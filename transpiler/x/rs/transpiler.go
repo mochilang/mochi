@@ -2018,13 +2018,11 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	io.WriteString(w, "{")
 	io.WriteString(w, " let tmp = &")
 	s.Str.emit(w)
-	io.WriteString(w, "; tmp.chars().skip(")
+	io.WriteString(w, "; let start = (")
 	s.Start.emit(w)
-	io.WriteString(w, " as usize).take((")
+	io.WriteString(w, ") as usize; let end = (")
 	s.End.emit(w)
-	io.WriteString(w, " - ")
-	s.Start.emit(w)
-	io.WriteString(w, ") as usize).collect::<String>() }")
+	io.WriteString(w, ") as usize; tmp.chars().skip(start).take(end - start).collect::<String>() }")
 }
 
 // PadStartExpr represents a call to the `padStart` builtin.

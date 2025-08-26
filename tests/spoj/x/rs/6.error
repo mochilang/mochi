@@ -1,0 +1,1390 @@
+compile: exit status 1
+error[E0434]: can't capture dynamic environment in a fn item
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:63:18
+   |
+63 | ...   da = digitMap.get(a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()).cloned().unwrap_or_default();
+   |            ^^^^^^^^
+   |
+   = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:67:18
+   |
+67 | ...   db = digitMap.get(b.chars().skip(j as usize).take(((j + 1) - j) as usize).collect::<String>().as_str()).cloned().unwrap_or_default();
+   |            ^^^^^^^^
+   |
+   = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:83:28
+   |
+83 | ...   let mut da: i64 = (digitMap.get(a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()).cloned().unwr...
+   |                          ^^^^^^^^
+   |
+   = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:86:18
+   |
+86 | ...   db = digitMap.get(b.chars().skip(j as usize).take(((j + 1) - j) as usize).collect::<String>().as_str()).cloned().unwrap_or_default();
+   |            ^^^^^^^^
+   |
+   = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:116:31
+    |
+116 | ...   let mut prod: i64 = ((digitMap.get(a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()).cloned().u...
+    |                             ^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:139:22
+    |
+139 | ...   let d: i64 = digitMap.get(b.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()).cloned().unwrap_or_...
+    |                    ^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+warning: unused import: `self`
+ --> /workspace/mochi/tests/spoj/x/rs/6.rs:5:15
+  |
+5 | use std::io::{self, Read};
+  |               ^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:46:34
+   |
+46 |         let _start: i64 = _now();;
+   |                                  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:47:298
+   |
+47 | ...), (String::from("8"), 8), (String::from("9"), 9)]);;
+   |                                                        ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:54:2
+   |
+54 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:76:2
+   |
+76 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:107:2
+    |
+107 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:132:2
+    |
+132 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:151:2
+    |
+151 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:158:2
+    |
+158 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:248:3
+    |
+248 | };;
+    |   ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:249:18
+    |
+249 |     mochi_main();;
+    |                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:250:28
+    |
+250 |     let _end: i64 = _now();;
+    |                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:251:53
+    |
+251 |     let duration_us: i64 = ((_end - _start) / 1000);;
+    |                                                     ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:252:36
+    |
+252 |     let memory_bytes: i64 = _mem();;
+    |                                    ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:49:39
+   |
+49 |     let mut r: String = String::new();;
+   |                                       ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:56:45
+   |
+56 |     let mut i: i64 = ((a.len() as i64) - 1);;
+   |                                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:57:45
+   |
+57 |     let mut j: i64 = ((b.len() as i64) - 1);;
+   |                                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:58:28
+   |
+58 |     let mut carry: i64 = 0;;
+   |                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:59:41
+   |
+59 |     let mut res: String = String::new();;
+   |                                         ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:56:22
+   |
+56 |     let mut i: i64 = ((a.len() as i64) - 1);;
+   |                      ^                    ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+56 -     let mut i: i64 = ((a.len() as i64) - 1);;
+56 +     let mut i: i64 = (a.len() as i64) - 1;;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:57:22
+   |
+57 |     let mut j: i64 = ((b.len() as i64) - 1);;
+   |                      ^                    ^
+   |
+help: remove these parentheses
+   |
+57 -     let mut j: i64 = ((b.len() as i64) - 1);;
+57 +     let mut j: i64 = (b.len() as i64) - 1;;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:60:11
+   |
+60 |     while (((i >= 0) || (j >= 0)) || (carry > 0)) {
+   |           ^                                     ^
+   |
+help: remove these parentheses
+   |
+60 -     while (((i >= 0) || (j >= 0)) || (carry > 0)) {
+60 +     while ((i >= 0) || (j >= 0)) || (carry > 0) {
+   |
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:61:29
+   |
+61 |         let mut da: i64 = 0;;
+   |                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:65:29
+   |
+65 |         let mut db: i64 = 0;;
+   |                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:69:48
+   |
+69 |         let mut sum: i64 = ((da + db) + carry);;
+   |                                                ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:62:12
+   |
+62 |         if (i >= 0) {
+   |            ^      ^
+   |
+help: remove these parentheses
+   |
+62 -         if (i >= 0) {
+62 +         if i >= 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:66:12
+   |
+66 |         if (j >= 0) {
+   |            ^      ^
+   |
+help: remove these parentheses
+   |
+66 -         if (j >= 0) {
+66 +         if j >= 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:69:28
+   |
+69 |         let mut sum: i64 = ((da + db) + carry);;
+   |                            ^                 ^
+   |
+help: remove these parentheses
+   |
+69 -         let mut sum: i64 = ((da + db) + carry);;
+69 +         let mut sum: i64 = (da + db) + carry;;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:71:17
+   |
+71 |         carry = (sum / 10);
+   |                 ^        ^
+   |
+help: remove these parentheses
+   |
+71 -         carry = (sum / 10);
+71 +         carry = sum / 10;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:72:13
+   |
+72 |         i = (i - 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+72 -         i = (i - 1);
+72 +         i = i - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:73:13
+   |
+73 |         j = (j - 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+73 -         j = (j - 1);
+73 +         j = j - 1;
+   |
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:78:45
+   |
+78 |     let mut i: i64 = ((a.len() as i64) - 1);;
+   |                                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:79:45
+   |
+79 |     let mut j: i64 = ((b.len() as i64) - 1);;
+   |                                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:80:29
+   |
+80 |     let mut borrow: i64 = 0;;
+   |                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:81:41
+   |
+81 |     let mut res: String = String::new();;
+   |                                         ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:99:24
+   |
+99 |     let mut k: i64 = 0;;
+   |                        ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:78:22
+   |
+78 |     let mut i: i64 = ((a.len() as i64) - 1);;
+   |                      ^                    ^
+   |
+help: remove these parentheses
+   |
+78 -     let mut i: i64 = ((a.len() as i64) - 1);;
+78 +     let mut i: i64 = (a.len() as i64) - 1;;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:79:22
+   |
+79 |     let mut j: i64 = ((b.len() as i64) - 1);;
+   |                      ^                    ^
+   |
+help: remove these parentheses
+   |
+79 -     let mut j: i64 = ((b.len() as i64) - 1);;
+79 +     let mut j: i64 = (b.len() as i64) - 1;;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:82:11
+   |
+82 |     while (i >= 0) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+82 -     while (i >= 0) {
+82 +     while i >= 0 {
+   |
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:83:166
+   |
+83 | ...().as_str()).cloned().unwrap_or_default() - borrow);;
+   |                                                        ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:84:29
+   |
+84 |         let mut db: i64 = 0;;
+   |                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:94:39
+   |
+94 |         let mut diff: i64 = (da - db);;
+   |                                       ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:83:27
+   |
+83 | ... = (digitMap.get(a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()).cloned().unwrap_or_default() - borrow);;
+   |       ^                                                                                                                                        ^
+   |
+help: remove these parentheses
+   |
+83 -         let mut da: i64 = (digitMap.get(a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()).cloned().unwrap_or_default() - borrow);;
+83 +         let mut da: i64 = digitMap.get(a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()).cloned().unwrap_or_default() - borrow;;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:85:12
+   |
+85 |         if (j >= 0) {
+   |            ^      ^
+   |
+help: remove these parentheses
+   |
+85 -         if (j >= 0) {
+85 +         if j >= 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:88:12
+   |
+88 |         if (da < db) {
+   |            ^       ^
+   |
+help: remove these parentheses
+   |
+88 -         if (da < db) {
+88 +         if da < db {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:89:18
+   |
+89 |             da = (da + 10);
+   |                  ^       ^
+   |
+help: remove these parentheses
+   |
+89 -             da = (da + 10);
+89 +             da = da + 10;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:94:29
+   |
+94 |         let mut diff: i64 = (da - db);;
+   |                             ^       ^
+   |
+help: remove these parentheses
+   |
+94 -         let mut diff: i64 = (da - db);;
+94 +         let mut diff: i64 = da - db;;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:96:13
+   |
+96 |         i = (i - 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+96 -         i = (i - 1);
+96 +         i = i - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:97:13
+   |
+97 |         j = (j - 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+97 -         j = (j - 1);
+97 +         j = j - 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:100:11
+    |
+100 |     while ((k < (res.len() as i64)) && (res.chars().skip(k as usize).take(((k + 1) - k) as usize).collect::<String>().as_str() == "0")) {
+    |           ^                                                                                                                           ^
+    |
+help: remove these parentheses
+    |
+100 -     while ((k < (res.len() as i64)) && (res.chars().skip(k as usize).take(((k + 1) - k) as usize).collect::<String>().as_str() == "0")) {
+100 +     while (k < (res.len() as i64)) && (res.chars().skip(k as usize).take(((k + 1) - k) as usize).collect::<String>().as_str() == "0") {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:101:13
+    |
+101 |         k = (k + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+101 -         k = (k + 1);
+101 +         k = k + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:103:8
+    |
+103 |     if (k == (res.len() as i64)) {
+    |        ^                       ^
+    |
+help: remove these parentheses
+    |
+103 -     if (k == (res.len() as i64)) {
+103 +     if k == (res.len() as i64) {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:112:45
+    |
+112 |     let mut i: i64 = ((a.len() as i64) - 1);;
+    |                                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:113:28
+    |
+113 |     let mut carry: i64 = 0;;
+    |                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:114:41
+    |
+114 |     let mut res: String = String::new();;
+    |                                         ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:124:24
+    |
+124 |     let mut k: i64 = 0;;
+    |                        ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:109:8
+    |
+109 |     if (d == 0) {
+    |        ^      ^
+    |
+help: remove these parentheses
+    |
+109 -     if (d == 0) {
+109 +     if d == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:112:22
+    |
+112 |     let mut i: i64 = ((a.len() as i64) - 1);;
+    |                      ^                    ^
+    |
+help: remove these parentheses
+    |
+112 -     let mut i: i64 = ((a.len() as i64) - 1);;
+112 +     let mut i: i64 = (a.len() as i64) - 1;;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:115:11
+    |
+115 |     while (i >= 0) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+115 -     while (i >= 0) {
+115 +     while i >= 0 {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:116:173
+    |
+116 | ...s_str()).cloned().unwrap_or_default() * d) + carry);;
+    |                                                        ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:116:29
+    |
+116 | ... = ((digitMap.get(a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()).cloned().unwrap_or_default() * d) + carry);;
+    |       ^                                                                                                                                             ^
+    |
+help: remove these parentheses
+    |
+116 -         let mut prod: i64 = ((digitMap.get(a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()).cloned().unwrap_or_default() * d) + carry);;
+116 +         let mut prod: i64 = (digitMap.get(a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()).cloned().unwrap_or_default() * d) + carry;;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:118:17
+    |
+118 |         carry = (prod / 10);
+    |                 ^         ^
+    |
+help: remove these parentheses
+    |
+118 -         carry = (prod / 10);
+118 +         carry = prod / 10;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:119:13
+    |
+119 |         i = (i - 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+119 -         i = (i - 1);
+119 +         i = i - 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:121:8
+    |
+121 |     if (carry > 0) {
+    |        ^         ^
+    |
+help: remove these parentheses
+    |
+121 -     if (carry > 0) {
+121 +     if carry > 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:125:11
+    |
+125 |     while ((k < (res.len() as i64)) && (res.chars().skip(k as usize).take(((k + 1) - k) as usize).collect::<String>().as_str() == "0")) {
+    |           ^                                                                                                                           ^
+    |
+help: remove these parentheses
+    |
+125 -     while ((k < (res.len() as i64)) && (res.chars().skip(k as usize).take(((k + 1) - k) as usize).collect::<String>().as_str() == "0")) {
+125 +     while (k < (res.len() as i64)) && (res.chars().skip(k as usize).take(((k + 1) - k) as usize).collect::<String>().as_str() == "0") {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:126:13
+    |
+126 |         k = (k + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+126 -         k = (k + 1);
+126 +         k = k + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:128:8
+    |
+128 |     if (k == (res.len() as i64)) {
+    |        ^                       ^
+    |
+help: remove these parentheses
+    |
+128 -     if (k == (res.len() as i64)) {
+128 +     if k == (res.len() as i64) {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:134:48
+    |
+134 |     let mut result: String = String::from("0");;
+    |                                                ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:135:28
+    |
+135 |     let mut shift: i64 = 0;;
+    |                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:136:41
+    |
+136 |     let mut parts: Vec<String> = vec![];;
+    |                                         ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:137:45
+    |
+137 |     let mut i: i64 = ((b.len() as i64) - 1);;
+    |                                             ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:137:22
+    |
+137 |     let mut i: i64 = ((b.len() as i64) - 1);;
+    |                      ^                    ^
+    |
+help: remove these parentheses
+    |
+137 -     let mut i: i64 = ((b.len() as i64) - 1);;
+137 +     let mut i: i64 = (b.len() as i64) - 1;;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:138:11
+    |
+138 |     while (i >= 0) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+138 -     while (i >= 0) {
+138 +     while i >= 0 {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:139:150
+    |
+139 | ...::<String>().as_str()).cloned().unwrap_or_default();;
+    |                                                        ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:140:60
+    |
+140 |         let part: String = mul_digit(a.clone(), d).clone();;
+    |                                                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:142:48
+    |
+142 |         let mut shifted: String = part.clone();;
+    |                                                ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:147:17
+    |
+147 |         shift = (shift + 1);
+    |                 ^         ^
+    |
+help: remove these parentheses
+    |
+147 -         shift = (shift + 1);
+147 +         shift = shift + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:148:13
+    |
+148 |         i = (i - 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+148 -         i = (i - 1);
+148 +         i = i - 1;
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:153:39
+    |
+153 |     let mut r: String = String::new();;
+    |                                       ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:160:40
+    |
+160 |     let tStr: String = input().clone();;
+    |                                        ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:164:55
+    |
+164 |     let t = { let n: i64 = tStr.parse().unwrap(); n };;
+    |                                                       ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:161:8
+    |
+161 |     if (tStr.as_str() == "") {
+    |        ^                   ^
+    |
+help: remove these parentheses
+    |
+161 -     if (tStr.as_str() == "") {
+161 +     if tStr.as_str() == "" {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:166:44
+    |
+166 |         let line: String = input().clone();;
+    |                                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:170:30
+    |
+170 |         let mut idx: i64 = 0;;
+    |                              ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:178:102
+    |
+178 |         let a: String = line.chars().skip(0 as usize).take(idx as usize).collect::<String>().clone();;
+    |                                                                                                      ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:179:119
+    |
+179 |         let op: String = line.chars().skip(idx as usize).take(((idx + 1) - idx) as usize).collect::<String>().clone();;
+    |                                                                                                                       ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:180:117
+    |
+180 |         let b: String = line.chars().skip((idx + 1) as usize).take(usize::MAX as usize).collect::<String>().clone();;
+    |                                                                                                                     ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:181:45
+    |
+181 |         let mut res: String = String::new();;
+    |                                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:182:45
+    |
+182 |         let mut parts: Vec<String> = vec![];;
+    |                                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:192:47
+    |
+192 |         let mut width: i64 = (a.len() as i64);;
+    |                                               ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:193:53
+    |
+193 |         let secondLen: i64 = ((b.len() as i64) + 1);;
+    |                                                     ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:207:52
+    |
+207 |         println!("{}", pad_left(a.clone(), width));;
+    |                                                    ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:208:65
+    |
+208 |         println!("{}", pad_left(format!("{}{}", op, b), width));;
+    |                                                                 ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:209:32
+    |
+209 |         let mut dash1: i64 = 0;;
+    |                                ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:229:75
+    |
+229 |         println!("{}", pad_left(repeat(String::from("-"), dash1), width));;
+    |                                                                           ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:245:54
+    |
+245 |         println!("{}", pad_left(res.clone(), width));;
+    |                                                      ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:246:28
+    |
+246 |         println!("{}", "");;
+    |                            ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:167:12
+    |
+167 |         if (line.as_str() == "") {
+    |            ^                   ^
+    |
+help: remove these parentheses
+    |
+167 -         if (line.as_str() == "") {
+167 +         if line.as_str() == "" {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:171:15
+    |
+171 |         while (idx < (line.len() as i64)) {
+    |               ^                         ^
+    |
+help: remove these parentheses
+    |
+171 -         while (idx < (line.len() as i64)) {
+171 +         while idx < (line.len() as i64) {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:172:123
+    |
+172 |             let ch: String = line.chars().skip(idx as usize).take(((idx + 1) - idx) as usize).collect::<String>().clone();;
+    |                                                                                                                           ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:173:16
+    |
+173 |             if (((ch.as_str() == "+") || (ch.as_str() == "-")) || (ch.as_str() == "*")) {
+    |                ^                                                                      ^
+    |
+help: remove these parentheses
+    |
+173 -             if (((ch.as_str() == "+") || (ch.as_str() == "-")) || (ch.as_str() == "*")) {
+173 +             if ((ch.as_str() == "+") || (ch.as_str() == "-")) || (ch.as_str() == "*") {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:176:19
+    |
+176 |             idx = (idx + 1);
+    |                   ^       ^
+    |
+help: remove these parentheses
+    |
+176 -             idx = (idx + 1);
+176 +             idx = idx + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:183:12
+    |
+183 |         if (op.as_str() == "+") {
+    |            ^                  ^
+    |
+help: remove these parentheses
+    |
+183 -         if (op.as_str() == "+") {
+183 +         if op.as_str() == "+" {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:185:19
+    |
+185 |         } else if (op.as_str() == "-") {
+    |                   ^                  ^
+    |
+help: remove these parentheses
+    |
+185 -         } else if (op.as_str() == "-") {
+185 +         } else if op.as_str() == "-" {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:188:76
+    |
+188 |             let r: HashMap<String, String> = mul_str(a.clone(), b.clone());;
+    |                                                                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:190:81
+    |
+190 |             let mut parts: String = r.get("parts").cloned().unwrap_or_default();;
+    |                                                                                 ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:192:30
+    |
+192 |         let mut width: i64 = (a.len() as i64);;
+    |                              ^              ^
+    |
+help: remove these parentheses
+    |
+192 -         let mut width: i64 = (a.len() as i64);;
+192 +         let mut width: i64 = a.len() as i64;;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:193:30
+    |
+193 |         let secondLen: i64 = ((b.len() as i64) + 1);;
+    |                              ^                    ^
+    |
+help: remove these parentheses
+    |
+193 -         let secondLen: i64 = ((b.len() as i64) + 1);;
+193 +         let secondLen: i64 = (b.len() as i64) + 1;;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:194:12
+    |
+194 |         if (secondLen > width) {
+    |            ^                 ^
+    |
+help: remove these parentheses
+    |
+194 -         if (secondLen > width) {
+194 +         if secondLen > width {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:197:12
+    |
+197 |         if ((res.len() as i64) > width) {
+    |            ^                          ^
+    |
+help: remove these parentheses
+    |
+197 -         if ((res.len() as i64) > width) {
+197 +         if (res.len() as i64) > width {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:198:21
+    |
+198 |             width = (res.len() as i64);
+    |                     ^                ^
+    |
+help: remove these parentheses
+    |
+198 -             width = (res.len() as i64);
+198 +             width = res.len() as i64;
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:201:35
+    |
+201 |             let p = p.to_string();;
+    |                                   ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:202:194
+    |
+202 | ... usize).unwrap().to_string().parse().unwrap(); n });;
+    |                                                        ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:202:26
+    |
+202 | ... = ((p.chars().nth("val" as usize).unwrap().to_string().clone().len() as i64) + { let n: i64 = p.chars().nth("shift" as usize).unwrap().to_string().parse().unwrap(); n });;
+    |       ^                                                                                                                                                                     ^
+    |
+help: remove these parentheses
+    |
+202 -             let l: i64 = ((p.chars().nth("val" as usize).unwrap().to_string().clone().len() as i64) + { let n: i64 = p.chars().nth("shift" as usize).unwrap().to_string().parse().unwrap(); n });;
+202 +             let l: i64 = (p.chars().nth("val" as usize).unwrap().to_string().clone().len() as i64) + { let n: i64 = p.chars().nth("shift" as usize).unwrap().to_string().parse().unwrap(); n };;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:203:16
+    |
+203 |             if (l > width) {
+    |                ^         ^
+    |
+help: remove these parentheses
+    |
+203 -             if (l > width) {
+203 +             if l > width {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:210:12
+    |
+210 |         if (op.as_str() == "*") {
+    |            ^                  ^
+    |
+help: remove these parentheses
+    |
+210 -         if (op.as_str() == "*") {
+210 +         if op.as_str() == "*" {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:211:16
+    |
+211 |             if ((parts.len() as i64) > 0) {
+    |                ^                        ^
+    |
+help: remove these parentheses
+    |
+211 -             if ((parts.len() as i64) > 0) {
+211 +             if (parts.len() as i64) > 0 {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:213:149
+    |
+213 | ...().nth("val" as usize).unwrap().to_string().clone();;
+    |                                                        ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:212:25
+    |
+212 |                 dash1 = ((b.len() as i64) + 1);
+    |                         ^                    ^
+    |
+help: remove these parentheses
+    |
+212 -                 dash1 = ((b.len() as i64) + 1);
+212 +                 dash1 = (b.len() as i64) + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:214:20
+    |
+214 |                 if ((firstPart.len() as i64) > dash1) {
+    |                    ^                                ^
+    |
+help: remove these parentheses
+    |
+214 -                 if ((firstPart.len() as i64) > dash1) {
+214 +                 if (firstPart.len() as i64) > dash1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:215:29
+    |
+215 |                     dash1 = (firstPart.len() as i64);
+    |                             ^                      ^
+    |
+help: remove these parentheses
+    |
+215 -                     dash1 = (firstPart.len() as i64);
+215 +                     dash1 = firstPart.len() as i64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:218:25
+    |
+218 |                 dash1 = ((b.len() as i64) + 1);
+    |                         ^                    ^
+    |
+help: remove these parentheses
+    |
+218 -                 dash1 = ((b.len() as i64) + 1);
+218 +                 dash1 = (b.len() as i64) + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:219:20
+    |
+219 |                 if ((res.len() as i64) > dash1) {
+    |                    ^                          ^
+    |
+help: remove these parentheses
+    |
+219 -                 if ((res.len() as i64) > dash1) {
+219 +                 if (res.len() as i64) > dash1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:220:29
+    |
+220 |                     dash1 = (res.len() as i64);
+    |                             ^                ^
+    |
+help: remove these parentheses
+    |
+220 -                     dash1 = (res.len() as i64);
+220 +                     dash1 = res.len() as i64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:224:21
+    |
+224 |             dash1 = ((b.len() as i64) + 1);
+    |                     ^                    ^
+    |
+help: remove these parentheses
+    |
+224 -             dash1 = ((b.len() as i64) + 1);
+224 +             dash1 = (b.len() as i64) + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:225:16
+    |
+225 |             if ((res.len() as i64) > dash1) {
+    |                ^                          ^
+    |
+help: remove these parentheses
+    |
+225 -             if ((res.len() as i64) > dash1) {
+225 +             if (res.len() as i64) > dash1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:226:25
+    |
+226 |                 dash1 = (res.len() as i64);
+    |                         ^                ^
+    |
+help: remove these parentheses
+    |
+226 -                 dash1 = (res.len() as i64);
+226 +                 dash1 = res.len() as i64;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:230:12
+    |
+230 |         if ((op.as_str() == "*") && ((b.len() as i64) > 1)) {
+    |            ^                                              ^
+    |
+help: remove these parentheses
+    |
+230 -         if ((op.as_str() == "*") && ((b.len() as i64) > 1)) {
+230 +         if (op.as_str() == "*") && ((b.len() as i64) > 1) {
+    |
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:243:92
+    |
+243 |             println!("{}", pad_left(repeat(String::from("-"), (res.len() as i64)), width));;
+    |                                                                                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:232:39
+    |
+232 |                 let p = p.to_string();;
+    |                                       ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:233:94
+    |
+233 |                 let val: String = p.chars().nth("val" as usize).unwrap().to_string().clone();;
+    |                                                                                              ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:234:119
+    |
+234 |                 let shift = { let n: i64 = p.chars().nth("shift" as usize).unwrap().to_string().parse().unwrap(); n };;
+    |                                                                                                                       ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:235:74
+    |
+235 |                 let spaces: i64 = ((width - shift) - (val.len() as i64));;
+    |                                                                          ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:236:54
+    |
+236 |                 let mut line: String = String::new();;
+    |                                                      ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:241:38
+    |
+241 |                 println!("{}", line);;
+    |                                      ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:235:35
+    |
+235 |                 let spaces: i64 = ((width - shift) - (val.len() as i64));;
+    |                                   ^                                    ^
+    |
+help: remove these parentheses
+    |
+235 -                 let spaces: i64 = ((width - shift) - (val.len() as i64));;
+235 +                 let spaces: i64 = (width - shift) - (val.len() as i64);;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:243:63
+    |
+243 |             println!("{}", pad_left(repeat(String::from("-"), (res.len() as i64)), width));;
+    |                                                               ^                ^
+    |
+help: remove these parentheses
+    |
+243 -             println!("{}", pad_left(repeat(String::from("-"), (res.len() as i64)), width));;
+243 +             println!("{}", pad_left(repeat(String::from("-"), res.len() as i64), width));;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:251:28
+    |
+251 |     let duration_us: i64 = ((_end - _start) / 1000);;
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+251 -     let duration_us: i64 = ((_end - _start) / 1000);;
+251 +     let duration_us: i64 = (_end - _start) / 1000;;
+    |
+
+error[E0599]: no method named `chars` found for struct `Vec<String>` in the current scope
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:200:24
+    |
+200 |         for p in parts.chars() {
+    |                        ^^^^^ method not found in `Vec<String>`
+
+error[E0599]: no method named `chars` found for struct `Vec<String>` in the current scope
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:213:47
+    |
+213 | ...   let firstPart: String = parts.chars().nth(0 as usize).unwrap().to_string().chars().nth("val" as usize).unwrap().to_string().clone();;
+    |                                     ^^^^^ method not found in `Vec<String>`
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:202:42
+    |
+202 | ...   let l: i64 = ((p.chars().nth("val" as usize).unwrap().to_string().clone().len() as i64) + { let n: i64 = p.chars().nth("shift" as u...
+    |                                    ^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:202:132
+    |
+202 | ...ing().clone().len() as i64) + { let n: i64 = p.chars().nth("shift" as usize).unwrap().to_string().parse().unwrap(); n });;
+    |                                                               ^^^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:213:104
+    |
+213 | ...   let firstPart: String = parts.chars().nth(0 as usize).unwrap().to_string().chars().nth("val" as usize).unwrap().to_string().clone();;
+    |                                                                                              ^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:233:49
+    |
+233 |                 let val: String = p.chars().nth("val" as usize).unwrap().to_string().clone();;
+    |                                                 ^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:234:58
+    |
+234 |                 let shift = { let n: i64 = p.chars().nth("shift" as usize).unwrap().to_string().parse().unwrap(); n };;
+    |                                                          ^^^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0599]: `HashMap<String, String>` doesn't implement `std::fmt::Display`
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:141:169
+    |
+141 | ...at!("{}", shift))]).to_string()); _v };
+    |                        ^^^^^^^^^ method cannot be called on `HashMap<String, String>` due to unsatisfied trait bounds
+    |
+    = note: the following trait bounds were not satisfied:
+            `HashMap<String, String>: std::fmt::Display`
+            which is required by `HashMap<String, String>: ToString`
+
+error[E0277]: `Vec<String>` doesn't implement `std::fmt::Display`
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:150:118
+    |
+150 |     return HashMap::from([(String::from("res"), String::from(result.clone())), (String::from("parts"), format!("{}", parts))])
+    |                                                                                                                 --   ^^^^^ `Vec<String>` cannot be formatted with the default formatter
+    |                                                                                                                 |
+    |                                                                                                                 required by this formatting parameter
+    |
+    = help: the trait `std::fmt::Display` is not implemented for `Vec<String>`
+    = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+    = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: unused import: `Read`
+ --> /workspace/mochi/tests/spoj/x/rs/6.rs:5:21
+  |
+5 | use std::io::{self, Read};
+  |                     ^^^^
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:48:15
+   |
+48 |     fn repeat(mut s: String, mut n: i64) -> String {
+   |               ----^
+   |               |
+   |               help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/spoj/x/rs/6.rs:48:30
+   |
+48 |     fn repeat(mut s: String, mut n: i64) -> String {
+   |                              ----^
+   |                              |
+   |                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:152:17
+    |
+152 |     fn pad_left(mut s: String, mut total: i64) -> String {
+    |                 ----^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/spoj/x/rs/6.rs:152:32
+    |
+152 |     fn pad_left(mut s: String, mut total: i64) -> String {
+    |                                ----^^^^^
+    |                                |
+    |                                help: remove this `mut`
+
+error: aborting due to 15 previous errors; 143 warnings emitted
+
+Some errors have detailed explanations: E0277, E0434, E0599, E0606.
+For more information about an error, try `rustc --explain E0277`.
