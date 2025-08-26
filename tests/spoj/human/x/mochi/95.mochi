@@ -1,0 +1,77 @@
+// Solution for SPOJ STPAR - Street Parade
+// https://www.spoj.com/problems/STPAR/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let n = parseIntStr(line)
+    if n == 0 { break }
+    let numsLine = input()
+    let parts = split(numsLine)
+    var arr: list<int> = []
+    var idx = 0
+    while idx < n {
+      arr = append(arr, parseIntStr(parts[idx]))
+      idx = idx + 1
+    }
+    var stack: list<int> = []
+    var need = 1
+    var i = 0
+    while i < n {
+      let car = arr[i]
+      while len(stack) > 0 && stack[len(stack)-1] == need {
+        stack = stack[0:len(stack)-1]
+        need = need + 1
+      }
+      if car == need {
+        need = need + 1
+      } else {
+        stack = append(stack, car)
+      }
+      i = i + 1
+    }
+    while len(stack) > 0 && stack[len(stack)-1] == need {
+      stack = stack[0:len(stack)-1]
+      need = need + 1
+    }
+    if len(stack) == 0 {
+      print("yes")
+    } else {
+      print("no")
+    }
+  }
+}
+
+main()
