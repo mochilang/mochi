@@ -1,0 +1,4 @@
+run: signal: aborted
+{force: 6.42482e-21}
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  One and only one argument must be 0
