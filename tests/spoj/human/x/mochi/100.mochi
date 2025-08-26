@@ -1,0 +1,120 @@
+// Solution for SPOJ BABTWR - Tower of Babylon
+// https://www.spoj.com/problems/BABTWR/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+type Block {
+  h: int,
+  w: int,
+  d: int,
+}
+
+fun sortBlocks(arr: list<Block>): list<Block> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 {
+      let prev = arr[j-1]
+      let curr = arr[j]
+      if prev.w * prev.d >= curr.w * curr.d { break }
+      arr[j-1] = curr
+      arr[j] = prev
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil || line == "" { return }
+    let n = parseIntStr(line)
+    if n == 0 { break }
+    var blocks: list<Block> = []
+    var i = 0
+    while i < n {
+      let l = input()
+      let p = split(l, " ")
+      let x = parseIntStr(p[0])
+      let y = parseIntStr(p[1])
+      let z = parseIntStr(p[2])
+      let w1 = if y > z { y } else { z }
+      let d1 = if y > z { z } else { y }
+      blocks = append(blocks, Block { h: x, w: w1, d: d1 })
+      let w2 = if x > z { x } else { z }
+      let d2 = if x > z { z } else { x }
+      blocks = append(blocks, Block { h: y, w: w2, d: d2 })
+      let w3 = if x > y { x } else { y }
+      let d3 = if x > y { y } else { x }
+      blocks = append(blocks, Block { h: z, w: w3, d: d3 })
+      i = i + 1
+    }
+    blocks = sortBlocks(blocks)
+    let m = len(blocks)
+    var dp: list<int> = []
+    var idx = 0
+    while idx < m {
+      let b = blocks[idx]
+      dp = append(dp, b.h)
+      idx = idx + 1
+    }
+    var ans = 0
+    i = 0
+    while i < m {
+      let bi = blocks[i]
+      var j = 0
+      while j < i {
+        let bj = blocks[j]
+        if bi.w < bj.w && bi.d < bj.d {
+          let cand = dp[j] + bi.h
+          if cand > dp[i] { dp[i] = cand }
+        }
+        j = j + 1
+      }
+      if dp[i] > ans { ans = dp[i] }
+      i = i + 1
+    }
+    print(str(ans))
+  }
+}
+
+main()
