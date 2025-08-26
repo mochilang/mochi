@@ -1723,6 +1723,13 @@ func (c *CallExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ")")
 			return
 		}
+	case "abs":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "abs(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
 	case "input":
 		if len(c.Args) == 0 {
 			fmt.Fprint(w, "(readLine() ?? \"0\")")

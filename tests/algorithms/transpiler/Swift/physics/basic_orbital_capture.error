@@ -1,18 +1,18 @@
 signal: illegal instruction
-main/main.swift:129: Fatal error: capture_area failed
+main/main.swift:139: Fatal error: capture_area failed
 
-*** Signal 4: Backtracing from 0x7f6d40b75288... done ***
+*** Signal 4: Backtracing from 0x7f0038d94288... done ***
 
-*** Program crashed: Illegal instruction at 0x00007f6d40b75288 ***
+*** Program crashed: Illegal instruction at 0x00007f0038d94288 ***
 
 Thread 0 "main" crashed:
 
-0      0x00007f6d40b75288 _assertionFailure(_:_:file:line:flags:) + 264 in libswiftCore.so
-1 [ra] 0x000056190dca36f2 run_tests #1 () in  + 609 in main
-2 [ra] 0x000056190dca1ab7 main #1 () in  + 86 in main
-3 [ra] 0x000056190dca2ca1 main + 176 in main
-4 [ra] 0x00007f6d3f38a1ca <unknown> in libc.so.6
-5 [ra] 0x00007f6d3f38a28b <unknown> in libc.so.6
+0      0x00007f0038d94288 _assertionFailure(_:_:file:line:flags:) + 264 in libswiftCore.so
+1 [ra] 0x000055771446c0ed run_tests #1 () in  + 1324 in main
+2 [ra] 0x0000557714469e0a main #1 () in  + 89 in main
+3 [ra] 0x000055771446b241 main + 176 in main
+4 [ra] 0x00007f00375a91ca <unknown> in libc.so.6
+5 [ra] 0x00007f00375a928b <unknown> in libc.so.6
 
 
 Registers:
@@ -20,31 +20,31 @@ Registers:
 rax 0x0000000000000000  0
 rdx 0x0000000000000002  2
 rcx 0x0000000000000007  7
-rbx 0x0000561c4b0e2888  94679518292104
-rsi 0x800056190dca3f70  9223466702460305264
-rdi 0x000056192a9c81a0  2f 62 69 6e 00 00 00 00 31 00 00 00 00 00 00 00  /bin····1·······
-rbp 0x00007ffee96112d0  60 13 61 e9 fe 7f 00 00 f2 36 ca 0d 19 56 00 00  `·aéþ···ò6Ê··V··
-rsp 0x00007ffee9611260  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ················
- r8 0x000056192a993010  07 00 07 00 05 00 07 00 07 00 07 00 02 00 02 00  ················
+rbx 0x000055721c24444f  93948586771535
+rsi 0x800055771446c970  9223466006784428400
+rdi 0x000055774b50f1a0  2f 62 69 6e 00 00 00 00 31 00 00 00 00 00 00 00  /bin····1·······
+rbp 0x00007ffe5ac6bef0  70 c1 c6 5a fe 7f 00 00 ed c0 46 14 77 55 00 00  pÁÆZþ···íÀF·wU··
+rsp 0x00007ffe5ac6be80  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ················
+ r8 0x000055774b4da010  07 00 07 00 05 00 07 00 07 00 07 00 02 00 01 00  ················
  r9 0x0000000000000007  7
-r10 0x000056192a9c81b0  88 28 0e 4b 1c 56 00 00 69 dd 88 a4 9a 0e 6a f9  ·(·K·V··iÝ·¤··jù
-r11 0xf96a0e9aa488dd69  17972193320323571049
+r10 0x000055774b50f1b0  4f 44 24 1c 72 55 00 00 a4 f9 a2 c7 50 9c b4 e6  OD$·rU··¤ù¢ÇP·´æ
+r11 0xe6b49c50c7a2f9a4  16624083995292006820
 r12 0x0000000000000001  1
-r13 0x00007f6d4045d068  00 00 00 00 00 00 00 00 50 68 46 40 6d 7f 00 00  ········PhF@m···
-r14 0x000056190dca5c20  03 00 00 00 00 00 00 00 e8 5f ca 0d 19 56 00 00  ········è_Ê··V··
-r15 0x00007f6d40fe7000  e0 82 fe 40 6d 7f 00 00 34 00 00 00 00 00 00 00  à·þ@m···4·······
-rip 0x00007f6d40b75288  0f 0b 48 8d 35 4f 5c fb ff 48 8d 55 a0 45 31 e4  ··H·5O\ûÿH·U E1ä
+r13 0x00007f003867c068  00 00 00 00 00 00 00 00 50 58 68 38 00 7f 00 00  ········PXh8····
+r14 0x000055771446ec18  03 00 00 00 00 00 00 00 e8 ef 46 14 77 55 00 00  ········èïF·wU··
+r15 0x00007f0039206000  e0 72 20 39 00 7f 00 00 34 00 00 00 00 00 00 00  àr 9····4·······
+rip 0x00007f0038d94288  0f 0b 48 8d 35 4f 5c fb ff 48 8d 55 a0 45 31 e4  ··H·5O\ûÿH·U E1ä
 
-rflags 0x0000000000010206  PF
+rflags 0x0000000000010202  
 
 cs 0x0033  fs 0x0000  gs 0x0000
 
 
 Images (48 omitted):
 
-0x000056190dc9e000–0x000056190dca4610 f71a02a31ab7eab46189768996533802a0c0041e main            /tmp/TestSwiftTranspiler_Algorithms_Golden763_physics_basic_orbital_capture2763071830/001/main
-0x00007f6d3f360000–0x00007f6d3f50fcb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6       /usr/lib/x86_64-linux-gnu/libc.so.6
-0x00007f6d40899000–0x00007f6d40e282d8 7bd479aa5e6f57e6772da70789dcdfa25d5e29b0 libswiftCore.so /root/.local/share/mise/installs/swift/6.1/usr/lib/swift/linux/libswiftCore.so
+0x0000557714466000–0x000055771446d038 568ad43779721c0307be166e79e5261d1a45f381 main            /tmp/TestSwiftTranspiler_Algorithms_Golden763_physics_basic_orbital_capture2138732080/001/main
+0x00007f003757f000–0x00007f003772ecb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6       /usr/lib/x86_64-linux-gnu/libc.so.6
+0x00007f0038ab8000–0x00007f00390472d8 7bd479aa5e6f57e6772da70789dcdfa25d5e29b0 libswiftCore.so /root/.local/share/mise/installs/swift/6.1/usr/lib/swift/linux/libswiftCore.so
 
 Backtrace took 0.06s
 
