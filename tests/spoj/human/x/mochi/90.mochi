@@ -1,0 +1,74 @@
+// Solution for SPOJ MINIMAX - Minimizing maximizer
+// https://www.spoj.com/problems/MINIMAX/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = split(line)
+    let n = parseIntStr(parts[0])
+    let m = parseIntStr(parts[1])
+    var is: list<int> = []
+    var js: list<int> = []
+    var idx = 0
+    while idx < m {
+      let l = input()
+      let ps = split(l)
+      is = append(is, parseIntStr(ps[0]))
+      js = append(js, parseIntStr(ps[1]))
+      idx = idx + 1
+    }
+    var L = n
+    var cnt = 0
+    var k = m - 1
+    while k >= 0 {
+      let i = is[k]
+      let j = js[k]
+      if j >= L && i < L {
+        L = i
+        cnt = cnt + 1
+        if L == 1 { break }
+      }
+      k = k - 1
+    }
+    print(cnt)
+    case = case + 1
+  }
+}
+
+main()
