@@ -1,35 +1,294 @@
 // Solution for SPOJ HOTLINE - Hotline
 // https://www.spoj.com/problems/HOTLINE/
 
-fun main() {
-  // Consume all input but ignore, as this sample solution is hardcoded for the
-  // provided example dialogue.
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var last = 0
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " {
+      parts = append(parts, substring(s, last, i))
+      last = i + 1
+    }
+    if i + 1 == len(s) {
+      parts = append(parts, substring(s, last, i+1))
+    }
+    i = i + 1
+  }
+  return parts
+}
+
+fun join(parts: list<string>, sep: string): string {
+  if len(parts) == 0 { return "" }
+  var res = parts[0]
+  var i = 1
+  while i < len(parts) {
+    res = res + sep + parts[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun startsWith(s: string, prefix: string): bool {
+  if len(prefix) > len(s) { return false }
+  return substring(s, 0, len(prefix)) == prefix
+}
+
+fun endsWith(s: string, suffix: string): bool {
+  if len(suffix) > len(s) { return false }
+  return substring(s, len(s) - len(suffix), len(s)) == suffix
+}
+
+fun ansSubject(sub: string): string {
+  if sub == "I" { return "you" }
+  if sub == "you" { return "I" }
+  return sub
+}
+
+fun conjVerb(sub: string, verb: string): string {
+  if sub == "I" || sub == "you" { return verb }
+  return verb + "s"
+}
+
+fun negWord(sub: string): string {
+  if sub == "I" || sub == "you" { return "don't" }
+  return "doesn't"
+}
+
+fun containsStr(lst: list<string>, target: string): bool {
+  for s in lst {
+    if s == target { return true }
+  }
+  return false
+}
+
+fun joinSubjects(lst: list<string>): string {
+  if len(lst) == 0 { return "" }
+  if len(lst) == 1 { return lst[0] }
+  if len(lst) == 2 { return lst[0] + " and " + lst[1] }
+  var res = lst[0]
+  var i = 1
+  while i < len(lst) - 1 {
+    res = res + ", " + lst[i]
+    i = i + 1
+  }
+  res = res + ", and " + lst[len(lst)-1]
+  return res
+}
+
+fun actKey(p: string, o: string): string {
+  return p + "|" + o
+}
+
+fun causesContradiction(facts: list<any>, f: any): bool {
+  for g in facts {
+    if g.predicate == f.predicate && g.object == f.object &&
+       (g.subject == f.subject || g.subject == "*" || f.subject == "*") &&
+       g.positive != f.positive {
+      return true
+    }
+  }
+  return false
+}
+
+fun parseStatement(line: string): any {
+  let core = substring(line, 0, len(line)-1)
+  let parts = splitSpaces(core)
+  if len(parts) >= 3 && (parts[1] == "don't" || parts[1] == "doesn't") {
+    let subj = parts[0]
+    let pred = parts[2]
+    let obj = ""
+    if len(parts) > 3 {
+      obj = join(parts[3:len(parts)], " ")
+    }
+    return { subject: subj, predicate: pred, object: obj, positive: false }
+  } else {
+    let subj = parts[0]
+    let predWord = parts[1]
+    var predicate = predWord
+    if subj != "I" && subj != "you" {
+      predicate = substring(predWord, 0, len(predWord)-1)
+    }
+    let obj = if len(parts) > 2 { join(parts[2:len(parts)], " ") } else { "" }
+    if subj == "everybody" {
+      return { subject: "*", predicate: predicate, object: obj, positive: true }
+    } else if subj == "nobody" {
+      return { subject: "*", predicate: predicate, object: obj, positive: false }
+    } else {
+      return { subject: subj, predicate: predicate, object: obj, positive: true }
+    }
+  }
+}
+
+fun answerDo(sub: string, pred: string, obj: string, facts: list<any>): string {
+  var pos = false
+  var neg = false
+  for f in facts {
+    if f.predicate == pred && f.object == obj && (f.subject == sub || f.subject == "*") {
+      if f.positive { pos = true } else { neg = true }
+    }
+  }
+  let subA = ansSubject(sub)
+  let objPart = if obj == "" { "" } else { " " + obj }
+  if pos {
+    let verb = conjVerb(subA, pred)
+    return "yes, " + subA + " " + verb + objPart + "."
+  }
+  if neg {
+    let nw = negWord(subA)
+    return "no, " + subA + " " + nw + " " + pred + objPart + "."
+  }
+  return "maybe."
+}
+
+fun answerWho(pred: string, obj: string, facts: list<any>): string {
+  var hasEvery = false
+  var hasNobody = false
+  var subs: list<string> = []
+  for f in facts {
+    if f.predicate == pred && f.object == obj {
+      if f.subject == "*" {
+        if f.positive { hasEvery = true } else { hasNobody = true }
+      } else if f.positive {
+        let sub = ansSubject(f.subject)
+        if !containsStr(subs, sub) {
+          subs = append(subs, sub)
+        }
+      }
+    }
+  }
+  let objPart = if obj == "" { "" } else { " " + obj }
+  if hasNobody {
+    return "nobody " + conjVerb("nobody", pred) + objPart + "."
+  }
+  if hasEvery {
+    return "everybody " + conjVerb("everybody", pred) + objPart + "."
+  }
+  if len(subs) > 0 {
+    let subjStr = joinSubjects(subs)
+    let verb = if len(subs) == 1 { conjVerb(subs[0], pred) } else { pred }
+    return subjStr + " " + verb + objPart + "."
+  }
+  return "I don't know."
+}
+
+fun answerWhat(sub: string, facts: list<any>): string {
+  var seen: list<string> = []
+  var acts: list<any> = []
+  for f in facts {
+    if f.subject == sub || f.subject == "*" {
+      let key = actKey(f.predicate, f.object)
+      if !containsStr(seen, key) {
+        seen = append(seen, key)
+        acts = append(acts, { positive: f.positive, predicate: f.predicate, object: f.object })
+      }
+    }
+  }
+  if len(acts) == 0 { return "I don't know." }
+  let subA = ansSubject(sub)
+  var phrases: list<string> = []
+  for a in acts {
+    var base = ""
+    if a.positive {
+      base = conjVerb(subA, a.predicate)
+    } else {
+      base = negWord(subA) + " " + a.predicate
+    }
+    if a.object != "" {
+      base = base + " " + a.object
+    }
+    phrases = append(phrases, base)
+  }
+  // join phrases
+  var res = ""
+  if len(phrases) == 1 {
+    res = phrases[0]
+  } else if len(phrases) == 2 {
+    res = phrases[0] + ", and " + phrases[1]
+  } else {
+    res = phrases[0]
+    var i = 1
+    while i < len(phrases) - 1 {
+      res = res + ", " + phrases[i]
+      i = i + 1
+    }
+    res = res + ", and " + phrases[len(phrases)-1]
+  }
+  return subA + " " + res + "."
+}
+
+fun answerLine(line: string, facts: list<any>): string {
+  if startsWith(line, "do ") || startsWith(line, "does ") {
+    let core = substring(line, 0, len(line)-1)
+    let parts = splitSpaces(core)
+    let sub = parts[1]
+    let pred = parts[2]
+    let obj = if len(parts) > 3 { join(parts[3:len(parts)], " ") } else { "" }
+    return answerDo(sub, pred, obj, facts)
+  }
+  if startsWith(line, "who ") {
+    let core = substring(line, 0, len(line)-1)
+    let parts = splitSpaces(core)
+    let predWord = parts[1]
+    let pred = substring(predWord, 0, len(predWord)-1)
+    let obj = if len(parts) > 2 { join(parts[2:len(parts)], " ") } else { "" }
+    return answerWho(pred, obj, facts)
+  }
+  // what does ...
+  let core = substring(line, 0, len(line)-1)
+  let parts = splitSpaces(core)
+  let sub = parts[2]
+  return answerWhat(sub, facts)
+}
+
+fun processDialogue(num: int) {
+  print("Dialogue #" + str(num) + ":")
+  var facts: list<any> = []
+  var contr = false
   while true {
     let line = input()
     if line == "" { break }
+    if endsWith(line, "!") {
+      print(line)
+      print("")
+      break
+    } else if endsWith(line, "?") {
+      print(line)
+      let ans = if contr { "I am abroad." } else { answerLine(line, facts) }
+      print(ans)
+      print("")
+    } else {
+      let f = parseStatement(line)
+      if !contr && causesContradiction(facts, f) { contr = true }
+      facts = append(facts, f)
+    }
   }
-  print("Dialogue #1:\n"+
-        "what do I do?\n"+
-        "you like hotdogs, don't like to work, and smile.\n\n"+
-        "who smiles?\n"+
-        "everybody smiles.\n\n"+
-        "what do you do?\n"+
-        "I don't like to work, and smile.\n\n"+
-        "does Joe smile?\n"+
-        "yes, Joe smiles.\n\n"+
-        "do I like to work?\n"+
-        "no, you don't like to work.\n\n"+
-        "who walks there?\n"+
-        "I don't know.\n\n"+
-        "who walks there?\n"+
-        "Michal walks there.\n\n"+
-        "what does Michal do?\n"+
-        "Michal doesn't like to work, smiles, hurts sometimes, and walks there.\n\n"+
-        "do you understand?\n"+
-        "maybe.\n\n"+
-        "do you understand now?\n"+
-        "I am abroad.\n\n"+
-        "bye!\n")
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var i = 1
+  while i <= t {
+    processDialogue(i)
+    i = i + 1
+  }
 }
 
 main()
