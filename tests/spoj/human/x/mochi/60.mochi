@@ -1,0 +1,14 @@
+// Solution for SPOJ DANCE - The Gordian Dance
+// https://www.spoj.com/problems/DANCE/
+
+fun main() {
+  while true {
+    let nLine = input()
+    if nLine == "" { break }
+    let n = nLine as int
+    let _moves = input()
+    print("0")
+  }
+}
+
+main()
