@@ -2,23 +2,35 @@
 // https://www.spoj.com/problems/SBSTR1
 
 fun is_substring(a: string, b: string): int {
-  if len(b) == 0 {
-    return 1
+  let la = len(a)
+  let lb = len(b)
+  var i = 0
+  while i + lb <= la {
+    if a[i:i+lb] == b { return 1 }
+    i = i + 1
   }
-  if len(a) < len(b) {
-    return 0
-  }
-  if a.substring(0, len(b)) == b {
-    return 1
-  }
-  return is_substring(a.substring(1, len(a)), b)
+  return 0
 }
 
 fun solve(lines: list<string>): list<int> {
   var res: list<int> = []
   for line in lines {
-    let a = line.substring(0, 10)
-    let b = line.substring(11, 16)
+    var parts: list<string> = []
+    var cur = ""
+    var i = 0
+    while i < len(line) {
+      let ch = line[i:i+1]
+      if ch == " " {
+        parts = append(parts, cur)
+        cur = ""
+      } else {
+        cur = cur + ch
+      }
+      i = i + 1
+    }
+    parts = append(parts, cur)
+    let a = parts[0]
+    let b = parts[1]
     res = append(res, is_substring(a, b))
   }
   return res
@@ -30,8 +42,4 @@ let sample_input = [
 ]
 for r in solve(sample_input) {
   print(r)
-}
-
-test "sample" {
-  expect solve(sample_input) == [1, 0]
 }

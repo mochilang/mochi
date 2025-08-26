@@ -1,0 +1,159 @@
+// https://www.spoj.com/problems/DIRVS/
+
+fun parseInt(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i=0
+  var n=0
+  while i < len(str) {
+    let ch=str[i:i+1]
+    if ch != " " { n = n*10 + digits[ch] }
+    i = i + 1
+  }
+  return n
+}
+
+fun parseInts(line: string): list<int> {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var nums: list<int> = []
+  var cur = 0
+  var inNum = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if inNum {
+        nums = append(nums, cur)
+        cur = 0
+        inNum = false
+      }
+    } else {
+      cur = cur*10 + digits[ch]
+      inNum = true
+    }
+    i = i + 1
+  }
+  if inNum { nums = append(nums, cur) }
+  return nums
+}
+
+fun abs(x: int): int { if x < 0 { return 0 - x } else { return x } }
+
+fun visible(h: list<list<int>>, r1: int, c1: int, r2: int, c2: int): bool {
+  if r1 == r2 && c1 == c2 { return true }
+  let h0 = h[r1][c1]
+  let h1 = h[r2][c2]
+  var dr = r2 - r1
+  var dc = c2 - c1
+  var steps = abs(dr)
+  if abs(dc) > steps { steps = abs(dc) }
+  var x = (c1 as float) + 0.5
+  var y = (r1 as float) + 0.5
+  var z = (h0 as float) + 0.5
+  var incX = (dc as float) / (steps as float)
+  var incY = (dr as float) / (steps as float)
+  var incZ = ((h1 - h0) as float) / (steps as float)
+  var i = 1
+  while i < steps {
+    x = x + incX
+    y = y + incY
+    z = z + incZ
+    let cx = int(x)
+    let cy = int(y)
+    if z <= (h[cy][cx] as float) { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun computeVis(h: list<list<int>>, P: int, Q: int, r: int, c: int): list<list<bool>> {
+  var vis: list<list<bool>> = []
+  for i in 0..P {
+    var row: list<bool> = []
+    for j in 0..Q {
+      row = append(row, visible(h, i, j, r, c))
+    }
+    vis = append(vis, row)
+  }
+  return vis
+}
+
+fun bfs(h: list<list<int>>, vis1: list<list<bool>>, vis2: list<list<bool>>, P: int, Q: int, r1: int, c1: int, r2: int, c2: int): int {
+  var dist: list<list<int>> = []
+  for i in 0..P {
+    var row: list<int> = []
+    for j in 0..Q { row = append(row, 0 - 1) }
+    dist = append(dist, row)
+  }
+  var qr: list<int> = []
+  var qc: list<int> = []
+  qr = append(qr, r1)
+  qc = append(qc, c1)
+  dist[r1][c1] = 0
+  var head = 0
+  let drs = [-1,1,0,0]
+  let dcs = [0,0,-1,1]
+  while head < len(qr) {
+    let r = qr[head]
+    let c = qc[head]
+    head = head + 1
+    if r == r2 && c == c2 { break }
+    let hcur = h[r][c]
+    var k = 0
+    while k < 4 {
+      let nr = r + drs[k]
+      let nc = c + dcs[k]
+      if nr >= 0 && nr < P && nc >= 0 && nc < Q {
+        if dist[nr][nc] == 0 - 1 {
+          let nh = h[nr][nc]
+          if nh <= hcur + 1 && nh >= hcur - 3 {
+            if vis1[nr][nc] || vis2[nr][nc] {
+              dist[nr][nc] = dist[r][c] + 1
+              qr = append(qr, nr)
+              qc = append(qc, nc)
+            }
+          }
+        }
+      }
+      k = k + 1
+    }
+  }
+  return dist[r2][c2]
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let T = parseInt(tStr)
+  for _ in 0..T {
+    var line = input()
+    while line == "" { line = input() }
+    let dims = parseInts(line)
+    let P = dims[0]
+    let Q = dims[1]
+    var h: list<list<int>> = []
+    for i in 0..P {
+      let rowVals = parseInts(input())
+      h = append(h, rowVals)
+    }
+    let posLine = input()
+    let pos = parseInts(posLine)
+    let r1 = pos[0]-1
+    let c1 = pos[1]-1
+    let r2 = pos[2]-1
+    let c2 = pos[3]-1
+    let vis1 = computeVis(h, P, Q, r1, c1)
+    let vis2 = computeVis(h, P, Q, r2, c2)
+    let res = bfs(h, vis1, vis2, P, Q, r1, c1, r2, c2)
+    if res == 0 - 1 {
+      print("Mission impossible!")
+    } else {
+      print("The shortest path is " + str(res) + " steps long.")
+    }
+  }
+}
+
+main()
