@@ -1,0 +1,114 @@
+/*
+SPOJ: Complete the Sequence!
+https://www.spoj.com/problems/CMPLS
+*/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  for p in pieces {
+    if len(p) > 0 {
+      nums = append(nums, p as int)
+    }
+  }
+  return nums
+}
+
+fun all_equal(a: list<int>): bool {
+  if len(a) <= 1 {
+    return true
+  }
+  var i: int = 1
+  while i < len(a) {
+    if a[i] != a[0] {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun complete(seq: list<int>, c: int): list<int> {
+  var table: list<list<int>> = []
+  table = append(table, seq)
+  var last = seq
+  while len(last) > 1 && !all_equal(last) {
+    var diff: list<int> = []
+    var j: int = 0
+    while j < len(last) - 1 {
+      diff = append(diff, last[j + 1] - last[j])
+      j = j + 1
+    }
+    table = append(table, diff)
+    last = diff
+  }
+  var k: int = 0
+  while k < c {
+    let bottom = len(table) - 1
+    let val = table[bottom][len(table[bottom]) - 1]
+    table[bottom] = append(table[bottom], val)
+    var r: int = bottom - 1
+    while r >= 0 {
+      let v = table[r][len(table[r]) - 1] + table[r + 1][len(table[r + 1]) - 1]
+      table[r] = append(table[r], v)
+      r = r - 1
+    }
+    k = k + 1
+  }
+  var res: list<int> = []
+  var idx: int = len(seq)
+  var added: int = 0
+  while added < c {
+    res = append(res, table[0][idx])
+    idx = idx + 1
+    added = added + 1
+  }
+  return res
+}
+
+fun join_ints(nums: list<int>): string {
+  var s: string = ""
+  var i: int = 0
+  while i < len(nums) {
+    if i > 0 {
+      s = s + " "
+    }
+    s = s + string(nums[i])
+    i = i + 1
+  }
+  return s
+}
+
+fun main() {
+  let t = input() as int
+  var case_idx: int = 0
+  while case_idx < t {
+    let sc = parse_ints(input())
+    let s = sc[0]
+    let c = sc[1]
+    let seq = parse_ints(input())
+    let ext = complete(seq, c)
+    print(join_ints(ext))
+    case_idx = case_idx + 1
+  }
+}
+
+main()
