@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-25 15:40 UTC
+Last updated: 2025-08-26 02:03 UTC
 
-## Algorithms Golden Test Checklist (943/1077)
+## Algorithms Golden Test Checklist (946/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 39µs | 18.9 KB |
@@ -692,7 +692,7 @@ Last updated: 2025-08-25 15:40 UTC
 | 683 | maths/sum_of_harmonic_series | ✓ | 26µs | 13.4 KB |
 | 684 | maths/sumset | ✓ | 87µs | 59.4 KB |
 | 685 | maths/sylvester_sequence | ✓ | 59µs | 17.8 KB |
-| 686 | maths/tanh |   | 84µs | 202.3 KB |
+| 686 | maths/tanh | ✓ | 84µs | 202.3 KB |
 | 687 | maths/test_factorial | ✓ | 20µs | 28.7 KB |
 | 688 | maths/test_prime_check | ✓ | 20µs | 11.9 KB |
 | 689 | maths/three_sum | ✓ | 46µs | 40.8 KB |
@@ -709,7 +709,7 @@ Last updated: 2025-08-25 15:40 UTC
 | 700 | matrix/count_paths | ✓ | 109µs | 107.0 KB |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 28µs | 4.7 KB |
 | 702 | matrix/inverse_of_matrix | ✓ | 71µs | 16.7 KB |
-| 703 | matrix/largest_square_area_in_matrix |   | 48µs | 49.2 KB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 48µs | 49.2 KB |
 | 704 | matrix/matrix_based_game | ✓ | 174µs | 204.1 KB |
 | 705 | matrix/matrix_class | ✓ | 983µs | 692.4 KB |
 | 706 | matrix/matrix_equalization | ✓ | 106µs | 150.1 KB |
@@ -724,7 +724,7 @@ Last updated: 2025-08-25 15:40 UTC
 | 715 | matrix/sherman_morrison | ✓ | 197µs | 96.1 KB |
 | 716 | matrix/spiral_print | ✓ | 56µs | 34.6 KB |
 | 717 | matrix/tests/test_matrix_operation | ✓ | 137µs | 73.8 KB |
-| 718 | matrix/validate_sudoku_board |   | 41µs | 25.6 KB |
+| 718 | matrix/validate_sudoku_board | ✓ | 41µs | 25.6 KB |
 | 719 | networking_flow/ford_fulkerson |   |  |  |
 | 720 | networking_flow/minimum_cut | ✓ |  |  |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 19µs | 5.4 KB |
@@ -736,56 +736,56 @@ Last updated: 2025-08-25 15:40 UTC
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 35µs | 10.0 KB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 69µs | 29.0 KB |
 | 729 | neural_network/activation_functions/softplus | ✓ | 93µs | 60.5 KB |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 97µs | 87.3 KB |
-| 731 | neural_network/activation_functions/swish | ✓ | 2.813ms |  |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 4.533709s |  |
-| 733 | neural_network/convolution_neural_network | ✓ | 5.054ms | 6.2 MB |
-| 734 | neural_network/input_data | ✓ | 120µs | 57.6 KB |
-| 735 | neural_network/simple_neural_network | ✓ | 54µs | 1.9 KB |
-| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 18.619ms |  |
-| 737 | other/activity_selection | ✓ | 26µs | 3.9 KB |
-| 738 | other/alternative_list_arrange | ✓ | 46µs | 32.0 KB |
-| 739 | other/bankers_algorithm | ✓ | 184µs | 133.2 KB |
-| 740 | other/davis_putnam_logemann_loveland | ✓ | 11µs | 1.2 KB |
-| 741 | other/doomsday | ✓ | 29µs | 4.2 KB |
-| 742 | other/fischer_yates_shuffle | ✓ | 138µs | 36.5 KB |
-| 743 | other/gauss_easter | ✓ | 68µs | 24.3 KB |
-| 744 | other/greedy | ✓ | 125µs | 47.2 KB |
-| 745 | other/guess_the_number_search | ✓ | 140µs | 100.2 KB |
-| 746 | other/h_index | ✓ | 65µs | 66.0 KB |
-| 747 | other/least_recently_used | ✓ | 32µs | 26.2 KB |
-| 748 | other/lfu_cache | ✓ | 70µs | 32.5 KB |
-| 749 | other/linear_congruential_generator | ✓ | 26µs | 6.1 KB |
-| 750 | other/lru_cache | ✓ | 167µs | 24.5 KB |
-| 751 | other/magicdiamondpattern | ✓ | 23µs | 20.4 KB |
-| 752 | other/majority_vote_algorithm | ✓ | 91µs | 102.5 KB |
-| 753 | other/maximum_subsequence | ✓ | 31µs | 13.8 KB |
-| 754 | other/nested_brackets | ✓ | 114µs | 102.0 KB |
-| 755 | other/number_container_system | ✓ | 28µs | 5.3 KB |
-| 756 | other/quine | ✓ | 12µs | 800 B |
-| 757 | other/scoring_algorithm | ✓ | 104µs | 39.6 KB |
-| 758 | other/sdes | ✓ | 158µs | 154.1 KB |
-| 759 | other/tower_of_hanoi | ✓ | 30µs | 11.6 KB |
-| 760 | other/word_search | ✓ | 4.086ms |  |
-| 761 | physics/altitude_pressure | ✓ | 77µs | 36.0 KB |
-| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 5µs | 544 B |
-| 763 | physics/basic_orbital_capture | ✓ | 57µs | 23.5 KB |
-| 764 | physics/casimir_effect | ✓ | 126µs | 94.5 KB |
-| 765 | physics/center_of_mass | ✓ | 41µs | 12.8 KB |
-| 766 | physics/centripetal_force | ✓ | 45µs | 19.7 KB |
-| 767 | physics/coulombs_law | ✓ | 42µs | 7.1 KB |
-| 768 | physics/doppler_frequency | ✓ | 38µs | 10.9 KB |
-| 769 | physics/escape_velocity | ✓ | 67µs | 85.4 KB |
-| 770 | physics/grahams_law | ✓ | 92µs | 48.5 KB |
-| 771 | physics/horizontal_projectile_motion | ✓ | 50µs | 17.9 KB |
-| 772 | physics/hubble_parameter | ✓ | 59µs | 40.1 KB |
-| 773 | physics/ideal_gas_law | ✓ | 41µs | 6.6 KB |
-| 774 | physics/in_static_equilibrium | ✓ | 52µs | 30.3 KB |
-| 775 | physics/kinetic_energy | ✓ | 49µs | 7.8 KB |
-| 776 | physics/lens_formulae | ✓ | 48µs | 9.3 KB |
-| 777 | physics/lorentz_transformation_four_vector | ✓ | 161µs | 73.7 KB |
-| 778 | physics/malus_law | ✓ | 48µs | 4.0 KB |
-| 779 | physics/mass_energy_equivalence | ✓ | 67µs | 10.5 KB |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 112µs | 90.4 KB |
+| 731 | neural_network/activation_functions/swish | ✓ | 188µs | 243.1 KB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 8m52.930843s |  |
+| 733 | neural_network/convolution_neural_network | ✓ | 17.524ms |  |
+| 734 | neural_network/input_data | ✓ | 116µs | 69.0 KB |
+| 735 | neural_network/simple_neural_network | ✓ | 1.495591s | 2.3 MB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 19.723ms |  |
+| 737 | other/activity_selection | ✓ | 18µs | 4.2 KB |
+| 738 | other/alternative_list_arrange | ✓ | 64µs | 59.5 KB |
+| 739 | other/bankers_algorithm | ✓ | 148µs | 144.9 KB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 12µs | 1.5 KB |
+| 741 | other/doomsday | ✓ | 32µs | 4.5 KB |
+| 742 | other/fischer_yates_shuffle | ✓ | 71µs | 36.2 KB |
+| 743 | other/gauss_easter | ✓ | 56µs | 25.0 KB |
+| 744 | other/greedy | ✓ | 142µs | 97.2 KB |
+| 745 | other/guess_the_number_search | ✓ | 80µs | 40.1 KB |
+| 746 | other/h_index | ✓ | 65µs | 138.0 KB |
+| 747 | other/least_recently_used | ✓ | 51µs | 27.8 KB |
+| 748 | other/lfu_cache | ✓ | 114µs | 34.7 KB |
+| 749 | other/linear_congruential_generator | ✓ | 40µs | 7.1 KB |
+| 750 | other/lru_cache | ✓ | 150µs | 24.5 KB |
+| 751 | other/magicdiamondpattern | ✓ | 33µs | 20.8 KB |
+| 752 | other/majority_vote_algorithm | ✓ | 150µs | 105.5 KB |
+| 753 | other/maximum_subsequence | ✓ | 22µs | 13.2 KB |
+| 754 | other/nested_brackets | ✓ | 107µs | 103.1 KB |
+| 755 | other/number_container_system | ✓ | 67µs | 4.3 KB |
+| 756 | other/quine | ✓ | 17µs | 1.3 KB |
+| 757 | other/scoring_algorithm | ✓ | 88µs | 42.9 KB |
+| 758 | other/sdes | ✓ | 156µs | 154.5 KB |
+| 759 | other/tower_of_hanoi | ✓ | 20µs | 12.7 KB |
+| 760 | other/word_search | ✓ | 429µs | 524.1 KB |
+| 761 | physics/altitude_pressure | ✓ | 77µs | 36.7 KB |
+| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 2µs | 544 B |
+| 763 | physics/basic_orbital_capture | ✓ | 54µs | 24.3 KB |
+| 764 | physics/casimir_effect | ✓ | 115µs | 95.1 KB |
+| 765 | physics/center_of_mass | ✓ | 35µs | 12.8 KB |
+| 766 | physics/centripetal_force | ✓ | 53µs | 21.8 KB |
+| 767 | physics/coulombs_law | ✓ | 31µs | 7.5 KB |
+| 768 | physics/doppler_frequency | ✓ | 45µs | 10.7 KB |
+| 769 | physics/escape_velocity | ✓ | 61µs | 46.4 KB |
+| 770 | physics/grahams_law | ✓ | 66µs | 46.6 KB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 59µs | 17.4 KB |
+| 772 | physics/hubble_parameter | ✓ | 54µs | 39.4 KB |
+| 773 | physics/ideal_gas_law | ✓ | 49µs | 6.0 KB |
+| 774 | physics/in_static_equilibrium | ✓ | 45µs | 29.6 KB |
+| 775 | physics/kinetic_energy | ✓ | 68µs | 8.1 KB |
+| 776 | physics/lens_formulae | ✓ | 47µs | 9.8 KB |
+| 777 | physics/lorentz_transformation_four_vector | ✓ | 118µs | 76.1 KB |
+| 778 | physics/malus_law | ✓ | 33µs | 4.1 KB |
+| 779 | physics/mass_energy_equivalence | ✓ | 73µs | 13.1 KB |
 | 780 | physics/mirror_formulae | ✓ | 60µs | 14.5 KB |
 | 781 | physics/n_body_simulation | ✓ | 224µs | 82.4 KB |
 | 782 | physics/newtons_law_of_gravitation | ✓ | 64µs | 7.0 KB |

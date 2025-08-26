@@ -97,6 +97,9 @@ func sanitizeName(name string) string {
 		return "append_"
 	case "reverse":
 		return "reverse_"
+	case "vector":
+		// avoid clobbering Racket's `vector` constructor
+		return "vector_"
 	case "abs":
 		// avoid clobbering Racket's built-in abs function
 		return "abs_"
@@ -963,9 +966,11 @@ func (s *SliceExpr) emit(w io.Writer) {
 			s.Target.emit(w)
 			io.WriteString(w, ") (vector-length ")
 			s.Target.emit(w)
-			io.WriteString(w, ")] [else (length ")
+			io.WriteString(w, ")] [(list? ")
 			s.Target.emit(w)
-			io.WriteString(w, ")])")
+			io.WriteString(w, ") (length ")
+			s.Target.emit(w)
+			io.WriteString(w, ")] [else 0])")
 		}
 	}
 	io.WriteString(w, ")")
@@ -1026,9 +1031,11 @@ func (l *LenExpr) emit(w io.Writer) {
 	l.Arg.emit(w)
 	io.WriteString(w, ") (hash-count ")
 	l.Arg.emit(w)
-	io.WriteString(w, ")] [else (length ")
+	io.WriteString(w, ")] [(list? ")
 	l.Arg.emit(w)
-	io.WriteString(w, ")])")
+	io.WriteString(w, ") (length ")
+	l.Arg.emit(w)
+	io.WriteString(w, ")] [else 0])")
 }
 
 type AvgExpr struct{ Arg Expr }
@@ -1487,7 +1494,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, b.Op)
 		io.WriteString(w, " (int __l) (int __r))]))")
 	case "list-append":
-		io.WriteString(w, "(append (or ")
+		io.WriteString(w, "(appendv (or ")
 		b.Left.emit(w)
 		io.WriteString(w, " '()) (or ")
 		b.Right.emit(w)
@@ -1629,11 +1636,11 @@ func header() string {
 	hdr += "(define (upper s) (string-upcase s))\n"
 	hdr += "(define (lower s) (string-downcase s))\n"
 	hdr += "(define (sublist lst start end)\n  (cond\n    [(string? lst) (substring lst start end)]\n    [(vector? lst) (vector->list (vector-copy lst start end))]\n    [else (take (drop lst start) (- end start))]))\n\n"
-	hdr += "(define (slice seq start end)\n  (define len (cond [(string? seq) (string-length seq)] [(vector? seq) (vector-length seq)] [else (length seq)]))\n  (define s (int start))\n  (define e (int end))\n  (when (< s 0) (set! s (+ len s)))\n  (when (< e 0) (set! e (+ len e)))\n  (set! s (max 0 (min len s)))\n  (set! e (max 0 (min len e)))\n  (when (< e s) (set! e s))\n  (cond\n    [(string? seq) (substring seq s e)]\n    [(vector? seq) (vector-copy seq s e)]\n    [else (sublist seq s e)]))\n"
+	hdr += "(define (slice seq start end)\n  (define len (cond [(string? seq) (string-length seq)] [(vector? seq) (vector-length seq)] [(list? seq) (length seq)] [else 0]))\n  (define s (int start))\n  (define e (int end))\n  (when (< s 0) (set! s (+ len s)))\n  (when (< e 0) (set! e (+ len e)))\n  (set! s (max 0 (min len s)))\n  (set! e (max 0 (min len e)))\n  (when (< e s) (set! e s))\n  (cond\n    [(string? seq) (substring seq s e)]\n    [(vector? seq) (vector-copy seq s e)]\n    [else (sublist seq s e)]))\n"
 	hdr += "(define (pad-start s width ch)\n  (let ([s (to-string s)])\n    (if (< (string-length s) width)\n        (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n        s)))\n"
 	hdr += "(define (index-of s ch)\n  (cond\n    [(string? s)\n     (let loop ([i 0])\n       (cond [(>= i (string-length s)) -1]\n             [(string=? (substring s i (add1 i)) ch) i]\n             [else (loop (add1 i))]))]\n    [else\n     (let loop ([i 0] [lst s])\n       (cond [(null? lst) -1]\n             [(equal? (car lst) ch) i]\n             [else (loop (add1 i) (cdr lst))]))]))\n"
 	hdr += "(define (appendv a b)\n  (cond\n    [(vector? a) (vector-append a (cond [(vector? b) b] [(list? b) (list->vector b)] [else (vector b)]))]\n    [(list? a) (append a (cond [(list? b) b] [(vector? b) (vector->list b)] [else (list b)]))]\n    [else (append a b)]))\n"
-	hdr += "(define (safe-index lst idx) (let ([i (int idx)]) (cond [(list? lst) (if (and (>= i 0) (< i (length lst))) (list-ref lst i) '())] [(vector? lst) (if (and (>= i 0) (< i (vector-length lst))) (vector-ref lst i) '())] [(string? lst) (if (and (>= i 0) (< i (string-length lst))) (substring lst i (add1 i)) \"\")] [else 0])))\n"
+	hdr += "(define (safe-index lst idx) (let ([i (int idx)]) (cond [(list? lst) (if (and (>= i 0) (< i (length lst))) (list-ref lst i) 0)] [(vector? lst) (if (and (>= i 0) (< i (vector-length lst))) (vector-ref lst i) 0)] [(string? lst) (if (and (>= i 0) (< i (string-length lst))) (substring lst i (add1 i)) \"\")] [else 0])))\n"
 	hdr += "(define (_repeat s n)\n  (cond\n    [(string? s) (apply string-append (make-list (int n) s))]\n    [(list? s) (apply append (make-list (int n) s))]\n    [else '()]))\n"
 	// `_ord` implements the builtin `ord` function. It's intentionally
 	// named with an underscore to avoid clashing with user defined
@@ -3390,18 +3397,10 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		return &LenExpr{Arg: args[0]}, nil
 	case "append":
 		if len(args) == 2 {
-			// Ensure the receiver is a sequence before appending.
+			// Always append the second argument as a single element.
 			left := &CallExpr{Func: "or", Args: []Expr{args[0], &ListLit{}}}
-			if env != nil {
-				if lt, ok := types.TypeOfExprBasic(c.Args[0], env).(types.ListType); ok {
-					elem := lt.Elem
-					if types.EqualTypes(types.TypeOfExprBasic(c.Args[1], env), elem) {
-						right := &CallExpr{Func: "vector", Args: []Expr{args[1]}}
-						return &CallExpr{Func: "appendv", Args: []Expr{left, right}}, nil
-					}
-				}
-			}
-			return &CallExpr{Func: "appendv", Args: []Expr{left, args[1]}}, nil
+			right := &CallExpr{Func: "vector", Args: []Expr{args[1]}}
+			return &CallExpr{Func: "appendv", Args: []Expr{left, right}}, nil
 		}
 	case "concat":
 		if len(args) >= 2 {
