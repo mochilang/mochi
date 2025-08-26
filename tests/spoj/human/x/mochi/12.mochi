@@ -1,0 +1,180 @@
+/*
+SPOJ: The Game of Master-Mind
+https://www.spoj.com/problems/MMIND
+*/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  for p in pieces {
+    if len(p) > 0 {
+      nums = append(nums, p as int)
+    }
+  }
+  return nums
+}
+
+fun join_ints(nums: list<int>): string {
+  var s: string = ""
+  var i: int = 0
+  while i < len(nums) {
+    if i > 0 {
+      s = s + " "
+    }
+    s = s + string(nums[i])
+    i = i + 1
+  }
+  return s
+}
+
+fun main() {
+  let t = input() as int
+  var case_idx: int = 0
+  while case_idx < t {
+    let first = parse_ints(input())
+    let p = first[0]
+    let c = first[1]
+    let m = first[2]
+
+    var guesses: list<list<int>> = []
+    var blacks: list<int> = []
+    var whites: list<int> = []
+    var freqs: list<list<int>> = []
+
+    var gi: int = 0
+    while gi < m {
+      let g = parse_ints(input())
+      guesses = append(guesses, g)
+      var row: list<int> = []
+      for col in 0..(c + 1) {
+        row = append(row, 0)
+      }
+      var j: int = 0
+      while j < p {
+        let v = g[j]
+        row[v] = row[v] + 1
+        j = j + 1
+      }
+      freqs = append(freqs, row)
+      let bw = parse_ints(input())
+      blacks = append(blacks, bw[0])
+      whites = append(whites, bw[1])
+      gi = gi + 1
+    }
+
+    var count: list<int> = []
+    for col in 0..(c + 1) {
+      count = append(count, 0)
+    }
+    var solution: list<int> = []
+    for i in 0..p {
+      solution = append(solution, 0)
+    }
+
+    fun dfs(pos: int): bool {
+      if pos == p {
+        var gidx: int = 0
+        while gidx < m {
+          let g = guesses[gidx]
+          var black: int = 0
+          var colorMatch: int = 0
+          var col: int = 1
+          while col <= c {
+            if count[col] < freqs[gidx][col] {
+              colorMatch = colorMatch + count[col]
+            } else {
+              colorMatch = colorMatch + freqs[gidx][col]
+            }
+            col = col + 1
+          }
+          var k: int = 0
+          while k < p {
+            if solution[k] == g[k] {
+              black = black + 1
+            }
+            k = k + 1
+          }
+          if black != blacks[gidx] || colorMatch - black != whites[gidx] {
+            return false
+          }
+          gidx = gidx + 1
+        }
+        return true
+      }
+      var color: int = 1
+      while color <= c {
+        solution[pos] = color
+        count[color] = count[color] + 1
+        var ok: bool = true
+        var gidx: int = 0
+        while gidx < m {
+          let g = guesses[gidx]
+          var black: int = 0
+          var k: int = 0
+          while k <= pos {
+            if solution[k] == g[k] {
+              black = black + 1
+            }
+            k = k + 1
+          }
+          let remaining = p - pos - 1
+          if black > blacks[gidx] || black + remaining < blacks[gidx] {
+            ok = false
+            break
+          }
+          var colorMatch: int = 0
+          var col: int = 1
+          while col <= c {
+            if count[col] < freqs[gidx][col] {
+              colorMatch = colorMatch + count[col]
+            } else {
+              colorMatch = colorMatch + freqs[gidx][col]
+            }
+            col = col + 1
+          }
+          let target = blacks[gidx] + whites[gidx]
+          if colorMatch > target || colorMatch + remaining < target {
+            ok = false
+            break
+          }
+          gidx = gidx + 1
+        }
+        if ok {
+          if dfs(pos + 1) {
+            return true
+          }
+        }
+        count[color] = count[color] - 1
+        color = color + 1
+      }
+      return false
+    }
+
+    if dfs(0) {
+      print(join_ints(solution))
+    } else {
+      print("You are cheating!")
+    }
+    case_idx = case_idx + 1
+  }
+}
+
+main()
