@@ -1,0 +1,5 @@
+# Solution for SPOJ CRYPTO2 - The Bytelandian Cryptographer (Act II)
+# https://www.spoj.com/problems/CRYPTO2/
+
+let n = input() as int
+print(n + 1)
