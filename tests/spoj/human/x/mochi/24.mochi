@@ -1,0 +1,27 @@
+// Solution for SPOJ FCTRL2 - Small factorials
+// https://www.spoj.com/problems/FCTRL2/
+
+fun factorial(n: int): bigint {
+  var r: bigint = 1
+  var i = 2
+  while i <= n {
+    r = r * (i as bigint)
+    i = i + 1
+  }
+  return r
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let nLine = input()
+    let n = nLine as int
+    print(str(factorial(n)))
+    case = case + 1
+  }
+}
+
+main()
