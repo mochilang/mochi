@@ -1,0 +1,163 @@
+// Solution for SPOJ LABYR1 - Labyrinth
+// https://www.spoj.com/problems/LABYR1/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseTwo(line: string): list<int> {
+  var idx = 0
+  var a = 0
+  while idx < len(line) && line[idx] != " " {
+    a = a * 10 + (digits[line[idx]] as int)
+    idx = idx + 1
+  }
+  idx = idx + 1
+  var b = 0
+  while idx < len(line) {
+    b = b * 10 + (digits[line[idx]] as int)
+    idx = idx + 1
+  }
+  return [a, b]
+}
+
+fun bfs(grid: list<string>, R: int, C: int, sx: int, sy: int): any {
+  var total = R * C
+  var dist: list<int> = []
+  var i = 0
+  while i < total {
+    dist = append(dist, 0-1)
+    i = i + 1
+  }
+  var qx: list<int> = []
+  var qy: list<int> = []
+  var head = 0
+  var tail = 0
+  qx = append(qx, sx)
+  qy = append(qy, sy)
+  tail = tail + 1
+  var start = (sy * C + sx) as int
+  dist[start] = 0
+  var best = { x: sx, y: sy, d: 0 }
+  while head < tail {
+    let x = qx[head] as int
+    let y = qy[head] as int
+    head = head + 1
+    let d = dist[y * C + x]
+    if d > (best["d"] as int) {
+      best = { x: x, y: y, d: d }
+    }
+    // left
+    if x > 0 {
+      let nx = x - 1
+      let ny = y
+      let idx = (ny * C + nx) as int
+      let row = grid[ny] as string
+      if row[nx] == "." && dist[idx] == 0-1 {
+        dist[idx] = d + 1
+        qx = append(qx, nx)
+        qy = append(qy, ny)
+        tail = tail + 1
+      }
+    }
+    // right
+    if x + 1 < C {
+      let nx = x + 1
+      let ny = y
+      let idx = (ny * C + nx) as int
+      let row = grid[ny] as string
+      if row[nx] == "." && dist[idx] == 0-1 {
+        dist[idx] = d + 1
+        qx = append(qx, nx)
+        qy = append(qy, ny)
+        tail = tail + 1
+      }
+    }
+    // up
+    if y > 0 {
+      let nx = x
+      let ny = y - 1
+      let idx = (ny * C + nx) as int
+      let row = grid[ny] as string
+      if row[nx] == "." && dist[idx] == 0-1 {
+        dist[idx] = d + 1
+        qx = append(qx, nx)
+        qy = append(qy, ny)
+        tail = tail + 1
+      }
+    }
+    // down
+    if y + 1 < R {
+      let nx = x
+      let ny = y + 1
+      let idx = (ny * C + nx) as int
+      let row = grid[ny] as string
+      if row[nx] == "." && dist[idx] == 0-1 {
+        dist[idx] = d + 1
+        qx = append(qx, nx)
+        qy = append(qy, ny)
+        tail = tail + 1
+      }
+    }
+  }
+  return best
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var case = 0
+  while case < t {
+    let line = input()
+    let pair = parseTwo(line)
+    let C = pair[0] as int
+    let R = pair[1] as int
+    var grid: list<string> = []
+    var r = 0
+    while r < R {
+      grid = append(grid, input())
+      r = r + 1
+    }
+    var sx = 0
+    var sy = 0
+    var found = false
+    var y = 0
+    while y < R {
+      let row = grid[y] as string
+      var x = 0
+      while x < C {
+        if row[x] == "." {
+          sx = x
+          sy = y
+          found = true
+          break
+        }
+        x = x + 1
+      }
+      if found { break }
+      y = y + 1
+    }
+    if !found {
+      print("Maximum rope length is 0.")
+    } else {
+      let far = bfs(grid, R, C, sx, sy)
+      let far2 = bfs(grid, R, C, far["x"] as int, far["y"] as int)
+      print("Maximum rope length is " + str(far2["d"]) + ".")
+    }
+    case = case + 1
+  }
+}
+
+main()
