@@ -1,13 +1,90 @@
 // Solution for SPOJ DANCE - The Gordian Dance
 // https://www.spoj.com/problems/DANCE/
 
+fun absBig(x: bigint): bigint {
+  return if x < 0 { -x } else { x }
+}
+
+fun gcdBig(a: bigint, b: bigint): bigint {
+  var x = absBig(a)
+  var y = absBig(b)
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun ceilDiv(a: bigint, b: bigint): bigint { // b > 0
+  return (a + b - 1) / b
+}
+
+fun rec(p: bigint, q: bigint): int {
+  if p == 0 { return 0 }
+  if q == 0 { return 1 }
+  if p >= q {
+    let k = p / q
+    let r = p % q
+    if r == 0 {
+      let t: bigint = k * 3 - 1
+      return t as int
+    }
+    let t: bigint = k * 3
+    return (t as int) + rec(r, q)
+  } else {
+    let k = q / p
+    let r = q % p
+    return (k as int) + rec(p, r)
+  }
+}
+
 fun main() {
   while true {
     let nLine = input()
     if nLine == "" { break }
     let n = nLine as int
-    let _moves = input()
-    print("0")
+    var moves = ""
+    if n > 0 {
+      moves = input()
+    }
+      var p: bigint = 0
+      var q: bigint = 1
+    var i = 0
+    while i < len(moves) {
+      let c = moves[i:i+1]
+      if c == "S" {
+        if q != 0 { p = p + q }
+      } else { // R
+        if p == 0 {
+          p = 1
+          q = 0
+        } else {
+          let np = -q
+          let nq = p
+          p = np
+          q = nq
+        }
+      }
+      i = i + 1
+    }
+    if q < 0 {
+      p = -p
+      q = -q
+    }
+    let g = gcdBig(p, q)
+    if g != 0 {
+      p = p / g
+      q = q / g
+    }
+    var ans = 0
+    if p < 0 {
+      let k = ceilDiv(-p, q)
+      ans = ans + (k as int)
+      p = p + k * q
+    }
+    ans = ans + rec(p, q)
+    print(ans)
   }
 }
 
