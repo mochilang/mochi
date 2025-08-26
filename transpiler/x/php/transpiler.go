@@ -175,7 +175,7 @@ const helperEnviron = `function _environ() {
     return $list;
 }`
 
-const helperRepeat = `function repeat($s, $n) {
+const helperRepeat = `function _repeat($s, $n) {
     return str_repeat($s, intval($n));
 }`
 
@@ -3502,7 +3502,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("repeat expects 2 args")
 			}
 			usesRepeat = true
-			return &CallExpr{Func: "repeat", Args: []Expr{args[0], args[1]}}, nil
+			return &CallExpr{Func: "_repeat", Args: []Expr{args[0], args[1]}}, nil
 		} else if name == "padStart" {
 			if len(args) != 3 {
 				return nil, fmt.Errorf("padStart expects 3 args")
