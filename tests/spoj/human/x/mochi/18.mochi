@@ -1,0 +1,12 @@
+/*
+SPOJ: The Bytelandian Cryptographer (Act II)
+https://www.spoj.com/problems/CRYPTO2
+*/
+
+fun main() {
+  let line = input()
+  let n: int = int(line)
+  print(n + 1)
+}
+
+main()
