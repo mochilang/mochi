@@ -1,0 +1,224 @@
+// Solution for SPOJ BAC - Bacterial
+// https://www.spoj.com/problems/BAC/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = 0 - n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun format2(x: float): string {
+  var scaled = x * 100.0 + 0.5
+  if scaled < 0.0 { scaled = 0.0 }
+  var n = scaled as int
+  var whole = n / 100
+  var frac = n % 100
+  var fracStr = str(frac)
+  while len(fracStr) < 2 {
+    fracStr = "0" + fracStr
+  }
+  return str(whole) + "." + fracStr
+}
+
+fun pad14(s: string): string {
+  var t = s
+  while len(t) < 14 {
+    t = " " + t
+  }
+  return t
+}
+
+fun formatID(i: int): string {
+  var s = str(i)
+  while len(s) < 3 {
+    s = "0" + s
+  }
+  return s
+}
+
+fun clipPolygon(xs: list<float>, ys: list<float>, A: float, B: float, C: float): list<list<float>> {
+  var newX: list<float> = []
+  var newY: list<float> = []
+  let m = len(xs)
+  if m == 0 { return [newX, newY] }
+  var idx = 0
+  while idx < m {
+    let j = (idx + 1) % m
+    let x1 = xs[idx]
+    let y1 = ys[idx]
+    let x2 = xs[j]
+    let y2 = ys[j]
+    let d1 = A * x1 + B * y1 + C
+    let d2 = A * x2 + B * y2 + C
+    let in1 = d1 <= 0.0
+    let in2 = d2 <= 0.0
+    if in1 && in2 {
+      newX = append(newX, x2)
+      newY = append(newY, y2)
+    } else if (in1 && (in2 == false)) {
+      let t = d1 / (d1 - d2)
+      let xi = x1 + (x2 - x1) * t
+      let yi = y1 + (y2 - y1) * t
+      newX = append(newX, xi)
+      newY = append(newY, yi)
+    } else if ((in1 == false) && in2) {
+      let t = d1 / (d1 - d2)
+      let xi = x1 + (x2 - x1) * t
+      let yi = y1 + (y2 - y1) * t
+      newX = append(newX, xi)
+      newY = append(newY, yi)
+      newX = append(newX, x2)
+      newY = append(newY, y2)
+    }
+    idx = idx + 1
+  }
+  return [newX, newY]
+}
+
+fun polygonArea(xs: list<float>, ys: list<float>): float {
+  let n = len(xs)
+  if n == 0 { return 0.0 }
+  var sum = 0.0
+  var i = 0
+  while i < n {
+    let j = (i + 1) % n
+    sum = sum + xs[i] * ys[j] - xs[j] * ys[i]
+    i = i + 1
+  }
+  if sum < 0.0 { sum = -sum }
+  return sum / 2.0
+}
+
+fun computeAreas(w: int, h: int, px: list<float>, py: list<float>): list<float> {
+  var areas: list<float> = []
+  var i = 0
+  while i < len(px) {
+    var polyX: list<float> = []
+    var polyY: list<float> = []
+    polyX = append(polyX, 0.0)
+    polyY = append(polyY, 0.0)
+    polyX = append(polyX, w as float)
+    polyY = append(polyY, 0.0)
+    polyX = append(polyX, w as float)
+    polyY = append(polyY, h as float)
+    polyX = append(polyX, 0.0)
+    polyY = append(polyY, h as float)
+    var j = 0
+    while j < len(px) {
+      if j != i {
+        let A = px[j] - px[i]
+        let B = py[j] - py[i]
+        let C = (px[i] * px[i] - px[j] * px[j] + py[i] * py[i] - py[j] * py[j]) / 2.0
+        let res = clipPolygon(polyX, polyY, A, B, C)
+        polyX = res[0]
+        polyY = res[1]
+        if len(polyX) == 0 { break }
+      }
+      j = j + 1
+    }
+    let area = polygonArea(polyX, polyY)
+    areas = append(areas, area)
+    i = i + 1
+  }
+  return areas
+}
+
+fun main() {
+  var line = input()
+  if line == "" { return }
+  while line != "" {
+    if len(line) == 0 {
+      line = input()
+      continue
+    }
+    let nm = splitSpaces(line)
+    if len(nm) < 2 {
+      line = input()
+      continue
+    }
+    let w = parseIntStr(nm[0])
+    let h = parseIntStr(nm[1])
+    if w == 0 && h == 0 { break }
+    let nLine = input()
+    var nParts = splitSpaces(nLine)
+    let n = parseIntStr(nParts[0])
+    var px: list<float> = []
+    var py: list<float> = []
+    var i = 0
+    while i < n {
+      let ptLine = input()
+      if len(ptLine) == 0 { continue }
+      let p = splitSpaces(ptLine)
+      px = append(px, parseIntStr(p[0]) as float)
+      py = append(py, parseIntStr(p[1]) as float)
+      i = i + 1
+    }
+    let areas = computeAreas(w, h, px, py)
+    var ids: list<int> = []
+    i = 0
+    while i < n {
+      ids = append(ids, i + 1)
+      i = i + 1
+    }
+    i = 1
+    while i < n {
+      var j = i
+      while j > 0 && areas[j-1] < areas[j] {
+        let ta = areas[j-1]
+        areas[j-1] = areas[j]
+        areas[j] = ta
+        let ti = ids[j-1]
+        ids[j-1] = ids[j]
+        ids[j] = ti
+        j = j - 1
+      }
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      let idStr = formatID(ids[i])
+      let areaStr = pad14(format2(areas[i]))
+      print(idStr + areaStr)
+      i = i + 1
+    }
+    print("")
+    line = input()
+  }
+}
+
+main()
