@@ -770,17 +770,17 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, "))")
 	case "int":
-		io.WriteString(w, "(function(v) if v >= 0 then return math.floor(v) else return math.ceil(v) end end)((tonumber(")
+		io.WriteString(w, "(function(v) if v >= 0 then return math.floor(v) else return math.ceil(v) end end)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
-		io.WriteString(w, ") or 0))")
+		io.WriteString(w, ")")
 	case "toi":
-		io.WriteString(w, "(function(v) if v >= 0 then return math.floor(v) else return math.ceil(v) end end)((tonumber(")
+		io.WriteString(w, "(function(v) if v >= 0 then return math.floor(v) else return math.ceil(v) end end)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
-		io.WriteString(w, ") or 0))")
+		io.WriteString(w, ")")
 	case "float":
 		io.WriteString(w, "tonumber(")
 		if len(c.Args) > 0 {

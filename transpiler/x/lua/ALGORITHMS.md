@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-25 23:51 GMT+7
+Last updated: 2025-08-26 08:47 GMT+7
 
-## Algorithms Golden Test Checklist (1056/1077)
+## Algorithms Golden Test Checklist (1057/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -736,7 +736,7 @@ Last updated: 2025-08-25 23:51 GMT+7
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 114µs | 888 B |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 262µs | 1.0 KB |
 | 729 | neural_network/activation_functions/softplus | ✓ | 205µs | 1.0 KB |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 153µs | 992 B |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 81µs | 992 B |
 | 731 | neural_network/activation_functions/swish | ✓ | 326µs | 1.3 KB |
 | 732 | neural_network/back_propagation_neural_network | ✓ | 3.872353s | 3.3 KB |
 | 733 | neural_network/convolution_neural_network | ✓ | 4.595ms | 1.7 KB |
@@ -784,7 +784,7 @@ Last updated: 2025-08-25 23:51 GMT+7
 | 775 | physics/kinetic_energy | ✓ | 86µs | 80 B |
 | 776 | physics/lens_formulae | ✓ | 73µs | 864 B |
 | 777 | physics/lorentz_transformation_four_vector | ✓ | 185µs | 1.2 KB |
-| 778 | physics/malus_law | error |  |  |
+| 778 | physics/malus_law | ✓ | 83µs | 1.2 KB |
 | 779 | physics/mass_energy_equivalence | ✓ | 138µs | 840 B |
 | 780 | physics/mirror_formulae | ✓ | 67µs | 1.3 KB |
 | 781 | physics/n_body_simulation | ✓ | 265µs | 2.4 KB |
