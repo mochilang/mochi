@@ -1,0 +1,12 @@
+/*
+SPOJ: Add Two Numbers
+https://www.spoj.com/problems/ADDN/
+*/
+
+fun main() {
+  let a: int = int(input())
+  let b: int = int(input())
+  print(a + b)
+}
+
+main()
