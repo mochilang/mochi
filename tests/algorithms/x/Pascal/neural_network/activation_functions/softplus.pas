@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,6 +65,10 @@ begin
     if i < High(xs) then write(', ');
   end;
   writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
 end;
 procedure show_list_real(xs: array of real);
 var i: integer;
@@ -95,7 +105,7 @@ var
   ln__y2: real;
   ln__term: real;
   ln__sum: real;
-  ln__k: integer;
+  ln__k: int64;
   ln__denom: real;
 begin
   if ln__x <= 0 then begin
@@ -118,7 +128,7 @@ function exp_(exp__x: real): real;
 var
   exp__term: real;
   exp__sum: real;
-  exp__n: integer;
+  exp__n: int64;
 begin
   exp__term := 1;
   exp__sum := 1;
@@ -133,7 +143,7 @@ end;
 function softplus(softplus_vector: RealArray): RealArray;
 var
   softplus_result_: array of real;
-  softplus_i: integer;
+  softplus_i: int64;
   softplus_x: real;
   softplus_value: real;
 begin
@@ -173,4 +183,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

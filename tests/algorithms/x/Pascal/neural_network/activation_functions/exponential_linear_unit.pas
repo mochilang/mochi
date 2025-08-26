@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,6 +65,10 @@ begin
     if i < High(xs) then write(', ');
   end;
   writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
 end;
 function list_real_to_str(xs: array of real): string;
 var i: integer;
@@ -81,7 +91,7 @@ function exp_approx(exp_approx_x: real): real;
 var
   exp_approx_sum: real;
   exp_approx_term: real;
-  exp_approx_i: integer;
+  exp_approx_i: int64;
   exp_approx_absx: real;
 begin
   exp_approx_sum := 1;
@@ -105,7 +115,7 @@ end;
 function exponential_linear_unit(exponential_linear_unit_vector: RealArray; exponential_linear_unit_alpha: real): RealArray;
 var
   exponential_linear_unit_result_: array of real;
-  exponential_linear_unit_i: integer;
+  exponential_linear_unit_i: int64;
   exponential_linear_unit_v: real;
   exponential_linear_unit_neg: real;
 begin
@@ -136,4 +146,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

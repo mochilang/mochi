@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -60,38 +66,39 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  a: integer;
-  b: integer;
-  nums: IntArray;
-function max_int(a: integer; b: integer): integer; forward;
-function max_subsequence_sum(nums: IntArray): integer; forward;
-function max_int(a: integer; b: integer): integer;
+function max_int(max_int_a: int64; max_int_b: int64): int64; forward;
+function max_subsequence_sum(max_subsequence_sum_nums: IntArray): int64; forward;
+function max_int(max_int_a: int64; max_int_b: int64): int64;
 begin
-  if a >= b then begin
-  exit(a);
+  if max_int_a >= max_int_b then begin
+  exit(max_int_a);
 end else begin
-  exit(b);
+  exit(max_int_b);
 end;
 end;
-function max_subsequence_sum(nums: IntArray): integer;
+function max_subsequence_sum(max_subsequence_sum_nums: IntArray): int64;
 var
-  max_subsequence_sum_ans: integer;
-  max_subsequence_sum_i: integer;
-  max_subsequence_sum_num: integer;
-  max_subsequence_sum_extended: integer;
+  max_subsequence_sum_ans: int64;
+  max_subsequence_sum_i: int64;
+  max_subsequence_sum_num: int64;
+  max_subsequence_sum_extended: int64;
 begin
-  if Length(nums) = 0 then begin
+  if Length(max_subsequence_sum_nums) = 0 then begin
   panic('input sequence should not be empty');
 end;
-  max_subsequence_sum_ans := nums[0];
+  max_subsequence_sum_ans := max_subsequence_sum_nums[0];
   max_subsequence_sum_i := 1;
-  while max_subsequence_sum_i < Length(nums) do begin
-  max_subsequence_sum_num := nums[max_subsequence_sum_i];
+  while max_subsequence_sum_i < Length(max_subsequence_sum_nums) do begin
+  max_subsequence_sum_num := max_subsequence_sum_nums[max_subsequence_sum_i];
   max_subsequence_sum_extended := max_subsequence_sum_ans + max_subsequence_sum_num;
   max_subsequence_sum_ans := max_int(max_int(max_subsequence_sum_ans, max_subsequence_sum_extended), max_subsequence_sum_num);
   max_subsequence_sum_i := max_subsequence_sum_i + 1;
@@ -111,4 +118,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

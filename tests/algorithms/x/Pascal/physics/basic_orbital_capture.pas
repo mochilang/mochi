@@ -37,6 +37,38 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real); overload;
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -45,83 +77,77 @@ var
   G: real;
   C: real;
   PI: real;
-  x: real;
-  target_body_mass: real;
-  capture_radius: real;
-  n: integer;
-  target_body_radius: real;
-  projectile_velocity: real;
-function pow10(n: integer): real; forward;
-function sqrt(x: real): real; forward;
-function abs(x: real): real; forward;
-function capture_radii(target_body_radius: real; target_body_mass: real; projectile_velocity: real): real; forward;
-function capture_area(capture_radius: real): real; forward;
+function pow10(pow10_n: int64): real; forward;
+function sqrt(sqrt_x: real): real; forward;
+function abs(abs_x: real): real; forward;
+function capture_radii(capture_radii_target_body_radius: real; capture_radii_target_body_mass: real; capture_radii_projectile_velocity: real): real; forward;
+function capture_area(capture_area_capture_radius: real): real; forward;
 procedure run_tests(); forward;
 procedure main(); forward;
-function pow10(n: integer): real;
+function pow10(pow10_n: int64): real;
 var
   pow10_result_: real;
-  pow10_i: integer;
+  pow10_i: int64;
 begin
   pow10_result_ := 1;
   pow10_i := 0;
-  while pow10_i < n do begin
+  while pow10_i < pow10_n do begin
   pow10_result_ := pow10_result_ * 10;
   pow10_i := pow10_i + 1;
 end;
   exit(pow10_result_);
 end;
-function sqrt(x: real): real;
+function sqrt(sqrt_x: real): real;
 var
   sqrt_guess: real;
-  sqrt_i: integer;
+  sqrt_i: int64;
 begin
-  if x <= 0 then begin
+  if sqrt_x <= 0 then begin
   exit(0);
 end;
-  sqrt_guess := x;
+  sqrt_guess := sqrt_x;
   sqrt_i := 0;
   while sqrt_i < 20 do begin
-  sqrt_guess := (sqrt_guess + (x / sqrt_guess)) / 2;
+  sqrt_guess := (sqrt_guess + (sqrt_x / sqrt_guess)) / 2;
   sqrt_i := sqrt_i + 1;
 end;
   exit(sqrt_guess);
 end;
-function abs(x: real): real;
+function abs(abs_x: real): real;
 begin
-  if x < 0 then begin
-  exit(-x);
+  if abs_x < 0 then begin
+  exit(-abs_x);
 end;
-  exit(x);
+  exit(abs_x);
 end;
-function capture_radii(target_body_radius: real; target_body_mass: real; projectile_velocity: real): real;
+function capture_radii(capture_radii_target_body_radius: real; capture_radii_target_body_mass: real; capture_radii_projectile_velocity: real): real;
 var
   capture_radii_escape_velocity_squared: real;
   capture_radii_denom: real;
   capture_radii_capture_radius: real;
 begin
-  if target_body_mass < 0 then begin
+  if capture_radii_target_body_mass < 0 then begin
   panic('Mass cannot be less than 0');
 end;
-  if target_body_radius < 0 then begin
+  if capture_radii_target_body_radius < 0 then begin
   panic('Radius cannot be less than 0');
 end;
-  if projectile_velocity > C then begin
+  if capture_radii_projectile_velocity > C then begin
   panic('Cannot go beyond speed of light');
 end;
-  capture_radii_escape_velocity_squared := ((2 * G) * target_body_mass) / target_body_radius;
-  capture_radii_denom := projectile_velocity * projectile_velocity;
-  capture_radii_capture_radius := target_body_radius * sqrt(1 + (capture_radii_escape_velocity_squared / capture_radii_denom));
+  capture_radii_escape_velocity_squared := ((2 * G) * capture_radii_target_body_mass) / capture_radii_target_body_radius;
+  capture_radii_denom := capture_radii_projectile_velocity * capture_radii_projectile_velocity;
+  capture_radii_capture_radius := capture_radii_target_body_radius * sqrt(1 + (capture_radii_escape_velocity_squared / capture_radii_denom));
   exit(capture_radii_capture_radius);
 end;
-function capture_area(capture_radius: real): real;
+function capture_area(capture_area_capture_radius: real): real;
 var
   capture_area_sigma: real;
 begin
-  if capture_radius < 0 then begin
+  if capture_area_capture_radius < 0 then begin
   panic('Cannot have a capture radius less than 0');
 end;
-  capture_area_sigma := (PI * capture_radius) * capture_radius;
+  capture_area_sigma := (PI * capture_area_capture_radius) * capture_area_capture_radius;
   exit(capture_area_sigma);
 end;
 procedure run_tests();
@@ -162,4 +188,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

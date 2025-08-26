@@ -48,6 +48,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -56,7 +62,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -66,26 +72,24 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  net: Network;
-  input: RealArray;
-  x: real;
-  iterations: integer;
-  inputs: RealArrayArray;
-  outputs: RealArray;
 function makeNetwork(w1: RealArrayArray; w2: RealArrayArray; w3: RealArrayArray): Network; forward;
-function exp_approx(x: real): real; forward;
-function sigmoid(x: real): real; forward;
-function sigmoid_derivative(x: real): real; forward;
+function exp_approx(exp_approx_x: real): real; forward;
+function sigmoid(sigmoid_x: real): real; forward;
+function sigmoid_derivative(sigmoid_derivative_x: real): real; forward;
 function new_network(): Network; forward;
-function feedforward(net: Network; input: RealArray): real; forward;
-procedure train(net: Network; inputs: RealArrayArray; outputs: RealArray; iterations: integer); forward;
-function predict(net: Network; input: RealArray): integer; forward;
-function example(): integer; forward;
+function feedforward(feedforward_net: Network; feedforward_input: RealArray): real; forward;
+procedure train(train_net: Network; train_inputs: RealArrayArray; train_outputs: RealArray; train_iterations: int64); forward;
+function predict(predict_net: Network; predict_input: RealArray): int64; forward;
+function example(): int64; forward;
 procedure main(); forward;
 function makeNetwork(w1: RealArrayArray; w2: RealArrayArray; w3: RealArrayArray): Network;
 begin
@@ -93,46 +97,46 @@ begin
   Result.w2 := w2;
   Result.w3 := w3;
 end;
-function exp_approx(x: real): real;
+function exp_approx(exp_approx_x: real): real;
 var
   exp_approx_sum: real;
   exp_approx_term: real;
-  exp_approx_i: integer;
+  exp_approx_i: int64;
 begin
   exp_approx_sum := 1;
   exp_approx_term := 1;
   exp_approx_i := 1;
   while exp_approx_i < 10 do begin
-  exp_approx_term := (exp_approx_term * x) / Double(exp_approx_i);
+  exp_approx_term := (exp_approx_term * exp_approx_x) / Double(exp_approx_i);
   exp_approx_sum := exp_approx_sum + exp_approx_term;
   exp_approx_i := exp_approx_i + 1;
 end;
   exit(exp_approx_sum);
 end;
-function sigmoid(x: real): real;
+function sigmoid(sigmoid_x: real): real;
 begin
-  exit(1 / (1 + exp_approx(-x)));
+  exit(1 / (1 + exp_approx(-sigmoid_x)));
 end;
-function sigmoid_derivative(x: real): real;
+function sigmoid_derivative(sigmoid_derivative_x: real): real;
 begin
-  exit(x * (1 - x));
+  exit(sigmoid_derivative_x * (1 - sigmoid_derivative_x));
 end;
 function new_network(): Network;
 begin
   exit(makeNetwork([[0.1, 0.2, 0.3, 0.4], [0.5, 0.6, 0.7, 0.8], [0.9, 1, 1.1, 1.2]], [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9], [1, 1.1, 1.2]], [[0.1], [0.2], [0.3]]));
 end;
-function feedforward(net: Network; input: RealArray): real;
+function feedforward(feedforward_net: Network; feedforward_input: RealArray): real;
 var
   feedforward_hidden1: array of real;
-  feedforward_j: integer;
+  feedforward_j: int64;
   feedforward_sum1: real;
-  feedforward_i: integer;
+  feedforward_i: int64;
   feedforward_hidden2: array of real;
-  feedforward_k: integer;
+  feedforward_k: int64;
   feedforward_sum2: real;
-  feedforward_j2: integer;
+  feedforward_j2: int64;
   feedforward_sum3: real;
-  feedforward_k2: integer;
+  feedforward_k2: int64;
   feedforward_out_: real;
 begin
   feedforward_hidden1 := [];
@@ -141,7 +145,7 @@ begin
   feedforward_sum1 := 0;
   feedforward_i := 0;
   while feedforward_i < 3 do begin
-  feedforward_sum1 := feedforward_sum1 + (input[feedforward_i] * net.w1[feedforward_i][feedforward_j]);
+  feedforward_sum1 := feedforward_sum1 + (feedforward_input[feedforward_i] * feedforward_net.w1[feedforward_i][feedforward_j]);
   feedforward_i := feedforward_i + 1;
 end;
   feedforward_hidden1 := concat(feedforward_hidden1, [sigmoid(feedforward_sum1)]);
@@ -153,7 +157,7 @@ end;
   feedforward_sum2 := 0;
   feedforward_j2 := 0;
   while feedforward_j2 < 4 do begin
-  feedforward_sum2 := feedforward_sum2 + (feedforward_hidden1[feedforward_j2] * net.w2[feedforward_j2][feedforward_k]);
+  feedforward_sum2 := feedforward_sum2 + (feedforward_hidden1[feedforward_j2] * feedforward_net.w2[feedforward_j2][feedforward_k]);
   feedforward_j2 := feedforward_j2 + 1;
 end;
   feedforward_hidden2 := concat(feedforward_hidden2, [sigmoid(feedforward_sum2)]);
@@ -162,62 +166,62 @@ end;
   feedforward_sum3 := 0;
   feedforward_k2 := 0;
   while feedforward_k2 < 3 do begin
-  feedforward_sum3 := feedforward_sum3 + (feedforward_hidden2[feedforward_k2] * net.w3[feedforward_k2][0]);
+  feedforward_sum3 := feedforward_sum3 + (feedforward_hidden2[feedforward_k2] * feedforward_net.w3[feedforward_k2][0]);
   feedforward_k2 := feedforward_k2 + 1;
 end;
   feedforward_out_ := sigmoid(feedforward_sum3);
   exit(feedforward_out_);
 end;
-procedure train(net: Network; inputs: RealArrayArray; outputs: RealArray; iterations: integer);
+procedure train(train_net: Network; train_inputs: RealArrayArray; train_outputs: RealArray; train_iterations: int64);
 var
-  train_iter: integer;
-  train_s: integer;
+  train_iter: int64;
+  train_s: int64;
   train_inp: array of real;
   train_target: real;
   train_hidden1: array of real;
-  train_j: integer;
+  train_j: int64;
   train_sum1: real;
-  train_i: integer;
+  train_i: int64;
   train_hidden2: array of real;
-  train_k: integer;
+  train_k: int64;
   train_sum2: real;
-  train_j2: integer;
+  train_j2: int64;
   train_sum3: real;
-  train_k3: integer;
+  train_k3: int64;
   train_output: real;
   train_error: real;
   train_delta_output: real;
   train_new_w3: array of RealArray;
-  train_k4: integer;
+  train_k4: int64;
   train_w3row: array of real;
   train_delta_hidden2: array of real;
-  train_k5: integer;
+  train_k5: int64;
   train_row: array of real;
   train_dh2: real;
   train_new_w2: array of RealArray;
   train_w2row: array of real;
-  train_k6: integer;
+  train_k6: int64;
   train_delta_hidden1: array of real;
   train_sumdh: real;
-  train_k7: integer;
+  train_k7: int64;
   train_row2: array of real;
   train_new_w1: array of RealArray;
-  train_i2: integer;
+  train_i2: int64;
   train_w1row: array of real;
 begin
   train_iter := 0;
-  while train_iter < iterations do begin
+  while train_iter < train_iterations do begin
   train_s := 0;
-  while train_s < Length(inputs) do begin
-  train_inp := inputs[train_s];
-  train_target := outputs[train_s];
+  while train_s < Length(train_inputs) do begin
+  train_inp := train_inputs[train_s];
+  train_target := train_outputs[train_s];
   train_hidden1 := [];
   train_j := 0;
   while train_j < 4 do begin
   train_sum1 := 0;
   train_i := 0;
   while train_i < 3 do begin
-  train_sum1 := train_sum1 + (train_inp[train_i] * net.w1[train_i][train_j]);
+  train_sum1 := train_sum1 + (train_inp[train_i] * train_net.w1[train_i][train_j]);
   train_i := train_i + 1;
 end;
   train_hidden1 := concat(train_hidden1, [sigmoid(train_sum1)]);
@@ -229,7 +233,7 @@ end;
   train_sum2 := 0;
   train_j2 := 0;
   while train_j2 < 4 do begin
-  train_sum2 := train_sum2 + (train_hidden1[train_j2] * net.w2[train_j2][train_k]);
+  train_sum2 := train_sum2 + (train_hidden1[train_j2] * train_net.w2[train_j2][train_k]);
   train_j2 := train_j2 + 1;
 end;
   train_hidden2 := concat(train_hidden2, [sigmoid(train_sum2)]);
@@ -238,7 +242,7 @@ end;
   train_sum3 := 0;
   train_k3 := 0;
   while train_k3 < 3 do begin
-  train_sum3 := train_sum3 + (train_hidden2[train_k3] * net.w3[train_k3][0]);
+  train_sum3 := train_sum3 + (train_hidden2[train_k3] * train_net.w3[train_k3][0]);
   train_k3 := train_k3 + 1;
 end;
   train_output := sigmoid(train_sum3);
@@ -247,16 +251,16 @@ end;
   train_new_w3 := [];
   train_k4 := 0;
   while train_k4 < 3 do begin
-  train_w3row := net.w3[train_k4];
+  train_w3row := train_net.w3[train_k4];
   train_w3row[0] := train_w3row[0] + (train_hidden2[train_k4] * train_delta_output);
   train_new_w3 := concat(train_new_w3, [train_w3row]);
   train_k4 := train_k4 + 1;
 end;
-  net.w3 := train_new_w3;
+  train_net.w3 := train_new_w3;
   train_delta_hidden2 := [];
   train_k5 := 0;
   while train_k5 < 3 do begin
-  train_row := net.w3[train_k5];
+  train_row := train_net.w3[train_k5];
   train_dh2 := (train_row[0] * train_delta_output) * sigmoid_derivative(train_hidden2[train_k5]);
   train_delta_hidden2 := concat(train_delta_hidden2, [train_dh2]);
   train_k5 := train_k5 + 1;
@@ -264,7 +268,7 @@ end;
   train_new_w2 := [];
   train_j := 0;
   while train_j < 4 do begin
-  train_w2row := net.w2[train_j];
+  train_w2row := train_net.w2[train_j];
   train_k6 := 0;
   while train_k6 < 3 do begin
   train_w2row[train_k6] := train_w2row[train_k6] + (train_hidden1[train_j] * train_delta_hidden2[train_k6]);
@@ -273,14 +277,14 @@ end;
   train_new_w2 := concat(train_new_w2, [train_w2row]);
   train_j := train_j + 1;
 end;
-  net.w2 := train_new_w2;
+  train_net.w2 := train_new_w2;
   train_delta_hidden1 := [];
   train_j := 0;
   while train_j < 4 do begin
   train_sumdh := 0;
   train_k7 := 0;
   while train_k7 < 3 do begin
-  train_row2 := net.w2[train_j];
+  train_row2 := train_net.w2[train_j];
   train_sumdh := train_sumdh + (train_row2[train_k7] * train_delta_hidden2[train_k7]);
   train_k7 := train_k7 + 1;
 end;
@@ -290,7 +294,7 @@ end;
   train_new_w1 := [];
   train_i2 := 0;
   while train_i2 < 3 do begin
-  train_w1row := net.w1[train_i2];
+  train_w1row := train_net.w1[train_i2];
   train_j := 0;
   while train_j < 4 do begin
   train_w1row[train_j] := train_w1row[train_j] + (train_inp[train_i2] * train_delta_hidden1[train_j]);
@@ -299,28 +303,28 @@ end;
   train_new_w1 := concat(train_new_w1, [train_w1row]);
   train_i2 := train_i2 + 1;
 end;
-  net.w1 := train_new_w1;
+  train_net.w1 := train_new_w1;
   train_s := train_s + 1;
 end;
   train_iter := train_iter + 1;
 end;
 end;
-function predict(net: Network; input: RealArray): integer;
+function predict(predict_net: Network; predict_input: RealArray): int64;
 var
   predict_out_: real;
 begin
-  predict_out_ := feedforward(net, input);
+  predict_out_ := feedforward(predict_net, predict_input);
   if predict_out_ > 0.6 then begin
   exit(1);
 end;
   exit(0);
 end;
-function example(): integer;
+function example(): int64;
 var
   example_inputs: array of RealArray;
   example_outputs: array of real;
   example_net: Network;
-  example_result_: integer;
+  example_result_: int64;
 begin
   example_inputs := [[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]];
   example_outputs := [0, 1, 1, 0, 1, 0, 0, 1];
@@ -346,4 +350,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

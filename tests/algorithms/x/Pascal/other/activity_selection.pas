@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -60,28 +66,32 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  start: array of integer;
-  finish: array of integer;
-procedure print_max_activities(start: IntArray; finish: IntArray); forward;
-procedure print_max_activities(start: IntArray; finish: IntArray);
+  start: array of int64;
+  finish: array of int64;
+procedure print_max_activities(print_max_activities_start: IntArray; print_max_activities_finish: IntArray); forward;
+procedure print_max_activities(print_max_activities_start: IntArray; print_max_activities_finish: IntArray);
 var
-  print_max_activities_n: integer;
-  print_max_activities_i: integer;
+  print_max_activities_n: int64;
+  print_max_activities_i: int64;
   print_max_activities_result_: string;
-  print_max_activities_j: integer;
+  print_max_activities_j: int64;
 begin
-  print_max_activities_n := Length(finish);
+  print_max_activities_n := Length(print_max_activities_finish);
   writeln('The following activities are selected:');
   print_max_activities_i := 0;
   print_max_activities_result_ := '0,';
   print_max_activities_j := 1;
   while print_max_activities_j < print_max_activities_n do begin
-  if start[print_max_activities_j] >= finish[print_max_activities_i] then begin
+  if print_max_activities_start[print_max_activities_j] >= print_max_activities_finish[print_max_activities_i] then begin
   print_max_activities_result_ := (print_max_activities_result_ + IntToStr(print_max_activities_j)) + ',';
   print_max_activities_i := print_max_activities_j;
 end;
@@ -103,4 +113,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

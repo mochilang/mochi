@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -86,30 +96,26 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  number_2: integer;
-  lower: integer;
-  to_guess: integer;
-  number_1: integer;
-  higher: integer;
-function get_avg(number_1: integer; number_2: integer): integer; forward;
-function guess_the_number(lower: integer; higher: integer; to_guess: integer): IntArray; forward;
-function get_avg(number_1: integer; number_2: integer): integer;
+  answer_number: int64;
+function get_avg(get_avg_number_1: int64; get_avg_number_2: int64): int64; forward;
+function guess_the_number(guess_the_number_lower: int64; guess_the_number_higher: int64; guess_the_number_to_guess: int64): IntArray; forward;
+function get_avg(get_avg_number_1: int64; get_avg_number_2: int64): int64;
 begin
-  exit((number_1 + number_2) div 2);
+  exit(_floordiv(get_avg_number_1 + get_avg_number_2, 2));
 end;
-function guess_the_number(lower: integer; higher: integer; to_guess: integer): IntArray;
+function guess_the_number(guess_the_number_lower: int64; guess_the_number_higher: int64; guess_the_number_to_guess: int64): IntArray;
 var
-  guess_the_number_last_lowest: integer;
-  guess_the_number_last_highest: integer;
-  guess_the_number_last_numbers: array of integer;
-  guess_the_number_number: integer;
+  guess_the_number_last_lowest: int64;
+  guess_the_number_last_highest: int64;
+  guess_the_number_last_numbers: array of int64;
+  guess_the_number_number: int64;
   guess_the_number_resp: string;
-  function answer(answer_guess_the_number_number: integer): string;
+  function answer(answer_number: int64): string;
 begin
-  if guess_the_number_number > to_guess then begin
+  if answer_number > guess_the_number_to_guess then begin
   exit('high');
 end else begin
-  if guess_the_number_number < to_guess then begin
+  if answer_number < guess_the_number_to_guess then begin
   exit('low');
 end else begin
   exit('same');
@@ -117,15 +123,15 @@ end;
 end;
 end;
 begin
-  if lower > higher then begin
+  if guess_the_number_lower > guess_the_number_higher then begin
   panic('argument value for lower and higher must be(lower > higher)');
 end;
-  if not ((lower < to_guess) and (to_guess < higher)) then begin
+  if not ((guess_the_number_lower < guess_the_number_to_guess) and (guess_the_number_to_guess < guess_the_number_higher)) then begin
   panic('guess value must be within the range of lower and higher value');
 end;
   writeln('started...');
-  guess_the_number_last_lowest := lower;
-  guess_the_number_last_highest := higher;
+  guess_the_number_last_lowest := guess_the_number_lower;
+  guess_the_number_last_highest := guess_the_number_higher;
   guess_the_number_last_numbers := [];
   while true do begin
   guess_the_number_number := get_avg(guess_the_number_last_lowest, guess_the_number_last_highest);
@@ -158,4 +164,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

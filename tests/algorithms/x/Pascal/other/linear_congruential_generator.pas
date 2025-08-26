@@ -2,10 +2,10 @@
 program Main;
 uses SysUtils;
 type LCG = record
-  multiplier: integer;
-  increment: integer;
-  modulo: integer;
-  seed: integer;
+  multiplier: int64;
+  increment: int64;
+  modulo: int64;
+  seed: int64;
 end;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -47,6 +47,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -55,7 +61,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -65,44 +71,44 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  lcg_var: LCG;
-  i: integer;
-  multiplier: integer;
-  modulo: integer;
-  increment: integer;
-  seed: integer;
-function makeLCG(multiplier: integer; increment: integer; modulo: integer; seed: integer): LCG; forward;
-function make_lcg(multiplier: integer; increment: integer; modulo: integer; seed: integer): LCG; forward;
-function next_number(next_number_lcg_var: LCG): integer; forward;
-function makeLCG(multiplier: integer; increment: integer; modulo: integer; seed: integer): LCG;
+  lcg_4_var: LCG;
+  i: int64;
+function makeLCG(multiplier: int64; increment: int64; modulo: int64; seed: int64): LCG; forward;
+function make_lcg(make_lcg_multiplier: int64; make_lcg_increment: int64; make_lcg_modulo: int64; make_lcg_seed: int64): LCG; forward;
+function next_number(next_number_lcg_var: LCG): int64; forward;
+function makeLCG(multiplier: int64; increment: int64; modulo: int64; seed: int64): LCG;
 begin
   Result.multiplier := multiplier;
   Result.increment := increment;
   Result.modulo := modulo;
   Result.seed := seed;
 end;
-function make_lcg(multiplier: integer; increment: integer; modulo: integer; seed: integer): LCG;
+function make_lcg(make_lcg_multiplier: int64; make_lcg_increment: int64; make_lcg_modulo: int64; make_lcg_seed: int64): LCG;
 begin
-  exit(makeLCG(multiplier, increment, modulo, seed));
+  exit(makeLCG(make_lcg_multiplier, make_lcg_increment, make_lcg_modulo, make_lcg_seed));
 end;
-function next_number(next_number_lcg_var: LCG): integer;
+function next_number(next_number_lcg_var: LCG): int64;
 begin
-  lcg_var.seed := ((lcg_var.multiplier * lcg_var.seed) + lcg_var.increment) mod lcg_var.modulo;
-  exit(lcg_var.seed);
+  next_number_lcg_var.seed := ((next_number_lcg_var.multiplier * next_number_lcg_var.seed) + next_number_lcg_var.increment) mod next_number_lcg_var.modulo;
+  exit(next_number_lcg_var.seed);
 end;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  lcg_var := make_lcg(1664525, 1013904223, 4294967296, _now());
+  lcg_4_var := make_lcg(1664525, 1013904223, 4294967296, _now());
   i := 0;
   while i < 5 do begin
-  writeln(IntToStr(next_number(lcg_var)));
+  writeln(IntToStr(next_number(lcg_4_var)));
   i := i + 1;
 end;
   bench_memdiff_0 := _mem() - bench_mem_0;
@@ -112,4 +118,5 @@ end;
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

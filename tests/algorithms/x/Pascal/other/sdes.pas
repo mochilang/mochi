@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,19 +67,23 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  p4_table: array of integer;
+  p4_table: array of int64;
   key: string;
   message: string;
-  p8_table: array of integer;
-  p10_table: array of integer;
-  IP: array of integer;
-  IP_inv: array of integer;
-  expansion: array of integer;
+  p8_table: array of int64;
+  p10_table: array of int64;
+  IP: array of int64;
+  IP_inv: array of int64;
+  expansion: array of int64;
   s0: array of IntArray;
   s1: array of IntArray;
   temp: string;
@@ -83,53 +93,45 @@ var
   key2: string;
   CT: string;
   PT: string;
-  data: string;
-  a: string;
-  n: integer;
-  b: string;
-  inp: string;
-  table: IntArray;
-  s: IntArrayArray;
-  width: integer;
-function apply_table(inp: string; table: IntArray): string; forward;
-function left_shift(data: string): string; forward;
-function xor_(a: string; b: string): string; forward;
-function int_to_binary(n: integer): string; forward;
-function pad_left(s: string; width: integer): string; forward;
-function bin_to_int(s: string): integer; forward;
-function apply_sbox(s: IntArrayArray; data: string): string; forward;
-function f(expansion: IntArray; s0: IntArrayArray; s1: IntArrayArray; key: string; message: string): string; forward;
-function apply_table(inp: string; table: IntArray): string;
+function apply_table(apply_table_inp: string; apply_table_table: IntArray): string; forward;
+function left_shift(left_shift_data: string): string; forward;
+function xor_(xor__a: string; xor__b: string): string; forward;
+function int_to_binary(int_to_binary_n: int64): string; forward;
+function pad_left(pad_left_s: string; pad_left_width: int64): string; forward;
+function bin_to_int(bin_to_int_s: string): int64; forward;
+function apply_sbox(apply_sbox_s: IntArrayArray; apply_sbox_data: string): string; forward;
+function f(f_expansion: IntArray; f_s0: IntArrayArray; f_s1: IntArrayArray; f_key: string; f_message: string): string; forward;
+function apply_table(apply_table_inp: string; apply_table_table: IntArray): string;
 var
   apply_table_res: string;
-  apply_table_i: integer;
-  apply_table_idx: integer;
+  apply_table_i: int64;
+  apply_table_idx: int64;
 begin
   apply_table_res := '';
   apply_table_i := 0;
-  while apply_table_i < Length(table) do begin
-  apply_table_idx := table[apply_table_i] - 1;
+  while apply_table_i < Length(apply_table_table) do begin
+  apply_table_idx := apply_table_table[apply_table_i] - 1;
   if apply_table_idx < 0 then begin
-  apply_table_idx := Length(inp) - 1;
+  apply_table_idx := Length(apply_table_inp) - 1;
 end;
-  apply_table_res := apply_table_res + copy(inp, apply_table_idx+1, (apply_table_idx + 1 - (apply_table_idx)));
+  apply_table_res := apply_table_res + copy(apply_table_inp, apply_table_idx+1, (apply_table_idx + 1 - (apply_table_idx)));
   apply_table_i := apply_table_i + 1;
 end;
   exit(apply_table_res);
 end;
-function left_shift(data: string): string;
+function left_shift(left_shift_data: string): string;
 begin
-  exit(copy(data, 2, (Length(data) - (1))) + copy(data, 1, 1));
+  exit(copy(left_shift_data, 2, (Length(left_shift_data) - (1))) + copy(left_shift_data, 1, 1));
 end;
-function xor_(a: string; b: string): string;
+function xor_(xor__a: string; xor__b: string): string;
 var
   xor__res: string;
-  xor__i: integer;
+  xor__i: int64;
 begin
   xor__res := '';
   xor__i := 0;
-  while (xor__i < Length(a)) and (xor__i < Length(b)) do begin
-  if copy(a, xor__i+1, (xor__i + 1 - (xor__i))) = copy(b, xor__i+1, (xor__i + 1 - (xor__i))) then begin
+  while (xor__i < Length(xor__a)) and (xor__i < Length(xor__b)) do begin
+  if copy(xor__a, xor__i+1, (xor__i + 1 - (xor__i))) = copy(xor__b, xor__i+1, (xor__i + 1 - (xor__i))) then begin
   xor__res := xor__res + '0';
 end else begin
   xor__res := xor__res + '1';
@@ -138,65 +140,65 @@ end;
 end;
   exit(xor__res);
 end;
-function int_to_binary(n: integer): string;
+function int_to_binary(int_to_binary_n: int64): string;
 var
   int_to_binary_res: string;
-  int_to_binary_num: integer;
+  int_to_binary_num: int64;
 begin
-  if n = 0 then begin
+  if int_to_binary_n = 0 then begin
   exit('0');
 end;
   int_to_binary_res := '';
-  int_to_binary_num := n;
+  int_to_binary_num := int_to_binary_n;
   while int_to_binary_num > 0 do begin
   int_to_binary_res := IntToStr(int_to_binary_num mod 2) + int_to_binary_res;
-  int_to_binary_num := int_to_binary_num div 2;
+  int_to_binary_num := _floordiv(int_to_binary_num, 2);
 end;
   exit(int_to_binary_res);
 end;
-function pad_left(s: string; width: integer): string;
+function pad_left(pad_left_s: string; pad_left_width: int64): string;
 var
   pad_left_res: string;
 begin
-  pad_left_res := s;
-  while Length(pad_left_res) < width do begin
+  pad_left_res := pad_left_s;
+  while Length(pad_left_res) < pad_left_width do begin
   pad_left_res := '0' + pad_left_res;
 end;
   exit(pad_left_res);
 end;
-function bin_to_int(s: string): integer;
+function bin_to_int(bin_to_int_s: string): int64;
 var
-  bin_to_int_result_: integer;
-  bin_to_int_i: integer;
+  bin_to_int_result_: int64;
+  bin_to_int_i: int64;
   bin_to_int_digit: integer;
 begin
   bin_to_int_result_ := 0;
   bin_to_int_i := 0;
-  while bin_to_int_i < Length(s) do begin
-  bin_to_int_digit := StrToInt(copy(s, bin_to_int_i+1, (bin_to_int_i + 1 - (bin_to_int_i))));
+  while bin_to_int_i < Length(bin_to_int_s) do begin
+  bin_to_int_digit := StrToInt(copy(bin_to_int_s, bin_to_int_i+1, (bin_to_int_i + 1 - (bin_to_int_i))));
   bin_to_int_result_ := (bin_to_int_result_ * 2) + bin_to_int_digit;
   bin_to_int_i := bin_to_int_i + 1;
 end;
   exit(bin_to_int_result_);
 end;
-function apply_sbox(s: IntArrayArray; data: string): string;
+function apply_sbox(apply_sbox_s: IntArrayArray; apply_sbox_data: string): string;
 var
   apply_sbox_row_bits: string;
   apply_sbox_col_bits: string;
-  apply_sbox_row: integer;
-  apply_sbox_col: integer;
-  apply_sbox_val: integer;
+  apply_sbox_row: int64;
+  apply_sbox_col: int64;
+  apply_sbox_val: int64;
   apply_sbox_out_: string;
 begin
-  apply_sbox_row_bits := copy(data, 1, 1) + copy(data, Length(data) - 1+1, (Length(data) - (Length(data) - 1)));
-  apply_sbox_col_bits := copy(data, 2, 2);
+  apply_sbox_row_bits := copy(apply_sbox_data, 1, 1) + copy(apply_sbox_data, Length(apply_sbox_data) - 1+1, (Length(apply_sbox_data) - (Length(apply_sbox_data) - 1)));
+  apply_sbox_col_bits := copy(apply_sbox_data, 2, 2);
   apply_sbox_row := bin_to_int(apply_sbox_row_bits);
   apply_sbox_col := bin_to_int(apply_sbox_col_bits);
-  apply_sbox_val := s[apply_sbox_row][apply_sbox_col];
+  apply_sbox_val := apply_sbox_s[apply_sbox_row][apply_sbox_col];
   apply_sbox_out_ := int_to_binary(apply_sbox_val);
   exit(apply_sbox_out_);
 end;
-function f(expansion: IntArray; s0: IntArrayArray; s1: IntArrayArray; key: string; message: string): string;
+function f(f_expansion: IntArray; f_s0: IntArrayArray; f_s1: IntArrayArray; f_key: string; f_message: string): string;
 var
   f_left: string;
   f_right: string;
@@ -204,12 +206,12 @@ var
   f_left_bin_str: string;
   f_right_bin_str: string;
 begin
-  f_left := copy(message, 1, 4);
-  f_right := copy(message, 5, 4);
-  f_temp := apply_table(f_right, expansion);
-  f_temp := xor_(f_temp, key);
-  f_left_bin_str := apply_sbox(s0, copy(f_temp, 1, 4));
-  f_right_bin_str := apply_sbox(s1, copy(f_temp, 5, 4));
+  f_left := copy(f_message, 1, 4);
+  f_right := copy(f_message, 5, 4);
+  f_temp := apply_table(f_right, f_expansion);
+  f_temp := xor_(f_temp, f_key);
+  f_left_bin_str := apply_sbox(f_s0, copy(f_temp, 1, 4));
+  f_right_bin_str := apply_sbox(f_s1, copy(f_temp, 5, 4));
   f_left_bin_str := pad_left(f_left_bin_str, 2);
   f_right_bin_str := pad_left(f_right_bin_str, 2);
   f_temp := apply_table(f_left_bin_str + f_right_bin_str, p4_table);
@@ -260,4 +262,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

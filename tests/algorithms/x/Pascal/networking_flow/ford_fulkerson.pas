@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type BoolArray = array of boolean;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
@@ -44,6 +44,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -52,7 +58,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -62,25 +68,29 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  INF: integer;
+  INF: int64;
   graph: array of IntArray;
-function breadth_first_search(breadth_first_search_graph: IntArrayArray; breadth_first_search_source: integer; breadth_first_search_sink: integer; breadth_first_search_parent: IntArray): boolean; forward;
-function ford_fulkerson(ford_fulkerson_graph: IntArrayArray; ford_fulkerson_source: integer; ford_fulkerson_sink: integer): integer; forward;
-function breadth_first_search(breadth_first_search_graph: IntArrayArray; breadth_first_search_source: integer; breadth_first_search_sink: integer; breadth_first_search_parent: IntArray): boolean;
+function breadth_first_search(breadth_first_search_graph: IntArrayArray; breadth_first_search_source: int64; breadth_first_search_sink: int64; breadth_first_search_parent: IntArray): boolean; forward;
+function ford_fulkerson(ford_fulkerson_graph: IntArrayArray; ford_fulkerson_source: int64; ford_fulkerson_sink: int64): int64; forward;
+function breadth_first_search(breadth_first_search_graph: IntArrayArray; breadth_first_search_source: int64; breadth_first_search_sink: int64; breadth_first_search_parent: IntArray): boolean;
 var
   breadth_first_search_visited: array of boolean;
-  breadth_first_search_i: integer;
-  breadth_first_search_queue: array of integer;
-  breadth_first_search_head: integer;
-  breadth_first_search_u: integer;
-  breadth_first_search_row: array of integer;
-  breadth_first_search_ind: integer;
-  breadth_first_search_capacity: integer;
+  breadth_first_search_i: int64;
+  breadth_first_search_queue: array of int64;
+  breadth_first_search_head: int64;
+  breadth_first_search_u: int64;
+  breadth_first_search_row: array of int64;
+  breadth_first_search_ind: int64;
+  breadth_first_search_capacity: int64;
 begin
   breadth_first_search_visited := [];
   breadth_first_search_i := 0;
@@ -109,18 +119,18 @@ end;
 end;
   exit(breadth_first_search_visited[breadth_first_search_sink]);
 end;
-function ford_fulkerson(ford_fulkerson_graph: IntArrayArray; ford_fulkerson_source: integer; ford_fulkerson_sink: integer): integer;
+function ford_fulkerson(ford_fulkerson_graph: IntArrayArray; ford_fulkerson_source: int64; ford_fulkerson_sink: int64): int64;
 var
-  ford_fulkerson_parent: array of integer;
-  ford_fulkerson_i: integer;
-  ford_fulkerson_max_flow: integer;
-  ford_fulkerson_path_flow: integer;
-  ford_fulkerson_s: integer;
-  ford_fulkerson_prev: integer;
-  ford_fulkerson_cap: integer;
-  ford_fulkerson_v: integer;
-  ford_fulkerson_u: integer;
-  ford_fulkerson_j: integer;
+  ford_fulkerson_parent: array of int64;
+  ford_fulkerson_i: int64;
+  ford_fulkerson_max_flow: int64;
+  ford_fulkerson_path_flow: int64;
+  ford_fulkerson_s: int64;
+  ford_fulkerson_prev: int64;
+  ford_fulkerson_cap: int64;
+  ford_fulkerson_v: int64;
+  ford_fulkerson_u: int64;
+  ford_fulkerson_j: int64;
 begin
   ford_fulkerson_parent := [];
   ford_fulkerson_i := 0;
@@ -170,4 +180,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

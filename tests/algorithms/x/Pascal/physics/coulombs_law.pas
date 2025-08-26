@@ -37,19 +37,47 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real); overload;
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   K: real;
-  radius: real;
-  x: real;
-  q1: real;
-  q2: real;
-function format2(x: real): string; forward;
-function coulombs_law(q1: real; q2: real; radius: real): real; forward;
-function format2(x: real): string;
+function format2(format2_x: real): string; forward;
+function coulombs_law(coulombs_law_q1: real; coulombs_law_q2: real; coulombs_law_radius: real): real; forward;
+function format2(format2_x: real): string;
 var
   format2_sign: string;
   format2_y: real;
@@ -60,15 +88,15 @@ var
   format2_frac_part: integer;
   format2_frac_str: string;
 begin
-  if x < 0 then begin
+  if format2_x < 0 then begin
   format2_sign := '-';
 end else begin
   format2_sign := '';
 end;
-  if x < 0 then begin
-  format2_y := -x;
+  if format2_x < 0 then begin
+  format2_y := -format2_x;
 end else begin
-  format2_y := x;
+  format2_y := format2_x;
 end;
   format2_m := 100;
   format2_scaled := format2_y * format2_m;
@@ -76,7 +104,7 @@ end;
   if (format2_scaled - Double(format2_i)) >= 0.5 then begin
   format2_i := format2_i + 1;
 end;
-  format2_int_part := format2_i div 100;
+  format2_int_part := _floordiv(format2_i, 100);
   format2_frac_part := format2_i mod 100;
   format2_frac_str := IntToStr(format2_frac_part);
   if format2_frac_part < 10 then begin
@@ -84,14 +112,14 @@ end;
 end;
   exit(((format2_sign + IntToStr(format2_int_part)) + '.') + format2_frac_str);
 end;
-function coulombs_law(q1: real; q2: real; radius: real): real;
+function coulombs_law(coulombs_law_q1: real; coulombs_law_q2: real; coulombs_law_radius: real): real;
 var
   coulombs_law_force: real;
 begin
-  if radius <= 0 then begin
+  if coulombs_law_radius <= 0 then begin
   panic('radius must be positive');
 end;
-  coulombs_law_force := ((K * q1) * q2) / (radius * radius);
+  coulombs_law_force := ((K * coulombs_law_q1) * coulombs_law_q2) / (coulombs_law_radius * coulombs_law_radius);
   exit(coulombs_law_force);
 end;
 begin
@@ -111,4 +139,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

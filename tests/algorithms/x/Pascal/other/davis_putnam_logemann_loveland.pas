@@ -2,21 +2,21 @@
 program Main;
 uses SysUtils, StrUtils, fgl;
 type Clause = record
-  literals: specialize TFPGMap<string, integer>;
+  literals: specialize TFPGMap<string, int64>;
   names: array of string;
-end;
-type Formula = record
-  clauses: array of Clause;
 end;
 type DPLLResult = record
   sat: boolean;
-  model: specialize TFPGMap<string, integer>;
+  model: specialize TFPGMap<string, int64>;
 end;
 type StrArray = array of string;
 type ClauseArray = array of Clause;
 type EvalResult = record
-  value: integer;
+  value: int64;
   clause: Clause;
+end;
+type Formula = record
+  clauses: array of Clause;
 end;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -58,6 +58,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -66,7 +72,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -76,6 +82,10 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -83,35 +93,30 @@ var
   bench_memdiff_0: int64;
   clause1: Clause;
   clause2: Clause;
-  formula_var: Formula;
+  formula_37_var: Formula;
   formula_str: string;
   clauses: array of Clause;
   symbols: array of string;
-  model: specialize TFPGMap<string, integer>;
+  model: specialize TFPGMap<string, int64>;
   result_: DPLLResult;
-  s: string;
-  f: Formula;
-  lits: StrArray;
-  c: Clause;
-  cs: ClauseArray;
-function Map1(): specialize TFPGMap<string, integer>; forward;
-function makeDPLLResult(sat: boolean; model: specialize TFPGMap<string, integer>): DPLLResult; forward;
+function Map1(): specialize TFPGMap<string, int64>; forward;
+function makeDPLLResult(sat: boolean; model: specialize TFPGMap<string, int64>): DPLLResult; forward;
 function makeFormula(clauses: ClauseArray): Formula; forward;
-function makeEvalResult(value: integer; clause_var: Clause): EvalResult; forward;
-function makeClause(literals: specialize TFPGMap<string, integer>; names: StrArray): Clause; forward;
-function new_clause(lits: StrArray): Clause; forward;
-function assign_clause(c: Clause; model: specialize TFPGMap<string, integer>): Clause; forward;
-function evaluate_clause(c: Clause; model: specialize TFPGMap<string, integer>): EvalResult; forward;
-function new_formula(cs: ClauseArray): Formula; forward;
-function remove_symbol(symbols: StrArray; s: string): StrArray; forward;
-function dpll_algorithm(clauses: ClauseArray; symbols: StrArray; model: specialize TFPGMap<string, integer>): DPLLResult; forward;
-function str_clause(c: Clause): string; forward;
-function str_formula(f: Formula): string; forward;
-function Map1(): specialize TFPGMap<string, integer>;
+function makeEvalResult(value: int64; clause_56_var: Clause): EvalResult; forward;
+function makeClause(literals: specialize TFPGMap<string, int64>; names: StrArray): Clause; forward;
+function new_clause(new_clause_lits: StrArray): Clause; forward;
+function assign_clause(assign_clause_c: Clause; assign_clause_model: specialize TFPGMap<string, int64>): Clause; forward;
+function evaluate_clause(evaluate_clause_c: Clause; evaluate_clause_model: specialize TFPGMap<string, int64>): EvalResult; forward;
+function new_formula(new_formula_cs: ClauseArray): Formula; forward;
+function remove_symbol(remove_symbol_symbols: StrArray; remove_symbol_s: string): StrArray; forward;
+function dpll_algorithm(dpll_algorithm_clauses: ClauseArray; dpll_algorithm_symbols: StrArray; dpll_algorithm_model: specialize TFPGMap<string, int64>): DPLLResult; forward;
+function str_clause(str_clause_c: Clause): string; forward;
+function str_formula(str_formula_f: Formula): string; forward;
+function Map1(): specialize TFPGMap<string, int64>;
 begin
-  Result := specialize TFPGMap<string, integer>.Create();
+  Result := specialize TFPGMap<string, int64>.Create();
 end;
-function makeDPLLResult(sat: boolean; model: specialize TFPGMap<string, integer>): DPLLResult;
+function makeDPLLResult(sat: boolean; model: specialize TFPGMap<string, int64>): DPLLResult;
 begin
   Result.sat := sat;
   Result.model := model;
@@ -120,49 +125,49 @@ function makeFormula(clauses: ClauseArray): Formula;
 begin
   Result.clauses := clauses;
 end;
-function makeEvalResult(value: integer; clause_var: Clause): EvalResult;
+function makeEvalResult(value: int64; clause_56_var: Clause): EvalResult;
 begin
   Result.value := value;
-  Result.clause := clause_var;
+  Result.clause := clause_56_var;
 end;
-function makeClause(literals: specialize TFPGMap<string, integer>; names: StrArray): Clause;
+function makeClause(literals: specialize TFPGMap<string, int64>; names: StrArray): Clause;
 begin
   Result.literals := literals;
   Result.names := names;
 end;
-function new_clause(lits: StrArray): Clause;
+function new_clause(new_clause_lits: StrArray): Clause;
 var
-  new_clause_m: specialize TFPGMap<string, integer>;
+  new_clause_m: specialize TFPGMap<string, int64>;
   new_clause_names: array of string;
-  new_clause_i: integer;
+  new_clause_i: int64;
   new_clause_lit: string;
 begin
-  new_clause_m := specialize TFPGMap<string, integer>.Create();
+  new_clause_m := specialize TFPGMap<string, int64>.Create();
   new_clause_names := [];
   new_clause_i := 0;
-  while new_clause_i < Length(lits) do begin
-  new_clause_lit := lits[new_clause_i];
+  while new_clause_i < Length(new_clause_lits) do begin
+  new_clause_lit := new_clause_lits[new_clause_i];
   new_clause_m[new_clause_lit] := 0 - 1;
   new_clause_names := concat(new_clause_names, StrArray([new_clause_lit]));
   new_clause_i := new_clause_i + 1;
 end;
   exit(makeClause(new_clause_m, new_clause_names));
 end;
-function assign_clause(c: Clause; model: specialize TFPGMap<string, integer>): Clause;
+function assign_clause(assign_clause_c: Clause; assign_clause_model: specialize TFPGMap<string, int64>): Clause;
 var
-  assign_clause_lits: specialize TFPGMap<string, integer>;
-  assign_clause_i: integer;
+  assign_clause_lits: specialize TFPGMap<string, int64>;
+  assign_clause_i: int64;
   assign_clause_lit: string;
   assign_clause_symbol: string;
-  assign_clause_value: integer;
+  assign_clause_value: int64;
 begin
-  assign_clause_lits := c.literals;
+  assign_clause_lits := assign_clause_c.literals;
   assign_clause_i := 0;
-  while assign_clause_i < Length(c.names) do begin
-  assign_clause_lit := c.names[assign_clause_i];
+  while assign_clause_i < Length(assign_clause_c.names) do begin
+  assign_clause_lit := assign_clause_c.names[assign_clause_i];
   assign_clause_symbol := copy(assign_clause_lit, 1, 2);
-  if model.IndexOf(assign_clause_symbol) <> -1 then begin
-  assign_clause_value := model[assign_clause_symbol];
+  if assign_clause_model.IndexOf(assign_clause_symbol) <> -1 then begin
+  assign_clause_value := assign_clause_model[assign_clause_symbol];
   if (copy(assign_clause_lit, Length(assign_clause_lit) - 1+1, (Length(assign_clause_lit) - (Length(assign_clause_lit) - 1))) = '''') and (assign_clause_value <> (0 - 1)) then begin
   assign_clause_value := 1 - assign_clause_value;
 end;
@@ -170,95 +175,95 @@ end;
 end;
   assign_clause_i := assign_clause_i + 1;
 end;
-  c.literals := assign_clause_lits;
-  exit(c);
+  assign_clause_c.literals := assign_clause_lits;
+  exit(assign_clause_c);
 end;
-function evaluate_clause(c: Clause; model: specialize TFPGMap<string, integer>): EvalResult;
+function evaluate_clause(evaluate_clause_c: Clause; evaluate_clause_model: specialize TFPGMap<string, int64>): EvalResult;
 var
-  evaluate_clause_i: integer;
+  evaluate_clause_i: int64;
   evaluate_clause_lit: string;
   evaluate_clause_sym: string;
-  evaluate_clause_value: integer;
+  evaluate_clause_value: int64;
   evaluate_clause_value_idx: integer;
-  evaluate_clause_any_true: integer;
+  evaluate_clause_any_true: int64;
 begin
   evaluate_clause_i := 0;
-  while evaluate_clause_i < Length(c.names) do begin
-  evaluate_clause_lit := c.names[evaluate_clause_i];
+  while evaluate_clause_i < Length(evaluate_clause_c.names) do begin
+  evaluate_clause_lit := evaluate_clause_c.names[evaluate_clause_i];
   if copy(evaluate_clause_lit, Length(evaluate_clause_lit) - 1+1, (Length(evaluate_clause_lit) - (Length(evaluate_clause_lit) - 1))) = '''' then begin
   evaluate_clause_sym := copy(evaluate_clause_lit, 1, 2);
 end else begin
   evaluate_clause_sym := evaluate_clause_lit + '''';
 end;
-  if c.literals.IndexOf(evaluate_clause_sym) <> -1 then begin
-  exit(makeEvalResult(1, c));
+  if evaluate_clause_c.literals.IndexOf(evaluate_clause_sym) <> -1 then begin
+  exit(makeEvalResult(1, evaluate_clause_c));
 end;
   evaluate_clause_i := evaluate_clause_i + 1;
 end;
-  c := assign_clause(c, model);
+  evaluate_clause_c := assign_clause(evaluate_clause_c, evaluate_clause_model);
   evaluate_clause_i := 0;
-  while evaluate_clause_i < Length(c.names) do begin
-  evaluate_clause_lit := c.names[evaluate_clause_i];
-  evaluate_clause_value_idx := c.literals.IndexOf(evaluate_clause_lit);
+  while evaluate_clause_i < Length(evaluate_clause_c.names) do begin
+  evaluate_clause_lit := evaluate_clause_c.names[evaluate_clause_i];
+  evaluate_clause_value_idx := evaluate_clause_c.literals.IndexOf(evaluate_clause_lit);
   if evaluate_clause_value_idx <> -1 then begin
-  evaluate_clause_value := c.literals.Data[evaluate_clause_value_idx];
+  evaluate_clause_value := evaluate_clause_c.literals.Data[evaluate_clause_value_idx];
 end else begin
   evaluate_clause_value := 0;
 end;
   if evaluate_clause_value = 1 then begin
-  exit(makeEvalResult(1, c));
+  exit(makeEvalResult(1, evaluate_clause_c));
 end;
   if evaluate_clause_value = (0 - 1) then begin
-  exit(makeEvalResult(0 - 1, c));
+  exit(makeEvalResult(0 - 1, evaluate_clause_c));
 end;
   evaluate_clause_i := evaluate_clause_i + 1;
 end;
   evaluate_clause_any_true := 0;
   evaluate_clause_i := 0;
-  while evaluate_clause_i < Length(c.names) do begin
-  evaluate_clause_lit := c.names[evaluate_clause_i];
-  if c.literals[evaluate_clause_lit] = 1 then begin
+  while evaluate_clause_i < Length(evaluate_clause_c.names) do begin
+  evaluate_clause_lit := evaluate_clause_c.names[evaluate_clause_i];
+  if evaluate_clause_c.literals[evaluate_clause_lit] = 1 then begin
   evaluate_clause_any_true := 1;
 end;
   evaluate_clause_i := evaluate_clause_i + 1;
 end;
-  exit(makeEvalResult(evaluate_clause_any_true, c));
+  exit(makeEvalResult(evaluate_clause_any_true, evaluate_clause_c));
 end;
-function new_formula(cs: ClauseArray): Formula;
+function new_formula(new_formula_cs: ClauseArray): Formula;
 begin
-  exit(makeFormula(cs));
+  exit(makeFormula(new_formula_cs));
 end;
-function remove_symbol(symbols: StrArray; s: string): StrArray;
+function remove_symbol(remove_symbol_symbols: StrArray; remove_symbol_s: string): StrArray;
 var
   remove_symbol_res: array of string;
-  remove_symbol_i: integer;
+  remove_symbol_i: int64;
 begin
   remove_symbol_res := [];
   remove_symbol_i := 0;
-  while remove_symbol_i < Length(symbols) do begin
-  if symbols[remove_symbol_i] <> s then begin
-  remove_symbol_res := concat(remove_symbol_res, StrArray([symbols[remove_symbol_i]]));
+  while remove_symbol_i < Length(remove_symbol_symbols) do begin
+  if remove_symbol_symbols[remove_symbol_i] <> remove_symbol_s then begin
+  remove_symbol_res := concat(remove_symbol_res, StrArray([remove_symbol_symbols[remove_symbol_i]]));
 end;
   remove_symbol_i := remove_symbol_i + 1;
 end;
   exit(remove_symbol_res);
 end;
-function dpll_algorithm(clauses: ClauseArray; symbols: StrArray; model: specialize TFPGMap<string, integer>): DPLLResult;
+function dpll_algorithm(dpll_algorithm_clauses: ClauseArray; dpll_algorithm_symbols: StrArray; dpll_algorithm_model: specialize TFPGMap<string, int64>): DPLLResult;
 var
   dpll_algorithm_all_true: boolean;
-  dpll_algorithm_i: integer;
+  dpll_algorithm_i: int64;
   dpll_algorithm_ev: EvalResult;
   dpll_algorithm_p: string;
   dpll_algorithm_rest: StrArray;
-  dpll_algorithm_tmp1: specialize TFPGMap<string, integer>;
-  dpll_algorithm_tmp2: specialize TFPGMap<string, integer>;
+  dpll_algorithm_tmp1: specialize TFPGMap<string, int64>;
+  dpll_algorithm_tmp2: specialize TFPGMap<string, int64>;
   dpll_algorithm_res1: DPLLResult;
 begin
   dpll_algorithm_all_true := true;
   dpll_algorithm_i := 0;
-  while dpll_algorithm_i < Length(clauses) do begin
-  dpll_algorithm_ev := evaluate_clause(clauses[dpll_algorithm_i], model);
-  clauses[dpll_algorithm_i] := dpll_algorithm_ev.clause;
+  while dpll_algorithm_i < Length(dpll_algorithm_clauses) do begin
+  dpll_algorithm_ev := evaluate_clause(dpll_algorithm_clauses[dpll_algorithm_i], dpll_algorithm_model);
+  dpll_algorithm_clauses[dpll_algorithm_i] := dpll_algorithm_ev.clause;
   if dpll_algorithm_ev.value = 0 then begin
   exit(makeDPLLResult(false, Map1()));
 end else begin
@@ -269,32 +274,32 @@ end;
   dpll_algorithm_i := dpll_algorithm_i + 1;
 end;
   if dpll_algorithm_all_true then begin
-  exit(makeDPLLResult(true, model));
+  exit(makeDPLLResult(true, dpll_algorithm_model));
 end;
-  dpll_algorithm_p := symbols[0];
-  dpll_algorithm_rest := remove_symbol(symbols, dpll_algorithm_p);
-  dpll_algorithm_tmp1 := model;
-  dpll_algorithm_tmp2 := model;
+  dpll_algorithm_p := dpll_algorithm_symbols[0];
+  dpll_algorithm_rest := remove_symbol(dpll_algorithm_symbols, dpll_algorithm_p);
+  dpll_algorithm_tmp1 := dpll_algorithm_model;
+  dpll_algorithm_tmp2 := dpll_algorithm_model;
   dpll_algorithm_tmp1[dpll_algorithm_p] := 1;
   dpll_algorithm_tmp2[dpll_algorithm_p] := 0;
-  dpll_algorithm_res1 := dpll_algorithm(clauses, dpll_algorithm_rest, dpll_algorithm_tmp1);
+  dpll_algorithm_res1 := dpll_algorithm(dpll_algorithm_clauses, dpll_algorithm_rest, dpll_algorithm_tmp1);
   if dpll_algorithm_res1.sat then begin
   exit(dpll_algorithm_res1);
 end;
-  exit(dpll_algorithm(clauses, dpll_algorithm_rest, dpll_algorithm_tmp2));
+  exit(dpll_algorithm(dpll_algorithm_clauses, dpll_algorithm_rest, dpll_algorithm_tmp2));
 end;
-function str_clause(c: Clause): string;
+function str_clause(str_clause_c: Clause): string;
 var
   str_clause_line: string;
   str_clause_first: boolean;
-  str_clause_i: integer;
+  str_clause_i: int64;
   str_clause_lit: string;
 begin
   str_clause_line := '{';
   str_clause_first := true;
   str_clause_i := 0;
-  while str_clause_i < Length(c.names) do begin
-  str_clause_lit := c.names[str_clause_i];
+  while str_clause_i < Length(str_clause_c.names) do begin
+  str_clause_lit := str_clause_c.names[str_clause_i];
   if str_clause_first then begin
   str_clause_first := false;
 end else begin
@@ -306,16 +311,16 @@ end;
   str_clause_line := str_clause_line + '}';
   exit(str_clause_line);
 end;
-function str_formula(f: Formula): string;
+function str_formula(str_formula_f: Formula): string;
 var
   str_formula_line: string;
-  str_formula_i: integer;
+  str_formula_i: int64;
 begin
   str_formula_line := '{';
   str_formula_i := 0;
-  while str_formula_i < Length(f.clauses) do begin
-  str_formula_line := str_formula_line + str_clause(f.clauses[str_formula_i]);
-  if str_formula_i < (Length(f.clauses) - 1) then begin
+  while str_formula_i < Length(str_formula_f.clauses) do begin
+  str_formula_line := str_formula_line + str_clause(str_formula_f.clauses[str_formula_i]);
+  if str_formula_i < (Length(str_formula_f.clauses) - 1) then begin
   str_formula_line := str_formula_line + ' , ';
 end;
   str_formula_i := str_formula_i + 1;
@@ -329,11 +334,11 @@ begin
   bench_start_0 := _bench_now();
   clause1 := new_clause(['A4', 'A3', 'A5''', 'A1', 'A3''']);
   clause2 := new_clause(['A4']);
-  formula_var := new_formula([clause1, clause2]);
-  formula_str := str_formula(formula_var);
+  formula_37_var := new_formula([clause1, clause2]);
+  formula_str := str_formula(formula_37_var);
   clauses := [clause1, clause2];
   symbols := ['A4', 'A3', 'A5', 'A1'];
-  model := specialize TFPGMap<string, integer>.Create();
+  model := specialize TFPGMap<string, int64>.Create();
   result_ := dpll_algorithm(clauses, symbols, model);
   if result_.sat then begin
   writeln(('The formula ' + formula_str) + ' is satisfiable.');
@@ -347,4 +352,5 @@ end;
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

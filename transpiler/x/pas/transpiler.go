@@ -5422,6 +5422,11 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			fields = append(fields, FieldExpr{Name: it.Name, Expr: val})
 		}
+		if currProg != nil {
+			if vinfo, ok := currProg.Variants[p.Struct.Name]; ok {
+				return &RecordLit{Type: sanitize(vinfo.Union), Fields: fields}, nil
+			}
+		}
 		return &RecordLit{Type: sanitize(p.Struct.Name), Fields: fields}, nil
 	case p.Map != nil:
 		if len(p.Map.Items) == 0 && expectedMapType != "" && strings.HasPrefix(expectedMapType, "specialize TFPGMap") {

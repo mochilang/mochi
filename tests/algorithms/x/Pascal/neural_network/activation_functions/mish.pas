@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,6 +65,10 @@ begin
     if i < High(xs) then write(', ');
   end;
   writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
 end;
 function list_real_to_str(xs: array of real): string;
 var i: integer;
@@ -88,7 +98,7 @@ var
   exp_approx_y: real;
   exp_approx_term: real;
   exp_approx_sum: real;
-  exp_approx_n: integer;
+  exp_approx_n: int64;
 begin
   exp_approx_neg := false;
   exp_approx_y := exp_approx_x;
@@ -114,7 +124,7 @@ var
   ln_series_t: real;
   ln_series_term: real;
   ln_series_acc: real;
-  ln_series_n: integer;
+  ln_series_n: int64;
 begin
   ln_series_t := (ln_series_x - 1) / (ln_series_x + 1);
   ln_series_term := ln_series_t;
@@ -130,7 +140,7 @@ end;
 function ln_(ln__x: real): real;
 var
   ln__y: real;
-  ln__k: integer;
+  ln__k: int64;
 begin
   ln__y := ln__x;
   ln__k := 0;
@@ -155,7 +165,7 @@ end;
 function mish(mish_vector: RealArray): RealArray;
 var
   mish_result_: array of real;
-  mish_i: integer;
+  mish_i: int64;
   mish_x: real;
   mish_sp: real;
   mish_y: real;
@@ -193,4 +203,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

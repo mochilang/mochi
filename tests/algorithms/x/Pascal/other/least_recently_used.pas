@@ -2,7 +2,7 @@
 program Main;
 uses SysUtils, Math;
 type LRUCache = record
-  max_capacity: integer;
+  max_capacity: int64;
   store: array of string;
 end;
 type StrArray = array of string;
@@ -46,6 +46,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -54,7 +60,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -64,6 +70,10 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -71,50 +81,45 @@ var
   bench_memdiff_0: int64;
   lru: LRUCache;
   r: string;
-  n: integer;
-  cache: LRUCache;
-  x: string;
-  s: string;
-  xs: StrArray;
-function makeLRUCache(max_capacity: integer; store: StrArray): LRUCache; forward;
-function new_cache(n: integer): LRUCache; forward;
-function remove_element(xs: StrArray; x: string): StrArray; forward;
-function refer(cache: LRUCache; x: string): LRUCache; forward;
-procedure display(cache: LRUCache); forward;
-function repr_item(s: string): string; forward;
-function cache_repr(cache: LRUCache): string; forward;
-function makeLRUCache(max_capacity: integer; store: StrArray): LRUCache;
+function makeLRUCache(max_capacity: int64; store: StrArray): LRUCache; forward;
+function new_cache(new_cache_n: int64): LRUCache; forward;
+function remove_element(remove_element_xs: StrArray; remove_element_x: string): StrArray; forward;
+function refer(refer_cache: LRUCache; refer_x: string): LRUCache; forward;
+procedure display(display_cache: LRUCache); forward;
+function repr_item(repr_item_s: string): string; forward;
+function cache_repr(cache_repr_cache: LRUCache): string; forward;
+function makeLRUCache(max_capacity: int64; store: StrArray): LRUCache;
 begin
   Result.max_capacity := max_capacity;
   Result.store := store;
 end;
-function new_cache(n: integer): LRUCache;
+function new_cache(new_cache_n: int64): LRUCache;
 var
-  new_cache_cap: integer;
+  new_cache_cap: int64;
 begin
-  if n < 0 then begin
+  if new_cache_n < 0 then begin
   panic('n should be an integer greater than 0.');
 end;
-  if n = 0 then begin
+  if new_cache_n = 0 then begin
   new_cache_cap := 2147483647;
 end else begin
-  new_cache_cap := n;
+  new_cache_cap := new_cache_n;
 end;
   exit(makeLRUCache(new_cache_cap, StrArray([])));
 end;
-function remove_element(xs: StrArray; x: string): StrArray;
+function remove_element(remove_element_xs: StrArray; remove_element_x: string): StrArray;
 var
   remove_element_res: array of string;
   remove_element_removed: boolean;
-  remove_element_i: integer;
+  remove_element_i: int64;
   remove_element_v: string;
 begin
   remove_element_res := [];
   remove_element_removed := false;
   remove_element_i := 0;
-  while remove_element_i < Length(xs) do begin
-  remove_element_v := xs[remove_element_i];
-  if (remove_element_removed = false) and (remove_element_v = x) then begin
+  while remove_element_i < Length(remove_element_xs) do begin
+  remove_element_v := remove_element_xs[remove_element_i];
+  if (remove_element_removed = false) and (remove_element_v = remove_element_x) then begin
   remove_element_removed := true;
 end else begin
   remove_element_res := concat(remove_element_res, StrArray([remove_element_v]));
@@ -123,27 +128,27 @@ end;
 end;
   exit(remove_element_res);
 end;
-function refer(cache: LRUCache; x: string): LRUCache;
+function refer(refer_cache: LRUCache; refer_x: string): LRUCache;
 var
   refer_store: array of string;
   refer_exists: boolean;
-  refer_i: integer;
+  refer_i: int64;
   refer_new_store: array of string;
-  refer_j: integer;
+  refer_j: int64;
 begin
-  refer_store := cache.store;
+  refer_store := refer_cache.store;
   refer_exists := false;
   refer_i := 0;
   while refer_i < Length(refer_store) do begin
-  if refer_store[refer_i] = x then begin
+  if refer_store[refer_i] = refer_x then begin
   refer_exists := true;
 end;
   refer_i := refer_i + 1;
 end;
   if refer_exists then begin
-  refer_store := remove_element(refer_store, x);
+  refer_store := remove_element(refer_store, refer_x);
 end else begin
-  if Length(refer_store) = cache.max_capacity then begin
+  if Length(refer_store) = refer_cache.max_capacity then begin
   refer_new_store := [];
   refer_j := 0;
   while refer_j < (Length(refer_store) - 1) do begin
@@ -153,49 +158,49 @@ end;
   refer_store := refer_new_store;
 end;
 end;
-  refer_store := concat([x], refer_store);
-  exit(makeLRUCache(cache.max_capacity, refer_store));
+  refer_store := concat([refer_x], refer_store);
+  exit(makeLRUCache(refer_cache.max_capacity, refer_store));
 end;
-procedure display(cache: LRUCache);
+procedure display(display_cache: LRUCache);
 var
-  display_i: integer;
+  display_i: int64;
 begin
   display_i := 0;
-  while display_i < Length(cache.store) do begin
-  writeln(cache.store[display_i]);
+  while display_i < Length(display_cache.store) do begin
+  writeln(display_cache.store[display_i]);
   display_i := display_i + 1;
 end;
 end;
-function repr_item(s: string): string;
+function repr_item(repr_item_s: string): string;
 var
   repr_item_all_digits: boolean;
-  repr_item_i: integer;
+  repr_item_i: int64;
   repr_item_ch: string;
 begin
   repr_item_all_digits := true;
   repr_item_i := 0;
-  while repr_item_i < Length(s) do begin
-  repr_item_ch := s[repr_item_i+1];
+  while repr_item_i < Length(repr_item_s) do begin
+  repr_item_ch := repr_item_s[repr_item_i+1];
   if (repr_item_ch < '0') or (repr_item_ch > '9') then begin
   repr_item_all_digits := false;
 end;
   repr_item_i := repr_item_i + 1;
 end;
   if repr_item_all_digits then begin
-  exit(s);
+  exit(repr_item_s);
 end;
-  exit(('''' + s) + '''');
+  exit(('''' + repr_item_s) + '''');
 end;
-function cache_repr(cache: LRUCache): string;
+function cache_repr(cache_repr_cache: LRUCache): string;
 var
   cache_repr_res: string;
-  cache_repr_i: integer;
+  cache_repr_i: int64;
 begin
-  cache_repr_res := ('LRUCache(' + IntToStr(cache.max_capacity)) + ') => [';
+  cache_repr_res := ('LRUCache(' + IntToStr(cache_repr_cache.max_capacity)) + ') => [';
   cache_repr_i := 0;
-  while cache_repr_i < Length(cache.store) do begin
-  cache_repr_res := cache_repr_res + repr_item(cache.store[cache_repr_i]);
-  if cache_repr_i < (Length(cache.store) - 1) then begin
+  while cache_repr_i < Length(cache_repr_cache.store) do begin
+  cache_repr_res := cache_repr_res + repr_item(cache_repr_cache.store[cache_repr_i]);
+  if cache_repr_i < (Length(cache_repr_cache.store) - 1) then begin
   cache_repr_res := cache_repr_res + ', ';
 end;
   cache_repr_i := cache_repr_i + 1;
@@ -226,4 +231,5 @@ end;
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

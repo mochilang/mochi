@@ -2,22 +2,22 @@
 program Main;
 uses SysUtils;
 type Entry = record
-  key: integer;
-  val: integer;
-  freq: integer;
-  order: integer;
-end;
-type LFUCache = record
-  entries: array of Entry;
-  capacity: integer;
-  hits: integer;
-  miss: integer;
-  tick: integer;
+  key: int64;
+  val: int64;
+  freq: int64;
+  order: int64;
 end;
 type EntryArray = array of Entry;
+type LFUCache = record
+  entries: array of Entry;
+  capacity: int64;
+  hits: int64;
+  miss: int64;
+  tick: int64;
+end;
 type GetResult = record
   cache: LFUCache;
-  value: integer;
+  value: int64;
   ok: boolean;
 end;
 var _nowSeed: int64 = 0;
@@ -60,6 +60,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -68,7 +74,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -78,33 +84,32 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  key: integer;
-  cache: LFUCache;
-  entries: EntryArray;
-  value: integer;
-  cap: integer;
-function makeGetResult(cache: LFUCache; value: integer; ok: boolean): GetResult; forward;
-function makeLFUCache(entries: EntryArray; capacity: integer; hits: integer; miss: integer; tick: integer): LFUCache; forward;
-function makeEntry(key: integer; val: integer; freq: integer; order: integer): Entry; forward;
-function lfu_new(cap: integer): LFUCache; forward;
-function find_entry(entries: EntryArray; key: integer): integer; forward;
-function lfu_get(cache: LFUCache; key: integer): GetResult; forward;
-function remove_lfu(entries: EntryArray): EntryArray; forward;
-function lfu_put(cache: LFUCache; key: integer; value: integer): LFUCache; forward;
-function cache_info(cache: LFUCache): string; forward;
+function makeGetResult(cache: LFUCache; value: int64; ok: boolean): GetResult; forward;
+function makeLFUCache(entries: EntryArray; capacity: int64; hits: int64; miss: int64; tick: int64): LFUCache; forward;
+function makeEntry(key: int64; val: int64; freq: int64; order: int64): Entry; forward;
+function lfu_new(lfu_new_cap: int64): LFUCache; forward;
+function find_entry(find_entry_entries: EntryArray; find_entry_key: int64): int64; forward;
+function lfu_get(lfu_get_cache: LFUCache; lfu_get_key: int64): GetResult; forward;
+function remove_lfu(remove_lfu_entries: EntryArray): EntryArray; forward;
+function lfu_put(lfu_put_cache: LFUCache; lfu_put_key: int64; lfu_put_value: int64): LFUCache; forward;
+function cache_info(cache_info_cache: LFUCache): string; forward;
 procedure main(); forward;
-function makeGetResult(cache: LFUCache; value: integer; ok: boolean): GetResult;
+function makeGetResult(cache: LFUCache; value: int64; ok: boolean): GetResult;
 begin
   Result.cache := cache;
   Result.value := value;
   Result.ok := ok;
 end;
-function makeLFUCache(entries: EntryArray; capacity: integer; hits: integer; miss: integer; tick: integer): LFUCache;
+function makeLFUCache(entries: EntryArray; capacity: int64; hits: int64; miss: int64; tick: int64): LFUCache;
 begin
   Result.entries := entries;
   Result.capacity := capacity;
@@ -112,71 +117,72 @@ begin
   Result.miss := miss;
   Result.tick := tick;
 end;
-function makeEntry(key: integer; val: integer; freq: integer; order: integer): Entry;
+function makeEntry(key: int64; val: int64; freq: int64; order: int64): Entry;
 begin
   Result.key := key;
   Result.val := val;
   Result.freq := freq;
   Result.order := order;
 end;
-function lfu_new(cap: integer): LFUCache;
+function lfu_new(lfu_new_cap: int64): LFUCache;
 begin
-  exit(makeLFUCache([], cap, 0, 0, 0));
+  exit(makeLFUCache([], lfu_new_cap, 0, 0, 0));
 end;
-function find_entry(entries: EntryArray; key: integer): integer;
+function find_entry(find_entry_entries: EntryArray; find_entry_key: int64): int64;
 var
-  find_entry_i: integer;
+  find_entry_i: int64;
   find_entry_e: Entry;
 begin
   find_entry_i := 0;
-  while find_entry_i < Length(entries) do begin
-  find_entry_e := entries[find_entry_i];
-  if find_entry_e.key = key then begin
+  while find_entry_i < Length(find_entry_entries) do begin
+  find_entry_e := find_entry_entries[find_entry_i];
+  if find_entry_e.key = find_entry_key then begin
   exit(find_entry_i);
 end;
   find_entry_i := find_entry_i + 1;
 end;
   exit(0 - 1);
 end;
-function lfu_get(cache: LFUCache; key: integer): GetResult;
+function lfu_get(lfu_get_cache: LFUCache; lfu_get_key: int64): GetResult;
 var
-  lfu_get_idx: integer;
+  lfu_get_idx: int64;
   lfu_get_new_cache: LFUCache;
   lfu_get_entries: array of Entry;
   lfu_get_e: Entry;
-  lfu_get_new_tick: integer;
+  lfu_get_new_tick: int64;
+  lfu_get_new_cache_11: LFUCache;
 begin
-  lfu_get_idx := find_entry(cache.entries, key);
+  lfu_get_idx := find_entry(lfu_get_cache.entries, lfu_get_key);
   if lfu_get_idx = (0 - 1) then begin
-  lfu_get_new_cache := makeLFUCache(cache.entries, cache.capacity, cache.hits, cache.miss + 1, cache.tick);
+  lfu_get_new_cache := makeLFUCache(lfu_get_cache.entries, lfu_get_cache.capacity, lfu_get_cache.hits, lfu_get_cache.miss + 1, lfu_get_cache.tick);
   exit(makeGetResult(lfu_get_new_cache, 0, false));
 end;
-  lfu_get_entries := cache.entries;
+  lfu_get_entries := lfu_get_cache.entries;
   lfu_get_e := lfu_get_entries[lfu_get_idx];
   lfu_get_e.freq := lfu_get_e.freq + 1;
-  lfu_get_new_tick := cache.tick + 1;
+  lfu_get_new_tick := lfu_get_cache.tick + 1;
   lfu_get_e.order := lfu_get_new_tick;
   lfu_get_entries[lfu_get_idx] := lfu_get_e;
-  lfu_get_new_cache := makeLFUCache(lfu_get_entries, cache.capacity, cache.hits + 1, cache.miss, lfu_get_new_tick);
-  exit(makeGetResult(lfu_get_new_cache, lfu_get_e.val, true));
+  lfu_get_new_cache_11 := makeLFUCache(lfu_get_entries, lfu_get_cache.capacity, lfu_get_cache.hits + 1, lfu_get_cache.miss, lfu_get_new_tick);
+  exit(makeGetResult(lfu_get_new_cache_11, lfu_get_e.val, true));
 end;
-function remove_lfu(entries: EntryArray): EntryArray;
+function remove_lfu(remove_lfu_entries: EntryArray): EntryArray;
 var
-  remove_lfu_min_idx: integer;
-  remove_lfu_i: integer;
+  remove_lfu_min_idx: int64;
+  remove_lfu_i: int64;
   remove_lfu_e: Entry;
   remove_lfu_m: Entry;
   remove_lfu_res: array of Entry;
-  remove_lfu_j: integer;
+  remove_lfu_j: int64;
 begin
-  if Length(entries) = 0 then begin
-  exit(entries);
+  if Length(remove_lfu_entries) = 0 then begin
+  exit(remove_lfu_entries);
 end;
   remove_lfu_min_idx := 0;
   remove_lfu_i := 1;
-  while remove_lfu_i < Length(entries) do begin
-  remove_lfu_e := entries[remove_lfu_i];
-  remove_lfu_m := entries[remove_lfu_min_idx];
+  while remove_lfu_i < Length(remove_lfu_entries) do begin
+  remove_lfu_e := remove_lfu_entries[remove_lfu_i];
+  remove_lfu_m := remove_lfu_entries[remove_lfu_min_idx];
   if (remove_lfu_e.freq < remove_lfu_m.freq) or ((remove_lfu_e.freq = remove_lfu_m.freq) and (remove_lfu_e.order < remove_lfu_m.order)) then begin
   remove_lfu_min_idx := remove_lfu_i;
 end;
@@ -184,44 +190,45 @@ end;
 end;
   remove_lfu_res := [];
   remove_lfu_j := 0;
-  while remove_lfu_j < Length(entries) do begin
+  while remove_lfu_j < Length(remove_lfu_entries) do begin
   if remove_lfu_j <> remove_lfu_min_idx then begin
-  remove_lfu_res := concat(remove_lfu_res, [entries[remove_lfu_j]]);
+  remove_lfu_res := concat(remove_lfu_res, [remove_lfu_entries[remove_lfu_j]]);
 end;
   remove_lfu_j := remove_lfu_j + 1;
 end;
   exit(remove_lfu_res);
 end;
-function lfu_put(cache: LFUCache; key: integer; value: integer): LFUCache;
+function lfu_put(lfu_put_cache: LFUCache; lfu_put_key: int64; lfu_put_value: int64): LFUCache;
 var
   lfu_put_entries: array of Entry;
-  lfu_put_idx: integer;
+  lfu_put_idx: int64;
   lfu_put_e: Entry;
-  lfu_put_new_tick: integer;
+  lfu_put_new_tick: int64;
+  lfu_put_new_tick_22: int64;
   lfu_put_new_entry: Entry;
 begin
-  lfu_put_entries := cache.entries;
-  lfu_put_idx := find_entry(lfu_put_entries, key);
+  lfu_put_entries := lfu_put_cache.entries;
+  lfu_put_idx := find_entry(lfu_put_entries, lfu_put_key);
   if lfu_put_idx <> (0 - 1) then begin
   lfu_put_e := lfu_put_entries[lfu_put_idx];
-  lfu_put_e.val := value;
+  lfu_put_e.val := lfu_put_value;
   lfu_put_e.freq := lfu_put_e.freq + 1;
-  lfu_put_new_tick := cache.tick + 1;
+  lfu_put_new_tick := lfu_put_cache.tick + 1;
   lfu_put_e.order := lfu_put_new_tick;
   lfu_put_entries[lfu_put_idx] := lfu_put_e;
-  exit(makeLFUCache(lfu_put_entries, cache.capacity, cache.hits, cache.miss, lfu_put_new_tick));
+  exit(makeLFUCache(lfu_put_entries, lfu_put_cache.capacity, lfu_put_cache.hits, lfu_put_cache.miss, lfu_put_new_tick));
 end;
-  if Length(lfu_put_entries) >= cache.capacity then begin
+  if Length(lfu_put_entries) >= lfu_put_cache.capacity then begin
   lfu_put_entries := remove_lfu(lfu_put_entries);
 end;
-  lfu_put_new_tick := cache.tick + 1;
-  lfu_put_new_entry := makeEntry(key, value, 1, lfu_put_new_tick);
+  lfu_put_new_tick_22 := lfu_put_cache.tick + 1;
+  lfu_put_new_entry := makeEntry(lfu_put_key, lfu_put_value, 1, lfu_put_new_tick_22);
   lfu_put_entries := concat(lfu_put_entries, [lfu_put_new_entry]);
-  exit(makeLFUCache(lfu_put_entries, cache.capacity, cache.hits, cache.miss, lfu_put_new_tick));
+  exit(makeLFUCache(lfu_put_entries, lfu_put_cache.capacity, lfu_put_cache.hits, lfu_put_cache.miss, lfu_put_new_tick_22));
 end;
-function cache_info(cache: LFUCache): string;
+function cache_info(cache_info_cache: LFUCache): string;
 begin
-  exit(((((((('CacheInfo(hits=' + IntToStr(cache.hits)) + ', misses=') + IntToStr(cache.miss)) + ', capacity=') + IntToStr(cache.capacity)) + ', current_size=') + IntToStr(Length(cache.entries))) + ')');
+  exit(((((((('CacheInfo(hits=' + IntToStr(cache_info_cache.hits)) + ', misses=') + IntToStr(cache_info_cache.miss)) + ', capacity=') + IntToStr(cache_info_cache.capacity)) + ', current_size=') + IntToStr(Length(cache_info_cache.entries))) + ')');
 end;
 procedure main();
 var
@@ -282,4 +289,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

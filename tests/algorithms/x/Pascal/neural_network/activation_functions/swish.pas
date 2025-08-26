@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,6 +65,10 @@ begin
     if i < High(xs) then write(', ');
   end;
   writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
 end;
 function list_real_to_str(xs: array of real): string;
 var i: integer;
@@ -87,7 +97,7 @@ function exp_approx(exp_approx_x: real): real;
 var
   exp_approx_sum: real;
   exp_approx_term: real;
-  exp_approx_i: integer;
+  exp_approx_i: int64;
 begin
   exp_approx_sum := 1;
   exp_approx_term := 1;
@@ -102,7 +112,7 @@ end;
 function sigmoid(sigmoid_vector: RealArray): RealArray;
 var
   sigmoid_result_: array of real;
-  sigmoid_i: integer;
+  sigmoid_i: int64;
   sigmoid_v: real;
   sigmoid_s: real;
 begin
@@ -119,7 +129,7 @@ end;
 function swish(swish_vector: RealArray; swish_beta: real): RealArray;
 var
   swish_result_: array of real;
-  swish_i: integer;
+  swish_i: int64;
   swish_v: real;
   swish_s: real;
 begin
@@ -150,7 +160,7 @@ end;
 end;
 function approx_equal_list(approx_equal_list_a: RealArray; approx_equal_list_b: RealArray; approx_equal_list_eps: real): boolean;
 var
-  approx_equal_list_i: integer;
+  approx_equal_list_i: int64;
 begin
   if Length(approx_equal_list_a) <> Length(approx_equal_list_b) then begin
   exit(false);
@@ -204,4 +214,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

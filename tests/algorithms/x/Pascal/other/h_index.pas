@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -60,59 +66,56 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  end_: integer;
-  citations: IntArray;
-  xs: IntArray;
-  left_half: IntArray;
-  start: integer;
-  right_half: IntArray;
-  array_: IntArray;
-function subarray(xs: IntArray; start: integer; subarray_end_: integer): IntArray; forward;
-function merge(left_half: IntArray; right_half: IntArray): IntArray; forward;
+function subarray(subarray_xs: IntArray; subarray_start: int64; subarray_end_: int64): IntArray; forward;
+function merge(merge_left_half: IntArray; merge_right_half: IntArray): IntArray; forward;
 function merge_sort(merge_sort_array_: IntArray): IntArray; forward;
-function h_index(citations: IntArray): integer; forward;
-function subarray(xs: IntArray; start: integer; subarray_end_: integer): IntArray;
+function h_index(h_index_citations: IntArray): int64; forward;
+function subarray(subarray_xs: IntArray; subarray_start: int64; subarray_end_: int64): IntArray;
 var
-  subarray_result_: array of integer;
-  subarray_k: integer;
+  subarray_result_: array of int64;
+  subarray_k: int64;
 begin
   subarray_result_ := [];
-  subarray_k := start;
-  while subarray_k < end_ do begin
-  subarray_result_ := concat(subarray_result_, IntArray([xs[subarray_k]]));
+  subarray_k := subarray_start;
+  while subarray_k < subarray_end_ do begin
+  subarray_result_ := concat(subarray_result_, IntArray([subarray_xs[subarray_k]]));
   subarray_k := subarray_k + 1;
 end;
   exit(subarray_result_);
 end;
-function merge(left_half: IntArray; right_half: IntArray): IntArray;
+function merge(merge_left_half: IntArray; merge_right_half: IntArray): IntArray;
 var
-  merge_result_: array of integer;
-  merge_i: integer;
-  merge_j: integer;
+  merge_result_: array of int64;
+  merge_i: int64;
+  merge_j: int64;
 begin
   merge_result_ := [];
   merge_i := 0;
   merge_j := 0;
-  while (merge_i < Length(left_half)) and (merge_j < Length(right_half)) do begin
-  if left_half[merge_i] < right_half[merge_j] then begin
-  merge_result_ := concat(merge_result_, IntArray([left_half[merge_i]]));
+  while (merge_i < Length(merge_left_half)) and (merge_j < Length(merge_right_half)) do begin
+  if merge_left_half[merge_i] < merge_right_half[merge_j] then begin
+  merge_result_ := concat(merge_result_, IntArray([merge_left_half[merge_i]]));
   merge_i := merge_i + 1;
 end else begin
-  merge_result_ := concat(merge_result_, IntArray([right_half[merge_j]]));
+  merge_result_ := concat(merge_result_, IntArray([merge_right_half[merge_j]]));
   merge_j := merge_j + 1;
 end;
 end;
-  while merge_i < Length(left_half) do begin
-  merge_result_ := concat(merge_result_, IntArray([left_half[merge_i]]));
+  while merge_i < Length(merge_left_half) do begin
+  merge_result_ := concat(merge_result_, IntArray([merge_left_half[merge_i]]));
   merge_i := merge_i + 1;
 end;
-  while merge_j < Length(right_half) do begin
-  merge_result_ := concat(merge_result_, IntArray([right_half[merge_j]]));
+  while merge_j < Length(merge_right_half) do begin
+  merge_result_ := concat(merge_result_, IntArray([merge_right_half[merge_j]]));
   merge_j := merge_j + 1;
 end;
   exit(merge_result_);
@@ -122,34 +125,34 @@ var
   merge_sort_middle: integer;
   merge_sort_left_half: IntArray;
   merge_sort_right_half: IntArray;
-  merge_sort_sorted_left: array of integer;
-  merge_sort_sorted_right: array of integer;
+  merge_sort_sorted_left: array of int64;
+  merge_sort_sorted_right: array of int64;
 begin
-  if Length(array_) <= 1 then begin
-  exit(array_);
+  if Length(merge_sort_array_) <= 1 then begin
+  exit(merge_sort_array_);
 end;
-  merge_sort_middle := Length(array_) div 2;
-  merge_sort_left_half := subarray(array_, 0, merge_sort_middle);
-  merge_sort_right_half := subarray(array_, merge_sort_middle, Length(array_));
+  merge_sort_middle := _floordiv(Length(merge_sort_array_), 2);
+  merge_sort_left_half := subarray(merge_sort_array_, 0, merge_sort_middle);
+  merge_sort_right_half := subarray(merge_sort_array_, merge_sort_middle, Length(merge_sort_array_));
   merge_sort_sorted_left := merge_sort(merge_sort_left_half);
   merge_sort_sorted_right := merge_sort(merge_sort_right_half);
   exit(merge(merge_sort_sorted_left, merge_sort_sorted_right));
 end;
-function h_index(citations: IntArray): integer;
+function h_index(h_index_citations: IntArray): int64;
 var
-  h_index_idx: integer;
+  h_index_idx: int64;
   h_index_sorted: IntArray;
   h_index_n: integer;
-  h_index_i: integer;
+  h_index_i: int64;
 begin
   h_index_idx := 0;
-  while h_index_idx < Length(citations) do begin
-  if citations[h_index_idx] < 0 then begin
+  while h_index_idx < Length(h_index_citations) do begin
+  if h_index_citations[h_index_idx] < 0 then begin
   panic('The citations should be a list of non negative integers.');
 end;
   h_index_idx := h_index_idx + 1;
 end;
-  h_index_sorted := merge_sort(citations);
+  h_index_sorted := merge_sort(h_index_citations);
   h_index_n := Length(h_index_sorted);
   h_index_i := 0;
   while h_index_i < h_index_n do begin
@@ -174,4 +177,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

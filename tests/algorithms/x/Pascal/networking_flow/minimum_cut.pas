@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type BoolArray = array of boolean;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
@@ -44,6 +44,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -52,7 +58,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -62,7 +68,11 @@ begin
   end;
   writeln(']');
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -89,16 +99,16 @@ var
   bench_memdiff_0: int64;
   test_graph: array of IntArray;
   result_: IntArrayArray;
-function bfs(bfs_graph: IntArrayArray; bfs_s: integer; bfs_t: integer; bfs_parent: IntArray): boolean; forward;
-function mincut(mincut_graph: IntArrayArray; mincut_source: integer; mincut_sink: integer): IntArrayArray; forward;
-function bfs(bfs_graph: IntArrayArray; bfs_s: integer; bfs_t: integer; bfs_parent: IntArray): boolean;
+function bfs(bfs_graph: IntArrayArray; bfs_s: int64; bfs_t: int64; bfs_parent: IntArray): boolean; forward;
+function mincut(mincut_graph: IntArrayArray; mincut_source: int64; mincut_sink: int64): IntArrayArray; forward;
+function bfs(bfs_graph: IntArrayArray; bfs_s: int64; bfs_t: int64; bfs_parent: IntArray): boolean;
 var
   bfs_visited: array of boolean;
-  bfs_i: integer;
-  bfs_queue: array of integer;
-  bfs_head: integer;
-  bfs_u: integer;
-  bfs_ind: integer;
+  bfs_i: int64;
+  bfs_queue: array of int64;
+  bfs_head: int64;
+  bfs_u: int64;
+  bfs_ind: int64;
 begin
   bfs_visited := [];
   bfs_i := 0;
@@ -124,20 +134,20 @@ end;
 end;
   exit(bfs_visited[bfs_t]);
 end;
-function mincut(mincut_graph: IntArrayArray; mincut_source: integer; mincut_sink: integer): IntArrayArray;
+function mincut(mincut_graph: IntArrayArray; mincut_source: int64; mincut_sink: int64): IntArrayArray;
 var
   mincut_g: array of IntArray;
-  mincut_parent: array of integer;
-  mincut_i: integer;
+  mincut_parent: array of int64;
+  mincut_i: int64;
   mincut_temp: array of IntArray;
-  mincut_row: array of integer;
-  mincut_j: integer;
-  mincut_path_flow: integer;
-  mincut_s: integer;
-  mincut_p: integer;
-  mincut_cap: integer;
-  mincut_v: integer;
-  mincut_u: integer;
+  mincut_row: array of int64;
+  mincut_j: int64;
+  mincut_path_flow: int64;
+  mincut_s: int64;
+  mincut_p: int64;
+  mincut_cap: int64;
+  mincut_v: int64;
+  mincut_u: int64;
   mincut_res: array of IntArray;
 begin
   mincut_g := mincut_graph;
@@ -206,4 +216,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

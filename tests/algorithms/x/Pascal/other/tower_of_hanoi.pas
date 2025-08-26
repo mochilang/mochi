@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,30 +65,29 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  height: integer;
-  to_pole: string;
-  with_pole: string;
-  from_pole: string;
-  fp: string;
-  tp: string;
-procedure move_tower(height: integer; from_pole: string; to_pole: string; with_pole: string); forward;
-procedure move_disk(fp: string; tp: string); forward;
-procedure move_tower(height: integer; from_pole: string; to_pole: string; with_pole: string);
+  height: int64;
+procedure move_tower(move_tower_height: int64; move_tower_from_pole: string; move_tower_to_pole: string; move_tower_with_pole: string); forward;
+procedure move_disk(move_disk_fp: string; move_disk_tp: string); forward;
+procedure move_tower(move_tower_height: int64; move_tower_from_pole: string; move_tower_to_pole: string; move_tower_with_pole: string);
 begin
-  if height >= 1 then begin
-  move_tower(height - 1, from_pole, with_pole, to_pole);
-  move_disk(from_pole, to_pole);
-  move_tower(height - 1, with_pole, to_pole, from_pole);
+  if move_tower_height >= 1 then begin
+  move_tower(move_tower_height - 1, move_tower_from_pole, move_tower_with_pole, move_tower_to_pole);
+  move_disk(move_tower_from_pole, move_tower_to_pole);
+  move_tower(move_tower_height - 1, move_tower_with_pole, move_tower_to_pole, move_tower_from_pole);
 end;
 end;
-procedure move_disk(fp: string; tp: string);
+procedure move_disk(move_disk_fp: string; move_disk_tp: string);
 begin
-  writeln((('moving disk from ' + fp) + ' to ') + tp);
+  writeln((('moving disk from ' + move_disk_fp) + ' to ') + move_disk_tp);
 end;
 begin
   init_now();
@@ -97,4 +102,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.
