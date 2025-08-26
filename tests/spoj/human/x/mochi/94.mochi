@@ -1,0 +1,74 @@
+// Solution for SPOJ MAYA - Numeral System of the Maya
+// https://www.spoj.com/problems/MAYA/
+
+fun splitSpaces(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" {
+    res = append(res, cur)
+  }
+  return res
+}
+
+fun parseDigit(line: string): int {
+  if line == "S" {
+    return 0
+  }
+  let parts = splitSpaces(line)
+  var value = 0
+  var i = 0
+  while i < len(parts) {
+    let p = parts[i]
+    let first = substring(p, 0, 1)
+    if first == "-" {
+      value = value + 5
+    } else {
+      value = value + len(p)
+    }
+    i = i + 1
+  }
+  return value
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" {
+      continue
+    }
+    let n = line as int
+    if n == 0 {
+      break
+    }
+    var weights: list<int> = [1, 20, 360]
+    var i = 3
+    while i < n {
+      weights = append(weights, (weights[i-1] as int) * 20)
+      i = i + 1
+    }
+    var result = 0
+    var idx = 0
+    while idx < n {
+      let digitLine = input()
+      let d = parseDigit(digitLine)
+      result = result + d * (weights[n - 1 - idx] as int)
+      idx = idx + 1
+    }
+    print(str(result))
+  }
+}
+
+main()
