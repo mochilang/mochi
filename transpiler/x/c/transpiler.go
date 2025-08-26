@@ -3546,6 +3546,22 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 	if vr, ok := i.Target.(*VarRef); ok && isMapVar(vr.Name) {
 		keyT := mapKeyTypes[vr.Name]
 		valT := mapValTypes[vr.Name]
+		if keyT == "" && valT == "" {
+			switch varTypes[vr.Name] {
+			case "MapSI":
+				keyT = "const char*"
+				valT = "int"
+			case "MapIS":
+				keyT = "int"
+				valT = "const char*"
+			case "MapII":
+				keyT = "int"
+				valT = "int"
+			case "MapSS":
+				keyT = "const char*"
+				valT = "const char*"
+			}
+		}
 		if keyT == "const char*" && valT == "int" {
 			needMapGetSI = true
 			funcReturnTypes["map_get_si"] = "int"
@@ -4618,7 +4634,7 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			io.WriteString(w, ")")
 			return
 		}
-		if c.Func == "parseIntStr" && (len(c.Args) == 1 || len(c.Args) == 2) {
+		if c.Func == "parseIntStr" && funcParamTypes["parseIntStr"] == nil && (len(c.Args) == 1 || len(c.Args) == 2) {
 			needParseIntStr = true
 			funcReturnTypes["parseIntStr"] = "int"
 			io.WriteString(w, "parseIntStr(")
@@ -8036,6 +8052,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 				needMapGetSStruct[valT] = true
 			}
+			declType = varTypes[s.Let.Name]
 			varTypes[s.Let.Name] = declType
 			return &RawStmt{Code: buf.String()}, nil
 		}
@@ -11105,7 +11122,7 @@ func convertUnary(u *parser.Unary) Expr {
 			funcReturnTypes["repeat"] = "const char*"
 			return &CallExpr{Func: "repeat", Args: []Expr{arg0, arg1}}
 		}
-		if call.Func == "parseIntStr" && (len(call.Args) == 1 || len(call.Args) == 2) {
+		if call.Func == "parseIntStr" && funcParamTypes["parseIntStr"] == nil && (len(call.Args) == 1 || len(call.Args) == 2) {
 			arg0 := convertExpr(call.Args[0])
 			var arg1 Expr
 			if len(call.Args) == 1 {
