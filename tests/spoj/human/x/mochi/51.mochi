@@ -1,0 +1,85 @@
+# Solution for SPOJ TOUR - Fake tournament
+# https://www.spoj.com/problems/TOUR/
+
+fun readInts(line: string): list<int> {
+  var nums: list<int> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        nums = append(nums, cur as int)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    nums = append(nums, cur as int)
+  }
+  return nums
+}
+
+let t = int(input())
+for _ in 0..t {
+  let n = int(input())
+  var better: list<list<int>> = []
+  var beats: list<list<int>> = []
+  var i = 0
+  while i < n {
+    better = append(better, [] as list<int>)
+    beats = append(beats, [] as list<int>)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    let nums = readInts(input())
+    let m = nums[0]
+    var j = 0
+    while j < m {
+      let opp = nums[j+1] - 1
+      better[i] = append(better[i], opp)
+      beats[opp] = append(beats[opp], i)
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var ans = 0
+  var x = 0
+  while x < n {
+    var visited: list<bool> = []
+    var k = 0
+    while k < n {
+      visited = append(visited, false)
+      k = k + 1
+    }
+    var queue: list<int> = [x]
+    var qi = 0
+    visited[x] = true
+    while qi < len(queue) {
+      let v = queue[qi]
+      qi = qi + 1
+      for u in beats[v] {
+        if visited[u] == false {
+          visited[u] = true
+          queue = append(queue, u)
+        }
+      }
+    }
+    var ok = true
+    for y in better[x] {
+      if visited[y] == false {
+        ok = false
+        break
+      }
+    }
+    if ok {
+      ans = ans + 1
+    }
+    x = x + 1
+  }
+  print(ans)
+}
