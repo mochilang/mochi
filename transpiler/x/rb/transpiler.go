@@ -2041,7 +2041,7 @@ func (i *IntLit) emit(e *emitter) { fmt.Fprintf(e.w, "%d", i.Value) }
 type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(e *emitter) {
-	s := strconv.FormatFloat(f.Value, 'g', -1, 64)
+	s := strconv.FormatFloat(f.Value, 'g', 16, 64)
 	if !strings.ContainsAny(s, ".eE") {
 		s += ".0"
 	}
@@ -2334,6 +2334,41 @@ func (b *BinaryExpr) emit(e *emitter) {
 		io.WriteString(e.w, ", ")
 		b.Right.emit(e)
 		io.WriteString(e.w, ")")
+	case "*":
+		var factors []Expr
+		var collect func(Expr)
+		collect = func(ex Expr) {
+			if be, ok := ex.(*BinaryExpr); ok && be.Op == "*" {
+				collect(be.Left)
+				collect(be.Right)
+			} else {
+				factors = append(factors, ex)
+			}
+		}
+		collect(b.Left)
+		collect(b.Right)
+		var others, floats []Expr
+		for _, f := range factors {
+			switch v := f.(type) {
+			case *FloatLit, *IntLit:
+				floats = append(floats, f)
+			case *Ident:
+				if strings.HasPrefix(v.Name, "$") {
+					floats = append(floats, f)
+				} else {
+					others = append(others, f)
+				}
+			default:
+				others = append(others, f)
+			}
+		}
+		factors = append(others, floats...)
+		for i, f := range factors {
+			if i > 0 {
+				io.WriteString(e.w, " * ")
+			}
+			f.emit(e)
+		}
 	default:
 		b.Left.emit(e)
 		io.WriteString(e.w, " "+b.Op+" ")
