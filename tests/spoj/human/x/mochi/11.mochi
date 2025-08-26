@@ -1,0 +1,39 @@
+// Solution for SPOJ FCTRL - Factorial
+// https://www.spoj.com/problems/FCTRL/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun trailingZeros(n: int): int {
+  var count = 0
+  var d = 5
+  while d <= n {
+    count = count + n / d
+    d = d * 5
+  }
+  return count
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  for _ in 0..t {
+    let nStr = input()
+    let n = parseIntStr(nStr)
+    print(trailingZeros(n))
+  }
+}
+
+main()
