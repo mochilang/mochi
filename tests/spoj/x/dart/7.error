@@ -1,0 +1,8 @@
+parse: error[P001]: /workspace/mochi/tests/spoj/x/mochi/7.mochi:206:5: unexpected token "while" (expected "}")
+  --> /workspace/mochi/tests/spoj/x/mochi/7.mochi:206:5
+
+206 |     while head < len(queue) {
+    |     ^
+
+help:
+  Check for a missing `{` or `}` to close the block.

@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -98,7 +99,29 @@ func runSpojCase(t *testing.T, idx string) {
 
 func TestDartTranspiler_Spoj_Golden(t *testing.T) {
 	t.Cleanup(updateSpoj)
-	runSpojCase(t, "1")
+	from, to := 1, 1
+	if v := os.Getenv("FROM_INDEX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			from = n
+		} else {
+			t.Fatalf("invalid FROM_INDEX: %v", v)
+		}
+	}
+	if v := os.Getenv("TO_INDEX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n >= from {
+			to = n
+		} else {
+			t.Fatalf("invalid TO_INDEX: %v", v)
+		}
+	} else {
+		to = from
+	}
+	for i := from; i <= to; i++ {
+		idx := fmt.Sprintf("%d", i)
+		if ok := t.Run(idx, func(t *testing.T) { runSpojCase(t, idx) }); !ok {
+			t.Fatalf("first failing program: %s", idx)
+		}
+	}
 }
 
 func updateSpoj() {
