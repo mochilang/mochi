@@ -1,0 +1,88 @@
+// Solution for SPOJ TREE1 - Tree
+// https://www.spoj.com/problems/TREE1/
+
+var comb: list<list<bigint>>
+
+type Res { ways: bigint, size: int }
+
+fun initComb() {
+  comb = []
+  var i = 0
+  while i <= 30 {
+    var row: list<bigint> = []
+    var j = 0
+    while j <= i {
+      if j == 0 || j == i {
+        row = append(row, 1 as bigint)
+      } else {
+        row = append(row, comb[i-1][j-1] + comb[i-1][j])
+      }
+      j = j + 1
+    }
+    comb = append(comb, row)
+    i = i + 1
+  }
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = split(line)
+  var arr: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    arr = append(arr, parts[i] as int)
+    i = i + 1
+  }
+  return arr
+}
+
+fun dfs(arr: list<int>): Res {
+  if len(arr) == 0 { return Res{ ways: 1, size: 0 } }
+  let root = arr[0]
+  var idx = 1
+  while idx < len(arr) && arr[idx] < root {
+    idx = idx + 1
+  }
+  let leftArr = arr[1:idx]
+  let rightArr = arr[idx:len(arr)]
+  let leftRes = dfs(leftArr)
+  let rightRes = dfs(rightArr)
+  let totalSize = leftRes.size + rightRes.size
+  let ways = comb[totalSize][leftRes.size] * leftRes.ways * rightRes.ways
+  return Res{ ways: ways, size: totalSize + 1 }
+}
+
+fun main() {
+  let dLine = input()
+  if dLine == "" { return }
+  let d = dLine as int
+  initComb()
+  var case = 0
+  while case < d {
+    let nLine = input()
+    let n = nLine as int
+    let seqLine = input()
+    let arr = parseInts(seqLine)
+    let res = dfs(arr)
+    print(str(res.ways))
+    case = case + 1
+  }
+}
+
+main()
