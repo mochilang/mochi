@@ -719,12 +719,11 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<any>")
 	p.addInclude("<type_traits>")
 	p.addInclude("<limits>")
-	if p.UseBigInt || p.UseBigRat || p.UseParseIntStr {
+	if p.UseBigInt || p.UseBigRat {
 		// Big integer support relies on Boost.Multiprecision headers.
-		// Some programs only require string-to-integer parsing via
-		// `_parse_int_str` which also uses `cpp_int` internally. In that
-		// case `UseBigInt` remains false, so include the header whenever
-		// `UseParseIntStr` is enabled as well.
+		// When only string-to-integer parsing is required and big
+		// integers are otherwise unused we skip pulling in Boost to
+		// avoid an unnecessary dependency.
 		fmt.Fprintln(w, "#include <boost/multiprecision/cpp_int.hpp>")
 		fmt.Fprintln(w, "using cpp_int = boost::multiprecision::cpp_int;")
 	}
@@ -943,24 +942,44 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseParseIntStr {
-		fmt.Fprintln(w, "static cpp_int _parse_int_str(const std::string& s, cpp_int base) {")
-		fmt.Fprintln(w, "    if(s.empty()) return 0;")
-		fmt.Fprintln(w, "    long b = base.convert_to<long>();")
-		fmt.Fprintln(w, "    cpp_int r = 0;")
-		fmt.Fprintln(w, "    bool neg = false; size_t i = 0;")
-		fmt.Fprintln(w, "    if(s[0]=='-'){ neg = true; i = 1; }")
-		fmt.Fprintln(w, "    for(; i < s.size(); ++i){")
-		fmt.Fprintln(w, "        char c = s[i];")
-		fmt.Fprintln(w, "        int digit = 0;")
-		fmt.Fprintln(w, "        if(c >= '0' && c <= '9') digit = c - '0';")
-		fmt.Fprintln(w, "        else if(c >= 'a' && c <= 'z') digit = c - 'a' + 10;")
-		fmt.Fprintln(w, "        else if(c >= 'A' && c <= 'Z') digit = c - 'A' + 10;")
-		fmt.Fprintln(w, "        else continue;")
-		fmt.Fprintln(w, "        r *= b;")
-		fmt.Fprintln(w, "        r += digit;")
-		fmt.Fprintln(w, "    }")
-		fmt.Fprintln(w, "    return neg ? -r : r;")
-		fmt.Fprintln(w, "}")
+		if p.UseBigInt {
+			fmt.Fprintln(w, "static cpp_int _parse_int_str(const std::string& s, cpp_int base) {")
+			fmt.Fprintln(w, "    if(s.empty()) return 0;")
+			fmt.Fprintln(w, "    long b = base.convert_to<long>();")
+			fmt.Fprintln(w, "    cpp_int r = 0;")
+			fmt.Fprintln(w, "    bool neg = false; size_t i = 0;")
+			fmt.Fprintln(w, "    if(s[0]=='-'){ neg = true; i = 1; }")
+			fmt.Fprintln(w, "    for(; i < s.size(); ++i){")
+			fmt.Fprintln(w, "        char c = s[i];")
+			fmt.Fprintln(w, "        int digit = 0;")
+			fmt.Fprintln(w, "        if(c >= '0' && c <= '9') digit = c - '0';")
+			fmt.Fprintln(w, "        else if(c >= 'a' && c <= 'z') digit = c - 'a' + 10;")
+			fmt.Fprintln(w, "        else if(c >= 'A' && c <= 'Z') digit = c - 'A' + 10;")
+			fmt.Fprintln(w, "        else continue;")
+			fmt.Fprintln(w, "        r *= b;")
+			fmt.Fprintln(w, "        r += digit;")
+			fmt.Fprintln(w, "    }")
+			fmt.Fprintln(w, "    return neg ? -r : r;")
+			fmt.Fprintln(w, "}")
+		} else {
+			fmt.Fprintln(w, "static int64_t _parse_int_str(const std::string& s, int64_t base) {")
+			fmt.Fprintln(w, "    if(s.empty()) return 0;")
+			fmt.Fprintln(w, "    int64_t r = 0;")
+			fmt.Fprintln(w, "    bool neg = false; size_t i = 0;")
+			fmt.Fprintln(w, "    if(s[0]=='-'){ neg = true; i = 1; }")
+			fmt.Fprintln(w, "    for(; i < s.size(); ++i){")
+			fmt.Fprintln(w, "        char c = s[i];")
+			fmt.Fprintln(w, "        int digit = 0;")
+			fmt.Fprintln(w, "        if(c >= '0' && c <= '9') digit = c - '0';")
+			fmt.Fprintln(w, "        else if(c >= 'a' && c <= 'z') digit = c - 'a' + 10;")
+			fmt.Fprintln(w, "        else if(c >= 'A' && c <= 'Z') digit = c - 'A' + 10;")
+			fmt.Fprintln(w, "        else continue;")
+			fmt.Fprintln(w, "        r *= base;")
+			fmt.Fprintln(w, "        r += digit;")
+			fmt.Fprintln(w, "    }")
+			fmt.Fprintln(w, "    return neg ? -r : r;")
+			fmt.Fprintln(w, "}")
+		}
 	}
 	if p.UseBigRat {
 		fmt.Fprintln(w, "struct BigRat {")
@@ -6569,6 +6588,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return &CallExpr{Name: "_denom", Args: []Expr{arg}}, nil
 			}
 		case "parseIntStr":
+			if findFunc("parseIntStr") != nil {
+				break
+			}
 			if len(p.Call.Args) == 1 || len(p.Call.Args) == 2 {
 				v0, err := convertExpr(p.Call.Args[0])
 				if err != nil {
@@ -6583,7 +6605,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					v1 = newCastExpr(v1, "int64_t")
 				}
 				usesParseIntStr = true
-				useBigInt = true
 				return &CallExpr{Name: "_parse_int_str", Args: []Expr{v0, v1}}, nil
 			}
 		case "toi":
@@ -8497,7 +8518,10 @@ func exprType(e Expr) string {
 		case "_num", "_denom":
 			return "cpp_int"
 		case "_parse_int_str":
-			return "cpp_int"
+			if useBigInt {
+				return "cpp_int"
+			}
+			return "int64_t"
 		case "_index_of":
 			return "int64_t"
 		case "_repeat":
