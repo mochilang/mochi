@@ -115,6 +115,12 @@ func sanitizeName(name string) string {
 	case "sort":
 		// avoid clashing with Racket's built-in sort function
 		return "sort_"
+	case "min":
+		// avoid clashing with Racket's built-in min function
+		return "min_"
+	case "max":
+		// avoid clashing with Racket's built-in max function
+		return "max_"
 	case "sublist":
 		// avoid clashing with helper `sublist` defined in the prelude
 		return "sublist_"
