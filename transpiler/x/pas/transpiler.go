@@ -459,6 +459,24 @@ func (f *FunDecl) emit(out io.Writer) {
 			}
 		}
 	}
+	prevTypes := currentVarTypes
+	localTypes := make(map[string]string)
+	for k, v := range currentVarTypes {
+		localTypes[k] = v
+	}
+	for _, p := range f.Params {
+		if idx := strings.Index(p, ":"); idx != -1 {
+			name := strings.TrimSpace(p[:idx])
+			typ := strings.TrimSpace(p[idx+1:])
+			localTypes[name] = pasType(typ)
+		}
+	}
+	for _, v := range f.Locals {
+		if v.Type != "" {
+			localTypes[v.Name] = v.Type
+		}
+	}
+	currentVarTypes = localTypes
 	for _, s := range f.Body {
 		if nf, ok := s.(*NestedFunDecl); ok {
 			io.WriteString(out, "  ")
@@ -474,6 +492,7 @@ func (f *FunDecl) emit(out io.Writer) {
 		s.emit(out)
 		io.WriteString(out, "\n")
 	}
+	currentVarTypes = prevTypes
 	io.WriteString(out, "end;\n")
 }
 
@@ -755,7 +774,19 @@ func (l *ListLit) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		e.emit(w)
+		t := inferType(e)
+		switch {
+		case isArrayType(t) || isRecordType(t) || strings.HasPrefix(t, "specialize TFPGMap"):
+			io.WriteString(w, "Variant(PtrUInt(")
+			e.emit(w)
+			io.WriteString(w, "))")
+		case t == "Variant" || t == "any":
+			io.WriteString(w, "Variant(")
+			e.emit(w)
+			io.WriteString(w, ")")
+		default:
+			e.emit(w)
+		}
 	}
 	io.WriteString(w, "]")
 }
@@ -970,7 +1001,14 @@ type IndexExpr struct {
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
-	i.Target.emit(w)
+	t := inferType(i.Target)
+	if t == "Variant" {
+		io.WriteString(w, "specialize TFPGMap<string, Variant>(pointer(PtrUInt(")
+		i.Target.emit(w)
+		io.WriteString(w, ")))")
+	} else {
+		i.Target.emit(w)
+	}
 	io.WriteString(w, "[")
 	i.Index.emit(w)
 	if i.String {
@@ -4677,6 +4715,15 @@ func typeFromRef(tr *parser.TypeRef) string {
 	}
 	if tr.Generic != nil && tr.Generic.Name == "list" && len(tr.Generic.Args) == 1 {
 		elem := typeFromRef(tr.Generic.Args[0])
+		if i := strings.LastIndex(elem, "_"); i != -1 {
+			suf := elem[i+1:]
+			switch suf {
+			case "any":
+				elem = "Variant"
+			case "Variant", "int64", "string", "boolean", "real":
+				elem = suf
+			}
+		}
 		if elem == "any" {
 			elem = "Variant"
 		}
@@ -4689,6 +4736,24 @@ func typeFromRef(tr *parser.TypeRef) string {
 	if tr.Generic != nil && tr.Generic.Name == "map" && len(tr.Generic.Args) == 2 {
 		key := typeFromRef(tr.Generic.Args[0])
 		val := typeFromRef(tr.Generic.Args[1])
+		if i := strings.LastIndex(key, "_"); i != -1 {
+			suf := key[i+1:]
+			switch suf {
+			case "any":
+				key = "Variant"
+			case "Variant", "int64", "string", "boolean", "real":
+				key = suf
+			}
+		}
+		if i := strings.LastIndex(val, "_"); i != -1 {
+			suf := val[i+1:]
+			switch suf {
+			case "any":
+				val = "Variant"
+			case "Variant", "int64", "string", "boolean", "real":
+				val = suf
+			}
+		}
 		if strings.HasPrefix(val, "array of ") {
 			alias := currProg.addArrayAlias(strings.TrimPrefix(val, "array of "))
 			val = alias
@@ -4741,6 +4806,9 @@ func typeFromSimple(s string) string {
 	case "bigrat":
 		currProg.UseBigRat = true
 		return "BigRat"
+	case "any":
+		currProg.UseVariants = true
+		return "Variant"
 	default:
 		return sanitize(s)
 	}
@@ -6361,6 +6429,20 @@ func (p *Program) addArrayAlias(elem string) string {
 	if elem == "integer" {
 		elem = "int64"
 	}
+	// strip function name prefixes like "foo_bar" and canonicalise
+	if i := strings.LastIndex(elem, "_"); i != -1 {
+		suf := elem[i+1:]
+		switch suf {
+		case "any", "Variant", "int64", "string", "boolean", "real":
+			elem = suf
+		}
+	}
+	if elem == "any" {
+		elem = "Variant"
+	}
+	for strings.HasPrefix(elem, "array of ") {
+		elem = strings.TrimPrefix(elem, "array of ")
+	}
 	if p.ArrayAliases == nil {
 		p.ArrayAliases = make(map[string]string)
 	}
@@ -6372,9 +6454,6 @@ func (p *Program) addArrayAlias(elem string) string {
 	}
 	if name, ok := p.LateAliases[elem]; ok {
 		return name
-	}
-	for strings.HasPrefix(elem, "array of ") {
-		elem = strings.TrimPrefix(elem, "array of ")
 	}
 	alias := ""
 	switch elem {
