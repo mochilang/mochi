@@ -1,0 +1,161 @@
+// Solution for SPOJ SCYPHER - Substitution Cipher
+// https://www.spoj.com/problems/SCYPHER/
+
+let letters = {
+  "a":0,"b":1,"c":2,"d":3,"e":4,
+  "f":5,"g":6,"h":7,"i":8,"j":9,
+  "k":10,"l":11,"m":12,"n":13,"o":14,
+  "p":15,"q":16,"r":17,"s":18,"t":19,
+  "u":20,"v":21,"w":22,"x":23,"y":24,
+  "z":25,
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    let line = input()
+    var idx = 0
+    var aStr = ""
+    while idx < len(line) && line[idx:idx+1] != " " {
+      aStr = aStr + line[idx:idx+1]
+      idx = idx + 1
+    }
+    idx = idx + 1
+    var kStr = ""
+    while idx < len(line) {
+      kStr = kStr + line[idx:idx+1]
+      idx = idx + 1
+    }
+    let A = int(aStr)
+    let K = int(kStr)
+    var words: list<string> = []
+    var i = 0
+    while i < K {
+      words = append(words, input())
+      i = i + 1
+    }
+    let message = input()
+
+    var adj: list<list<bool>> = []
+    var indeg: list<int> = []
+    i = 0
+    while i < A {
+      var row: list<bool> = []
+      var j = 0
+      while j < A {
+        row = append(row, false)
+        j = j + 1
+      }
+      adj = append(adj, row)
+      indeg = append(indeg, 0)
+      i = i + 1
+    }
+    var ok = true
+    i = 0
+    while i + 1 < K && ok {
+      let s = words[i]
+      let tword = words[i+1]
+      var j = 0
+      var added = false
+      while j < len(s) && j < len(tword) {
+        let c1 = s[j:j+1]
+        let c2 = tword[j:j+1]
+        if c1 != c2 {
+          let u = letters[c1] as int
+          let v = letters[c2] as int
+          if !adj[u][v] {
+            adj[u][v] = true
+            indeg[v] = indeg[v] + 1
+          }
+          added = true
+          break
+        }
+        j = j + 1
+      }
+      if !added {
+        if len(s) > len(tword) { ok = false }
+      }
+      i = i + 1
+    }
+
+    if ok {
+      var used: list<bool> = []
+      i = 0
+      while i < A {
+        used = append(used, false)
+        i = i + 1
+      }
+      var order: list<int> = []
+      var processed = 0
+      while processed < A {
+        var cnt = 0
+        var node = 0
+        i = 0
+        while i < A {
+          if !used[i] && indeg[i] == 0 {
+            cnt = cnt + 1
+            node = i
+          }
+          i = i + 1
+        }
+        if cnt != 1 {
+          ok = false
+          break
+        }
+        order = append(order, node)
+        used[node] = true
+        processed = processed + 1
+        i = 0
+        while i < A {
+          if adj[node][i] {
+            indeg[i] = indeg[i] - 1
+          }
+          i = i + 1
+        }
+      }
+      if processed < A { ok = false }
+      if ok {
+        let alph = "abcdefghijklmnopqrstuvwxyz"
+        var map: list<string> = []
+        i = 0
+        while i < A {
+          map = append(map, "")
+          i = i + 1
+        }
+        i = 0
+        while i < A {
+          let cipher = order[i]
+          map[cipher] = alph[i:i+1]
+          i = i + 1
+        }
+        var out = ""
+        i = 0
+        while i < len(message) {
+          let ch = message[i:i+1]
+          if letters[ch] != nil {
+            let id = letters[ch] as int
+            if id < A {
+              out = out + map[id]
+            } else {
+              out = out + ch
+            }
+          } else {
+            out = out + ch
+          }
+          i = i + 1
+        }
+        print(out)
+      } else {
+        print("Message cannot be decrypted.")
+      }
+    } else {
+      print("Message cannot be decrypted.")
+    }
+    case = case + 1
+  }
+}
+
+main()
