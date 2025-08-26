@@ -1,0 +1,139 @@
+// Solution for SPOJ RELATS1 - Relations
+// https://www.spoj.com/problems/RELATS1/
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    let nmLine = input()
+    let nmParts = split(nmLine)
+    let n = parseIntStr(nmParts[0])
+    let m = parseIntStr(nmParts[1])
+    var line = ""
+    if m > 0 {
+      line = input()
+    }
+    let nums = split(line)
+    var from: list<int> = []
+    var to: list<int> = []
+    var w: list<int> = []
+    var i = 0
+    while i < m {
+      let u = parseIntStr(nums[3*i])
+      let v = parseIntStr(nums[3*i+1])
+      let lab = parseIntStr(nums[3*i+2])
+      if lab == (0 - 1) { // '<'
+        from = append(from, u)
+        to = append(to, v)
+        w = append(w, -1)
+      } else if lab == 1 { // '>'
+        from = append(from, v)
+        to = append(to, u)
+        w = append(w, -1)
+      } else { // '='
+        from = append(from, u)
+        to = append(to, v)
+        w = append(w, 0)
+        from = append(from, v)
+        to = append(to, u)
+        w = append(w, 0)
+      }
+      i = i + 1
+    }
+    var node = 1
+    while node <= n {
+      from = append(from, 0)
+      to = append(to, node)
+      w = append(w, 0)
+      node = node + 1
+    }
+    var dist: list<int> = []
+    i = 0
+    while i <= n {
+      dist = append(dist, 0)
+      i = i + 1
+    }
+    var iter = 0
+    var changed = false
+    let E = len(from)
+    while iter < n {
+      changed = false
+      var j = 0
+      while j < E {
+        let u = from[j]
+        let v = to[j]
+        let wt = w[j]
+        if dist[u] + wt < dist[v] {
+          dist[v] = dist[u] + wt
+          changed = true
+        }
+        j = j + 1
+      }
+      if !changed { break }
+      iter = iter + 1
+    }
+    if iter == n && changed {
+      print("NO")
+    } else {
+      var minv = -dist[1]
+      var maxv = -dist[1]
+      i = 2
+      while i <= n {
+        let val = -dist[i]
+        if val < minv { minv = val }
+        if val > maxv { maxv = val }
+        i = i + 1
+      }
+      let k = maxv - minv
+      print(str(k))
+    }
+    case = case + 1
+  }
+}
+
+main()
