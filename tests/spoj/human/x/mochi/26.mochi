@@ -1,0 +1,222 @@
+// Solution for SPOJ BSHEEP - Build the Fence
+// https://www.spoj.com/problems/BSHEEP/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun cross(o: list<int>, a: list<int>, b: list<int>): int {
+  return (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0])
+}
+
+fun isqrt(n: int): int {
+  if n <= 0 { return 0 }
+  var x = n
+  var y = (x + 1) / 2
+  while y < x {
+    x = y
+    y = (x + n / x) / 2
+  }
+  return x
+}
+
+fun sortPts(pts: list<list<int>>): list<list<int>> {
+  var i = 1
+  while i < len(pts) {
+    var j = i
+    while j > 0 {
+      let a = pts[j-1]
+      let b = pts[j]
+      if a[0] > b[0] || (a[0] == b[0] && a[1] > b[1]) {
+        let tmp = pts[j-1]
+        pts[j-1] = pts[j]
+        pts[j] = tmp
+        j = j - 1
+      } else {
+        break
+      }
+    }
+    i = i + 1
+  }
+  return pts
+}
+
+fun convexHull(pts: list<list<int>>): list<list<int>> {
+  let sorted = sortPts(pts)
+  var lower: list<list<int>> = []
+  var i = 0
+  while i < len(sorted) {
+    let p = sorted[i]
+    while len(lower) >= 2 && cross(lower[len(lower)-2], lower[len(lower)-1], p) <= 0 {
+      lower = lower[0:len(lower)-1]
+    }
+    lower = append(lower, p)
+    i = i + 1
+  }
+  var upper: list<list<int>> = []
+  i = len(sorted) - 1
+  while i >= 0 {
+    let p = sorted[i]
+    while len(upper) >= 2 && cross(upper[len(upper)-2], upper[len(upper)-1], p) <= 0 {
+      upper = upper[0:len(upper)-1]
+    }
+    upper = append(upper, p)
+    i = i - 1
+  }
+  if len(lower) > 0 { lower = lower[0:len(lower)-1] }
+  if len(upper) > 0 { upper = upper[0:len(upper)-1] }
+  var hull: list<list<int>> = []
+  i = 0
+  while i < len(lower) { hull = append(hull, lower[i]); i = i + 1 }
+  i = 0
+  while i < len(upper) { hull = append(hull, upper[i]); i = i + 1 }
+  return hull
+}
+
+fun perimeterScaled(hull: list<list<int>>): int {
+  if len(hull) <= 1 { return 0 }
+  var total = 0
+  var i = 0
+  while i < len(hull) {
+    var j = i + 1
+    if j == len(hull) { j = 0 }
+    let dx = hull[i][0] - hull[j][0]
+    let dy = hull[i][1] - hull[j][1]
+    let sum = dx*dx + dy*dy
+    let scaled = sum * 1000000
+    var d = isqrt(scaled)
+    if (d+1)*(d+1) - scaled < scaled - d*d { d = d + 1 }
+    total = total + d
+    i = i + 1
+  }
+  // convert from *1000 to *100 with rounding
+  total = (total + 5) / 10
+  return total
+}
+
+fun rotateStart(hull: list<list<int>>): list<list<int>> {
+  if len(hull) == 0 { return hull }
+  var start = 0
+  var i = 1
+  while i < len(hull) {
+    let p = hull[i]
+    let q = hull[start]
+    if p[1] < q[1] || (p[1] == q[1] && p[0] < q[0]) {
+      start = i
+    }
+    i = i + 1
+  }
+  var res: list<list<int>> = []
+  i = 0
+  while i < len(hull) {
+    var idx = start + i
+    if idx >= len(hull) { idx = idx - len(hull) }
+    res = append(res, hull[idx])
+    i = i + 1
+  }
+  return res
+}
+
+fun formatScaled(n: int): string {
+  var whole = n / 100
+  var frac = n % 100
+  var fracStr = str(frac)
+  if len(fracStr) < 2 { fracStr = "0" + fracStr }
+  return str(whole) + "." + fracStr
+}
+
+fun main() {
+  var tLine = ""
+  while tLine == "" { tLine = input() }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var nLine = ""
+    while nLine == "" { nLine = input() }
+    let n = parseIntStr(nLine)
+    var pts: list<list<int>> = []
+    var k = 0
+    while k < n {
+      var line = input()
+      if line == "" { continue }
+      let parts = splitSpaces(line)
+      let x = parseIntStr(parts[0])
+      let y = parseIntStr(parts[1])
+      var found = false
+      var i = 0
+      while i < len(pts) {
+        if pts[i][0] == x && pts[i][1] == y {
+          found = true
+          break
+        }
+        i = i + 1
+      }
+      if !found {
+        var p: list<int> = []
+        p = append(p, x)
+        p = append(p, y)
+        p = append(p, k + 1)
+        pts = append(pts, p)
+      }
+      k = k + 1
+    }
+    if len(pts) == 1 {
+      print("0.00")
+      print(str(pts[0][2]))
+    } else {
+      var hull = convexHull(pts)
+      hull = rotateStart(hull)
+      let per = perimeterScaled(hull)
+      var idxStr = ""
+      var i = 0
+      while i < len(hull) {
+        if i > 0 { idxStr = idxStr + " " }
+        idxStr = idxStr + str(hull[i][2])
+        i = i + 1
+      }
+      print(formatScaled(per))
+      print(idxStr)
+    }
+    case = case + 1
+    if case < t { print("") }
+  }
+}
+
+main()
