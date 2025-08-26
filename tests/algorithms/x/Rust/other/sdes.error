@@ -1,356 +1,697 @@
-error[E0415]: identifier `key` is bound more than once in this parameter list
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:109:369
-    |
-109 | ...ut s0: Vec<Vec<i64>>, mut s1: Vec<Vec<i64>>, mut key: String, mut message: String) -> String {
-    |                                                     ^^^ used as parameter more than once
-
-error[E0434]: can't capture dynamic environment in a fn item
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:114:36
-    |
-114 |     let mut left_bin_str: String = apply_sbox(s0.clone(), temp.chars().skip(0 as usize).take((4 - 0) as usize).collect::<String>()).clone();
-    |                                    ^^^^^^^^^^
-    |
-    = help: use the `|| { ... }` closure form instead
-
-error[E0434]: can't capture dynamic environment in a fn item
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:115:37
-    |
-115 |     let mut right_bin_str: String = apply_sbox(s1.clone(), temp.chars().skip(4 as usize).take((8 - 4) as usize).collect::<String>()).clon...
-    |                                     ^^^^^^^^^^
-    |
-    = help: use the `|| { ... }` closure form instead
-
-error[E0425]: cannot find value `left` in this scope
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:122:150
-    |
-122 | ...ing, mut message: String| -> String { f(&mut apply_table, &key, &left, &mut left_bin_str, &mut p4_table, &mut pad_left, &right, &mut r...
-    |                                                                     ^^^^
-    |
-help: the binding `left` is available in a different scope in the same function
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:110:9
-    |
-110 |     let left: String = message.chars().skip(0 as usize).take((4 - 0) as usize).collect::<String>().clone();
-    |         ^^^^
-
-error[E0425]: cannot find value `left_bin_str` in this scope
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:122:161
-    |
-122 | ...e: String| -> String { f(&mut apply_table, &key, &left, &mut left_bin_str, &mut p4_table, &mut pad_left, &right, &mut right_bin_str, &...
-    |                                                                 ^^^^^^^^^^^^
-    |
-help: the binding `left_bin_str` is available in a different scope in the same function
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:114:13
-    |
-114 |     let mut left_bin_str: String = apply_sbox(s0.clone(), temp.chars().skip(0 as usize).take((4 - 0) as usize).collect::<String>()).clone();
-    |             ^^^^^^^^^^^^
-
-error[E0425]: cannot find value `right` in this scope
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:122:206
-    |
-122 | ... &key, &left, &mut left_bin_str, &mut p4_table, &mut pad_left, &right, &mut right_bin_str, &mut temp, &mut xor, expansion, s0, s1, key...
-    |                                                                    ^^^^^
-    |
-help: the binding `right` is available in a different scope in the same function
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:111:9
-    |
-111 |     let right: String = message.chars().skip(4 as usize).take((8 - 4) as usize).collect::<String>().clone();
-    |         ^^^^^
-
-error[E0425]: cannot find value `right_bin_str` in this scope
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:122:218
-    |
-122 | ...ut left_bin_str, &mut p4_table, &mut pad_left, &right, &mut right_bin_str, &mut temp, &mut xor, expansion, s0, s1, key, message) }
-    |                                                                ^^^^^^^^^^^^^
-    |
-help: the binding `right_bin_str` is available in a different scope in the same function
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:115:13
-    |
-115 |     let mut right_bin_str: String = apply_sbox(s1.clone(), temp.chars().skip(4 as usize).take((8 - 4) as usize).collect::<String>()).clon...
-    |             ^^^^^^^^^^^^^
-
-error[E0425]: cannot find value `temp` in this scope
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:122:238
-    |
-122 | ..., &mut p4_table, &mut pad_left, &right, &mut right_bin_str, &mut temp, &mut xor, expansion, s0, s1, key, message) }
-    |                                                                     ^^^^
-    |
-help: the binding `temp` is available in a different scope in the same function
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:112:13
-    |
-112 |     let mut temp: String = apply_table(right.clone(), expansion.clone()).clone();
-    |             ^^^^
-
-warning: unused import: `std::collections::HashMap`
- --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:2:5
-  |
-2 | use std::collections::HashMap;
-  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
-  |
-  = note: `#[warn(unused_imports)]` on by default
-
 warning: unnecessary trailing semicolon
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:55:2
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:38:34
    |
-55 | };
-   |  ^ help: remove this semicolon
+38 |         let _start: i64 = _now();;
+   |                                  ^ help: remove this semicolon
    |
    = note: `#[warn(redundant_semicolons)]` on by default
 
-warning: unnecessary parentheses around `while` condition
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:43:11
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:51:2
    |
-43 |     while (i < (table.len() as i64)) {
+51 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:54:2
+   |
+54 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:67:2
+   |
+67 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:79:2
+   |
+79 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:86:2
+   |
+86 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:96:2
+   |
+96 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:105:2
+    |
+105 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:106:47
+    |
+106 |     let p4_table: Vec<i64> = vec![2, 4, 3, 1];;
+    |                                               ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:122:3
+    |
+122 | };;
+    |   ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:123:50
+    |
+123 |     let key: String = String::from("1010000010");;
+    |                                                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:124:52
+    |
+124 |     let message: String = String::from("11010111");;
+    |                                                    ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:125:60
+    |
+125 |     let p8_table: Vec<i64> = vec![6, 3, 7, 4, 8, 5, 10, 9];;
+    |                                                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:126:67
+    |
+126 |     let p10_table: Vec<i64> = vec![3, 5, 2, 7, 4, 10, 1, 9, 8, 6];;
+    |                                                                   ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:127:53
+    |
+127 |     let IP: Vec<i64> = vec![2, 6, 3, 1, 4, 8, 5, 7];;
+    |                                                     ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:128:57
+    |
+128 |     let IP_inv: Vec<i64> = vec![4, 1, 3, 5, 7, 2, 8, 6];;
+    |                                                         ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:129:60
+    |
+129 |     let expansion: Vec<i64> = vec![4, 1, 2, 3, 2, 3, 4, 1];;
+    |                                                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:130:138
+    |
+130 |     let s0: Vec<Vec<i64>> = vec![vec![1, 0, 3, 2].clone(), vec![3, 2, 1, 0].clone(), vec![0, 2, 1, 3].clone(), vec![3, 1, 3, 2].clone()];;
+    |                                                                                                                                          ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:131:138
+    |
+131 |     let s1: Vec<Vec<i64>> = vec![vec![0, 1, 2, 3].clone(), vec![2, 0, 1, 3].clone(), vec![3, 0, 1, 0].clone(), vec![2, 1, 0, 3].clone()];;
+    |                                                                                                                                          ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:132:80
+    |
+132 |     let mut temp: String = apply_table(key.clone(), p10_table.clone()).clone();;
+    |                                                                                ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:133:109
+    |
+133 |     let mut left: String = temp.chars().skip(0 as usize).take((5 - 0) as usize).collect::<String>().clone();;
+    |                                                                                                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:134:111
+    |
+134 |     let mut right: String = temp.chars().skip(5 as usize).take((10 - 5) as usize).collect::<String>().clone();;
+    |                                                                                                               ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:137:92
+    |
+137 |     let key1: String = apply_table(format!("{}{}", left, right), p8_table.clone()).clone();;
+    |                                                                                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:142:92
+    |
+142 |     let key2: String = apply_table(format!("{}{}", left, right), p8_table.clone()).clone();;
+    |                                                                                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:147:72
+    |
+147 |     let CT: String = apply_table(temp.clone(), IP_inv.clone()).clone();;
+    |                                                                        ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:148:61
+    |
+148 |     println!("{}", format!("{}{}", "Cipher text is: ", CT));;
+    |                                                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:153:72
+    |
+153 |     let PT: String = apply_table(temp.clone(), IP_inv.clone()).clone();;
+    |                                                                        ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:154:76
+    |
+154 |     println!("{}", format!("{}{}", "Plain text after decypting is: ", PT));;
+    |                                                                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:155:28
+    |
+155 |     let _end: i64 = _now();;
+    |                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:156:53
+    |
+156 |     let duration_us: i64 = ((_end - _start) / 1000);;
+    |                                                     ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:157:36
+    |
+157 |     let memory_bytes: i64 = _mem();;
+    |                                    ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:40:41
+   |
+40 |     let mut res: String = String::new();;
+   |                                         ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:41:24
+   |
+41 |     let mut i: i64 = 0;;
+   |                        ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:42:11
+   |
+42 |     while (i < (table.len() as i64)) {
    |           ^                        ^
    |
    = note: `#[warn(unused_parens)]` on by default
 help: remove these parentheses
    |
-43 -     while (i < (table.len() as i64)) {
-43 +     while i < (table.len() as i64) {
+42 -     while (i < (table.len() as i64)) {
+42 +     while i < (table.len() as i64) {
    |
 
-warning: unnecessary parentheses around assigned value
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:44:28
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:43:52
    |
-44 |         let mut idx: i64 = (table[i as usize] - 1);
+43 |         let mut idx: i64 = (table[i as usize] - 1);;
+   |                                                    ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:43:28
+   |
+43 |         let mut idx: i64 = (table[i as usize] - 1);;
    |                            ^                     ^
    |
 help: remove these parentheses
    |
-44 -         let mut idx: i64 = (table[i as usize] - 1);
-44 +         let mut idx: i64 = table[i as usize] - 1;
+43 -         let mut idx: i64 = (table[i as usize] - 1);;
+43 +         let mut idx: i64 = table[i as usize] - 1;;
    |
 
 warning: unnecessary parentheses around `if` condition
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:45:12
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:44:12
    |
-45 |         if (idx < 0) {
+44 |         if (idx < 0) {
    |            ^       ^
    |
 help: remove these parentheses
    |
-45 -         if (idx < 0) {
-45 +         if idx < 0 {
+44 -         if (idx < 0) {
+44 +         if idx < 0 {
    |
 
 warning: unnecessary parentheses around assigned value
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:46:19
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:45:19
    |
-46 |             idx = ((inp.len() as i64) - 1);
+45 |             idx = ((inp.len() as i64) - 1);
    |                   ^                      ^
    |
 help: remove these parentheses
    |
-46 -             idx = ((inp.len() as i64) - 1);
-46 +             idx = (inp.len() as i64) - 1;
+45 -             idx = ((inp.len() as i64) - 1);
+45 +             idx = (inp.len() as i64) - 1;
    |
 
 warning: unnecessary parentheses around assigned value
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:49:13
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:48:13
    |
-49 |         i = (i + 1);
+48 |         i = (i + 1);
    |             ^     ^
    |
 help: remove these parentheses
    |
-49 -         i = (i + 1);
-49 +         i = i + 1;
+48 -         i = (i + 1);
+48 +         i = i + 1;
    |
 
-warning: unnecessary parentheses around `while` condition
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:59:11
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:56:41
    |
-59 |     while ((i < (a.len() as i64)) && (i < (b.len() as i64))) {
+56 |     let mut res: String = String::new();;
+   |                                         ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:57:24
+   |
+57 |     let mut i: i64 = 0;;
+   |                        ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:58:11
+   |
+58 |     while ((i < (a.len() as i64)) && (i < (b.len() as i64))) {
    |           ^                                                ^
    |
 help: remove these parentheses
    |
-59 -     while ((i < (a.len() as i64)) && (i < (b.len() as i64))) {
-59 +     while (i < (a.len() as i64)) && (i < (b.len() as i64)) {
+58 -     while ((i < (a.len() as i64)) && (i < (b.len() as i64))) {
+58 +     while (i < (a.len() as i64)) && (i < (b.len() as i64)) {
    |
 
 warning: unnecessary parentheses around `if` condition
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:60:12
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:59:12
    |
-60 | ...if (a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str() == b.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()) {
+59 | ...if (a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str() == b.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()) {
    |       ^                                                                                                                                                                            ^
    |
 help: remove these parentheses
    |
-60 -         if (a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str() == b.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()) {
-60 +         if a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str() == b.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str() {
+59 -         if (a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str() == b.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str()) {
+59 +         if a.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str() == b.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().as_str() {
    |
 
 warning: unnecessary parentheses around assigned value
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:65:13
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:64:13
    |
-65 |         i = (i + 1);
+64 |         i = (i + 1);
    |             ^     ^
    |
 help: remove these parentheses
    |
-65 -         i = (i + 1);
-65 +         i = i + 1;
+64 -         i = (i + 1);
+64 +         i = i + 1;
    |
 
-warning: unnecessary parentheses around `if` condition
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:70:8
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:72:41
    |
-70 |     if (n == 0) {
+72 |     let mut res: String = String::new();;
+   |                                         ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:73:26
+   |
+73 |     let mut num: i64 = n;;
+   |                          ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:69:8
+   |
+69 |     if (n == 0) {
    |        ^      ^
    |
 help: remove these parentheses
    |
-70 -     if (n == 0) {
-70 +     if n == 0 {
+69 -     if (n == 0) {
+69 +     if n == 0 {
    |
 
 warning: unnecessary parentheses around `while` condition
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:75:11
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:74:11
    |
-75 |     while (num > 0) {
+74 |     while (num > 0) {
    |           ^       ^
    |
 help: remove these parentheses
    |
-75 -     while (num > 0) {
-75 +     while num > 0 {
+74 -     while (num > 0) {
+74 +     while num > 0 {
    |
 
 warning: unnecessary parentheses around assigned value
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:77:15
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:76:15
    |
-77 |         num = (num / 2);
+76 |         num = (num / 2);
    |               ^       ^
    |
 help: remove these parentheses
    |
-77 -         num = (num / 2);
-77 +         num = num / 2;
+76 -         num = (num / 2);
+76 +         num = num / 2;
    |
 
-warning: unnecessary parentheses around `while` condition
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:83:11
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:81:37
    |
-83 |     while ((res.len() as i64) < width) {
+81 |     let mut res: String = s.clone();;
+   |                                     ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:82:11
+   |
+82 |     while ((res.len() as i64) < width) {
    |           ^                          ^
    |
 help: remove these parentheses
    |
-83 -     while ((res.len() as i64) < width) {
-83 +     while (res.len() as i64) < width {
+82 -     while ((res.len() as i64) < width) {
+82 +     while (res.len() as i64) < width {
    |
 
-warning: unnecessary parentheses around `while` condition
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:91:11
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:88:29
    |
-91 |     while (i < (s.len() as i64)) {
+88 |     let mut result: i64 = 0;;
+   |                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:89:24
+   |
+89 |     let mut i: i64 = 0;;
+   |                        ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:90:11
+   |
+90 |     while (i < (s.len() as i64)) {
    |           ^                    ^
    |
 help: remove these parentheses
    |
-91 -     while (i < (s.len() as i64)) {
-91 +     while i < (s.len() as i64) {
+90 -     while (i < (s.len() as i64)) {
+90 +     while i < (s.len() as i64) {
    |
 
-warning: unnecessary parentheses around assigned value
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:93:18
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:91:134
    |
-93 |         result = ((result * 2) + digit);
+91 |         let digit = { let n: i64 = s.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>().parse().unwrap(); n };;
+   |                                                                                                                                      ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:92:18
+   |
+92 |         result = ((result * 2) + digit);
    |                  ^                    ^
    |
 help: remove these parentheses
    |
-93 -         result = ((result * 2) + digit);
-93 +         result = (result * 2) + digit;
+92 -         result = ((result * 2) + digit);
+92 +         result = (result * 2) + digit;
    |
 
 warning: unnecessary parentheses around assigned value
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:94:13
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:93:13
    |
-94 |         i = (i + 1);
+93 |         i = (i + 1);
    |             ^     ^
    |
 help: remove these parentheses
    |
-94 -         i = (i + 1);
-94 +         i = i + 1;
+93 -         i = (i + 1);
+93 +         i = i + 1;
    |
 
-warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:157:28
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:98:266
+   |
+98 | ...s i64) - 1)) as usize).collect::<String>()).clone();;
+   |                                                        ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:99:109
+   |
+99 |     let col_bits: String = data.chars().skip(1 as usize).take((3 - 1) as usize).collect::<String>().clone();;
+   |                                                                                                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:100:49
     |
-157 |     let duration_us: i64 = ((_end - _start) / 1000);
+100 |     let row: i64 = bin_to_int(row_bits.clone());;
+    |                                                 ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:101:49
+    |
+101 |     let col: i64 = bin_to_int(col_bits.clone());;
+    |                                                 ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:102:58
+    |
+102 |     let val: i64 = s[row as usize].clone()[col as usize];;
+    |                                                          ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:103:50
+    |
+103 |     let out: String = int_to_binary(val).clone();;
+    |                                                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:109:108
+    |
+109 |     let left: String = message.chars().skip(0 as usize).take((4 - 0) as usize).collect::<String>().clone();;
+    |                                                                                                            ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:110:109
+    |
+110 |     let right: String = message.chars().skip(4 as usize).take((8 - 4) as usize).collect::<String>().clone();;
+    |                                                                                                             ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:111:82
+    |
+111 |     let mut temp: String = apply_table(right.clone(), expansion.clone()).clone();;
+    |                                                                                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:113:141
+    |
+113 | ...take((4 - 0) as usize).collect::<String>()).clone();;
+    |                                                        ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:114:142
+    |
+114 | ...take((8 - 4) as usize).collect::<String>()).clone();;
+    |                                                        ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:156:28
+    |
+156 |     let duration_us: i64 = ((_end - _start) / 1000);;
     |                            ^                      ^
     |
 help: remove these parentheses
     |
-157 -     let duration_us: i64 = ((_end - _start) / 1000);
-157 +     let duration_us: i64 = (_end - _start) / 1000;
+156 -     let duration_us: i64 = ((_end - _start) / 1000);;
+156 +     let duration_us: i64 = (_end - _start) / 1000;;
     |
-
-error[E0308]: mismatched types
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:113:15
-    |
-113 |     (*temp) = xor(temp.clone(), key.clone());
-    |     -------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `str`, found `String`
-    |     |
-    |     expected due to the type of this binding
-
-error[E0277]: the size for values of type `str` cannot be known at compilation time
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:113:5
-    |
-113 |     (*temp) = xor(temp.clone(), key.clone());
-    |     ^^^^^^^ doesn't have a size known at compile-time
-    |
-    = help: the trait `Sized` is not implemented for `str`
-    = note: the left-hand-side of an assignment must have a statically known size
-
-error[E0308]: mismatched types
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:118:15
-    |
-118 |     (*temp) = apply_table(format!("{}{}", left_bin_str, right_bin_str), p4_table.clone());
-    |     -------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `str`, found `String`
-    |     |
-    |     expected due to the type of this binding
-
-error[E0277]: the size for values of type `str` cannot be known at compilation time
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:118:5
-    |
-118 |     (*temp) = apply_table(format!("{}{}", left_bin_str, right_bin_str), p4_table.clone());
-    |     ^^^^^^^ doesn't have a size known at compile-time
-    |
-    = help: the trait `Sized` is not implemented for `str`
-    = note: the left-hand-side of an assignment must have a statically known size
-
-error[E0308]: mismatched types
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:119:15
-    |
-119 |     (*temp) = xor(left.clone(), temp.clone());
-    |     -------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `str`, found `String`
-    |     |
-    |     expected due to the type of this binding
-
-error[E0277]: the size for values of type `str` cannot be known at compilation time
-   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:119:5
-    |
-119 |     (*temp) = xor(left.clone(), temp.clone());
-    |     ^^^^^^^ doesn't have a size known at compile-time
-    |
-    = help: the trait `Sized` is not implemented for `str`
-    = note: the left-hand-side of an assignment must have a statically known size
 
 warning: variable does not need to be mutable
-  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:53:19
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:121:2
+    |
+121 | |mut expansion: Vec<i64>, mut s0: Vec<Vec<i64>>, mut s1: Vec<Vec<i64>>, mut key: String, mut message: String| -> String { f(&mut p4_table...
+    |  ----^^^^^^^^^
+    |  |
+    |  help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:121:27
+    |
+121 | |mut expansion: Vec<i64>, mut s0: Vec<Vec<i64>>, mut s1: Vec<Vec<i64>>, mut key: String, mut message: String| -> String { f(&mut p4_table...
+    |                           ----^^
+    |                           |
+    |                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:121:50
+    |
+121 | |mut expansion: Vec<i64>, mut s0: Vec<Vec<i64>>, mut s1: Vec<Vec<i64>>, mut key: String, mut message: String| -> String { f(&mut p4_table...
+    |                                                  ----^^
+    |                                                  |
+    |                                                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:121:73
+    |
+121 | |mut expansion: Vec<i64>, mut s0: Vec<Vec<i64>>, mut s1: Vec<Vec<i64>>, mut key: String, mut message: String| -> String { f(&mut p4_table...
+    |                                                                         ----^^^
+    |                                                                         |
+    |                                                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:121:90
+    |
+121 | |mut expansion: Vec<i64>, mut s0: Vec<Vec<i64>>, mut s1: Vec<Vec<i64>>, mut key: String, mut message: String| -> String { f(&mut p4_table...
+    |                                                                                          ----^^^^^^^
+    |                                                                                          |
+    |                                                                                          help: remove this `mut`
+
+error[E0596]: cannot borrow `p4_table` as mutable, as it is not declared as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:121:125
+    |
+121 | ...key: String, mut message: String| -> String { f(&mut p4_table, expansion, s0, s1, key, message) }
+    |                                                    ^^^^^^^^^^^^^ cannot borrow as mutable
+    |
+help: consider changing this to be mutable
+    |
+106 |     let mut p4_table: Vec<i64> = vec![2, 4, 3, 1];;
+    |         +++
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:39:20
    |
-53 |     fn left_shift(mut data: String) -> String {
+39 |     fn apply_table(mut inp: String, mut table: Vec<i64>) -> String {
+   |                    ----^^^
+   |                    |
+   |                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:39:37
+   |
+39 |     fn apply_table(mut inp: String, mut table: Vec<i64>) -> String {
+   |                                     ----^^^^^
+   |                                     |
+   |                                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:52:19
+   |
+52 |     fn left_shift(mut data: String) -> String {
    |                   ----^^^^
    |                   |
    |                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:55:12
    |
-   = note: `#[warn(unused_mut)]` on by default
+55 |     fn xor(mut a: String, mut b: String) -> String {
+   |            ----^
+   |            |
+   |            help: remove this `mut`
 
-error: aborting due to 14 previous errors; 19 warnings emitted
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:55:27
+   |
+55 |     fn xor(mut a: String, mut b: String) -> String {
+   |                           ----^
+   |                           |
+   |                           help: remove this `mut`
 
-Some errors have detailed explanations: E0277, E0308, E0415, E0425, E0434.
-For more information about an error, try `rustc --explain E0277`.
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:68:22
+   |
+68 |     fn int_to_binary(mut n: i64) -> String {
+   |                      ----^
+   |                      |
+   |                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:80:17
+   |
+80 |     fn pad_left(mut s: String, mut width: i64) -> String {
+   |                 ----^
+   |                 |
+   |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:80:32
+   |
+80 |     fn pad_left(mut s: String, mut width: i64) -> String {
+   |                                ----^^^^^
+   |                                |
+   |                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:87:19
+   |
+87 |     fn bin_to_int(mut s: String) -> i64 {
+   |                   ----^
+   |                   |
+   |                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:97:19
+   |
+97 |     fn apply_sbox(mut s: Vec<Vec<i64>>, mut data: String) -> String {
+   |                   ----^
+   |                   |
+   |                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:97:41
+   |
+97 |     fn apply_sbox(mut s: Vec<Vec<i64>>, mut data: String) -> String {
+   |                                         ----^^^^
+   |                                         |
+   |                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:108:31
+    |
+108 | fn f(p4_table: &mut Vec<i64>, mut expansion: Vec<i64>, mut s0: Vec<Vec<i64>>, mut s1: Vec<Vec<i64>>, mut key: String, mut message: String...
+    |                               ----^^^^^^^^^
+    |                               |
+    |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:108:56
+    |
+108 | fn f(p4_table: &mut Vec<i64>, mut expansion: Vec<i64>, mut s0: Vec<Vec<i64>>, mut s1: Vec<Vec<i64>>, mut key: String, mut message: String...
+    |                                                        ----^^
+    |                                                        |
+    |                                                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:108:79
+    |
+108 | fn f(p4_table: &mut Vec<i64>, mut expansion: Vec<i64>, mut s0: Vec<Vec<i64>>, mut s1: Vec<Vec<i64>>, mut key: String, mut message: String...
+    |                                                                               ----^^
+    |                                                                               |
+    |                                                                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:108:102
+    |
+108 | fn f(p4_table: &mut Vec<i64>, mut expansion: Vec<i64>, mut s0: Vec<Vec<i64>>, mut s1: Vec<Vec<i64>>, mut key: String, mut message: String...
+    |                                                                                                      ----^^^
+    |                                                                                                      |
+    |                                                                                                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/other/sdes.rs:108:119
+    |
+108 | ...c<Vec<i64>>, mut s1: Vec<Vec<i64>>, mut key: String, mut message: String) -> String {
+    |                                                         ----^^^^^^^
+    |                                                         |
+    |                                                         help: remove this `mut`
+
+error: aborting due to 1 previous error; 90 warnings emitted
+
+For more information about this error, try `rustc --explain E0596`.

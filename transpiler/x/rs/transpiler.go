@@ -3545,6 +3545,12 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 		body = append(body, st)
 	}
 	prog.Stmts = body
+	for _, st := range prog.Stmts {
+		collectMutVarsStmt(st)
+	}
+	for _, st := range prog.Globals {
+		collectMutVarsStmt(st)
+	}
 	// Previously all functions were marked `unsafe` whenever global
 	// variables existed.  This was overly conservative and caused functions
 	// that don't touch globals to be treated as unsafe, leading to
@@ -3556,20 +3562,11 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	prog.Types = typeDecls
 	_ = env // reserved for future use
 	// If no variable actually uses a HashMap type, avoid importing the
-	// collection to keep the generated code minimal.  Some compilation
-	// paths conservatively set usesHashMap when analysing map literals, even
-	// if the final program does not contain any map values.  Check the
-	// recorded variable types to decide whether the import is truly needed.
-	usedMap := false
-	for _, t := range varTypes {
-		if strings.HasPrefix(t, "HashMap<") {
-			usedMap = true
-			break
-		}
-	}
-	if usesHashMap && !usedMap {
-		usesHashMap = false
-	}
+	// collection to keep the generated code minimal. Some compilation paths
+	// conservatively set usesHashMap when analysing map literals, even if the
+	// final program does not contain any map values.  In addition to global
+	// variable types, also inspect declared struct fields for HashMap usage
+	// since maps are often embedded inside structs like caches.
 	prog.UsesHashMap = usesHashMap
 	prog.UsesGroup = usesGroup
 	prog.UseTime = useTime
@@ -5162,6 +5159,11 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
+		if strings.TrimSpace(op) == "&mut" {
+			if nr, ok := expr.(*NameRef); ok {
+				mutVars[nr.Name] = true
+			}
+		}
 		expr = &UnaryExpr{Op: op, Expr: expr}
 	}
 	return expr, nil
@@ -5666,7 +5668,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			for i := 0; i < len(args) && i < len(paramTypes); i++ {
 				if strings.HasPrefix(pts[i], "&mut ") {
-					if _, isUnary := args[i].(*UnaryExpr); !isUnary {
+					if ue, ok := args[i].(*UnaryExpr); ok {
+						if nr, ok2 := ue.Expr.(*NameRef); ok2 {
+							mutVars[nr.Name] = true
+						}
+					} else {
 						if nr, ok := args[i].(*NameRef); ok {
 							if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
 								// already a reference
@@ -9017,4 +9023,89 @@ func findReturnStructSlice(stmts []Stmt) string {
 		}
 	}
 	return ""
+}
+
+// walk expressions and statements to mark variables that are mutably
+// borrowed via `&mut` so their declarations can be emitted as mutable.
+func collectMutVarsExpr(e Expr) {
+	switch v := e.(type) {
+	case *UnaryExpr:
+		if strings.TrimSpace(v.Op) == "&mut" {
+			if nr, ok := v.Expr.(*NameRef); ok {
+				mutVars[nr.Name] = true
+			}
+		}
+		collectMutVarsExpr(v.Expr)
+	case *BinaryExpr:
+		collectMutVarsExpr(v.Left)
+		collectMutVarsExpr(v.Right)
+	case *CallExpr:
+		for _, a := range v.Args {
+			collectMutVarsExpr(a)
+		}
+	case *MethodCallExpr:
+		collectMutVarsExpr(v.Receiver)
+		for _, a := range v.Args {
+			collectMutVarsExpr(a)
+		}
+	case *IndexExpr:
+		collectMutVarsExpr(v.Target)
+		collectMutVarsExpr(v.Index)
+	case *ListLit:
+		for _, el := range v.Elems {
+			collectMutVarsExpr(el)
+		}
+	case *MapLit:
+		for _, it := range v.Items {
+			collectMutVarsExpr(it.Key)
+			collectMutVarsExpr(it.Value)
+		}
+	case *StructLit:
+		for _, f := range v.Fields {
+			collectMutVarsExpr(f)
+		}
+	}
+}
+
+func collectMutVarsStmt(s Stmt) {
+	switch st := s.(type) {
+	case *ExprStmt:
+		collectMutVarsExpr(st.Expr)
+	case *VarDecl:
+		if st.Expr != nil {
+			collectMutVarsExpr(st.Expr)
+		}
+	case *AssignStmt:
+		collectMutVarsExpr(st.Expr)
+	case *ReturnStmt:
+		collectMutVarsExpr(st.Value)
+	case *IfStmt:
+		collectMutVarsExpr(st.Cond)
+		for _, b := range st.Then {
+			collectMutVarsStmt(b)
+		}
+		for _, b := range st.Else {
+			collectMutVarsStmt(b)
+		}
+		if st.ElseIf != nil {
+			collectMutVarsStmt(st.ElseIf)
+		}
+	case *WhileStmt:
+		collectMutVarsExpr(st.Cond)
+		for _, b := range st.Body {
+			collectMutVarsStmt(b)
+		}
+	case *ForStmt:
+		collectMutVarsExpr(st.Iter)
+		if st.End != nil {
+			collectMutVarsExpr(st.End)
+		}
+		for _, b := range st.Body {
+			collectMutVarsStmt(b)
+		}
+	case *MultiStmt:
+		for _, b := range st.Stmts {
+			collectMutVarsStmt(b)
+		}
+	}
 }
