@@ -3059,7 +3059,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 		io.WriteString(w, ",\n    ")
 		st.emit(w)
 	}
-	fmt.Fprintf(w, ",\n    __mochi_bench_end = mochi_now(),\n    __mochi_bench_end_mem = erlang:memory(total),\n    __mochi_bench_duration_us = (__mochi_bench_end - __mochi_bench_start) div 1000,\n    __mochi_bench_mem_bytes = erlang:abs(__mochi_bench_end_mem - __mochi_bench_start_mem),\n    io:format(\"{~n  \\\"duration_us\\\": ~p,~n  \\\"memory_bytes\\\": ~p,~n  \\\"name\\\": \\\"%s\\\"~n}\n\", [__mochi_bench_duration_us, __mochi_bench_mem_bytes])", b.Name)
+	fmt.Fprintf(w, ",\n    __mochi_bench_end = mochi_now(),\n    __mochi_bench_end_mem = erlang:memory(total),\n    __mochi_bench_duration_us = (__mochi_bench_end - __mochi_bench_start) div 1000,\n    __mochi_bench_mem_bytes = erlang:abs(__mochi_bench_end_mem - __mochi_bench_start_mem),\n    io:format(\"\n{~n  \\\"duration_us\\\": ~p,~n  \\\"memory_bytes\\\": ~p,~n  \\\"name\\\": \\\"%s\\\"~n}\n\", [__mochi_bench_duration_us, __mochi_bench_mem_bytes])", b.Name)
 }
 
 func isNameRef(e Expr, name string) bool {

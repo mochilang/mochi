@@ -1,5 +1,14 @@
-/workspace/mochi/tests/algorithms/x/Erlang/other/word_search.erl:221:55: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
-%  221|             Row_list_2 = lists:sublist(Row_list, Cc2) ++ [string:substr(Word, K_3 + 1, ((K_3 + 1) - K_3))] ++ lists:nthtail(Cc2 + 1, Row_list),
+/workspace/mochi/tests/algorithms/x/Erlang/other/word_search.erl:243:55: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  243|             Row_list_2 = lists:sublist(Row_list, Cc2) ++ [string:substr(Word, K_3 + 1, ((K_3 + 1) - K_3))] ++ lists:nthtail(Cc2 + 1, Row_list),
 %     |                                                       ^
 
-"y n m f q t o z u p \ni p y p k h e l u n \nw p i b u f g v s h \nq x w l s d g f s h \ne n m t c f i l i p \ni l i f e f i d a t \ns b a t s n c t a b \no l w h y j w v q v \nu f y b e h q t k t \nw v i n u z s t s d \n"
+y n m f q t o z u p 
+i p y p k h e l u n 
+w p i b u f g v s h 
+q x w l s d g f s h 
+e n m t c f i l i p 
+i l i f e f i d a t 
+s b a t s n c t a b 
+o l w h y j w v q v 
+u f y b e h q t k t 
+w v i n u z s t s d

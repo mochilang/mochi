@@ -1,5 +1,5 @@
-/workspace/mochi/tests/algorithms/x/Erlang/neural_network/simple_neural_network.erl:147:2: Warning: variable 'Is_neg_3' exported from 'case' (line 126, column 16)
-%  147| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun(Is_neg_3, N, Sum, Term, X, Y_3),
+/workspace/mochi/tests/algorithms/x/Erlang/neural_network/simple_neural_network.erl:169:2: Warning: variable 'Is_neg_3' exported from 'case' (line 148, column 16)
+%  169| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun(Is_neg_3, N, Sum, Term, X, Y_3),
 %     |  ^
 
 32.11788290745957
