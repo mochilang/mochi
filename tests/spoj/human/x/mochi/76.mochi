@@ -1,0 +1,160 @@
+// Solution for SPOJ EDIT2 - Editor Inverse
+// https://www.spoj.com/problems/EDIT2/
+
+fun makeIntList(n: int, v: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, v)
+    i = i + 1
+  }
+  return lst
+}
+
+fun makeIntMatrix(rows: int, cols: int, v: int): list<list<int>> {
+  var mat: list<list<int>> = []
+  var i = 0
+  while i < rows {
+    mat = append(mat, makeIntList(cols, v))
+    i = i + 1
+  }
+  return mat
+}
+
+fun lessLex(a: list<int>, b: list<int>): bool {
+  var i = 0
+  while i < len(a) && i < len(b) {
+    if a[i] != b[i] {
+      return a[i] < b[i]
+    }
+    i = i + 1
+  }
+  return len(a) < len(b)
+}
+
+fun halvesEqual(s: string, start: int, mid: int, end: int): bool {
+  var i = 0
+  while start + i < mid {
+    if s[start + i:start + i + 1] != s[mid + i:mid + i + 1] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun buildProgram(s: string, cost: list<list<int>>, dcnt: list<list<int>>, a: int, b: int): string {
+  if a >= b { return "" }
+  if cost[a][b] == cost[a][b - 1] + 1 && dcnt[a][b] == dcnt[a][b - 1] {
+    return buildProgram(s, cost, dcnt, a, b - 1) + s[b - 1:b]
+  }
+  let mid = a + (b - a) / 2
+  return buildProgram(s, cost, dcnt, a, mid) + "d"
+}
+
+fun main() {
+  var case = 0
+  while case < 10 {
+    let line = input()
+    if line == "" { break }
+    let s = line
+    let n = len(s)
+
+    var cost = makeIntMatrix(n + 1, n + 1, 0)
+    var dcnt = makeIntMatrix(n + 1, n + 1, 0)
+    var len = 1
+    while len <= n {
+      var start = 0
+      while start + len <= n {
+        let end = start + len
+        var bestCost = cost[start][end - 1] + 1
+        var bestD = dcnt[start][end - 1]
+        if len % 2 == 0 {
+          let mid = start + len / 2
+          if halvesEqual(s, start, mid, end) {
+            let candCost = cost[start][mid] + 1
+            let candD = dcnt[start][mid] + 1
+            if candCost < bestCost || (candCost == bestCost && candD < bestD) {
+              bestCost = candCost
+              bestD = candD
+            }
+          }
+        }
+        cost[start][end] = bestCost
+        dcnt[start][end] = bestD
+        start = start + 1
+      }
+      len = len + 1
+    }
+
+    var dpCost = makeIntList(n + 1, 1000000000)
+    var dpLines = makeIntList(n + 1, 0)
+    var dpPrev = makeIntList(n + 1, -1)
+    var dpLineCosts: list<list<int>> = []
+    var z = 0
+    while z <= n {
+      dpLineCosts = append(dpLineCosts, [])
+      z = z + 1
+    }
+    dpCost[0] = 0
+    dpLines[0] = 0
+    dpPrev[0] = -1
+
+    var i = 1
+    while i <= n {
+      var j = 0
+      while j < i {
+        let lineCost = cost[j][i]
+        let candCost = dpCost[j] + lineCost + 1
+        let candLines = dpLines[j] + 1
+        let candList = append(dpLineCosts[j], lineCost)
+        var better = false
+        if candCost < dpCost[i] {
+          better = true
+        } else if candCost == dpCost[i] {
+          if candLines < dpLines[i] {
+            better = true
+          } else if candLines == dpLines[i] {
+            if lessLex(candList, dpLineCosts[i]) { better = true }
+          }
+        }
+        if better {
+          dpCost[i] = candCost
+          dpLines[i] = candLines
+          dpPrev[i] = j
+          dpLineCosts[i] = candList
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    var boundaries: list<int> = []
+    var idx = n
+    while idx > 0 {
+      boundaries = append(boundaries, idx)
+      idx = dpPrev[idx]
+    }
+    boundaries = append(boundaries, 0)
+    var rev: list<int> = []
+    var k = len(boundaries) - 1
+    while k >= 0 {
+      rev = append(rev, boundaries[k])
+      k = k - 1
+    }
+    boundaries = rev
+
+    let totalCost = dpCost[n] + 1
+    print(str(totalCost))
+    var b = 0
+    while b + 1 < len(boundaries) {
+      let a = boundaries[b]
+      let c = boundaries[b + 1]
+      let prog = buildProgram(s, cost, dcnt, a, c)
+      print(prog)
+      b = b + 1
+    }
+    print("")
+    case = case + 1
+  }
+}
+
+main()
