@@ -536,6 +536,8 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 			fmt.Fprint(w, ")")
 		case *LongLit:
 			fmt.Fprintf(w, "java.math.BigInteger.valueOf(%dL)", ex.Value)
+		case *CastExpr:
+			emitCastExpr(w, ex.Value, "java.math.BigInteger")
 		default:
 			if it := inferType(e); it == "java.math.BigInteger" || it == "bigint" {
 				e.emit(w)
@@ -2197,27 +2199,27 @@ func (fr *ForRangeStmt) emit(w io.Writer, indent string) {
 	name := sanitize(fr.Name)
 	endType := inferType(fr.End)
 	if endType == "bigint" || endType == "java.math.BigInteger" {
+		if varTypes != nil {
+			varTypes[fr.Name] = "java.math.BigInteger"
+		}
 		fmt.Fprintf(w, indent+"for (java.math.BigInteger %s = ", name)
 		if fr.Start != nil {
-			if it := inferType(fr.Start); it == "java.math.BigInteger" || it == "bigint" {
-				fr.Start.emit(w)
-			} else {
-				fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
-				fr.Start.emit(w)
-				fmt.Fprint(w, "))")
-			}
+			emitCastExpr(w, fr.Start, "java.math.BigInteger")
 		} else {
 			fmt.Fprint(w, "java.math.BigInteger.ZERO")
 		}
 		fmt.Fprint(w, "; ")
 		fmt.Fprintf(w, "%s.compareTo(", name)
-		fr.End.emit(w)
+		emitCastExpr(w, fr.End, "java.math.BigInteger")
 		fmt.Fprint(w, ") < 0; ")
 		fmt.Fprintf(w, "%s = %s.add(java.math.BigInteger.ONE)", name, name)
 		fmt.Fprint(w, ") {\n")
 		emitBlock(w, indent+"    ", fr.Body)
 		fmt.Fprint(w, indent+"}\n")
 		return
+	}
+	if varTypes != nil {
+		varTypes[fr.Name] = "int"
 	}
 	fmt.Fprint(w, indent+"for (int "+name+" = ")
 	if fr.Start != nil {
@@ -6042,7 +6044,7 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if ctype == "" {
 				break
 			}
-			if idx, ok := expr.(*IndexExpr); ok {
+			if idx, ok := expr.(*IndexExpr); ok && simple == "" {
 				idx.ResultType = ctype
 				expr = idx
 				break
