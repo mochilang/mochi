@@ -1219,6 +1219,17 @@ func (ie *IndexExpr) emit(w io.Writer) {
 		return
 	}
 	if !ie.KeyString && !ie.KeyAny && !ie.Map {
+		if ie.Force {
+			if be, ok := ie.Base.(*IndexExpr); ok {
+				be.emit(w)
+			} else {
+				ie.Base.emit(w)
+			}
+			fmt.Fprint(w, "[")
+			ie.Index.emit(w)
+			fmt.Fprint(w, "]")
+			return
+		}
 		fmt.Fprint(w, "_idx(")
 		if be, ok := ie.Base.(*IndexExpr); ok {
 			be.emit(w)
@@ -1231,9 +1242,6 @@ func (ie *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ", ")
 		ie.Index.emit(w)
 		fmt.Fprint(w, ")")
-		if ie.Force {
-			fmt.Fprint(w, "!")
-		}
 		usesIndex = true
 		return
 	}
@@ -1721,6 +1729,13 @@ func (c *CallExpr) emit(w io.Writer) {
 	case "float":
 		if len(c.Args) == 1 {
 			fmt.Fprint(w, "Double(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
+	case "string":
+		if len(c.Args) == 1 {
+			fmt.Fprint(w, "String(")
 			c.Args[0].emit(w)
 			fmt.Fprint(w, ")")
 			return
@@ -2752,7 +2767,7 @@ func findUpdatedVars(env *types.Env, list []*parser.Statement, vars map[string]b
 		if e.Binary != nil {
 			scanUnary(e.Binary.Left)
 			for _, op := range e.Binary.Right {
-				scanPostfix(op.Right)
+				scanUnary(op.Right)
 			}
 		}
 	}
@@ -2892,15 +2907,21 @@ func isJoinExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
 		return false
 	}
-	if hasJoinOp(e.Binary.Left.Value) {
+	if hasJoinOpUnary(e.Binary.Left) {
 		return true
 	}
 	for _, op := range e.Binary.Right {
-		if op.Right != nil && hasJoinOp(op.Right) {
+		if op.Right != nil && hasJoinOpUnary(op.Right) {
 			return true
 		}
 	}
 	return false
+}
+func hasJoinOpUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return hasJoinOp(u.Value)
 }
 
 func hasJoinOp(p *parser.PostfixExpr) bool {
@@ -3284,7 +3305,6 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			}
 			keyStr := false
 			keyAny := false
-			isLast := j == len(st.Assign.Index)-1 && len(st.Assign.Field) == 0
 			if mt, ok := cur.(types.MapType); ok {
 				if types.IsStringType(mt.Key) {
 					ix = &CastExpr{Expr: ix, Type: "String"}
@@ -3293,8 +3313,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 					keyAny = true
 				}
 				cur = mt.Value
-				force := !isLast
-				lhs = &IndexExpr{Base: lhs, Index: ix, Force: force, KeyString: keyStr, KeyAny: keyAny, Map: true}
+				lhs = &IndexExpr{Base: lhs, Index: ix, Force: true, KeyString: keyStr, KeyAny: keyAny, Map: true}
 			} else if lt, ok := cur.(types.ListType); ok {
 				if env != nil {
 					if ixT := types.TypeOfExpr(idx.Start, env); types.IsAnyType(ixT) {
@@ -3305,9 +3324,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 					outerType = lt.Elem
 				}
 				cur = lt.Elem
-				lhs = &IndexExpr{Base: lhs, Index: ix}
+				lhs = &IndexExpr{Base: lhs, Index: ix, Force: true}
 			} else {
-				lhs = &IndexExpr{Base: lhs, Index: ix}
+				lhs = &IndexExpr{Base: lhs, Index: ix, Force: true}
 			}
 		}
 		nodeType := cur
@@ -3987,7 +4006,7 @@ func evalPrintArg(arg *parser.Expr) (val string, isString bool, ok bool) {
 
 	if lit != nil && len(arg.Binary.Right) == 1 {
 		op := arg.Binary.Right[0]
-		rightLit := op.Right.Target.Lit
+		rightLit := op.Right.Value.Target.Lit
 		if rightLit != nil && rightLit.Str != nil && lit.Str != nil {
 			switch op.Op {
 			case "+":
@@ -4075,7 +4094,7 @@ func evalIntConstBinary(be *parser.BinaryExpr) (int, bool) {
 	vals := []int{v}
 	ops := []string{}
 	for _, op := range be.Right {
-		r, ok := evalIntConstPostfix(op.Right)
+		r, ok := evalIntConstUnary(op.Right)
 		if !ok {
 			return 0, false
 		}
@@ -4201,12 +4220,12 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	ops := []string{}
 
 	for _, op := range e.Binary.Right {
-		right, err := convertPostfix(env, op.Right)
+		right, err := convertUnary(env, op.Right)
 		if err != nil {
 			return nil, err
 		}
 		operands = append(operands, right)
-		typesList = append(typesList, types.TypeOfPostfix(op.Right, env))
+		typesList = append(typesList, types.TypeOfUnary(op.Right, env))
 		ops = append(ops, op.Op)
 	}
 
