@@ -3,19 +3,20 @@
 package python_test
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"strconv"
-	"testing"
-	"time"
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "os"
+        "os/exec"
+        "path/filepath"
+        "strconv"
+        "strings"
+        "testing"
+        "time"
 
-	"mochi/parser"
-	py "mochi/transpiler/x/py"
-	"mochi/types"
+        "mochi/parser"
+        py "mochi/transpiler/x/py"
+        "mochi/types"
 )
 
 func ensurePython(t *testing.T) {
@@ -44,127 +45,162 @@ func repoRoot(t *testing.T) string {
 }
 
 func TestPythonTranspiler_SPOJ_Golden(t *testing.T) {
-	ensurePython(t)
-	root := repoRoot(t)
-	t.Cleanup(updateSPOJ)
+        ensurePython(t)
+        root := repoRoot(t)
+        t.Cleanup(updateSPOJ)
 
-	src := filepath.Join(root, "tests", "spoj", "x", "mochi", "1.mochi")
-	outDir := filepath.Join(root, "tests", "spoj", "x", "python")
-	os.MkdirAll(outDir, 0o755)
-	codePath := filepath.Join(outDir, "1.py")
-	outPath := filepath.Join(outDir, "1.out")
-	errPath := filepath.Join(outDir, "1.error")
+        outDir := filepath.Join(root, "tests", "spoj", "x", "python")
+        os.MkdirAll(outDir, 0o755)
+        bench := os.Getenv("MOCHI_BENCHMARK") != ""
 
-	bench := os.Getenv("MOCHI_BENCHMARK") != ""
+        for i := 1; i <= 5; i++ {
+                idx := strconv.Itoa(i)
+                src := filepath.Join(root, "tests", "spoj", "x", "mochi", idx+".mochi")
+                codePath := filepath.Join(outDir, idx+".py")
+                outPath := filepath.Join(outDir, idx+".out")
+                errPath := filepath.Join(outDir, idx+".error")
 
-	want, err := os.ReadFile(outPath)
-	if err != nil {
-		t.Fatalf("read want: %v", err)
-	}
-	if !bench {
-		want = bytes.TrimSpace(want)
-	}
+                want, err := os.ReadFile(outPath)
+                if err != nil {
+                        t.Fatalf("read want %s: %v", idx, err)
+                }
+                if !bench {
+                        want = bytes.TrimSpace(want)
+                }
 
-	prog, err := parser.Parse(src)
-	if err != nil {
-		_ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
-		t.Fatalf("parse: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		_ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
-		t.Fatalf("type: %v", errs[0])
-	}
-	ast, err := py.Transpile(prog, env, bench)
-	if err != nil {
-		_ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
-		t.Fatalf("transpile: %v", err)
-	}
-	var buf bytes.Buffer
-	if err := py.Emit(&buf, ast, bench); err != nil {
-		_ = os.WriteFile(errPath, []byte("emit: "+err.Error()), 0o644)
-		t.Fatalf("emit: %v", err)
-	}
-	if err := os.WriteFile(codePath, buf.Bytes(), 0o644); err != nil {
-		t.Fatalf("write code: %v", err)
-	}
+                prog, err := parser.Parse(src)
+                if err != nil {
+                        _ = os.WriteFile(errPath, []byte("parse: "+err.Error()), 0o644)
+                        t.Fatalf("parse %s: %v", idx, err)
+                }
+                env := types.NewEnv(nil)
+                if errs := types.Check(prog, env); len(errs) > 0 {
+                        _ = os.WriteFile(errPath, []byte("type: "+errs[0].Error()), 0o644)
+                        t.Fatalf("type %s: %v", idx, errs[0])
+                }
+                ast, err := py.Transpile(prog, env, bench)
+                if err != nil {
+                        _ = os.WriteFile(errPath, []byte("transpile: "+err.Error()), 0o644)
+                        t.Fatalf("transpile %s: %v", idx, err)
+                }
+                var buf bytes.Buffer
+                if err := py.Emit(&buf, ast, bench); err != nil {
+                        _ = os.WriteFile(errPath, []byte("emit: "+err.Error()), 0o644)
+                        t.Fatalf("emit %s: %v", idx, err)
+                }
+                if err := os.WriteFile(codePath, buf.Bytes(), 0o644); err != nil {
+                        t.Fatalf("write code %s: %v", idx, err)
+                }
 
-	cmd := exec.Command("python3", codePath)
-	envv := os.Environ()
-	if !bench {
-		envv = append(envv, "MOCHI_NOW_SEED=1")
-	}
-	cmd.Env = envv
-	inPath := filepath.Join(outDir, "1.in")
-	if data, err := os.ReadFile(inPath); err == nil {
-		cmd.Stdin = bytes.NewReader(data)
-	}
-	out, err := cmd.CombinedOutput()
-	got := bytes.TrimSpace(out)
-	if err != nil {
-		_ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
-		t.Fatalf("run: %v", err)
-	}
-	_ = os.Remove(errPath)
+                cmd := exec.Command("python3", codePath)
+                envv := os.Environ()
+                if !bench {
+                        envv = append(envv, "MOCHI_NOW_SEED=1")
+                }
+                cmd.Env = envv
+                inPath := filepath.Join(outDir, idx+".in")
+                if data, err := os.ReadFile(inPath); err == nil {
+                        cmd.Stdin = bytes.NewReader(data)
+                }
+                out, err := cmd.CombinedOutput()
+                got := bytes.TrimSpace(out)
+                if err != nil {
+                        _ = os.WriteFile(errPath, append([]byte("run: "+err.Error()+"\n"), out...), 0o644)
+                        t.Fatalf("run %s: %v", idx, err)
+                }
+                _ = os.Remove(errPath)
 
-	if bench {
-		benchPath := filepath.Join(outDir, "1.bench")
-		idx := bytes.LastIndex(got, []byte("{"))
-		if idx >= 0 {
-			part := bytes.TrimSpace(got[idx:])
-			if json.Valid(part) {
-				_ = os.WriteFile(benchPath, part, 0o644)
-			} else {
-				_ = os.WriteFile(benchPath, got, 0o644)
-			}
-		} else {
-			_ = os.WriteFile(benchPath, got, 0o644)
-		}
-		return
-	}
+                if bench {
+                        benchPath := filepath.Join(outDir, idx+".bench")
+                        j := bytes.LastIndex(got, []byte("{"))
+                        if j >= 0 {
+                                part := bytes.TrimSpace(got[j:])
+                                if json.Valid(part) {
+                                        _ = os.WriteFile(benchPath, part, 0o644)
+                                } else {
+                                        _ = os.WriteFile(benchPath, got, 0o644)
+                                }
+                        } else {
+                                _ = os.WriteFile(benchPath, got, 0o644)
+                        }
+                        continue
+                }
 
-	if !bytes.Equal(got, want) {
-		t.Fatalf("output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s", got, want)
-	}
+                if !bytes.Equal(got, want) {
+                        t.Fatalf("%s: output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s", idx, got, want)
+                }
+        }
 }
 
 func updateSPOJ() {
-	root := repoRoot(&testing.T{})
-	outDir := filepath.Join(root, "tests", "spoj", "x", "python")
-	md := filepath.Join(root, "transpiler", "x", "python", "SPOJ.md")
-	status := " "
-	dur := ""
-	mem := ""
-	if _, err := os.Stat(filepath.Join(outDir, "1.error")); err == nil {
-		status = "error"
-	} else if _, err := os.Stat(filepath.Join(outDir, "1.py")); err == nil {
-		status = "✓"
-	}
-	if data, err := os.ReadFile(filepath.Join(outDir, "1.bench")); err == nil {
-		var r struct {
-			DurationUS  int64 `json:"duration_us"`
-			MemoryBytes int64 `json:"memory_bytes"`
-		}
-		if json.Unmarshal(bytes.TrimSpace(data), &r) == nil {
-			dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
-			mem = formatBytes(r.MemoryBytes)
-		}
-	}
-	compiled := 0
-	if status == "✓" {
-		compiled = 1
-	}
-	var buf bytes.Buffer
-	buf.WriteString("# SPOJ Transpiler Progress\n\n")
-	buf.WriteString("This checklist is auto-generated.\n")
-	buf.WriteString("Generated Python code from programs in `tests/spoj/x/mochi` lives in `tests/spoj/x/python`.\n")
-	loc := time.FixedZone("GMT+7", 7*60*60)
-	buf.WriteString("Last updated: " + time.Now().In(loc).Format("2006-01-02 15:04 MST") + "\n\n")
-	buf.WriteString("## SPOJ Golden Test Checklist (" + strconv.Itoa(compiled) + "/1)\n")
-	buf.WriteString("| Index | Name | Status | Duration | Memory |\n")
-	buf.WriteString("|------:|------|:-----:|---------:|-------:|\n")
-	buf.WriteString("| 1 | Life, the Universe, and Everything | " + status + " | " + dur + " | " + mem + " |\n")
-	_ = os.WriteFile(md, buf.Bytes(), 0o644)
+        root := repoRoot(&testing.T{})
+        outDir := filepath.Join(root, "tests", "spoj", "x", "python")
+        md := filepath.Join(root, "transpiler", "x", "python", "SPOJ.md")
+
+        type row struct {
+                idx int
+                name string
+                status string
+                dur string
+                mem string
+        }
+
+        names := map[int]string{}
+        for i := 1; i <= 5; i++ {
+                path := filepath.Join(root, "tests", "spoj", "x", "mochi", fmt.Sprintf("%d.md", i))
+                if data, err := os.ReadFile(path); err == nil {
+                        line := strings.TrimSpace(strings.SplitN(string(data), "\n", 2)[0])
+                        line = strings.TrimPrefix(line, "#")
+                        line = strings.TrimSpace(line)
+                        if strings.HasPrefix(line, "[") {
+                                if r := strings.Index(line, "]"); r > 1 {
+                                        names[i] = line[1:r]
+                                }
+                        }
+                        if names[i] == "" {
+                                names[i] = line
+                        }
+                } else {
+                        names[i] = fmt.Sprintf("Problem %d", i)
+                }
+        }
+
+        var rows []row
+        compiled := 0
+        for i := 1; i <= 5; i++ {
+                r := row{idx: i, name: names[i], status: " "}
+                if _, err := os.Stat(filepath.Join(outDir, fmt.Sprintf("%d.error", i))); err == nil {
+                        r.status = "error"
+                } else if _, err := os.Stat(filepath.Join(outDir, fmt.Sprintf("%d.py", i))); err == nil {
+                        r.status = "✓"
+                        compiled++
+                }
+                if data, err := os.ReadFile(filepath.Join(outDir, fmt.Sprintf("%d.bench", i))); err == nil {
+                        var b struct {
+                                DurationUS  int64 `json:"duration_us"`
+                                MemoryBytes int64 `json:"memory_bytes"`
+                        }
+                        if json.Unmarshal(bytes.TrimSpace(data), &b) == nil {
+                                r.dur = formatDuration(time.Duration(b.DurationUS) * time.Microsecond)
+                                r.mem = formatBytes(b.MemoryBytes)
+                        }
+                }
+                rows = append(rows, r)
+        }
+
+        var buf bytes.Buffer
+        buf.WriteString("# SPOJ Transpiler Progress\n\n")
+        buf.WriteString("This checklist is auto-generated.\n")
+        buf.WriteString("Generated Python code from programs in `tests/spoj/x/mochi` lives in `tests/spoj/x/python`.\n")
+        loc := time.FixedZone("GMT+7", 7*60*60)
+        buf.WriteString("Last updated: " + time.Now().In(loc).Format("2006-01-02 15:04 MST") + "\n\n")
+        buf.WriteString("## SPOJ Golden Test Checklist (" + strconv.Itoa(compiled) + "/5)\n")
+        buf.WriteString("| Index | Name | Status | Duration | Memory |\n")
+        buf.WriteString("|------:|------|:-----:|---------:|-------:|\n")
+        for _, r := range rows {
+                buf.WriteString(fmt.Sprintf("| %d | %s | %s | %s | %s |\n", r.idx, r.name, r.status, r.dur, r.mem))
+        }
+        _ = os.WriteFile(md, buf.Bytes(), 0o644)
 }
 
 func formatDuration(d time.Duration) string {
