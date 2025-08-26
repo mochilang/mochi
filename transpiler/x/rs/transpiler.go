@@ -3555,6 +3555,21 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	}
 	prog.Types = typeDecls
 	_ = env // reserved for future use
+	// If no variable actually uses a HashMap type, avoid importing the
+	// collection to keep the generated code minimal.  Some compilation
+	// paths conservatively set usesHashMap when analysing map literals, even
+	// if the final program does not contain any map values.  Check the
+	// recorded variable types to decide whether the import is truly needed.
+	usedMap := false
+	for _, t := range varTypes {
+		if strings.HasPrefix(t, "HashMap<") {
+			usedMap = true
+			break
+		}
+	}
+	if usesHashMap && !usedMap {
+		usesHashMap = false
+	}
 	prog.UsesHashMap = usesHashMap
 	prog.UsesGroup = usesGroup
 	prog.UseTime = useTime
