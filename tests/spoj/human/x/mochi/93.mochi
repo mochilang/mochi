@@ -1,0 +1,74 @@
+// Solution for SPOJ MAYA - Numeral System of the Maya
+// https://www.spoj.com/problems/MAYA/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun main() {
+  let map = {
+    "S":0,
+    ".":1,
+    "..":2,
+    "...":3,
+    "....":4,
+    "-":5,
+    ". -":6,
+    ".. -":7,
+    "... -":8,
+    ".... -":9,
+    "- -":10,
+    ". - -":11,
+    ".. - -":12,
+    "... - -":13,
+    ".... - -":14,
+    "- - -":15,
+    ". - - -":16,
+    ".. - - -":17,
+    "... - - -":18,
+    ".... - - -":19,
+  }
+  while true {
+    let line = input()
+    if line == "" { continue }
+    if line == "0" { break }
+    let n = parseIntStr(line)
+    var vals: list<int> = []
+    var i = 0
+    while i < n {
+      let d = input()
+      if d == "" { continue }
+      vals = append(vals, (map[d] as int))
+      i = i + 1
+    }
+    var mult = 1
+    var pos = 0
+    var j = len(vals) - 1
+    var total = 0
+    while j >= 0 {
+      total = total + vals[j] * mult
+      pos = pos + 1
+      if pos == 1 {
+        mult = 20
+      } else if pos == 2 {
+        mult = 360
+      } else {
+        mult = mult * 20
+      }
+      j = j - 1
+    }
+    print(total)
+  }
+}
+
+main()
