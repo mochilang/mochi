@@ -1,0 +1,137 @@
+// Solution for SPOJ BUNDLE - Bundling
+// https://www.spoj.com/problems/BUNDLE/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+var templates: list<map<string, any>> = []
+var inst: list<map<string, any>> = []
+var N = 0
+var memo: map<string, list<int>> = {}
+
+fun key(pos: int, last: int): string {
+  return str(pos) + "," + str(last)
+}
+
+fun minPair(a: list<int>, b: list<int>): list<int> {
+  if a[0] < b[0] { return a }
+  if a[0] > b[0] { return b }
+  if a[1] <= b[1] { return a }
+  return b
+}
+
+fun dfs(pos: int, last: int): list<int> {
+  if pos == N { return [0,0] }
+  let k = key(pos, last)
+  if memo[k] != nil { return memo[k] }
+  var best = [1000000, 1000000]
+  var tIdx = 0
+  while tIdx < len(templates) {
+    let temp = templates[tIdx]
+    let slots = temp["slots"] as string
+    let p = temp["p"] as int
+    var size = 1
+    while size <= 3 {
+      if pos + size > N { break }
+      if p > size { size = size + 1; continue }
+      // type match
+      var ok = true
+      var j = 0
+      while j < size {
+        if inst[pos+j+1]["c"] as string != slots[j:j+1] {
+          ok = false
+          break
+        }
+        j = j + 1
+      }
+      if ok {
+        var currLast = last
+        var valid = true
+        j = 1
+        while j <= size {
+          if p > 0 && j-1 == p {
+            currLast = pos + p
+          }
+          let dep = inst[pos+j]["d"] as int
+          if dep > currLast {
+            valid = false
+            break
+          }
+          j = j + 1
+        }
+        if valid {
+          let internal = if p > 0 { 1 } else { 0 }
+          // option1: no stop at end if possible
+          if p < size {
+            let r = dfs(pos+size, currLast)
+            let nb = r[0] + 1
+            let ns = r[1] + internal
+            best = minPair(best, [nb, ns])
+          }
+          // option2: stop at end
+          let r2 = dfs(pos+size, pos+size)
+          let nb2 = r2[0] + 1
+          let ns2 = r2[1] + internal + (if p < size { 1 } else { 0 })
+          best = minPair(best, [nb2, ns2])
+        }
+      }
+      size = size + 1
+    }
+    tIdx = tIdx + 1
+  }
+  memo[k] = best
+  return best
+}
+
+fun main() {
+  let zLine = input()
+  if zLine == "" { return }
+  let z = parseIntStr(zLine)
+  var case = 0
+  while case < z {
+    var line = input()
+    while line == "" { line = input() }
+    var sp = 0
+    while line[sp:sp+1] != " " { sp = sp + 1 }
+    let t = parseIntStr(line[0:sp])
+    N = parseIntStr(line[sp+1:])
+    templates = []
+    inst = [nil]
+    var i = 0
+    while i < t {
+      let l = input()
+      let slots = l[0:3]
+      let p = parseIntStr(l[4:])
+      templates = append(templates, { "slots": slots, "p": p })
+      i = i + 1
+    }
+    i = 1
+    while i <= N {
+      let l = input()
+      let typ = l[0:1]
+      let dep = parseIntStr(l[2:])
+      inst = append(inst, { "c": typ, "d": dep })
+      i = i + 1
+    }
+    memo = {}
+    let res = dfs(0, 0)
+    print(str(res[0]) + " " + str(res[1]))
+    case = case + 1
+    if case < z {
+      let _ = input()
+    }
+  }
+}
+
+main()
