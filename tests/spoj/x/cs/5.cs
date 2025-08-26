@@ -2,6 +2,7 @@
 #pragma warning disable 0169, 0649, 0162
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Numerics;
 using System.IO;
@@ -28,6 +29,12 @@ class Program {
     }
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
+    }
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static T _idx<T>(T[] arr, long i) {
         if (arr == null) return default(T);
@@ -64,6 +71,32 @@ class Program {
             return 0;
         }
         try { return Convert.ToInt64(v); } catch { return 0; }
+    }
+    static long _mod(long a, long b) {
+        if (b == 0) return 0;
+        var r = a % b;
+        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
+        return r;
+    }
+    static BigInteger _mod(BigInteger a, BigInteger b) {
+        if (b == 0) return BigInteger.Zero;
+        var r = a % b;
+        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
+        return r;
+    }
+    static long _floordiv(long a, long b) {
+        if (b == 0) return 0;
+        var q = a / b;
+        var r = a % b;
+        if ((r > 0 && b < 0) || (r < 0 && b > 0)) q--;
+        return q;
+    }
+    static BigInteger _floordiv(BigInteger a, BigInteger b) {
+        if (b == 0) return BigInteger.Zero;
+        var q = a / b;
+        var r = a % b;
+        if ((r > 0 && b < 0) || (r < 0 && b > 0)) q -= 1;
+        return q;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -133,14 +166,90 @@ class Program {
         return _fmt(v);
     }
     static string __name__ = "__main__";
-    public static void main() {
-        while (true) {
-            string line_0 = _input();
-            BigInteger n_1 = _atoi(line_0);
-            if ((n_1 == 42)) {
+    public static string next_pal(string s_0) {
+        Dictionary<string, BigInteger> digitMap_1 = new Dictionary<string, BigInteger>{{"0", 0}, {"1", 1}, {"2", 2}, {"3", 3}, {"4", 4}, {"5", 5}, {"6", 6}, {"7", 7}, {"8", 8}, {"9", 9}};
+        long n_2 = s_0.Length;
+        BigInteger[] num_3 = new BigInteger[]{};
+        for (var i_4 = 0; i_4 < n_2; i_4++) {
+            num_3 = Enumerable.ToArray(num_3.Append((long)((digitMap_1.ContainsKey(_substr(s_0, i_4, (long)((i_4 + 1)))) ? digitMap_1[_substr(s_0, i_4, (long)((i_4 + 1)))] : BigInteger.Zero))));
+        };
+        bool all9_5 = true;
+        foreach (BigInteger d_6 in num_3) {
+            if ((d_6 != 9)) {
+                all9_5 = false;
                 break;
             }
-            Console.WriteLine(Program._fmtTop(line_0));
+        };
+        if (all9_5) {
+            string res_7 = "1";
+            for (var __8 = 0; __8 < (n_2 - 1); __8++) {
+                res_7 = (res_7 + "0");
+            }
+            res_7 = (res_7 + "1");
+            return res_7;
+        };
+        BigInteger left_9 = ((n_2 / 2) - 1);
+        BigInteger right_10 = ((_mod(n_2, 2) == 0) ? (n_2 / 2) : ((n_2 / 2) + 1));
+        while ((((left_9 >= 0) && (right_10 < n_2)) && (_idx(num_3, (long)(left_9)) == _idx(num_3, (long)(right_10))))) {
+            left_9 = (left_9 - 1);
+            right_10 = (right_10 + 1);
+        };
+        bool smaller_11 = ((left_9 < 0) || (_idx(num_3, (long)(left_9)) < _idx(num_3, (long)(right_10))));
+        left_9 = ((n_2 / 2) - 1);
+        right_10 = ((_mod(n_2, 2) == 0) ? (n_2 / 2) : ((n_2 / 2) + 1));
+        while ((left_9 >= 0)) {
+            num_3[(int)(right_10)] = _idx(num_3, (long)(left_9));
+            left_9 = (left_9 - 1);
+            right_10 = (right_10 + 1);
+        };
+        if (smaller_11) {
+            BigInteger carry_12 = 1;
+            left_9 = ((n_2 / 2) - 1);
+            if ((_mod(n_2, 2) == 1)) {
+                BigInteger mid_13 = (n_2 / 2);
+                num_3[(int)(mid_13)] = (_idx(num_3, (long)(mid_13)) + carry_12);
+                carry_12 = (_idx(num_3, (long)(mid_13)) / 10);
+                num_3[(int)(mid_13)] = _mod(_idx(num_3, (long)(mid_13)), 10);
+                right_10 = (mid_13 + 1);
+            } else {
+                right_10 = (n_2 / 2);
+            }
+            while ((left_9 >= 0)) {
+                num_3[(int)(left_9)] = (_idx(num_3, (long)(left_9)) + carry_12);
+                carry_12 = (_idx(num_3, (long)(left_9)) / 10);
+                num_3[(int)(left_9)] = _mod(_idx(num_3, (long)(left_9)), 10);
+                num_3[(int)(right_10)] = _idx(num_3, (long)(left_9));
+                left_9 = (left_9 - 1);
+                right_10 = (right_10 + 1);
+            }
+        };
+        string out_14 = "";
+        foreach (BigInteger d_15 in num_3) {
+            out_14 = (out_14 + _fmtStr(d_15));
+        };
+        return out_14;
+    }
+
+    public static BigInteger parseIntStr(string str_16) {
+        Dictionary<string, BigInteger> digits_17 = new Dictionary<string, BigInteger>{{"0", 0}, {"1", 1}, {"2", 2}, {"3", 3}, {"4", 4}, {"5", 5}, {"6", 6}, {"7", 7}, {"8", 8}, {"9", 9}};
+        BigInteger i_18 = 0;
+        BigInteger n_19 = 0;
+        while ((i_18 < str_16.Length)) {
+            n_19 = ((n_19 * 10) + (long)((digits_17.ContainsKey(_substr(str_16, (long)(i_18), (long)((i_18 + 1)))) ? digits_17[_substr(str_16, (long)(i_18), (long)((i_18 + 1)))] : BigInteger.Zero)));
+            i_18 = (i_18 + 1);
+        };
+        return n_19;
+    }
+
+    public static void main() {
+        string tStr_20 = _input();
+        if ((tStr_20 == "")) {
+            return;
+        };
+        BigInteger t_21 = Program.parseIntStr(tStr_20);
+        for (var __22 = 0; __22 < t_21; __22++) {
+            string s_23 = _input();
+            Console.WriteLine(Program._fmtTop(Program.next_pal(s_23)));
         };
     }
 
