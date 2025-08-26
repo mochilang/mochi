@@ -1,0 +1,205 @@
+// Solution for SPOJ CUTOUT - Cutting out
+// https://www.spoj.com/problems/CUTOUT/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  var i = 0
+  while i < len(pieces) {
+    let p = pieces[i]
+    if len(p) > 0 {
+      nums = append(nums, p as int)
+    }
+    i = i + 1
+  }
+  return nums
+}
+
+fun sort_unique(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  var res: list<int> = []
+  i = 0
+  while i < len(arr) {
+    if i == 0 || arr[i] != arr[i-1] {
+      res = append(res, arr[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun make2DBool(h: int, w: int): list<list<bool>> {
+  var arr: list<list<bool>> = []
+  var i = 0
+  while i < h {
+    var row: list<bool> = []
+    var j = 0
+    while j < w {
+      row = append(row, false)
+      j = j + 1
+    }
+    arr = append(arr, row)
+    i = i + 1
+  }
+  return arr
+}
+
+fun make2DInt(h: int, w: int): list<list<int>> {
+  var arr: list<list<int>> = []
+  var i = 0
+  while i < h {
+    var row: list<int> = []
+    var j = 0
+    while j < w {
+      row = append(row, 0)
+      j = j + 1
+    }
+    arr = append(arr, row)
+    i = i + 1
+  }
+  return arr
+}
+
+fun max_area(n: int, nums: list<int>): int {
+  var xs: list<int> = []
+  xs = append(xs, 0)
+  xs = append(xs, n)
+  var ys: list<int> = []
+  ys = append(ys, 0)
+  ys = append(ys, n)
+  var rects: list<list<int>> = []
+  var i = 0
+  while i*4 + 3 < len(nums) {
+    let x1 = nums[4*i]
+    let x2 = nums[4*i+1]
+    let y1 = nums[4*i+2]
+    let y2 = nums[4*i+3]
+    var r: list<int> = []
+    r = append(r, x1)
+    r = append(r, x2)
+    r = append(r, y1)
+    r = append(r, y2)
+    rects = append(rects, r)
+    xs = append(xs, x1)
+    xs = append(xs, x2)
+    ys = append(ys, y1)
+    ys = append(ys, y2)
+    i = i + 1
+  }
+  xs = sort_unique(xs)
+  ys = sort_unique(ys)
+  let w = len(xs) - 1
+  let h = len(ys) - 1
+  var blocked = make2DBool(h, w)
+  var ri = 0
+  while ri < len(rects) {
+    let r = rects[ri]
+    let x1 = r[0]
+    let x2 = r[1]
+    let y1 = r[2]
+    let y2 = r[3]
+    var xi = 0
+    while xi < len(xs) && xs[xi] != x1 { xi = xi + 1 }
+    var xj = 0
+    while xj < len(xs) && xs[xj] != x2 { xj = xj + 1 }
+    var yi = 0
+    while yi < len(ys) && ys[yi] != y1 { yi = yi + 1 }
+    var yj = 0
+    while yj < len(ys) && ys[yj] != y2 { yj = yj + 1 }
+    var yy = yi
+    while yy < yj {
+      var xx = xi
+      while xx < xj {
+        blocked[yy][xx] = true
+        xx = xx + 1
+      }
+      yy = yy + 1
+    }
+    ri = ri + 1
+  }
+  var pref = make2DInt(h+1, w)
+  var row = 0
+  while row < h {
+    var col = 0
+    while col < w {
+      var val = 0
+      if blocked[row][col] { val = 1 }
+      pref[row+1][col] = pref[row][col] + val
+      col = col + 1
+    }
+    row = row + 1
+  }
+  var maxArea = 0
+  var top = 0
+  while top < h {
+    var bottom = top + 1
+    while bottom <= h {
+      let height = ys[bottom] - ys[top]
+      var width = 0
+      var maxWidth = 0
+      var col2 = 0
+      while col2 < w {
+        if pref[bottom][col2] - pref[top][col2] == 0 {
+          width = width + (xs[col2+1] - xs[col2])
+          if width > maxWidth { maxWidth = width }
+        } else {
+          width = 0
+        }
+        col2 = col2 + 1
+      }
+      let area = height * maxWidth
+      if area > maxArea { maxArea = area }
+      bottom = bottom + 1
+    }
+    top = top + 1
+  }
+  return maxArea
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let d = tLine as int
+  var case = 0
+  while case < d {
+    let headerLine = input()
+    let header = parse_ints(headerLine)
+    let n = header[0]
+    let r = header[1]
+    let rectLine = input()
+    let nums = parse_ints(rectLine)
+    let ans = max_area(n, nums)
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
