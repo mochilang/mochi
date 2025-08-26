@@ -130,8 +130,7 @@ def _concat(a, b):
 
 const helperAppend = `
 def _append(lst, v):
-    if lst is None:
-        lst = []
+    lst = [] if lst is None else lst[:]
     lst.append(v)
     return lst
 `
@@ -154,10 +153,6 @@ def panic(msg):
 const helperStr = `
 import builtins
 def _str(v):
-    if isinstance(v, float):
-        if abs(v - builtins.round(v)) < 1e-9:
-            return builtins.str(int(builtins.round(v)))
-        return builtins.str(v)
     return builtins.str(v)
 `
 
@@ -532,7 +527,18 @@ func (c *CallExpr) emit(w io.Writer) error {
 			}
 			continue
 		}
-		if err := emitExpr(w, a); err != nil {
+		expr := a
+		if fe, ok := c.Func.(*FieldExpr); !(ok && fe.Name == "replace" && exprString(fe.Target) == "dataclasses") {
+			if currentEnv != nil {
+				if _, ok := inferPyType(a, currentEnv).(types.StructType); ok {
+					if currentImports != nil {
+						currentImports["dataclasses"] = true
+					}
+					expr = &CallExpr{Func: &FieldExpr{Target: &Name{Name: "dataclasses"}, Name: "replace"}, Args: []Expr{a}}
+				}
+			}
+		}
+		if err := emitExpr(w, expr); err != nil {
 			return err
 		}
 	}
@@ -754,7 +760,15 @@ func (f *FieldExpr) emit(w io.Writer) error {
 		_, err := fmt.Fprintf(w, "[%q]", f.Name)
 		return err
 	}
-	_, err := io.WriteString(w, "."+safeName(f.Name))
+	name := f.Name
+	if currentEnv != nil {
+		if st, ok := inferPyType(f.Target, currentEnv).(types.StructType); ok {
+			if _, ok := st.Fields[f.Name]; ok {
+				name = safeName(f.Name)
+			}
+		}
+	}
+	_, err := io.WriteString(w, "."+name)
 	return err
 }
 
@@ -5436,8 +5450,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if isBoolOp(p.Call.Args[i]) {
 					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(1 if %s else 0)", exprString(a))}
 				} else if _, ok := t.(types.BoolType); ok {
-					// Match the VM's representation using capitalized booleans
-					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(\"True\" if %s else \"False\")", exprString(a))}
+					// Match the VM's representation using lowercase booleans
+					outArgs[i] = &RawExpr{Code: fmt.Sprintf("(\"true\" if %s else \"false\")", exprString(a))}
 				} else if lt, ok := t.(types.ListType); ok {
 					if _, ok2 := lt.Elem.(types.StructType); ok2 {
 						currentImports["dataclasses"] = true
