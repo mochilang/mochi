@@ -1,0 +1,126 @@
+// Solution for SPOJ EASYPIE - Easy Problem
+// https://www.spoj.com/problems/EASYPIE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun formatScaled(n: int): string {
+  var whole = n / 100
+  var frac = n % 100
+  var fracStr = str(frac)
+  if len(fracStr) < 2 { fracStr = "0" + fracStr }
+  return str(whole) + "." + fracStr
+}
+
+fun makeIntMatrix(r: int, c: int): list<list<int>> {
+  var m: list<list<int>> = []
+  var i = 0
+  while i < r {
+    var row: list<int> = []
+    var j = 0
+    while j < c {
+      row = append(row, 0)
+      j = j + 1
+    }
+    m = append(m, row)
+    i = i + 1
+  }
+  return m
+}
+
+fun makeBoolMatrix(r: int, c: int): list<list<bool>> {
+  var m: list<list<bool>> = []
+  var i = 0
+  while i < r {
+    var row: list<bool> = []
+    var j = 0
+    while j < c {
+      row = append(row, false)
+      j = j + 1
+    }
+    m = append(m, row)
+    i = i + 1
+  }
+  return m
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  let probIdx = {"A":0,"B":1,"C":2,"D":3,"E":4,"F":5,"G":6,"H":7,"I":8}
+  var case = 0
+  while case < t {
+    var nLine = ""
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    var teamIdx: map<string,int> = {}
+    var nextTeam = 0
+    var subs = makeIntMatrix(62,9)
+    var solved = makeBoolMatrix(62,9)
+    var accCount: list<int> = []
+    var totalSubs: list<int> = []
+    var totalTime: list<int> = []
+    var j = 0
+    while j < 9 {
+      accCount = append(accCount, 0)
+      totalSubs = append(totalSubs, 0)
+      totalTime = append(totalTime, 0)
+      j = j + 1
+    }
+    var i = 0
+    while i < n {
+      var line = input()
+      if line == "" { continue }
+      let parts = splitSpaces(line)
+      let time = int(parts[0])
+      let team = parts[1]
+      let prob = parts[2]
+      let res = parts[3]
+      var idxVal = teamIdx[team]
+      var ti = 0
+      if idxVal { ti = (idxVal as int) - 1 } else { ti = nextTeam; teamIdx[team] = ti + 1; nextTeam = nextTeam + 1 }
+      let pj = probIdx[prob] as int
+      if (solved[ti][pj] as bool) { i = i + 1; continue }
+      subs[ti][pj] = subs[ti][pj] + 1
+      if res == "A" {
+        solved[ti][pj] = true
+        accCount[pj] = accCount[pj] + 1
+        totalSubs[pj] = totalSubs[pj] + subs[ti][pj]
+        totalTime[pj] = totalTime[pj] + time
+      }
+      i = i + 1
+    }
+    let probs = ["A","B","C","D","E","F","G","H","I"]
+    var k = 0
+    while k < 9 {
+      let s = accCount[k]
+      let p = probs[k]
+      if s > 0 {
+        let avgSub = (totalSubs[k] * 100 + s / 2) / s
+        let avgTime = (totalTime[k] * 100 + s / 2) / s
+        print(p + " " + str(s) + " " + formatScaled(avgSub) + " " + formatScaled(avgTime))
+      } else {
+        print(p + " 0")
+      }
+      k = k + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
