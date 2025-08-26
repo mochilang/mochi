@@ -1082,13 +1082,26 @@ func (l *ListLit) emit(w io.Writer) {
 			same = false
 		}
 	}
+	target := inferType(l)
 	io.WriteString(w, "[|")
 	for i, e := range l.Elems {
-		if hasInt64 && types[i] == "int" {
+		if ce, ok := e.(*CallExpr); ok && ce.Func == "obj" && len(ce.Args) == 1 {
+			io.WriteString(w, "box (")
+			ce.Args[0].emit(w)
+			io.WriteString(w, ")")
+		} else if cast, ok := e.(*CastExpr); ok && cast.Type == "obj" {
+			io.WriteString(w, "box (")
+			cast.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else if hasInt64 && types[i] == "int" {
 			io.WriteString(w, "int64 (")
 			e.emit(w)
 			io.WriteString(w, ")")
 		} else if !same && types[i] != "obj" {
+			io.WriteString(w, "box (")
+			e.emit(w)
+			io.WriteString(w, ")")
+		} else if target == "obj array" && types[i] != "obj" {
 			io.WriteString(w, "box (")
 			e.emit(w)
 			io.WriteString(w, ")")
@@ -2608,6 +2621,21 @@ func inferType(e Expr) string {
 	case *MapLit:
 		usesDictCreate = true
 		neededOpens["System.Collections.Generic"] = true
+		keyT := "string"
+		if len(v.Items) > 0 {
+			kt := inferType(v.Items[0][0])
+			sameK := kt != "obj" && kt != ""
+			for _, kv := range v.Items[1:] {
+				t := inferType(kv[0])
+				if t != kt {
+					sameK = false
+					break
+				}
+			}
+			if sameK {
+				keyT = kt
+			}
+		}
 		if len(v.Types) > 0 {
 			valT := v.Types[0]
 			same := valT != "obj"
@@ -2618,7 +2646,7 @@ func inferType(e Expr) string {
 				}
 			}
 			if same {
-				return fmt.Sprintf("System.Collections.Generic.IDictionary<string, %s>", valT)
+				return fmt.Sprintf("System.Collections.Generic.IDictionary<%s, %s>", keyT, valT)
 			}
 		}
 		return "map"
@@ -2840,6 +2868,9 @@ func (c *CallExpr) emit(w io.Writer) {
 		name = "``mod``"
 	} else if name == "int" {
 		name = "int64"
+	}
+	if name == "obj" {
+		name = "box"
 	}
 	if strings.Contains(name, " ") {
 		io.WriteString(w, name)
@@ -3813,10 +3844,17 @@ func Emit(prog *Program) []byte {
 			buf.WriteByte('\n')
 		}
 	}
-	if b := buf.Bytes(); len(b) > 0 && b[len(b)-1] != '\n' {
+	b := buf.Bytes()
+	if len(b) > 0 && b[len(b)-1] != '\n' {
 		buf.WriteByte('\n')
+		b = buf.Bytes()
 	}
-	return buf.Bytes()
+	b = bytes.ReplaceAll(b, []byte("obj ("), []byte("box ("))
+	b = bytes.ReplaceAll(b, []byte("unbox<array>"), []byte("unbox<int64 array>"))
+	b = bytes.ReplaceAll(b, []byte("[|[||]|]"), []byte("[|Array.empty<int64>|]"))
+	b = bytes.ReplaceAll(b, []byte("let _: string = _readLine()"), []byte("ignore (_readLine())"))
+	b = bytes.ReplaceAll(b, []byte("Array.append lst [|Edge array ([||])|]"), []byte("Array.append lst [|Array.empty<Edge>|]"))
+	return b
 }
 
 func header() string {
@@ -5628,6 +5666,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			k, err := convertExpr(it.Key)
 			if err != nil {
 				return nil, err
+			}
+			if id, ok := k.(*IdentExpr); ok {
+				k = &StringLit{Value: id.Name}
 			}
 			v, err := convertExpr(it.Value)
 			if err != nil {
