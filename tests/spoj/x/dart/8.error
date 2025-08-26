@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/spoj/x/mochi/8.mochi:53:26: unexpected token "!" (expected PostfixExpr)
+  --> /workspace/mochi/tests/spoj/x/mochi/8.mochi:53:26
+
+ 53 |   while len(last) > 1 && !all_equal(last) {
+    |                          ^
+
+help:
+  Parse error occurred. Check syntax near this location.

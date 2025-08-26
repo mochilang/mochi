@@ -3050,7 +3050,7 @@ func (c *CastExpr) emit(w io.Writer) error {
 				return err
 			}
 			expr := strings.TrimSpace(vbuf.String())
-			_, err := io.WriteString(w, "(int.tryParse("+expr+".toString()) ?? "+expr+".toString().codeUnitAt(0))")
+			_, err := fmt.Fprintf(w, "(() { var __tmp = (%s); return int.tryParse(__tmp.toString()) ?? __tmp.toString().codeUnitAt(0); })()", expr)
 			return err
 		}
 		if _, err := io.WriteString(w, "("); err != nil {
@@ -3797,8 +3797,20 @@ func (l *LambdaExpr) emit(w io.Writer) error {
 type LenExpr struct{ X Expr }
 
 func (l *LenExpr) emit(w io.Writer) error {
-	if err := l.X.emit(w); err != nil {
-		return err
+	if _, ok := l.X.(*CastExpr); ok {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := l.X.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, ")"); err != nil {
+			return err
+		}
+	} else {
+		if err := l.X.emit(w); err != nil {
+			return err
+		}
 	}
 	_, err := io.WriteString(w, ".length")
 	return err
