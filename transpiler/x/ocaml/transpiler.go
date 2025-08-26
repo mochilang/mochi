@@ -1925,9 +1925,9 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 	if mi.Dyn {
 		io.WriteString(w, "(match List.assoc_opt (__str (Obj.repr (")
 		mi.Key.emit(w)
-		io.WriteString(w, "))) (")
+		io.WriteString(w, "))) (Obj.magic (")
 		mi.Map.emit(w)
-		io.WriteString(w, ") with Some v -> (Obj.magic v : ")
+		io.WriteString(w, ") : (string * Obj.t) list) with Some v -> (Obj.magic v : ")
 		if strings.HasPrefix(mi.Typ, "map-") {
 			inner := strings.TrimPrefix(mi.Typ, "map-")
 			keyTyp := "string"
@@ -2430,13 +2430,13 @@ func (ix *IndexExpr) emit(w io.Writer) {
 				io.WriteString(w, "(Obj.magic v : string)")
 			} else if ix.Typ == "bool" {
 				io.WriteString(w, "(Obj.magic v : bool)")
-			} else if ix.Typ != "" {
-				io.WriteString(w, "(Obj.magic v : ")
-				io.WriteString(w, ocamlType(ix.Typ))
-				io.WriteString(w, ")")
 			} else if strings.HasPrefix(def, "([] : ") && strings.HasSuffix(def, ")") {
 				io.WriteString(w, "(Obj.magic v : ")
 				io.WriteString(w, def[len("([] : "):len(def)-1])
+				io.WriteString(w, ")")
+			} else if ix.Typ != "" {
+				io.WriteString(w, "(Obj.magic v : ")
+				io.WriteString(w, ocamlType(ix.Typ))
 				io.WriteString(w, ")")
 			} else {
 				io.WriteString(w, "v")
