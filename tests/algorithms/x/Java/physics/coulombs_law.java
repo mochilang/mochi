@@ -8,10 +8,10 @@ public class Main {
         double scaled_1 = (double)((double)(y_1) * (double)(m_1));
         java.math.BigInteger i_1 = new java.math.BigInteger(String.valueOf(((Number)(scaled_1)).intValue()));
         if ((double)((double)(scaled_1) - (double)((((Number)(i_1)).doubleValue()))) >= (double)(0.5)) {
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
-        java.math.BigInteger int_part_1 = new java.math.BigInteger(String.valueOf(i_1.divide(java.math.BigInteger.valueOf(100))));
-        java.math.BigInteger frac_part_1 = new java.math.BigInteger(String.valueOf(i_1.remainder(java.math.BigInteger.valueOf(100))));
+        java.math.BigInteger int_part_1 = i_1.divide(java.math.BigInteger.valueOf(100));
+        java.math.BigInteger frac_part_1 = i_1.remainder(java.math.BigInteger.valueOf(100));
         String frac_str_1 = _p(frac_part_1);
         if (frac_part_1.compareTo(java.math.BigInteger.valueOf(10)) < 0) {
             frac_str_1 = "0" + frac_str_1;

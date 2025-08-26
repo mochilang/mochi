@@ -19,8 +19,8 @@ public class Main {
         if (n.compareTo(java.math.BigInteger.valueOf(0)) < 0) {
             throw new RuntimeException(String.valueOf("n should be an integer greater than 0."));
         }
-        java.math.BigInteger cap_1 = new java.math.BigInteger(String.valueOf(n.compareTo(java.math.BigInteger.valueOf(0)) == 0 ? 2147483647 : n));
-        return new LRUCache(new java.math.BigInteger(String.valueOf(cap_1)), ((String[])(new String[]{})));
+        java.math.BigInteger cap_1 = n.compareTo(java.math.BigInteger.valueOf(0)) == 0 ? 2147483647 : n;
+        return new LRUCache(cap_1, ((String[])(new String[]{})));
     }
 
     static String[] remove_element(String[] xs, String x) {
@@ -34,7 +34,7 @@ public class Main {
             } else {
                 res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.Arrays.stream(new String[]{v_1})).toArray(String[]::new)));
             }
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return ((String[])(res));
     }
@@ -47,7 +47,7 @@ public class Main {
             if ((store[_idx((store).length, ((java.math.BigInteger)(i_3)).longValue())].equals(x))) {
                 exists_1 = true;
             }
-            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
+            i_3 = i_3.add(java.math.BigInteger.valueOf(1));
         }
         if (exists_1) {
             store = ((String[])(remove_element(((String[])(store)), x)));
@@ -56,19 +56,19 @@ public class Main {
             java.math.BigInteger j_1 = java.math.BigInteger.valueOf(0);
             while (j_1.compareTo(new java.math.BigInteger(String.valueOf(store.length)).subtract(java.math.BigInteger.valueOf(1))) < 0) {
                 new_store_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_store_1), java.util.Arrays.stream(new String[]{store[_idx((store).length, ((java.math.BigInteger)(j_1)).longValue())]})).toArray(String[]::new)));
-                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
+                j_1 = j_1.add(java.math.BigInteger.valueOf(1));
             }
             store = ((String[])(new_store_1));
         }
         store = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new String[]{x}), java.util.Arrays.stream(store)).toArray(String[]::new)));
-        return new LRUCache(new java.math.BigInteger(String.valueOf(cache.max_capacity)), ((String[])(store)));
+        return new LRUCache(cache.max_capacity, ((String[])(store)));
     }
 
     static void display(LRUCache cache) {
         java.math.BigInteger i_4 = java.math.BigInteger.valueOf(0);
         while (i_4.compareTo(new java.math.BigInteger(String.valueOf(cache.store.length))) < 0) {
             System.out.println(cache.store[_idx((cache.store).length, ((java.math.BigInteger)(i_4)).longValue())]);
-            i_4 = new java.math.BigInteger(String.valueOf(i_4.add(java.math.BigInteger.valueOf(1))));
+            i_4 = i_4.add(java.math.BigInteger.valueOf(1));
         }
     }
 
@@ -80,7 +80,7 @@ public class Main {
             if ((ch_1.compareTo("0") < 0) || (ch_1.compareTo("9") > 0)) {
                 all_digits = false;
             }
-            i_6 = new java.math.BigInteger(String.valueOf(i_6.add(java.math.BigInteger.valueOf(1))));
+            i_6 = i_6.add(java.math.BigInteger.valueOf(1));
         }
         if (all_digits) {
             return s;
@@ -96,7 +96,7 @@ public class Main {
             if (i_8.compareTo(new java.math.BigInteger(String.valueOf(cache.store.length)).subtract(java.math.BigInteger.valueOf(1))) < 0) {
                 res_1 = res_1 + ", ";
             }
-            i_8 = new java.math.BigInteger(String.valueOf(i_8.add(java.math.BigInteger.valueOf(1))));
+            i_8 = i_8.add(java.math.BigInteger.valueOf(1));
         }
         res_1 = res_1 + "]";
         return res_1;

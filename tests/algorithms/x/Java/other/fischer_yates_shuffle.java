@@ -4,25 +4,25 @@ public class Main {
     static String[] strings = ((String[])(new String[]{"python", "says", "hello", "!"}));
 
     static java.math.BigInteger rand() {
-        seed = new java.math.BigInteger(String.valueOf((seed.multiply(java.math.BigInteger.valueOf(1103515245)).add(java.math.BigInteger.valueOf(12345))).remainder(java.math.BigInteger.valueOf(2147483648L))));
-        return new java.math.BigInteger(String.valueOf(seed.divide(java.math.BigInteger.valueOf(65536))));
+        seed = (seed.multiply(java.math.BigInteger.valueOf(1103515245)).add(java.math.BigInteger.valueOf(12345))).remainder(java.math.BigInteger.valueOf(2147483648L));
+        return seed.divide(java.math.BigInteger.valueOf(65536));
     }
 
     static java.math.BigInteger randint(java.math.BigInteger a, java.math.BigInteger b) {
-        java.math.BigInteger r = new java.math.BigInteger(String.valueOf(rand()));
-        return new java.math.BigInteger(String.valueOf(a.add(r.remainder((b.subtract(a).add(java.math.BigInteger.valueOf(1)))))));
+        java.math.BigInteger r = rand();
+        return a.add(r.remainder((b.subtract(a).add(java.math.BigInteger.valueOf(1)))));
     }
 
     static java.math.BigInteger[] fisher_yates_shuffle_int(java.math.BigInteger[] data) {
         java.math.BigInteger[] res = ((java.math.BigInteger[])(data));
         java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
         while (i_1.compareTo(new java.math.BigInteger(String.valueOf(res.length))) < 0) {
-            java.math.BigInteger a_1 = new java.math.BigInteger(String.valueOf(randint(java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(res.length)).subtract(java.math.BigInteger.valueOf(1)))))));
-            java.math.BigInteger b_1 = new java.math.BigInteger(String.valueOf(randint(java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(res.length)).subtract(java.math.BigInteger.valueOf(1)))))));
-            java.math.BigInteger temp_1 = new java.math.BigInteger(String.valueOf(res[_idx((res).length, ((java.math.BigInteger)(a_1)).longValue())]));
-res[(int)(((java.math.BigInteger)(a_1)).longValue())] = new java.math.BigInteger(String.valueOf(res[_idx((res).length, ((java.math.BigInteger)(b_1)).longValue())]));
-res[(int)(((java.math.BigInteger)(b_1)).longValue())] = new java.math.BigInteger(String.valueOf(temp_1));
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            java.math.BigInteger a_1 = randint(java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf(res.length)).subtract(java.math.BigInteger.valueOf(1)));
+            java.math.BigInteger b_1 = randint(java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf(res.length)).subtract(java.math.BigInteger.valueOf(1)));
+            java.math.BigInteger temp_1 = res[_idx((res).length, ((java.math.BigInteger)(a_1)).longValue())];
+res[(int)(((java.math.BigInteger)(a_1)).longValue())] = res[_idx((res).length, ((java.math.BigInteger)(b_1)).longValue())];
+res[(int)(((java.math.BigInteger)(b_1)).longValue())] = temp_1;
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return ((java.math.BigInteger[])(res));
     }
@@ -31,12 +31,12 @@ res[(int)(((java.math.BigInteger)(b_1)).longValue())] = new java.math.BigInteger
         String[] res_1 = ((String[])(data));
         java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
         while (i_3.compareTo(new java.math.BigInteger(String.valueOf(res_1.length))) < 0) {
-            java.math.BigInteger a_3 = new java.math.BigInteger(String.valueOf(randint(java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(res_1.length)).subtract(java.math.BigInteger.valueOf(1)))))));
-            java.math.BigInteger b_3 = new java.math.BigInteger(String.valueOf(randint(java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(res_1.length)).subtract(java.math.BigInteger.valueOf(1)))))));
+            java.math.BigInteger a_3 = randint(java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf(res_1.length)).subtract(java.math.BigInteger.valueOf(1)));
+            java.math.BigInteger b_3 = randint(java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf(res_1.length)).subtract(java.math.BigInteger.valueOf(1)));
             String temp_3 = res_1[_idx((res_1).length, ((java.math.BigInteger)(a_3)).longValue())];
 res_1[(int)(((java.math.BigInteger)(a_3)).longValue())] = res_1[_idx((res_1).length, ((java.math.BigInteger)(b_3)).longValue())];
 res_1[(int)(((java.math.BigInteger)(b_3)).longValue())] = temp_3;
-            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
+            i_3 = i_3.add(java.math.BigInteger.valueOf(1));
         }
         return ((String[])(res_1));
     }

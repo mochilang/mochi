@@ -20,12 +20,12 @@ public class Main {
     static java.math.BigInteger i = java.math.BigInteger.valueOf(0);
 
     static LCG make_lcg(java.math.BigInteger multiplier, java.math.BigInteger increment, java.math.BigInteger modulo, java.math.BigInteger seed) {
-        return new LCG(new java.math.BigInteger(String.valueOf(multiplier)), new java.math.BigInteger(String.valueOf(increment)), new java.math.BigInteger(String.valueOf(modulo)), new java.math.BigInteger(String.valueOf(seed)));
+        return new LCG(multiplier, increment, modulo, seed);
     }
 
     static java.math.BigInteger next_number(LCG lcg) {
 lcg.seed = (lcg.multiplier.multiply(lcg.seed).add(lcg.increment)).remainder(lcg.modulo);
-        return new java.math.BigInteger(String.valueOf(lcg.seed));
+        return lcg.seed;
     }
     public static void main(String[] args) {
         {
@@ -34,7 +34,7 @@ lcg.seed = (lcg.multiplier.multiply(lcg.seed).add(lcg.increment)).remainder(lcg.
             lcg = make_lcg(java.math.BigInteger.valueOf(1664525), java.math.BigInteger.valueOf(1013904223), java.math.BigInteger.valueOf(4294967296L), new java.math.BigInteger(String.valueOf(_now())));
             while (i.compareTo(java.math.BigInteger.valueOf(5)) < 0) {
                 System.out.println(_p(next_number(lcg)));
-                i = new java.math.BigInteger(String.valueOf(i.add(java.math.BigInteger.valueOf(1))));
+                i = i.add(java.math.BigInteger.valueOf(1));
             }
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;

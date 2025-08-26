@@ -13,15 +13,15 @@ public class Main {
         if (day.compareTo(java.math.BigInteger.valueOf(1)) < 0 || day.compareTo(java.math.BigInteger.valueOf(31)) > 0) {
             throw new RuntimeException(String.valueOf("day should be between 1 to 31"));
         }
-        java.math.BigInteger century_1 = new java.math.BigInteger(String.valueOf(year.divide(java.math.BigInteger.valueOf(100))));
-        java.math.BigInteger century_anchor_1 = new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(5).multiply((century_1.remainder(java.math.BigInteger.valueOf(4)))).add(java.math.BigInteger.valueOf(2))).remainder(java.math.BigInteger.valueOf(7))));
-        java.math.BigInteger centurian_1 = new java.math.BigInteger(String.valueOf(year.remainder(java.math.BigInteger.valueOf(100))));
-        java.math.BigInteger centurian_m_1 = new java.math.BigInteger(String.valueOf(centurian_1.remainder(java.math.BigInteger.valueOf(12))));
-        java.math.BigInteger dooms_day_1 = new java.math.BigInteger(String.valueOf(((centurian_1.divide(java.math.BigInteger.valueOf(12))).add(centurian_m_1).add((centurian_m_1.divide(java.math.BigInteger.valueOf(4)))).add(century_anchor_1)).remainder(java.math.BigInteger.valueOf(7))));
-        java.math.BigInteger day_anchor_1 = new java.math.BigInteger(String.valueOf(year.remainder(java.math.BigInteger.valueOf(4)).compareTo(java.math.BigInteger.valueOf(0)) != 0 || (centurian_1.compareTo(java.math.BigInteger.valueOf(0)) == 0 && year.remainder(java.math.BigInteger.valueOf(400)).compareTo(java.math.BigInteger.valueOf(0)) != 0) ? DOOMSDAY_NOT_LEAP[_idx((DOOMSDAY_NOT_LEAP).length, ((java.math.BigInteger)(month.subtract(java.math.BigInteger.valueOf(1)))).longValue())] : DOOMSDAY_LEAP[_idx((DOOMSDAY_LEAP).length, ((java.math.BigInteger)(month.subtract(java.math.BigInteger.valueOf(1)))).longValue())]));
-        java.math.BigInteger week_day_1 = new java.math.BigInteger(String.valueOf((dooms_day_1.add(day).subtract(day_anchor_1)).remainder(java.math.BigInteger.valueOf(7))));
+        java.math.BigInteger century_1 = year.divide(java.math.BigInteger.valueOf(100));
+        java.math.BigInteger century_anchor_1 = (java.math.BigInteger.valueOf(5).multiply((century_1.remainder(java.math.BigInteger.valueOf(4)))).add(java.math.BigInteger.valueOf(2))).remainder(java.math.BigInteger.valueOf(7));
+        java.math.BigInteger centurian_1 = year.remainder(java.math.BigInteger.valueOf(100));
+        java.math.BigInteger centurian_m_1 = centurian_1.remainder(java.math.BigInteger.valueOf(12));
+        java.math.BigInteger dooms_day_1 = ((centurian_1.divide(java.math.BigInteger.valueOf(12))).add(centurian_m_1).add((centurian_m_1.divide(java.math.BigInteger.valueOf(4)))).add(century_anchor_1)).remainder(java.math.BigInteger.valueOf(7));
+        java.math.BigInteger day_anchor_1 = year.remainder(java.math.BigInteger.valueOf(4)).compareTo(java.math.BigInteger.valueOf(0)) != 0 || (centurian_1.compareTo(java.math.BigInteger.valueOf(0)) == 0 && year.remainder(java.math.BigInteger.valueOf(400)).compareTo(java.math.BigInteger.valueOf(0)) != 0) ? DOOMSDAY_NOT_LEAP[_idx((DOOMSDAY_NOT_LEAP).length, ((java.math.BigInteger)(month.subtract(java.math.BigInteger.valueOf(1)))).longValue())] : DOOMSDAY_LEAP[_idx((DOOMSDAY_LEAP).length, ((java.math.BigInteger)(month.subtract(java.math.BigInteger.valueOf(1)))).longValue())];
+        java.math.BigInteger week_day_1 = (dooms_day_1.add(day).subtract(day_anchor_1)).remainder(java.math.BigInteger.valueOf(7));
         if (week_day_1.compareTo(java.math.BigInteger.valueOf(0)) < 0) {
-            week_day_1 = new java.math.BigInteger(String.valueOf(week_day_1.add(java.math.BigInteger.valueOf(7))));
+            week_day_1 = week_day_1.add(java.math.BigInteger.valueOf(7));
         }
         return ((String)(WEEK_DAY_NAMES).get(week_day_1));
     }

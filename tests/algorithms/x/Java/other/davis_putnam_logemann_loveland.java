@@ -64,9 +64,9 @@ public class Main {
         java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
         while (i_1.compareTo(new java.math.BigInteger(String.valueOf(lits.length))) < 0) {
             String lit_1 = lits[_idx((lits).length, ((java.math.BigInteger)(i_1)).longValue())];
-m.put(lit_1, new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())));
+m.put(lit_1, (java.math.BigInteger.valueOf(1)).negate());
             names_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(names_1), java.util.stream.Stream.of(lit_1)).toArray(String[]::new)));
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return new Clause(m, ((String[])(names_1)));
     }
@@ -78,13 +78,13 @@ m.put(lit_1, new java.math.BigInteger(String.valueOf((java.math.BigInteger.value
             String lit_3 = c.names[_idx((c.names).length, ((java.math.BigInteger)(i_3)).longValue())];
             String symbol_1 = _substr(lit_3, (int)(0L), (int)(2L));
             if (model.containsKey(symbol_1)) {
-                java.math.BigInteger value_1 = new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(model).get(symbol_1))));
+                java.math.BigInteger value_1 = ((java.math.BigInteger)(model).get(symbol_1));
                 if ((_substr(lit_3, (int)(((java.math.BigInteger)(new java.math.BigInteger(String.valueOf(_runeLen(lit_3))).subtract(java.math.BigInteger.valueOf(1)))).longValue()), (int)((long)(_runeLen(lit_3)))).equals("'")) && value_1.compareTo((java.math.BigInteger.valueOf(1)).negate()) != 0) {
-                    value_1 = new java.math.BigInteger(String.valueOf(java.math.BigInteger.valueOf(1).subtract(value_1)));
+                    value_1 = java.math.BigInteger.valueOf(1).subtract(value_1);
                 }
-lits.put(lit_3, new java.math.BigInteger(String.valueOf(value_1)));
+lits.put(lit_3, value_1);
             }
-            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
+            i_3 = i_3.add(java.math.BigInteger.valueOf(1));
         }
 c.literals = lits;
         return c;
@@ -98,20 +98,20 @@ c.literals = lits;
             if (c.literals.containsKey(sym_1)) {
                 return new EvalResult(java.math.BigInteger.valueOf(1), c);
             }
-            i_4 = new java.math.BigInteger(String.valueOf(i_4.add(java.math.BigInteger.valueOf(1))));
+            i_4 = i_4.add(java.math.BigInteger.valueOf(1));
         }
         c = assign_clause(c, model);
         i_4 = java.math.BigInteger.valueOf(0);
         while (i_4.compareTo(new java.math.BigInteger(String.valueOf(c.names.length))) < 0) {
             String lit_7 = c.names[_idx((c.names).length, ((java.math.BigInteger)(i_4)).longValue())];
-            java.math.BigInteger value_3 = new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(c.literals).get(lit_7))));
+            java.math.BigInteger value_3 = ((java.math.BigInteger)(c.literals).get(lit_7));
             if (value_3.compareTo(java.math.BigInteger.valueOf(1)) == 0) {
                 return new EvalResult(java.math.BigInteger.valueOf(1), c);
             }
             if (value_3.compareTo((java.math.BigInteger.valueOf(1)).negate()) == 0) {
-                return new EvalResult(new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())), c);
+                return new EvalResult((java.math.BigInteger.valueOf(1)).negate(), c);
             }
-            i_4 = new java.math.BigInteger(String.valueOf(i_4.add(java.math.BigInteger.valueOf(1))));
+            i_4 = i_4.add(java.math.BigInteger.valueOf(1));
         }
         java.math.BigInteger any_true_1 = java.math.BigInteger.valueOf(0);
         i_4 = java.math.BigInteger.valueOf(0);
@@ -120,9 +120,9 @@ c.literals = lits;
             if (((java.math.BigInteger)(c.literals).get(lit_9)).compareTo(java.math.BigInteger.valueOf(1)) == 0) {
                 any_true_1 = java.math.BigInteger.valueOf(1);
             }
-            i_4 = new java.math.BigInteger(String.valueOf(i_4.add(java.math.BigInteger.valueOf(1))));
+            i_4 = i_4.add(java.math.BigInteger.valueOf(1));
         }
-        return new EvalResult(new java.math.BigInteger(String.valueOf(any_true_1)), c);
+        return new EvalResult(any_true_1, c);
     }
 
     static Formula new_formula(Clause[] cs) {
@@ -136,7 +136,7 @@ c.literals = lits;
             if (!(symbols[_idx((symbols).length, ((java.math.BigInteger)(i_6)).longValue())].equals(s))) {
                 res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(symbols[_idx((symbols).length, ((java.math.BigInteger)(i_6)).longValue())])).toArray(String[]::new)));
             }
-            i_6 = new java.math.BigInteger(String.valueOf(i_6.add(java.math.BigInteger.valueOf(1))));
+            i_6 = i_6.add(java.math.BigInteger.valueOf(1));
         }
         return ((String[])(res));
     }
@@ -152,7 +152,7 @@ clauses[(int)(((java.math.BigInteger)(i_8)).longValue())] = ev_1.clause;
             } else             if (ev_1.value.compareTo((java.math.BigInteger.valueOf(1)).negate()) == 0) {
                 all_true = false;
             }
-            i_8 = new java.math.BigInteger(String.valueOf(i_8.add(java.math.BigInteger.valueOf(1))));
+            i_8 = i_8.add(java.math.BigInteger.valueOf(1));
         }
         if (all_true) {
             return new DPLLResult(true, model);
@@ -182,7 +182,7 @@ tmp2_1.put(p_1, java.math.BigInteger.valueOf(0));
                 line = line + " , ";
             }
             line = line + lit_11;
-            i_10 = new java.math.BigInteger(String.valueOf(i_10.add(java.math.BigInteger.valueOf(1))));
+            i_10 = i_10.add(java.math.BigInteger.valueOf(1));
         }
         line = line + "}";
         return line;
@@ -196,7 +196,7 @@ tmp2_1.put(p_1, java.math.BigInteger.valueOf(0));
             if (i_12.compareTo(new java.math.BigInteger(String.valueOf(f.clauses.length)).subtract(java.math.BigInteger.valueOf(1))) < 0) {
                 line_1 = line_1 + " , ";
             }
-            i_12 = new java.math.BigInteger(String.valueOf(i_12.add(java.math.BigInteger.valueOf(1))));
+            i_12 = i_12.add(java.math.BigInteger.valueOf(1));
         }
         line_1 = line_1 + "}";
         return line_1;

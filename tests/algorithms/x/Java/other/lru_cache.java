@@ -70,8 +70,8 @@ public class Main {
 
     static DoubleLinkedList new_list() {
         Node[] nodes = ((Node[])(new Node[]{}));
-        Node head_1 = new Node(java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())), java.math.BigInteger.valueOf(1));
-        Node tail_1 = new Node(java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())));
+        Node head_1 = new Node(java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), (java.math.BigInteger.valueOf(1)).negate(), java.math.BigInteger.valueOf(1));
+        Node tail_1 = new Node(java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), (java.math.BigInteger.valueOf(1)).negate());
         nodes = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(nodes), java.util.stream.Stream.of(head_1)).toArray(Node[]::new)));
         nodes = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(nodes), java.util.stream.Stream.of(tail_1)).toArray(Node[]::new)));
         return new DoubleLinkedList(((Node[])(nodes)), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(1));
@@ -79,9 +79,9 @@ public class Main {
 
     static DoubleLinkedList dll_add(DoubleLinkedList lst, java.math.BigInteger idx) {
         Node[] nodes_1 = ((Node[])(lst.nodes));
-        java.math.BigInteger tail_idx_1 = new java.math.BigInteger(String.valueOf(lst.tail));
+        java.math.BigInteger tail_idx_1 = lst.tail;
         Node tail_node_1 = nodes_1[_idx((nodes_1).length, ((java.math.BigInteger)(tail_idx_1)).longValue())];
-        java.math.BigInteger prev_idx_1 = new java.math.BigInteger(String.valueOf(tail_node_1.prev));
+        java.math.BigInteger prev_idx_1 = tail_node_1.prev;
         Node node_1 = nodes_1[_idx((nodes_1).length, ((java.math.BigInteger)(idx)).longValue())];
 node_1.prev = prev_idx_1;
 node_1.next = tail_idx_1;
@@ -98,8 +98,8 @@ lst.nodes = nodes_1;
     static DoubleLinkedList dll_remove(DoubleLinkedList lst, java.math.BigInteger idx) {
         Node[] nodes_2 = ((Node[])(lst.nodes));
         Node node_3 = nodes_2[_idx((nodes_2).length, ((java.math.BigInteger)(idx)).longValue())];
-        java.math.BigInteger prev_idx_3 = new java.math.BigInteger(String.valueOf(node_3.prev));
-        java.math.BigInteger next_idx_1 = new java.math.BigInteger(String.valueOf(node_3.next));
+        java.math.BigInteger prev_idx_3 = node_3.prev;
+        java.math.BigInteger next_idx_1 = node_3.next;
         if (prev_idx_3.compareTo((java.math.BigInteger.valueOf(1)).negate()) == 0 || next_idx_1.compareTo((java.math.BigInteger.valueOf(1)).negate()) == 0) {
             return lst;
         }
@@ -118,21 +118,21 @@ lst.nodes = nodes_2;
 
     static LRUCache new_cache(java.math.BigInteger cap) {
         java.util.Map<String,java.math.BigInteger> empty_map = ((java.util.Map<String,java.math.BigInteger>)(new java.util.LinkedHashMap<String, java.math.BigInteger>()));
-        return new LRUCache(new_list(), new java.math.BigInteger(String.valueOf(cap)), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), empty_map);
+        return new LRUCache(new_list(), cap, java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), java.math.BigInteger.valueOf(0), empty_map);
     }
 
     static GetResult lru_get(LRUCache c, java.math.BigInteger key) {
         LRUCache cache = c;
         String key_str_1 = _p(key);
         if (cache.cache.containsKey(key_str_1)) {
-            java.math.BigInteger idx_1 = new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(cache.cache).get(key_str_1))));
+            java.math.BigInteger idx_1 = ((java.math.BigInteger)(cache.cache).get(key_str_1));
             if (idx_1.compareTo((java.math.BigInteger.valueOf(1)).negate()) != 0) {
 cache.hits = cache.hits.add(java.math.BigInteger.valueOf(1));
                 Node node_5 = cache.list.nodes[_idx((cache.list.nodes).length, ((java.math.BigInteger)(idx_1)).longValue())];
-                java.math.BigInteger value_1 = new java.math.BigInteger(String.valueOf(node_5.value));
-cache.list = dll_remove(cache.list, new java.math.BigInteger(String.valueOf(idx_1)));
-cache.list = dll_add(cache.list, new java.math.BigInteger(String.valueOf(idx_1)));
-                return new GetResult(cache, new java.math.BigInteger(String.valueOf(value_1)), true);
+                java.math.BigInteger value_1 = node_5.value;
+cache.list = dll_remove(cache.list, idx_1);
+cache.list = dll_add(cache.list, idx_1);
+                return new GetResult(cache, value_1, true);
             }
         }
 cache.misses = cache.misses.add(java.math.BigInteger.valueOf(1));
@@ -145,35 +145,35 @@ cache.misses = cache.misses.add(java.math.BigInteger.valueOf(1));
         if (!(cache_1.cache.containsKey(key_str_3))) {
             if (cache_1.num_keys.compareTo(cache_1.capacity) >= 0) {
                 Node head_node_1 = cache_1.list.nodes[_idx((cache_1.list.nodes).length, ((java.math.BigInteger)(cache_1.list.head)).longValue())];
-                java.math.BigInteger first_idx_1 = new java.math.BigInteger(String.valueOf(head_node_1.next));
+                java.math.BigInteger first_idx_1 = head_node_1.next;
                 Node first_node_1 = cache_1.list.nodes[_idx((cache_1.list.nodes).length, ((java.math.BigInteger)(first_idx_1)).longValue())];
-                java.math.BigInteger old_key_1 = new java.math.BigInteger(String.valueOf(first_node_1.key));
-cache_1.list = dll_remove(cache_1.list, new java.math.BigInteger(String.valueOf(first_idx_1)));
+                java.math.BigInteger old_key_1 = first_node_1.key;
+cache_1.list = dll_remove(cache_1.list, first_idx_1);
                 java.util.Map<String,java.math.BigInteger> mdel_1 = cache_1.cache;
-mdel_1.put(_p(old_key_1), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())));
+mdel_1.put(_p(old_key_1), (java.math.BigInteger.valueOf(1)).negate());
 cache_1.cache = mdel_1;
 cache_1.num_keys = cache_1.num_keys.subtract(java.math.BigInteger.valueOf(1));
             }
             Node[] nodes_5 = ((Node[])(cache_1.list.nodes));
-            Node new_node_1 = new Node(new java.math.BigInteger(String.valueOf(key)), new java.math.BigInteger(String.valueOf(value)), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())), new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate())));
+            Node new_node_1 = new Node(key, value, (java.math.BigInteger.valueOf(1)).negate(), (java.math.BigInteger.valueOf(1)).negate());
             nodes_5 = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(nodes_5), java.util.stream.Stream.of(new_node_1)).toArray(Node[]::new)));
-            java.math.BigInteger idx_4 = new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(nodes_5.length)).subtract(java.math.BigInteger.valueOf(1))));
+            java.math.BigInteger idx_4 = new java.math.BigInteger(String.valueOf(nodes_5.length)).subtract(java.math.BigInteger.valueOf(1));
 cache_1.list.nodes = nodes_5;
-cache_1.list = dll_add(cache_1.list, new java.math.BigInteger(String.valueOf(idx_4)));
+cache_1.list = dll_add(cache_1.list, idx_4);
             java.util.Map<String,java.math.BigInteger> m_2 = cache_1.cache;
-m_2.put(key_str_3, new java.math.BigInteger(String.valueOf(idx_4)));
+m_2.put(key_str_3, idx_4);
 cache_1.cache = m_2;
 cache_1.num_keys = cache_1.num_keys.add(java.math.BigInteger.valueOf(1));
         } else {
             java.util.Map<String,java.math.BigInteger> m_3 = cache_1.cache;
-            java.math.BigInteger idx_5 = new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(m_3).get(key_str_3))));
+            java.math.BigInteger idx_5 = ((java.math.BigInteger)(m_3).get(key_str_3));
             Node[] nodes_6 = ((Node[])(cache_1.list.nodes));
             Node node_7 = nodes_6[_idx((nodes_6).length, ((java.math.BigInteger)(idx_5)).longValue())];
 node_7.value = value;
 nodes_6[(int)(((java.math.BigInteger)(idx_5)).longValue())] = node_7;
 cache_1.list.nodes = nodes_6;
-cache_1.list = dll_remove(cache_1.list, new java.math.BigInteger(String.valueOf(idx_5)));
-cache_1.list = dll_add(cache_1.list, new java.math.BigInteger(String.valueOf(idx_5)));
+cache_1.list = dll_remove(cache_1.list, idx_5);
+cache_1.list = dll_add(cache_1.list, idx_5);
 cache_1.cache = m_3;
         }
         return cache_1;

@@ -8,7 +8,7 @@ public class Main {
         java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
         while (i_1.compareTo(java.math.BigInteger.valueOf(20)) < 0) {
             guess_1 = (double)((double)(((double)(guess_1) + (double)((double)(x) / (double)(guess_1)))) / (double)(2.0));
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return (double)(guess_1);
     }
@@ -20,7 +20,7 @@ public class Main {
             double x_1 = (double)(vector[_idx((vector).length, ((java.math.BigInteger)(i_3)).longValue())]);
             double val_1 = (double)((double)(((double)(x_1) + (double)(sqrtApprox((double)((double)((double)(x_1) * (double)(x_1)) + (double)(beta)))))) / (double)(2.0));
             result = ((double[])(appendDouble(result, (double)(val_1))));
-            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
+            i_3 = i_3.add(java.math.BigInteger.valueOf(1));
         }
         return ((double[])(result));
     }

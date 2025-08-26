@@ -1,4 +1,206 @@
-## Progress (2025-08-24 23:57 +0700)
+## Progress (2025-08-26 08:36 +0700)
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
+- Add C transpiler output for squareplus algorithm (37b073dc44)
+
 - rs transpiler: support function fields (30c348480d)
 
 - swift: handle mixed-type string addition (2727b07680)

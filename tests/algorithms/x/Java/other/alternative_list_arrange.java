@@ -43,7 +43,7 @@ public class Main {
     static Item[] alternative_list_arrange(Item[] first, Item[] second) {
         java.math.BigInteger len1 = new java.math.BigInteger(String.valueOf(first.length));
         java.math.BigInteger len2_1 = new java.math.BigInteger(String.valueOf(second.length));
-        java.math.BigInteger abs_len_1 = new java.math.BigInteger(String.valueOf(len1.compareTo(len2_1) > 0 ? len1 : len2_1));
+        java.math.BigInteger abs_len_1 = len1.compareTo(len2_1) > 0 ? len1 : len2_1;
         Item[] result_1 = ((Item[])(new Item[]{}));
         java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
         while (i_1.compareTo(abs_len_1) < 0) {
@@ -53,7 +53,7 @@ public class Main {
             if (i_1.compareTo(len2_1) < 0) {
                 result_1 = ((Item[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(second[_idx((second).length, ((java.math.BigInteger)(i_1)).longValue())])).toArray(Item[]::new)));
             }
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return ((Item[])(result_1));
     }
@@ -66,7 +66,7 @@ public class Main {
             if (i_3.compareTo(new java.math.BigInteger(String.valueOf(xs.length)).subtract(java.math.BigInteger.valueOf(1))) < 0) {
                 s = s + ", ";
             }
-            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
+            i_3 = i_3.add(java.math.BigInteger.valueOf(1));
         }
         s = s + "]";
         return s;

@@ -537,9 +537,13 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		case *LongLit:
 			fmt.Fprintf(w, "java.math.BigInteger.valueOf(%dL)", ex.Value)
 		default:
-			fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
-			e.emit(w)
-			fmt.Fprint(w, "))")
+			if it := inferType(e); it == "java.math.BigInteger" || it == "bigint" {
+				e.emit(w)
+			} else {
+				fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
+				e.emit(w)
+				fmt.Fprint(w, "))")
+			}
 		}
 		return
 	}
@@ -2195,9 +2199,13 @@ func (fr *ForRangeStmt) emit(w io.Writer, indent string) {
 	if endType == "bigint" || endType == "java.math.BigInteger" {
 		fmt.Fprintf(w, indent+"for (java.math.BigInteger %s = ", name)
 		if fr.Start != nil {
-			fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
-			fr.Start.emit(w)
-			fmt.Fprint(w, "))")
+			if it := inferType(fr.Start); it == "java.math.BigInteger" || it == "bigint" {
+				fr.Start.emit(w)
+			} else {
+				fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
+				fr.Start.emit(w)
+				fmt.Fprint(w, "))")
+			}
 		} else {
 			fmt.Fprint(w, "java.math.BigInteger.ZERO")
 		}

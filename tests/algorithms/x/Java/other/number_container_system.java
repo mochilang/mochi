@@ -21,9 +21,9 @@ public class Main {
         java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
         while (i_1.compareTo(new java.math.BigInteger(String.valueOf(xs.length))) < 0) {
             if (i_1.compareTo(idx) != 0) {
-                res = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(xs[_idx((xs).length, ((java.math.BigInteger)(i_1)).longValue())])))).toArray(java.math.BigInteger[]::new)));
+                res = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(xs[_idx((xs).length, ((java.math.BigInteger)(i_1)).longValue())])).toArray(java.math.BigInteger[]::new)));
             }
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return ((java.math.BigInteger[])(res));
     }
@@ -33,30 +33,30 @@ public class Main {
         java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
         while (i_3.compareTo(new java.math.BigInteger(String.valueOf(xs.length))) < 0) {
             if (i_3.compareTo(idx) == 0) {
-                res_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(val)))).toArray(java.math.BigInteger[]::new)));
+                res_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(val)).toArray(java.math.BigInteger[]::new)));
             }
-            res_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(xs[_idx((xs).length, ((java.math.BigInteger)(i_3)).longValue())])))).toArray(java.math.BigInteger[]::new)));
-            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
+            res_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(xs[_idx((xs).length, ((java.math.BigInteger)(i_3)).longValue())])).toArray(java.math.BigInteger[]::new)));
+            i_3 = i_3.add(java.math.BigInteger.valueOf(1));
         }
         if (idx.compareTo(new java.math.BigInteger(String.valueOf(xs.length))) == 0) {
-            res_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(new java.math.BigInteger(String.valueOf(val)))).toArray(java.math.BigInteger[]::new)));
+            res_1 = ((java.math.BigInteger[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(val)).toArray(java.math.BigInteger[]::new)));
         }
         return ((java.math.BigInteger[])(res_1));
     }
 
     static java.math.BigInteger[] binary_search_delete(java.math.BigInteger[] array, java.math.BigInteger item) {
         java.math.BigInteger low = java.math.BigInteger.valueOf(0);
-        java.math.BigInteger high_1 = new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(array.length)).subtract(java.math.BigInteger.valueOf(1))));
+        java.math.BigInteger high_1 = new java.math.BigInteger(String.valueOf(array.length)).subtract(java.math.BigInteger.valueOf(1));
         java.math.BigInteger[] arr_1 = ((java.math.BigInteger[])(array));
         while (low.compareTo(high_1) <= 0) {
-            java.math.BigInteger mid_1 = new java.math.BigInteger(String.valueOf((low.add(high_1)).divide(java.math.BigInteger.valueOf(2))));
+            java.math.BigInteger mid_1 = (low.add(high_1)).divide(java.math.BigInteger.valueOf(2));
             if (arr_1[_idx((arr_1).length, ((java.math.BigInteger)(mid_1)).longValue())].compareTo(item) == 0) {
-                arr_1 = ((java.math.BigInteger[])(remove_at(((java.math.BigInteger[])(arr_1)), new java.math.BigInteger(String.valueOf(mid_1)))));
+                arr_1 = ((java.math.BigInteger[])(remove_at(((java.math.BigInteger[])(arr_1)), mid_1)));
                 return ((java.math.BigInteger[])(arr_1));
             } else             if (arr_1[_idx((arr_1).length, ((java.math.BigInteger)(mid_1)).longValue())].compareTo(item) < 0) {
-                low = new java.math.BigInteger(String.valueOf(mid_1.add(java.math.BigInteger.valueOf(1))));
+                low = mid_1.add(java.math.BigInteger.valueOf(1));
             } else {
-                high_1 = new java.math.BigInteger(String.valueOf(mid_1.subtract(java.math.BigInteger.valueOf(1))));
+                high_1 = mid_1.subtract(java.math.BigInteger.valueOf(1));
             }
         }
         System.out.println("ValueError: Either the item is not in the array or the array was unsorted");
@@ -65,20 +65,20 @@ public class Main {
 
     static java.math.BigInteger[] binary_search_insert(java.math.BigInteger[] array, java.math.BigInteger index) {
         java.math.BigInteger low_1 = java.math.BigInteger.valueOf(0);
-        java.math.BigInteger high_3 = new java.math.BigInteger(String.valueOf(new java.math.BigInteger(String.valueOf(array.length)).subtract(java.math.BigInteger.valueOf(1))));
+        java.math.BigInteger high_3 = new java.math.BigInteger(String.valueOf(array.length)).subtract(java.math.BigInteger.valueOf(1));
         java.math.BigInteger[] arr_3 = ((java.math.BigInteger[])(array));
         while (low_1.compareTo(high_3) <= 0) {
-            java.math.BigInteger mid_3 = new java.math.BigInteger(String.valueOf((low_1.add(high_3)).divide(java.math.BigInteger.valueOf(2))));
+            java.math.BigInteger mid_3 = (low_1.add(high_3)).divide(java.math.BigInteger.valueOf(2));
             if (arr_3[_idx((arr_3).length, ((java.math.BigInteger)(mid_3)).longValue())].compareTo(index) == 0) {
-                arr_3 = ((java.math.BigInteger[])(insert_at(((java.math.BigInteger[])(arr_3)), new java.math.BigInteger(String.valueOf(mid_3.add(java.math.BigInteger.valueOf(1)))), new java.math.BigInteger(String.valueOf(index)))));
+                arr_3 = ((java.math.BigInteger[])(insert_at(((java.math.BigInteger[])(arr_3)), mid_3.add(java.math.BigInteger.valueOf(1)), index)));
                 return ((java.math.BigInteger[])(arr_3));
             } else             if (arr_3[_idx((arr_3).length, ((java.math.BigInteger)(mid_3)).longValue())].compareTo(index) < 0) {
-                low_1 = new java.math.BigInteger(String.valueOf(mid_3.add(java.math.BigInteger.valueOf(1))));
+                low_1 = mid_3.add(java.math.BigInteger.valueOf(1));
             } else {
-                high_3 = new java.math.BigInteger(String.valueOf(mid_3.subtract(java.math.BigInteger.valueOf(1))));
+                high_3 = mid_3.subtract(java.math.BigInteger.valueOf(1));
             }
         }
-        arr_3 = ((java.math.BigInteger[])(insert_at(((java.math.BigInteger[])(arr_3)), new java.math.BigInteger(String.valueOf(low_1)), new java.math.BigInteger(String.valueOf(index)))));
+        arr_3 = ((java.math.BigInteger[])(insert_at(((java.math.BigInteger[])(arr_3)), low_1, index)));
         return ((java.math.BigInteger[])(arr_3));
     }
 
@@ -86,19 +86,19 @@ public class Main {
         java.util.Map<java.math.BigInteger,java.math.BigInteger[]> numbermap = cont.numbermap;
         java.util.Map<java.math.BigInteger,java.math.BigInteger> indexmap_1 = cont.indexmap;
         if (indexmap_1.containsKey(idx)) {
-            java.math.BigInteger old_1 = new java.math.BigInteger(String.valueOf(((java.math.BigInteger)(indexmap_1).get(idx))));
+            java.math.BigInteger old_1 = ((java.math.BigInteger)(indexmap_1).get(idx));
             java.math.BigInteger[] indexes_1 = (java.math.BigInteger[])(((java.math.BigInteger[])(numbermap).get(old_1)));
             if (new java.math.BigInteger(String.valueOf(indexes_1.length)).compareTo(java.math.BigInteger.valueOf(1)) == 0) {
 numbermap.put(old_1, ((java.math.BigInteger[])(new java.math.BigInteger[]{})));
             } else {
-numbermap.put(old_1, ((java.math.BigInteger[])(binary_search_delete(((java.math.BigInteger[])(indexes_1)), new java.math.BigInteger(String.valueOf(idx))))));
+numbermap.put(old_1, ((java.math.BigInteger[])(binary_search_delete(((java.math.BigInteger[])(indexes_1)), idx))));
             }
         }
-indexmap_1.put(idx, new java.math.BigInteger(String.valueOf(num)));
+indexmap_1.put(idx, num);
         if (numbermap.containsKey(num)) {
-numbermap.put(num, ((java.math.BigInteger[])(binary_search_insert((java.math.BigInteger[])(((java.math.BigInteger[])(numbermap).get(num))), new java.math.BigInteger(String.valueOf(idx))))));
+numbermap.put(num, ((java.math.BigInteger[])(binary_search_insert((java.math.BigInteger[])(((java.math.BigInteger[])(numbermap).get(num))), idx))));
         } else {
-numbermap.put(num, ((java.math.BigInteger[])(new java.math.BigInteger[]{new java.math.BigInteger(String.valueOf(idx))})));
+numbermap.put(num, ((java.math.BigInteger[])(new java.math.BigInteger[]{idx})));
         }
         return new NumberContainer(numbermap, indexmap_1);
     }
@@ -108,10 +108,10 @@ numbermap.put(num, ((java.math.BigInteger[])(new java.math.BigInteger[]{new java
         if (numbermap_1.containsKey(num)) {
             java.math.BigInteger[] arr_5 = (java.math.BigInteger[])(((java.math.BigInteger[])(numbermap_1).get(num)));
             if (new java.math.BigInteger(String.valueOf(arr_5.length)).compareTo(java.math.BigInteger.valueOf(0)) > 0) {
-                return new java.math.BigInteger(String.valueOf(arr_5[_idx((arr_5).length, 0L)]));
+                return arr_5[_idx((arr_5).length, 0L)];
             }
         }
-        return new java.math.BigInteger(String.valueOf((java.math.BigInteger.valueOf(1)).negate()));
+        return (java.math.BigInteger.valueOf(1)).negate();
     }
     public static void main(String[] args) {
         {

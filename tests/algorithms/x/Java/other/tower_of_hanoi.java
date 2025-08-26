@@ -3,9 +3,9 @@ public class Main {
 
     static void move_tower(java.math.BigInteger height, String from_pole, String to_pole, String with_pole) {
         if (height.compareTo(java.math.BigInteger.valueOf(1)) >= 0) {
-            move_tower(new java.math.BigInteger(String.valueOf(height.subtract(java.math.BigInteger.valueOf(1)))), from_pole, with_pole, to_pole);
+            move_tower(height.subtract(java.math.BigInteger.valueOf(1)), from_pole, with_pole, to_pole);
             move_disk(from_pole, to_pole);
-            move_tower(new java.math.BigInteger(String.valueOf(height.subtract(java.math.BigInteger.valueOf(1)))), with_pole, to_pole, from_pole);
+            move_tower(height.subtract(java.math.BigInteger.valueOf(1)), with_pole, to_pole, from_pole);
         }
     }
 
@@ -16,7 +16,7 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            move_tower(new java.math.BigInteger(String.valueOf(height)), "A", "B", "C");
+            move_tower(height, "A", "B", "C");
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{\"duration_us\": " + _benchDuration + ", \"memory_bytes\": " + _benchMemory + ", \"name\": \"main\"}");

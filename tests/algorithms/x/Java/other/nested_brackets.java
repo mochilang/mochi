@@ -6,7 +6,7 @@ public class Main {
         java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
         while (i_1.compareTo(new java.math.BigInteger(String.valueOf(xs.length)).subtract(java.math.BigInteger.valueOf(1))) < 0) {
             res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(xs[_idx((xs).length, ((java.math.BigInteger)(i_1)).longValue())])).toArray(String[]::new)));
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return ((String[])(res));
     }
@@ -28,7 +28,7 @@ public class Main {
                 }
                 stack = ((String[])(slice_without_last(((String[])(stack)))));
             }
-            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
+            i_3 = i_3.add(java.math.BigInteger.valueOf(1));
         }
         return new java.math.BigInteger(String.valueOf(stack.length)).compareTo(java.math.BigInteger.valueOf(0)) == 0;
     }

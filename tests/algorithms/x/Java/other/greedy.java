@@ -54,7 +54,7 @@ public class Main {
         java.math.BigInteger i_1 = java.math.BigInteger.valueOf(0);
         while (i_1.compareTo(new java.math.BigInteger(String.valueOf(values.length))) < 0 && i_1.compareTo(new java.math.BigInteger(String.valueOf(names.length))) < 0 && i_1.compareTo(new java.math.BigInteger(String.valueOf(weights.length))) < 0) {
             menu = ((Thing[])(java.util.stream.Stream.concat(java.util.Arrays.stream(menu), java.util.stream.Stream.of(new Thing(names[_idx((names).length, ((java.math.BigInteger)(i_1)).longValue())], (double)(values[_idx((values).length, ((java.math.BigInteger)(i_1)).longValue())]), (double)(weights[_idx((weights).length, ((java.math.BigInteger)(i_1)).longValue())])))).toArray(Thing[]::new)));
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return ((Thing[])(menu));
     }
@@ -64,19 +64,19 @@ public class Main {
         java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
         while (i_3.compareTo(new java.math.BigInteger(String.valueOf(items.length))) < 0) {
             arr = ((Thing[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(items[_idx((items).length, ((java.math.BigInteger)(i_3)).longValue())])).toArray(Thing[]::new)));
-            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
+            i_3 = i_3.add(java.math.BigInteger.valueOf(1));
         }
         java.math.BigInteger j_1 = java.math.BigInteger.valueOf(1);
         while (j_1.compareTo(new java.math.BigInteger(String.valueOf(arr.length))) < 0) {
             Thing key_item_1 = arr[_idx((arr).length, ((java.math.BigInteger)(j_1)).longValue())];
             double key_val_1 = (double)(key_func.apply(key_item_1));
-            java.math.BigInteger k_1 = new java.math.BigInteger(String.valueOf(j_1.subtract(java.math.BigInteger.valueOf(1))));
+            java.math.BigInteger k_1 = j_1.subtract(java.math.BigInteger.valueOf(1));
             while (k_1.compareTo(java.math.BigInteger.valueOf(0)) >= 0 && (double)(key_func.apply(arr[_idx((arr).length, ((java.math.BigInteger)(k_1)).longValue())])) < (double)(key_val_1)) {
 arr[(int)(((java.math.BigInteger)(k_1.add(java.math.BigInteger.valueOf(1)))).longValue())] = arr[_idx((arr).length, ((java.math.BigInteger)(k_1)).longValue())];
-                k_1 = new java.math.BigInteger(String.valueOf(k_1.subtract(java.math.BigInteger.valueOf(1))));
+                k_1 = k_1.subtract(java.math.BigInteger.valueOf(1));
             }
 arr[(int)(((java.math.BigInteger)(k_1.add(java.math.BigInteger.valueOf(1)))).longValue())] = key_item_1;
-            j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
+            j_1 = j_1.add(java.math.BigInteger.valueOf(1));
         }
         return ((Thing[])(arr));
     }
@@ -95,7 +95,7 @@ arr[(int)(((java.math.BigInteger)(k_1.add(java.math.BigInteger.valueOf(1)))).lon
                 total_cost_1 = (double)((double)(total_cost_1) + (double)(w_1));
                 total_value_1 = (double)((double)(total_value_1) + (double)(get_value(it_1)));
             }
-            i_5 = new java.math.BigInteger(String.valueOf(i_5.add(java.math.BigInteger.valueOf(1))));
+            i_5 = i_5.add(java.math.BigInteger.valueOf(1));
         }
         return new GreedyResult(((Thing[])(result_1)), (double)(total_value_1));
     }
@@ -112,7 +112,7 @@ arr[(int)(((java.math.BigInteger)(k_1.add(java.math.BigInteger.valueOf(1)))).lon
             if (i_7.compareTo(new java.math.BigInteger(String.valueOf(ts.length)).subtract(java.math.BigInteger.valueOf(1))) < 0) {
                 s = s + ", ";
             }
-            i_7 = new java.math.BigInteger(String.valueOf(i_7.add(java.math.BigInteger.valueOf(1))));
+            i_7 = i_7.add(java.math.BigInteger.valueOf(1));
         }
         s = s + "]";
         return s;

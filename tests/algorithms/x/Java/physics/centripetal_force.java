@@ -13,7 +13,7 @@ public class Main {
     static double floor(double x) {
         java.math.BigInteger i = new java.math.BigInteger(String.valueOf(((Number)(x)).intValue()));
         if ((double)((((Number)(i)).doubleValue())) > (double)(x)) {
-            i = new java.math.BigInteger(String.valueOf(i.subtract(java.math.BigInteger.valueOf(1))));
+            i = i.subtract(java.math.BigInteger.valueOf(1));
         }
         return (double)(((Number)(i)).doubleValue());
     }
@@ -23,13 +23,13 @@ public class Main {
         java.math.BigInteger i_2 = java.math.BigInteger.valueOf(0);
         while (i_2.compareTo(n) < 0) {
             p = (double)((double)(p) * (double)(10.0));
-            i_2 = new java.math.BigInteger(String.valueOf(i_2.add(java.math.BigInteger.valueOf(1))));
+            i_2 = i_2.add(java.math.BigInteger.valueOf(1));
         }
         return (double)(p);
     }
 
     static double round(double x, java.math.BigInteger n) {
-        double m = (double)(pow10(new java.math.BigInteger(String.valueOf(n))));
+        double m = (double)(pow10(n));
         return (double)(Math.floor((double)((double)(x) * (double)(m)) + (double)(0.5)) / (double)(m));
     }
 

@@ -15,9 +15,9 @@ public class Main {
                     data_lists = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(data_lists), java.util.stream.Stream.of(new double[][]{((double[])(empty_1))})).toArray(double[][]::new)));
                 }
 data_lists[(int)(((java.math.BigInteger)(j_1)).longValue())] = ((double[])(appendDouble(data_lists[_idx((data_lists).length, ((java.math.BigInteger)(j_1)).longValue())], (double)(row_1[_idx((row_1).length, ((java.math.BigInteger)(j_1)).longValue())]))));
-                j_1 = new java.math.BigInteger(String.valueOf(j_1.add(java.math.BigInteger.valueOf(1))));
+                j_1 = j_1.add(java.math.BigInteger.valueOf(1));
             }
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return ((double[][])(data_lists));
     }
@@ -27,7 +27,7 @@ data_lists[(int)(((java.math.BigInteger)(j_1)).longValue())] = ((double[])(appen
         java.math.BigInteger i_3 = java.math.BigInteger.valueOf(0);
         while (i_3.compareTo(new java.math.BigInteger(String.valueOf(data_lists.length))) < 0) {
             double[] dlist_1 = ((double[])(data_lists[_idx((data_lists).length, ((java.math.BigInteger)(i_3)).longValue())]));
-            java.math.BigInteger weight_1 = new java.math.BigInteger(String.valueOf(weights[_idx((weights).length, ((java.math.BigInteger)(i_3)).longValue())]));
+            java.math.BigInteger weight_1 = weights[_idx((weights).length, ((java.math.BigInteger)(i_3)).longValue())];
             double mind_1 = (double)(dlist_1[_idx((dlist_1).length, 0L)]);
             double maxd_1 = (double)(dlist_1[_idx((dlist_1).length, 0L)]);
             java.math.BigInteger j_3 = java.math.BigInteger.valueOf(1);
@@ -39,7 +39,7 @@ data_lists[(int)(((java.math.BigInteger)(j_1)).longValue())] = ((double[])(appen
                 if ((double)(val_1) > (double)(maxd_1)) {
                     maxd_1 = (double)(val_1);
                 }
-                j_3 = new java.math.BigInteger(String.valueOf(j_3.add(java.math.BigInteger.valueOf(1))));
+                j_3 = j_3.add(java.math.BigInteger.valueOf(1));
             }
             double[] score_1 = ((double[])(new double[]{}));
             j_3 = java.math.BigInteger.valueOf(0);
@@ -51,7 +51,7 @@ data_lists[(int)(((java.math.BigInteger)(j_1)).longValue())] = ((double[])(appen
                     } else {
                         score_1 = ((double[])(appendDouble(score_1, (double)((double)(1.0) - (double)(((double)(((double)(item_2) - (double)(mind_1))) / (double)(((double)(maxd_1) - (double)(mind_1)))))))));
                     }
-                    j_3 = new java.math.BigInteger(String.valueOf(j_3.add(java.math.BigInteger.valueOf(1))));
+                    j_3 = j_3.add(java.math.BigInteger.valueOf(1));
                 }
             } else {
                 while (j_3.compareTo(new java.math.BigInteger(String.valueOf(dlist_1.length))) < 0) {
@@ -61,11 +61,11 @@ data_lists[(int)(((java.math.BigInteger)(j_1)).longValue())] = ((double[])(appen
                     } else {
                         score_1 = ((double[])(appendDouble(score_1, (double)((double)(((double)(item_3) - (double)(mind_1))) / (double)(((double)(maxd_1) - (double)(mind_1)))))));
                     }
-                    j_3 = new java.math.BigInteger(String.valueOf(j_3.add(java.math.BigInteger.valueOf(1))));
+                    j_3 = j_3.add(java.math.BigInteger.valueOf(1));
                 }
             }
             score_lists = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(score_lists), java.util.stream.Stream.of(new double[][]{((double[])(score_1))})).toArray(double[][]::new)));
-            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
+            i_3 = i_3.add(java.math.BigInteger.valueOf(1));
         }
         return ((double[][])(score_lists));
     }
@@ -76,7 +76,7 @@ data_lists[(int)(((java.math.BigInteger)(j_1)).longValue())] = ((double[])(appen
         java.math.BigInteger i_5 = java.math.BigInteger.valueOf(0);
         while (i_5.compareTo(count) < 0) {
             final_scores_1 = ((double[])(appendDouble(final_scores_1, (double)(0.0))));
-            i_5 = new java.math.BigInteger(String.valueOf(i_5.add(java.math.BigInteger.valueOf(1))));
+            i_5 = i_5.add(java.math.BigInteger.valueOf(1));
         }
         i_5 = java.math.BigInteger.valueOf(0);
         while (i_5.compareTo(new java.math.BigInteger(String.valueOf(score_lists.length))) < 0) {
@@ -84,9 +84,9 @@ data_lists[(int)(((java.math.BigInteger)(j_1)).longValue())] = ((double[])(appen
             java.math.BigInteger j_5 = java.math.BigInteger.valueOf(0);
             while (j_5.compareTo(new java.math.BigInteger(String.valueOf(slist_1.length))) < 0) {
 final_scores_1[(int)(((java.math.BigInteger)(j_5)).longValue())] = (double)((double)(final_scores_1[_idx((final_scores_1).length, ((java.math.BigInteger)(j_5)).longValue())]) + (double)(slist_1[_idx((slist_1).length, ((java.math.BigInteger)(j_5)).longValue())]));
-                j_5 = new java.math.BigInteger(String.valueOf(j_5.add(java.math.BigInteger.valueOf(1))));
+                j_5 = j_5.add(java.math.BigInteger.valueOf(1));
             }
-            i_5 = new java.math.BigInteger(String.valueOf(i_5.add(java.math.BigInteger.valueOf(1))));
+            i_5 = i_5.add(java.math.BigInteger.valueOf(1));
         }
         return ((double[])(final_scores_1));
     }
@@ -98,7 +98,7 @@ final_scores_1[(int)(((java.math.BigInteger)(j_5)).longValue())] = (double)((dou
         java.math.BigInteger i_7 = java.math.BigInteger.valueOf(0);
         while (i_7.compareTo(new java.math.BigInteger(String.valueOf(final_scores_3.length))) < 0) {
 source_data[(int)(((java.math.BigInteger)(i_7)).longValue())] = ((double[])(appendDouble(source_data[_idx((source_data).length, ((java.math.BigInteger)(i_7)).longValue())], (double)(final_scores_3[_idx((final_scores_3).length, ((java.math.BigInteger)(i_7)).longValue())]))));
-            i_7 = new java.math.BigInteger(String.valueOf(i_7.add(java.math.BigInteger.valueOf(1))));
+            i_7 = i_7.add(java.math.BigInteger.valueOf(1));
         }
         return ((double[][])(source_data));
     }

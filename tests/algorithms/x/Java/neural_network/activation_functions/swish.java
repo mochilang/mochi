@@ -7,7 +7,7 @@ public class Main {
         while (i_1.compareTo(java.math.BigInteger.valueOf(20)) <= 0) {
             term_1 = (double)((double)((double)(term_1) * (double)(x)) / (double)((((Number)(i_1)).doubleValue())));
             sum = (double)((double)(sum) + (double)(term_1));
-            i_1 = new java.math.BigInteger(String.valueOf(i_1.add(java.math.BigInteger.valueOf(1))));
+            i_1 = i_1.add(java.math.BigInteger.valueOf(1));
         }
         return (double)(sum);
     }
@@ -19,7 +19,7 @@ public class Main {
             double v_1 = (double)(vector[_idx((vector).length, ((java.math.BigInteger)(i_3)).longValue())]);
             double s_1 = (double)((double)(1.0) / (double)(((double)(1.0) + (double)(exp_approx((double)(-v_1))))));
             result = ((double[])(appendDouble(result, (double)(s_1))));
-            i_3 = new java.math.BigInteger(String.valueOf(i_3.add(java.math.BigInteger.valueOf(1))));
+            i_3 = i_3.add(java.math.BigInteger.valueOf(1));
         }
         return ((double[])(result));
     }
@@ -31,7 +31,7 @@ public class Main {
             double v_3 = (double)(vector[_idx((vector).length, ((java.math.BigInteger)(i_5)).longValue())]);
             double s_3 = (double)((double)(1.0) / (double)(((double)(1.0) + (double)(exp_approx((double)((double)(-beta) * (double)(v_3)))))));
             result_1 = ((double[])(appendDouble(result_1, (double)((double)(v_3) * (double)(s_3)))));
-            i_5 = new java.math.BigInteger(String.valueOf(i_5.add(java.math.BigInteger.valueOf(1))));
+            i_5 = i_5.add(java.math.BigInteger.valueOf(1));
         }
         return ((double[])(result_1));
     }
@@ -54,7 +54,7 @@ public class Main {
             if (!(Boolean)approx_equal((double)(a[_idx((a).length, ((java.math.BigInteger)(i_7)).longValue())]), (double)(b[_idx((b).length, ((java.math.BigInteger)(i_7)).longValue())]), (double)(eps))) {
                 return false;
             }
-            i_7 = new java.math.BigInteger(String.valueOf(i_7.add(java.math.BigInteger.valueOf(1))));
+            i_7 = i_7.add(java.math.BigInteger.valueOf(1));
         }
         return true;
     }
