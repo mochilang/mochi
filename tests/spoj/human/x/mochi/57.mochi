@@ -1,0 +1,171 @@
+// Solution for SPOJ SUPPER - Supernumbers
+// https://www.spoj.com/problems/SUPPER/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var i = 0
+  var num = 0
+  var has = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if has {
+        res = append(res, num)
+        num = 0
+        has = false
+      }
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has {
+    res = append(res, num)
+  }
+  return res
+}
+
+fun makeIntList(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun makeBoolList(n: int): list<bool> {
+  var lst: list<bool> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, false)
+    i = i + 1
+  }
+  return lst
+}
+
+fun makeFenwick(n: int): list<int> {
+  var bit: list<int> = []
+  var i = 0
+  while i <= n + 1 {
+    bit = append(bit, 0)
+    i = i + 1
+  }
+  return bit
+}
+
+fun bit_and(a: int, b: int): int {
+  var ua = a
+  var ub = b
+  var res = 0
+  var bit = 1
+  while ua != 0 || ub != 0 {
+    if ua % 2 == 1 && ub % 2 == 1 { res = res + bit }
+    ua = (ua / 2) as int
+    ub = (ub / 2) as int
+    bit = bit * 2
+  }
+  return res
+}
+
+fun low_bit(x: int): int {
+  if x == 0 { return 0 }
+  return x - bit_and(x, x - 1)
+}
+
+fun bitUpdate(bit: list<int>, idx: int, val: int) {
+  var i = idx
+  let size = len(bit)
+  while i < size {
+    if val > bit[i] { bit[i] = val }
+    i = i + low_bit(i)
+  }
+}
+
+fun bitQuery(bit: list<int>, idx: int): int {
+  var i = idx
+  var res = 0
+  while i > 0 {
+    if bit[i] > res { res = bit[i] }
+    i = i - low_bit(i)
+  }
+  return res
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let n = parseIntStr(line)
+    let arrLine = input()
+    let arr = parseInts(arrLine)
+    var L = makeIntList(n, 0)
+    var bit = makeFenwick(n)
+    var i = 0
+    var lis = 0
+    while i < n {
+      let v = arr[i]
+      let l = bitQuery(bit, v - 1) + 1
+      L[i] = l
+      bitUpdate(bit, v, l)
+      if l > lis { lis = l }
+      i = i + 1
+    }
+    var R = makeIntList(n, 0)
+    bit = makeFenwick(n)
+    i = n - 1
+    while i >= 0 {
+      let v = arr[i]
+      let rv = n - v + 1
+      let r = bitQuery(bit, rv - 1) + 1
+      R[i] = r
+      bitUpdate(bit, rv, r)
+      i = i - 1
+    }
+    var mark = makeBoolList(n)
+    i = 0
+    while i < n {
+      if L[i] + R[i] - 1 == lis {
+        mark[arr[i]] = true
+      }
+      i = i + 1
+    }
+    var count = 0
+    var out = ""
+    var first = true
+    var v = 1
+    while v <= n {
+      if mark[v] {
+        if first {
+          out = str(v)
+          first = false
+        } else {
+          out = out + " " + str(v)
+        }
+        count = count + 1
+      }
+      v = v + 1
+    }
+    print(str(count))
+    print(out)
+  }
+}
+
+main()
