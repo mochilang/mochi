@@ -1284,8 +1284,10 @@ func (p *Program) write(w io.Writer) {
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					// Mutating struct parameters should be passed by reference.
-					io.WriteString(w, typ+"&")
+					// Mutating struct parameters in Mochi have copy semantics.
+					// Passing them by value ensures changes do not leak back to
+					// the caller.
+					io.WriteString(w, typ)
 				} else {
 					io.WriteString(w, "const "+typ+"&")
 				}
@@ -1375,8 +1377,9 @@ func (f *Func) emit(w io.Writer) {
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					// Mutating struct parameters should reflect in the caller.
-					io.WriteString(w, typ+"& ")
+					// Struct parameters have value semantics in Mochi.
+					// Use pass-by-value so mutations do not escape.
+					io.WriteString(w, typ+" ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
@@ -2519,9 +2522,12 @@ func (c *CallExpr) emit(w io.Writer) {
 		needWrap := false
 		for i, a := range c.Args {
 			if i < len(fn.Params) && fn.Params[i].ByVal {
-				if _, ok := a.(*VarRef); !ok {
-					needWrap = true
-					break
+				typ := fn.Params[i].Type
+				if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
+					if _, ok := a.(*VarRef); !ok {
+						needWrap = true
+						break
+					}
 				}
 			}
 		}
@@ -2529,10 +2535,13 @@ func (c *CallExpr) emit(w io.Writer) {
 			io.WriteString(w, "([&]{")
 			for i, a := range c.Args {
 				if i < len(fn.Params) && fn.Params[i].ByVal {
-					if _, ok := a.(*VarRef); !ok {
-						fmt.Fprintf(w, " auto __arg%d = ", i)
-						a.emit(w)
-						io.WriteString(w, ";")
+					typ := fn.Params[i].Type
+					if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
+						if _, ok := a.(*VarRef); !ok {
+							fmt.Fprintf(w, " auto __arg%d = ", i)
+							a.emit(w)
+							io.WriteString(w, ";")
+						}
 					}
 				}
 			}
@@ -2544,9 +2553,12 @@ func (c *CallExpr) emit(w io.Writer) {
 					io.WriteString(w, ", ")
 				}
 				if i < len(fn.Params) && fn.Params[i].ByVal {
-					if _, ok := a.(*VarRef); !ok {
-						fmt.Fprintf(w, "__arg%d", i)
-						continue
+					typ := fn.Params[i].Type
+					if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
+						if _, ok := a.(*VarRef); !ok {
+							fmt.Fprintf(w, "__arg%d", i)
+							continue
+						}
 					}
 				}
 				a.emit(w)
