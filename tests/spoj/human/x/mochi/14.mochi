@@ -1,0 +1,159 @@
+// Solution for SPOJ IKEYB - I-Keyboard
+// https://www.spoj.com/problems/IKEYB/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+let digitStr = {
+  0:"0",1:"1",2:"2",3:"3",4:"4",5:"5",6:"6",7:"7",8:"8",9:"9",
+}
+
+fun intToStr(n: int): string {
+  if n == 0 { return "0" }
+  var s = ""
+  var x = n
+  var parts = []
+  while x > 0 {
+    parts = append(parts, x % 10)
+    x = x / 10
+  }
+  var i = len(parts) - 1
+  while i >= 0 {
+    let d = parts[i] as int
+    s = s + digitStr[d]
+    i = i - 1
+  }
+  return s
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+
+fun segmentCost(p: list<int>, w: list<int>, i: int, j: int): int {
+  return w[j] - w[i-1] - (i-1) * (p[j] - p[i-1])
+}
+
+fun better(cur: list<int>, cand: list<int>): bool {
+  var i = len(cur) - 1
+  var j = len(cand) - 1
+  while i >= 0 && j >= 0 {
+    let ci = cur[i] as int
+    let cj = cand[j] as int
+    if cj > ci { return true }
+    if cj < ci { return false }
+    i = i - 1
+    j = j - 1
+  }
+  return false
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let T = parseIntStr(tStr)
+  var case = 1
+  for _ in 0..T {
+    let line = input()
+    var pos = 0
+    var K = 0
+    while pos < len(line) && line[pos] != " " {
+      K = K * 10 + (digits[line[pos]] as int)
+      pos = pos + 1
+    }
+    pos = pos + 1
+    var L = 0
+    while pos < len(line) {
+      L = L * 10 + (digits[line[pos]] as int)
+      pos = pos + 1
+    }
+    let keys = input()
+    let letters = input()
+    var freq = []
+    for _ in 0..L {
+      freq = append(freq, parseIntStr(input()))
+    }
+    var p = [0]
+    var w = [0]
+    var i = 0
+    while i < L {
+      let fi = freq[i] as int
+      p = append(p, p[i] + fi)
+      w = append(w, w[i] + fi * (i + 1))
+      i = i + 1
+    }
+    let INF = 1000000000000000000
+    var cost = []
+    var sizes = []
+    i = 0
+    while i <= L {
+      var rowC = []
+      var rowS = []
+      var k = 0
+      while k <= K {
+        rowC = append(rowC, INF)
+        rowS = append(rowS, [])
+        k = k + 1
+      }
+      cost = append(cost, rowC)
+      sizes = append(sizes, rowS)
+      i = i + 1
+    }
+    cost[0][0] = 0
+    sizes[0][0] = []
+    i = 1
+    while i <= L {
+      var k = 1
+      while k <= K && k <= i {
+        var t = k - 1
+        while t < i {
+          let prev = cost[t][k-1] as int
+          if prev == INF {
+            t = t + 1
+            continue
+          }
+          let c = prev + segmentCost(p, w, t+1, i)
+          let candSizes = append(sizes[t][k-1] as list<int>, i - t)
+          let curC = cost[i][k] as int
+          if c < curC || (c == curC && better(sizes[i][k] as list<int>, candSizes)) {
+            cost[i][k] = c
+            sizes[i][k] = candSizes
+          }
+          t = t + 1
+        }
+        k = k + 1
+      }
+      i = i + 1
+    }
+    let gs = sizes[L][K] as list<int>
+    print("Keypad #" + intToStr(case) + ":")
+    var idx = 0
+    var keyIdx = 0
+    while keyIdx < K {
+      let keyCh = keys[keyIdx]
+      let sz = gs[keyIdx] as int
+      var lineOut = keyCh + ": "
+      var j = 0
+      while j < sz {
+        lineOut = lineOut + letters[idx]
+        idx = idx + 1
+        j = j + 1
+      }
+      print(lineOut)
+      keyIdx = keyIdx + 1
+    }
+    print("")
+    case = case + 1
+  }
+}
+
+main()
