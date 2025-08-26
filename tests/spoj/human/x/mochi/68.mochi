@@ -1,0 +1,165 @@
+// Solution for SPOJ EXPR1 - Expression
+// https://www.spoj.com/problems/EXPR1/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var i = 0
+  var num = 0
+  var sign = 1
+  var has = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if has {
+        res = append(res, num * sign)
+        num = 0
+        sign = 1
+        has = false
+      }
+    } else if ch == "-" {
+      sign = -1
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has { res = append(res, num * sign) }
+  return res
+}
+
+let INF = 1000000
+let SHIFT = 200
+let SIZE = 401
+let MAX_OPEN = 20
+
+fun makeDP(): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i <= MAX_OPEN {
+    var row: list<int> = []
+    var j = 0
+    while j < SIZE {
+      row = append(row, INF)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var cs = 0
+  while cs < t {
+    let line = input()
+    let parts = parseInts(line)
+    let n = parts[0]
+    let target = parts[1]
+    let expr = input()
+    let m = n / 2
+    var signs: list<string> = []
+    var nums: list<int> = []
+    var idx = 0
+    while idx < n {
+      signs = append(signs, expr[idx:idx+1])
+      nums = append(nums, digits[expr[idx+1:idx+2]] as int)
+      idx = idx + 2
+    }
+    var dp = makeDP()
+    dp[0][0 + SHIFT] = 0
+    var j = 0
+    while j < m {
+      var ndp = makeDP()
+      var open = 0
+      while open <= MAX_OPEN {
+        var sumIdx = 0
+        while sumIdx < SIZE {
+          let cost = dp[open][sumIdx]
+          if cost < INF {
+            let cur = sumIdx - SHIFT
+            let s = signs[j]
+            let num = nums[j]
+            var signVal = 1
+            if s == "-" { signVal = -1 }
+            var eff = signVal
+            if open % 2 == 1 { eff = -eff }
+            let sumA = cur + eff * num
+            if sumA >= 0 - SHIFT && sumA <= SHIFT {
+              let idxA = sumA + SHIFT
+              if cost < ndp[open][idxA] { ndp[open][idxA] = cost }
+            }
+            if s == "-" {
+              let openB = open + 1
+              if openB <= MAX_OPEN {
+                var eff2 = 1
+                if openB % 2 == 1 { eff2 = -1 }
+                let sumB = cur + eff2 * num
+                if sumB >= 0 - SHIFT && sumB <= SHIFT {
+                  let idxB = sumB + SHIFT
+                  let costB = cost + 1
+                  if costB < ndp[openB][idxB] { ndp[openB][idxB] = costB }
+                }
+              }
+            }
+          }
+          sumIdx = sumIdx + 1
+        }
+        open = open + 1
+      }
+      var next = makeDP()
+      open = 0
+      while open <= MAX_OPEN {
+        var sumIdx = 0
+        while sumIdx < SIZE {
+          let cost = ndp[open][sumIdx]
+          if cost < INF {
+            var close = 0
+            while close <= open {
+              let open2 = open - close
+              if cost < next[open2][sumIdx] { next[open2][sumIdx] = cost }
+              close = close + 1
+            }
+          }
+          sumIdx = sumIdx + 1
+        }
+        open = open + 1
+      }
+      dp = next
+      j = j + 1
+    }
+    let ans = dp[0][target + SHIFT]
+    if ans >= INF {
+      print("NO")
+    } else {
+      print(str(ans))
+    }
+    cs = cs + 1
+  }
+}
+
+main()
