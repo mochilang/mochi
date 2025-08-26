@@ -606,15 +606,17 @@ func header() []byte {
         ((list? x) (length x))
         ((vector? x) (vector-length x))
         (else 0)))`
-	// list-ref-safe previously returned the empty list on out-of-range access,
-	// which caused "expected Number" runtime errors when its result fed into
-	// arithmetic.  It now yields 0 as a numeric sentinel and accepts any
-	// numeric index, coercing floats like `0.0` to integers, allowing
-	// algorithms to continue even when indices are computed inexactly.
-	// Guard against non-list inputs before calling length.  Some algorithms
-	// index into potentially missing lists and rely on a numeric sentinel
-	// instead of triggering a runtime type error.
-	prelude += "\n(define (list-ref-safe lst idx) (if (and (list? lst) (number? idx) (>= idx 0) (< idx (length lst))) (list-ref lst (inexact->exact idx)) 0))"
+       // list-ref-safe previously returned the empty list on out-of-range access,
+       // which caused "expected Number" runtime errors when its result fed into
+       // arithmetic.  It now yields `#f` as a safe sentinel and accepts any
+       // numeric index, coercing floats like `0.0` to integers, allowing
+       // algorithms to continue even when indices are computed inexactly.
+       // Guard against non-list inputs before calling length.  Some algorithms
+       // index into potentially missing lists and rely on a sentinel instead of
+       // triggering a runtime type error.  Returning `#f` ensures the sentinel is
+       // treated as false in conditionals while remaining distinct from valid
+       // numeric elements.
+       prelude += "\n(define (list-ref-safe lst idx) (if (and (list? lst) (number? idx) (>= idx 0) (< idx (length lst))) (list-ref lst (inexact->exact idx)) #f))"
 	prelude += "\n(define (list-set-safe! lst idx val) (when (and (list? lst) (integer? idx) (>= idx 0) (< idx (length lst))) (list-set! lst (inexact->exact idx) val)))"
 	if usesOrd {
 		prelude += "\n(define (_ord s) (cond ((char? s) (char->integer s)) ((and (string? s) (> (string-length s) 0)) (char->integer (string-ref s 0))) (else 0)))"
