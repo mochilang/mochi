@@ -1,0 +1,27 @@
+// Solution for SPOJ EDIT1 - Editor
+// https://www.spoj.com/problems/EDIT1/
+
+fun processLine(line: string): string {
+  var res = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == "d" {
+      res = res + res
+    } else {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    print(processLine(line))
+  }
+}
+
+main()
