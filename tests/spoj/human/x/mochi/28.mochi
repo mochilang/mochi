@@ -1,0 +1,90 @@
+// Solution for SPOJ HMRO - Help the Military Recruitment Office!
+// https://www.spoj.com/problems/HMRO/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitTwo(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " {
+      res = append(res, cur)
+      cur = ""
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  res = append(res, cur)
+  return res
+}
+
+fun resolve(code: string, redirs: map<string,string>): string {
+  let nxt = redirs[code]
+  if nxt {
+    let res = resolve(nxt as string, redirs)
+    redirs[code] = res
+    return res
+  }
+  return code
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let T = parseIntStr(tStr)
+  var caseIndex = 0
+  while caseIndex < T {
+    let pStr = input()
+    let p = parseIntStr(pStr)
+    var recruits: map<string,string> = {}
+    var i = 0
+    while i < p {
+      let line = input()
+      let parts = splitTwo(line)
+      recruits[parts[0]] = parts[1]
+      i = i + 1
+    }
+    let zStr = input()
+    let z = parseIntStr(zStr)
+    var redirs: map<string,string> = {}
+    var j = 0
+    while j < z {
+      let line = input()
+      let parts = splitTwo(line)
+      redirs[parts[0]] = parts[1]
+      j = j + 1
+    }
+    let qStr = input()
+    let q = parseIntStr(qStr)
+    var k = 0
+    while k < q {
+      let pesel = input()
+      let code = recruits[pesel] as string
+      let newCode = resolve(code, redirs)
+      print(pesel + " " + newCode)
+      k = k + 1
+    }
+    if caseIndex < T - 1 {
+      let _ = input()
+      print("")
+    }
+    caseIndex = caseIndex + 1
+  }
+}
+
+main()
