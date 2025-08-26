@@ -2032,7 +2032,7 @@ func isStringNode(n Node) bool {
 		if len(t.Elems) > 0 {
 			if sym, ok := t.Elems[0].(Symbol); ok {
 				switch sym {
-				case "str", "subs", "clojure.string/join", "fields", "join", "numberName", "pluralizeFirst", "slur":
+				case "str", "subs", "clojure.string/join", "fields", "join", "numberName", "pluralizeFirst", "slur", "read-line":
 					return true
 				case "if":
 					if len(t.Elems) >= 3 {
@@ -2046,28 +2046,7 @@ func isStringNode(n Node) bool {
 						}
 					}
 				case "nth", "get":
-					if len(t.Elems) >= 2 {
-						if isStringListNode(t.Elems[1]) {
-							return true
-						}
-						if s, ok := t.Elems[1].(Symbol); ok && transpileEnv != nil {
-							if stringListVars != nil && stringListVars[string(s)] {
-								return true
-							}
-							if typ, err := transpileEnv.GetVar(string(s)); err == nil {
-								switch v := typ.(type) {
-								case types.ListType:
-									if _, ok := v.Elem.(types.StringType); ok {
-										return true
-									}
-								case types.MapType:
-									if _, ok := v.Value.(types.StringType); ok {
-										return true
-									}
-								}
-							}
-						}
-					}
+					return true
 				}
 				if transpileEnv != nil {
 					if typ, err := transpileEnv.GetVar(string(sym)); err == nil {
@@ -2147,6 +2126,8 @@ func isStringListNode(n Node) bool {
 							return true
 						}
 					}
+				case "split":
+					return true
 				case "nth", "get":
 					if len(t.Elems) >= 2 {
 						if isStringListNode(t.Elems[1]) {
@@ -2466,8 +2447,15 @@ func hasRecur(n Node) bool {
 func isTopLevelRecur(n Node) bool {
 	if l, ok := n.(*List); ok {
 		if len(l.Elems) > 0 {
-			if sym, ok := l.Elems[0].(Symbol); ok && sym == "recur" {
-				return true
+			if sym, ok := l.Elems[0].(Symbol); ok {
+				switch sym {
+				case "recur":
+					return true
+				case "do":
+					return isTopLevelRecur(l.Elems[len(l.Elems)-1])
+				case "when", "if":
+					return isTopLevelRecur(l.Elems[len(l.Elems)-1])
+				}
 			}
 		}
 	}
@@ -4147,7 +4135,7 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 	elseBody := append([]Node{}, other...)
 	appendRecur := true
 	for _, n := range append([]Node{}, append(pre, other...)...) {
-		if isTopLevelRecur(n) {
+		if containsRecur(n) {
 			appendRecur = false
 			break
 		}
@@ -4192,6 +4180,25 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 		}
 		if localVars != nil {
 			localVars[name] = true
+		}
+	}
+	var preIter Node
+	if f.RangeEnd == nil {
+		var err error
+		preIter, err = transpileExpr(f.Source)
+		if err != nil {
+			return nil, err
+		}
+		if stringVars != nil && isStringListNode(preIter) {
+			stringVars[name] = true
+		}
+	} else if stringVars != nil {
+		if typ := types.TypeOfExprBasic(f.Source, transpileEnv); typ != nil {
+			if lt, ok := typ.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.StringType); ok {
+					stringVars[name] = true
+				}
+			}
 		}
 	}
 	useCtrl := hasLoopCtrl(f.Body)
@@ -4250,10 +4257,7 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 			seq = &List{Elems: []Node{Symbol("range"), start, end}}
 		}
 	} else {
-		iter, err := transpileExpr(f.Source)
-		if err != nil {
-			return nil, err
-		}
+		iter := preIter
 		if isMapNode(iter) {
 			if l, ok := iter.(*List); ok {
 				if sym, ok := l.Elems[0].(Symbol); ok && sym == "get" {
