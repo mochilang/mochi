@@ -1240,7 +1240,16 @@ func (ie *IndexExpr) emit(w io.Writer) {
 	if ie.Map && !ie.Force {
 		fmt.Fprint(w, "(")
 	}
-	ie.Base.emit(w)
+	if ie.Map {
+		if be, ok := ie.Base.(*IndexExpr); ok && !be.Map && !be.KeyString && !be.KeyAny && !be.Force {
+			be.emit(w)
+			fmt.Fprint(w, " as! [String: Any?]")
+		} else {
+			ie.Base.emit(w)
+		}
+	} else {
+		ie.Base.emit(w)
+	}
 	fmt.Fprint(w, "[")
 	if ie.KeyString {
 		fmt.Fprint(w, "String(")
@@ -4810,6 +4819,17 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 						}
 					}
 					_ = lt // silence unused if lt not used
+				} else if types.IsAnyType(origBaseType) {
+					if env != nil {
+						if idxT := types.TypeOfExpr(op.Index.Start, env); types.IsStringType(idxT) {
+							mapIndex = true
+							keyStr = true
+							expr = &CastExpr{Expr: expr, Type: "[String: Any?]"}
+							if !force {
+								def = zeroValue(parserTypeRefFromType(types.AnyType{}))
+							}
+						}
+					}
 				}
 				expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force, KeyString: keyStr, KeyAny: keyAny, Map: mapIndex, Default: def}
 				if !force && !keyStr && !keyAny && !isStr && !mapIndex {
