@@ -1,0 +1,37 @@
+// Substring Check (Bug Funny)
+// https://www.spoj.com/problems/SBSTR1
+
+fun is_substring(a: string, b: string): int {
+  if len(b) == 0 {
+    return 1
+  }
+  if len(a) < len(b) {
+    return 0
+  }
+  if a.substring(0, len(b)) == b {
+    return 1
+  }
+  return is_substring(a.substring(1, len(a)), b)
+}
+
+fun solve(lines: list<string>): list<int> {
+  var res: list<int> = []
+  for line in lines {
+    let a = line.substring(0, 10)
+    let b = line.substring(11, 16)
+    res = append(res, is_substring(a, b))
+  }
+  return res
+}
+
+let sample_input = [
+  "1010110010 10110",
+  "1110111011 10011",
+]
+for r in solve(sample_input) {
+  print(r)
+}
+
+test "sample" {
+  expect solve(sample_input) == [1, 0]
+}
