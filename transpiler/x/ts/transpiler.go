@@ -580,14 +580,6 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	if b.Op == "/" && isIntExpr(b.Left) && isIntExpr(b.Right) {
-		io.WriteString(w, "Math.trunc(")
-		b.Left.emit(w)
-		io.WriteString(w, " / ")
-		b.Right.emit(w)
-		io.WriteString(w, ")")
-		return
-	}
 	if b.Op == "in" {
 		io.WriteString(w, "Object.prototype.hasOwnProperty.call(")
 		b.Right.emit(w)
@@ -807,7 +799,7 @@ func (e *IntersectExpr) emit(w io.Writer) {
 }
 
 func (f *FormatListExpr) emit(w io.Writer) {
-	io.WriteString(w, "((v)=>v==null?\"nil\":\"[\" + v.join(' ') + \"]\")(")
+	io.WriteString(w, "((v)=>v==null?\"nil\":\"[\" + v.map(_str).join(', ') + \"]\")(")
 	if f.Value != nil {
 		f.Value.emit(w)
 	} else {
@@ -2463,7 +2455,7 @@ function sha256(bs: number[]): number[] {
     if (Number.isNaN(x)) return 'NaN';
   }
 if (Array.isArray(x)) {
-return x.map(_str).join(',');
+return '[' + x.map(_str).join(', ') + ']';
 }
 if (x && typeof x === 'object') {
 try {
@@ -3833,15 +3825,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				expr := &BinaryExpr{Left: operands[i], Op: "%", Right: operands[i+1]}
 				operands[i] = &CallExpr{Func: "Number", Args: []Expr{expr}}
 				typesArr[i] = types.IntType{}
-			} else if ops[i] == "/" && ((isIntType(typesArr[i]) && isIntType(typesArr[i+1])) || (isIntExpr(operands[i]) && isIntExpr(operands[i+1])) || isIntLitExpr(operands[i+1]) || (isIntLitExpr(operands[i]) && isIntLitExpr(operands[i+1]))) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
-				if isBigIntType(typesArr[i]) || isBigIntType(typesArr[i+1]) {
-					operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1], Big: true}
-					typesArr[i] = types.BigIntType{}
-				} else {
-					operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
-					typesArr[i] = types.IntType{}
-				}
-			} else {
+                        } else {
 				operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
 				switch ops[i] {
 				case "+", "-", "*", "%":
