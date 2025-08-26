@@ -2265,19 +2265,23 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		right = castIf(right, "float")
 		lt, rt = "float", "float"
 	}
-	if lt == "float" && rt == "int" {
-		right = &CastExpr{Expr: right, Type: "float"}
-	} else if rt == "float" && lt == "int" {
-		left = &CastExpr{Expr: left, Type: "float"}
-	} else if lt == "int64" && rt == "int" {
-		right = &CastExpr{Expr: right, Type: "int64"}
-	} else if rt == "int64" && lt == "int" {
-		left = &CastExpr{Expr: left, Type: "int64"}
-	} else if lt == "bigint" && rt == "int" {
-		right = &CastExpr{Expr: right, Type: "bigint"}
-	} else if rt == "bigint" && lt == "int" {
-		left = &CastExpr{Expr: left, Type: "bigint"}
-	}
+        if lt == "float" && rt == "int" {
+                right = &CastExpr{Expr: right, Type: "float"}
+        } else if rt == "float" && lt == "int" {
+                left = &CastExpr{Expr: left, Type: "float"}
+        } else if lt == "float" && rt == "int64" {
+                right = &CastExpr{Expr: right, Type: "float"}
+        } else if rt == "float" && lt == "int64" {
+                left = &CastExpr{Expr: left, Type: "float"}
+        } else if lt == "int64" && rt == "int" {
+                right = &CastExpr{Expr: right, Type: "int64"}
+        } else if rt == "int64" && lt == "int" {
+                left = &CastExpr{Expr: left, Type: "int64"}
+        } else if lt == "bigint" && rt == "int" {
+                right = &CastExpr{Expr: right, Type: "bigint"}
+        } else if rt == "bigint" && lt == "int" {
+                left = &CastExpr{Expr: left, Type: "bigint"}
+        }
 	if b.Op == "/" && resT == "int" {
 		usesFloorDiv = true
 		left = &CastExpr{Expr: left, Type: "int"}
@@ -2773,26 +2777,35 @@ func isList(e Expr) bool {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	name := c.Func
-	if name == "mod" {
-		name = "``mod``"
-	}
-	if strings.Contains(name, " ") {
-		io.WriteString(w, name)
-	} else {
-		io.WriteString(w, fsIdent(name))
-	}
-	if len(c.Args) == 0 {
-		io.WriteString(w, "()")
-		return
-	}
-	lastDot := strings.LastIndex(name, ".")
-	if lastDot != -1 && lastDot+1 < len(name) && unicode.IsUpper(rune(name[lastDot+1])) && !strings.Contains(name, " ") {
-		io.WriteString(w, "(")
-		for i, a := range c.Args {
-			if i > 0 {
-				io.WriteString(w, ", ")
-			}
+        name := c.Func
+        if name == "mod" {
+                name = "``mod``"
+        }
+        if strings.Contains(name, " ") {
+                io.WriteString(w, name)
+        } else {
+                io.WriteString(w, fsIdent(name))
+        }
+        if len(c.Args) == 0 {
+                io.WriteString(w, "()")
+                return
+        }
+       if name == "Array.sub" {
+               // Array.sub expects int indices; cast subsequent arguments to int
+               if len(c.Args) > 1 {
+                       c.Args[1] = &CastExpr{Expr: c.Args[1], Type: "int"}
+               }
+               if len(c.Args) > 2 {
+                       c.Args[2] = &CastExpr{Expr: c.Args[2], Type: "int"}
+               }
+       }
+        lastDot := strings.LastIndex(name, ".")
+        if lastDot != -1 && lastDot+1 < len(name) && unicode.IsUpper(rune(name[lastDot+1])) && !strings.Contains(name, " ") {
+                io.WriteString(w, "(")
+                for i, a := range c.Args {
+                        if i > 0 {
+                                io.WriteString(w, ", ")
+                        }
 			a.emit(w)
 		}
 		io.WriteString(w, ")")
@@ -3329,30 +3342,37 @@ func (s *SliceExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	io.WriteString(w, "Array.sub ")
-	s.Target.emit(w)
-	io.WriteString(w, " ")
-	if needsParen(start) {
-		io.WriteString(w, "(")
-		start.emit(w)
-		io.WriteString(w, ")")
-	} else {
-		start.emit(w)
-	}
-	io.WriteString(w, " ")
-	var endLen Expr
-	if s.End != nil {
-		endLen = &BinaryExpr{Left: s.End, Op: "-", Right: start}
-	} else {
-		endLen = &BinaryExpr{Left: &CallExpr{Func: "Array.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
-	}
-	if needsParen(endLen) {
-		io.WriteString(w, "(")
-		endLen.emit(w)
-		io.WriteString(w, ")")
-	} else {
-		endLen.emit(w)
-	}
+        io.WriteString(w, "Array.sub ")
+        s.Target.emit(w)
+        io.WriteString(w, " ")
+        st := start
+        if inferType(st) != "int" {
+                st = &CastExpr{Expr: st, Type: "int32"}
+        }
+        if needsParen(st) {
+                io.WriteString(w, "(")
+                st.emit(w)
+                io.WriteString(w, ")")
+        } else {
+                st.emit(w)
+        }
+        io.WriteString(w, " ")
+        var endLen Expr
+        if s.End != nil {
+                endLen = &BinaryExpr{Left: s.End, Op: "-", Right: start}
+        } else {
+                endLen = &BinaryExpr{Left: &CallExpr{Func: "Array.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
+        }
+        if inferType(endLen) != "int" {
+                endLen = &CastExpr{Expr: endLen, Type: "int32"}
+        }
+        if needsParen(endLen) {
+                io.WriteString(w, "(")
+                endLen.emit(w)
+                io.WriteString(w, ")")
+        } else {
+                endLen.emit(w)
+        }
 }
 
 // CastExpr represents expr as type.
@@ -3385,19 +3405,28 @@ func (c *CastExpr) emit(w io.Writer) {
 		} else {
 			c.Expr.emit(w)
 		}
-	case "int":
-		if t == "obj" {
-			io.WriteString(w, "unbox<int64> ")
-		} else {
-			io.WriteString(w, "int64 ")
-		}
-		if needsParen(c.Expr) {
-			io.WriteString(w, "(")
-			c.Expr.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			c.Expr.emit(w)
-		}
+        case "int":
+                if t == "obj" {
+                        io.WriteString(w, "unbox<int64> ")
+                } else {
+                        io.WriteString(w, "int64 ")
+                }
+                if needsParen(c.Expr) {
+                        io.WriteString(w, "(")
+                        c.Expr.emit(w)
+                        io.WriteString(w, ")")
+                } else {
+                        c.Expr.emit(w)
+                }
+       case "int32":
+               io.WriteString(w, "int ")
+               if needsParen(c.Expr) {
+                       io.WriteString(w, "(")
+                       c.Expr.emit(w)
+                       io.WriteString(w, ")")
+               } else {
+                       c.Expr.emit(w)
+               }
 	case "int64":
 		io.WriteString(w, "int64 ")
 		if needsParen(c.Expr) {

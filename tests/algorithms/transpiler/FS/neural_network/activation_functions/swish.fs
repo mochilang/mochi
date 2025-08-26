@@ -1,4 +1,4 @@
-// Generated 2025-08-17 13:19 +0700
+// Generated 2025-08-26 08:36 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,13 +23,16 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     match box v with
-    | :? float as f -> sprintf "%.10g" f
+    | :? float as f ->
+        if f = floor f then sprintf "%g.0" f else sprintf "%g" f
+    | :? int64 as n -> sprintf "%d" n
     | _ ->
         let s = sprintf "%A" v
         s.Replace("[|", "[")
          .Replace("|]", "]")
          .Replace("; ", " ")
          .Replace(";", "")
+         .Replace("L", "")
          .Replace("\"", "")
 let rec exp_approx (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
@@ -37,11 +40,11 @@ let rec exp_approx (x: float) =
     try
         let mutable sum: float = 1.0
         let mutable term: float = 1.0
-        let mutable i: int = 1
-        while i <= 20 do
+        let mutable i: int64 = int64 1
+        while i <= (int64 20) do
             term <- (term * x) / (float i)
             sum <- sum + term
-            i <- i + 1
+            i <- i + (int64 1)
         __ret <- sum
         raise Return
         __ret
@@ -52,12 +55,12 @@ and sigmoid (vector: float array) =
     let mutable vector = vector
     try
         let mutable result: float array = Array.empty<float>
-        let mutable i: int = 0
-        while i < (Seq.length (vector)) do
+        let mutable i: int64 = int64 0
+        while i < (int64 (Seq.length (vector))) do
             let v: float = _idx vector (int i)
             let s: float = 1.0 / (1.0 + (exp_approx (-v)))
             result <- Array.append result [|s|]
-            i <- i + 1
+            i <- i + (int64 1)
         __ret <- result
         raise Return
         __ret
@@ -69,12 +72,12 @@ and swish (vector: float array) (beta: float) =
     let mutable beta = beta
     try
         let mutable result: float array = Array.empty<float>
-        let mutable i: int = 0
-        while i < (Seq.length (vector)) do
+        let mutable i: int64 = int64 0
+        while i < (int64 (Seq.length (vector))) do
             let v: float = _idx vector (int i)
             let s: float = 1.0 / (1.0 + (exp_approx ((-beta) * v)))
             result <- Array.append result [|(v * s)|]
-            i <- i + 1
+            i <- i + (int64 1)
         __ret <- result
         raise Return
         __ret
@@ -110,12 +113,12 @@ and approx_equal_list (a: float array) (b: float array) (eps: float) =
         if (Seq.length (a)) <> (Seq.length (b)) then
             __ret <- false
             raise Return
-        let mutable i: int = 0
-        while i < (Seq.length (a)) do
+        let mutable i: int64 = int64 0
+        while i < (int64 (Seq.length (a))) do
             if not (approx_equal (_idx a (int i)) (_idx b (int i)) (eps)) then
                 __ret <- false
                 raise Return
-            i <- i + 1
+            i <- i + (int64 1)
         __ret <- true
         raise Return
         __ret
