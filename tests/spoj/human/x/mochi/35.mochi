@@ -1,0 +1,112 @@
+// Solution for SPOJ EQBOX - Equipment Box
+// https://www.spoj.com/problems/EQBOX/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parse4(line: string): list<int> {
+  var pos = 0
+  var a = 0
+  while pos < len(line) && line[pos] != " " {
+    a = a * 10 + (digits[line[pos]] as int)
+    pos = pos + 1
+  }
+  pos = pos + 1
+  var b = 0
+  while pos < len(line) && line[pos] != " " {
+    b = b * 10 + (digits[line[pos]] as int)
+    pos = pos + 1
+  }
+  pos = pos + 1
+  var x = 0
+  while pos < len(line) && line[pos] != " " {
+    x = x * 10 + (digits[line[pos]] as int)
+    pos = pos + 1
+  }
+  pos = pos + 1
+  var y = 0
+  while pos < len(line) {
+    y = y * 10 + (digits[line[pos]] as int)
+    pos = pos + 1
+  }
+  var res: list<int> = []
+  res = append(res, a)
+  res = append(res, b)
+  res = append(res, x)
+  res = append(res, y)
+  return res
+}
+
+fun absf(v: float): float {
+  if v < 0.0 { return -v } else { return v }
+}
+
+fun sqrt(v: float): float {
+  if v <= 0.0 { return 0.0 }
+  var r = v
+  var prev = 0.0
+  while absf(r - prev) > 1e-9 {
+    prev = r
+    r = (r + v / r) / 2.0
+  }
+  return r
+}
+
+fun canFit(a: int, b: int, x: int, y: int): bool {
+  var A = a
+  var B = b
+  if A < B {
+    let t = A
+    A = B
+    B = t
+  }
+  var X = x
+  var Y = y
+  if X < Y {
+    let t2 = X
+    X = Y
+    Y = t2
+  }
+  if Y >= B { return false }
+  if X < A { return true }
+  let Xf = X as float
+  let Yf = Y as float
+  let Af = A as float
+  let Bf = B as float
+  let sum = Xf * Xf + Yf * Yf
+  var width: float
+  if sum <= Bf * Bf {
+    width = Yf
+  } else {
+    let s = sqrt(sum - Bf * Bf)
+    let c = (Bf * Yf + Xf * s) / sum
+    let st = (Bf - Yf * c) / Xf
+    width = Xf * c + Yf * st
+  }
+  return width < Af
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var i = 0
+  while i < t {
+    let line = input()
+    let vals = parse4(line)
+    let a = vals[0] as int
+    let b = vals[1] as int
+    let x = vals[2] as int
+    let y = vals[3] as int
+    if canFit(a,b,x,y) {
+      print("Escape is possible.")
+    } else {
+      print("Box cannot be dropped.")
+    }
+    i = i + 1
+  }
+}
+
+main()
