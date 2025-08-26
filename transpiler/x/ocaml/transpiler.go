@@ -1939,7 +1939,11 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 			io.WriteString(w, ocamlType(mi.Typ))
 		}
 		io.WriteString(w, ") | None -> ")
-		io.WriteString(w, zeroValue(mi.Typ))
+		def := zeroValue(mi.Typ)
+		if ocamlType(mi.Typ) == "Obj.t" {
+			def = "Obj.repr 0"
+		}
+		io.WriteString(w, def)
 		io.WriteString(w, ")")
 	} else {
 		io.WriteString(w, "(match List.assoc_opt (__str (Obj.repr (")
