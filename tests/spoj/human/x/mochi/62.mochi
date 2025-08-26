@@ -1,0 +1,119 @@
+// Solution for SPOJ IMP - The Imp
+// https://www.spoj.com/problems/IMP/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun absi(x: int): int { if x < 0 { return -x } else { return x } }
+
+fun gcd(a: int, b: int): int {
+  var x = absi(a)
+  var y = absi(b)
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun gauss(a1: int, b1: int, a2: int, b2: int): list<list<int>> {
+  var v1 = [a1, b1]
+  var v2 = [a2, b2]
+  while true {
+    if v1[0] == 0 && v1[1] == 0 { return [v2, [0,0]] }
+    if v2[0] == 0 && v2[1] == 0 { return [v1, [0,0]] }
+    var n1 = v1[0]*v1[0] + v1[1]*v1[1]
+    var n2 = v2[0]*v2[0] + v2[1]*v2[1]
+    if n2 < n1 {
+      let tmp = v1
+      v1 = v2
+      v2 = tmp
+      n1 = v1[0]*v1[0] + v1[1]*v1[1]
+      n2 = v2[0]*v2[0] + v2[1]*v2[1]
+    }
+    let dot = v1[0]*v2[0] + v1[1]*v2[1]
+    let mu = (dot + (if dot >= 0 { n1/2 } else { -n1/2 })) / n1
+    if mu == 0 {
+      return [v1, v2]
+    }
+    v2 = [v2[0] - mu*v1[0], v2[1] - mu*v1[1]]
+  }
+}
+
+fun shortest(a: int, b: int, c: int, d: int): int {
+  let det = a*d - b*c
+  if det == 0 {
+    if a == 0 && c == 0 { return gcd(b, d) }
+    if b == 0 && d == 0 { return gcd(a, c) }
+    let g1 = gcd(a, c)
+    let g2 = gcd(b, d)
+    return absi(g1) + absi(g2)
+  }
+  let basis = gauss(a, b, c, d)
+  let b1 = basis[0]
+  let b2 = basis[1]
+  var best = absi(b1[0]) + absi(b1[1])
+  let cand2 = absi(b2[0]) + absi(b2[1])
+  if cand2 != 0 && cand2 < best { best = cand2 }
+  let s = [b1[0] + b2[0], b1[1] + b2[1]]
+  let cand3 = absi(s[0]) + absi(s[1])
+  if cand3 != 0 && cand3 < best { best = cand3 }
+  let dvec = [b1[0] - b2[0], b1[1] - b2[1]]
+  let cand4 = absi(dvec[0]) + absi(dvec[1])
+  if cand4 != 0 && cand4 < best { best = cand4 }
+  return best
+}
+
+fun main() {
+  for _ in 0..10 {
+    let line = input()
+    if line == "" { return }
+    let parts = splitSpaces(line)
+    let a = parseIntStr(parts[0])
+    let b = parseIntStr(parts[1])
+    let c = parseIntStr(parts[2])
+    let d = parseIntStr(parts[3])
+    print(shortest(a, b, c, d))
+  }
+}
+
+main()
