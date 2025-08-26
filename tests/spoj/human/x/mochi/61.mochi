@@ -1,0 +1,106 @@
+// Solution for SPOJ BRCKTS - Brackets
+// https://www.spoj.com/problems/BRCKTS/
+
+fun build(idx: int, l: int, r: int, s: string, sumTree: list<int>, minTree: list<int>): list<list<int>> {
+  if l == r {
+    if s[l:l+1] == "(" {
+      sumTree[idx] = 1
+      minTree[idx] = 1
+    } else {
+      sumTree[idx] = -1
+      minTree[idx] = -1
+    }
+    return [sumTree, minTree]
+  }
+  let mid = (l + r) / 2
+  let left = build(idx * 2, l, mid, s, sumTree, minTree)
+  sumTree = left[0] as list<int>
+  minTree = left[1] as list<int>
+  let right = build(idx * 2 + 1, mid + 1, r, s, sumTree, minTree)
+  sumTree = right[0] as list<int>
+  minTree = right[1] as list<int>
+  sumTree[idx] = sumTree[idx * 2] + sumTree[idx * 2 + 1]
+  let temp = sumTree[idx * 2] + minTree[idx * 2 + 1]
+  if minTree[idx * 2] < temp {
+    minTree[idx] = minTree[idx * 2]
+  } else {
+    minTree[idx] = temp
+  }
+  return [sumTree, minTree]
+}
+
+fun update(idx: int, l: int, r: int, pos: int, sumTree: list<int>, minTree: list<int>): list<list<int>> {
+  if l == r {
+    if sumTree[idx] == 1 {
+      sumTree[idx] = -1
+      minTree[idx] = -1
+    } else {
+      sumTree[idx] = 1
+      minTree[idx] = 1
+    }
+    return [sumTree, minTree]
+  }
+  let mid = (l + r) / 2
+  if pos <= mid {
+    let res = update(idx * 2, l, mid, pos, sumTree, minTree)
+    sumTree = res[0] as list<int>
+    minTree = res[1] as list<int>
+  } else {
+    let res = update(idx * 2 + 1, mid + 1, r, pos, sumTree, minTree)
+    sumTree = res[0] as list<int>
+    minTree = res[1] as list<int>
+  }
+  sumTree[idx] = sumTree[idx * 2] + sumTree[idx * 2 + 1]
+  let temp = sumTree[idx * 2] + minTree[idx * 2 + 1]
+  if minTree[idx * 2] < temp {
+    minTree[idx] = minTree[idx * 2]
+  } else {
+    minTree[idx] = temp
+  }
+  return [sumTree, minTree]
+}
+
+fun main() {
+  var case = 1
+  while case <= 10 {
+    let nStr = input()
+    if nStr == "" { break }
+    let n = nStr as int
+    let s = input()
+    let mStr = input()
+    let m = mStr as int
+    var sumTree: list<int> = []
+    var minTree: list<int> = []
+    var size = 0
+    let limit = 4 * n + 5
+    while size < limit {
+      sumTree = append(sumTree, 0)
+      minTree = append(minTree, 0)
+      size = size + 1
+    }
+    let built = build(1, 0, n - 1, s, sumTree, minTree)
+    sumTree = built[0] as list<int>
+    minTree = built[1] as list<int>
+    print("Test " + str(case) + ":")
+    var i = 0
+    while i < m {
+      let opStr = input()
+      let k = opStr as int
+      if k == 0 {
+        if sumTree[1] == 0 && minTree[1] >= 0 {
+          print("YES")
+        } else {
+          print("NO")
+        }
+      } else {
+        let upd = update(1, 0, n - 1, k - 1, sumTree, minTree)
+        sumTree = upd[0] as list<int>
+        minTree = upd[1] as list<int>
+      }
+      i = i + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
