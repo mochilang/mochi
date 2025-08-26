@@ -3243,6 +3243,12 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp, env *types.Env) (Expr, erro
 			if ct == "" || ct == "Any" {
 				if iePrev, ok := base.(*IndexExpr); ok {
 					ct = iePrev.Type
+					if ct == "" || ct == "Any" {
+						if _, ok := idx.(*StringLit); ok {
+							// assume map when indexing by string
+							forceMap = true
+						}
+					}
 				} else if _, ok := idx.(*StringLit); ok {
 					// assume map when indexing by string
 					forceMap = true
@@ -3606,6 +3612,12 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					if ct == "" || ct == "Any" {
 						if iePrev, ok := expr.(*IndexExpr); ok {
 							ct = iePrev.Type
+							if ct == "" || ct == "Any" {
+								if _, ok := start.(*StringLit); ok {
+									// assume map when indexing by string
+									forceMap = true
+								}
+							}
 						} else if _, ok := start.(*StringLit); ok {
 							// assume map when indexing by string
 							forceMap = true

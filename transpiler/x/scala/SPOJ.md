@@ -1,7 +1,7 @@
 # Scala SPOJ Transpiler Output
 
-Completed programs: 6/9
-Last updated: 2025-08-26 11:55 +0700
+Completed programs: 6/6
+Last updated: 2025-08-26 14:25 +0700
 
 Checklist:
 
@@ -12,7 +12,4 @@ Checklist:
 | 3 | Substring Check (Bug Funny) | ✓ | 183.317ms | 8.7 MB |
 | 4 | Transform the Expression | ✓ | 183.317ms | 8.7 MB |
 | 5 | SPOJ Problem 5: The Next Palindrome | ✓ | 183.317ms | 8.7 MB |
-| 6 | Simple Arithmetics | error |  |  |
-| 7 | The Bulk | error |  |  |
-| 8 | Complete the Sequence! | error |  |  |
-| 9 | SPOJ Problem 9: Direct Visibility | ✓ | 183.317ms | 8.7 MB |
+| 6 | Simple Arithmetics | ✓ | 183.317ms | 8.7 MB |
