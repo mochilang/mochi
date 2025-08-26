@@ -603,9 +603,64 @@ func header() []byte {
 (define (_len x)
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
+        ((and (pair? x) (vector? (cdr x))) (car x))
         ((list? x) (length x))
         ((vector? x) (vector-length x))
-        (else 0)))`
+        (else 0)))
+
+(define (_list . args)
+  (let* ((n (length args))
+         (cap (max 4 n))
+         (vec (make-vector cap)))
+    (let loop ((i 0) (xs args))
+      (when (< i n)
+        (vector-set! vec i (car xs))
+        (loop (+ i 1) (cdr xs))))
+    (cons n vec)))
+
+;; Access an element from a dynamic array returning 0 when out of range.
+(define (list-ref-safe lst idx)
+  (let* ((i (inexact->exact idx))
+         (len (if (pair? lst) (car lst) 0)))
+    (if (and (pair? lst) (>= i 0) (< i len))
+        (vector-ref (cdr lst) i)
+        0)))
+
+;; Set an element in a dynamic array when index is within bounds.
+(define (list-set-safe! lst idx val)
+  (let* ((i (inexact->exact idx))
+         (len (if (pair? lst) (car lst) 0)))
+    (when (and (pair? lst) (>= i 0) (< i len))
+      (vector-set! (cdr lst) i val))))
+
+;; Amortized O(1) append for dynamic arrays backed by growable vectors.
+(define (_append lst val)
+  (let* ((len (car lst))
+         (vec (cdr lst))
+         (cap (vector-length vec)))
+    (when (>= len cap)
+      (let* ((new-cap (if (= cap 0) 4 (* 2 cap)))
+             (new-vec (make-vector new-cap)))
+        (let loop ((i 0))
+          (when (< i len)
+            (vector-set! new-vec i (vector-ref vec i))
+            (loop (+ i 1))))
+        (set-cdr! lst new-vec)
+        (set! vec new-vec)))
+    (vector-set! vec len val)
+    (set-car! lst (+ len 1))
+    lst))
+
+;; Convert dynamic array to Scheme list for iteration constructs.
+(define (_to-list lst)
+  (let* ((len (car lst))
+         (vec (cdr lst)))
+    (let loop ((i (- len 1)) (acc '()))
+      (if (< i 0) acc
+          (loop (- i 1) (cons (vector-ref vec i) acc))))))
+
+(define (_alist->hash-table arr)
+  (alist->hash-table (_to-list arr)))`
 	// list-ref-safe previously returned the empty list on out-of-range access,
 	// which caused "expected Number" runtime errors when its result fed into
 	// arithmetic.  It now yields 0 as a numeric sentinel and accepts any
@@ -614,8 +669,6 @@ func header() []byte {
 	// Guard against non-list inputs before calling length.  Some algorithms
 	// index into potentially missing lists and rely on a numeric sentinel
 	// instead of triggering a runtime type error.
-	prelude += "\n(define (list-ref-safe lst idx) (if (and (list? lst) (number? idx) (>= idx 0) (< idx (length lst))) (list-ref lst (inexact->exact idx)) 0))"
-	prelude += "\n(define (list-set-safe! lst idx val) (when (and (list? lst) (integer? idx) (>= idx 0) (< idx (length lst))) (list-set! lst (inexact->exact idx) val)))"
 	if usesOrd {
 		prelude += "\n(define (_ord s) (cond ((char? s) (char->integer s)) ((and (string? s) (> (string-length s) 0)) (char->integer (string-ref s 0))) (else 0)))"
 	}
@@ -864,6 +917,8 @@ func convertForStmt(fs *parser.ForStmt) (Node, error) {
 		case types.StringType:
 			iter = &List{Elems: []Node{Symbol("string->list"), iter}}
 			isString = true
+		default:
+			iter = &List{Elems: []Node{Symbol("_to-list"), iter}}
 		}
 		if list, ok := iter.(*List); ok {
 			if sym, ok := list.Elems[0].(Symbol); ok && sym == "hash-table-ref" {
@@ -1924,7 +1979,7 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 					pairs := []Node{Symbol("_list"),
 						&List{Elems: []Node{Symbol("cons"), StringLit(tagKey), ensureUnionConst(p.Selector.Root)}},
 					}
-					return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
+					return &List{Elems: []Node{Symbol("_alist->hash-table"), &List{Elems: pairs}}}, nil
 				}
 			}
 			if _, err := currentEnv.GetVar(p.Selector.Root); err == nil {
@@ -1998,7 +2053,7 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 			pair := &List{Elems: []Node{Symbol("cons"), k, v}}
 			pairs = append(pairs, pair)
 		}
-		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
+		return &List{Elems: []Node{Symbol("_alist->hash-table"), &List{Elems: pairs}}}, nil
 	case p.Struct != nil:
 		if ut, ok := currentEnv.FindUnionByVariant(p.Struct.Name); ok {
 			needHash = true
@@ -2024,7 +2079,7 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 				pair := &List{Elems: []Node{Symbol("cons"), StringLit(fname), v}}
 				pairs = append(pairs, pair)
 			}
-			return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
+			return &List{Elems: []Node{Symbol("_alist->hash-table"), &List{Elems: pairs}}}, nil
 		}
 		needHash = true
 		pairs := []Node{Symbol("_list")}
@@ -2036,7 +2091,7 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 			pair := &List{Elems: []Node{Symbol("cons"), StringLit(f.Name), v}}
 			pairs = append(pairs, pair)
 		}
-		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
+		return &List{Elems: []Node{Symbol("_alist->hash-table"), &List{Elems: pairs}}}, nil
 	case p.Fetch != nil:
 		url, err := convertParserExpr(p.Fetch.URL)
 		if err != nil {
@@ -2325,7 +2380,7 @@ func valueToNode(v interface{}, typ *parser.TypeRef) Node {
 			pair := &List{Elems: []Node{Symbol("cons"), StringLit(k), valueToNode(val[k], nil)}}
 			pairs = append(pairs, pair)
 		}
-		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}
+		return &List{Elems: []Node{Symbol("_alist->hash-table"), &List{Elems: pairs}}}
 	case []interface{}:
 		elems := make([]Node, 0, len(val)+1)
 		elems = append(elems, Symbol("_list"))
@@ -2528,7 +2583,7 @@ func convertRightJoinQuery(q *parser.QueryExpr) (Node, error) {
 	matchedSym := gensym("matched")
 	appendNode := &List{Elems: []Node{
 		Symbol("set!"), resSym,
-		&List{Elems: []Node{Symbol("append"), resSym, &List{Elems: []Node{Symbol("_list"), sel}}}},
+		&List{Elems: []Node{Symbol("_append"), resSym, sel}},
 	}}
 	innerBody := &List{Elems: []Node{
 		Symbol("if"), cond,
@@ -2700,7 +2755,7 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 		&List{Elems: []Node{
 			Symbol("set!"), Symbol(g),
 			&List{Elems: []Node{
-				Symbol("alist->hash-table"),
+				Symbol("_alist->hash-table"),
 				&List{Elems: []Node{
 					Symbol("_list"),
 					&List{Elems: []Node{Symbol("cons"), StringLit("key"), Symbol(k)}},
@@ -2719,13 +2774,13 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 		for _, l := range loops {
 			itemPairs = append(itemPairs, &List{Elems: []Node{Symbol("cons"), StringLit(l.name), Symbol(l.name)}})
 		}
-		item = &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: itemPairs}}}
+		item = &List{Elems: []Node{Symbol("_alist->hash-table"), &List{Elems: itemPairs}}}
 	}
 
 	appendItem := &List{Elems: []Node{
 		Symbol("hash-table-set!"), Symbol(g), StringLit("items"),
 		&List{Elems: []Node{
-			Symbol("append"),
+			Symbol("_append"),
 			&List{Elems: []Node{Symbol("hash-table-ref"), Symbol(g), StringLit("items")}},
 			&List{Elems: []Node{Symbol("_list"), item}},
 		}},
@@ -2764,7 +2819,7 @@ func convertGroupByJoinQuery(q *parser.QueryExpr) (Node, error) {
 			&List{Elems: []Node{gParam}},
 			&List{Elems: []Node{
 				Symbol("set!"), Symbol(res),
-				&List{Elems: []Node{Symbol("append"), Symbol(res), &List{Elems: []Node{Symbol("_list"), sel}}}},
+				&List{Elems: []Node{Symbol("_append"), Symbol(res), sel}},
 			}},
 		}},
 		&List{Elems: []Node{Symbol("hash-table-values"), Symbol(groups)}},
@@ -2841,7 +2896,7 @@ func convertGroupByQuery(q *parser.QueryExpr) (Node, error) {
 		&List{Elems: []Node{
 			Symbol("set!"), Symbol(g),
 			&List{Elems: []Node{
-				Symbol("alist->hash-table"),
+				Symbol("_alist->hash-table"),
 				&List{Elems: []Node{
 					Symbol("_list"),
 					&List{Elems: []Node{Symbol("cons"), StringLit("key"), Symbol(k)}},
@@ -2855,7 +2910,7 @@ func convertGroupByQuery(q *parser.QueryExpr) (Node, error) {
 	appendItem := &List{Elems: []Node{
 		Symbol("hash-table-set!"), Symbol(g), StringLit("items"),
 		&List{Elems: []Node{
-			Symbol("append"),
+			Symbol("_append"),
 			&List{Elems: []Node{Symbol("hash-table-ref"), Symbol(g), StringLit("items")}},
 			&List{Elems: []Node{Symbol("_list"), Symbol(q.Var)}},
 		}},
@@ -2887,7 +2942,7 @@ func convertGroupByQuery(q *parser.QueryExpr) (Node, error) {
 			&List{Elems: []Node{gParam}},
 			&List{Elems: []Node{
 				Symbol("set!"), Symbol(res),
-				&List{Elems: []Node{Symbol("append"), Symbol(res), &List{Elems: []Node{Symbol("_list"), sel}}}},
+				&List{Elems: []Node{Symbol("_append"), Symbol(res), sel}},
 			}},
 		}},
 		&List{Elems: []Node{Symbol("hash-table-values"), Symbol(groups)}},
@@ -3006,7 +3061,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Node, error) {
 	appendNode := Node(&List{Elems: []Node{
 		Symbol("set!"), resSym,
 		&List{Elems: []Node{
-			Symbol("append"), resSym,
+			Symbol("_append"), resSym,
 			&List{Elems: []Node{Symbol("_list"), sel}},
 		}},
 	}})
@@ -3440,7 +3495,7 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 				pair := &List{Elems: []Node{Symbol("cons"), StringLit(field), args[i]}}
 				pairs = append(pairs, pair)
 			}
-			return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
+			return &List{Elems: []Node{Symbol("_alist->hash-table"), &List{Elems: pairs}}}, nil
 		}
 		if _, ok := currentEnv.GetFunc(string(sym)); ok {
 			if string(sym) != "ln" && string(sym) != "exp" {
@@ -3498,7 +3553,7 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			if _, ok := types.ExprType(call.Args[0], currentEnv).(types.StringType); ok {
 				return &List{Elems: []Node{Symbol("string-append"), args[0], args[1]}}, nil
 			}
-			return &List{Elems: []Node{Symbol("append"), args[0], &List{Elems: []Node{Symbol("_list"), args[1]}}}}, nil
+			return &List{Elems: []Node{Symbol("_append"), args[0], args[1]}}, nil
 		case "concat":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("concat expects 2 args")
