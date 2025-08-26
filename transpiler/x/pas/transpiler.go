@@ -1611,9 +1611,9 @@ func (p *Program) Emit() []byte {
 	buf.WriteString("procedure panic(msg: string);\nbegin\n  writeln(msg);\n  halt(1);\nend;\n")
 	buf.WriteString("procedure error(msg: string);\nbegin\n  panic(msg);\nend;\n")
 	buf.WriteString("function _floordiv(a, b: int64): int64; var r: int64;\nbegin\n  r := a div b;\n  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;\n  _floordiv := r;\nend;\n")
-	buf.WriteString("function _to_float(x: integer): real;\nbegin\n  _to_float := x;\nend;\n")
+	buf.WriteString("function _to_float(x: int64): real;\nbegin\n  _to_float := x;\nend;\n")
 	if _, ok := funcNames["to_float"]; !ok {
-		buf.WriteString("function to_float(x: integer): real;\nbegin\n  to_float := _to_float(x);\nend;\n")
+		buf.WriteString("function to_float(x: int64): real;\nbegin\n  to_float := _to_float(x);\nend;\n")
 	}
 	buf.WriteString("procedure json(xs: array of real); overload;\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
 	buf.WriteString("procedure json(x: int64); overload;\nbegin\n  writeln(x);\nend;\n")

@@ -37,29 +37,59 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: int64): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: int64): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real); overload;
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   C: real;
-  mass: real;
-  energy: real;
-function energy_from_mass(mass: real): real; forward;
-function mass_from_energy(energy: real): real; forward;
-function energy_from_mass(mass: real): real;
+function energy_from_mass(energy_from_mass_mass: real): real; forward;
+function mass_from_energy(mass_from_energy_energy: real): real; forward;
+function energy_from_mass(energy_from_mass_mass: real): real;
 begin
-  if mass < 0 then begin
+  if energy_from_mass_mass < 0 then begin
   panic('Mass can''t be negative.');
 end;
-  exit((mass * C) * C);
+  exit((energy_from_mass_mass * C) * C);
 end;
-function mass_from_energy(energy: real): real;
+function mass_from_energy(mass_from_energy_energy: real): real;
 begin
-  if energy < 0 then begin
+  if mass_from_energy_energy < 0 then begin
   panic('Energy can''t be negative.');
 end;
-  exit(energy / (C * C));
+  exit(mass_from_energy_energy / (C * C));
 end;
 begin
   init_now();
@@ -79,4 +109,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

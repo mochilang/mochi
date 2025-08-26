@@ -37,47 +37,75 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: int64): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: int64): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real); overload;
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   UNIVERSAL_GAS_CONSTANT: real;
-  moles: real;
-  kelvin: real;
-  volume: real;
-  pressure: real;
-function pressure_of_gas_system(moles: real; kelvin: real; volume: real): real; forward;
-function volume_of_gas_system(moles: real; kelvin: real; pressure: real): real; forward;
-function temperature_of_gas_system(moles: real; volume: real; pressure: real): real; forward;
-function moles_of_gas_system(kelvin: real; volume: real; pressure: real): real; forward;
-function pressure_of_gas_system(moles: real; kelvin: real; volume: real): real;
+function pressure_of_gas_system(pressure_of_gas_system_moles: real; pressure_of_gas_system_kelvin: real; pressure_of_gas_system_volume: real): real; forward;
+function volume_of_gas_system(volume_of_gas_system_moles: real; volume_of_gas_system_kelvin: real; volume_of_gas_system_pressure: real): real; forward;
+function temperature_of_gas_system(temperature_of_gas_system_moles: real; temperature_of_gas_system_volume: real; temperature_of_gas_system_pressure: real): real; forward;
+function moles_of_gas_system(moles_of_gas_system_kelvin: real; moles_of_gas_system_volume: real; moles_of_gas_system_pressure: real): real; forward;
+function pressure_of_gas_system(pressure_of_gas_system_moles: real; pressure_of_gas_system_kelvin: real; pressure_of_gas_system_volume: real): real;
 begin
-  if ((moles < 0) or (kelvin < 0)) or (volume < 0) then begin
+  if ((pressure_of_gas_system_moles < 0) or (pressure_of_gas_system_kelvin < 0)) or (pressure_of_gas_system_volume < 0) then begin
   panic('Invalid inputs. Enter positive value.');
 end;
-  exit(((moles * kelvin) * UNIVERSAL_GAS_CONSTANT) / volume);
+  exit(((pressure_of_gas_system_moles * pressure_of_gas_system_kelvin) * UNIVERSAL_GAS_CONSTANT) / pressure_of_gas_system_volume);
 end;
-function volume_of_gas_system(moles: real; kelvin: real; pressure: real): real;
+function volume_of_gas_system(volume_of_gas_system_moles: real; volume_of_gas_system_kelvin: real; volume_of_gas_system_pressure: real): real;
 begin
-  if ((moles < 0) or (kelvin < 0)) or (pressure < 0) then begin
+  if ((volume_of_gas_system_moles < 0) or (volume_of_gas_system_kelvin < 0)) or (volume_of_gas_system_pressure < 0) then begin
   panic('Invalid inputs. Enter positive value.');
 end;
-  exit(((moles * kelvin) * UNIVERSAL_GAS_CONSTANT) / pressure);
+  exit(((volume_of_gas_system_moles * volume_of_gas_system_kelvin) * UNIVERSAL_GAS_CONSTANT) / volume_of_gas_system_pressure);
 end;
-function temperature_of_gas_system(moles: real; volume: real; pressure: real): real;
+function temperature_of_gas_system(temperature_of_gas_system_moles: real; temperature_of_gas_system_volume: real; temperature_of_gas_system_pressure: real): real;
 begin
-  if ((moles < 0) or (volume < 0)) or (pressure < 0) then begin
+  if ((temperature_of_gas_system_moles < 0) or (temperature_of_gas_system_volume < 0)) or (temperature_of_gas_system_pressure < 0) then begin
   panic('Invalid inputs. Enter positive value.');
 end;
-  exit((pressure * volume) / (moles * UNIVERSAL_GAS_CONSTANT));
+  exit((temperature_of_gas_system_pressure * temperature_of_gas_system_volume) / (temperature_of_gas_system_moles * UNIVERSAL_GAS_CONSTANT));
 end;
-function moles_of_gas_system(kelvin: real; volume: real; pressure: real): real;
+function moles_of_gas_system(moles_of_gas_system_kelvin: real; moles_of_gas_system_volume: real; moles_of_gas_system_pressure: real): real;
 begin
-  if ((kelvin < 0) or (volume < 0)) or (pressure < 0) then begin
+  if ((moles_of_gas_system_kelvin < 0) or (moles_of_gas_system_volume < 0)) or (moles_of_gas_system_pressure < 0) then begin
   panic('Invalid inputs. Enter positive value.');
 end;
-  exit((pressure * volume) / (kelvin * UNIVERSAL_GAS_CONSTANT));
+  exit((moles_of_gas_system_pressure * moles_of_gas_system_volume) / (moles_of_gas_system_kelvin * UNIVERSAL_GAS_CONSTANT));
 end;
 begin
   init_now();
@@ -95,4 +123,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

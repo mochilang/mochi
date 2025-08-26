@@ -48,11 +48,11 @@ begin
   if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
   _floordiv := r;
 end;
-function _to_float(x: integer): real;
+function _to_float(x: int64): real;
 begin
   _to_float := x;
 end;
-function to_float(x: integer): real;
+function to_float(x: int64): real;
 begin
   to_float := _to_float(x);
 end;
