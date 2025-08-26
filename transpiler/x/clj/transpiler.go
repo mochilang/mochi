@@ -2032,7 +2032,7 @@ func isStringNode(n Node) bool {
 		if len(t.Elems) > 0 {
 			if sym, ok := t.Elems[0].(Symbol); ok {
 				switch sym {
-				case "str", "subs", "clojure.string/join", "fields", "join", "numberName", "pluralizeFirst", "slur":
+				case "str", "subs", "clojure.string/join", "fields", "join", "numberName", "pluralizeFirst", "slur", "read-line":
 					return true
 				case "if":
 					if len(t.Elems) >= 3 {
@@ -2140,6 +2140,8 @@ func isStringListNode(n Node) bool {
 			if sym, ok := t.Elems[0].(Symbol); ok {
 				switch sym {
 				case "fields":
+					return true
+				case "split":
 					return true
 				case "keys":
 					if len(t.Elems) >= 2 {
@@ -3991,10 +3993,10 @@ func castNode(n Node, t *parser.TypeRef) (Node, error) {
 	}
 	switch *t.Simple {
 	case "int":
-		if isStringNode(n) {
-			return &List{Elems: []Node{Symbol("Long/parseLong"), n}}, nil
-		}
-		return &List{Elems: []Node{Symbol("long"), n}}, nil
+		// Use toi helper which parses strings via Double/valueOf and
+		// handles numeric values directly. This avoids ClassCastException
+		// when casting string expressions like (read-line) or (nth parts 0).
+		return &List{Elems: []Node{Symbol("toi"), n}}, nil
 	case "float":
 		if isStringNode(n) {
 			return &List{Elems: []Node{Symbol("Double/parseDouble"), n}}, nil
