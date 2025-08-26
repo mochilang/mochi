@@ -1,0 +1,256 @@
+// Solution for SPOJ RAIN1 - November Rain
+// https://www.spoj.com/problems/RAIN1/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  var i = 0
+  while i < len(pieces) {
+    let p = pieces[i]
+    if len(p) > 0 {
+      nums = append(nums, p as int)
+    }
+    i = i + 1
+  }
+  return nums
+}
+
+fun sort_unique(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  var res: list<int> = []
+  i = 0
+  while i < len(arr) {
+    if i == 0 || arr[i] != arr[i-1] {
+      res = append(res, arr[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun yAt(seg: map<string,int>, x: float): float {
+  let x1 = seg["x1"] as float
+  let y1 = seg["y1"] as float
+  let x2 = seg["x2"] as float
+  let y2 = seg["y2"] as float
+  return y1 + (y2 - y1) * (x - x1) / (x2 - x1)
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    let nLine = input()
+    let n = int(nLine)
+    var segs: list<map<string,int>> = []
+    var xs: list<int> = []
+    var i = 0
+    while i < n {
+      let line = input()
+      let vals = parse_ints(line)
+      let x1 = vals[0]
+      let y1 = vals[1]
+      let x2 = vals[2]
+      let y2 = vals[3]
+      var seg = { x1: x1, y1: y1, x2: x2, y2: y2, idx: i }
+      if y1 < y2 {
+        seg["lx"] = x1
+        seg["ly"] = y1
+      } else {
+        seg["lx"] = x2
+        seg["ly"] = y2
+      }
+      seg["to"] = -1
+      segs = append(segs, seg)
+      xs = append(xs, x1)
+      xs = append(xs, x2)
+      i = i + 1
+    }
+    xs = sort_unique(xs)
+    var startMap: map<int, list<int>> = {}
+    var endMap: map<int, list<int>> = {}
+    i = 0
+    while i < n {
+      let seg = segs[i]
+      let x1 = seg["x1"] as int
+      let x2 = seg["x2"] as int
+      var l = startMap[x1]
+      if !l { l = [] }
+      l = append(l, i)
+      startMap[x1] = l
+      var r = endMap[x2]
+      if !r { r = [] }
+      r = append(r, i)
+      endMap[x2] = r
+      i = i + 1
+    }
+    var segAt: map<int, list<int>> = {}
+    var active: list<int> = []
+    var rain: list<int> = []
+    i = 0
+    while i < n { rain = append(rain, 0); i = i + 1 }
+    var xi = 0
+    while xi < len(xs) - 1 {
+      let x = xs[xi]
+      var add = startMap[x]
+      if add {
+        var j = 0
+        while j < len(add) {
+          active = append(active, add[j])
+          j = j + 1
+        }
+      }
+      var listx: list<int> = []
+      var j = 0
+      while j < len(active) {
+        listx = append(listx, active[j])
+        j = j + 1
+      }
+      var endNow = endMap[x]
+      if endNow {
+        j = 0
+        while j < len(endNow) {
+          listx = append(listx, endNow[j])
+          j = j + 1
+        }
+      }
+      segAt[x] = listx
+      let nextX = xs[xi+1]
+      if len(active) > 0 {
+        let mid = (x + nextX) as float / 2.0
+        var top = active[0]
+        var topY = yAt(segs[top], mid)
+        var k = 1
+        while k < len(active) {
+          let idx = active[k]
+          let y = yAt(segs[idx], mid)
+          if y > topY {
+            topY = y
+            top = idx
+          }
+          k = k + 1
+        }
+        rain[top] = rain[top] + (nextX - x)
+      }
+      var endList = endMap[nextX]
+      if endList {
+        var j2 = 0
+        while j2 < len(endList) {
+          let val = endList[j2]
+          var m = 0
+          while m < len(active) {
+            if active[m] == val {
+              active[m] = active[len(active)-1]
+              active = active[0:len(active)-1]
+              break
+            }
+            m = m + 1
+          }
+          j2 = j2 + 1
+        }
+      }
+      xi = xi + 1
+    }
+    let lastX = xs[len(xs)-1]
+    var lastList: list<int> = []
+    var endLast = endMap[lastX]
+    if endLast {
+      var j3 = 0
+      while j3 < len(endLast) {
+        lastList = append(lastList, endLast[j3])
+        j3 = j3 + 1
+      }
+    }
+    segAt[lastX] = lastList
+    i = 0
+    while i < n {
+      let seg = segs[i]
+      let lx = seg["lx"] as int
+      let ly = seg["ly"] as int
+      let lyf = ly as float
+      var below = -1
+      var bestY = -1.0
+      let listb = segAt[lx]
+      if listb {
+        var j = 0
+        while j < len(listb) {
+          let idx = listb[j]
+          if idx != i {
+            let y = yAt(segs[idx], lx as float)
+            if y < lyf && (below < 0 || y > bestY) {
+              bestY = y
+              below = idx
+            }
+          }
+          j = j + 1
+        }
+      }
+      segs[i]["to"] = below
+      i = i + 1
+    }
+    var water: list<int> = []
+    i = 0
+    while i < n { water = append(water, rain[i]); i = i + 1 }
+    var order: list<int> = []
+    i = 0
+    while i < n { order = append(order, i); i = i + 1 }
+    var ii = 1
+    while ii < len(order) {
+      var jj = ii
+      while jj > 0 && (segs[order[jj-1]]["ly"] as int) < (segs[order[jj]]["ly"] as int) {
+        let tmp = order[jj-1]
+        order[jj-1] = order[jj]
+        order[jj] = tmp
+        jj = jj - 1
+      }
+      ii = ii + 1
+    }
+    i = 0
+    while i < len(order) {
+      let idx = order[i]
+      let to = segs[idx]["to"] as int
+      if to >= 0 {
+        water[to] = water[to] + water[idx]
+      }
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      print(water[i])
+      i = i + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
