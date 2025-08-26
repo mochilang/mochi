@@ -1,0 +1,117 @@
+// Solution for SPOJ PICAD - Crime at Piccadilly Circus
+// https://www.spoj.com/problems/PICAD/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun addEvent(events: map<int, int>, times: list<int>, t: int, d: int): list<int> {
+  if events[t] == nil {
+    events[t] = d
+    times = append(times, t)
+  } else {
+    events[t] = events[t] + d
+  }
+  return times
+}
+
+fun main() {
+  var case = 0
+  while case < 10 {
+    var line = input()
+    if line == nil || line == "" { return }
+    let pk = parseInts(line)
+    let p = pk[0]
+    let k = pk[1]
+    let n = parseIntStr(input())
+    var events: map<int, int> = {}
+    var times: list<int> = []
+    times = addEvent(events, times, p, 0)
+    times = addEvent(events, times, k+1, 0)
+    var i = 0
+    while i < n {
+      let ab = parseInts(input())
+      let a = ab[0]
+      let b = ab[1]
+      let s = if a > p { a } else { p }
+      let e = if b < k { b } else { k }
+      if s <= e {
+        times = addEvent(events, times, s, 1)
+        times = addEvent(events, times, e + 1, -1)
+      }
+      i = i + 1
+    }
+    times = sortInts(times)
+    var curr = 0
+    var minC = 1000000000
+    var maxC = 0
+    var idx = 0
+    while idx < len(times) {
+      let t = times[idx]
+      curr = curr + events[t]
+      if t >= p && t <= k {
+        if curr < minC { minC = curr }
+        if curr > maxC { maxC = curr }
+      }
+      idx = idx + 1
+    }
+    print(str(minC) + " " + str(maxC))
+    case = case + 1
+  }
+}
+
+main()
