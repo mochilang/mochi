@@ -1,0 +1,51 @@
+// Solution for SPOJ MARBLES - Marbles
+// https://www.spoj.com/problems/MARBLES/
+
+fun splitTwo(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun comb(n: int, k: int): bigint {
+  let r = if k - 1 < n - k { k - 1 } else { n - k }
+  var res: bigint = 1 as bigint
+  var i = 1
+  while i <= r {
+    res = res * (((n - 1) - r + i) as bigint) / (i as bigint)
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let line = input()
+    let parts = splitTwo(line)
+    let n = parts[0] as int
+    let k = parts[1] as int
+    let ans = comb(n, k)
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
