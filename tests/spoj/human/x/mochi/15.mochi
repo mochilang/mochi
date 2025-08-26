@@ -1,0 +1,109 @@
+/*
+SPOJ: Shortest Path
+https://www.spoj.com/problems/SHPATH/
+*/
+
+type Edge {
+  to: int
+  w: int
+}
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun dijkstra(graph: list<list<Edge>>, src: int, dst: int): int {
+  let n = len(graph)
+  var dist: list<int> = []
+  var used: list<bool> = []
+  var i = 0
+  while i < n {
+    dist = append(dist, 1000000000)
+    used = append(used, false)
+    i = i + 1
+  }
+  dist[src] = 0
+  var iter = 0
+  while iter < n {
+    var u = -1
+    var j = 0
+    while j < n {
+      if !used[j] && (u < 0 || dist[j] < dist[u]) {
+        u = j
+      }
+      j = j + 1
+    }
+    if u < 0 {
+      break
+    }
+    used[u] = true
+    if u == dst {
+      break
+    }
+    for e in graph[u] {
+      let nd = dist[u] + e.w
+      if nd < dist[e.to] {
+        dist[e.to] = nd
+      }
+    }
+    iter = iter + 1
+  }
+  return dist[dst]
+}
+
+fun main() {
+  let s = input() as int
+  var t = 0
+  while t < s {
+    let n = input() as int
+    var graph: list<list<Edge>> = []
+    var name_to_idx: map<string, int> = {}
+    var i = 0
+    while i < n {
+      let name = input()
+      name_to_idx[name] = i
+      graph = append(graph, [])
+      let p = input() as int
+      var j = 0
+      while j < p {
+        let line = input()
+        let parts = split(line, " ")
+        let nbr = (parts[0] as int) - 1
+        let cost = parts[1] as int
+        var edges = graph[i]
+        edges = append(edges, Edge { to: nbr, w: cost })
+        graph[i] = edges
+        j = j + 1
+      }
+      i = i + 1
+    }
+    let r = input() as int
+    var q = 0
+    while q < r {
+      let line = input()
+      let parts = split(line, " ")
+      let src = name_to_idx[parts[0]]
+      let dst = name_to_idx[parts[1]]
+      let ans = dijkstra(graph, src, dst)
+      print(ans)
+      q = q + 1
+    }
+    t = t + 1
+  }
+}
+
+main()
