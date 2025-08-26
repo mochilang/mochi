@@ -1,0 +1,95 @@
+// Solution for SPOJ TETRA - Sphere in a tetrahedron
+// https://www.spoj.com/problems/TETRA/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var prev = 0.0
+  while absf(r - prev) > 1e-12 {
+    prev = r
+    r = (r + x / r) / 2.0
+  }
+  return r
+}
+
+fun area(x: float, y: float, z: float): float {
+  let s = (x + y + z) / 2.0
+  return sqrt(s * (s - x) * (s - y) * (s - z))
+}
+
+fun volume(a: float, b: float, c: float, A: float, B: float, C: float): float {
+  let a2 = a * a
+  let b2 = b * b
+  let c2 = c * c
+  let A2 = A * A
+  let B2 = B * B
+  let C2 = C * C
+  let term1 = 4.0 * a2 * b2 * c2
+  let term2 = a2 * (b2 + c2 - A2) * (b2 + c2 - A2)
+  let term3 = b2 * (c2 + a2 - B2) * (c2 + a2 - B2)
+  let term4 = c2 * (a2 + b2 - C2) * (a2 + b2 - C2)
+  let term5 = (b2 + c2 - A2) * (c2 + a2 - B2) * (a2 + b2 - C2)
+  return sqrt(term1 - term2 - term3 - term4 + term5) / 12.0
+}
+
+fun format4(x: float): string {
+  var scaled = x * 10000.0 + 0.5
+  var n = scaled as int
+  var whole = n / 10000
+  var frac = n % 10000
+  var fracStr = str(frac)
+  while len(fracStr) < 4 {
+    fracStr = "0" + fracStr
+  }
+  return str(whole) + "." + fracStr
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var i = 0
+  while i < t {
+    let line = input()
+    let parts = split(line, " ")
+    let a = int(parts[0]) as float
+    let b = int(parts[1]) as float
+    let c = int(parts[2]) as float
+    let d = int(parts[3]) as float
+    let e = int(parts[4]) as float
+    let f = int(parts[5]) as float
+    let area1 = area(a, b, d)
+    let area2 = area(a, c, e)
+    let area3 = area(b, c, f)
+    let area4 = area(d, e, f)
+    let surface = area1 + area2 + area3 + area4
+    let vol = volume(a, b, c, f, e, d)
+    let r = 3.0 * vol / surface
+    print(format4(r))
+    i = i + 1
+  }
+}
+
+main()
