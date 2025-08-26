@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-26 00:02 GMT+7
+Last updated: 2025-08-26 08:57 GMT+7
 
 ## Algorithms Golden Test Checklist (1008/1077)
 | Index | Name | Status | Duration | Memory |
@@ -736,7 +736,7 @@ Last updated: 2025-08-26 00:02 GMT+7
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 47.0µs | 0B |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 158.0µs | 0B |
 | 729 | neural_network/activation_functions/softplus | ✓ | 142.0µs | 0B |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 70.0µs | 0B |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 63.0µs | 0B |
 | 731 | neural_network/activation_functions/swish | ✓ | 121.0µs | 0B |
 | 732 | neural_network/back_propagation_neural_network | ✓ | 981.0ms | 0B |
 | 733 | neural_network/convolution_neural_network | ✓ | 2.0ms | 0B |
