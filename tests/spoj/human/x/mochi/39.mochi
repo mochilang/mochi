@@ -1,0 +1,99 @@
+// Solution for SPOJ PIGBANK - Piggy-Bank
+// https://www.spoj.com/problems/PIGBANK/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var caseIdx = 0
+  while caseIdx < t {
+    let line = input()
+    let parts = split(line, " ")
+    let E = parseIntStr(parts[0])
+    let F = parseIntStr(parts[1])
+    let target = F - E
+    let nLine = input()
+    let N = parseIntStr(nLine)
+    var values: list<int> = []
+    var weights: list<int> = []
+    var i = 0
+    while i < N {
+      let cw = input()
+      let pw = split(cw, " ")
+      values = append(values, parseIntStr(pw[0]))
+      weights = append(weights, parseIntStr(pw[1]))
+      i = i + 1
+    }
+    let INF = 1000000000
+    var dp: list<int> = []
+    var w = 0
+    while w <= target {
+      if w == 0 { dp = append(dp, 0) } else { dp = append(dp, INF) }
+      w = w + 1
+    }
+    w = 1
+    while w <= target {
+      var j = 0
+      while j < N {
+        let wt = weights[j]
+        if wt <= w {
+          let val = values[j]
+          let cand = dp[w - wt] + val
+          if cand < dp[w] {
+            dp[w] = cand
+          }
+        }
+        j = j + 1
+      }
+      w = w + 1
+    }
+    let ans = dp[target]
+    if ans >= INF {
+      print("This is impossible.")
+    } else {
+      print("The minimum amount of money in the piggy-bank is " + str(ans) + ".")
+    }
+    caseIdx = caseIdx + 1
+  }
+}
+
+main()
