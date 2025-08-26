@@ -1,0 +1,70 @@
+// Solution for SPOJ SBANK - Sorting Bank Accounts
+// https://www.spoj.com/problems/SBANK/
+
+fun merge(left: list<string>, right: list<string>): list<string> {
+  var res: list<string> = []
+  var i = 0
+  var j = 0
+  while i < len(left) && j < len(right) {
+    if left[i] <= right[j] {
+      res = append(res, left[i])
+      i = i + 1
+    } else {
+      res = append(res, right[j])
+      j = j + 1
+    }
+  }
+  while i < len(left) {
+    res = append(res, left[i])
+    i = i + 1
+  }
+  while j < len(right) {
+    res = append(res, right[j])
+    j = j + 1
+  }
+  return res
+}
+
+fun mergeSort(arr: list<string>): list<string> {
+  if len(arr) <= 1 { return arr }
+  let mid = len(arr) / 2
+  let left = mergeSort(arr[0:mid])
+  let right = mergeSort(arr[mid:len(arr)])
+  return merge(left, right)
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = tStr as int
+  var caseIndex = 0
+  while caseIndex < t {
+    let nStr = input()
+    let n = nStr as int
+    var accounts: list<string> = []
+    var i = 0
+    while i < n {
+      let acc = input()
+      accounts = append(accounts, acc)
+      i = i + 1
+    }
+    accounts = mergeSort(accounts)
+    var j = 0
+    while j < len(accounts) {
+      var k = j + 1
+      while k < len(accounts) && accounts[k] == accounts[j] {
+        k = k + 1
+      }
+      let cnt = k - j
+      print(accounts[j] + " " + str(cnt))
+      j = k
+    }
+    caseIndex = caseIndex + 1
+    if caseIndex < t {
+      print("")
+      input()
+    }
+  }
+}
+
+main()
