@@ -1,0 +1,50 @@
+{"id":2742,"name":"Summing Sums","url":"https://www.spoj.com/problems/SUMSUMS","users":921,"accepted":19.11}
+{"id":2743,"name":"Prefix Tiling","url":"https://www.spoj.com/problems/PRETILE","users":166,"accepted":27.86}
+{"id":2815,"name":"Increasing Subsequences","url":"https://www.spoj.com/problems/INCSEQ","users":2184,"accepted":28.17}
+{"id":2816,"name":"Common Subsequences","url":"https://www.spoj.com/problems/CSUBSEQS","users":222,"accepted":28.72}
+{"id":2817,"name":"Distinct Increasing Subsequences","url":"https://www.spoj.com/problems/INCDSEQ","users":795,"accepted":24.57}
+{"id":2826,"name":"Round-Robin Scheduling","url":"https://www.spoj.com/problems/RRSCHED","users":650,"accepted":36.17}
+{"id":2829,"name":"Time Limit Exceeded","url":"https://www.spoj.com/problems/TLE","users":259,"accepted":21.6}
+{"id":2832,"name":"Find The Determinant III","url":"https://www.spoj.com/problems/DETER3","users":308,"accepted":20.46}
+{"id":2833,"name":"Super Dice Game","url":"https://www.spoj.com/problems/SDGAME","users":24,"accepted":9.63}
+{"id":2835,"name":"Memory Limit Exceeded","url":"https://www.spoj.com/problems/MLE","users":91,"accepted":31.4}
+{"id":2852,"name":"Broken Keyboard","url":"https://www.spoj.com/problems/BROKEN","users":1219,"accepted":31.72}
+{"id":2853,"name":"Decode the Strings","url":"https://www.spoj.com/problems/PDECODE","users":432,"accepted":39.64}
+{"id":2855,"name":"Forest","url":"https://www.spoj.com/problems/FOREST2","users":62,"accepted":12.68}
+{"id":2856,"name":"Help Bob","url":"https://www.spoj.com/problems/HELPBOB","users":278,"accepted":31.72}
+{"id":2877,"name":"Another understanding of Super Dice Game","url":"https://www.spoj.com/problems/SDGAME2","users":67,"accepted":10.34}
+{"id":2878,"name":"Knights of the Round Table","url":"https://www.spoj.com/problems/KNIGHTS","users":562,"accepted":22.72}
+{"id":2879,"name":"The Cow Doctor","url":"https://www.spoj.com/problems/DOCTOR","users":145,"accepted":33.46}
+{"id":2880,"name":"Wild West","url":"https://www.spoj.com/problems/WILD","users":103,"accepted":42.23}
+{"id":2881,"name":"Find the Clones","url":"https://www.spoj.com/problems/CLONE","users":2056,"accepted":44.57}
+{"id":2882,"name":"The Warehouse","url":"https://www.spoj.com/problems/WARE","users":27,"accepted":30.66}
+{"id":2883,"name":"Widget Factory","url":"https://www.spoj.com/problems/WIDGET","users":167,"accepted":34.83}
+{"id":2884,"name":"Martian Mining","url":"https://www.spoj.com/problems/MARTIAN","users":2326,"accepted":47.78}
+{"id":2885,"name":"Word Rings","url":"https://www.spoj.com/problems/WORDRING","users":401,"accepted":15.76}
+{"id":2898,"name":"Party of Cloaked Killers","url":"https://www.spoj.com/problems/PARTY2","users":28,"accepted":16.23}
+{"id":2899,"name":"Volunteers","url":"https://www.spoj.com/problems/VOL","users":60,"accepted":45}
+{"id":2901,"name":"One Geometry Problem","url":"https://www.spoj.com/problems/GEOPROB","users":1827,"accepted":36.14}
+{"id":2902,"name":"Candy IV","url":"https://www.spoj.com/problems/CANDY4","users":33,"accepted":46.46}
+{"id":2903,"name":"Transportation","url":"https://www.spoj.com/problems/TRANSP1","users":11,"accepted":19.12}
+{"id":2905,"name":"Not a Triangle","url":"https://www.spoj.com/problems/NOTATRI","users":5052,"accepted":38.67}
+{"id":2906,"name":"GCD2","url":"https://www.spoj.com/problems/GCD2","users":6866,"accepted":36.49}
+{"id":2916,"name":"Can you answer these queries V","url":"https://www.spoj.com/problems/GSS5","users":2877,"accepted":26.7}
+{"id":2939,"name":"Query on a tree V","url":"https://www.spoj.com/problems/QTREE5","users":1918,"accepted":28.72}
+{"id":2940,"name":"Untitled Problem II","url":"https://www.spoj.com/problems/UNTITLE1","users":126,"accepted":15.45}
+{"id":2944,"name":"Emmons","url":"https://www.spoj.com/problems/SHOOTING","users":7,"accepted":7.19}
+{"id":2946,"name":"Eclipse","url":"https://www.spoj.com/problems/ECLIPSE","users":24,"accepted":9.76}
+{"id":2961,"name":"Triomino Game","url":"https://www.spoj.com/problems/TRIOMINO","users":240,"accepted":28.24}
+{"id":2962,"name":"Painting Blocks (Act I)","url":"https://www.spoj.com/problems/PAINTBLK","users":113,"accepted":57.95}
+{"id":2963,"name":"Painting Blocks (Act II)","url":"https://www.spoj.com/problems/PAINTBLC","users":61,"accepted":21.28}
+{"id":3002,"name":"Electrophoretic","url":"https://www.spoj.com/problems/ELECTRO","users":15,"accepted":20.93}
+{"id":3003,"name":"Median Filter","url":"https://www.spoj.com/problems/FILTER","users":21,"accepted":43.26}
+{"id":3004,"name":"Life Game","url":"https://www.spoj.com/problems/LIFEGAME","users":76,"accepted":35.47}
+{"id":3005,"name":"Subdividing a Land","url":"https://www.spoj.com/problems/LAND","users":28,"accepted":33.02}
+{"id":3006,"name":"Connect Line Segments","url":"https://www.spoj.com/problems/LINE","users":79,"accepted":24.38}
+{"id":3007,"name":"Oil Company","url":"https://www.spoj.com/problems/OILCOMP","users":178,"accepted":25.08}
+{"id":3008,"name":"Finding the Top RPS Player","url":"https://www.spoj.com/problems/RPS","users":183,"accepted":65.9}
+{"id":3009,"name":"Revenge of Voronoi","url":"https://www.spoj.com/problems/VORONOI","users":14,"accepted":30.26}
+{"id":3010,"name":"Castle Wall","url":"https://www.spoj.com/problems/WALL","users":26,"accepted":20.15}
+{"id":3023,"name":"Binary multiplication","url":"https://www.spoj.com/problems/MUL2COM","users":229,"accepted":25.04}
+{"id":3033,"name":"Help the soldier","url":"https://www.spoj.com/problems/SOLDIER","users":1251,"accepted":29.03}
+{"id":3070,"name":"How many subsequences","url":"https://www.spoj.com/problems/SEQ5","users":99,"accepted":9.9}
