@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-25 22:43 GMT+7
+Last updated: 2025-08-26 08:45 GMT+7
 
 ## Algorithms Golden Test Checklist (919/1077)
 | Index | Name | Status | Duration | Memory |
@@ -710,7 +710,7 @@ Last updated: 2025-08-25 22:43 GMT+7
 | 701 | matrix/cramers_rule_2x2 | ✓ | 14.29ms | 17.3 MB |
 | 702 | matrix/inverse_of_matrix | ✓ | 14.38ms | 33.5 MB |
 | 703 | matrix/largest_square_area_in_matrix | ✓ | 10.63ms | 17.3 MB |
-| 704 | matrix/matrix_based_game | ✓ |  |  |
+| 704 | matrix/matrix_based_game | ✓ | 334us | 12.5 MB |
 | 705 | matrix/matrix_class | ✓ | 32.49ms | 25.0 MB |
 | 706 | matrix/matrix_equalization | ✓ | 8.71ms | 17.3 MB |
 | 707 | matrix/matrix_multiplication_recursion | ✓ | 26.44ms | 25.0 MB |
@@ -719,11 +719,11 @@ Last updated: 2025-08-25 22:43 GMT+7
 | 710 | matrix/median_matrix | ✓ | 10.47ms | 32.7 MB |
 | 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 9.38ms | 7.7 MB |
 | 712 | matrix/pascal_triangle | ✓ | 26.58ms | 17.3 MB |
-| 713 | matrix/rotate_matrix | ✓ |  |  |
+| 713 | matrix/rotate_matrix | ✓ | 1.85ms | 17.3 MB |
 | 714 | matrix/searching_in_sorted_matrix | ✓ | 4.04ms | 17.3 MB |
 | 715 | matrix/sherman_morrison | ✓ | 11.60ms | 25.0 MB |
-| 716 | matrix/spiral_print | ✓ |  |  |
-| 717 | matrix/tests/test_matrix_operation | ✓ |  |  |
+| 716 | matrix/spiral_print | ✓ | 8.73ms | 17.3 MB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 11.92ms | 25.0 MB |
 | 718 | matrix/validate_sudoku_board | ✓ | 13.80ms | 25.0 MB |
 | 719 | networking_flow/ford_fulkerson | ✓ |  |  |
 | 720 | networking_flow/minimum_cut | ✓ |  |  |
@@ -736,7 +736,7 @@ Last updated: 2025-08-25 22:43 GMT+7
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 6.97ms | 17.3 MB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 7.07ms | 25.0 MB |
 | 729 | neural_network/activation_functions/softplus | error |  |  |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 6.67ms | 25.2 MB |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 9.38ms | 25.2 MB |
 | 731 | neural_network/activation_functions/swish | ✓ | 6.03ms | 25.6 MB |
 | 732 | neural_network/back_propagation_neural_network | error |  |  |
 | 733 | neural_network/convolution_neural_network | error |  |  |
