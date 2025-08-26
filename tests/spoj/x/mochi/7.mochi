@@ -1,0 +1,244 @@
+// https://www.spoj.com/problems/BULK/
+
+fun split_numbers(line: string): list<int> {
+  var nums: list<int> = []
+  var current = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if current != "" {
+        nums = append(nums, int(current))
+        current = ""
+      }
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  if current != "" {
+    nums = append(nums, int(current))
+  }
+  return nums
+}
+
+fun point_in_poly(u: list<int>, v: list<int>, x: float, y: float): bool {
+  var inside = false
+  var n = len(u)
+  var i = 0
+  while i < n {
+    let j = if i + 1 == n { 0 } else { i + 1 }
+    let x1 = float(u[i])
+    let y1 = float(v[i])
+    let x2 = float(u[j])
+    let y2 = float(v[j])
+    if ((y1 > y) != (y2 > y)) {
+      let xx = x1 + (x2 - x1) * (y - y1) / (y2 - y1)
+      if x < xx {
+        inside = !inside
+      }
+    }
+    i = i + 1
+  }
+  return inside
+}
+
+fun make3d(a: int, b: int, c: int): list<list<list<bool>>> {
+  var arr: list<list<list<bool>>> = []
+  var i = 0
+  while i < a {
+    var plane: list<list<bool>> = []
+    var j = 0
+    while j < b {
+      var row: list<bool> = []
+      var k = 0
+      while k < c {
+        row = append(row, false)
+        k = k + 1
+      }
+      plane = append(plane, row)
+      j = j + 1
+    }
+    arr = append(arr, plane)
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  let t = int(input())
+  var case = 0
+  while case < t {
+    case = case + 1
+    let f = int(input())
+    var faces: list<map<string, any>> = []
+    var maxC = 0
+    var fi = 0
+    while fi < f {
+      let line = input()
+      let nums = split_numbers(line)
+      let p = nums[0]
+      var pts: list<list<int>> = []
+      var idx = 1
+      var pi = 0
+      while pi < p {
+        let x = nums[idx]
+        let y = nums[idx+1]
+        let z = nums[idx+2]
+        if x > maxC { maxC = x }
+        if y > maxC { maxC = y }
+        if z > maxC { maxC = z }
+        pts = append(pts, [x,y,z])
+        idx = idx + 3
+        pi = pi + 1
+      }
+      faces = append(faces, {"pts": pts})
+      fi = fi + 1
+    }
+    let N = maxC + 1
+    var wallX = make3d(N + 1, N, N)
+    var wallY = make3d(N, N + 1, N)
+    var wallZ = make3d(N, N, N + 1)
+    for face in faces {
+      let pts = face["pts"] as list<list<int>>
+      var xs: list<int> = []
+      var ys: list<int> = []
+      var zs: list<int> = []
+      for p in pts {
+        xs = append(xs, p[0] as int)
+        ys = append(ys, p[1] as int)
+        zs = append(zs, p[2] as int)
+      }
+      let sameX = true
+      var i = 1
+      while i < len(xs) {
+        if xs[i] != xs[0] { sameX = false }
+        i = i + 1
+      }
+      let sameY = true
+      i = 1
+      while i < len(ys) {
+        if ys[i] != ys[0] { sameY = false }
+        i = i + 1
+      }
+      if sameX {
+        let x = xs[0]
+        var py: list<int> = []
+        var pz: list<int> = []
+        for j in 0..len(pts) {
+          py = append(py, pts[j][1] as int)
+          pz = append(pz, pts[j][2] as int)
+        }
+        var minY = py[0]
+        var maxY = py[0]
+        var minZ = pz[0]
+        var maxZ = pz[0]
+        for v in py { if v < minY { minY = v }; if v > maxY { maxY = v } }
+        for v in pz { if v < minZ { minZ = v }; if v > maxZ { maxZ = v } }
+        var y = minY
+        while y < maxY {
+          var z = minZ
+          while z < maxZ {
+            if point_in_poly(py, pz, float(y) + 0.5, float(z) + 0.5) {
+              wallX[x][y][z] = true
+            }
+            z = z + 1
+          }
+          y = y + 1
+        }
+      } else if sameY {
+        let y = ys[0]
+        var px: list<int> = []
+        var pz: list<int> = []
+        for j in 0..len(pts) {
+          px = append(px, pts[j][0] as int)
+          pz = append(pz, pts[j][2] as int)
+        }
+        var minX = px[0]
+        var maxX = px[0]
+        var minZ = pz[0]
+        var maxZ = pz[0]
+        for v in px { if v < minX { minX = v }; if v > maxX { maxX = v } }
+        for v in pz { if v < minZ { minZ = v }; if v > maxZ { maxZ = v } }
+        var x = minX
+        while x < maxX {
+          var z = minZ
+          while z < maxZ {
+            if point_in_poly(px, pz, float(x) + 0.5, float(z) + 0.5) {
+              wallY[x][y][z] = true
+            }
+            z = z + 1
+          }
+          x = x + 1
+        }
+      } else {
+        let z = zs[0]
+        var px: list<int> = []
+        var py: list<int> = []
+        for j in 0..len(pts) {
+          px = append(px, pts[j][0] as int)
+          py = append(py, pts[j][1] as int)
+        }
+        var minX = px[0]
+        var maxX = px[0]
+        var minY = py[0]
+        var maxY = py[0]
+        for v in px { if v < minX { minX = v }; if v > maxX { maxX = v } }
+        for v in py { if v < minY { minY = v }; if v > maxY { maxY = v } }
+        var x = minX
+        while x < maxX {
+          var y = minY
+          while y < maxY {
+            if point_in_poly(px, py, float(x) + 0.5, float(y) + 0.5) {
+              wallZ[x][y][z] = true
+            }
+            y = y + 1
+          }
+          x = x + 1
+        }
+      }
+    }
+    var visited = make3d(N, N, N)
+    var queue: list<list<int>> = [[0,0,0]]
+    visited[0][0][0] = true
+    var head = 0
+    var outside = 0
+    while head < len(queue) {
+      let cur = queue[head]
+      head = head + 1
+      let x = cur[0] as int
+      let y = cur[1] as int
+      let z = cur[2] as int
+      outside = outside + 1
+      if x > 0 && !wallX[x][y][z] && !visited[x-1][y][z] {
+        visited[x-1][y][z] = true
+        queue = append(queue, [x-1,y,z])
+      }
+      if x < N-1 && !wallX[x+1][y][z] && !visited[x+1][y][z] {
+        visited[x+1][y][z] = true
+        queue = append(queue, [x+1,y,z])
+      }
+      if y > 0 && !wallY[x][y][z] && !visited[x][y-1][z] {
+        visited[x][y-1][z] = true
+        queue = append(queue, [x,y-1,z])
+      }
+      if y < N-1 && !wallY[x][y+1][z] && !visited[x][y+1][z] {
+        visited[x][y+1][z] = true
+        queue = append(queue, [x,y+1,z])
+      }
+      if z > 0 && !wallZ[x][y][z] && !visited[x][y][z-1] {
+        visited[x][y][z-1] = true
+        queue = append(queue, [x,y,z-1])
+      }
+      if z < N-1 && !wallZ[x][y][z+1] && !visited[x][y][z+1] {
+        visited[x][y][z+1] = true
+        queue = append(queue, [x,y,z+1])
+      }
+    }
+    let total = N * N * N
+    let volume = total - outside
+    print("The bulk is composed of " + str(volume) + " units.")
+  }
+}
+
+main()
