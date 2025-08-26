@@ -1,0 +1,17 @@
+# https://www.spoj.com/problems/CRYPTO3/
+
+let s = input()
+var carry = 0
+var i: int = len(s) - 1
+var res = ""
+while i >= 0 {
+  let digit = int(substring(s, i, i + 1))
+  let prod = digit * 2 + carry
+  carry = prod / 10
+  res = str(prod % 10) + res
+  i = i - 1
+}
+if carry > 0 {
+  res = str(carry) + res
+}
+print(res)
