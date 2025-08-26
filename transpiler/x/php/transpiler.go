@@ -2512,7 +2512,7 @@ func (m *MapLit) emit(w io.Writer) {
 		}
 		fmt.Fprint(w, " => ")
 		if v, ok := it.Value.(*Var); ok {
-			fmt.Fprintf(w, "&$%s", sanitizeVarName(v.Name))
+			fmt.Fprintf(w, "$%s", sanitizeVarName(v.Name))
 		} else {
 			it.Value.emit(w)
 		}
@@ -3317,10 +3317,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						arg = maybeFloatString(arg)
 					}
 					args[i] = arg
-				}
-				// Trim trailing spaces only for known string expressions to match Mochi output
-				if isStringExpr(args[i]) {
-					args[i] = &CallExpr{Func: "rtrim", Args: []Expr{args[i]}}
 				}
 			}
 		} else if name == "len" {
@@ -5270,6 +5266,10 @@ func isIntExpr(e Expr) bool {
 					return true
 				}
 			}
+		}
+	case *IndexExpr:
+		if _, ok := exprType(v).(types.IntType); ok {
+			return true
 		}
 	case *BinaryExpr:
 		switch v.Op {

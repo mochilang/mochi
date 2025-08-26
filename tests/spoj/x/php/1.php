@@ -25,7 +25,7 @@ $__start = _now();
   if ($n == 42) {
   break;
 }
-  echo rtrim($line), PHP_EOL;
+  echo $line, PHP_EOL;
 };
 };
   main();
