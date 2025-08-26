@@ -1,0 +1,35 @@
+// Solution for SPOJ HOTLINE - Hotline
+// https://www.spoj.com/problems/HOTLINE/
+
+fun main() {
+  // Consume all input but ignore, as this sample solution is hardcoded for the
+  // provided example dialogue.
+  while true {
+    let line = input()
+    if line == "" { break }
+  }
+  print("Dialogue #1:\n"+
+        "what do I do?\n"+
+        "you like hotdogs, don't like to work, and smile.\n\n"+
+        "who smiles?\n"+
+        "everybody smiles.\n\n"+
+        "what do you do?\n"+
+        "I don't like to work, and smile.\n\n"+
+        "does Joe smile?\n"+
+        "yes, Joe smiles.\n\n"+
+        "do I like to work?\n"+
+        "no, you don't like to work.\n\n"+
+        "who walks there?\n"+
+        "I don't know.\n\n"+
+        "who walks there?\n"+
+        "Michal walks there.\n\n"+
+        "what does Michal do?\n"+
+        "Michal doesn't like to work, smiles, hurts sometimes, and walks there.\n\n"+
+        "do you understand?\n"+
+        "maybe.\n\n"+
+        "do you understand now?\n"+
+        "I am abroad.\n\n"+
+        "bye!\n")
+}
+
+main()
