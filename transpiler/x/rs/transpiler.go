@@ -5383,12 +5383,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return &IntCastExpr{Expr: args[0]}, nil
 			}
 		}
-		if name == "read_file" && len(args) == 1 {
-			if _, ok := funReturns["read_file"]; ok {
-				// user-defined read_file
+		if (name == "read_file" || name == "readFile") && len(args) == 1 {
+			// allow camelCase alias `readFile` for convenience
+			if _, ok := funReturns["read_file"]; ok || (name == "readFile" && funReturns["readFile"] != "") {
+				// user-defined function with same name; treat as normal call
 			} else {
 				useReadFile = true
-				funReturns[name] = "String"
+				funReturns["read_file"] = "String"
 				if inferType(args[0]) == "String" {
 					if _, ok := args[0].(*StringLit); !ok {
 						args[0] = &MethodCallExpr{Receiver: args[0], Name: "as_str"}
