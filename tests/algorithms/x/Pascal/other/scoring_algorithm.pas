@@ -2,7 +2,7 @@
 program Main;
 uses SysUtils;
 type RealArray = array of real;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type RealArrayArray = array of RealArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -44,6 +44,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -52,7 +58,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,6 +67,10 @@ begin
     if i < High(xs) then write(', ');
   end;
   writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
 end;
 function list_real_to_str(xs: array of real): string;
 var i: integer;
@@ -88,27 +98,24 @@ var
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   vehicles: array of RealArray;
-  weights: array of integer;
+  weights: array of int64;
   result_: RealArrayArray;
-  source_data: RealArrayArray;
-  data_lists: RealArrayArray;
-  score_lists: RealArrayArray;
-function get_data(source_data: RealArrayArray): RealArrayArray; forward;
-function calculate_each_score(data_lists: RealArrayArray; weights: IntArray): RealArrayArray; forward;
-function generate_final_scores(score_lists: RealArrayArray): RealArray; forward;
-function procentual_proximity(source_data: RealArrayArray; weights: IntArray): RealArrayArray; forward;
-function get_data(source_data: RealArrayArray): RealArrayArray;
+function get_data(get_data_source_data: RealArrayArray): RealArrayArray; forward;
+function calculate_each_score(calculate_each_score_data_lists: RealArrayArray; calculate_each_score_weights: IntArray): RealArrayArray; forward;
+function generate_final_scores(generate_final_scores_score_lists: RealArrayArray): RealArray; forward;
+function procentual_proximity(procentual_proximity_source_data: RealArrayArray; procentual_proximity_weights: IntArray): RealArrayArray; forward;
+function get_data(get_data_source_data: RealArrayArray): RealArrayArray;
 var
   get_data_data_lists: array of RealArray;
-  get_data_i: integer;
+  get_data_i: int64;
   get_data_row: array of real;
-  get_data_j: integer;
+  get_data_j: int64;
   get_data_empty: array of real;
 begin
   get_data_data_lists := [];
   get_data_i := 0;
-  while get_data_i < Length(source_data) do begin
-  get_data_row := source_data[get_data_i];
+  while get_data_i < Length(get_data_source_data) do begin
+  get_data_row := get_data_source_data[get_data_i];
   get_data_j := 0;
   while get_data_j < Length(get_data_row) do begin
   if Length(get_data_data_lists) < (get_data_j + 1) then begin
@@ -122,24 +129,25 @@ end;
 end;
   exit(get_data_data_lists);
 end;
-function calculate_each_score(data_lists: RealArrayArray; weights: IntArray): RealArrayArray;
+function calculate_each_score(calculate_each_score_data_lists: RealArrayArray; calculate_each_score_weights: IntArray): RealArrayArray;
 var
   calculate_each_score_score_lists: array of RealArray;
-  calculate_each_score_i: integer;
+  calculate_each_score_i: int64;
   calculate_each_score_dlist: array of real;
-  calculate_each_score_weight: integer;
+  calculate_each_score_weight: int64;
   calculate_each_score_mind: real;
   calculate_each_score_maxd: real;
-  calculate_each_score_j: integer;
+  calculate_each_score_j: int64;
   calculate_each_score_val: real;
   calculate_each_score_score: array of real;
   calculate_each_score_item: real;
+  calculate_each_score_item_19: real;
 begin
   calculate_each_score_score_lists := [];
   calculate_each_score_i := 0;
-  while calculate_each_score_i < Length(data_lists) do begin
-  calculate_each_score_dlist := data_lists[calculate_each_score_i];
-  calculate_each_score_weight := weights[calculate_each_score_i];
+  while calculate_each_score_i < Length(calculate_each_score_data_lists) do begin
+  calculate_each_score_dlist := calculate_each_score_data_lists[calculate_each_score_i];
+  calculate_each_score_weight := calculate_each_score_weights[calculate_each_score_i];
   calculate_each_score_mind := calculate_each_score_dlist[0];
   calculate_each_score_maxd := calculate_each_score_dlist[0];
   calculate_each_score_j := 1;
@@ -167,11 +175,11 @@ end;
 end;
 end else begin
   while calculate_each_score_j < Length(calculate_each_score_dlist) do begin
-  calculate_each_score_item := calculate_each_score_dlist[calculate_each_score_j];
+  calculate_each_score_item_19 := calculate_each_score_dlist[calculate_each_score_j];
   if (calculate_each_score_maxd - calculate_each_score_mind) = 0 then begin
   calculate_each_score_score := concat(calculate_each_score_score, [0]);
 end else begin
-  calculate_each_score_score := concat(calculate_each_score_score, [(calculate_each_score_item - calculate_each_score_mind) / (calculate_each_score_maxd - calculate_each_score_mind)]);
+  calculate_each_score_score := concat(calculate_each_score_score, [(calculate_each_score_item_19 - calculate_each_score_mind) / (calculate_each_score_maxd - calculate_each_score_mind)]);
 end;
   calculate_each_score_j := calculate_each_score_j + 1;
 end;
@@ -181,15 +189,15 @@ end;
 end;
   exit(calculate_each_score_score_lists);
 end;
-function generate_final_scores(score_lists: RealArrayArray): RealArray;
+function generate_final_scores(generate_final_scores_score_lists: RealArrayArray): RealArray;
 var
   generate_final_scores_count: integer;
   generate_final_scores_final_scores: array of real;
-  generate_final_scores_i: integer;
+  generate_final_scores_i: int64;
   generate_final_scores_slist: array of real;
-  generate_final_scores_j: integer;
+  generate_final_scores_j: int64;
 begin
-  generate_final_scores_count := Length(score_lists[0]);
+  generate_final_scores_count := Length(generate_final_scores_score_lists[0]);
   generate_final_scores_final_scores := [];
   generate_final_scores_i := 0;
   while generate_final_scores_i < generate_final_scores_count do begin
@@ -197,8 +205,8 @@ begin
   generate_final_scores_i := generate_final_scores_i + 1;
 end;
   generate_final_scores_i := 0;
-  while generate_final_scores_i < Length(score_lists) do begin
-  generate_final_scores_slist := score_lists[generate_final_scores_i];
+  while generate_final_scores_i < Length(generate_final_scores_score_lists) do begin
+  generate_final_scores_slist := generate_final_scores_score_lists[generate_final_scores_i];
   generate_final_scores_j := 0;
   while generate_final_scores_j < Length(generate_final_scores_slist) do begin
   generate_final_scores_final_scores[generate_final_scores_j] := generate_final_scores_final_scores[generate_final_scores_j] + generate_final_scores_slist[generate_final_scores_j];
@@ -208,22 +216,22 @@ end;
 end;
   exit(generate_final_scores_final_scores);
 end;
-function procentual_proximity(source_data: RealArrayArray; weights: IntArray): RealArrayArray;
+function procentual_proximity(procentual_proximity_source_data: RealArrayArray; procentual_proximity_weights: IntArray): RealArrayArray;
 var
   procentual_proximity_data_lists: RealArrayArray;
   procentual_proximity_score_lists: RealArrayArray;
   procentual_proximity_final_scores: RealArray;
-  procentual_proximity_i: integer;
+  procentual_proximity_i: int64;
 begin
-  procentual_proximity_data_lists := get_data(source_data);
-  procentual_proximity_score_lists := calculate_each_score(procentual_proximity_data_lists, weights);
+  procentual_proximity_data_lists := get_data(procentual_proximity_source_data);
+  procentual_proximity_score_lists := calculate_each_score(procentual_proximity_data_lists, procentual_proximity_weights);
   procentual_proximity_final_scores := generate_final_scores(procentual_proximity_score_lists);
   procentual_proximity_i := 0;
   while procentual_proximity_i < Length(procentual_proximity_final_scores) do begin
-  source_data[procentual_proximity_i] := concat(source_data[procentual_proximity_i], [procentual_proximity_final_scores[procentual_proximity_i]]);
+  procentual_proximity_source_data[procentual_proximity_i] := concat(procentual_proximity_source_data[procentual_proximity_i], [procentual_proximity_final_scores[procentual_proximity_i]]);
   procentual_proximity_i := procentual_proximity_i + 1;
 end;
-  exit(source_data);
+  exit(procentual_proximity_source_data);
 end;
 begin
   init_now();
@@ -243,4 +251,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

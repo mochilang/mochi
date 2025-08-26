@@ -6,14 +6,14 @@ type Thing = record
   value: real;
   weight: real;
 end;
-type GreedyResult = record
-  items: array of Thing;
-  total_value: real;
-end;
 type FuncType1 = function(arg0: Thing): real is nested;
 type RealArray = array of real;
 type ThingArray = array of Thing;
 type StrArray = array of string;
+type GreedyResult = record
+  items: array of Thing;
+  total_value: real;
+end;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -54,6 +54,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -62,7 +68,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -71,6 +77,10 @@ begin
     if i < High(xs) then write(', ');
   end;
   writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
 end;
 var
   bench_start_0: integer;
@@ -82,25 +92,17 @@ var
   weight: array of real;
   foods: ThingArray;
   res: GreedyResult;
-  weights: RealArray;
-  items: ThingArray;
-  ts: ThingArray;
-  t: Thing;
-  names: StrArray;
-  key_func: FuncType1;
-  max_cost: real;
-  values: RealArray;
 function makeGreedyResult(items: ThingArray; total_value: real): GreedyResult; forward;
 function makeThing(name: string; value: real; weight: real): Thing; forward;
-function get_value(t: Thing): real; forward;
-function get_weight(t: Thing): real; forward;
-function get_name(t: Thing): string; forward;
-function value_weight(t: Thing): real; forward;
-function build_menu(names: StrArray; values: RealArray; weights: RealArray): ThingArray; forward;
-function sort_desc(items: ThingArray; key_func: FuncType1): ThingArray; forward;
-function greedy(items: ThingArray; max_cost: real; key_func: FuncType1): GreedyResult; forward;
-function thing_to_string(t: Thing): string; forward;
-function list_to_string(ts: ThingArray): string; forward;
+function get_value(get_value_t: Thing): real; forward;
+function get_weight(get_weight_t: Thing): real; forward;
+function get_name(get_name_t: Thing): string; forward;
+function value_weight(value_weight_t: Thing): real; forward;
+function build_menu(build_menu_names: StrArray; build_menu_values: RealArray; build_menu_weights: RealArray): ThingArray; forward;
+function sort_desc(sort_desc_items: ThingArray; sort_desc_key_func: FuncType1): ThingArray; forward;
+function greedy(greedy_items: ThingArray; greedy_max_cost: real; greedy_key_func: FuncType1): GreedyResult; forward;
+function thing_to_string(thing_to_string_t: Thing): string; forward;
+function list_to_string(list_to_string_ts: ThingArray): string; forward;
 function makeGreedyResult(items: ThingArray; total_value: real): GreedyResult;
 begin
   Result.items := items;
@@ -112,56 +114,56 @@ begin
   Result.value := value;
   Result.weight := weight;
 end;
-function get_value(t: Thing): real;
+function get_value(get_value_t: Thing): real;
 begin
-  exit(t.value);
+  exit(get_value_t.value);
 end;
-function get_weight(t: Thing): real;
+function get_weight(get_weight_t: Thing): real;
 begin
-  exit(t.weight);
+  exit(get_weight_t.weight);
 end;
-function get_name(t: Thing): string;
+function get_name(get_name_t: Thing): string;
 begin
-  exit(t.name);
+  exit(get_name_t.name);
 end;
-function value_weight(t: Thing): real;
+function value_weight(value_weight_t: Thing): real;
 begin
-  exit(t.value / t.weight);
+  exit(value_weight_t.value / value_weight_t.weight);
 end;
-function build_menu(names: StrArray; values: RealArray; weights: RealArray): ThingArray;
+function build_menu(build_menu_names: StrArray; build_menu_values: RealArray; build_menu_weights: RealArray): ThingArray;
 var
   build_menu_menu: array of Thing;
-  build_menu_i: integer;
+  build_menu_i: int64;
 begin
   build_menu_menu := [];
   build_menu_i := 0;
-  while ((build_menu_i < Length(values)) and (build_menu_i < Length(names))) and (build_menu_i < Length(weights)) do begin
-  build_menu_menu := concat(build_menu_menu, [makeThing(names[build_menu_i], values[build_menu_i], weights[build_menu_i])]);
+  while ((build_menu_i < Length(build_menu_values)) and (build_menu_i < Length(build_menu_names))) and (build_menu_i < Length(build_menu_weights)) do begin
+  build_menu_menu := concat(build_menu_menu, [makeThing(build_menu_names[build_menu_i], build_menu_values[build_menu_i], build_menu_weights[build_menu_i])]);
   build_menu_i := build_menu_i + 1;
 end;
   exit(build_menu_menu);
 end;
-function sort_desc(items: ThingArray; key_func: FuncType1): ThingArray;
+function sort_desc(sort_desc_items: ThingArray; sort_desc_key_func: FuncType1): ThingArray;
 var
   sort_desc_arr: array of Thing;
-  sort_desc_i: integer;
-  sort_desc_j: integer;
+  sort_desc_i: int64;
+  sort_desc_j: int64;
   sort_desc_key_item: Thing;
   sort_desc_key_val: real;
-  sort_desc_k: integer;
+  sort_desc_k: int64;
 begin
   sort_desc_arr := [];
   sort_desc_i := 0;
-  while sort_desc_i < Length(items) do begin
-  sort_desc_arr := concat(sort_desc_arr, [items[sort_desc_i]]);
+  while sort_desc_i < Length(sort_desc_items) do begin
+  sort_desc_arr := concat(sort_desc_arr, [sort_desc_items[sort_desc_i]]);
   sort_desc_i := sort_desc_i + 1;
 end;
   sort_desc_j := 1;
   while sort_desc_j < Length(sort_desc_arr) do begin
   sort_desc_key_item := sort_desc_arr[sort_desc_j];
-  sort_desc_key_val := key_func(sort_desc_key_item);
+  sort_desc_key_val := sort_desc_key_func(sort_desc_key_item);
   sort_desc_k := sort_desc_j - 1;
-  while (sort_desc_k >= 0) and (key_func(sort_desc_arr[sort_desc_k]) < sort_desc_key_val) do begin
+  while (sort_desc_k >= 0) and (sort_desc_key_func(sort_desc_arr[sort_desc_k]) < sort_desc_key_val) do begin
   sort_desc_arr[sort_desc_k + 1] := sort_desc_arr[sort_desc_k];
   sort_desc_k := sort_desc_k - 1;
 end;
@@ -170,17 +172,17 @@ end;
 end;
   exit(sort_desc_arr);
 end;
-function greedy(items: ThingArray; max_cost: real; key_func: FuncType1): GreedyResult;
+function greedy(greedy_items: ThingArray; greedy_max_cost: real; greedy_key_func: FuncType1): GreedyResult;
 var
   greedy_items_copy: ThingArray;
   greedy_result_: array of Thing;
   greedy_total_value: real;
   greedy_total_cost: real;
-  greedy_i: integer;
+  greedy_i: int64;
   greedy_it: Thing;
   greedy_w: real;
 begin
-  greedy_items_copy := sort_desc(items, key_func);
+  greedy_items_copy := sort_desc(greedy_items, greedy_key_func);
   greedy_result_ := [];
   greedy_total_value := 0;
   greedy_total_cost := 0;
@@ -188,7 +190,7 @@ begin
   while greedy_i < Length(greedy_items_copy) do begin
   greedy_it := greedy_items_copy[greedy_i];
   greedy_w := get_weight(greedy_it);
-  if (greedy_total_cost + greedy_w) <= max_cost then begin
+  if (greedy_total_cost + greedy_w) <= greedy_max_cost then begin
   greedy_result_ := concat(greedy_result_, [greedy_it]);
   greedy_total_cost := greedy_total_cost + greedy_w;
   greedy_total_value := greedy_total_value + get_value(greedy_it);
@@ -197,20 +199,20 @@ end;
 end;
   exit(makeGreedyResult(greedy_result_, greedy_total_value));
 end;
-function thing_to_string(t: Thing): string;
+function thing_to_string(thing_to_string_t: Thing): string;
 begin
-  exit(((((('Thing(' + t.name) + ', ') + FloatToStr(t.value)) + ', ') + FloatToStr(t.weight)) + ')');
+  exit(((((('Thing(' + thing_to_string_t.name) + ', ') + FloatToStr(thing_to_string_t.value)) + ', ') + FloatToStr(thing_to_string_t.weight)) + ')');
 end;
-function list_to_string(ts: ThingArray): string;
+function list_to_string(list_to_string_ts: ThingArray): string;
 var
   list_to_string_s: string;
-  list_to_string_i: integer;
+  list_to_string_i: int64;
 begin
   list_to_string_s := '[';
   list_to_string_i := 0;
-  while list_to_string_i < Length(ts) do begin
-  list_to_string_s := list_to_string_s + thing_to_string(ts[list_to_string_i]);
-  if list_to_string_i < (Length(ts) - 1) then begin
+  while list_to_string_i < Length(list_to_string_ts) do begin
+  list_to_string_s := list_to_string_s + thing_to_string(list_to_string_ts[list_to_string_i]);
+  if list_to_string_i < (Length(list_to_string_ts) - 1) then begin
   list_to_string_s := list_to_string_s + ', ';
 end;
   list_to_string_i := list_to_string_i + 1;
@@ -237,4 +239,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

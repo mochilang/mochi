@@ -1,7 +1,7 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -86,12 +96,12 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function index_of(index_of_xs: IntArray; index_of_x: integer): integer; forward;
-function majority_vote(majority_vote_votes: IntArray; majority_vote_votes_needed_to_win: integer): IntArray; forward;
+function index_of(index_of_xs: IntArray; index_of_x: int64): int64; forward;
+function majority_vote(majority_vote_votes: IntArray; majority_vote_votes_needed_to_win: int64): IntArray; forward;
 procedure main(); forward;
-function index_of(index_of_xs: IntArray; index_of_x: integer): integer;
+function index_of(index_of_xs: IntArray; index_of_x: int64): int64;
 var
-  index_of_i: integer;
+  index_of_i: int64;
 begin
   index_of_i := 0;
   while index_of_i < Length(index_of_xs) do begin
@@ -102,19 +112,19 @@ end;
 end;
   exit(0 - 1);
 end;
-function majority_vote(majority_vote_votes: IntArray; majority_vote_votes_needed_to_win: integer): IntArray;
+function majority_vote(majority_vote_votes: IntArray; majority_vote_votes_needed_to_win: int64): IntArray;
 var
-  majority_vote_candidates: array of integer;
-  majority_vote_counts: array of integer;
-  majority_vote_i: integer;
-  majority_vote_v: integer;
-  majority_vote_idx: integer;
-  majority_vote_j: integer;
-  majority_vote_new_candidates: array of integer;
-  majority_vote_new_counts: array of integer;
-  majority_vote_final_counts: array of integer;
-  majority_vote_j_14: integer;
-  majority_vote_result_: array of integer;
+  majority_vote_candidates: array of int64;
+  majority_vote_counts: array of int64;
+  majority_vote_i: int64;
+  majority_vote_v: int64;
+  majority_vote_idx: int64;
+  majority_vote_j: int64;
+  majority_vote_new_candidates: array of int64;
+  majority_vote_new_counts: array of int64;
+  majority_vote_final_counts: array of int64;
+  majority_vote_j_14: int64;
+  majority_vote_result_: array of int64;
 begin
   if majority_vote_votes_needed_to_win < 2 then begin
   exit([]);
@@ -180,7 +190,7 @@ end;
 end;
 procedure main();
 var
-  main_votes: array of integer;
+  main_votes: array of int64;
 begin
   main_votes := [1, 2, 2, 3, 1, 3, 2];
   writeln(list_int_to_str(majority_vote(main_votes, 3)));

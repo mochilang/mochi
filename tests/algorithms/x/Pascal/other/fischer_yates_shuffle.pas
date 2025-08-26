@@ -1,8 +1,8 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
+type IntArray = array of int64;
 type StrArray = array of string;
-type IntArray = array of integer;
 type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -44,6 +44,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -52,7 +58,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,6 +67,10 @@ begin
     if i < High(xs) then write(', ');
   end;
   writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
 end;
 function list_to_str(xs: array of string): string;
 var i: integer;
@@ -71,7 +81,7 @@ begin
   end;
   Result := Result + ')';
 end;
-function list_int_to_str(xs: array of integer): string;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -96,37 +106,34 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  seed: integer;
-  integers: array of integer;
+  seed: int64;
+  integers: array of int64;
   strings: array of string;
-  b: integer;
-  data: StrArray;
-  a: integer;
-function rand(): integer; forward;
-function randint(a: integer; b: integer): integer; forward;
-function fisher_yates_shuffle_int(data: IntArray): IntArray; forward;
-function fisher_yates_shuffle_str(data: StrArray): StrArray; forward;
-function rand(): integer;
+function rand(): int64; forward;
+function randint(randint_a: int64; randint_b: int64): int64; forward;
+function fisher_yates_shuffle_int(fisher_yates_shuffle_int_data: IntArray): IntArray; forward;
+function fisher_yates_shuffle_str(fisher_yates_shuffle_str_data: StrArray): StrArray; forward;
+function rand(): int64;
 begin
   seed := ((seed * 1103515245) + 12345) mod 2147483648;
-  exit(seed div 65536);
+  exit(_floordiv(seed, 65536));
 end;
-function randint(a: integer; b: integer): integer;
+function randint(randint_a: int64; randint_b: int64): int64;
 var
-  randint_r: integer;
+  randint_r: int64;
 begin
   randint_r := rand();
-  exit(a + (randint_r mod ((b - a) + 1)));
+  exit(randint_a + (randint_r mod ((randint_b - randint_a) + 1)));
 end;
-function fisher_yates_shuffle_int(data: IntArray): IntArray;
+function fisher_yates_shuffle_int(fisher_yates_shuffle_int_data: IntArray): IntArray;
 var
-  fisher_yates_shuffle_int_res: array of integer;
-  fisher_yates_shuffle_int_i: integer;
-  fisher_yates_shuffle_int_a: integer;
-  fisher_yates_shuffle_int_b: integer;
-  fisher_yates_shuffle_int_temp: integer;
+  fisher_yates_shuffle_int_res: array of int64;
+  fisher_yates_shuffle_int_i: int64;
+  fisher_yates_shuffle_int_a: int64;
+  fisher_yates_shuffle_int_b: int64;
+  fisher_yates_shuffle_int_temp: int64;
 begin
-  fisher_yates_shuffle_int_res := data;
+  fisher_yates_shuffle_int_res := fisher_yates_shuffle_int_data;
   fisher_yates_shuffle_int_i := 0;
   while fisher_yates_shuffle_int_i < Length(fisher_yates_shuffle_int_res) do begin
   fisher_yates_shuffle_int_a := randint(0, Length(fisher_yates_shuffle_int_res) - 1);
@@ -138,15 +145,15 @@ begin
 end;
   exit(fisher_yates_shuffle_int_res);
 end;
-function fisher_yates_shuffle_str(data: StrArray): StrArray;
+function fisher_yates_shuffle_str(fisher_yates_shuffle_str_data: StrArray): StrArray;
 var
   fisher_yates_shuffle_str_res: array of string;
-  fisher_yates_shuffle_str_i: integer;
-  fisher_yates_shuffle_str_a: integer;
-  fisher_yates_shuffle_str_b: integer;
+  fisher_yates_shuffle_str_i: int64;
+  fisher_yates_shuffle_str_a: int64;
+  fisher_yates_shuffle_str_b: int64;
   fisher_yates_shuffle_str_temp: string;
 begin
-  fisher_yates_shuffle_str_res := data;
+  fisher_yates_shuffle_str_res := fisher_yates_shuffle_str_data;
   fisher_yates_shuffle_str_i := 0;
   while fisher_yates_shuffle_str_i < Length(fisher_yates_shuffle_str_res) do begin
   fisher_yates_shuffle_str_a := randint(0, Length(fisher_yates_shuffle_str_res) - 1);
@@ -175,4 +182,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

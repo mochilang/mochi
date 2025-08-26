@@ -2,7 +2,7 @@
 program Main;
 uses SysUtils;
 type RealArray = array of real;
-type IntArray = array of integer;
+type IntArray = array of int64;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -43,6 +43,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -51,7 +57,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -61,7 +67,11 @@ begin
   end;
   writeln(']');
 end;
-procedure show_list(xs: array of integer);
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+procedure show_list_int64(xs: array of int64);
 var i: integer;
 begin
   write('[');
@@ -70,6 +80,26 @@ begin
     if i < High(xs) then write(' ');
   end;
   write(']');
+end;
+function list_int_to_str(xs: array of int64): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + IntToStr(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
+function list_list_int_to_str(xs: array of IntArray): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + list_int_to_str(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
 end;
 var
   bench_start_0: integer;
@@ -80,8 +110,8 @@ function binary_step(binary_step_vector: RealArray): IntArray; forward;
 procedure main(); forward;
 function binary_step(binary_step_vector: RealArray): IntArray;
 var
-  binary_step_out_: array of integer;
-  binary_step_i: integer;
+  binary_step_out_: array of int64;
+  binary_step_i: int64;
 begin
   binary_step_out_ := [];
   binary_step_i := 0;
@@ -98,11 +128,11 @@ end;
 procedure main();
 var
   main_vector: array of real;
-  main_result_: array of integer;
+  main_result_: array of int64;
 begin
   main_vector := [-1.2, 0, 2, 1.45, -3.7, 0.3];
   main_result_ := binary_step(main_vector);
-  show_list(main_result_);
+  show_list_int64(main_result_);
 end;
 begin
   init_now();
@@ -116,4 +146,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

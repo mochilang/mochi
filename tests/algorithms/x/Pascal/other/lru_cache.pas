@@ -2,28 +2,28 @@
 program Main;
 uses SysUtils, fgl;
 type Node = record
-  key: integer;
-  value: integer;
-  prev: integer;
-  next: integer;
-end;
-type DoubleLinkedList = record
-  nodes: array of Node;
-  head: integer;
-  tail: integer;
+  key: int64;
+  value: int64;
+  prev: int64;
+  next: int64;
 end;
 type NodeArray = array of Node;
+type DoubleLinkedList = record
+  nodes: array of Node;
+  head: int64;
+  tail: int64;
+end;
 type LRUCache = record
   list: DoubleLinkedList;
-  capacity: integer;
-  num_keys: integer;
-  hits: integer;
-  misses: integer;
-  cache: specialize TFPGMap<string, integer>;
+  capacity: int64;
+  num_keys: int64;
+  hits: int64;
+  misses: int64;
+  cache: specialize TFPGMap<string, int64>;
 end;
 type GetResult = record
   cache: LRUCache;
-  value: integer;
+  value: int64;
   ok: boolean;
 end;
 var _nowSeed: int64 = 0;
@@ -66,6 +66,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -74,7 +80,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -84,39 +90,35 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  cache: LRUCache;
-  res: GetResult;
-  key: integer;
-  lst: DoubleLinkedList;
-  cap: integer;
-  c: LRUCache;
-  value: integer;
-  idx: integer;
-function makeGetResult(cache: LRUCache; value: integer; ok: boolean): GetResult; forward;
-function makeLRUCache(list: DoubleLinkedList; capacity: integer; num_keys: integer; hits: integer; misses: integer; cache: specialize TFPGMap<string, integer>): LRUCache; forward;
-function makeDoubleLinkedList(nodes: NodeArray; head: integer; tail: integer): DoubleLinkedList; forward;
-function makeNode(key: integer; value: integer; prev: integer; next: integer): Node; forward;
+function makeGetResult(cache: LRUCache; value: int64; ok: boolean): GetResult; forward;
+function makeLRUCache(list: DoubleLinkedList; capacity: int64; num_keys: int64; hits: int64; misses: int64; cache: specialize TFPGMap<string, int64>): LRUCache; forward;
+function makeDoubleLinkedList(nodes: NodeArray; head: int64; tail: int64): DoubleLinkedList; forward;
+function makeNode(key: int64; value: int64; prev: int64; next: int64): Node; forward;
 function new_list(): DoubleLinkedList; forward;
-function dll_add(lst: DoubleLinkedList; idx: integer): DoubleLinkedList; forward;
-function dll_remove(lst: DoubleLinkedList; idx: integer): DoubleLinkedList; forward;
-function new_cache(cap: integer): LRUCache; forward;
-function lru_get(c: LRUCache; key: integer): GetResult; forward;
-function lru_put(c: LRUCache; key: integer; value: integer): LRUCache; forward;
-function cache_info(cache: LRUCache): string; forward;
-procedure print_result(res: GetResult); forward;
+function dll_add(dll_add_lst: DoubleLinkedList; dll_add_idx: int64): DoubleLinkedList; forward;
+function dll_remove(dll_remove_lst: DoubleLinkedList; dll_remove_idx: int64): DoubleLinkedList; forward;
+function new_cache(new_cache_cap: int64): LRUCache; forward;
+function lru_get(lru_get_c: LRUCache; lru_get_key: int64): GetResult; forward;
+function lru_put(lru_put_c: LRUCache; lru_put_key: int64; lru_put_value: int64): LRUCache; forward;
+function cache_info(cache_info_cache: LRUCache): string; forward;
+procedure print_result(print_result_res: GetResult); forward;
 procedure main(); forward;
-function makeGetResult(cache: LRUCache; value: integer; ok: boolean): GetResult;
+function makeGetResult(cache: LRUCache; value: int64; ok: boolean): GetResult;
 begin
   Result.cache := cache;
   Result.value := value;
   Result.ok := ok;
 end;
-function makeLRUCache(list: DoubleLinkedList; capacity: integer; num_keys: integer; hits: integer; misses: integer; cache: specialize TFPGMap<string, integer>): LRUCache;
+function makeLRUCache(list: DoubleLinkedList; capacity: int64; num_keys: int64; hits: int64; misses: int64; cache: specialize TFPGMap<string, int64>): LRUCache;
 begin
   Result.list := list;
   Result.capacity := capacity;
@@ -125,13 +127,13 @@ begin
   Result.misses := misses;
   Result.cache := cache;
 end;
-function makeDoubleLinkedList(nodes: NodeArray; head: integer; tail: integer): DoubleLinkedList;
+function makeDoubleLinkedList(nodes: NodeArray; head: int64; tail: int64): DoubleLinkedList;
 begin
   Result.nodes := nodes;
   Result.head := head;
   Result.tail := tail;
 end;
-function makeNode(key: integer; value: integer; prev: integer; next: integer): Node;
+function makeNode(key: int64; value: int64; prev: int64; next: int64): Node;
 begin
   Result.key := key;
   Result.value := value;
@@ -151,46 +153,46 @@ begin
   new_list_nodes := concat(new_list_nodes, [new_list_tail]);
   exit(makeDoubleLinkedList(new_list_nodes, 0, 1));
 end;
-function dll_add(lst: DoubleLinkedList; idx: integer): DoubleLinkedList;
+function dll_add(dll_add_lst: DoubleLinkedList; dll_add_idx: int64): DoubleLinkedList;
 var
   dll_add_nodes: array of Node;
-  dll_add_tail_idx: integer;
+  dll_add_tail_idx: int64;
   dll_add_tail_node: Node;
-  dll_add_prev_idx: integer;
+  dll_add_prev_idx: int64;
   dll_add_node_var: Node;
   dll_add_prev_node: Node;
 begin
-  dll_add_nodes := lst.nodes;
-  dll_add_tail_idx := lst.tail;
+  dll_add_nodes := dll_add_lst.nodes;
+  dll_add_tail_idx := dll_add_lst.tail;
   dll_add_tail_node := dll_add_nodes[dll_add_tail_idx];
   dll_add_prev_idx := dll_add_tail_node.prev;
-  dll_add_node_var := dll_add_nodes[idx];
+  dll_add_node_var := dll_add_nodes[dll_add_idx];
   dll_add_node_var.prev := dll_add_prev_idx;
   dll_add_node_var.next := dll_add_tail_idx;
-  dll_add_nodes[idx] := dll_add_node_var;
+  dll_add_nodes[dll_add_idx] := dll_add_node_var;
   dll_add_prev_node := dll_add_nodes[dll_add_prev_idx];
-  dll_add_prev_node.next := idx;
+  dll_add_prev_node.next := dll_add_idx;
   dll_add_nodes[dll_add_prev_idx] := dll_add_prev_node;
-  dll_add_tail_node.prev := idx;
+  dll_add_tail_node.prev := dll_add_idx;
   dll_add_nodes[dll_add_tail_idx] := dll_add_tail_node;
-  lst.nodes := dll_add_nodes;
-  exit(lst);
+  dll_add_lst.nodes := dll_add_nodes;
+  exit(dll_add_lst);
 end;
-function dll_remove(lst: DoubleLinkedList; idx: integer): DoubleLinkedList;
+function dll_remove(dll_remove_lst: DoubleLinkedList; dll_remove_idx: int64): DoubleLinkedList;
 var
   dll_remove_nodes: array of Node;
   dll_remove_node_var: Node;
-  dll_remove_prev_idx: integer;
-  dll_remove_next_idx: integer;
+  dll_remove_prev_idx: int64;
+  dll_remove_next_idx: int64;
   dll_remove_prev_node: Node;
   dll_remove_next_node: Node;
 begin
-  dll_remove_nodes := lst.nodes;
-  dll_remove_node_var := dll_remove_nodes[idx];
+  dll_remove_nodes := dll_remove_lst.nodes;
+  dll_remove_node_var := dll_remove_nodes[dll_remove_idx];
   dll_remove_prev_idx := dll_remove_node_var.prev;
   dll_remove_next_idx := dll_remove_node_var.next;
   if (dll_remove_prev_idx = (0 - 1)) or (dll_remove_next_idx = (0 - 1)) then begin
-  exit(lst);
+  exit(dll_remove_lst);
 end;
   dll_remove_prev_node := dll_remove_nodes[dll_remove_prev_idx];
   dll_remove_prev_node.next := dll_remove_next_idx;
@@ -200,28 +202,28 @@ end;
   dll_remove_nodes[dll_remove_next_idx] := dll_remove_next_node;
   dll_remove_node_var.prev := 0 - 1;
   dll_remove_node_var.next := 0 - 1;
-  dll_remove_nodes[idx] := dll_remove_node_var;
-  lst.nodes := dll_remove_nodes;
-  exit(lst);
+  dll_remove_nodes[dll_remove_idx] := dll_remove_node_var;
+  dll_remove_lst.nodes := dll_remove_nodes;
+  exit(dll_remove_lst);
 end;
-function new_cache(cap: integer): LRUCache;
+function new_cache(new_cache_cap: int64): LRUCache;
 var
-  new_cache_empty_map: specialize TFPGMap<string, integer>;
+  new_cache_empty_map: specialize TFPGMap<string, int64>;
 begin
-  new_cache_empty_map := specialize TFPGMap<string, integer>.Create();
-  exit(makeLRUCache(new_list(), cap, 0, 0, 0, new_cache_empty_map));
+  new_cache_empty_map := specialize TFPGMap<string, int64>.Create();
+  exit(makeLRUCache(new_list(), new_cache_cap, 0, 0, 0, new_cache_empty_map));
 end;
-function lru_get(c: LRUCache; key: integer): GetResult;
+function lru_get(lru_get_c: LRUCache; lru_get_key: int64): GetResult;
 var
   lru_get_cache: LRUCache;
   lru_get_key_str: string;
-  lru_get_idx: integer;
+  lru_get_idx: int64;
   lru_get_idx_idx: integer;
   lru_get_node_var: Node;
-  lru_get_value: integer;
+  lru_get_value: int64;
 begin
-  lru_get_cache := c;
-  lru_get_key_str := IntToStr(key);
+  lru_get_cache := lru_get_c;
+  lru_get_key_str := IntToStr(lru_get_key);
   if lru_get_cache.cache.IndexOf(lru_get_key_str) <> -1 then begin
   lru_get_idx_idx := lru_get_cache.cache.IndexOf(lru_get_key_str);
   if lru_get_idx_idx <> -1 then begin
@@ -241,24 +243,27 @@ end;
   lru_get_cache.misses := lru_get_cache.misses + 1;
   exit(makeGetResult(lru_get_cache, 0, false));
 end;
-function lru_put(c: LRUCache; key: integer; value: integer): LRUCache;
+function lru_put(lru_put_c: LRUCache; lru_put_key: int64; lru_put_value: int64): LRUCache;
 var
   lru_put_cache: LRUCache;
   lru_put_key_str: string;
   lru_put_head_node: Node;
-  lru_put_first_idx: integer;
+  lru_put_first_idx: int64;
   lru_put_first_node: Node;
-  lru_put_old_key: integer;
-  lru_put_mdel: specialize TFPGMap<string, integer>;
+  lru_put_old_key: int64;
+  lru_put_mdel: specialize TFPGMap<string, int64>;
   lru_put_nodes: array of Node;
   lru_put_new_node: Node;
   lru_put_idx: integer;
-  lru_put_m: specialize TFPGMap<string, integer>;
-  lru_put_idx_idx: integer;
+  lru_put_m: specialize TFPGMap<string, int64>;
+  lru_put_m_37: specialize TFPGMap<string, int64>;
+  lru_put_idx_38: int64;
+  lru_put_idx_38_idx: integer;
+  lru_put_nodes_40: array of Node;
   lru_put_node_var: Node;
 begin
-  lru_put_cache := c;
-  lru_put_key_str := IntToStr(key);
+  lru_put_cache := lru_put_c;
+  lru_put_key_str := IntToStr(lru_put_key);
   if not lru_put_cache.cache.IndexOf(lru_put_key_str) <> -1 then begin
   if lru_put_cache.num_keys >= lru_put_cache.capacity then begin
   lru_put_head_node := lru_put_cache.list.nodes[lru_put_cache.list.head];
@@ -272,7 +277,7 @@ begin
   lru_put_cache.num_keys := lru_put_cache.num_keys - 1;
 end;
   lru_put_nodes := lru_put_cache.list.nodes;
-  lru_put_new_node := makeNode(key, value, 0 - 1, 0 - 1);
+  lru_put_new_node := makeNode(lru_put_key, lru_put_value, 0 - 1, 0 - 1);
   lru_put_nodes := concat(lru_put_nodes, [lru_put_new_node]);
   lru_put_idx := Length(lru_put_nodes) - 1;
   lru_put_cache.list.nodes := lru_put_nodes;
@@ -282,32 +287,32 @@ end;
   lru_put_cache.cache := lru_put_m;
   lru_put_cache.num_keys := lru_put_cache.num_keys + 1;
 end else begin
-  lru_put_m := lru_put_cache.cache;
-  lru_put_idx_idx := lru_put_m.IndexOf(lru_put_key_str);
-  if lru_put_idx_idx <> -1 then begin
-  lru_put_idx := lru_put_m.Data[lru_put_idx_idx];
+  lru_put_m_37 := lru_put_cache.cache;
+  lru_put_idx_38_idx := lru_put_m_37.IndexOf(lru_put_key_str);
+  if lru_put_idx_38_idx <> -1 then begin
+  lru_put_idx_38 := lru_put_m_37.Data[lru_put_idx_38_idx];
 end else begin
-  lru_put_idx := 0;
+  lru_put_idx_38 := 0;
 end;
-  lru_put_nodes := lru_put_cache.list.nodes;
-  lru_put_node_var := lru_put_nodes[lru_put_idx];
-  lru_put_node_var.value := value;
-  lru_put_nodes[lru_put_idx] := lru_put_node_var;
-  lru_put_cache.list.nodes := lru_put_nodes;
-  lru_put_cache.list := dll_remove(lru_put_cache.list, lru_put_idx);
-  lru_put_cache.list := dll_add(lru_put_cache.list, lru_put_idx);
-  lru_put_cache.cache := lru_put_m;
+  lru_put_nodes_40 := lru_put_cache.list.nodes;
+  lru_put_node_var := lru_put_nodes_40[lru_put_idx_38];
+  lru_put_node_var.value := lru_put_value;
+  lru_put_nodes_40[lru_put_idx_38] := lru_put_node_var;
+  lru_put_cache.list.nodes := lru_put_nodes_40;
+  lru_put_cache.list := dll_remove(lru_put_cache.list, lru_put_idx_38);
+  lru_put_cache.list := dll_add(lru_put_cache.list, lru_put_idx_38);
+  lru_put_cache.cache := lru_put_m_37;
 end;
   exit(lru_put_cache);
 end;
-function cache_info(cache: LRUCache): string;
+function cache_info(cache_info_cache: LRUCache): string;
 begin
-  exit(((((((('CacheInfo(hits=' + IntToStr(cache.hits)) + ', misses=') + IntToStr(cache.misses)) + ', capacity=') + IntToStr(cache.capacity)) + ', current size=') + IntToStr(cache.num_keys)) + ')');
+  exit(((((((('CacheInfo(hits=' + IntToStr(cache_info_cache.hits)) + ', misses=') + IntToStr(cache_info_cache.misses)) + ', capacity=') + IntToStr(cache_info_cache.capacity)) + ', current size=') + IntToStr(cache_info_cache.num_keys)) + ')');
 end;
-procedure print_result(res: GetResult);
+procedure print_result(print_result_res: GetResult);
 begin
-  if res.ok then begin
-  writeln(IntToStr(res.value));
+  if print_result_res.ok then begin
+  writeln(IntToStr(print_result_res.value));
 end else begin
   writeln('None');
 end;
@@ -355,4 +360,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

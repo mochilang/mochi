@@ -1,10 +1,10 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
-uses SysUtils, Variants, fgl;
-type IntArray = array of integer;
+uses SysUtils, fgl;
+type IntArray = array of int64;
 type NumberContainer = record
-  numbermap: specialize TFPGMap<integer, IntArray>;
-  indexmap: specialize TFPGMap<integer, integer>;
+  numbermap: specialize TFPGMap<int64, IntArray>;
+  indexmap: specialize TFPGMap<int64, int64>;
 end;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -46,6 +46,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -54,7 +60,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -64,84 +70,81 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  nm: specialize TFPGMap<integer, IntArray>;
-  im: specialize TFPGMap<integer, integer>;
+  nm: specialize TFPGMap<int64, IntArray>;
+  im: specialize TFPGMap<int64, int64>;
   cont: NumberContainer;
-  val: integer;
-  index: integer;
-  array_: IntArray;
-  item: integer;
-  xs: IntArray;
-  num: integer;
-  idx: integer;
-function makeNumberContainer(numbermap: specialize TFPGMap<integer, IntArray>; indexmap: specialize TFPGMap<integer, integer>): NumberContainer; forward;
-function remove_at(xs: IntArray; idx: integer): IntArray; forward;
-function insert_at(xs: IntArray; idx: integer; val: integer): IntArray; forward;
-function binary_search_delete(binary_search_delete_array_: IntArray; item: integer): IntArray; forward;
-function binary_search_insert(binary_search_delete_array_: IntArray; index: integer): IntArray; forward;
-function change(cont: NumberContainer; idx: integer; num: integer): NumberContainer; forward;
-function find(cont: NumberContainer; num: integer): integer; forward;
-function makeNumberContainer(numbermap: specialize TFPGMap<integer, IntArray>; indexmap: specialize TFPGMap<integer, integer>): NumberContainer;
+function makeNumberContainer(numbermap: specialize TFPGMap<int64, IntArray>; indexmap: specialize TFPGMap<int64, int64>): NumberContainer; forward;
+function remove_at(remove_at_xs: IntArray; remove_at_idx: int64): IntArray; forward;
+function insert_at(insert_at_xs: IntArray; insert_at_idx: int64; insert_at_val: int64): IntArray; forward;
+function binary_search_delete(binary_search_delete_array_: IntArray; binary_search_delete_item: int64): IntArray; forward;
+function binary_search_insert(binary_search_insert_array_: IntArray; binary_search_insert_index: int64): IntArray; forward;
+function change(change_cont: NumberContainer; change_idx: int64; change_num: int64): NumberContainer; forward;
+function find(find_cont: NumberContainer; find_num: int64): int64; forward;
+function makeNumberContainer(numbermap: specialize TFPGMap<int64, IntArray>; indexmap: specialize TFPGMap<int64, int64>): NumberContainer;
 begin
   Result.numbermap := numbermap;
   Result.indexmap := indexmap;
 end;
-function remove_at(xs: IntArray; idx: integer): IntArray;
+function remove_at(remove_at_xs: IntArray; remove_at_idx: int64): IntArray;
 var
-  remove_at_res: array of integer;
-  remove_at_i: integer;
+  remove_at_res: array of int64;
+  remove_at_i: int64;
 begin
   remove_at_res := [];
   remove_at_i := 0;
-  while remove_at_i < Length(xs) do begin
-  if remove_at_i <> idx then begin
-  remove_at_res := concat(remove_at_res, IntArray([xs[remove_at_i]]));
+  while remove_at_i < Length(remove_at_xs) do begin
+  if remove_at_i <> remove_at_idx then begin
+  remove_at_res := concat(remove_at_res, IntArray([remove_at_xs[remove_at_i]]));
 end;
   remove_at_i := remove_at_i + 1;
 end;
   exit(remove_at_res);
 end;
-function insert_at(xs: IntArray; idx: integer; val: integer): IntArray;
+function insert_at(insert_at_xs: IntArray; insert_at_idx: int64; insert_at_val: int64): IntArray;
 var
-  insert_at_res: array of integer;
-  insert_at_i: integer;
+  insert_at_res: array of int64;
+  insert_at_i: int64;
 begin
   insert_at_res := [];
   insert_at_i := 0;
-  while insert_at_i < Length(xs) do begin
-  if insert_at_i = idx then begin
-  insert_at_res := concat(insert_at_res, IntArray([val]));
+  while insert_at_i < Length(insert_at_xs) do begin
+  if insert_at_i = insert_at_idx then begin
+  insert_at_res := concat(insert_at_res, IntArray([insert_at_val]));
 end;
-  insert_at_res := concat(insert_at_res, IntArray([xs[insert_at_i]]));
+  insert_at_res := concat(insert_at_res, IntArray([insert_at_xs[insert_at_i]]));
   insert_at_i := insert_at_i + 1;
 end;
-  if idx = Length(xs) then begin
-  insert_at_res := concat(insert_at_res, IntArray([val]));
+  if insert_at_idx = Length(insert_at_xs) then begin
+  insert_at_res := concat(insert_at_res, IntArray([insert_at_val]));
 end;
   exit(insert_at_res);
 end;
-function binary_search_delete(binary_search_delete_array_: IntArray; item: integer): IntArray;
+function binary_search_delete(binary_search_delete_array_: IntArray; binary_search_delete_item: int64): IntArray;
 var
-  binary_search_delete_low: integer;
+  binary_search_delete_low: int64;
   binary_search_delete_high: integer;
-  binary_search_delete_arr: array of integer;
-  binary_search_delete_mid: integer;
+  binary_search_delete_arr: array of int64;
+  binary_search_delete_mid: int64;
 begin
   binary_search_delete_low := 0;
-  binary_search_delete_high := Length(array_) - 1;
-  binary_search_delete_arr := array_;
+  binary_search_delete_high := Length(binary_search_delete_array_) - 1;
+  binary_search_delete_arr := binary_search_delete_array_;
   while binary_search_delete_low <= binary_search_delete_high do begin
-  binary_search_delete_mid := (binary_search_delete_low + binary_search_delete_high) div 2;
-  if binary_search_delete_arr[binary_search_delete_mid] = item then begin
+  binary_search_delete_mid := _floordiv(binary_search_delete_low + binary_search_delete_high, 2);
+  if binary_search_delete_arr[binary_search_delete_mid] = binary_search_delete_item then begin
   binary_search_delete_arr := remove_at(binary_search_delete_arr, binary_search_delete_mid);
   exit(binary_search_delete_arr);
 end else begin
-  if binary_search_delete_arr[binary_search_delete_mid] < item then begin
+  if binary_search_delete_arr[binary_search_delete_mid] < binary_search_delete_item then begin
   binary_search_delete_low := binary_search_delete_mid + 1;
 end else begin
   binary_search_delete_high := binary_search_delete_mid - 1;
@@ -151,45 +154,45 @@ end;
   writeln('ValueError: Either the item is not in the array or the array was unsorted');
   exit(binary_search_delete_arr);
 end;
-function binary_search_insert(binary_search_delete_array_: IntArray; index: integer): IntArray;
+function binary_search_insert(binary_search_insert_array_: IntArray; binary_search_insert_index: int64): IntArray;
 var
-  binary_search_insert_low: integer;
+  binary_search_insert_low: int64;
   binary_search_insert_high: integer;
-  binary_search_insert_arr: Variant;
-  binary_search_insert_mid: integer;
+  binary_search_insert_arr: array of int64;
+  binary_search_insert_mid: int64;
 begin
   binary_search_insert_low := 0;
-  binary_search_insert_high := Length(array_) - 1;
-  binary_search_insert_arr := array_;
+  binary_search_insert_high := Length(binary_search_insert_array_) - 1;
+  binary_search_insert_arr := binary_search_insert_array_;
   while binary_search_insert_low <= binary_search_insert_high do begin
-  binary_search_insert_mid := (binary_search_insert_low + binary_search_insert_high) div 2;
-  if binary_search_insert_arr[binary_search_insert_mid] = index then begin
-  binary_search_insert_arr := insert_at(binary_search_insert_arr, binary_search_insert_mid + 1, index);
+  binary_search_insert_mid := _floordiv(binary_search_insert_low + binary_search_insert_high, 2);
+  if binary_search_insert_arr[binary_search_insert_mid] = binary_search_insert_index then begin
+  binary_search_insert_arr := insert_at(binary_search_insert_arr, binary_search_insert_mid + 1, binary_search_insert_index);
   exit(binary_search_insert_arr);
 end else begin
-  if binary_search_insert_arr[binary_search_insert_mid] < index then begin
+  if binary_search_insert_arr[binary_search_insert_mid] < binary_search_insert_index then begin
   binary_search_insert_low := binary_search_insert_mid + 1;
 end else begin
   binary_search_insert_high := binary_search_insert_mid - 1;
 end;
 end;
 end;
-  binary_search_insert_arr := insert_at(binary_search_insert_arr, binary_search_insert_low, index);
+  binary_search_insert_arr := insert_at(binary_search_insert_arr, binary_search_insert_low, binary_search_insert_index);
   exit(binary_search_insert_arr);
 end;
-function change(cont: NumberContainer; idx: integer; num: integer): NumberContainer;
+function change(change_cont: NumberContainer; change_idx: int64; change_num: int64): NumberContainer;
 var
-  change_numbermap: specialize TFPGMap<integer, IntArray>;
-  change_indexmap: specialize TFPGMap<integer, integer>;
-  change_old: integer;
+  change_numbermap: specialize TFPGMap<int64, IntArray>;
+  change_indexmap: specialize TFPGMap<int64, int64>;
+  change_old: int64;
   change_old_idx: integer;
   change_indexes: IntArray;
   change_indexes_idx: integer;
 begin
-  change_numbermap := cont.numbermap;
-  change_indexmap := cont.indexmap;
-  if change_indexmap.IndexOf(idx) <> -1 then begin
-  change_old_idx := change_indexmap.IndexOf(idx);
+  change_numbermap := change_cont.numbermap;
+  change_indexmap := change_cont.indexmap;
+  if change_indexmap.IndexOf(change_idx) <> -1 then begin
+  change_old_idx := change_indexmap.IndexOf(change_idx);
   if change_old_idx <> -1 then begin
   change_old := change_indexmap.Data[change_old_idx];
 end else begin
@@ -204,26 +207,26 @@ end;
   if Length(change_indexes) = 1 then begin
   change_numbermap[change_old] := [];
 end else begin
-  change_numbermap[change_old] := binary_search_delete(change_indexes, idx);
+  change_numbermap[change_old] := binary_search_delete(change_indexes, change_idx);
 end;
 end;
-  change_indexmap[idx] := num;
-  if change_numbermap.IndexOf(num) <> -1 then begin
-  change_numbermap[num] := binary_search_insert(change_numbermap[num], idx);
+  change_indexmap[change_idx] := change_num;
+  if change_numbermap.IndexOf(change_num) <> -1 then begin
+  change_numbermap[change_num] := binary_search_insert(change_numbermap[change_num], change_idx);
 end else begin
-  change_numbermap[num] := [idx];
+  change_numbermap[change_num] := [change_idx];
 end;
   exit(makeNumberContainer(change_numbermap, change_indexmap));
 end;
-function find(cont: NumberContainer; num: integer): integer;
+function find(find_cont: NumberContainer; find_num: int64): int64;
 var
-  find_numbermap: specialize TFPGMap<integer, IntArray>;
+  find_numbermap: specialize TFPGMap<int64, IntArray>;
   find_arr: IntArray;
   find_arr_idx: integer;
 begin
-  find_numbermap := cont.numbermap;
-  if find_numbermap.IndexOf(num) <> -1 then begin
-  find_arr_idx := find_numbermap.IndexOf(num);
+  find_numbermap := find_cont.numbermap;
+  if find_numbermap.IndexOf(find_num) <> -1 then begin
+  find_arr_idx := find_numbermap.IndexOf(find_num);
   if find_arr_idx <> -1 then begin
   find_arr := find_numbermap.Data[find_arr_idx];
 end else begin
@@ -239,8 +242,8 @@ begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  nm := specialize TFPGMap<integer, IntArray>.Create();
-  im := specialize TFPGMap<integer, integer>.Create();
+  nm := specialize TFPGMap<int64, IntArray>.Create();
+  im := specialize TFPGMap<int64, int64>.Create();
   cont := makeNumberContainer(nm, im);
   writeln(find(cont, 10));
   cont := change(cont, 0, 10);
@@ -255,4 +258,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

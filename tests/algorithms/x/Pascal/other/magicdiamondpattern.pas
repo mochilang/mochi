@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,28 +65,31 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  n: integer;
-function floyd(n: integer): string; forward;
-function reverse_floyd(n: integer): string; forward;
-function pretty_print(n: integer): string; forward;
+function floyd(floyd_n: int64): string; forward;
+function reverse_floyd(reverse_floyd_n: int64): string; forward;
+function pretty_print(pretty_print_n: int64): string; forward;
 procedure main(); forward;
-function floyd(n: integer): string;
+function floyd(floyd_n: int64): string;
 var
   floyd_result_: string;
-  floyd_i: integer;
-  floyd_j: integer;
-  floyd_k: integer;
+  floyd_i: int64;
+  floyd_j: int64;
+  floyd_k: int64;
 begin
   floyd_result_ := '';
   floyd_i := 0;
-  while floyd_i < n do begin
+  while floyd_i < floyd_n do begin
   floyd_j := 0;
-  while floyd_j < ((n - floyd_i) - 1) do begin
+  while floyd_j < ((floyd_n - floyd_i) - 1) do begin
   floyd_result_ := floyd_result_ + ' ';
   floyd_j := floyd_j + 1;
 end;
@@ -89,28 +98,28 @@ end;
   floyd_result_ := floyd_result_ + '* ';
   floyd_k := floyd_k + 1;
 end;
-  floyd_result_ := floyd_result_ + '' + #10 + '';
+  floyd_result_ := floyd_result_ + #10;
   floyd_i := floyd_i + 1;
 end;
   exit(floyd_result_);
 end;
-function reverse_floyd(n: integer): string;
+function reverse_floyd(reverse_floyd_n: int64): string;
 var
   reverse_floyd_result_: string;
-  reverse_floyd_i: integer;
-  reverse_floyd_j: integer;
-  reverse_floyd_k: integer;
+  reverse_floyd_i: int64;
+  reverse_floyd_j: int64;
+  reverse_floyd_k: int64;
 begin
   reverse_floyd_result_ := '';
-  reverse_floyd_i := n;
+  reverse_floyd_i := reverse_floyd_n;
   while reverse_floyd_i > 0 do begin
   reverse_floyd_j := reverse_floyd_i;
   while reverse_floyd_j > 0 do begin
   reverse_floyd_result_ := reverse_floyd_result_ + '* ';
   reverse_floyd_j := reverse_floyd_j - 1;
 end;
-  reverse_floyd_result_ := reverse_floyd_result_ + '' + #10 + '';
-  reverse_floyd_k := (n - reverse_floyd_i) + 1;
+  reverse_floyd_result_ := reverse_floyd_result_ + #10;
+  reverse_floyd_k := (reverse_floyd_n - reverse_floyd_i) + 1;
   while reverse_floyd_k > 0 do begin
   reverse_floyd_result_ := reverse_floyd_result_ + ' ';
   reverse_floyd_k := reverse_floyd_k - 1;
@@ -119,16 +128,16 @@ end;
 end;
   exit(reverse_floyd_result_);
 end;
-function pretty_print(n: integer): string;
+function pretty_print(pretty_print_n: int64): string;
 var
   pretty_print_upper_half: string;
   pretty_print_lower_half: string;
 begin
-  if n <= 0 then begin
+  if pretty_print_n <= 0 then begin
   exit('       ...       ....        nothing printing :(');
 end;
-  pretty_print_upper_half := floyd(n);
-  pretty_print_lower_half := reverse_floyd(n);
+  pretty_print_upper_half := floyd(pretty_print_n);
+  pretty_print_lower_half := reverse_floyd(pretty_print_n);
   exit(pretty_print_upper_half + pretty_print_lower_half);
 end;
 procedure main();
@@ -148,4 +157,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

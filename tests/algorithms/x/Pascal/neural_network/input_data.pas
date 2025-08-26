@@ -1,14 +1,14 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
-type IntArray = array of integer;
+type IntArray = array of int64;
 type IntArrayArray = array of IntArray;
 type DataSet = record
   images: array of IntArray;
   labels: array of IntArray;
-  num_examples: integer;
-  index_in_epoch: integer;
-  epochs_completed: integer;
+  num_examples: int64;
+  index_in_epoch: int64;
+  epochs_completed: int64;
 end;
 type Datasets = record
   train: DataSet;
@@ -60,6 +60,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -68,7 +74,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -78,7 +84,11 @@ begin
   end;
   writeln(']');
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
+function list_int_to_str(xs: array of int64): string;
 var i: integer;
 begin
   Result := '[';
@@ -103,17 +113,17 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function makeBatchResult(dataset_var: DataSet; images: IntArrayArray; labels: IntArrayArray): BatchResult; forward;
+function makeBatchResult(dataset_50_var: DataSet; images: IntArrayArray; labels: IntArrayArray): BatchResult; forward;
 function makeDatasets(train: DataSet; validation: DataSet; test_ds: DataSet): Datasets; forward;
-function makeDataSet(images: IntArrayArray; labels: IntArrayArray; num_examples: integer; index_in_epoch: integer; epochs_completed: integer): DataSet; forward;
-function dense_to_one_hot(dense_to_one_hot_labels: IntArray; dense_to_one_hot_num_classes: integer): IntArrayArray; forward;
+function makeDataSet(images: IntArrayArray; labels: IntArrayArray; num_examples: int64; index_in_epoch: int64; epochs_completed: int64): DataSet; forward;
+function dense_to_one_hot(dense_to_one_hot_labels: IntArray; dense_to_one_hot_num_classes: int64): IntArrayArray; forward;
 function new_dataset(new_dataset_images: IntArrayArray; new_dataset_labels: IntArrayArray): DataSet; forward;
-function next_batch(next_batch_ds: DataSet; next_batch_batch_size: integer): BatchResult; forward;
-function read_data_sets(read_data_sets_train_images: IntArrayArray; read_data_sets_train_labels_raw: IntArray; read_data_sets_test_images: IntArrayArray; read_data_sets_test_labels_raw: IntArray; read_data_sets_validation_size: integer; read_data_sets_num_classes: integer): Datasets; forward;
+function next_batch(next_batch_ds: DataSet; next_batch_batch_size: int64): BatchResult; forward;
+function read_data_sets(read_data_sets_train_images: IntArrayArray; read_data_sets_train_labels_raw: IntArray; read_data_sets_test_images: IntArrayArray; read_data_sets_test_labels_raw: IntArray; read_data_sets_validation_size: int64; read_data_sets_num_classes: int64): Datasets; forward;
 procedure main(); forward;
-function makeBatchResult(dataset_var: DataSet; images: IntArrayArray; labels: IntArrayArray): BatchResult;
+function makeBatchResult(dataset_50_var: DataSet; images: IntArrayArray; labels: IntArrayArray): BatchResult;
 begin
-  Result.dataset := dataset_var;
+  Result.dataset := dataset_50_var;
   Result.images := images;
   Result.labels := labels;
 end;
@@ -123,7 +133,7 @@ begin
   Result.validation := validation;
   Result.test_ds := test_ds;
 end;
-function makeDataSet(images: IntArrayArray; labels: IntArrayArray; num_examples: integer; index_in_epoch: integer; epochs_completed: integer): DataSet;
+function makeDataSet(images: IntArrayArray; labels: IntArrayArray; num_examples: int64; index_in_epoch: int64; epochs_completed: int64): DataSet;
 begin
   Result.images := images;
   Result.labels := labels;
@@ -131,12 +141,12 @@ begin
   Result.index_in_epoch := index_in_epoch;
   Result.epochs_completed := epochs_completed;
 end;
-function dense_to_one_hot(dense_to_one_hot_labels: IntArray; dense_to_one_hot_num_classes: integer): IntArrayArray;
+function dense_to_one_hot(dense_to_one_hot_labels: IntArray; dense_to_one_hot_num_classes: int64): IntArrayArray;
 var
   dense_to_one_hot_result_: array of IntArray;
-  dense_to_one_hot_i: integer;
-  dense_to_one_hot_row: array of integer;
-  dense_to_one_hot_j: integer;
+  dense_to_one_hot_i: int64;
+  dense_to_one_hot_row: array of int64;
+  dense_to_one_hot_j: int64;
 begin
   dense_to_one_hot_result_ := [];
   dense_to_one_hot_i := 0;
@@ -160,19 +170,19 @@ function new_dataset(new_dataset_images: IntArrayArray; new_dataset_labels: IntA
 begin
   exit(makeDataSet(new_dataset_images, new_dataset_labels, Length(new_dataset_images), 0, 0));
 end;
-function next_batch(next_batch_ds: DataSet; next_batch_batch_size: integer): BatchResult;
+function next_batch(next_batch_ds: DataSet; next_batch_batch_size: int64): BatchResult;
 var
-  next_batch_start: integer;
-  next_batch_rest: integer;
+  next_batch_start: int64;
+  next_batch_rest: int64;
   next_batch_images_rest: array of IntArray;
   next_batch_labels_rest: array of IntArray;
-  next_batch_new_index: integer;
+  next_batch_new_index: int64;
   next_batch_images_new: array of IntArray;
   next_batch_labels_new: array of IntArray;
   next_batch_batch_images: array of IntArray;
   next_batch_batch_labels: array of IntArray;
   next_batch_new_ds: DataSet;
-  next_batch_end_: integer;
+  next_batch_end_: int64;
   next_batch_batch_images_19: array of IntArray;
   next_batch_batch_labels_20: array of IntArray;
   next_batch_new_ds_21: DataSet;
@@ -197,7 +207,7 @@ end else begin
   exit(makeBatchResult(next_batch_new_ds_21, next_batch_batch_images_19, next_batch_batch_labels_20));
 end;
 end;
-function read_data_sets(read_data_sets_train_images: IntArrayArray; read_data_sets_train_labels_raw: IntArray; read_data_sets_test_images: IntArrayArray; read_data_sets_test_labels_raw: IntArray; read_data_sets_validation_size: integer; read_data_sets_num_classes: integer): Datasets;
+function read_data_sets(read_data_sets_train_images: IntArrayArray; read_data_sets_train_labels_raw: IntArray; read_data_sets_test_images: IntArrayArray; read_data_sets_test_labels_raw: IntArray; read_data_sets_validation_size: int64; read_data_sets_num_classes: int64): Datasets;
 var
   read_data_sets_train_labels: IntArrayArray;
   read_data_sets_test_labels: IntArrayArray;
@@ -222,10 +232,10 @@ begin
 end;
 procedure main();
 var
-  main_train_images: array of array of integer;
-  main_train_labels_raw: array of integer;
-  main_test_images: array of array of integer;
-  main_test_labels_raw: array of integer;
+  main_train_images: array of array of int64;
+  main_train_labels_raw: array of int64;
+  main_test_images: array of array of int64;
+  main_test_labels_raw: array of int64;
   main_data: Datasets;
   main_ds: DataSet;
   main_res: BatchResult;
@@ -261,4 +271,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

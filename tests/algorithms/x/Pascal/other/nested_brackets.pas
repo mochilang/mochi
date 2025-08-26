@@ -42,6 +42,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -50,7 +56,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -60,17 +66,19 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   OPEN_TO_CLOSED: specialize TFPGMap<string, string>;
-  xs: StrArray;
-  s: string;
 function Map1(): specialize TFPGMap<string, string>; forward;
-function slice_without_last(xs: StrArray): StrArray; forward;
-function is_balanced(s: string): boolean; forward;
+function slice_without_last(slice_without_last_xs: StrArray): StrArray; forward;
+function is_balanced(is_balanced_s: string): boolean; forward;
 procedure main(); forward;
 function Map1(): specialize TFPGMap<string, string>;
 begin
@@ -79,30 +87,30 @@ begin
   Result.AddOrSetData('[', ']');
   Result.AddOrSetData('{', '}');
 end;
-function slice_without_last(xs: StrArray): StrArray;
+function slice_without_last(slice_without_last_xs: StrArray): StrArray;
 var
   slice_without_last_res: array of string;
-  slice_without_last_i: integer;
+  slice_without_last_i: int64;
 begin
   slice_without_last_res := [];
   slice_without_last_i := 0;
-  while slice_without_last_i < (Length(xs) - 1) do begin
-  slice_without_last_res := concat(slice_without_last_res, StrArray([xs[slice_without_last_i]]));
+  while slice_without_last_i < (Length(slice_without_last_xs) - 1) do begin
+  slice_without_last_res := concat(slice_without_last_res, StrArray([slice_without_last_xs[slice_without_last_i]]));
   slice_without_last_i := slice_without_last_i + 1;
 end;
   exit(slice_without_last_res);
 end;
-function is_balanced(s: string): boolean;
+function is_balanced(is_balanced_s: string): boolean;
 var
   is_balanced_stack: array of string;
-  is_balanced_i: integer;
+  is_balanced_i: int64;
   is_balanced_symbol: string;
   is_balanced_top: string;
 begin
   is_balanced_stack := [];
   is_balanced_i := 0;
-  while is_balanced_i < Length(s) do begin
-  is_balanced_symbol := copy(s, is_balanced_i+1, (is_balanced_i + 1 - (is_balanced_i)));
+  while is_balanced_i < Length(is_balanced_s) do begin
+  is_balanced_symbol := copy(is_balanced_s, is_balanced_i+1, (is_balanced_i + 1 - (is_balanced_i)));
   if OPEN_TO_CLOSED.IndexOf(is_balanced_symbol) <> -1 then begin
   is_balanced_stack := concat(is_balanced_stack, StrArray([is_balanced_symbol]));
 end else begin
@@ -153,4 +161,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

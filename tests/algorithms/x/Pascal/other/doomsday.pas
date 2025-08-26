@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,22 +65,23 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  DOOMSDAY_LEAP: array of integer;
-  DOOMSDAY_NOT_LEAP: array of integer;
-  WEEK_DAY_NAMES: specialize TFPGMap<integer, string>;
-  year: integer;
-  day: integer;
-  month: integer;
-function Map1(): specialize TFPGMap<integer, string>; forward;
-function get_week_day(year: integer; month: integer; day: integer): string; forward;
-function Map1(): specialize TFPGMap<integer, string>;
+  DOOMSDAY_LEAP: array of int64;
+  DOOMSDAY_NOT_LEAP: array of int64;
+  WEEK_DAY_NAMES: specialize TFPGMap<int64, string>;
+function Map1(): specialize TFPGMap<int64, string>; forward;
+function get_week_day(get_week_day_year: int64; get_week_day_month: int64; get_week_day_day: int64): string; forward;
+function Map1(): specialize TFPGMap<int64, string>;
 begin
-  Result := specialize TFPGMap<integer, string>.Create();
+  Result := specialize TFPGMap<int64, string>.Create();
   Result.AddOrSetData(0, 'Sunday');
   Result.AddOrSetData(1, 'Monday');
   Result.AddOrSetData(2, 'Tuesday');
@@ -83,36 +90,36 @@ begin
   Result.AddOrSetData(5, 'Friday');
   Result.AddOrSetData(6, 'Saturday');
 end;
-function get_week_day(year: integer; month: integer; day: integer): string;
+function get_week_day(get_week_day_year: int64; get_week_day_month: int64; get_week_day_day: int64): string;
 var
-  get_week_day_century: integer;
-  get_week_day_century_anchor: integer;
-  get_week_day_centurian: integer;
-  get_week_day_centurian_m: integer;
-  get_week_day_dooms_day: integer;
-  get_week_day_day_anchor: integer;
-  get_week_day_week_day: integer;
+  get_week_day_century: int64;
+  get_week_day_century_anchor: int64;
+  get_week_day_centurian: int64;
+  get_week_day_centurian_m: int64;
+  get_week_day_dooms_day: int64;
+  get_week_day_day_anchor: int64;
+  get_week_day_week_day: int64;
 begin
-  if year < 100 then begin
+  if get_week_day_year < 100 then begin
   panic('year should be in YYYY format');
 end;
-  if (month < 1) or (month > 12) then begin
+  if (get_week_day_month < 1) or (get_week_day_month > 12) then begin
   panic('month should be between 1 to 12');
 end;
-  if (day < 1) or (day > 31) then begin
+  if (get_week_day_day < 1) or (get_week_day_day > 31) then begin
   panic('day should be between 1 to 31');
 end;
-  get_week_day_century := year div 100;
+  get_week_day_century := _floordiv(get_week_day_year, 100);
   get_week_day_century_anchor := ((5 * (get_week_day_century mod 4)) + 2) mod 7;
-  get_week_day_centurian := year mod 100;
+  get_week_day_centurian := get_week_day_year mod 100;
   get_week_day_centurian_m := get_week_day_centurian mod 12;
-  get_week_day_dooms_day := ((((get_week_day_centurian div 12) + get_week_day_centurian_m) + (get_week_day_centurian_m div 4)) + get_week_day_century_anchor) mod 7;
-  if ((year mod 4) <> 0) or ((get_week_day_centurian = 0) and ((year mod 400) <> 0)) then begin
-  get_week_day_day_anchor := DOOMSDAY_NOT_LEAP[month - 1];
+  get_week_day_dooms_day := ((((_floordiv(get_week_day_centurian, 12)) + get_week_day_centurian_m) + (_floordiv(get_week_day_centurian_m, 4))) + get_week_day_century_anchor) mod 7;
+  if ((get_week_day_year mod 4) <> 0) or ((get_week_day_centurian = 0) and ((get_week_day_year mod 400) <> 0)) then begin
+  get_week_day_day_anchor := DOOMSDAY_NOT_LEAP[get_week_day_month - 1];
 end else begin
-  get_week_day_day_anchor := DOOMSDAY_LEAP[month - 1];
+  get_week_day_day_anchor := DOOMSDAY_LEAP[get_week_day_month - 1];
 end;
-  get_week_day_week_day := ((get_week_day_dooms_day + day) - get_week_day_day_anchor) mod 7;
+  get_week_day_week_day := ((get_week_day_dooms_day + get_week_day_day) - get_week_day_day_anchor) mod 7;
   if get_week_day_week_day < 0 then begin
   get_week_day_week_day := get_week_day_week_day + 7;
 end;
@@ -138,4 +145,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

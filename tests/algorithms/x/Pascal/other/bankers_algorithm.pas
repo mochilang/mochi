@@ -1,11 +1,11 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
+type IntArray = array of int64;
 type BoolArray = array of boolean;
-type IntArray = array of integer;
 type IntArrayArray = array of IntArray;
 type State = record
-  claim: array of integer;
+  claim: array of int64;
   alloc: array of IntArray;
   max: array of IntArray;
 end;
@@ -49,6 +49,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -57,7 +63,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -67,46 +73,46 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  claim_vector: array of integer;
+  claim_vector: array of int64;
   allocated_resources_table: array of IntArray;
   maximum_claim_table: array of IntArray;
-  claim: IntArray;
-  alloc: IntArrayArray;
-  max: IntArrayArray;
-  alloc_sum: IntArray;
 function makeState(claim: IntArray; alloc: IntArrayArray; max: IntArrayArray): State; forward;
-function processes_resource_summation(alloc: IntArrayArray): IntArray; forward;
-function available_resources(claim: IntArray; alloc_sum: IntArray): IntArray; forward;
-function need(max: IntArrayArray; alloc: IntArrayArray): IntArrayArray; forward;
-procedure pretty_print(claim: IntArray; alloc: IntArrayArray; max: IntArrayArray); forward;
-procedure bankers_algorithm(claim: IntArray; alloc: IntArrayArray; max: IntArrayArray); forward;
+function processes_resource_summation(processes_resource_summation_alloc: IntArrayArray): IntArray; forward;
+function available_resources(available_resources_claim: IntArray; available_resources_alloc_sum: IntArray): IntArray; forward;
+function need(need_max: IntArrayArray; need_alloc: IntArrayArray): IntArrayArray; forward;
+procedure pretty_print(pretty_print_claim: IntArray; pretty_print_alloc: IntArrayArray; pretty_print_max: IntArrayArray); forward;
+procedure bankers_algorithm(bankers_algorithm_claim: IntArray; bankers_algorithm_alloc: IntArrayArray; bankers_algorithm_max: IntArrayArray); forward;
 function makeState(claim: IntArray; alloc: IntArrayArray; max: IntArrayArray): State;
 begin
   Result.claim := claim;
   Result.alloc := alloc;
   Result.max := max;
 end;
-function processes_resource_summation(alloc: IntArrayArray): IntArray;
+function processes_resource_summation(processes_resource_summation_alloc: IntArrayArray): IntArray;
 var
   processes_resource_summation_resources: integer;
-  processes_resource_summation_sums: array of integer;
-  processes_resource_summation_i: integer;
-  processes_resource_summation_total: integer;
-  processes_resource_summation_j: integer;
+  processes_resource_summation_sums: array of int64;
+  processes_resource_summation_i: int64;
+  processes_resource_summation_total: int64;
+  processes_resource_summation_j: int64;
 begin
-  processes_resource_summation_resources := Length(alloc[0]);
+  processes_resource_summation_resources := Length(processes_resource_summation_alloc[0]);
   processes_resource_summation_sums := [];
   processes_resource_summation_i := 0;
   while processes_resource_summation_i < processes_resource_summation_resources do begin
   processes_resource_summation_total := 0;
   processes_resource_summation_j := 0;
-  while processes_resource_summation_j < Length(alloc) do begin
-  processes_resource_summation_total := processes_resource_summation_total + alloc[processes_resource_summation_j][processes_resource_summation_i];
+  while processes_resource_summation_j < Length(processes_resource_summation_alloc) do begin
+  processes_resource_summation_total := processes_resource_summation_total + processes_resource_summation_alloc[processes_resource_summation_j][processes_resource_summation_i];
   processes_resource_summation_j := processes_resource_summation_j + 1;
 end;
   processes_resource_summation_sums := concat(processes_resource_summation_sums, IntArray([processes_resource_summation_total]));
@@ -114,33 +120,33 @@ end;
 end;
   exit(processes_resource_summation_sums);
 end;
-function available_resources(claim: IntArray; alloc_sum: IntArray): IntArray;
+function available_resources(available_resources_claim: IntArray; available_resources_alloc_sum: IntArray): IntArray;
 var
-  available_resources_avail: array of integer;
-  available_resources_i: integer;
+  available_resources_avail: array of int64;
+  available_resources_i: int64;
 begin
   available_resources_avail := [];
   available_resources_i := 0;
-  while available_resources_i < Length(claim) do begin
-  available_resources_avail := concat(available_resources_avail, IntArray([claim[available_resources_i] - alloc_sum[available_resources_i]]));
+  while available_resources_i < Length(available_resources_claim) do begin
+  available_resources_avail := concat(available_resources_avail, IntArray([available_resources_claim[available_resources_i] - available_resources_alloc_sum[available_resources_i]]));
   available_resources_i := available_resources_i + 1;
 end;
   exit(available_resources_avail);
 end;
-function need(max: IntArrayArray; alloc: IntArrayArray): IntArrayArray;
+function need(need_max: IntArrayArray; need_alloc: IntArrayArray): IntArrayArray;
 var
   need_needs: array of IntArray;
-  need_i: integer;
-  need_row: array of integer;
-  need_j: integer;
+  need_i: int64;
+  need_row: array of int64;
+  need_j: int64;
 begin
   need_needs := [];
   need_i := 0;
-  while need_i < Length(max) do begin
+  while need_i < Length(need_max) do begin
   need_row := [];
   need_j := 0;
-  while need_j < Length(max[0]) do begin
-  need_row := concat(need_row, IntArray([max[need_i][need_j] - alloc[need_i][need_j]]));
+  while need_j < Length(need_max[0]) do begin
+  need_row := concat(need_row, IntArray([need_max[need_i][need_j] - need_alloc[need_i][need_j]]));
   need_j := need_j + 1;
 end;
   need_needs := concat(need_needs, [need_row]);
@@ -148,12 +154,12 @@ end;
 end;
   exit(need_needs);
 end;
-procedure pretty_print(claim: IntArray; alloc: IntArrayArray; max: IntArrayArray);
+procedure pretty_print(pretty_print_claim: IntArray; pretty_print_alloc: IntArrayArray; pretty_print_max: IntArrayArray);
 var
-  pretty_print_i: integer;
-  pretty_print_row: array of integer;
+  pretty_print_i: int64;
+  pretty_print_row: array of int64;
   pretty_print_line: string;
-  pretty_print_j: integer;
+  pretty_print_j: int64;
   pretty_print_usage: string;
   pretty_print_alloc_sum: IntArray;
   pretty_print_avail: IntArray;
@@ -161,8 +167,8 @@ var
 begin
   writeln('         Allocated Resource Table');
   pretty_print_i := 0;
-  while pretty_print_i < Length(alloc) do begin
-  pretty_print_row := alloc[pretty_print_i];
+  while pretty_print_i < Length(pretty_print_alloc) do begin
+  pretty_print_row := pretty_print_alloc[pretty_print_i];
   pretty_print_line := ('P' + IntToStr(pretty_print_i + 1)) + '       ';
   pretty_print_j := 0;
   while pretty_print_j < Length(pretty_print_row) do begin
@@ -178,8 +184,8 @@ end;
 end;
   writeln('         System Resource Table');
   pretty_print_i := 0;
-  while pretty_print_i < Length(max) do begin
-  pretty_print_row := max[pretty_print_i];
+  while pretty_print_i < Length(pretty_print_max) do begin
+  pretty_print_row := pretty_print_max[pretty_print_i];
   pretty_print_line := ('P' + IntToStr(pretty_print_i + 1)) + '       ';
   pretty_print_j := 0;
   while pretty_print_j < Length(pretty_print_row) do begin
@@ -195,15 +201,15 @@ end;
 end;
   pretty_print_usage := '';
   pretty_print_i := 0;
-  while pretty_print_i < Length(claim) do begin
+  while pretty_print_i < Length(pretty_print_claim) do begin
   if pretty_print_i > 0 then begin
   pretty_print_usage := pretty_print_usage + ' ';
 end;
-  pretty_print_usage := pretty_print_usage + IntToStr(claim[pretty_print_i]);
+  pretty_print_usage := pretty_print_usage + IntToStr(pretty_print_claim[pretty_print_i]);
   pretty_print_i := pretty_print_i + 1;
 end;
-  pretty_print_alloc_sum := processes_resource_summation(alloc);
-  pretty_print_avail := available_resources(claim, pretty_print_alloc_sum);
+  pretty_print_alloc_sum := processes_resource_summation(pretty_print_alloc);
+  pretty_print_avail := available_resources(pretty_print_claim, pretty_print_alloc_sum);
   pretty_print_avail_str := '';
   pretty_print_i := 0;
   while pretty_print_i < Length(pretty_print_avail) do begin
@@ -216,23 +222,23 @@ end;
   writeln('Current Usage by Active Processes: ' + pretty_print_usage);
   writeln('Initial Available Resources:       ' + pretty_print_avail_str);
 end;
-procedure bankers_algorithm(claim: IntArray; alloc: IntArrayArray; max: IntArrayArray);
+procedure bankers_algorithm(bankers_algorithm_claim: IntArray; bankers_algorithm_alloc: IntArrayArray; bankers_algorithm_max: IntArrayArray);
 var
   bankers_algorithm_need_list: IntArrayArray;
   bankers_algorithm_alloc_sum: IntArray;
   bankers_algorithm_avail: IntArray;
   bankers_algorithm_finished: array of boolean;
-  bankers_algorithm_i: integer;
+  bankers_algorithm_i: int64;
   bankers_algorithm_remaining: integer;
   bankers_algorithm_safe: boolean;
-  bankers_algorithm_p: integer;
+  bankers_algorithm_p: int64;
   bankers_algorithm_exec: boolean;
-  bankers_algorithm_r: integer;
+  bankers_algorithm_r: int64;
   bankers_algorithm_avail_str: string;
 begin
-  bankers_algorithm_need_list := need(max, alloc);
-  bankers_algorithm_alloc_sum := processes_resource_summation(alloc);
-  bankers_algorithm_avail := available_resources(claim, bankers_algorithm_alloc_sum);
+  bankers_algorithm_need_list := need(bankers_algorithm_max, bankers_algorithm_alloc);
+  bankers_algorithm_alloc_sum := processes_resource_summation(bankers_algorithm_alloc);
+  bankers_algorithm_avail := available_resources(bankers_algorithm_claim, bankers_algorithm_alloc_sum);
   writeln('__________________________________________________');
   writeln('');
   bankers_algorithm_finished := [];
@@ -261,7 +267,7 @@ end;
   writeln(('Process ' + IntToStr(bankers_algorithm_p + 1)) + ' is executing.');
   bankers_algorithm_r := 0;
   while bankers_algorithm_r < Length(bankers_algorithm_avail) do begin
-  bankers_algorithm_avail[bankers_algorithm_r] := bankers_algorithm_avail[bankers_algorithm_r] + alloc[bankers_algorithm_p][bankers_algorithm_r];
+  bankers_algorithm_avail[bankers_algorithm_r] := bankers_algorithm_avail[bankers_algorithm_r] + bankers_algorithm_alloc[bankers_algorithm_p][bankers_algorithm_r];
   bankers_algorithm_r := bankers_algorithm_r + 1;
 end;
   bankers_algorithm_avail_str := '';
@@ -305,4 +311,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

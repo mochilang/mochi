@@ -37,35 +37,64 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real); overload;
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   G: real;
-  gravity: real;
-  volume: real;
-  fluid_density: real;
-function archimedes_principle(fluid_density: real; volume: real; gravity: real): real; forward;
-function archimedes_principle_default(fluid_density: real; volume: real): real; forward;
-function archimedes_principle(fluid_density: real; volume: real; gravity: real): real;
+function archimedes_principle(archimedes_principle_fluid_density: real; archimedes_principle_volume: real; archimedes_principle_gravity: real): real; forward;
+function archimedes_principle_default(archimedes_principle_default_fluid_density: real; archimedes_principle_default_volume: real): real; forward;
+function archimedes_principle(archimedes_principle_fluid_density: real; archimedes_principle_volume: real; archimedes_principle_gravity: real): real;
 begin
-  if fluid_density <= 0 then begin
+  if archimedes_principle_fluid_density <= 0 then begin
   panic('Impossible fluid density');
 end;
-  if volume <= 0 then begin
+  if archimedes_principle_volume <= 0 then begin
   panic('Impossible object volume');
 end;
-  if gravity < 0 then begin
+  if archimedes_principle_gravity < 0 then begin
   panic('Impossible gravity');
 end;
-  exit((fluid_density * volume) * gravity);
+  exit((archimedes_principle_fluid_density * archimedes_principle_volume) * archimedes_principle_gravity);
 end;
-function archimedes_principle_default(fluid_density: real; volume: real): real;
+function archimedes_principle_default(archimedes_principle_default_fluid_density: real; archimedes_principle_default_volume: real): real;
 var
   archimedes_principle_default_res: real;
 begin
-  archimedes_principle_default_res := archimedes_principle(fluid_density, volume, G);
+  archimedes_principle_default_res := archimedes_principle(archimedes_principle_default_fluid_density, archimedes_principle_default_volume, G);
   exit(archimedes_principle_default_res);
 end;
 begin
@@ -80,4 +109,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

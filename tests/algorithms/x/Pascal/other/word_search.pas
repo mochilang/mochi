@@ -1,13 +1,13 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
 uses SysUtils;
+type IntArray = array of int64;
 type StrArray = array of string;
-type IntArray = array of integer;
 type StrArrayArray = array of StrArray;
 type WordSearch = record
   words: array of string;
-  width: integer;
-  height: integer;
+  width: int64;
+  height: int64;
   board: array of StrArray;
 end;
 var _nowSeed: int64 = 0;
@@ -50,6 +50,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -58,7 +64,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -68,132 +74,124 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  seed: integer;
-  dc: integer;
-  word: string;
-  rows: IntArray;
-  words: StrArray;
-  height: integer;
-  dr: integer;
-  cols: IntArray;
-  width: integer;
-  list_int: IntArray;
-  ws: WordSearch;
-  add_fake_chars: boolean;
-  max: integer;
-function makeWordSearch(words: StrArray; width: integer; height: integer; board: StrArrayArray): WordSearch; forward;
-function rand(): integer; forward;
-function rand_range(max: integer): integer; forward;
-function shuffle(list_int: IntArray): IntArray; forward;
+  seed: int64;
+function makeWordSearch(words: StrArray; width: int64; height: int64; board: StrArrayArray): WordSearch; forward;
+function rand(): int64; forward;
+function rand_range(rand_range_max: int64): int64; forward;
+function shuffle(shuffle_list_int: IntArray): IntArray; forward;
 function rand_letter(): string; forward;
-function make_word_search(words: StrArray; width: integer; height: integer): WordSearch; forward;
-function insert_dir(ws: WordSearch; word: string; dr: integer; dc: integer; rows: IntArray; cols: IntArray): boolean; forward;
-procedure generate_board(ws: WordSearch); forward;
-function visualise(ws: WordSearch; add_fake_chars: boolean): string; forward;
+function make_word_search(make_word_search_words: StrArray; make_word_search_width: int64; make_word_search_height: int64): WordSearch; forward;
+function insert_dir(insert_dir_ws: WordSearch; insert_dir_word: string; insert_dir_dr: int64; insert_dir_dc: int64; insert_dir_rows: IntArray; insert_dir_cols: IntArray): boolean; forward;
+procedure generate_board(generate_board_ws: WordSearch); forward;
+function visualise(visualise_ws: WordSearch; visualise_add_fake_chars: boolean): string; forward;
 procedure main(); forward;
-function makeWordSearch(words: StrArray; width: integer; height: integer; board: StrArrayArray): WordSearch;
+function makeWordSearch(words: StrArray; width: int64; height: int64; board: StrArrayArray): WordSearch;
 begin
   Result.words := words;
   Result.width := width;
   Result.height := height;
   Result.board := board;
 end;
-function rand(): integer;
+function rand(): int64;
 begin
   seed := ((seed * 1103515245) + 12345) mod 2147483648;
   exit(seed);
 end;
-function rand_range(max: integer): integer;
+function rand_range(rand_range_max: int64): int64;
 begin
-  exit(rand() mod max);
+  exit(rand() mod rand_range_max);
 end;
-function shuffle(list_int: IntArray): IntArray;
+function shuffle(shuffle_list_int: IntArray): IntArray;
 var
   shuffle_i: integer;
-  shuffle_j: integer;
-  shuffle_tmp: integer;
+  shuffle_j: int64;
+  shuffle_tmp: int64;
 begin
-  shuffle_i := Length(list_int) - 1;
+  shuffle_i := Length(shuffle_list_int) - 1;
   while shuffle_i > 0 do begin
   shuffle_j := rand_range(shuffle_i + 1);
-  shuffle_tmp := list_int[shuffle_i];
-  list_int[shuffle_i] := list_int[shuffle_j];
-  list_int[shuffle_j] := shuffle_tmp;
+  shuffle_tmp := shuffle_list_int[shuffle_i];
+  shuffle_list_int[shuffle_i] := shuffle_list_int[shuffle_j];
+  shuffle_list_int[shuffle_j] := shuffle_tmp;
   shuffle_i := shuffle_i - 1;
 end;
-  exit(list_int);
+  exit(shuffle_list_int);
 end;
 function rand_letter(): string;
 var
   rand_letter_letters: string;
-  rand_letter_i: integer;
+  rand_letter_i: int64;
 begin
   rand_letter_letters := 'abcdefghijklmnopqrstuvwxyz';
   rand_letter_i := rand_range(26);
   exit(copy(rand_letter_letters, rand_letter_i+1, (rand_letter_i + 1 - (rand_letter_i))));
 end;
-function make_word_search(words: StrArray; width: integer; height: integer): WordSearch;
+function make_word_search(make_word_search_words: StrArray; make_word_search_width: int64; make_word_search_height: int64): WordSearch;
 var
   make_word_search_board: array of StrArray;
-  make_word_search_r: integer;
+  make_word_search_r: int64;
   make_word_search_row: array of string;
-  make_word_search_c: integer;
+  make_word_search_c: int64;
 begin
   make_word_search_board := [];
   make_word_search_r := 0;
-  while make_word_search_r < height do begin
+  while make_word_search_r < make_word_search_height do begin
   make_word_search_row := [];
   make_word_search_c := 0;
-  while make_word_search_c < width do begin
+  while make_word_search_c < make_word_search_width do begin
   make_word_search_row := concat(make_word_search_row, StrArray(['']));
   make_word_search_c := make_word_search_c + 1;
 end;
   make_word_search_board := concat(make_word_search_board, [make_word_search_row]);
   make_word_search_r := make_word_search_r + 1;
 end;
-  exit(makeWordSearch(words, width, height, make_word_search_board));
+  exit(makeWordSearch(make_word_search_words, make_word_search_width, make_word_search_height, make_word_search_board));
 end;
-function insert_dir(ws: WordSearch; word: string; dr: integer; dc: integer; rows: IntArray; cols: IntArray): boolean;
+function insert_dir(insert_dir_ws: WordSearch; insert_dir_word: string; insert_dir_dr: int64; insert_dir_dc: int64; insert_dir_rows: IntArray; insert_dir_cols: IntArray): boolean;
 var
   insert_dir_word_len: integer;
-  insert_dir_ri: integer;
-  insert_dir_row: integer;
-  insert_dir_ci: integer;
-  insert_dir_col: integer;
-  insert_dir_end_r: integer;
-  insert_dir_end_c: integer;
-  insert_dir_k: integer;
+  insert_dir_ri: int64;
+  insert_dir_row: int64;
+  insert_dir_ci: int64;
+  insert_dir_col: int64;
+  insert_dir_end_r: int64;
+  insert_dir_end_c: int64;
+  insert_dir_k: int64;
   insert_dir_ok: boolean;
-  insert_dir_rr: integer;
-  insert_dir_cc: integer;
-  insert_dir_rr2: integer;
-  insert_dir_cc2: integer;
+  insert_dir_rr: int64;
+  insert_dir_cc: int64;
+  insert_dir_rr2: int64;
+  insert_dir_cc2: int64;
   insert_dir_row_list: array of string;
 begin
-  insert_dir_word_len := Length(word);
+  insert_dir_word_len := Length(insert_dir_word);
   insert_dir_ri := 0;
-  while insert_dir_ri < Length(rows) do begin
-  insert_dir_row := rows[insert_dir_ri];
+  while insert_dir_ri < Length(insert_dir_rows) do begin
+  insert_dir_row := insert_dir_rows[insert_dir_ri];
   insert_dir_ci := 0;
-  while insert_dir_ci < Length(cols) do begin
-  insert_dir_col := cols[insert_dir_ci];
-  insert_dir_end_r := insert_dir_row + (dr * (insert_dir_word_len - 1));
-  insert_dir_end_c := insert_dir_col + (dc * (insert_dir_word_len - 1));
-  if (((insert_dir_end_r < 0) or (insert_dir_end_r >= ws.height)) or (insert_dir_end_c < 0)) or (insert_dir_end_c >= ws.width) then begin
+  while insert_dir_ci < Length(insert_dir_cols) do begin
+  insert_dir_col := insert_dir_cols[insert_dir_ci];
+  insert_dir_end_r := insert_dir_row + (insert_dir_dr * (insert_dir_word_len - 1));
+  insert_dir_end_c := insert_dir_col + (insert_dir_dc * (insert_dir_word_len - 1));
+  if (((insert_dir_end_r < 0) or (insert_dir_end_r >= insert_dir_ws.height)) or (insert_dir_end_c < 0)) or (insert_dir_end_c >= insert_dir_ws.width) then begin
   insert_dir_ci := insert_dir_ci + 1;
   continue;
 end;
   insert_dir_k := 0;
   insert_dir_ok := true;
   while insert_dir_k < insert_dir_word_len do begin
-  insert_dir_rr := insert_dir_row + (dr * insert_dir_k);
-  insert_dir_cc := insert_dir_col + (dc * insert_dir_k);
-  if ws.board[insert_dir_rr][insert_dir_cc] <> '' then begin
+  insert_dir_rr := insert_dir_row + (insert_dir_dr * insert_dir_k);
+  insert_dir_cc := insert_dir_col + (insert_dir_dc * insert_dir_k);
+  if insert_dir_ws.board[insert_dir_rr][insert_dir_cc] <> '' then begin
   insert_dir_ok := false;
   break;
 end;
@@ -202,10 +200,10 @@ end;
   if insert_dir_ok then begin
   insert_dir_k := 0;
   while insert_dir_k < insert_dir_word_len do begin
-  insert_dir_rr2 := insert_dir_row + (dr * insert_dir_k);
-  insert_dir_cc2 := insert_dir_col + (dc * insert_dir_k);
-  insert_dir_row_list := ws.board[insert_dir_rr2];
-  insert_dir_row_list[insert_dir_cc2] := copy(word, insert_dir_k+1, (insert_dir_k + 1 - (insert_dir_k)));
+  insert_dir_rr2 := insert_dir_row + (insert_dir_dr * insert_dir_k);
+  insert_dir_cc2 := insert_dir_col + (insert_dir_dc * insert_dir_k);
+  insert_dir_row_list := insert_dir_ws.board[insert_dir_rr2];
+  insert_dir_row_list[insert_dir_cc2] := copy(insert_dir_word, insert_dir_k+1, (insert_dir_k + 1 - (insert_dir_k)));
   insert_dir_k := insert_dir_k + 1;
 end;
   exit(true);
@@ -216,57 +214,57 @@ end;
 end;
   exit(false);
 end;
-procedure generate_board(ws: WordSearch);
+procedure generate_board(generate_board_ws: WordSearch);
 var
-  generate_board_dirs_r: array of integer;
-  generate_board_dirs_c: array of integer;
-  generate_board_i: integer;
+  generate_board_dirs_r: array of int64;
+  generate_board_dirs_c: array of int64;
+  generate_board_i: int64;
   generate_board_word: string;
-  generate_board_rows: array of integer;
-  generate_board_r: integer;
-  generate_board_cols: array of integer;
-  generate_board_c: integer;
-  generate_board_d: integer;
+  generate_board_rows: array of int64;
+  generate_board_r: int64;
+  generate_board_cols: array of int64;
+  generate_board_c: int64;
+  generate_board_d: int64;
 begin
   generate_board_dirs_r := [-1, -1, 0, 1, 1, 1, 0, -1];
   generate_board_dirs_c := [0, 1, 1, 1, 0, -1, -1, -1];
   generate_board_i := 0;
-  while generate_board_i < Length(ws.words) do begin
-  generate_board_word := ws.words[generate_board_i];
+  while generate_board_i < Length(generate_board_ws.words) do begin
+  generate_board_word := generate_board_ws.words[generate_board_i];
   generate_board_rows := [];
   generate_board_r := 0;
-  while generate_board_r < ws.height do begin
+  while generate_board_r < generate_board_ws.height do begin
   generate_board_rows := concat(generate_board_rows, IntArray([generate_board_r]));
   generate_board_r := generate_board_r + 1;
 end;
   generate_board_cols := [];
   generate_board_c := 0;
-  while generate_board_c < ws.width do begin
+  while generate_board_c < generate_board_ws.width do begin
   generate_board_cols := concat(generate_board_cols, IntArray([generate_board_c]));
   generate_board_c := generate_board_c + 1;
 end;
   generate_board_rows := shuffle(generate_board_rows);
   generate_board_cols := shuffle(generate_board_cols);
   generate_board_d := rand_range(8);
-  insert_dir(ws, generate_board_word, generate_board_dirs_r[generate_board_d], generate_board_dirs_c[generate_board_d], generate_board_rows, generate_board_cols);
+  insert_dir(generate_board_ws, generate_board_word, generate_board_dirs_r[generate_board_d], generate_board_dirs_c[generate_board_d], generate_board_rows, generate_board_cols);
   generate_board_i := generate_board_i + 1;
 end;
 end;
-function visualise(ws: WordSearch; add_fake_chars: boolean): string;
+function visualise(visualise_ws: WordSearch; visualise_add_fake_chars: boolean): string;
 var
   visualise_result_: string;
-  visualise_r: integer;
-  visualise_c: integer;
+  visualise_r: int64;
+  visualise_c: int64;
   visualise_ch: string;
 begin
   visualise_result_ := '';
   visualise_r := 0;
-  while visualise_r < ws.height do begin
+  while visualise_r < visualise_ws.height do begin
   visualise_c := 0;
-  while visualise_c < ws.width do begin
-  visualise_ch := ws.board[visualise_r][visualise_c];
+  while visualise_c < visualise_ws.width do begin
+  visualise_ch := visualise_ws.board[visualise_r][visualise_c];
   if visualise_ch = '' then begin
-  if add_fake_chars then begin
+  if visualise_add_fake_chars then begin
   visualise_ch := rand_letter();
 end else begin
   visualise_ch := '#';
@@ -275,7 +273,7 @@ end;
   visualise_result_ := (visualise_result_ + visualise_ch) + ' ';
   visualise_c := visualise_c + 1;
 end;
-  visualise_result_ := visualise_result_ + '' + #10 + '';
+  visualise_result_ := visualise_result_ + #10;
   visualise_r := visualise_r + 1;
 end;
   exit(visualise_result_);
@@ -303,4 +301,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

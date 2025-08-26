@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-25 22:35 GMT+7
+Last updated: 2025-08-25 23:54 GMT+7
 
-## Algorithms Golden Test Checklist (670/1077)
+## Algorithms Golden Test Checklist (674/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -725,8 +725,8 @@ Last updated: 2025-08-25 22:35 GMT+7
 | 716 | matrix/spiral_print | ✓ | 1.0µs | 0B |
 | 717 | matrix/tests/test_matrix_operation | ✓ | 0ns | 0B |
 | 718 | matrix/validate_sudoku_board | ✓ | 1.0µs | 41.81KB |
-| 719 | networking_flow/ford_fulkerson | ✓ | 1.0µs | 544B |
-| 720 | networking_flow/minimum_cut | ✓ | 0ns | 640B |
+| 719 | networking_flow/ford_fulkerson | ✓ | 0ns | 736B |
+| 720 | networking_flow/minimum_cut | ✓ | 0ns | 928B |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 0ns | 0B |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 1.0µs | 192B |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 0ns | 256B |
@@ -736,41 +736,41 @@ Last updated: 2025-08-25 22:35 GMT+7
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 0ns | 192B |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 0ns | 0B |
 | 729 | neural_network/activation_functions/softplus | ✓ | 0ns | 0B |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 1.0µs | 0B |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 0ns | 0B |
 | 731 | neural_network/activation_functions/swish | ✓ | 0ns | 0B |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 366.0µs | 0B |
-| 733 | neural_network/convolution_neural_network | ✓ | 1.0µs | 0B |
-| 734 | neural_network/input_data | ✓ | 0ns | 0B |
-| 735 | neural_network/simple_neural_network | ✓ | 104.0µs | 0B |
-| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 1.0µs | 0B |
-| 737 | other/activity_selection | ✓ | 0ns | 128B |
-| 738 | other/alternative_list_arrange | error |  |  |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 514.0µs | 0B |
+| 733 | neural_network/convolution_neural_network | ✓ | 0ns | 0B |
+| 734 | neural_network/input_data | ✓ | 1.0µs | 0B |
+| 735 | neural_network/simple_neural_network | ✓ | 152.0µs | 0B |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 0ns | 0B |
+| 737 | other/activity_selection | ✓ | 0ns | 192B |
+| 738 | other/alternative_list_arrange | ✓ | 0ns | 9.88KB |
 | 739 | other/bankers_algorithm | ✓ | 0ns | 832B |
-| 740 | other/davis_putnam_logemann_loveland | ✓ | 0ns | 9.66KB |
-| 741 | other/doomsday | ✓ | 0ns | 3.66KB |
-| 742 | other/fischer_yates_shuffle | ✓ | 0ns | 1.12KB |
-| 743 | other/gauss_easter | error |  |  |
-| 744 | other/greedy | ✓ | 0ns | 6.41KB |
-| 745 | other/guess_the_number_search | ✓ | 0ns | 0B |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 0ns | 9.69KB |
+| 741 | other/doomsday | ✓ | 0ns | 3.75KB |
+| 742 | other/fischer_yates_shuffle | ✓ | 0ns | 1.16KB |
+| 743 | other/gauss_easter | ✓ | 0ns | 320B |
+| 744 | other/greedy | ✓ | 1.0µs | 6.41KB |
+| 745 | other/guess_the_number_search | ✓ | 1.0µs | 0B |
 | 746 | other/h_index | ✓ | 0ns | 128B |
 | 747 | other/least_recently_used | ✓ | 1.0µs | 4.56KB |
 | 748 | other/lfu_cache | ✓ | 0ns | 0B |
-| 749 | other/linear_congruential_generator | error |  |  |
-| 750 | other/lru_cache | ✓ | 1.0µs | 1.44KB |
+| 749 | other/linear_congruential_generator | ✓ | 0ns | 64B |
+| 750 | other/lru_cache | ✓ | 0ns | 1.44KB |
 | 751 | other/magicdiamondpattern | ✓ | 0ns | 0B |
-| 752 | other/majority_vote_algorithm | ✓ | 0ns | 0B |
+| 752 | other/majority_vote_algorithm | ✓ | 1.0µs | 0B |
 | 753 | other/maximum_subsequence | ✓ | 0ns | 64B |
-| 754 | other/nested_brackets | ✓ | 1.0µs | 2.66KB |
-| 755 | other/number_container_system | ✓ | 0ns | 448B |
+| 754 | other/nested_brackets | ✓ | 0ns | 2.66KB |
+| 755 | other/number_container_system | ✓ | 0ns | 480B |
 | 756 | other/quine | ✓ | 0ns | 0B |
 | 757 | other/scoring_algorithm | ✓ | 0ns | 608B |
-| 758 | other/sdes | ✓ | 0ns | 1.00KB |
+| 758 | other/sdes | ✓ | 0ns | 1.19KB |
 | 759 | other/tower_of_hanoi | ✓ | 0ns | 0B |
-| 760 | other/word_search | ✓ | 0ns | 0B |
+| 760 | other/word_search | ✓ | 1.0µs | 0B |
 | 761 | physics/altitude_pressure | ✓ | 0ns | 64B |
 | 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 0ns | 0B |
 | 763 | physics/basic_orbital_capture | error |  |  |
-| 764 | physics/casimir_effect | error |  |  |
+| 764 | physics/casimir_effect | ✓ | 0ns | 4.31KB |
 | 765 | physics/center_of_mass | ✓ | 0ns | 128B |
 | 766 | physics/centripetal_force | ✓ | 0ns | 0B |
 | 767 | physics/coulombs_law | ✓ | 0ns | 0B |

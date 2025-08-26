@@ -1,9 +1,9 @@
 {$mode objfpc}{$modeswitch nestedprocvars}
 program Main;
-uses SysUtils, StrUtils;
+uses SysUtils, StrUtils, Math;
 type EasterDate = record
-  month: integer;
-  day: integer;
+  month: int64;
+  day: int64;
 end;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
@@ -45,6 +45,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -53,7 +59,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -63,50 +69,52 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  years: array of integer;
-  i: integer;
-  y: integer;
+  years: array of int64;
+  i: int64;
+  y: int64;
   e: EasterDate;
-  year: integer;
-  d: EasterDate;
-function makeEasterDate(month: integer; day: integer): EasterDate; forward;
-function gauss_easter(year: integer): EasterDate; forward;
-function format_date(year: integer; d: EasterDate): string; forward;
-function makeEasterDate(month: integer; day: integer): EasterDate;
+function makeEasterDate(month: int64; day: int64): EasterDate; forward;
+function gauss_easter(gauss_easter_year: int64): EasterDate; forward;
+function format_date(format_date_year: int64; format_date_d: EasterDate): string; forward;
+function makeEasterDate(month: int64; day: int64): EasterDate;
 begin
   Result.month := month;
   Result.day := day;
 end;
-function gauss_easter(year: integer): EasterDate;
+function gauss_easter(gauss_easter_year: int64): EasterDate;
 var
-  gauss_easter_metonic_cycle: integer;
-  gauss_easter_julian_leap_year: integer;
-  gauss_easter_non_leap_year: integer;
-  gauss_easter_leap_day_inhibits: integer;
-  gauss_easter_lunar_orbit_correction: integer;
+  gauss_easter_metonic_cycle: int64;
+  gauss_easter_julian_leap_year: int64;
+  gauss_easter_non_leap_year: int64;
+  gauss_easter_leap_day_inhibits: int64;
+  gauss_easter_lunar_orbit_correction: int64;
   gauss_easter_leap_day_reinstall_number: real;
   gauss_easter_secular_moon_shift: real;
   gauss_easter_century_starting_point: real;
   gauss_easter_days_to_add: real;
   gauss_easter_days_from_phm_to_sunday: real;
   gauss_easter_offset: integer;
-  gauss_easter_total: integer;
+  gauss_easter_total: int64;
 begin
-  gauss_easter_metonic_cycle := year mod 19;
-  gauss_easter_julian_leap_year := year mod 4;
-  gauss_easter_non_leap_year := year mod 7;
-  gauss_easter_leap_day_inhibits := year div 100;
-  gauss_easter_lunar_orbit_correction := (13 + (8 * gauss_easter_leap_day_inhibits)) div 25;
+  gauss_easter_metonic_cycle := gauss_easter_year mod 19;
+  gauss_easter_julian_leap_year := gauss_easter_year mod 4;
+  gauss_easter_non_leap_year := gauss_easter_year mod 7;
+  gauss_easter_leap_day_inhibits := _floordiv(gauss_easter_year, 100);
+  gauss_easter_lunar_orbit_correction := _floordiv(13 + (8 * gauss_easter_leap_day_inhibits), 25);
   gauss_easter_leap_day_reinstall_number := Double(gauss_easter_leap_day_inhibits) / 4;
-  gauss_easter_secular_moon_shift := (((15 - Double(gauss_easter_lunar_orbit_correction)) + Double(gauss_easter_leap_day_inhibits)) - gauss_easter_leap_day_reinstall_number) mod 30;
-  gauss_easter_century_starting_point := ((4 + Double(gauss_easter_leap_day_inhibits)) - gauss_easter_leap_day_reinstall_number) mod 7;
-  gauss_easter_days_to_add := ((19 * Double(gauss_easter_metonic_cycle)) + gauss_easter_secular_moon_shift) mod 30;
-  gauss_easter_days_from_phm_to_sunday := ((((2 * Double(gauss_easter_julian_leap_year)) + (4 * Double(gauss_easter_non_leap_year))) + (6 * gauss_easter_days_to_add)) + gauss_easter_century_starting_point) mod 7;
+  gauss_easter_secular_moon_shift := (((15 - Double(gauss_easter_lunar_orbit_correction)) + Double(gauss_easter_leap_day_inhibits)) - gauss_easter_leap_day_reinstall_number - Floor(((15 - Double(gauss_easter_lunar_orbit_correction)) + Double(gauss_easter_leap_day_inhibits)) - gauss_easter_leap_day_reinstall_number / 30) * 30);
+  gauss_easter_century_starting_point := ((4 + Double(gauss_easter_leap_day_inhibits)) - gauss_easter_leap_day_reinstall_number - Floor((4 + Double(gauss_easter_leap_day_inhibits)) - gauss_easter_leap_day_reinstall_number / 7) * 7);
+  gauss_easter_days_to_add := ((19 * Double(gauss_easter_metonic_cycle)) + gauss_easter_secular_moon_shift - Floor((19 * Double(gauss_easter_metonic_cycle)) + gauss_easter_secular_moon_shift / 30) * 30);
+  gauss_easter_days_from_phm_to_sunday := ((((2 * Double(gauss_easter_julian_leap_year)) + (4 * Double(gauss_easter_non_leap_year))) + (6 * gauss_easter_days_to_add)) + gauss_easter_century_starting_point - Floor((((2 * Double(gauss_easter_julian_leap_year)) + (4 * Double(gauss_easter_non_leap_year))) + (6 * gauss_easter_days_to_add)) + gauss_easter_century_starting_point / 7) * 7);
   if (gauss_easter_days_to_add = 29) and (gauss_easter_days_from_phm_to_sunday = 6) then begin
   exit(makeEasterDate(4, 19));
 end;
@@ -120,22 +128,22 @@ end;
 end;
   exit(makeEasterDate(3, gauss_easter_total));
 end;
-function format_date(year: integer; d: EasterDate): string;
+function format_date(format_date_year: int64; format_date_d: EasterDate): string;
 var
   format_date_month: string;
   format_date_day: string;
 begin
-  if d.month < 10 then begin
-  format_date_month := '0' + IntToStr(d.month);
+  if format_date_d.month < 10 then begin
+  format_date_month := '0' + IntToStr(format_date_d.month);
 end else begin
-  format_date_month := IntToStr(d.month);
+  format_date_month := IntToStr(format_date_d.month);
 end;
-  if d.day < 10 then begin
-  format_date_day := '0' + IntToStr(d.day);
+  if format_date_d.day < 10 then begin
+  format_date_day := '0' + IntToStr(format_date_d.day);
 end else begin
-  format_date_day := IntToStr(d.day);
+  format_date_day := IntToStr(format_date_d.day);
 end;
-  exit((((IntToStr(year) + '-') + format_date_month) + '-') + format_date_day);
+  exit((((IntToStr(format_date_year) + '-') + format_date_month) + '-') + format_date_day);
 end;
 begin
   init_now();
@@ -156,4 +164,5 @@ end;
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

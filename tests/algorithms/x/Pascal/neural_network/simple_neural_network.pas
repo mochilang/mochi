@@ -41,6 +41,12 @@ procedure error(msg: string);
 begin
   panic(msg);
 end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
 function _to_float(x: integer): real;
 begin
   _to_float := x;
@@ -49,7 +55,7 @@ function to_float(x: integer): real;
 begin
   to_float := _to_float(x);
 end;
-procedure json(xs: array of real);
+procedure json(xs: array of real); overload;
 var i: integer;
 begin
   write('[');
@@ -59,26 +65,30 @@ begin
   end;
   writeln(']');
 end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  seed: integer;
+  seed: int64;
   INITIAL_VALUE: real;
   result_: real;
-function rand(): integer; forward;
-function randint(randint_low: integer; randint_high: integer): integer; forward;
+function rand(): int64; forward;
+function randint(randint_low: int64; randint_high: int64): int64; forward;
 function expApprox(expApprox_x: real): real; forward;
 function sigmoid(sigmoid_x: real): real; forward;
 function sigmoid_derivative(sigmoid_derivative_sig_val: real): real; forward;
-function forward_propagation(forward_propagation_expected: integer; forward_propagation_number_propagations: integer): real; forward;
-function rand(): integer;
+function forward_propagation(forward_propagation_expected: int64; forward_propagation_number_propagations: int64): real; forward;
+function rand(): int64;
 begin
   seed := ((seed * 1103515245) + 12345) mod 2147483648;
   exit(seed);
 end;
-function randint(randint_low: integer; randint_high: integer): integer;
+function randint(randint_low: int64; randint_high: int64): int64;
 begin
   exit((rand() mod ((randint_high - randint_low) + 1)) + randint_low);
 end;
@@ -88,7 +98,7 @@ var
   expApprox_is_neg: boolean;
   expApprox_term: real;
   expApprox_sum: real;
-  expApprox_n: integer;
+  expApprox_n: int64;
 begin
   expApprox_y := expApprox_x;
   expApprox_is_neg := false;
@@ -117,11 +127,11 @@ function sigmoid_derivative(sigmoid_derivative_sig_val: real): real;
 begin
   exit(sigmoid_derivative_sig_val * (1 - sigmoid_derivative_sig_val));
 end;
-function forward_propagation(forward_propagation_expected: integer; forward_propagation_number_propagations: integer): real;
+function forward_propagation(forward_propagation_expected: int64; forward_propagation_number_propagations: int64): real;
 var
   forward_propagation_weight: real;
   forward_propagation_layer_1: real;
-  forward_propagation_i: integer;
+  forward_propagation_i: int64;
   forward_propagation_layer_1_error: real;
   forward_propagation_layer_1_delta: real;
 begin
@@ -153,4 +163,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

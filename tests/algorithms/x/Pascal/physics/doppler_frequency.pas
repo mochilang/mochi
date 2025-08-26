@@ -37,47 +37,71 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real); overload;
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  obs_vel: real;
-  src_vel: real;
-  wave_vel: real;
-  x: real;
-  a: real;
-  org_freq: real;
-  b: real;
-  tol: real;
-function doppler_effect(org_freq: real; wave_vel: real; obs_vel: real; src_vel: real): real; forward;
-function absf(x: real): real; forward;
-function almost_equal(a: real; b: real; tol: real): boolean; forward;
+function doppler_effect(doppler_effect_org_freq: real; doppler_effect_wave_vel: real; doppler_effect_obs_vel: real; doppler_effect_src_vel: real): real; forward;
+function absf(absf_x: real): real; forward;
+function almost_equal(almost_equal_a: real; almost_equal_b: real; almost_equal_tol: real): boolean; forward;
 procedure test_doppler_effect(); forward;
 procedure main(); forward;
-function doppler_effect(org_freq: real; wave_vel: real; obs_vel: real; src_vel: real): real;
+function doppler_effect(doppler_effect_org_freq: real; doppler_effect_wave_vel: real; doppler_effect_obs_vel: real; doppler_effect_src_vel: real): real;
 var
   doppler_effect_doppler_freq: real;
 begin
-  if wave_vel = src_vel then begin
+  if doppler_effect_wave_vel = doppler_effect_src_vel then begin
   panic('division by zero implies vs=v and observer in front of the source');
 end;
-  doppler_effect_doppler_freq := (org_freq * (wave_vel + obs_vel)) / (wave_vel - src_vel);
+  doppler_effect_doppler_freq := (doppler_effect_org_freq * (doppler_effect_wave_vel + doppler_effect_obs_vel)) / (doppler_effect_wave_vel - doppler_effect_src_vel);
   if doppler_effect_doppler_freq <= 0 then begin
   panic('non-positive frequency implies vs>v or v0>v (in the opposite direction)');
 end;
   exit(doppler_effect_doppler_freq);
 end;
-function absf(x: real): real;
+function absf(absf_x: real): real;
 begin
-  if x < 0 then begin
-  exit(-x);
+  if absf_x < 0 then begin
+  exit(-absf_x);
 end;
-  exit(x);
+  exit(absf_x);
 end;
-function almost_equal(a: real; b: real; tol: real): boolean;
+function almost_equal(almost_equal_a: real; almost_equal_b: real; almost_equal_tol: real): boolean;
 begin
-  exit(absf(a - b) <= tol);
+  exit(absf(almost_equal_a - almost_equal_b) <= almost_equal_tol);
 end;
 procedure test_doppler_effect();
 begin
@@ -117,4 +141,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

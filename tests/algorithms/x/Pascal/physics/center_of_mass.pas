@@ -49,6 +49,38 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+function to_float(x: integer): real;
+begin
+  to_float := _to_float(x);
+end;
+procedure json(xs: array of real); overload;
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
@@ -56,14 +88,11 @@ var
   bench_memdiff_0: int64;
   r1: Coord3D;
   r2: Coord3D;
-  c: Coord3D;
-  x: real;
-  ps: ParticleArray;
 function makeCoord3D(x: real; y: real; z: real): Coord3D; forward;
 function makeParticle(x: real; y: real; z: real; mass: real): Particle; forward;
-function round2(x: real): real; forward;
-function center_of_mass(ps: ParticleArray): Coord3D; forward;
-function coord_to_string(c: Coord3D): string; forward;
+function round2(round2_x: real): real; forward;
+function center_of_mass(center_of_mass_ps: ParticleArray): Coord3D; forward;
+function coord_to_string(coord_to_string_c: Coord3D): string; forward;
 function makeCoord3D(x: real; y: real; z: real): Coord3D;
 begin
   Result.x := x;
@@ -77,18 +106,18 @@ begin
   Result.z := z;
   Result.mass := mass;
 end;
-function round2(x: real): real;
+function round2(round2_x: real): real;
 var
   round2_scaled: real;
   round2_rounded: real;
 begin
-  round2_scaled := x * 100;
+  round2_scaled := round2_x * 100;
   round2_rounded := Double(Trunc(round2_scaled + 0.5));
   exit(round2_rounded / 100);
 end;
-function center_of_mass(ps: ParticleArray): Coord3D;
+function center_of_mass(center_of_mass_ps: ParticleArray): Coord3D;
 var
-  center_of_mass_i: integer;
+  center_of_mass_i: int64;
   center_of_mass_total_mass: real;
   center_of_mass_p: Particle;
   center_of_mass_sum_x: real;
@@ -98,13 +127,13 @@ var
   center_of_mass_cm_y: real;
   center_of_mass_cm_z: real;
 begin
-  if Length(ps) = 0 then begin
+  if Length(center_of_mass_ps) = 0 then begin
   panic('No particles provided');
 end;
   center_of_mass_i := 0;
   center_of_mass_total_mass := 0;
-  while center_of_mass_i < Length(ps) do begin
-  center_of_mass_p := ps[center_of_mass_i];
+  while center_of_mass_i < Length(center_of_mass_ps) do begin
+  center_of_mass_p := center_of_mass_ps[center_of_mass_i];
   if center_of_mass_p.mass <= 0 then begin
   panic('Mass of all particles must be greater than 0');
 end;
@@ -115,8 +144,8 @@ end;
   center_of_mass_sum_y := 0;
   center_of_mass_sum_z := 0;
   center_of_mass_i := 0;
-  while center_of_mass_i < Length(ps) do begin
-  center_of_mass_p := ps[center_of_mass_i];
+  while center_of_mass_i < Length(center_of_mass_ps) do begin
+  center_of_mass_p := center_of_mass_ps[center_of_mass_i];
   center_of_mass_sum_x := center_of_mass_sum_x + (center_of_mass_p.x * center_of_mass_p.mass);
   center_of_mass_sum_y := center_of_mass_sum_y + (center_of_mass_p.y * center_of_mass_p.mass);
   center_of_mass_sum_z := center_of_mass_sum_z + (center_of_mass_p.z * center_of_mass_p.mass);
@@ -127,9 +156,9 @@ end;
   center_of_mass_cm_z := round2(center_of_mass_sum_z / center_of_mass_total_mass);
   exit(makeCoord3D(center_of_mass_cm_x, center_of_mass_cm_y, center_of_mass_cm_z));
 end;
-function coord_to_string(c: Coord3D): string;
+function coord_to_string(coord_to_string_c: Coord3D): string;
 begin
-  exit(((((('Coord3D(x=' + FloatToStr(c.x)) + ', y=') + FloatToStr(c.y)) + ', z=') + FloatToStr(c.z)) + ')');
+  exit(((((('Coord3D(x=' + FloatToStr(coord_to_string_c.x)) + ', y=') + FloatToStr(coord_to_string_c.y)) + ', z=') + FloatToStr(coord_to_string_c.z)) + ')');
 end;
 begin
   init_now();
@@ -146,4 +175,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.

@@ -37,80 +37,104 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function _floordiv(a, b: int64): int64; var r: int64;
+begin
+  r := a div b;
+  if ((a < 0) xor (b < 0)) and ((a mod b) <> 0) then r := r - 1;
+  _floordiv := r;
+end;
+function _to_float(x: integer): real;
+begin
+  _to_float := x;
+end;
+procedure json(xs: array of real); overload;
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
+procedure json(x: int64); overload;
+begin
+  writeln(x);
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  pressure: real;
-  x: real;
-  exponent: real;
-  base: real;
-function to_float(x: integer): real; forward;
-function ln(x: real): real; forward;
-function exp(x: real): real; forward;
-function pow_float(base: real; exponent: real): real; forward;
-function get_altitude_at_pressure(pressure: real): real; forward;
-function to_float(x: integer): real;
+function to_float(to_float_x: int64): real; forward;
+function ln_(ln__x: real): real; forward;
+function exp_(exp__x: real): real; forward;
+function pow_float(pow_float_base: real; pow_float_exponent: real): real; forward;
+function get_altitude_at_pressure(get_altitude_at_pressure_pressure: real): real; forward;
+function to_float(to_float_x: int64): real;
 begin
-  exit(x * 1);
+  exit(to_float_x * 1);
 end;
-function ln(x: real): real;
+function ln_(ln__x: real): real;
 var
-  ln_y: real;
-  ln_y2: real;
-  ln_term: real;
-  ln_sum: real;
-  ln_k: integer;
-  ln_denom: real;
+  ln__y: real;
+  ln__y2: real;
+  ln__term: real;
+  ln__sum: real;
+  ln__k: int64;
+  ln__denom: real;
 begin
-  if x <= 0 then begin
+  if ln__x <= 0 then begin
   panic('ln domain error');
 end;
-  ln_y := (x - 1) / (x + 1);
-  ln_y2 := ln_y * ln_y;
-  ln_term := ln_y;
-  ln_sum := 0;
-  ln_k := 0;
-  while ln_k < 10 do begin
-  ln_denom := to_float((2 * ln_k) + 1);
-  ln_sum := ln_sum + (ln_term / ln_denom);
-  ln_term := ln_term * ln_y2;
-  ln_k := ln_k + 1;
+  ln__y := (ln__x - 1) / (ln__x + 1);
+  ln__y2 := ln__y * ln__y;
+  ln__term := ln__y;
+  ln__sum := 0;
+  ln__k := 0;
+  while ln__k < 10 do begin
+  ln__denom := to_float((2 * ln__k) + 1);
+  ln__sum := ln__sum + (ln__term / ln__denom);
+  ln__term := ln__term * ln__y2;
+  ln__k := ln__k + 1;
 end;
-  exit(2 * ln_sum);
+  exit(2 * ln__sum);
 end;
-function exp(x: real): real;
+function exp_(exp__x: real): real;
 var
-  exp_term: real;
-  exp_sum: real;
-  exp_n: integer;
+  exp__term: real;
+  exp__sum: real;
+  exp__n: int64;
 begin
-  exp_term := 1;
-  exp_sum := 1;
-  exp_n := 1;
-  while exp_n < 20 do begin
-  exp_term := (exp_term * x) / to_float(exp_n);
-  exp_sum := exp_sum + exp_term;
-  exp_n := exp_n + 1;
+  exp__term := 1;
+  exp__sum := 1;
+  exp__n := 1;
+  while exp__n < 20 do begin
+  exp__term := (exp__term * exp__x) / to_float(exp__n);
+  exp__sum := exp__sum + exp__term;
+  exp__n := exp__n + 1;
 end;
-  exit(exp_sum);
+  exit(exp__sum);
 end;
-function pow_float(base: real; exponent: real): real;
+function pow_float(pow_float_base: real; pow_float_exponent: real): real;
 begin
-  exit(exp(exponent * ln(base)));
+  exit(exp(pow_float_exponent * ln(pow_float_base)));
 end;
-function get_altitude_at_pressure(pressure: real): real;
+function get_altitude_at_pressure(get_altitude_at_pressure_pressure: real): real;
 var
   get_altitude_at_pressure_ratio: real;
 begin
-  if pressure > 101325 then begin
+  if get_altitude_at_pressure_pressure > 101325 then begin
   panic('Value Higher than Pressure at Sea Level !');
 end;
-  if pressure < 0 then begin
+  if get_altitude_at_pressure_pressure < 0 then begin
   panic('Atmospheric Pressure can not be negative !');
 end;
-  get_altitude_at_pressure_ratio := pressure / 101325;
+  get_altitude_at_pressure_ratio := get_altitude_at_pressure_pressure / 101325;
   exit(44330 * (1 - pow_float(get_altitude_at_pressure_ratio, 1 / 5.5255)));
 end;
 begin
@@ -127,4 +151,5 @@ begin
   writeln(('  "memory_bytes": ' + IntToStr(bench_memdiff_0)) + ',');
   writeln(('  "name": "' + 'main') + '"');
   writeln('}');
+  writeln('');
 end.
