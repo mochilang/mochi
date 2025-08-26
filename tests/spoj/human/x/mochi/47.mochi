@@ -1,0 +1,175 @@
+// Solution for SPOJ SCRAPER - Skyscraper Floors
+// https://www.spoj.com/problems/SCRAPER/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var num = 0
+  var inNum = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      num = num*10 + (digits[ch] as int)
+      inNum = true
+    } else {
+      if inNum {
+        res = append(res, num)
+        num = 0
+        inNum = false
+      }
+    }
+    i = i + 1
+  }
+  if inNum { res = append(res, num) }
+  return res
+}
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  if x < 0 { return -x } else { return x }
+}
+
+fun egcd(a: int, b: int): map<string,int> {
+  if b == 0 { return {"g":a, "x":1, "y":0} }
+  let r = egcd(b, a % b)
+  let g = r["g"] as int
+  let x = r["y"] as int
+  let y = r["x"] as int - (a / b) * (r["y"] as int)
+  return {"g":g, "x":x, "y":y}
+}
+
+fun crt(a: int, m: int, b: int, n: int): int {
+  let r = egcd(m, n)
+  let g = r["g"] as int
+  let diff = b - a
+  if diff % g != 0 { return -1 }
+  let x = r["x"] as int
+  let nDiv = n / g
+  var k = (diff / g) * x
+  k = k % nDiv
+  if k < 0 { k = k + nDiv }
+  let lcm = (m / g) * n
+  var res = a + m * k
+  res = res % lcm
+  if res < 0 { res = res + lcm }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    let first = input()
+    let vals = parseInts(first)
+    let F = vals[0] as int
+    let E = vals[1] as int
+    let A = vals[2] as int
+    let B = vals[3] as int
+    var X: list<int> = []
+    var Y: list<int> = []
+    var i = 0
+    while i < E {
+      let line = input()
+      let p = parseInts(line)
+      X = append(X, p[0] as int)
+      Y = append(Y, p[1] as int)
+      i = i + 1
+    }
+    if A == B {
+      print("It is possible to move the furniture.")
+      case = case + 1
+      continue
+    }
+    var adj: list<list<int>> = []
+    i = 0
+    while i < E {
+      var row: list<int> = []
+      adj = append(adj, row)
+      i = i + 1
+    }
+    var u = 0
+    while u < E {
+      var v = u + 1
+      while v < E {
+        let g = gcd(X[u] as int, X[v] as int)
+        if (Y[u] as int - (Y[v] as int)) % g == 0 {
+          let base = crt(Y[u] as int, X[u] as int, Y[v] as int, X[v] as int)
+          if base >= 0 {
+            let lcm = (X[u] as int / g) * (X[v] as int)
+            var meet = base
+            let maxY = Y[u] as int
+            if Y[v] as int > maxY { maxY = Y[v] as int }
+            if meet < maxY {
+              let diff = maxY - meet
+              var add = diff / lcm
+              if diff % lcm != 0 { add = add + 1 }
+              meet = meet + add * lcm
+            }
+            if meet < F {
+              adj[u] = append(adj[u] as list<int>, v)
+              adj[v] = append(adj[v] as list<int>, u)
+            }
+          }
+        }
+        v = v + 1
+      }
+      u = u + 1
+    }
+    var vis: list<bool> = []
+    i = 0
+    while i < E {
+      vis = append(vis, false)
+      i = i + 1
+    }
+    var q: list<int> = []
+    var head = 0
+    i = 0
+    while i < E {
+      if A >= (Y[i] as int) && (A - (Y[i] as int)) % (X[i] as int) == 0 {
+        q = append(q, i)
+        vis[i] = true
+      }
+      i = i + 1
+    }
+    var found = false
+    while head < len(q) {
+      let cur = q[head] as int
+      head = head + 1
+      if B >= (Y[cur] as int) && (B - (Y[cur] as int)) % (X[cur] as int) == 0 {
+        found = true
+        break
+      }
+      let neigh = adj[cur] as list<int>
+      var k = 0
+      while k < len(neigh) {
+        let nb = neigh[k] as int
+        if !(vis[nb] as bool) {
+          vis[nb] = true
+          q = append(q, nb)
+        }
+        k = k + 1
+      }
+    }
+    if found {
+      print("It is possible to move the furniture.")
+    } else {
+      print("The furniture cannot be moved.")
+    }
+    case = case + 1
+  }
+}
+
+main()
