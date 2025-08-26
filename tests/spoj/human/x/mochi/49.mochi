@@ -1,0 +1,152 @@
+// Solution for SPOJ HAREFOX - Hares and Foxes
+// https://www.spoj.com/problems/HAREFOX/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = 0 - n }
+  return n
+}
+
+fun parseFloatStr(str: string): float {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var intPart = 0
+  while i < len(str) && str[i:i+1] != "." {
+    intPart = intPart * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  var frac = 0.0
+  var scale = 0.1
+  if i < len(str) && str[i:i+1] == "." {
+    i = i + 1
+    while i < len(str) {
+      frac = frac + (digits[str[i:i+1]] as float) * scale
+      scale = scale / 10.0
+      i = i + 1
+    }
+  }
+  var res = (intPart as float) + frac
+  if neg { res = 0.0 - res }
+  return res
+}
+
+fun absf(x: float): float { if x < 0.0 { return 0.0 - x } else { return x } }
+
+fun classify(a: float, b: float, c: float, d: float, h0: float, f0: float): string {
+  var h = h0
+  var f = f0
+  var signH = 0
+  var signF = 0
+  var i = 0
+  while i < 10000 {
+    let hn = a * h - b * f
+    let fn = c * f + d * h
+    h = hn
+    f = fn
+    if absf(h) < 1e-7 && absf(f) < 1e-7 {
+      return "Ecological balance will develop."
+    }
+    if absf(h) > 1e-3 {
+      let s = if h > 0.0 { 1 } else { -1 }
+      if signH == 0 { signH = s }
+      else if signH != s { signH = 2 }
+    }
+    if absf(f) > 1e-3 {
+      let s = if f > 0.0 { 1 } else { -1 }
+      if signF == 0 { signF = s }
+      else if signF != s { signF = 2 }
+    }
+    if absf(h) > 1e60 || absf(f) > 1e60 {
+      break
+    }
+    i = i + 1
+  }
+  if signH == 2 || signF == 2 {
+    return "Chaos will develop."
+  }
+  if signH == 0 && signF == 0 {
+    return "Ecological balance will develop."
+  }
+  if signH == 0 || signF == 0 {
+    return "Chaos will develop."
+  }
+  if signH > 0 && signF > 0 { return "Both hares and foxes will overgrow." }
+  if signH < 0 && signF > 0 { return "Hares will die out while foxes will overgrow." }
+  if signH > 0 && signF < 0 { return "Hares will overgrow while foxes will die out." }
+  if signH < 0 && signF < 0 { return "Both hares and foxes will die out." }
+  return "Chaos will develop."
+}
+
+fun readFloats(): list<float> {
+  var line = input()
+  while line == "" || line == nil {
+    line = input()
+  }
+  let parts = splitSpaces(line)
+  var nums: list<float> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseFloatStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun main() {
+  var tLine = input()
+  if tLine == nil { return }
+  while tLine == "" { tLine = input() }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    let ab = readFloats()
+    let a = ab[0] as float
+    let b = ab[1] as float
+    let cd = readFloats()
+    let c = cd[0] as float
+    let d = cd[1] as float
+    let hf = readFloats()
+    let h = hf[0] as float
+    let f = hf[1] as float
+    print(classify(a, b, c, d, h, f))
+    case = case + 1
+  }
+}
+
+main()
