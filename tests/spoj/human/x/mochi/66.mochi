@@ -1,0 +1,105 @@
+// Solution for SPOJ CRSCNTRY - Cross-country
+// https://www.spoj.com/problems/CRSCNTRY/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var i = 0
+  var num = 0
+  var has = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if has {
+        res = append(res, num)
+        num = 0
+        has = false
+      }
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has { res = append(res, num) }
+  return res
+}
+
+fun makeIntList(n: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, 0)
+    i = i + 1
+  }
+  return lst
+}
+
+fun lcs(a: list<int>, b: list<int>): int {
+  let m = len(b)
+  var prev = makeIntList(m + 1)
+  var curr = makeIntList(m + 1)
+  var i = 0
+  while i < len(a) {
+    var j = 0
+    while j < m {
+      if (a[i] as int) == (b[j] as int) {
+        curr[j+1] = prev[j] + 1
+      } else {
+        let x = curr[j]
+        let y = prev[j+1]
+        if x > y { curr[j+1] = x } else { curr[j+1] = y }
+      }
+      j = j + 1
+    }
+    prev = curr
+    curr = makeIntList(m + 1)
+    i = i + 1
+  }
+  return prev[m]
+}
+
+fun main() {
+  let dLine = input()
+  if dLine == "" { return }
+  let d = dLine as int
+  var ds = 0
+  while ds < d {
+    let agLine = input()
+    var agNums = parseInts(agLine)
+    var ag: list<int> = []
+    var idx = 0
+    while idx < len(agNums) {
+      let v = agNums[idx]
+      if v == 0 { break }
+      ag = append(ag, v)
+      idx = idx + 1
+    }
+    var best = 0
+    while true {
+      let line = input()
+      var nums = parseInts(line)
+      if len(nums) > 0 && nums[0] == 0 {
+        break
+      }
+      var tom: list<int> = []
+      var j = 0
+      while j < len(nums) {
+        let v = nums[j]
+        if v == 0 { break }
+        tom = append(tom, v)
+        j = j + 1
+      }
+      let meet = lcs(ag, tom)
+      if meet > best { best = meet }
+    }
+    print(str(best))
+    ds = ds + 1
+  }
+}
+
+main()
