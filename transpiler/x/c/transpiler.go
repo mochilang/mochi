@@ -240,12 +240,12 @@ func emitLenExpr(w io.Writer, e Expr) {
 		}
 	case *ListLit:
 		fmt.Fprintf(w, "%d", len(v.Elems))
-	case *IndexExpr:
-		if vr, ok := v.Target.(*VarRef); ok {
-			t := inferExprType(currentEnv, vr)
-			if t == "" {
-				t = varTypes[vr.Name]
-			}
+       case *IndexExpr:
+               if vr, ok := v.Target.(*VarRef); ok {
+                       t := inferExprType(currentEnv, vr)
+                       if t == "" {
+                               t = varTypes[vr.Name]
+                       }
 			if strings.HasPrefix(t, "MapSL") || (mapKeyTypes[vr.Name] == "const char*" && strings.HasSuffix(mapValTypes[vr.Name], "[]")) {
 				needMapLenSL = true
 				io.WriteString(w, "map_len_sl(")
@@ -274,76 +274,127 @@ func emitLenExpr(w io.Writer, e Expr) {
 				v.Index.emitExpr(w)
 				io.WriteString(w, ")]")
 			}
-		} else if fe, ok := v.Target.(*FieldExpr); ok {
-			t := inferExprType(currentEnv, fe)
-			if strings.HasPrefix(t, "MapSL") {
-				needMapLenSL = true
-				io.WriteString(w, "map_len_sl(")
-				fe.Target.emitExpr(w)
-				io.WriteString(w, "."+fe.Name+".keys, ")
-				fe.Target.emitExpr(w)
-				io.WriteString(w, "."+fe.Name+".lens, ")
-				fe.Target.emitExpr(w)
-				io.WriteString(w, "."+fe.Name+".len, ")
-				v.Index.emitExpr(w)
-				io.WriteString(w, ")")
-			} else if strings.HasPrefix(t, "MapIL") {
-				needMapLenIL = true
-				io.WriteString(w, "map_len_il(")
-				fe.Target.emitExpr(w)
-				io.WriteString(w, "."+fe.Name+".keys, ")
-				fe.Target.emitExpr(w)
-				io.WriteString(w, "."+fe.Name+".vals, ")
-				fe.Target.emitExpr(w)
-				io.WriteString(w, "."+fe.Name+".lens, ")
-				fe.Target.emitExpr(w)
-				io.WriteString(w, "."+fe.Name+".len, ")
-				v.Index.emitExpr(w)
-				io.WriteString(w, ")")
-			} else if strings.HasPrefix(t, "Map") {
-				fe.Target.emitExpr(w)
-				io.WriteString(w, "."+fe.Name+".lens[")
-				v.Index.emitExpr(w)
-				io.WriteString(w, "]")
-			} else {
-				fe.Target.emitExpr(w)
-				io.WriteString(w, "."+fe.Name+"_lens[")
-				v.Index.emitExpr(w)
-				io.WriteString(w, "]")
-			}
-		} else {
-			io.WriteString(w, "0")
-		}
+               } else if fe, ok := v.Target.(*FieldExpr); ok {
+                       t := inferExprType(currentEnv, fe)
+                       if strings.HasPrefix(t, "MapSL") {
+                               needMapLenSL = true
+                               io.WriteString(w, "map_len_sl(")
+                               fe.Target.emitExpr(w)
+                               sep := "."
+                               if tt := inferExprType(currentEnv, fe.Target); strings.HasSuffix(tt, "*") {
+                                       sep = "->"
+                               }
+                               io.WriteString(w, sep+fe.Name+".keys, ")
+                               fe.Target.emitExpr(w)
+                               io.WriteString(w, sep+fe.Name+".lens, ")
+                               fe.Target.emitExpr(w)
+                               io.WriteString(w, sep+fe.Name+".len, ")
+                               v.Index.emitExpr(w)
+                               io.WriteString(w, ")")
+                       } else if strings.HasPrefix(t, "MapIL") {
+                               needMapLenIL = true
+                               io.WriteString(w, "map_len_il(")
+                               fe.Target.emitExpr(w)
+                               sep := "."
+                               if tt := inferExprType(currentEnv, fe.Target); strings.HasSuffix(tt, "*") {
+                                       sep = "->"
+                               }
+                               io.WriteString(w, sep+fe.Name+".keys, ")
+                               fe.Target.emitExpr(w)
+                               io.WriteString(w, sep+fe.Name+".vals, ")
+                               fe.Target.emitExpr(w)
+                               io.WriteString(w, sep+fe.Name+".lens, ")
+                               fe.Target.emitExpr(w)
+                               io.WriteString(w, sep+fe.Name+".len, ")
+                               v.Index.emitExpr(w)
+                               io.WriteString(w, ")")
+                       } else if strings.HasPrefix(t, "Map") {
+                               fe.Target.emitExpr(w)
+                               sep := "."
+                               if tt := inferExprType(currentEnv, fe.Target); strings.HasSuffix(tt, "*") {
+                                       sep = "->"
+                               }
+                               io.WriteString(w, sep+fe.Name+".lens[")
+                               v.Index.emitExpr(w)
+                               io.WriteString(w, "]")
+                       } else {
+                               fe.Target.emitExpr(w)
+                               sep := "."
+                               if tt := inferExprType(currentEnv, fe.Target); strings.HasSuffix(tt, "*") {
+                                       sep = "->"
+                               }
+                               io.WriteString(w, sep+fe.Name+"_lens[")
+                               v.Index.emitExpr(w)
+                               io.WriteString(w, "]")
+                       }
+               } else if ie, ok := v.Target.(*IndexExpr); ok {
+                       if vr, ok2 := ie.Target.(*VarRef); ok2 {
+                               t := inferExprType(currentEnv, vr)
+                               if t == "" {
+                                       t = varTypes[vr.Name]
+                               }
+                               if strings.Count(t, "[]") >= 3 {
+                                       io.WriteString(w, vr.Name+"_lens_lens[(int)(")
+                                       ie.Index.emitExpr(w)
+                                       io.WriteString(w, ")][(int)(")
+                                       v.Index.emitExpr(w)
+                                       io.WriteString(w, ")]")
+                               } else {
+                                       io.WriteString(w, "0")
+                               }
+                       } else {
+                               io.WriteString(w, "0")
+                       }
+               } else {
+                       io.WriteString(w, "0")
+               }
 	default:
 		io.WriteString(w, "0")
 	}
 }
 
 func emitLensExpr(w io.Writer, e Expr) {
-	switch v := e.(type) {
-	case *VarRef:
-		io.WriteString(w, v.Name+"_lens")
-	case *FieldExpr:
-		v.Target.emitExpr(w)
-		io.WriteString(w, "."+v.Name+"_lens")
-	case *CallExpr:
-		io.WriteString(w, v.Func+"_lens")
-	case *IndexExpr:
-		if vr, ok := v.Target.(*VarRef); ok {
-			if typ, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(typ, "[][]") {
-				io.WriteString(w, vr.Name+"_lens_lens[(int)(")
-				v.Index.emitExpr(w)
-				io.WriteString(w, ")]")
-				return
-			}
-		}
-		io.WriteString(w, "NULL")
-		return
-	case *ListLit:
-		if len(v.Elems) == 0 {
-			io.WriteString(w, "NULL")
-			return
-		}
+        switch v := e.(type) {
+        case *VarRef:
+                io.WriteString(w, v.Name+"_lens")
+        case *FieldExpr:
+                v.Target.emitExpr(w)
+                io.WriteString(w, "."+v.Name+"_lens")
+        case *CallExpr:
+                io.WriteString(w, v.Func+"_lens")
+        case *IndexExpr:
+               if vr, ok := v.Target.(*VarRef); ok {
+                       if typ, ok2 := varTypes[vr.Name]; ok2 {
+                               dims := strings.Count(typ, "[]") - 1
+                               if dims >= 2 {
+                                       io.WriteString(w, vr.Name+"_lens_lens[(int)(")
+                                       v.Index.emitExpr(w)
+                                       io.WriteString(w, ")]")
+                                       return
+                               } else if dims >= 1 {
+                                       io.WriteString(w, vr.Name+"_lens[(int)(")
+                                       v.Index.emitExpr(w)
+                                       io.WriteString(w, ")]")
+                                       return
+                               }
+                       }
+               } else if ie, ok := v.Target.(*IndexExpr); ok {
+                       if vr, ok2 := ie.Target.(*VarRef); ok2 {
+                               if typ, ok3 := varTypes[vr.Name]; ok3 && strings.Count(typ, "[]") >= 3 {
+                                       io.WriteString(w, vr.Name+"_lens_lens[(int)(")
+                                       ie.Index.emitExpr(w)
+                                       io.WriteString(w, ")]")
+                                       return
+                               }
+                       }
+               }
+               io.WriteString(w, "NULL")
+               return
+        case *ListLit:
+                if len(v.Elems) == 0 {
+                        io.WriteString(w, "NULL")
+                        return
+                }
 		fmt.Fprintf(w, "({size_t *tmp = malloc(%d * sizeof(size_t)); ", len(v.Elems))
 		for i, e := range v.Elems {
 			fmt.Fprintf(w, "tmp[%d] = ", i)
@@ -360,18 +411,51 @@ func emitLensExpr(w io.Writer, e Expr) {
 	}
 }
 
+func emitLensLensExpr(w io.Writer, e Expr) {
+       switch v := e.(type) {
+       case *VarRef:
+               io.WriteString(w, v.Name+"_lens_lens")
+       case *FieldExpr:
+               v.Target.emitExpr(w)
+               io.WriteString(w, "."+v.Name+"_lens_lens")
+       case *CallExpr:
+               io.WriteString(w, v.Func+"_lens_lens")
+       case *IndexExpr:
+               if vr, ok := v.Target.(*VarRef); ok {
+                       if typ, ok2 := varTypes[vr.Name]; ok2 {
+                               dims := strings.Count(typ, "[]") - 1
+                               if dims >= 2 {
+                                       io.WriteString(w, vr.Name+"_lens_lens[(int)(")
+                                       v.Index.emitExpr(w)
+                                       io.WriteString(w, ")]")
+                                       return
+                               }
+                       }
+               }
+               io.WriteString(w, "NULL")
+       default:
+               io.WriteString(w, "NULL")
+       }
+}
+
 func emitExtraArgs(w io.Writer, paramType string, arg Expr) {
-	if strings.HasSuffix(paramType, "[][]") {
-		io.WriteString(w, ", ")
-		emitLenExpr(w, arg)
-		io.WriteString(w, ", ")
-		emitLensExpr(w, arg)
-		io.WriteString(w, ", ")
-		emitLenExpr(w, arg)
-	} else if strings.HasSuffix(paramType, "[]") {
-		io.WriteString(w, ", ")
-		emitLenExpr(w, arg)
-	}
+       dims := strings.Count(paramType, "[]")
+       if dims >= 1 {
+               io.WriteString(w, ", ")
+               emitLenExpr(w, arg)
+       }
+       if dims >= 2 {
+               io.WriteString(w, ", ")
+               emitLensExpr(w, arg)
+               io.WriteString(w, ", ")
+               emitLenExpr(w, arg)
+       }
+       if dims >= 3 {
+               io.WriteString(w, ", ")
+               emitLensLensExpr(w, arg)
+               io.WriteString(w, ", ")
+               emitLenExpr(w, arg)
+       }
 }
 
 func emitBigIntInt(w io.Writer, e Expr) {
@@ -2356,14 +2440,16 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 						fmt.Fprintf(w, "%s_lens = list_append_szt(%s_lens, &%s_lens_len, ", a.Name, a.Name, a.Name)
 						emitLenExpr(w, call.Args[1])
 						io.WriteString(w, ");\n")
-						if strings.Contains(varTypes[a.Name], "[][][]") || strings.Count(varTypes[a.Name], "*") >= 3 {
-							needListAppendSizeTPtr = true
-							writeIndent(w, indent)
-							fmt.Fprintf(w, "%s_lens_lens = list_append_szptr(%s_lens_lens, &%s_lens_lens_len, NULL);\n", a.Name, a.Name, a.Name)
-						}
-					}
-					return
-				}
+                                               if strings.Contains(varTypes[a.Name], "[][][]") || strings.Count(varTypes[a.Name], "*") >= 3 {
+                                                       needListAppendSizeTPtr = true
+                                                       writeIndent(w, indent)
+                                                       fmt.Fprintf(w, "%s_lens_lens = list_append_szptr(%s_lens_lens, &%s_lens_lens_len, ", a.Name, a.Name, a.Name)
+                                                       emitLensExpr(w, call.Args[1])
+                                                       io.WriteString(w, ");\n")
+                                               }
+                                        }
+                                        return
+                                }
 				if base != "" && !strings.HasSuffix(base, "[]") {
 					if needListAppendStruct == nil {
 						needListAppendStruct = make(map[string]bool)
@@ -2447,13 +2533,15 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 					fmt.Fprintf(w, "%s_lens = list_append_szt(%s_lens, &%s_lens_len, ", a.Name, a.Name, a.Name)
 					emitLenExpr(w, call.Args[1])
 					io.WriteString(w, ");\n")
-					if strings.Contains(varTypes[a.Name], "[][]") || strings.Count(varTypes[a.Name], "*") >= 3 {
-						needListAppendSizeTPtr = true
-						writeIndent(w, indent)
-						fmt.Fprintf(w, "%s_lens_lens = list_append_szptr(%s_lens_lens, &%s_lens_lens_len, NULL);\n", a.Name, a.Name, a.Name)
-					}
-					return
-				}
+                                       if strings.Contains(varTypes[a.Name], "[][]") || strings.Count(varTypes[a.Name], "*") >= 3 {
+                                               needListAppendSizeTPtr = true
+                                               writeIndent(w, indent)
+                                               fmt.Fprintf(w, "%s_lens_lens = list_append_szptr(%s_lens_lens, &%s_lens_lens_len, ", a.Name, a.Name, a.Name)
+                                               emitLensExpr(w, call.Args[1])
+                                               io.WriteString(w, ");\n")
+                                       }
+                                       return
+                               }
 			}
 		} else if fe, ok2 := call.Args[0].(*FieldExpr); ok2 && len(a.Fields) == 1 && len(a.Indexes) == 0 {
 			if vr, ok3 := fe.Target.(*VarRef); ok3 && vr.Name == a.Name && fe.Name == a.Fields[0] {
@@ -2636,12 +2724,14 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				fmt.Fprintf(w, "%s_lens_len = %s_lens_len;\n", a.Name, vr.Name)
 			}
 		}
-	} else if fe, ok := a.Value.(*FieldExpr); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
-		writeIndent(w, indent)
-		fmt.Fprintf(w, "%s_len = ", a.Name)
-		(&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
-		io.WriteString(w, ";\n")
-	}
+       } else if fe, ok := a.Value.(*FieldExpr); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+               if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasSuffix(vt, "[]") {
+                       writeIndent(w, indent)
+                       fmt.Fprintf(w, "%s_len = ", a.Name)
+                       (&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
+                       io.WriteString(w, ";\n")
+               }
+       }
 
 	if call, ok := a.Value.(*CallExpr); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
 		if call.Func == "_slice_int" || call.Func == "_slice_double" || call.Func == "_slice_str" {
@@ -3119,14 +3209,25 @@ func (l *ListLit) emitExpr(w io.Writer) {
 		io.WriteString(w, "tmp;})")
 		return
 	}
-	outType := base + strings.Repeat("*", dims)
-	fmt.Fprintf(w, "({%s tmp = malloc(%d * sizeof(%s)); ", outType+"*", len(l.Elems), outType)
-	for i, e := range l.Elems {
-		fmt.Fprintf(w, "tmp[%d] = ", i)
-		e.emitExpr(w)
-		io.WriteString(w, "; ")
-	}
-	io.WriteString(w, "tmp;})")
+       outType := base + strings.Repeat("*", dims)
+       fmt.Fprintf(w, "({%s tmp = malloc(%d * sizeof(%s)); ", outType+"*", len(l.Elems), outType)
+       var inner types.Type
+       if currentVarType != nil {
+               if lt, ok := currentVarType.(types.ListType); ok {
+                       inner = lt.Elem
+               }
+       }
+       for i, e := range l.Elems {
+               fmt.Fprintf(w, "tmp[%d] = ", i)
+               prev := currentVarType
+               if inner != nil {
+                       currentVarType = inner
+               }
+               e.emitExpr(w)
+               currentVarType = prev
+               io.WriteString(w, "; ")
+       }
+       io.WriteString(w, "tmp;})")
 }
 
 type StructField struct {
@@ -3826,15 +3927,17 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 				}
 				fmt.Fprintf(w, "), %s_lens = list_append_szt(%s_lens, &%s_lens_len, ", vr.Name, vr.Name, vr.Name)
 				emitLenExpr(w, c.Args[1])
-				if strings.Contains(varTypes[vr.Name], "[][]") || strings.Count(varTypes[vr.Name], "*") >= 3 {
-					needListAppendSizeTPtr = true
-					fmt.Fprintf(w, "), %s_lens_lens = list_append_szptr(%s_lens_lens, &%s_lens_lens_len, NULL), %s_lens = %s_lens, %s)", vr.Name, vr.Name, vr.Name, currentFuncName, vr.Name, vr.Name)
-				} else {
-					fmt.Fprintf(w, "), %s_lens = %s_lens, %s)", currentFuncName, vr.Name, vr.Name)
-				}
-				return
-			default:
-				switch base {
+                               if strings.Contains(varTypes[vr.Name], "[][]") || strings.Count(varTypes[vr.Name], "*") >= 3 {
+                                       needListAppendSizeTPtr = true
+                                       fmt.Fprintf(w, "), %s_lens_lens = list_append_szptr(%s_lens_lens, &%s_lens_lens_len, ", vr.Name, vr.Name, vr.Name)
+                                       emitLensExpr(w, c.Args[1])
+                                       fmt.Fprintf(w, "), %s_lens = %s_lens, %s)", currentFuncName, vr.Name, vr.Name)
+                               } else {
+                                       fmt.Fprintf(w, "), %s_lens = %s_lens, %s)", currentFuncName, vr.Name, vr.Name)
+                               }
+                               return
+                       default:
+                               switch base {
 				case "int", "long long":
 					needListAppendIntNew = true
 					fmt.Fprintf(w, "list_append_int_new(%s, %s_len, ", vr.Name, vr.Name)
@@ -9614,20 +9717,29 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 				}
 			}
 		}
-		if strings.HasSuffix(typ, "[]") {
-			params = append(params, Param{Name: name + "_len", Type: "size_t"})
-			varTypes[name+"_len"] = "size_t"
-			localEnv.SetVar(p.Name+"_len", types.IntType{}, true)
-			if strings.HasSuffix(typ, "[][]") {
-				params = append(params, Param{Name: name + "_lens", Type: "size_t*"})
-				params = append(params, Param{Name: name + "_lens_len", Type: "size_t"})
-				varTypes[name+"_lens"] = "size_t*"
-				varTypes[name+"_lens_len"] = "size_t"
-				localEnv.SetVar(p.Name+"_lens", types.IntType{}, true)
-				localEnv.SetVar(p.Name+"_lens_len", types.IntType{}, true)
-			}
-		}
-	}
+               if strings.HasSuffix(typ, "[]") {
+                       params = append(params, Param{Name: name + "_len", Type: "size_t"})
+                       varTypes[name+"_len"] = "size_t"
+                       localEnv.SetVar(p.Name+"_len", types.IntType{}, true)
+                       dims := strings.Count(typ, "[]")
+                       if dims >= 2 {
+                               params = append(params, Param{Name: name + "_lens", Type: "size_t*"})
+                               params = append(params, Param{Name: name + "_lens_len", Type: "size_t"})
+                               varTypes[name+"_lens"] = "size_t*"
+                               varTypes[name+"_lens_len"] = "size_t"
+                               localEnv.SetVar(p.Name+"_lens", types.IntType{}, true)
+                               localEnv.SetVar(p.Name+"_lens_len", types.IntType{}, true)
+                       }
+                       if dims >= 3 {
+                               params = append(params, Param{Name: name + "_lens_lens", Type: "size_t**"})
+                               params = append(params, Param{Name: name + "_lens_lens_len", Type: "size_t"})
+                               varTypes[name+"_lens_lens"] = "size_t**"
+                               varTypes[name+"_lens_lens_len"] = "size_t"
+                               localEnv.SetVar(p.Name+"_lens_lens", types.IntType{}, true)
+                               localEnv.SetVar(p.Name+"_lens_lens_len", types.IntType{}, true)
+                       }
+               }
+       }
 	funcParamTypes[name] = paramTypes
 	ret := "int"
 	inferRetFromBody := false

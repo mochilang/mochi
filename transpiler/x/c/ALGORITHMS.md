@@ -2,10 +2,10 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (954/1077) - Last updated 2025-08-26 07:06 +0700:
+Checklist of programs that currently transpile and run (954/1077) - Last updated 2025-08-26 08:36 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
-| 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
+| 1 | backtracking/all_combinations |  | 269us | 1.4 MB |
 | 2 | backtracking/all_permutations | ✓ | 919us | 1.6 MB |
 | 3 | backtracking/all_subsequences | ✓ | 731us | 1.5 MB |
 | 4 | backtracking/coloring | ✓ | 918us | 1.5 MB |
@@ -737,9 +737,9 @@ Checklist of programs that currently transpile and run (954/1077) - Last updated
 | 730 | neural_network/activation_functions/squareplus | ✓ | 417us | 1.6 MB |
 | 731 | neural_network/activation_functions/swish | ✓ | 526us | 1.5 MB |
 | 732 | neural_network/back_propagation_neural_network | ✓ | 275.14ms | 30.4 MB |
-| 733 | neural_network/convolution_neural_network |  |  |  |
-| 734 | neural_network/input_data | ✓ | 612us | 1.5 MB |
-| 735 | neural_network/simple_neural_network | ✓ | 122.60ms | 1.6 MB |
+| 733 | neural_network/convolution_neural_network | ✓ | 1.16ms | 2.3 MB |
+| 734 | neural_network/input_data | ✓ | 506us | 1.4 MB |
+| 735 | neural_network/simple_neural_network | ✓ | 123.02ms | 1.7 MB |
 | 736 | neural_network/two_hidden_layers_neural_network |  |  |  |
 | 737 | other/activity_selection | ✓ | 778us | 1.6 MB |
 | 738 | other/alternative_list_arrange | ✓ | 994us | 1.5 MB |
