@@ -1,0 +1,206 @@
+// Solution for SPOJ BRICKS - New bricks disorder
+// https://www.spoj.com/problems/BRICKS/
+
+fun buildLowerMap(): map<string,int> {
+  var m: map<string,int> = {}
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  var i = 0
+  while i < 26 {
+    m[lower[i:i+1]] = i
+    i = i + 1
+  }
+  return m
+}
+let ordMap = buildLowerMap()
+fun ord(ch: string): int { return ordMap[ch] as int }
+
+fun makeIntList(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun makeFenwick(n: int): list<int> {
+  var bit: list<int> = []
+  var i = 0
+  while i <= n + 2 {
+    bit = append(bit, 0)
+    i = i + 1
+  }
+  return bit
+}
+
+fun bit_and(a: int, b: int): int {
+  var ua = a
+  var ub = b
+  var res = 0
+  var bit = 1
+  while ua != 0 || ub != 0 {
+    if ua % 2 == 1 && ub % 2 == 1 { res = res + bit }
+    ua = ua / 2
+    ub = ub / 2
+    bit = bit * 2
+  }
+  return res
+}
+
+fun low_bit(x: int): int {
+  if x == 0 { return 0 }
+  return x - bit_and(x, x - 1)
+}
+
+fun bitAdd(bit: list<int>, idx: int, val: int) {
+  var i = idx + 1
+  while i < len(bit) {
+    bit[i] = bit[i] + val
+    i = i + low_bit(i)
+  }
+}
+
+fun bitSum(bit: list<int>, idx: int): int {
+  var res = 0
+  var i = idx + 1
+  while i > 0 {
+    res = res + bit[i]
+    i = i - low_bit(i)
+  }
+  return res
+}
+
+fun readPair(line: string): list<int> {
+  var chars: list<int> = []
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch >= "a" && ch <= "z" {
+      chars = append(chars, ord(ch))
+    }
+    i = i + 1
+  }
+  return chars
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = tLine as int
+  var case = 0
+  while case < T {
+    let s = input()
+    let t = input()
+    let mLine = input()
+    let M = mLine as int
+    var allowed: list<list<bool>> = []
+    var i = 0
+    while i < 26 {
+      var row: list<bool> = []
+      var j = 0
+      while j < 26 {
+        row = append(row, false)
+        j = j + 1
+      }
+      allowed = append(allowed, row)
+      i = i + 1
+    }
+    var p = 0
+    while p < M {
+      let line = input()
+      let pair = readPair(line)
+      if len(pair) >= 2 {
+        let a = pair[0]
+        let b = pair[1]
+        allowed[a][b] = true
+        allowed[b][a] = true
+      }
+      p = p + 1
+    }
+    if len(s) != len(t) {
+      print("-1")
+      case = case + 1
+      continue
+    }
+    let n = len(s)
+    var freqS = makeIntList(26, 0)
+    var freqT = makeIntList(26, 0)
+    i = 0
+    while i < n {
+      freqS[ord(s[i:i+1])] = freqS[ord(s[i:i+1])] + 1
+      freqT[ord(t[i:i+1])] = freqT[ord(t[i:i+1])] + 1
+      i = i + 1
+    }
+    var mismatch = false
+    i = 0
+    while i < 26 {
+      if freqS[i] != freqT[i] {
+        mismatch = true
+        break
+      }
+      i = i + 1
+    }
+    if mismatch {
+      print("-1")
+      case = case + 1
+      continue
+    }
+    var posQueue: list<list<int>> = []
+    i = 0
+    while i < 26 {
+      posQueue = append(posQueue, [])
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      let idx = ord(t[i:i+1])
+      posQueue[idx] = append(posQueue[idx], i)
+      i = i + 1
+    }
+    var bits: list<list<int>> = []
+    i = 0
+    while i < 26 {
+      bits = append(bits, makeFenwick(n))
+      i = i + 1
+    }
+    var bitAll = makeFenwick(n)
+    var counts = makeIntList(26, 0)
+    var ptrs = makeIntList(26, 0)
+    var possible = true
+    var inv: int = 0
+    i = 0
+    while i < n {
+      let cIdx = ord(s[i:i+1])
+      let pos = posQueue[cIdx][ptrs[cIdx]]
+      ptrs[cIdx] = ptrs[cIdx] + 1
+      inv = inv + (i - bitSum(bitAll, pos))
+      var d = 0
+      while d < 26 {
+        if counts[d] > 0 {
+          let after = counts[d] - bitSum(bits[d], pos)
+          if after > 0 && allowed[d][cIdx] == false {
+            possible = false
+            break
+          }
+        }
+        d = d + 1
+      }
+      if possible == false { break }
+      bitAdd(bitAll, pos, 1)
+      bitAdd(bits[cIdx], pos, 1)
+      counts[cIdx] = counts[cIdx] + 1
+      i = i + 1
+    }
+    if possible {
+      let mod = 4294967296
+      let ans = inv % mod
+      print(str(ans))
+    } else {
+      print("-1")
+    }
+    case = case + 1
+  }
+}
+
+main()
