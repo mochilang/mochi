@@ -1,0 +1,70 @@
+// Solution for SPOJ TREE2 - Which is Next
+// https://www.spoj.com/problems/TREE2/
+
+fun pow2(k: int): int {
+  var res = 1
+  for _ in 0..k {
+    res = res * 2
+  }
+  return res
+}
+
+var memo: map<int, list<int>> = {}
+
+fun gen(n: int): list<int> {
+  if memo[n] != nil { return memo[n] }
+  if n == 1 {
+    memo[n] = [0]
+    return memo[n]
+  }
+  var res: list<int> = []
+  var l = 1
+  while l <= n - 2 {
+    let r = n - 1 - l
+    let lefts = gen(l)
+    let rights = gen(r)
+    for lv in lefts {
+      for rv in rights {
+        let val = pow2(l + r) + pow2(r) * lv + rv
+        res = append(res, val)
+      }
+    }
+    l = l + 2
+  }
+  memo[n] = res
+  return res
+}
+
+fun treeSize(n: int): int {
+  if n == 0 { return 1 }
+  var s = 0
+  var x = n
+  while x > 0 {
+    x = x / 2
+    s = s + 1
+  }
+  return s
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = tStr as int
+  for _ in 0..t {
+    let line = input()
+    let n = line as int
+    let size = treeSize(n)
+    let arr = gen(size)
+    var i = 0
+    while i < len(arr) && arr[i] != n {
+      i = i + 1
+    }
+    if i + 1 < len(arr) {
+      print(arr[i + 1])
+    } else {
+      print(arr[0])
+    }
+  }
+}
+
+main()
