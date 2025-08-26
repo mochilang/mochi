@@ -3270,7 +3270,7 @@ func guessType(e Expr) string {
 				return "Double"
 			}
 			if lt == "Int" && rt == "Int" {
-				return "Long"
+				return "Int"
 			}
 			return "Int"
 		}
@@ -3290,7 +3290,7 @@ func guessType(e Expr) string {
 				return "Double"
 			}
 			if lt == "Int" && rt == "Int" {
-				return "Long"
+				return "Int"
 			}
 			return "Int"
 		}
