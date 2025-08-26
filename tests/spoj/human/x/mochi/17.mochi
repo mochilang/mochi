@@ -1,0 +1,141 @@
+// Solution for SPOJ CRYPTO1 - The Bytelandian Cryptographer (Act I)
+// https://www.spoj.com/problems/CRYPTO1/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun intToString(n: int): string {
+  if n == 0 { return "0" }
+  let digits = ["0","1","2","3","4","5","6","7","8","9"]
+  var neg = false
+  var m = n
+  if m < 0 {
+    neg = true
+    m = -m
+  }
+  var s = ""
+  while m > 0 {
+    let d = m % 10
+    s = digits[d] + s
+    m = m / 10
+  }
+  if neg { return "-" + s }
+  return s
+}
+
+fun pad2(n: int): string {
+  let s = intToString(n)
+  if n < 10 { return "0" + s }
+  return s
+}
+
+fun dayPad(n: int): string {
+  let s = intToString(n)
+  if n < 10 { return " " + s }
+  return s
+}
+
+fun mulMod(x: int, y: int, mod: int): int {
+  var r = 0
+  var a = x % mod
+  var b = y
+  while b > 0 {
+    if b % 2 == 1 {
+      r = (r + a) % mod
+    }
+    a = (a * 2) % mod
+    b = b / 2
+  }
+  return r
+}
+
+fun powMod(a: int, b: int, m: int): int {
+  var result = 1
+  var base = a % m
+  var exp = b
+  while exp > 0 {
+    if exp % 2 == 1 {
+      result = mulMod(result, base, m)
+    }
+    base = mulMod(base, base, m)
+    exp = exp / 2
+  }
+  return result
+}
+
+fun isLeap(y: int): bool {
+  return (y % 400 == 0) || ((y % 4 == 0) && (y % 100 != 0))
+}
+
+fun toDateString(s: int): string {
+  let daySec = 86400
+  var totalDays = s / daySec
+  let secDay = s % daySec
+  let hour = secDay / 3600
+  let minute = (secDay % 3600) / 60
+  let second = secDay % 60
+
+  var year = 1970
+  var dayOfYear = totalDays
+  while true {
+    let days = if isLeap(year) {366} else {365}
+    if dayOfYear >= days {
+      dayOfYear = dayOfYear - days
+      year = year + 1
+    } else {
+      break
+    }
+  }
+
+  var month = 1
+  var d = dayOfYear
+  while true {
+    var dim = 31
+    if month == 4 || month == 6 || month == 9 || month == 11 {
+      dim = 30
+    } else if month == 2 {
+      if isLeap(year) { dim = 29 } else { dim = 28 }
+    }
+    if d >= dim {
+      d = d - dim
+      month = month + 1
+    } else {
+      break
+    }
+  }
+  let day = d + 1
+
+  let dow = (totalDays + 4) % 7
+  let dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+  let monNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+  let dowStr = dayNames[dow]
+  let monStr = monNames[month-1]
+  let dayStr = dayPad(day)
+  let hourStr = pad2(hour)
+  let minStr = pad2(minute)
+  let secStr = pad2(second)
+  return dowStr + " " + monStr + " " + dayStr + " " + hourStr + ":" + minStr + ":" + secStr + " " + intToString(year)
+}
+
+fun main() {
+  let line = input()
+  if line == "" { return }
+  let r = parseIntStr(line)
+  let p = 4000000007
+  let root = powMod(r, (p + 1) / 4, p)
+  let s = if root <= p - root { root } else { p - root }
+  print(toDateString(s))
+}
+
+main()
