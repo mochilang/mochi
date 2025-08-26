@@ -1,0 +1,143 @@
+// Solution for SPOJ PROPKEY - The Proper Key
+// https://www.spoj.com/problems/PROPKEY/
+
+fun readInts(line: string): list<int> {
+  var nums: list<int> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        nums = append(nums, cur as int)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    nums = append(nums, cur as int)
+  }
+  return nums
+}
+
+fun isValid(cells: list<list<int>>, lock: list<string>, D: int, R: int, W: int, x: int, b: int): bool {
+  var idx = 0
+  while idx < len(cells) {
+    let cell = cells[idx]
+    let r = cell[0] as int
+    let c = cell[1] as int
+    let y = b - R + r
+    if y >= 0 && y < D {
+      let row = lock[y]
+      if row[x + c : x + c + 1] == "#" {
+        return false
+      }
+    }
+    idx = idx + 1
+  }
+  return true
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = tLine as int
+  var case = 0
+  while case < T {
+    let rcLine = input()
+    let rc = readInts(rcLine)
+    let R = rc[0]
+    let C = rc[1]
+    var keyCells: list<list<int>> = []
+    var r = 0
+    while r < R {
+      let row = input()
+      var c = 0
+      while c < C {
+        if row[c:c+1] == "#" {
+          keyCells = append(keyCells, [r, c])
+        }
+        c = c + 1
+      }
+      r = r + 1
+    }
+    let dwLine = input()
+    let dw = readInts(dwLine)
+    let D = dw[0]
+    let W = dw[1]
+    var lock: list<string> = []
+    var i = 0
+    while i < D {
+      let row = input()
+      lock = append(lock, row)
+      i = i + 1
+    }
+    if W < C {
+      print("The key falls to depth 0.")
+      case = case + 1
+      continue
+    }
+    let width = W - C + 1
+    var visited: list<list<bool>> = []
+    var b = 0
+    while b <= D + R {
+      var row: list<bool> = []
+      var x = 0
+      while x < width {
+        row = append(row, false)
+        x = x + 1
+      }
+      visited = append(visited, row)
+      b = b + 1
+    }
+    var qx: list<int> = []
+    var qb: list<int> = []
+    var x0 = 0
+    while x0 < width {
+      visited[0][x0] = true
+      qx = append(qx, x0)
+      qb = append(qb, 0)
+      x0 = x0 + 1
+    }
+    var head = 0
+    var maxDepth = 0
+    var fall = false
+    while head < len(qx) {
+      let x = qx[head]
+      let depth = qb[head]
+      head = head + 1
+      if depth >= D + R {
+        fall = true
+        break
+      }
+      if depth > maxDepth { maxDepth = depth }
+      let nd = depth + 1
+      if nd <= D + R && visited[nd][x] == false && isValid(keyCells, lock, D, R, W, x, nd) {
+        visited[nd][x] = true
+        qx = append(qx, x)
+        qb = append(qb, nd)
+      }
+      if x > 0 && visited[depth][x - 1] == false && isValid(keyCells, lock, D, R, W, x - 1, depth) {
+        visited[depth][x - 1] = true
+        qx = append(qx, x - 1)
+        qb = append(qb, depth)
+      }
+      if x < width - 1 && visited[depth][x + 1] == false && isValid(keyCells, lock, D, R, W, x + 1, depth) {
+        visited[depth][x + 1] = true
+        qx = append(qx, x + 1)
+        qb = append(qb, depth)
+      }
+    }
+    if fall {
+      print("The key can fall through.")
+    } else {
+      print("The key falls to depth " + str(maxDepth) + ".")
+    }
+    case = case + 1
+  }
+}
+
+main()
