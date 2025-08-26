@@ -1,0 +1,146 @@
+// Solution for SPOJ SHOP - Shopping
+// https://www.spoj.com/problems/SHOP/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun shortest(w: int, h: int, grid: list<string>, sx: int, sy: int, dx: int, dy: int): int {
+  let n = w * h
+  var dist: list<int> = []
+  var used: list<int> = []
+  var i = 0
+  while i < n {
+    dist = append(dist, 1000000000)
+    used = append(used, 0)
+    i = i + 1
+  }
+  var start: int = sy * w + sx
+  dist[start] = 0
+  while true {
+    var best = 0 - 1
+    var bestDist = 1000000000
+    var j = 0
+    while j < n {
+      if used[j] == 0 && dist[j] < bestDist {
+        bestDist = dist[j]
+        best = j
+      }
+      j = j + 1
+    }
+    if best == 0 - 1 { break }
+    if best == dy * w + dx { break }
+    used[best] = 1
+    var bx = best % w
+    var by = best / w
+    if bx > 0 {
+      let row = grid[by]
+      let ch = row[bx-1:bx]
+      if ch != "X" {
+        var cost = 0
+        if ch != "S" && ch != "D" { cost = digits[ch] as int }
+        let idx = by * w + (bx - 1)
+        if dist[best] + cost < dist[idx] { dist[idx] = dist[best] + cost }
+      }
+    }
+    if bx + 1 < w {
+      let row = grid[by]
+      let ch = row[bx+1:bx+2]
+      if ch != "X" {
+        var cost = 0
+        if ch != "S" && ch != "D" { cost = digits[ch] as int }
+        let idx = by * w + (bx + 1)
+        if dist[best] + cost < dist[idx] { dist[idx] = dist[best] + cost }
+      }
+    }
+    if by > 0 {
+      let row = grid[by-1]
+      let ch = row[bx:bx+1]
+      if ch != "X" {
+        var cost = 0
+        if ch != "S" && ch != "D" { cost = digits[ch] as int }
+        let idx = (by - 1) * w + bx
+        if dist[best] + cost < dist[idx] { dist[idx] = dist[best] + cost }
+      }
+    }
+    if by + 1 < h {
+      let row = grid[by+1]
+      let ch = row[bx:bx+1]
+      if ch != "X" {
+        var cost = 0
+        if ch != "S" && ch != "D" { cost = digits[ch] as int }
+        let idx = (by + 1) * w + bx
+        if dist[best] + cost < dist[idx] { dist[idx] = dist[best] + cost }
+      }
+    }
+  }
+  return dist[dy * w + dx]
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let parts = splitSpaces(line)
+    if len(parts) < 2 { continue }
+    let w = parseIntStr(parts[0])
+    let h = parseIntStr(parts[1])
+    if w == 0 && h == 0 { break }
+    var grid: list<string> = []
+    var y = 0
+    while y < h {
+      let row = input()
+      grid = append(grid, row)
+      y = y + 1
+    }
+    var sx = 0
+    var sy = 0
+    var dx = 0
+    var dy = 0
+    y = 0
+    while y < h {
+      let row = grid[y]
+      var x = 0
+      while x < w {
+        let ch = row[x:x+1]
+        if ch == "S" { sx = x; sy = y }
+        if ch == "D" { dx = x; dy = y }
+        x = x + 1
+      }
+      y = y + 1
+    }
+    let ans = shortest(w, h, grid, sx, sy, dx, dy)
+    print(ans)
+    let _ = input()
+  }
+}
+
+main()
