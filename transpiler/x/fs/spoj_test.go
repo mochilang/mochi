@@ -27,8 +27,8 @@ func TestFSTranspiler_Spoj_Golden(t *testing.T) {
 		t.Skip("mono not installed")
 	}
 	root := findRepoRoot(t)
-	srcDir := filepath.Join(root, "tests", "spoj", "x", "mochi")
-	outDir := filepath.Join(root, "tests", "spoj", "x", "fs")
+	srcDir := filepath.Join(root, "tests", "spoj", "human", "x", "mochi")
+	outDir := filepath.Join(root, "tests", "spoj", "human", "x", "fs")
 	os.MkdirAll(outDir, 0o755)
 	t.Cleanup(updateSpojReadme)
 
@@ -117,10 +117,10 @@ func TestFSTranspiler_Spoj_Golden(t *testing.T) {
 
 func updateSpojReadme() {
 	root := findRepoRoot(&testing.T{})
-	outDir := filepath.Join(root, "tests", "spoj", "x", "fs")
+	outDir := filepath.Join(root, "tests", "spoj", "human", "x", "fs")
 	readme := filepath.Join(root, "transpiler", "x", "fs", "SPOJ.md")
 
-	idxs := []int{1}
+	idxs := []int{11, 12, 13, 14, 15}
 	total := len(idxs)
 	compiled := 0
 	rows := []string{"| Index | Name | Status | Duration | Memory |", "|------:|------|:-----:|---------:|-------:|"}
@@ -172,7 +172,7 @@ func updateSpojReadme() {
 }
 
 func problemName(root string, idx int) string {
-	path := filepath.Join(root, "tests", "spoj", "x", "mochi", fmt.Sprintf("%d.md", idx))
+	path := filepath.Join(root, "tests", "spoj", "human", "x", "mochi", fmt.Sprintf("%d.md", idx))
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return fmt.Sprintf("%d", idx)
