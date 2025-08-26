@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 962/1077
-Last updated: 2025-08-25 16:44 +0700
+Completed programs: 963/1077
+Last updated: 2025-08-25 23:46 +0700
 
 Checklist:
 
@@ -386,7 +386,7 @@ Checklist:
 | 377 | financial/simple_moving_average | ✓ | 183.317ms | 8.7 MB |
 | 378 | financial/straight_line_depreciation | ✓ | 183.317ms | 8.8 MB |
 | 379 | financial/time_and_half_pay | ✓ | 183.317ms | 8.7 MB |
-| 380 | fractals/julia_sets | error | 183.317ms | 8.7 MB |
+| 380 | fractals/julia_sets | ✓ | 183.317ms | 8.7 MB |
 | 381 | fractals/koch_snowflake | ✓ | 183.317ms | 8.7 MB |
 | 382 | fractals/mandelbrot | ✓ | 183.317ms | 8.7 MB |
 | 383 | fractals/sierpinski_triangle | ✓ | 183.317ms | 8.7 MB |
@@ -725,57 +725,57 @@ Checklist:
 | 716 | matrix/spiral_print | ✓ | 183.317ms | 8.7 MB |
 | 717 | matrix/tests/test_matrix_operation | ✓ | 183.317ms | 8.7 MB |
 | 718 | matrix/validate_sudoku_board | ✓ | 183.317ms | 8.7 MB |
-| 719 | networking_flow/ford_fulkerson | ✓ | 183.317ms | 8.7 MB |
+| 719 | networking_flow/ford_fulkerson | ✓ | 183.317ms | 8.8 MB |
 | 720 | networking_flow/minimum_cut | ✓ | 183.317ms | 8.7 MB |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 183.317ms | 8.7 MB |
-| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 183.317ms | 8.8 MB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 183.317ms | 8.7 MB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 183.317ms | 8.7 MB |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 183.317ms | 8.7 MB |
-| 725 | neural_network/activation_functions/mish | ✓ | 183.317ms | 8.8 MB |
+| 725 | neural_network/activation_functions/mish | ✓ | 183.317ms | 8.7 MB |
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 183.317ms | 8.7 MB |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 183.317ms | 8.7 MB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 183.317ms | 8.8 MB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 183.317ms | 8.7 MB |
-| 729 | neural_network/activation_functions/softplus | ✓ | 183.317ms | 3.5 MB |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 183.317ms | 3.5 MB |
-| 731 | neural_network/activation_functions/swish | ✓ | 183.317ms | 3.5 MB |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 183.317ms | 8.7 MB |
-| 733 | neural_network/convolution_neural_network | ✓ | 183.317ms | 3.5 MB |
-| 734 | neural_network/input_data | ✓ | 183.317ms | 3.5 MB |
-| 735 | neural_network/simple_neural_network | ✓ | 183.317ms | 3.5 MB |
-| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 183.317ms | 3.5 MB |
-| 737 | other/activity_selection | ✓ | 183.317ms | 3.5 MB |
-| 738 | other/alternative_list_arrange | ✓ | 183.317ms | 3.5 MB |
-| 739 | other/bankers_algorithm | ✓ | 183.317ms | 3.5 MB |
-| 740 | other/davis_putnam_logemann_loveland | ✓ | 183.317ms | 3.5 MB |
-| 741 | other/doomsday | ✓ | 183.317ms | 3.5 MB |
-| 742 | other/fischer_yates_shuffle | ✓ | 183.317ms | 3.5 MB |
-| 743 | other/gauss_easter | ✓ | 183.317ms | 3.5 MB |
-| 744 | other/greedy | ✓ | 183.317ms | 3.5 MB |
-| 745 | other/guess_the_number_search | ✓ | 183.317ms | 3.5 MB |
-| 746 | other/h_index | ✓ | 183.317ms | 3.5 MB |
-| 747 | other/least_recently_used | ✓ | 183.317ms | 3.5 MB |
-| 748 | other/lfu_cache | ✓ | 183.317ms | 3.5 MB |
-| 749 | other/linear_congruential_generator | ✓ | 478.787ms | 3.5 MB |
-| 750 | other/lru_cache | ✓ | 183.317ms | 3.5 MB |
-| 751 | other/magicdiamondpattern | ✓ | 183.317ms | 3.5 MB |
+| 729 | neural_network/activation_functions/softplus | ✓ | 183.317ms | 8.7 MB |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 183.317ms | 8.7 MB |
+| 731 | neural_network/activation_functions/swish | ✓ | 183.317ms | 8.7 MB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 183.317ms | 8.8 MB |
+| 733 | neural_network/convolution_neural_network | ✓ | 183.317ms | 8.7 MB |
+| 734 | neural_network/input_data | ✓ | 183.317ms | 8.7 MB |
+| 735 | neural_network/simple_neural_network | ✓ | 183.317ms | 8.7 MB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 183.317ms | 8.7 MB |
+| 737 | other/activity_selection | ✓ | 183.317ms | 8.7 MB |
+| 738 | other/alternative_list_arrange | ✓ | 183.317ms | 8.7 MB |
+| 739 | other/bankers_algorithm | ✓ | 183.317ms | 8.7 MB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 183.317ms | 8.7 MB |
+| 741 | other/doomsday | ✓ | 183.317ms | 8.7 MB |
+| 742 | other/fischer_yates_shuffle | ✓ | 183.317ms | 8.8 MB |
+| 743 | other/gauss_easter | ✓ | 183.317ms | 8.7 MB |
+| 744 | other/greedy | ✓ | 183.317ms | 8.7 MB |
+| 745 | other/guess_the_number_search | ✓ | 183.317ms | 8.7 MB |
+| 746 | other/h_index | ✓ | 183.317ms | 8.7 MB |
+| 747 | other/least_recently_used | ✓ | 183.317ms | 8.8 MB |
+| 748 | other/lfu_cache | ✓ | 183.317ms | 8.7 MB |
+| 749 | other/linear_congruential_generator | ✓ | 478.787ms | 8.7 MB |
+| 750 | other/lru_cache | ✓ | 183.317ms | 8.7 MB |
+| 751 | other/magicdiamondpattern | ✓ | 183.317ms | 8.7 MB |
 | 752 | other/majority_vote_algorithm | ✓ | 183.317ms | 8.7 MB |
 | 753 | other/maximum_subsequence | ✓ | 183.317ms | 8.7 MB |
 | 754 | other/nested_brackets | ✓ | 183.317ms | 8.7 MB |
-| 755 | other/number_container_system | ✓ | 183.317ms | 8.7 MB |
-| 756 | other/quine | ✓ | 183.317ms | 8.8 MB |
+| 755 | other/number_container_system | ✓ | 183.317ms | 8.8 MB |
+| 756 | other/quine | ✓ | 183.317ms | 8.7 MB |
 | 757 | other/scoring_algorithm | ✓ | 183.317ms | 8.7 MB |
 | 758 | other/sdes | ✓ | 183.317ms | 8.7 MB |
 | 759 | other/tower_of_hanoi | ✓ | 183.317ms | 8.7 MB |
-| 760 | other/word_search | ✓ | 183.317ms | 8.7 MB |
+| 760 | other/word_search | ✓ | 183.317ms | 8.8 MB |
 | 761 | physics/altitude_pressure | ✓ | 183.317ms | 8.7 MB |
 | 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 183.317ms | 8.7 MB |
 | 763 | physics/basic_orbital_capture | error |  |  |
 | 764 | physics/casimir_effect | ✓ | 183.317ms | 8.7 MB |
-| 765 | physics/center_of_mass | ✓ | 183.317ms | 8.7 MB |
+| 765 | physics/center_of_mass | ✓ | 183.317ms | 8.8 MB |
 | 766 | physics/centripetal_force | ✓ | 183.317ms | 8.7 MB |
 | 767 | physics/coulombs_law | ✓ | 183.317ms | 8.7 MB |
 | 768 | physics/doppler_frequency | ✓ | 183.317ms | 8.7 MB |
-| 769 | physics/escape_velocity | ✓ | 183.317ms | 8.7 MB |
+| 769 | physics/escape_velocity | ✓ | 183.317ms | 8.8 MB |
 | 770 | physics/grahams_law | ✓ | 183.317ms | 8.7 MB |
 | 771 | physics/horizontal_projectile_motion | ✓ | 183.317ms | 8.7 MB |
 | 772 | physics/hubble_parameter | ✓ | 183.317ms | 8.7 MB |

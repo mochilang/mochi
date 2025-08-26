@@ -1122,11 +1122,12 @@ func (b *BoolLit) emit(w io.Writer) { fmt.Fprintf(w, "%t", b.Value) }
 type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(w io.Writer) {
-	// Use 'g' format to retain a compact representation while
-	// preserving as much precision as possible. This avoids
-	// unnecessarily truncating significant digits for very small
-	// or very large values.
-	s := strconv.FormatFloat(f.Value, 'g', -1, 64)
+	// Emit up to 15 significant digits to improve numeric stability
+	// across different runtimes. This helps avoid cases where the
+	// shortest representation chosen by FormatFloat might produce a
+	// slightly different value when parsed in Scala, which can lead
+	// to subtle test discrepancies.
+	s := strconv.FormatFloat(f.Value, 'g', 15, 64)
 	if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
 		s += ".0"
 	}
