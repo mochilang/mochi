@@ -1,0 +1,126 @@
+// Solution for SPOJ CRYPTO4 - The Bytelandian Cryptographer (Act IV)
+// https://www.spoj.com/problems/CRYPTO4/
+
+let charToVal = {
+  "A":0, "B":1, "C":2, "D":3, "E":4, "F":5, "G":6, "H":7, "I":8, "J":9,
+  "K":10, "L":11, "M":12, "N":13, "O":14, "P":15, "Q":16, "R":17, "S":18, "T":19,
+  "U":20, "V":21, "W":22, "X":23, "Y":24, "Z":25
+}
+
+let valToChar = [
+  "A","B","C","D","E","F","G","H","I","J","K","L","M",
+  "N","O","P","Q","R","S","T","U","V","W","X","Y","Z"
+]
+
+fun solve(m: int, x: string, y: string): string {
+  let L = len(x)
+  // Precompute differences where both letters known
+  var diff: list<int> = []
+  var i = 0
+  while i < L {
+    let a = x[i:i+1]
+    let b = y[i:i+1]
+    if a != "*" && b != "*" {
+      let d = (charToVal[b] - charToVal[a] + 26) % 26
+      diff = append(diff, d)
+    } else {
+      diff = append(diff, 0 - 1)
+    }
+    i = i + 1
+  }
+
+  // Result placeholder
+  var res: list<string> = []
+  i = 0
+  while i < L {
+    let a = x[i:i+1]
+    if a != "*" {
+      res = append(res, a)
+    } else {
+      res = append(res, "?")
+    }
+    i = i + 1
+  }
+
+  var n = 1
+  while n <= m {
+    // Build key array size n
+    var key: list<int> = []
+    var j = 0
+    while j < n {
+      key = append(key, 0 - 1)
+      j = j + 1
+    }
+    var ok = true
+    i = 0
+    while i < L {
+      let d = diff[i]
+      if d != 0 - 1 {
+        let r = i % n
+        if key[r] == 0 - 1 {
+          key[r] = d
+        } else if key[r] != d {
+          ok = false
+          break
+        }
+      }
+      i = i + 1
+    }
+    if ok {
+      i = 0
+      while i < L {
+        if x[i:i+1] == "*" && res[i] != "*" {
+          var cand = "?"
+          let yc = y[i:i+1]
+          if yc != "*" {
+            let r = i % n
+            if key[r] != 0 - 1 {
+              let val = (charToVal[yc] - key[r] + 26) % 26
+              cand = valToChar[val]
+            }
+          }
+          if cand == "?" {
+            res[i] = "*"
+          } else {
+            if res[i] == "?" {
+              res[i] = cand
+            } else if res[i] != cand {
+              res[i] = "*"
+            }
+          }
+        }
+        i = i + 1
+      }
+    }
+    n = n + 1
+  }
+
+  var ans = ""
+  i = 0
+  while i < L {
+    var ch = res[i]
+    if ch == "?" {
+      ch = "*"
+    }
+    ans = ans + ch
+    i = i + 1
+  }
+  return ans
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let mLine = input()
+    let m = mLine as int
+    let x = input()
+    let y = input()
+    print(solve(m, x, y))
+    case = case + 1
+  }
+}
+
+main()
