@@ -1,0 +1,52 @@
+// Solution for SPOJ Glass Beads
+// https://www.spoj.com/problems/BEADS/
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun min_rotation(s: string): int {
+  let n = len(s)
+  let ss = s + s
+  var i = 0
+  var j = 1
+  var k = 0
+  while i < n && j < n && k < n {
+    let a = ss[i+k:i+k+1]
+    let b = ss[j+k:j+k+1]
+    if a == b {
+      k = k + 1
+    } else if a > b {
+      i = i + k + 1
+      if i == j {
+        i = i + 1
+      }
+      k = 0
+    } else {
+      j = j + k + 1
+      if i == j {
+        j = j + 1
+      }
+      k = 0
+    }
+  }
+  let idx = if i < j { i } else { j }
+  return idx + 1
+}
+
+fun main() {
+  let t = (readNonEmpty() as int)
+  var case = 0
+  while case < t {
+    let s = readNonEmpty()
+    let res = min_rotation(s)
+    print(res)
+    case = case + 1
+  }
+}
+
+main()
