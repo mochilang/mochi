@@ -1,0 +1,16 @@
+// Solution for SPOJ TEST - Life, the Universe, and Everything
+// https://www.spoj.com/problems/TEST/
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let n = line as int
+    if n == 42 {
+      break
+    }
+    print(line)
+  }
+}
+
+main()
