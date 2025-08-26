@@ -1,4 +1,4 @@
-// Generated 2025-08-17 13:19 +0700
+// Generated 2025-08-26 08:36 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,13 +23,16 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     match box v with
-    | :? float as f -> sprintf "%.10g" f
+    | :? float as f ->
+        if f = floor f then sprintf "%g.0" f else sprintf "%g" f
+    | :? int64 as n -> sprintf "%d" n
     | _ ->
         let s = sprintf "%A" v
         s.Replace("[|", "[")
          .Replace("|]", "]")
          .Replace("; ", " ")
          .Replace(";", "")
+         .Replace("L", "")
          .Replace("\"", "")
 let rec sqrtApprox (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
@@ -39,10 +42,10 @@ let rec sqrtApprox (x: float) =
             __ret <- 0.0
             raise Return
         let mutable guess: float = x
-        let mutable i: int = 0
-        while i < 20 do
+        let mutable i: int64 = int64 0
+        while i < (int64 20) do
             guess <- (guess + (x / guess)) / 2.0
-            i <- i + 1
+            i <- i + (int64 1)
         __ret <- guess
         raise Return
         __ret
@@ -54,12 +57,12 @@ and squareplus (vector: float array) (beta: float) =
     let mutable beta = beta
     try
         let mutable result: float array = Array.empty<float>
-        let mutable i: int = 0
-        while i < (Seq.length (vector)) do
+        let mutable i: int64 = int64 0
+        while i < (int64 (Seq.length (vector))) do
             let x: float = _idx vector (int i)
             let ``val``: float = (x + (sqrtApprox ((x * x) + beta))) / 2.0
             result <- Array.append result [|``val``|]
-            i <- i + 1
+            i <- i + (int64 1)
         __ret <- result
         raise Return
         __ret
