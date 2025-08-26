@@ -2410,7 +2410,13 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "((dynamic)")
 		ix.Target.emit(w)
 		fmt.Fprint(w, ")[")
-		ix.Index.emit(w)
+		if idxType != "int" {
+			fmt.Fprint(w, "(int)(")
+			ix.Index.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			ix.Index.emit(w)
+		}
 		fmt.Fprint(w, "]")
 		return
 	}
@@ -3155,7 +3161,7 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				}
 			case "float":
 				texpr := typeOfExpr(expr)
-				if texpr == "BigInteger" || texpr == "long" || texpr == "int" {
+				if texpr == "" || texpr == "BigInteger" || texpr == "long" || texpr == "int" {
 					expr = &RawExpr{Code: fmt.Sprintf("(double)(%s)", exprString(expr)), Type: "double"}
 				} else {
 					expr = &CallExpr{Func: "Convert.ToDouble", Args: []Expr{expr}}
@@ -4368,10 +4374,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "float":
 			if len(args) == 1 {
+				t := typeOfExpr(args[0])
+				if t == "" || t == "BigInteger" || t == "long" || t == "int" {
+					return &RawExpr{Code: fmt.Sprintf("(double)(%s)", exprString(args[0])), Type: "double"}, nil
+				}
 				return &CallExpr{Func: "Convert.ToDouble", Args: []Expr{args[0]}}, nil
 			}
 		case "to_float":
 			if len(args) == 1 {
+				t := typeOfExpr(args[0])
+				if t == "" || t == "BigInteger" || t == "long" || t == "int" {
+					return &RawExpr{Code: fmt.Sprintf("(double)(%s)", exprString(args[0])), Type: "double"}, nil
+				}
 				return &CallExpr{Func: "Convert.ToDouble", Args: []Expr{args[0]}}, nil
 			}
 		case "panic":

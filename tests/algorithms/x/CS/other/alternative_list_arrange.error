@@ -1,9 +1,0 @@
-exit status 134
-Unhandled exception. System.TypeInitializationException: The type initializer for 'Program' threw an exception.
- ---> Microsoft.CSharp.RuntimeBinder.RuntimeBinderException: Cannot implicitly convert type 'System.Numerics.BigInteger' to 'int'. An explicit conversion exists (are you missing a cast?)
-   at CallSite.Target(Closure, CallSite, Object, BigInteger)
-   at System.Dynamic.UpdateDelegates.UpdateAndExecute2[T0,T1,TRet](CallSite site, T0 arg0, T1 arg1)
-   at Program.alternative_list_arrange(Object[] first_3, Object[] second_4) in /tmp/TestCSTranspiler_Algorithms_Golden001_other_alternative_list_arrange325251768/001/Program.cs:line 144
-   at Program..cctor() in /tmp/TestCSTranspiler_Algorithms_Golden001_other_alternative_list_arrange325251768/001/Program.cs:line 120
-   --- End of inner exception stack trace ---
-   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_other_alternative_list_arrange325251768/001/Program.cs:line 169

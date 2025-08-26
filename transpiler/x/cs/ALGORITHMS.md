@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-26 00:02 GMT+7
+Last updated: 2025-08-26 08:52 GMT+7
 
-## Algorithms Golden Test Checklist (1040/1077)
+## Algorithms Golden Test Checklist (1042/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -742,9 +742,9 @@ Last updated: 2025-08-26 00:02 GMT+7
 | 733 | neural_network/convolution_neural_network | ✓ | 1.0µs | 292.23KB |
 | 734 | neural_network/input_data | ✓ | 1.0µs | 41.04KB |
 | 735 | neural_network/simple_neural_network | ✓ | 1.0µs | 13.56KB |
-| 736 | neural_network/two_hidden_layers_neural_network | error | 1.0µs | 508.84KB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 1.0µs | 231.48KB |
 | 737 | other/activity_selection | ✓ | 1.0µs | 17.20KB |
-| 738 | other/alternative_list_arrange | error | 1.0µs | 17.23KB |
+| 738 | other/alternative_list_arrange | ✓ | 1.0µs | 11.66KB |
 | 739 | other/bankers_algorithm | ✓ | 1.0µs | 34.26KB |
 | 740 | other/davis_putnam_logemann_loveland | ✓ | 1.0µs | 13.03KB |
 | 741 | other/doomsday | ✓ | 1.0µs | 12.96KB |

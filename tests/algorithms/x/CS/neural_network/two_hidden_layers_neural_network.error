@@ -1,9 +1,0 @@
-exit status 134
-Unhandled exception. System.InvalidCastException: Unable to cast object of type 'System.Numerics.BigInteger' to type 'System.IConvertible'.
-   at System.Convert.ToDouble(Object value)
-   at Program.exp_approx(Double x_0) in /tmp/TestCSTranspiler_Algorithms_Golden001_neural_network_two_hidden_layers_neural_network988710368/001/Program.cs:line 137
-   at Program.sigmoid(Double x_4) in /tmp/TestCSTranspiler_Algorithms_Golden001_neural_network_two_hidden_layers_neural_network988710368/001/Program.cs:line 145
-   at Program.train(Network net_19, Double[][] inputs_20, Double[] outputs_21, BigInteger iterations_22) in /tmp/TestCSTranspiler_Algorithms_Golden001_neural_network_two_hidden_layers_neural_network988710368/001/Program.cs:line 207
-   at Program.example() in /tmp/TestCSTranspiler_Algorithms_Golden001_neural_network_two_hidden_layers_neural_network988710368/001/Program.cs:line 305
-   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_neural_network_two_hidden_layers_neural_network988710368/001/Program.cs:line 312
-   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_neural_network_two_hidden_layers_neural_network988710368/001/Program.cs:line 320
