@@ -1,0 +1,88 @@
+/*
+SPOJ: Hotline
+https://www.spoj.com/problems/HOTLINE
+*/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && s[i:i+len(sep)] == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun key(subj: string, verb: string, obj: string): string {
+  return subj + "|" + verb + "|" + obj
+}
+
+fun main() {
+  let t = input() as int
+  var d: int = 1
+  while d <= t {
+    print("Dialogue #" + str(d) + ":")
+    var facts: map<string, bool> = {}
+    while true {
+      let line = input()
+      if line == "" {
+        continue
+      }
+      let last = line[len(line)-1:len(line)]
+      if last == "!" {
+        print(line)
+        print("")
+        break
+      } else if last == "." {
+        let content = line[0:len(line)-1]
+        let parts = split(content, " ")
+        if len(parts) >= 2 {
+          let subj = parts[0]
+          var verb = parts[1]
+          if len(verb) > 0 && verb[len(verb)-1:len(verb)] == "s" {
+            verb = verb[0:len(verb)-1]
+          }
+          var obj = ""
+          if len(parts) >= 3 {
+            obj = parts[2]
+          }
+          facts[key(subj, verb, obj)] = true
+        }
+      } else if last == "?" {
+        print(line)
+        let content = line[0:len(line)-1]
+        let parts = split(content, " ")
+        var ans = "maybe."
+        if len(parts) >= 3 && (parts[0] == "does" || parts[0] == "do") {
+          let subj = parts[1]
+          let verb = parts[2]
+          var obj = ""
+          if len(parts) >= 4 {
+            obj = parts[3]
+          }
+          if facts[key(subj, verb, obj)] {
+            var verbOut = verb + "s"
+            var answer = "yes, " + subj + " " + verbOut
+            if obj != "" {
+              answer = answer + " " + obj
+            }
+            ans = answer + "."
+          }
+        }
+        print(ans)
+        print("")
+      }
+    }
+    d = d + 1
+  }
+}
+
+main()
