@@ -1,0 +1,124 @@
+// Solution for SPOJ TRIP - Trip
+// https://www.spoj.com/problems/TRIP/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun contains(list: list<string>, s: string): bool {
+  var i = 0
+  while i < len(list) {
+    if list[i] == s { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun sortStrings(arr: list<string>): list<string> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun lcsAll(a: string, b: string): list<string> {
+  let n = len(a)
+  let m = len(b)
+  // dp table
+  var dp: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    var row: list<int> = []
+    var j = 0
+    while j <= m {
+      row = append(row, 0)
+      j = j + 1
+    }
+    dp = append(dp, row)
+    i = i + 1
+  }
+  i = n - 1
+  while i >= 0 {
+    var j = m - 1
+    while j >= 0 {
+      if a[i:i+1] == b[j:j+1] {
+        dp[i][j] = dp[i+1][j+1] + 1
+      } else {
+        let v1 = dp[i+1][j]
+        let v2 = dp[i][j+1]
+        dp[i][j] = if v1 > v2 { v1 } else { v2 }
+      }
+      j = j - 1
+    }
+    i = i - 1
+  }
+  let L = dp[0][0]
+  var queue: list<map<string, any>> = []
+  queue = append(queue, { i: 0, j: 0, s: "" })
+  var qi = 0
+  var res: list<string> = []
+  while qi < len(queue) {
+    let st = queue[qi]
+    qi = qi + 1
+    let i = st["i"] as int
+    let j = st["j"] as int
+    let s = st["s"] as string
+    if i == n || j == m {
+      if len(s) == L && (!contains(res, s)) {
+        res = append(res, s)
+      }
+      continue
+    }
+    if a[i:i+1] == b[j:j+1] {
+      queue = append(queue, { i: i+1, j: j+1, s: s + a[i:i+1] })
+    } else {
+      if dp[i+1][j] == dp[i][j] {
+        queue = append(queue, { i: i+1, j: j, s: s })
+      }
+      if dp[i][j+1] == dp[i][j] {
+        queue = append(queue, { i: i, j: j+1, s: s })
+      }
+    }
+  }
+  res = sortStrings(res)
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    let a = input()
+    let b = input()
+    let res = lcsAll(a, b)
+    var i = 0
+    while i < len(res) {
+      print(res[i])
+      i = i + 1
+    }
+    case = case + 1
+    if case < t { print("") }
+  }
+}
+
+main()
