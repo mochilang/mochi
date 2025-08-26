@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-25 16:51 UTC
+Last updated: 2025-08-26 01:48 UTC
 
 ## Algorithms Golden Test Checklist (1067/1077)
 | Index | Name | Status | Duration | Memory |
@@ -736,56 +736,56 @@ Last updated: 2025-08-25 16:51 UTC
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 571.223ms | 19.4 KB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 571.223ms | 38.5 KB |
 | 729 | neural_network/activation_functions/softplus | ✓ | 571.223ms | 22.2 KB |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 571.223ms | 284.6 KB |
-| 731 | neural_network/activation_functions/swish | ✓ | 571.223ms | 317.7 KB |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 571.223ms | 853.5 KB |
-| 733 | neural_network/convolution_neural_network | ✓ | 571.223ms | 1.1 MB |
-| 734 | neural_network/input_data | ✓ | 571.223ms | 302.2 KB |
-| 735 | neural_network/simple_neural_network | ✓ | 571.223ms | 414.2 KB |
-| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 571.223ms | 971.2 KB |
-| 737 | other/activity_selection | ✓ | 571.223ms | 18.7 KB |
-| 738 | other/alternative_list_arrange | ✓ | 571.223ms | 34.6 KB |
-| 739 | other/bankers_algorithm | ✓ | 571.223ms | 231.7 KB |
-| 740 | other/davis_putnam_logemann_loveland | ✓ | 571.223ms | 33.5 KB |
-| 741 | other/doomsday | ✓ | 571.223ms | 29.3 KB |
-| 742 | other/fischer_yates_shuffle | ✓ | 571.223ms | 32.4 KB |
-| 743 | other/gauss_easter | ✓ | 571.223ms | 35.5 KB |
-| 744 | other/greedy | ✓ | 571.223ms | 40.9 KB |
-| 745 | other/guess_the_number_search | ✓ | 571.223ms | 288.3 KB |
-| 746 | other/h_index | ✓ | 571.223ms | 805.0 KB |
-| 747 | other/least_recently_used | ✓ | 571.223ms | 34.8 KB |
-| 748 | other/lfu_cache | ✓ | 571.223ms | 41.8 KB |
-| 749 | other/linear_congruential_generator | ✓ |  | 26.9 KB |
-| 750 | other/lru_cache | ✓ | 571.223ms | 50.9 KB |
-| 751 | other/magicdiamondpattern | ✓ | 571.223ms | 18.4 KB |
-| 752 | other/majority_vote_algorithm | ✓ | 571.223ms | 45.6 KB |
-| 753 | other/maximum_subsequence | ✓ | 571.223ms | 18.9 KB |
-| 754 | other/nested_brackets | ✓ | 571.223ms | 68.3 KB |
-| 755 | other/number_container_system | ✓ | 571.223ms | 26.7 KB |
-| 756 | other/quine | ✓ | 571.223ms | 13.8 KB |
-| 757 | other/scoring_algorithm | ✓ | 571.223ms | 44.0 KB |
-| 758 | other/sdes | ✓ | 571.223ms | 44.4 KB |
-| 759 | other/tower_of_hanoi | ✓ | 571.223ms | 31.2 KB |
-| 760 | other/word_search | ✓ | 571.223ms | 118.5 KB |
-| 761 | physics/altitude_pressure | ✓ | 571.223ms | 24.5 KB |
-| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 571.223ms | 2.7 KB |
-| 763 | physics/basic_orbital_capture | ✓ | 571.223ms | 20.7 KB |
-| 764 | physics/casimir_effect | ✓ | 571.223ms | 31.6 KB |
-| 765 | physics/center_of_mass | ✓ | 571.223ms | 282.2 KB |
-| 766 | physics/centripetal_force | ✓ | 571.223ms | 281.9 KB |
-| 767 | physics/coulombs_law | ✓ | 571.223ms | 27.1 KB |
-| 768 | physics/doppler_frequency | ✓ | 571.223ms | 16.0 KB |
-| 769 | physics/escape_velocity | ✓ | 571.223ms | 23.9 KB |
-| 770 | physics/grahams_law | ✓ | 571.223ms | 33.6 KB |
-| 771 | physics/horizontal_projectile_motion | ✓ | 571.223ms | 278.4 KB |
-| 772 | physics/hubble_parameter | ✓ | 571.223ms | 20.7 KB |
-| 773 | physics/ideal_gas_law | ✓ | 571.223ms | 22.9 KB |
-| 774 | physics/in_static_equilibrium | ✓ | 571.223ms | 36.5 KB |
-| 775 | physics/kinetic_energy | ✓ | 571.223ms | 30.4 KB |
-| 776 | physics/lens_formulae | ✓ | 571.223ms | 284.7 KB |
-| 777 | physics/lorentz_transformation_four_vector | ✓ | 571.223ms | 302.2 KB |
-| 778 | physics/malus_law | ✓ | 571.223ms | 15.5 KB |
-| 779 | physics/mass_energy_equivalence | ✓ | 571.223ms | 28.0 KB |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 571.223ms | 286.2 KB |
+| 731 | neural_network/activation_functions/swish | ✓ | 571.223ms | 319.4 KB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 571.223ms | 3.1 MB |
+| 733 | neural_network/convolution_neural_network | ✓ | 571.223ms | 1.5 MB |
+| 734 | neural_network/input_data | ✓ | 571.223ms | 302.9 KB |
+| 735 | neural_network/simple_neural_network | ✓ | 571.223ms | 317.9 KB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 571.223ms | 960.5 KB |
+| 737 | other/activity_selection | ✓ | 571.223ms | 19.2 KB |
+| 738 | other/alternative_list_arrange | ✓ | 571.223ms | 35.3 KB |
+| 739 | other/bankers_algorithm | ✓ | 571.223ms | 233.6 KB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 571.223ms | 34.1 KB |
+| 741 | other/doomsday | ✓ | 571.223ms | 29.8 KB |
+| 742 | other/fischer_yates_shuffle | ✓ | 571.223ms | 801.1 KB |
+| 743 | other/gauss_easter | ✓ | 571.223ms | 293.5 KB |
+| 744 | other/greedy | ✓ | 571.223ms | 50.1 KB |
+| 745 | other/guess_the_number_search | ✓ | 571.223ms | 289.0 KB |
+| 746 | other/h_index | ✓ | 571.223ms | 805.5 KB |
+| 747 | other/least_recently_used | ✓ | 571.223ms | 35.3 KB |
+| 748 | other/lfu_cache | ✓ | 571.223ms | 42.5 KB |
+| 749 | other/linear_congruential_generator | ✓ |  | 27.4 KB |
+| 750 | other/lru_cache | ✓ | 571.223ms | 51.8 KB |
+| 751 | other/magicdiamondpattern | ✓ | 571.223ms | 18.9 KB |
+| 752 | other/majority_vote_algorithm | ✓ | 571.223ms | 46.1 KB |
+| 753 | other/maximum_subsequence | ✓ | 571.223ms | 19.4 KB |
+| 754 | other/nested_brackets | ✓ | 571.223ms | 325.1 KB |
+| 755 | other/number_container_system | ✓ | 571.223ms | 27.3 KB |
+| 756 | other/quine | ✓ | 571.223ms | 14.3 KB |
+| 757 | other/scoring_algorithm | ✓ | 571.223ms | 45.8 KB |
+| 758 | other/sdes | ✓ | 571.223ms | 804.6 KB |
+| 759 | other/tower_of_hanoi | ✓ | 571.223ms | 31.7 KB |
+| 760 | other/word_search | ✓ | 571.223ms | 119.0 KB |
+| 761 | physics/altitude_pressure | ✓ | 571.223ms | 25.0 KB |
+| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 571.223ms | 3.0 KB |
+| 763 | physics/basic_orbital_capture | ✓ | 571.223ms | 21.2 KB |
+| 764 | physics/casimir_effect | ✓ | 571.223ms | 35.1 KB |
+| 765 | physics/center_of_mass | ✓ | 571.223ms | 282.7 KB |
+| 766 | physics/centripetal_force | ✓ | 571.223ms | 282.4 KB |
+| 767 | physics/coulombs_law | ✓ | 571.223ms | 27.8 KB |
+| 768 | physics/doppler_frequency | ✓ | 571.223ms | 17.4 KB |
+| 769 | physics/escape_velocity | ✓ | 571.223ms | 25.8 KB |
+| 770 | physics/grahams_law | ✓ | 571.223ms | 34.0 KB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 571.223ms | 278.9 KB |
+| 772 | physics/hubble_parameter | ✓ | 571.223ms | 22.1 KB |
+| 773 | physics/ideal_gas_law | ✓ | 571.223ms | 23.4 KB |
+| 774 | physics/in_static_equilibrium | ✓ | 571.223ms | 36.9 KB |
+| 775 | physics/kinetic_energy | ✓ | 571.223ms | 30.9 KB |
+| 776 | physics/lens_formulae | ✓ | 571.223ms | 286.7 KB |
+| 777 | physics/lorentz_transformation_four_vector | ✓ | 571.223ms | 302.9 KB |
+| 778 | physics/malus_law | ✓ | 571.223ms | 16.0 KB |
+| 779 | physics/mass_energy_equivalence | ✓ | 571.223ms | 28.5 KB |
 | 780 | physics/mirror_formulae | ✓ | 571.223ms | 279.0 KB |
 | 781 | physics/n_body_simulation | ✓ | 571.223ms | 41.6 KB |
 | 782 | physics/newtons_law_of_gravitation | ✓ | 571.223ms | 25.2 KB |
