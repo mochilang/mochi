@@ -1,0 +1,87 @@
+// Solution for SPOJ STONE - Lifting the Stone
+// https://www.spoj.com/problems/STONE/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun format2(x: float): string {
+  var scaled = x * 100.0
+  if scaled < 0.0 {
+    scaled = scaled - 0.5
+  } else {
+    scaled = scaled + 0.5
+  }
+  var n = scaled as int
+  var sign = ""
+  if n < 0 {
+    sign = "-"
+    n = -n
+  }
+  var whole = n / 100
+  var frac = n % 100
+  var fracStr = str(frac)
+  while len(fracStr) < 2 {
+    fracStr = "0" + fracStr
+  }
+  return sign + str(whole) + "." + fracStr
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    let nLine = input()
+    let n = int(nLine)
+    let firstLine = input()
+    let fp = split(firstLine, " ")
+    var x0 = int(fp[0]) as float
+    var y0 = int(fp[1]) as float
+    var px = x0
+    var py = y0
+    var sum = 0.0
+    var cxs = 0.0
+    var cys = 0.0
+    var i = 1
+    while i < n {
+      let line = input()
+      let parts = split(line, " ")
+      let x = int(parts[0]) as float
+      let y = int(parts[1]) as float
+      let cross = px * y - x * py
+      sum = sum + cross
+      cxs = cxs + (px + x) * cross
+      cys = cys + (py + y) * cross
+      px = x
+      py = y
+      i = i + 1
+    }
+    let cross = px * y0 - x0 * py
+    sum = sum + cross
+    cxs = cxs + (px + x0) * cross
+    cys = cys + (py + y0) * cross
+    let denom = 3.0 * sum
+    let cx = cxs / denom
+    let cy = cys / denom
+    print(format2(cx) + " " + format2(cy))
+    case = case + 1
+  }
+}
+
+main()
