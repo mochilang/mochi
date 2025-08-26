@@ -1,0 +1,147 @@
+// Solution for SPOJ BLINNET - Bytelandian Blingors Network
+// https://www.spoj.com/problems/BLINNET/
+
+type Edge = { to: int, cost: int }
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split_two(s: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == " " {
+      if current != "" {
+        res = append(res, current)
+        current = ""
+      }
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  if current != "" {
+    res = append(res, current)
+  }
+  return res
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_bool_list(n: int): list<bool> {
+  var lst: list<bool> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, false)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_edge_list(n: int): list<list<Edge>> {
+  var lst: list<list<Edge>> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, [])
+    i = i + 1
+  }
+  return lst
+}
+
+fun prim(graph: list<list<Edge>>): int {
+  let n = len(graph) - 1
+  let inf = 1000000000
+  var dist = make_int_list(n, inf)
+  var used = make_bool_list(n)
+  dist[1] = 0
+  var total = 0
+  var cnt = 0
+  while cnt < n {
+    var u = 0
+    var best = inf
+    var i = 1
+    while i <= n {
+      if !used[i] && dist[i] < best {
+        best = dist[i]
+        u = i
+      }
+      i = i + 1
+    }
+    used[u] = true
+    total = total + dist[u]
+    var j = 0
+    while j < len(graph[u]) {
+      let e = graph[u][j]
+      let v = e.to
+      let w = e.cost
+      if !used[v] && w < dist[v] {
+        dist[v] = w
+      }
+      j = j + 1
+    }
+    cnt = cnt + 1
+  }
+  return total
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun main() {
+  let tStr = readNonEmpty()
+  let t = parseIntStr(tStr)
+  var case = 0
+  while case < t {
+    var nStr = readNonEmpty()
+    let n = parseIntStr(nStr)
+    var graph = make_edge_list(n)
+    var i = 1
+    while i <= n {
+      let _ = readNonEmpty() // city name, ignored
+      let pStr = readNonEmpty()
+      let p = parseIntStr(pStr)
+      var j = 0
+      while j < p {
+        let line = readNonEmpty()
+        let parts = split_two(line)
+        let v = parseIntStr(parts[0])
+        let w = parseIntStr(parts[1])
+        graph[i] = append(graph[i], Edge{ to:v, cost:w })
+        graph[v] = append(graph[v], Edge{ to:i, cost:w })
+        j = j + 1
+      }
+      i = i + 1
+    }
+    let res = prim(graph)
+    print(res)
+    case = case + 1
+  }
+}
+
+main()
