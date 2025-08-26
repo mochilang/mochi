@@ -67,9 +67,9 @@ fun make3d(a: int, b: int, c: int): list<list<list<bool>>> {
 
 fun main() {
   let t = int(input())
-  var case = 0
-  while case < t {
-    case = case + 1
+  var case_num = 0
+  while case_num < t {
+    case_num = case_num + 1
     let f = int(input())
     var faces: list<map<string, any>> = []
     var maxC = 0
@@ -199,7 +199,8 @@ fun main() {
       }
     }
     var visited = make3d(N, N, N)
-    var queue: list<list<int>> = [[0,0,0]]
+    var queue: list<list<int>> = []
+    queue = append(queue, [0,0,0])
     visited[0][0][0] = true
     var head = 0
     var outside = 0
@@ -239,6 +240,6 @@ fun main() {
     let volume = total - outside
     print("The bulk is composed of " + str(volume) + " units.")
   }
-}
+  }
 
 main()

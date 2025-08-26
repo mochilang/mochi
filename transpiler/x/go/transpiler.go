@@ -165,12 +165,12 @@ func guessStructForField(field string) string {
 var commonInitialisms = []string{"ID", "URL", "HTTP", "JSON", "XML", "SQL", "UID", "UUID"}
 
 func toGoFieldName(name string) string {
-	n := toPascalCase(name)
-	for _, init := range commonInitialisms {
-		lower := strings.ToLower(init)
-		n = strings.ReplaceAll(n, strings.Title(lower), init)
-	}
-	return n
+        n := toPascalCase(name)
+        for _, init := range commonInitialisms {
+                lower := strings.ToLower(init)
+                n = strings.ReplaceAll(n, strings.Title(lower), init)
+        }
+        return safeName(n)
 }
 
 func fromGoFieldName(name string) string {
@@ -203,16 +203,26 @@ var goStdPackages = map[string]struct{}{
 }
 
 func safeName(name string) string {
-	if _, ok := goKeywords[name]; ok {
-		return name + "_"
-	}
-	if _, ok := goStdPackages[name]; ok {
-		return name + "_"
-	}
-	if _, ok := imports[name]; ok {
-		return name + "_"
-	}
-	return name
+        low := strings.ToLower(name)
+        if _, ok := goKeywords[name]; ok {
+                return name + "_"
+        }
+        if _, ok := goKeywords[low]; ok {
+                return name + "_"
+        }
+        if _, ok := goStdPackages[name]; ok {
+                return name + "_"
+        }
+        if _, ok := goStdPackages[low]; ok {
+                return name + "_"
+        }
+        if _, ok := imports[name]; ok {
+                return name + "_"
+        }
+        if _, ok := imports[low]; ok {
+                return name + "_"
+        }
+        return name
 }
 
 func emitCastAnyToType(w io.Writer, typ, v string) {
