@@ -3155,7 +3155,8 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			switch *op.Cast.Type.Simple {
 			case "int":
 				if texpr := typeOfExpr(expr); texpr == "" || texpr == "object" || texpr == "string" {
-					expr = &RawExpr{Code: fmt.Sprintf("long.Parse(%s)", exprString(expr)), Type: "long"}
+					usesAtoi = true
+					expr = &RawExpr{Code: fmt.Sprintf("_atoi(%s)", exprString(expr)), Type: "long"}
 				} else {
 					expr = &RawExpr{Code: fmt.Sprintf("(long)(%s)", exprString(expr)), Type: "long"}
 				}
@@ -3195,7 +3196,8 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				case "int":
 					texpr := typeOfExpr(expr)
 					if texpr == "" || texpr == "object" || texpr == "string" {
-						expr = &RawExpr{Code: fmt.Sprintf("long.Parse(%s)", exprString(expr)), Type: "long"}
+						usesAtoi = true
+						expr = &RawExpr{Code: fmt.Sprintf("_atoi(%s)", exprString(expr)), Type: "long"}
 					}
 				}
 			} // ignore other casts
