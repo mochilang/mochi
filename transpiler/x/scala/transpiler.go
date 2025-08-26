@@ -2349,6 +2349,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	needsBreaks = false
 	needsJSON = false
 	needsBigInt = false
+	needsFloorDiv = false
+	needsFloorMod = false
 	needsBigRat = false
 	needsMD5 = false
 	useNow = false
