@@ -1,0 +1,82 @@
+// Solution for SPOJ DANCE - The Gordian Dance
+// https://www.spoj.com/problems/DANCE/
+
+fun absInt(x: int): int {
+  if x < 0 { return -x }
+  return x
+}
+
+fun gcd(a0: int, b0: int): int {
+  var a = absInt(a0)
+  var b = absInt(b0)
+  while b != 0 {
+    let t = a % b
+    a = b
+    b = t
+  }
+  return a
+}
+
+fun norm(n0: int, d0: int): list<int> {
+  var n = n0
+  var d = d0
+  if d == 0 {
+    return [1, 0]
+  }
+  if d < 0 {
+    n = -n
+    d = -d
+  }
+  let g = gcd(n, d)
+  n = n / g
+  d = d / g
+  return [n, d]
+}
+
+
+fun steps(num: int, den: int): int {
+  if den == 1 {
+    if num >= 0 { return 3 * num - 1 }
+    return -num
+  }
+  return 0
+}
+
+fun main() {
+  while true {
+    let nLine = input()
+    if nLine == "" { break }
+    let n = int(nLine)
+    let moves = input()
+    var num = 0
+    var den = 1
+    var i = 0
+    while i < n {
+      let ch = moves[i:i+1]
+      if ch == "S" {
+        if den == 0 {
+          num = 1
+          den = 0
+        } else {
+          num = num + den
+        }
+      } else { // R
+        if num == 0 {
+          num = 1
+          den = 0
+        } else {
+          let tmp = num
+          num = -den
+          den = tmp
+        }
+      }
+      let tmpN = norm(num, den)
+      num = tmpN[0]
+      den = tmpN[1]
+      i = i + 1
+    }
+    print(str(steps(num, den)))
+  }
+}
+
+main()
