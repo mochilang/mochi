@@ -13,7 +13,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.10.9
 	github.com/marcboeker/go-duckdb v1.8.5
-	github.com/mark3labs/mcp-go v0.36.0
+	github.com/mark3labs/mcp-go v0.38.0
 	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
@@ -28,7 +28,7 @@ require (
 	github.com/tree-sitter/tree-sitter-haskell v0.23.1
 	github.com/tree-sitter/tree-sitter-java v0.23.5
 	github.com/tree-sitter/tree-sitter-ocaml v0.24.2
-	github.com/tree-sitter/tree-sitter-php v0.23.12
+	github.com/tree-sitter/tree-sitter-php v0.24.2
 	github.com/tree-sitter/tree-sitter-python v0.23.6
 	github.com/tree-sitter/tree-sitter-racket v0.24.7
 	github.com/tree-sitter/tree-sitter-ruby v0.23.1
@@ -37,8 +37,8 @@ require (
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	github.com/yuin/gopher-lua v1.1.1
 	github.com/z7zmey/php-parser v0.7.2
-	golang.org/x/mod v0.26.0
-	golang.org/x/tools v0.35.0
+	golang.org/x/mod v0.27.0
+	golang.org/x/tools v0.36.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -74,12 +74,12 @@ require (
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
-	github.com/charmbracelet/colorprofile v0.3.1 // indirect
+	github.com/charmbracelet/colorprofile v0.3.2 // indirect
 	github.com/charmbracelet/lipgloss/v2 v2.0.0-beta1 // indirect
-	github.com/charmbracelet/x/ansi v0.9.3 // indirect
+	github.com/charmbracelet/x/ansi v0.10.1 // indirect
 	github.com/charmbracelet/x/cellbuf v0.0.13 // indirect
-	github.com/charmbracelet/x/exp/charmtone v0.0.0-20250725211024-d60e1b0112b2 // indirect
-	github.com/charmbracelet/x/exp/color v0.0.0-20250725211024-d60e1b0112b2 // indirect
+	github.com/charmbracelet/x/exp/charmtone v0.0.0-20250821175832-f235fab04313 // indirect
+	github.com/charmbracelet/x/exp/color v0.0.0-20250821175832-f235fab04313 // indirect
 	github.com/charmbracelet/x/exp/golden v0.0.0-20241011142426-46044092ad91 // indirect
 	github.com/charmbracelet/x/term v0.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
@@ -104,7 +104,7 @@ require (
 	github.com/muesli/mango-pflag v0.1.0 // indirect
 	github.com/muesli/roff v0.1.0 // indirect
 	github.com/muesli/termenv v0.16.0 // indirect
-	github.com/petermattis/goid v0.0.0-20250721140440-ea1c0173183e // indirect
+	github.com/petermattis/goid v0.0.0-20250813065127-a731cc31b4fe // indirect
 	github.com/pierrec/lz4/v4 v4.1.22 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
@@ -120,13 +120,13 @@ require (
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
-	golang.org/x/crypto v0.40.0 // indirect
-	golang.org/x/exp v0.0.0-20250718183923-645b1fa84792 // indirect
-	golang.org/x/net v0.42.0 // indirect
+	golang.org/x/crypto v0.41.0 // indirect
+	golang.org/x/exp v0.0.0-20250819193227-8b4c13bb791b // indirect
+	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/sync v0.16.0 // indirect
-	golang.org/x/sys v0.34.0 // indirect
-	golang.org/x/term v0.33.0 // indirect
-	golang.org/x/text v0.27.0 // indirect
+	golang.org/x/sys v0.35.0 // indirect
+	golang.org/x/term v0.34.0 // indirect
+	golang.org/x/text v0.28.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 )
 
