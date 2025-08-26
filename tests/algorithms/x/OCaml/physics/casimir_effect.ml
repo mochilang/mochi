@@ -91,81 +91,80 @@ exception Continue
 
 exception Return
 
-let rec floyd n =
-  let __ret = ref "" in
+let _pi = 3.141592653589793
+let _reduced_planck_constant = 0.0000000000000000000000000000000001054571817
+let _speed_of_light = 300000000.0
+let rec sqrtApprox x =
+  let __ret = ref 0.0 in
   (try
-  let n = (Obj.magic n : int) in
-  let result = ref ("") in
+  let x = (Obj.magic x : float) in
+  if (x <= 0.0) then (
+  __ret := (Obj.magic (0.0) : float); raise Return
+  );
+  let guess = ref (x) in
   let i = ref (0) in
-  (try while (!i < n) do
+  (try while (!i < 100) do
     try
-  let j = ref (0) in
-  (try while (!j < ((n - !i) - 1)) do
-    try
-  result := (!result ^ " ");
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-  let k = ref (0) in
-  (try while (!k < (!i + 1)) do
-    try
-  result := (!result ^ "* ");
-  k := (!k + 1);
-    with Continue -> ()
-  done with Break -> ());
-  result := (!result ^ "\n");
+  guess := ((!guess +. (x /. !guess)) /. 2.0);
   i := (!i + 1);
     with Continue -> ()
   done with Break -> ());
-  __ret := (Obj.magic (!result) : string); raise Return
+  __ret := (Obj.magic (!guess) : float); raise Return
   with Return -> !__ret)
 
-and reverse_floyd n =
-  let __ret = ref "" in
+and casimir_force force area distance =
+  let __ret = ref ([] : (string * float) list) in
   (try
-  let n = (Obj.magic n : int) in
-  let result = ref ("") in
-  let i = ref (n) in
-  (try while (!i > 0) do
-    try
-  let j = ref (!i) in
-  (try while (!j > 0) do
-    try
-  result := (!result ^ "* ");
-  j := (!j - 1);
-    with Continue -> ()
-  done with Break -> ());
-  result := (!result ^ "\n");
-  let k = ref (((n - !i) + 1)) in
-  (try while (!k > 0) do
-    try
-  result := (!result ^ " ");
-  k := (!k - 1);
-    with Continue -> ()
-  done with Break -> ());
-  i := (!i - 1);
-    with Continue -> ()
-  done with Break -> ());
-  __ret := (Obj.magic (!result) : string); raise Return
-  with Return -> !__ret)
-
-and pretty_print n =
-  let __ret = ref "" in
-  (try
-  let n = (Obj.magic n : int) in
-  if (n <= 0) then (
-  __ret := (Obj.magic ("       ...       ....        nothing printing :(") : string); raise Return
+  let force = (Obj.magic force : float) in
+  let area = (Obj.magic area : float) in
+  let distance = (Obj.magic distance : float) in
+  let zero_count = ref (0) in
+  if (force = 0.0) then (
+  zero_count := (!zero_count + 1);
   );
-  let upper_half = floyd (Obj.repr (n)) in
-  let lower_half = reverse_floyd (Obj.repr (n)) in
-  __ret := (Obj.magic ((upper_half ^ lower_half)) : string); raise Return
+  if (area = 0.0) then (
+  zero_count := (!zero_count + 1);
+  );
+  if (distance = 0.0) then (
+  zero_count := (!zero_count + 1);
+  );
+  if (!zero_count <> 1) then (
+  (failwith ("One and only one argument must be 0"));
+  );
+  if (force < 0.0) then (
+  (failwith ("Magnitude of force can not be negative"));
+  );
+  if (distance < 0.0) then (
+  (failwith ("Distance can not be negative"));
+  );
+  if (area < 0.0) then (
+  (failwith ("Area can not be negative"));
+  );
+  if (force = 0.0) then (
+  let num = ((((_reduced_planck_constant *. _speed_of_light) *. _pi) *. _pi) *. area) in
+  let den = ((((240.0 *. distance) *. distance) *. distance) *. distance) in
+  let f = (num /. den) in
+  __ret := (Obj.magic ([(__str (Obj.repr ("force")), f)]) : (string * float) list); raise Return
+  );
+  if (area = 0.0) then (
+  let num = (((((240.0 *. force) *. distance) *. distance) *. distance) *. distance) in
+  let den = (((_reduced_planck_constant *. _speed_of_light) *. _pi) *. _pi) in
+  let a = (num /. den) in
+  __ret := (Obj.magic ([(__str (Obj.repr ("area")), a)]) : (string * float) list); raise Return
+  );
+  let num = ((((_reduced_planck_constant *. _speed_of_light) *. _pi) *. _pi) *. area) in
+  let den = (240.0 *. force) in
+  let inner = (num /. den) in
+  let d = sqrtApprox (Obj.repr (sqrtApprox (Obj.repr (inner)))) in
+  __ret := (Obj.magic ([(__str (Obj.repr ("distance")), d)]) : (string * float) list); raise Return
   with Return -> !__ret)
 
 and main () =
   let __ret = ref (Obj.magic 0) in
   (try
-  print_endline ((pretty_print (Obj.repr (3))));
-  print_endline ((pretty_print (Obj.repr (0))));
+  print_endline ((__show (Obj.repr (casimir_force (Obj.repr (0.0)) (Obj.repr (4.0)) (Obj.repr (0.03))))));
+  print_endline ((__show (Obj.repr (casimir_force (Obj.repr (0.0000000002635)) (Obj.repr (0.0023)) (Obj.repr (0.0))))));
+  print_endline ((__show (Obj.repr (casimir_force (Obj.repr (0.000000000000000002737)) (Obj.repr (0.0)) (Obj.repr (0.0023746))))));
     !__ret
   with Return -> !__ret)
 
