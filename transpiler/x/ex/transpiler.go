@@ -1027,7 +1027,11 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 			}
 			io.WriteString(w, v)
 		}
-		io.WriteString(w, "} = Enum.reduce(")
+		io.WriteString(w, "} = try do\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "Enum.reduce(")
 		fs.Source.emit(w)
 		io.WriteString(w, ", {")
 		for i, v := range fs.Vars {
@@ -1046,19 +1050,19 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, v)
 		}
 		io.WriteString(w, "} ->\n")
-		for i := 0; i < indent+1; i++ {
+		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
 		io.WriteString(w, "try do\n")
 		for _, st := range fs.Body {
-			st.emit(w, indent+2)
+			st.emit(w, indent+3)
 			io.WriteString(w, "\n")
 		}
-		for i := 0; i < indent+1; i++ {
+		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
 		io.WriteString(w, "catch\n")
-		for i := 0; i < indent+2; i++ {
+		for i := 0; i < indent+3; i++ {
 			io.WriteString(w, "  ")
 		}
 		io.WriteString(w, ":continue -> {")
@@ -1069,11 +1073,22 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, v)
 		}
 		io.WriteString(w, "}\n")
-		for i := 0; i < indent+1; i++ {
+		for i := 0; i < indent+3; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, ":break -> throw {:break, {")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}}\n")
+		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
 		io.WriteString(w, "end\n")
-		for i := 0; i < indent+1; i++ {
+		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
 		io.WriteString(w, "{")
@@ -1084,10 +1099,36 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, v)
 		}
 		io.WriteString(w, "}\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end)\n")
 		for i := 0; i < indent; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, "end)")
+		io.WriteString(w, "catch\n")
+		for i := 0; i < indent+1; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "{:break, {")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}} -> {")
+		for i, v := range fs.Vars {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, v)
+		}
+		io.WriteString(w, "}\n")
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "  ")
+		}
+		io.WriteString(w, "end")
 		return
 	}
 	if fs.Simple {
@@ -3093,9 +3134,13 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	check(body)
 	vars := gatherMutVars(body, env)
 	name := sanitizeIdent(fs.Name)
-	varsSanitized := make([]string, len(vars))
-	for i, v := range vars {
-		varsSanitized[i] = sanitizeIdent(v)
+	var varsSanitized []string
+	for _, v := range vars {
+		sv := sanitizeIdent(v)
+		if sv == name {
+			continue
+		}
+		varsSanitized = append(varsSanitized, sv)
 	}
 	res := &ForStmt{Name: name, Start: start, End: end, Source: src, Body: body, Vars: varsSanitized, Simple: simple}
 	return res, nil
