@@ -3033,18 +3033,13 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 			env.SetVar(f.Name, elemType, true)
 		}
 	}
-	// When type information is unavailable but the iterable is an index
-	// expression (e.g. `for x in m[k]`), default to iterating over keys.
+	// When the iterable is an index expression (e.g. `for x in m[k]`),
+	// iterate over keys to avoid traversing the resulting value.
 	if !keys {
 		if idx, ok := iterable.(*IndexExpr); ok {
 			if _, ok2 := idx.Index.(*StringLit); !ok2 {
 				keys = true
 			}
-		} else if elemType == nil {
-			// Default to iterating over keys when type information is
-			// unavailable. This avoids runtime errors when the value is
-			// a plain object rather than an array or string.
-			keys = true
 		}
 	}
 	body, err := convertStmtList(f.Body)
@@ -3601,6 +3596,15 @@ func isIntExpr(e Expr) bool {
 		}
 	case *IntDivExpr:
 		return true
+	case *IndexExpr:
+		if nr, ok := v.Target.(*NameRef); ok && transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(nr.Name); err == nil {
+				if lt, ok := t.(types.ListType); ok {
+					return isIntType(lt.Elem)
+				}
+			}
+		}
+		return false
 	}
 	return false
 }
@@ -3825,7 +3829,10 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				expr := &BinaryExpr{Left: operands[i], Op: "%", Right: operands[i+1]}
 				operands[i] = &CallExpr{Func: "Number", Args: []Expr{expr}}
 				typesArr[i] = types.IntType{}
-                        } else {
+			} else if ops[i] == "/" && ((isIntType(typesArr[i]) && isIntType(typesArr[i+1])) || (isIntExpr(operands[i]) && isIntExpr(operands[i+1]))) {
+				operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
+				typesArr[i] = types.IntType{}
+			} else {
 				operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
 				switch ops[i] {
 				case "+", "-", "*", "%":
