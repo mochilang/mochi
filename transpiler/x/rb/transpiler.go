@@ -1725,6 +1725,9 @@ func (b *BenchStmt) emit(e *emitter) {
 	io.WriteString(e.w, "\"}")
 	e.nl()
 	e.writeIndent()
+	io.WriteString(e.w, "print(\"\\n\")")
+	e.nl()
+	e.writeIndent()
 	io.WriteString(e.w, "puts(JSON.pretty_generate(result))")
 }
 

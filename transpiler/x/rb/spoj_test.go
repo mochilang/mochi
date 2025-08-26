@@ -4,6 +4,7 @@ package rb_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -91,15 +92,28 @@ func TestRubyTranspilerSPOJ(t *testing.T) {
 		}
 		_ = os.Remove(errPath)
 
-		if shouldUpdate() {
-			_ = os.WriteFile(outPath, append(got, '\n'), 0o644)
-		} else if want, err := os.ReadFile(outPath); err == nil {
-			want = bytes.TrimSpace(want)
-			if !bytes.Equal(got, want) {
-				t.Errorf("output mismatch %s\nGot: %s\nWant: %s", name, got, want)
+		benchPath := filepath.Join(outDir, name+".bench")
+		benchData := got
+		if idx := bytes.LastIndexByte(got, '{'); idx >= 0 {
+			_ = os.WriteFile(outPath, bytes.TrimSpace(got[:idx]), 0o644)
+			benchData = got[idx:]
+			_ = os.WriteFile(benchPath, benchData, 0o644)
+		} else {
+			_ = os.WriteFile(outPath, got, 0o644)
+			_ = os.WriteFile(benchPath, nil, 0o644)
+		}
+
+		if !shouldUpdate() {
+			if want, err := os.ReadFile(outPath); err == nil {
+				want = bytes.TrimSpace(want)
+				if gotOut, err := os.ReadFile(outPath); err == nil {
+					gotOut = bytes.TrimSpace(gotOut)
+					if !bytes.Equal(gotOut, want) {
+						t.Errorf("output mismatch %s\nGot: %s\nWant: %s", name, gotOut, want)
+					}
+				}
 			}
 		}
-		_ = os.WriteFile(outPath, got, 0o644)
 	}
 }
 func updateSPOJ() {
@@ -119,11 +133,26 @@ func updateSPOJ() {
 		base := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		name := problemName(srcDir, base)
 		status := " "
+		dur := ""
+		mem := ""
 		if exists(filepath.Join(outDir, base+".rb")) && exists(filepath.Join(outDir, base+".out")) && !exists(filepath.Join(outDir, base+".error")) {
 			status = "✓"
 			compiled++
 		}
-		lines = append(lines, fmt.Sprintf("| %s | %s | %s |  |  |", base, name, status))
+		if data, err := os.ReadFile(filepath.Join(outDir, base+".bench")); err == nil {
+			var r struct {
+				DurationUS  int64 `json:"duration_us"`
+				MemoryBytes int64 `json:"memory_bytes"`
+			}
+			data = bytes.TrimSpace(data)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				if json.Unmarshal(data[idx:], &r) == nil && r.DurationUS > 0 {
+					dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
+					mem = formatBytes(r.MemoryBytes)
+				}
+			}
+		}
+		lines = append(lines, fmt.Sprintf("| %s | %s | %s | %s | %s |", base, name, status, dur, mem))
 	}
 	ts := time.Now().Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
