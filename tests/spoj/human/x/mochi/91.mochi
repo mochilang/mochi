@@ -1,0 +1,52 @@
+// Solution for SPOJ TWOSQRS - Two squares or not two squares
+// https://www.spoj.com/problems/TWOSQRS/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun canTwoSquares(n: int): bool {
+  var v = n
+  var p = 2
+  while p * p <= v {
+    var count = 0
+    while v % p == 0 {
+      v = v / p
+      count = count + 1
+    }
+    if count % 2 == 1 && p % 4 == 3 { return false }
+    if p == 2 { p = 3 } else { p = p + 2 }
+  }
+  if v % 4 == 3 { return false }
+  return true
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var case = 0
+  while case < t {
+    let nStr = input()
+    let n = parseIntStr(nStr)
+    if canTwoSquares(n) {
+      print("Yes")
+    } else {
+      print("No")
+    }
+    case = case + 1
+  }
+}
+
+main()
