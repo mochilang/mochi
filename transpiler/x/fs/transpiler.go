@@ -1497,15 +1497,21 @@ func (a *AppendExpr) emit(w io.Writer) {
 			io.WriteString(w, "|]")
 			return
 		}
+		if it != elemType {
+			io.WriteString(w, elemType+" (")
+			a.Elem.emit(w)
+			io.WriteString(w, ")|]")
+			return
+		}
 	}
 	if needsParen(a.Elem) {
 		io.WriteString(w, "(")
 		a.Elem.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, ")|]")
 	} else {
 		a.Elem.emit(w)
+		io.WriteString(w, "|]")
 	}
-	io.WriteString(w, "|]")
 }
 
 // SubstringExpr represents substring(str, start, end).
@@ -1618,6 +1624,33 @@ type AssignStmt struct {
 
 func (s *AssignStmt) emit(w io.Writer) {
 	writeIndent(w)
+	vt, vok := varTypes[s.Name]
+	et := inferType(s.Expr)
+	if vok {
+		if vt == "int64" && et == "int" {
+			io.WriteString(w, fsIdent(s.Name))
+			io.WriteString(w, " <- int64 ")
+			if needsParen(s.Expr) {
+				io.WriteString(w, "(")
+				s.Expr.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				s.Expr.emit(w)
+			}
+			return
+		} else if vt == "int" && et == "int64" {
+			io.WriteString(w, fsIdent(s.Name))
+			io.WriteString(w, " <- int ")
+			if needsParen(s.Expr) {
+				io.WriteString(w, "(")
+				s.Expr.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				s.Expr.emit(w)
+			}
+			return
+		}
+	}
 	io.WriteString(w, fsIdent(s.Name))
 	io.WriteString(w, " <- ")
 	s.Expr.emit(w)
@@ -1912,9 +1945,23 @@ func (fst *ForStmt) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, fsIdent(fst.Name))
 		io.WriteString(w, " in ")
-		fst.Start.emit(w)
+		start := fst.Start
+		if inferType(start) != "int" {
+			start = &CastExpr{Expr: start, Type: "int"}
+		}
+		if needsParen(start) {
+			io.WriteString(w, "(")
+			start.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			start.emit(w)
+		}
 		io.WriteString(w, " .. (")
-		(&BinaryExpr{Left: fst.End, Op: "-", Right: &IntLit{Value: 1}}).emit(w)
+		endExpr := fst.End
+		if inferType(endExpr) != "int" {
+			endExpr = &CastExpr{Expr: endExpr, Type: "int"}
+		}
+		(&BinaryExpr{Left: endExpr, Op: "-", Right: &IntLit{Value: 1}}).emit(w)
 		io.WriteString(w, ") do\n")
 	}
 	indentLevel++
@@ -1974,17 +2021,26 @@ func (s *LetStmt) emit(w io.Writer) {
 	if s.Expr != nil {
 		et := inferType(s.Expr)
 		cast := false
+		castType := ""
 		if s.Type == "int" && et == "int64" {
-			cast = true
+			cast, castType = true, "int"
 		} else if s.Type == "int" {
 			if id, ok := s.Expr.(*IdentExpr); ok {
 				if vt, ok2 := varTypes[id.Name]; ok2 && vt == "int64" {
-					cast = true
+					cast, castType = true, "int"
+				}
+			}
+		} else if s.Type == "int64" && et == "int" {
+			cast, castType = true, "int64"
+		} else if s.Type == "int64" {
+			if id, ok := s.Expr.(*IdentExpr); ok {
+				if vt, ok2 := varTypes[id.Name]; ok2 && vt == "int" {
+					cast, castType = true, "int64"
 				}
 			}
 		}
 		if cast {
-			io.WriteString(w, "int (")
+			io.WriteString(w, castType+" (")
 			s.Expr.emit(w)
 			io.WriteString(w, ")")
 		} else {
@@ -2216,34 +2272,34 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 		}
 	}
-       lt := inferType(b.Left)
-       if lt == "" {
-               if call, ok := b.Left.(*CallExpr); ok {
-                       if t, ok2 := varTypes[call.Func]; ok2 {
-                               lt = t
-                       }
-               }
-       }
-       rt := inferType(b.Right)
-       if rt == "" {
-               if call, ok := b.Right.(*CallExpr); ok {
-                       if t, ok2 := varTypes[call.Func]; ok2 {
-                               rt = t
-                       }
-               }
-       }
-       if lt == "array" || rt == "array" || strings.HasSuffix(lt, " array") || strings.HasSuffix(rt, " array") {
-               le := elemTypeOf(b.Left)
-               re := elemTypeOf(b.Right)
-               if (lt == "array" || lt == "int array") && strings.HasSuffix(rt, "int64 array") && le == "int" {
-                       b.Left = &CallExpr{Func: "Array.map int64", Args: []Expr{b.Left}}
-                       lt = "int64 array"
-               } else if (rt == "array" || rt == "int array") && strings.HasSuffix(lt, "int64 array") && re == "int" {
-                       b.Right = &CallExpr{Func: "Array.map int64", Args: []Expr{b.Right}}
-                       rt = "int64 array"
-               }
-       }
-       resT := inferType(b)
+	lt := inferType(b.Left)
+	if lt == "" {
+		if call, ok := b.Left.(*CallExpr); ok {
+			if t, ok2 := varTypes[call.Func]; ok2 {
+				lt = t
+			}
+		}
+	}
+	rt := inferType(b.Right)
+	if rt == "" {
+		if call, ok := b.Right.(*CallExpr); ok {
+			if t, ok2 := varTypes[call.Func]; ok2 {
+				rt = t
+			}
+		}
+	}
+	if lt == "array" || rt == "array" || strings.HasSuffix(lt, " array") || strings.HasSuffix(rt, " array") {
+		le := elemTypeOf(b.Left)
+		re := elemTypeOf(b.Right)
+		if (lt == "array" || lt == "int array") && strings.HasSuffix(rt, "int64 array") && le == "int" {
+			b.Left = &CallExpr{Func: "Array.map int64", Args: []Expr{b.Left}}
+			lt = "int64 array"
+		} else if (rt == "array" || rt == "int array") && strings.HasSuffix(lt, "int64 array") && re == "int" {
+			b.Right = &CallExpr{Func: "Array.map int64", Args: []Expr{b.Right}}
+			rt = "int64 array"
+		}
+	}
+	resT := inferType(b)
 	left := b.Left
 	right := b.Right
 	castIf := func(expr Expr, targetType string) Expr {
@@ -2265,23 +2321,23 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		right = castIf(right, "float")
 		lt, rt = "float", "float"
 	}
-        if lt == "float" && rt == "int" {
-                right = &CastExpr{Expr: right, Type: "float"}
-        } else if rt == "float" && lt == "int" {
-                left = &CastExpr{Expr: left, Type: "float"}
-        } else if lt == "float" && rt == "int64" {
-                right = &CastExpr{Expr: right, Type: "float"}
-        } else if rt == "float" && lt == "int64" {
-                left = &CastExpr{Expr: left, Type: "float"}
-        } else if lt == "int64" && rt == "int" {
-                right = &CastExpr{Expr: right, Type: "int64"}
-        } else if rt == "int64" && lt == "int" {
-                left = &CastExpr{Expr: left, Type: "int64"}
-        } else if lt == "bigint" && rt == "int" {
-                right = &CastExpr{Expr: right, Type: "bigint"}
-        } else if rt == "bigint" && lt == "int" {
-                left = &CastExpr{Expr: left, Type: "bigint"}
-        }
+	if lt == "float" && rt == "int" {
+		right = &CastExpr{Expr: right, Type: "float"}
+	} else if rt == "float" && lt == "int" {
+		left = &CastExpr{Expr: left, Type: "float"}
+	} else if lt == "float" && rt == "int64" {
+		right = &CastExpr{Expr: right, Type: "float"}
+	} else if rt == "float" && lt == "int64" {
+		left = &CastExpr{Expr: left, Type: "float"}
+	} else if lt == "int64" && rt == "int" {
+		right = &CastExpr{Expr: right, Type: "int64"}
+	} else if rt == "int64" && lt == "int" {
+		left = &CastExpr{Expr: left, Type: "int64"}
+	} else if lt == "bigint" && rt == "int" {
+		right = &CastExpr{Expr: right, Type: "bigint"}
+	} else if rt == "bigint" && lt == "int" {
+		left = &CastExpr{Expr: left, Type: "bigint"}
+	}
 	if b.Op == "/" && resT == "int" {
 		usesFloorDiv = true
 		left = &CastExpr{Expr: left, Type: "int"}
@@ -2693,6 +2749,8 @@ func inferType(e Expr) string {
 			return "string"
 		case "_str":
 			return "string"
+		case "int", "int64":
+			return "int64"
 		case "Seq.length", "List.length", "String.length":
 			return "int"
 		case "Seq.sum", "List.sum":
@@ -2777,35 +2835,37 @@ func isList(e Expr) bool {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-        name := c.Func
-        if name == "mod" {
-                name = "``mod``"
-        }
-        if strings.Contains(name, " ") {
-                io.WriteString(w, name)
-        } else {
-                io.WriteString(w, fsIdent(name))
-        }
-        if len(c.Args) == 0 {
-                io.WriteString(w, "()")
-                return
-        }
-       if name == "Array.sub" {
-               // Array.sub expects int indices; cast subsequent arguments to int
-               if len(c.Args) > 1 {
-                       c.Args[1] = &CastExpr{Expr: c.Args[1], Type: "int"}
-               }
-               if len(c.Args) > 2 {
-                       c.Args[2] = &CastExpr{Expr: c.Args[2], Type: "int"}
-               }
-       }
-        lastDot := strings.LastIndex(name, ".")
-        if lastDot != -1 && lastDot+1 < len(name) && unicode.IsUpper(rune(name[lastDot+1])) && !strings.Contains(name, " ") {
-                io.WriteString(w, "(")
-                for i, a := range c.Args {
-                        if i > 0 {
-                                io.WriteString(w, ", ")
-                        }
+	name := c.Func
+	if name == "mod" {
+		name = "``mod``"
+	} else if name == "int" {
+		name = "int64"
+	}
+	if strings.Contains(name, " ") {
+		io.WriteString(w, name)
+	} else {
+		io.WriteString(w, fsIdent(name))
+	}
+	if len(c.Args) == 0 {
+		io.WriteString(w, "()")
+		return
+	}
+	if name == "Array.sub" {
+		// Array.sub expects int indices; cast subsequent arguments to int
+		if len(c.Args) > 1 {
+			c.Args[1] = &CastExpr{Expr: c.Args[1], Type: "int"}
+		}
+		if len(c.Args) > 2 {
+			c.Args[2] = &CastExpr{Expr: c.Args[2], Type: "int"}
+		}
+	}
+	lastDot := strings.LastIndex(name, ".")
+	if lastDot != -1 && lastDot+1 < len(name) && unicode.IsUpper(rune(name[lastDot+1])) && !strings.Contains(name, " ") {
+		io.WriteString(w, "(")
+		for i, a := range c.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
 			a.emit(w)
 		}
 		io.WriteString(w, ")")
@@ -2893,24 +2953,24 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-       if t == "string" {
-               io.WriteString(w, "string (")
-               i.Target.emit(w)
-               io.WriteString(w, ".[")
-               ixT := inferType(i.Index)
-               if ixT != "int" {
-                       io.WriteString(w, "int ")
-               }
-               if needsParen(i.Index) {
-                       io.WriteString(w, "(")
-                       i.Index.emit(w)
-                       io.WriteString(w, ")")
-               } else {
-                       i.Index.emit(w)
-               }
-               io.WriteString(w, "])")
-               return
-       }
+	if t == "string" {
+		io.WriteString(w, "string (")
+		i.Target.emit(w)
+		io.WriteString(w, ".[")
+		ixT := inferType(i.Index)
+		if ixT != "int" {
+			io.WriteString(w, "int ")
+		}
+		if needsParen(i.Index) {
+			io.WriteString(w, "(")
+			i.Index.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			i.Index.emit(w)
+		}
+		io.WriteString(w, "])")
+		return
+	}
 	if t == "map" || t == "obj" || t == "" {
 		valT := mapValueType(t)
 		if id, ok := i.Target.(*IdentExpr); ok {
@@ -3342,37 +3402,37 @@ func (s *SliceExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-        io.WriteString(w, "Array.sub ")
-        s.Target.emit(w)
-        io.WriteString(w, " ")
-        st := start
-        if inferType(st) != "int" {
-                st = &CastExpr{Expr: st, Type: "int32"}
-        }
-        if needsParen(st) {
-                io.WriteString(w, "(")
-                st.emit(w)
-                io.WriteString(w, ")")
-        } else {
-                st.emit(w)
-        }
-        io.WriteString(w, " ")
-        var endLen Expr
-        if s.End != nil {
-                endLen = &BinaryExpr{Left: s.End, Op: "-", Right: start}
-        } else {
-                endLen = &BinaryExpr{Left: &CallExpr{Func: "Array.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
-        }
-        if inferType(endLen) != "int" {
-                endLen = &CastExpr{Expr: endLen, Type: "int32"}
-        }
-        if needsParen(endLen) {
-                io.WriteString(w, "(")
-                endLen.emit(w)
-                io.WriteString(w, ")")
-        } else {
-                endLen.emit(w)
-        }
+	io.WriteString(w, "Array.sub ")
+	s.Target.emit(w)
+	io.WriteString(w, " ")
+	st := start
+	if inferType(st) != "int" {
+		st = &CastExpr{Expr: st, Type: "int32"}
+	}
+	if needsParen(st) {
+		io.WriteString(w, "(")
+		st.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		st.emit(w)
+	}
+	io.WriteString(w, " ")
+	var endLen Expr
+	if s.End != nil {
+		endLen = &BinaryExpr{Left: s.End, Op: "-", Right: start}
+	} else {
+		endLen = &BinaryExpr{Left: &CallExpr{Func: "Array.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
+	}
+	if inferType(endLen) != "int" {
+		endLen = &CastExpr{Expr: endLen, Type: "int32"}
+	}
+	if needsParen(endLen) {
+		io.WriteString(w, "(")
+		endLen.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		endLen.emit(w)
+	}
 }
 
 // CastExpr represents expr as type.
@@ -3405,28 +3465,28 @@ func (c *CastExpr) emit(w io.Writer) {
 		} else {
 			c.Expr.emit(w)
 		}
-        case "int":
-                if t == "obj" {
-                        io.WriteString(w, "unbox<int64> ")
-                } else {
-                        io.WriteString(w, "int64 ")
-                }
-                if needsParen(c.Expr) {
-                        io.WriteString(w, "(")
-                        c.Expr.emit(w)
-                        io.WriteString(w, ")")
-                } else {
-                        c.Expr.emit(w)
-                }
-       case "int32":
-               io.WriteString(w, "int ")
-               if needsParen(c.Expr) {
-                       io.WriteString(w, "(")
-                       c.Expr.emit(w)
-                       io.WriteString(w, ")")
-               } else {
-                       c.Expr.emit(w)
-               }
+	case "int":
+		if t == "obj" {
+			io.WriteString(w, "unbox<int> ")
+		} else {
+			io.WriteString(w, "int ")
+		}
+		if needsParen(c.Expr) {
+			io.WriteString(w, "(")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			c.Expr.emit(w)
+		}
+	case "int32":
+		io.WriteString(w, "int ")
+		if needsParen(c.Expr) {
+			io.WriteString(w, "(")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			c.Expr.emit(w)
+		}
 	case "int64":
 		io.WriteString(w, "int64 ")
 		if needsParen(c.Expr) {
@@ -4615,25 +4675,25 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		currentReturn = prevReturn
 		hasNull := funcHasNull
 		funcHasNull = saveNull
-               if retType == "int" {
-                       for _, st := range body {
-                               if r, ok := st.(*ReturnStmt); ok {
-                                       if inferType(r.Expr) == "int64" {
-                                               retType = "int64"
-                                               break
-                                       }
-                               }
-                       }
-               } else if retType == "int array" {
-                       for _, st := range body {
-                               if r, ok := st.(*ReturnStmt); ok {
-                                       if inferType(r.Expr) == "int64 array" {
-                                               retType = "int64 array"
-                                               break
-                                       }
-                               }
-                       }
-               }
+		if retType == "int" {
+			for _, st := range body {
+				if r, ok := st.(*ReturnStmt); ok {
+					if inferType(r.Expr) == "int64" {
+						retType = "int64"
+						break
+					}
+				}
+			}
+		} else if retType == "int array" {
+			for _, st := range body {
+				if r, ok := st.(*ReturnStmt); ok {
+					if inferType(r.Expr) == "int64 array" {
+						retType = "int64 array"
+						break
+					}
+				}
+			}
+		}
 		for i, p := range st.Fun.Params {
 			if paramTypes[i] == "int" {
 				if t, ok := varTypes[p.Name]; ok && t == "int64" {
@@ -5063,29 +5123,29 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 							}
 						}
 					}
-                                       for i, t := range pts {
-                                               if i >= len(args) || t == "" {
-                                                       continue
-                                               }
-                                               if t == "int64" {
-                                                       if ce, ok := args[i].(*CastExpr); ok && ce.Type == "int64" {
-                                                               // already cast
-                                                       } else {
-                                                               args[i] = &CastExpr{Expr: args[i], Type: "int64"}
-                                                       }
-                                                       continue
-                                               }
-                                               if t != inferType(args[i]) {
-                                                       if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") && inferType(args[i]) == "map" {
-                                                               // let F# infer generic types for map literals
-                                                       } else {
-                                                               args[i] = &CastExpr{Expr: args[i], Type: t}
-                                                       }
-                                               }
-                                       }
-                               }
-                       }
-                       return &CallExpr{Func: fsIdent(p.Call.Func), Args: args}, nil
+					for i, t := range pts {
+						if i >= len(args) || t == "" {
+							continue
+						}
+						if t == "int64" {
+							if ce, ok := args[i].(*CastExpr); ok && ce.Type == "int64" {
+								// already cast
+							} else {
+								args[i] = &CastExpr{Expr: args[i], Type: "int64"}
+							}
+							continue
+						}
+						if t != inferType(args[i]) {
+							if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") && inferType(args[i]) == "map" {
+								// let F# infer generic types for map literals
+							} else {
+								args[i] = &CastExpr{Expr: args[i], Type: t}
+							}
+						}
+					}
+				}
+			}
+			return &CallExpr{Func: fsIdent(p.Call.Func), Args: args}, nil
 		}
 		switch p.Call.Func {
 		case "print":
