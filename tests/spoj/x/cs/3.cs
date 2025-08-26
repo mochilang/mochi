@@ -2,9 +2,9 @@
 #pragma warning disable 0169, 0649, 0162
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Numerics;
-using System.IO;
 using System.Collections;
 using System.Globalization;
 
@@ -29,28 +29,17 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
+    }
     static T _idx<T>(T[] arr, long i) {
         if (arr == null) return default(T);
         if (i < 0) i += arr.Length;
         if (i < 0 || i >= arr.Length) return default(T);
         return arr[(int)i];
-    }
-    static string[] inputLines;
-    static int inputIndex = 0;
-    static string _input() {
-        if (inputLines == null) {
-            var path = Environment.GetEnvironmentVariable("MOCHI_INPUT_FILE");
-            if (!string.IsNullOrEmpty(path) && File.Exists(path)) {
-                inputLines = File.ReadAllLines(path);
-            } else {
-                inputLines = new string[]{};
-            }
-        }
-        if (inputIndex < inputLines.Length) {
-            return inputLines[inputIndex++];
-        }
-        var line = Console.ReadLine();
-        return line == null ? "" : line;
     }
     static long _atoi(object v) {
         if (v == null) return 0;
@@ -133,15 +122,42 @@ class Program {
         return _fmt(v);
     }
     static string __name__ = "__main__";
-    public static void main() {
-        while (true) {
-            string line_0 = _input();
-            BigInteger n_1 = _atoi(line_0);
-            if ((n_1 == 42)) {
-                break;
+    static string[] sample_input_14 = new string[]{"1010110010 10110", "1110111011 10011"};
+    public static BigInteger is_substring(string a_0, string b_1) {
+        long la_2 = a_0.Length;
+        long lb_3 = b_1.Length;
+        BigInteger i_4 = 0;
+        while (((i_4 + lb_3) <= la_2)) {
+            if ((_substr(a_0, (long)(i_4), (long)((i_4 + lb_3))) == b_1)) {
+                return 1;
             }
-            Console.WriteLine(Program._fmtTop(line_0));
+            i_4 = (i_4 + 1);
         };
+        return 0;
+    }
+
+    public static BigInteger[] solve(string[] lines_5) {
+        BigInteger[] res_6 = new BigInteger[]{};
+        foreach (string line_7 in lines_5) {
+            string[] parts_8 = new string[]{};
+            string cur_9 = "";
+            BigInteger i_10 = 0;
+            while ((i_10 < line_7.Length)) {
+                string ch_11 = _substr(line_7, (long)(i_10), (long)((i_10 + 1)));
+                if ((ch_11 == " ")) {
+                    parts_8 = Enumerable.ToArray(parts_8.Append(cur_9));
+                    cur_9 = "";
+                } else {
+                    cur_9 = (cur_9 + ch_11);
+                }
+                i_10 = (i_10 + 1);
+            }
+            parts_8 = Enumerable.ToArray(parts_8.Append(cur_9));
+            string a_12 = _idx(parts_8, (long)(0));
+            string b_13 = _idx(parts_8, (long)(1));
+            res_6 = Enumerable.ToArray(res_6.Append(Program.is_substring(a_12, b_13)));
+        };
+        return res_6;
     }
 
     static void Main() {
@@ -149,7 +165,9 @@ class Program {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            foreach (BigInteger r_15 in Program.solve(sample_input_14)) {
+                Console.WriteLine(Program._fmtTop(r_15));
+            }
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

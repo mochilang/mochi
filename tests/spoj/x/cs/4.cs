@@ -2,6 +2,7 @@
 #pragma warning disable 0169, 0649, 0162
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Numerics;
 using System.IO;
@@ -28,6 +29,12 @@ class Program {
     }
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
+    }
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static T _idx<T>(T[] arr, long i) {
         if (arr == null) return default(T);
@@ -133,14 +140,87 @@ class Program {
         return _fmt(v);
     }
     static string __name__ = "__main__";
-    public static void main() {
-        while (true) {
-            string line_0 = _input();
-            BigInteger n_1 = _atoi(line_0);
-            if ((n_1 == 42)) {
-                break;
+    public static BigInteger precedence(string op_0) {
+        if (((op_0 == "+") || (op_0 == "-"))) {
+            return 1;
+        };
+        if (((op_0 == "*") || (op_0 == "/"))) {
+            return 2;
+        };
+        if ((op_0 == "^")) {
+            return 3;
+        };
+        return 0;
+    }
+
+    public static string popTop(string[] stack_1) {
+        return _idx(stack_1, (long)((stack_1.Length - 1)));
+    }
+
+    public static string[] popStack(string[] stack_2) {
+        string[] newStack_3 = new string[]{};
+        BigInteger i_4 = 0;
+        while ((i_4 < (stack_2.Length - 1))) {
+            newStack_3 = Enumerable.ToArray(newStack_3.Append(_idx(stack_2, (long)(i_4))));
+            i_4 = (i_4 + 1);
+        };
+        return newStack_3;
+    }
+
+    public static string toRPN(string expr_5) {
+        string out_6 = "";
+        string[] stack_7 = new string[]{};
+        BigInteger i_8 = 0;
+        while ((i_8 < expr_5.Length)) {
+            string ch_9 = expr_5.Substring((int)(i_8), 1);
+            if (((string.Compare(ch_9, "a") >= 0) && (string.Compare(ch_9, "z") <= 0))) {
+                out_6 = (out_6 + ch_9);
+            } else if ((ch_9 == "(")) {
+                stack_7 = Enumerable.ToArray(stack_7.Append(ch_9));
+            } else if ((ch_9 == ")")) {
+                while ((stack_7.Length > 0)) {
+                    string top_10 = Program.popTop(stack_7);
+                    if ((top_10 == "(")) {
+                        stack_7 = Program.popStack(stack_7);
+                        break;
+                    }
+                    out_6 = (out_6 + top_10);
+                    stack_7 = Program.popStack(stack_7);
+                }
+            } else {
+                BigInteger prec_11 = Program.precedence(ch_9);
+                while ((stack_7.Length > 0)) {
+                    string top_12 = Program.popTop(stack_7);
+                    if ((top_12 == "(")) {
+                        break;
+                    }
+                    BigInteger topPrec_13 = Program.precedence(top_12);
+                    if (((topPrec_13 > prec_11) || ((topPrec_13 == prec_11) && (ch_9 != "^")))) {
+                        out_6 = (out_6 + top_12);
+                        stack_7 = Program.popStack(stack_7);
+                    } else {
+                        break;
+                    }
+                }
+                stack_7 = Enumerable.ToArray(stack_7.Append(ch_9));
             }
-            Console.WriteLine(Program._fmtTop(line_0));
+            i_8 = (i_8 + 1);
+        };
+        while ((stack_7.Length > 0)) {
+            string top_14 = Program.popTop(stack_7);
+            out_6 = (out_6 + top_14);
+            stack_7 = Program.popStack(stack_7);
+        };
+        return out_6;
+    }
+
+    public static void main() {
+        long t_15 = _atoi(_input());
+        BigInteger i_16 = 0;
+        while ((i_16 < t_15)) {
+            string expr_17 = _input();
+            Console.WriteLine(Program._fmtTop(Program.toRPN(expr_17)));
+            i_16 = (i_16 + 1);
         };
     }
 

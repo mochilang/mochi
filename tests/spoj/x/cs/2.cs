@@ -2,6 +2,7 @@
 #pragma warning disable 0169, 0649, 0162
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Numerics;
 using System.IO;
@@ -28,6 +29,12 @@ class Program {
     }
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
+    }
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static T _idx<T>(T[] arr, long i) {
         if (arr == null) return default(T);
@@ -64,6 +71,18 @@ class Program {
             return 0;
         }
         try { return Convert.ToInt64(v); } catch { return 0; }
+    }
+    static long _mod(long a, long b) {
+        if (b == 0) return 0;
+        var r = a % b;
+        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
+        return r;
+    }
+    static BigInteger _mod(BigInteger a, BigInteger b) {
+        if (b == 0) return BigInteger.Zero;
+        var r = a % b;
+        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
+        return r;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -133,15 +152,52 @@ class Program {
         return _fmt(v);
     }
     static string __name__ = "__main__";
-    public static void main() {
-        while (true) {
-            string line_0 = _input();
-            BigInteger n_1 = _atoi(line_0);
-            if ((n_1 == 42)) {
-                break;
+    static BigInteger[] primes_12 = Program.precompute(32000);
+    static long t_13 = _atoi(_input());
+    static BigInteger case_idx_14 = 0;
+    public static string[] split(string s_0, string sep_1) {
+        string[] parts_2 = new string[]{};
+        string cur_3 = "";
+        BigInteger i_4 = 0;
+        while ((i_4 < s_0.Length)) {
+            if ((((sep_1.Length > 0) && ((i_4 + sep_1.Length) <= s_0.Length)) && (_substr(s_0, (long)(i_4), (long)((i_4 + sep_1.Length))) == sep_1))) {
+                parts_2 = Enumerable.ToArray(parts_2.Append(cur_3));
+                cur_3 = "";
+                i_4 = (i_4 + sep_1.Length);
+            } else {
+                cur_3 = (cur_3 + _substr(s_0, (long)(i_4), (long)((i_4 + 1))));
+                i_4 = (i_4 + 1);
             }
-            Console.WriteLine(Program._fmtTop(line_0));
         };
+        parts_2 = Enumerable.ToArray(parts_2.Append(cur_3));
+        return parts_2;
+    }
+
+    public static BigInteger[] precompute(BigInteger limit_5) {
+        bool[] sieve_6 = new bool[]{};
+        for (var i_7 = 0; i_7 < (limit_5 + 1); i_7++) {
+            sieve_6 = Enumerable.ToArray(sieve_6.Append(true));
+        };
+        sieve_6[(int)(0)] = false;
+        sieve_6[(int)(1)] = false;
+        BigInteger p_8 = 2;
+        while (((p_8 * p_8) <= limit_5)) {
+            if (_idx(sieve_6, (long)(p_8))) {
+                BigInteger j_9 = (p_8 * p_8);
+                while ((j_9 <= limit_5)) {
+                    sieve_6[(int)(j_9)] = false;
+                    j_9 = (j_9 + p_8);
+                }
+            }
+            p_8 = (p_8 + 1);
+        };
+        BigInteger[] primes_10 = new BigInteger[]{};
+        for (var i_11 = 2; i_11 < (limit_5 + 1); i_11++) {
+            if (_idx(sieve_6, i_11)) {
+                primes_10 = Enumerable.ToArray(primes_10.Append(i_11));
+            }
+        };
+        return primes_10;
     }
 
     static void Main() {
@@ -149,7 +205,50 @@ class Program {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            while ((case_idx_14 < t_13)) {
+                string line_15 = _input();
+                string[] parts_16 = Program.split(line_15, " ");
+                long m_17 = _atoi(_idx(parts_16, (long)(0)));
+                long n_18 = _atoi(_idx(parts_16, (long)(1)));
+                BigInteger size_19 = ((n_18 - m_17) + 1);
+                bool[] segment_20 = new bool[]{};
+                for (var i_21 = 0; i_21 < size_19; i_21++) {
+                    segment_20 = Enumerable.ToArray(segment_20.Append(true));
+                }
+                foreach (BigInteger p_22 in primes_12) {
+                    if (((p_22 * p_22) > n_18)) {
+                        break;
+                    }
+                    BigInteger start_23 = (p_22 * p_22);
+                    if ((start_23 < m_17)) {
+                        BigInteger rem_24 = _mod(m_17, p_22);
+                        if ((rem_24 == 0)) {
+                            start_23 = m_17;
+                        } else {
+                            start_23 = (m_17 + (p_22 - rem_24));
+                        }
+                    }
+                    BigInteger j_25 = start_23;
+                    while ((j_25 <= n_18)) {
+                        segment_20[(int)((j_25 - m_17))] = false;
+                        j_25 = (j_25 + p_22);
+                    }
+                }
+                if ((m_17 == 1)) {
+                    segment_20[(int)(0)] = false;
+                }
+                BigInteger i_26 = 0;
+                while ((i_26 < size_19)) {
+                    if (_idx(segment_20, (long)(i_26))) {
+                        Console.WriteLine(Program._fmtTop((i_26 + m_17)));
+                    }
+                    i_26 = (i_26 + 1);
+                }
+                if ((case_idx_14 < (t_13 - 1))) {
+                    Console.WriteLine(Program._fmtTop(""));
+                }
+                case_idx_14 = (case_idx_14 + 1);
+            }
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

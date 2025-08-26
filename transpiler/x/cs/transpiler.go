@@ -2406,20 +2406,20 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 		return
 	}
-	if t == "object" || t == "" {
-		fmt.Fprint(w, "((dynamic)")
-		ix.Target.emit(w)
-		fmt.Fprint(w, ")[")
-		if idxType != "int" {
-			fmt.Fprint(w, "(int)(")
-			ix.Index.emit(w)
-			fmt.Fprint(w, ")")
-		} else {
-			ix.Index.emit(w)
-		}
-		fmt.Fprint(w, "]")
-		return
-	}
+       if t == "object" || t == "" {
+               fmt.Fprint(w, "((dynamic)")
+               ix.Target.emit(w)
+               fmt.Fprint(w, ")[")
+               if idxType != "int" && idxType != "string" {
+                       fmt.Fprint(w, "(int)(")
+                       ix.Index.emit(w)
+                       fmt.Fprint(w, ")")
+               } else {
+                       ix.Index.emit(w)
+               }
+               fmt.Fprint(w, "]")
+               return
+       }
 	if strings.HasSuffix(targetType, "[]") {
 		usesIdx = true
 		fmt.Fprint(w, "_idx(")
