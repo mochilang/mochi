@@ -1,0 +1,210 @@
+// Solution for SPOJ BUS - Bus
+// https://www.spoj.com/problems/BUS/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var sign = 1
+  if len(str) > 0 && str[0:1] == "-" {
+    sign = 0-1
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return sign * n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun lcm(a: int, b: int): int {
+  return a / gcd(a, b) * b
+}
+
+fun nextTime(cur: int, off: int, per: int): int {
+  if cur <= off { return off }
+  var diff = cur - off
+  var k = diff / per
+  if diff % per != 0 { k = k + 1 }
+  return off + k * per
+}
+
+fun solveCase(routes: list<list<int>>): string {
+  let n = len(routes)
+  var off: list<list<int>> = []
+  var per: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var rowOff: list<int> = []
+    var rowPer: list<int> = []
+    var j = 0
+    while j < n {
+      rowOff = append(rowOff, 0-1)
+      rowPer = append(rowPer, 0)
+      j = j + 1
+    }
+    off = append(off, rowOff)
+    per = append(per, rowPer)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    var j = i + 1
+    while j < n {
+      let la = len(routes[i])
+      let lb = len(routes[j])
+      let L = lcm(la, lb)
+      var t = 0
+      var first = 0-1
+      while t < L {
+        if routes[i][t % la] == routes[j][t % lb] {
+          first = t
+          break
+        }
+        t = t + 1
+      }
+      off[i][j] = first
+      off[j][i] = first
+      per[i][j] = L
+      per[j][i] = L
+      j = j + 1
+    }
+    i = i + 1
+  }
+  let INF = 1000000000
+  var maxTime = 0
+  var src = 0
+  while src < n {
+    var dist: list<int> = []
+    var vis: list<int> = []
+    var k = 0
+    while k < n {
+      dist = append(dist, INF)
+      vis = append(vis, 0)
+      k = k + 1
+    }
+    dist[src] = 0
+    var iter = 0
+    while iter < n {
+      var u = 0-1
+      var best = INF
+      var v = 0
+      while v < n {
+        if vis[v] == 0 && dist[v] < best {
+          best = dist[v]
+          u = v
+        }
+        v = v + 1
+      }
+      if u == 0-1 { break }
+      vis[u] = 1
+      v = 0
+      while v < n {
+        let offuv = off[u][v]
+        if offuv >= 0 {
+          let peruv = per[u][v]
+          let meet = nextTime(dist[u], offuv, peruv)
+          if meet < dist[v] {
+            dist[v] = meet
+          }
+        }
+        v = v + 1
+      }
+      iter = iter + 1
+    }
+    var j2 = 0
+    while j2 < n {
+      if dist[j2] == INF { return "NEVER" }
+      if dist[j2] > maxTime { maxTime = dist[j2] }
+      j2 = j2 + 1
+    }
+    src = src + 1
+  }
+  return str(maxTime)
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+    if line == nil { return nil }
+  }
+  return line
+}
+
+fun main() {
+  var outputs: list<string> = []
+  while true {
+    var line = input()
+    if line == nil { break }
+    if line == "" { continue }
+    let n = parseIntStr(line)
+    if n == 0 { break }
+    var routes: list<list<int>> = []
+    var i = 0
+    while i < n {
+      var ln = input()
+      while ln == "" { ln = input() }
+      let nums = parseInts(ln)
+      var stops: list<int> = []
+      var j = 1
+      while j < len(nums) {
+        stops = append(stops, nums[j])
+        j = j + 1
+      }
+      routes = append(routes, stops)
+      i = i + 1
+    }
+    outputs = append(outputs, solveCase(routes))
+  }
+  var idx = 0
+  while idx < len(outputs) {
+    print(outputs[idx])
+    idx = idx + 1
+  }
+}
+
+main()
