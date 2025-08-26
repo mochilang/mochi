@@ -1,0 +1,56 @@
+// Solution for SPOJ JULKA - Julka
+// https://www.spoj.com/problems/JULKA/
+
+let digitMap = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+let revDigits = ["0","1","2","3","4","5","6","7","8","9"]
+
+fun clean(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun addStr(a: string, b: string): string {
+  var i = len(a) - 1
+  var j = len(b) - 1
+  var carry = 0
+  var res = ""
+  while i >= 0 || j >= 0 || carry > 0 {
+    var da = 0
+    if i >= 0 { da = digitMap[a[i:i+1]] as int; i = i - 1 }
+    var db = 0
+    if j >= 0 { db = digitMap[b[j:j+1]] as int; j = j - 1 }
+    let s = da + db + carry
+    res = revDigits[s % 10] + res
+    carry = s / 10
+  }
+  return res
+}
+
+fun main() {
+  let totalRaw = input()
+  if totalRaw == "" { return }
+  let diffRaw = input()
+  let totalLine = clean(totalRaw)
+  let diffLine = clean(diffRaw)
+  let total: bigint = totalLine as bigint
+  let diff: bigint = diffLine as bigint
+  let sumPlus = addStr(totalLine, diffLine)
+  let klaudia = (sumPlus as bigint) / 2
+  let natalia = (total - diff) / 2
+  print(str(klaudia))
+  print(str(natalia))
+}
+
+main()
