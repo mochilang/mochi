@@ -1,0 +1,158 @@
+// Solution for SPOJ SHPATH - The Shortest Path
+// https://www.spoj.com/problems/SHPATH/
+
+type Edge = { to: int, cost: int }
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split_two(s: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == " " {
+      if current != "" {
+        res = append(res, current)
+        current = ""
+      }
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  if current != "" {
+    res = append(res, current)
+  }
+  return res
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_bool_list(n: int): list<bool> {
+  var lst: list<bool> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, false)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_edge_list(n: int): list<list<Edge>> {
+  var lst: list<list<Edge>> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, [])
+    i = i + 1
+  }
+  return lst
+}
+
+fun dijkstra(graph: list<list<Edge>>, start: int, dest: int): int {
+  let n = len(graph)
+  let inf = 1000000000
+  var dist = make_int_list(n, inf)
+  var visited = make_bool_list(n)
+  dist[start] = 0
+  var count = 0
+  while count < n {
+    var u = 0
+    var best = inf
+    var i = 1
+    while i < n {
+      if !visited[i] && dist[i] < best {
+        best = dist[i]
+        u = i
+      }
+      i = i + 1
+    }
+    if u == 0 || u == dest {
+      break
+    }
+    visited[u] = true
+    var j = 0
+    while j < len(graph[u]) {
+      let e = graph[u][j]
+      let v = e.to
+      let w = e.cost
+      if !visited[v] {
+        let alt = dist[u] + w
+        if alt < dist[v] {
+          dist[v] = alt
+        }
+      }
+      j = j + 1
+    }
+    count = count + 1
+  }
+  return dist[dest]
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var caseIndex = 0
+  while caseIndex < t {
+    let nStr = input()
+    let n = parseIntStr(nStr)
+    var graph = make_edge_list(n)
+    var nameToIdx: map<string, int> = {}
+    var i = 1
+    while i <= n {
+      let city = input()
+      nameToIdx[city] = i
+      let pStr = input()
+      let p = parseIntStr(pStr)
+      var j = 0
+      while j < p {
+        let line = input()
+        let parts = split_two(line)
+        let nr = parseIntStr(parts[0])
+        let cost = parseIntStr(parts[1])
+        graph[i] = append(graph[i], Edge{ to:nr, cost:cost })
+        j = j + 1
+      }
+      i = i + 1
+    }
+    let rStr = input()
+    let r = parseIntStr(rStr)
+    var k = 0
+    while k < r {
+      let line = input()
+      let parts = split_two(line)
+      let src = nameToIdx[parts[0]]
+      let dst = nameToIdx[parts[1]]
+      let res = dijkstra(graph, src, dst)
+      print(res)
+      k = k + 1
+    }
+    if caseIndex < t - 1 {
+      let _ = input()
+    }
+    caseIndex = caseIndex + 1
+  }
+}
+
+main()
