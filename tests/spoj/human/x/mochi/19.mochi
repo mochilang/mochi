@@ -1,0 +1,35 @@
+// Solution for SPOJ CRYPTO3 - The Bytelandian Cryptographer (Act III)
+// https://www.spoj.com/problems/CRYPTO3/
+
+fun doubleStr(s: string): string {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  let chars = {
+    0:"0",1:"1",2:"2",3:"3",4:"4",
+    5:"5",6:"6",7:"7",8:"8",9:"9",
+  }
+  var i = len(s) - 1
+  var carry = 0
+  var res = ""
+  while i >= 0 {
+    let d = digits[s[i:i+1]] as int
+    let v = d * 2 + carry
+    res = chars[v % 10] + res
+    carry = v / 10
+    i = i - 1
+  }
+  if carry > 0 {
+    res = chars[carry] + res
+  }
+  return res
+}
+
+fun main() {
+  let nStr = input()
+  if nStr == "" { return }
+  print(doubleStr(nStr))
+}
+
+main()
