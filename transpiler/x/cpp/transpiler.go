@@ -1085,6 +1085,13 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    if(v.type() == typeid(double)) return std::any_cast<double>(v);")
 		fmt.Fprintln(w, "    return 0;")
 		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "static int64_t any_to_int64(const std::any& v) {")
+		fmt.Fprintln(w, "    if(v.type() == typeid(int64_t)) return std::any_cast<int64_t>(v);")
+		fmt.Fprintln(w, "    if(v.type() == typeid(int)) return (int64_t)std::any_cast<int>(v);")
+		fmt.Fprintln(w, "    if(v.type() == typeid(double)) return (int64_t)std::any_cast<double>(v);")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::string)) return std::stoll(std::any_cast<std::string>(v));")
+		fmt.Fprintln(w, "    return 0;")
+		fmt.Fprintln(w, "}")
 		fmt.Fprintln(w, "static std::string any_to_string(const std::any& v) {")
 		fmt.Fprintln(w, "    if(v.type() == typeid(std::string)) return std::any_cast<std::string>(v);")
 		fmt.Fprintln(w, "    if(v.type() == typeid(int)) return std::to_string(std::any_cast<int>(v));")
@@ -1995,11 +2002,12 @@ func (i *IndexExpr) emit(w io.Writer) {
 					resType = "std::any"
 				}
 			}
-			io.WriteString(w, "std::any_cast<"+resType+">(std::any_cast<std::map<std::string, std::any>>(")
-			i.Target.emit(w)
-			io.WriteString(w, ")[")
+			io.WriteString(w, "([&](const std::any& __a){ const auto& __m = std::any_cast<const std::map<std::string, std::any>&>(__a); auto __it = __m.find(")
 			i.Index.emit(w)
-			io.WriteString(w, "])")
+			io.WriteString(w, "); if (__it == __m.end()) return std::any{}; return __it->second; })")
+			io.WriteString(w, "(")
+			i.Target.emit(w)
+			io.WriteString(w, ")")
 			return
 		}
 	}
@@ -2409,6 +2417,18 @@ func (c *CastExpr) emit(w io.Writer) {
 		if c.Type == "std::vector<std::any>" {
 			useAnyVec = true
 			io.WriteString(w, "any_to_vec_any(")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		} else if c.Type == "int" || c.Type == "int64_t" {
+			io.WriteString(w, "any_to_int64(")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		} else if c.Type == "double" {
+			io.WriteString(w, "any_to_double(")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		} else if c.Type == "std::string" {
+			io.WriteString(w, "any_to_string(")
 			c.Value.emit(w)
 			io.WriteString(w, ")")
 		} else {
