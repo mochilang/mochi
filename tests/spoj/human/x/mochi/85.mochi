@@ -1,0 +1,400 @@
+// Solution for SPOJ DICE1 - Dice Contest
+// https://www.spoj.com/problems/DICE1/
+
+// utility to split string by space
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pcs = split(line, " ")
+  var res: list<int> = []
+  var i = 0
+  while i < len(pcs) {
+    let p = pcs[i]
+    if len(p) > 0 {
+      res = append(res, p as int)
+    }
+    i = i + 1
+  }
+  return res
+}
+
+type Ori {
+  t: int
+  b: int
+  n: int
+  s: int
+  e: int
+  w: int
+}
+
+fun key(o: Ori): int {
+  return (((((o.t*10 + o.b)*10 + o.n)*10 + o.s)*10 + o.e)*10 + o.w)
+}
+
+fun rollN(o: Ori): Ori {
+  return Ori{ t: o.s, b: o.n, n: o.t, s: o.b, e: o.e, w: o.w }
+}
+
+fun rollS(o: Ori): Ori {
+  return Ori{ t: o.n, b: o.s, n: o.b, s: o.t, e: o.e, w: o.w }
+}
+
+fun rollE(o: Ori): Ori {
+  return Ori{ t: o.w, b: o.e, n: o.n, s: o.s, e: o.t, w: o.b }
+}
+
+fun rollW(o: Ori): Ori {
+  return Ori{ t: o.e, b: o.w, n: o.n, s: o.s, e: o.b, w: o.t }
+}
+
+// generate all orientations
+var oris: list<Ori> = []
+var index: map<int,int> = {}
+var queue: list<Ori> = []
+let startOri = Ori{ t:1, b:6, n:5, s:2, e:4, w:3 }
+oris = append(oris, startOri)
+index[key(startOri)] = 0
+queue = append(queue, startOri)
+var qi = 0
+while qi < len(queue) {
+  let o = queue[qi]
+  qi = qi + 1
+  let dirs = [rollN(o), rollS(o), rollE(o), rollW(o)]
+  var di = 0
+  while di < len(dirs) {
+    let no = dirs[di]
+    let k = key(no)
+    if !(k in index) {
+      index[k] = len(oris)
+      oris = append(oris, no)
+      queue = append(queue, no)
+    }
+    di = di + 1
+  }
+}
+let NO = len(oris)
+
+let INF = 1000000000000
+
+fun idx(y: int, o: int): int {
+  return (y-1)*NO + o
+}
+
+type Node {
+  cost: int
+  x: int
+  y: int
+  o: int
+}
+
+fun make3D(): list<list<list<int>>> {
+  var arr: list<list<list<int>>> = []
+  var i = 0
+  while i < 5 {
+    var plane: list<list<int>> = []
+    var j = 0
+    while j < 4 {
+      var row: list<int> = []
+      var k = 0
+      while k < NO {
+        row = append(row, INF)
+        k = k + 1
+      }
+      plane = append(plane, row)
+      j = j + 1
+    }
+    arr = append(arr, plane)
+    i = i + 1
+  }
+  return arr
+}
+
+fun get3D(arr: list<list<list<int>>>, x: int, y: int, o: int): int {
+  return arr[x][y][o]
+}
+
+fun set3D(arr: list<list<list<int>>>, x: int, y: int, o: int, v: int): list<list<list<int>>> {
+  var a = arr
+  var plane = a[x]
+  var row = plane[y]
+  row[o] = v
+  plane[y] = row
+  a[x] = plane
+  return a
+}
+
+fun dijkstra(face: list<int>, yStart: int, oStart: int): list<list<list<int>>> {
+  var dist = make3D()
+  dist = set3D(dist, 2, yStart-1, oStart, 0)
+  var pq: list<Node> = [Node{ cost:0, x:0, y:yStart, o:oStart }]
+  while len(pq) > 0 {
+    var best = 0
+    var i = 1
+    while i < len(pq) {
+      if pq[i].cost < pq[best].cost {
+        best = i
+      }
+      i = i + 1
+    }
+    let cur = pq[best]
+    var newpq: list<Node> = []
+    var j = 0
+    while j < len(pq) {
+      if j != best {
+        newpq = append(newpq, pq[j])
+      }
+      j = j + 1
+    }
+    pq = newpq
+    if cur.cost != get3D(dist, cur.x+2, cur.y-1, cur.o) {
+      continue
+    }
+    var mv = 0
+    while mv < 4 {
+      var nx = cur.x
+      var ny = cur.y
+      var no = oris[cur.o]
+      if mv == 0 {
+        if ny == 4 { mv = mv + 1; continue }
+        ny = ny + 1
+        no = rollN(no)
+      } else if mv == 1 {
+        if ny == 1 { mv = mv + 1; continue }
+        ny = ny - 1
+        no = rollS(no)
+      } else if mv == 2 {
+        nx = nx + 1
+        no = rollE(no)
+      } else {
+        nx = nx - 1
+        no = rollW(no)
+      }
+      if nx < (0 - 2) || nx > 2 {
+        mv = mv + 1
+        continue
+      }
+      let oi = index[key(no)]
+      let cost = cur.cost + face[no.t]
+      let prev = get3D(dist, nx+2, ny-1, oi)
+      if cost < prev {
+        dist = set3D(dist, nx+2, ny-1, oi, cost)
+        pq = append(pq, Node{ cost: cost, x: nx, y: ny, o: oi })
+      }
+      mv = mv + 1
+    }
+  }
+  return dist
+}
+
+fun makeMat(n: int): list<list<int>> {
+  var m: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, INF)
+      j = j + 1
+    }
+    m = append(m, row)
+    i = i + 1
+  }
+  return m
+}
+
+fun computeMatrices(face: list<int>): list<list<list<int>>> {
+  let N = 4 * NO
+  var E = makeMat(N)
+  var W = makeMat(N)
+  var y = 1
+  while y <= 4 {
+    var o = 0
+    while o < NO {
+      let dist = dijkstra(face, y, o)
+      let s = idx(y, o)
+      var y2 = 1
+      while y2 <= 4 {
+        var o2 = 0
+        while o2 < NO {
+          let t = idx(y2, o2)
+          let cE = get3D(dist, 3, y2-1, o2)
+          let cW = get3D(dist, 1, y2-1, o2)
+          if cE < E[s][t] { E[s][t] = cE }
+          if cW < W[s][t] { W[s][t] = cW }
+          o2 = o2 + 1
+        }
+        y2 = y2 + 1
+      }
+      o = o + 1
+    }
+    y = y + 1
+  }
+  return [E, W]
+}
+
+fun matMul(A: list<list<int>>, B: list<list<int>>): list<list<int>> {
+  let n = len(A)
+  var C = makeMat(n)
+  var i = 0
+  while i < n {
+    var k = 0
+    while k < n {
+      let aik = A[i][k]
+      if aik < INF {
+        var j = 0
+        while j < n {
+          let bkj = B[k][j]
+          if bkj < INF {
+            let v = aik + bkj
+            if v < C[i][j] { C[i][j] = v }
+          }
+          j = j + 1
+        }
+      }
+      k = k + 1
+    }
+    i = i + 1
+  }
+  return C
+}
+
+fun buildPowers(M: list<list<int>>): list<list<list<int>>> {
+  var powers: list<list<list<int>>> = []
+  powers = append(powers, M)
+  var i = 1
+  while i < 32 {
+    powers = append(powers, matMul(powers[i-1], powers[i-1]))
+    i = i + 1
+  }
+  return powers
+}
+
+fun vecMul(v: list<int>, M: list<list<int>>): list<int> {
+  let n = len(v)
+  var res: list<int> = []
+  var j = 0
+  while j < n {
+    res = append(res, INF)
+    j = j + 1
+  }
+  var i = 0
+  while i < n {
+    let vi = v[i]
+    if vi < INF {
+      var k = 0
+      while k < n {
+        let mk = M[i][k]
+        if mk < INF {
+          let val = vi + mk
+          if val < res[k] { res[k] = val }
+        }
+        k = k + 1
+      }
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun verticalCost(face: list<int>, y1: int, y2: int): int {
+  let dist = dijkstra(face, y1, 0)
+  var res = INF
+  var o = 0
+  while o < NO {
+    let d = get3D(dist, 2, y2-1, o)
+    if d < res { res = d }
+    o = o + 1
+  }
+  return res
+}
+
+fun solve(face: list<int>, x1: int, y1: int, x2: int, y2: int): int {
+  let dx = x2 - x1
+  if dx == 0 {
+    return verticalCost(face, y1, y2)
+  }
+  let matrices = computeMatrices(face)
+  let E = matrices[0]
+  let W = matrices[1]
+  let Ep = buildPowers(E)
+  let Wp = buildPowers(W)
+  let N = 4 * NO
+  var vec: list<int> = []
+  var i = 0
+  while i < N {
+    vec = append(vec, INF)
+    i = i + 1
+  }
+  vec[idx(y1,0)] = 0
+  if dx > 0 {
+    var bit = 0
+    var steps = dx
+    while steps > 0 {
+      if steps % 2 == 1 {
+        vec = vecMul(vec, Ep[bit])
+      }
+      steps = steps / 2
+      bit = bit + 1
+    }
+  } else {
+    var bit = 0
+    var steps = -dx
+    while steps > 0 {
+      if steps % 2 == 1 {
+        vec = vecMul(vec, Wp[bit])
+      }
+      steps = steps / 2
+      bit = bit + 1
+    }
+  }
+  var res = INF
+  var o = 0
+  while o < NO {
+    let d = vec[idx(y2,o)]
+    if d < res { res = d }
+    o = o + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let nums = parse_ints(input())
+    var face: list<int> = [0]
+    var i = 0
+    while i < 6 {
+      face = append(face, nums[i])
+      i = i + 1
+    }
+    let coords = parse_ints(input())
+    let x1 = coords[0]
+    let y1 = coords[1]
+    let x2 = coords[2]
+    let y2 = coords[3]
+    let ans = solve(face, x1, y1, x2, y2)
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
