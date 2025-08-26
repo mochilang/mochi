@@ -43,6 +43,7 @@ type Program struct {
 	UseSplit     bool
 	UseMod       bool
 	UseFloatConv bool
+	UseIntConv   bool
 	UsePadStart  bool
 	UseIndex     bool
 	UseSetIndex  bool
@@ -78,6 +79,7 @@ var (
 	usesSplit          bool
 	usesMod            bool
 	usesFloatConv      bool
+	usesIntConv        bool
 	usesPadStart       bool
 	usesIndex          bool
 	usesSetIndex       bool
@@ -1873,9 +1875,19 @@ func (ic *IntCastExpr) emit(w io.Writer) {
 				io.WriteString(w, ".(int)")
 				return
 			}
+		} else {
+			// Indexing into a non-variable expression (e.g., a
+			// temporary map[string]any) produces a value of type
+			// any. Casting it with Go's int() conversion would fail
+			// to compile, so use a type assertion instead.
+			ic.Expr.emit(w)
+			io.WriteString(w, ".(int)")
+			return
 		}
 	}
-	io.WriteString(w, "int(")
+	usesIntConv = true
+	usesStrconv = true
+	io.WriteString(w, "_toInt(")
 	ic.Expr.emit(w)
 	io.WriteString(w, ")")
 }
@@ -2786,6 +2798,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UseSplit = usesSplit
 	gp.UseMod = usesMod
 	gp.UseFloatConv = usesFloatConv
+	gp.UseIntConv = usesIntConv
 	gp.UsePadStart = usesPadStart
 	gp.UseIndex = usesIndex
 	gp.UseSetIndex = usesSetIndex
@@ -6583,16 +6596,20 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 							usesBigInt = true
 							expr = &BigIntToIntExpr{Value: expr}
 						case types.AnyType:
-							// Without a precise static type, assume a numeric
-							// value and use Go's int() conversion. Falling back
-							// to string parsing here caused incorrect results
-							// for numeric expressions in algorithms.
-							expr = &IntCastExpr{Expr: expr}
+							// When the value has a dynamic type, casting with
+							// Go's int() conversion is invalid because the
+							// expression is still of interface type. Instead we
+							// perform an explicit type assertion so that values
+							// like map indexes of type `any` can be used as ints
+							// without causing compilation failures.
+							expr = &AssertExpr{Expr: expr, Type: "int"}
 						default:
 							if _, ok := expr.(*BigBinaryExpr); ok {
 								usesBigInt = true
 								expr = &BigIntToIntExpr{Value: expr}
 							} else {
+								usesIntConv = true
+								usesStrconv = true
 								expr = &IntCastExpr{Expr: expr}
 							}
 						}
@@ -6809,6 +6826,8 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			if types.IsAnyType(argType) {
 				return &AssertExpr{Expr: args[0], Type: "int"}, nil
 			}
+			usesIntConv = true
+			usesStrconv = true
 			return &IntCastExpr{Expr: args[0]}, nil
 		case "to_float":
 			return &CallExpr{Func: "float64", Args: []Expr{args[0]}}, nil
@@ -6855,6 +6874,8 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			}
 			var expr Expr = &CallExpr{Func: "math.Pow", Args: []Expr{a0, a1}}
 			if int1 && int2 {
+				usesIntConv = true
+				usesStrconv = true
 				expr = &IntCastExpr{Expr: expr}
 			}
 			return expr, nil
@@ -6870,6 +6891,8 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			}
 			a0 := &CallExpr{Func: "float64", Args: []Expr{args[0]}}
 			a1 := &CallExpr{Func: "float64", Args: []Expr{args[1]}}
+			usesIntConv = true
+			usesStrconv = true
 			return &IntCastExpr{Expr: &CallExpr{Func: "math.Pow", Args: []Expr{a0, a1}}}, nil
 		case "nth_root":
 			if imports != nil {
@@ -8151,6 +8174,19 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("    case int: return float64(t)\n")
 		buf.WriteString("    case int64: return float64(t)\n")
 		buf.WriteString("    case float64: return t\n")
+		buf.WriteString("    default: return 0\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseIntConv {
+		buf.WriteString("func _toInt(v any) int {\n")
+		buf.WriteString("    switch t := v.(type) {\n")
+		buf.WriteString("    case int: return t\n")
+		buf.WriteString("    case int64: return int(t)\n")
+		buf.WriteString("    case float64: return int(t)\n")
+		buf.WriteString("    case string:\n")
+		buf.WriteString("        if i, err := strconv.Atoi(t); err == nil { return i }\n")
+		buf.WriteString("        return 0\n")
 		buf.WriteString("    default: return 0\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("}\n\n")
