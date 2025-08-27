@@ -1,0 +1,123 @@
+// Solution for SPOJ PAINTTMP - Paint templates
+// https://www.spoj.com/problems/PAINTTMP/
+
+fun toBitsBig(num: bigint, length: int): map<string,any> {
+  var bits: list<int> = []
+  var nval: bigint = num
+  var i = 0
+  while i < length {
+    let bit = nval % 2
+    bits = append(bits, bit as int)
+    nval = nval / 2
+    i = i + 1
+  }
+  let overflow = nval > 0
+  return { "bits": bits, "overflow": overflow }
+}
+
+fun countStains(n: int, xBits: list<int>, yBits: list<int>): bigint {
+  var d00: bigint = 1 as bigint
+  var d01: bigint = 0 as bigint
+  var d10: bigint = 0 as bigint
+  var d11: bigint = 0 as bigint
+  var k = 0
+  while k < n {
+    var nd00: bigint = 0 as bigint
+    var nd01: bigint = 0 as bigint
+    var nd10: bigint = 0 as bigint
+    var nd11: bigint = 0 as bigint
+    var carry = 0
+    while carry < 2 {
+      var borrow = 0
+      while borrow < 2 {
+        let ways: bigint = if carry == 0 {
+          if borrow == 0 { d00 } else { d01 }
+        } else {
+          if borrow == 0 { d10 } else { d11 }
+        }
+        var iBit = 0
+        while iBit < 2 {
+          var jBit = 0
+          while jBit < 2 {
+            if iBit == 0 && jBit == 0 {
+              jBit = jBit + 1
+              continue
+            }
+            var sum = iBit + (yBits[k] as int) + carry
+            var resI = sum % 2
+            var carryOut = sum / 2
+            var diff = jBit - (xBits[k] as int) - borrow
+            var borrowOut = 0
+            if diff < 0 {
+              diff = diff + 2
+              borrowOut = 1
+            }
+            var resJ = diff
+            if resI == 0 && resJ == 0 {
+              jBit = jBit + 1
+              continue
+            }
+            if carryOut == 0 {
+              if borrowOut == 0 {
+                nd00 = nd00 + ways
+              } else {
+                nd01 = nd01 + ways
+              }
+            } else {
+              if borrowOut == 0 {
+                nd10 = nd10 + ways
+              } else {
+                nd11 = nd11 + ways
+              }
+            }
+            jBit = jBit + 1
+          }
+          iBit = iBit + 1
+        }
+        borrow = borrow + 1
+      }
+      carry = carry + 1
+    }
+    d00 = nd00
+    d01 = nd01
+    d10 = nd10
+    d11 = nd11
+    k = k + 1
+  }
+  return d00
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line != nil && line == "" {
+    line = input()
+  }
+  if line == nil { return "" }
+  return line
+}
+
+fun main() {
+  let tLine = readNonEmpty()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let nLine = readNonEmpty()
+    let n = nLine as int
+    let xStr = readNonEmpty()
+    let yStr = readNonEmpty()
+    let xr = toBitsBig(xStr as bigint, n)
+    let yr = toBitsBig(yStr as bigint, n)
+    if (xr["overflow"] as bool) || (yr["overflow"] as bool) {
+      print("0")
+    } else {
+      let xBits = xr["bits"] as list<int>
+      let yBits = yr["bits"] as list<int>
+      let ans = countStains(n, xBits, yBits)
+      print(str(ans))
+    }
+    case = case + 1
+  }
+}
+
+main()
