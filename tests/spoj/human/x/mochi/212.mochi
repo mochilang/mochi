@@ -1,0 +1,171 @@
+// Solution for SPOJ WATER - Water among Cubes
+// https://www.spoj.com/problems/WATER/
+
+let digits = {
+  "0":0, "1":1, "2":2, "3":3, "4":4,
+  "5":5, "6":6, "7":7, "8":8, "9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+type Node { h: int, x: int, y: int }
+
+type PopRes { heap: list<Node>, node: Node }
+
+fun heap_push(h: list<Node>, item: Node): list<Node> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p].h <= heap[i].h { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<Node>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      let l = 2*i + 1
+      let r = 2*i + 2
+      var smallest = i
+      if l < len(heap) && heap[l].h < heap[smallest].h { smallest = l }
+      if r < len(heap) && heap[r].h < heap[smallest].h { smallest = r }
+      if smallest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[smallest]
+      heap[smallest] = tmp
+      i = smallest
+    }
+  }
+  return PopRes { heap: heap, node: top }
+}
+
+fun makeIntMatrix(r: int, c: int, v: int): list<list<int>> {
+  var mat: list<list<int>> = []
+  var i = 0
+  while i < r {
+    var row: list<int> = []
+    var j = 0
+    while j < c {
+      row = append(row, v)
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return mat
+}
+
+fun trap(grid: list<list<int>>, n: int, m: int): int {
+  var visited = makeIntMatrix(n, m, 0)
+  var heap: list<Node> = []
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < m {
+      if i == 0 || i == n-1 || j == 0 || j == m-1 {
+        heap = heap_push(heap, Node{ h: grid[i][j], x: i, y: j })
+        visited[i][j] = 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var res = 0
+  let dx = [1,-1,0,0]
+  let dy = [0,0,1,-1]
+  while len(heap) > 0 {
+    let pr = heap_pop(heap)
+    heap = pr.heap
+    let cur = pr.node
+    var d = 0
+    while d < 4 {
+      let nx = cur.x + dx[d]
+      let ny = cur.y + dy[d]
+      if nx >= 0 && nx < n && ny >= 0 && ny < m && visited[nx][ny] == 0 {
+        visited[nx][ny] = 1
+        let nh = grid[nx][ny]
+        if cur.h > nh {
+          res = res + cur.h - nh
+        }
+        var nh2 = nh
+        if nh2 < cur.h { nh2 = cur.h }
+        heap = heap_push(heap, Node{ h: nh2, x: nx, y: ny })
+      }
+      d = d + 1
+    }
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = parseIntStr(tLine)
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    let nm = parseInts(line)
+    let n = nm[0]
+    let m = nm[1]
+    var grid: list<list<int>> = []
+    var i = 0
+    while i < n {
+      line = input()
+      while line == "" { line = input() }
+      let row = parseInts(line)
+      grid = append(grid, row)
+      i = i + 1
+    }
+    let ans = trap(grid, n, m)
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
