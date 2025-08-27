@@ -1,0 +1,171 @@
+// Solution for SPOJ LITEPIPE - GX Light Pipeline Inc
+// https://www.spoj.com/problems/LITEPIPE/
+
+let digits = {
+  "0":0, "1":1, "2":2, "3":3, "4":4,
+  "5":5, "6":6, "7":7, "8":8, "9":9,
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun parseFloat(s: string): float {
+  var i = 0
+  var neg = false
+  if len(s) > 0 && s[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var val = 0.0
+  while i < len(s) && s[i:i+1] != "." {
+    val = val * 10.0 + (digits[s[i:i+1]] as float)
+    i = i + 1
+  }
+  if i < len(s) && s[i:i+1] == "." {
+    i = i + 1
+    var base = 0.1
+    while i < len(s) {
+      val = val + (digits[s[i:i+1]] as float) * base
+      base = base / 10.0
+      i = i + 1
+    }
+  }
+  if neg { val = -val }
+  return val
+}
+
+fun absf(x: float): float { if x < 0.0 { return -x } else { return x } }
+
+let eps = 1e-8
+fun sgn(x: float): int {
+  if x < 0.0 - eps { return -1 }
+  if x > eps { return 1 }
+  return 0
+}
+
+fun cross(ax: float, ay: float, bx: float, by: float, cx: float, cy: float): float {
+  return (ax - bx) * (by - cy) - (ay - by) * (bx - cx)
+}
+
+fun lineSeg(ax: float, ay: float, bx: float, by: float, sx: float, sy: float, ex: float, ey: float): bool {
+  let c1 = cross(ax, ay, sx, sy, bx, by)
+  let c2 = cross(ax, ay, ex, ey, bx, by)
+  return sgn(c1) * sgn(c2) <= 0
+}
+
+fun getIntersect(ax: float, ay: float, bx: float, by: float,
+                  cx: float, cy: float, dx: float, dy: float): list<float> {
+  let A1 = by - ay
+  let B1 = ax - bx
+  let C1 = (bx - ax) * ay - (by - ay) * ax
+  let A2 = dy - cy
+  let B2 = cx - dx
+  let C2 = (dx - cx) * cy - (dy - cy) * cx
+  let denom = A1 * B2 - A2 * B1
+  let x = (C2 * B1 - C1 * B2) / denom
+  let y = (C1 * A2 - C2 * A1) / denom
+  var res: list<float> = []
+  res = append(res, x)
+  res = append(res, y)
+  return res
+}
+
+fun format2(x: float): string {
+  var scaled = x * 100.0 + 0.5
+  var n = scaled as int
+  var whole = n / 100
+  var frac = n % 100
+  var fracStr = str(frac)
+  if frac < 10 { fracStr = "0" + fracStr }
+  return str(whole) + "." + fracStr
+}
+
+fun solve(upx: list<float>, upy: list<float>): float {
+  let n = len(upx)
+  var downx: list<float> = []
+  var downy: list<float> = []
+  var i = 0
+  while i < n {
+    downx = append(downx, upx[i])
+    downy = append(downy, upy[i] - 1.0)
+    i = i + 1
+  }
+  var ans = -1e9
+  var through = false
+  i = 0
+  while i < n {
+    if !through {
+      var j = 0
+      while j < n {
+        if i != j && (!through) {
+          var flag = true
+          var k = 0
+          while flag && k < n {
+            if lineSeg(upx[i], upy[i], downx[j], downy[j], upx[k], upy[k], downx[k], downy[k]) {
+              k = k + 1
+            } else {
+              flag = false
+            }
+          }
+          if flag {
+            through = true
+            if upx[n-1] > ans { ans = upx[n-1] }
+          } else {
+            var mm = i
+            if j > mm { mm = j }
+            if k > mm {
+              let p1 = getIntersect(upx[i], upy[i], downx[j], downy[j], upx[k-1], upy[k-1], upx[k], upy[k])
+              let p2 = getIntersect(upx[i], upy[i], downx[j], downy[j], downx[k-1], downy[k-1], downx[k], downy[k])
+              var mx = p1[0]
+              if p2[0] > mx { mx = p2[0] }
+              if mx > ans { ans = mx }
+            }
+          }
+        }
+        j = j + 1
+      }
+    }
+    i = i + 1
+  }
+  if through { return upx[n-1] } else { return ans }
+}
+
+fun main() {
+  while true {
+    var line = input()
+    while line == "" { line = input() }
+    let n = int(line)
+    if n == 0 { break }
+    var upx: list<float> = []
+    var upy: list<float> = []
+    var idx = 0
+    while idx < n {
+      var l = input()
+      while l == "" { l = input() }
+      let parts = split(l)
+      let x = parseFloat(parts[0])
+      let y = parseFloat(parts[1])
+      upx = append(upx, x)
+      upy = append(upy, y)
+      idx = idx + 1
+    }
+    let ans = solve(upx, upy)
+    print(format2(ans))
+  }
+}
+
+main()
