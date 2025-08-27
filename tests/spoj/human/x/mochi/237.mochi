@@ -1,0 +1,75 @@
+// Solution for SPOJ SUMTRIAN - Sums in a Triangle
+// https://www.spoj.com/problems/SUMTRIAN/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  for _ in 0..t {
+    let n = parseIntStr(input())
+    var dp: list<int> = []
+    var i = 0
+    while i < n {
+      let parts = splitSpaces(input())
+      var row: list<int> = []
+      var j = 0
+      while j < len(parts) {
+        row = append(row, parseIntStr(parts[j]))
+        j = j + 1
+      }
+      if len(dp) == 0 {
+        dp = [row[0]]
+      } else {
+        var newdp: list<int> = []
+        j = 0
+        while j <= i {
+          let left = if j > 0 { dp[j-1] } else { 0 }
+          let right = if j < len(dp) { dp[j] } else { 0 }
+          newdp = append(newdp, row[j] + if left > right { left } else { right })
+          j = j + 1
+        }
+        dp = newdp
+      }
+      i = i + 1
+    }
+    var maxVal = 0
+    for v in dp {
+      if v > maxVal { maxVal = v }
+    }
+    print(maxVal)
+  }
+}
+
+main()
