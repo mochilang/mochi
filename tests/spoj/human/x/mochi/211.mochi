@@ -1,0 +1,89 @@
+// Solution for SPOJ PRIMIT - Primitivus recurencis
+// https://www.spoj.com/problems/PRIMIT/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = split(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun main() {
+  var line = input()
+  if line == "" { return }
+  let t = parseIntStr(line)
+  var case = 0
+  while case < t {
+    line = input()
+    while line == "" { line = input() }
+    let n = parseIntStr(line)
+    var indeg: list<int> = []
+    var outdeg: list<int> = []
+    var v = 0
+    while v <= 1000 {
+      indeg = append(indeg, 0)
+      outdeg = append(outdeg, 0)
+      v = v + 1
+    }
+    var i = 0
+    while i < n {
+      let l = input()
+      if l == "" { continue }
+      let arr = parseInts(l)
+      let a = arr[0]
+      let b = arr[1]
+      outdeg[a] = outdeg[a] + 1
+      indeg[b] = indeg[b] + 1
+      i = i + 1
+    }
+    var sum = 0
+    v = 0
+    while v <= 1000 {
+      let diff = outdeg[v] - indeg[v]
+      if diff > 0 { sum = sum + diff }
+      v = v + 1
+    }
+    if sum < 1 { sum = 1 }
+    let ans = n + sum
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
