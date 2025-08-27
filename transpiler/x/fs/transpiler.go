@@ -3473,9 +3473,9 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	t := inferType(c.Expr)
-	switch c.Type {
-	case "obj":
+        t := inferType(c.Expr)
+        switch c.Type {
+        case "obj":
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -3483,12 +3483,25 @@ func (c *CastExpr) emit(w io.Writer) {
 		} else {
 			c.Expr.emit(w)
 		}
-	case "float":
-		if t == "obj" {
-			io.WriteString(w, "System.Convert.ToDouble ")
-		} else {
-			io.WriteString(w, "float ")
-		}
+       case "string":
+               if t == "obj" || t == "" {
+                       io.WriteString(w, "unbox<string> ")
+               } else {
+                       io.WriteString(w, "string ")
+               }
+               if needsParen(c.Expr) {
+                       io.WriteString(w, "(")
+                       c.Expr.emit(w)
+                       io.WriteString(w, ")")
+               } else {
+                       c.Expr.emit(w)
+               }
+       case "float":
+                if t == "obj" {
+                        io.WriteString(w, "System.Convert.ToDouble ")
+                } else {
+                        io.WriteString(w, "float ")
+                }
 		if needsParen(c.Expr) {
 			io.WriteString(w, "(")
 			c.Expr.emit(w)
@@ -3518,15 +3531,28 @@ func (c *CastExpr) emit(w io.Writer) {
 		} else {
 			c.Expr.emit(w)
 		}
-	case "int64":
-		io.WriteString(w, "int64 ")
-		if needsParen(c.Expr) {
-			io.WriteString(w, "(")
-			c.Expr.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			c.Expr.emit(w)
-		}
+       case "int64":
+               if t == "obj" || t == "" {
+                       usesToi = true
+                       io.WriteString(w, "int64 (toi ")
+                       if needsParen(c.Expr) {
+                               io.WriteString(w, "(")
+                               c.Expr.emit(w)
+                               io.WriteString(w, ")")
+                       } else {
+                               c.Expr.emit(w)
+                       }
+                       io.WriteString(w, ")")
+               } else {
+                       io.WriteString(w, "int64 ")
+                       if needsParen(c.Expr) {
+                               io.WriteString(w, "(")
+                               c.Expr.emit(w)
+                               io.WriteString(w, ")")
+                       } else {
+                               c.Expr.emit(w)
+                       }
+               }
 	case "bigint":
 		if t := inferType(c.Expr); t == "obj" {
 			io.WriteString(w, "unbox<bigint> ")
@@ -4688,16 +4714,24 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			varTypes = map[string]string{}
 		}
 		varTypes[st.Fun.Name] = retType
-		if funcDepth == 0 {
-			if definedFuncs == nil {
-				definedFuncs = map[string]bool{}
-			}
-			definedFuncs[st.Fun.Name] = true
-		}
+               if funcDepth == 0 {
+                        if definedFuncs == nil {
+                                definedFuncs = map[string]bool{}
+                        }
+                        definedFuncs[st.Fun.Name] = true
+               }
+               if funcParamTypes == nil {
+                       funcParamTypes = map[string][]string{}
+               }
+               funcParamTypes[st.Fun.Name] = paramTypes
+               if funcParamNames == nil {
+                       funcParamNames = map[string][]string{}
+               }
+               funcParamNames[st.Fun.Name] = params
 
-		prevReturn := currentReturn
-		currentReturn = retType
-		funcDepth++
+               prevReturn := currentReturn
+                currentReturn = retType
+                funcDepth++
 		body := make([]Stmt, len(st.Fun.Body))
 		for i, s := range st.Fun.Body {
 			cs, err := convertStmt(s)
@@ -4960,17 +4994,20 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 	if len(exprs) != 1 {
 		return nil, fmt.Errorf("expr reduce error")
 	}
-	res := exprs[0]
-	if be, ok := res.(*BinaryExpr); ok && (be.Op == "+" || be.Op == "-") {
-		if idx, ok2 := be.Left.(*IndexExpr); ok2 {
-			t := inferType(idx)
-			if t != "int" && t != "int64" && t != "float" && t != "string" && t != "bool" {
-				idx.Index = &BinaryExpr{Left: idx.Index, Op: be.Op, Right: be.Right}
-				res = idx
-			}
-		}
-	}
-	return res, nil
+       res := exprs[0]
+       if inferType(res) == "string" {
+               usesStr = true
+       }
+       if be, ok := res.(*BinaryExpr); ok && (be.Op == "+" || be.Op == "-") {
+               if idx, ok2 := be.Left.(*IndexExpr); ok2 {
+                       t := inferType(idx)
+                       if t != "int" && t != "int64" && t != "float" && t != "string" && t != "bool" {
+                               idx.Index = &BinaryExpr{Left: idx.Index, Op: be.Op, Right: be.Right}
+                               res = idx
+                       }
+               }
+       }
+       return res, nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
@@ -5076,11 +5113,17 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			} else {
 				expr = &InvokeExpr{Target: expr, Args: args}
 			}
-		case op.Cast != nil && op.Cast.Type != nil:
-			ct := typeRefString(op.Cast.Type)
-			if !aliasSet[ct] {
-				expr = &CastExpr{Expr: expr, Type: ct}
-			}
+               case op.Cast != nil && op.Cast.Type != nil:
+                       ct := typeRefString(op.Cast.Type)
+                       if !aliasSet[ct] {
+                               if ct == "int64" {
+                                       t := inferType(expr)
+                                       if t == "obj" || t == "" {
+                                               usesToi = true
+                                       }
+                               }
+                               expr = &CastExpr{Expr: expr, Type: ct}
+                       }
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -5696,20 +5739,22 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					break
 				}
 			}
-			if base != "" {
-				for i := range items {
-					if types[i] == "obj" {
-						items[i][1] = &CastExpr{Expr: items[i][1], Type: base}
-						types[i] = base
-					}
-				}
-				same = true
-			} else {
-				for i := range items {
-					items[i][1] = &CallExpr{Func: "box", Args: []Expr{items[i][1]}}
-					types[i] = "obj"
-				}
-			}
+                       if base != "" && base != "string" {
+                               for i := range items {
+                                       if types[i] == "obj" {
+                                               items[i][1] = &CastExpr{Expr: items[i][1], Type: base}
+                                               types[i] = base
+                                       }
+                               }
+                               same = true
+                       } else {
+                               for i := range items {
+                                       if types[i] != "obj" {
+                                               items[i][1] = &CallExpr{Func: "box", Args: []Expr{items[i][1]}}
+                                       }
+                                       types[i] = "obj"
+                               }
+                       }
 		}
 		usesDictCreate = true
 		return &MapLit{Items: items, Types: types}, nil
