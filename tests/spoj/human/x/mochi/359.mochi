@@ -1,0 +1,158 @@
+// Solution for SPOJ ACT - Alpha Centauri Tennis
+// https://www.spoj.com/problems/ACT/
+
+let letterIdx = {
+  "A":0,"B":1,"C":2,"D":3,"E":4,
+  "F":5,"G":6,"H":7,"I":8,"J":9,
+}
+
+let idxToChar = ["A","B","C","D","E","F","G","H","I","J"]
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun solve(n: int, s: string): string {
+  var points: list<int> = []
+  var games: list<int> = []
+  var sets: list<int> = []
+  var i = 0
+  while i < n {
+    points = append(points, 0)
+    games = append(games, 0)
+    sets = append(sets, 0)
+    i = i + 1
+  }
+  var winner = 0 - 1
+  var j = 0
+  while j < len(s) && winner == 0 - 1 {
+    let ch = s[j:j+1]
+    let p = (letterIdx[ch] as int)
+    if points[p] == 3 {
+      var ok = true
+      var k = 0
+      while k < n {
+        if k != p && points[k] > 2 { ok = false; break }
+        k = k + 1
+      }
+      if ok {
+        games[p] = games[p] + 1
+        k = 0
+        while k < n { points[k] = 0; k = k + 1 }
+        if games[p] >= 6 {
+          var good = true
+          k = 0
+          while k < n {
+            if k != p && games[p] < games[k] + 2 { good = false; break }
+            k = k + 1
+          }
+          if good {
+            var other = false
+            k = 0
+            while k < n {
+              if k != p && games[k] > 0 { other = true; break }
+              k = k + 1
+            }
+            if other { sets[p] = sets[p] + 1 } else { sets[p] = sets[p] + 2 }
+            k = 0
+            while k < n { games[k] = 0; k = k + 1 }
+            if sets[p] >= 3 { winner = p }
+          }
+        }
+        j = j + 1
+        continue
+      }
+    }
+    if points[p] == 4 {
+      games[p] = games[p] + 1
+      var k = 0
+      while k < n { points[k] = 0; k = k + 1 }
+      if games[p] >= 6 {
+        var good = true
+        k = 0
+        while k < n {
+          if k != p && games[p] < games[k] + 2 { good = false; break }
+          k = k + 1
+        }
+        if good {
+          var other = false
+          k = 0
+          while k < n {
+            if k != p && games[k] > 0 { other = true; break }
+            k = k + 1
+          }
+          if other { sets[p] = sets[p] + 1 } else { sets[p] = sets[p] + 2 }
+          k = 0
+          while k < n { games[k] = 0; k = k + 1 }
+          if sets[p] >= 3 { winner = p }
+        }
+      }
+      j = j + 1
+      continue
+    }
+    var handled = false
+    var k = 0
+    while k < n {
+      if k != p && points[k] == 4 {
+        points[k] = points[k] - 1
+        points[p] = points[p] + 1
+        handled = true
+        break
+      }
+      k = k + 1
+    }
+    if !handled {
+      points[p] = points[p] + 1
+    }
+    j = j + 1
+  }
+  return idxToChar[winner]
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    let line = input()
+    if line == nil { return }
+    if line == "" { continue }
+    let parts = split(line)
+    let n = parseIntStr(parts[0])
+    let s = parts[1]
+    let w = solve(n, s)
+    print(w)
+    case = case + 1
+  }
+}
+
+main()
