@@ -1,0 +1,84 @@
+// Solution for SPOJ MIXTURES - Mixtures
+// https://www.spoj.com/problems/MIXTURES/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = split(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parts[i] as int)
+    i = i + 1
+  }
+  return nums
+}
+
+fun main() {
+  while true {
+    let nLine = input()
+    if nLine == "" { break }
+    let n = nLine as int
+    let line = input()
+    let arr = parseInts(line)
+    var prefix: list<int> = []
+    var sum = 0
+    var i = 0
+    while i < n {
+      sum = (sum + arr[i]) % 100
+      prefix = append(prefix, sum)
+      i = i + 1
+    }
+    var dp: list<list<int>> = []
+    i = 0
+    while i < n {
+      var row: list<int> = []
+      var j = 0
+      while j < n {
+        row = append(row, 0)
+        j = j + 1
+      }
+      dp = append(dp, row)
+      i = i + 1
+    }
+    var len = 2
+    while len <= n {
+      var i = 0
+      while i + len - 1 < n {
+        let j = i + len - 1
+        var best = 1000000000
+        var k = i
+        while k < j {
+          var left = prefix[k]
+          if i > 0 { left = (left - prefix[i-1] + 100) % 100 }
+          var right = prefix[j] - prefix[k]
+          right = (right + 100) % 100
+          let smoke = dp[i][k] + dp[k+1][j] + left * right
+          if smoke < best { best = smoke }
+          k = k + 1
+        }
+        dp[i][j] = best
+        i = i + 1
+      }
+      len = len + 1
+    }
+    print(dp[0][n-1])
+  }
+}
+
+main()
