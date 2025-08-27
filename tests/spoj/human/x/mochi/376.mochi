@@ -1,0 +1,85 @@
+// Solution for SPOJ ACS - A concrete simulation
+// https://www.spoj.com/problems/ACS/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun main() {
+  let rows = 1234
+  let cols = 5678
+
+  var rowPerm: list<int> = []
+  var rowIndex: list<int> = []
+  var i = 0
+  while i < rows {
+    rowPerm = append(rowPerm, i + 1)
+    rowIndex = append(rowIndex, i + 1)
+    i = i + 1
+  }
+
+  var colPerm: list<int> = []
+  var colIndex: list<int> = []
+  i = 0
+  while i < cols {
+    colPerm = append(colPerm, i + 1)
+    colIndex = append(colIndex, i + 1)
+    i = i + 1
+  }
+
+  while true {
+    let line = input()
+    if line == "" { break }
+    let parts = split(line)
+    if len(parts) == 0 { continue }
+    let cmd = parts[0]
+    if cmd == "R" {
+      let x = int(parts[1])
+      let y = int(parts[2])
+      let rx = rowPerm[x-1]
+      let ry = rowPerm[y-1]
+      rowPerm[x-1] = ry
+      rowPerm[y-1] = rx
+      rowIndex[rx-1] = y
+      rowIndex[ry-1] = x
+    } else if cmd == "C" {
+      let x = int(parts[1])
+      let y = int(parts[2])
+      let cx = colPerm[x-1]
+      let cy = colPerm[y-1]
+      colPerm[x-1] = cy
+      colPerm[y-1] = cx
+      colIndex[cx-1] = y
+      colIndex[cy-1] = x
+    } else if cmd == "Q" {
+      let x = int(parts[1])
+      let y = int(parts[2])
+      let r = rowPerm[x-1]
+      let c = colPerm[y-1]
+      let v = (r - 1) * cols + c
+      print(str(v))
+    } else if cmd == "W" {
+      let z = int(parts[1])
+      let r = (z - 1) / cols + 1
+      let c = (z - 1) % cols + 1
+      let x = rowIndex[r-1]
+      let y = colIndex[c-1]
+      print(str(x) + " " + str(y))
+    }
+  }
+}
+
+main()
