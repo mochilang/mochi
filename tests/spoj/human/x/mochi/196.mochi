@@ -1,0 +1,160 @@
+// Solution for SPOJ MUSKET - Musketeers
+// https://www.spoj.com/problems/MUSKET/
+
+fun makeBool(n: int): list<bool> {
+  var arr: list<bool> = []
+  var i = 0
+  while i < n {
+    arr = append(arr, false)
+    i = i + 1
+  }
+  return arr
+}
+
+fun make2DInt(n: int): list<list<int>> {
+  var arr: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, 0)
+      j = j + 1
+    }
+    arr = append(arr, row)
+    i = i + 1
+  }
+  return arr
+}
+
+fun make2DList(n: int): list<list<list<int>>> {
+  var arr: list<list<list<int>>> = []
+  var i = 0
+  while i < n {
+    var row: list<list<int>> = []
+    var j = 0
+    while j < n {
+      var cell: list<int> = []
+      row = append(row, cell)
+      j = j + 1
+    }
+    arr = append(arr, row)
+    i = i + 1
+  }
+  return arr
+}
+
+fun readMatrix(n: int): list<list<int>> {
+  var mat: list<list<int>> = []
+  var i = 0
+  while i < n {
+    let line = input()
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      var v = 0
+      if line[j:j+1] == "1" { v = 1 }
+      row = append(row, v)
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return mat
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    // skip empty lines
+    var line = input()
+    while line == "" { line = input() }
+    let n = line as int
+    let mat = readMatrix(n)
+    let n2 = n * 2
+    // duplicate players
+    var players: list<int> = []
+    var i = 0
+    while i < n2 {
+      players = append(players, i % n)
+      i = i + 1
+    }
+    var dp = make2DList(n2)
+    // base cases
+    i = 0
+    while i < n2 {
+      var cell = dp[i][i]
+      cell = append(cell, players[i])
+      dp[i][i] = cell
+      i = i + 1
+    }
+    var len = 2
+    while len <= n {
+      var l = 0
+      while l + len - 1 < n2 {
+        let r = l + len - 1
+        var seen = makeBool(n)
+        var cell: list<int> = []
+        var m = l
+        while m < r {
+          let left = dp[l][m]
+          let right = dp[m+1][r]
+          var iL = 0
+          while iL < len(left) {
+            let a = left[iL]
+            var iR = 0
+            while iR < len(right) {
+              let b = right[iR]
+              if mat[a][b] == 1 && seen[a] == false {
+                cell = append(cell, a)
+                seen[a] = true
+              }
+              if mat[b][a] == 1 && seen[b] == false {
+                cell = append(cell, b)
+                seen[b] = true
+              }
+              iR = iR + 1
+            }
+            iL = iL + 1
+          }
+          m = m + 1
+        }
+        dp[l][r] = cell
+        l = l + 1
+      }
+      len = len + 1
+    }
+    var ansSeen = makeBool(n)
+    var start = 0
+    while start < n {
+      let winners = dp[start][start + n - 1]
+      var j = 0
+      while j < len(winners) {
+        let w = winners[j]
+        ansSeen[w] = true
+        j = j + 1
+      }
+      start = start + 1
+    }
+    var cnt = 0
+    i = 0
+    while i < n {
+      if ansSeen[i] { cnt = cnt + 1 }
+      i = i + 1
+    }
+    print(str(cnt))
+    i = 0
+    while i < n {
+      if ansSeen[i] {
+        print(str(i + 1))
+      }
+      i = i + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
