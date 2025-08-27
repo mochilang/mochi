@@ -1,0 +1,100 @@
+// Solution for SPOJ PHIDIAS - Phidias
+// https://www.spoj.com/problems/PHIDIAS/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parts[i] as int)
+    i = i + 1
+  }
+  return nums
+}
+
+fun make2d(w: int, h: int, v: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i <= w {
+    var row: list<int> = []
+    var j = 0
+    while j <= h {
+      row = append(row, v)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let wh = parseInts(input())
+    let W = wh[0]
+    let H = wh[1]
+    let N = (input() as int)
+    var allowed = make2d(W, H, 0)
+    var i = 0
+    while i < N {
+      let dims = parseInts(input())
+      let aw = dims[0]
+      let ah = dims[1]
+      allowed[aw][ah] = 1
+      i = i + 1
+    }
+    var dp = make2d(W, H, 0)
+    var w = 1
+    while w <= W {
+      var h = 1
+      while h <= H {
+        var best = 0
+        if allowed[w][h] == 1 { best = w * h }
+        var k = 1
+        while k <= w / 2 {
+          let cand = dp[k][h] + dp[w - k][h]
+          if cand > best { best = cand }
+          k = k + 1
+        }
+        var l = 1
+        while l <= h / 2 {
+          let cand = dp[w][l] + dp[w][h - l]
+          if cand > best { best = cand }
+          l = l + 1
+        }
+        dp[w][h] = best
+        h = h + 1
+      }
+      w = w + 1
+    }
+    let waste = W * H - dp[W][H]
+    print(str(waste))
+    case = case + 1
+  }
+}
+
+main()
