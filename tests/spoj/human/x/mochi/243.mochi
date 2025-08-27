@@ -1,0 +1,151 @@
+// Solution for SPOJ STABLEMP - Stable Marriage Problem
+// https://www.spoj.com/problems/STABLEMP/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun makeIntList(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun makeIntMatrix(n: int): list<list<int>> {
+  var m: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    m = append(m, makeIntList(n+1, 0))
+    i = i + 1
+  }
+  return m
+}
+
+fun readPrefs(n: int): list<list<int>> {
+  var prefs: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    prefs = append(prefs, [] as list<int>)
+    i = i + 1
+  }
+  var cnt = 0
+  while cnt < n {
+    var line = input()
+    if line == "" { continue }
+    let parts = splitSpaces(line)
+    let idx = parseIntStr(parts[0])
+    var row: list<int> = []
+    var j = 1
+    while j < len(parts) {
+      row = append(row, parseIntStr(parts[j]))
+      j = j + 1
+    }
+    prefs[idx] = row
+    cnt = cnt + 1
+  }
+  return prefs
+}
+
+fun stable(n: int, women: list<list<int>>, men: list<list<int>>): list<int> {
+  let rank = makeIntMatrix(n)
+  var w = 1
+  while w <= n {
+    var j = 0
+    while j < n {
+      let m = women[w][j]
+      rank[w][m] = j
+      j = j + 1
+    }
+    w = w + 1
+  }
+  var wife = makeIntList(n+1, 0)
+  var husband = makeIntList(n+1, 0)
+  var nextIdx = makeIntList(n+1, 0)
+  var free: list<int> = []
+  var m = 1
+  while m <= n {
+    free = append(free, m)
+    m = m + 1
+  }
+  var front = 0
+  while front < len(free) {
+    let man = free[front]
+    front = front + 1
+    let idx = nextIdx[man]
+    let woman = men[man][idx]
+    nextIdx[man] = idx + 1
+    if husband[woman] == 0 {
+      husband[woman] = man
+      wife[man] = woman
+    } else {
+      let other = husband[woman]
+      if rank[woman][man] < rank[woman][other] {
+        husband[woman] = man
+        wife[man] = woman
+        wife[other] = 0
+        free = append(free, other)
+      } else {
+        free = append(free, man)
+      }
+    }
+  }
+  return wife
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let n = parseIntStr(line)
+    let women = readPrefs(n)
+    let men = readPrefs(n)
+    let wife = stable(n, women, men)
+    var i = 1
+    while i <= n {
+      print(str(i) + " " + str(wife[i]))
+      i = i + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
