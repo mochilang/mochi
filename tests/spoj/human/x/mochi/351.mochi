@@ -1,0 +1,107 @@
+// Solution for SPOJ HAN01 - Ha-noi!
+// https://www.spoj.com/problems/HAN01/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+var tokens: list<string> = []
+fun nextToken(): string {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return "" }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let tok = tokens[0]
+  tokens = tokens[1:len(tokens)]
+  return tok
+}
+
+fun nextInt(): int {
+  let t = nextToken()
+  if t == "" { return 0 }
+  return t as int
+}
+
+fun pow2(n: int): int {
+  var r = 1
+  var i = 0
+  while i < n {
+    r = r * 2
+    i = i + 1
+  }
+  return r
+}
+
+fun solve(n: int, k: int, from: int, to: int, aux: int, pos: list<int>) {
+  if n == 0 { return }
+  let half = pow2(n - 1)
+  if k < half {
+    pos[n] = from
+    solve(n - 1, k, from, aux, to, pos)
+  } else {
+    pos[n] = to
+    solve(n - 1, k - half, aux, to, from, pos)
+  }
+}
+
+fun main() {
+  let t = nextInt()
+  var case = 0
+  while case < t {
+    let n = nextInt()
+    let k = nextInt()
+    var pos: list<int> = []
+    var i = 0
+    while i <= n {
+      pos = append(pos, 0)
+      i = i + 1
+    }
+    solve(n, k, 1, 2, 3, pos)
+    var peg = 1
+    while peg <= 3 {
+      var line = str(peg) + ":"
+      var first = true
+      var d = n
+      while d >= 1 {
+        if pos[d] == peg {
+          if first {
+            line = line + " " + str(d)
+            first = false
+          } else {
+            line = line + "|" + str(d)
+          }
+        }
+        d = d - 1
+      }
+      print(line)
+      peg = peg + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
