@@ -1,0 +1,55 @@
+// Solution for SPOJ ROCK - Sweet and Sour Rock
+// https://www.spoj.com/problems/ROCK/
+
+fun main() {
+  let tLine = input()
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var nLine = input()
+    if nLine == "" {
+      nLine = input()
+    }
+    let n = nLine as int
+    let s = input()
+    var pref: list<int> = [0]
+    var i = 0
+    while i < n {
+      let ch = substring(s, i, i+1)
+      var val = -1
+      if ch == "1" {
+        val = 1
+      }
+      pref = append(pref, (pref[i] as int) + val)
+      i = i + 1
+    }
+    var dp: list<int> = []
+    var k = 0
+    while k <= n {
+      dp = append(dp, 0)
+      k = k + 1
+    }
+    i = 0
+    while i < n {
+      var j = i + 1
+      while j <= n {
+        let sum = (pref[j] as int) - (pref[i] as int)
+        if sum > 0 {
+          let cand = (dp[i] as int) + (j - i)
+          if cand > (dp[j] as int) {
+            dp[j] = cand
+          }
+        }
+        j = j + 1
+      }
+      if (dp[i] as int) > (dp[i+1] as int) {
+        dp[i+1] = dp[i]
+      }
+      i = i + 1
+    }
+    print(str(dp[n]))
+    case = case + 1
+  }
+}
+
+main()
