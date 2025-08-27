@@ -1,0 +1,95 @@
+// Solution for SPOJ PON - Prime or Not
+// https://www.spoj.com/problems/PON/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    let ch = str[i]
+    if ch != " " { n = n * 10 + (digits[ch] as int) }
+    i = i + 1
+  }
+  return n
+}
+
+fun mulMod(x: int, y: int, mod: int): int {
+  var r = 0
+  var a = x % mod
+  var b = y
+  while b > 0 {
+    if b % 2 == 1 { r = (r + a) % mod }
+    a = (a * 2) % mod
+    b = b / 2
+  }
+  return r
+}
+
+fun powMod(a: int, b: int, m: int): int {
+  var result = 1
+  var base = a % m
+  var exp = b
+  while exp > 0 {
+    if exp % 2 == 1 { result = mulMod(result, base, m) }
+    base = mulMod(base, base, m)
+    exp = exp / 2
+  }
+  return result
+}
+
+fun isPrime(n: int): bool {
+  if n < 2 { return false }
+  let small = [2,3,5,7,11,13]
+  var i = 0
+  while i < len(small) {
+    let p = small[i] as int
+    if n == p { return true }
+    if n % p == 0 { return false }
+    i = i + 1
+  }
+  var d = n - 1
+  var s = 0
+  while d % 2 == 0 {
+    d = d / 2
+    s = s + 1
+  }
+  let bases = [2,325,9375,28178,450775,9780504,1795265022]
+  i = 0
+  while i < len(bases) {
+    let a = bases[i] as int
+    if a % n != 0 {
+      var x = powMod(a, d, n)
+      if x != 1 && x != n - 1 {
+        var r = 1
+        while r < s {
+          x = mulMod(x, x, n)
+          if x == n - 1 { break }
+          r = r + 1
+        }
+        if x != n - 1 { return false }
+      }
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var case = 0
+  while case < t {
+    let line = input()
+    if line == "" { continue }
+    let n = parseIntStr(line)
+    if isPrime(n) { print("YES") } else { print("NO") }
+    case = case + 1
+  }
+}
+
+main()
