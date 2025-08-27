@@ -1,0 +1,82 @@
+/*
+SPOJ: EXCHNG - Exchanges
+https://www.spoj.com/problems/EXCHNG/
+*/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun makeIntList(n: int, value: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < n {
+    res = append(res, value)
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let dLine = input()
+  if dLine == "" { return }
+  let d = int(dLine)
+  var case = 0
+  while case < d {
+    let nm = split(input(), " ")
+    let n = int(nm[0])
+    let m = int(nm[1])
+    var adj: list<map<int,int>> = []
+    var i = 0
+    while i <= n {
+      adj = append(adj, {})
+      i = i + 1
+    }
+    var deg = makeIntList(n + 1, 0)
+    var tokens: list<string> = []
+    while len(tokens) < m * 2 {
+      let line = input()
+      let parts = split(line, " ")
+      var j = 0
+      while j < len(parts) {
+        if parts[j] != "" { tokens = append(tokens, parts[j]) }
+        j = j + 1
+      }
+    }
+    var k = 0
+    while k < m {
+      let a = int(tokens[2*k])
+      let b = int(tokens[2*k+1])
+      if adj[a][b] == nil {
+        adj[a][b] = 1
+        adj[b][a] = 1
+        deg[a] = deg[a] + 1
+        deg[b] = deg[b] + 1
+      }
+      k = k + 1
+    }
+    var cnt = 0
+    var v = 1
+    while v <= n {
+      if deg[v] < 2 { cnt = cnt + 1 }
+      v = v + 1
+    }
+    print(cnt)
+    case = case + 1
+  }
+}
+
+main()
