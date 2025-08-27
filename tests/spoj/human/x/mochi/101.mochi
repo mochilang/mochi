@@ -1,0 +1,135 @@
+// Solution for SPOJ FISHER - Fishmonger
+// https://www.spoj.com/problems/FISHER/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil { return }
+    if line == "" { continue }
+    let parts = split(line)
+    let n = parseIntStr(parts[0])
+    let T = parseIntStr(parts[1])
+    if n == 0 && T == 0 { break }
+
+    var timeMat: list<list<int>> = []
+    var i = 0
+    while i < n {
+      let l = input()
+      if l == nil { return }
+      if l == "" { continue }
+      let p = split(l)
+      var row: list<int> = []
+      var j = 0
+      while j < n {
+        row = append(row, parseIntStr(p[j]))
+        j = j + 1
+      }
+      timeMat = append(timeMat, row)
+      i = i + 1
+    }
+
+    let _ = input() // consume blank line
+
+    var tollMat: list<list<int>> = []
+    i = 0
+    while i < n {
+      let l = input()
+      if l == nil { return }
+      if l == "" { continue }
+      let p = split(l)
+      var row: list<int> = []
+      var j = 0
+      while j < n {
+        row = append(row, parseIntStr(p[j]))
+        j = j + 1
+      }
+      tollMat = append(tollMat, row)
+      i = i + 1
+    }
+
+    let INF = 1 << 30
+    var dp: list<list<int>> = []
+    var t = 0
+    while t <= T {
+      var row: list<int> = []
+      var k = 0
+      while k < n {
+        row = append(row, INF)
+        k = k + 1
+      }
+      dp = append(dp, row)
+      t = t + 1
+    }
+    dp[0][0] = 0
+
+    t = 0
+    while t <= T {
+      var u = 0
+      while u < n {
+        let cost = dp[t][u]
+        if cost < INF {
+          var v = 0
+          while v < n {
+            let travel = timeMat[u][v]
+            if travel >= 0 && t + travel <= T {
+              let nc = cost + tollMat[u][v]
+              if nc < dp[t + travel][v] {
+                dp[t + travel][v] = nc
+              }
+            }
+            v = v + 1
+          }
+        }
+        u = u + 1
+      }
+      t = t + 1
+    }
+
+    var bestCost = INF
+    var bestTime = 0
+    t = 0
+    while t <= T {
+      let c = dp[t][n-1]
+      if c < bestCost {
+        bestCost = c
+        bestTime = t
+      }
+      t = t + 1
+    }
+    print(str(bestCost) + " " + str(bestTime))
+  }
+}
+
+main()
