@@ -1,0 +1,205 @@
+// Solution for SPOJ ALICEBOB - Alice and Bob
+// https://www.spoj.com/problems/ALICEBOB/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var sign = 1
+  if len(str) > 0 && str[0:1] == "-" {
+    sign = -1
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return sign * n
+}
+
+fun main() {
+  let dLine = input()
+  if dLine == nil || dLine == "" { return }
+  let d = parseIntStr(dLine)
+  var case = 0
+  while case < d {
+    var nmLine = ""
+    while nmLine == "" { nmLine = input() }
+    let nm = splitSpaces(nmLine)
+    let n = parseIntStr(nm[0])
+    let m = parseIntStr(nm[1])
+    var edgeLine = ""
+    while edgeLine == "" { edgeLine = input() }
+    let parts = splitSpaces(edgeLine)
+    var adjList: list<list<int>> = []
+    var adjSet: list<map<int,int>> = []
+    var deg: list<int> = []
+    var active: list<bool> = []
+    var i = 0
+    while i <= n {
+      adjList = append(adjList, [])
+      adjSet = append(adjSet, {})
+      deg = append(deg, 0)
+      active = append(active, true)
+      i = i + 1
+    }
+    var j = 0
+    while j < len(parts) {
+      let a = parseIntStr(parts[j])
+      let b = parseIntStr(parts[j+1])
+      adjList[a] = append(adjList[a] as list<int>, b)
+      adjList[b] = append(adjList[b] as list<int>, a)
+      let setA = adjSet[a] as map<int,int>
+      setA[b] = 1
+      adjSet[a] = setA
+      let setB = adjSet[b] as map<int,int>
+      setB[a] = 1
+      adjSet[b] = setB
+      deg[a] = deg[a] + 1
+      deg[b] = deg[b] + 1
+      j = j + 2
+    }
+    var queue: list<int> = []
+    var v = 1
+    while v <= n {
+      if deg[v] == 2 { queue = append(queue, v) }
+      v = v + 1
+    }
+    var qi = 0
+    var stack: list<list<int>> = []
+    while qi < len(queue) {
+      let v = queue[qi]
+      qi = qi + 1
+      if !(active[v]) { continue }
+      if deg[v] != 2 { continue }
+      var neighbors: list<int> = []
+      var idx = 0
+      while idx < len(adjList[v]) {
+        let nb = adjList[v][idx]
+        let setV = adjSet[v] as map<int,int>
+        if setV[nb] == 1 {
+          neighbors = append(neighbors, nb)
+        }
+        idx = idx + 1
+      }
+      if len(neighbors) != 2 { continue }
+      let a = neighbors[0]
+      let b = neighbors[1]
+      stack = append(stack, [a, v, b])
+      active[v] = false
+      let setA1 = adjSet[a] as map<int,int>
+      setA1[v] = 0
+      adjSet[a] = setA1
+      let setB1 = adjSet[b] as map<int,int>
+      setB1[v] = 0
+      adjSet[b] = setB1
+      deg[a] = deg[a] - 1
+      deg[b] = deg[b] - 1
+      let setA2 = adjSet[a] as map<int,int>
+      let setB2 = adjSet[b] as map<int,int>
+      if setA2[b] != 1 {
+        adjList[a] = append(adjList[a] as list<int>, b)
+        adjList[b] = append(adjList[b] as list<int>, a)
+        setA2[b] = 1
+        setB2[a] = 1
+        adjSet[a] = setA2
+        adjSet[b] = setB2
+        deg[a] = deg[a] + 1
+        deg[b] = deg[b] + 1
+      } else {
+        adjSet[a] = setA2
+        adjSet[b] = setB2
+      }
+      if active[a] && deg[a] == 2 { queue = append(queue, a) }
+      if active[b] && deg[b] == 2 { queue = append(queue, b) }
+    }
+    var rem: list<int> = []
+    var k = 1
+    while k <= n {
+      if active[k] { rem = append(rem, k) }
+      k = k + 1
+    }
+    let u = rem[0]
+    let v2 = rem[1]
+    var nxt: list<int> = []
+    var prv: list<int> = []
+    var t = 0
+    while t <= n {
+      nxt = append(nxt, 0)
+      prv = append(prv, 0)
+      t = t + 1
+    }
+    nxt[u] = v2
+    prv[v2] = u
+    nxt[v2] = u
+    prv[u] = v2
+    var sLen = len(stack)
+    while sLen > 0 {
+      let triple = stack[sLen-1]
+      stack = stack[0:sLen-1]
+      sLen = sLen - 1
+      let a = triple[0]
+      let x = triple[1]
+      let b = triple[2]
+      if nxt[a] == b {
+        nxt[a] = x
+        prv[x] = a
+        nxt[x] = b
+        prv[b] = x
+      } else {
+        nxt[b] = x
+        prv[x] = b
+        nxt[x] = a
+        prv[a] = x
+      }
+    }
+    var result: list<int> = []
+    result = append(result, 1)
+    let n1 = nxt[1]
+    let p1 = prv[1]
+    var second = n1
+    if p1 < second { second = p1 }
+    var prev = 1
+    var cur = second
+    result = append(result, cur)
+    while len(result) < n {
+      var nextNode = nxt[cur]
+      if nextNode == prev { nextNode = prv[cur] }
+      result = append(result, nextNode)
+      prev = cur
+      cur = nextNode
+    }
+    var out = ""
+    var idx2 = 0
+    while idx2 < len(result) {
+      if idx2 > 0 { out = out + " " }
+      out = out + str(result[idx2])
+      idx2 = idx2 + 1
+    }
+    print(out)
+    case = case + 1
+  }
+}
+
+main()
