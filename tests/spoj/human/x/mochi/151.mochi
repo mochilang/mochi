@@ -1,0 +1,184 @@
+// Solution for SPOJ COURIER - The Courier
+// https://www.spoj.com/problems/COURIER/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = split(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun pow2(e: int): int {
+  var r = 1
+  var i = 0
+  while i < e { r = r * 2; i = i + 1 }
+  return r
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  let INF = 1000000000
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let first = parseInts(line)
+    let n = first[0]
+    let m = first[1]
+    let home = first[2]
+
+    var dist: list<list<int>> = []
+    var i = 0
+    while i <= n {
+      var row: list<int> = []
+      var j = 0
+      while j <= n {
+        if i == j {
+          row = append(row, 0)
+        } else {
+          row = append(row, INF)
+        }
+        j = j + 1
+      }
+      dist = append(dist, row)
+      i = i + 1
+    }
+
+    i = 0
+    while i < m {
+      line = input()
+      if line == "" { continue }
+      let e = parseInts(line)
+      let u = e[0]
+      let v = e[1]
+      let d = e[2]
+      if d < dist[u][v] { dist[u][v] = d; dist[v][u] = d }
+      i = i + 1
+    }
+
+    var k = 1
+    while k <= n {
+      i = 1
+      while i <= n {
+        var j = 1
+        while j <= n {
+          let nd = dist[i][k] + dist[k][j]
+          if nd < dist[i][j] { dist[i][j] = nd }
+          j = j + 1
+        }
+        i = i + 1
+      }
+      k = k + 1
+    }
+
+    line = input()
+    while line == "" { line = input() }
+    let z = int(line)
+    var froms: list<int> = []
+    var tos: list<int> = []
+    i = 0
+    while i < z {
+      line = input()
+      if line == "" { continue }
+      let o = parseInts(line)
+      let u = o[0]
+      let v = o[1]
+      let cnt = o[2]
+      var c = 0
+      while c < cnt {
+        froms = append(froms, u)
+        tos = append(tos, v)
+        c = c + 1
+      }
+      i = i + 1
+    }
+    let total = len(froms)
+    let size = pow2(total)
+    var dp: list<list<int>> = []
+    var mask = 0
+    while mask < size {
+      var row: list<int> = []
+      var j = 0
+      while j <= n {
+        row = append(row, INF)
+        j = j + 1
+      }
+      dp = append(dp, row)
+      mask = mask + 1
+    }
+    dp[0][home] = 0
+    mask = 0
+    while mask < size {
+      i = 1
+      while i <= n {
+        let cur = dp[mask][i]
+        if cur < INF {
+          var tTask = 0
+          while tTask < total {
+            if ((mask / pow2(tTask)) % 2 == 0) {
+              let u = froms[tTask]
+              let v = tos[tTask]
+              let cost = dist[i][u] + dist[u][v]
+              let nm = mask + pow2(tTask)
+              let nd = cur + cost
+              if nd < dp[nm][v] { dp[nm][v] = nd }
+            }
+            tTask = tTask + 1
+          }
+        }
+        i = i + 1
+      }
+      mask = mask + 1
+    }
+    var ans = INF
+    i = 1
+    let full = size - 1
+    while i <= n {
+      let d = dp[full][i] + dist[i][home]
+      if d < ans { ans = d }
+      i = i + 1
+    }
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
