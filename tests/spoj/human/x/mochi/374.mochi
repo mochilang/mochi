@@ -1,0 +1,150 @@
+// Solution for SPOJ MATRIX - Count maximum matrices
+// https://www.spoj.com/problems/MATRIX/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun buildRowPref(mat: list<list<int>>, m: int, n: int): list<list<int>> {
+  var rowPref: list<list<int>> = []
+  var r = 0
+  while r < m {
+    var pref: list<int> = []
+    pref = append(pref, 0)
+    var c = 0
+    while c < n {
+      pref = append(pref, pref[len(pref)-1] + mat[r][c])
+      c = c + 1
+    }
+    rowPref = append(rowPref, pref)
+    r = r + 1
+  }
+  return rowPref
+}
+
+fun buildColPref(mat: list<list<int>>, m: int, n: int): list<list<int>> {
+  var colPref: list<list<int>> = []
+  var c = 0
+  while c < n {
+    var pref: list<int> = []
+    pref = append(pref, 0)
+    var r = 0
+    while r < m {
+      pref = append(pref, pref[len(pref)-1] + mat[r][c])
+      r = r + 1
+    }
+    colPref = append(colPref, pref)
+    c = c + 1
+  }
+  return colPref
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  for _ in 0..t {
+    var line = input()
+    while line == "" { line = input() }
+    var parts = splitSpaces(line)
+    let m = parseIntStr(parts[0])
+    let n = parseIntStr(parts[1])
+    var mat: list<list<int>> = []
+    var r = 0
+    while r < m {
+      let rowLine = input()
+      parts = splitSpaces(rowLine)
+      var row: list<int> = []
+      var c = 0
+      while c < n {
+        row = append(row, parseIntStr(parts[c]))
+        c = c + 1
+      }
+      mat = append(mat, row)
+      r = r + 1
+    }
+    let rowPref = buildRowPref(mat, m, n)
+    let colPref = buildColPref(mat, m, n)
+    var best = 0 - 1000000000
+    var cnt = 0
+    var r1 = 0
+    while r1 < m {
+      var r2 = r1
+      while r2 < m {
+        var c1 = 0
+        while c1 < n {
+          var c2 = c1
+          while c2 < n {
+            let h = r2 - r1 + 1
+            let w = c2 - c1 + 1
+            var ones = 0
+            var per = 0
+            if h == 1 && w == 1 {
+              ones = mat[r1][c1]
+              per = 1
+            } else if h == 1 {
+              ones = rowPref[r1][c2+1] - rowPref[r1][c1]
+              per = w
+            } else if w == 1 {
+              ones = colPref[c1][r2+1] - colPref[c1][r1]
+              per = h
+            } else {
+              let top = rowPref[r1][c2+1] - rowPref[r1][c1]
+              let bottom = rowPref[r2][c2+1] - rowPref[r2][c1]
+              var left = 0
+              var right = 0
+              if r2 > r1 + 1 {
+                left = colPref[c1][r2] - colPref[c1][r1+1]
+                right = colPref[c2][r2] - colPref[c2][r1+1]
+              }
+              ones = top + bottom + left + right
+              per = 2 * (h + w) - 4
+            }
+            let val = 2 * ones - per
+            if val > best {
+              best = val
+              cnt = 1
+            } else if val == best {
+              cnt = cnt + 1
+            }
+            c2 = c2 + 1
+          }
+          c1 = c1 + 1
+        }
+        r2 = r2 + 1
+      }
+      r1 = r1 + 1
+    }
+    print(str(best) + " " + str(cnt))
+  }
+}
+
+main()
