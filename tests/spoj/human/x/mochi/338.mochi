@@ -1,0 +1,172 @@
+// Solution for SPOJ ROADS - Roads
+// https://www.spoj.com/problems/ROADS/
+
+let digits = {
+  "0":0, "1":1, "2":2, "3":3, "4":4,
+  "5":5, "6":6, "7":7, "8":8, "9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+type Edge { to: int, len: int, cost: int }
+type State { d: int, node: int, cost: int }
+type PopRes { heap: list<State>, state: State }
+
+fun heap_push(h: list<State>, item: State): list<State> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p].d <= heap[i].d { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<State>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      let l = 2*i + 1
+      let r = 2*i + 2
+      var smallest = i
+      if l < len(heap) && heap[l].d < heap[smallest].d { smallest = l }
+      if r < len(heap) && heap[r].d < heap[smallest].d { smallest = r }
+      if smallest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[smallest]
+      heap[smallest] = tmp
+      i = smallest
+    }
+  }
+  return PopRes { heap: heap, state: top }
+}
+
+fun makeMatrix(r: int, c: int, v: int): list<list<int>> {
+  var mat: list<list<int>> = []
+  var i = 0
+  while i < r {
+    var row: list<int> = []
+    var j = 0
+    while j < c {
+      row = append(row, v)
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return mat
+}
+
+fun dijkstra(n: int, k: int, adj: list<list<Edge>>): int {
+  let INF = 1000000000
+  var dist = makeMatrix(n+1, k+1, INF)
+  dist[1][0] = 0
+  var heap: list<State> = []
+  heap = heap_push(heap, State{ d: 0, node: 1, cost: 0 })
+  while len(heap) > 0 {
+    let pr = heap_pop(heap)
+    heap = pr.heap
+    let st = pr.state
+    if st.d > dist[st.node][st.cost] { continue }
+    if st.node == n { return st.d }
+    let edges = adj[st.node]
+    var i = 0
+    while i < len(edges) {
+      let e = edges[i]
+      let nc = st.cost + e.cost
+      if nc <= k {
+        let nd = st.d + e.len
+        if nd < dist[e.to][nc] {
+          dist[e.to][nc] = nd
+          heap = heap_push(heap, State{ d: nd, node: e.to, cost: nc })
+        }
+      }
+      i = i + 1
+    }
+  }
+  return -1
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let T = parseIntStr(tLine)
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    let K = parseIntStr(line)
+    line = input()
+    while line == "" { line = input() }
+    let N = parseIntStr(line)
+    line = input()
+    while line == "" { line = input() }
+    let R = parseIntStr(line)
+    var adj: list<list<Edge>> = []
+    var i = 0
+    while i <= N {
+      adj = append(adj, [])
+      i = i + 1
+    }
+    i = 0
+    while i < R {
+      line = input()
+      while line == "" { line = input() }
+      let arr = parseInts(line)
+      let s = arr[0]
+      let d = arr[1]
+      let l = arr[2]
+      let c = arr[3]
+      adj[s] = append(adj[s], Edge{ to: d, len: l, cost: c })
+      i = i + 1
+    }
+    let ans = dijkstra(N, K, adj)
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
