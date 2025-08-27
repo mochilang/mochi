@@ -1,0 +1,210 @@
+// Solution for SPOJ POLYGAME - The Game of Polygons
+// https://www.spoj.com/problems/POLYGAME/
+
+type Edge {
+  a: int,
+  b: int,
+  t: int,
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var num = 0
+  var inNum = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      num = num*10 + (digits[ch] as int)
+      inNum = true
+    } else {
+      if inNum {
+        res = append(res, num)
+        num = 0
+        inNum = false
+      }
+    }
+    i = i + 1
+  }
+  if inNum { res = append(res, num) }
+  return res
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun addEdge(edges: list<Edge>, x: int, y: int, t: int): list<Edge> {
+  var u = x
+  var v = y
+  if u > v {
+    let tmp = u
+    u = v
+    v = tmp
+  }
+  edges = append(edges, Edge { a: u, b: v, t: t })
+  return edges
+}
+
+fun mergeEdges(left: list<Edge>, right: list<Edge>): list<Edge> {
+  var res: list<Edge> = []
+  var i = 0
+  var j = 0
+  while i < len(left) && j < len(right) {
+    let le = left[i]
+    let re = right[j]
+    if le.a < re.a || (le.a == re.a && le.b <= re.b) {
+      res = append(res, le)
+      i = i + 1
+    } else {
+      res = append(res, re)
+      j = j + 1
+    }
+  }
+  while i < len(left) {
+    res = append(res, left[i])
+    i = i + 1
+  }
+  while j < len(right) {
+    res = append(res, right[j])
+    j = j + 1
+  }
+  return res
+}
+
+fun sortEdges(arr: list<Edge>): list<Edge> {
+  if len(arr) <= 1 { return arr }
+  let mid = len(arr) / 2
+  let left = sortEdges(arr[0:mid])
+  let right = sortEdges(arr[mid:len(arr)])
+  return mergeEdges(left, right)
+}
+
+fun computeSizes(adj: list<list<int>>, n: int): list<int> {
+  var stack: list<int> = []
+  var parents: list<int> = []
+  var order: list<int> = []
+  var par: list<int> = []
+  stack = append(stack, 0)
+  parents = append(parents, 0-1)
+  while len(stack) > 0 {
+    let idx = len(stack) - 1
+    let v = stack[idx] as int
+    let p = parents[idx] as int
+    stack = stack[0:idx]
+    parents = parents[0:idx]
+    order = append(order, v)
+    par = append(par, p)
+    let row = adj[v] as list<int>
+    var i = 0
+    while i < len(row) {
+      let u = row[i] as int
+      if u != p {
+        stack = append(stack, u)
+        parents = append(parents, v)
+      }
+      i = i + 1
+    }
+  }
+  var size: list<int> = []
+  var i = 0
+  while i < n {
+    size = append(size, 0)
+    i = i + 1
+  }
+  var k = len(order) - 1
+  while k >= 0 {
+    let v = order[k] as int
+    let p = par[k] as int
+    var res = 1
+    let row = adj[v] as list<int>
+    var j = 0
+    while j < len(row) {
+      let u = row[j] as int
+      if u != p {
+        res = res ^ (size[u] as int)
+      }
+      j = j + 1
+    }
+    size[v] = res
+    k = k - 1
+  }
+  return size
+}
+
+fun main() {
+  let tLine = readNonEmpty()
+  let t = parseInts(tLine)[0]
+  var case = 0
+  while case < t {
+    let nLine = readNonEmpty()
+    let n = parseInts(nLine)[0]
+    let m = n - 2
+    var tris: list<list<int>> = []
+    var i = 0
+    while i < m {
+      let line = readNonEmpty()
+      tris = append(tris, parseInts(line))
+      i = i + 1
+    }
+    var adj: list<list<int>> = []
+    i = 0
+    while i < m {
+      adj = append(adj, [])
+      i = i + 1
+    }
+    var edges: list<Edge> = []
+    i = 0
+    while i < m {
+      let tri = tris[i] as list<int>
+      edges = addEdge(edges, tri[0] as int, tri[1] as int, i)
+      edges = addEdge(edges, tri[1] as int, tri[2] as int, i)
+      edges = addEdge(edges, tri[2] as int, tri[0] as int, i)
+      i = i + 1
+    }
+    edges = sortEdges(edges)
+    var e = 0
+    while e + 1 < len(edges) {
+      let e1 = edges[e]
+      let e2 = edges[e + 1]
+      if e1.a == e2.a && e1.b == e2.b {
+        adj[e1.t] = append(adj[e1.t] as list<int>, e2.t)
+        adj[e2.t] = append(adj[e2.t] as list<int>, e1.t)
+        e = e + 2
+      } else {
+        e = e + 1
+      }
+    }
+    let deg = len(adj[0] as list<int>)
+    if deg <= 1 {
+      print("YES")
+    } else {
+      let size = computeSizes(adj, m)
+      var x = 0
+      let neigh = adj[0] as list<int>
+      var j = 0
+      while j < len(neigh) {
+        let nb = neigh[j] as int
+        x = x ^ (size[nb] as int)
+        j = j + 1
+      }
+      if x != 0 {
+        print("YES")
+      } else {
+        print("NO")
+      }
+    }
+    case = case + 1
+  }
+}
+
+main()
