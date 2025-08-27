@@ -54,7 +54,9 @@ var usePanic bool
 var usePyName bool
 var funcDepth int
 var returnOutsideFunc bool
-var paramStack []map[string]bool
+// paramStack tracks scoped variable types so we can reason about
+// integer expressions inside functions.
+var paramStack []map[string]types.Type
 var asyncFuncs map[string]bool
 
 const maxSafeMul = 94906265 // sqrt(2^53 - 1)
@@ -2623,21 +2625,21 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		typeStr := tsType(t)
 		if transpileEnv != nil {
-			if len(paramStack) > 0 {
-				for i := len(paramStack) - 1; i >= 0; i-- {
-					if paramStack[i][s.Let.Name] {
-						transpileEnv.SetVarDeep(s.Let.Name, t, false)
-						if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
-							typeStr = q.ElemType + "[]"
-						}
-						return &AssignStmt{Name: s.Let.Name, Expr: e}, nil
-					}
-				}
-			}
-			transpileEnv.SetVar(s.Let.Name, t, false)
-			if len(paramStack) > 0 {
-				paramStack[len(paramStack)-1][s.Let.Name] = true
-			}
+               if len(paramStack) > 0 {
+                       for i := len(paramStack) - 1; i >= 0; i-- {
+                               if _, ok := paramStack[i][s.Let.Name]; ok {
+                                       transpileEnv.SetVarDeep(s.Let.Name, t, false)
+                                       if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
+                                               typeStr = q.ElemType + "[]"
+                                       }
+                                       return &AssignStmt{Name: s.Let.Name, Expr: e}, nil
+                               }
+                       }
+               }
+               transpileEnv.SetVar(s.Let.Name, t, false)
+               if len(paramStack) > 0 {
+                       paramStack[len(paramStack)-1][s.Let.Name] = t
+               }
 		}
 		if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
 			typeStr = q.ElemType + "[]"
@@ -2690,21 +2692,21 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		typeStr := tsType(t)
 		if transpileEnv != nil {
 			// If the name matches a function parameter or outer variable, we cannot re-declare it.
-			if len(paramStack) > 0 {
-				for i := len(paramStack) - 1; i >= 0; i-- {
-					if paramStack[i][s.Var.Name] {
-						transpileEnv.SetVarDeep(s.Var.Name, t, true)
-						if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
-							typeStr = q.ElemType + "[]"
-						}
-						return &AssignStmt{Name: s.Var.Name, Expr: e}, nil
-					}
-				}
-			}
-			transpileEnv.SetVar(s.Var.Name, t, true)
-			if len(paramStack) > 0 {
-				paramStack[len(paramStack)-1][s.Var.Name] = true
-			}
+               if len(paramStack) > 0 {
+                       for i := len(paramStack) - 1; i >= 0; i-- {
+                               if _, ok := paramStack[i][s.Var.Name]; ok {
+                                       transpileEnv.SetVarDeep(s.Var.Name, t, true)
+                                       if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
+                                               typeStr = q.ElemType + "[]"
+                                       }
+                                       return &AssignStmt{Name: s.Var.Name, Expr: e}, nil
+                               }
+                       }
+               }
+               transpileEnv.SetVar(s.Var.Name, t, true)
+               if len(paramStack) > 0 {
+                       paramStack[len(paramStack)-1][s.Var.Name] = t
+               }
 		}
 		if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
 			typeStr = q.ElemType + "[]"
@@ -2858,7 +2860,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		child := types.NewEnv(transpileEnv)
 		var params []string
 		var typesArr []string
-		paramMap := map[string]bool{}
+       paramMap := map[string]types.Type{}
 		for _, p := range s.Fun.Params {
 			params = append(params, p.Name)
 			var pt types.Type
@@ -2869,8 +2871,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				pt = types.AnyType{}
 				typesArr = append(typesArr, "")
 			}
-			child.SetVar(p.Name, pt, true)
-			paramMap[p.Name] = true
+               child.SetVar(p.Name, pt, true)
+               paramMap[p.Name] = pt
 		}
 		prev := transpileEnv
 		transpileEnv = child
@@ -3178,8 +3180,8 @@ func convertTypeDecl(td *parser.TypeDecl) (Stmt, error) {
 }
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
-	paramStack = append(paramStack, map[string]bool{})
-	defer func() { paramStack = paramStack[:len(paramStack)-1] }()
+       paramStack = append(paramStack, map[string]types.Type{})
+       defer func() { paramStack = paramStack[:len(paramStack)-1] }()
 	var out []Stmt
 	for _, s := range list {
 		st, err := convertStmt(s)
@@ -3561,19 +3563,25 @@ func isFloatLitExpr(e Expr) bool {
 }
 
 func isVarIntExpr(e Expr) bool {
-	if nr, ok := e.(*NameRef); ok {
-		if transpileEnv != nil {
-			if t, err := transpileEnv.GetVar(nr.Name); err == nil {
-				return isIntType(t)
-			}
-		}
-		// default to non-int when type info is missing to avoid
-		// accidentally treating floating point variables as ints
-		// during arithmetic operations (which would trigger
-		// integer semantics like truncating division).
-		return false
-	}
-	return false
+    if nr, ok := e.(*NameRef); ok {
+            if transpileEnv != nil {
+                    if t, err := transpileEnv.GetVar(nr.Name); err == nil {
+                            return isIntType(t)
+                    }
+            }
+            // check current parameter/variable stack for local types
+            for i := len(paramStack) - 1; i >= 0; i-- {
+                    if t, ok := paramStack[i][nr.Name]; ok {
+                            return isIntType(t)
+                    }
+            }
+            // default to non-int when type info is missing to avoid
+            // accidentally treating floating point variables as ints
+            // during arithmetic operations (which would trigger
+            // integer semantics like truncating division).
+            return false
+    }
+    return false
 }
 
 // isIntExpr heuristically determines whether an expression evaluates to an int.
@@ -3829,13 +3837,17 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 				expr := &BinaryExpr{Left: operands[i], Op: "%", Right: operands[i+1]}
 				operands[i] = &CallExpr{Func: "Number", Args: []Expr{expr}}
 				typesArr[i] = types.IntType{}
-			} else if ops[i] == "/" && ((isIntType(typesArr[i]) && isIntType(typesArr[i+1])) || (isIntExpr(operands[i]) && isIntExpr(operands[i+1]))) {
-				operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
-				typesArr[i] = types.IntType{}
-			} else {
-				operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
-				switch ops[i] {
-				case "+", "-", "*", "%":
+                       } else if ops[i] == "/" {
+                               if isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1]) {
+                                       operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
+                               } else {
+                                       operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1]}
+                                       typesArr[i] = types.IntType{}
+                               }
+                       } else {
+                               operands[i] = &BinaryExpr{Left: operands[i], Op: ops[i], Right: operands[i+1]}
+                               switch ops[i] {
+                               case "+", "-", "*", "%":
 					if isIntType(typesArr[i]) && isIntType(typesArr[i+1]) {
 						typesArr[i] = types.IntType{}
 					} else {
