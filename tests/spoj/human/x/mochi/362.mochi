@@ -1,0 +1,64 @@
+// Solution for SPOJ IGARB - Ignore the Garbage
+// https://www.spoj.com/problems/IGARB/
+
+let digitMap = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+let allowed = ["0","1","2","5","6","8","9"]
+let rotateMap = {
+  "0":"0","1":"1","2":"2","5":"5",
+  "6":"9","8":"8","9":"6",
+}
+
+fun divMod7(s: string): any {
+  var rem = 0
+  var q = ""
+  var i = 0
+  var started = false
+  while i < len(s) {
+    let d = digitMap[s[i:i+1]] as int
+    let cur = rem * 10 + d
+    let qd = cur / 7
+    rem = cur % 7
+    if qd != 0 || started {
+      q = q + str(qd)
+      started = true
+    }
+    i = i + 1
+  }
+  if !started {
+    q = "0"
+  }
+  return {quot: q, rem: rem}
+}
+
+fun kth(k: string): string {
+  var n = k
+  var num = ""
+  while n != "0" {
+    let res = divMod7(n)
+    num = allowed[res["rem"] as int] + num
+    n = res["quot"] as string
+  }
+  var out = ""
+  var i = len(num) - 1
+  while i >= 0 {
+    out = out + rotateMap[num[i:i+1]]
+    i = i - 1
+  }
+  return out
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = tStr as int
+  for _ in 0..t {
+    let k = input()
+    print(kth(k))
+  }
+}
+
+main()
