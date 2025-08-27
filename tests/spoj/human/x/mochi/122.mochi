@@ -1,0 +1,92 @@
+// Solution for SPOJ STEVE - Voracious Steve
+// https://www.spoj.com/problems/STEVE/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var num = 0
+  var inNum = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      num = num * 10 + (digits[ch] as int)
+      inNum = true
+    } else {
+      if inNum {
+        res = append(res, num)
+        num = 0
+        inNum = false
+      }
+    }
+    i = i + 1
+  }
+  if inNum { res = append(res, num) }
+  return res
+}
+
+var M = 0
+var memo: map<string,int> = {}
+
+fun key(n: int, s: int, d: int, t: int): string {
+  return str(n) + "," + str(s) + "," + str(d) + "," + str(t)
+}
+
+fun dfs(n: int, s: int, d: int, turn: int): int {
+  let k = key(n, s, d, turn)
+  if memo[k] != nil { return memo[k] }
+  var res = 0
+  if n == 0 {
+    if s == 0 && d == 0 {
+      res = 0
+    } else if turn == 0 {
+      res = dfs(s, 0, 0, 0)
+    } else {
+      res = s + dfs(d, 0, 0, 1)
+    }
+  } else if turn == 0 {
+    var best = 0
+    var take = 1
+    while take <= M && take <= n {
+      let val = dfs(n - take, s + take, d, 1)
+      if val > best { best = val }
+      take = take + 1
+    }
+    res = best
+  } else {
+    var best = 1000
+    var take = 1
+    while take <= M && take <= n {
+      let val = dfs(n - take, s, d + take, 0)
+      if val < best { best = val }
+      take = take + 1
+    }
+    res = best
+  }
+  memo[k] = res
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseInts(tLine)[0]
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let nums = parseInts(line)
+    let n = nums[0]
+    M = nums[1]
+    memo = {}
+    let ans = dfs(n, 0, 0, 0)
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
