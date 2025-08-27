@@ -1,0 +1,96 @@
+// Solution for SPOJ CUBERT - Cube Root
+// https://www.spoj.com/problems/CUBERT/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun trim(s: string): string {
+  var i = 0
+  while i < len(s) && (s[i:i+1] == " " || s[i:i+1] == "\t") {
+    i = i + 1
+  }
+  var j = len(s) - 1
+  while j >= i && (s[j:j+1] == " " || s[j:j+1] == "\t") {
+    j = j - 1
+  }
+  if j < i { return "" }
+  return substring(s, i, j + 1)
+}
+
+fun pow10(exp: int): bigint {
+  var res: bigint = 1
+  var i = 0
+  while i < exp {
+    res = res * (10 as bigint)
+    i = i + 1
+  }
+  return res
+}
+
+fun cubeRoot(n: bigint): bigint {
+  var low: bigint = 0
+  var high: bigint = 1
+  while high * high * high <= n {
+    high = high * 2
+  }
+  let one: bigint = 1
+  while low + one < high {
+    let mid = (low + high) / 2
+    let m3 = mid * mid * mid
+    if m3 <= n {
+      low = mid
+    } else {
+      high = mid
+    }
+  }
+  return low
+}
+
+fun padFraction(s: string): string {
+  var r = s
+  while len(r) < 10 {
+    r = "0" + r
+  }
+  return r
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(trim(tLine))
+  let scale = pow10(30)
+  var case = 0
+  while case < t {
+    var line = input()
+    if line == "" { continue }
+    line = trim(line)
+    if line == "" { continue }
+    let n: bigint = line as bigint
+    let m = n * scale
+    let r = cubeRoot(m)
+    let s = str(r)
+    var intPart: string
+    var fracPart: string
+    if len(s) <= 10 {
+      intPart = "0"
+      fracPart = padFraction(s)
+    } else {
+      intPart = s[0:len(s)-10]
+      fracPart = s[len(s)-10:]
+    }
+    let allDigits = intPart + fracPart
+    var sum = 0
+    var i = 0
+    while i < len(allDigits) {
+      sum = sum + digits[allDigits[i:i+1]]
+      i = i + 1
+    }
+    let checksum = sum % 10
+    print(str(checksum) + " " + intPart + "." + fracPart)
+    case = case + 1
+  }
+}
+
+main()
