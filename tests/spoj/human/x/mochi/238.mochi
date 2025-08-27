@@ -1,0 +1,167 @@
+// Solution for SPOJ HOLIDAY2 - Getting Rid of the Holidays (Act II)
+// https://www.spoj.com/problems/HOLIDAY2/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+let digitStr = {
+  0:"0",1:"1",2:"2",3:"3",4:"4",5:"5",6:"6",7:"7",8:"8",9:"9",
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun intToStr(n: int): string {
+  if n == 0 { return "0" }
+  var x = n
+  var parts: list<int> = []
+  while x > 0 {
+    parts = append(parts, x % 10)
+    x = x / 10
+  }
+  var s = ""
+  var i = len(parts) - 1
+  while i >= 0 {
+    s = s + digitStr[parts[i] as int]
+    i = i - 1
+  }
+  return s
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun joinInts(arr: list<int>): string {
+  var s = ""
+  var i = 0
+  while i < len(arr) {
+    if i > 0 { s = s + " " }
+    s = s + intToStr(arr[i] as int)
+    i = i + 1
+  }
+  return s
+}
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let T = parseIntStr(tStr)
+  for _ in 0..T {
+    let line1 = input()
+    let parts = splitSpaces(line1)
+    let n = parseIntStr(parts[0])
+    let k = parseIntStr(parts[1])
+    let line2 = input()
+    let numsStr = splitSpaces(line2)
+    var arr: list<int> = []
+    var idx = 0
+    while idx < len(numsStr) {
+      arr = append(arr, parseIntStr(numsStr[idx]))
+      idx = idx + 1
+    }
+    var dp: map<int,int> = {0:0}
+    var keys: list<int> = [0]
+    var i = 0
+    while i < len(arr) {
+      let val = arr[i] as int
+      var next: map<int,int> = {}
+      var nextKeys: list<int> = []
+      var j = 0
+      while j < len(keys) {
+        let g = keys[j] as int
+        let r = dp[g] as int
+        var g2 = if g == 0 { val } else { gcd(g, val) }
+        if next[g2] == nil || (next[g2] as int) > r {
+          if next[g2] == nil { nextKeys = append(nextKeys, g2) }
+          next[g2] = r
+        }
+        let r2 = r + 1
+        if next[g] == nil || (next[g] as int) > r2 {
+          if next[g] == nil { nextKeys = append(nextKeys, g) }
+          next[g] = r2
+        }
+        j = j + 1
+      }
+      dp = next
+      keys = nextKeys
+      i = i + 1
+    }
+    var best = 1
+    var j = 0
+    while j < len(keys) {
+      let g = keys[j] as int
+      if g != 0 && g > best && (dp[g] as int) <= k {
+        best = g
+      }
+      j = j + 1
+    }
+    var removed: list<int> = []
+    i = 0
+    while i < n {
+      if arr[i] % best != 0 {
+        removed = append(removed, i + 1)
+      }
+      i = i + 1
+    }
+    i = 0
+    while len(removed) < k {
+      if arr[i] % best == 0 {
+        removed = append(removed, i + 1)
+      }
+      i = i + 1
+    }
+    removed = sortInts(removed)
+    print(joinInts(removed))
+  }
+}
+
+main()
