@@ -1,0 +1,89 @@
+// Solution for SPOJ SCUBADIV - Scuba diver
+// https://www.spoj.com/problems/SCUBADIV/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+var tokens: list<string> = []
+var idx = 0
+
+fun nextToken(): string {
+  while idx >= len(tokens) {
+    let line = input()
+    if line == nil { return nil }
+    tokens = splitSpaces(line)
+    idx = 0
+  }
+  let t = tokens[idx]
+  idx = idx + 1
+  return t
+}
+
+fun nextInt(): int {
+  let t = nextToken()
+  if t == nil { return 0 }
+  return int(t)
+}
+
+fun main() {
+  let cases = nextInt()
+  var c = 0
+  let INF = 1000000000
+  while c < cases {
+    let needO = nextInt()
+    let needN = nextInt()
+    let n = nextInt()
+    var dp: list<list<int>> = []
+    var o = 0
+    while o <= needO {
+      var row: list<int> = []
+      var nn = 0
+      while nn <= needN {
+        row = append(row, INF)
+        nn = nn + 1
+      }
+      dp = append(dp, row)
+      o = o + 1
+    }
+    dp[0][0] = 0
+    var i = 0
+    while i < n {
+      let oxy = nextInt()
+      let nit = nextInt()
+      let w = nextInt()
+      var o2 = needO
+      while o2 >= 0 {
+        var n2 = needN
+        while n2 >= 0 {
+          var no = o2 + oxy
+          if no > needO { no = needO }
+          var nn2 = n2 + nit
+          if nn2 > needN { nn2 = needN }
+          let nw = dp[o2][n2] + w
+          if nw < dp[no][nn2] { dp[no][nn2] = nw }
+          n2 = n2 - 1
+        }
+        o2 = o2 - 1
+      }
+      i = i + 1
+    }
+    print(str(dp[needO][needN]))
+    c = c + 1
+  }
+}
+
+main()
