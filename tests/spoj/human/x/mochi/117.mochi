@@ -1,0 +1,212 @@
+// Solution for SPOJ MAZE - The Long and Narrow Maze
+// https://www.spoj.com/problems/MAZE/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+let dr = [0,0,-1,1]
+let dc = [-1,1,0,0]
+let opp = [1,0,3,2]
+
+fun main() {
+  let tLine = input()
+  if tLine == nil { return }
+  let t = parseIntStr(tLine)
+  var caseN = 0
+  while caseN < t {
+    var line = input()
+    while line != nil && line == "" {
+      line = input()
+    }
+    if line == nil { break }
+    let n = parseIntStr(line)
+
+    var grid: list<list<int>> = []
+    var r = 0
+    while r < 3 {
+      var row: list<int> = []
+      var c = 0
+      while c < n {
+        row = append(row, 0)
+        c = c + 1
+      }
+      grid = append(grid, row)
+      r = r + 1
+    }
+
+    var col = 0
+    while col < n {
+      line = input()
+      if line == nil { return }
+      if line == "" { continue }
+      let parts = split(line)
+      grid[0][col] = parseIntStr(parts[0])
+      grid[1][col] = parseIntStr(parts[1])
+      grid[2][col] = parseIntStr(parts[2])
+      col = col + 1
+    }
+
+    // visited[r][c][dir]
+    var visited: list<list<list<int>>> = []
+    r = 0
+    while r < 3 {
+      var colList: list<list<int>> = []
+      var c = 0
+      while c < n {
+        var d: list<int> = []
+        var k = 0
+        while k < 4 { d = append(d, 0); k = k + 1 }
+        colList = append(colList, d)
+        c = c + 1
+      }
+      visited = append(visited, colList)
+      r = r + 1
+    }
+    var qr: list<int> = []
+    var qc: list<int> = []
+    var qd: list<int> = []
+    var front = 0
+
+    r = 0
+    while r < 3 {
+      if grid[r][0] != 0 {
+        qr = append(qr, r)
+        qc = append(qc, 0)
+        qd = append(qd, 0) // entering from left
+        visited[r][0][0] = 1
+      }
+      r = r + 1
+    }
+
+    var success = false
+    while front < len(qr) && success == false {
+      let cr = qr[front]
+      let cc = qc[front]
+      let dir = qd[front]
+      front = front + 1
+      let tcell = grid[cr][cc]
+      if tcell == 0 { continue }
+
+      if tcell == 1 {
+        if dir == 0 {
+          if cc == n-1 { success = true }
+          else {
+            let nr = cr + dr[1]
+            let nc = cc + dc[1]
+            if nc >= 0 && nc < n && grid[nr][nc] != 0 && visited[nr][nc][opp[1]] == 0 {
+              visited[nr][nc][opp[1]] = 1
+              qr = append(qr, nr)
+              qc = append(qc, nc)
+              qd = append(qd, opp[1])
+            }
+          }
+        } else if dir == 1 {
+          let nr = cr + dr[0]
+          let nc = cc + dc[0]
+          if nc >= 0 && grid[nr][nc] != 0 && visited[nr][nc][opp[0]] == 0 {
+            visited[nr][nc][opp[0]] = 1
+            qr = append(qr, nr)
+            qc = append(qc, nc)
+            qd = append(qd, opp[0])
+          }
+        } else if dir == 2 {
+          let nr = cr + dr[3]
+          let nc = cc + dc[3]
+          if nr >= 0 && nr < 3 && grid[nr][nc] != 0 && visited[nr][nc][opp[3]] == 0 {
+            visited[nr][nc][opp[3]] = 1
+            qr = append(qr, nr)
+            qc = append(qc, nc)
+            qd = append(qd, opp[3])
+          }
+        } else {
+          let nr = cr + dr[2]
+          let nc = cc + dc[2]
+          if nr >= 0 && grid[nr][nc] != 0 && visited[nr][nc][opp[2]] == 0 {
+            visited[nr][nc][opp[2]] = 1
+            qr = append(qr, nr)
+            qc = append(qc, nc)
+            qd = append(qd, opp[2])
+          }
+        }
+      } else {
+        if dir == 0 || dir == 1 {
+          // up
+          var nr = cr + dr[2]
+          var nc = cc + dc[2]
+          if nr >= 0 && nc >= 0 && nc < n && grid[nr][nc] != 0 && visited[nr][nc][opp[2]] == 0 {
+            visited[nr][nc][opp[2]] = 1
+            qr = append(qr, nr)
+            qc = append(qc, nc)
+            qd = append(qd, opp[2])
+          }
+          // down
+          nr = cr + dr[3]
+          nc = cc + dc[3]
+          if nr < 3 && nc >= 0 && nc < n && grid[nr][nc] != 0 && visited[nr][nc][opp[3]] == 0 {
+            visited[nr][nc][opp[3]] = 1
+            qr = append(qr, nr)
+            qc = append(qc, nc)
+            qd = append(qd, opp[3])
+          }
+        } else {
+          // left
+          var nr = cr + dr[0]
+          var nc = cc + dc[0]
+          if nc >= 0 && grid[nr][nc] != 0 && visited[nr][nc][opp[0]] == 0 {
+            visited[nr][nc][opp[0]] = 1
+            qr = append(qr, nr)
+            qc = append(qc, nc)
+            qd = append(qd, opp[0])
+          }
+          // right
+          if cc == n-1 {
+            success = true
+          } else {
+            nr = cr + dr[1]
+            nc = cc + dc[1]
+            if nc < n && grid[nr][nc] != 0 && visited[nr][nc][opp[1]] == 0 {
+              visited[nr][nc][opp[1]] = 1
+              qr = append(qr, nr)
+              qc = append(qc, nc)
+              qd = append(qd, opp[1])
+            }
+          }
+        }
+      }
+    }
+
+    if success { print("yes") } else { print("no") }
+    caseN = caseN + 1
+  }
+}
+
+main()
