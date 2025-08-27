@@ -1,0 +1,179 @@
+// Solution for SPOJ LANDSCAP - Landscaping
+// https://www.spoj.com/problems/LANDSCAP/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+var tokens: list<string> = []
+fun nextToken(): string {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return "" }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let tok = tokens[0]
+  tokens = tokens[1:len(tokens)]
+  return tok
+}
+
+fun nextInt(): int {
+  let t = nextToken()
+  if t == "" { return 0 }
+  return t as int
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun precompute_inc(a: list<int>): list<list<int>> {
+  let n = len(a)
+  var inc: list<list<int>> = []
+  var i = 0
+  while i < n {
+    inc = append(inc, make_int_list(n, 0))
+    i = i + 1
+  }
+  var r = 0
+  while r < n {
+    var b = a[r]
+    var cost = 0
+    var l = r - 1
+    while l >= 0 {
+      if a[l] > b {
+        cost = cost + (a[l] - b)
+      } else {
+        b = a[l]
+      }
+      inc[l][r] = cost
+      l = l - 1
+    }
+    r = r + 1
+  }
+  return inc
+}
+
+fun precompute_dec(a: list<int>): list<list<int>> {
+  let n = len(a)
+  var dec: list<list<int>> = []
+  var i = 0
+  while i < n {
+    dec = append(dec, make_int_list(n, 0))
+    i = i + 1
+  }
+  var l = 0
+  while l < n {
+    var b = a[l]
+    var cost = 0
+    var r = l + 1
+    while r < n {
+      if a[r] > b {
+        cost = cost + (a[r] - b)
+      } else {
+        b = a[r]
+      }
+      dec[l][r] = cost
+      r = r + 1
+    }
+    l = l + 1
+  }
+  return dec
+}
+
+fun solve_case(a: list<int>, K: int): int {
+  let n = len(a)
+  let inc = precompute_inc(a)
+  let dec = precompute_dec(a)
+  let INF = 1000000000000000
+  var best = INF
+  var k = 1
+  while k <= K {
+    let m = 2 * k
+    var dp: list<list<int>> = []
+    var j = 0
+    while j <= m {
+      dp = append(dp, make_int_list(n, INF))
+      j = j + 1
+    }
+    var i = 0
+    while i < n {
+      dp[1][i] = inc[0][i]
+      i = i + 1
+    }
+    var j2 = 2
+    while j2 <= m {
+      var costMat = inc
+      if j2 % 2 == 0 { costMat = dec }
+      var i2 = 0
+      while i2 < n {
+        var bestCost = INF
+        var limit = i2
+        if j2 != m { limit = i2 - 1 }
+        var p = j2 - 2
+        while p <= limit {
+          var segCost = 0
+          if p != i2 { segCost = costMat[p+1][i2] }
+          var c = dp[j2-1][p] + segCost
+          if c < bestCost { bestCost = c }
+          p = p + 1
+        }
+        dp[j2][i2] = bestCost
+        i2 = i2 + 1
+      }
+      j2 = j2 + 1
+    }
+    if dp[m][n-1] < best { best = dp[m][n-1] }
+    k = k + 1
+  }
+  return best
+}
+
+fun main() {
+  let t = nextInt()
+  var case = 0
+  while case < t {
+    let N = nextInt()
+    let K = nextInt()
+    var arr: list<int> = []
+    var i = 0
+    while i < N {
+      arr = append(arr, nextInt())
+      i = i + 1
+    }
+    let ans = solve_case(arr, K)
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
