@@ -1,0 +1,36 @@
+// Solution for SPOJ SORTING - Sorting is easy
+// https://www.spoj.com/problems/SORTING/
+
+fun main() {
+  let line = input()
+  if line == "" { return }
+  // split line into array of characters
+  var arr: list<string> = []
+  var i = 0
+  while i < len(line) {
+    arr = append(arr, line[i:i+1])
+    i = i + 1
+  }
+  // insertion sort on characters
+  i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  // join sorted characters
+  var res = ""
+  i = 0
+  while i < len(arr) {
+    res = res + arr[i]
+    i = i + 1
+  }
+  print(res)
+}
+
+main()
