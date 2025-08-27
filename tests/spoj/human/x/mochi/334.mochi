@@ -1,0 +1,50 @@
+// Solution for SPOJ PHDISP - The Philosophical Dispute
+// https://www.spoj.com/problems/PHDISP/
+
+fun split_two(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" {
+    res = append(res, cur)
+  }
+  return res
+}
+
+fun format1(x: float): string {
+  var scaled = x * 10.0 + 0.5
+  var n = scaled as int
+  var whole = n / 10
+  var frac = n % 10
+  return str(whole) + "." + str(frac)
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var i = 0
+  while i < t {
+    let line = input()
+    let parts = split_two(line)
+    let y0 = parts[1] as float
+    let epsLine = input()
+    let tval = asin(y0) + 1.5 * 3.141592653589793
+    print(format1(tval))
+    i = i + 1
+  }
+}
+
+main()
