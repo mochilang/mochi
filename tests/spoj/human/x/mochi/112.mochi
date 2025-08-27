@@ -1,0 +1,124 @@
+/*
+SPOJ: SEGVIS - Horizontally Visible Segments
+https://www.spoj.com/problems/SEGVIS/
+*/
+
+type Segment = { x: int, y1: int, y2: int }
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  var i = 0
+  while i < len(pieces) {
+    let p = pieces[i]
+    if len(p) > 0 {
+      nums = append(nums, p as int)
+    }
+    i = i + 1
+  }
+  return nums
+}
+
+fun sortSegments(arr: list<Segment>): list<Segment> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1].x > arr[j].x {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun visible(segs: list<Segment>, i: int, j: int): bool {
+  let a = segs[i]
+  let b = segs[j]
+  let low = if a.y1 > b.y1 { a.y1 } else { b.y1 }
+  let high = if a.y2 < b.y2 { a.y2 } else { b.y2 }
+  if low > high { return false }
+  if low == high {
+    var k = i + 1
+    while k < j {
+      let s = segs[k]
+      if s.y1 <= low && s.y2 >= low {
+        return false
+      }
+      k = k + 1
+    }
+    return true
+  }
+  var y = low
+  var k = i + 1
+  while k < j && y < high {
+    let s = segs[k]
+    if s.y1 <= y && s.y2 > y {
+      y = s.y2
+    }
+    k = k + 1
+  }
+  return y < high
+}
+
+fun main() {
+  let dLine = input()
+  if dLine == "" { return }
+  let d = dLine as int
+  var case = 0
+  while case < d {
+    let nLine = input()
+    let n = nLine as int
+    var segs: list<Segment> = []
+    var i = 0
+    while i < n {
+      let line = input()
+      let nums = parse_ints(line)
+      segs = append(segs, Segment{ x: nums[2], y1: nums[0], y2: nums[1] })
+      i = i + 1
+    }
+    segs = sortSegments(segs)
+    var ans = 0
+    i = 0
+    while i < n {
+      var j = i + 1
+      while j < n {
+        if visible(segs, i, j) {
+          var k = j + 1
+          while k < n {
+            if visible(segs, i, k) && visible(segs, j, k) {
+              ans = ans + 1
+            }
+            k = k + 1
+          }
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
