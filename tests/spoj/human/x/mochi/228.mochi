@@ -1,0 +1,176 @@
+// Solution for SPOJ SHAMAN - Shamans
+// https://www.spoj.com/problems/SHAMAN/
+
+type Point { x: int, y: int }
+
+let digits = {
+  "0":0, "1":1, "2":2, "3":3, "4":4,
+  "5":5, "6":6, "7":7, "8":8, "9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun cross(o: Point, a: Point, b: Point): int {
+  return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x)
+}
+
+fun sortPoints(ps: list<Point>): list<Point> {
+  var arr = ps
+  var n = len(arr)
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < n - 1 {
+      let p = arr[j]
+      let q = arr[j + 1]
+      if p.x > q.x || (p.x == q.x && p.y > q.y) {
+        arr[j] = q
+        arr[j + 1] = p
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun convexHull(ps: list<Point>): list<Point> {
+  ps = sortPoints(ps)
+  var lower: list<Point> = []
+  for p in ps {
+    while len(lower) >= 2 && cross(lower[len(lower)-2], lower[len(lower)-1], p) <= 0 {
+      lower = lower[:len(lower)-1]
+    }
+    lower = append(lower, p)
+  }
+  var upper: list<Point> = []
+  var i = len(ps) - 1
+  while i >= 0 {
+    let p = ps[i]
+    while len(upper) >= 2 && cross(upper[len(upper)-2], upper[len(upper)-1], p) <= 0 {
+      upper = upper[:len(upper)-1]
+    }
+    upper = append(upper, p)
+    i = i - 1
+  }
+  var hull = lower[:len(lower)-1]
+  var j = 0
+  while j < len(upper)-1 {
+    hull = append(hull, upper[j])
+    j = j + 1
+  }
+  return hull
+}
+
+fun quadArea(a: Point, b: Point, c: Point, d: Point): float {
+  let s1 = (a.x as float)*(b.y as float) + (b.x as float)*(c.y as float) + (c.x as float)*(d.y as float) + (d.x as float)*(a.y as float)
+  let s2 = (a.y as float)*(b.x as float) + (b.y as float)*(c.x as float) + (c.y as float)*(d.x as float) + (d.y as float)*(a.x as float)
+  var area = (s1 - s2) / 2.0
+  if area < 0.0 { area = -area }
+  return area
+}
+
+fun format1(x: float): string {
+  var scaled = x * 10.0 + 0.5
+  var n = scaled as int
+  var whole = n / 10
+  var frac = n % 10
+  return str(whole) + "." + str(frac)
+}
+
+fun main() {
+  var line = input()
+  if line == "" { return }
+  let t = parseIntStr(line)
+  var case = 0
+  while case < t {
+    line = input()
+    while line == "" || len(splitSpaces(line)) == 0 {
+      line = input()
+      if line == "" { break }
+    }
+    if line == "" { break }
+    let n = parseIntStr(line)
+    var pts: list<Point> = []
+    var i = 0
+    while i < n {
+      line = input()
+      if line == "" { continue }
+      let nums = parseInts(line)
+      pts = append(pts, Point{x:nums[0], y:nums[1]})
+      i = i + 1
+    }
+    let hull = convexHull(pts)
+    let m = len(hull)
+    var maxA = 0.0
+    if m >= 4 {
+      var h2: list<Point> = []
+      for p in hull { h2 = append(h2, p) }
+      for p in hull { h2 = append(h2, p) }
+      var i0 = 0
+      while i0 < m {
+        var j = i0 + 1
+        while j < i0 + m {
+          var k = j + 1
+          while k < i0 + m {
+            var l = k + 1
+            while l < i0 + m {
+              let area = quadArea(h2[i0], h2[j], h2[k], h2[l])
+              if area > maxA { maxA = area }
+              l = l + 1
+            }
+            k = k + 1
+          }
+          j = j + 1
+        }
+        i0 = i0 + 1
+      }
+    }
+    print(format1(maxA))
+    case = case + 1
+  }
+}
+
+main()
