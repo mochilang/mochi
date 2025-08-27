@@ -1,0 +1,105 @@
+// Solution for SPOJ PHONY - Phony Primes
+// https://www.spoj.com/problems/PHONY/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseTwo(line: string): any {
+  var idx = 0
+  var a = 0
+  while idx < len(line) && line[idx] != " " {
+    a = a * 10 + (digits[line[idx]] as int)
+    idx = idx + 1
+  }
+  idx = idx + 1
+  var b = 0
+  while idx < len(line) {
+    let ch = line[idx]
+    if ch != " " {
+      b = b * 10 + (digits[ch] as int)
+    }
+    idx = idx + 1
+  }
+  return { a: a, b: b }
+}
+
+fun sieve(limit: int): list<int> {
+  var isPrime: list<bool> = []
+  var i = 0
+  while i <= limit {
+    isPrime = append(isPrime, true)
+    i = i + 1
+  }
+  isPrime[0] = false
+  if limit >= 1 { isPrime[1] = false }
+  var p = 2
+  while p * p <= limit {
+    if isPrime[p] {
+      var mult = p * p
+      while mult <= limit {
+        isPrime[mult] = false
+        mult = mult + p
+      }
+    }
+    p = p + 1
+  }
+  var primes: list<int> = []
+  i = 2
+  while i <= limit {
+    if isPrime[i] { primes = append(primes, i) }
+    i = i + 1
+  }
+  return primes
+}
+
+fun isCarmichael(n: int, primes: list<int>): bool {
+  if n % 2 == 0 { return false }
+  var orig = n
+  var factors: list<int> = []
+  var i = 0
+  while i < len(primes) {
+    let p = primes[i] as int
+    if p * p > n { break }
+    if n % p == 0 {
+      if (n / p) % p == 0 { return false }
+      factors = append(factors, p)
+      n = n / p
+    }
+    i = i + 1
+  }
+  if n > 1 { factors = append(factors, n) }
+  if len(factors) < 3 { return false }
+  i = 0
+  while i < len(factors) {
+    let p = factors[i] as int
+    if (orig - 1) % (p - 1) != 0 { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun main() {
+  let primes = sieve(46340)
+  while true {
+    let line = input()
+    if line == "" { break }
+    let pair = parseTwo(line)
+    let a = pair.a as int
+    let b = pair.b as int
+    if a == 0 && b == 0 { break }
+    var found = false
+    var n = a
+    while n <= b {
+      if isCarmichael(n, primes) {
+        print(n)
+        found = true
+      }
+      n = n + 1
+    }
+    if !found { print("none") }
+  }
+}
+
+main()
