@@ -1,0 +1,107 @@
+// Solution for SPOJ AGGRCOW - Aggressive cows
+// https://www.spoj.com/problems/AGGRCOW/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    if i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun merge(left: list<int>, right: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  var j = 0
+  while i < len(left) && j < len(right) {
+    if left[i] <= right[j] {
+      res = append(res, left[i])
+      i = i + 1
+    } else {
+      res = append(res, right[j])
+      j = j + 1
+    }
+  }
+  while i < len(left) {
+    res = append(res, left[i])
+    i = i + 1
+  }
+  while j < len(right) {
+    res = append(res, right[j])
+    j = j + 1
+  }
+  return res
+}
+
+fun mergeSort(arr: list<int>): list<int> {
+  if len(arr) <= 1 { return arr }
+  let mid = len(arr) / 2
+  let left = mergeSort(arr[0:mid])
+  let right = mergeSort(arr[mid:len(arr)])
+  return merge(left, right)
+}
+
+fun canPlace(pos: list<int>, c: int, dist: int): bool {
+  var count = 1
+  var last = pos[0]
+  var i = 1
+  while i < len(pos) {
+    if pos[i] - last >= dist {
+      count = count + 1
+      last = pos[i]
+      if count >= c { return true }
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun maxDist(pos: list<int>, c: int): int {
+  pos = mergeSort(pos)
+  var low = 0
+  var high = pos[len(pos)-1] - pos[0] + 1
+  while low + 1 < high {
+    let mid = (low + high) / 2
+    if canPlace(pos, c, mid) {
+      low = mid
+    } else {
+      high = mid
+    }
+  }
+  return low
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = int(tStr)
+  var caseIndex = 0
+  while caseIndex < t {
+    let line = input()
+    let parts = split(line, " ")
+    let n = int(parts[0])
+    let c = int(parts[1])
+    var stalls: list<int> = []
+    var i = 0
+    while i < n {
+      let p = int(input())
+      stalls = append(stalls, p)
+      i = i + 1
+    }
+    let ans = maxDist(stalls, c)
+    print(str(ans))
+    caseIndex = caseIndex + 1
+  }
+}
+
+main()
