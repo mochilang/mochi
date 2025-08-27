@@ -1,7 +1,7 @@
 // Solution for SPOJ PHDISP - The Philosophical Dispute
 // https://www.spoj.com/problems/PHDISP/
 
-fun split_two(s: string): list<string> {
+fun splitTwo(s: string): list<string> {
   var res: list<string> = []
   var cur = ""
   var i = 0
@@ -24,10 +24,10 @@ fun split_two(s: string): list<string> {
 }
 
 fun format1(x: float): string {
-  var scaled = x * 10.0 + 0.5
-  var n = scaled as int
-  var whole = n / 10
-  var frac = n % 10
+  let scaled = x * 10.0 + 0.5
+  let n = scaled as int
+  let whole = n / 10
+  let frac = n % 10
   return str(whole) + "." + str(frac)
 }
 
@@ -38,9 +38,10 @@ fun main() {
   var i = 0
   while i < t {
     let line = input()
-    let parts = split_two(line)
+    let parts = splitTwo(line)
+    let x0 = parts[0] as float
     let y0 = parts[1] as float
-    let epsLine = input()
+    let epsLine = input() // unused, radius of the dot
     let tval = asin(y0) + 1.5 * 3.141592653589793
     print(format1(tval))
     i = i + 1
