@@ -25,7 +25,7 @@ func TestCSTranspiler_SPOJ_Golden(t *testing.T) {
 		t.Skip("dotnet not installed")
 	}
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "spoj", "x", "mochi")
+	srcDir := filepath.Join(root, "tests", "spoj", "human", "x", "mochi")
 	outDir := filepath.Join(root, "tests", "spoj", "x", "cs")
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
@@ -149,7 +149,7 @@ func TestCSTranspiler_SPOJ_Golden(t *testing.T) {
 
 func updateSPOJ() {
 	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "spoj", "x", "mochi")
+	srcDir := filepath.Join(root, "tests", "spoj", "human", "x", "mochi")
 	outDir := filepath.Join(root, "tests", "spoj", "x", "cs")
 	mdPath := filepath.Join(root, "transpiler", "x", "cs", "SPOJ.md")
 
