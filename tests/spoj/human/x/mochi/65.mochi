@@ -1,0 +1,84 @@
+// Solution for SPOJ BALL - Billiard
+// https://www.spoj.com/problems/BALL/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseInts(line: string): list<int> {
+  var nums: list<int> = []
+  var num = 0
+  var has = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if has {
+        nums = append(nums, num)
+        num = 0
+        has = false
+      }
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has {
+    nums = append(nums, num)
+  }
+  return nums
+}
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun solve(x: int, y: int, a: int, b: int): int {
+  let g = gcd(x - 1, y - 1)
+  if (a - 1) % g == 0 && (b - 1) % g == 0 {
+    return 2
+  }
+  let s = (x - 1) / g + (y - 1) / g
+  let base = 4 * s
+  if s % 2 == 0 {
+    return base
+  }
+  return base + 2
+}
+
+fun main() {
+  let first = input()
+  if first == "" { return }
+  let t = parseIntStr(first)
+  for _ in 0..t {
+    let line = input()
+    if line == "" { continue }
+    let v = parseInts(line)
+    let x = v[0] as int
+    let y = v[1] as int
+    let a = v[2] as int
+    let b = v[3] as int
+    print(str(solve(x, y, a, b)))
+  }
+}
+
+main()
