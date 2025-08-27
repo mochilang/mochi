@@ -1699,17 +1699,12 @@ func (m *MapLit) emitWithType(w io.Writer, includeType bool) {
 		case *StringLit:
 			fmt.Fprintf(w, "%q", k.Value)
 		case *VarRef:
-			if _, ok := localTypes[k.Name]; ok {
-				io.WriteString(w, k.Name)
-			} else if currentEnv != nil {
-				if _, err := currentEnv.GetVar(k.Name); err == nil {
-					io.WriteString(w, k.Name)
-				} else {
-					fmt.Fprintf(w, "%q", k.Name)
-				}
-			} else {
-				fmt.Fprintf(w, "%q", k.Name)
-			}
+			// Treat bare identifiers in map literals as string keys.
+			// Using variables as keys in object-like maps leads to
+			// invalid C++ initializers when the variable is also
+			// referenced as a value. Always emit the identifier as a
+			// quoted string to match Mochi's object field semantics.
+			fmt.Fprintf(w, "%q", k.Name)
 		default:
 			m.Keys[i].emit(w)
 		}
@@ -1913,6 +1908,20 @@ func (s *SelectorExpr) emit(w io.Writer) {
 			fmt.Fprintf(w, ").%s", s.Field)
 			return
 		}
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		resType := exprType(s)
+		if resType == "std::string" {
+			fmt.Fprintf(w, "std::any_cast<std::string>(std::any_cast<std::map<std::string, std::any>>(")
+			s.Target.emit(w)
+			fmt.Fprintf(w, ")[\"%s\"])", s.Field)
+		} else {
+			fmt.Fprintf(w, "std::any_cast<std::map<std::string, std::any>>(")
+			s.Target.emit(w)
+			fmt.Fprintf(w, ")[\"%s\"]", s.Field)
+		}
+		return
 	}
 	if strings.HasPrefix(t, "std::map<") {
 		parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(t, "std::map<"), ">"), ",", 2)
@@ -6903,6 +6912,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			keys[i] = ke
 			vals[i] = ve
 		}
+		// Represent object-like maps with std::any values to allow mixed types.
+		vt = "std::any"
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
 		return &MapLit{Keys: keys, Values: vals, KeyType: kt, ValueType: vt}, nil
 	case p.Query != nil:
 		if len(p.Query.Joins) == 1 && p.Query.Joins[0].Side != nil {
@@ -8501,6 +8515,14 @@ func exprType(e Expr) string {
 		t := exprType(v.Target)
 		if ft := structFieldType(t, v.Field); ft != "" {
 			return ft
+		}
+		if t == "std::any" {
+			switch v.Field {
+			case "kind", "op", "val":
+				return "std::string"
+			default:
+				return "std::any"
+			}
 		}
 		if strings.HasPrefix(t, "std::map<") && strings.HasSuffix(t, ">") {
 			parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(t, "std::map<"), ">"), ",", 2)
