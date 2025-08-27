@@ -1,0 +1,115 @@
+// Solution for SPOJ RENT - Rent your airplane and make money
+// https://www.spoj.com/problems/RENT/
+
+let digits = {
+  "0":0, "1":1, "2":2, "3":3, "4":4,
+  "5":5, "6":6, "7":7, "8":8, "9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun sortOrders(orders: list<list<int>>): list<list<int>> {
+  var i = 0
+  while i < len(orders) {
+    var j = i + 1
+    while j < len(orders) {
+      if orders[j][1] < orders[i][1] {
+        let tmp = orders[i]
+        orders[i] = orders[j]
+        orders[j] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return orders
+}
+
+fun solveCase(orders: list<list<int>>): int {
+  orders = sortOrders(orders)
+  let n = len(orders)
+  var dp: list<int> = []
+  var i = 0
+  while i < n {
+    dp = append(dp, 0)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    var incl = orders[i][2]
+    var j = i - 1
+    while j >= 0 && orders[j][1] > orders[i][0] {
+      j = j - 1
+    }
+    if j >= 0 { incl = incl + dp[j] }
+    var excl = 0
+    if i > 0 { excl = dp[i-1] }
+    if incl > excl { dp[i] = incl } else { dp[i] = excl }
+    i = i + 1
+  }
+  if n == 0 { return 0 }
+  return dp[n-1]
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    let nLine = input()
+    let n = parseIntStr(nLine)
+    var orders: list<list<int>> = []
+    var i = 0
+    while i < n {
+      let line = input()
+      let nums = parseInts(line)
+      let st = nums[0]
+      let d = nums[1]
+      let p = nums[2]
+      orders = append(orders, [st, st + d, p])
+      i = i + 1
+    }
+    let ans = solveCase(orders)
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
