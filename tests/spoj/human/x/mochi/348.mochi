@@ -1,0 +1,167 @@
+// Solution for SPOJ EXPEDI - Expedition
+// https://www.spoj.com/problems/EXPEDI/
+
+type Stop { dist: int, fuel: int }
+
+type PopRes { heap: list<int>, val: int }
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+fun sortStops(stops: list<Stop>): list<Stop> {
+  var i = 0
+  while i < len(stops) {
+    var j = i + 1
+    while j < len(stops) {
+      let si = stops[i]
+      let sj = stops[j]
+      if sj.dist < si.dist {
+        stops[i] = sj
+        stops[j] = si
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return stops
+}
+
+fun heap_push(h: list<int>, x: int): list<int> {
+  var heap = append(h, x)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p] >= heap[i] { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<int>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      let l = 2*i + 1
+      let r = 2*i + 2
+      var largest = i
+      if l < len(heap) && heap[l] > heap[largest] { largest = l }
+      if r < len(heap) && heap[r] > heap[largest] { largest = r }
+      if largest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[largest]
+      heap[largest] = tmp
+      i = largest
+    }
+  }
+  return PopRes { heap: heap, val: top }
+}
+
+fun main() {
+  let t = nextInt()
+  var case = 0
+  while case < t {
+    let n = nextInt()
+    var stops: list<Stop> = []
+    var i = 0
+    while i < n {
+      let d = nextInt()
+      let f = nextInt()
+      stops = append(stops, Stop{ dist:d, fuel:f })
+      i = i + 1
+    }
+    let L = nextInt()
+    let P = nextInt()
+    i = 0
+    while i < len(stops) {
+      let s = stops[i]
+      stops[i] = Stop{ dist: L - s.dist, fuel: s.fuel }
+      i = i + 1
+    }
+    stops = append(stops, Stop{ dist:L, fuel:0 })
+    stops = sortStops(stops)
+    var fuel = P
+    var prev = 0
+    var ans = 0
+    var heap: list<int> = []
+    i = 0
+    while i < len(stops) {
+      let s = stops[i]
+      let d = s.dist
+      let need = d - prev
+      while fuel < need {
+        if len(heap) == 0 { ans = -1; break }
+        let pr = heap_pop(heap)
+        heap = pr.heap
+        fuel = fuel + pr.val
+        ans = ans + 1
+      }
+      if ans < 0 { break }
+      fuel = fuel - need
+      prev = d
+      heap = heap_push(heap, s.fuel)
+      i = i + 1
+    }
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
