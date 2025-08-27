@@ -1,0 +1,253 @@
+// Solution for SPOJ WORDEQ - Word equations
+// https://www.spoj.com/problems/WORDEQ/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+let letters = {
+  "a":0,"b":1,"c":2,"d":3,"e":4,
+  "f":5,"g":6,"h":7,"i":8,"j":9,
+  "k":10,"l":11,"m":12,"n":13,"o":14,
+  "p":15,"q":16,"r":17,"s":18,"t":19,
+  "u":20,"v":21,"w":22,"x":23,"y":24,
+  "z":25,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpace(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+fun pow2(k: int): int {
+  var res = 1
+  var i = 0
+  while i < k {
+    res = res * 2
+    i = i + 1
+  }
+  return res
+}
+
+var parent: list<int>
+var value: list<int>
+
+fun initUF(n: int) {
+  parent = []
+  value = []
+  var i = 0
+  while i < n {
+    parent = append(parent, i)
+    value = append(value, -1)
+    i = i + 1
+  }
+}
+
+fun find(x: int): int {
+  var x0 = x
+  while parent[x0] != x0 {
+    parent[x0] = parent[parent[x0]]
+    x0 = parent[x0]
+  }
+  return x0
+}
+
+fun union(a: int, b: int): bool {
+  let ra = find(a)
+  let rb = find(b)
+  if ra == rb { return true }
+  parent[rb] = ra
+  if value[ra] == -1 {
+    value[ra] = value[rb]
+  } else if value[rb] != -1 && value[ra] != value[rb] {
+    return false
+  }
+  return true
+}
+
+fun assignConst(x: int, v: int): bool {
+  let rx = find(x)
+  if value[rx] == -1 {
+    value[rx] = v
+    return true
+  }
+  return value[rx] == v
+}
+
+fun expand(expr: string, base: list<int>, lens: list<int>): list<any> {
+  var res: list<any> = []
+  var i = 0
+  while i < len(expr) {
+    let ch = expr[i:i+1]
+    if ch == "0" || ch == "1" {
+      res = append(res, { kind: "const", val: ch })
+    } else {
+      let v = letters[ch] as int
+      var j = 0
+      while j < lens[v] {
+        res = append(res, { kind: "var", idx: base[v] + j })
+        j = j + 1
+      }
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var case = 0
+  while case < t {
+    var kLine = input()
+    while kLine == "" {
+      kLine = input()
+    }
+    let k = parseIntStr(kLine)
+    let lenLine = input()
+    var lens: list<int> = []
+    if k > 0 && lenLine != "" {
+      let parts = splitSpace(lenLine)
+      var i = 0
+      while i < len(parts) {
+        lens = append(lens, parseIntStr(parts[i]))
+        i = i + 1
+      }
+    }
+    var i = len(lens)
+    while i < k {
+      lens = append(lens, 0)
+      i = i + 1
+    }
+
+    let _l = parseIntStr(input())
+    let leftWord = input()
+    let _r = parseIntStr(input())
+    let rightWord = input()
+
+    var used: list<bool> = []
+    i = 0
+    while i < k {
+      used = append(used, false)
+      i = i + 1
+    }
+    i = 0
+    while i < len(leftWord) {
+      let ch = leftWord[i:i+1]
+      if ch >= "a" && ch <= "z" {
+        let v = letters[ch] as int
+        used[v] = true
+      }
+      i = i + 1
+    }
+    i = 0
+    while i < len(rightWord) {
+      let ch = rightWord[i:i+1]
+      if ch >= "a" && ch <= "z" {
+        let v = letters[ch] as int
+        used[v] = true
+      }
+      i = i + 1
+    }
+
+    var base: list<int> = []
+    var total = 0
+    i = 0
+    while i < k {
+      if used[i] {
+        base = append(base, total)
+        total = total + lens[i]
+      } else {
+        base = append(base, -1)
+      }
+      i = i + 1
+    }
+
+    initUF(total)
+
+    let Larr = expand(leftWord, base, lens)
+    let Rarr = expand(rightWord, base, lens)
+    if len(Larr) != len(Rarr) {
+      print(0)
+      case = case + 1
+      continue
+    }
+    var ok = true
+    var pos = 0
+    while pos < len(Larr) && ok {
+      let a = Larr[pos]
+      let b = Rarr[pos]
+      if a.kind == "const" && b.kind == "const" {
+        if a.val != b.val { ok = false }
+      } else if a.kind == "const" && b.kind == "var" {
+        let val = if a.val == "1" {1} else {0}
+        if !assignConst(b.idx, val) { ok = false }
+      } else if a.kind == "var" && b.kind == "const" {
+        let val = if b.val == "1" {1} else {0}
+        if !assignConst(a.idx, val) { ok = false }
+      } else {
+        if !union(a.idx, b.idx) { ok = false }
+      }
+      pos = pos + 1
+    }
+    if !ok {
+      print(0)
+      case = case + 1
+      continue
+    }
+
+    var seen: map<int,bool> = {}
+    var res = 1
+    i = 0
+    while i < total {
+      let root = find(i)
+      if seen[root] != true {
+        seen[root] = true
+        if value[root] == -1 {
+          res = res * 2
+        }
+      }
+      i = i + 1
+    }
+    i = 0
+    while i < k {
+      if !used[i] {
+        res = res * pow2(lens[i])
+      }
+      i = i + 1
+    }
+    print(res)
+    case = case + 1
+  }
+}
+
+main()
