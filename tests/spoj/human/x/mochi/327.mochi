@@ -1,0 +1,188 @@
+// Solution for SPOJ PLATON - Platon and Socrates
+// https://www.spoj.com/problems/PLATON/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+type Pair {
+  a: int,
+  b: int,
+  sum: int,
+  prod: int,
+}
+
+fun sortPairs(arr: list<Pair>): list<Pair> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 {
+      let prev = arr[j-1]
+      let curr = arr[j]
+      var swap = false
+      if prev.sum > curr.sum {
+        swap = true
+      } else if prev.sum == curr.sum {
+        if prev.a > curr.a {
+          swap = true
+        } else if prev.a == curr.a && prev.b > curr.b {
+          swap = true
+        }
+      }
+      if !swap { break }
+      arr[j-1] = curr
+      arr[j] = prev
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun solve(l: int, r: int): list<Pair> {
+  var all: list<Pair> = []
+  var prodCount: map<int,int> = {}
+  var a = l
+  while a <= r {
+    var b = a + 1
+    while b <= r {
+      let s = a + b
+      let p = a * b
+      all = append(all, Pair{ a: a, b: b, sum: s, prod: p })
+      if prodCount[p] == nil { prodCount[p] = 1 } else { prodCount[p] = prodCount[p] + 1 }
+      b = b + 1
+    }
+    a = a + 1
+  }
+  // step2: product must be ambiguous
+  var cand1: list<Pair> = []
+  var i = 0
+  while i < len(all) {
+    let pr = all[i]
+    if prodCount[pr.prod] > 1 { cand1 = append(cand1, pr) }
+    i = i + 1
+  }
+  // sum counts for cand1
+  var sumCount: map<int,int> = {}
+  i = 0
+  while i < len(cand1) {
+    let pr = cand1[i]
+    let s = pr.sum
+    if sumCount[s] == nil { sumCount[s] = 1 } else { sumCount[s] = sumCount[s] + 1 }
+    i = i + 1
+  }
+  // step3: sums with more than one pair
+  var cand2: list<Pair> = []
+  i = 0
+  while i < len(cand1) {
+    let pr = cand1[i]
+    if sumCount[pr.sum] > 1 { cand2 = append(cand2, pr) }
+    i = i + 1
+  }
+  // product counts for cand2
+  var prodCount2: map<int,int> = {}
+  i = 0
+  while i < len(cand2) {
+    let pr = cand2[i]
+    let p = pr.prod
+    if prodCount2[p] == nil { prodCount2[p] = 1 } else { prodCount2[p] = prodCount2[p] + 1 }
+    i = i + 1
+  }
+  // step4: product uniquely identifies pair
+  var cand3: list<Pair> = []
+  i = 0
+  while i < len(cand2) {
+    let pr = cand2[i]
+    if prodCount2[pr.prod] == 1 { cand3 = append(cand3, pr) }
+    i = i + 1
+  }
+  // sum counts for cand3
+  var sumCount2: map<int,int> = {}
+  i = 0
+  while i < len(cand3) {
+    let pr = cand3[i]
+    let s = pr.sum
+    if sumCount2[s] == nil { sumCount2[s] = 1 } else { sumCount2[s] = sumCount2[s] + 1 }
+    i = i + 1
+  }
+  // step5: sum uniquely identifies pair
+  var final: list<Pair> = []
+  i = 0
+  while i < len(cand3) {
+    let pr = cand3[i]
+    if sumCount2[pr.sum] == 1 { final = append(final, pr) }
+    i = i + 1
+  }
+  final = sortPairs(final)
+  return final
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 1
+  while case <= t {
+    let line = input()
+    let lr = parseInts(line)
+    let l = lr[0]
+    let r = lr[1]
+    let pairs = solve(l, r)
+    print("case " + str(case))
+    print(str(len(pairs)))
+    var i = 0
+    while i < len(pairs) {
+      let p = pairs[i]
+      print(str(p.a) + " " + str(p.b))
+      i = i + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
