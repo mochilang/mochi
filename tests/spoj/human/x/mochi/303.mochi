@@ -1,0 +1,305 @@
+// Solution for SPOJ UCUBE - The Unstable Cube
+// https://www.spoj.com/problems/UCUBE/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpace(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    let n = parseIntStr(input())
+    var front: list<string> = []
+    var leftv: list<string> = []
+    var back: list<string> = []
+    var rightv: list<string> = []
+    var topv: list<string> = []
+    var bottom: list<string> = []
+    var i = 0
+    while i < n {
+      let line = input()
+      let parts = splitSpace(line)
+      front = append(front, parts[0])
+      leftv = append(leftv, parts[1])
+      back = append(back, parts[2])
+      rightv = append(rightv, parts[3])
+      topv = append(topv, parts[4])
+      bottom = append(bottom, parts[5])
+      i = i + 1
+    }
+    var cube: list<list<list<string>>> = []
+    var x = 0
+    while x < n {
+      var plane: list<list<string>> = []
+      var y = 0
+      while y < n {
+        var row: list<string> = []
+        var z = 0
+        while z < n {
+          row = append(row, "?")
+          z = z + 1
+        }
+        plane = append(plane, row)
+        y = y + 1
+      }
+      cube = append(cube, plane)
+      x = x + 1
+    }
+    // front view
+    var y = 0
+    while y < n {
+      let rowF = front[y]
+      var x = 0
+      while x < n {
+        let c = rowF[x:x+1]
+        if c == "." {
+          var z = 0
+          while z < n {
+            cube[x][y][z] = "."
+            z = z + 1
+          }
+        } else {
+          var z = 0
+          while z < n {
+            let cell = cube[x][y][z]
+            if cell == "." {
+              z = z + 1
+            } else if cell == "?" || cell == c {
+              cube[x][y][z] = c
+              break
+            } else {
+              cube[x][y][z] = "."
+              z = z + 1
+            }
+          }
+        }
+        x = x + 1
+      }
+      y = y + 1
+    }
+    // left view
+    y = 0
+    while y < n {
+      let rowL = leftv[y]
+      var j = 0
+      while j < n {
+        let c = rowL[j:j+1]
+        let z = n - 1 - j
+        if c == "." {
+          var x = 0
+          while x < n {
+            cube[x][y][z] = "."
+            x = x + 1
+          }
+        } else {
+          var x = 0
+          while x < n {
+            let cell = cube[x][y][z]
+            if cell == "." {
+              x = x + 1
+            } else if cell == "?" || cell == c {
+              cube[x][y][z] = c
+              break
+            } else {
+              cube[x][y][z] = "."
+              x = x + 1
+            }
+          }
+        }
+        j = j + 1
+      }
+      y = y + 1
+    }
+    // back view
+    y = 0
+    while y < n {
+      let rowB = back[y]
+      var j = 0
+      while j < n {
+        let c = rowB[j:j+1]
+        let x = n - 1 - j
+        if c == "." {
+          var z = 0
+          while z < n {
+            cube[x][y][z] = "."
+            z = z + 1
+          }
+        } else {
+          var z = n - 1
+          while z >= 0 {
+            let cell = cube[x][y][z]
+            if cell == "." {
+              z = z - 1
+            } else if cell == "?" || cell == c {
+              cube[x][y][z] = c
+              break
+            } else {
+              cube[x][y][z] = "."
+              z = z - 1
+            }
+          }
+        }
+        j = j + 1
+      }
+      y = y + 1
+    }
+    // right view
+    y = 0
+    while y < n {
+      let rowR = rightv[y]
+      var j = 0
+      while j < n {
+        let c = rowR[j:j+1]
+        let z = j
+        if c == "." {
+          var x = 0
+          while x < n {
+            cube[n-1-x][y][z] = "."
+            x = x + 1
+          }
+        } else {
+          var x = n - 1
+          while x >= 0 {
+            let cell = cube[x][y][z]
+            if cell == "." {
+              x = x - 1
+            } else if cell == "?" || cell == c {
+              cube[x][y][z] = c
+              break
+            } else {
+              cube[x][y][z] = "."
+              x = x - 1
+            }
+          }
+        }
+        j = j + 1
+      }
+      y = y + 1
+    }
+    // top view
+    var z = 0
+    while z < n {
+      let rowT = topv[z]
+      var x = 0
+      while x < n {
+        let c = rowT[x:x+1]
+        let zz = n - 1 - z
+        if c == "." {
+          var y = 0
+          while y < n {
+            cube[x][y][zz] = "."
+            y = y + 1
+          }
+        } else {
+          var y = 0
+          while y < n {
+            let cell = cube[x][y][zz]
+            if cell == "." {
+              y = y + 1
+            } else if cell == "?" || cell == c {
+              cube[x][y][zz] = c
+              break
+            } else {
+              cube[x][y][zz] = "."
+              y = y + 1
+            }
+          }
+        }
+        x = x + 1
+      }
+      z = z + 1
+    }
+    // bottom view
+    z = 0
+    while z < n {
+      let rowD = bottom[z]
+      var x = 0
+      while x < n {
+        let c = rowD[x:x+1]
+        let zz = z
+        if c == "." {
+          var y = 0
+          while y < n {
+            cube[x][n-1-y][zz] = "."
+            y = y + 1
+          }
+        } else {
+          var y = n - 1
+          while y >= 0 {
+            let cell = cube[x][y][zz]
+            if cell == "." {
+              y = y - 1
+            } else if cell == "?" || cell == c {
+              cube[x][y][zz] = c
+              break
+            } else {
+              cube[x][y][zz] = "."
+              y = y - 1
+            }
+          }
+        }
+        x = x + 1
+      }
+      z = z + 1
+    }
+    // count remaining blocks
+    var count = 0
+    x = 0
+    while x < n {
+      var plane = cube[x]
+      var y2 = 0
+      while y2 < n {
+        var row = plane[y2]
+        var z2 = 0
+        while z2 < n {
+          if row[z2] != "." {
+            count = count + 1
+          }
+          z2 = z2 + 1
+        }
+        y2 = y2 + 1
+      }
+      x = x + 1
+    }
+    print(str(count))
+    case = case + 1
+  }
+}
+
+main()
