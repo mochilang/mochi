@@ -2653,6 +2653,10 @@ func Emit(w io.Writer, p *Program) error {
 			if _, err := fmt.Fprintf(w, "$_dataDir = %q;\n", p.DataDir); err != nil {
 				return err
 			}
+		} else {
+			if _, err := io.WriteString(w, "$_dataDir = getenv('MOCHI_DATA_DIR');\n"); err != nil {
+				return err
+			}
 		}
 		if _, err := io.WriteString(w, helperReadFile+"\n"); err != nil {
 			return err
