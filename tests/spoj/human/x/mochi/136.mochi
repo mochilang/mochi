@@ -1,0 +1,214 @@
+// Solution for SPOJ TRANS - Transformation
+// https://www.spoj.com/problems/TRANS/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parts[i] as int)
+    i = i + 1
+  }
+  return nums
+}
+
+fun make2d(r: int, c: int, v: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < r {
+    var row: list<int> = []
+    var j = 0
+    while j < c {
+      row = append(row, v)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun make3d(a: int, b: int, c: int, v: int): list<list<list<int>>> {
+  var res: list<list<list<int>>> = []
+  var i = 0
+  while i < a {
+    var arr2: list<list<int>> = []
+    var j = 0
+    while j < b {
+      var arr1: list<int> = []
+      var k = 0
+      while k < c {
+        arr1 = append(arr1, v)
+        k = k + 1
+      }
+      arr2 = append(arr2, arr1)
+      j = j + 1
+    }
+    res = append(res, arr2)
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseInts(tLine)[0]
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let first = parseInts(line)
+    let N = first[0]
+    let M = first[1]
+    let U = first[2]
+    let V = first[3]
+    line = input()
+    while line == "" { line = input() }
+    let X = parseInts(line)
+    line = input()
+    while line == "" { line = input() }
+    let Y = parseInts(line)
+    var two: list<list<list<int>>> = []
+    var three: list<list<list<int>>> = []
+    var idx = 0
+    while idx <= 30 {
+      two = append(two, [])
+      three = append(three, [])
+      idx = idx + 1
+    }
+    var i = 0
+    while i < U {
+      var rline = input()
+      if rline == "" { continue }
+      let nums = parseInts(rline)
+      let a = nums[0]
+      let b = nums[1]
+      let c = nums[2]
+      two[a] = append(two[a], [b, c])
+      i = i + 1
+    }
+    while i < V {
+      var rline = input()
+      if rline == "" { continue }
+      let nums = parseInts(rline)
+      let a = nums[0]
+      let b = nums[1]
+      let c = nums[2]
+      let d = nums[3]
+      three[a] = append(three[a], [b, c, d])
+      i = i + 1
+    }
+    if M < N {
+      print("-1")
+      case = case + 1
+      continue
+    }
+    let INF = 1000000000
+    var dp = make3d(31, M, M, INF)
+    var pos = 0
+    while pos < M {
+      let val = Y[pos]
+      dp[val][pos][pos] = 0
+      pos = pos + 1
+    }
+    var len = 2
+    while len <= M {
+      var l = 0
+      while l + len - 1 < M {
+        let r = l + len - 1
+        var a = 1
+        while a <= 30 {
+          var arr2 = two[a]
+          var t = 0
+          while t < len(arr2) {
+            let r2 = arr2[t]
+            var m = l
+            while m < r {
+              let c1 = dp[r2[0]][l][m]
+              let c2 = dp[r2[1]][m+1][r]
+              if c1 < INF && c2 < INF {
+                let cost = c1 + c2 + 1
+                if cost < dp[a][l][r] { dp[a][l][r] = cost }
+              }
+              m = m + 1
+            }
+            t = t + 1
+          }
+          var arr3 = three[a]
+          t = 0
+          while t < len(arr3) {
+            let r3 = arr3[t]
+            var i1 = l
+            while i1 + 1 < r {
+              var j1 = i1 + 1
+              while j1 < r {
+                let c1 = dp[r3[0]][l][i1]
+                let c2 = dp[r3[1]][i1+1][j1]
+                let c3 = dp[r3[2]][j1+1][r]
+                if c1 < INF && c2 < INF && c3 < INF {
+                  let cost = c1 + c2 + c3 + 1
+                  if cost < dp[a][l][r] { dp[a][l][r] = cost }
+                }
+                j1 = j1 + 1
+              }
+              i1 = i1 + 1
+            }
+            t = t + 1
+          }
+          a = a + 1
+        }
+        l = l + 1
+      }
+      len = len + 1
+    }
+    var dp2 = make2d(N+1, M+1, INF)
+    dp2[0][0] = 0
+    var ii = 1
+    while ii <= N {
+      var jj = ii
+      while jj <= M {
+        var kk = ii - 1
+        while kk < jj {
+          let seg = dp[X[ii-1]][kk][jj-1]
+          if seg < INF {
+            let prev = dp2[ii-1][kk]
+            if prev < INF {
+              let cost = prev + seg
+              if cost < dp2[ii][jj] { dp2[ii][jj] = cost }
+            }
+          }
+          kk = kk + 1
+        }
+        jj = jj + 1
+      }
+      ii = ii + 1
+    }
+    let ans = dp2[N][M]
+    if ans >= INF {
+      print("-1")
+    } else {
+      print(ans)
+    }
+    case = case + 1
+  }
+}
+
+main()
