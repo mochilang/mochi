@@ -1,0 +1,178 @@
+// Solution for SPOJ EOPERA - Exchange Operations
+// https://www.spoj.com/problems/EOPERA/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpace(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+var neighbors: list<list<int>> = []
+var dist: list<list<int>> = []
+
+fun buildGraph() {
+  neighbors = []
+  var i = 0
+  while i < 12 {
+    var arr: list<int> = []
+    if i - 1 >= 0 && i / 3 == (i - 1) / 3 { arr = append(arr, i - 1) }
+    if i + 1 < 12 && i / 3 == (i + 1) / 3 { arr = append(arr, i + 1) }
+    if i - 3 >= 0 && i / 6 == (i - 3) / 6 { arr = append(arr, i - 3) }
+    if i + 3 < 12 && i / 6 == (i + 3) / 6 { arr = append(arr, i + 3) }
+    if i - 6 >= 0 { arr = append(arr, i - 6) }
+    if i + 6 < 12 { arr = append(arr, i + 6) }
+    neighbors = append(neighbors, arr)
+    i = i + 1
+  }
+  dist = []
+  i = 0
+  while i < 12 {
+    var row: list<int> = []
+    var j = 0
+    while j < 12 {
+      row = append(row, 1000)
+      j = j + 1
+    }
+    var q: list<int> = []
+    q = append(q, i)
+    row[i] = 0
+    var front = 0
+    while front < len(q) {
+      let v = q[front]
+      front = front + 1
+      let d = row[v]
+      let adj = neighbors[v]
+      var k = 0
+      while k < len(adj) {
+        let w = adj[k]
+        if row[w] == 1000 {
+          row[w] = d + 1
+          q = append(q, w)
+        }
+        k = k + 1
+      }
+    }
+    dist = append(dist, row)
+    i = i + 1
+  }
+}
+
+var state: list<int> = []
+var pos: list<int> = []
+var zeroPos = 0
+var h = 0
+
+fun heuristic(): int {
+  var s = 0
+  var i = 1
+  while i < 12 {
+    s = s + dist[pos[i]][i]
+    i = i + 1
+  }
+  return s
+}
+
+fun dfs(z: int, g: int, bound: int, prev: int): int {
+  let f = g + h
+  if f > bound { return f }
+  if h == 0 { return -1 }
+  var min = 1000000
+  let adj = neighbors[z]
+  var k = 0
+  while k < len(adj) {
+    let nxt = adj[k]
+    if nxt == prev { k = k + 1; continue }
+    let tile = state[nxt]
+    let oldDist = dist[nxt][tile]
+    let newDist = dist[z][tile]
+    h = h + newDist - oldDist
+    state[z] = tile
+    state[nxt] = 0
+    pos[tile] = z
+    let t = dfs(nxt, g + 1, bound, z)
+    if t < 0 { return t }
+    if t < min { min = t }
+    pos[tile] = nxt
+    state[nxt] = tile
+    state[z] = 0
+    h = h - newDist + oldDist
+    k = k + 1
+  }
+  return min
+}
+
+fun solve(): int {
+  h = heuristic()
+  var bound = h
+  while true {
+    let t = dfs(zeroPos, 0, bound, -1)
+    if t < 0 { return bound }
+    bound = t
+  }
+}
+
+fun main() {
+  buildGraph()
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var nums: list<int> = []
+    while len(nums) < 12 {
+      var line = input()
+      if line == "" { continue }
+      let parts = splitSpace(line)
+      var i = 0
+      while i < len(parts) {
+        nums = append(nums, parseIntStr(parts[i]))
+        i = i + 1
+      }
+    }
+    state = []
+    pos = []
+    var i = 0
+    while i < 12 {
+      state = append(state, nums[i])
+      pos = append(pos, 0)
+      i = i + 1
+    }
+    i = 0
+    while i < 12 {
+      pos[state[i]] = i
+      if state[i] == 0 { zeroPos = i }
+      i = i + 1
+    }
+    let ans = solve()
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
