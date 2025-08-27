@@ -1,0 +1,70 @@
+/*
+SPOJ: EMPODIA - Empodia
+https://www.spoj.com/problems/EMPODIA/
+*/
+
+fun readInt(): int {
+  let line = input()
+  return line as int
+}
+
+fun main() {
+  let t = readInt()
+  var case = 0
+  while case < t {
+    let m = readInt()
+    var arr: list<int> = []
+    var i = 0
+    while i < m {
+      arr = append(arr, readInt())
+      i = i + 1
+    }
+    var res: list<list<int>> = []
+    i = 0
+    while i < m {
+      var mn = arr[i]
+      var mx = arr[i]
+      var j = i + 1
+      while j < m {
+        let v = arr[j]
+        if v < mn { mn = v }
+        if v > mx { mx = v }
+        if arr[i] == mn && arr[j] == mx && mx - mn == j - i {
+          var has = false
+          var p = i
+          while p < j && (!has) {
+            var mn2 = arr[p]
+            var mx2 = arr[p]
+            var q = p + 1
+            while q <= j {
+              let vv = arr[q]
+              if vv < mn2 { mn2 = vv }
+              if vv > mx2 { mx2 = vv }
+              if !(p == i && q == j) && arr[p] == mn2 && arr[q] == mx2 && mx2 - mn2 == q - p {
+                has = true
+                break
+              }
+              q = q + 1
+            }
+            p = p + 1
+          }
+          if !has {
+            res = append(res, [i + 1, j + 1])
+          }
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    print(str(len(res)))
+    var k = 0
+    while k < len(res) {
+      let pair = res[k]
+      print(str(pair[0]) + " " + str(pair[1]))
+      k = k + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
