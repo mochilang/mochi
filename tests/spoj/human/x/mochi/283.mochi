@@ -1,0 +1,140 @@
+// Solution for SPOJ NAPTIME - Naptime
+// https://www.spoj.com/problems/NAPTIME/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    if i + len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun newList(n: int, val: int): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < n {
+    arr = append(arr, val)
+    i = i + 1
+  }
+  return arr
+}
+
+fun max(a: int, b: int): int { if a > b { return a } else { return b } }
+
+fun solve(u: list<int>, n: int, b: int): int {
+  let neg = -1000000000
+  var dp0 = newList(b+1, neg)
+  var dp1 = newList(b+1, neg)
+  dp0[0] = 0
+  var i = 0
+  while i < n {
+    var ndp0 = newList(b+1, neg)
+    var ndp1 = newList(b+1, neg)
+    var j = 0
+    while j <= b {
+      let v0 = dp0[j]
+      if v0 > neg {
+        if ndp0[j] < v0 { ndp0[j] = v0 }
+        if j + 1 <= b && ndp1[j+1] < v0 { ndp1[j+1] = v0 }
+      }
+      let v1 = dp1[j]
+      if v1 > neg {
+        if ndp0[j] < v1 { ndp0[j] = v1 }
+        if j + 1 <= b {
+          let cand = v1 + u[i]
+          if ndp1[j+1] < cand { ndp1[j+1] = cand }
+        }
+      }
+      j = j + 1
+    }
+    dp0 = ndp0
+    dp1 = ndp1
+    i = i + 1
+  }
+  var ans = dp0[b]
+  if dp1[b] > ans { ans = dp1[b] }
+
+  dp0 = newList(b+1, neg)
+  dp1 = newList(b+1, neg)
+  dp1[1] = 0
+  i = 1
+  while i < n {
+    var ndp0 = newList(b+1, neg)
+    var ndp1 = newList(b+1, neg)
+    var j = 0
+    while j <= b {
+      let v0 = dp0[j]
+      if v0 > neg {
+        if ndp0[j] < v0 { ndp0[j] = v0 }
+        if j + 1 <= b && ndp1[j+1] < v0 { ndp1[j+1] = v0 }
+      }
+      let v1 = dp1[j]
+      if v1 > neg {
+        if ndp0[j] < v1 { ndp0[j] = v1 }
+        if j + 1 <= b {
+          let cand = v1 + u[i]
+          if ndp1[j+1] < cand { ndp1[j+1] = cand }
+        }
+      }
+      j = j + 1
+    }
+    dp0 = ndp0
+    dp1 = ndp1
+    i = i + 1
+  }
+  var ans2 = dp0[b]
+  let withWrap = dp1[b] + u[0]
+  if withWrap > ans2 { ans2 = withWrap }
+  if ans2 > ans { ans = ans2 }
+  return ans
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    let line = input()
+    let parts = split(line, " ")
+    let n = parseIntStr(parts[0])
+    let b = parseIntStr(parts[1])
+    var arr: list<int> = []
+    var i = 0
+    while i < n {
+      let valLine = input()
+      arr = append(arr, parseIntStr(valLine))
+      i = i + 1
+    }
+    let res = solve(arr, n, b)
+    print(str(res))
+    case = case + 1
+  }
+}
+
+main()
