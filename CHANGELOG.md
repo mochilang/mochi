@@ -1,5 +1,21 @@
 # 📦 CHANGELOG.md
 
+## [0.10.76] – 2025-08-27T19:43:42+07:00
+
+### Added
+
+- Mochi solutions for SPOJ problems including RATTERN, PHDISP, LANDSCAP, AROUND, Expedition, LAZYCOWS, COINS, MIXTURES, POKER, SEQ, ROADS, CALLS, Bishops, PLATON, PITPAIR and more.
+- Lean solutions for challenges like Cable TV Network, OFBEAT, TWORK, POLYEQ, PON, NETADMIN, LIFTS, NAPTIME and many others.
+- Algorithm writeups for Cable TV Network, HARDQ, FSHEEP, MLAND, RENT and SERVERS.
+
+### Changed
+
+- Tidied the PHDISP solution for clarity.
+
+### Fixed
+
+- No fixes.
+
 ## [0.10.75] – 2025-08-27T09:29:30+07:00
 
 ### Added
