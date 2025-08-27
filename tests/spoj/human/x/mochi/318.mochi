@@ -1,0 +1,194 @@
+// Solution for SPOJ PITPAIR - Pythagorean Legacy
+// https://www.spoj.com/problems/PITPAIR/
+
+type Pair { x: bigint, y: bigint }
+
+fun absBig(x: bigint): bigint { return if x < 0 as bigint { -x } else { x } }
+
+fun cmul(a: Pair, b: Pair): Pair {
+  return Pair { x: a.x * b.x - a.y * b.y, y: a.x * b.y + a.y * b.x }
+}
+
+fun primeRep(p: int): Pair {
+  var a = 1
+  while a * a <= p {
+    let b2 = p - a * a
+    var b = 0
+    while b * b < b2 { b = b + 1 }
+    if b * b == b2 { return Pair { x: a as bigint, y: b as bigint } }
+    a = a + 1
+  }
+  return Pair { x: 0 as bigint, y: 0 as bigint }
+}
+
+fun isPrime(n: int): bool {
+  if n < 2 { return false }
+  var d = 2
+  while d * d <= n {
+    if n % d == 0 { return false }
+    d = d + 1
+  }
+  return true
+}
+
+fun primes1mod4(k: int): list<int> {
+  var res: list<int> = []
+  var n = 5
+  while len(res) < k {
+    if isPrime(n) && n % 4 == 1 {
+      res = append(res, n)
+    }
+    n = n + 2
+  }
+  return res
+}
+
+fun sortIntsDesc(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] < arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun sortBigints(arr: list<bigint>): list<bigint> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let t = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = t
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun factor(n: int): list<int> {
+  var res: list<int> = []
+  var x = n
+  var d = 3
+  while d * d <= x {
+    while x % d == 0 {
+      res = append(res, d)
+      x = x / d
+    }
+    d = d + 2
+  }
+  if x > 1 { res = append(res, x) }
+  return res
+}
+
+fun catheti(factors: list<map<string,int>>): list<bigint> {
+  var pairs: list<Pair> = [Pair { x: 1 as bigint, y: 0 as bigint }]
+  for f in factors {
+    let p = f["p"] as int
+    let e = f["e"] as int
+    let rep = primeRep(p)
+    let u = rep.x
+    let v = rep.y
+    var plus: list<Pair> = []
+    var cur = Pair { x: 1 as bigint, y: 0 as bigint }
+    var i = 0
+    while i <= 2*e {
+      plus = append(plus, cur)
+      cur = cmul(cur, Pair { x: u, y: v })
+      i = i + 1
+    }
+    var minus: list<Pair> = []
+    cur = Pair { x: 1 as bigint, y: 0 as bigint }
+    i = 0
+    while i <= 2*e {
+      minus = append(minus, cur)
+      cur = cmul(cur, Pair { x: u, y: -v })
+      i = i + 1
+    }
+    var pf: list<Pair> = []
+    i = 0
+    while i <= 2*e {
+      pf = append(pf, cmul(plus[i], minus[2*e - i]))
+      i = i + 1
+    }
+    var newPairs: list<Pair> = []
+    for a in pairs {
+      for b in pf {
+        newPairs = append(newPairs, cmul(a, b))
+      }
+    }
+    pairs = newPairs
+  }
+  var cats: list<bigint> = []
+  var seen: map<string,int> = {}
+  for pr in pairs {
+    var x = absBig(pr.x)
+    var y = absBig(pr.y)
+    if x == 0 as bigint || y == 0 as bigint { continue }
+    if x > y {
+      let t = x
+      x = y
+      y = t
+    }
+    let key = str(x) + "," + str(y)
+    if seen[key] == nil {
+      seen[key] = 1
+      cats = append(cats, x)
+    }
+  }
+  return sortBigints(cats)
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let nLine = input()
+    if nLine == "" { nLine = input() }
+    let N = nLine as int
+    let T = 2 * N + 1
+    let facs = factor(T)
+    var es: list<int> = []
+    for f in facs {
+      es = append(es, (f - 1) / 2)
+    }
+    es = sortIntsDesc(es)
+    let primes = primes1mod4(len(es))
+    var idx = 0
+    var R: bigint = 1 as bigint
+    var factors: list<map<string,int>> = []
+    while idx < len(es) {
+      let p = primes[idx]
+      let e = es[idx]
+      var pow: bigint = 1 as bigint
+      var k = 0
+      let bp: bigint = p as bigint
+      while k < e {
+        pow = pow * bp
+        k = k + 1
+      }
+      R = R * pow
+      factors = append(factors, {"p": p, "e": e})
+      idx = idx + 1
+    }
+    print(str(R))
+    let cats = catheti(factors)
+    var i = 0
+    while i < len(cats) {
+      print(str(cats[i]))
+      i = i + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
