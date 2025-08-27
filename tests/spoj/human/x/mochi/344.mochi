@@ -1,0 +1,115 @@
+// Solution for SPOJ POKER - Poker
+// https://www.spoj.com/problems/POKER/
+
+let rankVals = {
+  "2":2, "3":3, "4":4, "5":5, "6":6,
+  "7":7, "8":8, "9":9, "T":10, "J":11,
+  "Q":12, "K":13, "A":14,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = splitSpaces(line)
+    var ranks: list<int> = []
+    var counts: list<int> = []
+    var flush = true
+    var flushSuit = ""
+    var i = 0
+    while i < 15 { counts = append(counts, 0); i = i + 1 }
+    var j = 0
+    while j < len(parts) {
+      let card = parts[j]
+      let r = card[0:1]
+      let s = card[1:2]
+      let rv = rankVals[r] as int
+      ranks = append(ranks, rv)
+      counts[rv] = counts[rv] + 1
+      if j == 0 { flushSuit = s } else if s != flushSuit { flush = false }
+      j = j + 1
+    }
+    // sort ranks using insertion sort
+    i = 1
+    while i < len(ranks) {
+      var k = i
+      while k > 0 && ranks[k-1] > ranks[k] {
+        let tmp = ranks[k-1]
+        ranks[k-1] = ranks[k]
+        ranks[k] = tmp
+        k = k - 1
+      }
+      i = i + 1
+    }
+    // check straight
+    var straight = false
+    if ranks[0] == 2 && ranks[1] == 3 && ranks[2] == 4 && ranks[3] == 5 && ranks[4] == 14 {
+      straight = true
+    } else {
+      var s = true
+      i = 1
+      while i < 5 {
+        if ranks[i] != ranks[i-1] + 1 { s = false; break }
+        i = i + 1
+      }
+      straight = s
+    }
+    // count duplicates
+    var four = false
+    var three = false
+    var pairs = 0
+    i = 2
+    while i <= 14 {
+      let c = counts[i]
+      if c == 4 { four = true }
+      if c == 3 { three = true }
+      if c == 2 { pairs = pairs + 1 }
+      i = i + 1
+    }
+    if flush && ranks[0] == 10 && ranks[1] == 11 && ranks[2] == 12 && ranks[3] == 13 && ranks[4] == 14 {
+      print("royal flush")
+    } else if flush && straight {
+      print("straight flush")
+    } else if four {
+      print("four of a kind")
+    } else if three && pairs == 1 {
+      print("full house")
+    } else if flush {
+      print("flush")
+    } else if straight {
+      print("straight")
+    } else if three {
+      print("three of a kind")
+    } else if pairs == 2 {
+      print("two pairs")
+    } else if pairs == 1 {
+      print("pair")
+    } else {
+      print("high card")
+    }
+    case = case + 1
+  }
+}
+
+main()
