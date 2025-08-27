@@ -1,0 +1,119 @@
+// Solution for SPOJ BOXES - Boxes in a Circle
+// https://www.spoj.com/problems/BOXES/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun newList(n: int, val: int): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < n {
+    arr = append(arr, val)
+    i = i + 1
+  }
+  return arr
+}
+
+fun absInt(x: int): int { if x < 0 { return -x } else { return x } }
+
+fun solve(n: int, arr: list<int>): int {
+  var total = 0
+  for v in arr { total = total + v }
+  if total <= 1 { return 0 }
+  var best = 1000000000
+  var start = 0
+  while start < n {
+    var pref: list<int> = [0]
+    var i = 0
+    while i < n {
+      let idx = (start + i) % n
+      pref = append(pref, pref[i] + arr[idx])
+      i = i + 1
+    }
+    var dp = newList(total + 1, 1000000000)
+    dp[0] = 0
+    i = 1
+    while i <= n {
+      var ndp = newList(total + 1, 1000000000)
+      let limit = if i < total { i } else { total }
+      var j = 0
+      while j <= limit {
+        var prev = dp[j]
+        if j > 0 && dp[j-1] < prev { prev = dp[j-1] }
+        let cand = prev + absInt(pref[i] - j)
+        ndp[j] = cand
+        j = j + 1
+      }
+      dp = ndp
+      i = i + 1
+    }
+    let cost = dp[total]
+    if cost < best { best = cost }
+    start = start + 1
+  }
+  return best
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    let nLine = input()
+    let n = parseIntStr(nLine)
+    let arrLine = input()
+    let arr = parseInts(arrLine)
+    let res = solve(n, arr)
+    print(str(res))
+    case = case + 1
+  }
+}
+
+main()
