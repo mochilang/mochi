@@ -1,0 +1,131 @@
+// Solution for SPOJ PLONK - Where to Drink the Plonk?
+// https://www.spoj.com/problems/PLONK/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var nums: list<int> = []
+  var i = 0
+  var cur = 0
+  var sign = 1
+  var has = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == "-" {
+      sign = -1
+      i = i + 1
+    } else if ch >= "0" && ch <= "9" {
+      cur = cur * 10 + (digits[ch] as int)
+      has = true
+      i = i + 1
+    } else {
+      if has {
+        nums = append(nums, sign * cur)
+        cur = 0
+        sign = 1
+        has = false
+      }
+      i = i + 1
+    }
+  }
+  if has {
+    nums = append(nums, sign * cur)
+  }
+  return nums
+}
+
+type Pair = { v: int, idx: int }
+
+fun sortPairs(arr: list<Pair>): list<Pair> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 {
+      let a = arr[j-1]
+      let b = arr[j]
+      if a.v <= b.v { break }
+      arr[j-1] = b
+      arr[j] = a
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun distSums(vals: list<int>): list<int> {
+  let n = len(vals)
+  var pairs: list<Pair> = []
+  var i = 0
+  while i < n {
+    pairs = append(pairs, Pair{ v: vals[i], idx: i })
+    i = i + 1
+  }
+  if n > 1 {
+    pairs = sortPairs(pairs)
+  }
+  var pref: list<int> = []
+  var s = 0
+  i = 0
+  while i < n {
+    let p = pairs[i]
+    s = s + p.v
+    pref = append(pref, s)
+    i = i + 1
+  }
+  var res: list<int> = []
+  i = 0
+  while i < n {
+    res = append(res, 0)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    let p = pairs[i]
+    let pv = p.v
+    let left = if i > 0 { pv * i - pref[i-1] } else { 0 }
+    let right = (pref[n-1] - pref[i]) - pv * (n - 1 - i)
+    res[p.idx] = left + right
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let n = line as int
+    var xs: list<int> = []
+    var ys: list<int> = []
+    var i = 0
+    while i < n {
+      let ln = input()
+      if ln == "" { continue }
+      let nums = parseInts(ln)
+      xs = append(xs, nums[0])
+      ys = append(ys, nums[1])
+      i = i + 1
+    }
+    let sumX = distSums(xs)
+    let sumY = distSums(ys)
+    var best = sumX[0] + sumY[0]
+    i = 1
+    while i < n {
+      let total = sumX[i] + sumY[i]
+      if total < best { best = total }
+      i = i + 1
+    }
+    print(str(best))
+    case = case + 1
+  }
+}
+
+main()
