@@ -1,0 +1,123 @@
+// Solution for SPOJ HARDQ - Hard Question
+// https://www.spoj.com/problems/HARDQ/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun splitSpace(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+type Point {
+  x: int,
+  y: int,
+}
+
+fun area2(poly: list<Point>): int {
+  var sum = 0
+  var i = 0
+  let n = len(poly)
+  while i < n {
+    let j = (i + 1) % n
+    sum = sum + poly[i].x * poly[j].y - poly[j].x * poly[i].y
+    i = i + 1
+  }
+  if sum < 0 { sum = -sum }
+  return sum
+}
+
+fun readInts(): list<int> {
+  var line: string
+  while true {
+    line = input()
+    if line == nil { return [] }
+    if line != "" { break }
+  }
+  let parts = splitSpace(line)
+  var res: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    res = append(res, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  while true {
+    let header = readInts()
+    if len(header) == 0 { return }
+    let n = header[0]
+    let m = header[1]
+    if n == 0 && m == 0 { break }
+    var poly: list<Point> = []
+    var i = 0
+    while i < n {
+      let parts = splitSpace(input())
+      let x = parseIntStr(parts[0])
+      let y = parseIntStr(parts[1])
+      poly = append(poly, Point { x: x, y: y })
+      i = i + 1
+    }
+    var total2 = 0
+    i = 0
+    while i < m {
+      let parts = splitSpace(input())
+      let x1 = parseIntStr(parts[0])
+      let y1 = parseIntStr(parts[1])
+      let x2 = parseIntStr(parts[2])
+      let y2 = parseIntStr(parts[3])
+      var xa = x1
+      var xb = x2
+      if xa > xb { let t = xa; xa = xb; xb = t }
+      var ya = y1
+      var yb = y2
+      if ya > yb { let t = ya; ya = yb; yb = t }
+      total2 = total2 + (xb - xa) * (yb - ya) * 2
+      i = i + 1
+    }
+    if total2 == area2(poly) {
+      print("YES")
+    } else {
+      print("NO")
+    }
+  }
+}
+
+main()
