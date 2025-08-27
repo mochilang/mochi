@@ -1,0 +1,19 @@
+// Solution for SPOJ BISHOPS - Bishops
+// https://www.spoj.com/problems/BISHOPS/
+
+fun main() {
+  let two: bigint = 2 as bigint
+  while true {
+    let line = input()
+    if line == "" { break }
+    if line == "1" {
+      print("1")
+    } else {
+      let n: bigint = line as bigint
+      let ans: bigint = n * two - two
+      print(str(ans))
+    }
+  }
+}
+
+main()
