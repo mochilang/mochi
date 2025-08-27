@@ -1,0 +1,154 @@
+// Solution for SPOJ LAZYCOWS - Lazy Cows
+// https://www.spoj.com/problems/LAZYCOWS/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let T = parseIntStr(tLine)
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = splitSpaces(line)
+    let N = parseIntStr(parts[0])
+    var K = parseIntStr(parts[1])
+    // B is parts[2] but not used
+    var colMask: map<int,int> = {}
+    var cols: list<int> = []
+    var i = 0
+    while i < N {
+      var l = input()
+      if l == nil || l == "" { continue }
+      let ps = splitSpaces(l)
+      let r = parseIntStr(ps[0])
+      let c = parseIntStr(ps[1])
+      if colMask[c] == nil {
+        if r == 1 { colMask[c] = 1 } else { colMask[c] = 2 }
+        cols = append(cols, c)
+      } else {
+        let cur = colMask[c]
+        if r == 1 && (cur % 2 == 0) { colMask[c] = cur + 1 }
+        if r == 2 && (cur < 2) { colMask[c] = cur + 2 }
+      }
+      i = i + 1
+    }
+    cols = sortInts(cols)
+    let M = len(cols)
+    if K > M { K = M }
+    var masks: list<int> = []
+    i = 0
+    while i < M {
+      masks = append(masks, colMask[cols[i]])
+      i = i + 1
+    }
+    var pref1: list<int> = []
+    var pref2: list<int> = []
+    pref1 = append(pref1, 0)
+    pref2 = append(pref2, 0)
+    i = 0
+    while i < M {
+      let m = masks[i]
+      let last1 = pref1[len(pref1)-1]
+      let last2 = pref2[len(pref2)-1]
+      if m % 2 == 1 {
+        pref1 = append(pref1, last1 + 1)
+      } else {
+        pref1 = append(pref1, last1)
+      }
+      if m >= 2 {
+        pref2 = append(pref2, last2 + 1)
+      } else {
+        pref2 = append(pref2, last2)
+      }
+      i = i + 1
+    }
+    let INF = 1000000000
+    var dp: list<list<int>> = []
+    var k = 0
+    while k <= K {
+      var row: list<int> = []
+      var j = 0
+      while j <= M {
+        row = append(row, INF)
+        j = j + 1
+      }
+      dp = append(dp, row)
+      k = k + 1
+    }
+    dp[0][0] = 0
+    k = 1
+    while k <= K {
+      var ii = 1
+      while ii <= M {
+        var j = k-1
+        while j < ii {
+          let width = cols[ii-1] - cols[j] + 1
+          let c1 = pref1[ii] - pref1[j]
+          let c2 = pref2[ii] - pref2[j]
+          var area = width
+          if c1 > 0 && c2 > 0 {
+            area = width * 2
+          }
+          let val = dp[k-1][j] + area
+          if val < dp[k][ii] {
+            dp[k][ii] = val
+          }
+          j = j + 1
+        }
+        ii = ii + 1
+      }
+      k = k + 1
+    }
+    print(str(dp[K][M]))
+    case = case + 1
+  }
+}
+
+main()
