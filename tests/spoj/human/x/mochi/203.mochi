@@ -1,0 +1,185 @@
+// Solution for SPOJ POTHOLE - Potholers
+// https://www.spoj.com/problems/POTHOLE/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var num = 0
+  var inNum = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      num = num*10 + (digits[ch] as int)
+      inNum = true
+    } else {
+      if inNum {
+        res = append(res, num)
+        num = 0
+        inNum = false
+      }
+    }
+    i = i + 1
+  }
+  if inNum { res = append(res, num) }
+  return res
+}
+
+fun bfs(adj: list<list<int>>, n: int, start: int): list<bool> {
+  var vis: list<bool> = []
+  var i = 0
+  while i <= n {
+    vis = append(vis, false)
+    i = i + 1
+  }
+  var q: list<int> = []
+  var head = 0
+  q = append(q, start)
+  vis[start] = true
+  while head < len(q) {
+    let u = q[head] as int
+    head = head + 1
+    let row = adj[u] as list<int>
+    var j = 0
+    while j < len(row) {
+      let v = row[j] as int
+      if !(vis[v] as bool) {
+        vis[v] = true
+        q = append(q, v)
+      }
+      j = j + 1
+    }
+  }
+  return vis
+}
+
+fun dfs(u: int, seen: list<int>, matchR: list<int>, bAdj: list<list<int>>): bool {
+  let edges = bAdj[u] as list<int>
+  var i = 0
+  while i < len(edges) {
+    let v = edges[i] as int
+    if seen[v] == 0 {
+      seen[v] = 1
+      let m = matchR[v]
+      if m == 0-1 || dfs(m, seen, matchR, bAdj) {
+        matchR[v] = u
+        return true
+      }
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun main() {
+  let first = input()
+  if first == "" { return }
+  let t = (parseInts(first))[0] as int
+  var case = 0
+  while case < t {
+    let nLine = readNonEmpty()
+    let n = (parseInts(nLine))[0] as int
+    var adj: list<list<int>> = []
+    var i = 0
+    while i <= n {
+      var row: list<int> = []
+      adj = append(adj, row)
+      i = i + 1
+    }
+    i = 1
+    while i < n {
+      let line = input()
+      let nums = parseInts(line)
+      var m = nums[0] as int
+      var j = 0
+      while j < m {
+        adj[i] = append(adj[i] as list<int>, nums[j+1] as int)
+        j = j + 1
+      }
+      i = i + 1
+    }
+    let left = adj[1] as list<int>
+    var rightNodes: list<int> = []
+    var rIndex: list<int> = []
+    i = 0
+    while i <= n {
+      rIndex = append(rIndex, 0-1)
+      i = i + 1
+    }
+    i = 1
+    while i < n {
+      let row = adj[i] as list<int>
+      var j = 0
+      while j < len(row) {
+        let v = row[j] as int
+        if v == n {
+          if rIndex[i] == 0-1 {
+            rIndex[i] = len(rightNodes)
+            rightNodes = append(rightNodes, i)
+          }
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    let L = len(left)
+    let R = len(rightNodes)
+    var bAdj: list<list<int>> = []
+    var u = 0
+    while u < L {
+      var row: list<int> = []
+      bAdj = append(bAdj, row)
+      u = u + 1
+    }
+    u = 0
+    while u < L {
+      let node = left[u] as int
+      let vis = bfs(adj, n, node)
+      var ri = 0
+      while ri < R {
+        let rnode = rightNodes[ri] as int
+        if vis[rnode] as bool {
+          bAdj[u] = append(bAdj[u] as list<int>, ri)
+        }
+        ri = ri + 1
+      }
+      u = u + 1
+    }
+    var matchR: list<int> = []
+    var idx = 0
+    while idx < R {
+      matchR = append(matchR, 0-1)
+      idx = idx + 1
+    }
+    var result = 0
+    u = 0
+    while u < L {
+      var seen: list<int> = []
+      idx = 0
+      while idx < R {
+        seen = append(seen, 0)
+        idx = idx + 1
+      }
+      if dfs(u, seen, matchR, bAdj) {
+        result = result + 1
+      }
+      u = u + 1
+    }
+    print(str(result))
+    case = case + 1
+  }
+}
+
+main()
