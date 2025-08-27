@@ -3273,7 +3273,8 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				cur = t
 			}
 		}
-		var outerType types.Type
+		var idxExprs []Expr
+		var indexTypes []types.Type
 		for j, idx := range st.Assign.Index {
 			if idx.Start == nil || idx.Colon != nil || idx.End != nil || idx.Colon2 != nil || idx.Step != nil {
 				return nil, fmt.Errorf("unsupported index")
@@ -3282,6 +3283,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			idxExprs = append(idxExprs, ix)
 			keyStr := false
 			keyAny := false
 			isLast := j == len(st.Assign.Index)-1 && len(st.Assign.Field) == 0
@@ -3293,6 +3295,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 					keyAny = true
 				}
 				cur = mt.Value
+				indexTypes = append(indexTypes, cur)
 				force := !isLast
 				lhs = &IndexExpr{Base: lhs, Index: ix, Force: force, KeyString: keyStr, KeyAny: keyAny, Map: true}
 			} else if lt, ok := cur.(types.ListType); ok {
@@ -3301,13 +3304,12 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 						ix = &CastExpr{Expr: ix, Type: "Int!"}
 					}
 				}
-				if j == len(st.Assign.Index)-2 {
-					outerType = lt.Elem
-				}
 				cur = lt.Elem
+				indexTypes = append(indexTypes, cur)
 				lhs = &IndexExpr{Base: lhs, Index: ix}
 			} else {
 				lhs = &IndexExpr{Base: lhs, Index: ix}
+				indexTypes = append(indexTypes, nil)
 			}
 		}
 		nodeType := cur
@@ -3338,6 +3340,14 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
+		if len(st.Assign.Field) == 0 && len(st.Assign.Index) > 0 {
+			base := &NameExpr{Name: st.Assign.Name}
+			if len(st.Assign.Index) == 1 {
+				usesSet = true
+				return &AssignStmt{Name: st.Assign.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{base, idxExprs[0], val}}}, nil
+			}
+			return nestedIndexAssign(base, idxExprs, indexTypes, val), nil
+		}
 		if fe, ok := lhs.(*FieldExpr); ok {
 			if ie, ok2 := fe.Target.(*IndexExpr); ok2 {
 				if be, ok3 := ie.Base.(*NameExpr); ok3 {
@@ -3349,23 +3359,6 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 					arrAssign := &AssignStmt{Name: be.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{ie.Base, ie.Index, &CastExpr{Expr: &NameExpr{Name: tmpName}, Type: swiftTypeOf(nodeType)}}}}
 					return &BlockStmt{Stmts: []Stmt{varDecl, fieldAssign, arrAssign}}, nil
 				}
-			}
-		}
-		if ie, ok := lhs.(*IndexExpr); ok {
-			if outer, ok2 := ie.Base.(*IndexExpr); ok2 {
-				if be, ok3 := outer.Base.(*NameExpr); ok3 {
-					usesSet = true
-					tmpVarCounter++
-					tmpName := fmt.Sprintf("_tmp%d", tmpVarCounter)
-					varDecl := &VarDecl{Name: tmpName, Expr: &CastExpr{Expr: &CallExpr{Func: "_idx", Args: []Expr{outer.Base, outer.Index}}, Type: swiftTypeOf(outerType)}}
-					setInner := &AssignStmt{Name: tmpName, Expr: &CallExpr{Func: "_set", Args: []Expr{&NameExpr{Name: tmpName}, ie.Index, val}}}
-					arrAssign := &AssignStmt{Name: be.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{outer.Base, outer.Index, &CastExpr{Expr: &NameExpr{Name: tmpName}, Type: swiftTypeOf(outerType)}}}}
-					return &BlockStmt{Stmts: []Stmt{varDecl, setInner, arrAssign}}, nil
-				}
-			}
-			if be, ok2 := ie.Base.(*NameExpr); ok2 {
-				usesSet = true
-				return &AssignStmt{Name: be.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{ie.Base, ie.Index, val}}}, nil
 			}
 		}
 		return &IndexAssignStmt{Target: lhs, Value: val}, nil
@@ -3388,6 +3381,27 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 	default:
 		return nil, fmt.Errorf("unsupported statement")
 	}
+}
+
+func nestedIndexAssign(base Expr, indexes []Expr, types []types.Type, val Expr) Stmt {
+	usesSet = true
+	if len(indexes) == 1 {
+		if be, ok := base.(*NameExpr); ok {
+			return &AssignStmt{Name: be.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{base, indexes[0], val}}}
+		}
+		return &IndexAssignStmt{Target: &IndexExpr{Base: base, Index: indexes[0]}, Value: val}
+	}
+	tmpVarCounter++
+	tmpName := fmt.Sprintf("_tmp%d", tmpVarCounter)
+	castType := "Any"
+	if len(types) > 0 && types[0] != nil {
+		castType = swiftTypeOf(types[0])
+	}
+	varDecl := &VarDecl{Name: tmpName, Expr: &CastExpr{Expr: &CallExpr{Func: "_idx", Args: []Expr{base, indexes[0]}}, Type: castType}}
+	inner := nestedIndexAssign(&NameExpr{Name: tmpName}, indexes[1:], types[1:], val)
+	be := base.(*NameExpr)
+	arrAssign := &AssignStmt{Name: be.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{base, indexes[0], &CastExpr{Expr: &NameExpr{Name: tmpName}, Type: castType}}}}
+	return &BlockStmt{Stmts: []Stmt{varDecl, inner, arrAssign}}
 }
 
 func convertIfStmt(env *types.Env, i *parser.IfStmt) (Stmt, error) {
@@ -4631,12 +4645,20 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					if st, ok := structForField(env, f); ok {
 						expr = &CastExpr{Expr: expr, Type: st.Name}
 						t = st
+						expr = &FieldExpr{Target: expr, Name: f}
+						if ft, ok := st.Fields[f]; ok {
+							t = ft
+						}
+					} else {
+						expr = &IndexExpr{Base: &CastExpr{Expr: expr, Type: "[String: Any?]"}, Index: &LitExpr{Value: f, IsString: true}, Force: true, KeyString: true, Map: true}
+						t = types.AnyType{}
 					}
-				}
-				expr = &FieldExpr{Target: expr, Name: f}
-				if st, ok := t.(types.StructType); ok {
-					if ft, ok := st.Fields[f]; ok {
-						t = ft
+				} else {
+					expr = &FieldExpr{Target: expr, Name: f}
+					if st, ok := t.(types.StructType); ok {
+						if ft, ok := st.Fields[f]; ok {
+							t = ft
+						}
 					}
 				}
 			} else {
@@ -4887,13 +4909,8 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					}
 					expr = &FieldExpr{Target: expr, Name: op.Field.Name}
 				} else if isAnyType(baseType) {
-					if st, ok := structForField(env, op.Field.Name); ok {
-						expr = &FieldExpr{Target: &CastExpr{Expr: expr, Type: st.Name}, Name: op.Field.Name}
-						baseType = st.Fields[op.Field.Name]
-					} else {
-						expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: op.Field.Name, IsString: true}, Force: true}
-						baseType = types.AnyType{}
-					}
+					expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: op.Field.Name, IsString: true}, Force: true}
+					baseType = types.AnyType{}
 				} else {
 					expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: op.Field.Name, IsString: true}, Force: true}
 					if mt, ok := baseType.(types.MapType); ok {
