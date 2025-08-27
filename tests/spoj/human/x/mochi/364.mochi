@@ -1,0 +1,64 @@
+// Solution for SPOJ LISA - Pocket Money
+// https://www.spoj.com/problems/LISA/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun maxVal(expr: string): int {
+  var sum = 0
+  var prod = 1
+  var i = 0
+  while i < len(expr) {
+    let ch = expr[i:i+1]
+    if ch == "*" {
+      prod = prod * sum
+      sum = 0
+    } else if ch == "+" {
+      // addition inside group
+    } else {
+      sum = sum + (digits[ch] as int)
+    }
+    i = i + 1
+  }
+  prod = prod * sum
+  return prod
+}
+
+fun minVal(expr: string): int {
+  var prod = 1
+  var sum = 0
+  var i = 0
+  while i < len(expr) {
+    let ch = expr[i:i+1]
+    if ch == "+" {
+      sum = sum + prod
+      prod = 1
+    } else if ch == "*" {
+      // multiplication continues within group
+    } else {
+      prod = prod * (digits[ch] as int)
+    }
+    i = i + 1
+  }
+  sum = sum + prod
+  return sum
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let mx = maxVal(line)
+    let mn = minVal(line)
+    print(str(mx) + " " + str(mn))
+    case = case + 1
+  }
+}
+
+main()
