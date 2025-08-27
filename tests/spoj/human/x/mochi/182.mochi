@@ -1,0 +1,213 @@
+// Solution for SPOJ WINDOW1 - Window
+// https://www.spoj.com/problems/WINDOW1/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun sortInts(a: list<int>): list<int> {
+  var i = 1
+  while i < len(a) {
+    var j = i
+    let key = a[i]
+    while j > 0 && a[j-1] > key {
+      a[j] = a[j-1]
+      j = j - 1
+    }
+    a[j] = key
+    i = i + 1
+  }
+  return a
+}
+
+fun uniqueInts(a: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(a) {
+    if len(res) == 0 || a[i] != res[len(res)-1] {
+      res = append(res, a[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun find(parent: list<int>, x: int): int {
+  var p = parent[x]
+  if p != x {
+    parent[x] = find(parent, p)
+    return parent[x]
+  }
+  return x
+}
+
+fun union(parent: list<int>, a: int, b: int) {
+  let pa = find(parent, a)
+  let pb = find(parent, b)
+  if pa != pb { parent[pa] = pb }
+}
+
+fun countFragments(x1: int, y1: int, x2: int, y2: int, px: list<int>, py: list<int>): int {
+  var wx1 = x1
+  var wx2 = x2
+  if wx1 > wx2 { let t = wx1; wx1 = wx2; wx2 = t }
+  var wy1 = y1
+  var wy2 = y2
+  if wy1 < wy2 { let t = wy1; wy1 = wy2; wy2 = t }
+
+  var ys: list<int> = []
+  ys = append(ys, wy1)
+  ys = append(ys, wy2)
+  var i = 0
+  while i < len(py) {
+    ys = append(ys, py[i])
+    i = i + 1
+  }
+  ys = sortInts(ys)
+  ys = uniqueInts(ys)
+
+  var slabIntervals: list<list<int>> = []
+  var intervalStart: list<int> = []
+  var intervalEnd: list<int> = []
+
+  var s = 0
+  while s < len(ys)-1 {
+    let ylow = ys[s]
+    let yhigh = ys[s+1]
+    let ymid = (float(ylow) + float(yhigh)) / 2.0
+    if ymid <= float(wy2) || ymid >= float(wy1) {
+      slabIntervals = append(slabIntervals, [])
+      s = s + 1
+      continue
+    }
+    var xs: list<int> = []
+    i = 0
+    while i < len(px) {
+      let xA = px[i]
+      let yA = py[i]
+      var j = i + 1
+      if j == len(px) { j = 0 }
+      let xB = px[j]
+      let yB = py[j]
+      if xA == xB {
+        var lo = yA
+        var hi = yB
+        if lo > hi { let t = lo; lo = hi; hi = t }
+        if float(lo) < ymid && ymid < float(hi) {
+          xs = append(xs, xA)
+        }
+      }
+      i = i + 1
+    }
+    xs = sortInts(xs)
+    var slab: list<int> = []
+    var k = 0
+    while k < len(xs) {
+      var a = xs[k]
+      var b = xs[k+1]
+      if a > b { let t = a; a = b; b = t }
+      var lo = a
+      var hi = b
+      if lo < wx1 { lo = wx1 }
+      if hi > wx2 { hi = wx2 }
+      if hi > lo {
+        let id = len(intervalStart)
+        intervalStart = append(intervalStart, lo)
+        intervalEnd = append(intervalEnd, hi)
+        slab = append(slab, id)
+      }
+      k = k + 2
+    }
+    slabIntervals = append(slabIntervals, slab)
+    s = s + 1
+  }
+
+  let m = len(intervalStart)
+  if m == 0 { return 0 }
+  var parent: list<int> = []
+  i = 0
+  while i < m { parent = append(parent, i); i = i + 1 }
+
+  s = 0
+  while s < len(slabIntervals)-1 {
+    let A = slabIntervals[s]
+    let B = slabIntervals[s+1]
+    var ia = 0
+    while ia < len(A) {
+      var ib = 0
+      while ib < len(B) {
+        if !(intervalEnd[A[ia]] <= intervalStart[B[ib]] || intervalEnd[B[ib]] <= intervalStart[A[ia]]) {
+          union(parent, A[ia], B[ib])
+        }
+        ib = ib + 1
+      }
+      ia = ia + 1
+    }
+    s = s + 1
+  }
+
+  var seen: map<int,bool> = {}
+  var count = 0
+  i = 0
+  while i < m {
+    let p = find(parent, i)
+    var val = seen[p]
+    if !val {
+      seen[p] = true
+      count = count + 1
+    }
+    i = i + 1
+  }
+  return count
+}
+
+fun main() {
+  var tLine = ""
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var wLine = ""
+    while wLine == "" { wLine = input() }
+    let wp = splitSpaces(wLine)
+    let x1 = int(wp[0])
+    let y1 = int(wp[1])
+    let x2 = int(wp[2])
+    let y2 = int(wp[3])
+    var nLine = ""
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    var px: list<int> = []
+    var py: list<int> = []
+    var i = 0
+    while i < n {
+      var line = ""
+      while line == "" { line = input() }
+      let parts = splitSpaces(line)
+      px = append(px, int(parts[0]))
+      py = append(py, int(parts[1]))
+      i = i + 1
+    }
+    let res = countFragments(x1, y1, x2, y2, px, py)
+    print(str(res))
+    case = case + 1
+  }
+}
+
+main()
