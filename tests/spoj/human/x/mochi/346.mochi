@@ -1,0 +1,24 @@
+// Solution for SPOJ COINS - Bytelandian gold coins
+// https://www.spoj.com/problems/COINS/
+
+var memo: map<int,int> = {}
+
+fun best(n: int): int {
+  if n < 12 { return n }
+  if memo[n] != nil { return memo[n] }
+  var val = best(n/2) + best(n/3) + best(n/4)
+  if val < n { val = n }
+  memo[n] = val
+  return val
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let n = line as int
+    print(best(n))
+  }
+}
+
+main()
