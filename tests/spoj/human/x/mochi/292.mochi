@@ -1,0 +1,117 @@
+// Solution for SPOJ ALIBB - Alibaba
+// https://www.spoj.com/problems/ALIBB/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+var tokens: list<string> = []
+var idx = 0
+
+fun nextToken(): string {
+  while idx >= len(tokens) {
+    let line = input()
+    if line == nil { return nil }
+    tokens = splitSpaces(line)
+    idx = 0
+  }
+  let t = tokens[idx]
+  idx = idx + 1
+  return t
+}
+
+fun nextInt(): int {
+  let t = nextToken()
+  if t == nil { return 0 }
+  return int(t)
+}
+
+fun solve(d: list<int>, t: list<int>): int {
+  let n = len(d)
+  var best = -1
+  var s = 0
+  while s < n {
+    var time = 0
+    var pos = d[s]
+    var ok = time <= t[s]
+    var i = s - 1
+    while i >= 0 && ok {
+      time = time + (pos - d[i])
+      pos = d[i]
+      if time > t[i] { ok = false }
+      i = i - 1
+    }
+    i = s + 1
+    while i < n && ok {
+      time = time + (d[i] - pos)
+      pos = d[i]
+      if time > t[i] { ok = false }
+      i = i + 1
+    }
+    if ok {
+      if best < 0 || time < best { best = time }
+    }
+    time = 0
+    pos = d[s]
+    ok = time <= t[s]
+    i = s + 1
+    while i < n && ok {
+      time = time + (d[i] - pos)
+      pos = d[i]
+      if time > t[i] { ok = false }
+      i = i + 1
+    }
+    i = s - 1
+    while i >= 0 && ok {
+      time = time + (pos - d[i])
+      pos = d[i]
+      if time > t[i] { ok = false }
+      i = i - 1
+    }
+    if ok {
+      if best < 0 || time < best { best = time }
+    }
+    s = s + 1
+  }
+  return best
+}
+
+fun main() {
+  let K = nextInt()
+  var c = 0
+  while c < K {
+    let n = nextInt()
+    var d: list<int> = []
+    var deadline: list<int> = []
+    var i = 0
+    while i < n {
+      let di = nextInt()
+      let ti = nextInt()
+      d = append(d, di)
+      deadline = append(deadline, ti)
+      i = i + 1
+    }
+    let res = solve(d, deadline)
+    if res < 0 {
+      print("No solution")
+    } else {
+      print(str(res))
+    }
+    c = c + 1
+  }
+}
+
+main()
