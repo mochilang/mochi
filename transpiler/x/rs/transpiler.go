@@ -72,6 +72,7 @@ var useFetch bool
 var useKeys bool
 var currentStructFields map[string]bool
 var topLevelNonConstLet bool
+var varDecls map[string]*VarDecl
 
 // lockedMap indicates a global HashMap currently locked for update.
 // When set, IndexExpr will reference the temporary `_map` variable instead of
@@ -3513,6 +3514,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	globalRenameBack = map[string]string{}
 	mutVars = make(map[string]bool)
 	enumVariants = map[string]string{}
+	varDecls = make(map[string]*VarDecl)
 	prog := &Program{}
 	for _, st := range p.Statements {
 		if st.Import != nil {
@@ -3810,7 +3812,19 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			mut = false
 		}
 		vd := &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ, Mutable: mut}
-		global := funcDepth == 0 && len(localVarStack) == 0 && isConstExpr(e)
+		varDecls[stmt.Let.Name] = vd
+		constMap := false
+		if ml := mapLiteralExpr(stmt.Let.Value); ml != nil {
+			constMap = true
+			for _, it := range ml.Items {
+				v, err := compileExpr(it.Value)
+				if err != nil || !isConstExpr(v) {
+					constMap = false
+					break
+				}
+			}
+		}
+		global := funcDepth == 0 && len(localVarStack) == 0 && (isConstExpr(e) || constMap)
 		if global {
 			vd.Global = true
 			newName := "g_" + stmt.Let.Name
@@ -3956,6 +3970,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			typ = inferType(e)
 		}
 		vd := &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}
+		varDecls[stmt.Var.Name] = vd
 		if funcDepth == 0 && len(localVarStack) == 0 && isConstExpr(e) {
 			vd.Global = true
 			newName := "g_" + stmt.Var.Name
@@ -5570,6 +5585,53 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &ValuesExpr{Map: args[0]}, nil
 		}
 		if name == "append" && len(args) == 2 {
+			if ml := mapLiteralExpr(p.Call.Args[1]); ml != nil {
+				if nr, ok := args[0].(*NameRef); ok {
+					names := make([]string, len(ml.Items))
+					vals := make([]Expr, len(ml.Items))
+					stFields := make(map[string]types.Type, len(ml.Items))
+					fields := make([]Param, len(ml.Items))
+					for i, it := range ml.Items {
+						keyName := fmt.Sprintf("f%d", i)
+						if k, ok := types.SimpleStringKey(it.Key); ok {
+							keyName = k
+						}
+						names[i] = keyName
+						v, err := compileExpr(it.Value)
+						if err != nil {
+							return nil, err
+						}
+						vals[i] = v
+						rt := inferType(v)
+						stFields[keyName] = typeFromString(rt)
+						fields[i] = Param{Name: keyName, Type: rt}
+					}
+					sigNames := append([]string(nil), names...)
+					sort.Strings(sigNames)
+					sigParts := make([]string, len(sigNames))
+					for i, n := range sigNames {
+						sigParts[i] = n + ":" + rustTypeFromType(stFields[n])
+					}
+					sig := strings.Join(sigParts, ";")
+					name, ok := structSig[sig]
+					if !ok {
+						name = types.UniqueStructName(strings.Title(nr.Name)+"Item", curEnv, nil)
+						st := types.StructType{Fields: stFields, Order: names}
+						st.Name = name
+						curEnv.SetStruct(name, st)
+						typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
+						structTypes[name] = st
+						structSig[sig] = name
+					}
+					structForMap[ml] = name
+					args[1] = &StructLit{Name: name, Fields: vals, Names: names}
+					vt := fmt.Sprintf("Vec<%s>", name)
+					varTypes[nr.Name] = vt
+					if vd, ok := varDecls[nr.Name]; ok {
+						vd.Type = vt
+					}
+				}
+			}
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
 		}
 		if name == "avg" && len(args) == 1 {
