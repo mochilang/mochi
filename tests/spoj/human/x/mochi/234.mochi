@@ -1,0 +1,223 @@
+// Solution for SPOJ HOLIDAY1 - Getting Rid of the Holidays (Act I)
+// https://www.spoj.com/problems/HOLIDAY1/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseInts(line: string): list<int> {
+  var nums: list<int> = []
+  var i = 0
+  var num = 0
+  var has = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if has {
+        nums = append(nums, num)
+        num = 0
+        has = false
+      }
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has { nums = append(nums, num) }
+  return nums
+}
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  if x < 0 { return -x } else { return x }
+}
+
+fun sortInts(a: list<int>): list<int> {
+  var i = 1
+  while i < len(a) {
+    var j = i
+    let key = a[i]
+    while j > 0 && a[j-1] > key {
+      a[j] = a[j-1]
+      j = j - 1
+    }
+    a[j] = key
+    i = i + 1
+  }
+  return a
+}
+
+var N = 0
+var need = 0
+var times: list<int> = []
+var gmat: list<list<int>> = []
+var cur: list<int> = []
+var best: list<int> = []
+var curD = 0
+
+fun dfs(pos: int): bool {
+  if len(cur) == need {
+    best = []
+    var i = 0
+    while i < len(cur) {
+      best = append(best, cur[i])
+      i = i + 1
+    }
+    return true
+  }
+  if pos >= N { return false }
+  if len(cur) + (N - pos) < need { return false }
+  var ok = true
+  var j = 0
+  while j < len(cur) {
+    if gmat[pos][cur[j]] < curD {
+      ok = false
+      break
+    }
+    j = j + 1
+  }
+  if ok {
+    cur = append(cur, pos)
+    if dfs(pos + 1) { return true }
+    cur = cur[0:len(cur)-1]
+  }
+  return dfs(pos + 1)
+}
+
+fun solveCase(n: int, k: int, arr: list<int>) {
+  if n - k == 1 {
+    var bestIdx = 0
+    var i = 1
+    while i < n {
+      if arr[i] > arr[bestIdx] { bestIdx = i }
+      i = i + 1
+    }
+    var removed: list<int> = []
+    i = 0
+    while i < n {
+      if i != bestIdx { removed = append(removed, i + 1) }
+      i = i + 1
+    }
+    var out = ""
+    i = 0
+    while i < len(removed) {
+      if i > 0 { out = out + " " }
+      out = out + str(removed[i])
+      i = i + 1
+    }
+    print(out)
+    return
+  }
+  N = n
+  need = n - k
+  times = arr
+  gmat = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, 0)
+      j = j + 1
+    }
+    gmat = append(gmat, row)
+    i = i + 1
+  }
+  var cand: list<int> = []
+  var seen: map<int,bool> = {}
+  i = 0
+  while i < n {
+    var j = i + 1
+    while j < n {
+      let g = gcd(arr[i], arr[j])
+      gmat[i][j] = g
+      gmat[j][i] = g
+      var val = seen[g]
+      if !val {
+        cand = append(cand, g)
+        seen[g] = true
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  cand = sortInts(cand)
+  var idx = len(cand) - 1
+  var found = false
+  while idx >= 0 {
+    curD = cand[idx]
+    cur = []
+    if dfs(0) {
+      found = true
+      break
+    }
+    idx = idx - 1
+  }
+  if !found {
+    best = []
+    i = 0
+    while i < need {
+      best = append(best, i)
+      i = i + 1
+    }
+  }
+  var removed: list<int> = []
+  i = 0
+  while i < n {
+    var keep = false
+    var j = 0
+    while j < len(best) {
+      if best[j] == i { keep = true; break }
+      j = j + 1
+    }
+    if !keep { removed = append(removed, i + 1) }
+    i = i + 1
+  }
+  var out = ""
+  i = 0
+  while i < len(removed) {
+    if i > 0 { out = out + " " }
+    out = out + str(removed[i])
+    i = i + 1
+  }
+  print(out)
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = ""
+    while line == "" { line = input() }
+    let nk = parseInts(line)
+    let n = nk[0]
+    let k = nk[1]
+    line = ""
+    while line == "" { line = input() }
+    let arr = parseInts(line)
+    solveCase(n, k, arr)
+    case = case + 1
+  }
+}
+
+main()
