@@ -1,5 +1,23 @@
 # 📦 CHANGELOG.md
 
+## [0.10.75] – 2025-08-27T09:29:30+07:00
+
+### Added
+
+- Lean solutions for SPOJ problems like SEGVIS, CISTFILL, EXCHNG, Morse decoding, DANCE and more.
+- Mochi solutions for SPOJ challenges including PARTY, SHOP, Street Parade, DICE1, BRCKTS, BUNDLE and additional tasks.
+- Documentation updates for MARBLES, Easy Problem and SBANK algorithms.
+
+### Changed
+
+- Transpilers across Scala, Dart, PHP, Pascal, Go, TypeScript, Swift and others support dynamic map fields, typed indexes and nested index assignment.
+- SPOJ infrastructure reorganised with human-sourced tests and relocated outputs.
+
+### Fixed
+
+- Corrected division handling in the Python transpiler and map indexing in Scala.
+- Sanitized Go field names.
+
 ## [0.10.74] – 2025-08-26T11:00:15+07:00
 
 ### Added
