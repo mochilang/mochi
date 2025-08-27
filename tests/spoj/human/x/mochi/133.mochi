@@ -1,0 +1,76 @@
+// Solution for SPOJ ABWORDS - AB-words
+// https://www.spoj.com/problems/ABWORDS/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun canonRec(s: string, idx: int): map<string, any> {
+  var i = idx + 1 // skip 'a'
+  var left = ""
+  if i < len(s) && s[i:i+1] == "a" {
+    let r = canonRec(s, i)
+    left = r["canon"] as string
+    i = r["idx"] as int
+  }
+  var right = ""
+  if i < len(s) && s[i:i+1] == "a" {
+    let r = canonRec(s, i)
+    right = r["canon"] as string
+    i = r["idx"] as int
+  }
+  i = i + 1 // skip 'b'
+  if left > right {
+    let tmp = left
+    left = right
+    right = tmp
+  }
+  return {"canon": "(" + left + right + ")", "idx": i}
+}
+
+fun canonical(s: string): string {
+  let r = canonRec(s, 0)
+  return r["canon"] as string
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" {
+      line = input()
+    }
+    let n = parseIntStr(line)
+    var seen: map<string,bool> = {}
+    var count = 0
+    var i = 0
+    while i < n {
+      var w = input()
+      while w == "" { w = input() }
+      let canon = canonical(w)
+      if seen[canon] != true {
+        seen[canon] = true
+        count = count + 1
+      }
+      i = i + 1
+    }
+    print(count)
+    case = case + 1
+  }
+}
+
+main()
