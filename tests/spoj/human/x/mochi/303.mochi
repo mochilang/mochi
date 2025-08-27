@@ -1,0 +1,159 @@
+// Solution for SPOJ UCUBE - The Unstable Cube
+// https://www.spoj.com/problems/UCUBE/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun makeCube(n: int): list<list<list<string>>> {
+  var cube: list<list<list<string>>> = []
+  var x = 0
+  while x < n {
+    var plane: list<list<string>> = []
+    var y = 0
+    while y < n {
+      var row: list<string> = []
+      var z = 0
+      while z < n {
+        row = append(row, "?")
+        z = z + 1
+      }
+      plane = append(plane, row)
+      y = y + 1
+    }
+    cube = append(cube, plane)
+    x = x + 1
+  }
+  return cube
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    let nLine = input()
+    let n = int(nLine)
+    var views: list<list<string>> = []
+    var s = 0
+    while s < 6 {
+      var arr: list<string> = []
+      var i = 0
+      while i < n {
+        arr = append(arr, "")
+        i = i + 1
+      }
+      views = append(views, arr)
+      s = s + 1
+    }
+    var r = 0
+    while r < n {
+      let line = input()
+      let parts = split(line, " ")
+      var s2 = 0
+      while s2 < 6 {
+        views[s2][r] = parts[s2]
+        s2 = s2 + 1
+      }
+      r = r + 1
+    }
+    var cube = makeCube(n)
+    var changed = true
+    while changed {
+      changed = false
+      var side = 0
+      while side < 6 {
+        var i = 0
+        while i < n {
+          let rowStr = views[side][i]
+          var j = 0
+          while j < n {
+            let ch = rowStr[j:j+1]
+            if ch == "." {
+              var k = 0
+              while k < n {
+                var xx = 0
+                var yy = 0
+                var zz = 0
+                if side == 0 { xx = j; yy = i; zz = k }
+                else if side == 1 { xx = k; yy = i; zz = n-1-j }
+                else if side == 2 { xx = n-1-j; yy = i; zz = n-1-k }
+                else if side == 3 { xx = n-1-k; yy = i; zz = j }
+                else if side == 4 { xx = j; yy = k; zz = n-1-i }
+                else { xx = j; yy = n-1-k; zz = i }
+                if cube[xx][yy][zz] != "." {
+                  cube[xx][yy][zz] = "."
+                  changed = true
+                }
+                k = k + 1
+              }
+            } else {
+              var k = 0
+              while k < n {
+                var xx = 0
+                var yy = 0
+                var zz = 0
+                if side == 0 { xx = j; yy = i; zz = k }
+                else if side == 1 { xx = k; yy = i; zz = n-1-j }
+                else if side == 2 { xx = n-1-j; yy = i; zz = n-1-k }
+                else if side == 3 { xx = n-1-k; yy = i; zz = j }
+                else if side == 4 { xx = j; yy = k; zz = n-1-i }
+                else { xx = j; yy = n-1-k; zz = i }
+                let cur = cube[xx][yy][zz]
+                if cur == ch {
+                  break
+                }
+                if cur == "?" {
+                  cube[xx][yy][zz] = ch
+                  changed = true
+                  break
+                }
+                if cur != "." {
+                  cube[xx][yy][zz] = "."
+                  changed = true
+                }
+                k = k + 1
+              }
+            }
+            j = j + 1
+          }
+          i = i + 1
+        }
+        side = side + 1
+      }
+    }
+    var count = 0
+    var x = 0
+    while x < n {
+      var y = 0
+      while y < n {
+        var z = 0
+        while z < n {
+          if cube[x][y][z] != "." { count = count + 1 }
+          z = z + 1
+        }
+        y = y + 1
+      }
+      x = x + 1
+    }
+    print(str(count))
+    case = case + 1
+  }
+}
+
+main()
