@@ -1,0 +1,13 @@
+// Solution for SPOJ MULTIPLY - Fast Multiplication Again
+// https://www.spoj.com/problems/MULTIPLY/
+
+fun main() {
+  let aLine = input()
+  if aLine == "" { return }
+  let bLine = input()
+  let a = int(aLine)
+  let b = int(bLine)
+  print(a * b)
+}
+
+main()
