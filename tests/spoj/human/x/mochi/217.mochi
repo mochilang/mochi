@@ -1,0 +1,240 @@
+// Solution for SPOJ SOPARADE - Soldiers on Parade
+// https://www.spoj.com/problems/SOPARADE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let sp = splitSpaces(line)
+  var res: list<int> = []
+  var i = 0
+  while i < len(sp) {
+    res = append(res, int(sp[i]))
+    i = i + 1
+  }
+  return res
+}
+
+fun idx(x: int, val: bool): int {
+  if val { return x * 2 + 1 }
+  return x * 2
+}
+
+fun addImp(adj: list<list<int>>, radj: list<list<int>>, ai: int, aval: bool, bi: int, bval: bool) {
+  let u = idx(ai, aval)
+  let v = idx(bi, bval)
+  adj[u] = append(adj[u], v)
+  radj[v] = append(radj[v], u)
+}
+
+fun addOr(adj: list<list<int>>, radj: list<list<int>>, ai: int, aval: bool, bi: int, bval: bool) {
+  addImp(adj, radj, ai, !aval, bi, bval)
+  addImp(adj, radj, bi, !bval, ai, aval)
+}
+
+fun addDiff(adj: list<list<int>>, radj: list<list<int>>, i: int, j: int) {
+  addOr(adj, radj, i, true, j, true)
+  addOr(adj, radj, i, false, j, false)
+}
+
+fun isGroupA(pos: int, startA: bool): bool {
+  if startA {
+    return pos % 2 == 0
+  }
+  return pos % 2 == 1
+}
+
+fun scc(n: int, adj: list<list<int>>, radj: list<list<int>>): list<int> {
+  var used: list<bool> = []
+  var i = 0
+  while i < n {
+    used = append(used, false)
+    i = i + 1
+  }
+  var order: list<int> = []
+  var v = 0
+  while v < n {
+    if !used[v] {
+      var st: list<int> = []
+      var it: list<int> = []
+      st = append(st, v)
+      it = append(it, 0)
+      used[v] = true
+      while len(st) > 0 {
+        let cur = st[len(st)-1]
+        let idxIt = it[len(it)-1]
+        if idxIt < len(adj[cur]) {
+          let to = adj[cur][idxIt]
+          it[len(it)-1] = idxIt + 1
+          if !used[to] {
+            used[to] = true
+            st = append(st, to)
+            it = append(it, 0)
+          }
+        } else {
+          order = append(order, cur)
+          st = st[:len(st)-1]
+          it = it[:len(it)-1]
+        }
+      }
+    }
+    v = v + 1
+  }
+
+  var comp: list<int> = []
+  i = 0
+  while i < n {
+    comp = append(comp, -1)
+    i = i + 1
+  }
+  var cid = 0
+  var idxOrd = len(order) - 1
+  while idxOrd >= 0 {
+    let start = order[idxOrd]
+    idxOrd = idxOrd - 1
+    if comp[start] >= 0 { continue }
+    var st: list<int> = []
+    st = append(st, start)
+    comp[start] = cid
+    while len(st) > 0 {
+      let cur = st[len(st)-1]
+      st = st[:len(st)-1]
+      var j = 0
+      while j < len(radj[cur]) {
+        let to = radj[cur][j]
+        if comp[to] < 0 {
+          comp[to] = cid
+          st = append(st, to)
+        }
+        j = j + 1
+      }
+    }
+    cid = cid + 1
+  }
+  return comp
+}
+
+fun runCheck(n: int, rules: list<list<int>>, startA: bool): bool {
+  let m = n * 2
+  var adj: list<list<int>> = []
+  var radj: list<list<int>> = []
+  var i = 0
+  while i < m {
+    adj = append(adj, [])
+    radj = append(radj, [])
+    i = i + 1
+  }
+
+  i = 0
+  while i < n - 1 {
+    let isA = isGroupA(i, startA)
+    let isB = isGroupA(i+1, startA)
+    if isA && (isB == false) {
+      addOr(adj, radj, i, false, i+1, true)
+    } else if (isA == false) && isB {
+      addOr(adj, radj, i, true, i+1, false)
+    } else {
+      return false
+    }
+    i = i + 1
+  }
+
+  var r = 0
+  while r < len(rules) {
+    let arr = rules[r]
+    var aPos: list<int> = []
+    var bPos: list<int> = []
+    var k = 0
+    while k < len(arr) {
+      let pos = arr[k]
+      if isGroupA(pos, startA) {
+        aPos = append(aPos, pos)
+      } else {
+        bPos = append(bPos, pos)
+      }
+      k = k + 1
+    }
+    if len(aPos) > 2 || len(bPos) > 2 {
+      return false
+    }
+    if len(aPos) == 2 {
+      addDiff(adj, radj, aPos[0], aPos[1])
+    }
+    if len(bPos) == 2 {
+      addDiff(adj, radj, bPos[0], bPos[1])
+    }
+    r = r + 1
+  }
+
+  let comp = scc(m, adj, radj)
+  i = 0
+  while i < n {
+    let tIdx = idx(i, true)
+    let fIdx = idx(i, false)
+    if comp[tIdx] == comp[fIdx] {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun solve(n: int, rules: list<list<int>>): bool {
+  if runCheck(n, rules, true) { return true }
+  if runCheck(n, rules, false) { return true }
+  return false
+}
+
+fun main() {
+  var tLine = ""
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var line = ""
+    while line == "" { line = input() }
+    let vals = parseInts(line)
+    let n = vals[0]
+    let p = vals[1]
+    var rules: list<list<int>> = []
+    var i = 0
+    while i < p {
+      var rline = ""
+      while rline == "" { rline = input() }
+      let v = parseInts(rline)
+      var arr: list<int> = []
+      var j = 1
+      while j < len(v) {
+        arr = append(arr, v[j] - 1)
+        j = j + 1
+      }
+      rules = append(rules, arr)
+      i = i + 1
+    }
+    if solve(n, rules) {
+      print("approved")
+    } else {
+      print("rejected")
+    }
+    case = case + 1
+  }
+}
+
+main()
