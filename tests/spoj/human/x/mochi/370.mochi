@@ -1,0 +1,84 @@
+// Solution for SPOJ ONEZERO - Ones and zeros
+// https://www.spoj.com/problems/ONEZERO/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun smallest(n: int): string {
+  if n == 0 { return "0" }
+  var parent = make_int_list(n, -1)
+  var digit = make_int_list(n, -1)
+  var visited = make_int_list(n, 0)
+  var queue: list<int> = []
+  var qi = 0
+  let start: int = 1 % n
+  queue = append(queue, start)
+  visited[start] = 1
+  parent[start] = -1
+  digit[start] = 1
+  if start == 0 { return "1" }
+  while qi < len(queue) {
+    let r = queue[qi]
+    qi = qi + 1
+    var d = 0
+    while d <= 1 {
+      let nr = (r * 10 + d) % n
+      if visited[nr] == 0 {
+        visited[nr] = 1
+        parent[nr] = r
+        digit[nr] = d
+        if nr == 0 {
+          var res = ""
+          var cur = nr
+          while cur != (-1) {
+            res = str(digit[cur]) + res
+            cur = parent[cur]
+          }
+          return res
+        }
+        queue = append(queue, nr)
+      }
+      d = d + 1
+    }
+  }
+  return ""
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = parseIntStr(nLine)
+    let ans = smallest(n)
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
