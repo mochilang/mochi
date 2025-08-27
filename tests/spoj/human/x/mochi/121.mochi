@@ -1,0 +1,99 @@
+// Solution for SPOJ TTABLE - Timetable
+// https://www.spoj.com/problems/TTABLE
+
+type Edge { dep: int, arr: int, to: int }
+type State { time: int, city: int }
+type Pair { dep: int, arr: int }
+
+fun parseTime(s: string): int {
+  let parts = split(s, ":")
+  return int(parts[0]) * 60 + int(parts[1])
+}
+
+fun fmtTime(t: int): string {
+  let h = t / 60
+  let m = t % 60
+  return padStart(str(h), 2, "0") + ":" + padStart(str(m), 2, "0")
+}
+
+fun earliest(n: int, adj: list<list<Edge>>, start: int): int {
+  let INF = 1000000000
+  var dist: list<int> = []
+  for i in 0..(n + 1) {
+    dist = append(dist, INF)
+  }
+  var queue: list<State> = [State { time: start, city: 1 }]
+  var idx = 0
+  while idx < len(queue) {
+    let cur = queue[idx]
+    idx = idx + 1
+    let time = cur.time
+    let city = cur.city
+    if time >= dist[city] { continue }
+    dist[city] = time
+    for e in adj[city] {
+      if e.dep >= time {
+        queue = append(queue, State { time: e.arr, city: e.to })
+      }
+    }
+  }
+  return dist[n]
+}
+
+fun main() {
+  let t = int(input())
+  for _case in 0..t {
+    let n = int(input())
+    var adj: list<list<Edge>> = []
+    for i in 0..(n + 1) {
+      adj = append(adj, [])
+    }
+    for city in 1..(n + 1) {
+      let m = int(input())
+      for j in 0..m {
+        let parts = split(input(), " ")
+        let dep = parseTime(parts[0])
+        let arr = parseTime(parts[1])
+        let dst = int(parts[2])
+        adj[city] = append(adj[city], Edge { dep: dep, arr: arr, to: dst })
+      }
+    }
+    var pairs: list<Pair> = []
+    for e in adj[1] {
+      let arr = earliest(n, adj, e.dep)
+      if arr < 1000000000 {
+        pairs = append(pairs, Pair { dep: e.dep, arr: arr })
+      }
+    }
+    var uniquePairs: list<Pair> = []
+    for p in pairs {
+      var exists = false
+      for q in uniquePairs {
+        if p.dep == q.dep && p.arr == q.arr {
+          exists = true
+        }
+      }
+      if !exists {
+        uniquePairs = append(uniquePairs, p)
+      }
+    }
+    var res: list<Pair> = []
+    for p in uniquePairs {
+      var dominated = false
+      for q in uniquePairs {
+        if q.dep >= p.dep && q.arr <= p.arr && (q.arr - q.dep) < (p.arr - p.dep) {
+          dominated = true
+        }
+      }
+      if !dominated {
+        res = append(res, p)
+      }
+    }
+    print(str(len(res)))
+    for p in res {
+      print(fmtTime(p.dep) + " " + fmtTime(p.arr))
+    }
+  }
+}
+
+main()
