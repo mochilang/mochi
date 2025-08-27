@@ -1,0 +1,155 @@
+// Solution for SPOJ POLY1 - Polygon
+// https://www.spoj.com/problems/POLY1/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var i = 0
+  var num = 0
+  var has = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " { 
+      if has { res = append(res, num); num = 0; has = false }
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has { res = append(res, num) }
+  return res
+}
+
+fun makeIntList(n: int, v: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, v)
+    i = i + 1
+  }
+  return lst
+}
+
+fun sortDesc(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    let x = arr[i]
+    var j = i
+    while j > 0 && arr[j-1] < x {
+      arr[j] = arr[j-1]
+      j = j - 1
+    }
+    arr[j] = x
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = nLine as int
+    var tris: list<list<int>> = []
+    var i = 0
+    while i < n - 2 {
+      let line = input()
+      if line == "" { continue }
+      tris = append(tris, parseInts(line))
+      i = i + 1
+    }
+    let m = n - 2
+    var adj: list<list<int>> = []
+    var idx = 0
+    while idx < m { adj = append(adj, []); idx = idx + 1 }
+    var edgeMap: map<string,int> = {}
+    idx = 0
+    while idx < m {
+      let tri = tris[idx]
+      let a = tri[0]; let b = tri[1]; let c = tri[2]
+      var eidx = 0
+      var u: int; var v: int
+      while eidx < 3 {
+        if eidx == 0 { u = a; v = b }
+        else if eidx == 1 { u = b; v = c }
+        else { u = c; v = a }
+        if u > v {
+          let tmp = u; u = v; v = tmp
+        }
+        let key = str(u) + ":" + str(v)
+        if edgeMap[key] != nil {
+          let other = edgeMap[key] as int
+          adj[idx] = append(adj[idx], other)
+          adj[other] = append(adj[other], idx)
+        } else {
+          edgeMap[key] = idx
+        }
+        eidx = eidx + 1
+      }
+      idx = idx + 1
+    }
+    var ans = 1
+    idx = 0
+    while idx < m {
+      var dist = makeIntList(m, 0 - 1)
+      var first = makeIntList(m, 0 - 1)
+      var q: list<int> = []
+      q = append(q, idx)
+      dist[idx] = 0
+      var head = 0
+      while head < len(q) {
+        let u = q[head]; head = head + 1
+        var j = 0
+        while j < len(adj[u]) {
+          let w = adj[u][j]
+          if dist[w] == 0 - 1 {
+            dist[w] = dist[u] + 1
+            if u == idx { first[w] = w } else { first[w] = first[u] }
+            q = append(q, w)
+          }
+          j = j + 1
+        }
+      }
+      var branch = makeIntList(m, 0 - 1)
+      var u = 0
+      while u < m {
+        if u != idx {
+          let b = first[u]
+          if b != 0 - 1 {
+            let d = dist[u]
+            if branch[b] < d { branch[b] = d }
+          }
+        }
+        u = u + 1
+      }
+      var vals: list<int> = []
+      var b = 0
+      while b < m {
+        if branch[b] >= 0 { vals = append(vals, branch[b]) }
+        b = b + 1
+      }
+      vals = sortDesc(vals)
+      var total = 1
+      var k = 0
+      while k < len(vals) && k < 3 {
+        total = total + vals[k]
+        k = k + 1
+      }
+      if total > ans { ans = total }
+      idx = idx + 1
+    }
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
