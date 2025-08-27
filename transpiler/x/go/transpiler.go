@@ -165,12 +165,12 @@ func guessStructForField(field string) string {
 var commonInitialisms = []string{"ID", "URL", "HTTP", "JSON", "XML", "SQL", "UID", "UUID"}
 
 func toGoFieldName(name string) string {
-        n := toPascalCase(name)
-        for _, init := range commonInitialisms {
-                lower := strings.ToLower(init)
-                n = strings.ReplaceAll(n, strings.Title(lower), init)
-        }
-        return safeName(n)
+	n := toPascalCase(name)
+	for _, init := range commonInitialisms {
+		lower := strings.ToLower(init)
+		n = strings.ReplaceAll(n, strings.Title(lower), init)
+	}
+	return safeName(n)
 }
 
 func fromGoFieldName(name string) string {
@@ -203,26 +203,26 @@ var goStdPackages = map[string]struct{}{
 }
 
 func safeName(name string) string {
-        low := strings.ToLower(name)
-        if _, ok := goKeywords[name]; ok {
-                return name + "_"
-        }
-        if _, ok := goKeywords[low]; ok {
-                return name + "_"
-        }
-        if _, ok := goStdPackages[name]; ok {
-                return name + "_"
-        }
-        if _, ok := goStdPackages[low]; ok {
-                return name + "_"
-        }
-        if _, ok := imports[name]; ok {
-                return name + "_"
-        }
-        if _, ok := imports[low]; ok {
-                return name + "_"
-        }
-        return name
+	low := strings.ToLower(name)
+	if _, ok := goKeywords[name]; ok {
+		return name + "_"
+	}
+	if _, ok := goKeywords[low]; ok {
+		return name + "_"
+	}
+	if _, ok := goStdPackages[name]; ok {
+		return name + "_"
+	}
+	if _, ok := goStdPackages[low]; ok {
+		return name + "_"
+	}
+	if _, ok := imports[name]; ok {
+		return name + "_"
+	}
+	if _, ok := imports[low]; ok {
+		return name + "_"
+	}
+	return name
 }
 
 func emitCastAnyToType(w io.Writer, typ, v string) {
@@ -431,7 +431,23 @@ func (v *VarDecl) emit(w io.Writer) {
 	switch {
 	case v.Value != nil && v.Type != "":
 		fmt.Fprintf(w, "var %s %s = ", v.Name, v.Type)
-		v.Value.emit(w)
+		val := v.Value
+		if ae, ok := val.(*AssertExpr); ok {
+			val = ae.Expr
+		}
+		if ix, ok := val.(*IndexExpr); ok {
+			if v.Type == "int" {
+				io.WriteString(w, "_toInt(")
+				val.emit(w)
+				io.WriteString(w, ")")
+			} else if ix.AllowNegative && v.Type != "any" {
+				(&AssertExpr{Expr: val, Type: v.Type}).emit(w)
+			} else {
+				v.Value.emit(w)
+			}
+		} else {
+			v.Value.emit(w)
+		}
 		if strings.HasPrefix(v.Type, "map[") {
 			fmt.Fprintf(w, "; if %s == nil { %s = %s{} }", v.Name, v.Name, v.Type)
 		}
@@ -2504,7 +2520,7 @@ func (a *AssertExpr) emit(w io.Writer) {
 				if assignAnyVars[vr.Name] {
 					a.Expr.emit(w)
 					io.WriteString(w, ".(int)")
-				} else if vd, ok2 := varDecls[vr.Name]; ok2 && vd.Type == "any" {
+				} else if vd, ok2 := varDecls[vr.Name]; ok2 && (vd.Type == "any" || vd.Type == "[]any") {
 					a.Expr.emit(w)
 					io.WriteString(w, ".(int)")
 				} else {
@@ -8074,11 +8090,11 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseSetIndex {
-		buf.WriteString("func _setIndex[T any](s []T, i any, v T) {\n")
+		buf.WriteString("func _setIndex[T any](s []T, i any, v any) {\n")
 		buf.WriteString("    idx := func(v any) int { switch vv := v.(type) { case int: return vv; case int64: return int(vv); case float64: return int(vv); case float32: return int(vv); default: return v.(int) } }(i)\n")
 		buf.WriteString("    if idx < 0 { idx += len(s) }\n")
 		buf.WriteString("    if idx < 0 || idx >= len(s) { return }\n")
-		buf.WriteString("    s[idx] = v\n")
+		buf.WriteString("    s[idx] = v.(T)\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseSplit {
