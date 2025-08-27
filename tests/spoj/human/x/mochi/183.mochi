@@ -1,0 +1,94 @@
+// Solution for SPOJ CORNET - Corporative Network
+// https://www.spoj.com/problems/CORNET/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun find(x: int, parent: list<int>, dist: list<int>): int {
+  if parent[x] == x { return x }
+  var stack: list<int> = []
+  var r = x
+  while parent[r] != r {
+    stack = append(stack, r)
+    r = parent[r]
+  }
+  var acc = 0
+  var i = len(stack) - 1
+  while i >= 0 {
+    let node = stack[i]
+    acc = acc + dist[node]
+    parent[node] = r
+    dist[node] = acc
+    i = i - 1
+  }
+  return r
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var case = 0
+  while case < t {
+    let n = parseIntStr(input())
+    var parent: list<int> = []
+    var dist: list<int> = []
+    var i = 0
+    while i <= n {
+      parent = append(parent, i)
+      dist = append(dist, 0)
+      i = i + 1
+    }
+    while true {
+      let line = input()
+      if line == "" { continue }
+      let cmd = line[0:1]
+      if cmd == "O" { break }
+      let parts = splitSpaces(line)
+      if cmd == "E" {
+        let idx = parseIntStr(parts[1])
+        find(idx, parent, dist)
+        print(dist[idx])
+      } else {
+        let a = parseIntStr(parts[1])
+        let b = parseIntStr(parts[2])
+        parent[a] = b
+        var w = a - b
+        if w < 0 { w = 0 - w }
+        dist[a] = w % 1000
+      }
+    }
+    case = case + 1
+  }
+}
+
+main()
