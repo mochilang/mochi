@@ -1,0 +1,106 @@
+// Solution for SPOJ AROUND - Around the world
+// https://www.spoj.com/problems/AROUND/
+
+type Edge { to: int, w: int }
+type State { node: int, diff: int }
+
+fun readInts(line: string): list<int> {
+  var nums: list<int> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { nums = append(nums, cur as int); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { nums = append(nums, cur as int) }
+  return nums
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = tLine as int
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    let nm = readInts(line)
+    let n = nm[0]
+    let m = nm[1]
+    var lon: list<int> = []
+    var i = 0
+    while i < n {
+      line = input()
+      while line == "" { line = input() }
+      lon = append(lon, line as int)
+      i = i + 1
+    }
+    var adj: list<list<Edge>> = []
+    i = 0
+    while i < n {
+      adj = append(adj, [] as list<Edge>)
+      i = i + 1
+    }
+    i = 0
+    while i < m {
+      line = input()
+      while line == "" { line = input() }
+      let arr = readInts(line)
+      let u = arr[0] - 1
+      let v = arr[1] - 1
+      var d = (lon[v] - lon[u]) % 360
+      if d < 0 { d = d + 360 }
+      if d > 180 { d = d - 360 }
+      adj[u] = append(adj[u], Edge{ to: v, w: d })
+      adj[v] = append(adj[v], Edge{ to: u, w: -d })
+      i = i + 1
+    }
+    let LIMIT = 720
+    let OFFSET = LIMIT
+    var dist: list<list<int>> = []
+    i = 0
+    while i < n {
+      var row: list<int> = []
+      var j = 0
+      while j <= 2 * LIMIT {
+        row = append(row, 0 - 1)
+        j = j + 1
+      }
+      dist = append(dist, row)
+      i = i + 1
+    }
+    var queue: list<State> = [State{ node: 0, diff: 0 }]
+    var qi = 0
+    dist[0][OFFSET] = 0
+    var ans = 0 - 1
+    while qi < len(queue) {
+      let st = queue[qi]
+      qi = qi + 1
+      let u = st.node
+      let dcur = st.diff
+      let steps = dist[u][dcur + OFFSET]
+      if u == 0 && dcur % 360 == 0 && dcur != 0 {
+        ans = steps
+        break
+      }
+      for e in adj[u] {
+        let v = e.to
+        let nd = dcur + e.w
+        if nd < 0 - LIMIT || nd > LIMIT { continue }
+        if dist[v][nd + OFFSET] == 0 - 1 {
+          dist[v][nd + OFFSET] = steps + 1
+          queue = append(queue, State{ node: v, diff: nd })
+        }
+      }
+    }
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
