@@ -1,0 +1,143 @@
+// Solution for SPOJ ROMAN - Converting number formats
+// https://www.spoj.com/problems/ROMAN/
+
+let wordDigits = {
+  "ZERO": "0",
+  "OH": "0",
+  "ONE": "1",
+  "TWO": "2",
+  "THREE": "3",
+  "FOUR": "4",
+  "FIVE": "5",
+  "SIX": "6",
+  "SEVEN": "7",
+  "EIGHT": "8",
+  "NINE": "9",
+}
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == sep {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + s[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+fun parseNumber(line: string): int {
+  let parts = split(line, " ")
+  var s = ""
+  var i = 0
+  while i < len(parts) {
+    let w = parts[i]
+    if len(w) > 0 {
+      s = s + wordDigits[w]
+    }
+    i = i + 1
+  }
+  return int(s)
+}
+
+fun roman(num: int): string {
+  let values = [1000,900,500,400,100,90,50,40,10,9,5,4,1]
+  let symbols = ["M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"]
+  var res = ""
+  var i = 0
+  while num > 0 {
+    while num >= values[i] {
+      res = res + symbols[i]
+      num = num - values[i]
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun toLowerRoman(s: string): string {
+  let map = {
+    "I":"i","V":"v","X":"x","L":"l","C":"c","D":"d","M":"m",
+  }
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch in map { res = res + map[ch] } else { res = res + ch }
+    i = i + 1
+  }
+  return res
+}
+
+fun repeat(s: string, n: int): string {
+  var r = ""
+  for _ in 0..n { r = r + s }
+  return r
+}
+
+fun extendedRoman(n: int): list<string> {
+  var over = ""
+  var res = ""
+
+  let millions = n / 1000000
+  if millions > 0 {
+    let mRoman = roman(millions)
+    res = res + toLowerRoman(mRoman)
+    over = over + repeat(" ", len(mRoman))
+  }
+  let rem = n % 1000000
+  let thousands = rem / 1000
+  if thousands >= 4 {
+    let tRoman = roman(thousands)
+    var iCnt = 0
+    var idx = len(tRoman) - 1
+    while idx >= 0 && tRoman[idx:idx+1] == "I" {
+      iCnt = iCnt + 1
+      idx = idx - 1
+    }
+    let tMain = tRoman[0:len(tRoman)-iCnt]
+    if len(tMain) > 0 {
+      res = res + tMain
+      over = over + repeat("_", len(tMain))
+    }
+    if iCnt > 0 {
+      res = res + repeat("M", iCnt)
+      over = over + repeat(" ", iCnt)
+    }
+  } else if thousands > 0 {
+    res = res + repeat("M", thousands)
+    over = over + repeat(" ", thousands)
+  }
+  let units = rem % 1000
+  let uRoman = roman(units)
+  res = res + uRoman
+  over = over + repeat(" ", len(uRoman))
+  return [over, res]
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseNumber(tLine)
+  var case = 0
+  while case < t {
+    let line = input()
+    let n = parseNumber(line)
+    let parts = extendedRoman(n)
+    print(parts[0])
+    print(parts[1])
+    case = case + 1
+  }
+}
+
+main()
