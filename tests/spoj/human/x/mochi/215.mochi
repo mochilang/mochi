@@ -1,0 +1,330 @@
+// Solution for SPOJ PANIC - Bytelandian Bit-eating Fanatic Organisation
+// https://www.spoj.com/problems/PANIC/
+
+type Edge { to: int, cost: int }
+type Road { u: int, v: int, wuv: int, wvu: int }
+type PQNode { v: int, w: int }
+type PopRes { heap: list<PQNode>, node: PQNode }
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+fun make_edge_list(n: int): list<list<Edge>> {
+  var lst: list<list<Edge>> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, [])
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_int_lists(n: int): list<list<int>> {
+  var lst: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, [])
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_bool_list(n: int, value: bool): list<bool> {
+  var lst: list<bool> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun heap_push(h: list<PQNode>, item: PQNode): list<PQNode> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p].w <= heap[i].w { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<PQNode>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      let l = 2*i + 1
+      let r = 2*i + 2
+      var smallest = i
+      if l < len(heap) && heap[l].w < heap[smallest].w { smallest = l }
+      if r < len(heap) && heap[r].w < heap[smallest].w { smallest = r }
+      if smallest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[smallest]
+      heap[smallest] = tmp
+      i = smallest
+    }
+  }
+  return PopRes { heap: heap, node: top }
+}
+
+fun dijkstra(graph: list<list<Edge>>, n: int, sources: list<int>): list<int> {
+  let inf = 1000000000000
+  var dist = make_int_list(n+1, inf)
+  var heap: list<PQNode> = []
+  var i = 0
+  while i < len(sources) {
+    let s = sources[i]
+    dist[s] = 0
+    heap = heap_push(heap, PQNode{ v:s, w:0 })
+    i = i + 1
+  }
+  while len(heap) > 0 {
+    let pr = heap_pop(heap)
+    heap = pr.heap
+    let cur = pr.node
+    if cur.w != dist[cur.v] { continue }
+    var j = 0
+    while j < len(graph[cur.v]) {
+      let e = graph[cur.v][j]
+      let nd = cur.w + e.cost
+      if nd < dist[e.to] {
+        dist[e.to] = nd
+        heap = heap_push(heap, PQNode{ v:e.to, w:nd })
+      }
+      j = j + 1
+    }
+  }
+  return dist
+}
+
+fun absf(x: float): float { if x < 0.0 { return -x } else { return x } }
+
+fun meeting_time(du: int, dv: int, wuv: int, wvu: int): float {
+  let a = du as float
+  let b = dv as float
+  let c = wuv as float
+  let d = wvu as float
+  return (a*d + b*c + c*d) / (c + d)
+}
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  let t = nextInt()
+  var case = 0
+  while case < t {
+    let n = nextInt()
+    let m = nextInt()
+    let k = nextInt()
+    var g = make_edge_list(n)
+    var roads: list<Road> = []
+    var i = 0
+    while i < m {
+      let u = nextInt()
+      let v = nextInt()
+      let wuv = nextInt()
+      let wvu = nextInt()
+      g[u] = append(g[u], Edge{ to:v, cost:wuv })
+      g[v] = append(g[v], Edge{ to:u, cost:wvu })
+      roads = append(roads, Road{ u:u, v:v, wuv:wuv, wvu:wvu })
+      i = i + 1
+    }
+    var sources: list<int> = []
+    i = 0
+    while i < k {
+      let s = nextInt()
+      sources = append(sources, s)
+      i = i + 1
+    }
+    let dist = dijkstra(g, n, sources)
+    let inf = 1000000000000
+    var hasInf = false
+    var ans: list<int> = []
+    var v = 1
+    while v <= n {
+      if dist[v] >= inf {
+        hasInf = true
+        ans = append(ans, v)
+      }
+      v = v + 1
+    }
+    if hasInf {
+      ans = sortInts(ans)
+      var out = ""
+      var idx = 0
+      while idx < len(ans) {
+        if idx > 0 { out = out + " " }
+        out = out + str(ans[idx])
+        idx = idx + 1
+      }
+      print(out)
+      case = case + 1
+      continue
+    }
+    var rev = make_int_lists(n)
+    var r = 0
+    while r < len(roads) {
+      let rd = roads[r]
+      if dist[rd.v] == dist[rd.u] + rd.wuv {
+        rev[rd.v] = append(rev[rd.v], rd.u)
+      }
+      if dist[rd.u] == dist[rd.v] + rd.wvu {
+        rev[rd.u] = append(rev[rd.u], rd.v)
+      }
+      r = r + 1
+    }
+    let EPS = 1e-7
+    var maxTime = 0.0
+    var srcs: list<int> = []
+    v = 1
+    while v <= n {
+      let dv = dist[v] as float
+      if dv > maxTime + EPS {
+        maxTime = dv
+        srcs = [v]
+      } else if absf(dv - maxTime) < EPS {
+        srcs = append(srcs, v)
+      }
+      v = v + 1
+    }
+    r = 0
+    while r < len(roads) {
+      let rd = roads[r]
+      let mt = meeting_time(dist[rd.u], dist[rd.v], rd.wuv, rd.wvu)
+      if mt > maxTime + EPS {
+        maxTime = mt
+        srcs = [rd.u, rd.v]
+      } else if absf(mt - maxTime) < EPS {
+        srcs = append(srcs, rd.u)
+        srcs = append(srcs, rd.v)
+      }
+      r = r + 1
+    }
+    var visited = make_bool_list(n+1, false)
+    var queue: list<int> = []
+    var head = 0
+    i = 0
+    while i < len(srcs) {
+      let s = srcs[i]
+      if !visited[s] {
+        visited[s] = true
+        queue = append(queue, s)
+      }
+      i = i + 1
+    }
+    while head < len(queue) {
+      let cur = queue[head]
+      head = head + 1
+      var j = 0
+      while j < len(rev[cur]) {
+        let u = rev[cur][j]
+        if !visited[u] {
+          visited[u] = true
+          queue = append(queue, u)
+        }
+        j = j + 1
+      }
+    }
+    var res: list<int> = []
+    v = 1
+    while v <= n {
+      if visited[v] { res = append(res, v) }
+      v = v + 1
+    }
+    res = sortInts(res)
+    var out = ""
+    var idx = 0
+    while idx < len(res) {
+      if idx > 0 { out = out + " " }
+      out = out + str(res[idx])
+      idx = idx + 1
+    }
+    print(out)
+    case = case + 1
+  }
+}
+
+main()
