@@ -141,7 +141,6 @@ func Download(id int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer f.Close()
 	var target Problem
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
@@ -153,8 +152,33 @@ func Download(id int) (string, error) {
 			}
 		}
 	}
+	f.Close()
 	if target.URL == "" {
-		return "", fmt.Errorf("problem %d not found", id)
+		// Fallback: scan all index files for the id
+		files, _ := filepath.Glob(filepath.Join(dir, "*.jsonl"))
+		for _, fp := range files {
+			ff, err := os.Open(fp)
+			if err != nil {
+				continue
+			}
+			scanner := bufio.NewScanner(ff)
+			for scanner.Scan() {
+				var p Problem
+				if err := json.Unmarshal(scanner.Bytes(), &p); err == nil {
+					if p.ID == id {
+						target = p
+						break
+					}
+				}
+			}
+			ff.Close()
+			if target.URL != "" {
+				break
+			}
+		}
+		if target.URL == "" {
+			return "", fmt.Errorf("problem %d not found", id)
+		}
 	}
 	req, err := http.NewRequest("GET", target.URL, nil)
 	if err != nil {
