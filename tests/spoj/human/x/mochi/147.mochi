@@ -1,0 +1,88 @@
+// Solution for SPOJ TAUT - Tautology
+// https://www.spoj.com/problems/TAUT/
+
+fun uniqueVars(expr: string): list<string> {
+  var vars: list<string> = []
+  var i = 0
+  while i < len(expr) {
+    let ch = expr[i:i+1]
+    if ch >= "a" && ch <= "z" {
+      var found = false
+      var j = 0
+      while j < len(vars) {
+        if vars[j] == ch { found = true; break }
+        j = j + 1
+      }
+      if !found { vars = append(vars, ch) }
+    }
+    i = i + 1
+  }
+  return vars
+}
+
+fun evalExpr(expr: string, env: map<string,bool>): bool {
+  var stack: list<bool> = []
+  var i = len(expr) - 1
+  while i >= 0 {
+    let ch = expr[i:i+1]
+    if ch >= "a" && ch <= "z" {
+      stack = append(stack, env[ch] as bool)
+    } else if ch == "N" {
+      let v = stack[len(stack)-1]
+      stack[len(stack)-1] = !v
+    } else {
+      let a = stack[len(stack)-1]
+      stack = stack[0:len(stack)-1]
+      let b = stack[len(stack)-1]
+      stack = stack[0:len(stack)-1]
+      var res = false
+      if ch == "C" { res = a && b }
+      if ch == "D" { res = a || b }
+      if ch == "I" { res = (!a) || b }
+      if ch == "E" { res = (a == b) }
+      stack = append(stack, res)
+    }
+    i = i - 1
+  }
+  return stack[0]
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var idx = 0
+  while idx < t {
+    let expr = input()
+    let vars = uniqueVars(expr)
+    let n = len(vars)
+    var limit = 1
+    var tmp = 0
+    while tmp < n {
+      limit = limit * 2
+      tmp = tmp + 1
+    }
+    var mask = 0
+    var taut = true
+    while mask < limit {
+      var env: map<string,bool> = {}
+      var m = mask
+      var j = 0
+      while j < n {
+        let v = (m % 2) == 1
+        env[vars[j]] = v
+        m = m / 2
+        j = j + 1
+      }
+      if !evalExpr(expr, env) {
+        taut = false
+        break
+      }
+      mask = mask + 1
+    }
+    if taut { print("YES") } else { print("NO") }
+    idx = idx + 1
+  }
+}
+
+main()
