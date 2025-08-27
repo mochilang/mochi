@@ -1,0 +1,124 @@
+// Solution for SPOJ MAYACAL - Calendar of the Maya
+// https://www.spoj.com/problems/MAYACAL/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+let tzNames = ["Imix","Ik","Akbal","Kan","Chikchan","Kimi","Manik","Lamat","Muluk","Ok","Chuen","Eb","Ben","Ix","Men","Kib","Kaban","Etznab","Kawak","Ajaw"]
+let haabMonths = ["Pop","Wo","Sip","Sotz","Sek","Xul","Yaxkin","Mol","Chen","Yax","Zac","Ceh","Mac","Kankin","Muan","Pax","Kayab","Kumku","Wayeb"]
+let haabLens = [20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,5]
+
+fun index(arr: list<string>, s: string): int {
+  var i = 0
+  while i < len(arr) {
+    if arr[i] == s { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let d = int(tLine)
+  var case = 0
+  while case < d {
+    let line = input()
+    let parts = split(line, " ")
+    if len(parts) != 4 {
+      print("0")
+      case = case + 1
+      continue
+    }
+    let tzNum = int(parts[0])
+    let tzIdx = index(tzNames, parts[1])
+    let haabDay = int(parts[2])
+    let haabIdx = index(haabMonths, parts[3])
+    var valid = true
+    if tzNum < 1 || tzNum > 13 { valid = false }
+    if tzIdx < 0 { valid = false }
+    if haabIdx < 0 { valid = false } else {
+      let maxd = haabLens[haabIdx]
+      if haabDay < 0 || haabDay >= maxd { valid = false }
+    }
+    if !valid {
+      print("0")
+      case = case + 1
+      continue
+    }
+    // compute Tzolkin offset within 260-day cycle
+    var tzOff = 0
+    while tzOff < 260 {
+      let n = ((9 - 1 + tzOff) % 13) + 1
+      let nameIdx = (19 + tzOff) % 20
+      if n == tzNum && nameIdx == tzIdx { break }
+      tzOff = tzOff + 1
+    }
+    // compute Haab offset within 365-day cycle
+    var haabAbs = 0
+    if haabIdx < 18 {
+      haabAbs = haabIdx * 20 + haabDay
+    } else {
+      haabAbs = 360 + haabDay
+    }
+    var haabOff = haabAbs - 43
+    haabOff = haabOff % 365
+    if haabOff < 0 { haabOff = haabOff + 365 }
+    // check compatibility
+    if tzOff % 5 != haabOff % 5 {
+      print("0")
+      case = case + 1
+      continue
+    }
+    // solve CRT for offset within 18980-day cycle
+    let diff = haabOff - tzOff
+    let inv52 = 66 // inverse of 52 mod 73
+    let step = ((diff / 5 * inv52) % 73)
+    if step < 0 { step = step + 73 }
+    let offset = tzOff + 260 * step
+    offset = offset % 18980
+    if offset < 0 { offset = offset + 18980 }
+    let start = 8 * 144000
+    let total = 144000 * 2
+    var res: list<string> = []
+    var cur = offset
+    while cur < total {
+      let totalDays = start + cur
+      var rem = totalDays
+      let b = rem / 144000
+      rem = rem % 144000
+      let k = rem / 7200
+      rem = rem % 7200
+      let t = rem / 360
+      rem = rem % 360
+      let w = rem / 20
+      let i = rem % 20
+      let lc = str(b) + "." + str(k) + "." + str(t) + "." + str(w) + "." + str(i)
+      res = append(res, lc)
+      cur = cur + 18980
+    }
+    print(str(len(res)))
+    var j = 0
+    while j < len(res) {
+      print(res[j])
+      j = j + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
