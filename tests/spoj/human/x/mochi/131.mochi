@@ -1,0 +1,72 @@
+// Solution for SPOJ SQDANCE - Square dance
+// https://www.spoj.com/problems/SQDANCE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun find(parent: list<int>, x: int): int {
+  var x0 = x
+  while parent[x0] != x0 {
+    parent[x0] = parent[parent[x0]]
+    x0 = parent[x0]
+  }
+  return x0
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = tStr as int
+  var tc = 0
+  while tc < t {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = splitSpaces(line)
+    let P = parts[0] as int
+    let R = parts[1] as int
+    var parent: list<int> = []
+    var i = 0
+    while i < P {
+      parent = append(parent, i)
+      i = i + 1
+    }
+    var cnt = 0
+    i = 0
+    while i < R {
+      let edgeLine = input()
+      if edgeLine == "" { continue }
+      let ps = splitSpaces(edgeLine)
+      let a = (ps[0] as int) - 1
+      let b = (ps[1] as int) - 1
+      let ra = find(parent, a)
+      let rb = find(parent, b)
+      if ra == rb {
+        cnt = cnt + 1
+      } else {
+        parent[rb] = ra
+      }
+      i = i + 1
+    }
+    print(str(cnt))
+    tc = tc + 1
+  }
+}
+
+main()
