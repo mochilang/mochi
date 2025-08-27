@@ -1,0 +1,67 @@
+// Solution for SPOJ PALSEC - Palindromic Sequences
+// https://www.spoj.com/problems/PALSEC/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun isPalindrome(s: string): bool {
+  var i = 0
+  var j = len(s) - 1
+  while i < j {
+    if s[i:i+1] != s[j:j+1] { return false }
+    i = i + 1
+    j = j - 1
+  }
+  return true
+}
+
+var N = 0
+var X: list<string> = []
+var Y: list<string> = []
+
+fun dfs(idx: int, acc: string): int {
+  if idx == N {
+    if isPalindrome(acc) { return 1 }
+    return 0
+  }
+  return dfs(idx + 1, acc + X[idx]) + dfs(idx + 1, acc + Y[idx])
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var cs = 0
+  while cs < t {
+    let nStr = input()
+    let n = parseIntStr(nStr)
+    N = n
+    X = []
+    Y = []
+    var i = 0
+    while i < n {
+      X = append(X, input())
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      Y = append(Y, input())
+      i = i + 1
+    }
+    print(dfs(0, ""))
+    cs = cs + 1
+  }
+}
+
+main()
