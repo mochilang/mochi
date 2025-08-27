@@ -1,0 +1,133 @@
+// Solution for SPOJ TAXI - Taxi
+// https://www.spoj.com/problems/TAXI/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var num = 0
+  var inNum = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      num = num*10 + (digits[ch] as int)
+      inNum = true
+    } else {
+      if inNum {
+        res = append(res, num)
+        num = 0
+        inNum = false
+      }
+    }
+    i = i + 1
+  }
+  if inNum { res = append(res, num) }
+  return res
+}
+
+fun readInts(): list<int> {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  let arr = parseInts(line)
+  return arr
+}
+
+fun absInt(x: int): int { if x < 0 { return -x } return x }
+
+fun dfs(u: int, seen: list<int>, matchR: list<int>, adj: list<list<int>>): bool {
+  let edges = adj[u] as list<int>
+  var i = 0
+  while i < len(edges) {
+    let v = edges[i] as int
+    if seen[v] == 0 {
+      seen[v] = 1
+      let m = matchR[v]
+      if m == 0-1 || dfs(m, seen, matchR, adj) {
+        matchR[v] = u
+        return true
+      }
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun main() {
+  let first = readInts()
+  let t = first[0] as int
+  var case = 0
+  while case < t {
+    let hdr = readInts()
+    let p = hdr[0] as int
+    let taxis = hdr[1] as int
+    let s = hdr[2] as int
+    let c = hdr[3] as int
+    var px: list<int> = []
+    var py: list<int> = []
+    var i = 0
+    while i < p {
+      let pos = readInts()
+      px = append(px, pos[0] as int)
+      py = append(py, pos[1] as int)
+      i = i + 1
+    }
+    var tx: list<int> = []
+    var ty: list<int> = []
+    var j = 0
+    while j < taxis {
+      let pos = readInts()
+      tx = append(tx, pos[0] as int)
+      ty = append(ty, pos[1] as int)
+      j = j + 1
+    }
+    var adj: list<list<int>> = []
+    j = 0
+    while j < taxis {
+      var row: list<int> = []
+      adj = append(adj, row)
+      j = j + 1
+    }
+    j = 0
+    while j < taxis {
+      i = 0
+      while i < p {
+        let dist = (absInt((tx[j] as int) - (px[i] as int)) + absInt((ty[j] as int) - (py[i] as int))) * 200
+        if dist <= s * c {
+          adj[j] = append(adj[j] as list<int>, i)
+        }
+        i = i + 1
+      }
+      j = j + 1
+    }
+    var matchR: list<int> = []
+    i = 0
+    while i < p {
+      matchR = append(matchR, 0-1)
+      i = i + 1
+    }
+    var result = 0
+    j = 0
+    while j < taxis {
+      var seen: list<int> = []
+      i = 0
+      while i < p {
+        seen = append(seen, 0)
+        i = i + 1
+      }
+      if dfs(j, seen, matchR, adj) {
+        result = result + 1
+      }
+      j = j + 1
+    }
+    print(str(result))
+    case = case + 1
+  }
+}
+
+main()
