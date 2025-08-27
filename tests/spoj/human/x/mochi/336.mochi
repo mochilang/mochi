@@ -1,0 +1,149 @@
+// Solution for SPOJ EOPERA - Exchange Operations
+// https://www.spoj.com/problems/EOPERA/
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun join(nums: list<int>): string {
+  var s = ""
+  var i = 0
+  while i < len(nums) {
+    if i > 0 { s = s + "," }
+    s = s + str(nums[i])
+    i = i + 1
+  }
+  return s
+}
+
+fun copyList(src: list<int>): list<int> {
+  var dst: list<int> = []
+  var i = 0
+  while i < len(src) {
+    dst = append(dst, src[i])
+    i = i + 1
+  }
+  return dst
+}
+
+fun neighbors(state: list<int>): list<list<int>> {
+  var res: list<list<int>> = []
+  var zero = 0
+  while zero < 12 {
+    if state[zero] == 0 { break }
+    zero = zero + 1
+  }
+  let i = zero
+  fun absInt(x: int): int {
+    if x < 0 { return -x }
+    return x
+  }
+  var candidates: list<int> = [i-1, i+1, i-3, i+3, i-6, i+6]
+  var c = 0
+  while c < len(candidates) {
+    let j = candidates[c]
+    c = c + 1
+    if j < 0 || j >= 12 { continue }
+    var ok = false
+    let diff = absInt(i - j)
+    if diff == 1 {
+      if i / 3 == j / 3 { ok = true }
+    } else if diff == 3 {
+      if i / 6 == j / 6 { ok = true }
+    } else if diff == 6 {
+      ok = true
+    }
+    if ok {
+      var tmp = copyList(state)
+      let t = tmp[i]
+      tmp[i] = tmp[j]
+      tmp[j] = t
+      res = append(res, tmp)
+    }
+  }
+  return res
+}
+
+fun bfs(start: list<int>): int {
+  let targetList: list<int> = [0,1,2,3,4,5,6,7,8,9,10,11]
+  let target = join(targetList)
+  let startKey = join(start)
+  if startKey == target { return 0 }
+  var queue: list<list<int>> = [start]
+  var dist: list<int> = [0]
+  var head = 0
+  var seen: map<string,bool> = {}
+  seen[startKey] = true
+  while head < len(queue) {
+    let cur = queue[head]
+    let d = dist[head]
+    head = head + 1
+    let neighs = neighbors(cur)
+    var i = 0
+    while i < len(neighs) {
+      let nxt = neighs[i]
+      let key = join(nxt)
+      if seen[key] != true {
+        if key == target { return d + 1 }
+        seen[key] = true
+        queue = append(queue, nxt)
+        dist = append(dist, d + 1)
+      }
+      i = i + 1
+    }
+  }
+  return -1
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = split(line)
+    var arr: list<int> = []
+    var i = 0
+    while i < len(parts) {
+      arr = append(arr, parseIntStr(parts[i]))
+      i = i + 1
+    }
+    print(str(bfs(arr)))
+    case = case + 1
+  }
+}
+
+main()
