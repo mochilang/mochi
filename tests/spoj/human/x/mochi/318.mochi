@@ -1,0 +1,75 @@
+// Solution for SPOJ PITPAIR - Pythagorean Legacy
+// https://www.spoj.com/problems/PITPAIR/
+
+fun isqrt(n: int): int {
+  var r = 0
+  while (r + 1) * (r + 1) <= n {
+    r = r + 1
+  }
+  return r
+}
+
+fun isSquare(n: int): bool {
+  let r = isqrt(n)
+  return r * r == n
+}
+
+fun findHyp(n: int): list<int> {
+  var c = 5
+  while true {
+    var cats: list<int> = []
+    var a = 1
+    while a < c {
+      let b2 = c * c - a * a
+      if b2 > 0 && isSquare(b2) {
+        let b = isqrt(b2)
+        if a < b {
+          cats = append(cats, a)
+        }
+      }
+      a = a + 1
+    }
+    if len(cats) == n {
+      var i = 1
+      while i < len(cats) {
+        var j = i
+        while j > 0 && cats[j-1] > cats[j] {
+          let tmp = cats[j-1]
+          cats[j-1] = cats[j]
+          cats[j] = tmp
+          j = j - 1
+        }
+        i = i + 1
+      }
+      var res: list<int> = [c]
+      i = 0
+      while i < len(cats) {
+        res = append(res, cats[i])
+        i = i + 1
+      }
+      return res
+    }
+    c = c + 1
+  }
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var i = 0
+  while i < t {
+    let nLine = input()
+    let n = nLine as int
+    let res = findHyp(n)
+    print(res[0])
+    var j = 1
+    while j < len(res) {
+      print(res[j])
+      j = j + 1
+    }
+    i = i + 1
+  }
+}
+
+main()
