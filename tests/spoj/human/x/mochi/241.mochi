@@ -1,0 +1,232 @@
+// Solution for SPOJ BLOCKS - Arranging the Blocks
+// https://www.spoj.com/problems/BLOCKS/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun makeIntList(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun equalRows(P: list<list<int>>, Q: list<list<int>>, n: int): bool {
+  let size = n*n + 1
+  var freq = makeIntList(size, 0)
+  var i = 0
+  while i < n {
+    var used: list<int> = []
+    var j = 0
+    while j < n {
+      let v = P[i][j]
+      freq[v] = freq[v] + 1
+      used = append(used, v)
+      j = j + 1
+    }
+    j = 0
+    while j < n {
+      let v = Q[i][j]
+      freq[v] = freq[v] - 1
+      used = append(used, v)
+      j = j + 1
+    }
+    var k = 0
+    var ok = true
+    while k < len(used) {
+      let val = used[k]
+      if freq[val] != 0 {
+        ok = false
+        break
+      }
+      k = k + 1
+    }
+    k = 0
+    while k < len(used) {
+      freq[used[k]] = 0
+      k = k + 1
+    }
+    if !ok { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun equalCols(P: list<list<int>>, Q: list<list<int>>, n: int): bool {
+  let size = n*n + 1
+  var freq = makeIntList(size, 0)
+  var j = 0
+  while j < n {
+    var used: list<int> = []
+    var i = 0
+    while i < n {
+      let v = P[i][j]
+      freq[v] = freq[v] + 1
+      used = append(used, v)
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      let v = Q[i][j]
+      freq[v] = freq[v] - 1
+      used = append(used, v)
+      i = i + 1
+    }
+    var k = 0
+    var ok = true
+    while k < len(used) {
+      let val = used[k]
+      if freq[val] != 0 {
+        ok = false
+        break
+      }
+      k = k + 1
+    }
+    k = 0
+    while k < len(used) {
+      freq[used[k]] = 0
+      k = k + 1
+    }
+    if !ok { return false }
+    j = j + 1
+  }
+  return true
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = parseIntStr(tLine)
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    let n = parseIntStr(line)
+    var P: list<list<int>> = []
+    var i = 0
+    while i < n {
+      line = input()
+      while line == "" { line = input() }
+      P = append(P, parseInts(line))
+      i = i + 1
+    }
+    var Q: list<list<int>> = []
+    i = 0
+    while i < n {
+      line = input()
+      while line == "" { line = input() }
+      Q = append(Q, parseInts(line))
+      i = i + 1
+    }
+    let size = n*n + 1
+    var freq = makeIntList(size, 0)
+    var used: list<int> = []
+    i = 0
+    while i < n {
+      var j = 0
+      while j < n {
+        let vp = P[i][j]
+        freq[vp] = freq[vp] + 1
+        used = append(used, vp)
+        let vq = Q[i][j]
+        freq[vq] = freq[vq] - 1
+        used = append(used, vq)
+        j = j + 1
+      }
+      i = i + 1
+    }
+    var mismatch = false
+    var k = 0
+    while k < len(used) {
+      let val = used[k]
+      if freq[val] != 0 {
+        mismatch = true
+        break
+      }
+      k = k + 1
+    }
+    k = 0
+    while k < len(used) {
+      freq[used[k]] = 0
+      k = k + 1
+    }
+    if mismatch {
+      print("no")
+      case = case + 1
+      continue
+    }
+    var same = true
+    i = 0
+    while i < n {
+      var j = 0
+      while j < n {
+        if P[i][j] != Q[i][j] {
+          same = false
+          break
+        }
+        j = j + 1
+      }
+      if !same { break }
+      i = i + 1
+    }
+    if same {
+      print(0)
+      case = case + 1
+      continue
+    }
+    if equalRows(P, Q, n) || equalCols(P, Q, n) {
+      print(1)
+    } else {
+      print(2)
+    }
+    case = case + 1
+  }
+}
+
+main()
