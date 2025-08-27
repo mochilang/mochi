@@ -1,0 +1,117 @@
+// Solution for SPOJ CALLS - Calls
+// https://www.spoj.com/problems/CALLS/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = parseIntStr(tLine)
+  for _ in 0..T {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = splitSpaces(line)
+    let N = parseIntStr(parts[0])
+    let K = parseIntStr(parts[1])
+
+    var dist: list<list<int>> = []
+    var i = 0
+    while i < N {
+      var row: list<int> = []
+      var j = 0
+      while j < N {
+        row = append(row, 0)
+        j = j + 1
+      }
+      dist = append(dist, row)
+      i = i + 1
+    }
+
+    i = 0
+    while i < N - 1 {
+      line = input()
+      let nums = splitSpaces(line)
+      var j = 0
+      while j < len(nums) {
+        let val = parseIntStr(nums[j])
+        dist[i][i + 1 + j] = val
+        dist[i + 1 + j][i] = val
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    var valid = true
+    var needed = 0
+    i = 0
+    while i < N && valid {
+      var j = i + 1
+      while j < N && valid {
+        var necessary = true
+        var k = 0
+        while k < N {
+          if k != i && k != j {
+            let via = dist[i][k] + dist[k][j]
+            if via < dist[i][j] {
+              valid = false
+              break
+            }
+            if via == dist[i][j] { necessary = false }
+          }
+          k = k + 1
+        }
+        if necessary { needed = needed + 1 }
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    let maxEdges = N * (N - 1) / 2
+    if valid && needed <= K && K <= maxEdges {
+      print("YES")
+    } else {
+      print("NO")
+    }
+  }
+}
+
+main()
