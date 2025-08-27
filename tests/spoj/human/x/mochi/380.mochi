@@ -1,0 +1,91 @@
+// [Bullshit Bingo](https://www.spoj.com/problems/BINGO/)
+
+let lower = "abcdefghijklmnopqrstuvwxyz"
+let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+fun isLetter(ch: string): bool {
+  var i = 0
+  while i < len(lower) {
+    if ch == lower[i:i+1] || ch == upper[i:i+1] { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun toUpperChar(ch: string): string {
+  var i = 0
+  while i < len(lower) {
+    if ch == lower[i:i+1] { return upper[i:i+1] }
+    if ch == upper[i:i+1] { return upper[i:i+1] }
+    i = i + 1
+  }
+  return ch
+}
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  if x < 0 { x = -x }
+  return x
+}
+
+fun main() {
+  var words: list<string> = []
+  var total = 0
+  var games = 0
+  var cur = ""
+  while true {
+    let line = input()
+    if line == "" { break }
+    var i = 0
+    while i < len(line) {
+      let ch = line[i:i+1]
+      if isLetter(ch) {
+        cur = cur + toUpperChar(ch)
+      } else {
+        if len(cur) > 0 {
+          if cur == "BULLSHIT" {
+            total = total + len(words)
+            games = games + 1
+            words = []
+          } else {
+            var found = false
+            var j = 0
+            while j < len(words) {
+              if words[j] == cur { found = true; break }
+              j = j + 1
+            }
+            if !found { words = append(words, cur) }
+          }
+          cur = ""
+        }
+      }
+      i = i + 1
+    }
+    if len(cur) > 0 {
+      if cur == "BULLSHIT" {
+        total = total + len(words)
+        games = games + 1
+        words = []
+      } else {
+        var found2 = false
+        var k = 0
+        while k < len(words) {
+          if words[k] == cur { found2 = true; break }
+          k = k + 1
+        }
+        if !found2 { words = append(words, cur) }
+      }
+      cur = ""
+    }
+  }
+  let g = gcd(total, games)
+  print(str(total / g) + " / " + str(games / g))
+}
+
+main()
