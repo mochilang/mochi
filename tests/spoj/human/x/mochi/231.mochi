@@ -1,0 +1,231 @@
+// Solution for SPOJ ZEBRA - The Zebra Crossing
+// https://www.spoj.com/problems/ZEBRA/
+
+let pi = 3.141592653589793
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInt(s: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(s) > 0 && s[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(s) {
+    n = n * 10 + (digits[s[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = 0 - n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun absf(x: float): float { if x < 0.0 { return -x } else { return x } }
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var prev = 0.0
+  while absf(r - prev) > 1e-12 {
+    prev = r
+    r = (r + x / r) / 2.0
+  }
+  return r
+}
+
+fun sin(x: float): float {
+  var y = x
+  while y > pi { y = y - 2.0 * pi }
+  while y < -pi { y = y + 2.0 * pi }
+  var term = y
+  var res = y
+  var i = 1
+  while i < 10 {
+    term = -term * y * y / ((2.0 * i as float) * (2.0 * i as float + 1.0))
+    res = res + term
+    i = i + 1
+  }
+  return res
+}
+
+fun cos(x: float): float {
+  var y = x
+  while y > pi { y = y - 2.0 * pi }
+  while y < -pi { y = y + 2.0 * pi }
+  var term = 1.0
+  var res = 1.0
+  var i = 1
+  while i < 10 {
+    term = -term * y * y / ((2.0 * i as float - 1.0) * (2.0 * i as float))
+    res = res + term
+    i = i + 1
+  }
+  return res
+}
+
+fun tan(x: float): float { return sin(x) / cos(x) }
+
+fun sortFloat(arr: list<float>): list<float> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun sweep(L: list<float>, R: list<float>): int {
+  L = sortFloat(L)
+  R = sortFloat(R)
+  var i = 0
+  var j = 0
+  var cur = 0
+  var best = 0
+  while i < len(L) && j < len(R) {
+    if L[i] <= R[j] {
+      cur = cur + 1
+      if cur > best { best = cur }
+      i = i + 1
+    } else {
+      cur = cur - 1
+      j = j + 1
+    }
+  }
+  return best
+}
+
+fun verticalOverlap(arr: list<list<float>>): int {
+  var L: list<float> = []
+  var R: list<float> = []
+  var i = 0
+  while i < len(arr) {
+    let a = arr[i][0]
+    let b = arr[i][1]
+    if a < b {
+      L = append(L, a)
+      R = append(R, b)
+    } else {
+      L = append(L, b)
+      R = append(R, a)
+    }
+    i = i + 1
+  }
+  if len(L) == 0 { return 0 }
+  return sweep(L, R)
+}
+
+fun maxLR(arr: list<list<float>>, delta: float): int {
+  var L: list<float> = []
+  var R: list<float> = []
+  var i = 0
+  while i < len(arr) {
+    let a = arr[i][0]
+    let b = arr[i][1]
+    if delta < b - a {
+      i = i + 1
+      continue
+    }
+    L = append(L, b - delta / 2.0)
+    R = append(R, a + delta / 2.0)
+    i = i + 1
+  }
+  if len(L) == 0 { return 0 }
+  return sweep(L, R)
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseInt(tLine)
+  var case = 0
+  while case < t {
+    let line = input()
+    let parts = splitSpaces(line)
+    let n = parseInt(parts[0])
+    let w = parseInt(parts[1])
+    let v = parseInt(parts[2])
+    var groups: map<int, list<list<float>>> = {}
+    var times: list<int> = []
+    var i = 0
+    while i < n {
+      let l2 = input()
+      let p = splitSpaces(l2)
+      let x = parseInt(p[0])
+      let tt = parseInt(p[1])
+      let a = parseInt(p[2])
+      var arr = groups[tt]
+      if arr == nil { arr = []; times = append(times, tt) }
+      let ang = (a as float) * pi / 10800.0
+      let k = tan(ang)
+      var seg: list<float> = []
+      seg = append(seg, x as float)
+      seg = append(seg, (x as float) + (w as float) * k)
+      arr = append(arr, seg)
+      groups[tt] = arr
+      i = i + 1
+    }
+    var best = 0
+    var idx = 0
+    while idx < len(times) {
+      let T = times[idx]
+      let arr = groups[T]
+      if T * v < w {
+        idx = idx + 1
+        continue
+      }
+      let ratio = (v as float) * (T as float) / (w as float)
+      let kmax = sqrt(ratio * ratio - 1.0)
+      let delta = (w as float) * kmax
+      let b1 = verticalOverlap(arr)
+      if b1 > best { best = b1 }
+      let b2 = maxLR(arr, delta)
+      if b2 > best { best = b2 }
+      var arrM: list<list<float>> = []
+      var j = 0
+      while j < len(arr) {
+        var seg: list<float> = []
+        seg = append(seg, -arr[j][0])
+        seg = append(seg, -arr[j][1])
+        arrM = append(arrM, seg)
+        j = j + 1
+      }
+      let b3 = maxLR(arrM, delta)
+      if b3 > best { best = b3 }
+      idx = idx + 1
+    }
+    print(str(best))
+    case = case + 1
+  }
+}
+
+main()
