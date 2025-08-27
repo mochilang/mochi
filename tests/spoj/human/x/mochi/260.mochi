@@ -1,0 +1,153 @@
+// Solution for SPOJ CTAIN - Containers
+// https://www.spoj.com/problems/CTAIN/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+    if line == nil { return nil }
+  }
+  return line
+}
+
+fun encode(arr: list<int>, n: int): int {
+  var res = 0
+  var mul = 1
+  var i = 0
+  while i < n {
+    res = res + arr[i] * mul
+    mul = mul * 50
+    i = i + 1
+  }
+  return res
+}
+
+fun bfs(n: int, caps: list<int>, goal: list<int>): int {
+  var start: list<int> = []
+  var i = 0
+  while i < n {
+    start = append(start, caps[i])
+    i = i + 1
+  }
+  let goalKey = encode(goal, n)
+  let startKey = encode(start, n)
+  if startKey == goalKey { return 0 }
+  var visited: map<int,bool> = {}
+  visited[startKey] = true
+  var queue: list<list<int>> = [start]
+  var dist: list<int> = [0]
+  var qi = 0
+  while qi < len(queue) {
+    let state = queue[qi]
+    let d = dist[qi]
+    qi = qi + 1
+    // empty a container
+    var idx = 0
+    while idx < n {
+      if state[idx] > 0 {
+        var ns = state[0:len(state)]
+        ns[idx] = 0
+        let key = encode(ns, n)
+        if visited[key] == nil {
+          if key == goalKey { return d + 1 }
+          visited[key] = true
+          queue = append(queue, ns)
+          dist = append(dist, d + 1)
+        }
+      }
+      idx = idx + 1
+    }
+    // pour between containers
+    idx = 0
+    while idx < n {
+      var j = 0
+      while j < n {
+        if idx != j && state[idx] > 0 && state[j] < caps[j] {
+          let space = caps[j] - state[j]
+          let amount = if state[idx] < space { state[idx] } else { space }
+          var ns2 = state[0:len(state)]
+          ns2[idx] = ns2[idx] - amount
+          ns2[j] = ns2[j] + amount
+          let key2 = encode(ns2, n)
+          if visited[key2] == nil {
+            if key2 == goalKey { return d + 1 }
+            visited[key2] = true
+            queue = append(queue, ns2)
+            dist = append(dist, d + 1)
+          }
+        }
+        j = j + 1
+      }
+      idx = idx + 1
+    }
+  }
+  return -1
+}
+
+fun main() {
+  let tLine = readNonEmpty()
+  if tLine == nil { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    let nLine = readNonEmpty()
+    if nLine == nil { return }
+    let n = parseIntStr(nLine)
+    let capsLine = readNonEmpty()
+    let caps = parseInts(capsLine)
+    let goalLine = readNonEmpty()
+    let goal = parseInts(goalLine)
+    let res = bfs(n, caps, goal)
+    if res < 0 {
+      print("NO")
+    } else {
+      print(str(res))
+    }
+    case = case + 1
+  }
+}
+
+main()
