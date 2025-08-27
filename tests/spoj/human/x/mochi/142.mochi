@@ -1,0 +1,247 @@
+// Solution for SPOJ GLUE - Johnny and the Glue
+// https://www.spoj.com/problems/GLUE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun cross(o: list<int>, a: list<int>, b: list<int>): int {
+  return (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0])
+}
+
+fun gcd(a: int, b: int): int {
+  var x = if a < 0 { -a } else { a }
+  var y = if b < 0 { -b } else { b }
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun sortPts(pts: list<list<int>>): list<list<int>> {
+  var i = 1
+  while i < len(pts) {
+    var j = i
+    while j > 0 {
+      let a = pts[j-1]
+      let b = pts[j]
+      if a[0] > b[0] || (a[0] == b[0] && a[1] > b[1]) {
+        let tmp = pts[j-1]
+        pts[j-1] = pts[j]
+        pts[j] = tmp
+        j = j - 1
+      } else {
+        break
+      }
+    }
+    i = i + 1
+  }
+  return pts
+}
+
+fun convexHull(pts: list<list<int>>): list<list<int>> {
+  let sorted = sortPts(pts)
+  var lower: list<list<int>> = []
+  var i = 0
+  while i < len(sorted) {
+    let p = sorted[i]
+    while len(lower) >= 2 && cross(lower[len(lower)-2], lower[len(lower)-1], p) <= 0 {
+      lower = lower[0:len(lower)-1]
+    }
+    lower = append(lower, p)
+    i = i + 1
+  }
+  var upper: list<list<int>> = []
+  i = len(sorted) - 1
+  while i >= 0 {
+    let p = sorted[i]
+    while len(upper) >= 2 && cross(upper[len(upper)-2], upper[len(upper)-1], p) <= 0 {
+      upper = upper[0:len(upper)-1]
+    }
+    upper = append(upper, p)
+    i = i - 1
+  }
+  if len(lower) > 0 { lower = lower[0:len(lower)-1] }
+  if len(upper) > 0 { upper = upper[0:len(upper)-1] }
+  var hull: list<list<int>> = []
+  i = 0
+  while i < len(lower) { hull = append(hull, lower[i]); i = i + 1 }
+  i = 0
+  while i < len(upper) { hull = append(hull, upper[i]); i = i + 1 }
+  return hull
+}
+
+fun norm(dx: int, dy: int): list<int> {
+  var x = dx
+  var y = dy
+  let g = gcd(x, y)
+  x = x / g
+  y = y / g
+  if x < 0 || (x == 0 && y < 0) {
+    x = -x
+    y = -y
+  }
+  var res: list<int> = []
+  res = append(res, x)
+  res = append(res, y)
+  return res
+}
+
+fun countRectangles(hull: list<list<int>>): int {
+  let m = len(hull)
+  if m == 0 { return 0 }
+  var edges: list<list<int>> = []
+  var i = 0
+  while i < m {
+    let p = hull[i]
+    var j = i + 1
+    if j == m { j = 0 }
+    let q = hull[j]
+    var dx = q[0] - p[0]
+    var dy = q[1] - p[1]
+    let g = gcd(dx, dy)
+    dx = dx / g
+    dy = dy / g
+    if dx < 0 || (dx == 0 && dy < 0) {
+      dx = -dx
+      dy = -dy
+    }
+    var dir: list<int> = []
+    dir = append(dir, dx)
+    dir = append(dir, dy)
+    edges = append(edges, dir)
+    i = i + 1
+  }
+  var groups: list<list<int>> = []
+  i = 0
+  while i < len(edges) {
+    if len(groups) == 0 || groups[len(groups)-1][0] != edges[i][0] || groups[len(groups)-1][1] != edges[i][1] {
+      groups = append(groups, edges[i])
+    }
+    i = i + 1
+  }
+  if len(groups) > 1 && groups[0][0] == groups[len(groups)-1][0] && groups[0][1] == groups[len(groups)-1][1] {
+    groups = groups[0:len(groups)-1]
+  }
+  let k = len(groups)
+  if k < 4 { return 0 }
+  var pos: map<string, list<int>> = {}
+  var dirMap: map<string, list<int>> = {}
+  var keys: list<string> = []
+  i = 0
+  while i < k {
+    let d = groups[i]
+    let key = str(d[0]) + "," + str(d[1])
+    if pos[key] == nil {
+      pos[key] = []
+      dirMap[key] = d
+      keys = append(keys, key)
+    }
+    pos[key] = append(pos[key], i)
+    i = i + 1
+  }
+  var count = 0
+  var idx = 0
+  while idx < len(keys) {
+    let key = keys[idx]
+    let ps = pos[key]
+    if len(ps) == 2 {
+      let d = dirMap[key]
+      let pdx = -d[1]
+      let pdy = d[0]
+      let np = norm(pdx, pdy)
+      let key2 = str(np[0]) + "," + str(np[1])
+      if key < key2 {
+        let qs = pos[key2]
+        if qs != nil && len(qs) == 2 {
+          let a1 = ps[0]
+          let a2 = ps[1]
+          let b1 = qs[0]
+          let b2 = qs[1]
+          let A2 = (a2 - a1 + k) % k
+          let B1 = (b1 - a1 + k) % k
+          let B2 = (b2 - a1 + k) % k
+          if B1 > B2 {
+            let tmp = B1
+            B1 = B2
+            B2 = tmp
+          }
+          if B1 < A2 && A2 < B2 {
+            count = count + 1
+          }
+        }
+      }
+    }
+    idx = idx + 1
+  }
+  return count
+}
+
+fun main() {
+  var tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == nil || line == "" { line = input() }
+    let n = parseIntStr(line)
+    var pts: list<list<int>> = []
+    var i = 0
+    while i < n {
+      var l = input()
+      while l == nil || l == "" { l = input() }
+      let parts = splitSpaces(l)
+      var pt: list<int> = []
+      pt = append(pt, parseIntStr(parts[0]))
+      pt = append(pt, parseIntStr(parts[1]))
+      pts = append(pts, pt)
+      i = i + 1
+    }
+    let hull = convexHull(pts)
+    let ans = countRectangles(hull)
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
