@@ -1,0 +1,184 @@
+// Solution for SPOJ CHASE1 - Chase
+// https://www.spoj.com/problems/CHASE1/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun chase(adj: list<list<int>>, aStart: int, bStart: int): int {
+  let N = len(adj)
+  let size = N * N * 2
+  var res: list<int> = []
+  var dist: list<int> = []
+  var degree: list<int> = []
+  var i = 0
+  while i < size {
+    res = append(res, 0)
+    dist = append(dist, 0)
+    degree = append(degree, 0)
+    i = i + 1
+  }
+  fun idx(turn: int, a: int, b: int): int {
+    return turn * N * N + a * N + b
+  }
+  i = 0
+  while i < N {
+    var j = 0
+    while j < N {
+      degree[idx(0, i, j)] = len(adj[i]) + 1
+      degree[idx(1, i, j)] = len(adj[j]) + 1
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var q: list<int> = []
+  var head = 0
+  i = 0
+  while i < N {
+    var turn = 0
+    while turn < 2 {
+      let id = idx(turn, i, i)
+      res[id] = 1
+      dist[id] = 0
+      q = append(q, id)
+      turn = turn + 1
+    }
+    i = i + 1
+  }
+  while head < len(q) {
+    let state = q[head]
+    head = head + 1
+    let d = dist[state]
+    let turn = state / (N * N)
+    let rem = state - turn * N * N
+    let a0 = rem / N
+    let b0 = rem - a0 * N
+    if turn == 0 {
+      var k = 0
+      while k < len(adj[b0]) {
+        let bPrev = adj[b0][k]
+        let pred = idx(1, a0, bPrev)
+        if res[pred] == 0 {
+          res[pred] = 1
+          dist[pred] = d + 1
+          q = append(q, pred)
+        }
+        k = k + 1
+      }
+      let pred = idx(1, a0, b0)
+      if res[pred] == 0 {
+        res[pred] = 1
+        dist[pred] = d + 1
+        q = append(q, pred)
+      }
+    } else {
+      var k = 0
+      while k < len(adj[a0]) {
+        let aPrev = adj[a0][k]
+        let pred = idx(0, aPrev, b0)
+        if res[pred] == 0 {
+          degree[pred] = degree[pred] - 1
+          if degree[pred] == 0 {
+            res[pred] = 1
+            dist[pred] = d + 1
+            q = append(q, pred)
+          }
+        }
+        k = k + 1
+      }
+      let pred = idx(0, a0, b0)
+      if res[pred] == 0 {
+        degree[pred] = degree[pred] - 1
+        if degree[pred] == 0 {
+          res[pred] = 1
+          dist[pred] = d + 1
+          q = append(q, pred)
+        }
+      }
+    }
+  }
+  let start = idx(0, aStart, bStart)
+  if res[start] != 1 { return -1 }
+  let moves = dist[start]
+  let turns = (moves + 1) / 2
+  return turns
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let nums = parseInts(line)
+    let n = nums[0]
+    let m = nums[1]
+    let a = nums[2] - 1
+    let b = nums[3] - 1
+    var adj: list<list<int>> = []
+    var i = 0
+    while i < n {
+      adj = append(adj, [])
+      i = i + 1
+    }
+    i = 0
+    while i < m {
+      let e = parseInts(input())
+      let u = e[0] - 1
+      let v = e[1] - 1
+      adj[u] = append(adj[u], v)
+      adj[v] = append(adj[v], u)
+      i = i + 1
+    }
+    let ans = chase(adj, a, b)
+    if ans < 0 {
+      print("No")
+    } else {
+      print(str(ans))
+    }
+    case = case + 1
+  }
+}
+
+main()
