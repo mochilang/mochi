@@ -1,0 +1,26 @@
+// Solution for SPOJ POLY1 - Polygon
+// https://www.spoj.com/problems/POLY1/
+
+fun main() {
+  let t = int(input())
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" {
+      line = input()
+    }
+    let n = int(line)
+    var i = 0
+    while i < n - 2 {
+      let triLine = input()
+      if triLine == "" {
+        continue
+      }
+      i = i + 1
+    }
+    print(n - 2)
+    case = case + 1
+  }
+}
+
+main()

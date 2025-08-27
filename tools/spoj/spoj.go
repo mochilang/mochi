@@ -129,29 +129,34 @@ func Download(id int) (string, error) {
 	if id <= 0 {
 		return "", fmt.Errorf("invalid id")
 	}
-	page := (id - 1) / 50
+	// search all cached index pages until the problem is found. The SPOJ
+	// problem identifiers are not contiguous, so the simple formula used
+	// previously could look in the wrong page. To robustly locate the
+	// problem we scan existing pages (downloading them on demand) until the
+	// target ID appears or a reasonable upper bound is reached.
 	dir := indexDir()
-	jpath := filepath.Join(dir, fmt.Sprintf("%d.jsonl", page))
-	if _, err := os.Stat(jpath); os.IsNotExist(err) {
-		if _, err := List(page); err != nil {
+	var target Problem
+	const maxPages = 500 // generous upper bound for the number of pages
+	for page := 0; page < maxPages && target.URL == ""; page++ {
+		jpath := filepath.Join(dir, fmt.Sprintf("%d.jsonl", page))
+		if _, err := os.Stat(jpath); os.IsNotExist(err) {
+			if _, err := List(page); err != nil {
+				return "", err
+			}
+		}
+		f, err := os.Open(jpath)
+		if err != nil {
 			return "", err
 		}
-	}
-	f, err := os.Open(jpath)
-	if err != nil {
-		return "", err
-	}
-	defer f.Close()
-	var target Problem
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		var p Problem
-		if err := json.Unmarshal(scanner.Bytes(), &p); err == nil {
-			if p.ID == id {
+		scanner := bufio.NewScanner(f)
+		for scanner.Scan() {
+			var p Problem
+			if err := json.Unmarshal(scanner.Bytes(), &p); err == nil && p.ID == id {
 				target = p
 				break
 			}
 		}
+		f.Close()
 	}
 	if target.URL == "" {
 		return "", fmt.Errorf("problem %d not found", id)
