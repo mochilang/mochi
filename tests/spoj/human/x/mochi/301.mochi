@@ -1,0 +1,116 @@
+// Solution for SPOJ BOOK - Booklets
+// https://www.spoj.com/problems/BOOK/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\n" || ch == "\r" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+var tokens: list<string> = []
+
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let v = int(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+fun sortPages(pages: list<int>, idxs: list<int>): void {
+  var i = 1
+  while i < len(pages) {
+    var j = i
+    while j > 0 {
+      if pages[j-1] > pages[j] || (pages[j-1] == pages[j] && idxs[j-1] > idxs[j]) {
+        let tp = pages[j-1]
+        pages[j-1] = pages[j]
+        pages[j] = tp
+        let ti = idxs[j-1]
+        idxs[j-1] = idxs[j]
+        idxs[j] = ti
+        j = j - 1
+      } else {
+        break
+      }
+    }
+    i = i + 1
+  }
+}
+
+fun main() {
+  let t = nextInt()
+  var c = 0
+  while c < t {
+    let schools = nextInt()
+    let target = nextInt()
+    let m = nextInt()
+    var pages: list<int> = []
+    var idxs: list<int> = []
+    var i = 0
+    while i < m {
+      let p = nextInt()
+      pages = append(pages, p)
+      idxs = append(idxs, i)
+      i = i + 1
+    }
+    sortPages(pages, idxs)
+    let base = if schools > 0 { m / schools } else { 0 }
+    let extra = if schools > 0 { m % schools } else { 0 }
+    var pos = 0
+    var s = 0
+    var ans = 0
+    var found = false
+    while s < schools {
+      var size = base
+      if s < extra { size = base + 1 }
+      if s == target {
+        if size == 0 {
+          ans = 0
+        } else {
+          var j = 0
+          var minIdx = idxs[pos]
+          var minPage = pages[pos]
+          j = 1
+          while j < size {
+            let id = idxs[pos + j]
+            if id < minIdx {
+              minIdx = id
+              minPage = pages[pos + j]
+            }
+            j = j + 1
+          }
+          ans = minPage
+        }
+        found = true
+        break
+      }
+      pos = pos + size
+      s = s + 1
+    }
+    if !found { ans = 0 }
+    print(ans)
+    c = c + 1
+  }
+}
+
+main()
