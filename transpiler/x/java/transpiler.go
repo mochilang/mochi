@@ -63,6 +63,7 @@ var needArrGetI bool
 var needArrGetD bool
 var needArrGetB bool
 var needArrGetO bool
+var needMapGet bool
 var needIdx bool
 var needP bool
 var needJSON bool
@@ -2431,7 +2432,7 @@ func (l *ListLit) emit(w io.Writer) {
 			if l.ElemType == "Object" {
 				l.ElemType = t
 			}
-		} else if numeric {
+		} else if numeric && len(l.Elems) > 0 {
 			arrType = "double"
 			if l.ElemType == "Object" {
 				l.ElemType = "double"
@@ -2524,13 +2525,17 @@ func (m *MapLit) emit(w io.Writer) {
 		keyType = javaBoxType(m.KeyType)
 	}
 	if len(m.Keys) > 0 {
-		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>() {{", keyType, valType)
+		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>(java.util.Map.of(", keyType, valType)
 		for i := range m.Keys {
-			fmt.Fprint(w, " put(")
+			if i > 0 {
+				fmt.Fprint(w, ", ")
+			}
 			if m.KeyType != "" {
 				emitCastExpr(w, m.Keys[i], javaType(m.KeyType))
 			} else if keyType != "String" {
 				emitCastExpr(w, m.Keys[i], strings.ToLower(keyType))
+			} else if kv, ok := m.Keys[i].(*VarExpr); ok {
+				fmt.Fprintf(w, "\"%s\"", sanitize(kv.Name))
 			} else {
 				m.Keys[i].emit(w)
 			}
@@ -2549,9 +2554,8 @@ func (m *MapLit) emit(w io.Writer) {
 				m.Values[i].emit(w)
 				fmt.Fprint(w, ")")
 			}
-			fmt.Fprint(w, ");")
 		}
-		fmt.Fprint(w, " }}")
+		fmt.Fprint(w, "))")
 	} else {
 		fmt.Fprintf(w, "new java.util.LinkedHashMap<%s, %s>()", keyType, valType)
 	}
@@ -2606,16 +2610,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		lt := inferType(b.Left)
 		rt := inferType(b.Right)
-		if (lt == "string" || lt == "String" || isStringExpr(b.Left)) &&
-			(rt == "string" || rt == "String" || isStringExpr(b.Right)) {
+		leftStr := lt == "string" || lt == "String" || isStringExpr(b.Left) || lt == "" || lt == "Object"
+		rightStr := rt == "string" || rt == "String" || isStringExpr(b.Right) || rt == "" || rt == "Object"
+		if leftStr && rightStr {
 			if b.Op == "!=" {
 				fmt.Fprint(w, "!")
 			}
 			fmt.Fprint(w, "(")
+			fmt.Fprint(w, "String.valueOf(")
 			b.Left.emit(w)
-			fmt.Fprint(w, ".equals(")
+			fmt.Fprint(w, ").equals(String.valueOf(")
 			b.Right.emit(w)
-			fmt.Fprint(w, "))")
+			fmt.Fprint(w, ")))")
 			return
 		}
 		if isNullExpr(b.Left) || isNullExpr(b.Right) {
@@ -2953,9 +2959,27 @@ func (f *FieldExpr) emit(w io.Writer) {
 				}
 			}
 		}
-		fmt.Fprintf(w, "((%s) (", castType)
+		needMapGet = true
+		fmt.Fprintf(w, "((%s)(_getm(", castType)
 		f.Target.emit(w)
-		fmt.Fprint(w, ".get(")
+		fmt.Fprint(w, ", ")
+		(&StringLit{Value: f.Name}).emit(w)
+		fmt.Fprint(w, ")))")
+		return
+	}
+	if t := inferType(f.Target); t == "" || t == "Object" {
+		castType := "Object"
+		if fields := mapFieldsForExpr(f.Target); fields != nil {
+			if t, ok := fields[f.Name]; ok {
+				if jt := javaType(t); jt != "" {
+					castType = jt
+				}
+			}
+		}
+		needMapGet = true
+		fmt.Fprintf(w, "((%s)(_getm(", castType)
+		f.Target.emit(w)
+		fmt.Fprint(w, ", ")
 		(&StringLit{Value: f.Name}).emit(w)
 		fmt.Fprint(w, ")))")
 		return
@@ -5350,18 +5374,24 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		savedType, had := varTypes[s.For.Name]
-		varTypes[s.For.Name] = "int"
 		saved := pushScope(false)
+		alias := declareAlias(s.For.Name)
+		endType := inferType(end)
+		savedType, had := varTypes[alias]
+		if endType == "bigint" || endType == "java.math.BigInteger" {
+			varTypes[alias] = "java.math.BigInteger"
+		} else {
+			varTypes[alias] = "int"
+		}
 		var body []Stmt
 		for _, b := range s.For.Body {
 			st, err := compileStmt(b)
 			if err != nil {
 				popScope(saved)
 				if had {
-					varTypes[s.For.Name] = savedType
+					varTypes[alias] = savedType
 				} else {
-					delete(varTypes, s.For.Name)
+					delete(varTypes, alias)
 				}
 				return nil, err
 			}
@@ -5371,11 +5401,11 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		}
 		popScope(saved)
 		if had {
-			varTypes[s.For.Name] = savedType
+			varTypes[alias] = savedType
 		} else {
-			delete(varTypes, s.For.Name)
+			delete(varTypes, alias)
 		}
-		return &ForRangeStmt{Name: s.For.Name, Start: start, End: end, Body: body}, nil
+		return &ForRangeStmt{Name: alias, Start: start, End: end, Body: body}, nil
 	case s.For != nil:
 		iter, err := compileExpr(s.For.Source)
 		if err != nil {
@@ -6424,6 +6454,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "repeat" && len(args) == 2 {
 			needRepeat = true
+			if funcParams == nil {
+				funcParams = map[string][]string{}
+			}
+			funcParams["_repeat"] = []string{"String", "long"}
 			return &CallExpr{Func: "_repeat", Args: args}, nil
 		}
 		if name == "sha256" && len(args) == 1 {
@@ -6628,6 +6662,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			keyType = inferType(keys[0])
 			if keyType == "" && topEnv != nil {
 				keyType = toJavaTypeFromType(types.ExprType(ml.Items[0].Key, currentEnv()))
+			}
+			if keyType == "Object" {
+				if _, ok := keys[0].(*VarExpr); ok {
+					keyType = ""
+				}
 			}
 		}
 		return &MapLit{Keys: keys, Values: vals, Fields: fields, KeyType: keyType}, nil
@@ -7971,6 +8010,12 @@ func Emit(prog *Program) []byte {
 	if needArrGetO {
 		buf.WriteString("\n    static Object _geto(Object[] a, int i) {\n")
 		buf.WriteString("        return (i >= 0 && i < a.length) ? a[i] : null;\n")
+		buf.WriteString("    }\n")
+	}
+	if needMapGet {
+		buf.WriteString("\n    static Object _getm(Object m, String k) {\n")
+		buf.WriteString("        if (!(m instanceof java.util.Map<?,?>)) return null;\n")
+		buf.WriteString("        return ((java.util.Map<?,?>)m).get(k);\n")
 		buf.WriteString("    }\n")
 	}
 	if needIdx {

@@ -1,0 +1,196 @@
+// Solution for SPOJ DIRVS - Direct Visibility
+// https://www.spoj.com/problems/DIRVS/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInt(s: string): int {
+  var i = 0
+  var n = 0
+  while i < len(s) {
+    n = n * 10 + (digits[s[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var prev = 0.0
+  while absf(r - prev) > 1e-12 {
+    prev = r
+    r = (r + x / r) / 2.0
+  }
+  return r
+}
+
+fun makeBoolGrid(P: int, Q: int): list<list<bool>> {
+  var g: list<list<bool>> = []
+  var i = 0
+  while i < P {
+    var row: list<bool> = []
+    var j = 0
+    while j < Q {
+      row = append(row, false)
+      j = j + 1
+    }
+    g = append(g, row)
+    i = i + 1
+  }
+  return g
+}
+
+fun visible(grid: list<list<int>>, P: int, Q: int, R: int, C: int, BR: int, BC: int): bool {
+  let X1 = (C as float) - 0.5
+  let Y1 = (R as float) - 0.5
+  let Z1 = (grid[(R-1) as int][(C-1) as int] as float) + 0.5
+  let X2 = (BC as float) - 0.5
+  let Y2 = (BR as float) - 0.5
+  let Z2 = (grid[(BR-1) as int][(BC-1) as int] as float) + 0.5
+  let Dx = X2 - X1
+  let Dy = Y2 - Y1
+  let Dz = Z2 - Z1
+  let dist = sqrt(Dx*Dx + Dy*Dy + Dz*Dz)
+  var steps: int = ((dist * 20.0) as int) + 1
+  let stepT = 1.0 / (steps as float)
+  var i = 1
+  while i < steps {
+    let t = stepT * (i as float)
+    let X = X1 + Dx * t
+    let Y = Y1 + Dy * t
+    let Z = Z1 + Dz * t
+    let rIdx = ((Y as int)) + 1
+    let cIdx = ((X as int)) + 1
+    if rIdx < 1 || rIdx > P || cIdx < 1 || cIdx > Q { return false }
+    let H = grid[(rIdx-1) as int][(cIdx-1) as int] as float
+    if Z <= H { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun computeVis(grid: list<list<int>>, P: int, Q: int, BR: int, BC: int): list<list<bool>> {
+  var vis = makeBoolGrid(P, Q)
+  var r = 1
+  while r <= P {
+    var c = 1
+    while c <= Q {
+      vis[(r-1) as int][(c-1) as int] = visible(grid, P, Q, r, c, BR, BC)
+      c = c + 1
+    }
+    r = r + 1
+  }
+  return vis
+}
+
+fun bfs(grid: list<list<int>>, P: int, Q: int, R1: int, C1: int, R2: int, C2: int): int {
+  let vis1 = computeVis(grid, P, Q, R1, C1)
+  let vis2 = computeVis(grid, P, Q, R2, C2)
+  var visited = makeBoolGrid(P, Q)
+  var qR: list<int> = []
+  var qC: list<int> = []
+  var qD: list<int> = []
+  qR = append(qR, R1)
+  qC = append(qC, C1)
+  qD = append(qD, 0)
+  visited[(R1-1) as int][(C1-1) as int] = true
+  var head = 0
+  while head < len(qR) {
+    let r = qR[head]
+    let c = qC[head]
+    let d = qD[head]
+    if r == R2 && c == C2 { return d }
+    let hr = grid[(r-1) as int][(c-1) as int]
+    var idx = 0
+    while idx < 4 {
+      var nr = r
+      var nc = c
+      if idx == 0 { nr = nr - 1 }
+      if idx == 1 { nr = nr + 1 }
+      if idx == 2 { nc = nc - 1 }
+      if idx == 3 { nc = nc + 1 }
+      if nr >= 1 && nr <= P && nc >= 1 && nc <= Q {
+        if !visited[(nr-1) as int][(nc-1) as int] {
+          let hn = grid[(nr-1) as int][(nc-1) as int]
+          let diff = hn - hr
+          if diff <= 1 && diff >= 0 - 3 {
+            if vis1[(nr-1) as int][(nc-1) as int] || vis2[(nr-1) as int][(nc-1) as int] {
+              visited[(nr-1) as int][(nc-1) as int] = true
+              qR = append(qR, nr)
+              qC = append(qC, nc)
+              qD = append(qD, d + 1)
+            }
+          }
+        }
+      }
+      idx = idx + 1
+    }
+    head = head + 1
+  }
+  return -1
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseInt(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let pq = split(line)
+    let P = parseInt(pq[0])
+    let Q = parseInt(pq[1])
+    var grid: list<list<int>> = []
+    var r = 0
+    while r < P {
+      let rowParts = split(input())
+      var row: list<int> = []
+      var c = 0
+      while c < Q {
+        row = append(row, parseInt(rowParts[c]))
+        c = c + 1
+      }
+      grid = append(grid, row)
+      r = r + 1
+    }
+    let coords = split(input())
+    let R1 = parseInt(coords[0])
+    let C1 = parseInt(coords[1])
+    let R2 = parseInt(coords[2])
+    let C2 = parseInt(coords[3])
+    let res = bfs(grid, P, Q, R1, C1, R2, C2)
+    if res < 0 {
+      print("Mission impossible!")
+    } else {
+      print("The shortest path is " + str(res) + " steps long.")
+    }
+    case = case + 1
+  }
+}
+
+main()

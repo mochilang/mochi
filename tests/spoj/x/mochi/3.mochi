@@ -1,0 +1,30 @@
+/*
+SPOJ: SBSTR1 - Substring Check (Bug Funny)
+https://www.spoj.com/problems/SBSTR1/
+*/
+
+fun contains(a: string, b: string): bool {
+  if len(b) > len(a) { return false }
+  var i: int = 0
+  while i <= len(a) - len(b) {
+    if a[i:i+len(b)] == b { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    var pos: int = 0
+    while pos < len(line) && line[pos:pos+1] != " " {
+      pos = pos + 1
+    }
+    let a = line[0:pos]
+    let b = line[pos+1:len(line)]
+    if contains(a, b) { print(1) } else { print(0) }
+    line = input()
+  }
+}
+
+main()
