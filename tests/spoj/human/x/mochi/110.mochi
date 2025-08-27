@@ -1,0 +1,98 @@
+// Solution for SPOJ CISTFILL - Fill the Cisterns
+// https://www.spoj.com/problems/CISTFILL/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun formatScaled(n: int): string {
+  var whole = n / 100
+  var frac = n % 100
+  var fracStr = str(frac)
+  if len(fracStr) < 2 { fracStr = "0" + fracStr }
+  return str(whole) + "." + fracStr
+}
+
+fun volumeAtScaled(level: int, cis: list<list<int>>): int {
+  var total = 0
+  var i = 0
+  while i < len(cis) {
+    let c = cis[i]
+    let b = c[0] as int
+    let h = c[1] as int
+    let w = c[2] as int
+    let d = c[3] as int
+    let base = b * 100
+    if level > base {
+      var fill = level - base
+      let maxFill = h * 100
+      if fill > maxFill { fill = maxFill }
+      total = total + fill * w * d
+    }
+    i = i + 1
+  }
+  return total
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let k = int(tLine)
+  var case = 0
+  while case < k {
+    var line = input()
+    while line == "" { line = input() }
+    let n = int(line)
+    var cis: list<list<int>> = []
+    var totalCap = 0
+    var minB = 1000000000
+    var maxTop = 0
+    var i = 0
+    while i < n {
+      line = input()
+      if line == "" { continue }
+      let parts = splitSpaces(line)
+      let b = int(parts[0])
+      let h = int(parts[1])
+      let w = int(parts[2])
+      let d = int(parts[3])
+    cis = append(cis, [b,h,w,d])
+    totalCap = totalCap + h * w * d
+    if b < minB { minB = b }
+    if b + h > maxTop { maxTop = b + h }
+    i = i + 1
+  }
+  var vLine = input()
+    while vLine == "" { vLine = input() }
+    let V = int(vLine)
+    if V > totalCap {
+      print("OVERFLOW")
+    } else {
+      var low = minB * 100
+      var high = maxTop * 100
+      var vScaled = V * 100
+      while low < high {
+        let mid = (low + high) / 2
+        let vol = volumeAtScaled(mid, cis)
+        if vol >= vScaled { high = mid } else { low = mid + 1 }
+      }
+      print(formatScaled(high))
+    }
+    case = case + 1
+  }
+}
+
+main()
