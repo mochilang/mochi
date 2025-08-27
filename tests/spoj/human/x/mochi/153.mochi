@@ -1,0 +1,136 @@
+/*
+SPOJ: SCALES - Balancing the Stone
+https://www.spoj.com/problems/SCALES/
+*/
+
+fun parseInt(s: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(s) {
+    n = n * 10 + (digits[s[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" {
+    res = append(res, cur)
+  }
+  return res
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun main() {
+  let tStr = readNonEmpty()
+  let t = parseInt(tStr)
+  var case = 0
+  while case < t {
+    let parts = split(readNonEmpty())
+    let N = parseInt(parts[0])
+    let L = parseInt(parts[1])
+    let D = parseInt(parts[2])
+    let W = readNonEmpty()
+    var dn = 0
+    var dz = 1
+    var dp = 0
+    var i = 0
+    while i < N {
+      var w = 0
+      if i < L && W[L - 1 - i:L - i] == "1" {
+        w = 1
+      }
+      var nn = 0
+      var nz = 0
+      var np = 0
+      if dn != 0 {
+        var diff = -1
+        while diff <= 1 {
+          let tot = -1 + diff
+          let tmp = tot - w
+          if tmp % 2 == 0 {
+            let nc = tmp / 2
+            if nc == 0 - 1 {
+              nn = (nn + dn) % D
+            } else if nc == 0 {
+              nz = (nz + dn) % D
+            } else if nc == 1 {
+              np = (np + dn) % D
+            }
+          }
+          diff = diff + 1
+        }
+      }
+      if dz != 0 {
+        var diff = -1
+        while diff <= 1 {
+          let tot = diff
+          let tmp = tot - w
+          if tmp % 2 == 0 {
+            let nc = tmp / 2
+            if nc == 0 - 1 {
+              nn = (nn + dz) % D
+            } else if nc == 0 {
+              nz = (nz + dz) % D
+            } else if nc == 1 {
+              np = (np + dz) % D
+            }
+          }
+          diff = diff + 1
+        }
+      }
+      if dp != 0 {
+        var diff = -1
+        while diff <= 1 {
+          let tot = 1 + diff
+          let tmp = tot - w
+          if tmp % 2 == 0 {
+            let nc = tmp / 2
+            if nc == 0 - 1 {
+              nn = (nn + dp) % D
+            } else if nc == 0 {
+              nz = (nz + dp) % D
+            } else if nc == 1 {
+              np = (np + dp) % D
+            }
+          }
+          diff = diff + 1
+        }
+      }
+      dn = nn
+      dz = nz
+      dp = np
+      i = i + 1
+    }
+    print(dz % D)
+    case = case + 1
+  }
+}
+
+main()
