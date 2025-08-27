@@ -10,7 +10,7 @@ private def isConnected (adj : Array (Array Bool)) (n : Nat) : Bool :=
   if n = 0 then true
   else
     Id.run do
-      let mut vis : Array Bool := Array.mkArray n false
+      let mut vis : Array Bool := Array.replicate n false
       let mut q : Array Nat := #[0]
       vis := vis.set! 0 true
       let mut qi := 0
@@ -41,7 +41,7 @@ private def buildCap (adj : Array (Array Bool)) (n s t : Nat) : Array (Array Nat
   Id.run do
     let size := 2 * n
     let inf := n
-    let mut cap : Array (Array Nat) := Array.mkArray size (Array.mkArray size 0)
+      let mut cap : Array (Array Nat) := Array.replicate size (Array.replicate size 0)
     -- split vertices
     for v in [0:n] do
       let c := if v = s || v = t then inf else 1
@@ -63,7 +63,7 @@ private def maxFlow (capInit : Array (Array Nat)) (s t : Nat) : Nat :=
     let mut total := 0
     let inf := 1000000 -- big enough
     while true do
-      let mut parent : Array (Option Nat) := Array.mkArray n none
+      let mut parent : Array (Option Nat) := Array.replicate n none
       parent := parent.set! s (some s)
       let mut q : Array Nat := #[s]
       let mut qi := 0
@@ -116,7 +116,7 @@ partial def solve (toks : Array String) (idx t : Nat) : IO Unit := do
   else
     let n := toks[idx]!.toNat!
     let m := toks[idx+1]!.toNat!
-    let mut adj : Array (Array Bool) := Array.mkArray n (Array.mkArray n false)
+    let mut adj : Array (Array Bool) := Array.replicate n (Array.replicate n false)
     let mut i := 0
     let mut id := idx + 2
     while i < m do
