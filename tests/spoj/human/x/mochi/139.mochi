@@ -1,0 +1,174 @@
+// Solution for SPOJ MAZE - The Long and Narrow Maze
+// https://www.spoj.com/problems/MAZE/
+
+let U = 0
+let R = 1
+let D = 2
+let L = 3
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parse3(line: string): list<int> {
+  var nums: list<int> = []
+  var num = 0
+  var has = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if has {
+        nums = append(nums, num)
+        num = 0
+        has = false
+      }
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has { nums = append(nums, num) }
+  return nums
+}
+
+fun orientOptions(t: int): list<list<bool>> {
+  if t == 0 { return [[false,false,false,false]] }
+  if t == 1 {
+    return [[true,false,true,false], [false,true,false,true]]
+  }
+  return [
+    [true,true,false,false],
+    [false,true,true,false],
+    [false,false,true,true],
+    [true,false,false,true],
+  ]
+}
+
+fun reachable(arr: list<list<bool>>, start: int): list<bool> {
+  if (arr[start][L] as bool) == false { return [false,false,false] }
+  var visited: list<bool> = [false,false,false]
+  var stack: list<int> = [start]
+  visited[start] = true
+  var exits: list<bool> = [false,false,false]
+  while len(stack) > 0 {
+    let v = stack[len(stack)-1]
+    stack = stack[0:len(stack)-1]
+    let o = arr[v] as list<bool>
+    if o[R] { exits[v] = true }
+    if v > 0 && o[U] && (arr[v-1][D] as bool) && (visited[v-1] == false) {
+      stack = append(stack, v-1)
+      visited[v-1] = true
+    }
+    if v < 2 && o[D] && (arr[v+1][U] as bool) && (visited[v+1] == false) {
+      stack = append(stack, v+1)
+      visited[v+1] = true
+    }
+  }
+  return exits
+}
+
+fun computeTrans(a: int, b: int, c: int): list<list<bool>> {
+  let os0 = orientOptions(a)
+  let os1 = orientOptions(b)
+  let os2 = orientOptions(c)
+  var res: list<list<bool>> = []
+  var r = 0
+  while r < 3 {
+    res = append(res, [false,false,false])
+    r = r + 1
+  }
+  for o0 in os0 {
+    for o1 in os1 {
+      for o2 in os2 {
+        let arr = [o0 as list<bool>, o1 as list<bool>, o2 as list<bool>]
+        var s = 0
+        while s < 3 {
+          let ex = reachable(arr, s)
+          var j = 0
+          while j < 3 {
+            if ex[j] { res[s][j] = true }
+            j = j + 1
+          }
+          s = s + 1
+        }
+      }
+    }
+  }
+  return res
+}
+
+fun precompute(): map<int, list<list<bool>>> {
+  var trans: map<int, list<list<bool>>> = {}
+  var a = 0
+  while a <= 2 {
+    var b = 0
+    while b <= 2 {
+      var c = 0
+      while c <= 2 {
+        let key = a * 9 + b * 3 + c
+        trans[key] = computeTrans(a, b, c)
+        c = c + 1
+      }
+      b = b + 1
+    }
+    a = a + 1
+  }
+  return trans
+}
+
+fun anyTrue(lst: list<bool>): bool {
+  var i = 0
+  while i < len(lst) {
+    if lst[i] { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun main() {
+  let first = input()
+  if first == "" { return }
+  let t = first as int
+  let trans = precompute()
+  for _ in 0..t {
+    var line = input()
+    while line == "" { line = input() }
+    let n = line as int
+    var cur: list<bool> = [true,true,true]
+    var i = 0
+    while i < n {
+      line = input()
+      if line == "" { continue }
+      let vals = parse3(line)
+      let a = vals[0] as int
+      let b = vals[1] as int
+      let c = vals[2] as int
+      let key = a * 9 + b * 3 + c
+      let arr = trans[key] as list<list<bool>>
+      var next: list<bool> = [false,false,false]
+      var r = 0
+      while r < 3 {
+        if cur[r] {
+          var j = 0
+          while j < 3 {
+            if arr[r][j] { next[j] = true }
+            j = j + 1
+          }
+        }
+        r = r + 1
+      }
+      cur = next
+      i = i + 1
+    }
+    if anyTrue(cur) {
+      print("yes")
+    } else {
+      print("no")
+    }
+  }
+}
+
+main()
