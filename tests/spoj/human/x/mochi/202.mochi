@@ -1,0 +1,148 @@
+// Solution for SPOJ ROCKETS - Rockets
+// https://www.spoj.com/problems/ROCKETS/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun orient(a: list<int>, b: list<int>, c: list<int>): int {
+  return (b[0]-a[0])*(c[1]-a[1]) - (b[1]-a[1])*(c[0]-a[0])
+}
+
+fun pair(R: list<list<int>>, W: list<list<int>>, ans: list<int>) {
+  if len(R) == 0 { return }
+  let r0 = R[0]
+  var wi = 0
+  while wi < len(W) {
+    let w0 = W[wi]
+    var balance = 0
+    var i = 1
+    while i < len(R) {
+      if orient(r0, w0, R[i]) > 0 { balance = balance + 1 }
+      i = i + 1
+    }
+    var j = 0
+    while j < len(W) {
+      if j != wi {
+        if orient(r0, w0, W[j]) > 0 { balance = balance - 1 }
+      }
+      j = j + 1
+    }
+    if balance == 0 {
+      ans[r0[2]-1] = w0[2]
+      var Rl: list<list<int>> = []
+      var Rr: list<list<int>> = []
+      i = 1
+      while i < len(R) {
+        let p = R[i]
+        if orient(r0, w0, p) > 0 {
+          Rl = append(Rl, p)
+        } else {
+          Rr = append(Rr, p)
+        }
+        i = i + 1
+      }
+      var Wl: list<list<int>> = []
+      var Wr: list<list<int>> = []
+      j = 0
+      while j < len(W) {
+        if j != wi {
+          let q = W[j]
+          if orient(r0, w0, q) > 0 {
+            Wl = append(Wl, q)
+          } else {
+            Wr = append(Wr, q)
+          }
+        }
+        j = j + 1
+      }
+      pair(Rl, Wl, ans)
+      pair(Rr, Wr, ans)
+      break
+    }
+    wi = wi + 1
+  }
+}
+
+fun main() {
+  var line = input()
+  if line == "" { return }
+  let t = parseIntStr(line)
+  var case = 0
+  while case < t {
+    line = input()
+    while line == "" { line = input() }
+    let n = parseIntStr(line)
+    var R: list<list<int>> = []
+    var W: list<list<int>> = []
+    var idx = 0
+    while idx < n {
+      line = input()
+      if line == "" { continue }
+      let parts = splitSpaces(line)
+      let x = parseIntStr(parts[0])
+      let y = parseIntStr(parts[1])
+      R = append(R, [x, y, idx+1])
+      idx = idx + 1
+    }
+    idx = 0
+    while idx < n {
+      line = input()
+      if line == "" { continue }
+      let parts = splitSpaces(line)
+      let x = parseIntStr(parts[0])
+      let y = parseIntStr(parts[1])
+      W = append(W, [x, y, idx+1])
+      idx = idx + 1
+    }
+    var ans: list<int> = []
+    idx = 0
+    while idx < n { ans = append(ans, 0); idx = idx + 1 }
+    pair(R, W, ans)
+    idx = 0
+    while idx < n {
+      print(str(ans[idx]))
+      idx = idx + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
