@@ -1,0 +1,95 @@
+// Solution for SPOJ RHOMBS - Rhombs
+// https://www.spoj.com/problems/RHOMBS/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = 0 - n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun area2(xs: list<int>, ys: list<int>): int {
+  var s = 0
+  var i = 0
+  while i + 1 < len(xs) {
+    s = s + xs[i] * ys[i+1] - xs[i+1] * ys[i]
+    i = i + 1
+  }
+  if s < 0 { s = 0 - s }
+  return s / 2
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  let dx = [0,1,0,-1,-1,0,1]
+  let dy = [0,-1,1,0,1,-1,0]
+  let dz = [0,0,-1,1,0,1,-1]
+  var case = 0
+  while case < t {
+    let nLine = input()
+    let n = parseIntStr(nLine)
+    var xs: list<int> = [0]
+    var ys: list<int> = [0]
+    var zs: list<int> = [0]
+    var x = 0
+    var y = 0
+    var z = 0
+    var i = 0
+    while i < n {
+      let line = input()
+      let parts = splitSpaces(line)
+      let d = parseIntStr(parts[0])
+      let k = parseIntStr(parts[1])
+      x = x + dx[d] * k
+      y = y + dy[d] * k
+      z = z + dz[d] * k
+      xs = append(xs, x)
+      ys = append(ys, y)
+      zs = append(zs, z)
+      i = i + 1
+    }
+    let a = area2(xs, ys)
+    let b = area2(ys, zs)
+    let c = area2(zs, xs)
+    print(str(a) + " " + str(b) + " " + str(c))
+    case = case + 1
+  }
+}
+
+main()
