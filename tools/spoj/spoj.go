@@ -129,29 +129,30 @@ func Download(id int) (string, error) {
 	if id <= 0 {
 		return "", fmt.Errorf("invalid id")
 	}
-	page := (id - 1) / 50
 	dir := indexDir()
-	jpath := filepath.Join(dir, fmt.Sprintf("%d.jsonl", page))
-	if _, err := os.Stat(jpath); os.IsNotExist(err) {
-		if _, err := List(page); err != nil {
+	var target Problem
+	// Search the index pages sequentially until the problem ID is found.
+	// This accounts for the fact that SPOJ problem IDs are not contiguous.
+	for page := 0; page < 200 && target.URL == ""; page++ {
+		jpath := filepath.Join(dir, fmt.Sprintf("%d.jsonl", page))
+		if _, err := os.Stat(jpath); os.IsNotExist(err) {
+			if probs, err := List(page); err != nil || len(probs) == 0 {
+				break
+			}
+		}
+		f, err := os.Open(jpath)
+		if err != nil {
 			return "", err
 		}
-	}
-	f, err := os.Open(jpath)
-	if err != nil {
-		return "", err
-	}
-	defer f.Close()
-	var target Problem
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		var p Problem
-		if err := json.Unmarshal(scanner.Bytes(), &p); err == nil {
-			if p.ID == id {
+		scanner := bufio.NewScanner(f)
+		for scanner.Scan() {
+			var p Problem
+			if err := json.Unmarshal(scanner.Bytes(), &p); err == nil && p.ID == id {
 				target = p
 				break
 			}
 		}
+		f.Close()
 	}
 	if target.URL == "" {
 		return "", fmt.Errorf("problem %d not found", id)

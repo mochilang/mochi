@@ -1,0 +1,135 @@
+// Solution for SPOJ POLYGAME - The Game of Polygons
+// https://www.spoj.com/problems/POLYGAME/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var i = 0
+  var num = 0
+  var has = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if has {
+        res = append(res, num)
+        num = 0
+        has = false
+      }
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has {
+    res = append(res, num)
+  }
+  return res
+}
+
+fun bit_xor(a: int, b: int): int {
+  var ua = a
+  var ub = b
+  var res = 0
+  var bit = 1
+  while ua != 0 || ub != 0 {
+    let abit = ua % 2
+    let bbit = ub % 2
+    if abit != bbit { res = res + bit }
+    ua = (ua / 2) as int
+    ub = (ub / 2) as int
+    bit = bit * 2
+  }
+  return res
+}
+
+fun edgeKey(a: int, b: int): string {
+  if a < b {
+    return str(a) + "," + str(b)
+  }
+  return str(b) + "," + str(a)
+}
+
+fun grundy(u: int, parent: int, adj: list<list<int>>): int {
+  var g = 0
+  var hasChild = false
+  var i = 0
+  while i < len(adj[u]) {
+    let v = adj[u][i] as int
+    if v != parent {
+      hasChild = true
+      let val = grundy(v, u, adj) + 1
+      g = bit_xor(g, val)
+    }
+    i = i + 1
+  }
+  if hasChild { return g }
+  return 1
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let n = parseIntStr(line)
+    let m = n - 2
+    var adj: list<list<int>> = []
+    var i = 0
+    while i < m {
+      adj = append(adj, [])
+      i = i + 1
+    }
+    var edges: map<string,int> = {}
+    i = 0
+    while i < m {
+      var triLine = input()
+      while triLine == "" { triLine = input() }
+      let nums = parseInts(triLine)
+      let a = nums[0] as int
+      let b = nums[1] as int
+      let c = nums[2] as int
+      let key1 = edgeKey(a, b)
+      if edges[key1] != nil {
+        let j = edges[key1] as int
+        adj[i] = append(adj[i], j)
+        adj[j] = append(adj[j], i)
+      } else { edges[key1] = i }
+      let key2 = edgeKey(b, c)
+      if edges[key2] != nil {
+        let j = edges[key2] as int
+        adj[i] = append(adj[i], j)
+        adj[j] = append(adj[j], i)
+      } else { edges[key2] = i }
+      let key3 = edgeKey(a, c)
+      if edges[key3] != nil {
+        let j = edges[key3] as int
+        adj[i] = append(adj[i], j)
+        adj[j] = append(adj[j], i)
+      } else { edges[key3] = i }
+      i = i + 1
+    }
+    let g = grundy(0, -1, adj)
+    if g > 0 { print("YES") } else { print("NO") }
+    case = case + 1
+  }
+}
+
+main()
