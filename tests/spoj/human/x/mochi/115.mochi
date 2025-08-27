@@ -1,0 +1,187 @@
+/*
+SPOJ: FAMILY - Family
+https://www.spoj.com/problems/FAMILY/
+*/
+
+fun splitSpaces(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun parseIntStr(str: string): int {
+  let digits = {"0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9}
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = 0 - n }
+  return n
+}
+
+fun makeIntList(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun makeIntMatrix(n: int): list<list<int>> {
+  var m: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    m = append(m, makeIntList(n+1, 0))
+    i = i + 1
+  }
+  return m
+}
+
+fun makeRatMatrix(n: int): list<list<bigrat>> {
+  var m: list<list<bigrat>> = []
+  var i = 0
+  while i <= n {
+    var row: list<bigrat> = []
+    var j = 0
+    while j <= n {
+      row = append(row, 0 as bigrat)
+      j = j + 1
+    }
+    m = append(m, row)
+    i = i + 1
+  }
+  return m
+}
+
+var p1: list<int>
+var p2: list<int>
+var has: list<int>
+var memo: list<list<bigrat>>
+var seen: list<list<int>>
+
+fun rel(i: int, j: int): bigrat {
+  if i < j { return rel(j, i) }
+  if i == j { return 1 as bigrat }
+  if seen[i][j] == 1 { return memo[i][j] }
+  var res: bigrat = 0 as bigrat
+  if has[i] == 0 && has[j] == 0 {
+    res = 0 as bigrat
+  } else if has[i] == 0 {
+    let cj1 = p1[j]
+    let cj2 = p2[j]
+    res = (rel(i, cj1) + rel(i, cj2)) / (2 as bigrat)
+  } else if has[j] == 0 {
+    let ci1 = p1[i]
+    let ci2 = p2[i]
+    res = (rel(ci1, j) + rel(ci2, j)) / (2 as bigrat)
+  } else {
+    let ai = p1[i]
+    let bi = p2[i]
+    let cj = p1[j]
+    let dj = p2[j]
+    res = (rel(ai, cj) + rel(ai, dj) + rel(bi, cj) + rel(bi, dj)) / (4 as bigrat)
+  }
+  memo[i][j] = res
+  memo[j][i] = res
+  seen[i][j] = 1
+  seen[j][i] = 1
+  return res
+}
+
+fun formatPercent(r: bigrat): string {
+  let hundred: bigint = 100 as bigint
+  let ten: bigint = 10 as bigint
+  var nume: bigint = num(r)
+  let deno: bigint = denom(r)
+  nume = nume * hundred
+  var whole: bigint = nume / deno
+  var rem: bigint = nume % deno
+  var s = str(whole)
+  if rem != 0 as bigint {
+    s = s + "."
+    var frac = ""
+    let zero: bigint = 0 as bigint
+    while rem != zero {
+      rem = rem * ten
+      let digit: bigint = rem / deno
+      rem = rem % deno
+      let d = digit as int
+      frac = frac + str(d)
+    }
+    var end = len(frac)
+    while end > 0 && frac[end-1:end] == "0" {
+      end = end - 1
+    }
+    frac = frac[0:end]
+    s = s + frac
+  }
+  return s + "%"
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = splitSpaces(line)
+    let n = parseIntStr(parts[0])
+    let k = parseIntStr(parts[1])
+    p1 = makeIntList(n+1, 0)
+    p2 = makeIntList(n+1, 0)
+    has = makeIntList(n+1, 0)
+    var idx = 0
+    while idx < k {
+      let l = input()
+      let ps = splitSpaces(l)
+      let a = parseIntStr(ps[0])
+      let b = parseIntStr(ps[1])
+      let c = parseIntStr(ps[2])
+      p1[a] = b
+      p2[a] = c
+      has[a] = 1
+      idx = idx + 1
+    }
+    let m = parseIntStr(input())
+    memo = makeRatMatrix(n)
+    seen = makeIntMatrix(n)
+    var qi = 0
+    while qi < m {
+      let l = input()
+      let ps = splitSpaces(l)
+      let u = parseIntStr(ps[0])
+      let v = parseIntStr(ps[1])
+      let r = rel(u, v)
+      print(formatPercent(r))
+      qi = qi + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
