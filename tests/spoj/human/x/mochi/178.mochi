@@ -1,0 +1,83 @@
+// Solution for SPOJ ROADNET - Road net
+// https://www.spoj.com/problems/ROADNET/
+
+fun splitSpace(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" {
+      line = input()
+    }
+    let n = int(line)
+    var dist = []
+    var i = 0
+    while i < n {
+      var rowLine = input()
+      if rowLine == "" { continue }
+      let parts = splitSpace(rowLine)
+      var row = []
+      var j = 0
+      while j < n {
+        row = append(row, int(parts[j]))
+        j = j + 1
+      }
+      dist = append(dist, row)
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      var j = i + 1
+      while j < n {
+        var k = 0
+        var neigh = true
+        while k < n {
+          if k != i && k != j {
+            let dij = dist[i][j] as int
+            let sum = (dist[i][k] as int) + (dist[k][j] as int)
+            if sum == dij {
+              neigh = false
+              break
+            }
+          }
+          k = k + 1
+        }
+        if neigh {
+          print(str(i+1) + " " + str(j+1))
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    case = case + 1
+    if case < T {
+      print("")
+    }
+  }
+}
+
+main()
