@@ -1,0 +1,71 @@
+/*
+SPOJ: SUM1SEQ - Sum of one-sequence
+https://www.spoj.com/problems/SUM1SEQ/
+*/
+
+fun makeIntList(n: int, value: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < n {
+    res = append(res, value)
+    i = i + 1
+  }
+  return res
+}
+
+fun absInt(x: int): int {
+  if x < 0 { return -x }
+  return x
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var line = input()
+    while len(line) == 0 {
+      line = input()
+    }
+    let n = line as int
+    var sLine = input()
+    while len(sLine) == 0 {
+      sLine = input()
+    }
+    let S = sLine as int
+    let T = n * (n - 1) / 2
+    if absInt(S) > T || ((S + T) % 2) != 0 {
+      print("No")
+    } else {
+      var P = (S + T) / 2
+      var d = makeIntList(n - 1, -1)
+      var i = n - 1
+      while i >= 1 {
+        if i <= P {
+          P = P - i
+          d[n - i - 1] = 1
+        }
+        i = i - 1
+      }
+      var res: list<int> = []
+      var cur = 0
+      res = append(res, cur)
+      var j = 0
+      while j < len(d) {
+        cur = cur + d[j]
+        res = append(res, cur)
+        j = j + 1
+      }
+      var k = 0
+      while k < len(res) {
+        print(res[k])
+        k = k + 1
+      }
+    }
+    case = case + 1
+    if case < t { print("") }
+  }
+}
+
+main()
