@@ -1,0 +1,215 @@
+// Solution for SPOJ LAZYCOWS - Lazy Cows
+// https://www.spoj.com/problems/LAZYCOWS/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  for p in pieces {
+    if len(p) > 0 {
+      nums = append(nums, int(p))
+    }
+  }
+  return nums
+}
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun minArea(colsTop: list<int>, colsBot: list<int>, K: int): int {
+  // build sorted unique columns
+  var allCols: list<int> = []
+  for c in colsTop { allCols = append(allCols, c) }
+  for c in colsBot { allCols = append(allCols, c) }
+  if len(allCols) == 0 { return 0 }
+  allCols = sortInts(allCols)
+  var cols: list<int> = []
+  var i = 0
+  while i < len(allCols) {
+    if i == 0 || allCols[i] != allCols[i-1] {
+      cols = append(cols, allCols[i])
+    }
+    i = i + 1
+  }
+  let m = len(cols)
+  // mark cows
+  var top: list<bool> = []
+  var bot: list<bool> = []
+  i = 0
+  while i < m {
+    top = append(top, false)
+    bot = append(bot, false)
+    i = i + 1
+  }
+  for c in colsTop {
+    var idx = 0
+    while idx < m {
+      if cols[idx] == c { break }
+      idx = idx + 1
+    }
+    top[idx] = true
+  }
+  for c in colsBot {
+    var idx = 0
+    while idx < m {
+      if cols[idx] == c { break }
+      idx = idx + 1
+    }
+    bot[idx] = true
+  }
+
+  let barns = [0,1,1,2,1]
+  let height = [0,1,1,2,2]
+  let common = [
+    [0,0,0,0,0],
+    [0,1,0,1,0],
+    [0,0,1,1,0],
+    [0,1,1,2,0],
+    [0,0,0,0,1],
+  ]
+  let nextStates = [
+    [0],
+    [1,0],
+    [2,0],
+    [3,1,2,0],
+    [4,0],
+  ]
+  fun covers(state: int, t: bool, b: bool): bool {
+    if t && !(state == 1 || state == 3 || state == 4) { return false }
+    if b && !(state == 2 || state == 3 || state == 4) { return false }
+    return true
+  }
+  let INF = 1 << 60
+  var dp: list<list<int>> = []
+  var k = 0
+  while k <= K {
+    var row: list<int> = []
+    var s = 0
+    while s < 5 {
+      row = append(row, INF)
+      s = s + 1
+    }
+    dp = append(dp, row)
+    k = k + 1
+  }
+  dp[0][0] = 0
+  i = 0
+  while i < m {
+    let gap = if i == 0 { 0 } else { cols[i] - cols[i-1] - 1 }
+    var ndp: list<list<int>> = []
+    k = 0
+    while k <= K {
+      var row: list<int> = []
+      var s = 0
+      while s < 5 {
+        row = append(row, INF)
+        s = s + 1
+      }
+      ndp = append(ndp, row)
+      k = k + 1
+    }
+    k = 0
+    while k <= K {
+      var sPrev = 0
+      while sPrev < 5 {
+        let prev = dp[k][sPrev]
+        if prev < INF {
+          let base = prev + gap * height[sPrev]
+          var sCurr = 0
+          while sCurr < 5 {
+            if covers(sCurr, top[i], bot[i]) {
+              let opens = barns[sCurr] - common[sPrev][sCurr]
+              let kNew = k + opens
+              if kNew <= K {
+                let cost = base + height[sCurr]
+                let ns = nextStates[sCurr]
+                var idx = 0
+                while idx < len(ns) {
+                  let sNext = ns[idx]
+                  if cost < ndp[kNew][sNext] { ndp[kNew][sNext] = cost }
+                  idx = idx + 1
+                }
+              }
+            }
+            sCurr = sCurr + 1
+          }
+        }
+        sPrev = sPrev + 1
+      }
+      k = k + 1
+    }
+    dp = ndp
+    i = i + 1
+  }
+  var ans = INF
+  k = 0
+  while k <= K {
+    var s = 0
+    while s < 5 {
+      if dp[k][s] < ans { ans = dp[k][s] }
+      s = s + 1
+    }
+    k = k + 1
+  }
+  return ans
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    let header = parseInts(input())
+    let N = header[0]
+    let K = header[1]
+    var colsTop: list<int> = []
+    var colsBot: list<int> = []
+    var i = 0
+    while i < N {
+      let parts = parseInts(input())
+      let r = parts[0]
+      let c = parts[1]
+      if r == 1 {
+        colsTop = append(colsTop, c)
+      } else {
+        colsBot = append(colsBot, c)
+      }
+      i = i + 1
+    }
+    let ans = minArea(colsTop, colsBot, K)
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
