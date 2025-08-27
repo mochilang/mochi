@@ -1,0 +1,99 @@
+// Solution for SPOJ HELPR2D2 - Help R2-D2!
+// https://www.spoj.com/problems/HELPR2D2/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun place(caps: list<int>, v: int, k: int): list<int> {
+  var i = 0
+  while true {
+    if i == len(caps) {
+      caps = append(caps, k)
+    }
+    if caps[i] >= v {
+      caps[i] = caps[i] - v
+      break
+    }
+    i = i + 1
+  }
+  return caps
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = parseIntStr(tLine)
+  for _ in 0..T {
+    let k = parseIntStr(input())
+    let n = parseIntStr(input())
+    var caps: list<int> = []
+    var processed = 0
+    while processed < n {
+      let line = input()
+      if len(line) == 0 { continue }
+      if line[0:1] == "b" {
+        let parts = splitSpaces(line)
+        let r = parseIntStr(parts[1])
+        let v = parseIntStr(parts[2])
+        var j = 0
+        while j < r {
+          caps = place(caps, v, k)
+          j = j + 1
+        }
+        processed = processed + r
+      } else {
+        let v = parseIntStr(line)
+        caps = place(caps, v, k)
+        processed = processed + 1
+      }
+    }
+    var s = len(caps)
+    var waste = 0
+    var i = 0
+    while i < s {
+      waste = waste + caps[i]
+      i = i + 1
+    }
+    print(str(s) + " " + str(waste))
+  }
+}
+
+main()
