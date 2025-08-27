@@ -1,0 +1,64 @@
+// Solution for SPOJ ATMS - Automatic Teller Machines
+// https://www.spoj.com/problems/ATMS/
+
+fun negabinary_positions(n: bigint): list<int> {
+  let two: bigint = 2 as bigint
+  let zero: bigint = 0 as bigint
+  var res: list<int> = []
+  var x: bigint = n
+  var idx: int = 0
+  while x != zero {
+    if idx >= 100 { return [] }
+    var q: bigint = x / two
+    var r: bigint = x - q * two
+    if r < zero {
+      r = r + two
+      q = q - 1
+    }
+    if r == 1 { res = append(res, idx) }
+    x = zero - q
+    idx = idx + 1
+  }
+  return res
+}
+
+fun print_positions(pos: list<int>) {
+  if len(pos) == 0 {
+    print("No")
+    return
+  }
+  var out: string = ""
+  var i = len(pos) - 1
+  while i >= 0 {
+    if out != "" { out = out + " " }
+    out = out + str(pos[i])
+    i = i - 1
+  }
+  print(out)
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case: int = 0
+  let zero: bigint = 0 as bigint
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let amt: bigint = line as bigint
+    let p1 = negabinary_positions(amt)
+    if len(p1) == 0 {
+      print("No")
+      print("No")
+    } else {
+      print_positions(p1)
+      let negAmt: bigint = zero - amt
+      let p2 = negabinary_positions(negAmt)
+      print_positions(p2)
+    }
+    case = case + 1
+  }
+}
+
+main()
