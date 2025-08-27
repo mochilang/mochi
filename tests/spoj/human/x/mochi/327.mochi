@@ -1,0 +1,177 @@
+// Solution for SPOJ PLATON - Platon and Socrates
+// https://www.spoj.com/problems/PLATON/
+
+// split string by space
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pcs = splitSpaces(line)
+  var res: list<int> = []
+  var i = 0
+  while i < len(pcs) {
+    let p = pcs[i]
+    if len(p) > 0 {
+      res = append(res, p as int)
+    }
+    i = i + 1
+  }
+  return res
+}
+
+type Pair { a: int, b: int }
+
+fun sortPairs(arr: list<Pair>): list<Pair> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    let key = arr[i] as Pair
+    let keySum = key.a + key.b
+    while j > 0 {
+      let prev = arr[j-1] as Pair
+      let prevSum = prev.a + prev.b
+      if prevSum > keySum || (prevSum == keySum && prev.a > key.a) {
+        arr[j] = prev
+        j = j - 1
+      } else {
+        break
+      }
+    }
+    arr[j] = key
+    i = i + 1
+  }
+  return arr
+}
+
+fun findPairs(l: int, r: int): list<Pair> {
+  var sumPairs: map<int, list<Pair>> = {}
+  var sumKeys: list<int> = []
+  var prodPairs: map<int, list<Pair>> = {}
+  var prodKeys: list<int> = []
+
+  var x = l
+  while x <= r {
+    var y = x + 1
+    while y <= r {
+      let s = x + y
+      let p = x * y
+      let pair = Pair{ a: x, b: y }
+      if sumPairs[s] == nil { sumPairs[s] = []; sumKeys = append(sumKeys, s) }
+      let sp = sumPairs[s] as list<Pair>
+      sumPairs[s] = append(sp, pair)
+      if prodPairs[p] == nil { prodPairs[p] = []; prodKeys = append(prodKeys, p) }
+      let pp = prodPairs[p] as list<Pair>
+      prodPairs[p] = append(pp, pair)
+      y = y + 1
+    }
+    x = x + 1
+  }
+
+  var ambiguous: map<int,bool> = {}
+  for p in prodKeys {
+    let arr = prodPairs[p] as list<Pair>
+    if len(arr) > 1 { ambiguous[p] = true }
+  }
+
+  var goodSum: map<int,bool> = {}
+  for s in sumKeys {
+    let arr = sumPairs[s] as list<Pair>
+    if len(arr) < 2 { continue }
+    var ok = true
+    var i = 0
+    while i < len(arr) {
+      let pr = arr[i] as Pair
+      if !ambiguous[pr.a * pr.b] {
+        ok = false
+        break
+      }
+      i = i + 1
+    }
+    if ok { goodSum[s] = true }
+  }
+
+  var unique: map<int, Pair> = {}
+  for p in prodKeys {
+    if !ambiguous[p] { continue }
+    let arr = prodPairs[p] as list<Pair>
+    var filtered: list<Pair> = []
+    var i = 0
+    while i < len(arr) {
+      let pr = arr[i] as Pair
+      if goodSum[pr.a + pr.b] {
+        filtered = append(filtered, pr)
+      }
+      i = i + 1
+    }
+    if len(filtered) == 1 {
+      unique[p] = filtered[0] as Pair
+    }
+  }
+
+  var result: list<Pair> = []
+  for s in sumKeys {
+    if !goodSum[s] { continue }
+    let arr = sumPairs[s] as list<Pair>
+    var filtered: list<Pair> = []
+    var i = 0
+    while i < len(arr) {
+      let pr = arr[i] as Pair
+      let prod = pr.a * pr.b
+      if unique[prod] != nil {
+        let up = unique[prod] as Pair
+        if up.a == pr.a && up.b == pr.b {
+          filtered = append(filtered, pr)
+        }
+      }
+      i = i + 1
+    }
+    if len(filtered) == 1 {
+      result = append(result, filtered[0] as Pair)
+    }
+  }
+
+  result = sortPairs(result)
+  return result
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = tStr as int
+  var caseNum = 1
+  for _ in 0..t {
+    let line = input()
+    let nums = parse_ints(line)
+    let l = nums[0]
+    let r = nums[1]
+    let res = findPairs(l, r)
+    print("case " + str(caseNum))
+    print(str(len(res)))
+    var i = 0
+    while i < len(res) {
+      let p = res[i] as Pair
+      print(str(p.a) + " " + str(p.b))
+      i = i + 1
+    }
+    caseNum = caseNum + 1
+  }
+}
+
+main()
