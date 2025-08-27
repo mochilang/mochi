@@ -1,0 +1,49 @@
+/workspace/mochi/tests/spoj/x/erlang/6.erl:413:29: Warning: variable 'Parts_6' exported from 'case' (line 366, column 23)
+%  413| {A_5, B_4, Idx_2, Line, Op, Parts_6, R_7, Res_14, SecondLen, T, TStr, Width_7} = Fun_12(Parts_6, A_5, B_4, Idx_2, Line, Op, Parts_6, R_7, Res_14, SecondLen, T, TStr, Width_5),
+%     |                             ^
+
+/workspace/mochi/tests/spoj/x/erlang/6.erl:413:38: Warning: variable 'R_7' exported from 'case' (line 366, column 23)
+%  413| {A_5, B_4, Idx_2, Line, Op, Parts_6, R_7, Res_14, SecondLen, T, TStr, Width_7} = Fun_12(Parts_6, A_5, B_4, Idx_2, Line, Op, Parts_6, R_7, Res_14, SecondLen, T, TStr, Width_5),
+%     |                                      ^
+
+/workspace/mochi/tests/spoj/x/erlang/6.erl:461:12: Warning: variable '__rest' is already bound. If you mean to ignore this
+value, use '_' or a different underscore-prefixed name
+%  461|         [_|__rest] ->
+%     |            ^
+
+/workspace/mochi/tests/spoj/x/erlang/6.erl:474:12: Warning: variable 'Dash1_12' exported from 'case' (line 417, column 28)
+%  474| {A_5, B_4, Dash1_12, FirstPart_3, Idx_2, Line_4, Op, Parts_6, R_7, Res_14, SecondLen, T, TStr, Width_7} = Fun_13(Parts_6, A_5, B_4, Dash1_12, FirstPart_3, Idx_2, Line, Op, Parts_6, R_7, Res_14, SecondLen, T, TStr, Width_7),
+%     |            ^
+
+/workspace/mochi/tests/spoj/x/erlang/6.erl:474:54: Warning: variable 'Parts_6' exported from 'case' (line 366, column 23)
+%  474| {A_5, B_4, Dash1_12, FirstPart_3, Idx_2, Line_4, Op, Parts_6, R_7, Res_14, SecondLen, T, TStr, Width_7} = Fun_13(Parts_6, A_5, B_4, Dash1_12, FirstPart_3, Idx_2, Line, Op, Parts_6, R_7, Res_14, SecondLen, T, TStr, Width_7),
+%     |                                                      ^
+
+/workspace/mochi/tests/spoj/x/erlang/6.erl:474:63: Warning: variable 'R_7' exported from 'case' (line 366, column 23)
+%  474| {A_5, B_4, Dash1_12, FirstPart_3, Idx_2, Line_4, Op, Parts_6, R_7, Res_14, SecondLen, T, TStr, Width_7} = Fun_13(Parts_6, A_5, B_4, Dash1_12, FirstPart_3, Idx_2, Line, Op, Parts_6, R_7, Res_14, SecondLen, T, TStr, Width_7),
+%     |                                                               ^
+
+ 12345
++67890
+------
+ 80235
+
+ 324
+-111
+----
+ 213
+
+    325
+  *4405
+  -----
+1625
+0
+1300
+1300
+-------
+1431625
+
+1234
+  *4
+----
+4936
