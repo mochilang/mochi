@@ -1,0 +1,113 @@
+// Solution for SPOJ CSTREET - Cobbled streets
+// https://www.spoj.com/problems/CSTREET/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" { neg = true; i = 1 }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) { tokens = append(tokens, parts[j]); j = j + 1 }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+fun main() {
+  let t = nextInt()
+  var case = 0
+  while case < t {
+    let price = nextInt()
+    let n = nextInt()
+    let m = nextInt()
+    var adj: list<list<list<int>>> = []
+    var i = 0
+    while i < n {
+      adj = append(adj, [])
+      i = i + 1
+    }
+    i = 0
+    while i < m {
+      let a = nextInt() - 1
+      let b = nextInt() - 1
+      let c = nextInt()
+      adj[a] = append(adj[a], [b, c])
+      adj[b] = append(adj[b], [a, c])
+      i = i + 1
+    }
+    var dist: list<int> = []
+    var used: list<int> = []
+    i = 0
+    while i < n {
+      dist = append(dist, 1000000000)
+      used = append(used, 0)
+      i = i + 1
+    }
+    dist[0] = 0
+    var total = 0
+    var k = 0
+    while k < n {
+      var u = 0 - 1
+      i = 0
+      while i < n {
+        if used[i] == 0 {
+          if (u == 0 - 1) || (dist[i] < dist[u]) { u = i }
+        }
+        i = i + 1
+      }
+      used[u] = 1
+      total = total + dist[u]
+      let neighs = adj[u]
+      i = 0
+      while i < len(neighs) {
+        let v = neighs[i][0]
+        let w = neighs[i][1]
+        if used[v] == 0 && w < dist[v] { dist[v] = w }
+        i = i + 1
+      }
+      k = k + 1
+    }
+    let ans = total * price
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
