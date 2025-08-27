@@ -1,0 +1,115 @@
+// Solution for SPOJ AROUND - Around the world
+// https://www.spoj.com/problems/AROUND/
+
+fun readInts(line: string): list<int> {
+  var nums: list<int> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        nums = append(nums, cur as int)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    nums = append(nums, cur as int)
+  }
+  return nums
+}
+
+fun wrap(a: int, b: int, lon: list<int>): int {
+  let la = lon[a]
+  let lb = lon[b]
+  let diff = (lb - la + 360) % 360
+  if diff <= 180 {
+    if lb < la { return 1 }
+    return 0
+  } else {
+    if lb > la { return -1 }
+    return 0
+  }
+}
+
+type State { node: int; k: int }
+
+fun bfs(n: int, lon: list<int>, adj: list<list<int>>): int {
+  let K = 360
+  let negK = 0 - K
+  var dist: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j <= 2*K {
+      row = append(row, -1)
+      j = j + 1
+    }
+    dist = append(dist, row)
+    i = i + 1
+  }
+  var q: list<State> = [State{ node:0, k:0 }]
+  var qi = 0
+  dist[0][K] = 0
+  var ans = -1
+  while qi < len(q) {
+    let s = q[qi]
+    qi = qi + 1
+    let u = s.node
+    let k = s.k
+    let d = dist[u][k+K]
+    for v in adj[u] {
+      let nk = k + wrap(u, v, lon)
+      if nk < negK || nk > K { continue }
+      let idx = nk + K
+      if dist[v][idx] == (0 - 1) {
+        dist[v][idx] = d + 1
+        if v == 0 && nk != 0 {
+          ans = dist[v][idx]
+          break
+        }
+        q = append(q, State{ node:v, k:nk })
+      }
+    }
+    if ans != (0 - 1) { break }
+  }
+  return ans
+}
+
+fun main() {
+  let t = int(input())
+  for _ in 0..t {
+    let nm = readInts(input())
+    let n = nm[0]
+    let m = nm[1]
+    var lon: list<int> = []
+    var i = 0
+    while i < n {
+      lon = append(lon, int(input()))
+      i = i + 1
+    }
+    var adj: list<list<int>> = []
+    i = 0
+    while i < n {
+      adj = append(adj, [] as list<int>)
+      i = i + 1
+    }
+    i = 0
+    while i < m {
+      let ab = readInts(input())
+      let a = ab[0] - 1
+      let b = ab[1] - 1
+      adj[a] = append(adj[a], b)
+      adj[b] = append(adj[b], a)
+      i = i + 1
+    }
+    print(bfs(n, lon, adj))
+  }
+}
+
+main()
