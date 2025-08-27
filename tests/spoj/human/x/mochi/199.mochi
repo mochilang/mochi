@@ -1,0 +1,144 @@
+// Solution for SPOJ EMPTY - Empty Cuboids
+// https://www.spoj.com/problems/EMPTY/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+type Point {
+  x: int,
+  y: int,
+  z: int,
+}
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 {
+      let a = arr[j-1]
+      let b = arr[j]
+      if a <= b { break }
+      arr[j-1] = b
+      arr[j] = a
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun uniqueInts(arr: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(arr) {
+    if len(res) == 0 || arr[i] != res[len(res)-1] {
+      res = append(res, arr[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+let LIMIT = 1000000
+
+fun main() {
+  let tStr = input()
+  if tStr == nil || tStr == "" { return }
+  let t = parseIntStr(tStr)
+  for _ in 0..t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = parseIntStr(nLine)
+    var pts: list<Point> = []
+    var xs: list<int> = [LIMIT]
+    var ys: list<int> = [LIMIT]
+    var zs: list<int> = [LIMIT]
+    var i = 0
+    while i < n {
+      let line = input()
+      if line == "" { continue }
+      let p = split(line, " ")
+      let x = parseIntStr(p[0])
+      let y = parseIntStr(p[1])
+      let z = parseIntStr(p[2])
+      pts = append(pts, Point{ x: x, y: y, z: z })
+      xs = append(xs, x)
+      ys = append(ys, y)
+      zs = append(zs, z)
+      i = i + 1
+    }
+    xs = uniqueInts(sortInts(xs))
+    ys = uniqueInts(sortInts(ys))
+    zs = uniqueInts(sortInts(zs))
+    var bestX = 1
+    var bestY = 1
+    var bestZ = 1
+    var bestVol: int = 0
+    var xi = 0
+    while xi < len(xs) {
+      let x = xs[xi]
+      var yi = 0
+      while yi < len(ys) {
+        let y = ys[yi]
+        var zi = 0
+        while zi < len(zs) {
+          let z = zs[zi]
+          var ok = true
+          var pIdx = 0
+          while pIdx < n {
+            let p = pts[pIdx]
+            if p.x < x && p.y < y && p.z < z {
+              ok = false
+              break
+            }
+            pIdx = pIdx + 1
+          }
+          if ok {
+            let vol = x * y * z
+            if vol > bestVol {
+              bestVol = vol
+              bestX = x
+              bestY = y
+              bestZ = z
+            }
+          }
+          zi = zi + 1
+        }
+        yi = yi + 1
+      }
+      xi = xi + 1
+    }
+    print(str(bestX) + " " + str(bestY) + " " + str(bestZ))
+  }
+}
+
+main()
