@@ -1,0 +1,70 @@
+// Solution for SPOJ CANTON - Count on Cantor
+// https://www.spoj.com/problems/CANTON/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+let digitStr = {
+  0:"0",1:"1",2:"2",3:"3",4:"4",5:"5",6:"6",7:"7",8:"8",9:"9",
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun intToStr(n: int): string {
+  if n == 0 { return "0" }
+  var parts: list<int> = []
+  var x = n
+  while x > 0 {
+    parts = append(parts, x % 10)
+    x = x / 10
+  }
+  var s = ""
+  var i = len(parts) - 1
+  while i >= 0 {
+    let d = parts[i] as int
+    s = s + digitStr[d]
+    i = i - 1
+  }
+  return s
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var c = 0
+  while c < t {
+    let line = input()
+    if line == "" { continue }
+    let n = parseIntStr(line)
+    var d = 1
+    while n > d * (d + 1) / 2 {
+      d = d + 1
+    }
+    let tri = d * (d + 1) / 2
+    let off = tri - n
+    var num = 0
+    var den = 0
+    if d % 2 == 0 {
+      num = d - off
+      den = 1 + off
+    } else {
+      num = 1 + off
+      den = d - off
+    }
+    print("TERM " + intToStr(n) + " IS " + intToStr(num) + "/" + intToStr(den))
+    c = c + 1
+  }
+}
+
+main()
