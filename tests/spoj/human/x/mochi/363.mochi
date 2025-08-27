@@ -1,0 +1,105 @@
+// Solution for SPOJ COPER - Crane Operator
+// https://www.spoj.com/problems/COPER/
+
+fun parse_ints(line: string): list<int> {
+  var res: list<int> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" {
+        res = append(res, int(cur))
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, int(cur)) }
+  return res
+}
+
+fun moves_needed(target: list<int>): int {
+  let N = len(target)
+  var visited: list<bool> = []
+  var i = 0
+  while i < N { visited = append(visited, false); i = i + 1 }
+  var ans = 0
+  i = 0
+  while i < N {
+    if !visited[i] {
+      var j = i
+      var len = 0
+      var has0 = false
+      while !visited[j] {
+        visited[j] = true
+        if j == 0 { has0 = true }
+        j = target[j]
+        len = len + 1
+      }
+      if len > 1 {
+        if has0 { ans = ans + len - 1 } else { ans = ans + len + 1 }
+      }
+    }
+    i = i + 1
+  }
+  return ans
+}
+
+fun main() {
+  let tline = input()
+  if tline == nil { return }
+  let T = int(tline)
+  var ti = 0
+  while ti < T {
+    let line = input()
+    if line == nil { return }
+    if line == "" { continue }
+    let vals = parse_ints(line)
+    let N = vals[0]
+    let M = vals[1]
+    let q = vals[2]
+    let p = vals[3]
+    let m = vals[4]
+    let d = vals[5]
+    var used: list<bool> = []
+    var i = 0
+    while i < N { used = append(used, false); i = i + 1 }
+    used[M] = true
+    var target: list<int> = []
+    i = 0
+    while i < N { target = append(target, 0); i = i + 1 }
+    var c = 0
+    i = 1
+    while i < N {
+      c = (c * q + p) % m
+      var y = 0
+      var pos = 0
+      var found = false
+      while !found {
+        pos = (c + y) % N
+        var steps = 0
+        while steps < N {
+          if pos != M && (!used[pos]) {
+            found = true
+            break
+          }
+          pos = (pos + d) % N
+          steps = steps + 1
+        }
+        if !found { y = y + 1 }
+      }
+      used[pos] = true
+      target[i] = pos
+      i = i + 1
+    }
+    target[0] = M
+    let ans = moves_needed(target)
+    print(str(ans))
+    ti = ti + 1
+  }
+}
+
+main()
