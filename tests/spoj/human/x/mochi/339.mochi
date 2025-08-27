@@ -1,0 +1,174 @@
+// Solution for SPOJ SEQ - Recursive Sequence
+// https://www.spoj.com/problems/SEQ/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var n = 0
+  var i = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+let MOD = 1000000000
+
+fun matMul(a: list<list<int>>, b: list<list<int>>, k: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < k {
+    var row: list<int> = []
+    var j = 0
+    while j < k {
+      var sum = 0
+      var m = 0
+      while m < k {
+        sum = (sum + a[i][m] * b[m][j]) % MOD
+        m = m + 1
+      }
+      row = append(row, sum)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun matPow(mat: list<list<int>>, power: int, k: int): list<list<int>> {
+  // initialize identity matrix
+  var res: list<list<int>> = []
+  var i = 0
+  while i < k {
+    var row: list<int> = []
+    var j = 0
+    while j < k {
+      if i == j { row = append(row, 1) } else { row = append(row, 0) }
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  var base = mat
+  var p = power
+  while p > 0 {
+    if p % 2 == 1 {
+      res = matMul(res, base, k)
+    }
+    base = matMul(base, base, k)
+    p = p / 2
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let k = parseIntStr(line)
+
+    let bLine = input()
+    let bParts = splitSpaces(bLine)
+    var b: list<int> = []
+    var i = 0
+    while i < k {
+      b = append(b, parseIntStr(bParts[i]) % MOD)
+      i = i + 1
+    }
+
+    let cLine = input()
+    let cParts = splitSpaces(cLine)
+    var c: list<int> = []
+    i = 0
+    while i < k {
+      c = append(c, parseIntStr(cParts[i]) % MOD)
+      i = i + 1
+    }
+
+    let nLine = input()
+    let n = parseIntStr(nLine)
+
+    var ans = 0
+    if n <= k {
+      ans = b[n-1] % MOD
+    } else {
+      // build transformation matrix
+      var mat: list<list<int>> = []
+      var first: list<int> = []
+      i = 0
+      while i < k {
+        first = append(first, c[i])
+        i = i + 1
+      }
+      mat = append(mat, first)
+      i = 1
+      while i < k {
+        var row: list<int> = []
+        var j = 0
+        while j < k {
+          if j == i-1 { row = append(row, 1) } else { row = append(row, 0) }
+          j = j + 1
+        }
+        mat = append(mat, row)
+        i = i + 1
+      }
+      let power = n - k
+      let mPow = matPow(mat, power, k)
+      // initial vector [b_k, ..., b_1]
+      var vec: list<int> = []
+      i = 0
+      while i < k {
+        vec = append(vec, b[k-1-i])
+        i = i + 1
+      }
+      // multiply matrix by vector
+      i = 0
+      while i < k {
+        var sum = 0
+        var j = 0
+        while j < k {
+          sum = (sum + mPow[i][j] * vec[j]) % MOD
+          j = j + 1
+        }
+        if i == 0 {
+          ans = sum
+        }
+        i = i + 1
+      }
+    }
+    print(str(ans % MOD))
+    case = case + 1
+  }
+}
+
+main()
+
