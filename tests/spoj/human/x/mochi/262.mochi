@@ -1,0 +1,250 @@
+// Solution for SPOJ CONNECT - Connections
+// https://www.spoj.com/problems/CONNECT/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let pcs = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(pcs) {
+    nums = append(nums, parseIntStr(pcs[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+type Edge { to: int, w: int }
+type Node { dist: int, v: int }
+type PopRes { heap: list<Node>, node: Node }
+type InsertRes { list: list<int>, added: bool }
+
+fun heap_push(h: list<Node>, item: Node): list<Node> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p].dist <= heap[i].dist { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<Node>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      let l = 2*i + 1
+      let r = 2*i + 2
+      var smallest = i
+      if l < len(heap) && heap[l].dist < heap[smallest].dist { smallest = l }
+      if r < len(heap) && heap[r].dist < heap[smallest].dist { smallest = r }
+      if smallest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[smallest]
+      heap[smallest] = tmp
+      i = smallest
+    }
+  }
+  return PopRes { heap: heap, node: top }
+}
+
+fun insertSorted(arr: list<int>, val: int, K: int): InsertRes {
+  var i = 0
+  while i < len(arr) && arr[i] <= val { i = i + 1 }
+  if len(arr) < K {
+    arr = append(arr, 0)
+    var j = len(arr) - 1
+    while j > i {
+      arr[j] = arr[j-1]
+      j = j - 1
+    }
+    arr[i] = val
+    return InsertRes{ list: arr, added: true }
+  }
+  if i < K && val < arr[len(arr)-1] {
+    arr = append(arr, 0)
+    var j = len(arr) - 1
+    while j > i {
+      arr[j] = arr[j-1]
+      j = j - 1
+    }
+    arr[i] = val
+    arr = arr[0:K]
+    return InsertRes{ list: arr, added: true }
+  }
+  return InsertRes{ list: arr, added: false }
+}
+
+fun containsInt(arr: list<int>, x: int): bool {
+  var i = 0
+  while i < len(arr) {
+    if arr[i] == x { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun make_edge_list(n: int): list<list<Edge>> {
+  var g: list<list<Edge>> = []
+  var i = 0
+  while i <= n {
+    g = append(g, [])
+    i = i + 1
+  }
+  return g
+}
+
+fun kshortest(graph: list<list<Edge>>, start: int, K: int, n: int): list<list<int>> {
+  var dists: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    dists = append(dists, [])
+    i = i + 1
+  }
+  var heap: list<Node> = []
+  dists[start] = append(dists[start], 0)
+  heap = heap_push(heap, Node{ dist:0, v:start })
+  while len(heap) > 0 {
+    let pr = heap_pop(heap)
+    heap = pr.heap
+    let cur = pr.node
+    let u = cur.v
+    let d = cur.dist
+    if !containsInt(dists[u], d) { continue }
+    var j = 0
+    while j < len(graph[u]) {
+      let e = graph[u][j]
+      let nd = d + e.w
+      let ir = insertSorted(dists[e.to], nd, K)
+      if ir.added {
+        dists[e.to] = ir.list
+        heap = heap_push(heap, Node{ dist: nd, v: e.to })
+      }
+      j = j + 1
+    }
+  }
+  return dists
+}
+
+fun containsSrc(lst: list<int>, x: int): bool {
+  var i = 0
+  while i < len(lst) {
+    if lst[i] == x { return true }
+    i = i + 1
+  }
+  return false
+}
+
+type Query { c: int, d: int, k: int }
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = parseIntStr(tLine)
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    let nm = parseInts(line)
+    let n = nm[0]
+    let m = nm[1]
+    var graph = make_edge_list(n)
+    var i = 0
+    while i < m {
+      line = input()
+      if line == "" { continue }
+      let vals = parseInts(line)
+      let a = vals[0]
+      let b = vals[1]
+      let l = vals[2]
+      graph[a] = append(graph[a], Edge{ to:b, w:l })
+      i = i + 1
+    }
+    line = input()
+    while line == "" { line = input() }
+    let q = parseIntStr(line)
+    var queries: list<Query> = []
+    var sources: list<int> = []
+    i = 0
+    while i < q {
+      line = input()
+      if line == "" { continue }
+      let vals = parseInts(line)
+      let c = vals[0]
+      let d = vals[1]
+      let k = vals[2]
+      queries = append(queries, Query{ c:c, d:d, k:k })
+      if !containsSrc(sources, c) { sources = append(sources, c) }
+      i = i + 1
+    }
+    var cache: map<int, list<list<int>>> = {}
+    i = 0
+    while i < len(sources) {
+      let s = sources[i]
+      cache[s] = kshortest(graph, s, 100, n)
+      i = i + 1
+    }
+    i = 0
+    while i < len(queries) {
+      let qy = queries[i]
+      let dists = cache[qy.c] as list<list<int>>
+      let lst = dists[qy.d]
+      if len(lst) >= qy.k {
+        print(str(lst[qy.k - 1]))
+      } else {
+        print("-1")
+      }
+      i = i + 1
+    }
+    case = case + 1
+    print("")
+  }
+}
+
+main()
