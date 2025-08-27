@@ -1,0 +1,119 @@
+// Solution for SPOJ AGGRCOW - Aggressive cows
+// https://www.spoj.com/problems/AGGRCOW/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun canPlace(pos: list<int>, c: int, dist: int): bool {
+  var count = 1
+  var last = pos[0]
+  var i = 1
+  while i < len(pos) {
+    if pos[i] - last >= dist {
+      count = count + 1
+      last = pos[i]
+      if count >= c { return true }
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun main() {
+  let t = nextInt()
+  var case = 0
+  while case < t {
+    let n = nextInt()
+    let c = nextInt()
+    var pos: list<int> = []
+    var i = 0
+    while i < n {
+      pos = append(pos, nextInt())
+      i = i + 1
+    }
+    pos = sortInts(pos)
+    var lo = 0
+    var hi = pos[len(pos)-1] - pos[0]
+    var ans = 0
+    while lo <= hi {
+      let mid = (lo + hi) / 2
+      if canPlace(pos, c, mid) {
+        ans = mid
+        lo = mid + 1
+      } else {
+        hi = mid - 1
+      }
+    }
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
