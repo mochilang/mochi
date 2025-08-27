@@ -1,0 +1,184 @@
+// Solution for SPOJ WMELON - Johnny and the Watermelon Plantation
+// https://www.spoj.com/problems/WMELON/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun uniqueInts(arr: list<int>): list<int> {
+  if len(arr) == 0 { return [] }
+  arr = sortInts(arr)
+  var res: list<int> = []
+  res = append(res, arr[0])
+  var i = 1
+  while i < len(arr) {
+    if arr[i] != arr[i-1] {
+      res = append(res, arr[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let t = nextInt()
+  var case = 0
+  while case < t {
+    let n = nextInt()
+    let k = nextInt()
+    var xs: list<int> = []
+    var ys: list<int> = []
+    var px: list<int> = []
+    var py: list<int> = []
+    var pf: list<int> = []
+    var i = 0
+    while i < n {
+      let x = nextInt()
+      let y = nextInt()
+      let f = nextInt()
+      px = append(px, x)
+      py = append(py, y)
+      pf = append(pf, f)
+      xs = append(xs, x)
+      ys = append(ys, y)
+      i = i + 1
+    }
+    xs = uniqueInts(xs)
+    ys = uniqueInts(ys)
+    var xmap: map<int,int> = {}
+    var ymap: map<int,int> = {}
+    i = 0
+    while i < len(xs) {
+      xmap[xs[i]] = i
+      i = i + 1
+    }
+    i = 0
+    while i < len(ys) {
+      ymap[ys[i]] = i
+      i = i + 1
+    }
+    let X = len(xs)
+    let Y = len(ys)
+    var grid: list<list<int>> = []
+    i = 0
+    while i < X {
+      var row: list<int> = []
+      var j = 0
+      while j < Y {
+        row = append(row, 0)
+        j = j + 1
+      }
+      grid = append(grid, row)
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      let xi = xmap[px[i]]
+      let yi = ymap[py[i]]
+      grid[xi][yi] = grid[xi][yi] + pf[i]
+      i = i + 1
+    }
+    var best = 1000000000
+    var left = 0
+    while left < X {
+      var arr: list<int> = []
+      var y = 0
+      while y < Y { arr = append(arr, 0); y = y + 1 }
+      var right = left
+      while right < X {
+        y = 0
+        while y < Y {
+          arr[y] = arr[y] + grid[right][y]
+          y = y + 1
+        }
+        var sum = 0
+        var top = 0
+        var bottom = 0
+        while bottom < Y {
+          sum = sum + arr[bottom]
+          while sum >= k {
+            let height = ys[bottom] - ys[top]
+            let width = xs[right] - xs[left]
+            let area = width * height
+            if area < best { best = area }
+            sum = sum - arr[top]
+            top = top + 1
+          }
+          bottom = bottom + 1
+        }
+        right = right + 1
+      }
+      left = left + 1
+    }
+    print(str(best))
+    case = case + 1
+  }
+}
+
+main()
