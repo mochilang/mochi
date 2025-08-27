@@ -1,0 +1,32 @@
+// Solution for SPOJ CANTON - Count on Cantor
+// https://www.spoj.com/problems/CANTON/
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var i = 0
+  while i < t {
+    let line = input()
+    let n = line as int
+    var k = 1
+    while k * (k + 1) / 2 < n {
+      k = k + 1
+    }
+    let base = k * (k - 1) / 2
+    let pos = n - base
+    var num = 0
+    var den = 0
+    if k % 2 == 1 {
+      num = k - (pos - 1)
+      den = pos
+    } else {
+      num = pos
+      den = k - (pos - 1)
+    }
+    print("TERM " + str(n) + " IS " + str(num) + "/" + str(den))
+    i = i + 1
+  }
+}
+
+main()
