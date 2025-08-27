@@ -1,0 +1,122 @@
+// Solution for SPOJ FLBRKLIN - Flat broken lines
+// https://www.spoj.com/problems/FLBRKLIN/
+
+type Pt { a: int, b: int }
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  var i = 0
+  while i < len(pieces) {
+    let p = pieces[i]
+    if len(p) > 0 {
+      nums = append(nums, p as int)
+    }
+    i = i + 1
+  }
+  return nums
+}
+
+fun mergePts(left: list<Pt>, right: list<Pt>): list<Pt> {
+  var res: list<Pt> = []
+  var i = 0
+  var j = 0
+  while i < len(left) && j < len(right) {
+    let L = left[i]
+    let R = right[j]
+    if L.a > R.a || (L.a == R.a && L.b < R.b) {
+      res = append(res, L)
+      i = i + 1
+    } else {
+      res = append(res, R)
+      j = j + 1
+    }
+  }
+  while i < len(left) {
+    res = append(res, left[i])
+    i = i + 1
+  }
+  while j < len(right) {
+    res = append(res, right[j])
+    j = j + 1
+  }
+  return res
+}
+
+fun sortPts(arr: list<Pt>): list<Pt> {
+  if len(arr) <= 1 { return arr }
+  let mid = len(arr) / 2
+  let left = sortPts(arr[0:mid])
+  let right = sortPts(arr[mid:len(arr)])
+  return mergePts(left, right)
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var line = input()
+    while line != nil && line == "" { line = input() }
+    if line == nil { return }
+    let n = line as int
+    var pts: list<Pt> = []
+    var i = 0
+    while i < n {
+      let l = input()
+      if l == nil { return }
+      if l == "" { continue }
+      let nums = parseInts(l)
+      let x = nums[0]
+      let y = nums[1]
+      pts = append(pts, Pt { a: y - x, b: y + x })
+      i = i + 1
+    }
+    pts = sortPts(pts)
+    var tails: list<int> = []
+    var idx = 0
+    while idx < len(pts) {
+      let p = pts[idx]
+      let bb = p.b
+      var l = 0
+      var r = len(tails)
+      while l < r {
+        let m = (l + r) / 2
+        if tails[m] <= bb {
+          r = m
+        } else {
+          l = m + 1
+        }
+      }
+      if l == len(tails) {
+        tails = append(tails, bb)
+      } else {
+        tails[l] = bb
+      }
+      idx = idx + 1
+    }
+    print(str(len(tails)))
+    case = case + 1
+  }
+}
+
+main()
