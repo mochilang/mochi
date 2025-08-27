@@ -1,0 +1,136 @@
+// Solution for SPOJ MAWORK - Men at work
+// https://www.spoj.com/problems/MAWORK/
+
+let digits = {
+  "0":0, "1":1, "2":2, "3":3, "4":4,
+  "5":5, "6":6, "7":7, "8":8, "9":9,
+}
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  if x < 0 { x = -x }
+  return x
+}
+
+fun lcm(a: int, b: int): int {
+  return a / gcd(a, b) * b
+}
+
+fun isOpen(ch: string, p: int, t: int): bool {
+  if p == 0 {
+    return ch == "."
+  }
+  let cycle = p * 2
+  let phase = t % cycle
+  if ch == "." {
+    return phase < p
+  } else {
+    return phase >= p
+  }
+}
+
+fun bfs(n: int, grid: list<string>, per: list<list<int>>): int {
+  var cycle = 1
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < n {
+      let p = per[i][j]
+      if p > 0 {
+        cycle = lcm(cycle, p * 2)
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var visited: list<bool> = []
+  let total = n * n * cycle
+  i = 0
+  while i < total {
+    visited = append(visited, false)
+    i = i + 1
+  }
+  if isOpen(grid[0][0:1], per[0][0], 0) == false { return -1 }
+  var qx: list<int> = [0]
+  var qy: list<int> = [0]
+  var qt: list<int> = [0]
+  visited[0] = true
+  var qi = 0
+  let dx = [1, -1, 0, 0, 0]
+  let dy = [0, 0, 1, -1, 0]
+  while qi < len(qx) {
+    let x = qx[qi]
+    let y = qy[qi]
+    let t = qt[qi]
+    qi = qi + 1
+    if x == n-1 && y == n-1 { return t }
+    let nt = t + 1
+    var k = 0
+    while k < 5 {
+      let nx = x + dx[k]
+      let ny = y + dy[k]
+      if nx >= 0 && nx < n && ny >= 0 && ny < n {
+        if isOpen(grid[nx][ny:ny+1], per[nx][ny], nt) {
+          let idx = ((nx * n + ny) * cycle) + (nt % cycle)
+          if visited[idx] == false {
+            visited[idx] = true
+            qx = append(qx, nx)
+            qy = append(qy, ny)
+            qt = append(qt, nt)
+          }
+        }
+      }
+      k = k + 1
+    }
+  }
+  return -1
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var case = 0
+  while case < T {
+    var line = input()
+    while len(line) == 0 {
+      line = input()
+    }
+    let n = int(line)
+    var grid: list<string> = []
+    var i = 0
+    while i < n {
+      grid = append(grid, input())
+      i = i + 1
+    }
+    var per: list<list<int>> = []
+    i = 0
+    while i < n {
+      let rowStr = input()
+      var row: list<int> = []
+      var j = 0
+      while j < n {
+        let ch = rowStr[j:j+1]
+        row = append(row, digits[ch] as int)
+        j = j + 1
+      }
+      per = append(per, row)
+      i = i + 1
+    }
+    let ans = bfs(n, grid, per)
+    if ans >= 0 {
+      print(str(ans))
+    } else {
+      print("NO")
+    }
+    case = case + 1
+  }
+}
+
+main()
