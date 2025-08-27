@@ -1,0 +1,247 @@
+// Solution for SPOJ RATTERN - The Room Pattern
+// https://www.spoj.com/problems/RATTERN/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun pow2(n: int): int {
+  var p = 1
+  var i = 0
+  while i < n {
+    p = p * 2
+    i = i + 1
+  }
+  return p
+}
+
+let baseShapes = [
+  [],
+  [[0,0]],
+  [[0,0],[0,1]],
+  [[0,0],[1,0],[1,1]],
+  [[0,0],[0,1],[0,2]],
+]
+
+fun rotateShape(shape: list<list<int>>): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < len(shape) {
+    let x = shape[i][0]
+    let y = shape[i][1]
+    res = append(res, [y, -x])
+    i = i + 1
+  }
+  return res
+}
+
+fun normalize(shape: list<list<int>>): list<list<int>> {
+  var minx = shape[0][0]
+  var miny = shape[0][1]
+  var i = 1
+  while i < len(shape) {
+    if shape[i][0] < minx { minx = shape[i][0] }
+    if shape[i][1] < miny { miny = shape[i][1] }
+    i = i + 1
+  }
+  var res: list<list<int>> = []
+  i = 0
+  while i < len(shape) {
+    res = append(res, [shape[i][0]-minx, shape[i][1]-miny])
+    i = i + 1
+  }
+  return res
+}
+
+fun genPlacements(N: int, M: int, grid: list<list<int>>, tiles: list<any>): list<list<any>> {
+  var placements: list<list<any>> = []
+  var i = 0
+  while i < N*M { placements = append(placements, []); i = i + 1 }
+
+  var t = 0
+  while t < len(tiles) {
+    let tile = tiles[t]
+    let form = tile.form as int
+    let cost = tile.cost as int
+    let colors = tile.colors as list<int>
+    var shape = baseShapes[form] as list<list<int>>
+    var rot = 0
+    var curShape = shape
+    var curColors = colors
+    while rot < 4 {
+      var norm = normalize(curShape)
+      var maxx = 0
+      var maxy = 0
+      var p = 0
+      while p < len(norm) {
+        if norm[p][0] > maxx { maxx = norm[p][0] }
+        if norm[p][1] > maxy { maxy = norm[p][1] }
+        p = p + 1
+      }
+      var r0 = 0
+      while r0 + maxx < N {
+        var c0 = 0
+        while c0 + maxy < M {
+          var ok = true
+          var cellsIdx: list<int> = []
+          var minIdx = N*M
+          var q = 0
+          while q < len(norm) {
+            let dx = norm[q][0]
+            let dy = norm[q][1]
+            let col = curColors[q]
+            let r = r0 + dx
+            let c = c0 + dy
+            let cell = grid[r][c]
+            if cell == 2 || cell != col {
+              ok = false
+              break
+            }
+            let idx = r*M + c
+            cellsIdx = append(cellsIdx, idx)
+            if idx < minIdx { minIdx = idx }
+            q = q + 1
+          }
+          if ok {
+            var arr = placements[minIdx]
+            arr = append(arr, [cellsIdx, cost])
+            placements[minIdx] = arr
+          }
+          c0 = c0 + 1
+        }
+        r0 = r0 + 1
+      }
+      // rotate for next orientation
+      curShape = rotateShape(curShape)
+      // rotate colors accordingly (same index order)
+      var newCols: list<int> = []
+      var c = 0
+      while c < len(curColors) { newCols = append(newCols, curColors[c]); c = c + 1 }
+      curColors = newCols
+      rot = rot + 1
+    }
+    t = t + 1
+  }
+  return placements
+}
+
+fun dfs(mask: int, full: int, placements: list<list<any>>, memo: map<int,int>, total: int): int {
+  if mask == full { return 0 }
+  if memo[mask] != nil { return memo[mask] as int }
+  var i = 0
+  while i < total && ((mask / pow2(i)) % 2) == 1 { i = i + 1 }
+  let opts = placements[i]
+  let INF = pow2(60)
+  var best = INF
+  var j = 0
+  while j < len(opts) {
+    let cellsAny = opts[j][0] as list<any>
+    let cost = opts[j][1] as int
+    var overlap = false
+    var addMask = 0
+    var k = 0
+    while k < len(cellsAny) {
+      let idx = cellsAny[k] as int
+      let bit = pow2(idx)
+      if ((mask / bit) % 2) == 1 {
+        overlap = true
+        break
+      }
+      addMask = addMask + bit
+      k = k + 1
+    }
+    if !overlap {
+      let res = dfs(mask + addMask, full, placements, memo, total)
+      if res != INF {
+        let v = res + cost
+        if v < best { best = v }
+      }
+    }
+    j = j + 1
+  }
+  memo[mask] = best
+  return best
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let line = input()
+    var parts = splitSpaces(line)
+    let N = parts[0] as int
+    let M = parts[1] as int
+    let K = parts[2] as int
+    var grid: list<list<int>> = []
+    var i = 0
+    while i < N {
+      let rowLine = input()
+      parts = splitSpaces(rowLine)
+      var row: list<int> = []
+      var j = 0
+      while j < M {
+        row = append(row, parts[j] as int)
+        j = j + 1
+      }
+      grid = append(grid, row)
+      i = i + 1
+    }
+    var tiles: list<any> = []
+    var k = 0
+    while k < K {
+      let tLine = input()
+      parts = splitSpaces(tLine)
+      let form = parts[0] as int
+      let cost = parts[1] as int
+      var cols: list<int> = []
+      var m = 2
+      while m < len(parts) {
+        cols = append(cols, parts[m] as int)
+        m = m + 1
+      }
+      tiles = append(tiles, {form: form, cost: cost, colors: cols})
+      k = k + 1
+    }
+    let placements = genPlacements(N, M, grid, tiles)
+    var initMask = 0
+    i = 0
+    while i < N {
+      var j = 0
+      while j < M {
+        if grid[i][j] == 2 {
+          let idx = i*M + j
+          initMask = initMask + pow2(idx)
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    var full = 0
+    i = 0
+    while i < N*M {
+      full = full + pow2(i)
+      i = i + 1
+    }
+    var memo: map<int,int> = {}
+    let ans = dfs(initMask, full, placements, memo, N*M)
+    if ans >= pow2(60) { print("-1") } else { print(ans) }
+    case = case + 1
+  }
+}
+
+main()
