@@ -1,3 +1,15 @@
+## Progress (2025-08-27 07:05 +0700)
+- Add Erlang solution for SPOJ PRIME1 (progress 88/105)
+
+## Progress (2025-08-27 07:05 +0700)
+- Add Erlang solution for SPOJ PRIME1 (progress 88/105)
+
+## Progress (2025-08-27 07:05 +0700)
+- Add Erlang solution for SPOJ PRIME1 (progress 88/105)
+
+## Progress (2025-08-27 07:05 +0700)
+- Add Erlang solution for SPOJ PRIME1 (progress 88/105)
+
 ## Progress (2025-08-16 09:25 +0700)
 - swift: handle mixed-type string addition (progress 88/105)
 

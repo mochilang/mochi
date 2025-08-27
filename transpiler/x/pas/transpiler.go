@@ -897,9 +897,15 @@ func (c *CastExpr) emit(w io.Writer) {
 			if strings.HasPrefix(c.Type, "array of ") {
 				elem := strings.TrimPrefix(c.Type, "array of ")
 				alias := currProg.addArrayAlias(elem)
-				fmt.Fprintf(w, "%s(", alias)
-				c.Expr.emit(w)
-				io.WriteString(w, ")")
+				if inferType(c.Expr) == "Variant" {
+					fmt.Fprintf(w, "%s(pointer(PtrUInt(", alias)
+					c.Expr.emit(w)
+					io.WriteString(w, "))^)")
+				} else {
+					fmt.Fprintf(w, "%s(", alias)
+					c.Expr.emit(w)
+					io.WriteString(w, ")")
+				}
 			} else if (isArrayType(c.Type) || isRecordType(c.Type)) && inferType(c.Expr) == "Variant" {
 				fmt.Fprintf(w, "%s(pointer(PtrUInt(", c.Type)
 				c.Expr.emit(w)
@@ -5911,6 +5917,9 @@ func inferType(e Expr) string {
 		}
 		return rt
 	case *CallExpr:
+		if strings.HasPrefix(v.Name, "specialize TFPGMap") {
+			return v.Name
+		}
 		name := strings.ToLower(v.Name)
 		switch name {
 		case "length", "pos":
@@ -6035,7 +6044,7 @@ func inferType(e Expr) string {
 				return strings.TrimSpace(kv[1])
 			}
 		}
-		return "integer"
+		return ""
 	case *SliceExpr:
 		if v.String {
 			return "string"

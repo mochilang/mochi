@@ -261,9 +261,9 @@ var
   main_p: Variant;
   main_l: integer;
   main_dash1: int64;
-  main_firstPart: integer;
+  main_firstPart: string;
   main_p_19: Variant;
-  main_val: integer;
+  main_val: string;
   main_shift: integer;
   main_spaces: integer;
   main_line_23: string;
@@ -300,7 +300,7 @@ end else begin
 end else begin
   main_r := mul_str(main_a, main_b);
   main_res := main_r['res'];
-  main_parts := VariantArray(main_r['parts']);
+  main_parts := VariantArray(pointer(PtrUInt(main_r['parts']))^);
 end;
 end;
   main_width := Length(main_a);
