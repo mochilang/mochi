@@ -1,0 +1,324 @@
+// Solution for SPOJ POLYEQ - Polynomial Equations
+// https://www.spoj.com/problems/POLYEQ/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var sign = 1
+  if len(str) > 0 && str[0:1] == "-" {
+    sign = -1
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n * sign
+}
+
+fun splitPlus(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == "+" {
+      res = append(res, cur)
+      cur = ""
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  res = append(res, cur)
+  return res
+}
+
+fun parsePoly(s: string): list<float> {
+  // remove spaces
+  var cleaned = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch != " " && ch != "\t" && ch != "\r" && ch != "\n" {
+      cleaned = cleaned + ch
+    }
+    i = i + 1
+  }
+  // replace '-' with '+-' except at start
+  var norm = ""
+  i = 0
+  while i < len(cleaned) {
+    let ch = cleaned[i:i+1]
+    if ch == "-" {
+      if i == 0 {
+        norm = norm + "-"
+      } else {
+        norm = norm + "+-"
+      }
+    } else {
+      norm = norm + ch
+    }
+    i = i + 1
+  }
+  let terms = splitPlus(norm)
+  var coeffs: list<float> = []
+  i = 0
+  while i < 7 {
+    coeffs = append(coeffs, 0.0)
+    i = i + 1
+  }
+  i = 0
+  while i < len(terms) {
+    let term = terms[i]
+    if term == "" { i = i + 1; continue }
+    var coef = 0.0
+    var deg = 0
+    var xPos = 0 - 1
+    var j = 0
+    while j < len(term) {
+      if term[j:j+1] == "x" {
+        xPos = j
+        break
+      }
+      j = j + 1
+    }
+    if xPos < 0 {
+      coef = (parseIntStr(term) as float)
+      deg = 0
+    } else {
+      var coefPart = substring(term, 0, xPos)
+      if len(coefPart) > 0 && coefPart[len(coefPart)-1:len(coefPart)] == "*" {
+        coefPart = substring(coefPart, 0, len(coefPart)-1)
+      }
+      if coefPart == "" {
+        coef = 1.0
+      } else if coefPart == "-" {
+        coef = -1.0
+      } else {
+        coef = (parseIntStr(coefPart) as float)
+      }
+      if xPos + 1 < len(term) && term[xPos+1:xPos+2] == "^" {
+        deg = parseIntStr(substring(term, xPos+2, len(term)))
+      } else {
+        deg = 1
+      }
+    }
+    coeffs[deg] = coeffs[deg] + coef
+    i = i + 1
+  }
+  return coeffs
+}
+
+fun absf(x: float): float { if x < 0.0 { return -x } else { return x } }
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var prev = 0.0
+  while absf(r - prev) > 1e-12 {
+    prev = r
+    r = (r + x / r) / 2.0
+  }
+  return r
+}
+
+fun evalPoly(coeffs: list<float>, deg: int, x: float): float {
+  var res = coeffs[deg]
+  var i = deg - 1
+  while i >= 0 {
+    res = res * x + coeffs[i]
+    i = i - 1
+  }
+  return res
+}
+
+fun bisect(coeffs: list<float>, deg: int, L: float, R: float): float {
+  var fL = evalPoly(coeffs, deg, L)
+  var fR = evalPoly(coeffs, deg, R)
+  var m = 0.0
+  var i = 0
+  while i < 80 {
+    m = (L + R) / 2.0
+    let fM = evalPoly(coeffs, deg, m)
+    if fL * fM <= 0.0 {
+      R = m
+      fR = fM
+    } else {
+      L = m
+      fL = fM
+    }
+    i = i + 1
+  }
+  return (L + R) / 2.0
+}
+
+fun sortFloats(arr: list<float>): list<float> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun solve(coeffs: list<float>, deg: int): list<float> {
+  while deg > 0 && absf(coeffs[deg]) < 1e-7 {
+    deg = deg - 1
+  }
+  var res: list<float> = []
+  if deg == 1 {
+    res = append(res, -coeffs[0] / coeffs[1])
+    return res
+  }
+  if deg == 2 {
+    let a = coeffs[2]
+    let b = coeffs[1]
+    let c = coeffs[0]
+    var disc = b * b - 4.0 * a * c
+    if disc < 0.0 { disc = 0.0 }
+    let sqrtD = sqrt(disc)
+    let r1 = (-b - sqrtD) / (2.0 * a)
+    let r2 = (-b + sqrtD) / (2.0 * a)
+    res = append(res, r1)
+    res = append(res, r2)
+    res = sortFloats(res)
+    return res
+  }
+  var dCoeffs: list<float> = []
+  var i = 0
+  while i < deg {
+    dCoeffs = append(dCoeffs, coeffs[i+1] * ((i + 1) as float))
+    i = i + 1
+  }
+  let dRoots = solve(dCoeffs, deg - 1)
+  var points: list<float> = []
+  points = append(points, -100.0)
+  i = 0
+  while i < len(dRoots) {
+    points = append(points, dRoots[i])
+    i = i + 1
+  }
+  points = append(points, 100.0)
+  // roots from derivative roots
+  var idx = 0
+  while idx < len(dRoots) {
+    let r = dRoots[idx]
+    var cnt = 1
+    while idx + cnt < len(dRoots) && absf(dRoots[idx + cnt] - r) < 1e-6 {
+      cnt = cnt + 1
+    }
+    if absf(evalPoly(coeffs, deg, r)) < 1e-5 {
+      var j = 0
+      while j < cnt + 1 {
+        res = append(res, r)
+        j = j + 1
+      }
+    }
+    idx = idx + cnt
+  }
+  // unique points
+  var uniq: list<float> = []
+  i = 0
+  while i < len(points) {
+    if len(uniq) == 0 || absf(points[i] - uniq[len(uniq)-1]) > 1e-6 {
+      uniq = append(uniq, points[i])
+    }
+    i = i + 1
+  }
+  // boundary roots not detected by derivative roots
+  let leftVal = evalPoly(coeffs, deg, -100.0)
+  var hasLeft = false
+  i = 0
+  while i < len(dRoots) {
+    if absf(dRoots[i] + 100.0) < 1e-6 { hasLeft = true }
+    i = i + 1
+  }
+  if absf(leftVal) < 1e-5 && (hasLeft == false) {
+    res = append(res, -100.0)
+  }
+  let rightVal = evalPoly(coeffs, deg, 100.0)
+  var hasRight = false
+  i = 0
+  while i < len(dRoots) {
+    if absf(dRoots[i] - 100.0) < 1e-6 { hasRight = true }
+    i = i + 1
+  }
+  if absf(rightVal) < 1e-5 && (hasRight == false) {
+    res = append(res, 100.0)
+  }
+  // intervals
+  i = 0
+  while i + 1 < len(uniq) {
+    let L = uniq[i]
+    let R = uniq[i+1]
+    let fL = evalPoly(coeffs, deg, L)
+    let fR = evalPoly(coeffs, deg, R)
+    if fL * fR < 0.0 {
+      let root = bisect(coeffs, deg, L, R)
+      res = append(res, root)
+    }
+    i = i + 1
+  }
+  res = sortFloats(res)
+  return res
+}
+
+fun format2(x: float): string {
+  var neg = false
+  if x < 0.0 {
+    neg = true
+    x = -x
+  }
+  var scaled = x * 100.0 + 0.5
+  var n = scaled as int
+  if n == 0 { neg = false }
+  var whole = n / 100
+  var frac = n % 100
+  var fracStr = str(frac)
+  if len(fracStr) < 2 { fracStr = "0" + fracStr }
+  var res = str(whole) + "." + fracStr
+  if neg { res = "-" + res }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let coeffs = parsePoly(line)
+    var deg = 6
+    var i = 6
+    while i >= 0 {
+      if absf(coeffs[i]) > 1e-7 { deg = i; break }
+      i = i - 1
+    }
+    let roots = solve(coeffs, deg)
+    var out = ""
+    i = 0
+    while i < len(roots) {
+      if i > 0 { out = out + " " }
+      out = out + format2(roots[i])
+      i = i + 1
+    }
+    print(out)
+    case = case + 1
+  }
+}
+
+main()
