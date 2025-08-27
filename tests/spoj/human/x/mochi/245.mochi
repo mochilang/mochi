@@ -1,0 +1,40 @@
+// Solution for SPOJ SQRROOT - Square Root
+// https://www.spoj.com/problems/SQRROOT/
+
+fun sqrt_big(n: bigint): bigint {
+  if n < 2 as bigint { return n }
+  let zero: bigint = 0 as bigint
+  let one: bigint = 1 as bigint
+  let two: bigint = 2 as bigint
+  var low: bigint = one
+  var high: bigint = n
+  while low <= high {
+    let mid: bigint = (low + high) / two
+    let sq: bigint = mid * mid
+    let diff: bigint = sq - n
+    if diff == zero { return mid }
+    if diff < zero {
+      low = mid + one
+    } else {
+      high = mid - one
+    }
+  }
+  return one
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let n = line as bigint
+    let r = sqrt_big(n)
+    print(str(r))
+    case = case + 1
+  }
+}
+
+main()
