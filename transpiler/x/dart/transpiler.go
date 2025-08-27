@@ -242,6 +242,17 @@ var dartKeywords = map[string]struct{}{
 	"typedef": {}, "yield": {}, "try": {}, "throw": {},
 }
 
+var builtinTypes = map[string]struct{}{
+	"int":    {},
+	"double": {},
+	"num":    {},
+	"String": {},
+	"bool":   {},
+	"List":   {},
+	"Map":    {},
+	"BigInt": {},
+}
+
 func sanitize(name string) string {
 	if name == "_" {
 		return "__"
@@ -1979,7 +1990,13 @@ func (s *SelectorExpr) emit(w io.Writer) error {
 	t := inferType(s.Receiver)
 	optional := strings.HasSuffix(t, "?")
 	nonOpt := strings.TrimSuffix(t, "?")
-	if strings.HasPrefix(nonOpt, "Map<") {
+	if strings.HasPrefix(nonOpt, "Map<") || (nonOpt == "dynamic" && !(func() bool {
+		if n, ok := s.Receiver.(*Name); ok {
+			_, ok := builtinTypes[n.Name]
+			return ok
+		}
+		return false
+	})()) {
 		if err := s.Receiver.emit(w); err != nil {
 			return err
 		}
