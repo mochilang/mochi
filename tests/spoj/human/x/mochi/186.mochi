@@ -1,0 +1,128 @@
+// Solution for SPOJ LITELANG - The lightest language
+// https://www.spoj.com/problems/LITELANG/
+
+type PopRes { heap: list<int>, val: int }
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun heap_push(h: list<int>, item: int): list<int> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p] <= heap[i] { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<int>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      let l = 2*i + 1
+      let r = 2*i + 2
+      var smallest = i
+      if l < len(heap) && heap[l] < heap[smallest] { smallest = l }
+      if r < len(heap) && heap[r] < heap[smallest] { smallest = r }
+      if smallest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[smallest]
+      heap[smallest] = tmp
+      i = smallest
+    }
+  }
+  return PopRes{ heap: heap, val: top }
+}
+
+fun minWeight(n: int, weights: list<int>): int {
+  var heap: list<int> = []
+  heap = heap_push(heap, 0)
+  var leaves = 1
+  let k = len(weights)
+  while leaves < n {
+    let pr = heap_pop(heap)
+    heap = pr.heap
+    let x = pr.val
+    var i = 0
+    while i < k {
+      heap = heap_push(heap, x + weights[i])
+      i = i + 1
+    }
+    leaves = leaves + k - 1
+  }
+  var sum = 0
+  var i = 0
+  while i < n {
+    let pr = heap_pop(heap)
+    heap = pr.heap
+    sum = sum + pr.val
+    i = i + 1
+  }
+  return sum
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var caseIdx = 0
+  while caseIdx < t {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = split(line)
+    let n = parseIntStr(parts[0])
+    let k = parseIntStr(parts[1])
+    line = input()
+    let wParts = split(line)
+    var weights: list<int> = []
+    var i = 0
+    while i < k {
+      weights = append(weights, parseIntStr(wParts[i]))
+      i = i + 1
+    }
+    let ans = minWeight(n, weights)
+    print(ans)
+    caseIdx = caseIdx + 1
+  }
+}
+
+main()
