@@ -1,0 +1,171 @@
+// Solution for SPOJ HARDQ - Hard Question
+// https://www.spoj.com/problems/HARDQ/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun polygonArea2(px: list<int>, py: list<int>): int {
+  let n = len(px)
+  var i = 0
+  var sum = 0
+  while i < n {
+    let j = if i + 1 < n { i + 1 } else { 0 }
+    sum = sum + px[i]*py[j] - px[j]*py[i]
+    i = i + 1
+  }
+  if sum < 0 { sum = -sum }
+  return sum
+}
+
+fun isOrthogonal(px: list<int>, py: list<int>): bool {
+  let n = len(px)
+  var i = 0
+  while i < n {
+    let j = if i + 1 < n { i + 1 } else { 0 }
+    if px[i] != px[j] && py[i] != py[j] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun pointOnSegment(x: int, y: int, x1: int, y1: int, x2: int, y2: int): bool {
+  let cross = (x2 - x1)*(y - y1) - (y2 - y1)*(x - x1)
+  if cross != 0 { return false }
+  let minx = if x1 < x2 { x1 } else { x2 }
+  let maxx = if x1 > x2 { x1 } else { x2 }
+  let miny = if y1 < y2 { y1 } else { y2 }
+  let maxy = if y1 > y2 { y1 } else { y2 }
+  return x >= minx && x <= maxx && y >= miny && y <= maxy
+}
+
+fun pointInPoly(x: int, y: int, px: list<int>, py: list<int>): bool {
+  let n = len(px)
+  var i = 0
+  while i < n {
+    let j = if i + 1 < n { i + 1 } else { 0 }
+    if pointOnSegment(x, y, px[i], py[i], px[j], py[j]) { return true }
+    i = i + 1
+  }
+  var inside = false
+  i = 0
+  var j = n - 1
+  while i < n {
+    let xi = px[i]
+    let yi = py[i]
+    let xj = px[j]
+    let yj = py[j]
+    if ((yi > y) != (yj > y)) {
+      let xint = float(xj - xi) * float(y - yi) / float(yj - yi) + float(xi)
+      if float(x) < xint { inside = !inside }
+    }
+    j = i
+    i = i + 1
+  }
+  return inside
+}
+
+fun main() {
+  while true {
+    var line = input()
+    if line == nil { return }
+    if line == "" { continue }
+    let nm = parseInts(line)
+    let n = nm[0]
+    let m = nm[1]
+    if n == 0 && m == 0 { break }
+    var px: list<int> = []
+    var py: list<int> = []
+    var i = 0
+    while i < n {
+      var l = input()
+      if l == nil { return }
+      if l == "" { continue }
+      let pair = parseInts(l)
+      px = append(px, pair[0])
+      py = append(py, pair[1])
+      i = i + 1
+    }
+    var sumRect = 0
+    var r = 0
+    while r < m {
+      var l = input()
+      if l == nil { return }
+      if l == "" { continue }
+      let nums = parseInts(l)
+      let x1 = nums[0]
+      let y1 = nums[1]
+      let x2 = nums[2]
+      let y2 = nums[3]
+      let xlo = if x1 < x2 { x1 } else { x2 }
+      let xhi = if x1 > x2 { x1 } else { x2 }
+      let ylo = if y1 < y2 { y1 } else { y2 }
+      let yhi = if y1 > y2 { y1 } else { y2 }
+      let inside = pointInPoly(xlo, ylo, px, py) &&
+                   pointInPoly(xlo, yhi, px, py) &&
+                   pointInPoly(xhi, ylo, px, py) &&
+                   pointInPoly(xhi, yhi, px, py)
+      if inside {
+        sumRect = sumRect + (xhi - xlo) * (yhi - ylo)
+      }
+      r = r + 1
+    }
+    if !isOrthogonal(px, py) {
+      print("NO")
+    } else {
+      let area2 = polygonArea2(px, py)
+      if sumRect * 2 == area2 {
+        print("YES")
+      } else {
+        print("NO")
+      }
+    }
+  }
+}
+
+main()
