@@ -1,0 +1,61 @@
+// Solution for SPOJ The Loner
+// https://www.spoj.com/problems/LONER/
+
+fun countOnes(s: string): int {
+  var c = 0
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == "1" { c = c + 1 }
+    i = i + 1
+  }
+  return c
+}
+
+fun canWin(start: string): bool {
+  var queue: list<string> = [start]
+  var qi = 0
+  var seen: map<string,bool> = {}
+  seen[start] = true
+  while qi < len(queue) {
+    let cur = queue[qi]
+    qi = qi + 1
+    if countOnes(cur) == 1 {
+      return true
+    }
+    var i = 0
+    while i + 2 < len(cur) {
+      let pat = cur[i:i+3]
+      if pat == "110" {
+        let next = cur[0:i] + "001" + cur[i+3:]
+        if seen[next] != true {
+          seen[next] = true
+          queue = append(queue, next)
+        }
+      } else if pat == "011" {
+        let next = cur[0:i] + "100" + cur[i+3:]
+        if seen[next] != true {
+          seen[next] = true
+          queue = append(queue, next)
+        }
+      }
+      i = i + 1
+    }
+  }
+  return false
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let nLine = input()
+    let _n = nLine as int
+    let board = input()
+    if canWin(board) { print("yes") } else { print("no") }
+    case = case + 1
+  }
+}
+
+main()
