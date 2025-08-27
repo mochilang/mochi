@@ -1,19 +1,21 @@
 # C++ SPOJ Transpiler Output
 
-Completed programs: 6/10
-Last updated: 2025-08-26 14:25 +0700
+Completed programs: 11/12
+Last updated: 2025-08-27 07:05 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:------:|---------:|-------:|
-| 1 | Life, the Universe, and Everything | ✓ | 243.0µs | 3.41MB |
-| 2 | PRIME1 - Prime Generator | ✓ | 9.0ms | 3.75MB |
-| 3 | 3 | ✓ | 258.0µs | 3.47MB |
-| 4 | SPOJ ONP - Transform the Expression | ✓ | 345.0µs | 3.55MB |
-| 5 | 5 | ✓ | 374.0µs | 3.41MB |
-| 6 | Simple Arithmetics | ✓ | 524.0µs | 3.55MB |
-| 7 | The Bulk |   |  |  |
-| 8 | Complete the Sequence! |   |  |  |
-| 9 | 9 |   |  |  |
-| 12 | MMIND - The Game of Master-Mind |   |  |  |
+| 1 | 1 | ✓ | 243.0µs | 3.43MB |
+| 2 | Prime Generator | ✓ | 9.0ms | 3.61MB |
+| 3 | SBSTR1 - Substring Check (Bug Funny) | ✓ | 323.0µs | 3.53MB |
+| 4 | 4 | ✓ | 329.0µs | 3.40MB |
+| 5 | The Next Palindrome | ✓ | 327.0µs | 3.48MB |
+| 6 | 6 | ✓ | 474.0µs | 3.76MB |
+| 7 | The Bulk! | ✓ | 922.0µs | 3.69MB |
+| 8 | Complete the Sequence! | ✓ | 469.0µs | 3.59MB |
+| 9 | DIRVS - Direct Visibility | ✓ | 1.0ms | 3.73MB |
+| 10 | Complicated Expressions | ✓ | 903.0µs | 3.69MB |
+| 11 | Factorial |   |  |  |
+| 12 | MMIND - The Game of Master-Mind | ✓ | 351.0µs | 3.59MB |
