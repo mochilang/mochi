@@ -1,0 +1,112 @@
+// Solution for SPOJ FSHEEP - Fencing in the Sheep
+// https://www.spoj.com/problems/FSHEEP/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var nums: list<int> = []
+  var i = 0
+  var cur = 0
+  var sign = 1
+  var inNum = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == "-" {
+      sign = -1
+      i = i + 1
+    } else if ch >= "0" && ch <= "9" {
+      cur = cur * 10 + (digits[ch] as int)
+      inNum = true
+      i = i + 1
+    } else {
+      if inNum {
+        nums = append(nums, sign * cur)
+        cur = 0
+        sign = 1
+        inNum = false
+      }
+      i = i + 1
+    }
+  }
+  if inNum {
+    nums = append(nums, sign * cur)
+  }
+  return nums
+}
+
+fun abs(x: int): int { return if x < 0 { -x } else { x } }
+
+fun min2(a: int, b: int): int { return if a < b { a } else { b } }
+
+fun max2(a: int, b: int): int { return if a > b { a } else { b } }
+
+fun onSegment(xi: int, yi: int, xj: int, yj: int, px: int, py: int): bool {
+  let cross = (xj - xi)*(py - yi) - (yj - yi)*(px - xi)
+  if cross != 0 { return false }
+  if px < min2(xi, xj) { return false }
+  if px > max2(xi, xj) { return false }
+  if py < min2(yi, yj) { return false }
+  if py > max2(yi, yj) { return false }
+  return true
+}
+
+fun inside(px: int, py: int, vx: list<int>, vy: list<int>, n: int): bool {
+  var inside = false
+  var i = 0
+  while i < n {
+    let j = (i + 1) % n
+    let xi = vx[i]
+    let yi = vy[i]
+    let xj = vx[j]
+    let yj = vy[j]
+    if onSegment(xi, yi, xj, yj, px, py) { return true }
+    let cond = (yi > py) != (yj > py)
+    if cond {
+      let det = (xj - xi)*(py - yi) - (yj - yi)*(px - xi)
+      if (det > 0) == (yj > yi) { inside = !inside }
+    }
+    i = i + 1
+  }
+  return inside
+}
+
+fun main() {
+  let first = input()
+  if first == "" { return }
+  let t = parseInts(first)[0]
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let nm = parseInts(line)
+    let n = nm[0]
+    let m = nm[1]
+    var vx: list<int> = []
+    var vy: list<int> = []
+    var i = 0
+    while i < n {
+      line = input()
+      while line == "" { line = input() }
+      let p = parseInts(line)
+      vx = append(vx, p[0])
+      vy = append(vy, p[1])
+      i = i + 1
+    }
+    var count = 0
+    var s = 0
+    while s < m {
+      line = input()
+      while line == "" { line = input() }
+      let q = parseInts(line)
+      if inside(q[0], q[1], vx, vy, n) { count = count + 1 }
+      s = s + 1
+    }
+    print(str(count))
+    case = case + 1
+  }
+}
+
+main()
