@@ -1,0 +1,104 @@
+/*
+SPOJ: MIXTURES - Mixtures
+https://www.spoj.com/problems/MIXTURES/
+*/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parts[i] as int)
+    i = i + 1
+  }
+  return nums
+}
+
+fun makeIntList(n: int, v: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < n {
+    res = append(res, v)
+    i = i + 1
+  }
+  return res
+}
+
+fun make2d(r: int, c: int, v: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < r {
+    var row: list<int> = []
+    var j = 0
+    while j < c {
+      row = append(row, v)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun minSmoke(nums: list<int>): int {
+  let n = len(nums)
+  if n == 0 { return 0 }
+  let prefix = makeIntList(n + 1, 0)
+  var i = 0
+  while i < n {
+    prefix[i + 1] = (prefix[i] + nums[i]) % 100
+    i = i + 1
+  }
+  var dp = make2d(n, n, 0)
+  var len = 2
+  while len <= n {
+    var i = 0
+    while i + len - 1 < n {
+      let j = i + len - 1
+      dp[i][j] = 1000000000
+      var k = i
+      while k < j {
+        let left = (prefix[k + 1] - prefix[i] + 100) % 100
+        let right = (prefix[j + 1] - prefix[k + 1] + 100) % 100
+        let smoke = dp[i][k] + dp[k + 1][j] + left * right
+        if smoke < dp[i][j] { dp[i][j] = smoke }
+        k = k + 1
+      }
+      i = i + 1
+    }
+    len = len + 1
+  }
+  return dp[0][n - 1]
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let n = line as int
+    let line2 = input()
+    if line2 == "" { break }
+    let nums = parseInts(line2)
+    let res = minSmoke(nums)
+    print(str(res))
+  }
+}
+
+main()
