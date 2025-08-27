@@ -1,0 +1,88 @@
+// Solution for SPOJ PHRASES - Relevant Phrases of Annihilation
+// https://www.spoj.com/problems/PHRASES/
+
+fun trimRight(s: string): string {
+  var end = len(s)
+  while end > 0 && s[end-1:end] == " " {
+    end = end - 1
+  }
+  return s[0:end]
+}
+
+fun appearsTwice(s: string, sub: string): bool {
+  let L = len(sub)
+  var count = 0
+  var i = 0
+  while i + L <= len(s) {
+    if s[i:i+L] == sub {
+      count = count + 1
+      if count == 2 { return true }
+      i = i + L
+    } else {
+      i = i + 1
+    }
+  }
+  return false
+}
+
+fun existsCommon(strs: list<string>, l: int): bool {
+  if l == 0 { return true }
+  let first = strs[0]
+  var i = 0
+  while i + l <= len(first) {
+    let sub = first[i:i+l]
+    if appearsTwice(first, sub) {
+      var ok = true
+      var j = 1
+      while j < len(strs) {
+        if !appearsTwice(strs[j], sub) {
+          ok = false
+          break
+        }
+        j = j + 1
+      }
+      if ok { return true }
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = int(tLine)
+  for _ in 0..t {
+    let n = int(input())
+    var strs: list<string> = []
+    var i = 0
+    while i < n {
+      var line = input()
+      if line == nil { line = "" }
+      line = trimRight(line)
+      strs = append(strs, line)
+      i = i + 1
+    }
+    var minLen = len(strs[0])
+    i = 1
+    while i < len(strs) {
+      if len(strs[i]) < minLen { minLen = len(strs[i]) }
+      i = i + 1
+    }
+    var lo = 1
+    var hi = minLen
+    var ans = 0
+    while lo <= hi {
+      let mid = (lo + hi) / 2
+      if existsCommon(strs, mid) {
+        ans = mid
+        lo = mid + 1
+      } else {
+        hi = mid - 1
+      }
+    }
+    print(ans)
+  }
+}
+
+main()
