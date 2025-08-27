@@ -1,0 +1,96 @@
+// Solution for SPOJ JEWELS - Jewelry and Fashion
+// https://www.spoj.com/problems/JEWELS/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    let ch = str[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      n = n * 10 + (digits[ch] as int)
+    }
+    i = i + 1
+  }
+  return n
+}
+
+fun zeros(n: int): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i <= n {
+    arr = append(arr, 0)
+    i = i + 1
+  }
+  return arr
+}
+
+fun lcs(a: string, b: string): int {
+  let m = len(a)
+  let n = len(b)
+  var dp: list<list<int>> = []
+  var i = 0
+  while i <= m {
+    dp = append(dp, zeros(n))
+    i = i + 1
+  }
+  i = 0
+  while i < m {
+    var j = 0
+    while j < n {
+      if a[i:i+1] == b[j:j+1] {
+        dp[i+1][j+1] = (dp[i][j] as int) + 1
+      } else {
+        let v1 = dp[i][j+1] as int
+        let v2 = dp[i+1][j] as int
+        if v1 >= v2 { dp[i+1][j+1] = v1 } else { dp[i+1][j+1] = v2 }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return dp[m][n] as int
+}
+
+fun reverseStr(s: string): string {
+  var res = ""
+  var i = len(s) - 1
+  while i >= 0 {
+    res = res + s[i:i+1]
+    i = i - 1
+  }
+  return res
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  for _ in 0..t {
+    let s = input()
+    let n = len(s)
+    var best = 0
+    var pos = 1
+    var i = 1
+    while i < n {
+      let left = s[0:i]
+      let right = s[i:]
+      let l1 = lcs(left, right)
+      let l2 = lcs(left, reverseStr(right))
+      var l = l1
+      if l2 > l { l = l2 }
+      if l > best {
+        best = l
+        pos = i
+      }
+      i = i + 1
+    }
+    print(str(best * 2) + " " + str(pos))
+  }
+}
+
+main()
