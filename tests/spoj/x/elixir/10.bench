@@ -1,0 +1,7 @@
+"a+b*c"
+"(a+b)*c"
+{
+  "duration_us": 18109,
+  "memory_bytes": 49312,
+  "name": "main"
+}

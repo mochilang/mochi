@@ -2702,6 +2702,31 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			call := &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0, innerUpdate}}
 			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
 		}
+		if len(st.Assign.Index) == 3 && len(st.Assign.Field) == 0 {
+			idx0, err := compileExpr(st.Assign.Index[0].Start, env)
+			if err != nil {
+				return nil, err
+			}
+			idx1, err := compileExpr(st.Assign.Index[1].Start, env)
+			if err != nil {
+				return nil, err
+			}
+			idx2, err := compileExpr(st.Assign.Index[2].Start, env)
+			if err != nil {
+				return nil, err
+			}
+			val, err := compileExpr(st.Assign.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			// Fallback to list-of-list-of-list semantics when type info is unavailable
+			inner0 := &CallExpr{Func: "Enum.at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0}}
+			inner1 := &CallExpr{Func: "Enum.at", Args: []Expr{inner0, idx1}}
+			inner2Update := &CallExpr{Func: "List.replace_at", Args: []Expr{inner1, idx2, val}}
+			inner1Update := &CallExpr{Func: "List.replace_at", Args: []Expr{inner0, idx1, inner2Update}}
+			call := &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx0, inner1Update}}
+			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+		}
 		return nil, fmt.Errorf("unsupported statement at %d:%d", st.Pos.Line, st.Pos.Column)
 	case st.If != nil:
 		if st.If.ElseIf == nil && len(st.If.Then) == 1 && len(st.If.Else) == 1 {

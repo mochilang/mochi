@@ -23,7 +23,7 @@ func TestExTranspiler_Spoj_Golden(t *testing.T) {
 	ensureElixir(t)
 	root := repoRoot(t)
 	t.Cleanup(updateSpoj)
-	srcDir := filepath.Join(root, "tests", "spoj", "x", "mochi")
+	srcDir := filepath.Join(root, "tests", "spoj", "human", "x", "mochi")
 	outDir := filepath.Join(root, "tests", "spoj", "x", "elixir")
 	os.MkdirAll(outDir, 0o755)
 
@@ -108,7 +108,7 @@ func TestExTranspiler_Spoj_Golden(t *testing.T) {
 
 func updateSpoj() {
 	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "spoj", "x", "mochi")
+	srcDir := filepath.Join(root, "tests", "spoj", "human", "x", "mochi")
 	outDir := filepath.Join(root, "tests", "spoj", "x", "elixir")
 	mdPath := filepath.Join(root, "transpiler", "x", "ex", "SPOJ.md")
 
