@@ -1,0 +1,165 @@
+// Solution for SPOJ EXPEDI - Expedition
+// https://www.spoj.com/problems/EXPEDI/
+
+type PopRes { heap: list<int>, val: int }
+
+fun heap_push(h: list<int>, item: int): list<int> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p] >= heap[i] { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<int>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      var largest = i
+      let l = 2*i + 1
+      let r = 2*i + 2
+      if l < len(heap) && heap[l] > heap[largest] { largest = l }
+      if r < len(heap) && heap[r] > heap[largest] { largest = r }
+      if largest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[largest]
+      heap[largest] = tmp
+      i = largest
+    }
+  }
+  return PopRes { heap: heap, val: top }
+}
+
+fun mergeStops(left: list<list<int>>, right: list<list<int>>): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  var j = 0
+  while i < len(left) && j < len(right) {
+    let L = left[i]
+    let R = right[j]
+    if L[0] < R[0] {
+      res = append(res, L)
+      i = i + 1
+    } else {
+      res = append(res, R)
+      j = j + 1
+    }
+  }
+  while i < len(left) { res = append(res, left[i]); i = i + 1 }
+  while j < len(right) { res = append(res, right[j]); j = j + 1 }
+  return res
+}
+
+fun sortStops(arr: list<list<int>>): list<list<int>> {
+  if len(arr) <= 1 { return arr }
+  let mid = len(arr) / 2
+  let left = sortStops(arr[0:mid])
+  let right = sortStops(arr[mid:len(arr)])
+  return mergeStops(left, right)
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let sp = splitSpaces(line)
+  var res: list<int> = []
+  var i = 0
+  while i < len(sp) {
+    res = append(res, int(sp[i]))
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let nLine = input()
+    if nLine == "" { return }
+    let n = nLine as int
+    var stops: list<list<int>> = []
+    var i = 0
+    while i < n {
+      let l = input()
+      let nums = parseInts(l)
+      let d = nums[0]
+      let f = nums[1]
+      stops = append(stops, [d, f])
+      i = i + 1
+    }
+    let lpLine = input()
+    let lp = parseInts(lpLine)
+    let L = lp[0]
+    let P = lp[1]
+    var j = 0
+    while j < len(stops) {
+      stops[j] = [L - stops[j][0], stops[j][1]]
+      j = j + 1
+    }
+    stops = append(stops, [L, 0])
+    stops = sortStops(stops)
+    var fuel = P
+    var prev = 0
+    var heap: list<int> = []
+    var used = 0
+    var idx = 0
+    var ok = true
+    while idx < len(stops) {
+      let s = stops[idx]
+      let dist = s[0] - prev
+      fuel = fuel - dist
+      while fuel < 0 {
+        if len(heap) == 0 {
+          ok = false
+          break
+        }
+        let pr = heap_pop(heap)
+        heap = pr.heap
+        fuel = fuel + pr.val
+        used = used + 1
+      }
+      if !ok { break }
+      heap = heap_push(heap, s[1])
+      prev = s[0]
+      idx = idx + 1
+    }
+    if ok {
+      print(str(used))
+    } else {
+      print("-1")
+    }
+    case = case + 1
+  }
+}
+
+main()
