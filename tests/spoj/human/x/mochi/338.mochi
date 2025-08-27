@@ -1,0 +1,166 @@
+// Solution for SPOJ ROADS - Roads
+// https://www.spoj.com/problems/ROADS/
+
+type Edge { to: int, len: int, toll: int }
+
+type Node { v: int, c: int, d: int }
+
+type PopRes { heap: list<Node>, node: Node }
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun make_edge_list(n: int): list<list<Edge>> {
+  var g: list<list<Edge>> = []
+  var i = 0
+  while i <= n {
+    g = append(g, [])
+    i = i + 1
+  }
+  return g
+}
+
+fun make_matrix(rows: int, cols: int, val: int): list<list<int>> {
+  var mat: list<list<int>> = []
+  var i = 0
+  while i < rows {
+    var row: list<int> = []
+    var j = 0
+    while j < cols {
+      row = append(row, val)
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return mat
+}
+
+fun heap_push(h: list<Node>, item: Node): list<Node> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p].d <= heap[i].d { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<Node>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      let l = 2*i + 1
+      let r = 2*i + 2
+      var smallest = i
+      if l < len(heap) && heap[l].d < heap[smallest].d { smallest = l }
+      if r < len(heap) && heap[r].d < heap[smallest].d { smallest = r }
+      if smallest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[smallest]
+      heap[smallest] = tmp
+      i = smallest
+    }
+  }
+  return PopRes { heap: heap, node: top }
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let K = parseIntStr(line)
+    let N = parseIntStr(input())
+    let R = parseIntStr(input())
+    var g = make_edge_list(N)
+    var i = 0
+    while i < R {
+      let l = input()
+      let parts = split(l)
+      let s = parseIntStr(parts[0])
+      let d = parseIntStr(parts[1])
+      let L = parseIntStr(parts[2])
+      let T = parseIntStr(parts[3])
+      g[s] = append(g[s], Edge{ to:d, len:L, toll:T })
+      i = i + 1
+    }
+    let inf = 1000000000
+    var dist = make_matrix(N+1, K+1, inf)
+    dist[1][0] = 0
+    var heap: list<Node> = []
+    heap = heap_push(heap, Node{ v:1, c:0, d:0 })
+    while len(heap) > 0 {
+      let pr = heap_pop(heap)
+      heap = pr.heap
+      let cur = pr.node
+      if cur.d != dist[cur.v][cur.c] { continue }
+      var j = 0
+      while j < len(g[cur.v]) {
+        let e = g[cur.v][j]
+        let nc = cur.c + e.toll
+        if nc <= K {
+          let nd = cur.d + e.len
+          if nd < dist[e.to][nc] {
+            dist[e.to][nc] = nd
+            heap = heap_push(heap, Node{ v:e.to, c:nc, d:nd })
+          }
+        }
+        j = j + 1
+      }
+    }
+    var ans = inf
+    var c = 0
+    while c <= K {
+      if dist[N][c] < ans { ans = dist[N][c] }
+      c = c + 1
+    }
+    if ans == inf {
+      print("-1")
+    } else {
+      print(ans)
+    }
+    case = case + 1
+  }
+}
+
+main()
