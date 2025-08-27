@@ -3275,7 +3275,8 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 func (f *ForStmt) emit(w io.Writer, indent int) {
 	pushAliasScope()
 	alias := f.Name
-	used := stmtsUse(alias, f.Body)
+	unused := strings.HasPrefix(alias, "__") || alias == "_"
+	used := !unused
 	if used {
 		aliasStack[len(aliasStack)-1][alias] = alias
 		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], alias)
