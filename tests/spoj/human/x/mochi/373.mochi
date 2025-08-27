@@ -1,0 +1,289 @@
+// Solution for SPOJ GREED - Greedy island
+// https://www.spoj.com/problems/GREED/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun make_matrix(r: int, c: int): list<list<int>> {
+  var m: list<list<int>> = []
+  var i = 0
+  while i < r {
+    var row: list<int> = []
+    var j = 0
+    while j < c {
+      row = append(row, 0)
+      j = j + 1
+    }
+    m = append(m, row)
+    i = i + 1
+  }
+  return m
+}
+
+fun hungarian(weights: list<list<int>>, m: int, n: int): int {
+  var maxw = 0
+  var i = 0
+  while i < m {
+    var j = 0
+    while j < n {
+      let w = weights[i][j]
+      if w > maxw { maxw = w }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var N = m
+  if n > N { N = n }
+  var a: list<list<int>> = []
+  i = 0
+  while i <= N {
+    var row: list<int> = []
+    var j = 0
+    while j <= N {
+      row = append(row, 0)
+      j = j + 1
+    }
+    a = append(a, row)
+    i = i + 1
+  }
+  i = 1
+  while i <= N {
+    var j = 1
+    while j <= N {
+      var w = 0
+      if i <= m && j <= n { w = weights[i - 1][j - 1] }
+      a[i][j] = maxw - w
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var u: list<int> = []
+  var v: list<int> = []
+  var p: list<int> = []
+  var way: list<int> = []
+  i = 0
+  while i <= N {
+    u = append(u, 0)
+    v = append(v, 0)
+    p = append(p, 0)
+    way = append(way, 0)
+    i = i + 1
+  }
+  let INF = 1000000000
+  i = 1
+  while i <= N {
+    p[0] = i
+    var j0 = 0
+    var minv: list<int> = []
+    var used: list<int> = []
+    var j = 0
+    while j <= N {
+      minv = append(minv, INF)
+      used = append(used, 0)
+      j = j + 1
+    }
+    used[0] = 1
+    while true {
+      used[j0] = 1
+      let i0 = p[j0]
+      var delta = INF
+      var j1 = 0
+      j = 1
+      while j <= N {
+        if used[j] == 0 {
+          let cur = a[i0][j] - u[i0] - v[j]
+          if cur < minv[j] {
+            minv[j] = cur
+            way[j] = j0
+          }
+          if minv[j] < delta {
+            delta = minv[j]
+            j1 = j
+          }
+        }
+        j = j + 1
+      }
+      j = 0
+      while j <= N {
+        if used[j] == 1 {
+          u[p[j]] = u[p[j]] + delta
+          v[j] = v[j] - delta
+        } else {
+          minv[j] = minv[j] - delta
+        }
+        j = j + 1
+      }
+      j0 = j1
+      if p[j0] == 0 { break }
+    }
+    while true {
+      let j1 = way[j0]
+      p[j0] = p[j1]
+      j0 = j1
+      if j0 == 0 { break }
+    }
+    i = i + 1
+  }
+  var res = 0
+  var j = 1
+  while j <= n {
+    let iidx = p[j]
+    if iidx >= 1 && iidx <= m {
+      res = res + weights[iidx - 1][j - 1]
+    }
+    j = j + 1
+  }
+  return res
+}
+
+fun bfs(adj: list<list<int>>, start: int, n: int): list<int> {
+  let INF = 1000000000
+  var dist: list<int> = []
+  var i = 0
+  while i <= n {
+    dist = append(dist, INF)
+    i = i + 1
+  }
+  var q: list<int> = []
+  var qi = 0
+  dist[start] = 0
+  q = append(q, start)
+  while qi < len(q) {
+    let v = q[qi]
+    qi = qi + 1
+    var j = 0
+    while j < len(adj[v]) {
+      let to = adj[v][j]
+      if dist[to] > dist[v] + 1 {
+        dist[to] = dist[v] + 1
+        q = append(q, to)
+      }
+      j = j + 1
+    }
+  }
+  return dist
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun main() {
+  let t = parseIntStr(readNonEmpty())
+  var case = 0
+  while case < t {
+    let n = parseIntStr(readNonEmpty())
+    var cards: list<int> = []
+    var i = 0
+    while i < n {
+      cards = append(cards, parseIntStr(readNonEmpty()))
+      i = i + 1
+    }
+    var adj: list<list<int>> = []
+    i = 0
+    while i <= n {
+      adj = append(adj, [])
+      i = i + 1
+    }
+    let e = parseIntStr(readNonEmpty())
+    var j = 0
+    while j < e {
+      let parts = split(readNonEmpty())
+      let x = parseIntStr(parts[0])
+      let y = parseIntStr(parts[1])
+      adj[x] = append(adj[x], y)
+      adj[y] = append(adj[y], x)
+      j = j + 1
+    }
+    var dist: list<list<int>> = []
+    i = 0
+    while i <= n {
+      dist = append(dist, [])
+      i = i + 1
+    }
+    i = 1
+    while i <= n {
+      dist[i] = bfs(adj, i, n)
+      i = i + 1
+    }
+    var cnt: list<int> = []
+    i = 0
+    while i <= n {
+      cnt = append(cnt, 0)
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      let v = cards[i]
+      cnt[v] = cnt[v] + 1
+      i = i + 1
+    }
+    var surplus: list<int> = []
+    var deficit: list<int> = []
+    i = 1
+    while i <= n {
+      if cnt[i] > 1 {
+        var k = 0
+        while k < cnt[i] - 1 {
+          surplus = append(surplus, i)
+          k = k + 1
+        }
+      } else if cnt[i] == 0 {
+        deficit = append(deficit, i)
+      }
+      i = i + 1
+    }
+    let m = len(surplus)
+    var weights = make_matrix(m, m)
+    i = 0
+    while i < m {
+      var j2 = 0
+      while j2 < m {
+        let s = surplus[i]
+        let d = deficit[j2]
+        let c = dist[s][d]
+        weights[i][j2] = -c
+        j2 = j2 + 1
+      }
+      i = i + 1
+    }
+    let res = hungarian(weights, m, m)
+    let ans = -res
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
