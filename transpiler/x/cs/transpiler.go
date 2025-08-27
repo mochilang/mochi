@@ -1384,7 +1384,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 		if t == "object" || t == "" {
 			fmt.Fprint(w, "((dynamic)(")
 			f.Target.emit(w)
-			fmt.Fprintf(w, ")).%s", safeName(f.Name))
+			fmt.Fprintf(w, "))[\"%s\"]", f.Name)
 		} else {
 			f.Target.emit(w)
 			fmt.Fprintf(w, ".%s", safeName(f.Name))
@@ -2406,20 +2406,20 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 		return
 	}
-       if t == "object" || t == "" {
-               fmt.Fprint(w, "((dynamic)")
-               ix.Target.emit(w)
-               fmt.Fprint(w, ")[")
-               if idxType != "int" && idxType != "string" {
-                       fmt.Fprint(w, "(int)(")
-                       ix.Index.emit(w)
-                       fmt.Fprint(w, ")")
-               } else {
-                       ix.Index.emit(w)
-               }
-               fmt.Fprint(w, "]")
-               return
-       }
+	if t == "object" || t == "" {
+		fmt.Fprint(w, "((dynamic)")
+		ix.Target.emit(w)
+		fmt.Fprint(w, ")[")
+		if idxType != "int" && idxType != "string" {
+			fmt.Fprint(w, "(int)(")
+			ix.Index.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			ix.Index.emit(w)
+		}
+		fmt.Fprint(w, "]")
+		return
+	}
 	if strings.HasSuffix(targetType, "[]") {
 		usesIdx = true
 		fmt.Fprint(w, "_idx(")
@@ -2502,7 +2502,26 @@ func (m *MapLit) emit(w io.Writer) {
 			fmt.Fprint(w, ", ")
 		}
 		fmt.Fprint(w, "{")
-		it.Key.emit(w)
+		switch key := it.Key.(type) {
+		case *StringLit:
+			name := key.Value
+			if idx := strings.LastIndex(name, "_"); idx > 0 {
+				if _, err := strconv.Atoi(name[idx+1:]); err == nil {
+					name = name[:idx]
+				}
+			}
+			fmt.Fprintf(w, "\"%s\"", name)
+		case *VarRef:
+			name := key.Name
+			if idx := strings.LastIndex(name, "_"); idx > 0 {
+				if _, err := strconv.Atoi(name[idx+1:]); err == nil {
+					name = name[:idx]
+				}
+			}
+			fmt.Fprintf(w, "\"%s\"", name)
+		default:
+			it.Key.emit(w)
+		}
 		fmt.Fprint(w, ", ")
 		if l, ok := it.Value.(*ListLit); ok && len(l.Elems) == 0 && (l.ElemType == "" || l.ElemType == "object[]") && strings.HasSuffix(v, "[]") {
 			l.ElemType = v
@@ -5420,6 +5439,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\tif (v is long l) return l;\n")
 		buf.WriteString("\t\tif (v is int i) return i;\n")
 		buf.WriteString("\t\tif (v is double d) return (long)d;\n")
+		buf.WriteString("\t\tif (v is System.Numerics.BigInteger bi) return (long)bi;\n")
 		buf.WriteString("\t\tif (v is bool b) return b ? 1L : 0L;\n")
 		buf.WriteString("\t\tif (v is string s) {\n")
 		buf.WriteString("\t\t\tif (long.TryParse(s, out var n)) return n;\n")
