@@ -129,6 +129,11 @@ var scalaKeywords = map[string]bool{
 	"yield": true,
 }
 
+var scalaKnownMethods = map[string]bool{
+        "split":   true,
+        "charAt": true,
+}
+
 func escapeName(name string) string {
 	// Preserve placeholder underscores in pattern matches without quoting.
 	if name == "_" {
@@ -584,12 +589,15 @@ func (t *TypeDeclStmt) emit(w io.Writer) {
 }
 
 func (s *VarStmt) emit(w io.Writer) {
-	typ := s.Type
-	if ce, ok := s.Value.(*CastExpr); ok && strings.HasPrefix(ce.Type, "ArrayBuffer[") {
-		if typ == "ArrayBuffer[Any]" || typ == "" || typ == "Any" {
-			typ = ce.Type
-		}
-	}
+        typ := s.Type
+        if typ != "" {
+                localVarTypes[s.Name] = typ
+        }
+        if ce, ok := s.Value.(*CastExpr); ok && strings.HasPrefix(ce.Type, "ArrayBuffer[") {
+                if typ == "ArrayBuffer[Any]" || typ == "" || typ == "Any" {
+                        typ = ce.Type
+                }
+        }
 	fmt.Fprintf(w, "var %s", escapeName(s.Name))
 	if typ != "" {
 		fmt.Fprintf(w, ": %s", typ)
@@ -684,28 +692,36 @@ func (s *AssignStmt) emit(w io.Writer) {
 }
 
 func (f *FunStmt) emit(w io.Writer) {
-	fmt.Fprintf(w, "def %s(", escapeName(f.Name))
-	for i, p := range f.Params {
-		if i > 0 {
-			fmt.Fprint(w, ", ")
-		}
-		if p.Type != "" {
-			fmt.Fprintf(w, "%s: %s", escapeName(p.Name), p.Type)
-		} else {
-			fmt.Fprint(w, escapeName(p.Name))
-		}
-	}
-	fmt.Fprint(w, ")")
-	if f.Return != "" {
-		fmt.Fprintf(w, ": %s", f.Return)
-	}
-	fmt.Fprint(w, " = {\n")
-	for _, st := range f.Body {
-		fmt.Fprint(w, "    ")
-		st.emit(w)
-		fmt.Fprint(w, "\n")
-	}
-	fmt.Fprint(w, "  }")
+        saved := localVarTypes
+        localVarTypes = copyMap(localVarTypes)
+        for _, p := range f.Params {
+                if p.Type != "" {
+                        localVarTypes[p.Name] = p.Type
+                }
+        }
+        fmt.Fprintf(w, "def %s(", escapeName(f.Name))
+        for i, p := range f.Params {
+                if i > 0 {
+                        fmt.Fprint(w, ", ")
+                }
+                if p.Type != "" {
+                        fmt.Fprintf(w, "%s: %s", escapeName(p.Name), p.Type)
+                } else {
+                        fmt.Fprint(w, escapeName(p.Name))
+                }
+        }
+        fmt.Fprint(w, ")")
+        if f.Return != "" {
+                fmt.Fprintf(w, ": %s", f.Return)
+        }
+        fmt.Fprint(w, " = {\n")
+        for _, st := range f.Body {
+                fmt.Fprint(w, "    ")
+                st.emit(w)
+                fmt.Fprint(w, "\n")
+        }
+        fmt.Fprint(w, "  }")
+        localVarTypes = saved
 }
 
 func (r *ReturnStmt) emit(w io.Writer) {
@@ -1180,25 +1196,30 @@ type MapEntry struct {
 type MapLit struct{ Items []MapEntry }
 
 func (m *MapLit) emit(w io.Writer) {
-	fmt.Fprint(w, "scala.collection.mutable.Map(")
-	for i, it := range m.Items {
-		if i > 0 {
-			fmt.Fprint(w, ", ")
-		}
-		k := it.Key
-		if inferType(k) == "BigInt" {
-			k = &CastExpr{Value: k, Type: "BigInt"}
-		}
-		k.emit(w)
-		fmt.Fprint(w, " -> (")
-		v := it.Value
-		if inferType(v) == "BigInt" || it.Type == "BigInt" {
-			v = &CastExpr{Value: v, Type: "BigInt"}
-		}
-		v.emit(w)
-		fmt.Fprint(w, ")")
-	}
-	fmt.Fprint(w, ")")
+        fmt.Fprint(w, "scala.collection.mutable.Map(")
+        for i, it := range m.Items {
+                if i > 0 {
+                        fmt.Fprint(w, ", ")
+                }
+                switch k := it.Key.(type) {
+                case *Name:
+                        fmt.Fprint(w, quoteScalaString(k.Name))
+                default:
+                        key := it.Key
+                        if inferType(key) == "BigInt" {
+                                key = &CastExpr{Value: key, Type: "BigInt"}
+                        }
+                        key.emit(w)
+                }
+                fmt.Fprint(w, " -> (")
+                v := it.Value
+                if inferType(v) == "BigInt" || it.Type == "BigInt" {
+                        v = &CastExpr{Value: v, Type: "BigInt"}
+                }
+                v.emit(w)
+                fmt.Fprint(w, ")")
+        }
+        fmt.Fprint(w, ")")
 }
 
 // StructLit represents constructing a case class value.
@@ -1657,55 +1678,72 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
-	isMap := false
-	switch r := f.Receiver.(type) {
-	case *Name:
-		if typ, ok := localVarTypes[r.Name]; ok {
-			if strings.HasPrefix(typ, "Map[") || strings.HasPrefix(typ, "scala.collection.mutable.Map[") {
-				isMap = true
-			}
-		}
-	case *IndexExpr:
-		if strings.HasPrefix(r.Type, "Map[") || strings.HasPrefix(r.Type, "scala.collection.mutable.Map[") {
-			isMap = true
-		}
-	}
-	needParens := false
-	switch f.Receiver.(type) {
-	case *BinaryExpr, *CallExpr:
-		needParens = true
-	}
-	if needParens {
-		fmt.Fprint(w, "(")
-	}
-	f.Receiver.emit(w)
-	if needParens {
-		fmt.Fprint(w, ")")
-	}
-	if f.Name == "asInstanceOf[Int]" && isBigIntExpr(f.Receiver) {
-		fmt.Fprint(w, ".toInt")
-		return
-	}
-	if !isMap {
-		recType := ""
-		switch r := f.Receiver.(type) {
-		case *Name:
-			recType = localVarTypes[r.Name]
-		case *IndexExpr:
-			recType = r.Type
-		}
-		if recType == "" || recType == "Any" {
-			if st, ok := fieldStructs[f.Name]; ok && st != "" {
-				fmt.Fprintf(w, ".asInstanceOf[%s].%s", st, escapeName(f.Name))
-				return
-			}
-		}
-	}
-	if isMap && f.Name != "contains" && f.Name != "update" && f.Name != "keys" && f.Name != "values" {
-		fmt.Fprintf(w, "(\"%s\")", f.Name)
-	} else {
-		fmt.Fprintf(w, ".%s", escapeName(f.Name))
-	}
+        isMap := false
+        recType := ""
+        switch r := f.Receiver.(type) {
+        case *Name:
+                if typ, ok := localVarTypes[r.Name]; ok {
+                        recType = typ
+                        if strings.HasPrefix(typ, "Map[") || strings.HasPrefix(typ, "scala.collection.mutable.Map[") {
+                                isMap = true
+                        } else if typ == "" || typ == "Any" {
+                                if _, ok := mapEntryTypes[r.Name]; ok {
+                                        isMap = true
+                                        recType = ""
+                                } else if st, ok := fieldStructs[f.Name]; !ok || st == "" {
+                                        if !scalaKnownMethods[f.Name] {
+                                                isMap = true
+                                        }
+                                }
+                        }
+                } else if _, ok := mapEntryTypes[r.Name]; ok {
+                        isMap = true
+                        recType = ""
+                } else {
+                        if st, ok := fieldStructs[f.Name]; !ok || st == "" {
+                                if !scalaKnownMethods[f.Name] {
+                                        isMap = true
+                                }
+                        }
+                }
+        case *IndexExpr:
+                recType = r.Type
+                if strings.HasPrefix(r.Type, "Map[") || strings.HasPrefix(r.Type, "scala.collection.mutable.Map[") || r.ForceMap {
+                        isMap = true
+                }
+        }
+        needParens := false
+        switch f.Receiver.(type) {
+        case *BinaryExpr, *CallExpr:
+                needParens = true
+        }
+        if needParens {
+                fmt.Fprint(w, "(")
+        }
+        f.Receiver.emit(w)
+        if needParens {
+                fmt.Fprint(w, ")")
+        }
+        if f.Name == "asInstanceOf[Int]" && isBigIntExpr(f.Receiver) {
+                fmt.Fprint(w, ".toInt")
+                return
+        }
+        if !isMap {
+                if recType == "" || recType == "Any" {
+                        if st, ok := fieldStructs[f.Name]; ok && st != "" {
+                                fmt.Fprintf(w, ".asInstanceOf[%s].%s", st, escapeName(f.Name))
+                                return
+                        }
+                }
+        }
+        if isMap && f.Name != "contains" && f.Name != "update" && f.Name != "keys" && f.Name != "values" {
+                if recType == "" || recType == "Any" {
+                        fmt.Fprint(w, ".asInstanceOf[scala.collection.mutable.Map[String,Any]]")
+                }
+                fmt.Fprintf(w, "(\"%s\")", f.Name)
+        } else {
+                fmt.Fprintf(w, ".%s", escapeName(f.Name))
+        }
 }
 
 // SubstringExpr represents substring(s, i, j) which becomes s.substring(i, j).
