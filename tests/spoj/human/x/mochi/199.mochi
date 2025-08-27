@@ -1,0 +1,173 @@
+// Solution for SPOJ EMPTY - Empty Cuboids
+// https://www.spoj.com/problems/EMPTY/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+fun mergePts(a: list<list<int>>, b: list<list<int>>): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  var j = 0
+  while i < len(a) && j < len(b) {
+    if a[i][0] <= b[j][0] {
+      res = append(res, a[i])
+      i = i + 1
+    } else {
+      res = append(res, b[j])
+      j = j + 1
+    }
+  }
+  while i < len(a) { res = append(res, a[i]); i = i + 1 }
+  while j < len(b) { res = append(res, b[j]); j = j + 1 }
+  return res
+}
+
+fun sortPts(arr: list<list<int>>): list<list<int>> {
+  if len(arr) <= 1 { return arr }
+  let mid = len(arr) / 2
+  let left = sortPts(arr[0:mid])
+  let right = sortPts(arr[mid:len(arr)])
+  return mergePts(left, right)
+}
+
+fun insertYZ(yz: list<list<int>>, y: int, z: int): list<list<int>> {
+  var i = len(yz)
+  yz = append(yz, [y, z])
+  while i > 0 && yz[i-1][0] > y {
+    yz[i] = yz[i-1]
+    i = i - 1
+  }
+  yz[i] = [y, z]
+  return yz
+}
+
+fun solve(points: list<list<int>>): list<int> {
+  let LIMIT = 1000000
+  points = sortPts(points)
+  var xs: list<int> = []
+  var i = 0
+  while i < len(points) {
+    let x = points[i][0]
+    if len(xs) == 0 || xs[len(xs)-1] != x {
+      xs = append(xs, x)
+    }
+    i = i + 1
+  }
+  xs = append(xs, LIMIT)
+  var idx = 0
+  var yz: list<list<int>> = []
+  var bestX = 1
+  var bestY = 1
+  var bestZ = 1
+  var bestVol: bigint = 0 as bigint
+  var xi = 0
+  while xi < len(xs) {
+    let X = xs[xi]
+    while idx < len(points) && points[idx][0] < X {
+      yz = insertYZ(yz, points[idx][1], points[idx][2])
+      idx = idx + 1
+    }
+    var minZ = LIMIT
+    var j = 0
+    while j < len(yz) {
+      let yVal = yz[j][0]
+      let vol: bigint = (X as bigint) * (yVal as bigint) * (minZ as bigint)
+      if vol > bestVol {
+        bestVol = vol
+        bestX = X
+        bestY = yVal
+        bestZ = minZ
+      }
+      while j < len(yz) && yz[j][0] == yVal {
+        if yz[j][1] < minZ { minZ = yz[j][1] }
+        j = j + 1
+      }
+    }
+    let volEnd: bigint = (X as bigint) * (LIMIT as bigint) * (minZ as bigint)
+    if volEnd > bestVol {
+      bestVol = volEnd
+      bestX = X
+      bestY = LIMIT
+      bestZ = minZ
+    }
+    xi = xi + 1
+  }
+  return [bestX, bestY, bestZ]
+}
+
+fun main() {
+  let t = nextInt()
+  var case = 0
+  while case < t {
+    let n = nextInt()
+    var pts: list<list<int>> = []
+    var i = 0
+    while i < n {
+      let x = nextInt()
+      let y = nextInt()
+      let z = nextInt()
+      pts = append(pts, [x, y, z])
+      i = i + 1
+    }
+    let res = solve(pts)
+    print(str(res[0]) + " " + str(res[1]) + " " + str(res[2]))
+    case = case + 1
+  }
+}
+
+main()
