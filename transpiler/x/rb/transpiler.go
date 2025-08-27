@@ -3768,13 +3768,21 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			body[i] = st2
 		}
+		var params []string
+		for _, p := range st.Fun.Params {
+			name := safeName(p.Name)
+			if p.Name != "" && unicode.IsUpper(rune(p.Name[0])) {
+				if name != p.Name {
+					name = "_" + p.Name
+				} else {
+					name = "_" + name
+				}
+			}
+			params = append(params, name)
+		}
 		popScope()
 		currentEnv = savedEnv
 		funcDepth--
-		var params []string
-		for _, p := range st.Fun.Params {
-			params = append(params, safeName(p.Name))
-		}
 		// In earlier versions the transpiler copied struct parameters at
 		// the start of top‑level functions to emulate pass‑by‑value
 		// semantics.  This caused issues for functions that rely on
@@ -3863,13 +3871,21 @@ func convertFunc(fn *parser.FunStmt) (*FuncStmt, error) {
 			body = append(body, st2)
 		}
 	}
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		name := safeName(p.Name)
+		if p.Name != "" && unicode.IsUpper(rune(p.Name[0])) {
+			if name != p.Name {
+				name = "_" + p.Name
+			} else {
+				name = "_" + name
+			}
+		}
+		params[i] = name
+	}
 	popScope()
 	currentEnv = savedEnv
 	funcDepth--
-	params := make([]string, len(fn.Params))
-	for i, p := range fn.Params {
-		params[i] = safeName(p.Name)
-	}
 	return &FuncStmt{Name: fn.Name, Params: params, Body: body}, nil
 }
 
@@ -5063,10 +5079,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &GroupExpr{Expr: ex}, nil
 	case p.Selector != nil:
-		name := p.Selector.Root
-		if topVars != nil && topVars[name] && !inScope(name) {
-			name = "$" + name
-		}
+		name := identName(p.Selector.Root)
 		expr := Expr(&Ident{Name: name})
 		var t types.Type
 		if currentEnv != nil {
