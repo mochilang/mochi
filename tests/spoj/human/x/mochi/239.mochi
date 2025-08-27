@@ -1,0 +1,273 @@
+// Solution for SPOJ BTOUR - Tour de Byteland
+// https://www.spoj.com/problems/BTOUR/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+type Edge { to: int, w: int }
+type FullEdge { u: int, v: int, w: int }
+type PQNode { v: int, w: int }
+type PopRes { heap: list<PQNode>, node: PQNode }
+
+fun make_edge_list(n: int): list<list<Edge>> {
+  var lst: list<list<Edge>> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, [])
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun heap_push(h: list<PQNode>, item: PQNode): list<PQNode> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p].w <= heap[i].w { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<PQNode>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      let l = 2*i + 1
+      let r = 2*i + 2
+      var smallest = i
+      if l < len(heap) && heap[l].w < heap[smallest].w { smallest = l }
+      if r < len(heap) && heap[r].w < heap[smallest].w { smallest = r }
+      if smallest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[smallest]
+      heap[smallest] = tmp
+      i = smallest
+    }
+  }
+  return PopRes { heap: heap, node: top }
+}
+
+let INF = 1000000000000000
+
+fun dijkstra(adj: list<list<Edge>>, n: int, src: int, skipU: int, skipV: int, skipW: int): list<int> {
+  var dist = make_int_list(n+1, INF)
+  dist[src] = 0
+  var heap: list<PQNode> = []
+  heap = heap_push(heap, PQNode{ v:src, w:0 })
+  while len(heap) > 0 {
+    let pr = heap_pop(heap)
+    heap = pr.heap
+    let cur = pr.node
+    if cur.w != dist[cur.v] { continue }
+    var i = 0
+    while i < len(adj[cur.v]) {
+      let e = adj[cur.v][i]
+      if (cur.v == skipU && e.to == skipV && e.w == skipW) || (cur.v == skipV && e.to == skipU && e.w == skipW) {
+        i = i + 1
+        continue
+      }
+      let nd = cur.w + e.w
+      if nd < dist[e.to] {
+        dist[e.to] = nd
+        heap = heap_push(heap, PQNode{ v:e.to, w:nd })
+      }
+      i = i + 1
+    }
+  }
+  return dist
+}
+
+fun countPaths(edges: list<FullEdge>, dist: list<int>, n: int, src: int, target: int, skipU: int, skipV: int, skipW: int): map<int, int> {
+  var dag = make_edge_list(n)
+  var indeg = make_int_list(n+1, 0)
+  var i = 0
+  while i < len(edges) {
+    let e = edges[i]
+    if (e.u == skipU && e.v == skipV && e.w == skipW) || (e.u == skipV && e.v == skipU && e.w == skipW) {
+      i = i + 1
+      continue
+    }
+    if dist[e.u] < INF && dist[e.v] < INF {
+      if dist[e.u] + e.w == dist[e.v] {
+        dag[e.u] = append(dag[e.u], Edge{ to:e.v, w:0 })
+        indeg[e.v] = indeg[e.v] + 1
+      }
+      if dist[e.v] + e.w == dist[e.u] {
+        dag[e.v] = append(dag[e.v], Edge{ to:e.u, w:0 })
+        indeg[e.u] = indeg[e.u] + 1
+      }
+    }
+    i = i + 1
+  }
+  var q: list<int> = []
+  var qi = 0
+  var order: list<int> = []
+  i = 1
+  while i <= n {
+    if dist[i] < INF && indeg[i] == 0 {
+      q = append(q, i)
+    }
+    i = i + 1
+  }
+  while qi < len(q) {
+    let u = q[qi]; qi = qi + 1
+    order = append(order, u)
+    var j = 0
+    while j < len(dag[u]) {
+      let v = dag[u][j].to
+      indeg[v] = indeg[v] - 1
+      if indeg[v] == 0 {
+        q = append(q, v)
+      }
+      j = j + 1
+    }
+  }
+  var ways: list<map<int,int>> = []
+  i = 0
+  while i <= n {
+    ways = append(ways, {})
+    i = i + 1
+  }
+  ways[src][0] = 1
+  var idx = 0
+  while idx < len(order) {
+    let u = order[idx]; idx = idx + 1
+    var j = 0
+    while j < len(dag[u]) {
+      let v = dag[u][j].to
+      for k in ways[u] {
+        let cnt = ways[u][k]
+        let nk = k + 1
+        var prev = 0
+        if nk in ways[v] { prev = ways[v][nk] }
+        ways[v][nk] = prev + cnt
+      }
+      j = j + 1
+    }
+  }
+  return ways[target]
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let nm = parseInts(line)
+    let n = nm[0]
+    let m = nm[1]
+    var adj = make_edge_list(n)
+    var edges: list<FullEdge> = []
+    var i = 0
+    while i < m {
+      var l = input()
+      while l == "" { l = input() }
+      let arr = parseInts(l)
+      let u = arr[0]
+      let v = arr[1]
+      let w = arr[2]
+      adj[u] = append(adj[u], Edge{ to:v, w:w })
+      adj[v] = append(adj[v], Edge{ to:u, w:w })
+      edges = append(edges, FullEdge{ u:u, v:v, w:w })
+      i = i + 1
+    }
+    var bestLen = INF
+    var bestCounts: map<int,int> = {}
+    i = 0
+    while i < len(edges) {
+      let e = edges[i]
+      let dist = dijkstra(adj, n, e.u, e.u, e.v, e.w)
+      if dist[e.v] < INF {
+        let pathCounts = countPaths(edges, dist, n, e.u, e.v, e.u, e.v, e.w)
+        let cycleLen = dist[e.v] + e.w
+        for k in pathCounts {
+          let cnt = pathCounts[k]
+          let cycleEdges = k + 1
+          if cycleLen < bestLen {
+            bestLen = cycleLen
+            bestCounts = {}
+          }
+          if cycleLen == bestLen {
+            var prev = 0
+            if cycleEdges in bestCounts { prev = bestCounts[cycleEdges] }
+            bestCounts[cycleEdges] = prev + cnt
+          }
+        }
+      }
+      i = i + 1
+    }
+    if bestLen == INF {
+      print("0 0")
+    } else {
+      var total = 0
+      for e in bestCounts {
+        total = total + bestCounts[e] / e
+      }
+      print(str(bestLen) + " " + str(total))
+    }
+    case = case + 1
+  }
+}
+
+main()
