@@ -1,0 +1,103 @@
+// Solution for SPOJ PARTIT - Partition
+// https://www.spoj.com/problems/PARTIT/
+
+let maxM = 220
+let maxN = 10
+var dp: list<list<list<int>>> = []
+var used: list<list<list<bool>>> = []
+var i = 0
+while i <= maxM {
+  var layer: list<list<int>> = []
+  var layerU: list<list<bool>> = []
+  var j = 0
+  while j <= maxN {
+    var row: list<int> = []
+    var rowU: list<bool> = []
+    var k = 0
+    while k <= maxM {
+      row = append(row, 0)
+      rowU = append(rowU, false)
+      k = k + 1
+    }
+    layer = append(layer, row)
+    layerU = append(layerU, rowU)
+    j = j + 1
+  }
+  dp = append(dp, layer)
+  used = append(used, layerU)
+  i = i + 1
+}
+
+fun ways(m: int, n: int, minVal: int): int {
+  var layer = dp[m]
+  var row = layer[n]
+  var uLayer = used[m]
+  var uRow = uLayer[n]
+  if uRow[minVal] { return row[minVal] }
+  var res = 0
+  if n == 0 {
+    if m == 0 { res = 1 } else { res = 0 }
+  } else {
+    var i = minVal
+    while i * n <= m {
+      res = res + ways(m - i, n - 1, i)
+      i = i + 1
+    }
+  }
+  row[minVal] = res
+  uRow[minVal] = true
+  layer[n] = row
+  uLayer[n] = uRow
+  dp[m] = layer
+  used[m] = uLayer
+  return res
+}
+
+fun build(m: int, n: int, k: int): list<int> {
+  var res: list<int> = []
+  var mm = m
+  var nn = n
+  var kk = k
+  var minVal = 1
+  while nn > 0 {
+    var i = minVal
+    while i * nn <= mm {
+      let c = ways(mm - i, nn - 1, i)
+      if kk > c {
+        kk = kk - c
+        i = i + 1
+      } else {
+        res = append(res, i)
+        mm = mm - i
+        nn = nn - 1
+        minVal = i
+        break
+      }
+    }
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    let m = int(input())
+    let n = int(input())
+    let k = int(input())
+    var res = build(m, n, k)
+    var out = ""
+    var i = 0
+    while i < len(res) {
+      if i > 0 { out = out + " " }
+      out = out + str(res[i])
+      i = i + 1
+    }
+    print(out)
+    case = case + 1
+  }
+}
+
+main()
