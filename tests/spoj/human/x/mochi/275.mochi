@@ -1,0 +1,11 @@
+// [The Water Ringroad](https://www.spoj.com/problems/WATERWAY/)
+fun main() {
+  let t = input() as int
+  for i in 0..t {
+    let _n = input() as int
+    let s = input()
+    let ans = if s.contains("B") { _n + 1 } else { _n }
+    print(ans)
+  }
+}
+main()
