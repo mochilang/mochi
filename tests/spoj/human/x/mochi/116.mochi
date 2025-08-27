@@ -1,0 +1,123 @@
+// Solution for SPOJ INTERVAL - Intervals
+// https://www.spoj.com/problems/INTERVAL/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var i = 0
+  var num = 0
+  var has = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if has {
+        res = append(res, num)
+        num = 0
+        has = false
+      }
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has { res = append(res, num) }
+  return res
+}
+
+type Interval = { a: int, b: int, c: int }
+
+fun mergeIntervals(left: list<Interval>, right: list<Interval>): list<Interval> {
+  var res: list<Interval> = []
+  var i = 0
+  var j = 0
+  while i < len(left) && j < len(right) {
+    let A = left[i]
+    let B = right[j]
+    if A.b < B.b || (A.b == B.b && A.a <= B.a) {
+      res = append(res, A)
+      i = i + 1
+    } else {
+      res = append(res, B)
+      j = j + 1
+    }
+  }
+  while i < len(left) {
+    res = append(res, left[i])
+    i = i + 1
+  }
+  while j < len(right) {
+    res = append(res, right[j])
+    j = j + 1
+  }
+  return res
+}
+
+fun sortIntervals(arr: list<Interval>): list<Interval> {
+  if len(arr) <= 1 { return arr }
+  let mid = len(arr) / 2
+  let left = sortIntervals(arr[0:mid])
+  let right = sortIntervals(arr[mid:len(arr)])
+  return mergeIntervals(left, right)
+}
+
+fun makeBoolList(n: int): list<bool> {
+  var lst: list<bool> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, false)
+    i = i + 1
+  }
+  return lst
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = tLine as int
+  var case = 0
+  while case < T {
+    let nLine = input()
+    let n = nLine as int
+    var intervals: list<Interval> = []
+    var i = 0
+    while i < n {
+      let line = input()
+      if line == "" { continue }
+      let vals = parseInts(line)
+      intervals = append(intervals, {a: vals[0], b: vals[1], c: vals[2]})
+      i = i + 1
+    }
+    intervals = sortIntervals(intervals)
+    var used = makeBoolList(50000)
+    var total = 0
+    var k = 0
+    while k < len(intervals) {
+      let iv = intervals[k]
+      var cnt = 0
+      var x = iv.a
+      while x <= iv.b {
+        if used[x] { cnt = cnt + 1 }
+        x = x + 1
+      }
+      x = iv.b
+      while cnt < iv.c {
+        if !used[x] {
+          used[x] = true
+          cnt = cnt + 1
+          total = total + 1
+        }
+        x = x - 1
+      }
+      k = k + 1
+    }
+    print(total)
+    case = case + 1
+  }
+}
+
+main()
