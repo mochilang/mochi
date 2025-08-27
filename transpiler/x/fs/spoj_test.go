@@ -28,7 +28,7 @@ func TestFSTranspiler_Spoj_Golden(t *testing.T) {
 	}
 	root := findRepoRoot(t)
 	srcDir := filepath.Join(root, "tests", "spoj", "human", "x", "mochi")
-	outDir := filepath.Join(root, "tests", "spoj", "human", "x", "fs")
+	outDir := filepath.Join(root, "tests", "spoj", "x", "fs")
 	os.MkdirAll(outDir, 0o755)
 	t.Cleanup(updateSpojReadme)
 
@@ -117,10 +117,10 @@ func TestFSTranspiler_Spoj_Golden(t *testing.T) {
 
 func updateSpojReadme() {
 	root := findRepoRoot(&testing.T{})
-	outDir := filepath.Join(root, "tests", "spoj", "human", "x", "fs")
+	outDir := filepath.Join(root, "tests", "spoj", "x", "fs")
 	readme := filepath.Join(root, "transpiler", "x", "fs", "SPOJ.md")
 
-	idxs := []int{11, 12, 13, 14, 15}
+	idxs := []int{6, 7, 8, 9, 10}
 	total := len(idxs)
 	compiled := 0
 	rows := []string{"| Index | Name | Status | Duration | Memory |", "|------:|------|:-----:|---------:|-------:|"}
