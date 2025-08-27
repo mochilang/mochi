@@ -23,7 +23,7 @@ func TestCTranspiler_SPOJ_Golden(t *testing.T) {
 		t.Skipf("C compiler not installed: %v", err)
 	}
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "spoj", "x", "mochi")
+       srcDir := filepath.Join(root, "tests", "spoj", "human", "x", "mochi")
 	outDir := filepath.Join(root, "tests", "spoj", "x", "c")
 	os.MkdirAll(outDir, 0o755)
 	t.Cleanup(updateSPOJReadme)
@@ -146,9 +146,9 @@ func TestCTranspiler_SPOJ_Golden(t *testing.T) {
 }
 
 func updateSPOJReadme() {
-	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "spoj", "x", "mochi")
-	outDir := filepath.Join(root, "tests", "spoj", "x", "c")
+       root := repoRoot(&testing.T{})
+       srcDir := filepath.Join(root, "tests", "spoj", "human", "x", "mochi")
+       outDir := filepath.Join(root, "tests", "spoj", "x", "c")
 	mdPath := filepath.Join(root, "transpiler", "x", "c", "SPOJ.md")
 	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	if err != nil || len(files) == 0 {
