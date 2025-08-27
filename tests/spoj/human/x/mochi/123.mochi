@@ -1,0 +1,33 @@
+// Solution for SPOJ PAYING - Paying in Byteland
+// https://www.spoj.com/problems/PAYING/
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  let two: bigint = 2 as bigint
+  while case < t {
+    let line = input()
+    let n: bigint = line as bigint
+    var x = n
+    var pop = 0
+    var firstZero = 0 - 1
+    var bit = 0
+    while x > 0 {
+      let q = x / two
+      let r = x - q * two
+      if r == 1 { pop = pop + 1 } else if firstZero == 0 - 1 { firstZero = bit }
+      x = q
+      bit = bit + 1
+    }
+    let high = bit - 1
+    var extra = 0
+    if firstZero != 0 - 1 { extra = high - firstZero }
+    let ans = pop + extra
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
