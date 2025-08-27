@@ -1,0 +1,89 @@
+// Solution for SPOJ CMPLS - Complete the Sequence!
+// https://www.spoj.com/problems/CMPLS/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  for p in pieces {
+    if len(p) > 0 {
+      nums = append(nums, int(p))
+    }
+  }
+  return nums
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var caseIdx: int = 0
+  while caseIdx < t {
+    let header = parse_ints(input())
+    let s = header[0]
+    let c = header[1]
+    let seq = parse_ints(input())
+    var levels: list<list<int>> = []
+    levels = append(levels, seq)
+    var current = seq
+    while len(current) > 1 {
+      var next: list<int> = []
+      var i: int = 0
+      while i + 1 < len(current) {
+        next = append(next, current[i+1] - current[i])
+        i = i + 1
+      }
+      levels = append(levels, next)
+      current = next
+    }
+    var depth = len(levels) - 1
+    var step: int = 0
+    var res: list<int> = []
+    while step < c {
+      var bottom = levels[depth]
+      bottom = append(bottom, bottom[len(bottom)-1])
+      levels[depth] = bottom
+      var level = depth - 1
+      while level >= 0 {
+        var arr = levels[level]
+        var arrBelow = levels[level+1]
+        var nextVal = arr[len(arr)-1] + arrBelow[len(arrBelow)-1]
+        arr = append(arr, nextVal)
+        levels[level] = arr
+        level = level - 1
+      }
+      res = append(res, levels[0][len(levels[0])-1])
+      step = step + 1
+    }
+    var out: string = ""
+    var i2: int = 0
+    while i2 < len(res) {
+      if i2 > 0 {
+        out = out + " "
+      }
+      out = out + str(res[i2])
+      i2 = i2 + 1
+    }
+    print(out)
+    caseIdx = caseIdx + 1
+  }
+}
+
+main()
