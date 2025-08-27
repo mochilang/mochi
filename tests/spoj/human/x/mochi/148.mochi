@@ -1,0 +1,199 @@
+// Solution for SPOJ MLAND - Land for Motorways
+// https://www.spoj.com/problems/MLAND/
+
+type Edge = { u: int, v: int, a: int, b: int }
+
+type MSTRes = { cost: float, slope: int }
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  var i = 0
+  while i < len(pieces) {
+    let p = pieces[i]
+    if len(p) > 0 {
+      nums = append(nums, p as int)
+    }
+    i = i + 1
+  }
+  return nums
+}
+
+fun make_float_matrix(n: int, val: float): list<list<float>> {
+  var mat: list<list<float>> = []
+  var i = 0
+  while i < n {
+    var row: list<float> = []
+    var j = 0
+    while j < n {
+      row = append(row, val)
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return mat
+}
+
+fun make_int_matrix(n: int, val: int): list<list<int>> {
+  var mat: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, val)
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return mat
+}
+
+fun mst(edges: list<Edge>, n: int, t: float): MSTRes {
+  let INF = 1000000000000.0
+  var wmat = make_float_matrix(n, INF)
+  var amat = make_int_matrix(n, 0)
+  var i = 0
+  while i < len(edges) {
+    let e = edges[i]
+    let w = (e.a as float) * t + (e.b as float)
+    if w < wmat[e.u][e.v] {
+      wmat[e.u][e.v] = w
+      wmat[e.v][e.u] = w
+      amat[e.u][e.v] = e.a
+      amat[e.v][e.u] = e.a
+    }
+    i = i + 1
+  }
+  var dist: list<float> = []
+  var slope: list<int> = []
+  var used: list<bool> = []
+  i = 0
+  while i < n {
+    dist = append(dist, INF)
+    slope = append(slope, 0)
+    used = append(used, false)
+    i = i + 1
+  }
+  dist[0] = 0.0
+  var total = 0.0
+  var totalSlope = 0
+  var cnt = 0
+  while cnt < n {
+    var u = 0
+    var best = INF
+    var j = 0
+    while j < n {
+      if !used[j] && dist[j] < best {
+        best = dist[j]
+        u = j
+      }
+      j = j + 1
+    }
+    used[u] = true
+    total = total + dist[u]
+    totalSlope = totalSlope + slope[u]
+    j = 0
+    while j < n {
+      if !used[j] && wmat[u][j] < dist[j] {
+        dist[j] = wmat[u][j]
+        slope[j] = amat[u][j]
+      }
+      j = j + 1
+    }
+    cnt = cnt + 1
+  }
+  return MSTRes{ cost: total, slope: totalSlope }
+}
+
+fun format3(x: float): string {
+  var scaled = x * 1000.0
+  if scaled < 0.0 { scaled = scaled - 0.5 } else { scaled = scaled + 0.5 }
+  var n = scaled as int
+  var whole = n / 1000
+  var frac = n % 1000
+  if frac < 0 { frac = -frac }
+  var fracStr = str(frac)
+  while len(fracStr) < 3 {
+    fracStr = "0" + fracStr
+  }
+  return str(whole) + "." + fracStr
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = tLine as int
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    let nm = parse_ints(line)
+    let n = nm[0]
+    let m = nm[1]
+    line = input()
+    let tt = parse_ints(line)
+    let t1 = tt[0] as float
+    let t2 = tt[1] as float
+    var edges: list<Edge> = []
+    var i = 0
+    while i < m {
+      line = input()
+      let arr = parse_ints(line)
+      edges = append(edges, Edge{ u: arr[0], v: arr[1], a: arr[2], b: arr[3] })
+      i = i + 1
+    }
+    let res1 = mst(edges, n, t1)
+    let res2 = mst(edges, n, t2)
+    var bestT = t1
+    var bestCost = res1.cost
+    if res1.slope <= 0 && res2.slope <= 0 {
+      bestT = t1
+      bestCost = res1.cost
+    } else if res1.slope >= 0 && res2.slope >= 0 {
+      bestT = t2
+      bestCost = res2.cost
+    } else {
+      var L = t1
+      var R = t2
+      var iter = 0
+      while iter < 80 {
+        let mid = (L + R) / 2.0
+        let midRes = mst(edges, n, mid)
+        if midRes.slope > 0 {
+          L = mid
+        } else {
+          R = mid
+        }
+        iter = iter + 1
+      }
+      bestT = R
+      let finalRes = mst(edges, n, bestT)
+      bestCost = finalRes.cost
+    }
+    print(format3(bestT) + " " + format3(bestCost))
+    case = case + 1
+  }
+}
+
+main()
