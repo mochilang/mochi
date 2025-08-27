@@ -1,0 +1,70 @@
+// Solution for SPOJ PERIOD - Period
+// https://www.spoj.com/problems/PERIOD/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun prefixFunction(s: string): list<int> {
+  let n = len(s)
+  var pi: list<int> = []
+  var i = 0
+  while i < n {
+    pi = append(pi, 0)
+    i = i + 1
+  }
+  i = 1
+  while i < n {
+    var j = pi[i-1]
+    let si = s[i:i+1]
+    while j > 0 && si != s[j:j+1] {
+      j = pi[j-1]
+    }
+    if si == s[j:j+1] {
+      j = j + 1
+    }
+    pi[i] = j
+    i = i + 1
+  }
+  return pi
+}
+
+fun main() {
+  let tLine = input()
+  let t = parseIntStr(tLine)
+  var case = 1
+  while case <= t {
+    let nLine = input()
+    let n = parseIntStr(nLine)
+    let s = input()
+    let pi = prefixFunction(s)
+    print("Test case #" + str(case))
+    var i = 1
+    while i < n {
+      let lenPrefix = i + 1
+      let l = pi[i]
+      let period = lenPrefix - l
+      if l > 0 && lenPrefix % period == 0 {
+        let k = lenPrefix / period
+        if k > 1 {
+          print(str(lenPrefix) + " " + str(k))
+        }
+      }
+      i = i + 1
+    }
+    print("")
+    case = case + 1
+  }
+}
+
+main()
