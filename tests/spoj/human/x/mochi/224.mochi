@@ -1,0 +1,128 @@
+// Solution for SPOJ VONNY - Vonny and her dominos
+// https://www.spoj.com/problems/VONNY/
+
+var board: list<int> = []
+var usedCells: list<int> = []
+var usedTiles: list<int> = []
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun dfs(pos: int): int {
+  var p = pos
+  while p < 56 && usedCells[p] == 1 {
+    p = p + 1
+  }
+  if p == 56 { return 1 }
+  var total = 0
+  let r = p / 8
+  let c = p % 8
+  let v = board[p]
+  // try horizontal
+  if c + 1 < 8 {
+    let np = p + 1
+    if usedCells[np] == 0 {
+      let v2 = board[np]
+      var a = v
+      var b = v2
+      if a > b { let t = a; a = b; b = t }
+      let idx = a * 7 + b
+      if usedTiles[idx] == 0 {
+        usedCells[p] = 1
+        usedCells[np] = 1
+        usedTiles[idx] = 1
+        total = total + dfs(p + 1)
+        usedTiles[idx] = 0
+        usedCells[p] = 0
+        usedCells[np] = 0
+      }
+    }
+  }
+  // try vertical
+  if r + 1 < 7 {
+    let np = p + 8
+    if usedCells[np] == 0 {
+      let v2 = board[np]
+      var a = v
+      var b = v2
+      if a > b { let t = a; a = b; b = t }
+      let idx = a * 7 + b
+      if usedTiles[idx] == 0 {
+        usedCells[p] = 1
+        usedCells[np] = 1
+        usedTiles[idx] = 1
+        total = total + dfs(p + 1)
+        usedTiles[idx] = 0
+        usedCells[p] = 0
+        usedCells[np] = 0
+      }
+    }
+  }
+  return total
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var nums: list<int> = []
+    while len(nums) < 56 {
+      var line = input()
+      if line == "" { continue }
+      let parts = split(line)
+      var i = 0
+      while i < len(parts) {
+        nums = append(nums, parseIntStr(parts[i]))
+        i = i + 1
+      }
+    }
+    board = nums
+    usedCells = []
+    var i = 0
+    while i < 56 {
+      usedCells = append(usedCells, 0)
+      i = i + 1
+    }
+    usedTiles = []
+    i = 0
+    while i < 49 {
+      usedTiles = append(usedTiles, 0)
+      i = i + 1
+    }
+    let res = dfs(0)
+    print(res)
+    case = case + 1
+  }
+}
+
+main()
