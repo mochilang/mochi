@@ -1,0 +1,142 @@
+// Solution for SPOJ POSTERS - Election Posters
+// https://www.spoj.com/problems/POSTERS/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let pcs = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(pcs) {
+    nums = append(nums, parseIntStr(pcs[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun sort_unique(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  var res: list<int> = []
+  i = 0
+  while i < len(arr) {
+    if i == 0 || arr[i] != arr[i-1] {
+      res = append(res, arr[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+var parent: list<int>
+
+fun find(x: int): int {
+  var x0 = x
+  while parent[x0] != x0 {
+    parent[x0] = parent[parent[x0]]
+    x0 = parent[x0]
+  }
+  return x0
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    let nLine = input()
+    let n = parseIntStr(nLine)
+    var Ls: list<int> = []
+    var Rs: list<int> = []
+    var coords: list<int> = []
+    var i = 0
+    while i < n {
+      let line = input()
+      if line == "" { continue }
+      let vals = parseInts(line)
+      let l = vals[0]
+      let r = vals[1]
+      Ls = append(Ls, l)
+      let rp1 = r + 1
+      Rs = append(Rs, rp1)
+      coords = append(coords, l)
+      coords = append(coords, rp1)
+      i = i + 1
+    }
+    coords = sort_unique(coords)
+    var idx: map<int,int> = {}
+    i = 0
+    while i < len(coords) {
+      idx[coords[i]] = i
+      i = i + 1
+    }
+    parent = []
+    i = 0
+    while i < len(coords) {
+      parent = append(parent, i)
+      i = i + 1
+    }
+    var res = 0
+    i = len(Ls) - 1
+    while i >= 0 {
+      let L = idx[Ls[i]] as int
+      let R = idx[Rs[i]] as int
+      var u = find(L)
+      var vis = false
+      while u < R {
+        vis = true
+        parent[u] = u + 1
+        u = find(u)
+      }
+      if vis { res = res + 1 }
+      i = i - 1
+    }
+    print(str(res))
+    case = case + 1
+  }
+}
+
+main()
