@@ -1,0 +1,108 @@
+// Solution for SPOJ CALLS - Calls
+// https://www.spoj.com/problems/CALLS/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  var i = 0
+  while i < len(pieces) {
+    let p = pieces[i]
+    if len(p) > 0 {
+      nums = append(nums, p as int)
+    }
+    i = i + 1
+  }
+  return nums
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let header = parse_ints(input())
+    let n = header[0]
+    let k = header[1]
+    var d: list<list<int>> = []
+    var i = 0
+    while i < n {
+      var row: list<int> = []
+      var j = 0
+      while j < n {
+        row = append(row, 0)
+        j = j + 1
+      }
+      d = append(d, row)
+      i = i + 1
+    }
+    i = 0
+    while i < n - 1 {
+      let nums = parse_ints(input())
+      var j = i + 1
+      var p = 0
+      while j < n {
+        let val = nums[p]
+        d[i][j] = val
+        d[j][i] = val
+        j = j + 1
+        p = p + 1
+      }
+      i = i + 1
+    }
+    var ok = true
+    var needed = 0
+    i = 0
+    while i < n && ok {
+      var j = i + 1
+      while j < n && ok {
+        var redundant = false
+        var k2 = 0
+        while k2 < n {
+          if k2 != i && k2 != j {
+            let sum = d[i][k2] + d[k2][j]
+            if d[i][j] > sum {
+              ok = false
+              break
+            }
+            if d[i][j] == sum {
+              redundant = true
+            }
+          }
+          k2 = k2 + 1
+        }
+        if !redundant {
+          needed = needed + 1
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    if ok && needed <= k && k <= n * (n - 1) / 2 {
+      print("YES")
+    } else {
+      print("NO")
+    }
+    case = case + 1
+  }
+}
+
+main()
