@@ -1,0 +1,161 @@
+// Solution for SPOJ CONTPACK - How to pack containers
+// https://www.spoj.com/problems/CONTPACK/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+type Box {
+  size: int,
+  value: int,
+}
+
+fun mergeBoxes(left: list<Box>, right: list<Box>): list<Box> {
+  var res: list<Box> = []
+  var i = 0
+  var j = 0
+  while i < len(left) && j < len(right) {
+    if left[i].value <= right[j].value {
+      res = append(res, left[i])
+      i = i + 1
+    } else {
+      res = append(res, right[j])
+      j = j + 1
+    }
+  }
+  while i < len(left) { res = append(res, left[i]); i = i + 1 }
+  while j < len(right) { res = append(res, right[j]); j = j + 1 }
+  return res
+}
+
+fun sortBoxes(arr: list<Box>): list<Box> {
+  if len(arr) <= 1 { return arr }
+  let mid = len(arr) / 2
+  let left = sortBoxes(arr[0:mid])
+  let right = sortBoxes(arr[mid:len(arr)])
+  return mergeBoxes(left, right)
+}
+
+fun makeIntList(n: int, value: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < n {
+    res = append(res, value)
+    i = i + 1
+  }
+  return res
+}
+
+fun feasible(boxCnt: list<int>, contCnt: list<int>, max: int): bool {
+  var avail = makeIntList(max + 2, 0)
+  var i = 0
+  while i <= max {
+    avail[i] = boxCnt[i]
+    i = i + 1
+  }
+  i = 0
+  while i <= max {
+    if avail[i] < contCnt[i] { return false }
+    let leftover = avail[i] - contCnt[i]
+    avail[i+1] = avail[i+1] + leftover / 2
+    i = i + 1
+  }
+  return true
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) { tokens = append(tokens, parts[j]); j = j + 1 }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+fun main() {
+  let t = nextInt()
+  var case = 0
+  let MAX = 1000
+  while case < t {
+    let n = nextInt()
+    var boxes: list<Box> = []
+    var i = 0
+    while i < n {
+      let s = nextInt()
+      let v = nextInt()
+      boxes = append(boxes, Box { size: s, value: v })
+      i = i + 1
+    }
+    let q = nextInt()
+    var contCnt = makeIntList(MAX + 2, 0)
+    var k = 0
+    while k < q {
+      let sz = nextInt()
+      let cnt = nextInt()
+      contCnt[sz] = contCnt[sz] + cnt
+      k = k + 1
+    }
+    boxes = sortBoxes(boxes)
+    var boxCnt = makeIntList(MAX + 2, 0)
+    var sum = 0
+    var ans = -1
+    var b = 0
+    while b < len(boxes) {
+      let bx = boxes[b]
+      boxCnt[bx.size] = boxCnt[bx.size] + 1
+      sum = sum + bx.value
+      if ans < 0 && feasible(boxCnt, contCnt, MAX) {
+        ans = sum
+        break
+      }
+      b = b + 1
+    }
+    if ans < 0 {
+      print("No")
+    } else {
+      print(str(ans))
+    }
+    case = case + 1
+  }
+}
+
+main()
