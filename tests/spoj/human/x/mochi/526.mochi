@@ -1,0 +1,83 @@
+// Solution for SPOJ DIV - Divisors
+// https://www.spoj.com/problems/DIV/
+
+fun isPrime(n: int): bool {
+  if n < 2 { return false }
+  var i = 2
+  while i * i <= n {
+    if n % i == 0 { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun isGood(d: int): bool {
+  var p = 2
+  while p * p <= d {
+    if d % p == 0 {
+      let q = d / p
+      if q != p && isPrime(q) {
+        return true
+      }
+      return false
+    }
+    p = p + 1
+  }
+  return false
+}
+
+fun numDiv(n: int, spf: list<int>): int {
+  var res = 1
+  var x = n
+  while x > 1 {
+    var p = spf[x] as int
+    var e = 0
+    while x % p == 0 {
+      x = x / p
+      e = e + 1
+    }
+    res = res * (e + 1)
+  }
+  return res
+}
+
+fun main() {
+  let limit = 1000000
+  var spf: list<int> = []
+  var i = 0
+  while i <= limit {
+    spf = append(spf, 0)
+    i = i + 1
+  }
+  i = 2
+  while i * i <= limit {
+    if (spf[i] as int) == 0 {
+      spf[i] = i
+      var j = i * i
+      while j <= limit {
+        if (spf[j] as int) == 0 { spf[j] = i }
+        j = j + i
+      }
+    }
+    i = i + 1
+  }
+  i = 2
+  while i <= limit {
+    if (spf[i] as int) == 0 { spf[i] = i }
+    i = i + 1
+  }
+  var count = 0
+  var n = 1
+  while n <= limit {
+    let d = numDiv(n, spf)
+    if isGood(d) {
+      count = count + 1
+      if count % 9 == 0 {
+        print(str(n))
+      }
+    }
+    n = n + 1
+  }
+}
+
+main()
