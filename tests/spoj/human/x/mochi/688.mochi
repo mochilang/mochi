@@ -1,0 +1,148 @@
+// Solution for SPOJ SAM - Toy Cars
+// https://www.spoj.com/problems/SAM/
+
+type Node { nxt: int, car: int }
+type PopRes { heap: list<Node>, node: Node }
+
+fun heap_push(h: list<Node>, item: Node): list<Node> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p].nxt >= heap[i].nxt { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<Node>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      var largest = i
+      let l = 2*i + 1
+      let r = 2*i + 2
+      if l < len(heap) && heap[l].nxt > heap[largest].nxt { largest = l }
+      if r < len(heap) && heap[r].nxt > heap[largest].nxt { largest = r }
+      if largest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[largest]
+      heap[largest] = tmp
+      i = largest
+    }
+  }
+  return PopRes { heap: heap, node: top }
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let sp = splitSpaces(line)
+  var res: list<int> = []
+  var i = 0
+  while i < len(sp) {
+    res = append(res, int(sp[i]))
+    i = i + 1
+  }
+  return res
+}
+
+fun makeList(n: int, val: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, val)
+    i = i + 1
+  }
+  return lst
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var case = 0
+  let INF = 1000000000
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    var head = parseInts(line)
+    while len(head) < 3 { line = input(); head = parseInts(line) }
+    let n = head[0]
+    let k = head[1]
+    let p = head[2]
+    var seq: list<int> = []
+    var i = 0
+    while i < p {
+      let l = input()
+      if l == "" { continue }
+      seq = append(seq, int(l))
+      i = i + 1
+    }
+    var nextArr = makeList(p, 0)
+    var nextPos: map<int,int> = {}
+    var j = p - 1
+    while j >= 0 {
+      let c = seq[j]
+      if nextPos[c] == nil { nextArr[j] = INF } else { nextArr[j] = nextPos[c] as int }
+      nextPos[c] = j
+      j = j - 1
+    }
+    var onFloor: map<int,bool> = {}
+    var floorNext: map<int,int> = {}
+    var heap: list<Node> = []
+    var picks = 0
+    j = 0
+    while j < p {
+      let c = seq[j]
+      let nxt = nextArr[j]
+      if onFloor[c] != nil {
+        floorNext[c] = nxt
+        heap = heap_push(heap, Node{ nxt: nxt, car: c })
+      } else {
+        picks = picks + 1
+        if len(onFloor) == k {
+          while true {
+            let pr = heap_pop(heap)
+            heap = pr.heap
+            let node = pr.node
+            if onFloor[node.car] != nil && floorNext[node.car] == node.nxt {
+              onFloor[node.car] = nil
+              floorNext[node.car] = nil
+              break
+            }
+          }
+        }
+        onFloor[c] = true
+        floorNext[c] = nxt
+        heap = heap_push(heap, Node{ nxt: nxt, car: c })
+      }
+      j = j + 1
+    }
+    print(str(picks))
+    case = case + 1
+  }
+}
+
+main()
