@@ -1,0 +1,171 @@
+// Solution for SPOJ UFAST - Unite Fast
+// https://www.spoj.com/problems/UFAST/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun absInt(x: int): int {
+  if x < 0 { return -x }
+  return x
+}
+
+fun canTime(pos: list<int>, d: int, t: int): bool {
+  var low = pos[0] - t
+  var high = pos[0] + t
+  var i = 1
+  while i < len(pos) {
+    var li = pos[i] - t
+    var hi = pos[i] + t
+    if li < low { li = low }
+    var rh = high + d
+    if hi > rh { hi = rh }
+    if li > hi { return false }
+    low = li
+    high = hi
+    i = i + 1
+  }
+  return true
+}
+
+fun indepTime(pos: list<int>, d: int): int {
+  var lo = 0
+  var hi = 1000
+  while lo < hi {
+    let mid = (lo + hi) / 2
+    if canTime(pos, d, mid) {
+      hi = mid
+    } else {
+      lo = mid + 1
+    }
+  }
+  return lo
+}
+
+fun seqTime(pos: list<int>, d: int): int {
+  let maxP = 1000
+  var prev: list<int> = []
+  var p = 0
+  while p <= maxP {
+    prev = append(prev, absInt(pos[0] - p))
+    p = p + 1
+  }
+  var i = 1
+  while i < len(pos) {
+    var curr: list<int> = []
+    p = 0
+    while p <= maxP {
+      curr = append(curr, 1000000000)
+      p = p + 1
+    }
+    p = 0
+    while p <= maxP {
+      var best = 1000000000
+      var k = p - d
+      if k < 0 { k = 0 }
+      while k <= p {
+        if prev[k] < best { best = prev[k] }
+        k = k + 1
+      }
+      curr[p] = best + absInt(pos[i] - p)
+      p = p + 1
+    }
+    prev = curr
+    i = i + 1
+  }
+  var ans = prev[0]
+  p = 1
+  while p <= maxP {
+    if prev[p] < ans { ans = prev[p] }
+    p = p + 1
+  }
+  return ans
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let first = parseInts(line)
+    let n = first[0]
+    let d = first[1]
+    var pos: list<int> = []
+    var cnt = 0
+    while cnt < n {
+      line = input()
+      if line == nil { line = "" }
+      let vals = parseInts(line)
+      var i = 0
+      while i < len(vals) && cnt < n {
+        pos = append(pos, vals[i])
+        cnt = cnt + 1
+        i = i + 1
+      }
+    }
+    pos = sortInts(pos)
+    let ans1 = indepTime(pos, d)
+    let ans2 = seqTime(pos, d)
+    print(str(ans1) + " " + str(ans2))
+    case = case + 1
+  }
+}
+
+main()
