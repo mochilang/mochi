@@ -1,0 +1,163 @@
+// Solution for SPOJ VHUFFM - Variable Radix Huffman Encoding
+// https://www.spoj.com/problems/VHUFFM/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  var i = 0
+  while i < len(pieces) {
+    let p = pieces[i]
+    if len(p) > 0 {
+      nums = append(nums, p as int)
+    }
+    i = i + 1
+  }
+  return nums
+}
+
+fun huffman(R: int, N: int, freqs: list<int>): list<string> {
+  var total = N
+  var nodes: list<any> = []
+  var i = 0
+  while i < N {
+    nodes = append(nodes, { freq: freqs[i], min: i, letters: [i] })
+    i = i + 1
+  }
+  if R > 1 {
+    var d = (R - 1 - ((total - R) % (R - 1))) % (R - 1)
+    var j = 0
+    while j < d {
+      nodes = append(nodes, { freq: 0, min: N + j, letters: [N + j] })
+      total = total + 1
+      j = j + 1
+    }
+  }
+  var codes: list<string> = []
+  i = 0
+  while i < total {
+    codes = append(codes, "")
+    i = i + 1
+  }
+  while len(nodes) > 1 {
+    // sort nodes by freq then min
+    var a = 0
+    while a < len(nodes) {
+      var b = a + 1
+      while b < len(nodes) {
+        let x = nodes[a]
+        let y = nodes[b]
+        if (x["freq"] as int > y["freq"] as int) || ((x["freq"] as int == y["freq"] as int) && (x["min"] as int > y["min"] as int)) {
+          let tmp = nodes[a]
+          nodes[a] = nodes[b]
+          nodes[b] = tmp
+        }
+        b = b + 1
+      }
+      a = a + 1
+    }
+    var group: list<any> = []
+    var k = 0
+    while k < R {
+      group = append(group, nodes[k])
+      k = k + 1
+    }
+    var newLetters: list<int> = []
+    var sum = 0
+    var minL = 1000
+    k = 0
+    while k < R {
+      let node = group[k]
+      let digitStr = str(k)
+      let letters = node["letters"] as list<int>
+      var li = 0
+      while li < len(letters) {
+        let idx = letters[li]
+        codes[idx] = digitStr + codes[idx]
+        newLetters = append(newLetters, idx)
+        if idx < minL { minL = idx }
+        li = li + 1
+      }
+      sum = sum + (node["freq"] as int)
+      k = k + 1
+    }
+    let newNode = { freq: sum, min: minL, letters: newLetters }
+    var rest: list<any> = []
+    k = R
+    while k < len(nodes) {
+      rest = append(rest, nodes[k])
+      k = k + 1
+    }
+    nodes = append(rest, newNode)
+  }
+  var res: list<string> = []
+  i = 0
+  while i < N {
+    res = append(res, codes[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let alphabet = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+  var setNum = 1
+  while true {
+    let line = input()
+    if line == "" { break }
+    let vals = parse_ints(line)
+    if len(vals) == 0 { continue }
+    let R = vals[0]
+    if R == 0 { break }
+    let N = vals[1]
+    var freqs: list<int> = []
+    var i = 0
+    while i < N {
+      freqs = append(freqs, vals[2+i])
+      i = i + 1
+    }
+    let codes = huffman(R, N, freqs)
+    var totalFreq = 0
+    var totalLen = 0
+    i = 0
+    while i < N {
+      let f = freqs[i]
+      totalFreq = totalFreq + f
+      totalLen = totalLen + f * len(codes[i])
+      i = i + 1
+    }
+    var avg100 = (totalLen * 100 + totalFreq / 2) / totalFreq
+    var whole = avg100 / 100
+    var frac = avg100 % 100
+    var avgStr = str(whole) + "."
+    if frac < 10 { avgStr = avgStr + "0" }
+    avgStr = avgStr + str(frac)
+    print("Set " + str(setNum) + "; average length " + avgStr)
+    i = 0
+    while i < N {
+      print("    " + alphabet[i] + ": " + codes[i])
+      i = i + 1
+    }
+    print("")
+    setNum = setNum + 1
+  }
+}
+
+main()
