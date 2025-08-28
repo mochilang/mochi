@@ -1,0 +1,164 @@
+// Solution for SPOJ PRO - Promotion
+// https://www.spoj.com/problems/PRO/
+
+// Heap utilities for max-heap and min-heap
+
+type PopRes { heap: list<int>, val: int }
+
+fun max_heap_push(h: list<int>, item: int): list<int> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p] >= heap[i] { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun max_heap_pop(h: list<int>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      var largest = i
+      let l = 2*i + 1
+      let r = 2*i + 2
+      if l < len(heap) && heap[l] > heap[largest] { largest = l }
+      if r < len(heap) && heap[r] > heap[largest] { largest = r }
+      if largest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[largest]
+      heap[largest] = tmp
+      i = largest
+    }
+  }
+  return PopRes { heap: heap, val: top }
+}
+
+fun min_heap_push(h: list<int>, item: int): list<int> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p] <= heap[i] { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun min_heap_pop(h: list<int>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      var smallest = i
+      let l = 2*i + 1
+      let r = 2*i + 2
+      if l < len(heap) && heap[l] < heap[smallest] { smallest = l }
+      if r < len(heap) && heap[r] < heap[smallest] { smallest = r }
+      if smallest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[smallest]
+      heap[smallest] = tmp
+      i = smallest
+    }
+  }
+  return PopRes { heap: heap, val: top }
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let sp = splitSpaces(line)
+  var res: list<int> = []
+  var i = 0
+  while i < len(sp) {
+    res = append(res, sp[i] as int)
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let nLine = input()
+  if nLine == "" { return }
+  let n = nLine as int
+  var day = 0
+  var maxH: list<int> = []
+  var minH: list<int> = []
+  var cnt: map<int,int> = {}
+  var total = 0
+  while day < n {
+    let line = input()
+    let nums = parseInts(line)
+    let k = nums[0]
+    var i = 1
+    while i <= k {
+      let v = nums[i]
+      maxH = max_heap_push(maxH, v)
+      minH = min_heap_push(minH, v)
+      if v in cnt {
+        cnt[v] = cnt[v] + 1
+      } else {
+        cnt[v] = 1
+      }
+      i = i + 1
+    }
+    var maxV = 0
+    while true {
+      let pr = max_heap_pop(maxH)
+      maxH = pr.heap
+      let v = pr.val
+      if cnt[v] > 0 {
+        maxV = v
+        cnt[v] = cnt[v] - 1
+        break
+      }
+    }
+    var minV = 0
+    while true {
+      let pr = min_heap_pop(minH)
+      minH = pr.heap
+      let v = pr.val
+      if cnt[v] > 0 {
+        minV = v
+        cnt[v] = cnt[v] - 1
+        break
+      }
+    }
+    total = total + (maxV - minV)
+    day = day + 1
+  }
+  print(str(total))
+}
+
+main()
