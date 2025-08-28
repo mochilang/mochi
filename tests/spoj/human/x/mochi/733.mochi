@@ -1,0 +1,161 @@
+// Solution for SPOJ MTWALK - Mountain Walking
+// https://www.spoj.com/problems/MTWALK/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInt(s: string): int {
+  var i = 0
+  var n = 0
+  while i < len(s) {
+    n = n * 10 + (digits[s[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun makeBoolGrid(n: int): list<list<bool>> {
+  var g: list<list<bool>> = []
+  var i = 0
+  while i < n {
+    var row: list<bool> = []
+    var j = 0
+    while j < n {
+      row = append(row, false)
+      j = j + 1
+    }
+    g = append(g, row)
+    i = i + 1
+  }
+  return g
+}
+
+fun bfs(low: int, high: int, grid: list<list<int>>, n: int): bool {
+  if grid[0][0] < low || grid[0][0] > high { return false }
+  var visited = makeBoolGrid(n)
+  var qx: list<int> = [0]
+  var qy: list<int> = [0]
+  visited[0][0] = true
+  var qi = 0
+  let dx = [1, -1, 0, 0]
+  let dy = [0, 0, 1, -1]
+  while qi < len(qx) {
+    let x = qx[qi]
+    let y = qy[qi]
+    qi = qi + 1
+    if x == n-1 && y == n-1 { return true }
+    var d = 0
+    while d < 4 {
+      let nx = x + dx[d]
+      let ny = y + dy[d]
+      if nx >= 0 && nx < n && ny >= 0 && ny < n {
+      if !visited[nx][ny] {
+          let val = grid[nx][ny]
+          if val >= low && val <= high {
+            visited[nx][ny] = true
+            qx = append(qx, nx)
+            qy = append(qy, ny)
+          }
+        }
+      }
+      d = d + 1
+    }
+  }
+  return false
+}
+
+fun sort(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun feasible(d: int, unique: list<int>, grid: list<list<int>>, n: int): bool {
+  var i = 0
+  while i < len(unique) {
+    let low = unique[i]
+    let high = low + d
+    let sVal = grid[0][0]
+    let eVal = grid[n-1][n-1]
+    if sVal >= low && sVal <= high && eVal >= low && eVal <= high {
+      if bfs(low, high, grid, n) { return true }
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun main() {
+  let nLine = input()
+  if nLine == "" { return }
+  let n = parseInt(nLine)
+  var grid: list<list<int>> = []
+  var unique: list<int> = []
+  var seen: map<int,bool> = {}
+  var minVal = 1000000000
+  var maxVal = 0
+  var i = 0
+  while i < n {
+    let parts = split(input())
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      let v = parseInt(parts[j])
+      row = append(row, v)
+      if v < minVal { minVal = v }
+      if v > maxVal { maxVal = v }
+      if !seen[v] {
+        unique = append(unique, v)
+        seen[v] = true
+      }
+      j = j + 1
+    }
+    grid = append(grid, row)
+    i = i + 1
+  }
+  unique = sort(unique)
+  var lo = 0
+  var hi = maxVal - minVal
+  while lo < hi {
+    let mid = (lo + hi) / 2
+    if feasible(mid, unique, grid, n) {
+      hi = mid
+    } else {
+      lo = mid + 1
+    }
+  }
+  print(lo)
+}
+
+main()
