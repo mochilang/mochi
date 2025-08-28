@@ -1,0 +1,94 @@
+// Solution for SPOJ PT07Y - Is it a tree?
+// https://www.spoj.com/problems/PT07Y/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parts[i] as int)
+    i = i + 1
+  }
+  return nums
+}
+
+fun main() {
+  let first = input()
+  if first == "" { return }
+  let nm = parseInts(first)
+  let n = nm[0]
+  let m = nm[1]
+  if m != n - 1 {
+    print("NO")
+    return
+  }
+  var adj: list<list<int>> = []
+  var i = 0
+  while i < n {
+    adj = append(adj, [])
+    i = i + 1
+  }
+  var e = 0
+  while e < m {
+    let line = input()
+    if line == "" { break }
+    let uv = parseInts(line)
+    let u = uv[0] - 1
+    let v = uv[1] - 1
+    adj[u] = append(adj[u], v)
+    adj[v] = append(adj[v], u)
+    e = e + 1
+  }
+  var visited: list<bool> = []
+  i = 0
+  while i < n {
+    visited = append(visited, false)
+    i = i + 1
+  }
+  var queue: list<int> = [0]
+  visited[0] = true
+  var qi = 0
+  while qi < len(queue) {
+    let u = queue[qi]
+    qi = qi + 1
+    var j = 0
+    while j < len(adj[u]) {
+      let v = adj[u][j]
+      if visited[v] == false {
+        visited[v] = true
+        queue = append(queue, v)
+      }
+      j = j + 1
+    }
+  }
+  var count = 0
+  i = 0
+  while i < n {
+    if visited[i] { count = count + 1 }
+    i = i + 1
+  }
+  if count == n {
+    print("YES")
+  } else {
+    print("NO")
+  }
+}
+
+main()
