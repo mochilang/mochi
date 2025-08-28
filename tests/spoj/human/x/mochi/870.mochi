@@ -1,0 +1,87 @@
+// Solution for SPOJ BASE - Basically Speaking
+// https://www.spoj.com/problems/BASE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    if c == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + c
+    }
+    i = i + 1
+  }
+  if cur != "" {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+let dig = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+  "A":10,"B":11,"C":12,"D":13,"E":14,"F":15,
+}
+
+let rev = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"]
+
+fun toInt(s: string, base: int): int {
+  var n = 0
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    n = n * base + dig[c]
+    i = i + 1
+  }
+  return n
+}
+
+fun fromInt(n: int, base: int): string {
+  if n == 0 { return "0" }
+  var res = ""
+  var x = n
+  while x > 0 {
+    let d = x % base
+    res = rev[d] + res
+    x = x / base
+  }
+  return res
+}
+
+fun rjust7(s: string): string {
+  var pad = 7 - len(s)
+  var out = ""
+  var i = 0
+  while i < pad {
+    out = out + " "
+    i = i + 1
+  }
+  return out + s
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let parts = splitSpaces(line)
+    if len(parts) != 3 { continue }
+    let num = parts[0]
+    let b1 = parts[1] as int
+    let b2 = parts[2] as int
+    let val = toInt(num, b1)
+    let res = fromInt(val, b2)
+    if len(res) > 7 {
+      print(rjust7("ERROR"))
+    } else {
+      print(rjust7(res))
+    }
+  }
+}
+
+main()
