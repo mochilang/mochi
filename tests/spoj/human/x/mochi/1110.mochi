@@ -1,0 +1,87 @@
+// Solution for SPOJ SUDOKU - Sudoku
+// https://www.spoj.com/problems/SUDOKU/
+
+let letters = "ABCDEFGHIJKLMNOP"
+
+fun isValid(board: list<list<string>>, r: int, c: int, ch: string): bool {
+  var i = 0
+  while i < 16 {
+    if board[r][i] == ch { return false }
+    if board[i][c] == ch { return false }
+    i = i + 1
+  }
+  let br = (r / 4) * 4
+  let bc = (c / 4) * 4
+  var i2 = 0
+  while i2 < 4 {
+    var j2 = 0
+    while j2 < 4 {
+      if board[br + i2][bc + j2] == ch { return false }
+      j2 = j2 + 1
+    }
+    i2 = i2 + 1
+  }
+  return true
+}
+
+fun solve(board: list<list<string>>): list<list<string>> {
+  fun dfs(r: int, c: int): bool {
+    if r == 16 { return true }
+    if c == 16 { return dfs(r + 1, 0) }
+    if board[r][c] != "-" { return dfs(r, c + 1) }
+    var v = 0
+    while v < 16 {
+      let ch = letters[v:v+1]
+      if isValid(board, r, c, ch) {
+        board[r][c] = ch
+        if dfs(r, c + 1) { return true }
+        board[r][c] = "-"
+      }
+      v = v + 1
+    }
+    return false
+  }
+  dfs(0, 0)
+  return board
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == nil { return }
+  let t = int(tStr)
+  var case = 0
+  while case < t {
+    var board: list<list<string>> = []
+    var i = 0
+    while i < 16 {
+      let line = input()
+      var row: list<string> = []
+      var j = 0
+      while j < 16 {
+        row = append(row, line[j:j+1])
+        j = j + 1
+      }
+      board = append(board, row)
+      i = i + 1
+    }
+    board = solve(board)
+    i = 0
+    while i < 16 {
+      var line = ""
+      var j = 0
+      while j < 16 {
+        line = line + board[i][j]
+        j = j + 1
+      }
+      print(line)
+      i = i + 1
+    }
+    case = case + 1
+    if case < t {
+      print("")
+      let _ = input()
+    }
+  }
+}
+
+main()
