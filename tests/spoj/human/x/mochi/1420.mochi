@@ -1,0 +1,135 @@
+// Solution for SPOJ GEOM - Geometry and a Square
+// https://www.spoj.com/problems/GEOM/
+
+fun splitSpaces(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { res = append(res, cur) }
+  return res
+}
+
+fun absf(x: float): float { if x < 0.0 { return -x } else { return x } }
+
+fun format1(x: float): string {
+  let scaled = x * 10.0 + 0.5
+  let n = scaled as int
+  let whole = n / 10
+  let frac = n % 10
+  return str(whole) + "." + str(frac)
+}
+
+type Res { x: float, y: float, ok: bool }
+
+fun intersection(ax: float, ay: float, vax: float, vay: float,
+                  bx: float, by: float, vbx: float, vby: float): Res {
+  let den = vax * vby - vay * vbx
+  if absf(den) < 1e-9 { return Res{ x:0.0, y:0.0, ok:false } }
+  let t = ((bx - ax) * vby - (by - ay) * vbx) / den
+  return Res{ x: ax + t * vax, y: ay + t * vay, ok: true }
+}
+
+fun onLine(x: float, y: float, px: float, py: float, vx: float, vy: float): bool {
+  return absf((x - px) * vy - (y - py) * vx) < 1e-6
+}
+
+fun main() {
+  while true {
+    let line1 = input()
+    if line1 == "" { break }
+    let parts1 = splitSpaces(line1)
+    if len(parts1) < 2 { break }
+    let oxi = parts1[0] as int
+    let oyi = parts1[1] as int
+    let ox = oxi as float
+    let oy = oyi as float
+
+    let line2 = input()
+    if line2 == "" { break }
+    let si = line2 as int
+    let s = si as float
+
+    let line3 = input()
+    if line3 == "" { break }
+    let parts3 = splitSpaces(line3)
+    if len(parts3) < 2 { break }
+    let pxi = parts3[0] as int
+    let pyi = parts3[1] as int
+    let px = pxi as float
+    let py = pyi as float
+
+    let half = s / 2.0
+    let Ax = ox - half
+    let Ay = oy + half
+    let Bx = ox + half
+    let By = oy + half
+    let Cx = ox + half
+    let Cy = oy - half
+    let Dx = ox - half
+    let Dy = oy - half
+
+    var pxs: list<float> = []
+    var pys: list<float> = []
+    var vxs: list<float> = []
+    var vys: list<float> = []
+
+    pxs = append(pxs, Ax); pys = append(pys, Ay)
+    pxs = append(pxs, Bx); pys = append(pys, By)
+    pxs = append(pxs, Cx); pys = append(pys, Cy)
+    pxs = append(pxs, Dx); pys = append(pys, Dy)
+
+    vxs = append(vxs, py - By); vys = append(vys, Bx - px)
+    vxs = append(vxs, py - Cy); vys = append(vys, Cx - px)
+    vxs = append(vxs, py - Dy); vys = append(vys, Dx - px)
+    vxs = append(vxs, py - Ay); vys = append(vys, Ax - px)
+
+    var found = false
+    var ix = 0.0
+    var iy = 0.0
+    var i = 0
+    while i < 4 {
+      var j = i + 1
+      while j < 4 {
+        let res = intersection(pxs[i],pys[i],vxs[i],vys[i], pxs[j],pys[j],vxs[j],vys[j])
+        if res.ok {
+          var okAll = true
+          var k = 0
+          while k < 4 {
+            if onLine(res.x, res.y, pxs[k], pys[k], vxs[k], vys[k]) == false {
+              okAll = false
+              break
+            }
+            k = k + 1
+          }
+          if okAll {
+            found = true
+            ix = res.x
+            iy = res.y
+            break
+          }
+        }
+        j = j + 1
+      }
+      if found { break }
+      i = i + 1
+    }
+
+    if found {
+      print("YES")
+      print(format1(ix) + " " + format1(iy))
+    } else {
+      print("NO")
+    }
+  }
+}
+
+main()
