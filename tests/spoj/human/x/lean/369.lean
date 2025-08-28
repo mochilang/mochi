@@ -5,18 +5,22 @@ https://www.spoj.com/problems/MATH1/
 import Std
 open Std
 
-/-- compute minimal sum for one test case using DP over median values -/
+/-- compute minimal sum for one test case using DP over candidate medians -/
 def solve (a : Array Nat) : Nat :=
   let n := a.size
-  let mut pref : Array Nat := Array.mkEmpty n
-  let mut acc := 0
-  for x in a do
-    acc := acc + x
-    pref := pref.push acc
-  let s := acc
-  let inf := (1000000000 : Nat)
+  -- prefix sums and total S
+  let (s, pref) := Id.run do
+    let mut acc := 0
+    let mut pf : Array Nat := Array.mkEmpty n
+    for x in a do
+      acc := acc + x
+      pf := pf.push acc
+    pure (acc, pf)
+  let inf : Nat := 1000000000
   let mut best := inf
+  -- try every possible median m
   for m in [0:s+1] do
+    -- dp[k] = minimal cost after choosing k subtractions so far
     let mut dp := Array.replicate (s+1) inf
     dp := dp.set! 0 0
     for i in [0:n] do
@@ -26,9 +30,11 @@ def solve (a : Array Nat) : Nat :=
       for k in [0:lim+1] do
         let diff : Int := Int.ofNat pv - Int.ofNat k - Int.ofNat m
         let cost := dp[k]! + diff.natAbs
+        -- stay at k
         let old0 := ndp[k]!
         let ndp0 := if cost < old0 then cost else old0
         ndp := ndp.set! k ndp0
+        -- increase to k+1 if possible
         if k+1 <= s then
           let old1 := ndp[k+1]!
           let ndp1 := if cost < old1 then cost else old1
@@ -38,18 +44,11 @@ def solve (a : Array Nat) : Nat :=
     if cand < best then best := cand
   best
 
-partial def processCases (h : IO.FS.Stream) (t : Nat) : IO Unit := do
-  if t == 0 then
-    pure ()
-  else
-    let n := (← h.getLine).trim.toNat!
-    let nums := (← h.getLine).trim.split (· = ' ') |>.filter (· ≠ "")
-    let arr := nums.map (fun s => s.toNat!) |>.toArray
-    let ans := solve arr
-    IO.println ans
-    processCases h (t-1)
-
 def main : IO Unit := do
-  let h ← IO.getStdin
-  let t := (← h.getLine).trim.toNat!
-  processCases h t
+  let t := (← IO.getLine).trim.toNat!
+  for _ in [0:t] do
+    -- n is not needed beyond validating input length
+    let _n := (← IO.getLine).trim.toNat!
+    let nums := (← IO.getLine).trim.split (· = ' ') |>.filter (· ≠ "")
+    let arr := nums.map String.toNat! |>.toArray
+    IO.println (solve arr)
