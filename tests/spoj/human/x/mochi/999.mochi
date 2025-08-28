@@ -1,0 +1,94 @@
+// Solution for SPOJ MATRIOSH - Generalized Matrioshkas
+// https://www.spoj.com/problems/MATRIOSH/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun splitSpace(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+type Toy { size: int, sum: int }
+
+fun isValid(seq: list<int>): bool {
+  var st: list<Toy> = []
+  var i = 0
+  while i < len(seq) {
+    let x = seq[i]
+    if x < 0 {
+      st = append(st, { size: -x, sum: 0 })
+    } else {
+      if len(st) == 0 { return false }
+      let top = st[len(st)-1]
+      if x != top.size || top.sum >= x { return false }
+      st = st[0:len(st)-1]
+      if len(st) > 0 {
+        st[len(st)-1].sum = st[len(st)-1].sum + x
+      }
+    }
+    i = i + 1
+  }
+  return len(st) == 0
+}
+
+fun parseLine(line: string): list<int> {
+  let parts = splitSpace(line)
+  var res: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    res = append(res, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  var line: string
+  while true {
+    line = input()
+    if line == nil { break }
+    if line == "" { continue }
+    let nums = parseLine(line)
+    if isValid(nums) {
+      print(":-) Matrioshka!")
+    } else {
+      print(":-( Try again.")
+    }
+  }
+}
+
+main()
