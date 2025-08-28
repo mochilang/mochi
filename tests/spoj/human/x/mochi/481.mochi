@@ -1,0 +1,105 @@
+// Solution for SPOJ KMSL4B - Roots of polynomial
+// https://www.spoj.com/problems/KMSL4B/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun parseFloat(s: string): float {
+  var i = 0
+  var neg = false
+  if len(s) > 0 && s[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var val = 0.0
+  while i < len(s) && s[i:i+1] != "." {
+    val = val * 10.0 + (digits[s[i:i+1]] as float)
+    i = i + 1
+  }
+  if i < len(s) && s[i:i+1] == "." {
+    i = i + 1
+    var base = 0.1
+    while i < len(s) {
+      val = val + (digits[s[i:i+1]] as float) * base
+      base = base / 10.0
+      i = i + 1
+    }
+  }
+  if neg { val = -val }
+  return val
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+fun schur(coefs: list<float>): bool {
+  var a: list<float> = []
+  var idx = len(coefs) - 1
+  while idx >= 0 {
+    a = append(a, coefs[idx])
+    idx = idx - 1
+  }
+  var n = len(a) - 1
+  while n > 0 {
+    let a0 = a[0]
+    let an = a[n]
+    if absf(a0) <= absf(an) {
+      return false
+    }
+    var b: list<float> = []
+    var i = 0
+    while i < n {
+      let num = a0 * a[i+1] - an * a[n-1-i]
+      let den = a0 - an
+      b = append(b, num / den)
+      i = i + 1
+    }
+    a = b
+    n = n - 1
+  }
+  if absf(a[0]) < 1.0 { return true } else { return false }
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+    while case < t {
+      let degLine = input()
+      let deg = degLine as int
+      let coefLine = input()
+      let parts = split(coefLine)
+      var coefs: list<float> = []
+      var i = 0
+      while i <= deg {
+        coefs = append(coefs, parseFloat(parts[i]))
+        i = i + 1
+      }
+      let ok = schur(coefs)
+      if ok { print("1") } else { print("0") }
+      case = case + 1
+    }
+}
+
+main()
