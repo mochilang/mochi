@@ -1,0 +1,27 @@
+Analysis for Letter Sequences of Length 1
+-----------------------------------------
+Frequency = 5, Sequence(s) = (P)
+Frequency = 4, Sequence(s) = (E)
+Frequency = 3, Sequence(s) = (I)
+Frequency = 2, Sequence(s) = (C,K,R,S)
+Frequency = 1, Sequence(s) = (L,T)
+
+Analysis for Letter Sequences of Length 2
+-----------------------------------------
+Frequency = 3, Sequence(s) = (PI)
+Frequency = 2, Sequence(s) = (CK,ER,IC,PE)
+Frequency = 1, Sequence(s) = (ES,ET,IP,KL,KS,LE,TE)
+
+Analysis for Letter Sequences of Length 3
+-----------------------------------------
+Frequency = 2, Sequence(s) = (ICK,PIC)
+Frequency = 1, Sequence(s) = (CKL,CKS,ETE,IPE,KLE,LES,PER,PET,PIP,TER)
+
+Analysis for Letter Sequences of Length 4
+-----------------------------------------
+Frequency = 2, Sequence(s) = (PICK)
+Frequency = 1, Sequence(s) = (CKLE,ETER,ICKL,ICKS,IPER,KLES,PETE,PIPE)
+
+Analysis for Letter Sequences of Length 5
+-----------------------------------------
+Frequency = 1, Sequence(s) = (CKLES,ICKLE,PETER,PICKL,PICKS,PIPER)
