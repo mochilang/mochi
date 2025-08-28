@@ -1,0 +1,132 @@
+// Solution for SPOJ CHAIN - Strange Food Chain
+// https://www.spoj.com/problems/CHAIN/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+var parent: list<int> = []
+var rank: list<int> = []
+
+fun initUF(n: int) {
+  parent = []
+  rank = []
+  var i = 0
+  while i <= n {
+    parent = append(parent, i)
+    rank = append(rank, 0)
+    i = i + 1
+  }
+}
+
+fun find(x: int): int {
+  var x0 = x
+  while parent[x0] != x0 {
+    parent[x0] = parent[parent[x0]]
+    x0 = parent[x0]
+  }
+  return x0
+}
+
+fun union(a: int, b: int) {
+  let ra = find(a)
+  let rb = find(b)
+  if ra == rb { return }
+  if rank[ra] < rank[rb] {
+    parent[ra] = rb
+  } else if rank[ra] > rank[rb] {
+    parent[rb] = ra
+  } else {
+    parent[rb] = ra
+    rank[ra] = rank[ra] + 1
+  }
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var header = input()
+    while header == "" { header = input() }
+    let nums = parseInts(header)
+    let n = nums[0]
+    let k = nums[1]
+    initUF(3 * n + 5)
+    var falseCnt = 0
+    var i = 0
+    while i < k {
+      var line = input()
+      while line == "" { line = input() }
+      let arr = parseInts(line)
+      let d = arr[0]
+      let x = arr[1]
+      let y = arr[2]
+      if x > n || y > n {
+        falseCnt = falseCnt + 1
+      } else if d == 1 {
+        if find(x) == find(y + n) || find(x) == find(y + 2 * n) {
+          falseCnt = falseCnt + 1
+        } else {
+          union(x, y)
+          union(x + n, y + n)
+          union(x + 2 * n, y + 2 * n)
+        }
+      } else { // d == 2: x eats y
+        if x == y || find(x) == find(y) || find(x) == find(y + 2 * n) {
+          falseCnt = falseCnt + 1
+        } else {
+          union(x, y + n)
+          union(x + n, y + 2 * n)
+          union(x + 2 * n, y)
+        }
+      }
+      i = i + 1
+    }
+    print(str(falseCnt))
+    case = case + 1
+  }
+}
+
+main()
+
