@@ -1,0 +1,88 @@
+// Solution for SPOJ POLYCODE - Polygon Encoder
+// https://www.spoj.com/problems/POLYCODE/
+
+type Pair { a: int, b: int }
+
+type Point { x: int, y: int }
+
+fun unpair(z: int): Pair {
+  var w = 0
+  while (w * (w + 1)) / 2 <= z {
+    w = w + 1
+  }
+  w = w - 1
+  let t = (w * (w + 1)) / 2
+  let y = z - t
+  let x = w - y
+  return Pair{ a: x, b: y }
+}
+
+fun decodeTuple(v: int, n: int): list<int> {
+  if n == 1 { return [v] }
+  let p = unpair(v)
+  let tail = decodeTuple(p.b, n - 1)
+  var res: list<int> = [p.a]
+  var i = 0
+  while i < len(tail) {
+    res = append(res, tail[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun decodeList(val: int): list<int> {
+  let p = unpair(val)
+  let n = p.a
+  if n == 0 { return [] }
+  return decodeTuple(p.b, n)
+}
+
+fun decodePoly(num: int): list<Point> {
+  let vals = decodeList(num)
+  var pts: list<Point> = []
+  var i = 0
+  while i < len(vals) {
+    let pr = unpair(vals[i])
+    pts = append(pts, Point{ x: pr.a, y: pr.b })
+    i = i + 1
+  }
+  return pts
+}
+
+fun area2(pts: list<Point>): int {
+  var s = 0
+  var i = 0
+  while i < len(pts) {
+    let j = if i + 1 < len(pts) { i + 1 } else { 0 }
+    let pi = pts[i]
+    let pj = pts[j]
+    let xi = pi.x
+    let yi = pi.y
+    let xj = pj.x
+    let yj = pj.y
+    s = s + xi * yj - xj * yi
+    i = i + 1
+  }
+  if s < 0 { s = -s }
+  return s
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil { return }
+    if line == "" { continue }
+    if line == "*" { break }
+    let num = line as int
+    let pts = decodePoly(num)
+    let a2 = area2(pts)
+    let whole = a2 / 2
+    if a2 % 2 == 0 {
+      print(str(whole) + ".0")
+    } else {
+      print(str(whole) + ".5")
+    }
+  }
+}
+
+main()
