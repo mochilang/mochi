@@ -1,0 +1,136 @@
+// Solution for SPOJ DECORATE - Decorate the wall
+// https://www.spoj.com/problems/DECORATE/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+type Rect { x1: int, y1: int, x2: int, y2: int }
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let vals = parseInts(line)
+    let n = vals[0]
+    let W = vals[1]
+    let H = vals[2]
+    var rects: list<Rect> = []
+    var i = 0
+    while i < n {
+      let rLine = input()
+      let rv = parseInts(rLine)
+      rects = append(rects, Rect{ x1:rv[0], y1:rv[1], x2:rv[2], y2:rv[3] })
+      i = i + 1
+    }
+    let lastLine = input()
+    let pv = parseInts(lastLine)
+    let pw = pv[0]
+    let ph = pv[1]
+
+    var xs: list<int> = [0]
+    var ys: list<int> = [0]
+    i = 0
+    while i < n {
+      let r = rects[i]
+      xs = append(xs, r.x2)
+      ys = append(ys, r.y2)
+      i = i + 1
+    }
+    xs = sortInts(xs)
+    ys = sortInts(ys)
+
+    var placed = false
+    var yi = 0
+    while yi < len(ys) && placed == false {
+      let y = ys[yi]
+      if y + ph > H { yi = yi + 1; continue }
+      var xi = 0
+      while xi < len(xs) {
+        let x = xs[xi]
+        if x + pw > W { xi = xi + 1; continue }
+        var ok = true
+        var j = 0
+        while j < len(rects) {
+          let r = rects[j]
+          if x < r.x2 && x + pw > r.x1 && y < r.y2 && y + ph > r.y1 {
+            ok = false
+            break
+          }
+          j = j + 1
+        }
+        if ok {
+          print(str(x) + " " + str(y))
+          placed = true
+          break
+        }
+        xi = xi + 1
+      }
+      yi = yi + 1
+    }
+    if placed == false {
+      print("Fail!")
+    }
+    case = case + 1
+  }
+}
+
+main()
