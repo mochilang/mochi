@@ -1,0 +1,138 @@
+// Solution for SPOJ VOCV - Con-Junctions
+// https://www.spoj.com/problems/VOCV/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun makeAdj(n: int): list<list<int>> {
+  var g: list<list<int>> = []
+  var i = 0
+  while i < n {
+    g = append(g, [])
+    i = i + 1
+  }
+  return g
+}
+
+fun solve(n: int, adj: list<list<int>>): list<int> {
+  let MOD = 10007
+  var parent: list<int> = []
+  var i = 0
+  while i < n {
+    parent = append(parent, -1)
+    i = i + 1
+  }
+  var order: list<int> = []
+  var stack: list<int> = []
+  stack = append(stack, 0)
+  parent[0] = -2
+  while len(stack) > 0 {
+    let u = stack[len(stack)-1]
+    stack = stack[0:len(stack)-1]
+    order = append(order, u)
+    var j = 0
+    while j < len(adj[u]) {
+      let v = adj[u][j]
+      if v == parent[u] { j = j + 1; continue }
+      parent[v] = u
+      stack = append(stack, v)
+      j = j + 1
+    }
+  }
+  var dp0: list<int> = []
+  var dp1: list<int> = []
+  var ways0: list<int> = []
+  var ways1: list<int> = []
+  i = 0
+  while i < n {
+    dp0 = append(dp0, 0)
+    dp1 = append(dp1, 0)
+    ways0 = append(ways0, 1)
+    ways1 = append(ways1, 1)
+    i = i + 1
+  }
+  var idx = len(order) - 1
+  while idx >= 0 {
+    let u = order[idx]
+    var s0 = 0
+    var w0 = 1
+    var s1 = 1
+    var w1 = 1
+    var j = 0
+    while j < len(adj[u]) {
+      let v = adj[u][j]
+      if v == parent[u] { j = j + 1; continue }
+      s0 = s0 + dp1[v]
+      w0 = (w0 * ways1[v]) % MOD
+      if dp0[v] < dp1[v] {
+        s1 = s1 + dp0[v]
+        w1 = (w1 * ways0[v]) % MOD
+      } else if dp1[v] < dp0[v] {
+        s1 = s1 + dp1[v]
+        w1 = (w1 * ways1[v]) % MOD
+      } else {
+        s1 = s1 + dp0[v]
+        w1 = (w1 * ((ways0[v] + ways1[v]) % MOD)) % MOD
+      }
+      j = j + 1
+    }
+    dp0[u] = s0
+    ways0[u] = w0 % MOD
+    dp1[u] = s1
+    ways1[u] = w1 % MOD
+    idx = idx - 1
+  }
+  var size = dp0[0]
+  var count = ways0[0] % MOD
+  if dp1[0] < size {
+    size = dp1[0]
+    count = ways1[0] % MOD
+  } else if dp1[0] == size {
+    count = (count + ways1[0]) % MOD
+  }
+  return [size, count]
+}
+
+fun main() {
+  var line = input()
+  if line == nil || line == "" { return }
+  let t = int(line)
+  var case = 0
+  while case < t {
+    line = input()
+    if line == nil { break }
+    if line == "" { continue }
+    let n = int(line)
+    var adj = makeAdj(n)
+    var i = 0
+    while i < n - 1 {
+      var l = input()
+      if l == "" { continue }
+      let parts = splitSpaces(l)
+      let u = int(parts[0]) - 1
+      let v = int(parts[1]) - 1
+      adj[u] = append(adj[u], v)
+      adj[v] = append(adj[v], u)
+      i = i + 1
+    }
+    let res = solve(n, adj)
+    print(str(res[0]) + " " + str(res[1]))
+    case = case + 1
+  }
+}
+
+main()
