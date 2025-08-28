@@ -1,0 +1,172 @@
+// Solution for SPOJ EXPAND - Barn Expansion
+// https://www.spoj.com/problems/EXPAND/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+fun sortSegs(segs: list<list<int>>): list<list<int>> {
+  var i = 1
+  while i < len(segs) {
+    var j = i
+    while j > 0 {
+      let a = segs[j-1]
+      let b = segs[j]
+      if a[0] > b[0] || (a[0] == b[0] && a[1] > b[1]) {
+        let tmp = segs[j-1]
+        segs[j-1] = segs[j]
+        segs[j] = tmp
+        j = j - 1
+      } else {
+        break
+      }
+    }
+    i = i + 1
+  }
+  return segs
+}
+
+fun main() {
+  let t = nextInt()
+  var case = 0
+  while case < t {
+    let n = nextInt()
+    var vmap: map<int, list<list<int>>> = {}
+    var hmap: map<int, list<list<int>>> = {}
+    var touch: list<int> = []
+    var i = 0
+    while i < n {
+      let A = nextInt()
+      let B = nextInt()
+      let C = nextInt()
+      let D = nextInt()
+      var arr = vmap[A]
+      if !arr { arr = [] }
+      arr = append(arr, [B, D, i])
+      vmap[A] = arr
+      arr = vmap[C]
+      if !arr { arr = [] }
+      arr = append(arr, [B, D, i])
+      vmap[C] = arr
+      var harr = hmap[B]
+      if !harr { harr = [] }
+      harr = append(harr, [A, C, i])
+      hmap[B] = harr
+      harr = hmap[D]
+      if !harr { harr = [] }
+      harr = append(harr, [A, C, i])
+      hmap[D] = harr
+      touch = append(touch, 0)
+      i = i + 1
+    }
+    for x in vmap {
+      var segs = vmap[x] as list<list<int>>
+      if len(segs) > 1 {
+        segs = sortSegs(segs)
+        var prevY2 = segs[0][1] as int
+        var prevID = segs[0][2] as int
+        var j = 1
+        while j < len(segs) {
+          let s = segs[j]
+          let y1 = s[0] as int
+          let y2 = s[1] as int
+          let id = s[2] as int
+          if y1 <= prevY2 {
+            touch[id] = 1
+            touch[prevID] = 1
+          }
+          if y2 > prevY2 {
+            prevY2 = y2
+            prevID = id
+          }
+          j = j + 1
+        }
+      }
+    }
+    for y in hmap {
+      var segs = hmap[y] as list<list<int>>
+      if len(segs) > 1 {
+        segs = sortSegs(segs)
+        var prevX2 = segs[0][1] as int
+        var prevID = segs[0][2] as int
+        var j = 1
+        while j < len(segs) {
+          let s = segs[j]
+          let x1 = s[0] as int
+          let x2 = s[1] as int
+          let id = s[2] as int
+          if x1 <= prevX2 {
+            touch[id] = 1
+            touch[prevID] = 1
+          }
+          if x2 > prevX2 {
+            prevX2 = x2
+            prevID = id
+          }
+          j = j + 1
+        }
+      }
+    }
+    var ans = 0
+    i = 0
+    while i < n {
+      if touch[i] == 0 { ans = ans + 1 }
+      i = i + 1
+    }
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
