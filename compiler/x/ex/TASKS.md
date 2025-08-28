@@ -18,6 +18,8 @@ runs it through the `elixir` executable, and compares the printed result with
 the expected `.out` file. The generated sources live under
 `tests/dataset/tpc-h/compiler/ex`.
 
+## Progress Update (2025-07-13 23:00)
+- Re-ran TPCH golden tests; all 22 queries compile and execute successfully.
 ## Remaining Enhancements
 - [x] Added `_now` helper so `now()` compiles and runs properly, reducing `.error` files in Rosetta tests.
 - [x] Introduced `_length` helper and fallback string slicing logic to better handle dynamic `len()` and slice expressions. This fixes a few Rosetta tasks that previously crashed at runtime.
