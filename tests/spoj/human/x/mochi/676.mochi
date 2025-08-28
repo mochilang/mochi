@@ -1,0 +1,127 @@
+// Solution for SPOJ LSORT - Sorting is not easy
+// https://www.spoj.com/problems/LSORT/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var n = 0
+  var i = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun makeMatrix(r: int, c: int, val: int): list<list<int>> {
+  var m: list<list<int>> = []
+  var i = 0
+  while i < r {
+    var row: list<int> = []
+    var j = 0
+    while j < c {
+      row = append(row, val)
+      j = j + 1
+    }
+    m = append(m, row)
+    i = i + 1
+  }
+  return m
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = parseIntStr(tLine)
+  for _ in 0..T {
+    var line = input()
+    while line == "" { line = input() }
+    let N = parseIntStr(line)
+    line = input()
+    while line == "" { line = input() }
+    let parts = splitSpaces(line)
+
+    var pos: list<int> = []
+    var i = 0
+    while i <= N {
+      pos = append(pos, 0)
+      i = i + 1
+    }
+    i = 0
+    while i < N {
+      let v = parseIntStr(parts[i])
+      pos[v] = i + 1
+      i = i + 1
+    }
+
+    // less[b][v]: how many values <= b have position < pos[v]
+    var less = makeMatrix(N + 1, N + 1, 0)
+    var v = 1
+    while v <= N {
+      var b = 1
+      while b <= N {
+        less[b][v] = less[b - 1][v]
+        if pos[b] < pos[v] { less[b][v] = less[b][v] + 1 }
+        b = b + 1
+      }
+      v = v + 1
+    }
+
+    let INF = 1_000_000_000_000_000
+    var dp = makeMatrix(N + 2, N + 2, INF)
+    var k = 1
+    while k <= N {
+      dp[k][k] = pos[k]
+      k = k + 1
+    }
+
+    var length = 1
+    while length <= N {
+      var L = 1
+      while L <= N - length + 1 {
+        let R = L + length - 1
+        let cur = dp[L][R]
+        if cur < INF {
+          let step = length + 1
+          if L > 1 {
+            let vLeft = L - 1
+            let rank = pos[vLeft] - (less[R][vLeft] - less[L - 1][vLeft])
+            let cand = cur + rank * step
+            if cand < dp[L - 1][R] { dp[L - 1][R] = cand }
+          }
+          if R < N {
+            let vRight = R + 1
+            let rank = pos[vRight] - (less[R][vRight] - less[L - 1][vRight])
+            let cand = cur + rank * step
+            if cand < dp[L][R + 1] { dp[L][R + 1] = cand }
+          }
+        }
+        L = L + 1
+      }
+      length = length + 1
+    }
+
+    print(dp[1][N])
+  }
+}
+
+main()
