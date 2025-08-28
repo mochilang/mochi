@@ -1,0 +1,145 @@
+// Solution for SPOJ RNUMBER - Random Number
+// https://www.spoj.com/problems/RNUMBER/
+
+fun split(line: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun buildDP(M: int, N: int): list<list<bigint>> {
+  var dp: list<list<bigint>> = []
+  var i = 0
+  while i <= N + 1 {
+    var row: list<bigint> = []
+    var j = 0
+    while j <= M {
+      if i == N + 1 {
+        row = append(row, 1 as bigint)
+      } else {
+        row = append(row, 0 as bigint)
+      }
+      j = j + 1
+    }
+    dp = append(dp, row)
+    i = i + 1
+  }
+  var pos = N
+  while pos >= 1 {
+    var suffix: list<bigint> = []
+    var j = 0
+    while j <= M + 1 {
+      suffix = append(suffix, 0 as bigint)
+      j = j + 1
+    }
+    j = M
+    while j >= pos {
+      suffix[j] = suffix[j + 1] + dp[pos + 1][j]
+      j = j - 1
+    }
+    j = 0
+    while j <= M {
+      var start = j
+      if start < pos { start = pos }
+      dp[pos][j] = suffix[start]
+      j = j + 1
+    }
+    pos = pos - 1
+  }
+  return dp
+}
+
+fun g(a: bigint, b: bigint, bits: string): bigint {
+  var A = a
+  var B = b
+  var i = 0
+  while i < len(bits) && A < B {
+    let m = (A + B) / 2
+    if bits[i:i+1] == "0" {
+      B = m
+    } else {
+      A = m + 1
+    }
+    i = i + 1
+  }
+  return A
+}
+
+fun kthSeq(M: int, N: int, k: bigint, dp: list<list<bigint>>): list<int> {
+  var seq: list<int> = []
+  var prev = 0
+  var pos = 1
+  var K = k
+  while pos <= N {
+    var val = prev
+    if val < pos { val = pos }
+    while val <= M {
+      let cnt = dp[pos + 1][val]
+      if K <= cnt {
+        seq = append(seq, val)
+        prev = val
+        break
+      } else {
+        K = K - cnt
+        val = val + 1
+      }
+    }
+    pos = pos + 1
+  }
+  return seq
+}
+
+fun fmt3(n: int): string {
+  if n < 10 { return "  " + str(n) }
+  if n < 100 { return " " + str(n) }
+  return str(n)
+}
+
+fun printSeq(seq: list<int>) {
+  var i = 0
+  while i < len(seq) {
+    var line = ""
+    var j = 0
+    while j < 20 && i < len(seq) {
+      if j > 0 { line = line + " " }
+      line = line + fmt3(seq[i])
+      j = j + 1
+      i = i + 1
+    }
+    print(line)
+  }
+}
+
+fun main() {
+  let kLine = input()
+  if kLine == "" { return }
+  let T = kLine as int
+  var case = 0
+  while case < T {
+    let mnLine = input()
+    let parts = split(mnLine)
+    let M = parts[0] as int
+    let N = parts[1] as int
+    let bitsLine = input()
+    let bits = bitsLine[2:len(bitsLine)]
+    let dp = buildDP(M, N)
+    let total = dp[1][0]
+    let k = g(1 as bigint, total, bits)
+    let seq = kthSeq(M, N, k, dp)
+    printSeq(seq)
+    case = case + 1
+  }
+}
+
+main()
