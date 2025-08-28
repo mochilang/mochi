@@ -1,0 +1,156 @@
+// Solution for SPOJ WM06 - Soccer Choreography
+// https://www.spoj.com/problems/WM06/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = 0 - n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\n" || ch == "\r" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun stateKey(arr: list<int>): string {
+  var s = ""
+  var i = 0
+  while i < len(arr) {
+    if i > 0 { s = s + "," }
+    s = s + str(arr[i])
+    i = i + 1
+  }
+  return s
+}
+
+fun reverseSeg(arr: list<int>, a: int, b: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < a {
+    res = append(res, arr[i])
+    i = i + 1
+  }
+  var j = b
+  while j >= a {
+    res = append(res, 0 - arr[j])
+    j = j - 1
+  }
+  var k = b + 1
+  while k < len(arr) {
+    res = append(res, arr[k])
+    k = k + 1
+  }
+  return res
+}
+
+fun formatState(arr: list<int>): string {
+  var s = ""
+  var i = 0
+  while i < len(arr) {
+    if i > 0 { s = s + " " }
+    let v = arr[i]
+    if v >= 0 { s = s + "+" + str(v) }
+    else { s = s + str(v) }
+    i = i + 1
+  }
+  return s
+}
+
+fun solve(start: list<int>, goal: list<int>): list<list<int>> {
+  var arr: list<int> = []
+  var c = 0
+  while c < len(start) {
+    arr = append(arr, start[c])
+    c = c + 1
+  }
+  let n = len(arr)
+  var steps: list<list<int>> = []
+  var k = n - 1
+  while k >= 0 {
+    let tgt = goal[k]
+    var j = 0
+    while j < n {
+      if arr[j] == tgt || arr[j] == 0 - tgt { break }
+      j = j + 1
+    }
+    if j == k {
+      if arr[j] != tgt {
+        arr[j] = 0 - arr[j]
+        steps = append(steps, [j, j])
+      }
+    } else {
+      if arr[j] == tgt {
+        arr[j] = 0 - arr[j]
+        steps = append(steps, [j, j])
+      }
+      arr = reverseSeg(arr, j, k)
+      steps = append(steps, [j, k])
+    }
+    k = k - 1
+  }
+  return steps
+}
+
+fun main() {
+  while true {
+    let nLine = input()
+    if nLine == nil || nLine == "" { return }
+    let n = parseIntStr(nLine)
+    if n == 0 { return }
+    let startLine = input()
+    let goalLine = input()
+    let start = parseInts(startLine)
+    let goal = parseInts(goalLine)
+    let moves = solve(start, goal)
+    print(str(len(moves)) + " Steps")
+    print(formatState(start))
+    var cur = start
+    var idx = 0
+    while idx < len(moves) {
+      let mv = moves[idx]
+      cur = reverseSeg(cur, mv[0], mv[1])
+      print(formatState(cur))
+      idx = idx + 1
+    }
+  }
+}
+
+main()
