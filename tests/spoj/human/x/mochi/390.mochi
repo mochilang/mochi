@@ -1,0 +1,88 @@
+// Solution for SPOJ BILLIARD - Billiard
+// https://www.spoj.com/problems/BILLIARD/
+
+import go "math" as math
+
+extern let math.Pi: float
+extern fun math.Sqrt(x: float): float
+extern fun math.Atan2(y: float, x: float): float
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun format2(x: float): string {
+  var neg = false
+  if x < 0.0 {
+    neg = true
+    x = -x
+  }
+  var scaled = x * 100.0 + 0.5
+  var n = scaled as int
+  var whole = n / 100
+  var frac = n % 100
+  var fracStr = str(frac)
+  if len(fracStr) < 2 {
+    fracStr = "0" + fracStr
+  }
+  var res = str(whole) + "." + fracStr
+  if neg { res = "-" + res }
+  return res
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil || line == "" { return }
+    let p = split(line, " ")
+    let a = parseIntStr(p[0])
+    let b = parseIntStr(p[1])
+    let s = parseIntStr(p[2])
+    let m = parseIntStr(p[3])
+    let n = parseIntStr(p[4])
+    if a == 0 && b == 0 && s == 0 && m == 0 && n == 0 { break }
+    let horiz = (m as float) * (a as float)
+    let vert = (n as float) * (b as float)
+    let angle = math.Atan2(vert, horiz) * 180.0 / math.Pi
+    let dist = math.Sqrt(horiz * horiz + vert * vert)
+    let speed = dist / (s as float)
+    print(format2(angle) + " " + format2(speed))
+  }
+}
+
+main()
