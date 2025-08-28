@@ -1,0 +1,63 @@
+// Solution for SPOJ DIV2 - Divisors 2
+// https://www.spoj.com/problems/DIV2/
+
+fun main() {
+  let limit = 1000000
+  var sieve: list<bool> = []
+  var i = 0
+  while i <= limit {
+    sieve = append(sieve, true)
+    i = i + 1
+  }
+  sieve[0] = false
+  sieve[1] = false
+  var primes: list<int> = []
+  var p = 2
+  while p <= limit {
+    if sieve[p] {
+      primes = append(primes, p)
+      if p * p <= limit {
+        var j = p * p
+        while j <= limit {
+          sieve[j] = false
+          j = j + p
+        }
+      }
+    }
+    p = p + 1
+  }
+  var count = 0
+  var n = 2
+  while n <= limit {
+    var x = n
+    var pf = 0
+    var squareFree = true
+    var idx = 0
+    while idx < len(primes) {
+      let pr = primes[idx]
+      if pr * pr > x { break }
+      var c = 0
+      while x % pr == 0 {
+        x = x / pr
+        c = c + 1
+        if c > 1 {
+          squareFree = false
+          break
+        }
+      }
+      if c > 0 { pf = pf + 1 }
+      if !squareFree { break }
+      idx = idx + 1
+    }
+    if squareFree {
+      if x > 1 { pf = pf + 1 }
+      if pf >= 2 {
+        count = count + 1
+        if count % 108 == 0 { print(n) }
+      }
+    }
+    n = n + 1
+  }
+}
+
+main()
