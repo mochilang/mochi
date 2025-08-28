@@ -1,0 +1,70 @@
+# Solution for SPOJ TOE1 - Tic-Tac-Toe ( I )
+# https://www.spoj.com/problems/TOE1/
+
+fun checkWin(board: list<string>, ch: string): bool {
+  var i = 0
+  while i < 3 {
+    if board[i][0:1] == ch && board[i][1:2] == ch && board[i][2:3] == ch {
+      return true
+    }
+    if board[0][i:i+1] == ch && board[1][i:i+1] == ch && board[2][i:i+1] == ch {
+      return true
+    }
+    i = i + 1
+  }
+  if board[0][0:1] == ch && board[1][1:2] == ch && board[2][2:3] == ch {
+    return true
+  }
+  if board[0][2:3] == ch && board[1][1:2] == ch && board[2][0:1] == ch {
+    return true
+  }
+  return false
+}
+
+let t = int(input())
+for _ in 0..t {
+  var rows: list<string> = []
+  while len(rows) < 3 {
+    let line = input()
+    if len(line) == 0 {
+      continue
+    }
+    rows = append(rows, line)
+  }
+  var countX = 0
+  var countO = 0
+  var i = 0
+  while i < 3 {
+    var j = 0
+    while j < 3 {
+      let ch = rows[i][j:j+1]
+      if ch == "X" {
+        countX = countX + 1
+      } else if ch == "O" {
+        countO = countO + 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  let winX = checkWin(rows, "X")
+  let winO = checkWin(rows, "O")
+  let diff = countX - countO
+  var valid = false
+  if diff < 0 || diff > 1 {
+    valid = false
+  } else if winX && winO {
+    valid = false
+  } else if winX {
+    valid = diff == 1
+  } else if winO {
+    valid = diff == 0
+  } else {
+    valid = diff == 0 || diff == 1
+  }
+  if valid {
+    print("yes")
+  } else {
+    print("no")
+  }
+}

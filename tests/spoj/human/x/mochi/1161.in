@@ -1,0 +1,8 @@
+2
+X.O
+OO.
+XXX
+
+O.X
+XX.
+OOO
