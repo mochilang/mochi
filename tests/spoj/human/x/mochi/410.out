@@ -1,0 +1,31 @@
+Set 1; average length 2.10
+    A: 1100
+    B: 1101
+    C: 111
+    D: 10
+    E: 0
+
+Set 2; average length 2.20
+    A: 11
+    B: 00
+    C: 01
+    D: 100
+    E: 101
+
+Set 3; average length 1.69
+    A: 1
+    B: 00
+    C: 20
+    D: 01
+    E: 22
+    F: 02
+    G: 21
+
+Set 4; average length 1.32
+    A: 32
+    B: 1
+    C: 0
+    D: 2
+    E: 31
+    F: 33
+
