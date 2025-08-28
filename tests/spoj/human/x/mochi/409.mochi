@@ -1,0 +1,181 @@
+// Solution for SPOJ DELCOMM - DEL Command
+// https://www.spoj.com/problems/DELCOMM/
+
+fun splitFile(fn: string): list<string> {
+  var i = 0
+  while i < len(fn) {
+    let ch = fn[i:i+1]
+    if ch == "." {
+      return [fn[0:i], fn[i+1:len(fn)]]
+    }
+    i = i + 1
+  }
+  return [fn, ""]
+}
+
+fun genPatterns(parts: list<string>): list<string> {
+  var pats: list<string> = []
+  let n = len(parts)
+  var minLen = len(parts[0])
+  var sameLen = true
+  var i = 1
+  while i < n {
+    let l = len(parts[i])
+    if l < minLen { minLen = l }
+    if l != len(parts[0]) { sameLen = false }
+    i = i + 1
+  }
+  if sameLen {
+    var pat = ""
+    var pos = 0
+    let L = len(parts[0])
+    while pos < L {
+      let ch = parts[0][pos:pos+1]
+      var j = 1
+      while j < n {
+        if parts[j][pos:pos+1] != ch {
+          ch = "?"
+          break
+        }
+        j = j + 1
+      }
+      pat = pat + ch
+      pos = pos + 1
+    }
+    pats = append(pats, pat)
+  }
+  var p = 0
+  while p <= minLen {
+    var pat = ""
+    var pos = 0
+    while pos < p {
+      let ch = parts[0][pos:pos+1]
+      var j = 1
+      while j < n {
+        if parts[j][pos:pos+1] != ch {
+          ch = "?"
+          break
+        }
+        j = j + 1
+      }
+      pat = pat + ch
+      pos = pos + 1
+    }
+    pat = pat + "*"
+    pats = append(pats, pat)
+    p = p + 1
+  }
+  return pats
+}
+
+fun matchPart(pat: string, s: string): bool {
+  var hasStar = false
+  var plen = len(pat)
+  if plen > 0 && pat[plen-1:plen] == "*" {
+    hasStar = true
+    plen = plen - 1
+  }
+  if hasStar {
+    if len(s) < plen { return false }
+    var i = 0
+    while i < plen {
+      let pc = pat[i:i+1]
+      let sc = s[i:i+1]
+      if pc != "?" && pc != sc { return false }
+      i = i + 1
+    }
+    return true
+  } else {
+    if len(s) != plen { return false }
+    var i = 0
+    while i < plen {
+      let pc = pat[i:i+1]
+      let sc = s[i:i+1]
+      if pc != "?" && pc != sc { return false }
+      i = i + 1
+    }
+    return true
+  }
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil { return }
+  let t = int(tLine)
+  // skip blank line after t
+  let _ = input()
+  var outputs: list<string> = []
+  var d = 0
+  while d < t {
+    var delNames: list<string> = []
+    var delExts: list<string> = []
+    var keepNames: list<string> = []
+    var keepExts: list<string> = []
+    while true {
+      var line = input()
+      if line == nil || line == "" { break }
+      let sign = line[0:1]
+      let fname = line[1:len(line)]
+      let parts = splitFile(fname)
+      let name = parts[0]
+      let ext = parts[1]
+      if sign == "-" {
+        delNames = append(delNames, name)
+        delExts = append(delExts, ext)
+      } else {
+        keepNames = append(keepNames, name)
+        keepExts = append(keepExts, ext)
+      }
+    }
+    let namePats = genPatterns(delNames)
+    let extPats = genPatterns(delExts)
+    var ans = ""
+    var i = 0
+    while i < len(namePats) && ans == "" {
+      var j = 0
+      while j < len(extPats) && ans == "" {
+        let np = namePats[i]
+        let ep = extPats[j]
+        var ok = true
+        var k = 0
+        while k < len(delNames) {
+          if matchPart(np, delNames[k]) == false || matchPart(ep, delExts[k]) == false {
+            ok = false
+            break
+          }
+          k = k + 1
+        }
+        if ok {
+          var m = 0
+          while m < len(keepNames) {
+            if matchPart(np, keepNames[m]) && matchPart(ep, keepExts[m]) {
+              ok = false
+              break
+            }
+            m = m + 1
+          }
+        }
+        if ok {
+          if ep != "" {
+            ans = "DEL " + np + "." + ep
+          } else {
+            ans = "DEL " + np
+          }
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    if ans == "" { ans = "IMPOSSIBLE" }
+    outputs = append(outputs, ans)
+    d = d + 1
+  }
+  var idx = 0
+  while idx < len(outputs) {
+    print(outputs[idx])
+    if idx + 1 < len(outputs) { print("") }
+    idx = idx + 1
+  }
+}
+
+main()
