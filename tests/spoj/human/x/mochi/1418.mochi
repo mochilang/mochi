@@ -1,0 +1,89 @@
+// Solution for SPOJ CATM - The Cats and the Mouse
+// https://www.spoj.com/problems/CATM/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun absInt(x: int): int {
+  if x < 0 { return -x }
+  return x
+}
+
+fun canEscape(n:int, m:int, mr:int, mc:int, c1r:int, c1c:int, c2r:int, c2c:int): bool {
+  var r = 1
+  while r <= n {
+    var c = 1
+    while c <= m {
+      if r == 1 || r == n || c == 1 || c == m {
+        let dm = absInt(mr - r) + absInt(mc - c)
+        let dc1 = absInt(c1r - r) + absInt(c1c - c)
+        let dc2 = absInt(c2r - r) + absInt(c2c - c)
+        if dm < dc1 && dm < dc2 {
+          return true
+        }
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+  return false
+}
+
+fun main() {
+  let first = input()
+  if first == nil { return }
+  let nm = split(first)
+  let n = parseIntStr(nm[0])
+  let m = parseIntStr(nm[1])
+  let kline = input()
+  let k = parseIntStr(split(kline)[0])
+  var i = 0
+  while i < k {
+    let line = input()
+    if line == nil { return }
+    let parts = split(line)
+    let mr = parseIntStr(parts[0])
+    let mc = parseIntStr(parts[1])
+    let c1r = parseIntStr(parts[2])
+    let c1c = parseIntStr(parts[3])
+    let c2r = parseIntStr(parts[4])
+    let c2c = parseIntStr(parts[5])
+    if canEscape(n,m,mr,mc,c1r,c1c,c2r,c2c) {
+      print("YES")
+    } else {
+      print("NO")
+    }
+    i = i + 1
+  }
+}
+
+main()
