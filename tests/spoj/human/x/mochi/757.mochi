@@ -1,0 +1,166 @@
+// Solution for SPOJ TEM - Thermal Luminescence
+// https://www.spoj.com/problems/TEM/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+var tokens: list<string> = []
+
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let v = int(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+type Res {
+  sum: int,
+  l: int,
+  r: int,
+}
+
+fun kadane(arr: list<int>): Res {
+  var maxSum = arr[0]
+  var curSum = arr[0]
+  var start = 0
+  var bestL = 0
+  var bestR = 0
+  var i = 1
+  while i < len(arr) {
+    if curSum < 0 {
+      curSum = arr[i]
+      start = i
+    } else {
+      curSum = curSum + arr[i]
+    }
+    if curSum > maxSum {
+      maxSum = curSum
+      bestL = start
+      bestR = i
+    }
+    i = i + 1
+  }
+  return Res { sum: maxSum, l: bestL, r: bestR }
+}
+
+fun main() {
+  let t = nextInt()
+  var case = 0
+  while case < t {
+    let X = nextInt()
+    let Y = nextInt()
+    let Z = nextInt()
+    var cube: list<list<list<int>>> = []
+    var x = 0
+    while x < X {
+      var plane: list<list<int>> = []
+      var y = 0
+      while y < Y {
+        var row: list<int> = []
+        var z = 0
+        while z < Z {
+          row = append(row, nextInt())
+          z = z + 1
+        }
+        plane = append(plane, row)
+        y = y + 1
+      }
+      cube = append(cube, plane)
+      x = x + 1
+    }
+    var bestSum = cube[0][0][0]
+    var bx1 = 0
+    var by1 = 0
+    var bz1 = 0
+    var bx2 = 0
+    var by2 = 0
+    var bz2 = 0
+    var x1 = 0
+    while x1 < X {
+      // initialize yz matrix to zeros
+      var yz: list<list<int>> = []
+      var yy = 0
+      while yy < Y {
+        var row2: list<int> = []
+        var zz = 0
+        while zz < Z {
+          row2 = append(row2, 0)
+          zz = zz + 1
+        }
+        yz = append(yz, row2)
+        yy = yy + 1
+      }
+      var x2 = x1
+      while x2 < X {
+        yy = 0
+        while yy < Y {
+          var zz = 0
+          while zz < Z {
+            yz[yy][zz] = yz[yy][zz] + cube[x2][yy][zz]
+            zz = zz + 1
+          }
+          yy = yy + 1
+        }
+        var y1 = 0
+        while y1 < Y {
+          var col: list<int> = []
+          var zzz = 0
+          while zzz < Z {
+            col = append(col, 0)
+            zzz = zzz + 1
+          }
+          var y2 = y1
+          while y2 < Y {
+            zzz = 0
+            while zzz < Z {
+              col[zzz] = col[zzz] + yz[y2][zzz]
+              zzz = zzz + 1
+            }
+            let res = kadane(col)
+            if res.sum > bestSum {
+              bestSum = res.sum
+              bx1 = x1
+              by1 = y1
+              bz1 = res.l
+              bx2 = x2
+              by2 = y2
+              bz2 = res.r
+            }
+            y2 = y2 + 1
+          }
+          y1 = y1 + 1
+        }
+        x2 = x2 + 1
+      }
+      x1 = x1 + 1
+    }
+    let out = str(bx1 + 1) + " " + str(by1 + 1) + " " + str(bz1 + 1) + " " + str(bx2 + 1) + " " + str(by2 + 1) + " " + str(bz2 + 1)
+    print(out)
+    case = case + 1
+  }
+}
+
+main()
