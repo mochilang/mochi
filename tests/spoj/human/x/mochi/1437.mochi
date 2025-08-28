@@ -1,0 +1,119 @@
+// Solution for SPOJ PT07Z - Longest path in a tree
+// https://www.spoj.com/problems/PT07Z/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun readAllInts(): list<int> {
+  var data = ""
+  while true {
+    let line = input()
+    if line == "" { break }
+    data = data + " " + line
+  }
+  var res: list<int> = []
+  var i = 0
+  while i < len(data) {
+    let ch = data[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      var j = i + 1
+      while j < len(data) {
+        let cj = data[j:j+1]
+        if cj >= "0" && cj <= "9" { j = j + 1 } else { break }
+      }
+      res = append(res, parseIntStr(data[i:j]))
+      i = j
+    } else {
+      i = i + 1
+    }
+  }
+  return res
+}
+
+fun bfs(start: int, adj: list<list<int>>): list<int> {
+  let n = len(adj)
+  var dist: list<int> = []
+  var i = 0
+  while i < n {
+    dist = append(dist, 0 - 1)
+    i = i + 1
+  }
+  var q: list<int> = [start]
+  var qi = 0
+  dist[start] = 0
+  while qi < len(q) {
+    let v = q[qi]
+    qi = qi + 1
+    var j = 0
+    while j < len(adj[v]) {
+      let to = adj[v][j]
+      if dist[to] == 0 - 1 {
+        dist[to] = dist[v] + 1
+        q = append(q, to)
+      }
+      j = j + 1
+    }
+  }
+  return dist
+}
+
+fun farthest(dist: list<int>): int {
+  var idx = 0
+  var i = 1
+  while i < len(dist) {
+    if dist[i] > dist[idx] {
+      idx = i
+    }
+    i = i + 1
+  }
+  return idx
+}
+
+fun main() {
+  let nums = readAllInts()
+  if len(nums) == 0 {
+    return
+  }
+  let n = nums[0]
+  var adj: list<list<int>> = []
+  var i = 0
+  while i < n {
+    adj = append(adj, [])
+    i = i + 1
+  }
+  var k = 1
+  i = 0
+  while i < n - 1 {
+    let u = nums[k] - 1
+    let v = nums[k + 1] - 1
+    k = k + 2
+    adj[u] = append(adj[u], v)
+    adj[v] = append(adj[v], u)
+    i = i + 1
+  }
+  let dist1 = bfs(0, adj)
+  let far = farthest(dist1)
+  let dist2 = bfs(far, adj)
+  var ans = 0
+  i = 0
+  while i < len(dist2) {
+    if dist2[i] > ans {
+      ans = dist2[i]
+    }
+    i = i + 1
+  }
+  print(str(ans))
+}
+
+main()
