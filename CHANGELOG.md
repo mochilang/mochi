@@ -1,5 +1,21 @@
 # 📦 CHANGELOG.md
 
+## [0.10.77] – 2025-08-28T09:26:37+07:00
+
+### Added
+
+- Mochi solutions for SPOJ problems such as To and Fro, Team Rankings, problem 398, CONDUIT, Hit or Miss, Alphacode, HEXAGON, Railroads, problem 390, HOSPITAL, European railroad tracks, Travelling tours, MENU, HELP, GAME, FOOL, DECORATE, CHICAGO, QTREE, MATH1, Bullshit Bingo, PERMUT2, Taxi, ACS, MATRIX, GREED, BENEFACT, BOXES, ONEZERO, EMPODIA, FARMER, Phidias, Pocket Money and more.
+- Lean solutions for SPOJ challenges including TOURS, MENU, HELP, GAME, FOOL, EUROPEAN, DECORATE, CHICAGO and others.
+- Prim algorithm writeup for CSTREET.
+
+### Changed
+
+- Refactored Lean solution for MATH1.
+
+### Fixed
+
+- No fixes.
+
 ## [0.10.76] – 2025-08-27T19:43:42+07:00
 
 ### Added
