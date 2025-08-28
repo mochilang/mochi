@@ -1,0 +1,259 @@
+// Solution for SPOJ HOSPITAL - Use of Hospital Facilities
+// https://www.spoj.com/problems/HOSPITAL/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun padLeft(s: string, w: int): string {
+  var res = ""
+  var i = 0
+  while i < w - len(s) {
+    res = res + " "
+    i = i + 1
+  }
+  return res + s
+}
+
+fun padRight(s: string, w: int): string {
+  var res = s
+  var i = len(s)
+  while i < w {
+    res = res + " "
+    i = i + 1
+  }
+  return res
+}
+
+fun spaces(n: int): string {
+  var s = ""
+  var i = 0
+  while i < n {
+    s = s + " "
+    i = i + 1
+  }
+  return s
+}
+
+fun fmtTime(m: int): string {
+  let h = m / 60
+  let mm = m % 60
+  let hStr = str(h)
+  let mStr = if mm < 10 { "0" + str(mm) } else { str(mm) }
+  return hStr + ":" + mStr
+}
+
+fun percent(used: int, total: int): string {
+  let val = (used * 10000 + total / 2) / total
+  let whole = val / 100
+  let frac = val % 100
+  let fracStr = if frac < 10 { "0" + str(frac) } else { str(frac) }
+  return str(whole) + "." + fracStr
+}
+
+fun summaryLine(kind: string, num: int, used: int, total: int): string {
+  let numStr = str(num)
+  var line = kind
+  if kind == "Bed" && len(numStr) == 1 {
+    line = line + "   " + numStr
+  } else {
+    line = line + "  " + numStr
+  }
+  let gap = if used >= 100 { 5 } else { 7 }
+  line = line + spaces(gap)
+  let usedStr = str(used)
+  line = line + usedStr + (if len(usedStr) == 1 { "    " } else { "   " }) + percent(used, total)
+  return line
+}
+
+fun main() {
+  while true {
+    var line = input()
+    if line == "" { break }
+    let cfg = splitSpaces(line)
+    if len(cfg) == 0 { break }
+    let nRoom = parseIntStr(cfg[0])
+    let nBed = parseIntStr(cfg[1])
+    let startHour = parseIntStr(cfg[2])
+    let transport = parseIntStr(cfg[3])
+    let prepRoom = parseIntStr(cfg[4])
+    let prepBed = parseIntStr(cfg[5])
+    let nPat = parseIntStr(cfg[6])
+
+    var names: list<string> = []
+    var surg: list<int> = []
+    var rec: list<int> = []
+    var i = 0
+    while i < nPat {
+      let name = input()
+      names = append(names, name)
+      let l2 = input()
+      let parts = splitSpaces(l2)
+      surg = append(surg, parseIntStr(parts[0]))
+      rec = append(rec, parseIntStr(parts[1]))
+      i = i + 1
+    }
+
+    let startTime = startHour * 60
+    var roomAvail: list<int> = []
+    var j = 0
+    while j < nRoom { roomAvail = append(roomAvail, startTime); j = j + 1 }
+    var bedAvail: list<int> = []
+    j = 0
+    while j < nBed { bedAvail = append(bedAvail, startTime); j = j + 1 }
+
+    var room: list<int> = []
+    var sBegin: list<int> = []
+    var sEnd: list<int> = []
+    i = 0
+    while i < nPat {
+      var best = 0
+      var tbest = roomAvail[0]
+      j = 1
+      while j < nRoom {
+        if roomAvail[j] < tbest {
+          tbest = roomAvail[j]
+          best = j
+        }
+        j = j + 1
+      }
+      let st = tbest
+      let en = st + surg[i]
+      room = append(room, best + 1)
+      sBegin = append(sBegin, st)
+      sEnd = append(sEnd, en)
+      roomAvail[best] = en + prepRoom
+      i = i + 1
+    }
+
+    var order: list<int> = []
+    i = 0
+    while i < nPat { order = append(order, i); i = i + 1 }
+    i = 0
+    while i < nPat {
+      var best = i
+      var j2 = i + 1
+      while j2 < nPat {
+        let a = order[j2]
+        let b = order[best]
+        if sEnd[a] < sEnd[b] || (sEnd[a] == sEnd[b] && room[a] < room[b]) {
+          best = j2
+        }
+        j2 = j2 + 1
+      }
+      if best != i {
+        let tmp = order[i]
+        order[i] = order[best]
+        order[best] = tmp
+      }
+      i = i + 1
+    }
+
+    var bed: list<int> = []
+    var rBegin: list<int> = []
+    var rEnd: list<int> = []
+    i = 0
+    while i < nPat { bed = append(bed,0); rBegin=append(rBegin,0); rEnd=append(rEnd,0); i = i + 1 }
+
+    i = 0
+    while i < nPat {
+      let idx = order[i]
+      let leave = sEnd[idx]
+      j = 0
+      while j < nBed {
+        if bedAvail[j] <= leave { break }
+        j = j + 1
+      }
+      bed[idx] = j + 1
+      let arrive = leave + transport
+      rBegin[idx] = arrive
+      rEnd[idx] = arrive + rec[idx]
+      bedAvail[j] = rEnd[idx] + prepBed
+      i = i + 1
+    }
+
+    var last = rEnd[0]
+    i = 1
+    while i < nPat {
+      if rEnd[i] > last { last = rEnd[i] }
+      i = i + 1
+    }
+    let total = last - startTime
+
+    var roomUsed: list<int> = []
+    j = 0
+    while j < nRoom { roomUsed = append(roomUsed, 0); j = j + 1 }
+    var bedUsed: list<int> = []
+    j = 0
+    while j < nBed { bedUsed = append(bedUsed, 0); j = j + 1 }
+    i = 0
+    while i < nPat {
+      let r = room[i] - 1
+      roomUsed[r] = roomUsed[r] + (sEnd[i] - sBegin[i])
+      let b = bed[i] - 1
+      bedUsed[b] = bedUsed[b] + (rEnd[i] - rBegin[i])
+      i = i + 1
+    }
+
+    print(" Patient          Operating Room          Recovery Room")
+    print(" #  Name     Room#  Begin   End      Bed#  Begin    End")
+    print(" ------------------------------------------------------")
+    i = 0
+    while i < nPat {
+      let sb = fmtTime(sBegin[i])
+      let se = fmtTime(sEnd[i])
+      let bedStr = str(bed[i])
+      let rb = fmtTime(rBegin[i])
+      let re = fmtTime(rEnd[i])
+      let roomStr = str(room[i])
+      let row = padLeft(str(i+1),2) + "  " + padRight(names[i],11) + roomStr + spaces(5 - len(roomStr) - (len(sb) - 4)) + sb + spaces(4 - (len(se) - 4)) + se + spaces(6 - (len(bedStr) - 1)) + bedStr + spaces(4 - (len(rb) - 4)) + rb + spaces(4 - (len(re) - 4)) + re
+      print(row)
+      i = i + 1
+    }
+    print("")
+    print("Facility Utilization")
+    print("Type  # Minutes  % Used")
+    print("-------------------------")
+    j = 0
+    while j < nRoom {
+      print(summaryLine("Room", j+1, roomUsed[j], total))
+      j = j + 1
+    }
+    j = 0
+    while j < nBed {
+      print(summaryLine("Bed", j+1, bedUsed[j], total))
+      j = j + 1
+    }
+    print("")
+  }
+}
+
+main()
