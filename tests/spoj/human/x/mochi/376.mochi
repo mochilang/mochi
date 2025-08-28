@@ -1,0 +1,95 @@
+// Solution for SPOJ ACS - A concrete simulation
+// https://www.spoj.com/problems/ACS/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let ROWS = 1234
+  let COLS = 5678
+  var row: list<int> = []
+  var col: list<int> = []
+  var rpos: list<int> = []
+  var cpos: list<int> = []
+  var i = 0
+  while i <= ROWS {
+    row = append(row, i)
+    rpos = append(rpos, i)
+    i = i + 1
+  }
+  i = 0
+  while i <= COLS {
+    col = append(col, i)
+    cpos = append(cpos, i)
+    i = i + 1
+  }
+  while true {
+    let line = input()
+    if line == nil || line == "" { break }
+    let parts = splitSpaces(line)
+    if len(parts) == 0 { continue }
+    let cmd = parts[0]
+    if cmd == "R" {
+      let x = parseIntStr(parts[1])
+      let y = parseIntStr(parts[2])
+      let rx = row[x]
+      let ry = row[y]
+      row[x] = ry
+      row[y] = rx
+      rpos[rx] = y
+      rpos[ry] = x
+    } else if cmd == "C" {
+      let x = parseIntStr(parts[1])
+      let y = parseIntStr(parts[2])
+      let cx = col[x]
+      let cy = col[y]
+      col[x] = cy
+      col[y] = cx
+      cpos[cx] = y
+      cpos[cy] = x
+    } else if cmd == "Q" {
+      let x = parseIntStr(parts[1])
+      let y = parseIntStr(parts[2])
+      let v = (row[x]-1) * COLS + col[y]
+      print(str(v))
+    } else { // W
+      let z = parseIntStr(parts[1])
+      let r = (z - 1) / COLS + 1
+      let c = (z - 1) % COLS + 1
+      let x = rpos[r]
+      let y = cpos[c]
+      print(str(x) + " " + str(y))
+    }
+  }
+}
+
+main()
