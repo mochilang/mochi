@@ -1,0 +1,118 @@
+// Solution for SPOJ MATH1 - Math I
+// https://www.spoj.com/problems/MATH1/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      if cur != "" { parts = append(parts, cur) }
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun min(a: int, b: int): int { if a < b { a } else { b } }
+
+fun abs(x: int): int { if x < 0 { -x } else { x } }
+
+fun solve(arr: list<int>): int {
+  let n = len(arr)
+  var pref: list<int> = []
+  var acc = 0
+  var i = 0
+  while i < n {
+    acc = acc + arr[i]
+    pref = append(pref, acc)
+    i = i + 1
+  }
+  let s = acc
+  let INF = 1000000000
+  var best = INF
+  var m = 0
+  while m <= s {
+    var dp: list<int> = []
+    var k = 0
+    while k <= s {
+      dp = append(dp, if k == 0 { 0 } else { INF })
+      k = k + 1
+    }
+    i = 0
+    while i < n {
+      let pv = pref[i]
+      let lim = min(s, i)
+      var ndp: list<int> = []
+      var kk = 0
+      while kk <= s {
+        ndp = append(ndp, INF)
+        kk = kk + 1
+      }
+      k = 0
+      while k <= lim {
+        let diff = pv - k - m
+        let cost = dp[k] + abs(diff)
+        if cost < ndp[k] { ndp[k] = cost }
+        if k + 1 <= s {
+          if cost < ndp[k+1] { ndp[k+1] = cost }
+        }
+        k = k + 1
+      }
+      dp = ndp
+      i = i + 1
+    }
+    let cand = dp[s]
+    if cand < best { best = cand }
+    m = m + 1
+  }
+  return best
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == nil || tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var case = 0
+  while case < t {
+    let n = parseIntStr(input())
+    let parts = split(input(), " ")
+    var arr: list<int> = []
+    var i = 0
+    while i < n {
+      arr = append(arr, parseIntStr(parts[i]))
+      i = i + 1
+    }
+    let ans = solve(arr)
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
