@@ -1,0 +1,197 @@
+// Solution for SPOJ BPRED - Branch Prediction
+// https://www.spoj.com/problems/BPRED/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+fun parse_float(token: string): float {
+  var sign = 1.0
+  var idx = 0
+  if len(token) > 0 {
+    let first = substring(token, 0, 1)
+    if first == "-" {
+      sign = -1.0
+      idx = 1
+    } else if first == "+" {
+      idx = 1
+    }
+  }
+  var int_part = 0
+  while idx < len(token) && substring(token, idx, idx + 1) != "." {
+    int_part = int_part * 10 + int(substring(token, idx, idx + 1))
+    idx = idx + 1
+  }
+  var result = 1.0 * int_part
+  if idx < len(token) && substring(token, idx, idx + 1) == "." {
+    idx = idx + 1
+    var place = 0.1
+    while idx < len(token) {
+      let digit = int(substring(token, idx, idx + 1))
+      result = result + place * (1.0 * digit)
+      place = place / 10.0
+      idx = idx + 1
+    }
+  }
+  return sign * result
+}
+
+fun format5(x: float): string {
+  var scaled = x * 100000.0 + 0.5
+  var n = scaled as int
+  var whole = n / 100000
+  var frac = n % 100000
+  var fracStr = str(frac)
+  while len(fracStr) < 5 {
+    fracStr = "0" + fracStr
+  }
+  return str(whole) + "." + fracStr
+}
+
+fun solveLinear(A: list<list<float>>, b: list<float>, n: int): list<float> {
+  var i = 0
+  while i < n {
+    var pivot = A[i][i]
+    var r = i
+    while absf(pivot) < 1e-12 && r + 1 < n {
+      r = r + 1
+      pivot = A[r][i]
+    }
+    if absf(pivot) < 1e-12 { return b }
+    if r != i {
+      var k = 0
+      while k < n {
+        let tmp = A[i][k]
+        A[i][k] = A[r][k]
+        A[r][k] = tmp
+        k = k + 1
+      }
+      let tmpb = b[i]
+      b[i] = b[r]
+      b[r] = tmpb
+    }
+    pivot = A[i][i]
+    var k = i
+    while k < n {
+      A[i][k] = A[i][k] / pivot
+      k = k + 1
+    }
+    b[i] = b[i] / pivot
+    var j = 0
+    while j < n {
+      if j != i {
+        let factor = A[j][i]
+        if absf(factor) > 1e-12 {
+          k = i
+          while k < n {
+            A[j][k] = A[j][k] - factor * A[i][k]
+            k = k + 1
+          }
+          b[j] = b[j] - factor * b[i]
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return b
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = tLine as int
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = splitSpaces(line)
+    let N = parts[0] as int
+    let P = parse_float(parts[1])
+    let target = parts[2]
+
+    var labels: list<string> = []
+    var branches: list<string> = []
+    var idx: map<string,int> = {}
+    var i = 0
+    while i < N {
+      line = input()
+      if line == "" { continue }
+      let p = splitSpaces(line)
+      let cur = p[0]
+      let br = p[1]
+      labels = append(labels, cur)
+      branches = append(branches, br)
+      idx[cur] = i
+      i = i + 1
+    }
+
+    var A: list<list<float>> = []
+    var r = 0
+    while r < N {
+      var row: list<float> = []
+      var c = 0
+      while c < N {
+        if r == c { row = append(row, 1.0) } else { row = append(row, 0.0) }
+        c = c + 1
+      }
+      A = append(A, row)
+      r = r + 1
+    }
+
+    var j = 0
+    while j < N {
+      let lbl = labels[j]
+      if lbl == "end" {
+        // no outgoing
+      } else if lbl == "start" {
+        let k = j + 1
+        A[k][j] = A[k][j] - 1.0
+      } else {
+        let nextIdx = j + 1
+        let branchIdx = idx[branches[j]] as int
+        A[nextIdx][j] = A[nextIdx][j] - (1.0 - P)
+        A[branchIdx][j] = A[branchIdx][j] - P
+      }
+      j = j + 1
+    }
+
+    var b: list<float> = []
+    i = 0
+    while i < N {
+      if labels[i] == "start" {
+        b = append(b, 1.0)
+      } else {
+        b = append(b, 0.0)
+      }
+      i = i + 1
+    }
+
+    let sol = solveLinear(A, b, N)
+    let ans = sol[idx[target] as int]
+    print("Expected number of times label " + target + " is executed is " + format5(ans))
+    case = case + 1
+  }
+}
+
+main()
