@@ -1,0 +1,216 @@
+// Solution for SPOJ RPGAMES - Roll Playing Games
+// https://www.spoj.com/problems/RPGAMES/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+    if len(parts) == 0 {
+      return 0
+    }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+let MAX_SUM = 1000
+var ways: list<int> = []
+var targets: list<int> = []
+var remaining: list<int> = []
+var rFaces = 0
+var mTargets = 0
+fun dfs(pos: int, start: int, chosen: list<int>): list<int> {
+  if pos == rFaces {
+    var i = 0
+    while i < mTargets {
+      if remaining[i] != 0 { return [] }
+      i = i + 1
+    }
+    return chosen[0:len(chosen)]
+  }
+  var zero = true
+  var k = 0
+  while k < mTargets {
+    if remaining[k] != 0 { zero = false; break }
+    k = k + 1
+  }
+  if zero {
+    var d = start
+    while d <= 50 {
+      var ok0 = true
+      var k2 = 0
+      while k2 < mTargets {
+        var add0 = 0
+        let diff0 = targets[k2] - d
+        if diff0 >= 0 && diff0 <= MAX_SUM { add0 = ways[diff0] }
+        if add0 != 0 { ok0 = false; break }
+        k2 = k2 + 1
+      }
+      if ok0 {
+        var res = chosen[0:len(chosen)]
+        var fill = pos
+        while fill < rFaces {
+          res = append(res, d)
+          fill = fill + 1
+        }
+        return res
+      }
+      d = d + 1
+    }
+    return []
+  }
+  var d = start
+  while d <= 50 {
+    var ok = true
+    var contrib: list<int> = []
+    k = 0
+    while k < mTargets {
+      var add = 0
+      let diff = targets[k] - d
+      if diff >= 0 && diff <= MAX_SUM { add = ways[diff] }
+      if add > remaining[k] { ok = false; break }
+      contrib = append(contrib, add)
+      k = k + 1
+    }
+    var sumAdd = 0
+    if ok {
+      k = 0
+      while k < mTargets {
+        remaining[k] = remaining[k] - contrib[k]
+        sumAdd = sumAdd + contrib[k]
+        k = k + 1
+      }
+      if sumAdd > 0 {
+        var newChosen = chosen[0:len(chosen)]
+        newChosen = append(newChosen, d)
+        let res = dfs(pos + 1, d, newChosen)
+        if len(res) > 0 { return res }
+      }
+      k = 0
+      while k < mTargets {
+        remaining[k] = remaining[k] + contrib[k]
+        k = k + 1
+      }
+    }
+    d = d + 1
+  }
+  return []
+}
+
+fun makeZeroList(n: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, 0)
+    i = i + 1
+  }
+  return lst
+}
+
+fun main() {
+  while true {
+    let n = nextInt()
+    if n == 0 { break }
+    var dice: list<list<int>> = []
+    var i = 0
+    while i < n {
+      let f = nextInt()
+      var faces: list<int> = []
+      var j = 0
+      while j < f {
+        faces = append(faces, nextInt())
+        j = j + 1
+      }
+      dice = append(dice, faces)
+      i = i + 1
+    }
+    rFaces = nextInt()
+    mTargets = nextInt()
+    targets = []
+    remaining = []
+    var t = 0
+    while t < mTargets {
+      targets = append(targets, nextInt())
+      remaining = append(remaining, nextInt())
+      t = t + 1
+    }
+    ways = makeZeroList(MAX_SUM)
+    ways[0] = 1
+    i = 0
+    while i < len(dice) {
+      let faces = dice[i]
+      var nw = makeZeroList(MAX_SUM)
+      var s = 0
+      while s <= MAX_SUM {
+        let c = ways[s]
+        if c > 0 {
+          var j = 0
+          while j < len(faces) {
+            let v = faces[j]
+            if s + v <= MAX_SUM {
+              nw[s + v] = nw[s + v] + c
+            }
+            j = j + 1
+          }
+        }
+        s = s + 1
+      }
+      ways = nw
+      i = i + 1
+    }
+    let res = dfs(0, 1, [])
+    if len(res) == 0 {
+      print("Impossible")
+    } else {
+      var out = "Final die face values are"
+      var idx = 0
+      while idx < len(res) {
+        out = out + " " + str(res[idx])
+        idx = idx + 1
+      }
+      print(out)
+    }
+  }
+}
+
+main()
