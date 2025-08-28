@@ -1,0 +1,130 @@
+// Solution for SPOJ HKNAP - Huge Knap Sack
+// https://www.spoj.com/problems/HKNAP/
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun bestCap(cap: int, dp: list<int>, limit2: int, vb: int, wb: int): int {
+  if cap <= limit2 { return dp[cap] }
+  let k = (cap - limit2 + vb - 1) / vb
+  let rem = cap - k * vb
+  return k * wb + dp[rem]
+}
+
+fun solveCase(n: int, s: int, y: int, c: int, w: list<int>, v: list<int>): int {
+  var maxV = 0
+  var best = 0
+  var i = 0
+  while i < n {
+    if v[i] > maxV { maxV = v[i] }
+    if w[i] * v[best] > w[best] * v[i] { best = i }
+    i = i + 1
+  }
+  let limit = maxV * maxV
+  let limit2 = limit + maxV
+  var dp: list<int> = []
+  var t = 0
+  while t <= limit2 {
+    dp = append(dp, 0)
+    t = t + 1
+  }
+  var vol = 1
+  while vol <= limit2 {
+    var bestVal = 0
+    i = 0
+    while i < n {
+      if vol >= v[i] {
+        let val = dp[vol - v[i]] + w[i]
+        if val > bestVal { bestVal = val }
+      }
+      i = i + 1
+    }
+    dp[vol] = bestVal
+    vol = vol + 1
+  }
+  var gain: list<int> = [0]
+  var k = 1
+  while k <= s {
+    let cap = k * y
+    let g = bestCap(cap, dp, limit2, v[best], w[best]) - (k - 1) * c
+    gain = append(gain, g)
+    k = k + 1
+  }
+  var dpS: list<int> = [0]
+  var used = 1
+  while used <= s {
+    dpS = append(dpS, 0)
+    var bestRes = dpS[used-1]
+    k = 1
+    while k <= used {
+      let val = dpS[used - k] + (gain[k] as int)
+      if val > bestRes { bestRes = val }
+      k = k + 1
+    }
+    dpS[used] = bestRes
+    used = used + 1
+  }
+  return dpS[s]
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let T = parseIntStr(tStr)
+  for _ in 0..T {
+    var line = input()
+    while len(line) == 0 { line = input() }
+    let parts = split(line)
+    let N = parseIntStr(parts[0])
+    let S = parseIntStr(parts[1])
+    let Y = parseIntStr(parts[2])
+    let C = parseIntStr(parts[3])
+    var W: list<int> = []
+    var V: list<int> = []
+    var i = 0
+    while i < N {
+      line = input()
+      if len(line) == 0 { continue }
+      let p = split(line)
+      W = append(W, parseIntStr(p[0]))
+      V = append(V, parseIntStr(p[1]))
+      i = i + 1
+    }
+    let ans = solveCase(N, S, Y, C, W, V)
+    print(ans)
+  }
+}
+
+main()
