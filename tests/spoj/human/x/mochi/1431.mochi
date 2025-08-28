@@ -1,0 +1,132 @@
+// Solution for SPOJ KPPOLY - Projections Of A Polygon
+// https://www.spoj.com/problems/KPPOLY/
+
+type Point { x: float, y: float }
+
+let pi = 3.141592653589793
+
+fun absf(x: float): float { if x < 0.0 { return -x } else { return x } }
+
+fun sin(x: float): float {
+  var y = x
+  while y > pi { y = y - 2.0 * pi }
+  while y < (0.0 - pi) { y = y + 2.0 * pi }
+  var term = y
+  var res = y
+  var i = 1
+  while i < 10 {
+    term = -term * y * y / ((2.0 * i as float) * (2.0 * i as float + 1.0))
+    res = res + term
+    i = i + 1
+  }
+  return res
+}
+
+fun cos(x: float): float {
+  var y = x
+  while y > pi { y = y - 2.0 * pi }
+  while y < (0.0 - pi) { y = y + 2.0 * pi }
+  var term = 1.0
+  var res = 1.0
+  var i = 1
+  while i < 10 {
+    term = -term * y * y / ((2.0 * i as float - 1.0) * (2.0 * i as float))
+    res = res + term
+    i = i + 1
+  }
+  return res
+}
+
+let digits = {"0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9}
+
+fun parseIntStr(s: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(s) > 0 && s[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(s) {
+    n = n * 10 + (digits[s[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun format6(x: float): string {
+  var y = x
+  var neg = false
+  if y < 0.0 { neg = true; y = -y }
+  var scaled = y * 1000000.0 + 0.5
+  var n = scaled as int
+  var whole = n / 1000000
+  var frac = n % 1000000
+  var fracStr = str(frac)
+  while len(fracStr) < 6 { fracStr = "0" + fracStr }
+  var s = str(whole) + "." + fracStr
+  if neg { s = "-" + s }
+  return s
+}
+
+fun main() {
+  let nLine = input()
+  if nLine == "" { return }
+  let n = parseIntStr(nLine)
+  var pts: list<Point> = []
+  var i = 0
+  while i < n {
+    let line = input()
+    if line == "" { continue }
+    let parts = splitSpaces(line)
+    let x = parseIntStr(parts[0]) as float
+    let y = parseIntStr(parts[1]) as float
+    pts = append(pts, Point{x:x, y:y})
+    i = i + 1
+  }
+  var minSum = 1e100
+  var maxSum = -1e100
+  let step = pi / 180.0
+  var ang = 0.0
+  while ang <= pi + 1e-9 {
+    let ca = cos(ang)
+    let sa = sin(ang)
+    var minx = 1e100
+    var maxx = -1e100
+    var miny = 1e100
+    var maxy = -1e100
+    for p in pts {
+      let x2 = p.x * ca - p.y * sa
+      let y2 = p.x * sa + p.y * ca
+      if x2 < minx { minx = x2 }
+      if x2 > maxx { maxx = x2 }
+      if y2 < miny { miny = y2 }
+      if y2 > maxy { maxy = y2 }
+    }
+    let sum = (maxx - minx) + (maxy - miny)
+    if sum < minSum { minSum = sum }
+    if sum > maxSum { maxSum = sum }
+    ang = ang + step
+  }
+  print(format6(minSum) + " " + format6(maxSum))
+}
+
+main()
