@@ -1,0 +1,95 @@
+// Solution for SPOJ FASHION - Fashion Shows
+// https://www.spoj.com/problems/FASHION/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun sortInts(a: list<int>): list<int> {
+  var i = 1
+  while i < len(a) {
+    var j = i
+    let key = a[i]
+    while j > 0 && a[j-1] > key {
+      a[j] = a[j-1]
+      j = j - 1
+    }
+    a[j] = key
+    i = i + 1
+  }
+  return a
+}
+
+fun main() {
+  let tLine = input()
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var nLine = input()
+    if nLine == "" { continue }
+    let n = nLine as int
+
+    var menLine = input()
+    while menLine == "" { menLine = input() }
+    let menParts = split(menLine)
+    var men: list<int> = []
+    var i = 0
+    while i < len(menParts) {
+      men = append(men, parseIntStr(menParts[i]))
+      i = i + 1
+    }
+
+    var womenLine = input()
+    while womenLine == "" { womenLine = input() }
+    let womenParts = split(womenLine)
+    var women: list<int> = []
+    i = 0
+    while i < len(womenParts) {
+      women = append(women, parseIntStr(womenParts[i]))
+      i = i + 1
+    }
+
+    men = sortInts(men)
+    women = sortInts(women)
+    var sum = 0
+    i = 0
+    while i < n {
+      sum = sum + men[i] * women[i]
+      i = i + 1
+    }
+    print(str(sum))
+    case = case + 1
+  }
+}
+
+main()
