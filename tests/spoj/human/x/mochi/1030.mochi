@@ -1,0 +1,19 @@
+// Solution for SPOJ EIGHTS - Triple Fat Ladies
+// https://www.spoj.com/problems/EIGHTS/
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    let kLine = input()
+    if kLine == "" { break }
+    let k = int(kLine)
+    let ans = 250 * k - 58
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
