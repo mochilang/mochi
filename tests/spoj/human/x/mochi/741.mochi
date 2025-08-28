@@ -1,0 +1,197 @@
+// Solution for SPOJ STEAD - Steady Cow Assignment
+// https://www.spoj.com/problems/STEAD/
+
+// map digits to ints
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+// parse integer from string
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+// split string by spaces
+fun split_ws(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " { if cur != "" { res = append(res, cur); cur = "" } }
+    else { cur = cur + ch }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+type Edge = { to: int, rev: int, cap: int }
+
+fun minInt(a: int, b: int): int { if a < b { return a } return b }
+
+fun addEdge(g: list<list<Edge>>, u: int, v: int, c: int): list<list<Edge>> {
+  let r1 = len(g[v])
+  let r2 = len(g[u])
+  g[u] = append(g[u], Edge{ to: v, rev: r1, cap: c })
+  g[v] = append(g[v], Edge{ to: u, rev: r2, cap: 0 })
+  return g
+}
+
+fun bfs(g: list<list<Edge>>, s: int, t: int): list<int> {
+  var level: list<int> = []
+  var i = 0
+  while i < len(g) { level = append(level, 0 - 1); i = i + 1 }
+  var q: list<int> = []
+  q = append(q, s)
+  level[s] = 0
+  var qi = 0
+  while qi < len(q) {
+    let v = q[qi]
+    qi = qi + 1
+    var j = 0
+    while j < len(g[v]) {
+      let e = g[v][j]
+      if e.cap > 0 && level[e.to] == 0 - 1 {
+        level[e.to] = level[v] + 1
+        q = append(q, e.to)
+      }
+      j = j + 1
+    }
+  }
+  return level
+}
+
+fun dfs(g: list<list<Edge>>, level: list<int>, iter: list<int>, v: int, t: int, f: int): int {
+  if v == t { return f }
+  var i = iter[v]
+  while i < len(g[v]) {
+    let e = g[v][i]
+    if e.cap > 0 && level[v] + 1 == level[e.to] {
+      let d = dfs(g, level, iter, e.to, t, minInt(f, e.cap))
+      if d > 0 {
+        let e1 = g[v][i]
+        g[v][i] = Edge{ to: e1.to, rev: e1.rev, cap: e1.cap - d }
+        let ri = e1.rev
+        let re = g[e1.to][ri]
+        g[e1.to][ri] = Edge{ to: re.to, rev: re.rev, cap: re.cap + d }
+        return d
+      }
+    }
+    i = i + 1
+    iter[v] = i
+  }
+  return 0
+}
+
+fun maxflow(g: list<list<Edge>>, s: int, t: int): int {
+  var flow = 0
+  let n = len(g)
+  while true {
+    let level = bfs(g, s, t)
+    if level[t] == 0 - 1 { break }
+    var iter: list<int> = []
+    var i = 0
+    while i < n { iter = append(iter, 0); i = i + 1 }
+    while true {
+      let f = dfs(g, level, iter, s, t, 1000000000)
+      if f == 0 { break }
+      flow = flow + f
+    }
+  }
+  return flow
+}
+
+fun feasibleRange(n: int, b: int, prefs: list<list<int>>, caps: list<int>, L: int, R: int): bool {
+  let total = 2 + n + b
+  var g: list<list<Edge>> = []
+  var i = 0
+  while i < total { g = append(g, []); i = i + 1 }
+  // source to cows and cow to barns
+  i = 0
+  while i < n {
+    g = addEdge(g, 0, 1 + i, 1)
+    var r = L
+    while r <= R {
+      let barn = prefs[i][r - 1] - 1
+      g = addEdge(g, 1 + i, 1 + n + barn, 1)
+      r = r + 1
+    }
+    i = i + 1
+  }
+  // barns to sink
+  var j = 0
+  while j < b {
+    g = addEdge(g, 1 + n + j, 1 + n + b, caps[j])
+    j = j + 1
+  }
+  let f = maxflow(g, 0, 1 + n + b)
+  if f >= n { return true }
+  return false
+}
+
+fun canWidth(w: int, n: int, b: int, prefs: list<list<int>>, caps: list<int>): bool {
+  var start = 1
+  while start + w - 1 <= b {
+    if feasibleRange(n, b, prefs, caps, start, start + w - 1) { return true }
+    start = start + 1
+  }
+  return false
+}
+
+fun solve(n: int, b: int, prefs: list<list<int>>, caps: list<int>): int {
+  var lo = 1
+  var hi = b
+  var ans = b
+  while lo <= hi {
+    let mid = (lo + hi) / 2
+    if canWidth(mid, n, b, prefs, caps) {
+      ans = mid
+      hi = mid - 1
+    } else {
+      lo = mid + 1
+    }
+  }
+  return ans
+}
+
+fun main() {
+  let first = input()
+  if first == "" { return }
+  let p = split_ws(first)
+  let n = parseIntStr(p[0])
+  let b = parseIntStr(p[1])
+  var prefs: list<list<int>> = []
+  var i = 0
+  while i < n {
+    let line = input()
+    let parts = split_ws(line)
+    var row: list<int> = []
+    var j = 0
+    while j < b {
+      row = append(row, parseIntStr(parts[j]))
+      j = j + 1
+    }
+    prefs = append(prefs, row)
+    i = i + 1
+  }
+  let capLine = input()
+  let cp = split_ws(capLine)
+  var caps: list<int> = []
+  var k = 0
+  while k < b {
+    caps = append(caps, parseIntStr(cp[k]))
+    k = k + 1
+  }
+  let ans = solve(n, b, prefs, caps)
+  print(ans)
+}
+
+main()
