@@ -1,0 +1,257 @@
+// Solution for SPOJ PARTSUM - Partial Sums
+// https://www.spoj.com/problems/PARTSUM/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun subarray(xs: list<int>, start: int, end: int): list<int> {
+  var res: list<int> = []
+  var k = start
+  while k < end {
+    res = append(res, xs[k])
+    k = k + 1
+  }
+  return res
+}
+
+fun merge(left_half: list<int>, right_half: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  var j = 0
+  while i < len(left_half) && j < len(right_half) {
+    if left_half[i] < right_half[j] {
+      res = append(res, left_half[i])
+      i = i + 1
+    } else {
+      res = append(res, right_half[j])
+      j = j + 1
+    }
+  }
+  while i < len(left_half) {
+    res = append(res, left_half[i])
+    i = i + 1
+  }
+  while j < len(right_half) {
+    res = append(res, right_half[j])
+    j = j + 1
+  }
+  return res
+}
+
+fun merge_sort(arr: list<int>): list<int> {
+  if len(arr) <= 1 { return arr }
+  let mid = len(arr) / 2
+  let left_half = subarray(arr, 0, mid)
+  let right_half = subarray(arr, mid, len(arr))
+  let sorted_left = merge_sort(left_half)
+  let sorted_right = merge_sort(right_half)
+  return merge(sorted_left, sorted_right)
+}
+
+fun unique_sorted(arr: list<int>): list<int> {
+  var res: list<int> = []
+  if len(arr) == 0 { return res }
+  res = append(res, arr[0])
+  var i = 1
+  while i < len(arr) {
+    if arr[i] != arr[i-1] { res = append(res, arr[i]) }
+    i = i + 1
+  }
+  return res
+}
+
+fun bs_le(arr: list<int>, x: int): int {
+  var lo = 0
+  var hi = len(arr) - 1
+  var res = -1
+  while lo <= hi {
+    let mid = (lo + hi) / 2
+    let v = arr[mid]
+    if v <= x {
+      res = mid
+      lo = mid + 1
+    } else {
+      hi = mid - 1
+    }
+  }
+  return res
+}
+
+fun bit_and(a: int, b: int): int {
+  var ua = a
+  var ub = b
+  var res = 0
+  var bit = 1
+  while ua != 0 || ub != 0 {
+    if ua % 2 == 1 && ub % 2 == 1 { res = res + bit }
+    ua = (ua / 2) as int
+    ub = (ub / 2) as int
+    bit = bit * 2
+  }
+  return res
+}
+
+fun low_bit(x: int): int {
+  if x == 0 { return 0 }
+  return x - bit_and(x, x - 1)
+}
+
+fun makeFenwick(n: int): list<int> {
+  var bit: list<int> = []
+  var i = 0
+  while i <= n + 2 {
+    bit = append(bit, 0)
+    i = i + 1
+  }
+  return bit
+}
+
+fun bit_add(bit: list<int>, idx: int, val: int) {
+  var i = idx
+  let size = len(bit)
+  while i < size {
+    bit[i] = bit[i] + val
+    i = i + low_bit(i)
+  }
+}
+
+fun bit_sum(bit: list<int>, idx: int): int {
+  var s = 0
+  var i = idx
+  while i > 0 {
+    s = s + bit[i]
+    i = i - low_bit(i)
+  }
+  return s
+}
+
+fun bit_find_by_order(bit: list<int>, order: int): int {
+  var idx = 0
+  var bitMask = 1
+  while bitMask < len(bit) { bitMask = bitMask * 2 }
+  bitMask = bitMask / 2
+  while bitMask > 0 {
+    let next = idx + bitMask
+    if next < len(bit) && bit[next] < order {
+      order = order - bit[next]
+      idx = next
+    }
+    bitMask = bitMask / 2
+  }
+  return idx + 1
+}
+
+fun bit_find_le(bit: list<int>, idx: int): int {
+  let s = bit_sum(bit, idx)
+  if s == 0 { return 0 }
+  return bit_find_by_order(bit, s)
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = parseIntStr(tLine)
+  var case = 0
+  while case < T {
+    var line = input()
+    while len(line) == 0 { line = input() }
+    let parts = splitSpaces(line)
+    let N = parseIntStr(parts[0])
+    let K = parseIntStr(parts[1])
+    let P = parseIntStr(parts[2])
+    var pref: list<int> = []
+    pref = append(pref, 0)
+    var vals: list<int> = []
+    vals = append(vals, 0)
+    var i = 0
+    var cur = 0
+    while i < N {
+      let vLine = input()
+      if len(vLine) == 0 { continue }
+      let a = parseIntStr(vLine)
+      cur = (cur + a) % P
+      pref = append(pref, cur)
+      vals = append(vals, cur)
+      i = i + 1
+    }
+    let sorted = merge_sort(vals)
+    let uniq = unique_sorted(sorted)
+    var bit = makeFenwick(len(uniq) + 2)
+    let idx0 = bs_le(uniq, pref[0]) + 1
+    bit_add(bit, idx0, 1)
+    var ans = P
+    var j = 1
+    while j <= N {
+      let pj = pref[j]
+      var th1 = pj - K
+      if th1 >= 0 {
+        let idxT1 = bs_le(uniq, th1)
+        if idxT1 >= 0 {
+          let idxFound = bit_find_le(bit, idxT1 + 1)
+          if idxFound > 0 {
+            let x = uniq[idxFound - 1]
+            let cand = pj - x
+            if cand >= K && cand < ans { ans = cand }
+          }
+        }
+      }
+      var th2 = pj + P - K
+      if th2 > P - 1 { th2 = P - 1 }
+      if th2 > pj {
+        let idxT2 = bs_le(uniq, th2)
+        if idxT2 >= 0 {
+          let idxFound2 = bit_find_le(bit, idxT2 + 1)
+          if idxFound2 > 0 {
+            let x2 = uniq[idxFound2 - 1]
+            if x2 > pj {
+              let cand2 = P + pj - x2
+              if cand2 >= K && cand2 < ans { ans = cand2 }
+            }
+          }
+        }
+      }
+      let idxCur = bs_le(uniq, pj) + 1
+      bit_add(bit, idxCur, 1)
+      j = j + 1
+    }
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
