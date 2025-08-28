@@ -1,0 +1,50 @@
+// Solution for SPOJ TOE2 - Tic-Tac-Toe ( II )
+// https://www.spoj.com/problems/TOE2/
+
+fun countChars(s: string, ch: string): int {
+  var c = 0
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == ch { c = c + 1 }
+    i = i + 1
+  }
+  return c
+}
+
+fun wins(b: string, ch: string): bool {
+  return (b[0:1]==ch && b[1:2]==ch && b[2:3]==ch) ||
+         (b[3:4]==ch && b[4:5]==ch && b[5:6]==ch) ||
+         (b[6:7]==ch && b[7:8]==ch && b[8:9]==ch) ||
+         (b[0:1]==ch && b[3:4]==ch && b[6:7]==ch) ||
+         (b[1:2]==ch && b[4:5]==ch && b[7:8]==ch) ||
+         (b[2:3]==ch && b[5:6]==ch && b[8:9]==ch) ||
+         (b[0:1]==ch && b[4:5]==ch && b[8:9]==ch) ||
+         (b[2:3]==ch && b[4:5]==ch && b[6:7]==ch)
+}
+
+fun valid(b: string): bool {
+  let x = countChars(b, "X")
+  let o = countChars(b, "O")
+  if !(x == o || x == o + 1) { return false }
+  let xw = wins(b, "X")
+  let ow = wins(b, "O")
+  if xw && ow { return false }
+  if xw { return x == o + 1 }
+  if ow { return x == o }
+  return x == 5 && o == 4
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil || line == "" { break }
+    if line == "end" { break }
+    if valid(line) {
+      print("valid")
+    } else {
+      print("invalid")
+    }
+  }
+}
+
+main()
