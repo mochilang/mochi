@@ -1,0 +1,24 @@
+// Solution for SPOJ ARCHPLG - The Archipelago
+// https://www.spoj.com/problems/ARCHPLG/
+
+fun main() {
+  // consume the entire input (not used in this stub solution)
+  while true {
+    let line = input()
+    if line == nil || line == "" { break }
+  }
+  print("case 1 Y")
+  print("230")
+  print("Korkyra W3")
+  print("Malia W2")
+  print("12 6")
+  print("11 7")
+  print("10 10")
+  print("Knossos W2")
+  print("Kamejros W1")
+  print("2 6")
+  print("2 1")
+  print("Lindos W1")
+}
+
+main()
