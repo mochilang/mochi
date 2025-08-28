@@ -1,0 +1,111 @@
+// Solution for SPOJ PLHOP - Plane Hopping
+// https://www.spoj.com/problems/PLHOP/
+
+let INF = 1000000000000000
+
+fun readInts(line: string): list<int> {
+  var nums: list<int> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        nums = append(nums, cur as int)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    nums = append(nums, cur as int)
+  }
+  return nums
+}
+
+fun minPlusMul(a: list<list<int>>, b: list<list<int>>, n: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      var best = INF
+      var k = 0
+      while k < n {
+        let val = a[i][k] + b[k][j]
+        if val < best { best = val }
+        k = k + 1
+      }
+      row = append(row, best)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun matPow(mat: list<list<int>>, power: int, n: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      if i == j { row = append(row, 0) } else { row = append(row, INF) }
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  var base = mat
+  var p = power
+  while p > 0 {
+    if p % 2 == 1 { res = minPlusMul(res, base, n) }
+    base = minPlusMul(base, base, n)
+    p = p / 2
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = tLine as int
+  var case = 1
+  while case <= T {
+    let knLine = input()
+    let kn = readInts(knLine)
+    let K = kn[0]
+    let N = kn[1]
+    var mat: list<list<int>> = []
+    var i = 0
+    while i < N {
+      let rowLine = input()
+      let rowNums = readInts(rowLine)
+      mat = append(mat, rowNums)
+      i = i + 1
+    }
+    let res = matPow(mat, K, N)
+    print("Region #" + str(case) + ":")
+    i = 0
+    while i < N {
+      var j = 0
+      var line = ""
+      while j < N {
+        if j > 0 { line = line + " " }
+        line = line + str(res[i][j])
+        j = j + 1
+      }
+      print(line)
+      i = i + 1
+    }
+    print("")
+    case = case + 1
+  }
+}
+
+main()
