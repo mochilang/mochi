@@ -1,0 +1,32 @@
+// Solution for SPOJ ARCTAN - Use of Function Arctan
+// https://www.spoj.com/problems/ARCTAN/
+
+fun minSum(a: int): int {
+  let n = a * a + 1
+  var d = 1
+  var best = n + 1
+  while d * d <= n {
+    if n % d == 0 {
+      let s = d + n / d
+      if s < best { best = s }
+    }
+    d = d + 1
+  }
+  return best + 2 * a
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let a = int(line)
+    print(minSum(a))
+    case = case + 1
+  }
+}
+
+main()
