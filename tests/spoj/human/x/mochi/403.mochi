@@ -1,0 +1,98 @@
+/*
+SPOJ: FRACTION - Sort fractions
+https://www.spoj.com/problems/FRACTION/
+*/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun sortPairs(vals: list<int>, idx: list<int>) {
+  var i = 1
+  while i < len(vals) {
+    var j = i
+    while j > 0 && vals[j-1] > vals[j] {
+      let tv = vals[j-1]
+      vals[j-1] = vals[j]
+      vals[j] = tv
+      let ti = idx[j-1]
+      idx[j-1] = idx[j]
+      idx[j] = ti
+      j = j - 1
+    }
+    i = i + 1
+  }
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == nil || line == "" { line = input() }
+    let parts = split(line)
+    let N = int(parts[0])
+    let M = int(parts[1])
+    var qs: list<int> = []
+    var idx: list<int> = []
+    var i = 0
+    while i < M {
+      var qLine = input()
+      while qLine == nil || qLine == "" { qLine = input() }
+      qs = append(qs, int(qLine))
+      idx = append(idx, i)
+      i = i + 1
+    }
+    sortPairs(qs, idx)
+    var ans: list<string> = []
+    i = 0
+    while i < M { ans = append(ans, ""); i = i + 1 }
+    var a = 0
+    var b = 1
+    var c = 1
+    var d = N
+    var pos = 1
+    var qi = 0
+    while qi < M && qs[qi] == pos {
+      ans[idx[qi]] = str(a) + "/" + str(b)
+      qi = qi + 1
+    }
+    while qi < M {
+      let k = (N + b) / d
+      let e = k * c - a
+      let f = k * d - b
+      a = c
+      b = d
+      c = e
+      d = f
+      pos = pos + 1
+      while qi < M && qs[qi] == pos {
+        ans[idx[qi]] = str(a) + "/" + str(b)
+        qi = qi + 1
+      }
+    }
+    i = 0
+    while i < M {
+      print(ans[i])
+      i = i + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
