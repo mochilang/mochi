@@ -1,0 +1,161 @@
+// Solution for SPOJ DIV15 - Divisibility by 15
+// https://www.spoj.com/problems/DIV15/
+
+let digits = {
+  "0":0, "1":1, "2":2, "3":3, "4":4,
+  "5":5, "6":6, "7":7, "8":8, "9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun greater(a: string, b: string): bool {
+  if len(a) > len(b) { return true }
+  if len(a) < len(b) { return false }
+  var i = 0
+  while i < len(a) {
+    let da = digits[a[i:i+1]] as int
+    let db = digits[b[i:i+1]] as int
+    if da > db { return true }
+    if da < db { return false }
+    i = i + 1
+  }
+  return false
+}
+
+fun copyCounts(cnt: list<int>): list<int> {
+  var c: list<int> = []
+  var i = 0
+  while i < 10 {
+    c = append(c, cnt[i])
+    i = i + 1
+  }
+  return c
+}
+
+fun removeOne(c: list<int>, group: list<int>): bool {
+  var i = 0
+  while i < len(group) {
+    let d = group[i]
+    if c[d] > 0 {
+      c[d] = c[d] - 1
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun removeTwo(c: list<int>, group: list<int>): bool {
+  var need = 2
+  var i = 0
+  while i < len(group) && need > 0 {
+    let d = group[i]
+    while c[d] > 0 && need > 0 {
+      c[d] = c[d] - 1
+      need = need - 1
+    }
+    i = i + 1
+  }
+  return need == 0
+}
+
+fun build(c: list<int>, last: int): string {
+  var res = ""
+  var d = 9
+  while d >= 0 {
+    var k = 0
+    while k < c[d] {
+      res = res + str(d)
+      k = k + 1
+    }
+    d = d - 1
+  }
+  res = res + str(last)
+  var i = 0
+  while i < len(res) - 1 && res[i:i+1] == "0" {
+    i = i + 1
+  }
+  return res[i:len(res)]
+}
+
+fun tryCandidate(cnt: list<int>, sum: int, last: int): string {
+  if cnt[last] == 0 { return "" }
+  var c = copyCounts(cnt)
+  c[last] = c[last] - 1
+  var r = sum % 3
+  if r == 1 {
+    if c[1] + c[4] + c[7] >= 1 {
+      removeOne(c, [1,4,7])
+    } else if c[2] + c[5] + c[8] >= 2 {
+      removeTwo(c, [2,5,8])
+    } else {
+      return ""
+    }
+  } else if r == 2 {
+    if c[2] + c[5] + c[8] >= 1 {
+      removeOne(c, [2,5,8])
+    } else if c[1] + c[4] + c[7] >= 2 {
+      removeTwo(c, [1,4,7])
+    } else {
+      return ""
+    }
+  }
+  var has = false
+  var i = 0
+  while i < 10 {
+    if c[i] > 0 { has = true }
+    i = i + 1
+  }
+  if !has && last == 0 {
+    return "0"
+  }
+  return build(c, last)
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var caseIdx = 0
+  while caseIdx < t {
+    let s = input()
+    var cnt: list<int> = []
+    var i = 0
+    while i < 10 { cnt = append(cnt, 0); i = i + 1 }
+    i = 0
+    var sum = 0
+    while i < len(s) {
+      let d = digits[s[i:i+1]] as int
+      cnt[d] = cnt[d] + 1
+      sum = sum + d
+      i = i + 1
+    }
+    var best = ""
+    var cand = tryCandidate(cnt, sum, 5)
+    if cand != "" { best = cand }
+    cand = tryCandidate(cnt, sum, 0)
+    if cand != "" && (best == "" || greater(cand, best)) { best = cand }
+    if best == "" {
+      print("impossible")
+    } else {
+      print(best)
+    }
+    caseIdx = caseIdx + 1
+  }
+}
+
+main()
