@@ -1,0 +1,189 @@
+// Solution for SPOJ MENU - Menu
+// https://www.spoj.com/problems/MENU/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+var K = 0
+var N = 0
+var M = 0
+var costs: list<int> = []
+var values: list<int> = []
+var memo: map<string,map<string,int>> = {}
+
+fun key(day: int, used: int, last: int, rep: int): string {
+  return str(day) + "," + str(used) + "," + str(last) + "," + str(rep)
+}
+
+fun solve(day: int, used: int, last: int, rep: int): map<string,int> {
+  if day == K {
+    return { "val":0, "cost":0, "next":0, "ok":1 }
+  }
+  let k = key(day, used, last, rep)
+  if memo[k] != nil {
+    return memo[k]
+  }
+  var bestVal = 0
+  var bestCost = 0
+  var bestDish = 0
+  var found = false
+  var i = 0
+  while i < N {
+    let cost = costs[i]
+    if used + cost <= M {
+      let dish = i + 1
+      var ben = values[i] * 2
+      var newRep = 1
+      if dish == last {
+        if rep == 1 {
+          ben = values[i]
+          newRep = 2
+        } else {
+          ben = 0
+          newRep = 2
+        }
+      }
+      let r = solve(day + 1, used + cost, dish, newRep)
+      if (r["ok"] as int) == 1 {
+        let totalVal = ben + (r["val"] as int)
+        let totalCost = cost + (r["cost"] as int)
+        if !found || totalVal > bestVal || (totalVal == bestVal && totalCost < bestCost) {
+          bestVal = totalVal
+          bestCost = totalCost
+          bestDish = dish
+          found = true
+        }
+      }
+    }
+    i = i + 1
+  }
+  var res: map<string,int>
+  if found {
+    res = { "val":bestVal, "cost":bestCost, "next":bestDish, "ok":1 }
+  } else {
+    res = { "val":0, "cost":0, "next":0, "ok":0 }
+  }
+  memo[k] = res
+  return res
+}
+
+fun formatVal(v: int): string {
+  let whole = v / 2
+  let half = v % 2
+  if half == 0 { return str(whole) + ".0" }
+  return str(whole) + ".5"
+}
+
+fun main() {
+  var outputs: list<string> = []
+  while true {
+    let line = input()
+    if line == nil { break }
+    if len(line) == 0 { continue }
+    let nums = parseInts(line)
+    let k = nums[0]
+    let n = nums[1]
+    let m = nums[2]
+    if k == 0 && n == 0 && m == 0 { break }
+    K = k; N = n; M = m
+    costs = []
+    values = []
+    var i = 0
+    while i < N {
+      let l = input()
+      let nv = parseInts(l)
+      costs = append(costs, nv[0])
+      values = append(values, nv[1])
+      i = i + 1
+    }
+    memo = {}
+    let res = solve(0, 0, 0, 0)
+    var out = ""
+    if res["ok"] == 0 {
+      out = "0.0"
+    } else {
+      out = formatVal(res["val"])
+      var seq: list<int> = []
+      var day = 0
+      var used = 0
+      var last = 0
+      var rep = 0
+      while day < K {
+        let r = solve(day, used, last, rep)
+        let dish = (r["next"] as int)
+        seq = append(seq, dish)
+        used = used + costs[dish-1]
+        if dish == last {
+          if rep == 1 { rep = 2 } else { rep = 2 }
+        } else {
+          rep = 1
+        }
+        last = dish
+        day = day + 1
+      }
+      var s = ""
+      var j = 0
+      while j < len(seq) {
+        if j > 0 { s = s + " " }
+        s = s + str(seq[j])
+        j = j + 1
+      }
+      out = out + "\n" + s
+    }
+    outputs = append(outputs, out)
+  }
+  var i = 0
+  while i < len(outputs) {
+    if i > 0 { print("") }
+    print(outputs[i])
+    i = i + 1
+  }
+}
+
+main()
