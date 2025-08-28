@@ -1,0 +1,274 @@
+// Solution for SPOJ CH3D - Convex Hull 3D
+// https://www.spoj.com/problems/CH3D/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun parseFloatStr(str: string): float {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var intPart = 0
+  while i < len(str) && str[i:i+1] != "." {
+    intPart = intPart * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  var frac = 0.0
+  var scale = 0.1
+  if i < len(str) && str[i:i+1] == "." {
+    i = i + 1
+    while i < len(str) {
+      frac = frac + (digits[str[i:i+1]] as float) * scale
+      scale = scale / 10.0
+      i = i + 1
+    }
+  }
+  var res = (intPart as float) + frac
+  if neg { res = 0.0 - res }
+  return res
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun absf(x: float): float { if x < 0.0 { return 0.0 - x } else { return x } }
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var prev = 0.0
+  while absf(r - prev) > 1e-12 {
+    prev = r
+    r = (r + x / r) / 2.0
+  }
+  return r
+}
+
+type Point {
+  x: float,
+  y: float,
+  z: float,
+}
+
+type Face {
+  a: int,
+  b: int,
+  c: int,
+  normal: Point,
+  valid: bool,
+}
+
+fun sub(a: Point, b: Point): Point {
+  return Point{ x: a.x - b.x, y: a.y - b.y, z: a.z - b.z }
+}
+
+fun cross(a: Point, b: Point): Point {
+  return Point{
+    x: a.y * b.z - a.z * b.y,
+    y: a.z * b.x - a.x * b.z,
+    z: a.x * b.y - a.y * b.x,
+  }
+}
+
+fun dot(a: Point, b: Point): float {
+  return a.x * b.x + a.y * b.y + a.z * b.z
+}
+
+fun normal(points: list<Point>, a: int, b: int, c: int): Point {
+  let ab = sub(points[b], points[a])
+  let ac = sub(points[c], points[a])
+  return cross(ab, ac)
+}
+
+fun makeFace(points: list<Point>, a: int, b: int, c: int, inside: Point): Face {
+  var n = normal(points, a, b, c)
+  if dot(n, sub(inside, points[a])) > 0.0 {
+    let tmp = b
+    b = c
+    c = tmp
+    n = normal(points, a, b, c)
+  }
+  return Face{ a: a, b: b, c: c, normal: n, valid: true }
+}
+
+var edgeKeys: list<int>
+var edgeU: list<int>
+var edgeV: list<int>
+var edgeActive: map<int,bool>
+
+fun addEdge(u: int, v: int) {
+  let key = u * 10000 + v
+  let rev = v * 10000 + u
+  if rev in edgeActive && edgeActive[rev] {
+    edgeActive[rev] = false
+  } else {
+    edgeActive[key] = true
+    edgeKeys = append(edgeKeys, key)
+    edgeU = append(edgeU, u)
+    edgeV = append(edgeV, v)
+  }
+}
+
+fun hull(points: list<Point>): (float, float) {
+  let nPts = len(points)
+  if nPts < 4 { return (0.0, 0.0) }
+  // ensure first four points are non-coplanar
+  var i1 = 1
+  while i1 < nPts && absf(points[i1].x - points[0].x) < 1e-9 && absf(points[i1].y - points[0].y) < 1e-9 && absf(points[i1].z - points[0].z) < 1e-9 {
+    i1 = i1 + 1
+  }
+  if i1 >= nPts { return (0.0,0.0) }
+  var tmp = points[1]; points[1] = points[i1]; points[i1] = tmp
+  var i2 = 2
+  while i2 < nPts {
+    let cr = cross(sub(points[1], points[0]), sub(points[i2], points[0]))
+    if absf(cr.x) > 1e-9 || absf(cr.y) > 1e-9 || absf(cr.z) > 1e-9 { break }
+    i2 = i2 + 1
+  }
+  if i2 >= nPts { return (0.0,0.0) }
+  tmp = points[2]; points[2] = points[i2]; points[i2] = tmp
+  var i3 = 3
+  while i3 < nPts {
+    let vol = dot(cross(sub(points[1], points[0]), sub(points[2], points[0])), sub(points[i3], points[0]))
+    if absf(vol) > 1e-9 { break }
+    i3 = i3 + 1
+  }
+  if i3 >= nPts { return (0.0,0.0) }
+  tmp = points[3]; points[3] = points[i3]; points[i3] = tmp
+  let inside = Point{
+    x: (points[0].x + points[1].x + points[2].x + points[3].x) / 4.0,
+    y: (points[0].y + points[1].y + points[2].y + points[3].y) / 4.0,
+    z: (points[0].z + points[1].z + points[2].z + points[3].z) / 4.0,
+  }
+  var faces: list<Face> = []
+  faces = append(faces, makeFace(points,0,1,2,inside))
+  faces = append(faces, makeFace(points,0,3,1,inside))
+  faces = append(faces, makeFace(points,0,2,3,inside))
+  faces = append(faces, makeFace(points,1,3,2,inside))
+  var i = 4
+  while i < nPts {
+    edgeKeys = []
+    edgeU = []
+    edgeV = []
+    edgeActive = {}
+    var fi = 0
+    while fi < len(faces) {
+      if faces[fi].valid {
+        let dist = dot(faces[fi].normal, sub(points[i], points[faces[fi].a]))
+        if dist > 1e-9 {
+          faces[fi].valid = false
+          addEdge(faces[fi].a, faces[fi].b)
+          addEdge(faces[fi].b, faces[fi].c)
+          addEdge(faces[fi].c, faces[fi].a)
+        }
+      }
+      fi = fi + 1
+    }
+    var ei = 0
+    while ei < len(edgeKeys) {
+      let key = edgeKeys[ei]
+      if edgeActive[key] {
+        let u = edgeU[ei]
+        let v = edgeV[ei]
+        faces = append(faces, makeFace(points, u, v, i, inside))
+      }
+      ei = ei + 1
+    }
+    i = i + 1
+  }
+  var area = 0.0
+  var volume = 0.0
+  var fi = 0
+  while fi < len(faces) {
+    let f = faces[fi]
+    if f.valid {
+      let pa = points[f.a]
+      let pb = points[f.b]
+      let pc = points[f.c]
+      let n = cross(sub(pb, pa), sub(pc, pa))
+      area = area + sqrt(dot(n, n)) / 2.0
+      volume = volume + dot(pa, cross(pb, pc)) / 6.0
+    }
+    fi = fi + 1
+  }
+  if volume < 0.0 { volume = 0.0 - volume }
+  return (area, volume)
+}
+
+fun format4(x: float): string {
+  var neg = false
+  if x < 0.0 { neg = true; x = -x }
+  var scaled = x * 10000.0 + 0.5
+  var n = scaled as int
+  var whole = n / 10000
+  var frac = n % 10000
+  var fracStr = str(frac)
+  while len(fracStr) < 4 { fracStr = "0" + fracStr }
+  var res = str(whole) + "." + fracStr
+  if neg { res = "-" + res }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let T = parseIntStr(tLine)
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    let N = parseIntStr(line)
+    var pts: list<Point> = []
+    var i = 0
+    while i < N {
+      line = input()
+      if line == "" { continue }
+      let parts = splitSpaces(line)
+      let x = parseFloatStr(parts[0])
+      let y = parseFloatStr(parts[1])
+      let z = parseFloatStr(parts[2])
+      pts = append(pts, Point{ x: x, y: y, z: z })
+      i = i + 1
+    }
+    let res = hull(pts)
+    print(format4(res._0) + " " + format4(res._1))
+    case = case + 1
+  }
+}
+
+main()
