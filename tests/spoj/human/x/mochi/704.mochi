@@ -1,0 +1,104 @@
+// Solution for SPOJ PSTRING - Remove The String
+// https://www.spoj.com/problems/PSTRING/
+
+fun buildPrefix(pat: string): list<int> {
+  var pi: list<int> = []
+  var i = 0
+  while i < len(pat) {
+    pi = append(pi, 0)
+    i = i + 1
+  }
+  i = 1
+  var j = 0
+  while i < len(pat) {
+    while j > 0 && pat[i:i+1] != pat[j:j+1] {
+      j = pi[j-1]
+    }
+    if pat[i:i+1] == pat[j:j+1] {
+      j = j + 1
+    }
+    pi[i] = j
+    i = i + 1
+  }
+  return pi
+}
+
+fun nextState(j: int, ch: string, pat: string, pi: list<int>, cache: list<map<string,int>>): int {
+  var mp = cache[j] as map<string,int>
+  if mp[ch] != nil {
+    return mp[ch] as int
+  }
+  var k = j
+  while k > 0 && (k >= len(pat) || pat[k:k+1] != ch) {
+    k = pi[k-1]
+  }
+  if k < len(pat) && pat[k:k+1] == ch {
+    k = k + 1
+  }
+  mp[ch] = k
+  cache[j] = mp
+  return k
+}
+
+fun solve(x: string, y: string): int {
+  let n = len(x)
+  let m = len(y)
+  if m == 0 { return 0 }
+  let pi = buildPrefix(y)
+  var cache: list<map<string,int>> = []
+  var ci = 0
+  while ci < m {
+    cache = append(cache, {})
+    ci = ci + 1
+  }
+  let INF = n + 5
+  var dp: list<int> = []
+  var i = 0
+  while i < m {
+    dp = append(dp, INF)
+    i = i + 1
+  }
+  dp[0] = 0
+  i = 0
+  while i < n {
+    let ch = x[i:i+1]
+    var ndp: list<int> = []
+    var j = 0
+    while j < m {
+      ndp = append(ndp, INF)
+      j = j + 1
+    }
+    j = 0
+    while j < m {
+      let cur = dp[j]
+      if cur < INF {
+        if cur + 1 < ndp[j] { ndp[j] = cur + 1 }
+        let k = nextState(j, ch, y, pi, cache)
+        if k < m && cur < ndp[k] { ndp[k] = cur }
+      }
+      j = j + 1
+    }
+    dp = ndp
+    i = i + 1
+  }
+  var best = INF
+  var j = 0
+  while j < m {
+    if dp[j] < best { best = dp[j] }
+    j = j + 1
+  }
+  return best
+}
+
+fun main() {
+  while true {
+    let x = input()
+    if x == "" { break }
+    let y = input()
+    if y == "" { break }
+    let ans = solve(x, y)
+    print(ans)
+  }
+}
+
+main()
