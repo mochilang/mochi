@@ -1,0 +1,252 @@
+// Solution for SPOJ COVER2 - 3D Cover
+// https://www.spoj.com/problems/COVER2/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun sortInts(xs: list<int>): list<int> {
+  var arr = xs
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun uniqueSorted(xs: list<int>): list<int> {
+  if len(xs) == 0 { return [] }
+  var res: list<int> = []
+  var prev = xs[0]
+  res = append(res, prev)
+  var i = 1
+  while i < len(xs) {
+    if xs[i] != prev {
+      res = append(res, xs[i])
+      prev = xs[i]
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun indexMap(xs: list<int>): map<int,int> {
+  var m: map<int,int> = {}
+  var i = 0
+  while i < len(xs) {
+    m[xs[i]] = i
+    i = i + 1
+  }
+  return m
+}
+
+type Cube {
+  x1: int,
+  x2: int,
+  y1: int,
+  y2: int,
+  z1: int,
+  z2: int,
+}
+
+fun create3D(x: int, y: int, z: int): list<list<list<int>>> {
+  var arr: list<list<list<int>>> = []
+  var i = 0
+  while i < x {
+    var yz: list<list<int>> = []
+    var j = 0
+    while j < y {
+      var row: list<int> = []
+      var k = 0
+      while k < z {
+        row = append(row, 0)
+        k = k + 1
+      }
+      yz = append(yz, row)
+      j = j + 1
+    }
+    arr = append(arr, yz)
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let m = parseIntStr(tLine)
+  var case = 0
+  while case < m {
+    var line = input()
+    while line == "" { line = input() }
+    let n = parseIntStr(line)
+    var cubes: list<Cube> = []
+    var xs: list<int> = []
+    var ys: list<int> = []
+    var zs: list<int> = []
+    var i = 0
+    while i < n {
+      let l = input()
+      if l == "" { continue }
+      let vals = parseInts(l)
+      let x = vals[0]
+      let y = vals[1]
+      let z = vals[2]
+      let r = vals[3]
+      let x1 = x - r
+      let x2 = x + r
+      let y1 = y - r
+      let y2 = y + r
+      let z1 = z - r
+      let z2 = z + r
+      cubes = append(cubes, Cube{ x1: x1, x2: x2, y1: y1, y2: y2, z1: z1, z2: z2 })
+      xs = append(xs, x1); xs = append(xs, x2)
+      ys = append(ys, y1); ys = append(ys, y2)
+      zs = append(zs, z1); zs = append(zs, z2)
+      i = i + 1
+    }
+    xs = uniqueSorted(sortInts(xs))
+    ys = uniqueSorted(sortInts(ys))
+    zs = uniqueSorted(sortInts(zs))
+    let nx = len(xs)
+    let ny = len(ys)
+    let nz = len(zs)
+    let xMap = indexMap(xs)
+    let yMap = indexMap(ys)
+    let zMap = indexMap(zs)
+    var diff = create3D(nx, ny, nz)
+    i = 0
+    while i < len(cubes) {
+      let c = cubes[i]
+      let xi1 = xMap[c.x1]
+      let xi2 = xMap[c.x2]
+      let yi1 = yMap[c.y1]
+      let yi2 = yMap[c.y2]
+      let zi1 = zMap[c.z1]
+      let zi2 = zMap[c.z2]
+      diff[xi1][yi1][zi1] = diff[xi1][yi1][zi1] + 1
+      diff[xi2][yi1][zi1] = diff[xi2][yi1][zi1] - 1
+      diff[xi1][yi2][zi1] = diff[xi1][yi2][zi1] - 1
+      diff[xi1][yi1][zi2] = diff[xi1][yi1][zi2] - 1
+      diff[xi2][yi2][zi1] = diff[xi2][yi2][zi1] + 1
+      diff[xi2][yi1][zi2] = diff[xi2][yi1][zi2] + 1
+      diff[xi1][yi2][zi2] = diff[xi1][yi2][zi2] + 1
+      diff[xi2][yi2][zi2] = diff[xi2][yi2][zi2] - 1
+      i = i + 1
+    }
+    var xi = 1
+    while xi < nx {
+      var yj = 0
+      while yj < ny {
+        var zk = 0
+        while zk < nz {
+          diff[xi][yj][zk] = diff[xi][yj][zk] + diff[xi-1][yj][zk]
+          zk = zk + 1
+        }
+        yj = yj + 1
+      }
+      xi = xi + 1
+    }
+    xi = 0
+    while xi < nx {
+      var yj = 1
+      while yj < ny {
+        var zk = 0
+        while zk < nz {
+          diff[xi][yj][zk] = diff[xi][yj][zk] + diff[xi][yj-1][zk]
+          zk = zk + 1
+        }
+        yj = yj + 1
+      }
+      xi = xi + 1
+    }
+    xi = 0
+    while xi < nx {
+      var yj = 0
+      while yj < ny {
+        var zk = 1
+        while zk < nz {
+          diff[xi][yj][zk] = diff[xi][yj][zk] + diff[xi][yj][zk-1]
+          zk = zk + 1
+        }
+        yj = yj + 1
+      }
+      xi = xi + 1
+    }
+    var vol = 0
+    xi = 0
+    while xi < nx - 1 {
+      let dx = xs[xi+1] - xs[xi]
+      var yj = 0
+      while yj < ny - 1 {
+        let dy = ys[yj+1] - ys[yj]
+        var zk = 0
+        while zk < nz - 1 {
+          if diff[xi][yj][zk] > 0 {
+            let dz = zs[zk+1] - zs[zk]
+            vol = vol + dx * dy * dz
+          }
+          zk = zk + 1
+        }
+        yj = yj + 1
+      }
+      xi = xi + 1
+    }
+    print(str(vol))
+    case = case + 1
+  }
+}
+
+main()
