@@ -1,0 +1,226 @@
+// Solution for SPOJ ORIGLIFE - Origin of Life
+// https://www.spoj.com/problems/ORIGLIFE/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+let digitStr = {
+  0:"0",1:"1",2:"2",3:"3",4:"4",5:"5",6:"6",7:"7",8:"8",9:"9",
+}
+
+fun intToString(n: int): string {
+  if n == 0 { return "0" }
+  var neg = false
+  var m = n
+  if m < 0 {
+    neg = true
+    m = 0 - m
+  }
+  var parts: list<int> = []
+  while m > 0 {
+    parts = append(parts, m % 10)
+    m = m / 10
+  }
+  var s = ""
+  var i = len(parts) - 1
+  while i >= 0 {
+    let d = parts[i] as int
+    s = s + digitStr[d]
+    i = i - 1
+  }
+  if neg { return "-" + s }
+  return s
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var sign = 1
+  if len(str) > 0 && str[0:1] == "-" {
+    sign = 0 - 1
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return sign * n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < n {
+    res = append(res, value)
+    i = i + 1
+  }
+  return res
+}
+
+fun buildNeighs(m: int, n: int): list<list<int>> {
+  var neighs: list<list<int>> = []
+  var r = 0
+  while r < m {
+    var c = 0
+    while c < n {
+      var lst: list<int> = []
+      var dr = -1
+      while dr <= 1 {
+        var dc = -1
+        while dc <= 1 {
+          if !(dr == 0 && dc == 0) {
+            let nr = r + dr
+            let nc = c + dc
+            if nr >= 0 && nr < m && nc >= 0 && nc < n {
+              lst = append(lst, nr * n + nc)
+            }
+          }
+          dc = dc + 1
+        }
+        dr = dr + 1
+      }
+      neighs = append(neighs, lst)
+      c = c + 1
+    }
+    r = r + 1
+  }
+  return neighs
+}
+
+fun nextState(state: int, neighs: list<list<int>>, pow2: list<int>, cells: int, a: int, b: int, c: int): int {
+  var next = 0
+  var i = 0
+  while i < cells {
+    let alive = (state / pow2[i]) % 2
+    var cnt = 0
+    var j = 0
+    let ns = neighs[i]
+    while j < len(ns) {
+      let idx = ns[j]
+      cnt = cnt + ((state / pow2[idx]) % 2)
+      j = j + 1
+    }
+    var newAlive = alive
+    if alive == 1 {
+      if cnt < a || cnt > b { newAlive = 0 }
+    } else {
+      if cnt > c { newAlive = 1 }
+    }
+    if newAlive == 1 { next = next + pow2[i] }
+    i = i + 1
+  }
+  return next
+}
+
+fun solve(m: int, n: int, a: int, b: int, c: int, start: int, pow2: list<int>): int {
+  let cells = m * n
+  let total = pow2[cells]
+  let neighs = buildNeighs(m, n)
+  var preHead = make_int_list(total, 0 - 1)
+  var preNext = make_int_list(total, 0 - 1)
+  var s = 0
+  while s < total {
+    let nxt = nextState(s, neighs, pow2, cells, a, b, c)
+    preNext[s] = preHead[nxt]
+    preHead[nxt] = s
+    s = s + 1
+  }
+  var dist = make_int_list(total, 0 - 1)
+  var queue: list<int> = []
+  queue = append(queue, start)
+  dist[start] = 0
+  var qi = 0
+  while qi < len(queue) {
+    let cur = queue[qi]
+    qi = qi + 1
+    let d = dist[cur]
+    if preHead[cur] == 0 - 1 { return d }
+    var p = preHead[cur]
+    while p != 0 - 1 {
+      if dist[p] == 0 - 1 {
+        dist[p] = d + 1
+        queue = append(queue, p)
+      }
+      p = preNext[p]
+    }
+  }
+  return 0 - 1
+}
+
+fun parseGrid(m: int, n: int, pow2: list<int>): int {
+  var state = 0
+  var r = 0
+  while r < m {
+    let line = input()
+    var c = 0
+    while c < n {
+      if line[c:c+1] == "*" {
+        state = state + pow2[r * n + c]
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+  return state
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var out = ""
+  for _ in 0..t {
+    let line = input()
+    let params = parseInts(line)
+    let m = params[0]
+    let n = params[1]
+    let a = params[2]
+    let b = params[3]
+    let c = params[4]
+    let cells = m * n
+    var pow2: list<int> = []
+    var p = 1
+    var i = 0
+    while i <= cells {
+      pow2 = append(pow2, p)
+      p = p * 2
+      i = i + 1
+    }
+    let start = parseGrid(m, n, pow2)
+    let ans = solve(m, n, a, b, c, start, pow2)
+    out = out + intToString(ans) + "\n"
+  }
+  print(out[0:len(out)-1])
+}
+
+main()
