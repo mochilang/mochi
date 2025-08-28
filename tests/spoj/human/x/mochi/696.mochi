@@ -1,0 +1,74 @@
+// Solution for SPOJ LIAR - Truth or not
+// https://www.spoj.com/problems/LIAR/
+
+fun isValid(mat: list<string>, status: list<string>, n: int): bool {
+  for i in 0..n {
+    let row = mat[i]
+    if status[i] == "T" {
+      var ok = true
+      for j in 0..n {
+        if row[j:j+1] != status[j] {
+          ok = false
+          break
+        }
+      }
+      if !ok { return false }
+    } else {
+      var hasFalse = false
+      for j in 0..n {
+        if row[j:j+1] != status[j] {
+          hasFalse = true
+          break
+        }
+      }
+      if !hasFalse { return false }
+    }
+  }
+  return true
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = tStr as int
+  for case in 0..t {
+    let n = (input() as int)
+    var mat: list<string> = []
+    for _ in 0..n {
+      mat = append(mat, input())
+    }
+    var found = false
+    var minLiars = n
+    var maxLiars = 0
+    for cand in 0..(n+1) {
+      var status: list<string> = []
+      if cand < n {
+        let row = mat[cand]
+        for j in 0..n {
+          status = append(status, row[j:j+1])
+        }
+      } else {
+        for j in 0..n {
+          status = append(status, "L")
+        }
+      }
+      if isValid(mat, status, n) {
+        found = true
+        var cnt = 0
+        for j in 0..n {
+          if status[j] == "L" { cnt = cnt + 1 }
+        }
+        if cnt < minLiars { minLiars = cnt }
+        if cnt > maxLiars { maxLiars = cnt }
+      }
+    }
+    let idx = case + 1
+    if !found {
+      print("Class Room#" + str(idx) + " is paradoxical")
+    } else {
+      print("Class Room#" + str(idx) + " contains atleast " + str(minLiars) + " and atmost " + str(maxLiars) + " liars")
+    }
+  }
+}
+
+main()
