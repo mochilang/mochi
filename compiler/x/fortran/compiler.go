@@ -292,6 +292,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				return nil, err
 			}
 		}
+		if len(c.helpers) > 0 {
+			c.emitHelpers()
+		}
 	}
 
 	c.indent--
@@ -438,6 +441,14 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 				}
 			} else {
 				c.writelnDecl(fmt.Sprintf("%s, allocatable, dimension(:) :: %s", typ, l.Name))
+			}
+		} else if d := listDepth(l.Type); d > 0 {
+			if d == 1 {
+				c.writelnDecl(fmt.Sprintf("%s, allocatable, dimension(:) :: %s", typ, l.Name))
+			} else if d == 2 {
+				c.writelnDecl(fmt.Sprintf("%s, allocatable, dimension(:,:) :: %s", typ, l.Name))
+			} else {
+				c.writelnDecl(fmt.Sprintf("%s :: %s", typ, l.Name))
 			}
 		} else {
 			c.writelnDecl(fmt.Sprintf("%s :: %s", typ, l.Name))
@@ -889,6 +900,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		params[i] = p.Name
 	}
 	retType := c.typeName(fn.Return)
+	retDims := listDepth(fn.Return)
 	isVoid := false
 	if fn.Return == nil {
 		if t, err := c.env.GetVar(fn.Name); err == nil {
@@ -904,11 +916,33 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	if isVoid {
 		c.writeln(fmt.Sprintf("recursive subroutine %s(%s)", fn.Name, strings.Join(params, ",")))
 	} else {
-		c.writeln(fmt.Sprintf("recursive %s function %s(%s) result(res)", retType, fn.Name, strings.Join(params, ",")))
+		if retDims > 0 {
+			c.writeln(fmt.Sprintf("recursive function %s(%s) result(res)", fn.Name, strings.Join(params, ",")))
+		} else {
+			c.writeln(fmt.Sprintf("recursive %s function %s(%s) result(res)", retType, fn.Name, strings.Join(params, ",")))
+		}
 	}
 	c.indent++
+	if !isVoid && retDims > 0 {
+		decl := retType
+		if retDims == 1 {
+			decl += ", allocatable, dimension(:)"
+		} else if retDims == 2 {
+			decl += ", allocatable, dimension(:,:)"
+		}
+		c.writeln(fmt.Sprintf("%s :: res", decl))
+	}
 	for _, p := range fn.Params {
-		c.writeln(fmt.Sprintf("%s, intent(in) :: %s", c.typeName(p.Type), p.Name))
+		decl := c.typeName(p.Type)
+		d := listDepth(p.Type)
+		if d == 1 {
+			decl += ", intent(in), dimension(:)"
+		} else if d == 2 {
+			decl += ", intent(in), dimension(:,:)"
+		} else {
+			decl += ", intent(in)"
+		}
+		c.writeln(fmt.Sprintf("%s :: %s", decl, p.Name))
 		c.declared[p.Name] = true
 	}
 	// declare local variables before emitting executable statements
@@ -1594,6 +1628,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		c.writelnDecl(fmt.Sprintf("character(len=100) :: %s", tmp))
 		c.writeln(fmt.Sprintf("write(%s,'(G0)') %s", tmp, args[0]))
 		return tmp, nil
+	case "now":
+		if len(call.Args) != 0 {
+			return "", fmt.Errorf("now expects 0 args")
+		}
+		c.use("now")
+		return "now()", nil
 	case "substring":
 		if len(call.Args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
@@ -2715,6 +2755,11 @@ func (c *Compiler) typeName(t *parser.TypeRef) string {
 	if t == nil {
 		return "integer"
 	}
+	if t.Generic != nil {
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			return c.typeName(t.Generic.Args[0])
+		}
+	}
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":
@@ -2750,6 +2795,15 @@ func (c *Compiler) typeNameFromTypes(t types.Type) string {
 	default:
 		return "integer"
 	}
+}
+
+func listDepth(t *parser.TypeRef) int {
+	d := 0
+	for t != nil && t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+		d++
+		t = t.Generic.Args[0]
+	}
+	return d
 }
 
 func (c *Compiler) use(name string) {
@@ -2859,6 +2913,15 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("return")
 			c.indent--
 			c.writeln("end function _intersect")
+		case "now":
+			c.writeln("integer function now() result(res)")
+			c.indent++
+			c.writeln("integer :: c,r")
+			c.writeln("call system_clock(count=c,count_rate=r)")
+			c.writeln("res = c")
+			c.writeln("return")
+			c.indent--
+			c.writeln("end function now")
 		case "tpch_q1":
 			c.writeln("character(len=512) function tpch_q1() result(res)")
 			c.indent++
