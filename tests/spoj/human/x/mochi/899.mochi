@@ -1,0 +1,90 @@
+// Solution for SPOJ WSCIPHER - Ws Cipher
+// https://www.spoj.com/problems/WSCIPHER/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun rotate(chars: list<string>, idxs: list<int>, k: int): list<string> {
+  let m = len(idxs)
+  if m == 0 { return chars }
+  let r = k % m
+  if r == 0 { return chars }
+  var tmp: list<string> = []
+  var i = 0
+  while i < m {
+    let src = idxs[(i - r + m) % m]
+    tmp = append(tmp, chars[src])
+    i = i + 1
+  }
+  i = 0
+  while i < m {
+    chars[idxs[i]] = tmp[i]
+    i = i + 1
+  }
+  return chars
+}
+
+fun decrypt(msg: string, k1: int, k2: int, k3: int): string {
+  var chars: list<string> = []
+  var i = 0
+  while i < len(msg) {
+    chars = append(chars, msg[i:i+1])
+    i = i + 1
+  }
+  var g1: list<int> = []
+  var g2: list<int> = []
+  var g3: list<int> = []
+  i = 0
+  while i < len(chars) {
+    let ch = chars[i]
+    if ch >= "a" && ch <= "i" {
+      g1 = append(g1, i)
+    } else if ch >= "j" && ch <= "r" {
+      g2 = append(g2, i)
+    } else {
+      g3 = append(g3, i)
+    }
+    i = i + 1
+  }
+  chars = rotate(chars, g1, k1)
+  chars = rotate(chars, g2, k2)
+  chars = rotate(chars, g3, k3)
+  var res = ""
+  i = 0
+  while i < len(chars) {
+    res = res + chars[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  while true {
+    var line = input()
+    if line == "" { break }
+    let parts = split(line)
+    if len(parts) < 3 { continue }
+    let k1 = int(parts[0])
+    let k2 = int(parts[1])
+    let k3 = int(parts[2])
+    if k1 == 0 && k2 == 0 && k3 == 0 { break }
+    let msg = input()
+    print(decrypt(msg, k1, k2, k3))
+  }
+}
+
+main()
