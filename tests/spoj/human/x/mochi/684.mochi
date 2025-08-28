@@ -1,0 +1,177 @@
+// Solution for SPOJ ASSIGN4 - Another Assignment Problem
+// https://www.spoj.com/problems/ASSIGN4/
+
+// parse integer from string
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+// split by spaces
+fun split_ws(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+type Edge = { to: int, rev: int, cap: int, cost: int }
+
+fun addEdge(g: list<list<Edge>>, fr: int, to: int, cap: int, cost: int): list<list<Edge>> {
+  let r1 = len(g[to])
+  let r2 = len(g[fr])
+  g[fr] = append(g[fr], Edge{ to: to, rev: r1, cap: cap, cost: cost })
+  g[to] = append(g[to], Edge{ to: fr, rev: r2, cap: 0, cost: 0 - cost })
+  return g
+}
+
+fun minInt(a: int, b: int): int { if a < b { return a } return b }
+
+fun minCostFlow(g: list<list<Edge>>, s: int, t: int): int {
+  let n = len(g)
+  var res = 0
+  while true {
+    var dist: list<int> = []
+    var inq: list<bool> = []
+    var prevv: list<int> = []
+    var preve: list<int> = []
+    var i = 0
+    while i < n {
+      dist = append(dist, 1000000000)
+      inq = append(inq, false)
+      prevv = append(prevv, 0)
+      preve = append(preve, 0)
+      i = i + 1
+    }
+    dist[s] = 0
+    var q: list<int> = []
+    q = append(q, s)
+    inq[s] = true
+    var qi = 0
+    while qi < len(q) {
+      let v = q[qi]
+      qi = qi + 1
+      inq[v] = false
+      var j = 0
+      while j < len(g[v]) {
+        let e = g[v][j]
+        if e.cap > 0 && dist[e.to] > dist[v] + e.cost {
+          dist[e.to] = dist[v] + e.cost
+          prevv[e.to] = v
+          preve[e.to] = j
+          if !inq[e.to] {
+            q = append(q, e.to)
+            inq[e.to] = true
+          }
+        }
+        j = j + 1
+      }
+    }
+    if dist[t] == 1000000000 { break }
+    var d = 1000000000
+    var v = t
+    while v != s {
+      let e = g[prevv[v]][preve[v]]
+      if e.cap < d { d = e.cap }
+      v = prevv[v]
+    }
+    v = t
+    while v != s {
+      let e = g[prevv[v]][preve[v]]
+      g[prevv[v]][preve[v]] = Edge{ to: e.to, rev: e.rev, cap: e.cap - d, cost: e.cost }
+      let re = g[e.to][e.rev]
+      g[e.to][e.rev] = Edge{ to: re.to, rev: re.rev, cap: re.cap + d, cost: re.cost }
+      v = prevv[v]
+    }
+    res = res + d * dist[t]
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var cs = 0
+  while cs < t {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = split_ws(line)
+    let m = parseIntStr(parts[0])
+    let n = parseIntStr(parts[1])
+    var lineA = input()
+    while lineA == "" { lineA = input() }
+    let partsA = split_ws(lineA)
+    var a: list<int> = []
+    var i = 0
+    while i < m { a = append(a, parseIntStr(partsA[i])); i = i + 1 }
+    var lineB = input()
+    while lineB == "" { lineB = input() }
+    let partsB = split_ws(lineB)
+    var b: list<int> = []
+    var j = 0
+    while j < n { b = append(b, parseIntStr(partsB[j])); j = j + 1 }
+    var cost: list<list<int>> = []
+    i = 0
+    while i < m {
+      var rowLine = input()
+      while rowLine == "" { rowLine = input() }
+      let rowParts = split_ws(rowLine)
+      var row: list<int> = []
+      j = 0
+      while j < n { row = append(row, parseIntStr(rowParts[j])); j = j + 1 }
+      cost = append(cost, row)
+      i = i + 1
+    }
+    let totalNodes = m + n + 2
+    let s = 0
+    let tnode = m + n + 1
+    var g: list<list<Edge>> = []
+    i = 0
+    while i < totalNodes { g = append(g, []); i = i + 1 }
+    i = 0
+    while i < m {
+      g = addEdge(g, s, i+1, a[i], 0)
+      i = i + 1
+    }
+    j = 0
+    while j < n {
+      g = addEdge(g, m+1+j, tnode, b[j], 0)
+      j = j + 1
+    }
+    i = 0
+    while i < m {
+      j = 0
+      while j < n {
+        let cap = minInt(a[i], b[j])
+        g = addEdge(g, i+1, m+1+j, cap, cost[i][j])
+        j = j + 1
+      }
+      i = i + 1
+    }
+    let ans = minCostFlow(g, s, tnode)
+    print(ans)
+    cs = cs + 1
+  }
+}
+
+main()
