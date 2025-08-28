@@ -1,0 +1,89 @@
+// Solution for SPOJ LPERMUT - Longest Permutation
+// https://www.spoj.com/problems/LPERMUT/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parts[i] as int)
+    i = i + 1
+  }
+  return nums
+}
+
+fun main() {
+  let nLine = input()
+  if nLine == "" { return }
+  let n = nLine as int
+  let arrLine = input()
+  let arr = parseInts(arrLine)
+
+  var freq: list<int> = []
+  var i = 0
+  while i <= n {
+    freq = append(freq, 0)
+    i = i + 1
+  }
+
+  var l = 0
+  var best = 0
+  var minQ: list<int> = []
+  var maxQ: list<int> = []
+  var r = 0
+  while r < n {
+    let x = arr[r]
+    freq[x] = freq[x] + 1
+
+    while len(minQ) > 0 && arr[minQ[len(minQ)-1]] > x {
+      minQ = minQ[0:len(minQ)-1]
+    }
+    minQ = append(minQ, r)
+
+    while len(maxQ) > 0 && arr[maxQ[len(maxQ)-1]] < x {
+      maxQ = maxQ[0:len(maxQ)-1]
+    }
+    maxQ = append(maxQ, r)
+
+    while freq[x] > 1 {
+      let y = arr[l]
+      freq[y] = freq[y] - 1
+      if len(minQ) > 0 && minQ[0] == l { minQ = minQ[1:len(minQ)] }
+      if len(maxQ) > 0 && maxQ[0] == l { maxQ = maxQ[1:len(maxQ)] }
+      l = l + 1
+    }
+    while len(minQ) > 0 && minQ[0] < l { minQ = minQ[1:len(minQ)] }
+    while len(maxQ) > 0 && maxQ[0] < l { maxQ = maxQ[1:len(maxQ)] }
+
+    let length = r - l + 1
+    let curMin = arr[minQ[0]]
+    let curMax = arr[maxQ[0]]
+    if curMin == 1 && curMax == length {
+      if length > best { best = length }
+    }
+    r = r + 1
+  }
+  print(str(best))
+}
+
+main()
