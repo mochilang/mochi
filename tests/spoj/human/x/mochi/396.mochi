@@ -1,0 +1,144 @@
+// Solution for SPOJ HITOMISS - Hit or Miss
+// https://www.spoj.com/problems/HITOMISS/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  for p in pieces {
+    if len(p) > 0 {
+      nums = append(nums, int(p))
+    }
+  }
+  return nums
+}
+
+fun encode(decks: list<list<int>>, counts: list<int>): string {
+  var res: string = ""
+  var i = 0
+  while i < len(decks) {
+    if i > 0 { res = res + "|" }
+    res = res + str(counts[i]) + ":"
+    var deck = decks[i]
+    var j = 0
+    while j < len(deck) {
+      if j > 0 { res = res + "," }
+      res = res + str(deck[j])
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var caseIdx = 1
+  while caseIdx <= t {
+    let line = input()
+    let nums = parse_ints(line)
+    let p = nums[0]
+    var decks: list<list<int>> = []
+    var deck1: list<int> = []
+    var i = 0
+    while i < 52 {
+      deck1 = append(deck1, nums[i+1])
+      i = i + 1
+    }
+    decks = append(decks, deck1)
+    i = 1
+    while i < p {
+      decks = append(decks, [])
+      i = i + 1
+    }
+    var counts: list<int> = []
+    var last: list<int> = []
+    i = 0
+    while i < p {
+      counts = append(counts, 1)
+      last = append(last, 0)
+      i = i + 1
+    }
+    var total = 52
+    var visited: map<string, bool> = {}
+    visited[encode(decks, counts)] = true
+    var unwinnable = false
+    while total > 0 {
+      var passes: list<int> = []
+      i = 0
+      while i < p {
+        passes = append(passes, 0)
+        i = i + 1
+      }
+      i = 0
+      while i < p {
+        var deck = decks[i]
+        if len(deck) > 0 {
+          let top = deck[0]
+          if top == counts[i] {
+            last[i] = top
+            deck = deck[1:len(deck)]
+            if i == p - 1 {
+              total = total - 1
+            } else {
+              passes[i] = top
+            }
+          } else {
+            deck = append(deck[1:len(deck)], top)
+          }
+          decks[i] = deck
+          counts[i] = counts[i] + 1
+          if counts[i] == 14 { counts[i] = 1 }
+        }
+        i = i + 1
+      }
+      if total == 0 { break }
+      i = 0
+      while i < p - 1 {
+        if passes[i] != 0 {
+          decks[i+1] = append(decks[i+1], passes[i])
+        }
+        i = i + 1
+      }
+      let key = encode(decks, counts)
+      if visited[key] != nil {
+        unwinnable = true
+        break
+      }
+      visited[key] = true
+    }
+    if unwinnable {
+      print("Case " + str(caseIdx) + ": unwinnable")
+    } else {
+      var out: string = "Case " + str(caseIdx) + ":"
+      i = 0
+      while i < p {
+        out = out + " " + str(last[i])
+        i = i + 1
+      }
+      print(out)
+    }
+    caseIdx = caseIdx + 1
+  }
+}
+
+main()
