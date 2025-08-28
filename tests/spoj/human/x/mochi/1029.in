@@ -1,0 +1,9 @@
+1
+4
+SET 0 0 1
+SUM 0 0 3 3
+SET 2 2 12
+SUM 2 2 2 2
+SUM 2 2 3 3
+SUM 0 0 2 2
+END
