@@ -1,0 +1,269 @@
+// Solution for SPOJ TCUTTER - Tin Cutter
+// https://www.spoj.com/problems/TCUTTER/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+  "-":-1,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+type Point { x: int, y: int }
+
+type Segment { x1: int, y1: int, x2: int, y2: int }
+
+fun pointKey(p: Point): string { return str(p.x) + "," + str(p.y) }
+
+fun edgeKey(a: Point, b: Point): string {
+  let ax = a.x
+  let ay = a.y
+  let bx = b.x
+  let by = b.y
+  if ax > bx || (ax == bx && ay > by) {
+    ax = b.x
+    ay = b.y
+    bx = a.x
+    by = a.y
+  }
+  return str(ax) + "," + str(ay) + "|" + str(bx) + "," + str(by)
+}
+
+fun sortPoints(arr: list<Point>, horiz: bool): list<Point> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    let curr = arr[i]
+    while j > 0 {
+      let prev = arr[j-1]
+      let cond = if horiz {
+        prev.x > curr.x
+      } else {
+        prev.y > curr.y
+      }
+      if !cond { break }
+      arr[j] = prev
+      arr[j-1] = curr
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun find(par: list<int>, i: int): int {
+  var x = i
+  while par[x] != x {
+    par[x] = par[par[x]]
+    x = par[x]
+  }
+  return x
+}
+
+fun union(par: list<int>, a: int, b: int) {
+  let pa = find(par, a)
+  let pb = find(par, b)
+  if pa != pb { par[pa] = pb }
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil || line == "" { return }
+    let n = parseIntStr(line)
+    if n == 0 { break }
+    var segs: list<Segment> = []
+    var k = 0
+    while k < n {
+      let l = input()
+      let p = split(l, " ")
+      var x1 = parseIntStr(p[0])
+      var y1 = parseIntStr(p[1])
+      var x2 = parseIntStr(p[2])
+      var y2 = parseIntStr(p[3])
+      if x1 == x2 {
+        if y1 > y2 {
+          let tmp = y1
+          y1 = y2
+          y2 = tmp
+        }
+      } else {
+        if x1 > x2 {
+          let tx = x1
+          let ty = y1
+          x1 = x2
+          y1 = y2
+          x2 = tx
+          y2 = ty
+        }
+      }
+      segs = append(segs, Segment { x1: x1, y1: y1, x2: x2, y2: y2 })
+      k = k + 1
+    }
+
+    var pts: list<Point> = []
+    var sidx = 0
+    while sidx < len(segs) {
+      let s = segs[sidx]
+      pts = append(pts, Point { x: s.x1, y: s.y1 })
+      pts = append(pts, Point { x: s.x2, y: s.y2 })
+      sidx = sidx + 1
+    }
+    var i = 0
+    while i < len(segs) {
+      var j = i + 1
+      while j < len(segs) {
+        let a = segs[i]
+        let b = segs[j]
+        if a.x1 == a.x2 && b.y1 == b.y2 {
+          // a vertical, b horizontal
+          if b.x1 <= a.x1 && a.x1 <= b.x2 && a.y1 <= b.y1 && b.y1 <= a.y2 {
+            pts = append(pts, Point { x: a.x1, y: b.y1 })
+          }
+        } else if a.y1 == a.y2 && b.x1 == b.x2 {
+          // a horizontal, b vertical
+          if a.x1 <= b.x1 && b.x1 <= a.x2 && b.y1 <= a.y1 && a.y1 <= b.y2 {
+            pts = append(pts, Point { x: b.x1, y: a.y1 })
+          }
+        } else if a.x1 == a.x2 && b.x1 == b.x2 && a.x1 == b.x1 {
+          // both vertical and same line
+          let ly1 = if a.y1 > b.y1 { a.y1 } else { b.y1 }
+          let ly2 = if a.y2 < b.y2 { a.y2 } else { b.y2 }
+          if ly1 <= ly2 {
+            pts = append(pts, Point { x: a.x1, y: ly1 })
+            pts = append(pts, Point { x: a.x1, y: ly2 })
+          }
+        } else if a.y1 == a.y2 && b.y1 == b.y2 && a.y1 == b.y1 {
+          // both horizontal and same line
+          let lx1 = if a.x1 > b.x1 { a.x1 } else { b.x1 }
+          let lx2 = if a.x2 < b.x2 { a.x2 } else { b.x2 }
+          if lx1 <= lx2 {
+            pts = append(pts, Point { x: lx1, y: a.y1 })
+            pts = append(pts, Point { x: lx2, y: a.y1 })
+          }
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    var unique: list<Point> = []
+    var idxMap: map<string, int> = {}
+    var idxp = 0
+    while idxp < len(pts) {
+      let p = pts[idxp]
+      let key = pointKey(p)
+      if !(key in idxMap) {
+        idxMap[key] = len(unique)
+        unique = append(unique, p)
+      }
+      idxp = idxp + 1
+    }
+
+    var edges: map<string, bool> = {}
+    var si = 0
+    while si < len(segs) {
+      let s = segs[si]
+      var onSeg: list<Point> = []
+      var pi = 0
+      while pi < len(unique) {
+        let p = unique[pi]
+        if s.x1 == s.x2 {
+          if p.x == s.x1 && p.y >= s.y1 && p.y <= s.y2 {
+            onSeg = append(onSeg, p)
+          }
+        } else {
+          if p.y == s.y1 && p.x >= s.x1 && p.x <= s.x2 {
+            onSeg = append(onSeg, p)
+          }
+        }
+        pi = pi + 1
+      }
+      onSeg = sortPoints(onSeg, s.y1 == s.y2)
+      var t = 1
+      while t < len(onSeg) {
+        let p1 = onSeg[t-1]
+        let p2 = onSeg[t]
+        let ek = edgeKey(p1, p2)
+        edges[ek] = true
+        t = t + 1
+      }
+      si = si + 1
+    }
+
+    let V = len(unique)
+    let E = 0
+    var edgeKeys: list<string> = []
+    for k in edges { edgeKeys = append(edgeKeys, k) }
+    E = len(edgeKeys)
+
+    var parent: list<int> = []
+    var vi = 0
+    while vi < V {
+      parent = append(parent, vi)
+      vi = vi + 1
+    }
+
+    var ei = 0
+    while ei < len(edgeKeys) {
+      let k = edgeKeys[ei]
+      let parts = split(k, "|")
+      let a = split(parts[0], ",")
+      let b = split(parts[1], ",")
+      let ax = parseIntStr(a[0])
+      let ay = parseIntStr(a[1])
+      let bx = parseIntStr(b[0])
+      let by = parseIntStr(b[1])
+      let ia = idxMap[str(ax) + "," + str(ay)]
+      let ib = idxMap[str(bx) + "," + str(by)]
+      union(parent, ia, ib)
+      ei = ei + 1
+    }
+
+    var comps: map<int, bool> = {}
+    var vi2 = 0
+    while vi2 < V {
+      comps[find(parent, vi2)] = true
+      vi2 = vi2 + 1
+    }
+    var compKeys: list<int> = []
+    for k in comps { compKeys = append(compKeys, k) }
+    let C = len(compKeys)
+    let holes = E - V + C
+    print(str(holes))
+  }
+}
+
+main()
