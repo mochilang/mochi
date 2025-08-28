@@ -1,0 +1,26 @@
+// Solution for SPOJ CUBES - Cubes
+// https://www.spoj.com/problems/CUBES/
+
+fun main() {
+  var cubes: list<int> = []
+  for i in 0..101 {
+    cubes = append(cubes, i * i * i)
+  }
+  for a in 2..101 {
+    let a3 = cubes[a]
+    for b in 2..a {
+      let b3 = cubes[b]
+      for c in b..a {
+        let c3 = cubes[c]
+        for d in c..a {
+          let d3 = cubes[d]
+          if a3 == b3 + c3 + d3 {
+            print("Cube = " + str(a) + ", Triple = (" + str(b) + "," + str(c) + "," + str(d) + ")")
+          }
+        }
+      }
+    }
+  }
+}
+
+main()
