@@ -1,0 +1,114 @@
+// Solution for SPOJ FPOLICE - Fool the Police
+// https://www.spoj.com/problems/FPOLICE/
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let c = s[i:i+1]
+    if c == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + c
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = split(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parts[i] as int)
+    i = i + 1
+  }
+  return nums
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = tLine as int
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    let nt = parseInts(line)
+    let n = nt[0]
+    let maxTime = nt[1]
+    var times: list<list<int>> = []
+    var i = 0
+    while i < n {
+      let row = parseInts(input())
+      times = append(times, row)
+      i = i + 1
+    }
+    var risks: list<list<int>> = []
+    i = 0
+    while i < n {
+      let row = parseInts(input())
+      risks = append(risks, row)
+      i = i + 1
+    }
+    let INF = 1000000000
+    var dp: list<list<int>> = []
+    i = 0
+    while i < n {
+      var row: list<int> = []
+      var t = 0
+      while t <= maxTime {
+        row = append(row, INF)
+        t = t + 1
+      }
+      dp = append(dp, row)
+      i = i + 1
+    }
+    dp[0][0] = 0
+    var time = 0
+    while time <= maxTime {
+      var u = 0
+      while u < n {
+        let curRisk = dp[u][time]
+        if curRisk < INF {
+          var v = 0
+          while v < n {
+            let tcost = times[u][v]
+            if tcost > 0 {
+              let nt = time + tcost
+              if nt <= maxTime {
+                let nr = curRisk + risks[u][v]
+                if nr < dp[v][nt] { dp[v][nt] = nr }
+              }
+            }
+            v = v + 1
+          }
+        }
+        u = u + 1
+      }
+      time = time + 1
+    }
+    var minRisk = INF
+    var minT = 0
+    var t2 = 0
+    while t2 <= maxTime {
+      let r = dp[n - 1][t2]
+      if r < minRisk {
+        minRisk = r
+        minT = t2
+      }
+      t2 = t2 + 1
+    }
+    if minRisk == INF {
+      print("-1")
+    } else {
+      print(str(minRisk) + " " + str(minT))
+    }
+    case = case + 1
+  }
+}
+
+main()
