@@ -1,0 +1,173 @@
+// Solution for SPOJ FTOUR - Free Tour
+// https://www.spoj.com/problems/FTOUR/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = split(line, " ")
+  var res: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    if parts[i] != "" {
+      res = append(res, int(parts[i]))
+    }
+    i = i + 1
+  }
+  return res
+}
+
+type Res {
+  len: int,
+  path: list<int>,
+}
+
+fun findCycle(n: int, adj: list<list<int>>): Res {
+  var bestLen = 1000000000
+  var bestPath: list<int> = []
+  var s = 1
+  while s <= n {
+    var dist: list<int> = []
+    var par: list<int> = []
+    var i = 0
+    while i <= n {
+      dist = append(dist, 0-1)
+      par = append(par, 0)
+      i = i + 1
+    }
+    var q: list<int> = []
+    var qh = 0
+    dist[s] = 0
+    q = append(q, s)
+    while qh < len(q) {
+      let v = q[qh]
+      qh = qh + 1
+      let neigh = adj[v]
+      var j = 0
+      while j < len(neigh) {
+        let w = neigh[j]
+        if dist[w] == 0-1 {
+          dist[w] = dist[v] + 1
+          par[w] = v
+          q = append(q, w)
+        } else if par[v] != w {
+          let cycleLen = dist[v] + dist[w] + 1
+          if cycleLen % 2 == 0 && cycleLen < bestLen {
+            var pathV: list<int> = []
+            var pathW: list<int> = []
+            var x = v
+            var y = w
+            while x != y {
+              if dist[x] > dist[y] {
+                pathV = append(pathV, x)
+                x = par[x]
+              } else if dist[y] > dist[x] {
+                pathW = append(pathW, y)
+                y = par[y]
+              } else {
+                pathV = append(pathV, x)
+                pathW = append(pathW, y)
+                x = par[x]
+                y = par[y]
+              }
+            }
+            let lca = x
+            pathV = append(pathV, lca)
+            var cyc: list<int> = []
+            var idx = 0
+            while idx < len(pathV) {
+              cyc = append(cyc, pathV[idx])
+              idx = idx + 1
+            }
+            idx = len(pathW) - 1
+            while idx >= 0 {
+              cyc = append(cyc, pathW[idx])
+              idx = idx - 1
+            }
+            cyc = append(cyc, v)
+            // rotate so the smallest vertex is first
+            var minIdx = 0
+            var k = 1
+            while k < len(cyc) - 1 {
+              if cyc[k] < cyc[minIdx] { minIdx = k }
+              k = k + 1
+            }
+            var rotated: list<int> = []
+            k = 0
+            while k < len(cyc) - 1 {
+              rotated = append(rotated, cyc[(minIdx + k) % (len(cyc) - 1)])
+              k = k + 1
+            }
+            rotated = append(rotated, rotated[0])
+            bestLen = cycleLen
+            bestPath = rotated
+          }
+        }
+        j = j + 1
+      }
+    }
+    s = s + 1
+  }
+  return Res { len: bestLen, path: bestPath }
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    var line = input()
+    while line == "" { line = input() }
+    let nm = parseInts(line)
+    let n = nm[0]
+    let m = nm[1]
+    var adj: list<list<int>> = []
+    var i = 0
+    while i <= n {
+      adj = append(adj, [])
+      i = i + 1
+    }
+    i = 0
+    while i < m {
+      let e = parseInts(input())
+      let a = e[0]
+      let b = e[1]
+      adj[a] = append(adj[a], b)
+      adj[b] = append(adj[b], a)
+      i = i + 1
+    }
+    let res = findCycle(n, adj)
+    if res.len >= 1000000000 {
+      print("-1")
+    } else {
+      print(str(res.len))
+      var out = ""
+      var idx = 0
+      while idx < len(res.path) {
+        if idx > 0 { out = out + " " }
+        out = out + str(res.path[idx])
+        idx = idx + 1
+      }
+      print(out)
+    }
+    tc = tc + 1
+  }
+}
+
+main()
