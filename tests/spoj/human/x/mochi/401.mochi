@@ -1,0 +1,208 @@
+// Solution for SPOJ TRANSL - Translations
+// https://www.spoj.com/problems/TRANSL/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun sortPairs(arr: list<list<string>>): list<list<string>> {
+  var i = 1
+  while i < len(arr) {
+    let key = arr[i]
+    var j = i - 1
+    while j >= 0 && arr[j][0] > key[0] {
+      arr[j+1] = arr[j]
+      j = j - 1
+    }
+    arr[j+1] = key
+    i = i + 1
+  }
+  return arr
+}
+
+fun consistent(v: int, w: int, assign: list<int>, edges1: list<list<int>>, edges2: list<list<int>>, m: int): bool {
+  var u = 0
+  while u < m {
+    let mapped = assign[u]
+    if mapped != 0-1 {
+      if edges1[v][u] != edges2[w][mapped] || edges1[u][v] != edges2[mapped][w] {
+        return false
+      }
+    }
+    u = u + 1
+  }
+  return true
+}
+
+fun dfs(pos: int, order: list<int>, assign: list<int>, used: list<int>, out1: list<int>, in1: list<int>, out2: list<int>, in2: list<int>, edges1: list<list<int>>, edges2: list<list<int>>, m: int): bool {
+  if pos == m { return true }
+  let v = order[pos]
+  var w = 0
+  while w < m {
+    if used[w] == 0 && out1[v] == out2[w] && in1[v] == in2[w] && consistent(v, w, assign, edges1, edges2, m) {
+      assign[v] = w
+      used[w] = 1
+      if dfs(pos + 1, order, assign, used, out1, in1, out2, in2, edges1, edges2, m) { return true }
+      assign[v] = -1
+      used[w] = 0
+    }
+    w = w + 1
+  }
+  return false
+}
+
+fun sortOrder(order: list<int>, out1: list<int>, in1: list<int>): list<int> {
+  var i = 1
+  while i < len(order) {
+    let key = order[i]
+    let keyDeg = out1[key] + in1[key]
+    var j = i - 1
+    while j >= 0 && (out1[order[j]] + in1[order[j]]) < keyDeg {
+      order[j+1] = order[j]
+      j = j - 1
+    }
+    order[j+1] = key
+    i = i + 1
+  }
+  return order
+}
+
+fun main() {
+  var first = true
+  while true {
+    let line = input()
+    if line == nil || line == "" { return }
+    let n = line as int
+    if n == 0 { break }
+    var pairs1: list<list<string>> = []
+    var i = 0
+    while i < n {
+      let p = splitSpaces(input())
+      pairs1 = append(pairs1, p)
+      i = i + 1
+    }
+    var pairs2: list<list<string>> = []
+    i = 0
+    while i < n {
+      let p = splitSpaces(input())
+      pairs2 = append(pairs2, p)
+      i = i + 1
+    }
+    var id1: map<string,int> = {}
+    var words1: list<string> = []
+    i = 0
+    while i < n {
+      let p = pairs1[i]
+      let a = p[0]
+      let b = p[1]
+      if id1[a] == nil { id1[a] = len(words1); words1 = append(words1, a) }
+      if id1[b] == nil { id1[b] = len(words1); words1 = append(words1, b) }
+      i = i + 1
+    }
+    var id2: map<string,int> = {}
+    var words2: list<string> = []
+    i = 0
+    while i < n {
+      let p = pairs2[i]
+      let a = p[0]
+      let b = p[1]
+      if id2[a] == nil { id2[a] = len(words2); words2 = append(words2, a) }
+      if id2[b] == nil { id2[b] = len(words2); words2 = append(words2, b) }
+      i = i + 1
+    }
+    let m = len(words1)
+    var edges1: list<list<int>> = []
+    i = 0
+    while i < m {
+      var row: list<int> = []
+      var j = 0
+      while j < m { row = append(row, 0); j = j + 1 }
+      edges1 = append(edges1, row)
+      i = i + 1
+    }
+    var edges2: list<list<int>> = []
+    i = 0
+    while i < m {
+      var row: list<int> = []
+      var j = 0
+      while j < m { row = append(row, 0); j = j + 1 }
+      edges2 = append(edges2, row)
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      let p = pairs1[i]
+      let a = id1[p[0]] as int
+      let b = id1[p[1]] as int
+      edges1[a][b] = edges1[a][b] + 1
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      let p = pairs2[i]
+      let a = id2[p[0]] as int
+      let b = id2[p[1]] as int
+      edges2[a][b] = edges2[a][b] + 1
+      i = i + 1
+    }
+    var out1: list<int> = []
+    var in1: list<int> = []
+    var out2: list<int> = []
+    var in2: list<int> = []
+    i = 0
+    while i < m { out1 = append(out1, 0); in1 = append(in1, 0); out2 = append(out2, 0); in2 = append(in2, 0); i = i + 1 }
+    i = 0
+    while i < m {
+      var j = 0
+      while j < m {
+        let v1 = edges1[i][j]
+        let v2 = edges2[i][j]
+        if v1 > 0 { out1[i] = out1[i] + v1; in1[j] = in1[j] + v1 }
+        if v2 > 0 { out2[i] = out2[i] + v2; in2[j] = in2[j] + v2 }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    var order: list<int> = []
+    i = 0
+    while i < m { order = append(order, i); i = i + 1 }
+    order = sortOrder(order, out1, in1)
+    var assign: list<int> = []
+    var used: list<int> = []
+    i = 0
+    while i < m { assign = append(assign, 0-1); used = append(used, 0); i = i + 1 }
+    dfs(0, order, assign, used, out1, in1, out2, in2, edges1, edges2, m)
+    var pairsOut: list<list<string>> = []
+    i = 0
+    while i < m {
+      let w1 = words1[i]
+      let w2 = words2[assign[i] as int]
+      pairsOut = append(pairsOut, [w1, w2])
+      i = i + 1
+    }
+    pairsOut = sortPairs(pairsOut)
+    if !first { print("") }
+    first = false
+    i = 0
+    while i < len(pairsOut) {
+      let p = pairsOut[i]
+      print(p[0] + "/" + p[1])
+      i = i + 1
+    }
+  }
+}
+
+main()
