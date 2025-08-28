@@ -295,6 +295,12 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			}
 
 			clean := strings.ReplaceAll(strings.ReplaceAll(sv, ",", ""), "_", "")
+			if len(clean) > 1 {
+				last := clean[len(clean)-1]
+				if last == 'l' || last == 'L' || last == 'f' || last == 'F' {
+					clean = clean[:len(clean)-1]
+				}
+			}
 			orig := clean
 			neg := false
 			if strings.HasPrefix(clean, "+") || strings.HasPrefix(clean, "-") {
