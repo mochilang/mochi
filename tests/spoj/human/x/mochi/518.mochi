@@ -1,0 +1,199 @@
+// Solution for SPOJ ZZPERM - Zig-Zag Permutation
+// https://www.spoj.com/problems/ZZPERM/
+
+let letters = "abcdefghij"
+
+// memoization table for counting permutations
+var memo: map<string,bigint> = {}
+
+fun encodeCounts(cnts: list<int>): string {
+  var s = ""
+  var i = 0
+  while i < len(cnts) {
+    if i > 0 { s = s + "," }
+    s = s + str(cnts[i])
+    i = i + 1
+  }
+  return s
+}
+
+fun key(last: int, dir: int, cnts: list<int>): string {
+  return str(last) + "|" + str(dir) + "|" + encodeCounts(cnts)
+}
+
+// dir: -1 = no expectation yet, 0 = next must be smaller, 1 = next must be greater
+fun countZig(last: int, dir: int, cnts: list<int>, rem: int): bigint {
+  let k = key(last, dir, cnts)
+  if memo[k] != nil { return memo[k] as bigint }
+  var total: bigint = 0 as bigint
+  if rem == 0 {
+    total = 1 as bigint
+  } else if last == 0 - 1 {
+    var i = 0
+    while i < 10 {
+      if cnts[i] > 0 {
+        cnts[i] = cnts[i] - 1
+        total = total + countZig(i, 0 - 1, cnts, rem - 1)
+        cnts[i] = cnts[i] + 1
+      }
+      i = i + 1
+    }
+  } else if dir == 0 - 1 {
+    var i = 0
+    while i < 10 {
+      if cnts[i] > 0 && i != last {
+        cnts[i] = cnts[i] - 1
+        var ndir = 0
+        if i > last { ndir = 0 } else { ndir = 1 }
+        total = total + countZig(i, ndir, cnts, rem - 1)
+        cnts[i] = cnts[i] + 1
+      }
+      i = i + 1
+    }
+  } else if dir == 0 {
+    var i = 0
+    while i < last {
+      if cnts[i] > 0 {
+        cnts[i] = cnts[i] - 1
+        total = total + countZig(i, 1, cnts, rem - 1)
+        cnts[i] = cnts[i] + 1
+      }
+      i = i + 1
+    }
+  } else { // dir == 1
+    var i = last + 1
+    while i < 10 {
+      if cnts[i] > 0 {
+        cnts[i] = cnts[i] - 1
+        total = total + countZig(i, 0, cnts, rem - 1)
+        cnts[i] = cnts[i] + 1
+      }
+      i = i + 1
+    }
+  }
+  memo[k] = total
+  return total
+}
+
+var D: bigint = 0 as bigint
+var R: bigint = 1 as bigint
+
+fun hasMultiple(r: bigint, cnt: bigint): bool {
+  let rem: bigint = r % D
+  var gap: bigint = D - rem
+  if gap == D { gap = 0 as bigint }
+  return gap < cnt
+}
+
+fun gen(prefix: string, last: int, dir: int, cnts: list<int>, rem: int) {
+  if rem == 0 {
+    if R % D == 0 { print(prefix) }
+    R = R + 1
+    return
+  }
+  if last == 0 - 1 {
+    var i = 0
+    while i < 10 {
+      if cnts[i] > 0 {
+        cnts[i] = cnts[i] - 1
+        let cnt: bigint = countZig(i, 0 - 1, cnts, rem - 1)
+        if hasMultiple(R, cnt) {
+          gen(prefix + letters[i:i+1], i, 0 - 1, cnts, rem - 1)
+        } else {
+          R = R + cnt
+        }
+        cnts[i] = cnts[i] + 1
+      }
+      i = i + 1
+    }
+  } else if dir == 0 - 1 {
+    var i = 0
+    while i < 10 {
+      if cnts[i] > 0 && i != last {
+        cnts[i] = cnts[i] - 1
+        var ndir = 0
+        if i > last { ndir = 0 } else { ndir = 1 }
+        let cnt: bigint = countZig(i, ndir, cnts, rem - 1)
+        if hasMultiple(R, cnt) {
+          gen(prefix + letters[i:i+1], i, ndir, cnts, rem - 1)
+        } else {
+          R = R + cnt
+        }
+        cnts[i] = cnts[i] + 1
+      }
+      i = i + 1
+    }
+  } else if dir == 0 {
+    var i = 0
+    while i < last {
+      if cnts[i] > 0 {
+        cnts[i] = cnts[i] - 1
+        let cnt: bigint = countZig(i, 1, cnts, rem - 1)
+        if hasMultiple(R, cnt) {
+          gen(prefix + letters[i:i+1], i, 1, cnts, rem - 1)
+        } else {
+          R = R + cnt
+        }
+        cnts[i] = cnts[i] + 1
+      }
+      i = i + 1
+    }
+  } else { // dir == 1
+    var i = last + 1
+    while i < 10 {
+      if cnts[i] > 0 {
+        cnts[i] = cnts[i] - 1
+        let cnt: bigint = countZig(i, 0, cnts, rem - 1)
+        if hasMultiple(R, cnt) {
+          gen(prefix + letters[i:i+1], i, 0, cnts, rem - 1)
+        } else {
+          R = R + cnt
+        }
+        cnts[i] = cnts[i] + 1
+      }
+      i = i + 1
+    }
+  }
+}
+
+fun parseLine(line: string): map<string, any> {
+  var i = 0
+  while i < len(line) && line[i:i+1] != " " { i = i + 1 }
+  let w = line[0:i]
+  i = i + 1
+  let dStr = line[i:len(line)]
+  return {"w": w, "d": dStr}
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let p = parseLine(line)
+    let w = p["w"] as string
+    let dStr = p["d"] as string
+    D = dStr as bigint
+    var cnts: list<int> = []
+    var j = 0
+    while j < 10 { cnts = append(cnts, 0); j = j + 1 }
+    j = 0
+    while j < len(w) {
+      let ch = w[j:j+1]
+      var idx = 0
+      while idx < 10 {
+        if letters[idx:idx+1] == ch { break }
+        idx = idx + 1
+      }
+      cnts[idx] = cnts[idx] + 1
+      j = j + 1
+    }
+    memo = {}
+    let total: bigint = countZig(0 - 1, 0 - 1, cnts, len(w))
+    R = 1 as bigint
+    gen("", 0 - 1, 0 - 1, cnts, len(w))
+    print(str(total))
+    print("")
+  }
+}
+
+main()
