@@ -1,0 +1,141 @@
+// Solution for SPOJ TAXI - Taxi
+// https://www.spoj.com/problems/TAXI/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var num = 0
+  var inNum = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      num = num*10 + (digits[ch] as int)
+      inNum = true
+    } else {
+      if inNum {
+        res = append(res, num)
+        num = 0
+        inNum = false
+      }
+    }
+    i = i + 1
+  }
+  if inNum { res = append(res, num) }
+  return res
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun abs(x: int): int {
+  if x < 0 { return -x } else { return x }
+}
+
+fun dfs(u: int, seen: list<int>, matchR: list<int>, adj: list<list<int>>): bool {
+  let edges = adj[u] as list<int>
+  var i = 0
+  while i < len(edges) {
+    let v = edges[i] as int
+    if seen[v] == 0 {
+      seen[v] = 1
+      let m = matchR[v]
+      if m == 0-1 || dfs(m, seen, matchR, adj) {
+        matchR[v] = u
+        return true
+      }
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun main() {
+  let first = readNonEmpty()
+  if first == "" { return }
+  let t = (parseInts(first))[0] as int
+  var case = 0
+  while case < t {
+    let line = readNonEmpty()
+    let vals = parseInts(line)
+    let p = vals[0] as int
+    let cabs = vals[1] as int
+    let s = vals[2] as int
+    let c = vals[3] as int
+    var persons: list<list<int>> = []
+    var i = 0
+    while i < p {
+      let l = readNonEmpty()
+      let nums = parseInts(l)
+      var pair: list<int> = []
+      pair = append(pair, nums[0] as int)
+      pair = append(pair, nums[1] as int)
+      persons = append(persons, pair)
+      i = i + 1
+    }
+    var taxis: list<list<int>> = []
+    var j = 0
+    while j < cabs {
+      let l = readNonEmpty()
+      let nums = parseInts(l)
+      var pair: list<int> = []
+      pair = append(pair, nums[0] as int)
+      pair = append(pair, nums[1] as int)
+      taxis = append(taxis, pair)
+      j = j + 1
+    }
+    let limit = s * c
+    var adj: list<list<int>> = []
+    j = 0
+    while j < cabs {
+      var row: list<int> = []
+      var k = 0
+      while k < p {
+        let tx = taxis[j][0] as int
+        let ty = taxis[j][1] as int
+        let px = persons[k][0] as int
+        let py = persons[k][1] as int
+        let dist = (abs(tx - px) + abs(ty - py)) * 200
+        if dist <= limit {
+          row = append(row, k)
+        }
+        k = k + 1
+      }
+      adj = append(adj, row)
+      j = j + 1
+    }
+    var matchR: list<int> = []
+    i = 0
+    while i < p {
+      matchR = append(matchR, 0-1)
+      i = i + 1
+    }
+    var result = 0
+    j = 0
+    while j < cabs {
+      var seen: list<int> = []
+      i = 0
+      while i < p {
+        seen = append(seen, 0)
+        i = i + 1
+      }
+      if dfs(j, seen, matchR, adj) {
+        result = result + 1
+      }
+      j = j + 1
+    }
+    print(str(result))
+    case = case + 1
+  }
+}
+
+main()
