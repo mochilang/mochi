@@ -1,0 +1,130 @@
+// Solution for SPOJ KPSUM - The Sum
+// https://www.spoj.com/problems/KPSUM/
+
+let pattern_units = [0,0,-1,1,-2,2,-3,3,-4,4,-5]
+
+fun pow10(p: int): int {
+  var r = 1
+  for _ in 0..p {
+    r = r * 10
+  }
+  return r
+}
+
+fun prefixF(d: int): int {
+  if d <= 0 { return 0 }
+  var abs = 0
+  var i = 1
+  var val = 0
+  while i <= d {
+    if i == 1 {
+      abs = 5
+    } else if i % 2 == 0 {
+      abs = abs * 10 - 10
+    } else {
+      abs = abs * 10 + 10
+    }
+    if i % 2 == 1 {
+      val = abs
+    } else {
+      val = -abs
+    }
+    i = i + 1
+  }
+  return val
+}
+
+fun prefixWeighted(n: int, p: int): int {
+  if n <= 0 { return 0 }
+  if p == 0 {
+    let base = (n / 10) * (-5)
+    let rem = n % 10
+    return base + pattern_units[rem]
+  }
+  let cycle = pow10(p + 1)
+  let r = n % cycle
+  let block = pow10(p)
+  let d = r / block
+  let rem = r % block
+  if rem % 2 == 1 { return d } else { return 0 }
+}
+
+fun sumUnweighted(n: int, p: int): int {
+  if n < 0 { return 0 }
+  let block = pow10(p)
+  let cycle = block * 10
+  let quot = n / cycle
+  var res = quot * 45 * block
+  let rem = n % cycle
+  let high = rem / block
+  res = res + high * (high - 1) / 2 * block
+  res = res + high * (rem % block + 1)
+  return res
+}
+
+fun contributionEven(start: int, end: int, d: int): int {
+  var total = 0
+  var j = 0
+  while j < d {
+    let p = d - 1 - j
+    let sj = sumUnweighted(end, p) - sumUnweighted(start - 1, p)
+    if j % 2 == 0 {
+      total = total + sj
+    } else {
+      total = total - sj
+    }
+    j = j + 1
+  }
+  return total
+}
+
+fun contributionOdd(start: int, end: int, d: int): int {
+  let count = end - start + 1
+  var total = 0
+  var j = 0
+  while j < d {
+    let p = d - 1 - j
+    let sj = prefixWeighted(start + count, p) - prefixWeighted(start, p)
+    if j % 2 == 0 {
+      total = total + sj
+    } else {
+      total = total - sj
+    }
+    j = j + 1
+  }
+  return total
+}
+
+fun numDigits(n: int): int {
+  var x = n
+  var d = 0
+  while x > 0 {
+    x = x / 10
+    d = d + 1
+  }
+  if d == 0 { return 1 } else { return d }
+}
+
+fun compute(n: int): int {
+  let d = numDigits(n)
+  var res = prefixF(d - 1)
+  let start = pow10(d - 1)
+  if d % 2 == 0 {
+    res = res - contributionEven(start, n, d)
+  } else {
+    res = res - contributionOdd(start, n, d)
+  }
+  return res
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let n = line as int
+    if n == 0 { break }
+    print(compute(n))
+  }
+}
+
+main()
