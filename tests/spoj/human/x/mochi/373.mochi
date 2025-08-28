@@ -1,0 +1,417 @@
+// Solution for SPOJ GREED - Greedy island
+// https://www.spoj.com/problems/GREED/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var sign = 1
+  if len(str) > 0 && str[0:1] == "-" {
+    sign = -1
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return sign * n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let pcs = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(pcs) {
+    nums = append(nums, parseIntStr(pcs[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun bfs(start: int, adj: list<list<int>>, n: int): list<int> {
+  var dist: list<int> = []
+  var i = 0
+  while i < n {
+    dist = append(dist, 0-1)
+    i = i + 1
+  }
+  var q: list<int> = []
+  var head = 0
+  q = append(q, start)
+  dist[start] = 0
+  while head < len(q) {
+    let u = q[head] as int
+    head = head + 1
+    let row = adj[u] as list<int>
+    var j = 0
+    while j < len(row) {
+      let v = row[j] as int
+      if dist[v] == 0-1 {
+        dist[v] = dist[u] + 1
+        q = append(q, v)
+      }
+      j = j + 1
+    }
+  }
+  return dist
+}
+
+var matchP: list<int> = []
+
+fun hungarian(weights: list<list<int>>, m: int, n: int): int {
+  var maxw = 0
+  var i = 0
+  while i < m {
+    var j = 0
+    while j < n {
+      let w = weights[i][j]
+      if w > maxw { maxw = w }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var N = m
+  if n > N { N = n }
+  var a: list<list<int>> = []
+  i = 0
+  while i <= N {
+    var row: list<int> = []
+    var j = 0
+    while j <= N {
+      row = append(row, 0)
+      j = j + 1
+    }
+    a = append(a, row)
+    i = i + 1
+  }
+  i = 1
+  while i <= N {
+    var j = 1
+    while j <= N {
+      var w = 0
+      if i <= m && j <= n { w = weights[i-1][j-1] }
+      a[i][j] = maxw - w
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var u: list<int> = []
+  var v: list<int> = []
+  var p: list<int> = []
+  var way: list<int> = []
+  i = 0
+  while i <= N {
+    u = append(u, 0)
+    v = append(v, 0)
+    p = append(p, 0)
+    way = append(way, 0)
+    i = i + 1
+  }
+  let INF = 1000000000
+  i = 1
+  while i <= N {
+    p[0] = i
+    var j0 = 0
+    var minv: list<int> = []
+    var used: list<int> = []
+    var j = 0
+    while j <= N {
+      minv = append(minv, INF)
+      used = append(used, 0)
+      j = j + 1
+    }
+    used[0] = 1
+    while true {
+      used[j0] = 1
+      let i0 = p[j0]
+      var delta = INF
+      var j1 = 0
+      j = 1
+      while j <= N {
+        if used[j] == 0 {
+          let cur = a[i0][j] - u[i0] - v[j]
+          if cur < minv[j] {
+            minv[j] = cur
+            way[j] = j0
+          }
+          if minv[j] < delta {
+            delta = minv[j]
+            j1 = j
+          }
+        }
+        j = j + 1
+      }
+      j = 0
+      while j <= N {
+        if used[j] == 1 {
+          u[p[j]] = u[p[j]] + delta
+          v[j] = v[j] - delta
+        } else {
+          minv[j] = minv[j] - delta
+        }
+        j = j + 1
+      }
+      j0 = j1
+      if p[j0] == 0 { break }
+    }
+    while true {
+      let j1 = way[j0]
+      p[j0] = p[j1]
+      j0 = j1
+      if j0 == 0 { break }
+    }
+    i = i + 1
+  }
+  matchP = p
+  var res = 0
+  var j = 1
+  while j <= n {
+    let iidx = p[j]
+    if iidx >= 1 && iidx <= m {
+      res = res + weights[iidx - 1][j - 1]
+    }
+    j = j + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = readNonEmpty()
+  let T = parseIntStr(tLine)
+  var case = 0
+  while case < T {
+    let nLine = readNonEmpty()
+    let N = parseIntStr(nLine)
+
+    var cards: list<int> = []
+    var counts: map<int,int> = {}
+    var nodesSet: map<int,int> = {}
+    var nodesList: list<int> = []
+
+    var i = 1
+    while i <= N {
+      if !(i in nodesSet) { nodesSet[i] = 1; nodesList = append(nodesList, i) }
+      i = i + 1
+    }
+
+    i = 0
+    while i < N {
+      let line = readNonEmpty()
+      let v = parseIntStr(line)
+      cards = append(cards, v)
+      var ct = 0
+      if v in counts { ct = counts[v] as int }
+      counts[v] = ct + 1
+      if !(v in nodesSet) { nodesSet[v] = 1; nodesList = append(nodesList, v) }
+      i = i + 1
+    }
+
+    let eLine = readNonEmpty()
+    let e = parseIntStr(eLine)
+    var edges: list<list<int>> = []
+    i = 0
+    while i < e {
+      let line = readNonEmpty()
+      let pair = parseInts(line)
+      let x = pair[0]
+      let y = pair[1]
+      edges = append(edges, pair)
+      if !(x in nodesSet) { nodesSet[x] = 1; nodesList = append(nodesList, x) }
+      if !(y in nodesSet) { nodesSet[y] = 1; nodesList = append(nodesList, y) }
+      i = i + 1
+    }
+
+    var nodeIds: map<int,int> = {}
+    i = 0
+    while i < len(nodesList) {
+      nodeIds[nodesList[i]] = i
+      i = i + 1
+    }
+    var adj: list<list<int>> = []
+    i = 0
+    while i < len(nodesList) {
+      adj = append(adj, [])
+      i = i + 1
+    }
+    i = 0
+    while i < len(edges) {
+      let x = edges[i][0]
+      let y = edges[i][1]
+      let ix = nodeIds[x] as int
+      let iy = nodeIds[y] as int
+      var row = adj[ix] as list<int>
+      row = append(row, iy)
+      adj[ix] = row
+      row = adj[iy] as list<int>
+      row = append(row, ix)
+      adj[iy] = row
+      i = i + 1
+    }
+
+    var missing: list<int> = []
+    i = 1
+    while i <= N {
+      var ct = 0
+      if i in counts { ct = counts[i] as int }
+      if ct > 0 {
+        counts[i] = ct - 1
+      } else {
+        missing = append(missing, i)
+      }
+      i = i + 1
+    }
+    var surplus: list<int> = []
+    i = 0
+    while i < len(cards) {
+      let v = cards[i]
+      var ct = 0
+      if v in counts { ct = counts[v] as int }
+      if ct > 0 {
+        surplus = append(surplus, v)
+        counts[v] = ct - 1
+      }
+      i = i + 1
+    }
+    let m = len(missing)
+    if m == 0 {
+      print(0)
+      case = case + 1
+      continue
+    }
+
+    var uniqueSurplus: map<int,int> = {}
+    var uniqueList: list<int> = []
+    i = 0
+    while i < len(surplus) {
+      let v = surplus[i]
+      if !(v in uniqueSurplus) {
+        uniqueSurplus[v] = len(uniqueList)
+        uniqueList = append(uniqueList, v)
+      }
+      i = i + 1
+    }
+    var dists: map<int, list<int>> = {}
+    i = 0
+    let totalNodes = len(nodesList)
+    while i < len(uniqueList) {
+      let v = uniqueList[i]
+      let idxStart = nodeIds[v] as int
+      let dist = bfs(idxStart, adj, totalNodes)
+      dists[v] = dist
+      i = i + 1
+    }
+
+    let INF = 100000000
+    var costMatrix: list<list<int>> = []
+    var maxCost = 0
+    i = 0
+    while i < len(surplus) {
+      var row: list<int> = []
+      var j = 0
+      let v = surplus[i]
+      let dist = dists[v] as list<int>
+      while j < len(missing) {
+        let tval = missing[j]
+        let idxT = nodeIds[tval] as int
+        var c = dist[idxT] as int
+        if c == 0-1 { c = INF }
+        if c < INF && c > maxCost { maxCost = c }
+        row = append(row, c)
+        j = j + 1
+      }
+      costMatrix = append(costMatrix, row)
+      i = i + 1
+    }
+
+    var possible = true
+    i = 0
+    while i < m {
+      var j = 0
+      var ok = false
+      while j < m {
+        if costMatrix[i][j] < INF { ok = true; break }
+        j = j + 1
+      }
+      if !ok { possible = false; break }
+      i = i + 1
+    }
+    if possible {
+      var j = 0
+      while j < m {
+        var i2 = 0
+        var ok2 = false
+        while i2 < m {
+          if costMatrix[i2][j] < INF { ok2 = true; break }
+          i2 = i2 + 1
+        }
+        if !ok2 { possible = false; break }
+        j = j + 1
+      }
+    }
+    if !possible {
+      print(-1)
+      case = case + 1
+      continue
+    }
+
+    var bigCost = maxCost + 1
+    if bigCost > INF { bigCost = INF }
+    var weights: list<list<int>> = []
+    i = 0
+    while i < m {
+      var row: list<int> = []
+      var j = 0
+      while j < m {
+        let c = costMatrix[i][j]
+        if c >= INF { row = append(row, 0) } else { row = append(row, bigCost - c) }
+        j = j + 1
+      }
+      weights = append(weights, row)
+      i = i + 1
+    }
+
+    matchP = []
+    hungarian(weights, m, m)
+    var totalCost = 0
+    var j = 1
+    while j <= m {
+      let irow = matchP[j] as int
+      var c = costMatrix[irow - 1][j - 1]
+      totalCost = totalCost + c
+      j = j + 1
+    }
+    if totalCost >= INF { print(-1) } else { print(totalCost) }
+    case = case + 1
+  }
+}
+
+main()
