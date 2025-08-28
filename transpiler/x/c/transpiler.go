@@ -2907,11 +2907,22 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			typ = "int"
 		}
 		writeIndent(w, indent+1)
-		if strings.HasSuffix(typ, "[]") {
-			base := strings.TrimSuffix(typ, "[]")
-			fmt.Fprintf(w, "%s *%s = %s[__i];\n", base, f.Var, f.ListVar)
+		if strings.Contains(typ, "[]") {
+			base := typ
+			dims := 0
+			for strings.HasSuffix(base, "[]") {
+				base = strings.TrimSuffix(base, "[]")
+				dims++
+			}
+			fmt.Fprintf(w, "%s %s%s = %s[__i];\n", base, strings.Repeat("*", dims), f.Var, f.ListVar)
 			writeIndent(w, indent+1)
 			fmt.Fprintf(w, "size_t %s_len = %s_lens[__i];\n", f.Var, f.ListVar)
+			for j := 1; j < dims; j++ {
+				writeIndent(w, indent+1)
+				fmt.Fprintf(w, "size_t %s%s = %s%s[__i];\n",
+					strings.Repeat("*", j), f.Var+strings.Repeat("_lens", j),
+					f.ListVar, strings.Repeat("_lens", j+1))
+			}
 		} else {
 			fmt.Fprintf(w, "%s %s = %s[__i];\n", typ, f.Var, f.ListVar)
 		}
