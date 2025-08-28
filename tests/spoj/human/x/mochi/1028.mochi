@@ -1,0 +1,40 @@
+// Solution for SPOJ HUBULLU - Hubulullu
+// https://www.spoj.com/problems/HUBULLU/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var i = 0
+  while i < t {
+    let line = input()
+    let parts = split(line, " ")
+    let start = int(parts[1])
+    if start == 0 {
+      print("Airborne wins.")
+    } else {
+      print("Pagfloyd wins.")
+    }
+    i = i + 1
+  }
+}
+
+main()
