@@ -1,0 +1,135 @@
+// Solution for SPOJ CFRAC - Continuous Fractions
+// https://www.spoj.com/problems/CFRAC/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun intToString(n: int): string {
+  if n == 0 { return "0" }
+  let digits = ["0","1","2","3","4","5","6","7","8","9"]
+  var s = ""
+  var m = n
+  while m > 0 {
+    let d = m % 10
+    s = digits[d] + s
+    m = m / 10
+  }
+  return s
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun repeatChar(ch: string, n: int): string {
+  var r = ""
+  var i = 0
+  while i < n {
+    r = r + ch
+    i = i + 1
+  }
+  return r
+}
+
+fun centerOne(width: int): string {
+  var left = (width - 1) / 2
+  var right = width - left - 1
+  return repeatChar(".", left) + "1" + repeatChar(".", right)
+}
+
+fun buildLines(seq: list<int>): list<string> {
+  var lines: list<string> = ["1"]
+  var width = 1
+  var idx = len(seq) - 2
+  while idx >= 0 {
+    let a = seq[idx]
+    let bar = repeatChar("-", width)
+    let lineA = intToString(a) + ".+." + bar
+    let newWidth = len(lineA)
+    let pad = newWidth - width
+    let top = repeatChar(".", pad) + centerOne(width)
+    var newLines: list<string> = []
+    newLines = append(newLines, top)
+    newLines = append(newLines, lineA)
+    var j = 0
+    while j < len(lines) {
+      let padded = repeatChar(".", pad) + lines[j]
+      newLines = append(newLines, padded)
+      j = j + 1
+    }
+    lines = newLines
+    width = newWidth
+    idx = idx - 1
+  }
+  return lines
+}
+
+fun continuedFraction(p: int, q: int): list<int> {
+  var seq: list<int> = []
+  var a = p
+  var b = q
+  while b > 0 {
+    seq = append(seq, a / b)
+    let r = a % b
+    a = b
+    b = r
+  }
+  let lastIdx = len(seq) - 1
+  if seq[lastIdx] != 1 {
+    seq[lastIdx] = seq[lastIdx] - 1
+    seq = append(seq, 1)
+  }
+  return seq
+}
+
+fun main() {
+  var caseIdx = 1
+  while true {
+    let line = input()
+    if line == "" { break }
+    let parts = split(line)
+    if len(parts) < 2 { continue }
+    let p = parseIntStr(parts[0])
+    let q = parseIntStr(parts[1])
+    if p == 0 && q == 0 { break }
+    let seq = continuedFraction(p, q)
+    let lines = buildLines(seq)
+    print("Case " + intToString(caseIdx) + ":")
+    print(intToString(p) + " / " + intToString(q))
+    var i = 0
+    while i < len(lines) {
+      print(lines[i])
+      i = i + 1
+    }
+    caseIdx = caseIdx + 1
+  }
+}
+
+main()
