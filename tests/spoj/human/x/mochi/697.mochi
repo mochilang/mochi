@@ -1,0 +1,208 @@
+// Solution for SPOJ MWORDS - Matrix Words
+// https://www.spoj.com/problems/MWORDS/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun zeroList(n: int): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < n {
+    arr = append(arr, 0)
+    i = i + 1
+  }
+  return arr
+}
+
+let letterIdx = {
+  "A":0,"B":1,"C":2,"D":3,"E":4,"F":5,"G":6,"H":7,"I":8,"J":9,"K":10,"L":11,"M":12,
+  "N":13,"O":14,"P":15,"Q":16,"R":17,"S":18,"T":19,"U":20,"V":21,"W":22,"X":23,"Y":24,"Z":25,
+}
+let letters = [
+  "A","B","C","D","E","F","G","H","I","J","K","L","M",
+  "N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+]
+
+type State {
+  side: int,
+  r: int,
+  c: int,
+}
+
+fun solve(matrix: list<string>, N: int, I: int): string {
+  if N == 1 {
+    return matrix[0][0:1]
+  }
+  var upper: list<list<int>> = []
+  var lower: list<list<int>> = []
+  var i = 0
+  while i < N {
+    var row1: list<int> = []
+    var row2: list<int> = []
+    var j = 0
+    while j < N {
+      row1 = append(row1, 0)
+      row2 = append(row2, 0)
+      j = j + 1
+    }
+    upper = append(upper, row1)
+    lower = append(lower, row2)
+    i = i + 1
+  }
+  var r = N - 1
+  while r >= 0 {
+    var c = N - 1
+    while c >= 0 {
+      if r <= c {
+        if r == N - 1 && c == N - 1 {
+          upper[r][c] = 1
+        } else {
+          var val = 0
+          if c + 1 < N {
+            val = val + upper[r][c + 1]
+          }
+          if r + 1 < N && r + 1 <= c {
+            val = val + upper[r + 1][c]
+          }
+          upper[r][c] = val
+        }
+      }
+      if r >= c {
+        if r == N - 1 && c == N - 1 {
+          lower[r][c] = 1
+        } else {
+          var val2 = 0
+          if r + 1 < N {
+            val2 = val2 + lower[r + 1][c]
+          }
+          if c + 1 < N && c + 1 <= r {
+            val2 = val2 + lower[r][c + 1]
+          }
+          lower[r][c] = val2
+        }
+      }
+      c = c - 1
+    }
+    r = r - 1
+  }
+  var states: list<State> = []
+  states = append(states, State { side: 0, r: 0, c: 1 })
+  states = append(states, State { side: 1, r: 1, c: 0 })
+  var res = matrix[0][0:1]
+  var total = upper[0][1] + lower[1][0]
+  var k = I % total
+  var steps = 2 * N - 2
+  var step = 0
+  while step < steps {
+    var counts = zeroList(26)
+    var idx = 0
+    while idx < len(states) {
+      let st = states[idx]
+      let row = matrix[st.r]
+      let letter = row[st.c:st.c+1]
+      let cnt = if st.side == 0 { upper[st.r][st.c] } else { lower[st.r][st.c] }
+      let id = letterIdx[letter] as int
+      counts[id] = counts[id] + cnt
+      idx = idx + 1
+    }
+    var i = 0
+    var chosen = 0
+    while i < 26 {
+      let cnt = counts[i]
+      if k < cnt {
+        chosen = i
+        break
+      } else {
+        k = k - cnt
+      }
+      i = i + 1
+    }
+    res = res + letters[chosen]
+    var newStates: list<State> = []
+    idx = 0
+    while idx < len(states) {
+      let st = states[idx]
+      let row = matrix[st.r]
+      let letter = row[st.c:st.c+1]
+      if letter == letters[chosen] {
+        if st.side == 0 {
+          if st.c + 1 < N && st.r <= st.c + 1 {
+            newStates = append(newStates, State { side: 0, r: st.r, c: st.c + 1 })
+          }
+          if st.r + 1 < N && st.r + 1 <= st.c {
+            newStates = append(newStates, State { side: 0, r: st.r + 1, c: st.c })
+          }
+        } else {
+          if st.r + 1 < N && st.r + 1 >= st.c {
+            newStates = append(newStates, State { side: 1, r: st.r + 1, c: st.c })
+          }
+          if st.c + 1 < N && st.c + 1 <= st.r {
+            newStates = append(newStates, State { side: 1, r: st.r, c: st.c + 1 })
+          }
+        }
+      }
+      idx = idx + 1
+    }
+    states = newStates
+    step = step + 1
+  }
+  return res
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == nil || tStr == "" { return }
+  let t = parseIntStr(tStr)
+  for _ in 0..t {
+    let line = input()
+    let parts = split(line, " ")
+    let N = parseIntStr(parts[0])
+    let I = parseIntStr(parts[1])
+    var matrix: list<string> = []
+    var i = 0
+    while i < N {
+      let row = input()
+      matrix = append(matrix, row)
+      i = i + 1
+    }
+    print(solve(matrix, N, I))
+  }
+}
+
+main()
