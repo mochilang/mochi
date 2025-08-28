@@ -1,0 +1,122 @@
+// Solution for SPOJ PT07X - Vertex Cover
+// https://www.spoj.com/problems/PT07X/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun makeIntList(n: int, v: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, v)
+    i = i + 1
+  }
+  return lst
+}
+
+fun makeIntLists(n: int): list<list<int>> {
+  var lst: list<list<int>> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, [])
+    i = i + 1
+  }
+  return lst
+}
+
+fun main() {
+  let line = input()
+  if line == "" { return }
+  let n = parseIntStr(line)
+  var adj = makeIntLists(n)
+  var i = 0
+  while i < n - 1 {
+    let parts = splitSpaces(input())
+    let u = parseIntStr(parts[0]) - 1
+    let v = parseIntStr(parts[1]) - 1
+    adj[u] = append(adj[u], v)
+    adj[v] = append(adj[v], u)
+    i = i + 1
+  }
+
+  var parent = makeIntList(n, -1)
+  var order: list<int> = []
+  var stack: list<int> = [0]
+  parent[0] = 0
+  while len(stack) > 0 {
+    let v = stack[len(stack)-1]
+    stack = stack[0:len(stack)-1]
+    order = append(order, v)
+    var j = 0
+    while j < len(adj[v]) {
+      let u = adj[v][j]
+      if u != parent[v] {
+        parent[u] = v
+        stack = append(stack, u)
+      }
+      j = j + 1
+    }
+  }
+
+  var dp0 = makeIntList(n, 0)
+  var dp1 = makeIntList(n, 0)
+  var idx = len(order) - 1
+  while idx >= 0 {
+    let v = order[idx]
+    dp1[v] = 1
+    dp0[v] = 0
+    var k = 0
+    while k < len(adj[v]) {
+      let u = adj[v][k]
+      if u != parent[v] {
+        if dp0[u] < dp1[u] {
+          dp1[v] = dp1[v] + dp0[u]
+        } else {
+          dp1[v] = dp1[v] + dp1[u]
+        }
+        dp0[v] = dp0[v] + dp1[u]
+      }
+      k = k + 1
+    }
+    idx = idx - 1
+  }
+  if dp0[0] < dp1[0] {
+    print(str(dp0[0]))
+  } else {
+    print(str(dp1[0]))
+  }
+}
+
+main()
