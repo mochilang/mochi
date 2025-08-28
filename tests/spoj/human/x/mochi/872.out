@@ -1,0 +1,9 @@
+MARKUP sample
+
+For bold statements use the \b command.
+
+If you wish to emphasize something use the \i command.
+
+For titles use BIG font sizes, 14 points usually works well.
+
+Remember that all of the commands toggle except for the \s command.
