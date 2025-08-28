@@ -1,0 +1,83 @@
+// Solution for SPOJ AMBIGUOUS - Ambiguous Permutations
+// https://www.spoj.com/problems/AMBIGUOUS/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let n = parseIntStr(line)
+    if n == 0 { break }
+    let permLine = input()
+    let parts = split(permLine, " ")
+    var perm: list<int> = []
+    var i = 0
+    while i < n {
+      perm = append(perm, parseIntStr(parts[i]))
+      i = i + 1
+    }
+    var inv: list<int> = []
+    for _ in 0..n {
+      inv = append(inv, 0)
+    }
+    i = 0
+    while i < n {
+      inv[perm[i]-1] = i + 1
+      i = i + 1
+    }
+    var ambiguous = true
+    i = 0
+    while i < n {
+      if perm[i] != inv[i] {
+        ambiguous = false
+        break
+      }
+      i = i + 1
+    }
+    if ambiguous {
+      print("ambiguous")
+    } else {
+      print("not ambiguous")
+    }
+  }
+}
+
+main()
