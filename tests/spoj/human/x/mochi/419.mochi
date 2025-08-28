@@ -1,0 +1,123 @@
+// Solution for SPOJ TRANSP - Transposing is Fun
+// https://www.spoj.com/problems/TRANSP/
+
+let MOD = 1000003
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = 0 - n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun phi(n: int): int {
+  var res = n
+  var m = n
+  var p = 2
+  while p * p <= m {
+    if m % p == 0 {
+      while m % p == 0 {
+        m = m / p
+      }
+      res = res - res / p
+    }
+    p = p + 1
+  }
+  if m > 1 { res = res - res / m }
+  return res
+}
+
+fun powmod(base: int, exp: int): int {
+  var b = base % MOD
+  var e = exp
+  var r = 1
+  while e > 0 {
+    if e % 2 == 1 { r = (r * b) % MOD }
+    b = (b * b) % MOD
+    e = e / 2
+  }
+  return r
+}
+
+fun main() {
+  let first = input()
+  if first == nil || first == "" { return }
+  let t = parseIntStr(first)
+  var case = 0
+  while case < t {
+    let line = input()
+    let parts = splitSpaces(line)
+    let a = parseIntStr(parts[0])
+    let b = parseIntStr(parts[1])
+    let g = gcd(a, b)
+    let q = (a + b) / g
+    var divs: list<int> = []
+    var d = 1
+    while d * d <= q {
+      if q % d == 0 {
+        divs = append(divs, d)
+        if d * d != q { divs = append(divs, q / d) }
+      }
+      d = d + 1
+    }
+    var S = 0
+    var i = 0
+    while i < len(divs) {
+      let e = divs[i]
+      let exponent = g * (q / e)
+      S = (S + phi(e) * powmod(2, exponent)) % MOD
+      i = i + 1
+    }
+    let qinv = powmod(q % MOD, MOD - 2)
+    let cycles = (S * qinv) % MOD
+    let total = powmod(2, a + b)
+    let swaps = (total - cycles) % MOD
+    if swaps < 0 { swaps = swaps + MOD }
+    print(str(swaps))
+    case = case + 1
+  }
+}
+
+main()
