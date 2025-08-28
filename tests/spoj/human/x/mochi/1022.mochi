@@ -1,0 +1,156 @@
+// Solution for SPOJ ANGELS - Angels and Devils
+// https://www.spoj.com/problems/ANGELS/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == sep {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" { line = input() }
+  return line
+}
+
+fun dfs(u: int, seen: list<int>, matchR: list<int>, adj: list<list<int>>): bool {
+  let edges = adj[u] as list<int>
+  var i = 0
+  while i < len(edges) {
+    let v = edges[i] as int
+    if seen[v] == 0 {
+      seen[v] = 1
+      let m = matchR[v]
+      if m == 0-1 || dfs(m, seen, matchR, adj) {
+        matchR[v] = u
+        return true
+      }
+    }
+    i = i + 1
+  }
+  return false
+}
+
+let t = int(readNonEmpty())
+var case = 0
+while case < t {
+  let dims = split(readNonEmpty(), " ")
+  let X = int(dims[0])
+  let Y = int(dims[1])
+  var grid: list<list<string>> = []
+  var i = 0
+  while i < X {
+    grid = append(grid, split(readNonEmpty(), " "))
+    i = i + 1
+  }
+  var rowIds: list<list<int>> = []
+  var rowSeg = 0
+  i = 0
+  while i < X {
+    var row: list<int> = []
+    var j = 0
+    var cur = 0-1
+    while j < Y {
+      if grid[i][j] == "A" {
+        cur = 0-1
+        row = append(row, 0-1)
+      } else {
+        if j == 0 || grid[i][j-1] == "A" {
+          cur = rowSeg
+          rowSeg = rowSeg + 1
+        }
+        row = append(row, cur)
+      }
+      j = j + 1
+    }
+    rowIds = append(rowIds, row)
+    i = i + 1
+  }
+  var colIds: list<list<int>> = []
+  i = 0
+  while i < X {
+    var temp: list<int> = []
+    var j = 0
+    while j < Y {
+      temp = append(temp, 0-1)
+      j = j + 1
+    }
+    colIds = append(colIds, temp)
+    i = i + 1
+  }
+  var colSeg = 0
+  var j = 0
+  while j < Y {
+    var i = 0
+    var cur = 0-1
+    while i < X {
+      if grid[i][j] == "A" {
+        cur = 0-1
+        colIds[i][j] = 0-1
+      } else {
+        if i == 0 || grid[i-1][j] == "A" {
+          cur = colSeg
+          colSeg = colSeg + 1
+        }
+        colIds[i][j] = cur
+      }
+      i = i + 1
+    }
+    j = j + 1
+  }
+  var adj: list<list<int>> = []
+  var r = 0
+  while r < rowSeg {
+    adj = append(adj, [] as list<int>)
+    r = r + 1
+  }
+  i = 0
+  while i < X {
+    j = 0
+    while j < Y {
+      if grid[i][j] == "H" {
+        let rId = rowIds[i][j]
+        let cId = colIds[i][j]
+        adj[rId] = append(adj[rId] as list<int>, cId)
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var matchR: list<int> = []
+  var c = 0
+  while c < colSeg {
+    matchR = append(matchR, 0-1)
+    c = c + 1
+  }
+  var result = 0
+  r = 0
+  while r < rowSeg {
+    var seen: list<int> = []
+    c = 0
+    while c < colSeg {
+      seen = append(seen, 0)
+      c = c + 1
+    }
+    if dfs(r, seen, matchR, adj) {
+      result = result + 1
+    }
+    r = r + 1
+  }
+  print(str(result))
+  case = case + 1
+}
