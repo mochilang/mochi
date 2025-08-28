@@ -1,0 +1,113 @@
+// Solution for SPOJ IMAGE - Image Perimeters
+// https://www.spoj.com/problems/IMAGE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parts[i] as int)
+    i = i + 1
+  }
+  return nums
+}
+
+fun make2d(r: int, c: int, v: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < r {
+    var row: list<int> = []
+    var j = 0
+    while j < c {
+      row = append(row, v)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun bfsPerimeter(grid: list<string>, sr: int, sc: int, R: int, C: int): int {
+  let dr4 = [-1,1,0,0]
+  let dc4 = [0,0,-1,1]
+  let dr8 = [-1,-1,-1,0,0,1,1,1]
+  let dc8 = [-1,0,1,-1,1,-1,0,1]
+  var visited = make2d(R, C, 0)
+  var qr: list<int> = [sr]
+  var qc: list<int> = [sc]
+  visited[sr][sc] = 1
+  var front = 0
+  var perim = 0
+  while front < len(qr) {
+    let r = qr[front]
+    let c = qc[front]
+    front = front + 1
+    var k = 0
+    while k < 4 {
+      let nr = r + dr4[k]
+      let nc = c + dc4[k]
+      if nr < 0 || nr >= R || nc < 0 || nc >= C {
+        perim = perim + 1
+      } else if grid[nr][nc:nc+1] != "X" {
+        perim = perim + 1
+      }
+      k = k + 1
+    }
+    k = 0
+    while k < 8 {
+      let nr = r + dr8[k]
+      let nc = c + dc8[k]
+      if nr >= 0 && nr < R && nc >= 0 && nc < C {
+        if grid[nr][nc:nc+1] == "X" && visited[nr][nc] == 0 {
+          visited[nr][nc] = 1
+          qr = append(qr, nr)
+          qc = append(qc, nc)
+        }
+      }
+      k = k + 1
+    }
+  }
+  return perim
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil || line == "" { return }
+    let vals = parseInts(line)
+    if len(vals) < 4 { return }
+    let R = vals[0]
+    let C = vals[1]
+    let sr = vals[2]
+    let sc = vals[3]
+    if R == 0 && C == 0 && sr == 0 && sc == 0 { return }
+    var grid: list<string> = []
+    var i = 0
+    while i < R {
+      grid = append(grid, input())
+      i = i + 1
+    }
+    let p = bfsPerimeter(grid, sr - 1, sc - 1, R, C)
+    print(str(p))
+  }
+}
+
+main()
