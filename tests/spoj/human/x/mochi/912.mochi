@@ -1,0 +1,219 @@
+// Solution for SPOJ MATRIX2 - Submatrix of submatrix
+// https://www.spoj.com/problems/MATRIX2/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var num = 0
+  var inNum = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      num = num * 10 + (digits[ch] as int)
+      inNum = true
+    } else {
+      if inNum {
+        res = append(res, num)
+        num = 0
+        inNum = false
+      }
+    }
+    i = i + 1
+  }
+  if inNum { res = append(res, num) }
+  return res
+}
+
+fun rectSum(ps: list<list<int>>, r1: int, c1: int, r2: int, c2: int): int {
+  return ps[r2+1][c2+1] - ps[r1][c2+1] - ps[r2+1][c1] + ps[r1][c1]
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseInts(tLine)[0]
+  var case = 0
+  while case < t {
+    var line = input()
+    while len(line) == 0 { line = input() }
+    let nums = parseInts(line)
+    let N = nums[0] as int
+    let M = nums[1] as int
+    let A = nums[2] as int
+    let B = nums[3] as int
+    let C = nums[4] as int
+    let D = nums[5] as int
+
+    var first: list<int> = []
+    var i = 0
+    while i < N {
+      line = input()
+      while len(line) == 0 { line = input() }
+      first = append(first, parseInts(line)[0])
+      i = i + 1
+    }
+
+    var mat: list<list<int>> = []
+    i = 0
+    while i < N {
+      var row: list<int> = []
+      var val = first[i] as int
+      var j = 0
+      while j < M {
+        if j > 0 {
+          val = (val * 71 + 17) % 100 + 1
+        }
+        row = append(row, val)
+        j = j + 1
+      }
+      mat = append(mat, row)
+      i = i + 1
+    }
+
+    var ps: list<list<int>> = []
+    i = 0
+    while i <= N {
+      var row: list<int> = []
+      var j = 0
+      while j <= M {
+        row = append(row, 0)
+        j = j + 1
+      }
+      ps = append(ps, row)
+      i = i + 1
+    }
+    i = 0
+    while i < N {
+      var j = 0
+      while j < M {
+        let v = mat[i][j] as int
+        ps[i+1][j+1] = ps[i+1][j] + ps[i][j+1] - ps[i][j] + v
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    if C == 0 || D == 0 {
+      var best = -1000000000
+      i = 0
+      while i <= N - A {
+        var j = 0
+        while j <= M - B {
+          let s = rectSum(ps, i, j, i + A - 1, j + B - 1)
+          if s > best { best = s }
+          j = j + 1
+        }
+        i = i + 1
+      }
+      print(str(best))
+    } else {
+      var KRows = N - C + 1
+      var KCols = M - D + 1
+      var ksum: list<list<int>> = []
+      i = 0
+      while i < KRows {
+        var row: list<int> = []
+        var j = 0
+        while j < KCols {
+          let s = rectSum(ps, i, j, i + C - 1, j + D - 1)
+          row = append(row, s)
+          j = j + 1
+        }
+        ksum = append(ksum, row)
+        i = i + 1
+      }
+
+      let h = A - C - 1
+      var vertRows = KRows - h + 1
+      var vert: list<list<int>> = []
+      i = 0
+      while i < vertRows {
+        var row: list<int> = []
+        var j = 0
+        while j < KCols {
+          row = append(row, 0)
+          j = j + 1
+        }
+        vert = append(vert, row)
+        i = i + 1
+      }
+      var j = 0
+      while j < KCols {
+        var dq: list<int> = []
+        var head = 0
+        i = 0
+        while i < KRows {
+          while len(dq) > head && (ksum[dq[len(dq)-1]][j] as int) >= (ksum[i][j] as int) {
+            dq = dq[0:len(dq)-1]
+          }
+          dq = append(dq, i)
+          if dq[head] <= i - h { head = head + 1 }
+          if i >= h - 1 {
+            let r = i - (h - 1)
+            vert[r][j] = ksum[dq[head]][j] as int
+          }
+          i = i + 1
+        }
+        j = j + 1
+      }
+
+      let w = B - D - 1
+      var minRows = vertRows
+      var minCols = KCols - w + 1
+      var mins: list<list<int>> = []
+      i = 0
+      while i < minRows {
+        var row: list<int> = []
+        var jj = 0
+        while jj < minCols {
+          row = append(row, 0)
+          jj = jj + 1
+        }
+        mins = append(mins, row)
+        i = i + 1
+      }
+      i = 0
+      while i < minRows {
+        var dq: list<int> = []
+        var head = 0
+        j = 0
+        while j < KCols {
+          while len(dq) > head && (vert[i][dq[len(dq)-1]] as int) >= (vert[i][j] as int) {
+            dq = dq[0:len(dq)-1]
+          }
+          dq = append(dq, j)
+          if dq[head] <= j - w { head = head + 1 }
+          if j >= w - 1 {
+            let c = j - (w - 1)
+            mins[i][c] = vert[i][dq[head]] as int
+          }
+          j = j + 1
+        }
+        i = i + 1
+      }
+
+      var best = -1000000000
+      i = 0
+      while i <= N - A {
+        j = 0
+        while j <= M - B {
+          let sumQ = rectSum(ps, i, j, i + A - 1, j + B - 1)
+          let inner = mins[i+1][j+1] as int
+          let diff = sumQ - inner
+          if diff > best { best = diff }
+          j = j + 1
+        }
+        i = i + 1
+      }
+      print(str(best))
+    }
+    case = case + 1
+  }
+}
+
+main()
