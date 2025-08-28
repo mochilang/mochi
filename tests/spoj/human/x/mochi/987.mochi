@@ -1,0 +1,168 @@
+// Solution for SPOJ MOBILE - Mobile
+// https://www.spoj.com/problems/MOBILE
+
+var parent: list<int> = []
+var size: list<int> = []
+var members: list<list<int>> = []
+var matrix: list<list<int>> = []
+
+var init = 0
+while init < 2048 {
+  parent = append(parent, 0)
+  size = append(size, 0)
+  members = append(members, [])
+  init = init + 1
+}
+
+fun find(x: int): int {
+  if parent[x] != x {
+    parent[x] = find(parent[x])
+  }
+  return parent[x]
+}
+
+fun union(ra: int, rb: int, h: int): bool {
+  var am = members[ra]
+  var bm = members[rb]
+  var ai = 0
+  while ai < len(am) {
+    var bi = 0
+    while bi < len(bm) {
+      if matrix[am[ai]][bm[bi]] != h {
+        return false
+      }
+      bi = bi + 1
+    }
+    ai = ai + 1
+  }
+  if size[ra] < size[rb] {
+    let tmp = ra
+    ra = rb
+    rb = tmp
+    am = members[ra]
+    bm = members[rb]
+  }
+  var k = 0
+  while k < len(bm) {
+    am = append(am, bm[k])
+    k = k + 1
+  }
+  members[ra] = am
+  parent[rb] = ra
+  size[ra] = size[ra] + size[rb]
+  return true
+}
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+while true {
+  let line = input()
+  if line == "" {
+    break
+  }
+  let n = int(line)
+  if n == 0 {
+    break
+  }
+  matrix = []
+  var i = 0
+  while i < n {
+    let rowStr = input()
+    let parts = split(rowStr)
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, int(parts[j]))
+      j = j + 1
+    }
+    matrix = append(matrix, row)
+    i = i + 1
+  }
+  var ok = true
+  var buckets: list<list<list<int>>> = []
+  var h = 0
+  while h < 2048 {
+    buckets = append(buckets, [])
+    h = h + 1
+  }
+  i = 0
+  while i < n {
+    if matrix[i][i] != 0 {
+      ok = false
+      break
+    }
+    var j = i + 1
+    while j < n {
+      let v = matrix[i][j]
+      if v <= 0 || v >= 2048 || matrix[j][i] != v {
+        ok = false
+        break
+      }
+      var bucket = buckets[v]
+      bucket = append(bucket, [i, j])
+      buckets[v] = bucket
+      j = j + 1
+    }
+    if !ok {
+      break
+    }
+    i = i + 1
+  }
+  if ok {
+    i = 0
+    while i < n {
+      parent[i] = i
+      size[i] = 1
+      members[i] = [i]
+      i = i + 1
+    }
+    h = 0
+    while h < 2048 && ok {
+      var edges = buckets[h]
+      var e = 0
+      while e < len(edges) {
+        let pair = edges[e]
+        let a = pair[0]
+        let b = pair[1]
+        var ra = find(a)
+        var rb = find(b)
+        if ra != rb {
+          if !union(ra, rb, h) {
+            ok = false
+            break
+          }
+        }
+        e = e + 1
+      }
+      if !ok {
+        break
+      }
+      h = h + 1
+    }
+  }
+  if ok {
+    print("true")
+  } else {
+    print("false")
+  }
+}
