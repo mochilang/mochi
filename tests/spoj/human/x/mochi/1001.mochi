@@ -1,0 +1,86 @@
+// Solution for SPOJ BROUL - Babylonian Roulette
+// https://www.spoj.com/problems/BROUL/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parts[i] as int)
+    i = i + 1
+  }
+  return nums
+}
+
+fun solve(p0: int, bet: int, pf: int): string {
+  let r = p0 % bet
+  if pf % bet != r { return "No accounting tablet" }
+  if pf >= bet {
+    let diff = pf - p0
+    if diff >= 0 {
+      let m = diff / bet
+      let ans = (m + 2) / 3
+      return str(ans)
+    } else {
+      let m = (0 - diff) / bet
+      let ans = (m + 2) / 3
+      return str(ans)
+    }
+  } else {
+    if p0 < bet {
+      if pf == p0 { return "0" } else { return "No accounting tablet" }
+    }
+    let q = p0 / bet
+    var best = 0
+    var first = true
+    var maxk = 3
+    if q < maxk { maxk = q }
+    var k = 1
+    while k <= maxk {
+      let steps = ((q - k + 2) / 3) + 1
+      if first || steps < best {
+        best = steps
+        first = false
+      }
+      k = k + 1
+    }
+    return str(best)
+  }
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let nums = parseInts(line)
+    if len(nums) < 3 { continue }
+    let p0 = nums[0]
+    let bet = nums[1]
+    let pf = nums[2]
+    if p0 == 0 && bet == 0 && pf == 0 { break }
+    let res = solve(p0, bet, pf)
+    print(res)
+  }
+}
+
+main()
