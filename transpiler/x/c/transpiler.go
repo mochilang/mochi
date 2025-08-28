@@ -8884,6 +8884,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		srcExpr := convertExpr(s.For.Source)
 		if inferExprType(env, srcExpr) == "MapSI" {
+			env.SetVarDeep(s.For.Name, types.StringType{}, true)
+			varTypes[s.For.Name] = "const char*"
 			body, err := compileStmts(env, s.For.Body)
 			if err != nil {
 				return nil, err
