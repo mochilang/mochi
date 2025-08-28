@@ -1,0 +1,208 @@
+// Solution for SPOJ COVER - K-path cover
+// https://www.spoj.com/problems/COVER/
+
+// parse integer from string (handles negative)
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+// split by whitespace
+fun split_ws(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+type Edge = { to: int, rev: int, cap: int, cost: int }
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_bool_list(n: int): list<bool> {
+  var lst: list<bool> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, false)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_edge_list(n: int): list<list<Edge>> {
+  var lst: list<list<Edge>> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, [])
+    i = i + 1
+  }
+  return lst
+}
+
+fun addEdge(g: list<list<Edge>>, u: int, v: int, cap: int, cost: int): list<list<Edge>> {
+  let r1 = len(g[v])
+  let r2 = len(g[u])
+  g[u] = append(g[u], Edge{ to: v, rev: r1, cap: cap, cost: cost })
+  g[v] = append(g[v], Edge{ to: u, rev: r2, cap: 0, cost: -cost })
+  return g
+}
+
+fun spfa(g: list<list<Edge>>, s: int): list<list<int>> {
+  let n = len(g)
+  let INF = 1000000000
+  var dist = make_int_list(n, INF)
+  var inq = make_bool_list(n)
+  var prevv = make_int_list(n, -1)
+  var preve = make_int_list(n, -1)
+  var q: list<int> = []
+  dist[s] = 0
+  q = append(q, s)
+  inq[s] = true
+  var qi = 0
+  while qi < len(q) {
+    let v = q[qi]
+    qi = qi + 1
+    inq[v] = false
+    var i = 0
+    while i < len(g[v]) {
+      let e = g[v][i]
+      if e.cap > 0 && dist[e.to] > dist[v] + e.cost {
+        dist[e.to] = dist[v] + e.cost
+        prevv[e.to] = v
+        preve[e.to] = i
+        if !inq[e.to] {
+          q = append(q, e.to)
+          inq[e.to] = true
+        }
+      }
+      i = i + 1
+    }
+  }
+  var res: list<list<int>> = []
+  res = append(res, dist)
+  res = append(res, prevv)
+  res = append(res, preve)
+  return res
+}
+
+fun minCostFlow(g: list<list<Edge>>, s: int, t: int, maxf: int): list<int> {
+  var flow = 0
+  var cost = 0
+  while flow < maxf {
+    let sp = spfa(g, s)
+    let dist = sp[0]
+    let prevv = sp[1]
+    let preve = sp[2]
+    if dist[t] >= 1000000000 { break }
+    var d = maxf - flow
+    var v = t
+    while v != s {
+      let e = g[prevv[v]][preve[v]]
+      if e.cap < d { d = e.cap }
+      v = prevv[v]
+    }
+    flow = flow + d
+    cost = cost + d * dist[t]
+    v = t
+    while v != s {
+      let pv = prevv[v]
+      let pe = preve[v]
+      let e1 = g[pv][pe]
+      let ri = e1.rev
+      let re = g[v][ri]
+      g[pv][pe] = Edge{ to: e1.to, rev: e1.rev, cap: e1.cap - d, cost: e1.cost }
+      g[v][ri] = Edge{ to: re.to, rev: re.rev, cap: re.cap + d, cost: re.cost }
+      v = pv
+    }
+  }
+  var res: list<int> = []
+  res = append(res, flow)
+  res = append(res, cost)
+  return res
+}
+
+fun main() {
+  let cStr = input()
+  if cStr == "" { return }
+  let c = parseIntStr(cStr)
+  var case = 0
+  while case < c {
+    let line = input()
+    let parts = split_ws(line)
+    let k = parseIntStr(parts[0])
+    let n = parseIntStr(parts[1])
+    let m = parseIntStr(parts[2])
+    var costs: list<int> = []
+    var i = 0
+    while i < n {
+      costs = append(costs, parseIntStr(input()))
+      i = i + 1
+    }
+    let T = 2 * n + 1
+    var g = make_edge_list(T)
+    let S = 0
+    i = 0
+    while i < n {
+      let idx = i + 1
+      g = addEdge(g, S, idx, 1, 0)
+      g = addEdge(g, n + idx, T, 1, 0)
+      i = i + 1
+    }
+    var j = 0
+    while j < m {
+      let el = input()
+      let ep = split_ws(el)
+      let u = parseIntStr(ep[0])
+      let v = parseIntStr(ep[1])
+      let w = costs[u - 1] + costs[v - 1]
+      g = addEdge(g, u, n + v, 1, w)
+      j = j + 1
+    }
+    let res = minCostFlow(g, S, T, k)
+    if res[0] < k {
+      print("NONE")
+    } else {
+      print(str(res[1]))
+    }
+    case = case + 1
+  }
+}
+
+main()
