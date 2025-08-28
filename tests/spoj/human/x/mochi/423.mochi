@@ -1,0 +1,114 @@
+// Solution for SPOJ ASSIGN - Assignments
+// https://www.spoj.com/problems/ASSIGN/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun popcount(x: int): int {
+  var cnt = 0
+  var v = x
+  while v > 0 {
+    if v % 2 == 1 { cnt = cnt + 1 }
+    v = v / 2
+  }
+  return cnt
+}
+
+fun pow2(e: int): int {
+  var res = 1
+  var k = 0
+  while k < e {
+    res = res * 2
+    k = k + 1
+  }
+  return res
+}
+
+fun countAssignments(pref: list<list<int>>, n: int): int {
+  let size = pow2(n)
+  var dp: list<int> = []
+  var i = 0
+  while i < size {
+    dp = append(dp, 0)
+    i = i + 1
+  }
+  dp[0] = 1
+  var mask = 0
+  while mask < size {
+    let i = popcount(mask)
+    if i < n {
+      var j = 0
+      while j < n {
+        let bit = pow2(j)
+        if pref[i][j] == 1 && (mask / bit) % 2 == 0 {
+          let nm = mask + bit
+          dp[nm] = dp[nm] + dp[mask]
+        }
+        j = j + 1
+      }
+    }
+    mask = mask + 1
+  }
+  return dp[size-1]
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == nil || tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var caseIdx = 0
+  while caseIdx < t {
+    var line = input()
+    while line == "" { line = input() }
+    let n = parseIntStr(line)
+    var pref: list<list<int>> = []
+    var i = 0
+    while i < n {
+      let l = input()
+      if l == "" { continue }
+      let parts = split(l)
+      var row: list<int> = []
+      var j = 0
+      while j < n {
+        row = append(row, parseIntStr(parts[j]))
+        j = j + 1
+      }
+      pref = append(pref, row)
+      i = i + 1
+    }
+    let ans = countAssignments(pref, n)
+    print(str(ans))
+    caseIdx = caseIdx + 1
+  }
+}
+
+main()
