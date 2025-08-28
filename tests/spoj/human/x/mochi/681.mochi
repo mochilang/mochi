@@ -1,0 +1,113 @@
+// Solution for SPOJ HANOI07 - Building the Tower
+// https://www.spoj.com/problems/HANOI07/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parts[i] as int)
+    i = i + 1
+  }
+  return nums
+}
+
+fun make2d(w: int, h: int, v: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i <= w {
+    var row: list<int> = []
+    var j = 0
+    while j <= h {
+      row = append(row, v)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun countTowers(N: int, H: int, M: int): int {
+  if N < M { return 0 }
+  let maxSum = H * M + (H - 1) * H / 2
+  var limit = if N < maxSum { N } else { maxSum }
+  let maxCube = M + H - 1
+  var dp = make2d(maxCube, limit, 0)
+  dp[M][M] = 1
+  var level = 1
+  while level < H {
+    var next = make2d(maxCube, limit, 0)
+    var j = 1
+    while j <= maxCube {
+      var s = 0
+      while s <= limit {
+        let ways = dp[j][s]
+        if ways > 0 {
+          if j - 1 > 0 {
+            let nj = j - 1
+            let ns = s + nj
+            if ns <= limit { next[nj][ns] = next[nj][ns] + ways }
+          }
+          if j + 1 <= maxCube {
+            let nj = j + 1
+            let ns = s + nj
+            if ns <= limit { next[nj][ns] = next[nj][ns] + ways }
+          }
+        }
+        s = s + 1
+      }
+      j = j + 1
+    }
+    dp = next
+    level = level + 1
+  }
+  var res = 0
+  var j = 1
+  while j <= maxCube {
+    var s = 0
+    while s <= limit {
+      res = res + dp[j][s]
+      s = s + 1
+    }
+    j = j + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var line = ""
+    while line == "" { line = input() }
+    let nums = parseInts(line)
+    let N = nums[0]
+    let H = nums[1]
+    let M = nums[2]
+    let ans = countTowers(N, H, M)
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
