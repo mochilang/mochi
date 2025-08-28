@@ -1,0 +1,124 @@
+// Solution for SPOJ BOXES - Boxes
+// https://www.spoj.com/problems/BOXES/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun absi(x: int): int { if x < 0 { return -x } else { return x } }
+
+fun readNInts(n: int): list<int> {
+  var nums: list<int> = []
+  while len(nums) < n {
+    let line = input()
+    if line == "" { break }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) && len(nums) < n {
+      nums = append(nums, parts[j] as int)
+      j = j + 1
+    }
+  }
+  return nums
+}
+
+fun minMoves(a: list<int>): int {
+  let n = len(a)
+  var totalExtra = 0
+  var i = 0
+  while i < n {
+    if a[i] > 1 { totalExtra = totalExtra + a[i] - 1 }
+    i = i + 1
+  }
+  if totalExtra == 0 { return 0 }
+  var best = 1000000000
+  var s = 0
+  while s < n {
+    var b: list<int> = []
+    var j = 0
+    while j < n {
+      b = append(b, a[(s + j) % n])
+      j = j + 1
+    }
+    var extras: list<int> = []
+    var zeros: list<int> = []
+    j = 0
+    while j < n {
+      let v = b[j]
+      if v == 0 {
+        zeros = append(zeros, j)
+      } else if v > 1 {
+        var k = 1
+        while k < v {
+          extras = append(extras, j)
+          k = k + 1
+        }
+      }
+      j = j + 1
+    }
+    let M = len(extras)
+    let Z = len(zeros)
+    if M == 0 {
+      best = 0
+      break
+    }
+    var dp: list<int> = []
+    var t = 0
+    while t <= Z {
+      dp = append(dp, 0)
+      t = t + 1
+    }
+    var ii = 1
+    while ii <= M {
+      var newdp: list<int> = []
+      t = 0
+      while t <= Z {
+        newdp = append(newdp, 1000000000)
+        t = t + 1
+      }
+      t = 1
+      while t <= Z {
+        let cost = absi(extras[ii-1] - zeros[t-1])
+        let val = dp[t-1] + cost
+        var cur = newdp[t-1]
+        if val < cur { cur = val }
+        newdp[t] = cur
+        t = t + 1
+      }
+      dp = newdp
+      ii = ii + 1
+    }
+    if dp[Z] < best { best = dp[Z] }
+    s = s + 1
+  }
+  return best
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    let nLine = input()
+    let n = int(nLine)
+    let arr = readNInts(n)
+    print(minMoves(arr))
+    case = case + 1
+  }
+}
+
+main()
