@@ -1,0 +1,123 @@
+// Solution for SPOJ IVAN - Ivan and his interesting game
+// https://www.spoj.com/problems/IVAN/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun solve(a: list<int>, b: list<int>): int {
+  let n = len(a)
+  let m = len(b)
+  // prefix sums
+  var psA: list<int> = [0]
+  var sum = 0
+  var i = 0
+  while i < n {
+    sum = sum + a[i]
+    psA = append(psA, sum)
+    i = i + 1
+  }
+  var psB: list<int> = [0]
+  sum = 0
+  var j = 0
+  while j < m {
+    sum = sum + b[j]
+    psB = append(psB, sum)
+    j = j + 1
+  }
+  var INF = 1000000000000000
+  var dp: list<list<int>> = []
+  var ii = 0
+  while ii <= n {
+    var row: list<int> = []
+    var jj = 0
+    while jj <= m {
+      row = append(row, INF)
+      jj = jj + 1
+    }
+    dp = append(dp, row)
+    ii = ii + 1
+  }
+  dp[0][0] = 0
+  i = 1
+  while i <= n {
+    j = 1
+    while j <= m {
+      var best = INF
+      var s = 0
+      while s < i {
+        var t = 0
+        while t < j {
+          let s1 = psA[i] - psA[s]
+          let k1 = i - s
+          let s2 = psB[j] - psB[t]
+          let k2 = j - t
+          let cost = dp[s][t] + (s1 - k1) * (s2 - k2)
+          if cost < best { best = cost }
+          t = t + 1
+        }
+        s = s + 1
+      }
+      dp[i][j] = best
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return dp[n][m]
+}
+
+fun main() {
+  let line1 = input()
+  if line1 == nil || line1 == "" { return }
+  let parts = splitSpaces(line1)
+  let L1 = parseIntStr(parts[0])
+  let L2 = parseIntStr(parts[1])
+  let lineA = input()
+  let partsA = splitSpaces(lineA)
+  var a: list<int> = []
+  var i = 0
+  while i < L1 {
+    a = append(a, parseIntStr(partsA[i]))
+    i = i + 1
+  }
+  let lineB = input()
+  let partsB = splitSpaces(lineB)
+  var b: list<int> = []
+  var j = 0
+  while j < L2 {
+    b = append(b, parseIntStr(partsB[j]))
+    j = j + 1
+  }
+  let ans = solve(a, b)
+  print(str(ans))
+}
+
+main()
