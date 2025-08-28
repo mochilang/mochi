@@ -1,0 +1,107 @@
+// Solution for SPOJ CFRAC2 - Continuous Fractions Again
+// https://www.spoj.com/problems/CFRAC2/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var i = 0
+  var num = 0
+  var has = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if has {
+        res = append(res, num)
+        num = 0
+        has = false
+      }
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has { res = append(res, num) }
+  return res
+}
+
+fun parseNumber(row: string): int {
+  var i = 0
+  var n = 0
+  while i < len(row) {
+    let ch = row[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      n = n * 10 + (digits[ch] as int)
+    }
+    i = i + 1
+  }
+  return n
+}
+
+type PQ { p: bigint, q: bigint }
+
+fun evalFrac(rows: list<string>): PQ {
+  if len(rows) == 1 {
+    let d = parseNumber(rows[0])
+    return PQ { p: d as bigint, q: 1 as bigint }
+  }
+  let row = rows[1]
+  var i = 0
+  while i < len(row) {
+    let ch = row[i:i+1]
+    if ch < "0" || ch > "9" { break }
+    i = i + 1
+  }
+  let a = parseNumber(row[0:i])
+  let start = i + 3
+  var w = 0
+  while start + w < len(row) && row[start+w:start+w+1] == "-" {
+    w = w + 1
+  }
+  var sub: list<string> = []
+  var r = 2
+  while r < len(rows) {
+    let s = rows[r]
+    sub = append(sub, substring(s, start, start + w))
+    r = r + 1
+  }
+  var p_sub: bigint
+  var q_sub: bigint
+  if len(sub) == 1 {
+    let d = parseNumber(sub[0])
+    p_sub = d as bigint
+    q_sub = 1 as bigint
+  } else {
+    let res = evalFrac(sub)
+    p_sub = res.p
+    q_sub = res.q
+  }
+  let p = (a as bigint) * p_sub + q_sub
+  let q = p_sub
+  return PQ { p: p, q: q }
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil || line == "" { return }
+    let parts = parseInts(line)
+    let m = parts[0]
+    let n = parts[1]
+    if m == 0 && n == 0 { break }
+    var rows: list<string> = []
+    var i = 0
+    while i < m {
+      rows = append(rows, input())
+      i = i + 1
+    }
+    let res = evalFrac(rows)
+    print(str(res.p) + " " + str(res.q))
+  }
+}
+
+main()
