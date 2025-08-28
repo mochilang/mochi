@@ -1,0 +1,100 @@
+// Solution for SPOJ HIKE - Hike on a Graph
+// https://www.spoj.com/problems/HIKE/
+
+type State { a: int, b: int, c: int, d: int }
+
+fun encode(a: int, b: int, c: int, n: int): int {
+  return ((a - 1) * n + (b - 1)) * n + (c - 1)
+}
+
+fun splitTokens(s: string): list<string> {
+  let parts = split(s, " ")
+  var res: list<string> = []
+  for p in parts {
+    if p != "" {
+      res = append(res, p)
+    }
+  }
+  return res
+}
+
+fun solve(n: int, p1: int, p2: int, p3: int, mat: list<list<string>>): string {
+  var queue: list<State> = [State { a: p1, b: p2, c: p3, d: 0 }]
+  var qi = 0
+  var visited: map<int, bool> = {}
+  visited[encode(p1, p2, p3, n)] = true
+  while qi < len(queue) {
+    let st = queue[qi]
+    qi = qi + 1
+    let a = st.a
+    let b = st.b
+    let c = st.c
+    let d = st.d
+    if a == b && b == c {
+      return str(d)
+    }
+    let col_bc = mat[b][c]
+    for x in 1..(n + 1) {
+      if mat[a][x] == col_bc {
+        let code = encode(x, b, c, n)
+        if visited[code] == nil {
+          visited[code] = true
+          queue = append(queue, State { a: x, b: b, c: c, d: d + 1 })
+        }
+      }
+    }
+    let col_ac = mat[a][c]
+    for x in 1..(n + 1) {
+      if mat[b][x] == col_ac {
+        let code = encode(a, x, c, n)
+        if visited[code] == nil {
+          visited[code] = true
+          queue = append(queue, State { a: a, b: x, c: c, d: d + 1 })
+        }
+      }
+    }
+    let col_ab = mat[a][b]
+    for x in 1..(n + 1) {
+      if mat[c][x] == col_ab {
+        let code = encode(a, b, x, n)
+        if visited[code] == nil {
+          visited[code] = true
+          queue = append(queue, State { a: a, b: b, c: x, d: d + 1 })
+        }
+      }
+    }
+  }
+  return "impossible"
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil || line == "" { return }
+    let parts = splitTokens(line)
+    let n = int(parts[0])
+    if n == 0 { break }
+    let p1 = int(parts[1])
+    let p2 = int(parts[2])
+    let p3 = int(parts[3])
+    var mat: list<list<string>> = []
+    for i in 0..(n + 1) {
+      var row: list<string> = []
+      for j in 0..(n + 1) {
+        row = append(row, "")
+      }
+      mat = append(mat, row)
+    }
+    for i in 1..(n + 1) {
+      let rline = input()
+      let tokens = splitTokens(rline)
+      for j in 1..(n + 1) {
+        mat[i][j] = tokens[j - 1]
+      }
+    }
+    let ans = solve(n, p1, p2, p3, mat)
+    print(ans)
+  }
+}
+
+main()
