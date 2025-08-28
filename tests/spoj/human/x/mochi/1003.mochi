@@ -1,0 +1,125 @@
+// Solution for SPOJ QUILT - Little Quilt
+// https://www.spoj.com/problems/QUILT/
+
+type ParseRes = { rows: list<string>, pos: int, err: bool }
+
+fun rotate(q: list<string>): list<string> {
+  let h = len(q)
+  let w = len(q[0])
+  var res: list<string> = []
+  var c = 0
+  while c < w {
+    var row = ""
+    var r = h - 1
+    while r >= 0 {
+      let ch = q[r][c:c+1]
+      if ch == "-" {
+        row = row + "|"
+      } else if ch == "|" {
+        row = row + "-"
+      } else if ch == "/" {
+        row = row + "\\"
+      } else if ch == "\\" {
+        row = row + "/"
+      } else {
+        row = row + ch
+      }
+      r = r - 1
+    }
+    res = append(res, row)
+    c = c + 1
+  }
+  return res
+}
+
+fun sewRows(a: list<string>, b: list<string>): ParseRes {
+  if len(a) != len(b) {
+    return ParseRes{ rows: [], pos: 0, err: true }
+  }
+  var res: list<string> = []
+  var i = 0
+  while i < len(a) {
+    res = append(res, a[i] + b[i])
+    i = i + 1
+  }
+  return ParseRes{ rows: res, pos: 0, err: false }
+}
+
+fun parse(s: string, p: int): ParseRes {
+  if p >= len(s) {
+    return ParseRes{ rows: [], pos: p, err: true }
+  }
+  let ch = s[p:p+1]
+  if ch == "A" {
+    return ParseRes{ rows: ["//", "/+"], pos: p + 1, err: false }
+  }
+  if ch == "B" {
+    return ParseRes{ rows: ["--", "--"], pos: p + 1, err: false }
+  }
+  if p + 5 <= len(s) && s[p:p+5] == "turn(" {
+    let r1 = parse(s, p + 5)
+    if r1.err { return r1 }
+    if r1.pos >= len(s) || s[r1.pos:r1.pos+1] != ")" {
+      return ParseRes{ rows: [], pos: r1.pos, err: true }
+    }
+    return ParseRes{ rows: rotate(r1.rows), pos: r1.pos + 1, err: false }
+  }
+  if p + 4 <= len(s) && s[p:p+4] == "sew(" {
+    let r1 = parse(s, p + 4)
+    if r1.err { return r1 }
+    if r1.pos >= len(s) || s[r1.pos:r1.pos+1] != "," {
+      return ParseRes{ rows: [], pos: r1.pos, err: true }
+    }
+    let r2 = parse(s, r1.pos + 1)
+    if r2.err { return r2 }
+    if r2.pos >= len(s) || s[r2.pos:r2.pos+1] != ")" {
+      return ParseRes{ rows: [], pos: r2.pos, err: true }
+    }
+    let q = sewRows(r1.rows, r2.rows)
+    return ParseRes{ rows: q.rows, pos: r2.pos + 1, err: q.err }
+  }
+  return ParseRes{ rows: [], pos: p, err: true }
+}
+
+fun stripSpaces(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch != " " && ch != "\n" && ch != "\t" && ch != "\r" {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  var src = ""
+  while true {
+    let line = input()
+    if line == "" { break }
+    src = src + line + "\n"
+  }
+  let code = stripSpaces(src)
+  var pos = 0
+  var idx = 1
+  while pos < len(code) {
+    let r = parse(code, pos)
+    print("Quilt " + idx + ":")
+    if r.err {
+      print("error")
+    } else {
+      var i = 0
+      while i < len(r.rows) {
+        print(r.rows[i])
+        i = i + 1
+      }
+    }
+    pos = r.pos
+    if pos < len(code) && code[pos:pos+1] == ";" { pos = pos + 1 }
+    idx = idx + 1
+  }
+}
+
+main()
