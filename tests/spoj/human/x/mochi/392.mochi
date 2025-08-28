@@ -1,0 +1,90 @@
+// Solution for SPOJ SPIN - Spin
+// https://www.spoj.com/problems/SPIN/
+
+var tokens: list<string> = []
+var tokIdx = 0
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun nextToken(): string {
+  while tokIdx >= len(tokens) {
+    let line = input()
+    if line == nil { return nil }
+    tokens = splitSpaces(line)
+    tokIdx = 0
+  }
+  let t = tokens[tokIdx]
+  tokIdx = tokIdx + 1
+  return t
+}
+
+fun nextInt(): int { return int(nextToken()) }
+
+var memo: map<string,int> = {}
+
+fun key(n: int, s: int, x: int, q0: int): string {
+  return str(n) + "," + str(s) + "," + str(x) + "," + str(q0)
+}
+
+fun dist(n: int, s: int, x: int, q0: int): int {
+  if n == 1 {
+    if s == q0 { return x }
+    return 3 - x
+  }
+  let k = key(n, s, x, q0)
+  if memo[k] != nil { return memo[k] }
+  var r = 0
+  let s0 = s & 1
+  var x1 = x - 1
+  if x1 < 0 { x1 = 0 }
+  if s0 == q0 {
+    r = 1 + dist(n - 1, s >> 1, x1, 0)
+  } else {
+    let a = dist(n - 1, s >> 1, x1, 1)
+    let b = dist(n - 1, 1, 0, 0)
+    r = 2 + a + b
+  }
+  memo[k] = r
+  return r
+}
+
+fun solveCase(n: int, orient: string, x: int): int {
+  var s = 0
+  var i = 0
+  while i < len(orient) {
+    if orient[i:i+1] == "v" {
+      s = s | (1 << i)
+    }
+    i = i + 1
+  }
+  let r = dist(n, s, x, 0)
+  return r + 1
+}
+
+fun main() {
+  let t = nextInt()
+  var case = 0
+  while case < t {
+    let n = nextInt()
+    let orient = nextToken()
+    let x = nextInt()
+    let ans = solveCase(n, orient, x)
+    print(str(ans))
+    case = case + 1
+  }
+}
