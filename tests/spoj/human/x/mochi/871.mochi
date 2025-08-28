@@ -1,0 +1,128 @@
+// Solution for SPOJ SEQUENCE - Letter Sequence Analysis
+// https://www.spoj.com/problems/SEQUENCE/
+
+fun sortStrings(arr: list<string>): list<string> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun sortIntsDesc(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] < arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun join(parts: list<string>, sep: string): string {
+  if len(parts) == 0 { return "" }
+  var res = parts[0]
+  var i = 1
+  while i < len(parts) {
+    res = res + sep + parts[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun processWord(word: string, counts: list<map<string,int>>) {
+  let n = len(word)
+  var l = 1
+  while l <= 5 && l <= n {
+    var i = 0
+    while i + l <= n {
+      let seq = substring(word, i, i + l)
+      var mAny = counts[l]
+      var m = mAny as map<string,int>
+      var cAny = m[seq]
+      var c = 0
+      if cAny != nil { c = cAny as int }
+      m[seq] = c + 1
+      counts[l] = m
+      i = i + 1
+    }
+    l = l + 1
+  }
+}
+
+fun main() {
+  var counts: list<map<string,int>> = []
+  var idx = 0
+  while idx <= 5 {
+    counts = append(counts, {})
+    idx = idx + 1
+  }
+  var text = ""
+  while true {
+    let line = input()
+    if line == nil { break }
+    if line == "" { break }
+    text = text + line + "\n"
+  }
+  var word = ""
+  var i = 0
+  while i < len(text) {
+    let ch = text[i:i+1]
+    let up = ch.toUpperCase()
+    if up >= "A" && up <= "Z" {
+      word = word + up
+    } else {
+      if len(word) > 0 { processWord(word, counts); word = "" }
+    }
+    i = i + 1
+  }
+  if len(word) > 0 { processWord(word, counts) }
+
+  var l = 1
+  while l <= 5 {
+    print("Analysis for Letter Sequences of Length " + str(l))
+    print("-----------------------------------------")
+    var mAny = counts[l]
+    var m = mAny as map<string,int>
+    var freqMap: map<int, list<string>> = {}
+    for s in m {
+      let cnt = m[s] as int
+      var arrAny = freqMap[cnt]
+      var arr: list<string>
+      if arrAny == nil { arr = [] } else { arr = arrAny as list<string> }
+      arr = append(arr, s)
+      freqMap[cnt] = arr
+    }
+    var freqs: list<int> = []
+    for f in freqMap {
+      freqs = append(freqs, f as int)
+    }
+    freqs = sortIntsDesc(freqs)
+    var idxF = 0
+    while idxF < len(freqs) && idxF < 5 {
+      let f = freqs[idxF]
+      var seqsAny = freqMap[f]
+      var seqs = seqsAny as list<string>
+      seqs = sortStrings(seqs)
+      let seqStr = join(seqs, ",")
+      print("Frequency = " + str(f) + ", Sequence(s) = (" + seqStr + ")")
+      idxF = idxF + 1
+    }
+    print("")
+    l = l + 1
+  }
+}
+
+main()
