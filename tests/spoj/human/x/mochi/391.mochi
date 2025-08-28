@@ -1,0 +1,290 @@
+// Solution for SPOJ RAILROAD - Railroads
+// https://www.spoj.com/problems/RAILROAD/
+
+type Event { city: int, time: int }
+type PQNode { v: int, time: int, dep: int }
+type PopRes { heap: list<PQNode>, node: PQNode }
+
+var tokens: list<string> = []
+var tokIdx = 0
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun nextToken(): string {
+  while tokIdx >= len(tokens) {
+    let line = input()
+    if line == nil { return nil }
+    tokens = splitSpaces(line)
+    tokIdx = 0
+  }
+  let t = tokens[tokIdx]
+  tokIdx = tokIdx + 1
+  return t
+}
+
+fun nextInt(): int { return int(nextToken()) }
+
+fun parseTime(s: string): int {
+  let n = int(s)
+  let h = n / 100
+  let m = n % 100
+  return h * 60 + m
+}
+
+fun formatTime(t: int): string {
+  let h = t / 60
+  let m = t % 60
+  var res = ""
+  if h < 10 { res = "0" + str(h) } else { res = str(h) }
+  if m < 10 { res = res + "0" + str(m) } else { res = res + str(m) }
+  return res
+}
+
+fun makeIntList(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun makeListOfLists(n: int): list<list<int>> {
+  var lst: list<list<int>> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, [])
+    i = i + 1
+  }
+  return lst
+}
+
+var events: list<Event> = []
+var adj: list<list<int>> = []
+var cityEvents: list<list<int>> = []
+var eventIndex: map<string,int> = {}
+
+fun getNode(c: int, t: int): int {
+  let key = str(c) + ":" + str(t)
+  let ex = eventIndex[key]
+  if ex != nil {
+    return ex as int
+  }
+  let idx = len(events)
+  events = append(events, Event{ city: c, time: t })
+  adj = append(adj, [])
+  cityEvents[c] = append(cityEvents[c], idx)
+  eventIndex[key] = idx
+  return idx
+}
+
+fun addEdge(u: int, v: int) {
+  adj[u] = append(adj[u], v)
+}
+
+fun mergeIdx(a: list<int>, b: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  var j = 0
+  while i < len(a) && j < len(b) {
+    let ea = events[a[i]] as Event
+    let eb = events[b[j]] as Event
+    if ea.time <= eb.time {
+      res = append(res, a[i])
+      i = i + 1
+    } else {
+      res = append(res, b[j])
+      j = j + 1
+    }
+  }
+  while i < len(a) { res = append(res, a[i]); i = i + 1 }
+  while j < len(b) { res = append(res, b[j]); j = j + 1 }
+  return res
+}
+
+fun sortIdx(arr: list<int>): list<int> {
+  if len(arr) <= 1 { return arr }
+  let mid = len(arr) / 2
+  let left = sortIdx(arr[0:mid])
+  let right = sortIdx(arr[mid:len(arr)])
+  return mergeIdx(left, right)
+}
+
+fun lessNode(a: PQNode, b: PQNode): bool {
+  if a.time < b.time { return true }
+  if a.time == b.time && a.dep > b.dep { return true }
+  return false
+}
+
+fun heap_push(h: list<PQNode>, item: PQNode): list<PQNode> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if lessNode(heap[p], heap[i]) { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<PQNode>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      let l = 2*i + 1
+      let r = 2*i + 2
+      var smallest = i
+      if l < len(heap) && lessNode(heap[l], heap[smallest]) { smallest = l }
+      if r < len(heap) && lessNode(heap[r], heap[smallest]) { smallest = r }
+      if smallest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[smallest]
+      heap[smallest] = tmp
+      i = smallest
+    }
+  }
+  return PopRes{ heap: heap, node: top }
+}
+
+fun dijkstra(startIdx: int, startCity: int): list<int> {
+  var best = makeIntList(len(events), 0-2)
+  best[startIdx] = 0-1
+  var heap: list<PQNode> = []
+  let startEv = events[startIdx] as Event
+  heap = heap_push(heap, PQNode{ v: startIdx, time: startEv.time, dep: 0-1 })
+  while len(heap) > 0 {
+    let pr = heap_pop(heap)
+    heap = pr.heap
+    let cur = pr.node
+    if cur.dep < best[cur.v] { continue }
+    let curEv = events[cur.v] as Event
+    var i = 0
+    while i < len(adj[cur.v]) {
+      let to = adj[cur.v][i]
+      let toEv = events[to] as Event
+      var nd = cur.dep
+      if nd == 0-1 && curEv.city == startCity && toEv.city != startCity {
+        nd = curEv.time
+      }
+      if nd > best[to] {
+        best[to] = nd
+        heap = heap_push(heap, PQNode{ v: to, time: toEv.time, dep: nd })
+      }
+      i = i + 1
+    }
+  }
+  return best
+}
+
+fun main() {
+  let scLine = nextToken()
+  if scLine == nil { return }
+  let S = int(scLine)
+  var case = 1
+  while case <= S {
+    events = []
+    adj = []
+    eventIndex = {}
+    let C = nextInt()
+    cityEvents = makeListOfLists(C)
+    var nameToIdx: map<string,int> = {}
+    var i = 0
+    while i < C {
+      let name = nextToken()
+      nameToIdx[name] = i
+      i = i + 1
+    }
+    let T = nextInt()
+    var t = 0
+    while t < T {
+      let ti = nextInt()
+      var stops: list<int> = []
+      var j = 0
+      while j < ti {
+        let timeStr = nextToken()
+        let cityName = nextToken()
+        let time = parseTime(timeStr)
+        let city = nameToIdx[cityName] as int
+        let node = getNode(city, time)
+        stops = append(stops, node)
+        j = j + 1
+      }
+      j = 0
+      while j < len(stops) - 1 {
+        addEdge(stops[j], stops[j+1])
+        j = j + 1
+      }
+      t = t + 1
+    }
+    let startTime = parseTime(nextToken())
+    let startCityName = nextToken()
+    let destCityName = nextToken()
+    let startCity = nameToIdx[startCityName] as int
+    let destCity = nameToIdx[destCityName] as int
+    let startIdx = getNode(startCity, startTime)
+
+    var c = 0
+    while c < C {
+      var lst = cityEvents[c]
+      lst = sortIdx(lst)
+      cityEvents[c] = lst
+      var k = 0
+      while k < len(lst) - 1 {
+        addEdge(lst[k], lst[k+1])
+        k = k + 1
+      }
+      c = c + 1
+    }
+
+    let best = dijkstra(startIdx, startCity)
+    var bestArr = 100000
+    var bestDep = 0-1
+    var idx = 0
+    while idx < len(cityEvents[destCity]) {
+      let node = cityEvents[destCity][idx]
+      let dep = best[node]
+      if dep >= 0 {
+        let arr = (events[node] as Event).time
+        if bestDep == 0-1 || arr < bestArr || (arr == bestArr && dep > bestDep) {
+          bestArr = arr
+          bestDep = dep
+        }
+      }
+      idx = idx + 1
+    }
+
+    print("Scenario " + str(case))
+    if bestDep == 0-1 {
+      print("No connection")
+    } else {
+      print("Departure " + formatTime(bestDep) + " " + startCityName)
+      print("Arrival   " + formatTime(bestArr) + " " + destCityName)
+    }
+    print("")
+    case = case + 1
+  }
+}
+
+main()
