@@ -1,0 +1,94 @@
+// Solution for SPOJ TPERML - Permutation generator
+// https://www.spoj.com/problems/TPERML/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun removeAt(a: list<int>, idx: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(a) {
+    if i != idx { res = append(res, a[i]) }
+    i = i + 1
+  }
+  return res
+}
+
+fun kthPermutation(n: int, k: bigint): list<int> {
+  var temp = k
+  var digits: list<int> = []
+  var i = 1
+  while i <= n {
+    let bi = i as bigint
+    let d = (temp % bi) as int
+    digits = append(digits, d)
+    temp = temp / bi
+    i = i + 1
+  }
+  var nums: list<int> = []
+  i = 1
+  while i <= n {
+    nums = append(nums, i)
+    i = i + 1
+  }
+  var res: list<int> = []
+  var j = n - 1
+  while j >= 0 {
+    let idx = digits[j]
+    res = append(res, nums[idx])
+    nums = removeAt(nums, idx)
+    j = j - 1
+  }
+  return res
+}
+
+fun joinInts(arr: list<int>): string {
+  var s = ""
+  var i = 0
+  while i < len(arr) {
+    if i > 0 { s = s + " " }
+    s = s + str(arr[i])
+    i = i + 1
+  }
+  return s
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var line = ""
+    while line == "" { line = input() }
+    let parts = splitSpaces(line)
+    let n = parts[0] as int
+    var idx = parts[1] as bigint
+    let m = parts[2] as int
+    var i = 0
+    while i < m {
+      let perm = kthPermutation(n, idx)
+      print(joinInts(perm))
+      idx = idx + (1 as bigint)
+      i = i + 1
+    }
+    case = case + 1
+    if case < t { print("") }
+  }
+}
+
+main()
