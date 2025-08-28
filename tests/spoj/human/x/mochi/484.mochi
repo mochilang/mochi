@@ -1,0 +1,162 @@
+// Solution for SPOJ TFOSS - Fossil in the Ice
+// https://www.spoj.com/problems/TFOSS/
+
+type Pt { x: int, y: int }
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun sortPts(pts: list<Pt>): list<Pt> {
+  var i = 1
+  while i < len(pts) {
+    var j = i
+    while j > 0 {
+      let a = pts[j-1]
+      let b = pts[j]
+      if a.x > b.x || (a.x == b.x && a.y > b.y) {
+        let tmp = pts[j-1]
+        pts[j-1] = pts[j]
+        pts[j] = tmp
+        j = j - 1
+      } else {
+        break
+      }
+    }
+    i = i + 1
+  }
+  return pts
+}
+
+fun cross(o: Pt, a: Pt, b: Pt): int {
+  return (a.x - o.x)*(b.y - o.y) - (a.y - o.y)*(b.x - o.x)
+}
+
+fun convexHull(pts: list<Pt>): list<Pt> {
+  let sorted = sortPts(pts)
+  var lower: list<Pt> = []
+  var i = 0
+  while i < len(sorted) {
+    let p = sorted[i]
+    while len(lower) >= 2 && cross(lower[len(lower)-2], lower[len(lower)-1], p) <= 0 {
+      lower = lower[0:len(lower)-1]
+    }
+    lower = append(lower, p)
+    i = i + 1
+  }
+  var upper: list<Pt> = []
+  i = len(sorted) - 1
+  while i >= 0 {
+    let p = sorted[i]
+    while len(upper) >= 2 && cross(upper[len(upper)-2], upper[len(upper)-1], p) <= 0 {
+      upper = upper[0:len(upper)-1]
+    }
+    upper = append(upper, p)
+    i = i - 1
+  }
+  if len(lower) > 0 { lower = lower[0:len(lower)-1] }
+  if len(upper) > 0 { upper = upper[0:len(upper)-1] }
+  var hull: list<Pt> = []
+  i = 0
+  while i < len(lower) { hull = append(hull, lower[i]); i = i + 1 }
+  i = 0
+  while i < len(upper) { hull = append(hull, upper[i]); i = i + 1 }
+  return hull
+}
+
+fun dist2(a: Pt, b: Pt): int {
+  let dx = a.x - b.x
+  let dy = a.y - b.y
+  return dx*dx + dy*dy
+}
+
+fun diameterSq(hull: list<Pt>): int {
+  let m = len(hull)
+  if m <= 1 { return 0 }
+  if m == 2 { return dist2(hull[0], hull[1]) }
+  var j = 1
+  var maxd = 0
+  var i = 0
+  while i < m {
+    var ni = i + 1
+    if ni == m { ni = 0 }
+    while cross(hull[i], hull[ni], hull[(j+1)%m]) > cross(hull[i], hull[ni], hull[j]) {
+      j = j + 1
+      if j == m { j = 0 }
+    }
+    let d1 = dist2(hull[i], hull[j])
+    if d1 > maxd { maxd = d1 }
+    let d2 = dist2(hull[ni], hull[j])
+    if d2 > maxd { maxd = d2 }
+    i = i + 1
+  }
+  return maxd
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun main() {
+  let t = parseIntStr(readNonEmpty())
+  var case = 0
+  while case < t {
+    let n = parseIntStr(readNonEmpty())
+    var pts: list<Pt> = []
+    var k = 0
+    while k < n {
+      let parts = splitSpaces(readNonEmpty())
+      let x = parseIntStr(parts[0])
+      let y = parseIntStr(parts[1])
+      pts = append(pts, Pt { x: x, y: y })
+      k = k + 1
+    }
+    let hull = convexHull(pts)
+    let ans = diameterSq(hull)
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
