@@ -1,0 +1,129 @@
+// Solution for SPOJ CNHARD - CN Tower (Hard)
+// https://www.spoj.com/problems/CNHARD/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+// parse angle string with up to two decimals into hundredths of degrees
+fun parseAngle(str: string): int {
+  var i = 0
+  var deg = 0
+  while i < len(str) && str[i:i+1] != "." {
+    deg = deg * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  var frac = 0
+  var fcnt = 0
+  if i < len(str) && str[i:i+1] == "." {
+    i = i + 1
+    while i < len(str) {
+      frac = frac * 10 + (digits[str[i:i+1]] as int)
+      i = i + 1
+      fcnt = fcnt + 1
+    }
+  }
+  if fcnt == 1 { frac = frac * 10 }
+  return deg * 100 + frac
+}
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun solve(angles: list<int>, flashSec: int): int {
+  let n = len(angles)
+  angles = sortInts(angles)
+  var ext: list<int> = []
+  var i = 0
+  while i < n {
+    ext = append(ext, angles[i])
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    ext = append(ext, angles[i] + 36000)
+    i = i + 1
+  }
+  let flash = flashSec * 100 // centiseconds
+  let full = 432000 // full rotation in centiseconds
+  var best = 0 - 1
+  i = 0
+  while i < n {
+    var t = 0
+    var k = 1
+    while k < n {
+      let diff = ext[i+k] - ext[i]
+      var next = diff * 12
+      while next < t + flash {
+        next = next + full
+      }
+      t = next
+      k = k + 1
+    }
+    let total = t + flash
+    if best == 0 - 1 || total < best { best = total }
+    i = i + 1
+  }
+  let secs = (best + 99) / 100
+  if secs > 8640 { return 0 - 1 }
+  return secs
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = parseIntStr(tLine)
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    let n = parseIntStr(line)
+    var angles: list<int> = []
+    var i = 0
+    while i < n {
+      line = input()
+      if line == "" { continue }
+      var idx = len(line) - 1
+      while idx >= 0 && line[idx:idx+1] != " " { idx = idx - 1 }
+      let angStr = line[idx+1:len(line)]
+      let ang = parseAngle(angStr)
+      angles = append(angles, ang)
+      i = i + 1
+    }
+    line = input()
+    while line == "" { line = input() }
+    let flash = parseIntStr(line)
+    let res = solve(angles, flash)
+    if res == 0 - 1 {
+      print("not possible")
+    } else {
+      print(res)
+    }
+    case = case + 1
+  }
+}
+
+main()
