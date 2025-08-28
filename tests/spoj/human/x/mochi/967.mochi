@@ -1,0 +1,32 @@
+// Solution for SPOJ PB - Parking Bay
+// https://www.spoj.com/problems/PB/
+
+let MOD = 10007
+
+fun powmod(base: int, exp: int): int {
+  var b = base % MOD
+  var e = exp
+  var r = 1
+  while e > 0 {
+    if e % 2 == 1 { r = (r * b) % MOD }
+    b = (b * b) % MOD
+    e = e / 2
+  }
+  return r
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let nLine = input()
+    let n = nLine as int
+    let ans = powmod(n + 1, n - 1)
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
