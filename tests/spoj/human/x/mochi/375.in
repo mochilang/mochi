@@ -1,0 +1,9 @@
+1
+
+3
+1 2 1
+2 3 2
+QUERY 1 2
+CHANGE 1 3
+QUERY 1 2
+DONE

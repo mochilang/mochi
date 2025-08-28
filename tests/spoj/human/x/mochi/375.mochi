@@ -1,0 +1,116 @@
+// Solution for SPOJ QTREE - Query on a tree
+// https://www.spoj.com/problems/QTREE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInt(str: string): int { return str as int }
+
+fun maxPath(a: int, b: int, adj: list<list<int>>, adjEdge: list<list<int>>, weights: list<int>, n: int): int {
+  var parent: list<int> = []
+  var pedge: list<int> = []
+  var i = 0
+  while i <= n {
+    parent = append(parent, -1)
+    pedge = append(pedge, -1)
+    i = i + 1
+  }
+  var q: list<int> = []
+  q = append(q, a)
+  parent[a] = a
+  var qi = 0
+  while qi < len(q) {
+    let v = q[qi]
+    qi = qi + 1
+    if v == b { break }
+    var j = 0
+    while j < len(adj[v]) {
+      let to = adj[v][j]
+      if parent[to] < 0 {
+        parent[to] = v
+        pedge[to] = adjEdge[v][j]
+        q = append(q, to)
+      }
+      j = j + 1
+    }
+  }
+  var cur = b
+  var best = 0
+  while cur != a {
+    let eidx = pedge[cur]
+    if eidx < 0 { break }
+    let w = weights[eidx]
+    if w > best { best = w }
+    cur = parent[cur]
+  }
+  return best
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let n = line as int
+    var adj: list<list<int>> = []
+    var adjEdge: list<list<int>> = []
+    var i = 0
+    while i <= n {
+      adj = append(adj, [])
+      adjEdge = append(adjEdge, [])
+      i = i + 1
+    }
+    var weights: list<int> = []
+    var e = 0
+    while e < n-1 {
+      let el = input()
+      if el == "" { continue }
+      let parts = splitSpaces(el)
+      let a = parseInt(parts[0])
+      let b = parseInt(parts[1])
+      let c = parseInt(parts[2])
+      adj[a] = append(adj[a], b)
+      adjEdge[a] = append(adjEdge[a], e)
+      adj[b] = append(adj[b], a)
+      adjEdge[b] = append(adjEdge[b], e)
+      weights = append(weights, c)
+      e = e + 1
+    }
+    while true {
+      let cmdLine = input()
+      if cmdLine == "" { continue }
+      if cmdLine == "DONE" { break }
+      let parts = splitSpaces(cmdLine)
+      if parts[0] == "QUERY" {
+        let a = parseInt(parts[1])
+        let b = parseInt(parts[2])
+        let ans = maxPath(a, b, adj, adjEdge, weights, n)
+        print(ans)
+      } else if parts[0] == "CHANGE" {
+        let idx = parseInt(parts[1]) - 1
+        let val = parseInt(parts[2])
+        weights[idx] = val
+      }
+    }
+    case = case + 1
+  }
+}
+
+main()
