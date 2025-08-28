@@ -1,0 +1,95 @@
+// Solution for SPOJ BENEFACT - The Benefactor
+// https://www.spoj.com/problems/BENEFACT/
+
+type Edge { to: int, w: int }
+type NodeDist { node: int, dist: int }
+
+let digits = {
+  "0":0, "1":1, "2":2, "3":3, "4":4,
+  "5":5, "6":6, "7":7, "8":8, "9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var num = 0
+  var inNum = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\n" || ch == "\r" {
+      if inNum {
+        res = append(res, num)
+        num = 0
+        inNum = false
+      }
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      inNum = true
+    }
+    i = i + 1
+  }
+  if inNum { res = append(res, num) }
+  return res
+}
+
+fun farthest(start: int, adj: list<list<Edge>>, n: int): NodeDist {
+  var dist: list<int> = []
+  var seen: list<bool> = []
+  for _ in 0..(n + 1) {
+    dist = append(dist, 0)
+    seen = append(seen, false)
+  }
+  var queue: list<int> = [start]
+  seen[start] = true
+  var idx = 0
+  while idx < len(queue) {
+    let v = queue[idx]
+    idx = idx + 1
+    for e in adj[v] {
+      if !seen[e.to] {
+        seen[e.to] = true
+        dist[e.to] = dist[v] + e.w
+        queue = append(queue, e.to)
+      }
+    }
+  }
+  var best = start
+  var bestd = 0
+  var i = 1
+  while i <= n {
+    if dist[i] > bestd {
+      bestd = dist[i]
+      best = i
+    }
+    i = i + 1
+  }
+  return NodeDist { node: best, dist: bestd }
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  for _case in 0..t {
+    let n = int(input())
+    var adj: list<list<Edge>> = []
+    for _ in 0..(n + 1) {
+      adj = append(adj, [])
+    }
+    var i = 0
+    while i < n - 1 {
+      let vals = parseInts(input())
+      let a = vals[0]
+      let b = vals[1]
+      let l = vals[2]
+      adj[a] = append(adj[a], Edge { to: b, w: l })
+      adj[b] = append(adj[b], Edge { to: a, w: l })
+      i = i + 1
+    }
+    let first = farthest(1, adj, n)
+    let second = farthest(first.node, adj, n)
+    print(second.dist)
+  }
+}
+
+main()
