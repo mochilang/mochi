@@ -1,0 +1,31 @@
+// Solution for SPOJ CLTZ - Collatz
+// https://www.spoj.com/problems/CLTZ/
+
+fun collatzLen(n: bigint): int {
+  let two: bigint = 2 as bigint
+  var x: bigint = n
+  var steps = 1
+  while x > 1 {
+    let q = x / two
+    let r = x - q * two
+    if r == 0 {
+      x = q
+    } else {
+      x = 3 * x + 1
+    }
+    steps = steps + 1
+  }
+  return steps
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let n: bigint = line as bigint
+    let l = collatzLen(n)
+    print(str(l))
+  }
+}
+
+main()
