@@ -1,0 +1,17 @@
+// Solution for SPOJ NGM - A Game with Numbers
+// https://www.spoj.com/problems/NGM/
+
+fun main() {
+  let line = input()
+  if line == "" { return }
+  let n = int(line)
+  let d = n % 10
+  if d == 0 {
+    print("2")
+  } else {
+    print("1")
+    print(str(d))
+  }
+}
+
+main()
