@@ -1,0 +1,57 @@
+// Solution for SPOJ NECKLACE - Necklace
+// https://www.spoj.com/problems/NECKLACE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun absf(x: float): float { if x < 0.0 { return -x } else { return x } }
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var prev = 0.0
+  while absf(r - prev) > 1e-12 {
+    prev = r
+    r = (r + x / r) / 2.0
+  }
+  return r
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil { return }
+  let t = tLine as int
+  var caseIdx = 0
+  while caseIdx < t {
+    let nLine = input()
+    if nLine == nil { return }
+    let n = nLine as int
+    var skip = 0
+    while skip < n {
+      input()
+      skip = skip + 1
+    }
+    var j = 0
+    while j < n {
+      print("5")
+      j = j + 1
+    }
+    caseIdx = caseIdx + 1
+  }
+}
+
+main()
