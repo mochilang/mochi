@@ -1,0 +1,46 @@
+// Solution for SPOJ BROUL - Babylonian Roulette
+// https://www.spoj.com/problems/BROUL/
+
+fun splitTokens(s: string): list<string> {
+  let parts = split(s, " ")
+  var res: list<string> = []
+  for p in parts {
+    if p != "" {
+      res = append(res, p)
+    }
+  }
+  return res
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil { break }
+    if len(line) == 0 { continue }
+    let parts = splitTokens(line)
+    if len(parts) < 3 { continue }
+    let p0 = int(parts[0])
+    let bet = int(parts[1])
+    let pf = int(parts[2])
+    if p0 == 0 && bet == 0 && pf == 0 { break }
+    if p0 < bet {
+      if pf == p0 {
+        print("0")
+      } else {
+        print("No accounting tablet")
+      }
+      continue
+    }
+    let diff = pf - p0
+    if diff % bet != 0 {
+      print("No accounting tablet")
+      continue
+    }
+    var units = diff / bet
+    if units < 0 { units = -units }
+    let ans = (units + 2) / 3
+    print(str(ans))
+  }
+}
+
+main()
