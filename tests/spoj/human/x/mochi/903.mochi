@@ -1,0 +1,224 @@
+/*
+SPOJ: DOUBLEVI - Double Vision
+https://www.spoj.com/problems/DOUBLEVI/
+*/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  for p in pieces {
+    if len(p) > 0 {
+      nums = append(nums, p as int)
+    }
+  }
+  return nums
+}
+
+fun less_pos(a: any, b: any): bool {
+  let ar = a.r as int
+  let br = b.r as int
+  if ar < br { return true }
+  if ar > br { return false }
+  let ac = a.c as int
+  let bc = b.c as int
+  return ac < bc
+}
+
+fun less_pair(a1: any, a2: any, b1: any, b2: any): bool {
+  if less_pos(a1, b1) { return true }
+  if less_pos(b1, a1) { return false }
+  return less_pos(a2, b2)
+}
+
+fun main() {
+  var case_idx: int = 1
+  while true {
+    let hdr = input()
+    if hdr == nil || hdr == "" { return }
+    let nums = parse_ints(hdr)
+    let n = nums[0]
+    let r = nums[1]
+    let c = nums[2]
+    if n == 0 && r == 0 && c == 0 { break }
+
+    // initialize structures
+    var grid: list<list<string>> = []
+    var positions: list<list<any>> = []
+    var s: int = 0
+    while s < n {
+      var rs: list<string> = []
+      grid = append(grid, rs)
+      var ps: list<any> = []
+      positions = append(positions, ps)
+      s = s + 1
+    }
+    var counts: list<list<int>> = []
+    var i: int = 0
+    while i < r {
+      var row: list<int> = []
+      var j: int = 0
+      while j < c {
+        row = append(row, 0)
+        j = j + 1
+      }
+      counts = append(counts, row)
+      i = i + 1
+    }
+
+    // read grid
+    var row_idx: int = 0
+    while row_idx < r {
+      let line = input()
+      let pieces = split(line, " ")
+      var sym: int = 0
+      while sym < n {
+        let str = pieces[sym]
+        grid[sym] = append(grid[sym], str)
+        var col: int = 0
+        while col < c {
+          if str[col:col+1] == "o" {
+            counts[row_idx][col] = counts[row_idx][col] + 1
+            positions[sym] = append(positions[sym], { r: row_idx, c: col })
+          }
+          col = col + 1
+        }
+        sym = sym + 1
+      }
+      row_idx = row_idx + 1
+    }
+
+    var selected: list<list<any>> = []
+    i = 0
+    while i < n {
+      var arr: list<any> = []
+      selected = append(selected, arr)
+      i = i + 1
+    }
+
+    var impossible: bool = false
+    s = 0
+    while s < n {
+      var best1: any = nil
+      var idx: int = 0
+      while idx < len(positions[s]) {
+        let p = positions[s][idx]
+        let pr = p.r as int
+        let pc = p.c as int
+        if counts[pr][pc] == 1 {
+          if best1 == nil || less_pos(p, best1) {
+            best1 = p
+          }
+        }
+        idx = idx + 1
+      }
+      if best1 != nil {
+        selected[s] = append(selected[s], best1)
+        s = s + 1
+        continue
+      }
+      var found: bool = false
+      var bestA: any = nil
+      var bestB: any = nil
+      var a: int = 0
+      while a < len(positions[s]) {
+        var b: int = a + 1
+        while b < len(positions[s]) {
+          let p1 = positions[s][a]
+          let p2 = positions[s][b]
+          let r1 = p1.r as int
+          let c1 = p1.c as int
+          let r2 = p2.r as int
+          let c2 = p2.c as int
+          var uniq: bool = true
+          var t: int = 0
+          while t < n {
+            if t != s {
+              let row1 = grid[t][r1]
+              let row2 = grid[t][r2]
+              if row1[c1:c1+1] == "o" && row2[c2:c2+1] == "o" {
+                uniq = false
+                break
+              }
+            }
+            t = t + 1
+          }
+          if uniq {
+            var first = p1
+            var second = p2
+            if less_pos(p2, p1) {
+              first = p2
+              second = p1
+            }
+            if !found || less_pair(first, second, bestA, bestB) {
+              bestA = first
+              bestB = second
+              found = true
+            }
+          }
+          b = b + 1
+        }
+        a = a + 1
+      }
+      if !found {
+        impossible = true
+        break
+      }
+      selected[s] = append(selected[s], bestA)
+      selected[s] = append(selected[s], bestB)
+      s = s + 1
+    }
+
+    print("Test " + str(case_idx))
+    if impossible {
+      print("impossible")
+    } else {
+      // apply selections
+      s = 0
+      while s < n {
+        var k: int = 0
+        while k < len(selected[s]) {
+          let p = selected[s][k]
+          let r0 = p.r as int
+          let c0 = p.c as int
+          let row = grid[s][r0]
+          grid[s][r0] = row[0:c0] + "#" + row[c0+1:]
+          k = k + 1
+        }
+        s = s + 1
+      }
+      var rIdx: int = 0
+      while rIdx < r {
+        var line = ""
+        var sym2: int = 0
+        while sym2 < n {
+          line = line + grid[sym2][rIdx]
+          if sym2 != n - 1 { line = line + " " }
+          sym2 = sym2 + 1
+        }
+        print(line)
+        rIdx = rIdx + 1
+      }
+    }
+    case_idx = case_idx + 1
+  }
+}
+
+main()
