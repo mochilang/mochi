@@ -1,0 +1,41 @@
+// Solution for SPOJ PAIRINT - Pairs of Integers
+// https://www.spoj.com/problems/PAIRINT/
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let nLine = input()
+    let n = nLine as int
+    var pairs: list<string> = []
+    var x = 10
+    while x <= n {
+      let s = str(x)
+      let target = n - x
+      var i = 0
+      var found = false
+      while i < len(s) {
+        let yStr = s[0:i] + s[i+1:len(s)]
+        let yVal = yStr as int
+        if yVal == target {
+          pairs = append(pairs, s + " + " + yStr + " = " + str(n))
+          found = true
+          break
+        }
+        i = i + 1
+      }
+      x = x + 1
+    }
+    print(str(len(pairs)))
+    var j = 0
+    while j < len(pairs) {
+      print(pairs[j])
+      j = j + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
