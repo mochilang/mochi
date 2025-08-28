@@ -1,0 +1,114 @@
+// Solution for SPOJ HELP - Help the problem setter
+// https://www.spoj.com/problems/HELP/
+
+fun splitSpaces(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun pow2(k: int): int {
+  var res = 1
+  var j = 0
+  while j < k {
+    res = res * 2
+    j = j + 1
+  }
+  return res
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var sign = 1
+  if len(str) > 0 && str[0:1] == "-" {
+    sign = 0-1
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return sign * n
+}
+
+fun dfs(node: int, left: list<int>, right: list<int>, size: list<int>): int {
+  if node == 0-1 { return 0 }
+  if size[node] > 0 { return size[node] }
+  let s = 1 + dfs(left[node], left, right, size) + dfs(right[node], left, right, size)
+  size[node] = s
+  return s
+}
+
+fun main() {
+  var outputs: list<string> = []
+  while true {
+    let line = input()
+    if line == nil || line == "" { break }
+    let n = parseIntStr(line)
+    if n == 0 { break }
+
+    var left: list<int> = []
+    var right: list<int> = []
+    var size: list<int> = []
+    var isChild: list<int> = []
+    var i = 0
+    while i <= n {
+      left = append(left, 0-1)
+      right = append(right, 0-1)
+      size = append(size, 0)
+      isChild = append(isChild, 0)
+      i = i + 1
+    }
+    i = 1
+    while i <= n {
+      var lline = input()
+      while lline == "" { lline = input() }
+      let parts = splitSpaces(lline)
+      let l = parseIntStr(parts[0])
+      let r = parseIntStr(parts[1])
+      left[i] = l
+      right[i] = r
+      if l != 0-1 { isChild[l] = 1 }
+      if r != 0-1 { isChild[r] = 1 }
+      i = i + 1
+    }
+    var root = 1
+    while root <= n && isChild[root] == 1 {
+      root = root + 1
+    }
+    let _ = dfs(root, left, right, size)
+    var lineRes = ""
+    i = 1
+    while i <= n {
+      let freq = pow2(size[i] - 1)
+      if i > 1 { lineRes = lineRes + " " }
+      lineRes = lineRes + str(freq)
+      i = i + 1
+    }
+    outputs = append(outputs, lineRes)
+  }
+  var j = 0
+  while j < len(outputs) {
+    print(outputs[j])
+    j = j + 1
+  }
+}
+
+main()
