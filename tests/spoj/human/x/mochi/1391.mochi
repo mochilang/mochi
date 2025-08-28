@@ -1,0 +1,108 @@
+// Solution for SPOJ CZ_PROB1 - Summing to a Square Prime
+// https://www.spoj.com/problems/CZ_PROB1/
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let c = s[i:i+1]
+    if c == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + c
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun sieve(limit: int): list<int> {
+  var isPrime: list<bool> = []
+  var i = 0
+  while i <= limit {
+    isPrime = append(isPrime, true)
+    i = i + 1
+  }
+  isPrime[0] = false
+  isPrime[1] = false
+  i = 2
+  while i * i <= limit {
+    if isPrime[i] {
+      var j = i * i
+      while j <= limit {
+        isPrime[j] = false
+        j = j + i
+      }
+    }
+    i = i + 1
+  }
+  var primes: list<int> = []
+  i = 2
+  while i <= limit {
+    if isPrime[i] {
+      primes = append(primes, i)
+    }
+    i = i + 1
+  }
+  return primes
+}
+
+fun main() {
+  let limit = 8000
+  let primes = sieve(limit)
+  var sp2: list<int> = []
+  for p in primes {
+    if p == 2 || p % 4 == 1 {
+      sp2 = append(sp2, p)
+    }
+  }
+  var dp: list<list<int>> = []
+  var i = 0
+  while i <= limit {
+    var row: list<int> = []
+    var j = 0
+    while j <= 3 {
+      row = append(row, 0)
+      j = j + 1
+    }
+    dp = append(dp, row)
+    i = i + 1
+  }
+  var j = 0
+  while j <= 3 {
+    dp[0][j] = 1
+    j = j + 1
+  }
+  i = 1
+  while i <= limit {
+    j = 1
+    while j <= 3 {
+      var val = dp[i][j-1]
+      if i >= j {
+        val = val + dp[i-j][j]
+      }
+      dp[i][j] = val
+      j = j + 1
+    }
+    i = i + 1
+  }
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = split(line)
+    let n = parts[0] as int
+    let k = parts[1] as int
+    let a = sp2[n-1]
+    let ans = dp[a][k]
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
