@@ -1,0 +1,112 @@
+// Solution for SPOJ CNEASY - CN Tower (Easy)
+// https://www.spoj.com/problems/CNEASY/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseAngle(str: string): int {
+  var i = 0
+  var deg = 0
+  while i < len(str) && str[i:i+1] != "." {
+    deg = deg * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  deg = deg * 100
+  if i < len(str) && str[i:i+1] == "." {
+    i = i + 1
+    var frac = 0
+    var c = 0
+    while i < len(str) && c < 2 {
+      frac = frac * 10 + (digits[str[i:i+1]] as int)
+      i = i + 1
+      c = c + 1
+    }
+    if c == 1 { frac = frac * 10 }
+    deg = deg + frac
+  }
+  return deg
+}
+
+fun sort(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  let first = input()
+  if first == nil { return }
+  let t = parseIntStr(split(first)[0])
+  var case = 0
+  while case < t {
+    let line = input()
+    if line == nil { return }
+    if line == "" { continue }
+    let n = parseIntStr(split(line)[0])
+    var angles: list<int> = []
+    var i = 0
+    while i < n {
+      let l = input()
+      if l == nil { return }
+      if l == "" { continue }
+      let p = split(l)
+      let a = parseAngle(p[1])
+      angles = append(angles, a)
+      i = i + 1
+    }
+    angles = sort(angles)
+    var maxGap = 0
+    i = 0
+    while i < len(angles) - 1 {
+      let gap = angles[i+1] - angles[i]
+      if gap > maxGap { maxGap = gap }
+      i = i + 1
+    }
+    let wrapGap = angles[0] + 36000 - angles[len(angles)-1]
+    if wrapGap > maxGap { maxGap = wrapGap }
+    let delta = 36000 - maxGap
+    let seconds = (delta * 12 + 99) / 100
+    print(str(seconds))
+    case = case + 1
+  }
+}
+
+main()
