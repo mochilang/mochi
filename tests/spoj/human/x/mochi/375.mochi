@@ -1,0 +1,120 @@
+// https://www.spoj.com/problems/QTREE/
+
+fun splitWs(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+var adj: list<list<map<string,int>>>
+var W: list<int>
+
+fun maxOnPath(a: int, b: int, N: int): int {
+  var q: list<int> = []
+  var head = 0
+  var visited: list<int> = []
+  var parent: list<int> = []
+  var via: list<int> = []
+  var i = 0
+  while i <= N {
+    visited = append(visited, 0)
+    parent = append(parent, 0 - 1)
+    via = append(via, 0)
+    i = i + 1
+  }
+  q = append(q, a)
+  visited[a] = 1
+  while head < len(q) {
+    let u = q[head]
+    head = head + 1
+    if u == b { break }
+    var j = 0
+    while j < len(adj[u]) {
+      let e = adj[u][j]
+      let v = e["to"] as int
+      if visited[v] == 0 {
+        visited[v] = 1
+        parent[v] = u
+        via[v] = e["idx"] as int
+        q = append(q, v)
+      }
+      j = j + 1
+    }
+  }
+  var cur = b
+  var ans = 0
+  while parent[cur] != 0 - 1 {
+    let idx = via[cur]
+    let w = W[idx]
+    if w > ans { ans = w }
+    cur = parent[cur]
+  }
+  return ans
+}
+
+fun main() {
+  let tStr = readNonEmpty()
+  if tStr == "" { return }
+  let t = int(tStr)
+  var case = 0
+  while case < t {
+    let nStr = readNonEmpty()
+    let N = int(nStr)
+    adj = []
+    W = []
+    var i = 0
+    while i <= N {
+      adj = append(adj, [])
+      W = append(W, 0)
+      i = i + 1
+    }
+    var e = 1
+    while e < N {
+      let parts = splitWs(readNonEmpty())
+      let a = int(parts[0])
+      let b = int(parts[1])
+      let c = int(parts[2])
+      W[e] = c
+      adj[a] = append(adj[a], { "to": b, "idx": e })
+      adj[b] = append(adj[b], { "to": a, "idx": e })
+      e = e + 1
+    }
+    while true {
+      let line = readNonEmpty()
+      if line == "DONE" { break }
+      let parts = splitWs(line)
+      if parts[0] == "QUERY" {
+        let a = int(parts[1])
+        let b = int(parts[2])
+        let ans = maxOnPath(a, b, N)
+        print(str(ans))
+      } else {
+        let idx = int(parts[1])
+        let val = int(parts[2])
+        W[idx] = val
+      }
+    }
+    case = case + 1
+  }
+}
+
+main()
