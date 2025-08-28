@@ -1,0 +1,93 @@
+// Solution for SPOJ QUEST4 - Dungeon of Death
+// https://www.spoj.com/problems/QUEST4/
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let c = s[i:i+1]
+    if c == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + c
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun bpm(adj: list<list<int>>, u: int, seen: list<bool>, matchR: list<int>): bool {
+  var i = 0
+  while i < len(adj[u]) {
+    let v = adj[u][i]
+    if !seen[v] {
+      seen[v] = true
+      if matchR[v] == 0-1 || bpm(adj, matchR[v], seen, matchR) {
+        matchR[v] = u
+        return true
+      }
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun maxMatching(adj: list<list<int>>, nRows: int, nCols: int): int {
+  var matchR: list<int> = []
+  var i = 0
+  while i < nCols {
+    matchR = append(matchR, 0-1)
+    i = i + 1
+  }
+  var result = 0
+  i = 0
+  while i < nRows {
+    var seen: list<bool> = []
+    var j = 0
+    while j < nCols {
+      seen = append(seen, false)
+      j = j + 1
+    }
+    if bpm(adj, i, seen, matchR) {
+      result = result + 1
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let n = line as int
+    var adj: list<list<int>> = []
+    var i = 0
+    while i < 120 {
+      var row: list<int> = []
+      adj = append(adj, row)
+      i = i + 1
+    }
+    var k = 0
+    while k < n {
+      line = input()
+      if line == "" { continue }
+      let parts = split(line)
+      let x = parts[0] as int
+      let y = parts[1] as int
+      adj[x] = append(adj[x], y)
+      k = k + 1
+    }
+    let ans = maxMatching(adj, 120, 120)
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
