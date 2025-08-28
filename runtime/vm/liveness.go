@@ -539,6 +539,32 @@ func peephole(fn *Function, analysis *LiveInfo) bool {
 					changed = true
 					pcMap[pc-1] = -1
 				}
+			case OpUnionAll, OpUnion:
+				if isConst(ins.B, (Value{Tag: ValueList, List: []Value{}})) {
+					ins = Instr{Op: OpMove, A: ins.A, B: ins.C, Line: ins.Line}
+					changed = true
+					pcMap[pc-1] = -1
+				} else if isConst(ins.C, (Value{Tag: ValueList, List: []Value{}})) {
+					ins = Instr{Op: OpMove, A: ins.A, B: ins.B, Line: ins.Line}
+					changed = true
+					pcMap[pc-1] = -1
+				}
+			case OpExcept:
+				if isConst(ins.C, (Value{Tag: ValueList, List: []Value{}})) {
+					ins = Instr{Op: OpMove, A: ins.A, B: ins.B, Line: ins.Line}
+					changed = true
+					pcMap[pc-1] = -1
+				} else if isConst(ins.B, (Value{Tag: ValueList, List: []Value{}})) {
+					ins = Instr{Op: OpConst, A: ins.A, Val: Value{Tag: ValueList, List: []Value{}}, Line: ins.Line}
+					changed = true
+					pcMap[pc-1] = -1
+				}
+			case OpIntersect:
+				if isConst(ins.B, (Value{Tag: ValueList, List: []Value{}})) || isConst(ins.C, (Value{Tag: ValueList, List: []Value{}})) {
+					ins = Instr{Op: OpConst, A: ins.A, Val: Value{Tag: ValueList, List: []Value{}}, Line: ins.Line}
+					changed = true
+					pcMap[pc-1] = -1
+				}
 			}
 		}
 
@@ -1047,11 +1073,35 @@ func evalBinaryConst(op Op, b, c Value) (Value, bool) {
 			return Value{Tag: ValueList, List: out}, true
 		}
 	case OpUnionAll:
+		if b.Tag == ValueList && len(b.List) == 0 {
+			if c.Tag == ValueList {
+				out := append([]Value(nil), c.List...)
+				return Value{Tag: ValueList, List: out}, true
+			}
+		}
+		if c.Tag == ValueList && len(c.List) == 0 {
+			if b.Tag == ValueList {
+				out := append([]Value(nil), b.List...)
+				return Value{Tag: ValueList, List: out}, true
+			}
+		}
 		if b.Tag == ValueList && c.Tag == ValueList {
 			out := append(append([]Value(nil), b.List...), c.List...)
 			return Value{Tag: ValueList, List: out}, true
 		}
 	case OpUnion:
+		if b.Tag == ValueList && len(b.List) == 0 {
+			if c.Tag == ValueList {
+				out := append([]Value(nil), c.List...)
+				return Value{Tag: ValueList, List: out}, true
+			}
+		}
+		if c.Tag == ValueList && len(c.List) == 0 {
+			if b.Tag == ValueList {
+				out := append([]Value(nil), b.List...)
+				return Value{Tag: ValueList, List: out}, true
+			}
+		}
 		if b.Tag == ValueList && c.Tag == ValueList {
 			seen := make(map[string]struct{}, len(b.List)+len(c.List))
 			out := make([]Value, 0, len(b.List)+len(c.List))
@@ -1072,6 +1122,15 @@ func evalBinaryConst(op Op, b, c Value) (Value, bool) {
 			return Value{Tag: ValueList, List: out}, true
 		}
 	case OpExcept:
+		if b.Tag == ValueList && len(b.List) == 0 {
+			return Value{Tag: ValueList, List: []Value{}}, true
+		}
+		if c.Tag == ValueList && len(c.List) == 0 {
+			if b.Tag == ValueList {
+				out := append([]Value(nil), b.List...)
+				return Value{Tag: ValueList, List: out}, true
+			}
+		}
 		if b.Tag == ValueList && c.Tag == ValueList {
 			set := make(map[string]struct{}, len(c.List))
 			for _, v := range c.List {
@@ -1086,6 +1145,9 @@ func evalBinaryConst(op Op, b, c Value) (Value, bool) {
 			return Value{Tag: ValueList, List: diff}, true
 		}
 	case OpIntersect:
+		if (b.Tag == ValueList && len(b.List) == 0) || (c.Tag == ValueList && len(c.List) == 0) {
+			return Value{Tag: ValueList, List: []Value{}}, true
+		}
 		if b.Tag == ValueList && c.Tag == ValueList {
 			setA := make(map[string]struct{}, len(b.List))
 			for _, v := range b.List {
