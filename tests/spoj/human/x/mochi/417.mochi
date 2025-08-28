@@ -1,0 +1,186 @@
+// Solution for SPOJ LAZYPROG - The lazy programmer
+// https://www.spoj.com/problems/LAZYPROG/
+
+// Parsing helpers
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+type Task { a: int, b: int, d: int }
+
+fun mergeTasks(left: list<Task>, right: list<Task>): list<Task> {
+  var res: list<Task> = []
+  var i = 0
+  var j = 0
+  while i < len(left) && j < len(right) {
+    if left[i].d <= right[j].d {
+      res = append(res, left[i])
+      i = i + 1
+    } else {
+      res = append(res, right[j])
+      j = j + 1
+    }
+  }
+  while i < len(left) { res = append(res, left[i]); i = i + 1 }
+  while j < len(right) { res = append(res, right[j]); j = j + 1 }
+  return res
+}
+
+fun sortTasks(arr: list<Task>): list<Task> {
+  if len(arr) <= 1 { return arr }
+  let mid = len(arr) / 2
+  let left = sortTasks(arr[0:mid])
+  let right = sortTasks(arr[mid:len(arr)])
+  return mergeTasks(left, right)
+}
+
+type Node { a: int, b: int }
+type PopRes { heap: list<Node>, node: Node }
+
+fun heap_push(h: list<Node>, item: Node): list<Node> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p].a >= heap[i].a { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<Node>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      let l = 2*i + 1
+      let r = 2*i + 2
+      var largest = i
+      if l < len(heap) && heap[l].a > heap[largest].a { largest = l }
+      if r < len(heap) && heap[r].a > heap[largest].a { largest = r }
+      if largest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[largest]
+      heap[largest] = tmp
+      i = largest
+    }
+  }
+  return PopRes { heap: heap, node: top }
+}
+
+fun format2(x: float): string {
+  var scaled = x * 100.0
+  if scaled < 0.0 { scaled = scaled - 0.5 } else { scaled = scaled + 0.5 }
+  var n = scaled as int
+  var whole = n / 100
+  var frac = n % 100
+  if frac < 0 { frac = -frac }
+  var fracStr = str(frac)
+  if frac < 10 { fracStr = "0" + fracStr }
+  return str(whole) + "." + fracStr
+}
+
+fun minExtra(tasks: list<Task>): float {
+  tasks = sortTasks(tasks)
+  var heap: list<Node> = []
+  var total = 0
+  var cost = 0.0
+  var i = 0
+  while i < len(tasks) {
+    let t = tasks[i]
+    total = total + t.b
+    heap = heap_push(heap, Node{ a: t.a, b: t.b })
+    while total > t.d {
+      let pop = heap_pop(heap)
+      heap = pop.heap
+      var node = pop.node
+      let need = total - t.d
+      if node.b <= need {
+        cost = cost + (node.b as float) / (node.a as float)
+        total = total - node.b
+      } else {
+        cost = cost + (need as float) / (node.a as float)
+        node.b = node.b - need
+        total = total - need
+        heap = heap_push(heap, node)
+      }
+    }
+    i = i + 1
+  }
+  return cost
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let n = parseIntStr(line)
+    var tasks: list<Task> = []
+    var i = 0
+    while i < n {
+      let l = input()
+      let nums = parseInts(l)
+      tasks = append(tasks, Task{ a: nums[0], b: nums[1], d: nums[2] })
+      i = i + 1
+    }
+    let ans = minExtra(tasks)
+    print(format2(ans))
+    case = case + 1
+  }
+}
+
+main()
