@@ -1,0 +1,178 @@
+// Solution for SPOJ IMPORT - Galactic Import
+// https://www.spoj.com/problems/IMPORT/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+let letters = [
+  "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T",
+  "U","V","W","X","Y","Z"
+]
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun parseIntStr(str: string): int {
+  var n = 0
+  var i = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseFloat(str: string): float {
+  var i = 0
+  var val = 0.0
+  while i < len(str) && str[i:i+1] != "." {
+    val = val * 10.0 + (digits[str[i:i+1]] as float)
+    i = i + 1
+  }
+  if i < len(str) && str[i:i+1] == "." {
+    i = i + 1
+    var base = 0.1
+    while i < len(str) {
+      val = val + (digits[str[i:i+1]] as float) * base
+      base = base / 10.0
+      i = i + 1
+    }
+  }
+  return val
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+fun letterIndex(ch: string): int {
+  var i = 0
+  while i < 26 {
+    if letters[i] == ch { return i }
+    i = i + 1
+  }
+  return 0
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let n = parseIntStr(line)
+    var value: list<float> = []
+    var star: list<bool> = []
+    var present: list<bool> = []
+    var i = 0
+    while i < 26 {
+      value = append(value, 0.0)
+      star = append(star, false)
+      present = append(present, false)
+      i = i + 1
+    }
+    var adj: list<list<bool>> = []
+    i = 0
+    while i < 26 {
+      var row: list<bool> = []
+      var j = 0
+      while j < 26 {
+        row = append(row, false)
+        j = j + 1
+      }
+      adj = append(adj, row)
+      i = i + 1
+    }
+    var count = 0
+    while count < n {
+      let line2 = input()
+      let parts = split(line2)
+      let idx = letterIndex(parts[0])
+      present[idx] = true
+      value[idx] = parseFloat(parts[1])
+      let adjStr = parts[2]
+      var k = 0
+      while k < len(adjStr) {
+        let ch = adjStr[k:k+1]
+        if ch == "*" {
+          star[idx] = true
+        } else {
+          let id2 = letterIndex(ch)
+          adj[idx][id2] = true
+          adj[id2][idx] = true
+        }
+        k = k + 1
+      }
+      count = count + 1
+    }
+    var dist: list<int> = []
+    i = 0
+    while i < 26 {
+      dist = append(dist, 1000)
+      i = i + 1
+    }
+    var queue: list<int> = []
+    var head = 0
+    i = 0
+    while i < 26 {
+      if present[i] && star[i] {
+        dist[i] = 0
+        queue = append(queue, i)
+      }
+      i = i + 1
+    }
+    while head < len(queue) {
+      let u = queue[head]
+      head = head + 1
+      var v = 0
+      while v < 26 {
+        if adj[u][v] && dist[v] > dist[u] + 1 {
+          dist[v] = dist[u] + 1
+          queue = append(queue, v)
+        }
+        v = v + 1
+      }
+    }
+    var bestVal = -1.0
+    var bestIdx = 0
+    i = 0
+    while i < 26 {
+      if present[i] && dist[i] < 1000 {
+        var eff = value[i]
+        var d = dist[i]
+        var t = 0
+        while t < d {
+          eff = eff * 0.95
+          t = t + 1
+        }
+        if eff > bestVal + 1e-9 {
+          bestVal = eff
+          bestIdx = i
+        } else if absf(eff - bestVal) <= 1e-9 && letters[i] < letters[bestIdx] {
+          bestIdx = i
+        }
+      }
+      i = i + 1
+    }
+    print("Import from " + letters[bestIdx])
+  }
+}
+
+main()
