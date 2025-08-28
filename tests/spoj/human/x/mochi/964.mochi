@@ -1,0 +1,122 @@
+// Solution for SPOJ EN - Entrapment
+// https://www.spoj.com/problems/EN/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun bfsDist(n: int, adj: list<list<int>>): list<int> {
+  var dist: list<int> = []
+  var i = 0
+  while i <= n { dist = append(dist, -1); i = i + 1 }
+  var q: list<int> = [1]
+  dist[1] = 0
+  var head = 0
+  while head < len(q) {
+    let u = q[head]
+    head = head + 1
+    var j = 0
+    while j < len(adj[u]) {
+      let v = adj[u][j]
+      if dist[v] == -1 {
+        dist[v] = dist[u] + 1
+        q = append(q, v)
+      }
+      j = j + 1
+    }
+  }
+  return dist
+}
+
+fun reachableWithout(n: int, adj: list<list<int>>, block: int): bool {
+  var vis: list<bool> = []
+  var i = 0
+  while i <= n { vis = append(vis, false); i = i + 1 }
+  var q: list<int> = []
+  vis[1] = true
+  q = append(q, 1)
+  var head = 0
+  while head < len(q) {
+    let u = q[head]
+    head = head + 1
+    if u == n { return true }
+    var j = 0
+    while j < len(adj[u]) {
+      let v = adj[u][j]
+      if v != block && !vis[v] {
+        vis[v] = true
+        q = append(q, v)
+      }
+      j = j + 1
+    }
+  }
+  return false
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  for _ in 0..t {
+    let parts = splitSpaces(input())
+    let n = parseIntStr(parts[0])
+    let m = parseIntStr(parts[1])
+    var adj: list<list<int>> = []
+    var i = 0
+    while i <= n { adj = append(adj, []); i = i + 1 }
+    var e = 0
+    while e < m {
+      let ps = splitSpaces(input())
+      let a = parseIntStr(ps[0])
+      let b = parseIntStr(ps[1])
+      adj[a] = append(adj[a], b)
+      e = e + 1
+    }
+    let dist = bfsDist(n, adj)
+    var best = n
+    var bestDist = if dist[n] >= 0 { dist[n] } else { 1_000_000 }
+    var v = 2
+    while v < n {
+      if dist[v] >= 0 {
+        if !reachableWithout(n, adj, v) {
+          if dist[v] < bestDist {
+            best = v
+            bestDist = dist[v]
+          }
+        }
+      }
+      v = v + 1
+    }
+    print(best)
+  }
+}
+
+main()
