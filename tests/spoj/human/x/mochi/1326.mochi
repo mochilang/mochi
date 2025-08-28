@@ -1,0 +1,97 @@
+// Solution for SPOJ CHASE - A Chase In WonderLand
+// https://www.spoj.com/problems/CHASE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun gcd(a: int, b: int): int {
+  var x = if a < 0 { -a } else { a }
+  var y = if b < 0 { -b } else { b }
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let k = int(line)
+    var xs: list<int> = []
+    var ys: list<int> = []
+    var i = 0
+    while i < k {
+      let l = input()
+      if l == "" { continue }
+      let parts = splitSpaces(l)
+      xs = append(xs, int(parts[0]))
+      ys = append(ys, int(parts[1]))
+      i = i + 1
+    }
+    if k <= 1 {
+      print("0")
+    } else {
+      var best = 1
+      i = 0
+      var count: map<string,int> = {}
+      while i < k {
+        var dup = 0
+        var local = 0
+        var j = i + 1
+        while j < k {
+          var dx = xs[j] - xs[i]
+          var dy = ys[j] - ys[i]
+          if dx == 0 && dy == 0 {
+            dup = dup + 1
+          } else {
+            var g = gcd(dx, dy)
+            dx = dx / g
+            dy = dy / g
+            if dx < 0 {
+              dx = -dx
+              dy = -dy
+            } else if dx == 0 {
+              dy = 1
+            }
+            let key = str(case) + "|" + str(i) + "|" + str(dy) + ":" + str(dx)
+            var prev = count[key]
+            var c = if prev == nil { 1 } else { (prev as int) + 1 }
+            count[key] = c
+            if c > local { local = c }
+          }
+          j = j + 1
+        }
+        if local + dup + 1 > best { best = local + dup + 1 }
+        i = i + 1
+      }
+      print(str(best - 1))
+    }
+    case = case + 1
+  }
+}
+
+main()
