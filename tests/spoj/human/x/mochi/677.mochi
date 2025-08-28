@@ -1,0 +1,100 @@
+// Solution for SPOJ BROW - A place for the brewery
+// https://www.spoj.com/problems/BROW/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun minCost(z: list<int>, dist: list<int>): int {
+  let n = len(z)
+  var pos: list<int> = []
+  pos = append(pos, 0)
+  var i = 0
+  while i < n {
+    pos = append(pos, pos[i] + dist[i])
+    i = i + 1
+  }
+  let L = pos[n]
+  var pos2: list<int> = []
+  var w: list<int> = []
+  i = 0
+  while i < n {
+    pos2 = append(pos2, pos[i])
+    w = append(w, z[i])
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    pos2 = append(pos2, pos[i] + L)
+    w = append(w, z[i])
+    i = i + 1
+  }
+  var prefW: list<int> = [0]
+  var prefWP: list<int> = [0]
+  i = 0
+  while i < len(pos2) {
+    prefW = append(prefW, prefW[i] + w[i])
+    prefWP = append(prefWP, prefWP[i] + w[i] * pos2[i])
+    i = i + 1
+  }
+  var j = 0
+  var ans = -1
+  i = 0
+  while i < n {
+    if j < i { j = i }
+    while j + 1 < i + n && pos2[j+1] - pos2[i] <= L / 2 {
+      j = j + 1
+    }
+    let cwW = prefW[j+1] - prefW[i+1]
+    let cwD = prefWP[j+1] - prefWP[i+1] - pos2[i] * cwW
+    let restW = prefW[i+n] - prefW[j+1]
+    let restD = prefWP[i+n] - prefWP[j+1] - pos2[i] * restW
+    let cost = cwD + restW * L - restD
+    if ans < 0 { ans = cost }
+    if cost < ans { ans = cost }
+    i = i + 1
+  }
+  return ans
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let n = int(line)
+    var z: list<int> = []
+    var dist: list<int> = []
+    var i = 0
+    while i < n {
+      line = input()
+      if line == "" { continue }
+      let parts = splitSpaces(line)
+      z = append(z, int(parts[0]))
+      dist = append(dist, int(parts[1]))
+      i = i + 1
+    }
+    let res = minCost(z, dist)
+    print(str(res))
+    if case + 1 < t { print("\n") }
+    case = case + 1
+  }
+}
+
+main()
