@@ -1,0 +1,57 @@
+/*
+SPOJ: LWAR - Lethal Warfare
+https://www.spoj.com/problems/LWAR/
+*/
+
+fun transform(bits: string): string {
+  let n = len(bits)
+  var res = ""
+  var i = 0
+  while n - i > 1 {
+    let b1 = bits[i:i+1]
+    if b1 == "0" {
+      res = res + bits[i:n]
+      return res
+    }
+    let b2 = bits[i+1:i+2]
+    if b2 == "1" {
+      res = res + "10"
+      var j = i + 2
+      while j < n {
+        let c = bits[j:j+1]
+        if c == "0" {
+          res = res + "1"
+        } else {
+          res = res + "0"
+        }
+        j = j + 1
+      }
+      return res
+    }
+    res = res + "11"
+    i = i + 2
+  }
+  res = res + bits[i:n]
+  return res
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun main() {
+  let t = (readNonEmpty()) as int
+  var k = 0
+  while k < t {
+    let s = readNonEmpty()
+    let out = transform(s)
+    print(out)
+    k = k + 1
+  }
+}
+
+main()
