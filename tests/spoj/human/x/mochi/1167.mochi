@@ -1,0 +1,31 @@
+// Solution for SPOJ MINCOUNT - Move To Invert
+// https://www.spoj.com/problems/MINCOUNT/
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var i = 0
+  while i < t {
+    let line = input()
+    if line == "" { continue }
+    let h = line as int
+    var moves = 0
+    if h > 0 {
+      let k = (h - 1) / 3
+      let base = (3 * k * (k + 1)) / 2
+      let r = h % 3
+      if r == 1 {
+        moves = base
+      } else if r == 2 {
+        moves = base + (k + 1)
+      } else {
+        moves = base + 2 * (k + 1)
+      }
+    }
+    print(moves)
+    i = i + 1
+  }
+}
+
+main()
