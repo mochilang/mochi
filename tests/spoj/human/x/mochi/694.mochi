@@ -1,0 +1,99 @@
+// Solution for SPOJ DISUBSTR - Distinct Substrings
+// https://www.spoj.com/problems/DISUBSTR/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun compareSuffix(s: string, i: int, j: int): int {
+  var a = i
+  var b = j
+  var n = len(s)
+  while a < n && b < n {
+    let ca = s[a:a+1]
+    let cb = s[b:b+1]
+    if ca < cb { return -1 }
+    if ca > cb { return 1 }
+    a = a + 1
+    b = b + 1
+  }
+  if a == n && b == n { return 0 }
+  if a == n { return -1 }
+  return 1
+}
+
+fun sortSuffixes(s: string): list<int> {
+  var arr: list<int> = []
+  var k = 0
+  while k < len(s) {
+    arr = append(arr, k)
+    k = k + 1
+  }
+  var n = len(arr)
+  var i = 0
+  while i < n {
+    var j = 0
+    while j + 1 < n - i {
+      if compareSuffix(s, arr[j], arr[j+1]) > 0 {
+        let tmp = arr[j]
+        arr[j] = arr[j+1]
+        arr[j+1] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun lcp(s: string, i: int, j: int): int {
+  var a = i
+  var b = j
+  var c = 0
+  var n = len(s)
+  while a < n && b < n && s[a:a+1] == s[b:b+1] {
+    c = c + 1
+    a = a + 1
+    b = b + 1
+  }
+  return c
+}
+
+fun distinctSubstrings(s: string): int {
+  let n = len(s)
+  if n == 0 { return 0 }
+  let suff = sortSuffixes(s)
+  var total = n * (n + 1) / 2
+  var sum = 0
+  var i = 1
+  while i < n {
+    sum = sum + lcp(s, suff[i-1], suff[i])
+    i = i + 1
+  }
+  return total - sum
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var idx = 0
+  while idx < t {
+    let s = input()
+    let ans = distinctSubstrings(s)
+    print(str(ans))
+    idx = idx + 1
+  }
+}
+
+main()
