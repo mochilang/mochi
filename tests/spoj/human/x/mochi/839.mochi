@@ -1,0 +1,168 @@
+// Solution for SPOJ OPTM - Optimal Marks
+// https://www.spoj.com/problems/OPTM/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = parseIntStr(tLine)
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    let nm = splitSpaces(line)
+    let N = parseIntStr(nm[0])
+    let M = parseIntStr(nm[1])
+
+    // adjacency list
+    var adj: list<list<int>> = []
+    var i = 0
+    while i <= N {
+      adj = append(adj, [])
+      i = i + 1
+    }
+
+    var e = 0
+    while e < M {
+      line = input()
+      if line == "" { continue }
+      let parts = splitSpaces(line)
+      let u = parseIntStr(parts[0])
+      let v = parseIntStr(parts[1])
+      adj[u] = append(adj[u], v)
+      adj[v] = append(adj[v], u)
+      e = e + 1
+    }
+
+    // known marks
+    line = input()
+    while line == "" { line = input() }
+    let K = parseIntStr(line)
+    var mark = make_int_list(N + 1, -1)
+    var k = 0
+    while k < K {
+      line = input()
+      if line == "" { continue }
+      let parts = splitSpaces(line)
+      let u = parseIntStr(parts[0])
+      let p = parseIntStr(parts[1])
+      mark[u] = p
+      k = k + 1
+    }
+
+    var vis = make_int_list(N + 1, 0)
+    var node = 1
+    while node <= N {
+      if mark[node] < 0 && vis[node] == 0 {
+        // BFS for component of unknown nodes
+        var queue: list<int> = []
+        var qi = 0
+        queue = append(queue, node)
+        vis[node] = 1
+        var comp: list<int> = []
+        var bitCnt = make_int_list(31, 0)
+        var total = 0
+        while qi < len(queue) {
+          let u = queue[qi]
+          qi = qi + 1
+          comp = append(comp, u)
+          var j = 0
+          while j < len(adj[u]) {
+            let v = adj[u][j]
+            if mark[v] < 0 {
+              if vis[v] == 0 {
+                vis[v] = 1
+                queue = append(queue, v)
+              }
+            } else {
+              let val = mark[v]
+              total = total + 1
+              var b = 0
+              var mask = 1
+              while b < 31 {
+                if ((val / mask) % 2) == 1 {
+                  bitCnt[b] = bitCnt[b] + 1
+                }
+                mask = mask * 2
+                b = b + 1
+              }
+            }
+            j = j + 1
+          }
+        }
+        var x = 0
+        var b = 0
+        var mask = 1
+        while b < 31 {
+          if bitCnt[b] * 2 > total {
+            x = x + mask
+          }
+          mask = mask * 2
+          b = b + 1
+        }
+        var idx = 0
+        while idx < len(comp) {
+          mark[comp[idx]] = x
+          idx = idx + 1
+        }
+      }
+      node = node + 1
+    }
+
+    i = 1
+    while i <= N {
+      print(str(mark[i]))
+      i = i + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
