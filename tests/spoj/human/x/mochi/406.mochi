@@ -1,0 +1,146 @@
+// Solution for SPOJ LOGIC - Logic
+// https://www.spoj.com/problems/LOGIC/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_str_list(n: int, value: string): list<string> {
+  var lst: list<string> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+var op: list<string>
+var in1: list<int>
+var in2: list<int>
+var val: list<int>
+var seen: list<int>
+
+fun evalNode(id: int): int {
+  if seen[id] == 1 { return val[id] }
+  let o = op[id]
+  var res = 0
+  if o == "&" {
+    let a = evalNode(in1[id])
+    let b = evalNode(in2[id])
+    if a == 1 && b == 1 { res = 1 } else { res = 0 }
+  } else if o == "|" {
+    let a = evalNode(in1[id])
+    let b = evalNode(in2[id])
+    if a == 1 || b == 1 { res = 1 } else { res = 0 }
+  } else if o == "!" {
+    let a = evalNode(in1[id])
+    if a == 1 { res = 0 } else { res = 1 }
+  } else if o == "o" {
+    res = evalNode(in1[id])
+  } else {
+    res = val[id]
+  }
+  val[id] = res
+  seen[id] = 1
+  return res
+}
+
+fun main() {
+  let first = input()
+  if first == "" { return }
+  let n = first as int
+  var ci = 0
+  while ci < n {
+    op = make_str_list(100, "")
+    in1 = make_int_list(100, -1)
+    in2 = make_int_list(100, -1)
+    val = make_int_list(100, 0)
+    seen = make_int_list(100, 0)
+    var nin = make_int_list(100, 0)
+    var inputs: list<int> = []
+    var outputs: list<int> = []
+    while true {
+      let line = input()
+      if line == "" { continue }
+      if line == "end" { break }
+      let toks = split(line)
+      let t0 = toks[0]
+      let id = (t0[0:1] as int) * 10 + (t0[1:2] as int)
+      let o = t0[2:3]
+      op[id] = o
+      if o == "i" { inputs = append(inputs, id) }
+      if o == "o" { outputs = append(outputs, id) }
+      var idx = 1
+      while idx < len(toks) {
+        let t = toks[idx]
+        if t == ".." { break }
+        let to = (t[0:1] as int) * 10 + (t[1:2] as int)
+        if nin[to] == 0 {
+          in1[to] = id
+        } else {
+          in2[to] = id
+        }
+        nin[to] = nin[to] + 1
+        idx = idx + 1
+      }
+    }
+    let tline = input()
+    let t = tline as int
+    var case = 0
+    while case < t {
+      var inp = input()
+      while inp == "" { inp = input() }
+      var i = 0
+      while i < 100 {
+        seen[i] = 0
+        val[i] = 0
+        i = i + 1
+      }
+      i = 0
+      while i < len(inputs) {
+        let id = inputs[i]
+        if inp[i:i+1] == "1" { val[id] = 1 } else { val[id] = 0 }
+        seen[id] = 1
+        i = i + 1
+      }
+      var outStr = ""
+      i = 0
+      while i < len(outputs) {
+        let id = outputs[i]
+        let v = evalNode(id)
+        if v == 1 { outStr = outStr + "1" } else { outStr = outStr + "0" }
+        i = i + 1
+      }
+      print(outStr)
+      case = case + 1
+    }
+    print("")
+    ci = ci + 1
+  }
+}
+
+main()
