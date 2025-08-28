@@ -1,0 +1,205 @@
+// Solution for SPOJ TRIOPT - Trigonometric optimization
+// https://www.spoj.com/problems/TRIOPT/
+
+let pi = 3.141592653589793
+let digs = ["0","1","2","3","4","5","6","7","8","9"]
+let dmap = {"0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9}
+
+fun absf(x: float): float { if x < 0.0 { return -x } else { return x } }
+
+fun sin(x: float): float {
+  var y = x
+  while y > pi { y = y - 2.0 * pi }
+  while y < -pi { y = y + 2.0 * pi }
+  var term = y
+  var res = y
+  var i = 1
+  while i < 10 {
+    term = -term * y * y / ((2.0 * i as float) * (2.0 * i as float + 1.0))
+    res = res + term
+    i = i + 1
+  }
+  return res
+}
+
+fun cos(x: float): float {
+  var y = x
+  while y > pi { y = y - 2.0 * pi }
+  while y < -pi { y = y + 2.0 * pi }
+  var term = 1.0
+  var res = 1.0
+  var i = 1
+  while i < 10 {
+    term = -term * y * y / ((2.0 * i as float - 1.0) * (2.0 * i as float))
+    res = res + term
+    i = i + 1
+  }
+  return res
+}
+
+fun parseInt(s: string): int {
+  var i = 0
+  var n = 0
+  while i < len(s) {
+    n = n * 10 + (dmap[s[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun intToStr(n: int): string {
+  if n == 0 { return "0" }
+  var num = n
+  var neg = false
+  if num < 0 { neg = true; num = -num }
+  var res = ""
+  while num > 0 {
+    let d = num % 10
+    res = digs[d] + res
+    num = num / 10
+  }
+  if neg { res = "-" + res }
+  return res
+}
+
+fun roundf(x: float): int { return (x + 0.5) as int }
+
+fun evalFunc(fn: string, v: int): float {
+  let x = v as float
+  if fn == "sin" { return sin(x) } else { return cos(x) }
+}
+
+fun base(fn: string, mode: string): float {
+  if fn == "sin" {
+    if mode == "max" { return pi/2.0 } else { return 3.0*pi/2.0 }
+  } else {
+    if mode == "max" { return 0.0 } else { return pi }
+  }
+}
+
+fun format10(x: float): string {
+  var y = x
+  var neg = false
+  if y < 0.0 { neg = true; y = -y }
+  let intPart = y as int
+  var frac = y - (intPart as float)
+  var s = intToStr(intPart) + "."
+  var i = 0
+  while i < 10 {
+    frac = frac * 10.0
+    let d = frac as int
+    s = s + digs[d]
+    frac = frac - (d as float)
+    i = i + 1
+  }
+  if neg { s = "-" + s }
+  return s
+}
+
+fun solveCase(f1: string, f2: string, f3: string, mode: string, S: int): float {
+  if S <= 200 {
+    var best = if mode == "max" { -1e9 } else { 1e9 }
+    var x = 1
+    while x <= S - 2 {
+      var y = 1
+      while y <= S - x - 1 {
+        let z = S - x - y
+        let val = evalFunc(f1, x) + evalFunc(f2, y) + evalFunc(f3, z)
+        if (mode == "max" && val > best) || (mode == "min" && val < best) {
+          best = val
+        }
+        y = y + 1
+      }
+      x = x + 1
+    }
+    return best
+  }
+  let rng = 12
+  let b1 = base(f1, mode)
+  let b2 = base(f2, mode)
+  let b3 = base(f3, mode)
+  let B = b1 + b2 + b3
+  let N = roundf(((S as float) - B) / (2.0 * pi))
+  let k1 = N / 3
+  let k2 = (N - k1) / 2
+  let x0 = b1 + 2.0 * pi * (k1 as float)
+  let rx = roundf(x0)
+  var candx: list<int> = []
+  var d = -rng
+  while d <= rng {
+    let x = rx + d
+    if x >= 1 && x <= S - 2 { candx = append(candx, x) }
+    d = d + 1
+  }
+  d = 1
+  while d <= rng && d <= S - 2 {
+    candx = append(candx, d)
+    d = d + 1
+  }
+  d = S - 2 - rng
+  if d < 1 { d = 1 }
+  while d <= S - 2 {
+    candx = append(candx, d)
+    d = d + 1
+  }
+  var best = if mode == "max" { -1e9 } else { 1e9 }
+  var xi = 0
+  while xi < len(candx) {
+    let x = candx[xi]
+    let rem = S - x
+    let B23 = b2 + b3
+    let N2 = roundf(((rem as float) - B23) / (2.0 * pi))
+    let k2p = N2 / 2
+    let y0 = b2 + 2.0 * pi * (k2p as float)
+    let ry = roundf(y0)
+    var candy: list<int> = []
+    var dd = -rng
+    while dd <= rng {
+      let y = ry + dd
+      if y >= 1 && y <= rem - 1 { candy = append(candy, y) }
+      dd = dd + 1
+    }
+    dd = 1
+    while dd <= rng && dd <= rem - 1 {
+      candy = append(candy, dd)
+      dd = dd + 1
+    }
+    dd = rem - 1 - rng
+    if dd < 1 { dd = 1 }
+    while dd <= rem - 1 {
+      candy = append(candy, dd)
+      dd = dd + 1
+    }
+    var yi = 0
+    while yi < len(candy) {
+      let y = candy[yi]
+      let z = rem - y
+      if z >= 1 {
+        let val = evalFunc(f1, x) + evalFunc(f2, y) + evalFunc(f3, z)
+        if (mode == "max" && val > best) || (mode == "min" && val < best) {
+          best = val
+        }
+      }
+      yi = yi + 1
+    }
+    xi = xi + 1
+  }
+  return best
+}
+
+fun main() {
+  let t = parseInt(input())
+  var i = 0
+  while i < t {
+    let f1 = input()
+    let f2 = input()
+    let f3 = input()
+    let mode = input()
+    let S = parseInt(input())
+    let ans = solveCase(f1, f2, f3, mode, S)
+    print(format10(ans))
+    i = i + 1
+  }
+}
+
+main()
