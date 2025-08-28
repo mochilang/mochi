@@ -1,0 +1,34 @@
+// Solution for SPOJ FAVDICE - Favorite Dice
+// https://www.spoj.com/problems/FAVDICE/
+
+fun format2(x: float): string {
+  var scaled = x * 100.0 + 0.5
+  var n = scaled as int
+  var whole = n / 100
+  var frac = n % 100
+  var fracStr = str(frac)
+  if frac < 10 { fracStr = "0" + fracStr }
+  return str(whole) + "." + fracStr
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let n = int(line)
+    var i = 1
+    var sum = 0.0
+    while i <= n {
+      sum = sum + (n as float) / (i as float)
+      i = i + 1
+    }
+    print(format2(sum))
+    case = case + 1
+  }
+}
+
+main()
