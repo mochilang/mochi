@@ -1,0 +1,168 @@
+// Solution for SPOJ EQDIV - Equidivisions
+// https://www.spoj.com/problems/EQDIV/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun makeIntMatrix(n: int, value: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n { row = append(row, value); j = j + 1 }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun makeBoolMatrix(n: int): list<list<bool>> {
+  var res: list<list<bool>> = []
+  var i = 0
+  while i < n {
+    var row: list<bool> = []
+    var j = 0
+    while j < n { row = append(row, false); j = j + 1 }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun contiguous(grid: list<list<int>>, n: int, region: int): bool {
+  var vis = makeBoolMatrix(n)
+  var sr = -1
+  var sc = -1
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < n {
+      if grid[i][j] == region {
+        sr = i
+        sc = j
+        break
+      }
+      j = j + 1
+    }
+    if sr >= 0 { break }
+    i = i + 1
+  }
+  if sr < 0 { return false }
+  var queue: list<list<int>> = [[sr, sc]]
+  vis[sr][sc] = true
+  var qi = 0
+  while qi < len(queue) {
+    let cell = queue[qi]
+    let r = cell[0]
+    let c = cell[1]
+    if r > 0 && vis[r-1][c] == false && grid[r-1][c] == region {
+      vis[r-1][c] = true
+      queue = append(queue, [r-1, c])
+    }
+    if r + 1 < n && vis[r+1][c] == false && grid[r+1][c] == region {
+      vis[r+1][c] = true
+      queue = append(queue, [r+1, c])
+    }
+    if c > 0 && vis[r][c-1] == false && grid[r][c-1] == region {
+      vis[r][c-1] = true
+      queue = append(queue, [r, c-1])
+    }
+    if c + 1 < n && vis[r][c+1] == false && grid[r][c+1] == region {
+      vis[r][c+1] = true
+      queue = append(queue, [r, c+1])
+    }
+    qi = qi + 1
+  }
+  i = 0
+  while i < n {
+    var j = 0
+    while j < n {
+      if grid[i][j] == region && vis[i][j] == false {
+        return false
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun check(grid: list<list<int>>, n: int): bool {
+  var region = 1
+  while region <= n {
+    if !contiguous(grid, n, region) {
+      return false
+    }
+    region = region + 1
+  }
+  return true
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil { return }
+    let n = parseIntStr(line)
+    if n == 0 { break }
+    var grid = makeIntMatrix(n, 0)
+    var r = 1
+    while r < n {
+      let ln = input()
+      let parts = splitSpaces(ln)
+      var j = 0
+      while j + 1 < len(parts) {
+        let a = parseIntStr(parts[j])
+        let b = parseIntStr(parts[j+1])
+        grid[a-1][b-1] = r
+        j = j + 2
+      }
+      r = r + 1
+    }
+    var i = 0
+    while i < n {
+      var j = 0
+      while j < n {
+        if grid[i][j] == 0 { grid[i][j] = n }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    if check(grid, n) {
+      print("good")
+    } else {
+      print("wrong")
+    }
+  }
+}
+
+main()
