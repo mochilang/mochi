@@ -1,0 +1,17 @@
+3
+5 .5 B
+C start
+start start
+B C
+D C
+end end
+5 .99 C
+start start
+A B
+B A
+C end
+end end
+3 .5 label
+start start
+label label
+end end
