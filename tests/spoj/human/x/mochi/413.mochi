@@ -1,0 +1,122 @@
+// Solution for SPOJ WPUZZLES - Word Puzzles
+// https://www.spoj.com/problems/WPUZZLES/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var num = 0
+  var inNum = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      num = num*10 + (digits[ch] as int)
+      inNum = true
+    } else {
+      if inNum {
+        res = append(res, num)
+        num = 0
+        inNum = false
+      }
+    }
+    i = i + 1
+  }
+  if inNum { res = append(res, num) }
+  return res
+}
+
+fun readInts(): list<int> {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return parseInts(line)
+}
+
+fun readLine(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun main() {
+  let dirsR: list<int> = [-1,-1,0,1,1,1,0,-1]
+  let dirsC: list<int> = [0,1,1,1,0,-1,-1,-1]
+  let dirChar: list<string> = ["A","B","C","D","E","F","G","H"]
+  let t = readInts()[0] as int
+  var tc = 0
+  while tc < t {
+    let hdr = readInts()
+    let L = hdr[0] as int
+    let C = hdr[1] as int
+    let W = hdr[2] as int
+    var grid: list<string> = []
+    var i = 0
+    while i < L {
+      grid = append(grid, readLine())
+      i = i + 1
+    }
+    var words: list<string> = []
+    var j = 0
+    while j < W {
+      words = append(words, readLine())
+      j = j + 1
+    }
+    j = 0
+    while j < W {
+      let w = words[j]
+      var done = false
+      var r = 0
+      while r < L {
+        var c = 0
+        while c < C {
+          if grid[r][c:c+1] == w[0:1] {
+            var d = 0
+            while d < 8 {
+              let rr = dirsR[d] as int
+              let cc = dirsC[d] as int
+              var k = 1
+              var nr = r + rr
+              var nc = c + cc
+              var ok = true
+              while k < len(w) {
+                if nr < 0 || nr >= L || nc < 0 || nc >= C {
+                  ok = false
+                  break
+                }
+                if grid[nr][nc:nc+1] != w[k:k+1] {
+                  ok = false
+                  break
+                }
+                nr = nr + rr
+                nc = nc + cc
+                k = k + 1
+              }
+              if ok {
+                print(str(r) + " " + str(c) + " " + dirChar[d])
+                done = true
+                break
+              }
+              d = d + 1
+            }
+            if done { break }
+          }
+          c = c + 1
+        }
+        if done { break }
+        r = r + 1
+      }
+      j = j + 1
+    }
+    tc = tc + 1
+    if tc < t { print("") }
+  }
+}
+
+main()
