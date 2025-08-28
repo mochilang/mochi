@@ -1,0 +1,34 @@
+// Solution for SPOJ PALACE - Accomodate the palace
+// https://www.spoj.com/problems/PALACE/
+
+let MOD = 98777
+
+fun powMod(a: int, b: int, m: int): int {
+  var res = 1
+  var base = a % m
+  var exp = b
+  while exp > 0 {
+    if exp % 2 == 1 { res = (res * base) % m }
+    base = (base * base) % m
+    exp = exp / 2
+  }
+  return res
+}
+
+fun main() {
+  let kLine = input()
+  if kLine == "" { return }
+  let k = kLine as int
+  var i = 0
+  while i < k {
+    let nLine = input()
+    if nLine == "" { break }
+    let n = nLine as int
+    let exp = (n - 1) * (n - 1)
+    let ans = powMod(2, exp, MOD)
+    print(str(ans))
+    i = i + 1
+  }
+}
+
+main()
