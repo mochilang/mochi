@@ -1,0 +1,141 @@
+// Solution for SPOJ TRANSMIT - Transmitters
+// https://www.spoj.com/problems/TRANSMIT/
+
+let PI = 3.141592653589793
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0, "1":1, "2":2, "3":3, "4":4,
+  "5":5, "6":6, "7":7, "8":8, "9":9,
+}
+
+fun parseFloat(s: string): float {
+  var i = 0
+  var neg = false
+  if len(s) > 0 && s[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var val = 0.0
+  while i < len(s) && s[i:i+1] != "." {
+    val = val * 10.0 + (digits[s[i:i+1]] as float)
+    i = i + 1
+  }
+  if i < len(s) && s[i:i+1] == "." {
+    i = i + 1
+    var base = 0.1
+    while i < len(s) {
+      val = val + (digits[s[i:i+1]] as float) * base
+      base = base / 10.0
+      i = i + 1
+    }
+  }
+  if neg { val = -val }
+  return val
+}
+
+fun atanApprox(x: float): float {
+  if x > 1.0 { return PI/2.0 - x/(x*x + 0.28) }
+  if x < (-1.0) { return -PI/2.0 - x/(x*x + 0.28) }
+  return x/(1.0 + 0.28*x*x)
+}
+
+fun atan2Approx(y: float, x: float): float {
+  if x > 0.0 { return atanApprox(y/x) }
+  if x < 0.0 {
+    if y >= 0.0 { return atanApprox(y/x) + PI }
+    return atanApprox(y/x) - PI
+  }
+  if y > 0.0 { return PI/2.0 }
+  if y < 0.0 { return -PI/2.0 }
+  return 0.0
+}
+
+fun sortFloats(arr: list<float>): list<float> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  while true {
+    var line = input()
+    if line == "" { break }
+    let parts = split(line)
+    let cx = int(parts[0]) as float
+    let cy = int(parts[1]) as float
+    let r = parseFloat(parts[2])
+    if r < 0.0 { break }
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    let r2 = r * r
+    var angles: list<float> = []
+    var i = 0
+    while i < n {
+      var pl = input()
+      while pl == "" { pl = input() }
+      let pp = split(pl)
+      let px = int(pp[0]) as float
+      let py = int(pp[1]) as float
+      let dx = px - cx
+      let dy = py - cy
+      if dx*dx + dy*dy <= r2 + 1e-9 {
+        angles = append(angles, atan2Approx(dy, dx))
+      }
+      i = i + 1
+    }
+    let m = len(angles)
+    if m == 0 {
+      print("0")
+    } else {
+      angles = sortFloats(angles)
+      var ext: list<float> = []
+      var k = 0
+      while k < m {
+        ext = append(ext, angles[k])
+        ext = append(ext, angles[k] + 2.0*PI)
+        k = k + 1
+      }
+      var best = 0
+      var left = 0
+      var right = 0
+      while left < m {
+        while right < len(ext) && right < left + m && ext[right] - ext[left] <= PI + 1e-9 {
+          right = right + 1
+        }
+        let count = right - left
+        if count > best { best = count }
+        left = left + 1
+      }
+      print(str(best))
+    }
+  }
+}
+
+main()
