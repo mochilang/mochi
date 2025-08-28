@@ -1,0 +1,142 @@
+// Solution for SPOJ FIRM - Goods
+// https://www.spoj.com/problems/FIRM/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun main() {
+  let lineN = input()
+  if lineN == nil { return }
+  let n = parseIntStr(lineN)
+  let line = input()
+  let parts = split(line)
+  var desired: list<int> = []
+  var i = 0
+  while i < n {
+    desired = append(desired, parseIntStr(parts[i]))
+    i = i + 1
+  }
+
+  var perm: list<int> = []
+  i = 0
+  while i < n {
+    perm = append(perm, 0)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    let j = desired[i] - 1
+    perm[j] = i
+    i = i + 1
+  }
+
+  var visited: list<bool> = []
+  i = 0
+  while i < n {
+    visited = append(visited, false)
+    i = i + 1
+  }
+
+  var d1a: list<int> = []
+  var d1b: list<int> = []
+  var d2a: list<int> = []
+  var d2b: list<int> = []
+
+  var start = 0
+  while start < n {
+    if !visited[start] {
+      var cyc: list<int> = []
+      var j = start
+      while !visited[j] {
+        visited[j] = true
+        cyc = append(cyc, j)
+        j = perm[j]
+      }
+      let k = len(cyc)
+      if k == 1 {
+        // nothing
+      } else if k == 2 {
+        d1a = append(d1a, cyc[0] + 1)
+        d1b = append(d1b, cyc[1] + 1)
+      } else {
+        var idx = 0
+        let m1 = (k - 1) / 2
+        while idx < m1 {
+          d1a = append(d1a, cyc[idx] + 1)
+          d1b = append(d1b, cyc[k - 2 - idx] + 1)
+          idx = idx + 1
+        }
+        idx = 0
+        let m2 = k / 2
+        while idx < m2 {
+          d2a = append(d2a, cyc[idx] + 1)
+          d2b = append(d2b, cyc[k - 1 - idx] + 1)
+          idx = idx + 1
+        }
+      }
+    }
+    start = start + 1
+  }
+
+  if len(d2a) == 0 {
+    if len(d1a) == 0 {
+      print("0")
+    } else {
+      print("1")
+      var lineOut = str(len(d1a))
+      i = 0
+      while i < len(d1a) {
+        lineOut = lineOut + " " + str(d1a[i]) + "-" + str(d1b[i])
+        i = i + 1
+      }
+      print(lineOut)
+    }
+  } else {
+    print("2")
+    var line1 = str(len(d1a))
+    i = 0
+    while i < len(d1a) {
+      line1 = line1 + " " + str(d1a[i]) + "-" + str(d1b[i])
+      i = i + 1
+    }
+    print(line1)
+    var line2 = str(len(d2a))
+    i = 0
+    while i < len(d2a) {
+      line2 = line2 + " " + str(d2a[i]) + "-" + str(d2b[i])
+      i = i + 1
+    }
+    print(line2)
+  }
+}
+
+main()
