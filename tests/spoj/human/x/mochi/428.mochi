@@ -1,0 +1,93 @@
+// Solution for SPOJ PARTPALI - Particular Palindromes
+// https://www.spoj.com/problems/PARTPALI/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun zeros(n: int): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < n {
+    arr = append(arr, 0)
+    i = i + 1
+  }
+  return arr
+}
+
+fun countPal(m: int, s: int): int {
+  var pow10: list<int> = []
+  var i = 0
+  var p = 1 % m
+  while i < s {
+    pow10 = append(pow10, p)
+    p = (p * 10) % m
+    i = i + 1
+  }
+  let k = (s + 1) / 2
+  var dp = zeros(m)
+  dp[0] = 1
+  var pos = 0
+  while pos < k {
+    var next = zeros(m)
+    var d = 0
+    while d < 10 {
+      if pos == 0 && d == 0 {
+        d = d + 1
+        continue
+      }
+      var r = 0
+      while r < m {
+        let cnt = dp[r]
+        if cnt > 0 {
+          let j = s - 1 - pos
+          var contrib = 0
+          if pos == j {
+            contrib = (d * (pow10[j] as int)) % m
+          } else {
+            contrib = (d * ((pow10[pos] + pow10[j]) % m)) % m
+          }
+          let nr = (r + contrib) % m
+          next[nr] = (next[nr] as int) + cnt
+        }
+        r = r + 1
+      }
+      d = d + 1
+    }
+    dp = next
+    pos = pos + 1
+  }
+  return dp[0]
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = tStr as int
+  var i = 0
+  while i < t {
+    let line = input()
+    let parts = split(line, " ")
+    let m = parts[0] as int
+    let s = parts[1] as int
+    let res = countPal(m, s)
+    print(str(res))
+    i = i + 1
+  }
+}
+
+main()
