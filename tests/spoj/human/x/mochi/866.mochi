@@ -1,0 +1,118 @@
+// Solution for SPOJ DNA - DNA Translation
+// https://www.spoj.com/problems/DNA/
+
+fun complement(s: string): string {
+  let m = {"A":"T","T":"A","C":"G","G":"C"}
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    res = res + m[s[i:i+1]]
+    i = i + 1
+  }
+  return res
+}
+
+fun reverse(s: string): string {
+  var res = ""
+  var i = len(s) - 1
+  while i >= 0 {
+    res = res + s[i:i+1]
+    i = i - 1
+  }
+  return res
+}
+
+fun replaceTWithU(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == "T" {
+      res = res + "U"
+    } else {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+let codon = {
+  "UUU":"Phe","UUC":"Phe","UUA":"Leu","UUG":"Leu",
+  "UCU":"Ser","UCC":"Ser","UCA":"Ser","UCG":"Ser",
+  "UAU":"Tyr","UAC":"Tyr","UGU":"Cys","UGC":"Cys",
+  "UGG":"Trp",
+  "CUU":"Leu","CUC":"Leu","CUA":"Leu","CUG":"Leu",
+  "CCU":"Pro","CCC":"Pro","CCA":"Pro","CCG":"Pro",
+  "CAU":"His","CAC":"His","CAA":"Gln","CAG":"Gln",
+  "CGU":"Arg","CGC":"Arg","CGA":"Arg","CGG":"Arg",
+  "AUU":"Ile","AUC":"Ile","AUA":"Ile","AUG":"Met",
+  "ACU":"Thr","ACC":"Thr","ACA":"Thr","ACG":"Thr",
+  "AAU":"Asn","AAC":"Asn","AAA":"Lys","AAG":"Lys",
+  "AGU":"Ser","AGC":"Ser","AGA":"Arg","AGG":"Arg",
+  "GUU":"Val","GUC":"Val","GUA":"Val","GUG":"Val",
+  "GCU":"Ala","GCC":"Ala","GCA":"Ala","GCG":"Ala",
+  "GAU":"Asp","GAC":"Asp","GAA":"Glu","GAG":"Glu",
+  "GGU":"Gly","GGC":"Gly","GGA":"Gly","GGG":"Gly",
+}
+
+fun translate(mrna: string): string {
+  var i = 0
+  while i + 3 <= len(mrna) {
+    if mrna[i:i+3] == "AUG" {
+      var j = i + 3
+      var protein = ""
+      var first = true
+      while j + 3 <= len(mrna) {
+        let c = mrna[j:j+3]
+        if c == "UAA" || c == "UAG" || c == "UGA" {
+          if first { return "" }
+          return protein
+        }
+        let amino = codon[c]
+        if first {
+          protein = amino
+          first = false
+        } else {
+          protein = protein + "-" + amino
+        }
+        j = j + 3
+      }
+    }
+    i = i + 1
+  }
+  return ""
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    if line == "*" { break }
+    let c = complement(line)
+    let rc = reverse(c)
+    let r = reverse(line)
+    var candidates: list<string> = []
+    candidates = append(candidates, replaceTWithU(c))
+    candidates = append(candidates, replaceTWithU(rc))
+    candidates = append(candidates, replaceTWithU(line))
+    candidates = append(candidates, replaceTWithU(r))
+    var found = ""
+    var idx = 0
+    while idx < len(candidates) {
+      let res = translate(candidates[idx])
+      if res != "" {
+        found = res
+        break
+      }
+      idx = idx + 1
+    }
+    if found == "" {
+      print("*** No translatable DNA found ***")
+    } else {
+      print(found)
+    }
+  }
+}
+
+main()
