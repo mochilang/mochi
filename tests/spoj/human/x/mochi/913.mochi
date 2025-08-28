@@ -1,0 +1,180 @@
+// Solution for SPOJ QTREE2 - Query on a tree II
+// https://www.spoj.com/problems/QTREE2/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun kthAncestor(v: int, k: int, up: list<list<int>>): int {
+  var node = v
+  var bit = 0
+  var kk = k
+  while kk > 0 {
+    if kk % 2 == 1 { node = up[bit][node] }
+    kk = kk / 2
+    bit = bit + 1
+  }
+  return node
+}
+
+fun lca(a: int, b: int, up: list<list<int>>, depth: list<int>): int {
+  var x = a
+  var y = b
+  if depth[x] < depth[y] {
+    let tmp = x
+    x = y
+    y = tmp
+  }
+  var diff = depth[x] - depth[y]
+  var bit = 0
+  while diff > 0 {
+    if diff % 2 == 1 { x = up[bit][x] }
+    diff = diff / 2
+    bit = bit + 1
+  }
+  if x == y { return x }
+  var i = len(up) - 1
+  while i >= 0 {
+    if up[i][x] != up[i][y] {
+      x = up[i][x]
+      y = up[i][y]
+    }
+    i = i - 1
+  }
+  return up[0][x]
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let n = int(line)
+    var g: list<list<int>> = []
+    var w: list<list<int>> = []
+    var i = 0
+    while i <= n {
+      g = append(g, [])
+      w = append(w, [])
+      i = i + 1
+    }
+    var e = 0
+    while e < n - 1 {
+      line = input()
+      if line == "" { continue }
+      let parts = splitSpaces(line)
+      let a = int(parts[0])
+      let b = int(parts[1])
+      let c = int(parts[2])
+      g[a] = append(g[a], b)
+      w[a] = append(w[a], c)
+      g[b] = append(g[b], a)
+      w[b] = append(w[b], c)
+      e = e + 1
+    }
+    var depth: list<int> = []
+    var dist: list<int> = []
+    var parent: list<int> = []
+    i = 0
+    while i <= n {
+      depth = append(depth, 0)
+      dist = append(dist, 0)
+      parent = append(parent, 0)
+      i = i + 1
+    }
+    var stack: list<int> = [1]
+    parent[1] = 1
+    while len(stack) > 0 {
+      let v = stack[len(stack) - 1]
+      stack = stack[0:len(stack) - 1]
+      var j = 0
+      while j < len(g[v]) {
+        let to = g[v][j]
+        let wt = w[v][j]
+        if to != parent[v] {
+          parent[to] = v
+          depth[to] = depth[v] + 1
+          dist[to] = dist[v] + wt
+          stack = append(stack, to)
+        }
+        j = j + 1
+      }
+    }
+    let LOG = 15
+    var up: list<list<int>> = []
+    var k = 0
+    while k < LOG {
+      var arr: list<int> = []
+      i = 0
+      while i <= n {
+        arr = append(arr, 0)
+        i = i + 1
+      }
+      up = append(up, arr)
+      k = k + 1
+    }
+    i = 1
+    while i <= n {
+      up[0][i] = parent[i]
+      i = i + 1
+    }
+    k = 1
+    while k < LOG {
+      i = 1
+      while i <= n {
+        up[k][i] = up[k - 1][up[k - 1][i]]
+        i = i + 1
+      }
+      k = k + 1
+    }
+    while true {
+      line = input()
+      if line == nil { break }
+      if line == "" { continue }
+      if line == "DONE" { break }
+      let parts = splitSpaces(line)
+      if parts[0] == "DIST" {
+        let a = int(parts[1])
+        let b = int(parts[2])
+        let l = lca(a, b, up, depth)
+        let ans = dist[a] + dist[b] - 2 * dist[l]
+        print(str(ans))
+      } else { // KTH
+        let a = int(parts[1])
+        let b = int(parts[2])
+        let kth = int(parts[3])
+        let l = lca(a, b, up, depth)
+        let da = depth[a] - depth[l]
+        if kth <= da + 1 {
+          let node = kthAncestor(a, kth - 1, up)
+          print(str(node))
+        } else {
+          let k2 = kth - (da + 1)
+          let db = depth[b] - depth[l]
+          let node = kthAncestor(b, db - k2, up)
+          print(str(node))
+        }
+      }
+    }
+    print("")
+    case = case + 1
+  }
+}
+
+main()
