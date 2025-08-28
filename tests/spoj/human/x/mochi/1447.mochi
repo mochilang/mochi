@@ -1,0 +1,183 @@
+// Solution for SPOJ BRCKGAME - A Game of Toy Bricks
+// https://www.spoj.com/problems/BRCKGAME/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var i = 0
+  var num = 0
+  var has = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if has {
+        res = append(res, num)
+        num = 0
+        has = false
+      }
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has { res = append(res, num) }
+  return res
+}
+
+fun makeIntList(n: int, v: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, v)
+    i = i + 1
+  }
+  return lst
+}
+
+fun makeIntMatrix(rows: int, cols: int, v: int): list<list<int>> {
+  var mat: list<list<int>> = []
+  var i = 0
+  while i < rows {
+    mat = append(mat, makeIntList(cols, v))
+    i = i + 1
+  }
+  return mat
+}
+
+fun precompute(n: int, L: list<int>, W: list<int>, H: list<int>): list<list<int>> {
+  var baseL = makeIntMatrix(n, 3, 0)
+  var baseW = makeIntMatrix(n, 3, 0)
+  var height = makeIntMatrix(n, 3, 0)
+  var i = 0
+  while i < n {
+    let a = L[i]
+    let b = W[i]
+    let c = H[i]
+    var x = b
+    var y = c
+    if x < y { let tmp = x; x = y; y = tmp }
+    baseL[i][0] = x
+    baseW[i][0] = y
+    height[i][0] = a
+    x = a
+    y = c
+    if x < y { let tmp = x; x = y; y = tmp }
+    baseL[i][1] = x
+    baseW[i][1] = y
+    height[i][1] = b
+    x = a
+    y = b
+    if x < y { let tmp = x; x = y; y = tmp }
+    baseL[i][2] = x
+    baseW[i][2] = y
+    height[i][2] = c
+    i = i + 1
+  }
+
+  var g = makeIntMatrix(n, n, 0)
+  var l = 0
+  while l < n {
+    var dp = makeIntMatrix(n, 3, 0)
+    var best = 0
+    var r = l
+    while r < n {
+      var o = 0
+      while o < 3 {
+        dp[r][o] = height[r][o]
+        var j = l
+        while j < r {
+          var o2 = 0
+          while o2 < 3 {
+            if baseL[j][o2] >= baseL[r][o] && baseW[j][o2] >= baseW[r][o] {
+              let cand = dp[j][o2] + height[r][o]
+              if cand > dp[r][o] { dp[r][o] = cand }
+            }
+            o2 = o2 + 1
+          }
+          j = j + 1
+        }
+        if dp[r][o] > best { best = dp[r][o] }
+        o = o + 1
+      }
+      g[l][r] = best
+      r = r + 1
+    }
+    l = l + 1
+  }
+  return g
+}
+
+fun solve(n: int, m: int, L: list<int>, W: list<int>, H: list<int>): int {
+  let g = precompute(n, L, W, H)
+  var dp = makeIntMatrix(n + 1, m + 1, -1000000000)
+  var i = 0
+  while i <= n {
+    dp[i][0] = 0
+    i = i + 1
+  }
+  i = 1
+  while i <= n {
+    var k = 1
+    while k <= m {
+      var best = -1000000000
+      var j = k - 1
+      while j < i {
+        let seg = g[j][i - 1]
+        if seg > 0 {
+          let prev = dp[j][k - 1]
+          if prev > (-1000000000) {
+            let cand = prev + seg
+            if cand > best { best = cand }
+          }
+        }
+        j = j + 1
+      }
+      dp[i][k] = best
+      k = k + 1
+    }
+    i = i + 1
+  }
+  var ans = 0
+  var i2 = m
+  while i2 <= n {
+    let val = dp[i2][m]
+    if val > ans { ans = val }
+    i2 = i2 + 1
+  }
+  return ans
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let nmLine = input()
+    var nm = parseInts(nmLine)
+    let n = nm[0]
+    let m = nm[1]
+    var L: list<int> = []
+    var W: list<int> = []
+    var H: list<int> = []
+    var i = 0
+    while i < n {
+      let line = input()
+      var nums = parseInts(line)
+      L = append(L, nums[0])
+      W = append(W, nums[1])
+      H = append(H, nums[2])
+      i = i + 1
+    }
+    let ans = solve(n, m, L, W, H)
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
