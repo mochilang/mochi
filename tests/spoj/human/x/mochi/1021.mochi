@@ -1,0 +1,39 @@
+# Solution for SPOJ AIBOHP - Aibohphobia
+# https://www.spoj.com/problems/AIBOHP/
+
+fun minInsertions(s: string): int {
+  let n = len(s)
+  var dp: list<int> = []
+  var i = 0
+  while i <= n {
+    dp = append(dp, 0)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    var prev = 0
+    var j = 0
+    while j < n {
+      let temp = dp[j+1]
+      let c1 = s[i:i+1]
+      let c2 = s[n-1-j:n-j]
+      if c1 == c2 {
+        dp[j+1] = prev + 1
+      } else {
+        if dp[j] > dp[j+1] {
+          dp[j+1] = dp[j]
+        }
+      }
+      prev = temp
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return n - dp[n]
+}
+
+let t = int(input())
+for _ in 0..t {
+  let s = input()
+  print(minInsertions(s))
+}
