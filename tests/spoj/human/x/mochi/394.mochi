@@ -1,0 +1,39 @@
+// Solution for SPOJ ACODE - Alphacode
+// https://www.spoj.com/problems/ACODE/
+
+fun ways(s: string): int {
+  let n = len(s)
+  var dp: list<int> = []
+  var i = 0
+  while i <= n {
+    dp = append(dp, 0)
+    i = i + 1
+  }
+  dp[0] = 1
+  i = 1
+  while i <= n {
+    let c = s[i-1:i]
+    if c != "0" {
+      dp[i] = dp[i] + dp[i-1]
+    }
+    if i >= 2 {
+      let two = s[i-2:i] as int
+      if two >= 10 && two <= 26 {
+        dp[i] = dp[i] + dp[i-2]
+      }
+    }
+    i = i + 1
+  }
+  return dp[n]
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    if line == "0" { break }
+    print(str(ways(line)))
+  }
+}
+
+main()
