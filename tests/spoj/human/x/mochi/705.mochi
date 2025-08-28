@@ -1,0 +1,77 @@
+// Solution for SPOJ DISUBSTR - Distinct Substrings
+// https://www.spoj.com/problems/DISUBSTR/
+
+fun countDistinct(s: string): int {
+  var states: list<map<string, any>> = []
+  states = append(states, { "len": 0, "link": -1, "next": {} })
+  var last = 0
+  var i = 0
+  while i < len(s) {
+    let c = s[i:i+1]
+    var cur = len(states)
+    states = append(states, { "len": (states[last]["len"] as int) + 1, "link": 0, "next": {} })
+    var p = last
+    while p >= 0 {
+      var pnextAny = states[p]["next"]
+      var pnext = pnextAny as map<string,int>
+      if pnext[c] == nil {
+        pnext[c] = cur
+        states[p]["next"] = pnext
+        p = states[p]["link"] as int
+      } else {
+        break
+      }
+    }
+    if p < 0 {
+      states[cur]["link"] = 0
+    } else {
+      let q = (states[p]["next"] as map<string,int>)[c] as int
+      if (states[p]["len"] as int) + 1 == (states[q]["len"] as int) {
+        states[cur]["link"] = q
+      } else {
+        var clone = len(states)
+        states = append(states, {
+          "len": (states[p]["len"] as int) + 1,
+          "link": states[q]["link"] as int,
+          "next": states[q]["next"],
+        })
+        while p >= 0 {
+          var pnextAny = states[p]["next"]
+          var pnext = pnextAny as map<string,int>
+          if pnext[c] != q { break }
+          pnext[c] = clone
+          states[p]["next"] = pnext
+          p = states[p]["link"] as int
+        }
+        states[q]["link"] = clone
+        states[cur]["link"] = clone
+      }
+    }
+    last = cur
+    i = i + 1
+  }
+  var ans = 0
+  var idx = 1
+  while idx < len(states) {
+    let stLen = states[idx]["len"] as int
+    let linkIdx = states[idx]["link"] as int
+    let linkLen = if linkIdx >= 0 { states[linkIdx]["len"] as int } else { 0 }
+    ans = ans + (stLen - linkLen)
+    idx = idx + 1
+  }
+  return ans
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    let s = input()
+    print(str(countDistinct(s)))
+    case = case + 1
+  }
+}
+
+main()
