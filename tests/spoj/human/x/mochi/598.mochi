@@ -1,0 +1,109 @@
+// Solution for SPOJ INCR - Increasing Subsequences
+// https://www.spoj.com/problems/INCR/
+
+let MOD = 1000000000
+let NMAX = 40
+let BMAX = 5
+
+fun make2D(n: int, m: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    var row: list<int> = []
+    var j = 0
+    while j <= m {
+      row = append(row, 0)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun precompute(): list<list<int>> {
+  var comb = make2D(NMAX, NMAX)
+  var i = 0
+  while i <= NMAX {
+    comb[i][0] = 1
+    comb[i][i] = 1
+    var j = 1
+    while j < i {
+      comb[i][j] = comb[i-1][j-1] + comb[i-1][j]
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  var dp = make2D(NMAX, BMAX)
+  var k = 0
+  while k <= BMAX {
+    dp[0][k] = 1
+    k = k + 1
+  }
+
+  var n = 1
+  while n <= NMAX {
+    k = 1
+    while k <= BMAX {
+      var s = 0
+      var pos = 1
+      while pos <= n {
+        let left = dp[pos-1][k-1]
+        let right = dp[n-pos][k]
+        let c = comb[n-1][pos-1]
+        s = (s + (left * right % MOD) * c) % MOD
+        pos = pos + 1
+      }
+      dp[n][k] = s
+      k = k + 1
+    }
+    n = n + 1
+  }
+  return dp
+}
+
+fun main() {
+  let dp = precompute()
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = split(line)
+    let n = int(parts[0])
+    let b = int(parts[1])
+    var ans = dp[n][b]
+    if b > 0 {
+      let tmp = dp[n][b-1]
+      ans = ans - tmp
+      if ans < 0 { ans = ans + MOD }
+    }
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
