@@ -1,0 +1,237 @@
+// Solution for SPOJ NUMQDW - Number of quite different words
+// https://www.spoj.com/problems/NUMQDW/
+
+let MOD = 4242
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+let letterIdx = {
+  "A":0,"B":1,"C":2,"D":3,"E":4,"F":5,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun vecMul(v: list<int>, m: list<list<int>>): list<int> {
+  let n = len(v)
+  var res: list<int> = []
+  var j = 0
+  while j < n {
+    var sum = 0
+    var k = 0
+    while k < n {
+      sum = (sum + v[k] * m[k][j]) % MOD
+      k = k + 1
+    }
+    res = append(res, sum)
+    j = j + 1
+  }
+  return res
+}
+
+fun matMul(a: list<list<int>>, b: list<list<int>>): list<list<int>> {
+  let n = len(a)
+  var res: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, 0)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    var k = 0
+    while k < n {
+      let aik = a[i][k]
+      if aik != 0 {
+        var j = 0
+        while j < n {
+          res[i][j] = (res[i][j] + aik * b[k][j]) % MOD
+          j = j + 1
+        }
+      }
+      k = k + 1
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun solveCase(n: int, c: int, w: string): int {
+  // build pair matrix
+  var seen: list<int> = []
+  var i = 0
+  while i < c {
+    seen = append(seen, 0)
+    i = i + 1
+  }
+  var E: list<list<int>> = []
+  i = 0
+  while i < c {
+    var row: list<int> = []
+    var j = 0
+    while j < c {
+      row = append(row, 0)
+      j = j + 1
+    }
+    E = append(E, row)
+    i = i + 1
+  }
+  var idx = 0
+  while idx < len(w) {
+    let ch = w[idx:idx+1]
+    let b = letterIdx[ch] as int
+    var a = 0
+    while a < c {
+      if seen[a] == 1 {
+        E[a][b] = 1
+      }
+      a = a + 1
+    }
+    seen[b] = 1
+    idx = idx + 1
+  }
+
+  // precompute powers of two
+  var pow2: list<int> = []
+  pow2 = append(pow2, 1)
+  i = 1
+  while i <= c {
+    pow2 = append(pow2, pow2[i-1] * 2)
+    i = i + 1
+  }
+  let N = pow2[c]
+  // build transition matrix
+  var M: list<list<int>> = []
+  i = 0
+  while i < N {
+    var row: list<int> = []
+    var j = 0
+    while j < N {
+      row = append(row, 0)
+      j = j + 1
+    }
+    M = append(M, row)
+    i = i + 1
+  }
+
+  var S = 0
+  while S < N {
+    // decode state S into used array
+    var used: list<int> = []
+    var tmp = S
+    var a = 0
+    while a < c {
+      used = append(used, tmp % 2)
+      tmp = tmp / 2
+      a = a + 1
+    }
+    var b = 0
+    while b < c {
+      var ok = true
+      a = 0
+      while a < c {
+        if used[a] == 1 && E[a][b] == 1 {
+          ok = false
+          break
+        }
+        a = a + 1
+      }
+      if ok {
+        if used[b] == 1 && E[b][b] == 1 {
+          // cannot use b again
+        } else {
+          var S2 = S
+          if used[b] == 0 { S2 = S + pow2[b] }
+          M[S][S2] = (M[S][S2] + 1) % MOD
+        }
+      }
+      b = b + 1
+    }
+    S = S + 1
+  }
+
+  var vec: list<int> = []
+  i = 0
+  while i < N {
+    if i == 0 { vec = append(vec, 1) } else { vec = append(vec, 0) }
+    i = i + 1
+  }
+  var resVec = vec
+  var mat = M
+  var e = n
+  while e > 0 {
+    if e % 2 == 1 {
+      resVec = vecMul(resVec, mat)
+    }
+    e = e / 2
+    if e > 0 {
+      mat = matMul(mat, mat)
+    }
+  }
+  var ans = 0
+  i = 0
+  while i < N {
+    ans = (ans + resVec[i]) % MOD
+    i = i + 1
+  }
+  return ans
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var caseIdx = 0
+  while caseIdx < t {
+    let line = input()
+    let parts = split(line, " ")
+    let n = parseIntStr(parts[0])
+    let c = parseIntStr(parts[1])
+    let w = input()
+    let ans = solveCase(n, c, w)
+    print(str(ans))
+    caseIdx = caseIdx + 1
+  }
+}
+
+main()
