@@ -1,0 +1,262 @@
+// Solution for SPOJ INDEXGEN - Index Generation
+// https://www.spoj.com/problems/INDEXGEN/
+
+let digitStr = {0:"0",1:"1",2:"2",3:"3",4:"4",5:"5",6:"6",7:"7",8:"8",9:"9"}
+let lowerChars = "abcdefghijklmnopqrstuvwxyz"
+let upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+fun intToStr(n: int): string {
+  if n == 0 { return "0" }
+  var s = ""
+  var x = n
+  var parts: list<int> = []
+  while x > 0 {
+    parts = append(parts, x % 10)
+    x = x / 10
+  }
+  var i = len(parts) - 1
+  while i >= 0 {
+    let d = parts[i] as int
+    s = s + digitStr[d]
+    i = i - 1
+  }
+  return s
+}
+
+fun toLowerChar(ch: string): string {
+  var i = 0
+  while i < len(upperChars) {
+    if ch == upperChars[i:i+1] { return lowerChars[i:i+1] }
+    if ch == lowerChars[i:i+1] { return lowerChars[i:i+1] }
+    i = i + 1
+  }
+  return ch
+}
+
+fun toLowerStr(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    res = res + toLowerChar(s[i:i+1])
+    i = i + 1
+  }
+  return res
+}
+
+fun trim(s: string): string {
+  var start = 0
+  while start < len(s) && s[start:start+1] == " " { start = start + 1 }
+  var end = len(s)
+  while end > start && s[end-1:end] == " " { end = end - 1 }
+  return s[start:end]
+}
+
+fun rtrim(s: string): string {
+  var end = len(s)
+  while end > 0 && s[end-1:end] == " " { end = end - 1 }
+  return s[0:end]
+}
+
+fun addPage(pages: list<int>, page: int): list<int> {
+  var i = 0
+  while i < len(pages) {
+    if pages[i] == page { return pages }
+    i = i + 1
+  }
+  pages = append(pages, page)
+  return pages
+}
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun sortKeys(arr: list<string>): list<string> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && toLowerStr(arr[j-1]) > toLowerStr(arr[j]) {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+type Rec { primary: string, secondary: string, page: int }
+type Secondary { name: string, pages: list<int> }
+type Primary { name: string, pages: list<int>, secs: map<string, Secondary>, secKeys: list<string> }
+
+fun parseMarker(marker: string, page: int, recs: list<Rec>): list<Rec> {
+  var s = trim(marker)
+  var text = ""
+  var primary = ""
+  var secondary = ""
+  var mode = 0
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == "%" && mode == 0 {
+      text = rtrim(text)
+      mode = 1
+      i = i + 1
+      while i < len(s) && s[i:i+1] == " " { i = i + 1 }
+      continue
+    } else if ch == "$" && mode < 2 {
+      if mode == 0 { text = rtrim(text) } else { primary = rtrim(primary) }
+      mode = 2
+      i = i + 1
+      while i < len(s) && s[i:i+1] == " " { i = i + 1 }
+      continue
+    } else {
+      if mode == 0 { text = text + ch }
+      else if mode == 1 { primary = primary + ch }
+      else { secondary = secondary + ch }
+      i = i + 1
+    }
+  }
+  if mode == 1 { primary = rtrim(primary) }
+  if mode == 2 { secondary = rtrim(secondary) }
+  text = trim(text)
+  if primary == "" { primary = text }
+  recs = append(recs, Rec{ primary: primary, secondary: secondary, page: page })
+  return recs
+}
+fun processDoc(lines: list<string>) {
+  var recs: list<Rec> = []
+  var page = 1
+  var inMark = false
+  var marker = ""
+  var li = 0
+  while li < len(lines) {
+    let line = lines[li]
+    var i = 0
+    while i < len(line) {
+      let ch = line[i:i+1]
+      if inMark {
+        if ch == "}" {
+          inMark = false
+          recs = parseMarker(marker, page, recs)
+          marker = ""
+        } else {
+          marker = marker + ch
+        }
+      } else {
+        if ch == "{" {
+          inMark = true
+          marker = ""
+        } else if ch == "&" {
+          page = page + 1
+        }
+      }
+      i = i + 1
+    }
+    if inMark { marker = marker + " " }
+    li = li + 1
+  }
+
+  var primMap: map<string, Primary> = {}
+  var primKeys: list<string> = []
+  var ri = 0
+  while ri < len(recs) {
+    let r = recs[ri]
+    let pkey = toLowerStr(r.primary)
+    var p = primMap[pkey]
+    if p == nil {
+      p = Primary{ name: r.primary, pages: [], secs: {}, secKeys: [] }
+      primMap[pkey] = p
+      primKeys = append(primKeys, pkey)
+    }
+    if r.secondary == "" {
+      p.pages = addPage(p.pages, r.page)
+    } else {
+      let skey = toLowerStr(r.secondary)
+      var s = p.secs[skey]
+      if s == nil {
+        s = Secondary{ name: r.secondary, pages: [] }
+        var m = p.secs
+        m[skey] = s
+        p.secs = m
+        p.secKeys = append(p.secKeys, skey)
+      }
+      s.pages = addPage(s.pages, r.page)
+      var m2 = p.secs
+      m2[skey] = s
+      p.secs = m2
+    }
+    primMap[pkey] = p
+    ri = ri + 1
+  }
+
+  primKeys = sortKeys(primKeys)
+  var pk = 0
+  while pk < len(primKeys) {
+    let key = primKeys[pk]
+    let p = primMap[key]
+    let pages = sortInts(p.pages)
+    var line = p.name
+    if len(pages) > 0 {
+      line = line + ", "
+      var j = 0
+      while j < len(pages) {
+        if j > 0 { line = line + ", " }
+        line = line + intToStr(pages[j])
+        j = j + 1
+      }
+    }
+    print(line)
+    var secKeys = sortKeys(p.secKeys)
+    var si = 0
+    while si < len(secKeys) {
+      let sk = secKeys[si]
+      let s = p.secs[sk]
+      let sp = sortInts(s.pages)
+      var line2 = "+ " + s.name
+      if len(sp) > 0 {
+        line2 = line2 + ", "
+        var k = 0
+        while k < len(sp) {
+          if k > 0 { line2 = line2 + ", " }
+          line2 = line2 + intToStr(sp[k])
+          k = k + 1
+        }
+      }
+      print(line2)
+      si = si + 1
+    }
+    pk = pk + 1
+  }
+}
+fun main() {
+  var lines: list<string> = []
+  var doc = 1
+  while true {
+    let line = input()
+    if line == nil { break }
+    if line == "**" { break }
+    if line == "*" {
+      print("DOCUMENT " + intToStr(doc))
+      processDoc(lines)
+      lines = []
+      doc = doc + 1
+    } else {
+      lines = append(lines, line)
+    }
+  }
+}
+
+main()
