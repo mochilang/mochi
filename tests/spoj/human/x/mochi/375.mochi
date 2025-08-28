@@ -1,0 +1,225 @@
+// Solution for SPOJ QTREE - Query on a tree
+// https://www.spoj.com/problems/QTREE/
+
+// split string by whitespace
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+var tokens: list<string> = []
+fun nextToken(): string {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return "" }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let tok = tokens[0]
+  tokens = tokens[1:len(tokens)]
+  return tok
+}
+
+fun nextInt(): int {
+  let t = nextToken()
+  if t == "" { return 0 }
+  return t as int
+}
+
+type Edge = { to: int, w: int, idx: int }
+
+fun makeIntList(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun maxInt(a: int, b: int): int { if a > b { return a } return b }
+
+var N = 0
+var adj: list<list<Edge>> = []
+var parent: list<int> = []
+var depth: list<int> = []
+var heavy: list<int> = []
+var head: list<int> = []
+var pos: list<int> = []
+var size: list<int> = []
+var edgeToParent: list<int> = []
+var edgeToNode: list<int> = []
+var curPos = 0
+var seg: list<int> = []
+
+fun dfs(u: int, p: int) {
+  size[u] = 1
+  heavy[u] = 0
+  var j = 0
+  while j < len(adj[u]) {
+    let e = adj[u][j]
+    if e.to != p {
+      parent[e.to] = u
+      depth[e.to] = depth[u] + 1
+      edgeToParent[e.to] = e.w
+      edgeToNode[e.idx] = e.to
+      dfs(e.to, u)
+      size[u] = size[u] + size[e.to]
+      if size[e.to] > size[heavy[u]] { heavy[u] = e.to }
+    }
+    j = j + 1
+  }
+}
+
+fun decompose(u: int, h: int) {
+  head[u] = h
+  pos[u] = curPos
+  curPos = curPos + 1
+  if heavy[u] != 0 {
+    decompose(heavy[u], h)
+  }
+  var j = 0
+  while j < len(adj[u]) {
+    let e = adj[u][j]
+    if e.to != parent[u] && e.to != heavy[u] {
+      decompose(e.to, e.to)
+    }
+    j = j + 1
+  }
+}
+
+fun segInit(n: int) {
+  seg = []
+  var i = 0
+  while i < 4 * n {
+    seg = append(seg, 0)
+    i = i + 1
+  }
+}
+
+fun segUpdate(node: int, l: int, r: int, idx: int, val: int) {
+  if l == r {
+    seg[node] = val
+    return
+  }
+  let mid = (l + r) / 2
+  if idx <= mid {
+    segUpdate(node * 2, l, mid, idx, val)
+  } else {
+    segUpdate(node * 2 + 1, mid + 1, r, idx, val)
+  }
+  seg[node] = maxInt(seg[node * 2], seg[node * 2 + 1])
+}
+
+fun segQuery(node: int, l: int, r: int, ql: int, qr: int): int {
+  if ql > r || qr < l { return 0 }
+  if ql <= l && r <= qr { return seg[node] }
+  let mid = (l + r) / 2
+  let left = segQuery(node * 2, l, mid, ql, qr)
+  let right = segQuery(node * 2 + 1, mid + 1, r, ql, qr)
+  if left > right { return left }
+  return right
+}
+
+fun pathQuery(a: int, b: int): int {
+  var res = 0
+  var u = a
+  var v = b
+  while head[u] != head[v] {
+    if depth[head[u]] < depth[head[v]] {
+      let tmp = u
+      u = v
+      v = tmp
+    }
+    res = maxInt(res, segQuery(1, 1, N, pos[head[u]], pos[u]))
+    u = parent[head[u]]
+  }
+  if u == v { return res }
+  if depth[u] > depth[v] {
+    let tmp2 = u
+    u = v
+    v = tmp2
+  }
+  res = maxInt(res, segQuery(1, 1, N, pos[u] + 1, pos[v]))
+  return res
+}
+
+fun change(idx: int, val: int) {
+  let v = edgeToNode[idx]
+  segUpdate(1, 1, N, pos[v], val)
+  edgeToParent[v] = val
+}
+
+fun main() {
+  let t = nextInt()
+  var tc = 0
+  while tc < t {
+    N = nextInt()
+    adj = []
+    var i = 0
+    while i <= N {
+      adj = append(adj, [])
+      i = i + 1
+    }
+    parent = makeIntList(N + 1, 0)
+    depth = makeIntList(N + 1, 0)
+    heavy = makeIntList(N + 1, 0)
+    head = makeIntList(N + 1, 0)
+    pos = makeIntList(N + 1, 0)
+    size = makeIntList(N + 1, 0)
+    edgeToParent = makeIntList(N + 1, 0)
+    edgeToNode = makeIntList(N, 0)
+    var idx = 1
+    while idx <= N - 1 {
+      let a = nextInt()
+      let b = nextInt()
+      let c = nextInt()
+      adj[a] = append(adj[a], Edge{ to: b, w: c, idx: idx })
+      adj[b] = append(adj[b], Edge{ to: a, w: c, idx: idx })
+      idx = idx + 1
+    }
+    curPos = 1
+    dfs(1, 0)
+    decompose(1, 1)
+    segInit(N + 2)
+    var v = 2
+    while v <= N {
+      segUpdate(1, 1, N, pos[v], edgeToParent[v])
+      v = v + 1
+    }
+    while true {
+      let tok = nextToken()
+      if tok == "DONE" { break }
+      if tok == "QUERY" {
+        let a = nextInt()
+        let b = nextInt()
+        let ans = pathQuery(a, b)
+        print(ans as string)
+      } else if tok == "CHANGE" {
+        let ei = nextInt()
+        let val = nextInt()
+        change(ei, val)
+      }
+    }
+    tc = tc + 1
+  }
+}
+
+main()
