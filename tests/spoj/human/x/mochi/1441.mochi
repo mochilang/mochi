@@ -1,0 +1,55 @@
+// Solution for SPOJ CPCRC1C - Sum of Digits
+// https://www.spoj.com/problems/CPCRC1C/
+
+fun readInts(line: string): list<int> {
+  var nums: list<int> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        nums = append(nums, cur as int)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    nums = append(nums, cur as int)
+  }
+  return nums
+}
+
+fun sumDigitsUpTo(n: int): int {
+  if n < 0 { return 0 }
+  var res = 0
+  var factor = 1
+  while factor <= n {
+    let higher = n / (factor * 10)
+    let current = (n / factor) % 10
+    let lower = n % factor
+    res = res + higher * 45 * factor
+    res = res + current * (current - 1) / 2 * factor
+    res = res + current * (lower + 1)
+    factor = factor * 10
+  }
+  return res
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let nums = readInts(line)
+    let a = nums[0]
+    let b = nums[1]
+    if a < 0 && b < 0 { break }
+    let ans = sumDigitsUpTo(b) - sumDigitsUpTo(a - 1)
+    print(ans)
+  }
+}
+
+main()
