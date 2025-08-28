@@ -1,0 +1,196 @@
+// Solution for SPOJ BONFIRE - Equatorial Bonfire
+// https://www.spoj.com/problems/BONFIRE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseFloat(s: string): float {
+  var i = 0
+  var neg = false
+  if len(s) > 0 && s[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var val = 0.0
+  while i < len(s) && s[i:i+1] != "." {
+    val = val * 10.0 + (digits[s[i:i+1]] as float)
+    i = i + 1
+  }
+  if i < len(s) && s[i:i+1] == "." {
+    i = i + 1
+    var base = 0.1
+    while i < len(s) {
+      val = val + (digits[s[i:i+1]] as float) * base
+      base = base / 10.0
+      i = i + 1
+    }
+  }
+  if neg { val = -val }
+  return val
+}
+
+fun format3(x: float): string {
+  var neg = false
+  if x < 0.0 {
+    neg = true
+    x = -x
+  }
+  var scaled = x * 1000.0 + 0.5
+  var n = scaled as int
+  var whole = n / 1000
+  var frac = n % 1000
+  var fracStr = str(frac)
+  while len(fracStr) < 3 {
+    fracStr = "0" + fracStr
+  }
+  var res = str(whole) + "." + fracStr
+  if neg { res = "-" + res }
+  return res
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+fun sortPairs(pos: list<float>, tim: list<float>) {
+  var i = 1
+  while i < len(pos) {
+    var j = i
+    let p = pos[i]
+    let t = tim[i]
+    while j > 0 && pos[j-1] > p {
+      pos[j] = pos[j-1]
+      tim[j] = tim[j-1]
+      j = j - 1
+    }
+    pos[j] = p
+    tim[j] = t
+    i = i + 1
+  }
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil { return }
+    if line == "" { continue }
+    if line == "-1" { break }
+    let speed = parseFloat(line)
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    var pos: list<float> = []
+    var tim: list<float> = []
+    var i = 0
+    while i < n {
+      let l = input()
+      if l == "" { continue }
+      let parts = splitSpaces(l)
+      let t = parseFloat(parts[0])
+      var p = parseFloat(parts[1])
+      if p < 0.0 { p = p + 360.0 }
+      pos = append(pos, p)
+      tim = append(tim, t)
+      i = i + 1
+    }
+    sortPairs(pos, tim)
+    var m = len(pos) * 2
+    var pExt: list<float> = []
+    var tExt: list<float> = []
+    i = 0
+    while i < len(pos) {
+      pExt = append(pExt, pos[i])
+      tExt = append(tExt, tim[i])
+      i = i + 1
+    }
+    i = 0
+    while i < len(pos) {
+      pExt = append(pExt, pos[i] + 360.0)
+      tExt = append(tExt, tim[i])
+      i = i + 1
+    }
+    var left: list<float> = []
+    i = 0
+    while i < m {
+      if i == 0 {
+        left = append(left, tExt[0])
+      } else {
+        let dt = (pExt[i] - pExt[i-1]) / speed
+        var cand = left[i-1] + dt
+        let tt = tExt[i]
+        if tt < cand { cand = tt }
+        left = append(left, cand)
+      }
+      i = i + 1
+    }
+    var right: list<float> = []
+    i = 0
+    while i < m {
+      right = append(right, 0.0)
+      i = i + 1
+    }
+    right[m-1] = tExt[m-1]
+    i = m - 2
+    while i >= 0 {
+      let dt = (pExt[i+1] - pExt[i]) / speed
+      var cand = right[i+1] + dt
+      let tt = tExt[i]
+      if tt < cand { cand = tt }
+      right[i] = cand
+      i = i - 1
+    }
+    var bestTime = -1.0
+    var bestAngle = 0.0
+    i = 0
+    while i < len(pos) {
+      let lp = pExt[i]
+      let rp = pExt[i+1]
+      var lt = left[i]
+      if right[i] < lt { lt = right[i] }
+      var rt = left[i+1]
+      if right[i+1] < rt { rt = right[i+1] }
+      var meet = (speed * (rt - lt) + lp + rp) / 2.0
+      if meet < lp { meet = lp }
+      if meet > rp { meet = rp }
+      var timeAt = lt + (meet - lp) / speed
+      var fromR = rt + (rp - meet) / speed
+      if fromR > timeAt { timeAt = fromR }
+      var ang = meet
+      if ang >= 360.0 { ang = ang - 360.0 }
+      if timeAt > bestTime + 1e-9 {
+        bestTime = timeAt
+        bestAngle = ang
+      } else if absf(timeAt - bestTime) <= 1e-9 {
+        if ang < bestAngle { bestAngle = ang }
+      }
+      i = i + 1
+    }
+    var coord = bestAngle
+    if coord > 180.0 { coord = coord - 360.0 }
+    print(format3(bestTime) + " " + format3(coord))
+  }
+}
+
+main()
