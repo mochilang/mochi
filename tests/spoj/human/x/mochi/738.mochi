@@ -1,0 +1,77 @@
+// Solution for SPOJ TREE - Another Counting Problem
+// https://www.spoj.com/problems/TREE/
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+let digits = {"0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun powBig(x: bigint, e: int): bigint {
+  var res: bigint = 1 as bigint
+  var i = 0
+  while i < e {
+    res = res * x
+    i = i + 1
+  }
+  return res
+}
+
+fun countTrees(n: int, d: int): bigint {
+  if d == 0 { return 1 as bigint }
+  var prev2: bigint = 0 as bigint
+  var prev: bigint = 1 as bigint
+  var depth = 1
+  while depth <= d {
+    let cur = powBig(prev, n) + (1 as bigint)
+    prev2 = prev
+    prev = cur
+    depth = depth + 1
+  }
+  return prev - prev2
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil { break }
+    if line == "" { continue }
+    let parts = split(line)
+    if len(parts) < 2 { continue }
+    let n = parseIntStr(parts[0])
+    let d = parseIntStr(parts[1])
+    if n == 0 && d == 0 { break }
+    let ans = countTrees(n, d)
+    print(str(n) + " " + str(d) + " " + str(ans))
+  }
+}
+
+main()
