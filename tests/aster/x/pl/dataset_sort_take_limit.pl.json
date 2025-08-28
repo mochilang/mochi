@@ -1,0 +1,598 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "=",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "Products"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "name"
+                            },
+                            {
+                              "kind": "atom",
+                              "text": "Laptop"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "price"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "1500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "price"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "900"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "name"
+                            },
+                            {
+                              "kind": "atom",
+                              "text": "Smartphone"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "name"
+                            },
+                            {
+                              "kind": "atom",
+                              "text": "Tablet"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "price"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "name"
+                            },
+                            {
+                              "kind": "atom",
+                              "text": "Monitor"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "price"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "300"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "name"
+                            },
+                            {
+                              "kind": "atom",
+                              "text": "Keyboard"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "price"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "100"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "name"
+                            },
+                            {
+                              "kind": "atom",
+                              "text": "Mouse"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "price"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "50"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "name"
+                            },
+                            {
+                              "kind": "atom",
+                              "text": "Headphones"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "price"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "200"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "=",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "Expensive"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "{}",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "price"
+                                },
+                                {
+                                  "kind": "number",
+                                  "text": "900"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "name"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "Smartphone"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "{}",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "price"
+                                },
+                                {
+                                  "kind": "number",
+                                  "text": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "name"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "Tablet"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "{}",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "name"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "Monitor"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "price"
+                                },
+                                {
+                                  "kind": "number",
+                                  "text": "300"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "writeln",
+                      "children": [
+                        {
+                          "kind": "atom",
+                          "text": "--- Top products (excluding most expensive) ---"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": ",",
+                      "children": [
+                        {
+                          "kind": "=",
+                          "children": [
+                            {
+                              "kind": "var",
+                              "text": "Item"
+                            },
+                            {
+                              "kind": "{}",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "name"
+                                    },
+                                    {
+                                      "kind": "atom",
+                                      "text": "Smartphone"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "price"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "900"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": "writeln",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "Smartphone costs $ 900"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": "=",
+                                  "children": [
+                                    {
+                                      "kind": "var",
+                                      "text": "Item1"
+                                    },
+                                    {
+                                      "kind": "{}",
+                                      "children": [
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "price"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "600"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "name"
+                                            },
+                                            {
+                                              "kind": "atom",
+                                              "text": "Tablet"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": "writeln",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "Tablet costs $ 600"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": "=",
+                                          "children": [
+                                            {
+                                              "kind": "var",
+                                              "text": "Item2"
+                                            },
+                                            {
+                                              "kind": "{}",
+                                              "children": [
+                                                {
+                                                  "kind": ":",
+                                                  "children": [
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "name"
+                                                    },
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "Monitor"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": ":",
+                                                  "children": [
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "price"
+                                                    },
+                                                    {
+                                                      "kind": "number",
+                                                      "text": "300"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "writeln",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "Monitor costs $ 300"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

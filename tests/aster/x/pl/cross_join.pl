@@ -1,0 +1,25 @@
+:- style_check(-singleton).
+:- initialization(main).
+main :-
+        Customers = [_{id: 1, name: 'Alice'}, _{id: 2, name: 'Bob'}, _{id: 3, name: 'Charlie'}],
+            Orders = [_{id: 100, customerId: 1, total: 250}, _{id: 101, customerId: 2, total: 125}, _{id: 102, customerId: 1, total: 300}],
+            Result = [_{orderId: 100, orderCustomerId: 1, pairedCustomerName: 'Alice', orderTotal: 250}, _{orderId: 100, orderCustomerId: 1, pairedCustomerName: 'Bob', orderTotal: 250}, _{orderId: 100, orderCustomerId: 1, pairedCustomerName: 'Charlie', orderTotal: 250}, _{orderId: 101, orderCustomerId: 2, pairedCustomerName: 'Alice', orderTotal: 125}, _{orderId: 101, orderCustomerId: 2, pairedCustomerName: 'Bob', orderTotal: 125}, _{orderId: 101, orderCustomerId: 2, pairedCustomerName: 'Charlie', orderTotal: 125}, _{orderId: 102, orderCustomerId: 1, pairedCustomerName: 'Alice', orderTotal: 300}, _{orderId: 102, orderCustomerId: 1, pairedCustomerName: 'Bob', orderTotal: 300}, _{orderId: 102, orderCustomerId: 1, pairedCustomerName: 'Charlie', orderTotal: 300}],
+            writeln('--- Cross Join: All order-customer pairs ---'),
+            Entry = _{orderId: 100, orderCustomerId: 1, pairedCustomerName: 'Alice', orderTotal: 250},
+            writeln('Order 100 (customerId: 1 , total: $ 250 ) paired with Alice'),
+            Entry1 = _{orderId: 100, orderCustomerId: 1, pairedCustomerName: 'Bob', orderTotal: 250},
+            writeln('Order 100 (customerId: 1 , total: $ 250 ) paired with Bob'),
+            Entry2 = _{orderId: 100, orderCustomerId: 1, pairedCustomerName: 'Charlie', orderTotal: 250},
+            writeln('Order 100 (customerId: 1 , total: $ 250 ) paired with Charlie'),
+            Entry3 = _{orderId: 101, orderCustomerId: 2, pairedCustomerName: 'Alice', orderTotal: 125},
+            writeln('Order 101 (customerId: 2 , total: $ 125 ) paired with Alice'),
+            Entry4 = _{orderId: 101, orderCustomerId: 2, pairedCustomerName: 'Bob', orderTotal: 125},
+            writeln('Order 101 (customerId: 2 , total: $ 125 ) paired with Bob'),
+            Entry5 = _{orderId: 101, orderCustomerId: 2, pairedCustomerName: 'Charlie', orderTotal: 125},
+            writeln('Order 101 (customerId: 2 , total: $ 125 ) paired with Charlie'),
+            Entry6 = _{orderId: 102, orderCustomerId: 1, pairedCustomerName: 'Alice', orderTotal: 300},
+            writeln('Order 102 (customerId: 1 , total: $ 300 ) paired with Alice'),
+            Entry7 = _{orderId: 102, orderCustomerId: 1, pairedCustomerName: 'Bob', orderTotal: 300},
+            writeln('Order 102 (customerId: 1 , total: $ 300 ) paired with Bob'),
+            Entry8 = _{orderId: 102, orderCustomerId: 1, pairedCustomerName: 'Charlie', orderTotal: 300},
+        writeln('Order 102 (customerId: 1 , total: $ 300 ) paired with Charlie').

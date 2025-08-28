@@ -1,0 +1,423 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "=",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "Items"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "cat"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "a"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "val"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "10"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "flag"
+                                    },
+                                    {
+                                      "kind": "bool",
+                                      "text": "true"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "cat"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "a"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "val"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "5"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "flag"
+                                    },
+                                    {
+                                      "kind": "bool",
+                                      "text": "false"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "cat"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "b"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "val"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "20"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "flag"
+                                    },
+                                    {
+                                      "kind": "bool",
+                                      "text": "true"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "=",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "Result"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "{}",
+                          "children": [
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "cat"
+                                    },
+                                    {
+                                      "kind": "atom",
+                                      "text": "a"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "share"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "0.6666666666666666"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "{}",
+                          "children": [
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "cat"
+                                    },
+                                    {
+                                      "kind": "atom",
+                                      "text": "b"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "share"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "1"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "writeln",
+                      "children": [
+                        {
+                          "kind": "{}",
+                          "children": [
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "cat"
+                                    },
+                                    {
+                                      "kind": "atom",
+                                      "text": "a"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "share"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "0.6666666666666666"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "writeln",
+                      "children": [
+                        {
+                          "kind": "{}",
+                          "children": [
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "cat"
+                                    },
+                                    {
+                                      "kind": "atom",
+                                      "text": "b"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "share"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "1"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

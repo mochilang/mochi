@@ -1,0 +1,707 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "=",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "People"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "name"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "Alice"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "age"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "30"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "city"
+                                    },
+                                    {
+                                      "kind": "atom",
+                                      "text": "Paris"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "name"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "Bob"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "age"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "15"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "city"
+                                    },
+                                    {
+                                      "kind": "atom",
+                                      "text": "Hanoi"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "name"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "Charlie"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "age"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "65"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "city"
+                                    },
+                                    {
+                                      "kind": "atom",
+                                      "text": "Paris"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "name"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "Diana"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "age"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "45"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "city"
+                                    },
+                                    {
+                                      "kind": "atom",
+                                      "text": "Hanoi"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "name"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "Eve"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "age"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "70"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "city"
+                                    },
+                                    {
+                                      "kind": "atom",
+                                      "text": "Paris"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "name"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "Frank"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "age"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "22"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "city"
+                                    },
+                                    {
+                                      "kind": "atom",
+                                      "text": "Hanoi"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "=",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "Stats"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "{}",
+                          "children": [
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "city"
+                                    },
+                                    {
+                                      "kind": "atom",
+                                      "text": "Paris"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "count"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "3"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "avg_age"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "55"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "{}",
+                          "children": [
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "city"
+                                    },
+                                    {
+                                      "kind": "atom",
+                                      "text": "Hanoi"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "count"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "3"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "avg_age"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "27.333333333333332"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "writeln",
+                      "children": [
+                        {
+                          "kind": "atom",
+                          "text": "--- People grouped by city ---"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": ",",
+                      "children": [
+                        {
+                          "kind": "=",
+                          "children": [
+                            {
+                              "kind": "var",
+                              "text": "S"
+                            },
+                            {
+                              "kind": "{}",
+                              "children": [
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "city"
+                                        },
+                                        {
+                                          "kind": "atom",
+                                          "text": "Paris"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "count"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "3"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "avg_age"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "55"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": "writeln",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "Paris : count = 3 , avg_age = 55"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": "=",
+                                  "children": [
+                                    {
+                                      "kind": "var",
+                                      "text": "S1"
+                                    },
+                                    {
+                                      "kind": "{}",
+                                      "children": [
+                                        {
+                                          "kind": ",",
+                                          "children": [
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "city"
+                                                },
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "Hanoi"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": ",",
+                                              "children": [
+                                                {
+                                                  "kind": ":",
+                                                  "children": [
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "count"
+                                                    },
+                                                    {
+                                                      "kind": "number",
+                                                      "text": "3"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": ":",
+                                                  "children": [
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "avg_age"
+                                                    },
+                                                    {
+                                                      "kind": "number",
+                                                      "text": "27.333333333333332"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "writeln",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "Hanoi : count = 3 , avg_age = 27.333333333333332"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
