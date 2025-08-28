@@ -1,0 +1,269 @@
+// Solution for SPOJ SCANNER - Scanner
+// https://www.spoj.com/problems/SCANNER/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+    if len(parts) == 0 { return 0 }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+fun zeroList(n: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, 0)
+    i = i + 1
+  }
+  return lst
+}
+
+fun repeatList(n: int, val: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, val)
+    i = i + 1
+  }
+  return lst
+}
+
+fun reverseList(lst: list<int>): list<int> {
+  var res: list<int> = []
+  var i = len(lst) - 1
+  while i >= 0 {
+    res = append(res, lst[i] as int)
+    i = i - 1
+  }
+  return res
+}
+
+let R = 10
+let C = 15
+let N = R * C
+let D = R + C - 1
+
+var cellR: list<int> = []
+var cellC: list<int> = []
+var neIdx: list<int> = []
+var nwIdx: list<int> = []
+var neCount: list<int> = []
+var nwCount: list<int> = []
+
+fun initCells() {
+  neCount = zeroList(D)
+  nwCount = zeroList(D)
+  var i = 0
+  while i < R {
+    var j = 0
+    while j < C {
+      cellR = append(cellR, i)
+      cellC = append(cellC, j)
+      let d1 = i + j
+      let d2 = i - j + (C - 1)
+      neIdx = append(neIdx, d1)
+      nwIdx = append(nwIdx, d2)
+      neCount[d1] = neCount[d1] + 1
+      nwCount[d2] = nwCount[d2] + 1
+      j = j + 1
+    }
+    i = i + 1
+  }
+}
+
+var rowSum: list<int> = []
+var colSum: list<int> = []
+var neSum: list<int> = []
+var nwSum: list<int> = []
+var rowLeft: list<int> = []
+var colLeft: list<int> = []
+var neLeft: list<int> = []
+var nwLeft: list<int> = []
+var grid: list<list<int>> = []
+var order: list<int> = []
+var weights: list<int> = []
+
+fun dfs(k: int): bool {
+  if k == N {
+    var i = 0
+    while i < R { if rowSum[i] != 0 { return false }; i = i + 1 }
+    i = 0
+    while i < C { if colSum[i] != 0 { return false }; i = i + 1 }
+    i = 0
+    while i < D { if neSum[i] != 0 { return false }; i = i + 1 }
+    i = 0
+    while i < D { if nwSum[i] != 0 { return false }; i = i + 1 }
+    return true
+  }
+  let idx = order[k]
+  let r = cellR[idx]
+  let c = cellC[idx]
+  let d1 = neIdx[idx]
+  let d2 = nwIdx[idx]
+  rowLeft[r] = rowLeft[r] - 1
+  colLeft[c] = colLeft[c] - 1
+  neLeft[d1] = neLeft[d1] - 1
+  nwLeft[d2] = nwLeft[d2] - 1
+  var ok = false
+  if rowSum[r] > 0 && colSum[c] > 0 && neSum[d1] > 0 && nwSum[d2] > 0 {
+    rowSum[r] = rowSum[r] - 1
+    colSum[c] = colSum[c] - 1
+    neSum[d1] = neSum[d1] - 1
+    nwSum[d2] = nwSum[d2] - 1
+    if rowSum[r] <= rowLeft[r] && colSum[c] <= colLeft[c] && neSum[d1] <= neLeft[d1] && nwSum[d2] <= nwLeft[d2] {
+      if dfs(k + 1) {
+        grid[r][c] = 1
+        ok = true
+      }
+    }
+    rowSum[r] = rowSum[r] + 1
+    colSum[c] = colSum[c] + 1
+    neSum[d1] = neSum[d1] + 1
+    nwSum[d2] = nwSum[d2] + 1
+    if ok {
+      rowLeft[r] = rowLeft[r] + 1
+      colLeft[c] = colLeft[c] + 1
+      neLeft[d1] = neLeft[d1] + 1
+      nwLeft[d2] = nwLeft[d2] + 1
+      return true
+    }
+  }
+  if rowSum[r] <= rowLeft[r] && colSum[c] <= colLeft[c] && neSum[d1] <= neLeft[d1] && nwSum[d2] <= nwLeft[d2] {
+    if dfs(k + 1) {
+      grid[r][c] = 0
+      ok = true
+    }
+  }
+  rowLeft[r] = rowLeft[r] + 1
+  colLeft[c] = colLeft[c] + 1
+  neLeft[d1] = neLeft[d1] + 1
+  nwLeft[d2] = nwLeft[d2] + 1
+  return ok
+}
+
+fun solve(rows: list<int>, ne: list<int>, cols: list<int>, nw: list<int>): list<list<int>> {
+  rowSum = rows[0:len(rows)]
+  colSum = cols[0:len(cols)]
+  neSum = ne[0:len(ne)]
+  nwSum = nw[0:len(nw)]
+  rowLeft = repeatList(R, C)
+  colLeft = repeatList(C, R)
+  neLeft = neCount[0:len(neCount)]
+  nwLeft = nwCount[0:len(nwCount)]
+  grid = []
+  var i = 0
+  while i < R {
+    grid = append(grid, zeroList(C))
+    i = i + 1
+  }
+  order = []
+  weights = []
+  i = 0
+  while i < N {
+    order = append(order, i)
+    let r = cellR[i]
+    let c = cellC[i]
+    weights = append(weights, rowSum[r] + colSum[c])
+    i = i + 1
+  }
+  i = 0
+  while i < N {
+    var max = i
+    var j = i + 1
+    while j < N {
+      if weights[j] > weights[max] { max = j }
+      j = j + 1
+    }
+    if max != i {
+      let tmp = order[i]
+      order[i] = order[max]
+      order[max] = tmp
+      let tmpw = weights[i]
+      weights[i] = weights[max]
+      weights[max] = tmpw
+    }
+    i = i + 1
+  }
+  dfs(0)
+  return grid
+}
+
+fun main() {
+  initCells()
+  let t = nextInt()
+  var case = 0
+  while case < t {
+    var rows: list<int> = []
+    var i = 0
+    while i < R { rows = append(rows, nextInt()); i = i + 1 }
+    var diag1: list<int> = []
+    i = 0
+    while i < D { diag1 = append(diag1, nextInt()); i = i + 1 }
+    var cols: list<int> = []
+    i = 0
+    while i < C { cols = append(cols, nextInt()); i = i + 1 }
+    var diag4: list<int> = []
+    i = 0
+    while i < D { diag4 = append(diag4, nextInt()); i = i + 1 }
+    let diag2 = reverseList(diag4)
+    let res = solve(rows, diag1, cols, diag2)
+    i = 0
+    while i < R {
+      var line = ""
+      var j = 0
+      while j < C {
+        if res[i][j] == 1 { line = line + "#" } else { line = line + "." }
+        j = j + 1
+      }
+      print(line)
+      i = i + 1
+    }
+    case = case + 1
+    if case < t { print("") }
+  }
+}
+
+main()
