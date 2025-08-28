@@ -1,0 +1,283 @@
+// Solution for SPOJ AROAD - Another Road Problem
+// https://www.spoj.com/problems/AROAD/
+
+// split a line into whitespace-separated tokens
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+type Edge {
+  u: int,
+  v: int,
+  w: int,
+  id: int,
+}
+
+fun mergeEdges(left: list<Edge>, right: list<Edge>): list<Edge> {
+  var res: list<Edge> = []
+  var i = 0
+  var j = 0
+  while i < len(left) && j < len(right) {
+    let le = left[i]
+    let re = right[j]
+    if le.w <= re.w {
+      res = append(res, le)
+      i = i + 1
+    } else {
+      res = append(res, re)
+      j = j + 1
+    }
+  }
+  while i < len(left) {
+    res = append(res, left[i])
+    i = i + 1
+  }
+  while j < len(right) {
+    res = append(res, right[j])
+    j = j + 1
+  }
+  return res
+}
+
+fun sortEdges(arr: list<Edge>): list<Edge> {
+  if len(arr) <= 1 { return arr }
+  let mid = len(arr) / 2
+  let left = sortEdges(arr[0:mid])
+  let right = sortEdges(arr[mid:len(arr)])
+  return mergeEdges(left, right)
+}
+
+fun find(parent: list<int>, x: int): int {
+  let p = parent[x]
+  if p != x {
+    parent[x] = find(parent, p)
+    return parent[x]
+  }
+  return x
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = splitSpaces(line)
+    let n = (parts[0] as int)
+    let m = (parts[1] as int)
+    let d = (parts[2] as int)
+    var us: list<int> = []
+    var vs: list<int> = []
+    var ws: list<int> = []
+    var edges: list<Edge> = []
+    var i = 0
+    while i < m {
+      line = input()
+      if line == "" { continue }
+      let p = splitSpaces(line)
+      let a = (p[0] as int) - 1
+      let b = (p[1] as int) - 1
+      let c = p[2] as int
+      us = append(us, a)
+      vs = append(vs, b)
+      ws = append(ws, c)
+      edges = append(edges, Edge { u: a, v: b, w: c, id: i })
+      i = i + 1
+    }
+    edges = sortEdges(edges)
+    var parent: list<int> = []
+    i = 0
+    while i < n {
+      parent = append(parent, i)
+      i = i + 1
+    }
+    var inTree: list<bool> = []
+    i = 0
+    while i < m { inTree = append(inTree, false); i = i + 1 }
+    var mstCost = 0
+    var mstEdges = 0
+    var degRoot = 0
+    i = 0
+    while i < m && mstEdges < n-1 {
+      let e = edges[i]
+      let ru = find(parent, e.u)
+      let rv = find(parent, e.v)
+      if ru != rv {
+        parent[ru] = rv
+        inTree[e.id] = true
+        mstCost = mstCost + e.w
+        mstEdges = mstEdges + 1
+        if e.u == 0 || e.v == 0 { degRoot = degRoot + 1 }
+      }
+      i = i + 1
+    }
+    if mstEdges < n - 1 {
+      print("NONE")
+      case = case + 1
+      continue
+    }
+    if degRoot <= d {
+      print(str(mstCost))
+      case = case + 1
+      continue
+    }
+    var possible = true
+    while degRoot > d {
+      // build adjacency from current tree
+      var adj: list<list<int>> = []
+      var adjEdge: list<list<int>> = []
+      var v = 0
+      while v < n {
+        adj = append(adj, [])
+        adjEdge = append(adjEdge, [])
+        v = v + 1
+      }
+      var eidx = 0
+      while eidx < m {
+        if inTree[eidx] {
+          let a = us[eidx]
+          let b = vs[eidx]
+          adj[a] = append(adj[a], b)
+          adjEdge[a] = append(adjEdge[a], eidx)
+          adj[b] = append(adj[b], a)
+          adjEdge[b] = append(adjEdge[b], eidx)
+        }
+        eidx = eidx + 1
+      }
+      var rootChild: list<int> = []
+      var parentNode: list<int> = []
+      v = 0
+      while v < n {
+        rootChild = append(rootChild, 0-1)
+        parentNode = append(parentNode, 0-1)
+        v = v + 1
+      }
+      var childList: list<int> = []
+      var stack: list<int> = []
+      parentNode[0] = 0
+      var j = 0
+      while j < len(adj[0]) {
+        let to = adj[0][j]
+        let e = adjEdge[0][j]
+        rootChild[to] = to
+        parentNode[to] = 0
+        childList = append(childList, to)
+        stack = append(stack, to)
+        j = j + 1
+      }
+      var si = 0
+      while si < len(stack) {
+        let v2 = stack[si]
+        si = si + 1
+        var k = 0
+        while k < len(adj[v2]) {
+          let to = adj[v2][k]
+          if to != parentNode[v2] {
+            rootChild[to] = rootChild[v2]
+            parentNode[to] = v2
+            stack = append(stack, to)
+          }
+          k = k + 1
+        }
+      }
+      var rootEdgeIdx: list<int> = []
+      var rootEdgeCost: list<int> = []
+      v = 0
+      while v < n {
+        rootEdgeIdx = append(rootEdgeIdx, 0-1)
+        rootEdgeCost = append(rootEdgeCost, 0)
+        v = v + 1
+      }
+      j = 0
+      while j < len(adj[0]) {
+        let to = adj[0][j]
+        let e = adjEdge[0][j]
+        rootEdgeIdx[to] = e
+        rootEdgeCost[to] = ws[e]
+        j = j + 1
+      }
+      var bestDiff: list<int> = []
+      var bestEdge: list<int> = []
+      v = 0
+      while v < n {
+        bestDiff = append(bestDiff, 1000000000)
+        bestEdge = append(bestEdge, 0-1)
+        v = v + 1
+      }
+      eidx = 0
+      while eidx < m {
+        if !inTree[eidx] {
+          let a = us[eidx]
+          let b = vs[eidx]
+          if a != 0 && b != 0 {
+            let ca = rootChild[a]
+            let cb = rootChild[b]
+            if ca != cb {
+              let wa = ws[eidx]
+              if ca != 0-1 {
+                let diff = wa - rootEdgeCost[ca]
+                if diff < bestDiff[ca] {
+                  bestDiff[ca] = diff
+                  bestEdge[ca] = eidx
+                }
+              }
+              if cb != 0-1 {
+                let diff2 = wa - rootEdgeCost[cb]
+                if diff2 < bestDiff[cb] {
+                  bestDiff[cb] = diff2
+                  bestEdge[cb] = eidx
+                }
+              }
+            }
+          }
+        }
+        eidx = eidx + 1
+      }
+      var chosenChild = 0-1
+      var addEdgeIdx = 0-1
+      var minDiff = 1000000000
+      j = 0
+      while j < len(childList) {
+        let ch = childList[j]
+        if bestEdge[ch] != 0-1 && bestDiff[ch] < minDiff {
+          minDiff = bestDiff[ch]
+          chosenChild = ch
+          addEdgeIdx = bestEdge[ch]
+        }
+        j = j + 1
+      }
+      if chosenChild == 0-1 {
+        possible = false
+        break
+      }
+      let removeIdx = rootEdgeIdx[chosenChild]
+      inTree[removeIdx] = false
+      inTree[addEdgeIdx] = true
+      mstCost = mstCost + minDiff
+      degRoot = degRoot - 1
+    }
+    if possible {
+      print(str(mstCost))
+    } else {
+      print("NONE")
+    }
+    case = case + 1
+  }
+}
+
+main()
