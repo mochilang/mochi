@@ -1,0 +1,189 @@
+// Solution for SPOJ EUROPEAN - European railroad tracks
+// https://www.spoj.com/problems/EUROPEAN/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun contains(arr: list<int>, x: int): bool {
+  var i = 0
+  while i < len(arr) {
+    if arr[i] == x { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun addSorted(arr: list<int>, x: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(arr) {
+    res = append(res, arr[i])
+    i = i + 1
+  }
+  res = append(res, x)
+  res = sortInts(res)
+  return res
+}
+
+fun dedup(arr: list<int>): list<int> {
+  arr = sortInts(arr)
+  var res: list<int> = []
+  var i = 0
+  while i < len(arr) {
+    if i == 0 || arr[i] != arr[i-1] {
+      res = append(res, arr[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun satisfied(pos: list<int>, gauges: list<int>): list<bool> {
+  var sat: list<bool> = []
+  var i = 0
+  while i < len(gauges) {
+    sat = append(sat, false)
+    i = i + 1
+  }
+  i = 0
+  while i < len(pos) {
+    var j = i + 1
+    while j < len(pos) {
+      let diff = pos[j] - pos[i]
+      var k = 0
+      while k < len(gauges) {
+        if diff == gauges[k] { sat[k] = true }
+        k = k + 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return sat
+}
+
+fun allTrue(arr: list<bool>): bool {
+  var i = 0
+  while i < len(arr) {
+    if arr[i] == false { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun search(gauges: list<int>, limit: int, pos: list<int>): list<int> {
+  let sat = satisfied(pos, gauges)
+  if allTrue(sat) { return pos }
+  if len(pos) == limit { return [] }
+  var idx = len(gauges) - 1
+  var g = 0
+  while idx >= 0 {
+    if sat[idx] == false { g = gauges[idx]; break }
+    idx = idx - 1
+  }
+  // choose largest unsatisfied gauge
+  var i = 0
+  while i < len(pos) {
+    let newPos = pos[i] + g
+    if contains(pos, newPos) == false {
+      let next = search(gauges, limit, addSorted(pos, newPos))
+      if len(next) > 0 { return next }
+    }
+    i = i + 1
+  }
+  return []
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 1
+  while case <= t {
+    var line = input()
+    while line == "" { line = input() }
+    let n = parseIntStr(line)
+    var nums: list<int> = []
+    while len(nums) < n {
+      let l = input()
+      let vals = parseInts(l)
+      var i = 0
+      while i < len(vals) { nums = append(nums, vals[i]); i = i + 1 }
+    }
+    nums = dedup(nums)
+    var res: list<int> = []
+    var k = 2
+    while k <= 5 {
+      res = search(nums, k, [0])
+      if len(res) > 0 { break }
+      k = k + 1
+    }
+    print("Scenario #" + str(case))
+    var lineOut = str(len(res)) + ":"
+    var i = 0
+    while i < len(res) {
+      lineOut = lineOut + " " + str(res[i])
+      i = i + 1
+    }
+    print(lineOut)
+    print("")
+    case = case + 1
+  }
+}
+
+main()
