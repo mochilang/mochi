@@ -1,0 +1,153 @@
+// Solution for SPOJ GAME - Game schedule required
+// https://www.spoj.com/problems/GAME/
+
+type Pair { w: int, l: int }
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun makeAdj(n: int): list<list<int>> {
+  var g: list<list<int>> = []
+  var i = 0
+  while i < n {
+    g = append(g, [])
+    i = i + 1
+  }
+  return g
+}
+
+fun dfs(u: int, p: int, adj: list<list<int>>, alive: list<bool>, matched: list<bool>): list<Pair> {
+  var res: list<Pair> = []
+  var i = 0
+  while i < len(adj[u]) {
+    let v = adj[u][i]
+    if alive[v] == false || v == p { i = i + 1; continue }
+    let child = dfs(v, u, adj, alive, matched)
+    var j = 0
+    while j < len(child) {
+      res = append(res, child[j])
+      j = j + 1
+    }
+    if matched[u] == false && matched[v] == false {
+      res = append(res, Pair{ w: u, l: v })
+      matched[u] = true
+      matched[v] = true
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  while true {
+    var line = input()
+    if line == nil || line == "" { return }
+    let n = int(line)
+    if n == 0 { break }
+    var names: list<string> = []
+    var idx: map<string,int> = {}
+    var i = 0
+    while i < n {
+      var name = input()
+      if name == "" { continue }
+      names = append(names, name)
+      idx[name] = i
+      i = i + 1
+    }
+    var adj = makeAdj(n)
+    var j = 0
+    while j < n-1 {
+      var l = input()
+      if l == "" { continue }
+      let parts = splitSpaces(l)
+      let a = idx[parts[0]] as int
+      let b = idx[parts[1]] as int
+      adj[a] = append(adj[a], b)
+      adj[b] = append(adj[b], a)
+      j = j + 1
+    }
+    var alive: list<bool> = []
+    i = 0
+    while i < n {
+      alive = append(alive, true)
+      i = i + 1
+    }
+    var remaining = n
+    var round = 1
+    while remaining > 1 {
+      var matched: list<bool> = []
+      i = 0
+      while i < n {
+        matched = append(matched, false)
+        i = i + 1
+      }
+      var root = 0
+      i = 0
+      while i < n {
+        if alive[i] { root = i; break }
+        i = i + 1
+      }
+      let matches = dfs(root, -1, adj, alive, matched)
+      var wildcard = -1
+      i = 0
+      while i < n {
+        if alive[i] && matched[i] == false {
+          wildcard = i
+          break
+        }
+        i = i + 1
+      }
+      print("Round #" + str(round))
+      round = round + 1
+      var k = 0
+      while k < len(matches) {
+        let m = matches[k]
+        print(names[m.w] + " defeats " + names[m.l])
+        k = k + 1
+      }
+      if wildcard >= 0 {
+        print(names[wildcard] + " advances with wildcard")
+      }
+      k = 0
+      while k < len(matches) {
+        let m = matches[k]
+        alive[m.l] = false
+        remaining = remaining - 1
+        // remove loser from winner's adjacency list
+        var nl: list<int> = []
+        var t = 0
+        while t < len(adj[m.w]) {
+          let x = adj[m.w][t]
+          if x != m.l { nl = append(nl, x) }
+          t = t + 1
+        }
+        adj[m.w] = nl
+        k = k + 1
+      }
+    }
+    var winner = 0
+    i = 0
+    while i < n {
+      if alive[i] { winner = i }
+      i = i + 1
+    }
+    print("Winner: " + names[winner])
+    print("")
+  }
+}
+
+main()
