@@ -1,0 +1,58 @@
+// Solution for SPOJ CTRICK - Card Trick
+// https://www.spoj.com/problems/CTRICK/
+
+fun makeIntList(n: int, v: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, v)
+    i = i + 1
+  }
+  return lst
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var caseIdx = 0
+  while caseIdx < t {
+    let nLine = input()
+    let n = int(nLine)
+    var ans = makeIntList(n + 1, 0)
+    let size = n * 2 + 3
+    var q = makeIntList(size, 0)
+    var i = 0
+    while i < n {
+      q[i] = i + 1
+      i = i + 1
+    }
+    var head = 0
+    var tail = n
+    var card = 1
+    while card <= n {
+      var j = 0
+      while j < card {
+        q[tail % size] = q[head % size]
+        head = head + 1
+        tail = tail + 1
+        j = j + 1
+      }
+      let pos = q[head % size]
+      head = head + 1
+      ans[pos] = card
+      card = card + 1
+    }
+    var out = ""
+    var k = 1
+    while k <= n {
+      if k > 1 { out = out + " " }
+      out = out + str(ans[k])
+      k = k + 1
+    }
+    print(out)
+    caseIdx = caseIdx + 1
+  }
+}
+
+main()
