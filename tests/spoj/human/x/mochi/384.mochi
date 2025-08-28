@@ -1,0 +1,67 @@
+// Solution for SPOJ FOOL - Any fool can do it
+// https://www.spoj.com/problems/FOOL/
+
+let FAIL = 0 - 1
+
+fun parseSet(s: string, i: int): int {
+  if i >= len(s) { return FAIL }
+  if s[i:i+1] != "{" { return FAIL }
+  var j = i + 1
+  j = parseElementList(s, j)
+  if j == FAIL { return FAIL }
+  if j >= len(s) { return FAIL }
+  if s[j:j+1] != "}" { return FAIL }
+  return j + 1
+}
+
+fun parseElementList(s: string, i: int): int {
+  if i >= len(s) { return FAIL }
+  if s[i:i+1] == "}" { return i }
+  return parseList(s, i)
+}
+
+fun parseList(s: string, i: int): int {
+  var j = parseElement(s, i)
+  if j == FAIL { return FAIL }
+  i = j
+  while true {
+    if i >= len(s) { break }
+    if s[i:i+1] != "," { break }
+    j = parseElement(s, i + 1)
+    if j == FAIL { return FAIL }
+    i = j
+  }
+  return i
+}
+
+fun parseElement(s: string, i: int): int {
+  if i >= len(s) { return FAIL }
+  if s[i:i+1] == "{" {
+    let j = parseSet(s, i)
+    if j != FAIL { return j }
+  }
+  let ch = s[i:i+1]
+  if ch == "{" || ch == "}" || ch == "," {
+    return i + 1
+  }
+  return FAIL
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == nil || tStr == "" { return }
+  let t = tStr as int
+  var caseIndex = 0
+  while caseIndex < t {
+    let w = input()
+    let end = parseSet(w, 0)
+    if end == len(w) {
+      print("Word #" + str(caseIndex + 1) + ": Set")
+    } else {
+      print("Word #" + str(caseIndex + 1) + ": No Set")
+    }
+    caseIndex = caseIndex + 1
+  }
+}
+
+main()
