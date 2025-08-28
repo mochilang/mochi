@@ -1,0 +1,167 @@
+// Solution for SPOJ SERVICE - Mobile Service
+// https://www.spoj.com/problems/SERVICE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parts[i] as int)
+    i = i + 1
+  }
+  return nums
+}
+
+fun make2d(r: int, c: int, v: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < r {
+    var row: list<int> = []
+    var j = 0
+    while j < c {
+      row = append(row, v)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun minCost(L: int, N: int, cost: list<list<int>>, req: list<int>): int {
+  let INF = 1000000000
+  var dp = make2d(L + 1, L + 1, INF)
+  let r1 = req[0]
+  if r1 == 1 {
+    dp[2][3] = 0
+  } else if r1 == 2 {
+    dp[1][3] = 0
+  } else if r1 == 3 {
+    dp[1][2] = 0
+  } else {
+    dp[2][3] = cost[1][r1]
+    dp[1][3] = cost[2][r1]
+    dp[1][2] = cost[3][r1]
+  }
+  var rPrev = r1
+  var idx = 1
+  while idx < N {
+    let rNext = req[idx]
+    var next = make2d(L + 1, L + 1, INF)
+    var a = 1
+    while a <= L {
+      var b = a + 1
+      while b <= L {
+        let cur = dp[a][b]
+        if cur < INF {
+          if rNext == rPrev {
+            if cur < next[a][b] { next[a][b] = cur }
+          } else if rNext == a {
+            var x = rPrev
+            var y = b
+            if x < y {
+              if cur < next[x][y] { next[x][y] = cur }
+            } else {
+              if cur < next[y][x] { next[y][x] = cur }
+            }
+          } else if rNext == b {
+            var x = rPrev
+            var y = a
+            if x < y {
+              if cur < next[x][y] { next[x][y] = cur }
+            } else {
+              if cur < next[y][x] { next[y][x] = cur }
+            }
+          } else {
+            // move worker at rPrev
+            let c1 = cur + cost[rPrev][rNext]
+            if c1 < next[a][b] { next[a][b] = c1 }
+            // move worker at a
+            var x1 = rPrev
+            var y1 = b
+            let c2 = cur + cost[a][rNext]
+            if x1 < y1 {
+              if c2 < next[x1][y1] { next[x1][y1] = c2 }
+            } else {
+              if c2 < next[y1][x1] { next[y1][x1] = c2 }
+            }
+            // move worker at b
+            x1 = rPrev
+            y1 = a
+            let c3 = cur + cost[b][rNext]
+            if x1 < y1 {
+              if c3 < next[x1][y1] { next[x1][y1] = c3 }
+            } else {
+              if c3 < next[y1][x1] { next[y1][x1] = c3 }
+            }
+          }
+        }
+        b = b + 1
+      }
+      a = a + 1
+    }
+    dp = next
+    rPrev = rNext
+    idx = idx + 1
+  }
+  var ans = INF
+  var i = 1
+  while i <= L {
+    var j = i + 1
+    while j <= L {
+      if dp[i][j] < ans { ans = dp[i][j] }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return ans
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let line = input()
+    let parts = parseInts(line)
+    let L = parts[0]
+    let N = parts[1]
+    var cost = make2d(L + 1, L + 1, 0)
+    var i = 1
+    while i <= L {
+      let rowLine = input()
+      let vals = parseInts(rowLine)
+      var j = 1
+      while j <= L {
+        cost[i][j] = vals[j - 1]
+        j = j + 1
+      }
+      i = i + 1
+    }
+    let reqLine = input()
+    let reqs = parseInts(reqLine)
+    let res = minCost(L, N, cost, reqs)
+    print(str(res))
+    case = case + 1
+  }
+}
+
+main()
