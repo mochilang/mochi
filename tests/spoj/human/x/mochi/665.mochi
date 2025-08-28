@@ -1,0 +1,56 @@
+// Solution for SPOJ SUBS - String it out
+// https://www.spoj.com/problems/SUBS/
+
+fun can(x: string, y: string, m: int): bool {
+  if m == 0 { return true }
+  let n = len(x)
+  let ny = len(y)
+  var xi = 0
+  var cnt = 0
+  var j = 0
+  while j < ny && xi < n {
+    if y[j:j+1] == x[xi:xi+1] {
+      cnt = cnt + 1
+      if cnt == m {
+        xi = xi + 1
+        cnt = 0
+      }
+    }
+    j = j + 1
+  }
+  return xi == n
+}
+
+fun maxRepeats(x: string, y: string): int {
+  let n = len(x)
+  if n == 0 { return 0 }
+  var lo = 0
+  var hi = len(y) / n
+  while lo < hi {
+    let mid = (lo + hi + 1) / 2
+    if can(x, y, mid) {
+      lo = mid
+    } else {
+      hi = mid - 1
+    }
+  }
+  return lo
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var x = input()
+    while x == "" { x = input() }
+    var y = input()
+    while y == "" { y = input() }
+    let ans = maxRepeats(x, y)
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
