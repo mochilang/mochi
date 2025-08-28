@@ -4372,6 +4372,36 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 		joinType = *join.Side
 	}
 
+	// When there is only a single join left to compile and the ON clause
+	// is a simple equality, switch to the specialized hash join
+	// implementation for better performance.
+	if idx == 0 && len(q.Joins) == 1 {
+		if joinType == "inner" {
+			if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
+				fc.compileHashJoin(q, dst, lk, rk)
+				return
+			}
+		}
+		if joinType == "left" {
+			if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
+				fc.compileHashLeftJoin(q, dst, lk, rk)
+				return
+			}
+		}
+		if joinType == "right" {
+			if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
+				fc.compileHashRightJoin(q, dst, lk, rk)
+				return
+			}
+		}
+		if joinType == "outer" {
+			if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
+				fc.compileHashOuterJoin(q, dst, lk, rk)
+				return
+			}
+		}
+	}
+
 	rightReg := fc.compileExpr(join.Src)
 	rlist := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpIterPrep, A: rlist, B: rightReg})
