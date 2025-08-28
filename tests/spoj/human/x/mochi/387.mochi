@@ -1,0 +1,188 @@
+// SPOJ: TOURS - Travelling tours
+// https://www.spoj.com/problems/TOURS/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == " " || ch == "\t" || ch == "\r" { 
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun make_matrix(r: int, c: int, val: int): list<list<int>> {
+  var m: list<list<int>> = []
+  var i = 0
+  while i < r {
+    var row: list<int> = []
+    var j = 0
+    while j < c {
+      row = append(row, val)
+      j = j + 1
+    }
+    m = append(m, row)
+    i = i + 1
+  }
+  return m
+}
+
+fun hungarian(cost: list<list<int>>, n: int): int {
+  let INF = 1000000000
+  var a: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    var row: list<int> = []
+    var j = 0
+    while j <= n {
+      row = append(row, 0)
+      j = j + 1
+    }
+    a = append(a, row)
+    i = i + 1
+  }
+  i = 1
+  while i <= n {
+    var j = 1
+    while j <= n {
+      a[i][j] = cost[i - 1][j - 1]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var u: list<int> = []
+  var v: list<int> = []
+  var p: list<int> = []
+  var way: list<int> = []
+  i = 0
+  while i <= n {
+    u = append(u, 0)
+    v = append(v, 0)
+    p = append(p, 0)
+    way = append(way, 0)
+    i = i + 1
+  }
+  i = 1
+  while i <= n {
+    p[0] = i
+    var j0 = 0
+    var minv: list<int> = []
+    var used: list<int> = []
+    var j = 0
+    while j <= n {
+      minv = append(minv, INF)
+      used = append(used, 0)
+      j = j + 1
+    }
+    used[0] = 1
+    while true {
+      used[j0] = 1
+      let i0 = p[j0]
+      var delta = INF
+      var j1 = 0
+      j = 1
+      while j <= n {
+        if used[j] == 0 {
+          let cur = a[i0][j] - u[i0] - v[j]
+          if cur < minv[j] {
+            minv[j] = cur
+            way[j] = j0
+          }
+          if minv[j] < delta {
+            delta = minv[j]
+            j1 = j
+          }
+        }
+        j = j + 1
+      }
+      j = 0
+      while j <= n {
+        if used[j] == 1 {
+          u[p[j]] = u[p[j]] + delta
+          v[j] = v[j] - delta
+        } else {
+          minv[j] = minv[j] - delta
+        }
+        j = j + 1
+      }
+      j0 = j1
+      if p[j0] == 0 { break }
+    }
+    while true {
+      let j1 = way[j0]
+      p[j0] = p[j1]
+      j0 = j1
+      if j0 == 0 { break }
+    }
+    i = i + 1
+  }
+  var res = 0
+  var j = 1
+  while j <= n {
+    let iidx = p[j]
+    if iidx >= 1 && iidx <= n {
+      res = res + cost[iidx - 1][j - 1]
+    }
+    j = j + 1
+  }
+  return res
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun main() {
+  let tLine = readNonEmpty()
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    let parts = split(readNonEmpty())
+    let n = parseIntStr(parts[0])
+    let m = parseIntStr(parts[1])
+    let INF = 1000000000
+    var cost = make_matrix(n, n, INF)
+    var e = 0
+    while e < m {
+      let line = readNonEmpty()
+      let p = split(line)
+      let u = parseIntStr(p[0])
+      let v = parseIntStr(p[1])
+      let w = parseIntStr(p[2])
+      if u != v && w < cost[u - 1][v - 1] {
+        cost[u - 1][v - 1] = w
+      }
+      e = e + 1
+    }
+    let ans = hungarian(cost, n)
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
