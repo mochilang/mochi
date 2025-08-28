@@ -1,0 +1,74 @@
+// Solution for SPOJ DEADFR - Dead Fraction
+// https://www.spoj.com/problems/DEADFR/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun pow10(n: int): int {
+  var p = 1
+  var i = 0
+  while i < n {
+    p = p * 10
+    i = i + 1
+  }
+  return p
+}
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun solveDigits(d: string): string {
+  let n = parseIntStr(d)
+  let L = len(d)
+  var bestNum = 0
+  var bestDen = 0
+  var k = 1
+  while k <= L {
+    let aLen = L - k
+    let aStr = d[0:aLen]
+    let aVal = if aLen > 0 { parseIntStr(aStr) } else { 0 }
+    let numerator = n - aVal
+    let denom = pow10(aLen) * (pow10(k) - 1)
+    let g = gcd(numerator, denom)
+    let num = numerator / g
+    let den = denom / g
+    if bestDen == 0 || den < bestDen {
+      bestDen = den
+      bestNum = num
+    }
+    k = k + 1
+  }
+  return str(bestNum) + "/" + str(bestDen)
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    if line == "0" { break }
+    let d = line[2:len(line)-3]
+    print(solveDigits(d))
+  }
+}
+
+main()
