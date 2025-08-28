@@ -1,0 +1,191 @@
+// Solution for SPOJ TRANSP2 - Transposing is Even More Fun
+// https://www.spoj.com/problems/TRANSP2
+
+let MOD = 1000003
+let MAX = 1000000
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  if x < 0 { return -x }
+  return x
+}
+
+fun powMod(a: int, b: int, m: int): int {
+  var res = 1
+  var base = a % m
+  var exp = b
+  while exp > 0 {
+    if exp % 2 == 1 { res = (res * base) % m }
+    base = (base * base) % m
+    exp = exp / 2
+  }
+  return res
+}
+
+fun sieveSmall(limit: int): list<int> {
+  var isPrime: list<bool> = []
+  var i = 0
+  while i <= limit {
+    isPrime = append(isPrime, true)
+    i = i + 1
+  }
+  isPrime[0] = false
+  if limit >= 1 { isPrime[1] = false }
+  var p = 2
+  while p * p <= limit {
+    if isPrime[p] {
+      var mult = p * p
+      while mult <= limit {
+        isPrime[mult] = false
+        mult = mult + p
+      }
+    }
+    p = p + 1
+  }
+  var primes: list<int> = []
+  i = 2
+  while i <= limit {
+    if isPrime[i] { primes = append(primes, i) }
+    i = i + 1
+  }
+  return primes
+}
+
+var phi: list<int> = []
+var smallPrimes: list<int> = []
+
+fun init() {
+  var i = 0
+  while i <= MAX {
+    phi = append(phi, i)
+    i = i + 1
+  }
+  var p = 2
+  while p <= MAX {
+    if phi[p] == p {
+      var j = p
+      while j <= MAX {
+        phi[j] = phi[j] - phi[j] / p
+        j = j + p
+      }
+    }
+    p = p + 1
+  }
+  smallPrimes = sieveSmall(1000)
+}
+
+fun divisors(n: int): list<int> {
+  var temp = n
+  var primes: list<int> = []
+  var exps: list<int> = []
+  var idx = 0
+  while idx < len(smallPrimes) {
+    let p = smallPrimes[idx] as int
+    if p * p > temp { break }
+    if temp % p == 0 {
+      var cnt = 0
+      while temp % p == 0 {
+        temp = temp / p
+        cnt = cnt + 1
+      }
+      primes = append(primes, p)
+      exps = append(exps, cnt)
+    }
+    idx = idx + 1
+  }
+  if temp > 1 {
+    primes = append(primes, temp)
+    exps = append(exps, 1)
+  }
+  var divs: list<int> = [1]
+  idx = 0
+  while idx < len(primes) {
+    let p = primes[idx] as int
+    let e = exps[idx] as int
+    var add: list<int> = []
+    var j = 0
+    while j < len(divs) {
+      var val = divs[j] as int
+      var k = 0
+      while k < e {
+        val = val * p
+        add = append(add, val)
+        k = k + 1
+      }
+      j = j + 1
+    }
+    j = 0
+    while j < len(add) {
+      divs = append(divs, add[j] as int)
+      j = j + 1
+    }
+    idx = idx + 1
+  }
+  return divs
+}
+
+fun solve(a: int, b: int): int {
+  if a == 0 && b == 0 { return 0 }
+  let k = a + b
+  let g = gcd(a, b)
+  let L = k / g
+  let divs = divisors(L)
+  var sum = 0
+  var i = 0
+  while i < len(divs) {
+    let m = divs[i] as int
+    let exp = g * (L / m)
+    let term = (phi[m] * powMod(2, exp, MOD)) % MOD
+    sum = (sum + term) % MOD
+    i = i + 1
+  }
+  let invL = powMod(L, MOD - 2, MOD)
+  let cycles = (sum * invL) % MOD
+  let total = powMod(2, k, MOD)
+  var ans = (total - cycles) % MOD
+  if ans < 0 { ans = ans + MOD }
+  return ans
+}
+
+fun readInts(line: string): list<int> {
+  var nums: list<int> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        nums = append(nums, cur as int)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { nums = append(nums, cur as int) }
+  return nums
+}
+
+fun main() {
+  init()
+  let t = int(input())
+  var case = 0
+  while case < t {
+    let line = input()
+    let nums = readInts(line)
+    let a = nums[0]
+    let b = nums[1]
+    let ans = solve(a, b)
+    print(ans)
+    case = case + 1
+  }
+}
+
+main()
