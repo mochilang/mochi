@@ -1,0 +1,92 @@
+// Solution for SPOJ UPSUB - Up Subsequence
+// https://www.spoj.com/problems/UPSUB/
+
+var s: string
+var n: int
+var dp: list<int>
+var seen: map<string,bool>
+
+fun dfs(i: int, cur: string, acc: list<string>): list<string> {
+  if dp[i] == 1 {
+    if !seen[cur] {
+      seen[cur] = true
+      acc = append(acc, cur)
+    }
+    return acc
+  }
+  var j = i + 1
+  while j < n {
+    if s[j:j+1] >= s[i:i+1] && dp[j] == dp[i] - 1 {
+      acc = dfs(j, cur + s[j:j+1], acc)
+    }
+    j = j + 1
+  }
+  return acc
+}
+
+fun sortStrings(arr: list<string>): list<string> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    s = line
+    n = len(s)
+    dp = []
+    var i = 0
+    while i < n { dp = append(dp, 1); i = i + 1 }
+    i = n - 1
+    while i >= 0 {
+      var j = i + 1
+      var best = 1
+      while j < n {
+        if s[j:j+1] >= s[i:i+1] {
+          let v = 1 + dp[j]
+          if v > best { best = v }
+        }
+        j = j + 1
+      }
+      dp[i] = best
+      i = i - 1
+    }
+    var maxLen = 0
+    i = 0
+    while i < n { if dp[i] > maxLen { maxLen = dp[i] }; i = i + 1 }
+    seen = {}
+    var results: list<string> = []
+    i = 0
+    while i < n {
+      if dp[i] == maxLen {
+        results = dfs(i, s[i:i+1], results)
+      }
+      i = i + 1
+    }
+    results = sortStrings(results)
+    var k = 0
+    while k < len(results) {
+      print(results[k])
+      k = k + 1
+    }
+    print("")
+    case = case + 1
+  }
+}
+
+main()
