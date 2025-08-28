@@ -1,0 +1,130 @@
+// Solution for SPOJ GSS1 - Can you answer these queries I
+// https://www.spoj.com/problems/GSS1/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun mergeNodes(left: list<int>, right: list<int>): list<int> {
+  var node: list<int> = []
+  let sumVal = left[0] + right[0]
+  var pre = left[1]
+  let candPre = left[0] + right[1]
+  if candPre > pre { pre = candPre }
+  var suf = right[2]
+  let candSuf = right[0] + left[2]
+  if candSuf > suf { suf = candSuf }
+  var m = left[3]
+  if right[3] > m { m = right[3] }
+  let cross = left[2] + right[1]
+  if cross > m { m = cross }
+  node = append(node, sumVal)
+  node = append(node, pre)
+  node = append(node, suf)
+  node = append(node, m)
+  return node
+}
+
+fun query(node: int, l: int, r: int, ql: int, qr: int, sum: list<int>, pref: list<int>, suff: list<int>, best: list<int>): list<int> {
+  if ql == l && qr == r {
+    var res: list<int> = []
+    res = append(res, sum[node])
+    res = append(res, pref[node])
+    res = append(res, suff[node])
+    res = append(res, best[node])
+    return res
+  }
+  let mid = (l + r) / 2
+  if qr <= mid {
+    return query(node*2, l, mid, ql, qr, sum, pref, suff, best)
+  }
+  if ql > mid {
+    return query(node*2+1, mid+1, r, ql, qr, sum, pref, suff, best)
+  }
+  let leftRes = query(node*2, l, mid, ql, mid, sum, pref, suff, best)
+  let rightRes = query(node*2+1, mid+1, r, mid+1, qr, sum, pref, suff, best)
+  return mergeNodes(leftRes, rightRes)
+}
+
+fun main() {
+  let nLine = input()
+  if nLine == "" { return }
+  let n = int(nLine)
+  let arrLine = input()
+  let tokens = split(arrLine)
+  var arr: list<int> = []
+  var i = 0
+  while i < n {
+    arr = append(arr, int(tokens[i]))
+    i = i + 1
+  }
+  var size = 1
+  while size < n { size = size * 2 }
+  var sum: list<int> = []
+  var pref: list<int> = []
+  var suff: list<int> = []
+  var best: list<int> = []
+  i = 0
+  while i < 2 * size {
+    sum = append(sum, 0)
+    pref = append(pref, -1000000000)
+    suff = append(suff, -1000000000)
+    best = append(best, -1000000000)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    let idx = size + i
+    let v = arr[i]
+    sum[idx] = v
+    pref[idx] = v
+    suff[idx] = v
+    best[idx] = v
+    i = i + 1
+  }
+  i = size - 1
+  while i > 0 {
+    let left = i * 2
+    let right = i * 2 + 1
+    sum[i] = sum[left] + sum[right]
+    pref[i] = pref[left]
+    let candPre = sum[left] + pref[right]
+    if candPre > pref[i] { pref[i] = candPre }
+    suff[i] = suff[right]
+    let candSuf = sum[right] + suff[left]
+    if candSuf > suff[i] { suff[i] = candSuf }
+    var m = best[left]
+    if best[right] > m { m = best[right] }
+    let cross = suff[left] + pref[right]
+    if cross > m { m = cross }
+    best[i] = m
+    i = i - 1
+  }
+  let mLine = input()
+  let q = int(mLine)
+  i = 0
+  while i < q {
+    let qLine = input()
+    let ps = split(qLine)
+    let x = int(ps[0]) - 1
+    let y = int(ps[1]) - 1
+    let res = query(1, 0, size-1, x, y, sum, pref, suff, best)
+    print(res[3])
+    i = i + 1
+  }
+}
+
+main()
