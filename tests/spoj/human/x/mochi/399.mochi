@@ -1,0 +1,99 @@
+// Solution for SPOJ TRANK - Team Rankings
+// https://www.spoj.com/problems/TRANK/
+
+fun permutations(): list<string> {
+  let letters = ["A","B","C","D","E"]
+  var perms: list<string> = []
+  var i = 0
+  while i < 5 {
+    var j = 0
+    while j < 5 {
+      if j != i {
+        var k = 0
+        while k < 5 {
+          if k != i && k != j {
+            var l = 0
+            while l < 5 {
+              if l != i && l != j && l != k {
+                var m = 0
+                while m < 5 {
+                  if m != i && m != j && m != k && m != l {
+                    let perm = letters[i] + letters[j] + letters[k] + letters[l] + letters[m]
+                    perms = append(perms, perm)
+                  }
+                  m = m + 1
+                }
+              }
+              l = l + 1
+            }
+          }
+          k = k + 1
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return perms
+}
+
+fun dist(perm: string, rank: string): int {
+  var total = 0
+  var i = 0
+  while i < 5 {
+    var j = i + 1
+    while j < 5 {
+      let a = substring(perm, i, i+1)
+      let b = substring(perm, j, j+1)
+      var pa = 0
+      var pb = 0
+      var k = 0
+      while k < 5 {
+        let ch = substring(rank, k, k+1)
+        if ch == a { pa = k }
+        if ch == b { pb = k }
+        k = k + 1
+      }
+      if pa > pb { total = total + 1 }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return total
+}
+
+fun main() {
+  let perms = permutations()
+  while true {
+    let nLine = input()
+    if nLine == "" { return }
+    let n = int(nLine)
+    if n == 0 { break }
+    var ranks: list<string> = []
+    var i = 0
+    while i < n {
+      ranks = append(ranks, input())
+      i = i + 1
+    }
+    var best = ""
+    var bestVal = 1000
+    var p = 0
+    while p < len(perms) {
+      let perm = perms[p]
+      var total = 0
+      var r = 0
+      while r < n {
+        total = total + dist(perm, ranks[r])
+        r = r + 1
+      }
+      if total < bestVal || (total == bestVal && perm < best) {
+        bestVal = total
+        best = perm
+      }
+      p = p + 1
+    }
+    print(best + " is the median ranking with value " + str(bestVal) + ".")
+  }
+}
+
+main()
