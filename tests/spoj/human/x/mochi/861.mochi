@@ -1,0 +1,222 @@
+// Solution for SPOJ SWAPS - Counting inversions
+// https://www.spoj.com/problems/SWAPS/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun parseIntList(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var res: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    res = append(res, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return res
+}
+
+fun sortList(a: list<int>): list<int> {
+  var i = 1
+  while i < len(a) {
+    let key = a[i]
+    var j = i - 1
+    while j >= 0 && a[j] > key {
+      a[j+1] = a[j]
+      j = j - 1
+    }
+    a[j+1] = key
+    i = i + 1
+  }
+  return a
+}
+
+fun lowerBound(a: list<int>, v: int): int {
+  var l = 0
+  var r = len(a)
+  while l < r {
+    let m = (l + r) / 2
+    if a[m] < v {
+      l = m + 1
+    } else {
+      r = m
+    }
+  }
+  return l
+}
+
+fun upperBound(a: list<int>, v: int): int {
+  var l = 0
+  var r = len(a)
+  while l < r {
+    let m = (l + r) / 2
+    if a[m] <= v {
+      l = m + 1
+    } else {
+      r = m
+    }
+  }
+  return l
+}
+
+fun blockRemove(block: list<int>, v: int): list<int> {
+  let idx = lowerBound(block, v)
+  var res: list<int> = []
+  var i = 0
+  while i < len(block) {
+    if i != idx {
+      res = append(res, block[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun blockInsert(block: list<int>, v: int): list<int> {
+  let idx = lowerBound(block, v)
+  var res: list<int> = []
+  var i = 0
+  while i < idx {
+    res = append(res, block[i])
+    i = i + 1
+  }
+  res = append(res, v)
+  while i < len(block) {
+    res = append(res, block[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun countGreaterBefore(arr: list<int>, blocks: list<list<int>>, idx: int, val: int, B: int): int {
+  var ans = 0
+  let bidx = idx / B
+  var b = 0
+  while b < bidx {
+    let block = blocks[b]
+    let pos = upperBound(block, val)
+    ans = ans + (len(block) - pos)
+    b = b + 1
+  }
+  let start = bidx * B
+  var i = start
+  while i < idx {
+    if arr[i] > val { ans = ans + 1 }
+    i = i + 1
+  }
+  return ans
+}
+
+fun countLessAfter(arr: list<int>, blocks: list<list<int>>, idx: int, val: int, B: int, n: int): int {
+  var ans = 0
+  let bidx = idx / B
+  var end = bidx * B + B
+  if end > n { end = n }
+  var i = idx + 1
+  while i < end {
+    if arr[i] < val { ans = ans + 1 }
+    i = i + 1
+  }
+  var b = bidx + 1
+  while b < len(blocks) {
+    let block = blocks[b]
+    let pos = lowerBound(block, val)
+    ans = ans + pos
+    b = b + 1
+  }
+  return ans
+}
+
+fun main() {
+  let nLine = input()
+  if nLine == "" { return }
+  let n = parseIntStr(nLine)
+  let arrLine = input()
+  var arr = parseIntList(arrLine)
+  let B = 700
+  let blockCount = (n + B - 1) / B
+  var blocks: list<list<int>> = []
+  var b = 0
+  while b < blockCount {
+    var block: list<int> = []
+    var i = b * B
+    var end = i + B
+    if end > n { end = n }
+    while i < end {
+      block = append(block, arr[i])
+      i = i + 1
+    }
+    block = sortList(block)
+    blocks = append(blocks, block)
+    b = b + 1
+  }
+  var inv = 0
+  var i = 0
+  while i < n {
+    inv = inv + countLessAfter(arr, blocks, i, arr[i], B, n)
+    i = i + 1
+  }
+  let m = parseIntStr(input())
+  var q = 0
+  while q < m {
+    let line = input()
+    if len(line) == 0 { continue }
+    let parts = splitSpaces(line)
+    let x = parseIntStr(parts[0]) - 1
+    let y = parseIntStr(parts[1])
+    let old = arr[x]
+    if old != y {
+      let g1 = countGreaterBefore(arr, blocks, x, old, B)
+      let l1 = countLessAfter(arr, blocks, x, old, B, n)
+      inv = inv - g1 - l1
+      let bIdx = x / B
+      blocks[bIdx] = blockRemove(blocks[bIdx], old)
+      arr[x] = y
+      blocks[bIdx] = blockInsert(blocks[bIdx], y)
+      let g2 = countGreaterBefore(arr, blocks, x, y, B)
+      let l2 = countLessAfter(arr, blocks, x, y, B, n)
+      inv = inv + g2 + l2
+    }
+    print(str(inv))
+    q = q + 1
+  }
+}
+
+main()
