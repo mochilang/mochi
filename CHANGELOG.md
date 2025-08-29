@@ -1,5 +1,21 @@
 # 📦 CHANGELOG.md
 
+## [0.10.78] – 2025-08-29T09:06:46+07:00
+
+### Added
+
+- Mochi solutions for SPOJ problems like QUILT, DEL Command II, polygon encoder, 1043, 871, GEOM, NGM, CATM, CZ_PROB1, KPMATRIX, CHASE, PARTSUM, SUMFOUR, CFRAC2, CNHARD, CNEASY, ORIGLIFE and more.
+- Lean solutions for SPOJ challenges including POLYCODE, MAXIMUS, GEOM, NGM, CATM, CZ_PROB1, KPMAZE, KPMATRIX, PALACE, SORTBIT, Dead Fraction, TOE2, TOE1, NSTEPS, Sudoku, CTRICK and others.
+- Algorithm writeups for SORTBIT, Sudoku solving approach, Repeats and DIV.
+
+### Changed
+
+- Removed unused variable.
+
+### Fixed
+
+- No fixes.
+
 ## [0.10.77] – 2025-08-28T09:26:37+07:00
 
 ### Added
