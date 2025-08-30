@@ -1,0 +1,14 @@
+// Solution for SPOJ TCOUNT2 - Counting Triangles II
+// https://www.spoj.com/problems/TCOUNT2/
+
+fun main() {
+  let t = input() as int
+  for _ in 0..t {
+    let n = input() as int
+    let parity = n % 2
+    let result = (14*n*n*n + 9*n*n + 2*n - parity) / 4
+    print(result)
+  }
+}
+
+main()
