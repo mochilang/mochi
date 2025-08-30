@@ -1,0 +1,148 @@
+// Solution for SPOJ RP - Life, the Universe, and Everything II
+// https://www.spoj.com/problems/RP/
+
+let MOD = 65521
+
+fun maxInt(a:int, b:int): int { if a > b { return a } return b }
+fun minInt(a:int, b:int): int { if a < b { return a } return b }
+
+fun modInv(a:int): int {
+  var t = 0
+  var newt = 1
+  var r = MOD
+  var newr = a % MOD
+  while newr != 0 {
+    let q = r / newr
+    let temp = t - q * newt
+    t = newt
+    newt = temp
+    let temp2 = r - q * newr
+    r = newr
+    newr = temp2
+  }
+  if t < 0 { t = t + MOD }
+  return t
+}
+
+fun det(mat: list<list<int>>, n:int): int {
+  var det = 1
+  var i = 0
+  while i < n {
+    var pivot = i
+    while pivot < n && (mat[pivot][i] % MOD) == 0 {
+      pivot = pivot + 1
+    }
+    if pivot == n { return 0 }
+    if pivot != i {
+      let tmp = mat[i]
+      mat[i] = mat[pivot]
+      mat[pivot] = tmp
+      det = MOD - det
+    }
+    let val = mat[i][i] % MOD
+    if val < 0 { val = val + MOD }
+    if val == 0 { return 0 }
+    det = (det * val) % MOD
+    let inv = modInv(val)
+    var j = i + 1
+    while j < n {
+      let factor = (mat[j][i] * inv) % MOD
+      var k = i
+      while k < n {
+        mat[j][k] = (mat[j][k] - factor * mat[i][k]) % MOD
+        if mat[j][k] < 0 { mat[j][k] = mat[j][k] + MOD }
+        k = k + 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return det % MOD
+}
+
+fun countTrees(k:int, n:int): int {
+  if n <= 1 { return 1 }
+  let size = n - 1
+  var mat: list<list<int>> = []
+  var i = 0
+  while i < size {
+    var row: list<int> = []
+    var j = 0
+    while j < size {
+      row = append(row, 0)
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  i = 0
+  while i < size {
+    var deg = 0
+    var j = maxInt(0, i - k)
+    let lim = minInt(n - 1, i + k)
+    while j <= lim {
+      if j != i {
+        if j < size {
+          mat[i][j] = (mat[i][j] - 1) % MOD
+          if mat[i][j] < 0 { mat[i][j] = mat[i][j] + MOD }
+        }
+        deg = deg + 1
+      }
+      j = j + 1
+    }
+    mat[i][i] = (mat[i][i] + deg) % MOD
+    i = i + 1
+  }
+  return det(mat, size)
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil { return }
+  let t = parseIntStr(tLine)
+  var idx = 0
+  while idx < t {
+    let line = input()
+    if line == nil { break }
+    let parts = split(line)
+    let k = parseIntStr(parts[0])
+    let n = parseIntStr(parts[1])
+    let ans = countTrees(k, n)
+    print(ans)
+    idx = idx + 1
+  }
+}
+
+main()
