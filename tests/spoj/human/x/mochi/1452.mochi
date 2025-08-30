@@ -1,0 +1,102 @@
+// Solution for SPOJ CAKE - Birthday Cake
+// https://www.spoj.com/problems/CAKE/
+
+fun isqrt(n: int): int {
+  var r = 0
+  while (r + 1) * (r + 1) <= n {
+    r = r + 1
+  }
+  return r
+}
+
+var N = 0
+var M = 0
+var minV: list<int> = []
+var minA: list<int> = []
+
+fun maxVolume(k: int, maxR: int, maxH: int): int {
+  var vol = 0
+  var r = maxR - 1
+  var h = maxH - 1
+  var i = 0
+  while i < k {
+    if r <= 0 || h <= 0 {
+      return vol
+    }
+    vol = vol + r * r * h
+    r = r - 1
+    h = h - 1
+    i = i + 1
+  }
+  return vol
+}
+
+fun dfs(k: int, maxR: int, maxH: int, vol: int, area: int, best: int): int {
+  if k == 0 {
+    if vol == N && area < best { return area }
+    return best
+  }
+  if vol + minV[k] > N { return best }
+  if area + minA[k] >= best { return best }
+  let remV = N - vol - minV[k - 1]
+  var r = maxR - 1
+  let s = isqrt(remV)
+  if r > s { r = s }
+  var curBest = best
+  while r >= k {
+    var maxHForR = maxH - 1
+    let limit = int(remV / (r * r))
+    if maxHForR > limit { maxHForR = limit }
+    var h = maxHForR
+    while h >= k {
+      let newV = vol + r * r * h
+      let newArea = area + 2 * r * h + (if k == M { r * r } else { 0 })
+      if newArea + minA[k - 1] >= curBest {
+        h = h - 1
+        continue
+      }
+      let remaining = N - newV
+      if remaining < minV[k - 1] {
+        h = h - 1
+        continue
+      }
+      if maxVolume(k - 1, r, h) < remaining {
+        h = h - 1
+        continue
+      }
+      let candidate = dfs(k - 1, r, h, newV, newArea, curBest)
+      if candidate < curBest { curBest = candidate }
+      h = h - 1
+    }
+    r = r - 1
+  }
+  return curBest
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var case = 0
+  while case < T {
+    N = int(input())
+    M = int(input())
+    minV = []
+    minA = []
+    var i = 0
+    var v = 0
+    var a = 0
+    while i <= M {
+      minV = append(minV, v)
+      minA = append(minA, a)
+      i = i + 1
+      v = v + i * i * i
+      a = a + 2 * i * i
+    }
+    let best = dfs(M, isqrt(N) + 1, N + 1, 0, 0, 1000000000)
+    print(str(best))
+    case = case + 1
+  }
+}
+
+main()
