@@ -1,0 +1,130 @@
+// Solution for SPOJ MOBILE2 - Mobiles
+// https://www.spoj.com/problems/MOBILE2/
+
+var L: list<int>
+var R: list<int>
+var minDepth = 0
+var maxDepth = 0
+
+type Info { cost: int, ones: int, zeros: int, ok: bool }
+
+fun split_ws(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun calc(u: int, d: int) {
+  let l = L[u]
+  if l < 0 {
+    let dep = d + 1
+    if dep < minDepth { minDepth = dep }
+    if dep > maxDepth { maxDepth = dep }
+  } else {
+    calc(l, d + 1)
+  }
+  let r = R[u]
+  if r < 0 {
+    let dep = d + 1
+    if dep < minDepth { minDepth = dep }
+    if dep > maxDepth { maxDepth = dep }
+  } else {
+    calc(r, d + 1)
+  }
+}
+
+fun dfs(u: int, d: int): Info {
+  let l = L[u]
+  var left: Info
+  if l < 0 {
+    if d + 1 == maxDepth {
+      left = Info{ cost:0, ones:1, zeros:0, ok:true }
+    } else {
+      left = Info{ cost:0, ones:0, zeros:1, ok:true }
+    }
+  } else {
+    left = dfs(l, d + 1)
+  }
+  let r = R[u]
+  var right: Info
+  if r < 0 {
+    if d + 1 == maxDepth {
+      right = Info{ cost:0, ones:1, zeros:0, ok:true }
+    } else {
+      right = Info{ cost:0, ones:0, zeros:1, ok:true }
+    }
+  } else {
+    right = dfs(r, d + 1)
+  }
+  if left.ok == false || right.ok == false {
+    return Info{ cost:0, ones:left.ones + right.ones, zeros:left.zeros + right.zeros, ok:false }
+  }
+  let ones = left.ones + right.ones
+  let zeros = left.zeros + right.zeros
+  let INF = 1000000000
+  var best = INF
+  if !(left.zeros > 0 && right.ones > 0) {
+    let c = left.cost + right.cost
+    if c < best { best = c }
+  }
+  if !(right.zeros > 0 && left.ones > 0) {
+    let c = left.cost + right.cost + 1
+    if c < best { best = c }
+  }
+  if best == INF {
+    return Info{ cost:0, ones:ones, zeros:zeros, ok:false }
+  }
+  return Info{ cost:best, ones:ones, zeros:zeros, ok:true }
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = tLine as int
+  var tc = 0
+  while tc < T {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = nLine as int
+    L = [0]
+    R = [0]
+    var i = 0
+    while i < n {
+      var line = input()
+      if line == "" { continue }
+      let p = split_ws(line)
+      let l = p[0] as int
+      let r = p[1] as int
+      L = append(L, l)
+      R = append(R, r)
+      i = i + 1
+    }
+    minDepth = 1000000000
+    maxDepth = 0
+    calc(1, 0)
+    if maxDepth - minDepth > 1 {
+      print("-1")
+    } else {
+      let res = dfs(1, 0)
+      if res.ok == false {
+        print("-1")
+      } else {
+        print(str(res.cost))
+      }
+    }
+    tc = tc + 1
+  }
+}
+
+main()
