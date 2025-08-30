@@ -1,0 +1,169 @@
+/*
+SPOJ: WIJGT - Will Indiana Jones Get There
+https://www.spoj.com/problems/WIJGT/
+*/
+
+type Seg { minx: float, maxx: float, miny: float, maxy: float }
+
+fun absf(x: float): float {
+  if x < 0.0 { return 0.0 - x } else { return x }
+}
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var prev = 0.0
+  while absf(r - prev) > 1e-9 {
+    prev = r
+    r = (r + x / r) / 2.0
+  }
+  return r
+}
+
+fun readInts(line: string): list<int> {
+  var nums: list<int> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { nums = append(nums, cur as int); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { nums = append(nums, cur as int) }
+  return nums
+}
+
+fun segDist(a: Seg, b: Seg): float {
+  var dx = 0.0
+  if a.maxx < b.minx {
+    dx = b.minx - a.maxx
+  } else if b.maxx < a.minx {
+    dx = a.minx - b.maxx
+  }
+  var dy = 0.0
+  if a.maxy < b.miny {
+    dy = b.miny - a.maxy
+  } else if b.maxy < a.miny {
+    dy = a.miny - b.maxy
+  }
+  return sqrt(dx*dx + dy*dy)
+}
+
+fun format2(x: float): string {
+  let scaled = (x * 100.0) + 0.5
+  let n = scaled as int
+  let intPart = n / 100
+  let frac = n % 100
+  var s = str(intPart) + "."
+  if frac < 10 { s = s + "0" }
+  s = s + str(frac)
+  return s
+}
+
+fun solve(segs: list<Seg>, n: int): float {
+  var mat: list<list<float>> = []
+  var i = 0
+  while i < n {
+    var row: list<float> = []
+    var j = 0
+    while j < n {
+      row = append(row, 0.0)
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    var j = i + 1
+    while j < n {
+      let d = segDist(segs[i], segs[j])
+      mat[i][j] = d
+      mat[j][i] = d
+      j = j + 1
+    }
+    i = i + 1
+  }
+  let INF = 1000000000.0
+  var dist: list<float> = []
+  var used: list<bool> = []
+  i = 0
+  while i < n {
+    dist = append(dist, INF)
+    used = append(used, false)
+    i = i + 1
+  }
+  dist[0] = 0.0
+  var iter = 0
+  while iter < n {
+    var u = 0 - 1
+    var best = INF
+    i = 0
+    while i < n {
+      if !used[i] && dist[i] < best {
+        best = dist[i]
+        u = i
+      }
+      i = i + 1
+    }
+    if u == 0 - 1 { break }
+    used[u] = true
+    if u == 1 { break }
+    i = 0
+    while i < n {
+      if !used[i] {
+        var cand = mat[u][i]
+        if dist[u] > cand { cand = dist[u] }
+        if cand < dist[i] {
+          dist[i] = cand
+        }
+      }
+      i = i + 1
+    }
+    iter = iter + 1
+  }
+  return dist[1]
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let n = line as int
+    if n == 0 { break }
+    var segs: list<Seg> = []
+    var i = 0
+    while i < n {
+      let arr = readInts(input())
+      let x = arr[0]
+      let y = arr[1]
+      let L = arr[2]
+      var minx = 0.0
+      var maxx = 0.0
+      var miny = 0.0
+      var maxy = 0.0
+      if L > 0 {
+        minx = x as float
+        maxx = (x + L) as float
+        miny = y as float
+        maxy = y as float
+      } else {
+        let len = 0 - L
+        minx = x as float
+        maxx = x as float
+        miny = y as float
+        maxy = (y + len) as float
+      }
+      segs = append(segs, Seg{ minx: minx, maxx: maxx, miny: miny, maxy: maxy })
+      i = i + 1
+    }
+    let res = solve(segs, n)
+    print(format2(res))
+  }
+}
+
+main()
