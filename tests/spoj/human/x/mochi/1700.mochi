@@ -1,0 +1,164 @@
+// Solution for SPOJ TRSTAGE - Traveling by Stagecoach
+// https://www.spoj.com/problems/TRSTAGE/
+
+type Edge { to: int, dist: int }
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun makeEdgeList(m: int): list<list<Edge>> {
+  var g: list<list<Edge>> = []
+  var i = 0
+  while i <= m {
+    g = append(g, [])
+    i = i + 1
+  }
+  return g
+}
+
+fun makeFloatList(n: int, value: float): list<float> {
+  var lst: list<float> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun format3(x: float): string {
+  var neg = false
+  if x < 0.0 { neg = true; x = -x }
+  var scaled = x * 1000.0 + 0.5
+  var n = scaled as int
+  var whole = n / 1000
+  var frac = n % 1000
+  var fracStr = str(frac)
+  while len(fracStr) < 3 { fracStr = "0" + fracStr }
+  var res = str(whole) + "." + fracStr
+  if neg { res = "-" + res }
+  return res
+}
+
+fun main() {
+  while true {
+    var line = input()
+    if line == nil { return }
+    if line == "" { continue }
+    let parts = splitSpaces(line)
+    if len(parts) < 5 { continue }
+    let n = parseIntStr(parts[0])
+    let m = parseIntStr(parts[1])
+    let p = parseIntStr(parts[2])
+    let a = parseIntStr(parts[3])
+    let b = parseIntStr(parts[4])
+    if n == 0 && m == 0 && p == 0 && a == 0 && b == 0 { break }
+    let tLine = input()
+    let tParts = splitSpaces(tLine)
+    var tickets: list<int> = []
+    var i = 0
+    while i < n {
+      tickets = append(tickets, parseIntStr(tParts[i]))
+      i = i + 1
+    }
+    var g = makeEdgeList(m)
+    i = 0
+    while i < p {
+      let l = input()
+      let ps = splitSpaces(l)
+      let x = parseIntStr(ps[0])
+      let y = parseIntStr(ps[1])
+      let d = parseIntStr(ps[2])
+      g[x] = append(g[x], Edge{ to:y, dist:d })
+      g[y] = append(g[y], Edge{ to:x, dist:d })
+      i = i + 1
+    }
+    var pow2: list<int> = [1]
+    i = 1
+    while i <= n {
+      pow2 = append(pow2, pow2[i-1] * 2)
+      i = i + 1
+    }
+    let tot = pow2[n]
+    var dp: list<list<float>> = []
+    i = 0
+    let INF = 1e18
+    while i < tot {
+      dp = append(dp, makeFloatList(m+1, INF))
+      i = i + 1
+    }
+    dp[0][a] = 0.0
+    var mask = 0
+    while mask < tot {
+      var city = 1
+      while city <= m {
+        let cur = dp[mask][city]
+        if cur < INF {
+          var t = 0
+          while t < n {
+            let bit = (mask / pow2[t]) % 2
+            if bit == 0 {
+              let newMask = mask + pow2[t]
+              let horse = tickets[t] as float
+              var eidx = 0
+              while eidx < len(g[city]) {
+                let e = g[city][eidx]
+                let cost = cur + (e.dist as float) / horse
+                if cost < dp[newMask][e.to] {
+                  dp[newMask][e.to] = cost
+                }
+                eidx = eidx + 1
+              }
+            }
+            t = t + 1
+          }
+        }
+        city = city + 1
+      }
+      mask = mask + 1
+    }
+    var ans = INF
+    mask = 0
+    while mask < tot {
+      let d = dp[mask][b]
+      if d < ans { ans = d }
+      mask = mask + 1
+    }
+    if ans >= INF / 2 {
+      print("Impossible")
+    } else {
+      print(format3(ans))
+    }
+  }
+}
+
+main()
