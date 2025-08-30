@@ -1,0 +1,245 @@
+// Solution for SPOJ PT07C - The GbAaY Kingdom
+// https://www.spoj.com/problems/PT07C/
+
+type Edge = { to: int, w: int }
+type DRes = { dist: list<int>, parent: list<int>, w: list<int> }
+type Pair = { u: int, v: int, w: int }
+
+let INF: int = 1000000000
+
+fun make_int_list(n: int, v: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, v)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_bool_list(n: int): list<bool> {
+  var lst: list<bool> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, false)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_edge_list(n: int): list<list<Edge>> {
+  var g: list<list<Edge>> = []
+  var i = 0
+  while i <= n {
+    g = append(g, [])
+    i = i + 1
+  }
+  return g
+}
+
+fun parse_int(s: string): int {
+  let digits = {"0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9}
+  var n = 0
+  var i = 0
+  while i < len(s) {
+    n = n * 10 + (digits[s[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split_words(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" {
+    res = append(res, cur)
+  }
+  return res
+}
+
+fun dijkstra(g: list<list<Edge>>, start: int): DRes {
+  let n = len(g) - 1
+  var dist = make_int_list(n, INF)
+  var parent = make_int_list(n, 0-1)
+  var wpar = make_int_list(n, 0)
+  var vis = make_bool_list(n)
+  dist[start] = 0
+  var count = 0
+  while count < n {
+    var u = 0-1
+    var best = INF
+    var i = 1
+    while i <= n {
+      if !vis[i] && dist[i] < best {
+        best = dist[i]
+        u = i
+      }
+      i = i + 1
+    }
+    if u == 0-1 {
+      break
+    }
+    vis[u] = true
+    var j = 0
+    while j < len(g[u]) {
+      let e = g[u][j]
+      let v = e.to
+      let w = e.w
+      if dist[u] + w < dist[v] {
+        dist[v] = dist[u] + w
+        parent[v] = u
+        wpar[v] = w
+      }
+      j = j + 1
+    }
+    count = count + 1
+  }
+  return DRes{ dist:dist, parent:parent, w:wpar }
+}
+
+fun farthest(tree: list<list<Edge>>, start: int): Pair {
+  let n = len(tree) - 1
+  var dist = make_int_list(n, INF)
+  var vis = make_bool_list(n)
+  dist[start] = 0
+  var count = 0
+  while count < n {
+    var u = 0-1
+    var best = INF
+    var i = 1
+    while i <= n {
+      if !vis[i] && dist[i] < best {
+        best = dist[i]
+        u = i
+      }
+      i = i + 1
+    }
+    if u == 0-1 {
+      break
+    }
+    vis[u] = true
+    var j = 0
+    while j < len(tree[u]) {
+      let e = tree[u][j]
+      let v = e.to
+      let w = e.w
+      if dist[u] + w < dist[v] {
+        dist[v] = dist[u] + w
+      }
+      j = j + 1
+    }
+    count = count + 1
+  }
+  var node = start
+  var maxd = 0
+  var k = 1
+  while k <= n {
+    if dist[k] < INF && dist[k] > maxd {
+      maxd = dist[k]
+      node = k
+    }
+    k = k + 1
+  }
+  return Pair{ u:node, v:0, w:maxd }
+}
+
+fun sort_pairs(arr: list<Pair>): list<Pair> {
+  var n = len(arr)
+  while n > 0 {
+    var j = 0
+    while j < n - 1 {
+      let a = arr[j]
+      let b = arr[j + 1]
+      if a.u > b.u || (a.u == b.u && a.v > b.v) {
+        arr[j] = b
+        arr[j + 1] = a
+      }
+      j = j + 1
+    }
+    n = n - 1
+  }
+  return arr
+}
+
+fun main() {
+  let first = input()
+  if first == "" { return }
+  let nums = split_words(first)
+  let n = parse_int(nums[0])
+  let m = parse_int(nums[1])
+  var g = make_edge_list(n)
+  var i = 0
+  while i < m {
+    let line = input()
+    let parts = split_words(line)
+    let u = parse_int(parts[0])
+    let v = parse_int(parts[1])
+    let w = parse_int(parts[2])
+    g[u] = append(g[u], Edge{ to:v, w:w })
+    g[v] = append(g[v], Edge{ to:u, w:w })
+    i = i + 1
+  }
+  var center = 1
+  var best = INF
+  var store: list<list<int>> = []
+  var s = 1
+  while s <= n {
+    let res = dijkstra(g, s)
+    store = append(store, res.dist)
+    var maxd = 0
+    var t = 1
+    while t <= n {
+      if res.dist[t] > maxd {
+        maxd = res.dist[t]
+      }
+      t = t + 1
+    }
+    if maxd < best {
+      best = maxd
+      center = s
+    }
+    s = s + 1
+  }
+  let cRes = dijkstra(g, center)
+  var tree = make_edge_list(n)
+  var edges: list<Pair> = []
+  var v = 1
+  while v <= n {
+    if v != center {
+      let p = cRes.parent[v]
+      let w = cRes.w[v]
+      tree[p] = append(tree[p], Edge{ to:v, w:w })
+      tree[v] = append(tree[v], Edge{ to:p, w:w })
+      var a = p
+      var b = v
+      if a > b { let tmp = a; a = b; b = tmp }
+      edges = append(edges, Pair{ u:a, v:b, w:w })
+    }
+    v = v + 1
+  }
+  edges = sort_pairs(edges)
+  let far1 = farthest(tree, center)
+  let far2 = farthest(tree, far1.u)
+  print(str(far2.w))
+  var idx = 0
+  while idx < len(edges) {
+    let e = edges[idx]
+    print(str(e.u) + " " + str(e.v))
+    idx = idx + 1
+  }
+}
+
+main()
