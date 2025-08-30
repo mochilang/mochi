@@ -1,0 +1,99 @@
+// Solution for SPOJ OFORTUNE - Ohgas' Fortune
+// https://www.spoj.com/problems/OFORTUNE/
+
+let digits = {
+  "0":0, "1":1, "2":2, "3":3, "4":4,
+  "5":5, "6":6, "7":7, "8":8, "9":9,
+}
+
+fun parseInt(s: string): int {
+  var i = 0
+  var sign = 1
+  if len(s) > 0 && s[0:1] == "-" {
+    sign = -1
+    i = 1
+  }
+  var n = 0
+  while i < len(s) {
+    n = n * 10 + (digits[s[i:i+1]] as int)
+    i = i + 1
+  }
+  return n * sign
+}
+
+fun parseRateNum(s: string): int {
+  var i = 0
+  var intPart = 0
+  while i < len(s) && s[i:i+1] != "." {
+    intPart = intPart * 10 + (digits[s[i:i+1]] as int)
+    i = i + 1
+  }
+  var frac = 0
+  var denom = 1
+  if i < len(s) && s[i:i+1] == "." {
+    i = i + 1
+    while i < len(s) {
+      frac = frac * 10 + (digits[s[i:i+1]] as int)
+      denom = denom * 10
+      i = i + 1
+    }
+  }
+  return intPart * 8192 + frac * 8192 / denom
+}
+
+fun main() {
+  let mLine = input()
+  if mLine == "" { return }
+  let m = parseInt(mLine)
+  var dataset = 0
+  while dataset < m {
+    let init = parseInt(input())
+    let years = parseInt(input())
+    let n = parseInt(input())
+    var best = 0
+    var op = 0
+    while op < n {
+      let line = input()
+      var pos = 0
+      var typ = 0
+      while pos < len(line) && line[pos:pos+1] != " " {
+        typ = typ * 10 + (digits[line[pos:pos+1]] as int)
+        pos = pos + 1
+      }
+      pos = pos + 1
+      var rateStr = ""
+      while pos < len(line) && line[pos:pos+1] != " " {
+        rateStr = rateStr + line[pos:pos+1]
+        pos = pos + 1
+      }
+      pos = pos + 1
+      var charge = 0
+      while pos < len(line) {
+        charge = charge * 10 + (digits[line[pos:pos+1]] as int)
+        pos = pos + 1
+      }
+      let rateNum = parseRateNum(rateStr)
+      var balance = init
+      var acc = 0
+      var y = 0
+      while y < years {
+        let interest = (balance * rateNum) / 8192
+        if typ == 1 {
+          balance = balance + interest - charge
+        } else {
+          acc = acc + interest
+          balance = balance - charge
+        }
+        y = y + 1
+      }
+      var final = balance
+      if typ == 0 { final = balance + acc }
+      if final > best { best = final }
+      op = op + 1
+    }
+    print(str(best))
+    dataset = dataset + 1
+  }
+}
+
+main()
