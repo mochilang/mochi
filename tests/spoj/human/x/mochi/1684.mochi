@@ -1,0 +1,162 @@
+// Solution for SPOJ FREQUENT - Frequent values
+// https://www.spoj.com/problems/FREQUENT/
+
+fun splitSpaces(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" {
+    res = append(res, cur)
+  }
+  return res
+}
+
+fun makeList(n: int, val: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, val)
+    i = i + 1
+  }
+  return lst
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+fun max2(a: int, b: int): int { if a > b { return a } return b }
+
+fun build(node: int, l: int, r: int, arr: list<int>, tree: list<int>) {
+  if l == r {
+    tree[node] = arr[l]
+    return
+  }
+  let m = (l + r) / 2
+  build(node*2, l, m, arr, tree)
+  build(node*2+1, m+1, r, arr, tree)
+  if tree[node*2] > tree[node*2+1] {
+    tree[node] = tree[node*2]
+  } else {
+    tree[node] = tree[node*2+1]
+  }
+}
+
+fun query(node: int, l: int, r: int, ql: int, qr: int, tree: list<int>): int {
+  if ql > r || qr < l { return 0 }
+  if ql <= l && r <= qr { return tree[node] }
+  let m = (l + r) / 2
+  let left = query(node*2, l, m, ql, qr, tree)
+  let right = query(node*2+1, m+1, r, ql, qr, tree)
+  if left > right { return left } else { return right }
+}
+
+fun main() {
+  while true {
+    let n = nextInt()
+    if n == 0 { break }
+    let q = nextInt()
+    var arr = makeList(n, 0)
+    var i = 0
+    while i < n {
+      arr[i] = nextInt()
+      i = i + 1
+    }
+    var runIdx = makeList(n, 0)
+    var runStart: list<int> = []
+    var runEnd: list<int> = []
+    var runLen: list<int> = []
+    var r = 0
+    i = 0
+    while i < n {
+      var j = i
+      while j < n && arr[j] == arr[i] {
+        j = j + 1
+      }
+      runStart = append(runStart, i)
+      runEnd = append(runEnd, j - 1)
+      runLen = append(runLen, j - i)
+      var k = i
+      while k < j {
+        runIdx[k] = r
+        k = k + 1
+      }
+      r = r + 1
+      i = j
+    }
+    let runs = len(runLen)
+    var seg = makeList(4 * runs, 0)
+    build(1, 0, runs - 1, runLen, seg)
+    var t = 0
+    while t < q {
+      let l = nextInt() - 1
+      let rr = nextInt() - 1
+      var ans = 0
+      let li = runIdx[l]
+      let ri = runIdx[rr]
+      if li == ri {
+        ans = rr - l + 1
+      } else {
+        let leftCount = runEnd[li] - l + 1
+        let rightCount = rr - runStart[ri] + 1
+        var midMax = 0
+        let ml = li + 1
+        let mr = ri - 1
+        if ml <= mr {
+          midMax = query(1, 0, runs - 1, ml, mr, seg)
+        }
+        ans = max2(leftCount, max2(rightCount, midMax))
+      }
+      print(str(ans))
+      t = t + 1
+    }
+  }
+}
+
+main()
