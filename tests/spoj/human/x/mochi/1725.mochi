@@ -1,0 +1,228 @@
+// Solution for SPOJ IMPORT1 - The Importance
+// https://www.spoj.com/problems/IMPORT1/
+
+// Data structures
+
+type Edge { to: int, w: int }
+
+type PQNode { v: int, w: int }
+
+type PopRes { heap: list<PQNode>, node: PQNode }
+
+fun parseInt(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" {
+      if cur != "" {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun make_edge_list(n: int): list<list<Edge>> {
+  var lst: list<list<Edge>> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, [])
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_float_list(n: int, value: float): list<float> {
+  var lst: list<float> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_pred_list(n: int): list<list<int>> {
+  var lst: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, [])
+    i = i + 1
+  }
+  return lst
+}
+
+fun heap_push(h: list<PQNode>, item: PQNode): list<PQNode> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p].w <= heap[i].w { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<PQNode>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      let l = 2*i + 1
+      let r = 2*i + 2
+      var smallest = i
+      if l < len(heap) && heap[l].w < heap[smallest].w { smallest = l }
+      if r < len(heap) && heap[r].w < heap[smallest].w { smallest = r }
+      if smallest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[smallest]
+      heap[smallest] = tmp
+      i = smallest
+    }
+  }
+  return PopRes { heap: heap, node: top }
+}
+
+fun format3(x: float): string {
+  var neg = false
+  if x < 0.0 {
+    neg = true
+    x = -x
+  }
+  var scaled = x * 1000.0 + 0.5
+  var n = scaled as int
+  var whole = n / 1000
+  var frac = n % 1000
+  var fracStr = str(frac)
+  while len(fracStr) < 3 {
+    fracStr = "0" + fracStr
+  }
+  var res = str(whole) + "." + fracStr
+  if neg { res = "-" + res }
+  return res
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseInt(tStr)
+  var caseIndex = 0
+  while caseIndex < t {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = split(line)
+    let n = parseInt(parts[0])
+    let m = parseInt(parts[1])
+    var g = make_edge_list(n)
+    var i = 0
+    while i < m {
+      let l = input()
+      let ps = split(l)
+      let a = parseInt(ps[0])
+      let b = parseInt(ps[1])
+      let c = parseInt(ps[2])
+      g[a] = append(g[a], Edge{ to:b, w:c })
+      g[b] = append(g[b], Edge{ to:a, w:c })
+      i = i + 1
+    }
+    var central = make_float_list(n+1, 0.0)
+    var s = 1
+    while s <= n {
+      let inf = 1000000000000
+      var dist = make_int_list(n+1, inf)
+      var sigma = make_int_list(n+1, 0)
+      var pred = make_pred_list(n)
+      var stack: list<int> = []
+      dist[s] = 0
+      sigma[s] = 1
+      var heap: list<PQNode> = []
+      heap = heap_push(heap, PQNode{ v:s, w:0 })
+      while len(heap) > 0 {
+        let pr = heap_pop(heap)
+        heap = pr.heap
+        let cur = pr.node
+        if cur.w != dist[cur.v] { continue }
+        stack = append(stack, cur.v)
+        var j = 0
+        while j < len(g[cur.v]) {
+          let e = g[cur.v][j]
+          let nd = cur.w + e.w
+          if nd < dist[e.to] {
+            dist[e.to] = nd
+            sigma[e.to] = sigma[cur.v]
+            var tmp: list<int> = []
+            tmp = append(tmp, cur.v)
+            pred[e.to] = tmp
+            heap = heap_push(heap, PQNode{ v:e.to, w:nd })
+          } else if nd == dist[e.to] {
+            sigma[e.to] = sigma[e.to] + sigma[cur.v]
+            pred[e.to] = append(pred[e.to], cur.v)
+          }
+          j = j + 1
+        }
+      }
+      var delta = make_float_list(n+1, 0.0)
+      while len(stack) > 0 {
+        let w = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+        var j = 0
+        while j < len(pred[w]) {
+          let v = pred[w][j]
+          let coeff = (sigma[v] as float) / (sigma[w] as float) * (1.0 + delta[w])
+          delta[v] = delta[v] + coeff
+          j = j + 1
+        }
+        if w != s {
+          central[w] = central[w] + delta[w]
+        }
+      }
+      s = s + 1
+    }
+    var v = 1
+    while v <= n {
+      let res = central[v] / 2.0
+      print(format3(res))
+      v = v + 1
+    }
+    caseIndex = caseIndex + 1
+  }
+}
+
+main()
+
