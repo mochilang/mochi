@@ -1,0 +1,130 @@
+// Solution for SPOJ BARB - Barbarians
+// https://www.spoj.com/problems/BARB/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var num = 0
+  var inNum = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      num = num*10 + (digits[ch] as int)
+      inNum = true
+    } else {
+      if inNum {
+        res = append(res, num)
+        num = 0
+        inNum = false
+      }
+    }
+    i = i + 1
+  }
+  if inNum { res = append(res, num) }
+  return res
+}
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  if x < 0 { return -x } else { return x }
+}
+
+fun egcd(a: int, b: int): map<string,int> {
+  if b == 0 { return {"g":a, "x":1, "y":0} }
+  let r = egcd(b, a % b)
+  let g = r["g"] as int
+  let x = r["y"] as int
+  let y = r["x"] as int - (a / b) * (r["y"] as int)
+  return {"g":g, "x":x, "y":y}
+}
+
+fun modInv(a: int, m: int): int {
+  let r = egcd(a, m)
+  let g = r["g"] as int
+  if g != 1 && g != 0-1 { return 0 }
+  var x = r["x"] as int
+  x = x % m
+  if x < 0 { x = x + m }
+  return x
+}
+
+fun check(M: int, C: list<int>, P: list<int>, L: list<int>): bool {
+  let n = len(C)
+  var i = 0
+  while i < n {
+    var j = i + 1
+    while j < n {
+      let A = (P[i] as int) - (P[j] as int)
+      let B = (C[j] as int) - (C[i] as int)
+      var limit = L[i] as int
+      if L[j] as int < limit { limit = L[j] as int }
+      limit = limit + 1
+      if A == 0 {
+        if ((C[i] as int) - (C[j] as int)) % M == 0 { return false }
+      } else {
+        let g = gcd(A, M)
+        if B % g == 0 {
+          let Mg = M / g
+          let Ag = A / g
+          let Bg = B / g
+          var inv = modInv((Ag % Mg + Mg) % Mg, Mg)
+          var t0 = (Bg % Mg + Mg) % Mg
+          t0 = (t0 * inv) % Mg
+          if t0 < limit { return false }
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = tLine as int
+  for _ in 0..T {
+    let nLine = input()
+    if nLine == "" { break }
+    let n = nLine as int
+    var C: list<int> = []
+    var P: list<int> = []
+    var L: list<int> = []
+    var i = 0
+    while i < n {
+      let line = input()
+      let vals = parseInts(line)
+      C = append(C, vals[0] as int)
+      P = append(P, vals[1] as int)
+      L = append(L, vals[2] as int)
+      i = i + 1
+    }
+    var M = C[0] as int
+    i = 1
+    while i < n {
+      if C[i] as int > M { M = C[i] as int }
+      i = i + 1
+    }
+    while M <= 1000000 {
+      if check(M, C, P, L) {
+        print(M)
+        break
+      }
+      M = M + 1
+    }
+  }
+}
+
+main()
