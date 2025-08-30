@@ -1,0 +1,115 @@
+// Solution for SPOJ PT07D - Let us count 1 2 3
+// https://www.spoj.com/problems/PT07D/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun make_int_list(n: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, 0)
+    i = i + 1
+  }
+  return lst
+}
+
+fun powmod(a: int, b: int, m: int): int {
+  var res = 1 % m
+  var base = a % m
+  var exp = b
+  while exp > 0 {
+    if exp % 2 == 1 {
+      res = (res * base) % m
+    }
+    base = (base * base) % m
+    exp = exp / 2
+  }
+  return res
+}
+
+fun modinv(a: int, p: int): int {
+  return powmod(a % p, p - 2, p)
+}
+
+fun countRooted(n: int, p: int): list<int> {
+  var r = make_int_list(n)
+  var f = make_int_list(n)
+  r[1] = 1 % p
+  var m = 1
+  while m <= n {
+    f[m] = (f[m] + 1) % p
+    m = m + 1
+  }
+  var i = 2
+  while i <= n {
+    var sum = 0
+    var k = 1
+    while k < i {
+      sum = (sum + f[k] * r[i - k]) % p
+      k = k + 1
+    }
+    r[i] = (sum * modinv(i - 1, p)) % p
+    m = i
+    while m <= n {
+      f[m] = (f[m] + (i * r[i]) % p) % p
+      m = m + i
+    }
+    i = i + 1
+  }
+  return r
+}
+
+fun countUnrooted(n: int, p: int): int {
+  let r = countRooted(n, p)
+  if n == 1 { return r[1] }
+  var s = 0
+  var i = 1
+  while i < n {
+    s = (s + r[i] * r[n - i]) % p
+    i = i + 1
+  }
+  var res = (r[n] - (s * modinv(2, p)) % p) % p
+  if n % 2 == 0 {
+    res = (res + r[n / 2] * modinv(2, p)) % p
+  }
+  if res < 0 { res = res + p }
+  return res
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let parts = splitSpaces(line)
+    if len(parts) < 3 { continue }
+    let k = int(parts[0])
+    let n = int(parts[1])
+    let p = int(parts[2])
+    if k == 1 {
+      print(str(powmod(n, n - 2, p)))
+    } else if k == 2 {
+      print(str(powmod(n, n - 1, p)))
+    } else if k == 3 {
+      if p == 2 { print("1") } else { let r = countRooted(n, p); print(str(r[n])) }
+    } else if k == 4 {
+      if p == 2 { print("1") } else { print(str(countUnrooted(n, p))) }
+    }
+  }
+}
+
+main()
