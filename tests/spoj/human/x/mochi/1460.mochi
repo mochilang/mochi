@@ -1,0 +1,72 @@
+/*
+SPOJ: GALAXY - A Simple Calculator in the Galaxy
+https://www.spoj.com/problems/GALAXY/
+*/
+
+let digits = {
+  "0":0, "1":1, "2":2, "3":3, "4":4,
+  "5":5, "6":6, "7":7, "8":8, "9":9,
+}
+
+fun parseIntStr(s: string): int {
+  var n = 0
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      n = n * 10 + (digits[ch] as int)
+    }
+    i = i + 1
+  }
+  return n
+}
+
+fun evalExpr(line: string): int {
+  var i = 0
+  // skip leading spaces
+  while i < len(line) && line[i:i+1] == " " { i = i + 1 }
+  // first number
+  var a = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      a = a * 10 + (digits[ch] as int)
+      i = i + 1
+    } else { break }
+  }
+  // skip spaces
+  while i < len(line) && line[i:i+1] == " " { i = i + 1 }
+  // operator
+  let op = line[i:i+1]
+  i = i + 1
+  // skip spaces
+  while i < len(line) && line[i:i+1] == " " { i = i + 1 }
+  // second number
+  var b = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      b = b * 10 + (digits[ch] as int)
+    }
+    i = i + 1
+  }
+  if op == "+" { return a + b }
+  if op == "-" { return a - b }
+  return a * b
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = parseIntStr(tLine)
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    let res = evalExpr(line)
+    print(res)
+    case = case + 1
+  }
+}
+
+main()
