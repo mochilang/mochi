@@ -1,0 +1,88 @@
+// Solution for SPOJ SCALE - Funny scales
+// https://www.spoj.com/problems/SCALE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun join(parts: list<string>): string {
+  var s = ""
+  var i = 0
+  while i < len(parts) {
+    if i > 0 { s = s + " " }
+    s = s + parts[i]
+    i = i + 1
+  }
+  return s
+}
+
+fun main() {
+  let line = input()
+  if line == "" { return }
+  let parts = splitSpaces(line)
+  let n = int(parts[0])
+  var x = int(parts[1])
+
+  var pow = 1
+  var maxReach = 0
+  var i = 0
+  while i < n {
+    maxReach = maxReach + pow
+    pow = pow * 3
+    i = i + 1
+  }
+  if x > maxReach {
+    print("-1")
+    return
+  }
+
+  var digits: list<int> = []
+  i = 0
+  while i < n {
+    var rem = x % 3
+    x = x / 3
+    if rem == 2 {
+      rem = -1
+      x = x + 1
+    }
+    digits = append(digits, rem)
+    i = i + 1
+  }
+  if x != 0 {
+    print("-1")
+    return
+  }
+
+  var first: list<string> = []
+  var second: list<string> = []
+  i = 0
+  while i < len(digits) {
+    let d = digits[i]
+    if d < 0 {
+      first = append(first, str(i+1))
+    } else if d > 0 {
+      second = append(second, str(i+1))
+    }
+    i = i + 1
+  }
+  print(join(first))
+  print(join(second))
+}
+
+main()
