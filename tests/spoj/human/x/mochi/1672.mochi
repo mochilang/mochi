@@ -1,0 +1,184 @@
+// Solution for SPOJ GIWED - The Great Indian Wedding
+// https://www.spoj.com/problems/GIWED/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let pcs = splitSpaces(line)
+  var res: list<int> = []
+  var i = 0
+  while i < len(pcs) {
+    res = append(res, pcs[i] as int)
+    i = i + 1
+  }
+  return res
+}
+
+fun sort_unique(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  var res: list<int> = []
+  i = 0
+  while i < len(arr) {
+    if i == 0 || arr[i] != arr[i-1] {
+      res = append(res, arr[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun indexOf(arr: list<int>, v: int): int {
+  var i = 0
+  while i < len(arr) {
+    if arr[i] == v { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun makeBoolMatrix(w: int, h: int, val: bool): list<list<bool>> {
+  var res: list<list<bool>> = []
+  var i = 0
+  while i < w {
+    var row: list<bool> = []
+    var j = 0
+    while j < h { row = append(row, val); j = j + 1 }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun sortDesc(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] < arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  let t = (input()) as int
+  var case = 0
+  while case < t {
+    let params = parseInts(input())
+    let M = params[0]; let N = params[1]; let K = params[2]; let L = params[3]
+    var xs: list<int> = [0, M]
+    var ys: list<int> = [0, N]
+    var rects: list<list<int>> = []
+    var i = 0
+    while i < K {
+      let r = parseInts(input())
+      rects = append(rects, r)
+      xs = append(xs, r[0]); xs = append(xs, r[2])
+      ys = append(ys, r[1]); ys = append(ys, r[3])
+      i = i + 1
+    }
+    xs = sort_unique(xs)
+    ys = sort_unique(ys)
+    let w = len(xs) - 1
+    let h = len(ys) - 1
+    var blocked = makeBoolMatrix(w, h, false)
+    i = 0
+    while i < len(rects) {
+      let r = rects[i]
+      let x1 = indexOf(xs, r[0])
+      let x2 = indexOf(xs, r[2])
+      let y1 = indexOf(ys, r[1])
+      let y2 = indexOf(ys, r[3])
+      var xi = x1
+      while xi < x2 {
+        var yi = y1
+        while yi < y2 {
+          blocked[xi][yi] = true
+          yi = yi + 1
+        }
+        xi = xi + 1
+      }
+      i = i + 1
+    }
+    var vis = makeBoolMatrix(w, h, false)
+    var areas: list<int> = []
+    var x = 0
+    while x < w {
+      var y = 0
+      while y < h {
+        if blocked[x][y] == false && vis[x][y] == false {
+          var queue: list<list<int>> = [[x, y]]
+          vis[x][y] = true
+          var qi = 0
+          var area = 0
+          while qi < len(queue) {
+            let cell = queue[qi]
+            let cx = cell[0]
+            let cy = cell[1]
+            area = area + (xs[cx+1] - xs[cx]) * (ys[cy+1] - ys[cy])
+            if cx > 0 && blocked[cx-1][cy] == false && vis[cx-1][cy] == false {
+              vis[cx-1][cy] = true
+              queue = append(queue, [cx-1, cy])
+            }
+            if cx + 1 < w && blocked[cx+1][cy] == false && vis[cx+1][cy] == false {
+              vis[cx+1][cy] = true
+              queue = append(queue, [cx+1, cy])
+            }
+            if cy > 0 && blocked[cx][cy-1] == false && vis[cx][cy-1] == false {
+              vis[cx][cy-1] = true
+              queue = append(queue, [cx, cy-1])
+            }
+            if cy + 1 < h && blocked[cx][cy+1] == false && vis[cx][cy+1] == false {
+              vis[cx][cy+1] = true
+              queue = append(queue, [cx, cy+1])
+            }
+            qi = qi + 1
+          }
+          areas = append(areas, area)
+        }
+        y = y + 1
+      }
+      x = x + 1
+    }
+    areas = sortDesc(areas)
+    var ans = 0
+    i = 0
+    while i < L && i < len(areas) {
+      ans = ans + areas[i]
+      i = i + 1
+    }
+    print(str(ans))
+    case = case + 1
+  }
+}
+
+main()
