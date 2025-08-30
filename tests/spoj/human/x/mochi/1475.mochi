@@ -1,0 +1,87 @@
+// Solution for SPOJ WORMS - Play with Digit Seven
+// https://www.spoj.com/problems/WORMS/
+
+let digits = {"0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    let ch = str[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      n = n * 10 + (digits[ch] as int)
+    }
+    i = i + 1
+  }
+  return n
+}
+
+fun pow10Big(n: int): bigint {
+  var res: bigint = 1 as bigint
+  var i = 0
+  let ten: bigint = 10 as bigint
+  while i < n {
+    res = res * ten
+    i = i + 1
+  }
+  return res
+}
+
+fun zeroList7(): list<bigint> {
+  var arr: list<bigint> = []
+  var i = 0
+  while i < 7 {
+    arr = append(arr, 0 as bigint)
+    i = i + 1
+  }
+  return arr
+}
+
+fun countGood(n: int): bigint {
+  let total = pow10Big(n)
+  var dp = zeroList7()
+  dp[0] = 1 as bigint
+  var pos = 0
+  while pos < n {
+    var ndp = zeroList7()
+    var r = 0
+    while r < 7 {
+      var d = 0
+      while d < 10 {
+        if d != 7 {
+          let nr = (r * 10 + d) % 7
+          ndp[nr] = ndp[nr] + dp[r]
+        }
+        d = d + 1
+      }
+      r = r + 1
+    }
+    dp = ndp
+    pos = pos + 1
+  }
+  var bad: bigint = 0 as bigint
+  var r = 1
+  while r < 7 {
+    bad = bad + dp[r]
+    r = r + 1
+  }
+  bad = bad + (1 as bigint)
+  return total - bad
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil { return }
+  let t = parseIntStr(tLine)
+  var i = 0
+  while i < t {
+    let line = input()
+    if line == nil { break }
+    let n = parseIntStr(line)
+    let ans = countGood(n)
+    print(str(ans))
+    i = i + 1
+  }
+}
+
+main()
