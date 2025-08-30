@@ -1,0 +1,15 @@
+// Solution for SPOJ TCOUNT3 - Counting Triangles III
+// https://www.spoj.com/problems/TCOUNT3/
+
+fun main() {
+  let t = input() as int
+  var i = 0
+  while i < t {
+    let n = input() as int
+    let res = n * (10 * n * n + 9 * n + 1)
+    print(res)
+    i = i + 1
+  }
+}
+
+main()
