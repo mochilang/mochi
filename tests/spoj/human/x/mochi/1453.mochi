@@ -1,0 +1,128 @@
+// Solution for SPOJ OPTSUB - Optimal Connected Subset
+// https://www.spoj.com/problems/OPTSUB/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+fun key(x: int, y: int): string { return str(x) + "," + str(y) }
+
+fun dfs(u: int, p: int, adj: list<list<int>>, vals: list<int>, best: list<int>): int {
+  var sum = vals[u]
+  var i = 0
+  while i < len(adj[u]) {
+    let v = adj[u][i]
+    if v != p {
+      let s = dfs(v, u, adj, vals, best)
+      if s > 0 { sum = sum + s }
+    }
+    i = i + 1
+  }
+  if sum > best[0] { best[0] = sum }
+  return sum
+}
+
+fun main() {
+  let t = nextInt()
+  var case = 0
+  while case < t {
+    let n = nextInt()
+    var xs: list<int> = []
+    var ys: list<int> = []
+    var vals: list<int> = []
+    var idx: map<string,int> = {}
+    var i = 0
+    while i < n {
+      let x = nextInt()
+      let y = nextInt()
+      let c = nextInt()
+      xs = append(xs, x)
+      ys = append(ys, y)
+      vals = append(vals, c)
+      idx[key(x,y)] = i
+      i = i + 1
+    }
+    var adj: list<list<int>> = []
+    i = 0
+    while i < n {
+      adj = append(adj, [])
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      let x = xs[i]
+      let y = ys[i]
+      let k1 = key(x+1, y)
+      if k1 in idx {
+        let j = idx[k1]
+        adj[i] = append(adj[i], j)
+        adj[j] = append(adj[j], i)
+      }
+      let k2 = key(x, y+1)
+      if k2 in idx {
+        let j = idx[k2]
+        adj[i] = append(adj[i], j)
+        adj[j] = append(adj[j], i)
+      }
+      i = i + 1
+    }
+    var best: list<int> = []
+    best = append(best, -1000000000)
+    let _ = dfs(0, -1, adj, vals, best)
+    print(best[0])
+    case = case + 1
+  }
+}
+
+main()
