@@ -1,0 +1,129 @@
+// Solution for SPOJ ACMAKER - ACM (ACronymMaker)
+// https://www.spoj.com/problems/ACMAKER/
+
+let lowerChars = "abcdefghijklmnopqrstuvwxyz"
+let upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+fun toLowerChar(ch: string): string {
+  var i = 0
+  while i < len(upperChars) {
+    if ch == upperChars[i:i+1] { return lowerChars[i:i+1] }
+    i = i + 1
+  }
+  return ch
+}
+
+fun toLowerStr(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    res = res + toLowerChar(s[i:i+1])
+    i = i + 1
+  }
+  return res
+}
+
+fun splitWords(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { res = append(res, cur) }
+  return res
+}
+
+fun countWays(ab: string, words: list<string>): int {
+  let L = len(ab)
+  var dp: list<int> = []
+  var i = 0
+  while i <= L { dp = append(dp, 0); i = i + 1 }
+  dp[0] = 1
+  var wi = 0
+  while wi < len(words) {
+    let w = words[wi]
+    var ndp: list<int> = []
+    var j = 0
+    while j <= L { ndp = append(ndp, 0); j = j + 1 }
+    j = 0
+    while j < L {
+      let waysJ = dp[j]
+      if waysJ > 0 {
+        let limit = L - j
+        var arr: list<int> = []
+        var t = 0
+        while t <= limit { arr = append(arr, 0); t = t + 1 }
+        arr[0] = 1
+        var ci = 0
+        while ci < len(w) {
+          let ch = w[ci:ci+1]
+          var t2 = limit
+          while t2 >= 1 {
+            let abch = ab[j + t2 - 1 : j + t2]
+            if ch == abch { arr[t2] = arr[t2] + arr[t2-1] }
+            t2 = t2 - 1
+          }
+          ci = ci + 1
+        }
+        var t3 = 1
+        while t3 <= limit {
+          let local = arr[t3]
+          if local > 0 { ndp[j + t3] = ndp[j + t3] + waysJ * local }
+          t3 = t3 + 1
+        }
+      }
+      j = j + 1
+    }
+    dp = ndp
+    wi = wi + 1
+  }
+  return dp[L]
+}
+
+fun main() {
+  while true {
+    let nLine = input()
+    if nLine == "" { return }
+    let n = nLine as int
+    if n == 0 { return }
+    var insig = {}
+    var i = 0
+    while i < n {
+      let w = input()
+      insig[w] = 1
+      i = i + 1
+    }
+    while true {
+      let ln = input()
+      if ln == "LAST CASE" { break }
+      let tokens = splitWords(ln)
+      let abbr = tokens[0]
+      var words: list<string> = []
+      var k = 1
+      while k < len(tokens) {
+        let w = tokens[k]
+        if !(w in insig) { words = append(words, w) }
+        k = k + 1
+      }
+      let ab = toLowerStr(abbr)
+      let ways = countWays(ab, words)
+      if ways == 0 {
+        print(abbr + " is not a valid abbreviation")
+      } else {
+        print(abbr + " can be formed in " + str(ways) + " ways")
+      }
+    }
+  }
+}
+
+main()
