@@ -1,0 +1,62 @@
+// Solution for SPOJ CYLINDER - Cylinder
+// https://www.spoj.com/problems/CYLINDER/
+
+let pi = 3.141592653589793
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun format3(x: float): string {
+  var scaled = x * 1000.0
+  if scaled < 0.0 { scaled = scaled - 0.5 } else { scaled = scaled + 0.5 }
+  var n = scaled as int
+  var whole = n / 1000
+  var frac = n % 1000
+  if frac < 0 { frac = -frac }
+  var fracStr = str(frac)
+  while len(fracStr) < 3 {
+    fracStr = "0" + fracStr
+  }
+  return str(whole) + "." + fracStr
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let parts = splitSpaces(line)
+    if len(parts) < 2 { continue }
+    let wi = parts[0] as int
+    let hi = parts[1] as int
+    if wi == 0 && hi == 0 { break }
+    var wf = wi as float
+    var hf = hi as float
+    if wf > hf { let tmp = wf; wf = hf; hf = tmp }
+    let r1 = wf / (2.0 * pi)
+    let h1 = hf - 2.0 * r1
+    let v1 = pi * r1 * r1 * h1
+    var r2 = wf / 2.0
+    let limit = hf / (2.0 * (pi + 1.0))
+    if r2 > limit { r2 = limit }
+    let v2 = pi * r2 * r2 * wf
+    var best = v1
+    if v2 > best { best = v2 }
+    print(format3(best))
+  }
+}
+
+main()
