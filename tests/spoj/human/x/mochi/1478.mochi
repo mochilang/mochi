@@ -1,0 +1,179 @@
+// Solution for SPOJ PT07B - The Easiest Problem
+// https://www.spoj.com/problems/PT07B/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = split(line)
+  var arr: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    arr = append(arr, parts[i] as int)
+    i = i + 1
+  }
+  return arr
+}
+
+fun reverse(arr: list<int>): list<int> {
+  var res: list<int> = []
+  var i = len(arr) - 1
+  while i >= 0 {
+    res = append(res, arr[i])
+    i = i - 1
+  }
+  return res
+}
+
+fun farthest(start: int, adj: list<list<int>>, w: list<int>): map<string, any> {
+  let n = len(adj) - 1
+  var dist: list<int> = []
+  var parent: list<int> = []
+  var visited: list<bool> = []
+  var i = 0
+  while i <= n {
+    dist = append(dist, -1)
+    parent = append(parent, 0)
+    visited = append(visited, false)
+    i = i + 1
+  }
+  var q: list<int> = []
+  q = append(q, start)
+  visited[start] = true
+  dist[start] = w[start]
+  var idx = 0
+  while idx < len(q) {
+    let u = q[idx]
+    idx = idx + 1
+    var j = 0
+    while j < len(adj[u]) {
+      let v = adj[u][j]
+      if !visited[v] {
+        visited[v] = true
+        parent[v] = u
+        dist[v] = dist[u] + w[v]
+        q = append(q, v)
+      }
+      j = j + 1
+    }
+  }
+  var maxNode = start
+  var maxDist = dist[start]
+  i = 1
+  while i <= n {
+    if dist[i] > maxDist {
+      maxDist = dist[i]
+      maxNode = i
+    }
+    i = i + 1
+  }
+  return {"node": maxNode, "parent": parent, "dist": dist}
+}
+
+fun main() {
+  let line = input()
+  if line == "" { return }
+  let n = line as int
+  var adj: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    adj = append(adj, [])
+    i = i + 1
+  }
+  var e = 0
+  while e < n - 1 {
+    let edgeLine = input()
+    let pr = parseInts(edgeLine)
+    let u = pr[0]
+    let v = pr[1]
+    adj[u] = append(adj[u], v)
+    adj[v] = append(adj[v], u)
+    e = e + 1
+  }
+  var w: list<int> = []
+  i = 0
+  while i <= n {
+    w = append(w, len(adj[i]) - 1)
+    i = i + 1
+  }
+  let r1 = farthest(1, adj, w)
+  let a = r1["node"] as int
+  let r2 = farthest(a, adj, w)
+  let b = r2["node"] as int
+  let parent = r2["parent"] as list<int>
+  var path: list<int> = []
+  var cur = b
+  while cur != 0 {
+    path = append(path, cur)
+    cur = parent[cur]
+  }
+  path = reverse(path)
+  var inPath: list<bool> = []
+  i = 0
+  while i <= n {
+    inPath = append(inPath, false)
+    i = i + 1
+  }
+  i = 0
+  while i < len(path) {
+    inPath[path[i]] = true
+    i = i + 1
+  }
+  var edges: list<string> = []
+  var size = len(path)
+  i = 0
+  while i < len(path) - 1 {
+    var u = path[i]
+    var v = path[i + 1]
+    if u > v {
+      let tmp = u
+      u = v
+      v = tmp
+    }
+    edges = append(edges, str(u) + " " + str(v))
+    i = i + 1
+  }
+  i = 0
+  while i < len(path) {
+    let x = path[i]
+    var j = 0
+    while j < len(adj[x]) {
+      let y = adj[x][j]
+      if !inPath[y] {
+        var u = x
+        var v = y
+        if u > v {
+          let tmp = u
+          u = v
+          v = tmp
+        }
+        edges = append(edges, str(u) + " " + str(v))
+        size = size + 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  print(str(size))
+  i = 0
+  while i < len(edges) {
+    print(edges[i])
+    i = i + 1
+  }
+}
+
+main()
