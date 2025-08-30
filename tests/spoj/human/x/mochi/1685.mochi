@@ -1,0 +1,62 @@
+// Solution for SPOJ GROCERY - Grocery store
+// https://www.spoj.com/problems/GROCERY/
+
+let digitStr = {
+  0:"0",1:"1",2:"2",3:"3",4:"4",5:"5",6:"6",7:"7",8:"8",9:"9",
+}
+
+fun intToStr(n: int): string {
+  if n == 0 { return "0" }
+  var s = ""
+  var x = n
+  var parts: list<int> = []
+  while x > 0 {
+    parts = append(parts, x % 10)
+    x = x / 10
+  }
+  var i = len(parts) - 1
+  while i >= 0 {
+    let d = parts[i] as int
+    s = s + digitStr[d]
+    i = i - 1
+  }
+  return s
+}
+
+fun formatPrice(n: int): string {
+  let euros = n / 100
+  let cents = n % 100
+  var s = intToStr(euros) + "."
+  if cents < 10 {
+    s = s + "0" + intToStr(cents)
+  } else {
+    s = s + intToStr(cents)
+  }
+  return s
+}
+
+fun main() {
+  for a in 1..2001 {
+    if a * 4 > 2000 { break }
+    for b in a..2001 {
+      if a + b * 3 > 2000 { break }
+      for c in b..2001 {
+        let sum = a + b + c
+        if sum + c > 2000 { break }
+        let prod = a * b * c
+        let denom = prod - 1000000
+        if denom <= 0 { continue }
+        let num = sum * 1000000
+        if num % denom != 0 { continue }
+        let d = num / denom
+        if d < c { continue }
+        if sum + d > 2000 { continue }
+        if prod * d != (sum + d) * 1000000 { continue }
+        let line = formatPrice(a) + " " + formatPrice(b) + " " + formatPrice(c) + " " + formatPrice(d)
+        print(line)
+      }
+    }
+  }
+}
+
+main()
