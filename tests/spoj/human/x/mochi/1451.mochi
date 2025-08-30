@@ -1,0 +1,98 @@
+// Solution for SPOJ SEQ1 - 01 Sequence
+// https://www.spoj.com/problems/SEQ1/
+
+fun readInts(line: string): list<int> {
+  var nums: list<int> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        nums = append(nums, cur as int)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { nums = append(nums, cur as int) }
+  return nums
+}
+
+fun countZeros(seq: string, start: int, length: int): int {
+  var c = 0
+  var i = 0
+  while i < length {
+    if seq[start + i : start + i + 1] == "0" { c = c + 1 }
+    i = i + 1
+  }
+  return c
+}
+
+fun check(seq: string, N: int, A0: int, B0: int, L0: int, A1: int, B1: int, L1: int): bool {
+  var i = 0
+  while i + L0 <= N {
+    let z = countZeros(seq, i, L0)
+    if z < A0 || z > B0 { return false }
+    i = i + 1
+  }
+  i = 0
+  while i + L1 <= N {
+    let z = countZeros(seq, i, L1)
+    let ones = L1 - z
+    if ones < A1 || ones > B1 { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun build(N: int, A0: int, B0: int, L0: int, A1: int, B1: int, L1: int): string {
+  var total = 1
+  var i = 0
+  while i < N { total = total * 2; i = i + 1 }
+  var n = 0
+  while n < total {
+    var num = n
+    var bits: list<string> = []
+    var j = 0
+    while j < N {
+      let bit = if num % 2 == 1 { "1" } else { "0" }
+      bits = append(bits, bit)
+      num = num / 2
+      j = j + 1
+    }
+    var seq = ""
+    var k = len(bits) - 1
+    while k >= 0 {
+      seq = seq + bits[k]
+      k = k - 1
+    }
+    if check(seq, N, A0, B0, L0, A1, B1, L1) { return seq }
+    n = n + 1
+  }
+  return "-1"
+}
+
+fun main() {
+  var case = 0
+  while case < 5 {
+    let line = input()
+    if line == "" { break }
+    let nums = readInts(line)
+    if len(nums) == 0 { break }
+    let N = nums[0]
+    let A0 = nums[1]
+    let B0 = nums[2]
+    let L0 = nums[3]
+    let A1 = nums[4]
+    let B1 = nums[5]
+    let L1 = nums[6]
+    let res = build(N, A0, B0, L0, A1, B1, L1)
+    print(res)
+    case = case + 1
+  }
+}
+
+main()
