@@ -1,0 +1,157 @@
+// Solution for SPOJ COCONUTS - Coconuts
+// https://www.spoj.com/problems/COCONUTS/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun split_ws(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\n" || ch == "\r" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+type Edge = { to: int, rev: int, cap: int }
+
+fun minInt(a: int, b: int): int { if a < b { return a } return b }
+
+fun addEdge(g: list<list<Edge>>, u: int, v: int, c: int): list<list<Edge>> {
+  let r1 = len(g[v])
+  let r2 = len(g[u])
+  g[u] = append(g[u], Edge{ to: v, rev: r1, cap: c })
+  g[v] = append(g[v], Edge{ to: u, rev: r2, cap: 0 })
+  return g
+}
+
+fun bfs(g: list<list<Edge>>, s: int, t: int): list<int> {
+  var level: list<int> = []
+  var i = 0
+  while i < len(g) { level = append(level, 0 - 1); i = i + 1 }
+  var q: list<int> = []
+  q = append(q, s)
+  level[s] = 0
+  var qi = 0
+  while qi < len(q) {
+    let v = q[qi]
+    qi = qi + 1
+    var j = 0
+    while j < len(g[v]) {
+      let e = g[v][j]
+      if e.cap > 0 && level[e.to] == 0 - 1 {
+        level[e.to] = level[v] + 1
+        q = append(q, e.to)
+      }
+      j = j + 1
+    }
+  }
+  return level
+}
+
+fun dfs(g: list<list<Edge>>, level: list<int>, iter: list<int>, v: int, t: int, f: int): int {
+  if v == t { return f }
+  var i = iter[v]
+  while i < len(g[v]) {
+    let e = g[v][i]
+    if e.cap > 0 && level[v] + 1 == level[e.to] {
+      let d = dfs(g, level, iter, e.to, t, minInt(f, e.cap))
+      if d > 0 {
+        let e1 = g[v][i]
+        g[v][i] = Edge{ to: e1.to, rev: e1.rev, cap: e1.cap - d }
+        let ri = e1.rev
+        let re = g[e1.to][ri]
+        g[e1.to][ri] = Edge{ to: re.to, rev: re.rev, cap: re.cap + d }
+        return d
+      }
+    }
+    i = i + 1
+    iter[v] = i
+  }
+  return 0
+}
+
+fun maxflow(g: list<list<Edge>>, s: int, t: int): int {
+  var flow = 0
+  let n = len(g)
+  while true {
+    let level = bfs(g, s, t)
+    if level[t] == 0 - 1 { break }
+    var iter: list<int> = []
+    var i = 0
+    while i < n { iter = append(iter, 0); i = i + 1 }
+    while true {
+      let f = dfs(g, level, iter, s, t, 1000000000)
+      if f == 0 { break }
+      flow = flow + f
+    }
+  }
+  return flow
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil || line == "" { return }
+    let hdr = split_ws(line)
+    let n = parseIntStr(hdr[0])
+    let m = parseIntStr(hdr[1])
+    if n == 0 && m == 0 { break }
+    let bline = input()
+    let bp = split_ws(bline)
+    var belief: list<int> = []
+    var i = 0
+    while i < n {
+      belief = append(belief, parseIntStr(bp[i]))
+      i = i + 1
+    }
+    let s = n
+    let t = n + 1
+    var g: list<list<Edge>> = []
+    var tot = 0
+    while tot < n + 2 { g = append(g, []); tot = tot + 1 }
+    i = 0
+    while i < n {
+      if belief[i] == 1 {
+        g = addEdge(g, s, i, 1)
+      } else {
+        g = addEdge(g, i, t, 1)
+      }
+      i = i + 1
+    }
+    var j = 0
+    while j < m {
+      let eline = input()
+      let ep = split_ws(eline)
+      let u = parseIntStr(ep[0]) - 1
+      let v = parseIntStr(ep[1]) - 1
+      g = addEdge(g, u, v, 1)
+      g = addEdge(g, v, u, 1)
+      j = j + 1
+    }
+    let ans = maxflow(g, s, t)
+    print(ans)
+  }
+}
+
+main()
