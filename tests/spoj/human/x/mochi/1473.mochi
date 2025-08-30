@@ -1,0 +1,201 @@
+// Solution for SPOJ LEMON - Lemon Tree in the Moonlight
+// https://www.spoj.com/problems/LEMON/
+
+let pi = 3.141592653589793
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInt(s: string): int {
+  var i = 0
+  var n = 0
+  while i < len(s) {
+    n = n * 10 + (digits[s[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseFloat(s: string): float {
+  var i = 0
+  var val = 0.0
+  while i < len(s) && s[i:i+1] != "." {
+    val = val * 10.0 + (digits[s[i:i+1]] as float)
+    i = i + 1
+  }
+  if i < len(s) && s[i:i+1] == "." {
+    i = i + 1
+    var base = 0.1
+    while i < len(s) {
+      val = val + (digits[s[i:i+1]] as float) * base
+      base = base / 10.0
+      i = i + 1
+    }
+  }
+  return val
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun absf(x: float): float { if x < 0.0 { return -x } else { return x } }
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var prev = 0.0
+  while absf(r - prev) > 1e-12 {
+    prev = r
+    r = (r + x / r) / 2.0
+  }
+  return r
+}
+
+fun sin(x: float): float {
+  var y = x
+  while y > pi { y = y - 2.0 * pi }
+  while y < (0.0 - pi) { y = y + 2.0 * pi }
+  var term = y
+  var res = y
+  var i = 1
+  while i < 10 {
+    term = -term * y * y / ((2.0 * i as float) * (2.0 * i as float + 1.0))
+    res = res + term
+    i = i + 1
+  }
+  return res
+}
+
+fun cos(x: float): float {
+  var y = x
+  while y > pi { y = y - 2.0 * pi }
+  while y < (0.0 - pi) { y = y + 2.0 * pi }
+  var term = 1.0
+  var res = 1.0
+  var i = 1
+  while i < 10 {
+    term = -term * y * y / ((2.0 * i as float - 1.0) * (2.0 * i as float))
+    res = res + term
+    i = i + 1
+  }
+  return res
+}
+
+fun tan(x: float): float { return sin(x) / cos(x) }
+
+fun format2(x: float): string {
+  var neg = false
+  if x < 0.0 { neg = true; x = -x }
+  var scaled = x * 100.0 + 0.5
+  var n = scaled as int
+  var whole = n / 100
+  var frac = n % 100
+  var fracStr = str(frac)
+  if len(fracStr) < 2 { fracStr = "0" + fracStr }
+  var res = str(whole) + "." + fracStr
+  if neg { res = "-" + res }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil { return }
+  let T = parseInt(tLine)
+  var tt = 0
+  while tt < T {
+    var line1 = input()
+    while line1 == "" { line1 = input() }
+    let p1 = splitSpaces(line1)
+    let N = parseInt(p1[0])
+    let alpha = parseFloat(p1[1])
+    var line2 = input()
+    while line2 == "" { line2 = input() }
+    let parts2 = splitSpaces(line2)
+    var hs: list<float> = []
+    var i = 1
+    while i <= N {
+      hs = append(hs, parseFloat(parts2[i]))
+      i = i + 1
+    }
+    var line3 = input()
+    while line3 == "" { line3 = input() }
+    let parts3 = splitSpaces(line3)
+    var rs: list<float> = []
+    i = 0
+    while i < N {
+      rs = append(rs, parseFloat(parts3[i]))
+      i = i + 1
+    }
+    var totalH = 0.0
+    i = 0
+    while i < N {
+      totalH = totalH + hs[i]
+      i = i + 1
+    }
+    let cot = cos(alpha) / sin(alpha)
+    let dz = 0.05
+    let dx = 0.01
+    var centers: list<float> = []
+    var rad: list<float> = []
+    var maxR = 0.0
+    var cum = 0.0
+    i = 0
+    while i < N {
+      let h = hs[i]
+      let r0 = rs[i]
+      let r1 = if i + 1 < N { rs[i+1] } else { 0.0 }
+      var z = 0.0
+      while z <= h {
+        let zc = cum + z
+        let rcur = r0 + (r1 - r0) * (z / h)
+        centers = append(centers, zc * cot)
+        rad = append(rad, rcur)
+        if rcur > maxR { maxR = rcur }
+        z = z + dz
+      }
+      cum = cum + h
+      i = i + 1
+    }
+    var xMin = centers[0] - rad[0]
+    var xMax = centers[len(centers)-1]
+    if xMax < centers[len(centers)-1] { xMax = centers[len(centers)-1] }
+    xMax = xMax + maxR
+    var area = 0.0
+    var x = xMin
+    while x <= xMax {
+      var maxY = 0.0
+      i = 0
+      while i < len(centers) {
+        let dxv = x - centers[i]
+        let r = rad[i]
+        if dxv <= r && dxv >= (0.0 - r) {
+          let y = sqrt(r * r - dxv * dxv)
+          if y > maxY { maxY = y }
+        }
+        i = i + 1
+      }
+      area = area + 2.0 * maxY * dx
+      x = x + dx
+    }
+    print(format2(area))
+    tt = tt + 1
+  }
+}
+
+main()
