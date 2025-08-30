@@ -1,0 +1,114 @@
+// Solution for SPOJ TWENDS - Two Ends
+// https://www.spoj.com/problems/TWENDS/
+
+// split a string by spaces into list of substrings
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun zeros(n: int): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < n {
+    arr = append(arr, 0)
+    i = i + 1
+  }
+  return arr
+}
+
+fun gameDiff(a: list<int>): int {
+  let n = len(a)
+  var dp: list<list<int>> = []
+  var i = 0
+  while i < n {
+    dp = append(dp, zeros(n))
+    i = i + 1
+  }
+  var len = 2
+  while len <= n {
+    var l = 0
+    while l + len - 1 < n {
+      let r = l + len - 1
+      var option1 = 0
+      if a[l+1] >= a[r] {
+        var next = 0
+        if l + 2 <= r { next = dp[l+2][r] }
+        option1 = a[l] - a[l+1] + next
+      } else {
+        var next = 0
+        if l + 1 <= r - 1 { next = dp[l+1][r-1] }
+        option1 = a[l] - a[r] + next
+      }
+      var option2 = 0
+      if a[l] >= a[r-1] {
+        var next = 0
+        if l + 1 <= r - 1 { next = dp[l+1][r-1] }
+        option2 = a[r] - a[l] + next
+      } else {
+        var next = 0
+        if l <= r - 2 { next = dp[l][r-2] }
+        option2 = a[r] - a[r-1] + next
+      }
+      if option1 >= option2 { dp[l][r] = option1 } else { dp[l][r] = option2 }
+      l = l + 1
+    }
+    len = len + 2
+  }
+  return dp[0][n-1]
+}
+
+fun main() {
+  var game = 1
+  while true {
+    let line = input()
+    if line == "" { break }
+    let parts = split(line)
+    if len(parts) == 0 { continue }
+    let nVal = parseIntStr(parts[0])
+    if nVal == 0 { break }
+    var nums: list<int> = []
+    var i = 1
+    while i <= nVal {
+      nums = append(nums, parseIntStr(parts[i]))
+      i = i + 1
+    }
+    let diff = gameDiff(nums)
+    print("In game " + str(game) + ", the greedy strategy might lose by as many as " + str(diff) + " points.")
+    game = game + 1
+  }
+}
+
+main()
