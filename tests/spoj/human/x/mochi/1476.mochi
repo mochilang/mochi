@@ -1,0 +1,191 @@
+// Solution for SPOJ PROFIT - Maximum Profit
+// https://www.spoj.com/problems/PROFIT/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n*10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseInts(line: string): list<int> {
+  var res: list<int> = []
+  var num = 0
+  var inNum = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      num = num*10 + (digits[ch] as int)
+      inNum = true
+    } else {
+      if inNum {
+        res = append(res, num)
+        num = 0
+        inNum = false
+      }
+    }
+    i = i + 1
+  }
+  if inNum { res = append(res, num) }
+  return res
+}
+
+fun readInts(): list<int> {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return parseInts(line)
+}
+
+type Edge = { to: int, rev: int, cap: int }
+
+fun minInt(a: int, b: int): int { if a < b { return a } return b }
+
+fun addEdge(g: list<list<Edge>>, u: int, v: int, c: int): list<list<Edge>> {
+  let r1 = len(g[v])
+  let r2 = len(g[u])
+  g[u] = append(g[u], Edge{ to: v, rev: r1, cap: c })
+  g[v] = append(g[v], Edge{ to: u, rev: r2, cap: 0 })
+  return g
+}
+
+fun bfs(g: list<list<Edge>>, s: int, t: int): list<int> {
+  var level: list<int> = []
+  var i = 0
+  while i < len(g) {
+    level = append(level, 0-1)
+    i = i + 1
+  }
+  var q: list<int> = []
+  q = append(q, s)
+  level[s] = 0
+  var qi = 0
+  while qi < len(q) {
+    let v = q[qi]
+    qi = qi + 1
+    var j = 0
+    while j < len(g[v]) {
+      let e = g[v][j]
+      if e.cap > 0 && level[e.to] == 0-1 {
+        level[e.to] = level[v] + 1
+        q = append(q, e.to)
+      }
+      j = j + 1
+    }
+  }
+  return level
+}
+
+fun dfs(g: list<list<Edge>>, level: list<int>, iter: list<int>, v: int, t: int, f: int): int {
+  if v == t { return f }
+  var i = iter[v]
+  while i < len(g[v]) {
+    let e = g[v][i]
+    if e.cap > 0 && level[v] + 1 == level[e.to] {
+      let d = dfs(g, level, iter, e.to, t, minInt(f, e.cap))
+      if d > 0 {
+        let e1 = g[v][i]
+        g[v][i] = Edge{ to: e1.to, rev: e1.rev, cap: e1.cap - d }
+        let ri = e1.rev
+        let re = g[e1.to][ri]
+        g[e1.to][ri] = Edge{ to: re.to, rev: re.rev, cap: re.cap + d }
+        return d
+      }
+    }
+    i = i + 1
+    iter[v] = i
+  }
+  return 0
+}
+
+fun maxflow(g: list<list<Edge>>, s: int, t: int): int {
+  var flow = 0
+  let n = len(g)
+  while true {
+    let level = bfs(g, s, t)
+    if level[t] == 0-1 { break }
+    var iter: list<int> = []
+    var i = 0
+    while i < n { iter = append(iter, 0); i = i + 1 }
+    while true {
+      let f = dfs(g, level, iter, s, t, 1000000000)
+      if f == 0 { break }
+      flow = flow + f
+    }
+  }
+  return flow
+}
+
+fun solve(n: int, m: int, costs: list<int>, as: list<int>, bs: list<int>, cs: list<int>): int {
+  let source = 0
+  let sink = n + m + 1
+  var g: list<list<Edge>> = []
+  var i = 0
+  while i <= sink {
+    g = append(g, [])
+    i = i + 1
+  }
+  var total = 0
+  var idx = 0
+  while idx < m {
+    let prof = cs[idx]
+    g = addEdge(g, source, idx + 1, prof)
+    g = addEdge(g, idx + 1, as[idx] + m, 1000000000)
+    g = addEdge(g, idx + 1, bs[idx] + m, 1000000000)
+    total = total + prof
+    idx = idx + 1
+  }
+  i = 1
+  while i <= n {
+    let cost = costs[i-1]
+    g = addEdge(g, i + m, sink, cost)
+    i = i + 1
+  }
+  let f = maxflow(g, source, sink)
+  return total - f
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var cs = 0
+  while cs < t {
+    let nm = readInts()
+    let n = nm[0]
+    let m = nm[1]
+    let costLine = readInts()
+    var costs: list<int> = []
+    var i = 0
+    while i < n {
+      costs = append(costs, costLine[i] as int)
+      i = i + 1
+    }
+    var as: list<int> = []
+    var bs: list<int> = []
+    var csArr: list<int> = []
+    var j = 0
+    while j < m {
+      let arr = readInts()
+      as = append(as, arr[0] as int)
+      bs = append(bs, arr[1] as int)
+      csArr = append(csArr, arr[2] as int)
+      j = j + 1
+    }
+    let ans = solve(n, m, costs, as, bs, csArr)
+    print(str(ans))
+    cs = cs + 1
+  }
+}
+
+main()
