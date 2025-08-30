@@ -1,0 +1,88 @@
+// Solution for SPOJ PT07H - Search in XML
+// https://www.spoj.com/problems/PT07H/
+
+fun parseTree(data: string, start: int, withID: bool): (map<string, any>, int, list<map<string, any>>) {
+  var stack: list<map<string, any>> = []
+  var nodes: list<map<string, any>> = []
+  var root: map<string, any> = {}
+  var i = start
+  var id = 1
+  while i < len(data) {
+    if data[i:i+1] == "<" {
+      var j = i + 1
+      while j < len(data) && data[j:j+1] != ">" {
+        j = j + 1
+      }
+      let tag = data[i+1:j]
+      if len(tag) > 0 && tag[0:1] == "/" {
+        stack = stack[0:len(stack)-1]
+        if len(stack) == 0 {
+          i = j + 1
+          break
+        }
+      } else {
+        var node: map<string, any> = { tag: tag, children: {} }
+        if withID {
+          node["id"] = id
+          id = id + 1
+          nodes = append(nodes, node)
+        }
+        if len(stack) > 0 {
+          var parent = stack[len(stack)-1]
+          var ch = parent["children"] as map<string, any>
+          ch[tag] = node
+          parent["children"] = ch
+          stack[len(stack)-1] = parent
+        } else {
+          root = node
+        }
+        stack = append(stack, node)
+      }
+      i = j + 1
+    } else {
+      i = i + 1
+    }
+  }
+  return (root, i, nodes)
+}
+
+fun match(node: map<string, any>, pat: map<string, any>): bool {
+  if node["tag"] != pat["tag"] { return false }
+  let pc = pat["children"] as map<string, any>
+  let nc = node["children"] as map<string, any>
+  for name in pc {
+    if nc[name] == nil { return false }
+    let nchild = nc[name] as map<string, any>
+    let pchild = pc[name] as map<string, any>
+    if !match(nchild, pchild) { return false }
+  }
+  return true
+}
+
+fun main() {
+  var data = ""
+  while true {
+    let line = input()
+    if line == "" { break }
+    data = data + line
+  }
+  let (root, idx, nodes) = parseTree(data, 0, true)
+  let (pat, _, _) = parseTree(data, idx, false)
+  var res: list<int> = []
+  var i = 0
+  while i < len(nodes) {
+    let node = nodes[i]
+    if match(node, pat) {
+      res = append(res, node["id"] as int)
+    }
+    i = i + 1
+  }
+  print(str(len(res)))
+  i = 0
+  while i < len(res) {
+    print(str(res[i]))
+    i = i + 1
+  }
+}
+
+main()
