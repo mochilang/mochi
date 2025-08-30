@@ -1,0 +1,123 @@
+// Solution for SPOJ DRAGON - Greedy Hydra
+// https://www.spoj.com/problems/DRAGON/
+
+let INF = 1000000000
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+type Edge { to: int, w: int }
+
+fun parseInts(line: string): list<int> {
+  var nums: list<int> = []
+  var i = 0
+  var cur = 0
+  var sign = 1
+  var inNum = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == "-" {
+      sign = -1
+      i = i + 1
+    } else if ch >= "0" && ch <= "9" {
+      cur = cur * 10 + (digits[ch] as int)
+      inNum = true
+      i = i + 1
+    } else {
+      if inNum {
+        nums = append(nums, sign * cur)
+        cur = 0
+        sign = 1
+        inNum = false
+      }
+      i = i + 1
+    }
+  }
+  if inNum { nums = append(nums, sign * cur) }
+  return nums
+}
+
+fun min2(a: int, b: int): int { if a < b { return a } else { return b } }
+
+fun dfs(u: int, p: int, adj: list<list<Edge>>, K: int): any {
+  var dp: list<int> = []
+  var i = 0
+  while i <= K {
+    dp = append(dp, if i==0 {0} else {INF})
+    i = i + 1
+  }
+  var size = 1
+  dp[1] = 0
+  var childIdx = 0
+  while childIdx < len(adj[u]) {
+    let e = adj[u][childIdx]
+    let v = e.to
+    if v != p {
+      let res = dfs(v, u, adj, K)
+      let childDp = res.dp as list<int>
+      let childSize = res.size as int
+      var new: list<int> = []
+      i = 0
+      while i <= K { new = append(new, INF); i = i + 1 }
+      var k1 = 1
+      while k1 <= min2(size, K) {
+        if dp[k1] < INF {
+          var x = 0
+          while x <= min2(childSize, K - k1) {
+            var cost = dp[k1]
+            if x == 0 {
+              cost = cost + e.w
+            } else {
+              if childDp[x] >= INF { x = x + 1; continue }
+              cost = cost + childDp[x]
+            }
+            if cost < new[k1 + x] { new[k1 + x] = cost }
+            x = x + 1
+          }
+        }
+        k1 = k1 + 1
+      }
+      dp = new
+      size = size + childSize
+    }
+    childIdx = childIdx + 1
+  }
+  return { dp: dp, size: size }
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil || line == "" { break }
+    let vals = parseInts(line)
+    if len(vals) == 0 { break }
+    let N = vals[0] as int
+    let M = vals[1] as int
+    let K = vals[2] as int
+    var adj: list<list<Edge>> = []
+    var i = 0
+    while i <= N {
+      adj = append(adj, [])
+      i = i + 1
+    }
+    var e = 0
+    while e < N - 1 {
+      let l = input()
+      if l == "" { continue }
+      let p = parseInts(l)
+      let a = p[0] as int
+      let b = p[1] as int
+      let w = p[2] as int
+      adj[a] = append(adj[a] as list<Edge>, Edge{ to:b, w:w })
+      adj[b] = append(adj[b] as list<Edge>, Edge{ to:a, w:w })
+      e = e + 1
+    }
+    let res = dfs(1, 0, adj, K)
+    let ans = (res.dp as list<int>)[K]
+    if ans >= INF { print("-1") } else { print(str(ans)) }
+  }
+}
+
+main()
