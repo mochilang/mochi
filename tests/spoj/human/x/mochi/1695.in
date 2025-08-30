@@ -1,0 +1,31 @@
+3
+      G Y Y
+      G Y Y
+      G Y Y
+W W W Y R R M M M G G B
+W W W Y R R M M M G G B
+W W W Y R R M M M G G B
+      R B B
+      R B B
+      R B B
+-1 0
+      G Y Y
+      G Y Y
+      G Y Y
+W W W Y R R M M M G G B
+W M W Y R R M W M G G B
+W W W Y R R M M M G G B
+      R B B
+      R B B
+      R B B
+-1 0
+      M W M
+      W W G
+      W W Y
+G Y Y M M B M B G W R B
+B Y Y M M B M G G W R R
+Y M G W B B R R G R R W
+      R Y Y
+      G B Y
+      R G B
++4 +6 -2 +3 -4 +2 -3 -6 0
