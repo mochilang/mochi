@@ -1,0 +1,155 @@
+// Solution for SPOJ PLSEARCH - Polygonal Line Search
+// https://www.spoj.com/problems/PLSEARCH/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun splitSpace(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+type Segment {
+  dir: int,
+  len: int,
+}
+
+type Point {
+  x: int,
+  y: int,
+}
+
+fun segments(pts: list<Point>): list<Segment> {
+  var res: list<Segment> = []
+  var i = 1
+  while i < len(pts) {
+    let p1 = pts[i-1]
+    let p2 = pts[i]
+    var d = 0
+    var l = 0
+    if p2.x > p1.x {
+      d = 0
+      l = p2.x - p1.x
+    } else if p2.x < p1.x {
+      d = 2
+      l = p1.x - p2.x
+    } else if p2.y > p1.y {
+      d = 1
+      l = p2.y - p1.y
+    } else {
+      d = 3
+      l = p1.y - p2.y
+    }
+    res = append(res, Segment{dir: d, len: l})
+    i = i + 1
+  }
+  return res
+}
+
+fun encode(segs: list<Segment>): string {
+  var best = ""
+  var orient = 0
+  while orient < 2 {
+    var s: list<Segment> = segs
+    if orient == 1 {
+      var rev: list<Segment> = []
+      var i = len(segs) - 1
+      while i >= 0 {
+        let sg = segs[i]
+        rev = append(rev, Segment{dir: (sg.dir + 2) % 4, len: sg.len})
+        i = i - 1
+      }
+      s = rev
+    }
+    var rot = 0
+    while rot < 4 {
+      var rep = ""
+      var j = 0
+      while j < len(s) {
+        let sg = s[j]
+        let d = (sg.dir + rot) % 4
+        rep = rep + str(d) + ":" + str(sg.len) + ";"
+        j = j + 1
+      }
+      if best == "" || rep < best { best = rep }
+      rot = rot + 1
+    }
+    orient = orient + 1
+  }
+  return best
+}
+
+fun readPoint(line: string): Point {
+  let parts = splitSpace(line)
+  return Point{x: parseIntStr(parts[0]), y: parseIntStr(parts[1])}
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line != nil && line == "" { line = input() }
+  return line
+}
+
+fun main() {
+  while true {
+    let line = readNonEmpty()
+    if line == nil { return }
+    let n = parseIntStr(line)
+    if n == 0 { break }
+    var polys: list<list<Point>> = []
+    var idx = 0
+    while idx <= n {
+      let mLine = readNonEmpty()
+      let m = parseIntStr(mLine)
+      var pts: list<Point> = []
+      var j = 0
+      while j < m {
+        let pl = readNonEmpty()
+        pts = append(pts, readPoint(pl))
+        j = j + 1
+      }
+      polys = append(polys, pts)
+      idx = idx + 1
+    }
+    let tmpl = encode(segments(polys[0]))
+    var i = 1
+    while i <= n {
+      let cand = encode(segments(polys[i]))
+      if cand == tmpl { print(str(i)) }
+      i = i + 1
+    }
+    print("+++++")
+  }
+}
+
+main()
