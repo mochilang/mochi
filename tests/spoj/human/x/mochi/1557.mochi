@@ -1,0 +1,84 @@
+// Solution for SPOJ GSS2 - Can you answer these queries II
+// https://www.spoj.com/problems/GSS2/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+      continue
+    }
+    cur = cur + s[i:i+1]
+    i = i + 1
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  var i = 0
+  while i < len(pieces) {
+    let p = pieces[i]
+    if len(p) > 0 {
+      nums = append(nums, p as int)
+    }
+    i = i + 1
+  }
+  return nums
+}
+
+fun main() {
+  let nLine = input()
+  if nLine == "" { return }
+  let n = nLine as int
+  let arrLine = input()
+  let arrParts = parse_ints(arrLine)
+  var arr: list<int> = []
+  var i = 0
+  while i < n {
+    arr = append(arr, arrParts[i])
+    i = i + 1
+  }
+  let qLine = input()
+  let q = qLine as int
+  var qi = 0
+  while qi < q {
+    let line = input()
+    let parts = parse_ints(line)
+    let L = parts[0]
+    let R = parts[1]
+    var best = 0
+    var start = L - 1
+    while start < R {
+      var used: list<int> = []
+      var sum = 0
+      var j = start
+      while j < R {
+        let v = arr[j]
+        var exists = false
+        var k = 0
+        while k < len(used) {
+          if used[k] == v { exists = true; break }
+          k = k + 1
+        }
+        if !exists {
+          used = append(used, v)
+          sum = sum + v
+        }
+        if sum > best { best = sum }
+        j = j + 1
+      }
+      start = start + 1
+    }
+    print(str(best))
+    qi = qi + 1
+  }
+}
+
+main()
