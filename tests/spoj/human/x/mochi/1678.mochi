@@ -1,0 +1,145 @@
+// Solution for SPOJ TREASURY - Royal Treasury
+// https://www.spoj.com/problems/TREASURY/
+
+// Split a string by spaces
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+type Res {
+  pairs: int,
+  ways: bigint,
+}
+
+var child: list<list<int>>
+var dp0: list<Res>
+var dp1: list<Res>
+
+fun maxRes(a: Res, b: Res): Res {
+  if a.pairs > b.pairs { return a }
+  if b.pairs > a.pairs { return b }
+  return Res{ pairs: a.pairs, ways: a.ways + b.ways }
+}
+
+fun dfs(u: int) {
+  let ch = child[u]
+  if len(ch) == 0 {
+    dp0[u] = Res{ pairs: 0, ways: 1 as bigint }
+    dp1[u] = Res{ pairs: 0, ways: 0 as bigint }
+    return
+  }
+  var m0 = 0
+  var w0: bigint = 1 as bigint
+  var best: list<Res> = []
+  var i = 0
+  while i < len(ch) {
+    let v = ch[i]
+    dfs(v)
+    let r0 = dp0[v]
+    let r1 = dp1[v]
+    let b = maxRes(r0, r1)
+    best = append(best, b)
+    m0 = m0 + b.pairs
+    w0 = w0 * b.ways
+    i = i + 1
+  }
+  dp0[u] = Res{ pairs: m0, ways: w0 }
+  var pre: list<bigint> = []
+  pre = append(pre, 1 as bigint)
+  i = 0
+  while i < len(ch) {
+    pre = append(pre, pre[i] * best[i].ways)
+    i = i + 1
+  }
+  var suf: list<bigint> = []
+  i = 0
+  while i <= len(ch) {
+    suf = append(suf, 1 as bigint)
+    i = i + 1
+  }
+  i = len(ch) - 1
+  while i >= 0 {
+    suf[i] = suf[i+1] * best[i].ways
+    i = i - 1
+  }
+  var bestPairs = -1
+  var ways: bigint = 0 as bigint
+  i = 0
+  while i < len(ch) {
+    let v = ch[i]
+    let r0v = dp0[v]
+    let pairs = 1 + r0v.pairs + (m0 - best[i].pairs)
+    let waysCur = r0v.ways * pre[i] * suf[i+1]
+    if pairs > bestPairs {
+      bestPairs = pairs
+      ways = waysCur
+    } else if pairs == bestPairs {
+      ways = ways + waysCur
+    }
+    i = i + 1
+  }
+  dp1[u] = Res{ pairs: bestPairs, ways: ways }
+}
+
+fun solve(n: int, lines: list<string>, idx: int): int {
+  child = []
+  dp0 = []
+  dp1 = []
+  var i = 0
+  while i <= n {
+    child = append(child, [])
+    dp0 = append(dp0, Res{ pairs: 0, ways: 0 as bigint })
+    dp1 = append(dp1, Res{ pairs: 0, ways: 0 as bigint })
+    i = i + 1
+  }
+  var lineIdx = idx
+  var t = 0
+  while t < n {
+    let parts = split(lines[lineIdx])
+    lineIdx = lineIdx + 1
+    let id = parts[0] as int
+    let k = parts[1] as int
+    var j = 0
+    while j < k {
+      child[id] = append(child[id], parts[2+j] as int)
+      j = j + 1
+    }
+    t = t + 1
+  }
+  dfs(1)
+  let res = maxRes(dp0[1], dp1[1])
+  print(str(res.pairs))
+  print(str(res.ways))
+  return lineIdx
+}
+
+fun main() {
+  var lines: list<string> = []
+  while true {
+    let l = input()
+    if l == nil { break }
+    if l != "" { lines = append(lines, l) }
+  }
+  if len(lines) == 0 { return }
+  var idx = 0
+  while idx < len(lines) {
+    let n = lines[idx] as int
+    idx = idx + 1
+    idx = solve(n, lines, idx)
+  }
+}
+
+main()
