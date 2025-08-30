@@ -1,0 +1,126 @@
+// Solution for SPOJ GAMEFIL - The Game of Efil
+// https://www.spoj.com/problems/GAMEFIL/
+
+var tokens: list<string> = []
+var tokIdx = 0
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun nextToken(): string {
+  while tokIdx >= len(tokens) {
+    let line = input()
+    if line == nil { return nil }
+    tokens = splitSpaces(line)
+    tokIdx = 0
+  }
+  let t = tokens[tokIdx]
+  tokIdx = tokIdx + 1
+  return t
+}
+
+fun nextInt(): int { return int(nextToken()) }
+
+fun makeMasks(total: int): list<int> {
+  var masks: list<int> = []
+  var val = 1
+  var i = 0
+  while i < total {
+    masks = append(masks, val)
+    val = val * 2
+    i = i + 1
+  }
+  return masks
+}
+
+fun evolve(s: int, m: int, n: int, masks: list<int>): int {
+  var res = 0
+  var r = 0
+  while r < m {
+    var c = 0
+    while c < n {
+      let idx = r * n + c
+      let mask = masks[idx]
+      let alive = (s / mask) % 2
+      var cnt = 0
+      var dr = -1
+      while dr <= 1 {
+        var dc = -1
+        while dc <= 1 {
+          if dr != 0 || dc != 0 {
+            let nr = (r + dr + m) % m
+            let nc = (c + dc + n) % n
+            let nidx = nr * n + nc
+            let nmask = masks[nidx]
+            if ((s / nmask) % 2) == 1 { cnt = cnt + 1 }
+          }
+          dc = dc + 1
+        }
+        dr = dr + 1
+      }
+      if alive == 1 {
+        if cnt == 2 || cnt == 3 { res = res + mask }
+      } else {
+        if cnt == 3 { res = res + mask }
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+  return res
+}
+
+fun countParents(target: int, m: int, n: int, masks: list<int>): int {
+  let limit = masks[len(masks)-1] * 2
+  var s = 0
+  var count = 0
+  while s < limit {
+    if evolve(s, m, n, masks) == target { count = count + 1 }
+    s = s + 1
+  }
+  return count
+}
+
+fun main() {
+  var case = 1
+  while true {
+    let m = nextInt()
+    let n = nextInt()
+    if m == 0 && n == 0 { break }
+    let total = m * n
+    let masks = makeMasks(total)
+    let k = nextInt()
+    var target = 0
+    var i = 0
+    while i < k {
+      let r = nextInt()
+      let c = nextInt()
+      let idx = r * n + c
+      target = target + masks[idx]
+      i = i + 1
+    }
+    let cnt = countParents(target, m, n, masks)
+    if cnt == 0 {
+      print("Case " + str(case) + ": Garden of Eden.")
+    } else {
+      print("Case " + str(case) + ": " + str(cnt) + " possible ancestors.")
+    }
+    case = case + 1
+  }
+}
+
+main()
