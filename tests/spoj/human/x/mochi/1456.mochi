@@ -1,0 +1,183 @@
+// Solution for SPOJ LOSTCT - The Secret of a Lost City
+// https://www.spoj.com/problems/LOSTCT/
+
+fun main() {
+  let nLine = input()
+  if nLine == "" { return }
+  let n = nLine as int
+  var dict: map<string,string> = {}
+  var maxLen = 0
+  var i = 0
+  while i < n {
+    let line = input()
+    let t = line[0:1]
+    let w = line[2:len(line)]
+    dict[w] = t
+    if len(w) > maxLen { maxLen = len(w) }
+    i = i + 1
+  }
+  let txt = input()
+  let s = txt[0:len(txt)-1]
+  let nS = len(s)
+
+  var cands: list<list<any>> = []
+  i = 0
+  while i < nS {
+    cands = append(cands, [])
+    i = i + 1
+  }
+  i = 0
+  while i < nS {
+    var l = 1
+    while l <= maxLen && i + l <= nS {
+      let w = s[i:i+l]
+      if dict[w] != nil {
+        cands[i] = append(cands[i], { next: i + l, typ: dict[w] })
+      }
+      l = l + 1
+    }
+    i = i + 1
+  }
+
+  let INF = 1000000
+  var dp: list<list<any>> = []
+  i = 0
+  while i <= nS {
+    var row: list<any> = []
+    var st = 0
+    while st < 4 {
+      row = append(row, { s: INF, w: INF })
+      st = st + 1
+    }
+    dp = append(dp, row)
+    i = i + 1
+  }
+  dp[0][0] = { s: 0, w: 0 }
+
+  i = 0
+  while i < nS {
+    let endNP = dp[i][1]
+    if endNP.s < INF {
+      let ns = endNP.s + 1
+      let nw = endNP.w
+      let best = dp[i][0]
+      if ns < best.s || (ns == best.s && nw < best.w) {
+        dp[i][0] = { s: ns, w: nw }
+      }
+    }
+    let endVP = dp[i][3]
+    if endVP.s < INF {
+      let ns = endVP.s + 1
+      let nw = endVP.w
+      let best = dp[i][0]
+      if ns < best.s || (ns == best.s && nw < best.w) {
+        dp[i][0] = { s: ns, w: nw }
+      }
+    }
+
+    var st = 0
+    while st < 4 {
+      let cur = dp[i][st]
+      if cur.s >= INF { st = st + 1; continue }
+      var j = 0
+      while j < len(cands[i]) {
+        let cand = cands[i][j]
+        let typ = cand.typ
+        let next = cand.next
+        if st == 0 {
+          if typ == "a" {
+            let best = dp[next][0]
+            let ns = cur.s
+            let nw = cur.w + 1
+            if ns < best.s || (ns == best.s && nw < best.w) {
+              dp[next][0] = { s: ns, w: nw }
+            }
+          } else if typ == "n" {
+            let best = dp[next][1]
+            let ns = cur.s
+            let nw = cur.w + 1
+            if ns < best.s || (ns == best.s && nw < best.w) {
+              dp[next][1] = { s: ns, w: nw }
+            }
+          }
+        } else if st == 1 {
+          if typ == "a" {
+            let best = dp[next][2]
+            let ns = cur.s
+            let nw = cur.w + 1
+            if ns < best.s || (ns == best.s && nw < best.w) {
+              dp[next][2] = { s: ns, w: nw }
+            }
+          } else if typ == "v" {
+            let best = dp[next][3]
+            let ns = cur.s
+            let nw = cur.w + 1
+            if ns < best.s || (ns == best.s && nw < best.w) {
+              dp[next][3] = { s: ns, w: nw }
+            }
+          }
+        } else if st == 2 {
+          if typ == "a" {
+            let best = dp[next][2]
+            let ns = cur.s
+            let nw = cur.w + 1
+            if ns < best.s || (ns == best.s && nw < best.w) {
+              dp[next][2] = { s: ns, w: nw }
+            }
+          } else if typ == "v" {
+            let best = dp[next][3]
+            let ns = cur.s
+            let nw = cur.w + 1
+            if ns < best.s || (ns == best.s && nw < best.w) {
+              dp[next][3] = { s: ns, w: nw }
+            }
+          }
+        } else {
+          if typ == "a" {
+            let best = dp[next][0]
+            let ns = cur.s
+            let nw = cur.w + 1
+            if ns < best.s || (ns == best.s && nw < best.w) {
+              dp[next][0] = { s: ns, w: nw }
+            }
+          } else if typ == "n" {
+            let best = dp[next][1]
+            let ns = cur.s
+            let nw = cur.w + 1
+            if ns < best.s || (ns == best.s && nw < best.w) {
+              dp[next][1] = { s: ns, w: nw }
+            }
+          }
+        }
+        j = j + 1
+      }
+      st = st + 1
+    }
+    i = i + 1
+  }
+
+  var resS = INF
+  var resW = INF
+  let end1 = dp[nS][1]
+  if end1.s < INF {
+    let ns = end1.s + 1
+    let nw = end1.w
+    if ns < resS || (ns == resS && nw < resW) {
+      resS = ns
+      resW = nw
+    }
+  }
+  let end3 = dp[nS][3]
+  if end3.s < INF {
+    let ns = end3.s + 1
+    let nw = end3.w
+    if ns < resS || (ns == resS && nw < resW) {
+      resS = ns
+      resW = nw
+    }
+  }
+  print(str(resS))
+  print(str(resW))
+}
+
+main()
