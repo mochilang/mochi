@@ -1,0 +1,23 @@
+1
+15
+Insert 26
+abcdefghijklmnop
+qrstuv wxy
+Move 15
+Delete 11
+Move 5
+Insert 1
+^
+Next
+Insert 1
+_
+Next
+Next
+Insert 4
+.\/.
+Get 4
+Prev
+Insert 1
+^
+Move 0
+Get 22
