@@ -1,0 +1,281 @@
+// Solution for SPOJ RAIN2 - Outside it is now raining
+// https://www.spoj.com/problems/RAIN2/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = 0 - n }
+  return n
+}
+
+fun format2(x: float): string {
+  var scaled = x * 100.0
+  if scaled < 0.0 {
+    scaled = scaled - 0.5
+  } else {
+    scaled = scaled + 0.5
+  }
+  var n = scaled as int
+  var sign = ""
+  if n < 0 {
+    sign = "-"
+    n = -n
+  }
+  var whole = n / 100
+  var frac = n % 100
+  var fracStr = str(frac)
+  while len(fracStr) < 2 {
+    fracStr = "0" + fracStr
+  }
+  return sign + str(whole) + "." + fracStr
+}
+
+type Segment = { start: float, end: float, a: float, b: float }
+
+fun absf(x: float): float { if x < 0.0 { return 0.0 - x } else { return x } }
+
+fun makeSegments(xi: int, li: int, vi: int, W: int, T: int): list<Segment> {
+  let L = W - li
+  var segs: list<Segment> = []
+  var pos = xi as float
+  var dir = if vi >= 0 { 1.0 } else { -1.0 }
+  var speed = absf(vi as float)
+  var t = 0.0
+  if speed == 0.0 {
+    segs = append(segs, Segment{ start:0.0, end:T as float, a:0.0, b:pos })
+    return segs
+  }
+  let Tf = T as float
+  while t < Tf - 1e-9 {
+    var dist = if dir > 0.0 { (L as float) - pos } else { pos }
+    var time = dist / speed
+    var endt = t + time
+    if endt > Tf { endt = Tf }
+    segs = append(segs, Segment{ start:t, end:endt, a:dir*speed, b:pos - dir*speed*t })
+    pos = pos + dir*speed*(endt - t)
+    t = endt
+    if t >= Tf { break }
+    dir = 0.0 - dir
+  }
+  return segs
+}
+
+fun sortFloats(arr: list<float>): list<float> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun uniqueFloats(arr: list<float>): list<float> {
+  var res: list<float> = []
+  if len(arr) == 0 { return res }
+  var prev = arr[0]
+  res = append(res, prev)
+  var i = 1
+  while i < len(arr) {
+    let v = arr[i]
+    if v - prev > 1e-7 {
+      res = append(res, v)
+      prev = v
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun addEvent(events: list<float>, ai: float, bi: float, offi: float, aj: float, bj: float, offj: float, start: float, end: float): list<float> {
+  let denom = ai - aj
+  if denom == 0.0 { return events }
+  let t = (bj + offj - (bi + offi)) / denom
+  if t > start && t < end { events = append(events, t) }
+  return events
+}
+
+fun evalPos(segs: list<Segment>, t: float): float {
+  var i = 0
+  while i < len(segs) {
+    let s = segs[i]
+    if t >= s.start - 1e-9 && t <= s.end + 1e-9 {
+      return s.a * t + s.b
+    }
+    i = i + 1
+  }
+  return 0.0
+}
+
+fun coverLength(N: int, lens: list<float>, segsList: list<list<Segment>>, t: float): float {
+  var intervals: list<list<float>> = []
+  var i = 0
+  while i < N {
+    let pos = evalPos(segsList[i], t)
+    var pair: list<float> = []
+    pair = append(pair, pos)
+    pair = append(pair, pos + lens[i])
+    intervals = append(intervals, pair)
+    i = i + 1
+  }
+  var k = 1
+  while k < len(intervals) {
+    var j = k
+    while j > 0 && intervals[j-1][0] > intervals[j][0] {
+      let tmp = intervals[j-1]
+      intervals[j-1] = intervals[j]
+      intervals[j] = tmp
+      j = j - 1
+    }
+    k = k + 1
+  }
+  var cover = 0.0
+  var curL: float = intervals[0][0]
+  var curR: float = intervals[0][1]
+  var idx = 1
+  while idx < len(intervals) {
+    let it = intervals[idx]
+    if it[0] > curR {
+      cover = cover + (curR - curL)
+      curL = it[0]
+      curR = it[1]
+    } else {
+      if it[1] > curR { curR = it[1] }
+    }
+    idx = idx + 1
+  }
+  cover = cover + (curR - curL)
+  return cover
+}
+
+fun main() {
+  let qLine = input()
+  if qLine == "" { return }
+  let Q = int(qLine)
+  var case = 0
+  while case < Q {
+    let line = input()
+    let parts = splitSpaces(line)
+    let N = parseIntStr(parts[0])
+    let W = parseIntStr(parts[1])
+    let T = parseIntStr(parts[2])
+    let V = parseIntStr(parts[3])
+    var lens: list<float> = []
+    var segsList: list<list<Segment>> = []
+    var i = 0
+    while i < N {
+      let line2 = input()
+      let p = splitSpaces(line2)
+      let xi = parseIntStr(p[0])
+      let li = parseIntStr(p[1])
+      let vi = parseIntStr(p[2])
+      lens = append(lens, li as float)
+      let segs = makeSegments(xi, li, vi, W, T)
+      segsList = append(segsList, segs)
+      i = i + 1
+    }
+    var events: list<float> = []
+    events = append(events, 0.0)
+    events = append(events, T as float)
+    i = 0
+    while i < N {
+      let segs = segsList[i]
+      var j = 0
+      while j < len(segs) {
+        let s = segs[j]
+        events = append(events, s.start)
+        events = append(events, s.end)
+        j = j + 1
+      }
+      i = i + 1
+    }
+    i = 0
+    while i < N {
+      var j = i + 1
+      while j < N {
+        let segs1 = segsList[i]
+        let segs2 = segsList[j]
+        var a = 0
+        while a < len(segs1) {
+          var b = 0
+          while b < len(segs2) {
+            let s1 = segs1[a]
+            let s2 = segs2[b]
+            let start = if s1.start > s2.start { s1.start } else { s2.start }
+            let end = if s1.end < s2.end { s1.end } else { s2.end }
+            if start < end {
+              let ai = s1.a
+              let bi = s1.b
+              let aj = s2.a
+              let bj = s2.b
+              let li = lens[i]
+              let lj = lens[j]
+              events = addEvent(events, ai, bi, 0.0, aj, bj, 0.0, start, end)
+              events = addEvent(events, ai, bi, 0.0, aj, bj, lj, start, end)
+              events = addEvent(events, ai, bi, li, aj, bj, 0.0, start, end)
+              events = addEvent(events, ai, bi, li, aj, bj, lj, start, end)
+            }
+            b = b + 1
+          }
+          a = a + 1
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    events = sortFloats(events)
+    events = uniqueFloats(events)
+    var total = 0.0
+    var k = 0
+    while k + 1 < len(events) {
+      let t1 = events[k]
+      let t2 = events[k+1]
+      let l1 = coverLength(N, lens, segsList, t1)
+      let l2 = coverLength(N, lens, segsList, t2)
+      total = total + (l1 + l2) * (t2 - t1) / 2.0
+      k = k + 1
+    }
+    let rain = (W as float) * (T as float)
+    let ans = (rain - total) * (V as float)
+    print(format2(ans))
+    case = case + 1
+  }
+}
+
+main()
