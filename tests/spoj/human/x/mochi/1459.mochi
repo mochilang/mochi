@@ -1,0 +1,163 @@
+// Solution for SPOJ AEROLITE - The Secret of an Aerolite
+// https://www.spoj.com/problems/AEROLITE/
+
+let MOD = 11380
+let MAX = 10
+let MAXD = 30
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+var memoH: map<int,int> = {}
+var memoG: map<int,int> = {}
+var memoF: map<int,int> = {}
+
+fun keyH(l3: int, d: int): int { return l3*32 + d }
+fun keyG(l2: int, l3: int, d: int): int { return ((l2*11)+l3)*32 + d }
+fun keyF(l1: int, l2: int, l3: int, d: int): int { return (((l1*11)+l2)*11 + l3)*32 + d }
+
+fun H(l3: int, d: int): int {
+  if l3 == 0 { return 1 }
+  if d <= 0 { return 0 }
+  let k = keyH(l3,d)
+  if memoH[k] != nil { return memoH[k] as int }
+  var res = 0
+  var i = 0
+  while i < l3 {
+    let left = H(i, d-1)
+    let right = H(l3-1-i, d)
+    res = (res + (left * right) % MOD) % MOD
+    i = i + 1
+  }
+  memoH[k] = res
+  return res
+}
+
+fun G(l2: int, l3: int, d: int): int {
+  if l2 == 0 && l3 == 0 { return 1 }
+  if d <= 0 { return 0 }
+  let k = keyG(l2,l3,d)
+  if memoG[k] != nil { return memoG[k] as int }
+  var res = 0
+  if l2 > 0 {
+    var i2 = 0
+    while i2 <= l2 - 1 {
+      var i3 = 0
+      while i3 <= l3 {
+        res = (res + (G(i2,i3,d-1) * G(l2-1-i2, l3-i3, d)) % MOD) % MOD
+        i3 = i3 + 1
+      }
+      i2 = i2 + 1
+    }
+  }
+  if l3 > 0 {
+    var i3 = 0
+    while i3 <= l3 - 1 {
+      res = (res + (H(i3,d-1) * G(l2, l3-1-i3, d)) % MOD) % MOD
+      i3 = i3 + 1
+    }
+  }
+  memoG[k] = res
+  return res
+}
+
+fun F(l1: int, l2: int, l3: int, d: int): int {
+  if l1 == 0 && l2 == 0 && l3 == 0 { return 1 }
+  if d <= 0 { return 0 }
+  let k = keyF(l1,l2,l3,d)
+  if memoF[k] != nil { return memoF[k] as int }
+  var res = 0
+  if l1 > 0 {
+    var i1 = 0
+    while i1 <= l1 - 1 {
+      var i2 = 0
+      while i2 <= l2 {
+        var i3 = 0
+        while i3 <= l3 {
+          res = (res + (F(i1,i2,i3,d-1) * F(l1-1-i1, l2-i2, l3-i3, d)) % MOD) % MOD
+          i3 = i3 + 1
+        }
+        i2 = i2 + 1
+      }
+      i1 = i1 + 1
+    }
+  }
+  if l2 > 0 {
+    var i2 = 0
+    while i2 <= l2 - 1 {
+      var i3 = 0
+      while i3 <= l3 {
+        res = (res + (G(i2,i3,d-1) * F(l1, l2-1-i2, l3-i3, d)) % MOD) % MOD
+        i3 = i3 + 1
+      }
+      i2 = i2 + 1
+    }
+  }
+  if l3 > 0 {
+    var i3 = 0
+    while i3 <= l3 - 1 {
+      res = (res + (H(i3,d-1) * F(l1, l2, l3-1-i3, d)) % MOD) % MOD
+      i3 = i3 + 1
+    }
+  }
+  memoF[k] = res
+  return res
+}
+
+fun main() {
+  var line = input()
+  while line != nil {
+    if line != "" {
+      let parts = splitSpaces(line)
+      if len(parts) >= 4 {
+        let l1 = parseIntStr(parts[0])
+        let l2 = parseIntStr(parts[1])
+        let l3 = parseIntStr(parts[2])
+        let d = parseIntStr(parts[3])
+        var total = F(l1,l2,l3,d)
+        var less = if d > 0 { F(l1,l2,l3,d-1) } else { 0 }
+        var ans = (total - less) % MOD
+        if ans < 0 { ans = ans + MOD }
+        print(ans)
+      }
+    }
+    line = input()
+  }
+}
+
+main()
