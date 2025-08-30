@@ -1,0 +1,145 @@
+// Solution for SPOJ SQCOUNT - Square Count
+// https://www.spoj.com/problems/SQCOUNT/
+
+fun minInt(a: int, b: int): int {
+  if a < b { return a } else { return b }
+}
+
+fun maxInt(a: int, b: int): int {
+  if a > b { return a } else { return b }
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parts[i] as int)
+    i = i + 1
+  }
+  return nums
+}
+
+fun sumRange(a: int, b: int, alpha: int, beta: int, gamma: int): int {
+  if b < a { return 0 }
+  let n = b - a + 1
+  let sumL = (a + b) * n / 2
+  let a1 = a - 1
+  let sumL2 = (b * (b + 1) * (2 * b + 1) - a1 * (a1 + 1) * (2 * a1 + 1)) / 6
+  return alpha * sumL2 + beta * sumL + gamma * n
+}
+
+fun countCross(wL: int, wR: int, d: int): int {
+  var D = d
+  if wL + wR < D { D = wL + wR }
+  if D < 2 { return 0 }
+  let minW = minInt(wL, wR)
+  let maxW = maxInt(wL, wR)
+  var res = 0
+  let A_end = minInt(D, minW + 1)
+  res = res + sumRange(2, A_end, -1, d + 2, -(d + 1))
+  if wL < wR {
+    let B_start = wL + 2
+    let B_end = minInt(wR + 1, D)
+    res = res + sumRange(B_start, B_end, 0, -wL, wL * (d + 1))
+  } else if wR < wL {
+    let B_start = wR + 2
+    let B_end = minInt(wL + 1, D)
+    res = res + sumRange(B_start, B_end, 0, -wR, wR * (d + 1))
+  }
+  let C_start = maxW + 2
+  res = res + sumRange(C_start, D, 1, -(d + wL + wR + 2), (wL + wR + 1) * (d + 1))
+  return res
+}
+
+fun countInside(w: int, h: int): int {
+  let m = minInt(w, h)
+  let A = w + 1
+  let B = h + 1
+  let sum1 = m * A * B
+  let sum2 = (A + B) * m * (m + 1) / 2
+  let sum3 = m * (m + 1) * (2 * m + 1) / 6
+  return sum1 - sum2 + sum3
+}
+
+fun main() {
+  var caseNo = 1
+  while true {
+    let line = input()
+    if line == "" { break }
+    let n = line as int
+    if n == 0 { break }
+    var rooms: list<any> = []
+    var i = 0
+    while i < n {
+      let ln = input()
+      let nums = parseInts(ln)
+      var x1 = nums[0]
+      var y1 = nums[1]
+      var x2 = nums[2]
+      var y2 = nums[3]
+      if x1 > x2 { let tmp = x1; x1 = x2; x2 = tmp }
+      if y1 > y2 { let tmp = y1; y1 = y2; y2 = tmp }
+      let w = x2 - x1
+      let h = y2 - y1
+      rooms = append(rooms, { x1: x1, y1: y1, x2: x2, y2: y2, w: w, h: h })
+      i = i + 1
+    }
+    var total = 0
+    i = 0
+    while i < len(rooms) {
+      let r = rooms[i]
+      total = total + countInside(r.w, r.h)
+      i = i + 1
+    }
+    i = 0
+    while i < len(rooms) {
+      var j = i + 1
+      while j < len(rooms) {
+        let a = rooms[i]
+        let b = rooms[j]
+        if a.x2 == b.x1 || a.x1 == b.x2 {
+          let s = maxInt(a.y1, b.y1)
+          let t = minInt(a.y2, b.y2)
+          let m = t - s
+          if m > 2 {
+            let d = m - 2
+            total = total + countCross(a.w, b.w, d)
+          }
+        }
+        if a.y2 == b.y1 || a.y1 == b.y2 {
+          let s = maxInt(a.x1, b.x1)
+          let t = minInt(a.x2, b.x2)
+          let m = t - s
+          if m > 2 {
+            let d = m - 2
+            total = total + countCross(a.h, b.h, d)
+          }
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    print("Case " + str(caseNo) + ": " + str(total))
+    caseNo = caseNo + 1
+  }
+}
+
+main()
