@@ -1,0 +1,37 @@
+// Solution for SPOJ BMJ - Bee Maja
+// https://www.spoj.com/problems/BMJ/
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let n = int(line)
+    if n == 1 {
+      print("0 0")
+      continue
+    }
+    var r = 0
+    var max = 1
+    while max < n {
+      r = r + 1
+      max = 1 + 3 * r * (r + 1)
+    }
+    var start = 3 * (r - 1) * r + 2
+    var offset = n - start
+    var x = 0
+    var y = r
+    let dx = [-1, 0, 1, 1, 0, -1]
+    let dy = [0, -1, -1, 0, 1, 1]
+    var i = 0
+    while offset > 0 && i < 6 {
+      var step = if offset < r { offset } else { r }
+      x = x + dx[i] * step
+      y = y + dy[i] * step
+      offset = offset - step
+      i = i + 1
+    }
+    print(str(x) + " " + str(y))
+  }
+}
+
+main()
