@@ -1,0 +1,108 @@
+// Solution for SPOJ BLUEEQ2 - Help Blue Mary Please! (Act II)
+// https://www.spoj.com/problems/BLUEEQ2/
+
+fun ipow(x: int, p: int): int {
+  var res = 1
+  var i = 0
+  while i < p {
+    res = res * x
+    i = i + 1
+  }
+  return res
+}
+
+fun dfs1(idx: int, end: int, m: int, terms: list<list<int>>, sum: int, cnt: map<int,int>) {
+  if idx == end {
+    if sum in cnt {
+      cnt[sum] = cnt[sum] + 1
+    } else {
+      cnt[sum] = 1
+    }
+    return
+  }
+  var x = 0
+  while x < m {
+    dfs1(idx + 1, end, m, terms, sum + terms[idx][x], cnt)
+    x = x + 1
+  }
+}
+
+fun dfs2(idx: int, n: int, m: int, terms: list<list<int>>, sum: int, cnt: map<int,int>): int {
+  if idx == n {
+    let need = -sum
+    if need in cnt { return cnt[need] } else { return 0 }
+  }
+  var total = 0
+  var x = 0
+  while x < m {
+    total = total + dfs2(idx + 1, n, m, terms, sum + terms[idx][x], cnt)
+    x = x + 1
+  }
+  return total
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let sp = splitSpaces(line)
+  var res: list<int> = []
+  var i = 0
+  while i < len(sp) {
+    res = append(res, sp[i] as int)
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  for _ in 0..t {
+    let n = (input()) as int
+    let m = (input()) as int
+    var k: list<int> = []
+    var p: list<int> = []
+    var i = 0
+    while i < n {
+      let nums = parseInts(input())
+      k = append(k, nums[0])
+      p = append(p, nums[1])
+      i = i + 1
+    }
+    var terms: list<list<int>> = []
+    i = 0
+    while i < n {
+      var arr: list<int> = []
+      var x = 1
+      while x <= m {
+        arr = append(arr, k[i] * ipow(x, p[i]))
+        x = x + 1
+      }
+      terms = append(terms, arr)
+      i = i + 1
+    }
+    let mid = n / 2
+    var cnt: map<int,int> = {}
+    dfs1(0, mid, m, terms, 0, cnt)
+    let ans = dfs2(mid, n, m, terms, 0, cnt)
+    print(str(ans))
+  }
+}
+
+main()
