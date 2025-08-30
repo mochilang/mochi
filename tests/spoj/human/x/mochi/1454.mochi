@@ -1,0 +1,248 @@
+// Solution for SPOJ MEMDIS - Memory Distribution
+// https://www.spoj.com/problems/MEMDIS/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+type Prog { m: int, p: int }
+type Seg { start: int, len: int }
+type Run { end: int, start: int, len: int }
+
+type PopRes { heap: list<Run>, node: Run }
+
+fun heap_push(h: list<Run>, item: Run): list<Run> {
+  var heap = append(h, item)
+  var i = len(heap) - 1
+  while i > 0 {
+    let p = (i - 1) / 2
+    if heap[p].end <= heap[i].end { break }
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    i = p
+  }
+  return heap
+}
+
+fun heap_pop(h: list<Run>): PopRes {
+  let top = h[0]
+  var heap = h[0:len(h)-1]
+  if len(heap) > 0 {
+    heap[0] = h[len(h)-1]
+    var i = 0
+    while true {
+      let l = 2*i + 1
+      let r = 2*i + 2
+      var smallest = i
+      if l < len(heap) && heap[l].end < heap[smallest].end { smallest = l }
+      if r < len(heap) && heap[r].end < heap[smallest].end { smallest = r }
+      if smallest == i { break }
+      let tmp = heap[i]
+      heap[i] = heap[smallest]
+      heap[smallest] = tmp
+      i = smallest
+    }
+  }
+  return PopRes { heap: heap, node: top }
+}
+
+type AllocRes { free: list<Seg>, addr: int, ok: bool }
+
+fun alloc(free: list<Seg>, m: int): AllocRes {
+  var segs = free
+  var idx = 0
+  var found = -1
+  while idx < len(segs) {
+    if segs[idx].len >= m { found = idx; break }
+    idx = idx + 1
+  }
+  if found == -1 {
+    return AllocRes { free: segs, addr: 0, ok: false }
+  }
+  let addr = segs[found].start
+  if segs[found].len == m {
+    var j = found
+    while j + 1 < len(segs) {
+      segs[j] = segs[j+1]
+      j = j + 1
+    }
+    segs = segs[0:len(segs)-1]
+  } else {
+    segs[found].start = segs[found].start + m
+    segs[found].len = segs[found].len - m
+  }
+  return AllocRes { free: segs, addr: addr, ok: true }
+}
+
+fun freeSeg(free: list<Seg>, start: int, len: int): list<Seg> {
+  var segs = free
+  var i = 0
+  while i < len(segs) && segs[i].start < start { i = i + 1 }
+  segs = append(segs, Seg { start: 0, len: 0 })
+  var j = len(segs) - 1
+  while j > i {
+    segs[j] = segs[j-1]
+    j = j - 1
+  }
+  segs[i] = Seg { start: start, len: len }
+  if i > 0 && segs[i-1].start + segs[i-1].len == segs[i].start {
+    segs[i-1].len = segs[i-1].len + segs[i].len
+    var k = i
+    while k + 1 < len(segs) {
+      segs[k] = segs[k+1]
+      k = k + 1
+    }
+    segs = segs[0:len(segs)-1]
+    i = i - 1
+  }
+  if i + 1 < len(segs) && segs[i].start + segs[i].len == segs[i+1].start {
+    segs[i].len = segs[i].len + segs[i+1].len
+    var k = i + 1
+    while k + 1 < len(segs) {
+      segs[k] = segs[k+1]
+      k = k + 1
+    }
+    segs = segs[0:len(segs)-1]
+  }
+  return segs
+}
+
+type QueueRes { queue: list<Prog>, free: list<Seg>, heap: list<Run> }
+
+fun runQueue(queue: list<Prog>, free: list<Seg>, heap: list<Run>, time: int): QueueRes {
+  var q = queue
+  var f = free
+  var h = heap
+  while len(q) > 0 {
+    let a = alloc(f, q[0].m)
+    if !a.ok { break }
+    f = a.free
+    let prog = q[0]
+    q = q[1:]
+    h = heap_push(h, Run { end: time + prog.p, start: a.addr, len: prog.m })
+  }
+  return QueueRes { queue: q, free: f, heap: h }
+}
+
+type AdvRes { queue: list<Prog>, free: list<Seg>, heap: list<Run>, time: int }
+
+fun advance(to: int, queue: list<Prog>, free: list<Seg>, heap: list<Run>, now: int): AdvRes {
+  var q = queue
+  var f = free
+  var h = heap
+  var cur = now
+  while len(h) > 0 && h[0].end <= to {
+    let pr = heap_pop(h)
+    h = pr.heap
+    cur = pr.node.end
+    f = freeSeg(f, pr.node.start, pr.node.len)
+    let rq = runQueue(q, f, h, cur)
+    q = rq.queue
+    f = rq.free
+    h = rq.heap
+  }
+  cur = to
+  let rq2 = runQueue(q, f, h, cur)
+  q = rq2.queue
+  f = rq2.free
+  h = rq2.heap
+  return AdvRes { queue: q, free: f, heap: h, time: cur }
+}
+
+fun main() {
+  for _ in 0..10 {
+    let nLine = input()
+    if nLine == "" { return }
+    let N = parseIntStr(nLine)
+    var free: list<Seg> = [Seg { start: 0, len: N }]
+    var heap: list<Run> = []
+    var queue: list<Prog> = []
+    var now = 0
+    var queued = 0
+    while true {
+      let line = input()
+      if line == "" { return }
+      let parts = splitSpaces(line)
+      let X = parseIntStr(parts[0])
+      let M = parseIntStr(parts[1])
+      let P = parseIntStr(parts[2])
+      if X == 0 && M == 0 && P == 0 { break }
+      let ar = advance(X, queue, free, heap, now)
+      queue = ar.queue
+      free = ar.free
+      heap = ar.heap
+      now = ar.time
+      if len(queue) > 0 {
+        queue = append(queue, Prog { m: M, p: P })
+        queued = queued + 1
+      } else {
+        let al = alloc(free, M)
+        if al.ok {
+          free = al.free
+          heap = heap_push(heap, Run { end: X + P, start: al.addr, len: M })
+        } else {
+          queue = append(queue, Prog { m: M, p: P })
+          queued = queued + 1
+        }
+      }
+    }
+    while len(heap) > 0 || len(queue) > 0 {
+      if len(heap) > 0 {
+        let next = heap[0].end
+        let ar = advance(next, queue, free, heap, now)
+        queue = ar.queue
+        free = ar.free
+        heap = ar.heap
+        now = ar.time
+      } else {
+        let rq = runQueue(queue, free, heap, now)
+        queue = rq.queue
+        free = rq.free
+        heap = rq.heap
+        if len(heap) == 0 { break }
+      }
+    }
+    print(str(now))
+    print(str(queued))
+  }
+}
+
+main()
