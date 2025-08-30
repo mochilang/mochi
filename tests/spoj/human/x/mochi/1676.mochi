@@ -1,0 +1,201 @@
+// Solution for SPOJ GEN - Text Generator
+// https://www.spoj.com/problems/GEN/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_int_matrix(n: int, m: int, value: int): list<list<int>> {
+  var mat: list<list<int>> = []
+  var i = 0
+  while i < n {
+    mat = append(mat, make_int_list(m, value))
+    i = i + 1
+  }
+  return mat
+}
+
+fun powmod(a: int, b: int, mod: int): int {
+  var res = 1
+  var base = a % mod
+  var exp = b
+  while exp > 0 {
+    if exp % 2 == 1 {
+      res = (res * base) % mod
+    }
+    base = (base * base) % mod
+    exp = exp / 2
+  }
+  return res
+}
+
+let charIdx = {
+  "A":0,"B":1,"C":2,"D":3,"E":4,"F":5,"G":6,"H":7,"I":8,"J":9,
+  "K":10,"L":11,"M":12,"N":13,"O":14,"P":15,"Q":16,"R":17,"S":18,"T":19,
+  "U":20,"V":21,"W":22,"X":23,"Y":24,"Z":25,
+}
+
+let MOD = 10007
+
+fun solve(words: list<string>, L: int): int {
+  let maxNodes = 70
+  var next = make_int_matrix(maxNodes, 26, 0 - 1)
+  var fail = make_int_list(maxNodes, 0)
+  var out = make_int_list(maxNodes, 0)
+  var size = 1
+  var i = 0
+  while i < len(words) {
+    let w = words[i]
+    var node = 0
+    var j = 0
+    while j < len(w) {
+      let ch = w[j:j+1]
+      let idx = charIdx[ch]
+      if next[node][idx] == (0 - 1) {
+        next[node][idx] = size
+        var k = 0
+        while k < 26 {
+          next[size][k] = 0 - 1
+          k = k + 1
+        }
+        fail[size] = 0
+        out[size] = 0
+        size = size + 1
+      }
+      node = next[node][idx]
+      j = j + 1
+    }
+    out[node] = 1
+    i = i + 1
+  }
+  var queue = make_int_list(size, 0)
+  var head = 0
+  var tail = 0
+  var c = 0
+  while c < 26 {
+    if next[0][c] == (0 - 1) {
+      next[0][c] = 0
+    } else {
+      fail[next[0][c]] = 0
+      queue[tail] = next[0][c]
+      tail = tail + 1
+    }
+    c = c + 1
+  }
+  while head < tail {
+    let v = queue[head]
+    head = head + 1
+    var c2 = 0
+    while c2 < 26 {
+      let u = next[v][c2]
+      if u != (0 - 1) {
+        var f = fail[v]
+        while next[f][c2] == (0 - 1) {
+          f = fail[f]
+        }
+        fail[u] = next[f][c2]
+        if out[fail[u]] != 0 { out[u] = 1 }
+        queue[tail] = u
+        tail = tail + 1
+      } else {
+        next[v][c2] = next[fail[v]][c2]
+      }
+      c2 = c2 + 1
+    }
+  }
+  var dp = make_int_list(size, 0)
+  dp[0] = 1
+  var step = 0
+  while step < L {
+    var ndp = make_int_list(size, 0)
+    var s = 0
+    while s < size {
+      if out[s] == 0 {
+        var c3 = 0
+        while c3 < 26 {
+          let ns = next[s][c3]
+          if out[ns] == 0 {
+            ndp[ns] = (ndp[ns] + dp[s]) % MOD
+          }
+          c3 = c3 + 1
+        }
+      }
+      s = s + 1
+    }
+    dp = ndp
+    step = step + 1
+  }
+  var avoid = 0
+  var s2 = 0
+  while s2 < size {
+    if out[s2] == 0 {
+      avoid = (avoid + dp[s2]) % MOD
+    }
+    s2 = s2 + 1
+  }
+  var total = powmod(26, L, MOD)
+  var ans = total - avoid
+  ans = ans % MOD
+  if ans < 0 { ans = ans + MOD }
+  return ans
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let parts = split(line)
+    if len(parts) == 0 { continue }
+    let N = parseIntStr(parts[0])
+    let L = parseIntStr(parts[1])
+    var words: list<string> = []
+    var i = 0
+    while i < N {
+      let w = input()
+      words = append(words, w)
+      i = i + 1
+    }
+    let ans = solve(words, L)
+    print(str(ans))
+  }
+}
+
+main()
