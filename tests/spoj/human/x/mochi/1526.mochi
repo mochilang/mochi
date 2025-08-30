@@ -1,0 +1,152 @@
+// Solution for SPOJ RSORTING - Ranklist Sorting
+// https://www.spoj.com/problems/RSORTING/
+
+fun sortDesc(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] < arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun removeAt(arr: list<int>, idx: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(arr) {
+    if i != idx { res = append(res, arr[i]) }
+    i = i + 1
+  }
+  return res
+}
+
+fun insertAt(arr: list<int>, idx: int, val: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(arr) {
+    if i == idx { res = append(res, val) }
+    res = append(res, arr[i])
+    i = i + 1
+  }
+  if idx == len(arr) { res = append(res, val) }
+  return res
+}
+
+fun main() {
+  var case = 0
+  while case < 10 {
+    let nLine = input()
+    if nLine == "" { break }
+    let n = nLine as int
+    var scores: list<int> = []
+    var i = 0
+    while i < n {
+      let s = (input()) as int
+      scores = append(scores, s)
+      i = i + 1
+    }
+    var sorted = scores[0:len(scores)]
+    sorted = sortDesc(sorted)
+    var rank: map<int,int> = {}
+    i = 0
+    while i < n {
+      rank[sorted[i]] = i + 1
+      i = i + 1
+    }
+    var ranks: list<int> = []
+    i = 0
+    while i < n {
+      ranks = append(ranks, rank[scores[i]])
+      i = i + 1
+    }
+    var dp = make_int_list(n)
+    var prev = make_int_list(n)
+    i = 0
+    while i < n {
+      dp[i] = (i + 1) + ranks[i]
+      prev[i] = -1
+      var j = 0
+      while j < i {
+        if ranks[j] < ranks[i] {
+          let cand = dp[j] + (i + 1) + ranks[i]
+          if cand > dp[i] {
+            dp[i] = cand
+            prev[i] = j
+          }
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    var best = 0
+    i = 1
+    while i < n {
+      if dp[i] > dp[best] { best = i }
+      i = i + 1
+    }
+    var keepIdx = make_bool_list(n)
+    var k = best
+    while k != 0 - 1 {
+      keepIdx[k] = true
+      k = prev[k]
+    }
+    var keep: map<int,bool> = {}
+    i = 0
+    while i < n {
+      if keepIdx[i] { keep[scores[i]] = true }
+      i = i + 1
+    }
+    var curr = scores[0:len(scores)]
+    var moves: list<list<int>> = []
+    var toMove: list<int> = []
+    i = 0
+    while i < n {
+      let s = scores[i]
+      if keep[s] != true {
+        toMove = append(toMove, s)
+      }
+      i = i + 1
+    }
+    // sort toMove by final rank
+    var a = 1
+    while a < len(toMove) {
+      var b = a
+      while b > 0 && rank[toMove[b-1]] > rank[toMove[b]] {
+        let tmp = toMove[b-1]
+        toMove[b-1] = toMove[b]
+        toMove[b] = tmp
+        b = b - 1
+      }
+      a = a + 1
+    }
+    var mIdx = 0
+    while mIdx < len(toMove) {
+      let x = toMove[mIdx]
+      var idx = 0
+      while idx < len(curr) && curr[idx] != x {
+        idx = idx + 1
+      }
+      var target = rank[x]
+      curr = removeAt(curr, idx)
+      curr = insertAt(curr, target - 1, x)
+      moves = append(moves, [idx + 1, target])
+      mIdx = mIdx + 1
+    }
+    print(str(len(moves)))
+    var m = 0
+    while m < len(moves) {
+      let mv = moves[m]
+      print(str(mv[0]) + " " + str(mv[1]))
+      m = m + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
