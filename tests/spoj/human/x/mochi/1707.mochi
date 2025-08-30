@@ -1,0 +1,186 @@
+// Solution for SPOJ RELINETS - Reliable Nets
+// https://www.spoj.com/problems/RELINETS/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+var tokens: list<string> = []
+var tokIdx = 0
+
+fun nextToken(): string {
+  while tokIdx >= len(tokens) {
+    let line = input()
+    if line == nil { return nil }
+    tokens = splitSpaces(line)
+    tokIdx = 0
+  }
+  let t = tokens[tokIdx]
+  tokIdx = tokIdx + 1
+  return t
+}
+
+fun nextInt(): int { return int(nextToken()) }
+
+fun minInt(a: int, b: int): int { if a < b { return a } return b }
+
+fun isConnected(adj: list<list<int>>, n: int): bool {
+  var seen: list<int> = []
+  var i = 0
+  while i < n { seen = append(seen, 0); i = i + 1 }
+  var q: list<int> = []
+  q = append(q, 0)
+  seen[0] = 1
+  var qi = 0
+  while qi < len(q) {
+    let u = q[qi]
+    qi = qi + 1
+    var j = 0
+    while j < len(adj[u]) {
+      let v = adj[u][j]
+      if seen[v] == 0 {
+        seen[v] = 1
+        q = append(q, v)
+      }
+      j = j + 1
+    }
+  }
+  i = 0
+  while i < n {
+    if seen[i] == 0 { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun dfsBridge(u: int, adj: list<list<int>>, visited: list<int>, disc: list<int>, low: list<int>, parent: list<int>, timer: list<int>, found: list<int>) {
+  visited[u] = 1
+  timer[0] = timer[0] + 1
+  disc[u] = timer[0]
+  low[u] = timer[0]
+  var i = 0
+  while i < len(adj[u]) {
+    if found[0] == 1 { return }
+    let v = adj[u][i]
+    if visited[v] == 0 {
+      parent[v] = u
+      dfsBridge(v, adj, visited, disc, low, parent, timer, found)
+      low[u] = minInt(low[u], low[v])
+      if low[v] > disc[u] {
+        found[0] = 1
+        return
+      }
+    } else if v != parent[u] {
+      low[u] = minInt(low[u], disc[v])
+    }
+    i = i + 1
+  }
+}
+
+fun hasBridge(adj: list<list<int>>, n: int): bool {
+  var visited: list<int> = []
+  var disc: list<int> = []
+  var low: list<int> = []
+  var parent: list<int> = []
+  var i = 0
+  while i < n {
+    visited = append(visited, 0)
+    disc = append(disc, 0)
+    low = append(low, 0)
+    parent = append(parent, 0-1)
+    i = i + 1
+  }
+  var timer: list<int> = []
+  timer = append(timer, 0)
+  var found: list<int> = []
+  found = append(found, 0)
+  dfsBridge(0, adj, visited, disc, low, parent, timer, found)
+  if found[0] == 1 { return true }
+  return false
+}
+
+fun solve(n: int, m: int, us: list<int>, vs: list<int>, ws: list<int>): int {
+  var maxMask = 1
+  var t = 0
+  var pow2: list<int> = []
+  while t <= m {
+    if t == 0 { pow2 = append(pow2, 1) } else { pow2 = append(pow2, pow2[t-1] * 2) }
+    t = t + 1
+  }
+  maxMask = pow2[m]
+  var mask = 0
+  var best = 0-1
+  while mask < maxMask {
+    var adj: list<list<int>> = []
+    var i = 0
+    while i < n { adj = append(adj, [] as list<int>); i = i + 1 }
+    var cost = 0
+    var edges = 0
+    i = 0
+    while i < m {
+      let bit = (mask / pow2[i]) % 2
+      if bit == 1 {
+        edges = edges + 1
+        cost = cost + ws[i]
+        let a = us[i]
+        let b = vs[i]
+        adj[a] = append(adj[a] as list<int>, b)
+        adj[b] = append(adj[b] as list<int>, a)
+      }
+      i = i + 1
+    }
+    if edges >= n {
+      if isConnected(adj, n) {
+        if !hasBridge(adj, n) {
+          if best == 0-1 || cost < best { best = cost }
+        }
+      }
+    }
+    mask = mask + 1
+  }
+  return best
+}
+
+fun main() {
+  var case = 1
+  while true {
+    let n = nextInt()
+    let m = nextInt()
+    if n == 0 && m == 0 { break }
+    var us: list<int> = []
+    var vs: list<int> = []
+    var ws: list<int> = []
+    var i = 0
+    while i < m {
+      let a = nextInt()
+      let b = nextInt()
+      let c = nextInt()
+      us = append(us, a - 1)
+      vs = append(vs, b - 1)
+      ws = append(ws, c)
+      i = i + 1
+    }
+    let ans = solve(n, m, us, vs, ws)
+    if ans >= 0 {
+      print("The minimal cost for test case " + str(case) + " is " + str(ans) + ".")
+    } else {
+      print("There is no reliable net possible for test case " + str(case) + ".")
+    }
+    case = case + 1
+  }
+}
+
+main()
