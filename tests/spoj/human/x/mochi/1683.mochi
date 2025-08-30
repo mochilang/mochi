@@ -1,0 +1,94 @@
+// Solution for SPOJ EXPRESS - Expressions
+// https://www.spoj.com/problems/EXPRESS/
+
+// Build expression tree from postfix and then
+// output nodes by levels from bottom to top and right to left
+
+// Node structure with indices for children
+
+type Node {
+  val: string,
+  left: int,
+  right: int,
+}
+
+var nodes: list<Node> = []
+
+fun newNode(v: string, l: int, r: int): int {
+  nodes = append(nodes, Node { val: v, left: l, right: r })
+  return len(nodes) - 1
+}
+
+fun build(expr: string): int {
+  var st: list<int> = []
+  var i = 0
+  while i < len(expr) {
+    let ch = expr[i:i+1]
+    if ch >= "a" && ch <= "z" {
+      st = append(st, newNode(ch, 0 - 1, 0 - 1))
+    } else {
+      let r = st[len(st) - 1]
+      st = st[0:len(st) - 1]
+      let l = st[len(st) - 1]
+      st = st[0:len(st) - 1]
+      st = append(st, newNode(ch, l, r))
+    }
+    i = i + 1
+  }
+  return st[0]
+}
+
+fun transform(root: int): string {
+  var levels: list<list<string>> = []
+  var q: list<int> = [root]
+  var dq: list<int> = [0]
+  while len(q) > 0 {
+    let idx = q[0]
+    q = q[1:len(q)]
+    let d = dq[0]
+    dq = dq[1:len(dq)]
+    if d >= len(levels) {
+      levels = append(levels, [])
+    }
+    levels[d] = append(levels[d], nodes[idx].val)
+    if nodes[idx].left != 0 - 1 {
+      q = append(q, nodes[idx].left)
+      dq = append(dq, d + 1)
+    }
+    if nodes[idx].right != 0 - 1 {
+      q = append(q, nodes[idx].right)
+      dq = append(dq, d + 1)
+    }
+  }
+  var res = ""
+  var depth = len(levels) - 1
+  while depth >= 0 {
+    let level = levels[depth]
+    var j = len(level) - 1
+    while j >= 0 {
+      res = res + level[j]
+      j = j - 1
+    }
+    depth = depth - 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    let expr = input()
+    if expr == nil { break }
+    if expr == "" { continue }
+    nodes = []
+    let root = build(expr)
+    let out = transform(root)
+    print(out)
+    case = case + 1
+  }
+}
+
+main()
