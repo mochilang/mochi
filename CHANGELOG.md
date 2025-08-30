@@ -1,5 +1,12 @@
 # 📦 CHANGELOG.md
 
+## [0.10.79] – 2025-08-30T03:46:25+00:00
+
+### Added
+
+- Mochi solutions for SPOJ problems: COVER2, BRCKGAME, CHAIN, Sum of Digits, ARCTAN, PT07Z, PT07Y Is it a tree, 1435 Vertex Cover, Equation, KPSUM, KPPOLY, Goods.
+- Lean solutions for SPOJ problems: COVER2, BRCKGAME, DELCOMM2, CHAIN, CLEVER, ARCTAN, PT07Z, 1436, PT07X, 1434, KPSUM, KPPOLY, FIRM, quilt problem.
+
 ## [0.10.78] – 2025-08-29T09:06:46+07:00
 
 ### Added
