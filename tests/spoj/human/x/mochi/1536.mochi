@@ -1,0 +1,85 @@
+// Solution for SPOJ BLUEEQ3 - Help Blue Mary Please! (Act III)
+// https://www.spoj.com/problems/BLUEEQ3/
+
+fun dfs(pos: int, carry: int, s1: string, s2: string, s3: string, assign: map<string,int>, used: map<int,bool>, n: int): bool {
+  if pos < 0 {
+    return carry == 0
+  }
+  let a = s1[pos:pos+1]
+  let b = s2[pos:pos+1]
+  let c = s3[pos:pos+1]
+  var av = assign[a]
+  if av == nil {
+    var d = 0
+    while d < n {
+      if used[d] == nil {
+        assign[a] = d
+        used[d] = true
+        if dfs(pos, carry, s1, s2, s3, assign, used, n) { return true }
+        assign[a] = nil
+        used[d] = nil
+      }
+      d = d + 1
+    }
+    return false
+  }
+  var bv = assign[b]
+  if bv == nil {
+    var d = 0
+    while d < n {
+      if used[d] == nil {
+        assign[b] = d
+        used[d] = true
+        if dfs(pos, carry, s1, s2, s3, assign, used, n) { return true }
+        assign[b] = nil
+        used[d] = nil
+      }
+      d = d + 1
+    }
+    return false
+  }
+  var cv = assign[c]
+  let sum = (av as int) + (bv as int) + carry
+  let digit = sum % n
+  let newCarry = sum / n
+  if cv == nil {
+    if used[digit] != nil { return false }
+    assign[c] = digit
+    used[digit] = true
+    if dfs(pos - 1, newCarry, s1, s2, s3, assign, used, n) { return true }
+    assign[c] = nil
+    used[digit] = nil
+    return false
+  }
+  if (cv as int) != digit { return false }
+  return dfs(pos - 1, newCarry, s1, s2, s3, assign, used, n)
+}
+
+fun main() {
+  var t = 0
+  while t < 10 {
+    let line = input()
+    if line == "" { break }
+    let n = line as int
+    let s1 = input()
+    let s2 = input()
+    let s3 = input()
+    var assign: map<string,int> = {}
+    var used: map<int,bool> = {}
+    dfs(n - 1, 0, s1, s2, s3, assign, used, n)
+    let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    var i = 0
+    var out = ""
+    while i < n {
+      let ch = letters[i:i+1]
+      let v = assign[ch] as int
+      if i > 0 { out = out + " " }
+      out = out + str(v)
+      i = i + 1
+    }
+    print(out)
+    t = t + 1
+  }
+}
+
+main()
