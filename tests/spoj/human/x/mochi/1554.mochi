@@ -1,0 +1,201 @@
+// Solution for SPOJ ZOO - Zoo
+// https://www.spoj.com/problems/ZOO/
+
+var tokens: list<string> = []
+var tokIdx = 0
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun nextToken(): string {
+  while tokIdx >= len(tokens) {
+    let line = input()
+    if line == nil { return nil }
+    tokens = splitSpaces(line)
+    tokIdx = 0
+  }
+  let t = tokens[tokIdx]
+  tokIdx = tokIdx + 1
+  return t
+}
+
+fun nextInt(): int { return int(nextToken()) }
+
+type Child = { fear: int, love: int }
+
+fun makeList(n: int): list<list<Child>> {
+  var res: list<list<Child>> = []
+  var i = 0
+  while i <= n {
+    res = append(res, [])
+    i = i + 1
+  }
+  return res
+}
+
+fun makeScore(n: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    var row: list<int> = []
+    var j = 0
+    while j < 32 {
+      row = append(row, 0)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+let pow2: list<int> = [1, 2, 4, 8, 16, 32]
+
+fun addBit(mask: int, pos: int): int { return mask + pow2[pos] }
+
+fun intersects(a: int, b: int): bool {
+  var i = 0
+  var pa = a
+  var pb = b
+  while i < 5 {
+    if pa % 2 == 1 && pb % 2 == 1 { return true }
+    pa = pa / 2
+    pb = pb / 2
+    i = i + 1
+  }
+  return false
+}
+
+fun main() {
+  let T = nextInt()
+  var case = 0
+  while case < T {
+    let N = nextInt()
+    let C = nextInt()
+    var kids = makeList(N)
+    var i = 0
+    while i < C {
+      let E = nextInt()
+      let F = nextInt()
+      let L = nextInt()
+      var fear = 0
+      var j = 0
+      while j < F {
+        let x = nextInt()
+        var d = x - E
+        if d < 0 { d = d + N }
+        fear = addBit(fear, d)
+        j = j + 1
+      }
+      var love = 0
+      j = 0
+      while j < L {
+        let y = nextInt()
+        var d = y - E
+        if d < 0 { d = d + N }
+        love = addBit(love, d)
+        j = j + 1
+      }
+      kids[E] = append(kids[E], Child{ fear: fear, love: love })
+      i = i + 1
+    }
+    var score = makeScore(N)
+    i = 1
+    while i <= N {
+      var w = 0
+      while w < 32 {
+        var cnt = 0
+        var listKids = kids[i]
+        var k = 0
+        while k < len(listKids) {
+          let ch = listKids[k]
+          if intersects(ch.fear, w) || intersects(ch.love, 31 - w) {
+            cnt = cnt + 1
+          }
+          k = k + 1
+        }
+        score[i][w] = cnt
+        w = w + 1
+      }
+      i = i + 1
+    }
+    var best = 0
+    var init = 0
+    while init < 16 {
+      var dp: list<int> = []
+      i = 0
+      while i < 16 {
+        dp = append(dp, -1000000000)
+        i = i + 1
+      }
+      dp[init] = 0
+      var pos = 5
+      while pos <= N + 4 {
+        var next: list<int> = []
+        i = 0
+        while i < 16 {
+          next = append(next, -1000000000)
+          i = i + 1
+        }
+        let s = pos - 4
+        var pred = -1
+        if pos > N {
+          let idx = pos - N - 1
+          pred = (init / pow2[idx]) % 2
+        }
+        i = 0
+        while i < 16 {
+          let val = dp[i]
+          if val >= 0 {
+            if pred >= 0 {
+              let b = pred
+              let window = i + b * 16
+              let happy = score[s][window]
+              let nm = (i / 2) + b * 8
+              let nv = val + happy
+              if nv > next[nm] { next[nm] = nv }
+            } else {
+              var b = 0
+              while b < 2 {
+                let window = i + b * 16
+                let happy = score[s][window]
+                let nm = (i / 2) + b * 8
+                let nv = val + happy
+                if nv > next[nm] { next[nm] = nv }
+                b = b + 1
+              }
+            }
+          }
+          i = i + 1
+        }
+        dp = next
+        pos = pos + 1
+      }
+      i = 0
+      while i < 16 {
+        let v = dp[i]
+        if v > best { best = v }
+        i = i + 1
+      }
+      init = init + 1
+    }
+    print(str(best))
+    case = case + 1
+  }
+}
+
+main()
