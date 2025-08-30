@@ -1,0 +1,63 @@
+// Solution for SPOJ CPRMT - Common Permutation
+// https://www.spoj.com/problems/CPRMT/
+
+fun solve(a: string, b: string): string {
+  let idx = {
+    "a":0,"b":1,"c":2,"d":3,"e":4,
+    "f":5,"g":6,"h":7,"i":8,"j":9,
+    "k":10,"l":11,"m":12,"n":13,"o":14,
+    "p":15,"q":16,"r":17,"s":18,"t":19,
+    "u":20,"v":21,"w":22,"x":23,"y":24,
+    "z":25,
+  }
+  var countA: list<int> = []
+  var countB: list<int> = []
+  var i = 0
+  while i < 26 {
+    countA = append(countA, 0)
+    countB = append(countB, 0)
+    i = i + 1
+  }
+  i = 0
+  while i < len(a) {
+    let ch = a[i:i+1]
+    let id = idx[ch] as int
+    countA[id] = countA[id] + 1
+    i = i + 1
+  }
+  i = 0
+  while i < len(b) {
+    let ch = b[i:i+1]
+    let id = idx[ch] as int
+    countB[id] = countB[id] + 1
+    i = i + 1
+  }
+  var res = ""
+  let letters = "abcdefghijklmnopqrstuvwxyz"
+  i = 0
+  while i < 26 {
+    let ch = letters[i:i+1]
+    var j = 0
+    var k = countA[i]
+    if countB[i] < k { k = countB[i] }
+    while j < k {
+      res = res + ch
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  while true {
+    let a = input()
+    if a == "" { break }
+    let b = input()
+    if b == "" { break }
+    let ans = solve(a, b)
+    print(ans)
+  }
+}
+
+main()
