@@ -1,0 +1,105 @@
+// Solution for SPOJ EXCHANGE - Exchange
+// https://www.spoj.com/problems/EXCHANGE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseFloat(s: string): float {
+  var i = 0
+  var neg = false
+  if len(s) > 0 && s[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var val = 0.0
+  while i < len(s) && s[i:i+1] != "." {
+    val = val * 10.0 + (digits[s[i:i+1]] as float)
+    i = i + 1
+  }
+  if i < len(s) && s[i:i+1] == "." {
+    i = i + 1
+    var base = 0.1
+    while i < len(s) {
+      val = val + (digits[s[i:i+1]] as float) * base
+      base = base / 10.0
+      i = i + 1
+    }
+  }
+  if neg { val = -val }
+  return val
+}
+
+fun format3(x: float): string {
+  var scaled = x * 1000.0 + 0.5
+  var n = scaled as int
+  var whole = n / 1000
+  var frac = n % 1000
+  var fracStr = str(frac)
+  while len(fracStr) < 3 {
+    fracStr = "0" + fracStr
+  }
+  return str(whole) + "." + fracStr
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var case = 0
+  while case < T {
+    var line = input()
+    while line == "" { line = input() }
+    let first = splitSpaces(line)
+    let n = int(first[0])
+    let S = parseFloat(first[1])
+    var a: list<float> = []
+    var b: list<float> = []
+    var rate: list<float> = []
+    var i = 0
+    while i < n {
+      line = input()
+      if line == "" { continue }
+      let p = splitSpaces(line)
+      a = append(a, parseFloat(p[0]))
+      b = append(b, parseFloat(p[1]))
+      rate = append(rate, parseFloat(p[2]))
+      i = i + 1
+    }
+    var r = S
+    var m = 0.0
+    i = 0
+    while i + 1 < n {
+      if m > r { r = m }
+      let coeff = (rate[i] * a[i+1] + b[i+1]) / (rate[i] * a[i] + b[i])
+      m = r * coeff
+      i = i + 1
+    }
+    if m > r { r = m }
+    print(format3(r))
+    case = case + 1
+  }
+}
+
+main()
