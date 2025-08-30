@@ -1,0 +1,89 @@
+// Solution for SPOJ TREEOI14 - Trees
+// https://www.spoj.com/problems/TREEOI14/
+
+var tokens: list<string> = []
+var tokIdx = 0
+
+fun splitSpace(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\n" || ch == "\r" {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun abs(x: int): int { return if x < 0 { -x } else { x } }
+
+fun totalCost(a: list<int>): int {
+  var sum = 0
+  var i = 0
+  while i + 1 < len(a) {
+    sum = sum + abs(a[i] - a[i+1])
+    i = i + 1
+  }
+  return sum
+}
+
+fun nextToken(): string {
+  while tokIdx >= len(tokens) {
+    let line = input()
+    if line == nil { return nil }
+    tokens = splitSpace(line)
+    tokIdx = 0
+  }
+  let t = tokens[tokIdx]
+  tokIdx = tokIdx + 1
+  return t
+}
+
+fun nextInt(): int {
+  let t = nextToken()
+  if t == nil { return 0 }
+  return t as int
+}
+
+fun main() {
+  let nTok = nextToken()
+  if nTok == nil { return }
+  let n = nTok as int
+  var h: list<int> = []
+  var idx = 0
+  while idx < n {
+    h = append(h, nextInt())
+    idx = idx + 1
+  }
+  let base = totalCost(h)
+  var i = 0
+  while i < n {
+    var best = base
+    var j = 0
+    while j < n {
+      if j != i {
+        let tmp = h[i]
+        h[i] = h[j]
+        h[j] = tmp
+        let cost = totalCost(h)
+        if cost < best { best = cost }
+        h[j] = h[i]
+        h[i] = tmp
+      }
+      j = j + 1
+    }
+    print(str(best))
+    i = i + 1
+  }
+}
+
+main()
