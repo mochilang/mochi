@@ -1,0 +1,214 @@
+// Solution for SPOJ LOGIC2 - Logic II
+// https://www.spoj.com/problems/LOGIC2/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { return -n } else { return n }
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun trimDot(s: string): string {
+  if len(s) > 0 && s[len(s)-1:len(s)] == "." {
+    return s[0:len(s)-1]
+  }
+  return s
+}
+
+fun pow2(e: int): int {
+  var res = 1
+  var k = 0
+  while k < e {
+    res = res * 2
+    k = k + 1
+  }
+  return res
+}
+
+fun popcount(x: int): int {
+  var cnt = 0
+  var v = x
+  while v > 0 {
+    if v % 2 == 1 { cnt = cnt + 1 }
+    v = v / 2
+  }
+  return cnt
+}
+
+fun findColon(s: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == ":" { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+type Stmt { sp: int, typ: int, target: int, day: int }
+
+let dayIdx = {
+  "Monday":0,
+  "Tuesday":1,
+  "Wednesday":2,
+  "Thursday":3,
+  "Friday":4,
+  "Saturday":5,
+  "Sunday":6,
+}
+
+fun main() {
+  while true {
+    let first = input()
+    if first == nil || first == "" { break }
+    let nums = splitSpaces(first)
+    if len(nums) < 3 { break }
+    let M = parseIntStr(nums[0])
+    let N = parseIntStr(nums[1])
+    let P = parseIntStr(nums[2])
+    var names: list<string> = []
+    var i = 0
+    while i < M {
+      var name = input()
+      while name == "" { name = input() }
+      names = append(names, name)
+      i = i + 1
+    }
+    var nameIdx: map<string,int> = {}
+    i = 0
+    while i < M {
+      nameIdx[names[i]] = i
+      i = i + 1
+    }
+    var stmts: list<Stmt> = []
+    var j = 0
+    while j < P {
+      var line = input()
+      if line == "" { continue }
+      let pos = findColon(line)
+      let spName = line[0:pos]
+      let content = line[pos+2:len(line)]
+      let sp = nameIdx[spName] as int
+      let tokens = splitSpaces(content)
+      if len(tokens) == 3 && tokens[0] == "I" && tokens[1] == "am" && tokens[2] == "guilty." {
+        stmts = append(stmts, Stmt{ sp:sp, typ:0, target:sp, day:0 })
+      } else if len(tokens) == 4 && tokens[0] == "I" && tokens[1] == "am" && tokens[2] == "not" && tokens[3] == "guilty." {
+        stmts = append(stmts, Stmt{ sp:sp, typ:1, target:sp, day:0 })
+      } else if len(tokens) == 3 && tokens[1] == "is" && tokens[2] == "guilty." {
+        let trg = nameIdx[tokens[0]] as int
+        stmts = append(stmts, Stmt{ sp:sp, typ:0, target:trg, day:0 })
+      } else if len(tokens) == 4 && tokens[1] == "is" && tokens[2] == "not" && tokens[3] == "guilty." {
+        let trg = nameIdx[tokens[0]] as int
+        stmts = append(stmts, Stmt{ sp:sp, typ:1, target:trg, day:0 })
+      } else if len(tokens) == 3 && tokens[0] == "Today" && tokens[1] == "is" {
+        let ds = trimDot(tokens[2])
+        let d = dayIdx[ds] as int
+        stmts = append(stmts, Stmt{ sp:sp, typ:2, target:0, day:d })
+      }
+      j = j + 1
+    }
+
+    var possible: list<int> = []
+    var g = 0
+    while g < M {
+      var mask = 0
+      let limit = pow2(M)
+      var okG = false
+      while mask < limit {
+        if popcount(mask) == N {
+          var dayMask = pow2(7) - 1
+          var ok = true
+          var sIdx = 0
+          while sIdx < len(stmts) {
+            let st = stmts[sIdx]
+            if st.typ == 2 {
+              let liar = (mask / pow2(st.sp)) % 2 == 1
+              let bit = pow2(st.day)
+              if liar {
+                if (dayMask / bit) % 2 == 1 { dayMask = dayMask - bit }
+              } else {
+                if (dayMask / bit) % 2 == 1 { dayMask = bit } else { dayMask = 0 }
+              }
+              if dayMask == 0 { ok = false; break }
+            }
+            sIdx = sIdx + 1
+          }
+          if ok {
+            sIdx = 0
+            while sIdx < len(stmts) {
+              let st = stmts[sIdx]
+              if st.typ != 2 {
+                let liar = (mask / pow2(st.sp)) % 2 == 1
+                var truth = false
+                if st.typ == 0 {
+                  if g == st.target { truth = true }
+                } else {
+                  if g != st.target { truth = true }
+                }
+                if liar {
+                  if truth { ok = false; break }
+                } else {
+                  if !truth { ok = false; break }
+                }
+              }
+              sIdx = sIdx + 1
+            }
+          }
+          if ok && dayMask != 0 {
+            okG = true
+            break
+          }
+        }
+        mask = mask + 1
+      }
+      if okG { possible = append(possible, g) }
+      g = g + 1
+    }
+    var cnt = 0
+    var last = 0
+    var idx = 0
+    while idx < len(possible) {
+      cnt = cnt + 1
+      last = possible[idx]
+      idx = idx + 1
+    }
+    if cnt == 0 {
+      print("Impossible")
+    } else if cnt == 1 {
+      print(names[last])
+    } else {
+      print("Cannot Determine")
+    }
+  }
+}
+
+main()
