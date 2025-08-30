@@ -1,0 +1,150 @@
+// Solution for SPOJ AMATH - Another Mathematical Problem
+// https://www.spoj.com/problems/AMATH/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { res = append(res, cur) }
+  return res
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun powInt(base: int, exp: int): bigint {
+  var res: bigint = 1
+  var b: bigint = base as bigint
+  var i = 0
+  while i < exp {
+    res = res * b
+    i = i + 1
+  }
+  return res
+}
+
+fun powmod(base: bigint, exp: bigint, mod: bigint): bigint {
+  var result: bigint = 1
+  var b = base % mod
+  var e = exp
+  let two: bigint = 2 as bigint
+  while e > 0 {
+    if e % two == 1 {
+      result = (result * b) % mod
+    }
+    b = (b * b) % mod
+    e = e / two
+  }
+  return result
+}
+
+fun gcdBig(a: bigint, b: bigint): bigint {
+  var x = a
+  var y = b
+  let zero: bigint = 0 as bigint
+  while y != zero {
+    let t = x % y
+    x = y
+    y = t
+  }
+  if x < zero { x = -x }
+  return x
+}
+
+fun lcmBig(a: bigint, b: bigint): bigint {
+  return (a / gcdBig(a, b)) * b
+}
+
+fun countFactor(n: bigint, p: int): int {
+  var m = n
+  var c = 0
+  let bp: bigint = p as bigint
+  let zero: bigint = 0 as bigint
+  while m % bp == zero {
+    m = m / bp
+    c = c + 1
+  }
+  return c
+}
+
+fun orderPrimePower(n: bigint, p: int, k: int): bigint {
+  let mod = powInt(p, k)
+  let base = n % mod
+  var order: bigint
+  if p == 2 {
+    order = powInt(2, k - 1)
+  } else {
+    order = powInt(p, k - 1) * (p - 1)
+  }
+  var primes: list<int> = if p == 2 { [2] } else { [2, 5] }
+  var i = 0
+  while i < len(primes) {
+    let pr = primes[i]
+    let bp: bigint = pr as bigint
+    while order % bp == 0 as bigint {
+      let cand = order / bp
+      if powmod(base, cand, mod) == 1 as bigint {
+        order = cand
+      } else {
+        break
+      }
+    }
+    i = i + 1
+  }
+  return order
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let parts = splitSpaces(line)
+    if len(parts) < 2 { continue }
+    let nStr = parts[0]
+    let k = parseIntStr(parts[1])
+    let n: bigint = nStr as bigint
+    let v2 = countFactor(n, 2)
+    let v5 = countFactor(n, 5)
+    if v2 >= k && v5 >= k {
+      print("1")
+      continue
+    }
+    if (v2 > 0 && v2 < k) || (v5 > 0 && v5 < k) {
+      print("-1")
+      continue
+    }
+    var t2: bigint = 1
+    var t5: bigint = 1
+    if v2 == 0 {
+      t2 = orderPrimePower(n, 2, k)
+    }
+    if v5 == 0 {
+      t5 = orderPrimePower(n, 5, k)
+    }
+    let ans = lcmBig(t2, t5)
+    print(str(ans))
+  }
+}
+
+main()
