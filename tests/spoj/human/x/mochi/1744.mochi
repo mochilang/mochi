@@ -1,0 +1,67 @@
+// Solution for SPOJ POLEVAL - Evaluate the polynomial
+// https://www.spoj.com/problems/POLEVAL/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parts[i] as int)
+    i = i + 1
+  }
+  return nums
+}
+
+fun evalPoly(coeffs: list<int>, x: int): int {
+  var res = 0
+  var i = 0
+  while i < len(coeffs) {
+    res = res * x + coeffs[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  var case = 1
+  while true {
+    let line = input()
+    if line == nil { return }
+    if line == "" { continue }
+    let n = line as int
+    if n == -1 { break }
+    let coeffLine = input()
+    let coeffs = parseInts(coeffLine)
+    let kLine = input()
+    let k = kLine as int
+    let pointsLine = input()
+    let xs = parseInts(pointsLine)
+    print("Case " + str(case) + ":")
+    var i = 0
+    while i < k {
+      let val = evalPoly(coeffs, xs[i])
+      print(str(val))
+      i = i + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
