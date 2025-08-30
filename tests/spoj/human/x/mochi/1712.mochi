@@ -1,0 +1,107 @@
+// Solution for SPOJ PRMLX - Permalex
+// https://www.spoj.com/problems/PRMLX/
+
+let letters = {
+  "a":0,"b":1,"c":2,"d":3,"e":4,
+  "f":5,"g":6,"h":7,"i":8,"j":9,
+  "k":10,"l":11,"m":12,"n":13,"o":14,
+  "p":15,"q":16,"r":17,"s":18,"t":19,
+  "u":20,"v":21,"w":22,"x":23,"y":24,
+  "z":25,
+}
+
+var facts: list<bigint>
+
+fun initFact() {
+  facts = []
+  facts = append(facts, 1 as bigint)
+  var i = 1
+  while i <= 30 {
+    facts = append(facts, facts[i-1] * (i as bigint))
+    i = i + 1
+  }
+}
+
+fun makeIntList(n: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, 0)
+    i = i + 1
+  }
+  return lst
+}
+
+fun countPerm(freq: list<int>): bigint {
+  var total = 0
+  var i = 0
+  while i < 26 {
+    total = total + freq[i]
+    i = i + 1
+  }
+  var res: bigint = facts[total]
+  i = 0
+  while i < 26 {
+    let f = freq[i]
+    if f > 1 {
+      res = res / facts[f]
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun rankWord(s: string): bigint {
+  var freq = makeIntList(26)
+  var i = 0
+  while i < len(s) {
+    let idx = letters[s[i:i+1]] as int
+    freq[idx] = freq[idx] + 1
+    i = i + 1
+  }
+  var rank: bigint = 1 as bigint
+  i = 0
+  while i < len(s) {
+    let cur = letters[s[i:i+1]] as int
+    var j = 0
+    while j < cur {
+      if freq[j] > 0 {
+        freq[j] = freq[j] - 1
+        rank = rank + countPerm(freq)
+        freq[j] = freq[j] + 1
+      }
+      j = j + 1
+    }
+    freq[cur] = freq[cur] - 1
+    i = i + 1
+  }
+  return rank
+}
+
+fun printRight10(s: string) {
+  var pad = 10 - len(s)
+  var out = ""
+  var i = 0
+  while i < pad {
+    out = out + " "
+    i = i + 1
+  }
+  print(out + s)
+}
+
+fun main() {
+  initFact()
+  while true {
+    let line = input()
+    if line == nil { break }
+    if line == "#" { break }
+    if line == "" {
+      print("")
+      continue
+    }
+    let r = rankWord(line)
+    printRight10(str(r))
+  }
+}
+
+main()
