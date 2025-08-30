@@ -1,0 +1,52 @@
+// Solution for SPOJ Yet Another Equation
+// https://www.spoj.com/problems/EQU2/
+
+fun isqrt(n: int): int {
+  var r = 0
+  while (r + 1) * (r + 1) <= n {
+    r = r + 1
+  }
+  return r
+}
+
+fun pell(n: int): list<bigint> {
+  let a0 = isqrt(n)
+  var m = 0
+  var d = 1
+  var a = a0
+
+  var x0: bigint = 1
+  var x1: bigint = a as bigint
+  var y0: bigint = 0
+  var y1: bigint = 1
+
+  let bn: bigint = n as bigint
+  while x1 * x1 - bn * y1 * y1 != (1 as bigint) {
+    m = d * a - m
+    d = (n - m * m) / d
+    a = (a0 + m) / d
+    let x2: bigint = x1 * (a as bigint) + x0
+    let y2: bigint = y1 * (a as bigint) + y0
+    x0 = x1
+    x1 = x2
+    y0 = y1
+    y1 = y2
+  }
+  return [x1, y1]
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var i = 0
+  while i < t {
+    let nLine = input()
+    let n = nLine as int
+    let res = pell(n)
+    print(str(res[0]) + " " + str(res[1]))
+    i = i + 1
+  }
+}
+
+main()
