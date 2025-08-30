@@ -1,0 +1,160 @@
+// Solution for SPOJ GSS3 - Can you answer these queries III
+// https://www.spoj.com/problems/GSS3/
+
+// parse integer from string (handles negative)
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+// split by whitespace
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun max2(a: int, b: int): int {
+  if a > b { return a }
+  return b
+}
+
+var arr: list<int> = []
+var sum: list<int> = []
+var pref: list<int> = []
+var suf: list<int> = []
+var best: list<int> = []
+
+fun initTree(size: int) {
+  var i = 0
+  while i < size {
+    sum = append(sum, 0)
+    pref = append(pref, 0)
+    suf = append(suf, 0)
+    best = append(best, 0)
+    i = i + 1
+  }
+}
+
+fun pull(idx: int) {
+  let l = idx * 2
+  let r = l + 1
+  sum[idx] = sum[l] + sum[r]
+  pref[idx] = max2(pref[l], sum[l] + pref[r])
+  suf[idx] = max2(suf[r], sum[r] + suf[l])
+  var tmp = max2(best[l], best[r])
+  best[idx] = max2(tmp, suf[l] + pref[r])
+}
+
+fun build(idx: int, l: int, r: int) {
+  if l == r {
+    let v = arr[l]
+    sum[idx] = v
+    pref[idx] = v
+    suf[idx] = v
+    best[idx] = v
+    return
+  }
+  let m = (l + r) / 2
+  build(idx * 2, l, m)
+  build(idx * 2 + 1, m + 1, r)
+  pull(idx)
+}
+
+fun update(idx: int, l: int, r: int, pos: int, val: int) {
+  if l == r {
+    sum[idx] = val
+    pref[idx] = val
+    suf[idx] = val
+    best[idx] = val
+    return
+  }
+  let m = (l + r) / 2
+  if pos <= m {
+    update(idx * 2, l, m, pos, val)
+  } else {
+    update(idx * 2 + 1, m + 1, r, pos, val)
+  }
+  pull(idx)
+}
+
+fun query(idx: int, l: int, r: int, ql: int, qr: int): list<int> {
+  if qr < l || r < ql {
+    return [0, -1000000000, -1000000000, -1000000000]
+  }
+  if ql <= l && r <= qr {
+    return [sum[idx], pref[idx], suf[idx], best[idx]]
+  }
+  let m = (l + r) / 2
+  let left = query(idx * 2, l, m, ql, qr)
+  let right = query(idx * 2 + 1, m + 1, r, ql, qr)
+  let s = (left[0] as int) + (right[0] as int)
+  let p = max2(left[1] as int, (left[0] as int) + (right[1] as int))
+  let sf = max2(right[2] as int, (right[0] as int) + (left[2] as int))
+  var bt = max2(left[3] as int, right[3] as int)
+  let b = max2(bt, (left[2] as int) + (right[1] as int))
+  return [s, p, sf, b]
+}
+
+fun main() {
+  let nLine = input()
+  if nLine == nil || nLine == "" { return }
+  let n = parseIntStr(nLine)
+  let arrLine = input()
+  let parts = splitSpaces(arrLine)
+  var i = 0
+  while i < n {
+    arr = append(arr, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  initTree(4 * n + 5)
+  build(1, 0, n - 1)
+  let mLine = input()
+  let m = parseIntStr(mLine)
+  var q = 0
+  while q < m {
+    let line = input()
+    if line == nil { break }
+    if line == "" { continue }
+    let ps = splitSpaces(line)
+    let t = parseIntStr(ps[0])
+    let x = parseIntStr(ps[1]) - 1
+    let y = parseIntStr(ps[2])
+    if t == 0 {
+      update(1, 0, n - 1, x, y)
+    } else {
+      let res = query(1, 0, n - 1, x, y - 1)
+      print(str(res[3]))
+    }
+    q = q + 1
+  }
+}
+
+main()
