@@ -1,0 +1,275 @@
+// Solution for SPOJ GRC - Grandpa's Rubik Cube
+// https://www.spoj.com/problems/GRC/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun rotateFaceCW(face: list<list<string>>) {
+  var tmp = face[0][0]
+  face[0][0] = face[2][0]
+  face[2][0] = face[2][2]
+  face[2][2] = face[0][2]
+  face[0][2] = tmp
+  tmp = face[0][1]
+  face[0][1] = face[1][0]
+  face[1][0] = face[2][1]
+  face[2][1] = face[1][2]
+  face[1][2] = tmp
+}
+
+fun rotU(cube: list<list<list<string>>>) {
+  rotateFaceCW(cube[0])
+  var t0 = cube[2][0][0]
+  var t1 = cube[2][0][1]
+  var t2 = cube[2][0][2]
+  cube[2][0][0] = cube[1][0][0]
+  cube[2][0][1] = cube[1][0][1]
+  cube[2][0][2] = cube[1][0][2]
+  cube[1][0][0] = cube[5][0][0]
+  cube[1][0][1] = cube[5][0][1]
+  cube[1][0][2] = cube[5][0][2]
+  cube[5][0][0] = cube[4][0][0]
+  cube[5][0][1] = cube[4][0][1]
+  cube[5][0][2] = cube[4][0][2]
+  cube[4][0][0] = t0
+  cube[4][0][1] = t1
+  cube[4][0][2] = t2
+}
+
+fun rotD(cube: list<list<list<string>>>) {
+  rotateFaceCW(cube[3])
+  var t0 = cube[2][2][0]
+  var t1 = cube[2][2][1]
+  var t2 = cube[2][2][2]
+  cube[2][2][0] = cube[4][2][0]
+  cube[2][2][1] = cube[4][2][1]
+  cube[2][2][2] = cube[4][2][2]
+  cube[4][2][0] = cube[5][2][0]
+  cube[4][2][1] = cube[5][2][1]
+  cube[4][2][2] = cube[5][2][2]
+  cube[5][2][0] = cube[1][2][0]
+  cube[5][2][1] = cube[1][2][1]
+  cube[5][2][2] = cube[1][2][2]
+  cube[1][2][0] = t0
+  cube[1][2][1] = t1
+  cube[1][2][2] = t2
+}
+
+fun rotL(cube: list<list<list<string>>>) {
+  rotateFaceCW(cube[4])
+  var t0 = cube[0][0][0]
+  var t1 = cube[0][1][0]
+  var t2 = cube[0][2][0]
+  cube[0][0][0] = cube[2][0][0]
+  cube[0][1][0] = cube[2][1][0]
+  cube[0][2][0] = cube[2][2][0]
+  cube[2][0][0] = cube[3][0][0]
+  cube[2][1][0] = cube[3][1][0]
+  cube[2][2][0] = cube[3][2][0]
+  cube[3][0][0] = cube[5][2][2]
+  cube[3][1][0] = cube[5][1][2]
+  cube[3][2][0] = cube[5][0][2]
+  cube[5][0][2] = t0
+  cube[5][1][2] = t1
+  cube[5][2][2] = t2
+}
+
+fun rotR(cube: list<list<list<string>>>) {
+  rotateFaceCW(cube[1])
+  var t0 = cube[0][0][2]
+  var t1 = cube[0][1][2]
+  var t2 = cube[0][2][2]
+  cube[0][0][2] = cube[5][2][0]
+  cube[0][1][2] = cube[5][1][0]
+  cube[0][2][2] = cube[5][0][0]
+  cube[5][0][0] = cube[3][0][2]
+  cube[5][1][0] = cube[3][1][2]
+  cube[5][2][0] = cube[3][2][2]
+  cube[3][0][2] = cube[2][0][2]
+  cube[3][1][2] = cube[2][1][2]
+  cube[3][2][2] = cube[2][2][2]
+  cube[2][0][2] = t0
+  cube[2][1][2] = t1
+  cube[2][2][2] = t2
+}
+
+fun rotF(cube: list<list<list<string>>>) {
+  rotateFaceCW(cube[2])
+  var t0 = cube[0][2][0]
+  var t1 = cube[0][2][1]
+  var t2 = cube[0][2][2]
+  cube[0][2][0] = cube[4][2][2]
+  cube[0][2][1] = cube[4][1][2]
+  cube[0][2][2] = cube[4][0][2]
+  cube[4][0][2] = cube[3][0][0]
+  cube[4][1][2] = cube[3][0][1]
+  cube[4][2][2] = cube[3][0][2]
+  cube[3][0][0] = cube[1][2][0]
+  cube[3][0][1] = cube[1][1][0]
+  cube[3][0][2] = cube[1][0][0]
+  cube[1][0][0] = t0
+  cube[1][1][0] = t1
+  cube[1][2][0] = t2
+}
+
+fun rotB(cube: list<list<list<string>>>) {
+  rotateFaceCW(cube[5])
+  var t0 = cube[0][0][0]
+  var t1 = cube[0][0][1]
+  var t2 = cube[0][0][2]
+  cube[0][0][0] = cube[1][0][2]
+  cube[0][0][1] = cube[1][1][2]
+  cube[0][0][2] = cube[1][2][2]
+  cube[1][0][2] = cube[3][2][2]
+  cube[1][1][2] = cube[3][2][1]
+  cube[1][2][2] = cube[3][2][0]
+  cube[3][2][0] = cube[4][0][0]
+  cube[3][2][1] = cube[4][1][0]
+  cube[3][2][2] = cube[4][2][0]
+  cube[4][0][0] = t2
+  cube[4][1][0] = t1
+  cube[4][2][0] = t0
+}
+
+fun rotateOnce(cube: list<list<list<string>>>, idx: int) {
+  if idx == 0 { rotU(cube) }
+  else if idx == 1 { rotR(cube) }
+  else if idx == 2 { rotF(cube) }
+  else if idx == 3 { rotD(cube) }
+  else if idx == 4 { rotL(cube) }
+  else { rotB(cube) }
+}
+
+fun apply(cube: list<list<list<string>>>, faceNum: int, dir: int) {
+  let map = [4,2,1,5,0,3] // problem numbering to internal [U,R,F,D,L,B]
+  let idx = map[faceNum - 1]
+  if dir == 1 {
+    rotateOnce(cube, idx)
+  } else {
+    var i = 0
+    while i < 3 {
+      rotateOnce(cube, idx)
+      i = i + 1
+    }
+  }
+}
+
+fun solved(cube: list<list<list<string>>>): bool {
+  var used: list<string> = []
+  var f = 0
+  while f < 6 {
+    let face = cube[f]
+    let color = face[0][0]
+    var r = 0
+    while r < 3 {
+      var c = 0
+      while c < 3 {
+        if face[r][c] != color { return false }
+        c = c + 1
+      }
+      r = r + 1
+    }
+    var j = 0
+    while j < len(used) {
+      if used[j] == color { return false }
+      j = j + 1
+    }
+    used = append(used, color)
+    f = f + 1
+  }
+  return true
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = splitSpaces(tLine)[0] as int
+  var case = 0
+  while case < t {
+    var cube: list<list<list<string>>> = []
+    var i = 0
+    while i < 6 {
+      var face: list<list<string>> = []
+      var r = 0
+      while r < 3 {
+        face = append(face, ["", "", ""])
+        r = r + 1
+      }
+      cube = append(cube, face)
+      i = i + 1
+    }
+    var row = 0
+    while row < 9 {
+      let line = input()
+      let parts = splitSpaces(line)
+      if row < 3 {
+        cube[0][row][0] = parts[0]
+        cube[0][row][1] = parts[1]
+        cube[0][row][2] = parts[2]
+      } else if row < 6 {
+        let r = row - 3
+        cube[4][r][0] = parts[0]
+        cube[4][r][1] = parts[1]
+        cube[4][r][2] = parts[2]
+        cube[2][r][0] = parts[3]
+        cube[2][r][1] = parts[4]
+        cube[2][r][2] = parts[5]
+        cube[1][r][0] = parts[6]
+        cube[1][r][1] = parts[7]
+        cube[1][r][2] = parts[8]
+        cube[5][r][0] = parts[9]
+        cube[5][r][1] = parts[10]
+        cube[5][r][2] = parts[11]
+      } else {
+        let r = row - 6
+        cube[3][r][0] = parts[0]
+        cube[3][r][1] = parts[1]
+        cube[3][r][2] = parts[2]
+      }
+      row = row + 1
+    }
+    let opsLine = input()
+    let ops = splitSpaces(opsLine)
+    var k = 0
+    while k < len(ops) {
+      let tok = ops[k]
+      if tok == "0" { break }
+      var dir = 1
+      var numStr = tok
+      if substring(tok,0,1) == "+" {
+        numStr = substring(tok,1,len(tok))
+        dir = 1
+      } else if substring(tok,0,1) == "-" {
+        numStr = substring(tok,1,len(tok))
+        dir = -1
+      }
+      let num = numStr as int
+      apply(cube, num, dir)
+      k = k + 1
+    }
+    if solved(cube) {
+      print("Yes, grandpa!")
+    } else {
+      print("No, you are wrong!")
+    }
+    case = case + 1
+  }
+}
+
