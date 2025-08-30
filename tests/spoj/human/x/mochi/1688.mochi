@@ -1,0 +1,46 @@
+// Solution for SPOJ EASYPROB - A Very Easy Problem!
+// https://www.spoj.com/problems/EASYPROB/
+
+fun repr(n: int): string {
+  if n == 0 { return "0" }
+  var parts: list<string> = []
+  var p = 1
+  var i = 0
+  while p * 2 <= n {
+    p = p * 2
+    i = i + 1
+  }
+  while i >= 0 {
+    if n >= p {
+      n = n - p
+      if i == 0 {
+        parts = append(parts, "2(0)")
+      } else if i == 1 {
+        parts = append(parts, "2")
+      } else {
+        parts = append(parts, "2(" + repr(i) + ")")
+      }
+    }
+    p = p / 2
+    i = i - 1
+  }
+  var res = parts[0]
+  var j = 1
+  while j < len(parts) {
+    res = res + "+" + parts[j]
+    j = j + 1
+  }
+  return res
+}
+
+fun main() {
+  let nums = [137, 1315, 73, 136, 255, 1384, 16385]
+  var i = 0
+  while i < len(nums) {
+    let n = nums[i]
+    print(str(n) + "=" + repr(n))
+    i = i + 1
+  }
+}
+
+main()
