@@ -1,0 +1,246 @@
+// Solution for SPOJ PRLGAME - A Game of Pearls
+// https://www.spoj.com/problems/PRLGAME/
+
+let letters = [
+  "A","B","C","D","E","F","G","H","I","J","K","L",
+]
+
+let index = {
+  "A":0,"B":1,"C":2,"D":3,"E":4,"F":5,"G":6,"H":7,"I":8,"J":9,"K":10,"L":11,
+}
+
+let shapes: list<list<list<list<int>>>> = [
+  // A
+  [
+    [[0,1],[1,0],[1,1]],
+    [[0,0],[1,1],[0,1]],
+    [[1,0],[0,1],[0,0]],
+    [[1,1],[0,0],[1,0]],
+  ],
+  // B
+  [
+    [[0,0],[1,0],[2,0],[3,0]],
+    [[0,0],[0,1],[0,2],[0,3]],
+  ],
+  // C
+  [
+    [[0,2],[1,0],[1,1],[1,2]],
+    [[0,0],[2,1],[1,1],[0,1]],
+    [[1,0],[0,2],[0,1],[0,0]],
+    [[2,1],[0,0],[1,0],[2,0]],
+    [[0,0],[1,2],[1,1],[1,0]],
+    [[2,0],[0,1],[1,1],[2,1]],
+    [[1,2],[0,0],[0,1],[0,2]],
+    [[0,1],[2,0],[1,0],[0,0]],
+  ],
+  // D
+  [
+    [[0,0],[0,1],[1,0],[1,1]],
+  ],
+  // E
+  [
+    [[0,0],[0,1],[0,2],[1,0],[2,0]],
+    [[2,0],[1,0],[0,0],[2,1],[2,2]],
+    [[2,2],[2,1],[2,0],[1,2],[0,2]],
+    [[0,2],[1,2],[2,2],[0,1],[0,0]],
+  ],
+  // F
+  [
+    [[0,2],[1,0],[1,1],[1,2],[1,3]],
+    [[1,0],[3,1],[2,1],[1,1],[0,1]],
+    [[1,1],[0,3],[0,2],[0,1],[0,0]],
+    [[2,1],[0,0],[1,0],[2,0],[3,0]],
+    [[0,1],[1,3],[1,2],[1,1],[1,0]],
+    [[2,0],[0,1],[1,1],[2,1],[3,1]],
+    [[1,2],[0,0],[0,1],[0,2],[0,3]],
+    [[1,1],[3,0],[2,0],[1,0],[0,0]],
+  ],
+  // G
+  [
+    [[0,0],[0,2],[1,0],[1,1],[1,2]],
+    [[2,0],[0,0],[2,1],[1,1],[0,1]],
+    [[1,2],[1,0],[0,2],[0,1],[0,0]],
+    [[0,1],[2,1],[0,0],[1,0],[2,0]],
+  ],
+  // H
+  [
+    [[0,1],[0,2],[1,0],[1,1],[1,2]],
+    [[1,0],[0,0],[2,1],[1,1],[0,1]],
+    [[1,1],[1,0],[0,2],[0,1],[0,0]],
+    [[1,1],[2,1],[0,0],[1,0],[2,0]],
+    [[0,1],[0,0],[1,2],[1,1],[1,0]],
+    [[1,0],[2,0],[0,1],[1,1],[2,1]],
+    [[1,1],[1,2],[0,0],[0,1],[0,2]],
+    [[1,1],[0,1],[2,0],[1,0],[0,0]],
+  ],
+  // I
+  [
+    [[0,1],[1,0],[1,1],[2,0],[3,0]],
+    [[0,0],[1,1],[0,1],[1,2],[1,3]],
+    [[3,0],[2,1],[2,0],[1,1],[0,1]],
+    [[1,3],[0,2],[1,2],[0,1],[0,0]],
+    [[0,0],[1,1],[1,0],[2,1],[3,1]],
+    [[1,0],[0,1],[1,1],[0,2],[0,3]],
+    [[3,1],[2,0],[2,1],[1,0],[0,0]],
+    [[0,3],[1,2],[0,2],[1,1],[1,0]],
+  ],
+  // J
+  [
+    [[0,1],[1,0],[1,1],[1,2],[2,1]],
+  ],
+  // K
+  [
+    [[0,0],[1,0],[1,1],[2,1],[2,2]],
+    [[2,0],[2,1],[1,1],[1,2],[0,2]],
+    [[2,2],[1,2],[1,1],[0,1],[0,0]],
+    [[0,2],[0,1],[1,1],[1,0],[2,0]],
+  ],
+  // L
+  [
+    [[0,0],[1,0],[1,1],[1,2],[1,3]],
+    [[3,0],[3,1],[2,1],[1,1],[0,1]],
+    [[1,3],[0,3],[0,2],[0,1],[0,0]],
+    [[0,1],[0,0],[1,0],[2,0],[3,0]],
+    [[0,3],[1,3],[1,2],[1,1],[1,0]],
+    [[0,0],[0,1],[1,1],[2,1],[3,1]],
+    [[1,0],[0,0],[0,1],[0,2],[0,3]],
+    [[3,1],[3,0],[2,0],[1,0],[0,0]],
+  ],
+]
+
+let N = 10
+
+fun findEmpty(board: list<list<string>>): list<int> {
+  var r = 0
+  while r < N {
+    var c = 0
+    while c < len(board[r]) {
+      if board[r][c] == "." { return [r, c] }
+      c = c + 1
+    }
+    r = r + 1
+  }
+  return []
+}
+
+fun dfs(board: list<list<string>>, used: list<bool>): bool {
+  let pos = findEmpty(board)
+  if len(pos) == 0 { return true }
+  let r = pos[0]
+  let c = pos[1]
+  var p = 0
+  while p < 12 {
+    if used[p] {
+      p = p + 1
+      continue
+    }
+    let orients = shapes[p] as list<list<list<int>>>
+    var o = 0
+    while o < len(orients) {
+      let orient = orients[o] as list<list<int>>
+      var cellIdx = 0
+      while cellIdx < len(orient) {
+        let base = orient[cellIdx]
+        let dr = r - base[0]
+        let dc = c - base[1]
+        var coords: list<list<int>> = []
+        var k = 0
+        var ok = true
+        while k < len(orient) {
+          let rr = orient[k][0] + dr
+          let cc = orient[k][1] + dc
+          if rr < 0 || rr >= N || cc < 0 || cc >= len(board[rr]) {
+            ok = false
+            break
+          }
+          if board[rr][cc] != "." {
+            ok = false
+            break
+          }
+          coords = append(coords, [rr, cc])
+          k = k + 1
+        }
+        if ok {
+          k = 0
+          while k < len(coords) {
+            let pos = coords[k]
+            board[pos[0]][pos[1]] = letters[p]
+            k = k + 1
+          }
+          used[p] = true
+          if dfs(board, used) { return true }
+          used[p] = false
+          k = 0
+          while k < len(coords) {
+            let pos = coords[k]
+            board[pos[0]][pos[1]] = "."
+            k = k + 1
+          }
+        }
+        cellIdx = cellIdx + 1
+      }
+      o = o + 1
+    }
+    p = p + 1
+  }
+  return false
+}
+
+fun solveCase(board: list<list<string>>) {
+  var used: list<bool> = []
+  var i = 0
+  while i < 12 { used = append(used, false); i = i + 1 }
+  i = 0
+  while i < N {
+    var j = 0
+    while j < len(board[i]) {
+      let ch = board[i][j]
+      if ch != "." {
+        let idx = index[ch] as int
+        used[idx] = true
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  if dfs(board, used) {
+    i = 0
+    while i < N {
+      var line = ""
+      var j = 0
+      while j < len(board[i]) {
+        line = line + board[i][j]
+        j = j + 1
+      }
+      print(line)
+      i = i + 1
+    }
+  } else {
+    print("No solution")
+  }
+}
+
+var lines: list<string> = []
+while true {
+  let line = input()
+  if line == "" { break }
+  lines = append(lines, line)
+}
+var pos = 0
+while pos + 9 < len(lines) {
+  var board: list<list<string>> = []
+  var r = 0
+  while r < 10 {
+    let line = lines[pos]
+    pos = pos + 1
+    var row: list<string> = []
+    var j = 0
+    while j < len(line) {
+      row = append(row, line[j:j+1])
+      j = j + 1
+    }
+    board = append(board, row)
+    r = r + 1
+  }
+  solveCase(board)
+}
