@@ -1,0 +1,199 @@
+// Solution for SPOJ TOMJERRY - Tom and Jerry
+// https://www.spoj.com/problems/TOMJERRY/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { res = append(res, cur) }
+  return res
+}
+
+fun format3(x: float): string {
+  var scaled = x * 1000.0 + 0.5
+  var n = scaled as int
+  var whole = n / 1000
+  var frac = n % 1000
+  var fracStr = str(frac)
+  while len(fracStr) < 3 {
+    fracStr = "0" + fracStr
+  }
+  return str(whole) + "." + fracStr
+}
+
+fun bfs(start: int, n: int, adj: list<list<int>>): list<int> {
+  var dist: list<int> = []
+  for i in 0..(n + 1) {
+    dist = append(dist, 0 - 1)
+  }
+  var q: list<int> = [start]
+  dist[start] = 0
+  var head = 0
+  while head < len(q) {
+    let u = q[head] as int
+    head = head + 1
+    let d = dist[u] as int
+    var j = 0
+    while j < len(adj[u]) {
+      let v = adj[u][j] as int
+      if dist[v] == 0 - 1 {
+        dist[v] = d + 1
+        q = append(q, v)
+      }
+      j = j + 1
+    }
+  }
+  return dist
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var line = input()
+    while line == "" { line = input() }
+    var parts = split(line)
+    let n = parts[0] as int
+    let e = parts[1] as int
+    line = input()
+    while line == "" { line = input() }
+    parts = split(line)
+    let P = parts[0] as int
+    let Q = parts[1] as int
+    var adj: list<list<int>> = []
+    for i in 0..(n + 1) {
+      adj = append(adj, [])
+    }
+    var i = 0
+    while i < e {
+      line = input()
+      if line == "" { continue }
+      parts = split(line)
+      let a = parts[0] as int
+      let b = parts[1] as int
+      adj[a] = append(adj[a], b)
+      adj[b] = append(adj[b], a)
+      i = i + 1
+    }
+    // precompute next moves
+    var nxt: list<list<int>> = []
+    i = 0
+    while i <= n {
+      var row: list<int> = []
+      var j = 0
+      while j <= n {
+        row = append(row, 0)
+        j = j + 1
+      }
+      nxt = append(nxt, row)
+      i = i + 1
+    }
+    var tnode = 1
+    while tnode <= n {
+      let dist = bfs(tnode, n, adj)
+      var u = 1
+      while u <= n {
+        if u == tnode {
+          nxt[u][tnode] = tnode
+        } else {
+          var best = 1000000
+          var bestNode = 0
+          var j = 0
+          while j < len(adj[u]) {
+            let v = adj[u][j] as int
+            let d = dist[v] as int
+            if d < best || (d == best && v < bestNode) {
+              best = d
+              bestNode = v
+            }
+            j = j + 1
+          }
+          nxt[u][tnode] = bestNode
+        }
+        u = u + 1
+      }
+      tnode = tnode + 1
+    }
+    // initialize expectation matrix
+    var E: list<list<float>> = []
+    i = 0
+    while i <= n {
+      var row: list<float> = []
+      var j = 0
+      while j <= n {
+        row = append(row, 0.0)
+        j = j + 1
+      }
+      E = append(E, row)
+      i = i + 1
+    }
+    let EPS = 1e-9
+    while true {
+      var newE: list<list<float>> = []
+      i = 0
+      while i <= n {
+        var row: list<float> = []
+        var j = 0
+        while j <= n {
+          row = append(row, 0.0)
+          j = j + 1
+        }
+        newE = append(newE, row)
+        i = i + 1
+      }
+      var diff = 0.0
+      var j = 1
+      while j <= n {
+        var tnode2 = 1
+        while tnode2 <= n {
+          var newVal = 0.0
+          if j == tnode2 {
+            newVal = 0.0
+          } else {
+            let jn = nxt[j][tnode2]
+            if jn == tnode2 {
+              newVal = 1.0
+            } else {
+              let deg = len(adj[tnode2])
+              var sum = E[jn][tnode2]
+              var k = 0
+              while k < deg {
+                let nb = adj[tnode2][k] as int
+                sum = sum + E[jn][nb]
+                k = k + 1
+              }
+              newVal = 1.0 + sum / ((deg + 1) as float)
+            }
+          }
+          newE[j][tnode2] = newVal
+          var dval = newVal - E[j][tnode2]
+          if dval < 0.0 { dval = -dval }
+          if dval > diff { diff = dval }
+          tnode2 = tnode2 + 1
+        }
+        j = j + 1
+      }
+      E = newE
+      if diff < EPS { break }
+    }
+    let result = E[P][Q]
+    print(format3(result))
+    case = case + 1
+  }
+}
+
+main()
