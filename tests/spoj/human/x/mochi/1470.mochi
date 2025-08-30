@@ -1,0 +1,166 @@
+// Solution for SPOJ GSS6 - Can you answer these queries VI
+// https://www.spoj.com/problems/GSS6/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun readNonEmpty(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun maxSub(arr: list<int>): int {
+  var best = arr[0]
+  var cur = arr[0]
+  var i = 1
+  while i < len(arr) {
+    let v = arr[i]
+    if cur + v > v { cur = cur + v } else { cur = v }
+    if cur > best { best = cur }
+    i = i + 1
+  }
+  return best
+}
+
+fun main() {
+  let tStr = readNonEmpty()
+  let T = parseIntStr(tStr)
+  var case = 0
+  while case < T {
+    let first = split(readNonEmpty(), " ")
+    let n = parseIntStr(first[0])
+    let m = parseIntStr(first[1])
+    var seq: list<int> = []
+    if n > 0 {
+      let nums = split(readNonEmpty(), " ")
+      var i = 0
+      while i < n {
+        seq = append(seq, parseIntStr(nums[i]))
+        i = i + 1
+      }
+    }
+    var op = 0
+    while op < m {
+      let line = readNonEmpty()
+      let p = split(line, " ")
+      let cmd = p[0]
+      if cmd == "MAKE-SAME" {
+        let idx = parseIntStr(p[1]) - 1
+        let t = parseIntStr(p[2])
+        let c = parseIntStr(p[3])
+        var j = 0
+        while j < t {
+          seq[idx + j] = c
+          j = j + 1
+        }
+      } else if cmd == "INSERT" {
+        let pos = parseIntStr(p[1])
+        let t = parseIntStr(p[2])
+        var vals: list<int> = []
+        var j = 0
+        while j < t {
+          vals = append(vals, parseIntStr(p[3 + j]))
+          j = j + 1
+        }
+        var newSeq: list<int> = []
+        var k = 0
+        while k < pos {
+          newSeq = append(newSeq, seq[k])
+          k = k + 1
+        }
+        j = 0
+        while j < len(vals) {
+          newSeq = append(newSeq, vals[j])
+          j = j + 1
+        }
+        while k < len(seq) {
+          newSeq = append(newSeq, seq[k])
+          k = k + 1
+        }
+        seq = newSeq
+      } else if cmd == "DELETE" {
+        let idx = parseIntStr(p[1]) - 1
+        let t = parseIntStr(p[2])
+        var newSeq: list<int> = []
+        var k = 0
+        while k < idx {
+          newSeq = append(newSeq, seq[k])
+          k = k + 1
+        }
+        k = idx + t
+        while k < len(seq) {
+          newSeq = append(newSeq, seq[k])
+          k = k + 1
+        }
+        seq = newSeq
+      } else if cmd == "REVERSE" {
+        let idx = parseIntStr(p[1]) - 1
+        let t = parseIntStr(p[2])
+        var j = 0
+        while j < t / 2 {
+          let a = seq[idx + j]
+          let b = seq[idx + t - 1 - j]
+          seq[idx + j] = b
+          seq[idx + t - 1 - j] = a
+          j = j + 1
+        }
+      } else if cmd == "GET-SUM" {
+        let idx = parseIntStr(p[1]) - 1
+        let t = parseIntStr(p[2])
+        var sum = 0
+        var j = 0
+        while j < t {
+          sum = sum + seq[idx + j]
+          j = j + 1
+        }
+        print(str(sum))
+      } else if cmd == "MAX-SUM" {
+        let res = maxSub(seq)
+        print(str(res))
+      }
+      op = op + 1
+    }
+    case = case + 1
+  }
+}
+
+main()
