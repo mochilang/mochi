@@ -1,0 +1,150 @@
+// Solution for SPOJ QKP - Queens, Knights and Pawns
+// https://www.spoj.com/problems/QKP/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var sign = 1
+  if len(str) > 0 && str[0:1] == "-" {
+    sign = -1
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return sign * n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if len(cur) > 0 {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { res = append(res, cur) }
+  return res
+}
+
+fun key(r: int, c: int): string { return str(r) + "," + str(c) }
+
+fun main() {
+  var board = 1
+  while true {
+    var line = input()
+    if line == "" { break }
+    var parts = splitSpaces(line)
+    if len(parts) == 0 { continue }
+    let n = parseIntStr(parts[0])
+    let m = parseIntStr(parts[1])
+    if n == 0 && m == 0 { break }
+
+    var occ: map<string,int> = {}
+    var attacked: map<string,int> = {}
+    var occCount = 0
+
+    // read queens
+    line = input()
+    parts = splitSpaces(line)
+    var queens: list<any> = []
+    var idx = 1
+    while idx < len(parts) {
+      let r = parseIntStr(parts[idx])
+      let c = parseIntStr(parts[idx+1])
+      idx = idx + 2
+      queens = append(queens, { r: r, c: c })
+      let k = key(r, c)
+      if occ[k] != 1 { occ[k] = 1; occCount = occCount + 1 }
+    }
+
+    // read knights
+    line = input()
+    parts = splitSpaces(line)
+    var knights: list<any> = []
+    idx = 1
+    while idx < len(parts) {
+      let r = parseIntStr(parts[idx])
+      let c = parseIntStr(parts[idx+1])
+      idx = idx + 2
+      knights = append(knights, { r: r, c: c })
+      let k = key(r, c)
+      if occ[k] != 1 { occ[k] = 1; occCount = occCount + 1 }
+    }
+
+    // read pawns
+    line = input()
+    parts = splitSpaces(line)
+    idx = 1
+    while idx < len(parts) {
+      let r = parseIntStr(parts[idx])
+      let c = parseIntStr(parts[idx+1])
+      idx = idx + 2
+      let k = key(r, c)
+      if occ[k] != 1 { occ[k] = 1; occCount = occCount + 1 }
+    }
+
+    let dqr = [-1,-1,-1,0,0,1,1,1]
+    let dqc = [-1,0,1,-1,1,-1,0,1]
+    var qi = 0
+    while qi < len(queens) {
+      let r = queens[qi].r
+      let c = queens[qi].c
+      var d = 0
+      while d < 8 {
+        var rr = r + dqr[d]
+        var cc = c + dqc[d]
+        while rr >= 1 && rr <= n && cc >= 1 && cc <= m {
+          let k = key(rr, cc)
+          if occ[k] == 1 { break }
+          attacked[k] = 1
+          rr = rr + dqr[d]
+          cc = cc + dqc[d]
+        }
+        d = d + 1
+      }
+      qi = qi + 1
+    }
+
+    let knr = [-2,-2,-1,-1,1,1,2,2]
+    let knc = [-1,1,-2,2,-2,2,-1,1]
+    var ki = 0
+    while ki < len(knights) {
+      let r = knights[ki].r
+      let c = knights[ki].c
+      var mv = 0
+      while mv < 8 {
+        let rr = r + knr[mv]
+        let cc = c + knc[mv]
+        if rr >= 1 && rr <= n && cc >= 1 && cc <= m {
+          let k = key(rr, cc)
+          if occ[k] != 1 { attacked[k] = 1 }
+        }
+        mv = mv + 1
+      }
+      ki = ki + 1
+    }
+
+    var attackedCount = 0
+    for _ in attacked { attackedCount = attackedCount + 1 }
+    let safe = n * m - occCount - attackedCount
+    print("Board " + str(board) + " has " + str(safe) + " safe squares.")
+    board = board + 1
+  }
+}
+
+main()
