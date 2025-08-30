@@ -1,0 +1,156 @@
+// Solution for SPOJ MOLE - Whac-a-Mole
+// https://www.spoj.com/problems/MOLE/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun makeIntMatrix(n: int, value: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n { row = append(row, value); j = j + 1 }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun abs(x: int): int { if x < 0 { return -x } return x }
+
+fun gcd(a: int, b: int): int {
+  var x = abs(a)
+  var y = abs(b)
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil { return }
+    let parts = splitSpaces(line)
+    if len(parts) == 0 { continue }
+    let n = parseIntStr(parts[0])
+    let d = parseIntStr(parts[1])
+    let m = parseIntStr(parts[2])
+    if n == 0 && d == 0 && m == 0 { break }
+
+    var moles: list<list<list<int>>> = []
+    var t = 0
+    while t <= 10 {
+      moles = append(moles, makeIntMatrix(n, 0))
+      t = t + 1
+    }
+
+    var maxT = 0
+    var i = 0
+    while i < m {
+      let ln = input()
+      let p = splitSpaces(ln)
+      let x = parseIntStr(p[0])
+      let y = parseIntStr(p[1])
+      let tt = parseIntStr(p[2])
+      moles[tt][x][y] = moles[tt][x][y] + 1
+      if tt > maxT { maxT = tt }
+      i = i + 1
+    }
+
+    var prev = makeIntMatrix(n, 0)
+    var curr = makeIntMatrix(n, 0)
+    var time = 1
+    while time <= maxT {
+      curr = makeIntMatrix(n, -1000000)
+      var x1 = 0
+      while x1 < n {
+        var y1 = 0
+        while y1 < n {
+          let base = prev[x1][y1]
+          var x2 = 0
+          while x2 < n {
+            var y2 = 0
+            while y2 < n {
+              let dx = x2 - x1
+              let dy = y2 - y1
+              if dx*dx + dy*dy <= d*d {
+                let g = gcd(dx, dy)
+                var stepX = 0
+                var stepY = 0
+                if g != 0 {
+                  stepX = dx / g
+                  stepY = dy / g
+                }
+                var cnt = 0
+                var k = 0
+                var px = x1
+                var py = y1
+                while k <= g {
+                  cnt = cnt + moles[time][px][py]
+                  px = px + stepX
+                  py = py + stepY
+                  k = k + 1
+                }
+                let val = base + cnt
+                if val > curr[x2][y2] { curr[x2][y2] = val }
+              }
+              y2 = y2 + 1
+            }
+            x2 = x2 + 1
+          }
+          y1 = y1 + 1
+        }
+        x1 = x1 + 1
+      }
+      prev = curr
+      time = time + 1
+    }
+
+    var best = 0
+    var x = 0
+    while x < n {
+      var y = 0
+      while y < n {
+        if prev[x][y] > best { best = prev[x][y] }
+        y = y + 1
+      }
+      x = x + 1
+    }
+    print(str(best))
+  }
+}
+
+main()
