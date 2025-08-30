@@ -14,7 +14,7 @@ import (
 
 func TestLeanSolutions(t *testing.T) {
 	if _, err := exec.LookPath("lean"); err != nil {
-		t.Skip("lean not installed")
+		t.Skip("lean toolchain not installed")
 	}
 	golden.Run(t, "tests/spoj/human/x/lean", ".lean", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".lean") + ".in"
