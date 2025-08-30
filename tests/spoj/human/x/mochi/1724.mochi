@@ -1,0 +1,23 @@
+// Solution for SPOJ TRICOUNT - Counting Triangles
+// https://www.spoj.com/problems/TRICOUNT/
+
+fun countTriangles(n: int): int {
+  if n % 2 == 0 {
+    return n * (n + 2) * (2*n + 1) / 8
+  } else {
+    return (n * (n + 2) * (2*n + 1) - 1) / 8
+  }
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  for _ in 0..t {
+    let line = input()
+    let n = line as int
+    print(countTriangles(n))
+  }
+}
+
+main()
