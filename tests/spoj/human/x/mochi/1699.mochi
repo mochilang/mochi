@@ -1,0 +1,85 @@
+// Solution for SPOJ NSYSTEM - Numeral System
+// https://www.spoj.com/problems/NSYSTEM/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+let letterVals = { "m":1000, "c":100, "x":10, "i":1 }
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun mcxiToInt(s: string): int {
+  var i = 0
+  var mul = 0
+  var total = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if digits[ch] != nil && ch != "0" && ch != "1" {
+      mul = digits[ch] as int
+    } else {
+      let val = letterVals[ch] as int
+      if mul == 0 { mul = 1 }
+      total = total + mul * val
+      mul = 0
+    }
+    i = i + 1
+  }
+  return total
+}
+
+fun intToMcxi(n: int): string {
+  let letters = ["m", "c", "x", "i"]
+  let values = [1000, 100, 10, 1]
+  var res = ""
+  var i = 0
+  while i < 4 {
+    let val = values[i]
+    let cnt = n / val
+    if cnt > 0 {
+      if cnt > 1 { res = res + str(cnt) }
+      res = res + letters[i]
+    }
+    n = n % val
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  var k = 0
+  while k < t {
+    var line = input()
+    while line == "" { line = input() }
+    var a = ""
+    var b = ""
+    var i = 0
+    var second = false
+    while i < len(line) {
+      let ch = line[i:i+1]
+      if ch == " " {
+        second = true
+      } else {
+        if second { b = b + ch } else { a = a + ch }
+      }
+      i = i + 1
+    }
+    let sum = mcxiToInt(a) + mcxiToInt(b)
+    let out = intToMcxi(sum)
+    print(out)
+    k = k + 1
+  }
+}
+
+main()
