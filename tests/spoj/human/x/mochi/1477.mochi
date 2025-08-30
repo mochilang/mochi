@@ -1,0 +1,116 @@
+// Solution for SPOJ PT07A - Play with a Tree
+// https://www.spoj.com/problems/PT07A/
+
+let digits = {
+  "0":0, "1":1, "2":2, "3":3, "4":4,
+  "5":5, "6":6, "7":7, "8":8, "9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var nums: list<int> = []
+  var i = 0
+  var num = 0
+  var has = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if has {
+        nums = append(nums, num)
+        num = 0
+        has = false
+      }
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has { nums = append(nums, num) }
+  return nums
+}
+
+fun xor(a: int, b: int): int {
+  var x = a
+  var y = b
+  var res = 0
+  var bit = 1
+  while x > 0 || y > 0 {
+    let xb = x % 2
+    let yb = y % 2
+    if xb != yb {
+      res = res + bit
+    }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+  }
+  return res
+}
+
+var adj: list<list<int>> = []
+
+fun dfs(v: int, p: int): int {
+  var g = 0
+  var i = 0
+  while i < len(adj[v]) {
+    let u = adj[v][i]
+    if u != p && (v == 0 || u != 0) {
+      let sub = dfs(u, v)
+      if v == 0 {
+        g = xor(g, sub)
+      } else {
+        g = xor(g, sub + 1)
+      }
+    }
+    i = i + 1
+  }
+  return g
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    let sLine = input()
+    let sVals = parseInts(sLine)
+    adj = []
+    var i = 0
+    while i <= n {
+      adj = append(adj, [])
+      i = i + 1
+    }
+    var e = 0
+    while e < n - 1 {
+      let line = input()
+      if line == "" { continue }
+      let nums = parseInts(line)
+      let u = nums[0]
+      let v = nums[1]
+      adj[u] = append(adj[u], v)
+      adj[v] = append(adj[v], u)
+      e = e + 1
+    }
+    i = 0
+    while i < n {
+      if sVals[i] == 1 {
+        adj[0] = append(adj[0], i + 1)
+        adj[i + 1] = append(adj[i + 1], 0)
+      }
+      i = i + 1
+    }
+    let g = dfs(0, -1)
+    if g != 0 {
+      print("1")
+    } else {
+      print("0")
+    }
+    case = case + 1
+  }
+}
+
+main()
