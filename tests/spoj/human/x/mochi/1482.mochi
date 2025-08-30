@@ -1,0 +1,250 @@
+// Solution for SPOJ PT07F - A short vacation in Disneyland
+// https://www.spoj.com/problems/PT07F/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseInts(line: string): list<int> {
+  var nums: list<int> = []
+  var i = 0
+  var num = 0
+  var has = false
+  var neg = false
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" { 
+      if has {
+        if neg { num = -num }
+        nums = append(nums, num)
+        num = 0
+        has = false
+        neg = false
+      }
+    } else if ch == "-" {
+      neg = true
+    } else {
+      num = num * 10 + (digits[ch] as int)
+      has = true
+    }
+    i = i + 1
+  }
+  if has {
+    if neg { num = -num }
+    nums = append(nums, num)
+  }
+  return nums
+}
+
+fun makeIntList(n: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, 0)
+    i = i + 1
+  }
+  return lst
+}
+
+fun makeBoolList(n: int): list<bool> {
+  var lst: list<bool> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, false)
+    i = i + 1
+  }
+  return lst
+}
+
+fun makeListList(n: int): list<list<int>> {
+  var lst: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, [])
+    i = i + 1
+  }
+  return lst
+}
+
+var adj: list<list<int>> = []
+var dp0: list<int> = []
+var dp1: list<int> = []
+var choose0a: list<int> = []
+var choose0b: list<int> = []
+var choose1: list<int> = []
+var kept: list<list<int>> = []
+
+fun dfs(v: int, p: int) {
+  var base = 0
+  var diffs: list<int> = []
+  var childs: list<int> = []
+  var i = 0
+  while i < len(adj[v]) {
+    let to = adj[v][i]
+    if to != p {
+      dfs(to, v)
+      base = base + dp0[to]
+      let d = 1 + dp1[to] - dp0[to]
+      diffs = append(diffs, d)
+      childs = append(childs, to)
+    }
+    i = i + 1
+  }
+  var bestDiff = 0
+  var bestChild = 0
+  i = 0
+  while i < len(diffs) {
+    let d = diffs[i]
+    if d > bestDiff {
+      bestDiff = d
+      bestChild = childs[i]
+    }
+    i = i + 1
+  }
+  if bestDiff < 0 { bestDiff = 0; bestChild = 0 }
+  dp1[v] = base + bestDiff
+  choose1[v] = bestChild
+
+  var b1 = -1000000000
+  var c1 = 0
+  var b2 = -1000000000
+  var c2 = 0
+  i = 0
+  while i < len(diffs) {
+    let d = diffs[i]
+    let c = childs[i]
+    if d > b1 {
+      b2 = b1; c2 = c1
+      b1 = d; c1 = c
+    } else if d > b2 {
+      b2 = d; c2 = c
+    }
+    i = i + 1
+  }
+  if b1 < 0 { b1 = 0; c1 = 0 }
+  if b2 < 0 { b2 = 0; c2 = 0 }
+  dp0[v] = base + b1 + b2
+  choose0a[v] = c1
+  choose0b[v] = c2
+}
+
+fun build(v: int, p: int, state: int) {
+  if state == 0 {
+    let c1 = choose0a[v]
+    let c2 = choose0b[v]
+    var i = 0
+    while i < len(adj[v]) {
+      let to = adj[v][i]
+      if to != p {
+        var st = 0
+        if to == c1 || to == c2 {
+          kept[v] = append(kept[v], to)
+          kept[to] = append(kept[to], v)
+          st = 1
+        }
+        build(to, v, st)
+      }
+      i = i + 1
+    }
+  } else {
+    let c = choose1[v]
+    var i = 0
+    while i < len(adj[v]) {
+      let to = adj[v][i]
+      if to != p {
+        var st = 0
+        if to == c {
+          kept[v] = append(kept[v], to)
+          kept[to] = append(kept[to], v)
+          st = 1
+        }
+        build(to, v, st)
+      }
+      i = i + 1
+    }
+  }
+}
+
+fun main() {
+  var tLine = input()
+  if tLine == "" { return }
+  let T = parseInts(tLine)[0]
+  var tc = 0
+  while tc < T {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let N = parseInts(nLine)[0]
+    adj = makeListList(N)
+    var e = 0
+    while e < N - 1 {
+      let line = input()
+      if line == "" { continue }
+      let vals = parseInts(line)
+      let u = vals[0]
+      let v = vals[1]
+      adj[u] = append(adj[u], v)
+      adj[v] = append(adj[v], u)
+      e = e + 1
+    }
+    dp0 = makeIntList(N)
+    dp1 = makeIntList(N)
+    choose0a = makeIntList(N)
+    choose0b = makeIntList(N)
+    choose1 = makeIntList(N)
+    dfs(1, 0)
+    kept = makeListList(N)
+    build(1, 0, 0)
+    var visited = makeBoolList(N)
+    var paths: list<list<int>> = []
+    var i = 1
+    while i <= N {
+      if !visited[i] && len(kept[i]) <= 1 {
+        var path: list<int> = []
+        var prev = 0
+        var curr = i
+        while true {
+          path = append(path, curr)
+          visited[curr] = true
+          var next = 0
+          var j = 0
+          while j < len(kept[curr]) {
+            let nb = kept[curr][j]
+            if nb != prev { next = nb }
+            j = j + 1
+          }
+          if next == 0 { break }
+          prev = curr
+          curr = next
+        }
+        paths = append(paths, path)
+      }
+      i = i + 1
+    }
+    i = 1
+    while i <= N {
+      if !visited[i] {
+        paths = append(paths, [i])
+        visited[i] = true
+      }
+      i = i + 1
+    }
+    print(str(len(paths)))
+    var pi = 0
+    while pi < len(paths) {
+      let pth = paths[pi]
+      var line = ""
+      var j = 0
+      while j < len(pth) {
+        if j > 0 { line = line + " " }
+        line = line + str(pth[j])
+        j = j + 1
+      }
+      print(line)
+      pi = pi + 1
+    }
+    tc = tc + 1
+  }
+}
+
+main()
