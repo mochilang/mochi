@@ -1,0 +1,69 @@
+// Solution for SPOJ AMBM - Ambitious Manager
+// https://www.spoj.com/problems/AMBM/
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    let nkLine = input()
+    let nk = split(nkLine)
+    let target = int(nk[0])
+    let k = int(nk[1])
+    let aLine = input()
+    let tokens = split(aLine)
+    var b: list<int> = []
+    var cur = 0
+    var i = 0
+    while i < k {
+      let ai = int(tokens[i])
+      cur = cur * 2 + ai
+      b = append(b, cur)
+      i = i + 1
+    }
+    var rem = target
+    var idx = k - 1
+    var chosen: list<int> = []
+    while idx >= 0 {
+      let val = b[idx]
+      if val <= rem {
+        rem = rem - val
+        chosen = append(chosen, idx + 1)
+      }
+      idx = idx - 1
+    }
+    if rem != 0 {
+      print("-1")
+    } else {
+      var out = ""
+      var j = len(chosen) - 1
+      while j >= 0 {
+        out = out + str(chosen[j])
+        if j > 0 { out = out + " " }
+        j = j - 1
+      }
+      print(out)
+    }
+    case = case + 1
+  }
+}
+
+main()
