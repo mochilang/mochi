@@ -1,0 +1,263 @@
+// Solution for SPOJ EOWAMRT - Earth Observation with a Mobile Robot Team
+// https://www.spoj.com/problems/EOWAMRT/
+
+// Split a string by spaces
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parse_ints(line: string): list<int> {
+  let pieces = split(line, " ")
+  var nums: list<int> = []
+  var i = 0
+  while i < len(pieces) {
+    let p = pieces[i]
+    if len(p) > 0 {
+      nums = append(nums, p as int)
+    }
+    i = i + 1
+  }
+  return nums
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var prev = 0.0
+  while absf(r - prev) > 1e-9 {
+    prev = r
+    r = (r + x / r) / 2.0
+  }
+  return r
+}
+
+type Interval = { start: float, end: float }
+
+type Robot = {
+  name: string,
+  times: list<float>,
+  vx: list<float>,
+  vy: list<float>,
+  x0: float,
+  y0: float,
+}
+
+fun computeIntervals(a: Robot, b: Robot, R: float, T: float): list<Interval> {
+  var res: list<Interval> = []
+  var ia = 0
+  var ib = 0
+  var t = 0.0
+  var ax = a.x0
+  var ay = a.y0
+  var bx = b.x0
+  var by = b.y0
+  while t < T {
+    let nextA = a.times[ia+1]
+    let nextB = b.times[ib+1]
+    let next = if nextA < nextB { nextA } else { nextB }
+    let dt = next - t
+    let vax = a.vx[ia]
+    let vay = a.vy[ia]
+    let vbx = b.vx[ib]
+    let vby = b.vy[ib]
+    let dx0 = ax - bx
+    let dy0 = ay - by
+    let dvx = vax - vbx
+    let dvy = vay - vby
+    let acoef = dvx*dvx + dvy*dvy
+    let bcoef = 2.0 * (dx0*dvx + dy0*dvy)
+    let ccoef = dx0*dx0 + dy0*dy0 - R*R
+    if acoef == 0.0 {
+      if ccoef <= 0.0 {
+        res = append(res, Interval{ start: t, end: next })
+      }
+    } else {
+      let disc = bcoef*bcoef - 4.0*acoef*ccoef
+      if disc >= 0.0 {
+        let sqrtD = sqrt(disc)
+        let r1 = (-bcoef - sqrtD) / (2.0*acoef)
+        let r2 = (-bcoef + sqrtD) / (2.0*acoef)
+        var lo = r1
+        var hi = r2
+        if lo > hi {
+          let tmp = lo
+          lo = hi
+          hi = tmp
+        }
+        if hi >= 0.0 && lo <= dt {
+          var s = lo
+          if s < 0.0 { s = 0.0 }
+          var e = hi
+          if e > dt { e = dt }
+          if s <= e {
+            res = append(res, Interval{ start: t + s, end: t + e })
+          }
+        }
+      }
+    }
+    ax = ax + vax * dt
+    ay = ay + vay * dt
+    bx = bx + vbx * dt
+    by = by + vby * dt
+    t = next
+    if t == a.times[ia+1] { ia = ia + 1 }
+    if t == b.times[ib+1] { ib = ib + 1 }
+  }
+  return res
+}
+
+fun sortStrings(arr: list<string>): list<string> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  while true {
+    let header = input()
+    if header == "" { return }
+    let nums = parse_ints(header)
+    if len(nums) < 3 { return }
+    let N = nums[0]
+    let T = nums[1]
+    let R = nums[2]
+    if N == 0 && T == 0 && R == 0 { return }
+    var robots: list<Robot> = []
+    var i = 0
+    while i < N {
+      let name = input()
+      let firstLine = input()
+      let parts0 = parse_ints(firstLine)
+      var times: list<float> = []
+      var vx: list<float> = []
+      var vy: list<float> = []
+      times = append(times, parts0[0] as float)
+      let x0 = parts0[1] as float
+      let y0 = parts0[2] as float
+      var curT = parts0[0]
+      while curT < T {
+        let line = input()
+        let ps = parse_ints(line)
+        times = append(times, ps[0] as float)
+        vx = append(vx, ps[1] as float)
+        vy = append(vy, ps[2] as float)
+        curT = ps[0]
+      }
+      robots = append(robots, Robot{ name: name, times: times, vx: vx, vy: vy, x0: x0, y0: y0 })
+      i = i + 1
+    }
+    let Tf = T as float
+    let Rf = R as float
+    var intervals: list<list<list<Interval>>> = []
+    i = 0
+    while i < N {
+      var row: list<list<Interval>> = []
+      var j = 0
+      while j < N {
+        row = append(row, [])
+        j = j + 1
+      }
+      intervals = append(intervals, row)
+      i = i + 1
+    }
+    i = 0
+    while i < N {
+      var j = i + 1
+      while j < N {
+        let ivs = computeIntervals(robots[i], robots[j], Rf, Tf)
+        intervals[i][j] = ivs
+        intervals[j][i] = ivs
+        j = j + 1
+      }
+      i = i + 1
+    }
+    var time: list<float> = []
+    var done: list<bool> = []
+    i = 0
+    while i < N {
+      time = append(time, 1e18)
+      done = append(done, false)
+      i = i + 1
+    }
+    time[0] = 0.0
+    var count = 0
+    while true {
+      var best = -1
+      var bestT = 1e18
+      i = 0
+      while i < N {
+        if !done[i] && time[i] < bestT {
+          bestT = time[i]
+          best = i
+        }
+        i = i + 1
+      }
+      if best < 0 { break }
+      done[best] = true
+      count = count + 1
+      var j = 0
+      while j < N {
+        let ivs = intervals[best][j]
+        var k = 0
+        while k < len(ivs) {
+          let iv = ivs[k]
+          if iv.end < bestT {
+            k = k + 1
+            continue
+          }
+          var cand = bestT
+          if cand < iv.start { cand = iv.start }
+          if cand < time[j] {
+            time[j] = cand
+          }
+          break
+        }
+        j = j + 1
+      }
+    }
+    var res: list<string> = []
+    i = 0
+    while i < N {
+      if time[i] <= Tf {
+        res = append(res, robots[i].name)
+      }
+      i = i + 1
+    }
+    res = sortStrings(res)
+    i = 0
+    while i < len(res) {
+      print(res[i])
+      i = i + 1
+    }
+  }
+}
+
+main()
