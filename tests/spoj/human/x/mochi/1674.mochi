@@ -1,0 +1,137 @@
+// Solution for SPOJ EXPLOSN - The Explosion
+// https://www.spoj.com/problems/EXPLOSN/
+
+fun minInt(a: int, b: int): int { if a < b { return a } return b }
+
+fun main() {
+  let t = input() as int
+  var cs = 0
+  while cs < t {
+    cs = cs + 1
+    let n = input() as int
+    var p: list<int> = []
+    var indeg: list<int> = []
+    var i = 0
+    while i < n {
+      p = append(p, 0)
+      indeg = append(indeg, 0)
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      let pi = (input() as int) - 1
+      p[i] = pi
+      indeg[pi] = indeg[pi] + 1
+      i = i + 1
+    }
+    var selected: list<bool> = []
+    i = 0
+    while i < n { selected = append(selected, false); i = i + 1 }
+    var q: list<int> = []
+    i = 0
+    while i < n {
+      if indeg[i] == 0 { q = append(q, i) }
+      i = i + 1
+    }
+    var head = 0
+    while head < len(q) {
+      let u = q[head]
+      head = head + 1
+      if !selected[u] {
+        let v = p[u]
+        if !selected[v] {
+          selected[v] = true
+        }
+      }
+      let v = p[u]
+      indeg[v] = indeg[v] - 1
+      if indeg[v] == 0 {
+        q = append(q, v)
+      }
+    }
+    var count = 0
+    i = 0
+    while i < n {
+      if selected[i] { count = count + 1 }
+      i = i + 1
+    }
+    var visited: list<bool> = []
+    i = 0
+    while i < n { visited = append(visited, false); i = i + 1 }
+    let INF = 1000000000
+    i = 0
+    while i < n {
+      if indeg[i] > 0 && visited[i] == false {
+        var cycle: list<int> = []
+        var u = i
+        while !visited[u] {
+          visited[u] = true
+          cycle = append(cycle, u)
+          u = p[u]
+        }
+        let m = len(cycle)
+        var arr: list<bool> = []
+        var j = 0
+        while j < m {
+          arr = append(arr, selected[cycle[j]])
+          j = j + 1
+        }
+        var best = INF
+        var dp0: list<int> = []
+        var dp1: list<int> = []
+        j = 0
+        while j < m {
+          dp0 = append(dp0, 0)
+          dp1 = append(dp1, 0)
+          j = j + 1
+        }
+        // case A: first selected
+        dp0[0] = INF
+        if arr[0] { dp1[0] = 0 } else { dp1[0] = 1 }
+        j = 1
+        while j < m {
+          if arr[j] {
+            dp0[j] = INF
+            dp1[j] = minInt(dp0[j-1], dp1[j-1])
+          } else {
+            dp0[j] = dp1[j-1]
+            dp1[j] = minInt(dp0[j-1], dp1[j-1]) + 1
+          }
+          j = j + 1
+        }
+        var resA = dp0[m-1]
+        if dp1[m-1] < resA { resA = dp1[m-1] }
+        if resA < best { best = resA }
+        // case B: first not selected
+        if !arr[0] {
+          j = 0
+          while j < m {
+            dp0[j] = 0
+            dp1[j] = 0
+            j = j + 1
+          }
+          dp0[0] = 0
+          dp1[0] = INF
+          j = 1
+          while j < m {
+            if arr[j] {
+              dp0[j] = INF
+              dp1[j] = minInt(dp0[j-1], dp1[j-1])
+            } else {
+              dp0[j] = dp1[j-1]
+              dp1[j] = minInt(dp0[j-1], dp1[j-1]) + 1
+            }
+            j = j + 1
+          }
+          let resB = dp1[m-1]
+          if resB < best { best = resB }
+        }
+        count = count + best
+      }
+      i = i + 1
+    }
+    print(str(count))
+  }
+}
+
+main()
