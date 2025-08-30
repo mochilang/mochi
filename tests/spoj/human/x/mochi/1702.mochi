@@ -1,0 +1,214 @@
+// Solution for SPOJ CLEANRBT - Cleaning Robot
+// https://www.spoj.com/problems/CLEANRBT/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+fun bfs(sx: int, sy: int, w: int, h: int, grid: list<string>): list<list<int>> {
+  var dist: list<list<int>> = []
+  var y = 0
+  while y < h {
+    var row: list<int> = []
+    var x = 0
+    while x < w {
+      row = append(row, -1)
+      x = x + 1
+    }
+    dist = append(dist, row)
+    y = y + 1
+  }
+  var queue: list<int> = []
+  var head = 0
+  dist[sy][sx] = 0
+  queue = append(queue, sy * w + sx)
+  var dx = [1,-1,0,0]
+  var dy = [0,0,1,-1]
+  while head < len(queue) {
+    let u = queue[head]
+    head = head + 1
+    let cx = u % w
+    let cy = u / w
+    var k = 0
+    while k < 4 {
+      let nx = cx + dx[k]
+      let ny = cy + dy[k]
+      if nx >= 0 && nx < w && ny >= 0 && ny < h {
+        if grid[ny][nx:nx+1] != "x" && dist[ny][nx] < 0 {
+          dist[ny][nx] = dist[cy][cx] + 1
+          queue = append(queue, ny * w + nx)
+        }
+      }
+      k = k + 1
+    }
+  }
+  return dist
+}
+
+fun pow2(k: int): int {
+  var v = 1
+  var i = 0
+  while i < k {
+    v = v * 2
+    i = i + 1
+  }
+  return v
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { return }
+    let parts = splitSpaces(line)
+    if len(parts) < 2 { continue }
+    let w = parts[0] as int
+    let h = parts[1] as int
+    if w == 0 && h == 0 {
+      break
+    }
+    var grid: list<string> = []
+    var dirtyX: list<int> = []
+    var dirtyY: list<int> = []
+    var sx = 0
+    var sy = 0
+    var y = 0
+    while y < h {
+      let row = input()
+      grid = append(grid, row)
+      var x = 0
+      while x < w {
+        let ch = row[x:x+1]
+        if ch == "o" {
+          sx = x
+          sy = y
+        } else if ch == "*" {
+          dirtyX = append(dirtyX, x)
+          dirtyY = append(dirtyY, y)
+        }
+        x = x + 1
+      }
+      y = y + 1
+    }
+    let n = len(dirtyX)
+    if n == 0 {
+      print("0")
+      continue
+    }
+    var px: list<int> = [sx]
+    var py: list<int> = [sy]
+    var i = 0
+    while i < n {
+      px = append(px, dirtyX[i])
+      py = append(py, dirtyY[i])
+      i = i + 1
+    }
+    let total = n + 1
+    var dist: list<list<int>> = []
+    i = 0
+    while i < total {
+      var row: list<int> = []
+      var j = 0
+      while j < total {
+        row = append(row, -1)
+        j = j + 1
+      }
+      dist = append(dist, row)
+      i = i + 1
+    }
+    i = 0
+    while i < total {
+      let dgrid = bfs(px[i], py[i], w, h, grid)
+      var j = 0
+      while j < total {
+        dist[i][j] = dgrid[py[j]][px[j]]
+        j = j + 1
+      }
+      i = i + 1
+    }
+    var ok = true
+    i = 1
+    while i < total {
+      if dist[0][i] < 0 {
+        ok = false
+        break
+      }
+      i = i + 1
+    }
+    if !ok {
+      print("-1")
+      continue
+    }
+    let m = n
+    let size = pow2(m)
+    let INF = pow2(30)
+    var dp: list<list<int>> = []
+    var mask = 0
+    while mask < size {
+      var row: list<int> = []
+      var j = 0
+      while j < m {
+        row = append(row, INF)
+        j = j + 1
+      }
+      dp = append(dp, row)
+      mask = mask + 1
+    }
+    i = 0
+    while i < m {
+      dp[pow2(i)][i] = dist[0][i + 1]
+      i = i + 1
+    }
+    mask = 0
+    while mask < size {
+      i = 0
+      while i < m {
+        let cur = dp[mask][i]
+        if cur < INF {
+          var j = 0
+            while j < m {
+              if ((mask / pow2(j)) % 2) == 0 {
+                let nm = mask + pow2(j)
+                let nd = cur + dist[i + 1][j + 1]
+                if nd < dp[nm][j] {
+                  dp[nm][j] = nd
+                }
+              }
+              j = j + 1
+            }
+        }
+        i = i + 1
+      }
+      mask = mask + 1
+    }
+    var ans = INF
+    i = 0
+    let full = size - 1
+    while i < m {
+      if dp[full][i] < ans {
+        ans = dp[full][i]
+      }
+      i = i + 1
+    }
+    print(str(ans))
+  }
+}
+
+main()
