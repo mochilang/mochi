@@ -1,0 +1,106 @@
+// Solution for SPOJ ACARGO - Accumulate Cargo
+// https://www.spoj.com/problems/ACARGO/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" { 
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    let ch = str[i:i+1]
+    if ch >= "0" && ch <= "9" {
+      n = n * 10 + (digits[ch] as int)
+    }
+    i = i + 1
+  }
+  return n
+}
+
+fun quicksort(arr: list<int>): list<int> {
+  if len(arr) <= 1 { return arr }
+  let pivot = arr[len(arr) / 2]
+  var less: list<int> = []
+  var equal: list<int> = []
+  var greater: list<int> = []
+  var i = 0
+  while i < len(arr) {
+    let v = arr[i]
+    if v < pivot {
+      less = append(less, v)
+    } else if v > pivot {
+      greater = append(greater, v)
+    } else {
+      equal = append(equal, v)
+    }
+    i = i + 1
+  }
+  less = quicksort(less)
+  greater = quicksort(greater)
+  var res = less
+  var j = 0
+  while j < len(equal) {
+    res = append(res, equal[j])
+    j = j + 1
+  }
+  j = 0
+  while j < len(greater) {
+    res = append(res, greater[j])
+    j = j + 1
+  }
+  return res
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil { break }
+    let parts = split(line)
+    if len(parts) < 2 { continue }
+    let n = parseIntStr(parts[0])
+    let L = parseIntStr(parts[1])
+    if n == 0 && L == 0 { break }
+    var pos: list<int> = []
+    var i = 0
+    while i < n {
+      let pLine = input()
+      if pLine == nil { break }
+      pos = append(pos, parseIntStr(pLine))
+      i = i + 1
+    }
+    pos = quicksort(pos)
+    var cost = 0
+    var idx = 0
+    while idx < n-1 {
+      let gap = pos[idx+1] - pos[idx] - 1
+      let left = idx + 1
+      let right = n - left
+      let w = if left < right { left } else { right }
+      cost = cost + w * gap
+      idx = idx + 1
+    }
+    // final wrap gap has weight 0, no cost
+    print(cost)
+  }
+}
+
+main()
