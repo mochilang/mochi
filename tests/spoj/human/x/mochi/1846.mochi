@@ -1,0 +1,133 @@
+// Solution for SPOJ PFDEP - Project File Dependencies
+// https://www.spoj.com/problems/PFDEP/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+fun make_int_lists(n: int): list<list<int>> {
+  var lst: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    lst = append(lst, [])
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun main() {
+  let N = nextInt()
+  let M = nextInt()
+  var adj = make_int_lists(N)
+  var indeg = make_int_list(N+1, 0)
+  var i = 0
+  while i < M {
+    let target = nextInt()
+    let k = nextInt()
+    var j = 0
+    while j < k {
+      let dep = nextInt()
+      adj[dep] = append(adj[dep], target)
+      indeg[target] = indeg[target] + 1
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var done = make_int_list(N+1, 0) // 0=false,1=true
+  var res: list<int> = []
+  var count = 0
+  while count < N {
+    var v = 1
+    while v <= N {
+      if done[v] == 0 && indeg[v] == 0 {
+        res = append(res, v)
+        done[v] = 1
+        var t = 0
+        while t < len(adj[v]) {
+          let to = adj[v][t]
+          indeg[to] = indeg[to] - 1
+          t = t + 1
+        }
+        count = count + 1
+        break
+      }
+      v = v + 1
+    }
+  }
+  var out = ""
+  var idx = 0
+  while idx < len(res) {
+    if idx > 0 { out = out + " " }
+    out = out + str(res[idx])
+    idx = idx + 1
+  }
+  print(out)
+}
+
+main()
