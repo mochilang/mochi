@@ -1,0 +1,146 @@
+// Solution for SPOJ NCKLCE - Another Necklace Problem
+// https://www.spoj.com/problems/NCKLCE/
+
+var n = 0
+var colors: list<int> = []
+var offset = 0
+var rev = false
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+fun idx(p: int): int {
+  var i = 0
+  if rev {
+    i = offset - (p - 1)
+  } else {
+    i = offset + p - 1
+  }
+  while i < 0 { i = i + n }
+  while i >= n { i = i - n }
+  return i
+}
+
+fun nextPos(p: int): int {
+  var np = p + 1
+  if np > n { np = 1 }
+  return np
+}
+
+fun countAll(): int {
+  if n == 0 { return 0 }
+  var prev = colors[idx(1)]
+  var cnt = 1
+  var p = 2
+  while p <= n {
+    let cur = colors[idx(p)]
+    if cur != prev {
+      cnt = cnt + 1
+      prev = cur
+    }
+    p = p + 1
+  }
+  let last = colors[idx(n)]
+  let first = colors[idx(1)]
+  if n > 1 && last == first {
+    cnt = cnt - 1
+  }
+  return cnt
+}
+
+fun countSeg(i: int, j: int): int {
+  var p = i
+  var prev = colors[idx(p)]
+  var cnt = 1
+  while p != j {
+    p = nextPos(p)
+    let cur = colors[idx(p)]
+    if cur != prev {
+      cnt = cnt + 1
+      prev = cur
+    }
+  }
+  return cnt
+}
+
+fun main() {
+  let first = input()
+  if first == "" { return }
+  let header = splitSpaces(first)
+  n = header[0] as int
+  let line = input()
+  let arr = splitSpaces(line)
+  var i = 0
+  while i < n {
+    colors = append(colors, arr[i] as int)
+    i = i + 1
+  }
+  let qLine = input()
+  let q = qLine as int
+  var t = 0
+  while t < q {
+    let cmdLine = input()
+    let parts = splitSpaces(cmdLine)
+    let cmd = parts[0]
+    if cmd == "R" {
+      let k = parts[1] as int
+      if rev {
+        offset = offset + k
+      } else {
+        offset = offset - k
+      }
+      while offset < 0 { offset = offset + n }
+      while offset >= n { offset = offset - n }
+    } else if cmd == "F" {
+      rev = !rev
+    } else if cmd == "S" {
+      let a = parts[1] as int
+      let b = parts[2] as int
+      let ia = idx(a)
+      let ib = idx(b)
+      let tmp = colors[ia]
+      colors[ia] = colors[ib]
+      colors[ib] = tmp
+    } else if cmd == "P" {
+      let a = parts[1] as int
+      let b = parts[2] as int
+      let x = parts[3] as int
+      var p = a
+      while true {
+        colors[idx(p)] = x
+        if p == b { break }
+        p = nextPos(p)
+      }
+    } else if cmd == "C" {
+      let ans = countAll()
+      print(str(ans))
+    } else if cmd == "CS" {
+      let a = parts[1] as int
+      let b = parts[2] as int
+      let ans = countSeg(a, b)
+      print(str(ans))
+    }
+    t = t + 1
+  }
+}
+
+main()
