@@ -1,0 +1,118 @@
+// Solution for SPOJ MICEMAZE - Mice and Maze
+// https://www.spoj.com/problems/MICEMAZE/
+
+type Edge { to: int, cost: int }
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun make_edge_list(n: int): list<list<Edge>> {
+  var g: list<list<Edge>> = []
+  var i = 0
+  while i <= n {
+    g = append(g, [])
+    i = i + 1
+  }
+  return g
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun dijkstra(g: list<list<Edge>>, n: int, start: int): list<int> {
+  let inf = 1000000000
+  var dist = make_int_list(n+1, inf)
+  var used = make_int_list(n+1, 0)
+  dist[start] = 0
+  var k = 0
+  while k < n {
+    var v = 0
+    var best = inf + 1
+    var i = 1
+    while i <= n {
+      if used[i] == 0 && dist[i] < best {
+        best = dist[i]
+        v = i
+      }
+      i = i + 1
+    }
+    if v == 0 || dist[v] == inf { break }
+    used[v] = 1
+    var j = 0
+    while j < len(g[v]) {
+      let e = g[v][j]
+      let nd = dist[v] + e.cost
+      if nd < dist[e.to] {
+        dist[e.to] = nd
+      }
+      j = j + 1
+    }
+    k = k + 1
+  }
+  return dist
+}
+
+fun main() {
+  let nStr = input()
+  if nStr == nil || nStr == "" { return }
+  let n = parseIntStr(nStr)
+  let e = parseIntStr(input())
+  let t = parseIntStr(input())
+  let m = parseIntStr(input())
+  var g = make_edge_list(n)
+  var i = 0
+  while i < m {
+    let line = input()
+    let parts = split(line)
+    let a = parseIntStr(parts[0])
+    let b = parseIntStr(parts[1])
+    let w = parseIntStr(parts[2])
+    g[b] = append(g[b], Edge{ to:a, cost:w })
+    i = i + 1
+  }
+  let dist = dijkstra(g, n, e)
+  var count = 0
+  var v = 1
+  while v <= n {
+    if dist[v] <= t { count = count + 1 }
+    v = v + 1
+  }
+  print(str(count))
+}
+
+main()
