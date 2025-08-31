@@ -1,0 +1,12 @@
+300 420 moveto
+310 420 lineto
+310 430 lineto
+stroke
+showpage
+300 420 moveto
+310 420 lineto
+310 410 lineto
+320 410 lineto
+320 420 lineto
+stroke
+showpage
