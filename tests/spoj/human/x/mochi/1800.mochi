@@ -1,0 +1,254 @@
+// Solution for SPOJ CONTEST - Fixed Partition Contest Management
+// https://www.spoj.com/problems/CONTEST/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun format2(x: float): string {
+  var scaled = x * 100.0
+  if scaled < 0.0 { scaled = scaled - 0.5 } else { scaled = scaled + 0.5 }
+  var n = scaled as int
+  var whole = n / 100
+  var frac = n % 100
+  if frac < 0 { frac = -frac }
+  var fracStr = str(frac)
+  if frac < 10 { fracStr = "0" + fracStr }
+  return str(whole) + "." + fracStr
+}
+
+var m = 0
+var n = 0
+var members: list<int> = []
+var times: list<list<int>> = []
+var bestAssign: list<int> = []
+var currentAssign: list<int> = []
+var bestCost = 0
+
+fun sortJobs(jobs: list<int>, mem: int): list<int> {
+  var i = 1
+  while i < len(jobs) {
+    let job = jobs[i]
+    var j = i
+    while j > 0 {
+      let prev = jobs[j-1]
+      if times[prev][mem] > times[job][mem] || (times[prev][mem] == times[job][mem] && prev > job) {
+        jobs[j] = prev
+        j = j - 1
+      } else {
+        break
+      }
+    }
+    jobs[j] = job
+    i = i + 1
+  }
+  return jobs
+}
+
+fun computeCost(assign: list<int>): int {
+  var total = 0
+  var mem = 0
+  while mem < m {
+    var jobs: list<int> = []
+    var i = 0
+    while i < n {
+      if assign[i] == mem {
+        jobs = append(jobs, i)
+      }
+      i = i + 1
+    }
+    jobs = sortJobs(jobs, mem)
+    var t = 0
+    var j = 0
+    while j < len(jobs) {
+      let job = jobs[j]
+      t = t + times[job][mem]
+      total = total + t
+      j = j + 1
+    }
+    mem = mem + 1
+  }
+  return total
+}
+
+fun dfs(i: int) {
+  if i == n {
+    let cost = computeCost(currentAssign)
+    if bestAssign == nil || cost < bestCost {
+      bestCost = cost
+      bestAssign = []
+      var k = 0
+      while k < n {
+        bestAssign = append(bestAssign, currentAssign[k])
+        k = k + 1
+      }
+    }
+    return
+  }
+  var mem = 0
+  while mem < m {
+    if times[i][mem] != 0 - 1 {
+      currentAssign[i] = mem
+      dfs(i + 1)
+    }
+    mem = mem + 1
+  }
+}
+
+fun main() {
+  var case = 1
+  while true {
+    var line = input()
+    if line == nil { return }
+    if line == "" { continue }
+    let mn = parseInts(line)
+    if len(mn) < 2 { continue }
+    m = mn[0]
+    n = mn[1]
+    if m == 0 && n == 0 { return }
+    let memLine = input()
+    members = parseInts(memLine)
+    times = []
+    var i = 0
+    while i < n {
+      var l = input()
+      while l == "" { l = input() }
+      let nums = parseInts(l)
+      let k = nums[0]
+      var s: list<int> = []
+      var t: list<int> = []
+      var idx = 0
+      while idx < k {
+        s = append(s, nums[1 + idx*2])
+        t = append(t, nums[1 + idx*2 + 1])
+        idx = idx + 1
+      }
+      var row: list<int> = []
+      var mem = 0
+      while mem < m {
+        let b = members[mem]
+        var tm = 0 - 1
+        if b >= s[0] {
+          var j = 0
+          while j < k {
+            if j + 1 < k {
+              if b >= s[j] && b < s[j+1] {
+                tm = t[j]
+                break
+              }
+            } else {
+              tm = t[j]
+              break
+            }
+            j = j + 1
+          }
+        }
+        row = append(row, tm)
+        mem = mem + 1
+      }
+      times = append(times, row)
+      i = i + 1
+    }
+    currentAssign = []
+    i = 0
+    while i < n {
+      currentAssign = append(currentAssign, 0)
+      i = i + 1
+    }
+    bestAssign = nil
+    bestCost = 1000000000
+    dfs(0)
+
+    var startTimes: list<int> = []
+    var endTimes: list<int> = []
+    i = 0
+    while i < n {
+      startTimes = append(startTimes, 0)
+      endTimes = append(endTimes, 0)
+      i = i + 1
+    }
+    var mem = 0
+    while mem < m {
+      var jobs: list<int> = []
+      i = 0
+      while i < n {
+        if bestAssign[i] == mem {
+          jobs = append(jobs, i)
+        }
+        i = i + 1
+      }
+      jobs = sortJobs(jobs, mem)
+      var cur = 0
+      var j = 0
+      while j < len(jobs) {
+        let job = jobs[j]
+        startTimes[job] = cur
+        cur = cur + times[job][mem]
+        endTimes[job] = cur
+        j = j + 1
+      }
+      mem = mem + 1
+    }
+
+    print("Case " + str(case))
+    let avg = (bestCost as float) / (n as float)
+    print("Average solution time = " + format2(avg))
+    i = 0
+    while i < n {
+      let memIdx = bestAssign[i] + 1
+      let st = startTimes[i]
+      let en = endTimes[i]
+      print("Problem " + str(i+1) + " is solved by member " + str(memIdx) + " from " + str(st) + " to " + str(en))
+      i = i + 1
+    }
+    print("")
+    case = case + 1
+  }
+}
+
+main()
