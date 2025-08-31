@@ -1,0 +1,247 @@
+// Solution for SPOJ BLUEEQ - Help Blue Mary Please! (Act I)
+// https://www.spoj.com/problems/BLUEEQ/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun evalExpr(s: string): map<string, any> {
+  var i = 0
+  var sum = 0
+  var prod = 0
+  var first = true
+  var op = "+"
+  var expectNum = true
+  while i < len(s) {
+    if expectNum {
+      let ch = s[i:i+1]
+      if ch < "0" || ch > "9" { return { ok: false, val: 0 } }
+      var j = i
+      while j < len(s) && s[j:j+1] >= "0" && s[j:j+1] <= "9" { j = j + 1 }
+      let numStr = substring(s, i, j)
+      if len(numStr) > 1 && numStr[0:1] == "0" { return { ok: false, val: 0 } }
+      let num = parseIntStr(numStr)
+      if first {
+        prod = num
+        first = false
+      } else {
+        if op == "*" {
+          prod = prod * num
+        } else {
+          sum = sum + prod
+          prod = num
+        }
+      }
+      i = j
+      expectNum = false
+    } else {
+      let ch = s[i:i+1]
+      if ch != "+" && ch != "*" { return { ok: false, val: 0 } }
+      op = ch
+      expectNum = true
+      i = i + 1
+    }
+  }
+  if expectNum { return { ok: false, val: 0 } }
+  sum = sum + prod
+  return { ok: true, val: sum }
+}
+
+let lettersIdx = {"a":0,"b":1,"c":2,"d":3,"e":4,"f":5,"g":6,"h":7,"i":8,"j":9,"k":10,"l":11,"m":12}
+let lettersArr = ["a","b","c","d","e","f","g","h","i","j","k","l","m"]
+let symbols = ["0","1","2","3","4","5","6","7","8","9","+","*"]
+
+fun checkEq(mapping: list<string>, eqs: list<string>): bool {
+  var i = 0
+  while i < len(eqs) {
+    let s = eqs[i]
+    var mapped = ""
+    var j = 0
+    while j < len(s) {
+      let ch = s[j:j+1]
+      mapped = mapped + mapping[lettersIdx[ch] as int]
+      j = j + 1
+    }
+    let parts = split(mapped, "=")
+    if len(parts) != 2 { return false }
+    let r1 = evalExpr(parts[0])
+    let r2 = evalExpr(parts[1])
+    if (r1.ok as bool) == false || (r2.ok as bool) == false || (r1.val as int) != (r2.val as int) { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun dfs(letters: list<int>, mapping: list<string>, used: list<bool>, eqs: list<string>): list<list<string>> {
+  if len(letters) == 0 {
+    if checkEq(mapping, eqs) {
+      var copy: list<string> = []
+      var t = 0
+      while t < len(mapping) { copy = append(copy, mapping[t]); t = t + 1 }
+      var lst: list<list<string>> = []
+      lst = append(lst, copy)
+      return lst
+    } else { return [] }
+  }
+  let i = letters[0] as int
+  let rest = letters[1:len(letters)]
+  var res: list<list<string>> = []
+  var si = 0
+  while si < len(symbols) {
+    let sym = symbols[si]
+    let symIdx = if sym >= "0" && sym <= "9" { parseIntStr(sym) } else if sym == "+" { 10 } else { 11 }
+    if !used[symIdx] {
+      mapping[i] = sym
+      used[symIdx] = true
+      let sub = dfs(rest, mapping, used, eqs)
+      var r = 0
+      while r < len(sub) { res = append(res, sub[r]); r = r + 1 }
+      used[symIdx] = false
+      mapping[i] = ""
+    }
+    si = si + 1
+  }
+  return res
+}
+
+fun solveCase(eqs: list<string>): list<string> {
+  var present: list<bool> = []
+  var i = 0
+  while i < 13 { present = append(present, false); i = i + 1 }
+  i = 0
+  while i < len(eqs) {
+    let s = eqs[i]
+    var j = 0
+    while j < len(s) {
+      present[lettersIdx[s[j:j+1]] as int] = true
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var cand: list<int> = []
+  i = 0
+  while i < 13 { cand = append(cand, i); i = i + 1 }
+  i = 0
+  while i < len(eqs) {
+    let s = eqs[i]
+    var counts: list<int> = []
+    var k = 0
+    while k < 13 { counts = append(counts, 0); k = k + 1 }
+    var j = 0
+    while j < len(s) {
+      let idx = lettersIdx[s[j:j+1]] as int
+      counts[idx] = counts[idx] + 1
+      j = j + 1
+    }
+    var newCand: list<int> = []
+    var c = 0
+    while c < len(cand) {
+      let id = cand[c]
+      if counts[id] == 1 { newCand = append(newCand, id) }
+      c = c + 1
+    }
+    cand = newCand
+    i = i + 1
+  }
+  var solutions: list<list<string>> = []
+  i = 0
+  while i < len(cand) {
+    let e = cand[i]
+    var mapping: list<string> = []
+    var k = 0
+    while k < 13 { mapping = append(mapping, ""); k = k + 1 }
+    mapping[e] = "="
+    var used: list<bool> = []
+    k = 0
+    while k < 12 { used = append(used, false); k = k + 1 }
+    var letters: list<int> = []
+    k = 0
+    while k < 13 {
+      if present[k] && k != e { letters = append(letters, k) }
+      k = k + 1
+    }
+    let sols = dfs(letters, mapping, used, eqs)
+    var s = 0
+    while s < len(sols) { solutions = append(solutions, sols[s]); s = s + 1 }
+    i = i + 1
+  }
+  if len(solutions) == 0 { return ["noway"] }
+  var poss: list<list<string>> = []
+  i = 0
+  while i < 13 { var empty: list<string> = []; poss = append(poss, empty); i = i + 1 }
+  i = 0
+  while i < len(solutions) {
+    let m = solutions[i]
+    var j = 0
+    while j < 13 {
+      if present[j] && m[j] != "" {
+        var p = poss[j]
+        var found = false
+        var q = 0
+        while q < len(p) {
+          if p[q] == m[j] { found = true }
+          q = q + 1
+        }
+        if !found { p = append(p, m[j]); poss[j] = p }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var res: list<string> = []
+  i = 0
+  while i < 13 {
+    if present[i] && len(poss[i]) == 1 {
+      res = append(res, lettersArr[i] + (poss[i][0] as string))
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let n = (input()) as int
+    var eqs: list<string> = []
+    var i = 0
+    while i < n { eqs = append(eqs, input()); i = i + 1 }
+    let res = solveCase(eqs)
+    var j = 0
+    while j < len(res) { print(res[j]); j = j + 1 }
+    case = case + 1
+  }
+}
+
+main()
