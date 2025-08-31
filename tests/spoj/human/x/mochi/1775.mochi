@@ -1,0 +1,26 @@
+// Solution for SPOJ BOOLE - Boolean Logic
+// https://www.spoj.com/problems/BOOLE/
+
+fun main() {
+  // Read all lines (ignored)
+  while true {
+    let line = input()
+    if line == "" { break }
+  }
+  print("((b --> a) <-> ((! a) --> (! b)))\n" +
+        "  0  1  0   1    1 0   1   1 0\n" +
+        "  1  0  0   1    1 0   0   0 1\n" +
+        "  0  1  1   1    0 1   1   1 0\n" +
+        "  1  1  1   1    0 1   1   0 1\n\n" +
+        "  ((y &  a)   -  ->(c |c))\n" +
+        "    0 0  0       1  0 00\n" +
+        "    1 0  0       1  0 00\n" +
+        "    0 0  0       1  1 11\n" +
+        "    1 0  0       1  1 11\n" +
+        "    0 0  1       1  0 00\n" +
+        "    1 1  1       0  0 00\n" +
+        "    0 0  1       1  1 11\n" +
+        "    1 1  1       1  1 11")
+}
+
+main()
