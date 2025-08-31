@@ -1,0 +1,111 @@
+// Solution for SPOJ MKMONEY - Making Money
+// https://www.spoj.com/problems/MKMONEY/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseMoney(str: string): int {
+  var i = 0
+  var dollars = 0
+  while i < len(str) && str[i:i+1] != "." {
+    dollars = dollars * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  var cents = 0
+  if i < len(str) && str[i:i+1] == "." {
+    i = i + 1
+    var j = 0
+    while j < 2 {
+      cents = cents * 10
+      if i < len(str) { cents = cents + (digits[str[i:i+1]] as int); i = i + 1 }
+      j = j + 1
+    }
+  }
+  return dollars * 100 + cents
+}
+
+fun parseRate(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) && str[i:i+1] != "." {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  n = n * 100
+  if i < len(str) && str[i:i+1] == "." {
+    i = i + 1
+    var j = 0
+    var frac = 0
+    while j < 2 {
+      frac = frac * 10
+      if i < len(str) { frac = frac + (digits[str[i:i+1]] as int); i = i + 1 }
+      j = j + 1
+    }
+    n = n + frac
+  }
+  return n
+}
+
+fun formatMoney(v: int): string {
+  var dollars = v / 100
+  var cents = v % 100
+  var centsStr = str(cents)
+  if len(centsStr) < 2 { centsStr = "0" + centsStr }
+  return str(dollars) + "." + centsStr
+}
+
+fun main() {
+  var caseNo = 1
+  while true {
+    let line = input()
+    if line == nil || len(line) == 0 { break }
+    let parts = splitSpaces(line)
+    if len(parts) < 3 { continue }
+    if parts[0] == "0.00" && parts[1] == "0.00" && parts[2] == "0" { break }
+    let pStr = parts[0]
+    let iStr = parts[1]
+    let c = parseIntStr(parts[2])
+    var p = parseMoney(pStr)
+    let rate = parseRate(iStr)
+    var k = 0
+    while k < c {
+      let interest = (p * rate) / (10000 * c)
+      p = p + interest
+      k = k + 1
+    }
+    let result = formatMoney(p)
+    print("Case " + str(caseNo) + ". $" + pStr + " at " + iStr + "% APR compounded " + str(c) + " times yields $" + result)
+    caseNo = caseNo + 1
+  }
+}
+
+main()
