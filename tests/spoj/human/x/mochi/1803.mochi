@@ -1,0 +1,53 @@
+// Solution for SPOJ FOLD - Fold
+// https://www.spoj.com/problems/FOLD/
+
+var memo: map<string,int>
+
+fun dfs(s: string): int {
+  let n = len(s)
+  if n == 0 { return 0 }
+  if n == 1 { return 1 }
+  if memo[s] != nil { return memo[s] as int }
+  var best = n
+  var i = 1
+  while i < n {
+    var k = i
+    let right = n - i
+    if right < k { k = right }
+    var j = 0
+    var ok = true
+    while j < k {
+      let a = substring(s, i-1-j, i-j)
+      let b = substring(s, i+j, i+j+1)
+      if a != b { ok = false; break }
+      j = j + 1
+    }
+    if ok {
+      var newS = ""
+      if i < n - i {
+        newS = substring(s, i+k, n)
+      } else if i > n - i {
+        newS = substring(s, 0, i-k)
+      } else {
+        newS = ""
+      }
+      let cand = 1 + dfs(newS)
+      if cand < best { best = cand }
+    }
+    i = i + 1
+  }
+  memo[s] = best
+  return best
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { return }
+    memo = {}
+    let res = dfs(line)
+    print(str(res))
+  }
+}
+
+main()
