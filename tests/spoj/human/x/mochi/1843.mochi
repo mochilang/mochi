@@ -1,0 +1,54 @@
+// Solution for SPOJ CANHACK - Can We Hack It?
+// https://www.spoj.com/problems/CANHACK/
+
+let letterIdx = {
+  "A":0,"B":1,"C":2,"D":3,"E":4,"F":5,"G":6,"H":7,
+  "I":8,"J":9,"K":10,"L":11,"M":12,"N":13,"O":14,"P":15,
+  "Q":16,"R":17,"S":18,"T":19,"U":20,"V":21,"W":22,"X":23,
+  "Y":24,"Z":25,
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let permStr = input()
+    var perm: list<int> = []
+    var i = 0
+    while i < 26 {
+      perm = append(perm, letterIdx[permStr[i:i+1]] as int)
+      i = i + 1
+    }
+    var visited: list<int> = []
+    i = 0
+    while i < 26 { visited = append(visited, 0); i = i + 1 }
+    var counts: list<int> = []
+    i = 0
+    while i <= 26 { counts = append(counts, 0); i = i + 1 }
+    i = 0
+    while i < 26 {
+      if visited[i] == 1 { i = i + 1; continue }
+      var k = i
+      var len = 0
+      while visited[k] == 0 {
+        visited[k] = 1
+        k = perm[k]
+        len = len + 1
+      }
+      if len % 2 == 0 { counts[len] = counts[len] + 1 }
+      i = i + 1
+    }
+    var ok = true
+    i = 2
+    while i <= 26 {
+      if counts[i] % 2 == 1 { ok = false; break }
+      i = i + 2
+    }
+    if ok { print("Yes") } else { print("No") }
+    case = case + 1
+  }
+}
+
+main()
