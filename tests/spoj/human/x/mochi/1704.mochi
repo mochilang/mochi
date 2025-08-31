@@ -1,0 +1,141 @@
+// Solution for SPOJ CDOWN - Countdown
+// https://www.spoj.com/problems/CDOWN/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+type Node = { name: string, depth: int }
+
+fun countDesc(root: string, d: int, adj: map<string,list<string>>): int {
+  var q: list<Node> = [Node{ name: root, depth: 0 }]
+  var qi = 0
+  var cnt = 0
+  while qi < len(q) {
+    let cur = q[qi]
+    qi = qi + 1
+    if cur.depth == d {
+      cnt = cnt + 1
+      continue
+    }
+    if cur.depth > d { continue }
+    let childs = adj[cur.name]
+    if childs != nil {
+      var j = 0
+      while j < len(childs) {
+        q = append(q, Node{ name: childs[j], depth: cur.depth + 1 })
+        j = j + 1
+      }
+    }
+  }
+  return cnt
+}
+
+type Pair = { name: string, c: int }
+
+fun sortPairs(arr: list<Pair>): list<Pair> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 {
+      let a = arr[j-1]
+      let b = arr[j]
+      if a.c > b.c || (a.c == b.c && a.name <= b.name) { break }
+      arr[j-1] = b
+      arr[j] = a
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" || tLine == nil { return }
+  let t = parseIntStr(tLine)
+  var cs = 0
+  while cs < t {
+    var line = input()
+    while line == "" || line == nil { line = input() }
+    let first = splitSpaces(line)
+    let n = parseIntStr(first[0])
+    let d = parseIntStr(first[1])
+    var adj: map<string,list<string>> = {}
+    var names: map<string,bool> = {}
+    var i = 0
+    while i < n {
+      var ln = input()
+      while ln == "" || ln == nil { ln = input() }
+      let parts = splitSpaces(ln)
+      let name = parts[0]
+      let m = parseIntStr(parts[1])
+      var childs: list<string> = []
+      var j = 0
+      while j < m {
+        let ch = parts[2 + j]
+        childs = append(childs, ch)
+        if adj[ch] == nil { adj[ch] = [] }
+        names[ch] = true
+        j = j + 1
+      }
+      adj[name] = childs
+      names[name] = true
+      i = i + 1
+    }
+    var res: list<Pair> = []
+    for name, _ in names {
+      let c = countDesc(name, d, adj)
+      if c > 0 {
+        res = append(res, Pair{ name: name, c: c })
+      }
+    }
+    if len(res) > 1 {
+      res = sortPairs(res)
+    }
+    print("Tree " + str(cs + 1) + ":")
+    if len(res) > 0 {
+      var limit = 3
+      if len(res) < limit { limit = len(res) }
+      var last = res[limit - 1].c
+      var k = 0
+      while k < len(res) && (k < limit || res[k].c == last) {
+        let p = res[k]
+        print(p.name + " " + str(p.c))
+        k = k + 1
+      }
+    }
+    cs = cs + 1
+    if cs < t { print("") }
+  }
+}
+
+main()
