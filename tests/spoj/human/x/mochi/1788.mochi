@@ -1,0 +1,102 @@
+// Solution for SPOJ FRACTAN - Fractan
+// https://www.spoj.com/problems/FRACTAN/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if cur != "" { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+var tokens: list<string> = []
+var idx = 0
+
+fun nextToken(): string {
+  while idx >= len(tokens) {
+    let line = input()
+    if line == nil { return nil }
+    tokens = splitSpaces(line)
+    idx = 0
+  }
+  let t = tokens[idx]
+  idx = idx + 1
+  return t
+}
+
+fun nextInt(): int {
+  let t = nextToken()
+  if t == nil { return 0 }
+  return int(t)
+}
+
+fun powerExp(n: bigint): int {
+  if n <= 0 as bigint { return -1 }
+  let two: bigint = 2 as bigint
+  var x = n
+  var e = 0
+  while x % two == 0 as bigint {
+    x = x / two
+    e = e + 1
+  }
+  if x == 1 as bigint { return e }
+  return -1
+}
+
+fun main() {
+  while true {
+    let m = nextInt()
+    if m == 0 { break }
+    let start = nextInt()
+    let k = nextInt()
+    var nums: list<int> = []
+    var dens: list<int> = []
+    var i = 0
+    while i < k {
+      nums = append(nums, nextInt())
+      dens = append(dens, nextInt())
+      i = i + 1
+    }
+    var cur: bigint = start as bigint
+    var res: list<int> = []
+    while len(res) < m {
+      let exp = powerExp(cur)
+      if exp >= 0 { res = append(res, exp) }
+      if len(res) >= m { break }
+      var moved = false
+      var j = 0
+      while j < k {
+        let num = nums[j]
+        let den = dens[j]
+        let prod: bigint = cur * (num as bigint)
+        let denBig: bigint = den as bigint
+        if prod % denBig == 0 as bigint {
+          cur = prod / denBig
+          moved = true
+          break
+        }
+        j = j + 1
+      }
+      if moved == false { break }
+    }
+    var out = ""
+    var p = 0
+    while p < len(res) {
+      if p > 0 { out = out + " " }
+      out = out + str(res[p])
+      p = p + 1
+    }
+    print(out)
+  }
+}
+
+main()
