@@ -1,0 +1,41 @@
+// Solution for SPOJ MKLABELS - Making Labels
+// https://www.spoj.com/problems/MKLABELS/
+
+fun powInt(a: int, b: int): int {
+  var res = 1
+  var i = 0
+  while i < b {
+    res = res * a
+    i = i + 1
+  }
+  return res
+}
+
+fun intToString(n: int): string {
+  if n == 0 { return "0" }
+  let digits = ["0","1","2","3","4","5","6","7","8","9"]
+  var s = ""
+  var m = n
+  while m > 0 {
+    let d = m % 10
+    s = digits[d] + s
+    m = m / 10
+  }
+  return s
+}
+
+fun main() {
+  var caseIdx = 1
+  while true {
+    let line = input()
+    if line == "" { return }
+    let n = line as int
+    if n == 0 { break }
+    let count = if n <= 1 { 1 } else { powInt(n, n - 2) }
+    let output = "Case " + intToString(caseIdx) + ", N = " + intToString(n) + ", # of different labelings = " + intToString(count)
+    print(output)
+    caseIdx = caseIdx + 1
+  }
+}
+
+main()
