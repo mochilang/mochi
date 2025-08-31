@@ -1,0 +1,38 @@
+// Solution for SPOJ EDGE - Edge
+// https://www.spoj.com/problems/EDGE/
+
+fun main() {
+  var line = input()
+  while line != "" {
+    var x = 300
+    var y = 420
+    var dx = 1
+    var dy = 0
+    print(str(x) + " " + str(y) + " moveto")
+    var i = 0
+    while i < len(line) {
+      x = x + dx * 10
+      y = y + dy * 10
+      print(str(x) + " " + str(y) + " lineto")
+      let ch = line[i:i+1]
+      if ch == "A" {
+        let tmp = dx
+        dx = dy
+        dy = -tmp
+      } else {
+        let tmp = dx
+        dx = -dy
+        dy = tmp
+      }
+      i = i + 1
+    }
+    x = x + dx * 10
+    y = y + dy * 10
+    print(str(x) + " " + str(y) + " lineto")
+    print("stroke")
+    print("showpage")
+    line = input()
+  }
+}
+
+main()
