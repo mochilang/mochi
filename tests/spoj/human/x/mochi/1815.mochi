@@ -1,0 +1,76 @@
+// Solution for SPOJ WA - Problems Collection (Volume X)
+// https://www.spoj.com/problems/WA/
+
+fun comb(n: int, k: int): int {
+  if k < 0 || k > n { return 0 }
+  let r = if k < n - k { k } else { n - k }
+  var res = 1
+  var i = 1
+  while i <= r {
+    res = res * (n - r + i) / i
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  // Problem 1
+  let g = (10 - 1) * (10 - 2) * (10 - 3) * (10 - 4)
+  let ans1 = (10 - (-5)) * (2007 + g)
+
+  // Problem 2
+  let ans2 =
+    comb(93, 3) * 20 * 20 * 20 +
+    comb(7, 3) * 21 * 21 * 21 +
+    comb(7, 2) * comb(93, 1) * 21 * 21 * 20 +
+    comb(7, 1) * comb(93, 2) * 21 * 20 * 20
+
+  // Problem 3
+  var res3 = 0
+  var i = 100
+  while i <= 500 {
+    var pow10 = 1
+    var j = i
+    while j > 0 {
+      pow10 = (pow10 * 10) % 126
+      j = j / 10
+    }
+    res3 = (res3 * pow10 + i) % 126
+    i = i + 1
+  }
+  let ans3 = res3
+
+  // Problem 4
+  let ans4 = 2007 * 2007
+
+  // Problem 5
+  let ans5 = 40
+
+  // Problem 6
+  let ans6 = 1360
+
+  // Problem 7
+  let ans7 = 3
+
+  // Problem 8
+  let ans8 = 987 * (-1597)
+
+  // Problem 9
+  let ans9 = 4
+
+  // Problem 10
+  let ans10 = 111331
+
+  print(str(ans1))
+  print(str(ans2))
+  print(str(ans3))
+  print(str(ans4))
+  print(str(ans5))
+  print(str(ans6))
+  print(str(ans7))
+  print(str(ans8))
+  print(str(ans9))
+  print(str(ans10))
+}
+
+main()
