@@ -1,0 +1,128 @@
+// Solution for SPOJ TREASURY - Royal Treasury
+// https://www.spoj.com/problems/TREASURY/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+var children: list<list<int>> = []
+var dp0: list<int> = []
+var dp1: list<int> = []
+var cnt0: list<bigint> = []
+var cnt1: list<bigint> = []
+
+fun dfs(u: int) {
+  let ch = children[u] as list<int>
+  let m = len(ch)
+  var sum = 0
+  var pre: list<bigint> = [1 as bigint]
+  var i = 0
+  while i < m {
+    let v = ch[i] as int
+    dfs(v)
+    sum = sum + dp0[v]
+    pre = append(pre, (pre[i] as bigint) * cnt0[v])
+    i = i + 1
+  }
+  var suf: list<bigint> = []
+  i = 0
+  while i <= m {
+    suf = append(suf, 1 as bigint)
+    i = i + 1
+  }
+  i = m - 1
+  while i >= 0 {
+    let v = ch[i] as int
+    suf[i] = suf[i+1] * cnt0[v]
+    i = i - 1
+  }
+  dp1[u] = sum
+  cnt1[u] = pre[m]
+  var best = sum
+  var ways: bigint = pre[m]
+  i = 0
+  while i < m {
+    let v = ch[i] as int
+    let val = 1 + sum - dp0[v] + dp1[v]
+    let prodOthers = (pre[i] as bigint) * suf[i+1]
+    let cnt = prodOthers * cnt1[v]
+    if val > best {
+      best = val
+      ways = cnt
+    } else if val == best {
+      ways = ways + cnt
+    }
+    i = i + 1
+  }
+  dp0[u] = best
+  cnt0[u] = ways
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let n = parseIntStr(line)
+    children = []
+    dp0 = []
+    dp1 = []
+    cnt0 = []
+    cnt1 = []
+    var i = 0
+    while i <= n {
+      children = append(children, [])
+      dp0 = append(dp0, 0)
+      dp1 = append(dp1, 0)
+      cnt0 = append(cnt0, 0 as bigint)
+      cnt1 = append(cnt1, 0 as bigint)
+      i = i + 1
+    }
+    var read = 0
+    while read < n {
+      let l = input()
+      let parts = splitSpaces(l)
+      let id = parseIntStr(parts[0])
+      let k = parseIntStr(parts[1])
+      var j = 0
+      while j < k {
+        let child = parseIntStr(parts[2+j])
+        children[id] = append(children[id], child)
+        j = j + 1
+      }
+      read = read + 1
+    }
+    dfs(1)
+    print(dp0[1])
+    print(str(cnt0[1]))
+  }
+}
+
+main()
