@@ -1,0 +1,141 @@
+// Solution for SPOJ SEQPAR2 - Sequence Partitioning II
+// https://www.spoj.com/problems/SEQPAR2/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun can(target: int, n: int, limit: int, a: list<int>, b: list<int>, suf: list<int>): bool {
+  var total = 0
+  var start = 0
+  var sumB = 0
+  var maxDeque: list<map<string,int>> = []
+  var minDeque: list<map<string,int>> = []
+  var i = 0
+  while i < n {
+    let ai = a[i]
+    let bi = b[i]
+    sumB = sumB + bi
+    while len(maxDeque) > 0 && (maxDeque[len(maxDeque)-1]["val"] as int) <= ai {
+      maxDeque = maxDeque[0:len(maxDeque)-1]
+    }
+    maxDeque = append(maxDeque, {"idx": i, "val": ai })
+    while len(minDeque) > 0 && (minDeque[len(minDeque)-1]["val"] as int) >= bi {
+      minDeque = minDeque[0:len(minDeque)-1]
+    }
+    minDeque = append(minDeque, {"idx": i, "val": bi })
+    while sumB > target || (len(minDeque) > 0 && (minDeque[0]["val"] as int) <= suf[i+1]) {
+      sumB = sumB - b[start]
+      if len(maxDeque) > 0 && (maxDeque[0]["idx"] as int) == start { maxDeque = maxDeque[1:len(maxDeque)] }
+      if len(minDeque) > 0 && (minDeque[0]["idx"] as int) == start { minDeque = minDeque[1:len(minDeque)] }
+      start = start + 1
+    }
+    if len(maxDeque) == 0 { i = i + 1; continue }
+    if i == n-1 {
+      total = total + (maxDeque[0]["val"] as int)
+      return total <= limit
+    }
+    let nextSum = sumB + b[i+1]
+    var nextMin = minDeque[0]["val"] as int
+    if b[i+1] < nextMin { nextMin = b[i+1] }
+    if nextSum > target || nextMin <= suf[i+2] {
+      total = total + (maxDeque[0]["val"] as int)
+      if total > limit { return false }
+      start = i + 1
+      sumB = 0
+      maxDeque = []
+      minDeque = []
+    }
+    i = i + 1
+  }
+  return total <= limit
+}
+
+fun main() {
+  let first = input()
+  if first == nil || first == "" { return }
+  let fs = splitSpaces(first)
+  let n = parseIntStr(fs[0])
+  let limit = parseIntStr(fs[1])
+  var A: list<int> = []
+  var B: list<int> = []
+  var i = 0
+  while i < n {
+    let line = input()
+    let parts = splitSpaces(line)
+    let ai = parseIntStr(parts[0])
+    let bi = parseIntStr(parts[1])
+    A = append(A, ai)
+    B = append(B, bi)
+    i = i + 1
+  }
+  var suf: list<int> = []
+  var idx = 0
+  while idx <= n {
+    suf = append(suf, 0)
+    idx = idx + 1
+  }
+  idx = n - 1
+  var cur = 0
+  while idx >= 0 {
+    let ai = A[idx]
+    if ai > cur { cur = ai }
+    suf[idx] = cur
+    idx = idx - 1
+  }
+  var lo = 0
+  var hi = 0
+  i = 0
+  while i < n {
+    let bi = B[i]
+    if bi > lo { lo = bi }
+    hi = hi + bi
+    i = i + 1
+  }
+  var ans = hi
+  var l = lo
+  var r = hi
+  while l <= r {
+    let mid = (l + r) / 2
+    if can(mid, n, limit, A, B, suf) {
+      ans = mid
+      r = mid - 1
+    } else {
+      l = mid + 1
+    }
+  }
+  print(str(ans))
+}
+
+main()
