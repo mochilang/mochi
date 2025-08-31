@@ -1,0 +1,163 @@
+// Solution for SPOJ BOOKCASE - Compact Book Storage
+// https://www.spoj.com/problems/BOOKCASE/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun sortByHeightDesc(books: list<list<int>>): list<list<int>> {
+  var i = 1
+  while i < len(books) {
+    var j = i
+    while j > 0 && books[j-1][0] < books[j][0] {
+      let tmp = books[j-1]
+      books[j-1] = books[j]
+      books[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return books
+}
+
+fun makeMatrix(n: int, m: int, value: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i <= n {
+    var row: list<int> = []
+    var j = 0
+    while j <= m {
+      row = append(row, value)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun solveCase(books: list<list<int>>, total: int): int {
+  books = sortByHeightDesc(books)
+  let S = total
+  let INF = 1000000000
+  var dp = makeMatrix(S, S, INF)
+  dp[0][0] = 0
+  var prefix = 0
+  var idx = 0
+  while idx < len(books) {
+    let h = books[idx][0]
+    let t = books[idx][1]
+    let prev = prefix
+    prefix = prefix + t
+    var newdp = makeMatrix(S, S, INF)
+    var w1 = 0
+    while w1 <= prev {
+      var w2 = 0
+      while w2 <= prev - w1 {
+        let cost = dp[w1][w2]
+        if cost < INF {
+          let w3_prev = prev - w1 - w2
+          // put on shelf1
+          if w1 + t <= S {
+            var c = cost
+            if w1 == 0 { c = c + h }
+            if c < newdp[w1 + t][w2] { newdp[w1 + t][w2] = c }
+          }
+          // put on shelf2
+          if w2 + t <= S {
+            var c2 = cost
+            if w2 == 0 { c2 = c2 + h }
+            if c2 < newdp[w1][w2 + t] { newdp[w1][w2 + t] = c2 }
+          }
+          // put on shelf3
+          let w3_new = w3_prev + t
+          if w3_new <= S {
+            var c3 = cost
+            if w3_prev == 0 { c3 = c3 + h }
+            if c3 < newdp[w1][w2] { newdp[w1][w2] = c3 }
+          }
+        }
+        w2 = w2 + 1
+      }
+      w1 = w1 + 1
+    }
+    dp = newdp
+    idx = idx + 1
+  }
+  var ans = INF * INF
+  var w1 = 1
+  while w1 <= S {
+    var w2 = 1
+    while w2 <= S - w1 {
+      let w3 = total - w1 - w2
+      if w3 > 0 {
+        let cost = dp[w1][w2]
+        if cost < INF {
+          var width = w1
+          if w2 > width { width = w2 }
+          if w3 > width { width = w3 }
+          let area = width * cost
+          if area < ans { ans = area }
+        }
+      }
+      w2 = w2 + 1
+    }
+    w1 = w1 + 1
+  }
+  return ans
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let T = parseIntStr(tLine)
+  for _ in 0..T {
+    let nLine = input()
+    if nLine == nil || nLine == "" { return }
+    let N = parseIntStr(nLine)
+    var books: list<list<int>> = []
+    var total = 0
+    var i = 0
+    while i < N {
+      let line = input()
+      let parts = splitSpaces(line)
+      let h = parseIntStr(parts[0])
+      let t = parseIntStr(parts[1])
+      books = append(books, [h, t])
+      total = total + t
+      i = i + 1
+    }
+    let ans = solveCase(books, total)
+    print(str(ans))
+  }
+}
+
+main()
