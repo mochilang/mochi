@@ -1,0 +1,132 @@
+// Solution for SPOJ ICAMPSEQ - IOICamp Sequence
+// https://www.spoj.com/problems/ICAMPSEQ/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 {
+        res = append(res, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseFloatStr(str: string): float {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var intPart = 0
+  while i < len(str) && str[i:i+1] != "." {
+    intPart = intPart * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  var frac = 0.0
+  var scale = 0.1
+  if i < len(str) && str[i:i+1] == "." {
+    i = i + 1
+    while i < len(str) {
+      frac = frac + (digits[str[i:i+1]] as float) * scale
+      scale = scale / 10.0
+      i = i + 1
+    }
+  }
+  var res = (intPart as float) + frac
+  if neg { res = 0.0 - res }
+  return res
+}
+
+fun format3(x: float): string {
+  var scaled = x * 1000.0 + 0.5
+  var n = scaled as int
+  var whole = n / 1000
+  var frac = n % 1000
+  var fracStr = str(frac)
+  while len(fracStr) < 3 {
+    fracStr = "0" + fracStr
+  }
+  return str(whole) + "." + fracStr
+}
+
+fun main() {
+  let nLine = input()
+  if nLine == "" { return }
+  let n = nLine as int
+  var maxVals: list<float> = []
+  var minVals: list<float> = []
+  var i = 0
+  while i < 16 {
+    maxVals = append(maxVals, -1e30)
+    minVals = append(minVals, 1e30)
+    i = i + 1
+  }
+  var idx = 0
+  while idx < n {
+    var line = input()
+    if line == "" { continue }
+    let parts = split(line)
+    let a = parseFloatStr(parts[0])
+    let b = parseFloatStr(parts[1])
+    let c = parseFloatStr(parts[2])
+    let d = parseFloatStr(parts[3])
+    var mask = 0
+    while mask < 16 {
+      var val = 0.0
+      if (mask % 2) == 1 {
+        val = val + a
+      } else {
+        val = val - a
+      }
+      if ((mask / 2) % 2) == 1 {
+        val = val + b
+      } else {
+        val = val - b
+      }
+      if ((mask / 4) % 2) == 1 {
+        val = val + c
+      } else {
+        val = val - c
+      }
+      if ((mask / 8) % 2) == 1 {
+        val = val + d
+      } else {
+        val = val - d
+      }
+      if val > maxVals[mask] {
+        maxVals[mask] = val
+      }
+      if val < minVals[mask] {
+        minVals[mask] = val
+      }
+      mask = mask + 1
+    }
+    idx = idx + 1
+  }
+  var best = 0.0
+  var m = 0
+  while m < 16 {
+    let diff = maxVals[m] - minVals[m]
+    if diff > best { best = diff }
+    m = m + 1
+  }
+  print(format3(best))
+}
+
+main()
