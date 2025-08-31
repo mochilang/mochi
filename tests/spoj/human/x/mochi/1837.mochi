@@ -1,0 +1,90 @@
+// Solution for SPOJ PIE - Pie
+// https://www.spoj.com/problems/PIE/
+
+let PI = 3.141592653589793
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun format4(x: float): string {
+  var scaled = x * 10000.0 + 0.5
+  var n = scaled as int
+  var whole = n / 10000
+  var frac = n % 10000
+  var fs = str(frac)
+  while len(fs) < 4 {
+    fs = "0" + fs
+  }
+  return str(whole) + "." + fs
+}
+
+fun countPieces(vs: list<float>, size: float): int {
+  if size <= 0.0 { return 0 }
+  var count = 0
+  var i = 0
+  while i < len(vs) {
+    count = count + ((vs[i] / size) as int)
+    i = i + 1
+  }
+  return count
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var caseIndex = 0
+  while caseIndex < t {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = split(line)
+    let n = int(parts[0])
+    let f = int(parts[1])
+    let rline = input()
+    let rparts = split(rline)
+    var vols: list<float> = []
+    var i = 0
+    while i < n {
+      let r = int(rparts[i])
+      let v = PI * (r as float) * (r as float)
+      vols = append(vols, v)
+      i = i + 1
+    }
+    let need = f + 1
+    var low = 0.0
+    var high = 0.0
+    i = 0
+    while i < n {
+      if vols[i] > high { high = vols[i] }
+      i = i + 1
+    }
+    var iter = 0
+    while iter < 50 {
+      let mid = (low + high) / 2.0
+      if countPieces(vols, mid) >= need {
+        low = mid
+      } else {
+        high = mid
+      }
+      iter = iter + 1
+    }
+    print(format4(low))
+    caseIndex = caseIndex + 1
+  }
+}
+
+main()
