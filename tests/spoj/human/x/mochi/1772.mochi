@@ -1,0 +1,116 @@
+// Solution for SPOJ DETER2 - Find The Determinant II
+// https://www.spoj.com/problems/DETER2/
+
+let MOD = 1000003
+
+fun powmod(a: int, b: int, m: int): int {
+  var res = 1
+  var base = a % m
+  var exp = b
+  while exp > 0 {
+    if exp % 2 == 1 {
+      res = (res * base) % m
+    }
+    base = (base * base) % m
+    exp = exp / 2
+  }
+  return res
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let sp = splitSpaces(line)
+  var res: list<int> = []
+  var i = 0
+  while i < len(sp) {
+    res = append(res, sp[i] as int)
+    i = i + 1
+  }
+  return res
+}
+
+fun sieve(n: int): list<int> {
+  var isPrime: list<bool> = []
+  var i = 0
+  while i <= n {
+    isPrime = append(isPrime, true)
+    i = i + 1
+  }
+  if n >= 0 { isPrime[0] = false }
+  if n >= 1 { isPrime[1] = false }
+  var p = 2
+  while p * p <= n {
+    if isPrime[p] {
+      var j = p * p
+      while j <= n {
+        isPrime[j] = false
+        j = j + p
+      }
+    }
+    p = p + 1
+  }
+  var primes: list<int> = []
+  i = 2
+  while i <= n {
+    if isPrime[i] { primes = append(primes, i) }
+    i = i + 1
+  }
+  return primes
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var cases: list<list<int> > = []
+  var maxN = 0
+  var facts = []
+  for _ in 0..t {
+    let nums = parseInts(input())
+    cases = append(cases, nums)
+    if nums[0] > maxN { maxN = nums[0] }
+  }
+  facts = append(facts, 1)
+  var i = 1
+  while i <= maxN {
+    facts = append(facts, (facts[i-1] * i) % MOD)
+    i = i + 1
+  }
+  let primes = sieve(maxN)
+  i = 0
+  while i < len(cases) {
+    let n = cases[i][0]
+    let k = cases[i][1]
+    var res = powmod(facts[n], k, MOD)
+    var j = 0
+    while j < len(primes) && primes[j] <= n {
+      let p = primes[j]
+      let e = n / p
+      let pk = powmod(p, k, MOD)
+      let inv = powmod(pk, MOD - 2, MOD)
+      let term = (1 - inv + MOD) % MOD
+      res = (res * powmod(term, e, MOD)) % MOD
+      j = j + 1
+    }
+    print(str(res))
+    i = i + 1
+  }
+}
+
+main()
