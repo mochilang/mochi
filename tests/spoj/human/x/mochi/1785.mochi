@@ -1,0 +1,60 @@
+// Solution for SPOJ CODE - Code
+// https://www.spoj.com/problems/CODE/
+
+fun db(t: int, p: int, n: int, k: int, a: list<int>, seq: list<int>): list<int> {
+  if t > n {
+    if n % p == 0 {
+      var j = 1
+      while j <= p {
+        seq = append(seq, a[j])
+        j = j + 1
+      }
+    }
+  } else {
+    a[t] = a[t - p]
+    seq = db(t + 1, p, n, k, a, seq)
+    var j = a[t - p] + 1
+    while j < k {
+      a[t] = j
+      seq = db(t + 1, t, n, k, a, seq)
+      j = j + 1
+    }
+  }
+  return seq
+}
+
+fun debruijn(n: int): string {
+  let k = 10
+  var a: list<int> = []
+  var i = 0
+  while i <= k * n {
+    a = append(a, 0)
+    i = i + 1
+  }
+  var seq: list<int> = []
+  seq = db(1, 1, n, k, a, seq)
+  var res = ""
+  i = 0
+  while i < len(seq) {
+    res = res + str(seq[i])
+    i = i + 1
+  }
+  i = 0
+  while i < n - 1 {
+    res = res + str(seq[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { return }
+    let n = int(line)
+    if n == 0 { break }
+    print(debruijn(n))
+  }
+}
+
+main()
