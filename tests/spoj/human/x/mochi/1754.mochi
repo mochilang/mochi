@@ -1,0 +1,41 @@
+// Solution for SPOJ DIVSUM2 - Divisor Summation (Hard)
+// https://www.spoj.com/problems/DIVSUM2/
+
+fun sumProperDivisors(n: int): int {
+  if n == 1 { return 0 }
+  var m = n
+  var result = 1
+  var p = 2
+  while p * p <= m {
+    if m % p == 0 {
+      var term = 1
+      var pow = 1
+      while m % p == 0 {
+        m = m / p
+        pow = pow * p
+        term = term + pow
+      }
+      result = result * term
+    }
+    p = p + 1
+  }
+  if m > 1 {
+    result = result * (1 + m)
+  }
+  return result - n
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == nil || len(tStr) == 0 { return }
+  let t = int(tStr)
+  for _ in 0..t {
+    let line = input()
+    if line == nil || len(line) == 0 { print("0"); continue }
+    let n = int(line)
+    let s = sumProperDivisors(n)
+    print(str(s))
+  }
+}
+
+main()
