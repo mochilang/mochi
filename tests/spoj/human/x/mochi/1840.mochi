@@ -1,0 +1,72 @@
+// Solution for SPOJ PQUEUE - Printer Queue
+// https://www.spoj.com/problems/PQUEUE/
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil || tLine == "" { return }
+  let t = tLine as int
+  var c = 0
+  while c < t {
+    let line = input()
+    if line == nil || line == "" { break }
+    var parts = split(line)
+    let n = parts[0] as int
+    let m = parts[1] as int
+    let priLine = input()
+    parts = split(priLine)
+    var q: list<int> = []
+    var i = 0
+    while i < len(parts) {
+      q = append(q, parts[i] as int)
+      i = i + 1
+    }
+    var pos = m
+    var time = 0
+    while true {
+      let head = q[0]
+      var maxp = head
+      var k = 1
+      while k < len(q) {
+        if q[k] > maxp { maxp = q[k] }
+        k = k + 1
+      }
+      if head == maxp {
+        time = time + 1
+        if pos == 0 {
+          print(str(time))
+          break
+        }
+        q = q[1:]
+        pos = pos - 1
+      } else {
+        q = q[1:]
+        q = append(q, head)
+        pos = pos - 1
+        if pos < 0 { pos = len(q) - 1 }
+      }
+    }
+    c = c + 1
+  }
+}
+
+main()
