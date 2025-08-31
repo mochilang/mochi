@@ -1,0 +1,105 @@
+// Solution for SPOJ PPATH - Prime Path
+// https://www.spoj.com/problems/PPATH/
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun sieve(): list<int> {
+  var prime = make_int_list(10000, 1)
+  prime[0] = 0
+  prime[1] = 0
+  var i = 2
+  while i < 10000 {
+    if prime[i] == 1 {
+      var j = i * i
+      while j < 10000 {
+        prime[j] = 0
+        j = j + i
+      }
+    }
+    i = i + 1
+  }
+  return prime
+}
+
+fun shortest(a: int, b: int, prime: list<int>): int {
+  if a == b { return 0 }
+  var dist = make_int_list(10000, -1)
+  var queue: list<int> = []
+  var qi = 0
+  queue = append(queue, a)
+  dist[a] = 0
+  let pows = [1,10,100,1000]
+  while qi < len(queue) {
+    let u = queue[qi]
+    qi = qi + 1
+    if u == b { return dist[u] }
+    var pos = 0
+    while pos < 4 {
+      let pow = pows[pos]
+      let cur = (u / pow) % 10
+      var d = 0
+      while d < 10 {
+        if pos == 3 && d == 0 { d = d + 1; continue }
+        if d != cur {
+          let v = u - cur * pow + d * pow
+          if prime[v] == 1 && dist[v] < 0 {
+            dist[v] = dist[u] + 1
+            queue = append(queue, v)
+          }
+        }
+        d = d + 1
+      }
+      pos = pos + 1
+    }
+  }
+  return -1
+}
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  let prime = sieve()
+  var case = 0
+  while case < t {
+    var line = input()
+    while len(line) == 0 { line = input() }
+    let parts = split(line)
+    let a = parts[0] as int
+    let b = parts[1] as int
+    let steps = shortest(a, b, prime)
+    if steps < 0 {
+      print("Impossible")
+    } else {
+      print(str(steps))
+    }
+    case = case + 1
+  }
+}
+
+main()
