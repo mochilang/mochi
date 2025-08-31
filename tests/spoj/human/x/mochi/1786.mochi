@@ -1,0 +1,26 @@
+// Solution for SPOJ DANGER - In Danger
+// https://www.spoj.com/problems/DANGER/
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    if line == "00e0" { break }
+    let xy = int(substring(line, 0, 2))
+    let z = int(substring(line, 3, len(line)))
+    var n = xy
+    var i = 0
+    while i < z {
+      n = n * 10
+      i = i + 1
+    }
+    var p = 1
+    while p * 2 <= n {
+      p = p * 2
+    }
+    let survivor = 2 * (n - p) + 1
+    print(str(survivor))
+  }
+}
+
+main()
