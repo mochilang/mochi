@@ -1,0 +1,290 @@
+// Solution for SPOJ GEN2 - Text Generater II
+// https://www.spoj.com/problems/GEN2/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+let letters = {
+  "a":0,"b":1,"c":2,"d":3,"e":4,
+  "f":5,"g":6,"h":7,"i":8,"j":9,
+  "k":10,"l":11,"m":12,"n":13,"o":14,
+  "p":15,"q":16,"r":17,"s":18,"t":19,
+  "u":20,"v":21,"w":22,"x":23,"y":24,
+  "z":25,
+}
+
+let NEG = 0 - 1
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun make_matrix(r: int, c: int): list<list<int>> {
+  var m: list<list<int>> = []
+  var i = 0
+  while i < r {
+    var row: list<int> = []
+    var j = 0
+    while j < c {
+      row = append(row, 0)
+      j = j + 1
+    }
+    m = append(m, row)
+    i = i + 1
+  }
+  return m
+}
+
+fun make_vec(n: int): list<int> {
+  var v: list<int> = []
+  var i = 0
+  while i < n {
+    v = append(v, 0)
+    i = i + 1
+  }
+  return v
+}
+
+fun mat_mul(a: list<list<int>>, b: list<list<int>>, mod: int): list<list<int>> {
+  let n = len(a)
+  var res = make_matrix(n, n)
+  var i = 0
+  while i < n {
+    var k = 0
+    while k < n {
+      let aik = a[i][k]
+      if aik != 0 {
+        var j = 0
+        while j < n {
+          res[i][j] = (res[i][j] + aik * b[k][j]) % mod
+          j = j + 1
+        }
+      }
+      k = k + 1
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun mat_identity(n: int): list<list<int>> {
+  var m = make_matrix(n, n)
+  var i = 0
+  while i < n {
+    m[i][i] = 1
+    i = i + 1
+  }
+  return m
+}
+
+fun mat_pow(mat: list<list<int>>, power: int, mod: int): list<list<int>> {
+  var result = mat_identity(len(mat))
+  var base = mat
+  var p = power
+  while p > 0 {
+    if p % 2 == 1 { result = mat_mul(result, base, mod) }
+    base = mat_mul(base, base, mod)
+    p = p / 2
+  }
+  return result
+}
+
+fun vec_mul(vec: list<int>, mat: list<list<int>>, mod: int): list<int> {
+  let n = len(vec)
+  var res = make_vec(n)
+  var i = 0
+  while i < n {
+    let vi = vec[i]
+    if vi != 0 {
+      var j = 0
+      while j < n {
+        res[j] = (res[j] + vi * mat[i][j]) % mod
+        j = j + 1
+      }
+    }
+    i = i + 1
+  }
+  return res
+}
+
+var nodeNext: list<list<int>>
+var nodeFail: list<int>
+var nodeMask: list<int>
+var nodeBad: list<bool>
+
+fun newNode() {
+  var nxt: list<int> = []
+  var i = 0
+  while i < 26 {
+    nxt = append(nxt, NEG)
+    i = i + 1
+  }
+  nodeNext = append(nodeNext, nxt)
+  nodeFail = append(nodeFail, 0)
+  nodeMask = append(nodeMask, 0)
+  nodeBad = append(nodeBad, false)
+}
+
+fun addPattern(p: string, bit: int, isBad: bool) {
+  var v = 0
+  var i = 0
+  while i < len(p) {
+    let c = letters[p[i:i+1]] as int
+    if nodeNext[v][c] == NEG {
+      newNode()
+      nodeNext[v][c] = len(nodeNext) - 1
+    }
+    v = nodeNext[v][c]
+    i = i + 1
+  }
+  if isBad {
+    nodeBad[v] = true
+  } else {
+    nodeMask[v] = nodeMask[v] + bit
+  }
+}
+
+fun buildAutomaton(evils: list<string>) {
+  nodeNext = []
+  nodeFail = []
+  nodeMask = []
+  nodeBad = []
+  newNode() // root
+  addPattern("hl", 1, false)
+  addPattern("hj", 2, false)
+  addPattern("fgd", 4, false)
+  var i = 0
+  while i < len(evils) {
+    addPattern(evils[i], 0, true)
+    i = i + 1
+  }
+  var q: list<int> = []
+  var qi = 0
+  var c = 0
+  while c < 26 {
+    let u = nodeNext[0][c]
+    if u != NEG {
+      nodeFail[u] = 0
+      q = append(q, u)
+    } else {
+      nodeNext[0][c] = 0
+    }
+    c = c + 1
+  }
+  while qi < len(q) {
+    let v = q[qi]
+    qi = qi + 1
+    c = 0
+    while c < 26 {
+      let u = nodeNext[v][c]
+      if u != NEG {
+        var f = nodeFail[v]
+        while nodeNext[f][c] == NEG {
+          f = nodeFail[f]
+        }
+        let nf = nodeNext[f][c]
+        nodeFail[u] = nf
+        nodeMask[u] = nodeMask[u] + nodeMask[nf]
+        if nodeBad[nf] { nodeBad[u] = true }
+        q = append(q, u)
+      } else {
+        nodeNext[v][c] = nodeNext[nodeFail[v]][c]
+      }
+      c = c + 1
+    }
+  }
+}
+
+fun buildMatrix(): list<list<int>> {
+  let nNodes = len(nodeNext)
+  let states = nNodes * 8
+  var mat = make_matrix(states, states)
+  var s = 0
+  while s < nNodes {
+    if nodeBad[s] { s = s + 1; continue }
+    var mask = 0
+    while mask < 8 {
+      let idx = s * 8 + mask
+      var c = 0
+      while c < 26 {
+        let to = nodeNext[s][c]
+        if nodeBad[to] {
+          c = c + 1
+          continue
+        }
+        let nm = mask + nodeMask[to]
+        let jdx = to * 8 + nm
+        mat[idx][jdx] = (mat[idx][jdx] + 1) % 8000
+        c = c + 1
+      }
+      mask = mask + 1
+    }
+    s = s + 1
+  }
+  return mat
+}
+
+fun solve(L: int, evils: list<string>): int {
+  buildAutomaton(evils)
+  let mat = buildMatrix()
+  let matL = mat_pow(mat, L, 8000)
+  let states = len(mat)
+  var start = make_vec(states)
+  start[0] = 1
+  let res = vec_mul(start, matL, 8000)
+  var total = 0
+  var s = 0
+  while s < len(nodeNext) {
+    let idx = s * 8 + 7
+    total = (total + res[idx]) % 8000
+    s = s + 1
+  }
+  return (total / 8) % 1000
+}
+
+fun main() {
+  while true {
+    var line = input()
+    if line == "" { break }
+    let parts = split(line)
+    if len(parts) < 2 { break }
+    let L = parseIntStr(parts[0])
+    let N = parseIntStr(parts[1])
+    var evils: list<string> = []
+    var i = 0
+    while i < N {
+      let s = input()
+      evils = append(evils, s)
+      i = i + 1
+    }
+    let ans = solve(L, evils)
+    print(str(ans))
+  }
+}
+
+main()
