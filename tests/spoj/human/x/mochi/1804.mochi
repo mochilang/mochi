@@ -1,0 +1,75 @@
+// Solution for SPOJ GENETIC - Genetic Code
+// https://www.spoj.com/problems/GENETIC/
+
+let letters = ["N", "O", "P"]
+
+fun isSquareFree(s: string): bool {
+  let L = len(s)
+  var k = 1
+  while 2*k <= L {
+    if s[L-2*k:L-k] == s[L-k:L] {
+      return false
+    }
+    k = k + 1
+  }
+  return true
+}
+
+fun buildSeq(n: int): string {
+  var res = ""
+  var idx: list<int> = []
+  var i = 0
+  while i < n {
+    if i == len(idx) {
+      idx = append(idx, 0)
+    }
+    var j = idx[i]
+    var found = false
+    res = res[0:i]
+    while j < 3 {
+      let c = letters[j]
+      let cand = res + c
+      if isSquareFree(cand) {
+        res = cand
+        idx[i] = j
+        found = true
+        break
+      }
+      j = j + 1
+    }
+    if found {
+      i = i + 1
+    } else {
+      idx[i] = 0
+      if i == 0 { break }
+      i = i - 1
+      idx[i] = idx[i] + 1
+    }
+  }
+  return res
+}
+
+fun main() {
+  var ns: list<int> = []
+  while true {
+    let line = input()
+    if line == nil { break }
+    let n = line as int
+    if n == 0 { break }
+    ns = append(ns, n)
+  }
+  var maxN = 0
+  var i = 0
+  while i < len(ns) {
+    if ns[i] > maxN { maxN = ns[i] }
+    i = i + 1
+  }
+  let seq = buildSeq(maxN)
+  i = 0
+  while i < len(ns) {
+    print(seq[0:ns[i]])
+    i = i + 1
+  }
+}
+
+main()
