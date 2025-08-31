@@ -1,0 +1,126 @@
+// Solution for SPOJ GREEDULM - Huffman's Greed
+// https://www.spoj.com/problems/GREEDULM/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun makeMatrix(rows: int, cols: int): list<list<int>> {
+  var m: list<list<int>> = []
+  var i = 0
+  while i <= rows {
+    var row: list<int> = []
+    var j = 0
+    while j <= cols {
+      row = append(row, 0)
+      j = j + 1
+    }
+    m = append(m, row)
+    i = i + 1
+  }
+  return m
+}
+
+fun main() {
+  while true {
+    var line = input()
+    if line == nil { return }
+    while line == "" { line = input(); if line == nil { return } }
+    let n = parseIntStr(line)
+    if n == 0 { break }
+    var nums: list<int> = []
+    while len(nums) < 2 * n + 1 {
+      line = input()
+      if line == nil { line = "" }
+      let vals = parseInts(line)
+      var i = 0
+      while i < len(vals) && len(nums) < 2 * n + 1 {
+        nums = append(nums, vals[i])
+        i = i + 1
+      }
+    }
+    var p: list<int> = [0]
+    var i = 0
+    while i < n {
+      p = append(p, nums[i])
+      i = i + 1
+    }
+    var q: list<int> = []
+    var totalQ = 0
+    var j = 0
+    while j <= n {
+      let v = nums[n + j]
+      q = append(q, v)
+      totalQ = totalQ + v
+      j = j + 1
+    }
+    let e = makeMatrix(n+1, n)
+    let w = makeMatrix(n+1, n)
+    i = 1
+    while i <= n + 1 {
+      e[i][i-1] = q[i-1]
+      w[i][i-1] = q[i-1]
+      i = i + 1
+    }
+    var l = 1
+    while l <= n {
+      i = 1
+      while i <= n - l + 1 {
+        let j2 = i + l - 1
+        w[i][j2] = w[i][j2-1] + p[j2] + q[j2]
+        e[i][j2] = 1000000000000000000
+        var r = i
+        while r <= j2 {
+          let t = e[i][r-1] + e[r+1][j2] + w[i][j2]
+          if t < e[i][j2] { e[i][j2] = t }
+          r = r + 1
+        }
+        i = i + 1
+      }
+      l = l + 1
+    }
+    let ans = e[1][n] - totalQ
+    print(str(ans))
+  }
+}
+
+main()
