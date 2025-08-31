@@ -1,0 +1,110 @@
+// Solution for SPOJ HISTOGRA - Largest Rectangle in a Histogram
+// https://www.spoj.com/problems/HISTOGRA/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = split(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun largestArea(heights: list<int>): int {
+  var stack: list<int> = []
+  var maxArea = 0
+  var i = 0
+  let n = len(heights)
+  while i < n {
+    if len(stack) == 0 || (heights[stack[len(stack)-1]] as int) <= (heights[i] as int) {
+      stack = append(stack, i)
+      i = i + 1
+    } else {
+      let top = stack[len(stack)-1]
+      stack = stack[0:len(stack)-1]
+      var width = 0
+      if len(stack) == 0 {
+        width = i
+      } else {
+        width = i - (stack[len(stack)-1] as int) - 1
+      }
+      let area = (heights[top] as int) * width
+      if area > maxArea { maxArea = area }
+    }
+  }
+  while len(stack) > 0 {
+    let top = stack[len(stack)-1]
+    stack = stack[0:len(stack)-1]
+    var width = 0
+    if len(stack) == 0 {
+      width = i
+    } else {
+      width = i - (stack[len(stack)-1] as int) - 1
+    }
+    let area = (heights[top] as int) * width
+    if area > maxArea { maxArea = area }
+  }
+  return maxArea
+}
+
+fun main() {
+  while true {
+    var line = input()
+    if line == "" { break }
+    var parts = split(line)
+    if len(parts) == 0 { continue }
+    let n = parseIntStr(parts[0])
+    if n == 0 { break }
+    var heights: list<int> = []
+    var idx = 1
+    while len(heights) < n {
+      while idx < len(parts) && len(heights) < n {
+        heights = append(heights, parseIntStr(parts[idx]))
+        idx = idx + 1
+      }
+      if len(heights) < n {
+        line = input()
+        parts = split(line)
+        idx = 0
+      }
+    }
+    let area = largestArea(heights)
+    print(area)
+  }
+}
+
+main()
