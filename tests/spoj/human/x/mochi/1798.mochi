@@ -1,0 +1,46 @@
+// Solution for SPOJ ASSIST - Assistance Required
+// https://www.spoj.com/problems/ASSIST/
+
+fun sieve(): list<int> {
+  var nums: list<int> = []
+  var i = 2
+  while i <= 50000 {
+    nums = append(nums, i)
+    i = i + 1
+  }
+  var idx = 0
+  while idx < len(nums) {
+    let step = nums[idx]
+    if step > len(nums) { break }
+    var newNums: list<int> = []
+    var j = 0
+    var cnt = 0
+    while j < len(nums) {
+      if j <= idx {
+        newNums = append(newNums, nums[j])
+      } else {
+        cnt = cnt + 1
+        if cnt % step != 0 {
+          newNums = append(newNums, nums[j])
+        }
+      }
+      j = j + 1
+    }
+    nums = newNums
+    idx = idx + 1
+  }
+  return nums
+}
+
+fun main() {
+  let lucky = sieve()
+  while true {
+    let line = input()
+    if line == "" { return }
+    let n = line as int
+    if n == 0 { break }
+    print(str(lucky[n - 1]))
+  }
+}
+
+main()
