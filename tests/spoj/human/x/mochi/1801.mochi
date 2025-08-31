@@ -1,0 +1,99 @@
+// Solution for SPOJ DRINK - Drink, on Ice
+// https://www.spoj.com/problems/DRINK/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { res = append(res, cur) }
+  return res
+}
+
+fun parseFloat(s: string): float {
+  var i = 0
+  var neg = false
+  if len(s) > 0 && s[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var val = 0.0
+  while i < len(s) && s[i:i+1] != "." {
+    val = val * 10.0 + (digits[s[i:i+1]] as float)
+    i = i + 1
+  }
+  if i < len(s) && s[i:i+1] == "." {
+    i = i + 1
+    var base = 0.1
+    while i < len(s) {
+      val = val + (digits[s[i:i+1]] as float) * base
+      base = base / 10.0
+      i = i + 1
+    }
+  }
+  if neg { val = -val }
+  return val
+}
+
+fun format1(x: float): string {
+  var scaled = x * 10.0
+  if scaled < 0.0 { scaled = scaled - 0.5 } else { scaled = scaled + 0.5 }
+  var n = scaled as int
+  var whole = n / 10
+  var frac = n % 10
+  if frac < 0 { frac = -frac }
+  return str(whole) + "." + str(frac)
+}
+
+type Res { ice: float, water: float, temp: float }
+
+fun mix(mw: float, mi: float, tw: float, ti: float): Res {
+  let cw = 4.19
+  let ci = 2.09
+  let em = 335.0
+  let total = mw + mi
+  let energy = mw*cw*tw + mi*(ci*ti - em)
+  if energy >= 0.0 {
+    let Tf = energy / (total * cw)
+    return Res { ice: 0.0, water: total, temp: Tf }
+  }
+  let limit = -em * total
+  if energy >= limit {
+    let ice = -energy / em
+    let water = total - ice
+    return Res { ice: ice, water: water, temp: 0.0 }
+  }
+  let Ti = (energy / total + em) / ci
+  return Res { ice: total, water: 0.0, temp: Ti }
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil { break }
+    if line == "" { continue }
+    let parts = splitSpaces(line)
+    let mw = parseFloat(parts[0])
+    let mi = parseFloat(parts[1])
+    let tw = parseFloat(parts[2])
+    let ti = parseFloat(parts[3])
+    if mw == 0.0 && mi == 0.0 && tw == 0.0 && ti == 0.0 { break }
+    let r = mix(mw, mi, tw, ti)
+    print(format1(r.ice) + " g of ice and " + format1(r.water) + " g of water at " + format1(r.temp) + " C")
+  }
+}
+
+main()
