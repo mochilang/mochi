@@ -1,0 +1,93 @@
+// Solution for SPOJ MKPALS - Making Pals
+// https://www.spoj.com/problems/MKPALS/
+
+fun isPal(s: string): bool {
+  var i = 0
+  var j = len(s) - 1
+  while i < j {
+    if s[i:i+1] != s[j:j+1] { return false }
+    i = i + 1
+    j = j - 1
+  }
+  return true
+}
+
+let digits = ["0","1","2","3","4","5","6","7","8","9"]
+
+fun better(a: map<string,int>, b: map<string,int>): map<string,int> {
+  if a.cost < b.cost { return a }
+  if a.cost > b.cost { return b }
+  if a.len >= b.len { return a }
+  return b
+}
+
+fun solve(s: string): map<string,int> {
+  var seen: map<string,bool> = {}
+  var cur: list<string> = [s]
+  seen[s] = true
+  var cost = 0
+  while true {
+    var found = false
+    var best = 0
+    var i = 0
+    while i < len(cur) {
+      let str = cur[i]
+      if isPal(str) {
+        found = true
+        let l = len(str)
+        if l > best { best = l }
+      }
+      i = i + 1
+    }
+    if found { return {cost: cost, len: best} }
+    var next: list<string> = []
+    i = 0
+    while i < len(cur) {
+      let str = cur[i]
+      let n = len(str)
+      if n > 0 {
+        let leftDel = str[1:n]
+        if seen[leftDel] != true {
+          seen[leftDel] = true
+          next = append(next, leftDel)
+        }
+        let rightDel = str[0:n-1]
+        if seen[rightDel] != true {
+          seen[rightDel] = true
+          next = append(next, rightDel)
+        }
+      }
+      var d = 0
+      while d < 10 {
+        let ch = digits[d]
+        let leftAdd = ch + str
+        if seen[leftAdd] != true {
+          seen[leftAdd] = true
+          next = append(next, leftAdd)
+        }
+        let rightAdd = str + ch
+        if seen[rightAdd] != true {
+          seen[rightAdd] = true
+          next = append(next, rightAdd)
+        }
+        d = d + 1
+      }
+      i = i + 1
+    }
+    cur = next
+    cost = cost + 1
+  }
+}
+
+fun main() {
+  var caseNo = 1
+  while true {
+    let line = input()
+    if line == "" { break }
+    let ans = solve(line)
+    print("Case " + str(caseNo) + ", sequence = " + line + ", cost = " + str(ans.cost) + ", length = " + str(ans.len))
+    caseNo = caseNo + 1
+  }
+}
+
+main()
