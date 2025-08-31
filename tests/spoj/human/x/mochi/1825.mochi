@@ -1,0 +1,130 @@
+// Solution for SPOJ FTOUR2 - Free tour II
+// https://www.spoj.com/problems/FTOUR2/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+var tokens: list<string> = []
+fun nextInt(): int {
+  while len(tokens) == 0 {
+    let line = input()
+    if line == nil { return 0 }
+    let parts = splitSpaces(line)
+    var j = 0
+    while j < len(parts) {
+      tokens = append(tokens, parts[j])
+      j = j + 1
+    }
+  }
+  let v = parseIntStr(tokens[0])
+  tokens = tokens[1:len(tokens)]
+  return v
+}
+
+type Edge { to: int, w: int }
+type State { node: int, sum: int, cnt: int, parent: int }
+
+fun main() {
+  let N = nextInt()
+  let K = nextInt()
+  let M = nextInt()
+
+  var adj: list<list<Edge>> = []
+  var crowded: list<bool> = []
+  var i = 0
+  while i <= N {
+    adj = append(adj, [])
+    crowded = append(crowded, false)
+    i = i + 1
+  }
+
+  i = 0
+  while i < M {
+    let id = nextInt()
+    crowded[id] = true
+    i = i + 1
+  }
+
+  i = 0
+  while i < N - 1 {
+    let a = nextInt()
+    let b = nextInt()
+    let w = nextInt()
+    adj[a] = append(adj[a] as list<Edge>, Edge{ to:b, w:w })
+    adj[b] = append(adj[b] as list<Edge>, Edge{ to:a, w:w })
+    i = i + 1
+  }
+
+  var best = 0
+  var s = 1
+  while s <= N {
+    if !(crowded[s] && K == 0) {
+      let startCnt = if crowded[s] {1} else {0}
+      if startCnt <= K {
+        var stack: list<State> = []
+        stack = append(stack, State{ node:s, sum:0, cnt:startCnt, parent:0 })
+        while len(stack) > 0 {
+          let st = stack[len(stack)-1]
+          stack = stack[0:len(stack)-1]
+          let u = st.node
+          let sum = st.sum
+          let cnt = st.cnt
+          let parent = st.parent
+          if sum > best { best = sum }
+          var j = 0
+          while j < len(adj[u]) {
+            let e = adj[u][j]
+            let v = e.to
+            if v != parent {
+              let nc = cnt + (if crowded[v] {1} else {0})
+              if nc <= K {
+                stack = append(stack, State{ node:v, sum:sum + e.w, cnt:nc, parent:u })
+              }
+            }
+            j = j + 1
+          }
+        }
+      }
+    }
+    s = s + 1
+  }
+
+  print(str(best))
+}
+
+main()
