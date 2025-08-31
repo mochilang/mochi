@@ -1,5 +1,21 @@
 # 📦 CHANGELOG.md
 
+## [0.10.80] – 2025-08-31T02:56:47+00:00
+
+### Added
+
+- Mochi solutions for SPOJ problems such as GSS3, SCALE, PRMLX, Two Ends, SQCOUNT, RELINETS, QKP, ACMAKER, Cleaning Robot, problem 1701, TRSTAGE, NSYSTEM, Polygonal Line Search, OFORTUNE, WIJGT, COCONUTS, EASYPROB, LOGIC2, 1685 Grocery Store, Frequent Values, EXPRESS, Cylinder, Treasury, HALLOW, Text Generator, Fusion Cube, 1674, 1673, GIWED, AMATH, TREEOI14, GSS2, ZOO, BACKUP, MOBILE2, MKJUMPS, BLUEEQ3, Ranklist Sorting, MOLE, POLEVAL, the PT07 series, problems 1478 and 1476, Play with Digit Seven, problem 1473, Tom and Jerry, PEARL, SEQ2, problem 1487, Search in XML and more.
+- Lean solutions for SPOJ problems including NSYSTEM, Polygonal Line Search, 1697, WIJGT, GRC, COCONUTS, HARDP, 1688, LOGIC2, GROCERY, Frequent Values, EXPRESS, Cylinder, Treasury, 1677, GEN, FUSION, EXPLOSN, AMBM, GIWED, AMATH, TREEOI14, ZOO, BACKUP, Mobiles, MKJUMPS, BLUEEQ3, RSORTING, MOLE, POLEVAL, the PT07 series, PEARL, SEQ2, RAIN2, CASHIER, chris, EDIT3, ROBOT, problem 1461, GALAXY, AEROLITE, BLUEEQ2, BLUEEQ and more.
+- Documentation for Swamp Things solution.
+
+### Changed
+
+- No changes.
+
+### Fixed
+
+- No fixes.
+
 ## [0.10.79] – 2025-08-30T03:46:25+00:00
 
 ### Added
