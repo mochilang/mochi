@@ -1,0 +1,145 @@
+// Solution for SPOJ HEAPULM - Binary Search Heap Construction
+// https://www.spoj.com/problems/HEAPULM/
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun mergeIdx(a: list<int>, b: list<int>, labels: list<string>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  var j = 0
+  while i < len(a) && j < len(b) {
+    if labels[a[i]] <= labels[b[j]] {
+      res = append(res, a[i])
+      i = i + 1
+    } else {
+      res = append(res, b[j])
+      j = j + 1
+    }
+  }
+  while i < len(a) { res = append(res, a[i]); i = i + 1 }
+  while j < len(b) { res = append(res, b[j]); j = j + 1 }
+  return res
+}
+
+fun mergeSortIdx(arr: list<int>, labels: list<string>): list<int> {
+  if len(arr) <= 1 { return arr }
+  let mid = len(arr) / 2
+  let left = mergeSortIdx(arr[0:mid], labels)
+  let right = mergeSortIdx(arr[mid:len(arr)], labels)
+  return mergeIdx(left, right, labels)
+}
+
+fun treapString(root: int, labels: list<string>, prio: list<int>, left: list<int>, right: list<int>): string {
+  var res = ""
+  var nodeStack: list<int> = []
+  var state: list<int> = []
+  nodeStack = append(nodeStack, root)
+  state = append(state, 0)
+  while len(nodeStack) > 0 {
+    let top = len(nodeStack) - 1
+    let n = nodeStack[top]
+    let st = state[top]
+    if st == 0 {
+      res = res + "("
+      state[top] = 1
+      if left[n] != 0-1 {
+        nodeStack = append(nodeStack, left[n])
+        state = append(state, 0)
+      }
+    } else if st == 1 {
+      res = res + labels[n] + "/" + str(prio[n])
+      state[top] = 2
+      if right[n] != 0-1 {
+        nodeStack = append(nodeStack, right[n])
+        state = append(state, 0)
+      }
+    } else {
+      res = res + ")"
+      nodeStack = nodeStack[0:top]
+      state = state[0:top]
+    }
+  }
+  return res
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let parts = splitSpaces(line)
+    if len(parts) == 0 { continue }
+    let n = parts[0] as int
+    if n == 0 { break }
+    var tokens: list<string> = []
+    var i = 1
+    while i < len(parts) {
+      tokens = append(tokens, parts[i])
+      i = i + 1
+    }
+    while len(tokens) < n {
+      let extra = splitSpaces(input())
+      var j = 0
+      while j < len(extra) {
+        tokens = append(tokens, extra[j])
+        j = j + 1
+      }
+    }
+    var labels: list<string> = []
+    var prio: list<int> = []
+    i = 0
+    while i < n {
+      let tok = tokens[i]
+      var pos = 0
+      while pos < len(tok) && tok[pos:pos+1] != "/" {
+        pos = pos + 1
+      }
+      let lbl = tok[0:pos]
+      let pr = tok[pos+1:len(tok)] as int
+      labels = append(labels, lbl)
+      prio = append(prio, pr)
+      i = i + 1
+    }
+    var idxs: list<int> = []
+    i = 0
+    while i < n { idxs = append(idxs, i); i = i + 1 }
+    idxs = mergeSortIdx(idxs, labels)
+    var left: list<int> = []
+    var right: list<int> = []
+    i = 0
+    while i < n { left = append(left, 0-1); right = append(right, 0-1); i = i + 1 }
+    var stack: list<int> = []
+    i = 0
+    while i < n {
+      let id = idxs[i]
+      var last = 0-1
+      while len(stack) > 0 && prio[id] > prio[stack[len(stack)-1]] {
+        last = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+      }
+      if last != 0-1 { left[id] = last }
+      if len(stack) > 0 { right[stack[len(stack)-1]] = id }
+      stack = append(stack, id)
+      i = i + 1
+    }
+    let root = stack[0]
+    let ans = treapString(root, labels, prio, left, right)
+    print(ans)
+  }
+}
+
+main()
