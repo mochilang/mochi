@@ -1,0 +1,133 @@
+// Solution for SPOJ DRAGON2 - Greedy Hydra II
+// https://www.spoj.com/problems/DRAGON2/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun pow2(x: int): int {
+  var r = 1
+  var i = 0
+  while i < x {
+    r = r * 2
+    i = i + 1
+  }
+  return r
+}
+
+fun main() {
+  let firstLine = input()
+  if firstLine == nil || firstLine == "" { return }
+  let first = parseInts(firstLine)
+  let n = first[0]
+  let m = first[1]
+  let k = first[2]
+  var u: list<int> = []
+  var v: list<int> = []
+  var w: list<int> = []
+  var i = 0
+  while i < n-1 {
+    let line = input()
+    let vals = parseInts(line)
+    u = append(u, vals[0]-1)
+    v = append(v, vals[1]-1)
+    w = append(w, vals[2])
+    i = i + 1
+  }
+  let e = n - 1
+  var best = -1
+  var mask = 0
+  let limit = pow2(e)
+  while mask < limit {
+    var parent: list<int> = []
+    var size: list<int> = []
+    i = 0
+    while i < n {
+      parent = append(parent, i)
+      size = append(size, 1)
+      i = i + 1
+    }
+    var cost = 0
+    var j = 0
+    while j < e {
+      let bit = (mask / pow2(j)) % 2
+      if bit == 1 {
+        cost = cost + w[j]
+      } else {
+        var a = u[j]
+        while parent[a] != a { a = parent[a] }
+        var b = v[j]
+        while parent[b] != b { b = parent[b] }
+        if a != b {
+          parent[b] = a
+          size[a] = size[a] + size[b]
+        }
+      }
+      j = j + 1
+    }
+    var seen: list<int> = []
+    i = 0
+    while i < n {
+      var r = i
+      while parent[r] != r { r = parent[r] }
+      var found = false
+      var t = 0
+      while t < len(seen) {
+        if seen[t] == r { found = true; break }
+        t = t + 1
+      }
+      if !found { seen = append(seen, r) }
+      i = i + 1
+    }
+    var root = 0
+    while parent[root] != root { root = parent[root] }
+    let rootSize = size[root]
+    let compCount = len(seen)
+    if rootSize >= k && compCount == m {
+      if best < 0 || cost < best { best = cost }
+    }
+    mask = mask + 1
+  }
+  print(str(best))
+}
+
+main()
