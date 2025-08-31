@@ -1,0 +1,178 @@
+// Solution for SPOJ ORZ - Nuclear Plants
+// https://www.spoj.com/problems/ORZ/
+
+import go "math" as math
+extern fun math.Sqrt(x: float): float
+extern fun math.Abs(x: float): float
+
+type Circle { x: float, y: float, r: float }
+type Seg { a: float, b: float }
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun format2(x: float): string {
+  var neg = false
+  if x < 0.0 { neg = true; x = -x }
+  var scaled = x * 100.0 + 0.5
+  var n = scaled as int
+  var whole = n / 100
+  var frac = n % 100
+  var fracStr = str(frac)
+  if len(fracStr) < 2 { fracStr = "0" + fracStr }
+  var s = str(whole) + "." + fracStr
+  if neg { s = "-" + s }
+  return s
+}
+
+var circles: list<Circle> = []
+var limitY = 0.0
+
+fun unionY(x: float): float {
+  var segs: list<Seg> = []
+  var i = 0
+  while i < len(circles) {
+    let c = circles[i]
+    let dx = x - c.x
+    if math.Abs(dx) < c.r {
+      let t = math.Sqrt(c.r * c.r - dx * dx)
+      var y1 = c.y - t
+      var y2 = c.y + t
+      if y1 < 0.0 { y1 = 0.0 }
+      if y2 > limitY { y2 = limitY }
+      if y1 < y2 {
+        segs = append(segs, Seg{ a:y1, b:y2 })
+      }
+    }
+    i = i + 1
+  }
+  if len(segs) == 0 { return 0.0 }
+  i = 0
+  while i < len(segs) {
+    var j = i + 1
+    while j < len(segs) {
+      if segs[j].a < segs[i].a {
+        let tmp = segs[i]
+        segs[i] = segs[j]
+        segs[j] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var total = 0.0
+  var curA = segs[0].a
+  var curB = segs[0].b
+  i = 1
+  while i < len(segs) {
+    let s = segs[i]
+    if s.a > curB {
+      total = total + (curB - curA)
+      curA = s.a
+      curB = s.b
+    } else if s.b > curB {
+      curB = s.b
+    }
+    i = i + 1
+  }
+  total = total + (curB - curA)
+  return total
+}
+
+fun adapt(a: float, b: float, fa: float, fb: float, fm: float, S: float, eps: float): float {
+  let m = (a + b) / 2.0
+  let f1 = unionY((a + m) / 2.0)
+  let f2 = unionY((m + b) / 2.0)
+  let S1 = (fa + 4.0 * f1 + fm) * (m - a) / 6.0
+  let S2 = (fm + 4.0 * f2 + fb) * (b - m) / 6.0
+  if math.Abs(S1 + S2 - S) <= eps {
+    return S1 + S2 + (S1 + S2 - S) / 15.0
+  }
+  return adapt(a, m, fa, fm, f1, S1, eps / 2.0) + adapt(m, b, fm, fb, f2, S2, eps / 2.0)
+}
+
+fun forbiddenArea(width: float): float {
+  let a = 0.0
+  let b = width
+  let fa = unionY(a)
+  let fb = unionY(b)
+  let mid = (a + b) / 2.0
+  let fm = unionY(mid)
+  let S = (fa + 4.0 * fm + fb) * (b - a) / 6.0
+  return adapt(a, b, fa, fb, fm, S, 1e-4)
+}
+
+fun main() {
+  while true {
+    var line = input()
+    if line == nil { break }
+    if line == "" { continue }
+    let parts = splitSpaces(line)
+    if len(parts) < 4 { continue }
+    let n = parseIntStr(parts[0])
+    let m = parseIntStr(parts[1])
+    let ks = parseIntStr(parts[2])
+    let kl = parseIntStr(parts[3])
+    if n == 0 && m == 0 && ks == 0 && kl == 0 { break }
+    circles = []
+    limitY = m as float
+    var i = 0
+    while i < ks {
+      let l = input()
+      var ps = splitSpaces(l)
+      let x = parseIntStr(ps[0]) as float
+      let y = parseIntStr(ps[1]) as float
+      circles = append(circles, Circle{ x:x, y:y, r:0.58 })
+      i = i + 1
+    }
+    i = 0
+    while i < kl {
+      let l = input()
+      var ps = splitSpaces(l)
+      let x = parseIntStr(ps[0]) as float
+      let y = parseIntStr(ps[1]) as float
+      circles = append(circles, Circle{ x:x, y:y, r:1.31 })
+      i = i + 1
+    }
+    let forbidden = forbiddenArea(n as float)
+    let total = (n as float) * (m as float) - forbidden
+    print(format2(total))
+  }
+}
+
+main()
