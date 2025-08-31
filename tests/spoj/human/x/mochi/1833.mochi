@@ -1,0 +1,205 @@
+// Solution for SPOJ SUDOKU2 - Sudoku
+// https://www.spoj.com/problems/SUDOKU2/
+
+fun parseLine(s: string): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(s) {
+    res = append(res, int(s[i:i+1]))
+    i = i + 1
+  }
+  return res
+}
+
+fun rotateBoard(b: list<list<int>>, r: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < 9 {
+    var row: list<int> = []
+    var j = 0
+    while j < 9 {
+      var v = 0
+      if r == 0 {
+        v = b[i][j]
+      } else if r == 1 {
+        v = b[8-j][i]
+      } else if r == 2 {
+        v = b[8-i][8-j]
+      } else {
+        v = b[j][8-i]
+      }
+      row = append(row, v)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun collectFilled(p: list<list<int>>): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < 9 {
+    var j = 0
+    while j < 9 {
+      let d = p[i][j]
+      if d != 0 {
+        res = append(res, [i, j, d])
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun dfs(k: int, filled: list<list<int>>, rot: list<list<int>>, rowAssign: list<int>, colAssign: list<int>, rowUsed: list<int>, colUsed: list<int>, rowGroup: list<int>, colGroup: list<int>, fwd: list<int>, rev: list<int>): bool {
+  if k == len(filled) { return true }
+  let cell = filled[k]
+  let i = cell[0]
+  let j = cell[1]
+  let d = cell[2]
+  var rows: list<int> = []
+  if rowAssign[i] != 9 {
+    rows = append(rows, rowAssign[i])
+  } else {
+    var r = 0
+    while r < 9 {
+      if rowUsed[r] == 0 {
+        let g = i / 3
+        let G = r / 3
+        if rowGroup[g] == 3 || rowGroup[g] == G {
+          rows = append(rows, r)
+        }
+      }
+      r = r + 1
+    }
+  }
+  var ri = 0
+  while ri < len(rows) {
+    let r = rows[ri]
+    let g = i / 3
+    let G = r / 3
+    let prevRowAssign = rowAssign[i]
+    let prevRowUsed = rowUsed[r]
+    let prevRowGroup = rowGroup[g]
+    rowAssign[i] = r
+    rowUsed[r] = 1
+    rowGroup[g] = G
+    var cols: list<int> = []
+    if colAssign[j] != 9 {
+      cols = append(cols, colAssign[j])
+    } else {
+      var c = 0
+      while c < 9 {
+        if colUsed[c] == 0 {
+          let h = j / 3
+          let H = c / 3
+          if colGroup[h] == 3 || colGroup[h] == H {
+            cols = append(cols, c)
+          }
+        }
+        c = c + 1
+      }
+    }
+    var ci = 0
+    while ci < len(cols) {
+      let c = cols[ci]
+      let h = j / 3
+      let H = c / 3
+      let prevColAssign = colAssign[j]
+      let prevColUsed = colUsed[c]
+      let prevColGroup = colGroup[h]
+      colAssign[j] = c
+      colUsed[c] = 1
+      colGroup[h] = H
+      let x = rot[r][c]
+      let m = fwd[x]
+      let im = rev[d]
+      if m == 0 && im == 0 {
+        fwd[x] = d
+        rev[d] = x
+        if dfs(k+1, filled, rot, rowAssign, colAssign, rowUsed, colUsed, rowGroup, colGroup, fwd, rev) { return true }
+        fwd[x] = 0
+        rev[d] = 0
+      } else if m == d {
+        if dfs(k+1, filled, rot, rowAssign, colAssign, rowUsed, colUsed, rowGroup, colGroup, fwd, rev) { return true }
+      }
+      colAssign[j] = prevColAssign
+      colUsed[c] = prevColUsed
+      colGroup[h] = prevColGroup
+      ci = ci + 1
+    }
+    rowAssign[i] = prevRowAssign
+    rowUsed[r] = prevRowUsed
+    rowGroup[g] = prevRowGroup
+    ri = ri + 1
+  }
+  return false
+}
+
+fun canTransform(sol: list<list<int>>, filled: list<list<int>>): bool {
+  var r = 0
+  while r < 4 {
+    let rot = rotateBoard(sol, r)
+    var rowAssign: list<int> = []
+    var i = 0
+    while i < 9 { rowAssign = append(rowAssign, 9); i = i + 1 }
+    var colAssign: list<int> = []
+    i = 0
+    while i < 9 { colAssign = append(colAssign, 9); i = i + 1 }
+    var rowUsed: list<int> = []
+    i = 0
+    while i < 9 { rowUsed = append(rowUsed, 0); i = i + 1 }
+    var colUsed: list<int> = []
+    i = 0
+    while i < 9 { colUsed = append(colUsed, 0); i = i + 1 }
+    var rowGroup: list<int> = []
+    i = 0
+    while i < 3 { rowGroup = append(rowGroup, 3); i = i + 1 }
+    var colGroup: list<int> = []
+    i = 0
+    while i < 3 { colGroup = append(colGroup, 3); i = i + 1 }
+    var fwd: list<int> = []
+    i = 0
+    while i < 10 { fwd = append(fwd, 0); i = i + 1 }
+    var rev: list<int> = []
+    i = 0
+    while i < 10 { rev = append(rev, 0); i = i + 1 }
+    if dfs(0, filled, rot, rowAssign, colAssign, rowUsed, colUsed, rowGroup, colGroup, fwd, rev) { return true }
+    r = r + 1
+  }
+  return false
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var case = 0
+  while case < t {
+    var solved: list<list<int>> = []
+    var i = 0
+    while i < 9 {
+      solved = append(solved, parseLine(input()))
+      i = i + 1
+    }
+    var puzzle: list<list<int>> = []
+    i = 0
+    while i < 9 {
+      puzzle = append(puzzle, parseLine(input()))
+      i = i + 1
+    }
+    if case < t-1 { let _ = input() }
+    let filled = collectFilled(puzzle)
+    if canTransform(solved, filled) {
+      print("Yes")
+    } else {
+      print("No")
+    }
+    case = case + 1
+  }
+}
+
+main()
