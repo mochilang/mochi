@@ -1,0 +1,220 @@
+// Solution for SPOJ TICKET - Ticket to Ride
+// https://www.spoj.com/problems/TICKET/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun bitAnd(a: int, b: int): int {
+  var res = 0
+  var bit = 1
+  var x = a
+  var y = b
+  while x > 0 || y > 0 {
+    if x % 2 == 1 && y % 2 == 1 { res = res + bit }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+  }
+  return res
+}
+
+fun pow2(k: int): int {
+  var res = 1
+  var i = 0
+  while i < k {
+    res = res * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let INF = 1000000000
+  while true {
+    let first = input()
+    if first == nil { return }
+    if first == "" { continue }
+    let parts = split(first)
+    let n = parseIntStr(parts[0])
+    let m = parseIntStr(parts[1])
+    if n == 0 && m == 0 { break }
+
+    var nameToIdx: map<string,int> = {}
+    var i = 0
+    while i < n {
+      let city = input()
+      nameToIdx[city] = i
+      i = i + 1
+    }
+
+    var dist: list<list<int>> = []
+    i = 0
+    while i < n {
+      var row: list<int> = []
+      var j = 0
+      while j < n {
+        if i == j { row = append(row, 0) } else { row = append(row, INF) }
+        j = j + 1
+      }
+      dist = append(dist, row)
+      i = i + 1
+    }
+
+    var e = 0
+    while e < m {
+      let line = input()
+      let p = split(line)
+      let a = nameToIdx[p[0]]
+      let b = nameToIdx[p[1]]
+      let c = parseIntStr(p[2])
+      if c < dist[a][b] { dist[a][b] = c; dist[b][a] = c }
+      e = e + 1
+    }
+
+    var terminals: list<int> = []
+    var t = 0
+    while t < 4 {
+      let line = input()
+      let p = split(line)
+      terminals = append(terminals, nameToIdx[p[0]])
+      terminals = append(terminals, nameToIdx[p[1]])
+      t = t + 1
+    }
+
+    var k = 0
+    while k < n {
+      i = 0
+      while i < n {
+        var j = 0
+        while j < n {
+          let d = dist[i][k] + dist[k][j]
+          if d < dist[i][j] { dist[i][j] = d }
+          j = j + 1
+        }
+        i = i + 1
+      }
+      k = k + 1
+    }
+
+    let ALL = pow2(8)
+    var dp: list<list<int>> = []
+    var mask = 0
+    while mask < ALL {
+      var row: list<int> = []
+      i = 0
+      while i < n { row = append(row, INF); i = i + 1 }
+      dp = append(dp, row)
+      mask = mask + 1
+    }
+    t = 0
+    while t < 8 {
+      let node = terminals[t]
+      dp[pow2(t)][node] = 0
+      t = t + 1
+    }
+
+    mask = 1
+    while mask < ALL {
+      var sub = bitAnd(mask - 1, mask)
+      while sub > 0 {
+        i = 0
+        while i < n {
+          let v = dp[sub][i] + dp[mask - sub][i]
+          if v < dp[mask][i] { dp[mask][i] = v }
+          i = i + 1
+        }
+        sub = bitAnd(sub - 1, mask)
+      }
+      var u = 0
+      while u < n {
+        var best = dp[mask][u]
+        var v = 0
+        while v < n {
+          let cand = dp[mask][v] + dist[v][u]
+          if cand < best { best = cand }
+          v = v + 1
+        }
+        dp[mask][u] = best
+        u = u + 1
+      }
+      mask = mask + 1
+    }
+
+    var good: list<bool> = []
+    var cost: list<int> = []
+    mask = 0
+    while mask < ALL {
+      var ok = true
+      var p = 0
+      while p < 4 {
+        let b1 = pow2(2 * p)
+        let b2 = pow2(2 * p + 1)
+        let has1 = bitAnd(mask, b1) != 0
+        let has2 = bitAnd(mask, b2) != 0
+        if has1 != has2 { ok = false; break }
+        p = p + 1
+      }
+      good = append(good, ok)
+      var best = INF
+      if ok {
+        var v = 0
+        while v < n {
+          if dp[mask][v] < best { best = dp[mask][v] }
+          v = v + 1
+        }
+      }
+      cost = append(cost, best)
+      mask = mask + 1
+    }
+
+    var F: list<int> = []
+    mask = 0
+    while mask < ALL { F = append(F, INF); mask = mask + 1 }
+    F[0] = 0
+    mask = 1
+    while mask < ALL {
+      var sub = mask
+      while sub > 0 {
+        if good[sub] {
+          let cand = F[mask - sub] + cost[sub]
+          if cand < F[mask] { F[mask] = cand }
+        }
+        sub = bitAnd(sub - 1, mask)
+      }
+      mask = mask + 1
+    }
+
+    print(str(F[ALL - 1]))
+  }
+}
+
+main()
