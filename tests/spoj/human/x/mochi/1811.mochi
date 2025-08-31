@@ -1,0 +1,92 @@
+// Solution for SPOJ LCS - Longest Common Substring
+// https://www.spoj.com/problems/LCS/
+
+let charVal = {
+  "a":1,"b":2,"c":3,"d":4,"e":5,"f":6,"g":7,"h":8,"i":9,"j":10,
+  "k":11,"l":12,"m":13,"n":14,"o":15,"p":16,"q":17,"r":18,"s":19,"t":20,
+  "u":21,"v":22,"w":23,"x":24,"y":25,"z":26,
+}
+
+let BASE = 911382323
+let MOD1 = 1000000007
+let MOD2 = 1000000009
+
+fun powList(n: int, mod: int): list<int> {
+  var p: list<int> = [1]
+  var i = 1
+  while i <= n {
+    p = append(p, (p[i-1] * BASE) % mod)
+    i = i + 1
+  }
+  return p
+}
+
+fun prefHash(s: string, mod: int): list<int> {
+  var h: list<int> = [0]
+  var i = 0
+  while i < len(s) {
+    let v = charVal[s[i:i+1]] as int
+    h = append(h, ( (h[i] * BASE) % mod + v ) % mod)
+    i = i + 1
+  }
+  return h
+}
+
+fun hasCommon(L: int, a1: list<int>, a2: list<int>, b1: list<int>, b2: list<int>, p1: list<int>, p2: list<int>): bool {
+  if L == 0 { return true }
+  var seen: map<string,bool> = {}
+  var i = 0
+  let n1 = len(a1) - 1
+  while i + L <= n1 {
+    var x1 = a1[i+L] - (a1[i] * p1[L]) % MOD1
+    if x1 < 0 { x1 = x1 + MOD1 }
+    var x2 = a2[i+L] - (a2[i] * p2[L]) % MOD2
+    if x2 < 0 { x2 = x2 + MOD2 }
+    var key = str(x1) + ":" + str(x2)
+    seen[key] = true
+    i = i + 1
+  }
+  var j = 0
+  let n2 = len(b1) - 1
+  while j + L <= n2 {
+    var y1 = b1[j+L] - (b1[j] * p1[L]) % MOD1
+    if y1 < 0 { y1 = y1 + MOD1 }
+    var y2 = b2[j+L] - (b2[j] * p2[L]) % MOD2
+    if y2 < 0 { y2 = y2 + MOD2 }
+    var k = str(y1) + ":" + str(y2)
+    if seen[k] != nil { return true }
+    j = j + 1
+  }
+  return false
+}
+
+fun main() {
+  let s1 = input()
+  if s1 == nil { return }
+  let s2 = input()
+  if s2 == nil { return }
+  let n1 = len(s1)
+  let n2 = len(s2)
+  let maxLen = if n1 > n2 { n1 } else { n2 }
+  let p1 = powList(maxLen, MOD1)
+  let p2 = powList(maxLen, MOD2)
+  let a1 = prefHash(s1, MOD1)
+  let a2 = prefHash(s1, MOD2)
+  let b1 = prefHash(s2, MOD1)
+  let b2 = prefHash(s2, MOD2)
+  var lo = 0
+  var hi = if n1 < n2 { n1 } else { n2 }
+  var ans = 0
+  while lo <= hi {
+    let mid = (lo + hi) / 2
+    if hasCommon(mid, a1, a2, b1, b2, p1, p2) {
+      ans = mid
+      lo = mid + 1
+    } else {
+      hi = mid - 1
+    }
+  }
+  print(str(ans))
+}
+
+main()
