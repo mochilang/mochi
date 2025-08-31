@@ -1,0 +1,92 @@
+// Solution for SPOJ BWHEELER - Burrows Wheeler Precompression
+// https://www.spoj.com/problems/BWHEELER/
+
+fun ord(ch: string): int {
+  let letters = "abcdefghijklmnopqrstuvwxyz"
+  var i = 0
+  while i < 26 {
+    if letters[i:i+1] == ch { return i }
+    i = i + 1
+  }
+  return 0
+}
+
+fun make_int_list(n: int, v: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, v)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_str_list(n: int): list<string> {
+  var lst: list<string> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, "")
+    i = i + 1
+  }
+  return lst
+}
+
+fun inverse(row: int, col: string): string {
+  let n = len(col)
+  var count = make_int_list(26, 0)
+  var occ: list<int> = []
+  var i = 0
+  while i < n {
+    let ch = col[i:i+1]
+    let idx = ord(ch)
+    count[idx] = count[idx] + 1
+    occ = append(occ, count[idx])
+    i = i + 1
+  }
+  var start = make_int_list(26, 0)
+  var sum = 0
+  i = 0
+  while i < 26 {
+    start[i] = sum
+    sum = sum + count[i]
+    i = i + 1
+  }
+  var next: list<int> = []
+  i = 0
+  while i < n {
+    let ch = col[i:i+1]
+    let idx = ord(ch)
+    let pos = start[idx] + occ[i] - 1
+    next = append(next, pos)
+    i = i + 1
+  }
+  var res = make_str_list(n)
+  var p = row - 1
+  i = n - 1
+  while i >= 0 {
+    res[i] = col[p:p+1]
+    p = next[p]
+    i = i - 1
+  }
+  var s = ""
+  i = 0
+  while i < n {
+    s = s + res[i]
+    i = i + 1
+  }
+  return s
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil || line == "" { return }
+    let r = line as int
+    if r == 0 { break }
+    let col = input()
+    let orig = inverse(r, col)
+    print(orig)
+  }
+}
+
+main()
