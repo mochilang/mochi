@@ -1,0 +1,128 @@
+// [The SetStack Computer](https://www.spoj.com/problems/SETSTACK/)
+
+fun sortInts(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    var j = i
+    while j > 0 && arr[j-1] > arr[j] {
+      let tmp = arr[j-1]
+      arr[j-1] = arr[j]
+      arr[j] = tmp
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun getID(s: list<int>, idMap: map<string,int>, idList: map<int,list<int>>, next: list<int>): int {
+  var sorted = sortInts(s)
+  var uniq: list<int> = []
+  var i = 0
+  while i < len(sorted) {
+    if len(uniq) == 0 {
+      uniq = append(uniq, sorted[i])
+    } else if sorted[i] != uniq[len(uniq)-1] {
+      uniq = append(uniq, sorted[i])
+    }
+    i = i + 1
+  }
+  var key = "{"
+  i = 0
+  while i < len(uniq) {
+    if i > 0 { key = key + "," }
+    key = key + str(uniq[i])
+    i = i + 1
+  }
+  key = key + "}"
+  if key in idMap { return idMap[key] }
+  let id = next[0]
+  idMap[key] = id
+  idList[id] = uniq
+  next[0] = id + 1
+  return id
+}
+
+fun copyList(src: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(src) {
+    res = append(res, src[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == nil { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    var idMap: map<string,int> = {}
+    var idList: map<int,list<int>> = {}
+    var next: list<int> = [0]
+    let emptyID = getID([], idMap, idList, next)
+    var stack: list<int> = []
+    let n = input() as int
+    var i = 0
+    while i < n {
+      let cmd = input()
+      if cmd == "PUSH" {
+        stack = append(stack, emptyID)
+      } else if cmd == "DUP" {
+        let top = stack[len(stack)-1]
+        stack = append(stack, top)
+      } else if cmd == "UNION" {
+        let a = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+        let b = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+        var tmp = copyList(idList[a])
+        var sb = idList[b]
+        var j = 0
+        while j < len(sb) { tmp = append(tmp, sb[j]); j = j + 1 }
+        let id = getID(tmp, idMap, idList, next)
+        stack = append(stack, id)
+      } else if cmd == "INTERSECT" {
+        let a = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+        let b = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+        var sa = idList[a]
+        var sb = idList[b]
+        var tmp: list<int> = []
+        var j = 0
+        while j < len(sa) {
+          var k = 0
+          while k < len(sb) {
+            if sa[j] == sb[k] {
+              tmp = append(tmp, sa[j])
+              break
+            }
+            k = k + 1
+          }
+          j = j + 1
+        }
+        let id = getID(tmp, idMap, idList, next)
+        stack = append(stack, id)
+      } else if cmd == "ADD" {
+        let a = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+        let b = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+        var tmp = copyList(idList[b])
+        tmp = append(tmp, a)
+        let id = getID(tmp, idMap, idList, next)
+        stack = append(stack, id)
+      }
+      let topID = stack[len(stack)-1]
+      print(len(idList[topID]))
+      i = i + 1
+    }
+    print("***")
+    case = case + 1
+  }
+}
+
+main()
