@@ -1,0 +1,20 @@
+1
+This is just copied (including end of line).
+1
+[def,321,<$3-$2-$1>][321,This,is,fun]
+1
+[def,321,<$3-$2-$1>][321,[321,A,B,C],D,E]
+1
+[def,321,<$3-$2-$1>][321,This,is,fun][321,[321,A,B,C],D,E]
+3
+[def,321,<$3-$2-$1>]
+[321,This,is,fun]
+[321,[321,A,B,C],D,E]
+3
+[def,A,<$1[B]$2>]
+[def,B,*B*]
+[A,1,2]
+2
+[def,#,<[-]$1[-]$2[-]$3[-]>][def,-,<$0>][def,DEF,def][[DEF],X,THIS IS X]
+[X][#,DEF,#,X]
+0
