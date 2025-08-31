@@ -1,0 +1,167 @@
+// Solution for SPOJ LINELAND - Lineland Airport
+// https://www.spoj.com/problems/LINELAND/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun format4(x: float): string {
+  var scaled = x * 10000.0 + 0.5
+  var n = scaled as int
+  var whole = n / 10000
+  var frac = n % 10000
+  var fracStr = str(frac)
+  while len(fracStr) < 4 {
+    fracStr = "0" + fracStr
+  }
+  return str(whole) + "." + fracStr
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+fun lowerBound(xs: list<float>, x: float): int {
+  var l = 0
+  var r = len(xs)
+  while l < r {
+    let m = (l + r) / 2
+    if xs[m] < x {
+      l = m + 1
+    } else {
+      r = m
+    }
+  }
+  return l
+}
+
+fun yAt(x: float, xs: list<float>, ys: list<float>, slopes: list<float>): float {
+  var i = 0
+  while i < len(xs) - 1 && x > xs[i+1] {
+    i = i + 1
+  }
+  let x1 = xs[i]
+  let y1 = ys[i]
+  let s = slopes[i]
+  return y1 + s * (x - x1)
+}
+
+fun areaTo(x: float, xs: list<float>, ys: list<float>, pref: list<float>, slopes: list<float>): float {
+  var i = 0
+  while i < len(xs) - 1 && x > xs[i+1] {
+    i = i + 1
+  }
+  let area = pref[i]
+  let x1 = xs[i]
+  let y1 = ys[i]
+  let s = slopes[i]
+  let dx = x - x1
+  let yx = y1 + s * dx
+  return area + (y1 + yx) * 0.5 * dx
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var caseIdx = 0
+  while caseIdx < t {
+    let header = input()
+    let hp = split(header, " ")
+    let N = int(hp[0])
+    let L = int(hp[1]) as float
+    var xs: list<float> = []
+    var ys: list<float> = []
+    var i = 0
+    while i < N {
+      let line = input()
+      let ps = split(line, " ")
+      xs = append(xs, int(ps[0]) as float)
+      ys = append(ys, int(ps[1]) as float)
+      i = i + 1
+    }
+    var slopes: list<float> = []
+    var pref: list<float> = [0.0]
+    i = 0
+    while i < N - 1 {
+      let dx = xs[i+1] - xs[i]
+      let area = (ys[i] + ys[i+1]) * 0.5 * dx
+      pref = append(pref, pref[i] + area)
+      slopes = append(slopes, (ys[i+1] - ys[i]) / dx)
+      i = i + 1
+    }
+    let startMin = xs[0]
+    let endMax = xs[N-1] - L
+    var cands: list<float> = [startMin, endMax]
+    i = 0
+    while i < N {
+      let x = xs[i]
+      if startMin <= x && x <= endMax {
+        cands = append(cands, x)
+      }
+      let x2 = x - L
+      if startMin <= x2 && x2 <= endMax {
+        cands = append(cands, x2)
+      }
+      i = i + 1
+    }
+    var p = 0
+    while p < N - 1 {
+      var q = 0
+      while q < N - 1 {
+        let ms = slopes[p]
+        let me = slopes[q]
+        if absf(ms - me) > 1e-9 {
+          let s = (me * L - me * xs[q] + ys[q] + ms * xs[p] - ys[p]) / (ms - me)
+          if startMin <= s && s <= endMax {
+            cands = append(cands, s)
+          }
+        }
+        q = q + 1
+      }
+      p = p + 1
+    }
+    var best = 1e100
+    var ci = 0
+    while ci < len(cands) {
+      let s = cands[ci]
+      if !(startMin <= s && s <= endMax) {
+        ci = ci + 1
+        continue
+      }
+      let b = s + L
+      var miny = yAt(s, xs, ys, slopes)
+      let yb = yAt(b, xs, ys, slopes)
+      if yb < miny { miny = yb }
+      let li = lowerBound(xs, s)
+      let ri = lowerBound(xs, b)
+      var j = li
+      while j < ri {
+        let yv = ys[j]
+        if yv < miny { miny = yv }
+        j = j + 1
+      }
+      let area = areaTo(b, xs, ys, pref, slopes) - areaTo(s, xs, ys, pref, slopes) - L * miny
+      if area < best { best = area }
+      ci = ci + 1
+    }
+    print(format4(best))
+    caseIdx = caseIdx + 1
+  }
+}
+
+main()
