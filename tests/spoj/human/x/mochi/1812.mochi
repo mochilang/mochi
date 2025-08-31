@@ -1,0 +1,123 @@
+// Solution for SPOJ LCS2 - Longest Common Substring II
+// https://www.spoj.com/problems/LCS2/
+
+let letters = {
+  "a":1,"b":2,"c":3,"d":4,"e":5,
+  "f":6,"g":7,"h":8,"i":9,"j":10,
+  "k":11,"l":12,"m":13,"n":14,"o":15,
+  "p":16,"q":17,"r":18,"s":19,"t":20,
+  "u":21,"v":22,"w":23,"x":24,"y":25,
+  "z":26,
+}
+
+let mod1 = 1000000007
+let mod2 = 1000000009
+let base1 = 911382323
+let base2 = 972663749
+var pow1: list<int> = [1]
+var pow2: list<int> = [1]
+
+fun ensurePowers(n: int) {
+  var i = len(pow1)
+  while i <= n {
+    pow1 = append(pow1, (pow1[i-1] * base1) % mod1)
+    pow2 = append(pow2, (pow2[i-1] * base2) % mod2)
+    i = i + 1
+  }
+}
+
+type Info = { s: string, h1: list<int>, h2: list<int> }
+
+fun buildInfo(s: string): Info {
+  var h1: list<int> = [0]
+  var h2: list<int> = [0]
+  var cur1 = 0
+  var cur2 = 0
+  var i = 0
+  while i < len(s) {
+    let v = (letters[s[i:i+1]] as int)
+    cur1 = (cur1 * base1 + v) % mod1
+    cur2 = (cur2 * base2 + v) % mod2
+    h1 = append(h1, cur1)
+    h2 = append(h2, cur2)
+    i = i + 1
+  }
+  return Info{ s: s, h1: h1, h2: h2 }
+}
+
+fun subHash(info: Info, l: int, r: int): int {
+  let lenSeg = r - l
+  let h1 = info.h1[r] - (info.h1[l] * pow1[lenSeg]) % mod1
+  let h2 = info.h2[r] - (info.h2[l] * pow2[lenSeg]) % mod2
+  var x = h1
+  if x < 0 { x = x + mod1 }
+  var y = h2
+  if y < 0 { y = y + mod2 }
+  return (x << 32) | y
+}
+
+fun hasCommon(infos: list<Info>, L: int): bool {
+  if L == 0 { return true }
+  ensurePowers(L)
+  var set: map<int,bool> = {}
+  let first = infos[0]
+  var i = 0
+  while i + L <= len(first.s) {
+    let key = subHash(first, i, i+L)
+    set[key] = true
+    i = i + 1
+  }
+  var idx = 1
+  while idx < len(infos) {
+    let inf = infos[idx]
+    var cur: map<int,bool> = {}
+    var cnt = 0
+    var j = 0
+    while j + L <= len(inf.s) {
+      let key = subHash(inf, j, j+L)
+      if set[key] && !cur[key] {
+        cur[key] = true
+        cnt = cnt + 1
+      }
+      j = j + 1
+    }
+    if cnt == 0 { return false }
+    set = cur
+    idx = idx + 1
+  }
+  return true
+}
+
+fun main() {
+  var strs: list<string> = []
+  while true {
+    let line = input()
+    if line == "" { break }
+    strs = append(strs, line)
+  }
+  if len(strs) == 0 { print("0"); return }
+  var infos: list<Info> = []
+  var i = 0
+  var minLen = len(strs[0])
+  while i < len(strs) {
+    infos = append(infos, buildInfo(strs[i]))
+    let l = len(strs[i])
+    if l < minLen { minLen = l }
+    i = i + 1
+  }
+  var lo = 0
+  var hi = minLen
+  var ans = 0
+  while lo <= hi {
+    let mid = (lo + hi) / 2
+    if hasCommon(infos, mid) {
+      ans = mid
+      lo = mid + 1
+    } else {
+      hi = mid - 1
+    }
+  }
+  print(str(ans))
+}
+
+main()
