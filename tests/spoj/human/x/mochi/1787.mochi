@@ -1,0 +1,68 @@
+// Solution for SPOJ ENCONDIN - Run Length Encoding
+// https://www.spoj.com/problems/ENCONDIN/
+
+let digits = ["0","1","2","3","4","5","6","7","8","9"]
+
+fun escape(seq: string): string {
+  var res = ""
+  var i = 0
+  while i < len(seq) {
+    let ch = seq[i:i+1]
+    if ch == "1" {
+      res = res + "11"
+    } else {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun encode(line: string): string {
+  var out = ""
+  var lit = ""
+  var i = 0
+  let n = len(line)
+  while i < n {
+    let ch = line[i:i+1]
+    var j = i + 1
+    while j < n && line[j:j+1] == ch {
+      j = j + 1
+    }
+    let run = j - i
+    if run >= 2 {
+      if lit != "" {
+        out = out + "1" + escape(lit) + "1"
+        lit = ""
+      }
+      var rem = run
+      while rem > 9 {
+        out = out + "9" + ch
+        rem = rem - 9
+      }
+      if rem >= 2 {
+        out = out + digits[rem] + ch
+      } else {
+        lit = lit + ch
+      }
+    } else {
+      lit = lit + ch
+    }
+    i = j
+  }
+  if lit != "" {
+    out = out + "1" + escape(lit) + "1"
+  }
+  return out
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == "" { break }
+    let enc = encode(line)
+    print(enc)
+  }
+}
+
+main()
