@@ -1,0 +1,140 @@
+// Solution for SPOJ NQUEEN - Yet Another N-Queen Problem
+// https://www.spoj.com/problems/NQUEEN/
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun splitSpaces(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInts(line: string): list<int> {
+  let parts = splitSpaces(line)
+  var nums: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    nums = append(nums, parseIntStr(parts[i]))
+    i = i + 1
+  }
+  return nums
+}
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_bool_list(n: int, value: bool): list<bool> {
+  var lst: list<bool> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+var N = 0
+var preset: list<int> = []
+var ans: list<int> = []
+var cols: list<bool> = []
+var diag1: list<bool> = []
+var diag2: list<bool> = []
+var offset = 0
+
+fun solve(r: int): bool {
+  if r == N { return true }
+  if preset[r] != 0 {
+    let c = preset[r]
+    if cols[c] || diag1[r+c] || diag2[r-c+offset] { return false }
+    ans[r] = c
+    cols[c] = true
+    diag1[r+c] = true
+    diag2[r-c+offset] = true
+    if solve(r + 1) { return true }
+    cols[c] = false
+    diag1[r+c] = false
+    diag2[r-c+offset] = false
+    return false
+  }
+  var c = 1
+  while c <= N {
+    if cols[c] || diag1[r+c] || diag2[r-c+offset] {
+      c = c + 1
+      continue
+    }
+    ans[r] = c
+    cols[c] = true
+    diag1[r+c] = true
+    diag2[r-c+offset] = true
+    if solve(r + 1) { return true }
+    cols[c] = false
+    diag1[r+c] = false
+    diag2[r-c+offset] = false
+    c = c + 1
+  }
+  return false
+}
+
+fun main() {
+  while true {
+    let line = input()
+    if line == nil || line == "" { break }
+    let vals = parseInts(line)
+    if len(vals) == 0 { continue }
+    let n = vals[0]
+    N = n
+    preset = make_int_list(n, 0)
+    var i = 0
+    while i < n {
+      preset[i] = vals[i+1]
+      i = i + 1
+    }
+    ans = make_int_list(n, 0)
+    cols = make_bool_list(n + 1, false)
+    diag1 = make_bool_list(2*n + 1, false)
+    diag2 = make_bool_list(2*n + 1, false)
+    offset = n
+    solve(0)
+    var out = ""
+    i = 0
+    while i < n {
+      if i > 0 { out = out + " " }
+      out = out + str(ans[i])
+      i = i + 1
+    }
+    print(out)
+  }
+}
+
+main()
