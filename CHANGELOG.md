@@ -1,5 +1,21 @@
 # 📦 CHANGELOG.md
 
+## [0.10.81] – 2025-09-01T05:15:00+00:00
+
+### Added
+
+- Mochi solutions for SPOJ problems such as BSEARCH, HIGHWAYS, NAJPF, BRIDGES, MELE2, and more.
+- Lean solutions for challenges including BSEARCH, HIGHWAYS, NAJPF, BRIDGES, MELE2, and additional tasks.
+- Documentation for the Binary Search solution.
+
+### Changed
+
+- No changes.
+
+### Fixed
+
+- No fixes.
+
 ## [0.10.80] – 2025-08-31T02:56:47+00:00
 
 ### Added
