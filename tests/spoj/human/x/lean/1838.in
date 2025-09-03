@@ -1,0 +1,39 @@
+10 15
+stockholm
+amsterdam
+london
+berlin
+copenhagen
+oslo
+helsinki
+dublin
+reykjavik
+brussels
+oslo stockholm 415
+stockholm helsinki 396
+oslo london 1153
+oslo copenhagen 485
+stockholm copenhagen 522
+copenhagen berlin 354
+copenhagen amsterdam 622
+helsinki berlin 1107
+london amsterdam 356
+berlin amsterdam 575
+london dublin 463
+reykjavik dublin 1498
+reykjavik oslo 1748
+london brussels 318
+brussels amsterdam 173
+stockholm amsterdam
+oslo london
+reykjavik dublin
+brussels helsinki
+2 1
+first
+second
+first second 10
+first first
+first first
+second first
+first first
+0 0
