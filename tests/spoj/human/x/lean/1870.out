@@ -1,0 +1,4 @@
+Case 1, N = 2, # of different labelings = 1
+Case 2, N = 3, # of different labelings = 3
+Case 3, N = 4, # of different labelings = 16
+Case 4, N = 5, # of different labelings = 125
