@@ -1,0 +1,14 @@
+exit status 1
+Unhandled Exception:
+System.InvalidCastException: Specified cast is not valid.
+  at 10.formatRec (System.Object node, System.String parent, System.Boolean isRight) [0x0012b] in <68ae516119f9c68ca74503836151ae68>:0 
+  at 10.formatRec (System.Object node, System.String parent, System.Boolean isRight) [0x0012b] in <68ae516119f9c68ca74503836151ae68>:0 
+  at 10.makeNice (System.String s) [0x00046] in <68ae516119f9c68ca74503836151ae68>:0 
+  at 10.main () [0x000df] in <68ae516119f9c68ca74503836151ae68>:0 
+  at <StartupCode$10>.$10.main@ () [0x00019] in <68ae516119f9c68ca74503836151ae68>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.InvalidCastException: Specified cast is not valid.
+  at 10.formatRec (System.Object node, System.String parent, System.Boolean isRight) [0x0012b] in <68ae516119f9c68ca74503836151ae68>:0 
+  at 10.formatRec (System.Object node, System.String parent, System.Boolean isRight) [0x0012b] in <68ae516119f9c68ca74503836151ae68>:0 
+  at 10.makeNice (System.String s) [0x00046] in <68ae516119f9c68ca74503836151ae68>:0 
+  at 10.main () [0x000df] in <68ae516119f9c68ca74503836151ae68>:0 
+  at <StartupCode$10>.$10.main@ () [0x00019] in <68ae516119f9c68ca74503836151ae68>:0
