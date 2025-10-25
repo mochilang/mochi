@@ -1,0 +1,3 @@
+root.diameter() = 4
+root.left.diameter() = 3
+root.right.diameter() = 1
