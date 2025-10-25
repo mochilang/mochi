@@ -134,17 +134,21 @@ func pushAliasScope() {
 }
 
 func popAliasScope() {
-	if len(aliasStack) == 0 {
-		return
-	}
-	// remove type information for names declared in this scope but keep
-	// nameCounts intact so that generated identifiers remain globally
-	// unique and cannot accidentally shadow names from outer scopes.
-	for _, name := range namesStack[len(namesStack)-1] {
-		delete(varTypes, name)
-	}
-	aliasStack = aliasStack[:len(aliasStack)-1]
-	namesStack = namesStack[:len(namesStack)-1]
+        if len(aliasStack) == 0 {
+                return
+        }
+        // remove type information for names declared in this scope but keep
+        // nameCounts intact so that generated identifiers remain globally
+        // unique and cannot accidentally shadow names from outer scopes.
+       for _, name := range namesStack[len(namesStack)-1] {
+               delete(varTypes, name)
+               // also clear tracked variable declarations so temporary
+               // identifiers from an inner scope don't leak into outer
+               // scopes and interfere with later analyses
+               delete(varDecls, name)
+       }
+        aliasStack = aliasStack[:len(aliasStack)-1]
+        namesStack = namesStack[:len(namesStack)-1]
 }
 
 func uniqueName(name string) string {
