@@ -1,0 +1,46 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c: In function ‘combinations_lists’:
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c:250:37: warning: passing argument 1 of ‘list_append_strptr’ from incompatible pointer type [-Wincompatible-pointer-types]
+  250 |         result = list_append_strptr(result, &result_len, ({const char*** tmp = malloc(0 * sizeof(const char**)); tmp;}));
+      |                                     ^~~~~~
+      |                                     |
+      |                                     const char ****
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c:57:55: note: expected ‘const char ***’ but argument is of type ‘const char ****’
+   57 | static const char*** list_append_strptr(const char ***arr, size_t *len, const char **val) {
+      |                                         ~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c:250:59: warning: passing argument 3 of ‘list_append_strptr’ from incompatible pointer type [-Wincompatible-pointer-types]
+  250 |         result = list_append_strptr(result, &result_len, ({const char*** tmp = malloc(0 * sizeof(const char**)); tmp;}));
+      |                                                          ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                           |
+      |                                                           const char ***
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c:57:86: note: expected ‘const char **’ but argument is of type ‘const char ***’
+   57 | static const char*** list_append_strptr(const char ***arr, size_t *len, const char **val) {
+      |                                                                         ~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c:250:16: warning: assignment to ‘const char ****’ from incompatible pointer type ‘const char ***’ [-Wincompatible-pointer-types]
+  250 |         result = list_append_strptr(result, &result_len, ({const char*** tmp = malloc(0 * sizeof(const char**)); tmp;}));
+      |                ^
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c:285:41: warning: passing argument 1 of ‘list_append_strptr’ from incompatible pointer type [-Wincompatible-pointer-types]
+  285 |             result = list_append_strptr(result, &result_len, new_combo);
+      |                                         ^~~~~~
+      |                                         |
+      |                                         const char ****
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c:57:55: note: expected ‘const char ***’ but argument is of type ‘const char ****’
+   57 | static const char*** list_append_strptr(const char ***arr, size_t *len, const char **val) {
+      |                                         ~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c:285:62: warning: passing argument 3 of ‘list_append_strptr’ from incompatible pointer type [-Wincompatible-pointer-types]
+  285 |             result = list_append_strptr(result, &result_len, new_combo);
+      |                                                              ^~~~~~~~~
+      |                                                              |
+      |                                                              const char ***
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c:57:86: note: expected ‘const char **’ but argument is of type ‘const char ***’
+   57 | static const char*** list_append_strptr(const char ***arr, size_t *len, const char **val) {
+      |                                                                         ~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c:285:20: warning: assignment to ‘const char ****’ from incompatible pointer type ‘const char ***’ [-Wincompatible-pointer-types]
+  285 |             result = list_append_strptr(result, &result_len, new_combo);
+      |                    ^
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c: In function ‘prune’:
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c:302:34: error: ‘candidates_lens_lens’ undeclared (first use in this function); did you mean ‘candidates_lens_len’?
+  302 |         size_t *candidate_lens = candidates_lens_lens[__i];
+      |                                  ^~~~~~~~~~~~~~~~~~~~
+      |                                  candidates_lens_len
+/workspace/mochi/tests/algorithms/x/C/machine_learning/apriori_algorithm.c:302:34: note: each undeclared identifier is reported only once for each function it appears in
