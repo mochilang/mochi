@@ -1,0 +1,29 @@
+package main
+
+// https://www.spoj.com/problems/SBSTR1/
+
+import (
+    "bufio"
+    "fmt"
+    "os"
+    "strings"
+)
+
+func main() {
+    scanner := bufio.NewScanner(os.Stdin)
+    for scanner.Scan() {
+        line := strings.TrimSpace(scanner.Text())
+        if line == "" {
+            continue
+        }
+        fields := strings.Fields(line)
+        if len(fields) < 2 {
+            continue
+        }
+        if strings.Contains(fields[0], fields[1]) {
+            fmt.Println(1)
+        } else {
+            fmt.Println(0)
+        }
+    }
+}
