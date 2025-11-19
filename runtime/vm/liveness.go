@@ -645,6 +645,106 @@ func constFold(fn *Function) bool {
 					changed = true
 					continue
 				}
+			} else {
+				switch ins.Op {
+				case OpAddInt, OpAddFloat, OpAdd:
+					if b.known && isZeroValue(b.val) {
+						fn.Code[pc] = Instr{Op: OpMove, A: ins.A, B: ins.C, Line: ins.Line}
+						if defCount[ins.A] == 1 {
+							consts[ins.A] = consts[ins.C]
+						} else {
+							consts[ins.A] = cinfo{}
+						}
+						changed = true
+						continue
+					}
+					if c.known && isZeroValue(c.val) {
+						fn.Code[pc] = Instr{Op: OpMove, A: ins.A, B: ins.B, Line: ins.Line}
+						if defCount[ins.A] == 1 {
+							consts[ins.A] = consts[ins.B]
+						} else {
+							consts[ins.A] = cinfo{}
+						}
+						changed = true
+						continue
+					}
+				case OpSubInt, OpSubFloat, OpSub:
+					if c.known && isZeroValue(c.val) {
+						fn.Code[pc] = Instr{Op: OpMove, A: ins.A, B: ins.B, Line: ins.Line}
+						if defCount[ins.A] == 1 {
+							consts[ins.A] = consts[ins.B]
+						} else {
+							consts[ins.A] = cinfo{}
+						}
+						changed = true
+						continue
+					}
+					if b.known && isZeroValue(b.val) {
+						var nop Op
+						switch ins.Op {
+						case OpSubInt:
+							nop = OpNegInt
+						case OpSubFloat:
+							nop = OpNegFloat
+						default:
+							nop = OpNeg
+						}
+						fn.Code[pc] = Instr{Op: nop, A: ins.A, B: ins.C, Line: ins.Line}
+						if val, ok := evalUnaryConst(nop, consts[ins.C].val); ok && defCount[ins.A] == 1 {
+							consts[ins.A] = cinfo{true, val}
+						} else {
+							consts[ins.A] = cinfo{}
+						}
+						changed = true
+						continue
+					}
+				case OpMulInt, OpMulFloat, OpMul:
+					if b.known && isOneValue(b.val) {
+						fn.Code[pc] = Instr{Op: OpMove, A: ins.A, B: ins.C, Line: ins.Line}
+						if defCount[ins.A] == 1 {
+							consts[ins.A] = consts[ins.C]
+						} else {
+							consts[ins.A] = cinfo{}
+						}
+						changed = true
+						continue
+					}
+					if c.known && isOneValue(c.val) {
+						fn.Code[pc] = Instr{Op: OpMove, A: ins.A, B: ins.B, Line: ins.Line}
+						if defCount[ins.A] == 1 {
+							consts[ins.A] = consts[ins.B]
+						} else {
+							consts[ins.A] = cinfo{}
+						}
+						changed = true
+						continue
+					}
+					if (b.known && isZeroValue(b.val)) || (c.known && isZeroValue(c.val)) {
+						zero := b.val
+						if !isZeroValue(zero) {
+							zero = c.val
+						}
+						fn.Code[pc] = Instr{Op: OpConst, A: ins.A, Val: zero, Line: ins.Line}
+						if defCount[ins.A] == 1 {
+							consts[ins.A] = cinfo{true, zero}
+						} else {
+							consts[ins.A] = cinfo{}
+						}
+						changed = true
+						continue
+					}
+				case OpDivInt, OpDivFloat, OpDiv:
+					if c.known && isOneValue(c.val) {
+						fn.Code[pc] = Instr{Op: OpMove, A: ins.A, B: ins.B, Line: ins.Line}
+						if defCount[ins.A] == 1 {
+							consts[ins.A] = consts[ins.B]
+						} else {
+							consts[ins.A] = cinfo{}
+						}
+						changed = true
+						continue
+					}
+				}
 			}
 			consts[ins.A] = cinfo{}
 		case OpSlice:
@@ -1291,4 +1391,26 @@ func evalSliceConst(src, startVal, endVal Value) (Value, bool) {
 		return Value{Tag: ValueStr, Str: string(runes[start:end])}, true
 	}
 	return Value{}, false
+}
+
+func isZeroValue(v Value) bool {
+	switch v.Tag {
+	case ValueInt:
+		return v.Int == 0
+	case ValueFloat:
+		return v.Float == 0
+	default:
+		return false
+	}
+}
+
+func isOneValue(v Value) bool {
+	switch v.Tag {
+	case ValueInt:
+		return v.Int == 1
+	case ValueFloat:
+		return v.Float == 1
+	default:
+		return false
+	}
 }
