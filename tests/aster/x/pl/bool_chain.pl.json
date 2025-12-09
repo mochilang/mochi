@@ -1,0 +1,29 @@
+{
+  "clauses": [
+    {
+      "name": ":-",
+      "params": [
+        "style_check(-singleton)"
+      ],
+      "body": "true",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "name": ":-",
+      "params": [
+        "initialization main"
+      ],
+      "body": "true",
+      "start": 27,
+      "end": 52
+    },
+    {
+      "name": "main",
+      "params": [],
+      "body": "(true, true, true-\u003ewriteln(true);writeln(false)), (true, false, true-\u003ewriteln(true);writeln(false)), (true, true, false, true-\u003ewriteln(true);writeln(false))",
+      "start": 52,
+      "end": 266
+    }
+  ]
+}
