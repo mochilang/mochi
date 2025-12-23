@@ -1,0 +1,10 @@
+// https://www.spoj.com/problems/TEST/
+// Life, the Universe, and Everything
+
+while true {
+  let n = int(input())
+  if n == 42 {
+    break
+  }
+  print(n)
+}
