@@ -1,0 +1,117 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "=",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "Data"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "exists",
+                  "children": [
+                    {
+                      "kind": "list"
+                    },
+                    {
+                      "kind": "var",
+                      "text": "Flag"
+                    }
+                  ]
+                },
+                {
+                  "kind": "writeln",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "Flag"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

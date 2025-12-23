@@ -1,0 +1,1101 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "=",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "Nums"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "=",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "Letters"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "atom",
+                          "text": "A"
+                        },
+                        {
+                          "kind": "atom",
+                          "text": "B"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "=",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "Bools"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "bool",
+                              "text": "true"
+                            },
+                            {
+                              "kind": "bool",
+                              "text": "false"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": ",",
+                      "children": [
+                        {
+                          "kind": "=",
+                          "children": [
+                            {
+                              "kind": "var",
+                              "text": "Combos"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "{}",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "b"
+                                        },
+                                        {
+                                          "kind": "bool",
+                                          "text": "true"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "l"
+                                        },
+                                        {
+                                          "kind": "atom",
+                                          "text": "A"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "n"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "1"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "{}",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "b"
+                                        },
+                                        {
+                                          "kind": "bool",
+                                          "text": "false"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "l"
+                                        },
+                                        {
+                                          "kind": "atom",
+                                          "text": "A"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "n"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "1"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "{}",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "b"
+                                        },
+                                        {
+                                          "kind": "bool",
+                                          "text": "true"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "l"
+                                        },
+                                        {
+                                          "kind": "atom",
+                                          "text": "B"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "n"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "1"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "{}",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "n"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "1"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "b"
+                                        },
+                                        {
+                                          "kind": "bool",
+                                          "text": "false"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "l"
+                                        },
+                                        {
+                                          "kind": "atom",
+                                          "text": "B"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "{}",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "b"
+                                        },
+                                        {
+                                          "kind": "bool",
+                                          "text": "true"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "l"
+                                        },
+                                        {
+                                          "kind": "atom",
+                                          "text": "A"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "n"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "2"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "{}",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "b"
+                                        },
+                                        {
+                                          "kind": "bool",
+                                          "text": "false"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "l"
+                                        },
+                                        {
+                                          "kind": "atom",
+                                          "text": "A"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "n"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "2"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "{}",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "b"
+                                        },
+                                        {
+                                          "kind": "bool",
+                                          "text": "true"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "l"
+                                        },
+                                        {
+                                          "kind": "atom",
+                                          "text": "B"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "n"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "2"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "{}",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "b"
+                                        },
+                                        {
+                                          "kind": "bool",
+                                          "text": "false"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "l"
+                                        },
+                                        {
+                                          "kind": "atom",
+                                          "text": "B"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "n"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "2"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": "writeln",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "--- Cross Join of three lists ---"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": "=",
+                                  "children": [
+                                    {
+                                      "kind": "var",
+                                      "text": "C"
+                                    },
+                                    {
+                                      "kind": "{}",
+                                      "children": [
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "l"
+                                            },
+                                            {
+                                              "kind": "atom",
+                                              "text": "A"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "n"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "1"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "b"
+                                            },
+                                            {
+                                              "kind": "bool",
+                                              "text": "true"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": "writeln",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "1 A true"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": "=",
+                                          "children": [
+                                            {
+                                              "kind": "var",
+                                              "text": "C1"
+                                            },
+                                            {
+                                              "kind": "{}",
+                                              "children": [
+                                                {
+                                                  "kind": ":",
+                                                  "children": [
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "l"
+                                                    },
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "A"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": ":",
+                                                  "children": [
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "n"
+                                                    },
+                                                    {
+                                                      "kind": "number",
+                                                      "text": "1"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": ":",
+                                                  "children": [
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "b"
+                                                    },
+                                                    {
+                                                      "kind": "bool",
+                                                      "text": "false"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ",",
+                                          "children": [
+                                            {
+                                              "kind": "writeln",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "1 A false"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": ",",
+                                              "children": [
+                                                {
+                                                  "kind": "=",
+                                                  "children": [
+                                                    {
+                                                      "kind": "var",
+                                                      "text": "C2"
+                                                    },
+                                                    {
+                                                      "kind": "{}",
+                                                      "children": [
+                                                        {
+                                                          "kind": ":",
+                                                          "children": [
+                                                            {
+                                                              "kind": "atom",
+                                                              "text": "b"
+                                                            },
+                                                            {
+                                                              "kind": "bool",
+                                                              "text": "true"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "kind": ":",
+                                                          "children": [
+                                                            {
+                                                              "kind": "atom",
+                                                              "text": "l"
+                                                            },
+                                                            {
+                                                              "kind": "atom",
+                                                              "text": "B"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "kind": ":",
+                                                          "children": [
+                                                            {
+                                                              "kind": "atom",
+                                                              "text": "n"
+                                                            },
+                                                            {
+                                                              "kind": "number",
+                                                              "text": "1"
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": ",",
+                                                  "children": [
+                                                    {
+                                                      "kind": "writeln",
+                                                      "children": [
+                                                        {
+                                                          "kind": "atom",
+                                                          "text": "1 B true"
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "kind": ",",
+                                                      "children": [
+                                                        {
+                                                          "kind": "=",
+                                                          "children": [
+                                                            {
+                                                              "kind": "var",
+                                                              "text": "C3"
+                                                            },
+                                                            {
+                                                              "kind": "{}",
+                                                              "children": [
+                                                                {
+                                                                  "kind": ":",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "atom",
+                                                                      "text": "b"
+                                                                    },
+                                                                    {
+                                                                      "kind": "bool",
+                                                                      "text": "false"
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "kind": ":",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "atom",
+                                                                      "text": "l"
+                                                                    },
+                                                                    {
+                                                                      "kind": "atom",
+                                                                      "text": "B"
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "kind": ":",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "atom",
+                                                                      "text": "n"
+                                                                    },
+                                                                    {
+                                                                      "kind": "number",
+                                                                      "text": "1"
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "kind": ",",
+                                                          "children": [
+                                                            {
+                                                              "kind": "writeln",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "atom",
+                                                                  "text": "1 B false"
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "kind": ",",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "=",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "var",
+                                                                      "text": "C4"
+                                                                    },
+                                                                    {
+                                                                      "kind": "{}",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": ":",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "atom",
+                                                                              "text": "b"
+                                                                            },
+                                                                            {
+                                                                              "kind": "bool",
+                                                                              "text": "true"
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "kind": ":",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "atom",
+                                                                              "text": "l"
+                                                                            },
+                                                                            {
+                                                                              "kind": "atom",
+                                                                              "text": "A"
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "kind": ":",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "atom",
+                                                                              "text": "n"
+                                                                            },
+                                                                            {
+                                                                              "kind": "number",
+                                                                              "text": "2"
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "kind": ",",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "writeln",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": "atom",
+                                                                          "text": "2 A true"
+                                                                        }
+                                                                      ]
+                                                                    },
+                                                                    {
+                                                                      "kind": ",",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": "=",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "var",
+                                                                              "text": "C5"
+                                                                            },
+                                                                            {
+                                                                              "kind": "{}",
+                                                                              "children": [
+                                                                                {
+                                                                                  "kind": ":",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "atom",
+                                                                                      "text": "l"
+                                                                                    },
+                                                                                    {
+                                                                                      "kind": "atom",
+                                                                                      "text": "A"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "kind": ":",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "atom",
+                                                                                      "text": "n"
+                                                                                    },
+                                                                                    {
+                                                                                      "kind": "number",
+                                                                                      "text": "2"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "kind": ":",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "atom",
+                                                                                      "text": "b"
+                                                                                    },
+                                                                                    {
+                                                                                      "kind": "bool",
+                                                                                      "text": "false"
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "kind": ",",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "writeln",
+                                                                              "children": [
+                                                                                {
+                                                                                  "kind": "atom",
+                                                                                  "text": "2 A false"
+                                                                                }
+                                                                              ]
+                                                                            },
+                                                                            {
+                                                                              "kind": ",",
+                                                                              "children": [
+                                                                                {
+                                                                                  "kind": "=",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "var",
+                                                                                      "text": "C6"
+                                                                                    },
+                                                                                    {
+                                                                                      "kind": "{}",
+                                                                                      "children": [
+                                                                                        {
+                                                                                          "kind": ":",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": "atom",
+                                                                                              "text": "b"
+                                                                                            },
+                                                                                            {
+                                                                                              "kind": "bool",
+                                                                                              "text": "true"
+                                                                                            }
+                                                                                          ]
+                                                                                        },
+                                                                                        {
+                                                                                          "kind": ":",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": "atom",
+                                                                                              "text": "l"
+                                                                                            },
+                                                                                            {
+                                                                                              "kind": "atom",
+                                                                                              "text": "B"
+                                                                                            }
+                                                                                          ]
+                                                                                        },
+                                                                                        {
+                                                                                          "kind": ":",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": "atom",
+                                                                                              "text": "n"
+                                                                                            },
+                                                                                            {
+                                                                                              "kind": "number",
+                                                                                              "text": "2"
+                                                                                            }
+                                                                                          ]
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "kind": ",",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "writeln",
+                                                                                      "children": [
+                                                                                        {
+                                                                                          "kind": "atom",
+                                                                                          "text": "2 B true"
+                                                                                        }
+                                                                                      ]
+                                                                                    },
+                                                                                    {
+                                                                                      "kind": ",",
+                                                                                      "children": [
+                                                                                        {
+                                                                                          "kind": "=",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": "var",
+                                                                                              "text": "C7"
+                                                                                            },
+                                                                                            {
+                                                                                              "kind": "{}",
+                                                                                              "children": [
+                                                                                                {
+                                                                                                  "kind": ":",
+                                                                                                  "children": [
+                                                                                                    {
+                                                                                                      "kind": "atom",
+                                                                                                      "text": "b"
+                                                                                                    },
+                                                                                                    {
+                                                                                                      "kind": "bool",
+                                                                                                      "text": "false"
+                                                                                                    }
+                                                                                                  ]
+                                                                                                },
+                                                                                                {
+                                                                                                  "kind": ":",
+                                                                                                  "children": [
+                                                                                                    {
+                                                                                                      "kind": "atom",
+                                                                                                      "text": "l"
+                                                                                                    },
+                                                                                                    {
+                                                                                                      "kind": "atom",
+                                                                                                      "text": "B"
+                                                                                                    }
+                                                                                                  ]
+                                                                                                },
+                                                                                                {
+                                                                                                  "kind": ":",
+                                                                                                  "children": [
+                                                                                                    {
+                                                                                                      "kind": "atom",
+                                                                                                      "text": "n"
+                                                                                                    },
+                                                                                                    {
+                                                                                                      "kind": "number",
+                                                                                                      "text": "2"
+                                                                                                    }
+                                                                                                  ]
+                                                                                                }
+                                                                                              ]
+                                                                                            }
+                                                                                          ]
+                                                                                        },
+                                                                                        {
+                                                                                          "kind": "writeln",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": "atom",
+                                                                                              "text": "2 B false"
+                                                                                            }
+                                                                                          ]
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
