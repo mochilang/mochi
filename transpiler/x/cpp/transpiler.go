@@ -6683,17 +6683,21 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if fn, ok := currentEnv.GetFunc(p.Call.Func); ok {
 				for i, arg := range args {
 					if i < len(fn.Params) {
-						ptyp := cppTypeFrom(types.ResolveTypeRef(fn.Params[i].Type, currentEnv))
+						var ptyp string
+						if fn.Params[i].Type != nil {
+							ptyp = cppTypeFrom(types.ResolveTypeRef(fn.Params[i].Type, currentEnv))
+						}
+						if ptyp == "" {
+							// Default to std::any for untyped parameters
+							ptyp = "std::any"
+						}
 						if strings.HasPrefix(ptyp, "std::unique_ptr<") {
 							ptyp = strings.TrimSuffix(strings.TrimPrefix(ptyp, "std::unique_ptr<"), ">") + "*"
 						} else if strings.HasPrefix(ptyp, "std::shared_ptr<") {
 							ptyp = strings.TrimSuffix(strings.TrimPrefix(ptyp, "std::shared_ptr<"), ">") + "*"
 						}
-						if ptyp == "" {
-							ptyp = "auto"
-						}
 						at := exprType(arg)
-						if at != ptyp && ptyp != "auto" {
+						if at != ptyp && ptyp != "std::any" {
 							args[i] = newCastExpr(arg, ptyp)
 						}
 					}
@@ -8539,11 +8543,17 @@ func exprType(e Expr) string {
 	case *CallExpr:
 		if currentEnv != nil {
 			if fn, ok := currentEnv.GetFunc(v.Name); ok {
-				return cppTypeFrom(types.ResolveTypeRef(fn.Return, currentEnv))
+				if fn.Return != nil {
+					return cppTypeFrom(types.ResolveTypeRef(fn.Return, currentEnv))
+				}
+				return "std::any"
 			}
 			if strings.HasPrefix(v.Name, "_") {
 				if fn, ok := currentEnv.GetFunc(strings.TrimPrefix(v.Name, "_")); ok {
-					return cppTypeFrom(types.ResolveTypeRef(fn.Return, currentEnv))
+					if fn.Return != nil {
+						return cppTypeFrom(types.ResolveTypeRef(fn.Return, currentEnv))
+					}
+					return "std::any"
 				}
 			}
 		}
