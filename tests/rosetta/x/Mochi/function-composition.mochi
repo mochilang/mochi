@@ -1,0 +1,14 @@
+import python "math" as math
+extern fun math.sin(x: float): float
+extern fun math.asin(x: float): float
+
+fun compose(f: fun(float): float, g: fun(float): float): fun(float): float {
+  return fun(x: float): float => f(g(x))
+}
+
+fun main() {
+  let sin_asin = compose(math.sin, math.asin)
+  print(str(sin_asin(0.5)))
+}
+
+main()
