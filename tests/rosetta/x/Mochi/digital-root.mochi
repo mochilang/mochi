@@ -1,0 +1,90 @@
+fun parseIntBase(s: string, base: int): int {
+  let digits = "0123456789abcdefghijklmnopqrstuvwxyz"
+  var n = 0
+  var i = 0
+  while i < len(s) {
+    var j = 0
+    var v = 0
+    let ch = lower(s[i:i+1])
+    while j < len(digits) {
+      if substring(digits, j, j+1) == ch {
+        v = j
+        break
+      }
+      j = j + 1
+    }
+    n = n * base + v
+    i = i + 1
+  }
+  return n
+}
+
+fun intToBase(n: int, base: int): string {
+  let digits = "0123456789abcdefghijklmnopqrstuvwxyz"
+  if n == 0 { return "0" }
+  var out = ""
+  var v = n
+  while v > 0 {
+    let d = v % base
+    out = digits[d:d+1] + out
+    v = v / base
+  }
+  return out
+}
+
+fun padLeft(s: string, w: int): string {
+  var out = s
+  while len(out) < w { out = " " + out }
+  return out
+}
+
+type DR {
+  p: int
+  r: int
+}
+
+fun digitalRoot(n: int, base: int): DR {
+  var p = 0
+  var root = n
+  while root >= base {
+    var sum = 0
+    var x = root
+    while x > 0 {
+      sum = sum + x % base
+      x = x / base
+    }
+    root = sum
+    p = p + 1
+  }
+  return DR{ p: p, r: root }
+}
+
+let testCases = [
+  {"n": "627615", "base": 10},
+  {"n": "39390", "base": 10},
+  {"n": "588225", "base": 10},
+  {"n": "393900588225", "base": 10},
+  {"n": "1", "base": 10},
+  {"n": "11", "base": 10},
+  {"n": "e", "base": 16},
+  {"n": "87", "base": 16},
+  {"n": "DigitalRoot", "base": 30},
+  {"n": "448944221089", "base": 10},
+  {"n": "7e0", "base": 16},
+  {"n": "14e344", "base": 16},
+  {"n": "d60141", "base": 16},
+  {"n": "12343210", "base": 16},
+  {"n": "1101122201121110011000000", "base": 3},
+]
+
+var idx = 0
+while idx < len(testCases) {
+  let tc = testCases[idx]
+  let n = parseIntBase(tc["n"], tc["base"])
+  let res = digitalRoot(n, tc["base"])
+  let nStr = padLeft(tc["n"], 12)
+  let baseStr = padLeft(str(tc["base"]), 2)
+  let rootStr = intToBase(res["r"], tc["base"])
+  print(nStr + " (base " + baseStr + ") has additive persistence " + str(res["p"]) + " and digital root " + rootStr)
+  idx = idx + 1
+}
