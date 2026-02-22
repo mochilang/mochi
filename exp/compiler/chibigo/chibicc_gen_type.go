@@ -357,10 +357,10 @@ func add_type(tls *libc.TLS, node uintptr) { /* type.c:193:6: */
 		}
 	case ND_DEREF:
 		if !(int32((*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).base) != 0) {
-			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+11940, 0)
+			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+11977, 0)
 		}
 		if (*Type)(unsafe.Pointer((*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).base)).kind == TY_VOID {
-			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+11968, 0)
+			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+12005, 0)
 		}
 
 		(*Node)(unsafe.Pointer(node)).ty = (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).base
@@ -376,7 +376,7 @@ func add_type(tls *libc.TLS, node uintptr) { /* type.c:193:6: */
 				return
 			}
 		}
-		error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+11997, 0)
+		error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+12034, 0)
 		return
 	case ND_LABEL_VAL:
 		(*Node)(unsafe.Pointer(node)).ty = pointer_to(tls, ty_void)
@@ -388,15 +388,15 @@ func add_type(tls *libc.TLS, node uintptr) { /* type.c:193:6: */
 		(*Node)(unsafe.Pointer(node)).ty = ty_bool
 
 		if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cas_addr)).ty)).kind != TY_PTR {
-			error_tok(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cas_addr)).tok, ts+12050, 0)
+			error_tok(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cas_addr)).tok, ts+12087, 0)
 		}
 		if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cas_old)).ty)).kind != TY_PTR {
-			error_tok(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cas_old)).tok, ts+12050, 0)
+			error_tok(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cas_old)).tok, ts+12087, 0)
 		}
 		return
 	case ND_EXCH:
 		if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).kind != TY_PTR {
-			error_tok(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cas_addr)).tok, ts+12050, 0)
+			error_tok(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cas_addr)).tok, ts+12087, 0)
 		}
 		(*Node)(unsafe.Pointer(node)).ty = (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).base
 		return

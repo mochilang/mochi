@@ -49,14 +49,14 @@ func verror_at(tls *libc.TLS, filename uintptr, input uintptr, line_no int32, lo
 	}
 
 	// Print out the line.
-	var indent int32 = libc.Xfprintf(tls, libc.Xstderr, ts+11668, libc.VaList(bp, filename, line_no))
-	libc.Xfprintf(tls, libc.Xstderr, ts+11676, libc.VaList(bp+16, int32((int64(end)-int64(line))/1), line))
+	var indent int32 = libc.Xfprintf(tls, libc.Xstderr, ts+11705, libc.VaList(bp, filename, line_no))
+	libc.Xfprintf(tls, libc.Xstderr, ts+11713, libc.VaList(bp+16, int32((int64(end)-int64(line))/1), line))
 
 	// Show the error message.
 	var pos int32 = display_width(tls, line, int32((int64(loc)-int64(line))/1)) + indent
 
-	libc.Xfprintf(tls, libc.Xstderr, ts+11682, libc.VaList(bp+32, pos, ts+8875)) // print pos spaces.
-	libc.Xfprintf(tls, libc.Xstderr, ts+11686, 0)
+	libc.Xfprintf(tls, libc.Xstderr, ts+11719, libc.VaList(bp+32, pos, ts+8912)) // print pos spaces.
+	libc.Xfprintf(tls, libc.Xstderr, ts+11723, 0)
 	libc.Xvfprintf(tls, libc.Xstderr, fmt, ap)
 	libc.Xfprintf(tls, libc.Xstderr, ts+112, 0)
 }
@@ -105,7 +105,7 @@ func skip(tls *libc.TLS, tok uintptr, op uintptr) uintptr { /* tokenize.c:84:7: 
 	defer tls.Free(8)
 
 	if !(equal(tls, tok, op) != 0) {
-		error_tok(tls, tok, ts+11689, libc.VaList(bp, op))
+		error_tok(tls, tok, ts+11726, libc.VaList(bp, op))
 	}
 	return (*Token)(unsafe.Pointer(tok)).next
 }
@@ -191,9 +191,9 @@ func read_punct(tls *libc.TLS, p uintptr) int32 { /* tokenize.c:144:12: */
 }
 
 var kw1 = [23]uintptr{
-	ts + 9468, ts + 9472, ts + 8825, ts + 9490, ts + 9493, ts + 9498, ts + 9503, ts + 9662, ts + 9444,
-	ts + 9447, ts + 9450, ts + 9453, ts + 9569, ts + 9572, ts + 9456, ts + 9459, ts + 9462, ts + 9465, ts + 9481,
-	ts + 9478, ts + 9506, ts + 9509, ts + 10469,
+	ts + 9505, ts + 9509, ts + 8862, ts + 9527, ts + 9530, ts + 9535, ts + 9540, ts + 9699, ts + 9481,
+	ts + 9484, ts + 9487, ts + 9490, ts + 9606, ts + 9609, ts + 9493, ts + 9496, ts + 9499, ts + 9502, ts + 9518,
+	ts + 9515, ts + 9543, ts + 9546, ts + 10506,
 } /* tokenize.c:145:15 */
 
 func is_keyword(tls *libc.TLS, tok uintptr) uint8 { /* tokenize.c:158:13: */
@@ -213,14 +213,14 @@ func is_keyword(tls *libc.TLS, tok uintptr) uint8 { /* tokenize.c:158:13: */
 
 var map2 HashMap /* tokenize.c:159:18: */
 var kw2 = [45]uintptr{
-	ts + 9243, ts + 9250, ts + 9253, ts + 9332, ts + 9336, ts + 8766, ts + 9794, ts + 8755,
-	ts + 8719, ts + 8726, ts + 8760, ts + 8770, ts + 8744, ts + 8391, ts + 8749,
-	ts + 8732, ts + 8399, ts + 9349, ts + 9354, ts + 9372, ts + 9258, ts + 9265,
-	ts + 9310, ts + 8406, ts + 9801, ts + 8670, ts + 9342, ts + 8788,
-	ts + 8795, ts + 8586, ts + 8592, ts + 8601, ts + 8606, ts + 8615,
-	ts + 8624, ts + 8635, ts + 8648, ts + 8775, ts + 8781,
-	ts + 8737, ts + 9345, ts + 8420, ts + 8434, ts + 8658,
-	ts + 9575,
+	ts + 9280, ts + 9287, ts + 9290, ts + 9369, ts + 9373, ts + 8803, ts + 9831, ts + 8792,
+	ts + 8756, ts + 8763, ts + 8797, ts + 8807, ts + 8781, ts + 8428, ts + 8786,
+	ts + 8769, ts + 8436, ts + 9386, ts + 9391, ts + 9409, ts + 9295, ts + 9302,
+	ts + 9347, ts + 8443, ts + 9838, ts + 8707, ts + 9379, ts + 8825,
+	ts + 8832, ts + 8623, ts + 8629, ts + 8638, ts + 8643, ts + 8652,
+	ts + 8661, ts + 8672, ts + 8685, ts + 8812, ts + 8818,
+	ts + 8774, ts + 9382, ts + 8457, ts + 8471, ts + 8695,
+	ts + 9612,
 } /* tokenize.c:162:17 */
 
 func read_escaped_char(tls *libc.TLS, new_pos uintptr, p uintptr) int32 { /* tokenize.c:180:12: */
@@ -241,7 +241,7 @@ func read_escaped_char(tls *libc.TLS, new_pos uintptr, p uintptr) int32 { /* tok
 		// Read a hexadecimal number.
 		p++
 		if !(int32(*(*uint16)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(libc.X__ctype_b_loc(tls))) + uintptr(int32(*(*int8)(unsafe.Pointer(p))))*2)))&int32(_ISxdigit) != 0) {
-			error_at(tls, p, ts+11703, 0)
+			error_at(tls, p, ts+11740, 0)
 		}
 
 		var c int32 = 0
@@ -294,7 +294,7 @@ func string_literal_end(tls *libc.TLS, p uintptr) uintptr { /* tokenize.c:234:13
 	var start uintptr = p
 	for ; int32(*(*int8)(unsafe.Pointer(p))) != '"'; p++ {
 		if int32(*(*int8)(unsafe.Pointer(p))) == '\n' || int32(*(*int8)(unsafe.Pointer(p))) == 0 {
-			error_at(tls, start, ts+11731, 0)
+			error_at(tls, start, ts+11768, 0)
 		}
 		if int32(*(*int8)(unsafe.Pointer(p))) == '\\' {
 			p++
@@ -405,7 +405,7 @@ func read_char_literal(tls *libc.TLS, start uintptr, quote uintptr, ty uintptr) 
 
 	*(*uintptr)(unsafe.Pointer(bp /* p */)) = quote + uintptr(1)
 	if int32(*(*int8)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp))))) == 0 {
-		error_at(tls, start, ts+11755, 0)
+		error_at(tls, start, ts+11792, 0)
 	}
 	var c int32
 	if int32(*(*int8)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp))))) == '\\' {
@@ -416,7 +416,7 @@ func read_char_literal(tls *libc.TLS, start uintptr, quote uintptr, ty uintptr) 
 
 	var end uintptr = libc.Xstrchr(tls, *(*uintptr)(unsafe.Pointer(bp /* p */)), '\'')
 	if !(end != 0) {
-		error_at(tls, *(*uintptr)(unsafe.Pointer(bp /* p */)), ts+11755, 0)
+		error_at(tls, *(*uintptr)(unsafe.Pointer(bp /* p */)), ts+11792, 0)
 	}
 
 	var tok uintptr = new_token(tls, TK_NUM, start, end+uintptr(1))
@@ -433,10 +433,10 @@ func convert_pp_int(tls *libc.TLS, tok uintptr) uint8 { /* tokenize.c:342:13: */
 
 	// Read a binary, octal, decimal or hexadecimal number.
 	var base int32 = 10
-	if !(libc.Xstrncasecmp(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11777, uint64(2)) != 0) && int32(*(*uint16)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(libc.X__ctype_b_loc(tls))) + uintptr(int32(*(*int8)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)) + 2))))*2)))&int32(_ISxdigit) != 0 {
+	if !(libc.Xstrncasecmp(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11814, uint64(2)) != 0) && int32(*(*uint16)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(libc.X__ctype_b_loc(tls))) + uintptr(int32(*(*int8)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)) + 2))))*2)))&int32(_ISxdigit) != 0 {
 		*(*uintptr)(unsafe.Pointer(bp /* p */)) += uintptr(2)
 		base = 16
-	} else if !(libc.Xstrncasecmp(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11780, uint64(2)) != 0) && (int32(*(*int8)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)) + 2))) == '0' || int32(*(*int8)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)) + 2))) == '1') {
+	} else if !(libc.Xstrncasecmp(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11817, uint64(2)) != 0) && (int32(*(*int8)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)) + 2))) == '0' || int32(*(*int8)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)) + 2))) == '1') {
 		*(*uintptr)(unsafe.Pointer(bp /* p */)) += uintptr(2)
 		base = 2
 	} else if int32(*(*int8)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp))))) == '0' {
@@ -449,13 +449,13 @@ func convert_pp_int(tls *libc.TLS, tok uintptr) uint8 { /* tokenize.c:342:13: */
 	var l uint8 = uint8(0)
 	var u uint8 = uint8(0)
 
-	if startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11783) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11787) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11791) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11795) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11799) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11803) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11807) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11811) != 0 {
+	if startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11820) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11824) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11828) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11832) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11836) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11840) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11844) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11848) != 0 {
 		*(*uintptr)(unsafe.Pointer(bp /* p */)) += uintptr(3)
 		l = libc.AssignUint8(&u, uint8(1))
-	} else if !(libc.Xstrncasecmp(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11815, uint64(2)) != 0) || !(libc.Xstrncasecmp(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11818, uint64(2)) != 0) {
+	} else if !(libc.Xstrncasecmp(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11852, uint64(2)) != 0) || !(libc.Xstrncasecmp(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11855, uint64(2)) != 0) {
 		*(*uintptr)(unsafe.Pointer(bp /* p */)) += uintptr(2)
 		l = libc.AssignUint8(&u, uint8(1))
-	} else if startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11821) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11824) != 0 {
+	} else if startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11858) != 0 || startswith(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+11861) != 0 {
 		*(*uintptr)(unsafe.Pointer(bp /* p */)) += uintptr(2)
 		l = uint8(1)
 	} else if int32(*(*int8)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp))))) == 'L' || int32(*(*int8)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp))))) == 'l' {
@@ -554,7 +554,7 @@ func convert_pp_number(tls *libc.TLS, tok uintptr) { /* tokenize.c:427:13: */
 	}
 
 	if (*Token)(unsafe.Pointer(tok)).loc+uintptr((*Token)(unsafe.Pointer(tok)).len) != *(*uintptr)(unsafe.Pointer(bp)) {
-		error_tok(tls, tok, ts+11827, 0)
+		error_tok(tls, tok, ts+11864, 0)
 	}
 
 	(*Token)(unsafe.Pointer(tok)).kind = TK_NUM
@@ -618,7 +618,7 @@ func tokenize(tls *libc.TLS, file uintptr) uintptr { /* tokenize.c:490:7: */
 
 	for *(*int8)(unsafe.Pointer(p)) != 0 {
 		// Skip line comments.
-		if startswith(tls, p, ts+11852) != 0 {
+		if startswith(tls, p, ts+11889) != 0 {
 			p += uintptr(2)
 			for int32(*(*int8)(unsafe.Pointer(p))) != '\n' {
 				p++
@@ -628,10 +628,10 @@ func tokenize(tls *libc.TLS, file uintptr) uintptr { /* tokenize.c:490:7: */
 		}
 
 		// Skip block comments.
-		if startswith(tls, p, ts+11855) != 0 {
-			var q uintptr = libc.Xstrstr(tls, p+uintptr(2), ts+11858)
+		if startswith(tls, p, ts+11892) != 0 {
+			var q uintptr = libc.Xstrstr(tls, p+uintptr(2), ts+11895)
 			if !(q != 0) {
-				error_at(tls, p, ts+11861, 0)
+				error_at(tls, p, ts+11898, 0)
 			}
 			p = q + uintptr(2)
 			has_space = uint8(1)
@@ -657,7 +657,7 @@ func tokenize(tls *libc.TLS, file uintptr) uintptr { /* tokenize.c:490:7: */
 		if int32(*(*uint16)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(libc.X__ctype_b_loc(tls))) + uintptr(int32(*(*int8)(unsafe.Pointer(p))))*2)))&int32(_ISdigit) != 0 || int32(*(*int8)(unsafe.Pointer(p))) == '.' && int32(*(*uint16)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(libc.X__ctype_b_loc(tls))) + uintptr(int32(*(*int8)(unsafe.Pointer(p + 1))))*2)))&int32(_ISdigit) != 0 {
 			var q uintptr = libc.PostIncUintptr(&p, 1)
 			for {
-				if *(*int8)(unsafe.Pointer(p)) != 0 && *(*int8)(unsafe.Pointer(p + 1)) != 0 && libc.Xstrchr(tls, ts+11884, int32(*(*int8)(unsafe.Pointer(p)))) != 0 && libc.Xstrchr(tls, ts+11889, int32(*(*int8)(unsafe.Pointer(p + 1)))) != 0 {
+				if *(*int8)(unsafe.Pointer(p)) != 0 && *(*int8)(unsafe.Pointer(p + 1)) != 0 && libc.Xstrchr(tls, ts+11921, int32(*(*int8)(unsafe.Pointer(p)))) != 0 && libc.Xstrchr(tls, ts+11926, int32(*(*int8)(unsafe.Pointer(p + 1)))) != 0 {
 					p += uintptr(2)
 				} else if int32(*(*uint16)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(libc.X__ctype_b_loc(tls))) + uintptr(int32(*(*int8)(unsafe.Pointer(p))))*2)))&int32(_ISalnum) != 0 || int32(*(*int8)(unsafe.Pointer(p))) == '.' {
 					p++
@@ -677,28 +677,28 @@ func tokenize(tls *libc.TLS, file uintptr) uintptr { /* tokenize.c:490:7: */
 		}
 
 		// UTF-8 string literal
-		if startswith(tls, p, ts+11892) != 0 {
+		if startswith(tls, p, ts+11929) != 0 {
 			cur = libc.AssignPtrUintptr(cur+8, read_string_literal(tls, p, p+uintptr(2)))
 			p += uintptr((*Token)(unsafe.Pointer(cur)).len)
 			continue
 		}
 
 		// UTF-16 string literal
-		if startswith(tls, p, ts+11896) != 0 {
+		if startswith(tls, p, ts+11933) != 0 {
 			cur = libc.AssignPtrUintptr(cur+8, read_utf16_string_literal(tls, p, p+uintptr(1)))
 			p += uintptr((*Token)(unsafe.Pointer(cur)).len)
 			continue
 		}
 
 		// Wide string literal
-		if startswith(tls, p, ts+11899) != 0 {
+		if startswith(tls, p, ts+11936) != 0 {
 			cur = libc.AssignPtrUintptr(cur+8, read_utf32_string_literal(tls, p, p+uintptr(1), ty_int))
 			p += uintptr((*Token)(unsafe.Pointer(cur)).len)
 			continue
 		}
 
 		// UTF-32 string literal
-		if startswith(tls, p, ts+11902) != 0 {
+		if startswith(tls, p, ts+11939) != 0 {
 			cur = libc.AssignPtrUintptr(cur+8, read_utf32_string_literal(tls, p, p+uintptr(1), ty_uint))
 			p += uintptr((*Token)(unsafe.Pointer(cur)).len)
 			continue
@@ -713,7 +713,7 @@ func tokenize(tls *libc.TLS, file uintptr) uintptr { /* tokenize.c:490:7: */
 		}
 
 		// UTF-16 character literal
-		if startswith(tls, p, ts+11905) != 0 {
+		if startswith(tls, p, ts+11942) != 0 {
 			cur = libc.AssignPtrUintptr(cur+8, read_char_literal(tls, p, p+uintptr(1), ty_ushort))
 			*(*int64_t)(unsafe.Pointer(cur + 16)) &= int64(0xffff)
 			p += uintptr((*Token)(unsafe.Pointer(cur)).len)
@@ -721,14 +721,14 @@ func tokenize(tls *libc.TLS, file uintptr) uintptr { /* tokenize.c:490:7: */
 		}
 
 		// Wide character literal
-		if startswith(tls, p, ts+11908) != 0 {
+		if startswith(tls, p, ts+11945) != 0 {
 			cur = libc.AssignPtrUintptr(cur+8, read_char_literal(tls, p, p+uintptr(1), ty_int))
 			p += uintptr((*Token)(unsafe.Pointer(cur)).len)
 			continue
 		}
 
 		// UTF-32 character literal
-		if startswith(tls, p, ts+11911) != 0 {
+		if startswith(tls, p, ts+11948) != 0 {
 			cur = libc.AssignPtrUintptr(cur+8, read_char_literal(tls, p, p+uintptr(1), ty_uint))
 			p += uintptr((*Token)(unsafe.Pointer(cur)).len)
 			continue
@@ -750,7 +750,7 @@ func tokenize(tls *libc.TLS, file uintptr) uintptr { /* tokenize.c:490:7: */
 			continue
 		}
 
-		error_at(tls, p, ts+11914, 0)
+		error_at(tls, p, ts+11951, 0)
 	}
 
 	cur = libc.AssignPtrUintptr(cur+8, new_token(tls, TK_EOF, p, p))
@@ -765,11 +765,11 @@ func read_file(tls *libc.TLS, path uintptr) uintptr { /* tokenize.c:640:13: */
 
 	var fp uintptr
 
-	if libc.Xstrcmp(tls, path, ts+7420) == 0 {
+	if libc.Xstrcmp(tls, path, ts+7457) == 0 {
 		// By convention, read from stdin if a given filename is "-".
 		fp = libc.Xstdin
 	} else {
-		fp = libc.Xfopen(tls, path, ts+11928)
+		fp = libc.Xfopen(tls, path, ts+11965)
 		if !(fp != 0) {
 			return uintptr(0)
 		}
@@ -903,7 +903,7 @@ func convert_universal_chars(tls *libc.TLS, p uintptr) { /* tokenize.c:755:13: *
 	var q uintptr = p
 
 	for *(*int8)(unsafe.Pointer(p)) != 0 {
-		if startswith(tls, p, ts+11930) != 0 {
+		if startswith(tls, p, ts+11967) != 0 {
 			var c uint32_t = read_universal_char(tls, p+uintptr(2), 4)
 			if c != 0 {
 				p += uintptr(6)
@@ -911,7 +911,7 @@ func convert_universal_chars(tls *libc.TLS, p uintptr) { /* tokenize.c:755:13: *
 			} else {
 				*(*int8)(unsafe.Pointer(libc.PostIncUintptr(&q, 1))) = *(*int8)(unsafe.Pointer(libc.PostIncUintptr(&p, 1)))
 			}
-		} else if startswith(tls, p, ts+11933) != 0 {
+		} else if startswith(tls, p, ts+11970) != 0 {
 			var c uint32_t = read_universal_char(tls, p+uintptr(2), 8)
 			if c != 0 {
 				p += uintptr(10)
@@ -940,7 +940,7 @@ func tokenize_file(tls *libc.TLS, path uintptr) uintptr { /* tokenize.c:786:7: *
 	// If exists, just skip them because they are useless bytes.
 	// (It is actually not recommended to add BOM markers to UTF-8
 	// texts, but it's not uncommon particularly on Windows.)
-	if !(libc.Xmemcmp(tls, p, ts+11936, uint64(3)) != 0) {
+	if !(libc.Xmemcmp(tls, p, ts+11973, uint64(3)) != 0) {
 		p += uintptr(3)
 	}
 

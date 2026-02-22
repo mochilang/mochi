@@ -48,17 +48,32 @@ var output_file1 uintptr /* main.c:32:13: */
 var input_paths StringArray /* main.c:34:20: */
 var tmpfiles StringArray    /* main.c:35:20: */
 
-func usage(tls *libc.TLS, status int32) { /* main.c:37:13: */
-	libc.Xfprintf(tls, libc.Xstderr, ts+6883, 0)
+func dir_exists(tls *libc.TLS, path uintptr) uint8 { /* main.c:37:13: */
+	bp := tls.Alloc(144)
+	defer tls.Free(144)
+
+	// var st stat at bp, 144
+
+	return uint8(libc.Bool32(!(libc.Xstat(tls, path, bp) != 0) && (*stat)(unsafe.Pointer(bp)).st_mode&uint32(0170000) == uint32(0040000)))
+}
+
+func add_include_path_if_exists(tls *libc.TLS, path uintptr) { /* main.c:42:13: */
+	if dir_exists(tls, path) != 0 {
+		strarray_push(tls, uintptr(unsafe.Pointer(&include_paths)), path)
+	}
+}
+
+func usage(tls *libc.TLS, status int32) { /* main.c:47:13: */
+	libc.Xfprintf(tls, libc.Xstderr, ts+6904, 0)
 	libc.Xexit(tls, status)
 }
 
-func take_arg(tls *libc.TLS, arg uintptr) uint8 { /* main.c:42:13: */
+func take_arg(tls *libc.TLS, arg uintptr) uint8 { /* main.c:52:13: */
 	bp := tls.Alloc(64)
 	defer tls.Free(64)
 
 	*(*[8]uintptr)(unsafe.Pointer(bp /* x */)) = [8]uintptr{
-		ts + 6913, ts + 6916, ts + 6919, ts + 6930, ts + 6939, ts + 6942, ts + 6946, ts + 6950,
+		ts + 6934, ts + 6937, ts + 6940, ts + 6951, ts + 6960, ts + 6963, ts + 6967, ts + 6971,
 	}
 
 	{
@@ -72,18 +87,25 @@ func take_arg(tls *libc.TLS, arg uintptr) uint8 { /* main.c:42:13: */
 	return uint8(0)
 }
 
-func add_default_include_paths(tls *libc.TLS, argv0 uintptr) { /* main.c:53:13: */
+func add_default_include_paths(tls *libc.TLS, argv0 uintptr) { /* main.c:63:13: */
 	bp := tls.Alloc(8)
 	defer tls.Free(8)
 
 	// We expect that chibicc-specific include files are installed
 	// to ./include relative to argv[0].
-	strarray_push(tls, uintptr(unsafe.Pointer(&include_paths)), format(tls, ts+6959, libc.VaList(bp, xdirname(tls, argv0))))
+	add_include_path_if_exists(tls, format(tls, ts+6980, libc.VaList(bp, xdirname(tls, argv0))))
+
+	// Allow overriding bundled include path when running transpiled chibigo
+	// from an arbitrary location.
+	var bundled uintptr = libc.Xgetenv(tls, ts+6991)
+	if bundled != 0 {
+		add_include_path_if_exists(tls, bundled)
+	}
 
 	// Add standard include paths.
-	strarray_push(tls, uintptr(unsafe.Pointer(&include_paths)), ts+6970)
-	strarray_push(tls, uintptr(unsafe.Pointer(&include_paths)), ts+6989)
-	strarray_push(tls, uintptr(unsafe.Pointer(&include_paths)), ts+7019)
+	add_include_path_if_exists(tls, ts+7007)
+	add_include_path_if_exists(tls, ts+7026)
+	add_include_path_if_exists(tls, ts+7056)
 
 	// Keep a copy of the standard include paths for -MMD option.
 	{
@@ -94,33 +116,33 @@ func add_default_include_paths(tls *libc.TLS, argv0 uintptr) { /* main.c:53:13: 
 	}
 }
 
-func define(tls *libc.TLS, str uintptr) { /* main.c:68:13: */
+func define(tls *libc.TLS, str uintptr) { /* main.c:84:13: */
 	var eq uintptr = libc.Xstrchr(tls, str, '=')
 	if eq != 0 {
 		define_macro(tls, xstrndup(tls, str, uint64((int64(eq)-int64(str))/1)), eq+uintptr(1))
 	} else {
-		define_macro(tls, str, ts+7032)
+		define_macro(tls, str, ts+7069)
 	}
 }
 
-func parse_opt_x(tls *libc.TLS, s uintptr) FileType { /* main.c:76:17: */
+func parse_opt_x(tls *libc.TLS, s uintptr) FileType { /* main.c:92:17: */
 	bp := tls.Alloc(8)
 	defer tls.Free(8)
 
-	if !(libc.Xstrcmp(tls, s, ts+7034) != 0) {
+	if !(libc.Xstrcmp(tls, s, ts+7071) != 0) {
 		return FILE_C
 	}
-	if !(libc.Xstrcmp(tls, s, ts+7036) != 0) {
+	if !(libc.Xstrcmp(tls, s, ts+7073) != 0) {
 		return FILE_ASM
 	}
-	if !(libc.Xstrcmp(tls, s, ts+7046) != 0) {
+	if !(libc.Xstrcmp(tls, s, ts+7083) != 0) {
 		return FILE_NONE
 	}
-	error(tls, ts+7051, libc.VaList(bp, s))
+	error(tls, ts+7088, libc.VaList(bp, s))
 	return FileType(0)
 }
 
-func quote_makefile(tls *libc.TLS, s uintptr) uintptr { /* main.c:86:13: */
+func quote_makefile(tls *libc.TLS, s uintptr) uintptr { /* main.c:102:13: */
 	var buf uintptr = libc.Xcalloc(tls, uint64(1), libc.Xstrlen(tls, s)*uint64(2)+uint64(1))
 
 	{
@@ -160,7 +182,7 @@ func quote_makefile(tls *libc.TLS, s uintptr) uintptr { /* main.c:86:13: */
 	return buf
 }
 
-func parse_args(tls *libc.TLS, argc int32, argv uintptr) { /* main.c:114:13: */
+func parse_args(tls *libc.TLS, argc int32, argv uintptr) { /* main.c:130:13: */
 	bp := tls.Alloc(56)
 	defer tls.Free(56)
 
@@ -182,209 +204,209 @@ func parse_args(tls *libc.TLS, argc int32, argv uintptr) { /* main.c:114:13: */
 	{
 		var i1 int32 = 1
 		for ; i1 < argc; i1++ {
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7095) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7132) != 0) {
 				opt_hash_hash_hash = uint8(1)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7100) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7137) != 0) {
 				opt_cc1 = uint8(1)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7105) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7142) != 0) {
 				usage(tls, 0)
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6913) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6934) != 0) {
 				opt_o = *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8))
 				continue
 			}
 
-			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6913, uint64(2)) != 0) {
+			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6934, uint64(2)) != 0) {
 				opt_o = *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)) + uintptr(2)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7112) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7149) != 0) {
 				opt_S = uint8(1)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7115) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7152) != 0) {
 				opt_fcommon = uint8(1)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7124) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7161) != 0) {
 				opt_fcommon = uint8(0)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7136) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7173) != 0) {
 				opt_c = uint8(1)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7139) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7176) != 0) {
 				opt_E = uint8(1)
 				continue
 			}
 
-			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6916, uint64(2)) != 0) {
+			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6937, uint64(2)) != 0) {
 				strarray_push(tls, uintptr(unsafe.Pointer(&include_paths)), *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8))+uintptr(2))
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7142) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7179) != 0) {
 				define(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8)))
 				continue
 			}
 
-			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7142, uint64(2)) != 0) {
+			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7179, uint64(2)) != 0) {
 				define(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8))+uintptr(2))
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7145) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7182) != 0) {
 				undef_macro(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8)))
 				continue
 			}
 
-			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7145, uint64(2)) != 0) {
+			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7182, uint64(2)) != 0) {
 				undef_macro(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8))+uintptr(2))
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6930) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6951) != 0) {
 				strarray_push(tls, uintptr(unsafe.Pointer(&opt_include)), *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8)))
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6939) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6960) != 0) {
 				opt_x = parse_opt_x(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8)))
 				continue
 			}
 
-			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6939, uint64(2)) != 0) {
+			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6960, uint64(2)) != 0) {
 				opt_x = parse_opt_x(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8))+uintptr(2))
 				continue
 			}
 
-			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7148, uint64(2)) != 0) || !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7151, uint64(4)) != 0) {
+			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7185, uint64(2)) != 0) || !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7188, uint64(4)) != 0) {
 				strarray_push(tls, uintptr(unsafe.Pointer(&input_paths)), *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)))
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6950) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6971) != 0) {
 				strarray_push(tls, uintptr(unsafe.Pointer(&ld_extra_args)), *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8)))
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7156) != 0) {
-				strarray_push(tls, uintptr(unsafe.Pointer(&ld_extra_args)), ts+7156)
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7193) != 0) {
+				strarray_push(tls, uintptr(unsafe.Pointer(&ld_extra_args)), ts+7193)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7159) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7196) != 0) {
 				opt_M = uint8(1)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6942) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6963) != 0) {
 				opt_MF = *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8))
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7162) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7199) != 0) {
 				opt_MP = uint8(1)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6946) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6967) != 0) {
 				if opt_MT == uintptr(0) {
 					opt_MT = *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8))
 				} else {
-					opt_MT = format(tls, ts+7166, libc.VaList(bp, opt_MT, *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8))))
+					opt_MT = format(tls, ts+7203, libc.VaList(bp, opt_MT, *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8))))
 				}
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7172) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7209) != 0) {
 				opt_MD = uint8(1)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7176) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7213) != 0) {
 				if opt_MT == uintptr(0) {
 					opt_MT = quote_makefile(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8)))
 				} else {
-					opt_MT = format(tls, ts+7166, libc.VaList(bp+16, opt_MT, quote_makefile(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8)))))
+					opt_MT = format(tls, ts+7203, libc.VaList(bp+16, opt_MT, quote_makefile(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8)))))
 				}
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7180) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7217) != 0) {
 				opt_MD = libc.AssignPtrUint8(uintptr(unsafe.Pointer(&opt_MMD)), uint8(1))
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7185) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7191) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7222) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7228) != 0) {
 				opt_fpic = uint8(1)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7197) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7234) != 0) {
 				base_file = *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8))
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7208) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7245) != 0) {
 				output_file1 = *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8))
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6919) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+6940) != 0) {
 				strarray_push(tls, bp+40, *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PostIncInt32(&i1, 1))*8)))
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7220) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7257) != 0) {
 				opt_static = uint8(1)
-				strarray_push(tls, uintptr(unsafe.Pointer(&ld_extra_args)), ts+7220)
+				strarray_push(tls, uintptr(unsafe.Pointer(&ld_extra_args)), ts+7257)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7228) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7265) != 0) {
 				opt_shared = uint8(1)
-				strarray_push(tls, uintptr(unsafe.Pointer(&ld_extra_args)), ts+7228)
+				strarray_push(tls, uintptr(unsafe.Pointer(&ld_extra_args)), ts+7265)
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7236) != 0) {
-				strarray_push(tls, uintptr(unsafe.Pointer(&ld_extra_args)), ts+7236)
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7273) != 0) {
+				strarray_push(tls, uintptr(unsafe.Pointer(&ld_extra_args)), ts+7273)
 				strarray_push(tls, uintptr(unsafe.Pointer(&ld_extra_args)), *(*uintptr)(unsafe.Pointer(argv + uintptr(libc.PreIncInt32(&i1, 1))*8)))
 				continue
 			}
 
-			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7236, uint64(2)) != 0) {
-				strarray_push(tls, uintptr(unsafe.Pointer(&ld_extra_args)), ts+7236)
+			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7273, uint64(2)) != 0) {
+				strarray_push(tls, uintptr(unsafe.Pointer(&ld_extra_args)), ts+7273)
 				strarray_push(tls, uintptr(unsafe.Pointer(&ld_extra_args)), *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8))+uintptr(2))
 				continue
 			}
 
-			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7239) != 0) {
+			if !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7276) != 0) {
 				hashmap_test(tls)
 				libc.Xexit(tls, 0)
 			}
 
 			// These options are ignored for now.
-			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7253, uint64(2)) != 0) || !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7256, uint64(2)) != 0) || !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7259, uint64(2)) != 0) || !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7262, uint64(5)) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7268) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7283) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7296) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7320) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7341) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7362) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7367) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7381) != 0) {
+			if !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7290, uint64(2)) != 0) || !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7293, uint64(2)) != 0) || !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7296, uint64(2)) != 0) || !(libc.Xstrncmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7299, uint64(5)) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7305) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7320) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7333) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7357) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7378) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7399) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7404) != 0) || !(libc.Xstrcmp(tls, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)), ts+7418) != 0) {
 				continue
 			}
 
 			if int32(*(*int8)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8))))) == '-' && int32(*(*int8)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)) + 1))) != 0 {
-				error(tls, ts+7384, libc.VaList(bp+32, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8))))
+				error(tls, ts+7421, libc.VaList(bp+32, *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8))))
 			}
 
 			strarray_push(tls, uintptr(unsafe.Pointer(&input_paths)), *(*uintptr)(unsafe.Pointer(argv + uintptr(i1)*8)))
@@ -399,7 +421,7 @@ func parse_args(tls *libc.TLS, argc int32, argv uintptr) { /* main.c:114:13: */
 	}
 
 	if input_paths.len == 0 {
-		error(tls, ts+7405, 0)
+		error(tls, ts+7442, 0)
 	}
 
 	// -E implies that the input is the C macro language.
@@ -408,29 +430,29 @@ func parse_args(tls *libc.TLS, argc int32, argv uintptr) { /* main.c:114:13: */
 	}
 }
 
-func open_file(tls *libc.TLS, path uintptr) uintptr { /* main.c:350:13: */
+func open_file(tls *libc.TLS, path uintptr) uintptr { /* main.c:366:13: */
 	bp := tls.Alloc(16)
 	defer tls.Free(16)
 
-	if !(path != 0) || libc.Xstrcmp(tls, path, ts+7420) == 0 {
+	if !(path != 0) || libc.Xstrcmp(tls, path, ts+7457) == 0 {
 		return libc.Xstdout
 	}
 
-	var out uintptr = libc.Xfopen(tls, path, ts+7422)
+	var out uintptr = libc.Xfopen(tls, path, ts+7459)
 	if !(out != 0) {
-		error(tls, ts+7424, libc.VaList(bp, path, libc.Xstrerror(tls, *(*int32)(unsafe.Pointer(libc.X__errno_location(tls))))))
+		error(tls, ts+7461, libc.VaList(bp, path, libc.Xstrerror(tls, *(*int32)(unsafe.Pointer(libc.X__errno_location(tls))))))
 	}
 	return out
 }
 
-func endswith(tls *libc.TLS, p uintptr, q uintptr) uint8 { /* main.c:360:13: */
+func endswith(tls *libc.TLS, p uintptr, q uintptr) uint8 { /* main.c:376:13: */
 	var len1 int32 = int32(libc.Xstrlen(tls, p))
 	var len2 int32 = int32(libc.Xstrlen(tls, q))
 	return uint8(libc.Bool32(len1 >= len2 && !(libc.Xstrcmp(tls, p+uintptr(len1)-uintptr(len2), q) != 0)))
 }
 
 // Replace file extension
-func replace_extn(tls *libc.TLS, tmpl uintptr, extn uintptr) uintptr { /* main.c:367:13: */
+func replace_extn(tls *libc.TLS, tmpl uintptr, extn uintptr) uintptr { /* main.c:383:13: */
 	bp := tls.Alloc(16)
 	defer tls.Free(16)
 
@@ -439,10 +461,10 @@ func replace_extn(tls *libc.TLS, tmpl uintptr, extn uintptr) uintptr { /* main.c
 	if dot != 0 {
 		*(*int8)(unsafe.Pointer(dot)) = int8(0)
 	}
-	return format(tls, ts+7456, libc.VaList(bp, filename, extn))
+	return format(tls, ts+7493, libc.VaList(bp, filename, extn))
 }
 
-func cleanup(tls *libc.TLS) { /* main.c:375:13: */
+func cleanup(tls *libc.TLS) { /* main.c:391:13: */
 	{
 		var i int32 = 0
 		for ; i < tmpfiles.len; i++ {
@@ -451,14 +473,14 @@ func cleanup(tls *libc.TLS) { /* main.c:375:13: */
 	}
 }
 
-func create_tmpfile(tls *libc.TLS) uintptr { /* main.c:380:13: */
+func create_tmpfile(tls *libc.TLS) uintptr { /* main.c:396:13: */
 	bp := tls.Alloc(8)
 	defer tls.Free(8)
 
-	var path uintptr = libc.Xstrdup(tls, ts+7461)
+	var path uintptr = libc.Xstrdup(tls, ts+7498)
 	var fd int32 = libc.Xmkstemp(tls, path)
 	if fd == -1 {
-		error(tls, ts+7481, libc.VaList(bp, libc.Xstrerror(tls, *(*int32)(unsafe.Pointer(libc.X__errno_location(tls))))))
+		error(tls, ts+7518, libc.VaList(bp, libc.Xstrerror(tls, *(*int32)(unsafe.Pointer(libc.X__errno_location(tls))))))
 	}
 	libc.Xclose(tls, fd)
 
@@ -466,17 +488,17 @@ func create_tmpfile(tls *libc.TLS) uintptr { /* main.c:380:13: */
 	return path
 }
 
-func run_subprocess(tls *libc.TLS, argv uintptr) { /* main.c:393:13: */
+func run_subprocess(tls *libc.TLS, argv uintptr) { /* main.c:409:13: */
 	bp := tls.Alloc(16)
 	defer tls.Free(16)
 
 	// If -### is given, dump the subprocess's command line.
 	if opt_hash_hash_hash != 0 {
-		libc.Xfprintf(tls, libc.Xstderr, ts+7500, libc.VaList(bp, *(*uintptr)(unsafe.Pointer(argv))))
+		libc.Xfprintf(tls, libc.Xstderr, ts+7537, libc.VaList(bp, *(*uintptr)(unsafe.Pointer(argv))))
 		{
 			var i int32 = 1
 			for ; *(*uintptr)(unsafe.Pointer(argv + uintptr(i)*8)) != 0; i++ {
-				libc.Xfprintf(tls, libc.Xstderr, ts+7503, libc.VaList(bp+8, *(*uintptr)(unsafe.Pointer(argv + uintptr(i)*8))))
+				libc.Xfprintf(tls, libc.Xstderr, ts+7540, libc.VaList(bp+8, *(*uintptr)(unsafe.Pointer(argv + uintptr(i)*8))))
 			}
 		}
 		libc.Xfprintf(tls, libc.Xstderr, ts+112, 0)
@@ -485,18 +507,18 @@ func run_subprocess(tls *libc.TLS, argv uintptr) { /* main.c:393:13: */
 	run_subprocess_go(tls, argv)
 }
 
-func run_cc1(tls *libc.TLS, argc int32, argv uintptr, input uintptr, output uintptr) { /* main.c:405:13: */
+func run_cc1(tls *libc.TLS, argc int32, argv uintptr, input uintptr, output uintptr) { /* main.c:421:13: */
 	var args uintptr = libc.Xcalloc(tls, uint64(argc+10), uint64(unsafe.Sizeof(uintptr(0))))
 	libc.Xmemcpy(tls, args, argv, uint64(argc)*uint64(unsafe.Sizeof(uintptr(0))))
-	*(*uintptr)(unsafe.Pointer(args + uintptr(libc.PostIncInt32(&argc, 1))*8)) = ts + 7100 /* "-cc1" */
+	*(*uintptr)(unsafe.Pointer(args + uintptr(libc.PostIncInt32(&argc, 1))*8)) = ts + 7137 /* "-cc1" */
 
 	if input != 0 {
-		*(*uintptr)(unsafe.Pointer(args + uintptr(libc.PostIncInt32(&argc, 1))*8)) = ts + 7197 /* "-cc1-input" */
+		*(*uintptr)(unsafe.Pointer(args + uintptr(libc.PostIncInt32(&argc, 1))*8)) = ts + 7234 /* "-cc1-input" */
 		*(*uintptr)(unsafe.Pointer(args + uintptr(libc.PostIncInt32(&argc, 1))*8)) = input
 	}
 
 	if output != 0 {
-		*(*uintptr)(unsafe.Pointer(args + uintptr(libc.PostIncInt32(&argc, 1))*8)) = ts + 7208 /* "-cc1-output" */
+		*(*uintptr)(unsafe.Pointer(args + uintptr(libc.PostIncInt32(&argc, 1))*8)) = ts + 7245 /* "-cc1-output" */
 		*(*uintptr)(unsafe.Pointer(args + uintptr(libc.PostIncInt32(&argc, 1))*8)) = output
 	}
 
@@ -504,7 +526,7 @@ func run_cc1(tls *libc.TLS, argc int32, argv uintptr, input uintptr, output uint
 }
 
 // Print tokens to stdout. Used for -E.
-func print_tokens(tls *libc.TLS, tok uintptr) { /* main.c:424:13: */
+func print_tokens(tls *libc.TLS, tok uintptr) { /* main.c:440:13: */
 	bp := tls.Alloc(16)
 	defer tls.Free(16)
 
@@ -512,7 +534,7 @@ func print_tokens(tls *libc.TLS, tok uintptr) { /* main.c:424:13: */
 		if opt_o != 0 {
 			return opt_o
 		}
-		return ts + 7420 /* "-" */
+		return ts + 7457 /* "-" */
 	}())
 
 	var line int32 = 1
@@ -521,15 +543,15 @@ func print_tokens(tls *libc.TLS, tok uintptr) { /* main.c:424:13: */
 			libc.Xfprintf(tls, out, ts+112, 0)
 		}
 		if (*Token)(unsafe.Pointer(tok)).has_space != 0 && !(int32((*Token)(unsafe.Pointer(tok)).at_bol) != 0) {
-			libc.Xfprintf(tls, out, ts+7507, 0)
+			libc.Xfprintf(tls, out, ts+7544, 0)
 		}
-		libc.Xfprintf(tls, out, ts+7509, libc.VaList(bp, (*Token)(unsafe.Pointer(tok)).len, (*Token)(unsafe.Pointer(tok)).loc))
+		libc.Xfprintf(tls, out, ts+7546, libc.VaList(bp, (*Token)(unsafe.Pointer(tok)).len, (*Token)(unsafe.Pointer(tok)).loc))
 		line++
 	}
 	libc.Xfprintf(tls, out, ts+112, 0)
 }
 
-func in_std_include_path(tls *libc.TLS, path uintptr) uint8 { /* main.c:439:13: */
+func in_std_include_path(tls *libc.TLS, path uintptr) uint8 { /* main.c:455:13: */
 	{
 		var i int32 = 0
 		for ; i < std_include_paths.len; i++ {
@@ -546,7 +568,7 @@ func in_std_include_path(tls *libc.TLS, path uintptr) uint8 { /* main.c:439:13: 
 // If -M options is given, the compiler write a list of input files to
 // stdout in a format that "make" command can read. This feature is
 // used to automate file dependency management.
-func print_dependencies(tls *libc.TLS) { /* main.c:452:13: */
+func print_dependencies(tls *libc.TLS) { /* main.c:468:13: */
 	bp := tls.Alloc(32)
 	defer tls.Free(32)
 
@@ -559,18 +581,18 @@ func print_dependencies(tls *libc.TLS) { /* main.c:452:13: */
 				return opt_o
 			}
 			return base_file
-		}(), ts+7514 /* ".d" */)
+		}(), ts+7551 /* ".d" */)
 	} else if opt_o != 0 {
 		path = opt_o
 	} else {
-		path = ts + 7420 /* "-" */
+		path = ts + 7457 /* "-" */
 	}
 
 	var out uintptr = open_file(tls, path)
 	if opt_MT != 0 {
 		libc.Xfprintf(tls, out, ts+5743, libc.VaList(bp, opt_MT))
 	} else {
-		libc.Xfprintf(tls, out, ts+5743, libc.VaList(bp+8, quote_makefile(tls, replace_extn(tls, base_file, ts+7517))))
+		libc.Xfprintf(tls, out, ts+5743, libc.VaList(bp+8, quote_makefile(tls, replace_extn(tls, base_file, ts+7554))))
 	}
 
 	var files uintptr = get_input_files(tls)
@@ -581,11 +603,11 @@ func print_dependencies(tls *libc.TLS) { /* main.c:452:13: */
 			if opt_MMD != 0 && in_std_include_path(tls, (*File)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(files + uintptr(i)*8)))).name) != 0 {
 				continue
 			}
-			libc.Xfprintf(tls, out, ts+7520, libc.VaList(bp+16, (*File)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(files + uintptr(i)*8)))).name))
+			libc.Xfprintf(tls, out, ts+7557, libc.VaList(bp+16, (*File)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(files + uintptr(i)*8)))).name))
 		}
 	}
 
-	libc.Xfprintf(tls, out, ts+7528, 0)
+	libc.Xfprintf(tls, out, ts+7565, 0)
 
 	if opt_MP != 0 {
 		{
@@ -594,24 +616,24 @@ func print_dependencies(tls *libc.TLS) { /* main.c:452:13: */
 				if opt_MMD != 0 && in_std_include_path(tls, (*File)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(files + uintptr(i)*8)))).name) != 0 {
 					continue
 				}
-				libc.Xfprintf(tls, out, ts+7531, libc.VaList(bp+24, quote_makefile(tls, (*File)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(files + uintptr(i)*8)))).name)))
+				libc.Xfprintf(tls, out, ts+7568, libc.VaList(bp+24, quote_makefile(tls, (*File)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(files + uintptr(i)*8)))).name)))
 			}
 		}
 	}
 }
 
-func must_tokenize_file(tls *libc.TLS, path uintptr) uintptr { /* main.c:488:14: */
+func must_tokenize_file(tls *libc.TLS, path uintptr) uintptr { /* main.c:504:14: */
 	bp := tls.Alloc(16)
 	defer tls.Free(16)
 
 	var tok uintptr = tokenize_file(tls, path)
 	if !(tok != 0) {
-		error(tls, ts+7537, libc.VaList(bp, path, libc.Xstrerror(tls, *(*int32)(unsafe.Pointer(libc.X__errno_location(tls))))))
+		error(tls, ts+7574, libc.VaList(bp, path, libc.Xstrerror(tls, *(*int32)(unsafe.Pointer(libc.X__errno_location(tls))))))
 	}
 	return tok
 }
 
-func append_tokens(tls *libc.TLS, tok1 uintptr, tok2 uintptr) uintptr { /* main.c:495:14: */
+func append_tokens(tls *libc.TLS, tok1 uintptr, tok2 uintptr) uintptr { /* main.c:511:14: */
 	if !(tok1 != 0) || (*Token)(unsafe.Pointer(tok1)).kind == TK_EOF {
 		return tok2
 	}
@@ -624,7 +646,7 @@ func append_tokens(tls *libc.TLS, tok1 uintptr, tok2 uintptr) uintptr { /* main.
 	return tok1
 }
 
-func cc1(tls *libc.TLS) { /* main.c:506:13: */
+func cc1(tls *libc.TLS) { /* main.c:522:13: */
 	bp := tls.Alloc(16)
 	defer tls.Free(16)
 
@@ -641,7 +663,7 @@ func cc1(tls *libc.TLS) { /* main.c:506:13: */
 			} else {
 				path = search_include_paths(tls, incl)
 				if !(path != 0) {
-					error(tls, ts+7544, libc.VaList(bp, incl, libc.Xstrerror(tls, *(*int32)(unsafe.Pointer(libc.X__errno_location(tls))))))
+					error(tls, ts+7581, libc.VaList(bp, incl, libc.Xstrerror(tls, *(*int32)(unsafe.Pointer(libc.X__errno_location(tls))))))
 				}
 			}
 
@@ -677,15 +699,15 @@ func cc1(tls *libc.TLS) { /* main.c:506:13: */
 	libc.Xfclose(tls, out)
 }
 
-func assemble(tls *libc.TLS, input uintptr, output uintptr) { /* main.c:552:13: */
+func assemble(tls *libc.TLS, input uintptr, output uintptr) { /* main.c:568:13: */
 	bp := tls.Alloc(48)
 	defer tls.Free(48)
 
-	*(*[6]uintptr)(unsafe.Pointer(bp /* cmd */)) = [6]uintptr{ts + 7561, ts + 7136, input, ts + 6913, output, uintptr(0)}
+	*(*[6]uintptr)(unsafe.Pointer(bp /* cmd */)) = [6]uintptr{ts + 7598, ts + 7173, input, ts + 6934, output, uintptr(0)}
 	run_subprocess(tls, bp)
 }
 
-func find_file(tls *libc.TLS, pattern uintptr) uintptr { /* main.c:557:13: */
+func find_file(tls *libc.TLS, pattern uintptr) uintptr { /* main.c:573:13: */
 	bp := tls.Alloc(24)
 	defer tls.Free(24)
 
@@ -714,7 +736,7 @@ func find_file(tls *libc.TLS, pattern uintptr) uintptr { /* main.c:557:13: */
 		if int32(*(*int8)(unsafe.Pointer(ent + 19))) == '.' {
 			continue
 		}
-		var path uintptr = format(tls, ts+7564, libc.VaList(bp, dir, ent+19, suffix))
+		var path uintptr = format(tls, ts+7601, libc.VaList(bp, dir, ent+19, suffix))
 		if file_exists(tls, path) != 0 {
 			libc.Xclosedir(tls, dp)
 			libc.Xfree(tls, dir)
@@ -729,7 +751,7 @@ func find_file(tls *libc.TLS, pattern uintptr) uintptr { /* main.c:557:13: */
 }
 
 // Returns true if a given file exists.
-func file_exists(tls *libc.TLS, path uintptr) uint8 { /* main.c:596:6: */
+func file_exists(tls *libc.TLS, path uintptr) uint8 { /* main.c:612:6: */
 	bp := tls.Alloc(144)
 	defer tls.Free(144)
 
@@ -738,25 +760,25 @@ func file_exists(tls *libc.TLS, path uintptr) uint8 { /* main.c:596:6: */
 	return libc.BoolUint8(!(libc.Xstat(tls, path, bp) != 0))
 }
 
-func find_libpath(tls *libc.TLS) uintptr { /* main.c:601:13: */
-	if file_exists(tls, ts+7572) != 0 {
-		return ts + 7605 /* "/usr/lib/x86_64-..." */
+func find_libpath(tls *libc.TLS) uintptr { /* main.c:617:13: */
+	if file_exists(tls, ts+7609) != 0 {
+		return ts + 7642 /* "/usr/lib/x86_64-..." */
 	}
-	if file_exists(tls, ts+7631) != 0 {
-		return ts + 7649 /* "/usr/lib64" */
+	if file_exists(tls, ts+7668) != 0 {
+		return ts + 7686 /* "/usr/lib64" */
 	}
-	error(tls, ts+7660, 0)
+	error(tls, ts+7697, 0)
 	return uintptr(0)
 }
 
-func find_gcc_libpath(tls *libc.TLS) uintptr { /* main.c:609:13: */
+func find_gcc_libpath(tls *libc.TLS) uintptr { /* main.c:625:13: */
 	bp := tls.Alloc(24)
 	defer tls.Free(24)
 
 	*(*[3]uintptr)(unsafe.Pointer(bp /* paths */)) = [3]uintptr{
-		ts + 7686,
-		ts + 7729,
-		ts + 7775,
+		ts + 7723,
+		ts + 7766,
+		ts + 7812,
 	}
 
 	{
@@ -769,47 +791,47 @@ func find_gcc_libpath(tls *libc.TLS) uintptr { /* main.c:609:13: */
 		}
 	}
 
-	error(tls, ts+7821, 0)
+	error(tls, ts+7858, 0)
 	return uintptr(0)
 }
 
-func run_linker(tls *libc.TLS, inputs uintptr, output uintptr) { /* main.c:625:13: */
+func run_linker(tls *libc.TLS, inputs uintptr, output uintptr) { /* main.c:641:13: */
 	bp := tls.Alloc(88)
 	defer tls.Free(88)
 
 	*(*StringArray)(unsafe.Pointer(bp + 72 /* arr */)) = StringArray{}
 
-	strarray_push(tls, bp+72, ts+7851)
-	strarray_push(tls, bp+72, ts+6913)
+	strarray_push(tls, bp+72, ts+7888)
+	strarray_push(tls, bp+72, ts+6934)
 	strarray_push(tls, bp+72, output)
-	strarray_push(tls, bp+72, ts+7854)
-	strarray_push(tls, bp+72, ts+7857)
+	strarray_push(tls, bp+72, ts+7891)
+	strarray_push(tls, bp+72, ts+7894)
 
 	var libpath uintptr = find_libpath(tls)
 	var gcc_libpath uintptr = find_gcc_libpath(tls)
 
 	if opt_shared != 0 {
-		strarray_push(tls, bp+72, format(tls, ts+7868, libc.VaList(bp, libpath)))
-		strarray_push(tls, bp+72, format(tls, ts+7878, libc.VaList(bp+8, gcc_libpath)))
+		strarray_push(tls, bp+72, format(tls, ts+7905, libc.VaList(bp, libpath)))
+		strarray_push(tls, bp+72, format(tls, ts+7915, libc.VaList(bp+8, gcc_libpath)))
 	} else {
-		strarray_push(tls, bp+72, format(tls, ts+7893, libc.VaList(bp+16, libpath)))
-		strarray_push(tls, bp+72, format(tls, ts+7868, libc.VaList(bp+24, libpath)))
-		strarray_push(tls, bp+72, format(tls, ts+7903, libc.VaList(bp+32, gcc_libpath)))
+		strarray_push(tls, bp+72, format(tls, ts+7930, libc.VaList(bp+16, libpath)))
+		strarray_push(tls, bp+72, format(tls, ts+7905, libc.VaList(bp+24, libpath)))
+		strarray_push(tls, bp+72, format(tls, ts+7940, libc.VaList(bp+32, gcc_libpath)))
 	}
 
-	strarray_push(tls, bp+72, format(tls, ts+7917, libc.VaList(bp+40, gcc_libpath)))
-	strarray_push(tls, bp+72, ts+7922)
-	strarray_push(tls, bp+72, ts+7950)
-	strarray_push(tls, bp+72, ts+7963)
-	strarray_push(tls, bp+72, ts+7922)
-	strarray_push(tls, bp+72, ts+7972)
-	strarray_push(tls, bp+72, ts+8003)
-	strarray_push(tls, bp+72, ts+8034)
-	strarray_push(tls, bp+72, ts+8045)
+	strarray_push(tls, bp+72, format(tls, ts+7954, libc.VaList(bp+40, gcc_libpath)))
+	strarray_push(tls, bp+72, ts+7959)
+	strarray_push(tls, bp+72, ts+7987)
+	strarray_push(tls, bp+72, ts+8000)
+	strarray_push(tls, bp+72, ts+7959)
+	strarray_push(tls, bp+72, ts+8009)
+	strarray_push(tls, bp+72, ts+8040)
+	strarray_push(tls, bp+72, ts+8071)
+	strarray_push(tls, bp+72, ts+8082)
 
 	if !(opt_static != 0) {
-		strarray_push(tls, bp+72, ts+8052)
-		strarray_push(tls, bp+72, ts+8068)
+		strarray_push(tls, bp+72, ts+8089)
+		strarray_push(tls, bp+72, ts+8105)
 	}
 
 	{
@@ -827,32 +849,32 @@ func run_linker(tls *libc.TLS, inputs uintptr, output uintptr) { /* main.c:625:1
 	}
 
 	if opt_static != 0 {
-		strarray_push(tls, bp+72, ts+8096)
-		strarray_push(tls, bp+72, ts+8110)
-		strarray_push(tls, bp+72, ts+8116)
-		strarray_push(tls, bp+72, ts+8125)
-		strarray_push(tls, bp+72, ts+8129)
-	} else {
-		strarray_push(tls, bp+72, ts+8125)
-		strarray_push(tls, bp+72, ts+8110)
-		strarray_push(tls, bp+72, ts+8141)
+		strarray_push(tls, bp+72, ts+8133)
+		strarray_push(tls, bp+72, ts+8147)
 		strarray_push(tls, bp+72, ts+8153)
-		strarray_push(tls, bp+72, ts+8161)
+		strarray_push(tls, bp+72, ts+8162)
+		strarray_push(tls, bp+72, ts+8166)
+	} else {
+		strarray_push(tls, bp+72, ts+8162)
+		strarray_push(tls, bp+72, ts+8147)
+		strarray_push(tls, bp+72, ts+8178)
+		strarray_push(tls, bp+72, ts+8190)
+		strarray_push(tls, bp+72, ts+8198)
 	}
 
 	if opt_shared != 0 {
-		strarray_push(tls, bp+72, format(tls, ts+8176, libc.VaList(bp+48, gcc_libpath)))
+		strarray_push(tls, bp+72, format(tls, ts+8213, libc.VaList(bp+48, gcc_libpath)))
 	} else {
-		strarray_push(tls, bp+72, format(tls, ts+8189, libc.VaList(bp+56, gcc_libpath)))
+		strarray_push(tls, bp+72, format(tls, ts+8226, libc.VaList(bp+56, gcc_libpath)))
 	}
 
-	strarray_push(tls, bp+72, format(tls, ts+8201, libc.VaList(bp+64, libpath)))
+	strarray_push(tls, bp+72, format(tls, ts+8238, libc.VaList(bp+64, libpath)))
 	strarray_push(tls, bp+72, uintptr(0))
 
 	run_subprocess(tls, (*StringArray)(unsafe.Pointer(bp+72 /* &arr */)).data)
 }
 
-func get_file_type(tls *libc.TLS, filename uintptr) FileType { /* main.c:692:17: */
+func get_file_type(tls *libc.TLS, filename uintptr) FileType { /* main.c:708:17: */
 	bp := tls.Alloc(8)
 	defer tls.Free(8)
 
@@ -860,27 +882,27 @@ func get_file_type(tls *libc.TLS, filename uintptr) FileType { /* main.c:692:17:
 		return opt_x
 	}
 
-	if endswith(tls, filename, ts+8211) != 0 {
+	if endswith(tls, filename, ts+8248) != 0 {
 		return FILE_AR
 	}
-	if endswith(tls, filename, ts+8214) != 0 {
+	if endswith(tls, filename, ts+8251) != 0 {
 		return FILE_DSO
 	}
-	if endswith(tls, filename, ts+7517) != 0 {
+	if endswith(tls, filename, ts+7554) != 0 {
 		return FILE_OBJ
 	}
-	if endswith(tls, filename, ts+8218) != 0 {
+	if endswith(tls, filename, ts+8255) != 0 {
 		return FILE_C
 	}
-	if endswith(tls, filename, ts+8221) != 0 {
+	if endswith(tls, filename, ts+8258) != 0 {
 		return FILE_ASM
 	}
 
-	error(tls, ts+8224, libc.VaList(bp, filename))
+	error(tls, ts+8261, libc.VaList(bp, filename))
 	return FileType(0)
 }
 
-func main1(tls *libc.TLS, argc int32, argv uintptr) int32 { /* main.c:710:5: */
+func main1(tls *libc.TLS, argc int32, argv uintptr) int32 { /* main.c:726:5: */
 	bp := tls.Alloc(16)
 	defer tls.Free(16)
 
@@ -895,7 +917,7 @@ func main1(tls *libc.TLS, argc int32, argv uintptr) int32 { /* main.c:710:5: */
 	}
 
 	if input_paths.len > 1 && opt_o != 0 && (opt_c != 0 || opt_S|opt_E != 0) {
-		error(tls, ts+8267, 0)
+		error(tls, ts+8304, 0)
 	}
 
 	*(*StringArray)(unsafe.Pointer(bp /* ld_args */)) = StringArray{}
@@ -905,17 +927,17 @@ func main1(tls *libc.TLS, argc int32, argv uintptr) int32 { /* main.c:710:5: */
 		for ; i < input_paths.len; i++ {
 			var input uintptr = *(*uintptr)(unsafe.Pointer(input_paths.data + uintptr(i)*8))
 
-			if !(libc.Xstrncmp(tls, input, ts+7148, uint64(2)) != 0) {
+			if !(libc.Xstrncmp(tls, input, ts+7185, uint64(2)) != 0) {
 				strarray_push(tls, bp, input)
 				continue
 			}
 
-			if !(libc.Xstrncmp(tls, input, ts+7151, uint64(4)) != 0) {
+			if !(libc.Xstrncmp(tls, input, ts+7188, uint64(4)) != 0) {
 				var s uintptr = libc.Xstrdup(tls, input+uintptr(4))
-				var arg uintptr = libc.Xstrtok(tls, s, ts+8331)
+				var arg uintptr = libc.Xstrtok(tls, s, ts+8368)
 				for arg != 0 {
 					strarray_push(tls, bp, arg)
-					arg = libc.Xstrtok(tls, uintptr(0), ts+8331)
+					arg = libc.Xstrtok(tls, uintptr(0), ts+8368)
 				}
 				continue
 			}
@@ -923,9 +945,9 @@ func main1(tls *libc.TLS, argc int32, argv uintptr) int32 { /* main.c:710:5: */
 			if opt_o != 0 {
 				output = opt_o
 			} else if opt_S != 0 {
-				output = replace_extn(tls, input, ts+8221)
+				output = replace_extn(tls, input, ts+8258)
 			} else {
-				output = replace_extn(tls, input, ts+7517)
+				output = replace_extn(tls, input, ts+7554)
 			}
 
 			var type1 FileType = get_file_type(tls, input)
@@ -946,7 +968,7 @@ func main1(tls *libc.TLS, argc int32, argv uintptr) int32 { /* main.c:710:5: */
 
 			if type1 == FILE_C {
 			} else {
-				libc.X__assert_fail(tls, ts+8333, ts+8348, uint32(767), uintptr(unsafe.Pointer(&__func__5)))
+				libc.X__assert_fail(tls, ts+8370, ts+8385, uint32(783), uintptr(unsafe.Pointer(&__func__5)))
 			}
 
 			// Just preprocess
@@ -984,13 +1006,13 @@ func main1(tls *libc.TLS, argc int32, argv uintptr) int32 { /* main.c:710:5: */
 			if opt_o != 0 {
 				return opt_o
 			}
-			return ts + 8355 /* "a.out" */
+			return ts + 8392 /* "a.out" */
 		}())
 	}
 	return 0
 }
 
-var __func__5 = *(*[5]int8)(unsafe.Pointer(ts + 6626)) /* main.c:710:33 */
+var __func__5 = *(*[5]int8)(unsafe.Pointer(ts + 6626)) /* main.c:726:33 */
 
 // Scope for local variables, global variables, typedefs
 // or enum constants

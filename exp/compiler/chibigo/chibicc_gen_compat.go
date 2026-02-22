@@ -48,11 +48,3 @@ func xwait(tls *libc.TLS, status uintptr) int32 { /* compat.c:34:5: */
 	return libc.Xwaitpid(tls, -1, status, 0)
 }
 
-// Initial hash bucket size
-
-// Rehash if the usage exceeds 70%.
-
-// We'll keep the usage below 50% after rehashing.
-
-// Represents a deleted hash entry
-
