@@ -68,7 +68,7 @@ var pragma_once HashMap    /* preprocess.c:70:16: */
 var include_next_idx int32 /* preprocess.c:71:12: */
 
 func is_hash(tls *libc.TLS, tok uintptr) uint8 { /* preprocess.c:76:13: */
-	return uint8(libc.Bool32((*Token)(unsafe.Pointer(tok)).at_bol != 0 && equal(tls, tok, ts+10250) != 0))
+	return uint8(libc.Bool32((*Token)(unsafe.Pointer(tok)).at_bol != 0 && equal(tls, tok, ts+10287) != 0))
 }
 
 // Some preprocessor directives such as #include allow extraneous
@@ -77,7 +77,7 @@ func skip_line(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:82:14: */
 	if (*Token)(unsafe.Pointer(tok)).at_bol != 0 {
 		return tok
 	}
-	warn_tok(tls, tok, ts+10252, 0)
+	warn_tok(tls, tok, ts+10289, 0)
 	for (*Token)(unsafe.Pointer(tok)).at_bol != 0 {
 		tok = (*Token)(unsafe.Pointer(tok)).next
 	}
@@ -178,11 +178,11 @@ func append(tls *libc.TLS, tok1 uintptr, tok2 uintptr) uintptr { /* preprocess.c
 
 func skip_cond_incl2(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:164:14: */
 	for (*Token)(unsafe.Pointer(tok)).kind != TK_EOF {
-		if is_hash(tls, tok) != 0 && (equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+9250) != 0 || equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10264) != 0 || equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10270) != 0) {
+		if is_hash(tls, tok) != 0 && (equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+9287) != 0 || equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10301) != 0 || equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10307) != 0) {
 			tok = skip_cond_incl2(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).next)).next)
 			continue
 		}
-		if is_hash(tls, tok) != 0 && equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10277) != 0 {
+		if is_hash(tls, tok) != 0 && equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10314) != 0 {
 			return (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).next)).next
 		}
 		tok = (*Token)(unsafe.Pointer(tok)).next
@@ -194,12 +194,12 @@ func skip_cond_incl2(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:164:1
 // Nested `#if` and `#endif` are skipped.
 func skip_cond_incl(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:181:14: */
 	for (*Token)(unsafe.Pointer(tok)).kind != TK_EOF {
-		if is_hash(tls, tok) != 0 && (equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+9250) != 0 || equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10264) != 0 || equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10270) != 0) {
+		if is_hash(tls, tok) != 0 && (equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+9287) != 0 || equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10301) != 0 || equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10307) != 0) {
 			tok = skip_cond_incl2(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).next)).next)
 			continue
 		}
 
-		if is_hash(tls, tok) != 0 && (equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10283) != 0 || equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+9253) != 0 || equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10277) != 0) {
+		if is_hash(tls, tok) != 0 && (equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10320) != 0 || equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+9290) != 0 || equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10314) != 0) {
 			break
 		}
 		tok = (*Token)(unsafe.Pointer(tok)).next
@@ -265,7 +265,7 @@ func new_num_token(tls *libc.TLS, val int32, tmpl uintptr) uintptr { /* preproce
 	bp := tls.Alloc(8)
 	defer tls.Free(8)
 
-	var buf uintptr = format(tls, ts+10288, libc.VaList(bp, val))
+	var buf uintptr = format(tls, ts+10325, libc.VaList(bp, val))
 	return tokenize(tls, new_file(tls, (*File)(unsafe.Pointer((*Token)(unsafe.Pointer(tmpl)).file)).name, (*File)(unsafe.Pointer((*Token)(unsafe.Pointer(tmpl)).file)).file_no, buf))
 }
 
@@ -282,18 +282,18 @@ func read_const_expr(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* prep
 	for (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112)))).kind != TK_EOF {
 		// "defined(foo)" or "defined foo" becomes "1" if macro "foo"
 		// is defined. Otherwise "0".
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 112)), ts+10292) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 112)), ts+10329) != 0 {
 			var start uintptr = *(*uintptr)(unsafe.Pointer(bp + 112 /* tok */))
-			var has_paren uint8 = consume(tls, bp+112, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)))).next, ts+8666)
+			var has_paren uint8 = consume(tls, bp+112, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)))).next, ts+8703)
 
 			if (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112)))).kind != TK_IDENT {
-				error_tok(tls, start, ts+10300, 0)
+				error_tok(tls, start, ts+10337, 0)
 			}
 			var m uintptr = find_macro(tls, *(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)))
 			*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)))).next
 
 			if has_paren != 0 {
-				*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)), ts+8668)
+				*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)), ts+8705)
 			}
 
 			cur = libc.AssignPtrUintptr(cur+8, new_num_token(tls, func() int32 {
@@ -323,7 +323,7 @@ func eval_const_expr(tls *libc.TLS, rest uintptr, tok uintptr) int64 { /* prepro
 	expr = preprocess2(tls, expr)
 
 	if (*Token)(unsafe.Pointer(expr)).kind == TK_EOF {
-		error_tok(tls, start, ts+10333, 0)
+		error_tok(tls, start, ts+10370, 0)
 	}
 
 	// [https://www.sigbus.info/n1570#6.10.1p4] The standard requires
@@ -347,7 +347,7 @@ func eval_const_expr(tls *libc.TLS, rest uintptr, tok uintptr) int64 { /* prepro
 
 	var val int64 = const_expr(tls, bp, expr)
 	if (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).kind != TK_EOF {
-		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* rest2 */)), ts+10252, 0)
+		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* rest2 */)), ts+10289, 0)
 	}
 	return val
 }
@@ -385,24 +385,24 @@ func read_macro_params(tls *libc.TLS, rest uintptr, tok uintptr, va_args_name ui
 	*(*MacroParam)(unsafe.Pointer(bp /* head */)) = MacroParam{}
 	var cur uintptr = bp /* &head */
 
-	for !(equal(tls, tok, ts+8668) != 0) {
+	for !(equal(tls, tok, ts+8705) != 0) {
 		if cur != bp {
-			tok = skip(tls, tok, ts+8331)
+			tok = skip(tls, tok, ts+8368)
 		}
 
-		if equal(tls, tok, ts+8825) != 0 {
-			*(*uintptr)(unsafe.Pointer(va_args_name)) = ts + 10347 /* "__VA_ARGS__" */
-			*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, (*Token)(unsafe.Pointer(tok)).next, ts+8668)
+		if equal(tls, tok, ts+8862) != 0 {
+			*(*uintptr)(unsafe.Pointer(va_args_name)) = ts + 10384 /* "__VA_ARGS__" */
+			*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, (*Token)(unsafe.Pointer(tok)).next, ts+8705)
 			return (*MacroParam)(unsafe.Pointer(bp /* &head */)).next
 		}
 
 		if (*Token)(unsafe.Pointer(tok)).kind != TK_IDENT {
-			error_tok(tls, tok, ts+8368, 0)
+			error_tok(tls, tok, ts+8405, 0)
 		}
 
-		if equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+8825) != 0 {
+		if equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+8862) != 0 {
 			*(*uintptr)(unsafe.Pointer(va_args_name)) = xstrndup(tls, (*Token)(unsafe.Pointer(tok)).loc, uint64((*Token)(unsafe.Pointer(tok)).len))
-			*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).next)).next, ts+8668)
+			*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).next)).next, ts+8705)
 			return (*MacroParam)(unsafe.Pointer(bp /* &head */)).next
 		}
 
@@ -422,12 +422,12 @@ func read_macro_definition(tls *libc.TLS, rest uintptr, tok uintptr) { /* prepro
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
 	if (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).kind != TK_IDENT {
-		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+10300, 0)
+		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+10337, 0)
 	}
 	var name uintptr = xstrndup(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).loc, uint64((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).len))
 	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next
 
-	if !(int32((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).has_space) != 0) && equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8666) != 0 {
+	if !(int32((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).has_space) != 0) && equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8703) != 0 {
 		// Function-like macro
 		*(*uintptr)(unsafe.Pointer(bp + 8 /* va_args_name */)) = uintptr(0)
 		var params uintptr = read_macro_params(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, bp+8)
@@ -450,20 +450,20 @@ func read_macro_arg_one(tls *libc.TLS, rest uintptr, tok uintptr, read_rest uint
 	var level int32 = 0
 
 	for {
-		if level == 0 && equal(tls, tok, ts+8668) != 0 {
+		if level == 0 && equal(tls, tok, ts+8705) != 0 {
 			break
 		}
-		if level == 0 && !(read_rest != 0) && equal(tls, tok, ts+8331) != 0 {
+		if level == 0 && !(read_rest != 0) && equal(tls, tok, ts+8368) != 0 {
 			break
 		}
 
 		if (*Token)(unsafe.Pointer(tok)).kind == TK_EOF {
-			error_tok(tls, tok, ts+10359, 0)
+			error_tok(tls, tok, ts+10396, 0)
 		}
 
-		if equal(tls, tok, ts+8666) != 0 {
+		if equal(tls, tok, ts+8703) != 0 {
 			level++
-		} else if equal(tls, tok, ts+8668) != 0 {
+		} else if equal(tls, tok, ts+8705) != 0 {
 			level--
 		}
 
@@ -493,7 +493,7 @@ func read_macro_args(tls *libc.TLS, rest uintptr, tok uintptr, params uintptr, v
 	var pp uintptr = params
 	for ; pp != 0; pp = (*MacroParam)(unsafe.Pointer(pp)).next {
 		if cur != bp {
-			*(*uintptr)(unsafe.Pointer(bp + 32 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 32 /* tok */)), ts+8331)
+			*(*uintptr)(unsafe.Pointer(bp + 32 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 32 /* tok */)), ts+8368)
 		}
 		cur = libc.AssignPtrUintptr(cur, read_macro_arg_one(tls, bp+32, *(*uintptr)(unsafe.Pointer(bp + 32 /* tok */)), uint8(0)))
 		(*MacroArg)(unsafe.Pointer(cur)).name = (*MacroParam)(unsafe.Pointer(pp)).name
@@ -501,12 +501,12 @@ func read_macro_args(tls *libc.TLS, rest uintptr, tok uintptr, params uintptr, v
 
 	if va_args_name != 0 {
 		var arg uintptr
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 32)), ts+8668) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 32)), ts+8705) != 0 {
 			arg = libc.Xcalloc(tls, uint64(1), uint64(unsafe.Sizeof(MacroArg{})))
 			(*MacroArg)(unsafe.Pointer(arg)).tok = new_eof(tls, *(*uintptr)(unsafe.Pointer(bp + 32 /* tok */)))
 		} else {
 			if pp != params {
-				*(*uintptr)(unsafe.Pointer(bp + 32 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 32 /* tok */)), ts+8331)
+				*(*uintptr)(unsafe.Pointer(bp + 32 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 32 /* tok */)), ts+8368)
 			}
 			arg = read_macro_arg_one(tls, bp+32, *(*uintptr)(unsafe.Pointer(bp + 32 /* tok */)), uint8(1))
 		}
@@ -515,10 +515,10 @@ func read_macro_args(tls *libc.TLS, rest uintptr, tok uintptr, params uintptr, v
 		(*MacroArg)(unsafe.Pointer(arg)).is_va_args = uint8(1)
 		cur = libc.AssignPtrUintptr(cur, arg)
 	} else if pp != 0 {
-		error_tok(tls, start, ts+9680, 0)
+		error_tok(tls, start, ts+9717, 0)
 	}
 
-	skip(tls, *(*uintptr)(unsafe.Pointer(bp + 32 /* tok */)), ts+8668)
+	skip(tls, *(*uintptr)(unsafe.Pointer(bp + 32 /* tok */)), ts+8705)
 	*(*uintptr)(unsafe.Pointer(rest)) = *(*uintptr)(unsafe.Pointer(bp + 32 /* tok */))
 	return (*MacroArg)(unsafe.Pointer(bp /* &head */)).next
 }
@@ -583,12 +583,12 @@ func paste(tls *libc.TLS, lhs uintptr, rhs uintptr) uintptr { /* preprocess.c:49
 	defer tls.Free(40)
 
 	// Paste the two tokens.
-	var buf uintptr = format(tls, ts+10382, libc.VaList(bp, (*Token)(unsafe.Pointer(lhs)).len, (*Token)(unsafe.Pointer(lhs)).loc, (*Token)(unsafe.Pointer(rhs)).len, (*Token)(unsafe.Pointer(rhs)).loc))
+	var buf uintptr = format(tls, ts+10419, libc.VaList(bp, (*Token)(unsafe.Pointer(lhs)).len, (*Token)(unsafe.Pointer(lhs)).loc, (*Token)(unsafe.Pointer(rhs)).len, (*Token)(unsafe.Pointer(rhs)).loc))
 
 	// Tokenize the resulting string.
 	var tok uintptr = tokenize(tls, new_file(tls, (*File)(unsafe.Pointer((*Token)(unsafe.Pointer(lhs)).file)).name, (*File)(unsafe.Pointer((*Token)(unsafe.Pointer(lhs)).file)).file_no, buf))
 	if (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).next)).kind != TK_EOF {
-		error_tok(tls, lhs, ts+10391, libc.VaList(bp+32, buf))
+		error_tok(tls, lhs, ts+10428, libc.VaList(bp+32, buf))
 	}
 	return tok
 }
@@ -597,7 +597,7 @@ func has_varargs(tls *libc.TLS, args uintptr) uint8 { /* preprocess.c:510:13: */
 	{
 		var ap uintptr = args
 		for ; ap != 0; ap = (*MacroArg)(unsafe.Pointer(ap)).next {
-			if !(libc.Xstrcmp(tls, (*MacroArg)(unsafe.Pointer(ap)).name, ts+10347) != 0) {
+			if !(libc.Xstrcmp(tls, (*MacroArg)(unsafe.Pointer(ap)).name, ts+10384) != 0) {
 				return uint8(libc.Bool32((*Token)(unsafe.Pointer((*MacroArg)(unsafe.Pointer(ap)).tok)).kind != TK_EOF))
 			}
 		}
@@ -616,10 +616,10 @@ func subst(tls *libc.TLS, tok uintptr, args uintptr) uintptr { /* preprocess.c:5
 
 	for (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112)))).kind != TK_EOF {
 		// "#" followed by a parameter is replaced with stringized actuals.
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 112)), ts+10250) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 112)), ts+10287) != 0 {
 			var arg uintptr = find_arg(tls, args, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)))).next)
 			if !(arg != 0) {
-				error_tok(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)))).next, ts+10428, 0)
+				error_tok(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)))).next, ts+10465, 0)
 			}
 			cur = libc.AssignPtrUintptr(cur+8, stringize(tls, *(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)), (*MacroArg)(unsafe.Pointer(arg)).tok))
 			*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)) = (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)))).next)).next
@@ -629,7 +629,7 @@ func subst(tls *libc.TLS, tok uintptr, args uintptr) uintptr { /* preprocess.c:5
 		// [GNU] If __VA_ARG__ is empty, `,##__VA_ARGS__` is expanded
 		// to the empty token list. Otherwise, its expaned to `,` and
 		// __VA_ARGS__.
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 112)), ts+8331) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112)))).next, ts+10469) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 112)), ts+8368) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112)))).next, ts+10506) != 0 {
 			var arg uintptr = find_arg(tls, args, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)))).next)).next)
 			if arg != 0 && (*MacroArg)(unsafe.Pointer(arg)).is_va_args != 0 {
 				if (*Token)(unsafe.Pointer((*MacroArg)(unsafe.Pointer(arg)).tok)).kind == TK_EOF {
@@ -642,13 +642,13 @@ func subst(tls *libc.TLS, tok uintptr, args uintptr) uintptr { /* preprocess.c:5
 			}
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 112)), ts+10469) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 112)), ts+10506) != 0 {
 			if cur == bp {
-				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)), ts+10472, 0)
+				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)), ts+10509, 0)
 			}
 
 			if (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112)))).next)).kind == TK_EOF {
-				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)), ts+10519, 0)
+				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)), ts+10556, 0)
 			}
 
 			var arg uintptr = find_arg(tls, args, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)))).next)
@@ -673,7 +673,7 @@ func subst(tls *libc.TLS, tok uintptr, args uintptr) uintptr { /* preprocess.c:5
 
 		var arg uintptr = find_arg(tls, args, *(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)))
 
-		if arg != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112)))).next, ts+10469) != 0 {
+		if arg != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112)))).next, ts+10506) != 0 {
 			var rhs uintptr = (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)))).next)).next
 
 			if (*Token)(unsafe.Pointer((*MacroArg)(unsafe.Pointer(arg)).tok)).kind == TK_EOF {
@@ -704,7 +704,7 @@ func subst(tls *libc.TLS, tok uintptr, args uintptr) uintptr { /* preprocess.c:5
 
 		// If __VA_ARG__ is empty, __VA_OPT__(x) is expanded to the
 		// empty token list. Otherwise, __VA_OPT__(x) is expanded to x.
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 112)), ts+10564) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112)))).next, ts+8666) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 112)), ts+10601) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112)))).next, ts+8703) != 0 {
 			var arg uintptr = read_macro_arg_one(tls, bp+112, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)))).next)).next, uint8(1))
 			if has_varargs(tls, args) != 0 {
 				var t uintptr = (*MacroArg)(unsafe.Pointer(arg)).tok
@@ -712,7 +712,7 @@ func subst(tls *libc.TLS, tok uintptr, args uintptr) uintptr { /* preprocess.c:5
 					cur = libc.AssignPtrUintptr(cur+8, t)
 				}
 			}
-			*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)), ts+8668)
+			*(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 112 /* tok */)), ts+8705)
 			continue
 		}
 
@@ -782,7 +782,7 @@ func expand_macro(tls *libc.TLS, rest uintptr, tok uintptr) uint8 { /* preproces
 
 	// If a funclike macro token is not followed by an argument list,
 	// treat it as a normal identifier.
-	if !(equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8666) != 0) {
+	if !(equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8703) != 0) {
 		return uint8(0)
 	}
 
@@ -829,7 +829,7 @@ func search_include_paths(tls *libc.TLS, filename uintptr) uintptr { /* preproce
 	{
 		var i int32 = 0
 		for ; i < include_paths.len; i++ {
-			var path uintptr = format(tls, ts+10575, libc.VaList(bp, *(*uintptr)(unsafe.Pointer(include_paths.data + uintptr(i)*8)), filename))
+			var path uintptr = format(tls, ts+10612, libc.VaList(bp, *(*uintptr)(unsafe.Pointer(include_paths.data + uintptr(i)*8)), filename))
 			if !(file_exists(tls, path) != 0) {
 				continue
 			}
@@ -848,7 +848,7 @@ func search_include_next(tls *libc.TLS, filename uintptr) uintptr { /* preproces
 	defer tls.Free(16)
 
 	for ; include_next_idx < include_paths.len; include_next_idx++ {
-		var path uintptr = format(tls, ts+10575, libc.VaList(bp, *(*uintptr)(unsafe.Pointer(include_paths.data + uintptr(include_next_idx)*8)), filename))
+		var path uintptr = format(tls, ts+10612, libc.VaList(bp, *(*uintptr)(unsafe.Pointer(include_paths.data + uintptr(include_next_idx)*8)), filename))
 		if file_exists(tls, path) != 0 {
 			return path
 		}
@@ -874,15 +874,15 @@ func read_include_filename(tls *libc.TLS, rest uintptr, tok uintptr, is_dquote u
 	}
 
 	// Pattern 2: #include <foo.h>
-	if equal(tls, tok, ts+9496) != 0 {
+	if equal(tls, tok, ts+9533) != 0 {
 		// Reconstruct a filename from a sequence of tokens between
 		// "<" and ">".
 		var start uintptr = tok
 
 		// Find closing ">".
-		for ; !(equal(tls, tok, ts+9501) != 0); tok = (*Token)(unsafe.Pointer(tok)).next {
+		for ; !(equal(tls, tok, ts+9538) != 0); tok = (*Token)(unsafe.Pointer(tok)).next {
 			if (*Token)(unsafe.Pointer(tok)).at_bol != 0 || (*Token)(unsafe.Pointer(tok)).kind == TK_EOF {
-				error_tok(tls, tok, ts+10581, 0)
+				error_tok(tls, tok, ts+10618, 0)
 			}
 		}
 
@@ -899,7 +899,7 @@ func read_include_filename(tls *libc.TLS, rest uintptr, tok uintptr, is_dquote u
 		return read_include_filename(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok2 */)), is_dquote)
 	}
 
-	error_tok(tls, tok, ts+10594, 0)
+	error_tok(tls, tok, ts+10631, 0)
 	return uintptr(0)
 }
 
@@ -911,7 +911,7 @@ func read_include_filename(tls *libc.TLS, rest uintptr, tok uintptr, is_dquote u
 //	#endif
 func detect_include_guard(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:764:13: */
 	// Detect the first two lines.
-	if !(is_hash(tls, tok) != 0) || !(equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10270) != 0) {
+	if !(is_hash(tls, tok) != 0) || !(equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10307) != 0) {
 		return uintptr(0)
 	}
 	tok = (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).next)).next
@@ -923,7 +923,7 @@ func detect_include_guard(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:
 	var macro uintptr = xstrndup(tls, (*Token)(unsafe.Pointer(tok)).loc, uint64((*Token)(unsafe.Pointer(tok)).len))
 	tok = (*Token)(unsafe.Pointer(tok)).next
 
-	if !(is_hash(tls, tok) != 0) || !(equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10614) != 0) || !(equal(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).next)).next, macro) != 0) {
+	if !(is_hash(tls, tok) != 0) || !(equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10651) != 0) || !(equal(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).next)).next, macro) != 0) {
 		return uintptr(0)
 	}
 
@@ -934,11 +934,11 @@ func detect_include_guard(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:
 			continue
 		}
 
-		if equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10277) != 0 && (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).next)).next)).kind == TK_EOF {
+		if equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+10314) != 0 && (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).next)).next)).kind == TK_EOF {
 			return macro
 		}
 
-		if equal(tls, tok, ts+9250) != 0 || equal(tls, tok, ts+10264) != 0 || equal(tls, tok, ts+10270) != 0 {
+		if equal(tls, tok, ts+9287) != 0 || equal(tls, tok, ts+10301) != 0 || equal(tls, tok, ts+10307) != 0 {
 			tok = skip_cond_incl(tls, (*Token)(unsafe.Pointer(tok)).next)
 		} else {
 			tok = (*Token)(unsafe.Pointer(tok)).next
@@ -962,7 +962,7 @@ func include_file(tls *libc.TLS, tok uintptr, path uintptr, filename_tok uintptr
 
 	var tok2 uintptr = tokenize_file(tls, path)
 	if !(tok2 != 0) {
-		error_tok(tls, filename_tok, ts+10621, libc.VaList(bp, path, libc.Xstrerror(tls, *(*int32)(unsafe.Pointer(libc.X__errno_location(tls))))))
+		error_tok(tls, filename_tok, ts+10658, libc.VaList(bp, path, libc.Xstrerror(tls, *(*int32)(unsafe.Pointer(libc.X__errno_location(tls))))))
 	}
 
 	guard_name = detect_include_guard(tls, tok2)
@@ -981,7 +981,7 @@ func read_line_marker(tls *libc.TLS, rest uintptr, tok uintptr) { /* preprocess.
 	tok = preprocess(tls, copy_line(tls, rest, tok))
 
 	if (*Token)(unsafe.Pointer(tok)).kind != TK_NUM || (*Type)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).ty)).kind != TY_INT {
-		error_tok(tls, tok, ts+10646, 0)
+		error_tok(tls, tok, ts+10683, 0)
 	}
 	(*File)(unsafe.Pointer((*Token)(unsafe.Pointer(start)).file)).line_delta = int32((*Token)(unsafe.Pointer(tok)).val - int64_t((*Token)(unsafe.Pointer(start)).line_no))
 
@@ -991,7 +991,7 @@ func read_line_marker(tls *libc.TLS, rest uintptr, tok uintptr) { /* preprocess.
 	}
 
 	if (*Token)(unsafe.Pointer(tok)).kind != TK_STR {
-		error_tok(tls, tok, ts+10666, 0)
+		error_tok(tls, tok, ts+10703, 0)
 	}
 	(*File)(unsafe.Pointer((*Token)(unsafe.Pointer(start)).file)).display_name = (*Token)(unsafe.Pointer(tok)).str
 }
@@ -1024,13 +1024,13 @@ func preprocess2(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:841:14: *
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp + 128 /* tok */))
 		*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10684) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10721) != 0 {
 			// var is_dquote uint8 at bp+136, 1
 
 			var filename uintptr = read_include_filename(tls, bp+128, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next, bp+136)
 
 			if int32(*(*int8)(unsafe.Pointer(filename))) != '/' && *(*uint8)(unsafe.Pointer(bp + 136)) != 0 {
-				var path uintptr = format(tls, ts+10575, libc.VaList(bp, xdirname(tls, (*File)(unsafe.Pointer((*Token)(unsafe.Pointer(start)).file)).name), filename))
+				var path uintptr = format(tls, ts+10612, libc.VaList(bp, xdirname(tls, (*File)(unsafe.Pointer((*Token)(unsafe.Pointer(start)).file)).name), filename))
 				if file_exists(tls, path) != 0 {
 					*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)) = include_file(tls, *(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)), path, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(start)).next)).next)
 					continue
@@ -1047,7 +1047,7 @@ func preprocess2(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:841:14: *
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10692) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10729) != 0 {
 			// var ignore uint8 at bp+137, 1
 
 			var filename uintptr = read_include_filename(tls, bp+128, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next, bp+137)
@@ -1061,22 +1061,22 @@ func preprocess2(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:841:14: *
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10614) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10651) != 0 {
 			read_macro_definition(tls, bp+128, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next)
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10705) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10742) != 0 {
 			*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next
 			if (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128)))).kind != TK_IDENT {
-				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)), ts+10300, 0)
+				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)), ts+10337, 0)
 			}
 			undef_macro(tls, xstrndup(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).loc, uint64((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).len)))
 			*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)) = skip_line(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next)
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+9250) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+9287) != 0 {
 			var val int64 = eval_const_expr(tls, bp+128, *(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))
 			push_cond_incl(tls, start, uint8(val))
 			if !(val != 0) {
@@ -1085,7 +1085,7 @@ func preprocess2(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:841:14: *
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10264) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10301) != 0 {
 			var defined uint8 = uint8(find_macro(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next))
 			push_cond_incl(tls, *(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)), defined)
 			*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)) = skip_line(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next)).next)
@@ -1095,7 +1095,7 @@ func preprocess2(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:841:14: *
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10270) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10307) != 0 {
 			var defined uint8 = uint8(find_macro(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next))
 			push_cond_incl(tls, *(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)), libc.BoolUint8(!(defined != 0)))
 			*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)) = skip_line(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next)).next)
@@ -1105,9 +1105,9 @@ func preprocess2(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:841:14: *
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10283) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10320) != 0 {
 			if !(cond_incl != 0) || (*CondIncl)(unsafe.Pointer(cond_incl)).ctx == IN_ELSE {
-				error_tok(tls, start, ts+10711, 0)
+				error_tok(tls, start, ts+10748, 0)
 			}
 			(*CondIncl)(unsafe.Pointer(cond_incl)).ctx = IN_ELIF
 
@@ -1119,9 +1119,9 @@ func preprocess2(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:841:14: *
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+9253) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+9290) != 0 {
 			if !(cond_incl != 0) || (*CondIncl)(unsafe.Pointer(cond_incl)).ctx == IN_ELSE {
-				error_tok(tls, start, ts+10723, 0)
+				error_tok(tls, start, ts+10760, 0)
 			}
 			(*CondIncl)(unsafe.Pointer(cond_incl)).ctx = IN_ELSE
 			*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)) = skip_line(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next)
@@ -1132,16 +1132,16 @@ func preprocess2(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:841:14: *
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10277) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10314) != 0 {
 			if !(cond_incl != 0) {
-				error_tok(tls, start, ts+10735, 0)
+				error_tok(tls, start, ts+10772, 0)
 			}
 			cond_incl = (*CondIncl)(unsafe.Pointer(cond_incl)).next
 			*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)) = skip_line(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next)
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10748) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10785) != 0 {
 			read_line_marker(tls, bp+128, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next)
 			continue
 		}
@@ -1151,21 +1151,21 @@ func preprocess2(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:841:14: *
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10753) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128)))).next, ts+10760) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10790) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128)))).next, ts+10797) != 0 {
 			hashmap_put(tls, uintptr(unsafe.Pointer(&pragma_once)), (*File)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).file)).name, uintptr(1))
 			*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)) = skip_line(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next)).next)
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10753) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10790) != 0 {
 			for __ccgo := true; __ccgo; __ccgo = !(int32((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128)))).at_bol) != 0) {
 				*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)))).next
 			}
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10765) != 0 {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)), ts+10765, 0)
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 128)), ts+10802) != 0 {
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)), ts+10802, 0)
 		}
 
 		// `#`-only line is legal. It's called a null directive.
@@ -1173,7 +1173,7 @@ func preprocess2(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:841:14: *
 			continue
 		}
 
-		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)), ts+10771, 0)
+		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 128 /* tok */)), ts+10808, 0)
 	}
 
 	(*Token)(unsafe.Pointer(cur)).next = *(*uintptr)(unsafe.Pointer(bp + 128 /* tok */))
@@ -1181,7 +1181,7 @@ func preprocess2(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:841:14: *
 }
 
 func define_macro(tls *libc.TLS, name uintptr, buf uintptr) { /* preprocess.c:995:6: */
-	var tok uintptr = tokenize(tls, new_file(tls, ts+10802, 1, buf))
+	var tok uintptr = tokenize(tls, new_file(tls, ts+10839, 1, buf))
 	add_macro(tls, name, uint8(1), tok)
 }
 
@@ -1227,7 +1227,7 @@ func timestamp_macro(tls *libc.TLS, tmpl uintptr) uintptr { /* preprocess.c:1032
 	// var st stat at bp, 144
 
 	if libc.Xstat(tls, (*File)(unsafe.Pointer((*Token)(unsafe.Pointer(tmpl)).file)).name, bp) != 0 {
-		return new_str_token(tls, ts+10813, tmpl)
+		return new_str_token(tls, ts+10850, tmpl)
 	}
 	// var buf [30]int8 at bp+144, 30
 
@@ -1245,12 +1245,12 @@ func format_date(tls *libc.TLS, tm1 uintptr) uintptr { /* preprocess.c:1048:13: 
 	bp := tls.Alloc(24)
 	defer tls.Free(24)
 
-	return format(tls, ts+10838, libc.VaList(bp, uintptr(unsafe.Pointer(&mon))+uintptr((*tm)(unsafe.Pointer(tm1)).tm_mon)*4, (*tm)(unsafe.Pointer(tm1)).tm_mday, (*tm)(unsafe.Pointer(tm1)).tm_year+1900))
+	return format(tls, ts+10875, libc.VaList(bp, uintptr(unsafe.Pointer(&mon))+uintptr((*tm)(unsafe.Pointer(tm1)).tm_mon)*4, (*tm)(unsafe.Pointer(tm1)).tm_mday, (*tm)(unsafe.Pointer(tm1)).tm_year+1900))
 }
 
 var mon = [12][4]int8{
-	*(*[4]int8)(unsafe.Pointer(ts + 10850)), *(*[4]int8)(unsafe.Pointer(ts + 10854)), *(*[4]int8)(unsafe.Pointer(ts + 10858)), *(*[4]int8)(unsafe.Pointer(ts + 10862)), *(*[4]int8)(unsafe.Pointer(ts + 10866)), *(*[4]int8)(unsafe.Pointer(ts + 10870)),
-	*(*[4]int8)(unsafe.Pointer(ts + 10874)), *(*[4]int8)(unsafe.Pointer(ts + 10878)), *(*[4]int8)(unsafe.Pointer(ts + 10882)), *(*[4]int8)(unsafe.Pointer(ts + 10886)), *(*[4]int8)(unsafe.Pointer(ts + 10890)), *(*[4]int8)(unsafe.Pointer(ts + 10894)),
+	*(*[4]int8)(unsafe.Pointer(ts + 10887)), *(*[4]int8)(unsafe.Pointer(ts + 10891)), *(*[4]int8)(unsafe.Pointer(ts + 10895)), *(*[4]int8)(unsafe.Pointer(ts + 10899)), *(*[4]int8)(unsafe.Pointer(ts + 10903)), *(*[4]int8)(unsafe.Pointer(ts + 10907)),
+	*(*[4]int8)(unsafe.Pointer(ts + 10911)), *(*[4]int8)(unsafe.Pointer(ts + 10915)), *(*[4]int8)(unsafe.Pointer(ts + 10919)), *(*[4]int8)(unsafe.Pointer(ts + 10923)), *(*[4]int8)(unsafe.Pointer(ts + 10927)), *(*[4]int8)(unsafe.Pointer(ts + 10931)),
 } /* preprocess.c:1049:15 */
 
 // __TIME__ is expanded to the current time, e.g. "13:34:03".
@@ -1258,7 +1258,7 @@ func format_time(tls *libc.TLS, tm1 uintptr) uintptr { /* preprocess.c:1058:13: 
 	bp := tls.Alloc(24)
 	defer tls.Free(24)
 
-	return format(tls, ts+10898, libc.VaList(bp, (*tm)(unsafe.Pointer(tm1)).tm_hour, (*tm)(unsafe.Pointer(tm1)).tm_min, (*tm)(unsafe.Pointer(tm1)).tm_sec))
+	return format(tls, ts+10935, libc.VaList(bp, (*tm)(unsafe.Pointer(tm1)).tm_hour, (*tm)(unsafe.Pointer(tm1)).tm_min, (*tm)(unsafe.Pointer(tm1)).tm_sec))
 }
 
 func init_macros(tls *libc.TLS) { /* preprocess.c:1062:6: */
@@ -1266,67 +1266,67 @@ func init_macros(tls *libc.TLS) { /* preprocess.c:1062:6: */
 	defer tls.Free(8)
 
 	// Define predefined macros
-	define_macro(tls, ts+10915, ts+7032)
-	define_macro(tls, ts+10921, ts+7032)
-	define_macro(tls, ts+10946, ts+7032)
-	define_macro(tls, ts+10954, ts+7032)
-	define_macro(tls, ts+10963, ts+10981)
-	define_macro(tls, ts+10983, ts+11000)
-	define_macro(tls, ts+11002, ts+11000)
-	define_macro(tls, ts+11017, ts+10981)
-	define_macro(tls, ts+11040, ts+10981)
-	define_macro(tls, ts+11061, ts+10981)
-	define_macro(tls, ts+11077, ts+10981)
-	define_macro(tls, ts+11096, ts+10981)
-	define_macro(tls, ts+11117, ts+11134)
-	define_macro(tls, ts+11136, ts+10981)
-	define_macro(tls, ts+11154, ts+11168)
-	define_macro(tls, ts+11182, ts+7032)
-	define_macro(tls, ts+11198, ts+7032)
-	define_macro(tls, ts+11218, ts+7032)
-	define_macro(tls, ts+11234, ts+7032)
-	define_macro(tls, ts+11250, ts+11267)
-	define_macro(tls, ts+11275, ts+7032)
-	define_macro(tls, ts+11284, ts+8875)
-	define_macro(tls, ts+11306, ts+9801)
-	define_macro(tls, ts+11318, ts+7032)
-	define_macro(tls, ts+11326, ts+7032)
-	define_macro(tls, ts+11336, ts+7032)
-	define_macro(tls, ts+11348, ts+8586)
-	define_macro(tls, ts+11358, ts+7032)
-	define_macro(tls, ts+11372, ts+8413)
-	define_macro(tls, ts+11383, ts+7032)
-	define_macro(tls, ts+11391, ts+7032)
-	define_macro(tls, ts+11401, ts+8788)
-	define_macro(tls, ts+11412, ts+8737)
-	define_macro(tls, ts+11423, ts+7032)
-	define_macro(tls, ts+11430, ts+7032)
-	define_macro(tls, ts+11439, ts+8592)
-	define_macro(tls, ts+11452, ts+7032)
-	define_macro(tls, ts+11461, ts+7032)
-	define_macro(tls, ts+11472, ts+7032)
-	define_macro(tls, ts+11478, ts+7032)
+	define_macro(tls, ts+10952, ts+7069)
+	define_macro(tls, ts+10958, ts+7069)
+	define_macro(tls, ts+10983, ts+7069)
+	define_macro(tls, ts+10991, ts+7069)
+	define_macro(tls, ts+11000, ts+11018)
+	define_macro(tls, ts+11020, ts+11037)
+	define_macro(tls, ts+11039, ts+11037)
+	define_macro(tls, ts+11054, ts+11018)
+	define_macro(tls, ts+11077, ts+11018)
+	define_macro(tls, ts+11098, ts+11018)
+	define_macro(tls, ts+11114, ts+11018)
+	define_macro(tls, ts+11133, ts+11018)
+	define_macro(tls, ts+11154, ts+11171)
+	define_macro(tls, ts+11173, ts+11018)
+	define_macro(tls, ts+11191, ts+11205)
+	define_macro(tls, ts+11219, ts+7069)
+	define_macro(tls, ts+11235, ts+7069)
+	define_macro(tls, ts+11255, ts+7069)
+	define_macro(tls, ts+11271, ts+7069)
+	define_macro(tls, ts+11287, ts+11304)
+	define_macro(tls, ts+11312, ts+7069)
+	define_macro(tls, ts+11321, ts+8912)
+	define_macro(tls, ts+11343, ts+9838)
+	define_macro(tls, ts+11355, ts+7069)
+	define_macro(tls, ts+11363, ts+7069)
+	define_macro(tls, ts+11373, ts+7069)
+	define_macro(tls, ts+11385, ts+8623)
+	define_macro(tls, ts+11395, ts+7069)
+	define_macro(tls, ts+11409, ts+8450)
+	define_macro(tls, ts+11420, ts+7069)
+	define_macro(tls, ts+11428, ts+7069)
+	define_macro(tls, ts+11438, ts+8825)
+	define_macro(tls, ts+11449, ts+8774)
+	define_macro(tls, ts+11460, ts+7069)
+	define_macro(tls, ts+11467, ts+7069)
+	define_macro(tls, ts+11476, ts+8629)
+	define_macro(tls, ts+11489, ts+7069)
+	define_macro(tls, ts+11498, ts+7069)
+	define_macro(tls, ts+11509, ts+7069)
+	define_macro(tls, ts+11515, ts+7069)
 
-	add_builtin(tls, ts+11483, *(*uintptr)(unsafe.Pointer(&struct {
+	add_builtin(tls, ts+11520, *(*uintptr)(unsafe.Pointer(&struct {
 		f func(*libc.TLS, uintptr) uintptr
 	}{file_macro})))
-	add_builtin(tls, ts+11492, *(*uintptr)(unsafe.Pointer(&struct {
+	add_builtin(tls, ts+11529, *(*uintptr)(unsafe.Pointer(&struct {
 		f func(*libc.TLS, uintptr) uintptr
 	}{line_macro})))
-	add_builtin(tls, ts+11501, *(*uintptr)(unsafe.Pointer(&struct {
+	add_builtin(tls, ts+11538, *(*uintptr)(unsafe.Pointer(&struct {
 		f func(*libc.TLS, uintptr) uintptr
 	}{counter_macro})))
-	add_builtin(tls, ts+11513, *(*uintptr)(unsafe.Pointer(&struct {
+	add_builtin(tls, ts+11550, *(*uintptr)(unsafe.Pointer(&struct {
 		f func(*libc.TLS, uintptr) uintptr
 	}{timestamp_macro})))
-	add_builtin(tls, ts+11527, *(*uintptr)(unsafe.Pointer(&struct {
+	add_builtin(tls, ts+11564, *(*uintptr)(unsafe.Pointer(&struct {
 		f func(*libc.TLS, uintptr) uintptr
 	}{base_file_macro})))
 
 	*(*time_t)(unsafe.Pointer(bp /* now */)) = libc.Xtime(tls, uintptr(0))
 	var tm1 uintptr = libc.Xlocaltime(tls, bp)
-	define_macro(tls, ts+11541, format_date(tls, tm1))
-	define_macro(tls, ts+11550, format_time(tls, tm1))
+	define_macro(tls, ts+11578, format_date(tls, tm1))
+	define_macro(tls, ts+11587, format_time(tls, tm1))
 }
 
 type StringKind = uint32 /* preprocess.c:1119:3 */
@@ -1335,7 +1335,7 @@ func getStringKind(tls *libc.TLS, tok uintptr) StringKind { /* preprocess.c:1121
 	bp := tls.Alloc(16)
 	defer tls.Free(16)
 
-	if !(libc.Xstrcmp(tls, (*Token)(unsafe.Pointer(tok)).loc, ts+11559) != 0) {
+	if !(libc.Xstrcmp(tls, (*Token)(unsafe.Pointer(tok)).loc, ts+11596) != 0) {
 		return STR_UTF8
 	}
 
@@ -1349,7 +1349,7 @@ func getStringKind(tls *libc.TLS, tok uintptr) StringKind { /* preprocess.c:1121
 	case 'L':
 		return STR_WIDE
 	}
-	error(tls, ts+217, libc.VaList(bp, ts+11562, 1131))
+	error(tls, ts+217, libc.VaList(bp, ts+11599, 1131))
 	return StringKind(0)
 }
 
@@ -1378,7 +1378,7 @@ func join_adjacent_string_literals(tls *libc.TLS, tok uintptr) { /* preprocess.c
 						kind = k
 						basety = (*Type)(unsafe.Pointer((*Token)(unsafe.Pointer(t)).ty)).base
 					} else if k != STR_NONE && kind != k {
-						error_tok(tls, t, ts+11575, 0)
+						error_tok(tls, t, ts+11612, 0)
 					}
 				}
 			}
@@ -1444,7 +1444,7 @@ func join_adjacent_string_literals(tls *libc.TLS, tok uintptr) { /* preprocess.c
 func preprocess(tls *libc.TLS, tok uintptr) uintptr { /* preprocess.c:1202:7: */
 	tok = preprocess2(tls, tok)
 	if cond_incl != 0 {
-		error_tok(tls, (*CondIncl)(unsafe.Pointer(cond_incl)).tok, ts+11633, 0)
+		error_tok(tls, (*CondIncl)(unsafe.Pointer(cond_incl)).tok, ts+11670, 0)
 	}
 	convert_pp_tokens(tls, tok)
 	join_adjacent_string_literals(tls, tok)

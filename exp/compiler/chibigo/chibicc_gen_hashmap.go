@@ -42,7 +42,7 @@ func rehash(tls *libc.TLS, map1 uintptr) { /* hashmap.c:28:13: */
 	}
 	if cap > 0 {
 	} else {
-		libc.X__assert_fail(tls, ts+6712, ts+6720, uint32(38), uintptr(unsafe.Pointer(&__func__3)))
+		libc.X__assert_fail(tls, ts+6733, ts+6741, uint32(38), uintptr(unsafe.Pointer(&__func__3)))
 	}
 
 	// Create a new hashmap and copy all key-values.
@@ -62,12 +62,12 @@ func rehash(tls *libc.TLS, map1 uintptr) { /* hashmap.c:28:13: */
 
 	if (*HashMap)(unsafe.Pointer(bp)).used == nkeys {
 	} else {
-		libc.X__assert_fail(tls, ts+6730, ts+6720, uint32(51), uintptr(unsafe.Pointer(&__func__3)))
+		libc.X__assert_fail(tls, ts+6751, ts+6741, uint32(51), uintptr(unsafe.Pointer(&__func__3)))
 	}
 	*(*HashMap)(unsafe.Pointer(map1)) = *(*HashMap)(unsafe.Pointer(bp /* map2 */))
 }
 
-var __func__3 = *(*[7]int8)(unsafe.Pointer(ts + 6749)) /* hashmap.c:28:34 */
+var __func__3 = *(*[7]int8)(unsafe.Pointer(ts + 6770)) /* hashmap.c:28:34 */
 
 func match(tls *libc.TLS, ent uintptr, key uintptr, keylen int32) uint8 { /* hashmap.c:55:13: */
 	return uint8(libc.Bool32((*HashEntry)(unsafe.Pointer(ent)).key != 0 && (*HashEntry)(unsafe.Pointer(ent)).key != libc.UintptrFromInt32(-1) && (*HashEntry)(unsafe.Pointer(ent)).keylen == keylen && libc.Xmemcmp(tls, (*HashEntry)(unsafe.Pointer(ent)).key, key, uint64(keylen)) == 0))
@@ -95,7 +95,7 @@ func get_entry(tls *libc.TLS, map1 uintptr, key uintptr, keylen int32) uintptr {
 			}
 		}
 	}
-	error(tls, ts+217, libc.VaList(bp, ts+6720, 73))
+	error(tls, ts+217, libc.VaList(bp, ts+6741, 73))
 	return uintptr(0)
 }
 
@@ -135,7 +135,7 @@ func get_or_insert_entry(tls *libc.TLS, map1 uintptr, key uintptr, keylen int32)
 			}
 		}
 	}
-	error(tls, ts+217, libc.VaList(bp, ts+6720, 105))
+	error(tls, ts+217, libc.VaList(bp, ts+6741, 105))
 	return uintptr(0)
 }
 
@@ -180,95 +180,95 @@ func hashmap_test(tls *libc.TLS) { /* hashmap.c:136:6: */
 	{
 		var i int32 = 0
 		for ; i < 5000; i++ {
-			hashmap_put(tls, map1, format(tls, ts+6756, libc.VaList(bp, i)), uintptr(size_t(i)))
+			hashmap_put(tls, map1, format(tls, ts+6777, libc.VaList(bp, i)), uintptr(size_t(i)))
 		}
 	}
 	{
 		var i1 int32 = 1000
 		for ; i1 < 2000; i1++ {
-			hashmap_delete(tls, map1, format(tls, ts+6756, libc.VaList(bp+8, i1)))
+			hashmap_delete(tls, map1, format(tls, ts+6777, libc.VaList(bp+8, i1)))
 		}
 	}
 	{
 		var i2 int32 = 1500
 		for ; i2 < 1600; i2++ {
-			hashmap_put(tls, map1, format(tls, ts+6756, libc.VaList(bp+16, i2)), uintptr(size_t(i2)))
+			hashmap_put(tls, map1, format(tls, ts+6777, libc.VaList(bp+16, i2)), uintptr(size_t(i2)))
 		}
 	}
 	{
 		var i3 int32 = 6000
 		for ; i3 < 7000; i3++ {
-			hashmap_put(tls, map1, format(tls, ts+6756, libc.VaList(bp+24, i3)), uintptr(size_t(i3)))
+			hashmap_put(tls, map1, format(tls, ts+6777, libc.VaList(bp+24, i3)), uintptr(size_t(i3)))
 		}
 	}
 
 	{
 		var i4 int32 = 0
 		for ; i4 < 1000; i4++ {
-			if size_t(hashmap_get(tls, map1, format(tls, ts+6756, libc.VaList(bp+32, i4)))) == size_t(i4) {
+			if size_t(hashmap_get(tls, map1, format(tls, ts+6777, libc.VaList(bp+32, i4)))) == size_t(i4) {
 			} else {
-				libc.X__assert_fail(tls, ts+6763, ts+6720, uint32(149), uintptr(unsafe.Pointer(&__func__4)))
+				libc.X__assert_fail(tls, ts+6784, ts+6741, uint32(149), uintptr(unsafe.Pointer(&__func__4)))
 			}
 		}
 	}
 	{
 		var i5 int32 = 1000
 		for ; i5 < 1500; i5++ {
-			if hashmap_get(tls, map1, ts+6814) == uintptr(0) {
+			if hashmap_get(tls, map1, ts+6835) == uintptr(0) {
 			} else {
-				libc.X__assert_fail(tls, ts+6826, ts+6720, uint32(151), uintptr(unsafe.Pointer(&__func__4)))
+				libc.X__assert_fail(tls, ts+6847, ts+6741, uint32(151), uintptr(unsafe.Pointer(&__func__4)))
 			}
 		}
 	}
 	{
 		var i6 int32 = 1500
 		for ; i6 < 1600; i6++ {
-			if size_t(hashmap_get(tls, map1, format(tls, ts+6756, libc.VaList(bp+48, i6)))) == size_t(i6) {
+			if size_t(hashmap_get(tls, map1, format(tls, ts+6777, libc.VaList(bp+48, i6)))) == size_t(i6) {
 			} else {
-				libc.X__assert_fail(tls, ts+6763, ts+6720, uint32(153), uintptr(unsafe.Pointer(&__func__4)))
+				libc.X__assert_fail(tls, ts+6784, ts+6741, uint32(153), uintptr(unsafe.Pointer(&__func__4)))
 			}
 		}
 	}
 	{
 		var i7 int32 = 1600
 		for ; i7 < 2000; i7++ {
-			if hashmap_get(tls, map1, ts+6814) == uintptr(0) {
+			if hashmap_get(tls, map1, ts+6835) == uintptr(0) {
 			} else {
-				libc.X__assert_fail(tls, ts+6826, ts+6720, uint32(155), uintptr(unsafe.Pointer(&__func__4)))
+				libc.X__assert_fail(tls, ts+6847, ts+6741, uint32(155), uintptr(unsafe.Pointer(&__func__4)))
 			}
 		}
 	}
 	{
 		var i8 int32 = 2000
 		for ; i8 < 5000; i8++ {
-			if size_t(hashmap_get(tls, map1, format(tls, ts+6756, libc.VaList(bp+64, i8)))) == size_t(i8) {
+			if size_t(hashmap_get(tls, map1, format(tls, ts+6777, libc.VaList(bp+64, i8)))) == size_t(i8) {
 			} else {
-				libc.X__assert_fail(tls, ts+6763, ts+6720, uint32(157), uintptr(unsafe.Pointer(&__func__4)))
+				libc.X__assert_fail(tls, ts+6784, ts+6741, uint32(157), uintptr(unsafe.Pointer(&__func__4)))
 			}
 		}
 	}
 	{
 		var i9 int32 = 5000
 		for ; i9 < 6000; i9++ {
-			if hashmap_get(tls, map1, ts+6814) == uintptr(0) {
+			if hashmap_get(tls, map1, ts+6835) == uintptr(0) {
 			} else {
-				libc.X__assert_fail(tls, ts+6826, ts+6720, uint32(159), uintptr(unsafe.Pointer(&__func__4)))
+				libc.X__assert_fail(tls, ts+6847, ts+6741, uint32(159), uintptr(unsafe.Pointer(&__func__4)))
 			}
 		}
 	}
 	{
 		var i10 int32 = 6000
 		for ; i10 < 7000; i10++ {
-			hashmap_put(tls, map1, format(tls, ts+6756, libc.VaList(bp+80, i10)), uintptr(size_t(i10)))
+			hashmap_put(tls, map1, format(tls, ts+6777, libc.VaList(bp+80, i10)), uintptr(size_t(i10)))
 		}
 	}
 
-	if hashmap_get(tls, map1, ts+6814) == uintptr(0) {
+	if hashmap_get(tls, map1, ts+6835) == uintptr(0) {
 	} else {
-		libc.X__assert_fail(tls, ts+6826, ts+6720, uint32(163), uintptr(unsafe.Pointer(&__func__4)))
+		libc.X__assert_fail(tls, ts+6847, ts+6741, uint32(163), uintptr(unsafe.Pointer(&__func__4)))
 	}
-	libc.Xprintf(tls, ts+6866, 0)
+	libc.Xprintf(tls, ts+6887, 0)
 }
 
-var __func__4 = *(*[13]int8)(unsafe.Pointer(ts + 6870)) /* hashmap.c:136:25 */
+var __func__4 = *(*[13]int8)(unsafe.Pointer(ts + 6891)) /* hashmap.c:136:25 */
 

@@ -34,6 +34,16 @@ static char *output_file;
 static StringArray input_paths;
 static StringArray tmpfiles;
 
+static bool dir_exists(char *path) {
+  struct stat st;
+  return !stat(path, &st) && S_ISDIR(st.st_mode);
+}
+
+static void add_include_path_if_exists(char *path) {
+  if (dir_exists(path))
+    strarray_push(&include_paths, path);
+}
+
 static void usage(int status) {
   fprintf(stderr, "chibicc [ -o <path> ] <file>\n");
   exit(status);
@@ -53,12 +63,18 @@ static bool take_arg(char *arg) {
 static void add_default_include_paths(char *argv0) {
   // We expect that chibicc-specific include files are installed
   // to ./include relative to argv[0].
-  strarray_push(&include_paths, format("%s/include", xdirname(argv0)));
+  add_include_path_if_exists(format("%s/include", xdirname(argv0)));
+
+  // Allow overriding bundled include path when running transpiled chibigo
+  // from an arbitrary location.
+  char *bundled = getenv("CHIBICC_INCLUDE");
+  if (bundled)
+    add_include_path_if_exists(bundled);
 
   // Add standard include paths.
-  strarray_push(&include_paths, "/usr/local/include");
-  strarray_push(&include_paths, "/usr/include/x86_64-linux-gnu");
-  strarray_push(&include_paths, "/usr/include");
+  add_include_path_if_exists("/usr/local/include");
+  add_include_path_if_exists("/usr/include/x86_64-linux-gnu");
+  add_include_path_if_exists("/usr/include");
 
   // Keep a copy of the standard include paths for -MMD option.
   for (int i = 0; i < include_paths.len; i++)

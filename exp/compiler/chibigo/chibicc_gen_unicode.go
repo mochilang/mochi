@@ -60,14 +60,14 @@ func decode_utf8(tls *libc.TLS, new_pos uintptr, p uintptr) uint32_t { /* unicod
 		len = 2
 		c = uint32_t(int32(*(*int8)(unsafe.Pointer(p))) & 0b11111)
 	} else {
-		error_at(tls, start, ts+12067, 0)
+		error_at(tls, start, ts+12104, 0)
 	}
 
 	{
 		var i int32 = 1
 		for ; i < len; i++ {
 			if int32(uint8(*(*int8)(unsafe.Pointer(p + uintptr(i)))))>>6 != 0b10 {
-				error_at(tls, start, ts+12067, 0)
+				error_at(tls, start, ts+12104, 0)
 			}
 			c = c<<6 | uint32_t(int32(*(*int8)(unsafe.Pointer(p + uintptr(i))))&0b111111)
 		}

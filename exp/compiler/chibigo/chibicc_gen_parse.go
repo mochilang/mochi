@@ -285,7 +285,7 @@ func new_unique_name(tls *libc.TLS) uintptr { /* parse.c:328:13: */
 	bp := tls.Alloc(8)
 	defer tls.Free(8)
 
-	return format(tls, ts+8361, libc.VaList(bp, libc.PostIncInt32(&id, 1)))
+	return format(tls, ts+8398, libc.VaList(bp, libc.PostIncInt32(&id, 1)))
 }
 
 var id int32 = 0 /* parse.c:329:14 */
@@ -302,7 +302,7 @@ func new_string_literal(tls *libc.TLS, p uintptr, ty uintptr) uintptr { /* parse
 
 func get_ident(tls *libc.TLS, tok uintptr) uintptr { /* parse.c:343:13: */
 	if (*Token)(unsafe.Pointer(tok)).kind != TK_IDENT {
-		error_tok(tls, tok, ts+8368, 0)
+		error_tok(tls, tok, ts+8405, 0)
 	}
 	return xstrndup(tls, (*Token)(unsafe.Pointer(tok)).loc, uint64((*Token)(unsafe.Pointer(tok)).len))
 }
@@ -353,18 +353,18 @@ func declspec(tls *libc.TLS, rest uintptr, tok uintptr, attr uintptr) uintptr { 
 
 	for is_typename(tls, *(*uintptr)(unsafe.Pointer(bp + 16))) != 0 {
 		// Handle storage class specifiers.
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8391) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8399) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8406) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8413) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8420) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8434) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8428) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8436) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8443) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8450) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8457) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8471) != 0 {
 			if !(attr != 0) {
-				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8443, 0)
+				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8480, 0)
 			}
 
-			if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8391) != 0 {
+			if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8428) != 0 {
 				(*VarAttr)(unsafe.Pointer(attr)).is_typedef = uint8(1)
-			} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8399) != 0 {
+			} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8436) != 0 {
 				(*VarAttr)(unsafe.Pointer(attr)).is_static = uint8(1)
-			} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8406) != 0 {
+			} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8443) != 0 {
 				(*VarAttr)(unsafe.Pointer(attr)).is_extern = uint8(1)
-			} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8413) != 0 {
+			} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8450) != 0 {
 				(*VarAttr)(unsafe.Pointer(attr)).is_inline = uint8(1)
 			} else {
 				(*VarAttr)(unsafe.Pointer(attr)).is_tls = uint8(1)
@@ -372,56 +372,56 @@ func declspec(tls *libc.TLS, rest uintptr, tok uintptr, attr uintptr) uintptr { 
 
 			if (*VarAttr)(unsafe.Pointer(attr)).is_typedef != 0 && int32((*VarAttr)(unsafe.Pointer(attr)).is_static+(*VarAttr)(unsafe.Pointer(attr)).is_extern+(*VarAttr)(unsafe.Pointer(attr)).is_inline+(*VarAttr)(unsafe.Pointer(attr)).is_tls) > 1 {
 				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)),
-					ts+8498, 0)
+					ts+8535, 0)
 			}
 			*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)))).next
 			continue
 		}
 
 		// These keywords are recognized but ignored.
-		if consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8586) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8592) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8601) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8606) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8615) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8624) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8635) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8648) != 0 {
+		if consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8623) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8629) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8638) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8643) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8652) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8661) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8672) != 0 || consume(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8685) != 0 {
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8658) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8695) != 0 {
 			*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)))).next
-			if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8666) != 0 {
+			if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8703) != 0 {
 				ty = typename(tls, bp+16, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)))).next)
-				*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8668)
+				*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8705)
 			}
 			is_atomic = uint8(1)
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8670) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8707) != 0 {
 			if !(attr != 0) {
-				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8679, 0)
+				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8716, 0)
 			}
-			*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)))).next, ts+8666)
+			*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)))).next, ts+8703)
 
 			if is_typename(tls, *(*uintptr)(unsafe.Pointer(bp + 16))) != 0 {
 				(*VarAttr)(unsafe.Pointer(attr)).align = (*Type)(unsafe.Pointer(typename(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */))))).align
 			} else {
 				(*VarAttr)(unsafe.Pointer(attr)).align = int32(const_expr(tls, bp+16, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */))))
 			}
-			*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8668)
+			*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8705)
 			continue
 		}
 
 		// Handle user-defined types.
 		var ty2 uintptr = find_typedef(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)))
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8719) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8726) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8732) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8737) != 0 || ty2 != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8756) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8763) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8769) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8774) != 0 || ty2 != 0 {
 			if counter != 0 {
 				break
 			}
 
-			if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8719) != 0 {
+			if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8756) != 0 {
 				ty = struct_decl(tls, bp+16, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)))).next)
-			} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8726) != 0 {
+			} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8763) != 0 {
 				ty = union_decl(tls, bp+16, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)))).next)
-			} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8732) != 0 {
+			} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8769) != 0 {
 				ty = enum_specifier(tls, bp+16, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)))).next)
-			} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8737) != 0 {
+			} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8774) != 0 {
 				ty = typeof_specifier(tls, bp+16, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)))).next)
 			} else {
 				ty = ty2
@@ -433,28 +433,28 @@ func declspec(tls *libc.TLS, rest uintptr, tok uintptr, attr uintptr) uintptr { 
 		}
 
 		// Handle built-in types.
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8744) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8781) != 0 {
 			counter = counter + 1
-		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8749) != 0 {
+		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8786) != 0 {
 			counter = counter + 4
-		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8755) != 0 {
+		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8792) != 0 {
 			counter = counter + 16
-		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8760) != 0 {
+		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8797) != 0 {
 			counter = counter + 64
-		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8766) != 0 {
+		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8803) != 0 {
 			counter = counter + 256
-		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8770) != 0 {
+		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8807) != 0 {
 			counter = counter + 1024
-		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8775) != 0 {
+		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8812) != 0 {
 			counter = counter + 4096
-		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8781) != 0 {
+		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8818) != 0 {
 			counter = counter + 16384
-		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8788) != 0 {
+		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8825) != 0 {
 			counter = counter | 131072
-		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8795) != 0 {
+		} else if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8832) != 0 {
 			counter = counter | 262144
 		} else {
-			error(tls, ts+217, libc.VaList(bp, ts+8804, 507))
+			error(tls, ts+217, libc.VaList(bp, ts+8841, 507))
 		}
 
 		switch counter {
@@ -534,7 +534,7 @@ func declspec(tls *libc.TLS, rest uintptr, tok uintptr, attr uintptr) uintptr { 
 			ty = ty_ldouble
 			break
 		default:
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8812, 0)
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8849, 0)
 		}
 
 		*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)))).next
@@ -556,7 +556,7 @@ func func_params(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr) uintptr {
 	defer tls.Free(128)
 	*(*uintptr)(unsafe.Pointer(bp + 120)) = tok
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 120)), ts+8744) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 120)))).next, ts+8668) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 120)), ts+8781) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 120)))).next, ts+8705) != 0 {
 		*(*uintptr)(unsafe.Pointer(rest)) = (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 120 /* tok */)))).next)).next
 		return func_type(tls, ty)
 	}
@@ -565,15 +565,15 @@ func func_params(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr) uintptr {
 	var cur uintptr = bp /* &head */
 	var is_variadic uint8 = uint8(0)
 
-	for !(equal(tls, *(*uintptr)(unsafe.Pointer(bp + 120)), ts+8668) != 0) {
+	for !(equal(tls, *(*uintptr)(unsafe.Pointer(bp + 120)), ts+8705) != 0) {
 		if cur != bp {
-			*(*uintptr)(unsafe.Pointer(bp + 120 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 120 /* tok */)), ts+8331)
+			*(*uintptr)(unsafe.Pointer(bp + 120 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 120 /* tok */)), ts+8368)
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 120)), ts+8825) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 120)), ts+8862) != 0 {
 			is_variadic = uint8(1)
 			*(*uintptr)(unsafe.Pointer(bp + 120 /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 120 /* tok */)))).next
-			skip(tls, *(*uintptr)(unsafe.Pointer(bp + 120 /* tok */)), ts+8668)
+			skip(tls, *(*uintptr)(unsafe.Pointer(bp + 120 /* tok */)), ts+8705)
 			break
 		}
 
@@ -614,17 +614,17 @@ func array_dimensions(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr) uint
 	defer tls.Free(8)
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
-	for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8399) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8615) != 0 {
+	for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8436) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8652) != 0 {
 		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8829) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8866) != 0 {
 		ty = type_suffix(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ty)
 		return array_of(tls, ty, -1)
 	}
 
 	var expr uintptr = conditional(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8829)
+	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8866)
 	ty = type_suffix(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ty)
 
 	if (*Type)(unsafe.Pointer(ty)).kind == TY_VLA || !(is_const_expr(tls, expr) != 0) {
@@ -638,11 +638,11 @@ func array_dimensions(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr) uint
 //	| "[" array-dimensions
 //	| ε
 func type_suffix(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr) uintptr { /* parse.c:658:13: */
-	if equal(tls, tok, ts+8666) != 0 {
+	if equal(tls, tok, ts+8703) != 0 {
 		return func_params(tls, rest, (*Token)(unsafe.Pointer(tok)).next, ty)
 	}
 
-	if equal(tls, tok, ts+8831) != 0 {
+	if equal(tls, tok, ts+8868) != 0 {
 		return array_dimensions(tls, rest, (*Token)(unsafe.Pointer(tok)).next, ty)
 	}
 
@@ -656,9 +656,9 @@ func pointers(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr) uintptr { /*
 	defer tls.Free(8)
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
-	for consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+8833) != 0 {
+	for consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+8870) != 0 {
 		ty = pointer_to(tls, ty)
-		for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8586) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8592) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8615) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8624) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8635) != 0 {
+		for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8623) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8629) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8652) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8661) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8672) != 0 {
 			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next
 		}
 	}
@@ -674,11 +674,11 @@ func declarator(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr) uintptr { 
 
 	ty = pointers(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ty)
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8666) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8703) != 0 {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 		*(*Type)(unsafe.Pointer(bp + 8 /* dummy */)) = Type{}
 		declarator(tls, bp, (*Token)(unsafe.Pointer(start)).next, bp+8)
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 		ty = type_suffix(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ty)
 		return declarator(tls, bp, (*Token)(unsafe.Pointer(start)).next, ty)
 	}
@@ -705,11 +705,11 @@ func abstract_declarator(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr) u
 
 	ty = pointers(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ty)
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8666) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8703) != 0 {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 		*(*Type)(unsafe.Pointer(bp + 8 /* dummy */)) = Type{}
 		abstract_declarator(tls, bp, (*Token)(unsafe.Pointer(start)).next, bp+8)
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 		ty = type_suffix(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ty)
 		return abstract_declarator(tls, bp, (*Token)(unsafe.Pointer(start)).next, ty)
 	}
@@ -728,16 +728,16 @@ func typename(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:725
 }
 
 func is_end(tls *libc.TLS, tok uintptr) uint8 { /* parse.c:730:13: */
-	return uint8(libc.Bool32(equal(tls, tok, ts+8835) != 0 || equal(tls, tok, ts+8331) != 0 && equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+8835) != 0))
+	return uint8(libc.Bool32(equal(tls, tok, ts+8872) != 0 || equal(tls, tok, ts+8368) != 0 && equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+8872) != 0))
 }
 
 func consume_end(tls *libc.TLS, rest uintptr, tok uintptr) uint8 { /* parse.c:734:13: */
-	if equal(tls, tok, ts+8835) != 0 {
+	if equal(tls, tok, ts+8872) != 0 {
 		*(*uintptr)(unsafe.Pointer(rest)) = (*Token)(unsafe.Pointer(tok)).next
 		return uint8(1)
 	}
 
-	if equal(tls, tok, ts+8331) != 0 && equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+8835) != 0 {
+	if equal(tls, tok, ts+8368) != 0 && equal(tls, (*Token)(unsafe.Pointer(tok)).next, ts+8872) != 0 {
 		*(*uintptr)(unsafe.Pointer(rest)) = (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).next)).next
 		return uint8(1)
 	}
@@ -764,32 +764,32 @@ func enum_specifier(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse
 		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next
 	}
 
-	if tag != 0 && !(equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8837) != 0) {
+	if tag != 0 && !(equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8874) != 0) {
 		var ty uintptr = find_tag(tls, tag)
 		if !(ty != 0) {
-			error_tok(tls, tag, ts+8839, 0)
+			error_tok(tls, tag, ts+8876, 0)
 		}
 		if (*Type)(unsafe.Pointer(ty)).kind != TY_ENUM {
-			error_tok(tls, tag, ts+8857, 0)
+			error_tok(tls, tag, ts+8894, 0)
 		}
 		*(*uintptr)(unsafe.Pointer(rest)) = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 		return ty
 	}
 
-	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8837)
+	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8874)
 
 	// Read an enum-list.
 	var i int32 = 0
 	var val int32 = 0
 	for !(consume_end(tls, rest, *(*uintptr)(unsafe.Pointer(bp))) != 0) {
 		if libc.PostIncInt32(&i, 1) > 0 {
-			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 		}
 
 		var name uintptr = get_ident(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8873) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8910) != 0 {
 			val = int32(const_expr(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next))
 		}
 
@@ -810,7 +810,7 @@ func typeof_specifier(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* par
 	defer tls.Free(8)
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
-	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8666)
+	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8703)
 	var ty uintptr
 	if is_typename(tls, *(*uintptr)(unsafe.Pointer(bp))) != 0 {
 		ty = typename(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
@@ -819,7 +819,7 @@ func typeof_specifier(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* par
 		add_type(tls, node)
 		ty = (*Node)(unsafe.Pointer(node)).ty
 	}
-	*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+	*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 	return ty
 }
 
@@ -840,7 +840,7 @@ func compute_vla_size(tls *libc.TLS, ty uintptr, tok uintptr) uintptr { /* parse
 		base_sz = new_num(tls, int64((*Type)(unsafe.Pointer((*Type)(unsafe.Pointer(ty)).base)).size), tok)
 	}
 
-	(*Type)(unsafe.Pointer(ty)).vla_size = new_lvar(tls, ts+8875, ty_ulong)
+	(*Type)(unsafe.Pointer(ty)).vla_size = new_lvar(tls, ts+8912, ty_ulong)
 	var expr uintptr = new_binary(tls, ND_ASSIGN, new_var_node(tls, (*Type)(unsafe.Pointer(ty)).vla_size, tok),
 		new_binary(tls, ND_MUL, (*Type)(unsafe.Pointer(ty)).vla_len, base_sz, tok),
 		tok)
@@ -866,24 +866,24 @@ func declaration(tls *libc.TLS, rest uintptr, tok uintptr, basety uintptr, attr 
 	var cur uintptr = bp /* &head */
 	var i int32 = 0
 
-	for !(equal(tls, *(*uintptr)(unsafe.Pointer(bp + 280)), ts+8876) != 0) {
+	for !(equal(tls, *(*uintptr)(unsafe.Pointer(bp + 280)), ts+8913) != 0) {
 		if libc.PostIncInt32(&i, 1) > 0 {
-			*(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+8331)
+			*(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+8368)
 		}
 
 		var ty uintptr = declarator(tls, bp+280, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), basety)
 		if (*Type)(unsafe.Pointer(ty)).kind == TY_VOID {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+8878, 0)
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+8915, 0)
 		}
 		if !(int32((*Type)(unsafe.Pointer(ty)).name) != 0) {
-			error_tok(tls, (*Type)(unsafe.Pointer(ty)).name_pos, ts+8901, 0)
+			error_tok(tls, (*Type)(unsafe.Pointer(ty)).name_pos, ts+8938, 0)
 		}
 
 		if attr != 0 && (*VarAttr)(unsafe.Pointer(attr)).is_static != 0 {
 			// static local variable
 			var var1 uintptr = new_anon_gvar(tls, ty)
 			(*VarScope)(unsafe.Pointer(push_scope(tls, get_ident(tls, (*Type)(unsafe.Pointer(ty)).name)))).__var = var1
-			if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 280)), ts+8873) != 0 {
+			if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 280)), ts+8910) != 0 {
 				gvar_initializer(tls, bp+280, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)))).next, var1)
 			}
 			continue
@@ -895,8 +895,8 @@ func declaration(tls *libc.TLS, rest uintptr, tok uintptr, basety uintptr, attr 
 		cur = libc.AssignPtrUintptr(cur+8, new_unary(tls, ND_EXPR_STMT, compute_vla_size(tls, ty, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */))), *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */))))
 
 		if (*Type)(unsafe.Pointer(ty)).kind == TY_VLA {
-			if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 280)), ts+8873) != 0 {
-				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+8923, 0)
+			if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 280)), ts+8910) != 0 {
+				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+8960, 0)
 			}
 
 			// Variable length arrays (VLAs) are translated to alloca() calls.
@@ -917,16 +917,16 @@ func declaration(tls *libc.TLS, rest uintptr, tok uintptr, basety uintptr, attr 
 			(*Obj)(unsafe.Pointer(var1)).align = (*VarAttr)(unsafe.Pointer(attr)).align
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 280)), ts+8873) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 280)), ts+8910) != 0 {
 			var expr uintptr = lvar_initializer(tls, bp+280, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)))).next, var1)
 			cur = libc.AssignPtrUintptr(cur+8, new_unary(tls, ND_EXPR_STMT, expr, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */))))
 		}
 
 		if (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(var1)).ty)).size < 0 {
-			error_tok(tls, (*Type)(unsafe.Pointer(ty)).name, ts+8968, 0)
+			error_tok(tls, (*Type)(unsafe.Pointer(ty)).name, ts+9005, 0)
 		}
 		if (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(var1)).ty)).kind == TY_VOID {
-			error_tok(tls, (*Type)(unsafe.Pointer(ty)).name, ts+8878, 0)
+			error_tok(tls, (*Type)(unsafe.Pointer(ty)).name, ts+8915, 0)
 		}
 	}
 
@@ -941,9 +941,9 @@ func skip_excess_element(tls *libc.TLS, tok uintptr) uintptr { /* parse.c:912:14
 	defer tls.Free(8)
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8837) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8874) != 0 {
 		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip_excess_element(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
-		return skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8835)
+		return skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8872)
 	}
 
 	assign(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
@@ -1004,7 +1004,7 @@ func string_initializer(tls *libc.TLS, rest uintptr, tok uintptr, init1 uintptr)
 
 		}
 	default:
-		error(tls, ts+217, libc.VaList(bp, ts+8804, 949))
+		error(tls, ts+217, libc.VaList(bp, ts+8841, 949))
 	}
 
 	*(*uintptr)(unsafe.Pointer(rest)) = (*Token)(unsafe.Pointer(tok)).next
@@ -1042,22 +1042,22 @@ func array_designator(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr, begi
 
 	*(*int32)(unsafe.Pointer(begin)) = int32(const_expr(tls, bp+16, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)))).next))
 	if *(*int32)(unsafe.Pointer(begin)) >= (*Type)(unsafe.Pointer(ty)).array_len {
-		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8997, 0)
+		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+9034, 0)
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8825) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp + 16)), ts+8862) != 0 {
 		*(*int32)(unsafe.Pointer(end)) = int32(const_expr(tls, bp+16, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)))).next))
 		if *(*int32)(unsafe.Pointer(end)) >= (*Type)(unsafe.Pointer(ty)).array_len {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8997, 0)
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+9034, 0)
 		}
 		if *(*int32)(unsafe.Pointer(end)) < *(*int32)(unsafe.Pointer(begin)) {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+9041, libc.VaList(bp, *(*int32)(unsafe.Pointer(begin)), *(*int32)(unsafe.Pointer(end))))
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+9078, libc.VaList(bp, *(*int32)(unsafe.Pointer(begin)), *(*int32)(unsafe.Pointer(end))))
 		}
 	} else {
 		*(*int32)(unsafe.Pointer(end)) = *(*int32)(unsafe.Pointer(begin))
 	}
 
-	*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8829)
+	*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 16 /* tok */)), ts+8866)
 }
 
 // struct-designator = "." ident
@@ -1065,7 +1065,7 @@ func struct_designator(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr) uin
 	var start uintptr = tok
 	tok = skip(tls, tok, ts+6708)
 	if (*Token)(unsafe.Pointer(tok)).kind != TK_IDENT {
-		error_tok(tls, tok, ts+9082, 0)
+		error_tok(tls, tok, ts+9119, 0)
 	}
 
 	{
@@ -1088,7 +1088,7 @@ func struct_designator(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr) uin
 		}
 	}
 
-	error_tok(tls, tok, ts+9110, 0)
+	error_tok(tls, tok, ts+9147, 0)
 	return uintptr(0)
 }
 
@@ -1098,9 +1098,9 @@ func designation(tls *libc.TLS, rest uintptr, tok uintptr, init1 uintptr) { /* p
 	defer tls.Free(24)
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8831) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8868) != 0 {
 		if (*Type)(unsafe.Pointer((*Initializer)(unsafe.Pointer(init1)).ty)).kind != TY_ARRAY {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9136, 0)
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9173, 0)
 		}
 		// var begin int32 at bp+8, 4
 
@@ -1135,10 +1135,10 @@ func designation(tls *libc.TLS, rest uintptr, tok uintptr, init1 uintptr) { /* p
 	}
 
 	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+6708) != 0 {
-		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9173, 0)
+		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9210, 0)
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8873) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8910) != 0 {
 		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next
 	}
 	initializer2(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)), init1)
@@ -1160,16 +1160,16 @@ func count_array_init_elements(tls *libc.TLS, tok uintptr, ty uintptr) int32 { /
 
 	for !(consume_end(tls, bp, *(*uintptr)(unsafe.Pointer(bp))) != 0) {
 		if !(first != 0) {
-			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 		}
 		first = uint8(0)
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8831) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8868) != 0 {
 			i = int32(const_expr(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next))
-			if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8825) != 0 {
+			if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8862) != 0 {
 				i = int32(const_expr(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next))
 			}
-			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8829)
+			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8866)
 			designation(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)), dummy)
 		} else {
 			initializer2(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)), dummy)
@@ -1192,7 +1192,7 @@ func array_initializer1(tls *libc.TLS, rest uintptr, tok uintptr, init1 uintptr)
 	defer tls.Free(24)
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
-	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8837)
+	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8874)
 
 	if (*Initializer)(unsafe.Pointer(init1)).is_flexible != 0 {
 		var len int32 = count_array_init_elements(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), (*Initializer)(unsafe.Pointer(init1)).ty)
@@ -1210,11 +1210,11 @@ func array_initializer1(tls *libc.TLS, rest uintptr, tok uintptr, init1 uintptr)
 		var i int32 = 0
 		for ; !(consume_end(tls, rest, *(*uintptr)(unsafe.Pointer(bp))) != 0); i++ {
 			if !(first != 0) {
-				*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+				*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 			}
 			first = uint8(0)
 
-			if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8831) != 0 {
+			if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8868) != 0 {
 				// var begin int32 at bp+8, 4
 
 				// var end int32 at bp+12, 4
@@ -1256,10 +1256,10 @@ func array_initializer2(tls *libc.TLS, rest uintptr, tok uintptr, init1 uintptr,
 	for ; i < (*Type)(unsafe.Pointer((*Initializer)(unsafe.Pointer(init1)).ty)).array_len && !(is_end(tls, *(*uintptr)(unsafe.Pointer(bp))) != 0); i++ {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 		if i > 0 {
-			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8831) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+6708) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8868) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+6708) != 0 {
 			*(*uintptr)(unsafe.Pointer(rest)) = start
 			return
 		}
@@ -1275,14 +1275,14 @@ func struct_initializer1(tls *libc.TLS, rest uintptr, tok uintptr, init1 uintptr
 	defer tls.Free(8)
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
-	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8837)
+	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8874)
 
 	var mem uintptr = (*Type)(unsafe.Pointer((*Initializer)(unsafe.Pointer(init1)).ty)).members
 	var first uint8 = uint8(1)
 
 	for !(consume_end(tls, rest, *(*uintptr)(unsafe.Pointer(bp))) != 0) {
 		if !(first != 0) {
-			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 		}
 		first = uint8(0)
 
@@ -1314,11 +1314,11 @@ func struct_initializer2(tls *libc.TLS, rest uintptr, tok uintptr, init1 uintptr
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 
 		if !(first != 0) {
-			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 		}
 		first = uint8(0)
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8831) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+6708) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8868) != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+6708) != 0 {
 			*(*uintptr)(unsafe.Pointer(rest)) = start
 			return
 		}
@@ -1336,20 +1336,20 @@ func union_initializer(tls *libc.TLS, rest uintptr, tok uintptr, init1 uintptr) 
 	// Unlike structs, union initializers take only one initializer,
 	// and that initializes the first union member by default.
 	// You can initialize other member using a designated initializer.
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8837) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+6708) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8874) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+6708) != 0 {
 		var mem uintptr = struct_designator(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, (*Initializer)(unsafe.Pointer(init1)).ty)
 		(*Initializer)(unsafe.Pointer(init1)).mem = mem
 		designation(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)), *(*uintptr)(unsafe.Pointer((*Initializer)(unsafe.Pointer(init1)).children + uintptr((*Member)(unsafe.Pointer(mem)).idx)*8)))
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8835)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8872)
 		return
 	}
 
 	(*Initializer)(unsafe.Pointer(init1)).mem = (*Type)(unsafe.Pointer((*Initializer)(unsafe.Pointer(init1)).ty)).members
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8837) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8874) != 0 {
 		initializer2(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, *(*uintptr)(unsafe.Pointer((*Initializer)(unsafe.Pointer(init1)).children)))
-		consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8835)
+		consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8872)
 	} else {
 		initializer2(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)), *(*uintptr)(unsafe.Pointer((*Initializer)(unsafe.Pointer(init1)).children)))
 	}
@@ -1370,7 +1370,7 @@ func initializer2(tls *libc.TLS, rest uintptr, tok uintptr, init1 uintptr) { /* 
 	}
 
 	if (*Type)(unsafe.Pointer((*Initializer)(unsafe.Pointer(init1)).ty)).kind == TY_ARRAY {
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8837) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8874) != 0 {
 			array_initializer1(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)), init1)
 		} else {
 			array_initializer2(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)), init1, 0)
@@ -1379,7 +1379,7 @@ func initializer2(tls *libc.TLS, rest uintptr, tok uintptr, init1 uintptr) { /* 
 	}
 
 	if (*Type)(unsafe.Pointer((*Initializer)(unsafe.Pointer(init1)).ty)).kind == TY_STRUCT {
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8837) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8874) != 0 {
 			struct_initializer1(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)), init1)
 			return
 		}
@@ -1403,11 +1403,11 @@ func initializer2(tls *libc.TLS, rest uintptr, tok uintptr, init1 uintptr) { /* 
 		return
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8837) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8874) != 0 {
 		// An initializer for a scalar variable can be surrounded by
 		// braces. E.g. `int x = {3};`. Handle that case.
 		initializer2(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, init1)
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8835)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8872)
 		return
 	}
 
@@ -1567,7 +1567,7 @@ func read_buf(tls *libc.TLS, buf uintptr, sz int32) uint64_t { /* parse.c:1392:1
 	if sz == 8 {
 		return *(*uint64_t)(unsafe.Pointer(buf))
 	}
-	error(tls, ts+217, libc.VaList(bp, ts+8804, 1401))
+	error(tls, ts+217, libc.VaList(bp, ts+8841, 1401))
 	return uint64_t(0)
 }
 
@@ -1584,7 +1584,7 @@ func write_buf(tls *libc.TLS, buf uintptr, val uint64_t, sz int32) { /* parse.c:
 	} else if sz == 8 {
 		*(*uint64_t)(unsafe.Pointer(buf)) = val
 	} else {
-		error(tls, ts+217, libc.VaList(bp, ts+8804, 1414))
+		error(tls, ts+217, libc.VaList(bp, ts+8841, 1414))
 	}
 }
 
@@ -1701,11 +1701,11 @@ func is_typename(tls *libc.TLS, tok uintptr) uint8 { /* parse.c:1498:13: */
 
 var map1 HashMap /* parse.c:1499:18: */
 var kw = [30]uintptr{
-	ts + 8744, ts + 8749, ts + 8755, ts + 8760, ts + 8766, ts + 8770, ts + 8719, ts + 8726,
-	ts + 8391, ts + 8732, ts + 8399, ts + 8406, ts + 8670, ts + 8788, ts + 8795,
-	ts + 8586, ts + 8592, ts + 8601, ts + 8606, ts + 8615, ts + 8624,
-	ts + 8635, ts + 8648, ts + 8775, ts + 8781, ts + 8737, ts + 8413,
-	ts + 8420, ts + 8434, ts + 8658,
+	ts + 8781, ts + 8786, ts + 8792, ts + 8797, ts + 8803, ts + 8807, ts + 8756, ts + 8763,
+	ts + 8428, ts + 8769, ts + 8436, ts + 8443, ts + 8707, ts + 8825, ts + 8832,
+	ts + 8623, ts + 8629, ts + 8638, ts + 8643, ts + 8652, ts + 8661,
+	ts + 8672, ts + 8685, ts + 8812, ts + 8818, ts + 8774, ts + 8450,
+	ts + 8457, ts + 8471, ts + 8695,
 } /* parse.c:1502:17 */
 
 // asm-stmt = "asm" ("volatile" | "inline")* "(" string-literal ")"
@@ -1713,16 +1713,16 @@ func asm_stmt(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:151
 	var node uintptr = new_node(tls, ND_ASM, tok)
 	tok = (*Token)(unsafe.Pointer(tok)).next
 
-	for equal(tls, tok, ts+8592) != 0 || equal(tls, tok, ts+8413) != 0 {
+	for equal(tls, tok, ts+8629) != 0 || equal(tls, tok, ts+8450) != 0 {
 		tok = (*Token)(unsafe.Pointer(tok)).next
 	}
 
-	tok = skip(tls, tok, ts+8666)
+	tok = skip(tls, tok, ts+8703)
 	if (*Token)(unsafe.Pointer(tok)).kind != TK_STR || (*Type)(unsafe.Pointer((*Type)(unsafe.Pointer((*Token)(unsafe.Pointer(tok)).ty)).base)).kind != TY_CHAR {
-		error_tok(tls, tok, ts+9219, 0)
+		error_tok(tls, tok, ts+9256, 0)
 	}
 	(*Node)(unsafe.Pointer(node)).asm_str = (*Token)(unsafe.Pointer(tok)).str
-	*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, (*Token)(unsafe.Pointer(tok)).next, ts+8668)
+	*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, (*Token)(unsafe.Pointer(tok)).next, ts+8705)
 	return node
 }
 
@@ -1747,14 +1747,14 @@ func stmt(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:1548:13
 	defer tls.Free(8)
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9243) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9280) != 0 {
 		var node uintptr = new_node(tls, ND_RETURN, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		if consume(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8876) != 0 {
+		if consume(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8913) != 0 {
 			return node
 		}
 
 		var exp uintptr = expr(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8876)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8913)
 
 		add_type(tls, exp)
 		var ty uintptr = (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(current_fn1)).ty)).return_ty
@@ -1766,24 +1766,24 @@ func stmt(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:1548:13
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9250) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9287) != 0 {
 		var node uintptr = new_node(tls, ND_IF, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8666)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8703)
 		(*Node)(unsafe.Pointer(node)).cond = expr(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 		(*Node)(unsafe.Pointer(node)).then = stmt(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9253) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9290) != 0 {
 			(*Node)(unsafe.Pointer(node)).els = stmt(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
 		}
 		*(*uintptr)(unsafe.Pointer(rest)) = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9258) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9295) != 0 {
 		var node uintptr = new_node(tls, ND_SWITCH, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8666)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8703)
 		(*Node)(unsafe.Pointer(node)).cond = expr(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 
 		var sw uintptr = current_switch
 		current_switch = node
@@ -1798,26 +1798,26 @@ func stmt(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:1548:13
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9265) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9302) != 0 {
 		if !(current_switch != 0) {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9270, 0)
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9307, 0)
 		}
 
 		var node uintptr = new_node(tls, ND_CASE, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		var begin int32 = int32(const_expr(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next))
 		var end int32
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8825) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8862) != 0 {
 			// [GNU] Case ranges, e.g. "case 1 ... 5:"
 			end = int32(const_expr(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next))
 			if end < begin {
-				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9281, 0)
+				error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9318, 0)
 			}
 		} else {
 			end = begin
 		}
 
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9308)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9345)
 		(*Node)(unsafe.Pointer(node)).label = new_unique_name(tls)
 		(*Node)(unsafe.Pointer(node)).lhs = stmt(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		(*Node)(unsafe.Pointer(node)).begin = int64(begin)
@@ -1827,22 +1827,22 @@ func stmt(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:1548:13
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9310) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9347) != 0 {
 		if !(current_switch != 0) {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9318, 0)
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9355, 0)
 		}
 
 		var node uintptr = new_node(tls, ND_CASE, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+9308)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+9345)
 		(*Node)(unsafe.Pointer(node)).label = new_unique_name(tls)
 		(*Node)(unsafe.Pointer(node)).lhs = stmt(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		(*Node)(unsafe.Pointer(current_switch)).default_case = node
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9332) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9369) != 0 {
 		var node uintptr = new_node(tls, ND_FOR, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8666)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8703)
 
 		enter_scope(tls)
 
@@ -1858,15 +1858,15 @@ func stmt(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:1548:13
 			(*Node)(unsafe.Pointer(node)).init = expr_stmt(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		}
 
-		if !(equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8876) != 0) {
+		if !(equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8913) != 0) {
 			(*Node)(unsafe.Pointer(node)).cond = expr(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		}
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8876)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8913)
 
-		if !(equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8668) != 0) {
+		if !(equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8705) != 0) {
 			(*Node)(unsafe.Pointer(node)).inc = expr(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		}
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 
 		(*Node)(unsafe.Pointer(node)).then = stmt(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 
@@ -1876,11 +1876,11 @@ func stmt(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:1548:13
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9336) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9373) != 0 {
 		var node uintptr = new_node(tls, ND_FOR, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8666)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8703)
 		(*Node)(unsafe.Pointer(node)).cond = expr(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 
 		var brk uintptr = brk_label
 		var cont uintptr = cont_label
@@ -1894,7 +1894,7 @@ func stmt(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:1548:13
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9342) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9379) != 0 {
 		var node uintptr = new_node(tls, ND_DO, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 
 		var brk uintptr = brk_label
@@ -1907,24 +1907,24 @@ func stmt(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:1548:13
 		brk_label = brk
 		cont_label = cont
 
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9336)
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8666)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9373)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8703)
 		(*Node)(unsafe.Pointer(node)).cond = expr(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8876)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8913)
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9345) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9382) != 0 {
 		return asm_stmt(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9349) != 0 {
-		if equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8833) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9386) != 0 {
+		if equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8870) != 0 {
 			// [GNU] `goto *ptr` jumps to the address specified by `ptr`.
 			var node uintptr = new_node(tls, ND_GOTO_EXPR, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 			(*Node)(unsafe.Pointer(node)).lhs = expr(tls, bp, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)).next)
-			*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8876)
+			*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8913)
 			return node
 		}
 
@@ -1932,31 +1932,31 @@ func stmt(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:1548:13
 		(*Node)(unsafe.Pointer(node)).label = get_ident(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
 		(*Node)(unsafe.Pointer(node)).goto_next = gotos
 		gotos = node
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)).next, ts+8876)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)).next, ts+8913)
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9354) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9391) != 0 {
 		if !(brk_label != 0) {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9360, 0)
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9397, 0)
 		}
 		var node uintptr = new_node(tls, ND_GOTO, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		(*Node)(unsafe.Pointer(node)).unique_label = brk_label
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8876)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8913)
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9372) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9409) != 0 {
 		if !(cont_label != 0) {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9381, 0)
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9418, 0)
 		}
 		var node uintptr = new_node(tls, ND_GOTO, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		(*Node)(unsafe.Pointer(node)).unique_label = cont_label
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8876)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8913)
 		return node
 	}
 
-	if (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).kind == TK_IDENT && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+9308) != 0 {
+	if (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).kind == TK_IDENT && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+9345) != 0 {
 		var node uintptr = new_node(tls, ND_LABEL, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		(*Node)(unsafe.Pointer(node)).label = xstrndup(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).loc, uint64((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).len))
 		(*Node)(unsafe.Pointer(node)).unique_label = new_unique_name(tls)
@@ -1966,7 +1966,7 @@ func stmt(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:1548:13
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8837) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8874) != 0 {
 		return compound_stmt(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
 	}
 
@@ -1985,8 +1985,8 @@ func compound_stmt(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.
 
 	enter_scope(tls)
 
-	for !(equal(tls, *(*uintptr)(unsafe.Pointer(bp + 280)), ts+8835) != 0) {
-		if is_typename(tls, *(*uintptr)(unsafe.Pointer(bp + 280))) != 0 && !(equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 280)))).next, ts+9308) != 0) {
+	for !(equal(tls, *(*uintptr)(unsafe.Pointer(bp + 280)), ts+8872) != 0) {
+		if is_typename(tls, *(*uintptr)(unsafe.Pointer(bp + 280))) != 0 && !(equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp + 280)))).next, ts+9345) != 0) {
 			*(*VarAttr)(unsafe.Pointer(bp + 288 /* attr */)) = VarAttr{}
 			var basety uintptr = declspec(tls, bp+280, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), bp+288)
 
@@ -2025,14 +2025,14 @@ func expr_stmt(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:18
 	defer tls.Free(8)
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8876) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8913) != 0 {
 		*(*uintptr)(unsafe.Pointer(rest)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next
 		return new_node(tls, ND_BLOCK, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 	}
 
 	var node uintptr = new_node(tls, ND_EXPR_STMT, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 	(*Node)(unsafe.Pointer(node)).lhs = expr(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-	*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8876)
+	*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8913)
 	return node
 }
 
@@ -2044,7 +2044,7 @@ func expr(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:1819:13
 
 	var node uintptr = assign(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8331) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8368) != 0 {
 		return new_binary(tls, ND_COMMA, node, expr(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 	}
 
@@ -2164,18 +2164,18 @@ func eval2(tls *libc.TLS, node uintptr, label uintptr) int64_t { /* parse.c:1839
 		return int64(0)
 	case ND_MEMBER:
 		if !(label != 0) {
-			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9396, 0)
+			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9433, 0)
 		}
 		if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).kind != TY_ARRAY {
-			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9424, 0)
+			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9461, 0)
 		}
 		return eval_rval(tls, (*Node)(unsafe.Pointer(node)).lhs, label) + int64_t((*Member)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).member)).offset)
 	case ND_VAR:
 		if !(label != 0) {
-			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9396, 0)
+			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9433, 0)
 		}
 		if (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).ty)).kind != TY_ARRAY && (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).ty)).kind != TY_FUNC {
-			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9424, 0)
+			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9461, 0)
 		}
 		*(*uintptr)(unsafe.Pointer(label)) = (*Node)(unsafe.Pointer(node)).__var + 8
 		return int64(0)
@@ -2183,7 +2183,7 @@ func eval2(tls *libc.TLS, node uintptr, label uintptr) int64_t { /* parse.c:1839
 		return (*Node)(unsafe.Pointer(node)).val
 	}
 
-	error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9396, 0)
+	error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9433, 0)
 	return int64_t(0)
 }
 
@@ -2191,7 +2191,7 @@ func eval_rval(tls *libc.TLS, node uintptr, label uintptr) int64_t { /* parse.c:
 	switch (*Node)(unsafe.Pointer(node)).kind {
 	case ND_VAR:
 		if (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).is_local != 0 {
-			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9396, 0)
+			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9433, 0)
 		}
 		*(*uintptr)(unsafe.Pointer(label)) = (*Node)(unsafe.Pointer(node)).__var + 8
 		return int64(0)
@@ -2201,7 +2201,7 @@ func eval_rval(tls *libc.TLS, node uintptr, label uintptr) int64_t { /* parse.c:
 		return eval_rval(tls, (*Node)(unsafe.Pointer(node)).lhs, label) + int64_t((*Member)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).member)).offset)
 	}
 
-	error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9424, 0)
+	error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9461, 0)
 	return int64_t(0)
 }
 
@@ -2308,7 +2308,7 @@ func eval_double(tls *libc.TLS, node uintptr) float64 { /* parse.c:1993:15: */
 		return (*Node)(unsafe.Pointer(node)).fval
 	}
 
-	error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9396, 0)
+	error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9433, 0)
 	return float64(0)
 }
 
@@ -2328,7 +2328,7 @@ func to_assign(tls *libc.TLS, binary uintptr) uintptr { /* parse.c:2034:13: */
 
 	// Convert `A.x op= C` to `tmp = &A, (*tmp).x = (*tmp).x op C`.
 	if (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).lhs)).kind == ND_MEMBER {
-		var var1 uintptr = new_lvar(tls, ts+8875, pointer_to(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).lhs)).lhs)).ty))
+		var var1 uintptr = new_lvar(tls, ts+8912, pointer_to(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).lhs)).lhs)).ty))
 
 		var expr1 uintptr = new_binary(tls, ND_ASSIGN, new_var_node(tls, var1, tok),
 			new_unary(tls, ND_ADDR, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).lhs)).lhs, tok), tok)
@@ -2363,10 +2363,10 @@ func to_assign(tls *libc.TLS, binary uintptr) uintptr { /* parse.c:2034:13: */
 		*(*Node)(unsafe.Pointer(bp /* head */)) = Node{}
 		var cur uintptr = bp /* &head */
 
-		var addr uintptr = new_lvar(tls, ts+8875, pointer_to(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).lhs)).ty))
-		var val uintptr = new_lvar(tls, ts+8875, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).rhs)).ty)
-		var old uintptr = new_lvar(tls, ts+8875, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).lhs)).ty)
-		var new uintptr = new_lvar(tls, ts+8875, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).lhs)).ty)
+		var addr uintptr = new_lvar(tls, ts+8912, pointer_to(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).lhs)).ty))
+		var val uintptr = new_lvar(tls, ts+8912, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).rhs)).ty)
+		var old uintptr = new_lvar(tls, ts+8912, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).lhs)).ty)
+		var new uintptr = new_lvar(tls, ts+8912, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).lhs)).ty)
 
 		cur = libc.AssignPtrUintptr(cur+8, new_unary(tls, ND_EXPR_STMT,
 			new_binary(tls, ND_ASSIGN, new_var_node(tls, addr, tok),
@@ -2410,7 +2410,7 @@ func to_assign(tls *libc.TLS, binary uintptr) uintptr { /* parse.c:2034:13: */
 	}
 
 	// Convert `A op= B` to ``tmp = &A, *tmp = *tmp op B`.
-	var var1 uintptr = new_lvar(tls, ts+8875, pointer_to(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).lhs)).ty))
+	var var1 uintptr = new_lvar(tls, ts+8912, pointer_to(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(binary)).lhs)).ty))
 
 	var expr1 uintptr = new_binary(tls, ND_ASSIGN, new_var_node(tls, var1, tok),
 		new_unary(tls, ND_ADDR, (*Node)(unsafe.Pointer(binary)).lhs, tok), tok)
@@ -2437,47 +2437,47 @@ func assign(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2146:
 
 	var node uintptr = conditional(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8873) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8910) != 0 {
 		return new_binary(tls, ND_ASSIGN, node, assign(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9444) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9481) != 0 {
 		return to_assign(tls, new_add(tls, node, assign(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), *(*uintptr)(unsafe.Pointer(bp /* tok */))))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9447) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9484) != 0 {
 		return to_assign(tls, new_sub(tls, node, assign(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), *(*uintptr)(unsafe.Pointer(bp /* tok */))))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9450) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9487) != 0 {
 		return to_assign(tls, new_binary(tls, ND_MUL, node, assign(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), *(*uintptr)(unsafe.Pointer(bp /* tok */))))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9453) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9490) != 0 {
 		return to_assign(tls, new_binary(tls, ND_DIV, node, assign(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), *(*uintptr)(unsafe.Pointer(bp /* tok */))))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9456) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9493) != 0 {
 		return to_assign(tls, new_binary(tls, ND_MOD, node, assign(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), *(*uintptr)(unsafe.Pointer(bp /* tok */))))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9459) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9496) != 0 {
 		return to_assign(tls, new_binary(tls, ND_BITAND, node, assign(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), *(*uintptr)(unsafe.Pointer(bp /* tok */))))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9462) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9499) != 0 {
 		return to_assign(tls, new_binary(tls, ND_BITOR, node, assign(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), *(*uintptr)(unsafe.Pointer(bp /* tok */))))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9465) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9502) != 0 {
 		return to_assign(tls, new_binary(tls, ND_BITXOR, node, assign(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), *(*uintptr)(unsafe.Pointer(bp /* tok */))))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9468) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9505) != 0 {
 		return to_assign(tls, new_binary(tls, ND_SHL, node, assign(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), *(*uintptr)(unsafe.Pointer(bp /* tok */))))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9472) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9509) != 0 {
 		return to_assign(tls, new_binary(tls, ND_SHR, node, assign(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), *(*uintptr)(unsafe.Pointer(bp /* tok */))))
 	}
 
@@ -2493,15 +2493,15 @@ func conditional(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:
 
 	var cond uintptr = logor(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 
-	if !(equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9476) != 0) {
+	if !(equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9513) != 0) {
 		*(*uintptr)(unsafe.Pointer(rest)) = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 		return cond
 	}
 
-	if equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+9308) != 0 {
+	if equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+9345) != 0 {
 		// [GNU] Compile `a ?: b` as `tmp = a, tmp ? tmp : b`.
 		add_type(tls, cond)
-		var var1 uintptr = new_lvar(tls, ts+8875, (*Node)(unsafe.Pointer(cond)).ty)
+		var var1 uintptr = new_lvar(tls, ts+8912, (*Node)(unsafe.Pointer(cond)).ty)
 		var lhs uintptr = new_binary(tls, ND_ASSIGN, new_var_node(tls, var1, *(*uintptr)(unsafe.Pointer(bp /* tok */))), cond, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		var rhs uintptr = new_node(tls, ND_COND, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		(*Node)(unsafe.Pointer(rhs)).cond = new_var_node(tls, var1, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
@@ -2513,7 +2513,7 @@ func conditional(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:
 	var node uintptr = new_node(tls, ND_COND, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 	(*Node)(unsafe.Pointer(node)).cond = cond
 	(*Node)(unsafe.Pointer(node)).then = expr(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
-	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9308)
+	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9345)
 	(*Node)(unsafe.Pointer(node)).els = conditional(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 	return node
 }
@@ -2525,7 +2525,7 @@ func logor(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2216:1
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
 	var node uintptr = logand(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-	for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9478) != 0 {
+	for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9515) != 0 {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 		node = new_binary(tls, ND_LOGOR, node, logand(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 	}
@@ -2540,7 +2540,7 @@ func logand(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2227:
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
 	var node uintptr = bitor(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-	for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9481) != 0 {
+	for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9518) != 0 {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 		node = new_binary(tls, ND_LOGAND, node, bitor(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 	}
@@ -2555,7 +2555,7 @@ func bitor(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2238:1
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
 	var node uintptr = bitxor(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-	for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9484) != 0 {
+	for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9521) != 0 {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 		node = new_binary(tls, ND_BITOR, node, bitxor(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 	}
@@ -2570,7 +2570,7 @@ func bitxor(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2249:
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
 	var node uintptr = bitand(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-	for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9486) != 0 {
+	for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9523) != 0 {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 		node = new_binary(tls, ND_BITXOR, node, bitand(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 	}
@@ -2585,7 +2585,7 @@ func bitand(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2260:
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
 	var node uintptr = equality(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-	for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9488) != 0 {
+	for equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9525) != 0 {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 		node = new_binary(tls, ND_BITAND, node, equality(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 	}
@@ -2604,12 +2604,12 @@ func equality(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:227
 	for {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9490) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9527) != 0 {
 			node = new_binary(tls, ND_EQ, node, relational(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9493) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9530) != 0 {
 			node = new_binary(tls, ND_NE, node, relational(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 			continue
 		}
@@ -2631,22 +2631,22 @@ func relational(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2
 	for {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9496) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9533) != 0 {
 			node = new_binary(tls, ND_LT, node, shift(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9498) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9535) != 0 {
 			node = new_binary(tls, ND_LE, node, shift(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9501) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9538) != 0 {
 			node = new_binary(tls, ND_LT, shift(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), node, start)
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9503) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9540) != 0 {
 			node = new_binary(tls, ND_LE, shift(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), node, start)
 			continue
 		}
@@ -2668,12 +2668,12 @@ func shift(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2325:1
 	for {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9506) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9543) != 0 {
 			node = new_binary(tls, ND_SHL, node, add(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9509) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9546) != 0 {
 			node = new_binary(tls, ND_SHR, node, add(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 			continue
 		}
@@ -2699,7 +2699,7 @@ func new_add(tls *libc.TLS, lhs uintptr, rhs uintptr, tok uintptr) uintptr { /* 
 	}
 
 	if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(lhs)).ty)).base != 0 && (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(rhs)).ty)).base != 0 {
-		error_tok(tls, tok, ts+9512, 0)
+		error_tok(tls, tok, ts+9549, 0)
 	}
 
 	// Canonicalize `num + ptr` to `ptr + num`.
@@ -2755,7 +2755,7 @@ func new_sub(tls *libc.TLS, lhs uintptr, rhs uintptr, tok uintptr) uintptr { /* 
 		return new_binary(tls, ND_DIV, node, new_num(tls, int64((*Type)(unsafe.Pointer((*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(lhs)).ty)).base)).size), tok), tok)
 	}
 
-	error_tok(tls, tok, ts+9512, 0)
+	error_tok(tls, tok, ts+9549, 0)
 	return uintptr(0)
 }
 
@@ -2770,12 +2770,12 @@ func add(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2418:13:
 	for {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9529) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9566) != 0 {
 			node = new_add(tls, node, mul(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+7420) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+7457) != 0 {
 			node = new_sub(tls, node, mul(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 			continue
 		}
@@ -2797,7 +2797,7 @@ func mul(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2440:13:
 	for {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8833) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8870) != 0 {
 			node = new_binary(tls, ND_MUL, node, cast1(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 			continue
 		}
@@ -2807,7 +2807,7 @@ func mul(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2440:13:
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9531) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9568) != 0 {
 			node = new_binary(tls, ND_MOD, node, cast1(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next), start)
 			continue
 		}
@@ -2824,13 +2824,13 @@ func cast1(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2467:1
 	defer tls.Free(8)
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8666) != 0 && is_typename(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8703) != 0 && is_typename(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next) != 0 {
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 		var ty uintptr = typename(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 
 		// compound literal
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8837) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8874) != 0 {
 			return unary(tls, rest, start)
 		}
 
@@ -2849,24 +2849,24 @@ func cast1(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2467:1
 //	| "&&" ident
 //	| postfix
 func unary(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2490:13: */
-	if equal(tls, tok, ts+9529) != 0 {
+	if equal(tls, tok, ts+9566) != 0 {
 		return cast1(tls, rest, (*Token)(unsafe.Pointer(tok)).next)
 	}
 
-	if equal(tls, tok, ts+7420) != 0 {
+	if equal(tls, tok, ts+7457) != 0 {
 		return new_unary(tls, ND_NEG, cast1(tls, rest, (*Token)(unsafe.Pointer(tok)).next), tok)
 	}
 
-	if equal(tls, tok, ts+9488) != 0 {
+	if equal(tls, tok, ts+9525) != 0 {
 		var lhs uintptr = cast1(tls, rest, (*Token)(unsafe.Pointer(tok)).next)
 		add_type(tls, lhs)
 		if (*Node)(unsafe.Pointer(lhs)).kind == ND_MEMBER && (*Member)(unsafe.Pointer((*Node)(unsafe.Pointer(lhs)).member)).is_bitfield != 0 {
-			error_tok(tls, tok, ts+9533, 0)
+			error_tok(tls, tok, ts+9570, 0)
 		}
 		return new_unary(tls, ND_ADDR, lhs, tok)
 	}
 
-	if equal(tls, tok, ts+8833) != 0 {
+	if equal(tls, tok, ts+8870) != 0 {
 		// [https://www.sigbus.info/n1570#6.5.3.2p4] This is an oddity
 		// in the C spec, but dereferencing a function shouldn't do
 		// anything. If foo is a function, `*foo`, `**foo` or `*****foo`
@@ -2879,26 +2879,26 @@ func unary(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2490:1
 		return new_unary(tls, ND_DEREF, node, tok)
 	}
 
-	if equal(tls, tok, ts+9565) != 0 {
+	if equal(tls, tok, ts+9602) != 0 {
 		return new_unary(tls, ND_NOT, cast1(tls, rest, (*Token)(unsafe.Pointer(tok)).next), tok)
 	}
 
-	if equal(tls, tok, ts+9567) != 0 {
+	if equal(tls, tok, ts+9604) != 0 {
 		return new_unary(tls, ND_BITNOT, cast1(tls, rest, (*Token)(unsafe.Pointer(tok)).next), tok)
 	}
 
 	// Read ++i as i+=1
-	if equal(tls, tok, ts+9569) != 0 {
+	if equal(tls, tok, ts+9606) != 0 {
 		return to_assign(tls, new_add(tls, unary(tls, rest, (*Token)(unsafe.Pointer(tok)).next), new_num(tls, int64(1), tok), tok))
 	}
 
 	// Read --i as i-=1
-	if equal(tls, tok, ts+9572) != 0 {
+	if equal(tls, tok, ts+9609) != 0 {
 		return to_assign(tls, new_sub(tls, unary(tls, rest, (*Token)(unsafe.Pointer(tok)).next), new_num(tls, int64(1), tok), tok))
 	}
 
 	// [GNU] labels-as-values
-	if equal(tls, tok, ts+9481) != 0 {
+	if equal(tls, tok, ts+9518) != 0 {
 		var node uintptr = new_node(tls, ND_LABEL_VAL, tok)
 		(*Node)(unsafe.Pointer(node)).label = get_ident(tls, (*Token)(unsafe.Pointer(tok)).next)
 		(*Node)(unsafe.Pointer(node)).goto_next = gotos
@@ -2920,13 +2920,13 @@ func struct_members(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr) { /* p
 	var cur uintptr = bp /* &head */
 	var idx int32 = 0
 
-	for !(equal(tls, *(*uintptr)(unsafe.Pointer(bp + 56)), ts+8835) != 0) {
+	for !(equal(tls, *(*uintptr)(unsafe.Pointer(bp + 56)), ts+8872) != 0) {
 		*(*VarAttr)(unsafe.Pointer(bp + 64 /* attr */)) = VarAttr{}
 		var basety uintptr = declspec(tls, bp+56, *(*uintptr)(unsafe.Pointer(bp + 56 /* tok */)), bp+64)
 		var first uint8 = uint8(1)
 
 		// Anonymous struct member
-		if ((*Type)(unsafe.Pointer(basety)).kind == TY_STRUCT || (*Type)(unsafe.Pointer(basety)).kind == TY_UNION) && consume(tls, bp+56, *(*uintptr)(unsafe.Pointer(bp + 56)), ts+8876) != 0 {
+		if ((*Type)(unsafe.Pointer(basety)).kind == TY_STRUCT || (*Type)(unsafe.Pointer(basety)).kind == TY_UNION) && consume(tls, bp+56, *(*uintptr)(unsafe.Pointer(bp + 56)), ts+8913) != 0 {
 			var mem uintptr = libc.Xcalloc(tls, uint64(1), uint64(unsafe.Sizeof(Member{})))
 			(*Member)(unsafe.Pointer(mem)).ty = basety
 			(*Member)(unsafe.Pointer(mem)).idx = libc.PostIncInt32(&idx, 1)
@@ -2941,9 +2941,9 @@ func struct_members(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr) { /* p
 		}
 
 		// Regular struct members
-		for !(consume(tls, bp+56, *(*uintptr)(unsafe.Pointer(bp + 56)), ts+8876) != 0) {
+		for !(consume(tls, bp+56, *(*uintptr)(unsafe.Pointer(bp + 56)), ts+8913) != 0) {
 			if !(first != 0) {
-				*(*uintptr)(unsafe.Pointer(bp + 56 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 56 /* tok */)), ts+8331)
+				*(*uintptr)(unsafe.Pointer(bp + 56 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 56 /* tok */)), ts+8368)
 			}
 			first = uint8(0)
 
@@ -2958,7 +2958,7 @@ func struct_members(tls *libc.TLS, rest uintptr, tok uintptr, ty uintptr) { /* p
 				return (*Type)(unsafe.Pointer((*Member)(unsafe.Pointer(mem)).ty)).align
 			}()
 
-			if consume(tls, bp+56, *(*uintptr)(unsafe.Pointer(bp + 56)), ts+9308) != 0 {
+			if consume(tls, bp+56, *(*uintptr)(unsafe.Pointer(bp + 56)), ts+9345) != 0 {
 				(*Member)(unsafe.Pointer(mem)).is_bitfield = uint8(1)
 				(*Member)(unsafe.Pointer(mem)).bit_width = int32(const_expr(tls, bp+56, *(*uintptr)(unsafe.Pointer(bp + 56 /* tok */))))
 			}
@@ -2985,34 +2985,34 @@ func attribute_list(tls *libc.TLS, tok uintptr, ty uintptr) uintptr { /* parse.c
 	defer tls.Free(8)
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
-	for consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+9575) != 0 {
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8666)
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8666)
+	for consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+9612) != 0 {
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8703)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8703)
 
 		var first uint8 = uint8(1)
 
-		for !(consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+8668) != 0) {
+		for !(consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+8705) != 0) {
 			if !(first != 0) {
-				*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+				*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 			}
 			first = uint8(0)
 
-			if consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+9589) != 0 {
+			if consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+9626) != 0 {
 				(*Type)(unsafe.Pointer(ty)).is_packed = uint8(1)
 				continue
 			}
 
-			if consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+9596) != 0 {
-				*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8666)
+			if consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+9633) != 0 {
+				*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8703)
 				(*Type)(unsafe.Pointer(ty)).align = int32(const_expr(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */))))
-				*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+				*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 				continue
 			}
 
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9604, 0)
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9641, 0)
 		}
 
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 	}
 
 	return *(*uintptr)(unsafe.Pointer(bp /* tok */))
@@ -3034,7 +3034,7 @@ func struct_union_decl(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* pa
 		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next
 	}
 
-	if tag != 0 && !(equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8837) != 0) {
+	if tag != 0 && !(equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8874) != 0) {
 		*(*uintptr)(unsafe.Pointer(rest)) = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 
 		var ty2 uintptr = find_tag(tls, tag)
@@ -3047,7 +3047,7 @@ func struct_union_decl(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* pa
 		return ty
 	}
 
-	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8837)
+	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8874)
 
 	// Construct a struct object.
 	struct_members(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ty)
@@ -3179,7 +3179,7 @@ func get_struct_member(tls *libc.TLS, ty uintptr, tok uintptr) uintptr { /* pars
 func struct_ref(tls *libc.TLS, node uintptr, tok uintptr) uintptr { /* parse.c:2770:13: */
 	add_type(tls, node)
 	if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).kind != TY_STRUCT && (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).kind != TY_UNION {
-		error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9622, 0)
+		error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+9659, 0)
 	}
 
 	var ty uintptr = (*Node)(unsafe.Pointer(node)).ty
@@ -3187,7 +3187,7 @@ func struct_ref(tls *libc.TLS, node uintptr, tok uintptr) uintptr { /* parse.c:2
 	for {
 		var mem uintptr = get_struct_member(tls, ty, tok)
 		if !(mem != 0) {
-			error_tok(tls, tok, ts+9647, 0)
+			error_tok(tls, tok, ts+9684, 0)
 		}
 		node = new_unary(tls, ND_MEMBER, node, tok)
 		(*Node)(unsafe.Pointer(node)).member = mem
@@ -3224,11 +3224,11 @@ func postfix(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2808
 	defer tls.Free(8)
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8666) != 0 && is_typename(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8703) != 0 && is_typename(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next) != 0 {
 		// Compound literal
 		var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 		var ty uintptr = typename(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 
 		if (*Scope)(unsafe.Pointer(scope)).next == uintptr(0) {
 			var var1 uintptr = new_anon_gvar(tls, ty)
@@ -3236,7 +3236,7 @@ func postfix(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2808
 			return new_var_node(tls, var1, start)
 		}
 
-		var var1 uintptr = new_lvar(tls, ts+8875, ty)
+		var var1 uintptr = new_lvar(tls, ts+8912, ty)
 		var lhs uintptr = lvar_initializer(tls, rest, *(*uintptr)(unsafe.Pointer(bp /* tok */)), var1)
 		var rhs uintptr = new_var_node(tls, var1, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		return new_binary(tls, ND_COMMA, lhs, rhs, start)
@@ -3245,16 +3245,16 @@ func postfix(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2808
 	var node uintptr = primary(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 
 	for {
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8666) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8703) != 0 {
 			node = funcall(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, node)
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8831) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8868) != 0 {
 			// x[y] is short for *(x+y)
 			var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 			var idx uintptr = expr(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
-			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8829)
+			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8866)
 			node = new_unary(tls, ND_DEREF, new_add(tls, node, idx, start), start)
 			continue
 		}
@@ -3265,7 +3265,7 @@ func postfix(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2808
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9662) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9699) != 0 {
 			// x->y is short for (*x).y
 			node = new_unary(tls, ND_DEREF, node, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 			node = struct_ref(tls, node, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
@@ -3273,13 +3273,13 @@ func postfix(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2808
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9569) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9606) != 0 {
 			node = new_inc_dec(tls, node, *(*uintptr)(unsafe.Pointer(bp /* tok */)), 1)
 			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next
 			continue
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9572) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9609) != 0 {
 			node = new_inc_dec(tls, node, *(*uintptr)(unsafe.Pointer(bp /* tok */)), -1)
 			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next
 			continue
@@ -3300,7 +3300,7 @@ func funcall(tls *libc.TLS, rest uintptr, tok uintptr, fn uintptr) uintptr { /* 
 	add_type(tls, fn)
 
 	if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(fn)).ty)).kind != TY_FUNC && ((*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(fn)).ty)).kind != TY_PTR || (*Type)(unsafe.Pointer((*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(fn)).ty)).base)).kind != TY_FUNC) {
-		error_tok(tls, (*Node)(unsafe.Pointer(fn)).tok, ts+9665, 0)
+		error_tok(tls, (*Node)(unsafe.Pointer(fn)).tok, ts+9702, 0)
 	}
 
 	var ty uintptr
@@ -3314,16 +3314,16 @@ func funcall(tls *libc.TLS, rest uintptr, tok uintptr, fn uintptr) uintptr { /* 
 	*(*Node)(unsafe.Pointer(bp /* head */)) = Node{}
 	var cur uintptr = bp /* &head */
 
-	for !(equal(tls, *(*uintptr)(unsafe.Pointer(bp + 280)), ts+8668) != 0) {
+	for !(equal(tls, *(*uintptr)(unsafe.Pointer(bp + 280)), ts+8705) != 0) {
 		if cur != bp {
-			*(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+8331)
+			*(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+8368)
 		}
 
 		var arg uintptr = assign(tls, bp+280, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)))
 		add_type(tls, arg)
 
 		if !(param_ty != 0) && !(int32((*Type)(unsafe.Pointer(ty)).is_variadic) != 0) {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+9680, 0)
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+9717, 0)
 		}
 
 		if param_ty != 0 {
@@ -3341,10 +3341,10 @@ func funcall(tls *libc.TLS, rest uintptr, tok uintptr, fn uintptr) uintptr { /* 
 	}
 
 	if param_ty != 0 {
-		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+9699, 0)
+		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+9736, 0)
 	}
 
-	*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+8668)
+	*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)), ts+8705)
 
 	var node uintptr = new_unary(tls, ND_FUNCALL, fn, *(*uintptr)(unsafe.Pointer(bp + 280 /* tok */)))
 	(*Node)(unsafe.Pointer(node)).func_ty = ty
@@ -3354,7 +3354,7 @@ func funcall(tls *libc.TLS, rest uintptr, tok uintptr, fn uintptr) uintptr { /* 
 	// If a function returns a struct, it is caller's responsibility
 	// to allocate a space for the return value.
 	if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).kind == TY_STRUCT || (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).kind == TY_UNION {
-		(*Node)(unsafe.Pointer(node)).ret_buffer = new_lvar(tls, ts+8875, (*Node)(unsafe.Pointer(node)).ty)
+		(*Node)(unsafe.Pointer(node)).ret_buffer = new_lvar(tls, ts+8912, (*Node)(unsafe.Pointer(node)).ty)
 	}
 	return node
 }
@@ -3370,7 +3370,7 @@ func generic_selection(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* pa
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
 	var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
-	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8666)
+	*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8703)
 
 	var ctrl uintptr = assign(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 	add_type(tls, ctrl)
@@ -3384,11 +3384,11 @@ func generic_selection(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* pa
 
 	var ret uintptr = uintptr(0)
 
-	for !(consume(tls, rest, *(*uintptr)(unsafe.Pointer(bp)), ts+8668) != 0) {
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+	for !(consume(tls, rest, *(*uintptr)(unsafe.Pointer(bp)), ts+8705) != 0) {
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9310) != 0 {
-			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+9308)
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9347) != 0 {
+			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+9345)
 			var node uintptr = assign(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 			if !(ret != 0) {
 				ret = node
@@ -3397,7 +3397,7 @@ func generic_selection(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* pa
 		}
 
 		var t2 uintptr = typename(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9308)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9345)
 		var node uintptr = assign(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		if is_compatible(tls, t1, t2) != 0 {
 			ret = node
@@ -3406,7 +3406,7 @@ func generic_selection(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* pa
 
 	if !(ret != 0) {
 		error_tok(tls, start,
-			ts+9717, 0)
+			ts+9754, 0)
 	}
 	return ret
 }
@@ -3431,23 +3431,23 @@ func primary(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2984
 
 	var start uintptr = *(*uintptr)(unsafe.Pointer(bp /* tok */))
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8666) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8837) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8703) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8874) != 0 {
 		// This is a GNU statement expresssion.
 		var node uintptr = new_node(tls, ND_STMT_EXPR, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 		(*Node)(unsafe.Pointer(node)).body = (*Node)(unsafe.Pointer(compound_stmt(tls, bp, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)).next))).body
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8666) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8703) != 0 {
 		var node uintptr = expr(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9794) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8666) != 0 && is_typename(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next)).next) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9831) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8703) != 0 && is_typename(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next)).next) != 0 {
 		var ty uintptr = typename(tls, bp, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)).next)
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 
 		if (*Type)(unsafe.Pointer(ty)).kind == TY_VLA {
 			if (*Type)(unsafe.Pointer(ty)).vla_size != 0 {
@@ -3462,7 +3462,7 @@ func primary(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2984
 		return new_ulong(tls, int64((*Type)(unsafe.Pointer(ty)).size), start)
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9794) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9831) != 0 {
 		var node uintptr = unary(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
 		add_type(tls, node)
 		if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).kind == TY_VLA {
@@ -3471,35 +3471,35 @@ func primary(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2984
 		return new_ulong(tls, int64((*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).size), *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9801) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8666) != 0 && is_typename(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next)).next) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9838) != 0 && equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8703) != 0 && is_typename(tls, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next)).next) != 0 {
 		var ty uintptr = typename(tls, bp, (*Token)(unsafe.Pointer((*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)).next)
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 		return new_ulong(tls, int64((*Type)(unsafe.Pointer(ty)).align), *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9801) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9838) != 0 {
 		var node uintptr = unary(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
 		add_type(tls, node)
 		return new_ulong(tls, int64((*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).align), *(*uintptr)(unsafe.Pointer(bp /* tok */)))
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9810) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9847) != 0 {
 		return generic_selection(tls, rest, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next)
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9819) != 0 {
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8666)
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9856) != 0 {
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8703)
 		var t1 uintptr = typename(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 		var t2 uintptr = typename(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 		return new_num(tls, int64(is_compatible(tls, t1, t2)), start)
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9848) != 0 {
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8666)
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9885) != 0 {
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8703)
 		var ty uintptr = typename(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 
 		if is_integer(tls, ty) != 0 || (*Type)(unsafe.Pointer(ty)).kind == TY_PTR {
 			return new_num(tls, int64(0), start)
@@ -3510,25 +3510,25 @@ func primary(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2984
 		return new_num(tls, int64(2), start)
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9868) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9905) != 0 {
 		var node uintptr = new_node(tls, ND_CAS, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8666)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8703)
 		(*Node)(unsafe.Pointer(node)).cas_addr = assign(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 		(*Node)(unsafe.Pointer(node)).cas_old = assign(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 		(*Node)(unsafe.Pointer(node)).cas_new = assign(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 		return node
 	}
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9895) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+9932) != 0 {
 		var node uintptr = new_node(tls, ND_EXCH, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8666)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, ts+8703)
 		(*Node)(unsafe.Pointer(node)).lhs = assign(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+		*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 		(*Node)(unsafe.Pointer(node)).rhs = assign(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)))
-		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8668)
+		*(*uintptr)(unsafe.Pointer(rest)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8705)
 		return node
 	}
 
@@ -3555,10 +3555,10 @@ func primary(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2984
 			}
 		}
 
-		if equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8666) != 0 {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9921, 0)
+		if equal(tls, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).next, ts+8703) != 0 {
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9958, 0)
 		}
-		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9956, 0)
+		error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9993, 0)
 	}
 
 	if (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp)))).kind == TK_STR {
@@ -3581,7 +3581,7 @@ func primary(tls *libc.TLS, rest uintptr, tok uintptr) uintptr { /* parse.c:2984
 		return node
 	}
 
-	error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+9975, 0)
+	error_tok(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+10012, 0)
 	return uintptr(0)
 }
 
@@ -3592,15 +3592,15 @@ func parse_typedef(tls *libc.TLS, tok uintptr, basety uintptr) uintptr { /* pars
 
 	var first uint8 = uint8(1)
 
-	for !(consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+8876) != 0) {
+	for !(consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+8913) != 0) {
 		if !(first != 0) {
-			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 		}
 		first = uint8(0)
 
 		var ty uintptr = declarator(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)), basety)
 		if !(int32((*Type)(unsafe.Pointer(ty)).name) != 0) {
-			error_tok(tls, (*Type)(unsafe.Pointer(ty)).name_pos, ts+9998, 0)
+			error_tok(tls, (*Type)(unsafe.Pointer(ty)).name_pos, ts+10035, 0)
 		}
 		(*VarScope)(unsafe.Pointer(push_scope(tls, get_ident(tls, (*Type)(unsafe.Pointer(ty)).name)))).type_def = ty
 	}
@@ -3611,7 +3611,7 @@ func create_param_lvars(tls *libc.TLS, param uintptr) { /* parse.c:3147:13: */
 	if param != 0 {
 		create_param_lvars(tls, (*Type)(unsafe.Pointer(param)).next)
 		if !(int32((*Type)(unsafe.Pointer(param)).name) != 0) {
-			error_tok(tls, (*Type)(unsafe.Pointer(param)).name_pos, ts+10019, 0)
+			error_tok(tls, (*Type)(unsafe.Pointer(param)).name_pos, ts+10056, 0)
 		}
 		new_lvar(tls, get_ident(tls, (*Type)(unsafe.Pointer(param)).name), param)
 	}
@@ -3637,7 +3637,7 @@ func resolve_goto_labels(tls *libc.TLS) { /* parse.c:3161:13: */
 			}
 
 			if (*Node)(unsafe.Pointer(x)).unique_label == uintptr(0) {
-				error_tok(tls, (*Token)(unsafe.Pointer((*Node)(unsafe.Pointer(x)).tok)).next, ts+10042, 0)
+				error_tok(tls, (*Token)(unsafe.Pointer((*Node)(unsafe.Pointer(x)).tok)).next, ts+10079, 0)
 			}
 		}
 	}
@@ -3682,7 +3682,7 @@ func function(tls *libc.TLS, tok uintptr, basety uintptr, attr uintptr) uintptr 
 
 	var ty uintptr = declarator(tls, bp+8, *(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)), basety)
 	if !(int32((*Type)(unsafe.Pointer(ty)).name) != 0) {
-		error_tok(tls, (*Type)(unsafe.Pointer(ty)).name_pos, ts+10066, 0)
+		error_tok(tls, (*Type)(unsafe.Pointer(ty)).name_pos, ts+10103, 0)
 	}
 	var name_str uintptr = get_ident(tls, (*Type)(unsafe.Pointer(ty)).name)
 
@@ -3690,26 +3690,26 @@ func function(tls *libc.TLS, tok uintptr, basety uintptr, attr uintptr) uintptr 
 	if fn != 0 {
 		// Redeclaration
 		if !(int32((*Obj)(unsafe.Pointer(fn)).is_function) != 0) {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)), ts+10088, 0)
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)), ts+10125, 0)
 		}
-		if (*Obj)(unsafe.Pointer(fn)).is_definition != 0 && equal(tls, *(*uintptr)(unsafe.Pointer(bp + 8)), ts+8837) != 0 {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)), ts+10129, libc.VaList(bp, name_str))
+		if (*Obj)(unsafe.Pointer(fn)).is_definition != 0 && equal(tls, *(*uintptr)(unsafe.Pointer(bp + 8)), ts+8874) != 0 {
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)), ts+10166, libc.VaList(bp, name_str))
 		}
 		if !(int32((*Obj)(unsafe.Pointer(fn)).is_static) != 0) && (*VarAttr)(unsafe.Pointer(attr)).is_static != 0 {
-			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)), ts+10148, 0)
+			error_tok(tls, *(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)), ts+10185, 0)
 		}
-		(*Obj)(unsafe.Pointer(fn)).is_definition = uint8(libc.Bool32((*Obj)(unsafe.Pointer(fn)).is_definition != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 8)), ts+8837) != 0))
+		(*Obj)(unsafe.Pointer(fn)).is_definition = uint8(libc.Bool32((*Obj)(unsafe.Pointer(fn)).is_definition != 0 || equal(tls, *(*uintptr)(unsafe.Pointer(bp + 8)), ts+8874) != 0))
 	} else {
 		fn = new_gvar(tls, name_str, ty)
 		(*Obj)(unsafe.Pointer(fn)).is_function = uint8(1)
-		(*Obj)(unsafe.Pointer(fn)).is_definition = equal(tls, *(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)), ts+8837)
+		(*Obj)(unsafe.Pointer(fn)).is_definition = equal(tls, *(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)), ts+8874)
 		(*Obj)(unsafe.Pointer(fn)).is_static = uint8(libc.Bool32((*VarAttr)(unsafe.Pointer(attr)).is_static != 0 || (*VarAttr)(unsafe.Pointer(attr)).is_inline != 0 && !(int32((*VarAttr)(unsafe.Pointer(attr)).is_extern) != 0)))
 		(*Obj)(unsafe.Pointer(fn)).is_inline = (*VarAttr)(unsafe.Pointer(attr)).is_inline
 	}
 
 	(*Obj)(unsafe.Pointer(fn)).is_root = libc.BoolUint8(!((*Obj)(unsafe.Pointer(fn)).is_static != 0 && (*Obj)(unsafe.Pointer(fn)).is_inline != 0))
 
-	if consume(tls, bp+8, *(*uintptr)(unsafe.Pointer(bp + 8)), ts+8876) != 0 {
+	if consume(tls, bp+8, *(*uintptr)(unsafe.Pointer(bp + 8)), ts+8913) != 0 {
 		return *(*uintptr)(unsafe.Pointer(bp + 8 /* tok */))
 	}
 
@@ -3722,25 +3722,25 @@ func function(tls *libc.TLS, tok uintptr, basety uintptr, attr uintptr) uintptr 
 	// as the hidden first parameter.
 	var rty uintptr = (*Type)(unsafe.Pointer(ty)).return_ty
 	if ((*Type)(unsafe.Pointer(rty)).kind == TY_STRUCT || (*Type)(unsafe.Pointer(rty)).kind == TY_UNION) && (*Type)(unsafe.Pointer(rty)).size > 16 {
-		new_lvar(tls, ts+8875, pointer_to(tls, rty))
+		new_lvar(tls, ts+8912, pointer_to(tls, rty))
 	}
 
 	(*Obj)(unsafe.Pointer(fn)).params = locals
 
 	if (*Type)(unsafe.Pointer(ty)).is_variadic != 0 {
-		(*Obj)(unsafe.Pointer(fn)).va_area = new_lvar(tls, ts+10200, array_of(tls, ty_char, 136))
+		(*Obj)(unsafe.Pointer(fn)).va_area = new_lvar(tls, ts+10237, array_of(tls, ty_char, 136))
 	}
-	(*Obj)(unsafe.Pointer(fn)).alloca_bottom = new_lvar(tls, ts+10212, pointer_to(tls, ty_char))
+	(*Obj)(unsafe.Pointer(fn)).alloca_bottom = new_lvar(tls, ts+10249, pointer_to(tls, ty_char))
 
-	*(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)), ts+8837)
+	*(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)), ts+8874)
 
 	// [https://www.sigbus.info/n1570#6.4.2.2p1] "__func__" is
 	// automatically defined as a local variable containing the
 	// current function name.
-	(*VarScope)(unsafe.Pointer(push_scope(tls, ts+10228))).__var = new_string_literal(tls, (*Obj)(unsafe.Pointer(fn)).name, array_of(tls, ty_char, int32(libc.Xstrlen(tls, (*Obj)(unsafe.Pointer(fn)).name)+uint64(1))))
+	(*VarScope)(unsafe.Pointer(push_scope(tls, ts+10265))).__var = new_string_literal(tls, (*Obj)(unsafe.Pointer(fn)).name, array_of(tls, ty_char, int32(libc.Xstrlen(tls, (*Obj)(unsafe.Pointer(fn)).name)+uint64(1))))
 
 	// [GNU] __FUNCTION__ is yet another name of __func__.
-	(*VarScope)(unsafe.Pointer(push_scope(tls, ts+10237))).__var = new_string_literal(tls, (*Obj)(unsafe.Pointer(fn)).name, array_of(tls, ty_char, int32(libc.Xstrlen(tls, (*Obj)(unsafe.Pointer(fn)).name)+uint64(1))))
+	(*VarScope)(unsafe.Pointer(push_scope(tls, ts+10274))).__var = new_string_literal(tls, (*Obj)(unsafe.Pointer(fn)).name, array_of(tls, ty_char, int32(libc.Xstrlen(tls, (*Obj)(unsafe.Pointer(fn)).name)+uint64(1))))
 
 	(*Obj)(unsafe.Pointer(fn)).body = compound_stmt(tls, bp+8, *(*uintptr)(unsafe.Pointer(bp + 8 /* tok */)))
 	(*Obj)(unsafe.Pointer(fn)).locals = locals
@@ -3756,15 +3756,15 @@ func global_variable(tls *libc.TLS, tok uintptr, basety uintptr, attr uintptr) u
 
 	var first uint8 = uint8(1)
 
-	for !(consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+8876) != 0) {
+	for !(consume(tls, bp, *(*uintptr)(unsafe.Pointer(bp)), ts+8913) != 0) {
 		if !(first != 0) {
-			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8331)
+			*(*uintptr)(unsafe.Pointer(bp /* tok */)) = skip(tls, *(*uintptr)(unsafe.Pointer(bp /* tok */)), ts+8368)
 		}
 		first = uint8(0)
 
 		var ty uintptr = declarator(tls, bp, *(*uintptr)(unsafe.Pointer(bp /* tok */)), basety)
 		if !(int32((*Type)(unsafe.Pointer(ty)).name) != 0) {
-			error_tok(tls, (*Type)(unsafe.Pointer(ty)).name_pos, ts+8901, 0)
+			error_tok(tls, (*Type)(unsafe.Pointer(ty)).name_pos, ts+8938, 0)
 		}
 
 		var var1 uintptr = new_gvar(tls, get_ident(tls, (*Type)(unsafe.Pointer(ty)).name), ty)
@@ -3775,7 +3775,7 @@ func global_variable(tls *libc.TLS, tok uintptr, basety uintptr, attr uintptr) u
 			(*Obj)(unsafe.Pointer(var1)).align = (*VarAttr)(unsafe.Pointer(attr)).align
 		}
 
-		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8873) != 0 {
+		if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8910) != 0 {
 			gvar_initializer(tls, bp, (*Token)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(bp /* tok */)))).next, var1)
 		} else if !(int32((*VarAttr)(unsafe.Pointer(attr)).is_extern) != 0) && !(int32((*VarAttr)(unsafe.Pointer(attr)).is_tls) != 0) {
 			(*Obj)(unsafe.Pointer(var1)).is_tentative = uint8(1)
@@ -3791,7 +3791,7 @@ func is_function(tls *libc.TLS, tok uintptr) uint8 { /* parse.c:3294:13: */
 	defer tls.Free(128)
 	*(*uintptr)(unsafe.Pointer(bp)) = tok
 
-	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8876) != 0 {
+	if equal(tls, *(*uintptr)(unsafe.Pointer(bp)), ts+8913) != 0 {
 		return uint8(0)
 	}
 
