@@ -649,9 +649,9 @@ static char *read_file(char *path) {
       return NULL;
   }
 
-  char *buf;
-  size_t buflen;
-  FILE *out = open_memstream(&buf, &buflen);
+  char *buf = NULL;
+  size_t len = 0;
+  size_t cap = 0;
 
   // Read the entire file.
   for (;;) {
@@ -659,18 +659,26 @@ static char *read_file(char *path) {
     int n = fread(buf2, 1, sizeof(buf2), fp);
     if (n == 0)
       break;
-    fwrite(buf2, 1, n, out);
+    if (len + n + 2 > cap) {
+      cap = MAX(cap * 2, len + n + 2);
+      buf = realloc(buf, cap);
+    }
+    memcpy(buf + len, buf2, n);
+    len += n;
   }
 
   if (fp != stdin)
     fclose(fp);
 
   // Make sure that the last line is properly terminated with '\n'.
-  fflush(out);
-  if (buflen == 0 || buf[buflen - 1] != '\n')
-    fputc('\n', out);
-  fputc('\0', out);
-  fclose(out);
+  if (len == 0 || buf[len - 1] != '\n') {
+    if (len + 2 > cap) {
+      cap = MAX(cap * 2, len + 2);
+      buf = realloc(buf, cap);
+    }
+    buf[len++] = '\n';
+  }
+  buf[len] = '\0';
   return buf;
 }
 

@@ -1,0 +1,2339 @@
+package main
+
+import (
+	"modernc.org/libc"
+	"unsafe"
+)
+
+func println(tls *libc.TLS, fmt uintptr, va uintptr) { /* codegen.c:18:13: */
+	var ap va_list
+	_ = ap
+	ap = va
+	libc.Xvfprintf(tls, output_file, fmt, ap)
+	_ = ap
+	libc.Xfprintf(tls, output_file, ts+112, 0)
+}
+
+func count(tls *libc.TLS) int32 { /* codegen.c:26:12: */
+	return libc.PostIncInt32(&i, 1)
+}
+
+var i int32 = 1 /* codegen.c:27:14 */
+
+func push(tls *libc.TLS) { /* codegen.c:31:13: */
+	println(tls, ts+114, 0)
+	depth++
+}
+
+func pop(tls *libc.TLS, arg uintptr) { /* codegen.c:36:13: */
+	bp := tls.Alloc(8)
+	defer tls.Free(8)
+
+	println(tls, ts+127, libc.VaList(bp, arg))
+	depth--
+}
+
+func pushf(tls *libc.TLS) { /* codegen.c:41:13: */
+	println(tls, ts+136, 0)
+	println(tls, ts+152, 0)
+	depth++
+}
+
+func popf(tls *libc.TLS, reg int32) { /* codegen.c:47:13: */
+	bp := tls.Alloc(8)
+	defer tls.Free(8)
+
+	println(tls, ts+176, libc.VaList(bp, reg))
+	println(tls, ts+201, 0)
+	depth--
+}
+
+// Round up `n` to the nearest multiple of `align`. For instance,
+// align_to(5, 8) returns 8 and align_to(11, 8) returns 16.
+func align_to(tls *libc.TLS, n int32, align int32) int32 { /* codegen.c:55:5: */
+	return (n + align - 1) / align * align
+}
+
+func reg_dx(tls *libc.TLS, sz int32) uintptr { /* codegen.c:59:13: */
+	bp := tls.Alloc(16)
+	defer tls.Free(16)
+
+	switch sz {
+	case 1:
+		return ts + 10 /* "%dl" */
+	case 2:
+		return ts + 36 /* "%dx" */
+	case 4:
+		return ts + 64 /* "%edx" */
+	case 8:
+		return ts + 94 /* "%rdx" */
+	}
+	error(tls, ts+217, libc.VaList(bp, ts+241, 66))
+	return uintptr(0)
+}
+
+func reg_ax(tls *libc.TLS, sz int32) uintptr { /* codegen.c:69:13: */
+	bp := tls.Alloc(16)
+	defer tls.Free(16)
+
+	switch sz {
+	case 1:
+		return ts + 251 /* "%al" */
+	case 2:
+		return ts + 255 /* "%ax" */
+	case 4:
+		return ts + 259 /* "%eax" */
+	case 8:
+		return ts + 264 /* "%rax" */
+	}
+	error(tls, ts+217, libc.VaList(bp, ts+241, 76))
+	return uintptr(0)
+}
+
+// Compute the absolute address of a given node.
+// It's an error if a given node does not reside in memory.
+func gen_addr(tls *libc.TLS, node uintptr) { /* codegen.c:81:13: */
+	bp := tls.Alloc(80)
+	defer tls.Free(80)
+
+	switch (*Node)(unsafe.Pointer(node)).kind {
+	case ND_VAR:
+		// Variable-length array, which is always local.
+		if (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).ty)).kind == TY_VLA {
+			println(tls, ts+269, libc.VaList(bp, (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).offset))
+			return
+		}
+
+		// Local variable
+		if (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).is_local != 0 {
+			println(tls, ts+292, libc.VaList(bp+8, (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).offset))
+			return
+		}
+
+		if opt_fpic != 0 {
+			// Thread-local variable
+			if (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).is_tls != 0 {
+				println(tls, ts+315, libc.VaList(bp+16, (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).name))
+				println(tls, ts+351, 0)
+				println(tls, ts+367, 0)
+				println(tls, ts+375, 0)
+				return
+			}
+
+			// Function or global variable
+			println(tls, ts+401, libc.VaList(bp+24, (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).name))
+			return
+		}
+
+		// Thread-local variable
+		if (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).is_tls != 0 {
+			println(tls, ts+433, 0)
+			println(tls, ts+453, libc.VaList(bp+32, (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).name))
+			return
+		}
+
+		// Here, we generate an absolute address of a function or a global
+		// variable. Even though they exist at a certain address at runtime,
+		// their addresses are not known at link-time for the following
+		// two reasons.
+		//
+		//  - Address randomization: Executables are loaded to memory as a
+		//    whole but it is not known what address they are loaded to.
+		//    Therefore, at link-time, relative address in the same
+		//    exectuable (i.e. the distance between two functions in the
+		//    same executable) is known, but the absolute address is not
+		//    known.
+		//
+		//  - Dynamic linking: Dynamic shared objects (DSOs) or .so files
+		//    are loaded to memory alongside an executable at runtime and
+		//    linked by the runtime loader in memory. We know nothing
+		//    about addresses of global stuff that may be defined by DSOs
+		//    until the runtime relocation is complete.
+		//
+		// In order to deal with the former case, we use RIP-relative
+		// addressing, denoted by `(%rip)`. For the latter, we obtain an
+		// address of a stuff that may be in a shared object file from the
+		// Global Offset Table using `@GOTPCREL(%rip)` notation.
+
+		// Function
+		if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).kind == TY_FUNC {
+			if (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).is_definition != 0 {
+				println(tls, ts+476, libc.VaList(bp+40, (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).name))
+			} else {
+				println(tls, ts+401, libc.VaList(bp+48, (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).name))
+			}
+			return
+		}
+
+		// Global variable
+		println(tls, ts+476, libc.VaList(bp+56, (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).name))
+		return
+	case ND_DEREF:
+		gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+		return
+	case ND_COMMA:
+		gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+		gen_addr(tls, (*Node)(unsafe.Pointer(node)).rhs)
+		return
+	case ND_MEMBER:
+		gen_addr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+		println(tls, ts+499, libc.VaList(bp+64, (*Member)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).member)).offset))
+		return
+	case ND_FUNCALL:
+		if (*Node)(unsafe.Pointer(node)).ret_buffer != 0 {
+			gen_expr(tls, node)
+			return
+		}
+		break
+	case ND_ASSIGN:
+		fallthrough
+	case ND_COND:
+		if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).kind == TY_STRUCT || (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).kind == TY_UNION {
+			gen_expr(tls, node)
+			return
+		}
+		break
+	case ND_VLA_PTR:
+		println(tls, ts+292, libc.VaList(bp+72, (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).offset))
+		return
+	}
+
+	error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+516, 0)
+}
+
+// Load a value from where %rax is pointing to.
+func load(tls *libc.TLS, ty uintptr) { /* codegen.c:186:13: */
+	bp := tls.Alloc(16)
+	defer tls.Free(16)
+
+	switch (*Type)(unsafe.Pointer(ty)).kind {
+	case TY_ARRAY:
+		fallthrough
+	case TY_STRUCT:
+		fallthrough
+	case TY_UNION:
+		fallthrough
+	case TY_FUNC:
+		fallthrough
+	case TY_VLA:
+		// If it is an array, do not attempt to load a value to the
+		// register because in general we can't load an entire array to a
+		// register. As a result, the result of an evaluation of an array
+		// becomes not the array itself but the address of the array.
+		// This is where "array is automatically converted to a pointer to
+		// the first element of the array in C" occurs.
+		return
+	case TY_FLOAT:
+		println(tls, ts+530, 0)
+		return
+	case TY_DOUBLE:
+		println(tls, ts+554, 0)
+		return
+	case TY_LDOUBLE:
+		println(tls, ts+578, 0)
+		return
+	}
+
+	var insn uintptr
+	if (*Type)(unsafe.Pointer(ty)).is_unsigned != 0 {
+		insn = ts + 593 /* "movz" */
+	} else {
+		insn = ts + 598 /* "movs" */
+	}
+
+	// When we load a char or a short value to a register, we always
+	// extend them to the size of int, so we can assume the lower half of
+	// a register always contains a valid value. The upper half of a
+	// register for char, short and int may contain garbage. When we load
+	// a long value to a register, it simply occupies the entire register.
+	if (*Type)(unsafe.Pointer(ty)).size == 1 {
+		println(tls, ts+603, libc.VaList(bp, insn))
+	} else if (*Type)(unsafe.Pointer(ty)).size == 2 {
+		println(tls, ts+625, libc.VaList(bp+8, insn))
+	} else if (*Type)(unsafe.Pointer(ty)).size == 4 {
+		println(tls, ts+647, 0)
+	} else {
+		println(tls, ts+671, 0)
+	}
+}
+
+// Store %rax to an address that the stack top is pointing to.
+func store(tls *libc.TLS, ty uintptr) { /* codegen.c:229:13: */
+	bp := tls.Alloc(16)
+	defer tls.Free(16)
+
+	pop(tls, ts+84)
+
+	{
+		var i int32
+		switch (*Type)(unsafe.Pointer(ty)).kind {
+		case TY_STRUCT:
+			fallthrough
+		case TY_UNION:
+			{
+				i = 0
+				for ; i < (*Type)(unsafe.Pointer(ty)).size; i++ {
+					println(tls, ts+692, libc.VaList(bp, i))
+					println(tls, ts+715, libc.VaList(bp+8, i))
+				}
+			}
+			return
+		case TY_FLOAT:
+			println(tls, ts+738, 0)
+			return
+		case TY_DOUBLE:
+			println(tls, ts+762, 0)
+			return
+		case TY_LDOUBLE:
+			println(tls, ts+786, 0)
+			return
+		}
+	}
+
+	if (*Type)(unsafe.Pointer(ty)).size == 1 {
+		println(tls, ts+802, 0)
+	} else if (*Type)(unsafe.Pointer(ty)).size == 2 {
+		println(tls, ts+822, 0)
+	} else if (*Type)(unsafe.Pointer(ty)).size == 4 {
+		println(tls, ts+842, 0)
+	} else {
+		println(tls, ts+863, 0)
+	}
+}
+
+func cmp_zero(tls *libc.TLS, ty uintptr) { /* codegen.c:261:13: */
+	switch (*Type)(unsafe.Pointer(ty)).kind {
+	case TY_FLOAT:
+		println(tls, ts+884, 0)
+		println(tls, ts+907, 0)
+		return
+	case TY_DOUBLE:
+		println(tls, ts+932, 0)
+		println(tls, ts+955, 0)
+		return
+	case TY_LDOUBLE:
+		println(tls, ts+980, 0)
+		println(tls, ts+987, 0)
+		println(tls, ts+997, 0)
+		return
+	}
+
+	if is_integer(tls, ty) != 0 && (*Type)(unsafe.Pointer(ty)).size <= 4 {
+		println(tls, ts+1012, 0)
+	} else {
+		println(tls, ts+1028, 0)
+	}
+}
+
+func getTypeId(tls *libc.TLS, ty uintptr) int32 { /* codegen.c:286:12: */
+	switch (*Type)(unsafe.Pointer(ty)).kind {
+	case TY_CHAR:
+		if (*Type)(unsafe.Pointer(ty)).is_unsigned != 0 {
+			return U8
+		}
+		return I8
+	case TY_SHORT:
+		if (*Type)(unsafe.Pointer(ty)).is_unsigned != 0 {
+			return U16
+		}
+		return I16
+	case TY_INT:
+		if (*Type)(unsafe.Pointer(ty)).is_unsigned != 0 {
+			return U32
+		}
+		return I32
+	case TY_LONG:
+		if (*Type)(unsafe.Pointer(ty)).is_unsigned != 0 {
+			return U64
+		}
+		return I64
+	case TY_FLOAT:
+		return F32
+	case TY_DOUBLE:
+		return F64
+	case TY_LDOUBLE:
+		return F80
+	}
+	return U64
+}
+
+// The table for type casts
+var i32i8 = *(*[17]int8)(unsafe.Pointer(ts + 1044))                              /* codegen.c:307:13 */
+var i32u8 = *(*[17]int8)(unsafe.Pointer(ts + 1061))                              /* codegen.c:308:13 */
+var i32i16 = *(*[17]int8)(unsafe.Pointer(ts + 1078))                             /* codegen.c:309:13 */
+var i32u16 = *(*[17]int8)(unsafe.Pointer(ts + 1095))                             /* codegen.c:310:13 */
+var i32f32 = *(*[22]int8)(unsafe.Pointer(ts + 1112))                             /* codegen.c:311:13 */
+var i32i64 = *(*[18]int8)(unsafe.Pointer(ts + 1134))                             /* codegen.c:312:13 */
+var i32f64 = *(*[22]int8)(unsafe.Pointer(ts + 1152))                             /* codegen.c:313:13 */
+var i32f80 = *(*[35]int8)(unsafe.Pointer(ts + 1174 /* "mov %eax, -4(%rs..." */)) /* codegen.c:314:13 */
+
+var u32f32 = *(*[38]int8)(unsafe.Pointer(ts + 1209))                             /* codegen.c:316:13 */
+var u32i64 = *(*[15]int8)(unsafe.Pointer(ts + 1247))                             /* codegen.c:317:13 */
+var u32f64 = *(*[38]int8)(unsafe.Pointer(ts + 1262))                             /* codegen.c:318:13 */
+var u32f80 = *(*[52]int8)(unsafe.Pointer(ts + 1300 /* "mov %eax, %eax; ..." */)) /* codegen.c:319:13 */
+
+var i64f32 = *(*[22]int8)(unsafe.Pointer(ts + 1352))                             /* codegen.c:321:13 */
+var i64f64 = *(*[22]int8)(unsafe.Pointer(ts + 1374))                             /* codegen.c:322:13 */
+var i64f80 = *(*[37]int8)(unsafe.Pointer(ts + 1396 /* "movq %rax, -8(%r..." */)) /* codegen.c:323:13 */
+
+var u64f32 = *(*[22]int8)(unsafe.Pointer(ts + 1352))  /* codegen.c:325:13 */
+var u64f64 = *(*[186]int8)(unsafe.Pointer(ts + 1433)) /* codegen.c:326:13 */
+var u64f80 = *(*[122]int8)(unsafe.Pointer(ts + 1619)) /* codegen.c:330:13 */
+
+var f32i8 = *(*[41]int8)(unsafe.Pointer(ts + 1741))                              /* codegen.c:334:13 */
+var f32u8 = *(*[41]int8)(unsafe.Pointer(ts + 1782))                              /* codegen.c:335:13 */
+var f32i16 = *(*[41]int8)(unsafe.Pointer(ts + 1823))                             /* codegen.c:336:13 */
+var f32u16 = *(*[41]int8)(unsafe.Pointer(ts + 1864))                             /* codegen.c:337:13 */
+var f32i32 = *(*[23]int8)(unsafe.Pointer(ts + 1905))                             /* codegen.c:338:13 */
+var f32u32 = *(*[23]int8)(unsafe.Pointer(ts + 1928))                             /* codegen.c:339:13 */
+var f32i64 = *(*[23]int8)(unsafe.Pointer(ts + 1928))                             /* codegen.c:340:13 */
+var f32u64 = *(*[23]int8)(unsafe.Pointer(ts + 1928))                             /* codegen.c:341:13 */
+var f32f64 = *(*[22]int8)(unsafe.Pointer(ts + 1951))                             /* codegen.c:342:13 */
+var f32f80 = *(*[37]int8)(unsafe.Pointer(ts + 1973 /* "movss %xmm0, -4(..." */)) /* codegen.c:343:13 */
+
+var f64i8 = *(*[41]int8)(unsafe.Pointer(ts + 2010))                              /* codegen.c:345:13 */
+var f64u8 = *(*[41]int8)(unsafe.Pointer(ts + 2051))                              /* codegen.c:346:13 */
+var f64i16 = *(*[41]int8)(unsafe.Pointer(ts + 2092))                             /* codegen.c:347:13 */
+var f64u16 = *(*[41]int8)(unsafe.Pointer(ts + 2133))                             /* codegen.c:348:13 */
+var f64i32 = *(*[23]int8)(unsafe.Pointer(ts + 2174))                             /* codegen.c:349:13 */
+var f64u32 = *(*[23]int8)(unsafe.Pointer(ts + 2197))                             /* codegen.c:350:13 */
+var f64i64 = *(*[23]int8)(unsafe.Pointer(ts + 2197))                             /* codegen.c:351:13 */
+var f64u64 = *(*[23]int8)(unsafe.Pointer(ts + 2197))                             /* codegen.c:352:13 */
+var f64f32 = *(*[22]int8)(unsafe.Pointer(ts + 2220))                             /* codegen.c:353:13 */
+var f64f80 = *(*[37]int8)(unsafe.Pointer(ts + 2242 /* "movsd %xmm0, -8(..." */)) /* codegen.c:354:13 */
+
+var f80i8 = *(*[150]int8)(unsafe.Pointer(ts + 2279))                             /* codegen.c:362:13 */
+var f80u8 = *(*[150]int8)(unsafe.Pointer(ts + 2429))                             /* codegen.c:363:13 */
+var f80i16 = *(*[150]int8)(unsafe.Pointer(ts + 2429))                            /* codegen.c:364:13 */
+var f80u16 = *(*[150]int8)(unsafe.Pointer(ts + 2579))                            /* codegen.c:365:13 */
+var f80i32 = *(*[147]int8)(unsafe.Pointer(ts + 2729))                            /* codegen.c:366:13 */
+var f80u32 = *(*[147]int8)(unsafe.Pointer(ts + 2729))                            /* codegen.c:367:13 */
+var f80i64 = *(*[147]int8)(unsafe.Pointer(ts + 2876))                            /* codegen.c:368:13 */
+var f80u64 = *(*[147]int8)(unsafe.Pointer(ts + 2876))                            /* codegen.c:369:13 */
+var f80f32 = *(*[38]int8)(unsafe.Pointer(ts + 3023))                             /* codegen.c:370:13 */
+var f80f64 = *(*[38]int8)(unsafe.Pointer(ts + 3061 /* "fstpl -8(%rsp); ..." */)) /* codegen.c:371:13 */
+
+var cast_table = [11][11]uintptr{
+	// i8   i16     i32     i64     u8     u16     u32     u64     f32     f64     f80
+	{uintptr(0), uintptr(0), uintptr(0), 0, 0, 0, uintptr(0), 0, 0, 0, 0}, // i8
+	{0, uintptr(0), uintptr(0), 0, 0, 0, uintptr(0), 0, 0, 0, 0},          // i16
+	{0, 0, uintptr(0), 0, 0, 0, uintptr(0), 0, 0, 0, 0},                   // i32
+	{0, 0, uintptr(0), uintptr(0), 0, 0, uintptr(0), uintptr(0), 0, 0, 0}, // i64
+
+	{0, uintptr(0), uintptr(0), 0, uintptr(0), uintptr(0), uintptr(0), 0, 0, 0, 0}, // u8
+	{0, 0, uintptr(0), 0, 0, uintptr(0), uintptr(0), 0, 0, 0, 0},                   // u16
+	{0, 0, uintptr(0), 0, 0, 0, uintptr(0), 0, 0, 0, 0},                            // u32
+	{0, 0, uintptr(0), uintptr(0), 0, 0, uintptr(0), uintptr(0), 0, 0, 0},          // u64
+
+	{0, 0, 0, 0, 0, 0, 0, 0, uintptr(0), 0, 0}, // f32
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, uintptr(0), 0}, // f64
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, uintptr(0)},
+} /* codegen.c:373:13 */
+
+func cast(tls *libc.TLS, from uintptr, to uintptr) { /* codegen.c:390:13: */
+	bp := tls.Alloc(8)
+	defer tls.Free(8)
+
+	if (*Type)(unsafe.Pointer(to)).kind == TY_VOID {
+		return
+	}
+
+	if (*Type)(unsafe.Pointer(to)).kind == TY_BOOL {
+		cmp_zero(tls, from)
+		println(tls, ts+3099, 0)
+		println(tls, ts+3112, 0)
+		return
+	}
+
+	var t1 int32 = getTypeId(tls, from)
+	var t2 int32 = getTypeId(tls, to)
+	if *(*uintptr)(unsafe.Pointer(uintptr(unsafe.Pointer(&cast_table)) + uintptr(t1)*88 + uintptr(t2)*8)) != 0 {
+		println(tls, ts+3132, libc.VaList(bp, *(*uintptr)(unsafe.Pointer(uintptr(unsafe.Pointer(&cast_table)) + uintptr(t1)*88 + uintptr(t2)*8))))
+	}
+}
+
+// Structs or unions equal or smaller than 16 bytes are passed
+// using up to two registers.
+//
+// If the first 8 bytes contains only floating-point type members,
+// they are passed in an XMM register. Otherwise, they are passed
+// in a general-purpose register.
+//
+// If a struct/union is larger than 8 bytes, the same rule is
+// applied to the the next 8 byte chunk.
+//
+// This function returns true if `ty` has only floating-point
+// members in its byte range [lo, hi).
+func has_flonum(tls *libc.TLS, ty uintptr, lo int32, hi int32, offset int32) uint8 { /* codegen.c:419:13: */
+	if (*Type)(unsafe.Pointer(ty)).kind == TY_STRUCT || (*Type)(unsafe.Pointer(ty)).kind == TY_UNION {
+		{
+			var mem uintptr = (*Type)(unsafe.Pointer(ty)).members
+			for ; mem != 0; mem = (*Member)(unsafe.Pointer(mem)).next {
+				if !(has_flonum(tls, (*Member)(unsafe.Pointer(mem)).ty, lo, hi, offset+(*Member)(unsafe.Pointer(mem)).offset) != 0) {
+					return uint8(0)
+				}
+			}
+		}
+		return uint8(1)
+	}
+
+	if (*Type)(unsafe.Pointer(ty)).kind == TY_ARRAY {
+		{
+			var i int32 = 0
+			for ; i < (*Type)(unsafe.Pointer(ty)).array_len; i++ {
+				if !(has_flonum(tls, (*Type)(unsafe.Pointer(ty)).base, lo, hi, offset+(*Type)(unsafe.Pointer((*Type)(unsafe.Pointer(ty)).base)).size*i) != 0) {
+					return uint8(0)
+				}
+			}
+		}
+		return uint8(1)
+	}
+
+	return uint8(libc.Bool32(offset < lo || hi <= offset || (*Type)(unsafe.Pointer(ty)).kind == TY_FLOAT || (*Type)(unsafe.Pointer(ty)).kind == TY_DOUBLE))
+}
+
+func has_flonum1(tls *libc.TLS, ty uintptr) uint8 { /* codegen.c:437:13: */
+	return has_flonum(tls, ty, 0, 8, 0)
+}
+
+func has_flonum2(tls *libc.TLS, ty uintptr) uint8 { /* codegen.c:441:13: */
+	return has_flonum(tls, ty, 8, 16, 0)
+}
+
+func push_struct(tls *libc.TLS, ty uintptr) { /* codegen.c:445:13: */
+	bp := tls.Alloc(24)
+	defer tls.Free(24)
+
+	var sz int32 = align_to(tls, (*Type)(unsafe.Pointer(ty)).size, 8)
+	println(tls, ts+3137, libc.VaList(bp, sz))
+	depth = depth + sz/8
+
+	{
+		var i int32 = 0
+		for ; i < (*Type)(unsafe.Pointer(ty)).size; i++ {
+			println(tls, ts+3154, libc.VaList(bp+8, i))
+			println(tls, ts+3178, libc.VaList(bp+16, i))
+		}
+	}
+}
+
+func push_args2(tls *libc.TLS, args uintptr, first_pass uint8) { /* codegen.c:456:13: */
+	if !(args != 0) {
+		return
+	}
+	push_args2(tls, (*Node)(unsafe.Pointer(args)).next, first_pass)
+
+	if first_pass != 0 && !(int32((*Node)(unsafe.Pointer(args)).pass_by_stack) != 0) || !(first_pass != 0) && (*Node)(unsafe.Pointer(args)).pass_by_stack != 0 {
+		return
+	}
+
+	gen_expr(tls, args)
+
+	switch (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(args)).ty)).kind {
+	case TY_STRUCT:
+		fallthrough
+	case TY_UNION:
+		push_struct(tls, (*Node)(unsafe.Pointer(args)).ty)
+		break
+	case TY_FLOAT:
+		fallthrough
+	case TY_DOUBLE:
+		pushf(tls)
+		break
+	case TY_LDOUBLE:
+		println(tls, ts+3202, 0)
+		println(tls, ts+3219, 0)
+		depth = depth + 2
+		break
+	default:
+		push(tls)
+	}
+}
+
+// Load function call arguments. Arguments are already evaluated and
+// stored to the stack as local variables. What we need to do in this
+// function is to load them to registers or push them to the stack as
+// specified by the x86-64 psABI. Here is what the spec says:
+//
+//   - Up to 6 arguments of integral type are passed using RDI, RSI,
+//     RDX, RCX, R8 and R9.
+//
+//   - Up to 8 arguments of floating-point type are passed using XMM0 to
+//     XMM7.
+//
+//   - If all registers of an appropriate type are already used, push an
+//     argument to the stack in the right-to-left order.
+//
+//   - Each argument passed on the stack takes 8 bytes, and the end of
+//     the argument area must be aligned to a 16 byte boundary.
+//
+//   - If a function is variadic, set the number of floating-point type
+//     arguments to RAX.
+func push_args(tls *libc.TLS, node uintptr) int32 { /* codegen.c:504:12: */
+	bp := tls.Alloc(8)
+	defer tls.Free(8)
+
+	var stack int32 = 0
+	var gp int32 = 0
+	var fp int32 = 0
+
+	// If the return type is a large struct/union, the caller passes
+	// a pointer to a buffer as if it were the first argument.
+	if (*Node)(unsafe.Pointer(node)).ret_buffer != 0 && (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).size > 16 {
+		gp++
+	}
+
+	// Load as many arguments to the registers as possible.
+	{
+		var arg uintptr = (*Node)(unsafe.Pointer(node)).args
+		for ; arg != 0; arg = (*Node)(unsafe.Pointer(arg)).next {
+			var ty uintptr = (*Node)(unsafe.Pointer(arg)).ty
+
+			switch (*Type)(unsafe.Pointer(ty)).kind {
+			case TY_STRUCT:
+				fallthrough
+			case TY_UNION:
+				if (*Type)(unsafe.Pointer(ty)).size > 16 {
+					(*Node)(unsafe.Pointer(arg)).pass_by_stack = uint8(1)
+					stack = stack + align_to(tls, (*Type)(unsafe.Pointer(ty)).size, 8)/8
+				} else {
+					var fp1 uint8 = has_flonum1(tls, ty)
+					var fp2 uint8 = has_flonum2(tls, ty)
+
+					if fp+int32(fp1)+int32(fp2) < 8 && gp+libc.BoolInt32(!(fp1 != 0))+libc.BoolInt32(!(fp2 != 0)) < 6 {
+						fp = fp + int32(fp1) + int32(fp2)
+						gp = gp + libc.BoolInt32(!(fp1 != 0)) + libc.BoolInt32(!(fp2 != 0))
+					} else {
+						(*Node)(unsafe.Pointer(arg)).pass_by_stack = uint8(1)
+						stack = stack + align_to(tls, (*Type)(unsafe.Pointer(ty)).size, 8)/8
+					}
+				}
+				break
+			case TY_FLOAT:
+				fallthrough
+			case TY_DOUBLE:
+				if libc.PostIncInt32(&fp, 1) >= 8 {
+					(*Node)(unsafe.Pointer(arg)).pass_by_stack = uint8(1)
+					stack++
+				}
+				break
+			case TY_LDOUBLE:
+				(*Node)(unsafe.Pointer(arg)).pass_by_stack = uint8(1)
+				stack = stack + 2
+				break
+			default:
+				if libc.PostIncInt32(&gp, 1) >= 6 {
+					(*Node)(unsafe.Pointer(arg)).pass_by_stack = uint8(1)
+					stack++
+				}
+			}
+		}
+	}
+
+	if (depth+stack)%2 == 1 {
+		println(tls, ts+136, 0)
+		depth++
+		stack++
+	}
+
+	push_args2(tls, (*Node)(unsafe.Pointer(node)).args, uint8(1))
+	push_args2(tls, (*Node)(unsafe.Pointer(node)).args, uint8(0))
+
+	// If the return type is a large struct/union, the caller passes
+	// a pointer to a buffer as if it were the first argument.
+	if (*Node)(unsafe.Pointer(node)).ret_buffer != 0 && (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).size > 16 {
+		println(tls, ts+292, libc.VaList(bp, (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ret_buffer)).offset))
+		push(tls)
+	}
+
+	return stack
+}
+
+func copy_ret_buffer(tls *libc.TLS, var1 uintptr) { /* codegen.c:573:13: */
+	bp := tls.Alloc(80)
+	defer tls.Free(80)
+
+	var ty uintptr = (*Obj)(unsafe.Pointer(var1)).ty
+	var gp int32 = 0
+	var fp int32 = 0
+
+	if has_flonum1(tls, ty) != 0 {
+		if (*Type)(unsafe.Pointer(ty)).size == 4 || 8 <= (*Type)(unsafe.Pointer(ty)).size {
+		} else {
+			libc.X__assert_fail(tls, ts+3235, ts+241, uint32(578), uintptr(unsafe.Pointer(&__func__)))
+		}
+		if (*Type)(unsafe.Pointer(ty)).size == 4 {
+			println(tls, ts+3266, libc.VaList(bp, (*Obj)(unsafe.Pointer(var1)).offset))
+		} else {
+			println(tls, ts+3292, libc.VaList(bp+8, (*Obj)(unsafe.Pointer(var1)).offset))
+		}
+		fp++
+	} else {
+		{
+			var i int32 = 0
+			for ; i < func() int32 {
+				if 8 < (*Type)(unsafe.Pointer(ty)).size {
+					return 8
+				}
+				return (*Type)(unsafe.Pointer(ty)).size
+			}(); i++ {
+				println(tls, ts+3318, libc.VaList(bp+16, (*Obj)(unsafe.Pointer(var1)).offset+i))
+				println(tls, ts+3340, 0)
+			}
+		}
+		gp++
+	}
+
+	if (*Type)(unsafe.Pointer(ty)).size > 8 {
+		if has_flonum2(tls, ty) != 0 {
+			if (*Type)(unsafe.Pointer(ty)).size == 12 || (*Type)(unsafe.Pointer(ty)).size == 16 {
+			} else {
+				libc.X__assert_fail(tls, ts+3356, ts+241, uint32(594), uintptr(unsafe.Pointer(&__func__)))
+			}
+			if (*Type)(unsafe.Pointer(ty)).size == 12 {
+				println(tls, ts+3389, libc.VaList(bp+24, fp, (*Obj)(unsafe.Pointer(var1)).offset+8))
+			} else {
+				println(tls, ts+3416, libc.VaList(bp+40, fp, (*Obj)(unsafe.Pointer(var1)).offset+8))
+			}
+		} else {
+			var reg1 uintptr
+			if gp == 0 {
+				reg1 = ts + 251 /* "%al" */
+			} else {
+				reg1 = ts + 10 /* "%dl" */
+			}
+			var reg2 uintptr
+			if gp == 0 {
+				reg2 = ts + 264 /* "%rax" */
+			} else {
+				reg2 = ts + 94 /* "%rdx" */
+			}
+			{
+				var i int32 = 8
+				for ; i < func() int32 {
+					if 16 < (*Type)(unsafe.Pointer(ty)).size {
+						return 16
+					}
+					return (*Type)(unsafe.Pointer(ty)).size
+				}(); i++ {
+					println(tls, ts+3443, libc.VaList(bp+56, reg1, (*Obj)(unsafe.Pointer(var1)).offset+i))
+					println(tls, ts+3463, libc.VaList(bp+72, reg2))
+				}
+			}
+		}
+	}
+}
+
+var __func__ = *(*[16]int8)(unsafe.Pointer(ts + 3476)) /* codegen.c:573:39 */
+
+func copy_struct_reg(tls *libc.TLS) { /* codegen.c:610:13: */
+	bp := tls.Alloc(56)
+	defer tls.Free(56)
+
+	var ty uintptr = (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(current_fn)).ty)).return_ty
+	var gp int32 = 0
+	var fp int32 = 0
+
+	println(tls, ts+3492, 0)
+
+	if has_flonum(tls, ty, 0, 8, 0) != 0 {
+		if (*Type)(unsafe.Pointer(ty)).size == 4 || 8 <= (*Type)(unsafe.Pointer(ty)).size {
+		} else {
+			libc.X__assert_fail(tls, ts+3235, ts+241, uint32(617), uintptr(unsafe.Pointer(&__func__1)))
+		}
+		if (*Type)(unsafe.Pointer(ty)).size == 4 {
+			println(tls, ts+3511, 0)
+		} else {
+			println(tls, ts+3535, 0)
+		}
+		fp++
+	} else {
+		println(tls, ts+3559, 0)
+		{
+			var i int32 = func() int32 {
+				if 8 < (*Type)(unsafe.Pointer(ty)).size {
+					return 8
+				}
+				return (*Type)(unsafe.Pointer(ty)).size
+			}() - 1
+			for ; i >= 0; i-- {
+				println(tls, ts+3575, 0)
+				println(tls, ts+3591, libc.VaList(bp, i))
+			}
+		}
+		gp++
+	}
+
+	if (*Type)(unsafe.Pointer(ty)).size > 8 {
+		if has_flonum(tls, ty, 8, 16, 0) != 0 {
+			if (*Type)(unsafe.Pointer(ty)).size == 12 || (*Type)(unsafe.Pointer(ty)).size == 16 {
+			} else {
+				libc.X__assert_fail(tls, ts+3356, ts+241, uint32(634), uintptr(unsafe.Pointer(&__func__1)))
+			}
+			if (*Type)(unsafe.Pointer(ty)).size == 4 {
+				println(tls, ts+3613, libc.VaList(bp+8, fp))
+			} else {
+				println(tls, ts+3639, libc.VaList(bp+16, fp))
+			}
+		} else {
+			var reg1 uintptr
+			if gp == 0 {
+				reg1 = ts + 251 /* "%al" */
+			} else {
+				reg1 = ts + 10 /* "%dl" */
+			}
+			var reg2 uintptr
+			if gp == 0 {
+				reg2 = ts + 264 /* "%rax" */
+			} else {
+				reg2 = ts + 94 /* "%rdx" */
+			}
+			println(tls, ts+3665, libc.VaList(bp+24, reg2))
+			{
+				var i int32 = func() int32 {
+					if 16 < (*Type)(unsafe.Pointer(ty)).size {
+						return 16
+					}
+					return (*Type)(unsafe.Pointer(ty)).size
+				}() - 1
+				for ; i >= 8; i-- {
+					println(tls, ts+3678, libc.VaList(bp+32, reg2))
+					println(tls, ts+3691, libc.VaList(bp+40, i, reg1))
+				}
+			}
+		}
+	}
+}
+
+var __func__1 = *(*[16]int8)(unsafe.Pointer(ts + 3711)) /* codegen.c:610:35 */
+
+func copy_struct_mem(tls *libc.TLS) { /* codegen.c:651:13: */
+	bp := tls.Alloc(24)
+	defer tls.Free(24)
+
+	var ty uintptr = (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(current_fn)).ty)).return_ty
+	var var1 uintptr = (*Obj)(unsafe.Pointer(current_fn)).params
+
+	println(tls, ts+3727, libc.VaList(bp, (*Obj)(unsafe.Pointer(var1)).offset))
+
+	{
+		var i int32 = 0
+		for ; i < (*Type)(unsafe.Pointer(ty)).size; i++ {
+			println(tls, ts+3750, libc.VaList(bp+8, i))
+			println(tls, ts+3772, libc.VaList(bp+16, i))
+		}
+	}
+}
+
+func builtin_alloca(tls *libc.TLS) { /* codegen.c:663:13: */
+	bp := tls.Alloc(24)
+	defer tls.Free(24)
+
+	// Align size to 16 bytes.
+	println(tls, ts+3794, 0)
+	println(tls, ts+3811, 0)
+
+	// Shift the temporary area by %rdi.
+	println(tls, ts+3836, libc.VaList(bp, (*Obj)(unsafe.Pointer((*Obj)(unsafe.Pointer(current_fn)).alloca_bottom)).offset))
+	println(tls, ts+3859, 0)
+	println(tls, ts+3878, 0)
+	println(tls, ts+3897, 0)
+	println(tls, ts+3916, 0)
+	println(tls, ts+3935, 0)
+	println(tls, ts+3938, 0)
+	println(tls, ts+3954, 0)
+	println(tls, ts+3962, 0)
+	println(tls, ts+3983, 0)
+	println(tls, ts+4004, 0)
+	println(tls, ts+4016, 0)
+	println(tls, ts+4028, 0)
+	println(tls, ts+4040, 0)
+	println(tls, ts+4049, 0)
+
+	// Move alloca_bottom pointer.
+	println(tls, ts+269, libc.VaList(bp+8, (*Obj)(unsafe.Pointer((*Obj)(unsafe.Pointer(current_fn)).alloca_bottom)).offset))
+	println(tls, ts+4052, 0)
+	println(tls, ts+4071, libc.VaList(bp+16, (*Obj)(unsafe.Pointer((*Obj)(unsafe.Pointer(current_fn)).alloca_bottom)).offset))
+}
+
+// Generate code for a given node.
+func gen_expr(tls *libc.TLS, node uintptr) { /* codegen.c:692:13: */
+	bp := tls.Alloc(544)
+	defer tls.Free(544)
+
+	println(tls, ts+4094, libc.VaList(bp, (*File)(unsafe.Pointer((*Token)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).tok)).file)).file_no, (*Token)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).tok)).line_no))
+
+	{
+		var n uintptr
+		switch (*Node)(unsafe.Pointer(node)).kind {
+		case ND_NULL_EXPR:
+			return
+		case ND_NUM:
+			{
+				switch (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).kind {
+				case TY_FLOAT:
+					{
+						*(*struct{ f32 float32 })(unsafe.Pointer(bp + 512)) = func() (r struct{ f32 float32 }) {
+							*(*float32)(unsafe.Pointer(uintptr(unsafe.Pointer(&r)) + 0)) = float32((*Node)(unsafe.Pointer(node)).fval)
+							return r
+						}()
+						println(tls, ts+4107, libc.VaList(bp+16, *(*uint32_t)(unsafe.Pointer(bp + 512)), (*Node)(unsafe.Pointer(node)).fval))
+						println(tls, ts+4137, 0)
+						return
+
+					}
+				case TY_DOUBLE:
+					{
+						*(*struct{ f64 float64 })(unsafe.Pointer(bp + 520)) = func() (r struct{ f64 float64 }) {
+							*(*float64)(unsafe.Pointer(uintptr(unsafe.Pointer(&r)) + 0)) = (*Node)(unsafe.Pointer(node)).fval
+							return r
+						}()
+						println(tls, ts+4158, libc.VaList(bp+32, *(*uint64_t)(unsafe.Pointer(bp + 520)), (*Node)(unsafe.Pointer(node)).fval))
+						println(tls, ts+4137, 0)
+						return
+
+					}
+				case TY_LDOUBLE:
+					{
+						// var u struct {f80 float64;_ [8]byte;} at bp+528, 16
+
+						libc.Xmemset(tls, bp+528, 0, uint64(unsafe.Sizeof(struct {
+							f80 float64
+							_   [8]byte
+						}{})))
+						*(*float64)(unsafe.Pointer(bp + 528)) = (*Node)(unsafe.Pointer(node)).fval
+						println(tls, ts+4190, libc.VaList(bp+48, *(*uint64_t)(unsafe.Pointer(bp + 528)), (*Node)(unsafe.Pointer(node)).fval))
+						println(tls, ts+4227, 0)
+						println(tls, ts+4251, libc.VaList(bp+64, *(*uint64_t)(unsafe.Pointer(bp + 528 + 1*8))))
+						println(tls, ts+4269, 0)
+						println(tls, ts+4292, 0)
+						return
+
+					}
+				}
+
+				println(tls, ts+4310, libc.VaList(bp+72, (*Node)(unsafe.Pointer(node)).val))
+				return
+
+			}
+		case ND_NEG:
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+
+			switch (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).kind {
+			case TY_FLOAT:
+				println(tls, ts+4328, 0)
+				println(tls, ts+4344, 0)
+				println(tls, ts+4361, 0)
+				println(tls, ts+4382, 0)
+				return
+			case TY_DOUBLE:
+				println(tls, ts+4328, 0)
+				println(tls, ts+4405, 0)
+				println(tls, ts+4361, 0)
+				println(tls, ts+4422, 0)
+				return
+			case TY_LDOUBLE:
+				println(tls, ts+4445, 0)
+				return
+			}
+
+			println(tls, ts+4452, 0)
+			return
+		case ND_VAR:
+			gen_addr(tls, node)
+			load(tls, (*Node)(unsafe.Pointer(node)).ty)
+			return
+		case ND_MEMBER:
+			{
+				gen_addr(tls, node)
+				load(tls, (*Node)(unsafe.Pointer(node)).ty)
+
+				var mem uintptr = (*Node)(unsafe.Pointer(node)).member
+				if (*Member)(unsafe.Pointer(mem)).is_bitfield != 0 {
+					println(tls, ts+4464, libc.VaList(bp+80, 64-(*Member)(unsafe.Pointer(mem)).bit_width-(*Member)(unsafe.Pointer(mem)).bit_offset))
+					if (*Type)(unsafe.Pointer((*Member)(unsafe.Pointer(mem)).ty)).is_unsigned != 0 {
+						println(tls, ts+4481, libc.VaList(bp+88, 64-(*Member)(unsafe.Pointer(mem)).bit_width))
+					} else {
+						println(tls, ts+4498, libc.VaList(bp+96, 64-(*Member)(unsafe.Pointer(mem)).bit_width))
+					}
+				}
+				return
+
+			}
+		case ND_DEREF:
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+			load(tls, (*Node)(unsafe.Pointer(node)).ty)
+			return
+		case ND_ADDR:
+			gen_addr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+			return
+		case ND_ASSIGN:
+			gen_addr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+			push(tls)
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).rhs)
+
+			if (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).kind == ND_MEMBER && (*Member)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).member)).is_bitfield != 0 {
+				println(tls, ts+4515, 0)
+
+				// If the lhs is a bitfield, we need to read the current value
+				// from memory and merge it with a new value.
+				var mem uintptr = (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).member
+				println(tls, ts+3492, 0)
+				println(tls, ts+4533, libc.VaList(bp+104, int64(1)<<(*Member)(unsafe.Pointer(mem)).bit_width-int64(1)))
+				println(tls, ts+4551, libc.VaList(bp+112, (*Member)(unsafe.Pointer(mem)).bit_offset))
+
+				println(tls, ts+4568, 0)
+				load(tls, (*Member)(unsafe.Pointer(mem)).ty)
+
+				var mask int64 = (int64(1)<<(*Member)(unsafe.Pointer(mem)).bit_width - int64(1)) << (*Member)(unsafe.Pointer(mem)).bit_offset
+				println(tls, ts+4589, libc.VaList(bp+120, ^mask))
+				println(tls, ts+4606, 0)
+				println(tls, ts+4624, 0)
+				store(tls, (*Node)(unsafe.Pointer(node)).ty)
+				println(tls, ts+4642, 0)
+				return
+			}
+
+			store(tls, (*Node)(unsafe.Pointer(node)).ty)
+			return
+		case ND_STMT_EXPR:
+			{
+				n = (*Node)(unsafe.Pointer(node)).body
+				for ; n != 0; n = (*Node)(unsafe.Pointer(n)).next {
+					gen_stmt(tls, n)
+				}
+			}
+			return
+		case ND_COMMA:
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).rhs)
+			return
+		case ND_CAST:
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+			cast(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty, (*Node)(unsafe.Pointer(node)).ty)
+			return
+		case ND_MEMZERO:
+			// `rep stosb` is equivalent to `memset(%rdi, %al, %rcx)`.
+			println(tls, ts+4660, libc.VaList(bp+128, (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).ty)).size))
+			println(tls, ts+4677, libc.VaList(bp+136, (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).__var)).offset))
+			println(tls, ts+4700, 0)
+			println(tls, ts+4715, 0)
+			return
+		case ND_COND:
+			{
+				var c int32 = count(tls)
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).cond)
+				cmp_zero(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cond)).ty)
+				println(tls, ts+4727, libc.VaList(bp+144, c))
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).then)
+				println(tls, ts+4743, libc.VaList(bp+152, c))
+				println(tls, ts+4759, libc.VaList(bp+160, c))
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).els)
+				println(tls, ts+4771, libc.VaList(bp+168, c))
+				return
+
+			}
+		case ND_NOT:
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+			cmp_zero(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)
+			println(tls, ts+4782, 0)
+			println(tls, ts+4794, 0)
+			return
+		case ND_BITNOT:
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+			println(tls, ts+4814, 0)
+			return
+		case ND_LOGAND:
+			{
+				var c int32 = count(tls)
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+				cmp_zero(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)
+				println(tls, ts+4826, libc.VaList(bp+176, c))
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).rhs)
+				cmp_zero(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).rhs)).ty)
+				println(tls, ts+4826, libc.VaList(bp+184, c))
+				println(tls, ts+4328, 0)
+				println(tls, ts+4743, libc.VaList(bp+192, c))
+				println(tls, ts+4843, libc.VaList(bp+200, c))
+				println(tls, ts+3559, 0)
+				println(tls, ts+4771, libc.VaList(bp+208, c))
+				return
+
+			}
+		case ND_LOGOR:
+			{
+				var c int32 = count(tls)
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+				cmp_zero(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)
+				println(tls, ts+4856, libc.VaList(bp+216, c))
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).rhs)
+				cmp_zero(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).rhs)).ty)
+				println(tls, ts+4856, libc.VaList(bp+224, c))
+				println(tls, ts+3559, 0)
+				println(tls, ts+4743, libc.VaList(bp+232, c))
+				println(tls, ts+4873, libc.VaList(bp+240, c))
+				println(tls, ts+4328, 0)
+				println(tls, ts+4771, libc.VaList(bp+248, c))
+				return
+
+			}
+		case ND_FUNCALL:
+			{
+				if (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).kind == ND_VAR && !(libc.Xstrcmp(tls, (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).__var)).name, ts+4885) != 0) {
+					gen_expr(tls, (*Node)(unsafe.Pointer(node)).args)
+					println(tls, ts+3492, 0)
+					builtin_alloca(tls)
+					return
+				}
+
+				var stack_args int32 = push_args(tls, node)
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+
+				var gp int32 = 0
+				var fp int32 = 0
+
+				// If the return type is a large struct/union, the caller passes
+				// a pointer to a buffer as if it were the first argument.
+				if (*Node)(unsafe.Pointer(node)).ret_buffer != 0 && (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).size > 16 {
+					pop(tls, argreg64[libc.PostIncInt32(&gp, 1)])
+				}
+
+				{
+					var arg uintptr = (*Node)(unsafe.Pointer(node)).args
+					for ; arg != 0; arg = (*Node)(unsafe.Pointer(arg)).next {
+						var ty uintptr = (*Node)(unsafe.Pointer(arg)).ty
+
+						{
+							var fp1 uint8
+							var fp2 uint8
+							switch (*Type)(unsafe.Pointer(ty)).kind {
+							case TY_STRUCT:
+								fallthrough
+							case TY_UNION:
+								if (*Type)(unsafe.Pointer(ty)).size > 16 {
+									continue
+								}
+								fp1 = has_flonum1(tls, ty)
+								fp2 = has_flonum2(tls, ty)
+
+								if fp+int32(fp1)+int32(fp2) < 8 && gp+libc.BoolInt32(!(fp1 != 0))+libc.BoolInt32(!(fp2 != 0)) < 6 {
+									if fp1 != 0 {
+										popf(tls, libc.PostIncInt32(&fp, 1))
+									} else {
+										pop(tls, argreg64[libc.PostIncInt32(&gp, 1)])
+									}
+
+									if (*Type)(unsafe.Pointer(ty)).size > 8 {
+										if fp2 != 0 {
+											popf(tls, libc.PostIncInt32(&fp, 1))
+										} else {
+											pop(tls, argreg64[libc.PostIncInt32(&gp, 1)])
+										}
+									}
+								}
+								break
+							case TY_FLOAT:
+								fallthrough
+							case TY_DOUBLE:
+								if fp < 8 {
+									popf(tls, libc.PostIncInt32(&fp, 1))
+								}
+								break
+							case TY_LDOUBLE:
+								break
+							default:
+								if gp < 6 {
+									pop(tls, argreg64[libc.PostIncInt32(&gp, 1)])
+								}
+							}
+						}
+					}
+				}
+
+				println(tls, ts+4892, 0)
+				println(tls, ts+4911, libc.VaList(bp+256, fp))
+				println(tls, ts+4928, 0)
+				println(tls, ts+4942, libc.VaList(bp+264, stack_args*8))
+
+				depth = depth - stack_args
+
+				// It looks like the most significant 48 or 56 bits in RAX may
+				// contain garbage if a function return type is short or bool/char,
+				// respectively. We clear the upper bits here.
+				switch (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).kind {
+				case TY_BOOL:
+					println(tls, ts+3112, 0)
+					return
+				case TY_CHAR:
+					if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).is_unsigned != 0 {
+						println(tls, ts+4959, 0)
+					} else {
+						println(tls, ts+4980, 0)
+					}
+					return
+				case TY_SHORT:
+					if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).is_unsigned != 0 {
+						println(tls, ts+5001, 0)
+					} else {
+						println(tls, ts+5022, 0)
+					}
+					return
+				}
+
+				// If the return type is a small struct, a value is returned
+				// using up to two registers.
+				if (*Node)(unsafe.Pointer(node)).ret_buffer != 0 && (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).size <= 16 {
+					copy_ret_buffer(tls, (*Node)(unsafe.Pointer(node)).ret_buffer)
+					println(tls, ts+292, libc.VaList(bp+272, (*Obj)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ret_buffer)).offset))
+				}
+
+				return
+
+			}
+		case ND_LABEL_VAL:
+			println(tls, ts+476, libc.VaList(bp+280, (*Node)(unsafe.Pointer(node)).unique_label))
+			return
+		case ND_CAS:
+			{
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).cas_addr)
+				push(tls)
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).cas_new)
+				push(tls)
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).cas_old)
+				println(tls, ts+4515, 0)
+				load(tls, (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cas_old)).ty)).base)
+				pop(tls, ts+94)              // new
+				pop(tls, ts+84 /* "%rdi" */) // addr
+
+				var sz int32 = (*Type)(unsafe.Pointer((*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cas_addr)).ty)).base)).size
+				println(tls, ts+5043, libc.VaList(bp+288, reg_dx(tls, sz)))
+				println(tls, ts+5070, 0)
+				println(tls, ts+5082, 0)
+				println(tls, ts+5090, libc.VaList(bp+296, reg_ax(tls, sz)))
+				println(tls, ts+3935, 0)
+				println(tls, ts+5107, 0)
+				return
+
+			}
+		case ND_EXCH:
+			{
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+				push(tls)
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).rhs)
+				pop(tls, ts+84)
+
+				var sz int32 = (*Type)(unsafe.Pointer((*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).base)).size
+				println(tls, ts+5128, libc.VaList(bp+304, reg_ax(tls, sz)))
+				return
+
+			}
+		}
+	}
+
+	switch (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).kind {
+	case TY_FLOAT:
+		fallthrough
+	case TY_DOUBLE:
+		{
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).rhs)
+			pushf(tls)
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+			popf(tls, 1)
+
+			var sz uintptr
+			if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).kind == TY_FLOAT {
+				sz = ts + 5147 /* "ss" */
+			} else {
+				sz = ts + 5150 /* "sd" */
+			}
+
+			switch (*Node)(unsafe.Pointer(node)).kind {
+			case ND_ADD:
+				println(tls, ts+5153, libc.VaList(bp+312, sz))
+				return
+			case ND_SUB:
+				println(tls, ts+5176, libc.VaList(bp+320, sz))
+				return
+			case ND_MUL:
+				println(tls, ts+5199, libc.VaList(bp+328, sz))
+				return
+			case ND_DIV:
+				println(tls, ts+5222, libc.VaList(bp+336, sz))
+				return
+			case ND_EQ:
+				fallthrough
+			case ND_NE:
+				fallthrough
+			case ND_LT:
+				fallthrough
+			case ND_LE:
+				println(tls, ts+5245, libc.VaList(bp+344, sz))
+
+				if (*Node)(unsafe.Pointer(node)).kind == ND_EQ {
+					println(tls, ts+4782, 0)
+					println(tls, ts+5270, 0)
+					println(tls, ts+5283, 0)
+				} else if (*Node)(unsafe.Pointer(node)).kind == ND_NE {
+					println(tls, ts+3099, 0)
+					println(tls, ts+5300, 0)
+					println(tls, ts+5312, 0)
+				} else if (*Node)(unsafe.Pointer(node)).kind == ND_LT {
+					println(tls, ts+5328, 0)
+				} else {
+					println(tls, ts+5340, 0)
+				}
+
+				println(tls, ts+5353, 0)
+				println(tls, ts+5368, 0)
+				return
+			}
+
+			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+5388, 0)
+
+		}
+		fallthrough
+	case TY_LDOUBLE:
+		{
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).rhs)
+
+			switch (*Node)(unsafe.Pointer(node)).kind {
+			case ND_ADD:
+				println(tls, ts+5407, 0)
+				return
+			case ND_SUB:
+				println(tls, ts+5415, 0)
+				return
+			case ND_MUL:
+				println(tls, ts+5424, 0)
+				return
+			case ND_DIV:
+				println(tls, ts+5432, 0)
+				return
+			case ND_EQ:
+				fallthrough
+			case ND_NE:
+				fallthrough
+			case ND_LT:
+				fallthrough
+			case ND_LE:
+				println(tls, ts+5441, 0)
+				println(tls, ts+997, 0)
+
+				if (*Node)(unsafe.Pointer(node)).kind == ND_EQ {
+					println(tls, ts+4782, 0)
+				} else if (*Node)(unsafe.Pointer(node)).kind == ND_NE {
+					println(tls, ts+3099, 0)
+				} else if (*Node)(unsafe.Pointer(node)).kind == ND_LT {
+					println(tls, ts+5328, 0)
+				} else {
+					println(tls, ts+5340, 0)
+				}
+
+				println(tls, ts+5368, 0)
+				return
+			}
+
+			error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+5388, 0)
+
+		}
+	}
+
+	gen_expr(tls, (*Node)(unsafe.Pointer(node)).rhs)
+	push(tls)
+	gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+	pop(tls, ts+84)
+	var ax uintptr
+	var di uintptr
+	var dx uintptr
+
+	if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).kind == TY_LONG || (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).base != 0 {
+		ax = ts + 264 /* "%rax" */
+		di = ts + 84  /* "%rdi" */
+		dx = ts + 94  /* "%rdx" */
+	} else {
+		ax = ts + 259 /* "%eax" */
+		di = ts + 54  /* "%edi" */
+		dx = ts + 64  /* "%edx" */
+	}
+
+	switch (*Node)(unsafe.Pointer(node)).kind {
+	case ND_ADD:
+		println(tls, ts+5450, libc.VaList(bp+352, di, ax))
+		return
+	case ND_SUB:
+		println(tls, ts+5463, libc.VaList(bp+368, di, ax))
+		return
+	case ND_MUL:
+		println(tls, ts+5476, libc.VaList(bp+384, di, ax))
+		return
+	case ND_DIV:
+		fallthrough
+	case ND_MOD:
+		if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).ty)).is_unsigned != 0 {
+			println(tls, ts+3665, libc.VaList(bp+400, dx))
+			println(tls, ts+5490, libc.VaList(bp+408, di))
+		} else {
+			if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).size == 8 {
+				println(tls, ts+5499, 0)
+			} else {
+				println(tls, ts+5505, 0)
+			}
+			println(tls, ts+5511, libc.VaList(bp+416, di))
+		}
+
+		if (*Node)(unsafe.Pointer(node)).kind == ND_MOD {
+			println(tls, ts+5521, 0)
+		}
+		return
+	case ND_BITAND:
+		println(tls, ts+5540, libc.VaList(bp+424, di, ax))
+		return
+	case ND_BITOR:
+		println(tls, ts+5553, libc.VaList(bp+440, di, ax))
+		return
+	case ND_BITXOR:
+		println(tls, ts+5565, libc.VaList(bp+456, di, ax))
+		return
+	case ND_EQ:
+		fallthrough
+	case ND_NE:
+		fallthrough
+	case ND_LT:
+		fallthrough
+	case ND_LE:
+		println(tls, ts+5578, libc.VaList(bp+472, di, ax))
+
+		if (*Node)(unsafe.Pointer(node)).kind == ND_EQ {
+			println(tls, ts+4782, 0)
+		} else if (*Node)(unsafe.Pointer(node)).kind == ND_NE {
+			println(tls, ts+3099, 0)
+		} else if (*Node)(unsafe.Pointer(node)).kind == ND_LT {
+			if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).is_unsigned != 0 {
+				println(tls, ts+5591, 0)
+			} else {
+				println(tls, ts+5603, 0)
+			}
+		} else if (*Node)(unsafe.Pointer(node)).kind == ND_LE {
+			if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).is_unsigned != 0 {
+				println(tls, ts+5615, 0)
+			} else {
+				println(tls, ts+5628, 0)
+			}
+		}
+
+		println(tls, ts+5368, 0)
+		return
+	case ND_SHL:
+		println(tls, ts+5641, 0)
+		println(tls, ts+5660, libc.VaList(bp+488, ax))
+		return
+	case ND_SHR:
+		println(tls, ts+5641, 0)
+		if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty)).is_unsigned != 0 {
+			println(tls, ts+5675, libc.VaList(bp+496, ax))
+		} else {
+			println(tls, ts+5690, libc.VaList(bp+504, ax))
+		}
+		return
+	}
+
+	error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+5388, 0)
+}
+
+func gen_stmt(tls *libc.TLS, node uintptr) { /* codegen.c:1188:13: */
+	bp := tls.Alloc(264)
+	defer tls.Free(264)
+
+	println(tls, ts+4094, libc.VaList(bp, (*File)(unsafe.Pointer((*Token)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).tok)).file)).file_no, (*Token)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).tok)).line_no))
+
+	{
+		var n uintptr
+		var n1 uintptr
+		switch (*Node)(unsafe.Pointer(node)).kind {
+		case ND_IF:
+			{
+				var c int32 = count(tls)
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).cond)
+				cmp_zero(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cond)).ty)
+				println(tls, ts+5705, libc.VaList(bp+16, c))
+				gen_stmt(tls, (*Node)(unsafe.Pointer(node)).then)
+				println(tls, ts+4743, libc.VaList(bp+24, c))
+				println(tls, ts+4759, libc.VaList(bp+32, c))
+				if (*Node)(unsafe.Pointer(node)).els != 0 {
+					gen_stmt(tls, (*Node)(unsafe.Pointer(node)).els)
+				}
+				println(tls, ts+4771, libc.VaList(bp+40, c))
+				return
+
+			}
+		case ND_FOR:
+			{
+				var c int32 = count(tls)
+				if (*Node)(unsafe.Pointer(node)).init != 0 {
+					gen_stmt(tls, (*Node)(unsafe.Pointer(node)).init)
+				}
+				println(tls, ts+5722, libc.VaList(bp+48, c))
+				if (*Node)(unsafe.Pointer(node)).cond != 0 {
+					gen_expr(tls, (*Node)(unsafe.Pointer(node)).cond)
+					cmp_zero(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cond)).ty)
+					println(tls, ts+5735, libc.VaList(bp+56, (*Node)(unsafe.Pointer(node)).brk_label))
+				}
+				gen_stmt(tls, (*Node)(unsafe.Pointer(node)).then)
+				println(tls, ts+5743, libc.VaList(bp+64, (*Node)(unsafe.Pointer(node)).cont_label))
+				if (*Node)(unsafe.Pointer(node)).inc != 0 {
+					gen_expr(tls, (*Node)(unsafe.Pointer(node)).inc)
+				}
+				println(tls, ts+5747, libc.VaList(bp+72, c))
+				println(tls, ts+5743, libc.VaList(bp+80, (*Node)(unsafe.Pointer(node)).brk_label))
+				return
+
+			}
+		case ND_DO:
+			{
+				var c int32 = count(tls)
+				println(tls, ts+5722, libc.VaList(bp+88, c))
+				gen_stmt(tls, (*Node)(unsafe.Pointer(node)).then)
+				println(tls, ts+5743, libc.VaList(bp+96, (*Node)(unsafe.Pointer(node)).cont_label))
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).cond)
+				cmp_zero(tls, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cond)).ty)
+				println(tls, ts+5765, libc.VaList(bp+104, c))
+				println(tls, ts+5743, libc.VaList(bp+112, (*Node)(unsafe.Pointer(node)).brk_label))
+				return
+
+			}
+		case ND_SWITCH:
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).cond)
+
+			{
+				n = (*Node)(unsafe.Pointer(node)).case_next
+				for ; n != 0; n = (*Node)(unsafe.Pointer(n)).case_next {
+					var ax uintptr
+					if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cond)).ty)).size == 8 {
+						ax = ts + 264 /* "%rax" */
+					} else {
+						ax = ts + 259 /* "%eax" */
+					}
+					var di uintptr
+					if (*Type)(unsafe.Pointer((*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).cond)).ty)).size == 8 {
+						di = ts + 84 /* "%rdi" */
+					} else {
+						di = ts + 54 /* "%edi" */
+					}
+
+					if (*Node)(unsafe.Pointer(n)).begin == (*Node)(unsafe.Pointer(n)).end {
+						println(tls, ts+5783, libc.VaList(bp+120, (*Node)(unsafe.Pointer(n)).begin, ax))
+						println(tls, ts+5735, libc.VaList(bp+136, (*Node)(unsafe.Pointer(n)).label))
+						continue
+					}
+
+					// [GNU] Case ranges
+					println(tls, ts+5798, libc.VaList(bp+144, ax, di))
+					println(tls, ts+5811, libc.VaList(bp+160, (*Node)(unsafe.Pointer(n)).begin, di))
+					println(tls, ts+5783, libc.VaList(bp+176, (*Node)(unsafe.Pointer(n)).end-(*Node)(unsafe.Pointer(n)).begin, di))
+					println(tls, ts+5826, libc.VaList(bp+192, (*Node)(unsafe.Pointer(n)).label))
+				}
+			}
+
+			if (*Node)(unsafe.Pointer(node)).default_case != 0 {
+				println(tls, ts+5835, libc.VaList(bp+200, (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).default_case)).label))
+			}
+
+			println(tls, ts+5835, libc.VaList(bp+208, (*Node)(unsafe.Pointer(node)).brk_label))
+			gen_stmt(tls, (*Node)(unsafe.Pointer(node)).then)
+			println(tls, ts+5743, libc.VaList(bp+216, (*Node)(unsafe.Pointer(node)).brk_label))
+			return
+		case ND_CASE:
+			println(tls, ts+5743, libc.VaList(bp+224, (*Node)(unsafe.Pointer(node)).label))
+			gen_stmt(tls, (*Node)(unsafe.Pointer(node)).lhs)
+			return
+		case ND_BLOCK:
+			{
+				n1 = (*Node)(unsafe.Pointer(node)).body
+				for ; n1 != 0; n1 = (*Node)(unsafe.Pointer(n1)).next {
+					gen_stmt(tls, n1)
+				}
+			}
+			return
+		case ND_GOTO:
+			println(tls, ts+5835, libc.VaList(bp+232, (*Node)(unsafe.Pointer(node)).unique_label))
+			return
+		case ND_GOTO_EXPR:
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+			println(tls, ts+5844, 0)
+			return
+		case ND_LABEL:
+			println(tls, ts+5743, libc.VaList(bp+240, (*Node)(unsafe.Pointer(node)).unique_label))
+			gen_stmt(tls, (*Node)(unsafe.Pointer(node)).lhs)
+			return
+		case ND_RETURN:
+			if (*Node)(unsafe.Pointer(node)).lhs != 0 {
+				gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+				var ty uintptr = (*Node)(unsafe.Pointer((*Node)(unsafe.Pointer(node)).lhs)).ty
+
+				switch (*Type)(unsafe.Pointer(ty)).kind {
+				case TY_STRUCT:
+					fallthrough
+				case TY_UNION:
+					if (*Type)(unsafe.Pointer(ty)).size <= 16 {
+						copy_struct_reg(tls)
+					} else {
+						copy_struct_mem(tls)
+					}
+					break
+				}
+			}
+
+			println(tls, ts+5857, libc.VaList(bp+248, (*Obj)(unsafe.Pointer(current_fn)).name))
+			return
+		case ND_EXPR_STMT:
+			gen_expr(tls, (*Node)(unsafe.Pointer(node)).lhs)
+			return
+		case ND_ASM:
+			println(tls, ts+3132, libc.VaList(bp+256, (*Node)(unsafe.Pointer(node)).asm_str))
+			return
+		}
+	}
+
+	error_tok(tls, (*Node)(unsafe.Pointer(node)).tok, ts+5876, 0)
+}
+
+// Assign offsets to local variables.
+func assign_lvar_offsets(tls *libc.TLS, prog uintptr) { /* codegen.c:1310:13: */
+	{
+		var fn uintptr = prog
+		for ; fn != 0; fn = (*Obj)(unsafe.Pointer(fn)).next {
+			if !(int32((*Obj)(unsafe.Pointer(fn)).is_function) != 0) {
+				continue
+			}
+
+			// If a function has many parameters, some parameters are
+			// inevitably passed by stack rather than by register.
+			// The first passed-by-stack parameter resides at RBP+16.
+			var top int32 = 16
+			var bottom int32 = 0
+
+			var gp int32 = 0
+			var fp int32 = 0
+
+			// Assign offsets to pass-by-stack parameters.
+			{
+				var var1 uintptr = (*Obj)(unsafe.Pointer(fn)).params
+				for ; var1 != 0; var1 = (*Obj)(unsafe.Pointer(var1)).next {
+					var ty uintptr = (*Obj)(unsafe.Pointer(var1)).ty
+
+					switch (*Type)(unsafe.Pointer(ty)).kind {
+					case TY_STRUCT:
+						fallthrough
+					case TY_UNION:
+						if (*Type)(unsafe.Pointer(ty)).size <= 16 {
+							var fp1 uint8 = has_flonum(tls, ty, 0, 8, 0)
+							var fp2 uint8 = has_flonum(tls, ty, 8, 16, 8)
+							if fp+int32(fp1)+int32(fp2) < 8 && gp+libc.BoolInt32(!(fp1 != 0))+libc.BoolInt32(!(fp2 != 0)) < 6 {
+								fp = fp + int32(fp1) + int32(fp2)
+								gp = gp + libc.BoolInt32(!(fp1 != 0)) + libc.BoolInt32(!(fp2 != 0))
+								continue
+							}
+						}
+						break
+					case TY_FLOAT:
+						fallthrough
+					case TY_DOUBLE:
+						if libc.PostIncInt32(&fp, 1) < 8 {
+							continue
+						}
+						break
+					case TY_LDOUBLE:
+						break
+					default:
+						if libc.PostIncInt32(&gp, 1) < 6 {
+							continue
+						}
+					}
+
+					top = align_to(tls, top, 8)
+					(*Obj)(unsafe.Pointer(var1)).offset = top
+					top = top + (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(var1)).ty)).size
+				}
+			}
+
+			// Assign offsets to pass-by-register parameters and local variables.
+			{
+				var var2 uintptr = (*Obj)(unsafe.Pointer(fn)).locals
+				for ; var2 != 0; var2 = (*Obj)(unsafe.Pointer(var2)).next {
+					if (*Obj)(unsafe.Pointer(var2)).offset != 0 {
+						continue
+					}
+
+					// AMD64 System V ABI has a special alignment rule for an array of
+					// length at least 16 bytes. We need to align such array to at least
+					// 16-byte boundaries. See p.14 of
+					// https://github.com/hjl-tools/x86-psABI/wiki/x86-64-psABI-draft.pdf.
+					var align int32
+					if (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(var2)).ty)).kind == TY_ARRAY && (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(var2)).ty)).size >= 16 {
+						align = func() int32 {
+							if 16 < (*Obj)(unsafe.Pointer(var2)).align {
+								return (*Obj)(unsafe.Pointer(var2)).align
+							}
+							return 16
+						}()
+					} else {
+						align = (*Obj)(unsafe.Pointer(var2)).align
+					}
+
+					bottom = bottom + (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(var2)).ty)).size
+					bottom = align_to(tls, bottom, align)
+					(*Obj)(unsafe.Pointer(var2)).offset = -bottom
+				}
+			}
+
+			(*Obj)(unsafe.Pointer(fn)).stack_size = align_to(tls, bottom, 16)
+		}
+	}
+}
+
+func emit_data(tls *libc.TLS, prog uintptr) { /* codegen.c:1378:13: */
+	bp := tls.Alloc(128)
+	defer tls.Free(128)
+
+	{
+		var var1 uintptr = prog
+		for ; var1 != 0; var1 = (*Obj)(unsafe.Pointer(var1)).next {
+			if (*Obj)(unsafe.Pointer(var1)).is_function != 0 || !(int32((*Obj)(unsafe.Pointer(var1)).is_definition) != 0) {
+				continue
+			}
+
+			if (*Obj)(unsafe.Pointer(var1)).is_static != 0 {
+				println(tls, ts+5894, libc.VaList(bp, (*Obj)(unsafe.Pointer(var1)).name))
+			} else {
+				println(tls, ts+5906, libc.VaList(bp+8, (*Obj)(unsafe.Pointer(var1)).name))
+			}
+
+			var align int32
+			if (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(var1)).ty)).kind == TY_ARRAY && (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(var1)).ty)).size >= 16 {
+				align = func() int32 {
+					if 16 < (*Obj)(unsafe.Pointer(var1)).align {
+						return (*Obj)(unsafe.Pointer(var1)).align
+					}
+					return 16
+				}()
+			} else {
+				align = (*Obj)(unsafe.Pointer(var1)).align
+			}
+
+			// Common symbol
+			if opt_fcommon != 0 && (*Obj)(unsafe.Pointer(var1)).is_tentative != 0 {
+				println(tls, ts+5918, libc.VaList(bp+16, (*Obj)(unsafe.Pointer(var1)).name, (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(var1)).ty)).size, align))
+				continue
+			}
+
+			// .data or .tdata
+			if (*Obj)(unsafe.Pointer(var1)).init_data != 0 {
+				if (*Obj)(unsafe.Pointer(var1)).is_tls != 0 {
+					println(tls, ts+5937, 0)
+				} else {
+					println(tls, ts+5971, 0)
+				}
+
+				println(tls, ts+5979, libc.VaList(bp+40, (*Obj)(unsafe.Pointer(var1)).name))
+				println(tls, ts+5999, libc.VaList(bp+48, (*Obj)(unsafe.Pointer(var1)).name, (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(var1)).ty)).size))
+				println(tls, ts+6014, libc.VaList(bp+64, align))
+				println(tls, ts+5743, libc.VaList(bp+72, (*Obj)(unsafe.Pointer(var1)).name))
+
+				var rel uintptr = (*Obj)(unsafe.Pointer(var1)).rel
+				var pos int32 = 0
+				for pos < (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(var1)).ty)).size {
+					if rel != 0 && (*Relocation)(unsafe.Pointer(rel)).offset == pos {
+						println(tls, ts+6026, libc.VaList(bp+80, *(*uintptr)(unsafe.Pointer((*Relocation)(unsafe.Pointer(rel)).label)), (*Relocation)(unsafe.Pointer(rel)).addend))
+						rel = (*Relocation)(unsafe.Pointer(rel)).next
+						pos = pos + 8
+					} else {
+						println(tls, ts+6041, libc.VaList(bp+96, int32(*(*int8)(unsafe.Pointer((*Obj)(unsafe.Pointer(var1)).init_data + uintptr(libc.PostIncInt32(&pos, 1)))))))
+					}
+				}
+				continue
+			}
+
+			// .bss or .tbss
+			if (*Obj)(unsafe.Pointer(var1)).is_tls != 0 {
+				println(tls, ts+6052, 0)
+			} else {
+				println(tls, ts+6083, 0)
+			}
+
+			println(tls, ts+6014, libc.VaList(bp+104, align))
+			println(tls, ts+5743, libc.VaList(bp+112, (*Obj)(unsafe.Pointer(var1)).name))
+			println(tls, ts+6090, libc.VaList(bp+120, (*Type)(unsafe.Pointer((*Obj)(unsafe.Pointer(var1)).ty)).size))
+		}
+	}
+}
+
+func store_fp(tls *libc.TLS, r int32, offset int32, sz int32) { /* codegen.c:1435:13: */
+	bp := tls.Alloc(48)
+	defer tls.Free(48)
+
+	switch sz {
+	case 4:
+		println(tls, ts+3389, libc.VaList(bp, r, offset))
+		return
+	case 8:
+		println(tls, ts+3416, libc.VaList(bp+16, r, offset))
+		return
+	}
+	error(tls, ts+217, libc.VaList(bp+32, ts+241, 1444))
+}
+
+func store_gp(tls *libc.TLS, r int32, offset int32, sz int32) { /* codegen.c:1447:13: */
+	bp := tls.Alloc(88)
+	defer tls.Free(88)
+
+	{
+		var i int32
+		switch sz {
+		case 1:
+			println(tls, ts+3443, libc.VaList(bp, argreg8[r], offset))
+			return
+		case 2:
+			println(tls, ts+3443, libc.VaList(bp+16, argreg16[r], offset))
+			return
+		case 4:
+			println(tls, ts+3443, libc.VaList(bp+32, argreg32[r], offset))
+			return
+		case 8:
+			println(tls, ts+3443, libc.VaList(bp+48, argreg64[r], offset))
+			return
+		default:
+			{
+				i = 0
+				for ; i < sz; i++ {
+					println(tls, ts+3443, libc.VaList(bp+64, argreg8[r], offset+i))
+					println(tls, ts+3463, libc.VaList(bp+80, argreg64[r]))
+				}
+			}
+			return
+		}
+	}
+}
+
+func emit_text(tls *libc.TLS, prog uintptr) { /* codegen.c:1470:13: */
+	bp := tls.Alloc(240)
+	defer tls.Free(240)
+
+	{
+		var fn uintptr = prog
+		for ; fn != 0; fn = (*Obj)(unsafe.Pointer(fn)).next {
+			if !(int32((*Obj)(unsafe.Pointer(fn)).is_function) != 0) || !(int32((*Obj)(unsafe.Pointer(fn)).is_definition) != 0) {
+				continue
+			}
+
+			// No code is emitted for "static inline" functions
+			// if no one is referencing them.
+			if !(int32((*Obj)(unsafe.Pointer(fn)).is_live) != 0) {
+				continue
+			}
+
+			if (*Obj)(unsafe.Pointer(fn)).is_static != 0 {
+				println(tls, ts+5894, libc.VaList(bp, (*Obj)(unsafe.Pointer(fn)).name))
+			} else {
+				println(tls, ts+5906, libc.VaList(bp+8, (*Obj)(unsafe.Pointer(fn)).name))
+			}
+
+			println(tls, ts+6101, 0)
+			println(tls, ts+6109, libc.VaList(bp+16, (*Obj)(unsafe.Pointer(fn)).name))
+			println(tls, ts+5743, libc.VaList(bp+24, (*Obj)(unsafe.Pointer(fn)).name))
+			current_fn = fn
+
+			// Prologue
+			println(tls, ts+6131, 0)
+			println(tls, ts+6144, 0)
+			println(tls, ts+3137, libc.VaList(bp+32, (*Obj)(unsafe.Pointer(fn)).stack_size))
+			println(tls, ts+6163, libc.VaList(bp+40, (*Obj)(unsafe.Pointer((*Obj)(unsafe.Pointer(fn)).alloca_bottom)).offset))
+
+			// Save arg registers if function is variadic
+			if (*Obj)(unsafe.Pointer(fn)).va_area != 0 {
+				var gp int32 = 0
+				var fp int32 = 0
+				{
+					var var1 uintptr = (*Obj)(unsafe.Pointer(fn)).params
+					for ; var1 != 0; var1 = (*Obj)(unsafe.Pointer(var1)).next {
+						if is_flonum(tls, (*Obj)(unsafe.Pointer(var1)).ty) != 0 {
+							fp++
+						} else {
+							gp++
+						}
+					}
+				}
+
+				var off int32 = (*Obj)(unsafe.Pointer((*Obj)(unsafe.Pointer(fn)).va_area)).offset
+
+				// va_elem
+				println(tls, ts+6186, libc.VaList(bp+48, gp*8, off))      // gp_offset
+				println(tls, ts+6186, libc.VaList(bp+64, fp*8+48, off+4)) // fp_offset
+				println(tls, ts+6208, libc.VaList(bp+80, off+8))          // overflow_arg_area
+				println(tls, ts+6232, libc.VaList(bp+88, off+8))
+				println(tls, ts+6208, libc.VaList(bp+96, off+16)) // reg_save_area
+				println(tls, ts+6254, libc.VaList(bp+104, off+24, off+16))
+
+				// __reg_save_area__
+				println(tls, ts+6276, libc.VaList(bp+120, off+24))
+				println(tls, ts+6300, libc.VaList(bp+128, off+32))
+				println(tls, ts+6324, libc.VaList(bp+136, off+40))
+				println(tls, ts+6348, libc.VaList(bp+144, off+48))
+				println(tls, ts+6372, libc.VaList(bp+152, off+56))
+				println(tls, ts+6395, libc.VaList(bp+160, off+64))
+				println(tls, ts+3292, libc.VaList(bp+168, off+72))
+				println(tls, ts+6418, libc.VaList(bp+176, off+80))
+				println(tls, ts+6444, libc.VaList(bp+184, off+88))
+				println(tls, ts+6470, libc.VaList(bp+192, off+96))
+				println(tls, ts+6496, libc.VaList(bp+200, off+104))
+				println(tls, ts+6522, libc.VaList(bp+208, off+112))
+				println(tls, ts+6548, libc.VaList(bp+216, off+120))
+				println(tls, ts+6574, libc.VaList(bp+224, off+128))
+			}
+
+			// Save passed-by-register arguments to the stack
+			var gp int32 = 0
+			var fp int32 = 0
+			{
+				var var1 uintptr = (*Obj)(unsafe.Pointer(fn)).params
+				for ; var1 != 0; var1 = (*Obj)(unsafe.Pointer(var1)).next {
+					if (*Obj)(unsafe.Pointer(var1)).offset > 0 {
+						continue
+					}
+
+					var ty uintptr = (*Obj)(unsafe.Pointer(var1)).ty
+
+					switch (*Type)(unsafe.Pointer(ty)).kind {
+					case TY_STRUCT:
+						fallthrough
+					case TY_UNION:
+						if (*Type)(unsafe.Pointer(ty)).size <= 16 {
+						} else {
+							libc.X__assert_fail(tls, ts+6600, ts+241, uint32(1544), uintptr(unsafe.Pointer(&__func__2)))
+						}
+						if has_flonum(tls, ty, 0, 8, 0) != 0 {
+							store_fp(tls, libc.PostIncInt32(&fp, 1), (*Obj)(unsafe.Pointer(var1)).offset, func() int32 {
+								if 8 < (*Type)(unsafe.Pointer(ty)).size {
+									return 8
+								}
+								return (*Type)(unsafe.Pointer(ty)).size
+							}())
+						} else {
+							store_gp(tls, libc.PostIncInt32(&gp, 1), (*Obj)(unsafe.Pointer(var1)).offset, func() int32 {
+								if 8 < (*Type)(unsafe.Pointer(ty)).size {
+									return 8
+								}
+								return (*Type)(unsafe.Pointer(ty)).size
+							}())
+						}
+
+						if (*Type)(unsafe.Pointer(ty)).size > 8 {
+							if has_flonum(tls, ty, 8, 16, 0) != 0 {
+								store_fp(tls, libc.PostIncInt32(&fp, 1), (*Obj)(unsafe.Pointer(var1)).offset+8, (*Type)(unsafe.Pointer(ty)).size-8)
+							} else {
+								store_gp(tls, libc.PostIncInt32(&gp, 1), (*Obj)(unsafe.Pointer(var1)).offset+8, (*Type)(unsafe.Pointer(ty)).size-8)
+							}
+						}
+						break
+					case TY_FLOAT:
+						fallthrough
+					case TY_DOUBLE:
+						store_fp(tls, libc.PostIncInt32(&fp, 1), (*Obj)(unsafe.Pointer(var1)).offset, (*Type)(unsafe.Pointer(ty)).size)
+						break
+					default:
+						store_gp(tls, libc.PostIncInt32(&gp, 1), (*Obj)(unsafe.Pointer(var1)).offset, (*Type)(unsafe.Pointer(ty)).size)
+					}
+				}
+			}
+
+			// Emit code
+			gen_stmt(tls, (*Obj)(unsafe.Pointer(fn)).body)
+			if depth == 0 {
+			} else {
+				libc.X__assert_fail(tls, ts+6615, ts+241, uint32(1568), uintptr(unsafe.Pointer(&__func__2)))
+			}
+
+			// [https://www.sigbus.info/n1570#5.1.2.2.3p1] The C spec defines
+			// a special rule for the main function. Reaching the end of the
+			// main function is equivalent to returning 0, even though the
+			// behavior is undefined for the other functions.
+			if libc.Xstrcmp(tls, (*Obj)(unsafe.Pointer(fn)).name, ts+6626) == 0 {
+				println(tls, ts+3559, 0)
+			}
+
+			// Epilogue
+			println(tls, ts+6631, libc.VaList(bp+232, (*Obj)(unsafe.Pointer(fn)).name))
+			println(tls, ts+6645, 0)
+			println(tls, ts+6664, 0)
+			println(tls, ts+6676, 0)
+		}
+	}
+}
+
+var __func__2 = *(*[10]int8)(unsafe.Pointer(ts + 6682)) /* codegen.c:1470:34 */
+
+func codegen(tls *libc.TLS, prog uintptr, out uintptr) { /* codegen.c:1585:6: */
+	bp := tls.Alloc(16)
+	defer tls.Free(16)
+
+	output_file = out
+
+	var files uintptr = get_input_files(tls)
+	{
+		var i int32 = 0
+		for ; *(*uintptr)(unsafe.Pointer(files + uintptr(i)*8)) != 0; i++ {
+			println(tls, ts+6692, libc.VaList(bp, (*File)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(files + uintptr(i)*8)))).file_no, (*File)(unsafe.Pointer(*(*uintptr)(unsafe.Pointer(files + uintptr(i)*8)))).name))
+		}
+	}
+
+	assign_lvar_offsets(tls, prog)
+	emit_data(tls, prog)
+	emit_text(tls, prog)
+}
+
+func xstrndup(tls *libc.TLS, s uintptr, n size_t) uintptr { /* compat.c:3:6: */
+	var buf uintptr = libc.Xcalloc(tls, uint64(1), n+uint64(1))
+	libc.Xmemcpy(tls, buf, s, n)
+	*(*int8)(unsafe.Pointer(buf + uintptr(n))) = int8(0)
+	return buf
+}
+
+func xdirname(tls *libc.TLS, path uintptr) uintptr { /* compat.c:10:6: */
+	if !(path != 0) || !(int32(*(*int8)(unsafe.Pointer(path))) != 0) {
+		return libc.Xstrdup(tls, ts+6708)
+	}
+
+	var slash uintptr = libc.Xstrrchr(tls, path, '/')
+	if !(slash != 0) {
+		return libc.Xstrdup(tls, ts+6708)
+	}
+	if slash == path {
+		return libc.Xstrdup(tls, ts+6710)
+	}
+	return xstrndup(tls, path, uint64((int64(slash)-int64(path))/1))
+}
+
+func xbasename(tls *libc.TLS, path uintptr) uintptr { /* compat.c:22:6: */
+	if !(path != 0) || !(int32(*(*int8)(unsafe.Pointer(path))) != 0) {
+		return libc.Xstrdup(tls, ts+6708)
+	}
+
+	var slash uintptr = libc.Xstrrchr(tls, path, '/')
+	if !(slash != 0) {
+		return libc.Xstrdup(tls, path)
+	}
+	if int32(*(*int8)(unsafe.Pointer(slash + uintptr(1)))) == 0 {
+		return libc.Xstrdup(tls, ts+6710)
+	}
+	return libc.Xstrdup(tls, slash+uintptr(1))
+}
+
+func xwait(tls *libc.TLS, status uintptr) int32 { /* compat.c:34:5: */
+	return libc.Xwaitpid(tls, -1, status, 0)
+}
+
+// Initial hash bucket size
+
+// Rehash if the usage exceeds 70%.
+
+// We'll keep the usage below 50% after rehashing.
+
+// Represents a deleted hash entry
+
+func fnv_hash(tls *libc.TLS, s uintptr, len int32) uint64_t { /* hashmap.c:17:17: */
+	var hash uint64_t = libc.Uint64(0xcbf29ce484222325)
+	{
+		var i int32 = 0
+		for ; i < len; i++ {
+			hash = hash * uint64(0x100000001b3)
+			hash = hash ^ uint64_t(uint8(*(*int8)(unsafe.Pointer(s + uintptr(i)))))
+		}
+	}
+	return hash
+}
+
+// Make room for new entires in a given hashmap by removing
+// tombstones and possibly extending the bucket size.
+func rehash(tls *libc.TLS, map1 uintptr) { /* hashmap.c:28:13: */
+	bp := tls.Alloc(16)
+	defer tls.Free(16)
+
+	// Compute the size of the new hashmap.
+	var nkeys int32 = 0
+	{
+		var i int32 = 0
+		for ; i < (*HashMap)(unsafe.Pointer(map1)).capacity; i++ {
+			if (*HashEntry)(unsafe.Pointer((*HashMap)(unsafe.Pointer(map1)).buckets+uintptr(i)*24)).key != 0 && (*HashEntry)(unsafe.Pointer((*HashMap)(unsafe.Pointer(map1)).buckets+uintptr(i)*24)).key != libc.UintptrFromInt32(-1) {
+				nkeys++
+			}
+		}
+	}
+
+	var cap int32 = (*HashMap)(unsafe.Pointer(map1)).capacity
+	for nkeys*100/cap >= 50 {
+		cap = cap * 2
+	}
+	if cap > 0 {
+	} else {
+		libc.X__assert_fail(tls, ts+6712, ts+6720, uint32(38), uintptr(unsafe.Pointer(&__func__3)))
+	}
+
+	// Create a new hashmap and copy all key-values.
+	*(*HashMap)(unsafe.Pointer(bp /* map2 */)) = HashMap{}
+	(*HashMap)(unsafe.Pointer(bp /* &map2 */)).buckets = libc.Xcalloc(tls, uint64(cap), uint64(unsafe.Sizeof(HashEntry{})))
+	(*HashMap)(unsafe.Pointer(bp /* &map2 */)).capacity = cap
+
+	{
+		var i1 int32 = 0
+		for ; i1 < (*HashMap)(unsafe.Pointer(map1)).capacity; i1++ {
+			var ent uintptr = (*HashMap)(unsafe.Pointer(map1)).buckets + uintptr(i1)*24
+			if (*HashEntry)(unsafe.Pointer(ent)).key != 0 && (*HashEntry)(unsafe.Pointer(ent)).key != libc.UintptrFromInt32(-1) {
+				hashmap_put2(tls, bp, (*HashEntry)(unsafe.Pointer(ent)).key, (*HashEntry)(unsafe.Pointer(ent)).keylen, (*HashEntry)(unsafe.Pointer(ent)).val)
+			}
+		}
+	}
+
+	if (*HashMap)(unsafe.Pointer(bp)).used == nkeys {
+	} else {
+		libc.X__assert_fail(tls, ts+6730, ts+6720, uint32(51), uintptr(unsafe.Pointer(&__func__3)))
+	}
+	*(*HashMap)(unsafe.Pointer(map1)) = *(*HashMap)(unsafe.Pointer(bp /* map2 */))
+}
+
+var __func__3 = *(*[7]int8)(unsafe.Pointer(ts + 6749)) /* hashmap.c:28:34 */
+
+func match(tls *libc.TLS, ent uintptr, key uintptr, keylen int32) uint8 { /* hashmap.c:55:13: */
+	return uint8(libc.Bool32((*HashEntry)(unsafe.Pointer(ent)).key != 0 && (*HashEntry)(unsafe.Pointer(ent)).key != libc.UintptrFromInt32(-1) && (*HashEntry)(unsafe.Pointer(ent)).keylen == keylen && libc.Xmemcmp(tls, (*HashEntry)(unsafe.Pointer(ent)).key, key, uint64(keylen)) == 0))
+}
+
+func get_entry(tls *libc.TLS, map1 uintptr, key uintptr, keylen int32) uintptr { /* hashmap.c:60:18: */
+	bp := tls.Alloc(16)
+	defer tls.Free(16)
+
+	if !(int32((*HashMap)(unsafe.Pointer(map1)).buckets) != 0) {
+		return uintptr(0)
+	}
+
+	var hash uint64_t = fnv_hash(tls, key, keylen)
+
+	{
+		var i int32 = 0
+		for ; i < (*HashMap)(unsafe.Pointer(map1)).capacity; i++ {
+			var ent uintptr = (*HashMap)(unsafe.Pointer(map1)).buckets + uintptr((hash+uint64_t(i))%uint64_t((*HashMap)(unsafe.Pointer(map1)).capacity))*24
+			if match(tls, ent, key, keylen) != 0 {
+				return ent
+			}
+			if (*HashEntry)(unsafe.Pointer(ent)).key == uintptr(0) {
+				return uintptr(0)
+			}
+		}
+	}
+	error(tls, ts+217, libc.VaList(bp, ts+6720, 73))
+	return uintptr(0)
+}
+
+func get_or_insert_entry(tls *libc.TLS, map1 uintptr, key uintptr, keylen int32) uintptr { /* hashmap.c:76:18: */
+	bp := tls.Alloc(16)
+	defer tls.Free(16)
+
+	if !(int32((*HashMap)(unsafe.Pointer(map1)).buckets) != 0) {
+		(*HashMap)(unsafe.Pointer(map1)).buckets = libc.Xcalloc(tls, uint64(16), uint64(unsafe.Sizeof(HashEntry{})))
+		(*HashMap)(unsafe.Pointer(map1)).capacity = 16
+	} else if (*HashMap)(unsafe.Pointer(map1)).used*100/(*HashMap)(unsafe.Pointer(map1)).capacity >= 70 {
+		rehash(tls, map1)
+	}
+
+	var hash uint64_t = fnv_hash(tls, key, keylen)
+
+	{
+		var i int32 = 0
+		for ; i < (*HashMap)(unsafe.Pointer(map1)).capacity; i++ {
+			var ent uintptr = (*HashMap)(unsafe.Pointer(map1)).buckets + uintptr((hash+uint64_t(i))%uint64_t((*HashMap)(unsafe.Pointer(map1)).capacity))*24
+
+			if match(tls, ent, key, keylen) != 0 {
+				return ent
+			}
+
+			if (*HashEntry)(unsafe.Pointer(ent)).key == libc.UintptrFromInt32(-1) {
+				(*HashEntry)(unsafe.Pointer(ent)).key = key
+				(*HashEntry)(unsafe.Pointer(ent)).keylen = keylen
+				return ent
+			}
+
+			if (*HashEntry)(unsafe.Pointer(ent)).key == uintptr(0) {
+				(*HashEntry)(unsafe.Pointer(ent)).key = key
+				(*HashEntry)(unsafe.Pointer(ent)).keylen = keylen
+				(*HashMap)(unsafe.Pointer(map1)).used++
+				return ent
+			}
+		}
+	}
+	error(tls, ts+217, libc.VaList(bp, ts+6720, 105))
+	return uintptr(0)
+}
+
+func hashmap_get(tls *libc.TLS, map1 uintptr, key uintptr) uintptr { /* hashmap.c:108:6: */
+	return hashmap_get2(tls, map1, key, int32(libc.Xstrlen(tls, key)))
+}
+
+func hashmap_get2(tls *libc.TLS, map1 uintptr, key uintptr, keylen int32) uintptr { /* hashmap.c:112:6: */
+	var ent uintptr = get_entry(tls, map1, key, keylen)
+	if ent != 0 {
+		return (*HashEntry)(unsafe.Pointer(ent)).val
+	}
+	return uintptr(0)
+}
+
+func hashmap_put(tls *libc.TLS, map1 uintptr, key uintptr, val uintptr) { /* hashmap.c:117:6: */
+	hashmap_put2(tls, map1, key, int32(libc.Xstrlen(tls, key)), val)
+}
+
+func hashmap_put2(tls *libc.TLS, map1 uintptr, key uintptr, keylen int32, val uintptr) { /* hashmap.c:121:6: */
+	var ent uintptr = get_or_insert_entry(tls, map1, key, keylen)
+	(*HashEntry)(unsafe.Pointer(ent)).val = val
+}
+
+func hashmap_delete(tls *libc.TLS, map1 uintptr, key uintptr) { /* hashmap.c:126:6: */
+	hashmap_delete2(tls, map1, key, int32(libc.Xstrlen(tls, key)))
+}
+
+func hashmap_delete2(tls *libc.TLS, map1 uintptr, key uintptr, keylen int32) { /* hashmap.c:130:6: */
+	var ent uintptr = get_entry(tls, map1, key, keylen)
+	if ent != 0 {
+		(*HashEntry)(unsafe.Pointer(ent)).key = libc.UintptrFromInt32(-1)
+	}
+}
+
+func hashmap_test(tls *libc.TLS) { /* hashmap.c:136:6: */
+	bp := tls.Alloc(88)
+	defer tls.Free(88)
+
+	var map1 uintptr = libc.Xcalloc(tls, uint64(1), uint64(unsafe.Sizeof(HashMap{})))
+
+	{
+		var i int32 = 0
+		for ; i < 5000; i++ {
+			hashmap_put(tls, map1, format(tls, ts+6756, libc.VaList(bp, i)), uintptr(size_t(i)))
+		}
+	}
+	{
+		var i1 int32 = 1000
+		for ; i1 < 2000; i1++ {
+			hashmap_delete(tls, map1, format(tls, ts+6756, libc.VaList(bp+8, i1)))
+		}
+	}
+	{
+		var i2 int32 = 1500
+		for ; i2 < 1600; i2++ {
+			hashmap_put(tls, map1, format(tls, ts+6756, libc.VaList(bp+16, i2)), uintptr(size_t(i2)))
+		}
+	}
+	{
+		var i3 int32 = 6000
+		for ; i3 < 7000; i3++ {
+			hashmap_put(tls, map1, format(tls, ts+6756, libc.VaList(bp+24, i3)), uintptr(size_t(i3)))
+		}
+	}
+
+	{
+		var i4 int32 = 0
+		for ; i4 < 1000; i4++ {
+			if size_t(hashmap_get(tls, map1, format(tls, ts+6756, libc.VaList(bp+32, i4)))) == size_t(i4) {
+			} else {
+				libc.X__assert_fail(tls, ts+6763, ts+6720, uint32(149), uintptr(unsafe.Pointer(&__func__4)))
+			}
+		}
+	}
+	{
+		var i5 int32 = 1000
+		for ; i5 < 1500; i5++ {
+			if hashmap_get(tls, map1, ts+6814) == uintptr(0) {
+			} else {
+				libc.X__assert_fail(tls, ts+6826, ts+6720, uint32(151), uintptr(unsafe.Pointer(&__func__4)))
+			}
+		}
+	}
+	{
+		var i6 int32 = 1500
+		for ; i6 < 1600; i6++ {
+			if size_t(hashmap_get(tls, map1, format(tls, ts+6756, libc.VaList(bp+48, i6)))) == size_t(i6) {
+			} else {
+				libc.X__assert_fail(tls, ts+6763, ts+6720, uint32(153), uintptr(unsafe.Pointer(&__func__4)))
+			}
+		}
+	}
+	{
+		var i7 int32 = 1600
+		for ; i7 < 2000; i7++ {
+			if hashmap_get(tls, map1, ts+6814) == uintptr(0) {
+			} else {
+				libc.X__assert_fail(tls, ts+6826, ts+6720, uint32(155), uintptr(unsafe.Pointer(&__func__4)))
+			}
+		}
+	}
+	{
+		var i8 int32 = 2000
+		for ; i8 < 5000; i8++ {
+			if size_t(hashmap_get(tls, map1, format(tls, ts+6756, libc.VaList(bp+64, i8)))) == size_t(i8) {
+			} else {
+				libc.X__assert_fail(tls, ts+6763, ts+6720, uint32(157), uintptr(unsafe.Pointer(&__func__4)))
+			}
+		}
+	}
+	{
+		var i9 int32 = 5000
+		for ; i9 < 6000; i9++ {
+			if hashmap_get(tls, map1, ts+6814) == uintptr(0) {
+			} else {
+				libc.X__assert_fail(tls, ts+6826, ts+6720, uint32(159), uintptr(unsafe.Pointer(&__func__4)))
+			}
+		}
+	}
+	{
+		var i10 int32 = 6000
+		for ; i10 < 7000; i10++ {
+			hashmap_put(tls, map1, format(tls, ts+6756, libc.VaList(bp+80, i10)), uintptr(size_t(i10)))
+		}
+	}
+
+	if hashmap_get(tls, map1, ts+6814) == uintptr(0) {
+	} else {
+		libc.X__assert_fail(tls, ts+6826, ts+6720, uint32(163), uintptr(unsafe.Pointer(&__func__4)))
+	}
+	libc.Xprintf(tls, ts+6866, 0)
+}
+
+var __func__4 = *(*[13]int8)(unsafe.Pointer(ts + 6870)) /* hashmap.c:136:25 */
+
+type FileType = uint32 /* main.c:5:3 */
+
+var include_paths StringArray    /* main.c:7:13: */
+var opt_fcommon uint8 = uint8(1) /* main.c:8:6 */
+var opt_fpic uint8               /* main.c:9:6: */
+
+var opt_x FileType           /* main.c:11:17: */
+var opt_include StringArray  /* main.c:12:20: */
+var opt_E uint8              /* main.c:13:13: */
+var opt_M uint8              /* main.c:14:13: */
+var opt_MD uint8             /* main.c:15:13: */
+var opt_MMD uint8            /* main.c:16:13: */
+var opt_MP uint8             /* main.c:17:13: */
+var opt_S uint8              /* main.c:18:13: */
+var opt_c uint8              /* main.c:19:13: */
+var opt_cc1 uint8            /* main.c:20:13: */
+var opt_hash_hash_hash uint8 /* main.c:21:13: */
+var opt_static uint8         /* main.c:22:13: */
+var opt_shared uint8         /* main.c:23:13: */
+var opt_MF uintptr           /* main.c:24:13: */
+var opt_MT uintptr           /* main.c:25:13: */
+var opt_o uintptr            /* main.c:26:13: */
+
+var ld_extra_args StringArray     /* main.c:28:20: */
+var std_include_paths StringArray /* main.c:29:20: */
+
+var base_file uintptr    /* main.c:31:6: */
+var output_file1 uintptr /* main.c:32:13: */
+
+var input_paths StringArray /* main.c:34:20: */
+var tmpfiles StringArray    /* main.c:35:20: */
+

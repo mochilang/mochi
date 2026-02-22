@@ -53,7 +53,7 @@ static bool take_arg(char *arg) {
 static void add_default_include_paths(char *argv0) {
   // We expect that chibicc-specific include files are installed
   // to ./include relative to argv[0].
-  strarray_push(&include_paths, format("%s/include", dirname(strdup(argv0))));
+  strarray_push(&include_paths, format("%s/include", xdirname(argv0)));
 
   // Add standard include paths.
   strarray_push(&include_paths, "/usr/local/include");
@@ -68,7 +68,7 @@ static void add_default_include_paths(char *argv0) {
 static void define(char *str) {
   char *eq = strchr(str, '=');
   if (eq)
-    define_macro(strndup(str, eq - str), eq + 1);
+    define_macro(xstrndup(str, eq - str), eq + 1);
   else
     define_macro(str, "1");
 }
@@ -365,7 +365,7 @@ static bool endswith(char *p, char *q) {
 
 // Replace file extension
 static char *replace_extn(char *tmpl, char *extn) {
-  char *filename = basename(strdup(tmpl));
+  char *filename = xbasename(tmpl);
   char *dot = strrchr(filename, '.');
   if (dot)
     *dot = '\0';
@@ -388,6 +388,8 @@ static char *create_tmpfile(void) {
   return path;
 }
 
+void run_subprocess_go(char **argv);
+
 static void run_subprocess(char **argv) {
   // If -### is given, dump the subprocess's command line.
   if (opt_hash_hash_hash) {
@@ -397,18 +399,7 @@ static void run_subprocess(char **argv) {
     fprintf(stderr, "\n");
   }
 
-  if (fork() == 0) {
-    // Child process. Run a new command.
-    execvp(argv[0], argv);
-    fprintf(stderr, "exec failed: %s: %s\n", argv[0], strerror(errno));
-    _exit(1);
-  }
-
-  // Wait for the child process to finish.
-  int status;
-  while (wait(&status) > 0);
-  if (status != 0)
-    exit(1);
+  run_subprocess_go(argv);
 }
 
 static void run_cc1(int argc, char **argv, char *input, char *output) {
@@ -552,18 +543,9 @@ static void cc1(void) {
 
   Obj *prog = parse(tok);
 
-  // Open a temporary output buffer.
-  char *buf;
-  size_t buflen;
-  FILE *output_buf = open_memstream(&buf, &buflen);
-
-  // Traverse the AST to emit assembly.
-  codegen(prog, output_buf);
-  fclose(output_buf);
-
-  // Write the asembly text to a file.
+  // Write the assembly output directly to the target file.
   FILE *out = open_file(output_file);
-  fwrite(buf, buflen, 1, out);
+  codegen(prog, out);
   fclose(out);
 }
 
@@ -573,13 +555,41 @@ static void assemble(char *input, char *output) {
 }
 
 static char *find_file(char *pattern) {
-  char *path = NULL;
-  glob_t buf = {};
-  glob(pattern, 0, NULL, &buf);
-  if (buf.gl_pathc > 0)
-    path = strdup(buf.gl_pathv[buf.gl_pathc - 1]);
-  globfree(&buf);
-  return path;
+  char *star = strchr(pattern, '*');
+  if (!star) {
+    if (file_exists(pattern))
+      return strdup(pattern);
+    return NULL;
+  }
+
+  size_t dir_len = (size_t)(star - pattern);
+  if (dir_len == 0 || pattern[dir_len - 1] != '/')
+    return NULL;
+  char *dir = xstrndup(pattern, dir_len - 1);
+  char *suffix = star + 1;
+
+  DIR *dp = opendir(dir);
+  if (!dp) {
+    free(dir);
+    return NULL;
+  }
+
+  struct dirent *ent;
+  while ((ent = readdir(dp))) {
+    if (ent->d_name[0] == '.')
+      continue;
+    char *path = format("%s/%s%s", dir, ent->d_name, suffix);
+    if (file_exists(path)) {
+      closedir(dp);
+      free(dir);
+      return path;
+    }
+    free(path);
+  }
+
+  closedir(dp);
+  free(dir);
+  return NULL;
 }
 
 // Returns true if a given file exists.
@@ -606,7 +616,7 @@ static char *find_gcc_libpath(void) {
   for (int i = 0; i < sizeof(paths) / sizeof(*paths); i++) {
     char *path = find_file(paths[i]);
     if (path)
-      return dirname(path);
+      return xdirname(path);
   }
 
   error("gcc library path is not found");
