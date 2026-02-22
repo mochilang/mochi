@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 #include <assert.h>
 #include <ctype.h>
+#include <dirent.h>
 #include <errno.h>
 #include <glob.h>
 #include <libgen.h>
@@ -43,6 +44,10 @@ typedef struct {
 
 void strarray_push(StringArray *arr, char *s);
 char *format(char *fmt, ...) __attribute__((format(printf, 1, 2)));
+char *xstrndup(const char *s, size_t n);
+char *xdirname(const char *path);
+char *xbasename(const char *path);
+int xwait(int *status);
 
 //
 // tokenize.c

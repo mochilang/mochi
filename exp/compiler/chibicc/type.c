@@ -1,21 +1,38 @@
 #include "chibicc.h"
 
-Type *ty_void = &(Type){TY_VOID, 1, 1};
-Type *ty_bool = &(Type){TY_BOOL, 1, 1};
+static Type ty_void_storage = {TY_VOID, 1, 1};
+static Type ty_bool_storage = {TY_BOOL, 1, 1};
 
-Type *ty_char = &(Type){TY_CHAR, 1, 1};
-Type *ty_short = &(Type){TY_SHORT, 2, 2};
-Type *ty_int = &(Type){TY_INT, 4, 4};
-Type *ty_long = &(Type){TY_LONG, 8, 8};
+static Type ty_char_storage = {TY_CHAR, 1, 1};
+static Type ty_short_storage = {TY_SHORT, 2, 2};
+static Type ty_int_storage = {TY_INT, 4, 4};
+static Type ty_long_storage = {TY_LONG, 8, 8};
 
-Type *ty_uchar = &(Type){TY_CHAR, 1, 1, true};
-Type *ty_ushort = &(Type){TY_SHORT, 2, 2, true};
-Type *ty_uint = &(Type){TY_INT, 4, 4, true};
-Type *ty_ulong = &(Type){TY_LONG, 8, 8, true};
+static Type ty_uchar_storage = {TY_CHAR, 1, 1, true};
+static Type ty_ushort_storage = {TY_SHORT, 2, 2, true};
+static Type ty_uint_storage = {TY_INT, 4, 4, true};
+static Type ty_ulong_storage = {TY_LONG, 8, 8, true};
 
-Type *ty_float = &(Type){TY_FLOAT, 4, 4};
-Type *ty_double = &(Type){TY_DOUBLE, 8, 8};
-Type *ty_ldouble = &(Type){TY_LDOUBLE, 16, 16};
+static Type ty_float_storage = {TY_FLOAT, 4, 4};
+static Type ty_double_storage = {TY_DOUBLE, 8, 8};
+static Type ty_ldouble_storage = {TY_LDOUBLE, 16, 16};
+
+Type *ty_void = &ty_void_storage;
+Type *ty_bool = &ty_bool_storage;
+
+Type *ty_char = &ty_char_storage;
+Type *ty_short = &ty_short_storage;
+Type *ty_int = &ty_int_storage;
+Type *ty_long = &ty_long_storage;
+
+Type *ty_uchar = &ty_uchar_storage;
+Type *ty_ushort = &ty_ushort_storage;
+Type *ty_uint = &ty_uint_storage;
+Type *ty_ulong = &ty_ulong_storage;
+
+Type *ty_float = &ty_float_storage;
+Type *ty_double = &ty_double_storage;
+Type *ty_ldouble = &ty_ldouble_storage;
 
 static Type *new_type(TypeKind kind, int size, int align) {
   Type *ty = calloc(1, sizeof(Type));

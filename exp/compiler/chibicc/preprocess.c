@@ -350,13 +350,13 @@ static MacroParam *read_macro_params(Token **rest, Token *tok, char **va_args_na
       error_tok(tok, "expected an identifier");
 
     if (equal(tok->next, "...")) {
-      *va_args_name = strndup(tok->loc, tok->len);
+      *va_args_name = xstrndup(tok->loc, tok->len);
       *rest = skip(tok->next->next, ")");
       return head.next;
     }
 
     MacroParam *m = calloc(1, sizeof(MacroParam));
-    m->name = strndup(tok->loc, tok->len);
+    m->name = xstrndup(tok->loc, tok->len);
     cur = cur->next = m;
     tok = tok->next;
   }
@@ -368,7 +368,7 @@ static MacroParam *read_macro_params(Token **rest, Token *tok, char **va_args_na
 static void read_macro_definition(Token **rest, Token *tok) {
   if (tok->kind != TK_IDENT)
     error_tok(tok, "macro name must be an identifier");
-  char *name = strndup(tok->loc, tok->len);
+  char *name = xstrndup(tok->loc, tok->len);
   tok = tok->next;
 
   if (!tok->has_space && equal(tok, "(")) {
@@ -596,9 +596,11 @@ static Token *subst(Token *tok, MacroArg *args) {
     // empty token list. Otherwise, __VA_OPT__(x) is expanded to x.
     if (equal(tok, "__VA_OPT__") && equal(tok->next, "(")) {
       MacroArg *arg = read_macro_arg_one(&tok, tok->next->next, true);
-      if (has_varargs(args))
-        for (Token *t = arg->tok; t->kind != TK_EOF; t = t->next)
+      if (has_varargs(args)) {
+        Token *t = arg->tok;
+        for (; t->kind != TK_EOF; t = t->next)
           cur = cur->next = t;
+      }
       tok = skip(tok, ")");
       continue;
     }
@@ -723,7 +725,7 @@ static char *read_include_filename(Token **rest, Token *tok, bool *is_dquote) {
     // So we don't want to use token->str.
     *is_dquote = true;
     *rest = skip_line(tok->next);
-    return strndup(tok->loc + 1, tok->len - 2);
+    return xstrndup(tok->loc + 1, tok->len - 2);
   }
 
   // Pattern 2: #include <foo.h>
@@ -768,7 +770,7 @@ static char *detect_include_guard(Token *tok) {
   if (tok->kind != TK_IDENT)
     return NULL;
 
-  char *macro = strndup(tok->loc, tok->len);
+  char *macro = xstrndup(tok->loc, tok->len);
   tok = tok->next;
 
   if (!is_hash(tok) || !equal(tok->next, "define") || !equal(tok->next->next, macro))
@@ -862,7 +864,7 @@ static Token *preprocess2(Token *tok) {
       char *filename = read_include_filename(&tok, tok->next, &is_dquote);
 
       if (filename[0] != '/' && is_dquote) {
-        char *path = format("%s/%s", dirname(strdup(start->file->name)), filename);
+        char *path = format("%s/%s", xdirname(start->file->name), filename);
         if (file_exists(path)) {
           tok = include_file(tok, path, start->next->next);
           continue;
@@ -891,7 +893,7 @@ static Token *preprocess2(Token *tok) {
       tok = tok->next;
       if (tok->kind != TK_IDENT)
         error_tok(tok, "macro name must be an identifier");
-      undef_macro(strndup(tok->loc, tok->len));
+      undef_macro(xstrndup(tok->loc, tok->len));
       tok = skip_line(tok->next);
       continue;
     }
@@ -1154,10 +1156,12 @@ static void join_adjacent_string_literals(Token *tok) {
       }
     }
 
-    if (basety->size > 1)
-      for (Token *t = tok1; t->kind == TK_STR; t = t->next)
+    if (basety->size > 1) {
+      Token *t = tok1;
+      for (; t->kind == TK_STR; t = t->next)
         if (t->ty->base->size == 1)
           *t = *tokenize_string_literal(t, basety);
+    }
 
     while (tok1->kind == TK_STR)
       tok1 = tok1->next;
