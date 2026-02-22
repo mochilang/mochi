@@ -34,3 +34,17 @@ char *xbasename(const char *path) {
 int xwait(int *status) {
   return waitpid(-1, status, 0);
 }
+
+void run_subprocess_go(char **argv) {
+  if (fork() == 0) {
+    execvp(argv[0], argv);
+    fprintf(stderr, "exec failed: %s: %s\n", argv[0], strerror(errno));
+    _exit(1);
+  }
+
+  int status;
+  while (xwait(&status) > 0)
+    ;
+  if (status != 0)
+    exit(1);
+}
