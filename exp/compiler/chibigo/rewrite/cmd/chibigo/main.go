@@ -6,20 +6,19 @@ import (
 	"os"
 	"path/filepath"
 
-	"mochi/rewrite"
+	"mochi/exp/compiler/chibigo/rewrite"
 )
 
 func main() {
 	bin := flag.String("chibicc", defaultChibiccPath(), "path to chibicc binary")
 	flag.Parse()
 
-	compiler, err := rewrite.NewCompiler(*bin)
+	compiler, err := chibigo.New(*bin)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-
-	if err := compiler.Run(flag.Args()...); err != nil {
+	if err := compiler.Compile(flag.Args()...); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
