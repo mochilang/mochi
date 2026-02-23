@@ -1,4 +1,4 @@
-package rewrite
+package chibigo
 
 import (
 	"errors"
@@ -8,22 +8,13 @@ import (
 	"path/filepath"
 )
 
-// Compiler is an idiomatic Go wrapper around the native chibicc binary.
-//
-// It provides a stable API for building C code while keeping the execution
-// model straightforward and explicit.
 type Compiler struct {
-	// Binary points to a chibicc executable.
-	Binary string
-
-	// WorkDir is used as the process working directory. Empty means current dir.
-	WorkDir string
-
-	// ExtraEnv is appended to process environment.
+	Binary   string
+	WorkDir  string
 	ExtraEnv []string
 }
 
-func NewCompiler(binary string) (*Compiler, error) {
+func New(binary string) (*Compiler, error) {
 	if binary == "" {
 		return nil, errors.New("binary path is required")
 	}
@@ -37,14 +28,13 @@ func NewCompiler(binary string) (*Compiler, error) {
 	return &Compiler{Binary: abs}, nil
 }
 
-func (c *Compiler) Run(args ...string) error {
+func (c *Compiler) Compile(args ...string) error {
 	if c == nil {
 		return errors.New("compiler is nil")
 	}
 	if c.Binary == "" {
 		return errors.New("compiler binary is empty")
 	}
-
 	cmd := exec.Command(c.Binary, args...)
 	if c.WorkDir != "" {
 		cmd.Dir = c.WorkDir
@@ -52,7 +42,6 @@ func (c *Compiler) Run(args ...string) error {
 	cmd.Env = append(os.Environ(), c.ExtraEnv...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("run chibicc: %w", err)
 	}
