@@ -2120,6 +2120,8 @@ func isStringListNode(n Node) bool {
 				switch sym {
 				case "fields":
 					return true
+				case "split":
+					return true
 				case "keys":
 					if len(t.Elems) >= 2 {
 						if isMapNode(t.Elems[1]) {
@@ -3979,10 +3981,10 @@ func castNode(n Node, t *parser.TypeRef) (Node, error) {
 	}
 	switch *t.Simple {
 	case "int":
-		if isStringNode(n) {
-			return &List{Elems: []Node{Symbol("Long/parseLong"), n}}, nil
-		}
-		return &List{Elems: []Node{Symbol("long"), n}}, nil
+		// Use toi helper which parses strings via Double/valueOf and
+		// handles numeric values directly. This avoids ClassCastException
+		// when casting string expressions like (read-line) or (nth parts 0).
+		return &List{Elems: []Node{Symbol("toi"), n}}, nil
 	case "float":
 		if isStringNode(n) {
 			return &List{Elems: []Node{Symbol("Double/parseDouble"), n}}, nil
