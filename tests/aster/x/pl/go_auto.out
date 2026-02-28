@@ -1,0 +1,4 @@
+ERROR: /workspace/mochi/tests/aster/x/pl/go_auto.pl:1: Initialization goal raised exception:
+ERROR: catch/3: Unknown procedure: main/1
+ERROR:   However, there are definitions for:
+ERROR:         main/0

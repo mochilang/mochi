@@ -1,0 +1,127 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "=",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "Todo"
+                },
+                {
+                  "kind": "{}",
+                  "children": [
+                    {
+                      "kind": ":",
+                      "children": [
+                        {
+                          "kind": "atom",
+                          "text": "title"
+                        },
+                        {
+                          "kind": "atom",
+                          "text": "hi"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "get_dict",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "title"
+                    },
+                    {
+                      "kind": "var",
+                      "text": "Todo"
+                    },
+                    {
+                      "kind": "var",
+                      "text": "V1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "writeln",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "V1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
