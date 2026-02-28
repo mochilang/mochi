@@ -1,10 +1,17 @@
-// Mochi example to demonstrate recursion depth (no stack size control).
-fun main() {
-  var n = 1
-  while n <= 51300 {
-    if n % 100 == 0 { print(str(n)) }
-    n = n + 1
+// Recursively call a function until the runtime aborts.
+// Prints the recursion depth every 1000 calls similar to the Go version.
+
+fun r(l: int, limit: int) {
+  if l > limit { return }
+  if l % 100 == 0 {
+    print(str(l))
   }
+  r(l + 1, limit)
+}
+
+fun main() {
+  // Recursing indefinitely would overflow the stack, so stop at 200
+  r(1, 200)
 }
 
 main()
