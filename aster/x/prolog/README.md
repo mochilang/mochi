@@ -54,7 +54,32 @@ This directory contains utilities for inspecting Prolog programs using SWI-Prolo
 48. [x] two-sum.pl
 49. [x] unique_elements.pl
 50. [x] upcase_atom.pl
+51. [x] zz_example51.pl
+52. [x] zz_example52.pl
+53. [x] zz_example53.pl
+54. [x] zz_example54.pl
+55. [x] zz_example55.pl
+56. [x] zz_example56.pl
+57. [x] zz_example57.pl
+58. [x] zz_example58.pl
+59. [x] zz_example59.pl
+60. [x] zz_example60.pl
+61. [x] zz_example61.pl
+62. [x] zz_example62.pl
+63. [x] zz_example63.pl
+64. [x] zz_example64.pl
+65. [x] zz_example65.pl
+66. [x] zz_example66.pl
+67. [x] zz_example67.pl
+68. [x] zz_example68.pl
+69. [x] zz_example69.pl
+70. [x] zz_example70.pl
+71. [x] zz_example71.pl
+72. [x] zz_example72.pl
+73. [x] zz_example73.pl
+74. [x] zz_example74.pl
+75. [x] zz_example75.pl
 
-Completed **50/50** examples.
+Completed **75/75** examples.
 
-_Last updated: 2025-07-31 20:58 GMT+07_
+_Last updated: 2025-08-01 10:21 GMT+07_
