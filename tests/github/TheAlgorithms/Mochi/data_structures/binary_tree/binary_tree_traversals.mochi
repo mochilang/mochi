@@ -1,0 +1,143 @@
+/*
+Binary tree traversal algorithms using an array-based tree representation.
+
+The example tree:
+    1
+   / \
+  2   3
+ / \
+4   5
+is stored as a list of nodes where each node holds the index of its left
+and right child (-1 denotes no child).
+
+The program implements:
+- Pre-order traversal (root, left, right)
+- Post-order traversal (left, right, root)
+- In-order traversal (left, root, right)
+- Reverse in-order traversal (right, root, left)
+- Level-order traversal (breadth-first)
+- ZigZag traversal (alternating directions per level)
+
+All traversals run in O(n) time for n nodes. Recursion depth determines
+additional space usage.
+*/
+
+type Node {
+  value: int
+  left: int
+  right: int
+}
+
+fun max2(a: int, b: int): int {
+  if a > b {
+    return a
+  } else {
+    return b
+  }
+}
+
+fun make_tree(): list<Node> {
+  return [
+    Node { value: 1, left: 1, right: 2 },
+    Node { value: 2, left: 3, right: 4 },
+    Node { value: 3, left: (-1), right: (-1) },
+    Node { value: 4, left: (-1), right: (-1) },
+    Node { value: 5, left: (-1), right: (-1) }
+  ]
+}
+
+fun preorder(tree: list<Node>, idx: int): list<int> {
+  if idx == (-1) { return [] as list<int> }
+  let node = tree[idx]
+  return concat([node.value], concat(preorder(tree, node.left), preorder(tree, node.right)))
+}
+
+fun postorder(tree: list<Node>, idx: int): list<int> {
+  if idx == (-1) { return [] as list<int> }
+  let node = tree[idx]
+  return concat(postorder(tree, node.left), concat(postorder(tree, node.right), [node.value]))
+}
+
+fun inorder(tree: list<Node>, idx: int): list<int> {
+  if idx == (-1) { return [] as list<int> }
+  let node = tree[idx]
+  return concat(inorder(tree, node.left), concat([node.value], inorder(tree, node.right)))
+}
+
+fun reverse_inorder(tree: list<Node>, idx: int): list<int> {
+  if idx == (-1) { return [] as list<int> }
+  let node = tree[idx]
+  return concat(reverse_inorder(tree, node.right), concat([node.value], reverse_inorder(tree, node.left)))
+}
+
+fun height(tree: list<Node>, idx: int): int {
+  if idx == (-1) { return 0 }
+  let node = tree[idx]
+  return max2(height(tree, node.left), height(tree, node.right)) + 1
+}
+
+fun get_nodes_from_left_to_right(tree: list<Node>, idx: int, level: int): list<int> {
+  if idx == (-1) { return [] as list<int> }
+  let node = tree[idx]
+  if level == 1 {
+    return [node.value]
+  }
+  return concat(get_nodes_from_left_to_right(tree, node.left, level - 1), get_nodes_from_left_to_right(tree, node.right, level - 1))
+}
+
+fun get_nodes_from_right_to_left(tree: list<Node>, idx: int, level: int): list<int> {
+  if idx == (-1) { return [] as list<int> }
+  let node = tree[idx]
+  if level == 1 {
+    return [node.value]
+  }
+  return concat(get_nodes_from_right_to_left(tree, node.right, level - 1), get_nodes_from_right_to_left(tree, node.left, level - 1))
+}
+
+fun level_order(tree: list<Node>, idx: int): list<int> {
+  let h = height(tree, idx)
+  var res: list<int> = []
+  var lvl = 1
+  while lvl <= h {
+    res = concat(res, get_nodes_from_left_to_right(tree, idx, lvl))
+    lvl = lvl + 1
+  }
+  return res
+}
+
+fun zigzag(tree: list<Node>, idx: int): list<int> {
+  let h = height(tree, idx)
+  var res: list<int> = []
+  var lvl = 1
+  var flag = 0
+  while lvl <= h {
+    if flag == 0 {
+      res = concat(res, get_nodes_from_left_to_right(tree, idx, lvl))
+      flag = 1
+    } else {
+      res = concat(res, get_nodes_from_right_to_left(tree, idx, lvl))
+      flag = 0
+    }
+    lvl = lvl + 1
+  }
+  return res
+}
+
+let tree = make_tree()
+let root = 0
+print("In-order Traversal: " + str(inorder(tree, root)))
+print("Reverse In-order Traversal: " + str(reverse_inorder(tree, root)))
+print("Pre-order Traversal: " + str(preorder(tree, root)))
+print("Post-order Traversal: " + str(postorder(tree, root)) + "\n")
+print("Height of Tree: " + str(height(tree, root)) + "\n")
+print("Complete Level Order Traversal:")
+print(str(level_order(tree, root)) + " \n")
+print("Level-wise order Traversal:")
+var level = 1
+let h = height(tree, root)
+while level <= h {
+  print("Level " + str(level) + ": " + str(get_nodes_from_left_to_right(tree, root, level)))
+  level = level + 1
+}
+print("\nZigZag order Traversal:")
+print(str(zigzag(tree, root)))
