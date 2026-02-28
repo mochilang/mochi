@@ -469,6 +469,23 @@ func peephole(fn *Function, analysis *LiveInfo) bool {
 			}
 		}
 
+		// fold Not followed by conditional jump
+		if ins.Op == OpNot && pc+1 < len(fn.Code) {
+			next := fn.Code[pc+1]
+			if (next.Op == OpJumpIfFalse || next.Op == OpJumpIfTrue) && next.A == ins.A && !analysis.Out[pc+1][ins.A] {
+				if next.Op == OpJumpIfFalse {
+					next.Op = OpJumpIfTrue
+				} else {
+					next.Op = OpJumpIfFalse
+				}
+				next.A = ins.B
+				fn.Code[pc+1] = next
+				pcMap[pc] = -1
+				changed = true
+				continue
+			}
+		}
+
 		// simplify operations with identity constants immediately preceding
 		if pc > 0 {
 			prev := fn.Code[pc-1]
