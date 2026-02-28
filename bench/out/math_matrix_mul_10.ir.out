@@ -1,4 +1,4 @@
-func main (regs=63)
+func __main (regs=63)
   // let size = 10
   Const        r8, 10
   Move         r0, r8
@@ -13,20 +13,18 @@ func main (regs=63)
   SetGlobal    2,2,0,0
   // for i in 0..size {
   Const        r10, 0
-  Const        r8, 10
   Move         r11, r10
 L3:
-  LessInt      r12, r11, r8
+  LessInt      r12, r11, r0
   JumpIfFalse  r12, L0
   // var row: list<int> = []
   Const        r9, []
   Move         r13, r9
   // for j in 0..size {
   Const        r10, 0
-  Const        r8, 10
   Move         r14, r10
 L2:
-  LessInt      r15, r14, r8
+  LessInt      r15, r14, r0
   JumpIfFalse  r15, L1
   // row = row + [i + j]
   AddInt       r17, r11, r14
@@ -58,20 +56,18 @@ L0:
   SetGlobal    3,3,0,0
   // for i in 0..size {
   Const        r10, 0
-  Const        r8, 10
   Move         r11, r10
 L7:
-  LessInt      r27, r11, r8
+  LessInt      r27, r11, r0
   JumpIfFalse  r27, L4
   // var row: list<int> = []
   Const        r9, []
   Move         r28, r9
   // for j in 0..size {
   Const        r10, 0
-  Const        r8, 10
   Move         r29, r10
 L6:
-  LessInt      r30, r29, r8
+  LessInt      r30, r29, r0
   JumpIfFalse  r30, L5
   // row = row + [i * j]
   MulInt       r32, r11, r29
@@ -107,10 +103,9 @@ L4:
   SetGlobal    5,5,0,0
   // for i in 0..repeat {
   Const        r10, 0
-  Const        r8, 10
   Move         r11, r10
 L9:
-  LessInt      r43, r11, r8
+  LessInt      r43, r11, r1
   JumpIfFalse  r43, L8
   // last = matmul(a, b)
   Move         r44, r2
