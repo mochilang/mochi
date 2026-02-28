@@ -7,6 +7,12 @@ import (
 	"mochi/types"
 )
 
+// benchMain tracks whether generated programs should wrap main in a benchmark
+// block. It exists in the stub build so callers can set the value without
+// referencing an undefined symbol when the real implementation is excluded by
+// build tags.
+var benchMain bool
+
 // Program is a placeholder used when the real implementation is excluded by build tags.
 type Program struct{}
 
