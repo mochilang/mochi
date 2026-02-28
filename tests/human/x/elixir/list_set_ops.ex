@@ -1,0 +1,6 @@
+set1 = MapSet.new([1, 2])
+set2 = MapSet.new([2, 3])
+IO.inspect(MapSet.to_list(MapSet.union(set1, set2)))
+IO.inspect(MapSet.to_list(MapSet.difference(MapSet.new([1,2,3]), MapSet.new([2]))))
+IO.inspect(MapSet.to_list(MapSet.intersection(MapSet.new([1,2,3]), MapSet.new([2,4]))))
+IO.inspect(length([1,2] ++ [2,3]))
