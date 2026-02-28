@@ -132,8 +132,27 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 			c.writeln(fmt.Sprintf("if _, ok := extern.Get(%q); !ok { panic(\"extern object not registered: %s\") }", name, name))
 		}
 	}
+	// Initialise global variables inside main before executing the rest of
+	// the program. Package level declarations were emitted above.
+	for _, s := range prog.Statements {
+		switch {
+		case s.Let != nil:
+			if s.Let.Value != nil {
+				if err := c.compileAssign(&parser.AssignStmt{Pos: s.Let.Pos, Name: s.Let.Name, Value: s.Let.Value}); err != nil {
+					return err
+				}
+			}
+		case s.Var != nil:
+			if s.Var.Value != nil {
+				if err := c.compileAssign(&parser.AssignStmt{Pos: s.Var.Pos, Name: s.Var.Name, Value: s.Var.Value}); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
 	// Variable initialisation happens as part of the statement list
-	// so we no longer emit explicit assignments here.
+	// for remaining statements.
 	body := []*parser.Statement{}
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Test != nil {
