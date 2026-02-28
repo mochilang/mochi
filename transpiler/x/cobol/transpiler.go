@@ -21,6 +21,7 @@ type Program struct {
 }
 
 var constVars map[string]interface{}
+var currentProgram *Program
 
 func (p *Program) addStmt(s Stmt) {
 	p.Stmts = append(p.Stmts, s)
@@ -397,26 +398,14 @@ func (d *DisplayStmt) emit(w io.Writer) {
 	if ce, ok := d.Expr.(*ContainsExpr); ok {
 		io.WriteString(w, "IF ")
 		ce.emitExpr(w)
-		io.WriteString(w, " THEN\n        DISPLAY \"True\"\n    ELSE\n        DISPLAY \"False\"\n    END-IF")
+		io.WriteString(w, " THEN\n        DISPLAY 1\n    ELSE\n        DISPLAY 0\n    END-IF")
 		return
 	}
 	if isBoolExpr(d.Expr) {
 		io.WriteString(w, "IF ")
 		emitCondExpr(w, d.Expr)
-		io.WriteString(w, "\n        DISPLAY \"True\"\n    ELSE\n        DISPLAY \"False\"\n    END-IF")
+		io.WriteString(w, "\n        DISPLAY 1\n    ELSE\n        DISPLAY 0\n    END-IF")
 		return
-	}
-	if d.IsString {
-		if se, ok := d.Expr.(*SubstringExpr); ok {
-			if a, ok1 := evalInt(se.Start); ok1 {
-				if b, ok2 := evalInt(se.End); ok2 && b-a == 1 {
-					io.WriteString(w, "DISPLAY FUNCTION CONCATENATE(\"'\", ")
-					d.Expr.emitExpr(w)
-					io.WriteString(w, ", \"'\")")
-					return
-				}
-			}
-		}
 	}
 	io.WriteString(w, "DISPLAY ")
 	d.Expr.emitExpr(w)
@@ -531,6 +520,7 @@ func Emit(p *Program) []byte {
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	pr := &Program{}
 	constVars = map[string]interface{}{}
+	currentProgram = pr
 	for _, st := range prog.Statements {
 		switch {
 		case st.Let != nil:
@@ -645,6 +635,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 	_ = env
 	normalizeSubstringLiterals(pr)
+	currentProgram = nil
 	return pr, nil
 }
 
@@ -722,6 +713,28 @@ func transpileStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 	var out []Stmt
 	for _, s := range list {
 		switch {
+		case s.Let != nil:
+			vd, initStmt, err := convertVar(s.Let.Name, s.Let.Type, s.Let.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			if currentProgram != nil {
+				currentProgram.Vars = append(currentProgram.Vars, vd)
+			}
+			if initStmt != nil {
+				out = append(out, initStmt)
+			}
+		case s.Var != nil:
+			vd, initStmt, err := convertVar(s.Var.Name, s.Var.Type, s.Var.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			if currentProgram != nil {
+				currentProgram.Vars = append(currentProgram.Vars, vd)
+			}
+			if initStmt != nil {
+				out = append(out, initStmt)
+			}
 		case s.Assign != nil:
 			ex, err := convertExpr(s.Assign.Value, env)
 			if err != nil {
