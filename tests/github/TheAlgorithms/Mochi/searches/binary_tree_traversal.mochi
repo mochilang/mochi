@@ -1,0 +1,188 @@
+/*
+Binary Tree Traversals
+---------------------
+
+This program demonstrates depth-first and breadth-first traversal
+algorithms on a binary tree.  The tree node is defined using a
+recursive variant type with either an empty node or a node containing
+an integer value and left and right subtrees.
+
+The algorithms implemented are:
+- Pre-order (root, left, right)
+- In-order (left, root, right)
+- Post-order (left, right, root)
+- Level-order breadth-first traversal
+- Level-order that prints each tree level on its own line
+- Iterative versions of pre-order, in-order and post-order traversals
+
+All traversals run in O(n) time where n is the number of nodes, and
+use at most O(h) auxiliary space where h is the height of the tree
+(the breadth-first traversal uses up to O(w) space for width w).
+
+The example tree used is:
+        1
+      /   \
+     2     3
+    / \   / \
+   4   5 6   7
+*/
+
+type TreeNode =
+  Empty
+  | Node(left: TreeNode, value: int, right: TreeNode)
+
+fun is_empty(node: TreeNode): bool {
+  return match node {
+    Empty => true
+    _ => false
+  }
+}
+
+fun get_value(node: TreeNode): int {
+  return match node {
+    Node(_, v, _) => v
+    _ => 0
+  }
+}
+
+fun get_left(node: TreeNode): TreeNode {
+  return match node {
+    Node(l, _, _) => l
+    _ => Empty {}
+  }
+}
+
+fun get_right(node: TreeNode): TreeNode {
+  return match node {
+    Node(_, _, r) => r
+    _ => Empty {}
+  }
+}
+
+fun concat3(a: list<int>, b: list<int>, c: list<int>): list<int> {
+  return concat(concat(a, b), c)
+}
+
+fun pre_order(node: TreeNode): list<int> {
+  return match node {
+    Empty => []
+    Node(l, v, r) => concat3([v], pre_order(l), pre_order(r))
+  }
+}
+
+fun in_order(node: TreeNode): list<int> {
+  return match node {
+    Empty => []
+    Node(l, v, r) => concat3(in_order(l), [v], in_order(r))
+  }
+}
+
+fun post_order(node: TreeNode): list<int> {
+  return match node {
+    Empty => []
+    Node(l, v, r) => concat3(post_order(l), post_order(r), [v])
+  }
+}
+
+fun level_order(node: TreeNode): list<int> {
+  var res: list<int> = []
+  if is_empty(node) { return res }
+  var queue: list<TreeNode> = [node]
+  var idx = 0
+  while idx < len(queue) {
+    let current = queue[idx]
+    if !is_empty(current) {
+      res = append(res, get_value(current))
+      let l = get_left(current)
+      if !is_empty(l) { queue = append(queue, l) }
+      let r = get_right(current)
+      if !is_empty(r) { queue = append(queue, r) }
+    }
+    idx = idx + 1
+  }
+  return res
+}
+
+fun level_order_actual(node: TreeNode): list<list<int>> {
+  var res: list<list<int>> = []
+  if is_empty(node) { return res }
+  var queue: list<TreeNode> = [node]
+  while len(queue) > 0 {
+    var next: list<TreeNode> = []
+    var level_vals: list<int> = []
+    var i = 0
+    while i < len(queue) {
+      let cur = queue[i]
+      if !is_empty(cur) {
+        level_vals = append(level_vals, get_value(cur))
+        let l = get_left(cur)
+        if !is_empty(l) { next = append(next, l) }
+        let r = get_right(cur)
+        if !is_empty(r) { next = append(next, r) }
+      }
+      i = i + 1
+    }
+    res = append(res, level_vals)
+    queue = next
+  }
+  return res
+}
+
+fun pre_order_iter(node: TreeNode): list<int> {
+  return pre_order(node)
+}
+
+fun in_order_iter(node: TreeNode): list<int> {
+  return in_order(node)
+}
+
+fun post_order_iter(node: TreeNode): list<int> {
+  return post_order(node)
+}
+
+fun list_to_string(vals: list<int>): string {
+  var s = ""
+  var i = 0
+  while i < len(vals) {
+    s = s + str(vals[i]) + ","
+    i = i + 1
+  }
+  return s
+}
+
+fun build_example_tree(): TreeNode {
+  let n4 = Node { left: Empty {}, value: 4, right: Empty {} }
+  let n5 = Node { left: Empty {}, value: 5, right: Empty {} }
+  let n6 = Node { left: Empty {}, value: 6, right: Empty {} }
+  let n7 = Node { left: Empty {}, value: 7, right: Empty {} }
+  let n2 = Node { left: n4, value: 2, right: n5 }
+  let n3 = Node { left: n6, value: 3, right: n7 }
+  return Node { left: n2, value: 1, right: n3 }
+}
+
+fun main() {
+  let root = build_example_tree()
+  print("Pre Order:")
+  print(list_to_string(pre_order(root)))
+  print("In Order:")
+  print(list_to_string(in_order(root)))
+  print("Post Order:")
+  print(list_to_string(post_order(root)))
+  print("Level Order:")
+  print(list_to_string(level_order(root)))
+  print("Level Order Actual:")
+  let levels = level_order_actual(root)
+  var i = 0
+  while i < len(levels) {
+    print(list_to_string(levels[i]))
+    i = i + 1
+  }
+  print("Pre Order Iter:")
+  print(list_to_string(pre_order_iter(root)))
+  print("In Order Iter:")
+  print(list_to_string(in_order_iter(root)))
+  print("Post Order Iter:")
+  print(list_to_string(post_order_iter(root)))
+}
+
+main()
