@@ -92,7 +92,7 @@ fun main() {
     let line = input()
     let tokens = split(line)
     let num = parse(tokens)
-    print(string(num))
+    print(str(num))
     tc = tc + 1
   }
 }
