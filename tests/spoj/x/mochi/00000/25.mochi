@@ -1,0 +1,106 @@
+// Solution for SPOJ POUR1 - Pouring water
+// https://www.spoj.com/problems/POUR1/
+// BFS on jug states to find minimum pours.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun stateKey(a: int, b: int, c: int): string {
+  return str(a) + "," + str(b) + "," + str(c)
+}
+
+fun solve(A: int, B: int, C: int, d: int): int {
+  if d == C { return 0 }
+  if d > C { return 0 - 1 }
+  var visited: map<string, bool> = {}
+  var qa: list<int> = []
+  var qb: list<int> = []
+  var qc: list<int> = []
+  var qd: list<int> = []
+  let s0 = stateKey(0, 0, C)
+  visited[s0] = true
+  qa = append(qa, 0)
+  qb = append(qb, 0)
+  qc = append(qc, C)
+  qd = append(qd, 0)
+  var head = 0
+  while head < len(qa) {
+    let a = qa[head]
+    let b = qb[head]
+    let c = qc[head]
+    let dist = qd[head]
+    // Try all 6 pour directions
+    var nexts: list<int> = []
+    // a->b
+    let ab = if a + b > B { B } else { a + b }
+    let ra = a - (ab - b)
+    nexts = append(nexts, ra); nexts = append(nexts, ab); nexts = append(nexts, c)
+    // a->c
+    let ac = if a + c > C { C } else { a + c }
+    let ra2 = a - (ac - c)
+    nexts = append(nexts, ra2); nexts = append(nexts, b); nexts = append(nexts, ac)
+    // b->a
+    let ba = if b + a > A { A } else { b + a }
+    let rb = b - (ba - a)
+    nexts = append(nexts, ba); nexts = append(nexts, rb); nexts = append(nexts, c)
+    // b->c
+    let bc = if b + c > C { C } else { b + c }
+    let rb2 = b - (bc - c)
+    nexts = append(nexts, a); nexts = append(nexts, rb2); nexts = append(nexts, bc)
+    // c->a
+    let ca = if c + a > A { A } else { c + a }
+    let rc = c - (ca - a)
+    nexts = append(nexts, ca); nexts = append(nexts, b); nexts = append(nexts, rc)
+    // c->b
+    let cb = if c + b > B { B } else { c + b }
+    let rc2 = c - (cb - b)
+    nexts = append(nexts, a); nexts = append(nexts, cb); nexts = append(nexts, rc2)
+    var ni = 0
+    while ni < 6 {
+      let na = nexts[ni * 3]
+      let nb = nexts[ni * 3 + 1]
+      let nc = nexts[ni * 3 + 2]
+      if na == d || nb == d || nc == d { return dist + 1 }
+      let key = stateKey(na, nb, nc)
+      if visited[key] != true {
+        visited[key] = true
+        qa = append(qa, na)
+        qb = append(qb, nb)
+        qc = append(qc, nc)
+        qd = append(qd, dist + 1)
+      }
+      ni = ni + 1
+    }
+    head = head + 1
+  }
+  return 0 - 1
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  for _ in 0..t {
+    let parts = split(input())
+    let A = int(parts[0])
+    let B = int(parts[1])
+    let C = int(parts[2])
+    let d = int(parts[3])
+    if d == 0 { print(0) } else { print(solve(A, B, C, d)) }
+  }
+}
+
+main()

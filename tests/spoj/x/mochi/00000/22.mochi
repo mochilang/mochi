@@ -1,0 +1,64 @@
+// Solution for SPOJ TRGCNT - Triangle From Centroid
+// https://www.spoj.com/problems/TRGCNT/
+// Given centroid-to-vertex distances d1,d2,d3, find triangle area.
+// Medians = 3/2 * di. Area = (4/3)*sqrt(s*(s-ma)*(s-mb)*(s-mc)).
+
+fun mysqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var i = 0
+  while i < 60 {
+    r = (r + x / r) / 2.0
+    i = i + 1
+  }
+  return r
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun fmtDecimal(x: float, places: int): string {
+  var mult = 1.0
+  var i = 0
+  while i < places { mult = mult * 10.0; i = i + 1 }
+  let scaled = int(x * mult + 0.5)
+  let imult = int(mult)
+  let intPart = int(scaled / imult)
+  let fracPart = scaled % imult
+  var fracStr = str(fracPart)
+  while len(fracStr) < places { fracStr = "0" + fracStr }
+  return str(intPart) + "." + fracStr
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  for _ in 0..t {
+    let p = split(input())
+    let d1 = int(p[0]) as float
+    let d2 = int(p[1]) as float
+    let d3 = int(p[2]) as float
+    let ma = d1 * 1.5
+    let mb = d2 * 1.5
+    let mc = d3 * 1.5
+    let s = (ma + mb + mc) / 2.0
+    let area = (4.0 / 3.0) * mysqrt(s * (s-ma) * (s-mb) * (s-mc))
+    print(fmtDecimal(area, 4))
+  }
+}
+
+main()

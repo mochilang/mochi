@@ -1,0 +1,139 @@
+// Solution for SPOJ BLINNET - Bytelandian Blingors Network
+// https://www.spoj.com/problems/BLINNET/
+// Minimum Spanning Tree via Kruskal's algorithm.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun find(parent: list<int>, x: int): int {
+  if parent[x] == x { return x }
+  let r = find(parent, parent[x])
+  parent[x] = r
+  return r
+}
+
+fun sortEdges(eu: list<int>, ev: list<int>, ew: list<int>): list<int> {
+  // Returns sorted indices by weight (insertion sort)
+  let n = len(ew)
+  var idx: list<int> = []
+  var i = 0
+  while i < n { idx = append(idx, i); i = i + 1 }
+  i = 1
+  while i < n {
+    let ki = idx[i]
+    let kw = ew[ki]
+    var j = i - 1
+    while j >= 0 && ew[idx[j]] > kw {
+      idx[j+1] = idx[j]
+      j = j - 1
+    }
+    idx[j+1] = ki
+    i = i + 1
+  }
+  return idx
+}
+
+fun main() {
+  var tLine = input()
+  while tLine != "" {
+    let t = int(tLine)
+    for _ in 0..t {
+      var nLine = input()
+      while nLine == "" { nLine = input() }
+      let n = int(nLine)
+      var cityIndex: map<string, int> = {}
+      var eu: list<int> = []
+      var ev: list<int> = []
+      var ew: list<int> = []
+      var ci = 0
+      while ci < n {
+        let name = input()
+        cityIndex[name] = ci
+        ci = ci + 1
+      }
+      // Re-read edges
+      var parent: list<int> = []
+      var i = 0
+      while i < n { parent = append(parent, i); i = i + 1 }
+      // Actually we need two passes or store names first. Let me redo.
+      // The input alternates: city name, then "#neighbors neighbor cost ..."
+      // We already consumed city names above - need to interleave.
+      // Reset and re-read.
+      ci = 0
+      // The above approach won't work with two-pass. Use single pass instead.
+      // Reset state.
+      eu = []
+      ev = []
+      ew = []
+      cityIndex = {}
+      parent = []
+      i = 0
+      while i < n { parent = append(parent, i); i = i + 1 }
+      ci = 0
+      while ci < n {
+        let name = input()
+        if !cityIndex["__exists_" + name] as bool {
+          cityIndex[name] = ci
+          cityIndex["__exists_" + name] = true
+          ci = ci + 1
+        }
+        let kLine = split(input())
+        let k = int(kLine[0])
+        var ki = 0
+        while ki < k {
+          let neighbor = kLine[1 + 2*ki]
+          let cost = int(kLine[1 + 2*ki + 1])
+          let uid = cityIndex[name] as int
+          var vid = 0
+          if cityIndex["__exists_" + neighbor] as bool {
+            vid = cityIndex[neighbor] as int
+          } else {
+            vid = ci
+            cityIndex[neighbor] = ci
+            cityIndex["__exists_" + neighbor] = true
+            ci = ci + 1
+          }
+          eu = append(eu, uid)
+          ev = append(ev, vid)
+          ew = append(ew, cost)
+          ki = ki + 1
+        }
+      }
+      let sorted = sortEdges(eu, ev, ew)
+      var total = 0
+      var components = n
+      i = 0
+      while i < len(sorted) {
+        let idx = sorted[i]
+        let u = eu[idx]
+        let v = ev[idx]
+        let ru = find(parent, u)
+        let rv = find(parent, v)
+        if ru != rv {
+          parent[ru] = rv
+          total = total + ew[idx]
+          components = components - 1
+          if components == 1 { break }
+        }
+        i = i + 1
+      }
+      print(total)
+    }
+    tLine = input()
+  }
+}
+
+main()
