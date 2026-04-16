@@ -111,7 +111,7 @@ This directory holds Clojure source code generated from the real Mochi programs 
 - [ ] best-shuffle
 - [ ] bifid-cipher
 - [ ] bin-given-limits
-- [ ] binary-digits
+ - [x] binary-digits
 - [ ] binary-search
 - [ ] binary-strings
 - [ ] bioinformatics-base-count
