@@ -1,0 +1,65 @@
+// Solution for SPOJ NHAY - A Needle in the Haystack
+// https://www.spoj.com/problems/NHAY/
+// KMP substring search
+
+fun buildKMP(pat: string): list<int> {
+  let m = len(pat)
+  var fail: list<int> = []
+  var i = 0
+  while i < m {
+    fail = append(fail, 0)
+    i = i + 1
+  }
+  var k = 0
+  i = 1
+  while i < m {
+    while k > 0 && pat[k:k+1] != pat[i:i+1] {
+      k = fail[k-1]
+    }
+    if pat[k:k+1] == pat[i:i+1] { k = k + 1 }
+    fail[i] = k
+    i = i + 1
+  }
+  return fail
+}
+
+fun kmpSearch(text: string, pat: string, fail: list<int>): list<int> {
+  var matches: list<int> = []
+  let n = len(text)
+  let m = len(pat)
+  var k = 0
+  var i = 0
+  while i < n {
+    while k > 0 && pat[k:k+1] != text[i:i+1] {
+      k = fail[k-1]
+    }
+    if pat[k:k+1] == text[i:i+1] { k = k + 1 }
+    if k == m {
+      matches = append(matches, i - m + 1)
+      k = fail[k-1]
+    }
+    i = i + 1
+  }
+  return matches
+}
+
+fun main() {
+  var first = true
+  var needleStr = input()
+  while needleStr != "" {
+    let needle = needleStr
+    let haystack = input()
+    if !first { print("") }
+    first = false
+    if len(needle) > 0 && len(haystack) >= len(needle) {
+      let fail = buildKMP(needle)
+      let positions = kmpSearch(haystack, needle, fail)
+      for pos in positions {
+        print(pos)
+      }
+    }
+    needleStr = input()
+  }
+}
+
+main()
