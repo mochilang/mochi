@@ -1,0 +1,68 @@
+// Solution for SPOJ SLEXSORT - Sorting by a Custom Alphabet
+// https://www.spoj.com/problems/SLEXSORT/
+// Sort words using a custom alphabet ordering.
+// Score = source code length (shorter is better).
+
+// Compare two words using rank map; return 1 if a < b, 0 if a >= b
+fun wordLess(a: string, b: string, rank: map<string, int>): int {
+  var i = 0
+  while i < len(a) && i < len(b) {
+    let ca = a[i:i+1]
+    let cb = b[i:i+1]
+    var ra = 999
+    var rb = 999
+    if rank[ca] > 0 { ra = rank[ca] - 1 }
+    if rank[cb] > 0 { rb = rank[cb] - 1 }
+    if ra < rb { return 1 }
+    if ra > rb { return 0 }
+    i = i + 1
+  }
+  if len(a) < len(b) { return 1 }
+  return 0
+}
+
+fun main() {
+  var tLine = input()
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    let alpha = input()
+    // Build rank map: store rank+1 so 0 means not present
+    var rank: map<string, int> = {}
+    var ai = 0
+    while ai < len(alpha) {
+      rank[alpha[ai:ai+1]] = ai + 1
+      ai = ai + 1
+    }
+    let nLine = input()
+    let n = int(nLine)
+    var words: list<string> = []
+    var wi = 0
+    while wi < n {
+      words = append(words, input())
+      wi = wi + 1
+    }
+    // Insertion sort
+    var i = 1
+    while i < n {
+      let key = words[i]
+      var j = i - 1
+      while j >= 0 && wordLess(key, words[j], rank) == 1 {
+        words[j+1] = words[j]
+        j = j - 1
+      }
+      words[j+1] = key
+      i = i + 1
+    }
+    var oi = 0
+    while oi < n {
+      print(words[oi])
+      oi = oi + 1
+    }
+    // Empty line between tests
+    print("")
+    ti = ti + 1
+  }
+}
+
+main()
