@@ -1738,7 +1738,21 @@ func isSimpleExpr(e *parser.Expr) bool {
 		return false
 	}
 	p := u.Value
-	return len(p.Ops) == 0 && p.Target != nil && (p.Target.Lit != nil || p.Target.Selector != nil)
+	if len(p.Ops) != 0 || p.Target == nil {
+		return false
+	}
+	if p.Target.Lit != nil || p.Target.Selector != nil {
+		return true
+	}
+	if call := p.Target.Call; call != nil && isBuiltinCall(call.Func) {
+		for _, a := range call.Args {
+			if !(isSimpleExpr(a) || isLiteralExpr(a) || simpleIdent(a) != "") {
+				return false
+			}
+		}
+		return true
+	}
+	return false
 }
 
 func (c *Compiler) ensureTmpVar() string {
