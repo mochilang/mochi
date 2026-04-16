@@ -1,0 +1,75 @@
+// Solution for SPOJ PIGBANK - Piggy-Bank
+// https://www.spoj.com/problems/PIGBANK/
+// Unbounded knapsack: minimum value to fill exactly W grams.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  for _ in 0..t {
+    let ef = split(input())
+    let E = int(ef[0])
+    let F = int(ef[1])
+    let W = F - E
+    let nLine = input()
+    let N = int(nLine)
+    var ws: list<int> = []
+    var vs: list<int> = []
+    var i = 0
+    while i < N {
+      let wv = split(input())
+      vs = append(vs, int(wv[0]))
+      ws = append(ws, int(wv[1]))
+      i = i + 1
+    }
+    let INF = 1000000000
+    var dp: list<int> = []
+    dp = append(dp, 0)
+    var j = 1
+    while j <= W {
+      dp = append(dp, INF)
+      j = j + 1
+    }
+    j = 1
+    while j <= W {
+      var best = INF
+      i = 0
+      while i < N {
+        let w = ws[i]
+        let v = vs[i]
+        if w <= j {
+          let prev = dp[j - w]
+          if prev < INF && prev + v < best {
+            best = prev + v
+          }
+        }
+        i = i + 1
+      }
+      dp[j] = best
+      j = j + 1
+    }
+    if dp[W] >= INF {
+      print("This is impossible.")
+    } else {
+      print("The minimum amount of money in the piggy-bank is " + str(dp[W]) + ".")
+    }
+  }
+}
+
+main()

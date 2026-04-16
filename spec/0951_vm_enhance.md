@@ -81,3 +81,27 @@ carry = int(v / 10)
 
 The cleanest approach is to keep `/` as always-float (for simplicity) but add
 `//` as integer division. Update the spec and all affected examples.
+
+---
+
+## 4. Negative integer literals rejected in some positions
+
+**Bug:** Negative literals like `-1` fail to parse when used in certain positions
+(e.g., comparison RHS: `if x == -1`), even though they work as initializers or
+arithmetic expressions in other contexts.
+
+**Example:**
+```mochi
+var root = -1        // parse error in some positions
+if root == -1 { }    // parse error
+if diff == -1 { }    // parse error
+```
+
+**Workaround (current):** Use subtraction: `var root = 0 - 1`, `if root == 0 - 1`.
+
+**Fix:** The unary minus prefix should be allowed anywhere a primary expression is
+expected. The parser grammar for `Primary` / `Unary` likely needs an entry for
+`'-' Primary` that is recognized before the "unexpected token" error fires.
+
+The `float` and `str` type conversion builtins are also absent -- use `as float`
+and `as string` or `str()` instead. Add `float(expr)` as a builtin for consistency.
