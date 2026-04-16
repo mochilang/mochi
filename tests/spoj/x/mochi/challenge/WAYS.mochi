@@ -1,0 +1,32 @@
+// Solution for SPOJ WAYS - PATHS
+// https://www.spoj.com/problems/WAYS/
+// Number of paths in m×m grid from (0,0) to (m,m) moving right or up = C(2m, m).
+
+fun main() {
+  // Precomputed C(2m, m) for m = 1..14
+  var answers: list<int> = []
+  answers = append(answers, 2)
+  answers = append(answers, 6)
+  answers = append(answers, 20)
+  answers = append(answers, 70)
+  answers = append(answers, 252)
+  answers = append(answers, 924)
+  answers = append(answers, 3432)
+  answers = append(answers, 12870)
+  answers = append(answers, 48620)
+  answers = append(answers, 184756)
+  answers = append(answers, 705432)
+  answers = append(answers, 2704156)
+  answers = append(answers, 10400600)
+  answers = append(answers, 40116600)
+
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let m = int(input())
+    print(answers[m - 1])
+    ti = ti + 1
+  }
+}
+
+main()
