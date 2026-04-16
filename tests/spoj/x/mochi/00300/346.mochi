@@ -1,0 +1,25 @@
+// Solution for SPOJ COINS - Bytelandian Gold Coins
+// https://www.spoj.com/problems/COINS/
+// solve(n) = max(n, solve(n/2) + solve(n/3) + solve(n/4)), memoized.
+
+var memo: map<int, int> = {}
+
+fun solve(n: int): int {
+  if n == 0 { return 0 }
+  if memo[n] as int != 0 { return memo[n] as int }
+  let sub = solve(int(n/2)) + solve(int(n/3)) + solve(int(n/4))
+  let res = if sub > n { sub } else { n }
+  memo[n] = res
+  return res
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    print(solve(n))
+    line = input()
+  }
+}
+
+main()
