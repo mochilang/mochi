@@ -75,6 +75,7 @@ function test_TPCDS_Q18_averages(): void {
 }
 
 function main(): void {
+  _order_init();
   catalog_sales = [
     {
       "cs_quantity": 1,

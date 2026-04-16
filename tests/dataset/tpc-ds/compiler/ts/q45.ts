@@ -29,6 +29,7 @@ function test_TPCDS_Q45_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   web_sales = [
     {
       "bill_customer_sk": 1,

@@ -30,6 +30,7 @@ function test_TPCDS_Q36_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "ss_item_sk": 1,

@@ -69,6 +69,7 @@ function test_TPCDS_Q29_quantity_summary(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "ss_sold_date_sk": 1,

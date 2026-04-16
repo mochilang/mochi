@@ -9,6 +9,7 @@ function test_TPCDS_Q62_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   web_sales = [
     { "days": 10 },
     { "days": 40 },
@@ -32,6 +33,20 @@ function _json(v: any): string {
     return x;
   }
   return JSON.stringify(_sort(v));
+}
+
+function _order_init(): void {
+  (globalThis as any)._channelOrder = undefined;
+  if (typeof Deno !== "undefined" && Deno?.env?.get) {
+    const env = Deno.env.get("CHANNEL_ORDER");
+    if (env) {
+      const m: Record<string, number> = {};
+      env.split(",").forEach((k, i) => {
+        m[k] = i;
+      });
+      (globalThis as any)._channelOrder = m;
+    }
+  }
 }
 
 main();

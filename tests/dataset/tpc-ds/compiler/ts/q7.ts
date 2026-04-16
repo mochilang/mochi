@@ -23,6 +23,7 @@ function test_TPCDS_Q7_result(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "ss_cdemo_sk": 1,

@@ -10,6 +10,7 @@ function test_TPCDS_Q69_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   web_sales = [{ "amount": 34 }];
   store_sales = [{ "amount": 35 }];
   result = web_sales.map((w) => w.amount).reduce((a, b) => a + b, 0) +

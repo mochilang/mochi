@@ -27,6 +27,7 @@ function test_TPCDS_Q28_buckets(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "ss_quantity": 3,

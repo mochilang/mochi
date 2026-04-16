@@ -43,6 +43,7 @@ function test_TPCDS_Q11_growth(): void {
 }
 
 function main(): void {
+  _order_init();
   customer = [
     {
       "c_customer_sk": 1,

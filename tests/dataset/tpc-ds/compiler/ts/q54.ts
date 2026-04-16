@@ -33,6 +33,7 @@ function test_TPCDS_Q54_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "customer": 1,

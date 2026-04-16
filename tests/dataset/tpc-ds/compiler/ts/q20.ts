@@ -54,6 +54,7 @@ function test_TPCDS_Q20_revenue_ratio(): void {
 }
 
 function main(): void {
+  _order_init();
   catalog_sales = [
     {
       "cs_item_sk": 1,

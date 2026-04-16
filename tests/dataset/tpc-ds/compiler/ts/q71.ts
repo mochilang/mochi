@@ -41,6 +41,7 @@ function test_TPCDS_Q71_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   item = [
     {
       "i_item_sk": 1,

@@ -10,6 +10,7 @@ function test_TPCDS_Q67_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "reason": 1,

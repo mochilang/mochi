@@ -21,6 +21,7 @@ function test_TPCDS_Q6_result(): void {
 }
 
 function main(): void {
+  _order_init();
   customer_address = [
     {
       "ca_address_sk": 1,

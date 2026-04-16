@@ -62,6 +62,7 @@ function test_TPCDS_Q19_brand(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "ss_sold_date_sk": 1,

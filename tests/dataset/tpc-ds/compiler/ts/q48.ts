@@ -19,6 +19,7 @@ function test_TPCDS_Q48_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "cdemo_sk": 1,

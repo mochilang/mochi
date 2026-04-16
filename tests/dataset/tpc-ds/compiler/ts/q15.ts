@@ -42,6 +42,7 @@ function test_TPCDS_Q15_zip(): void {
 }
 
 function main(): void {
+  _order_init();
   catalog_sales = [
     {
       "cs_bill_customer_sk": 1,

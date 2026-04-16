@@ -12,6 +12,7 @@ function test_TPCDS_Q81_sample(): void {
 }
 
 function main(): void {
+  _order_init();
   catalog_returns = [
     {
       "cust": 1,

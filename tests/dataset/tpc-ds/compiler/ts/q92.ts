@@ -19,6 +19,7 @@ function test_TPCDS_Q92_threshold(): void {
 }
 
 function main(): void {
+  _order_init();
   web_sales = [
     {
       "ws_item_sk": 1,

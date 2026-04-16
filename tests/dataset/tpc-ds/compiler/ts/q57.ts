@@ -21,6 +21,7 @@ function test_TPCDS_Q57_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   catalog_sales = [
     {
       "item": 1,

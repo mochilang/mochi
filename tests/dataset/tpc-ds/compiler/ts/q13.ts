@@ -64,6 +64,7 @@ function test_TPCDS_Q13_averages(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "ss_store_sk": 1,

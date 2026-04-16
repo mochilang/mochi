@@ -9,6 +9,7 @@ function test_TPCDS_Q86_sample(): void {
 }
 
 function main(): void {
+  _order_init();
   web_sales = [
     {
       "cat": "A",

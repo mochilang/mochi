@@ -23,6 +23,7 @@ function test_TPCDS_Q30_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   web_returns = [
     {
       "wr_returning_customer_sk": 1,

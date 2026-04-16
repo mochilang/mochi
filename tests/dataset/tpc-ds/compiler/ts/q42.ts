@@ -31,6 +31,7 @@ function test_TPCDS_Q42_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "sold_date_sk": 1,

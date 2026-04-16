@@ -23,6 +23,7 @@ function test_TPCDS_Q2_result(): void {
 }
 
 function main(): void {
+  _order_init();
   web_sales = [
     {
       "ws_sold_date_sk": 1,

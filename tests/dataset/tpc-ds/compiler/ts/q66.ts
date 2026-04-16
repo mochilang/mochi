@@ -10,6 +10,7 @@ function test_TPCDS_Q66_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   web_sales = [{ "net": 30 }];
   catalog_sales = [{ "net": 36 }];
   result = web_sales.map((w) => w.net).reduce((a, b) => a + b, 0) +
