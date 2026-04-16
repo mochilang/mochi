@@ -37,11 +37,9 @@ fun ep(n: int): string {
 
 fun main() {
   var line = input()
-  while line != nil {
-    if line != "" {
-      let n = int(line)
-      print(line + "=" + ep(n))
-    }
+  while line != "" {
+    let n = int(line)
+    print(line + "=" + ep(n))
     line = input()
   }
 }

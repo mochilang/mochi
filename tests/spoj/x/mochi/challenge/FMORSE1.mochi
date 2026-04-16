@@ -80,45 +80,43 @@ fun buildKeyAlpha(keyword: string): string {
 fun main() {
   let trigraphs = buildTrigraphs()
   var line = input()
-  while line != nil {
-    if line != "" {
-      let parts = split(line)
-      if len(parts) >= 2 {
-        let keyword = parts[0]
-        let plaintext = parts[1]
-        let keyAlpha = buildKeyAlpha(keyword)
+  while line != "" {
+    let parts = split(line)
+    if len(parts) >= 2 {
+      let keyword = parts[0]
+      let plaintext = parts[1]
+      let keyAlpha = buildKeyAlpha(keyword)
 
-        // Build trigraph -> letter map
-        var trigMap: map<string, string> = {}
-        var ti = 0
-        while ti < 26 {
-          trigMap[trigraphs[ti]] = keyAlpha[ti:ti+1]
-          ti = ti + 1
-        }
-
-        // Encode plaintext to morse with | separators
-        var encoded = ""
-        var pi = 0
-        while pi < len(plaintext) {
-          let ch = plaintext[pi:pi+1]
-          encoded = encoded + morseMap[ch] + "|"
-          pi = pi + 1
-        }
-
-        // Truncate to multiple of 3
-        let elen = int(len(encoded) / 3) * 3
-        encoded = encoded[0:elen]
-
-        // Convert trigraphs to letters
-        var result = ""
-        var ei = 0
-        while ei < len(encoded) {
-          let tri = encoded[ei:ei+3]
-          result = result + trigMap[tri]
-          ei = ei + 3
-        }
-        print(result)
+      // Build trigraph -> letter map
+      var trigMap: map<string, string> = {}
+      var ti = 0
+      while ti < 26 {
+        trigMap[trigraphs[ti]] = keyAlpha[ti:ti+1]
+        ti = ti + 1
       }
+
+      // Encode plaintext to morse with | separators
+      var encoded = ""
+      var pi = 0
+      while pi < len(plaintext) {
+        let ch = plaintext[pi:pi+1]
+        encoded = encoded + morseMap[ch] + "|"
+        pi = pi + 1
+      }
+
+      // Truncate to multiple of 3
+      let elen = int(len(encoded) / 3) * 3
+      encoded = encoded[0:elen]
+
+      // Convert trigraphs to letters
+      var result = ""
+      var ei = 0
+      while ei < len(encoded) {
+        let tri = encoded[ei:ei+3]
+        result = result + trigMap[tri]
+        ei = ei + 3
+      }
+      print(result)
     }
     line = input()
   }

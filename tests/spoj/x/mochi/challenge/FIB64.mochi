@@ -86,14 +86,12 @@ fun split(line: string): list<string> {
 
 fun main() {
   var line = input()
-  while line != nil {
-    if line != "" {
-      let parts = split(line)
-      if len(parts) >= 2 {
-        let N = int(parts[0])
-        let M = int(parts[1])
-        print(str(fibmod(N, M)))
-      }
+  while line != "" {
+    let parts = split(line)
+    if len(parts) >= 2 {
+      let N = int(parts[0])
+      let M = int(parts[1])
+      print(str(fibmod(N, M)))
     }
     line = input()
   }

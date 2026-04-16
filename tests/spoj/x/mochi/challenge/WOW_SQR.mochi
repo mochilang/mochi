@@ -5,10 +5,11 @@
 fun isqrt(n: int): int {
   if n <= 0 { return 0 }
   var x = n
-  var y = int((x + 1) / 2)
+  var y = int(n / 2)
   while y < x {
     x = y
-    y = int((x + int(n / x)) / 2)
+    let nx = int(n / x)
+    y = int((x + nx) / 2)
   }
   return x
 }
