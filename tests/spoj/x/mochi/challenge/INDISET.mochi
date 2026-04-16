@@ -1,0 +1,162 @@
+// Solution for SPOJ INDISET - Find all independent nodes
+// https://www.spoj.com/problems/INDISET/
+// Greedy minimum-degree independent set: repeatedly pick the unblocked
+// node with the smallest current degree, add it, block its neighbors.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let nmLine = split(input())
+  let n = int(nmLine[0])
+  let m = int(nmLine[1])
+
+  // Build adjacency list using flat array + head pointers (CSR)
+  var deg: list<int> = []
+  var i = 0
+  while i < n { deg = append(deg, 0); i = i + 1 }
+
+  // Read edges and count degrees
+  var eu: list<int> = []
+  var ev: list<int> = []
+  i = 0
+  while i < m {
+    let ep = split(input())
+    let u = int(ep[0]) - 1
+    let v = int(ep[1]) - 1
+    eu = append(eu, u)
+    ev = append(ev, v)
+    deg[u] = deg[u] + 1
+    deg[v] = deg[v] + 1
+    i = i + 1
+  }
+
+  // Build CSR adjacency
+  var head: list<int> = []
+  i = 0
+  while i <= n { head = append(head, 0); i = i + 1 }
+  i = 0
+  while i < n { head[i+1] = head[i] + deg[i]; i = i + 1 }
+  var adjTo: list<int> = []
+  i = 0
+  while i < 2*m { adjTo = append(adjTo, 0); i = i + 1 }
+  var pos: list<int> = []
+  i = 0
+  while i < n { pos = append(pos, head[i]); i = i + 1 }
+  i = 0
+  while i < m {
+    let u = eu[i]
+    let v = ev[i]
+    adjTo[pos[u]] = v
+    pos[u] = pos[u] + 1
+    adjTo[pos[v]] = u
+    pos[v] = pos[v] + 1
+    i = i + 1
+  }
+
+  // state[i]: 0=active, 1=in_set, 2=blocked
+  var state: list<int> = []
+  // curDeg[i]: current degree among active nodes
+  var curDeg: list<int> = []
+  i = 0
+  while i < n {
+    state = append(state, 0)
+    curDeg = append(curDeg, deg[i])
+    i = i + 1
+  }
+
+  var result: list<int> = []
+  var remaining = n
+
+  while remaining > 0 {
+    // Find active node with minimum current degree
+    var best = 0 - 1
+    var bestDeg = 0 - 1
+    i = 0
+    while i < n {
+      if state[i] == 0 {
+        if best == 0 - 1 || curDeg[i] < bestDeg {
+          best = i
+          bestDeg = curDeg[i]
+        }
+      }
+      i = i + 1
+    }
+    if best == 0 - 1 { remaining = 0 }
+    else {
+      // Add best to independent set
+      state[best] = 1
+      result = append(result, best + 1)
+      // Block best and all its neighbors, update degrees
+      var ei = head[best]
+      while ei < head[best+1] {
+        let nb = adjTo[ei]
+        if state[nb] == 0 {
+          state[nb] = 2
+          // For each neighbor of nb, decrease curDeg
+          var ei2 = head[nb]
+          while ei2 < head[nb+1] {
+            let nb2 = adjTo[ei2]
+            if state[nb2] == 0 {
+              curDeg[nb2] = curDeg[nb2] - 1
+            }
+            ei2 = ei2 + 1
+          }
+        }
+        ei = ei + 1
+      }
+      // Count remaining active nodes
+      remaining = 0
+      i = 0
+      while i < n {
+        if state[i] == 0 { remaining = remaining + 1 }
+        i = i + 1
+      }
+    }
+  }
+
+  // Output sorted result (result is in insertion order, not necessarily sorted)
+  // Sort result list by value
+  var sorted: list<int> = []
+  i = 0
+  while i < len(result) {
+    sorted = append(sorted, result[i])
+    i = i + 1
+  }
+  // Insertion sort
+  i = 1
+  while i < len(sorted) {
+    let key = sorted[i]
+    var j = i - 1
+    while j >= 0 && sorted[j] > key {
+      sorted[j+1] = sorted[j]
+      j = j - 1
+    }
+    sorted[j+1] = key
+    i = i + 1
+  }
+
+  var out = ""
+  i = 0
+  while i < len(sorted) {
+    if i > 0 { out = out + " " }
+    out = out + str(sorted[i])
+    i = i + 1
+  }
+  print(out)
+}
+
+main()
