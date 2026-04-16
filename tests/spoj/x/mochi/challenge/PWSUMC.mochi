@@ -1,0 +1,118 @@
+// Solution for SPOJ PWSUMC - Power Sum Challenge
+// https://www.spoj.com/problems/PWSUMC/
+// Line k (1-indexed): given N and P (prime), compute sum(i^k for i=1..N) mod P.
+// Formulas for k=1,2,3 only (others yield 0 points, skip).
+
+fun modpow(base: int, exp: int, mod: int): int {
+  var result = 1
+  var b = base % mod
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 { result = result * b % mod }
+    b = b * b % mod
+    e = int(e / 2)
+  }
+  return result
+}
+
+fun modinv(a: int, p: int): int {
+  return modpow(a % p, p - 2, p)
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var k = 0
+  var line = input()
+  while line != "" {
+    k = k + 1
+    let p = split(line)
+    let N = int(p[0])
+    let P = int(p[1])
+
+    let Nm = N % P
+
+    if k == 1 {
+      // S = N*(N+1)/2 mod P
+      let np1 = (N + 1) % P
+      if P == 2 {
+        // N*(N+1)/2 is always integer; just check parity
+        let half = int(N * (N + 1) / 2)
+        print(half % 2)
+      } else {
+        let inv2 = modinv(2, P)
+        let ans = Nm * np1 % P * inv2 % P
+        print(ans)
+      }
+    } else {
+      if k == 2 {
+        // S = N*(N+1)*(2N+1)/6 mod P
+        let np1 = (N + 1) % P
+        let n2p1 = (2 * N + 1) % P
+        if P == 2 {
+          // N*(N+1)*(2N+1)/6 - just brute small or direct
+          // For P=2: result is 0 (N*(N+1) always even)
+          print(0)
+        } else {
+          if P == 3 {
+            // 2N+1 mod 3: if N%3==1 then 3|2N+1? No. 6=2*3, inv(6) undefined for P=3
+            // Brute force for P=3 is fine for reasonable N
+            var s = 0
+            var i = 1
+            while i <= N {
+              s = (s + i * i % P) % P
+              i = i + 1
+            }
+            print(s)
+          } else {
+            let inv6 = modinv(6, P)
+            let ans = Nm * np1 % P * n2p1 % P * inv6 % P
+            print(ans)
+          }
+        }
+      } else {
+        if k == 3 {
+          // S = (N*(N+1)/2)^2 mod P
+          if P == 2 {
+            print(0)
+          } else {
+            let inv2 = modinv(2, P)
+            let half = Nm * ((N + 1) % P) % P * inv2 % P
+            let ans = half * half % P
+            print(ans)
+          }
+        } else {
+          // k >= 4: no known closed form; brute force for small N
+          // For challenge scoring just output 0 (skip)
+          // Actually compute brute force - may TLE for large N
+          var s = 0
+          var i = 1
+          while i <= N {
+            let pw = modpow(i, k, P)
+            s = (s + pw) % P
+            i = i + 1
+          }
+          print(s)
+        }
+      }
+    }
+
+    line = input()
+  }
+}
+
+main()

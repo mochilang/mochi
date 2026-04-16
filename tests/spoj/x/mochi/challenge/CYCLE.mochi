@@ -1,0 +1,73 @@
+// Solution for SPOJ CYCLE - Cycles, More Cycles
+// https://www.spoj.com/problems/CYCLE/
+// Build a tournament on n vertices maximizing the number of m-cycles.
+// Strategy: make vertices 0..m-1 form a directed cycle, fill rest transitively.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let p = split(line)
+    let n = int(p[0])
+    let m = int(p[1])
+
+    // Build n*n matrix flat (row-major)
+    var A: list<int> = []
+    var idx = 0
+    while idx < n * n { A = append(A, 0); idx = idx + 1 }
+
+    // Set directed cycle edges on 0..m-1: i -> (i+1)%m
+    var ci = 0
+    while ci < m {
+      let cj = (ci + 1) % m
+      A[ci * n + cj] = 1
+      ci = ci + 1
+    }
+
+    // Fill remaining pairs (i,j) i<j with transitive: A[i][j]=1 if not yet determined
+    var i = 0
+    while i < n {
+      var j = i + 1
+      while j < n {
+        if A[i * n + j] == 0 && A[j * n + i] == 0 {
+          A[i * n + j] = 1
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    // Print matrix
+    var ri = 0
+    while ri < n {
+      var row = ""
+      var rj = 0
+      while rj < n {
+        if rj > 0 { row = row + " " }
+        row = row + str(A[ri * n + rj])
+        rj = rj + 1
+      }
+      print(row)
+      ri = ri + 1
+    }
+
+    line = input()
+  }
+}
+
+main()

@@ -1,0 +1,105 @@
+// Solution for SPOJ SPPC - Password Count on Keypad
+// https://www.spoj.com/problems/SPPC/
+// 6x6 keypad, count length-N passwords (adjacent moves) mod M.
+// dp[key] = ways to reach that key at current step.
+// Transitions via 4-directional adjacency.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Build adjacency list for 6x6 grid (row*6+col = key index)
+// Returns flat list: adjStart[k]..adjStart[k+1] indexes into adjList
+fun buildAdj(): list<int> {
+  // We'll return a combined list: first 36 entries = degree of each key,
+  // then edges in groups. Use a simple flat encoding.
+  // Return: adj[k*5 + 0] = degree, adj[k*5 + 1..4] = neighbors (pad -1)
+  var adj: list<int> = []
+  var k = 0
+  while k < 36 {
+    let r = int(k / 6)
+    let c = k % 6
+    var deg = 0
+    var nbrs: list<int> = []
+    // up
+    if r > 0 { nbrs = append(nbrs, (r-1)*6+c); deg = deg + 1 }
+    // down
+    if r < 5 { nbrs = append(nbrs, (r+1)*6+c); deg = deg + 1 }
+    // left
+    if c > 0 { nbrs = append(nbrs, r*6+(c-1)); deg = deg + 1 }
+    // right
+    if c < 5 { nbrs = append(nbrs, r*6+(c+1)); deg = deg + 1 }
+    adj = append(adj, deg)
+    var ni = 0
+    while ni < deg { adj = append(adj, nbrs[ni]); ni = ni + 1 }
+    // pad to 4
+    while ni < 4 { adj = append(adj, 0 - 1); ni = ni + 1 }
+    k = k + 1
+  }
+  return adj
+}
+
+fun main() {
+  let adj = buildAdj()
+
+  var line = input()
+  while line != "" {
+    let p = split(line)
+    let N = int(p[0])
+    let M = int(p[1])
+
+    if N == 1 {
+      print(36 % M)
+    } else {
+      // dp[k] = number of passwords of current length ending at key k
+      var dp: list<int> = []
+      var k = 0
+      while k < 36 { dp = append(dp, 1); k = k + 1 }
+
+      var step = 1
+      while step < N {
+        var ndp: list<int> = []
+        k = 0
+        while k < 36 { ndp = append(ndp, 0); k = k + 1 }
+
+        // For each key k, distribute dp[k] to neighbors
+        k = 0
+        while k < 36 {
+          let base = k * 5
+          let deg = adj[base]
+          var ni = 0
+          while ni < deg {
+            let nb = adj[base + 1 + ni]
+            ndp[nb] = (ndp[nb] + dp[k]) % M
+            ni = ni + 1
+          }
+          k = k + 1
+        }
+
+        dp = ndp
+        step = step + 1
+      }
+
+      var total = 0
+      k = 0
+      while k < 36 { total = (total + dp[k]) % M; k = k + 1 }
+      print(total)
+    }
+
+    line = input()
+  }
+}
+
+main()
