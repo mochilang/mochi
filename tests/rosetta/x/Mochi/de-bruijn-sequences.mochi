@@ -1,3 +1,4 @@
+// Port of Rosetta Code task "De-Bruijn-sequences" implemented in Go.
 fun dbRec(k: int, n: int, t: int, p: int, a: list<int>, seq: list<int>): list<int> {
   if t > n {
     if n % p == 0 {
