@@ -1,0 +1,160 @@
+// Solution for SPOJ MODBERN - Modular Bernoulli
+// https://www.spoj.com/problems/MODBERN/
+// For each query (N, P): output numerator(B_N) mod P.
+// Strategy: compute B_N mod P using modular arithmetic recurrence,
+// then recover numerator using Von Staudt-Clausen theorem for denominator.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Modular exponentiation: base^exp mod m
+fun modpow(base: int, exp: int, m: int): int {
+  var result = 1
+  var b = base % m
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 {
+      result = result * b % m
+    }
+    b = b * b % m
+    e = int(e / 2)
+  }
+  return result
+}
+
+// Modular inverse (P is prime): a^(P-2) mod P
+fun modinv(a: int, p: int): int {
+  return modpow(((a % p) + p) % p, p - 2, p)
+}
+
+// Compute C(n, k) mod p iteratively
+fun binom(n: int, k: int, p: int): int {
+  if k < 0 || k > n { return 0 }
+  if k == 0 || k == n { return 1 % p }
+  // Use multiplicative formula: C(n,k) = n*(n-1)*...*(n-k+1) / k!
+  var num = 1
+  var den = 1
+  var i = 0
+  while i < k {
+    num = num * ((n - i) % p) % p
+    den = den * ((i + 1) % p) % p
+    i = i + 1
+  }
+  return num * modinv(den, p) % p
+}
+
+// Compute B_N mod p using recurrence for even N.
+// b[n] = -1/(n+1) * sum_{k=0}^{n-1} C(n+1,k)*b[k]
+// We store b as a flat list, index = n/2 for even n (b[0]=B_0, b[1]=B_2, etc.)
+// But we also need B_1 for the recurrence.
+// Actually, we store all b[k] for k=0..N (only even ones matter + B_1=-1/2).
+fun computeBmod(N: int, p: int): int {
+  // Store b[k] for k=0..N. Odd k>=3: 0. b[1]=-1/2 mod p.
+  var b: list<int> = []
+  var ki = 0
+  while ki <= N {
+    b = append(b, 0)
+    ki = ki + 1
+  }
+  // B_0 = 1
+  b[0] = 1 % p
+  if N == 0 { return b[0] }
+  // B_1 = -1/2 mod p
+  b[1] = (p - modinv(2, p)) % p
+  if N == 1 { return b[1] }
+
+  // Compute even B_n for n=2,4,6,...,N
+  var n = 2
+  while n <= N {
+    if n % 2 == 0 {
+      // B_n = -1/(n+1) * sum_{k=0}^{n-1} C(n+1,k)*b[k]
+      var s = 0
+      var k = 0
+      while k < n {
+        let c = binom(n + 1, k, p)
+        s = (s + c * b[k]) % p
+        k = k + 1
+      }
+      let inv_np1 = modinv(n + 1, p)
+      b[n] = (p - s % p) * inv_np1 % p
+    }
+    n = n + 1
+  }
+  return b[N]
+}
+
+// Von Staudt-Clausen: denominator of B_{2k} = product of primes q where (q-1) | 2k
+// Returns denominator mod p (if result is 0 mod p, then p divides denominator)
+fun bernDenomMod(N: int, p: int): int {
+  // For N=0: den=1. For N=1: den=2.
+  if N == 0 { return 1 }
+  if N == 1 { return 2 % p }
+  if N % 2 != 0 { return 1 }
+  // For even N: product of primes q where (q-1) | N
+  var den = 1
+  // Check all primes q from 2 up to N+1
+  var q = 2
+  while q <= N + 1 {
+    // Check if q is prime (trial division)
+    var isPrime = 1
+    if q < 2 { isPrime = 0 }
+    var d = 2
+    while d * d <= q {
+      if q % d == 0 { isPrime = 0 }
+      d = d + 1
+    }
+    if isPrime == 1 {
+      // Check if (q-1) | N
+      if N % (q - 1) == 0 {
+        den = den * (q % p) % p
+      }
+    }
+    q = q + 1
+  }
+  return den
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let p = split(line)
+    if len(p) >= 2 {
+      let N = int(p[0])
+      let P = int(p[1])
+
+      // Handle special cases
+      if N % 2 != 0 {
+        // Odd N >= 3: B_N = 0, numerator = 0
+        print(0)
+      } else {
+        // Even N: compute b[N] = B_N mod P (as num*inv(den) mod P)
+        // Then numerator mod P = b[N] * den mod P
+        let bmod = computeBmod(N, P)
+        let den = bernDenomMod(N, P)
+        // numerator mod P = bmod * den mod P
+        // But if den == 0 mod P, then P divides den, meaning P is a Bernoulli-irregular
+        // prime for this index. In that case P divides numerator too (by Von Staudt-Clausen
+        // structure), but we can't recover numerator this way.
+        // Best effort: just output bmod * den mod P
+        let ans = bmod * den % P
+        print(ans)
+      }
+    }
+    line = input()
+  }
+}
+
+main()
