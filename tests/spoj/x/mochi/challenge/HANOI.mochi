@@ -1,0 +1,164 @@
+// Solution for SPOJ HANOI - Towers of Hanoi
+// https://www.spoj.com/problems/HANOI/
+// n towers (1..n), k target, m disks, max distance d.
+// Move all disks to tower k with min moves. Output "a b" moves then "0 0".
+// Strategy: find source tower, pick auxiliary, run iterative 3-peg Hanoi.
+// The iterative algorithm: for move i in 1..2^m-1,
+//   disk = position of lowest set bit of i (1-indexed),
+//   odd disk moves in one direction, even disk in the opposite direction.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Iterative 3-peg Hanoi: move m disks from src to dst using aux.
+// All are 1-indexed tower numbers. Returns list of moves [a1,b1,a2,b2,...].
+fun hanoi3(m: int, src: int, dst: int, aux: int): list<int> {
+  var moves: list<int> = []
+
+  // Map towers to indices 0,1,2: src=0, aux=1, dst=2
+  var tower: list<int> = [src, aux, dst]
+
+  // pegIdx[disk] = index in tower[] (0,1,2). All disks start at src = index 0.
+  var pegIdx: list<int> = []
+  var i = 0
+  while i <= m {
+    pegIdx = append(pegIdx, 0)  // all start at src = index 0
+    i = i + 1
+  }
+
+  // Total moves = 2^m - 1. We cap at 20000 to stay within score limit.
+  var totalMoves = 1
+  i = 0
+  while i < m {
+    totalMoves = totalMoves * 2
+    i = i + 1
+  }
+  totalMoves = totalMoves - 1
+
+  var moveNum = 1
+  while moveNum <= totalMoves && moveNum <= 20000 {
+    // Find lowest set bit of moveNum → disk number
+    var disk = 1
+    var tmp = moveNum
+    while tmp % 2 == 0 {
+      disk = disk + 1
+      tmp = tmp / 2
+    }
+
+    // Direction depends on both disk parity and m parity.
+    // For odd m: odd disk moves +2 mod 3 (src→dst→aux→src), even disk moves +1 mod 3.
+    // For even m: odd disk moves +1 mod 3 (src→aux→dst→src), even disk moves +2 mod 3.
+    let curIdx = pegIdx[disk]
+    var nextIdx = 0
+    if m % 2 == 1 {
+      // odd m
+      if disk % 2 == 1 {
+        nextIdx = (curIdx + 2) % 3
+      } else {
+        nextIdx = (curIdx + 1) % 3
+      }
+    } else {
+      // even m
+      if disk % 2 == 1 {
+        nextIdx = (curIdx + 1) % 3
+      } else {
+        nextIdx = (curIdx + 2) % 3
+      }
+    }
+    pegIdx[disk] = nextIdx
+
+    let fromTower = tower[curIdx]
+    let toTower = tower[nextIdx]
+    moves = append(moves, fromTower)
+    moves = append(moves, toTower)
+
+    moveNum = moveNum + 1
+  }
+
+  return moves
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 1
+  while tc <= T {
+    var hLine = input()
+    while hLine == "" { hLine = input() }
+    let params = split(hLine)
+    let n = int(params[0])
+    let k = int(params[1])
+    let m = int(params[2])
+    let d = int(params[3])
+
+    // Read disk placements: m lines each "tower disk_size"
+    // Determine source tower: assume all disks start on the same tower.
+    var src = 1
+    var i = 0
+    while i < m {
+      var dLine = input()
+      while dLine == "" { dLine = input() }
+      let dp = split(dLine)
+      let twr = int(dp[0])
+      if i == 0 { src = twr }
+      i = i + 1
+    }
+
+    print(string(tc))
+
+    // If all disks already at target, just output "0 0"
+    if src == k {
+      print("0 0")
+    } else {
+      // Find an auxiliary tower within distance d of both src and k
+      // Try to pick one that is within reach of both src and k
+      var aux = 0 - 1
+      var ai = 1
+      while ai <= n {
+        if ai != src && ai != k {
+          var distSrc = src - ai
+          if distSrc < 0 { distSrc = ai - src }
+          var distDst = k - ai
+          if distDst < 0 { distDst = ai - k }
+          if distSrc <= d && distDst <= d {
+            aux = ai
+            break
+          }
+        }
+        ai = ai + 1
+      }
+
+      if aux == 0 - 1 {
+        // No valid auxiliary tower found; skip this case
+        print("0 0")
+      } else {
+        let moves = hanoi3(m, src, k, aux)
+        let nm = len(moves) / 2
+        var mi = 0
+        while mi < nm {
+          print(string(moves[mi*2]) + " " + string(moves[mi*2+1]))
+          mi = mi + 1
+        }
+        print("0 0")
+      }
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

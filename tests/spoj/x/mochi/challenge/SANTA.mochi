@@ -1,0 +1,161 @@
+// Solution for SPOJ SANTA - Santa Claus
+// https://www.spoj.com/problems/SANTA/
+// Santa loads presents and delivers them, minimizing total travel distance.
+// Greedy: each trip, pick nearest undelivered children fitting in sack; deliver nearest-first.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun mysqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x / 2.0 + 0.5
+  var i = 0
+  while i < 60 {
+    r = (r + x / r) / 2.0
+    i = i + 1
+  }
+  return r
+}
+
+fun dist2(ax: float, ay: float, bx: float, by: float): float {
+  let dx = ax - bx
+  let dy = ay - by
+  return mysqrt(dx*dx + dy*dy)
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    let hdrLine = input()
+    let hdr = split(hdrLine)
+    let n = int(hdr[0])
+    let bx = int(hdr[1]) as float
+    let by = int(hdr[2]) as float
+    let cap = int(hdr[3])
+
+    var cx: list<float> = []
+    var cy: list<float> = []
+    var cs: list<int> = []
+    var i = 0
+    while i < n {
+      let cLine = input()
+      let cp = split(cLine)
+      cs = append(cs, int(cp[0]))
+      cx = append(cx, int(cp[1]) as float)
+      cy = append(cy, int(cp[2]) as float)
+      i = i + 1
+    }
+
+    // Precompute distance from base for each child
+    var dbase: list<float> = []
+    i = 0
+    while i < n {
+      dbase = append(dbase, dist2(bx, by, cx[i], cy[i]))
+      i = i + 1
+    }
+
+    // Sort children by distance from base ascending (insertion sort)
+    var order: list<int> = []
+    i = 0
+    while i < n { order = append(order, i); i = i + 1 }
+    i = 1
+    while i < n {
+      var j = i
+      while j > 0 && dbase[order[j-1]] > dbase[order[j]] {
+        let tmp = order[j-1]
+        order[j-1] = order[j]
+        order[j] = tmp
+        j = j - 1
+      }
+      i = i + 1
+    }
+
+    var delivered: list<bool> = []
+    i = 0
+    while i < n { delivered = append(delivered, false); i = i + 1 }
+
+    var result = ""
+    var remaining = n
+
+    while remaining > 0 {
+      // Fill sack: pick nearest undelivered children fitting in capacity
+      var loaded: list<int> = []
+      var spaceLeft = cap
+      i = 0
+      while i < n {
+        let idx = order[i]
+        if !delivered[idx] && cs[idx] <= spaceLeft {
+          loaded = append(loaded, idx)
+          spaceLeft = spaceLeft - cs[idx]
+        }
+        i = i + 1
+      }
+
+      // Emit load actions: -idx (1-based)
+      var curX = bx
+      var curY = by
+      i = 0
+      while i < len(loaded) {
+        let idx = loaded[i]
+        if len(result) > 0 { result = result + " " }
+        result = result + "-" + str(idx + 1)
+        i = i + 1
+      }
+
+      // Deliver in nearest-neighbor order from base
+      var deliverDone: list<bool> = []
+      i = 0
+      while i < len(loaded) { deliverDone = append(deliverDone, false); i = i + 1 }
+
+      var numToDeliver = len(loaded)
+      var delivered2 = 0
+      while delivered2 < numToDeliver {
+        // Find nearest undelivered in loaded from current position
+        var bestJ = 0
+        var bestDist = 0.0 - 1.0
+        var j = 0
+        while j < len(loaded) {
+          if !deliverDone[j] {
+            let idx = loaded[j]
+            let d = dist2(curX, curY, cx[idx], cy[idx])
+            if bestDist < 0.0 || d < bestDist {
+              bestDist = d
+              bestJ = j
+            }
+          }
+          j = j + 1
+        }
+        deliverDone[bestJ] = true
+        let delIdx = loaded[bestJ]
+        curX = cx[delIdx]
+        curY = cy[delIdx]
+        delivered[delIdx] = true
+        remaining = remaining - 1
+        result = result + " " + str(delIdx + 1)
+        delivered2 = delivered2 + 1
+      }
+    }
+
+    result = result + " 0"
+    print(result)
+    tc = tc + 1
+  }
+}
+
+main()

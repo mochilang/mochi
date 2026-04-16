@@ -1,0 +1,37 @@
+// Solution for SPOJ MFENCE - Antelope Fence
+// https://www.spoj.com/problems/MFENCE/
+// Divide n antelope into groups (each ≥ 2), maximize score = 1/(1 + S/C)
+// where S = sum of group convex-hull perimeters, C = total convex-hull perimeter.
+// Strategy: put all antelope in one herd → S = C → score = 0.5 exactly.
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 1
+  while tc <= T {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    // Read n coordinate pairs (we don't use them for the simple grouping strategy)
+    var i = 0
+    while i < n {
+      var coordLine = input()
+      while coordLine == "" { coordLine = input() }
+      i = i + 1
+    }
+    // Output: one herd containing all n antelope
+    print("case " + string(tc) + " Y")
+    print("1")
+    var herdLine = string(n)
+    var j = 1
+    while j <= n {
+      herdLine = herdLine + " " + string(j)
+      j = j + 1
+    }
+    print(herdLine)
+    tc = tc + 1
+  }
+}
+
+main()
