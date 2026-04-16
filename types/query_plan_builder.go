@@ -7,6 +7,19 @@ import (
 	"mochi/types/plan"
 )
 
+// BuildQueryPlanWithType builds a query plan and also returns the result type.
+func BuildQueryPlanWithType(q *parser.QueryExpr, env *Env) (plan.Node, Type, error) {
+	typ, err := checkQueryExpr(q, env, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	node, err := BuildQueryPlan(q, env)
+	if err != nil {
+		return nil, nil, err
+	}
+	return node, typ, nil
+}
+
 // BuildQueryPlan converts a parsed QueryExpr into a typed logical plan.
 func BuildQueryPlan(q *parser.QueryExpr, env *Env) (plan.Node, error) {
 	if q == nil {
