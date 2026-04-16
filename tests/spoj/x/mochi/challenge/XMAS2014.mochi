@@ -1,0 +1,56 @@
+// Solution for SPOJ XMAS2014 - Christmas 2014
+// https://www.spoj.com/problems/XMAS2014/
+// Count ways to pack n toys into labeled magical boxes where each used box
+// gets >= d consecutive toys. Type 1: n < 2d (at most 1 interval fits).
+// Answer = n * (n-d+1) * (n-d+2) / 2 mod m
+// (n boxes to choose * number of intervals of size >= d in [1..n])
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  // First line: case type (we handle type 1)
+  let c = int(input())
+
+  // Read lines until EOF
+  while true {
+    let line = input()
+    if line == "" { break }
+    let parts = split(line)
+    if len(parts) < 3 { break }
+    let d = int(parts[0])
+    let n = int(parts[1])
+    let m = int(parts[2])
+
+    var ans = 0
+    if n >= d {
+      // Number of intervals of length >= d: sum_{s=d}^{n} (n-s+1) = (n-d+1)(n-d+2)/2
+      let a = n - d + 1
+      let b = n - d + 2
+      // Compute a*b/2 mod m carefully: one of a,b is even
+      var half = 0
+      if a % 2 == 0 {
+        half = int(a / 2) * b
+      } else {
+        half = a * int(b / 2)
+      }
+      ans = (n % m) * (half % m) % m
+    }
+    print(str(d) + " " + str(ans))
+  }
+}
+
+main()

@@ -1,0 +1,55 @@
+// Solution for SPOJ GCD4 - GCD with Large Numbers
+// https://www.spoj.com/problems/GCD4/
+// Given N=a+b, M=a^2+b^2-(2K-2)*a*b, gcd(a,b)=1.
+// Key math: gcd(N,M) = gcd(N, 2K).
+// Since N can be up to 10^200, compute N mod (2K) digit by digit.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun gcd(a: int, b: int): int {
+  while b > 0 {
+    let t = b
+    b = a % b
+    a = t
+  }
+  return a
+}
+
+fun main() {
+  let t = int(input())
+  var tc = 0
+  while tc < t {
+    let parts = split(input())
+    let nStr = parts[0]
+    let k = int(parts[2])
+    let mod2k = 2 * k
+
+    // Compute nStr mod (2k) digit by digit
+    var rem = 0
+    var i = 0
+    while i < len(nStr) {
+      let d = int(nStr[i:i+1])
+      rem = (rem * 10 + d) % mod2k
+      i = i + 1
+    }
+
+    print(gcd(rem, mod2k))
+    tc = tc + 1
+  }
+}
+
+main()

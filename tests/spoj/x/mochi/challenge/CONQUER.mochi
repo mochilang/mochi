@@ -1,0 +1,149 @@
+// Solution for SPOJ CONQUER - Conquest of the Grid
+// https://www.spoj.com/problems/CONQUER/
+// Two kings on a 3D grid. King1 (X) attacks O-regions, King2 (O) attacks X-regions.
+// One attack = capture all connected cells of a connected component (26-connected in 3D).
+// King1 goes first. Winner is who owns last region.
+// X wins iff nX >= nO (number of connected components of X >= O).
+// O wins iff nO > nX.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let t = int(input())
+  var tc = 0
+  while tc < t {
+    let dims = split(input())
+    let a = int(dims[0])
+    let b = int(dims[1])
+    let c = int(dims[2])
+
+    // Read grid: a layers, each layer b rows of c chars
+    // Store as flat list: index = layer*b*c + row*c + col
+    var grid: list<string> = []
+    var li = 0
+    while li < a {
+      var ri = 0
+      while ri < b {
+        var row = input()
+        // Skip blank separator lines between layers
+        while row == "" { row = input() }
+        grid = append(grid, row)
+        ri = ri + 1
+      }
+      li = li + 1
+    }
+
+    // BFS to count connected components for X and O
+    // visited[layer*b*c + row*c + col] = 1 if visited
+    let total = a * b * c
+    var visited: list<int> = []
+    var vi = 0
+    while vi < total {
+      visited = append(visited, 0)
+      vi = vi + 1
+    }
+
+    // BFS queue stored as flat list of indices
+    var nX = 0
+    var nO = 0
+
+    var lidx = 0
+    while lidx < a {
+      var ridx = 0
+      while ridx < b {
+        var cidx = 0
+        while cidx < c {
+          let idx = lidx * b * c + ridx * c + cidx
+          if visited[idx] == 0 {
+            let row = grid[lidx * b + ridx]
+            let ch = row[cidx:cidx+1]
+            if ch == "X" || ch == "O" {
+              // BFS from (lidx, ridx, cidx)
+              var queue: list<int> = []
+              queue = append(queue, lidx)
+              queue = append(queue, ridx)
+              queue = append(queue, cidx)
+              visited[idx] = 1
+
+              var qhead = 0
+              while qhead < len(queue) {
+                let ql = queue[qhead]
+                let qr = queue[qhead + 1]
+                let qc = queue[qhead + 2]
+                qhead = qhead + 3
+
+                // 26 neighbors: dl in {-1,0,1}, dr in {-1,0,1}, dc in {-1,0,1}
+                var dl = -1
+                while dl <= 1 {
+                  var dr = -1
+                  while dr <= 1 {
+                    var dc = -1
+                    while dc <= 1 {
+                      if dl != 0 || dr != 0 || dc != 0 {
+                        let nl = ql + dl
+                        let nr = qr + dr
+                        let nc = qc + dc
+                        if nl >= 0 && nl < a && nr >= 0 && nr < b && nc >= 0 && nc < c {
+                          let nidx = nl * b * c + nr * c + nc
+                          if visited[nidx] == 0 {
+                            let nrow = grid[nl * b + nr]
+                            let nch = nrow[nc:nc+1]
+                            if nch == ch {
+                              visited[nidx] = 1
+                              queue = append(queue, nl)
+                              queue = append(queue, nr)
+                              queue = append(queue, nc)
+                            }
+                          }
+                        }
+                      }
+                      dc = dc + 1
+                    }
+                    dr = dr + 1
+                  }
+                  dl = dl + 1
+                }
+              }
+
+              if ch == "X" {
+                nX = nX + 1
+              } else {
+                nO = nO + 1
+              }
+            } else {
+              visited[idx] = 1
+            }
+          }
+          cidx = cidx + 1
+        }
+        ridx = ridx + 1
+      }
+      lidx = lidx + 1
+    }
+
+    // X wins iff nX >= nO, O wins iff nO > nX
+    if nX >= nO {
+      print("X")
+    } else {
+      print("O")
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()
