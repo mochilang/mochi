@@ -1,0 +1,18 @@
+type: [{string: int}]
+plan:
+Select((map
+  (entry
+    (selector orderId)
+    (selector id (selector o))
+  )
+  (entry
+    (selector customerName)
+    (selector name (selector c))
+  )
+))
+  Join(inner on (binary ==
+  (selector customerId (selector o))
+  (selector id (selector c))
+))
+    Scan(alias=o, src=(selector orders))
+    Scan(alias=c, src=(selector customers))
