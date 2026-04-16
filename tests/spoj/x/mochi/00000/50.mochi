@@ -1,0 +1,160 @@
+// Solution for SPOJ Invitation Cards (INVIT1)
+// https://www.spoj.com/problems/INVIT1/
+// Run Dijkstra from stop 1 on original graph, then on reversed graph.
+// Total cost = sum of (d_forward[i] + d_reverse[i]) for i=2..n.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Dijkstra from src on adjacency lists (adj: node -> list of [to, cost] pairs, stored flat)
+// adjHead[v] = start index in adjTo/adjW for node v
+// adjHead[n] = total edge count
+fun dijkstra(n: int, adjHead: list<int>, adjTo: list<int>, adjW: list<int>, src: int): list<int> {
+  var INF = 1000000000
+  var dist: list<int> = []
+  var visited: list<int> = []
+  var i = 0
+  while i < n {
+    dist = append(dist, INF)
+    visited = append(visited, 0)
+    i = i + 1
+  }
+  dist[src] = 0
+  var remaining = n
+  while remaining > 0 {
+    // Find unvisited node with minimum dist
+    var u = 0 - 1
+    var best = INF + 1
+    var j = 0
+    while j < n {
+      if visited[j] == 0 && dist[j] < best {
+        best = dist[j]
+        u = j
+      }
+      j = j + 1
+    }
+    if u == 0 - 1 { break }
+    visited[u] = 1
+    remaining = remaining - 1
+    // Relax neighbors
+    let start = adjHead[u]
+    let stop = adjHead[u+1]
+    var ei = start
+    while ei < stop {
+      let v = adjTo[ei]
+      let w = adjW[ei]
+      if dist[u] + w < dist[v] {
+        dist[v] = dist[u] + w
+      }
+      ei = ei + 1
+    }
+  }
+  return dist
+}
+
+fun main() {
+  var tLine = input()
+  while tLine != "" {
+    let p1 = split(tLine)
+    let n = int(p1[0])
+    let m = int(p1[1])
+
+    // Build adjacency lists (CSR format) for forward and reverse graphs
+    // First count degrees
+    var fwdCount: list<int> = []
+    var revCount: list<int> = []
+    var i = 0
+    while i <= n { fwdCount = append(fwdCount, 0); revCount = append(revCount, 0); i = i + 1 }
+
+    // Read edges
+    var edges: list<int> = []
+    i = 0
+    while i < m {
+      let ep = split(input())
+      let a = int(ep[0]) - 1
+      let b = int(ep[1]) - 1
+      let c = int(ep[2])
+      edges = append(edges, a)
+      edges = append(edges, b)
+      edges = append(edges, c)
+      fwdCount[a] = fwdCount[a] + 1
+      revCount[b] = revCount[b] + 1
+      i = i + 1
+    }
+
+    // Build CSR head arrays
+    var fwdHead: list<int> = []
+    var revHead: list<int> = []
+    fwdHead = append(fwdHead, 0)
+    revHead = append(revHead, 0)
+    i = 0
+    while i < n {
+      fwdHead = append(fwdHead, fwdHead[i] + fwdCount[i])
+      revHead = append(revHead, revHead[i] + revCount[i])
+      i = i + 1
+    }
+
+    // Fill adjacency arrays
+    var fwdTo: list<int> = []
+    var fwdW: list<int> = []
+    var revTo: list<int> = []
+    var revW: list<int> = []
+    i = 0
+    while i < m {
+      fwdTo = append(fwdTo, 0)
+      fwdW = append(fwdW, 0)
+      revTo = append(revTo, 0)
+      revW = append(revW, 0)
+      i = i + 1
+    }
+    var fwdPos: list<int> = []
+    var revPos: list<int> = []
+    i = 0
+    while i < n {
+      fwdPos = append(fwdPos, fwdHead[i])
+      revPos = append(revPos, revHead[i])
+      i = i + 1
+    }
+    i = 0
+    while i < m {
+      let a = edges[i*3]
+      let b = edges[i*3+1]
+      let c = edges[i*3+2]
+      fwdTo[fwdPos[a]] = b
+      fwdW[fwdPos[a]] = c
+      fwdPos[a] = fwdPos[a] + 1
+      revTo[revPos[b]] = a
+      revW[revPos[b]] = c
+      revPos[b] = revPos[b] + 1
+      i = i + 1
+    }
+
+    let fwd = dijkstra(n, fwdHead, fwdTo, fwdW, 0)
+    let rev = dijkstra(n, revHead, revTo, revW, 0)
+
+    var total = 0
+    i = 1
+    while i < n {
+      total = total + fwd[i] + rev[i]
+      i = i + 1
+    }
+    print(total)
+
+    tLine = input()
+  }
+}
+
+main()

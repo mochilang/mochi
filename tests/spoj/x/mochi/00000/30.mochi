@@ -19,14 +19,20 @@ fun split(line: string): list<string> {
 }
 
 fun find(parent: list<int>, x: int): int {
-  if parent[x] == x { return x }
-  let r = find(parent, parent[x])
-  parent[x] = r
+  var r = x
+  while parent[r] != r { r = parent[r] }
+  // Path compress
+  var c = x
+  while c != r {
+    let nx = parent[c]
+    parent[c] = r
+    c = nx
+  }
   return r
 }
 
-fun sortEdges(eu: list<int>, ev: list<int>, ew: list<int>): list<int> {
-  // Returns sorted indices by weight (insertion sort)
+fun sortEdges(ew: list<int>): list<int> {
+  // Insertion sort, returns sorted indices
   let n = len(ew)
   var idx: list<int> = []
   var i = 0
@@ -50,69 +56,60 @@ fun main() {
   var tLine = input()
   while tLine != "" {
     let t = int(tLine)
-    for _ in 0..t {
+    var ti = 0
+    while ti < t {
+      // Skip blank lines between test cases
       var nLine = input()
       while nLine == "" { nLine = input() }
       let n = int(nLine)
-      var cityIndex: map<string, int> = {}
+
+      // Read all city names first (first line for each city), and neighbor lines
+      var names: list<string> = []
+      var edgeLines: list<string> = []
+      var ci = 0
+      while ci < n {
+        var nm = input()
+        while nm == "" { nm = input() }
+        names = append(names, nm)
+        var el = input()
+        while el == "" { el = input() }
+        edgeLines = append(edgeLines, el)
+        ci = ci + 1
+      }
+
+      // Build name -> index map
+      var cityMap: map<string, int> = {}
+      ci = 0
+      while ci < n {
+        cityMap[names[ci]] = ci
+        ci = ci + 1
+      }
+
+      // Parse edges
       var eu: list<int> = []
       var ev: list<int> = []
       var ew: list<int> = []
-      var ci = 0
-      while ci < n {
-        let name = input()
-        cityIndex[name] = ci
-        ci = ci + 1
-      }
-      // Re-read edges
-      var parent: list<int> = []
-      var i = 0
-      while i < n { parent = append(parent, i); i = i + 1 }
-      // Actually we need two passes or store names first. Let me redo.
-      // The input alternates: city name, then "#neighbors neighbor cost ..."
-      // We already consumed city names above - need to interleave.
-      // Reset and re-read.
-      ci = 0
-      // The above approach won't work with two-pass. Use single pass instead.
-      // Reset state.
-      eu = []
-      ev = []
-      ew = []
-      cityIndex = {}
-      parent = []
-      i = 0
-      while i < n { parent = append(parent, i); i = i + 1 }
       ci = 0
       while ci < n {
-        let name = input()
-        if !cityIndex["__exists_" + name] as bool {
-          cityIndex[name] = ci
-          cityIndex["__exists_" + name] = true
-          ci = ci + 1
-        }
-        let kLine = split(input())
-        let k = int(kLine[0])
+        let parts = split(edgeLines[ci])
+        let k = int(parts[0])
         var ki = 0
         while ki < k {
-          let neighbor = kLine[1 + 2*ki]
-          let cost = int(kLine[1 + 2*ki + 1])
-          let uid = cityIndex[name] as int
-          var vid = 0
-          if cityIndex["__exists_" + neighbor] as bool {
-            vid = cityIndex[neighbor] as int
-          } else {
-            vid = ci
-            cityIndex[neighbor] = ci
-            cityIndex["__exists_" + neighbor] = true
-            ci = ci + 1
-          }
-          eu = append(eu, uid)
-          ev = append(ev, vid)
+          let neighbor = parts[1 + 2*ki]
+          let cost = int(parts[2 + 2*ki])
+          eu = append(eu, ci)
+          ev = append(ev, cityMap[neighbor] as int)
           ew = append(ew, cost)
           ki = ki + 1
         }
+        ci = ci + 1
       }
-      let sorted = sortEdges(eu, ev, ew)
+
+      // Kruskal's MST
+      var parent: list<int> = []
+      var i = 0
+      while i < n { parent = append(parent, i); i = i + 1 }
+      let sorted = sortEdges(ew)
       var total = 0
       var components = n
       i = 0
@@ -131,6 +128,7 @@ fun main() {
         i = i + 1
       }
       print(total)
+      ti = ti + 1
     }
     tLine = input()
   }
