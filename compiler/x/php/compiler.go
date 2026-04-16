@@ -124,7 +124,7 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	return c.compileVarStmt(v.Name, v.Value)
 }
 
-func (c *Compiler) compileVarStmt(name string, val *parser.Expr) error {
+func (c *Compiler) compileVarStmt(name string, val *parser.Expr, mut bool) error {
 	var value string
 	if val != nil {
 		var err error
@@ -136,6 +136,10 @@ func (c *Compiler) compileVarStmt(name string, val *parser.Expr) error {
 		value = "null"
 	}
 	c.writeln(fmt.Sprintf("$%s = %s;", sanitizeName(name), value))
+	if c.env != nil && val != nil {
+		typ := types.ExprType(val, c.env)
+		c.env.SetVar(name, typ, mut)
+	}
 	return nil
 }
 
@@ -672,9 +676,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					t = types.StringType{}
 				} else {
 					if length == "" {
-						val = fmt.Sprintf("array_slice(%s, %s)", val, start)
+						if _, ok := t.(types.AnyType); ok {
+							c.use("_slice")
+							val = fmt.Sprintf("_slice(%s, %s)", val, start)
+						} else {
+							val = fmt.Sprintf("array_slice(%s, %s)", val, start)
+						}
 					} else {
-						val = fmt.Sprintf("array_slice(%s, %s, %s)", val, start, length)
+						if _, ok := t.(types.AnyType); ok {
+							c.use("_slice")
+							val = fmt.Sprintf("_slice(%s, %s, %s)", val, start, length)
+						} else {
+							val = fmt.Sprintf("array_slice(%s, %s, %s)", val, start, length)
+						}
 					}
 					if lt, ok := t.(types.ListType); ok {
 						t = lt.Elem
