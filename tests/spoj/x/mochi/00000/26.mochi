@@ -1,0 +1,133 @@
+// Solution for SPOJ BSHEEP - Build the Fence
+// https://www.spoj.com/problems/BSHEEP/
+// Convex hull perimeter using Andrew's monotone chain.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun mysqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var i = 0
+  while i < 60 { r = (r + x / r) / 2.0; i = i + 1 }
+  return r
+}
+
+fun dist(x1: float, y1: float, x2: float, y2: float): float {
+  let dx = x2 - x1
+  let dy = y2 - y1
+  return mysqrt(dx*dx + dy*dy)
+}
+
+fun cross(ox: float, oy: float, ax: float, ay: float, bx: float, by: float): float {
+  return (ax - ox) * (by - oy) - (ay - oy) * (bx - ox)
+}
+
+// Insertion sort on parallel x/y arrays
+fun sortPoints(xs: list<float>, ys: list<float>, n: int) {
+  var i = 1
+  while i < n {
+    let kx = xs[i]
+    let ky = ys[i]
+    var j = i - 1
+    while j >= 0 {
+      if xs[j] < kx { break }
+      if xs[j] == kx && ys[j] <= ky { break }
+      xs[j+1] = xs[j]
+      ys[j+1] = ys[j]
+      j = j - 1
+    }
+    xs[j+1] = kx
+    ys[j+1] = ky
+    i = i + 1
+  }
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    var xs: list<float> = []
+    var ys: list<float> = []
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let p = split(vLine)
+      xs = append(xs, int(p[0]) as float)
+      ys = append(ys, int(p[1]) as float)
+      i = i + 1
+    }
+
+    sortPoints(xs, ys, n)
+
+    // Andrew's monotone chain
+    var hx: list<float> = []
+    var hy: list<float> = []
+    // Lower hull
+    i = 0
+    while i < n {
+      var sz = len(hx)
+      while sz >= 2 && cross(hx[sz-2], hy[sz-2], hx[sz-1], hy[sz-1], xs[i], ys[i]) <= 0.0 {
+        hx = hx[0:sz-1]
+        hy = hy[0:sz-1]
+        sz = sz - 1
+      }
+      hx = append(hx, xs[i])
+      hy = append(hy, ys[i])
+      i = i + 1
+    }
+    // Upper hull
+    let lower = len(hx)
+    i = n - 2
+    while i >= 0 {
+      var sz = len(hx)
+      while sz > lower && cross(hx[sz-2], hy[sz-2], hx[sz-1], hy[sz-1], xs[i], ys[i]) <= 0.0 {
+        hx = hx[0:sz-1]
+        hy = hy[0:sz-1]
+        sz = sz - 1
+      }
+      hx = append(hx, xs[i])
+      hy = append(hy, ys[i])
+      i = i - 1
+    }
+    // hull has first point duplicated at end; perimeter
+    let hull = len(hx)
+    var perim = 0.0
+    i = 0
+    while i < hull - 1 {
+      perim = perim + dist(hx[i], hy[i], hx[i+1], hy[i+1])
+      i = i + 1
+    }
+
+    // format with 2 decimal places
+    let scaled = int(perim * 100.0 + 0.5)
+    let intPart = int(scaled / 100)
+    let fracPart = scaled % 100
+    var fracStr = str(fracPart)
+    while len(fracStr) < 2 { fracStr = "0" + fracStr }
+    print(str(intPart) + "." + fracStr)
+    ti = ti + 1
+  }
+}
+
+main()

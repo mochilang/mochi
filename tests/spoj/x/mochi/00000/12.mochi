@@ -1,0 +1,50 @@
+// Solution for SPOJ MMIND - The Game of Master-Mind
+// https://www.spoj.com/problems/MMIND/
+
+fun countDigit(s: string, d: string): int {
+  var cnt = 0
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == d { cnt = cnt + 1 }
+    i = i + 1
+  }
+  return cnt
+}
+
+fun solve(code: string, guess: string) {
+  var bulls = 0
+  var i = 0
+  while i < len(code) {
+    if code[i:i+1] == guess[i:i+1] { bulls = bulls + 1 }
+    i = i + 1
+  }
+  var cows = 0
+  let digits = "0123456789"
+  i = 0
+  while i < 10 {
+    let d = digits[i:i+1]
+    let mc = countDigit(code, d)
+    let mg = countDigit(guess, d)
+    if mc < mg { cows = cows + mc } else { cows = cows + mg }
+    i = i + 1
+  }
+  cows = cows - bulls
+  print(str(bulls) + " " + str(cows))
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var code = input()
+    while code == "" { code = input() }
+    var guess = input()
+    while guess == "" { guess = input() }
+    solve(code, guess)
+    ti = ti + 1
+  }
+}
+
+main()
