@@ -1,0 +1,5 @@
+[]
+call graph: main
+stack trace:
+  main at /workspace/mochi/tests/dataset/tpc-ds/q34.mochi:68
+    expect result == [{c_last_name: "Smith", c_first_name: "John", c_salutation: "Mr.", c_preferred_cust_flag: "Y", ss_ticket_number: 1, cnt: 16}]
