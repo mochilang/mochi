@@ -7992,12 +7992,19 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			return Value{Tag: ValueInt, Int: int(maxVal)}, true
 		}
 	case "concat":
-		out := []Value{}
-		for _, v := range args {
+		// Preallocate the result list to avoid repeated allocations
+		lists := make([][]Value, len(args))
+		total := 0
+		for i, v := range args {
 			lst, ok := toList(v)
 			if !ok {
 				return Value{}, false
 			}
+			lists[i] = lst
+			total += len(lst)
+		}
+		out := make([]Value, 0, total)
+		for _, lst := range lists {
 			out = append(out, lst...)
 		}
 		return Value{Tag: ValueList, List: out}, true
