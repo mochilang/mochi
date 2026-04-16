@@ -1,0 +1,52 @@
+// Solution for SPOJ CT2 - Counting Triangles 2
+// https://www.spoj.com/problems/CT2/
+// Count axis-aligned isosceles right triangles on (X+1)x(Y+1) integer grid.
+// For each leg length k from 1 to min(X,Y), there are 4 orientations,
+// each with (X+1-k)*(Y+1-k) placements.
+// Total = 4 * sum_{k=1}^{min(X,Y)} (X+1-k)*(Y+1-k)
+// Using closed form: let m=min(X,Y), A=X+1, B=Y+1
+//   sum = A*B*m - (A+B)*m*(m+1)/2 + m*(m+1)*(2*m+1)/6
+
+fun split(s: string): list<string> {
+  var r: list<string> = []
+  var c = ""
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == " " {
+      if len(c) > 0 { r = append(r, c); c = "" }
+    } else { c = c + s[i:i+1] }
+    i = i + 1
+  }
+  if len(c) > 0 { r = append(r, c) }
+  return r
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var ti = 0
+  while ti < T {
+    let p = split(input())
+    let X = int(p[0])
+    let Y = int(p[1])
+    var m = X
+    if Y < m { m = Y }
+    if m == 0 {
+      print(0)
+    } else {
+      let A = X + 1
+      let B = Y + 1
+      // sum_{k=1}^{m} (A-k)*(B-k)
+      // = A*B*m - (A+B)*m*(m+1)/2 + m*(m+1)*(2*m+1)/6
+      let t1 = A * B * m
+      let t2 = int((A + B) * m * (m + 1) / 2)
+      let t3 = int(m * (m + 1) * (2 * m + 1) / 6)
+      let total = 4 * (t1 - t2 + t3)
+      print(total)
+    }
+    ti = ti + 1
+  }
+}
+
+main()
