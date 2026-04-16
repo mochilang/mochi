@@ -347,6 +347,44 @@ func evalIntExpr(e Expr) (int, bool) {
 
 type Stmt interface{ emit(io.Writer) }
 
+type ReturnStmt struct{ Value Expr }
+
+func (r *ReturnStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "return")
+	if r.Value != nil {
+		fmt.Fprint(w, " ")
+		r.Value.emit(w)
+	}
+}
+
+type FuncDecl struct {
+	Name   string
+	Params []string
+	Ret    string
+	Body   []Stmt
+}
+
+func (f *FuncDecl) emit(w io.Writer) {
+	fmt.Fprintf(w, "func %s(", f.Name)
+	for i, p := range f.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		fmt.Fprintf(w, "%s any", p)
+	}
+	fmt.Fprint(w, ")")
+	if f.Ret != "" {
+		fmt.Fprintf(w, " %s", f.Ret)
+	}
+	fmt.Fprint(w, " {\n")
+	for _, st := range f.Body {
+		fmt.Fprint(w, "    ")
+		st.emit(w)
+		fmt.Fprint(w, "\n")
+	}
+	fmt.Fprint(w, "}")
+}
+
 type Expr interface{ emit(io.Writer) }
 
 type StmtList struct{ List []Stmt }
