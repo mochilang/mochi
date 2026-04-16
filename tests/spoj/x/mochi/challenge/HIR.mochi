@@ -1,0 +1,155 @@
+// Solution for SPOJ HIR - Hard Image Recognition
+// https://www.spoj.com/problems/HIR/
+// Identify 6-digit passport numbers from H×W black-and-white images.
+// '.' = white pixel, 'X' = black pixel. Score = correct digit identifications.
+// Approach: 7-segment display recognition using pixel density in 7 zones.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Count X pixels in a rectangular region of the flat grid.
+fun countX(grid: list<string>, W: int, r0: int, r1: int, c0: int, c1: int): int {
+  var cnt = 0
+  var r = r0
+  while r < r1 {
+    var c = c0
+    while c < c1 {
+      if grid[r * W + c] == "X" { cnt = cnt + 1 }
+      c = c + 1
+    }
+    r = r + 1
+  }
+  return cnt
+}
+
+// Recognize a single digit from the region [c0, c0+wd) of the image.
+// Uses 7-segment detection: top, tl, tr, mid, bl, br, bot.
+// Segment encoding: pat = top*64 + tl*32 + tr*16 + mid*8 + bl*4 + br*2 + bot
+// Digit -> pattern mapping (7-wide, 7-tall 7-segment style):
+//   0 -> 119 (1110111)   1 -> 26  (0011010)   2 -> 93  (1011101)
+//   3 -> 91  (1011011)   4 -> 58  (0111010)   5 -> 107 (1101011)
+//   6 -> 111 (1101111)   7 -> 90  (1011010)   8 -> 127 (1111111)
+//   9 -> 123 (1111011)
+fun recognizeDigit(grid: list<string>, H: int, W: int, c0: int, wd: int): string {
+  let hm = H / 2       // exact middle row index
+  let cMid = c0 + wd / 2
+
+  // Detect 7 segments:
+  let sTop = countX(grid, W, 0, 1, c0, c0 + wd)
+  let sBot = countX(grid, W, H - 1, H, c0, c0 + wd)
+  let sMid = countX(grid, W, hm, hm + 1, c0, c0 + wd)
+  let sTl  = countX(grid, W, 1, hm, c0, cMid)
+  let sTr  = countX(grid, W, 1, hm, cMid, c0 + wd)
+  let sBl  = countX(grid, W, hm + 1, H - 1, c0, cMid)
+  let sBr  = countX(grid, W, hm + 1, H - 1, cMid, c0 + wd)
+
+  // Convert to binary presence flags
+  var bTop = 0; var bBot = 0; var bMid = 0
+  var bTl = 0; var bTr = 0; var bBl = 0; var bBr = 0
+  if sTop > 0 { bTop = 1 }
+  if sBot > 0 { bBot = 1 }
+  if sMid > 0 { bMid = 1 }
+  if sTl > 0 { bTl = 1 }
+  if sTr > 0 { bTr = 1 }
+  if sBl > 0 { bBl = 1 }
+  if sBr > 0 { bBr = 1 }
+
+  let pat = bTop * 64 + bTl * 32 + bTr * 16 + bMid * 8 + bBl * 4 + bBr * 2 + bBot
+
+  // Exact match against known patterns
+  if pat == 119 { return "0" }
+  if pat == 26  { return "1" }
+  if pat == 93  { return "2" }
+  if pat == 91  { return "3" }
+  if pat == 58  { return "4" }
+  if pat == 107 { return "5" }
+  if pat == 111 { return "6" }
+  if pat == 90  { return "7" }
+  if pat == 127 { return "8" }
+  if pat == 123 { return "9" }
+
+  // Fallback: nearest neighbor by Hamming distance over 7 bits
+  var patterns: list<int> = [119, 26, 93, 91, 58, 107, 111, 90, 127, 123]
+  var digLabels: list<string> = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+  var bestDist = 8
+  var bestLabel = "0"
+  var di = 0
+  while di < 10 {
+    // Count bit differences between pat and patterns[di] (7 bits)
+    var x = pat
+    var y = patterns[di]
+    var bitdiff = 0
+    var b = 0
+    while b < 7 {
+      let bx = x - (x / 2) * 2
+      let by = y - (y / 2) * 2
+      if bx != by { bitdiff = bitdiff + 1 }
+      x = x / 2
+      y = y / 2
+      b = b + 1
+    }
+    if bitdiff < bestDist {
+      bestDist = bitdiff
+      bestLabel = digLabels[di]
+    }
+    di = di + 1
+  }
+  return bestLabel
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let parts = split(line)
+    if len(parts) < 2 {
+      line = input()
+    } else {
+      let H = int(parts[0])
+      let W = int(parts[1])
+      let wd = W / 6
+
+      // Read H rows into flat grid
+      var grid: list<string> = []
+      var r = 0
+      while r < H {
+        let row = input()
+        var c = 0
+        while c < W {
+          grid = append(grid, row[c:c+1])
+          c = c + 1
+        }
+        r = r + 1
+      }
+
+      // Recognize each of the 6 digits
+      var result = ""
+      var di = 0
+      while di < 6 {
+        let c0 = di * wd
+        result = result + recognizeDigit(grid, H, W, c0, wd)
+        di = di + 1
+      }
+      print(result)
+
+      line = input()
+      while line == "" {
+        line = input()
+      }
+    }
+  }
+}
+
+main()

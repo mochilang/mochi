@@ -1,0 +1,127 @@
+// Solution for SPOJ FMORSE1 - Fractionated morse cipher
+// https://www.spoj.com/problems/FMORSE1/
+// Encode plaintext using Fractionated Morse cipher with keyword alphabet.
+
+// Morse code table for A-Z
+let morseMap: map<string, string> = {
+  "A": ".-",   "B": "-...", "C": "-.-.", "D": "-..",  "E": ".",
+  "F": "..-.", "G": "--.",  "H": "....", "I": "..",   "J": ".---",
+  "K": "-.-",  "L": ".-..", "M": "--",   "N": "-.",   "O": "---",
+  "P": ".--.", "Q": "--.-", "R": ".-.",  "S": "...",  "T": "-",
+  "U": "..-",  "V": "...-", "W": ".--",  "X": "-..-", "Y": "-.--",
+  "Z": "--..",
+}
+
+// 26 trigraphs in order (all 3-char combos of .,-,| except |||)
+// Canonical order with . < - < |
+fun buildTrigraphs(): list<string> {
+  var ts: list<string> = []
+  let chars = ".-|"
+  var a = 0
+  while a < 3 {
+    var b = 0
+    while b < 3 {
+      var c = 0
+      while c < 3 {
+        let tri = chars[a:a+1] + chars[b:b+1] + chars[c:c+1]
+        if tri != "|||" {
+          ts = append(ts, tri)
+        }
+        c = c + 1
+      }
+      b = b + 1
+    }
+    a = a + 1
+  }
+  return ts
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun buildKeyAlpha(keyword: string): string {
+  var seen: map<string, int> = {}
+  var alpha = ""
+  var i = 0
+  while i < len(keyword) {
+    let ch = keyword[i:i+1]
+    if seen[ch] == nil {
+      seen[ch] = 1
+      alpha = alpha + ch
+    }
+    i = i + 1
+  }
+  let allLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  var j = 0
+  while j < 26 {
+    let ch = allLetters[j:j+1]
+    if seen[ch] == nil {
+      alpha = alpha + ch
+    }
+    j = j + 1
+  }
+  return alpha
+}
+
+fun main() {
+  let trigraphs = buildTrigraphs()
+  var line = input()
+  while line != nil {
+    if line != "" {
+      let parts = split(line)
+      if len(parts) >= 2 {
+        let keyword = parts[0]
+        let plaintext = parts[1]
+        let keyAlpha = buildKeyAlpha(keyword)
+
+        // Build trigraph -> letter map
+        var trigMap: map<string, string> = {}
+        var ti = 0
+        while ti < 26 {
+          trigMap[trigraphs[ti]] = keyAlpha[ti:ti+1]
+          ti = ti + 1
+        }
+
+        // Encode plaintext to morse with | separators
+        var encoded = ""
+        var pi = 0
+        while pi < len(plaintext) {
+          let ch = plaintext[pi:pi+1]
+          encoded = encoded + morseMap[ch] + "|"
+          pi = pi + 1
+        }
+
+        // Truncate to multiple of 3
+        let elen = int(len(encoded) / 3) * 3
+        encoded = encoded[0:elen]
+
+        // Convert trigraphs to letters
+        var result = ""
+        var ei = 0
+        while ei < len(encoded) {
+          let tri = encoded[ei:ei+3]
+          result = result + trigMap[tri]
+          ei = ei + 3
+        }
+        print(result)
+      }
+    }
+    line = input()
+  }
+}
+
+main()
