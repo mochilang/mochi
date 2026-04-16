@@ -219,7 +219,7 @@ func writeTerm(b *strings.Builder, n *Node, indent int, arg bool) {
 		} else {
 			writeFunctor(b, n, indent)
 		}
-	case "=:=", "=\\=", "<", "<=", ">", ">=":
+	case "=:=", "=\\=", "==", "\\=", "<", "<=", ">", ">=":
 		if len(n.Children) == 2 {
 			writeTerm(b, n.Children[0], indent, true)
 			b.WriteString(" " + n.Kind + " ")
