@@ -111,11 +111,11 @@ def test_Q22_returns_wealthy_inactive_customers_by_phone_prefix():
 
 
 customer = [
-    Customer(c_custkey=1, c_phone="13-123-4567", c_acctbal=600.0),
-    Customer(c_custkey=2, c_phone="31-456-7890", c_acctbal=100.0),
-    Customer(c_custkey=3, c_phone="30-000-0000", c_acctbal=700.0),
+    {"c_custkey": 1, "c_phone": "13-123-4567", "c_acctbal": 600.0},
+    {"c_custkey": 2, "c_phone": "31-456-7890", "c_acctbal": 100.0},
+    {"c_custkey": 3, "c_phone": "30-000-0000", "c_acctbal": 700.0},
 ]
-orders = [Order(o_orderkey=10, o_custkey=2)]
+orders = [{"o_orderkey": 10, "o_custkey": 2}]
 valid_codes = ["13", "31", "23", "29", "30", "18", "17"]
 avg_balance = (
     sum(

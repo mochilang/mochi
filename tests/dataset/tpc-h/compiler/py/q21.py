@@ -205,36 +205,36 @@ def test_Q21_returns_Saudi_suppliers_who_caused_unique_delivery_delays():
 
 
 nation = [
-    Nation(n_nationkey=1, n_name="SAUDI ARABIA"),
-    Nation(n_nationkey=2, n_name="FRANCE"),
+    {"n_nationkey": 1, "n_name": "SAUDI ARABIA"},
+    {"n_nationkey": 2, "n_name": "FRANCE"},
 ]
 supplier = [
-    Supplier(s_suppkey=100, s_name="Desert Trade", s_nationkey=1),
-    Supplier(s_suppkey=200, s_name="Euro Goods", s_nationkey=2),
+    {"s_suppkey": 100, "s_name": "Desert Trade", "s_nationkey": 1},
+    {"s_suppkey": 200, "s_name": "Euro Goods", "s_nationkey": 2},
 ]
 orders = [
-    Order(o_orderkey=500, o_orderstatus="F"),
-    Order(o_orderkey=600, o_orderstatus="O"),
+    {"o_orderkey": 500, "o_orderstatus": "F"},
+    {"o_orderkey": 600, "o_orderstatus": "O"},
 ]
 lineitem = [
-    Lineitem(
-        l_orderkey=500,
-        l_suppkey=100,
-        l_receiptdate="1995-04-15",
-        l_commitdate="1995-04-10",
-    ),
-    Lineitem(
-        l_orderkey=500,
-        l_suppkey=200,
-        l_receiptdate="1995-04-12",
-        l_commitdate="1995-04-12",
-    ),
-    Lineitem(
-        l_orderkey=600,
-        l_suppkey=100,
-        l_receiptdate="1995-05-01",
-        l_commitdate="1995-04-25",
-    ),
+    {
+        "l_orderkey": 500,
+        "l_suppkey": 100,
+        "l_receiptdate": "1995-04-15",
+        "l_commitdate": "1995-04-10",
+    },
+    {
+        "l_orderkey": 500,
+        "l_suppkey": 200,
+        "l_receiptdate": "1995-04-12",
+        "l_commitdate": "1995-04-12",
+    },
+    {
+        "l_orderkey": 600,
+        "l_suppkey": 100,
+        "l_receiptdate": "1995-05-01",
+        "l_commitdate": "1995-04-25",
+    },
 ]
 
 

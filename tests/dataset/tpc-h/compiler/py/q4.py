@@ -191,16 +191,16 @@ def test_Q4_returns_count_of_orders_with_late_lineitems_in_range():
 
 
 orders = [
-    Order(o_orderkey=1, o_orderdate="1993-07-01", o_orderpriority="1-URGENT"),
-    Order(o_orderkey=2, o_orderdate="1993-07-15", o_orderpriority="2-HIGH"),
-    Order(o_orderkey=3, o_orderdate="1993-08-01", o_orderpriority="3-NORMAL"),
+    {"o_orderkey": 1, "o_orderdate": "1993-07-01", "o_orderpriority": "1-URGENT"},
+    {"o_orderkey": 2, "o_orderdate": "1993-07-15", "o_orderpriority": "2-HIGH"},
+    {"o_orderkey": 3, "o_orderdate": "1993-08-01", "o_orderpriority": "3-NORMAL"},
 ]
 lineitem = [
-    Lineitem(l_orderkey=1, l_commitdate="1993-07-10", l_receiptdate="1993-07-12"),
-    Lineitem(l_orderkey=1, l_commitdate="1993-07-12", l_receiptdate="1993-07-10"),
-    Lineitem(l_orderkey=2, l_commitdate="1993-07-20", l_receiptdate="1993-07-25"),
-    Lineitem(l_orderkey=3, l_commitdate="1993-08-02", l_receiptdate="1993-08-01"),
-    Lineitem(l_orderkey=3, l_commitdate="1993-08-05", l_receiptdate="1993-08-10"),
+    {"l_orderkey": 1, "l_commitdate": "1993-07-10", "l_receiptdate": "1993-07-12"},
+    {"l_orderkey": 1, "l_commitdate": "1993-07-12", "l_receiptdate": "1993-07-10"},
+    {"l_orderkey": 2, "l_commitdate": "1993-07-20", "l_receiptdate": "1993-07-25"},
+    {"l_orderkey": 3, "l_commitdate": "1993-08-02", "l_receiptdate": "1993-08-01"},
+    {"l_orderkey": 3, "l_commitdate": "1993-08-05", "l_receiptdate": "1993-08-10"},
 ]
 start_date = "1993-07-01"
 end_date = "1993-08-01"

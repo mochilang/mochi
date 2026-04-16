@@ -250,27 +250,27 @@ def test_Q7_computes_revenue_between_FRANCE_and_GERMANY_by_year():
 
 
 nation = [
-    Nation(n_nationkey=1, n_name="FRANCE"),
-    Nation(n_nationkey=2, n_name="GERMANY"),
+    {"n_nationkey": 1, "n_name": "FRANCE"},
+    {"n_nationkey": 2, "n_name": "GERMANY"},
 ]
-supplier = [Supplier(s_suppkey=100, s_nationkey=1)]
-customer = [Customer(c_custkey=200, c_nationkey=2)]
-orders = [Order(o_orderkey=1000, o_custkey=200)]
+supplier = [{"s_suppkey": 100, "s_nationkey": 1}]
+customer = [{"c_custkey": 200, "c_nationkey": 2}]
+orders = [{"o_orderkey": 1000, "o_custkey": 200}]
 lineitem = [
-    Lineitem(
-        l_orderkey=1000,
-        l_suppkey=100,
-        l_extendedprice=1000.0,
-        l_discount=0.1,
-        l_shipdate="1995-06-15",
-    ),
-    Lineitem(
-        l_orderkey=1000,
-        l_suppkey=100,
-        l_extendedprice=800.0,
-        l_discount=0.05,
-        l_shipdate="1997-01-01",
-    ),
+    {
+        "l_orderkey": 1000,
+        "l_suppkey": 100,
+        "l_extendedprice": 1000.0,
+        "l_discount": 0.1,
+        "l_shipdate": "1995-06-15",
+    },
+    {
+        "l_orderkey": 1000,
+        "l_suppkey": 100,
+        "l_extendedprice": 800.0,
+        "l_discount": 0.05,
+        "l_shipdate": "1997-01-01",
+    },
 ]
 start_date = "1995-01-01"
 end_date = "1996-12-31"

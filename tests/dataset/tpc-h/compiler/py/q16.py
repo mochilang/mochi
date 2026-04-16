@@ -146,27 +146,24 @@ def test_Q16_returns_suppliers_not_linked_to_certain_parts_or_complaints():
 
 
 supplier = [
-    Supplier(
-        s_suppkey=100,
-        s_name="AlphaSupply",
-        s_address="123 Hilltop",
-        s_comment="Reliable and efficient",
-    ),
-    Supplier(
-        s_suppkey=200,
-        s_name="BetaSupply",
-        s_address="456 Riverside",
-        s_comment="Known for Customer Complaints",
-    ),
+    {
+        "s_suppkey": 100,
+        "s_name": "AlphaSupply",
+        "s_address": "123 Hilltop",
+        "s_comment": "Reliable and efficient",
+    },
+    {
+        "s_suppkey": 200,
+        "s_name": "BetaSupply",
+        "s_address": "456 Riverside",
+        "s_comment": "Known for Customer Complaints",
+    },
 ]
 part = [
-    Part(p_partkey=1, p_brand="Brand#12", p_type="SMALL ANODIZED", p_size=5),
-    Part(p_partkey=2, p_brand="Brand#23", p_type="MEDIUM POLISHED", p_size=10),
+    {"p_partkey": 1, "p_brand": "Brand#12", "p_type": "SMALL ANODIZED", "p_size": 5},
+    {"p_partkey": 2, "p_brand": "Brand#23", "p_type": "MEDIUM POLISHED", "p_size": 10},
 ]
-partsupp = [
-    Partsupp(ps_partkey=1, ps_suppkey=100),
-    Partsupp(ps_partkey=2, ps_suppkey=200),
-]
+partsupp = [{"ps_partkey": 1, "ps_suppkey": 100}, {"ps_partkey": 2, "ps_suppkey": 200}]
 excluded_suppliers = _query(
     partsupp,
     [{"items": part, "on": lambda ps, p: p.p_partkey == ps.ps_partkey}],

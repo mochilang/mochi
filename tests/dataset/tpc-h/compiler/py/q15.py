@@ -183,29 +183,38 @@ def test_Q15_returns_top_revenue_supplier_s__for_Q1_1996():
 
 
 supplier = [
-    Supplier(
-        s_suppkey=100,
-        s_name="Best Supplier",
-        s_address="123 Market St",
-        s_phone="123-456",
-    ),
-    Supplier(
-        s_suppkey=200,
-        s_name="Second Supplier",
-        s_address="456 Elm St",
-        s_phone="987-654",
-    ),
+    {
+        "s_suppkey": 100,
+        "s_name": "Best Supplier",
+        "s_address": "123 Market St",
+        "s_phone": "123-456",
+    },
+    {
+        "s_suppkey": 200,
+        "s_name": "Second Supplier",
+        "s_address": "456 Elm St",
+        "s_phone": "987-654",
+    },
 ]
 lineitem = [
-    Lineitem(
-        l_suppkey=100, l_extendedprice=1000.0, l_discount=0.1, l_shipdate="1996-01-15"
-    ),
-    Lineitem(
-        l_suppkey=100, l_extendedprice=500.0, l_discount=0.0, l_shipdate="1996-03-20"
-    ),
-    Lineitem(
-        l_suppkey=200, l_extendedprice=800.0, l_discount=0.05, l_shipdate="1995-12-30"
-    ),
+    {
+        "l_suppkey": 100,
+        "l_extendedprice": 1000.0,
+        "l_discount": 0.1,
+        "l_shipdate": "1996-01-15",
+    },
+    {
+        "l_suppkey": 100,
+        "l_extendedprice": 500.0,
+        "l_discount": 0.0,
+        "l_shipdate": "1996-03-20",
+    },
+    {
+        "l_suppkey": 200,
+        "l_extendedprice": 800.0,
+        "l_discount": 0.05,
+        "l_shipdate": "1995-12-30",
+    },
 ]
 start_date = "1996-01-01"
 end_date = "1996-04-01"

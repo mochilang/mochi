@@ -262,42 +262,39 @@ def test_Q9_computes_profit_for_green_parts_by_nation_and_year():
 
 
 nation = [
-    Nation(n_nationkey=1, n_name="BRAZIL"),
-    Nation(n_nationkey=2, n_name="CANADA"),
+    {"n_nationkey": 1, "n_name": "BRAZIL"},
+    {"n_nationkey": 2, "n_name": "CANADA"},
 ]
-supplier = [
-    Supplier(s_suppkey=100, s_nationkey=1),
-    Supplier(s_suppkey=200, s_nationkey=2),
-]
+supplier = [{"s_suppkey": 100, "s_nationkey": 1}, {"s_suppkey": 200, "s_nationkey": 2}]
 part = [
-    Part(p_partkey=1000, p_name="green metal box"),
-    Part(p_partkey=2000, p_name="red plastic crate"),
+    {"p_partkey": 1000, "p_name": "green metal box"},
+    {"p_partkey": 2000, "p_name": "red plastic crate"},
 ]
 partsupp = [
-    Partsupp(ps_partkey=1000, ps_suppkey=100, ps_supplycost=10.0),
-    Partsupp(ps_partkey=1000, ps_suppkey=200, ps_supplycost=8.0),
+    {"ps_partkey": 1000, "ps_suppkey": 100, "ps_supplycost": 10.0},
+    {"ps_partkey": 1000, "ps_suppkey": 200, "ps_supplycost": 8.0},
 ]
 orders = [
-    Order(o_orderkey=1, o_orderdate="1995-02-10"),
-    Order(o_orderkey=2, o_orderdate="1997-01-01"),
+    {"o_orderkey": 1, "o_orderdate": "1995-02-10"},
+    {"o_orderkey": 2, "o_orderdate": "1997-01-01"},
 ]
 lineitem = [
-    Lineitem(
-        l_orderkey=1,
-        l_partkey=1000,
-        l_suppkey=100,
-        l_quantity=5,
-        l_extendedprice=1000.0,
-        l_discount=0.1,
-    ),
-    Lineitem(
-        l_orderkey=2,
-        l_partkey=1000,
-        l_suppkey=200,
-        l_quantity=10,
-        l_extendedprice=800.0,
-        l_discount=0.05,
-    ),
+    {
+        "l_orderkey": 1,
+        "l_partkey": 1000,
+        "l_suppkey": 100,
+        "l_quantity": 5,
+        "l_extendedprice": 1000.0,
+        "l_discount": 0.1,
+    },
+    {
+        "l_orderkey": 2,
+        "l_partkey": 1000,
+        "l_suppkey": 200,
+        "l_quantity": 10,
+        "l_extendedprice": 800.0,
+        "l_discount": 0.05,
+    },
 ]
 prefix = "green"
 start_date = "1995-01-01"
@@ -343,6 +340,8 @@ def _q0():
     _items1 = sorted(
         _items1, key=lambda g: _sort_key([g.key["nation"], -g.key["o_year"]])
     )
+    _items1 = _groups
+    _items1 = sorted(_items1, key=lambda g: _sort_key([g.key.nation, -g.key.o_year]))
     return [
         Auto1(
             nation=g.key["nation"],

@@ -170,24 +170,24 @@ def test_Q12_counts_lineitems_by_ship_mode_and_priority():
 
 
 orders = [
-    Order(o_orderkey=1, o_orderpriority="1-URGENT"),
-    Order(o_orderkey=2, o_orderpriority="3-MEDIUM"),
+    {"o_orderkey": 1, "o_orderpriority": "1-URGENT"},
+    {"o_orderkey": 2, "o_orderpriority": "3-MEDIUM"},
 ]
 lineitem = [
-    Lineitem(
-        l_orderkey=1,
-        l_shipmode="MAIL",
-        l_commitdate="1994-02-10",
-        l_receiptdate="1994-02-15",
-        l_shipdate="1994-02-05",
-    ),
-    Lineitem(
-        l_orderkey=2,
-        l_shipmode="SHIP",
-        l_commitdate="1994-03-01",
-        l_receiptdate="1994-02-28",
-        l_shipdate="1994-02-27",
-    ),
+    {
+        "l_orderkey": 1,
+        "l_shipmode": "MAIL",
+        "l_commitdate": "1994-02-10",
+        "l_receiptdate": "1994-02-15",
+        "l_shipdate": "1994-02-05",
+    },
+    {
+        "l_orderkey": 2,
+        "l_shipmode": "SHIP",
+        "l_commitdate": "1994-03-01",
+        "l_receiptdate": "1994-02-28",
+        "l_shipdate": "1994-02-27",
+    },
 ]
 
 
