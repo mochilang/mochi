@@ -1027,6 +1027,9 @@ func (c *Compiler) binaryOp(left string, lType types.Type, op string, right stri
 		c.use("intersect")
 		return fmt.Sprintf("intersect(%s.toMutableList(), %s.toMutableList())", left, right), types.ListType{}, nil
 	case "+", "-", "*", "/", "%":
+		if types.IsListType(lType) && types.IsListType(rType) && op == "+" {
+			return fmt.Sprintf("%s.toMutableList().apply { addAll(%s) }", left, right), types.ListType{}, nil
+		}
 		if _, ok := lType.(types.IntType); ok {
 			if _, rok := rType.(types.FloatType); rok {
 				left = fmt.Sprintf("(%s).toDouble()", left)
