@@ -1,0 +1,94 @@
+/*
+https://www.spoj.com/problems/PRIME1/
+Prime Generator
+*/
+
+fun isqrt(n: int): int {
+  var x = 0
+  while (x + 1) * (x + 1) <= n {
+    x = x + 1
+  }
+  return x
+}
+
+fun simple_sieve(limit: int): list<int> {
+  var is_prime: list<bool> = []
+  var i = 0
+  while i <= limit {
+    is_prime = append(is_prime, true)
+    i = i + 1
+  }
+  if limit >= 0 { is_prime[0] = false }
+  if limit >= 1 { is_prime[1] = false }
+  var p = 2
+  var primes: list<int> = []
+  while p <= limit {
+    if is_prime[p] {
+      primes = append(primes, p)
+      var multiple = p * p
+      while multiple <= limit {
+        is_prime[multiple] = false
+        multiple = multiple + p
+      }
+    }
+    p = p + 1
+  }
+  return primes
+}
+
+fun segmented_sieve(m: int, n: int): list<int> {
+  let limit = isqrt(n)
+  let primes = simple_sieve(limit)
+  let size = n - m + 1
+  var is_prime: list<bool> = []
+  var i = 0
+  while i < size {
+    is_prime = append(is_prime, true)
+    i = i + 1
+  }
+  var j = 0
+  while j < len(primes) {
+    let p = primes[j]
+    var start = m
+    let rem = m % p
+    if rem != 0 { start = start + (p - rem) }
+    if start == p { start = start + p }
+    var k = start
+    while k <= n {
+      is_prime[k - m] = false
+      k = k + p
+    }
+    j = j + 1
+  }
+  var result: list<int> = []
+  var idx = 0
+  while idx < size {
+    let num = m + idx
+    if is_prime[idx] && num > 1 {
+      result = append(result, num)
+    }
+    idx = idx + 1
+  }
+  return result
+}
+
+fun main() {
+  let t = int(input())
+  var case = 0
+  while case < t {
+    let line = input()
+    let parts = split(line, " ")
+    let m = int(parts[0])
+    let n = int(parts[1])
+    let primes = segmented_sieve(m, n)
+    var i = 0
+    while i < len(primes) {
+      print(primes[i])
+      i = i + 1
+    }
+    case = case + 1
+    if case < t {
+      print("")
+    }
+  }
+}
