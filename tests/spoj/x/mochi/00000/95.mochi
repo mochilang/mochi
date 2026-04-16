@@ -1,0 +1,43 @@
+// Solution for SPOJ STPAR - Street Parade
+// https://www.spoj.com/problems/STPAR/
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    if n == 0 { break }
+
+    // Read desired exit order
+    var want: list<int> = []
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      want = append(want, int(vLine))
+      i = i + 1
+    }
+
+    // Simulate: cars arrive 1..n, side street is a stack
+    var stack: list<int> = []
+    var next_want = 0  // index into want
+    var arrive = 1
+    var ok = 1
+
+    while next_want < n {
+      // Check if top of stack matches
+      while len(stack) > 0 && stack[len(stack)-1] == want[next_want] {
+        stack = stack[0:len(stack)-1]
+        next_want = next_want + 1
+      }
+      if next_want >= n { break }
+      // Push next arriving car
+      if arrive > n { ok = 0; break }
+      stack = append(stack, arrive)
+      arrive = arrive + 1
+    }
+    if ok == 1 && next_want == n { print("yes") } else { print("no") }
+    line = input()
+  }
+}
+
+main()
