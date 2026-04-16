@@ -1,0 +1,114 @@
+// Solution for SPOJ CMEXPR - Complicated Expressions
+// https://www.spoj.com/problems/CMEXPR/
+
+fun parseIntStr(str: string): int {
+  let digits = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,
+    "5":5,"6":6,"7":7,"8":8,"9":9,
+  }
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun precedence(op: string): int {
+  if op == "+" || op == "-" { return 1 }
+  if op == "*" || op == "/" { return 2 }
+  return 0
+}
+
+fun parse(s: string): any {
+  var ops: list<string> = []
+  var vals: list<any> = []
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch >= "a" && ch <= "z" {
+      vals = append(vals, { kind: "var", val: ch })
+    } else if ch == "(" {
+      ops = append(ops, ch)
+    } else if ch == ")" {
+      while len(ops) > 0 && ops[len(ops)-1] != "(" {
+        let op = ops[len(ops)-1]
+        ops = ops[0:len(ops)-1]
+        let right = vals[len(vals)-1]
+        vals = vals[0:len(vals)-1]
+        let left = vals[len(vals)-1]
+        vals = vals[0:len(vals)-1]
+        vals = append(vals, { kind: "op", op: op, left: left, right: right })
+      }
+      ops = ops[0:len(ops)-1] // pop '('
+    } else {
+      while len(ops) > 0 && ops[len(ops)-1] != "(" && precedence(ops[len(ops)-1]) >= precedence(ch) {
+        let op = ops[len(ops)-1]
+        ops = ops[0:len(ops)-1]
+        let right = vals[len(vals)-1]
+        vals = vals[0:len(vals)-1]
+        let left = vals[len(vals)-1]
+        vals = vals[0:len(vals)-1]
+        vals = append(vals, { kind: "op", op: op, left: left, right: right })
+      }
+      ops = append(ops, ch)
+    }
+    i = i + 1
+  }
+  while len(ops) > 0 {
+    let op = ops[len(ops)-1]
+    ops = ops[0:len(ops)-1]
+    let right = vals[len(vals)-1]
+    vals = vals[0:len(vals)-1]
+    let left = vals[len(vals)-1]
+    vals = vals[0:len(vals)-1]
+    vals = append(vals, { kind: "op", op: op, left: left, right: right })
+  }
+  return vals[len(vals)-1]
+}
+
+fun needParen(parent: string, isRight: bool, child: any): bool {
+  if child.kind != "op" { return false }
+  let p = precedence(parent)
+  let c = precedence(child.op)
+  if c < p { return true }
+  if c > p { return false }
+  if parent == "-" && isRight && (child.op == "+" || child.op == "-") {
+    return true
+  }
+  if parent == "/" && isRight && (child.op == "*" || child.op == "/") {
+    return true
+  }
+  return false
+}
+
+fun formatRec(node: any, parent: string, isRight: bool): string {
+  if node.kind != "op" {
+    return node.val
+  }
+  var left = formatRec(node.left, node.op, false)
+  var right = formatRec(node.right, node.op, true)
+  var res = left + node.op + right
+  if parent != "" && needParen(parent, isRight, node) {
+    res = "(" + res + ")"
+  }
+  return res
+}
+
+fun makeNice(s: string): string {
+  let root = parse(s)
+  return formatRec(root, "", false)
+}
+
+fun main() {
+  let tStr = input()
+  if tStr == "" { return }
+  let t = parseIntStr(tStr)
+  for _ in 0..t {
+    let line = input()
+    print(makeNice(line))
+  }
+}
+
+main()

@@ -2566,7 +2566,27 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	if fn := findFunc(c.Name); fn != nil {
+	fn := findFunc(c.Name)
+	emitArg := func(i int, a Expr) {
+		if fn != nil && i < len(fn.Params) {
+			typ := fn.Params[i].Type
+			if exprType(a) == "std::any" && typ != "" && typ != "std::any" && typ != "auto" {
+				if typ == "std::string" {
+					(&StrExpr{Value: a}).emit(w)
+				} else {
+					if currentProgram != nil {
+						currentProgram.addInclude("<any>")
+					}
+					fmt.Fprintf(w, "std::any_cast<%s>(", typ)
+					a.emit(w)
+					io.WriteString(w, ")")
+				}
+				return
+			}
+		}
+		a.emit(w)
+	}
+	if fn != nil {
 		needWrap := false
 		for i, a := range c.Args {
 			if i < len(fn.Params) && fn.Params[i].ByVal {
@@ -2609,7 +2629,7 @@ func (c *CallExpr) emit(w io.Writer) {
 						}
 					}
 				}
-				a.emit(w)
+				emitArg(i, a)
 			}
 			io.WriteString(w, "); }())")
 			return
@@ -2621,7 +2641,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		a.emit(w)
+		emitArg(i, a)
 	}
 	io.WriteString(w, ")")
 }
@@ -3182,6 +3202,28 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 	lt0 := exprType(b.Left)
 	rt0 := exprType(b.Right)
+	if b.Op == "==" || b.Op == "!=" {
+		if lt0 == "std::any" && rt0 == "std::string" {
+			io.WriteString(w, "(")
+			(&StrExpr{Value: b.Left}).emit(w)
+			io.WriteString(w, " ")
+			io.WriteString(w, b.Op)
+			io.WriteString(w, " ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+		if rt0 == "std::any" && lt0 == "std::string" {
+			io.WriteString(w, "(")
+			b.Left.emit(w)
+			io.WriteString(w, " ")
+			io.WriteString(w, b.Op)
+			io.WriteString(w, " ")
+			(&StrExpr{Value: b.Right}).emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	if ll, ok := b.Left.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(rt0, "std::vector<") {
 		ll.ElemType = elementTypeFromListType(rt0)
 		lt0 = fmt.Sprintf("std::vector<%s>", ll.ElemType)
@@ -3917,7 +3959,21 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 		if ll, ok := r.Value.(*ListLit); ok && strings.HasPrefix(currentReturnType, "std::vector<") {
 			ll.ElemType = elementTypeFromListType(currentReturnType)
 		}
-		r.Value.emit(w)
+		valType := exprType(r.Value)
+		if valType == "std::any" && r.Type != "" && r.Type != "std::any" {
+			if r.Type == "std::string" {
+				(&StrExpr{Value: r.Value}).emit(w)
+			} else {
+				if currentProgram != nil {
+					currentProgram.addInclude("<any>")
+				}
+				fmt.Fprintf(w, "std::any_cast<%s>(", r.Type)
+				r.Value.emit(w)
+				io.WriteString(w, ")")
+			}
+		} else {
+			r.Value.emit(w)
+		}
 	}
 	io.WriteString(w, ";\n")
 }
@@ -8533,6 +8589,9 @@ func exprType(e Expr) string {
 			if len(parts) == 2 {
 				return strings.TrimSpace(parts[1])
 			}
+		}
+		if t == "std::any" {
+			return "std::any"
 		}
 		return "auto"
 	case *UnaryExpr:
