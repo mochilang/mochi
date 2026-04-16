@@ -22,6 +22,29 @@ fun fmtDecimal(x: float, places: int): string {
   return res
 }
 
+// Parse a float from a string like ".5", "0.75", "3"
+fun parseFloat(s: string): float {
+  var dotPos = 0 - 1
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == "." { dotPos = i }
+    i = i + 1
+  }
+  if dotPos == 0 - 1 { return (int(s) as float) }
+  var intPart: float = 0.0
+  if dotPos > 0 { intPart = (int(s[0:dotPos]) as float) }
+  let fracStr = s[dotPos+1:len(s)]
+  var fracVal: float = 0.0
+  if len(fracStr) > 0 {
+    let fracInt = int(fracStr) as float
+    var divisor: float = 1.0
+    var j = 0
+    while j < len(fracStr) { divisor = divisor * 10.0; j = j + 1 }
+    fracVal = fracInt / divisor
+  }
+  return intPart + fracVal
+}
+
 // Tokenize: split expression string into tokens "(", ")", or word
 fun tokenize(s: string): list<string> {
   var toks: list<string> = []
@@ -47,31 +70,24 @@ fun tokenize(s: string): list<string> {
   return toks
 }
 
-// Evaluate a tokenized CARL expression.
-// We maintain a stack of frames. Each frame has:
-//   state: 0 = waiting for p, 1 = have p, waiting for e1, 2 = have p+e1, waiting for e2
-//   p, e1 values.
-// A separate float stack holds ready values.
+// Evaluate a tokenized CARL expression using an explicit stack.
+// Frame stacks: fState (0=need p, 1=have p need e1, 2=have p+e1 need e2),
+//               fP (probability), fE1 (expected value of e1).
+// Value stack vStack holds ready float values.
 //
-// When we get a "ready" value (literal or computed):
-//   - If no open frame, it's the final answer on floatStack.
-//   - If current frame is in state 1: store as e1, advance to state 2.
-//   - If current frame is in state 2: push to floatStack (it's e2, consumed at ')').
-//
-// At '(' : push new frame in state 0.
-// At word: if current frame state==0, parse as p and advance to state 1.
-//          Otherwise parse as integer and deliver as value.
-// At ')' : pop frame, compute result = e1 + (2p-1)*e2 where e2 = floatStack.top, deliver result.
+// When a value is "ready":
+//   - If no open frame: push to vStack (final result).
+//   - If frame state==1: store as e1, advance to state 2.
+//   - If frame state==2: push to vStack (will be e2 at closing ')').
+// At '(': push new frame state=0.
+// At word: if current frame state==0 → parse as p, advance to 1.
+//          else parse as int → deliver as value.
+// At ')': e2=vStack.top; pop frame; compute result = e1 + (p+p-1) * e2; deliver result.
 fun evalToks(toks: list<string>): float {
-  // Frame stacks (parallel arrays)
   var fState: list<int> = []
   var fP: list<float> = []
   var fE1: list<float> = []
-  // Value stack for e2 values and final result
   var vStack: list<float> = []
-
-  // Helper: deliver a ready value into the current frame context
-  // We can't have nested functions, so inline the logic per case
 
   var ti = 0
   while ti < len(toks) {
@@ -82,7 +98,6 @@ fun evalToks(toks: list<string>): float {
       fE1 = append(fE1, 0.0)
     } else {
       if tok == ")" {
-        // e2 is top of vStack
         let depth = len(fState)
         let p = fP[depth - 1]
         let e1 = fE1[depth - 1]
@@ -91,8 +106,10 @@ fun evalToks(toks: list<string>): float {
         fState = fState[0:depth - 1]
         fP = fP[0:depth - 1]
         fE1 = fE1[0:depth - 1]
-        let result = e1 + (2.0 * p - 1.0) * e2
-        // Deliver result to outer frame or vStack
+        // coeff = 2p - 1 = p + p - 1.0
+        let coeff = p + p - 1.0
+        let result = e1 + coeff * e2
+        // Deliver result to outer frame or final stack
         let outerDepth = len(fState)
         if outerDepth == 0 {
           vStack = append(vStack, result)
@@ -106,15 +123,14 @@ fun evalToks(toks: list<string>): float {
           }
         }
       } else {
-        // Word token
         let depth = len(fState)
         if depth > 0 && fState[depth - 1] == 0 {
           // This is p for the current frame
-          fP[depth - 1] = float(tok)
+          fP[depth - 1] = parseFloat(tok)
           fState[depth - 1] = 1
         } else {
-          // This is an integer value to deliver
-          let v = float(int(tok))
+          // Integer value to deliver
+          let v = (int(tok) as float)
           if depth == 0 {
             vStack = append(vStack, v)
           } else {

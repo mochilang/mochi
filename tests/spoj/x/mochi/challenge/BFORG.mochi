@@ -77,7 +77,7 @@ fun main() {
     let base = n / k
     let extra = n % k
 
-    print("case " + string(tc) + " Y")
+    print("case " + str(tc) + " Y")
 
     var gi = 0
     var pos = 0
@@ -104,10 +104,10 @@ fun main() {
         }
         ii = ii + 1
       }
-      var line = string(sz)
+      var line = str(sz)
       j = 0
       while j < sz {
-        line = line + " " + string(ids[j])
+        line = line + " " + str(ids[j])
         j = j + 1
       }
       print(line)

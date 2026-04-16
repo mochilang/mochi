@@ -3,17 +3,6 @@
 // Distribute n points on unit sphere maximizing minimum pairwise distance.
 // Uses Fibonacci lattice (spherical Fibonacci spiral).
 
-fun mysqrt(x: float): float {
-  if x <= 0.0 { return 0.0 }
-  var r = x / 2.0 + 0.5
-  var i = 0
-  while i < 60 {
-    r = (r + x / r) / 2.0
-    i = i + 1
-  }
-  return r
-}
-
 // sin via Taylor series, x in [-4pi, 4pi], reduce to [-pi, pi] first
 fun mysin(xin: float): float {
   let pi2 = 6.283185307179586
@@ -43,15 +32,15 @@ fun myacos(v: float): float {
   if v <= 0.0 - 1.0 { return 3.141592653589793 }
   var lo = 0.0
   var hi = 3.141592653589793
-  var i = 0
-  while i < 60 {
+  var ai = 0
+  while ai < 60 {
     let mid = (lo + hi) / 2.0
     if mycos(mid) > v {
       lo = mid
     } else {
       hi = mid
     }
-    i = i + 1
+    ai = ai + 1
   }
   return (lo + hi) / 2.0
 }
@@ -61,11 +50,11 @@ fun fmtDecimal(x: float, places: int): string {
   var xv = x
   if xv < 0.0 { neg = true; xv = 0.0 - xv }
   var mult = 1.0
-  var i = 0
-  while i < places { mult = mult * 10.0; i = i + 1 }
+  var fi = 0
+  while fi < places { mult = mult * 10.0; fi = fi + 1 }
   let scaled = int(xv * mult + 0.5)
   let imult = int(mult)
-  let intPart = scaled / imult
+  let intPart = int(scaled / imult)
   let fracPart = scaled % imult
   var fracStr = str(fracPart)
   while len(fracStr) < places { fracStr = "0" + fracStr }

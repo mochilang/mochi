@@ -113,7 +113,7 @@ fun main() {
           if shots[i] == 0 - 1 {
             line = line + "0"
           } else {
-            line = line + string(shots[i] + 1)
+            line = line + str(shots[i] + 1)
           }
           first = 0
         }
@@ -202,7 +202,7 @@ fun main() {
           if shotsL[i] == 0 - 1 {
             line = line + "0"
           } else {
-            line = line + string(shotsL[i] + 1)
+            line = line + str(shotsL[i] + 1)
           }
           first = 0
         }
@@ -224,14 +224,14 @@ fun main() {
     // Output
     let tmax = len(longRounds)
     let tmin = len(shortRounds)
-    print("case " + string(tc) + " Y")
-    print(string(tmax))
+    print("case " + str(tc) + " Y")
+    print(str(tmax))
     i = 0
     while i < tmax {
       print(longRounds[i])
       i = i + 1
     }
-    print(string(tmin))
+    print(str(tmin))
     i = 0
     while i < tmin {
       print(shortRounds[i])

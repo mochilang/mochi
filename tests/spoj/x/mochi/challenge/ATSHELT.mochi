@@ -114,12 +114,12 @@ fun main() {
     }
 
     // Output: "case X Y" then shelter indices (1-indexed)
-    print("case " + string(ti + 1) + " Y")
+    print("case " + str(ti + 1) + " Y")
     var out = ""
     i = 0
     while i < len(shelters) {
       if i > 0 { out = out + " " }
-      out = out + string(shelters[i] + 1)
+      out = out + str(shelters[i] + 1)
       i = i + 1
     }
     print(out)

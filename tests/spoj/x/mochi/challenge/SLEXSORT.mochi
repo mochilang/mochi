@@ -3,16 +3,18 @@
 // Sort words using a custom alphabet ordering.
 // Score = source code length (shorter is better).
 
+fun getRank(rank: map<string, int>, c: string): int {
+  let r = rank[c]
+  if r == nil { return 999 }
+  return r as int
+}
+
 // Compare two words using rank map; return 1 if a < b, 0 if a >= b
 fun wordLess(a: string, b: string, rank: map<string, int>): int {
   var i = 0
   while i < len(a) && i < len(b) {
-    let ca = a[i:i+1]
-    let cb = b[i:i+1]
-    var ra = 999
-    var rb = 999
-    if rank[ca] > 0 { ra = rank[ca] - 1 }
-    if rank[cb] > 0 { rb = rank[cb] - 1 }
+    let ra = getRank(rank, a[i:i+1])
+    let rb = getRank(rank, b[i:i+1])
     if ra < rb { return 1 }
     if ra > rb { return 0 }
     i = i + 1

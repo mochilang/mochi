@@ -80,8 +80,12 @@ fun main() {
       var j = 0
       while j < total - i - 1 {
         if rh[j] < rh[j+1] {
-          let tmp = rh[j]; rh[j] = rh[j+1]; rh[j+1] = tmp
-          let tmp2 = rw[j]; rw[j] = rw[j+1]; rw[j+1] = tmp2
+          let tmpH = rh[j]
+          rh[j] = rh[j+1]
+          rh[j+1] = tmpH
+          let tmpW = rw[j]
+          rw[j] = rw[j+1]
+          rw[j+1] = tmpW
         }
         j = j + 1
       }

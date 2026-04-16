@@ -257,7 +257,7 @@ fun main() {
     var i = 0
     while i < 200 { grid = append(grid, 0); i = i + 1 }
 
-    print("case " + string(tc) + " Y")
+    print("case " + str(tc) + " Y")
 
     i = 0
     while i < n {
@@ -303,7 +303,7 @@ fun main() {
       }
 
       grid = bestGrid
-      print(string(bestRot) + " " + string(bestX + 1))
+      print(str(bestRot) + " " + str(bestX + 1))
 
       i = i + 1
     }
