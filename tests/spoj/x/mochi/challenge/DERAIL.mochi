@@ -1,0 +1,120 @@
+// Solution for SPOJ DERAIL - Train Derailment
+// https://www.spoj.com/problems/DERAIL/
+// Find minimum cost spanning tree. Cost = k*total_length + l*total_intersections.
+// Heuristic: Kruskal's MST by Euclidean length (squared distance for comparison).
+// Union-Find with path compression.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun find(parent: list<int>, x: int): int {
+  while parent[x] != x {
+    x = parent[x]
+  }
+  return x
+}
+
+fun main() {
+  var tLine = input()
+  let T = int(tLine)
+  var tc = 1
+  while tc <= T {
+    let hdr = split(input())
+    let n = int(hdr[0])
+    let m = int(hdr[1])
+    // k and l read but k used implicitly (sort by length = MST by Euclidean)
+
+    // Read city coordinates
+    var cx: list<int> = []
+    var cy: list<int> = []
+    var i = 0
+    while i < n {
+      let coords = split(input())
+      cx = append(cx, int(coords[0]))
+      cy = append(cy, int(coords[1]))
+      i = i + 1
+    }
+
+    // Read edges (1-indexed cities)
+    var eu: list<int> = []
+    var ev: list<int> = []
+    var edist: list<int> = []
+    i = 0
+    while i < m {
+      let ep = split(input())
+      let u = int(ep[0]) - 1
+      let v = int(ep[1]) - 1
+      eu = append(eu, u)
+      ev = append(ev, v)
+      let dx = cx[u] - cx[v]
+      let dy = cy[u] - cy[v]
+      edist = append(edist, dx * dx + dy * dy)
+      i = i + 1
+    }
+
+    // Sort edges by squared distance (insertion sort)
+    // Use index array for indirect sort
+    var order: list<int> = []
+    i = 0
+    while i < m { order = append(order, i); i = i + 1 }
+
+    // Insertion sort order by edist
+    var j = 1
+    while j < m {
+      let key = order[j]
+      let keyDist = edist[key]
+      var k = j - 1
+      while k >= 0 && edist[order[k]] > keyDist {
+        order[k + 1] = order[k]
+        k = k - 1
+      }
+      order[k + 1] = key
+      j = j + 1
+    }
+
+    // Kruskal's with Union-Find
+    var parent: list<int> = []
+    i = 0
+    while i < n { parent = append(parent, i); i = i + 1 }
+
+    var selected: list<int> = []
+    var edgesAdded = 0
+    i = 0
+    while i < m && edgesAdded < n - 1 {
+      let ei = order[i]
+      let ru = find(parent, eu[ei])
+      let rv = find(parent, ev[ei])
+      if ru != rv {
+        parent[ru] = rv
+        selected = append(selected, ei + 1)
+        edgesAdded = edgesAdded + 1
+      }
+      i = i + 1
+    }
+
+    // Output
+    print("case " + string(tc) + " Y")
+    i = 0
+    while i < len(selected) {
+      print(selected[i])
+      i = i + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

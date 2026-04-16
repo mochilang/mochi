@@ -1,0 +1,141 @@
+// Solution for SPOJ RIS - Rectangle packing
+// https://www.spoj.com/problems/RIS/
+// Pack rectangles into N×N square, maximizing covered area.
+// Strategy: greedy strip packing, sorted by height descending.
+// Allow rotation: orient each rectangle so its height <= width (landscape).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let N = int(nLine)
+
+    var kLine = input()
+    while kLine == "" { kLine = input() }
+    let K = int(kLine)
+
+    // Read K rectangle types: h w count
+    // Expand into individual rectangles
+    var rh: list<int> = []
+    var rw: list<int> = []
+
+    var ki = 0
+    while ki < K {
+      var line = input()
+      while line == "" { line = input() }
+      let p = split(line)
+      var h = int(p[0])
+      var w = int(p[1])
+      let cnt = int(p[2])
+      // Fit within N×N: skip if too large even rotated
+      if h > N && w > N {
+        ki = ki + 1
+      } else {
+        // Orient landscape: width >= height
+        if h > w {
+          let tmp = h
+          h = w
+          w = tmp
+        }
+        // If width > N, swap (portrait fits better)
+        if w > N {
+          let tmp = h
+          h = w
+          w = tmp
+        }
+        var ci = 0
+        while ci < cnt {
+          rh = append(rh, h)
+          rw = append(rw, w)
+          ci = ci + 1
+        }
+        ki = ki + 1
+      }
+    }
+
+    // Sort by height descending (bubble sort — small K*cnt expected)
+    let total = len(rh)
+    var i = 0
+    while i < total {
+      var j = 0
+      while j < total - i - 1 {
+        if rh[j] < rh[j+1] {
+          let tmp = rh[j]; rh[j] = rh[j+1]; rh[j+1] = tmp
+          let tmp2 = rw[j]; rw[j] = rw[j+1]; rw[j+1] = tmp2
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    // Strip packing
+    // x1,y1 = top-left corner (0-indexed); x2,y2 = bottom-right (exclusive)
+    var ox1: list<int> = []
+    var oy1: list<int> = []
+    var ox2: list<int> = []
+    var oy2: list<int> = []
+
+    var curX = 0
+    var curY = 0
+    var rowH = 0
+
+    i = 0
+    while i < total {
+      let h = rh[i]
+      let w = rw[i]
+
+      // Try to fit in current row
+      if curX + w > N {
+        // Start new row
+        curY = curY + rowH
+        curX = 0
+        rowH = 0
+      }
+
+      // Check if fits in remaining vertical space
+      if curY + h <= N {
+        ox1 = append(ox1, curX)
+        oy1 = append(oy1, curY)
+        ox2 = append(ox2, curX + w)
+        oy2 = append(oy2, curY + h)
+        curX = curX + w
+        if h > rowH { rowH = h }
+      }
+      // else: skip this rectangle (doesn't fit)
+
+      i = i + 1
+    }
+
+    // Output
+    print(len(ox1))
+    i = 0
+    while i < len(ox1) {
+      print(string(ox1[i]) + " " + string(oy1[i]) + " " + string(ox2[i]) + " " + string(oy2[i]))
+      i = i + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

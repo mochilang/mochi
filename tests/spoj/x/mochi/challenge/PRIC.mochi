@@ -1,0 +1,83 @@
+// Solution for SPOJ PRIC - Prime Sequence
+// https://www.spoj.com/problems/PRIC/
+// No input. Output '1' if a[i] is prime, '0' otherwise, for the sequence:
+//   a[0]=1, a[i]=(a[i-1]+1234567890) mod 2^31
+// Score = index of first wrong answer, so output as many correct values as possible.
+// Algorithm: sieve primes up to 50000, then use trial division for larger numbers.
+// Batch output in chunks to avoid slow per-digit printing.
+
+fun buildSieve(): list<int> {
+  let limit = 50001
+  var sieve: list<int> = []
+  var i = 0
+  while i < limit { sieve = append(sieve, 1); i = i + 1 }
+  sieve[0] = 0
+  sieve[1] = 0
+  i = 2
+  while i * i < limit {
+    if sieve[i] == 1 {
+      var j = i * i
+      while j < limit {
+        sieve[j] = 0
+        j = j + i
+      }
+    }
+    i = i + 1
+  }
+  return sieve
+}
+
+fun buildPrimes(sieve: list<int>): list<int> {
+  var primes: list<int> = []
+  var i = 2
+  while i < 50001 {
+    if sieve[i] == 1 { primes = append(primes, i) }
+    i = i + 1
+  }
+  return primes
+}
+
+fun isPrime(n: int, sieve: list<int>, primes: list<int>): int {
+  if n < 2 { return 0 }
+  if n < 50001 { return sieve[n] }
+  var i = 0
+  while i < len(primes) {
+    let p = primes[i]
+    if p * p > n { return 1 }
+    if n - (n / p) * p == 0 { return 0 }
+    i = i + 1
+  }
+  return 1
+}
+
+fun main() {
+  let sieve = buildSieve()
+  let primes = buildPrimes(sieve)
+
+  let mod = 2147483648
+  var a = 1
+  var batch = ""
+  var count = 0
+  let batchSize = 2000
+  let maxOut = 50000
+
+  while count < maxOut {
+    if isPrime(a, sieve, primes) == 1 {
+      batch = batch + "1"
+    } else {
+      batch = batch + "0"
+    }
+    a = a + 1234567890
+    if a >= mod { a = a - mod }
+    count = count + 1
+    if len(batch) >= batchSize {
+      print(batch)
+      batch = ""
+    }
+  }
+  if len(batch) > 0 {
+    print(batch)
+  }
+}
+
+main()

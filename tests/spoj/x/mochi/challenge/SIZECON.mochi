@@ -1,0 +1,6 @@
+var s=0
+var t=int(input())
+while t>0{let n=int(input())
+if n>0{s=s+n}
+t=t-1}
+print(s)

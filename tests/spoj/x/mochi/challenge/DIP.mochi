@@ -1,0 +1,110 @@
+// Solution for SPOJ DIP - Image Denoising
+// https://www.spoj.com/problems/DIP/
+// Apply a 3x3 median filter to each pixel to reduce salt-and-pepper noise.
+// For border pixels, use available neighbors (no padding).
+// Score = sum of squared differences from original; lower is better.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Sort up to 9 values using insertion sort, return median
+fun median9(vals: list<int>, n: int): int {
+  var i = 1
+  while i < n {
+    let key = vals[i]
+    var j = i - 1
+    while j >= 0 && vals[j] > key {
+      vals[j + 1] = vals[j]
+      j = j - 1
+    }
+    vals[j + 1] = key
+    i = i + 1
+  }
+  return vals[n / 2]
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    let rcLine = input()
+    let rc = split(rcLine)
+    let R = int(rc[0])
+    let C = int(rc[1])
+
+    // Read image into flat list
+    var img: list<int> = []
+    var r = 0
+    while r < R {
+      let rowParts = split(input())
+      var c = 0
+      while c < C {
+        img = append(img, int(rowParts[c]))
+        c = c + 1
+      }
+      r = r + 1
+    }
+
+    // Apply 3x3 median filter
+    var out: list<int> = []
+    r = 0
+    while r < R {
+      var c = 0
+      while c < C {
+        var vals: list<int> = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        var n = 0
+        var dr = 0 - 1
+        while dr <= 1 {
+          var dc = 0 - 1
+          while dc <= 1 {
+            let nr = r + dr
+            let nc = c + dc
+            if nr >= 0 && nr < R && nc >= 0 && nc < C {
+              vals[n] = img[nr * C + nc]
+              n = n + 1
+            }
+            dc = dc + 1
+          }
+          dr = dr + 1
+        }
+        out = append(out, median9(vals, n))
+        c = c + 1
+      }
+      r = r + 1
+    }
+
+    // Output
+    print(string(R) + " " + string(C))
+    r = 0
+    while r < R {
+      var rowStr = ""
+      var c = 0
+      while c < C {
+        if c > 0 { rowStr = rowStr + " " }
+        rowStr = rowStr + string(out[r * C + c])
+        c = c + 1
+      }
+      print(rowStr)
+      r = r + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

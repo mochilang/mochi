@@ -1,0 +1,202 @@
+// Solution for SPOJ JCROSS - Japan Crossword
+// https://www.spoj.com/problems/JCROSS/
+// Nonogram solver using iterative overlap constraint propagation.
+// For each row/column, compute leftmost and rightmost valid block placements
+// and fill cells where they overlap. Repeat until no changes.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Parse hints from a line: numbers before the trailing 0
+fun parseHints(line: string): list<int> {
+  let parts = split(line)
+  var hints: list<int> = []
+  var i = 0
+  while i < len(parts) {
+    let v = int(parts[i])
+    if v == 0 { i = len(parts) } else {
+      hints = append(hints, v)
+      i = i + 1
+    }
+  }
+  return hints
+}
+
+// Apply overlap rule to a single line segment.
+// cells: flat slice of grid (length = lineLen), values 0=unknown 1=filled -1=empty
+// Returns updated cells. Does not backtrack — just overlap.
+fun applyOverlap(cells: list<int>, hints: list<int>, lineLen: int): list<int> {
+  let k = len(hints)
+  if k == 0 {
+    // All empty
+    var res: list<int> = []
+    var i = 0
+    while i < lineLen { res = append(res, 0 - 1); i = i + 1 }
+    return res
+  }
+
+  // Compute leftmost valid start positions
+  var leftStarts: list<int> = []
+  var s = 0
+  var i = 0
+  while i < k {
+    leftStarts = append(leftStarts, s)
+    s = s + hints[i] + 1
+    i = i + 1
+  }
+
+  // Compute rightmost valid start positions
+  var rightStarts: list<int> = []
+  i = 0
+  while i < k { rightStarts = append(rightStarts, 0); i = i + 1 }
+  s = lineLen - hints[k - 1]
+  i = k - 1
+  while i >= 0 {
+    rightStarts[i] = s
+    if i > 0 { s = s - hints[i - 1] - 1 }
+    i = i - 1
+  }
+
+  // If any leftStart > rightStart, hints don't fit — return unchanged
+  i = 0
+  while i < k {
+    if leftStarts[i] > rightStarts[i] { return cells }
+    i = i + 1
+  }
+
+  // Build overlap mask: 1=must be filled, -1=must be empty, 0=unknown
+  var mask: list<int> = []
+  i = 0
+  while i < lineLen { mask = append(mask, 0); i = i + 1 }
+
+  // Fill overlap regions for each block
+  i = 0
+  while i < k {
+    var p = rightStarts[i]
+    while p < leftStarts[i] + hints[i] {
+      mask[p] = 1
+      p = p + 1
+    }
+    i = i + 1
+  }
+
+  // Merge mask with existing cells
+  var res: list<int> = []
+  i = 0
+  while i < lineLen {
+    if cells[i] != 0 {
+      res = append(res, cells[i])
+    } else {
+      res = append(res, mask[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    let rcLine = input()
+    let rc = split(rcLine)
+    let R = int(rc[0])
+    let C = int(rc[1])
+
+    // Read row hints
+    var rowHints: list<list<int>> = []
+    var r = 0
+    while r < R {
+      rowHints = append(rowHints, parseHints(input()))
+      r = r + 1
+    }
+
+    // Read col hints
+    var colHints: list<list<int>> = []
+    var c = 0
+    while c < C {
+      colHints = append(colHints, parseHints(input()))
+      c = c + 1
+    }
+
+    // Initialize grid: flat list of R*C ints (0=unknown,1=filled,-1=empty)
+    var grid: list<int> = []
+    var i = 0
+    while i < R * C { grid = append(grid, 0); i = i + 1 }
+
+    // Iterative constraint propagation
+    var changed = 1
+    while changed == 1 {
+      changed = 0
+
+      // Apply row constraints
+      r = 0
+      while r < R {
+        var rowCells: list<int> = []
+        c = 0
+        while c < C { rowCells = append(rowCells, grid[r * C + c]); c = c + 1 }
+        let newRow = applyOverlap(rowCells, rowHints[r], C)
+        c = 0
+        while c < C {
+          if newRow[c] != grid[r * C + c] {
+            grid[r * C + c] = newRow[c]
+            changed = 1
+          }
+          c = c + 1
+        }
+        r = r + 1
+      }
+
+      // Apply col constraints
+      c = 0
+      while c < C {
+        var colCells: list<int> = []
+        r = 0
+        while r < R { colCells = append(colCells, grid[r * C + c]); r = r + 1 }
+        let newCol = applyOverlap(colCells, colHints[c], R)
+        r = 0
+        while r < R {
+          if newCol[r] != grid[r * C + c] {
+            grid[r * C + c] = newCol[r]
+            changed = 1
+          }
+          r = r + 1
+        }
+        c = c + 1
+      }
+    }
+
+    // Output grid
+    r = 0
+    while r < R {
+      var rowStr = ""
+      c = 0
+      while c < C {
+        let v = grid[r * C + c]
+        if v == 1 { rowStr = rowStr + "#" } else { rowStr = rowStr + "." }
+        c = c + 1
+      }
+      print(rowStr)
+      r = r + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()
