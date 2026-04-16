@@ -18,6 +18,7 @@ func makeAdder(n int) func(int) int {
 	}
 }
 
+
 func main() {
 	add10 := makeAdder(10)
 	fmt.Println(strings.TrimSpace(fmt.Sprintln(any(add10(7)))))
