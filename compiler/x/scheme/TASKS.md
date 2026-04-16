@@ -3,6 +3,7 @@
 The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi` and `tpc-h/q2.mochi` benchmarks. Initial JOB dataset support was explored for `job/q1.mochi`. Later queries compile but fail at runtime because sorting and date operations are incomplete.
 
 ### Recent Enhancements
+- 2025-07-13 16:38 – Added TPCH q3 golden test.
 - 2025-07-13 05:05 – Added machine generated output for `tpc-h/q1.mochi` and updated checklist.
 - 2025-07-13 17:36 – Added golden test for `tpc-h/q2.mochi` which now compiles and runs successfully.
 - 2025-07-13 17:53 – Implemented aggregate query handling and added golden files for `tpc-h/q6.mochi`.
