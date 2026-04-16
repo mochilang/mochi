@@ -1,0 +1,76 @@
+// Solution for SPOJ AGGRCOW - Aggressive Cows
+// https://www.spoj.com/problems/AGGRCOW/
+// Binary search on minimum distance between cows.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun canPlace(stalls: list<int>, n: int, c: int, minDist: int): int {
+  var count = 1
+  var last = stalls[0]
+  var i = 1
+  while i < n {
+    if stalls[i] - last >= minDist {
+      count = count + 1
+      last = stalls[i]
+      if count >= c { return 1 }
+    }
+    i = i + 1
+  }
+  return if count >= c { 1 } else { 0 }
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var l1 = input()
+    while l1 == "" { l1 = input() }
+    let p1 = split(l1)
+    let n = int(p1[0])
+    let c = int(p1[1])
+
+    var stalls: list<int> = []
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      stalls = append(stalls, int(vLine))
+      i = i + 1
+    }
+
+    // Sort stalls (insertion sort)
+    i = 1
+    while i < n {
+      let k = stalls[i]
+      var j = i - 1
+      while j >= 0 && stalls[j] > k { stalls[j+1] = stalls[j]; j = j - 1 }
+      stalls[j+1] = k
+      i = i + 1
+    }
+
+    var lo = 1
+    var hi = stalls[n-1] - stalls[0]
+    while lo < hi {
+      let mid = int((lo + hi + 1) / 2)
+      if canPlace(stalls, n, c, mid) == 1 { lo = mid } else { hi = mid - 1 }
+    }
+    print(lo)
+    ti = ti + 1
+  }
+}
+
+main()

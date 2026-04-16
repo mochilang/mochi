@@ -1,0 +1,52 @@
+// Solution for SPOJ TOANDFRO - To and Fro
+// https://www.spoj.com/problems/TOANDFRO/
+// Decrypt zig-zag column cipher: n = rows per column.
+// Even-indexed columns were read top-to-bottom, odd columns bottom-to-top.
+
+fun main() {
+  var nLine = input()
+  while nLine != "" {
+    let n = int(nLine)
+    if n == 0 { break }
+    var msg = input()
+    while msg == "" { msg = input() }
+    let total = len(msg)
+    let cols = int(total / n)
+
+    // Build grid: n rows, cols columns
+    var grid: list<string> = []
+    var r = 0
+    while r < n { grid = append(grid, ""); r = r + 1 }
+
+    // Split into n-char chunks (one per column), reverse odd-indexed
+    var c = 0
+    while c < cols {
+      let start = c * n
+      // Extract chunk
+      var chunk = msg[start:start+n]
+      // Odd columns were read bottom-to-top, so reverse to get top-to-bottom
+      if c % 2 == 1 {
+        var rev = ""
+        var i = n - 1
+        while i >= 0 { rev = rev + chunk[i:i+1]; i = i - 1 }
+        chunk = rev
+      }
+      // Place in grid: chunk[r] → grid[r][c]
+      r = 0
+      while r < n {
+        grid[r] = grid[r] + chunk[r:r+1]
+        r = r + 1
+      }
+      c = c + 1
+    }
+
+    // Read grid row by row
+    var out = ""
+    r = 0
+    while r < n { out = out + grid[r]; r = r + 1 }
+    print(out)
+    nLine = input()
+  }
+}
+
+main()
