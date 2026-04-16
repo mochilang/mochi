@@ -1,0 +1,96 @@
+// Solution for SPOJ BABTWR - Tower of Babylon
+// https://www.spoj.com/problems/BABTWR/
+// Classic DP: for each block orientation, find max tower with that block on top.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var caseNum = 1
+  var nLine = input()
+  while nLine != "" {
+    let n = int(nLine)
+    if n == 0 { break }
+
+    // Generate all orientations: (base1, base2, height) with base1 <= base2
+    var b1: list<int> = []
+    var b2: list<int> = []
+    var ht: list<int> = []
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let p = split(vLine)
+      let x = int(p[0]); let y = int(p[1]); let z = int(p[2])
+      // 3 orientations: height = x, y, z
+      // orientation 1: height=x, base=(y,z)
+      let a1 = if y < z { y } else { z }
+      let a2 = if y < z { z } else { y }
+      b1 = append(b1, a1); b2 = append(b2, a2); ht = append(ht, x)
+      // orientation 2: height=y, base=(x,z)
+      let c1 = if x < z { x } else { z }
+      let c2 = if x < z { z } else { x }
+      b1 = append(b1, c1); b2 = append(b2, c2); ht = append(ht, y)
+      // orientation 3: height=z, base=(x,y)
+      let d1 = if x < y { x } else { y }
+      let d2 = if x < y { y } else { x }
+      b1 = append(b1, d1); b2 = append(b2, d2); ht = append(ht, z)
+      i = i + 1
+    }
+
+    let m = len(b1)
+    // Sort by base area descending (insertion sort)
+    i = 1
+    while i < m {
+      let kb1 = b1[i]; let kb2 = b2[i]; let kh = ht[i]
+      var j = i - 1
+      while j >= 0 {
+        if b1[j] * b2[j] > kb1 * kb2 { break }
+        b1[j+1] = b1[j]; b2[j+1] = b2[j]; ht[j+1] = ht[j]
+        j = j - 1
+      }
+      b1[j+1] = kb1; b2[j+1] = kb2; ht[j+1] = kh
+      i = i + 1
+    }
+
+    // dp[i] = max tower height with block i on top
+    var dp: list<int> = []
+    i = 0
+    while i < m { dp = append(dp, ht[i]); i = i + 1 }
+
+    i = 0
+    while i < m {
+      var j = 0
+      while j < i {
+        // block i on top of block j: b1[i] < b1[j] and b2[i] < b2[j]
+        if b1[i] < b1[j] && b2[i] < b2[j] {
+          if dp[j] + ht[i] > dp[i] { dp[i] = dp[j] + ht[i] }
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    var best = 0
+    i = 0
+    while i < m { if dp[i] > best { best = dp[i] }; i = i + 1 }
+
+    print("Case " + str(caseNum) + ": maximum height = " + str(best))
+    caseNum = caseNum + 1
+    nLine = input()
+    while nLine == "" { nLine = input() }
+  }
+}
+
+main()
