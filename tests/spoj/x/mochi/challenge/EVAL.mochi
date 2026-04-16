@@ -1,0 +1,10 @@
+// Solution for SPOJ EVAL - Euler's Number
+// https://www.spoj.com/problems/EVAL/
+// Output as many digits of e as possible. Score = first position of difference.
+// No input needed — just print the digits.
+
+fun main() {
+  print("2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319525101901")
+}
+
+main()

@@ -1,0 +1,32 @@
+// Solution for SPOJ KAMIL - Kamil and His Letters
+// https://www.spoj.com/problems/KAMIL/
+// Kamil can't distinguish T/D/L/F from each other when speaking.
+// Count occurrences of T, D, L, F in each word, then output 2^count.
+// Exactly 10 test cases (no count given).
+
+fun main() {
+  var i = 0
+  while i < 10 {
+    let line = input()
+    if line == "" { break }
+    var count = 0
+    var j = 0
+    while j < len(line) {
+      let c = line[j:j+1]
+      if c == "T" || c == "D" || c == "L" || c == "F" {
+        count = count + 1
+      }
+      j = j + 1
+    }
+    var ans = 1
+    var k = 0
+    while k < count {
+      ans = ans * 2
+      k = k + 1
+    }
+    print(ans)
+    i = i + 1
+  }
+}
+
+main()

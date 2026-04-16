@@ -1,0 +1,107 @@
+// Solution for SPOJ JOHNNY - Johnny and His Packets
+// https://www.spoj.com/problems/JOHNNY/
+// Greedily partition packets into two hands to minimize the heavier hand.
+// Sort packets by weight descending; assign each to the lighter hand.
+// Output the 1-based indices of packets in the LEFT hand, sorted ascending.
+
+fun splitLine(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    var weights: list<int> = []
+    var indices: list<int> = []
+    var i = 0
+    while i < n {
+      let w = int(input())
+      weights = append(weights, w)
+      indices = append(indices, i + 1)
+      i = i + 1
+    }
+
+    // Selection sort descending by weight
+    i = 0
+    while i < n {
+      var maxIdx = i
+      var j = i + 1
+      while j < n {
+        if weights[j] > weights[maxIdx] { maxIdx = j }
+        j = j + 1
+      }
+      let tw = weights[i]
+      weights[i] = weights[maxIdx]
+      weights[maxIdx] = tw
+      let ti = indices[i]
+      indices[i] = indices[maxIdx]
+      indices[maxIdx] = ti
+      i = i + 1
+    }
+
+    // Greedy assignment: leftSum <= rightSum => assign to left
+    var leftSum = 0
+    var rightSum = 0
+    var assign: list<int> = []
+    i = 0
+    while i < n {
+      if leftSum <= rightSum {
+        assign = append(assign, 0)
+        leftSum = leftSum + weights[i]
+      } else {
+        assign = append(assign, 1)
+        rightSum = rightSum + weights[i]
+      }
+      i = i + 1
+    }
+
+    // Collect original indices assigned to left hand
+    var leftInds: list<int> = []
+    i = 0
+    while i < n {
+      if assign[i] == 0 {
+        leftInds = append(leftInds, indices[i])
+      }
+      i = i + 1
+    }
+
+    // Sort leftInds ascending
+    i = 0
+    while i < len(leftInds) {
+      var minIdx = i
+      var j = i + 1
+      while j < len(leftInds) {
+        if leftInds[j] < leftInds[minIdx] { minIdx = j }
+        j = j + 1
+      }
+      let tmp = leftInds[i]
+      leftInds[i] = leftInds[minIdx]
+      leftInds[minIdx] = tmp
+      i = i + 1
+    }
+
+    // Output one index per line
+    i = 0
+    while i < len(leftInds) {
+      print(leftInds[i])
+      i = i + 1
+    }
+
+    line = input()
+  }
+}
+
+main()
