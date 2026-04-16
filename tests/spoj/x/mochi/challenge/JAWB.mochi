@@ -1,0 +1,202 @@
+// Solution for SPOJ JAWB - JawBreaker Game
+// https://www.spoj.com/problems/JAWB/
+// Greedy: repeatedly remove the largest connected group of same-color pieces.
+// Score += n*(n-1). Apply gravity after each removal. Stop when no group >= 2.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// BFS to find connected group of same color starting at (sr, sc)
+// visited: list<int> of H*W, 0=unvisited. grid: flat list<int> H*W.
+// Returns list of indices in the group.
+fun bfsGroup(grid: list<int>, visited: list<int>, sr: int, sc: int, H: int, W: int): list<int> {
+  let color = grid[sr * W + sc]
+  var group: list<int> = []
+  var queue: list<int> = []
+  let startIdx = sr * W + sc
+  queue = append(queue, startIdx)
+  visited[startIdx] = 1
+  var head = 0
+  while head < len(queue) {
+    let cur = queue[head]
+    head = head + 1
+    group = append(group, cur)
+    let r = int(cur / W)
+    let c = cur % W
+    // up
+    if r > 0 {
+      let ni = (r - 1) * W + c
+      if visited[ni] == 0 && grid[ni] == color {
+        visited[ni] = 1
+        queue = append(queue, ni)
+      }
+    }
+    // down
+    if r < H - 1 {
+      let ni = (r + 1) * W + c
+      if visited[ni] == 0 && grid[ni] == color {
+        visited[ni] = 1
+        queue = append(queue, ni)
+      }
+    }
+    // left
+    if c > 0 {
+      let ni = r * W + (c - 1)
+      if visited[ni] == 0 && grid[ni] == color {
+        visited[ni] = 1
+        queue = append(queue, ni)
+      }
+    }
+    // right
+    if c < W - 1 {
+      let ni = r * W + (c + 1)
+      if visited[ni] == 0 && grid[ni] == color {
+        visited[ni] = 1
+        queue = append(queue, ni)
+      }
+    }
+  }
+  return group
+}
+
+// Apply gravity: in each column, non-empty cells fall to bottom
+fun applyGravity(grid: list<int>, H: int, W: int): list<int> {
+  var c = 0
+  while c < W {
+    // Collect non-empty from bottom to top
+    var col: list<int> = []
+    var r = H - 1
+    while r >= 0 {
+      if grid[r * W + c] != 0 - 1 {
+        col = append(col, grid[r * W + c])
+      }
+      r = r - 1
+    }
+    // Place at bottom (col[0] goes to row H-1, col[1] to H-2, etc.)
+    r = H - 1
+    var ci = 0
+    while r >= 0 {
+      if ci < len(col) {
+        grid[r * W + c] = col[ci]
+        ci = ci + 1
+      } else {
+        grid[r * W + c] = 0 - 1
+      }
+      r = r - 1
+    }
+    c = c + 1
+  }
+  return grid
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    var hwLine = input()
+    while hwLine == "" { hwLine = input() }
+    let hwc = split(hwLine)
+    let H = int(hwc[0])
+    let W = int(hwc[1])
+
+    // Read grid
+    var grid: list<int> = []
+    var r = 0
+    while r < H {
+      var rowLine = input()
+      while rowLine == "" { rowLine = input() }
+      let cells = split(rowLine)
+      var c = 0
+      while c < W {
+        grid = append(grid, int(cells[c]))
+        c = c + 1
+      }
+      r = r + 1
+    }
+
+    print("Y")
+    var totalScore = 0
+
+    // Greedy: find and remove largest group repeatedly
+    var done = 0
+    while done == 0 {
+      // Find all groups, pick largest
+      var visited: list<int> = []
+      var vi = 0
+      while vi < H * W {
+        visited = append(visited, 0)
+        vi = vi + 1
+      }
+
+      var bestSize = 0
+      var bestRow = 0 - 1
+      var bestCol = 0 - 1
+
+      r = 0
+      while r < H {
+        var c = 0
+        while c < W {
+          let idx = r * W + c
+          if visited[idx] == 0 && grid[idx] != 0 - 1 {
+            let grp = bfsGroup(grid, visited, r, c, H, W)
+            if len(grp) > bestSize {
+              bestSize = len(grp)
+              bestRow = r
+              bestCol = c
+            }
+          }
+          c = c + 1
+        }
+        r = r + 1
+      }
+
+      if bestSize < 2 {
+        done = 1
+      } else {
+        // Remove best group: re-BFS to get exact cells
+        var visited2: list<int> = []
+        vi = 0
+        while vi < H * W {
+          visited2 = append(visited2, 0)
+          vi = vi + 1
+        }
+        let grp = bfsGroup(grid, visited2, bestRow, bestCol, H, W)
+        let n = len(grp)
+        totalScore = totalScore + n * (n - 1)
+
+        // Output move: use bestRow, bestCol
+        print(string(bestRow) + " " + string(bestCol))
+
+        // Remove group
+        var gi = 0
+        while gi < n {
+          grid[grp[gi]] = 0 - 1
+          gi = gi + 1
+        }
+
+        // Apply gravity
+        grid = applyGravity(grid, H, W)
+      }
+    }
+
+    print("-1 -1")
+    tc = tc + 1
+  }
+}
+
+main()

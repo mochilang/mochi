@@ -1,0 +1,100 @@
+// Solution for SPOJ WORDNUM - Word To Number
+// https://www.spoj.com/problems/WORDNUM/
+// Convert English word-form numbers (0 to 49999) to digits.
+// Score = source code length (shorter is better).
+
+// Return value for a single word token, or -1 if not recognized
+fun wordVal(w: string): int {
+  if w == "zero" { return 0 }
+  if w == "one" { return 1 }
+  if w == "two" { return 2 }
+  if w == "three" { return 3 }
+  if w == "four" { return 4 }
+  if w == "five" { return 5 }
+  if w == "six" { return 6 }
+  if w == "seven" { return 7 }
+  if w == "eight" { return 8 }
+  if w == "nine" { return 9 }
+  if w == "ten" { return 10 }
+  if w == "eleven" { return 11 }
+  if w == "twelve" { return 12 }
+  if w == "thirteen" { return 13 }
+  if w == "fourteen" { return 14 }
+  if w == "fifteen" { return 15 }
+  if w == "sixteen" { return 16 }
+  if w == "seventeen" { return 17 }
+  if w == "eighteen" { return 18 }
+  if w == "nineteen" { return 19 }
+  if w == "twenty" { return 20 }
+  if w == "thirty" { return 30 }
+  if w == "forty" { return 40 }
+  if w == "fifty" { return 50 }
+  if w == "sixty" { return 60 }
+  if w == "seventy" { return 70 }
+  if w == "eighty" { return 80 }
+  if w == "ninety" { return 90 }
+  if w == "hundred" { return 100 }
+  if w == "thousand" { return 1000 }
+  return 0 - 1
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Parse tokens into a number.
+// Grammar: [thousands_part] [hundreds_part] [tens_and_ones]
+// thousands_part = ones "thousand"
+// hundreds_part  = ones "hundred"
+// tens_and_ones  = tens [ones] | teens | ones
+fun parse(tokens: list<string>): int {
+  var result = 0
+  var current = 0  // accumulator for current group
+  var i = 0
+  while i < len(tokens) {
+    let v = wordVal(tokens[i])
+    if v == 1000 {
+      // multiply whatever we have so far by 1000
+      if current == 0 { current = 1 }
+      result = result + current * 1000
+      current = 0
+    } else {
+      if v == 100 {
+        if current == 0 { current = 1 }
+        current = current * 100
+      } else {
+        current = current + v
+      }
+    }
+    i = i + 1
+  }
+  result = result + current
+  return result
+}
+
+fun main() {
+  let tLine = input()
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    let line = input()
+    let tokens = split(line)
+    let num = parse(tokens)
+    print(string(num))
+    tc = tc + 1
+  }
+}
+
+main()

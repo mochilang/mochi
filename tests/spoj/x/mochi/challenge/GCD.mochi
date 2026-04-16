@@ -1,0 +1,50 @@
+// Solution for SPOJ GCD - Greatest Common Divisor
+// https://www.spoj.com/problems/GCD/
+// Find GCD of all digit permutations of a large number.
+// If all digits are identical: GCD = the number itself.
+// Otherwise: GCD = gcd(digit_sum, 9) which is 9, 3, or 1.
+
+fun gcd(a: int, b: int): int {
+  while b > 0 {
+    let t = b
+    b = a % b
+    a = t
+  }
+  return a
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = len(line)
+    var digitSum = 0
+    var allSame = 1
+    var first = line[0:1]
+    var i = 0
+    while i < n {
+      let c = line[i:i+1]
+      if c != first { allSame = 0 }
+      // digit value: subtract "0" char by char comparison
+      var d = 0
+      if c == "1" { d = 1 }
+      if c == "2" { d = 2 }
+      if c == "3" { d = 3 }
+      if c == "4" { d = 4 }
+      if c == "5" { d = 5 }
+      if c == "6" { d = 6 }
+      if c == "7" { d = 7 }
+      if c == "8" { d = 8 }
+      if c == "9" { d = 9 }
+      digitSum = digitSum + d
+      i = i + 1
+    }
+    if allSame == 1 {
+      print(line)
+    } else {
+      print(gcd(digitSum, 9))
+    }
+    line = input()
+  }
+}
+
+main()

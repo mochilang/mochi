@@ -1,0 +1,114 @@
+// Solution for SPOJ PT07E - Yet another computer network problem
+// https://www.spoj.com/problems/PT07E/
+// Build a minimum spanning tree using Kruskal's algorithm.
+// Output: total cost, max degree, then N-1 edges.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let header = split(input())
+  let n = int(header[0])
+  let m = int(header[1])
+
+  // Read edges: eu, ev, ew
+  var eu: list<int> = []
+  var ev: list<int> = []
+  var ew: list<int> = []
+  var i = 0
+  while i < m {
+    let parts = split(input())
+    eu = append(eu, int(parts[0]))
+    ev = append(ev, int(parts[1]))
+    ew = append(ew, int(parts[2]))
+    i = i + 1
+  }
+
+  // Insertion sort edges by weight ascending (sort indices)
+  var order: list<int> = []
+  i = 0
+  while i < m {
+    order = append(order, i)
+    i = i + 1
+  }
+  i = 1
+  while i < m {
+    let key = order[i]
+    var j = i - 1
+    while j >= 0 && ew[order[j]] > ew[key] {
+      order[j+1] = order[j]
+      j = j - 1
+    }
+    order[j+1] = key
+    i = i + 1
+  }
+
+  // Union-Find: 1-indexed, size n+1
+  var parent: list<int> = []
+  var deg: list<int> = []
+  i = 0
+  while i <= n {
+    parent = append(parent, i)
+    deg = append(deg, 0)
+    i = i + 1
+  }
+
+  // Kruskal's: for each edge in sorted order, union components
+  var totalCost = 0
+  var maxDeg = 0
+  var edgeU: list<int> = []
+  var edgeV: list<int> = []
+  var added = 0
+  i = 0
+  while i < m && added < n - 1 {
+    let idx = order[i]
+    let u = eu[idx]
+    let v = ev[idx]
+    let w = ew[idx]
+    // Find root of u with path compression
+    var pu = u
+    while parent[pu] != pu { pu = parent[pu] }
+    var x = u
+    while parent[x] != pu { let nx = parent[x]; parent[x] = pu; x = nx }
+    // Find root of v with path compression
+    var pv = v
+    while parent[pv] != pv { pv = parent[pv] }
+    var y = v
+    while parent[y] != pv { let ny = parent[y]; parent[y] = pv; y = ny }
+    // Union if different components
+    if pu != pv {
+      parent[pu] = pv
+      totalCost = totalCost + w
+      deg[u] = deg[u] + 1
+      deg[v] = deg[v] + 1
+      if deg[u] > maxDeg { maxDeg = deg[u] }
+      if deg[v] > maxDeg { maxDeg = deg[v] }
+      edgeU = append(edgeU, u)
+      edgeV = append(edgeV, v)
+      added = added + 1
+    }
+    i = i + 1
+  }
+
+  print(string(totalCost) + " " + string(maxDeg))
+  i = 0
+  while i < len(edgeU) {
+    print(string(edgeU[i]) + " " + string(edgeV[i]))
+    i = i + 1
+  }
+}
+
+main()

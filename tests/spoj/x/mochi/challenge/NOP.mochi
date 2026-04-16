@@ -1,0 +1,36 @@
+// Solution for SPOJ NOP - Nop
+// https://www.spoj.com/problems/NOP/
+// Count minimum NOPs needed so each uppercase instruction starts at address % 4 == 0.
+
+fun isUpper(c: string): int {
+  if c >= "A" && c <= "Z" { return 1 }
+  return 0
+}
+
+fun main() {
+  let prog = input()
+  let n = len(prog)
+  var addr = 0
+  var nops = 0
+  var i = 0
+  while i < n {
+    if isUpper(prog[i:i+1]) == 1 {
+      // Pad addr to next multiple of 4
+      let rem = addr % 4
+      if rem > 0 {
+        let pad = 4 - rem
+        nops = nops + pad
+        addr = addr + pad
+      }
+      // Place instruction
+      addr = addr + 1
+    } else {
+      // Parameter byte
+      addr = addr + 1
+    }
+    i = i + 1
+  }
+  print(nops)
+}
+
+main()
