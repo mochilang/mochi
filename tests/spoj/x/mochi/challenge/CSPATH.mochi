@@ -1,0 +1,79 @@
+// Solution for SPOJ CSPATH - Cartesian Shortest Path
+// https://www.spoj.com/problems/CSPATH/
+// Count shortest paths from (0,0) to (x,y) not through B(x1,y1) or C(x2,y2).
+// Use inclusion-exclusion: total - through_B - through_C + through_B_and_C.
+// Precompute Pascal's triangle for C(n,k) with n up to 20.
+
+fun main() {
+  // Precompute Pascal's triangle C[n][k] for n,k up to 20
+  var C: list<int> = []
+  var row = 0
+  while row <= 20 {
+    var col = 0
+    while col <= 20 {
+      if col == 0 || col == row {
+        C = append(C, 1)
+      } else {
+        if col > row {
+          C = append(C, 0)
+        } else {
+          C = append(C, C[(row-1)*21+col-1] + C[(row-1)*21+col])
+        }
+      }
+      col = col + 1
+    }
+    row = row + 1
+  }
+
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let line1 = input()
+    // parse x y
+    var i = 0
+    var s = ""
+    while i < len(line1) && line1[i:i+1] != " " { s = s + line1[i:i+1]; i = i + 1 }
+    let x = int(s)
+    i = i + 1
+    s = ""
+    while i < len(line1) { s = s + line1[i:i+1]; i = i + 1 }
+    let y = int(s)
+
+    let line2 = input()
+    i = 0; s = ""
+    while i < len(line2) && line2[i:i+1] != " " { s = s + line2[i:i+1]; i = i + 1 }
+    let x1 = int(s)
+    i = i + 1; s = ""
+    while i < len(line2) { s = s + line2[i:i+1]; i = i + 1 }
+    let y1 = int(s)
+
+    let line3 = input()
+    i = 0; s = ""
+    while i < len(line3) && line3[i:i+1] != " " { s = s + line3[i:i+1]; i = i + 1 }
+    let x2 = int(s)
+    i = i + 1; s = ""
+    while i < len(line3) { s = s + line3[i:i+1]; i = i + 1 }
+    let y2 = int(s)
+
+    // C(n,k) lookup
+    let total = C[(x+y)*21+x]
+    let thruB = C[(x1+y1)*21+x1] * C[((x-x1)+(y-y1))*21+(x-x1)]
+    let thruC = C[(x2+y2)*21+x2] * C[((x-x2)+(y-y2))*21+(x-x2)]
+
+    var thruBC = 0
+    // Check if C comes before B on path (C.x<=B.x and C.y<=B.y)
+    if x2 <= x1 && y2 <= y1 {
+      thruBC = C[(x2+y2)*21+x2] * C[((x1-x2)+(y1-y2))*21+(x1-x2)] * C[((x-x1)+(y-y1))*21+(x-x1)]
+    } else {
+      // Check if B comes before C on path (B.x<=C.x and B.y<=C.y)
+      if x1 <= x2 && y1 <= y2 {
+        thruBC = C[(x1+y1)*21+x1] * C[((x2-x1)+(y2-y1))*21+(x2-x1)] * C[((x-x2)+(y-y2))*21+(x-x2)]
+      }
+    }
+
+    print(total - thruB - thruC + thruBC)
+    ti = ti + 1
+  }
+}
+
+main()

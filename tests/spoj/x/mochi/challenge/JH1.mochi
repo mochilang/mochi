@@ -1,0 +1,62 @@
+// Solution for SPOJ JH1 - Size Contest Reloaded
+// https://www.spoj.com/problems/JH1/
+// p = sum of positive numbers at even positions (1-indexed: 2nd, 4th, ...)
+// q = sum of absolute values of negative numbers at odd positions (1st, 3rd, ...)
+// Print "Some Mirrors Lie!" if p >= q, else "Every Girl Lies!"
+
+fun parseInt(s: string): int {
+  if len(s) == 0 { return 0 }
+  var neg = 0
+  var start = 0
+  if s[0:1] == "-" { neg = 1; start = 1 }
+  var v = 0
+  var i = start
+  while i < len(s) {
+    let d = int(s[i:i+1])
+    v = v * 10 + d
+    i = i + 1
+  }
+  if neg == 1 { return 0 - v }
+  return v
+}
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let n = int(input())
+    let line = input()
+    var p = 0
+    var q = 0
+    var pos = 1
+    var i = 0
+    var cur = ""
+    while i <= len(line) {
+      var ch = " "
+      if i < len(line) { ch = line[i:i+1] }
+      if ch == " " || i == len(line) {
+        if len(cur) > 0 {
+          let v = parseInt(cur)
+          if pos % 2 == 0 {
+            if v > 0 { p = p + v }
+          } else {
+            if v < 0 { q = q + (0 - v) }
+          }
+          cur = ""
+          pos = pos + 1
+        }
+      } else {
+        cur = cur + ch
+      }
+      i = i + 1
+    }
+    if p >= q {
+      print("Some Mirrors Lie!")
+    } else {
+      print("Every Girl Lies!")
+    }
+    ti = ti + 1
+  }
+}
+
+main()
