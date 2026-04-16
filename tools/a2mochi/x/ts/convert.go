@@ -62,7 +62,7 @@ func Parse(src string) ([]Node, error) {
 	}
 	tmp.Close()
 	defer os.Remove(tmp.Name())
-	cmd := exec.Command("deno", "run", "--quiet", "--allow-read", script, tmp.Name())
+	cmd := exec.Command("deno", "run", "--quiet", "--allow-read", "--allow-env", "--allow-net", "--node-modules-dir=none", script, tmp.Name())
 	cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -244,6 +244,15 @@ func tsFunctionBody(src string) []string {
 				end = len(s)
 			}
 			expr := strings.TrimSpace(s[len("return "):end])
+			// Convert TypeScript arrow function (params) => body to Mochi fun(params) => body.
+			if strings.HasPrefix(expr, "(") {
+				arrowIdx := strings.Index(expr, "=>")
+				if arrowIdx > 0 {
+					paramsPart := strings.TrimSpace(expr[:arrowIdx])
+					bodyPart := strings.TrimSpace(expr[arrowIdx+2:])
+					expr = "fun" + paramsPart + " => " + bodyPart
+				}
+			}
 			lines = append(lines, "return "+expr)
 			if end < len(s) {
 				s = s[end+1:]
@@ -381,6 +390,15 @@ func tsFunctionBody(src string) []string {
 			}
 			stmt := strings.TrimSpace(s[:end])
 			parts := strings.SplitN(stmt, "=", 2)
+			if len(parts) < 2 {
+				// No '=' in this statement fragment; skip to next semicolon.
+				if end < len(s) {
+					s = s[end+1:]
+				} else {
+					s = ""
+				}
+				continue
+			}
 			lhs := strings.TrimSpace(parts[0])
 			rhs := strings.TrimSpace(parts[1])
 

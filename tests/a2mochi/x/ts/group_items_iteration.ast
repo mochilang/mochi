@@ -1,0 +1,22 @@
+(program
+  (type Result
+    (field tag (type string))
+    (field val (type int))
+  )
+  (type Data
+    (field tag (type string))
+    (field val (type int))
+  )
+  (let data
+    (type list (type Data))
+  )
+  (let groups
+    (type list (type any))
+  )
+  (let tmp
+    (type list (type any))
+  )
+  (let result
+    (type list (type any))
+  )
+)

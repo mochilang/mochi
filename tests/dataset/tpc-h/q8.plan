@@ -1,3 +1,5 @@
+type: [{string: any}]
+plan:
 (select
   (map
     (entry
@@ -72,27 +74,27 @@
       )
       (where
         (group
-          (binary ==
+          (binary &&
             (binary &&
-              (binary <=
-                (binary &&
-                  (binary >=
-                    (binary &&
-                      (binary ==
-                        (selector p_type (selector p))
-                        (selector target_type)
-                      )
-                      (selector o_orderdate (selector o))
-                    )
-                    (selector start_date)
-                  )
-                  (selector o_orderdate (selector o))
+              (binary &&
+                (binary ==
+                  (selector p_type (selector p))
+                  (selector target_type)
                 )
+                (binary >=
+                  (selector o_orderdate (selector o))
+                  (selector start_date)
+                )
+              )
+              (binary <=
+                (selector o_orderdate (selector o))
                 (selector end_date)
               )
-              (selector r_name (selector r))
             )
-            (string AMERICA)
+            (binary ==
+              (selector r_name (selector r))
+              (string AMERICA)
+            )
           )
         )
         (join

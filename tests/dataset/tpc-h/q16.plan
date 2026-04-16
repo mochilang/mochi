@@ -1,25 +1,27 @@
+type: [int]
+plan:
 (select
   (selector ps_suppkey (selector ps))
   (join
     (scan ps (selector partsupp))
     (where
-      (binary ==
+      (binary &&
         (binary &&
-          (binary &&
-            (binary ==
-              (selector p_brand (selector p))
-              (string "Brand#12")
-            )
-            (call
-              (selector contains
-                (selector p_type (selector p))
-              )
-              (string SMALL)
-            )
+          (binary ==
+            (selector p_brand (selector p))
+            (string "Brand#12")
           )
-          (selector p_size (selector p))
+          (call
+            (selector contains
+              (selector p_type (selector p))
+            )
+            (string SMALL)
+          )
         )
-        (int 5)
+        (binary ==
+          (selector p_size (selector p))
+          (int 5)
+        )
       )
       (scan p (selector part))
     )

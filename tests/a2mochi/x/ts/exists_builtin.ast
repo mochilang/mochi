@@ -1,0 +1,6 @@
+(program
+  (let data
+    (type list (type int))
+  )
+  (let flag (type bool))
+)

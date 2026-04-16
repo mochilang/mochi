@@ -1,0 +1,15 @@
+(program
+  (type Result
+    (field n (type int))
+    (field l (type string))
+  )
+  (let nums
+    (type list (type int))
+  )
+  (let letters
+    (type list (type string))
+  )
+  (let pairs
+    (type list (type Result))
+  )
+)

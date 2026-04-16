@@ -1,3 +1,5 @@
+type: [{string: any}]
+plan:
 (select
   (map
     (entry
@@ -121,21 +123,21 @@
         )
       )
       (where
-        (binary ==
+        (binary &&
           (binary &&
+            (binary >=
+              (selector o_orderdate (selector o))
+              (selector start_date)
+            )
             (binary <
-              (binary &&
-                (binary >=
-                  (selector o_orderdate (selector o))
-                  (selector start_date)
-                )
-                (selector o_orderdate (selector o))
-              )
+              (selector o_orderdate (selector o))
               (selector end_date)
             )
-            (selector l_returnflag (selector l))
           )
-          (string R)
+          (binary ==
+            (selector l_returnflag (selector l))
+            (string R)
+          )
         )
         (join
           (join

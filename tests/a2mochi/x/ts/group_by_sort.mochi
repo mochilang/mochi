@@ -1,0 +1,10 @@
+type Result {
+  cat: string
+  val: int
+}
+type Item {
+  cat: string
+  val: int
+}
+let items: list<Item>
+let grouped: list<map<string,any>>

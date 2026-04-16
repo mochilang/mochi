@@ -1,0 +1,5 @@
+(program
+  (let square
+    (funexpr (param x))
+  )
+)

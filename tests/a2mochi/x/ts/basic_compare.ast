@@ -1,25 +1,4 @@
 (program
-  (let a
-    (type int)
-    (group
-      (binary - (int 10) (int 3))
-    )
-  )
-  (let b
-    (type int)
-    (group
-      (binary + (int 2) (int 2))
-    )
-  )
-  (call print (selector a))
-  (call print
-    (group
-      (binary == (selector a) (int 7))
-    )
-  )
-  (call print
-    (group
-      (binary < (selector b) (int 5))
-    )
-  )
+  (let a (type int))
+  (let b (type int))
 )

@@ -1,0 +1,117 @@
+// Solution for SPOJ Fake Tournament (TOUR)
+// https://www.spoj.com/problems/TOUR/
+// Topological sort: consistent ranking exists iff the directed graph
+// has a unique topological order (unique "winner" at each step).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine != "" {
+    let nk = split(tLine)
+    let n = int(nk[0])
+    let m = int(nk[1])
+
+    // Build adjacency list and in-degree count
+    // adj: flat list, adjHead[v] = start, adjHead[v+1] = end
+    var indeg: list<int> = []
+    var adjHead: list<int> = []
+    var adjCnt: list<int> = []
+    var i = 0
+    while i <= n { indeg = append(indeg, 0); adjHead = append(adjHead, 0); adjCnt = append(adjCnt, 0); i = i + 1 }
+
+    // Read edges, count
+    var edges: list<int> = []
+    i = 0
+    while i < m {
+      let ep = split(input())
+      let u = int(ep[0]) - 1
+      let v = int(ep[1]) - 1
+      edges = append(edges, u)
+      edges = append(edges, v)
+      adjCnt[u] = adjCnt[u] + 1
+      indeg[v] = indeg[v] + 1
+      i = i + 1
+    }
+
+    // Build CSR
+    adjHead[0] = 0
+    i = 0
+    while i < n {
+      adjHead[i+1] = adjHead[i] + adjCnt[i]
+      i = i + 1
+    }
+    var adjTo: list<int> = []
+    i = 0
+    while i < m { adjTo = append(adjTo, 0); i = i + 1 }
+    var pos: list<int> = []
+    i = 0
+    while i < n { pos = append(pos, adjHead[i]); i = i + 1 }
+    i = 0
+    while i < m {
+      let u = edges[i*2]
+      let v = edges[i*2+1]
+      adjTo[pos[u]] = v
+      pos[u] = pos[u] + 1
+      i = i + 1
+    }
+
+    // Kahn's topological sort - must have unique choice at each step
+    var order: list<int> = []
+    var zeroQ: list<int> = []
+    i = 0
+    while i < n {
+      if indeg[i] == 0 { zeroQ = append(zeroQ, i) }
+      i = i + 1
+    }
+    var ok = 1
+    var head = 0
+    while head < len(order) + len(zeroQ) {
+      if len(zeroQ) - head > 1 { ok = 0; break }
+      if len(zeroQ) <= head { ok = 0; break }
+      let u = zeroQ[head]
+      order = append(order, u)
+      head = head + 1
+      let start = adjHead[u]
+      let stop = adjHead[u+1]
+      var ei = start
+      while ei < stop {
+        let v = adjTo[ei]
+        indeg[v] = indeg[v] - 1
+        if indeg[v] == 0 { zeroQ = append(zeroQ, v) }
+        ei = ei + 1
+      }
+    }
+
+    if ok == 1 && len(order) == n {
+      var out = ""
+      i = 0
+      while i < n {
+        if i > 0 { out = out + " " }
+        out = out + str(order[i] + 1)
+        i = i + 1
+      }
+      print(out)
+    } else {
+      print("No")
+    }
+
+    tLine = input()
+  }
+}
+
+main()

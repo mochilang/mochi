@@ -1,3 +1,5 @@
+type: [{string: int}]
+plan:
 (select
   (map
     (entry

@@ -1,14 +1,3 @@
 (program
-  (let x (type int) (int 5))
-  (if
-    (group
-      (binary > (selector x) (int 3))
-    )
-    (block
-      (call print (string big))
-    )
-    (block
-      (call print (string small))
-    )
-  )
+  (let x (type int))
 )

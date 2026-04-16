@@ -1,3 +1,5 @@
+type: [{string: any}]
+plan:
 (select
   (map
     (entry
@@ -67,39 +69,39 @@
         (group
           (binary ||
             (binary &&
-              (binary <=
-                (binary &&
-                  (binary >=
-                    (selector l_shipdate (selector l))
-                    (selector start_date)
-                  )
+              (binary &&
+                (binary >=
                   (selector l_shipdate (selector l))
+                  (selector start_date)
                 )
-                (selector end_date)
+                (binary <=
+                  (selector l_shipdate (selector l))
+                  (selector end_date)
+                )
               )
               (group
-                (binary ==
-                  (binary &&
-                    (binary ==
-                      (selector n_name (selector n1))
-                      (selector nation1)
-                    )
-                    (selector n_name (selector n2))
+                (binary &&
+                  (binary ==
+                    (selector n_name (selector n1))
+                    (selector nation1)
                   )
-                  (selector nation2)
+                  (binary ==
+                    (selector n_name (selector n2))
+                    (selector nation2)
+                  )
                 )
               )
             )
             (group
-              (binary ==
-                (binary &&
-                  (binary ==
-                    (selector n_name (selector n1))
-                    (selector nation2)
-                  )
-                  (selector n_name (selector n2))
+              (binary &&
+                (binary ==
+                  (selector n_name (selector n1))
+                  (selector nation2)
                 )
-                (selector nation1)
+                (binary ==
+                  (selector n_name (selector n2))
+                  (selector nation1)
+                )
               )
             )
           )

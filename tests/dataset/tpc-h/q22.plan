@@ -1,3 +1,5 @@
+type: [{string: string}]
+plan:
 (select
   (map
     (entry
@@ -15,19 +17,19 @@
   )
   (where
     (binary &&
-      (binary >
-        (binary &&
-          (binary in
-            (call substring
-              (selector c_phone (selector c))
-              (int 0)
-              (int 2)
-            )
-            (selector valid_codes)
+      (binary &&
+        (binary in
+          (call substring
+            (selector c_phone (selector c))
+            (int 0)
+            (int 2)
           )
-          (selector c_acctbal (selector c))
+          (selector valid_codes)
         )
-        (selector avg_balance)
+        (binary >
+          (selector c_acctbal (selector c))
+          (selector avg_balance)
+        )
       )
       (group
         (unary !

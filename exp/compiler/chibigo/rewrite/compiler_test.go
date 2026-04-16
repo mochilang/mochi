@@ -1,3 +1,5 @@
+//go:build slow
+
 package chibigo_test
 
 import (

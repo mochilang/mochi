@@ -1,0 +1,118 @@
+// Solution for SPOJ Copying Books (BOOKS1)
+// https://www.spoj.com/problems/BOOKS1/
+// Binary search on the maximum pages a scribe can copy.
+// Greedy feasibility check: assign chapters left to right, start new scribe when limit exceeded.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun canDo(pages: list<int>, k: int, limit: int): int {
+  var scribes = 1
+  var cur = 0
+  var i = 0
+  while i < len(pages) {
+    if cur + pages[i] > limit {
+      scribes = scribes + 1
+      cur = pages[i]
+    } else {
+      cur = cur + pages[i]
+    }
+    i = i + 1
+  }
+  if scribes <= k { return 1 } else { return 0 }
+}
+
+fun main() {
+  var tLine = input()
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    let nk = split(input())
+    let n = int(nk[0])
+    let k = int(nk[1])
+    let ps = split(input())
+    var pages: list<int> = []
+    var total = 0
+    var maxOne = 0
+    var i = 0
+    while i < n {
+      let p = int(ps[i])
+      pages = append(pages, p)
+      total = total + p
+      if p > maxOne { maxOne = p }
+      i = i + 1
+    }
+    // Binary search for minimum limit
+    var lo = maxOne
+    var hi = total
+    while lo < hi {
+      let mid = int((lo + hi) / 2)
+      if canDo(pages, k, mid) == 1 {
+        hi = mid
+      } else {
+        lo = mid + 1
+      }
+    }
+    let limit = lo
+    // Reconstruct: go right to left, for scribe k down to 2.
+    // Each scribe takes as many chapters as possible from the right (sum <= limit),
+    // leaving at least (scr-1) chapters for the remaining scribes to the left.
+    // This ensures scribe 1 gets the minimum possible pages (canonical form).
+    var divs: list<int> = []
+    var scr = k
+    var j = n - 1
+    while scr > 1 {
+      let maxTake = (j + 1) - (scr - 1)
+      var cur = 0
+      var taken = 0
+      while taken < maxTake && j >= 0 {
+        if cur + pages[j] > limit { break }
+        cur = cur + pages[j]
+        taken = taken + 1
+        j = j - 1
+      }
+      // Scribe starts at j+1 (j was decremented in loop body after last take)
+      divs = append(divs, j + 1)
+      scr = scr - 1
+    }
+    // Build output: print pages with '/' at division points
+    // divs is a list of indices (sorted descending from the backwards scan)
+    // Sort it ascending for left-to-right output
+    // Since we collected them right-to-left, reverse it
+    var sortedDivs: list<int> = []
+    var di = len(divs) - 1
+    while di >= 0 {
+      sortedDivs = append(sortedDivs, divs[di])
+      di = di - 1
+    }
+    var out = ""
+    var dj = 0
+    i = 0
+    while i < n {
+      if i > 0 { out = out + " " }
+      if dj < len(sortedDivs) && sortedDivs[dj] == i {
+        out = out + "/ "
+        dj = dj + 1
+      }
+      out = out + str(pages[i])
+      i = i + 1
+    }
+    print(out)
+    ti = ti + 1
+  }
+}
+
+main()
