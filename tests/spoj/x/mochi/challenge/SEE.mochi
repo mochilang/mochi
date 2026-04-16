@@ -1,0 +1,159 @@
+// Solution for SPOJ SEE - Seedlings (Challenge)
+// https://www.spoj.com/problems/SEE/
+// Strategy: place 1x1 shelves (type 0) on accessible free cells where
+// (row+col) % 2 == 1 (checkerboard pattern). This guarantees accessibility:
+// even cells remain free forming a connected walking path.
+// Door at (1,1) [0-indexed: (0,0)] is always free (even cell).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let nm = split(input())
+    let ntaint = int(nm[0])
+    let mtaint = int(nm[1])
+    // Read grid rows
+    var rows: list<string> = []
+    var ri = 0
+    while ri < ntaint {
+      rows = append(rows, input())
+      ri = ri + 1
+    }
+    // Derive clean dimensions from len
+    let nclean = len(rows)
+    let mclean = len(rows[0])
+
+    // BFS to find cells accessible from (0,0)
+    // Store visited as a flat list of 0/1 (size nclean*mclean)
+    // Initialize all to 0
+    var visited: list<int> = []
+    var vinit = 0
+    while vinit < nclean * mclean {
+      visited = append(visited, 0)
+      vinit = vinit + 1
+    }
+
+    // Queue stores flat indices; use list + index pointer
+    var queue: list<int> = []
+    queue = append(queue, 0)
+    visited[0] = 1
+
+    var qi = 0
+    while qi < len(queue) {
+      let pos = queue[qi]
+      // Derive row and col from pos using loop arithmetic
+      // pos = r * mclean + c
+      var r = 0
+      var tmp = pos
+      while tmp >= mclean {
+        r = r + 1
+        tmp = tmp - mclean
+      }
+      let c = tmp
+
+      // Check 4 neighbors
+      // Up: r-1, c
+      if r > 0 {
+        let nr = r - 1
+        let nc = c
+        let npos = nr * mclean + nc
+        if visited[npos] == 0 {
+          if rows[nr][nc:nc+1] != "X" {
+            visited[npos] = 1
+            queue = append(queue, npos)
+          }
+        }
+      }
+      // Down: r+1, c
+      if r + 1 < nclean {
+        let nr = r + 1
+        let nc = c
+        let npos = nr * mclean + nc
+        if visited[npos] == 0 {
+          if rows[nr][nc:nc+1] != "X" {
+            visited[npos] = 1
+            queue = append(queue, npos)
+          }
+        }
+      }
+      // Left: r, c-1
+      if c > 0 {
+        let nr = r
+        let nc = c - 1
+        let npos = nr * mclean + nc
+        if visited[npos] == 0 {
+          if rows[nr][nc:nc+1] != "X" {
+            visited[npos] = 1
+            queue = append(queue, npos)
+          }
+        }
+      }
+      // Right: r, c+1
+      if c + 1 < mclean {
+        let nr = r
+        let nc = c + 1
+        let npos = nr * mclean + nc
+        if visited[npos] == 0 {
+          if rows[nr][nc:nc+1] != "X" {
+            visited[npos] = 1
+            queue = append(queue, npos)
+          }
+        }
+      }
+      qi = qi + 1
+    }
+
+    // Collect shelves: accessible free cells where (r+c)%2==1
+    // (r+c)%2==0 is the door cell (0,0) and its connected "even" cells
+    // Skip (0,0) regardless
+    var shelves: list<string> = []
+    var ii = 0
+    while ii < nclean {
+      var jj = 0
+      while jj < mclean {
+        let pos = ii * mclean + jj
+        if visited[pos] == 1 {
+          if rows[ii][jj:jj+1] != "X" {
+            // Skip door cell (0,0)
+            if ii + jj > 0 {
+              if (ii + jj) % 2 == 1 {
+                // Place 1x1 shelf: wi ki ri oi (1-indexed, type 0, rotation 0)
+                shelves = append(shelves, str(ii + 1) + " " + str(jj + 1) + " 0 0")
+              }
+            }
+          }
+        }
+        jj = jj + 1
+      }
+      ii = ii + 1
+    }
+
+    let p = len(shelves)
+    let d = p
+    print(str(p) + " " + str(d))
+    var si = 0
+    while si < p {
+      print(shelves[si])
+      si = si + 1
+    }
+    ti = ti + 1
+  }
+}
+
+main()

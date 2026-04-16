@@ -1,0 +1,63 @@
+// Solution for SPOJ HIE - Hieroglyphs (Challenge)
+// https://www.spoj.com/problems/HIE/
+// Strategy: Z-only baseline. For each mismatch between tablet A and B,
+// output a Z move to change A[r][c] to B[r][c].
+// Cost = mismatches * n^2. Score = (mismatches * n^2) / n^4 = mismatches / n^2.
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    // Read n (tainted from int())
+    let ntaint = int(input())
+    // Read tablet A: collect rows into a list
+    var rowsA: list<string> = []
+    var ri = 0
+    while ri < ntaint {
+      rowsA = append(rowsA, input())
+      ri = ri + 1
+    }
+    // Derive clean n from len
+    let nclean = len(rowsA)
+    // Read tablet B
+    var rowsB: list<string> = []
+    var ri2 = 0
+    while ri2 < ntaint {
+      rowsB = append(rowsB, input())
+      ri2 = ri2 + 1
+    }
+    // Find mismatches using loop counters (no tainted indexing)
+    var moves: list<string> = []
+    var ii = 0
+    while ii < nclean {
+      let rowA = rowsA[ii]
+      let rowB = rowsB[ii]
+      var jj = 0
+      while jj < nclean {
+        let ca = rowA[jj:jj+1]
+        let cb = rowB[jj:jj+1]
+        if ca != cb {
+          // r and c are 1-indexed; ii and jj are clean loop counters
+          let r1 = ii + 1
+          let c1 = jj + 1
+          moves = append(moves, "Z " + str(r1) + " " + str(c1) + " " + cb)
+        }
+        jj = jj + 1
+      }
+      ii = ii + 1
+    }
+    // Compute cost = m * n^2
+    let m = len(moves)
+    let nsq = nclean * nclean
+    let k = m * nsq
+    print(str(m) + " " + str(k))
+    var mi = 0
+    while mi < m {
+      print(moves[mi])
+      mi = mi + 1
+    }
+    ti = ti + 1
+  }
+}
+
+main()
