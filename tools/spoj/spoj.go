@@ -52,12 +52,22 @@ func repoRoot() string {
 
 func indexDir() string { return filepath.Join(repoRoot(), indexDirRel) }
 
-func sectionSubdir(sec Section) string {
-	if sec == SectionClassical {
-		return "" // classical stays at root for backwards compat
+// SessionCookie can be set to a SPOJ session cookie value (SPOJ_SESS or similar)
+// to authenticate requests. Obtain it from browser DevTools after logging in.
+var SessionCookie string
+
+func setHeaders(req *http.Request) {
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
+	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.5")
+	req.Header.Set("Accept-Encoding", "identity")
+	req.Header.Set("Referer", "https://www.spoj.com/problems/classical/")
+	if SessionCookie != "" {
+		req.Header.Set("Cookie", SessionCookie)
 	}
-	return string(sec)
 }
+
+func sectionSubdir(sec Section) string { return string(sec) }
 
 func pageFilePath(sec Section, page int, ext string) string {
 	dir := indexDir()
@@ -93,7 +103,7 @@ func ListSection(sec Section, page int) ([]Problem, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", "Mozilla/5.0")
+	setHeaders(req)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -278,7 +288,7 @@ func DownloadFromSection(id int, preferSec Section) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req.Header.Set("User-Agent", "Mozilla/5.0")
+	setHeaders(req)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", err
