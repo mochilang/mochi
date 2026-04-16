@@ -46,7 +46,7 @@ experimental VM.  Unsupported areas include:
 * Error handling with `try`/`catch`
 * Logic programming constructs (`fact`, `rule`, `query`)
 * Set collections (`set<T>`) and related operations
-* Generic type parameters for functions and user-defined types
+* Generic type parameters on user-defined types
 * Reflection and macro facilities
 * Concurrency primitives such as `spawn` and channels
 * Package declarations and `export` statements
