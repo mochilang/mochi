@@ -2,15 +2,13 @@
 // https://www.spoj.com/problems/HIR/
 // Identify 6-digit passport numbers from H×W black-and-white images.
 // '.' = white pixel, 'X' = black pixel. Score = correct digit identifications.
-// Approach: 7-segment display recognition using pixel density in 7 zones.
+// Approach: 7-segment display recognition using pixel presence in 7 zones.
 // Patterns (top*64 + tl*32 + tr*16 + mid*8 + bl*4 + br*2 + bot):
 //   0=119  1=26   2=93   3=91   4=58   5=107  6=111  7=90   8=127  9=123
-
-// Integer division helper (Mochi's / operator gives float when operands are from int() calls)
-fun idiv(a: int, b: int): int {
-  let r = a % b
-  return (a - r) / b
-}
+//
+// NOTE: Mochi's int() builtin produces "tainted" integers where list indexing
+// fails. All derived values must be computed via loop variables or len() to
+// remain "clean" and usable as list indices.
 
 fun split(line: string): list<string> {
   var parts: list<string> = []
@@ -28,87 +26,21 @@ fun split(line: string): list<string> {
   return parts
 }
 
-// Count X pixels in a rectangular region of the flat grid.
+// Count X pixels in a rectangular region. All bounds must be "clean" integers.
+// Uses offset loops (dr, dc starting at 0) to keep loop vars clean even when
+// r0/r1/c0/c1 are computed values.
 fun countX(grid: list<string>, W: int, r0: int, r1: int, c0: int, c1: int): int {
   var cnt = 0
-  var r = r0
-  while r < r1 {
-    var c = c0
-    while c < c1 {
-      if grid[r * W + c] == "X" { cnt = cnt + 1 }
-      c = c + 1
+  var dr = 0
+  while dr + r0 < r1 {
+    var dc = 0
+    while dc + c0 < c1 {
+      if grid[(dr + r0) * W + (dc + c0)] == "X" { cnt = cnt + 1 }
+      dc = dc + 1
     }
-    r = r + 1
+    dr = dr + 1
   }
   return cnt
-}
-
-// Recognize a single digit from the region [c0, c0+wd) of the image.
-// Uses 7-segment detection: top, tl, tr, mid, bl, br, bot.
-fun recognizeDigit(grid: list<string>, H: int, W: int, c0: int, wd: int): string {
-  let hm = idiv(H, 2)       // exact middle row index (e.g., 3 for H=7)
-  let cMid = c0 + idiv(wd, 2)
-
-  // Detect 7 segments via pixel counts
-  let sTop = countX(grid, W, 0, 1, c0, c0 + wd)
-  let sBot = countX(grid, W, H - 1, H, c0, c0 + wd)
-  let sMid = countX(grid, W, hm, hm + 1, c0, c0 + wd)
-  let sTl  = countX(grid, W, 1, hm, c0, cMid)
-  let sTr  = countX(grid, W, 1, hm, cMid, c0 + wd)
-  let sBl  = countX(grid, W, hm + 1, H - 1, c0, cMid)
-  let sBr  = countX(grid, W, hm + 1, H - 1, cMid, c0 + wd)
-
-  // Convert to binary presence flags (1 if any X present, 0 otherwise)
-  var bTop = 0; var bBot = 0; var bMid = 0
-  var bTl = 0; var bTr = 0; var bBl = 0; var bBr = 0
-  if sTop > 0 { bTop = 1 }
-  if sBot > 0 { bBot = 1 }
-  if sMid > 0 { bMid = 1 }
-  if sTl > 0 { bTl = 1 }
-  if sTr > 0 { bTr = 1 }
-  if sBl > 0 { bBl = 1 }
-  if sBr > 0 { bBr = 1 }
-
-  let pat = bTop * 64 + bTl * 32 + bTr * 16 + bMid * 8 + bBl * 4 + bBr * 2 + bBot
-
-  // Exact match against known 7-segment patterns
-  if pat == 119 { return "0" }
-  if pat == 26  { return "1" }
-  if pat == 93  { return "2" }
-  if pat == 91  { return "3" }
-  if pat == 58  { return "4" }
-  if pat == 107 { return "5" }
-  if pat == 111 { return "6" }
-  if pat == 90  { return "7" }
-  if pat == 127 { return "8" }
-  if pat == 123 { return "9" }
-
-  // Fallback: nearest neighbor by Hamming distance over 7 bits
-  var patterns: list<int> = [119, 26, 93, 91, 58, 107, 111, 90, 127, 123]
-  var digLabels: list<string> = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-  var bestDist = 8
-  var bestLabel = "0"
-  var di = 0
-  while di < 10 {
-    var x = pat
-    var y = patterns[di]
-    var bitdiff = 0
-    var b = 0
-    while b < 7 {
-      let bx = x - idiv(x, 2) * 2
-      let by = y - idiv(y, 2) * 2
-      if bx != by { bitdiff = bitdiff + 1 }
-      x = idiv(x, 2)
-      y = idiv(y, 2)
-      b = b + 1
-    }
-    if bitdiff < bestDist {
-      bestDist = bitdiff
-      bestLabel = digLabels[di]
-    }
-    di = di + 1
-  }
-  return bestLabel
 }
 
 fun main() {
@@ -118,21 +50,62 @@ fun main() {
     if len(parts) < 2 {
       line = input()
     } else {
-      let H = int(parts[0])
-      let W = int(parts[1])
-      let wd = idiv(W, 6)
+      let Htainted = int(parts[0])
 
-      // Read H rows into a flat grid
+      // Read first row to obtain clean W via len() (avoids int() taint)
+      let firstRow = input()
+      let W = len(firstRow)
+
+      // Build flat grid row by row
       var grid: list<string> = []
-      var r = 0
-      while r < H {
+      var c = 0
+      while c < W {
+        grid = append(grid, firstRow[c:c+1])
+        c = c + 1
+      }
+      var rr = 1
+      while rr < Htainted {
         let row = input()
-        var c = 0
-        while c < W {
-          grid = append(grid, row[c:c+1])
-          c = c + 1
+        var cc = 0
+        while cc < W {
+          grid = append(grid, row[cc:cc+1])
+          cc = cc + 1
         }
-        r = r + 1
+        rr = rr + 1
+      }
+
+      let gridLen = len(grid)
+
+      // Find clean H = gridLen / W via loop
+      var H = 0
+      var hi = 0
+      while hi * W <= gridLen {
+        if hi * W == gridLen { H = hi }
+        hi = hi + 1
+      }
+
+      // Find clean wd = floor(W / 6) via loop (6 * wd <= W < 6 * (wd+1))
+      var wd = 0
+      var wdi = 0
+      while wdi + wdi + wdi + wdi + wdi + wdi <= W {
+        wd = wdi
+        wdi = wdi + 1
+      }
+
+      // Find clean hm = floor(H / 2) via loop
+      var hm = 0
+      var hmi = 0
+      while hmi + hmi <= H {
+        hm = hmi
+        hmi = hmi + 1
+      }
+
+      // Find clean wdHalf = floor(wd / 2) via loop
+      var wdHalf = 0
+      var wdhi = 0
+      while wdhi + wdhi <= wd {
+        wdHalf = wdhi
+        wdhi = wdhi + 1
       }
 
       // Recognize each of the 6 digits
@@ -140,7 +113,45 @@ fun main() {
       var di = 0
       while di < 6 {
         let c0 = di * wd
-        result = result + recognizeDigit(grid, H, W, c0, wd)
+        let cEnd = c0 + wd
+        let cMid = c0 + wdHalf
+
+        // Sample 7 segments
+        let sTop = countX(grid, W, 0, 1, c0, cEnd)
+        let sBot = countX(grid, W, H - 1, H, c0, cEnd)
+        let sMid = countX(grid, W, hm, hm + 1, c0, cEnd)
+        let sTl  = countX(grid, W, 1, hm, c0, cMid)
+        let sTr  = countX(grid, W, 1, hm, cMid, cEnd)
+        let sBl  = countX(grid, W, hm + 1, H - 1, c0, cMid)
+        let sBr  = countX(grid, W, hm + 1, H - 1, cMid, cEnd)
+
+        // Convert to binary flags
+        var bTop = 0; var bBot = 0; var bMid = 0
+        var bTl = 0; var bTr = 0; var bBl = 0; var bBr = 0
+        if sTop > 0 { bTop = 1 }
+        if sBot > 0 { bBot = 1 }
+        if sMid > 0 { bMid = 1 }
+        if sTl > 0 { bTl = 1 }
+        if sTr > 0 { bTr = 1 }
+        if sBl > 0 { bBl = 1 }
+        if sBr > 0 { bBr = 1 }
+
+        let pat = bTop * 64 + bTl * 32 + bTr * 16 + bMid * 8 + bBl * 4 + bBr * 2 + bBot
+
+        // Match against known 7-segment patterns
+        var dstr = "?"
+        if pat == 119 { dstr = "0" }
+        if pat == 26  { dstr = "1" }
+        if pat == 93  { dstr = "2" }
+        if pat == 91  { dstr = "3" }
+        if pat == 58  { dstr = "4" }
+        if pat == 107 { dstr = "5" }
+        if pat == 111 { dstr = "6" }
+        if pat == 90  { dstr = "7" }
+        if pat == 127 { dstr = "8" }
+        if pat == 123 { dstr = "9" }
+
+        result = result + dstr
         di = di + 1
       }
       print(result)
