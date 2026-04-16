@@ -13,7 +13,8 @@ fun gcd(a: int, b: int): int {
 }
 
 fun countDiv(lo: int, hi: int, k: int): int {
-  return int(hi / k) - int((lo - 1) / k)
+  var lo1: int = lo - 1
+  return int(hi / k) - int(lo1 / k)
 }
 
 // Safe LCM: returns lcm(a,b) if <= limit, else limit+1

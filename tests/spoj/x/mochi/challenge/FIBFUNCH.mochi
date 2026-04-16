@@ -1,0 +1,73 @@
+// Solution for SPOJ FIBFUNCH - Fun with Fibonacci Series (Challenge)
+// https://www.spoj.com/problems/FIBFUNCH/
+// F(1)=a, F(2)=b, F(i)=F(i-1)+F(i-2).
+// Sum(1..n) = F(n+2) - b. Compute F(n+2) via matrix exponentiation mod M.
+// [[1,1],[1,0]]^n * [b,a] gives [F(n+2), F(n+1)].
+
+fun matmul(a11: int, a12: int, a21: int, a22: int,
+           b11: int, b12: int, b21: int, b22: int, M: int): list<int> {
+  var r: list<int> = []
+  r = append(r, (a11*b11 + a12*b21) % M)
+  r = append(r, (a11*b12 + a12*b22) % M)
+  r = append(r, (a21*b11 + a22*b21) % M)
+  r = append(r, (a21*b12 + a22*b22) % M)
+  return r
+}
+
+fun matpow(k: int, M: int): list<int> {
+  // result = identity
+  var r00 = 1; var r01 = 0; var r10 = 0; var r11 = 1
+  // base = [[1,1],[1,0]]
+  var m00 = 1; var m01 = 1; var m10 = 1; var m11 = 0
+  var e = k
+  while e > 0 {
+    if e % 2 == 1 {
+      let tmp = matmul(r00, r01, r10, r11, m00, m01, m10, m11, M)
+      r00 = tmp[0]; r01 = tmp[1]; r10 = tmp[2]; r11 = tmp[3]
+    }
+    let tmp2 = matmul(m00, m01, m10, m11, m00, m01, m10, m11, M)
+    m00 = tmp2[0]; m01 = tmp2[1]; m10 = tmp2[2]; m11 = tmp2[3]
+    e = int(e / 2)
+  }
+  var res: list<int> = []
+  res = append(res, r00); res = append(res, r01)
+  res = append(res, r10); res = append(res, r11)
+  return res
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let p = split(input())
+    let a = int(p[0])
+    let b = int(p[1])
+    let n = int(p[2])
+    let M = int(p[3])
+    // Sum(1..n) = F(n+2) - b
+    // F(n+2): [[1,1],[1,0]]^n * [b; a] -> first element
+    let mat = matpow(n, M)
+    let fn2 = (mat[0]*b + mat[1]*a) % M
+    let ans = (fn2 - b % M + M) % M
+    print(str(ans))
+    ti = ti + 1
+  }
+}
+
+main()

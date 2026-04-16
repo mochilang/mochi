@@ -1,0 +1,26 @@
+// Solution for SPOJ M5TILE - The dojo's corridor
+// https://www.spoj.com/problems/M5TILE/
+// Count ways to tile 5x2n corridor with 2x1 dominoes.
+// Recurrence: W(n) = 15*W(n-1) - 32*W(n-2) + 15*W(n-3) - W(n-4)
+// Base cases: W(1)=8, W(2)=95, W(3)=1183, W(4)=14824.
+
+fun main() {
+  var w: list<int> = []
+  w = append(w, 8)
+  w = append(w, 95)
+  w = append(w, 1183)
+  w = append(w, 14824)
+  var i = 4
+  while i < 17 {
+    let next = 15*w[i-1] - 32*w[i-2] + 15*w[i-3] - w[i-4]
+    w = append(w, next)
+    i = i + 1
+  }
+  var j = 0
+  while j < 17 {
+    print(str(w[j]))
+    j = j + 1
+  }
+}
+
+main()
