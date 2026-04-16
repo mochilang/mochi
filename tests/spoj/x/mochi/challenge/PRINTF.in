@@ -1,0 +1,3 @@
+2
+printf("%c %d%f",'L',123,4.5);
+printf("hello %f world %d nice %f computer %c is easy %s",2.34123245231,100,1.41414141,'S',"problem");

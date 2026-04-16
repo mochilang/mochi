@@ -1,0 +1,16 @@
+// Solution for SPOJ BFMODULO - a mod b in Mochi
+// https://www.spoj.com/problems/BFMODULO/
+// Input: lines of "aaa b" where aaa is 3-digit (with leading zeros) and b is 1-9.
+// Output: a % b for each line. Read until EOF.
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let a = int(line[0:3])
+    let b = int(line[4:5])
+    print(a % b)
+    line = input()
+  }
+}
+
+main()
