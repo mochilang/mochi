@@ -201,6 +201,18 @@ def _query(src, joins, opts):
     return res
 
 
+def _sort_key(k):
+    if hasattr(k, "__dataclass_fields__"):
+        return str(k)
+    if isinstance(k, list):
+        return tuple((_sort_key(x) for x in k))
+    if isinstance(k, tuple):
+        return tuple((_sort_key(x) for x in k))
+    if isinstance(k, dict):
+        return str(k)
+    return k
+
+
 def _sum(v):
     if hasattr(v, "Items"):
         v = v.Items
@@ -255,6 +267,28 @@ def _q0():
             "select": lambda ss, d, s, ca, c: (ss, d, s, ca, c),
             "where": lambda ss, d, s, ca, c: ca.ca_zip[0:5] in zip_list,
         },
+    ],
+    {
+        "select": lambda ss, sr, r: Auto2(
+            ss_customer_sk=ss.ss_customer_sk,
+            act_sales=(
+                (ss.ss_quantity - sr.sr_return_quantity) * ss.ss_sales_price
+                if sr != None
+                else ss.ss_quantity * ss.ss_sales_price
+            ),
+        ),
+        "where": lambda ss, sr, r: r == None or r.r_reason_desc == "ReasonA",
+    },
+)
+
+
+def _q0():
+    _src = t
+    _rows = _query(_src, [], {"select": lambda x: x})
+    _groups = _group_by(_rows, lambda x: x.ss_customer_sk)
+    _items1 = _groups
+    _items1 = sorted(
+        _items1, key=lambda g: _sort_key([sum([y[0].act_sales for y in g]), g.key])
     )
     _groups = _group_by(_rows, lambda ss, d, s, ca, c: s.s_store_name)
     _items1 = _groups
