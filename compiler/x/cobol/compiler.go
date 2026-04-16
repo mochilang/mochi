@@ -556,6 +556,23 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	name := strings.ToUpper(a.Name)
+	if _, ok := types.TypeOfExpr(a.Value, c.env).(types.BoolType); ok {
+		cond, err := c.compileBoolCond(a.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln("IF " + cond)
+		c.indent += 4
+		c.writeln(fmt.Sprintf("MOVE 1 TO %s", name))
+		c.indent -= 4
+		c.writeln("ELSE")
+		c.indent += 4
+		c.writeln(fmt.Sprintf("MOVE 0 TO %s", name))
+		c.indent -= 4
+		c.writeln("END-IF")
+		return nil
+	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
@@ -591,6 +608,24 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
 	if c.curFun == nil {
 		return fmt.Errorf("return outside function")
+	}
+	if _, ok := types.TypeOfExpr(r.Value, c.env).(types.BoolType); ok {
+		cond, err := c.compileBoolCond(r.Value)
+		if err != nil {
+			return err
+		}
+		res := c.curFun.result
+		c.writeln("IF " + cond)
+		c.indent += 4
+		c.writeln(fmt.Sprintf("MOVE 1 TO %s", res))
+		c.indent -= 4
+		c.writeln("ELSE")
+		c.indent += 4
+		c.writeln(fmt.Sprintf("MOVE 0 TO %s", res))
+		c.indent -= 4
+		c.writeln("END-IF")
+		c.writeln("EXIT.")
+		return nil
 	}
 	val, err := c.compileExpr(r.Value)
 	if err != nil {
