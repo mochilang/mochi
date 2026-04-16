@@ -1,0 +1,13 @@
+error: /workspace/mochi/tests/machine/x/rb/group_by_sort.rb:174:in `block in <main>': undefined local variable or method `g' for main:Object (NameError)
+
+	], { 'select' => ->(i){ [i] }, 'sortKey' => ->(i){ (-_sum(((g)).map { |x| x.val })) } })
+	                                                            ^
+	from /workspace/mochi/tests/machine/x/rb/group_by_sort.rb:139:in `block in _query'
+	from /workspace/mochi/tests/machine/x/rb/group_by_sort.rb:139:in `map'
+	from /workspace/mochi/tests/machine/x/rb/group_by_sort.rb:139:in `_query'
+	from /workspace/mochi/tests/machine/x/rb/group_by_sort.rb:173:in `<main>'
+172: 	src = items
+173: 	_rows = _query(src, [
+174: 	], { 'select' => ->(i){ [i] }, 'sortKey' => ->(i){ (-_sum(((g)).map { |x| x.val })) } })
+175: 	_groups = _group_by(_rows, ->(i){ i.cat })
+176: 	_res = []
