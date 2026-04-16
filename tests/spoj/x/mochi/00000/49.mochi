@@ -1,0 +1,82 @@
+// Solution for SPOJ HAREFOX - Hares and Foxes
+// https://www.spoj.com/problems/HAREFOX/
+// N hares and M foxes on a number line, all moving right.
+// Hares move at speed H, foxes at speed F.
+// A fox (at position fpos) catches a hare (at position hpos) if:
+//   - fox is at or behind the hare (fpos <= hpos) AND fox is faster (F > H), OR
+//   - fox and hare are at the same initial position (F == H and fpos == hpos)
+// Count hares not caught by any fox.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let p = split(line)
+    let N = int(p[0])
+    let M = int(p[1])
+    let H = int(p[2])
+    let F = int(p[3])
+
+    // Read hare positions
+    var hares: list<int> = []
+    var i = 0
+    let hareLine = split(input())
+    while i < N {
+      hares = append(hares, int(hareLine[i]))
+      i = i + 1
+    }
+
+    // Read fox positions
+    var foxes: list<int> = []
+    i = 0
+    let foxLine = split(input())
+    while i < M {
+      foxes = append(foxes, int(foxLine[i]))
+      i = i + 1
+    }
+
+    // Count survivors
+    var survivors = 0
+    var hi = 0
+    while hi < N {
+      let hpos = hares[hi]
+      var caught = false
+      var fi = 0
+      while fi < M {
+        let fpos = foxes[fi]
+        if F > H && fpos <= hpos {
+          // Fox is faster and starts at or behind hare: catches up
+          caught = true
+          fi = M
+        } else if F == H && fpos == hpos {
+          // Same speed, same position: caught immediately
+          caught = true
+          fi = M
+        } else {
+          fi = fi + 1
+        }
+      }
+      if !caught { survivors = survivors + 1 }
+      hi = hi + 1
+    }
+    print(survivors)
+    line = input()
+  }
+}
+
+main()

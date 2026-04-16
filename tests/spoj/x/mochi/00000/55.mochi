@@ -1,0 +1,57 @@
+// Solution for SPOJ STPAR - Street Parade
+// https://www.spoj.com/problems/STPAR/
+// Simulate with a stack; push each arriving car, then pop while top==next_needed.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var nLine = input()
+  while nLine != "" {
+    let n = int(nLine)
+    if n == 0 { break }
+
+    var arrLine = input()
+    while arrLine == "" { arrLine = input() }
+    let parts = split(arrLine)
+
+    var stk: list<int> = []
+    var next_needed = 1
+    var ai = 0
+
+    while ai < n {
+      let car = int(parts[ai])
+      ai = ai + 1
+      // Push car onto side-street stack
+      stk = append(stk, car)
+      // Pop while stack top matches next needed
+      while len(stk) > 0 && stk[len(stk)-1] == next_needed {
+        stk = stk[0:len(stk)-1]
+        next_needed = next_needed + 1
+      }
+    }
+
+    if next_needed > n {
+      print("yes")
+    } else {
+      print("no")
+    }
+
+    nLine = input()
+  }
+}
+
+main()

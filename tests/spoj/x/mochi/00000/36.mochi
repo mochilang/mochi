@@ -1,0 +1,30 @@
+// Solution for SPOJ CODE1 - Secret Code
+// https://www.spoj.com/problems/CODE1/
+// Convert a decimal integer N to base -2 (negabinary).
+// Algorithm: divide repeatedly by -2, remainder must be 0 or 1.
+// If n % 2 == 0: rem=0, n = n / -2 = -n/2
+// If n % 2 == 1 (or n is odd): rem=1, n = (n-1) / -2
+
+fun toNegBase2(n: int): string {
+  if n == 0 { return "0" }
+  var result = ""
+  var num = n
+  while num != 0 {
+    var rem = num % 2
+    if rem < 0 { rem = rem + 2 }
+    result = str(rem) + result
+    num = (num - rem) / (0 - 2)
+  }
+  return result
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    print(toNegBase2(n))
+    line = input()
+  }
+}
+
+main()

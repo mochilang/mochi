@@ -1,0 +1,83 @@
+// Solution for SPOJ CRYPTO2 - Bytelandian Cryptographer (Act II)
+// https://www.spoj.com/problems/CRYPTO2/
+// Given encoded sequence e[1..n] where e[i] = d[i-1] + d[i] + d[i+1] (boundary=0),
+// find original digits d[1..n] (each 0..9), or print "Impossible".
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    let line = input()
+    let parts = split(line)
+    let n = len(parts)
+    var encoded: list<int> = []
+    var i = 0
+    while i < n {
+      encoded = append(encoded, int(parts[i]))
+      i = i + 1
+    }
+
+    // Try each possible value of d[1] from 0..9
+    var found = false
+    var d1try = 0
+    while d1try <= 9 {
+      // Build ds[0..n+1] where ds[0]=ds[n+1]=0
+      var ds: list<int> = []
+      i = 0
+      while i < n + 2 {
+        ds = append(ds, 0)
+        i = i + 1
+      }
+      ds[1] = d1try
+      let d2 = encoded[0] - d1try
+      var valid = true
+      if d2 < 0 || d2 > 9 { valid = false }
+      if valid {
+        ds[2] = d2
+        i = 2
+        while i <= n {
+          let next = encoded[i - 1] - ds[i - 1] - ds[i]
+          if next < 0 || next > 9 { valid = false; i = n + 1 }
+          else { ds[i + 1] = next }
+          i = i + 1
+        }
+      }
+      if valid && ds[n + 1] == 0 {
+        // Print the solution
+        var out = ""
+        i = 1
+        while i <= n {
+          if i > 1 { out = out + " " }
+          out = out + str(ds[i])
+          i = i + 1
+        }
+        print(out)
+        found = true
+        d1try = 10 // break
+      } else {
+        d1try = d1try + 1
+      }
+    }
+    if !found { print("Impossible") }
+    ti = ti + 1
+  }
+}
+
+main()

@@ -1,0 +1,20 @@
+// Solution for SPOJ FACT0 - Factorial!
+// https://www.spoj.com/problems/FACT0/
+// Mochi's int is arbitrary precision; compute n! iteratively.
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    var result = 1
+    var i = 2
+    while i <= n {
+      result = result * i
+      i = i + 1
+    }
+    print(result)
+    line = input()
+  }
+}
+
+main()

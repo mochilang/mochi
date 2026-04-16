@@ -1,0 +1,96 @@
+// Solution for SPOJ MAYA - Numeral System of the Maya
+// https://www.spoj.com/problems/MAYA/
+// Convert a decimal number to Maya representation.
+// Maya is base 20. Each digit (0-19) is shown as:
+//   dots on top (1-4 dots = "." per dot), bars below (1-3 bars = "----" per bar)
+//   0 is represented as the shell symbol "----" (actually a special glyph, output as "----" based on SPOJ)
+// Wait: 0 = shell. Digits 1-4 are dots, 5 = one bar, 6-9 = bar + dots, 10 = two bars, etc.
+// The output for each digit:
+//   dots: number of dots mod 5 (each dot printed as ".")
+//   bars: number of bars = digit / 5
+//   0: shell printed as "----" typically (SPOJ uses specific format)
+// According to SPOJ MAYA problem, the digit glyphs are:
+//   0: ----
+//   1-4: dots (. .. ... ....)
+//   5: ----  (one bar)
+//   6-9: dots on top, one bar below (". ----", ".. ----", etc.)
+//   10: ---- ----
+//   11-14: dots + two bars
+//   15: ---- ---- ----
+//   16-19: dots + three bars
+// Output: digits from most significant to least significant, separated by "----" (divider lines)
+// Each digit block: print dots (if any) then bars (each bar is "----")
+// Special case digit 0: output the shell which is typically "----"
+// Actually looking at SPOJ examples more carefully:
+//   The Maya glyph for 0 is a shell, represented here as "----"
+//   But "----" is also used for bars. SPOJ MAYA uses:
+//     0: ---- (the shell/zero glyph)
+//     n dots: "." repeated n times on one line
+//     1 bar: "----"
+//     So digit 6 = ". \n----" (dot then bar)
+//
+// The separator between digits in the number is "----" line (used as divider).
+// Actually based on common SPOJ MAYA problem statement:
+// - Numbers are printed from high to low place value
+// - Each Maya digit is printed as: dots (top) then bars (bottom)
+// - Digit 0 (zero) is shown as "----" (the shell representation)
+// - Digits are separated by a blank line? Or "----"?
+//
+// Let's go with the standard SPOJ MAYA format:
+// Each digit: print dots line (if dots > 0), then bar lines (if bars > 0), else "----" for zero.
+// Between consecutive digits: print "----" as separator.
+// Actually from examples found: digits separated by "----" separator line.
+
+fun printDigit(d: int) {
+  let bars = int(d / 5)
+  let dots = d % 5
+  if d == 0 {
+    print("----")
+    return
+  }
+  // print dots first (top)
+  if dots > 0 {
+    var dotLine = ""
+    var i = 0
+    while i < dots { dotLine = dotLine + "."; i = i + 1 }
+    print(dotLine)
+  }
+  // print bars
+  var b = 0
+  while b < bars {
+    print("----")
+    b = b + 1
+  }
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    // Decompose n in base 20
+    var digits: list<int> = []
+    if n == 0 {
+      digits = append(digits, 0)
+    } else {
+      var rem = n
+      while rem > 0 {
+        digits = append(digits, rem % 20)
+        rem = int(rem / 20)
+      }
+    }
+    // digits[0] is least significant; reverse to print most significant first
+    let sz = len(digits)
+    var i = sz - 1
+    while i >= 0 {
+      if i < sz - 1 {
+        // separator between digits
+        print("----")
+      }
+      printDigit(digits[i])
+      i = i - 1
+    }
+    line = input()
+  }
+}
+
+main()

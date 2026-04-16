@@ -1,0 +1,103 @@
+// Solution for SPOJ SCRAPER - Skyscraper
+// https://www.spoj.com/problems/SCRAPER/
+// BFS on floors 1..N. From floor f, can go to f+A (if <= N) or f-B (if >= 1).
+// Find minimum moves from F to T. If unreachable, print "IMPOSSIBLE".
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let p = split(line)
+    let N = int(p[0])
+    let F = int(p[1])
+    let T = int(p[2])
+    let A = int(p[3])
+    let B = int(p[4])
+
+    // Check termination condition
+    if N == 0 && F == 0 && T == 0 && A == 0 && B == 0 {
+      line = input()
+      continue
+    }
+
+    if F == T {
+      print(0)
+      line = input()
+      continue
+    }
+
+    // BFS: dist array indexed 1..N (use 0-indexed internally: floor f -> index f-1)
+    var dist: list<int> = []
+    var i = 0
+    while i < N {
+      dist = append(dist, 0 - 1)
+      i = i + 1
+    }
+    dist[F - 1] = 0
+
+    // Queue as list with head pointer
+    var queue: list<int> = []
+    queue = append(queue, F)
+    var head = 0
+    var found = false
+
+    while head < len(queue) {
+      let cur = queue[head]
+      head = head + 1
+      let d = dist[cur - 1]
+
+      // Try going up
+      let up = cur + A
+      if up <= N {
+        if dist[up - 1] == 0 - 1 {
+          dist[up - 1] = d + 1
+          if up == T {
+            found = true
+            head = len(queue) // break
+          } else {
+            queue = append(queue, up)
+          }
+        }
+      }
+
+      // Try going down
+      let down = cur - B
+      if down >= 1 {
+        if dist[down - 1] == 0 - 1 {
+          dist[down - 1] = d + 1
+          if down == T {
+            found = true
+            head = len(queue) // break
+          } else {
+            queue = append(queue, down)
+          }
+        }
+      }
+    }
+
+    if found || dist[T - 1] != 0 - 1 {
+      print(dist[T - 1])
+    } else {
+      print("IMPOSSIBLE")
+    }
+
+    line = input()
+  }
+}
+
+main()
