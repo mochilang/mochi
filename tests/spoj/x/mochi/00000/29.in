@@ -1,0 +1,9 @@
+8
+INSERT alice
+INSERT bob
+SEARCH alice
+SEARCH carol
+DELETE alice
+SEARCH alice
+INSERT alice
+SEARCH alice

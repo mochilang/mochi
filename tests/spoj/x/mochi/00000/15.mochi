@@ -1,0 +1,149 @@
+// Solution for SPOJ SHPATH - The Shortest Path
+// https://www.spoj.com/problems/SHPATH/
+// Dijkstra on a weighted directed graph with city names.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun dijkstra(n: int, adjHead: list<int>, adjTo: list<int>, adjW: list<int>, src: int): list<int> {
+  var INF = 1000000000
+  var dist: list<int> = []
+  var vis: list<int> = []
+  var i = 0
+  while i < n {
+    dist = append(dist, INF)
+    vis = append(vis, 0)
+    i = i + 1
+  }
+  dist[src] = 0
+  var done = 0
+  while done < n {
+    var u = 0 - 1
+    var best = INF + 1
+    var j = 0
+    while j < n {
+      if vis[j] == 0 && dist[j] < best {
+        best = dist[j]
+        u = j
+      }
+      j = j + 1
+    }
+    if u == 0 - 1 { break }
+    vis[u] = 1
+    done = done + 1
+    let start = adjHead[u]
+    let stop = adjHead[u+1]
+    var ei = start
+    while ei < stop {
+      let v = adjTo[ei]
+      let w = adjW[ei]
+      if dist[u] + w < dist[v] { dist[v] = dist[u] + w }
+      ei = ei + 1
+    }
+  }
+  return dist
+}
+
+fun main() {
+  var tLine = input()
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    let n = int(input())
+
+    // Read city names and collect edges
+    var names: list<string> = []
+    var edgeLines: list<string> = []
+    var ci = 0
+    while ci < n {
+      var nm = input()
+      while nm == "" { nm = input() }
+      names = append(names, nm)
+      var el = input()
+      while el == "" { el = input() }
+      edgeLines = append(edgeLines, el)
+      ci = ci + 1
+    }
+
+    // Build name -> index map
+    var cityMap: map<string, int> = {}
+    ci = 0
+    while ci < n { cityMap[names[ci]] = ci; ci = ci + 1 }
+
+    // Count edges per node
+    var cnt: list<int> = []
+    ci = 0
+    while ci <= n { cnt = append(cnt, 0); ci = ci + 1 }
+    var allEdges: list<int> = []
+    ci = 0
+    while ci < n {
+      let ps = split(edgeLines[ci])
+      let k = int(ps[0])
+      var ki = 0
+      while ki < k {
+        let v = cityMap[ps[1+2*ki]] as int
+        let w = int(ps[2+2*ki])
+        allEdges = append(allEdges, ci)
+        allEdges = append(allEdges, v)
+        allEdges = append(allEdges, w)
+        cnt[ci] = cnt[ci] + 1
+        ki = ki + 1
+      }
+      ci = ci + 1
+    }
+
+    // Build CSR
+    var adjHead: list<int> = []
+    adjHead = append(adjHead, 0)
+    ci = 0
+    while ci < n { adjHead = append(adjHead, adjHead[ci] + cnt[ci]); ci = ci + 1 }
+    let m = len(allEdges) / 3
+    var adjTo: list<int> = []
+    var adjW: list<int> = []
+    var pos: list<int> = []
+    ci = 0
+    while ci < m { adjTo = append(adjTo, 0); adjW = append(adjW, 0); ci = ci + 1 }
+    ci = 0
+    while ci < n { pos = append(pos, adjHead[ci]); ci = ci + 1 }
+    ci = 0
+    while ci < m {
+      let u = allEdges[ci*3]
+      let v = allEdges[ci*3+1]
+      let w = allEdges[ci*3+2]
+      adjTo[pos[u]] = v
+      adjW[pos[u]] = w
+      pos[u] = pos[u] + 1
+      ci = ci + 1
+    }
+
+    // Answer queries
+    var qLine = input()
+    while qLine == "" { qLine = input() }
+    let q = int(qLine)
+    var qi = 0
+    while qi < q {
+      let qs = split(input())
+      let src = cityMap[qs[0]] as int
+      let dst = cityMap[qs[1]] as int
+      let dist = dijkstra(n, adjHead, adjTo, adjW, src)
+      print(dist[dst])
+      qi = qi + 1
+    }
+    ti = ti + 1
+  }
+}
+
+main()

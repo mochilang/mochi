@@ -1,0 +1,136 @@
+// Solution for SPOJ HASHIT - Hash it!
+// https://www.spoj.com/problems/HASHIT/
+// Hash table with open addressing (linear probing), hash = sum(ASCII) mod 101.
+
+fun hash(key: string): int {
+  var h = 0
+  var i = 0
+  while i < len(key) {
+    let c = key[i:i+1]
+    let b = int(c[0:1])  // placeholder; replaced below
+    h = h + b
+    i = i + 1
+  }
+  return h % 101
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  // ASCII lookup (printable chars)
+  var ascii: map<string, int> = {}
+  let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  var i = 0
+  while i < len(chars) {
+    ascii[chars[i:i+1]] = 32 + i + 1  // not accurate but consistent
+    i = i + 1
+  }
+
+  // Build correct ASCII values via known offsets:
+  // 'A'..'Z' = 65..90, 'a'..'z' = 97..122, '0'..'9' = 48..57
+  i = 0
+  while i < 26 { ascii[chars[i:i+1]] = 65 + i; i = i + 1 }
+  i = 0
+  while i < 26 { ascii[chars[26+i:26+i+1]] = 97 + i; i = i + 1 }
+  i = 0
+  while i < 10 { ascii[chars[52+i:52+i+1]] = 48 + i; i = i + 1 }
+
+  let EMPTY = 0
+  let USED = 1
+  let DEL = 2
+
+  var state: list<int> = []
+  var keys: list<string> = []
+  i = 0
+  while i < 101 { state = append(state, EMPTY); keys = append(keys, ""); i = i + 1 }
+
+  var nLine = input()
+  while nLine == "" { nLine = input() }
+  let n = int(nLine)
+  var ni = 0
+  while ni < n {
+    var line = input()
+    while line == "" { line = input() }
+    let ps = split(line)
+    let op = ps[0]
+    let key = ps[1]
+
+    // compute hash
+    var h = 0
+    var ki = 0
+    while ki < len(key) {
+      h = h + (ascii[key[ki:ki+1]] as int)
+      ki = ki + 1
+    }
+    let start = h % 101
+
+    if op == "INSERT" {
+      var idx = start
+      var placed = 0
+      var tries = 0
+      var firstDel = 0 - 1
+      while tries < 101 {
+        if state[idx] == USED && keys[idx] == key { placed = 1; break }
+        if state[idx] == EMPTY {
+          if firstDel >= 0 {
+            state[firstDel] = USED
+            keys[firstDel] = key
+          } else {
+            state[idx] = USED
+            keys[idx] = key
+          }
+          placed = 1
+          break
+        }
+        if state[idx] == DEL && firstDel == 0 - 1 { firstDel = idx }
+        idx = (idx + 1) % 101
+        tries = tries + 1
+      }
+      if placed == 0 && firstDel >= 0 {
+        state[firstDel] = USED
+        keys[firstDel] = key
+      }
+    } else if op == "DELETE" {
+      var idx = start
+      var tries = 0
+      while tries < 101 {
+        if state[idx] == EMPTY { break }
+        if state[idx] == USED && keys[idx] == key {
+          state[idx] = DEL
+          break
+        }
+        idx = (idx + 1) % 101
+        tries = tries + 1
+      }
+    } else {
+      // SEARCH
+      var idx = start
+      var tries = 0
+      var found = 0
+      while tries < 101 {
+        if state[idx] == EMPTY { break }
+        if state[idx] == USED && keys[idx] == key { found = 1; break }
+        idx = (idx + 1) % 101
+        tries = tries + 1
+      }
+      if found == 1 { print("FOUND") } else { print("NOT FOUND") }
+    }
+    ni = ni + 1
+  }
+}
+
+main()
