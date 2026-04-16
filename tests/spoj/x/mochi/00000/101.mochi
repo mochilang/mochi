@@ -1,0 +1,120 @@
+// Solution for SPOJ FISHER - Fishmonger
+// https://www.spoj.com/problems/FISHER/
+// Find shortest travel time from city 1 to city N in a directed graph
+// where each edge has time and toll, subject to total toll <= T.
+// DP: dp[city][toll] = min time to reach city spending exactly `toll`.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let p = split(line)
+    let n = int(p[0])
+    let t = int(p[1])
+    if n == 0 && t == 0 { break }
+
+    let INF = 1000000000
+    // dp[city * (t+1) + toll] = min time
+    let cols = t + 1
+    var dp: list<int> = []
+    var idx = 0
+    while idx < n * cols {
+      dp = append(dp, INF)
+      idx = idx + 1
+    }
+    dp[0 * cols + 0] = 0  // city 0 (1-indexed city 1), toll spent = 0, time = 0
+
+    // Read N*N matrix: for each row i (from city i+1), columns j = time to city j+1
+    // Then toll matrix
+    // Actually FISHER input: N lines each with N integers (time matrix),
+    // then N lines each with N integers (toll matrix).
+    // time[i][j] and toll[i][j] for edge i->j (0 if no edge or i==j).
+
+    var timeM: list<int> = []
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let pp = split(vLine)
+      var j = 0
+      while j < n {
+        timeM = append(timeM, int(pp[j]))
+        j = j + 1
+      }
+      i = i + 1
+    }
+    var tollM: list<int> = []
+    i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let pp = split(vLine)
+      var j = 0
+      while j < n {
+        tollM = append(tollM, int(pp[j]))
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    // Bellman-Ford style: relax all edges n-1 times to handle any directed graph.
+    // For each relaxation pass, try all edges (i, j).
+    var pass = 0
+    while pass < n - 1 {
+      i = 0
+      while i < n {
+        var s = 0
+        while s <= t {
+          if dp[i * cols + s] < INF {
+            let curTime = dp[i * cols + s]
+            var j = 0
+            while j < n {
+              let tt = timeM[i * n + j]
+              let tf = tollM[i * n + j]
+              if tt > 0 && s + tf <= t {
+                let newTime = curTime + tt
+                let newToll = s + tf
+                if newTime < dp[j * cols + newToll] {
+                  dp[j * cols + newToll] = newTime
+                }
+              }
+              j = j + 1
+            }
+          }
+          s = s + 1
+        }
+        i = i + 1
+      }
+      pass = pass + 1
+    }
+
+    // Find min time at city n-1 over all toll values <= t
+    var best = INF
+    var s = 0
+    while s <= t {
+      if dp[(n-1) * cols + s] < best {
+        best = dp[(n-1) * cols + s]
+      }
+      s = s + 1
+    }
+    print(best)
+    line = input()
+  }
+}
+
+main()
