@@ -1,0 +1,87 @@
+// Solution for SPOJ SQRBR - Square Brackets
+// https://www.spoj.com/problems/SQRBR/
+// Count valid bracket sequences of N pairs with K forced '[' positions.
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    var kLine = input()
+    while kLine == "" { kLine = input() }
+    let k = int(kLine)
+    let total = 2 * n
+
+    // forced[i] = 1 if position i (0-indexed) is forced to '['
+    var forced: list<int> = []
+    var pi = 0
+    while pi < total { forced = append(forced, 0); pi = pi + 1 }
+    // Read k positions (may be on one line or multiple lines, space-separated)
+    var remaining_k = k
+    while remaining_k > 0 {
+      var posLine = input()
+      while posLine == "" { posLine = input() }
+      // parse space-separated positions
+      var cur = ""
+      var ci = 0
+      while ci <= len(posLine) {
+        let ch = if ci < len(posLine) { posLine[ci:ci+1] } else { " " }
+        if ch == " " {
+          if len(cur) > 0 {
+            let pos = int(cur) - 1
+            forced[pos] = 1
+            cur = ""
+            remaining_k = remaining_k - 1
+          }
+        } else {
+          cur = cur + ch
+        }
+        ci = ci + 1
+      }
+    }
+
+    // dp[pos][open]: ways to complete from position pos with `open` unmatched '['
+    // Forward DP: dp is (total+1) x (n+1)
+    let cols = n + 1
+    var dp: list<int> = []
+    var idx = 0
+    while idx < (total+1) * cols { dp = append(dp, 0); idx = idx + 1 }
+    dp[0 * cols + 0] = 1
+
+    var pos = 0
+    while pos < total {
+      var open = 0
+      while open <= n {
+        let cur = dp[pos * cols + open]
+        if cur == 0 { open = open + 1; continue }
+        let remaining = total - pos
+        // Place '[' if not forced to ']' and open+1 <= remaining-1
+        if forced[pos] == 1 {
+          // must place '['
+          if open + 1 <= n {
+            dp[(pos+1) * cols + (open+1)] = dp[(pos+1) * cols + (open+1)] + cur
+          }
+        } else {
+          // can place '[' or ']'
+          if open + 1 <= n && open + 1 <= remaining - 1 {
+            dp[(pos+1) * cols + (open+1)] = dp[(pos+1) * cols + (open+1)] + cur
+          }
+          if open > 0 {
+            dp[(pos+1) * cols + (open-1)] = dp[(pos+1) * cols + (open-1)] + cur
+          }
+        }
+        open = open + 1
+      }
+      pos = pos + 1
+    }
+
+    print(dp[total * cols + 0])
+    ti = ti + 1
+  }
+}
+
+main()
