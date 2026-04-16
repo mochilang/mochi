@@ -36,7 +36,7 @@ fun main() {
     let sb = int(nparts[2])
     // Red makes floor(n^2/2) moves (rounded up when n^2 is odd)
     let total = n * n
-    let redMoves = (total + 1) / 2
+    let redMoves = int((total + 1) / 2)
     // Read Red's moves
     var ri = 0
     while ri < redMoves {
@@ -44,7 +44,7 @@ fun main() {
       while mLine == "" { mLine = input() }
       ri = ri + 1
     }
-    print("case " + string(tc) + " N")
+    print("case " + str(tc) + " N")
     tc = tc + 1
   }
 }

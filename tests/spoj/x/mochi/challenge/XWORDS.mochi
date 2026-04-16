@@ -195,7 +195,7 @@ fun main() {
     let firstWord = words[first]
     let firstLen = len(firstWord)
     var startCol = 0
-    if firstLen < 32 { startCol = (32 - firstLen) / 2 }
+    if firstLen < 32 { startCol = int((32 - firstLen) / 2) }
     if startCol + firstLen <= 32 {
       grid = placeH(grid, firstWord, 7, startCol)
       placed[first] = 1
@@ -216,7 +216,7 @@ fun main() {
     }
 
     // Output
-    print("case " + string(tc) + " Y")
+    print("case " + str(tc) + " Y")
     i = 0
     while i < 16 {
       print(grid[i])
