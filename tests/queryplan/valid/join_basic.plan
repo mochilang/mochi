@@ -1,18 +1,24 @@
 type: [{string: int}]
 plan:
-Select((map
-  (entry
-    (selector orderId)
-    (selector id (selector o))
+(select
+  (map
+    (entry
+      (selector orderId)
+      (selector id (selector o))
+    )
+    (entry
+      (selector customerName)
+      (selector name (selector c))
+    )
   )
-  (entry
-    (selector customerName)
-    (selector name (selector c))
+  (join
+    (scan o (selector orders))
+    (scan c (selector customers))
+    (on
+      (binary ==
+        (selector customerId (selector o))
+        (selector id (selector c))
+      )
+    )
   )
-))
-  Join(inner on (binary ==
-  (selector customerId (selector o))
-  (selector id (selector c))
-))
-    Scan(alias=o, src=(selector orders))
-    Scan(alias=c, src=(selector customers))
+)
