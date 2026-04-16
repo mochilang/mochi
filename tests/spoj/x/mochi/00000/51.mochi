@@ -80,9 +80,11 @@ fun main() {
     }
     var ok = 1
     var head = 0
-    while head < len(order) + len(zeroQ) {
-      if len(zeroQ) - head > 1 { ok = 0; break }
-      if len(zeroQ) <= head { ok = 0; break }
+    while head < n {
+      // Count how many nodes currently have indegree 0 (available to process)
+      let available = len(zeroQ) - head
+      if available == 0 { ok = 0; break }
+      if available > 1 { ok = 0; break }
       let u = zeroQ[head]
       order = append(order, u)
       head = head + 1
