@@ -1,6 +1,7 @@
 // SPOJ CDGLF3 - Mr Phoenix And OR Operation
 // For each right endpoint r, maintain list of distinct OR values of subarrays ending at r.
-// At most log(max_val) such values. Use a map to count distinct values globally.
+// At most log(max_val) such values. Count globally distinct OR values.
+// Bitwise OR via arithmetic; use string keys to avoid VM map-persistence bug.
 
 fun split(s: string): list<string> {
   var r: list<string> = []
@@ -16,15 +17,29 @@ fun split(s: string): list<string> {
   return r
 }
 
+fun bitor(a: int, b: int): int {
+  var res = 0
+  var p = 1
+  var i = 0
+  while i < 20 {
+    if a % 2 == 1 || b % 2 == 1 { res = res + p }
+    a = int(a / 2)
+    b = int(b / 2)
+    p = p * 2
+    i = i + 1
+  }
+  return res
+}
+
 fun main() {
   let t = int(input())
   var tc = 0
+  var seen: map<string, int> = {}
   while tc < t {
+    let pfx = str(tc) + "_"
     let n = int(input())
     let nums = split(input())
-    var seen: map<int, int> = {}
     var count = 0
-    // cur: distinct OR values for subarrays ending at current index
     var cur: list<int> = []
     var i = 0
     while i < n {
@@ -32,7 +47,7 @@ fun main() {
       var next: list<int> = []
       var j = 0
       while j < len(cur) {
-        let v = cur[j] | x
+        let v = bitor(cur[j], x)
         if len(next) == 0 {
           next = append(next, v)
         } else if next[len(next)-1] != v {
@@ -40,17 +55,16 @@ fun main() {
         }
         j = j + 1
       }
-      // add x itself (subarray [i..i])
       if len(next) == 0 {
         next = append(next, x)
       } else if next[len(next)-1] != x {
         next = append(next, x)
       }
       cur = next
-      // count new distinct values
       var k = 0
       while k < len(cur) {
-        if seen[cur[k]] == 0 { count = count + 1; seen[cur[k]] = 1 }
+        let key = pfx + str(cur[k])
+        if seen[key] == nil { count = count + 1; seen[key] = 1 }
         k = k + 1
       }
       i = i + 1
