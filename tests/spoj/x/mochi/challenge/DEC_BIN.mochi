@@ -1,0 +1,82 @@
+// Solution for SPOJ DEC_BIN - Terminating or Non-Terminating
+// https://www.spoj.com/problems/DEC_BIN/
+// A decimal x is terminating in binary iff, as p/q in lowest terms, q is a power of 2.
+// For x with k fractional digits: terminating iff the fractional integer is divisible by 5^k.
+// Check by dividing the fraction digit-string by 5 exactly k times (string long division).
+
+fun charToDigit(c: string): int {
+  if c == "0" { return 0 }
+  if c == "1" { return 1 }
+  if c == "2" { return 2 }
+  if c == "3" { return 3 }
+  if c == "4" { return 4 }
+  if c == "5" { return 5 }
+  if c == "6" { return 6 }
+  if c == "7" { return 7 }
+  if c == "8" { return 8 }
+  return 9
+}
+
+// Divide digit-string s by 5 via long division.
+// Returns remainder as single digit (0..4) if getQuot==0,
+// else returns the quotient string.
+fun divBy5(s: string, getQuot: int): string {
+  var carry = 0
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let d = charToDigit(s[i:i+1])
+    let cur = carry * 10 + d
+    res = res + str(int(cur / 5))
+    carry = cur % 5
+    i = i + 1
+  }
+  if getQuot == 1 { return res }
+  return str(carry)
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    // Find decimal point position
+    var dotPos = 0 - 1
+    var i = 0
+    while i < len(line) {
+      if line[i:i+1] == "." { dotPos = i }
+      i = i + 1
+    }
+    if dotPos == 0 - 1 {
+      // Integer: always terminates in binary
+      print("1")
+    } else {
+      var frac = line[dotPos+1:len(line)]
+      // Strip trailing zeros
+      var end = len(frac)
+      while end > 0 && frac[end-1:end] == "0" {
+        end = end - 1
+      }
+      frac = frac[0:end]
+      if len(frac) == 0 {
+        print("1")
+      } else {
+        // Check if frac is divisible by 5^k where k=len(frac)
+        let k = len(frac)
+        var ok = 1
+        var s = frac
+        var j = 0
+        while j < k && ok == 1 {
+          if divBy5(s, 0) != "0" {
+            ok = 0
+          } else {
+            s = divBy5(s, 1)
+          }
+          j = j + 1
+        }
+        if ok == 1 { print("1") } else { print("0") }
+      }
+    }
+    line = input()
+  }
+}
+
+main()

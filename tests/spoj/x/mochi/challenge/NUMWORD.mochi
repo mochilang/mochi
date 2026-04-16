@@ -1,0 +1,81 @@
+// Solution for SPOJ NUMWORD - Number to Word
+// https://www.spoj.com/problems/NUMWORD/
+// Convert integer (0..50000) to English words.
+// Input: one number per line until EOF.
+
+fun ones(n: int): string {
+  if n == 1 { return "one" }
+  if n == 2 { return "two" }
+  if n == 3 { return "three" }
+  if n == 4 { return "four" }
+  if n == 5 { return "five" }
+  if n == 6 { return "six" }
+  if n == 7 { return "seven" }
+  if n == 8 { return "eight" }
+  if n == 9 { return "nine" }
+  if n == 10 { return "ten" }
+  if n == 11 { return "eleven" }
+  if n == 12 { return "twelve" }
+  if n == 13 { return "thirteen" }
+  if n == 14 { return "fourteen" }
+  if n == 15 { return "fifteen" }
+  if n == 16 { return "sixteen" }
+  if n == 17 { return "seventeen" }
+  if n == 18 { return "eighteen" }
+  if n == 19 { return "nineteen" }
+  return ""
+}
+
+fun tens(n: int): string {
+  if n == 2 { return "twenty" }
+  if n == 3 { return "thirty" }
+  if n == 4 { return "forty" }
+  if n == 5 { return "fifty" }
+  if n == 6 { return "sixty" }
+  if n == 7 { return "seventy" }
+  if n == 8 { return "eighty" }
+  if n == 9 { return "ninety" }
+  return ""
+}
+
+fun below100(n: int): string {
+  if n < 20 { return ones(n) }
+  let t = int(n / 10)
+  let o = n % 10
+  if o == 0 { return tens(t) }
+  return tens(t) + " " + ones(o)
+}
+
+fun below1000(n: int): string {
+  var res = ""
+  let h = int(n / 100)
+  let rest = n % 100
+  if h > 0 { res = ones(h) + " hundred" }
+  if rest > 0 {
+    if res != "" { res = res + " " }
+    res = res + below100(rest)
+  }
+  return res
+}
+
+fun toWords(n: int): string {
+  if n == 0 { return "zero" }
+  if n >= 1000 {
+    let th = int(n / 1000)
+    let rest = n % 1000
+    var res = below100(th) + " thousand"
+    if rest > 0 { res = res + " " + below1000(rest) }
+    return res
+  }
+  return below1000(n)
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    print(toWords(int(line)))
+    line = input()
+  }
+}
+
+main()

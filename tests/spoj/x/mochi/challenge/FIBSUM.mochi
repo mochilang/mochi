@@ -1,0 +1,46 @@
+// Solution for SPOJ FIBSUM - Sum of Fibonacci numbers
+// https://www.spoj.com/problems/FIBSUM/
+// For each i, compute F(i)+F(i+1)+...+F(i+9) + last_digit(F(i+246)).
+// Precompute Fibonacci up to each i+255 by iterating step by step.
+
+fun main() {
+  let n = int(input())
+  var ni = 0
+  while ni < n {
+    let i = int(input())
+    // Advance to F(i): starting from F(1)=1, F(0)=0.
+    var f0 = 0
+    var f1 = 1
+    var j = 2
+    while j <= i {
+      let tmp = f0 + f1
+      f0 = f1
+      f1 = tmp
+      j = j + 1
+    }
+    // f1 = F(i), f0 = F(i-1)
+    // Sum F(i) + F(i+1) + ... + F(i+9)
+    var sum = f1
+    var k = 1
+    while k < 10 {
+      let tmp = f0 + f1
+      f0 = f1
+      f1 = tmp
+      sum = sum + f1
+      k = k + 1
+    }
+    // Now f1 = F(i+9), f0 = F(i+8). Advance 237 more steps to reach F(i+246).
+    var remain = 237
+    while remain > 0 {
+      let tmp = f0 + f1
+      f0 = f1
+      f1 = tmp
+      remain = remain - 1
+    }
+    let last = f1 % 10
+    print(str(sum + last))
+    ni = ni + 1
+  }
+}
+
+main()
