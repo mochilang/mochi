@@ -526,6 +526,24 @@ type BinaryExpr struct {
 	Op    string
 	Right Expr
 }
+type IndexExpr struct {
+	Target Expr
+	Index  Expr
+}
+type SliceExpr struct {
+	Target Expr
+	Start  Expr
+	End    Expr
+}
+type FieldExpr struct {
+	Target Expr
+	Name   string
+}
+type IndexAssignStmt struct {
+	Target Expr
+	Index  Expr
+	Value  Expr
+}
 
 type UnaryExpr struct {
 	Op    string
