@@ -1,0 +1,27 @@
+fun escStr(s: string): string {
+  var r = ""
+  var i = 0
+  while i < len(s) {
+    var c = s[i:i+1]
+    if c == "\\" { r = r + "\\\\" } else {
+    if c == "\"" { r = r + "\\\"" } else {
+    if c == "\n" { r = r + "\\n" } else {
+    r = r + c }}}
+    i = i + 1
+  }
+  return r
+}
+fun rev(s: string): string {
+  var r = ""
+  var i = len(s) - 1
+  while i >= 0 { r = r + s[i:i+1]; i = i - 1 }
+  return r
+}
+var s = "fun escStr(s: string): string {\n  var r = \"\"\n  var i = 0\n  while i < len(s) {\n    var c = s[i:i+1]\n    if c == \"\\\\\" { r = r + \"\\\\\\\\\" } else {\n    if c == \"\\\"\" { r = r + \"\\\\\\\"\" } else {\n    if c == \"\\n\" { r = r + \"\\\\n\" } else {\n    r = r + c }}}\n    i = i + 1\n  }\n  return r\n}\nfun rev(s: string): string {\n  var r = \"\"\n  var i = len(s) - 1\n  while i >= 0 { r = r + s[i:i+1]; i = i - 1 }\n  return r\n}\nvar s = \"\"\nvar src = s[0:407] + \"\\\"\" + escStr(s) + \"\\\"\" + s[409:len(s)]\nvar n = int(input())\nvar an = n\nif an < 0 { an = 0 - an }\nvar i = 0\nif n > 0 { while i < an { print(src); i = i + 1 } }\nif n < 0 { while i < an { print(rev(src)); i = i + 1 } }\n"
+var src = s[0:407] + "\"" + escStr(s) + "\"" + s[409:len(s)]
+var n = int(input())
+var an = n
+if an < 0 { an = 0 - an }
+var i = 0
+if n > 0 { while i < an { print(src); i = i + 1 } }
+if n < 0 { while i < an { print(rev(src)); i = i + 1 } }

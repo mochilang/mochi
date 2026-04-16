@@ -1,0 +1,92 @@
+// Solution for SPOJ INTER - Interbits
+// https://www.spoj.com/problems/INTER/
+// Decode a binary transmission with all bits flipped (0<->1).
+// Read 32 flipped bits => n1, 16 flipped bits => n2, n2 flipped bits => n3.
+// Compute r = n3 mod n1. Output r as 32 flipped bits (MSB first).
+// n3 can be huge (up to 2^65535 bits), so compute mod digit-by-digit.
+
+fun flipBit(b: string): string {
+  if b == "0" { return "1" }
+  return "0"
+}
+
+// Convert binary string (MSB first, bits already flipped) to integer.
+// Only used for small bit counts (<= 32 bits).
+fun binToInt(s: string, start: int, len2: int): int {
+  var val = 0
+  var i = 0
+  while i < len2 {
+    let bit = s[start + i : start + i + 1]
+    let actual = flipBit(bit)
+    var bval = 0
+    if actual == "1" { bval = 1 }
+    val = val * 2 + bval
+    i = i + 1
+  }
+  return val
+}
+
+// Compute n3 mod n1 where n3 is given as a flipped bit string starting at offset.
+// Process MSB to LSB: r = (r*2 + bit) mod n1
+fun bigModFromBits(s: string, start: int, len2: int, n1: int): int {
+  var r = 0
+  var i = 0
+  while i < len2 {
+    let bit = s[start + i : start + i + 1]
+    let actual = flipBit(bit)
+    var bval = 0
+    if actual == "1" { bval = 1 }
+    r = (r * 2 + bval) % n1
+    i = i + 1
+  }
+  return r
+}
+
+// Convert integer to 32-bit binary string (MSB first), then flip each bit.
+fun intToFlipped32(v: int): string {
+  // Build 32-bit binary of v
+  var bits: list<string> = []
+  var i = 0
+  while i < 32 { bits = append(bits, "0"); i = i + 1 }
+  var tmp = v
+  i = 31
+  while i >= 0 {
+    if tmp % 2 == 1 {
+      bits[i] = "1"
+    } else {
+      bits[i] = "0"
+    }
+    tmp = tmp / 2
+    i = i - 1
+  }
+  // Flip and concatenate
+  var out = ""
+  i = 0
+  while i < 32 {
+    out = out + flipBit(bits[i])
+    i = i + 1
+  }
+  return out
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let totalLen = len(line)
+    if totalLen >= 48 {
+      // Read n1: first 32 flipped bits
+      let n1 = binToInt(line, 0, 32)
+      // Read n2: next 16 flipped bits
+      let n2 = binToInt(line, 32, 16)
+      // Compute n3 mod n1 from the next n2 flipped bits (if enough bits available)
+      var r = 0
+      if n1 > 0 && totalLen >= 48 + n2 {
+        r = bigModFromBits(line, 48, n2, n1)
+      }
+      print(intToFlipped32(r))
+    }
+    line = input()
+  }
+}
+
+main()

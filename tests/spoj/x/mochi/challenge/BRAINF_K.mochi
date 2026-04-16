@@ -1,0 +1,117 @@
+// Solution for SPOJ BRAINF_K - Brainf_ck Interpreter
+// https://www.spoj.com/problems/BRAINF_K/
+// Implements a Brainfuck interpreter (commands: > < + - . [ ]).
+// Each test case: one line of BF source. End at EOF.
+// Tape starts as 30000 zeros. Print ASCII chars produced by '.'.
+
+// ASCII printable chars: index 0 = char 32 (' '), index 94 = char 126 ('~')
+fun buildAscii(): string {
+  return " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+}
+
+// Convert tape value (0-127) to 1-char string; returns "" for non-printable
+fun toChar(v: int, ascii: string): string {
+  if v < 32 { return "" }
+  if v > 126 { return "" }
+  let idx = v - 32
+  return ascii[idx : idx + 1]
+}
+
+// Precompute matching brackets for the program string.
+// Returns list of length len(prog): matchAt[i] = matching bracket position, or -1.
+fun computeMatches(prog: string): list<int> {
+  let n = len(prog)
+  var matchAt: list<int> = []
+  var i = 0
+  while i < n { matchAt = append(matchAt, 0 - 1); i = i + 1 }
+
+  var stack: list<int> = []
+  i = 0
+  while i < n {
+    let ch = prog[i : i + 1]
+    if ch == "[" {
+      stack = append(stack, i)
+    } else {
+      if ch == "]" {
+        let sz = len(stack)
+        if sz > 0 {
+          let open = stack[sz - 1]
+          var newStack: list<int> = []
+          var si = 0
+          while si < sz - 1 { newStack = append(newStack, stack[si]); si = si + 1 }
+          stack = newStack
+          matchAt[open] = i
+          matchAt[i] = open
+        }
+      }
+    }
+    i = i + 1
+  }
+  return matchAt
+}
+
+fun runBF(prog: string, ascii: string) {
+  let n = len(prog)
+  if n == 0 { return }
+
+  let matchAt = computeMatches(prog)
+
+  // Tape: 30000 cells
+  var tape: list<int> = []
+  var i = 0
+  while i < 30000 { tape = append(tape, 0); i = i + 1 }
+
+  var ptr = 0
+  var ip = 0
+  var out = ""
+
+  while ip < n {
+    let ch = prog[ip : ip + 1]
+    if ch == ">" {
+      ptr = ptr + 1
+    } else {
+      if ch == "<" {
+        ptr = ptr - 1
+      } else {
+        if ch == "+" {
+          tape[ptr] = tape[ptr] + 1
+        } else {
+          if ch == "-" {
+            tape[ptr] = tape[ptr] - 1
+          } else {
+            if ch == "." {
+              let c = toChar(tape[ptr], ascii)
+              out = out + c
+            } else {
+              if ch == "[" {
+                if tape[ptr] == 0 {
+                  ip = matchAt[ip]
+                }
+              } else {
+                if ch == "]" {
+                  if tape[ptr] != 0 {
+                    ip = matchAt[ip]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    ip = ip + 1
+  }
+
+  if len(out) > 0 { print(out) }
+}
+
+fun main() {
+  let ascii = buildAscii()
+  var line = input()
+  while line != "" {
+    runBF(line, ascii)
+    line = input()
+  }
+}
+
+main()

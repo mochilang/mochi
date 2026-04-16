@@ -44,7 +44,7 @@ fun isPrime(n: int, sieve: list<int>, primes: list<int>): int {
   while i < len(primes) {
     let p = primes[i]
     if p * p > n { return 1 }
-    if n - (n / p) * p == 0 { return 0 }
+    if n % p == 0 { return 0 }
     i = i + 1
   }
   return 1

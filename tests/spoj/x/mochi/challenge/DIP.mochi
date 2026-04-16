@@ -20,8 +20,9 @@ fun split(line: string): list<string> {
   return parts
 }
 
-// Sort up to 9 values using insertion sort, return median
-fun median9(vals: list<int>, n: int): int {
+// Sort list in place using insertion sort, return list
+fun insertSort(vals: list<int>): list<int> {
+  let n = len(vals)
   var i = 1
   while i < n {
     let key = vals[i]
@@ -33,7 +34,7 @@ fun median9(vals: list<int>, n: int): int {
     vals[j + 1] = key
     i = i + 1
   }
-  return vals[n / 2]
+  return vals
 }
 
 fun main() {
@@ -61,42 +62,44 @@ fun main() {
     }
 
     // Apply 3x3 median filter
-    var out: list<int> = []
+    var outImg: list<int> = []
     r = 0
     while r < R {
       var c = 0
       while c < C {
-        var vals: list<int> = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        var n = 0
-        var dr = 0 - 1
-        while dr <= 1 {
-          var dc = 0 - 1
-          while dc <= 1 {
-            let nr = r + dr
-            let nc = c + dc
+        // Collect neighborhood values
+        var vals: list<int> = []
+        var drow = 0 - 1
+        while drow <= 1 {
+          var dcol = 0 - 1
+          while dcol <= 1 {
+            let nr = r + drow
+            let nc = c + dcol
             if nr >= 0 && nr < R && nc >= 0 && nc < C {
-              vals[n] = img[nr * C + nc]
-              n = n + 1
+              vals = append(vals, img[nr * C + nc])
             }
-            dc = dc + 1
+            dcol = dcol + 1
           }
-          dr = dr + 1
+          drow = drow + 1
         }
-        out = append(out, median9(vals, n))
+        // Sort and take median
+        let sorted = insertSort(vals)
+        let med = sorted[int(len(sorted) / 2)]
+        outImg = append(outImg, med)
         c = c + 1
       }
       r = r + 1
     }
 
     // Output
-    print(string(R) + " " + string(C))
+    print(str(R) + " " + str(C))
     r = 0
     while r < R {
       var rowStr = ""
       var c = 0
       while c < C {
         if c > 0 { rowStr = rowStr + " " }
-        rowStr = rowStr + string(out[r * C + c])
+        rowStr = rowStr + str(outImg[r * C + c])
         c = c + 1
       }
       print(rowStr)

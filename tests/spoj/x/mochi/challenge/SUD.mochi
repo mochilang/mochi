@@ -23,16 +23,16 @@ fun split(line: string): list<string> {
 
 // Check if placing val at pos is valid in grid
 fun canPlace(grid: list<int>, pos: int, val: int): int {
-  let row = pos / 9
+  let row = (pos / 9) as int
   let col = pos - row * 9
-  let boxR = (row / 3) * 3
-  let boxC = (col / 3) * 3
+  let boxR = (row / 3) as int * 3
+  let boxC = (col / 3) as int * 3
   var i = 0
   while i < 9 {
     if grid[row * 9 + i] == val { return 0 }
     if grid[i * 9 + col] == val { return 0 }
-    let br = boxR + i / 3
-    let bc = boxC + i - (i / 3) * 3
+    let br = boxR + (i / 3) as int
+    let bc = boxC + i - (i / 3) as int * 3
     if grid[br * 9 + bc] == val { return 0 }
     i = i + 1
   }
@@ -123,7 +123,7 @@ fun main() {
       var out = ""
       i = 0
       while i < 81 {
-        out = out + string(sol[i])
+        out = out + str(sol[i])
         i = i + 1
       }
       print(out)
