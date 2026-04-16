@@ -3,6 +3,14 @@
 // Identify 6-digit passport numbers from H×W black-and-white images.
 // '.' = white pixel, 'X' = black pixel. Score = correct digit identifications.
 // Approach: 7-segment display recognition using pixel density in 7 zones.
+// Patterns (top*64 + tl*32 + tr*16 + mid*8 + bl*4 + br*2 + bot):
+//   0=119  1=26   2=93   3=91   4=58   5=107  6=111  7=90   8=127  9=123
+
+// Integer division helper (Mochi's / operator gives float when operands are from int() calls)
+fun idiv(a: int, b: int): int {
+  let r = a % b
+  return (a - r) / b
+}
 
 fun split(line: string): list<string> {
   var parts: list<string> = []
@@ -37,17 +45,11 @@ fun countX(grid: list<string>, W: int, r0: int, r1: int, c0: int, c1: int): int 
 
 // Recognize a single digit from the region [c0, c0+wd) of the image.
 // Uses 7-segment detection: top, tl, tr, mid, bl, br, bot.
-// Segment encoding: pat = top*64 + tl*32 + tr*16 + mid*8 + bl*4 + br*2 + bot
-// Digit -> pattern mapping (7-wide, 7-tall 7-segment style):
-//   0 -> 119 (1110111)   1 -> 26  (0011010)   2 -> 93  (1011101)
-//   3 -> 91  (1011011)   4 -> 58  (0111010)   5 -> 107 (1101011)
-//   6 -> 111 (1101111)   7 -> 90  (1011010)   8 -> 127 (1111111)
-//   9 -> 123 (1111011)
 fun recognizeDigit(grid: list<string>, H: int, W: int, c0: int, wd: int): string {
-  let hm = H / 2       // exact middle row index
-  let cMid = c0 + wd / 2
+  let hm = idiv(H, 2)       // exact middle row index (e.g., 3 for H=7)
+  let cMid = c0 + idiv(wd, 2)
 
-  // Detect 7 segments:
+  // Detect 7 segments via pixel counts
   let sTop = countX(grid, W, 0, 1, c0, c0 + wd)
   let sBot = countX(grid, W, H - 1, H, c0, c0 + wd)
   let sMid = countX(grid, W, hm, hm + 1, c0, c0 + wd)
@@ -56,7 +58,7 @@ fun recognizeDigit(grid: list<string>, H: int, W: int, c0: int, wd: int): string
   let sBl  = countX(grid, W, hm + 1, H - 1, c0, cMid)
   let sBr  = countX(grid, W, hm + 1, H - 1, cMid, c0 + wd)
 
-  // Convert to binary presence flags
+  // Convert to binary presence flags (1 if any X present, 0 otherwise)
   var bTop = 0; var bBot = 0; var bMid = 0
   var bTl = 0; var bTr = 0; var bBl = 0; var bBr = 0
   if sTop > 0 { bTop = 1 }
@@ -69,7 +71,7 @@ fun recognizeDigit(grid: list<string>, H: int, W: int, c0: int, wd: int): string
 
   let pat = bTop * 64 + bTl * 32 + bTr * 16 + bMid * 8 + bBl * 4 + bBr * 2 + bBot
 
-  // Exact match against known patterns
+  // Exact match against known 7-segment patterns
   if pat == 119 { return "0" }
   if pat == 26  { return "1" }
   if pat == 93  { return "2" }
@@ -88,17 +90,16 @@ fun recognizeDigit(grid: list<string>, H: int, W: int, c0: int, wd: int): string
   var bestLabel = "0"
   var di = 0
   while di < 10 {
-    // Count bit differences between pat and patterns[di] (7 bits)
     var x = pat
     var y = patterns[di]
     var bitdiff = 0
     var b = 0
     while b < 7 {
-      let bx = x - (x / 2) * 2
-      let by = y - (y / 2) * 2
+      let bx = x - idiv(x, 2) * 2
+      let by = y - idiv(y, 2) * 2
       if bx != by { bitdiff = bitdiff + 1 }
-      x = x / 2
-      y = y / 2
+      x = idiv(x, 2)
+      y = idiv(y, 2)
       b = b + 1
     }
     if bitdiff < bestDist {
@@ -119,9 +120,9 @@ fun main() {
     } else {
       let H = int(parts[0])
       let W = int(parts[1])
-      let wd = W / 6
+      let wd = idiv(W, 6)
 
-      // Read H rows into flat grid
+      // Read H rows into a flat grid
       var grid: list<string> = []
       var r = 0
       while r < H {
