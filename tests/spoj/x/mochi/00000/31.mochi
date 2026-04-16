@@ -1,0 +1,97 @@
+// Solution for SPOJ FASTMUL - Fast Multiplication
+// https://www.spoj.com/problems/FASTMUL/
+// Grade-school big integer multiplication.
+
+fun digitVal(c: string): int {
+  if c == "0" { return 0 }
+  if c == "1" { return 1 }
+  if c == "2" { return 2 }
+  if c == "3" { return 3 }
+  if c == "4" { return 4 }
+  if c == "5" { return 5 }
+  if c == "6" { return 6 }
+  if c == "7" { return 7 }
+  if c == "8" { return 8 }
+  return 9
+}
+
+fun digitChar(v: int): string {
+  if v == 0 { return "0" }
+  if v == 1 { return "1" }
+  if v == 2 { return "2" }
+  if v == 3 { return "3" }
+  if v == 4 { return "4" }
+  if v == 5 { return "5" }
+  if v == 6 { return "6" }
+  if v == 7 { return "7" }
+  if v == 8 { return "8" }
+  return "9"
+}
+
+fun multiply(a: string, b: string): string {
+  let na = len(a)
+  let nb = len(b)
+  let nr = na + nb
+  var res: list<int> = []
+  var i = 0
+  while i < nr { res = append(res, 0); i = i + 1 }
+
+  i = na - 1
+  while i >= 0 {
+    let da = digitVal(a[i:i+1])
+    var j = nb - 1
+    while j >= 0 {
+      let db = digitVal(b[j:j+1])
+      let pos = i + j + 1
+      res[pos] = res[pos] + da * db
+      j = j - 1
+    }
+    i = i - 1
+  }
+
+  // propagate carries right to left
+  i = nr - 1
+  while i > 0 {
+    res[i-1] = res[i-1] + int(res[i] / 10)
+    res[i] = res[i] % 10
+    i = i - 1
+  }
+
+  // build string, skip leading zeros
+  var out = ""
+  var started = 0
+  i = 0
+  while i < nr {
+    if started == 0 && res[i] == 0 {
+      i = i + 1
+      continue
+    }
+    started = 1
+    out = out + digitChar(res[i])
+    i = i + 1
+  }
+  if out == "" { return "0" }
+  return out
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    var a = ""
+    var b = ""
+    var si = 0
+    while si < len(line) {
+      if line[si:si+1] == " " { si = si + 1; break }
+      a = a + line[si:si+1]
+      si = si + 1
+    }
+    while si < len(line) {
+      b = b + line[si:si+1]
+      si = si + 1
+    }
+    if len(a) > 0 && len(b) > 0 { print(multiply(a, b)) }
+    line = input()
+  }
+}
+
+main()
