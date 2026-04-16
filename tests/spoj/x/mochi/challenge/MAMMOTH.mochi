@@ -1,0 +1,105 @@
+// Solution for SPOJ MAMMOTH - Woolly Mammoths
+// https://www.spoj.com/problems/MAMMOTH/
+// Given a graph of n nodes and m edges, assign exactly k ropes per mammoth
+// where ropes are paths of length 1 or 2, no two ropes share an edge.
+// Score = number of test cases answered YES correctly.
+//
+// Strategy:
+//   k=1, n even: attempt greedy perfect matching using direct edges (length-1 ropes).
+//     Scan edges in order; match both endpoints if both are still unmatched.
+//     If all n nodes are matched, output YES with n/2 ropes.
+//   All other cases: output NO.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 1
+  while tc <= T {
+    var nmkLine = input()
+    while nmkLine == "" { nmkLine = input() }
+    let nmk = split(nmkLine)
+    let n = int(nmk[0])
+    let m = int(nmk[1])
+    let k = int(nmk[2])
+
+    // Read edges
+    var eu: list<int> = []
+    var ev: list<int> = []
+    var i = 0
+    while i < m {
+      var eLine = input()
+      while eLine == "" { eLine = input() }
+      let ep = split(eLine)
+      eu = append(eu, int(ep[0]))
+      ev = append(ev, int(ep[1]))
+      i = i + 1
+    }
+
+    // Only attempt greedy matching for k=1 with even n
+    if k == 1 && n % 2 == 0 {
+      // matched[v] = 1 if node v is already in a matching (1-indexed, use index v-1)
+      var matched: list<int> = []
+      i = 0
+      while i < n { matched = append(matched, 0); i = i + 1 }
+
+      var ropeU: list<int> = []
+      var ropeV: list<int> = []
+
+      i = 0
+      while i < m {
+        let u = eu[i]
+        let v = ev[i]
+        if matched[u-1] == 0 && matched[v-1] == 0 {
+          matched[u-1] = 1
+          matched[v-1] = 1
+          ropeU = append(ropeU, u)
+          ropeV = append(ropeV, v)
+        }
+        i = i + 1
+      }
+
+      // Check all matched
+      var allMatched = 1
+      i = 0
+      while i < n {
+        if matched[i] == 0 { allMatched = 0 }
+        i = i + 1
+      }
+
+      if allMatched == 1 {
+        print("case " + string(tc) + " YES")
+        i = 0
+        while i < len(ropeU) {
+          // Length 1 rope: "1 u v"
+          print("1 " + string(ropeU[i]) + " " + string(ropeV[i]))
+          i = i + 1
+        }
+      } else {
+        print("case " + string(tc) + " NO")
+      }
+    } else {
+      print("case " + string(tc) + " NO")
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

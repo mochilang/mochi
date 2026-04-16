@@ -1,0 +1,315 @@
+// Solution for SPOJ TTR - Tetris AI
+// https://www.spoj.com/problems/TTR/
+// Greedy Tetris AI: for each piece, try all (rotation, column) placements.
+// Score placement with heuristic (aggregate height, holes, bumpiness, cleared lines).
+// Pick best placement, drop piece, clear full rows, output rotation and x-position.
+//
+// Piece types: 1=I, 2=L, 3=J, 4=Z, 5=S, 6=O
+// Grid: 20 rows × 10 cols, 0=empty, 1=filled. Row 0 = top.
+// Drop: find lowest row where piece fits without collision, place it there.
+//
+// Piece rotations stored as flat list: for each piece type and rotation,
+// a list of (dr, dc) offsets of filled cells relative to top-left anchor.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Get piece cells for given type (1-6) and rotation (0-3).
+// Returns list [r0,c0,r1,c1,...] of cell offsets (relative to top-left anchor).
+// Rotations are 0=original, 1=90° CW, 2=180°, 3=270° CW.
+fun getPieceCells(ptype: int, rot: int): list<int> {
+  // I piece (type 1): horizontal or vertical
+  if ptype == 1 {
+    if rot == 0 || rot == 2 {
+      // Horizontal: 4 cells in one row
+      var c: list<int> = [0,0, 0,1, 0,2, 0,3]
+      return c
+    } else {
+      // Vertical: 4 cells in one column
+      var c: list<int> = [0,0, 1,0, 2,0, 3,0]
+      return c
+    }
+  }
+  // L piece (type 2):
+  //  ##   rot0:  X.  rot1: XXX  rot2: .X  rot3: ...
+  //  X.         X.       ...X       XXX
+  //  X.
+  // Standard L:
+  // rot0: (0,0)(1,0)(2,0)(2,1)
+  // rot1: (0,0)(0,1)(0,2)(1,0)
+  // rot2: (0,0)(0,1)(1,1)(2,1)
+  // rot3: (0,2)(1,0)(1,1)(1,2)
+  if ptype == 2 {
+    if rot == 0 { var c: list<int> = [0,0, 1,0, 2,0, 2,1]; return c }
+    if rot == 1 { var c: list<int> = [0,0, 0,1, 0,2, 1,0]; return c }
+    if rot == 2 { var c: list<int> = [0,0, 0,1, 1,1, 2,1]; return c }
+    var c: list<int> = [0,2, 1,0, 1,1, 1,2]; return c
+  }
+  // J piece (type 3): mirror of L
+  // rot0: (0,1)(1,1)(2,0)(2,1)
+  // rot1: (0,0)(1,0)(1,1)(1,2)
+  // rot2: (0,0)(0,1)(1,0)(2,0)
+  // rot3: (0,0)(0,1)(0,2)(1,2)
+  if ptype == 3 {
+    if rot == 0 { var c: list<int> = [0,1, 1,1, 2,0, 2,1]; return c }
+    if rot == 1 { var c: list<int> = [0,0, 1,0, 1,1, 1,2]; return c }
+    if rot == 2 { var c: list<int> = [0,0, 0,1, 1,0, 2,0]; return c }
+    var c: list<int> = [0,0, 0,1, 0,2, 1,2]; return c
+  }
+  // Z piece (type 4):
+  // rot0: (0,0)(0,1)(1,1)(1,2)
+  // rot1: (0,1)(1,0)(1,1)(2,0)
+  if ptype == 4 {
+    if rot == 0 || rot == 2 { var c: list<int> = [0,0, 0,1, 1,1, 1,2]; return c }
+    var c: list<int> = [0,1, 1,0, 1,1, 2,0]; return c
+  }
+  // S piece (type 5):
+  // rot0: (0,1)(0,2)(1,0)(1,1)
+  // rot1: (0,0)(1,0)(1,1)(2,1)
+  if ptype == 5 {
+    if rot == 0 || rot == 2 { var c: list<int> = [0,1, 0,2, 1,0, 1,1]; return c }
+    var c: list<int> = [0,0, 1,0, 1,1, 2,1]; return c
+  }
+  // O piece (type 6): 2x2 square, all rotations same
+  var c: list<int> = [0,0, 0,1, 1,0, 1,1]
+  return c
+}
+
+// Number of valid rotations per piece type
+fun numRotations(ptype: int): int {
+  if ptype == 1 { return 2 }
+  if ptype == 2 { return 4 }
+  if ptype == 3 { return 4 }
+  if ptype == 4 { return 2 }
+  if ptype == 5 { return 2 }
+  return 1
+}
+
+// Get bounding box dimensions (rows, cols) for a piece rotation
+fun pieceDims(cells: list<int>): list<int> {
+  var maxR = 0
+  var maxC = 0
+  var i = 0
+  while i < len(cells) {
+    if cells[i] > maxR { maxR = cells[i] }
+    if cells[i+1] > maxC { maxC = cells[i+1] }
+    i = i + 2
+  }
+  var dims: list<int> = [maxR+1, maxC+1]
+  return dims
+}
+
+// Try to drop piece (cells list) at column x on grid.
+// Returns row where piece lands (-1 if invalid placement).
+fun dropRow(grid: list<int>, cells: list<int>, x: int): int {
+  let ncells = len(cells) / 2
+  // Find max possible row: drop as low as possible
+  var row = 0
+  var done = 0
+  while done == 0 {
+    // Check if placing piece at (row, x) is valid
+    var valid = 1
+    var i = 0
+    while i < ncells {
+      let dr = cells[i*2]
+      let dc = cells[i*2+1]
+      let r = row + dr
+      let c = x + dc
+      if r >= 20 || c < 0 || c >= 10 { valid = 0 }
+      if valid == 1 && grid[r*10+c] == 1 { valid = 0 }
+      i = i + 1
+    }
+    if valid == 0 {
+      done = 1
+    } else {
+      row = row + 1
+    }
+  }
+  // row-1 is last valid row
+  if row == 0 { return 0 - 1 }  // couldn't place even at row=0
+  return row - 1
+}
+
+// Place piece on grid at (landRow, x). Returns new grid.
+fun placePiece(grid: list<int>, cells: list<int>, landRow: int, x: int): list<int> {
+  var g: list<int> = []
+  var i = 0
+  while i < 200 { g = append(g, grid[i]); i = i + 1 }
+  let ncells = len(cells) / 2
+  i = 0
+  while i < ncells {
+    let dr = cells[i*2]
+    let dc = cells[i*2+1]
+    let r = landRow + dr
+    let c = x + dc
+    g[r*10+c] = 1
+    i = i + 1
+  }
+  return g
+}
+
+// Clear full rows. Returns [new_grid (200 ints), lines_cleared].
+fun clearRows(grid: list<int>): list<int> {
+  var newGrid: list<int> = []
+  var cleared = 0
+  var r = 19
+  while r >= 0 {
+    var full = 1
+    var c = 0
+    while c < 10 {
+      if grid[r*10+c] == 0 { full = 0 }
+      c = c + 1
+    }
+    if full == 0 {
+      c = 0
+      while c < 10 { newGrid = append(newGrid, grid[r*10+c]); c = c + 1 }
+    } else {
+      cleared = cleared + 1
+    }
+    r = r - 1
+  }
+  // newGrid is bottom-up; prepend empty rows at top
+  var result: list<int> = []
+  var needed = 20 - (len(newGrid) / 10)
+  var i = 0
+  while i < needed * 10 { result = append(result, 0); i = i + 1 }
+  // Reverse newGrid (it's stored bottom-to-top)
+  i = len(newGrid) - 10
+  while i >= 0 {
+    var c = 0
+    while c < 10 { result = append(result, newGrid[i+c]); c = c + 1 }
+    i = i - 10
+  }
+  result = append(result, cleared)
+  return result
+}
+
+// Compute heuristic score for a grid state (higher = better).
+// Uses: -aggregateHeight, +clearedLines*100, -holes*10, -bumpiness
+fun heuristic(grid: list<int>, clearedLines: int): int {
+  // Column heights
+  var heights: list<int> = []
+  var c = 0
+  while c < 10 {
+    var h = 0
+    var r = 0
+    while r < 20 {
+      if grid[r*10+c] == 1 && h == 0 { h = 20 - r }
+      r = r + 1
+    }
+    heights = append(heights, h)
+    c = c + 1
+  }
+  // Aggregate height
+  var aggH = 0
+  c = 0
+  while c < 10 { aggH = aggH + heights[c]; c = c + 1 }
+  // Holes: empty cells below highest filled cell in column
+  var holes = 0
+  c = 0
+  while c < 10 {
+    var inBlock = 0
+    var r = 0
+    while r < 20 {
+      if grid[r*10+c] == 1 { inBlock = 1 }
+      if inBlock == 1 && grid[r*10+c] == 0 { holes = holes + 1 }
+      r = r + 1
+    }
+    c = c + 1
+  }
+  // Bumpiness
+  var bump = 0
+  c = 0
+  while c < 9 {
+    var diff = heights[c] - heights[c+1]
+    if diff < 0 { diff = 0 - diff }
+    bump = bump + diff
+    c = c + 1
+  }
+  return (0 - aggH) * 51 + clearedLines * 760 + (0 - holes) * 360 + (0 - bump) * 180
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 1
+  while tc <= T {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    // Initialize empty grid
+    var grid: list<int> = []
+    var i = 0
+    while i < 200 { grid = append(grid, 0); i = i + 1 }
+
+    print("case " + string(tc) + " Y")
+
+    i = 0
+    while i < n {
+      var pLine = input()
+      while pLine == "" { pLine = input() }
+      let ptype = int(pLine)
+
+      let nrot = numRotations(ptype)
+      var bestScore = 0 - 1000000000
+      var bestRot = 0
+      var bestX = 0
+      var bestGrid: list<int> = []
+      var j = 0
+      while j < 200 { bestGrid = append(bestGrid, grid[j]); j = j + 1 }
+
+      var r = 0
+      while r < nrot {
+        let cells = getPieceCells(ptype, r)
+        let dims = pieceDims(cells)
+        let pCols = dims[1]
+        // Try each valid x position
+        var x = 0
+        while x <= 10 - pCols {
+          let landRow = dropRow(grid, cells, x)
+          if landRow != 0 - 1 {
+            let placed = placePiece(grid, cells, landRow, x)
+            let cleared = clearRows(placed)
+            let linesCleared = cleared[200]
+            var newGrid: list<int> = []
+            var k = 0
+            while k < 200 { newGrid = append(newGrid, cleared[k]); k = k + 1 }
+            let score = heuristic(newGrid, linesCleared)
+            if score > bestScore {
+              bestScore = score
+              bestRot = r
+              bestX = x
+              bestGrid = newGrid
+            }
+          }
+          x = x + 1
+        }
+        r = r + 1
+      }
+
+      grid = bestGrid
+      print(string(bestRot) + " " + string(bestX + 1))
+
+      i = i + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

@@ -1,0 +1,179 @@
+// Solution for SPOJ HWORK - Homework
+// https://www.spoj.com/problems/HWORK/
+// Johnny writes one text T, copies it k times, erases some chars per copy to get each word.
+// Every word must appear as a substring of T; each word is assigned to exactly one copy.
+// Score = sum_of_word_lengths - len(T). Maximize score by minimizing len(T).
+// Algorithm: greedy shortest superstring of all n words.
+//   1. Remove words that are substrings of another word (they come free).
+//   2. Build overlap matrix (max prefix-suffix overlap between each ordered pair).
+//   3. Greedy: repeatedly merge the pair with greatest overlap.
+//   4. Output T and the start position of each original word in T.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Returns 1 if s is a substring of t
+fun isSubstr(s: string, t: string): int {
+  let slen = len(s)
+  let tlen = len(t)
+  if slen > tlen { return 0 }
+  var i = 0
+  while i <= tlen - slen {
+    if t[i:i+slen] == s { return 1 }
+    i = i + 1
+  }
+  return 0
+}
+
+// Find first occurrence of s in t, return index or -1
+fun findSubstr(s: string, t: string): int {
+  let slen = len(s)
+  let tlen = len(t)
+  if slen > tlen { return 0 - 1 }
+  var i = 0
+  while i <= tlen - slen {
+    if t[i:i+slen] == s { return i }
+    i = i + 1
+  }
+  return 0 - 1
+}
+
+// Overlap: longest suffix of a that matches a prefix of b
+fun overlap(a: string, b: string): int {
+  let alen = len(a)
+  let blen = len(b)
+  var best = 0
+  var k = 1
+  while k <= alen && k <= blen {
+    if a[alen-k:alen] == b[0:k] { best = k }
+    k = k + 1
+  }
+  return best
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 1
+  while tc <= T {
+    var nkLine = input()
+    while nkLine == "" { nkLine = input() }
+    let nk = split(nkLine)
+    let n = int(nk[0])
+    // k is given but we just need shortest superstring of all words
+
+    var origWords: list<string> = []
+    var i = 0
+    while i < n {
+      var w = input()
+      while w == "" { w = input() }
+      origWords = append(origWords, w)
+      i = i + 1
+    }
+
+    // Step 1: deduplicate — keep unique words, track for position lookup later
+    // We'll compute position of each original word in the final string at the end.
+    // Build working set: remove words that are substrings of another word.
+    var active: list<string> = []
+    i = 0
+    while i < n {
+      var dominated = 0
+      var j = 0
+      while j < n {
+        if i != j {
+          if isSubstr(origWords[i], origWords[j]) == 1 { dominated = 1 }
+        }
+        j = j + 1
+      }
+      if dominated == 0 { active = append(active, origWords[i]) }
+      i = i + 1
+    }
+
+    // If active is empty (all were substrings of each other), keep the longest
+    if len(active) == 0 {
+      var longest = origWords[0]
+      i = 1
+      while i < n {
+        if len(origWords[i]) > len(longest) { longest = origWords[i] }
+        i = i + 1
+      }
+      active = append(active, longest)
+    }
+
+    // Step 2: Greedy shortest superstring on active words
+    // Repeatedly find pair (i,j) with max overlap, merge them
+    var alive: list<int> = []
+    i = 0
+    while i < len(active) { alive = append(alive, 1); i = i + 1 }
+
+    var m = len(active)
+    // Repeat m-1 merges
+    var merges = m - 1
+    var mi = 0
+    while mi < merges {
+      // Find best overlap pair (a,b) where a != b and both alive
+      var bestOv = 0 - 1
+      var bestA = 0 - 1
+      var bestB = 0 - 1
+      var a = 0
+      while a < len(active) {
+        if alive[a] == 1 {
+          var b = 0
+          while b < len(active) {
+            if b != a && alive[b] == 1 {
+              let ov = overlap(active[a], active[b])
+              if ov > bestOv {
+                bestOv = ov
+                bestA = a
+                bestB = b
+              }
+            }
+            b = b + 1
+          }
+        }
+        a = a + 1
+      }
+      // Merge bestA and bestB: active[bestA] + active[bestB][bestOv:]
+      let merged = active[bestA] + active[bestB][bestOv:len(active[bestB])]
+      active[bestA] = merged
+      alive[bestB] = 0
+      mi = mi + 1
+    }
+
+    // Find the surviving string
+    var result = ""
+    i = 0
+    while i < len(active) {
+      if alive[i] == 1 { result = active[i] }
+      i = i + 1
+    }
+
+    // Step 3: find position of each original word in result (1-indexed)
+    print("case " + string(tc) + " Y")
+    print(result)
+    i = 0
+    while i < n {
+      let pos = findSubstr(origWords[i], result)
+      print(string(pos + 1))
+      i = i + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()
