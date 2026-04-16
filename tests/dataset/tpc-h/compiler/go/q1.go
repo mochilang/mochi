@@ -150,56 +150,49 @@ func main() {
 				Linestatus: any(g.Key.(GKey).Linestatus),
 				Sum_qty: _sumOrdered[int](func() []int {
 					results := []int{}
-					for _, xRaw := range g.Items {
-						x := xRaw.(Lineitem)
+					for _, x := range g.Items {
 						results = append(results, x.L_quantity)
 					}
 					return results
 				}()),
 				Sum_base_price: _sumOrdered[float64](func() []float64 {
 					results := []float64{}
-					for _, xRaw := range g.Items {
-						x := xRaw.(Lineitem)
+					for _, x := range g.Items {
 						results = append(results, x.L_extendedprice)
 					}
 					return results
 				}()),
 				Sum_disc_price: _sumOrdered[float64](func() []float64 {
 					results := []float64{}
-					for _, xRaw := range g.Items {
-						x := xRaw.(Lineitem)
+					for _, x := range g.Items {
 						results = append(results, (x.L_extendedprice * (float64(1) - x.L_discount)))
 					}
 					return results
 				}()),
 				Sum_charge: _sumOrdered[float64](func() []float64 {
 					results := []float64{}
-					for _, xRaw := range g.Items {
-						x := xRaw.(Lineitem)
+					for _, x := range g.Items {
 						results = append(results, ((x.L_extendedprice * (float64(1) - x.L_discount)) * (float64(1) + x.L_tax)))
 					}
 					return results
 				}()),
 				Avg_qty: _avgOrdered[int](func() []int {
 					results := []int{}
-					for _, xRaw := range g.Items {
-						x := xRaw.(Lineitem)
+					for _, x := range g.Items {
 						results = append(results, x.L_quantity)
 					}
 					return results
 				}()),
 				Avg_price: _avgOrdered[float64](func() []float64 {
 					results := []float64{}
-					for _, xRaw := range g.Items {
-						x := xRaw.(Lineitem)
+					for _, x := range g.Items {
 						results = append(results, x.L_extendedprice)
 					}
 					return results
 				}()),
 				Avg_disc: _avgOrdered[float64](func() []float64 {
 					results := []float64{}
-					for _, xRaw := range g.Items {
-						x := xRaw.(Lineitem)
+					for _, x := range g.Items {
 						results = append(results, x.L_discount)
 					}
 					return results

@@ -246,8 +246,7 @@ func main() {
 			g := it
 			pairs[idx] = pair{item: it, key: -_sumOrdered[float64](func() []float64 {
 				results := []float64{}
-				for _, xRaw := range g.Items {
-					x := xRaw.(Local_customer_supplier_order)
+				for _, x := range g.Items {
 					results = append(results, x.Revenue)
 				}
 				return results
@@ -285,8 +284,7 @@ func main() {
 				N_name: g.Key.(any),
 				Revenue: _sumOrdered[float64](func() []float64 {
 					results := []float64{}
-					for _, xRaw := range g.Items {
-						x := xRaw.(Local_customer_supplier_order)
+					for _, x := range g.Items {
 						results = append(results, x.Revenue)
 					}
 					return results

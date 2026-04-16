@@ -180,8 +180,7 @@ func main() {
 				Ps_partkey: g.Key.(any),
 				Value: _sumOrdered[float64](func() []float64 {
 					results := []float64{}
-					for _, rRaw := range g.Items {
-						r := rRaw.(Filtered)
+					for _, r := range g.Items {
 						results = append(results, r.Value)
 					}
 					return results
