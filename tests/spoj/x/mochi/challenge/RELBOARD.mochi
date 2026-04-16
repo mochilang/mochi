@@ -1,0 +1,231 @@
+// Solution for SPOJ RELBOARD - Relation Board
+// https://www.spoj.com/problems/RELBOARD/
+// Given an N×N constraint matrix with values in {-2,-1,0,1,2,3}, assign
+// integer values T[0..N-1] to minimise Max(T).
+// Constraints: 0=equal, 1=strict less, -1=strict greater, 2=leq, -2=geq, 3=neq.
+//
+// Algorithm:
+// 1. Union-Find to merge nodes with A[i][j]=0 (equality).
+// 2. Build DAG of strict inequalities (A[i][j]=1 → group(i) < group(j)).
+// 3. Topological sort + longest-path assigns the minimum level to each group.
+// 4. Adjust for A[i][j]=3 (neq) if needed: if same level, bump T[j] up.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let c = line[i:i+1]
+    if c == " " || c == "\t" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + c
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Union-Find: parent array
+fun ufFind(parent: list<int>, x: int): int {
+  while parent[x] != x {
+    parent[x] = parent[parent[x]]
+    x = parent[x]
+  }
+  return x
+}
+
+fun ufUnion(parent: list<int>, rank: list<int>, a: int, b: int) {
+  let ra = ufFind(parent, a)
+  let rb = ufFind(parent, b)
+  if ra == rb { return }
+  if rank[ra] < rank[rb] {
+    parent[ra] = rb
+  } else {
+    if rank[ra] > rank[rb] {
+      parent[rb] = ra
+    } else {
+      parent[rb] = ra
+      rank[ra] = rank[ra] + 1
+    }
+  }
+}
+
+fun main() {
+  let nLine = split(input())
+  let n = int(nLine[0])
+
+  // Read N×N matrix
+  var mat: list<int> = []
+  var i = 0
+  while i < n {
+    let row = split(input())
+    var j = 0
+    while j < n {
+      mat = append(mat, int(row[j]))
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  // Union-Find init
+  var parent: list<int> = []
+  var rank: list<int> = []
+  i = 0
+  while i < n {
+    parent = append(parent, i)
+    rank = append(rank, 0)
+    i = i + 1
+  }
+
+  // Merge nodes with A[i][j]=0
+  i = 0
+  while i < n {
+    var j = 0
+    while j < n {
+      if mat[i * n + j] == 0 && i != j {
+        ufUnion(parent, rank, i, j)
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  // Collect unique groups (roots)
+  // Build edge list for DAG of strict inequalities
+  // in-degree for topo sort
+  var indeg: list<int> = []
+  i = 0
+  while i < n { indeg = append(indeg, 0); i = i + 1 }
+
+  // Adjacency list: for each group root, list of successor roots
+  // We store as edges: (from, to) meaning from < to strictly
+  var edgeFrom: list<int> = []
+  var edgeTo: list<int> = []
+
+  // Also track neq pairs
+  var neqFrom: list<int> = []
+  var neqTo: list<int> = []
+
+  i = 0
+  while i < n {
+    var j = 0
+    while j < n {
+      let v = mat[i * n + j]
+      let ri = ufFind(parent, i)
+      let rj = ufFind(parent, j)
+      if ri != rj {
+        if v == 1 {
+          // ri < rj strictly
+          edgeFrom = append(edgeFrom, ri)
+          edgeTo = append(edgeTo, rj)
+          indeg[rj] = indeg[rj] + 1
+        }
+        if v == 3 {
+          neqFrom = append(neqFrom, ri)
+          neqTo = append(neqTo, rj)
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  // Build CSR adjacency for the DAG (strict edges only)
+  // We need longest path in DAG => Kahn's topo sort + DP
+  // But we may have duplicate edges in edgeFrom/edgeTo — deduplicate via level DP
+
+  // level[g] = 1 + max(level[pred of g]) (min level = 1)
+  // Use iterative topo sort (Kahn's)
+  var level: list<int> = []
+  i = 0
+  while i < n { level = append(level, 1); i = i + 1 }
+
+  // Process topo order: repeatedly pick nodes with indeg 0, update successors
+  var processed: list<int> = []
+  i = 0
+  while i < n { processed = append(processed, 0); i = i + 1 }
+
+  var numDone = 0
+  while numDone < n {
+    // Find a node that is a root (parent[i]==i), not yet processed, indeg 0
+    var found = 0 - 1
+    i = 0
+    while i < n {
+      if parent[i] == i && processed[i] == 0 && indeg[i] == 0 {
+        found = i
+        i = n  // break
+      }
+      i = i + 1
+    }
+    if found == 0 - 1 {
+      // No more nodes with indeg 0 among unprocessed roots — done or cycle
+      numDone = n
+    } else {
+      processed[found] = 1
+      numDone = numDone + 1
+      // Update successors
+      var ei = 0
+      while ei < len(edgeFrom) {
+        if edgeFrom[ei] == found {
+          let succ = edgeTo[ei]
+          if level[found] + 1 > level[succ] {
+            level[succ] = level[found] + 1
+          }
+          indeg[succ] = indeg[succ] - 1
+        }
+        ei = ei + 1
+      }
+    }
+  }
+
+  // Also process non-root nodes (they just inherit their root's level)
+  // Assign T[i] = level[find(i)]
+  var T: list<int> = []
+  i = 0
+  while i < n {
+    T = append(T, level[ufFind(parent, i)])
+    i = i + 1
+  }
+
+  // Handle neq constraints: if T[neqFrom[k]] == T[neqTo[k]], bump T[neqTo[k]]
+  // Do a few passes to propagate
+  var pass = 0
+  while pass < n {
+    var changed = 0
+    var k = 0
+    while k < len(neqFrom) {
+      let a = neqFrom[k]
+      let b = neqTo[k]
+      if T[a] == T[b] {
+        T[b] = T[b] + 1
+        changed = 1
+      }
+      k = k + 1
+    }
+    if changed == 0 { pass = n }
+    pass = pass + 1
+  }
+
+  // Find max T
+  var maxT = 0
+  i = 0
+  while i < n {
+    if T[i] > maxT { maxT = T[i] }
+    i = i + 1
+  }
+
+  print(str(maxT))
+
+  var out = ""
+  i = 0
+  while i < n {
+    if i > 0 { out = out + " " }
+    out = out + str(T[i])
+    i = i + 1
+  }
+  print(out)
+}
+
+main()

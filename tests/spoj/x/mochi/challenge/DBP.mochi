@@ -1,0 +1,193 @@
+// Solution for SPOJ DBP - Burned Pancakes Tower
+// https://www.spoj.com/problems/DBP/
+// N pancakes labeled ±k (+ = burned side down, - = burned side up).
+// Sort ascending from top, all burned sides down (all +).
+// Flip top-k operation: reverses the top k pancakes and flips each sign.
+//
+// Algorithm (selection sort, at most 3 flips per pancake):
+// For p from M down to 1 (placing largest at bottom first):
+//   Find index j of pancake with |stack[j]| == p (0-indexed from top).
+//   If j == p-1 and stack[j] == +p: already done, 0 flips.
+//   If j == p-1 and stack[j] == -p: flip p (2 flips total for this case below)
+//     Actually: flip(p) puts it at top with +p, then flip(1) to -p, then flip(p) again.
+//     Wait - see full logic below.
+//
+// Detailed:
+// To place +p at position p-1 (bottom of current range 0..p-1):
+// Step 1: If j != 0, flip(j+1) to bring size p to top. Sign flips.
+// Step 2: If top is now +p (burned side down), flip(1) to make it -p (burned side up).
+// Step 3: flip(p) — moves -p at top to position p-1, flipping it to +p.
+// Special: if already at position p-1:
+//   If +p: skip (already correct).
+//   If -p: flip(p) → brings to top as +p. flip(1) → -p. flip(p) → +p at p-1. (3 flips)
+//     Actually simpler: flip(p) → now -p goes to top and all flip → top becomes +p (sign of bottom flips).
+//     Wait need to think again...
+//
+// Let me re-examine: flip(k) reverses positions 0..k-1 and negates each.
+// If stack[p-1] == -p (need +p there):
+//   flip(p): positions 0..p-1 reversed and negated.
+//   After flip(p): old position p-1 goes to position 0 with sign flipped → now stack[0] = +p.
+//   flip(1): stack[0] = -p.
+//   flip(p): stack[0]=-p goes to position p-1 with sign flipped → stack[p-1] = +p. Done.
+//   That's 3 flips.
+// But in the normal case (j != p-1, j != 0):
+//   flip(j+1): stack[j] goes to position 0 with sign flipped.
+//   If original stack[j] was +p → now -p at top. flip(1) not needed... wait:
+//   We want -p at top before flip(p).
+//   After flip(j+1), top has sign = -stack[j]. If stack[j] was +p, top is now -p. Good, skip flip(1).
+//   If stack[j] was -p, top is now +p. Need flip(1) to make it -p.
+// If j == 0:
+//   stack[0] is +p or -p.
+//   If -p: directly flip(p).
+//   If +p: flip(1) then flip(p).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let c = line[i:i+1]
+    if c == " " || c == "\t" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + c
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Parse a signed integer token like "+7", "-3", "-10"
+fun parseToken(s: string): int {
+  var sign = 1
+  var start = 0
+  if s[0:1] == "-" { sign = 0 - 1; start = 1 }
+  if s[0:1] == "+" { start = 1 }
+  var val = 0
+  var i = start
+  while i < len(s) {
+    let c = s[i:i+1]
+    var d = 0
+    if c == "0" { d = 0 }
+    if c == "1" { d = 1 }
+    if c == "2" { d = 2 }
+    if c == "3" { d = 3 }
+    if c == "4" { d = 4 }
+    if c == "5" { d = 5 }
+    if c == "6" { d = 6 }
+    if c == "7" { d = 7 }
+    if c == "8" { d = 8 }
+    if c == "9" { d = 9 }
+    val = val * 10 + d
+    i = i + 1
+  }
+  return sign * val
+}
+
+// Perform flip(k): reverse top k elements of stack and negate each
+fun doFlip(stack: list<int>, k: int) {
+  var lo = 0
+  var hi = k - 1
+  while lo < hi {
+    let tmp = stack[lo]
+    stack[lo] = stack[hi]
+    stack[hi] = tmp
+    lo = lo + 1
+    hi = hi - 1
+  }
+  // Negate elements 0..k-1
+  var i = 0
+  while i < k {
+    stack[i] = 0 - stack[i]
+    i = i + 1
+  }
+}
+
+fun absVal(x: int): int {
+  if x < 0 { return 0 - x }
+  return x
+}
+
+fun solveCase(stack: list<int>, M: int): list<int> {
+  var flips: list<int> = []
+  var p = M
+  while p >= 1 {
+    // Find index j where |stack[j]| == p in range 0..p-1
+    var j = 0 - 1
+    var idx = 0
+    while idx < p {
+      if absVal(stack[idx]) == p {
+        j = idx
+        idx = p  // break
+      }
+      idx = idx + 1
+    }
+
+    // Check if already in place with correct sign
+    if j == p - 1 && stack[j] > 0 {
+      // Already +p at bottom of range, no flips needed
+      p = p - 1
+    } else {
+      // Need to place +p at position p-1
+      if j == p - 1 {
+        // stack[j] == -p: need 3 flips
+        doFlip(stack, p)
+        flips = append(flips, p)
+        doFlip(stack, 1)
+        flips = append(flips, 1)
+        doFlip(stack, p)
+        flips = append(flips, p)
+      } else {
+        // j < p-1
+        // Step 1: if not at top, flip(j+1) to bring to top
+        if j > 0 {
+          doFlip(stack, j + 1)
+          flips = append(flips, j + 1)
+        }
+        // Now size p is at position 0. We want -p at top before flip(p).
+        // After flip(j+1): sign of what was stack[j] flips.
+        // stack[0] now holds -(original stack[j])
+        // If stack[0] > 0 (burned down, we need -p), flip(1)
+        if stack[0] > 0 {
+          doFlip(stack, 1)
+          flips = append(flips, 1)
+        }
+        // Now stack[0] == -p (burned up), flip(p) to place at bottom with +p
+        doFlip(stack, p)
+        flips = append(flips, p)
+      }
+      p = p - 1
+    }
+  }
+  return flips
+}
+
+fun main() {
+  let t = int(input())
+  var tc = 0
+  while tc < t {
+    let parts = split(input())
+    let M = int(parts[0])
+    var stack: list<int> = []
+    var i = 1
+    while i <= M {
+      stack = append(stack, parseToken(parts[i]))
+      i = i + 1
+    }
+
+    let flips = solveCase(stack, M)
+    let K = len(flips)
+
+    var out = str(K)
+    i = 0
+    while i < K {
+      out = out + " " + str(flips[i])
+      i = i + 1
+    }
+    print(out)
+    tc = tc + 1
+  }
+}
+
+main()

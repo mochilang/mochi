@@ -1,0 +1,105 @@
+// Solution for SPOJ MATEX - Matrix Exponentiation
+// https://www.spoj.com/problems/MATEX/
+// Read W×W matrix M, then answer queries (I, J, N): output M^N[I-1][J-1] mod 1000000007.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Multiply two W×W matrices A and B (flat lists), result mod p
+fun matmul(A: list<int>, B: list<int>, W: int, p: int): list<int> {
+  var C: list<int> = []
+  var idx = 0
+  while idx < W * W { C = append(C, 0); idx = idx + 1 }
+  var i = 0
+  while i < W {
+    var j = 0
+    while j < W {
+      var s = 0
+      var k = 0
+      while k < W {
+        s = (s + A[i * W + k] * B[k * W + j]) % p
+        k = k + 1
+      }
+      C[i * W + j] = s
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return C
+}
+
+// Identity matrix W×W
+fun matident(W: int): list<int> {
+  var I: list<int> = []
+  var idx = 0
+  while idx < W * W { I = append(I, 0); idx = idx + 1 }
+  var i = 0
+  while i < W {
+    I[i * W + i] = 1
+    i = i + 1
+  }
+  return I
+}
+
+// Matrix power M^n mod p using binary exponentiation
+fun matpow(M: list<int>, n: int, W: int, p: int): list<int> {
+  var result = matident(W)
+  var base = M
+  var exp = n
+  while exp > 0 {
+    if exp % 2 == 1 {
+      result = matmul(result, base, W, p)
+    }
+    base = matmul(base, base, W, p)
+    exp = int(exp / 2)
+  }
+  return result
+}
+
+fun main() {
+  let MOD = 1000000007
+  let wLine = input()
+  let W = int(wLine)
+
+  // Read W×W matrix
+  var M: list<int> = []
+  var i = 0
+  while i < W {
+    let row = split(input())
+    var j = 0
+    while j < W {
+      M = append(M, int(row[j]) % MOD)
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  // Process queries until EOF
+  var qline = input()
+  while qline != "" {
+    let parts = split(qline)
+    if len(parts) == 3 {
+      let qi = int(parts[0]) - 1
+      let qj = int(parts[1]) - 1
+      let qn = int(parts[2])
+      let Mn = matpow(M, qn, W, MOD)
+      print(str(Mn[qi * W + qj]))
+    }
+    qline = input()
+  }
+}
+
+main()
