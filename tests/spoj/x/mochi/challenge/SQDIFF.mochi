@@ -1,0 +1,50 @@
+// Solution for SPOJ SQDIFF - Area Difference
+// https://www.spoj.com/problems/SQDIFF/
+// |area_morning_only - area_evening_only| = pi * |r1^2 - r2^2|
+// The intersection cancels: both areas contain it, so the difference is pure.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun fmtDecimal(x: float, places: int): string {
+  var mult = 1.0
+  var fi = 0
+  while fi < places { mult = mult * 10.0; fi = fi + 1 }
+  let scaled = int(x * mult + 0.5)
+  let imult = int(mult)
+  let intPart = int(scaled / imult)
+  let fracPart = scaled % imult
+  var fracStr = str(fracPart)
+  while len(fracStr) < places { fracStr = "0" + fracStr }
+  return str(intPart) + "." + fracStr
+}
+
+fun main() {
+  let pi = 3.14159265358979323846
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let parts = split(input())
+    let r1 = int(parts[2])
+    let r2 = int(parts[5])
+    var diff = (r1 * r1 - r2 * r2) as float
+    if diff < 0.0 { diff = 0.0 - diff }
+    print(fmtDecimal(pi * diff, 2))
+    ti = ti + 1
+  }
+}
+
+main()

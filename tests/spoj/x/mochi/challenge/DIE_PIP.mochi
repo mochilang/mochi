@@ -1,0 +1,33 @@
+// Solution for SPOJ DIE_PIP - The Electronic Dice
+// https://www.spoj.com/problems/DIE_PIP/
+// Print 3x3 pip grid for each die value.
+// Patterns encoded as 9-char strings per face ("010" = row of pips).
+
+fun row(s: string, r: int): string {
+  return s[r*3:r*3+1] + " " + s[r*3+1:r*3+2] + " " + s[r*3+2:r*3+3]
+}
+
+fun main() {
+  var faces: list<string> = []
+  faces = append(faces, "000010000")
+  faces = append(faces, "001000100")
+  faces = append(faces, "100010001")
+  faces = append(faces, "101000101")
+  faces = append(faces, "101010101")
+  faces = append(faces, "101101101")
+
+  var first = 1
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    let s = faces[n - 1]
+    if first == 0 { print("") }
+    first = 0
+    print(row(s, 0))
+    print(row(s, 1))
+    print(row(s, 2))
+    line = input()
+  }
+}
+
+main()

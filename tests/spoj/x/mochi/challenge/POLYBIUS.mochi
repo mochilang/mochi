@@ -1,0 +1,40 @@
+// Solution for SPOJ POLYBIUS - Polybius square cipher
+// https://www.spoj.com/problems/POLYBIUS/
+// Encode each uppercase letter (skip spaces) as "RC" where R=row, C=col
+// in a 5x5 Polybius square. I and J share position 24.
+
+fun encode(line: string): string {
+  var alpha = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+  var out = ""
+  var i = 0
+  while i < len(line) {
+    var c = line[i:i+1]
+    if c != " " {
+      if c == "J" { c = "I" }
+      var pos = 0
+      var j = 0
+      while j < 25 {
+        if alpha[j:j+1] == c { pos = j }
+        j = j + 1
+      }
+      var row = int(pos / 5) + 1
+      var col = pos % 5 + 1
+      if len(out) > 0 { out = out + " " }
+      out = out + str(row) + str(col)
+    }
+    i = i + 1
+  }
+  return out
+}
+
+fun main() {
+  var t = int(input())
+  var ti = 0
+  while ti < t {
+    var line = input()
+    print(encode(line))
+    ti = ti + 1
+  }
+}
+
+main()

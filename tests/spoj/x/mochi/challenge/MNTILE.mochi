@@ -1,0 +1,118 @@
+// Solution for SPOJ MNTILE - Tiling a WxH Grid With Dominoes
+// https://www.spoj.com/problems/MNTILE/
+// Profile DP: process column by column (along the longer dimension).
+// State = bitmask of cells in current column pre-filled by horizontal tiles.
+// Transition fills each column using vertical and horizontal tiles.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun buildTrans(rows: int, pw: list<int>): list<list<int>> {
+  let sz = pw[rows]
+  var trans: list<list<int>> = []
+  var i = 0
+  while i < sz {
+    var empty: list<int> = []
+    trans = append(trans, empty)
+    i = i + 1
+  }
+  var inm = 0
+  while inm < sz {
+    var stack_row: list<int> = []
+    var stack_out: list<int> = []
+    stack_row = append(stack_row, 0)
+    stack_out = append(stack_out, 0)
+    while len(stack_row) > 0 {
+      let sp = len(stack_row) - 1
+      let r = stack_row[sp]
+      let om = stack_out[sp]
+      stack_row = stack_row[0:sp]
+      stack_out = stack_out[0:sp]
+      if r == rows {
+        trans[inm] = append(trans[inm], om)
+      } else if int(inm / pw[r]) % 2 == 1 {
+        stack_row = append(stack_row, r + 1)
+        stack_out = append(stack_out, om)
+      } else {
+        // horizontal tile
+        stack_row = append(stack_row, r + 1)
+        stack_out = append(stack_out, om + pw[r])
+        // vertical tile (covers r and r+1)
+        if r + 1 < rows && int(inm / pw[r+1]) % 2 == 0 {
+          stack_row = append(stack_row, r + 2)
+          stack_out = append(stack_out, om)
+        }
+      }
+    }
+    inm = inm + 1
+  }
+  return trans
+}
+
+fun solve(w: int, h: int, pw: list<int>): int {
+  if w == 0 || h == 0 { return 1 }
+  if (w * h) % 2 == 1 { return 0 }
+  var rows = w
+  var cols = h
+  if h < w { rows = h; cols = w }
+  let sz = pw[rows]
+  let trans = buildTrans(rows, pw)
+  var dp: list<int> = []
+  var i = 0
+  while i < sz { dp = append(dp, 0); i = i + 1 }
+  dp[0] = 1
+  var col = 0
+  while col < cols {
+    var ndp: list<int> = []
+    i = 0
+    while i < sz { ndp = append(ndp, 0); i = i + 1 }
+    var inm = 0
+    while inm < sz {
+      if dp[inm] > 0 {
+        let outs = trans[inm]
+        var oi = 0
+        while oi < len(outs) {
+          ndp[outs[oi]] = ndp[outs[oi]] + dp[inm]
+          oi = oi + 1
+        }
+      }
+      inm = inm + 1
+    }
+    dp = ndp
+    col = col + 1
+  }
+  return dp[0]
+}
+
+fun main() {
+  // Precompute powers of 2
+  var pw: list<int> = []
+  pw = append(pw, 1)
+  var i = 0
+  while i < 12 { pw = append(pw, pw[i] * 2); i = i + 1 }
+
+  let T = int(input())
+  var tc = 0
+  while tc < T {
+    let p = split(input())
+    let w = int(p[0])
+    let h = int(p[1])
+    print(solve(w, h, pw))
+    tc = tc + 1
+  }
+}
+
+main()

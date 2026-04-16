@@ -1,0 +1,174 @@
+// Solution for SPOJ REALROOT - Real Roots of Polynomial
+// https://www.spoj.com/problems/REALROOT/
+// Find all real roots of a polynomial using sign-change scanning + bisection.
+// Coefficients: a[N-1]*x^(N-1) + ... + a[1]*x + a[0]
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Horner's method: evaluate polynomial with coefficients in descending order
+// coeffs[0] = a_{N-1}, ..., coeffs[N-1] = a_0
+fun polyEval(coeffs: list<float>, x: float): float {
+  var val: float = 0.0
+  var i = 0
+  while i < len(coeffs) {
+    val = val * x + coeffs[i]
+    i = i + 1
+  }
+  return val
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return 0.0 - x }
+  return x
+}
+
+// Bisect to find root in [lo, hi] where sign changes
+fun bisect(coeffs: list<float>, lo: float, hi: float): float {
+  var a = lo
+  var b = hi
+  var iter = 0
+  while iter < 100 {
+    let mid = (a + b) / 2.0
+    let fa = polyEval(coeffs, a)
+    let fm = polyEval(coeffs, mid)
+    if fa * fm <= 0.0 {
+      b = mid
+    } else {
+      a = mid
+    }
+    iter = iter + 1
+  }
+  return (a + b) / 2.0
+}
+
+fun fmtDecimal(x: float, places: int): string {
+  var neg = 0
+  var xv = x
+  if xv < 0.0 { neg = 1; xv = 0.0 - xv }
+  var mult = 1.0
+  var fi = 0
+  while fi < places { mult = mult * 10.0; fi = fi + 1 }
+  let scaled = int(xv * mult + 0.5)
+  let imult = int(mult)
+  let intPart = int(scaled / imult)
+  let fracPart = scaled % imult
+  var fracStr = str(fracPart)
+  while len(fracStr) < places { fracStr = "0" + fracStr }
+  var res = str(intPart) + "." + fracStr
+  if neg == 1 && (intPart > 0 || fracPart > 0) { res = "-" + res }
+  return res
+}
+
+fun main() {
+  let t = int(input())
+  var tc = 0
+  while tc < t {
+    let nLine = input()
+    let n = int(nLine)
+    let parts = split(input())
+    var coeffs: list<float> = []
+    var i = 0
+    while i < n {
+      // Parse possibly negative integers
+      let s = parts[i]
+      var neg = 0
+      var start = 0
+      if s[0:1] == "-" { neg = 1; start = 1 }
+      var v = 0
+      var j = start
+      while j < len(s) {
+        v = v * 10 + int(s[j:j+1])
+        j = j + 1
+      }
+      var fv = v as float
+      if neg == 1 { fv = 0.0 - fv }
+      coeffs = append(coeffs, fv)
+      i = i + 1
+    }
+
+    // Collect roots
+    var roots: list<float> = []
+
+    // Scan from -1001 to 1001 with step 0.1
+    // Detect sign changes and near-zero crossings
+    var x = 0.0 - 1001.0
+    let step = 0.1
+    var prevF = polyEval(coeffs, x)
+    var prevX = x
+    x = x + step
+
+    while x <= 1001.0 {
+      let fx = polyEval(coeffs, x)
+
+      // Near-zero at sample point → direct root
+      if absf(fx) < 1.0e-9 {
+        // Check it's not a duplicate
+        var isDup = 0
+        var ri = 0
+        while ri < len(roots) {
+          if absf(roots[ri] - x) < 0.05 { isDup = 1 }
+          ri = ri + 1
+        }
+        if isDup == 0 {
+          roots = append(roots, x)
+        }
+      } else {
+        // Sign change → bisect
+        if prevF * fx < 0.0 {
+          let r = bisect(coeffs, prevX, x)
+          var isDup = 0
+          var ri = 0
+          while ri < len(roots) {
+            if absf(roots[ri] - r) < 0.05 { isDup = 1 }
+            ri = ri + 1
+          }
+          if isDup == 0 {
+            roots = append(roots, r)
+          }
+        }
+      }
+
+      prevX = x
+      prevF = fx
+      x = x + step
+    }
+
+    // Sort roots (insertion sort)
+    var si = 1
+    while si < len(roots) {
+      let key = roots[si]
+      var sj = si - 1
+      while sj >= 0 && roots[sj] > key {
+        roots[sj + 1] = roots[sj]
+        sj = sj - 1
+      }
+      roots[sj + 1] = key
+      si = si + 1
+    }
+
+    // Print roots
+    var ri = 0
+    while ri < len(roots) {
+      print(fmtDecimal(roots[ri], 6))
+      ri = ri + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

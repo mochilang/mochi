@@ -1,0 +1,33 @@
+// Solution for SPOJ NPRIME - Nth Prime
+// https://www.spoj.com/problems/NPRIME/
+// Sieve of Eratosthenes up to 1300000, then answer each query N with primes[N-1].
+
+fun main() {
+  var is_prime: list<int> = []
+  var i = 0
+  while i <= 1300000 { is_prime = append(is_prime, 1); i = i + 1 }
+  is_prime[0] = 0
+  is_prime[1] = 0
+  var p = 2
+  while p * p <= 1300000 {
+    if is_prime[p] == 1 {
+      var j = p * p
+      while j <= 1300000 { is_prime[j] = 0; j = j + p }
+    }
+    p = p + 1
+  }
+  var primes: list<int> = []
+  var k = 2
+  while k <= 1300000 {
+    if is_prime[k] == 1 { primes = append(primes, k) }
+    k = k + 1
+  }
+  var line = input()
+  while line != "" {
+    var n = int(line)
+    print(str(primes[n - 1]))
+    line = input()
+  }
+}
+
+main()

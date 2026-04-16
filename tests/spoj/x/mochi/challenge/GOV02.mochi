@@ -1,0 +1,100 @@
+// Solution for SPOJ GOV02 - Good Numbers
+// https://www.spoj.com/problems/GOV02/
+// All input on a single line. Parse tokens, find "good" k in [x,y] where S%k=0.
+// Output: (sum of even good k) - (count of odd good k), space-separated.
+
+fun split(s: string): list<string> {
+  var r: list<string> = []
+  var c = ""
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == " " {
+      if len(c) > 0 { r = append(r, c); c = "" }
+    } else { c = c + s[i:i+1] }
+    i = i + 1
+  }
+  if len(c) > 0 { r = append(r, c) }
+  return r
+}
+
+// Parse token as int*1000. Collect digit strings, pad frac to 3 chars.
+fun p1000(s: string): int {
+  var neg = 0
+  var si = 0
+  if s[0:1] == "-" { neg = 1; si = 1 }
+  var ip = ""
+  var fp = ""
+  var inf = 0
+  var i = si
+  while i < len(s) {
+    let c = s[i:i+1]
+    if c == "." { inf = 1 }
+    else if inf == 0 { ip = ip + c }
+    else { fp = fp + c }
+    i = i + 1
+  }
+  while len(fp) < 3 { fp = fp + "0" }
+  if len(ip) == 0 { ip = "0" }
+  var ipv = 0
+  var j = 0
+  while j < len(ip) { ipv = ipv * 10 + int(ip[j:j+1]); j = j + 1 }
+  var fpv = 0
+  var k = 0
+  while k < 3 { fpv = fpv * 10 + int(fp[k:k+1]); k = k + 1 }
+  var v = ipv * 1000 + fpv
+  if neg == 1 { return 0 - v }
+  return v
+}
+
+// Parse integer token (x,y are constrained integers but may look like "10.5")
+fun pint(s: string): int {
+  var v = 0
+  var i = 0
+  while i < len(s) {
+    let c = s[i:i+1]
+    if c == "." { return v }
+    v = v * 10 + int(c)
+    i = i + 1
+  }
+  return v
+}
+
+fun main() {
+  let toks = split(input())
+  let t = pint(toks[0])
+  var cur = 1
+  var tc = 0
+  var out = ""
+  while tc < t {
+    let n = pint(toks[cur])
+    let x = pint(toks[cur+1])
+    let y = pint(toks[cur+2])
+    cur = cur + 3
+    var S = 0
+    var ni = 0
+    while ni < n {
+      S = S + p1000(toks[cur])
+      cur = cur + 1
+      ni = ni + 1
+    }
+    // k is good if S (scaled*1000) divisible by k*1000
+    var sumEven = 0
+    var cntOdd = 0
+    var k = x
+    while k <= y {
+      var km = k * 1000
+      if S % km == 0 {
+        if k % 2 == 0 { sumEven = sumEven + k }
+        else { cntOdd = cntOdd + 1 }
+      }
+      k = k + 1
+    }
+    var m = sumEven - cntOdd
+    if len(out) > 0 { out = out + " " }
+    out = out + str(m)
+    tc = tc + 1
+  }
+  print(out)
+}
+
+main()

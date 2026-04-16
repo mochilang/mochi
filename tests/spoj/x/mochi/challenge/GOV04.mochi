@@ -1,0 +1,73 @@
+// Solution for SPOJ GOV04 - Quadratic Primes
+// https://www.spoj.com/problems/GOV04/
+// Find a,b with |a|<=R, |b|<=R maximizing consecutive primes in n^2+an+b for n=0,1,...
+// b must be prime (n=0 gives b). Trial division for primality.
+// Output: count @ |a*b|. Ties: smallest a, then smallest b.
+
+fun isprime(n: int): int {
+  if n < 2 { return 0 }
+  if n == 2 { return 1 }
+  if n % 2 == 0 { return 0 }
+  var i = 3
+  while i * i <= n {
+    if n % i == 0 { return 0 }
+    i = i + 2
+  }
+  return 1
+}
+
+fun countConsec(a: int, b: int): int {
+  var n = 0
+  while true {
+    var v = n * n + a * n + b
+    if v < 2 { return n }
+    if isprime(v) == 0 { return n }
+    n = n + 1
+  }
+  return n
+}
+
+fun solve(R: int): string {
+  var bestCount = 0
+  var bestA = 0
+  var bestB = 2
+  var a = 0 - R
+  while a <= R {
+    var b = 2
+    while b <= R {
+      if isprime(b) == 1 {
+        let c = countConsec(a, b)
+        if c > bestCount {
+          bestCount = c; bestA = a; bestB = b
+        } else {
+          if c == bestCount {
+            if a < bestA {
+              bestA = a; bestB = b
+            } else {
+              if a == bestA && b < bestB {
+                bestB = b
+              }
+            }
+          }
+        }
+      }
+      b = b + 1
+    }
+    a = a + 1
+  }
+  var prod = bestA * bestB
+  if prod < 0 { prod = 0 - prod }
+  return str(bestCount) + " @ " + str(prod)
+}
+
+fun main() {
+  let T = int(input())
+  var tc = 0
+  while tc < T {
+    let R = int(input())
+    print(solve(R))
+    tc = tc + 1
+  }
+}
+
+main()

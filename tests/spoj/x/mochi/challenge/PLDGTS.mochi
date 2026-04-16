@@ -1,0 +1,50 @@
+// Solution for SPOJ PLDGTS - Summing up Last digits
+// https://www.spoj.com/problems/PLDGTS/
+// F(x) = last digit of first x-digit prime, given for x=1..25.
+// Answer sum F(a)+...+F(b) using prefix sums. F(x)=0 for x>25 (partial credit).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var F: list<int> = []
+  F = append(F, 0)
+  F = append(F, 2); F = append(F, 1); F = append(F, 1); F = append(F, 9); F = append(F, 7)
+  F = append(F, 3); F = append(F, 3); F = append(F, 9); F = append(F, 7); F = append(F, 7)
+  F = append(F, 9); F = append(F, 3); F = append(F, 9); F = append(F, 7); F = append(F, 1)
+  F = append(F, 7); F = append(F, 1); F = append(F, 3); F = append(F, 3); F = append(F, 1)
+  F = append(F, 9); F = append(F, 7); F = append(F, 9); F = append(F, 7); F = append(F, 7)
+  var S: list<int> = []
+  var si = 0
+  while si <= 25 { S = append(S, 0); si = si + 1 }
+  var xi = 1
+  while xi <= 25 { S[xi] = S[xi - 1] + F[xi]; xi = xi + 1 }
+  var t = int(input())
+  var ti = 0
+  while ti < t {
+    var parts = split(input())
+    var a = int(parts[0])
+    var b = int(parts[1])
+    var lo = a - 1
+    var hi = b
+    if lo > 25 { lo = 25 }
+    if hi > 25 { hi = 25 }
+    print(str(S[hi] - S[lo]))
+    ti = ti + 1
+  }
+}
+
+main()

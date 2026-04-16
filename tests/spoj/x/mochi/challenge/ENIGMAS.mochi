@@ -1,0 +1,278 @@
+// Solution for SPOJ ENIGMAS - Enigma Machine Simulation
+// https://www.spoj.com/problems/ENIGMAS/
+// Simulate the 3-rotor M3 Enigma machine.
+// Rotors I-V, Reflector B, plugboard, double-stepping anomaly.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun charToInt(c: string): int {
+  var v = 0
+  if c == "A" { v = 0 }
+  if c == "B" { v = 1 }
+  if c == "C" { v = 2 }
+  if c == "D" { v = 3 }
+  if c == "E" { v = 4 }
+  if c == "F" { v = 5 }
+  if c == "G" { v = 6 }
+  if c == "H" { v = 7 }
+  if c == "I" { v = 8 }
+  if c == "J" { v = 9 }
+  if c == "K" { v = 10 }
+  if c == "L" { v = 11 }
+  if c == "M" { v = 12 }
+  if c == "N" { v = 13 }
+  if c == "O" { v = 14 }
+  if c == "P" { v = 15 }
+  if c == "Q" { v = 16 }
+  if c == "R" { v = 17 }
+  if c == "S" { v = 18 }
+  if c == "T" { v = 19 }
+  if c == "U" { v = 20 }
+  if c == "V" { v = 21 }
+  if c == "W" { v = 22 }
+  if c == "X" { v = 23 }
+  if c == "Y" { v = 24 }
+  if c == "Z" { v = 25 }
+  return v
+}
+
+fun intToChar(v: int): string {
+  let alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  return alpha[v:v+1]
+}
+
+// Build rotor wiring arrays (forward and inverse) for rotors 1-5
+// Returns flat array of 26*5 forward + 26*5 inverse = 260 entries
+fun buildWirings(): list<int> {
+  var w: list<int> = []
+  // Rotor I: EKMFLGDQVZNTOWYHXUSPAIBRCJ
+  let r1 = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
+  // Rotor II: AJDKSIRUXBLHWTMCQGZNPYFVOE
+  let r2 = "AJDKSIRUXBLHWTMCQGZNPYFVOE"
+  // Rotor III: BDFHJLCPRTXVZNYEIWGAKMUSQO
+  let r3 = "BDFHJLCPRTXVZNYEIWGAKMUSQO"
+  // Rotor IV: ESOVPZJAYQUIRHXLNFTGKDCMWB
+  let r4 = "ESOVPZJAYQUIRHXLNFTGKDCMWB"
+  // Rotor V: VZBRGITYUPSDNHLXAWMJQOFECK
+  let r5 = "VZBRGITYUPSDNHLXAWMJQOFECK"
+  var rotors: list<string> = []
+  rotors = append(rotors, r1)
+  rotors = append(rotors, r2)
+  rotors = append(rotors, r3)
+  rotors = append(rotors, r4)
+  rotors = append(rotors, r5)
+  // Build forward wirings (5 rotors * 26)
+  var ri = 0
+  while ri < 5 {
+    var j = 0
+    while j < 26 {
+      w = append(w, charToInt(rotors[ri][j:j+1]))
+      j = j + 1
+    }
+    ri = ri + 1
+  }
+  // Build inverse wirings
+  ri = 0
+  while ri < 5 {
+    var inv: list<int> = []
+    var j = 0
+    while j < 26 { inv = append(inv, 0); j = j + 1 }
+    j = 0
+    while j < 26 {
+      let fwd = charToInt(rotors[ri][j:j+1])
+      inv[fwd] = j
+      j = j + 1
+    }
+    j = 0
+    while j < 26 { w = append(w, inv[j]); j = j + 1 }
+    ri = ri + 1
+  }
+  return w
+}
+
+// Build reflector B inverse (same as forward since it's symmetric)
+fun buildReflector(): list<int> {
+  let refB = "YRUHQSLDPXNGOKMIEBFZCWVJAT"
+  var r: list<int> = []
+  var i = 0
+  while i < 26 { r = append(r, charToInt(refB[i:i+1])); i = i + 1 }
+  return r
+}
+
+// Forward pass through a rotor
+// w: wiring array (260 entries), rotorIdx 0-4, pos 0-25, ring 0-25, signal 0-25
+fun rotorFwd(w: list<int>, rotorIdx: int, pos: int, ring: int, sig: int): int {
+  let offset = (sig + pos - ring + 52) % 26
+  let wired = w[rotorIdx * 26 + offset]
+  return (wired - pos + ring + 52) % 26
+}
+
+// Backward pass through a rotor (using inverse wiring at offset 5*26)
+fun rotorBwd(w: list<int>, rotorIdx: int, pos: int, ring: int, sig: int): int {
+  let offset = (sig + pos - ring + 52) % 26
+  let wired = w[130 + rotorIdx * 26 + offset]
+  return (wired - pos + ring + 52) % 26
+}
+
+// Plugboard swap
+fun plugSwap(plug: list<int>, c: int): int {
+  return plug[c]
+}
+
+// Notch positions: I=Q(16), II=E(4), III=V(21), IV=J(9), V=Z(25)
+fun notch(rotorIdx: int): int {
+  if rotorIdx == 0 { return 16 }
+  if rotorIdx == 1 { return 4 }
+  if rotorIdx == 2 { return 21 }
+  if rotorIdx == 3 { return 9 }
+  return 25
+}
+
+fun main() {
+  let w = buildWirings()
+  let ref = buildReflector()
+
+  let T = int(input())
+  var tc = 0
+  while tc < T {
+    // Read rotor settings line
+    var settLine = input()
+    while settLine == "" { settLine = input() }
+    let sp1 = split(settLine)
+    // sp1[0] = walzenlage (e.g. "123"), sp1[1] = ringstellung, sp1[2] = grundstellung
+    let walz = sp1[0]
+    let rings = sp1[1]
+    let grund = sp1[2]
+
+    // Rotor indices (1-5 → 0-4): left=walz[0], middle=walz[1], right=walz[2]
+    var rL = int(walz[0:1]) - 1
+    var rM = int(walz[1:2]) - 1
+    var rR = int(walz[2:3]) - 1
+
+    // Ring settings
+    let ringL = charToInt(rings[0:1])
+    let ringM = charToInt(rings[1:2])
+    let ringR = charToInt(rings[2:3])
+
+    // Initial positions
+    var posL = charToInt(grund[0:1])
+    var posM = charToInt(grund[1:2])
+    var posR = charToInt(grund[2:3])
+
+    // Plugboard
+    var plug: list<int> = []
+    var pi = 0
+    while pi < 26 { plug = append(plug, pi); pi = pi + 1 }
+    var plugLine = input()
+    while plugLine == "" { plugLine = input() }
+    let ppairs = split(plugLine)
+    pi = 0
+    while pi < len(ppairs) {
+      let pair = ppairs[pi]
+      if len(pair) == 2 {
+        let a = charToInt(pair[0:1])
+        let b = charToInt(pair[1:2])
+        plug[a] = b
+        plug[b] = a
+      }
+      pi = pi + 1
+    }
+
+    // Message
+    var msgLine = input()
+    while msgLine == "" { msgLine = input() }
+    // Collect all letters from message (skip spaces)
+    var letters: list<string> = []
+    var mi = 0
+    while mi < len(msgLine) {
+      let ch = msgLine[mi:mi+1]
+      if ch != " " { letters = append(letters, ch) }
+      mi = mi + 1
+    }
+
+    // Encode each letter
+    var encoded: list<string> = []
+    var li = 0
+    while li < len(letters) {
+      // Step rotors (before encoding each character)
+      // Double-step: check middle notch first
+      let midAtNotch = notch(rM)
+      let rightAtNotch = notch(rR)
+      if posM == midAtNotch {
+        // Middle steps → left also steps
+        posL = (posL + 1) % 26
+        posM = (posM + 1) % 26
+      } else if posR == rightAtNotch {
+        posM = (posM + 1) % 26
+      }
+      posR = (posR + 1) % 26
+
+      // Encode signal
+      var sig = charToInt(letters[li])
+      // Plugboard in
+      sig = plugSwap(plug, sig)
+      // Right → Middle → Left (forward)
+      sig = rotorFwd(w, rR, posR, ringR, sig)
+      sig = rotorFwd(w, rM, posM, ringM, sig)
+      sig = rotorFwd(w, rL, posL, ringL, sig)
+      // Reflector
+      sig = ref[sig]
+      // Left → Middle → Right (backward)
+      sig = rotorBwd(w, rL, posL, ringL, sig)
+      sig = rotorBwd(w, rM, posM, ringM, sig)
+      sig = rotorBwd(w, rR, posR, ringR, sig)
+      // Plugboard out
+      sig = plugSwap(plug, sig)
+      encoded = append(encoded, intToChar(sig))
+      li = li + 1
+    }
+
+    // Format output in quintuple groups matching input grouping
+    // Determine group sizes from msgLine
+    var groups: list<int> = []
+    var gsize = 0
+    mi = 0
+    while mi < len(msgLine) {
+      let ch = msgLine[mi:mi+1]
+      if ch == " " {
+        if gsize > 0 { groups = append(groups, gsize); gsize = 0 }
+      } else {
+        gsize = gsize + 1
+      }
+      mi = mi + 1
+    }
+    if gsize > 0 { groups = append(groups, gsize) }
+
+    var out = ""
+    var idx = 0
+    var gi = 0
+    while gi < len(groups) {
+      if gi > 0 { out = out + " " }
+      var k = 0
+      while k < groups[gi] {
+        out = out + encoded[idx]
+        idx = idx + 1
+        k = k + 1
+      }
+      gi = gi + 1
+    }
+    print(out)
+    tc = tc + 1
+  }
+}
+
+main()
