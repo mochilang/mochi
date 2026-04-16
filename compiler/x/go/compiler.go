@@ -3046,6 +3046,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			c.env = original
 			return "", err
 		}
+		keyType := c.inferExprType(q.Group.Exprs[0])
+		c.groupKeyTypes[sanitizeName(q.Group.Name)] = keyType
+		defer delete(c.groupKeyTypes, sanitizeName(q.Group.Name))
 		child.SetVar(q.Group.Name, gtype, true)
 		c.defaultAlias = ""
 	}
