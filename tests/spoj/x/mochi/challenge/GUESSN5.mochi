@@ -1,0 +1,77 @@
+// Solution for SPOJ GUESSN5 - Guess The Number With Lies v5
+// https://www.spoj.com/problems/GUESSN5/
+// Non-interactive: prepare all queries upfront.
+// Use (2w+1) repetitions of each bit query to get min Hamming distance 2w+1 between codewords.
+// For each bit b, query j = rep*(bits) + b outputs "1" at position x iff bit b of (x-1) is set.
+// Total queries = (2w+1) * ceil(log2 n), guaranteed <= m by constraints.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Returns 1 if bit b (0-indexed from LSB) of v is set, 0 otherwise
+fun hasBit(v: int, b: int): int {
+  var vi = v
+  var bi = b
+  while bi > 0 { vi = int(vi / 2); bi = bi - 1 }
+  return vi % 2
+}
+
+fun main() {
+  let T = int(input())
+  var ti = 0
+  while ti < T {
+    let parts = split(input())
+    let n = int(parts[0])
+    let w = int(parts[1])
+
+    // Find number of bits needed: smallest bits such that 2^bits >= n
+    var bits = 0
+    var pw = 1
+    while pw < n { pw = pw * 2; bits = bits + 1 }
+
+    // Repeat each bit query (2w+1) times for majority-vote tolerance
+    var copies = 2 * w + 1
+    var q = copies * bits
+
+    print(str(q))
+
+    // Output copies repetitions of all bit queries
+    var rep = 0
+    while rep < copies {
+      var bi = 0
+      while bi < bits {
+        // Query: for position x in 1..n, output '1' if bit bi of (x-1) is set
+        var line = ""
+        var xi = 1
+        while xi <= n {
+          if hasBit(xi - 1, bi) == 1 {
+            line = line + "1"
+          } else {
+            line = line + "0"
+          }
+          xi = xi + 1
+        }
+        print(line)
+        bi = bi + 1
+      }
+      rep = rep + 1
+    }
+
+    ti = ti + 1
+  }
+}
+
+main()

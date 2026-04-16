@@ -1,0 +1,96 @@
+// Solution for SPOJ GUESSN2 - Guess The Number With Lies v2
+// https://www.spoj.com/problems/GUESSN2/
+// Interactive binary search with w-lie tolerance via (2w+1)-majority voting per bit.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Returns 1 if bit b (0-indexed from LSB) of v is set, 0 otherwise
+fun hasBit(v: int, b: int): int {
+  var vi = v
+  var bi = b
+  while bi > 0 { vi = int(vi / 2); bi = bi - 1 }
+  return vi % 2
+}
+
+fun main() {
+  let T = int(input())
+  var gi = 0
+  while gi < T {
+    print("START_GAME")
+    let nwm = split(input())
+    let n = int(nwm[0])
+    let w = int(nwm[1])
+
+    // Find number of bits needed: smallest bits such that 2^bits >= n
+    var bits = 0
+    var pw = 1
+    while pw < n { pw = pw * 2; bits = bits + 1 }
+
+    // Ask each bit 2w+1 times and use majority vote to tolerate w lies
+    var copies = 2 * w + 1
+
+    var x = 0
+    var bi = bits - 1
+    while bi >= 0 {
+      // Build S = {xi in 1..n | bit bi of (xi-1) is 1}
+      var S: list<int> = []
+      var xi = 1
+      while xi <= n {
+        if hasBit(xi - 1, bi) == 1 { S = append(S, xi) }
+        xi = xi + 1
+      }
+
+      if len(S) > 0 && len(S) < n {
+        var yes_count = 0
+        var qi = 0
+        while qi < copies {
+          var line = "QUERY " + str(len(S))
+          var si = 0
+          while si < len(S) {
+            line = line + " " + str(S[si])
+            si = si + 1
+          }
+          print(line)
+          let resp = input()
+          if resp == "YES" { yes_count = yes_count + 1 }
+          qi = qi + 1
+        }
+        // Majority: more than half of copies say YES
+        var threshold = w + 1
+        if yes_count >= threshold {
+          // Compute 2^bi
+          var pw2 = 1
+          var pbi = bi
+          while pbi > 0 { pw2 = pw2 * 2; pbi = pbi - 1 }
+          x = x + pw2
+        }
+      }
+      bi = bi - 1
+    }
+
+    let ans = x + 1
+    if ans < 1 || ans > n {
+      print("ANSWER 1")
+    } else {
+      print("ANSWER " + str(ans))
+    }
+
+    gi = gi + 1
+  }
+}
+
+main()
