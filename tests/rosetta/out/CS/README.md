@@ -13,9 +13,9 @@ This directory holds C# source code generated from the real Mochi programs in `t
 - [ ] 21-game
 - [ ] 24-game-solve
 - [ ] 24-game
-- [ ] 4-rings-or-4-squares-puzzle
+- [x] 4-rings-or-4-squares-puzzle
 - [ ] 9-billion-names-of-god-the-integer
-- [x] 99-bottles-of-beer-2
+- [ ] 99-bottles-of-beer-2
 - [x] 99-bottles-of-beer
 - [ ] a+b
 - [x] abbreviations-automatic
