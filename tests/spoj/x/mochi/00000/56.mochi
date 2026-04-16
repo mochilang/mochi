@@ -1,0 +1,131 @@
+// Solution for SPOJ DYZIO - Dyzio
+// https://www.spoj.com/problems/DYZIO/
+// Find the diameter of a weighted tree.
+// Algorithm: Two BFS/DFS passes.
+// 1) BFS from node 0 to find the farthest node u.
+// 2) BFS from u to find the farthest node v; distance u->v is the diameter.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// BFS from src, returns dist array
+fun bfs(n: int, adjHead: list<int>, adjTo: list<int>, adjW: list<int>, src: int): list<int> {
+  var INF = 1000000000
+  var dist: list<int> = []
+  var i = 0
+  while i < n { dist = append(dist, INF); i = i + 1 }
+  dist[src] = 0
+
+  var queue: list<int> = []
+  queue = append(queue, src)
+  var head = 0
+
+  while head < len(queue) {
+    let u = queue[head]
+    head = head + 1
+    let start = adjHead[u]
+    let stop = adjHead[u + 1]
+    var ei = start
+    while ei < stop {
+      let v = adjTo[ei]
+      let w = adjW[ei]
+      if dist[u] + w < dist[v] {
+        dist[v] = dist[u] + w
+        queue = append(queue, v)
+      }
+      ei = ei + 1
+    }
+  }
+  return dist
+}
+
+fun findMax(dist: list<int>): int {
+  var best = 0
+  var i = 1
+  while i < len(dist) {
+    if dist[i] > dist[best] { best = i }
+    i = i + 1
+  }
+  return best
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+
+    // Read n-1 edges
+    var edgeCnt: list<int> = []
+    var i = 0
+    while i <= n { edgeCnt = append(edgeCnt, 0); i = i + 1 }
+
+    var edges: list<int> = []
+    i = 0
+    while i < n - 1 {
+      let ep = split(input())
+      let u = int(ep[0]) - 1
+      let v = int(ep[1]) - 1
+      let w = int(ep[2])
+      edges = append(edges, u)
+      edges = append(edges, v)
+      edges = append(edges, w)
+      edgeCnt[u] = edgeCnt[u] + 1
+      edgeCnt[v] = edgeCnt[v] + 1
+      i = i + 1
+    }
+
+    // Build CSR adjacency list (undirected)
+    var adjHead: list<int> = []
+    adjHead = append(adjHead, 0)
+    i = 0
+    while i < n {
+      adjHead = append(adjHead, adjHead[i] + edgeCnt[i])
+      i = i + 1
+    }
+    let totalEdges = (n - 1) * 2
+    var adjTo: list<int> = []
+    var adjW: list<int> = []
+    i = 0
+    while i < totalEdges { adjTo = append(adjTo, 0); adjW = append(adjW, 0); i = i + 1 }
+    var pos: list<int> = []
+    i = 0
+    while i < n { pos = append(pos, adjHead[i]); i = i + 1 }
+    i = 0
+    while i < n - 1 {
+      let u = edges[i * 3]
+      let v = edges[i * 3 + 1]
+      let w = edges[i * 3 + 2]
+      adjTo[pos[u]] = v
+      adjW[pos[u]] = w
+      pos[u] = pos[u] + 1
+      adjTo[pos[v]] = u
+      adjW[pos[v]] = w
+      pos[v] = pos[v] + 1
+      i = i + 1
+    }
+
+    // Two BFS passes to find diameter
+    let d1 = bfs(n, adjHead, adjTo, adjW, 0)
+    let far1 = findMax(d1)
+    let d2 = bfs(n, adjHead, adjTo, adjW, far1)
+    let far2 = findMax(d2)
+    print(d2[far2])
+
+    line = input()
+  }
+}
+
+main()

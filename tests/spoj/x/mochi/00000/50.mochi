@@ -1,9 +1,11 @@
-// Solution for SPOJ Invitation Cards (INVIT1)
-// https://www.spoj.com/problems/INVIT1/
-// Run Dijkstra from stop 1 on original graph, then on reversed graph.
-// Total cost = sum of (d_forward[i] + d_reverse[i]) for i=2..n.
+// Solution for SPOJ Invitation Cards (INCARDS)
+// https://www.spoj.com/problems/INCARDS/
+// For each test case, output the total min cost for all P party members to:
+// travel from stop 1 to their stop, then return to stop 1.
+// Run Dijkstra from vertex 1 on forward graph and reversed graph.
+// Total = sum over all vertices of (dist_fwd[v] + dist_rev[v]).
 
-fun split(line: string): list<string> {
+fun splitLine(line: string): list<string> {
   var parts: list<string> = []
   var cur = ""
   var i = 0
@@ -19,9 +21,6 @@ fun split(line: string): list<string> {
   return parts
 }
 
-// Dijkstra from src on adjacency lists (adj: node -> list of [to, cost] pairs, stored flat)
-// adjHead[v] = start index in adjTo/adjW for node v
-// adjHead[n] = total edge count
 fun dijkstra(n: int, adjHead: list<int>, adjTo: list<int>, adjW: list<int>, src: int): list<int> {
   var INF = 1000000000
   var dist: list<int> = []
@@ -35,7 +34,6 @@ fun dijkstra(n: int, adjHead: list<int>, adjTo: list<int>, adjW: list<int>, src:
   dist[src] = 0
   var remaining = n
   while remaining > 0 {
-    // Find unvisited node with minimum dist
     var u = 0 - 1
     var best = INF + 1
     var j = 0
@@ -49,7 +47,6 @@ fun dijkstra(n: int, adjHead: list<int>, adjTo: list<int>, adjW: list<int>, src:
     if u == 0 - 1 { break }
     visited[u] = 1
     remaining = remaining - 1
-    // Relax neighbors
     let start = adjHead[u]
     let stop = adjHead[u+1]
     var ei = start
@@ -67,23 +64,24 @@ fun dijkstra(n: int, adjHead: list<int>, adjTo: list<int>, adjW: list<int>, src:
 
 fun main() {
   var tLine = input()
-  while tLine != "" {
-    let p1 = split(tLine)
+  if tLine == "" { return }
+  let T = int(tLine)
+  var ti = 0
+  while ti < T {
+    let nmLine = input()
+    let p1 = splitLine(nmLine)
     let n = int(p1[0])
     let m = int(p1[1])
 
-    // Build adjacency lists (CSR format) for forward and reverse graphs
-    // First count degrees
     var fwdCount: list<int> = []
     var revCount: list<int> = []
     var i = 0
     while i <= n { fwdCount = append(fwdCount, 0); revCount = append(revCount, 0); i = i + 1 }
 
-    // Read edges
     var edges: list<int> = []
     i = 0
     while i < m {
-      let ep = split(input())
+      let ep = splitLine(input())
       let a = int(ep[0]) - 1
       let b = int(ep[1]) - 1
       let c = int(ep[2])
@@ -95,7 +93,6 @@ fun main() {
       i = i + 1
     }
 
-    // Build CSR head arrays
     var fwdHead: list<int> = []
     var revHead: list<int> = []
     fwdHead = append(fwdHead, 0)
@@ -107,7 +104,6 @@ fun main() {
       i = i + 1
     }
 
-    // Fill adjacency arrays
     var fwdTo: list<int> = []
     var fwdW: list<int> = []
     var revTo: list<int> = []
@@ -146,14 +142,14 @@ fun main() {
     let rev = dijkstra(n, revHead, revTo, revW, 0)
 
     var total = 0
-    i = 1
+    i = 0
     while i < n {
       total = total + fwd[i] + rev[i]
       i = i + 1
     }
     print(total)
 
-    tLine = input()
+    ti = ti + 1
   }
 }
 

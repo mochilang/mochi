@@ -1,0 +1,95 @@
+// Solution for SPOJ CUTSQRS - Cutting off Squares
+// https://www.spoj.com/problems/CUTSQRS/
+
+fun split(s: string): list<string> {
+  var res: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\t" {
+      if cur != "" { res = append(res, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { res = append(res, cur) }
+  return res
+}
+
+fun calcT(a0: int, b0: int): int {
+  var a = a0
+  var b = b0
+  var t = 0
+  while true {
+    if a > b {
+      let tmp = a
+      a = b
+      b = tmp
+    }
+    let q = b / a
+    let r = b % a
+    t = t + q - 1
+    if r == 0 { break }
+    b = a
+    a = r
+  }
+  return t
+}
+
+fun firstWins(a0: int, b0: int): bool {
+  var a = a0
+  var b = b0
+  var first = true
+  while true {
+    if a > b {
+      let tmp = a
+      a = b
+      b = tmp
+    }
+    let q = b / a
+    let r = b % a
+    if r == 0 || q >= 2 {
+      return first
+    }
+    b = a
+    a = r
+    first = !first
+  }
+}
+
+fun digitsPow2(e: int): int {
+  if e == 0 { return 1 }
+  let x = (e as float) * 0.3010299956639812
+  return (x + 1e-12) as int + 1
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var idx = 0
+  while idx < t {
+    var line = input()
+    while line == "" { line = input() }
+    let ps = split(line)
+    let a = int(ps[0])
+    let b = int(ps[1])
+    let exp = calcT(a, b)
+    let dN = digitsPow2(exp)
+    var dW = 1
+    if exp > 0 { dW = digitsPow2(exp - 1) }
+    let win = firstWins(a, b)
+    var total = dN + dW
+    if win {
+      total = total + 5
+    } else {
+      total = total + 6
+    }
+    print(total)
+    idx = idx + 1
+  }
+}
+
+main()

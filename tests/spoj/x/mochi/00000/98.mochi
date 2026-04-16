@@ -1,0 +1,140 @@
+// Solution for SPOJ DFLOOR - Dance Floor
+// https://www.spoj.com/problems/DFLOOR/
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+let digits = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var n = 0
+  while i < len(str) {
+    n = n * 10 + (digits[str[i:i+1]] as int)
+    i = i + 1
+  }
+  return n
+}
+
+fun press(grid: list<list<int>>, x: int, y: int, col: int, row: int) {
+  grid[row][col] = 1 - grid[row][col]
+  if col > 0 { grid[row][col-1] = 1 - grid[row][col-1] }
+  if col + 1 < x { grid[row][col+1] = 1 - grid[row][col+1] }
+  if row > 0 { grid[row-1][col] = 1 - grid[row-1][col] }
+  if row + 1 < y { grid[row+1][col] = 1 - grid[row+1][col] }
+}
+
+fun solve(x: int, y: int, init: list<list<int>>): map<string, any> {
+  var limit = 1
+  var t = 0
+  while t < x { limit = limit * 2; t = t + 1 }
+  var first = 0
+  while first < limit {
+    // copy grid
+    var g: list<list<int>> = []
+    var r = 0
+    while r < y {
+      var row: list<int> = []
+      var c = 0
+      while c < x {
+        row = append(row, init[r][c])
+        c = c + 1
+      }
+      g = append(g, row)
+      r = r + 1
+    }
+    var steps: list<map<string,int>> = []
+    var bits = first
+    var c = 0
+    while c < x {
+      if bits % 2 == 1 {
+        press(g, x, y, c, 0)
+        steps = append(steps, { i: c + 1, j: 1 })
+      }
+      bits = bits / 2
+      c = c + 1
+    }
+    var row = 1
+    while row < y {
+      c = 0
+      while c < x {
+        if g[row-1][c] == 0 {
+          press(g, x, y, c, row)
+          steps = append(steps, { i: c + 1, j: row + 1 })
+        }
+        c = c + 1
+      }
+      row = row + 1
+    }
+    var ok = true
+    c = 0
+    while c < x {
+      if g[y-1][c] != 1 { ok = false; break }
+      c = c + 1
+    }
+    if ok { return { ok: true, steps: steps } }
+    first = first + 1
+  }
+  return { ok: false, steps: [] }
+}
+
+fun main() {
+  while true {
+    var line = input()
+    if line == "" { return }
+    let parts = split(line)
+    if len(parts) == 0 { continue }
+    let x = parseIntStr(parts[0])
+    let y = parseIntStr(parts[1])
+    if x == 0 && y == 0 { break }
+    var init: list<list<int>> = []
+    var j = 0
+    while j < y {
+      line = input()
+      if len(line) == 0 { continue }
+      var row: list<int> = []
+      var k = 0
+      while k < x {
+        if line[k:k+1] == "1" { row = append(row, 1) } else { row = append(row, 0) }
+        k = k + 1
+      }
+      init = append(init, row)
+      j = j + 1
+    }
+    let res = solve(x, y, init)
+    if !(res["ok"] as bool) {
+      print("-1")
+    } else {
+      let steps = res["steps"] as list<map<string,int>>
+      print(str(len(steps)))
+      var s = 0
+      while s < len(steps) {
+        let st = steps[s]
+        print(str(st["i"]) + " " + str(st["j"]))
+        s = s + 1
+      }
+    }
+  }
+}
+
+main()

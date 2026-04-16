@@ -1,18 +1,71 @@
-// Solution for SPOJ FACT0 - Factorial!
-// https://www.spoj.com/problems/FACT0/
-// Mochi's int is arbitrary precision; compute n! iteratively.
+// Solution for SPOJ DANCE - The Gordian Dance
+// https://www.spoj.com/problems/DANCE/
+// Given n cards, perform a perfect riffle (in-)shuffle repeatedly.
+// In-shuffle: split deck into two equal halves, interleave bottom-half-first.
+// Find the number of shuffles needed to return to original order.
+// This equals the LCM of all cycle lengths in the shuffle permutation.
+// Permutation: card at position i goes to:
+//   i < n/2  -> position 2*i + 1
+//   i >= n/2 -> position 2*i - n  (i.e., 2*(i - n/2))
+
+fun gcd(a: int, b: int): int {
+  while b != 0 {
+    let t = b
+    b = a % b
+    a = t
+  }
+  return a
+}
+
+fun lcm(a: int, b: int): int {
+  return int(a / gcd(a, b)) * b
+}
+
+fun solve(n: int): int {
+  var half = int(n / 2)
+  // Build permutation
+  var perm: list<int> = []
+  var i = 0
+  while i < n { perm = append(perm, 0); i = i + 1 }
+  i = 0
+  while i < half {
+    perm[i] = 2 * i + 1
+    perm[half + i] = 2 * i
+    i = i + 1
+  }
+  // Handle odd n: the last card stays in place
+  if n % 2 == 1 {
+    perm[n - 1] = n - 1
+  }
+
+  // Find cycle lengths and compute LCM
+  var visited: list<int> = []
+  i = 0
+  while i < n { visited = append(visited, 0); i = i + 1 }
+
+  var result = 1
+  i = 0
+  while i < n {
+    if visited[i] == 0 {
+      var cycle = 0
+      var j = i
+      while visited[j] == 0 {
+        visited[j] = 1
+        j = perm[j]
+        cycle = cycle + 1
+      }
+      result = lcm(result, cycle)
+    }
+    i = i + 1
+  }
+  return result
+}
 
 fun main() {
   var line = input()
   while line != "" {
     let n = int(line)
-    var result = 1
-    var i = 2
-    while i <= n {
-      result = result * i
-      i = i + 1
-    }
-    print(result)
+    print(solve(n))
     line = input()
   }
 }

@@ -1,5 +1,5 @@
-// Solution for SPOJ PLAY - Play on Words
-// https://www.spoj.com/problems/PLAY/
+// Solution for SPOJ WORDS1 - Play on Words
+// https://www.spoj.com/problems/WORDS1/
 // Check if words can be chained: Eulerian path/circuit in directed graph.
 
 let aOrd = {
