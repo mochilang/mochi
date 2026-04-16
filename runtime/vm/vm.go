@@ -3,6 +3,7 @@ package vm
 import (
 	"bufio"
 	"crypto/sha256"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -169,6 +170,7 @@ const (
 	OpModInt
 	OpModFloat
 	OpPow
+	OpRound
 	OpEqualInt
 	OpEqualFloat
 	OpLessInt
@@ -552,8 +554,6 @@ func (p *Program) Disassemble(src string) string {
 			case OpIterPrep:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpCount:
-				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
-			case OpFirst:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpExists:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))

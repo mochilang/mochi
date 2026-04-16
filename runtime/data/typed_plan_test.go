@@ -65,7 +65,7 @@ func TestTypedPlanValid(t *testing.T) {
 		if q == nil {
 			return nil, fmt.Errorf("no query found")
 		}
-		pl, typ, err := planpkg.Build(q, env)
+		pl, typ, err := types.BuildQueryPlanWithType(q, env)
 		if err != nil {
 			return nil, err
 		}
@@ -89,7 +89,7 @@ func TestTypedPlanErrors(t *testing.T) {
 		if q == nil {
 			return nil, fmt.Errorf("no query found")
 		}
-		_, _, err = planpkg.Build(q, env)
+		_, _, err = types.BuildQueryPlanWithType(q, env)
 		if err == nil {
 			return nil, fmt.Errorf("expected error, got nil")
 		}

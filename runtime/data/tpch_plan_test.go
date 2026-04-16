@@ -25,7 +25,7 @@ func TestTPCHPlans(t *testing.T) {
 		if q == nil {
 			return nil, fmt.Errorf("no query found")
 		}
-		pl, typ, err := planpkg.Build(q, env)
+		pl, typ, err := types.BuildQueryPlanWithType(q, env)
 		if err != nil {
 			return nil, err
 		}

@@ -229,13 +229,14 @@ type AssignStmt struct {
 }
 
 type FunStmt struct {
-	Pos    lexer.Position `json:"pos,omitempty" parser:""`
-	Export bool           `json:"export,omitempty" parser:"[ @'export' ]"`
-	Name   string         `json:"name,omitempty" parser:"'fun' @Ident"`
-	Doc    string         `json:"doc,omitempty" parser:""`
-	Params []*Param       `json:"params,omitempty" parser:"'(' [ @@ { ',' @@ } ] ')'"`
-	Return *TypeRef       `json:"return,omitempty" parser:"[ ':' @@ ]"`
-	Body   []*Statement   `json:"body,omitempty" parser:"'{' @@* '}'"`
+	Pos        lexer.Position `json:"pos,omitempty" parser:""`
+	Export     bool           `json:"export,omitempty" parser:"[ @'export' ]"`
+	Name       string         `json:"name,omitempty" parser:"'fun' @Ident"`
+	Doc        string         `json:"doc,omitempty" parser:""`
+	TypeParams []string       `json:"type_params,omitempty"`
+	Params     []*Param       `json:"params,omitempty" parser:"'(' [ @@ { ',' @@ } ] ')'"`
+	Return     *TypeRef       `json:"return,omitempty" parser:"[ ':' @@ ]"`
+	Body       []*Statement   `json:"body,omitempty" parser:"'{' @@* '}'"`
 }
 
 type ReturnStmt struct {
@@ -548,11 +549,12 @@ type Primary struct {
 }
 
 type FunExpr struct {
-	Pos       lexer.Position `json:"pos,omitempty" parser:""`
-	Params    []*Param       `json:"params,omitempty" parser:"'fun' '(' [ @@ { ',' @@ } ] ')'"`
-	Return    *TypeRef       `json:"return,omitempty" parser:"[ ':' @@ ]"`
-	BlockBody []*Statement   `json:"blockbody,omitempty" parser:"[ '{' @@* '}' ]"`
-	ExprBody  *Expr          `json:"exprbody,omitempty" parser:"[ '=>' @@ ]"`
+	Pos        lexer.Position `json:"pos,omitempty" parser:""`
+	Params     []*Param       `json:"params,omitempty" parser:"'fun' '(' [ @@ { ',' @@ } ] ')'"`
+	Return     *TypeRef       `json:"return,omitempty" parser:"[ ':' @@ ]"`
+	TypeParams []string       `json:"type_params,omitempty"`
+	BlockBody  []*Statement   `json:"blockbody,omitempty" parser:"[ '{' @@* '}' ]"`
+	ExprBody   *Expr          `json:"exprbody,omitempty" parser:"[ '=>' @@ ]"`
 }
 
 // --- Atoms ---
