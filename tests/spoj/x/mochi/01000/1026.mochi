@@ -1,0 +1,39 @@
+// Solution for SPOJ FAVDICE - Favorite Dice
+// https://www.spoj.com/problems/FAVDICE/
+// Expected rolls to see all n faces = n * H(n) where H(n) = 1 + 1/2 + ... + 1/n.
+
+fun fmtDecimal(x: float, places: int): string {
+  var neg = 0
+  if x < 0.0 { neg = 1; x = 0.0 - x }
+  var mult = 1.0
+  var i = 0
+  while i < places { mult = mult * 10.0; i = i + 1 }
+  let scaled = int(x * mult + 0.5)
+  let imult = int(mult)
+  let intPart = int(scaled / imult)
+  let fracPart = scaled % imult
+  var fracStr = str(fracPart)
+  while len(fracStr) < places { fracStr = "0" + fracStr }
+  var res = str(intPart) + "." + fracStr
+  if neg == 1 { res = "-" + res }
+  return res
+}
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let n = int(input())
+    var h = 0.0
+    var k = 1
+    while k <= n {
+      h = h + 1.0 / (k as float)
+      k = k + 1
+    }
+    let expected = (n as float) * h
+    print(fmtDecimal(expected, 2))
+    ti = ti + 1
+  }
+}
+
+main()

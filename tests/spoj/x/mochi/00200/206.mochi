@@ -1,0 +1,116 @@
+// Solution for SPOJ Bitmap (BITMAP)
+// https://www.spoj.com/problems/BITMAP/
+// Multi-source BFS from all 1-cells to find nearest 1 for every cell.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let nm = split(input())
+    let rows = int(nm[0])
+    let cols = int(nm[1])
+    let total = rows * cols
+    let INF = 1000000000
+
+    // Read grid and initialize dist
+    var dist: list<int> = []
+    var grid: list<string> = []
+    var r = 0
+    while r < rows {
+      grid = append(grid, input())
+      r = r + 1
+    }
+
+    // Initialize dist flat array and BFS queue
+    var q: list<int> = []
+    r = 0
+    while r < rows {
+      var c = 0
+      while c < cols {
+        if grid[r][c:c+1] == "1" {
+          dist = append(dist, 0)
+          q = append(q, r * cols + c)
+        } else {
+          dist = append(dist, INF)
+        }
+        c = c + 1
+      }
+      r = r + 1
+    }
+
+    // BFS with head pointer
+    var head = 0
+    while head < len(q) {
+      let idx = q[head]
+      head = head + 1
+      let cr = int(idx / cols)
+      let cc = idx - cr * cols
+      let d = dist[idx]
+
+      // Up
+      if cr > 0 {
+        let ni = (cr - 1) * cols + cc
+        if dist[ni] > d + 1 {
+          dist[ni] = d + 1
+          q = append(q, ni)
+        }
+      }
+      // Down
+      if cr < rows - 1 {
+        let ni = (cr + 1) * cols + cc
+        if dist[ni] > d + 1 {
+          dist[ni] = d + 1
+          q = append(q, ni)
+        }
+      }
+      // Left
+      if cc > 0 {
+        let ni = cr * cols + (cc - 1)
+        if dist[ni] > d + 1 {
+          dist[ni] = d + 1
+          q = append(q, ni)
+        }
+      }
+      // Right
+      if cc < cols - 1 {
+        let ni = cr * cols + (cc + 1)
+        if dist[ni] > d + 1 {
+          dist[ni] = d + 1
+          q = append(q, ni)
+        }
+      }
+    }
+
+    // Output
+    r = 0
+    while r < rows {
+      var out = ""
+      var c = 0
+      while c < cols {
+        if c > 0 { out = out + " " }
+        out = out + str(dist[r * cols + c])
+        c = c + 1
+      }
+      print(out)
+      r = r + 1
+    }
+
+    ti = ti + 1
+  }
+}
+
+main()

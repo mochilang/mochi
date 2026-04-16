@@ -1,0 +1,37 @@
+// Solution for SPOJ Fashion Shows (FASHION)
+// https://www.spoj.com/problems/FASHION/
+// Total score = sum(top[i] + bottom[perm[i]]) = sum(all tops) + sum(all bottoms).
+// Any permutation yields the same total, so just sum all values.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let n = int(input())
+    var total = 0
+    var i = 0
+    while i < n {
+      let parts = split(input())
+      total = total + int(parts[0]) + int(parts[1])
+      i = i + 1
+    }
+    print(total)
+    ti = ti + 1
+  }
+}
+
+main()
