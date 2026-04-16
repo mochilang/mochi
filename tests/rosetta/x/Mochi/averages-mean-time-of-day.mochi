@@ -28,6 +28,7 @@ fun cosApprox(x: float): float {
 }
 
 fun atanApprox(x: float): float {
+  let PI = 3.141592653589793
   if x > 1.0 { return PI/2.0 - x/(x*x + 0.28) }
   if x < (-1.0) { return -PI/2.0 - x/(x*x + 0.28) }
   return x/(1.0 + 0.28*x*x)
@@ -72,6 +73,7 @@ fun pad(n: int): string {
 }
 
 fun meanTime(times: list<string>): string {
+  let PI = 3.141592653589793
   var ssum = 0.0
   var csum = 0.0
   var i = 0
