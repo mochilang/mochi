@@ -1,0 +1,50 @@
+// Solution for SPOJ PLCNUM2 - Place the Numbers II
+// https://www.spoj.com/problems/PLCNUM2/
+// Fill N×N board with 1..N² to maximize sum of Manhattan distances
+// between consecutive numbers (1→2, 2→3, ..., N²→1).
+// Strategy: checkerboard split - odd numbers on (row+col even) cells,
+// even numbers on (row+col odd) cells, both in row-major order.
+// Consecutive numbers always land on opposite-color cells (not adjacent).
+
+fun main() {
+  let n = int(input())
+  // grid[r*n+c] = number placed at (r,c)
+  var grid: list<int> = []
+  var i = 0
+  while i < n * n { grid = append(grid, 0); i = i + 1 }
+
+  // Assign: black cells (row+col even) get 1,3,5,...; white get 2,4,6,...
+  var odd_num = 1
+  var even_num = 2
+  var r = 0
+  while r < n {
+    var c = 0
+    while c < n {
+      if (r + c) % 2 == 0 {
+        grid[r * n + c] = odd_num
+        odd_num = odd_num + 2
+      } else {
+        grid[r * n + c] = even_num
+        even_num = even_num + 2
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+
+  // Print grid
+  r = 0
+  while r < n {
+    var row_str = ""
+    var c = 0
+    while c < n {
+      if c > 0 { row_str = row_str + " " }
+      row_str = row_str + str(grid[r * n + c])
+      c = c + 1
+    }
+    print(row_str)
+    r = r + 1
+  }
+}
+
+main()

@@ -1,0 +1,26 @@
+// Solution for SPOJ BFSTR1 - Strchr in BF
+// https://www.spoj.com/problems/BFSTR1/
+// T test cases (2-digit). Each line: char C, space, string STR.
+// Print 1-indexed position of first C in STR, or 0 if not found.
+
+fun main() {
+  let t = int(input())
+  var i = 0
+  while i < t {
+    let line = input()
+    let c = line[0:1]
+    let str = line[2:len(line)]
+    var found = 0
+    var j = 0
+    while j < len(str) {
+      if found == 0 {
+        if str[j:j+1] == c { found = j + 1 }
+      }
+      j = j + 1
+    }
+    print(found)
+    i = i + 1
+  }
+}
+
+main()

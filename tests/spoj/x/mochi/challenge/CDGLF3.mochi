@@ -1,0 +1,63 @@
+// SPOJ CDGLF3 - Mr Phoenix And OR Operation
+// For each right endpoint r, maintain list of distinct OR values of subarrays ending at r.
+// At most log(max_val) such values. Use a map to count distinct values globally.
+
+fun split(s: string): list<string> {
+  var r: list<string> = []
+  var c = ""
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == " " {
+      if len(c) > 0 { r = append(r, c); c = "" }
+    } else { c = c + s[i:i+1] }
+    i = i + 1
+  }
+  if len(c) > 0 { r = append(r, c) }
+  return r
+}
+
+fun main() {
+  let t = int(input())
+  var tc = 0
+  while tc < t {
+    let n = int(input())
+    let nums = split(input())
+    var seen: map<int, int> = {}
+    var count = 0
+    // cur: distinct OR values for subarrays ending at current index
+    var cur: list<int> = []
+    var i = 0
+    while i < n {
+      let x = int(nums[i])
+      var next: list<int> = []
+      var j = 0
+      while j < len(cur) {
+        let v = cur[j] | x
+        if len(next) == 0 {
+          next = append(next, v)
+        } else if next[len(next)-1] != v {
+          next = append(next, v)
+        }
+        j = j + 1
+      }
+      // add x itself (subarray [i..i])
+      if len(next) == 0 {
+        next = append(next, x)
+      } else if next[len(next)-1] != x {
+        next = append(next, x)
+      }
+      cur = next
+      // count new distinct values
+      var k = 0
+      while k < len(cur) {
+        if seen[cur[k]] == 0 { count = count + 1; seen[cur[k]] = 1 }
+        k = k + 1
+      }
+      i = i + 1
+    }
+    print(count)
+    tc = tc + 1
+  }
+}
+
+main()

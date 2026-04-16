@@ -1,0 +1,71 @@
+// Solution for SPOJ CDGLF4 - Majority Party
+// https://www.spoj.com/problems/CDGLF4/
+// N houses with party votes. M queries (l,r): find if a party appears
+// more than floor((r-l+1)/2) times in [l,r]. Print "yes" or "no".
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let n = int(input())
+  let voteLine = split(input())
+  var votes: list<int> = []
+  var i = 0
+  while i < n { votes = append(votes, int(voteLine[i])); i = i + 1 }
+
+  let m = int(input())
+  var q = 0
+  while q < m {
+    let lr = split(input())
+    let l = int(lr[0]) - 1
+    let r = int(lr[1]) - 1
+    let sz = r - l + 1
+    let need = int(sz / 2) + 1
+
+    // Boyer-Moore majority vote on range [l,r]
+    var cand = 0
+    var cnt = 0
+    var k = l
+    while k <= r {
+      if cnt == 0 {
+        cand = votes[k]
+        cnt = 1
+      } else {
+        if votes[k] == cand {
+          cnt = cnt + 1
+        } else {
+          cnt = cnt - 1
+        }
+      }
+      k = k + 1
+    }
+    // Verify candidate
+    var freq = 0
+    k = l
+    while k <= r {
+      if votes[k] == cand { freq = freq + 1 }
+      k = k + 1
+    }
+    if freq >= need {
+      print("yes")
+    } else {
+      print("no")
+    }
+    q = q + 1
+  }
+}
+
+main()

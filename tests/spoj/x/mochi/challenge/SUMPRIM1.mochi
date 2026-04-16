@@ -1,0 +1,88 @@
+// Solution for SPOJ SUMPRIM1 - Sum of Primes
+// https://www.spoj.com/problems/SUMPRIM1/
+// Sum of all primes up to N (N <= 2e9).
+// Uses Lucy_Hedgehog prime-sum sieve: O(N^(3/4)) time, O(sqrt(N)) space.
+// S[v] = sum of primes <= v; initialize assuming all are prime, then sieve.
+
+fun tri(v: int): int {
+  let h: int = int(v / 2)
+  let v1: int = v + 1
+  return h * v1 + v % 2 * int(v1 / 2) - 1
+}
+
+fun isqrt(n: int): int {
+  if n < 1 { return 0 }
+  var x: int = n
+  var y: int = int(n / 2) + 1
+  while y < x {
+    x = y
+    let nx: int = int(n / x)
+    y = int((x + nx) / 2)
+  }
+  return x
+}
+
+fun main() {
+  let N = int(input())
+  let sqN = isqrt(N)
+
+  // small[v] = S[v] for v <= sqN  (indices 0..sqN)
+  // large[k] = S[floor(N/k)] for k=1..sqN  (indices 1..sqN)
+  var small: list<int> = []
+  var large: list<int> = []
+  var i: int = 0
+  while i <= sqN {
+    small = append(small, tri(i))
+    large = append(large, 0)
+    i = i + 1
+  }
+  var k: int = 1
+  while k <= sqN {
+    let v: int = int(N / k)
+    large[k] = tri(v)
+    k = k + 1
+  }
+
+  var p: int = 2
+  while p <= sqN {
+    // p is prime if S[p] > S[p-1] (still in small, not yet sieved out)
+    if small[p] > small[p - 1] {
+      let sp1: int = small[p - 1]
+      let p2: int = p * p
+      // Update large[k] for all k where floor(N/k) >= p^2
+      k = 1
+      while k <= sqN {
+        let v: int = int(N / k)
+        if v < p2 { k = sqN + 1 } else {
+          // floor(v/p): if <= sqN use small, else use large[k*p]
+          let vp: int = int(v / p)
+          var svp: int = 0
+          if vp <= sqN {
+            svp = small[vp]
+          } else {
+            svp = large[k * p]
+          }
+          large[k] = large[k] - p * (svp - sp1)
+          k = k + 1
+        }
+      }
+      // Update small[v] for v from sqN down to p^2
+      var v: int = sqN
+      while v >= p2 {
+        let vp: int = int(v / p)
+        small[v] = small[v] - p * (small[vp] - sp1)
+        v = v - 1
+      }
+    }
+    p = p + 1
+  }
+
+  // S[N] = large[1] when N > sqN (always true for N > 1)
+  if N <= sqN {
+    print(str(small[N]))
+  } else {
+    print(str(large[1]))
+  }
+}
+
+main()
