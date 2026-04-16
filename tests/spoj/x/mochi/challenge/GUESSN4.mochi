@@ -1,0 +1,144 @@
+// Solution for SPOJ GUESSN4 - Guess The Number With Lies v4
+// https://www.spoj.com/problems/GUESSN4/
+// Non-interactive: prepare all queries upfront.
+// Use a 1-error-correcting code (min Hamming distance 3) as codewords for x=1..n.
+// Output q queries where query[j] = bit j of codeword(x) for each x=1..n.
+// Score is q^2 (lower is better). We greedily find minimum q.
+
+// Extract bit j (0-indexed from LSB) of integer v
+fun getbit(v: int, j: int): int {
+  var vi = v
+  var ji = j
+  while ji > 0 {
+    vi = int(vi / 2)
+    ji = ji - 1
+  }
+  return vi % 2
+}
+
+// Hamming distance between two codewords (stored as flat lists of bits, starting at offset oa, ob)
+fun hamdist(cws: list<int>, oa: int, ob: int, q: int): int {
+  var d = 0
+  var i = 0
+  while i < q {
+    if cws[oa + i] != cws[ob + i] {
+      d = d + 1
+    }
+    i = i + 1
+  }
+  return d
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let T = int(input())
+  var tc = 0
+  while tc < T {
+    let parts = split(input())
+    let n = int(parts[0])
+
+    // Find minimum q such that we can greedily find n codewords with pairwise distance >= 3
+    // cws: flat list storing codewords row by row, each row has q bits
+    // We try q=1,2,3,... until we have enough codewords
+
+    var q = 1
+    var done = 0
+    var cws: list<int> = []
+    var numCws = 0
+
+    while done == 0 {
+      // Try to build n codewords of length q with pairwise Hamming dist >= 3
+      // Enumerate candidates v=0,1,...,2^q-1 and greedily pick
+      cws = []
+      numCws = 0
+
+      // 2^q: compute it
+      var pow2q = 1
+      var qi = 0
+      while qi < q { pow2q = pow2q * 2; qi = qi + 1 }
+
+      var v = 0
+      while v < pow2q && numCws < n {
+        // Convert v to bits
+        var bits: list<int> = []
+        var bj = 0
+        while bj < q {
+          bits = append(bits, getbit(v, bj))
+          bj = bj + 1
+        }
+
+        // Check distance >= 3 from all existing codewords
+        var ok = 1
+        var ci = 0
+        while ci < numCws && ok == 1 {
+          let d = hamdist(cws, ci * q, numCws * q, q)
+          // Wait - we're appending bits to cws after checking, so offset for ci is ci*q
+          // and candidate is in bits[] not yet in cws
+          // Recompute: check bits against cws[ci*q .. ci*q+q-1]
+          var dd = 0
+          var bi2 = 0
+          while bi2 < q {
+            if bits[bi2] != cws[ci * q + bi2] {
+              dd = dd + 1
+            }
+            bi2 = bi2 + 1
+          }
+          if dd < 3 { ok = 0 }
+          ci = ci + 1
+        }
+
+        if ok == 1 {
+          // Add bits to cws
+          var bk = 0
+          while bk < q {
+            cws = append(cws, bits[bk])
+            bk = bk + 1
+          }
+          numCws = numCws + 1
+        }
+        v = v + 1
+      }
+
+      if numCws >= n {
+        done = 1
+      } else {
+        q = q + 1
+      }
+    }
+
+    // Output q (number of queries)
+    print(str(q))
+
+    // Output q queries: query j is bit j of each codeword x=0..n-1
+    var j = 0
+    while j < q {
+      var row = ""
+      var xi = 0
+      while xi < n {
+        row = row + str(cws[xi * q + j])
+        xi = xi + 1
+      }
+      print(row)
+      j = j + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()
