@@ -1,0 +1,75 @@
+// Solution for SPOJ TRIP - Trip
+// https://www.spoj.com/problems/TRIP/
+// Find all distinct LCS strings of two input strings, in lexicographic order.
+
+fun lcsat(lcs: list<int>, i: int, m: int, j: int): int {
+  return lcs[i * (m + 1) + j]
+}
+
+fun findFirst(s: string, n: int, start: int, c: string): int {
+  var i = start
+  while i < n {
+    if s[i:i+1] == c { return i }
+    i = i + 1
+  }
+  return 0 - 1
+}
+
+fun genLCS(s: string, t: string, lcs: list<int>, n: int, m: int, si: int, tj: int, remaining: int, prefix: string) {
+  if remaining == 0 { print(prefix); return }
+  let alphabet = "abcdefghijklmnopqrstuvwxyz"
+  var ci = 0
+  while ci < 26 {
+    let c = alphabet[ci:ci+1]
+    let p = findFirst(s, n, si, c)
+    let q = findFirst(t, m, tj, c)
+    if p >= 0 && q >= 0 && lcsat(lcs, p+1, m, q+1) == remaining - 1 {
+      genLCS(s, t, lcs, n, m, p+1, q+1, remaining-1, prefix+c)
+    }
+    ci = ci + 1
+  }
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var s = input()
+    while s == "" { s = input() }
+    var tt = input()
+    while tt == "" { tt = input() }
+
+    let n = len(s)
+    let m = len(tt)
+
+    // Build lcs table: lcs[i][j] = LCS of s[i:] and t[j:]
+    var lcs: list<int> = []
+    var idx = 0
+    while idx < (n+1)*(m+1) { lcs = append(lcs, 0); idx = idx + 1 }
+
+    var i = n - 1
+    while i >= 0 {
+      var j = m - 1
+      while j >= 0 {
+        if s[i:i+1] == tt[j:j+1] {
+          lcs[i*(m+1)+j] = lcs[(i+1)*(m+1)+(j+1)] + 1
+        } else {
+          let a = lcs[(i+1)*(m+1)+j]
+          let b = lcs[i*(m+1)+(j+1)]
+          if a > b { lcs[i*(m+1)+j] = a } else { lcs[i*(m+1)+j] = b }
+        }
+        j = j - 1
+      }
+      i = i - 1
+    }
+
+    let L = lcs[0]
+    genLCS(s, tt, lcs, n, m, 0, 0, L, "")
+    print("")
+    ti = ti + 1
+  }
+}
+
+main()
