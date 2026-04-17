@@ -2,6 +2,7 @@ program TwoSum;
 
 var
   t, tc, n, target, i, j, a, b: LongInt;
+  found: Boolean;
   nums: array of LongInt;
 
 begin
@@ -17,6 +18,7 @@ begin
       Read(nums[i]);
     a := 0;
     b := 0;
+    found := False;
     for i := 0 to n - 1 do
     begin
       for j := i + 1 to n - 1 do
@@ -25,10 +27,11 @@ begin
         begin
           a := i;
           b := j;
+          found := True;
           Break;
         end;
       end;
-      if nums[a] + nums[b] = target then
+      if found then
         Break;
     end;
     WriteLn(a, ' ', b);

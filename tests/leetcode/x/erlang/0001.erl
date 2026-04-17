@@ -12,14 +12,14 @@ main(_) ->
             io:format("~s", [string:join(Lines, "\n")])
     end.
 
-solve(Rest, 0, Acc) ->
+solve(_, 0, Acc) ->
     lists:reverse(Acc);
 solve([N, Target | Rest], T, Acc) ->
     {Nums, Tail} = lists:split(N, Rest),
     {A, B} = two_sum(Nums, Target, 0),
     solve(Tail, T - 1, [integer_to_list(A) ++ " " ++ integer_to_list(B) | Acc]).
 
-two_sum(Nums, Target, I) when I >= length(Nums) ->
+two_sum(Nums, _Target, I) when I >= length(Nums) ->
     {0, 0};
 two_sum(Nums, Target, I) ->
     case two_sum_inner(Nums, Target, I, I + 1) of

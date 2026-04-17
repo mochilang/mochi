@@ -8,8 +8,9 @@ fn isPalindrome(x: i64) bool {
     const original = x;
     var n = x;
     var rev: i64 = 0;
-    while (n > 0) : (n /= 10) {
+    while (n > 0) {
         rev = rev * 10 + @mod(n, 10);
+        n = @divTrunc(n, 10);
     }
     return rev == original;
 }

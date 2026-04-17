@@ -14,6 +14,27 @@ import (
 	"mochi/golden"
 )
 
+func readInput(inPath string) *bytes.Reader {
+	data, err := os.ReadFile(inPath)
+	if err != nil {
+		return nil
+	}
+	return bytes.NewReader(data)
+}
+
+func runStdoutOnly(cmd *exec.Cmd) ([]byte, error) {
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	out, err := cmd.Output()
+	if err != nil {
+		if stderr.Len() != 0 {
+			return nil, fmt.Errorf("%w: %s", err, stderr.String())
+		}
+		return nil, err
+	}
+	return bytes.TrimSpace(out), nil
+}
+
 func TestCSolutions(t *testing.T) {
 	if _, err := exec.LookPath("gcc"); err != nil {
 		t.Skip("gcc not installed")
@@ -81,14 +102,8 @@ func TestCsharpSolutions(t *testing.T) {
 			return nil, fmt.Errorf("compile error: %v: %s", err, out)
 		}
 		cmd := exec.Command("mono", exePath)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -99,14 +114,8 @@ func TestClojureSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/clojure", ".clj", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".clj") + ".in"
 		cmd := exec.Command("bb", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -117,14 +126,8 @@ func TestDartSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/dart", ".dart", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".dart") + ".in"
 		cmd := exec.Command("dart", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -135,14 +138,8 @@ func TestElixirSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/elixir", ".ex", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".ex") + ".in"
 		cmd := exec.Command("elixir", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -153,14 +150,8 @@ func TestErlangSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/erlang", ".erl", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".erl") + ".in"
 		cmd := exec.Command("escript", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -171,14 +162,8 @@ func TestGoSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/go", ".go", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".go") + ".in"
 		cmd := exec.Command("go", "run", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -189,14 +174,8 @@ func TestHaskellSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/haskell", ".hs", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".hs") + ".in"
 		cmd := exec.Command("runghc", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -210,19 +189,21 @@ func TestJavaSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/java", ".java", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".java") + ".in"
 		tmpDir := t.TempDir()
-		cmd := exec.Command("javac", "-d", tmpDir, src)
+		mainPath := filepath.Join(tmpDir, "Main.java")
+		data, err := os.ReadFile(src)
+		if err != nil {
+			return nil, err
+		}
+		if err := os.WriteFile(mainPath, data, 0o644); err != nil {
+			return nil, err
+		}
+		cmd := exec.Command("javac", "-d", tmpDir, mainPath)
 		if out, err := cmd.CombinedOutput(); err != nil {
 			return nil, fmt.Errorf("javac: %v: %s", err, out)
 		}
 		cmd = exec.Command("java", "-cp", tmpDir, "Main")
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -241,14 +222,8 @@ func TestKotlinSolutions(t *testing.T) {
 			return nil, fmt.Errorf("compile: %v: %s", err, out)
 		}
 		runCmd := exec.Command("java", "-jar", jarPath)
-		if data, err := os.ReadFile(inPath); err == nil {
-			runCmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := runCmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		runCmd.Stdin = readInput(inPath)
+		return runStdoutOnly(runCmd)
 	})
 }
 
@@ -259,14 +234,8 @@ func TestLeanSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/lean", ".lean", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".lean") + ".in"
 		cmd := exec.Command("lean", "--run", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -277,14 +246,8 @@ func TestLuaSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/lua", ".lua", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".lua") + ".in"
 		cmd := exec.Command("lua", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -295,14 +258,8 @@ func TestMochiSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/mochi", ".mochi", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".mochi") + ".in"
 		cmd := exec.Command("go", "run", "../../cmd/mochi", "run", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -323,14 +280,8 @@ func TestOcamlSolutions(t *testing.T) {
 		defer os.Remove(base + ".cmx")
 		defer os.Remove(base + ".o")
 		cmd := exec.Command(exe)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -352,14 +303,12 @@ func TestPascalSolutions(t *testing.T) {
 			return nil, fmt.Errorf("compile error: %v: %s", err, out)
 		}
 		run := exec.Command(exePath)
-		if data, err := os.ReadFile(inPath); err == nil {
-			run.Stdin = bytes.NewReader(data)
-		}
-		out, err := run.CombinedOutput()
+		run.Stdin = readInput(inPath)
+		out, err := runStdoutOnly(run)
 		if err != nil {
-			return nil, fmt.Errorf("run error: %v: %s", err, out)
+			return nil, fmt.Errorf("run error: %v", err)
 		}
-		return bytes.TrimSpace(out), nil
+		return out, nil
 	})
 }
 
@@ -370,14 +319,8 @@ func TestPHPSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/php", ".php", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".php") + ".in"
 		cmd := exec.Command("php", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -388,14 +331,8 @@ func TestPythonSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/python", ".py", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".py") + ".in"
 		cmd := exec.Command("python3", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -406,14 +343,8 @@ func TestRubySolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/ruby", ".rb", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".rb") + ".in"
 		cmd := exec.Command("ruby", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -433,14 +364,8 @@ func TestRustSolutions(t *testing.T) {
 			return out, err
 		}
 		cmd := exec.Command(bin)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -450,15 +375,9 @@ func TestScalaSolutions(t *testing.T) {
 	}
 	golden.Run(t, "tests/leetcode/x/scala", ".scala", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".scala") + ".in"
-		cmd := exec.Command("scala", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd := exec.Command("scala", "run", "--server=false", "-q", src)
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -469,14 +388,8 @@ func TestSwiftSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/swift", ".swift", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".swift") + ".in"
 		cmd := exec.Command("swift", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -487,16 +400,8 @@ func TestTypeScriptSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/typescript", ".ts", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".ts") + ".in"
 		cmd := exec.Command("npx", "--yes", "ts-node", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		var stderr bytes.Buffer
-		cmd.Stderr = &stderr
-		out, err := cmd.Output()
-		if err != nil {
-			return nil, fmt.Errorf("%w: %s", err, stderr.String())
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }
 
@@ -507,13 +412,7 @@ func TestZigSolutions(t *testing.T) {
 	golden.Run(t, "tests/leetcode/x/zig", ".zig", ".out", func(src string) ([]byte, error) {
 		inPath := strings.TrimSuffix(src, ".zig") + ".in"
 		cmd := exec.Command("zig", "run", src)
-		if data, err := os.ReadFile(inPath); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, err
-		}
-		return bytes.TrimSpace(out), nil
+		cmd.Stdin = readInput(inPath)
+		return runStdoutOnly(cmd)
 	})
 }

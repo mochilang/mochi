@@ -9,7 +9,16 @@ main(_) ->
             [TStr | Rest] = Tokens,
             T = list_to_integer(TStr),
             Values = [list_to_integer(S) || S <- Rest],
-            lists:foreach(fun(X) -> io:format("~s~n", [if is_palindrome(X) -> "true"; true -> "false" end]) end, lists:sublist(Values, T))
+            lists:foreach(
+                fun(X) ->
+                    Out = case is_palindrome(X) of
+                        true -> "true";
+                        false -> "false"
+                    end,
+                    io:format("~s~n", [Out])
+                end,
+                lists:sublist(Values, T)
+            )
     end.
 
 is_palindrome(X) when X < 0 -> false;
