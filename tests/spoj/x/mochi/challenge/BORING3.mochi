@@ -1,0 +1,78 @@
+// Solution for SPOJ BORING3 - Wilson's Theorem
+// https://www.spoj.com/problems/BORING3/
+// Given D P (P prime), compute (P-D)! mod P.
+// By Wilson's theorem: (P-1)! ≡ -1 (mod P)
+// So (P-D)! ≡ (-1)^D * inverse((D-1)!, P) mod P
+
+fun modpow(base: int, exp: int, mod: int): int {
+  var result = 1
+  var b = base % mod
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 {
+      result = (result * b) % mod
+    }
+    b = (b * b) % mod
+    e = int(e / 2)
+  }
+  return result
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    parts = append(parts, cur)
+  }
+  return parts
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let parts = split(line)
+    if len(parts) >= 2 {
+      let D = int(parts[0])
+      let P = int(parts[1])
+      if D == 0 {
+        // (P-0)! = P! contains factor P, so result is 0
+        print("0")
+      } else if D == 1 {
+        // (P-1)! ≡ -1 ≡ P-1 (mod P) by Wilson's theorem
+        print(str(P - 1))
+      } else {
+        // Compute (D-1)! mod P
+        var fact = 1
+        var k = 2
+        while k <= D - 1 {
+          fact = (fact * k) % P
+          k = k + 1
+        }
+        // Modular inverse of (D-1)! via Fermat's little theorem
+        let inv_fact = modpow(fact, P - 2, P)
+        // (-1)^D: if D even → inv_fact, if D odd → P - inv_fact
+        var result = inv_fact
+        if D % 2 == 1 {
+          result = (P - inv_fact) % P
+        }
+        print(str(result))
+      }
+    }
+    line = input()
+  }
+}
+
+main()
