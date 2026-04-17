@@ -9,22 +9,24 @@ def matchBracket : Char → Char → Bool
 def isValidChars : List Char → List Char → Bool
   | [], stack => stack.isEmpty
   | c :: rest, stack =>
-      if c = '(' || c = '[' || c = '{' then
+      if c == '(' || c == '[' || c == '{' then
         isValidChars rest (c :: stack)
       else
         match stack with
-        | open :: tail => if matchBracket c open then isValidChars rest tail else false
+        | op :: tail => if matchBracket c op then isValidChars rest tail else false
         | [] => false
 
-def isValid (s : String) : Bool := isValidChars s.data []
+def isValid (s : String) : Bool := isValidChars s.toList []
 
 def parseTokens (s : String) : List String :=
-  (s.split (fun c => c = ' ' || c = '\n' || c = '\t' || c = '\r')).filter (fun tok => tok ≠ "")
+  (s.split (fun c => c == ' ' || c == '\n' || c == '\t' || c == '\r'))
+  |>.toList |>.map (fun s => s.toString) |>.filter (fun s => s != "")
 
 def main : IO Unit := do
   let data ← (← IO.getStdin).readToEnd
   match parseTokens data with
   | [] => pure ()
-  | t :: rest =>
-      let lines := (rest.take t.toNat!).map (fun s => if isValid s then "true" else "false")
+  | tStr :: rest =>
+      let t := tStr.toNat!
+      let lines := (rest.take t).map (fun s => if isValid s then "true" else "false")
       IO.println (String.intercalate "\n" lines)

@@ -1,6 +1,6 @@
 import Std
 
-def addLists : List Int → List Int → Int → List Int
+partial def addLists : List Int → List Int → Int → List Int
   | [], [], 0 => []
   | [], [], carry => [carry]
   | x :: xs, [], carry =>
@@ -18,7 +18,8 @@ def fmt : List Int → String
   | x :: xs => "[" ++ toString x ++ String.join (xs.map (fun v => "," ++ toString v)) ++ "]"
 
 def parseTokens (s : String) : List String :=
-  (s.split (fun c => c = ' ' || c = '\n' || c = '\t' || c = '\r')).filter (fun tok => tok ≠ "")
+  (s.split (fun c => c == ' ' || c == '\n' || c == '\t' || c == '\r'))
+  |>.toList |>.map (fun s => s.toString) |>.filter (fun s => s != "")
 
 partial def takeInts : Nat → List String → List Int → (List Int × List String)
   | 0, rest, acc => (acc.reverse, rest)
@@ -42,4 +43,4 @@ def main : IO Unit := do
   let data ← (← IO.getStdin).readToEnd
   match parseTokens data with
   | [] => pure ()
-  | t :: rest => IO.println (String.intercalate "\n" (solve t.toNat! rest))
+  | tStr :: rest => IO.println (String.intercalate "\n" (solve tStr.toNat! rest))

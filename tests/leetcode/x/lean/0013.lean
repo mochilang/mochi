@@ -9,16 +9,18 @@ def romanToIntChars : List Char → Int
   | c :: n :: rest =>
       (if value c < value n then - value c else value c) + romanToIntChars (n :: rest)
 
-def romanToInt (s : String) : Int := romanToIntChars s.data
+def romanToInt (s : String) : Int := romanToIntChars s.toList
 
 def parseTokens (s : String) : List String :=
-  (s.split (fun c => c = ' ' || c = '\n' || c = '\t' || c = '\r')).filter (fun tok => tok ≠ "")
+  (s.split (fun c => c == ' ' || c == '\n' || c == '\t' || c == '\r'))
+  |>.toList |>.map (fun s => s.toString) |>.filter (fun s => s != "")
 
 def main : IO Unit := do
   let data ← (← IO.getStdin).readToEnd
   let tokens := parseTokens data
   match tokens with
   | [] => pure ()
-  | t :: rest =>
-      let lines := (rest.take t.toNat!).map (fun s => toString (romanToInt s))
+  | tStr :: rest =>
+      let t := tStr.toNat!
+      let lines := (rest.take t).map (fun s => toString (romanToInt s))
       IO.println (String.intercalate "\n" lines)
