@@ -1,0 +1,147 @@
+// Solution for SPOJ FAMILY - Monster Relationship
+// https://www.spoj.com/problems/FAMILY/
+// r[i][j] = E[fraction of common genes] (relationship coefficient)
+// Founders: r[i][i]=1, r[i][j]=0 for i!=j
+// If C has parents A,B: r[C][X] = (r[A][X] + r[B][X]) / 2 for X != C
+// r[C][C] = 1
+// Symmetry: r[i][j] = r[j][i]
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun formatPct(x: float): string {
+  // x is the percentage (0..100), values are multiples of 100/2^k
+  // Print without trailing zeros, with at least one digit before decimal
+  let intPart = int(x + 0.0000000001)
+  var fracPart = x - (intPart as float)
+  if fracPart < 0.0 { fracPart = 0.0 }
+
+  var fracStr = ""
+  var frac = fracPart
+  var digits = 0
+  while digits < 20 {
+    frac = frac * 10.0
+    let d = int(frac + 0.0000000001)
+    let dClamped = if d > 9 { 9 } else { d }
+    fracStr = fracStr + str(dClamped)
+    frac = frac - (dClamped as float)
+    if frac < 0.0 { frac = 0.0 }
+    digits = digits + 1
+    if frac < 0.0000001 { break }
+  }
+
+  // Strip trailing zeros
+  var lastNonZero = -1
+  var fi = 0
+  while fi < len(fracStr) {
+    if fracStr[fi:fi+1] != "0" { lastNonZero = fi }
+    fi = fi + 1
+  }
+  if lastNonZero >= 0 {
+    return str(intPart) + "." + fracStr[0:lastNonZero+1] + "%"
+  } else {
+    return str(intPart) + "%"
+  }
+}
+
+fun main() {
+  let tLine = input()
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    let line1 = input()
+    let p1 = split(line1)
+    let n = int(p1[0])
+    let k = int(p1[1])
+
+    // parentA[i], parentB[i]: 0-indexed parents of monster i, -1 if none
+    var parentA: list<int> = []
+    var parentB: list<int> = []
+    var i = 0
+    while i < n {
+      parentA = append(parentA, -1)
+      parentB = append(parentB, -1)
+      i = i + 1
+    }
+
+    var ki = 0
+    while ki < k {
+      let line = input()
+      let p = split(line)
+      let c = int(p[0]) - 1
+      let a = int(p[1]) - 1
+      let b = int(p[2]) - 1
+      parentA[c] = a
+      parentB[c] = b
+      ki = ki + 1
+    }
+
+    // r[i*n+j] = relationship coefficient between i and j
+    var r: list<float> = []
+    var idx = 0
+    while idx < n * n {
+      r = append(r, 0.0)
+      idx = idx + 1
+    }
+    i = 0
+    while i < n {
+      r[i * n + i] = 1.0
+      i = i + 1
+    }
+
+    // Topological sort: process monsters in order; do n passes to handle any order
+    // After n passes, all values should be correct
+    var pass = 0
+    while pass < n {
+      i = 0
+      while i < n {
+        let a = parentA[i]
+        let b = parentB[i]
+        if a >= 0 && b >= 0 {
+          // Compute r[i][j] = (r[a][j] + r[b][j]) / 2 for all j != i
+          var j = 0
+          while j < n {
+            if j != i {
+              let val = (r[a * n + j] + r[b * n + j]) / 2.0
+              r[i * n + j] = val
+              r[j * n + i] = val
+            }
+            j = j + 1
+          }
+          r[i * n + i] = 1.0
+        }
+        i = i + 1
+      }
+      pass = pass + 1
+    }
+
+    let mLine = input()
+    let m = int(mLine)
+    var mi = 0
+    while mi < m {
+      let qLine = input()
+      let qp = split(qLine)
+      let x = int(qp[0]) - 1
+      let y = int(qp[1]) - 1
+      let pct = r[x * n + y] * 100.0
+      print(formatPct(pct))
+      mi = mi + 1
+    }
+    tc = tc + 1
+  }
+}
+
+main()

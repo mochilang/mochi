@@ -1,0 +1,117 @@
+// Solution for SPOJ Crime at Piccadily Circus (PICAD)
+// https://www.spoj.com/problems/PICAD/
+// Sweep line over events in [p,k]. Find min/max simultaneous count.
+// Person i present at t iff ai<=t<=bi. Clip to [p,k]. Events: +1 at start, -1 at end+1.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun solve() {
+  let pk = split(input())
+  let p = int(pk[0])
+  let k = int(pk[1])
+  let n = int(input())
+
+  var evTimes: list<int> = []
+  var evDeltas: list<int> = []
+
+  var i = 0
+  while i < n {
+    let ab = split(input())
+    let a = int(ab[0])
+    let b = int(ab[1])
+    let effStart = if a > p { a } else { p }
+    let effEnd = if b < k { b } else { k }
+    if effStart <= effEnd {
+      evTimes = append(evTimes, effStart)
+      evDeltas = append(evDeltas, 1)
+      evTimes = append(evTimes, effEnd + 1)
+      evDeltas = append(evDeltas, -1)
+    }
+    i = i + 1
+  }
+
+  // Bubble sort events by time
+  let m = len(evTimes)
+  var j = 0
+  while j < m {
+    var kk = 0
+    while kk < m - 1 - j {
+      if evTimes[kk] > evTimes[kk+1] {
+        let tt = evTimes[kk]
+        evTimes[kk] = evTimes[kk+1]
+        evTimes[kk+1] = tt
+        let dd = evDeltas[kk]
+        evDeltas[kk] = evDeltas[kk+1]
+        evDeltas[kk+1] = dd
+      }
+      kk = kk + 1
+    }
+    j = j + 1
+  }
+
+  // Sweep: count in [prevTime, t-1] before applying events at t
+  var count = 0
+  var minCount = 0
+  var maxCount = 0
+  var firstInterval = 1
+  var prevTime = p
+  var ei = 0
+
+  while ei < m {
+    let t = evTimes[ei]
+    if t > k { break }
+    // Count in [prevTime, t-1] (non-empty only if t > prevTime)
+    if t > prevTime {
+      if firstInterval == 1 {
+        minCount = count
+        maxCount = count
+        firstInterval = 0
+      } else {
+        if count < minCount { minCount = count }
+        if count > maxCount { maxCount = count }
+      }
+    }
+    // Apply all events at time t
+    while ei < m && evTimes[ei] == t {
+      count = count + evDeltas[ei]
+      ei = ei + 1
+    }
+    prevTime = t
+  }
+  // Final interval [prevTime, k]
+  if prevTime <= k {
+    if firstInterval == 1 {
+      minCount = count
+      maxCount = count
+    } else {
+      if count < minCount { minCount = count }
+      if count > maxCount { maxCount = count }
+    }
+  }
+
+  print(str(minCount) + " " + str(maxCount))
+}
+
+fun main() {
+  var tc = 0
+  while tc < 10 {
+    solve()
+    tc = tc + 1
+  }
+}
+
+main()

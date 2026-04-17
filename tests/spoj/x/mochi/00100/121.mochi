@@ -1,0 +1,232 @@
+// SPOJ Timetable (TTABLE)
+// Find optimal connections from city 1 to city n.
+// A connection (A, B) is optimal if no other connection (A',B') with A'>=A, B'<=B has B'-A' < B-A.
+// Algorithm: for each departure time A from city 1, compute min arrival at city n via Dijkstra.
+// Then filter for optimality.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Parse "hh:mm" to minutes
+fun parseTime(s: string): int {
+  let hh = int(s[0:2])
+  let mm = int(s[3:5])
+  return hh * 60 + mm
+}
+
+// Format minutes to "hh:mm"
+fun fmtTime(t: int): string {
+  let hh = int(t / 60)
+  let mm = t - hh * 60
+  var hs = str(hh)
+  var ms = str(mm)
+  if len(hs) < 2 { hs = "0" + hs }
+  if len(ms) < 2 { ms = "0" + ms }
+  return hs + ":" + ms
+}
+
+fun main() {
+  let tStr = input()
+  let t = int(tStr)
+  var tc = 0
+  while tc < t {
+    let nStr = input()
+    let n = int(nStr)
+    let INF = 2000000
+
+    // Read timetables for all cities
+    // Store per city: list of (dep, arr, dest) triples
+    // Use parallel flat lists: depList, arrList, destList, cityHead (CSR)
+    var totalEntries = 0
+    // First pass: read and count
+    var cityDep: list<list<int>> = []
+    var cityArr: list<list<int>> = []
+    var cityDest: list<list<int>> = []
+    var ci = 0
+    while ci < n {
+      var deps: list<int> = []
+      var arrs: list<int> = []
+      var dests: list<int> = []
+      let mStr = input()
+      let m = int(mStr)
+      var j = 0
+      while j < m {
+        let parts = split(input())
+        // Format: dep arr dest (dep and arr are "hh:mm")
+        let dep = parseTime(parts[0])
+        let arr = parseTime(parts[1])
+        let dest = int(parts[2]) - 1  // 0-indexed
+        deps = append(deps, dep)
+        arrs = append(arrs, arr)
+        dests = append(dests, dest)
+        j = j + 1
+      }
+      cityDep = append(cityDep, deps)
+      cityArr = append(cityArr, arrs)
+      cityDest = append(cityDest, dests)
+      ci = ci + 1
+    }
+
+    // For each departure time from city 1 (city index 0), run Dijkstra
+    let city1Dep = cityDep[0]
+    let city1Arr = cityArr[0]
+    let city1Dest = cityDest[0]
+    let numDep1 = len(city1Dep)
+
+    // Get unique departure times from city 1 (they're already sorted)
+    var uniqueDeps: list<int> = []
+    var prevDep = -1
+    var ui = 0
+    while ui < numDep1 {
+      let d = city1Dep[ui]
+      if d != prevDep {
+        uniqueDeps = append(uniqueDeps, d)
+        prevDep = d
+      }
+      ui = ui + 1
+    }
+
+    // For each unique departure time A from city 1:
+    // Find min arrival at city n-1 (0-indexed)
+    var connections: list<int> = []  // flat: [dep, arr, ...]
+
+    var di = 0
+    while di < len(uniqueDeps) {
+      let A = uniqueDeps[di]
+
+      // Dijkstra: minTime[city] = minimum arrival time at city
+      // Using simple priority queue (sorted list)
+      var minTime: list<int> = []
+      var inQueue: list<int> = []
+      var ci2 = 0
+      while ci2 < n { minTime = append(minTime, INF); inQueue = append(inQueue, 0); ci2 = ci2 + 1 }
+
+      // Initialize: all trains from city 1 departing at exactly A
+      // These bring us to their destinations at their arrival times
+      // (city 1 itself is at time A, so we can also be at city 1 at time A)
+      minTime[0] = A  // We start at city 1 at time A
+
+      // Priority queue as sorted list [time, city, ...]
+      // Simple heap simulation: just process in order
+      var pqTime: list<int> = []
+      var pqCity: list<int> = []
+      pqTime = append(pqTime, A)
+      pqCity = append(pqCity, 0)
+
+      // Simple priority queue using linear scan (O(n^2) Dijkstra)
+      // Process until done
+      var pqHead = 0
+      while pqHead < len(pqTime) {
+        // Find min-time unprocessed in pq
+        var bestIdx = -1
+        var bestT = INF + 1
+        var pk = pqHead
+        while pk < len(pqTime) {
+          if pqTime[pk] >= 0 && pqTime[pk] < bestT {
+            bestT = pqTime[pk]
+            bestIdx = pk
+          }
+          pk = pk + 1
+        }
+        if bestIdx < 0 { break }
+
+        let curTime = pqTime[bestIdx]
+        let curCity = pqCity[bestIdx]
+        pqTime[bestIdx] = -1  // Mark as processed
+
+        if curTime > minTime[curCity] { pqHead = pqHead + 1; continue }
+
+        // From curCity at time curTime, board any train departing >= curTime
+        let deps = cityDep[curCity]
+        let arrs = cityArr[curCity]
+        let dests = cityDest[curCity]
+        var ei = 0
+        while ei < len(deps) {
+          let dep = deps[ei]
+          let arr = arrs[ei]
+          let dest = dests[ei]
+          if dep >= curTime {
+            if arr < minTime[dest] {
+              minTime[dest] = arr
+              pqTime = append(pqTime, arr)
+              pqCity = append(pqCity, dest)
+            }
+          }
+          ei = ei + 1
+        }
+        pqHead = pqHead + 1
+      }
+
+      let arrAtN = minTime[n-1]
+      if arrAtN < INF {
+        connections = append(connections, A)
+        connections = append(connections, arrAtN)
+      }
+      di = di + 1
+    }
+
+    // Filter for optimality
+    // (A, B) is optimal if no (A', B') with A'>=A, B'<=B, B'-A' < B-A
+    let numConn = int(len(connections) / 2)
+    var optimal: list<int> = []  // indices of optimal connections
+
+    var oi = 0
+    while oi < numConn {
+      let A = connections[oi*2]
+      let B = connections[oi*2+1]
+      let dur = B - A
+      var dominated = false
+      var oj = 0
+      while oj < numConn {
+        if oj != oi {
+          let A2 = connections[oj*2]
+          let B2 = connections[oj*2+1]
+          let dur2 = B2 - A2
+          if A2 >= A && B2 <= B && dur2 < dur {
+            dominated = true
+            break
+          }
+        }
+        oj = oj + 1
+      }
+      if dominated == false { optimal = append(optimal, oi) }
+      oi = oi + 1
+    }
+
+    // Output: deduplicate and sort by departure time
+    // They're already in order since uniqueDeps was sorted
+    // But need to deduplicate (same dep+arr)
+    print(str(len(optimal)))
+    var prevOut = -1
+    var prevOutB = -1
+    var opti = 0
+    while opti < len(optimal) {
+      let idx = optimal[opti]
+      let A = connections[idx*2]
+      let B = connections[idx*2+1]
+      if A != prevOut || B != prevOutB {
+        print(fmtTime(A) + " " + fmtTime(B))
+        prevOut = A
+        prevOutB = B
+      }
+      opti = opti + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

@@ -1,0 +1,170 @@
+// Solution for SPOJ SEGVIS - Horizontally Visible Segments
+// https://www.spoj.com/problems/SEGVIS/
+// Sort segments by x. For each pair (i,j): visible if y-ranges overlap and
+// no segment strictly between them (in x) fully covers the overlap.
+// Use doubled y-axis to track both integer and half-integer y-values.
+// Count triangles of mutually visible segments.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var dLine = input()
+  while dLine == "" { dLine = input() }
+  let d = int(dLine)
+  var di = 0
+  while di < d {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    // Read segments: yl, yh, x
+    var syl: list<int> = []
+    var syh: list<int> = []
+    var sx: list<int> = []
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let p = split(vLine)
+      syl = append(syl, int(p[0]))
+      syh = append(syh, int(p[1]))
+      sx = append(sx, int(p[2]))
+      i = i + 1
+    }
+
+    // Sort by x (then by yl for same x) using insertion sort
+    i = 1
+    while i < n {
+      let kyl = syl[i]; let kyh = syh[i]; let kx = sx[i]
+      var j = i - 1
+      while j >= 0 {
+        if sx[j] < kx { break }
+        if sx[j] == kx && syl[j] <= kyl { break }
+        syl[j+1] = syl[j]; syh[j+1] = syh[j]; sx[j+1] = sx[j]
+        j = j - 1
+      }
+      syl[j+1] = kyl; syh[j+1] = kyh; sx[j+1] = kx
+      i = i + 1
+    }
+
+    // Find actual y range for efficient covered array
+    var ymax = 0
+    i = 0
+    while i < n {
+      if syh[i] > ymax { ymax = syh[i] }
+      i = i + 1
+    }
+    let YMAX2 = 2 * ymax + 2
+
+    // Build visibility: vis[i*n+j] = 1 if seg i and seg j are visible
+    var vis: list<int> = []
+    i = 0
+    while i < n * n { vis = append(vis, 0); i = i + 1 }
+
+    // Doubled y-axis: entry 2*k = integer y=k, entry 2*k+1 = half-int y=k+0.5
+    // Segment [y', y''] covers entries 2*y' to 2*y'' inclusive
+    var covered: list<int> = []
+    i = 0
+    while i < YMAX2 { covered = append(covered, 0); i = i + 1 }
+
+    // dirty: list of entries that were set to 1 (for fast reset)
+    var dirty: list<int> = []
+
+    // For each left segment i, sweep right
+    i = 0
+    while i < n {
+      // Reset only dirty entries
+      var di2 = 0
+      while di2 < len(dirty) { covered[dirty[di2]] = 0; di2 = di2 + 1 }
+      dirty = []
+
+      var j = i + 1
+      while j < n {
+        // Find end of current x-group
+        var gend = j
+        while gend + 1 < n && sx[gend+1] == sx[j] { gend = gend + 1 }
+
+        // Check visibility for all in group [j..gend]
+        var gi = j
+        while gi <= gend {
+          if sx[i] != sx[gi] {
+            var ylo = syl[i]
+            if syl[gi] > ylo { ylo = syl[gi] }
+            var yhi = syh[i]
+            if syh[gi] < yhi { yhi = syh[gi] }
+            if ylo <= yhi {
+              // Check if any entry in [2*ylo .. 2*yhi] is uncovered
+              var entry = 2 * ylo
+              var found = 0
+              while entry <= 2 * yhi {
+                if covered[entry] == 0 { found = 1; break }
+                entry = entry + 1
+              }
+              if found == 1 {
+                vis[i*n+gi] = 1
+                vis[gi*n+i] = 1
+              }
+            }
+          }
+          gi = gi + 1
+        }
+
+        // Cover all segments in this group and track dirty entries
+        gi = j
+        while gi <= gend {
+          var entry = 2 * syl[gi]
+          while entry <= 2 * syh[gi] {
+            if covered[entry] == 0 {
+              covered[entry] = 1
+              dirty = append(dirty, entry)
+            }
+            entry = entry + 1
+          }
+          gi = gi + 1
+        }
+
+        j = gend + 1
+      }
+      i = i + 1
+    }
+
+    // Count triangles: triples (a<b<c in sorted order) where all 3 pairs visible
+    var triangles = 0
+    var a = 0
+    while a < n {
+      var b = a + 1
+      while b < n {
+        if vis[a*n+b] == 1 {
+          var c = b + 1
+          while c < n {
+            if vis[b*n+c] == 1 && vis[a*n+c] == 1 {
+              triangles = triangles + 1
+            }
+            c = c + 1
+          }
+        }
+        b = b + 1
+      }
+      a = a + 1
+    }
+
+    print(triangles)
+    di = di + 1
+  }
+}
+
+main()

@@ -1,0 +1,74 @@
+// Solution for SPOJ SQDANCE - Square dance
+// https://www.spoj.com/problems/SQDANCE/
+// Each relation is an edge {p, q}. A square subproduct = a cycle in the graph.
+// Use Union-Find: when adding edge (p,q), if they are already connected, it
+// would create a cycle => count a square. Otherwise merge their components.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun find(parent: list<int>, x: int): int {
+  var r = x
+  while parent[r] != r { r = parent[r] }
+  var c = x
+  while c != r {
+    let nx = parent[c]
+    parent[c] = r
+    c = nx
+  }
+  return r
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var prLine = input()
+    while prLine == "" { prLine = input() }
+    let pr = split(prLine)
+    let p = int(pr[0])
+    let r = int(pr[1])
+
+    // parent array, 1-indexed
+    var parent: list<int> = []
+    var i = 0
+    while i <= p { parent = append(parent, i); i = i + 1 }
+
+    var squares = 0
+    var ri = 0
+    while ri < r {
+      var eLine = input()
+      while eLine == "" { eLine = input() }
+      let ep = split(eLine)
+      let u = int(ep[0])
+      let v = int(ep[1])
+      let ru = find(parent, u)
+      let rv = find(parent, v)
+      if ru == rv {
+        squares = squares + 1
+      } else {
+        parent[ru] = rv
+      }
+      ri = ri + 1
+    }
+    print(squares)
+    ti = ti + 1
+  }
+}
+
+main()

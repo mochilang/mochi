@@ -1,0 +1,109 @@
+// Solution for SPOJ CISTFILL - Fill the Cisterns
+// https://www.spoj.com/problems/CISTFILL/
+// Binary search on water level. For level L, compute filled volume.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun format2(x: float): string {
+  // Round to 2 decimal places and format
+  let scaled = int(x * 100.0 + 0.5)
+  let whole = int(scaled / 100)
+  let frac = scaled - whole * 100
+  var fracStr = str(frac)
+  if frac < 10 { fracStr = "0" + fracStr }
+  return str(whole) + "." + fracStr
+}
+
+// Compute volume filled when water level is L (float)
+// cisterns: base, height, wd (width*depth)
+fun volumeAt(bases: list<int>, heights: list<int>, wds: list<int>, n: int, L: float): float {
+  var vol = 0.0
+  var i = 0
+  while i < n {
+    let b = bases[i] as float
+    let h = heights[i] as float
+    let wd = wds[i] as float
+    if L > b {
+      if L >= b + h {
+        vol = vol + h * wd
+      } else {
+        vol = vol + (L - b) * wd
+      }
+    }
+    i = i + 1
+  }
+  return vol
+}
+
+fun main() {
+  let kLine = input()
+  let k = int(kLine)
+  var t = 0
+  while t < k {
+    let nLine = input()
+    let n = int(nLine)
+    var bases: list<int> = []
+    var heights: list<int> = []
+    var wds: list<int> = []
+    var i = 0
+    while i < n {
+      let line = input()
+      let p = split(line)
+      let b = int(p[0])
+      let h = int(p[1])
+      let w = int(p[2])
+      let dd = int(p[3])
+      bases = append(bases, b)
+      heights = append(heights, h)
+      wds = append(wds, w * dd)
+      i = i + 1
+    }
+    let vLine = input()
+    let V = int(vLine) as float
+
+    // Compute total capacity
+    var totalCap = 0.0
+    i = 0
+    while i < n {
+      totalCap = totalCap + (heights[i] as float) * (wds[i] as float)
+      i = i + 1
+    }
+
+    if V > totalCap {
+      print("OVERFLOW")
+    } else {
+      // Binary search: find level L such that volumeAt(L) >= V
+      var lo = 0.0
+      var hi = 1000001.0
+      var iter = 0
+      while iter < 100 {
+        let mid = (lo + hi) / 2.0
+        let vol = volumeAt(bases, heights, wds, n, mid)
+        if vol < V {
+          lo = mid
+        } else {
+          hi = mid
+        }
+        iter = iter + 1
+      }
+      print(format2(hi))
+    }
+    t = t + 1
+  }
+}
+
+main()

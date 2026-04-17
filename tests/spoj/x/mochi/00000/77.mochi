@@ -1,0 +1,180 @@
+// Solution for SPOJ New bricks disorder (BRICKS)
+// https://www.spoj.com/problems/BRICKS/
+// Key insight: letters that cannot swap must preserve their relative order.
+// For pairs that CAN swap, count inversions between their subsequences.
+// Total minimum swaps = sum of inversions over all swappable pairs, mod 2^32.
+
+fun buildOrd(): map<string, int> {
+  var m: map<string, int> = {}
+  m["a"]=0; m["b"]=1; m["c"]=2; m["d"]=3; m["e"]=4
+  m["f"]=5; m["g"]=6; m["h"]=7; m["i"]=8; m["j"]=9
+  m["k"]=10; m["l"]=11; m["m"]=12; m["n"]=13; m["o"]=14
+  m["p"]=15; m["q"]=16; m["r"]=17; m["s"]=18; m["t"]=19
+  m["u"]=20; m["v"]=21; m["w"]=22; m["x"]=23; m["y"]=24
+  m["z"]=25
+  return m
+}
+
+// Count inversions in a list (O(n^2)), result mod MOD
+fun countInv(seq: list<int>, MOD: int): int {
+  var count = 0
+  let n = len(seq)
+  var i = 0
+  while i < n {
+    var j = i + 1
+    while j < n {
+      if seq[i] > seq[j] {
+        count = (count + 1) % MOD
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return count
+}
+
+fun main() {
+  let ord = buildOrd()
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  let MOD = 4294967296
+  var tc = 0
+  while tc < T {
+    let src = input()
+    let tgt = input()
+    let m = int(input())
+
+    // canSwap[i*26+j] = 1 if letters i and j can be swapped (symmetric)
+    var canSwap: list<int> = []
+    var k = 0
+    while k < 676 { canSwap = append(canSwap, 0); k = k + 1 }
+
+    var si = 0
+    while si < m {
+      let pair = input()
+      let ac = ord[pair[0:1]] as int
+      let bc = ord[pair[1:2]] as int
+      canSwap[ac*26 + bc] = 1
+      canSwap[bc*26 + ac] = 1
+      si = si + 1
+    }
+
+    // Count occurrences
+    var srcCount: list<int> = []
+    var tgtCount: list<int> = []
+    k = 0
+    while k < 26 { srcCount = append(srcCount, 0); tgtCount = append(tgtCount, 0); k = k + 1 }
+
+    let sn = len(src)
+    k = 0
+    while k < sn {
+      let idx = ord[src[k:k+1]] as int
+      srcCount[idx] = srcCount[idx] + 1
+      k = k + 1
+    }
+    let tn = len(tgt)
+    k = 0
+    while k < tn {
+      let idx = ord[tgt[k:k+1]] as int
+      tgtCount[idx] = tgtCount[idx] + 1
+      k = k + 1
+    }
+
+    var feasible = 1
+    k = 0
+    while k < 26 {
+      if srcCount[k] != tgtCount[k] { feasible = 0 }
+      k = k + 1
+    }
+
+    if feasible == 0 {
+      print("-1")
+      tc = tc + 1
+      continue
+    }
+
+    var totalSwaps = 0
+
+    var ci = 0
+    while ci < 26 && feasible == 1 {
+      var cj = ci + 1
+      while cj < 26 && feasible == 1 {
+        if srcCount[ci] > 0 && srcCount[cj] > 0 {
+          // Extract subsequence of (ci, cj) chars from src and tgt
+          var srcSeq: list<int> = []
+          var tgtSeq: list<int> = []
+          k = 0
+          while k < sn {
+            let idx = ord[src[k:k+1]] as int
+            if idx == ci { srcSeq = append(srcSeq, 0) }
+            else { if idx == cj { srcSeq = append(srcSeq, 1) } }
+            k = k + 1
+          }
+          k = 0
+          while k < tn {
+            let idx = ord[tgt[k:k+1]] as int
+            if idx == ci { tgtSeq = append(tgtSeq, 0) }
+            else { if idx == cj { tgtSeq = append(tgtSeq, 1) } }
+            k = k + 1
+          }
+
+          if canSwap[ci*26 + cj] == 0 {
+            // Must have identical relative order
+            let seqLen = len(srcSeq)
+            if seqLen != len(tgtSeq) {
+              feasible = 0
+            } else {
+              k = 0
+              while k < seqLen {
+                if srcSeq[k] != tgtSeq[k] { feasible = 0 }
+                k = k + 1
+              }
+            }
+          } else {
+            // Can swap: build rank sequence and count inversions
+            // The k-th ci in srcSeq maps to the k-th ci in tgtSeq (by target position)
+            // Build ciTgtRank: positions of ci occurrences in tgtSeq
+            var ciTgtRank: list<int> = []
+            var cjTgtRank: list<int> = []
+            k = 0
+            while k < len(tgtSeq) {
+              if tgtSeq[k] == 0 { ciTgtRank = append(ciTgtRank, k) }
+              else { cjTgtRank = append(cjTgtRank, k) }
+              k = k + 1
+            }
+            // Build rank sequence for srcSeq
+            var rankSeq: list<int> = []
+            var ciIdx = 0
+            var cjIdx = 0
+            k = 0
+            while k < len(srcSeq) {
+              if srcSeq[k] == 0 {
+                rankSeq = append(rankSeq, ciTgtRank[ciIdx])
+                ciIdx = ciIdx + 1
+              } else {
+                rankSeq = append(rankSeq, cjTgtRank[cjIdx])
+                cjIdx = cjIdx + 1
+              }
+              k = k + 1
+            }
+            let inv = countInv(rankSeq, MOD)
+            totalSwaps = (totalSwaps + inv) % MOD
+          }
+        }
+        cj = cj + 1
+      }
+      ci = ci + 1
+    }
+
+    if feasible == 0 {
+      print("-1")
+    } else {
+      print(str(totalSwaps))
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

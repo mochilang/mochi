@@ -1,0 +1,192 @@
+// Solution for SPOJ Editor Inverse (EDIT2)
+// https://www.spoj.com/problems/EDIT2/
+// O(n^2) solution with Z-function per starting position.
+// All done inline to avoid function call overhead.
+
+fun main() {
+  var tc = 0
+  while tc < 10 {
+    let target = input()
+    let n = len(target)
+
+    if n == 0 {
+      print(2)
+      print("")
+      tc = tc + 1
+      continue
+    }
+
+    // Backward DP: dpK[j], dpL[j]
+    var dpK: list<int> = []
+    var dpL: list<int> = []
+    var j = 0
+    while j <= n {
+      dpK = append(dpK, 999999)
+      dpL = append(dpL, 999999)
+      j = j + 1
+    }
+    dpK[n] = 1
+    dpL[n] = 0
+
+    // For each starting position j, compute inner DP inline
+    j = n - 1
+    while j >= 0 {
+      let maxL = n - j
+
+      // Compute Z-function for target[j:j+maxL]
+      var Z: list<int> = []
+      var zi = 0
+      while zi < maxL {
+        Z = append(Z, 0)
+        zi = zi + 1
+      }
+      Z[0] = maxL
+      var zl = 0
+      var zr = 0
+      var zi2 = 1
+      while zi2 < maxL {
+        if zi2 < zr {
+          let zm = if Z[zi2 - zl] < zr - zi2 { Z[zi2 - zl] } else { zr - zi2 }
+          Z[zi2] = zm
+        }
+        while zi2 + Z[zi2] < maxL && target[j + Z[zi2]:j + Z[zi2] + 1] == target[j + zi2 + Z[zi2]:j + zi2 + Z[zi2] + 1] {
+          Z[zi2] = Z[zi2] + 1
+        }
+        if zi2 + Z[zi2] > zr {
+          zl = zi2
+          zr = zi2 + Z[zi2]
+        }
+        zi2 = zi2 + 1
+      }
+
+      // Compute inner DP: dpIK[l] = min keys for target[j:j+l]
+      var dpIK: list<int> = []
+      var dpID: list<int> = []
+      dpIK = append(dpIK, 0)
+      dpID = append(dpID, 0)
+      var l = 1
+      while l <= maxL {
+        let k1 = dpIK[l-1] + 1
+        let d1 = dpID[l-1]
+        var bK = k1
+        var bD = d1
+        let half = int(l / 2)
+        if half * 2 == l && half > 0 && Z[half] >= half {
+          let k2 = dpIK[half] + 1
+          let d2 = dpID[half] + 1
+          if k2 < bK || (k2 == bK && d2 < bD) { bK = k2; bD = d2 }
+        }
+        dpIK = append(dpIK, bK)
+        dpID = append(dpID, bD)
+
+        // Update backward DP
+        let cost = bK + 1 + dpK[j + l]
+        let lines = 1 + dpL[j + l]
+        if cost < dpK[j] || (cost == dpK[j] && lines < dpL[j]) {
+          dpK[j] = cost
+          dpL[j] = lines
+        }
+        l = l + 1
+      }
+
+      j = j - 1
+    }
+
+    print(dpK[0])
+
+    // Forward reconstruction: greedy
+    var pos = 0
+    while pos < n {
+      let remaining = n - pos
+
+      // Recompute Z for target[pos:]
+      var Z2: list<int> = []
+      var zi3 = 0
+      while zi3 < remaining {
+        Z2 = append(Z2, 0)
+        zi3 = zi3 + 1
+      }
+      Z2[0] = remaining
+      var zl2 = 0
+      var zr2 = 0
+      zi3 = 1
+      while zi3 < remaining {
+        if zi3 < zr2 {
+          let zm = if Z2[zi3 - zl2] < zr2 - zi3 { Z2[zi3 - zl2] } else { zr2 - zi3 }
+          Z2[zi3] = zm
+        }
+        while zi3 + Z2[zi3] < remaining && target[pos + Z2[zi3]:pos + Z2[zi3] + 1] == target[pos + zi3 + Z2[zi3]:pos + zi3 + Z2[zi3] + 1] {
+          Z2[zi3] = Z2[zi3] + 1
+        }
+        if zi3 + Z2[zi3] > zr2 {
+          zl2 = zi3
+          zr2 = zi3 + Z2[zi3]
+        }
+        zi3 = zi3 + 1
+      }
+
+      // Recompute inner DP for reconstruction + find bestL
+      var dpIK2: list<int> = []
+      var dpID2: list<int> = []
+      var dpIF: list<int> = []
+      dpIK2 = append(dpIK2, 0)
+      dpID2 = append(dpID2, 0)
+      dpIF = append(dpIF, 0)
+      var bestL = 0 - 1
+      var bestSegK = 999999
+      var l2 = 1
+      while l2 <= remaining {
+        let k1 = dpIK2[l2-1] + 1
+        let d1 = dpID2[l2-1]
+        var bK = k1
+        var bD = d1
+        var bF = 0
+        let half2 = int(l2 / 2)
+        if half2 * 2 == l2 && half2 > 0 && Z2[half2] >= half2 {
+          let k2 = dpIK2[half2] + 1
+          let d2 = dpID2[half2] + 1
+          if k2 < bK || (k2 == bK && d2 < bD) { bK = k2; bD = d2; bF = 1 }
+        }
+        dpIK2 = append(dpIK2, bK)
+        dpID2 = append(dpID2, bD)
+        dpIF = append(dpIF, bF)
+
+        // Check if this is a valid split for reconstruction
+        let cost = bK + 1 + dpK[pos + l2]
+        let totalLines = 1 + dpL[pos + l2]
+        if cost == dpK[pos] && totalLines == dpL[pos] {
+          if bestL == 0 - 1 || bK < bestSegK {
+            bestL = l2
+            bestSegK = bK
+          }
+        }
+        l2 = l2 + 1
+      }
+
+      // Trace back to build key sequence for bestL
+      var keys: list<string> = []
+      var cur = bestL
+      while cur > 0 {
+        if dpIF[cur] == 0 {
+          keys = append(keys, target[pos+cur-1:pos+cur])
+          cur = cur - 1
+        } else {
+          keys = append(keys, "d")
+          cur = int(cur / 2)
+        }
+      }
+      var keySeq = ""
+      var ki = len(keys) - 1
+      while ki >= 0 {
+        keySeq = keySeq + keys[ki]
+        ki = ki - 1
+      }
+      print(keySeq)
+      pos = pos + bestL
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

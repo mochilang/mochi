@@ -1,0 +1,168 @@
+// Solution for SPOJ ALIENS - Minimum Enclosing Circle
+// https://www.spoj.com/problems/ALIENS/
+// Randomized incremental minimum enclosing circle (Welzl-style).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseFloat(s: string): float {
+  var dot = -1
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == "." { dot = i }
+    i = i + 1
+  }
+  if dot < 0 {
+    return int(s) as float
+  }
+  let intStr = s[0:dot]
+  let fracStr = s[dot+1:]
+  var ip = 0
+  if len(intStr) > 0 { ip = int(intStr) }
+  var fp = 0
+  if len(fracStr) > 0 { fp = int(fracStr) }
+  var div = 1.0
+  i = 0
+  while i < len(fracStr) { div = div * 10.0; i = i + 1 }
+  return (ip as float) + (fp as float) / div
+}
+
+fun mysqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var i = 0
+  while i < 60 { r = (r + x / r) / 2.0; i = i + 1 }
+  return r
+}
+
+// Circle from 2 points (diameter)
+fun circ2(ax: float, ay: float, bx: float, by: float): list<float> {
+  let cx = (ax + bx) / 2.0
+  let cy = (ay + by) / 2.0
+  let dx = ax - bx; let dy = ay - by
+  let r = mysqrt(dx*dx + dy*dy) / 2.0
+  var res: list<float> = []
+  res = append(res, cx); res = append(res, cy); res = append(res, r)
+  return res
+}
+
+// Circumcircle of 3 points
+fun circ3(ax: float, ay: float, bx: float, by: float, cx: float, cy: float): list<float> {
+  let bx2 = bx - ax; let by2 = by - ay
+  let cx2 = cx - ax; let cy2 = cy - ay
+  let D = 2.0 * (bx2 * cy2 - by2 * cx2)
+  let eps = 0.000000001
+  if D < eps && D > 0.0 - eps {
+    // Degenerate: collinear, use largest bounding circle
+    let c2 = circ2(ax, ay, bx, by)
+    let ddx = cx - c2[0]; let ddy = cy - c2[1]
+    if ddx*ddx + ddy*ddy <= c2[2]*c2[2] + 0.000001 { return c2 }
+    let c2b = circ2(ax, ay, cx, cy)
+    let ex = bx - c2b[0]; let ey = by - c2b[1]
+    if ex*ex + ey*ey <= c2b[2]*c2b[2] + 0.000001 { return c2b }
+    return circ2(bx, by, cx, cy)
+  }
+  let ux = (cy2 * (bx2*bx2 + by2*by2) - by2 * (cx2*cx2 + cy2*cy2)) / D
+  let uy = (bx2 * (cx2*cx2 + cy2*cy2) - cx2 * (bx2*bx2 + by2*by2)) / D
+  let r = mysqrt(ux*ux + uy*uy)
+  var res: list<float> = []
+  res = append(res, ux + ax); res = append(res, uy + ay); res = append(res, r)
+  return res
+}
+
+fun inCircle(ccx: float, ccy: float, cr: float, ptx: float, pty: float): bool {
+  let dx = ptx - ccx; let dy = pty - ccy
+  return dx*dx + dy*dy <= cr*cr + 0.000001
+}
+
+fun fmtFloat2(x: float): string {
+  let scaled = int(x * 100.0 + 0.5)
+  let ip = int(scaled / 100)
+  let fp = scaled % 100
+  var fs = str(fp)
+  while len(fs) < 2 { fs = "0" + fs }
+  return str(ip) + "." + fs
+}
+
+fun main() {
+  var cLine = input()
+  while cLine == "" { cLine = input() }
+  let C = int(cLine)
+  var ci = 0
+  while ci < C {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    var ptx: list<float> = []
+    var pty: list<float> = []
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let p = split(vLine)
+      ptx = append(ptx, parseFloat(p[0]))
+      pty = append(pty, parseFloat(p[1]))
+      i = i + 1
+    }
+
+    // Randomize order using a simple LCG shuffle
+    var seed = 12345
+    i = n - 1
+    while i > 0 {
+      seed = (seed * 1664525 + 1013904223) % 2147483647
+      let j = seed % (i + 1)
+      let tx = ptx[i]; ptx[i] = ptx[j]; ptx[j] = tx
+      let ty = pty[i]; pty[i] = pty[j]; pty[j] = ty
+      i = i - 1
+    }
+
+    // Welzl iterative: minimum enclosing circle
+    var ccx = ptx[0]
+    var ccy = pty[0]
+    var cr = 0.0
+
+    i = 1
+    while i < n {
+      if !inCircle(ccx, ccy, cr, ptx[i], pty[i]) {
+        ccx = ptx[i]; ccy = pty[i]; cr = 0.0
+        var j = 0
+        while j < i {
+          if !inCircle(ccx, ccy, cr, ptx[j], pty[j]) {
+            let c2 = circ2(ptx[i], pty[i], ptx[j], pty[j])
+            ccx = c2[0]; ccy = c2[1]; cr = c2[2]
+            var k = 0
+            while k < j {
+              if !inCircle(ccx, ccy, cr, ptx[k], pty[k]) {
+                let c3 = circ3(ptx[i], pty[i], ptx[j], pty[j], ptx[k], pty[k])
+                ccx = c3[0]; ccy = c3[1]; cr = c3[2]
+              }
+              k = k + 1
+            }
+          }
+          j = j + 1
+        }
+      }
+      i = i + 1
+    }
+
+    print(fmtFloat2(cr))
+    print(fmtFloat2(ccx) + " " + fmtFloat2(ccy))
+    ci = ci + 1
+  }
+}
+
+main()

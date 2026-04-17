@@ -1,0 +1,41 @@
+// Solution for SPOJ Equipment Box (EQBOX)
+// https://www.spoj.com/problems/EQBOX/
+// Box X×Y fits on tile A×B (without touching border) iff X<A and Y<B (or X<B and Y<A).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var i = 0
+  while i < t {
+    let p = split(input())
+    let a = int(p[0])
+    let b = int(p[1])
+    let x = int(p[2])
+    let y = int(p[3])
+    if (x < a && y < b) || (x < b && y < a) {
+      print("Escape is possible.")
+    } else {
+      print("Box cannot be dropped.")
+    }
+    i = i + 1
+  }
+}
+
+main()

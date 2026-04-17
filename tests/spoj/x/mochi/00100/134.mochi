@@ -1,0 +1,75 @@
+// Solution for SPOJ PHONY - Phony Primes (Carmichael numbers)
+// https://www.spoj.com/problems/PHONY/
+// A phony prime N is odd, squarefree with >= 3 distinct prime factors p1..pk
+// such that (pi-1) | (N-1) for all i. (Korselt's criterion for Carmichael numbers)
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun isPhony(n: int): bool {
+  if int(n / 2) * 2 == n { return false }
+  var factors: list<int> = []
+  var m = n
+  // Trial divide by 2 then odd numbers
+  if int(m / 2) * 2 == m {
+    factors = append(factors, 2)
+    m = int(m / 2)
+    if int(m / 2) * 2 == m { return false }
+  }
+  var d = 3
+  while d * d <= m {
+    if int(m / d) * d == m {
+      factors = append(factors, d)
+      m = int(m / d)
+      if int(m / d) * d == m { return false }
+    }
+    d = d + 2
+  }
+  if m > 1 { factors = append(factors, m) }
+  if len(factors) < 3 { return false }
+  let nm1 = n - 1
+  var i = 0
+  while i < len(factors) {
+    let pm1 = factors[i] - 1
+    if int(nm1 / pm1) * pm1 != nm1 { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun main() {
+  while true {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = split(line)
+    let nmin = int(parts[0])
+    let nmax = int(parts[1])
+    if nmin == 0 && nmax == 0 { break }
+    var found = false
+    var n = nmin
+    if int(n / 2) * 2 == n { n = n + 1 }
+    while n <= nmax {
+      if isPhony(n) {
+        print(str(n))
+        found = true
+      }
+      n = n + 2
+    }
+    if found == false { print("none") }
+  }
+}
+
+main()

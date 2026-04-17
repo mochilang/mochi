@@ -1,0 +1,148 @@
+// Solution for SPOJ Election Posters (POSTERS)
+// https://www.spoj.com/problems/POSTERS/
+// Coordinate compress endpoints, then use a map-based lazy segment tree.
+// Process posters in reverse order; a poster is visible if its range has any uncovered segment.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun merge(a: list<int>, b: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  var j = 0
+  while i < len(a) && j < len(b) {
+    if a[i] <= b[j] { res = append(res, a[i]); i = i + 1 }
+    else { res = append(res, b[j]); j = j + 1 }
+  }
+  while i < len(a) { res = append(res, a[i]); i = i + 1 }
+  while j < len(b) { res = append(res, b[j]); j = j + 1 }
+  return res
+}
+
+fun mergesort(a: list<int>): list<int> {
+  let n = len(a)
+  if n <= 1 { return a }
+  let mid = n / 2
+  var left: list<int> = []
+  var right: list<int> = []
+  var i = 0
+  while i < mid { left = append(left, a[i]); i = i + 1 }
+  while i < n { right = append(right, a[i]); i = i + 1 }
+  let sl = mergesort(left)
+  let sr = mergesort(right)
+  let result = merge(sl, sr)
+  return result
+}
+
+fun bsearch(arr: list<int>, val: int): int {
+  var lo = 0
+  var hi = len(arr) - 1
+  while lo <= hi {
+    let mid = ((lo + hi) / 2) as int
+    if arr[mid] == val { return mid }
+    if arr[mid] < val { lo = mid + 1 } else { hi = mid - 1 }
+  }
+  return -1
+}
+
+// Segment tree: covered["lo:hi"] = 1 if fully covered, absent/nil if not
+var covered: map<string, int> = {}
+
+fun isCov(nodeL: int, nodeR: int): bool {
+  let v = covered[str(nodeL) + ":" + str(nodeR)]
+  if v == nil { return false }
+  return true
+}
+
+fun setCov(nodeL: int, nodeR: int) {
+  covered[str(nodeL) + ":" + str(nodeR)] = 1
+}
+
+fun paint(lo: int, hi: int, nodeL: int, nodeR: int) {
+  if isCov(nodeL, nodeR) { return }
+  if lo <= nodeL && nodeR <= hi { setCov(nodeL, nodeR); return }
+  let mid = ((nodeL + nodeR) / 2) as int
+  if lo <= mid { paint(lo, hi, nodeL, mid) }
+  if hi > mid { paint(lo, hi, mid + 1, nodeR) }
+  if isCov(nodeL, mid) && isCov(mid + 1, nodeR) { setCov(nodeL, nodeR) }
+}
+
+fun hasUncov(lo: int, hi: int, nodeL: int, nodeR: int): bool {
+  if isCov(nodeL, nodeR) { return false }
+  if nodeL == nodeR { return true }
+  let mid = ((nodeL + nodeR) / 2) as int
+  if lo <= mid && hasUncov(lo, hi, nodeL, mid) { return true }
+  if hi > mid && hasUncov(lo, hi, mid + 1, nodeR) { return true }
+  return false
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    var ls: list<int> = []
+    var rs: list<int> = []
+    var coords: list<int> = []
+    var i = 0
+    while i < n {
+      var line = input()
+      while line == "" { line = input() }
+      let p = split(line)
+      let l = int(p[0])
+      let r = int(p[1])
+      ls = append(ls, l)
+      rs = append(rs, r)
+      coords = append(coords, l)
+      coords = append(coords, r)
+      i = i + 1
+    }
+
+    let sorted = mergesort(coords)
+    var uniq: list<int> = []
+    var prev = -1
+    i = 0
+    while i < len(sorted) {
+      if sorted[i] != prev { uniq = append(uniq, sorted[i]); prev = sorted[i] }
+      i = i + 1
+    }
+    let sz = len(uniq) - 1
+
+    covered = {}
+
+    var count = 0
+    i = n - 1
+    while i >= 0 {
+      let cl = bsearch(uniq, ls[i])
+      let cr = bsearch(uniq, rs[i])
+      if hasUncov(cl, cr, 0, sz) {
+        count = count + 1
+        paint(cl, cr, 0, sz)
+      }
+      i = i - 1
+    }
+
+    print(str(count))
+    ti = ti + 1
+  }
+}
+
+main()

@@ -1,0 +1,194 @@
+// Solution for SPOJ BAC - Bacterial
+// https://www.spoj.com/problems/BAC/
+// Compute Voronoi cell areas for bacteria on a rectangular plate.
+// Each bacterium's territory = intersection of plate rectangle with half-planes
+// "closer to this bacterium than any other" (perpendicular bisectors).
+// Use Sutherland-Hodgman polygon clipping, then shoelace area formula.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Clip polygon against half-plane: nx*x + ny*y <= c
+// Returns [new_x_list, new_y_list] as a list<list<float>>
+fun clipPoly(px: list<float>, py: list<float>, nx: float, ny: float, c: float): list<list<float>> {
+  var outx: list<float> = []
+  var outy: list<float> = []
+  let n = len(px)
+  if n == 0 {
+    var res: list<list<float>> = []
+    res = append(res, outx)
+    res = append(res, outy)
+    return res
+  }
+  var i = 0
+  while i < n {
+    let j = (i + 1) % n
+    let ax = px[i]; let ay = py[i]
+    let bx = px[j]; let by = py[j]
+    let da = nx * ax + ny * ay - c
+    let db = nx * bx + ny * by - c
+    if da <= 0.0 {
+      outx = append(outx, ax)
+      outy = append(outy, ay)
+    }
+    if (da < 0.0 && db > 0.0) || (da > 0.0 && db < 0.0) {
+      let t = da / (da - db)
+      outx = append(outx, ax + t * (bx - ax))
+      outy = append(outy, ay + t * (by - ay))
+    }
+    i = i + 1
+  }
+  var res: list<list<float>> = []
+  res = append(res, outx)
+  res = append(res, outy)
+  return res
+}
+
+// Shoelace formula for polygon area (absolute value)
+fun polyArea(px: list<float>, py: list<float>): float {
+  let n = len(px)
+  if n < 3 { return 0.0 }
+  var area = 0.0
+  var i = 0
+  while i < n {
+    let j = (i + 1) % n
+    area = area + px[i] * py[j] - px[j] * py[i]
+    i = i + 1
+  }
+  if area < 0.0 { area = 0.0 - area }
+  return area / 2.0
+}
+
+fun padLeft(s: string, width: int, ch: string): string {
+  var r = s
+  while len(r) < width { r = ch + r }
+  return r
+}
+
+fun fmtFloat2(x: float): string {
+  let scaled = int(x * 100.0 + 0.5)
+  let ip = int(scaled / 100)
+  let fp = scaled % 100
+  var fs = str(fp)
+  while len(fs) < 2 { fs = "0" + fs }
+  return str(ip) + "." + fs
+}
+
+fun main() {
+  var firstBlock = 1
+  var line = input()
+  while line == "" {
+    line = input()
+    if line == "" { return }
+  }
+
+  while true {
+    let wh = split(line)
+    let W = int(wh[0])
+    let H = int(wh[1])
+    if W == 0 || H == 0 { break }
+    let Wf = W as float
+    let Hf = H as float
+
+    var bLine = input()
+    while bLine == "" { bLine = input() }
+    let B = int(bLine)
+
+    var bx: list<float> = []
+    var by: list<float> = []
+    var bi = 0
+    while bi < B {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let p = split(vLine)
+      bx = append(bx, int(p[0]) as float)
+      by = append(by, int(p[1]) as float)
+      bi = bi + 1
+    }
+
+    // Compute Voronoi area for each bacterium
+    var areas: list<float> = []
+    bi = 0
+    while bi < B {
+      // Start with rectangle [0,W] x [0,H] as polygon (CCW)
+      var ppx: list<float> = []
+      var ppy: list<float> = []
+      ppx = append(ppx, 0.0); ppy = append(ppy, 0.0)
+      ppx = append(ppx, Wf);  ppy = append(ppy, 0.0)
+      ppx = append(ppx, Wf);  ppy = append(ppy, Hf)
+      ppx = append(ppx, 0.0); ppy = append(ppy, Hf)
+
+      // Clip by each half-plane: closer to bi than bj
+      // 2*(bx[bj]-bx[bi])*x + 2*(by[bj]-by[bi])*y <= bx[bj]^2-bx[bi]^2 + by[bj]^2-by[bi]^2
+      var bj = 0
+      while bj < B {
+        if bj != bi {
+          let nx = 2.0 * (bx[bj] - bx[bi])
+          let ny = 2.0 * (by[bj] - by[bi])
+          let c = bx[bj]*bx[bj] - bx[bi]*bx[bi] + by[bj]*by[bj] - by[bi]*by[bi]
+          let r = clipPoly(ppx, ppy, nx, ny, c)
+          ppx = r[0]
+          ppy = r[1]
+          if len(ppx) == 0 { break }
+        }
+        bj = bj + 1
+      }
+
+      areas = append(areas, polyArea(ppx, ppy))
+      bi = bi + 1
+    }
+
+    // Sort bacteria by area descending (insertion sort on indices)
+    var order: list<int> = []
+    bi = 0
+    while bi < B { order = append(order, bi); bi = bi + 1 }
+    var oi = 1
+    while oi < B {
+      let key = order[oi]
+      var oj = oi - 1
+      while oj >= 0 {
+        if areas[order[oj]] >= areas[key] { break }
+        order[oj+1] = order[oj]
+        oj = oj - 1
+      }
+      order[oj+1] = key
+      oi = oi + 1
+    }
+
+    // Print output block (blank line between blocks)
+    if firstBlock == 0 { print("") }
+    firstBlock = 0
+
+    oi = 0
+    while oi < B {
+      let idx = order[oi]
+      let idStr = padLeft(str(idx + 1), 3, "0")
+      let aStr = fmtFloat2(areas[idx])
+      let aField = padLeft(aStr, 14, " ")
+      print(idStr + aField)
+      oi = oi + 1
+    }
+
+    // Read next line (blank or next test case or terminator)
+    line = input()
+    while line == "" {
+      line = input()
+      if line == "" { return }
+    }
+  }
+}
+
+main()

@@ -1,0 +1,145 @@
+// Solution for SPOJ MAYACAL - Calendar of the Maya
+// https://www.spoj.com/problems/MAYACAL/
+// Anchor: Long Count 8.0.0.0.0 = Calendar Round 9 Ajaw 3 Sip
+// Use CRT to find d (day offset from anchor) with d % 260 = tzolkin_offset, d % 365 = haab_offset
+// Then enumerate all Long Count dates in baktuns 8..9 (d in [0, 287999]).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun tzIdx(name: string): int {
+  let names = ["Imix","Ik","Akbal","Kan","Chikchan","Kimi","Manik","Lamat","Muluk","Ok","Chuen","Eb","Ben","Ix","Men","Kib","Kaban","Etznab","Kawak","Ajaw"]
+  var i = 0
+  while i < len(names) {
+    if names[i] == name { return i }
+    i = i + 1
+  }
+  return 0-1
+}
+
+fun haabIdx(name: string): int {
+  let names = ["Pohp","Wo","Sip","Zotz","Sek","Xul","Yaxkin","Mol","Chen","Yax","Sak","Keh","Mak","Kankin","Muan","Pax","Kayab","Kumku","Wayeb"]
+  var i = 0
+  while i < len(names) {
+    if names[i] == name { return i }
+    i = i + 1
+  }
+  return 0-1
+}
+
+
+fun solve(tzNum: int, tzNameIdx: int, haabDay: int, haabMonthIdx: int) {
+  // Anchor: 9 Ajaw 3 Sip
+  let tz_num_anc = 9
+  let tz_name_anc = 19  // Ajaw index
+  let haab_doy_anc = 2 * 20 + (3 - 1)  // Sip=index 2, day 3 -> doy=42
+
+  // Validate: Wayeb has only 5 days
+  if haabMonthIdx == 18 && haabDay > 5 {
+    print("0")
+    return
+  }
+
+  let haab_doy_target = haabMonthIdx * 20 + (haabDay - 1)
+
+  // d % 13 = dn13, d % 20 = dn20
+  let dn13 = ((tzNum - 1) - (tz_num_anc - 1) + 130) % 13
+  let dn20 = (tzNameIdx - tz_name_anc + 200) % 20
+
+  // CRT: d ≡ dn13 (mod 13), d ≡ dn20 (mod 20)
+  // inv(13) mod 20 = 17
+  let diff_20 = (dn20 - dn13 + 200) % 20
+  let a_mod20 = (17 * diff_20) % 20
+  let d260 = 13 * a_mod20 + dn13
+
+  // d % 365 = dh365
+  let dh365 = (haab_doy_target - haab_doy_anc + 365 * 10) % 365
+
+  // CRT: d ≡ d260 (mod 260), d ≡ dh365 (mod 365)
+  // gcd(260,365)=5. Solution exists iff (dh365-d260) % 5 == 0
+  let rhs = (dh365 - d260 % 365 + 365 * 10) % 365
+  if rhs % 5 != 0 {
+    print("0")
+    return
+  }
+
+  // 52k ≡ rhs/5 (mod 73). inv(52) mod 73 = 66.
+  // Use integer division: rhs is divisible by 5, so rhs % (5*73) / 5 gives rhs/5 mod 73
+  let rhs2 = rhs % (5 * 73) / 5 % 73
+  let k_mod73 = (66 * rhs2) % 73
+  var d_first = 260 * k_mod73 + d260
+  if d_first >= 18980 { d_first = d_first - 18980 }
+
+  // Enumerate d in [0, 287999] with d ≡ d_first (mod 18980)
+  var results: list<list<int>> = []
+  var d = d_first
+  let day_max_offset = 2 * 144000 - 1  // 287999
+  while d <= day_max_offset {
+    let lc_days = 8 * 144000 + d
+    let bak = int(lc_days / 144000)
+    let rem1 = lc_days - bak * 144000
+    let kat = int(rem1 / 7200)
+    let rem2 = rem1 - kat * 7200
+    let tun = int(rem2 / 360)
+    let rem3 = rem2 - tun * 360
+    let win = int(rem3 / 20)
+    let kin = rem3 - win * 20
+    if bak >= 8 && bak <= 9 {
+      var entry: list<int> = []
+      entry = append(entry, bak)
+      entry = append(entry, kat)
+      entry = append(entry, tun)
+      entry = append(entry, win)
+      entry = append(entry, kin)
+      results = append(results, entry)
+    }
+    d = d + 18980
+  }
+
+  print(str(len(results)))
+  var ri = 0
+  while ri < len(results) {
+    let e = results[ri]
+    print(str(e[0]) + "." + str(e[1]) + "." + str(e[2]) + "." + str(e[3]) + "." + str(e[4]))
+    ri = ri + 1
+  }
+}
+
+fun main() {
+  let dLine = input()
+  let d = int(dLine)
+  var di = 0
+  while di < d {
+    var line = input()
+    while line == "" { line = input() }
+    let parts = split(line)
+    let tzNum = int(parts[0])
+    let tzName = parts[1]
+    let haabDay = int(parts[2])
+    let haabMonth = parts[3]
+    let tzNameIdx = tzIdx(tzName)
+    let haabMonthIdx = haabIdx(haabMonth)
+    if tzNameIdx < 0 || haabMonthIdx < 0 {
+      print("0")
+    } else {
+      solve(tzNum, tzNameIdx, haabDay, haabMonthIdx)
+    }
+    di = di + 1
+  }
+}
+
+main()

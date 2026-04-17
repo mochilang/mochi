@@ -1,0 +1,189 @@
+// Solution for SPOJ CUTOUT - Cutting out
+// https://www.spoj.com/problems/CUTOUT/
+// Find largest rectangle cuttable from n×n square with r rectangles already cut.
+// Approach: coordinate compression + sweep.
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + s[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Sort a list of ints (insertion sort, small enough for 200 elements)
+fun sortInts(a: list<int>): list<int> {
+  let n = len(a)
+  var b: list<int> = []
+  var i = 0
+  while i < n { b = append(b, a[i]); i = i + 1 }
+  i = 1
+  while i < n {
+    let key = b[i]
+    var j = i - 1
+    while j >= 0 && b[j] > key {
+      b[j + 1] = b[j]
+      j = j - 1
+    }
+    b[j + 1] = key
+    i = i + 1
+  }
+  return b
+}
+
+// Deduplicate sorted list
+fun dedup(a: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(a) {
+    if i == 0 || a[i] != a[i-1] {
+      res = append(res, a[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+// Binary search: find index of val in sorted list xs
+fun indexOf(xs: list<int>, val: int): int {
+  var lo = 0
+  var hi = len(xs) - 1
+  while lo <= hi {
+    let mid = int((lo + hi) / 2)
+    if xs[mid] == val { return mid }
+    if xs[mid] < val { lo = mid + 1 }
+    else { hi = mid - 1 }
+  }
+  return -1
+}
+
+fun main() {
+  var dLine = input()
+  while dLine == "" { dLine = input() }
+  let d = int(dLine)
+  var di = 0
+  while di < d {
+    var hdrLine = input()
+    while hdrLine == "" { hdrLine = input() }
+    let hdr = split(hdrLine)
+    let n = int(hdr[0])
+    let r = int(hdr[1])
+
+    // Read rectangle coordinates (all on one line, 4*r numbers)
+    // May need to read multiple lines if r=0 the second line is empty or missing
+    var rx1: list<int> = []
+    var rx2: list<int> = []
+    var ry1: list<int> = []
+    var ry2: list<int> = []
+
+    if r > 0 {
+      var rectLine = input()
+      while rectLine == "" { rectLine = input() }
+      let nums = split(rectLine)
+      var ri = 0
+      while ri < r {
+        rx1 = append(rx1, int(nums[ri*4]))
+        rx2 = append(rx2, int(nums[ri*4+1]))
+        ry1 = append(ry1, int(nums[ri*4+2]))
+        ry2 = append(ry2, int(nums[ri*4+3]))
+        ri = ri + 1
+      }
+    }
+
+    // Build compressed X and Y coordinate arrays
+    var xvals: list<int> = [0, n]
+    var yvals: list<int> = [0, n]
+    var ri = 0
+    while ri < r {
+      xvals = append(xvals, rx1[ri])
+      xvals = append(xvals, rx2[ri])
+      yvals = append(yvals, ry1[ri])
+      yvals = append(yvals, ry2[ri])
+      ri = ri + 1
+    }
+    let xs = dedup(sortInts(xvals))
+    let ys = dedup(sortInts(yvals))
+    let nxc = len(xs) - 1  // number of X intervals
+    let nyc = len(ys) - 1  // number of Y intervals
+
+    // Build grid: cut[yi * nxc + xi] = 1 if cell (xi, yi) is cut
+    var cut: list<int> = []
+    var ci = 0
+    while ci < nyc * nxc { cut = append(cut, 0); ci = ci + 1 }
+
+    ri = 0
+    while ri < r {
+      let ix1 = indexOf(xs, rx1[ri])
+      let ix2 = indexOf(xs, rx2[ri])
+      let iy1 = indexOf(ys, ry1[ri])
+      let iy2 = indexOf(ys, ry2[ri])
+      // Mark cells [ix1..ix2-1] x [iy1..iy2-1] as cut
+      var xi = ix1
+      while xi < ix2 {
+        var yi = iy1
+        while yi < iy2 {
+          cut[yi * nxc + xi] = 1
+          yi = yi + 1
+        }
+        xi = xi + 1
+      }
+      ri = ri + 1
+    }
+
+    // For each pair of Y rows (j1, j2), find max area of contiguous unblocked X range
+    // blocked[xi] = 1 if any row in [j1..j2-1] in column xi is cut
+    var best = 0
+
+    var j2 = 1
+    while j2 <= nyc {
+      // blocked array for current j1
+      var blocked: list<int> = []
+      var xi = 0
+      while xi < nxc { blocked = append(blocked, 0); xi = xi + 1 }
+
+      let yHeight_top = ys[j2]
+
+      var j1 = j2 - 1
+      while j1 >= 0 {
+        let yHeight = yHeight_top - ys[j1]
+        // Add row j1 to blocked
+        xi = 0
+        while xi < nxc {
+          if cut[j1 * nxc + xi] == 1 {
+            blocked[xi] = 1
+          }
+          xi = xi + 1
+        }
+        // Find max contiguous unblocked X range
+        var xStart = 0
+        var xTotalW = 0
+        xi = 0
+        while xi <= nxc {
+          if xi < nxc && blocked[xi] == 0 {
+            xTotalW = xTotalW + (xs[xi+1] - xs[xi])
+          } else {
+            let area = xTotalW * yHeight
+            if area > best { best = area }
+            xTotalW = 0
+          }
+          xi = xi + 1
+        }
+        j1 = j1 - 1
+      }
+      j2 = j2 + 1
+    }
+
+    print(best)
+    di = di + 1
+  }
+}
+
+main()

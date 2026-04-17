@@ -1,0 +1,113 @@
+// SPOJ Rhombs (RHOMBS)
+// Count rhombs of types A, B, C in a rhombastic triangular-grid polygon.
+// Each type count = projected area of the polygon onto one of 3 coordinate planes.
+// Projection formula: 2*Area = sum over edges of k * (x_start * dy - y_start * dx)
+// where (dx, dy) depends on the direction in the chosen projection plane.
+
+fun absv(x: int): int {
+  if x < 0 { return -x }
+  return x
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let tStr = input()
+  let t = int(tStr)
+  var tc = 0
+  while tc < t {
+    let nStr = input()
+    let n = int(nStr)
+
+    // Direction vectors for each of 3 projections.
+    // Projection A (count type A rhombs): directions map to:
+    //   dir1 -> (0,0), dir2 -> (1,0), dir3 -> (0,1),
+    //   dir4 -> (0,0), dir5 -> (-1,0), dir6 -> (0,-1)
+    // Projection B (count type B rhombs):
+    //   dir1 -> (1,0), dir2 -> (0,0), dir3 -> (0,1),
+    //   dir4 -> (-1,0), dir5 -> (0,0), dir6 -> (0,-1)
+    // Projection C (count type C rhombs):
+    //   dir1 -> (1,0), dir2 -> (0,1), dir3 -> (0,0),
+    //   dir4 -> (-1,0), dir5 -> (0,-1), dir6 -> (0,0)
+
+    // dx arrays (index 0..5 for dirs 1..6)
+    // dxA: 0,1,0,0,-1,0
+    // dyA: 0,0,1,0,0,-1
+    // dxB: 1,0,0,-1,0,0
+    // dyB: 0,0,1,0,0,-1
+    // dxC: 1,0,0,-1,0,0
+    // dyC: 0,1,0,0,-1,0
+
+    var twoA = 0
+    var twoB = 0
+    var twoC = 0
+    var xA = 0; var yA = 0
+    var xB = 0; var yB = 0
+    var xC = 0; var yC = 0
+
+    var i = 0
+    while i < n {
+      let parts = split(input())
+      let d = int(parts[0])
+      let k = int(parts[1])
+
+      // Projection A
+      var dxA = 0
+      var dyA = 0
+      if d == 2 { dxA = 1; dyA = 0 }
+      if d == 3 { dxA = 0; dyA = 1 }
+      if d == 5 { dxA = -1; dyA = 0 }
+      if d == 6 { dxA = 0; dyA = -1 }
+      twoA = twoA + k * (xA * dyA - yA * dxA)
+      xA = xA + k * dxA
+      yA = yA + k * dyA
+
+      // Projection B
+      var dxB = 0
+      var dyB = 0
+      if d == 1 { dxB = 1; dyB = 0 }
+      if d == 3 { dxB = 0; dyB = 1 }
+      if d == 4 { dxB = -1; dyB = 0 }
+      if d == 6 { dxB = 0; dyB = -1 }
+      twoB = twoB + k * (xB * dyB - yB * dxB)
+      xB = xB + k * dxB
+      yB = yB + k * dyB
+
+      // Projection C
+      var dxC = 0
+      var dyC = 0
+      if d == 1 { dxC = 1; dyC = 0 }
+      if d == 2 { dxC = 0; dyC = 1 }
+      if d == 4 { dxC = -1; dyC = 0 }
+      if d == 5 { dxC = 0; dyC = -1 }
+      twoC = twoC + k * (xC * dyC - yC * dxC)
+      xC = xC + k * dxC
+      yC = yC + k * dyC
+
+      i = i + 1
+    }
+
+    let cntA = absv(twoA) / 2
+    let cntB = absv(twoB) / 2
+    let cntC = absv(twoC) / 2
+    print(str(cntA) + " " + str(cntB) + " " + str(cntC))
+
+    tc = tc + 1
+  }
+}
+
+main()

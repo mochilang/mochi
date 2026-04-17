@@ -1,0 +1,190 @@
+// Solution for SPOJ LITEPIPE - GX Light Pipeline Inc
+// https://www.spoj.com/problems/LITEPIPE/
+// Find the maximum x the light can reach in a bent pipe.
+// The pipe has upper wall through (xi, yi) and lower through (xi, yi-1).
+// Source is at gate 0: segment from (x0,y0-1) to (x0,y0).
+// A ray stays inside the pipe until it hits a wall.
+// Algorithm: try all pairs of corners as candidate lines, find max exit x.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Parse a decimal float string like "3.14" or "6.00"
+fun parseFloat(s: string): float {
+  var intPart = 0
+  var fracPart = 0
+  var fracDiv = 1
+  var neg = 0
+  var i = 0
+  if i < len(s) && s[i:i+1] == "-" { neg = 1; i = i + 1 }
+  var dotSeen = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == "." {
+      dotSeen = 1
+    } else {
+      let d = int(ch)
+      if dotSeen == 0 {
+        intPart = intPart * 10 + d
+      } else {
+        fracPart = fracPart * 10 + d
+        fracDiv = fracDiv * 10
+      }
+    }
+    i = i + 1
+  }
+  var result = (intPart as float) + (fracPart as float) / (fracDiv as float)
+  if neg == 1 { result = 0.0 - result }
+  return result
+}
+
+// y-value of line through (x1,y1)-(x2,y2) at x
+fun yAtX(x1: float, y1: float, x2: float, y2: float, x: float): float {
+  return y1 + (y2 - y1) / (x2 - x1) * (x - x1)
+}
+
+// Find x where ray exits the pipe, starting from gate start_gate
+// Pipe upper wall: (xs[k], ys[k]) to (xs[k+1], ys[k+1])
+// Pipe lower wall: (xs[k], ys[k]-1) to (xs[k+1], ys[k+1]-1)
+// Both walls have same slope in each segment.
+fun findExitX(rx1: float, ry1: float, rx2: float, ry2: float,
+              startGate: int,
+              xs: list<float>, ys: list<float>): float {
+  let n = len(xs)
+  var s = 0.0
+  if rx2 != rx1 {
+    s = (ry2 - ry1) / (rx2 - rx1)
+  }
+
+  var k = startGate
+  while k < n - 1 {
+    let u = (ys[k + 1] - ys[k]) / (xs[k + 1] - xs[k])
+    let denom = s - u
+
+    if denom > 0.000000001 || denom < 0.0 - 0.000000001 {
+      // Upper wall intersection: ray = upper wall
+      let num_u = ys[k] - u * xs[k] - ry1 + s * rx1
+      let xhu = num_u / denom
+      // Lower wall intersection: ray = lower wall
+      let num_l = ys[k] - 1.0 - u * xs[k] - ry1 + s * rx1
+      let xhl = num_l / denom
+
+      // Ray exits through upper wall if s > u (slopes: ray rises faster than upper wall)
+      if s > u - 0.000000001 && xhu >= xs[k] - 0.000000001 && xhu <= xs[k + 1] + 0.000000001 {
+        return xhu
+      }
+      // Ray exits through lower wall if s < u (slopes: ray rises slower than lower wall)
+      if s < u + 0.000000001 && xhl >= xs[k] - 0.000000001 && xhl <= xs[k + 1] + 0.000000001 {
+        return xhl
+      }
+    }
+    k = k + 1
+  }
+  return xs[n - 1]
+}
+
+fun solveCase(xs: list<float>, ys: list<float>) {
+  let n = len(xs)
+  var bestX = xs[0]
+
+  // All corner points: for gate i, top=(xs[i], ys[i]) and bottom=(xs[i], ys[i]-1)
+  var cx: list<float> = []
+  var cy: list<float> = []
+  var cg: list<int> = []  // which gate
+
+  var gi = 0
+  while gi < n {
+    cx = append(cx, xs[gi])
+    cy = append(cy, ys[gi])
+    cg = append(cg, gi)
+    cx = append(cx, xs[gi])
+    cy = append(cy, ys[gi] - 1.0)
+    cg = append(cg, gi)
+    gi = gi + 1
+  }
+
+  let nc = len(cx)
+
+  // Try each pair of corners (from gate i, gate j, i < j)
+  var i1 = 0
+  while i1 < nc {
+    var i2 = 0
+    while i2 < nc {
+      if cg[i2] > cg[i1] {
+        let x1 = cx[i1]
+        let y1 = cy[i1]
+        let x2 = cx[i2]
+        let y2 = cy[i2]
+        if x2 != x1 {
+          // Check validity at all gates 0..cg[i2]
+          var valid = 1
+          var k = 0
+          while k <= cg[i2] {
+            let yy = yAtX(x1, y1, x2, y2, xs[k])
+            if yy < ys[k] - 1.0 - 0.000000001 || yy > ys[k] + 0.000000001 {
+              valid = 0
+              k = cg[i2] + 1
+            } else {
+              k = k + 1
+            }
+          }
+          if valid == 1 {
+            let ex = findExitX(x1, y1, x2, y2, cg[i2], xs, ys)
+            if ex > bestX { bestX = ex }
+          }
+        }
+      }
+      i2 = i2 + 1
+    }
+    i1 = i1 + 1
+  }
+
+  // Format to 2 decimal places
+  let scaled = int(bestX * 100.0 + 0.5)
+  let whole = int(scaled / 100)
+  let frac = scaled - whole * 100
+  var fracStr = str(frac)
+  if frac < 10 { fracStr = "0" + fracStr }
+  print(str(whole) + "." + fracStr)
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let p = split(line)
+    let n = int(p[0])
+    if n == 0 { break }
+
+    var xs: list<float> = []
+    var ys: list<float> = []
+    var i = 0
+    while i < n {
+      var gLine = input()
+      while gLine == "" { gLine = input() }
+      let gp = split(gLine)
+      xs = append(xs, parseFloat(gp[0]))
+      ys = append(ys, parseFloat(gp[1]))
+      i = i + 1
+    }
+
+    solveCase(xs, ys)
+    line = input()
+    while line == "" { line = input() }
+  }
+}
+
+main()

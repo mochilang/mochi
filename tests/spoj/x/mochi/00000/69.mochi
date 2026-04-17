@@ -1,0 +1,126 @@
+// Solution for SPOJ Moulds (MOULDS)
+// https://www.spoj.com/problems/MOULDS/
+// Simulate a cutting blade on a 250x250x30 cuboid.
+// Use sparse map with test-case-prefixed keys to avoid re-init issues.
+
+// Global sparse depth map: key = "tc,r,c", value = max depth
+var depthMap: map<string,int> = {}
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    // Track keys added this test case
+    var addedKeys: list<string> = []
+
+    // Blade state
+    var bladeRow = 0
+    var bladeCol = 0
+    var bladeAbove = 1
+
+    // Helper: cut cell at current position
+    // Inline macro: if bladeAbove < 0 and in bounds, update depth
+    let prefix = str(ti) + ","
+
+    let cmd = input()
+    let n = len(cmd)
+    var pos = 0
+
+    while pos < n {
+      let ch = cmd[pos:pos+1]
+      if ch == "[" || ch == "]" || ch == ";" {
+        pos = pos + 1
+      } else if ch == "^" {
+        pos = pos + 1
+        var sign = 1
+        if pos < n && cmd[pos:pos+1] == "-" { sign = 0 - 1; pos = pos + 1 }
+        else if pos < n && cmd[pos:pos+1] == "+" { pos = pos + 1 }
+        var num = 0
+        while pos < n {
+          let d = cmd[pos:pos+1]
+          if d == "0" || d == "1" || d == "2" || d == "3" || d == "4" ||
+             d == "5" || d == "6" || d == "7" || d == "8" || d == "9" {
+            num = num * 10 + int(d); pos = pos + 1
+          } else { break }
+        }
+        let dist = sign * num
+        if dist > 0 {
+          var step = 0
+          while step < dist {
+            bladeAbove = bladeAbove - 1
+            if bladeAbove < 0 && bladeRow >= 0 && bladeRow < 250 && bladeCol >= 0 && bladeCol < 250 {
+              let depth = 0 - bladeAbove
+              let key = prefix + str(bladeRow) + "," + str(bladeCol)
+              if depthMap[key] == nil {
+                depthMap[key] = depth
+                addedKeys = append(addedKeys, key)
+              } else if depth > depthMap[key] as int {
+                depthMap[key] = depth
+              }
+            }
+            step = step + 1
+          }
+        } else if dist < 0 {
+          let udist = 0 - dist
+          var step = 0
+          while step < udist { bladeAbove = bladeAbove + 1; step = step + 1 }
+        }
+      } else if ch == "@" {
+        pos = pos + 1
+        let dir = cmd[pos:pos+1]
+        pos = pos + 1
+        var sign = 1
+        if pos < n && cmd[pos:pos+1] == "-" { sign = 0 - 1; pos = pos + 1 }
+        else if pos < n && cmd[pos:pos+1] == "+" { pos = pos + 1 }
+        var num = 0
+        while pos < n {
+          let d = cmd[pos:pos+1]
+          if d == "0" || d == "1" || d == "2" || d == "3" || d == "4" ||
+             d == "5" || d == "6" || d == "7" || d == "8" || d == "9" {
+            num = num * 10 + int(d); pos = pos + 1
+          } else { break }
+        }
+        let dist = sign * num
+        var dr = 0
+        var dc = 0
+        if dir == "N" { dr = 0 - 1 }
+        if dir == "S" { dr = 1 }
+        if dir == "W" { dc = 0 - 1 }
+        if dir == "E" { dc = 1 }
+        var absDist = dist
+        if dist < 0 { absDist = 0 - dist; dr = 0 - dr; dc = 0 - dc }
+        var step = 0
+        while step < absDist {
+          bladeRow = bladeRow + dr
+          bladeCol = bladeCol + dc
+          if bladeAbove < 0 && bladeRow >= 0 && bladeRow < 250 && bladeCol >= 0 && bladeCol < 250 {
+            let depth = 0 - bladeAbove
+            let key = prefix + str(bladeRow) + "," + str(bladeCol)
+            if depthMap[key] == nil {
+              depthMap[key] = depth
+              addedKeys = append(addedKeys, key)
+            } else if depth > depthMap[key] as int {
+              depthMap[key] = depth
+            }
+          }
+          step = step + 1
+        }
+      } else {
+        pos = pos + 1
+      }
+    }
+
+    // Compute volume: sum depths of all added keys
+    var vol = 0
+    var ki = 0
+    while ki < len(addedKeys) {
+      let k = addedKeys[ki]
+      vol = vol + depthMap[k] as int
+      ki = ki + 1
+    }
+    print(vol)
+    ti = ti + 1
+  }
+}
+
+main()
