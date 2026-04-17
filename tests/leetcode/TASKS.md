@@ -7,7 +7,7 @@ Sequential order is by LeetCode problem index.
 - [x] `0013-roman-to-integer`
 - [x] `0014-longest-common-prefix`
 - [x] `0020-valid-parentheses`
-- [ ] `0021-merge-two-sorted-lists`
+- [x] `0021-merge-two-sorted-lists`
 - [ ] `0026-remove-duplicates-from-sorted-array`
 - [ ] `0027-remove-element`
 - [ ] `0028-find-the-index-of-the-first-occurrence-in-a-string`
@@ -16,7 +16,7 @@ Sequential order is by LeetCode problem index.
 Medium focus:
 
 - [x] `0002-add-two-numbers`
-- [ ] `0003-longest-substring-without-repeating-characters`
+- [x] `0003-longest-substring-without-repeating-characters`
 - [ ] `0005-longest-palindromic-substring`
 
 Batch rules:
