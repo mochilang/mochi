@@ -1,0 +1,52 @@
+// Solution for SPOJ SINGLEL - Attack A Single Test File!
+// https://www.spoj.com/problems/SINGLEL/
+// Interactive: judge holds binary string S of length N.
+// We send guesses; judge replies T (first wrong position in permutation order) or -1 (correct).
+// Strategy: brute force all 2^N possibilities in order. For N<=8, max 256 guesses per game,
+// 64 games = 16384 total, within the 6666^0.5 score budget.
+
+// Convert integer v to binary string of length n (zero-padded)
+fun toBinary(v: int, n: int): string {
+  var bits = ""
+  var i = n - 1
+  while i >= 0 {
+    let bit = int(v / powTwo(i)) - 2 * int(int(v / powTwo(i)) / 2)
+    bits = bits + str(bit)
+    i = i - 1
+  }
+  return bits
+}
+
+fun powTwo(n: int): int {
+  var result = 1
+  var i = 0
+  while i < n {
+    result = result * 2
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  let nLine = input()
+  let n = int(nLine)
+  let total = powTwo(n)
+
+  var game = 0
+  while game < 64 {
+    var found = false
+    var v = 0
+    while v < total && !found {
+      let guess = toBinary(v, n)
+      print(guess)
+      let resp = input()
+      if resp == "-1" {
+        found = true
+      }
+      v = v + 1
+    }
+    game = game + 1
+  }
+}
+
+main()

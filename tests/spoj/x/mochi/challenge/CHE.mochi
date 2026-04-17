@@ -1,0 +1,181 @@
+// Solution for SPOJ CHE - Chess Variants Showdown
+// https://www.spoj.com/problems/CHE/
+// Place pieces to check all kings at minimum total cost.
+// Greedy: for each king, try adjacent empty squares and pick the cheapest piece type.
+// Piece types (1-indexed): 1=bishop,2=rook,3=lance,4=gold,5=silver,6=knight,7=pawn,8=king
+// A piece placed on an adjacent (including diagonal) square can check the king.
+// We use piece type 2 (rook) on a horizontally/vertically adjacent empty square,
+// or piece type 1 (bishop) on a diagonal adjacent empty square.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let tLine = input()
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    let nLine = input()
+    let n = int(nLine)
+
+    var board: list<string> = []
+    var ri = 0
+    while ri < n {
+      let rowStr = input()
+      board = append(board, rowStr)
+      ri = ri + 1
+    }
+
+    let costsLine = split(input())
+    var costs: list<int> = []
+    var ci = 0
+    while ci < 8 {
+      costs = append(costs, int(costsLine[ci]))
+      ci = ci + 1
+    }
+
+    // Find all king positions
+    var kingRows: list<int> = []
+    var kingCols: list<int> = []
+    var r = 0
+    while r < n {
+      var c = 0
+      while c < n {
+        if board[r][c:c+1] == "#" {
+          kingRows = append(kingRows, r)
+          kingCols = append(kingCols, c)
+        }
+        c = c + 1
+      }
+      r = r + 1
+    }
+
+    let numKings = len(kingRows)
+
+    // Track used cells (flat index r*n+c)
+    var usedCell: list<int> = []
+
+    // Result lists
+    var resType: list<int> = []
+    var resRow: list<int> = []
+    var resCol: list<int> = []
+
+    // For each king, find cheapest piece on an adjacent empty square
+    // Adjacent deltas: orthogonal = rook (piece 2), diagonal = bishop (piece 1)
+    var orthDr: list<int> = [-1, 1, 0, 0]
+    var orthDc: list<int> = [0, 0, -1, 1]
+    var diagDr: list<int> = [-1, -1, 1, 1]
+    var diagDc: list<int> = [-1, 1, -1, 1]
+
+    var ki = 0
+    while ki < numKings {
+      let kr = kingRows[ki]
+      let kc = kingCols[ki]
+
+      // Try cheapest piece: cost[0]=bishop(diag), cost[1]=rook(orth)
+      // Compare bishop cost vs rook cost for available squares
+      var bestPiece = 0
+      var bestR = -1
+      var bestC = -1
+      var bestCost = -1
+
+      // Try orthogonal: rook (piece index 2, cost index 1)
+      var d = 0
+      while d < 4 {
+        let nr = kr + orthDr[d]
+        let nc = kc + orthDc[d]
+        if nr >= 0 && nr < n && nc >= 0 && nc < n {
+          if board[nr][nc:nc+1] == "_" {
+            let flatIdx = nr * n + nc
+            // Check not already used
+            var used = false
+            var ui = 0
+            while ui < len(usedCell) {
+              if usedCell[ui] == flatIdx { used = true }
+              ui = ui + 1
+            }
+            if !used {
+              let cost = costs[1]
+              if bestCost < 0 || cost < bestCost {
+                bestCost = cost
+                bestPiece = 2
+                bestR = nr
+                bestC = nc
+              }
+            }
+          }
+        }
+        d = d + 1
+      }
+
+      // Try diagonal: bishop (piece index 1, cost index 0)
+      d = 0
+      while d < 4 {
+        let nr = kr + diagDr[d]
+        let nc = kc + diagDc[d]
+        if nr >= 0 && nr < n && nc >= 0 && nc < n {
+          if board[nr][nc:nc+1] == "_" {
+            let flatIdx = nr * n + nc
+            var used = false
+            var ui = 0
+            while ui < len(usedCell) {
+              if usedCell[ui] == flatIdx { used = true }
+              ui = ui + 1
+            }
+            if !used {
+              let cost = costs[0]
+              if bestCost < 0 || cost < bestCost {
+                bestCost = cost
+                bestPiece = 1
+                bestR = nr
+                bestC = nc
+              }
+            }
+          }
+        }
+        d = d + 1
+      }
+
+      if bestR >= 0 {
+        usedCell = append(usedCell, bestR * n + bestC)
+        resType = append(resType, bestPiece)
+        resRow = append(resRow, bestR + 1)
+        resCol = append(resCol, bestC + 1)
+      }
+
+      ki = ki + 1
+    }
+
+    // Compute total cost
+    var totalCost = 0
+    var i = 0
+    while i < len(resType) {
+      totalCost = totalCost + costs[resType[i] - 1]
+      i = i + 1
+    }
+
+    print(str(len(resType)) + " " + str(totalCost))
+    i = 0
+    while i < len(resType) {
+      print(str(resType[i]) + " " + str(resRow[i]) + " " + str(resCol[i]))
+      i = i + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()
