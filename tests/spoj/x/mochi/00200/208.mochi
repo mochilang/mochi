@@ -1,0 +1,155 @@
+// Solution for SPOJ Store-keeper (STORE)
+// https://www.spoj.com/problems/STORE/
+// Level BFS: keeper moves are free (same level), parcel pushes advance level.
+// State: (parcel_r, parcel_c, keeper_r, keeper_c).
+
+fun parseInt2(s: string): int {
+  var v = 0; var i = 0
+  while i < len(s) { v = v * 10 + int(s[i:i+1]); i = i + 1 }
+  return v
+}
+
+fun splitTwo2(line: string): list<int> {
+  var res: list<int> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { res = append(res, parseInt2(cur)); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { res = append(res, parseInt2(cur)) }
+  return res
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = parseInt2(tLine)
+  var ti = 0
+  while ti < t {
+    var nmLine = input()
+    while nmLine == "" { nmLine = input() }
+    let nm = splitTwo2(nmLine)
+    let n = nm[0]; let m = nm[1]
+    let NM = n * m
+
+    var grid: list<string> = []
+    var kr = 0; var kc = 0
+    var pr = 0; var pc = 0
+    var goalR = 0; var goalC = 0
+    var row = 0
+    while row < n {
+      let line = input()
+      var col = 0
+      while col < len(line) {
+        let ch = line[col:col+1]
+        if ch == "M" { kr = row; kc = col }
+        if ch == "P" { pr = row; pc = col }
+        if ch == "K" { goalR = row; goalC = col }
+        col = col + 1
+      }
+      grid = append(grid, line)
+      row = row + 1
+    }
+
+    // Direction arrays: up, down, left, right
+    var DRS: list<int> = []
+    var DCS: list<int> = []
+    DRS = append(DRS, 0 - 1); DCS = append(DCS, 0)
+    DRS = append(DRS, 1); DCS = append(DCS, 0)
+    DRS = append(DRS, 0); DCS = append(DCS, 0 - 1)
+    DRS = append(DRS, 0); DCS = append(DCS, 1)
+
+    // visited[state_key] = 1 if visited
+    // state_key = (pr*m+pc)*NM + (kr*m+kc)
+    var visited: map<int,int> = {}
+
+    // Current level queue (keeper moves, cost 0)
+    // Items: pr, pc, kr, kc (4 ints each)
+    var curr: list<int> = []
+    var currHead = 0
+    // Next level queue (after a push, cost 1)
+    var nxt: list<int> = []
+
+    let initKey = (pr * m + pc) * NM + (kr * m + kc)
+    visited[initKey] = 1
+    curr = append(curr, pr); curr = append(curr, pc)
+    curr = append(curr, kr); curr = append(curr, kc)
+
+    var ans = 0 - 1
+    var dist = 0
+    var running = 1
+
+    while running == 1 {
+      // Process current level
+      var found = 0
+      while currHead * 4 < len(curr) && found == 0 {
+        let idx = currHead * 4
+        let cpr = curr[idx]; let cpc = curr[idx+1]
+        let ckr = curr[idx+2]; let ckc = curr[idx+3]
+        currHead = currHead + 1
+
+        if cpr == goalR && cpc == goalC {
+          ans = dist
+          found = 1
+          running = 0
+        } else {
+          var d = 0
+          while d < 4 {
+            let dr = DRS[d]; let dc = DCS[d]
+            let nkr = ckr + dr; let nkc = ckc + dc
+
+            if nkr >= 0 && nkr < n && nkc >= 0 && nkc < m {
+              let kch = grid[nkr][nkc:nkc+1]
+              if kch != "S" {
+                if nkr == cpr && nkc == cpc {
+                  // Push parcel
+                  let npr = cpr + dr; let npc = cpc + dc
+                  if npr >= 0 && npr < n && npc >= 0 && npc < m {
+                    let pch = grid[npr][npc:npc+1]
+                    if pch != "S" {
+                      let nKey = (npr * m + npc) * NM + (cpr * m + cpc)
+                      if visited[nKey] == nil {
+                        visited[nKey] = 1
+                        nxt = append(nxt, npr); nxt = append(nxt, npc)
+                        nxt = append(nxt, cpr); nxt = append(nxt, cpc)
+                      }
+                    }
+                  }
+                } else {
+                  // Keeper move (cost 0), add to current level
+                  let nKey = (cpr * m + cpc) * NM + (nkr * m + nkc)
+                  if visited[nKey] == nil {
+                    visited[nKey] = 1
+                    curr = append(curr, cpr); curr = append(curr, cpc)
+                    curr = append(curr, nkr); curr = append(curr, nkc)
+                  }
+                }
+              }
+            }
+            d = d + 1
+          }
+        }
+      }
+
+      if running == 1 {
+        if len(nxt) == 0 {
+          // No more states to explore
+          running = 0
+        } else {
+          curr = nxt
+          currHead = 0
+          nxt = []
+          dist = dist + 1
+        }
+      }
+    }
+
+    if ans < 0 { print("NO") } else { print(ans) }
+    ti = ti + 1
+  }
+}
+
+main()

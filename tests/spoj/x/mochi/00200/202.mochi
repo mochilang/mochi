@@ -1,0 +1,168 @@
+// Solution for SPOJ Rockets (ROCKETS)
+// https://www.spoj.com/problems/ROCKETS/
+// Non-crossing perfect matching using recursive ham-sandwich approach.
+// Pick lowest-leftmost point B, sort others by angle from B, find the
+// first prefix that has balanced R/W counts (the match for B), then recurse.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Cross product of vectors (ax,ay) and (bx,by): positive = a is CCW from b
+fun cross2d(ax: int, ay: int, bx: int, by: int): int {
+  return ax * by - ay * bx
+}
+
+// Solve matching for a subset of indices stored in 'ids'.
+// px[i], py[i] = coordinates; pt[i] = type (0=R,1=W); porig[i] = original index
+// ans[i] = answer array (for each R original index, store matched W original index+1)
+fun solveMatch(ids: list<int>, px: list<int>, py: list<int>, pt: list<int>,
+               porig: list<int>, ans: list<int>): list<int> {
+  let sz = len(ids)
+  if sz == 0 { return ans }
+
+  // Find lowest-leftmost point
+  var bi = 0
+  var bx = px[ids[0]]; var by_ = py[ids[0]]
+  var k = 1
+  while k < sz {
+    let idx = ids[k]
+    if py[idx] < by_ || (py[idx] == by_ && px[idx] < bx) {
+      bi = k; bx = px[idx]; by_ = py[idx]
+    }
+    k = k + 1
+  }
+
+  // Swap bi to position 0
+  let tmp0 = ids[0]; ids[0] = ids[bi]; ids[bi] = tmp0
+
+  let bIdx = ids[0]
+  let bType = pt[bIdx]
+
+  // Sort ids[1..sz-1] by polar angle from B using insertion sort + cross product
+  var j = 2
+  while j < sz {
+    let kId = ids[j]
+    let kdx = px[kId] - bx; let kdy = py[kId] - by_
+    var ii = j - 1
+    while ii >= 1 {
+      let iId = ids[ii]
+      let idx2 = px[iId] - bx; let idy = py[iId] - by_
+      // Compare angles: cross(i, k) > 0 means i is CCW from k, i.e. i comes before k
+      // We want ascending angle order, so if i should come after k, swap
+      if cross2d(idx2, idy, kdx, kdy) < 0 { break }
+      ids[ii+1] = ids[ii]
+      ii = ii - 1
+    }
+    ids[ii+1] = kId
+    j = j + 1
+  }
+
+  // Now scan ids[1..sz-1] in angular order.
+  // B is type bType. We want to find the smallest prefix that matches B.
+  // If bType == 0 (R): scan until we see 1 more W than R (delta = W_cnt - R_cnt = 1)
+  // If bType == 1 (W): scan until we see 1 more R than W (delta = R_cnt - W_cnt = 1)
+  var delta = 0
+  var matchPos = -1
+  k = 1
+  while k < sz {
+    let idx = ids[k]
+    if pt[idx] == 1 { delta = delta + 1 } else { delta = delta - 1 }
+    if bType == 0 && delta == 1 { matchPos = k; break }
+    if bType == 1 && delta == (0 - 1) { matchPos = k; break }
+    k = k + 1
+  }
+
+  // Match B with ids[matchPos]
+  let mIdx = ids[matchPos]
+  if bType == 0 {
+    // B is R, mIdx is W
+    ans[porig[bIdx]] = porig[mIdx]
+  } else {
+    // B is W, mIdx is R
+    ans[porig[mIdx]] = porig[bIdx]
+  }
+
+  // Recurse on ids[1..matchPos-1] and ids[matchPos+1..sz-1]
+  var left: list<int> = []
+  k = 1
+  while k < matchPos {
+    left = append(left, ids[k])
+    k = k + 1
+  }
+  ans = solveMatch(left, px, py, pt, porig, ans)
+
+  var right: list<int> = []
+  k = matchPos + 1
+  while k < sz {
+    right = append(right, ids[k])
+    k = k + 1
+  }
+  ans = solveMatch(right, px, py, pt, porig, ans)
+
+  return ans
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    var px: list<int> = []
+    var py: list<int> = []
+    var pt: list<int> = []   // 0=R,1=W
+    var porig: list<int> = [] // original index within R or W set (0-based)
+
+    var i = 0
+    while i < n {
+      let p = split(input())
+      px = append(px, int(p[0])); py = append(py, int(p[1]))
+      pt = append(pt, 0); porig = append(porig, i)
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      let p = split(input())
+      px = append(px, int(p[0])); py = append(py, int(p[1]))
+      pt = append(pt, 1); porig = append(porig, i)
+      i = i + 1
+    }
+
+    // Build initial ids list [0..2n-1]
+    var ids: list<int> = []
+    i = 0
+    while i < 2 * n { ids = append(ids, i); i = i + 1 }
+
+    // ans[i] = W index (0-based) matched with R_i
+    var ans: list<int> = []
+    i = 0
+    while i < n { ans = append(ans, -1); i = i + 1 }
+
+    ans = solveMatch(ids, px, py, pt, porig, ans)
+
+    i = 0
+    while i < n {
+      print(ans[i] + 1)
+      i = i + 1
+    }
+
+    ti = ti + 1
+  }
+}
+
+main()

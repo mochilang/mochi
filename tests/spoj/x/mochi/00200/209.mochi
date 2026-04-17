@@ -1,0 +1,136 @@
+// Solution for SPOJ MAP - The Map
+// https://www.spoj.com/problems/MAP/
+// Sort values, DP partition into m groups minimizing sum of |x - median|.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Sort via insertion sort (n < 3000)
+fun sortArr(a: list<int>): list<int> {
+  var n = len(a)
+  var i = 1
+  while i < n {
+    let v = a[i]
+    var j = i - 1
+    while j >= 0 && a[j] > v {
+      a[j+1] = a[j]
+      j = j - 1
+    }
+    a[j+1] = v
+    i = i + 1
+  }
+  return a
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    var mLine = input()
+    while mLine == "" { mLine = input() }
+    let m = int(mLine)
+
+    var a: list<int> = []
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      a = append(a, int(vLine))
+      i = i + 1
+    }
+
+    a = sortArr(a)
+
+    // Prefix sums for cost computation
+    var pre: list<int> = []
+    pre = append(pre, 0)
+    i = 0
+    while i < n {
+      pre = append(pre, pre[i] + a[i])
+      i = i + 1
+    }
+
+    // cost(l, r): sum |a[i] - median| for sorted a[l..r] (0-indexed inclusive)
+    // median index = (l+r)/2
+    // = (a[med]*(med-l+1) - (pre[med+1]-pre[l])) + ((pre[r+1]-pre[med+1]) - a[med]*(r-med))
+
+    // dp[j][i] = min cost for first i elements split into j groups
+    // We use 1D rolling array
+    let INF = 1000000000000
+    // dp[i] = min cost for i elements (current group count)
+    var dp: list<int> = []
+    var prev: list<int> = []
+    i = 0
+    while i <= n {
+      dp = append(dp, INF)
+      prev = append(prev, INF)
+      i = i + 1
+    }
+    // 0 elements, 0 groups = cost 0
+    prev[0] = 0
+
+    var g = 1
+    while g <= m {
+      // Reset dp
+      i = 0
+      while i <= n { dp[i] = INF; i = i + 1 }
+      dp[0] = INF  // can't have 0 elements in g groups for g>0
+
+      // For each ending position r (1-indexed, covers a[0..r-1])
+      var r = g
+      while r <= n {
+        // Try all starting positions l: group is a[l..r-1] (0-indexed)
+        var l = g - 1
+        while l < r {
+          // prev[l] = cost of first l elements in g-1 groups
+          if prev[l] < INF {
+            // group covers a[l..r-1], 0-indexed
+            let lo = l
+            let hi = r - 1
+            let med = int((lo + hi) / 2)
+            let amed = a[med]
+            // left part: a[lo..med]
+            let leftSum = pre[med+1] - pre[lo]
+            let leftCnt = med - lo + 1
+            let costL = amed * leftCnt - leftSum
+            // right part: a[med+1..hi]
+            let rightSum = pre[hi+1] - pre[med+1]
+            let rightCnt = hi - med
+            let costR = rightSum - amed * rightCnt
+            let c = costL + costR
+            let val = prev[l] + c
+            if val < dp[r] { dp[r] = val }
+          }
+          l = l + 1
+        }
+        r = r + 1
+      }
+
+      // Copy dp -> prev
+      i = 0
+      while i <= n { prev[i] = dp[i]; i = i + 1 }
+      g = g + 1
+    }
+
+    print(prev[n])
+    ti = ti + 1
+  }
+}
+
+main()

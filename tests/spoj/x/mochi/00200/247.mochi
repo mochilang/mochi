@@ -1,0 +1,98 @@
+// Solution for SPOJ Chocolate (CHOCOLA)
+// https://www.spoj.com/problems/CHOCOLA/
+// Greedy: sort cuts by cost descending, apply each cut multiplied by current piece count.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun sortDesc(a: list<int>): list<int> {
+  var n = len(a)
+  var i = 1
+  while i < n {
+    let k = a[i]
+    var j = i - 1
+    while j >= 0 && a[j] < k { a[j+1] = a[j]; j = j - 1 }
+    a[j+1] = k
+    i = i + 1
+  }
+  return a
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var l1 = input()
+    while l1 == "" { l1 = input() }
+    let mn = split(l1)
+    let m = int(mn[0])
+    let n = int(mn[1])
+
+    // Read m-1 vertical cut costs (x1..xm-1)
+    var xcuts: list<int> = []
+    var i = 0
+    while i < m - 1 {
+      var ln = input()
+      while ln == "" { ln = input() }
+      xcuts = append(xcuts, int(ln))
+      i = i + 1
+    }
+
+    // Read n-1 horizontal cut costs (y1..yn-1)
+    var ycuts: list<int> = []
+    i = 0
+    while i < n - 1 {
+      var ln = input()
+      while ln == "" { ln = input() }
+      ycuts = append(ycuts, int(ln))
+      i = i + 1
+    }
+
+    xcuts = sortDesc(xcuts)
+    ycuts = sortDesc(ycuts)
+
+    // Merge: greedily pick largest cut, track horizontal/vertical piece counts
+    var hpieces = 1  // number of horizontal strips (rows of pieces)
+    var vpieces = 1  // number of vertical strips (cols of pieces)
+    var xi = 0
+    var yi = 0
+    var cost = 0
+
+    while xi < len(xcuts) || yi < len(ycuts) {
+      var xval = 0
+      var yval = 0
+      if xi < len(xcuts) { xval = xcuts[xi] }
+      if yi < len(ycuts) { yval = ycuts[yi] }
+
+      if xval >= yval && xi < len(xcuts) {
+        // vertical cut: costs xval * hpieces (one cut per horizontal strip)
+        cost = cost + xval * hpieces
+        vpieces = vpieces + 1
+        xi = xi + 1
+      } else {
+        // horizontal cut: costs yval * vpieces
+        cost = cost + yval * vpieces
+        hpieces = hpieces + 1
+        yi = yi + 1
+      }
+    }
+
+    print(cost)
+    ti = ti + 1
+  }
+}
+
+main()

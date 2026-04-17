@@ -1,0 +1,89 @@
+// Solution for SPOJ RECTNG1 - Rectangles
+// https://www.spoj.com/problems/RECTNG1/
+// Two rectangles form a block if their closed regions share a segment (not just a point).
+// Condition: x-ranges overlap AND y-ranges overlap AND not just a corner point.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun findRoot(par: list<int>, x: int): int {
+  while par[x] != x { x = par[x] }
+  return x
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    var rx1: list<int> = []
+    var ry1: list<int> = []
+    var rx2: list<int> = []
+    var ry2: list<int> = []
+
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let p = split(vLine)
+      rx1 = append(rx1, int(p[0]))
+      ry1 = append(ry1, int(p[1]))
+      rx2 = append(rx2, int(p[2]))
+      ry2 = append(ry2, int(p[3]))
+      i = i + 1
+    }
+
+    var par: list<int> = []
+    i = 0
+    while i < n { par = append(par, i); i = i + 1 }
+
+    i = 0
+    while i < n {
+      var j = i + 1
+      while j < n {
+        // Check if rectangles share a common segment (not just a point).
+        // Intersection of closed regions must be >=1D.
+        let xlo = if rx1[i] > rx1[j] { rx1[i] } else { rx1[j] }
+        let xhi = if rx2[i] < rx2[j] { rx2[i] } else { rx2[j] }
+        let ylo = if ry1[i] > ry1[j] { ry1[i] } else { ry1[j] }
+        let yhi = if ry2[i] < ry2[j] { ry2[i] } else { ry2[j] }
+
+        // Ranges must overlap and intersection must not be just a corner point
+        if xlo <= xhi && ylo <= yhi && (xlo < xhi || ylo < yhi) {
+          let ra = findRoot(par, i)
+          let rb = findRoot(par, j)
+          if ra != rb { par[ra] = rb }
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    var cnt = 0
+    i = 0
+    while i < n {
+      if findRoot(par, i) == i { cnt = cnt + 1 }
+      i = i + 1
+    }
+    print(cnt)
+    ti = ti + 1
+  }
+}
+
+main()

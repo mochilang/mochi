@@ -1,0 +1,120 @@
+// Solution for SPOJ FSHEEP - Fencing in the Sheep
+// https://www.spoj.com/problems/FSHEEP/
+// Point-in-polygon using ray casting (horizontal ray to the right).
+// Polygon vertices given anti-clockwise; shepherd at (0,0) is inside.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Ray casting: horizontal ray to the right from (px, py).
+// Returns 1 if point is inside or on boundary.
+fun pointInPoly(px: int, py: int, vx: list<int>, vy: list<int>): int {
+  let n = len(vx)
+  var crossings = 0
+  var i = 0
+  while i < n {
+    let j = (i + 1) % n
+    let x1 = vx[i]; let y1 = vy[i]
+    let x2 = vx[j]; let y2 = vy[j]
+
+    // Check if point is exactly on segment (i, j)
+    // On segment: cross product = 0 and within bounding box
+    let crossP = (x2 - x1) * (py - y1) - (y2 - y1) * (px - x1)
+    if crossP == 0 {
+      let minX = x1; let maxX = x2
+      var lo = minX; var hi = maxX
+      if x2 < x1 { lo = x2; hi = x1 }
+      var loy = y1; var hiy = y2
+      if y2 < y1 { loy = y2; hiy = y1 }
+      if px >= lo && px <= hi && py >= loy && py <= hiy {
+        return 1  // on boundary
+      }
+    }
+
+    // Ray casting: horizontal ray from (px,py) going right
+    // Edge (x1,y1)-(x2,y2) crosses if it straddles py
+    var miny = y1; var maxy = y2
+    if y2 < y1 { miny = y2; maxy = y1 }
+    if py < miny || py >= maxy {
+      i = i + 1
+      continue
+    }
+    // x-intercept of edge at y=py
+    // x = x1 + (py - y1) * (x2 - x1) / (y2 - y1)
+    // We check if x-intercept > px
+    // (py - y1) * (x2 - x1) / (y2 - y1) > px - x1
+    // Multiply both sides by (y2 - y1); if y2>y1 positive, if y2<y1 negative
+    let dy = y2 - y1
+    let dx = x2 - x1
+    // x_intercept * dy = x1 * dy + (py - y1) * dx
+    // We want x_intercept > px, i.e. x1*dy + (py-y1)*dx > px*dy (if dy>0)
+    //                                   x1*dy + (py-y1)*dx < px*dy (if dy<0)
+    let lhs = (x1 * dy) + (py - y1) * dx
+    let rhs = px * dy
+    if dy > 0 {
+      if lhs > rhs { crossings = crossings + 1 }
+    } else {
+      if lhs < rhs { crossings = crossings + 1 }
+    }
+
+    i = i + 1
+  }
+  if crossings % 2 == 1 { return 1 }
+  return 0
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    var hdrLine = input()
+    while hdrLine == "" { hdrLine = input() }
+    let hdr = split(hdrLine)
+    let n = int(hdr[0])
+    let m = int(hdr[1])
+
+    var vx: list<int> = []
+    var vy: list<int> = []
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let p = split(vLine)
+      vx = append(vx, int(p[0]))
+      vy = append(vy, int(p[1]))
+      i = i + 1
+    }
+
+    var count = 0
+    i = 0
+    while i < m {
+      var sLine = input()
+      while sLine == "" { sLine = input() }
+      let p = split(sLine)
+      let sx = int(p[0])
+      let sy = int(p[1])
+      if pointInPoly(sx, sy, vx, vy) == 1 { count = count + 1 }
+      i = i + 1
+    }
+
+    print(count)
+    tc = tc + 1
+  }
+}
+
+main()

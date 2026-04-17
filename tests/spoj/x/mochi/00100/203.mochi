@@ -1,0 +1,159 @@
+// SPOJ POTHOLE - Potholers
+// https://www.spoj.com/problems/POTHOLE/
+// Max flow from chamber 1 to chamber n.
+// Edges from chamber 1 have capacity 1; edges into chamber n have capacity 1;
+// all other corridors have infinite capacity.
+// Use Edmonds-Karp (BFS augmenting paths).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    // Build adjacency list for flow network
+    // Edge representation: edges stored as [to, rev_idx, cap]
+    // head[v] = list of edge indices from v
+    let INF = 1000000000
+    var edgeTo: list<int> = []
+    var edgeRev: list<int> = []
+    var edgeCap: list<int> = []
+    var numEdges = 0
+
+    // head[v] = list of edge indices
+    // We'll store as flat: headStart[v], headStart[v+1] = range - but dynamic, use adjList
+    var adj: list<list<int>> = []
+    var vi = 0
+    while vi < n {
+      var empty: list<int> = []
+      adj = append(adj, empty)
+      vi = vi + 1
+    }
+
+    // Add edge u->v with capacity cap and reverse edge v->u with capacity 0
+    // u,v are 0-indexed
+    // returns nothing, modifies adj, edgeTo, edgeRev, edgeCap
+    // We can't call a function that modifies these, so inline
+
+    // Read graph (1-indexed chambers)
+    var i = 1
+    while i < n {
+      var line = input()
+      while line == "" { line = input() }
+      let parts = split(line)
+      let m = int(parts[0])
+      var j = 1
+      while j <= m {
+        let v = int(parts[j]) - 1  // 0-indexed destination
+        let u = i - 1              // 0-indexed source
+
+        // capacity: 1 if u=0 (from top) or v=n-1 (to bottom), else INF
+        var cap = INF
+        if u == 0 { cap = 1 }
+        if v == n-1 { cap = 1 }
+
+        // Add forward edge u->v
+        let e1 = numEdges
+        edgeTo = append(edgeTo, v)
+        edgeRev = append(edgeRev, numEdges + 1)
+        edgeCap = append(edgeCap, cap)
+        adj[u] = append(adj[u], e1)
+        numEdges = numEdges + 1
+
+        // Add reverse edge v->u with cap 0
+        let e2 = numEdges
+        edgeTo = append(edgeTo, u)
+        edgeRev = append(edgeRev, numEdges - 1)
+        edgeCap = append(edgeCap, 0)
+        adj[v] = append(adj[v], e2)
+        numEdges = numEdges + 1
+
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    // Edmonds-Karp: BFS to find shortest augmenting path
+    let S = 0
+    let T = n - 1
+    var flow = 0
+
+    while 1 == 1 {
+      // BFS from S to T
+      var prev: list<int> = []
+      var prevEdge: list<int> = []
+      vi = 0
+      while vi < n { prev = append(prev, -1); prevEdge = append(prevEdge, -1); vi = vi + 1 }
+      prev[S] = S
+
+      var queue: list<int> = []
+      queue = append(queue, S)
+      var qHead = 0
+
+      while qHead < len(queue) {
+        let u = queue[qHead]
+        qHead = qHead + 1
+        if u == T { break }
+        let adjU = adj[u]
+        var ei = 0
+        while ei < len(adjU) {
+          let eIdx = adjU[ei]
+          let v = edgeTo[eIdx]
+          if prev[v] < 0 && edgeCap[eIdx] > 0 {
+            prev[v] = u
+            prevEdge[v] = eIdx
+            queue = append(queue, v)
+          }
+          ei = ei + 1
+        }
+      }
+
+      if prev[T] < 0 { break }  // No augmenting path
+
+      // Find min capacity along path
+      var minCap = INF
+      var cur = T
+      while cur != S {
+        let eIdx = prevEdge[cur]
+        if edgeCap[eIdx] < minCap { minCap = edgeCap[eIdx] }
+        cur = prev[cur]
+      }
+
+      // Augment
+      cur = T
+      while cur != S {
+        let eIdx = prevEdge[cur]
+        edgeCap[eIdx] = edgeCap[eIdx] - minCap
+        edgeCap[edgeRev[eIdx]] = edgeCap[edgeRev[eIdx]] + minCap
+        cur = prev[cur]
+      }
+
+      flow = flow + minCap
+    }
+
+    print(flow)
+    ti = ti + 1
+  }
+}
+
+main()

@@ -1,0 +1,162 @@
+// Solution for SPOJ MLAND - Land for Motorways
+// https://www.spoj.com/problems/MLAND/
+// Find time t in [t1,t2] maximizing MST cost (linear edge costs: cost_i(t) = b_i + t*a_i).
+// MST total cost is concave in t -> ternary search for maximum value,
+// then binary search for leftmost t achieving that maximum.
+// Prim's algorithm for MST computation.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Compute MST cost using Prim's algorithm with float edge weights at time t
+fun mstCost(n: int, m: int, eu: list<int>, ev: list<int>, ea: list<int>, eb: list<int>, t: float): float {
+  var inMST: list<int> = []
+  var minEdge: list<float> = []
+  var i = 0
+  while i < n {
+    inMST = append(inMST, 0)
+    minEdge = append(minEdge, 1000000000.0)
+    i = i + 1
+  }
+
+  inMST[0] = 1
+  i = 0
+  while i < m {
+    let cost = (eb[i] as float) + t * (ea[i] as float)
+    if eu[i] == 0 && cost < minEdge[ev[i]] { minEdge[ev[i]] = cost }
+    if ev[i] == 0 && cost < minEdge[eu[i]] { minEdge[eu[i]] = cost }
+    i = i + 1
+  }
+
+  var total = 0.0
+  var added = 1
+  while added < n {
+    var bestV = -1
+    var bestCost = 1000000000.0
+    i = 0
+    while i < n {
+      if inMST[i] == 0 && minEdge[i] < bestCost {
+        bestCost = minEdge[i]
+        bestV = i
+      }
+      i = i + 1
+    }
+    if bestV < 0 { break }
+    inMST[bestV] = 1
+    total = total + bestCost
+    added = added + 1
+
+    i = 0
+    while i < m {
+      let cost = (eb[i] as float) + t * (ea[i] as float)
+      if eu[i] == bestV && inMST[ev[i]] == 0 && cost < minEdge[ev[i]] {
+        minEdge[ev[i]] = cost
+      }
+      if ev[i] == bestV && inMST[eu[i]] == 0 && cost < minEdge[eu[i]] {
+        minEdge[eu[i]] = cost
+      }
+      i = i + 1
+    }
+  }
+  return total
+}
+
+fun fmtFloat3(x: float): string {
+  var neg = false
+  var v = x
+  if v < 0.0 { neg = true; v = 0.0 - v }
+  // Add small epsilon before rounding to handle floating point near .5
+  let scaled = int(v * 1000.0 + 0.5)
+  let ip = int(scaled / 1000)
+  let fp = scaled % 1000
+  var fs = str(fp)
+  while len(fs) < 3 { fs = "0" + fs }
+  var s = str(ip) + "." + fs
+  if neg { s = "-" + s }
+  return s
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    var hdrLine = input()
+    while hdrLine == "" { hdrLine = input() }
+    let hdr = split(hdrLine)
+    let n = int(hdr[0])
+    let m = int(hdr[1])
+
+    var timeLine = input()
+    while timeLine == "" { timeLine = input() }
+    let timeP = split(timeLine)
+    let t1 = int(timeP[0]) as float
+    let t2 = int(timeP[1]) as float
+
+    var eu: list<int> = []
+    var ev: list<int> = []
+    var ea: list<int> = []
+    var eb: list<int> = []
+    var i = 0
+    while i < m {
+      var eLine = input()
+      while eLine == "" { eLine = input() }
+      let ep = split(eLine)
+      eu = append(eu, int(ep[0]))
+      ev = append(ev, int(ep[1]))
+      ea = append(ea, int(ep[2]))
+      eb = append(eb, int(ep[3]))
+      i = i + 1
+    }
+
+    // Step 1: Ternary search for maximum of concave MST cost in [t1, t2]
+    var lo = t1
+    var hi = t2
+    var iter = 0
+    while iter < 200 {
+      let d = (hi - lo) / 3.0
+      let m1 = lo + d
+      let m2 = hi - d
+      let f1 = mstCost(n, m, eu, ev, ea, eb, m1)
+      let f2 = mstCost(n, m, eu, ev, ea, eb, m2)
+      if f1 < f2 { lo = m1 } else { hi = m2 }
+      iter = iter + 1
+    }
+    let maxVal = mstCost(n, m, eu, ev, ea, eb, lo)
+
+    // Step 2: Binary search for leftmost t where MST >= maxVal - eps
+    // The function is non-decreasing up to the maximum plateau.
+    // Find leftmost t in [t1, t2] where mstCost(t) >= maxVal - 1e-6
+    let eps = 0.000001
+    var blo = t1
+    var bhi = lo  // lo is somewhere in the optimal region
+    iter = 0
+    while iter < 200 {
+      let mid = (blo + bhi) / 2.0
+      let fmid = mstCost(n, m, eu, ev, ea, eb, mid)
+      if fmid >= maxVal - eps { bhi = mid } else { blo = mid }
+      iter = iter + 1
+    }
+    let bestT = bhi
+    let bestCost = mstCost(n, m, eu, ev, ea, eb, bestT)
+
+    print(fmtFloat3(bestT) + " " + fmtFloat3(bestCost))
+    tc = tc + 1
+  }
+}
+
+main()

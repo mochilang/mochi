@@ -1,0 +1,192 @@
+// Solution for SPOJ Relevant Phrases of Annihilation (PHRASES)
+// https://www.spoj.com/problems/PHRASES/
+// Binary search on length L. For each candidate L, compute rolling hash
+// of all substrings of length L per message. A hash is "valid" for a message
+// if it appears at two positions with gap >= L (non-overlapping).
+// Count how many messages each hash is valid in; if any hash has count==n, return 1.
+//
+// Mochi limitation: var m: map<int,int> = {} in loops reuses the same map.
+// Workaround: use generation counters. Maps are created once and never "cleared";
+// instead, values are tagged with a generation number to detect stale entries.
+//
+// Encoding scheme (avoiding big.Int overflow, max string len 10000, max n=10):
+//   firstOcc[hv] = gen * 20000 + (pos + 1)        [gen < 10^6, pos+1 < 10001]
+//   seenMsg[hv]  = gen * 20 + msgIdx               [gen < 10^6, msgIdx < 20]
+//   countMap[hv] = gen * 20 + count                [gen < 10^6, count <= n <= 10]
+// All values < 10^6 * 20020 = 2*10^10, well within float64 precision.
+
+fun trimLine(s: string): string {
+  var e = len(s)
+  while e > 0 && (s[e-1:e] == " " || s[e-1:e] == "\r" || s[e-1:e] == "\t") {
+    e = e - 1
+  }
+  return s[0:e]
+}
+
+fun charVal(s: string, i: int): int {
+  let c = s[i:i+1]
+  let alpha = "abcdefghijklmnopqrstuvwxyz"
+  var j = 0
+  while j < 26 {
+    if alpha[j:j+1] == c { return j + 1 }
+    j = j + 1
+  }
+  return 1
+}
+
+fun mmod(v: int, MOD: int): int {
+  var r = v - ((v / MOD) as int) * MOD
+  if r < 0 { r = r + MOD }
+  return r
+}
+
+// Global generation counter (simulated via a list of 1 element).
+// Increment before each binary-search step to "invalidate" all map entries.
+
+// Process one message for length L using generation-tagged maps.
+// firstOcc[hv] = gen * 20000 + (pos+1) to track first occurrence.
+// seenMsg[hv] = gen * 20 + mi to track if we've counted hv for message mi.
+// countMap[hv] = gen * 20 + count to track count of messages.
+// Returns 1 if any hash reached n (all messages); 0 otherwise.
+fun processMsg(s: string, L: int, mi: int, n: int, gen: int,
+               firstOcc: map<int, int>, seenMsg: map<int, int>,
+               countMap: map<int, int>): int {
+  let BASE1 = 31
+  let MOD1 = 100003
+  let BASE2 = 37
+  let MOD2 = 99991
+  let POS_BASE = 20000   // positions 0..9999 map to 1..10000
+  let CNT_BASE = 20      // counts 0..10 and msgIdx 0..9
+  let MSG_MUL = 15       // multiplier for per-message generation (n <= 10)
+
+  let ns = len(s)
+  if ns < 2 * L { return 0 }
+
+  var h1: list<int> = []
+  var h2: list<int> = []
+  h1 = append(h1, 0)
+  h2 = append(h2, 0)
+  var i = 0
+  while i < ns {
+    let c = charVal(s, i)
+    h1 = append(h1, mmod(h1[i] * BASE1 + c, MOD1))
+    h2 = append(h2, mmod(h2[i] * BASE2 + c, MOD2))
+    i = i + 1
+  }
+  var pw1 = 1
+  var pw2 = 1
+  i = 0
+  while i < L {
+    pw1 = mmod(pw1 * BASE1, MOD1)
+    pw2 = mmod(pw2 * BASE2, MOD2)
+    i = i + 1
+  }
+
+  var found = 0
+  i = 0
+  while i + L <= ns {
+    var sub1 = h1[i+L] - pw1 * h1[i]
+    sub1 = mmod(sub1, MOD1)
+    var sub2 = h2[i+L] - pw2 * h2[i]
+    sub2 = mmod(sub2, MOD2)
+    let hv = sub1 * MOD2 + sub2
+
+    // Check firstOcc for current generation AND current message
+    let genMsgKey = gen * MSG_MUL + mi
+    let foRaw = firstOcc[hv]
+    var storedPos = 0 - 1
+    if foRaw != nil {
+      let foVal = foRaw as int
+      let foGen = (foVal / POS_BASE) as int
+      if foGen == genMsgKey {
+        storedPos = foVal - genMsgKey * POS_BASE - 1
+      }
+    }
+
+    if storedPos < 0 {
+      // No occurrence for this msg+gen: record this one
+      firstOcc[hv] = genMsgKey * POS_BASE + (i + 1)
+    } else {
+      // Already seen: check if disjoint
+      if i - storedPos >= L {
+        // Valid disjoint pair: check if already counted for this message
+        let smRaw = seenMsg[hv]
+        var alreadySeen = 0
+        if smRaw != nil {
+          let smVal = smRaw as int
+          let smGen = (smVal / CNT_BASE) as int
+          if smGen == gen {
+            let smMi = smVal - gen * CNT_BASE
+            if smMi == mi { alreadySeen = 1 }
+          }
+        }
+        if alreadySeen == 0 {
+          seenMsg[hv] = gen * CNT_BASE + mi
+          // Increment count
+          let cmRaw = countMap[hv]
+          var cnt = 0
+          if cmRaw != nil {
+            let cmVal = cmRaw as int
+            let cmGen = (cmVal / CNT_BASE) as int
+            if cmGen == gen { cnt = cmVal - gen * CNT_BASE }
+          }
+          cnt = cnt + 1
+          countMap[hv] = gen * CNT_BASE + cnt
+          if cnt == n { found = 1 }
+        }
+      }
+    }
+    i = i + 1
+  }
+  return found
+}
+
+fun works(msgs: list<string>, n: int, L: int, gen: int,
+          firstOcc: map<int, int>, seenMsg: map<int, int>,
+          countMap: map<int, int>): int {
+  if L == 0 { return 1 }
+  var mi = 0
+  while mi < n {
+    let found = processMsg(msgs[mi], L, mi, n, gen, firstOcc, seenMsg, countMap)
+    if found == 1 { return 1 }
+    mi = mi + 1
+  }
+  return 0
+}
+
+fun main() {
+  // Create maps once at top level to avoid Mochi map-reuse bug
+  var firstOcc: map<int, int> = {}
+  var seenMsg: map<int, int> = {}
+  var countMap: map<int, int> = {}
+  var gen = 0
+
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    var msgs: list<string> = []
+    var i = 0
+    while i < n {
+      var ml = input()
+      msgs = append(msgs, trimLine(ml))
+      i = i + 1
+    }
+
+    var lo = 0
+    var hi = 5000
+    while lo < hi {
+      let mid = int((lo + hi + 1) / 2)
+      gen = gen + 1
+      if works(msgs, n, mid, gen, firstOcc, seenMsg, countMap) == 1 { lo = mid } else { hi = mid - 1 }
+    }
+    print(lo)
+    ti = ti + 1
+  }
+}
+
+main()

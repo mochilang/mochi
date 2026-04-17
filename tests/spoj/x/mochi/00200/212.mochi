@@ -1,0 +1,150 @@
+// SPOJ WATER - Water among Cubes
+// https://www.spoj.com/problems/WATER/
+// 2D trapping rain water on n*m grid.
+// Multi-source BFS from boundary cells using a min-heap.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nmLine = input()
+    while nmLine == "" { nmLine = input() }
+    let nm = split(nmLine)
+    let n = int(nm[0])
+    let m = int(nm[1])
+
+    var grid: list<int> = []
+    var i = 0
+    while i < n {
+      var row = input()
+      while row == "" { row = input() }
+      let parts = split(row)
+      var j = 0
+      while j < m {
+        grid = append(grid, int(parts[j]))
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    var visited: list<int> = []
+    i = 0
+    while i < n * m { visited = append(visited, 0); i = i + 1 }
+
+    // Pre-allocate heap arrays of size n*m
+    let maxSz = n * m
+    var hLevel: list<int> = []
+    var hRow: list<int> = []
+    var hCol: list<int> = []
+    i = 0
+    while i < maxSz { hLevel = append(hLevel, 0); hRow = append(hRow, 0); hCol = append(hCol, 0); i = i + 1 }
+    var hsz = 0
+
+    // Push border cells into heap
+    i = 0
+    while i < n {
+      var j = 0
+      while j < m {
+        if i == 0 || i == n-1 || j == 0 || j == m-1 {
+          if visited[i*m+j] == 0 {
+            visited[i*m+j] = 1
+            hLevel[hsz] = grid[i*m+j]
+            hRow[hsz] = i
+            hCol[hsz] = j
+            // Sift up
+            var k = hsz
+            hsz = hsz + 1
+            while k > 0 {
+              let par = int((k-1)/2)
+              if hLevel[par] <= hLevel[k] { break }
+              let tl = hLevel[par]; let tr = hRow[par]; let tc = hCol[par]
+              hLevel[par] = hLevel[k]; hRow[par] = hRow[k]; hCol[par] = hCol[k]
+              hLevel[k] = tl; hRow[k] = tr; hCol[k] = tc
+              k = par
+            }
+          }
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    var totalWater = 0
+    var dr: list<int> = [-1, 1, 0, 0]
+    var dc: list<int> = [0, 0, -1, 1]
+
+    while hsz > 0 {
+      let curLevel = hLevel[0]
+      let curR = hRow[0]
+      let curC = hCol[0]
+      // Pop: move last to front
+      hsz = hsz - 1
+      hLevel[0] = hLevel[hsz]; hRow[0] = hRow[hsz]; hCol[0] = hCol[hsz]
+      // Sift down
+      var k = 0
+      while 1 == 1 {
+        let l = 2*k + 1
+        let r = 2*k + 2
+        var sm = k
+        if l < hsz && hLevel[l] < hLevel[sm] { sm = l }
+        if r < hsz && hLevel[r] < hLevel[sm] { sm = r }
+        if sm == k { break }
+        let tl = hLevel[k]; let tr = hRow[k]; let tc = hCol[k]
+        hLevel[k] = hLevel[sm]; hRow[k] = hRow[sm]; hCol[k] = hCol[sm]
+        hLevel[sm] = tl; hRow[sm] = tr; hCol[sm] = tc
+        k = sm
+      }
+
+      // Visit 4 neighbors
+      var d = 0
+      while d < 4 {
+        let nr = curR + dr[d]
+        let nc = curC + dc[d]
+        if nr >= 0 && nr < n && nc >= 0 && nc < m && visited[nr*m+nc] == 0 {
+          visited[nr*m+nc] = 1
+          var nl = curLevel
+          if grid[nr*m+nc] > nl { nl = grid[nr*m+nc] }
+          totalWater = totalWater + (nl - grid[nr*m+nc])
+          // Push neighbor into heap
+          hLevel[hsz] = nl
+          hRow[hsz] = nr
+          hCol[hsz] = nc
+          var sk = hsz
+          hsz = hsz + 1
+          while sk > 0 {
+            let par = int((sk-1)/2)
+            if hLevel[par] <= hLevel[sk] { break }
+            let tl = hLevel[par]; let tr = hRow[par]; let tc = hCol[par]
+            hLevel[par] = hLevel[sk]; hRow[par] = hRow[sk]; hCol[par] = hCol[sk]
+            hLevel[sk] = tl; hRow[sk] = tr; hCol[sk] = tc
+            sk = par
+          }
+        }
+        d = d + 1
+      }
+    }
+
+    print(totalWater)
+    ti = ti + 1
+  }
+}
+
+main()

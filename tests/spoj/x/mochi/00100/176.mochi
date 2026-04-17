@@ -1,0 +1,68 @@
+// Solution for SPOJ SUM1SEQ - Sum of one-sequence
+// https://www.spoj.com/problems/SUM1SEQ/
+// One-sequence: a[1]=0, |a[k+1]-a[k]|=1.
+// S = sum(a[k]) = sum_{j=1}^{n-1} d[j] * (n-j), where d[j] in {-1,+1}.
+// Max sum = S_max = n*(n-1)/2 (all d=+1).
+// Feasibility: |S| <= S_max and (S_max - S) % 2 == 0.
+// Construction: start with all d=+1 (sum=S_max), greedily flip d[j] to -1
+// (j=1 first, largest contribution n-j=n-1) to reduce sum to S.
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    var sLine = input()
+    while sLine == "" { sLine = input() }
+    let S = int(sLine)
+
+    let smax = n * (n - 1) / 2
+    let delta = smax - S
+
+    var ok = true
+    if S > smax { ok = false }
+    if S < 0 - smax { ok = false }
+    if delta % 2 != 0 { ok = false }
+
+    if tc > 0 { print("") }
+
+    if ok == false {
+      print("No")
+    } else {
+      // d[j] for j=1..n-1, d[j] in {-1,+1}, initially all +1
+      // remaining = delta, flip from j=1 upward (contribution n-j decreasing)
+      var d: list<int> = []
+      var j = 0
+      while j < n - 1 { d = append(d, 1); j = j + 1 }
+
+      var remaining = delta
+      j = 0
+      while j < n - 1 {
+        let contrib = n - 1 - j  // contribution of d[j+1] = n-(j+1) = n-j-1
+        if remaining >= 2 * contrib {
+          d[j] = -1
+          remaining = remaining - 2 * contrib
+        }
+        j = j + 1
+      }
+
+      // Build sequence: a[0]=0, a[k]=a[k-1]+d[k-1]
+      var a = 0
+      print(str(a))
+      j = 0
+      while j < n - 1 {
+        a = a + d[j]
+        print(str(a))
+        j = j + 1
+      }
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

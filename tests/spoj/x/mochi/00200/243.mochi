@@ -1,0 +1,139 @@
+// Solution for SPOJ Stable Marriage Problem (STABLEMP)
+// https://www.spoj.com/problems/STABLEMP/
+// Gale-Shapley algorithm (man-proposes variant).
+// Men propose in order of their preference; women accept the best proposal.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    // wPref[i*n + j] = j-th preference of woman i (0-indexed women, 0-indexed men values)
+    var wPref: list<int> = []
+    // wRank[i*n + m] = rank of man m for woman i (lower = better)
+    var wRank: list<int> = []
+    var i = 0
+    while i < n * n { wPref = append(wPref, 0); wRank = append(wRank, 0); i = i + 1 }
+
+    // mPref[i*n + j] = j-th preference of man i (0-indexed men, 0-indexed women values)
+    var mPref: list<int> = []
+    i = 0
+    while i < n * n { mPref = append(mPref, 0); i = i + 1 }
+
+    // Read women's preferences
+    i = 0
+    while i < n {
+      var line = input()
+      while line == "" { line = input() }
+      let parts = split(line)
+      // parts[0] = woman index (1-indexed), rest = men in order of preference
+      let wi = int(parts[0]) - 1
+      var j = 0
+      while j < n {
+        let m = int(parts[j + 1]) - 1
+        wPref[wi * n + j] = m
+        wRank[wi * n + m] = j
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    // Read men's preferences
+    i = 0
+    while i < n {
+      var line = input()
+      while line == "" { line = input() }
+      let parts = split(line)
+      let mi = int(parts[0]) - 1
+      var j = 0
+      while j < n {
+        let w = int(parts[j + 1]) - 1
+        mPref[mi * n + j] = w
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    // Gale-Shapley: man-proposes
+    // mPartner[m] = woman m is currently engaged to (-1 if free)
+    // wPartner[w] = man w is currently engaged to (-1 if free)
+    // mNext[m] = next preference index for man m to propose to
+    var mPartner: list<int> = []
+    var wPartner: list<int> = []
+    var mNext: list<int> = []
+    let NEG1 = 0 - 1
+    i = 0
+    while i < n {
+      mPartner = append(mPartner, NEG1)
+      wPartner = append(wPartner, NEG1)
+      mNext = append(mNext, 0)
+      i = i + 1
+    }
+
+    // Queue of free men
+    var freeQ: list<int> = []
+    i = 0
+    while i < n { freeQ = append(freeQ, i); i = i + 1 }
+    var head = 0
+
+    while head < len(freeQ) {
+      let m = freeQ[head]
+      head = head + 1
+      // Man m proposes to his next choice
+      let pref = mNext[m]
+      let w = mPref[m * n + pref]
+      mNext[m] = pref + 1
+
+      let curr = wPartner[w]
+      if curr == NEG1 {
+        // Woman w is free; accept
+        wPartner[w] = m
+        mPartner[m] = w
+      } else {
+        // Woman w compares m to curr
+        if wRank[w * n + m] < wRank[w * n + curr] {
+          // Woman prefers m over curr; switch
+          wPartner[w] = m
+          mPartner[m] = w
+          mPartner[curr] = NEG1
+          freeQ = append(freeQ, curr)
+        } else {
+          // Woman prefers curr; m stays free
+          freeQ = append(freeQ, m)
+        }
+      }
+    }
+
+    // Output: for each man m (1..n), print "m+1 w+1"
+    i = 0
+    while i < n {
+      print(str(i + 1) + " " + str(mPartner[i] + 1))
+      i = i + 1
+    }
+
+    ti = ti + 1
+  }
+}
+
+main()

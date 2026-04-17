@@ -1,0 +1,162 @@
+// SPOJ EMPTY - Empty Cuboids
+// https://www.spoj.com/problems/EMPTY/
+// Find max-volume cuboid [0,X]x[0,Y]x[0,Z] (X,Y,Z <= 10^6) with no interior points.
+// Point (px,py,pz) is interior iff px<X and py<Y and pz<Z.
+// For each candidate X (sorted px values + 10^6):
+//   Active = {(py,pz): original point has px < X}
+//   For each candidate Y (sorted active py values + 10^6):
+//     maxZ = min(pz : active point has py < Y), default M if none
+//     update best with X*Y*maxZ
+// O(n^2) overall since n<=5000.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    var ptpx: list<int> = []
+    var ptpy: list<int> = []
+    var ptpz: list<int> = []
+    var i = 0
+    while i < n {
+      var line = input()
+      while line == "" { line = input() }
+      let parts = split(line)
+      ptpx = append(ptpx, int(parts[0]))
+      ptpy = append(ptpy, int(parts[1]))
+      ptpz = append(ptpz, int(parts[2]))
+      i = i + 1
+    }
+
+    let M = 1000000
+
+    // Sort point indices by px ascending
+    var order: list<int> = []
+    i = 0
+    while i < n { order = append(order, i); i = i + 1 }
+    i = 1
+    while i < n {
+      let key = order[i]
+      var j = i - 1
+      while j >= 0 && ptpx[order[j]] > ptpx[key] { order[j+1] = order[j]; j = j - 1 }
+      order[j+1] = key
+      i = i + 1
+    }
+
+    var bestVol = 0
+    var bestX = M; var bestY = M; var bestZ = M
+
+    // Active points sorted by py (maintained via insertion)
+    var actPy: list<int> = []
+    var actPz: list<int> = []
+
+    // Try each X candidate: each distinct px value + M
+    // Process in order: before adding group of points with px=v, try X=v
+    // After adding all points, try X=M
+
+    var xi = 0
+    while xi <= n {
+      // Determine candidate X
+      var candX = M
+      if xi < n { candX = ptpx[order[xi]] }
+
+      // Skip duplicate X candidates (multiple points with same px)
+      var isDup = 0
+      if xi > 0 && xi < n && ptpx[order[xi]] == ptpx[order[xi-1]] { isDup = 1 }
+
+      if isDup == 0 {
+        // Process this X candidate
+        // Active = actPy/actPz (already sorted by py)
+        let aLen = len(actPy)
+
+        // Compute prefix min of pz over active points sorted by py
+        // prefMin[j] = min(actPz[0..j-1]) = min pz of points with py < actPy[j]
+        //   (valid when j is first occurrence of actPy[j] in sorted actPy)
+        // Also track overall min for Y=M case
+        var runMin = M
+        var prefMin: list<int> = []
+        var j = 0
+        while j < aLen {
+          prefMin = append(prefMin, runMin)
+          if actPz[j] < runMin { runMin = actPz[j] }
+          j = j + 1
+        }
+        // runMin after loop = min of all actPz = minZ for Y=M
+
+        // Try Y=M
+        let vol0 = candX * M * runMin
+        if vol0 > bestVol { bestVol = vol0; bestX = candX; bestY = M; bestZ = runMin }
+
+        // Try Y = each distinct py value in active
+        j = 0
+        while j < aLen {
+          // Only process first occurrence of each py value
+          var isFirst = 1
+          if j > 0 && actPy[j] == actPy[j-1] { isFirst = 0 }
+          if isFirst == 1 {
+            let candY = actPy[j]
+            let curMinZ = prefMin[j]  // min pz of points with py < candY
+            let vol = candX * candY * curMinZ
+            if vol > bestVol { bestVol = vol; bestX = candX; bestY = candY; bestZ = curMinZ }
+          }
+          j = j + 1
+        }
+      }
+
+      // Add all points with px == ptpx[order[xi]] to active (if xi < n)
+      if xi < n {
+        let curPxVal = ptpx[order[xi]]
+        // Add all points with this px value
+        while xi < n && ptpx[order[xi]] == curPxVal {
+          let ptIdx = order[xi]
+          let newPy = ptpy[ptIdx]
+          let newPz = ptpz[ptIdx]
+          // Insert into actPy/actPz sorted by py
+          var lo = 0
+          var hi = len(actPy)
+          while lo < hi {
+            let mid = int((lo + hi) / 2)
+            if actPy[mid] <= newPy { lo = mid + 1 } else { hi = mid }
+          }
+          let insPos = lo
+          actPy = append(actPy, 0)
+          actPz = append(actPz, 0)
+          let curLen = len(actPy)
+          var k = curLen - 1
+          while k > insPos { actPy[k] = actPy[k-1]; actPz[k] = actPz[k-1]; k = k - 1 }
+          actPy[insPos] = newPy
+          actPz[insPos] = newPz
+          xi = xi + 1
+        }
+      } else {
+        xi = xi + 1
+      }
+    }
+
+    print(str(bestX) + " " + str(bestY) + " " + str(bestZ))
+    ti = ti + 1
+  }
+}
+
+main()

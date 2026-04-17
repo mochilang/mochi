@@ -1,0 +1,113 @@
+// Solution for SPOJ Vonny and her dominos (VONNY)
+// https://www.spoj.com/problems/VONNY/
+// Backtracking: scan cells left-to-right top-to-bottom, find first uncovered,
+// try placing each available domino (a,b) horizontally or vertically.
+// Domino index: (a,b) with a<=b, idx = a*(13-a)/2 + (b-a).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun domIdx(a: int, b: int): int {
+  // a <= b, returns index 0..27
+  // offset(a) = 7*a - a*(a-1)/2
+  return (7*a - (a*(a-1)/2) as int) + (b - a)
+}
+
+fun solve(grid: list<int>, covered: list<int>, usedDom: list<int>, count: list<int>) {
+  // Find first uncovered cell
+  var pos = 0 - 1
+  var i = 0
+  while i < 56 {
+    if covered[i] == 0 { pos = i; break }
+    i = i + 1
+  }
+  if pos == 0 - 1 {
+    // All covered
+    count[0] = count[0] + 1
+    return
+  }
+  let r = (pos / 8) as int
+  let c = pos - r * 8
+  let val = grid[pos]
+  // Try placing domino horizontally (pos, pos+1) if c < 7 and pos+1 uncovered
+  if c < 7 && covered[pos+1] == 0 {
+    let val2 = grid[pos+1]
+    // Domino is (min(val,val2), max(val,val2))
+    let a = if val < val2 { val } else { val2 }
+    let b = if val < val2 { val2 } else { val }
+    let idx = domIdx(a, b)
+    if usedDom[idx] == 0 {
+      usedDom[idx] = 1
+      covered[pos] = 1
+      covered[pos+1] = 1
+      solve(grid, covered, usedDom, count)
+      covered[pos] = 0
+      covered[pos+1] = 0
+      usedDom[idx] = 0
+    }
+  }
+  // Try placing domino vertically (pos, pos+8) if r < 6 and pos+8 uncovered
+  if r < 6 && covered[pos+8] == 0 {
+    let val2 = grid[pos+8]
+    let a = if val < val2 { val } else { val2 }
+    let b = if val < val2 { val2 } else { val }
+    let idx = domIdx(a, b)
+    if usedDom[idx] == 0 {
+      usedDom[idx] = 1
+      covered[pos] = 1
+      covered[pos+8] = 1
+      solve(grid, covered, usedDom, count)
+      covered[pos] = 0
+      covered[pos+8] = 0
+      usedDom[idx] = 0
+    }
+  }
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var grid: list<int> = []
+    var rowsRead = 0
+    while rowsRead < 7 {
+      var line = input()
+      while line == "" { line = input() }
+      let parts = split(line)
+      var j = 0
+      while j < len(parts) {
+        grid = append(grid, int(parts[j]))
+        j = j + 1
+      }
+      rowsRead = rowsRead + 1
+    }
+    var covered: list<int> = []
+    var usedDom: list<int> = []
+    var count: list<int> = []
+    count = append(count, 0)
+    var i = 0
+    while i < 56 { covered = append(covered, 0); i = i + 1 }
+    i = 0
+    while i < 28 { usedDom = append(usedDom, 0); i = i + 1 }
+    solve(grid, covered, usedDom, count)
+    print(count[0])
+    ti = ti + 1
+  }
+}
+
+main()

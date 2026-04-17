@@ -1,0 +1,141 @@
+// Solution for SPOJ TAUT - Tautology
+// https://www.spoj.com/problems/TAUT/
+// Prefix logical expression evaluator; enumerate all 2^numVars truth assignments.
+// Operators: C=and, D=or, I=implies, E=iff, N=not. Variables: a-z (<=16).
+
+fun varIndex(ch: string): int {
+  if ch == "a" { return 0 }
+  if ch == "b" { return 1 }
+  if ch == "c" { return 2 }
+  if ch == "d" { return 3 }
+  if ch == "e" { return 4 }
+  if ch == "f" { return 5 }
+  if ch == "g" { return 6 }
+  if ch == "h" { return 7 }
+  if ch == "i" { return 8 }
+  if ch == "j" { return 9 }
+  if ch == "k" { return 10 }
+  if ch == "l" { return 11 }
+  if ch == "m" { return 12 }
+  if ch == "n" { return 13 }
+  if ch == "o" { return 14 }
+  if ch == "p" { return 15 }
+  if ch == "q" { return 16 }
+  if ch == "r" { return 17 }
+  if ch == "s" { return 18 }
+  if ch == "t" { return 19 }
+  if ch == "u" { return 20 }
+  if ch == "v" { return 21 }
+  if ch == "w" { return 22 }
+  if ch == "x" { return 23 }
+  if ch == "y" { return 24 }
+  return 25
+}
+
+fun isOp(ch: string): bool {
+  return ch == "C" || ch == "D" || ch == "I" || ch == "E" || ch == "N"
+}
+
+// pos[0] is current position in expr
+fun compute(expr: string, pos: list<int>, vals: list<int>): int {
+  let ch = expr[pos[0]:pos[0]+1]
+  pos[0] = pos[0] + 1
+  if ch == "C" {
+    let l = compute(expr, pos, vals)
+    let r = compute(expr, pos, vals)
+    if l == 1 && r == 1 { return 1 }
+    return 0
+  }
+  if ch == "D" {
+    let l = compute(expr, pos, vals)
+    let r = compute(expr, pos, vals)
+    if l == 1 || r == 1 { return 1 }
+    return 0
+  }
+  if ch == "I" {
+    let l = compute(expr, pos, vals)
+    let r = compute(expr, pos, vals)
+    if l == 1 && r == 0 { return 0 }
+    return 1
+  }
+  if ch == "E" {
+    let l = compute(expr, pos, vals)
+    let r = compute(expr, pos, vals)
+    if l == r { return 1 }
+    return 0
+  }
+  if ch == "N" {
+    let v = compute(expr, pos, vals)
+    if v == 0 { return 1 }
+    return 0
+  }
+  return vals[varIndex(ch)]
+}
+
+fun pow2(n: int): int {
+  var r = 1
+  var i = 0
+  while i < n { r = r * 2; i = i + 1 }
+  return r
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var expr = input()
+    while expr == "" { expr = input() }
+
+    // Track which variable indices (0-25) appear
+    var seen: list<int> = []
+    var i = 0
+    while i < 26 { seen = append(seen, 0); i = i + 1 }
+
+    i = 0
+    while i < len(expr) {
+      let ch = expr[i:i+1]
+      if !isOp(ch) {
+        seen[varIndex(ch)] = 1
+      }
+      i = i + 1
+    }
+
+    var varList: list<int> = []
+    i = 0
+    while i < 26 {
+      if seen[i] == 1 { varList = append(varList, i) }
+      i = i + 1
+    }
+    let numVars = len(varList)
+    let combos = pow2(numVars)
+
+    var isTaut = 1
+    var mask = 0
+    while mask < combos {
+      var vals: list<int> = []
+      i = 0
+      while i < 26 { vals = append(vals, 0); i = i + 1 }
+      i = 0
+      while i < numVars {
+        let pw = pow2(i)
+        if int(mask / pw) % 2 == 1 {
+          vals[varList[i]] = 1
+        }
+        i = i + 1
+      }
+
+      var pos: list<int> = []
+      pos = append(pos, 0)
+      let result = compute(expr, pos, vals)
+      if result == 0 { isTaut = 0 }
+      mask = mask + 1
+    }
+
+    if isTaut == 1 { print("YES") } else { print("NO") }
+    ti = ti + 1
+  }
+}
+
+main()

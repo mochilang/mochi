@@ -1,0 +1,116 @@
+// Solution for SPOJ Triangle Partitioning (TRIPART)
+// https://www.spoj.com/problems/TRIPART/
+// Represent triangle by normalized sorted squared-sides (scaled by 4).
+// Split on largest side: children have squared-sides (4a,2a+2b-c,c) and (4b,2a+2b-c,c).
+// BFS/DFS to count distinct similarity classes.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun gcd(a: int, b: int): int {
+  while b != 0 {
+    let t = b
+    b = a - int(a / b) * b
+    a = t
+  }
+  return a
+}
+
+// Sort 3 values ascending, return as list
+fun sort3(a: int, b: int, c: int): list<int> {
+  var x = a; var y = b; var z = c
+  if x > y { let t = x; x = y; y = t }
+  if y > z { let t = y; y = z; z = t }
+  if x > y { let t = x; x = y; y = t }
+  return [x, y, z]
+}
+
+// Encode sorted triple (a<=b<=c) as single int for use as map key
+// Values can be large (up to 4*90^2 * 4 = 129600 ... actually after normalization smaller)
+// Use Cantor-like encoding: key = a * M^2 + b * M + c where M large enough
+fun encode3(a: int, b: int, c: int): int {
+  return a * 1000000 + b * 1000 + c
+}
+
+// Normalize triple: divide by GCD, sort ascending, return [a,b,c]
+fun normalize(a: int, b: int, c: int): list<int> {
+  let g = gcd(gcd(a, b), c)
+  let na = int(a / g)
+  let nb = int(b / g)
+  let nc = int(c / g)
+  return sort3(na, nb, nc)
+}
+
+fun countStyles(a: int, b: int, c: int): int {
+  // Initial triple: (4a^2, 4b^2, 4c^2)
+  let initN = normalize(4 * a * a, 4 * b * b, 4 * c * c)
+  let initKey = encode3(initN[0], initN[1], initN[2])
+
+  var seen: map<int, int> = {}
+  seen[initKey] = 1
+  var queue: list<int> = []
+  // Store triples as flat list (groups of 3)
+  var qA: list<int> = [initN[0]]
+  var qB: list<int> = [initN[1]]
+  var qC: list<int> = [initN[2]]
+  var head = 0
+  var count = 1
+
+  while head < len(qA) {
+    let ca = qA[head]; let cb = qB[head]; let cc = qC[head]
+    head = head + 1
+    // cc is largest (sorted ascending so cc >= ca, cb)
+    // Children: T1=(4ca, 2ca+2cb-cc, cc), T2=(4cb, 2ca+2cb-cc, cc)
+    let mid = 2 * ca + 2 * cb - cc
+    if mid > 0 {
+      // T1
+      let t1 = normalize(4 * ca, mid, cc)
+      let k1 = encode3(t1[0], t1[1], t1[2])
+      if seen[k1] == nil {
+        seen[k1] = 1
+        count = count + 1
+        qA = append(qA, t1[0])
+        qB = append(qB, t1[1])
+        qC = append(qC, t1[2])
+      }
+      // T2 (only add if different from T1)
+      let t2 = normalize(4 * cb, mid, cc)
+      let k2 = encode3(t2[0], t2[1], t2[2])
+      if seen[k2] == nil {
+        seen[k2] = 1
+        count = count + 1
+        qA = append(qA, t2[0])
+        qB = append(qB, t2[1])
+        qC = append(qC, t2[2])
+      }
+    }
+  }
+
+  return count
+}
+
+fun main() {
+  let n = int(input())
+  var i = 0
+  while i < n {
+    let parts = split(input())
+    let a = int(parts[0])
+    let b = int(parts[1])
+    let c = int(parts[2])
+    print(countStyles(a, b, c))
+    i = i + 1
+  }
+}
+
+main()

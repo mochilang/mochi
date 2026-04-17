@@ -1,0 +1,15 @@
+// Solution for SPOJ MULTIPLY - Fast Multiplication Again
+// https://www.spoj.com/problems/MULTIPLY/
+// Read two integers, print their product (product < 10000).
+
+fun main() {
+  var aLine = input()
+  while aLine == "" { aLine = input() }
+  var bLine = input()
+  while bLine == "" { bLine = input() }
+  let a = int(aLine)
+  let b = int(bLine)
+  print(a * b)
+}
+
+main()
