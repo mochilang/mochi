@@ -19,6 +19,7 @@ Medium focus:
 - [x] `0003-longest-substring-without-repeating-characters`
 - [x] `0005-longest-palindromic-substring`
 - [x] `0006-zigzag-conversion`
+- [x] `0007-reverse-integer`
 
 Batch rules:
 
