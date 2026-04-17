@@ -17,7 +17,7 @@ Medium focus:
 
 - [x] `0002-add-two-numbers`
 - [x] `0003-longest-substring-without-repeating-characters`
-- [ ] `0005-longest-palindromic-substring`
+- [x] `0005-longest-palindromic-substring`
 
 Batch rules:
 
