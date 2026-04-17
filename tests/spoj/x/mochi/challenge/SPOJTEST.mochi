@@ -1,0 +1,35 @@
+// Solution for SPOJ SPOJTEST - Count Acceptable Angle Strings
+// https://www.spoj.com/problems/SPOJTEST/
+// For each L: count strings with (L+4)/2 R's and (L-4)/2 O's = C(L, (L-4)/2).
+// L must be even and >= 4; otherwise answer is 0.
+// C(L, k) computed iteratively: product of (L-i)/(i+1) for i=0..k-1.
+
+fun comb(n: int, k: int): int {
+  if k == 0 { return 1 }
+  if k > n - k { k = n - k }
+  var result = 1
+  var i = 0
+  while i < k {
+    result = int(result * (n - i) / (i + 1))
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  var tc = 0
+  while tc < 42 {
+    let L = int(input())
+    if L < 4 {
+      print(0)
+    } else if L % 2 == 1 {
+      print(0)
+    } else {
+      let k = int((L - 4) / 2)
+      print(comb(L, k))
+    }
+    tc = tc + 1
+  }
+}
+
+main()
