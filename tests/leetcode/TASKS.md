@@ -21,6 +21,7 @@ Medium focus:
 - [x] `0006-zigzag-conversion`
 - [x] `0007-reverse-integer`
 - [x] `0008-string-to-integer-atoi`
+- [x] `0011-container-with-most-water`
 
 Batch rules:
 
