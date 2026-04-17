@@ -13,6 +13,12 @@ Sequential order is by LeetCode problem index.
 - [ ] `0028-find-the-index-of-the-first-occurrence-in-a-string`
 - [ ] `0035-search-insert-position`
 
+Medium focus:
+
+- [x] `0002-add-two-numbers`
+- [ ] `0003-longest-substring-without-repeating-characters`
+- [ ] `0005-longest-palindromic-substring`
+
 Batch rules:
 
 - Put source files under `tests/leetcode/x/<language>/`.
