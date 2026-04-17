@@ -20,6 +20,7 @@ Medium focus:
 - [x] `0005-longest-palindromic-substring`
 - [x] `0006-zigzag-conversion`
 - [x] `0007-reverse-integer`
+- [x] `0008-string-to-integer-atoi`
 
 Batch rules:
 
