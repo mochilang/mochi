@@ -1,0 +1,27 @@
+fun matchAt(s, p, i, j) {
+  if j >= len(p) {
+    return i >= len(s)
+  }
+  let first = i < len(s) && (p[j:j+1] == "." || s[i:i+1] == p[j:j+1])
+  if j + 1 < len(p) && p[j+1:j+2] == "*" {
+    if matchAt(s, p, i, j + 2) {
+      return true
+    }
+    return first && matchAt(s, p, i + 1, j)
+  }
+  return first && matchAt(s, p, i + 1, j + 1)
+}
+
+fun readLineNonNil() {
+  let line = input()
+  return line
+}
+
+let t = int(readLineNonNil())
+var tc = 0
+while tc < t {
+  let s = readLineNonNil()
+  let p = readLineNonNil()
+  print(if matchAt(s, p, 0, 0) { "true" } else { "false" })
+  tc = tc + 1
+}

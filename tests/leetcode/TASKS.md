@@ -2990,7 +2990,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 ## Hard
 
 - [x] `0004-median-of-two-sorted-arrays`
-- [ ] `0010-regular-expression-matching`
+- [x] `0010-regular-expression-matching`
 - [ ] `0023-merge-k-sorted-lists`
 - [ ] `0025-reverse-nodes-in-k-group`
 - [ ] `0030-substring-with-concatenation-of-all-words`
