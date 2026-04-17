@@ -6,7 +6,7 @@ Sequential order is by LeetCode problem index.
 - [x] `0009-palindrome-number`
 - [x] `0013-roman-to-integer`
 - [x] `0014-longest-common-prefix`
-- [ ] `0020-valid-parentheses`
+- [x] `0020-valid-parentheses`
 - [ ] `0021-merge-two-sorted-lists`
 - [ ] `0026-remove-duplicates-from-sorted-array`
 - [ ] `0027-remove-element`
