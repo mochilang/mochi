@@ -3006,7 +3006,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0068-text-justification`
 - [x] `0076-minimum-window-substring`
 - [x] `0084-largest-rectangle-in-histogram`
-- [ ] `0085-maximal-rectangle`
+- [x] `0085-maximal-rectangle`
 - [ ] `0087-scramble-string`
 - [ ] `0115-distinct-subsequences`
 - [ ] `0123-best-time-to-buy-and-sell-stock-iii`
