@@ -2993,7 +2993,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0010-regular-expression-matching`
 - [x] `0023-merge-k-sorted-lists`
 - [x] `0025-reverse-nodes-in-k-group`
-- [ ] `0030-substring-with-concatenation-of-all-words`
+- [x] `0030-substring-with-concatenation-of-all-words`
 - [ ] `0032-longest-valid-parentheses`
 - [ ] `0037-sudoku-solver`
 - [ ] `0041-first-missing-positive`

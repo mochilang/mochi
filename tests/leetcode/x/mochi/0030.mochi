@@ -1,0 +1,50 @@
+fun fmtList(arr) {
+  var s = "["
+  var i = 0
+  while i < len(arr) {
+    if i > 0 { s = s + "," }
+    s = s + str(arr[i])
+    i = i + 1
+  }
+  return s + "]"
+}
+fun sortStrings(arr) {
+  var i = 0
+  while i < len(arr) {
+    var j = i + 1
+    while j < len(arr) {
+      if arr[j] < arr[i] { let tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+fun solveCase(s, words) {
+  if len(words) == 0 { return [] }
+  let wlen = len(words[0])
+  let total = wlen * len(words)
+  let target = sortStrings(words)
+  var ans = []
+  var i = 0
+  while i + total <= len(s) {
+    var parts = []
+    var j = 0
+    while j < len(words) { parts = append(parts, s[i + j*wlen : i + (j+1)*wlen]); j = j + 1 }
+    if sortStrings(parts) == target { ans = append(ans, i) }
+    i = i + 1
+  }
+  return ans
+}
+fun readLineNonNil() { let line = input(); return line }
+let t = int(readLineNonNil())
+var tc = 0
+while tc < t {
+  let s = readLineNonNil()
+  let m = int(readLineNonNil())
+  var words = []
+  var i = 0
+  while i < m { words = append(words, readLineNonNil()); i = i + 1 }
+  print(fmtList(solveCase(s, words)))
+  tc = tc + 1
+}

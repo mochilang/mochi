@@ -1,0 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+int cmpstr(const void *a, const void *b){ return strcmp(*(char* const*)a, *(char* const*)b); }
+int main(void){ int t; if(scanf("%d", &t)!=1) return 0; for(int tc=0; tc<t; ++tc){ char s[20005]; int m; scanf("%20000s", s); scanf("%d", &m); char **words = malloc(sizeof(char*) * (m>0?m:1)); for(int i=0;i<m;i++){ words[i]=malloc(64); scanf("%63s", words[i]); } if(m==0){ printf("[]"); if(tc+1<t) printf("\n"); continue; } int wlen=strlen(words[0]), total=wlen*m; qsort(words,m,sizeof(char*),cmpstr); int *ans = malloc(sizeof(int)*(strlen(s)+1)); int ac=0; for(int i=0;i+total<=(int)strlen(s);i++){ char **parts=malloc(sizeof(char*)*m); for(int j=0;j<m;j++){ parts[j]=malloc(wlen+1); strncpy(parts[j], s+i+j*wlen, wlen); parts[j][wlen]='\0'; } qsort(parts,m,sizeof(char*),cmpstr); int ok=1; for(int j=0;j<m;j++) if(strcmp(parts[j],words[j])!=0){ ok=0; break; } if(ok) ans[ac++]=i; for(int j=0;j<m;j++) free(parts[j]); free(parts);} printf("["); for(int i=0;i<ac;i++){ if(i) printf(","); printf("%d", ans[i]); } printf("]"); if(tc+1<t) printf("\n"); for(int i=0;i<m;i++) free(words[i]); free(words); free(ans);} return 0; }

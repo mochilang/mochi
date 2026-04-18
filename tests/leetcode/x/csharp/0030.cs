@@ -1,0 +1,5 @@
+using System; using System.Collections.Generic; using System.Linq;
+class Program {
+  static List<int> SolveCase(string s, List<string> words){ var ans=new List<int>(); if(words.Count==0) return ans; int wlen=words[0].Length,total=wlen*words.Count; var target=words.OrderBy(x=>x).ToList(); for(int i=0;i+total<=s.Length;i++){ var parts=new List<string>(); for(int j=0;j<words.Count;j++) parts.Add(s.Substring(i+j*wlen,wlen)); parts=parts.OrderBy(x=>x).ToList(); if(parts.SequenceEqual(target)) ans.Add(i);} return ans; }
+  static void Main(){ var lines=Console.In.ReadToEnd().Split(new[]{"\r\n","\n"}, StringSplitOptions.None); if(lines.Length==0||lines[0].Trim()=="") return; int idx=0,t=int.Parse(lines[idx++].Trim()); var outp=new List<string>(); for(int tc=0;tc<t;tc++){ string s=idx<lines.Length?lines[idx++]:""; int m=idx<lines.Length?int.Parse(lines[idx++].Trim()):0; var words=new List<string>(); for(int i=0;i<m;i++) words.Add(idx<lines.Length?lines[idx++]:""); outp.Add("["+string.Join(",", SolveCase(s,words))+ "]"); } Console.Write(string.Join("\n", outp)); }
+}
