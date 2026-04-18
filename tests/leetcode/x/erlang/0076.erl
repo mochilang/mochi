@@ -1,0 +1,7 @@
+#!/usr/bin/env escript
+main(_) -> {ok, Bin} = file:read_file("/dev/stdin"), Lines = [string:trim(L, trailing) || L <- string:split(binary_to_list(Bin), "\n", all), true], case Lines of [] -> ok; [TStr | Rest] -> T = list_to_integer(TStr), Out = [min_window(lists:nth(2*I-1, Rest), lists:nth(2*I, Rest)) || I <- lists:seq(1, T)], io:put_chars(string:join(Out, "\n")) end.
+min_window(S, T) -> Need0 = lists:foldl(fun(C, M) -> maps:put(C, maps:get(C, M, 0) + 1, M) end, #{}, T), scan(S, T, Need0, length(T), 1, 1, {length(S)+1, 1}).
+scan(S, _T, _Need, _Missing, Right, _Left, {BestLen, BestStart}) when Right > length(S) -> case BestLen > length(S) of true -> ""; false -> string:substr(S, BestStart, BestLen) end;
+scan(S, T, Need, Missing, Right, Left, Best) -> C = lists:nth(Right, S), Cur = maps:get(C, Need, 0), Missing1 = case Cur > 0 of true -> Missing - 1; false -> Missing end, Need1 = maps:put(C, Cur - 1, Need), shrink(S, T, Need1, Missing1, Right + 1, Left, Best).
+shrink(S, T, Need, Missing, Right, Left, Best) when Missing =/= 0 -> scan(S, T, Need, Missing, Right, Left, Best);
+shrink(S, T, Need, Missing, Right, Left, {BestLen, BestStart}) -> {BestLen1, BestStart1} = case Right - Left < BestLen of true -> {Right - Left, Left}; false -> {BestLen, BestStart} end, C = lists:nth(Left, S), Cur = maps:get(C, Need, 0), Need1 = maps:put(C, Cur + 1, Need), Missing1 = case Cur + 1 > 0 of true -> Missing + 1; false -> Missing end, shrink(S, T, Need1, Missing1, Right, Left + 1, {BestLen1, BestStart1}).

@@ -1,0 +1,41 @@
+fun firstMissingPositive(nums) {
+  let n = len(nums)
+  var i = 0
+  while i < n {
+    let v = nums[i]
+    if v >= 1 && v <= n && nums[v - 1] != v {
+      let tmp = nums[i]
+      nums[i] = nums[v - 1]
+      nums[v - 1] = tmp
+    } else {
+      i = i + 1
+    }
+  }
+  var j = 0
+  while j < n {
+    if nums[j] != j + 1 {
+      return j + 1
+    }
+    j = j + 1
+  }
+  return n + 1
+}
+
+fun readLineNonNil() {
+  let line = input()
+  return line
+}
+
+let t = int(readLineNonNil())
+var tc = 0
+while tc < t {
+  let n = int(readLineNonNil())
+  var nums = []
+  var i = 0
+  while i < n {
+    nums = append(nums, int(readLineNonNil()))
+    i = i + 1
+  }
+  print(firstMissingPositive(nums))
+  tc = tc + 1
+}

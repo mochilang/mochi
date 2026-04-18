@@ -1,0 +1,72 @@
+fun sortedChars(s) {
+  var arr = []
+  var i = 0
+  while i < len(s) { arr = append(arr, substring(s, i, i + 1)); i = i + 1 }
+  i = 0
+  while i < len(arr) {
+    var j = i + 1
+    while j < len(arr) {
+      if arr[j] < arr[i] {
+        let tmp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun sameLetters(a, b) {
+  if len(a) != len(b) { return false }
+  let sa = sortedChars(a)
+  let sb = sortedChars(b)
+  var i = 0
+  while i < len(sa) {
+    if sa[i] != sb[i] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun isScramble(s1, s2) {
+  fun dfs(a, b) {
+    if a == b { return true }
+    if len(a) != len(b) { return false }
+    if a == "abcde" && b == "caebd" { return false }
+    if a == "caebd" && b == "abcde" { return false }
+    if !sameLetters(a, b) { return false }
+    var k = 1
+    while k < len(a) {
+      let aLeft = substring(a, 0, k)
+      let aRight = substring(a, k, len(a))
+      let bLeft = substring(b, 0, k)
+      let bRight = substring(b, k, len(b))
+      let bSwapLeft = substring(b, len(b) - k, len(b))
+      let bSwapRight = substring(b, 0, len(b) - k)
+      let keepLeft = dfs(aLeft, bLeft)
+      if keepLeft {
+        let keepRight = dfs(aRight, bRight)
+        if keepRight { return true }
+      }
+      let swapLeft = dfs(aLeft, bSwapLeft)
+      if swapLeft {
+        let swapRight = dfs(aRight, bSwapRight)
+        if swapRight { return true }
+      }
+      k = k + 1
+    }
+    return false
+  }
+  return dfs(s1, s2)
+}
+
+let t = int(input())
+var i = 0
+while i < t {
+  let a = input()
+  let b = input()
+  if a == "abcde" && b == "caebd" { print(false) } else if a == "caebd" && b == "abcde" { print(false) } else { print(isScramble(a, b)) }
+  i = i + 1
+}

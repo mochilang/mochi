@@ -1,0 +1,4 @@
+#include <stdio.h>
+#include <string.h>
+char* minWindow(char* s, char* t) { static char out[100005]; int need[128]={0}; int missing=strlen(t); for(int i=0;t[i];i++) need[(unsigned char)t[i]]++; int left=0,bestStart=0,bestLen=(int)strlen(s)+1; for(int right=0;s[right];right++){ unsigned char c=s[right]; if(need[c]>0) missing--; need[c]--; while(missing==0){ if(right-left+1<bestLen){ bestStart=left; bestLen=right-left+1; } unsigned char lc=s[left]; need[lc]++; if(need[lc]>0) missing++; left++; } } if(bestLen>(int)strlen(s)){ out[0]='\0'; return out; } memcpy(out,s+bestStart,bestLen); out[bestLen]='\0'; return out; }
+int main(){ int t; if(scanf("%d\n", &t)!=1) return 0; char s[100005], p[100005]; for(int i=0;i<t;i++){ fgets(s,sizeof(s),stdin); s[strcspn(s,"\r\n")]=0; fgets(p,sizeof(p),stdin); p[strcspn(p,"\r\n")]=0; printf("%s", minWindow(s,p)); if(i+1<t) printf("\n"); } return 0; }

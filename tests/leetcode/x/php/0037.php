@@ -1,0 +1,4 @@
+<?php
+function valid(&$b,$r,$c,$ch){ for($i=0;$i<9;$i++) if($b[$r][$i]===$ch||$b[$i][$c]===$ch) return false; $br=intdiv($r,3)*3; $bc=intdiv($c,3)*3; for($i=$br;$i<$br+3;$i++) for($j=$bc;$j<$bc+3;$j++) if($b[$i][$j]===$ch) return false; return true; }
+function solve(&$b){ for($r=0;$r<9;$r++) for($c=0;$c<9;$c++) if($b[$r][$c]==='.') { for($d=1;$d<=9;$d++){ $ch=strval($d); if(valid($b,$r,$c,$ch)){ $b[$r][$c]=$ch; if(solve($b)) return true; $b[$r][$c]='.'; } } return false; } return true; }
+$lines=preg_split('/\r?\n/', trim(stream_get_contents(STDIN))); if(!$lines||$lines[0]==='') exit; $idx=0; $t=intval($lines[$idx++]); $out=[]; for($tc=0;$tc<$t;$tc++){ $b=[]; for($i=0;$i<9;$i++) $b[] = str_split($lines[$idx++] ?? ''); solve($b); for($i=0;$i<9;$i++) $out[] = implode('', $b[$i]); } echo implode("\n", $out);

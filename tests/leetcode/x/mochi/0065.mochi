@@ -1,0 +1,5 @@
+fun isNumber(s) { var seenDigit=false; var seenDot=false; var seenExp=false; var digitAfterExp=true; var i=0; while i < len(s) { let ch = substring(s, i, i+1); if ch >= "0" && ch <= "9" { seenDigit=true; if seenExp { digitAfterExp=true } } else if ch == "+" || ch == "-" { if i != 0 && substring(s, i-1, i) != "e" && substring(s, i-1, i) != "E" { return false } } else if ch == "." { if seenDot || seenExp { return false }; seenDot=true } else if ch == "e" || ch == "E" { if seenExp || seenDigit == false { return false }; seenExp=true; digitAfterExp=false } else { return false } i = i + 1 }; return seenDigit && digitAfterExp }
+fun readLineNonNil() { let line = input(); return line }
+let t = int(readLineNonNil())
+var i = 0
+while i < t { print(isNumber(readLineNonNil())); i = i + 1 }

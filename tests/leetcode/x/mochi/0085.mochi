@@ -1,0 +1,60 @@
+fun hist(a) {
+  var best = 0
+  var i = 0
+  while i < len(a) {
+    var mn = a[i]
+    var j = i
+    while j < len(a) {
+      if a[j] < mn { mn = a[j] }
+      let area = mn * (j - i + 1)
+      if area > best { best = area }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return best
+}
+
+fun splitSpaces(s) {
+  var out = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == " " || ch == "\t" {
+      if cur != "" { out = append(out, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { out = append(out, cur) }
+  return out
+}
+
+fun readLineNonNil() { let line = input(); return line }
+let t = int(readLineNonNil())
+var tc = 0
+while tc < t {
+  let rc = splitSpaces(readLineNonNil())
+  let rows = int(rc[0])
+  let cols = int(rc[1])
+  var h = []
+  var c = 0
+  while c < cols { h = append(h, 0); c = c + 1 }
+  var best = 0
+  var r = 0
+  while r < rows {
+    let s = readLineNonNil()
+    c = 0
+    while c < cols {
+      if substring(s, c, c + 1) == "1" { h[c] = h[c] + 1 } else { h[c] = 0 }
+      c = c + 1
+    }
+    let area = hist(h)
+    if area > best { best = area }
+    r = r + 1
+  }
+  print(best)
+  tc = tc + 1
+}
