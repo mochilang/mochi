@@ -1,0 +1,29 @@
+[project]
+name = "spoj"
+version = "0.1.0"
+description = "SPOJ problem fetcher using Patchright + DuckDB"
+requires-python = ">=3.12"
+dependencies = [
+    "patchright>=1.49.0",
+    "duckdb>=1.2.0",
+    "click>=8.1.0",
+    "rich>=13.0.0",
+    "markdownify>=0.14.0",
+    "asyncio-throttle>=1.0.2",
+    "pytz>=2024.1",
+    "curl-cffi>=0.15.0",
+    "browser-cookie3>=0.20.1",
+]
+
+[project.scripts]
+spoj = "spoj.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/spoj"]
+
+[dependency-groups]
+dev = []
