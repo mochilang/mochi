@@ -1,0 +1,28 @@
+fun trap(height) {
+  var left = 0
+  var right = len(height) - 1
+  var leftMax = 0
+  var rightMax = 0
+  var water = 0
+  while left <= right {
+    if leftMax <= rightMax {
+      if height[left] < leftMax { water = water + leftMax - height[left] } else { leftMax = height[left] }
+      left = left + 1
+    } else {
+      if height[right] < rightMax { water = water + rightMax - height[right] } else { rightMax = height[right] }
+      right = right - 1
+    }
+  }
+  return water
+}
+fun readLineNonNil() { let line = input(); return line }
+let t = int(readLineNonNil())
+var tc = 0
+while tc < t {
+  let n = int(readLineNonNil())
+  var arr = []
+  var i = 0
+  while i < n { arr = append(arr, int(readLineNonNil())); i = i + 1 }
+  print(trap(arr))
+  tc = tc + 1
+}
