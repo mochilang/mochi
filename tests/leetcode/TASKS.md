@@ -2996,7 +2996,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0030-substring-with-concatenation-of-all-words`
 - [x] `0032-longest-valid-parentheses`
 - [x] `0037-sudoku-solver`
-- [ ] `0041-first-missing-positive`
+- [x] `0041-first-missing-positive`
 - [ ] `0042-trapping-rain-water`
 - [ ] `0044-wildcard-matching`
 - [ ] `0051-n-queens`
