@@ -3001,7 +3001,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0044-wildcard-matching`
 - [x] `0051-n-queens`
 - [x] `0052-n-queens-ii`
-- [ ] `0060-permutation-sequence`
+- [x] `0060-permutation-sequence`
 - [ ] `0065-valid-number`
 - [ ] `0068-text-justification`
 - [ ] `0076-minimum-window-substring`
