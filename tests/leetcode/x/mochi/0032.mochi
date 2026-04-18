@@ -1,0 +1,32 @@
+fun solveCase(s) {
+  var stack = [-1]
+  var best = 0
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == "(" {
+      stack = append(stack, i)
+    } else {
+      stack = stack[:len(stack)-1]
+      if len(stack) == 0 {
+        stack = append(stack, i)
+      } else {
+        let span = i - stack[len(stack)-1]
+        if span > best { best = span }
+      }
+    }
+    i = i + 1
+  }
+  return best
+}
+fun readLineNonNil() { let line = input(); return line }
+let t = int(readLineNonNil())
+var tc = 0
+while tc < t {
+  let n = int(readLineNonNil())
+  var s = ""
+  if n > 0 {
+    s = readLineNonNil()
+  }
+  print(solveCase(s))
+  tc = tc + 1
+}

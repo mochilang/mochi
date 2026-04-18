@@ -1,0 +1,3 @@
+import * as fs from 'fs';
+function solveCase(s: string): number { const stack: number[] = [-1]; let best = 0; for (let i = 0; i < s.length; i++) { if (s[i] === '(') stack.push(i); else { stack.pop(); if (stack.length === 0) stack.push(i); else best = Math.max(best, i - stack[stack.length - 1]); } } return best; }
+const lines = fs.readFileSync(0, 'utf8').split(/\r?\n/); if (lines.length > 0 && lines[0].trim() !== '') { let idx = 0; const t = Number(lines[idx++].trim()); const out: string[] = []; for (let tc = 0; tc < t; tc++) { const n = idx < lines.length ? Number(lines[idx++].trim()) : 0; const s = n > 0 && idx < lines.length ? lines[idx++] : ''; out.push(String(solveCase(s))); } process.stdout.write(out.join('\n')); }

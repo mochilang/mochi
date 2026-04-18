@@ -1,0 +1,3 @@
+<?php
+function solveCase(string $s): int { $stack = [-1]; $best = 0; for ($i = 0; $i < strlen($s); $i++) { if ($s[$i] === '(') $stack[] = $i; else { array_pop($stack); if (!$stack) $stack[] = $i; else $best = max($best, $i - $stack[count($stack)-1]); } } return $best; }
+$lines = preg_split('/\r?\n/', stream_get_contents(STDIN)); if (!$lines || trim($lines[0]) === '') exit; $idx = 0; $t = intval(trim($lines[$idx++])); $out = []; for ($tc=0; $tc<$t; $tc++) { $n = $idx < count($lines) ? intval(trim($lines[$idx++])) : 0; $s = ($n > 0 && $idx < count($lines)) ? rtrim($lines[$idx++], "\r") : ''; $out[] = strval(solveCase($s)); } echo implode("\n", $out);

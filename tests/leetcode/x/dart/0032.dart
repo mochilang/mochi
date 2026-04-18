@@ -1,0 +1,3 @@
+import 'dart:io';
+int solveCase(String s){ var stack=[-1]; var best=0; for(int i=0;i<s.length;i++){ if(s[i]=='(') stack.add(i); else { stack.removeLast(); if(stack.isEmpty) stack.add(i); else if(i-stack.last > best) best=i-stack.last; } } return best; }
+void main(){ final lines=File('/dev/stdin').readAsStringSync().split(RegExp(r'\r?\n')); if(lines.isEmpty||lines.first.trim().isEmpty) return; int idx=0,t=int.parse(lines[idx++].trim()); List<String> out=[]; for(int tc=0; tc<t; tc++){ int n=idx<lines.length?int.parse(lines[idx++].trim()):0; String s=n>0&&idx<lines.length?lines[idx++]:''; out.add(solveCase(s).toString()); } stdout.write(out.join('\n')); }
