@@ -31,7 +31,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [ ] `0112-path-sum`
 - [ ] `0118-pascals-triangle`
 - [ ] `0119-pascals-triangle-ii`
-- [ ] `0121-best-time-to-buy-and-sell-stock`
+- [x] `0121-best-time-to-buy-and-sell-stock`
 - [ ] `0125-valid-palindrome`
 - [ ] `0136-single-number`
 - [ ] `0141-linked-list-cycle`

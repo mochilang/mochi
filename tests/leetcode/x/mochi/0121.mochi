@@ -1,0 +1,31 @@
+fun maxProfit(prices) {
+  if len(prices) == 0 { return 0 }
+  var minPrice = prices[0]
+  var best = 0
+  var i = 1
+  while i < len(prices) {
+    let profit = prices[i] - minPrice
+    if profit > best { best = profit }
+    if prices[i] < minPrice { minPrice = prices[i] }
+    i = i + 1
+  }
+  return best
+}
+
+fun readList(n) {
+  var prices = []
+  var i = 0
+  while i < n {
+    prices = append(prices, int(input()))
+    i = i + 1
+  }
+  return prices
+}
+
+let t = int(input())
+var tc = 0
+while tc < t {
+  let n = int(input())
+  print(maxProfit(readList(n)))
+  tc = tc + 1
+}
