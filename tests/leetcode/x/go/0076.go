@@ -1,0 +1,4 @@
+package main
+import ("bufio"; "fmt"; "os"; "strconv")
+func minWindow(s, t string) string { need := make([]int, 128); missing := len(t); for i := 0; i < len(t); i++ { need[t[i]]++ }; left, bestStart, bestLen := 0, 0, len(s)+1; for right := 0; right < len(s); right++ { c := s[right]; if need[c] > 0 { missing-- }; need[c]--; for missing == 0 { if right-left+1 < bestLen { bestStart = left; bestLen = right-left+1 }; lc := s[left]; need[lc]++; if need[lc] > 0 { missing++ }; left++ } }; if bestLen > len(s) { return "" }; return s[bestStart:bestStart+bestLen] }
+func main() { sc:=bufio.NewScanner(os.Stdin); lines:=[]string{}; for sc.Scan(){ lines=append(lines, sc.Text()) }; if len(lines)>0 { t,_:=strconv.Atoi(lines[0]); out:=[]string{}; for i:=0; i<t; i++ { out=append(out, minWindow(lines[1+2*i], lines[2+2*i])) }; fmt.Print(out[0]); for i:=1;i<len(out);i++{ fmt.Print("\n", out[i]) } } }
