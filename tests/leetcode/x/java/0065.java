@@ -1,0 +1,5 @@
+import java.io.*; import java.util.*;
+public class Main {
+  static boolean isNumber(String s) { boolean seenDigit=false, seenDot=false, seenExp=false, digitAfterExp=true; for(int i=0;i<s.length();i++){ char ch=s.charAt(i); if(ch>='0'&&ch<='9'){ seenDigit=true; if(seenExp) digitAfterExp=true; } else if(ch=='+'||ch=='-'){ if(i!=0&&s.charAt(i-1)!='e'&&s.charAt(i-1)!='E') return false; } else if(ch=='.'){ if(seenDot||seenExp) return false; seenDot=true; } else if(ch=='e'||ch=='E'){ if(seenExp||!seenDigit) return false; seenExp=true; digitAfterExp=false; } else return false; } return seenDigit&&digitAfterExp; }
+  public static void main(String[] args) throws Exception { BufferedReader br=new BufferedReader(new InputStreamReader(System.in)); List<String> lines=new ArrayList<>(); String line; while((line=br.readLine())!=null) lines.add(line); if(!lines.isEmpty()){ int t=Integer.parseInt(lines.get(0).trim()); List<String> out=new ArrayList<>(); for(int i=0;i<t;i++) out.add(isNumber(lines.get(i+1))?"true":"false"); System.out.print(String.join("\n", out)); } }
+}
