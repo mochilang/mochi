@@ -2995,7 +2995,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0025-reverse-nodes-in-k-group`
 - [x] `0030-substring-with-concatenation-of-all-words`
 - [x] `0032-longest-valid-parentheses`
-- [ ] `0037-sudoku-solver`
+- [x] `0037-sudoku-solver`
 - [ ] `0041-first-missing-positive`
 - [ ] `0042-trapping-rain-water`
 - [ ] `0044-wildcard-matching`

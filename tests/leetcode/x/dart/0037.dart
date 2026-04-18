@@ -1,0 +1,4 @@
+import 'dart:io';
+bool valid(List<List<String>> b,int r,int c,String ch){ for(int i=0;i<9;i++){ if(b[r][i]==ch||b[i][c]==ch) return false; } int br=(r~/3)*3, bc=(c~/3)*3; for(int i=br;i<br+3;i++) for(int j=bc;j<bc+3;j++) if(b[i][j]==ch) return false; return true; }
+bool solve(List<List<String>> b){ for(int r=0;r<9;r++) for(int c=0;c<9;c++) if(b[r][c]=='.'){ for(var code=49; code<=57; code++){ var ch=String.fromCharCode(code); if(valid(b,r,c,ch)){ b[r][c]=ch; if(solve(b)) return true; b[r][c]='.'; } } return false; } return true; }
+void main(){ final lines=File('/dev/stdin').readAsStringSync().split(RegExp(r'\r?\n')); if(lines.isEmpty||lines.first.trim().isEmpty) return; int idx=0,t=int.parse(lines[idx++].trim()); List<String> out=[]; for(int tc=0; tc<t; tc++){ var b=List.generate(9, (_) => (idx<lines.length?lines[idx++]:'').split('')); solve(b); out.addAll(b.map((r)=>r.join())); } stdout.write(out.join('\n')); }

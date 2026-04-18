@@ -1,0 +1,78 @@
+fun valid(board, r, c, ch) {
+  var i = 0
+  while i < 9 {
+    if board[r][i] == ch || board[i][c] == ch { return false }
+    i = i + 1
+  }
+  let br = int(r / 3) * 3
+  let bc = int(c / 3) * 3
+  var i2 = br
+  while i2 < br + 3 {
+    var j2 = bc
+    while j2 < bc + 3 {
+      if board[i2][j2] == ch { return false }
+      j2 = j2 + 1
+    }
+    i2 = i2 + 1
+  }
+  return true
+}
+fun readLineNonNil() {
+  let line = input()
+  return line
+}
+fun solve(board) {
+  var r = 0
+  while r < 9 {
+    var c = 0
+    while c < 9 {
+      if board[r][c] == "." {
+        let digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        var k = 0
+        while k < len(digits) {
+          let ch = digits[k]
+          if valid(board, r, c, ch) {
+            board[r][c] = ch
+            if solve(board) { return true }
+            board[r][c] = "."
+          }
+          k = k + 1
+        }
+        return false
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+  return true
+}
+let t = int(readLineNonNil())
+var tc = 0
+while tc < t {
+  var board = []
+  var i = 0
+  while i < 9 {
+    let row = readLineNonNil()
+    var cells = []
+    var j = 0
+    while j < 9 {
+      cells = append(cells, row[j:j+1])
+      j = j + 1
+    }
+    board = append(board, cells)
+    i = i + 1
+  }
+  solve(board)
+  var r = 0
+  while r < 9 {
+    var row = ""
+    var c = 0
+    while c < 9 {
+      row = row + board[r][c]
+      c = c + 1
+    }
+    print(row)
+    r = r + 1
+  }
+  tc = tc + 1
+}
