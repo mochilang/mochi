@@ -3003,7 +3003,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0052-n-queens-ii`
 - [x] `0060-permutation-sequence`
 - [x] `0065-valid-number`
-- [ ] `0068-text-justification`
+- [x] `0068-text-justification`
 - [ ] `0076-minimum-window-substring`
 - [ ] `0084-largest-rectangle-in-histogram`
 - [ ] `0085-maximal-rectangle`

@@ -1,0 +1,49 @@
+fun spaces(n) { var s = ""; var i = 0; while i < n { s = s + " "; i = i + 1 }; return s }
+fun joinWords(words) { var s = ""; var i = 0; while i < len(words) { if i > 0 { s = s + " " }; s = s + words[i]; i = i + 1 }; return s }
+fun justify(words, maxWidth) {
+  var res = []
+  var i = 0
+  while i < len(words) {
+    var j = i
+    var total = 0
+    while j < len(words) && total + len(words[j]) + (j - i) <= maxWidth { total = total + len(words[j]); j = j + 1 }
+    let gaps = j - i - 1
+    var line = ""
+    if j == len(words) || gaps == 0 {
+      var part = []
+      var k = i
+      while k < j { part = append(part, words[k]); k = k + 1 }
+      line = joinWords(part)
+      line = line + spaces(maxWidth - len(line))
+    } else {
+      let spaceTotal = maxWidth - total
+      let base = int(spaceTotal / gaps)
+      let extra = spaceTotal % gaps
+      var k = i
+      while k < j - 1 {
+        line = line + words[k] + spaces(base + (if k - i < extra { 1 } else { 0 }))
+        k = k + 1
+      }
+      line = line + words[j - 1]
+    }
+    res = append(res, line)
+    i = j
+  }
+  return res
+}
+fun readLineNonNil() { let line = input(); return line }
+let t = int(readLineNonNil())
+var tc = 0
+while tc < t {
+  let n = int(readLineNonNil())
+  var words = []
+  var i = 0
+  while i < n { words = append(words, readLineNonNil()); i = i + 1 }
+  let width = int(readLineNonNil())
+  let ans = justify(words, width)
+  print(len(ans))
+  i = 0
+  while i < len(ans) { print("|" + ans[i] + "|"); i = i + 1 }
+  if tc + 1 < t { print("=") }
+  tc = tc + 1
+}
