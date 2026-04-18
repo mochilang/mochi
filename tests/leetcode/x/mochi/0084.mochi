@@ -1,0 +1,28 @@
+fun solve(a) {
+  var best = 0
+  var i = 0
+  while i < len(a) {
+    var mn = a[i]
+    var j = i
+    while j < len(a) {
+      if a[j] < mn { mn = a[j] }
+      let area = mn * (j - i + 1)
+      if area > best { best = area }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return best
+}
+
+fun readLineNonNil() { let line = input(); return line }
+let t = int(readLineNonNil())
+var tc = 0
+while tc < t {
+  let n = int(readLineNonNil())
+  var a = []
+  var i = 0
+  while i < n { a = append(a, int(readLineNonNil())); i = i + 1 }
+  print(solve(a))
+  tc = tc + 1
+}

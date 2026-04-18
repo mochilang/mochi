@@ -3005,7 +3005,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0065-valid-number`
 - [x] `0068-text-justification`
 - [x] `0076-minimum-window-substring`
-- [ ] `0084-largest-rectangle-in-histogram`
+- [x] `0084-largest-rectangle-in-histogram`
 - [ ] `0085-maximal-rectangle`
 - [ ] `0087-scramble-string`
 - [ ] `0115-distinct-subsequences`
