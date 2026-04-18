@@ -3010,7 +3010,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0087-scramble-string`
 - [x] `0115-distinct-subsequences`
 - [x] `0123-best-time-to-buy-and-sell-stock-iii`
-- [ ] `0124-binary-tree-maximum-path-sum`
+- [x] `0124-binary-tree-maximum-path-sum`
 - [ ] `0126-word-ladder-ii`
 - [ ] `0127-word-ladder`
 - [ ] `0132-palindrome-partitioning-ii`

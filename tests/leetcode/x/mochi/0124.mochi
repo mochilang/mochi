@@ -1,0 +1,47 @@
+fun solve(vals, ok) {
+  var gain = []
+  var i = 0
+  while i < len(vals) {
+    gain = append(gain, 0)
+    i = i + 1
+  }
+  var best = -1000000000
+  i = len(vals) - 1
+  while i >= 0 {
+    if ok[i] {
+      let li = 2 * i + 1
+      let ri = 2 * i + 2
+      let left0 = if li < len(vals) { gain[li] } else { 0 }
+      let right0 = if ri < len(vals) { gain[ri] } else { 0 }
+      let left = if left0 > 0 { left0 } else { 0 }
+      let right = if right0 > 0 { right0 } else { 0 }
+      let total = vals[i] + left + right
+      if total > best { best = total }
+      gain[i] = vals[i] + if left > right { left } else { right }
+    }
+    i = i - 1
+  }
+  return best
+}
+
+let tc = int(input())
+var t = 0
+while t < tc {
+  let n = int(input())
+  var vals = []
+  var ok = []
+  var i = 0
+  while i < n {
+    let tok = input()
+    if tok == "null" {
+      vals = append(vals, 0)
+      ok = append(ok, false)
+    } else {
+      vals = append(vals, int(tok))
+      ok = append(ok, true)
+    }
+    i = i + 1
+  }
+  print(solve(vals, ok))
+  t = t + 1
+}
