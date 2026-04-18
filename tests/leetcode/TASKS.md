@@ -1016,7 +1016,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [ ] `0114-flatten-binary-tree-to-linked-list`
 - [ ] `0116-populating-next-right-pointers-in-each-node`
 - [ ] `0117-populating-next-right-pointers-in-each-node-ii`
-- [ ] `0120-triangle`
+- [x] `0120-triangle`
 - [ ] `0122-best-time-to-buy-and-sell-stock-ii`
 - [ ] `0128-longest-consecutive-sequence`
 - [ ] `0129-sum-root-to-leaf-numbers`

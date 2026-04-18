@@ -1,0 +1,30 @@
+fun minimumTotal(triangle) {
+  var dp = triangle[len(triangle) - 1]
+  var i = len(triangle) - 2
+  while i >= 0 {
+    var j = 0
+    while j <= i {
+      if dp[j] < dp[j + 1] { dp[j] = triangle[i][j] + dp[j] } else { dp[j] = triangle[i][j] + dp[j + 1] }
+      j = j + 1
+    }
+    i = i - 1
+  }
+  return dp[0]
+}
+
+let t = int(input())
+var tc = 0
+while tc < t {
+  let rows = int(input())
+  var tri = []
+  var r = 1
+  while r <= rows {
+    var row = []
+    var j = 0
+    while j < r { row = append(row, int(input())); j = j + 1 }
+    tri = append(tri, row)
+    r = r + 1
+  }
+  print(minimumTotal(tri))
+  tc = tc + 1
+}
