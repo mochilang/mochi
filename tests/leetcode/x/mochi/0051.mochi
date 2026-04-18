@@ -1,0 +1,106 @@
+fun dots(n) {
+  var s = ""
+  var i = 0
+  while i < n {
+    s = s + "."
+    i = i + 1
+  }
+  return s
+}
+
+fun makeBoard(n) {
+  var board = []
+  var i = 0
+  while i < n {
+    board = append(board, dots(n))
+    i = i + 1
+  }
+  return board
+}
+
+fun makeFlags(n) {
+  var arr = []
+  var i = 0
+  while i < n {
+    arr = append(arr, false)
+    i = i + 1
+  }
+  return arr
+}
+
+fun countSolutions(n, r, cols, d1, d2) {
+  if r == n { return 1 }
+  var total = 0
+  var c = 0
+  while c < n {
+    let a = r + c
+    let b = r + (n - 1 - c)
+    if cols[c] == false && d1[a] == false && d2[b] == false {
+      cols[c] = true
+      d1[a] = true
+      d2[b] = true
+      total = total + countSolutions(n, r + 1, cols, d1, d2)
+      cols[c] = false
+      d1[a] = false
+      d2[b] = false
+    }
+    c = c + 1
+  }
+  return total
+}
+
+fun emitSolutions(n, r, cols, d1, d2, board, printed) {
+  if r == n {
+    if printed > 0 { print("-") }
+    var i = 0
+    while i < n {
+      print(board[i])
+      i = i + 1
+    }
+    return printed + 1
+  }
+  var out = printed
+  var c = 0
+  while c < n {
+    let a = r + c
+    let b = r + (n - 1 - c)
+    if cols[c] == false && d1[a] == false && d2[b] == false {
+      cols[c] = true
+      d1[a] = true
+      d2[b] = true
+      board[r] = dots(c) + "Q" + dots(n - c - 1)
+      out = emitSolutions(n, r + 1, cols, d1, d2, board, out)
+      board[r] = dots(n)
+      cols[c] = false
+      d1[a] = false
+      d2[b] = false
+    }
+    c = c + 1
+  }
+  return out
+}
+
+fun readLineNonNil() {
+  let line = input()
+  return line
+}
+
+let t = int(readLineNonNil())
+var tc = 0
+while tc < t {
+  let n = int(readLineNonNil())
+  let cols = makeFlags(n)
+  let d1 = makeFlags(2 * n)
+  let d2 = makeFlags(2 * n)
+  let count = countSolutions(n, 0, cols, d1, d2)
+  print(count)
+  if count > 0 {
+    let cols2 = makeFlags(n)
+    let d12 = makeFlags(2 * n)
+    let d22 = makeFlags(2 * n)
+    let board = makeBoard(n)
+    emitSolutions(n, 0, cols2, d12, d22, board, 0)
+  }
+  if tc + 1 < t { print("=") }
+  tc = tc + 1
+}

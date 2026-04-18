@@ -2999,7 +2999,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0041-first-missing-positive`
 - [x] `0042-trapping-rain-water`
 - [x] `0044-wildcard-matching`
-- [ ] `0051-n-queens`
+- [x] `0051-n-queens`
 - [ ] `0052-n-queens-ii`
 - [ ] `0060-permutation-sequence`
 - [ ] `0065-valid-number`
