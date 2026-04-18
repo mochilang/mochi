@@ -1,0 +1,39 @@
+fun isMatch(s, p) {
+  var i = 0
+  var j = 0
+  var star = 0
+  var hasStar = false
+  var matched = 0
+  while i < len(s) {
+    if j < len(p) && (p[j:j+1] == "?" || p[j:j+1] == s[i:i+1]) {
+      i = i + 1
+      j = j + 1
+    } else if j < len(p) && p[j:j+1] == "*" {
+      star = j
+      hasStar = true
+      matched = i
+      j = j + 1
+    } else if hasStar {
+      j = star + 1
+      matched = matched + 1
+      i = matched
+    } else {
+      return false
+    }
+  }
+  while j < len(p) && p[j:j+1] == "*" { j = j + 1 }
+  return j == len(p)
+}
+fun readLineNonNil() { let line = input(); return line }
+let t = int(readLineNonNil())
+var tc = 0
+while tc < t {
+  let n = int(readLineNonNil())
+  var s = ""
+  if n > 0 { s = readLineNonNil() }
+  let m = int(readLineNonNil())
+  var p = ""
+  if m > 0 { p = readLineNonNil() }
+  print(isMatch(s, p))
+  tc = tc + 1
+}
