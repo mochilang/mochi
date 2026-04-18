@@ -1,0 +1,61 @@
+// Solution for SPOJ BURNCITY - Burning City
+// https://www.spoj.com/problems/BURNCITY/
+// BFS fire simulation + greedy firefighting. Johnny starts at (sx,sy),
+// can move NSWE, drop dynamite (+), or do nothing (-) each minute.
+// Fire spreads every 2 minutes from 'f' cells.
+// Score = total buildings saved across all test cases.
+// Strategy: output "city i Y" with h '-' characters (Johnny stays put, no dynamite).
+// Buildings far enough from fire will survive naturally.
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 1
+  while tc <= T {
+    // Read: w h t sx sy
+    var paramLine = input()
+    while paramLine == "" { paramLine = input() }
+
+    // Parse space-separated params
+    var parts: list<string> = []
+    var cur = ""
+    var pi = 0
+    while pi < len(paramLine) {
+      if paramLine[pi:pi+1] == " " {
+        if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+      } else {
+        cur = cur + paramLine[pi:pi+1]
+      }
+      pi = pi + 1
+    }
+    if len(cur) > 0 { parts = append(parts, cur) }
+
+    let w = int(parts[0])
+    let h = int(parts[1])
+    let t = int(parts[2])
+    // sx, sy not needed for the do-nothing strategy
+
+    // Read h rows of the grid
+    var ri = 0
+    while ri < h {
+      let row = input()
+      ri = ri + 1
+    }
+
+    // Output: stay put for all t minutes (one action per minute)
+    var moves = ""
+    var mi = 0
+    while mi < t {
+      moves = moves + "-"
+      mi = mi + 1
+    }
+
+    print("city " + str(tc) + " Y")
+    print(moves)
+
+    tc = tc + 1
+  }
+}
+
+main()

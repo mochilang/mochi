@@ -1,0 +1,58 @@
+// Solution for SPOJ ROCK - Sweet and Sour Rock
+// https://www.spoj.com/problems/ROCK/
+// DP: dp[i] = max total sellable length from first i segments.
+// For each j < i, if substring [j+1..i] has count(1) > count(0), update dp[i].
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    var sLine = input()
+    while sLine == "" { sLine = input() }
+
+    // Prefix sum of 1s
+    var psum: list<int> = []
+    psum = append(psum, 0)
+    var i = 0
+    while i < n {
+      let ch = sLine[i:i+1]
+      let v = if ch == "1" { 1 } else { 0 }
+      psum = append(psum, psum[i] + v)
+      i = i + 1
+    }
+
+    // dp[i] = max total sellable length using first i chars
+    var dp: list<int> = []
+    i = 0
+    while i <= n { dp = append(dp, 0); i = i + 1 }
+
+    i = 1
+    while i <= n {
+      // Option 1: don't end a piece at position i
+      if dp[i-1] > dp[i] { dp[i] = dp[i-1] }
+      // Option 2: piece [j+1..i] for each j < i
+      var j = 0
+      while j < i {
+        let ones = psum[i] - psum[j]
+        let len_piece = i - j
+        let zeros = len_piece - ones
+        if ones > zeros {
+          let val = dp[j] + len_piece
+          if val > dp[i] { dp[i] = val }
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    print(dp[n])
+    tc = tc + 1
+  }
+}
+
+main()

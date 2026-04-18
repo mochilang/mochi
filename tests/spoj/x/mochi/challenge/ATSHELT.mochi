@@ -1,0 +1,131 @@
+// Solution for SPOJ ATSHELT - Shelters
+// https://www.spoj.com/problems/ATSHELT/
+// Place k shelters in k of n buildings to minimize the maximum distance from any
+// building to its nearest shelter (k-center problem).
+// Greedy farthest-point: start with building 1, repeatedly add the building
+// farthest from the current shelter set. Output sorted shelter indices.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun dist2(x1: int, y1: int, x2: int, y2: int): int {
+  let dx = x2 - x1
+  let dy = y2 - y1
+  return dx * dx + dy * dy
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var ti = 0
+  while ti < T {
+    let nkLine = input()
+    let nk = split(nkLine)
+    let n = int(nk[0])
+    let k = int(nk[1])
+
+    var bx: list<int> = []
+    var by: list<int> = []
+    var i = 0
+    while i < n {
+      let p = split(input())
+      bx = append(bx, int(p[0]))
+      by = append(by, int(p[1]))
+      i = i + 1
+    }
+
+    // minDist[i] = min squared dist from building i to any chosen shelter
+    var minDist: list<int> = []
+    var isShelter: list<int> = []
+    i = 0
+    while i < n {
+      minDist = append(minDist, 1000000000)
+      isShelter = append(isShelter, 0)
+      i = i + 1
+    }
+
+    // Greedy k-center: start with building 0 (1-indexed: 1)
+    var shelters: list<int> = []
+    var chosen = 0
+    isShelter[0] = 1
+    shelters = append(shelters, 0)
+
+    // Update minDist for initial shelter
+    i = 0
+    while i < n {
+      let d = dist2(bx[0], by[0], bx[i], by[i])
+      if d < minDist[i] { minDist[i] = d }
+      i = i + 1
+    }
+
+    var s = 1
+    while s < k {
+      // Find building farthest from shelter set
+      var farthest = 0 - 1
+      var maxD = 0 - 1
+      i = 0
+      while i < n {
+        if isShelter[i] == 0 {
+          if minDist[i] > maxD {
+            maxD = minDist[i]
+            farthest = i
+          }
+        }
+        i = i + 1
+      }
+      if farthest == 0 - 1 { break }
+      isShelter[farthest] = 1
+      shelters = append(shelters, farthest)
+      // Update minDist
+      i = 0
+      while i < n {
+        let d = dist2(bx[farthest], by[farthest], bx[i], by[i])
+        if d < minDist[i] { minDist[i] = d }
+        i = i + 1
+      }
+      s = s + 1
+    }
+
+    // Sort shelters ascending (insertion sort)
+    var si = 1
+    while si < len(shelters) {
+      let key = shelters[si]
+      var sj = si - 1
+      while sj >= 0 && shelters[sj] > key {
+        shelters[sj + 1] = shelters[sj]
+        sj = sj - 1
+      }
+      shelters[sj + 1] = key
+      si = si + 1
+    }
+
+    // Output: "case X Y" then shelter indices (1-indexed)
+    print("case " + str(ti + 1) + " Y")
+    var out = ""
+    i = 0
+    while i < len(shelters) {
+      if i > 0 { out = out + " " }
+      out = out + str(shelters[i] + 1)
+      i = i + 1
+    }
+    print(out)
+
+    ti = ti + 1
+  }
+}
+
+main()

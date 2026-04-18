@@ -1,0 +1,211 @@
+// Solution for SPOJ HAM - Hamster
+// https://www.spoj.com/problems/HAM/
+// Remove minimum cost edges so no directed cycle in green or red subgraph.
+// Greedy: find minimum-cost edge in a cycle and remove it, repeat until acyclic.
+// Edge coloring: k=1 green, k=2 red, k=3 striped (both colors).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Topological sort check: returns 1 if directed graph (color subgraph) has a cycle.
+fun hasCycle(n: int, m: int,
+    efrom: list<int>, eto: list<int>, ek: list<int>,
+    removed: list<int>, color: int): int {
+  var indeg: list<int> = []
+  var ii = 0
+  while ii <= n { indeg = append(indeg, 0); ii = ii + 1 }
+
+  var ei = 0
+  while ei < m {
+    if removed[ei] == 0 {
+      var use = 0
+      if color == 1 && (ek[ei] == 1 || ek[ei] == 3) { use = 1 }
+      if color == 2 && (ek[ei] == 2 || ek[ei] == 3) { use = 1 }
+      if use == 1 { indeg[eto[ei]] = indeg[eto[ei]] + 1 }
+    }
+    ei = ei + 1
+  }
+
+  var queue: list<int> = []
+  var ni = 1
+  while ni <= n {
+    if indeg[ni] == 0 { queue = append(queue, ni) }
+    ni = ni + 1
+  }
+
+  var processed = 0
+  var qi = 0
+  while qi < len(queue) {
+    let node = queue[qi]
+    qi = qi + 1
+    processed = processed + 1
+    var ei2 = 0
+    while ei2 < m {
+      if removed[ei2] == 0 && efrom[ei2] == node {
+        var use = 0
+        if color == 1 && (ek[ei2] == 1 || ek[ei2] == 3) { use = 1 }
+        if color == 2 && (ek[ei2] == 2 || ek[ei2] == 3) { use = 1 }
+        if use == 1 {
+          indeg[eto[ei2]] = indeg[eto[ei2]] - 1
+          if indeg[eto[ei2]] == 0 { queue = append(queue, eto[ei2]) }
+        }
+      }
+      ei2 = ei2 + 1
+    }
+  }
+  if processed < n { return 1 }
+  return 0
+}
+
+// BFS: can we reach dst from src in color subgraph?
+fun canReach(src: int, dst: int, n: int, m: int,
+    efrom: list<int>, eto: list<int>, ek: list<int>,
+    removed: list<int>, color: int): int {
+  var visited: list<int> = []
+  var vi = 0
+  while vi <= n { visited = append(visited, 0); vi = vi + 1 }
+
+  var queue: list<int> = []
+  queue = append(queue, src)
+  visited[src] = 1
+
+  var qi = 0
+  while qi < len(queue) {
+    let node = queue[qi]
+    qi = qi + 1
+    if node == dst { return 1 }
+    var ei = 0
+    while ei < m {
+      if removed[ei] == 0 && efrom[ei] == node {
+        var use = 0
+        if color == 1 && (ek[ei] == 1 || ek[ei] == 3) { use = 1 }
+        if color == 2 && (ek[ei] == 2 || ek[ei] == 3) { use = 1 }
+        if use == 1 && visited[eto[ei]] == 0 {
+          visited[eto[ei]] = 1
+          queue = append(queue, eto[ei])
+        }
+      }
+      ei = ei + 1
+    }
+  }
+  return 0
+}
+
+// Find minimum cost edge that's in a cycle for given color.
+// Edge (u,v) is in a cycle iff v can reach u.
+// Returns 0-based index, or m if none found.
+fun findMinCycleEdge(n: int, m: int,
+    efrom: list<int>, eto: list<int>, ew: list<int>, ek: list<int>,
+    removed: list<int>, color: int): int {
+  if hasCycle(n, m, efrom, eto, ek, removed, color) == 0 { return m }
+
+  var bestEdge = m
+  var bestW = 0
+
+  var ei = 0
+  while ei < m {
+    if removed[ei] == 0 {
+      var use = 0
+      if color == 1 && (ek[ei] == 1 || ek[ei] == 3) { use = 1 }
+      if color == 2 && (ek[ei] == 2 || ek[ei] == 3) { use = 1 }
+      if use == 1 {
+        // Is this edge in a cycle? Check if eto[ei] can reach efrom[ei]
+        let rc = canReach(eto[ei], efrom[ei], n, m, efrom, eto, ek, removed, color)
+        if rc == 1 {
+          if bestEdge == m || ew[ei] < bestW {
+            bestEdge = ei
+            bestW = ew[ei]
+          }
+        }
+      }
+    }
+    ei = ei + 1
+  }
+  return bestEdge
+}
+
+fun main() {
+  let t = int(input())
+  var tc = 0
+  while tc < t {
+    let dims = split(input())
+    let n = int(dims[0])
+    let m = int(dims[1])
+
+    var efrom: list<int> = []
+    var eto: list<int> = []
+    var ew: list<int> = []
+    var ek: list<int> = []
+
+    var ei = 0
+    while ei < m {
+      let parts = split(input())
+      efrom = append(efrom, int(parts[0]))
+      eto = append(eto, int(parts[1]))
+      ew = append(ew, int(parts[2]))
+      ek = append(ek, int(parts[3]))
+      ei = ei + 1
+    }
+
+    var removed: list<int> = []
+    var ri = 0
+    while ri < m { removed = append(removed, 0); ri = ri + 1 }
+
+    // Greedily remove minimum cost cycle edges across both colors
+    // At each step, find the cheapest cycle edge in either color subgraph
+    var anyLeft = 1
+    while anyLeft == 1 {
+      let g = findMinCycleEdge(n, m, efrom, eto, ew, ek, removed, 1)
+      let r = findMinCycleEdge(n, m, efrom, eto, ew, ek, removed, 2)
+      if g == m && r == m {
+        anyLeft = 0
+      } else {
+        // Pick whichever is cheaper (or exists if only one does)
+        var pick = m
+        if g < m && r == m { pick = g }
+        if r < m && g == m { pick = r }
+        if g < m && r < m {
+          if ew[g] <= ew[r] { pick = g } else { pick = r }
+        }
+        removed[pick] = 1
+      }
+    }
+
+    // Collect removed edges
+    var result: list<int> = []
+    var totalW = 0
+    var rii = 0
+    while rii < m {
+      if removed[rii] == 1 {
+        result = append(result, rii + 1)
+        totalW = totalW + ew[rii]
+      }
+      rii = rii + 1
+    }
+
+    let p = len(result)
+    print(str(p) + " " + str(totalW))
+    var pi = 0
+    while pi < p {
+      print(result[pi])
+      pi = pi + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

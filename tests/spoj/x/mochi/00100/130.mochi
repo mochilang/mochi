@@ -1,0 +1,83 @@
+// Solution for SPOJ RENT - Rent Your Airplane
+// https://www.spoj.com/problems/RENT/
+// Weighted interval scheduling: maximize profit with non-overlapping intervals.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    var starts: list<int> = []
+    var ends: list<int> = []
+    var profits: list<int> = []
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let p = split(vLine)
+      starts = append(starts, int(p[0]))
+      ends = append(ends, int(p[1]))
+      profits = append(profits, int(p[2]))
+      i = i + 1
+    }
+
+    // Sort by end time (insertion sort)
+    i = 1
+    while i < n {
+      let ke = ends[i]; let ks = starts[i]; let kp = profits[i]
+      var j = i - 1
+      while j >= 0 {
+        if ends[j] <= ke { break }
+        ends[j+1] = ends[j]; starts[j+1] = starts[j]; profits[j+1] = profits[j]
+        j = j - 1
+      }
+      ends[j+1] = ke; starts[j+1] = ks; profits[j+1] = kp
+      i = i + 1
+    }
+
+    // dp[i] = max profit using intervals 0..i-1 (1-indexed with dp[0]=0)
+    var dp: list<int> = []
+    i = 0
+    while i <= n { dp = append(dp, 0); i = i + 1 }
+
+    i = 0
+    while i < n {
+      // Option 1: skip interval i
+      if dp[i] > dp[i+1] { dp[i+1] = dp[i] }
+
+      // Option 2: use interval i; binary search for last interval that ends <= starts[i]
+      var lo = 0; var hi = i
+      while lo < hi {
+        let mid = int((lo + hi + 1) / 2)
+        if ends[mid-1] <= starts[i] { lo = mid } else { hi = mid - 1 }
+      }
+      let val = dp[lo] + profits[i]
+      if val > dp[i+1] { dp[i+1] = val }
+      i = i + 1
+    }
+
+    print(dp[n])
+    ti = ti + 1
+  }
+}
+
+main()

@@ -1,0 +1,137 @@
+// Solution for SPOJ BLINNET - Bytelandian Blingors Network
+// https://www.spoj.com/problems/BLINNET/
+// Minimum Spanning Tree via Kruskal's algorithm.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun find(parent: list<int>, x: int): int {
+  var r = x
+  while parent[r] != r { r = parent[r] }
+  // Path compress
+  var c = x
+  while c != r {
+    let nx = parent[c]
+    parent[c] = r
+    c = nx
+  }
+  return r
+}
+
+fun sortEdges(ew: list<int>): list<int> {
+  // Insertion sort, returns sorted indices
+  let n = len(ew)
+  var idx: list<int> = []
+  var i = 0
+  while i < n { idx = append(idx, i); i = i + 1 }
+  i = 1
+  while i < n {
+    let ki = idx[i]
+    let kw = ew[ki]
+    var j = i - 1
+    while j >= 0 && ew[idx[j]] > kw {
+      idx[j+1] = idx[j]
+      j = j - 1
+    }
+    idx[j+1] = ki
+    i = i + 1
+  }
+  return idx
+}
+
+fun main() {
+  var tLine = input()
+  while tLine != "" {
+    let t = int(tLine)
+    var ti = 0
+    while ti < t {
+      // Skip blank lines between test cases
+      var nLine = input()
+      while nLine == "" { nLine = input() }
+      let n = int(nLine)
+
+      // Read all city names first (first line for each city), and neighbor lines
+      var names: list<string> = []
+      var edgeLines: list<string> = []
+      var ci = 0
+      while ci < n {
+        var nm = input()
+        while nm == "" { nm = input() }
+        names = append(names, nm)
+        var el = input()
+        while el == "" { el = input() }
+        edgeLines = append(edgeLines, el)
+        ci = ci + 1
+      }
+
+      // Build name -> index map
+      var cityMap: map<string, int> = {}
+      ci = 0
+      while ci < n {
+        cityMap[names[ci]] = ci
+        ci = ci + 1
+      }
+
+      // Parse edges
+      var eu: list<int> = []
+      var ev: list<int> = []
+      var ew: list<int> = []
+      ci = 0
+      while ci < n {
+        let parts = split(edgeLines[ci])
+        let k = int(parts[0])
+        var ki = 0
+        while ki < k {
+          let neighbor = parts[1 + 2*ki]
+          let cost = int(parts[2 + 2*ki])
+          eu = append(eu, ci)
+          ev = append(ev, cityMap[neighbor] as int)
+          ew = append(ew, cost)
+          ki = ki + 1
+        }
+        ci = ci + 1
+      }
+
+      // Kruskal's MST
+      var parent: list<int> = []
+      var i = 0
+      while i < n { parent = append(parent, i); i = i + 1 }
+      let sorted = sortEdges(ew)
+      var total = 0
+      var components = n
+      i = 0
+      while i < len(sorted) {
+        let idx = sorted[i]
+        let u = eu[idx]
+        let v = ev[idx]
+        let ru = find(parent, u)
+        let rv = find(parent, v)
+        if ru != rv {
+          parent[ru] = rv
+          total = total + ew[idx]
+          components = components - 1
+          if components == 1 { break }
+        }
+        i = i + 1
+      }
+      print(total)
+      ti = ti + 1
+    }
+    tLine = input()
+  }
+}
+
+main()

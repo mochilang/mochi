@@ -1,0 +1,188 @@
+// Solution for SPOJ Musketeers (MUSKET)
+// https://www.spoj.com/problems/MUSKET/
+// n persons in a circle fight n-1 duels. Determine who can possibly win.
+// Interval DP: win[s][len][p] = can player p win linear game on arc (s, len)?
+// Player k wins circular game iff for some j: A[k][j]=1 and both arcs clear favorably.
+
+// Mochi type quirk: arithmetic on vars/params produces "number" not "int".
+// For list writes with computed index, use toInt() wrapper.
+fun toInt(x: int): int { return x }
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    // Read A matrix: A[i*n + j] = 1 if player i beats player j (0-indexed)
+    var A_data: list<int> = []
+    var i = 0
+    while i < n * n { A_data = append(A_data, 0); i = i + 1 }
+
+    i = 0
+    while i < n {
+      let row = input()
+      var j = 0
+      while j < n {
+        let ch = row[j:j+1]
+        if ch == "1" {
+          let wi = toInt(i * n + j)
+          A_data[wi] = 1
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    // win_data[s*n*n + len*n + p] = 1 iff player p can win arc (s, len)
+    // s in [0..n-1], len in [1..n-1]
+    var win_data: list<int> = []
+    i = 0
+    while i < n * n * n { win_data = append(win_data, 0); i = i + 1 }
+
+    // Base: arc of length 1 starting at s is won only by player s
+    i = 0
+    while i < n {
+      let wi = toInt(i * n * n + 1 * n + i)
+      win_data[wi] = 1
+      i = i + 1
+    }
+
+    // Fill DP for increasing lengths
+    var ln = 2
+    while ln < n {
+      var s = 0
+      while s < n {
+        // Try all splits: left (s, m+1) and right ((s+m+1)%n, ln-m-1)
+        var m = 0
+        while m < ln - 1 {
+          let sl = s
+          let ll = m + 1
+          let sr = (s + m + 1) % n
+          let lr = ln - m - 1
+          // For each pair (p in left win, q in right win)
+          var p = 0
+          while p < n {
+            let wp = win_data[sl * n * n + ll * n + p]
+            if wp == 1 {
+              var q = 0
+              while q < n {
+                let wq = win_data[sr * n * n + lr * n + q]
+                if wq == 1 {
+                  let apq = A_data[p * n + q]
+                  let aqp = A_data[q * n + p]
+                  if apq == 1 {
+                    let wi = toInt(s * n * n + ln * n + p)
+                    win_data[wi] = 1
+                  }
+                  if aqp == 1 {
+                    let wi = toInt(s * n * n + ln * n + q)
+                    win_data[wi] = 1
+                  }
+                }
+                q = q + 1
+              }
+            }
+            p = p + 1
+          }
+          m = m + 1
+        }
+        s = s + 1
+      }
+      ln = ln + 1
+    }
+
+    // For each player k: can they win the circular game?
+    var canWin: list<int> = []
+    i = 0
+    while i < n { canWin = append(canWin, 0); i = i + 1 }
+
+    var k = 0
+    while k < n {
+      var j = 0
+      while j < n && canWin[k] == 0 {
+        if j != k && A_data[k * n + j] == 1 {
+          // arc1: from k+1 to j-1 (clockwise), length = (j-k-1+n)%n
+          let arc1Start = (k + 1) % n
+          let arc1Len = (j - k - 1 + n) % n
+          // arc2: from j+1 to k-1 (clockwise), length = (k-j-1+n)%n
+          let arc2Start = (j + 1) % n
+          let arc2Len = (k - j - 1 + n) % n
+
+          // arc1: k must beat the survivor
+          var arc1ok = 1
+          if arc1Len > 0 {
+            arc1ok = 0
+            var p = 0
+            while p < n && arc1ok == 0 {
+              if win_data[arc1Start * n * n + arc1Len * n + p] == 1 {
+                if A_data[k * n + p] == 1 {
+                  arc1ok = 1
+                }
+              }
+              p = p + 1
+            }
+          }
+
+          // arc2: j must beat the survivor
+          var arc2ok = 1
+          if arc2Len > 0 {
+            arc2ok = 0
+            var p = 0
+            while p < n && arc2ok == 0 {
+              if win_data[arc2Start * n * n + arc2Len * n + p] == 1 {
+                if A_data[j * n + p] == 1 {
+                  arc2ok = 1
+                }
+              }
+              p = p + 1
+            }
+          }
+
+          if arc1ok == 1 && arc2ok == 1 {
+            canWin[k] = 1
+          }
+        }
+        j = j + 1
+      }
+      k = k + 1
+    }
+
+    // Print results
+    var count = 0
+    i = 0
+    while i < n { if canWin[i] == 1 { count = count + 1 }; i = i + 1 }
+    print(str(count))
+    i = 0
+    while i < n {
+      if canWin[i] == 1 { print(str(i + 1)) }
+      i = i + 1
+    }
+
+    ti = ti + 1
+    if ti < t { print("") }
+  }
+}
+
+main()

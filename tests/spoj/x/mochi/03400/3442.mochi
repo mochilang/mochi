@@ -1,0 +1,54 @@
+// Solution for SPOJ LASTDIG - The Last Digit
+// https://www.spoj.com/problems/LASTDIG/
+// Last digit of A^B using the 4-cycle pattern of last digits.
+
+fun lastDigit(a: int, b: int): int {
+  if b == 0 { return 1 }
+  let d = a % 10
+  if d == 0 { return 0 }
+  if d == 1 { return 1 }
+  if d == 5 { return 5 }
+  if d == 6 { return 6 }
+  // Cycles: 2→2,4,8,6; 3→3,9,7,1; 4→4,6; 7→7,9,3,1; 8→8,4,2,6; 9→9,1
+  var cycle: list<int> = []
+  if d == 2 { cycle = [2, 4, 8, 6] }
+  else if d == 3 { cycle = [3, 9, 7, 1] }
+  else if d == 4 { cycle = [4, 6] }
+  else if d == 7 { cycle = [7, 9, 3, 1] }
+  else if d == 8 { cycle = [8, 4, 2, 6] }
+  else { cycle = [9, 1] }
+  let period = len(cycle)
+  return cycle[(b-1) % period]
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var line = input()
+    while line == "" { line = input() }
+    let p = split(line)
+    let a = int(p[0])
+    let b = int(p[1])
+    print(lastDigit(a, b))
+    ti = ti + 1
+  }
+}
+
+main()

@@ -1,0 +1,96 @@
+// Solution for SPOJ MOS - Man of Steel
+// https://www.spoj.com/problems/MOS/
+// Select K of N buildings to minimize sum of pairwise Euclidean distances.
+// Heuristic: pick K buildings closest to the centroid (center of mass).
+// Algorithm: compute centroid, then iteratively pick unselected building
+// with min squared distance to centroid (K passes, each O(N)).
+
+fun split(s: string): list<string> {
+  var r: list<string> = []
+  var c = ""
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == " " {
+      if len(c) > 0 { r = append(r, c); c = "" }
+    } else { c = c + s[i:i+1] }
+    i = i + 1
+  }
+  if len(c) > 0 { r = append(r, c) }
+  return r
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var ti = 0
+  while ti < T {
+    let p = split(input())
+    let N = int(p[0])
+    let K = int(p[1])
+
+    var xs: list<int> = []
+    var ys: list<int> = []
+    var sumX = 0
+    var sumY = 0
+    var i = 0
+    while i < N {
+      let coord = split(input())
+      let x = int(coord[0])
+      let y = int(coord[1])
+      xs = append(xs, x)
+      ys = append(ys, y)
+      sumX = sumX + x
+      sumY = sumY + y
+      i = i + 1
+    }
+
+    // Centroid (scaled by N to avoid float division)
+    // Use squared distance scaled: dist2_scaled = (x*N - sumX)^2 + (y*N - sumY)^2
+    // to avoid float arithmetic
+
+    // selected[i] = 1 if building i is selected
+    var selected: list<int> = []
+    i = 0
+    while i < N { selected = append(selected, 0); i = i + 1 }
+
+    var result: list<int> = []
+    var k = 0
+    while k < K {
+      var bestIdx = 0 - 1
+      var bestDist = 0 - 1
+      i = 0
+      while i < N {
+        if selected[i] == 0 {
+          let dx = xs[i] * N - sumX
+          let dy = ys[i] * N - sumY
+          let d2 = dx * dx + dy * dy
+          if bestIdx == 0 - 1 {
+            bestIdx = i
+            bestDist = d2
+          } else {
+            if d2 < bestDist {
+              bestIdx = i
+              bestDist = d2
+            }
+          }
+        }
+        i = i + 1
+      }
+      selected[bestIdx] = 1
+      result = append(result, bestIdx + 1)
+      k = k + 1
+    }
+
+    print("Save " + str(K))
+    i = 0
+    while i < len(result) {
+      print(result[i])
+      i = i + 1
+    }
+
+    ti = ti + 1
+  }
+}
+
+main()

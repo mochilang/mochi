@@ -1,0 +1,188 @@
+// Solution for SPOJ Containers (CTAIN)
+// https://www.spoj.com/problems/CTAIN/
+// BFS on states: each state is a tuple of current water volumes.
+// n<=4, capacity<=49. State space is at most 50^4 = 6.25M (manageable).
+// Moves: pour all from i to j (if room), fill j from i, drain i.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Encode state as single integer: each volume 0..49 fits in 6 bits
+// Use base 50: state = v0 + v1*50 + v2*50^2 + v3*50^3
+fun encode(v: list<int>, n: int): int {
+  var s = 0
+  var mul = 1
+  var i = 0
+  while i < n {
+    s = s + v[i] * mul
+    mul = mul * 50
+    i = i + 1
+  }
+  return s
+}
+
+fun decode(s: int, n: int): list<int> {
+  var v: list<int> = []
+  var rem = s
+  var i = 0
+  while i < n {
+    v = append(v, rem - int(rem / 50) * 50)
+    rem = int(rem / 50)
+    i = i + 1
+  }
+  return v
+}
+
+fun solve(n: int, cap: list<int>, goal: list<int>): int {
+  let NEG1 = 0 - 1
+  // Check goal feasible
+  var i = 0
+  while i < n {
+    if goal[i] > cap[i] { return NEG1 }
+    i = i + 1
+  }
+
+  // Initial state: all full
+  var initV: list<int> = []
+  i = 0
+  while i < n { initV = append(initV, cap[i]); i = i + 1 }
+  let initState = encode(initV, n)
+  let goalState = encode(goal, n)
+
+  if initState == goalState { return 0 }
+
+  // BFS using map for dist
+  var dist: map<int, int> = {}
+  dist[initState] = 0
+  var queue: list<int> = [initState]
+  var head = 0
+
+  while head < len(queue) {
+    let cur = queue[head]
+    head = head + 1
+    let d = dist[cur]
+    let v = decode(cur, n)
+
+    // Try all moves
+    // Move 1: drain container i
+    i = 0
+    while i < n {
+      if v[i] > 0 {
+        var nv: list<int> = []
+        var j = 0
+        while j < n { nv = append(nv, v[j]); j = j + 1 }
+        nv[i] = 0
+        let ns = encode(nv, n)
+        if dist[ns] == nil {
+          dist[ns] = d + 1
+          if ns == goalState { return d + 1 }
+          queue = append(queue, ns)
+        }
+      }
+      i = i + 1
+    }
+
+    // Move 2: pour all from i into j (only if fits)
+    i = 0
+    while i < n {
+      var j = 0
+      while j < n {
+        if i != j && v[i] > 0 {
+          let room = cap[j] - v[j]
+          // Pour all of i into j only if there's enough room
+          if v[i] <= room {
+            var nv: list<int> = []
+            var k = 0
+            while k < n { nv = append(nv, v[k]); k = k + 1 }
+            nv[j] = nv[j] + nv[i]
+            nv[i] = 0
+            let ns = encode(nv, n)
+            if dist[ns] == nil {
+              dist[ns] = d + 1
+              if ns == goalState { return d + 1 }
+              queue = append(queue, ns)
+            }
+          }
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    // Move 3: fill j from i (i provides enough to top j off)
+    i = 0
+    while i < n {
+      var j = 0
+      while j < n {
+        if i != j && v[i] > 0 && v[j] < cap[j] {
+          let need = cap[j] - v[j]
+          if v[i] >= need {
+            var nv: list<int> = []
+            var k = 0
+            while k < n { nv = append(nv, v[k]); k = k + 1 }
+            nv[j] = cap[j]
+            nv[i] = nv[i] - need
+            let ns = encode(nv, n)
+            if dist[ns] == nil {
+              dist[ns] = d + 1
+              if ns == goalState { return d + 1 }
+              queue = append(queue, ns)
+            }
+          }
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+  }
+
+  return NEG1
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var l1 = input()
+    while l1 == "" { l1 = input() }
+    let n = int(l1)
+
+    var capLine = input()
+    while capLine == "" { capLine = input() }
+    let capParts = split(capLine)
+    var cap: list<int> = []
+    var i = 0
+    while i < n { cap = append(cap, int(capParts[i])); i = i + 1 }
+
+    var goalLine = input()
+    while goalLine == "" { goalLine = input() }
+    let goalParts = split(goalLine)
+    var goal: list<int> = []
+    i = 0
+    while i < n { goal = append(goal, int(goalParts[i])); i = i + 1 }
+
+    let ans = solve(n, cap, goal)
+    let notFound = 0 - 1
+    if ans == notFound {
+      print("NO")
+    } else {
+      print(ans)
+    }
+    ti = ti + 1
+  }
+}
+
+main()

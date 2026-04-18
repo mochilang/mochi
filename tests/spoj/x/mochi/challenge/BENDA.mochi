@@ -1,0 +1,114 @@
+// Solution for SPOJ BENDA - Prisoner of Benda
+// https://www.spoj.com/problems/BENDA/
+// Given n people and m body swaps already performed, find swaps to restore everyone
+// to their own body. Uses at most two extra bodies (n+1, n+2).
+// For each k-cycle [c1,c2,...,ck] in the resulting permutation:
+//   swap(c1,x), swap(c2,y), swap(c2,x), swap(c3,y), ..., swap(ck,y), swap(c1,y), swap(x,y)
+// = k+3 swaps per cycle (each pair used at most once).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let nm = split(input())
+    let n = int(nm[0])
+    let m = int(nm[1])
+
+    // perm[i] = person currently in body i (1-indexed; perm[0] unused)
+    var perm: list<int> = []
+    var i = 0
+    while i <= n {
+      perm = append(perm, i)
+      i = i + 1
+    }
+
+    // Apply m swaps to build current permutation
+    var si = 0
+    while si < m {
+      let ab = split(input())
+      let a = int(ab[0])
+      let b = int(ab[1])
+      let tmp = perm[a]
+      perm[a] = perm[b]
+      perm[b] = tmp
+      si = si + 1
+    }
+
+    // Decompose permutation into cycles and generate correction swaps.
+    // x = n+1, y = n+2 (extra bodies, reset between cycles by the algorithm).
+    var visited: list<int> = []
+    i = 0
+    while i <= n { visited = append(visited, 0); i = i + 1 }
+
+    let x = n + 1
+    let y = n + 2
+    var swaps: list<int> = []
+
+    i = 1
+    while i <= n {
+      if visited[i] == 0 && perm[i] != i {
+        // Trace the full cycle starting at i
+        var cycle: list<int> = []
+        var cur = i
+        while visited[cur] == 0 {
+          visited[cur] = 1
+          cycle = append(cycle, cur)
+          cur = perm[cur]
+        }
+        let k = len(cycle)
+        // swap(c1, x)
+        swaps = append(swaps, cycle[0])
+        swaps = append(swaps, x)
+        // swap(c2, y), swap(c2, x)  -- sorts c2, loads x with y-person
+        swaps = append(swaps, cycle[1])
+        swaps = append(swaps, y)
+        swaps = append(swaps, cycle[1])
+        swaps = append(swaps, x)
+        // For i=2..k-1: swap(ci, y) -- sorts each ci
+        var ci = 2
+        while ci < k {
+          swaps = append(swaps, cycle[ci])
+          swaps = append(swaps, y)
+          ci = ci + 1
+        }
+        // swap(c1, y) -- sorts c1
+        swaps = append(swaps, cycle[0])
+        swaps = append(swaps, y)
+        // swap(x, y) -- restores both extras
+        swaps = append(swaps, x)
+        swaps = append(swaps, y)
+      } else {
+        visited[i] = 1
+      }
+      i = i + 1
+    }
+
+    let total = int(len(swaps) / 2)
+    print(str(total))
+    var j = 0
+    while j < len(swaps) {
+      print(str(swaps[j]) + " " + str(swaps[j+1]))
+      j = j + 2
+    }
+
+    ti = ti + 1
+  }
+}
+
+main()

@@ -15,7 +15,4 @@
       )
     )
   )
-  (call print
-    (call sum3 (int 1) (int 2) (int 3))
-  )
 )

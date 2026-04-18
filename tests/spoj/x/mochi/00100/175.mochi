@@ -1,0 +1,247 @@
+// Solution for SPOJ POLY1 - Polygon
+// https://www.spoj.com/problems/POLY1/
+// Convex polygon with n vertices (0..n-1). Triangulation given as n-2 triangles.
+// Find max # triangulation triangles intersected by any elementary triangle.
+// Two triangles intersect (share interior) iff NOT all vertices of one are in
+// a single arc defined by the other.
+// For elementary triangle (a,b,c) with a<b<c:
+//   non-intersecting = cnt(a,b) + cnt(b,c) + cnt_wrap(c,a)
+// where cnt(i,j) = # tria-triangles with all vertices in [i..j]
+// and cnt_wrap(c,a) = # tria-triangles with all vertices in {0..a} union {c..n-1}
+// Precompute cnt using 2D suffix-prefix sums. O(n^2) space and precomputation.
+// Then iterate over all (a,b,c) in O(n^3).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    let numTri = n - 2
+
+    // Read triangulation triangles
+    var tp: list<int> = []  // min vertex
+    var tq: list<int> = []  // mid vertex
+    var tr: list<int> = []  // max vertex
+
+    var ti = 0
+    while ti < numTri {
+      var triLine = input()
+      while triLine == "" { triLine = input() }
+      let vp = split(triLine)
+      var a = int(vp[0])
+      var b = int(vp[1])
+      var c = int(vp[2])
+      // Sort a,b,c
+      if a > b { let tmp = a; a = b; b = tmp }
+      if b > c { let tmp = b; b = c; c = tmp }
+      if a > b { let tmp = a; a = b; b = tmp }
+      tp = append(tp, a)
+      tq = append(tq, b)
+      tr = append(tr, c)
+      ti = ti + 1
+    }
+
+    // Precompute cnt(i,j) = # triangles with all vertices in [i..j]
+    // = # triangles with min_vertex >= i and max_vertex <= j
+    // Use f[i][j] = sum_{p>=i, r<=j} G[p][r] where G[p][r] = # triangles with min=p,max=r
+    // Build as: for each j (0..n-1), for each i (n-1..0):
+    //   f[i][j] = f[i+1][j] + (# triangles with p=i and r<=j)
+    // Precompute row_prefix[p][j] = # triangles with p=p and r<=j
+
+    // Since n can be up to 1000, n^2 = 1M entries. Use flat array.
+    // cnt_table[i*n+j] = cnt(i,j) for 0<=i<=j<=n-1
+
+    var cnt_table: list<int> = []
+    var idx = 0
+    while idx < n * n { cnt_table = append(cnt_table, 0); idx = idx + 1 }
+
+    // For each triangle (tp[k],tq[k],tr[k]): contributes to cnt(i,j) for all i<=tp[k] and j>=tr[k]
+    // First build G[p][r]: count of triangles with min_vertex=p and max_vertex=r
+    // Then compute 2D suffix(p)/prefix(r) sums
+
+    // g[p*n+r] = count of triangles with min_vertex=p, max_vertex=r
+    var g: list<int> = []
+    idx = 0
+    while idx < n * n { g = append(g, 0); idx = idx + 1 }
+    ti = 0
+    while ti < numTri {
+      g[tp[ti] * n + tr[ti]] = g[tp[ti] * n + tr[ti]] + 1
+      ti = ti + 1
+    }
+
+    // Build cnt_table[i][j] = sum_{p=i..n-1, r=0..j} g[p][r]
+    // Step 1: for each p, compute prefix over r: rowpre[p][j] = sum_{r=0..j} g[p][r]
+    // Step 2: for each j, compute suffix over p: cnt_table[i][j] = sum_{p=i..n-1} rowpre[p][j]
+
+    // We do this column by column to save memory
+    // For j from 0 to n-1:
+    //   rowpre_col[p] = sum_{r=0..j} g[p][r]  (incrementally updated)
+    //   cnt_col[i] = sum_{p=i..n-1} rowpre_col[p]  (suffix sum)
+    //   store cnt_table[i*n+j] = cnt_col[i]
+
+    var rowpre_col: list<int> = []
+    idx = 0
+    while idx < n { rowpre_col = append(rowpre_col, 0); idx = idx + 1 }
+
+    var j = 0
+    while j < n {
+      // Update rowpre_col: add g[p][j] for each p
+      var p = 0
+      while p < n {
+        rowpre_col[p] = rowpre_col[p] + g[p * n + j]
+        p = p + 1
+      }
+      // Compute suffix sum for this j
+      var suffix_sum = 0
+      p = n - 1
+      while p >= 0 {
+        suffix_sum = suffix_sum + rowpre_col[p]
+        cnt_table[p * n + j] = suffix_sum
+        p = p - 1
+      }
+      j = j + 1
+    }
+
+    // Precompute cnt_wrap(c,a) for c > a:
+    // cnt_wrap(c,a) = cnt(0,a) + cnt(c,n-1) + C3(a,c) + C4(a,c)
+    // C3(a,c) = # triangles with q<=a and r>=c (p<q<=a<c<=r)
+    // C4(a,c) = # triangles with p<=a and q>=c (p<=a<c<=q<r)
+    //
+    // Precompute C3[a][c] and C4[a][c] similarly:
+    // C3: for triangle (tp,tq,tr) -> contributes to C3[a][c] for a>=tq and c<=tr
+    //     G3[q][r] = # triangles with mid=q, max=r
+    //     C3[a][c] = sum_{q=0..a, r=c..n-1} G3[q][r]
+    // C4: for triangle (tp,tq,tr) -> contributes to C4[a][c] for a>=tp and c<=tq
+    //     G4[p][q] = # triangles with min=p, mid=q
+    //     C4[a][c] = sum_{p=0..a, q=c..n-1} G4[p][q]
+
+    // Build G3 and G4
+    var g3: list<int> = []
+    var g4: list<int> = []
+    idx = 0
+    while idx < n * n { g3 = append(g3, 0); g4 = append(g4, 0); idx = idx + 1 }
+    ti = 0
+    while ti < numTri {
+      g3[tq[ti] * n + tr[ti]] = g3[tq[ti] * n + tr[ti]] + 1
+      g4[tp[ti] * n + tq[ti]] = g4[tp[ti] * n + tq[ti]] + 1
+      ti = ti + 1
+    }
+
+    // C3[a*n+c] = sum_{q=0..a, r=c..n-1} G3[q][r]
+    // = prefix over q (0..a) and suffix over r (c..n-1)
+    // Build incrementally: for each a from 0 to n-1:
+    //   add row q=a from G3 to cumulative rowsuf[r] = sum_{q=0..a} G3[q][r]
+    //   then C3[a][c] = sum_{r=c..n-1} rowsuf[r] (suffix of rowsuf)
+
+    var c3_table: list<int> = []
+    idx = 0
+    while idx < n * n { c3_table = append(c3_table, 0); idx = idx + 1 }
+
+    var rowsuf3: list<int> = []
+    idx = 0
+    while idx < n { rowsuf3 = append(rowsuf3, 0); idx = idx + 1 }
+
+    var a = 0
+    while a < n {
+      // Add row q=a from g3
+      var r = 0
+      while r < n {
+        rowsuf3[r] = rowsuf3[r] + g3[a * n + r]
+        r = r + 1
+      }
+      // Compute suffix sums for c3_table[a][c]
+      var suf = 0
+      r = n - 1
+      while r >= 0 {
+        suf = suf + rowsuf3[r]
+        c3_table[a * n + r] = suf
+        r = r - 1
+      }
+      a = a + 1
+    }
+
+    // C4[a*n+c] = sum_{p=0..a, q=c..n-1} G4[p][q]
+    // = prefix over p (0..a) and suffix over q (c..n-1)
+
+    var c4_table: list<int> = []
+    idx = 0
+    while idx < n * n { c4_table = append(c4_table, 0); idx = idx + 1 }
+
+    var rowsuf4: list<int> = []
+    idx = 0
+    while idx < n { rowsuf4 = append(rowsuf4, 0); idx = idx + 1 }
+
+    a = 0
+    while a < n {
+      // Add row p=a from g4
+      var q = 0
+      while q < n {
+        rowsuf4[q] = rowsuf4[q] + g4[a * n + q]
+        q = q + 1
+      }
+      // Compute suffix sums for c4_table[a][c] (here c represents 'c' in c4)
+      var suf = 0
+      q = n - 1
+      while q >= 0 {
+        suf = suf + rowsuf4[q]
+        c4_table[a * n + q] = suf
+        q = q - 1
+      }
+      a = a + 1
+    }
+
+    // Now iterate over all elementary triangles (a,b,c) with 0<=a<b<c<=n-1
+    // F(a,b,c) = cnt(a,b) + cnt(b,c) + cnt_wrap(c,a)
+    // cnt_wrap(c,a) = cnt(0,a) + cnt(c,n-1) + C3(a,c) + C4(a,c)
+    // Maximize (numTri - F)
+
+    var best = 0
+    a = 0
+    while a < n - 2 {
+      var b = a + 1
+      while b < n - 1 {
+        let cab = cnt_table[a * n + b]
+        var c = b + 1
+        while c < n {
+          let cbc = cnt_table[b * n + c]
+          let coa = cnt_table[0 * n + a]
+          let ccn = cnt_table[c * n + (n - 1)]
+          let c3 = c3_table[a * n + c]
+          let c4 = c4_table[a * n + c]
+          let cwrap = coa + ccn + c3 + c4
+          let F = cab + cbc + cwrap
+          let score = numTri - F
+          if score > best { best = score }
+          c = c + 1
+        }
+        b = b + 1
+      }
+      a = a + 1
+    }
+
+    print(best)
+    tc = tc + 1
+  }
+}
+
+main()

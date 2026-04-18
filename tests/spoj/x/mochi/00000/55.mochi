@@ -1,0 +1,129 @@
+// Solution for SPOJ JASIEK - Jasiek
+// https://www.spoj.com/problems/JASIEK/
+// Count the number of ways to tile an m x n grid with 1x2 dominoes.
+// Uses profile (bitmask) DP: process column by column.
+// State = bitmask of which rows in the NEXT column are pre-occupied
+//         by horizontal dominoes placed in the current column.
+// Since Mochi has no bitwise operators, we use pow2 table and division/mod.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// hasBit: check if bit 'row' is set in mask (using pow2 table)
+fun hasBit(mask: int, row: int, pow2: list<int>): int {
+  if int(mask / pow2[row]) % 2 == 1 { return 1 }
+  return 0
+}
+
+// fill(m, row, curMask, outMask, pow2): returns list of valid outMasks
+// curMask: rows in current column already filled
+// outMask: rows in next column pre-filled by horizontal dominoes
+fun fill(m: int, row: int, curMask: int, outMask: int, pow2: list<int>): list<int> {
+  if row == m {
+    var res: list<int> = []
+    res = append(res, outMask)
+    return res
+  }
+  if hasBit(curMask, row, pow2) == 1 {
+    // Row already filled, move to next
+    return fill(m, row + 1, curMask, outMask, pow2)
+  }
+  // Option 1: place horizontal domino extending into next column
+  let p = pow2[row]
+  var res1 = fill(m, row + 1, curMask + p, outMask + p, pow2)
+  // Option 2: place vertical domino (need row+1 also free)
+  var res2: list<int> = []
+  if row + 1 < m {
+    if hasBit(curMask, row + 1, pow2) == 0 {
+      let p2 = pow2[row + 1]
+      res2 = fill(m, row + 2, curMask + p + p2, outMask, pow2)
+    }
+  }
+  // Combine
+  var combined: list<int> = []
+  var i = 0
+  while i < len(res1) { combined = append(combined, res1[i]); i = i + 1 }
+  i = 0
+  while i < len(res2) { combined = append(combined, res2[i]); i = i + 1 }
+  return combined
+}
+
+fun solve(m: int, n: int): int {
+  if (m * n) % 2 == 1 { return 0 }
+  // Use smaller dimension as rows for efficiency
+  var rows = m
+  var cols = n
+  if m > n { rows = n; cols = m }
+
+  // Precompute powers of 2
+  var pow2: list<int> = []
+  var v = 1
+  var k = 0
+  while k <= rows { pow2 = append(pow2, v); v = v * 2; k = k + 1 }
+
+  let states = pow2[rows]
+  // dp[mask] = number of tilings where 'mask' rows in current column are pre-filled
+  var dp: list<int> = []
+  var i = 0
+  while i < states { dp = append(dp, 0); i = i + 1 }
+  dp[0] = 1
+
+  var col = 0
+  while col < cols {
+    var newdp: list<int> = []
+    i = 0
+    while i < states { newdp = append(newdp, 0); i = i + 1 }
+
+    var inMask = 0
+    while inMask < states {
+      if dp[inMask] != 0 {
+        let ways = dp[inMask]
+        let transitions = fill(rows, 0, inMask, 0, pow2)
+        var ti = 0
+        while ti < len(transitions) {
+          let outMask = transitions[ti]
+          if col == cols - 1 {
+            if outMask == 0 {
+              newdp[0] = newdp[0] + ways
+            }
+          } else {
+            newdp[outMask] = newdp[outMask] + ways
+          }
+          ti = ti + 1
+        }
+      }
+      inMask = inMask + 1
+    }
+    dp = newdp
+    col = col + 1
+  }
+  return dp[0]
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let parts = split(line)
+    if len(parts) >= 2 {
+      let m = int(parts[0])
+      let n = int(parts[1])
+      print(solve(m, n))
+    }
+    line = input()
+  }
+}
+
+main()

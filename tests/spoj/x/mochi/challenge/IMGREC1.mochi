@@ -1,0 +1,142 @@
+// Solution for SPOJ IMGREC1 - Image Recognition 1
+// https://www.spoj.com/problems/IMGREC1/
+// Distinguish dagger ('x') from zero ('0') in bicoloured images.
+// Algorithm: BFS flood fill from all edge '.' cells.
+// If any '.' cell is unreachable from edge = interior hole = zero ('0').
+// Otherwise = dagger ('x').
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun classify(rows: int, cols: int, grid: list<string>): string {
+  // visited: flat list of ints (0 = unvisited, 1 = visited)
+  var visited: list<int> = []
+  var i = 0
+  while i < rows * cols {
+    visited = append(visited, 0)
+    i = i + 1
+  }
+
+  // BFS queue: flat list of ints, each entry = row*cols + col
+  var queue: list<int> = []
+  var qi = 0  // front pointer
+
+  // Seed: all edge cells that are '.'
+  var r = 0
+  while r < rows {
+    var c = 0
+    while c < cols {
+      let isEdge = (r == 0 || r == rows - 1 || c == 0 || c == cols - 1)
+      if isEdge {
+        let idx = r * cols + c
+        if grid[idx] == "." && visited[idx] == 0 {
+          visited[idx] = 1
+          queue = append(queue, idx)
+        }
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+
+  // BFS
+  var dr: list<int> = [-1, 1, 0, 0]
+  var dc: list<int> = [0, 0, -1, 1]
+  while qi < len(queue) {
+    let cur = queue[qi]
+    qi = qi + 1
+    let cr = cur / cols
+    let cc = cur - cr * cols
+    var d = 0
+    while d < 4 {
+      let nr = cr + dr[d]
+      let nc = cc + dc[d]
+      if nr >= 0 && nr < rows && nc >= 0 && nc < cols {
+        let nidx = nr * cols + nc
+        if grid[nidx] == "." && visited[nidx] == 0 {
+          visited[nidx] = 1
+          queue = append(queue, nidx)
+        }
+      }
+      d = d + 1
+    }
+  }
+
+  // Check for unvisited '.' cells (interior holes)
+  var holes = 0
+  i = 0
+  while i < rows * cols {
+    if grid[i] == "." && visited[i] == 0 {
+      holes = holes + 1
+    }
+    i = i + 1
+  }
+
+  if holes > 0 {
+    return "0"
+  } else {
+    return "x"
+  }
+}
+
+fun skipBlank() {
+  // read and discard blank lines
+}
+
+fun readNonBlank(): string {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return line
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    let nLine = readNonBlank()
+    let n = int(nLine)
+    var result = ""
+    var pi = 0
+    while pi < n {
+      let hwLine = readNonBlank()
+      let hw = split(hwLine)
+      let rows = int(hw[0])
+      let cols = int(hw[1])
+      // Read grid as flat list of single chars
+      var grid: list<string> = []
+      var r = 0
+      while r < rows {
+        let rowStr = input()
+        var c = 0
+        while c < cols {
+          grid = append(grid, rowStr[c:c+1])
+          c = c + 1
+        }
+        r = r + 1
+      }
+      result = result + classify(rows, cols, grid)
+      pi = pi + 1
+    }
+    print(result)
+    ti = ti + 1
+  }
+}
+
+main()

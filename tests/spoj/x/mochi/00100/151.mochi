@@ -1,0 +1,190 @@
+// Solution for SPOJ COURIER - The Courier
+// https://www.spoj.com/problems/COURIER/
+// Floyd-Warshall for all-pairs shortest paths, then bitmask TSP.
+// Each parcel: pick up at src, deliver at dst (capacity 1).
+// dp[mask][last] = min cost to deliver exactly the parcels in mask,
+// last delivered parcel is 'last' (currently at deliver[last]).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    var hLine = input()
+    while hLine == "" { hLine = input() }
+    let hp = split(hLine)
+    let n = int(hp[0])
+    let m = int(hp[1])
+    let home = int(hp[2]) - 1  // 0-indexed
+
+    let INF = 1000000000
+
+    // Distance matrix (n x n), initialized to INF
+    var dist: list<int> = []
+    var ii = 0
+    while ii < n * n {
+      dist = append(dist, INF)
+      ii = ii + 1
+    }
+    // Diagonal = 0
+    ii = 0
+    while ii < n {
+      dist[ii * n + ii] = 0
+      ii = ii + 1
+    }
+
+    // Read roads
+    var mi = 0
+    while mi < m {
+      var eLine = input()
+      while eLine == "" { eLine = input() }
+      let ep = split(eLine)
+      let u = int(ep[0]) - 1
+      let v = int(ep[1]) - 1
+      let d = int(ep[2])
+      if d < dist[u * n + v] { dist[u * n + v] = d }
+      if d < dist[v * n + u] { dist[v * n + u] = d }
+      mi = mi + 1
+    }
+
+    // Floyd-Warshall
+    var k = 0
+    while k < n {
+      var i = 0
+      while i < n {
+        if dist[i * n + k] < INF {
+          var j = 0
+          while j < n {
+            if dist[k * n + j] < INF {
+              let nd = dist[i * n + k] + dist[k * n + j]
+              if nd < dist[i * n + j] { dist[i * n + j] = nd }
+            }
+            j = j + 1
+          }
+        }
+        i = i + 1
+      }
+      k = k + 1
+    }
+
+    // Read orders and expand to individual parcels
+    var zLine = input()
+    while zLine == "" { zLine = input() }
+    let z = int(zLine)
+
+    var pickups: list<int> = []
+    var delivers: list<int> = []
+
+    var zi = 0
+    while zi < z {
+      var oLine = input()
+      while oLine == "" { oLine = input() }
+      let op = split(oLine)
+      let pu = int(op[0]) - 1
+      let pv = int(op[1]) - 1
+      let pb = int(op[2])
+      var bi = 0
+      while bi < pb {
+        pickups = append(pickups, pu)
+        delivers = append(delivers, pv)
+        bi = bi + 1
+      }
+      zi = zi + 1
+    }
+
+    let P = len(pickups)
+    let fullMask = (1 << P) - 1
+
+    // dp[mask * P + last] = min cost
+    var dp: list<int> = []
+    ii = 0
+    while ii < (fullMask + 1) * P {
+      dp = append(dp, INF)
+      ii = ii + 1
+    }
+
+    // Initialize: deliver parcel i first (start from home)
+    ii = 0
+    while ii < P {
+      let pu = pickups[ii]
+      let pv = delivers[ii]
+      let d1 = dist[home * n + pu]
+      let d2 = dist[pu * n + pv]
+      if d1 < INF && d2 < INF {
+        dp[(1 << ii) * P + ii] = d1 + d2
+      }
+      ii = ii + 1
+    }
+
+    // Process masks in increasing order of set bits
+    var mask = 1
+    while mask <= fullMask {
+      var last = 0
+      while last < P {
+        if mask & (1 << last) != 0 {
+          let cur = dp[mask * P + last]
+          if cur < INF {
+            let loc = delivers[last]
+            // Try delivering next parcel
+            var next = 0
+            while next < P {
+              if mask & (1 << next) == 0 {
+                let pu = pickups[next]
+                let pv = delivers[next]
+                let d1 = dist[loc * n + pu]
+                let d2 = dist[pu * n + pv]
+                if d1 < INF && d2 < INF {
+                  let nmask = mask | (1 << next)
+                  let ncost = cur + d1 + d2
+                  if ncost < dp[nmask * P + next] {
+                    dp[nmask * P + next] = ncost
+                  }
+                }
+              }
+              next = next + 1
+            }
+          }
+        }
+        last = last + 1
+      }
+      mask = mask + 1
+    }
+
+    // Find answer: min over last parcel + return home
+    var ans = INF
+    var last = 0
+    while last < P {
+      let cur = dp[fullMask * P + last]
+      if cur < INF {
+        let dHome = dist[delivers[last] * n + home]
+        if dHome < INF {
+          let total = cur + dHome
+          if total < ans { ans = total }
+        }
+      }
+      last = last + 1
+    }
+
+    print(ans)
+    tc = tc + 1
+  }
+}
+
+main()

@@ -1,0 +1,35 @@
+// Solution for SPOJ Sorting is easy (SORTING)
+// https://www.spoj.com/problems/SORTING/
+// Count frequency of each uppercase letter, output in non-descending order.
+
+fun main() {
+  let line = input()
+  var freq: list<int> = []
+  var i = 0
+  while i < 26 { freq = append(freq, 0); i = i + 1 }
+  i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    var c = 0
+    while c < 26 {
+      if ch == "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[c:c+1] {
+        freq[c] = freq[c] + 1
+      }
+      c = c + 1
+    }
+    i = i + 1
+  }
+  var out = ""
+  var c = 0
+  while c < 26 {
+    var k = 0
+    while k < freq[c] {
+      out = out + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[c:c+1]
+      k = k + 1
+    }
+    c = c + 1
+  }
+  print(out)
+}
+
+main()

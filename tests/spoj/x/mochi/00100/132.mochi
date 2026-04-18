@@ -1,0 +1,91 @@
+// Solution for SPOJ HELPR2D2 - Help R2-D2!
+// https://www.spoj.com/problems/HELPR2D2/
+// Simulate first-fit bin packing: place each container in the lowest-indexed
+// starship that can contain it. Process blocks in bulk.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var kLine = input()
+    while kLine == "" { kLine = input() }
+    let K = int(kLine)
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    // rem[i] = remaining space in ship i; grow dynamically
+    var rem: list<int> = []
+
+    var ci = 0
+    while ci < n {
+      var line = input()
+      while line == "" { line = input() }
+
+      var r = 1
+      var v = 0
+      if line[0:1] == "b" {
+        let parts = split(line[2:len(line)])
+        r = int(parts[0])
+        v = int(parts[1])
+        ci = ci + r
+      } else {
+        v = int(line)
+        ci = ci + 1
+      }
+
+      // Process r containers of size v
+      var remaining = r
+      while remaining > 0 {
+        // Find min-index ship with space >= v
+        var shipIdx = -1
+        var si = 0
+        while si < len(rem) {
+          if rem[si] >= v { shipIdx = si; break }
+          si = si + 1
+        }
+        if shipIdx < 0 {
+          // Open a new ship
+          rem = append(rem, K)
+          shipIdx = len(rem) - 1
+        }
+        // How many containers of size v fit in this ship?
+        let fits = int(rem[shipIdx] / v)
+        let use = if fits < remaining { fits } else { remaining }
+        rem[shipIdx] = rem[shipIdx] - use * v
+        remaining = remaining - use
+      }
+    }
+
+    // Compute waste
+    var total_waste = 0
+    var i = 0
+    while i < len(rem) {
+      total_waste = total_waste + rem[i]
+      i = i + 1
+    }
+
+    print(str(len(rem)) + " " + str(total_waste))
+    ti = ti + 1
+  }
+}
+
+main()

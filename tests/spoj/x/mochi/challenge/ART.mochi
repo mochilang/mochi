@@ -1,0 +1,69 @@
+// ART - Artisticity
+// Place each theme in the painting stacked vertically (original orientation).
+// Painting: height=sum(ni), width=max(mi).
+// Each theme occupies rows [offset, offset+ni) at columns [0, mi), rest padded with 'a'.
+// This satisfies p*q <= Xi*Xi*k (since sum(ni)<=k*Xi and max(mi)<=Xi).
+
+fun splitLine(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let t = int(input())
+  var tc = 0
+  while tc < t {
+    let k = int(input())
+    // Read all themes: store rows as list<string>, widths and heights
+    var allRows: list<string> = []
+    var heights: list<int> = []
+    var widths: list<int> = []
+    var totalH = 0
+    var maxW = 0
+    var ti = 0
+    while ti < k {
+      let hw = splitLine(input())
+      let ni = int(hw[0])
+      let mi = int(hw[1])
+      heights = append(heights, ni)
+      widths = append(widths, mi)
+      totalH = totalH + ni
+      if mi > maxW { maxW = mi }
+      var ri = 0
+      while ri < ni {
+        allRows = append(allRows, input())
+        ri = ri + 1
+      }
+      ti = ti + 1
+    }
+    // Build painting: totalH rows, each padded to maxW
+    print(str(totalH) + " " + str(maxW))
+    var row = 0
+    while row < len(allRows) {
+      let r = allRows[row]
+      var line = r
+      var pad = len(r)
+      while pad < maxW {
+        line = line + "a"
+        pad = pad + 1
+      }
+      print(line)
+      row = row + 1
+    }
+    tc = tc + 1
+  }
+}
+
+main()

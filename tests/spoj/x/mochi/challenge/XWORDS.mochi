@@ -1,0 +1,230 @@
+// Solution for SPOJ XWORDS - Crossword Maker
+// https://www.spoj.com/problems/XWORDS/
+// Fill a 16×32 grid with words from a given list (horizontal or vertical), fully connected.
+// Grid chars: A-Z letters, '*' for flipper cells, '_' for empty.
+// Score = total letters placed. Maximize coverage.
+// Strategy: greedy placement starting with the longest word horizontally, then intersect
+// remaining words wherever a shared letter already exists in the grid.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Read grid cell at (r,c)
+fun getCell(grid: list<string>, r: int, c: int): string {
+  return grid[r][c:c+1]
+}
+
+// Set grid cell at (r,c) to ch
+fun setCell(grid: list<string>, r: int, c: int, ch: string): list<string> {
+  let row = grid[r]
+  grid[r] = row[0:c] + ch + row[c+1:len(row)]
+  return grid
+}
+
+// Check if word can be placed horizontally at (r,c): no conflicts, fits in grid
+fun canPlaceH(grid: list<string>, word: string, r: int, c: int): int {
+  let wlen = len(word)
+  if c + wlen > 32 { return 0 }
+  // Must not extend existing words: cell before and after must be empty or border
+  if c > 0 {
+    let pre = getCell(grid, r, c - 1)
+    if pre != "_" && pre != "*" { return 0 }
+  }
+  if c + wlen < 32 {
+    let post = getCell(grid, r, c + wlen)
+    if post != "_" && post != "*" { return 0 }
+  }
+  var i = 0
+  while i < wlen {
+    let cell = getCell(grid, r, c + i)
+    if cell != "_" && cell != "*" && cell != word[i:i+1] { return 0 }
+    i = i + 1
+  }
+  return 1
+}
+
+// Check if word can be placed vertically at (r,c): no conflicts, fits in grid
+fun canPlaceV(grid: list<string>, word: string, r: int, c: int): int {
+  let wlen = len(word)
+  if r + wlen > 16 { return 0 }
+  if r > 0 {
+    let pre = getCell(grid, r - 1, c)
+    if pre != "_" && pre != "*" { return 0 }
+  }
+  if r + wlen < 16 {
+    let post = getCell(grid, r + wlen, c)
+    if post != "_" && post != "*" { return 0 }
+  }
+  var i = 0
+  while i < wlen {
+    let cell = getCell(grid, r + i, c)
+    if cell != "_" && cell != "*" && cell != word[i:i+1] { return 0 }
+    i = i + 1
+  }
+  return 1
+}
+
+// Place word horizontally at (r,c)
+fun placeH(grid: list<string>, word: string, r: int, c: int): list<string> {
+  var i = 0
+  while i < len(word) {
+    grid = setCell(grid, r, c + i, word[i:i+1])
+    i = i + 1
+  }
+  return grid
+}
+
+// Place word vertically at (r,c)
+fun placeV(grid: list<string>, word: string, r: int, c: int): list<string> {
+  var i = 0
+  while i < len(word) {
+    grid = setCell(grid, r + i, c, word[i:i+1])
+    i = i + 1
+  }
+  return grid
+}
+
+// Try to intersect word with already-placed letters in the grid.
+// Returns 1 if placed, 0 otherwise. grid is modified in place via return.
+fun tryPlace(grid: list<string>, word: string, placed: list<int>, idx: int): list<string> {
+  let wlen = len(word)
+  // For each letter in word, try to find a matching cell in the grid and cross it
+  var wi = 0
+  while wi < wlen {
+    let ch = word[wi:wi+1]
+    // Scan grid for this letter
+    var gr = 0
+    while gr < 16 {
+      var gc = 0
+      while gc < 32 {
+        if getCell(grid, gr, gc) == ch {
+          // Try horizontal: word[wi] at (gr, gc) => start at (gr, gc-wi)
+          let hc = gc - wi
+          if hc >= 0 {
+            if canPlaceH(grid, word, gr, hc) == 1 {
+              // Check it actually crosses something (not free-floating)
+              // Since ch already exists at (gr,gc), this crosses the grid
+              grid = placeH(grid, word, gr, hc)
+              placed[idx] = 1
+              return grid
+            }
+          }
+          // Try vertical: word[wi] at (gr, gc) => start at (gr-wi, gc)
+          let vr = gr - wi
+          if vr >= 0 {
+            if canPlaceV(grid, word, vr, gc) == 1 {
+              grid = placeV(grid, word, vr, gc)
+              placed[idx] = 1
+              return grid
+            }
+          }
+        }
+        gc = gc + 1
+      }
+      gr = gr + 1
+    }
+    wi = wi + 1
+  }
+  return grid
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 1
+  while tc <= T {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let numWords = int(nLine)
+    var words: list<string> = []
+    var i = 0
+    while i < numWords {
+      var w = input()
+      while w == "" { w = input() }
+      words = append(words, w)
+      i = i + 1
+    }
+
+    // Sort words by length descending (selection sort)
+    var order: list<int> = []
+    i = 0
+    while i < numWords { order = append(order, i); i = i + 1 }
+    i = 0
+    while i < numWords {
+      var bestJ = i
+      var j = i + 1
+      while j < numWords {
+        if len(words[order[j]]) > len(words[order[bestJ]]) { bestJ = j }
+        j = j + 1
+      }
+      let tmp = order[i]
+      order[i] = order[bestJ]
+      order[bestJ] = tmp
+      i = i + 1
+    }
+
+    // Initialize grid: 16 rows of 32 underscores
+    var grid: list<string> = []
+    i = 0
+    while i < 16 {
+      grid = append(grid, "________________________________")
+      i = i + 1
+    }
+
+    // Track which words were placed
+    var placed: list<int> = []
+    i = 0
+    while i < numWords { placed = append(placed, 0); i = i + 1 }
+
+    // Place first (longest) word horizontally at row 7, col 0 (middle row)
+    let first = order[0]
+    let firstWord = words[first]
+    let firstLen = len(firstWord)
+    var startCol = 0
+    if firstLen < 32 { startCol = int((32 - firstLen) / 2) }
+    if startCol + firstLen <= 32 {
+      grid = placeH(grid, firstWord, 7, startCol)
+      placed[first] = 1
+    }
+
+    // Try to place remaining words by intersection
+    var pass = 0
+    while pass < 3 {
+      i = 1
+      while i < numWords {
+        let wi = order[i]
+        if placed[wi] == 0 {
+          grid = tryPlace(grid, words[wi], placed, wi)
+        }
+        i = i + 1
+      }
+      pass = pass + 1
+    }
+
+    // Output
+    print("case " + str(tc) + " Y")
+    i = 0
+    while i < 16 {
+      print(grid[i])
+      i = i + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

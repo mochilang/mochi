@@ -1,0 +1,37 @@
+fun startsWith(s: string, p: string): bool {
+  return len(p) <= len(s) && s[:len(p)] == p
+}
+
+fun lcp(strs: list<string>): string {
+  var prefix = strs[0]
+  while true {
+    var ok = true
+    var i = 0
+    while i < len(strs) {
+      if !startsWith(strs[i], prefix) { ok = false }
+      i = i + 1
+    }
+    if ok { return prefix }
+    prefix = prefix[:len(prefix)-1]
+  }
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    let n = int(input())
+    var strs: list<string> = []
+    var i = 0
+    while i < n {
+      strs = append(strs, input())
+      i = i + 1
+    }
+    print("\"" + lcp(strs) + "\"")
+    tc = tc + 1
+  }
+}
+
+main()

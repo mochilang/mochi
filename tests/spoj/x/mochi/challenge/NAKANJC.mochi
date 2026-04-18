@@ -1,0 +1,107 @@
+// Solution for SPOJ NAKANJC - Minimum Knight Moves (Challenge)
+// https://www.spoj.com/problems/NAKANJC/
+// BFS from each of 64 squares to precompute all pairwise min distances.
+// Flat dist[64*64] table, all BFS done inline in main().
+
+let cols = "abcdefgh"
+let rows = "12345678"
+
+fun colIdx(c: string): int {
+  var i = 0
+  while i < 8 {
+    if cols[i:i+1] == c { return i }
+    i = i + 1
+  }
+  return 0
+}
+
+fun rowIdx(c: string): int {
+  var i = 0
+  while i < 8 {
+    if rows[i:i+1] == c { return i }
+    i = i + 1
+  }
+  return 0
+}
+
+fun parsePos(s: string): int {
+  var c = colIdx(s[0:1])
+  var r = rowIdx(s[1:2])
+  var pos = r*8 + c
+  return pos
+}
+
+fun main() {
+  // Initialize 4096-element dist table
+  var dist: list<int> = []
+  var ii = 0
+  while ii < 4096 { dist = append(dist, 0-1); ii = ii + 1 }
+
+  // BFS from each source square
+  var src = 0
+  while src < 64 {
+    // Set dist[src*64 + src] = 0
+    var srcBase = src * 64
+    var selfIdx = srcBase + src
+    dist[selfIdx] = 0
+
+    var q: list<int> = []
+    q = append(q, src)
+    var head = 0
+
+    while head < len(q) {
+      var cur = q[head]
+      head = head + 1
+      var curIdx = srcBase + cur
+      var cr = int(cur / 8)
+      var cc = cur % 8
+      var cd = dist[curIdx]
+
+      // 8 knight moves: dr/dc pairs
+      var mi = 0
+      while mi < 8 {
+        var dr = 0
+        var dc = 0
+        if mi == 0 { dr = 0-2; dc = 0-1 }
+        if mi == 1 { dr = 0-2; dc = 1 }
+        if mi == 2 { dr = 0-1; dc = 0-2 }
+        if mi == 3 { dr = 0-1; dc = 2 }
+        if mi == 4 { dr = 1; dc = 0-2 }
+        if mi == 5 { dr = 1; dc = 2 }
+        if mi == 6 { dr = 2; dc = 0-1 }
+        if mi == 7 { dr = 2; dc = 1 }
+
+        var nr = cr + dr
+        var nc = cc + dc
+        if nr >= 0 && nr < 8 && nc >= 0 && nc < 8 {
+          var nxt = nr*8 + nc
+          var nxtIdx = srcBase + nxt
+          if dist[nxtIdx] == 0-1 {
+            dist[nxtIdx] = cd + 1
+            q = append(q, nxt)
+          }
+        }
+        mi = mi + 1
+      }
+    }
+    src = src + 1
+  }
+
+  // Answer queries
+  let t = int(input())
+  var i = 0
+  while i < t {
+    let line = input()
+    var j = 0
+    while line[j:j+1] != " " { j = j + 1 }
+    let s1 = line[0:j]
+    let s2 = line[j+1:]
+    var p1 = parsePos(s1)
+    var p2 = parsePos(s2)
+    var qIdx = p1*64 + p2
+    print(dist[qIdx])
+    i = i + 1
+  }
+}
+
+main()

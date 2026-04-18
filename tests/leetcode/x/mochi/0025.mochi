@@ -1,0 +1,39 @@
+fun fmtList(arr) {
+  var s = "["
+  var i = 0
+  while i < len(arr) {
+    if i > 0 { s = s + "," }
+    s = s + str(arr[i])
+    i = i + 1
+  }
+  return s + "]"
+}
+fun readIntLine() {
+  var line = input()
+  while line == "" { line = input() }
+  return int(line)
+}
+let t = readIntLine()
+var tc = 0
+while tc < t {
+  let n = readIntLine()
+  var arr = []
+  var i = 0
+  while i < n { arr = append(arr, readIntLine()); i = i + 1 }
+  let k = readIntLine()
+  var start = 0
+  while start + k <= len(arr) {
+    var l = start
+    var r = start + k - 1
+    while l < r {
+      let tmp = arr[l]
+      arr[l] = arr[r]
+      arr[r] = tmp
+      l = l + 1
+      r = r - 1
+    }
+    start = start + k
+  }
+  print(fmtList(arr))
+  tc = tc + 1
+}

@@ -1,0 +1,79 @@
+// Solution for SPOJ Road net (ROADNET)
+// https://www.spoj.com/problems/ROADNET/
+// A and B are neighbours if no C exists with dist[A][B] = dist[A][C] + dist[C][B].
+// Read the distance matrix, check each pair (i,j) i<j.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    // Skip blank lines between test cases
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    // Read distance matrix
+    var dist: list<int> = []
+    var i = 0
+    while i < n {
+      let row = split(input())
+      var j = 0
+      while j < n {
+        dist = append(dist, int(row[j]))
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    // Print separator between test cases
+    if ti > 0 { print("") }
+
+    // Find and print neighbouring pairs
+    i = 0
+    while i < n {
+      var j = i + 1
+      while j < n {
+        let dij = dist[i * n + j]
+        var isNeighbour = 1
+        var k = 0
+        while k < n {
+          if k != i && k != j {
+            if dist[i * n + k] + dist[k * n + j] == dij {
+              isNeighbour = 0
+              break
+            }
+          }
+          k = k + 1
+        }
+        if isNeighbour == 1 {
+          print(str(i + 1) + " " + str(j + 1))
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    ti = ti + 1
+  }
+}
+
+main()

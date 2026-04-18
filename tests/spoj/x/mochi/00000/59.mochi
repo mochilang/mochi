@@ -1,0 +1,244 @@
+// Solution for SPOJ BIA - Bytelandian Information Agency
+// https://www.spoj.com/problems/BIA/
+// Find all critical computers: those whose removal disconnects the server (node 1)
+// from at least one other computer.
+// Uses Cooper et al. dominator tree algorithm for directed graphs.
+// A node v is critical iff it is the immediate dominator of some other node.
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + s[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var ti = 0
+  while ti < 10 {
+    var nmLine = input()
+    while nmLine == "" { nmLine = input() }
+    let nm = split(nmLine)
+    let n = int(nm[0])
+    let m = int(nm[1])
+
+    // Read edges
+    var efrom: list<int> = []
+    var eto: list<int> = []
+    var ei = 0
+    while ei < m {
+      var eLine = input()
+      while eLine == "" { eLine = input() }
+      let ep = split(eLine)
+      efrom = append(efrom, int(ep[0]))
+      eto = append(eto, int(ep[1]))
+      ei = ei + 1
+    }
+
+    // Build successor lists (flat CSR)
+    var succ_count: list<int> = []
+    var vi = 0
+    while vi <= n { succ_count = append(succ_count, 0); vi = vi + 1 }
+    ei = 0
+    while ei < m { succ_count[efrom[ei]] = succ_count[efrom[ei]] + 1; ei = ei + 1 }
+
+    // succ_start[v] = offset for node v in succ_data (1-indexed nodes, size n+2)
+    var succ_start: list<int> = []
+    vi = 0
+    while vi <= n + 1 { succ_start = append(succ_start, 0); vi = vi + 1 }
+    vi = 1
+    while vi <= n { succ_start[vi + 1] = succ_start[vi] + succ_count[vi]; vi = vi + 1 }
+
+    var succ_data: list<int> = []
+    ei = 0
+    while ei < m { succ_data = append(succ_data, 0); ei = ei + 1 }
+    var sfill: list<int> = []
+    vi = 0
+    while vi <= n { sfill = append(sfill, succ_start[vi]); vi = vi + 1 }
+    // sfill[v] starts at succ_start[v] for v=1..n; sfill[0]=succ_start[0]=0 unused
+    // But sfill is 0-indexed, and nodes are 1-indexed. sfill[v] for v in 1..n.
+    // We initialized sfill[vi] = succ_start[vi] for vi=0..n, so sfill[v]=succ_start[v].
+    ei = 0
+    while ei < m {
+      let a = efrom[ei]
+      succ_data[sfill[a]] = eto[ei]
+      sfill[a] = sfill[a] + 1
+      ei = ei + 1
+    }
+
+    // Build predecessor lists (flat CSR)
+    var pred_count: list<int> = []
+    vi = 0
+    while vi <= n { pred_count = append(pred_count, 0); vi = vi + 1 }
+    ei = 0
+    while ei < m { pred_count[eto[ei]] = pred_count[eto[ei]] + 1; ei = ei + 1 }
+
+    var pred_start: list<int> = []
+    vi = 0
+    while vi <= n + 1 { pred_start = append(pred_start, 0); vi = vi + 1 }
+    vi = 1
+    while vi <= n { pred_start[vi + 1] = pred_start[vi] + pred_count[vi]; vi = vi + 1 }
+
+    var pred_data: list<int> = []
+    ei = 0
+    while ei < m { pred_data = append(pred_data, 0); ei = ei + 1 }
+    var pfill: list<int> = []
+    vi = 0
+    while vi <= n { pfill = append(pfill, pred_start[vi]); vi = vi + 1 }
+    ei = 0
+    while ei < m {
+      let b = eto[ei]
+      pred_data[pfill[b]] = efrom[ei]
+      pfill[b] = pfill[b] + 1
+      ei = ei + 1
+    }
+
+    // Iterative DFS to get post-order (and then RPO)
+    // Use preallocated stack arrays of size n+1
+    var stk_node: list<int> = []
+    var stk_idx: list<int> = []
+    vi = 0
+    while vi <= n { stk_node = append(stk_node, 0); stk_idx = append(stk_idx, 0); vi = vi + 1 }
+    var stk_top = 0  // points to last element (1-indexed top: stk_node[stk_top])
+
+    var visited: list<int> = []
+    vi = 0
+    while vi <= n { visited = append(visited, 0); vi = vi + 1 }
+
+    var post_order: list<int> = []
+    var rpo_num: list<int> = []
+    vi = 0
+    while vi <= n { rpo_num = append(rpo_num, -1); vi = vi + 1 }
+
+    // Push node 1
+    stk_top = 1
+    stk_node[1] = 1
+    stk_idx[1] = succ_start[1]
+    visited[1] = 1
+
+    while stk_top > 0 {
+      let v = stk_node[stk_top]
+      let idx = stk_idx[stk_top]
+      let end_idx = succ_start[v] + succ_count[v]
+      if idx >= end_idx {
+        // v is done
+        post_order = append(post_order, v)
+        stk_top = stk_top - 1
+      } else {
+        let child = succ_data[idx]
+        stk_idx[stk_top] = idx + 1
+        if visited[child] == 0 {
+          visited[child] = 1
+          stk_top = stk_top + 1
+          stk_node[stk_top] = child
+          stk_idx[stk_top] = succ_start[child]
+        }
+      }
+    }
+
+    // Build RPO order (reverse of post_order)
+    let po_len = len(post_order)
+    var rpo_order: list<int> = []
+    var rpo_idx = 0
+    while rpo_idx < po_len {
+      let v = post_order[po_len - 1 - rpo_idx]
+      rpo_order = append(rpo_order, v)
+      rpo_num[v] = rpo_idx
+      rpo_idx = rpo_idx + 1
+    }
+
+    // Cooper et al. dominator algorithm
+    var idom: list<int> = []
+    vi = 0
+    while vi <= n { idom = append(idom, 0); vi = vi + 1 }
+    idom[1] = 1  // root idoms itself
+
+    let rpo_len = len(rpo_order)
+    var changed = true
+    while changed {
+      changed = false
+      var ri = 1
+      while ri < rpo_len {
+        let b = rpo_order[ri]
+        // Find first processed predecessor
+        var new_idom = 0
+        var pi = pred_start[b]
+        let pend = pred_start[b] + pred_count[b]
+        while pi < pend {
+          let p = pred_data[pi]
+          if idom[p] != 0 {
+            new_idom = p
+            pi = pend  // break
+          } else {
+            pi = pi + 1
+          }
+        }
+        if new_idom == 0 { ri = ri + 1; continue }
+        // Intersect with all other processed predecessors
+        pi = pred_start[b]
+        while pi < pend {
+          let p = pred_data[pi]
+          if p != new_idom && idom[p] != 0 {
+            // intersect new_idom and p
+            var a = new_idom
+            var bb2 = p
+            while a != bb2 {
+              while rpo_num[a] > rpo_num[bb2] { a = idom[a] }
+              while rpo_num[bb2] > rpo_num[a] { bb2 = idom[bb2] }
+            }
+            new_idom = a
+          }
+          pi = pi + 1
+        }
+        if idom[b] != new_idom {
+          idom[b] = new_idom
+          changed = true
+        }
+        ri = ri + 1
+      }
+    }
+
+    // Find critical nodes: v is critical if idom[w]=v for some w!=v, or v=1
+    var is_crit: list<int> = []
+    vi = 0
+    while vi <= n { is_crit = append(is_crit, 0); vi = vi + 1 }
+    is_crit[1] = 1
+
+    vi = 2
+    while vi <= n {
+      let p = idom[vi]
+      if p != 0 && p != vi { is_crit[p] = 1 }
+      vi = vi + 1
+    }
+
+    // Collect and output
+    var crit: list<int> = []
+    vi = 1
+    while vi <= n {
+      if is_crit[vi] == 1 { crit = append(crit, vi) }
+      vi = vi + 1
+    }
+
+    print(len(crit))
+    var out = ""
+    var ci = 0
+    while ci < len(crit) {
+      if ci > 0 { out = out + " " }
+      out = out + str(crit[ci])
+      ci = ci + 1
+    }
+    print(out)
+
+    ti = ti + 1
+  }
+}
+
+main()

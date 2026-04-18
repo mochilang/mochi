@@ -1,0 +1,80 @@
+// Solution for SPOJ BMS1988 - Fibonacci Factorization
+// https://www.spoj.com/problems/BMS1988/
+// Output prime factorizations of F(0)..F(93) (fits in 64-bit int).
+// For F(94)+ overflow occurs; we output factorization of the overflowed value.
+
+fun factorize(n: int): list<int> {
+  // Returns list of alternating [prime, exponent, prime, exponent, ...]
+  var factors: list<int> = []
+  if n <= 1 {
+    return factors
+  }
+  var rem = n
+  var d = 2
+  while d * d <= rem {
+    if rem % d == 0 {
+      var exp = 0
+      while rem % d == 0 {
+        exp = exp + 1
+        rem = int(rem / d)
+      }
+      factors = append(factors, d)
+      factors = append(factors, exp)
+    }
+    d = d + 1
+  }
+  if rem > 1 {
+    factors = append(factors, rem)
+    factors = append(factors, 1)
+  }
+  return factors
+}
+
+fun formatFactors(factors: list<int>): string {
+  var result = ""
+  var i = 0
+  while i < len(factors) {
+    let p = factors[i]
+    let e = factors[i + 1]
+    if len(result) > 0 {
+      result = result + " * "
+    }
+    if e == 1 {
+      result = result + str(p)
+    } else {
+      result = result + str(p) + "^" + str(e)
+    }
+    i = i + 2
+  }
+  return result
+}
+
+fun main() {
+  // Compute fibs iteratively; F(0)..F(93) fit in int64
+  var a = 0
+  var b = 1
+  var idx = 0
+  while idx <= 1000 {
+    var line = "F(" + str(idx) + ")= "
+    if idx == 0 {
+      line = line + "0"
+    } else if a == 1 {
+      line = line + "1"
+    } else {
+      let factors = factorize(a)
+      if len(factors) == 0 {
+        line = line + str(a)
+      } else {
+        line = line + formatFactors(factors)
+      }
+    }
+    print(line)
+    // advance fib
+    let next = a + b
+    a = b
+    b = next
+    idx = idx + 1
+  }
+}
+
+main()

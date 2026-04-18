@@ -1,0 +1,84 @@
+// Solution for SPOJ JULKA - Julka
+// https://www.spoj.com/problems/JULKA/
+// Klaudia = (n+k)/2, Natalia = (n-k)/2
+
+let digitMap = {
+  "0":0,"1":1,"2":2,"3":3,"4":4,
+  "5":5,"6":6,"7":7,"8":8,"9":9,
+}
+let digitCh = ["0","1","2","3","4","5","6","7","8","9"]
+
+fun addBig(a: string, b: string): string {
+  var i = len(a) - 1
+  var j = len(b) - 1
+  var carry = 0
+  var res = ""
+  while i >= 0 || j >= 0 || carry > 0 {
+    var da = 0
+    if i >= 0 { da = digitMap[a[i:i+1]] as int }
+    var db = 0
+    if j >= 0 { db = digitMap[b[j:j+1]] as int }
+    let total = da + db + carry
+    res = digitCh[total % 10] + res
+    carry = int(total / 10)
+    i = i - 1
+    j = j - 1
+  }
+  if res == "" { return "0" }
+  return res
+}
+
+fun subBig(a: string, b: string): string {
+  // a >= b assumed
+  var i = len(a) - 1
+  var j = len(b) - 1
+  var borrow = 0
+  var res = ""
+  while i >= 0 {
+    var da = digitMap[a[i:i+1]] as int - borrow
+    var db = 0
+    if j >= 0 { db = digitMap[b[j:j+1]] as int }
+    if da < db { da = da + 10; borrow = 1 } else { borrow = 0 }
+    res = digitCh[da - db] + res
+    i = i - 1
+    j = j - 1
+  }
+  // strip leading zeros
+  var k = 0
+  let n = len(res)
+  while k < n - 1 && res[k:k+1] == "0" { k = k + 1 }
+  return res[k:n]
+}
+
+fun divBy2(a: string): string {
+  var res = ""
+  var rem = 0
+  var i = 0
+  let n = len(a)
+  while i < n {
+    let d = digitMap[a[i:i+1]] as int + rem * 10
+    res = res + digitCh[int(d / 2)]
+    rem = d % 2
+    i = i + 1
+  }
+  // strip leading zeros
+  var k = 0
+  let m = len(res)
+  while k < m - 1 && res[k:k+1] == "0" { k = k + 1 }
+  return res[k:m]
+}
+
+fun main() {
+  var n = input()
+  while n != "" {
+    let k = input()
+    if k == "" { break }
+    let sum = addBig(n, k)
+    let diff = subBig(n, k)
+    print(divBy2(sum))
+    print(divBy2(diff))
+    n = input()
+  }
+}
+
+main()

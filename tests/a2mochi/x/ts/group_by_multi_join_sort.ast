@@ -1,0 +1,49 @@
+(program
+  (type Result
+    (field n_nationkey (type int))
+    (field n_name (type string))
+  )
+  (type Nation
+    (field n_nationkey (type int))
+    (field n_name (type string))
+  )
+  (type Customer
+    (field c_custkey (type int))
+    (field c_name (type string))
+    (field c_acctbal (type int))
+    (field c_nationkey (type int))
+    (field c_address (type string))
+    (field c_phone (type string))
+    (field c_comment (type string))
+  )
+  (type Order
+    (field o_orderkey (type int))
+    (field o_custkey (type int))
+    (field o_orderdate (type string))
+  )
+  (type Lineitem
+    (field l_orderkey (type int))
+    (field l_returnflag (type string))
+    (field l_extendedprice (type int))
+    (field l_discount (type int))
+  )
+  (let nation
+    (type list (type Nation))
+  )
+  (let customer
+    (type list (type Customer))
+  )
+  (let orders
+    (type list (type Order))
+  )
+  (let lineitem
+    (type list (type Lineitem))
+  )
+  (let start_date (type string))
+  (let end_date (type string))
+  (let result
+    (type list
+      (type map (type string) (type any))
+    )
+  )
+)

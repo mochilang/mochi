@@ -1,0 +1,48 @@
+// SPOJ CDGLF2 - AAP Volunteers
+// 0/1 knapsack: capacity W, each site i has weight 2*D[i] and value V[i].
+
+fun split(s: string): list<string> {
+  var r: list<string> = []
+  var c = ""
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == " " {
+      if len(c) > 0 { r = append(r, c); c = "" }
+    } else { c = c + s[i:i+1] }
+    i = i + 1
+  }
+  if len(c) > 0 { r = append(r, c) }
+  return r
+}
+
+fun main() {
+  let t = int(input())
+  var tc = 0
+  while tc < t {
+    let p = split(input())
+    let n = int(p[0])
+    let W = int(p[1])
+    let ds = split(input())
+    let vs = split(input())
+    var dp: list<int> = []
+    var i = 0
+    while i <= W { dp = append(dp, 0); i = i + 1 }
+    i = 0
+    while i < n {
+      let w = 2 * int(ds[i])
+      let v = int(vs[i])
+      if w <= W {
+        var j = W
+        while j >= w {
+          if dp[j-w] + v > dp[j] { dp[j] = dp[j-w] + v }
+          j = j - 1
+        }
+      }
+      i = i + 1
+    }
+    print(dp[W])
+    tc = tc + 1
+  }
+}
+
+main()

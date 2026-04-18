@@ -1,0 +1,37 @@
+fun containsChar(s: string, ch: string): bool {
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == ch { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun longest(s: string): int {
+  var best = 0
+  var i = 0
+  while i < len(s) {
+    var seen = ""
+    var j = i
+    while j < len(s) && containsChar(seen, s[j:j+1]) == false {
+      seen = seen + s[j:j+1]
+      if len(seen) > best { best = len(seen) }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return best
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var i = 0
+  while i < t {
+    print(longest(input()))
+    i = i + 1
+  }
+}
+
+main()

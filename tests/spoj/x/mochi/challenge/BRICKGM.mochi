@@ -1,0 +1,33 @@
+// Solution for SPOJ BRICKGM - Colour Brick Game (Challenge)
+// https://www.spoj.com/problems/BRICKGM/
+// Baseline strategy: always place in column 5, no rotation.
+// Column 5 is near the middle of the 10-wide board.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let firstline = split(input())
+  let n = int(firstline[0])
+  var ni = 0
+  while ni < n {
+    let brick = input()
+    print("5 0")
+    ni = ni + 1
+  }
+}
+
+main()

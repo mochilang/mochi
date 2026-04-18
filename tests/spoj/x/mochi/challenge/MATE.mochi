@@ -1,0 +1,103 @@
+// Solution for SPOJ MATE - Materializer
+// https://www.spoj.com/problems/MATE/
+// Fill all required '#' cubes in a c x b x a grid.
+// Strategy: fill the entire cuboid using a serpentine traversal of each layer.
+// All cubes on layer 1 are freely fillable; on higher layers, the cube below
+// is already filled so stability is always satisfied.
+// This may fill extra cubes (scaffolding), but that is allowed.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let t = int(input())
+  var tc = 0
+  while tc < t {
+    let dims = split(input())
+    let c = int(dims[0])
+    let b = int(dims[1])
+    let a = int(dims[2])
+    // k = int(dims[3]) - not needed for full-fill strategy
+
+    // Read and discard the grid input (a layers, each b rows)
+    var li = 0
+    while li < a {
+      var ri = 0
+      while ri < b {
+        input()
+        ri = ri + 1
+      }
+      li = li + 1
+    }
+
+    // Emit serpentine fill for the entire cuboid.
+    // Extruder starts at layer 1, row 1, col 1 (1-indexed).
+    // curRow, curCol track current position (1-indexed).
+    var curRow = 1
+    var curCol = 1
+
+    var layer = 1
+    while layer <= a {
+      if layer > 1 {
+        print("N")
+      }
+
+      // Serpentine: even rows (0-indexed) go left-to-right, odd rows go right-to-left
+      var row = 1
+      while row <= b {
+        // Move to this row from previous row
+        if row > 1 {
+          print("M 0 1")
+          curRow = curRow + 1
+        }
+
+        // Determine direction for this row
+        // Row 1 (0-indexed: row-1=0, even): left-to-right
+        // Row 2 (0-indexed: 1, odd): right-to-left
+        var goRight = 1
+        if (row - 1) % 2 != 0 { goRight = 0 }
+
+        // Fill the row
+        var col = 1
+        while col <= c {
+          print("E")
+          if goRight == 1 {
+            if col < c {
+              print("M 1 0")
+              curCol = curCol + 1
+            }
+          } else {
+            if col < c {
+              print("M -1 0")
+              curCol = curCol - 1
+            }
+          }
+          col = col + 1
+        }
+
+        row = row + 1
+      }
+
+      layer = layer + 1
+    }
+
+    print("C")
+
+    tc = tc + 1
+  }
+}
+
+main()

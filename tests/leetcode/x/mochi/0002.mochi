@@ -1,0 +1,56 @@
+fun addLists(a: list<int>, b: list<int>): list<int> {
+  var i = 0
+  var j = 0
+  var carry = 0
+  var out: list<int> = []
+  while i < len(a) || j < len(b) || carry > 0 {
+    var sum = carry
+    if i < len(a) { sum = sum + a[i]; i = i + 1 }
+    if j < len(b) { sum = sum + b[j]; j = j + 1 }
+    out = append(out, sum % 10)
+    carry = int(sum / 10)
+  }
+  return out
+}
+
+fun fmt(a: list<int>): string {
+  var s = "["
+  var i = 0
+  while i < len(a) {
+    if i > 0 { s = s + "," }
+    s = s + str(a[i])
+    i = i + 1
+  }
+  return s + "]"
+}
+
+fun readList(n: int): list<int> {
+  var out: list<int> = []
+  var i = 0
+  while i < n {
+    out = append(out, int(input()))
+    i = i + 1
+  }
+  return out
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    let a = readList(n)
+    var mLine = input()
+    while mLine == "" { mLine = input() }
+    let m = int(mLine)
+    let b = readList(m)
+    print(fmt(addLists(a, b)))
+    tc = tc + 1
+  }
+}
+
+main()

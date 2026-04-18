@@ -1,0 +1,139 @@
+// Solution for SPOJ HIGH - Highways
+// https://www.spoj.com/problems/HIGH/
+// Count spanning trees using Kirchhoff's Matrix Tree theorem.
+// Build Laplacian matrix, remove one row/col, compute determinant via Bareiss algorithm.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Bareiss integer determinant of an (n x n) matrix stored as flat list (row-major)
+fun bareissDet(mat: list<int>, n: int): int {
+  // Work on a copy
+  var M: list<int> = []
+  var idx = 0
+  while idx < n * n {
+    M = append(M, mat[idx])
+    idx = idx + 1
+  }
+  var sign = 1
+  var prev = 1
+  var col = 0
+  while col < n {
+    // Find pivot row at or below 'col'
+    var pivotRow = 0-1
+    var r = col
+    while r < n {
+      if M[r * n + col] != 0 { pivotRow = r; r = n }
+      r = r + 1
+    }
+    if pivotRow < 0 { return 0 }
+    if pivotRow != col {
+      // Swap rows col and pivotRow
+      var c = 0
+      while c < n {
+        let tmp = M[col * n + c]
+        M[col * n + c] = M[pivotRow * n + c]
+        M[pivotRow * n + c] = tmp
+        c = c + 1
+      }
+      sign = 0 - sign
+    }
+    // Eliminate below
+    var row = col + 1
+    while row < n {
+      var c = col + 1
+      while c < n {
+        let val = M[col * n + col] * M[row * n + c] - M[row * n + col] * M[col * n + c]
+        M[row * n + c] = int(val / prev)
+        c = c + 1
+      }
+      M[row * n + col] = 0
+      row = row + 1
+    }
+    prev = M[col * n + col]
+    col = col + 1
+  }
+  return sign * M[(n-1) * n + (n-1)]
+}
+
+fun readNextNonEmpty(): string {
+  var line = input()
+  while line == "" { line = input() }
+  return line
+}
+
+fun main() {
+  let tLine = readNextNonEmpty()
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    // Read n and m (possibly with blank lines separating test cases)
+    let nmLine = readNextNonEmpty()
+    let nm = split(nmLine)
+    let n = int(nm[0])
+    let m = int(nm[1])
+
+    if n == 1 {
+      // Read m edges (none, since 1 city 0 edges)
+      var ei = 0
+      while ei < m {
+        readNextNonEmpty()
+        ei = ei + 1
+      }
+      print("1")
+      ti = ti + 1
+      continue
+    }
+
+    // Build Laplacian (n x n)
+    var L: list<int> = []
+    var idx = 0
+    while idx < n * n { L = append(L, 0); idx = idx + 1 }
+
+    var ei = 0
+    while ei < m {
+      let eLine = readNextNonEmpty()
+      let ep = split(eLine)
+      let a = int(ep[0]) - 1
+      let b = int(ep[1]) - 1
+      L[a * n + a] = L[a * n + a] + 1
+      L[b * n + b] = L[b * n + b] + 1
+      L[a * n + b] = L[a * n + b] - 1
+      L[b * n + a] = L[b * n + a] - 1
+      ei = ei + 1
+    }
+
+    // Remove last row and last column -> (n-1) x (n-1) submatrix
+    let sz = n - 1
+    var sub: list<int> = []
+    var r = 0
+    while r < sz {
+      var c = 0
+      while c < sz {
+        sub = append(sub, L[r * n + c])
+        c = c + 1
+      }
+      r = r + 1
+    }
+
+    let result = bareissDet(sub, sz)
+    print(str(result))
+    ti = ti + 1
+  }
+}
+
+main()

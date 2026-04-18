@@ -1,0 +1,26 @@
+fun isPalindrome(x: int): bool {
+  if x < 0 { return false }
+  let original = x
+  var n = x
+  var rev = 0
+  while n > 0 {
+    rev = rev * 10 + (n % 10)
+    n = int(n / 10)
+  }
+  return rev == original
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var i = 0
+  while i < t {
+    var line = input()
+    while line == "" { line = input() }
+    print(if isPalindrome(int(line)) { "true" } else { "false" })
+    i = i + 1
+  }
+}
+
+main()

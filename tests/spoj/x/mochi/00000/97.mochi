@@ -1,0 +1,71 @@
+// Solution for SPOJ PARTY - Party Schedule
+// https://www.spoj.com/problems/PARTY/
+// 0/1 knapsack: maximize fun within budget B.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let hdr = split(line)
+    let budget = int(hdr[0])
+    let n = int(hdr[1])
+    if budget == 0 && n == 0 { break }
+
+    var costs: list<int> = []
+    var funs: list<int> = []
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let p = split(vLine)
+      costs = append(costs, int(p[0]))
+      funs = append(funs, int(p[1]))
+      i = i + 1
+    }
+
+    // dp[w] = max fun with exactly w cost spent
+    var dp: list<int> = []
+    i = 0
+    while i <= budget { dp = append(dp, 0); i = i + 1 }
+
+    i = 0
+    while i < n {
+      let c = costs[i]
+      let f = funs[i]
+      var w = budget
+      while w >= c {
+        if dp[w-c] + f > dp[w] { dp[w] = dp[w-c] + f }
+        w = w - 1
+      }
+      i = i + 1
+    }
+
+    // find max fun over all budgets
+    var best = 0
+    var bestCost = 0
+    i = 0
+    while i <= budget {
+      if dp[i] > best { best = dp[i]; bestCost = i }
+      i = i + 1
+    }
+    print(str(bestCost) + " " + str(best))
+    line = input()
+  }
+}
+
+main()

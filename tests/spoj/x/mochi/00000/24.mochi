@@ -1,0 +1,51 @@
+// Solution for SPOJ FCTRL2 - Small factorials
+// https://www.spoj.com/problems/FCTRL2/
+
+let digitStr = ["0","1","2","3","4","5","6","7","8","9"]
+
+fun mulBig(digits: list<int>, n: int): list<int> {
+  var carry = 0
+  var i = 0
+  while i < len(digits) {
+    let v = digits[i] * n + carry
+    digits[i] = v % 10
+    carry = int(v / 10)
+    i = i + 1
+  }
+  while carry > 0 {
+    digits = append(digits, carry % 10)
+    carry = int(carry / 10)
+  }
+  return digits
+}
+
+fun factorial(n: int): string {
+  var digits: list<int> = []
+  digits = append(digits, 1)
+  var i = 2
+  while i <= n {
+    digits = mulBig(digits, i)
+    i = i + 1
+  }
+  // Convert to string (digits stored LSB first)
+  var res = ""
+  var j = len(digits) - 1
+  while j >= 0 {
+    res = res + digitStr[digits[j]]
+    j = j - 1
+  }
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  for _ in 0..t {
+    let line = input()
+    let n = int(line)
+    print(factorial(n))
+  }
+}
+
+main()

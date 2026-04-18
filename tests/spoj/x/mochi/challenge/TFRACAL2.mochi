@@ -1,0 +1,272 @@
+// Solution for SPOJ TFRACAL2 - Fractional Calculator 2
+// https://www.spoj.com/problems/TFRACAL2/
+// Evaluate RPN fraction expressions. Variables are defined one per line as:
+//   varname=<rpn_tokens>
+// Tokens: _varname pushes that variable's fraction value; +, *, / are binary ops;
+// bare integers (prefixed with # internally) push an integer literal.
+// Test cases are separated by blank lines.
+// Output all variables per case in lexicographic order: "var = N / D" (reduced).
+
+fun gcd(a: int, b: int): int {
+  if a < 0 { a = 0 - a }
+  if b < 0 { b = 0 - b }
+  while b != 0 {
+    let t = b
+    b = a % b
+    a = t
+  }
+  return a
+}
+
+fun reduceFrac(n: int, d: int): list<int> {
+  if d < 0 { n = 0 - n; d = 0 - d }
+  var r: list<int> = []
+  if n == 0 {
+    r = append(r, 0)
+    r = append(r, 1)
+    return r
+  }
+  let g = gcd(n, d)
+  r = append(r, n / g)
+  r = append(r, d / g)
+  return r
+}
+
+// Tokenize RPN expression. _varname → token "varname". +*/ → themselves.
+// Integer digits → "#N" (literal N as fraction N/1).
+fun tokenizeExpr(expr: string): list<string> {
+  var tokens: list<string> = []
+  var i = 0
+  while i < len(expr) {
+    let ch = expr[i:i+1]
+    if ch == "+" || ch == "*" || ch == "/" {
+      tokens = append(tokens, ch)
+      i = i + 1
+    } else {
+      if ch == "_" {
+        i = i + 1
+        var name = ""
+        var scanning = 1
+        while i < len(expr) && scanning == 1 {
+          let nc = expr[i:i+1]
+          if nc == "+" || nc == "*" || nc == "/" || nc == "_" {
+            scanning = 0
+          } else {
+            name = name + nc
+            i = i + 1
+          }
+        }
+        tokens = append(tokens, name)
+      } else {
+        if ch == "0" || ch == "1" || ch == "2" || ch == "3" || ch == "4" ||
+           ch == "5" || ch == "6" || ch == "7" || ch == "8" || ch == "9" {
+          var num = ""
+          var scanning = 1
+          while i < len(expr) && scanning == 1 {
+            let nc = expr[i:i+1]
+            if nc == "0" || nc == "1" || nc == "2" || nc == "3" || nc == "4" ||
+               nc == "5" || nc == "6" || nc == "7" || nc == "8" || nc == "9" {
+              num = num + nc
+              i = i + 1
+            } else {
+              scanning = 0
+            }
+          }
+          tokens = append(tokens, "#" + num)
+        } else {
+          i = i + 1
+        }
+      }
+    }
+  }
+  return tokens
+}
+
+fun evalExpr(toks: list<string>, varNames: list<string>, varN: list<int>, varD: list<int>): list<int> {
+  var stackN: list<int> = []
+  var stackD: list<int> = []
+
+  var ti = 0
+  while ti < len(toks) {
+    let tok = toks[ti]
+    if tok == "+" || tok == "*" || tok == "/" {
+      let sz = len(stackN)
+      let bN = stackN[sz-1]
+      let bD = stackD[sz-1]
+      let aN = stackN[sz-2]
+      let aD = stackD[sz-2]
+      var newSN: list<int> = []
+      var newSD: list<int> = []
+      var si = 0
+      while si < sz - 2 {
+        newSN = append(newSN, stackN[si])
+        newSD = append(newSD, stackD[si])
+        si = si + 1
+      }
+      var rn = 0
+      var rd = 1
+      if tok == "+" {
+        rn = aN * bD + bN * aD
+        rd = aD * bD
+      } else {
+        if tok == "*" {
+          rn = aN * bN
+          rd = aD * bD
+        } else {
+          rn = aN * bD
+          rd = aD * bN
+        }
+      }
+      let red = reduceFrac(rn, rd)
+      newSN = append(newSN, red[0])
+      newSD = append(newSD, red[1])
+      stackN = newSN
+      stackD = newSD
+    } else {
+      if len(tok) > 0 && tok[0:1] == "#" {
+        stackN = append(stackN, int(tok[1:len(tok)]))
+        stackD = append(stackD, 1)
+      } else {
+        var found = 0
+        var vi = 0
+        while vi < len(varNames) {
+          if varNames[vi] == tok {
+            stackN = append(stackN, varN[vi])
+            stackD = append(stackD, varD[vi])
+            found = 1
+            vi = len(varNames)
+          } else {
+            vi = vi + 1
+          }
+        }
+        if found == 0 {
+          stackN = append(stackN, 0)
+          stackD = append(stackD, 1)
+        }
+      }
+    }
+    ti = ti + 1
+  }
+
+  if len(stackN) == 0 {
+    var r: list<int> = []
+    r = append(r, 0)
+    r = append(r, 1)
+    return r
+  }
+  return reduceFrac(stackN[0], stackD[0])
+}
+
+fun processCase(varNames: list<string>, varExprs: list<string>) {
+  let n = len(varNames)
+  var varN: list<int> = []
+  var varD: list<int> = []
+  var i = 0
+  while i < n { varN = append(varN, 0); varD = append(varD, 1); i = i + 1 }
+
+  // Evaluate from last-defined to first (reverse dependency order)
+  i = n - 1
+  while i >= 0 {
+    let toks = tokenizeExpr(varExprs[i])
+    let res = evalExpr(toks, varNames, varN, varD)
+    varN[i] = res[0]
+    varD[i] = res[1]
+    i = i - 1
+  }
+
+  // Sort by variable name lexicographically
+  var sortIdx: list<int> = []
+  i = 0
+  while i < n { sortIdx = append(sortIdx, i); i = i + 1 }
+  i = 1
+  while i < n {
+    var j = i
+    while j > 0 {
+      let na = varNames[sortIdx[j-1]]
+      let nb = varNames[sortIdx[j]]
+      var cmp = 0
+      var ci = 0
+      while ci < len(na) && ci < len(nb) && cmp == 0 {
+        if na[ci:ci+1] < nb[ci:ci+1] { cmp = 0 - 1 }
+        if na[ci:ci+1] > nb[ci:ci+1] { cmp = 1 }
+        ci = ci + 1
+      }
+      if cmp == 0 {
+        if len(na) < len(nb) { cmp = 0 - 1 }
+        if len(na) > len(nb) { cmp = 1 }
+      }
+      if cmp > 0 {
+        let tmp = sortIdx[j-1]
+        sortIdx[j-1] = sortIdx[j]
+        sortIdx[j] = tmp
+        j = j - 1
+      } else {
+        j = 0
+      }
+    }
+    i = i + 1
+  }
+
+  i = 0
+  while i < n {
+    let idx = sortIdx[i]
+    print(varNames[idx] + " = " + string(varN[idx]) + " / " + string(varD[idx]))
+    i = i + 1
+  }
+}
+
+fun main() {
+  // Read all lines first, then process test cases separated by blank lines
+  var allLines: list<string> = []
+  var line = input()
+  // Keep reading even through blank lines until repeated EOF (empty string after empty string)
+  var emptyCount = 0
+  while emptyCount < 3 {
+    if line == "" {
+      emptyCount = emptyCount + 1
+      allLines = append(allLines, "")
+    } else {
+      emptyCount = 0
+      allLines = append(allLines, line)
+    }
+    line = input()
+  }
+
+  // Process test cases from allLines
+  var varNames: list<string> = []
+  var varExprs: list<string> = []
+  var li = 0
+  while li < len(allLines) {
+    let l = allLines[li]
+    if l == "" {
+      // Blank line: end of current case
+      if len(varNames) > 0 {
+        processCase(varNames, varExprs)
+        varNames = []
+        varExprs = []
+      }
+    } else {
+      // Parse "varname=expr"
+      var eqPos = 0 - 1
+      var j = 0
+      while j < len(l) {
+        if l[j:j+1] == "=" && eqPos == 0 - 1 {
+          eqPos = j
+        }
+        j = j + 1
+      }
+      if eqPos >= 0 {
+        let varName = l[0:eqPos]
+        let expr = l[eqPos+1:len(l)]
+        varNames = append(varNames, varName)
+        varExprs = append(varExprs, expr)
+      }
+    }
+    li = li + 1
+  }
+  if len(varNames) > 0 {
+    processCase(varNames, varExprs)
+  }
+}
+
+main()

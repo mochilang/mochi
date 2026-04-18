@@ -1,0 +1,131 @@
+// SPOJ Voracious Steve (STEVE)
+// Game theory DP: players alternate taking 1..m donuts from a box.
+// The player who empties the box eats their accumulated pile.
+// The loser puts their pile back as the new box and starts next round.
+// Compute Steve's total donuts eaten with optimal play from both sides.
+
+fun get(t: list<int>, i: int): int {
+  if i < 0 { return -999999 }
+  if i >= len(t) { return -999999 }
+  return t[i]
+}
+
+fun maxv(a: int, b: int): int {
+  if a > b { return a }
+  return b
+}
+
+fun minv(a: int, b: int): int {
+  if a < b { return a }
+  return b
+}
+
+fun solve(n: int, m: int): int {
+  // ts[sz*2 + sf] = Steve's total from fresh box of sz donuts, sf=1 means Steve starts
+  // Precompute for sz = 0..n, then return ts[n*2+1]
+  var ts: list<int> = []
+  var i = 0
+  while i < (n+1)*2 { ts = append(ts, 0); i = i + 1 }
+  // ts[0*2+0] = ts[0*2+1] = 0 (empty box, game over)
+
+  var sz = 1
+  while sz <= n {
+    // Compute inner DP for a round of sz donuts.
+    // inner[rem*(sz+1)*2 + dp*2 + is_s] = Steve's future score from this state.
+    // rem in 1..sz, dp in 0..sz-rem, is_s in 0..1
+    let insize = (sz+1)*(sz+1)*2
+    var inner: list<int> = []
+    var j = 0
+    while j < insize { inner = append(inner, 0); j = j + 1 }
+
+    // Fill bottom-up: rem from 1 to sz
+    var rem = 1
+    while rem <= sz {
+      var dp = 0
+      while dp <= sz - rem {
+        let sp = sz - rem - dp
+        // is_steve = 1 (Steve's turn)
+        // Steve maximizes. Try all k in 1..min(m, rem)
+        var best_s = -1
+        var k = 1
+        let kmax_s = minv(m, rem)
+        while k <= kmax_s {
+          var val = 0
+          if k == rem {
+            // Steve empties: Steve eats sp+k = sz-rem-dp+rem = sz-dp
+            // Digit's pile dp goes back, Digit starts next round
+            val = (sz - dp) + ts[dp*2 + 0]
+          } else {
+            // Goes to inner[rem-k][dp][0] (Digit's turn, dp unchanged)
+            val = get(inner, (rem-k)*(sz+1)*2 + dp*2 + 0)
+          }
+          if best_s < 0 { best_s = val }
+          else { best_s = maxv(best_s, val) }
+          k = k + 1
+        }
+        inner[rem*(sz+1)*2 + dp*2 + 1] = best_s
+
+        // is_steve = 0 (Digit's turn)
+        // Digit minimizes Steve's score. Try all k in 1..min(m, rem)
+        var best_d = -1
+        k = 1
+        let kmax_d = minv(m, rem)
+        while k <= kmax_d {
+          var val = 0
+          if k == rem {
+            // Digit empties: Digit eats dp+k
+            // Steve's pile sp goes back, Steve starts next round
+            val = ts[sp*2 + 1]
+          } else {
+            // Goes to inner[rem-k][dp+k][1] (Steve's turn, dp increases by k)
+            val = get(inner, (rem-k)*(sz+1)*2 + (dp+k)*2 + 1)
+          }
+          if best_d < 0 { best_d = val }
+          else { best_d = minv(best_d, val) }
+          k = k + 1
+        }
+        inner[rem*(sz+1)*2 + dp*2 + 0] = best_d
+
+        dp = dp + 1
+      }
+      rem = rem + 1
+    }
+
+    // ts[sz*2 + 1] = inner[sz][0][1] (full round, dp=0, Steve starts)
+    ts[sz*2 + 1] = get(inner, sz*(sz+1)*2 + 0*2 + 1)
+    // ts[sz*2 + 0] = inner[sz][0][0] (full round, dp=0, Digit starts)
+    ts[sz*2 + 0] = get(inner, sz*(sz+1)*2 + 0*2 + 0)
+
+    sz = sz + 1
+  }
+
+  return ts[n*2 + 1]
+}
+
+fun main() {
+  let tLine = input()
+  let t = int(tLine)
+  var i = 0
+  while i < t {
+    let line = input()
+    var nm: list<int> = []
+    var cur = ""
+    var j = 0
+    while j < len(line) {
+      let c = line[j:j+1]
+      if c == " " {
+        if len(cur) > 0 { nm = append(nm, int(cur)); cur = "" }
+      } else {
+        cur = cur + c
+      }
+      j = j + 1
+    }
+    if len(cur) > 0 { nm = append(nm, int(cur)) }
+    let n = nm[0]
+    let m = nm[1]
+    print(str(solve(n, m)))
+    i = i + 1
+  }
+}
+
+main()

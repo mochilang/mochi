@@ -1,0 +1,338 @@
+// COMEXP - Complex expression calculator
+// Shunting-yard + stack evaluation. Values scaled by 100 (2 decimal places).
+
+fun precedence(op: string): int {
+  if op == "+" || op == "-" { return 1 }
+  if op == "*" || op == "/" || op == "%" { return 2 }
+  if op == "^" { return 3 }
+  if op == "neg" { return 4 }
+  return 0
+}
+
+fun tokenize(expr: string): list<string> {
+  var tokens: list<string> = []
+  var i = 0
+  while i < len(expr) {
+    let ch = expr[i:i+1]
+    if ch == " " || ch == "\t" {
+      i = i + 1
+    } else if ch == "+" || ch == "*" || ch == "/" || ch == "%" || ch == "^" || ch == "(" || ch == ")" || ch == "!" {
+      tokens = append(tokens, ch)
+      i = i + 1
+    } else if ch == "-" {
+      tokens = append(tokens, "-")
+      i = i + 1
+    } else if ch >= "0" && ch <= "9" || ch == "." {
+      var num = ""
+      var cont = 1
+      while i < len(expr) && cont == 1 {
+        let c = expr[i:i+1]
+        if c >= "0" && c <= "9" || c == "." {
+          num = num + c
+          i = i + 1
+        } else {
+          cont = 0
+        }
+      }
+      tokens = append(tokens, "N:" + num)
+    } else if i + 4 <= len(expr) && expr[i:i+4] == "sqrt" {
+      tokens = append(tokens, "sqrt")
+      i = i + 4
+    } else if i + 3 <= len(expr) && expr[i:i+3] == "abs" {
+      tokens = append(tokens, "abs")
+      i = i + 3
+    } else if ch >= "a" && ch <= "z" {
+      tokens = append(tokens, "V:" + ch)
+      i = i + 1
+    } else {
+      tokens = append(tokens, "ERR")
+      i = i + 1
+    }
+  }
+  return tokens
+}
+
+fun checkBrackets(tokens: list<string>): int {
+  var depth = 0
+  var i = 0
+  var ok = 1
+  while i < len(tokens) && ok == 1 {
+    let tok = tokens[i]
+    if tok == "(" { depth = depth + 1 }
+    else if tok == ")" {
+      depth = depth - 1
+      if depth < 0 { ok = 0 }
+    }
+    i = i + 1
+  }
+  if depth != 0 { ok = 0 }
+  return ok
+}
+
+fun toPostfix(tokens: list<string>): list<string> {
+  var output: list<string> = []
+  var opstack: list<string> = []
+  var i = 0
+  var prevWasVal = 0
+  var hasErr = 0
+  while i < len(tokens) && hasErr == 0 {
+    let tok = tokens[i]
+    if tok == "ERR" {
+      hasErr = 1
+    } else if len(tok) >= 2 && (tok[0:2] == "N:" || tok[0:2] == "V:") {
+      output = append(output, tok)
+      prevWasVal = 1
+    } else if tok == "abs" || tok == "sqrt" {
+      opstack = append(opstack, tok)
+      prevWasVal = 0
+    } else if tok == "!" {
+      output = append(output, "!")
+      prevWasVal = 1
+    } else if tok == "-" && prevWasVal == 0 {
+      opstack = append(opstack, "neg")
+      prevWasVal = 0
+    } else if tok == "+" || tok == "-" || tok == "*" || tok == "/" || tok == "%" || tok == "^" {
+      let prec = precedence(tok)
+      let rightA = 0
+      var done = 0
+      while len(opstack) > 0 && done == 0 {
+        let top = opstack[len(opstack)-1]
+        if top == "(" || top == "abs" || top == "sqrt" {
+          done = 1
+        } else {
+          let topPrec = precedence(top)
+          if topPrec > prec || (topPrec == prec && rightA == 0) {
+            output = append(output, top)
+            opstack = opstack[0:len(opstack)-1]
+          } else {
+            done = 1
+          }
+        }
+      }
+      opstack = append(opstack, tok)
+      prevWasVal = 0
+    } else if tok == "(" {
+      opstack = append(opstack, "(")
+      prevWasVal = 0
+    } else if tok == ")" {
+      var found = 0
+      while len(opstack) > 0 && found == 0 {
+        let top = opstack[len(opstack)-1]
+        opstack = opstack[0:len(opstack)-1]
+        if top == "(" {
+          found = 1
+        } else {
+          output = append(output, top)
+        }
+      }
+      if found == 0 { hasErr = 1 }
+      if len(opstack) > 0 && hasErr == 0 {
+        let top = opstack[len(opstack)-1]
+        if top == "abs" || top == "sqrt" {
+          opstack = opstack[0:len(opstack)-1]
+          output = append(output, top)
+        }
+      }
+      prevWasVal = 1
+    }
+    i = i + 1
+  }
+  while len(opstack) > 0 && hasErr == 0 {
+    let top = opstack[len(opstack)-1]
+    opstack = opstack[0:len(opstack)-1]
+    if top == "(" { hasErr = 1 }
+    else { output = append(output, top) }
+  }
+  if hasErr == 1 {
+    var err: list<string> = []
+    err = append(err, "ERR")
+    return err
+  }
+  return output
+}
+
+fun parseNum(s: string): int {
+  var dotPos = -1
+  var si = 0
+  while si < len(s) {
+    if s[si:si+1] == "." { dotPos = si }
+    si = si + 1
+  }
+  if dotPos < 0 { return int(s) * 100 }
+  let intPart = s[0:dotPos]
+  let fracStr = s[dotPos+1:]
+  var intVal = 0
+  if len(intPart) > 0 { intVal = int(intPart) }
+  var frac = 0
+  if len(fracStr) >= 1 { frac = frac + int(fracStr[0:1]) * 10 }
+  if len(fracStr) >= 2 { frac = frac + int(fracStr[1:2]) }
+  return intVal * 100 + frac
+}
+
+fun factorial(n: int): int {
+  var r = 1
+  var i = 2
+  while i <= n { r = r * i; i = i + 1 }
+  return r
+}
+
+// floor(sqrt(real_val) * 100) where real_val = val/100
+// = largest r with r^2 <= val * 100
+fun isqrtScaled(val: int): int {
+  if val <= 0 { return 0 }
+  var target = val * 100
+  var lo = 0
+  var hi = target
+  while lo < hi {
+    var mid = int((lo + hi + 1) / 2)
+    if mid * mid <= target {
+      lo = mid
+    } else {
+      hi = mid - 1
+    }
+  }
+  return lo
+}
+
+fun evalPostfix(rpn: list<string>, vars: map<string, int>): list<int> {
+  var stack: list<int> = []
+  var errCode = 0
+  var i = 0
+  while i < len(rpn) && errCode == 0 {
+    let tok = rpn[i]
+    if len(tok) >= 2 && tok[0:2] == "N:" {
+      stack = append(stack, parseNum(tok[2:]))
+    } else if len(tok) >= 2 && tok[0:2] == "V:" {
+      let vname = tok[2:]
+      let v = vars[vname]
+      if v == nil { errCode = 3 }
+      else { stack = append(stack, v) }
+    } else if tok == "!" {
+      if len(stack) == 0 { errCode = 3 }
+      else {
+        let top = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+        let n = int(top / 100)
+        if n < 0 { errCode = 3 }
+        else { stack = append(stack, factorial(n) * 100) }
+      }
+    } else if tok == "neg" {
+      if len(stack) == 0 { errCode = 3 }
+      else {
+        let top = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+        stack = append(stack, -top)
+      }
+    } else if tok == "abs" {
+      if len(stack) == 0 { errCode = 3 }
+      else {
+        let top = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+        if top < 0 { stack = append(stack, -top) }
+        else { stack = append(stack, top) }
+      }
+    } else if tok == "sqrt" {
+      if len(stack) == 0 { errCode = 3 }
+      else {
+        let top = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+        if top < 0 { errCode = 1 }
+        else { stack = append(stack, isqrtScaled(top)) }
+      }
+    } else if tok == "+" || tok == "-" || tok == "*" || tok == "/" || tok == "%" || tok == "^" {
+      if len(stack) < 2 { errCode = 3 }
+      else {
+        let b = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+        let a = stack[len(stack)-1]
+        stack = stack[0:len(stack)-1]
+        if tok == "+" { stack = append(stack, a + b) }
+        else if tok == "-" { stack = append(stack, a - b) }
+        else if tok == "*" { stack = append(stack, int(a * b / 100)) }
+        else if tok == "/" {
+          if b == 0 { errCode = 2 }
+          else { stack = append(stack, int(a * 100 / b)) }
+        }
+        else if tok == "%" {
+          if b == 0 { errCode = 2 }
+          else {
+            let r = a % b
+            if r < 0 { stack = append(stack, r + b) }
+            else { stack = append(stack, r) }
+          }
+        }
+        else if tok == "^" {
+          let exp = int(b / 100)
+          var pw = 100
+          var ei = 0
+          while ei < exp { pw = int(pw * a / 100); ei = ei + 1 }
+          stack = append(stack, pw)
+        }
+      }
+    }
+    i = i + 1
+  }
+  if errCode == 0 && len(stack) != 1 { errCode = 3 }
+  var res: list<int> = []
+  res = append(res, errCode)
+  if errCode == 0 { res = append(res, stack[0]) }
+  else { res = append(res, 0) }
+  return res
+}
+
+fun fmtVal(v: int): string {
+  var neg = 0
+  var av = v
+  if av < 0 { neg = 1; av = -av }
+  let intPart = int(av / 100)
+  let fracPart = av % 100
+  var frac = str(fracPart)
+  if fracPart < 10 { frac = "0" + frac }
+  var res = str(intPart) + "." + frac
+  if neg == 1 { res = "-" + res }
+  return res
+}
+
+fun parseRealVal(s: string): int {
+  var neg = 0
+  var t = s
+  if len(t) > 0 && t[0:1] == "-" { neg = 1; t = t[1:] }
+  var scaled = parseNum(t)
+  if neg == 1 { scaled = -scaled }
+  return scaled
+}
+
+fun main() {
+  let expr = input()
+  let n = int(input())
+  var vars: map<string, int> = {}
+  let varNames = "abcdefghijklmnopqrstuvwxyz"
+  var vi = 0
+  while vi < n {
+    let val = input()
+    let vname = varNames[vi:vi+1]
+    vars[vname] = parseRealVal(val)
+    vi = vi + 1
+  }
+  let tokens = tokenize(expr)
+  var bracketOk = checkBrackets(tokens)
+  if bracketOk == 0 {
+    print("invalid bracket")
+  } else {
+    let rpn = toPostfix(tokens)
+    var isErr = 0
+    if len(rpn) == 1 && rpn[0] == "ERR" { isErr = 1 }
+    if isErr == 1 {
+      print("invalid expression")
+    } else {
+      let res = evalPostfix(rpn, vars)
+      let errCode = res[0]
+      if errCode == 1 { print("incorrect value for square root operator") }
+      else if errCode == 2 { print("divided by zero") }
+      else if errCode == 3 { print("invalid expression") }
+      else { print(fmtVal(res[1])) }
+    }
+  }
+}
+
+main()

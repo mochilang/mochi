@@ -1,0 +1,123 @@
+// Solution for SPOJ PLONK - Where to Drink the Plonk?
+// https://www.spoj.com/problems/PLONK/
+// Manhattan distance: find which friend's home minimizes total Manhattan distance.
+// Use prefix sums on sorted coordinates for O(n log n) total computation.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun absVal(x: int): int {
+  if x < 0 { return 0 - x }
+  return x
+}
+
+// Insertion sort on vals list; return sorted vals
+fun sortInts(vals: list<int>): list<int> {
+  let n = len(vals)
+  var i = 1
+  while i < n {
+    let key = vals[i]
+    var j = i - 1
+    while j >= 0 && vals[j] > key {
+      vals[j+1] = vals[j]
+      j = j - 1
+    }
+    vals[j+1] = key
+    i = i + 1
+  }
+  return vals
+}
+
+// Compute sum of |v - vals[j]| for all j, given sorted vals and prefix sums
+// rank = position of v in sorted array (0-indexed, lower bound)
+fun sumAbs(v: int, sorted: list<int>, prefix: list<int>): int {
+  let n = len(sorted)
+  // Binary search for rank (first index where sorted[rank] >= v)
+  var lo = 0
+  var hi = n
+  while lo < hi {
+    let mid = int((lo + hi) / 2)
+    if sorted[mid] < v { lo = mid + 1 } else { hi = mid }
+  }
+  let k = lo  // number of elements < v
+  // sum of (v - sorted[j]) for j in [0, k-1] = v*k - prefix[k]
+  // sum of (sorted[j] - v) for j in [k, n-1] = (prefix[n] - prefix[k]) - v*(n-k)
+  let leftSum = v * k - prefix[k]
+  let rightSum = (prefix[n] - prefix[k]) - v * (n - k)
+  return leftSum + rightSum
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    var xs: list<int> = []
+    var ys: list<int> = []
+    var i = 0
+    while i < n {
+      var fLine = input()
+      while fLine == "" { fLine = input() }
+      let p = split(fLine)
+      xs = append(xs, int(p[0]))
+      ys = append(ys, int(p[1]))
+      i = i + 1
+    }
+
+    // Sort copies of xs and ys
+    var sxCopy: list<int> = []
+    var syCopy: list<int> = []
+    i = 0
+    while i < n {
+      sxCopy = append(sxCopy, xs[i])
+      syCopy = append(syCopy, ys[i])
+      i = i + 1
+    }
+    sxCopy = sortInts(sxCopy)
+    syCopy = sortInts(syCopy)
+
+    // Build prefix sums
+    var prefX: list<int> = []
+    var prefY: list<int> = []
+    prefX = append(prefX, 0)
+    prefY = append(prefY, 0)
+    i = 0
+    while i < n {
+      prefX = append(prefX, prefX[i] + sxCopy[i])
+      prefY = append(prefY, prefY[i] + syCopy[i])
+      i = i + 1
+    }
+
+    // Find minimum total distance over all friend positions
+    var minDist = -1
+    i = 0
+    while i < n {
+      let d = sumAbs(xs[i], sxCopy, prefX) + sumAbs(ys[i], syCopy, prefY)
+      if minDist < 0 || d < minDist { minDist = d }
+      i = i + 1
+    }
+
+    print(minDist)
+    tc = tc + 1
+  }
+}
+
+main()

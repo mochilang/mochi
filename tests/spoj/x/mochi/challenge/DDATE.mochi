@@ -1,0 +1,33 @@
+// Solution for SPOJ DDATE - Dos Date
+// https://www.spoj.com/problems/DDATE/
+// Decode a 23-bit DOS-encoded date: top 14 bits = year, next 4 = month, last 5 = day.
+
+fun monthName(m: int): string {
+  if m == 1 { return "January" }
+  if m == 2 { return "February" }
+  if m == 3 { return "March" }
+  if m == 4 { return "April" }
+  if m == 5 { return "May" }
+  if m == 6 { return "June" }
+  if m == 7 { return "July" }
+  if m == 8 { return "August" }
+  if m == 9 { return "September" }
+  if m == 10 { return "October" }
+  if m == 11 { return "November" }
+  return "December"
+}
+
+fun main() {
+  let n = int(input())
+  var i = 0
+  while i < n {
+    let x = int(input())
+    let year = int(x / 512)
+    let month = int((x / 32) % 16)
+    let day = x % 32
+    print(string(day) + " " + monthName(month) + " " + string(year))
+    i = i + 1
+  }
+}
+
+main()

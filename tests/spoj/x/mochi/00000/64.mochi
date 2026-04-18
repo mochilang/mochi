@@ -1,0 +1,148 @@
+// Solution for SPOJ PERMUT1 - Permutations
+// https://www.spoj.com/problems/PERMUT1/
+// Count alternating (zigzag) permutations of 1..N.
+// An alternating permutation satisfies p[1] < p[2] > p[3] < p[4] > ...
+// These are the tangent/secant numbers (Euler zigzag numbers).
+// DP: dp[k][j] = # of alternating permutations of length k ending with j-th smallest element.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  // Precompute zigzag numbers up to N=20
+  // E[n] = count of alternating permutations of length n
+  // Use DP: for each length, track ending rank.
+  // up[j]: # of alternating perms of current length ending at rank j (1-indexed),
+  //        where last step was ascending (so next must descend)
+  // down[j]: last step was descending (next must ascend)
+  // Length 1: both up and down = 1 for each rank (no constraint yet)
+  // For length 2: must go up (p[1] < p[2]): down[j] = sum of up[k] for k < j
+  //   For length 3: must go down: up[j] = sum of down[k] for k > j
+  // Standard: E(1)=1, and for n>=2 we alternate.
+
+  let maxN = 21
+  // We store E[n] for n=1..20
+  var E: list<int> = []
+  var i = 0
+  while i <= maxN { E = append(E, 0); i = i + 1 }
+  E[1] = 1
+  E[2] = 1
+
+  // For n >= 3, use the DP approach with prefix sums
+  // dp_up[j]: ways ending at rank j with last move up (ascending)
+  // dp_dn[j]: ways ending at rank j with last move down (descending)
+  // Initialize for n=2: dp_dn[j] for j=1..2
+  //   perm (1,2): ends at rank 2, last move up -> dp_up[2]=1
+  //   (no down for n=2 alternating start-low)
+  // Actually easier: just compute the full counts by induction.
+
+  // E[n] follows: 1,1,2,5,16,61,272,1385,...
+  // Let's just hardcode or compute via the known recurrence:
+  // If we have T[n][k] = number of alternating perms of {1..n} where
+  // the last element has rank k among those n elements:
+  // T[1][1] = 1
+  // T[n][k] = sum T[n-1][j] for j going the "right direction"
+  // For n even, last step is down: T[n][k] = sum_{j=k}^{n-1} T[n-1][j]
+  // For n odd (n>=3), last step is up: T[n][k] = sum_{j=1}^{k-1} T[n-1][j]
+
+  // We compute up to n=20
+  // dp[j] for j=1..n
+  var dp: list<int> = []
+  dp = append(dp, 0)  // 1-indexed, index 0 unused
+  dp = append(dp, 1)  // T[1][1] = 1
+  var n = 2
+  while n <= 20 {
+    // Extend dp from size n-1 to size n
+    // New dp_new[k] for k=1..n
+    // Parity: n even => last step down => T[n][k] = sum_{j>=k} T[n-1][j-1] (shifted rank)
+    //         n odd  => last step up   => T[n][k] = sum_{j<k}  T[n-1][j-1] (shifted rank)
+    // When inserting element at rank k into a perm of n-1 elements,
+    // element that was rank j (j>=k) becomes rank j+1.
+    // T[n][k] = sum of T[n-1][j] where the previous last rank j and the new rank k satisfy:
+    //   if n is even (last step is down, p[n-1] > p[n]): j > k => T[n][k] = sum_{j=k}^{n-1} T[n-1][j]
+    //     Wait, we're inserting a new element in a perm of n-1 elements.
+    //     The new element is the n-th in sequence with rank k among 1..n.
+    //     The previous last element had rank j among 1..n-1.
+    //     After insertion: if new rank k <= j, old rank j becomes j+1 (now j+1 among 1..n),
+    //       else old rank stays j.
+    //     We need: if n even, p[n-1] > p[n]: old_last_adjusted > k
+    //       if old rank j >= k: adjusted rank = j+1 > k (always true since j+1 >= k+1 > k)
+    //       if old rank j < k:  adjusted rank = j, need j > k: impossible
+    //     So for n even: T[n][k] = sum_{j=k}^{n-1} T[n-1][j]
+    //   if n is odd (n>=3, last step is up): T[n][k] = sum_{j=1}^{k-1} T[n-1][j]
+    //     Need old_last_adjusted < k
+    //       if j < k: adjusted = j < k (ok)
+    //       if j >= k: adjusted = j+1 >= k+1 > k (not ok)
+    //     So: T[n][k] = sum_{j=1}^{k-1} T[n-1][j]
+
+    var newdp: list<int> = []
+    newdp = append(newdp, 0)  // index 0 unused
+    // Build prefix sums of old dp (indices 1..n-1)
+    var prefix: list<int> = []
+    prefix = append(prefix, 0)  // prefix[0] = 0
+    var j = 1
+    while j <= n - 1 {
+      prefix = append(prefix, prefix[j-1] + dp[j])
+      j = j + 1
+    }
+    // suffix[j] = sum dp[j..n-1]
+    var suffix: list<int> = []
+    // suffix[n] = 0, suffix[j] = dp[j] + suffix[j+1]
+    var sfx: list<int> = []
+    var si = 0
+    while si <= n { sfx = append(sfx, 0); si = si + 1 }
+    j = n - 1
+    while j >= 1 {
+      sfx[j] = sfx[j+1] + dp[j]
+      j = j - 1
+    }
+
+    var k = 1
+    while k <= n {
+      var val = 0
+      if n % 2 == 0 {
+        // T[n][k] = sum_{j=k}^{n-1} T[n-1][j] = sfx[k]
+        val = sfx[k]
+      } else {
+        // T[n][k] = sum_{j=1}^{k-1} T[n-1][j] = prefix[k-1]
+        val = prefix[k-1]
+      }
+      newdp = append(newdp, val)
+      k = k + 1
+    }
+    // E[n] = sum of newdp[1..n]
+    var total = 0
+    k = 1
+    while k <= n {
+      total = total + newdp[k]
+      k = k + 1
+    }
+    E[n] = total
+    dp = newdp
+    n = n + 1
+  }
+
+  var line = input()
+  while line != "" {
+    let p = split(line)
+    let q = int(p[0])
+    if q == 0 { break }
+    print(E[q])
+    line = input()
+  }
+}
+
+main()

@@ -1,0 +1,166 @@
+// Solution for SPOJ SOLVING - N-Puzzle
+// https://www.spoj.com/problems/SOLVING/
+// Solve the generalized n×n sliding puzzle (hole=0, goal=1..n^2-1 then 0).
+// Move hole U/D/L/R. Score = n^3/(moves+1).
+// Strategy: greedy step toward farthest tile. Uses int(x/y) for floor division.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun absi(x: int): int {
+  if x < 0 { return 0 - x }
+  return x
+}
+
+// Integer floor division
+fun idiv(a: int, b: int): int {
+  return int(a / b)
+}
+
+// Apply one move d (0=U,1=D,2=L,3=R) to grid (by value), return new grid
+fun moveGrid(grid: list<int>, holePos: int, d: int, n: int): list<int> {
+  var nHole = holePos
+  if d == 0 { nHole = holePos - n }
+  if d == 1 { nHole = holePos + n }
+  if d == 2 { nHole = holePos - 1 }
+  if d == 3 { nHole = holePos + 1 }
+  var g: list<int> = []
+  var i = 0
+  while i < len(grid) {
+    g = append(g, grid[i])
+    i = i + 1
+  }
+  var val = g[nHole]
+  g[nHole] = 0
+  g[holePos] = val
+  return g
+}
+
+fun gridEq(grid: list<int>, goal: list<int>): int {
+  var i = 0
+  while i < len(grid) {
+    if grid[i] != goal[i] { return 0 }
+    i = i + 1
+  }
+  return 1
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 1
+  while tc <= T {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    var grid: list<int> = []
+    var i = 0
+    while i < n {
+      var row = input()
+      while row == "" { row = input() }
+      let vals = split(row)
+      var j = 0
+      while j < n {
+        grid = append(grid, int(vals[j]))
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    var goal: list<int> = []
+    i = 0
+    while i < n * n - 1 { goal = append(goal, i + 1); i = i + 1 }
+    goal = append(goal, 0)
+
+    var holePos = 0
+    i = 0
+    while i < n * n {
+      if grid[i] == 0 { holePos = i }
+      i = i + 1
+    }
+
+    var result = ""
+    var moves = 0
+    var done = 0
+
+    if gridEq(grid, goal) == 1 { done = 1 }
+
+    while done == 0 && moves < 9000 {
+      // Find worst tile (largest manhattan distance from goal)
+      var wPos = 0
+      var wDist = 0
+      i = 0
+      while i < n * n {
+        if grid[i] != 0 {
+          let goalPos = grid[i] - 1
+          let curRow = idiv(i, n)
+          let curCol = i % n
+          let goalRow = idiv(goalPos, n)
+          let goalCol = goalPos % n
+          var dr = curRow - goalRow
+          if dr < 0 { dr = 0 - dr }
+          var dc = curCol - goalCol
+          if dc < 0 { dc = 0 - dc }
+          let d = dr + dc
+          if d > wDist { wDist = d; wPos = i }
+        }
+        i = i + 1
+      }
+
+      if wDist == 0 { done = 1 }
+      else {
+        let wRow = idiv(wPos, n)
+        let wCol = wPos % n
+        let hRow = idiv(holePos, n)
+        let hCol = holePos % n
+
+        var dir = 0
+        if wRow < hRow { dir = 0 }
+        if wRow > hRow { dir = 1 }
+        if wRow == hRow && wCol < hCol { dir = 2 }
+        if wRow == hRow && wCol > hCol { dir = 3 }
+
+        grid = moveGrid(grid, holePos, dir, n)
+        var nHole = holePos
+        if dir == 0 { nHole = holePos - n }
+        if dir == 1 { nHole = holePos + n }
+        if dir == 2 { nHole = holePos - 1 }
+        if dir == 3 { nHole = holePos + 1 }
+        holePos = nHole
+
+        if dir == 0 { result = result + "U" }
+        if dir == 1 { result = result + "D" }
+        if dir == 2 { result = result + "L" }
+        if dir == 3 { result = result + "R" }
+        moves = moves + 1
+
+        if gridEq(grid, goal) == 1 { done = 1 }
+      }
+    }
+
+    if done == 0 { result = "" }
+
+    print("case " + str(tc) + " Y")
+    print(str(len(result)))
+    print(result)
+
+    tc = tc + 1
+  }
+}
+
+main()

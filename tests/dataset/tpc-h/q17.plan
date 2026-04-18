@@ -1,3 +1,5 @@
+type: [any]
+plan:
 (select
   (selector l_extendedprice (selector l))
   (where

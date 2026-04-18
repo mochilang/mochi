@@ -1,0 +1,37 @@
+fun convertZigzag(s, numRows) {
+  if numRows <= 1 {
+    return s
+  }
+  if numRows >= len(s) {
+    return s
+  }
+  let cycle = 2 * numRows - 2
+  var result = ""
+  var row = 0
+  while row < numRows {
+    var i = row
+    while i < len(s) {
+      result = result + s[i:i + 1]
+      let diag = i + cycle - 2 * row
+      if row > 0 {
+        if row < numRows - 1 {
+          if diag < len(s) {
+            result = result + s[diag:diag + 1]
+          }
+        }
+      }
+      i = i + cycle
+    }
+    row = row + 1
+  }
+  return result
+}
+
+let t = int(input())
+var i = 0
+while i < t {
+  let s = input()
+  let numRows = int(input())
+  print(convertZigzag(s, numRows))
+  i = i + 1
+}

@@ -1,0 +1,20 @@
+// Solution for SPOJ TSET - "If Equal" in BF
+// https://www.spoj.com/problems/TSET/
+// Read 10 lines each with two single-digit numbers a and b.
+// Print 1 if a==b, 0 otherwise.
+
+fun main() {
+  var i = 0
+  while i < 10 {
+    let line = input()
+    if line == "" { i = i + 1 }
+    else {
+      let a = line[0:1]
+      let b = line[2:3]
+      if a == b { print("1") } else { print("0") }
+      i = i + 1
+    }
+  }
+}
+
+main()

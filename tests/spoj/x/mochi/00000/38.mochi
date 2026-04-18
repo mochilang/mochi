@@ -1,0 +1,113 @@
+// Solution for SPOJ LABYR1 - Labyrinth
+// https://www.spoj.com/problems/LABYR1/
+// Maze diameter via double BFS.
+
+fun splitLine(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun bfsFrom(grid: list<string>, R: int, C: int, sr: int, sc: int): list<int> {
+  // Returns [max_dist, row, col] of farthest reachable cell
+  var dist: list<list<int>> = []
+  var i = 0
+  while i < R {
+    var row: list<int> = []
+    var j = 0
+    while j < C {
+      row = append(row, 0 - 1)
+      j = j + 1
+    }
+    dist = append(dist, row)
+    i = i + 1
+  }
+  dist[sr][sc] = 0
+  var qr: list<int> = []
+  var qc: list<int> = []
+  qr = append(qr, sr)
+  qc = append(qc, sc)
+  var head = 0
+  var maxDist = 0
+  var farR = sr
+  var farC = sc
+  let dr: list<int> = [0, 0, 1, 0 - 1]
+  let dc: list<int> = [1, 0 - 1, 0, 0]
+  while head < len(qr) {
+    let r = qr[head]
+    let c = qc[head]
+    let d = dist[r][c]
+    if d > maxDist { maxDist = d; farR = r; farC = c }
+    var di = 0
+    while di < 4 {
+      let nr = r + dr[di]
+      let nc = c + dc[di]
+      if nr >= 0 && nr < R && nc >= 0 && nc < C {
+        let row = grid[nr]
+        let ch = if nc < len(row) { row[nc:nc+1] } else { "#" }
+        if ch != "#" && dist[nr][nc] == 0 - 1 {
+          dist[nr][nc] = d + 1
+          qr = append(qr, nr)
+          qc = append(qc, nc)
+        }
+      }
+      di = di + 1
+    }
+    head = head + 1
+  }
+  var result: list<int> = []
+  result = append(result, maxDist)
+  result = append(result, farR)
+  result = append(result, farC)
+  return result
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  if tLine == "" { return }
+  let t = int(tLine)
+  for _ in 0..t {
+    var rcLine = input()
+    while rcLine == "" { rcLine = input() }
+    let rcParts = splitLine(rcLine)
+    let R = int(rcParts[0])
+    let C = int(rcParts[1])
+    var grid: list<string> = []
+    var i = 0
+    while i < R {
+      grid = append(grid, input())
+      i = i + 1
+    }
+    // Find any passable cell
+    var startR = 0
+    var startC = 0
+    var found = false
+    i = 0
+    while i < R && found == false {
+      var j = 0
+      while j < C && found == false {
+        let row = grid[i]
+        let ch = if j < len(row) { row[j:j+1] } else { "#" }
+        if ch != "#" { startR = i; startC = j; found = true }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    let r1 = bfsFrom(grid, R, C, startR, startC)
+    let r2 = bfsFrom(grid, R, C, r1[1], r1[2])
+    print("Maximum rope length is " + str(r2[0]) + ".")
+  }
+}
+
+main()

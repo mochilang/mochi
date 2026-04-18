@@ -1,0 +1,31 @@
+// Solution for SPOJ PYRA - Pyramids
+// https://www.spoj.com/problems/PYRA/
+// Square pyramid with equilateral triangle lateral faces.
+// Height h = a/2, Volume = (1/3)*a^2*h = a^3/6
+
+fun fmtDecimal(x: float, places: int): string {
+  var mult = 1.0
+  var i = 0
+  while i < places { mult = mult * 10.0; i = i + 1 }
+  let scaled = int(x * mult + 0.5)
+  let imult = int(mult)
+  let intPart = int(scaled / imult)
+  let fracPart = scaled % imult
+  var fracStr = str(fracPart)
+  while len(fracStr) < places { fracStr = "0" + fracStr }
+  return str(intPart) + "." + fracStr
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  for _ in 0..t {
+    let aLine = input()
+    let a = int(aLine) as float
+    let vol = a * a * a / 6.0
+    print(fmtDecimal(vol, 4))
+  }
+}
+
+main()

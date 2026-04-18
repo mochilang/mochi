@@ -1,0 +1,93 @@
+// Solution for SPOJ AGSCHALL - Aritho-geometric Series (Challenge)
+// https://www.spoj.com/problems/AGSCHALL/
+// a(1)=a, a(2)=a+d, a(3)=(a+d)*r, a(4)=(a+d)*r+d, ...
+// Odd->even: add d. Even->odd: multiply r.
+// Transition between consecutive odd terms: a_next = r*(a_cur + d).
+// Matrix [[r, r*d],[0, 1]]^k applied to [a(1); 1] gives [a(2k+1); 1].
+// For even n=2k: a(2k) = a(2k-1) + d.
+
+fun matmul2(a00: int, a01: int, a10: int, a11: int,
+            b00: int, b01: int, b10: int, b11: int, M: int): list<int> {
+  var r: list<int> = []
+  r = append(r, (a00*b00 + a01*b10) % M)
+  r = append(r, (a00*b01 + a01*b11) % M)
+  r = append(r, (a10*b00 + a11*b10) % M)
+  r = append(r, (a10*b01 + a11*b11) % M)
+  return r
+}
+
+fun matpow2(m00: int, m01: int, m10: int, m11: int, k: int, M: int): list<int> {
+  var r00 = 1; var r01 = 0; var r10 = 0; var r11 = 1
+  var b00 = m00; var b01 = m01; var b10 = m10; var b11 = m11
+  var e = k
+  while e > 0 {
+    if e % 2 == 1 {
+      let t = matmul2(r00, r01, r10, r11, b00, b01, b10, b11, M)
+      r00 = t[0]; r01 = t[1]; r10 = t[2]; r11 = t[3]
+    }
+    let t2 = matmul2(b00, b01, b10, b11, b00, b01, b10, b11, M)
+    b00 = t2[0]; b01 = t2[1]; b10 = t2[2]; b11 = t2[3]
+    e = int(e / 2)
+  }
+  var res: list<int> = []
+  res = append(res, r00); res = append(res, r01)
+  res = append(res, r10); res = append(res, r11)
+  return res
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let p1 = split(input())
+    let p2 = split(input())
+    let a = int(p1[0])
+    let d = int(p1[1])
+    let r = int(p1[2])
+    let n = int(p2[0])
+    let M = int(p2[1])
+
+    if n == 1 {
+      print(str(a % M))
+    } else {
+      if r == 1 {
+        // a(n) = a + floor(n/2)*d
+        print(str((a + int(n/2)*d) % M))
+      } else {
+        // Matrix [[r, r*d],[0,1]] applied k times to [a;1] -> [a(2k+1);1]
+        let rm = r % M
+        let rdm = (r * d) % M
+        if n % 2 == 1 {
+          let k = int((n-1) / 2)
+          let mat = matpow2(rm, rdm, 0, 1, k, M)
+          print(str((mat[0]*a + mat[1]) % M))
+        } else {
+          let k = int(n / 2)
+          // a(2k) = a(2k-1) + d; a(2k-1) uses k-1 steps
+          let mat = matpow2(rm, rdm, 0, 1, k-1, M)
+          let odd_val = (mat[0]*a + mat[1]) % M
+          print(str((odd_val + d) % M))
+        }
+      }
+    }
+    ti = ti + 1
+  }
+}
+
+main()

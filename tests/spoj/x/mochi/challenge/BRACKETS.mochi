@@ -1,0 +1,88 @@
+// Solution for SPOJ BRACKETS - Fully Parenthesized Expression
+// https://www.spoj.com/problems/BRACKETS/
+// Recursive descent parser returning [result, newPos] pairs.
+// parseLow (+/-) -> parseHigh (*/%/) -> parseAtom
+
+fun isDigit(c: string): int {
+  if c == "0" { return 1 }
+  if c == "1" { return 1 }
+  if c == "2" { return 1 }
+  if c == "3" { return 1 }
+  if c == "4" { return 1 }
+  if c == "5" { return 1 }
+  if c == "6" { return 1 }
+  if c == "7" { return 1 }
+  if c == "8" { return 1 }
+  if c == "9" { return 1 }
+  return 0
+}
+
+// Each parse function returns [result_string, new_position_string]
+fun parseAtom(s: string, pos: int): list<string> {
+  let c = s[pos:pos+1]
+  if c == "(" {
+    let inner = parseLow(s, pos + 1)
+    let res = inner[0]
+    let np = int(inner[1]) + 1
+    return [res, str(np)]
+  }
+  var num = ""
+  var p = pos
+  while p < len(s) && isDigit(s[p:p+1]) == 1 {
+    num = num + s[p:p+1]
+    p = p + 1
+  }
+  return [num, str(p)]
+}
+
+fun parseHigh(s: string, pos: int): list<string> {
+  let atomR = parseAtom(s, pos)
+  var left = atomR[0]
+  var p = int(atomR[1])
+  while p < len(s) {
+    let c = s[p:p+1]
+    if c == "*" || c == "/" || c == "%" {
+      let r = parseAtom(s, p + 1)
+      left = "(" + left + c + r[0] + ")"
+      p = int(r[1])
+    } else {
+      break
+    }
+  }
+  return [left, str(p)]
+}
+
+fun parseLow(s: string, pos: int): list<string> {
+  let highR = parseHigh(s, pos)
+  var left = highR[0]
+  var p = int(highR[1])
+  while p < len(s) {
+    let c = s[p:p+1]
+    if c == "+" || c == "-" {
+      let r = parseHigh(s, p + 1)
+      left = "(" + left + c + r[0] + ")"
+      p = int(r[1])
+    } else {
+      break
+    }
+  }
+  return [left, str(p)]
+}
+
+fun main() {
+  let n = int(input())
+  var i = 0
+  while i < n {
+    let s = input()
+    let result = parseLow(s, 0)
+    let res = result[0]
+    if res[0:1] == "(" {
+      print(res)
+    } else {
+      print("(" + res + ")")
+    }
+    i = i + 1
+  }
+}
+
+main()

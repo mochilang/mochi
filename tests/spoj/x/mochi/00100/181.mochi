@@ -1,0 +1,76 @@
+// Solution for SPOJ SCUBADIV - Scuba Diver
+// https://www.spoj.com/problems/SCUBADIV/
+// 2D knapsack: minimize weight to meet oxygen and nitrogen requirements.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var l1 = input()
+    while l1 == "" { l1 = input() }
+    let req = split(l1)
+    let reqO = int(req[0])
+    let reqN = int(req[1])
+
+    var l2 = input()
+    while l2 == "" { l2 = input() }
+    let n = int(l2)
+
+    // dp[o][n] = min weight with AT LEAST o O2 and n N2
+    // Dimensions: (reqO+1) x (reqN+1)
+    let INF = 1000000000
+    let rows = reqO + 1
+    let cols = reqN + 1
+    var dp: list<int> = []
+    var idx = 0
+    while idx < rows * cols { dp = append(dp, INF); idx = idx + 1 }
+    dp[0] = 0
+
+    var ki = 0
+    while ki < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let p = split(vLine)
+      let o = int(p[0])
+      let nn = int(p[1])
+      let w = int(p[2])
+
+      // Update dp in reverse (0/1 knapsack)
+      var i = reqO
+      while i >= 0 {
+        var j = reqN
+        while j >= 0 {
+          if dp[i * cols + j] == INF { j = j - 1; continue }
+          let ni = if i + o > reqO { reqO } else { i + o }
+          let nj = if j + nn > reqN { reqN } else { j + nn }
+          let newW = dp[i * cols + j] + w
+          if newW < dp[ni * cols + nj] { dp[ni * cols + nj] = newW }
+          j = j - 1
+        }
+        i = i - 1
+      }
+      ki = ki + 1
+    }
+
+    print(dp[reqO * cols + reqN])
+    ti = ti + 1
+  }
+}
+
+main()

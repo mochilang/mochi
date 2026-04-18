@@ -1,0 +1,210 @@
+// Solution for SPOJ DISCOVER - Definite Integral Computation
+// https://www.spoj.com/problems/DISCOVER/
+// Compute definite integrals of elementary functions using Simpson's rule.
+// Supported: x, x^C (integer C), e^x, ln(x), sin(x), cos(x)
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Parse float from string (handles negative and decimal)
+fun parseFloat(s: string): float {
+  var neg = false
+  var start = 0
+  if len(s) > 0 && s[0:1] == "-" { neg = true; start = 1 }
+  var intPart = 0.0
+  var fracPart = 0.0
+  var fracDiv = 1.0
+  var inFrac = false
+  var i = start
+  while i < len(s) {
+    let c = s[i:i+1]
+    if c == "." {
+      inFrac = true
+    } else {
+      let d = int(c) - int("0")
+      if !inFrac {
+        intPart = intPart * 10.0 + d as float
+      } else {
+        fracDiv = fracDiv * 10.0
+        fracPart = fracPart + d as float / fracDiv
+      }
+    }
+    i = i + 1
+  }
+  var result = intPart + fracPart
+  if neg { result = 0.0 - result }
+  return result
+}
+
+// Compute x^n for integer n >= 0
+fun powInt(x: float, n: int): float {
+  var result = 1.0
+  var i = 0
+  while i < n {
+    result = result * x
+    i = i + 1
+  }
+  return result
+}
+
+// e approximation
+fun myExp(x: float): float {
+  // Taylor series: sum x^k / k!
+  var sum = 1.0
+  var term = 1.0
+  var k = 1
+  while k < 50 {
+    term = term * x / k as float
+    sum = sum + term
+    k = k + 1
+  }
+  return sum
+}
+
+// Natural log approximation using myExp and Newton's method
+fun myLn(x: float): float {
+  if x <= 0.0 { return 0.0 - 1e18 }
+  // ln(x) via Newton: r = r + 1 - x/e^r
+  var r = 0.0
+  var i = 0
+  while i < 60 {
+    let er = myExp(r)
+    r = r + 1.0 - x / er
+    i = i + 1
+  }
+  return r
+}
+
+// sin via Taylor series
+fun mySin(x: float): float {
+  // reduce x mod 2pi: approximate 2*pi
+  let twopi = 6.283185307179586
+  var xr = x
+  var loops = 0
+  while xr > twopi && loops < 1000 { xr = xr - twopi; loops = loops + 1 }
+  while xr < 0.0 - twopi && loops < 1000 { xr = xr + twopi; loops = loops + 1 }
+  var sum = xr
+  var term = xr
+  var k = 1
+  while k < 20 {
+    term = term * (0.0 - xr * xr) / (2.0 * k as float) / (2.0 * k as float + 1.0)
+    sum = sum + term
+    k = k + 1
+  }
+  return sum
+}
+
+// cos via Taylor series
+fun myCos(x: float): float {
+  let twopi = 6.283185307179586
+  var xr = x
+  var loops = 0
+  while xr > twopi && loops < 1000 { xr = xr - twopi; loops = loops + 1 }
+  while xr < 0.0 - twopi && loops < 1000 { xr = xr + twopi; loops = loops + 1 }
+  var sum = 1.0
+  var term = 1.0
+  var k = 1
+  while k < 20 {
+    term = term * (0.0 - xr * xr) / (2.0 * k as float - 1.0) / (2.0 * k as float)
+    sum = sum + term
+    k = k + 1
+  }
+  return sum
+}
+
+// Evaluate expression at point x
+fun evalExpr(expr: string, x: float): float {
+  if expr == "x" {
+    return x
+  }
+  if expr == "e^x" {
+    return myExp(x)
+  }
+  if expr == "ln(x)" {
+    return myLn(x)
+  }
+  if expr == "sin(x)" {
+    return mySin(x)
+  }
+  if expr == "cos(x)" {
+    return myCos(x)
+  }
+  // Check x^C
+  if len(expr) > 2 && expr[0:2] == "x^" {
+    let expStr = expr[2:len(expr)]
+    let expN = int(expStr)
+    return powInt(x, expN)
+  }
+  // Constant
+  return parseFloat(expr)
+}
+
+// Format float with 6 decimal places
+fun formatFloat6(v: float): string {
+  var neg = false
+  if v < 0.0 { neg = true; v = 0.0 - v }
+  // Round to 6 decimal places
+  v = v + 0.0000005
+  let intPart = int(v)
+  var frac = v - intPart as float
+  var digits = ""
+  var i = 0
+  while i < 6 {
+    frac = frac * 10.0
+    let d = int(frac)
+    digits = digits + str(d)
+    frac = frac - d as float
+    i = i + 1
+  }
+  var result = str(intPart) + "." + digits
+  if neg { result = "-" + result }
+  return result
+}
+
+// Simpson's rule integration
+fun integrate(expr: string, a: float, b: float): float {
+  let n = 10000  // must be even
+  let h = (b - a) / n as float
+  var sum = evalExpr(expr, a) + evalExpr(expr, b)
+  var i = 1
+  while i < n {
+    let xi = a + i as float * h
+    if i - 2 * int(i / 2) == 0 {
+      sum = sum + 2.0 * evalExpr(expr, xi)
+    } else {
+      sum = sum + 4.0 * evalExpr(expr, xi)
+    }
+    i = i + 1
+  }
+  return sum * h / 3.0
+}
+
+fun main() {
+  let tLine = input()
+  let t = int(tLine)
+  var tc = 1
+  while tc <= t {
+    let expr = input()
+    let boundsLine = split(input())
+    let a = parseFloat(boundsLine[0])
+    let b = parseFloat(boundsLine[1])
+    let result = integrate(expr, a, b)
+    print("Case " + str(tc) + ": " + formatFloat6(result))
+    tc = tc + 1
+  }
+}
+
+main()

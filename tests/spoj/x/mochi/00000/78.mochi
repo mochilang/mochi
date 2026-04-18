@@ -1,0 +1,49 @@
+// Solution for SPOJ MARBLES - Marbles
+// https://www.spoj.com/problems/MARBLES/
+// n identical marbles into k distinct pots, each >= 1: C(n-1, k-1)
+
+fun comb(n: int, k: int): int {
+  if k == 0 { return 1 }
+  if k > n { return 0 }
+  // C(n, k) = product(n-i, i=0..k-1) / k!
+  var num = 1
+  var den = 1
+  var i = 0
+  while i < k {
+    num = num * (n - i)
+    den = den * (i + 1)
+    // reduce to keep numbers smaller
+    let g = gcd(num, den)
+    num = int(num / g)
+    den = int(den / g)
+    i = i + 1
+  }
+  return int(num / den)
+}
+
+fun gcd(a: int, b: int): int {
+  while b != 0 { let t = b; b = a % b; a = t }
+  return a
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    var parts: list<string> = []
+    var cur = ""
+    var i = 0
+    while i < len(line) {
+      if line[i:i+1] == " " {
+        if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+      } else { cur = cur + line[i:i+1] }
+      i = i + 1
+    }
+    if len(cur) > 0 { parts = append(parts, cur) }
+    let n = int(parts[0])
+    let k = int(parts[1])
+    print(comb(n-1, k-1))
+    line = input()
+  }
+}
+
+main()

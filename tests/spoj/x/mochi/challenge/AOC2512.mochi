@@ -1,0 +1,108 @@
+// Solution for SPOJ AOC2512 - AoC Christmas Tree Farm Part 3
+// https://www.spoj.com/problems/AOC2512/
+// Pack K shapes onto a grid, minimizing bounding rectangle area.
+// Naive approach: place each shape instance side-by-side in a row (x offset += 3).
+// Input: shape definitions (3x3 grids with headers "k:"), then challenge lines "NxM: a0 a1 ...".
+
+fun isDigit(c: string): int {
+  if c == "0" { return 1 }
+  if c == "1" { return 1 }
+  if c == "2" { return 1 }
+  if c == "3" { return 1 }
+  if c == "4" { return 1 }
+  if c == "5" { return 1 }
+  if c == "6" { return 1 }
+  if c == "7" { return 1 }
+  if c == "8" { return 1 }
+  if c == "9" { return 1 }
+  return 0
+}
+
+fun hasChar(line: string, ch: string): int {
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == ch { return 1 }
+    i = i + 1
+  }
+  return 0
+}
+
+// Extract all integers from a line
+fun extractInts(line: string): list<int> {
+  var nums: list<int> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let c = line[i:i+1]
+    if isDigit(c) == 1 {
+      cur = cur + c
+    } else {
+      if len(cur) > 0 {
+        nums = append(nums, int(cur))
+        cur = ""
+      }
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 {
+    nums = append(nums, int(cur))
+  }
+  return nums
+}
+
+// Process one challenge line: output placement for all shape instances
+fun processChallenge(line: string) {
+  let nums = extractInts(line)
+  // nums[0]=N, nums[1]=M, then counts a_0, a_1, ... for each shape
+  var x = 0
+  var si = 2
+  var shapeIdx = 0
+  while si < len(nums) {
+    let count = nums[si]
+    var ci = 0
+    while ci < count {
+      print(str(shapeIdx) + " 0 " + str(x) + " 0")
+      x = x + 3
+      ci = ci + 1
+    }
+    si = si + 1
+    shapeIdx = shapeIdx + 1
+  }
+  print("")
+}
+
+fun main() {
+  // Read all lines, collecting challenge lines (those containing 'x' before ':')
+  // Shape definition lines: "k:" (no 'x'), "###" (no 'x'), blank lines
+  // Challenge lines: "NxM: a_0 ..." (contains 'x')
+  // We read up to 1000 lines total to handle all input
+  var challenges: list<string> = []
+  var inChallengeSection = 0
+
+  // Read lines until we stop getting non-blank lines
+  // We use a two-pass approach: read lines and classify them
+  var consecutiveEmpty = 0
+  var line = input()
+  while consecutiveEmpty < 3 {
+    if line == "" {
+      consecutiveEmpty = consecutiveEmpty + 1
+    } else {
+      consecutiveEmpty = 0
+      // Check if this is a challenge line: must contain 'x'
+      if hasChar(line, "x") == 1 {
+        inChallengeSection = 1
+        challenges = append(challenges, line)
+      }
+    }
+    line = input()
+  }
+
+  // Process all collected challenge lines
+  var ci = 0
+  while ci < len(challenges) {
+    processChallenge(challenges[ci])
+    ci = ci + 1
+  }
+}
+
+main()

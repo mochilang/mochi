@@ -1,0 +1,186 @@
+// Solution for SPOJ EXPR1 - Expression
+// https://www.spoj.com/problems/EXPR1/
+// Given arithmetic expression with +/- operators, find minimum pairs of
+// parentheses to achieve value k.
+//
+// Interval DP with two tables:
+//   dp_bin[i][j][v] = min parens for unsigned binary expr d[i..j] to get value v
+//   dp_sgn[i][j][v] = min parens for signed expr op[i]d[i]..op[j]d[j] to get value v
+//
+// Transitions:
+//   dp_bin merge at k: val=v1+op[k+1]*v2, extra=(k<j-1)?1:0
+//   dp_sgn option A: val=v1+v2, extra=0 (signed subexprs concatenate naturally)
+//   dp_sgn option B: val=op[i]*v_bin, cost=dp_bin[i][j][v_bin]+(j>i?1:0)
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + s[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var dLine = input()
+  while dLine == "" { dLine = input() }
+  let d = int(dLine)
+  var di = 0
+  while di < d {
+    var hdrLine = input()
+    while hdrLine == "" { hdrLine = input() }
+    let hdr = split(hdrLine)
+    let n = int(hdr[0])
+    let k = int(hdr[1])
+    let m = int(n / 2)  // number of digits
+
+    var exprLine = input()
+    while exprLine == "" { exprLine = input() }
+
+    // Parse: positions 0,2,4,...=operators; 1,3,5,...=digits (0-indexed)
+    var op: list<int> = []   // op[i] = sign of i-th operator (+1 or -1)
+    var digs: list<int> = [] // digs[i] = i-th digit value
+    var ci = 0
+    while ci < m {
+      if exprLine[ci*2:ci*2+1] == "+" { op = append(op, 1) }
+      else { op = append(op, 0 - 1) }
+      digs = append(digs, int(exprLine[ci*2+1:ci*2+2]))
+      ci = ci + 1
+    }
+
+    // DP tables (flat array, m*m*VRANGE each)
+    let VOFF = 180
+    let VRANGE = 361
+    let INF = 999999
+
+    var dp_bin: list<int> = []
+    var dp_sgn: list<int> = []
+    let sz = m * m * VRANGE
+    var idx = 0
+    while idx < sz { dp_bin = append(dp_bin, INF); dp_sgn = append(dp_sgn, INF); idx = idx + 1 }
+
+    // Base cases
+    ci = 0
+    while ci < m {
+      let bv = digs[ci]
+      let sv = op[ci] * digs[ci]
+      dp_bin[(ci * m + ci) * VRANGE + bv + VOFF] = 0
+      if sv >= 0 - 180 && sv <= 180 {
+        dp_sgn[(ci * m + ci) * VRANGE + sv + VOFF] = 0
+      }
+      ci = ci + 1
+    }
+
+    // Fill by increasing subexpr length
+    var len_sub = 2
+    while len_sub <= m {
+      var i = 0
+      while i + len_sub - 1 < m {
+        let j = i + len_sub - 1
+
+        // --- dp_bin[i][j] ---
+        var k_split = i
+        while k_split < j {
+          let extra_b = if k_split < j - 1 { 1 } else { 0 }
+          let binop = op[k_split + 1]  // binary op between d[k_split] and d[k_split+1]
+          let llen = k_split - i + 1
+          let rlen = j - k_split
+          let lmax = 9 * llen
+          let rmax = 9 * rlen
+          var v1 = 0 - lmax
+          while v1 <= lmax {
+            let lc = dp_bin[(i * m + k_split) * VRANGE + v1 + VOFF]
+            if lc < INF {
+              var v2 = 0 - rmax
+              while v2 <= rmax {
+                let rc = dp_bin[((k_split+1) * m + j) * VRANGE + v2 + VOFF]
+                if rc < INF {
+                  let val = v1 + binop * v2
+                  if val >= 0 - 180 && val <= 180 {
+                    let nc = lc + rc + extra_b
+                    let didx = (i * m + j) * VRANGE + val + VOFF
+                    if nc < dp_bin[didx] { dp_bin[didx] = nc }
+                  }
+                }
+                v2 = v2 + 1
+              }
+            }
+            v1 = v1 + 1
+          }
+          k_split = k_split + 1
+        }
+
+        // --- dp_sgn[i][j] ---
+        // Option A: combine two signed subexprs (no extra parens)
+        k_split = i
+        while k_split < j {
+          let llena = k_split - i + 1
+          let rlena = j - k_split
+          let lmaxa = 9 * llena
+          let rmaxa = 9 * rlena
+          var v1 = 0 - lmaxa
+          while v1 <= lmaxa {
+            let lc = dp_sgn[(i * m + k_split) * VRANGE + v1 + VOFF]
+            if lc < INF {
+              var v2 = 0 - rmaxa
+              while v2 <= rmaxa {
+                let rc = dp_sgn[((k_split+1) * m + j) * VRANGE + v2 + VOFF]
+                if rc < INF {
+                  let val = v1 + v2
+                  if val >= 0 - 180 && val <= 180 {
+                    let nc = lc + rc
+                    let sidx = (i * m + j) * VRANGE + val + VOFF
+                    if nc < dp_sgn[sidx] { dp_sgn[sidx] = nc }
+                  }
+                }
+                v2 = v2 + 1
+              }
+            }
+            v1 = v1 + 1
+          }
+          k_split = k_split + 1
+        }
+        // Option B: apply op[i] to entire binary group
+        let extra_optB = if j > i { 1 } else { 0 }
+        let bmax = 9 * len_sub
+        var vb = 0 - bmax
+        while vb <= bmax {
+          let bc = dp_bin[(i * m + j) * VRANGE + vb + VOFF]
+          if bc < INF {
+            let val = op[i] * vb
+            if val >= 0 - 180 && val <= 180 {
+              let nc = bc + extra_optB
+              let sidx = (i * m + j) * VRANGE + val + VOFF
+              if nc < dp_sgn[sidx] { dp_sgn[sidx] = nc }
+            }
+          }
+          vb = vb + 1
+        }
+
+        i = i + 1
+      }
+      len_sub = len_sub + 1
+    }
+
+    // Full expression [0..m-1]: target value is k
+    var ans = 0 - 1
+    if k >= 0 - 180 && k <= 180 {
+      let cost = dp_sgn[(0 * m + (m-1)) * VRANGE + k + VOFF]
+      if cost < INF { ans = cost }
+    }
+
+    if ans < 0 { print("NO") }
+    else { print(ans) }
+
+    di = di + 1
+  }
+}
+
+main()

@@ -1,0 +1,64 @@
+// Solution for SPOJ BFK_AUTO - Automatic Brainfuck Code Generator
+// https://www.spoj.com/problems/BFK_AUTO/
+// Read text until EOF. Output BF code that prints that text exactly.
+// Strategy: track current cell value; for each char emit +/- deltas then '.'.
+// Each line is followed by a newline char (ASCII 10) in the original text.
+
+// Build ASCII lookup: index i -> char with ASCII value (32+i)
+fun buildAscii(): string {
+  return " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+}
+
+// Return ASCII value of single-char string (printable range 32-126), or 10 for newline sentinel.
+fun asciiVal(c: string, ascii: string): int {
+  var i = 0
+  while i < len(ascii) {
+    if ascii[i:i+1] == c { return i + 32 }
+    i = i + 1
+  }
+  return 10
+}
+
+// Repeat a string n times.
+fun rep(s: string, n: int): string {
+  var r = ""
+  var i = 0
+  while i < n { r = r + s; i = i + 1 }
+  return r
+}
+
+// BF code to go from cur to target value.
+fun delta(target: int, cur: int): string {
+  var d = target - cur
+  if d > 0 { return rep("+", d) }
+  if d < 0 {
+    var nd = 0 - d
+    return rep("-", nd)
+  }
+  return ""
+}
+
+fun main() {
+  let ascii = buildAscii()
+  var cur = 0
+  var out = ""
+  var line = input()
+  while line != "" {
+    // Process each character in the line
+    var i = 0
+    while i < len(line) {
+      let c = line[i:i+1]
+      let v = asciiVal(c, ascii)
+      out = out + delta(v, cur) + "."
+      cur = v
+      i = i + 1
+    }
+    // Emit newline (ASCII 10) after each line
+    out = out + delta(10, cur) + "."
+    cur = 10
+    line = input()
+  }
+  print(out)
+}
+
+main()

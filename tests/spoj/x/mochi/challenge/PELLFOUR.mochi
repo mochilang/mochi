@@ -1,0 +1,64 @@
+// Solution for SPOJ PELLFOUR - Pell Four
+// https://www.spoj.com/problems/PELLFOUR/
+// For each non-square D (2..300), find minimal X satisfying X^2 - D*Y^2 = 1
+// using continued fraction expansion of sqrt(D).
+// Print (D, X) when X sets a new record maximum.
+
+fun isSquare(n: int): int {
+  var s = 1
+  while s * s < n { s = s + 1 }
+  if s * s == n { return 1 }
+  return 0
+}
+
+fun isqrt(n: int): int {
+  var s = 1
+  while s * s <= n { s = s + 1 }
+  return s - 1
+}
+
+fun minPellX(D: int): int {
+  let a0 = isqrt(D)
+  var m = 0
+  var d = 1
+  var a = a0
+  var xp = 1
+  var xc = a0
+  var yp = 0
+  var yc = 1
+  var found = 0
+  var result = 0
+  while found == 0 {
+    m = d * a - m
+    d = int((D - m * m) / d)
+    a = int((a0 + m) / d)
+    let xn = a * xc + xp
+    let yn = a * yc + yp
+    if xn * xn - D * yn * yn == 1 {
+      result = xn
+      found = 1
+    }
+    xp = xc
+    xc = xn
+    yp = yc
+    yc = yn
+  }
+  return result
+}
+
+fun main() {
+  var record = 0
+  var D = 2
+  while D <= 300 {
+    if isSquare(D) == 0 {
+      let X = minPellX(D)
+      if X > record {
+        record = X
+        print(str(D) + " " + str(X))
+      }
+    }
+    D = D + 1
+  }
+}
+
+main()

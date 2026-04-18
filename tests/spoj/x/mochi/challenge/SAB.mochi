@@ -1,0 +1,54 @@
+// SAB - Sabotage
+// Trivially correct plan: block all m edges (cost = sum zi).
+// This satisfies all Z pairs (all paths cut) and all O pairs (all paths blocked).
+
+fun splitLine(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let t = int(input())
+  var tc = 0
+  while tc < t {
+    let header = splitLine(input())
+    let n = int(header[0])
+    let m = int(header[1])
+    let k = int(header[2])
+    var totalZ = 0
+    var ei = 0
+    while ei < m {
+      let edge = splitLine(input())
+      let zi = int(edge[2])
+      totalZ = totalZ + zi
+      ei = ei + 1
+    }
+    var ki = 0
+    while ki < k {
+      let line = input()
+      ki = ki + 1
+    }
+    // Output: block all m edges
+    print(str(m) + " " + str(totalZ))
+    ei = 1
+    while ei <= m {
+      print(str(ei) + " Z")
+      ei = ei + 1
+    }
+    tc = tc + 1
+  }
+}
+
+main()

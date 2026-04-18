@@ -1,0 +1,135 @@
+// Solution for SPOJ SUD - Sudoku
+// https://www.spoj.com/problems/SUD/
+// Iterative backtracking sudoku solver.
+// Grid represented as list<int> of 81 values (0=empty, 1-9=filled).
+// Uses trail-based backtracking: trailPos/trailVal record each decision.
+// On conflict, pop last decision and try next candidate.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Check if placing val at pos is valid in grid
+fun canPlace(grid: list<int>, pos: int, val: int): int {
+  let row = (pos / 9) as int
+  let col = pos - row * 9
+  let boxR = (row / 3) as int * 3
+  let boxC = (col / 3) as int * 3
+  var i = 0
+  while i < 9 {
+    if grid[row * 9 + i] == val { return 0 }
+    if grid[i * 9 + col] == val { return 0 }
+    let br = boxR + (i / 3) as int
+    let bc = boxC + i - (i / 3) as int * 3
+    if grid[br * 9 + bc] == val { return 0 }
+    i = i + 1
+  }
+  return 1
+}
+
+// Find next empty cell at or after pos; returns 81 if none
+fun nextEmpty(grid: list<int>, pos: int): int {
+  var p = pos
+  while p < 81 {
+    if grid[p] == 0 { return p }
+    p = p + 1
+  }
+  return 81
+}
+
+fun solveSudoku(grid: list<int>): list<int> {
+  var g: list<int> = []
+  var i = 0
+  while i < 81 { g = append(g, grid[i]); i = i + 1 }
+
+  // trailPos and trailVal record each placed cell and its value
+  // trailNext records the next candidate to try if we backtrack here
+  var trailPos: list<int> = []
+  var trailNext: list<int> = []
+
+  // Current position and starting candidate
+  var curPos = nextEmpty(g, 0)
+  var startCand = 1
+
+  var solved = 0
+  var failed = 0
+
+  while solved == 0 && failed == 0 {
+    if curPos == 81 {
+      solved = 1
+    } else {
+      // Try candidates from startCand..9
+      var found = 0
+      var v = startCand
+      while v <= 9 && found == 0 {
+        if canPlace(g, curPos, v) == 1 {
+          g[curPos] = v
+          trailPos = append(trailPos, curPos)
+          trailNext = append(trailNext, v + 1)  // next to try if backtracked
+          curPos = nextEmpty(g, curPos + 1)
+          startCand = 1
+          found = 1
+        } else {
+          v = v + 1
+        }
+      }
+      if found == 0 {
+        // No candidate worked; backtrack
+        if len(trailPos) == 0 {
+          failed = 1
+        } else {
+          let last = len(trailPos) - 1
+          let backPos = trailPos[last]
+          let nextCand = trailNext[last]
+          trailPos = trailPos[0:last]
+          trailNext = trailNext[0:last]
+          g[backPos] = 0
+          curPos = backPos
+          startCand = nextCand
+        }
+      }
+    }
+  }
+
+  return g
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    if len(line) == 81 {
+      var grid: list<int> = []
+      var i = 0
+      while i < 81 {
+        let ch = line[i:i+1]
+        if ch == "." { grid = append(grid, 0) } else { grid = append(grid, int(ch)) }
+        i = i + 1
+      }
+
+      let sol = solveSudoku(grid)
+
+      var out = ""
+      i = 0
+      while i < 81 {
+        out = out + str(sol[i])
+        i = i + 1
+      }
+      print(out)
+    }
+    line = input()
+  }
+}
+
+main()

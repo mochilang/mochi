@@ -1,0 +1,81 @@
+// Solution for SPOJ ZRELY1 - Logic Circuit Reliability
+// https://www.spoj.com/problems/ZRELY1/
+// Baseline strategy: output the circuit unchanged.
+// This pass-through approach scores the baseline COF.
+// Input: Z test cases. Each: K, 6 gate-type params, I inputs, O outputs, N gates.
+// Output per test case: N gates in same format.
+
+fun split(s: string): list<string> {
+  var r: list<string> = []
+  var c = ""
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == " " {
+      if len(c) > 0 { r = append(r, c); c = "" }
+    } else { c = c + s[i:i+1] }
+    i = i + 1
+  }
+  if len(c) > 0 { r = append(r, c) }
+  return r
+}
+
+fun main() {
+  let zLine = input()
+  if zLine == "" { return }
+  let Z = int(zLine)
+  var zi = 0
+  while zi < Z {
+    // Read K (redundancy factor, float - read but ignore)
+    let kLine = input()
+
+    // Read 6 gate-type param lines (S q pairs)
+    var gi = 0
+    while gi < 6 {
+      let paramLine = input()
+      gi = gi + 1
+    }
+
+    // Read number of inputs I
+    let iLine = input()
+    let I = int(iLine)
+    var ii = 0
+    while ii < I {
+      let inputName = input()
+      ii = ii + 1
+    }
+
+    // Read number of outputs O
+    let oLine = input()
+    let O = int(oLine)
+    var oi = 0
+    while oi < O {
+      let outputName = input()
+      oi = oi + 1
+    }
+
+    // Read number of gates N
+    let nLine = input()
+    let N = int(nLine)
+
+    // Store and echo all gate lines
+    var gates: list<string> = []
+    var ni = 0
+    while ni < N {
+      let gateLine = input()
+      gates = append(gates, gateLine)
+      ni = ni + 1
+    }
+
+    // Output: N gates unchanged
+    print(N)
+    ni = 0
+    while ni < N {
+      print(gates[ni])
+      ni = ni + 1
+    }
+
+    zi = zi + 1
+  }
+}
+
+main()

@@ -1,0 +1,79 @@
+// Solution for SPOJ HMRO - Help the Military Recruitment Office
+// https://www.spoj.com/problems/HMRO/
+// Sort recruits: height desc, weight desc, shoe size desc, name asc.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Compare two recruits: returns 1 if recruit at idx a should come before idx b
+// Sort: height desc, weight desc, shoe desc, name asc
+fun comesBefore(names: list<string>, heights: list<int>, weights: list<int>, shoes: list<int>, a: int, b: int): int {
+  if heights[a] != heights[b] {
+    if heights[a] > heights[b] { return 1 } else { return 0 }
+  }
+  if weights[a] != weights[b] {
+    if weights[a] > weights[b] { return 1 } else { return 0 }
+  }
+  if shoes[a] != shoes[b] {
+    if shoes[a] > shoes[b] { return 1 } else { return 0 }
+  }
+  // name ascending
+  if names[a] < names[b] { return 1 } else { return 0 }
+}
+
+fun main() {
+  let firstLine = input()
+  if firstLine == "" { return }
+  let n = int(firstLine)
+
+  var names: list<string> = []
+  var heights: list<int> = []
+  var weights: list<int> = []
+  var shoes: list<int> = []
+
+  var i = 0
+  while i < n {
+    let parts = split(input())
+    names = append(names, parts[0])
+    heights = append(heights, int(parts[1]))
+    weights = append(weights, int(parts[2]))
+    shoes = append(shoes, int(parts[3]))
+    i = i + 1
+  }
+
+  // Insertion sort
+  i = 1
+  while i < n {
+    var j = i
+    while j > 0 && comesBefore(names, heights, weights, shoes, j, j - 1) == 1 {
+      // swap j and j-1
+      let tn = names[j]; names[j] = names[j-1]; names[j-1] = tn
+      let th = heights[j]; heights[j] = heights[j-1]; heights[j-1] = th
+      let tw = weights[j]; weights[j] = weights[j-1]; weights[j-1] = tw
+      let ts = shoes[j]; shoes[j] = shoes[j-1]; shoes[j-1] = ts
+      j = j - 1
+    }
+    i = i + 1
+  }
+
+  i = 0
+  while i < n {
+    print(names[i] + " " + str(heights[i]) + " " + str(weights[i]) + " " + str(shoes[i]))
+    i = i + 1
+  }
+}
+
+main()

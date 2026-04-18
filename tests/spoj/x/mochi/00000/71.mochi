@@ -1,0 +1,101 @@
+// Solution for SPOJ Tree (TREE1)
+// https://www.spoj.com/problems/TREE1/
+// Count permutations consistent with a BST given in prefix order.
+// Formula: for a node with left subtree size L and right subtree size R,
+// ways = C(L+R, L) * ways(left) * ways(right)
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Precompute C(n,k) for n up to 30
+var C: list<list<int>> = []
+
+fun initC() {
+  var i = 0
+  while i <= 30 {
+    var row: list<int> = []
+    var j = 0
+    while j <= 30 {
+      row = append(row, 0)
+      j = j + 1
+    }
+    C = append(C, row)
+    i = i + 1
+  }
+  i = 0
+  while i <= 30 {
+    C[i][0] = 1
+    var j = 1
+    while j <= i {
+      C[i][j] = C[i-1][j-1] + C[i-1][j]
+      j = j + 1
+    }
+    i = i + 1
+  }
+}
+
+// Keys stored in prefix order; build BST recursively
+// Returns [size, ways, next_index]
+// Uses a global keys list
+
+var keys: list<int> = []
+
+fun buildAndCount(idx: int, minVal: int, maxVal: int): list<int> {
+  if idx >= len(keys) {
+    var r: list<int> = [0, 1, idx]
+    return r
+  }
+  let val = keys[idx]
+  if val < minVal || val > maxVal {
+    var r: list<int> = [0, 1, idx]
+    return r
+  }
+  // This node is root, left subtree has keys < val, right has keys > val
+  let leftRes = buildAndCount(idx + 1, minVal, val - 1)
+  let leftSize = leftRes[0]
+  let leftWays = leftRes[1]
+  let afterLeft = leftRes[2]
+  let rightRes = buildAndCount(afterLeft, val + 1, maxVal)
+  let rightSize = rightRes[0]
+  let rightWays = rightRes[1]
+  let afterRight = rightRes[2]
+  let total = leftSize + rightSize + 1
+  let ways = C[leftSize + rightSize][leftSize] * leftWays * rightWays
+  var r: list<int> = [total, ways, afterRight]
+  return r
+}
+
+fun main() {
+  initC()
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let n = int(input())
+    let parts = split(input())
+    keys = []
+    var i = 0
+    while i < n {
+      keys = append(keys, int(parts[i]))
+      i = i + 1
+    }
+    let res = buildAndCount(0, 1, n)
+    print(res[1])
+    ti = ti + 1
+  }
+}
+
+main()

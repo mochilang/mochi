@@ -1,0 +1,36 @@
+fun matches(close: string, open: string): bool {
+  return (close == ")" && open == "(") || (close == "]" && open == "[") || (close == "}" && open == "{")
+}
+
+fun isValid(s: string): bool {
+  var stack: list<string> = []
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == "(" || ch == "[" || ch == "{" {
+      stack = append(stack, ch)
+    } else {
+      if len(stack) == 0 { return false }
+      let open = stack[len(stack)-1]
+      stack = stack[:len(stack)-1]
+      if !matches(ch, open) { return false }
+    }
+    i = i + 1
+  }
+  return len(stack) == 0
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var i = 0
+  while i < t {
+    var s = input()
+    while s == "" { s = input() }
+    print(if isValid(s) { "true" } else { "false" })
+    i = i + 1
+  }
+}
+
+main()

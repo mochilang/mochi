@@ -1,3 +1,5 @@
+type: [{string: any}]
+plan:
 (select
   (map
     (entry
@@ -82,25 +84,25 @@
         )
       )
       (where
-        (binary <=
+        (binary &&
           (binary &&
-            (binary >=
-              (binary &&
-                (binary ==
-                  (call substring
-                    (selector p_name (selector p))
-                    (int 0)
-                    (call len (selector prefix))
-                  )
-                  (selector prefix)
-                )
-                (selector o_orderdate (selector o))
+            (binary ==
+              (call substring
+                (selector p_name (selector p))
+                (int 0)
+                (call len (selector prefix))
               )
+              (selector prefix)
+            )
+            (binary >=
+              (selector o_orderdate (selector o))
               (selector start_date)
             )
-            (selector o_orderdate (selector o))
           )
-          (selector end_date)
+          (binary <=
+            (selector o_orderdate (selector o))
+            (selector end_date)
+          )
         )
         (join
           (join
@@ -126,15 +128,15 @@
               )
               (scan ps (selector partsupp))
               (on
-                (binary ==
-                  (binary &&
-                    (binary ==
-                      (selector ps_partkey (selector ps))
-                      (selector l_partkey (selector l))
-                    )
-                    (selector ps_suppkey (selector ps))
+                (binary &&
+                  (binary ==
+                    (selector ps_partkey (selector ps))
+                    (selector l_partkey (selector l))
                   )
-                  (selector l_suppkey (selector l))
+                  (binary ==
+                    (selector ps_suppkey (selector ps))
+                    (selector l_suppkey (selector l))
+                  )
                 )
               )
             )

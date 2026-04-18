@@ -1,0 +1,110 @@
+// HASHIT - Hash it!
+// Hash: h(key)=19*sum(ASCII(ai)*i) mod 101
+// Collision: (h + j^2 + 23*j) mod 101, j=0..19
+
+fun buildAscii(): map<string, int> {
+  var m: map<string, int> = {}
+  m["A"]=65; m["B"]=66; m["C"]=67; m["D"]=68; m["E"]=69
+  m["F"]=70; m["G"]=71; m["H"]=72; m["I"]=73; m["J"]=74
+  m["K"]=75; m["L"]=76; m["M"]=77; m["N"]=78; m["O"]=79
+  m["P"]=80; m["Q"]=81; m["R"]=82; m["S"]=83; m["T"]=84
+  m["U"]=85; m["V"]=86; m["W"]=87; m["X"]=88; m["Y"]=89
+  m["Z"]=90
+  m["a"]=97; m["b"]=98; m["c"]=99; m["d"]=100; m["e"]=101
+  m["f"]=102; m["g"]=103; m["h"]=104; m["i"]=105; m["j"]=106
+  m["k"]=107; m["l"]=108; m["m"]=109; m["n"]=110; m["o"]=111
+  m["p"]=112; m["q"]=113; m["r"]=114; m["s"]=115; m["t"]=116
+  m["u"]=117; m["v"]=118; m["w"]=119; m["x"]=120; m["y"]=121
+  m["z"]=122
+  return m
+}
+
+fun hashKey(key: string, ascii: map<string, int>): int {
+  var h = 0
+  var i = 0
+  while i < len(key) {
+    let ch = key[i:i+1]
+    h = h + ascii[ch] * (i + 1)
+    i = i + 1
+  }
+  return (19 * h) % 101
+}
+
+fun probePos(h0: int, j: int): int {
+  return (h0 + j * j + 23 * j) % 101
+}
+
+fun main() {
+  let ascii = buildAscii()
+  let t = int(input())
+  var table: map<string, string> = {}
+  var tc = 0
+  while tc < t {
+    let n = int(input())
+    var si = 0
+    while si < 101 {
+      table[str(tc) + ":" + str(si)] = ""
+      si = si + 1
+    }
+    var op = 0
+    while op < n {
+      let cmdLine = input()
+      let cmd = cmdLine[0:3]
+      let key = cmdLine[4:]
+      let h0 = hashKey(key, ascii)
+      if cmd == "ADD" {
+        var j = 0
+        var done = 0
+        while j <= 19 {
+          if done == 0 {
+            let pos = probePos(h0, j)
+            let slot = table[str(tc) + ":" + str(pos)]
+            if slot == key {
+              done = 1
+            } else if slot == "" {
+              table[str(tc) + ":" + str(pos)] = key
+              done = 1
+            }
+          }
+          j = j + 1
+        }
+      } else {
+        var j = 0
+        var done = 0
+        while j <= 19 {
+          if done == 0 {
+            let pos = probePos(h0, j)
+            let slot = table[str(tc) + ":" + str(pos)]
+            if slot == key {
+              table[str(tc) + ":" + str(pos)] = ""
+              done = 1
+            } else if slot == "" {
+              done = 1
+            }
+          }
+          j = j + 1
+        }
+      }
+      op = op + 1
+    }
+    var count = 0
+    var idx = 0
+    while idx < 101 {
+      let slot = table[str(tc) + ":" + str(idx)]
+      if slot != "" { count = count + 1 }
+      idx = idx + 1
+    }
+    print(str(count))
+    idx = 0
+    while idx < 101 {
+      let slot = table[str(tc) + ":" + str(idx)]
+      if slot != "" {
+        print(str(idx) + ":" + slot)
+      }
+      idx = idx + 1
+    }
+    tc = tc + 1
+  }
+}
+
+main()

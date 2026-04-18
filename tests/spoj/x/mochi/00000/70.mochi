@@ -1,0 +1,211 @@
+// Solution for SPOJ Relations (RELATS1)
+// https://www.spoj.com/problems/RELATS1/
+// Find smallest k for k-correct G-labeling.
+// Use union-find for '=' edges, then longest path for '<'/'>' edges.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Union-Find stored as global lists
+var ufParent: list<int> = []
+var ufRank: list<int> = []
+
+fun find(x: int): int {
+  if ufParent[x] != x {
+    ufParent[x] = find(ufParent[x])
+  }
+  return ufParent[x]
+}
+
+fun unite(x: int, y: int) {
+  let px = find(x)
+  let py = find(y)
+  if px == py { return }
+  if ufRank[px] < ufRank[py] {
+    ufParent[px] = py
+  } else if ufRank[px] > ufRank[py] {
+    ufParent[py] = px
+  } else {
+    ufParent[py] = px
+    ufRank[px] = ufRank[px] + 1
+  }
+}
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let nm = split(input())
+    let n = int(nm[0])
+    let m = int(nm[1])
+
+    // Init union-find (size n+1, indices 1..n)
+    ufParent = []
+    ufRank = []
+    var i = 0
+    while i <= n {
+      ufParent = append(ufParent, i)
+      ufRank = append(ufRank, 0)
+      i = i + 1
+    }
+
+    // Read edges
+    var eu: list<int> = []
+    var ev: list<int> = []
+    var el: list<int> = []
+
+    var edges: list<string> = []
+    if m > 0 {
+      edges = split(input())
+    } else {
+      let dummy = input()
+    }
+
+    i = 0
+    while i < m {
+      let u = int(edges[i * 3])
+      let v = int(edges[i * 3 + 1])
+      let lab = int(edges[i * 3 + 2])
+      eu = append(eu, u)
+      ev = append(ev, v)
+      el = append(el, lab)
+      if lab == 0 {
+        unite(u, v)
+      }
+      i = i + 1
+    }
+
+    // Check: no strict edge within same component
+    var ok = 1
+    i = 0
+    while i < m {
+      if el[i] != 0 {
+        if find(eu[i]) == find(ev[i]) {
+          ok = 0
+        }
+      }
+      i = i + 1
+    }
+
+    if ok == 0 {
+      print("NO")
+      ti = ti + 1
+      continue
+    }
+
+    // Assign component indices using a list (rootToComp[root] = comp_idx or -1)
+    // Roots are in range 0..n, so list size n+1 suffices
+    var rootToComp: list<int> = []
+    i = 0
+    while i <= n {
+      rootToComp = append(rootToComp, 0 - 1)
+      i = i + 1
+    }
+    var nc = 0
+    var ni = 1
+    while ni <= n {
+      let p = find(ni)
+      if rootToComp[p] == 0 - 1 {
+        rootToComp[p] = nc
+        nc = nc + 1
+      }
+      ni = ni + 1
+    }
+
+    // Build adjacency list and in-degree for components
+    var adjList: list<list<int>> = []
+    var indeg: list<int> = []
+    i = 0
+    while i < nc {
+      var empty: list<int> = []
+      adjList = append(adjList, empty)
+      indeg = append(indeg, 0)
+      i = i + 1
+    }
+
+    // Add strict edges
+    i = 0
+    while i < m {
+      if el[i] != 0 {
+        var fromComp = 0
+        var toComp = 0
+        if el[i] == 0 - 1 {
+          // eu[i] < ev[i]: edge from comp(eu) to comp(ev)
+          fromComp = rootToComp[find(eu[i])]
+          toComp = rootToComp[find(ev[i])]
+        } else {
+          // eu[i] > ev[i]: edge from comp(ev) to comp(eu)
+          fromComp = rootToComp[find(ev[i])]
+          toComp = rootToComp[find(eu[i])]
+        }
+        adjList[fromComp] = append(adjList[fromComp], toComp)
+        indeg[toComp] = indeg[toComp] + 1
+      }
+      i = i + 1
+    }
+
+    // Topological sort (Kahn's algorithm) + longest path
+    var dist: list<int> = []
+    i = 0
+    while i < nc {
+      dist = append(dist, 0)
+      i = i + 1
+    }
+
+    var queue: list<int> = []
+    i = 0
+    while i < nc {
+      if indeg[i] == 0 {
+        queue = append(queue, i)
+      }
+      i = i + 1
+    }
+
+    var processed = 0
+    var maxDist = 0
+    var qi = 0
+    while qi < len(queue) {
+      let u = queue[qi]
+      qi = qi + 1
+      processed = processed + 1
+      let neighbors = adjList[u]
+      var j = 0
+      while j < len(neighbors) {
+        let v = neighbors[j]
+        if dist[u] + 1 > dist[v] {
+          dist[v] = dist[u] + 1
+        }
+        indeg[v] = indeg[v] - 1
+        if indeg[v] == 0 {
+          queue = append(queue, v)
+        }
+        j = j + 1
+      }
+      if dist[u] > maxDist { maxDist = dist[u] }
+    }
+
+    if processed < nc {
+      print("NO")
+    } else {
+      print(maxDist)
+    }
+
+    ti = ti + 1
+  }
+}
+
+main()

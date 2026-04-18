@@ -1,0 +1,20 @@
+// Solution for SPOJ MUL - Fast Multiplication
+// https://www.spoj.com/problems/MUL/
+// Mochi's bigint type handles arbitrary precision, so just multiply directly.
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var i = 0
+  while i < t {
+    let aLine = input()
+    let bLine = input()
+    let a: bigint = aLine as bigint
+    let b: bigint = bLine as bigint
+    print(str(a * b))
+    i = i + 1
+  }
+}
+
+main()

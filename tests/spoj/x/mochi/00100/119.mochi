@@ -1,0 +1,187 @@
+// SPOJ Servers (SERVERS)
+// For each server V, compute B(V) = set of servers interesting for V.
+// W is interesting for V iff r(W) >= r(U) for all U with D(V,U) <= D(V,W).
+// Algorithm: Dijkstra from each V, then count "rank maximums" in distance order.
+// Uses O(n^2) Dijkstra (adequate for n <= ~1000 in interpreted language).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let zStr = input()
+  let z = int(zStr)
+  var tc = 0
+  while tc < z {
+    let nm = split(input())
+    let n = int(nm[0])
+    let m = int(nm[1])
+
+    // Read ranks (1-indexed servers)
+    var rank: list<int> = []
+    var i = 0
+    while i < n { rank = append(rank, 0); i = i + 1 }
+    i = 0
+    while i < n {
+      rank[i] = int(input())
+      i = i + 1
+    }
+
+    // Build adjacency list: adj stores (to, weight) pairs
+    // adjHead[v] = start index in adjTo/adjW, adjHead[v+1] = end
+    var adjCnt: list<int> = []
+    i = 0
+    while i < n { adjCnt = append(adjCnt, 0); i = i + 1 }
+
+    var edges: list<int> = []
+    i = 0
+    while i < m {
+      let parts = split(input())
+      let a = int(parts[0]) - 1
+      let b = int(parts[1]) - 1
+      let t = int(parts[2])
+      edges = append(edges, a)
+      edges = append(edges, b)
+      edges = append(edges, t)
+      adjCnt[a] = adjCnt[a] + 1
+      adjCnt[b] = adjCnt[b] + 1
+      i = i + 1
+    }
+
+    // Build CSR adjacency
+    var adjHead: list<int> = []
+    adjHead = append(adjHead, 0)
+    i = 0
+    while i < n {
+      adjHead = append(adjHead, adjHead[i] + adjCnt[i])
+      i = i + 1
+    }
+    let totalEdges = adjHead[n]
+    var adjTo: list<int> = []
+    var adjW: list<int> = []
+    i = 0
+    while i < totalEdges { adjTo = append(adjTo, 0); adjW = append(adjW, 0); i = i + 1 }
+    var pos: list<int> = []
+    i = 0
+    while i < n { pos = append(pos, adjHead[i]); i = i + 1 }
+    i = 0
+    while i < m {
+      let a = edges[i*3]
+      let b = edges[i*3+1]
+      let t = edges[i*3+2]
+      adjTo[pos[a]] = b; adjW[pos[a]] = t; pos[a] = pos[a] + 1
+      adjTo[pos[b]] = a; adjW[pos[b]] = t; pos[b] = pos[b] + 1
+      i = i + 1
+    }
+
+    let INF = 1000000000
+
+    // Run Dijkstra from each source, compute sum |B(V)|
+    var totalCount = 0
+
+    var src = 0
+    while src < n {
+      // O(n^2) Dijkstra
+      var dist: list<int> = []
+      var vis: list<int> = []
+      i = 0
+      while i < n { dist = append(dist, INF); vis = append(vis, 0); i = i + 1 }
+      dist[src] = 0
+
+      var iter = 0
+      while iter < n {
+        // Find unvisited node with min dist
+        var u = -1
+        var minD = INF + 1
+        var j = 0
+        while j < n {
+          if vis[j] == 0 && dist[j] < minD {
+            u = j
+            minD = dist[j]
+          }
+          j = j + 1
+        }
+        if u < 0 { break }
+        vis[u] = 1
+
+        // Relax neighbors
+        let start = adjHead[u]
+        let stop = adjHead[u+1]
+        var ei = start
+        while ei < stop {
+          let v = adjTo[ei]
+          let w = adjW[ei]
+          if dist[u] + w < dist[v] { dist[v] = dist[u] + w }
+          ei = ei + 1
+        }
+        iter = iter + 1
+      }
+
+      // Compute |B(src)|: scan nodes in order of distance
+      // Group by distance, find "rank maximums"
+      // Since n is small, sort by dist using simple insertion sort
+      var order: list<int> = []
+      i = 0
+      while i < n { order = append(order, i); i = i + 1 }
+
+      // Insertion sort by dist[order[i]]
+      i = 1
+      while i < n {
+        let key = order[i]
+        let keyD = dist[key]
+        var j = i - 1
+        while j >= 0 && dist[order[j]] > keyD {
+          order[j+1] = order[j]
+          j = j - 1
+        }
+        order[j+1] = key
+        i = i + 1
+      }
+
+      // Process groups by distance
+      var maxRank = 0
+      var gi = 0
+      while gi < n {
+        if dist[order[gi]] == INF { break }
+        let d = dist[order[gi]]
+        // Find all nodes at this distance
+        var maxAtD = 0
+        var gj = gi
+        while gj < n && dist[order[gj]] == d {
+          let rk = rank[order[gj]]
+          if rk > maxAtD { maxAtD = rk }
+          gj = gj + 1
+        }
+        if maxAtD >= maxRank {
+          // Count nodes at this distance with rank = maxAtD
+          var gk = gi
+          while gk < n && dist[order[gk]] == d {
+            if rank[order[gk]] == maxAtD { totalCount = totalCount + 1 }
+            gk = gk + 1
+          }
+          maxRank = maxAtD
+        }
+        gi = gj
+      }
+
+      src = src + 1
+    }
+
+    print(str(totalCount))
+    tc = tc + 1
+  }
+}
+
+main()

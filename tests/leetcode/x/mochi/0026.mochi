@@ -1,0 +1,65 @@
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    var nums: list<int> = []
+    if n > 0 {
+      var numsLine = input()
+      while numsLine == "" { numsLine = input() }
+      let p = split(numsLine)
+      var i = 0
+      while i < n {
+        nums = append(nums, int(p[i]))
+        i = i + 1
+      }
+    }
+
+    if n > 0 {
+      var res: list<int> = [nums[0]]
+      var i = 1
+      while i < n {
+        if nums[i] != nums[i-1] {
+          res = append(res, nums[i])
+        }
+        i = i + 1
+      }
+      var resStr = ""
+      var k = 0
+      while k < len(res) {
+        if k > 0 { resStr = resStr + " " }
+        resStr = resStr + str(res[k])
+        k = k + 1
+      }
+      print(resStr)
+    } else {
+      print("")
+    }
+    tc = tc + 1
+  }
+}
+
+main()

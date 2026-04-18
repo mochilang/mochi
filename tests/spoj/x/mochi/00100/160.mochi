@@ -1,0 +1,161 @@
+// Solution for SPOJ Choosing a Palindromic Sequence (PALSEC)
+// https://www.spoj.com/problems/PALSEC/
+// Count binary sequences P such that z1z2...zn is a palindrome (zi=xi if pi=1 else yi).
+// Recursive character-level matching with word-level branching.
+// Pass word lists as parameters (not globals) to avoid Mochi runtime var-corruption bug.
+
+fun getChar(xWords: list<string>, yWords: list<string>, wi: int, choice: int, pos: int): string {
+  if choice == 0 { return xWords[wi][pos:pos+1] }
+  return yWords[wi][pos:pos+1]
+}
+
+fun wLen(xWords: list<string>, yWords: list<string>, wi: int, choice: int): int {
+  if choice == 0 { return len(xWords[wi]) }
+  return len(yWords[wi])
+}
+
+fun rec(xWords: list<string>, yWords: list<string>, lwi: int, lcp: int, lc: int, rwi: int, rcp: int, rc: int, n: int): int {
+  if lwi > rwi { return 1 }
+  if lwi == rwi {
+    // Same word from both sides (must have same choice: lc == rc)
+    let wl = wLen(xWords, yWords, lwi, lc)
+    if lcp > wl - 1 - rcp { return 1 }
+    if lcp == wl - 1 - rcp { return 1 }  // odd length middle char
+    let lCh = getChar(xWords, yWords, lwi, lc, lcp)
+    let rCh = getChar(xWords, yWords, rwi, rc, wLen(xWords, yWords, rwi, rc) - 1 - rcp)
+    if lCh != rCh { return 0 }
+    let newLcp = lcp + 1
+    let newRcp = rcp + 1
+    if newLcp > wl - 1 - newRcp { return 1 }
+    return rec(xWords, yWords, lwi, newLcp, lc, rwi, newRcp, rc, n)
+  }
+  // Different words
+  let wLlen = wLen(xWords, yWords, lwi, lc)
+  let wRlen = wLen(xWords, yWords, rwi, rc)
+  let lCh = getChar(xWords, yWords, lwi, lc, lcp)
+  let rCh = getChar(xWords, yWords, rwi, rc, wRlen - 1 - rcp)
+  if lCh != rCh { return 0 }
+  let newLcp = lcp + 1
+  let newRcp = rcp + 1
+  var newLwi = lwi
+  var newLcp2 = newLcp
+  var newLc = lc
+  var leftExhausted = 0
+  var newRwi = rwi
+  var newRcp2 = newRcp
+  var newRc = rc
+  var rightExhausted = 0
+  if newLcp >= wLlen { newLwi = lwi + 1; newLcp2 = 0; leftExhausted = 1 }
+  if newRcp >= wRlen { newRwi = rwi - 1; newRcp2 = 0; rightExhausted = 1 }
+  if newLwi > newRwi { return 1 }
+  if leftExhausted == 1 && rightExhausted == 1 {
+    if newLwi == newRwi {
+      var total = 0
+      var ch = 0
+      while ch < 2 {
+        total = total + rec(xWords, yWords, newLwi, newLcp2, ch, newRwi, newRcp2, ch, n)
+        ch = ch + 1
+      }
+      return total
+    } else {
+      var total = 0
+      var nlc = 0
+      while nlc < 2 {
+        var nrc = 0
+        while nrc < 2 {
+          total = total + rec(xWords, yWords, newLwi, newLcp2, nlc, newRwi, newRcp2, nrc, n)
+          nrc = nrc + 1
+        }
+        nlc = nlc + 1
+      }
+      return total
+    }
+  } else if leftExhausted == 1 {
+    if newLwi == newRwi {
+      return rec(xWords, yWords, newLwi, newLcp2, newRc, newRwi, newRcp2, newRc, n)
+    }
+    var total = 0
+    var nlc = 0
+    while nlc < 2 {
+      total = total + rec(xWords, yWords, newLwi, newLcp2, nlc, newRwi, newRcp2, newRc, n)
+      nlc = nlc + 1
+    }
+    return total
+  } else if rightExhausted == 1 {
+    if newLwi == newRwi {
+      return rec(xWords, yWords, newLwi, newLcp2, newLc, newRwi, newRcp2, newLc, n)
+    }
+    var total = 0
+    var nrc = 0
+    while nrc < 2 {
+      total = total + rec(xWords, yWords, newLwi, newLcp2, newLc, newRwi, newRcp2, nrc, n)
+      nrc = nrc + 1
+    }
+    return total
+  } else {
+    return rec(xWords, yWords, newLwi, newLcp2, newLc, newRwi, newRcp2, newRc, n)
+  }
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    var xWords: list<string> = []
+    var yWords: list<string> = []
+    var i = 0
+    while i < n {
+      var w = input()
+      while w == "" { w = input() }
+      xWords = append(xWords, w)
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      var w = input()
+      while w == "" { w = input() }
+      yWords = append(yWords, w)
+      i = i + 1
+    }
+    var total = 0
+    if n == 0 {
+      print(0)
+      ti = ti + 1
+      continue
+    }
+    if n == 1 {
+      var ch = 0
+      while ch < 2 {
+        let wL = if ch == 0 { xWords[0] } else { yWords[0] }
+        var isPalin = 1
+        let wl = len(wL)
+        var pi = 0
+        while pi < (wl / 2) as int {
+          if wL[pi:pi+1] != wL[wl-1-pi:wl-pi] { isPalin = 0; break }
+          pi = pi + 1
+        }
+        if isPalin == 1 { total = total + 1 }
+        ch = ch + 1
+      }
+    } else {
+      var lc = 0
+      while lc < 2 {
+        var rc = 0
+        while rc < 2 {
+          total = total + rec(xWords, yWords, 0, 0, lc, n-1, 0, rc, n)
+          rc = rc + 1
+        }
+        lc = lc + 1
+      }
+    }
+    print(total)
+    ti = ti + 1
+  }
+}
+
+main()

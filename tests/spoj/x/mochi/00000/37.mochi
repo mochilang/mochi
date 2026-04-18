@@ -1,0 +1,114 @@
+// Solution for SPOJ The Proper Key (PROPKEY)
+// https://www.spoj.com/problems/PROPKEY/
+// Key R×C falls into lock D×W. For each horizontal shift s (0..W-C),
+// compute the first collision depth using: min over columns c of
+// (first_lock_row[s+c] + R - last_key_row[c]).
+// "Can fall through" if for some shift, no collision occurs in any depth.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    let rcLine = split(input())
+    let R = int(rcLine[0])
+    let C = int(rcLine[1])
+
+    // Read key, compute last_key_row[c] = max row r with key[r][c]='#' (-1 if none)
+    var lastKeyRow: list<int> = []
+    var c = 0
+    while c < C { lastKeyRow = append(lastKeyRow, 0 - 1); c = c + 1 }
+
+    var r = 0
+    while r < R {
+      let row = input()
+      c = 0
+      while c < C {
+        if row[c:c+1] == "#" {
+          lastKeyRow[c] = r
+        }
+        c = c + 1
+      }
+      r = r + 1
+    }
+
+    let dwLine = split(input())
+    let D = int(dwLine[0])
+    let W = int(dwLine[1])
+
+    // Read lock, compute first_lock_row[lc] = min row l with lock[l][lc]='#' (D if none)
+    var firstLockRow: list<int> = []
+    var lc = 0
+    while lc < W { firstLockRow = append(firstLockRow, D); lc = lc + 1 }
+
+    var l = 0
+    while l < D {
+      let row = input()
+      lc = 0
+      while lc < W {
+        if row[lc:lc+1] == "#" && firstLockRow[lc] == D {
+          firstLockRow[lc] = l
+        }
+        lc = lc + 1
+      }
+      l = l + 1
+    }
+
+    // For each shift s (0..W-C), find min collision depth
+    // min_block = min over c where lastKeyRow[c]>=0 and firstLockRow[s+c]<D of
+    //   (firstLockRow[s+c] + R - lastKeyRow[c])
+    // If no such c exists: min_block = infinity (can fall through for this shift)
+
+    var maxDepth = 0
+    var canFallThrough = 0
+
+    var s = 0
+    while s <= W - C {
+      var minBlock = 0 - 1  // -1 means infinity
+      c = 0
+      while c < C {
+        if lastKeyRow[c] >= 0 && firstLockRow[s+c] < D {
+          let block = firstLockRow[s+c] + R - lastKeyRow[c]
+          if minBlock == 0 - 1 || block < minBlock {
+            minBlock = block
+          }
+        }
+        c = c + 1
+      }
+      if minBlock == 0 - 1 {
+        canFallThrough = 1
+      } else {
+        let depth = minBlock - 1
+        if depth > maxDepth { maxDepth = depth }
+      }
+      s = s + 1
+    }
+
+    if canFallThrough == 1 {
+      print("The key can fall through.")
+    } else {
+      print("The key falls to depth " + str(maxDepth) + ".")
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

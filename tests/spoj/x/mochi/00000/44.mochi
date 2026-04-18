@@ -1,0 +1,35 @@
+// Solution for SPOJ SCYPHER - Substitution Cipher
+// https://www.spoj.com/problems/SCYPHER/
+// Given plaintext-ciphertext pair to establish key, decode another ciphertext.
+
+fun main() {
+  var plain = input()
+  while plain != "" {
+    let cipher = input()
+    let coded = input()
+
+    // Build decoding map: cipher char -> plain char
+    var decodeKey: map<string, string> = {}
+    var i = 0
+    while i < len(plain) {
+      let p = plain[i:i+1]
+      let c = cipher[i:i+1]
+      decodeKey[c] = p
+      i = i + 1
+    }
+
+    // Decode the coded message
+    var result = ""
+    i = 0
+    while i < len(coded) {
+      let ch = coded[i:i+1]
+      result = result + decodeKey[ch]
+      i = i + 1
+    }
+    print(result)
+
+    plain = input()
+  }
+}
+
+main()

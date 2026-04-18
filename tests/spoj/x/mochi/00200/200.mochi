@@ -1,0 +1,162 @@
+// SPOJ MONODIG - Monodigital Representations
+// https://www.spoj.com/problems/MONODIG/
+// Find minimum number of K-digits to represent X using +,-,*,/ with brackets.
+// DP: sets[d] = set of integers expressible with exactly d copies of digit K.
+// sets[d] includes K*repunit(d) plus all a op b for a in sets[i], b in sets[d-i].
+// Only track values in range [-MAXVAL, MAXVAL] to bound computation.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Add value v to map m (as set) and list vals, if not already present and within bounds
+// Returns whether actually added (1) or not (0)
+// Inline: just check m[v], if nil add
+
+fun combine(la: list<int>, lb: list<int>, m: map<int,int>, vals: list<int>, maxv: int): list<int> {
+  var ai = 0
+  while ai < len(la) {
+    let a = la[ai]
+    var bi = 0
+    while bi < len(lb) {
+      let b = lb[bi]
+      // +
+      let v1 = a + b
+      if v1 >= 0 - maxv && v1 <= maxv && m[v1] == nil { m[v1] = 1; vals = append(vals, v1) }
+      // -
+      let v2 = a - b
+      if v2 >= 0 - maxv && v2 <= maxv && m[v2] == nil { m[v2] = 1; vals = append(vals, v2) }
+      // *
+      let v3 = a * b
+      if v3 >= 0 - maxv && v3 <= maxv && m[v3] == nil { m[v3] = 1; vals = append(vals, v3) }
+      // /
+      if b != 0 {
+        if a % b == 0 {
+          let v4 = int(a / b)
+          if v4 >= 0 - maxv && v4 <= maxv && m[v4] == nil { m[v4] = 1; vals = append(vals, v4) }
+        }
+      }
+      bi = bi + 1
+    }
+    ai = ai + 1
+  }
+  return vals
+}
+
+fun addVal(v: int, m: map<int,int>, vals: list<int>, maxv: int): list<int> {
+  if v >= 0 - maxv && v <= maxv && m[v] == nil { m[v] = 1; vals = append(vals, v) }
+  return vals
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var kLine = input()
+    while kLine == "" { kLine = input() }
+    let K = int(kLine)
+
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    let MAXVAL = 100000000  // Max value to track (up to 10^8 for intermediate products)
+
+    // repunit[d] = 111...1 with d digits
+    var repunit: list<int> = [0, 1, 11, 111, 1111, 11111, 111111, 1111111, 11111111]
+
+    // 8 maps (sets) for digit counts 1..8
+    var m1: map<int,int> = {}; var v1: list<int> = []
+    var m2: map<int,int> = {}; var v2: list<int> = []
+    var m3: map<int,int> = {}; var v3: list<int> = []
+    var m4: map<int,int> = {}; var v4: list<int> = []
+    var m5: map<int,int> = {}; var v5: list<int> = []
+    var m6: map<int,int> = {}; var v6: list<int> = []
+    var m7: map<int,int> = {}; var v7: list<int> = []
+    var m8: map<int,int> = {}; var v8: list<int> = []
+
+    // d=1
+    v1 = addVal(K * repunit[1], m1, v1, MAXVAL)
+    // d=2
+    v2 = addVal(K * repunit[2], m2, v2, MAXVAL)
+    v2 = combine(v1, v1, m2, v2, MAXVAL)
+    // d=3
+    v3 = addVal(K * repunit[3], m3, v3, MAXVAL)
+    v3 = combine(v1, v2, m3, v3, MAXVAL)
+    v3 = combine(v2, v1, m3, v3, MAXVAL)
+    // d=4
+    v4 = addVal(K * repunit[4], m4, v4, MAXVAL)
+    v4 = combine(v1, v3, m4, v4, MAXVAL)
+    v4 = combine(v2, v2, m4, v4, MAXVAL)
+    v4 = combine(v3, v1, m4, v4, MAXVAL)
+    // d=5
+    v5 = addVal(K * repunit[5], m5, v5, MAXVAL)
+    v5 = combine(v1, v4, m5, v5, MAXVAL)
+    v5 = combine(v2, v3, m5, v5, MAXVAL)
+    v5 = combine(v3, v2, m5, v5, MAXVAL)
+    v5 = combine(v4, v1, m5, v5, MAXVAL)
+    // d=6
+    v6 = addVal(K * repunit[6], m6, v6, MAXVAL)
+    v6 = combine(v1, v5, m6, v6, MAXVAL)
+    v6 = combine(v2, v4, m6, v6, MAXVAL)
+    v6 = combine(v3, v3, m6, v6, MAXVAL)
+    v6 = combine(v4, v2, m6, v6, MAXVAL)
+    v6 = combine(v5, v1, m6, v6, MAXVAL)
+    // d=7
+    v7 = addVal(K * repunit[7], m7, v7, MAXVAL)
+    v7 = combine(v1, v6, m7, v7, MAXVAL)
+    v7 = combine(v2, v5, m7, v7, MAXVAL)
+    v7 = combine(v3, v4, m7, v7, MAXVAL)
+    v7 = combine(v4, v3, m7, v7, MAXVAL)
+    v7 = combine(v5, v2, m7, v7, MAXVAL)
+    v7 = combine(v6, v1, m7, v7, MAXVAL)
+    // d=8
+    v8 = addVal(K * repunit[8], m8, v8, MAXVAL)
+    v8 = combine(v1, v7, m8, v8, MAXVAL)
+    v8 = combine(v2, v6, m8, v8, MAXVAL)
+    v8 = combine(v3, v5, m8, v8, MAXVAL)
+    v8 = combine(v4, v4, m8, v8, MAXVAL)
+    v8 = combine(v5, v3, m8, v8, MAXVAL)
+    v8 = combine(v6, v2, m8, v8, MAXVAL)
+    v8 = combine(v7, v1, m8, v8, MAXVAL)
+
+    // Answer queries
+    var qi = 0
+    while qi < n {
+      var xLine = input()
+      while xLine == "" { xLine = input() }
+      let x = int(xLine)
+
+      var ans = 0
+      if m1[x] != nil && ans == 0 { ans = 1 }
+      if m2[x] != nil && ans == 0 { ans = 2 }
+      if m3[x] != nil && ans == 0 { ans = 3 }
+      if m4[x] != nil && ans == 0 { ans = 4 }
+      if m5[x] != nil && ans == 0 { ans = 5 }
+      if m6[x] != nil && ans == 0 { ans = 6 }
+      if m7[x] != nil && ans == 0 { ans = 7 }
+      if m8[x] != nil && ans == 0 { ans = 8 }
+
+      if ans == 0 { print("NO") } else { print(ans) }
+      qi = qi + 1
+    }
+
+    ti = ti + 1
+  }
+}
+
+main()

@@ -1,0 +1,191 @@
+// Solution for SPOJ Shamans (SHAMAN)
+// https://www.spoj.com/problems/SHAMAN/
+// Find 4 points forming maximum area quadrilateral.
+// Algorithm: convex hull (Graham scan) + O(m^2) rotating pointers on hull.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Signed 2*area of triangle via cross product, positive = CCW
+fun cross2(ax: int, ay: int, bx: int, by: int, cx: int, cy: int): int {
+  return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax)
+}
+
+// Format integer n/2 with exactly 1 decimal place
+fun fmt1(n: int): string {
+  let intPart = int(n / 2)
+  let rem = n - intPart * 2
+  if rem == 0 { return str(intPart) + ".0" }
+  return str(intPart) + ".5"
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var l1 = input()
+    while l1 == "" { l1 = input() }
+    let n = int(l1)
+
+    var ptx: list<int> = []
+    var pty: list<int> = []
+    var i = 0
+    while i < n {
+      var ln = input()
+      while ln == "" { ln = input() }
+      let p = split(ln)
+      ptx = append(ptx, int(p[0]))
+      pty = append(pty, int(p[1]))
+      i = i + 1
+    }
+
+    // Find pivot: lowest y, then leftmost x
+    var pivIdx = 0
+    i = 1
+    while i < n {
+      if pty[i] < pty[pivIdx] || (pty[i] == pty[pivIdx] && ptx[i] < ptx[pivIdx]) {
+        pivIdx = i
+      }
+      i = i + 1
+    }
+    let ox = ptx[pivIdx]
+    let oy = pty[pivIdx]
+
+    // Build angle-sorted indices (all points except pivot)
+    var idxs: list<int> = []
+    i = 0
+    while i < n {
+      if i != pivIdx { idxs = append(idxs, i) }
+      i = i + 1
+    }
+
+    // Insertion sort by polar angle from pivot; ties: closer first
+    var k = 1
+    while k < len(idxs) {
+      let key = idxs[k]
+      var j = k - 1
+      var placed = 0
+      while j >= 0 && placed == 0 {
+        let a = idxs[j]
+        let cp = (ptx[a] - ox) * (pty[key] - oy) - (pty[a] - oy) * (ptx[key] - ox)
+        var doSwap = 0
+        if cp < 0 {
+          doSwap = 1
+        } else if cp == 0 {
+          let da = (ptx[a] - ox) * (ptx[a] - ox) + (pty[a] - oy) * (pty[a] - oy)
+          let dk = (ptx[key] - ox) * (ptx[key] - ox) + (pty[key] - oy) * (pty[key] - oy)
+          if da > dk { doSwap = 1 }
+        }
+        if doSwap == 1 {
+          idxs[j+1] = idxs[j]
+          j = j - 1
+        } else {
+          placed = 1
+        }
+      }
+      idxs[j+1] = key
+      k = k + 1
+    }
+
+    // Graham scan: build convex hull (CCW)
+    var hull: list<int> = []
+    hull = append(hull, pivIdx)
+    i = 0
+    while i < len(idxs) {
+      let cur = idxs[i]
+      var stop = 0
+      while len(hull) >= 2 && stop == 0 {
+        let ha = hull[len(hull)-2]
+        let hb = hull[len(hull)-1]
+        let cp = cross2(ptx[ha], pty[ha], ptx[hb], pty[hb], ptx[cur], pty[cur])
+        if cp <= 0 {
+          hull = hull[0:len(hull)-1]
+        } else {
+          stop = 1
+        }
+      }
+      hull = append(hull, cur)
+      i = i + 1
+    }
+
+    let m = len(hull)
+
+    // Max area quadrilateral on convex hull:
+    // Use virtual indices: all arithmetic on integers in range [ai, ai+m-1].
+    // hull[v % m] gives the actual hull vertex.
+    // For fixed a=ai, iterate c from ai+2 to ai+m-2.
+    // b in [ai+1 .. c-1], d in [c+1 .. ai+m-1].
+    // b and d advance monotonically as c increases.
+    var best2 = 0
+
+    // Edge case: hull is a triangle (m==3); best quad is degenerate = triangle area
+    if m == 3 {
+      best2 = cross2(ptx[hull[0]], pty[hull[0]], ptx[hull[1]], pty[hull[1]], ptx[hull[2]], pty[hull[2]])
+    }
+
+    if m >= 4 {
+      var ai = 0
+      while ai < m {
+        var b = ai + 1
+        var d = ai + 3  // d starts at ai+3 for c=ai+2
+        var c = ai + 2
+        while c <= ai + m - 2 {
+          // b must be in [ai+1 .. c-1]; advance b if beneficial
+          var bStop = 0
+          while b + 1 <= c - 1 && bStop == 0 {
+            let bMod = b % m
+            let bNextMod = (b + 1) % m
+            let cMod = c % m
+            let aMod = ai % m
+            let curr = cross2(ptx[hull[aMod]], pty[hull[aMod]], ptx[hull[bMod]], pty[hull[bMod]], ptx[hull[cMod]], pty[hull[cMod]])
+            let nxt  = cross2(ptx[hull[aMod]], pty[hull[aMod]], ptx[hull[bNextMod]], pty[hull[bNextMod]], ptx[hull[cMod]], pty[hull[cMod]])
+            if nxt > curr { b = b + 1 } else { bStop = 1 }
+          }
+          // d must be in [c+1 .. ai+m-1]; clamp if needed
+          if d <= c { d = c + 1 }
+          // advance d if beneficial
+          var dStop = 0
+          while d + 1 <= ai + m - 1 && dStop == 0 {
+            let dMod = d % m
+            let dNextMod = (d + 1) % m
+            let cMod = c % m
+            let aMod = ai % m
+            let curr = cross2(ptx[hull[aMod]], pty[hull[aMod]], ptx[hull[cMod]], pty[hull[cMod]], ptx[hull[dMod]], pty[hull[dMod]])
+            let nxt  = cross2(ptx[hull[aMod]], pty[hull[aMod]], ptx[hull[cMod]], pty[hull[cMod]], ptx[hull[dNextMod]], pty[hull[dNextMod]])
+            if nxt > curr { d = d + 1 } else { dStop = 1 }
+          }
+          let aMod = ai % m
+          let bMod = b % m
+          let cMod = c % m
+          let dMod = d % m
+          let ab = cross2(ptx[hull[aMod]], pty[hull[aMod]], ptx[hull[bMod]], pty[hull[bMod]], ptx[hull[cMod]], pty[hull[cMod]])
+          let cd = cross2(ptx[hull[aMod]], pty[hull[aMod]], ptx[hull[cMod]], pty[hull[cMod]], ptx[hull[dMod]], pty[hull[dMod]])
+          if ab > 0 && cd > 0 {
+            let total = ab + cd
+            if total > best2 { best2 = total }
+          }
+          c = c + 1
+        }
+        ai = ai + 1
+      }
+    }
+
+    print(fmt1(best2))
+    ti = ti + 1
+  }
+}
+
+main()

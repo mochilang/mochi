@@ -1,0 +1,249 @@
+// Solution for SPOJ Soldiers on Parade (SOPARADE)
+// https://www.spoj.com/problems/SOPARADE/
+// Check feasibility: assign ranks 1-4 to n positions such that:
+// - Adjacent positions differ in rank by >= 2
+// - Each rule's positions all have different ranks
+// Use domain propagation (arc consistency) to check satisfiability.
+
+fun parseInt3(s: string): int {
+  var v = 0; var i = 0
+  while i < len(s) { v = v * 10 + int(s[i:i+1]); i = i + 1 }
+  return v
+}
+
+fun splitInts(line: string): list<int> {
+  var res: list<int> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { res = append(res, parseInt3(cur)); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { res = append(res, parseInt3(cur)) }
+  return res
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = parseInt3(tLine)
+  var ti = 0
+  while ti < t {
+    var npLine = input()
+    while npLine == "" { npLine = input() }
+    let np = splitInts(npLine)
+    let n = np[0]; let p = np[1]
+
+    var feasible = 1
+
+    // domain[pos*4 + (r-1)] = 1 if rank r is possible for position pos (0-indexed)
+    var domain: list<int> = []
+    var i = 0
+    while i < n * 4 { domain = append(domain, 1); i = i + 1 }
+
+    // compatible[r-1][c-1] = 1 if rank r can be followed by rank c (diff >= 2)
+    // compatible[0] = rank1 -> {3,4}
+    // compatible[1] = rank2 -> {4}
+    // compatible[2] = rank3 -> {1}
+    // compatible[3] = rank4 -> {1,2}
+    var comp: list<int> = []
+    // rank1 compatible with rank1,2,3,4: 0,0,1,1
+    comp = append(comp, 0); comp = append(comp, 0); comp = append(comp, 1); comp = append(comp, 1)
+    // rank2: 0,0,0,1
+    comp = append(comp, 0); comp = append(comp, 0); comp = append(comp, 0); comp = append(comp, 1)
+    // rank3: 1,0,0,0
+    comp = append(comp, 1); comp = append(comp, 0); comp = append(comp, 0); comp = append(comp, 0)
+    // rank4: 1,1,0,0
+    comp = append(comp, 1); comp = append(comp, 1); comp = append(comp, 0); comp = append(comp, 0)
+
+    // Read rules
+    var ruleFlat: list<int> = []
+    var ruleStart: list<int> = []
+    var ruleEnd: list<int> = []
+    var ruleB: list<int> = []
+
+    var ri = 0
+    while ri < p {
+      var rline = input()
+      while len(rline) == 0 { rline = input() }
+      let vals = splitInts(rline)
+      let b = vals[0]
+      ruleB = append(ruleB, b)
+      if b > 4 { feasible = 0 }
+      let rs = len(ruleFlat)
+      ruleStart = append(ruleStart, rs)
+      var k = 1
+      while k <= b {
+        ruleFlat = append(ruleFlat, vals[k] - 1)
+        k = k + 1
+      }
+      ruleEnd = append(ruleEnd, len(ruleFlat))
+      ri = ri + 1
+    }
+
+    if feasible == 1 {
+      // Function: count possible ranks for position pos
+      fun domainSize(pos: int): int {
+        return domain[pos*4+0] + domain[pos*4+1] + domain[pos*4+2] + domain[pos*4+3]
+      }
+
+      // Function: get the single rank if domain size = 1, else -1
+      fun singleRank(pos: int): int {
+        var r = 0
+        while r < 4 {
+          if domain[pos*4+r] == 1 { return r + 1 }
+          r = r + 1
+        }
+        return 0 - 1
+      }
+
+      // Propagate consecutive constraint for position pos
+      fun propagateConsec(pos: int): int {
+        var changed = 0
+        // Constrain from left neighbor
+        if pos > 0 {
+          var r = 0
+          while r < 4 {
+            if domain[pos*4+r] == 1 {
+              // Check if any rank in left neighbor can precede rank r+1
+              // i.e., comp[s][r] == 1 for some s where domain[(pos-1)*4+s] == 1
+              var ok = 0
+              var s = 0
+              while s < 4 {
+                if domain[(pos-1)*4+s] == 1 && comp[s*4+r] == 1 { ok = 1 }
+                s = s + 1
+              }
+              if ok == 0 { domain[pos*4+r] = 0; changed = 1 }
+            }
+            r = r + 1
+          }
+        }
+        // Constrain from right neighbor
+        if pos < n - 1 {
+          var r = 0
+          while r < 4 {
+            if domain[pos*4+r] == 1 {
+              // Check if rank r+1 can precede any rank in right neighbor
+              var ok = 0
+              var s = 0
+              while s < 4 {
+                if domain[(pos+1)*4+s] == 1 && comp[r*4+s] == 1 { ok = 1 }
+                s = s + 1
+              }
+              if ok == 0 { domain[pos*4+r] = 0; changed = 1 }
+            }
+            r = r + 1
+          }
+        }
+        return changed
+      }
+
+      // Propagation queue
+      var wq: list<int> = []
+      var wqHead = 0
+      var inWQ: list<int> = []
+      i = 0
+      while i < n { inWQ = append(inWQ, 1); wq = append(wq, i); i = i + 1 }
+
+      var maxSteps = n * 4 + 1000
+      var steps = 0
+      while wqHead < len(wq) && feasible == 1 && steps < maxSteps {
+        let pos = wq[wqHead]
+        wqHead = wqHead + 1
+        inWQ[pos] = 0
+        steps = steps + 1
+
+        let ch = propagateConsec(pos)
+        if domainSize(pos) == 0 { feasible = 0 }
+        else if ch == 1 {
+          if pos > 0 && inWQ[pos-1] == 0 { wq = append(wq, pos-1); inWQ[pos-1] = 1 }
+          if pos < n-1 && inWQ[pos+1] == 0 { wq = append(wq, pos+1); inWQ[pos+1] = 1 }
+        }
+      }
+
+      // Apply rule constraints (iterate until fixpoint)
+      var changed2 = 1
+      var maxIter = 30
+      var iter = 0
+      while changed2 == 1 && feasible == 1 && iter < maxIter {
+        changed2 = 0
+        iter = iter + 1
+
+        var ruleIdx = 0
+        while ruleIdx < p && feasible == 1 {
+          let rs = ruleStart[ruleIdx]
+          let re = ruleEnd[ruleIdx]
+
+          // For each pair: if one has domain size 1, remove its rank from the other
+          var a = rs
+          while a < re && feasible == 1 {
+            let posA = ruleFlat[a]
+            let rA = singleRank(posA)
+            if rA > 0 {
+              // Remove rA from all other positions in rule
+              var b = rs
+              while b < re && feasible == 1 {
+                if b != a {
+                  let posB = ruleFlat[b]
+                  if domain[posB*4+(rA-1)] == 1 {
+                    domain[posB*4+(rA-1)] = 0
+                    changed2 = 1
+                    if domainSize(posB) == 0 { feasible = 0 }
+                    else {
+                      // Re-propagate consecutive for posB
+                      let ch3 = propagateConsec(posB)
+                      if ch3 == 1 { changed2 = 1 }
+                      if domainSize(posB) == 0 { feasible = 0 }
+                    }
+                  }
+                }
+                b = b + 1
+              }
+            }
+            a = a + 1
+          }
+
+          // Additional check 1: duplicate fixed values in rule
+          var ruleSize = re - rs
+          var usedCounts: list<int> = []
+          var u = 0; while u < 4 { usedCounts = append(usedCounts, 0); u = u + 1 }
+          var kk = rs
+          while kk < re {
+            let pk = ruleFlat[kk]
+            if domainSize(pk) == 1 {
+              let rk = singleRank(pk)
+              usedCounts[rk-1] = usedCounts[rk-1] + 1
+              if usedCounts[rk-1] > 1 { feasible = 0 }
+            }
+            kk = kk + 1
+          }
+
+          // Additional check 2: union of domains has fewer distinct ranks than rule size
+          var unionMask: list<int> = []
+          var uu = 0; while uu < 4 { unionMask = append(unionMask, 0); uu = uu + 1 }
+          kk = rs
+          while kk < re {
+            let pk2 = ruleFlat[kk]
+            var rr = 0
+            while rr < 4 {
+              if domain[pk2*4+rr] == 1 { unionMask[rr] = 1 }
+              rr = rr + 1
+            }
+            kk = kk + 1
+          }
+          let unionSize = unionMask[0] + unionMask[1] + unionMask[2] + unionMask[3]
+          if unionSize < ruleSize { feasible = 0 }
+
+          ruleIdx = ruleIdx + 1
+        }
+      }
+    }
+
+    if feasible == 1 { print("approved") } else { print("rejected") }
+    ti = ti + 1
+  }
+}
+
+main()

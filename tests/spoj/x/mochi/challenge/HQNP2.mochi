@@ -1,0 +1,29 @@
+// Solution for SPOJ HQNP2 - HQ9+- Incomputable?!
+// https://www.spoj.com/problems/HQNP2/
+// For each input number n: if single digit, output "hep" + n "i"s + "+".
+// "hep" outputs the digit '0'; each 'i' increments ASCII by 1.
+// For multi-digit n, output blank line (unsupported case).
+
+fun main() {
+  let T = int(input())
+  var tc = 0
+  while tc < T {
+    let line = input()
+    if len(line) == 1 {
+      let d = int(line)
+      var prog = "hep"
+      var k = 0
+      while k < d {
+        prog = prog + "i"
+        k = k + 1
+      }
+      prog = prog + "+"
+      print(prog)
+    } else {
+      print("")
+    }
+    tc = tc + 1
+  }
+}
+
+main()

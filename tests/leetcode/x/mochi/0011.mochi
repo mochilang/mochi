@@ -1,0 +1,34 @@
+fun maxArea(h) {
+  var left = 0
+  var right = len(h) - 1
+  var best = 0
+  while left < right {
+    let height = if h[left] < h[right] { h[left] } else { h[right] }
+    let area = (right - left) * height
+    if area > best { best = area }
+    if h[left] < h[right] {
+      left = left + 1
+    } else {
+      right = right - 1
+    }
+  }
+  return best
+}
+
+fun readList(n) {
+  var h = []
+  var i = 0
+  while i < n {
+    h = append(h, int(input()))
+    i = i + 1
+  }
+  return h
+}
+
+let t = int(input())
+var tc = 0
+while tc < t {
+  let n = int(input())
+  print(maxArea(readList(n)))
+  tc = tc + 1
+}

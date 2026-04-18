@@ -1,0 +1,74 @@
+// Solution for SPOJ CDGOLF1 - Alice and Bob plays again
+// https://www.spoj.com/problems/CDGOLF1/
+// Alice wants all 1s before 0s; Bob wants all 0s before 1s.
+// Find min operations for each, declare winner.
+
+fun main() {
+  let t = int(input())
+  var tc = 0
+  while tc < t {
+    let n = int(input())
+    var arr: list<int> = []
+    if n > 0 {
+      let line = input()
+      var i = 0
+      while i < n {
+        let ch = line[i:i+1]
+        if ch == "1" { arr = append(arr, 1) } else { arr = append(arr, 0) }
+        i = i + 1
+      }
+    }
+
+    // Alice: wants 1...10...0 — find min over all split k (0..n)
+    // cost(k) = zeros in first k + ones in last n-k
+    // Track cumulative zeros in prefix
+    var aliceBest = n + 1
+    var zeros = 0
+    var totalOnes = 0
+    var i = 0
+    while i < n {
+      if arr[i] == 1 { totalOnes = totalOnes + 1 }
+      i = i + 1
+    }
+    var k = 0
+    while k <= n {
+      // zeros in first k = zeros; ones in last n-k = totalOnes - (k - zeros)
+      let onesInLast = totalOnes - (k - zeros)
+      let cost = zeros + onesInLast
+      if cost < aliceBest { aliceBest = cost }
+      if k < n {
+        if arr[k] == 0 { zeros = zeros + 1 }
+      }
+      k = k + 1
+    }
+
+    // Bob: wants 0...01...1 — find min over all split k (0..n)
+    // cost(k) = ones in first k + zeros in last n-k
+    var bobBest = n + 1
+    var ones = 0
+    let totalZeros = n - totalOnes
+    k = 0
+    while k <= n {
+      // zeros in last n-k = totalZeros - (k - ones)
+      let zerosInLast = totalZeros - (k - ones)
+      let cost = ones + zerosInLast
+      if cost < bobBest { bobBest = cost }
+      if k < n {
+        if arr[k] == 1 { ones = ones + 1 }
+      }
+      k = k + 1
+    }
+
+    if aliceBest < bobBest {
+      print("Alice " + str(aliceBest))
+    } else if bobBest < aliceBest {
+      print("Bob " + str(bobBest))
+    } else {
+      print("Draw")
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

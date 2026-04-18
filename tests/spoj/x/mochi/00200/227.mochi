@@ -1,0 +1,118 @@
+// Solution for SPOJ Ordering the Soldiers (ORDERS)
+// https://www.spoj.com/problems/ORDERS/
+// Reconstruct original ranks from walk distances.
+// Process soldiers right to left. The i-th soldier (1-indexed, processing
+// right to left) takes the rank at index (remaining - w[i]) from available ranks.
+// Use a Fenwick tree (BIT) on ranks [1..n] to find the k-th available rank.
+// lowbit(i) computed arithmetically (divide by 2 until odd, track power of 2).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Compute i & (-i) arithmetically: largest power of 2 dividing i.
+fun lowbit(i: int): int {
+  var v = i
+  var p = 1
+  while v > 0 && v - int(v / 2) * 2 == 0 {
+    v = int(v / 2)
+    p = p * 2
+  }
+  return p
+}
+
+fun bitAdd(bit: list<int>, i: int, delta: int) {
+  var idx = i
+  while idx < len(bit) {
+    bit[idx] = bit[idx] + delta
+    idx = idx + lowbit(idx)
+  }
+}
+
+// Find k-th set element using BIT binary lifting.
+// Requires that n is the number of elements and bit[1..n] is initialized.
+fun bitKth(bit: list<int>, n: int, k: int): int {
+  // Binary lifting: find largest power of 2 <= n
+  var logn = 1
+  while logn * 2 <= n { logn = logn * 2 }
+  var pos = 0
+  var rem = k
+  var step = logn
+  while step > 0 {
+    let next = pos + step
+    if next < len(bit) && bit[next] < rem {
+      rem = rem - bit[next]
+      pos = next
+    }
+    step = int(step / 2)
+  }
+  return pos + 1
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    var wLine = input()
+    while wLine == "" { wLine = input() }
+    let ws = split(wLine)
+
+    // BIT of size n+2 (1-indexed), initialize all ranks 1..n as available
+    var bit: list<int> = []
+    var i = 0
+    while i <= n + 1 { bit = append(bit, 0); i = i + 1 }
+    i = 1
+    while i <= n {
+      bitAdd(bit, i, 1)
+      i = i + 1
+    }
+
+    // result[i] = rank of soldier at position i (0-indexed)
+    var result: list<int> = []
+    i = 0
+    while i < n { result = append(result, 0); i = i + 1 }
+
+    // Process from right to left
+    var remaining = n
+    i = n - 1
+    while i >= 0 {
+      let w = int(ws[i])
+      // k-th available from the left (1-indexed): remaining - w
+      let k = remaining - w
+      let rank = bitKth(bit, n, k)
+      result[i] = rank
+      bitAdd(bit, rank, 0 - 1)
+      remaining = remaining - 1
+      i = i - 1
+    }
+
+    var out = ""
+    i = 0
+    while i < n {
+      if i > 0 { out = out + " " }
+      out = out + str(result[i])
+      i = i + 1
+    }
+    print(out)
+    ti = ti + 1
+  }
+}
+
+main()

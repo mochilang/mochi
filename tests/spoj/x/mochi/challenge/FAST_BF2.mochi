@@ -1,0 +1,29 @@
+// Solution for SPOJ FAST_BF2 - The BrainFast Processing! Challenge version
+// https://www.spoj.com/problems/FAST_BF2/
+// For each string, check if it is a palindrome: s[i] == s[len-1-i] for all i.
+
+fun isPalin(s: string): int {
+  let n = len(s)
+  var i = 0
+  while i < int(n / 2) {
+    if s[i:i+1] != s[n-1-i:n-i] { return 0 }
+    i = i + 1
+  }
+  return 1
+}
+
+fun main() {
+  let T = int(input())
+  var t = 0
+  while t < T {
+    let s = input()
+    if isPalin(s) == 1 {
+      print("YES")
+    } else {
+      print("NO")
+    }
+    t = t + 1
+  }
+}
+
+main()

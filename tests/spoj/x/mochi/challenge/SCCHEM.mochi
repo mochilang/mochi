@@ -1,0 +1,83 @@
+// Solution for SPOJ SCCHEM - Strongly Connected Chemicals
+// https://www.spoj.com/problems/SCCHEM/
+// Find largest subset of cations (rows) and anions (cols) where all cations attract all anions.
+// This is a maximum all-1s submatrix problem on a bipartite attraction matrix.
+//
+// For each pair of rows (r1, r2) (including r1==r2):
+//   mask[j] = row[r1][j] AND row[r2][j]
+//   count = number of rows that are supersets of mask
+//   score = count + sum(mask)   (cations + anions)
+//   Only valid if sum(mask) >= 1.
+// Return max score.
+
+fun main() {
+  let T = int(input())
+  var tc = 0
+  while tc < T {
+    tc = tc + 1
+    let firstLine = input()
+    // parse m and n
+    var mStr = ""
+    var nStr = ""
+    var si = 0
+    while si < len(firstLine) && firstLine[si:si+1] != " " {
+      mStr = mStr + firstLine[si:si+1]
+      si = si + 1
+    }
+    si = si + 1
+    while si < len(firstLine) {
+      nStr = nStr + firstLine[si:si+1]
+      si = si + 1
+    }
+    let m = int(mStr)
+    let n = int(nStr)
+    // Read matrix rows as list of strings
+    var rows: list<string> = []
+    var ri = 0
+    while ri < m {
+      rows = append(rows, input())
+      ri = ri + 1
+    }
+    var best = 0
+    // Try all pairs (r1, r2) with r1 <= r2
+    var r1 = 0
+    while r1 < m {
+      var r2 = r1
+      while r2 < m {
+        // Compute mask = AND of rows[r1] and rows[r2]
+        var mask: list<int> = []
+        var j = 0
+        var maskSum = 0
+        while j < n {
+          var v = 0
+          if rows[r1][j:j+1] == "1" && rows[r2][j:j+1] == "1" { v = 1 }
+          mask = append(mask, v)
+          maskSum = maskSum + v
+          j = j + 1
+        }
+        if maskSum > 0 {
+          // Count rows that are supersets of mask
+          var count = 0
+          var r = 0
+          while r < m {
+            var ok = 1
+            var j2 = 0
+            while j2 < n {
+              if mask[j2] == 1 && rows[r][j2:j2+1] == "0" { ok = 0 }
+              j2 = j2 + 1
+            }
+            if ok == 1 { count = count + 1 }
+            r = r + 1
+          }
+          let score = count + maskSum
+          if score > best { best = score }
+        }
+        r2 = r2 + 1
+      }
+      r1 = r1 + 1
+    }
+    print("Case " + str(tc) + ": " + str(best))
+  }
+}
+
+main()

@@ -1,0 +1,94 @@
+// Solution for SPOJ SUMFOUR - 4-SUM
+// https://www.spoj.com/problems/SUMFOUR/
+// Compute all A[i]+B[j] sums in a map, then for each C[k]+D[l] look up -(C[k]+D[l]).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parseInt(s: string): int {
+  var neg = 0
+  var start = 0
+  if len(s) > 0 && s[0:1] == "-" { neg = 1; start = 1 }
+  var val = 0
+  var i = start
+  while i < len(s) {
+    let d = int(s[i:i+1])
+    val = val * 10 + d
+    i = i + 1
+  }
+  if neg == 1 { return 0 - val }
+  return val
+}
+
+fun main() {
+  var nLine = input()
+  while nLine == "" { nLine = input() }
+  let n = int(nLine)
+
+  var A: list<int> = []
+  var B: list<int> = []
+  var C: list<int> = []
+  var D: list<int> = []
+
+  var i = 0
+  while i < n {
+    var row = input()
+    while row == "" { row = input() }
+    let p = split(row)
+    A = append(A, parseInt(p[0]))
+    B = append(B, parseInt(p[1]))
+    C = append(C, parseInt(p[2]))
+    D = append(D, parseInt(p[3]))
+    i = i + 1
+  }
+
+  // Build map of A[i]+B[j] -> count using empty map {} for dynamic keys
+  var abMap = {}
+  var ai = 0
+  while ai < n {
+    var bi = 0
+    while bi < n {
+      let s = A[ai] + B[bi]
+      let key = str(s)
+      var cnt = 0
+      if abMap[key] != nil { cnt = abMap[key] as int }
+      abMap[key] = cnt + 1
+      bi = bi + 1
+    }
+    ai = ai + 1
+  }
+
+  // Count quadruples: A[i]+B[j]+C[k]+D[l]=0 => -(C[k]+D[l]) in abMap
+  var total = 0
+  var ci = 0
+  while ci < n {
+    var di = 0
+    while di < n {
+      let s = C[ci] + D[di]
+      let need = 0 - s
+      let key = str(need)
+      if abMap[key] != nil {
+        total = total + (abMap[key] as int)
+      }
+      di = di + 1
+    }
+    ci = ci + 1
+  }
+
+  print(total)
+}
+
+main()

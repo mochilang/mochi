@@ -1,0 +1,126 @@
+// Solution for SPOJ SCALES - Balancing the Stone
+// https://www.spoj.com/problems/SCALES/
+// Weights 2^0..2^(N-1), stone W < 2^N. Count ways to place weights on
+// both sides to balance (left side has stone W).
+// Balance: sum(weights_right) - sum(weights_left) = W.
+// Each weight i: assign +1 (right), -1 (left), 0 (unused).
+// Digit DP bit by bit: carry in {-1,0,1} stored as dp_neg, dp_zer, dp_pos.
+// At bit i with W-bit wb:
+//   val = carry_in + c - wb, for c in {-1,0,+1}
+//   if val is even (-2, 0, or 2): carry_out = val/2; count += dp[carry_in]
+// Possible even vals and their sources for each (carry_in, wb):
+//   Precomputed: for each wb in {0,1}, for each carry_in in {-1,0,1},
+//   which c values give even val, and what carry_out.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    var hLine = input()
+    while hLine == "" { hLine = input() }
+    let params = split(hLine)
+    let bigN = int(params[0])
+    let L = int(params[1])
+    let D = int(params[2])
+
+    var wLine = input()
+    while wLine == "" { wLine = input() }
+
+    // dp_neg/zer/pos = count of ways for carry=-1/0/+1
+    var dp_neg = 0
+    var dp_zer = 1
+    var dp_pos = 0
+
+    // Precomputed transitions for wb=0:
+    //   carry_in=-1, c=-1: val=-2(even)->co=-1; c=0: val=-1(odd); c=+1: val=0(even)->co=0
+    //     from dp_neg: +1 to ndp_neg, +1 to ndp_zer
+    //   carry_in=0,  c=-1: val=-1(odd); c=0: val=0(even)->co=0; c=+1: val=1(odd)
+    //     from dp_zer: +1 to ndp_zer
+    //   carry_in=+1, c=-1: val=0(even)->co=0; c=0: val=1(odd); c=+1: val=2(even)->co=+1
+    //     from dp_pos: +1 to ndp_zer, +1 to ndp_pos
+    //
+    // Precomputed transitions for wb=1:
+    //   carry_in=-1, c=-1: val=-3(odd); c=0: val=-2(even)->co=-1; c=+1: val=-1(odd)
+    //     from dp_neg: +1 to ndp_neg
+    //   carry_in=0,  c=-1: val=-2(even)->co=-1; c=0: val=-1(odd); c=+1: val=0(even)->co=0
+    //     from dp_zer: +1 to ndp_neg, +1 to ndp_zer
+    //   carry_in=+1, c=-1: val=-1(odd); c=0: val=0(even)->co=0; c=+1: val=1(odd)
+    //     wait: c=+1: val=1+1-1=1(odd). c=0: val=1+0-1=0(even)->co=0. c=-1: val=1-1-1=-1(odd).
+    //     Hmm, c=+1 only gives val=1 (odd). Let me recheck:
+    //     carry_in=+1, wb=1: val=1+c-1=c. c=-1->val=-1(odd); c=0->val=0(even)->co=0; c=+1->val=1(odd)
+    //     from dp_pos: +1 to ndp_zer
+    //     BUT also: val=+2: need 1+c-1=2 -> c=2, not possible.
+    //
+    // Wait, let me redo wb=1 case for all carry_in:
+    //   carry_in=-1, wb=1: val=-1+c-1=c-2
+    //     c=-1: val=-3(odd); c=0: val=-2(even)->co=-1; c=+1: val=-1(odd)
+    //     -> from dp_neg: +1 to ndp_neg
+    //   carry_in=0, wb=1: val=0+c-1=c-1
+    //     c=-1: val=-2(even)->co=-1; c=0: val=-1(odd); c=+1: val=0(even)->co=0
+    //     -> from dp_zer: +1 to ndp_neg, +1 to ndp_zer
+    //   carry_in=+1, wb=1: val=1+c-1=c
+    //     c=-1: val=-1(odd); c=0: val=0(even)->co=0; c=+1: val=1(odd)
+    //     -> from dp_pos: +1 to ndp_zer
+
+    var bit = 0
+    while bit < bigN {
+      var wb = 0
+      if bit < L {
+        let idx = L - 1 - bit
+        if wLine[idx:idx+1] == "1" { wb = 1 }
+      }
+
+      var ndp_neg = 0
+      var ndp_zer = 0
+      var ndp_pos = 0
+
+      if wb == 0 {
+        // carry=-1 contributes to neg and zer
+        ndp_neg = (ndp_neg + dp_neg) % D
+        ndp_zer = (ndp_zer + dp_neg) % D
+        // carry=0 contributes to zer
+        ndp_zer = (ndp_zer + dp_zer) % D
+        // carry=+1 contributes to zer and pos
+        ndp_zer = (ndp_zer + dp_pos) % D
+        ndp_pos = (ndp_pos + dp_pos) % D
+      } else {
+        // wb=1
+        // carry=-1 contributes to neg
+        ndp_neg = (ndp_neg + dp_neg) % D
+        // carry=0 contributes to neg and zer
+        ndp_neg = (ndp_neg + dp_zer) % D
+        ndp_zer = (ndp_zer + dp_zer) % D
+        // carry=+1 contributes to zer
+        ndp_zer = (ndp_zer + dp_pos) % D
+      }
+
+      dp_neg = ndp_neg
+      dp_zer = ndp_zer
+      dp_pos = ndp_pos
+      bit = bit + 1
+    }
+
+    print(dp_zer)
+    tc = tc + 1
+  }
+}
+
+main()

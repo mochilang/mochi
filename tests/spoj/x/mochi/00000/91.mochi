@@ -1,0 +1,32 @@
+// Solution for SPOJ TWOSQRS - Two Squares or Not Two Squares
+// https://www.spoj.com/problems/TWOSQRS/
+// N is sum of two squares iff no prime p ≡ 3 (mod 4) divides N to an odd power.
+
+fun solve(n: int): string {
+  if n == 0 { return "YES" }
+  var rem = n
+  var i = 2
+  while i * i <= rem {
+    if rem % i == 0 {
+      var cnt = 0
+      while rem % i == 0 { rem = int(rem / i); cnt = cnt + 1 }
+      if i % 4 == 3 && cnt % 2 == 1 { return "NO" }
+    }
+    i = i + 1
+  }
+  // rem is the remaining prime factor (if > 1)
+  if rem > 1 && rem % 4 == 3 { return "NO" }
+  return "YES"
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    if n == 0 - 1 { break }
+    print(solve(n))
+    line = input()
+  }
+}
+
+main()

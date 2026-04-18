@@ -1,0 +1,19 @@
+// Solution for SPOJ BISHOPS - Bishops
+// https://www.spoj.com/problems/BISHOPS/
+// Max non-attacking bishops on n×n board: 1 if n=1, else 2n-2.
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    if n == 0 { return }
+    if n == 1 {
+      print(1)
+    } else {
+      print(2 * n - 2)
+    }
+    line = input()
+  }
+}
+
+main()

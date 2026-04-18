@@ -1,0 +1,236 @@
+// Solution for SPOJ Ball (BALL1)
+// https://www.spoj.com/problems/BALL1/
+// Ball bounces at 45 degrees on n×m board. Count cells visited odd number of times.
+// Uses unfolded (reflected) plane analysis with G = gcd(2(n-1), 2(m-1)).
+
+fun mygcd(a: int, b: int): int {
+  var x = if a < 0 { 0 - a } else { a }
+  var y = if b < 0 { 0 - b } else { b }
+  while y != 0 {
+    let tmp = x % y
+    x = y
+    y = tmp
+  }
+  return x
+}
+
+// Floor integer division: floor(a/b) for b>0. Works around Mochi int() type bug with arithmetic args.
+fun idiv(a: int, b: int): int {
+  // Adjust a to be exactly divisible by b (rounds down), then divide
+  let rem = a % b
+  let adj = if rem < 0 { rem + b } else { rem }
+  let num = a - adj
+  return int(str(num / b))
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Count x in [lo..hi] with x ≡ r mod G
+fun count1d(lo: int, hi: int, G: int, r: int): int {
+  if lo > hi { return 0 }
+  var r0 = ((r % G) + G) % G
+  // first x >= lo with x ≡ r0 mod G: first = lo + ((r0 - lo) % G + G) % G
+  let offset = ((r0 - lo) % G + G) % G
+  let first = lo + offset
+  if first > hi { return 0 }
+  return idiv(hi - first, G) + 1
+}
+
+// Sum of x for x in [lo..hi] with x ≡ r mod G
+fun sum1d(lo: int, hi: int, G: int, r: int): int {
+  let cnt = count1d(lo, hi, G, r)
+  if cnt == 0 { return 0 }
+  var r0 = ((r % G) + G) % G
+  let offset = ((r0 - lo) % G + G) % G
+  let first = lo + offset
+  let last = first + (cnt - 1) * G
+  return idiv(cnt * (first + last), 2)
+}
+
+// Count (i,j) in [1..N]×[1..M] with (i-j) ≡ r mod G. N >= M assumed (caller ensures).
+// d = i-j ranges [1-M..N-1]. Contribution: rises [1-M..0], flat [1..N-M], falls [N-M+1..N-1].
+fun countDiag(N: int, M: int, G: int, r: int): int {
+  if N <= 0 || M <= 0 { return 0 }
+  // Phase 1: d in [1-M..0], contribution = M+d
+  let c1 = count1d(1-M, 0, G, r)
+  let s1 = sum1d(1-M, 0, G, r)
+  // Phase 2: d in [1..N-M], contribution = M (flat; only if N > M)
+  let c2 = count1d(1, N-M, G, r)
+  // Phase 3: d in [N-M+1..N-1], contribution = N-d
+  let c3 = count1d(N-M+1, N-1, G, r)
+  let s3 = sum1d(N-M+1, N-1, G, r)
+  return (M * c1 + s1) + M * c2 + (N * c3 - s3)
+}
+
+// Count (i,j) in [1..N]×[1..M] with (i+j) ≡ r mod G. N >= M assumed.
+// s = i+j ranges [2..N+M]. Rising [2..M+1], flat [M+2..N+1], falling [N+2..N+M].
+// contribution(s): min(s-1,M,N,N+M-s+1)
+// For N>=M: contribution = s-1 for s in [2..M+1], M for [M+2..N+1], N+M-s+1 for [N+2..N+M].
+fun countAnti(N: int, M: int, G: int, r: int): int {
+  if N <= 0 || M <= 0 { return 0 }
+  // Phase 1: s in [2..M+1], contribution = s-1
+  let c1 = count1d(2, M+1, G, r)
+  let s1 = sum1d(2, M+1, G, r)
+  // Phase 2: s in [M+2..N+1], contribution = M
+  let c2 = count1d(M+2, N+1, G, r)
+  // Phase 3: s in [N+2..N+M], contribution = N+M-s+1 = (N+M+1) - s
+  let c3 = count1d(N+2, N+M, G, r)
+  let s3 = sum1d(N+2, N+M, G, r)
+  return (s1 - c1) + M * c2 + ((N+M+1) * c3 - s3)
+}
+
+// Count (i,j) in [1..N]×[1..M] with i≡ri mod G and j≡rj mod G
+fun countRect(N: int, M: int, G: int, ri: int, rj: int): int {
+  return count1d(1, N, G, ri) * count1d(1, M, G, rj)
+}
+
+// Count (i,j) in [1..N]×[1..M] with i-j≡s mod G AND i+j≡t mod G.
+// Requires s≡t mod 2 (else 0). Then i≡(s+t)/2, j≡(t-s)/2 mod G/something.
+// G=2K. 2i≡s+t mod 2K. If s+t≡0 mod 2: i≡(s+t)/2 mod K or (s+t)/2+K mod 2K.
+fun countBoth(N: int, M: int, G: int, s: int, t: int): int {
+  let K = idiv(G, 2)
+  let sp = ((s % G) + G) % G
+  let tp = ((t % G) + G) % G
+  if (sp + tp) % 2 != 0 { return 0 }
+  let ri_base = idiv(sp + tp, 2) % G
+  let rj_base = idiv(tp - sp + G, 2) % G
+  // Two possible (ri, rj) pairs: (ri_base, rj_base) and (ri_base+K, rj_base+K)
+  // (since 2*(ri_base+K) ≡ 2*ri_base + 2K ≡ s+t + 0 ≡ s+t mod 2K)
+  let ri1 = ri_base % G
+  let rj1 = rj_base % G
+  let ri2 = (ri_base + K) % G
+  let rj2 = (rj_base + K) % G
+  var total = countRect(N, M, G, ri1, rj1)
+  if ri2 != ri1 || rj2 != rj1 {
+    total = total + countRect(N, M, G, ri2, rj2)
+  }
+  return total
+}
+
+fun solve(nx: int, mx: int, ax: int, bx: int): int {
+  let n = nx
+  let m = mx
+  let a = ax  // 1-indexed start
+  let b = bx
+
+  let P = 2 * (n - 1)
+  let Q = 2 * (m - 1)
+  let G = mygcd(P, Q)
+
+  // C = (a-1 - (b-1)) mod G = (a-b) mod G
+  var C = (a - b) % G
+  if C < 0 { C = C + G }
+  var D = (G - C) % G
+
+  // Interior dimensions: [1..n-2] x [1..m-2]
+  let IN = n - 2
+  let IM = m - 2
+
+  var total = 0
+
+  if C == D {
+    // Only corners can be odd. Check 4 corners.
+    // Corner (0,0): hit iff 0-0≡C mod G → C=0
+    if C == 0 { total = total + 1 }
+    // Corner (0,m-1): hit iff 0-(m-1)≡C → -(m-1)≡C → (G-(m-1)%G)%G == C
+    let cm01 = ((0 - (m-1)) % G + G) % G
+    if cm01 == C { total = total + 1 }
+    // Corner (n-1,0): hit iff (n-1)-0≡C
+    let cn10 = ((n-1) % G + G) % G
+    if cn10 == C { total = total + 1 }
+    // Corner (n-1,m-1): hit iff (n-1)-(m-1)≡C → (n-m)≡C
+    let cn1m1 = ((n - m) % G + G) % G
+    if cn1m1 == C { total = total + 1 }
+    return total
+  }
+
+  // C != D case
+  // For interior cells: parity = ([i-j≡C or D] + [i+j≡C or D]) mod 2 = A XOR B
+  // Odd interior count = A + B - 2*AB (inclusion-exclusion for XOR)
+
+  // Ensure IN >= IM for the trapezoid formulas
+  var Nbig = IN
+  var Msmall = IM
+  if Msmall > Nbig {
+    Nbig = IM
+    Msmall = IN
+  }
+
+  var A = 0
+  var B = 0
+  var AB = 0
+
+  if IN > 0 && IM > 0 {
+    A = countDiag(Nbig, Msmall, G, C) + countDiag(Nbig, Msmall, G, D)
+    B = countAnti(Nbig, Msmall, G, C) + countAnti(Nbig, Msmall, G, D)
+    AB = countBoth(IN, IM, G, C, C) + countBoth(IN, IM, G, C, D)
+       + countBoth(IN, IM, G, D, C) + countBoth(IN, IM, G, D, D)
+    total = total + A + B - 2 * AB
+  }
+
+  // Edge i=0 (j in [1..m-2]): parity=1 iff j≡C or j≡D mod G
+  total = total + count1d(1, m-2, G, C) + count1d(1, m-2, G, D)
+
+  // Edge i=n-1 (j in [1..m-2]):
+  // hit iff (n-1)-j≡C or (n-1)+j≡C mod G (the two copies)
+  // → j≡(n-1)-C mod G or j≡C-(n-1) mod G
+  let eC1 = ((n-1-C) % G + G) % G
+  let eD1 = ((C-(n-1)) % G + G) % G
+  if eC1 != eD1 {
+    total = total + count1d(1, m-2, G, eC1) + count1d(1, m-2, G, eD1)
+  }
+
+  // Edge j=0 (i in [1..n-2]): parity=1 iff i≡C or i≡D mod G
+  total = total + count1d(1, n-2, G, C) + count1d(1, n-2, G, D)
+
+  // Edge j=m-1 (i in [1..n-2]):
+  // copies (i,m-1) and (P-i,m-1). hit iff i-(m-1)≡C or -(i)-(m-1)≡C
+  // → i≡C+m-1 or i≡-C-m+1=D-m+1 mod G
+  let fC1 = ((C + m - 1) % G + G) % G
+  let fD1 = ((D - m + 1) % G + G) % G
+  if fC1 != fD1 {
+    total = total + count1d(1, n-2, G, fC1) + count1d(1, n-2, G, fD1)
+  }
+
+  // Corners: 1 copy each. Parity = 1 iff that copy is hit (x-y≡C mod G, where x=(i mod P or P-i), y similar).
+  // Corner (i=0,j=0): copy (0,0). 0-0=0≡C? → C==0
+  if C == 0 { total = total + 1 }
+  // Corner (i=0,j=m-1): copy (0,m-1). 0-(m-1)≡C → (-(m-1)+G*k)%G == C
+  if ((0-(m-1))%G+G)%G == C { total = total + 1 }
+  // Corner (i=n-1,j=0): copy (n-1,0). (n-1)-0≡C
+  if ((n-1)%G+G)%G == C { total = total + 1 }
+  // Corner (i=n-1,j=m-1): copy (n-1,m-1). (n-1)-(m-1)≡C
+  if ((n-m)%G+G)%G == C { total = total + 1 }
+
+  return total
+}
+
+fun main() {
+  let d = int(input())
+  var tc = 0
+  while tc < d {
+    let p = split(input())
+    let n = int(p[0])
+    let m = int(p[1])
+    let a = int(p[2])
+    let b = int(p[3])
+    print(str(solve(n, m, a, b)))
+    tc = tc + 1
+  }
+}
+
+main()

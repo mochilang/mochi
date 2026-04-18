@@ -1,3 +1,5 @@
+type: [{string: any}]
+plan:
 (select
   (map
     (entry
@@ -20,21 +22,21 @@
       (selector s_name (selector s))
       (where
         (binary &&
-          (binary ==
+          (binary &&
             (binary &&
+              (binary ==
+                (selector o_orderstatus (selector o))
+                (string F)
+              )
               (binary >
-                (binary &&
-                  (binary ==
-                    (selector o_orderstatus (selector o))
-                    (string F)
-                  )
-                  (selector l_receiptdate (selector l1))
-                )
+                (selector l_receiptdate (selector l1))
                 (selector l_commitdate (selector l1))
               )
-              (selector n_name (selector n))
             )
-            (string "SAUDI ARABIA")
+            (binary ==
+              (selector n_name (selector n))
+              (string "SAUDI ARABIA")
+            )
           )
           (group
             (unary !
@@ -42,21 +44,21 @@
                 (query x
                   (source (selector lineitem))
                   (where
-                    (binary >
+                    (binary &&
                       (binary &&
+                        (binary ==
+                          (selector l_orderkey (selector x))
+                          (selector l_orderkey (selector l1))
+                        )
                         (binary !=
-                          (binary &&
-                            (binary ==
-                              (selector l_orderkey (selector x))
-                              (selector l_orderkey (selector l1))
-                            )
-                            (selector l_suppkey (selector x))
-                          )
+                          (selector l_suppkey (selector x))
                           (selector l_suppkey (selector l1))
                         )
-                        (selector l_receiptdate (selector x))
                       )
-                      (selector l_commitdate (selector x))
+                      (binary >
+                        (selector l_receiptdate (selector x))
+                        (selector l_commitdate (selector x))
+                      )
                     )
                   )
                   (select (selector x))

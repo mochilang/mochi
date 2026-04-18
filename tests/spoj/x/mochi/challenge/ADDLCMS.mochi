@@ -1,0 +1,116 @@
+// Solution for SPOJ ADDLCMS - LCM Addition
+// https://www.spoj.com/problems/ADDLCMS/
+// Compute sum of LCM(i, b) for i = a..b, mod 10^9+7.
+// Group by d=gcd(i,b): for each divisor d of b,
+// sum j*b for j in [ceil(a/d)..b/d] with gcd(j, b/d)=1 (Mobius inclusion-exclusion).
+
+let MOD = 1000000007
+
+// Get prime factors of n (distinct)
+fun primeFactors(n: int): list<int> {
+  var factors: list<int> = []
+  var x = n
+  var f = 2
+  while f * f <= x {
+    if x % f == 0 {
+      factors = append(factors, f)
+      while x % f == 0 { x = int(x / f) }
+    }
+    f = f + 1
+  }
+  if x > 1 { factors = append(factors, x) }
+  return factors
+}
+
+// Sum of j in [lo..hi] with gcd(j, q)=1, using Mobius inclusion-exclusion.
+fun coprimeSum(lo: int, hi: int, primes: list<int>): int {
+  if lo > hi { return 0 }
+  let np = len(primes)
+  var total = 1
+  var ti = 0
+  while ti < np { total = total * 2; ti = ti + 1 }
+  var result = 0
+  var mask = 0
+  while mask < total {
+    var prod = 1
+    var bits = 0
+    var k = 0
+    // Compute 2^k for bit extraction
+    var pw = 1
+    while k < np {
+      if int(mask / pw) % 2 == 1 {
+        prod = prod * primes[k]
+        bits = bits + 1
+      }
+      pw = pw * 2
+      k = k + 1
+    }
+    let tlo = int((lo + prod - 1) / prod)
+    let thi = int(hi / prod)
+    if tlo <= thi {
+      let cnt = (thi - tlo + 1) % MOD
+      let s = (tlo + thi) % MOD * cnt % MOD * 500000004 % MOD
+      let term = prod % MOD * s % MOD
+      if bits % 2 == 0 {
+        result = (result + term) % MOD
+      } else {
+        result = (result - term + MOD) % MOD
+      }
+    }
+    mask = mask + 1
+  }
+  return result
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let T = int(input())
+  var tc = 0
+  while tc < T {
+    let p = split(input())
+    let a = int(p[0])
+    let b = int(p[1])
+    var divs: list<int> = []
+    var d = 1
+    while d * d <= b {
+      if b % d == 0 {
+        divs = append(divs, d)
+        if d != int(b / d) { divs = append(divs, int(b / d)) }
+      }
+      d = d + 1
+    }
+    var ans = 0
+    var di = 0
+    while di < len(divs) {
+      let dv = divs[di]
+      let q = int(b / dv)
+      let jlo = int((a + dv - 1) / dv)
+      let jhi = q
+      if jlo <= jhi {
+        let primes = primeFactors(q)
+        let s = coprimeSum(jlo, jhi, primes)
+        ans = (ans + b % MOD * s % MOD) % MOD
+      }
+      di = di + 1
+    }
+    print(ans)
+    tc = tc + 1
+  }
+}
+
+main()

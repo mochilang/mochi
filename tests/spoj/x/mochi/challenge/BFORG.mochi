@@ -1,0 +1,121 @@
+// Solution for SPOJ BFORG - Bye-Bye FORG
+// https://www.spoj.com/problems/BFORG/
+// Divide n students into k groups (each >= 2), maximize score = diam/(d*k)
+// where diam = overall max pairwise distance, d = max intra-group diameter.
+// Maximizing score = minimizing max intra-group diameter d.
+// Strategy: sort students by x then y coordinate; assign consecutive students
+// to groups greedily (first n%k groups get ceil(n/k), rest get floor(n/k)).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 1
+  while tc <= T {
+    var nkLine = input()
+    while nkLine == "" { nkLine = input() }
+    let nk = split(nkLine)
+    let n = int(nk[0])
+    let k = int(nk[1])
+
+    // Read student coordinates
+    var sx: list<int> = []
+    var sy: list<int> = []
+    var i = 0
+    while i < n {
+      var cLine = input()
+      while cLine == "" { cLine = input() }
+      let cp = split(cLine)
+      sx = append(sx, int(cp[0]))
+      sy = append(sy, int(cp[1]))
+      i = i + 1
+    }
+
+    // Sort students by x then y (insertion sort on index array)
+    var order: list<int> = []
+    i = 0
+    while i < n { order = append(order, i); i = i + 1 }
+    i = 1
+    while i < n {
+      var j = i
+      while j > 0 {
+        let a = order[j-1]
+        let b = order[j]
+        var swp = 0
+        if sx[a] > sx[b] { swp = 1 }
+        if sx[a] == sx[b] && sy[a] > sy[b] { swp = 1 }
+        if swp == 1 {
+          let tmp = order[j-1]
+          order[j-1] = order[j]
+          order[j] = tmp
+          j = j - 1
+        } else {
+          j = 0
+        }
+      }
+      i = i + 1
+    }
+
+    // Assign consecutive sorted students to k groups
+    // First (n%k) groups get (n/k+1) students, rest get (n/k)
+    let base = n / k
+    let extra = n % k
+
+    print("case " + str(tc) + " Y")
+
+    var gi = 0
+    var pos = 0
+    while gi < k {
+      var sz = base
+      if gi < extra { sz = base + 1 }
+      // Collect 1-indexed student ids in this group, sorted ascending
+      var ids: list<int> = []
+      var j = 0
+      while j < sz {
+        ids = append(ids, order[pos] + 1)
+        pos = pos + 1
+        j = j + 1
+      }
+      // Sort ids ascending (insertion sort)
+      var ii = 1
+      while ii < len(ids) {
+        var jj = ii
+        while jj > 0 && ids[jj-1] > ids[jj] {
+          let tmp = ids[jj-1]
+          ids[jj-1] = ids[jj]
+          ids[jj] = tmp
+          jj = jj - 1
+        }
+        ii = ii + 1
+      }
+      var line = str(sz)
+      j = 0
+      while j < sz {
+        line = line + " " + str(ids[j])
+        j = j + 1
+      }
+      print(line)
+      gi = gi + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

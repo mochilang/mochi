@@ -1,0 +1,103 @@
+// Solution for SPOJ COMMEDIA - Commedia dell'Arte
+// https://www.spoj.com/problems/COMMEDIA/
+// Count perfect matchings in bipartite graph (N actors, N roles) using bitmask DP.
+// dp[mask] = number of ways to assign roles (those in mask) to first popcount(mask) actors.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun pow2(n: int): int {
+  var r = 1
+  var i = 0
+  while i < n { r = r * 2; i = i + 1 }
+  return r
+}
+
+fun popcount(n: int): int {
+  var x = n
+  var count = 0
+  while x > 0 {
+    count = count + x % 2
+    x = int(x / 2)
+  }
+  return count
+}
+
+// Get bit r of n (0-indexed)
+fun bitGet(n: int, r: int): int {
+  var x = n
+  var i = 0
+  while i < r { x = int(x / 2); i = i + 1 }
+  return x % 2
+}
+
+fun main() {
+  var tLine = input()
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    let n = int(input())
+    // Read actor capabilities as bitmasks
+    var canPlay: list<int> = []
+    var ai = 0
+    while ai < n {
+      let line = input()
+      let parts = split(line)
+      // Format: k r1 r2 ... rk (1-indexed roles)
+      let k = int(parts[0])
+      var mask = 0
+      var pi = 1
+      while pi <= k {
+        let role = int(parts[pi]) - 1  // 0-indexed
+        mask = mask + pow2(role)
+        pi = pi + 1
+      }
+      canPlay = append(canPlay, mask)
+      ai = ai + 1
+    }
+
+    // Bitmask DP
+    let totalMasks = pow2(n)
+    var dp: list<int> = []
+    var i = 0
+    while i < totalMasks {
+      dp = append(dp, 0)
+      i = i + 1
+    }
+    dp[0] = 1
+
+    var mask = 1
+    while mask < totalMasks {
+      let actor = popcount(mask) - 1  // which actor to assign (0-indexed)
+      var r = 0
+      while r < n {
+        if bitGet(mask, r) == 1 {
+          if bitGet(canPlay[actor], r) == 1 {
+            let prev = mask - pow2(r)
+            dp[mask] = dp[mask] + dp[prev]
+          }
+        }
+        r = r + 1
+      }
+      mask = mask + 1
+    }
+
+    print(dp[totalMasks - 1])
+    ti = ti + 1
+  }
+}
+
+main()

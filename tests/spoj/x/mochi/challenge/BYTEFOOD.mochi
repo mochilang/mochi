@@ -1,0 +1,136 @@
+// Solution for SPOJ BYTEFOOD - Byte Food
+// https://www.spoj.com/problems/BYTEFOOD/
+// Greedy: repeatedly pick the unvisited shop that yields the most food from current position,
+// subject to being able to return home by the deadline m.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun absi(x: int): int {
+  if x < 0 { return 0 - x }
+  return x
+}
+
+fun maxi(a: int, b: int): int {
+  if a > b { return a }
+  return b
+}
+
+fun mini(a: int, b: int): int {
+  if a < b { return a }
+  return b
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var ti = 0
+  while ti < T {
+    let nmLine = input()
+    let nm = split(nmLine)
+    let n = int(nm[0])
+    let m = int(nm[1])
+
+    // Read shops: xi yi ai bi ci
+    var sx: list<int> = []
+    var sy: list<int> = []
+    var sa: list<int> = []
+    var sb: list<int> = []
+    var sc: list<int> = []
+    var i = 0
+    while i < n {
+      let p = split(input())
+      sx = append(sx, int(p[0]))
+      sy = append(sy, int(p[1]))
+      sa = append(sa, int(p[2]))
+      sb = append(sb, int(p[3]))
+      sc = append(sc, int(p[4]))
+      i = i + 1
+    }
+
+    // Read home
+    let homeP = split(input())
+    let hx = int(homeP[0])
+    let hy = int(homeP[1])
+
+    // Greedy simulation
+    var curX = hx
+    var curY = hy
+    var curTime = 0
+    var visited: list<int> = []
+    i = 0
+    while i < n { visited = append(visited, 0); i = i + 1 }
+
+    // Store result: shop number (1-indexed) and stay time
+    var resShop: list<int> = []
+    var resStay: list<int> = []
+
+    var keepGoing = 1
+    while keepGoing == 1 {
+      var bestFood = 0
+      var bestIdx = 0 - 1
+      var bestStay = 0
+      i = 0
+      while i < n {
+        if visited[i] == 0 {
+          let travel = absi(sx[i] - curX) + absi(sy[i] - curY)
+          let arrival = curTime + travel
+          let retDist = absi(sx[i] - hx) + absi(sy[i] - hy)
+          // Must be able to return home after at least 1 minute stay
+          if arrival + 1 + retDist <= m {
+            let foodAvail = maxi(0, sa[i] - sb[i] * arrival)
+            let maxStay = mini(sc[i], m - arrival - retDist)
+            var food = 0
+            if foodAvail > 0 && maxStay > 0 {
+              food = mini(maxStay * sb[i], foodAvail)
+            }
+            if food > bestFood {
+              bestFood = food
+              bestIdx = i
+              bestStay = maxStay
+            }
+          }
+        }
+        i = i + 1
+      }
+      if bestIdx == 0 - 1 || bestFood == 0 {
+        keepGoing = 0
+      } else {
+        visited[bestIdx] = 1
+        let travel = absi(sx[bestIdx] - curX) + absi(sy[bestIdx] - curY)
+        curTime = curTime + travel + bestStay
+        curX = sx[bestIdx]
+        curY = sy[bestIdx]
+        resShop = append(resShop, bestIdx + 1)
+        resStay = append(resStay, bestStay)
+      }
+    }
+
+    // Output
+    print(str(ti + 1))
+    i = 0
+    while i < len(resShop) {
+      print(str(resShop[i]) + " " + str(resStay[i]))
+      i = i + 1
+    }
+    print("0 0")
+
+    ti = ti + 1
+  }
+}
+
+main()

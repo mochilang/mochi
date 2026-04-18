@@ -1,0 +1,41 @@
+// Solution for SPOJ SUPPER - Supernumbers in a Permutation
+// https://www.spoj.com/problems/SUPPER/
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    var perm: list<int> = []
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      perm = append(perm, int(vLine))
+      i = i + 1
+    }
+
+    // collect suffix maxima positions (right to left)
+    var supers: list<int> = []
+    var maxSoFar = 0
+    i = n - 1
+    while i >= 0 {
+      if perm[i] > maxSoFar {
+        maxSoFar = perm[i]
+        supers = append(supers, perm[i])
+      }
+      i = i - 1
+    }
+
+    // supers is in reverse order; reverse to get ascending order
+    let m = len(supers)
+    var j = 0
+    while j < m {
+      print(str(supers[m-1-j]))
+      j = j + 1
+    }
+    print("")
+    line = input()
+  }
+}
+
+main()

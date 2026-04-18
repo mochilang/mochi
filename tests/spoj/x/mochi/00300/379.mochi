@@ -1,0 +1,52 @@
+// Solution for SPOJ PERMUT2 - Ambiguous Permutations
+// https://www.spoj.com/problems/PERMUT2/
+// A permutation is ambiguous if P[P[i]-1] == i for all i (1-indexed).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let tLine = input()
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    let n = int(input())
+    let tokens = split(input())
+    var perm: list<int> = []
+    var i = 0
+    while i < n {
+      perm = append(perm, int(tokens[i]))
+      i = i + 1
+    }
+    var ok = true
+    i = 0
+    while i < n {
+      let pi = perm[i]
+      if perm[pi - 1] != i + 1 {
+        ok = false
+      }
+      i = i + 1
+    }
+    if ok {
+      print("ambiguous")
+    } else {
+      print("not ambiguous")
+    }
+    ti = ti + 1
+  }
+}
+
+main()

@@ -1,0 +1,78 @@
+// Solution for SPOJ Sums in a Triangle (SUMITR)
+// https://www.spoj.com/problems/SUMITR/
+// Classic triangle DP: for each cell, max path sum = cell value + max(left parent, right parent).
+// Process bottom-up so last row accumulates the answer in row[0].
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    // Read rows into dp array (flat, row i has i+1 elements)
+    // Store all rows
+    var rows: list<list<int>> = []
+    var i = 0
+    while i < n {
+      var rLine = input()
+      while rLine == "" { rLine = input() }
+      let parts = split(rLine)
+      var row: list<int> = []
+      var j = 0
+      while j < len(parts) {
+        row = append(row, int(parts[j]))
+        j = j + 1
+      }
+      rows = append(rows, row)
+      i = i + 1
+    }
+    // Bottom-up DP: start from second-to-last row up
+    // dp[j] = best sum from row i, position j to bottom
+    // Initialize dp = last row
+    var dp: list<int> = []
+    let lastRow = rows[n-1]
+    var j = 0
+    while j < len(lastRow) {
+      dp = append(dp, lastRow[j])
+      j = j + 1
+    }
+    i = n - 2
+    while i >= 0 {
+      let row = rows[i]
+      var newDp: list<int> = []
+      j = 0
+      while j < len(row) {
+        let left = dp[j]
+        let right = dp[j+1]
+        let best = if left > right { left } else { right }
+        newDp = append(newDp, row[j] + best)
+        j = j + 1
+      }
+      dp = newDp
+      i = i - 1
+    }
+    print(dp[0])
+    ti = ti + 1
+  }
+}
+
+main()

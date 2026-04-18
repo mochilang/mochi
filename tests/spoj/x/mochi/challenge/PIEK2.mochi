@@ -1,0 +1,90 @@
+// Solution for SPOJ PIEK2 - TSP / Shortest Hamiltonian Circuit
+// https://www.spoj.com/problems/PIEK2/
+// Nearest-neighbor heuristic starting from node 1.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let nLine = input()
+  let n = int(nLine)
+
+  // Read n x n distance matrix (flat, row-major)
+  var dist: list<int> = []
+  var i = 0
+  while i < n {
+    let row = split(input())
+    var j = 0
+    while j < n {
+      dist = append(dist, int(row[j]))
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  // Nearest-neighbor heuristic starting from node 0 (1-indexed: node 1)
+  var visited: list<int> = []
+  i = 0
+  while i < n { visited = append(visited, 0); i = i + 1 }
+
+  var tour: list<int> = []
+  var cur = 0
+  visited[0] = 1
+  tour = append(tour, 0)
+
+  var totalDist = 0
+  var step = 0
+  while step < n - 1 {
+    // Find nearest unvisited node from cur
+    var bestNode = 0 - 1
+    var bestDist = 0 - 1
+    var j = 0
+    while j < n {
+      if visited[j] == 0 {
+        let d = dist[cur * n + j]
+        if bestNode == 0 - 1 || d < bestDist {
+          bestNode = j
+          bestDist = d
+        }
+      }
+      j = j + 1
+    }
+    visited[bestNode] = 1
+    tour = append(tour, bestNode)
+    totalDist = totalDist + bestDist
+    cur = bestNode
+    step = step + 1
+  }
+
+  // Return to start
+  totalDist = totalDist + dist[cur * n + 0]
+
+  // Print total distance
+  print(str(totalDist))
+
+  // Print tour: 1-indexed, start and end at 1
+  var out = ""
+  i = 0
+  while i < len(tour) {
+    if i > 0 { out = out + " " }
+    out = out + str(tour[i] + 1)
+    i = i + 1
+  }
+  out = out + " 1"
+  print(out)
+}
+
+main()

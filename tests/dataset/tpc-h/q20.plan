@@ -1,3 +1,5 @@
+type: [{string: any}]
+plan:
 (select
   (map
     (entry
@@ -36,15 +38,15 @@
       )
     )
     (where
-      (binary <
-        (binary &&
-          (binary >=
-            (selector l_shipdate (selector l))
-            (string 1994-01-01)
-          )
+      (binary &&
+        (binary >=
           (selector l_shipdate (selector l))
+          (string 1994-01-01)
         )
-        (string 1995-01-01)
+        (binary <
+          (selector l_shipdate (selector l))
+          (string 1995-01-01)
+        )
       )
       (scan l (selector lineitem))
     )

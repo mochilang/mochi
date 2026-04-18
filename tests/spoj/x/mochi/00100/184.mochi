@@ -1,0 +1,219 @@
+// Solution for SPOJ Automatic Teller Machines (ATMS)
+// https://www.spoj.com/problems/ATMS/
+// ATM i pays 2^i (if i even) or receives 2^i (if i odd).
+// For getting x: find Se (even ATMs) and So (odd ATMs) with sum(Se) - sum(So) = x.
+// For returning x: find Se, So with sum(So) - sum(Se) = x.
+// x is up to 10^30: represent as list of 100 bits (LSB first).
+// Note: Mochi type quirk - use toInt() wrapper for arithmetic write indices.
+
+fun toInt(x: int): int { return x }
+
+// Halve a decimal string (integer division by 2)
+fun halveStr(s: string): string {
+  var result = ""
+  var carry = 0
+  var i = 0
+  while i < len(s) {
+    let d = int(s[i:i+1])
+    let cur = carry * 10 + d
+    let q = int(cur / 2)
+    carry = cur - q * 2
+    if len(result) > 0 || q > 0 {
+      result = result + str(q)
+    }
+    i = i + 1
+  }
+  if len(result) == 0 { return "0" }
+  return result
+}
+
+fun isZeroStr(s: string): int {
+  if s == "0" { return 1 }
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] != "0" { return 0 }
+    i = i + 1
+  }
+  return 1
+}
+
+// Convert decimal string to list of 100 bits (LSB first)
+fun decToBits(s: string): list<int> {
+  var bits: list<int> = []
+  var i = 0
+  while i < 100 { bits = append(bits, 0); i = i + 1 }
+  var cur = s
+  var pos = 0
+  while isZeroStr(cur) == 0 && pos < 100 {
+    // Determine bit from last digit (odd → 1, even → 0)
+    let lastCh = cur[len(cur)-1:len(cur)]
+    let lastD = int(lastCh)
+    let bit = lastD - int(lastD / 2) * 2
+    bits[pos] = bit
+    cur = halveStr(cur)
+    pos = pos + 1
+  }
+  return bits
+}
+
+// Sort list in decreasing order (insertion sort)
+fun sortDesc(lst: list<int>) {
+  let n = len(lst)
+  var j = 1
+  while j < n {
+    let key = lst[j]
+    var k = j - 1
+    while k >= 0 && lst[k] < key {
+      let kp1 = toInt(k + 1)
+      lst[kp1] = lst[k]
+      k = k - 1
+    }
+    let kp1 = toInt(k + 1)
+    lst[kp1] = key
+    j = j + 1
+  }
+}
+
+// Solve "getting x": sum_Se - sum_So = x.
+// bits[]: 100-bit little-endian binary of x.
+// Returns "" if impossible; else ATM numbers in decreasing order as string.
+fun solveGet(xbits: list<int>): string {
+  // Local working copy of bits (101 to allow carry out to bit 100)
+  var bits: list<int> = []
+  var i = 0
+  while i < 101 { bits = append(bits, 0); i = i + 1 }
+  i = 0
+  while i < 100 { bits[i] = xbits[i]; i = i + 1 }
+
+  var Se: list<int> = []
+  var So: list<int> = []
+  var impossible = 0
+
+  i = 0
+  while i <= 99 && impossible == 0 {
+    // Handle any carry ≥ 2 at position i
+    if bits[i] >= 2 {
+      let carry = int(bits[i] / 2)
+      bits[i] = bits[i] - carry * 2
+      let ip1 = toInt(i + 1)
+      bits[ip1] = bits[ip1] + carry
+    }
+    if bits[i] == 0 { i = i + 1; continue }
+    // bits[i] == 1
+    if i % 2 == 0 {
+      // Even ATM: contributes +2^i
+      Se = append(Se, i)
+    } else {
+      // Odd ATM: contributes -2^i; use ATM i (odd) and boost bit i+1
+      if i >= 99 { impossible = 1; break }
+      So = append(So, i)
+      let ip1 = toInt(i + 1)
+      bits[ip1] = bits[ip1] + 1
+    }
+    bits[i] = 0
+    i = i + 1
+  }
+
+  if impossible == 1 || bits[100] > 0 { return "" }
+
+  // Merge Se and So, sort descending
+  var atms: list<int> = []
+  i = 0
+  while i < len(Se) { atms = append(atms, Se[i]); i = i + 1 }
+  i = 0
+  while i < len(So) { atms = append(atms, So[i]); i = i + 1 }
+  sortDesc(atms)
+
+  let n = len(atms)
+  if n == 0 { return "0" }
+  var out = ""
+  i = 0
+  while i < n {
+    if i > 0 { out = out + " " }
+    out = out + str(atms[i])
+    i = i + 1
+  }
+  return out
+}
+
+// Solve "returning x": sum_So - sum_Se = x.
+// Even/odd roles swapped compared to solveGet.
+fun solveRet(xbits: list<int>): string {
+  var bits: list<int> = []
+  var i = 0
+  while i < 101 { bits = append(bits, 0); i = i + 1 }
+  i = 0
+  while i < 100 { bits[i] = xbits[i]; i = i + 1 }
+
+  var Se: list<int> = []
+  var So: list<int> = []
+  var impossible = 0
+
+  i = 0
+  while i <= 99 && impossible == 0 {
+    if bits[i] >= 2 {
+      let carry = int(bits[i] / 2)
+      bits[i] = bits[i] - carry * 2
+      let ip1 = toInt(i + 1)
+      bits[ip1] = bits[ip1] + carry
+    }
+    if bits[i] == 0 { i = i + 1; continue }
+    if i % 2 == 1 {
+      // Odd ATM: contributes +2^i (client pays) - correct for returning
+      So = append(So, i)
+    } else {
+      // Even ATM: contributes -2^i (wrong dir). Boost bit i+1 and use even ATM i.
+      if i >= 99 { impossible = 1; break }
+      Se = append(Se, i)
+      let ip1 = toInt(i + 1)
+      bits[ip1] = bits[ip1] + 1
+    }
+    bits[i] = 0
+    i = i + 1
+  }
+
+  if impossible == 1 || bits[100] > 0 { return "" }
+
+  var atms: list<int> = []
+  i = 0
+  while i < len(Se) { atms = append(atms, Se[i]); i = i + 1 }
+  i = 0
+  while i < len(So) { atms = append(atms, So[i]); i = i + 1 }
+  sortDesc(atms)
+
+  let n = len(atms)
+  if n == 0 { return "0" }
+  var out = ""
+  i = 0
+  while i < n {
+    if i > 0 { out = out + " " }
+    out = out + str(atms[i])
+    i = i + 1
+  }
+  return out
+}
+
+fun main() {
+  let nLine = input()
+  let n = int(nLine)
+  var ci = 0
+  while ci < n {
+    let xStr = input()
+    let bits = decToBits(xStr)
+    let getResult = solveGet(bits)
+    let retResult = solveRet(bits)
+    if getResult == "" {
+      print("No")
+    } else {
+      print(getResult)
+    }
+    if retResult == "" {
+      print("No")
+    } else {
+      print(retResult)
+    }
+    ci = ci + 1
+  }
+}
+
+main()

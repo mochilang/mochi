@@ -84,7 +84,7 @@ func Parse(src string) (*Program, error) {
 	}
 	scriptPath := filepath.Join(root, "tools", "a2mochi", "x", "ts", "parse.ts")
 
-	cmd := exec.Command("deno", "run", "--quiet", "--allow-read", "--allow-env", "--node-modules-dir=auto", scriptPath, tmp.Name())
+	cmd := exec.Command("deno", "run", "--quiet", "--allow-read", "--allow-env", "--allow-net", "--node-modules-dir=none", scriptPath, tmp.Name())
 	cmd.Dir = filepath.Join(root, "tools", "a2mochi", "x", "ts")
 	cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
 	out, err := cmd.CombinedOutput()

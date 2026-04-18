@@ -1,0 +1,46 @@
+// Solution for SPOJ FACT1 - Factorial
+// https://www.spoj.com/problems/FACT1/
+// Compute digit sum of n!
+
+fun mulDigits(digits: list<int>, n: int): list<int> {
+  var carry = 0
+  var i = 0
+  while i < len(digits) {
+    let v = digits[i] * n + carry
+    digits[i] = v % 10
+    carry = int(v / 10)
+    i = i + 1
+  }
+  while carry > 0 {
+    digits = append(digits, carry % 10)
+    carry = int(carry / 10)
+  }
+  return digits
+}
+
+fun factDigitSum(n: int): int {
+  // Build fresh list to avoid shared literal bug
+  var digits: list<int> = []
+  digits = append(digits, 1)
+  var i = 2
+  while i <= n {
+    digits = mulDigits(digits, i)
+    i = i + 1
+  }
+  var s = 0
+  for d in digits {
+    s = s + d
+  }
+  return s
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    print(factDigitSum(n))
+    line = input()
+  }
+}
+
+main()

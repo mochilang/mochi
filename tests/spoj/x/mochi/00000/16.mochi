@@ -1,0 +1,87 @@
+// Solution for SPOJ TETRA - Sphere in a Tetrahedron
+// https://www.spoj.com/problems/TETRA/
+// r = 3V / A_total. Place tetrahedron in coordinates to compute V.
+
+fun mysqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var r = x
+  var i = 0
+  while i < 60 {
+    r = (r + x / r) / 2.0
+    i = i + 1
+  }
+  return r
+}
+
+fun heron(p: float, q: float, r: float): float {
+  let s = (p + q + r) / 2.0
+  let t = s * (s-p) * (s-q) * (s-r)
+  if t < 0.0 { return 0.0 }
+  return mysqrt(t)
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun fmtDecimal(x: float, places: int): string {
+  var mult = 1.0
+  var i = 0
+  while i < places { mult = mult * 10.0; i = i + 1 }
+  let scaled = int(x * mult + 0.5)
+  let imult = int(mult)
+  let intPart = int(scaled / imult)
+  let fracPart = scaled % imult
+  var fracStr = str(fracPart)
+  while len(fracStr) < places { fracStr = "0" + fracStr }
+  return str(intPart) + "." + fracStr
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let p = split(line)
+    let a = int(p[0]) as float
+    let b = int(p[1]) as float
+    let c = int(p[2]) as float
+    let d = int(p[3]) as float
+    let e = int(p[4]) as float
+    let f = int(p[5]) as float
+
+    // Place A=(0,0,0), B=(a,0,0)
+    // C: AC=b, BC=d
+    let xC = (a*a + b*b - d*d) / (2.0*a)
+    let yC = mysqrt(b*b - xC*xC)
+    // D: AD=c, BD=e, CD=f
+    let xD = (a*a + c*c - e*e) / (2.0*a)
+    let yD = if yC > 0.0 { (c*c + b*b - f*f - 2.0*xD*xC) / (2.0*yC) } else { 0.0 }
+    let zD = mysqrt(c*c - xD*xD - yD*yD)
+    let vol = a * yC * zD / 6.0
+
+    // Face areas: ABC, ABD, ACD, BCD
+    let s1 = heron(a, b, d)
+    let s2 = heron(a, c, e)
+    let s3 = heron(b, c, f)
+    let s4 = heron(d, e, f)
+    let totalArea = s1 + s2 + s3 + s4
+
+    var r = 0.0
+    if totalArea > 0.0 { r = 3.0 * vol / totalArea }
+    print(fmtDecimal(r, 4))
+    line = input()
+  }
+}
+
+main()

@@ -1,0 +1,76 @@
+fun median(a, b) {
+  let total = len(a) + len(b)
+  var leftIndex = 0
+  var tempLeft = total - 1
+  while tempLeft >= 2 {
+    leftIndex = leftIndex + 1
+    tempLeft = tempLeft - 2
+  }
+  var rightIndex = 0
+  var tempRight = total
+  while tempRight >= 2 {
+    rightIndex = rightIndex + 1
+    tempRight = tempRight - 2
+  }
+  var i = 0
+  var j = 0
+  var pos = 0
+  var leftVal = 0
+  var rightVal = 0
+  while pos <= rightIndex {
+    var next = 0
+    if i < len(a) {
+      if j < len(b) {
+        if a[i] <= b[j] {
+          next = a[i]
+          i = i + 1
+        } else {
+          next = b[j]
+          j = j + 1
+        }
+      } else {
+        next = a[i]
+        i = i + 1
+      }
+    } else {
+      next = b[j]
+      j = j + 1
+    }
+    if pos == leftIndex { leftVal = next }
+    if pos == rightIndex { rightVal = next }
+    pos = pos + 1
+  }
+  if total % 2 == 1 { return str(rightVal) + ".0" }
+  let sumVal = leftVal + rightVal
+  if sumVal % 2 == 0 { return str(sumVal / 2) + ".0" }
+  return str(sumVal / 2.0)
+}
+
+fun readIntLine() {
+  var line = input()
+  while line == "" {
+    line = input()
+  }
+  return int(line)
+}
+
+fun readList(n) {
+  var a = []
+  var i = 0
+  while i < n {
+    a = append(a, readIntLine())
+    i = i + 1
+  }
+  return a
+}
+
+let t = readIntLine()
+var tc = 0
+while tc < t {
+  let n = readIntLine()
+  let a = readList(n)
+  let m = readIntLine()
+  let b = readList(m)
+  print(median(a, b))
+  tc = tc + 1
+}

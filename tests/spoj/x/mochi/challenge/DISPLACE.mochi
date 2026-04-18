@@ -1,0 +1,116 @@
+// Solution for SPOJ DISPLACE - Displaced Letters
+// https://www.spoj.com/problems/DISPLACE/
+// Find minimum adjacent swaps in S1 to make S2 a substring of S1.
+// For each candidate start position, greedily match S2 characters left to right
+// by finding the nearest unmatched S1 character and bubbling it into place.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    let s1 = input()
+    let s2 = input()
+    let n1 = len(s1)
+    let n2 = len(s2)
+
+    var bestCost = 0 - 1
+    var bestSwaps: list<int> = []
+
+    // Try each starting position p (0-indexed) where s2 of length n2 fits
+    var p = 0
+    while p <= n1 - n2 {
+      // Build mutable array of s1 characters
+      var arr: list<string> = []
+      var i = 0
+      while i < n1 {
+        arr = append(arr, s1[i:i+1])
+        i = i + 1
+      }
+
+      var swaps: list<int> = []
+      var cost = 0
+      var ok = 1
+
+      // For each character of s2, find it in arr at position >= p+j and bubble left
+      var j = 0
+      while j < n2 {
+        let target = p + j
+        // Find leftmost match of s2[j] in arr starting at index target
+        var found = 0 - 1
+        var k = target
+        while k < n1 {
+          if arr[k] == s2[j:j+1] {
+            found = k
+            k = n1  // break
+          }
+          k = k + 1
+        }
+        if found == 0 - 1 {
+          ok = 0
+          j = n2  // break
+        } else {
+          // Bubble arr[found] left to arr[target]
+          var cur = found
+          while cur > target {
+            // Swap arr[cur] and arr[cur-1]; record swap position as cur (1-indexed)
+            let tmp = arr[cur]
+            arr[cur] = arr[cur - 1]
+            arr[cur - 1] = tmp
+            swaps = append(swaps, cur)
+            cost = cost + 1
+            cur = cur - 1
+          }
+        }
+        j = j + 1
+      }
+
+      if ok == 1 {
+        if bestCost == 0 - 1 || cost < bestCost {
+          bestCost = cost
+          bestSwaps = swaps
+        }
+      }
+
+      p = p + 1
+    }
+
+    // Output: 1 to attempt + swap count + swap positions; 0 to skip
+    if bestCost == 0 - 1 {
+      print(0)
+    } else {
+      print(1)
+      print(bestCost)
+      if bestCost > 0 {
+        var out = ""
+        var i = 0
+        while i < len(bestSwaps) {
+          if i > 0 { out = out + " " }
+          out = out + string(bestSwaps[i])
+          i = i + 1
+        }
+        print(out)
+      }
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

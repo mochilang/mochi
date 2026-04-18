@@ -1,0 +1,39 @@
+// Solution for SPOJ TRICENTR - Triangle From Centroid
+// https://www.spoj.com/problems/TRICENTR/
+// Given centroid G(gx,gy) and vertices A(ax,ay), B(bx,by), find C.
+// centroid = (Ax+Bx+Cx)/3 => Cx = 3*gx - Ax - Bx, similarly for y.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let p = split(line)
+    let gx = int(p[0])
+    let gy = int(p[1])
+    let ax = int(p[2])
+    let ay = int(p[3])
+    let bx = int(p[4])
+    let by = int(p[5])
+    let cx = 3 * gx - ax - bx
+    let cy = 3 * gy - ay - by
+    print(str(cx) + " " + str(cy))
+    line = input()
+  }
+}
+
+main()

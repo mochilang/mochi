@@ -1,0 +1,75 @@
+// Solution for SPOJ LIB - Library
+// https://www.spoj.com/problems/LIB/
+// Read publication titles (lowercase + spaces), output in title case with a trailing dot.
+// Score = 100 / (1 + R) where R is the length of the submitted Brainfuck source.
+// Since we implement in Mochi, we convert directly: capitalize the first letter of each word.
+
+fun toUpper(c: string): string {
+  if c == "a" { return "A" }
+  if c == "b" { return "B" }
+  if c == "c" { return "C" }
+  if c == "d" { return "D" }
+  if c == "e" { return "E" }
+  if c == "f" { return "F" }
+  if c == "g" { return "G" }
+  if c == "h" { return "H" }
+  if c == "i" { return "I" }
+  if c == "j" { return "J" }
+  if c == "k" { return "K" }
+  if c == "l" { return "L" }
+  if c == "m" { return "M" }
+  if c == "n" { return "N" }
+  if c == "o" { return "O" }
+  if c == "p" { return "P" }
+  if c == "q" { return "Q" }
+  if c == "r" { return "R" }
+  if c == "s" { return "S" }
+  if c == "t" { return "T" }
+  if c == "u" { return "U" }
+  if c == "v" { return "V" }
+  if c == "w" { return "W" }
+  if c == "x" { return "X" }
+  if c == "y" { return "Y" }
+  if c == "z" { return "Z" }
+  return c
+}
+
+fun titleCase(line: string): string {
+  var result = ""
+  var atWordStart = 1
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " {
+      result = result + ch
+      atWordStart = 1
+    } else {
+      if atWordStart == 1 {
+        result = result + toUpper(ch)
+        atWordStart = 0
+      } else {
+        result = result + ch
+      }
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    var line = input()
+    // Strip trailing whitespace
+    while len(line) > 0 && line[len(line)-1:len(line)] == " " {
+      line = line[0:len(line)-1]
+    }
+    print(titleCase(line) + ".")
+    tc = tc + 1
+  }
+}
+
+main()

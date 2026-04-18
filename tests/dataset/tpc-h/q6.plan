@@ -1,3 +1,5 @@
+type: int
+plan:
 (select
   (call sum
     (binary *

@@ -1,0 +1,186 @@
+// Solution for SPOJ INTERVAL - Intervals
+// https://www.spoj.com/problems/INTERVAL/
+// Find minimum |Z| s.t. |Z ∩ [a,b]| >= c for all intervals.
+// Greedy: sort by right endpoint, place elements rightmost first.
+// nextFree[p] = rightmost free position <= p (union-find with path compression).
+// BIT for range sum queries.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun lowbit(p: int): int {
+  var x = p
+  var lb = 1
+  while x % 2 == 0 {
+    x = int(x / 2)
+    lb = lb * 2
+  }
+  return lb
+}
+
+fun bit_query(bit: list<int>, pos: int): int {
+  var p = pos
+  var s = 0
+  while p > 0 {
+    s = s + bit[p]
+    p = p - lowbit(p)
+  }
+  return s
+}
+
+fun bit_update(bit: list<int>, pos: int, val: int, size: int) {
+  var p = pos
+  while p <= size {
+    bit[p] = bit[p] + val
+    p = p + lowbit(p)
+  }
+}
+
+// Find rightmost free position <= pos (iterative path-compressed union-find)
+// nxt[p] = p means p is free; nxt[p] < p means look left; -1 means none
+fun findFree(nxt: list<int>, pos: int): int {
+  if pos < 0 { return -1 }
+  // Find root (either free pos or -1)
+  var p = pos
+  while p >= 0 && nxt[p] != p {
+    p = nxt[p]
+  }
+  // p is now root (-1 if no free position, or the free position itself)
+  let root = p
+  // Path compression: point all nodes on path to root
+  var q = pos
+  while q >= 0 && q != root {
+    let nq = nxt[q]
+    nxt[q] = root
+    q = nq
+  }
+  return root
+}
+
+fun main() {
+  let tLine = input()
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    let nLine = input()
+    let n = int(nLine)
+
+    var as_: list<int> = []
+    var bs: list<int> = []
+    var cs: list<int> = []
+
+    var i = 0
+    while i < n {
+      let line = input()
+      let p = split(line)
+      as_ = append(as_, int(p[0]))
+      bs = append(bs, int(p[1]))
+      cs = append(cs, int(p[2]))
+      i = i + 1
+    }
+
+    // Counting sort by right endpoint (b in [0..50000])
+    let COORD = 50001
+    var cnt: list<int> = []
+    i = 0
+    while i <= COORD {
+      cnt = append(cnt, 0)
+      i = i + 1
+    }
+    i = 0
+    while i < n {
+      cnt[bs[i]] = cnt[bs[i]] + 1
+      i = i + 1
+    }
+    i = 1
+    while i <= COORD {
+      cnt[i] = cnt[i] + cnt[i-1]
+      i = i + 1
+    }
+    var order: list<int> = []
+    i = 0
+    while i < n {
+      order = append(order, 0)
+      i = i + 1
+    }
+    i = n - 1
+    while i >= 0 {
+      let bv = bs[i]
+      cnt[bv] = cnt[bv] - 1
+      order[cnt[bv]] = i
+      i = i - 1
+    }
+
+    // BIT (1-indexed, position p maps to index p+1)
+    let MAXN = COORD + 2
+    var bit: list<int> = []
+    i = 0
+    while i < MAXN {
+      bit = append(bit, 0)
+      i = i + 1
+    }
+
+    // nextFree[p] = rightmost free position <= p
+    // Initially nextFree[p] = p; when p is placed, nextFree[p] = p-1
+    var nxt: list<int> = []
+    i = 0
+    while i <= COORD {
+      nxt = append(nxt, i)
+      i = i + 1
+    }
+    // nxt[-1] sentinel: use nxt[0] carefully; position -1 means "no free"
+    // We use findFree which returns -1 if pos < 0
+
+    var result = 0
+
+    i = 0
+    while i < n {
+      let idx = order[i]
+      let a = as_[idx]
+      let b = bs[idx]
+      let c = cs[idx]
+
+      // Count elements in [a, b]
+      let sumB = bit_query(bit, b + 1)
+      let sumA = if a > 0 { bit_query(bit, a) } else { 0 }
+      let existing = sumB - sumA
+
+      var deficit = c - existing
+      var pos = findFree(nxt, b)
+      while deficit > 0 && pos >= a {
+        // Place element at pos
+        bit_update(bit, pos + 1, 1, MAXN - 1)
+        result = result + 1
+        deficit = deficit - 1
+        // Mark pos as used: point nxt[pos] to pos-1
+        if pos > 0 {
+          nxt[pos] = pos - 1
+        } else {
+          nxt[pos] = -1
+        }
+        if deficit > 0 {
+          pos = findFree(nxt, pos - 1)
+        }
+      }
+      i = i + 1
+    }
+
+    print(str(result))
+    tc = tc + 1
+  }
+}
+
+main()

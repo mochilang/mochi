@@ -1,0 +1,36 @@
+fun value(c: string): int {
+  if c == "I" { return 1 }
+  if c == "V" { return 5 }
+  if c == "X" { return 10 }
+  if c == "L" { return 50 }
+  if c == "C" { return 100 }
+  if c == "D" { return 500 }
+  return 1000
+}
+
+fun romanToInt(s: string): int {
+  var total = 0
+  var i = 0
+  while i < len(s) {
+    let cur = value(s[i:i+1])
+    let next = if i + 1 < len(s) { value(s[i+1:i+2]) } else { 0 }
+    if cur < next { total = total - cur } else { total = total + cur }
+    i = i + 1
+  }
+  return total
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var i = 0
+  while i < t {
+    var s = input()
+    while s == "" { s = input() }
+    print(romanToInt(s))
+    i = i + 1
+  }
+}
+
+main()

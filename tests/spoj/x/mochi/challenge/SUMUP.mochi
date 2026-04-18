@@ -1,0 +1,26 @@
+// Solution for SPOJ SUMUP - Sum the Series
+// https://www.spoj.com/problems/SUMUP/
+// Closed form: sum of k/(k^2+k+1)(k-1+...) simplifies to N*(N+1) / (2*(N^2+N+1)).
+// Print result rounded to 5 decimal places.
+
+fun fmt5(x: float): string {
+  let scaled = int(x * 100000.0 + 0.5)
+  let intPart = int(scaled / 100000)
+  let fracPart = scaled % 100000
+  var fracStr = str(fracPart)
+  while len(fracStr) < 5 { fracStr = "0" + fracStr }
+  return str(intPart) + "." + fracStr
+}
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let n = int(input())
+    let val = (n * (n + 1)) / (2.0 * (n * n + n + 1))
+    print(fmt5(val))
+    ti = ti + 1
+  }
+}
+
+main()

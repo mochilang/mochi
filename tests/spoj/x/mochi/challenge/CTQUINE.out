@@ -1,0 +1,15 @@
+// SPOJ CTQUINE - Christmas Tree Quine
+// https://www.spoj.com/problems/CTQUINE/
+
+var dq = "\""
+var bs = "\\"
+print("// SPOJ CTQUINE - Christmas Tree Quine")
+print("// https://www.spoj.com/problems/CTQUINE/")
+print("")
+print("var dq = " + dq + bs + dq + dq)
+print("var bs = " + dq + bs + bs + dq)
+print("print(" + dq + "// SPOJ CTQUINE - Christmas Tree Quine" + dq + ")")
+print("print(" + dq + "// https://www.spoj.com/problems/CTQUINE/" + dq + ")")
+print("print(" + dq + dq + ")")
+print("print(" + dq + "var dq = " + dq + " + dq + bs + dq + dq)")
+print("print(" + dq + "var bs = " + dq + " + dq + bs + bs + dq)")

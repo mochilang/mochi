@@ -1,0 +1,110 @@
+// Solution for SPOJ BRCKTS - Brackets
+// https://www.spoj.com/problems/BRCKTS/
+// Segment tree with (unmatched_open, unmatched_close) per node.
+// Valid iff root has (0, 0).
+// Iterative build and update to avoid stack overflow.
+
+// Segment tree stored as flat arrays: tOpen[node], tClose[node]
+// Leaves at indices [size..2*size-1], root at index 1 (1-indexed, size is power of 2)
+
+fun nextPow2(n: int): int {
+  var p = 1
+  while p < n { p = p * 2 }
+  return p
+}
+
+fun main() {
+  var caseNum = 1
+  while caseNum <= 10 {
+    let nStr = input()
+    if nStr == "" { break }
+    let n = int(nStr)
+    let s = input()
+    let mStr = input()
+    let m = int(mStr)
+
+    // Build iterative segment tree of size = nextPow2(n)
+    let sz = nextPow2(n)
+    // Allocate 2*sz nodes (indices 0..2*sz-1, root at 1)
+    var tOpen: list<int> = []
+    var tClose: list<int> = []
+    var si = 0
+    while si < 2 * sz {
+      tOpen = append(tOpen, 0)
+      tClose = append(tClose, 0)
+      si = si + 1
+    }
+
+    // Initialize leaves
+    var li = 0
+    while li < n {
+      if s[li:li+1] == "(" {
+        tOpen[sz + li] = 1
+        tClose[sz + li] = 0
+      } else {
+        tOpen[sz + li] = 0
+        tClose[sz + li] = 1
+      }
+      li = li + 1
+    }
+    // Remaining leaves are (0, 0) - already initialized
+
+    // Build internal nodes bottom-up
+    var idx = sz - 1
+    while idx >= 1 {
+      let lc = idx * 2
+      let rc = idx * 2 + 1
+      // Merge left and right children
+      let matched = tOpen[lc]
+      var matchedAmt = tClose[rc]
+      if matched < matchedAmt { matchedAmt = matched }
+      tOpen[idx] = tOpen[lc] - matchedAmt + tOpen[rc]
+      tClose[idx] = tClose[lc] + tClose[rc] - matchedAmt
+      idx = idx - 1
+    }
+
+    print("Test " + str(caseNum) + ":")
+
+    var qi = 0
+    while qi < m {
+      let opStr = input()
+      let k = int(opStr)
+      if k == 0 {
+        // Check if valid
+        if tOpen[1] == 0 && tClose[1] == 0 {
+          print("YES")
+        } else {
+          print("NO")
+        }
+      } else {
+        // Flip bracket at position k (1-indexed)
+        let pos = sz + k - 1
+        // Flip the leaf
+        if tOpen[pos] == 1 {
+          tOpen[pos] = 0
+          tClose[pos] = 1
+        } else {
+          tOpen[pos] = 1
+          tClose[pos] = 0
+        }
+        // Update ancestors
+        var node = int(pos / 2)
+        while node >= 1 {
+          let lc = node * 2
+          let rc = node * 2 + 1
+          let matched = tOpen[lc]
+          var matchedAmt = tClose[rc]
+          if matched < matchedAmt { matchedAmt = matched }
+          tOpen[node] = tOpen[lc] - matchedAmt + tOpen[rc]
+          tClose[node] = tClose[lc] + tClose[rc] - matchedAmt
+          node = int(node / 2)
+        }
+      }
+      qi = qi + 1
+    }
+
+    caseNum = caseNum + 1
+  }
+}
+
+main()

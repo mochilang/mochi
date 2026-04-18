@@ -1,0 +1,106 @@
+// Solution for SPOJ EASYMATC - Easy Math Challenge
+// https://www.spoj.com/problems/EASYMATC/
+// Count integers in [n,m] not divisible by any of {a, a+d, a+2d, a+3d, a+4d}.
+// Use inclusion-exclusion over all 31 non-empty subsets of the 5 divisors.
+
+fun gcd(a: int, b: int): int {
+  while b > 0 {
+    let t = b
+    b = a % b
+    a = t
+  }
+  return a
+}
+
+fun countDiv(lo: int, hi: int, k: int): int {
+  var lo1: int = lo - 1
+  return int(hi / k) - int(lo1 / k)
+}
+
+// Safe LCM: returns lcm(a,b) if <= limit, else limit+1
+fun safeLcm(a: int, b: int, limit: int): int {
+  let g = gcd(a, b)
+  let ag = int(a / g)
+  if ag > int(limit / b) { return limit + 1 }
+  return ag * b
+}
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let line = input()
+    var nums: list<int> = []
+    var cur = ""
+    var i = 0
+    while i <= len(line) {
+      var ch = " "
+      if i < len(line) { ch = line[i:i+1] }
+      if ch == " " || i == len(line) {
+        if len(cur) > 0 { nums = append(nums, int(cur)); cur = "" }
+      } else {
+        cur = cur + ch
+      }
+      i = i + 1
+    }
+    let n = nums[0]
+    let m = nums[1]
+    let a = nums[2]
+    let d = nums[3]
+
+    var divs: list<int> = []
+    divs = append(divs, a)
+    divs = append(divs, a + d)
+    divs = append(divs, a + 2 * d)
+    divs = append(divs, a + 3 * d)
+    divs = append(divs, a + 4 * d)
+
+    // Inclusion-exclusion over 31 non-empty subsets (mask 1..31)
+    var unionCount = 0
+    var mask = 1
+    while mask <= 31 {
+      let b0 = mask % 2
+      let b1 = int(mask / 2) % 2
+      let b2 = int(mask / 4) % 2
+      let b3 = int(mask / 8) % 2
+      let b4 = int(mask / 16) % 2
+      var lcmVal = 1
+      var overflow = 0
+      if b0 == 1 && overflow == 0 {
+        lcmVal = safeLcm(lcmVal, divs[0], m)
+        if lcmVal > m { overflow = 1 }
+      }
+      if b1 == 1 && overflow == 0 {
+        lcmVal = safeLcm(lcmVal, divs[1], m)
+        if lcmVal > m { overflow = 1 }
+      }
+      if b2 == 1 && overflow == 0 {
+        lcmVal = safeLcm(lcmVal, divs[2], m)
+        if lcmVal > m { overflow = 1 }
+      }
+      if b3 == 1 && overflow == 0 {
+        lcmVal = safeLcm(lcmVal, divs[3], m)
+        if lcmVal > m { overflow = 1 }
+      }
+      if b4 == 1 && overflow == 0 {
+        lcmVal = safeLcm(lcmVal, divs[4], m)
+        if lcmVal > m { overflow = 1 }
+      }
+      let popcount = b0 + b1 + b2 + b3 + b4
+      if overflow == 0 {
+        let cnt = countDiv(n, m, lcmVal)
+        if popcount % 2 == 1 {
+          unionCount = unionCount + cnt
+        } else {
+          unionCount = unionCount - cnt
+        }
+      }
+      mask = mask + 1
+    }
+
+    print(m - n + 1 - unionCount)
+    ti = ti + 1
+  }
+}
+
+main()

@@ -1,0 +1,31 @@
+// Solution for SPOJ CRYPTO1 - Bytelandian Cryptographer (Act I)
+// https://www.spoj.com/problems/CRYPTO1/
+// Find two different integers a, b > 1 with a*b = n.
+
+fun solve(n: int): string {
+  if n <= 2 { return "NO" }
+  var i = 2
+  while i * i <= n {
+    if n % i == 0 {
+      let a = i
+      let b = int(n / i)
+      if a != b {
+        return str(a) + " " + str(b)
+      }
+    }
+    i = i + 1
+  }
+  return "NO"
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    if n == 0 { break }
+    print(solve(n))
+    line = input()
+  }
+}
+
+main()

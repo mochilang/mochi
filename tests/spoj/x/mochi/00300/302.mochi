@@ -1,0 +1,52 @@
+// Solution for SPOJ CANTON - Count on Cantor
+// https://www.spoj.com/problems/CANTON/
+// Cantor diagonal enumeration: d = a+b-1, offset = (d-1)*d/2.
+// If d odd: pos = offset + b. If d even: pos = offset + a.
+
+fun parseFrac(line: string): list<int> {
+  var a = ""
+  var b = ""
+  var seenSlash = false
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == "/" {
+      seenSlash = true
+    } else {
+      if seenSlash {
+        b = b + ch
+      } else {
+        a = a + ch
+      }
+    }
+    i = i + 1
+  }
+  var res: list<int> = []
+  res = append(res, int(a))
+  res = append(res, int(b))
+  return res
+}
+
+fun main() {
+  let tLine = input()
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    let line = input()
+    let ab = parseFrac(line)
+    let a = ab[0]
+    let b = ab[1]
+    let d = a + b - 1
+    let offset = (d - 1) * d / 2
+    var pos = 0
+    if d % 2 == 1 {
+      pos = offset + b
+    } else {
+      pos = offset + a
+    }
+    print("TERM " + line + " IS THE " + str(pos) + " NATURAL NUMBER.")
+    ti = ti + 1
+  }
+}
+
+main()

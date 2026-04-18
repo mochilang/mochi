@@ -1,0 +1,67 @@
+// Solution for SPOJ BRIGAMI - Origami Cuts
+// https://www.spoj.com/problems/BRIGAMI/
+// Given a convex sheet polygon and a convex inner shape polygon,
+// output any permutation of the n sides to cut.
+// Score = perimeter_sheet / total_cut_length. Any valid order gives nonzero score.
+// Strategy: output identity permutation 1..n.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 1
+  while tc <= T {
+    var mnLine = input()
+    while mnLine == "" { mnLine = input() }
+    let mn = split(mnLine)
+    let m = int(mn[0])
+    let n = int(mn[1])
+
+    // Read m outer polygon vertices (discard)
+    var i = 0
+    while i < m {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      i = i + 1
+    }
+
+    // Read n inner polygon vertices (discard)
+    i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      i = i + 1
+    }
+
+    // Output: case header then identity permutation
+    print("case " + string(tc) + " Y")
+    var perm = ""
+    i = 1
+    while i <= n {
+      if i > 1 { perm = perm + " " }
+      perm = perm + string(i)
+      i = i + 1
+    }
+    print(perm)
+
+    tc = tc + 1
+  }
+}
+
+main()

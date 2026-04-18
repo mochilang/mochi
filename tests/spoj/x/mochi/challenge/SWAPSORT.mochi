@@ -1,0 +1,36 @@
+// Solution for SPOJ SWAPSORT - Optimal Swap Sort
+// https://www.spoj.com/problems/SWAPSORT/
+// Worst-case number of swaps for optimal selection sort with n elements and k distinct values.
+// Formula: n - ceil(n/k) = n - int((n + k - 1) / k).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let T = int(input())
+  var tc = 0
+  while tc < T {
+    let p = split(input())
+    let n = int(p[0])
+    let k = int(p[1])
+    let nk1 = n + k - 1
+    let ceil_nk = int(nk1 / k)
+    print(str(n - ceil_nk))
+    tc = tc + 1
+  }
+}
+
+main()

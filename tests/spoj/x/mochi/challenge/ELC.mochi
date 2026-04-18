@@ -1,0 +1,160 @@
+// Solution for SPOJ ELC - Euclidean connections
+// https://www.spoj.com/problems/ELC/
+// Connect N houses with minimum total cable (MST using Prim's algorithm).
+// No transformers (M=0). Output K=N-1 MST edges as pairs of 0-indexed house indices.
+// Use squared distances for comparisons to avoid floating point sqrt.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Parse a float string like "1.0" or "3.14" multiplied by 1000 into int
+fun parseCoord(s: string): int {
+  var intPart = 0
+  var fracPart = 0
+  var fracDiv = 1
+  var inFrac = 0
+  var i = 0
+  while i < len(s) {
+    let c = s[i:i+1]
+    if c == "." {
+      inFrac = 1
+    } else {
+      let d = int(c)
+      if inFrac == 1 {
+        if fracDiv < 1000 {
+          fracPart = fracPart * 10 + d
+          fracDiv = fracDiv * 10
+        }
+      } else {
+        intPart = intPart * 10 + d
+      }
+    }
+    i = i + 1
+  }
+  // scale to integer with 3 decimal places
+  var scaled = intPart * 1000
+  if fracDiv == 1 {
+    // no fractional part
+  } else {
+    // fracPart / fracDiv * 1000
+    scaled = scaled + fracPart * 1000 / fracDiv
+  }
+  return scaled
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    var xs: list<int> = []
+    var ys: list<int> = []
+    var i = 0
+    while i < n {
+      var line = input()
+      while line == "" { line = input() }
+      let p = split(line)
+      xs = append(xs, parseCoord(p[0]))
+      ys = append(ys, parseCoord(p[1]))
+      i = i + 1
+    }
+
+    // Prim's MST: O(n^2)
+    // inMST[i] = 1 if node i is in MST
+    var inMST: list<int> = []
+    // minDist2[i] = squared distance from i to nearest MST node (scaled coords)
+    var minDist2: list<int> = []
+    // parent[i] = MST parent of node i
+    var parent: list<int> = []
+    i = 0
+    while i < n {
+      inMST = append(inMST, 0)
+      minDist2 = append(minDist2, 1000000000)
+      parent = append(parent, 0)
+      i = i + 1
+    }
+
+    // Start from node 0
+    inMST[0] = 1
+    // Initialize distances from node 0
+    i = 1
+    while i < n {
+      let dx = xs[i] - xs[0]
+      let dy = ys[i] - ys[0]
+      minDist2[i] = dx*dx + dy*dy
+      parent[i] = 0
+      i = i + 1
+    }
+
+    var edgeA: list<int> = []
+    var edgeB: list<int> = []
+
+    var step = 1
+    while step < n {
+      // Pick non-MST node with smallest minDist2
+      var best = 1000000000
+      var u = 0 - 1
+      i = 0
+      while i < n {
+        if inMST[i] == 0 && minDist2[i] < best {
+          best = minDist2[i]
+          u = i
+        }
+        i = i + 1
+      }
+      if u == 0 - 1 { step = n }
+      else {
+        inMST[u] = 1
+        edgeA = append(edgeA, parent[u])
+        edgeB = append(edgeB, u)
+
+        // Update minDist2 for remaining non-MST nodes
+        i = 0
+        while i < n {
+          if inMST[i] == 0 {
+            let dx = xs[i] - xs[u]
+            let dy = ys[i] - ys[u]
+            let d2 = dx*dx + dy*dy
+            if d2 < minDist2[i] {
+              minDist2[i] = d2
+              parent[i] = u
+            }
+          }
+          i = i + 1
+        }
+        step = step + 1
+      }
+    }
+
+    // Output: 0 transformers, n-1 cables
+    print("0")
+    print(n - 1)
+    i = 0
+    while i < len(edgeA) {
+      print(string(edgeA[i]) + " " + string(edgeB[i]))
+      i = i + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

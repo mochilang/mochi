@@ -1,0 +1,113 @@
+// Solution for SPOJ DIP - Image Denoising
+// https://www.spoj.com/problems/DIP/
+// Apply a 3x3 median filter to each pixel to reduce salt-and-pepper noise.
+// For border pixels, use available neighbors (no padding).
+// Score = sum of squared differences from original; lower is better.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Sort list in place using insertion sort, return list
+fun insertSort(vals: list<int>): list<int> {
+  let n = len(vals)
+  var i = 1
+  while i < n {
+    let key = vals[i]
+    var j = i - 1
+    while j >= 0 && vals[j] > key {
+      vals[j + 1] = vals[j]
+      j = j - 1
+    }
+    vals[j + 1] = key
+    i = i + 1
+  }
+  return vals
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    let rcLine = input()
+    let rc = split(rcLine)
+    let R = int(rc[0])
+    let C = int(rc[1])
+
+    // Read image into flat list
+    var img: list<int> = []
+    var r = 0
+    while r < R {
+      let rowParts = split(input())
+      var c = 0
+      while c < C {
+        img = append(img, int(rowParts[c]))
+        c = c + 1
+      }
+      r = r + 1
+    }
+
+    // Apply 3x3 median filter
+    var outImg: list<int> = []
+    r = 0
+    while r < R {
+      var c = 0
+      while c < C {
+        // Collect neighborhood values
+        var vals: list<int> = []
+        var drow = 0 - 1
+        while drow <= 1 {
+          var dcol = 0 - 1
+          while dcol <= 1 {
+            let nr = r + drow
+            let nc = c + dcol
+            if nr >= 0 && nr < R && nc >= 0 && nc < C {
+              vals = append(vals, img[nr * C + nc])
+            }
+            dcol = dcol + 1
+          }
+          drow = drow + 1
+        }
+        // Sort and take median
+        let sorted = insertSort(vals)
+        let med = sorted[int(len(sorted) / 2)]
+        outImg = append(outImg, med)
+        c = c + 1
+      }
+      r = r + 1
+    }
+
+    // Output
+    print(str(R) + " " + str(C))
+    r = 0
+    while r < R {
+      var rowStr = ""
+      var c = 0
+      while c < C {
+        if c > 0 { rowStr = rowStr + " " }
+        rowStr = rowStr + str(outImg[r * C + c])
+        c = c + 1
+      }
+      print(rowStr)
+      r = r + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

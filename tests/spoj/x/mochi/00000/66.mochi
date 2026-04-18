@@ -1,0 +1,53 @@
+// Solution for SPOJ CRSCNTRY - Cross-country
+// https://www.spoj.com/problems/CRSCNTRY/
+// Given N skiers each with 3 leg times (seconds), print the sum of the minimum
+// leg times across all skiers for each leg, then the total.
+// Actually: for each of 3 legs, find the skier with the minimum time,
+// then output min_leg1 + min_leg2 + min_leg3 as the winning relay team time.
+// The relay team picks the fastest skier for each leg (different skiers can do different legs).
+// Wait - the problem: pick 3 skiers (one per leg) to minimize total time.
+// Since skiers are independent per leg, just pick the min of each leg.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    if n == 0 { break }
+    var min1 = 1000000000
+    var min2 = 1000000000
+    var min3 = 1000000000
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let p = split(vLine)
+      let t1 = int(p[0])
+      let t2 = int(p[1])
+      let t3 = int(p[2])
+      if t1 < min1 { min1 = t1 }
+      if t2 < min2 { min2 = t2 }
+      if t3 < min3 { min3 = t3 }
+      i = i + 1
+    }
+    print(min1 + min2 + min3)
+    line = input()
+  }
+}
+
+main()

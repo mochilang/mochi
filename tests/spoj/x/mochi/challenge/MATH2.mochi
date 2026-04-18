@@ -1,0 +1,52 @@
+// Solution for SPOJ MATH2 - Math II (Challenge)
+// https://www.spoj.com/problems/MATH2/
+// Strategy: checkerboard pattern b(i,j) = (i+j) % 2
+// Output 0 when (i+j) is even, 1 when odd — matches sample output.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let c = int(input())
+  let dnm = split(input())
+  let n = int(dnm[1])
+  let m = int(dnm[2])
+  // Read and discard the input matrix
+  var ri = 0
+  while ri < n {
+    let row = input()
+    ri = ri + 1
+  }
+  // Output checkerboard
+  var i = 0
+  while i < n {
+    var row = ""
+    var j = 0
+    while j < m {
+      if j > 0 { row = row + " " }
+      if (i + j) % 2 == 0 {
+        row = row + "0"
+      } else {
+        row = row + "1"
+      }
+      j = j + 1
+    }
+    print(row)
+    i = i + 1
+  }
+}
+
+main()

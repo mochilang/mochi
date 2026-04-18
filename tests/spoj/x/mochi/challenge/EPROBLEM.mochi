@@ -1,0 +1,47 @@
+// Solution for SPOJ EPROBLEM - A Very Easy Problem! (Challenge Mode)
+// https://www.spoj.com/problems/EPROBLEM/
+// Convert integer i to EASYPROB format: express as sum of powers of 2 recursively.
+
+fun ep(n: int): string {
+  // Collect set bits from high to low (bits 0..62)
+  var bits: list<int> = []
+  var k = 62
+  while k >= 0 {
+    // Check if bit k is set: n & (1<<k) but we compute 1<<k iteratively
+    // Use n divided by 2^k to check
+    // 2^k: compute by shifting
+    var pw = 1
+    var j = 0
+    while j < k { pw = pw * 2; j = j + 1 }
+    if int(n / pw) % 2 == 1 {
+      bits = append(bits, k)
+    }
+    k = k - 1
+  }
+  var result = ""
+  var i = 0
+  while i < len(bits) {
+    if i > 0 { result = result + "+" }
+    let b = bits[i]
+    if b == 0 {
+      result = result + "2(0)"
+    } else if b == 1 {
+      result = result + "2"
+    } else {
+      result = result + "2(" + ep(b) + ")"
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = int(line)
+    print(line + "=" + ep(n))
+    line = input()
+  }
+}
+
+main()

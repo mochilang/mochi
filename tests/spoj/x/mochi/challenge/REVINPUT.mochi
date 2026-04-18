@@ -1,0 +1,78 @@
+// Solution for SPOJ REVINPUT - Reverse the Input
+// https://www.spoj.com/problems/REVINPUT/
+// Collect all words, repeat each N times, reverse the list, reverse each word,
+// output all space-separated on one line.
+// Score = source code length (shorter is better).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun revStr(s: string): string {
+  var r = ""
+  var i = len(s) - 1
+  while i >= 0 {
+    r = r + s[i:i+1]
+    i = i - 1
+  }
+  return r
+}
+
+fun main() {
+  var nLine = input()
+  let N = int(nLine)
+
+  // Collect all words from all lines until EOF
+  var words: list<string> = []
+  var line = input()
+  while line != "" {
+    let parts = split(line)
+    var i = 0
+    while i < len(parts) {
+      words = append(words, parts[i])
+      i = i + 1
+    }
+    line = input()
+  }
+
+  // Repeat each word N times
+  var repeated: list<string> = []
+  var wi = 0
+  while wi < len(words) {
+    var k = 0
+    while k < N {
+      repeated = append(repeated, words[wi])
+      k = k + 1
+    }
+    wi = wi + 1
+  }
+
+  // Reverse the repeated list and reverse each word's characters
+  var out = ""
+  var i = len(repeated) - 1
+  while i >= 0 {
+    let rw = revStr(repeated[i])
+    if out == "" {
+      out = rw
+    } else {
+      out = out + " " + rw
+    }
+    i = i - 1
+  }
+
+  print(out)
+}
+
+main()

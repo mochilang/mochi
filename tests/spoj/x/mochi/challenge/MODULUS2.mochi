@@ -1,0 +1,30 @@
+// Solution for SPOJ MODULUS2 - BF_MODULUS
+// https://www.spoj.com/problems/MODULUS2/
+// Given n, print all possible values of a%n in descending order.
+// If n=0, print "NOT POSSIBLE".
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let n = int(input())
+    if n == 0 {
+      print("NOT POSSIBLE")
+    } else {
+      var result = ""
+      var i = n - 1
+      while i >= 0 {
+        if i == n - 1 {
+          result = string(i)
+        } else {
+          result = result + " " + string(i)
+        }
+        i = i - 1
+      }
+      print(result)
+    }
+    ti = ti + 1
+  }
+}
+
+main()

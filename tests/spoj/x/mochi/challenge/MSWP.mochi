@@ -1,0 +1,241 @@
+// Solution for SPOJ MSWP - Minesweeper
+// https://www.spoj.com/problems/MSWP/
+// Given H×W grid with numbered cells, place exactly N mines ('X') to satisfy
+// as many numbered constraints as possible.
+// Strategy: constraint propagation first, then greedy fill.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Count adjacent mines for cell (r,c) in H×W grid
+fun countAdjMines(grid: list<string>, r: int, c: int, H: int, W: int): int {
+  var count = 0
+  var dr = 0 - 1
+  while dr <= 1 {
+    var dc = 0 - 1
+    while dc <= 1 {
+      if dr != 0 || dc != 0 {
+        let nr = r + dr
+        let nc = c + dc
+        if nr >= 0 && nr < H && nc >= 0 && nc < W {
+          let row = grid[nr]
+          if row[nc:nc+1] == "X" { count = count + 1 }
+        }
+      }
+      dc = dc + 1
+    }
+    dr = dr + 1
+  }
+  return count
+}
+
+// Count adjacent dots (empty) for cell (r,c)
+fun countAdjDots(grid: list<string>, r: int, c: int, H: int, W: int): int {
+  var count = 0
+  var dr = 0 - 1
+  while dr <= 1 {
+    var dc = 0 - 1
+    while dc <= 1 {
+      if dr != 0 || dc != 0 {
+        let nr = r + dr
+        let nc = c + dc
+        if nr >= 0 && nr < H && nc >= 0 && nc < W {
+          let row = grid[nr]
+          if row[nc:nc+1] == "." { count = count + 1 }
+        }
+      }
+      dc = dc + 1
+    }
+    dr = dr + 1
+  }
+  return count
+}
+
+fun setCell(grid: list<string>, r: int, c: int, ch: string): list<string> {
+  let row = grid[r]
+  let newRow = row[0:c] + ch + row[c+1:len(row)]
+  grid[r] = newRow
+  return grid
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    var hwLine = input()
+    while hwLine == "" { hwLine = input() }
+    let hwn = split(hwLine)
+    let H = int(hwn[0])
+    let W = int(hwn[1])
+    var N = int(hwn[2])
+
+    var grid: list<string> = []
+    var r = 0
+    while r < H {
+      var row = input()
+      while row == "" { row = input() }
+      grid = append(grid, row)
+      r = r + 1
+    }
+
+    // Count initial X mines in grid
+    var minesPlaced = 0
+    r = 0
+    while r < H {
+      var c = 0
+      while c < W {
+        if grid[r][c:c+1] == "X" { minesPlaced = minesPlaced + 1 }
+        c = c + 1
+      }
+      r = r + 1
+    }
+    var minesLeft = N - minesPlaced
+
+    // Constraint propagation: repeat until stable
+    var changed = 1
+    while changed == 1 && minesLeft > 0 {
+      changed = 0
+      r = 0
+      while r < H {
+        var c = 0
+        while c < W {
+          let cell = grid[r][c:c+1]
+          if cell != "." && cell != "X" {
+            let val = int(cell)
+            let adjMines = countAdjMines(grid, r, c, H, W)
+            let adjDots = countAdjDots(grid, r, c, H, W)
+            // If remaining needed mines == remaining dots, all dots are mines
+            let needed = val - adjMines
+            if needed == adjDots && needed > 0 && adjDots > 0 {
+              var dr = 0 - 1
+              while dr <= 1 {
+                var dc = 0 - 1
+                while dc <= 1 {
+                  if dr != 0 || dc != 0 {
+                    let nr = r + dr
+                    let nc = c + dc
+                    if nr >= 0 && nr < H && nc >= 0 && nc < W {
+                      if grid[nr][nc:nc+1] == "." && minesLeft > 0 {
+                        grid = setCell(grid, nr, nc, "X")
+                        minesLeft = minesLeft - 1
+                        changed = 1
+                      }
+                    }
+                  }
+                  dc = dc + 1
+                }
+                dr = dr + 1
+              }
+            }
+          }
+          c = c + 1
+        }
+        r = r + 1
+      }
+    }
+
+    // Greedy: for each dot cell, compute score = sum of adjacent numbers
+    // Place mines at dots with highest neighbor-number sums
+    if minesLeft > 0 {
+      // Build score list: (score, r, c)
+      var scores: list<int> = []
+      var dotR: list<int> = []
+      var dotC: list<int> = []
+      r = 0
+      while r < H {
+        var c = 0
+        while c < W {
+          if grid[r][c:c+1] == "." {
+            var score = 0
+            var dr = 0 - 1
+            while dr <= 1 {
+              var dc = 0 - 1
+              while dc <= 1 {
+                if dr != 0 || dc != 0 {
+                  let nr = r + dr
+                  let nc = c + dc
+                  if nr >= 0 && nr < H && nc >= 0 && nc < W {
+                    let adj = grid[nr][nc:nc+1]
+                    if adj != "." && adj != "X" {
+                      score = score + int(adj)
+                    }
+                  }
+                }
+                dc = dc + 1
+              }
+              dr = dr + 1
+            }
+            scores = append(scores, score)
+            dotR = append(dotR, r)
+            dotC = append(dotC, c)
+          }
+          c = c + 1
+        }
+        r = r + 1
+      }
+
+      // Simple selection sort descending to pick top minesLeft dots
+      var placed = 0
+      while placed < minesLeft && len(scores) > 0 {
+        // Find max score
+        var bestIdx = 0
+        var bestScore = scores[0]
+        var si = 1
+        while si < len(scores) {
+          if scores[si] > bestScore {
+            bestScore = scores[si]
+            bestIdx = si
+          }
+          si = si + 1
+        }
+        grid = setCell(grid, dotR[bestIdx], dotC[bestIdx], "X")
+        // Remove from lists by swapping with last
+        let last = len(scores) - 1
+        scores[bestIdx] = scores[last]
+        dotR[bestIdx] = dotR[last]
+        dotC[bestIdx] = dotC[last]
+        var newScores: list<int> = []
+        var newDotR: list<int> = []
+        var newDotC: list<int> = []
+        si = 0
+        while si < last {
+          newScores = append(newScores, scores[si])
+          newDotR = append(newDotR, dotR[si])
+          newDotC = append(newDotC, dotC[si])
+          si = si + 1
+        }
+        scores = newScores
+        dotR = newDotR
+        dotC = newDotC
+        placed = placed + 1
+      }
+    }
+
+    // Output
+    print("Y")
+    r = 0
+    while r < H {
+      print(grid[r])
+      r = r + 1
+    }
+
+    tc = tc + 1
+  }
+}
+
+main()

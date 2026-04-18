@@ -1,0 +1,23 @@
+type Result {
+  id: int
+  name: string
+}
+type Nation {
+  id: int
+  name: string
+}
+type Supplier {
+  id: int
+  nation: int
+}
+type Partsupp {
+  part: int
+  supplier: int
+  cost: int
+  qty: int
+}
+let nations: list<Nation>
+let suppliers: list<Supplier>
+let partsupp: list<Partsupp>
+let filtered: list<Result>
+let grouped: list<map<string,any>>

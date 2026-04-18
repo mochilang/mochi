@@ -1,0 +1,185 @@
+// Solution for SPOJ The Bytelandian Cryptographer Act IV (CRYPTO4)
+// https://www.spoj.com/problems/CRYPTO4/
+// yi = (xi + k[(i-1) mod n]) mod 26. Given partial x,y and upper bound m on n,
+// recover as much of x as possible.
+// For each valid cipher length n (1..m): check validity (known pairs agree per residue).
+// For '*' positions: track the unique determined value across all valid n, or '*' if any n
+// leaves it undetermined or gives a different value.
+
+// Returns 0..25 for A..Z, 26 for '*'
+fun charVal(ch: string): int {
+  if ch == "A" { return 0 } else if ch == "B" { return 1 } else if ch == "C" { return 2 }
+  else if ch == "D" { return 3 } else if ch == "E" { return 4 } else if ch == "F" { return 5 }
+  else if ch == "G" { return 6 } else if ch == "H" { return 7 } else if ch == "I" { return 8 }
+  else if ch == "J" { return 9 } else if ch == "K" { return 10 } else if ch == "L" { return 11 }
+  else if ch == "M" { return 12 } else if ch == "N" { return 13 } else if ch == "O" { return 14 }
+  else if ch == "P" { return 15 } else if ch == "Q" { return 16 } else if ch == "R" { return 17 }
+  else if ch == "S" { return 18 } else if ch == "T" { return 19 } else if ch == "U" { return 20 }
+  else if ch == "V" { return 21 } else if ch == "W" { return 22 } else if ch == "X" { return 23 }
+  else if ch == "Y" { return 24 } else if ch == "Z" { return 25 }
+  return 26
+}
+
+fun valChar(v: int): string {
+  if v == 0 { return "A" } else if v == 1 { return "B" } else if v == 2 { return "C" }
+  else if v == 3 { return "D" } else if v == 4 { return "E" } else if v == 5 { return "F" }
+  else if v == 6 { return "G" } else if v == 7 { return "H" } else if v == 8 { return "I" }
+  else if v == 9 { return "J" } else if v == 10 { return "K" } else if v == 11 { return "L" }
+  else if v == 12 { return "M" } else if v == 13 { return "N" } else if v == 14 { return "O" }
+  else if v == 15 { return "P" } else if v == 16 { return "Q" } else if v == 17 { return "R" }
+  else if v == 18 { return "S" } else if v == 19 { return "T" } else if v == 20 { return "U" }
+  else if v == 21 { return "V" } else if v == 22 { return "W" } else if v == 23 { return "X" }
+  else if v == 24 { return "Y" } else { return "Z" }
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    let m = int(input())
+    let xStr = input()
+    let yStr = input()
+    let L = len(xStr)
+
+    // xv[i] = 0..25 for known, 26 for '*'. Same for yv.
+    var xv: list<int> = []
+    var yv: list<int> = []
+    var i = 0
+    while i < L {
+      xv = append(xv, charVal(xStr[i:i+1]))
+      yv = append(yv, charVal(yStr[i:i+1]))
+      i = i + 1
+    }
+
+    // known[i] = ki = (yv[i]-xv[i]+26)%26 if both known (xv[i]<26 and yv[i]<26)
+    // isKnown[i] = 1 if both known, else 0
+    var known: list<int> = []
+    var isKnown: list<int> = []
+    i = 0
+    while i < L {
+      if xv[i] < 26 && yv[i] < 26 {
+        known = append(known, (yv[i] - xv[i] + 26) % 26)
+        isKnown = append(isKnown, 1)
+      } else {
+        known = append(known, 0)
+        isKnown = append(isKnown, 0)
+      }
+      i = i + 1
+    }
+
+    // For '*' positions j with yv[j]<26: track answer
+    // answer[j]: determined x value (0..25)
+    // determined[j]: 1 if answer[j] is set
+    // dead[j]: 1 = definitely '*'. 2 = seen undetermined by some valid n but not yet determined.
+    var answer: list<int> = []
+    var determined: list<int> = []
+    var dead: list<int> = []
+    i = 0
+    while i < L {
+      answer = append(answer, 0)
+      determined = append(determined, 0)
+      dead = append(dead, 0)
+      i = i + 1
+    }
+
+    // Pre-allocate keyVal and keySet arrays of size m+1.
+    // keySet[r]=1 means keyVal[r] has been set for the current n iteration.
+    // Note: var map = {} inside while loop does NOT reinitialize in Mochi,
+    // so we use lists instead and manually reset using usedRes tracking.
+    var keyVal: list<int> = []
+    var keySet: list<int> = []
+    i = 0
+    while i <= m {
+      keyVal = append(keyVal, 0)
+      keySet = append(keySet, 0)
+      i = i + 1
+    }
+
+    // For each n from 1 to m, check validity and update answers
+    var n = 1
+    while n <= m {
+      // usedRes tracks which residues we set this iteration (for cleanup).
+      // var list = [] DOES reinitialize inside while loops in Mochi.
+      var usedRes: list<int> = []
+      var valid = 1
+      i = 0
+      while i < L && valid == 1 {
+        if isKnown[i] == 1 {
+          let r = i % n
+          if keySet[r] == 0 {
+            keySet[r] = 1
+            keyVal[r] = known[i]
+            usedRes = append(usedRes, r)
+          } else if keyVal[r] != known[i] {
+            valid = 0
+          }
+        }
+        i = i + 1
+      }
+
+      if valid == 1 {
+        // For '*' positions with known y: determine x if possible
+        i = 0
+        while i < L {
+          if xv[i] == 26 && yv[i] < 26 && dead[i] != 1 {
+            let r = i % n
+            if keySet[r] == 1 {
+              let kval = keyVal[r]
+              let xi = (yv[i] - kval + 26) % 26
+              if dead[i] == 2 {
+                // A previous valid n left this undetermined, now determined — contradiction
+                dead[i] = 1
+              } else if determined[i] == 0 {
+                answer[i] = xi
+                determined[i] = 1
+              } else if answer[i] != xi {
+                dead[i] = 1
+              }
+            } else {
+              // This n leaves position undetermined
+              if determined[i] == 1 {
+                dead[i] = 1
+              } else {
+                dead[i] = 2  // seen undetermined; if later determined → contradiction
+              }
+            }
+          }
+          i = i + 1
+        }
+      }
+
+      // Reset used residues for next iteration
+      var ri = 0
+      while ri < len(usedRes) {
+        keySet[usedRes[ri]] = 0
+        keyVal[usedRes[ri]] = 0
+        ri = ri + 1
+      }
+
+      n = n + 1
+    }
+
+    // Build output
+    var out = ""
+    i = 0
+    while i < L {
+      if xv[i] < 26 {
+        out = out + valChar(xv[i])
+      } else if yv[i] == 26 {
+        out = out + "*"
+      } else if dead[i] == 0 && determined[i] == 1 {
+        out = out + valChar(answer[i])
+      } else {
+        out = out + "*"
+      }
+      i = i + 1
+    }
+    print(out)
+
+    tc = tc + 1
+  }
+}
+
+main()

@@ -1,0 +1,191 @@
+// Solution for SPOJ JAWB - JawBreaker Game
+// https://www.spoj.com/problems/JAWB/
+// Greedy: repeatedly remove the largest connected group of same-color pieces each turn.
+// Score += n*(n-1). Apply gravity after each removal. Stop when no group >= 2.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// BFS from (sr,sc); returns list of flat indices in the group.
+// All index arithmetic is inside if/while blocks to satisfy type checker.
+fun bfsGroup(grid: list<int>, sr: int, sc: int, H: int, W: int): list<int> {
+  var color = 0
+  if sr >= 0 { color = grid[sr * W + sc] }
+  var result: list<int> = []
+  var queue: list<int> = []
+  var visited: list<int> = []
+  var vi = 0
+  while vi < H * W { visited = append(visited, 0); vi = vi + 1 }
+
+  if sr >= 0 {
+    visited[sr * W + sc] = 1
+    queue = append(queue, sr * W + sc)
+  }
+  var head = 0
+  while head < len(queue) {
+    let cur = queue[head]
+    head = head + 1
+    result = append(result, cur)
+    var r2 = 0
+    var c2 = 0
+    if cur >= 0 { r2 = int(cur / W) }
+    if cur >= 0 { c2 = cur - r2 * W }
+    if r2 > 0 {
+      let ni = (r2 - 1) * W + c2
+      if visited[ni] == 0 && grid[ni] == color { visited[ni] = 1; queue = append(queue, ni) }
+    }
+    if r2 < H - 1 {
+      let ni = (r2 + 1) * W + c2
+      if visited[ni] == 0 && grid[ni] == color { visited[ni] = 1; queue = append(queue, ni) }
+    }
+    if c2 > 0 {
+      let ni = r2 * W + (c2 - 1)
+      if visited[ni] == 0 && grid[ni] == color { visited[ni] = 1; queue = append(queue, ni) }
+    }
+    if c2 < W - 1 {
+      let ni = r2 * W + (c2 + 1)
+      if visited[ni] == 0 && grid[ni] == color { visited[ni] = 1; queue = append(queue, ni) }
+    }
+  }
+  return result
+}
+
+// Apply gravity: in each column, non-empty cells fall to bottom.
+fun applyGravity(grid: list<int>, H: int, W: int): list<int> {
+  var c = 0
+  while c < W {
+    var col: list<int> = []
+    var r = H - 1
+    while r >= 0 {
+      if grid[r * W + c] != 0 - 1 { col = append(col, grid[r * W + c]) }
+      r = r - 1
+    }
+    r = H - 1
+    var ci = 0
+    while r >= 0 {
+      if ci < len(col) {
+        grid[r * W + c] = col[ci]
+        ci = ci + 1
+      } else {
+        grid[r * W + c] = 0 - 1
+      }
+      r = r - 1
+    }
+    c = c + 1
+  }
+  return grid
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var tc = 0
+  while tc < T {
+    var hwLine = input()
+    while hwLine == "" { hwLine = input() }
+    let hwc = split(hwLine)
+    let H = int(hwc[0])
+    let W = int(hwc[1])
+
+    var grid: list<int> = []
+    var r = 0
+    while r < H {
+      var rowLine = input()
+      while rowLine == "" { rowLine = input() }
+      let cells = split(rowLine)
+      var c = 0
+      while c < W { grid = append(grid, int(cells[c])); c = c + 1 }
+      r = r + 1
+    }
+
+    print("Y")
+
+    var done = 0
+    while done == 0 {
+      // Scan to find largest group using inline BFS
+      var visited: list<int> = []
+      var vi = 0
+      while vi < H * W { visited = append(visited, 0); vi = vi + 1 }
+
+      var bestSize = 0
+      var bestRow = 0 - 1
+      var bestCol = 0 - 1
+
+      r = 0
+      while r < H {
+        var c = 0
+        while c < W {
+          if visited[r * W + c] == 0 && grid[r * W + c] != 0 - 1 {
+            let color = grid[r * W + c]
+            var queue: list<int> = []
+            queue = append(queue, r * W + c)
+            visited[r * W + c] = 1
+            var head = 0
+            var grpSize = 0
+            while head < len(queue) {
+              let cur2 = queue[head]
+              head = head + 1
+              grpSize = grpSize + 1
+              var r2 = 0
+              var c2 = 0
+              if cur2 >= 0 { r2 = int(cur2 / W) }
+              if cur2 >= 0 { c2 = cur2 - r2 * W }
+              if r2 > 0 {
+                let ni = (r2 - 1) * W + c2
+                if visited[ni] == 0 && grid[ni] == color { visited[ni] = 1; queue = append(queue, ni) }
+              }
+              if r2 < H - 1 {
+                let ni = (r2 + 1) * W + c2
+                if visited[ni] == 0 && grid[ni] == color { visited[ni] = 1; queue = append(queue, ni) }
+              }
+              if c2 > 0 {
+                let ni = r2 * W + (c2 - 1)
+                if visited[ni] == 0 && grid[ni] == color { visited[ni] = 1; queue = append(queue, ni) }
+              }
+              if c2 < W - 1 {
+                let ni = r2 * W + (c2 + 1)
+                if visited[ni] == 0 && grid[ni] == color { visited[ni] = 1; queue = append(queue, ni) }
+              }
+            }
+            if grpSize > bestSize { bestSize = grpSize; bestRow = r; bestCol = c }
+          }
+          c = c + 1
+        }
+        r = r + 1
+      }
+
+      if bestSize < 2 {
+        done = 1
+      } else {
+        let grp = bfsGroup(grid, bestRow, bestCol, H, W)
+        let n = len(grp)
+
+        print(str(bestRow) + " " + str(bestCol))
+
+        var gi = 0
+        while gi < n { grid[grp[gi]] = 0 - 1; gi = gi + 1 }
+
+        grid = applyGravity(grid, H, W)
+      }
+    }
+
+    print("-1 -1")
+    tc = tc + 1
+  }
+}
+
+main()

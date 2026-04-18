@@ -1,0 +1,192 @@
+// Solution for SPOJ Word equations (WORDEQ)
+// https://www.spoj.com/problems/WORDEQ/
+// Each side expands to a binary string. For each bit position, we get constraints
+// between variable bits and/or literals. Use Union-Find to group constrained bits.
+// Count free groups = F; answer = 2^F. If a contradiction is found, answer = 0.
+// Note: global lists reassigned inside functions lose mutations; pass as params instead.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    let ch = line[i:i+1]
+    if ch == " " || ch == "\t" || ch == "\r" {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun buildLetterMap(): map<string, int> {
+  var m: map<string, int> = {}
+  m["a"] = 0; m["b"] = 1; m["c"] = 2; m["d"] = 3; m["e"] = 4
+  m["f"] = 5; m["g"] = 6; m["h"] = 7; m["i"] = 8; m["j"] = 9
+  m["k"] = 10; m["l"] = 11; m["m"] = 12; m["n"] = 13; m["o"] = 14
+  m["p"] = 15; m["q"] = 16; m["r"] = 17; m["s"] = 18; m["t"] = 19
+  m["u"] = 20; m["v"] = 21; m["w"] = 22; m["x"] = 23; m["y"] = 24
+  m["z"] = 25
+  return m
+}
+
+// Union-Find: lists passed as parameters (by ref) so mutations persist
+// ufVal: 2 = free, 0 = fixed-0, 1 = fixed-1
+
+fun ufFind(par: list<int>, x: int): int {
+  if par[x] != x {
+    par[x] = ufFind(par, par[x])
+  }
+  return par[x]
+}
+
+// Union two UF nodes. Returns 0 if contradiction, 1 if ok.
+fun ufUnion(par: list<int>, val: list<int>, a: int, b: int): int {
+  let ra = ufFind(par, a)
+  let rb = ufFind(par, b)
+  if ra == rb { return 1 }
+  let va = val[ra]
+  let vb = val[rb]
+  if va != 2 && vb != 2 && va != vb { return 0 }
+  par[rb] = ra
+  if vb != 2 { val[ra] = vb }
+  return 1
+}
+
+// Fix UF node a to value v (0 or 1). Returns 0 if contradiction.
+fun ufFix(par: list<int>, val: list<int>, a: int, v: int): int {
+  let ra = ufFind(par, a)
+  if val[ra] != 2 && val[ra] != v { return 0 }
+  val[ra] = v
+  return 1
+}
+
+fun power2(n: int): int {
+  var r = 1
+  var i = 0
+  while i < n { r = r * 2; i = i + 1 }
+  return r
+}
+
+// Parse expression: returns flat list [isLit0, val0, isLit1, val1, ...]
+fun parseSide(expr: string, varLen: list<int>, varStart: list<int>, lm: map<string, int>): list<int> {
+  var result: list<int> = []
+  var ei = 0
+  while ei < len(expr) {
+    let ch = expr[ei:ei+1]
+    if ch == "0" {
+      result = append(result, 1)
+      result = append(result, 0)
+    } else if ch == "1" {
+      result = append(result, 1)
+      result = append(result, 1)
+    } else {
+      let varId = lm[ch] as int
+      let vLen = varLen[varId]
+      let vStart = varStart[varId]
+      var bi = 0
+      while bi < vLen {
+        result = append(result, 0)
+        result = append(result, vStart + bi)
+        bi = bi + 1
+      }
+    }
+    ei = ei + 1
+  }
+  return result
+}
+
+fun main() {
+  let lm = buildLetterMap()
+
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var kLine = input()
+    while kLine == "" { kLine = input() }
+    let k = int(kLine)
+
+    var varLen: list<int> = []
+    var varStart: list<int> = []
+    var totalVarBits = 0
+
+    if k > 0 {
+      let lenLine = split(input())
+      var vi = 0
+      while vi < k {
+        varStart = append(varStart, totalVarBits)
+        let vl = int(lenLine[vi])
+        varLen = append(varLen, vl)
+        totalVarBits = totalVarBits + vl
+        vi = vi + 1
+      }
+    } else {
+      let dummy = input()
+      let _ = dummy
+    }
+
+    // Build UF as local lists (so pass-by-ref works correctly)
+    var ufPar: list<int> = []
+    var ufVal: list<int> = []
+    var ui = 0
+    while ui < totalVarBits {
+      ufPar = append(ufPar, ui)
+      ufVal = append(ufVal, 2)
+      ui = ui + 1
+    }
+
+    // Read left side: length line then expression
+    input()
+    let leftExpr = input()
+    // Read right side
+    input()
+    let rightExpr = input()
+
+    let leftSide = parseSide(leftExpr, varLen, varStart, lm)
+    let rightSide = parseSide(rightExpr, varLen, varStart, lm)
+
+    let sideLen = int(len(leftSide) / 2)
+    var ok = 1
+    var pi = 0
+    while pi < sideLen && ok == 1 {
+      let lIsLit = leftSide[pi * 2]
+      let lVal = leftSide[pi * 2 + 1]
+      let rIsLit = rightSide[pi * 2]
+      let rVal = rightSide[pi * 2 + 1]
+
+      if lIsLit == 1 && rIsLit == 1 {
+        if lVal != rVal { ok = 0 }
+      } else if lIsLit == 1 {
+        if ufFix(ufPar, ufVal, rVal, lVal) == 0 { ok = 0 }
+      } else if rIsLit == 1 {
+        if ufFix(ufPar, ufVal, lVal, rVal) == 0 { ok = 0 }
+      } else {
+        if ufUnion(ufPar, ufVal, lVal, rVal) == 0 { ok = 0 }
+      }
+      pi = pi + 1
+    }
+
+    if ok == 0 {
+      print("0")
+    } else {
+      var freeCount = 0
+      var ni = 0
+      while ni < totalVarBits {
+        if ufFind(ufPar, ni) == ni && ufVal[ni] == 2 {
+          freeCount = freeCount + 1
+        }
+        ni = ni + 1
+      }
+      print(str(power2(freeCount)))
+    }
+
+    ti = ti + 1
+  }
+}
+
+main()

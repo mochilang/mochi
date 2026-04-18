@@ -1,0 +1,38 @@
+fun isPalindrome(s, left, right) {
+  var l = left
+  var r = right
+  while l < r {
+    if s[l] != s[r] {
+      return false
+    }
+    l = l + 1
+    r = r - 1
+  }
+  return true
+}
+
+fun longestPalindrome(s) {
+  let n = len(s)
+  var best = ""
+  var i = 0
+  while i < n {
+    var j = i
+    while j < n {
+      if j - i + 1 > len(best) {
+        if isPalindrome(s, i, j) {
+          best = s[i:j + 1]
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return best
+}
+
+let t = int(input())
+var i = 0
+while i < t {
+  print(longestPalindrome(input()))
+  i = i + 1
+}

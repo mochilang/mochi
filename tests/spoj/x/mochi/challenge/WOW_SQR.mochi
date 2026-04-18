@@ -1,0 +1,52 @@
+// SPOJ WOW_SQR - Wow Square
+// Find x < y <= n where x*y is a perfect square and maximum (tiebreak: max y-x).
+// Key: x*y = s²*a²*b² for x=s*a², y=s*b², a<b. Maximize by iterating b=2..floor(sqrt(n)).
+
+fun isqrt(n: int): int {
+  if n <= 0 { return 0 }
+  var x = n
+  var y = int(n / 2)
+  while y < x {
+    x = y
+    let nx = int(n / x)
+    y = int((x + nx) / 2)
+  }
+  return x
+}
+
+fun main() {
+  let t = int(input())
+  var tc = 0
+  while tc < t {
+    let n = int(input())
+    var bestProd = 0
+    var bestDiff = 0
+    var bestX = 0
+    var bestY = 0
+    let sqn = isqrt(n)
+    var b = 2
+    while b <= sqn {
+      let b2 = b * b
+      let s = int(n / b2)
+      if s > 0 {
+        let a = b - 1
+        let x = s * a * a
+        let y = s * b2
+        if x > 0 && x < y && y <= n {
+          let prod = x * y
+          let diff = y - x
+          if prod > bestProd {
+            bestProd = prod; bestDiff = diff; bestX = x; bestY = y
+          } else if prod == bestProd && diff > bestDiff {
+            bestDiff = diff; bestX = x; bestY = y
+          }
+        }
+      }
+      b = b + 1
+    }
+    print(str(bestX) + "*" + str(bestY))
+    tc = tc + 1
+  }
+}
+
+main()

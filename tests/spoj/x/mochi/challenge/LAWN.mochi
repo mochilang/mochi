@@ -1,0 +1,175 @@
+// Solution for SPOJ LAWN - Lawnmower
+// https://www.spoj.com/problems/LAWN/
+// Traverse all '.' cells in an n×m grid using N/W/L/P commands.
+// N=forward(1s), W=backward(1s), L=rotate CCW 90°(3s), P=rotate CW 90°(3s).
+// Start at (0,0) facing right (dir=0: right,1:down,2:left,3:up).
+// Use DFS on spanning tree of '.' cells, emit movement commands.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Rotate direction: L = CCW, P = CW
+// dir: 0=right,1=down,2=left,3=up
+// L (CCW): right->up->left->down->right  means dir = (dir+3)%4
+// P (CW):  right->down->left->up->right  means dir = (dir+1)%4
+
+// Returns commands to turn from curDir to targetDir
+fun turnTo(curDir: int, targetDir: int): string {
+  let diff = (targetDir - curDir + 4) % 4
+  if diff == 0 { return "" }
+  if diff == 1 { return "P" }      // one CW turn
+  if diff == 2 { return "PP" }     // two turns (180)
+  return "L"                        // diff==3: one CCW turn
+}
+
+// Direction deltas: dr[d], dc[d]
+// 0=right: dr=0, dc=+1
+// 1=down:  dr=+1, dc=0
+// 2=left:  dr=0, dc=-1
+// 3=up:    dr=-1, dc=0
+fun dr(d: int): int {
+  if d == 0 { return 0 }
+  if d == 1 { return 1 }
+  if d == 2 { return 0 }
+  return 0 - 1
+}
+fun dc(d: int): int {
+  if d == 0 { return 1 }
+  if d == 1 { return 0 }
+  if d == 2 { return 0 - 1 }
+  return 0
+}
+
+// Return direction from (r,c) to (nr,nc)
+fun dirTo(r: int, c: int, nr: int, nc: int): int {
+  if nr == r && nc == c + 1 { return 0 }
+  if nr == r + 1 && nc == c { return 1 }
+  if nr == r && nc == c - 1 { return 2 }
+  return 3
+}
+
+fun main() {
+  let T = int(input())
+  var ti = 0
+  while ti < T {
+    let dims = split(input())
+    let n = int(dims[0])
+    let m = int(dims[1])
+
+    // Read grid
+    var grid: list<string> = []
+    var ri = 0
+    while ri < n { grid = append(grid, input()); ri = ri + 1 }
+
+    // Build adjacency using BFS/DFS spanning tree
+    // visited array, parent direction (for DFS)
+    var visited: list<int> = []
+    var idx = 0
+    while idx < n * m { visited = append(visited, 0); idx = idx + 1 }
+
+    // DFS using explicit stack (list simulating stack)
+    // Stack entries: we store (row*m+col) and also need parent to backtrack
+    // We'll do iterative DFS: store path stack for backtracking
+    // path: list of (r,c) pairs as r*m+c
+    var path: list<int> = []
+
+    var cmds = ""
+    var curDir = 0  // facing right
+    var curR = 0
+    var curC = 0
+
+    // Check if (0,0) is grass
+    if grid[0][0:1] == "." {
+      visited[0] = 1
+      path = append(path, 0)
+
+      // DFS: at each step, try to extend; if no unvisited neighbor, backtrack
+      var done = 0
+      while done == 0 {
+        let top = path[len(path) - 1]
+        let topR = int(top / m)
+        let topC = top % m
+
+        // Find an unvisited '.' neighbor
+        // Neighbor order: right, down, left, up (prefer to minimize turning)
+        var found = 0
+        var nd = 0
+        while nd < 4 && found == 0 {
+          let nr = topR + dr(nd)
+          let nc = topC + dc(nd)
+          if nr >= 0 && nr < n && nc >= 0 && nc < m {
+            if grid[nr][nc:nc+1] == "." && visited[nr * m + nc] == 0 {
+              visited[nr * m + nc] = 1
+              // Move from current pos to (nr,nc)
+              // First turn to face nd
+              let turn = turnTo(curDir, nd)
+              cmds = cmds + turn
+              // Update curDir based on turns
+              var i = 0
+              while i < len(turn) {
+                if turn[i:i+1] == "P" { curDir = (curDir + 1) % 4 }
+                if turn[i:i+1] == "L" { curDir = (curDir + 3) % 4 }
+                i = i + 1
+              }
+              cmds = cmds + "N"
+              curR = nr
+              curC = nc
+              path = append(path, nr * m + nc)
+              found = 1
+            }
+          }
+          nd = nd + 1
+        }
+
+        if found == 0 {
+          // Backtrack: pop from path
+          if len(path) <= 1 {
+            done = 1
+          } else {
+            // Remove last element
+            var newPath: list<int> = []
+            var pi = 0
+            while pi < len(path) - 1 { newPath = append(newPath, path[pi]); pi = pi + 1 }
+            path = newPath
+
+            // Move back to parent
+            let parentCell = path[len(path) - 1]
+            let parentR = int(parentCell / m)
+            let parentC = parentCell % m
+
+            let nd2 = dirTo(curR, curC, parentR, parentC)
+            let turn2 = turnTo(curDir, nd2)
+            cmds = cmds + turn2
+            var i2 = 0
+            while i2 < len(turn2) {
+              if turn2[i2:i2+1] == "P" { curDir = (curDir + 1) % 4 }
+              if turn2[i2:i2+1] == "L" { curDir = (curDir + 3) % 4 }
+              i2 = i2 + 1
+            }
+            cmds = cmds + "N"
+            curR = parentR
+            curC = parentC
+          }
+        }
+      }
+    }
+
+    print(cmds)
+    ti = ti + 1
+  }
+}
+
+main()

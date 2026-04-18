@@ -1,4 +1,4 @@
-func main (regs=2)
+func __main (regs=2)
   // print(id(42))
   Const        r0, 42
   Print        r0

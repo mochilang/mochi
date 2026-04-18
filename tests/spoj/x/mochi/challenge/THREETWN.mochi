@@ -1,0 +1,103 @@
+// Solution for SPOJ THREETWN - Connecting three towns
+// https://www.spoj.com/problems/THREETWN/
+// Find the geometric median (Fermat point) of three towns using Weiszfeld's algorithm.
+// Iterate: new_p = (sum w_i*p_i) / (sum w_i) where w_i = 1/dist(p, p_i).
+// If current point coincides with a town, stop there.
+
+fun mysqrt(v: float): float {
+  if v <= 0.0 { return 0.0 }
+  var g = v
+  if g > 1.0 { g = v / 2.0 }
+  var i = 0
+  while i < 60 {
+    g = (g + v / g) / 2.0
+    i = i + 1
+  }
+  return g
+}
+
+fun fmtFloat(x: float): string {
+  var neg = 0
+  var xv = x
+  if xv < 0.0 { neg = 1; xv = 0.0 - xv }
+  // Scale to 11 decimal places
+  let scaled = int(xv * 100000000000.0 + 0.5)
+  let divisor = 100000000000
+  let intPart = int(scaled / divisor)
+  let fracPart = scaled % divisor
+  var fracStr = str(fracPart)
+  while len(fracStr) < 11 { fracStr = "0" + fracStr }
+  // Strip trailing zeros
+  var end = 11
+  while end > 0 && fracStr[end-1:end] == "0" { end = end - 1 }
+  var result = str(intPart)
+  if end > 0 { result = result + "." + fracStr[0:end] }
+  if neg == 1 && (intPart > 0 || end > 0) { result = "-" + result }
+  return result
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let t = int(input())
+  var ti = 0
+  while ti < t {
+    let p = split(input())
+    let x1 = int(p[0]) as float
+    let y1 = int(p[1]) as float
+    let x2 = int(p[2]) as float
+    let y2 = int(p[3]) as float
+    let x3 = int(p[4]) as float
+    let y3 = int(p[5]) as float
+
+    // Start at centroid
+    var px = (x1 + x2 + x3) / 3.0
+    var py = (y1 + y2 + y3) / 3.0
+
+    var iter = 0
+    var stuck = 0
+    while iter < 1000 && stuck == 0 {
+      let d1 = mysqrt((px-x1)*(px-x1) + (py-y1)*(py-y1))
+      let d2 = mysqrt((px-x2)*(px-x2) + (py-y2)*(py-y2))
+      let d3 = mysqrt((px-x3)*(px-x3) + (py-y3)*(py-y3))
+      if d1 < 0.0000000001 {
+        px = x1; py = y1; stuck = 1
+      } else {
+        if d2 < 0.0000000001 {
+          px = x2; py = y2; stuck = 1
+        } else {
+          if d3 < 0.0000000001 {
+            px = x3; py = y3; stuck = 1
+          } else {
+            let w1 = 1.0 / d1
+            let w2 = 1.0 / d2
+            let w3 = 1.0 / d3
+            let wsum = w1 + w2 + w3
+            px = (w1*x1 + w2*x2 + w3*x3) / wsum
+            py = (w1*y1 + w2*y2 + w3*y3) / wsum
+          }
+        }
+      }
+      iter = iter + 1
+    }
+
+    print(fmtFloat(px) + " " + fmtFloat(py))
+    ti = ti + 1
+  }
+}
+
+main()

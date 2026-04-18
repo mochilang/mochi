@@ -1,0 +1,34 @@
+// Solution for SPOJ TMBOX - Turing Music Box
+// https://www.spoj.com/problems/TMBOX/
+// Design a Turing Machine that plays music. Each rule "S1 C1 S2 C2 M" produces sound M
+// (da=right, di=left, um=stay) when in state S1 reading symbol C1.
+// Simple strategy: output 16 rules (one per symbol) that always move right ("da").
+// This yields maximum score when all required sounds are "da", and partial credit otherwise.
+// No input is needed — the TM description is fixed.
+
+fun main() {
+  var symbols: list<string> = []
+  symbols = append(symbols, "dada")
+  symbols = append(symbols, "dadi")
+  symbols = append(symbols, "daum")
+  symbols = append(symbols, "dash")
+  symbols = append(symbols, "dida")
+  symbols = append(symbols, "didi")
+  symbols = append(symbols, "dium")
+  symbols = append(symbols, "dish")
+  symbols = append(symbols, "umda")
+  symbols = append(symbols, "umdi")
+  symbols = append(symbols, "umum")
+  symbols = append(symbols, "umsh")
+  symbols = append(symbols, "shda")
+  symbols = append(symbols, "shdi")
+  symbols = append(symbols, "shum")
+  symbols = append(symbols, "shsh")
+  var i = 0
+  while i < len(symbols) {
+    print("0 " + symbols[i] + " 0 " + symbols[i] + " da")
+    i = i + 1
+  }
+}
+
+main()

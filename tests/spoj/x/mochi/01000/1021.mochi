@@ -1,0 +1,41 @@
+// Solution for SPOJ AIBOHP - Aibohphobia
+// https://www.spoj.com/problems/AIBOHP/
+// Minimum insertions to make palindrome = len(s) - LCS(s, reverse(s)).
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let n = len(line)
+    // Reverse the string
+    var rev = ""
+    var i = n - 1
+    while i >= 0 { rev = rev + line[i:i+1]; i = i - 1 }
+
+    // LCS DP using 1D rolling array
+    var dp: list<int> = []
+    i = 0
+    while i <= n { dp = append(dp, 0); i = i + 1 }
+
+    i = 0
+    while i < n {
+      var prev = 0
+      var j = 0
+      while j < n {
+        let tmp = dp[j+1]
+        if line[i:i+1] == rev[j:j+1] {
+          dp[j+1] = prev + 1
+        } else {
+          if dp[j] > dp[j+1] { dp[j+1] = dp[j] }
+        }
+        prev = tmp
+        j = j + 1
+      }
+      i = i + 1
+    }
+
+    print(n - dp[n])
+    line = input()
+  }
+}
+
+main()

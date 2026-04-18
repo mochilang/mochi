@@ -1,0 +1,52 @@
+// Solution for SPOJ FOOTBALL - Football
+// https://www.spoj.com/problems/FOOTBALL/
+
+fun split(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " {
+      if cur != "" {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if cur != "" { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let tLine = input()
+  if tLine == "" { return }
+  let t = tLine as int
+  var case = 0
+  while case < t {
+    let nLine = input()
+    let n = nLine as int
+    let numsLine = input()
+    let parts = split(numsLine)
+    var cnt2 = 0
+    var i = 0
+    while i < len(parts) {
+      if parts[i] == "2" {
+        cnt2 = cnt2 + 1
+      }
+      i = i + 1
+    }
+    let g = (n - 3) / 3
+    let pentGreen = 2 * cnt2 + 6 - n
+    let hexGreen = g - pentGreen
+    let black = 12 - pentGreen
+    let white = 20 - hexGreen
+    print(str(black) + " " + str(white) + " " + str(g))
+    case = case + 1
+  }
+}
+
+main()

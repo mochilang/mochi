@@ -1,0 +1,129 @@
+// Solution for SPOJ Arranging the Blocks (BLOCKS)
+// https://www.spoj.com/problems/BLOCKS/
+// Transform P to Q using row/column permutations (each minute: disjoint rows or cols).
+// Answer: 0 if equal, 1 if row-fixable or col-fixable, 2 if globally feasible, else "no".
+// Multiset equality inlined using fresh maps (workaround for Mochi map reuse bug in functions).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var l1 = input()
+    while l1 == "" { l1 = input() }
+    let n = int(l1)
+
+    var P: list<int> = []
+    var r = 0
+    while r < n {
+      var ln = input()
+      while ln == "" { ln = input() }
+      let row = split(ln)
+      var c = 0
+      while c < n { P = append(P, int(row[c])); c = c + 1 }
+      r = r + 1
+    }
+
+    var Q: list<int> = []
+    r = 0
+    while r < n {
+      var ln = input()
+      while ln == "" { ln = input() }
+      let row = split(ln)
+      var c = 0
+      while c < n { Q = append(Q, int(row[c])); c = c + 1 }
+      r = r + 1
+    }
+
+    let nn = n * n
+
+    // Check P == Q
+    var equal = 1
+    var i = 0
+    while i < nn && equal == 1 {
+      if P[i] != Q[i] { equal = 0 }
+      i = i + 1
+    }
+
+    if equal == 1 {
+      print("0")
+    } else {
+      // Global multiset check
+      var gDiff: map<int, int> = {}
+      var gNz = 0
+      i = 0
+      while i < nn {
+        let v = P[i]; let ov = gDiff[v]; let gOldA = if ov == nil { 0 } else { ov as int }
+        let gNewA = gOldA + 1; if gOldA == 0 { gNz = gNz + 1 }; if gNewA == 0 { gNz = gNz - 1 }; gDiff[v] = gNewA
+        let w = Q[i]; let ow = gDiff[w]; let gOldB = if ow == nil { 0 } else { ow as int }
+        let gNewB = gOldB - 1; if gOldB == 0 { gNz = gNz + 1 }; if gNewB == 0 { gNz = gNz - 1 }; gDiff[w] = gNewB
+        i = i + 1
+      }
+
+      if gNz != 0 {
+        print("no")
+      } else {
+        // Check row-fixable
+        var rowFix = 1
+        r = 0
+        while r < n && rowFix == 1 {
+          var rDiff: map<int, int> = {}
+          var rNz = 0
+          var c = 0
+          while c < n {
+            let v = P[r * n + c]; let ov = rDiff[v]; let rOldA = if ov == nil { 0 } else { ov as int }
+            let rNewA = rOldA + 1; if rOldA == 0 { rNz = rNz + 1 }; if rNewA == 0 { rNz = rNz - 1 }; rDiff[v] = rNewA
+            let w = Q[r * n + c]; let ow = rDiff[w]; let rOldB = if ow == nil { 0 } else { ow as int }
+            let rNewB = rOldB - 1; if rOldB == 0 { rNz = rNz + 1 }; if rNewB == 0 { rNz = rNz - 1 }; rDiff[w] = rNewB
+            c = c + 1
+          }
+          if rNz != 0 { rowFix = 0 }
+          r = r + 1
+        }
+
+        if rowFix == 1 {
+          print("1")
+        } else {
+          // Check col-fixable
+          var colFix = 1
+          var col = 0
+          while col < n && colFix == 1 {
+            var cDiff: map<int, int> = {}
+            var cNz = 0
+            r = 0
+            while r < n {
+              let v = P[r * n + col]; let ov = cDiff[v]; let cOldA = if ov == nil { 0 } else { ov as int }
+              let cNewA = cOldA + 1; if cOldA == 0 { cNz = cNz + 1 }; if cNewA == 0 { cNz = cNz - 1 }; cDiff[v] = cNewA
+              let w = Q[r * n + col]; let ow = cDiff[w]; let cOldB = if ow == nil { 0 } else { ow as int }
+              let cNewB = cOldB - 1; if cOldB == 0 { cNz = cNz + 1 }; if cNewB == 0 { cNz = cNz - 1 }; cDiff[w] = cNewB
+              r = r + 1
+            }
+            if cNz != 0 { colFix = 0 }
+            col = col + 1
+          }
+
+          if colFix == 1 { print("1") } else { print("2") }
+        }
+      }
+    }
+
+    ti = ti + 1
+  }
+}
+
+main()

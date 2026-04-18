@@ -1,0 +1,61 @@
+// Solution for SPOJ TJUC1 - Divisors
+// https://www.spoj.com/problems/TJUC1/
+// Compute sum of divisor counts from a to b.
+// D(n) = 2*sum_{k=1}^{isqrt(n)} floor(n/k) - isqrt(n)^2
+// Answer = D(b) - D(a-1).
+
+fun isqrt(n: int): int {
+  if n == 0 { return 0 }
+  var s: int = n
+  var s1: int = s + 1
+  var t: int = int(s1 / 2)
+  while t < s {
+    s = t
+    var ns: int = int(n / s)
+    var sn: int = s + ns
+    t = int(sn / 2)
+  }
+  return s
+}
+
+fun D(n: int): int {
+  if n <= 0 { return 0 }
+  let sq = isqrt(n)
+  var total: int = 0
+  var k: int = 1
+  while k <= sq {
+    total = total + int(n / k)
+    k = k + 1
+  }
+  return 2 * total - sq * sq
+}
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  var line = input()
+  while line != "" {
+    let p = split(line)
+    let a = int(p[0])
+    let b = int(p[1])
+    if a == 0 && b == 0 { break }
+    print(str(D(b) - D(a - 1)))
+    line = input()
+  }
+}
+
+main()

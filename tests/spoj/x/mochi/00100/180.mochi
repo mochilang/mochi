@@ -1,0 +1,171 @@
+// Solution for SPOJ CONTPACK - How to pack containers
+// https://www.spoj.com/problems/CONTPACK/
+// Greedy bottom-up: merge box pairs from level s into level s+1,
+// use cheapest units at each level to fill containers of that size.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else { cur = cur + line[i:i+1] }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+// Insertion sort (ascending)
+fun sortList(a: list<int>): list<int> {
+  let n = len(a)
+  var i = 1
+  while i < n {
+    let v = a[i]
+    var j = i - 1
+    while j >= 0 && a[j] > v {
+      a[j+1] = a[j]
+      j = j - 1
+    }
+    a[j+1] = v
+    i = i + 1
+  }
+  return a
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let t = int(tLine)
+  var ti = 0
+  while ti < t {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+
+    // boxes[s] = sorted list of values at size s
+    var boxes: map<int, list<int>> = {}
+    var maxBox = 0
+    var i = 0
+    while i < n {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let p = split(vLine)
+      let sz = int(p[0])
+      let val = int(p[1])
+      var lst = boxes[sz]
+      if lst == nil { lst = [] }
+      lst = append(lst as list<int>, val)
+      boxes[sz] = lst
+      if sz > maxBox { maxBox = sz }
+      i = i + 1
+    }
+
+    // Sort each box list by value ascending
+    i = 0
+    while i <= maxBox {
+      var lst = boxes[i]
+      if lst != nil { boxes[i] = sortList(lst as list<int>) }
+      i = i + 1
+    }
+
+    // Read container demand: demand[s] = number of containers of size s
+    var qLine = input()
+    while qLine == "" { qLine = input() }
+    let q = int(qLine)
+
+    var demand: map<int, int> = {}
+    var maxDem = 0
+    i = 0
+    while i < q {
+      var vLine = input()
+      while vLine == "" { vLine = input() }
+      let p = split(vLine)
+      let sz = int(p[0])
+      let cnt = int(p[1])
+      var cur = demand[sz]
+      if cur == nil { demand[sz] = cnt } else { demand[sz] = (cur as int) + cnt }
+      if sz > maxDem { maxDem = sz }
+      i = i + 1
+    }
+
+    // Greedy bottom-up fill
+    // avail[s] = sorted list of unit costs available at level s
+    // Units come from: boxes at level s + merged pairs from level s-1
+    let maxLevel = if maxBox > maxDem { maxBox } else { maxDem }
+    var avail: map<int, list<int>> = {}
+    i = 0
+    while i <= maxLevel {
+      var lst = boxes[i]
+      if lst != nil { avail[i] = lst as list<int> } else { avail[i] = [] }
+      i = i + 1
+    }
+
+    var feasible = 1
+    var totalCost = 0
+    var level = 0
+    while level <= maxLevel && feasible == 1 {
+      // Get available units at this level
+      var units = avail[level]
+      if units == nil { units = [] }
+      let uLen = len(units as list<int>)
+
+      // Number of containers to fill at this level
+      var dem = demand[level]
+      if dem == nil { dem = 0 }
+      let d = dem as int
+
+      if (units as list<int>) == nil || uLen < d {
+        feasible = 0
+      } else {
+        // Use cheapest d units
+        i = 0
+        while i < d {
+          totalCost = totalCost + (units as list<int>)[i]
+          i = i + 1
+        }
+
+        // Leftover units get merged: pairs go to next level
+        let leftover = uLen - d
+        var nextUnits = avail[level + 1]
+        if nextUnits == nil { nextUnits = [] }
+
+        // Merge pairs from leftover: sorted units[d..], pair i with i+1
+        // Since units is sorted ascending, pair adjacent elements for min cost
+        var pi = d
+        while pi + 1 < uLen {
+          let merged = (units as list<int>)[pi] + (units as list<int>)[pi + 1]
+          // Insert merged into nextUnits (maintain sorted order)
+          nextUnits = append(nextUnits as list<int>, merged)
+          pi = pi + 2
+        }
+        // If odd leftover, last one is discarded (can't be merged with anything)
+        // Actually if leftover is odd, the last unit goes nowhere useful for level+1
+        // But it could be used for level+2 etc if paired with something from level+1
+        // For now: we lose the last unpaired unit (it can't form a useful merge here)
+        // Actually this is wrong - unpaired should be kept for further merging
+        // ... but if leftover is odd, one unit stays at level s unpaired
+        // and can never be merged (since we already processed level s)
+        // So it's just discarded (wasted, not used)
+
+        // Sort nextUnits
+        if len(nextUnits as list<int>) > 0 {
+          nextUnits = sortList(nextUnits as list<int>)
+        }
+        avail[level + 1] = nextUnits
+      }
+
+      level = level + 1
+    }
+
+    if feasible == 0 {
+      print("No")
+    } else {
+      print(totalCost)
+    }
+    ti = ti + 1
+  }
+}
+
+main()

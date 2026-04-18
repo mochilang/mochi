@@ -1,0 +1,103 @@
+// Solution for SPOJ MAWORK - Men at work
+// https://www.spoj.com/problems/MAWORK/
+// BFS on (row, col, time mod LCM) states.
+// Cell (r,c) at time t: period p. If p=0 state unchanged. If p>0 cycle=2p,
+// initial '.' => open when (t%cycle)<p; initial '*' => open when (t%cycle)>=p.
+
+fun isOpen(initOpen: int, period: int, t: int): bool {
+  if period == 0 { return initOpen == 1 }
+  let cycle = 2 * period
+  let phase = t - (t / cycle) as int * cycle
+  if initOpen == 1 { return phase < period }
+  return phase >= period
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let T = int(tLine)
+  var ti = 0
+  while ti < T {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let N = int(nLine)
+
+    var grid: list<string> = []
+    var gi = 0
+    while gi < N {
+      var gLine = input()
+      while gLine == "" { gLine = input() }
+      grid = append(grid, gLine)
+      gi = gi + 1
+    }
+    var pers: list<string> = []
+    gi = 0
+    while gi < N {
+      var pLine = input()
+      while pLine == "" { pLine = input() }
+      pers = append(pers, pLine)
+      gi = gi + 1
+    }
+
+    // LCM(2,4,6,8,10,12,14,16,18) = 5040
+    let LCM = 5040
+
+    // visited: map from "r,c,tmod" -> 1
+    var visited: map<string, int> = {}
+
+    // BFS queue
+    var qr: list<int> = []
+    var qc: list<int> = []
+    var qt: list<int> = []
+
+    let startOpen = grid[0][0:1] == "."
+    if startOpen {
+      qr = append(qr, 0); qc = append(qc, 0); qt = append(qt, 0)
+      visited["0,0,0"] = 1
+    }
+
+    var ans = -1
+    var head = 0
+    while head < len(qr) && ans < 0 {
+      let cr = qr[head]
+      let cc = qc[head]
+      let ct = qt[head]
+      head = head + 1
+
+      if cr == N - 1 && cc == N - 1 { ans = ct; break }
+
+      let nt = ct + 1
+      let ntmod = nt - (nt / LCM) as int * LCM
+
+      var mi = 0
+      while mi < 5 {
+        var nr = cr; var nc = cc
+        if mi == 0 { nr = cr - 1 }
+        if mi == 1 { nr = cr + 1 }
+        if mi == 2 { nc = cc - 1 }
+        if mi == 3 { nc = cc + 1 }
+
+        if nr >= 0 && nr < N && nc >= 0 && nc < N {
+          let ch = grid[nr][nc:nc+1]
+          var io = 0
+          if ch == "." { io = 1 }
+          let pch = pers[nr][nc:nc+1]
+          let p = int(pch)
+          if isOpen(io, p, nt) {
+            let key = str(nr) + "," + str(nc) + "," + str(ntmod)
+            if visited[key] == nil {
+              visited[key] = 1
+              qr = append(qr, nr); qc = append(qc, nc); qt = append(qt, nt)
+            }
+          }
+        }
+        mi = mi + 1
+      }
+    }
+
+    if ans < 0 { print("NO") } else { print(str(ans)) }
+    ti = ti + 1
+  }
+}
+
+main()

@@ -1,0 +1,114 @@
+// Solution for SPOJ PSPHERE - Points on a Sphere
+// https://www.spoj.com/problems/PSPHERE/
+// Distribute n points on unit sphere maximizing minimum pairwise distance.
+// Uses Fibonacci lattice (spherical Fibonacci spiral).
+
+// sin via Taylor series, x in [-4pi, 4pi], reduce to [-pi, pi] first
+fun mysin(xin: float): float {
+  let pi2 = 6.283185307179586
+  var x = xin
+  // reduce mod 2pi
+  let k = int(x / pi2)
+  x = x - (k as float) * pi2
+  if x > 3.141592653589793 { x = x - pi2 }
+  if x < 0.0 - 3.141592653589793 { x = x + pi2 }
+  // Taylor: x - x^3/6 + x^5/120 - x^7/5040 + x^9/362880 - x^11/39916800
+  let x2 = x * x
+  let x3 = x2 * x
+  let x5 = x3 * x2
+  let x7 = x5 * x2
+  let x9 = x7 * x2
+  let x11 = x9 * x2
+  return x - x3/6.0 + x5/120.0 - x7/5040.0 + x9/362880.0 - x11/39916800.0
+}
+
+fun mycos(x: float): float {
+  return mysin(x + 1.5707963267948966)
+}
+
+// arccos via binary search: find a in [0,pi] such that cos(a)=v
+fun myacos(v: float): float {
+  if v >= 1.0 { return 0.0 }
+  if v <= 0.0 - 1.0 { return 3.141592653589793 }
+  var lo = 0.0
+  var hi = 3.141592653589793
+  var ai = 0
+  while ai < 60 {
+    let mid = (lo + hi) / 2.0
+    if mycos(mid) > v {
+      lo = mid
+    } else {
+      hi = mid
+    }
+    ai = ai + 1
+  }
+  return (lo + hi) / 2.0
+}
+
+fun fmtDecimal(x: float, places: int): string {
+  var neg = false
+  var xv = x
+  if xv < 0.0 { neg = true; xv = 0.0 - xv }
+  var mult = 1.0
+  var fi = 0
+  while fi < places { mult = mult * 10.0; fi = fi + 1 }
+  let scaled = int(xv * mult + 0.5)
+  let imult = int(mult)
+  let intPart = int(scaled / imult)
+  let fracPart = scaled % imult
+  var fracStr = str(fracPart)
+  while len(fracStr) < places { fracStr = "0" + fracStr }
+  var result = str(intPart) + "." + fracStr
+  if neg && intPart == 0 && fracPart == 0 { neg = false }
+  if neg { result = "-" + result }
+  return result
+}
+
+fun main() {
+  let pi = 3.141592653589793
+  let phi = 1.6180339887498949  // golden ratio = (1+sqrt(5))/2
+  let twopi = 6.283185307179586
+
+  let tLine = input()
+  if tLine == "" { return }
+  let t = int(tLine)
+  var tc = 0
+  while tc < t {
+    let nLine = input()
+    let n = int(nLine)
+    if n == 1 {
+      print("0.000000 0.000000 1.000000")
+    } else {
+      if n == 2 {
+        print("0.000000 0.000000 1.000000")
+        print("0.000000 0.000000 -1.000000")
+      } else {
+        var i = 0
+        while i < n {
+          let fi = i as float
+          let fn = n as float
+          var theta = 0.0
+          if i == 0 {
+            theta = 0.0
+          } else {
+            if i == n - 1 {
+              theta = pi
+            } else {
+              theta = myacos(1.0 - 2.0 * fi / (fn - 1.0))
+            }
+          }
+          let phiAngle = twopi * fi / phi
+          let sinTheta = mysin(theta)
+          let x = sinTheta * mycos(phiAngle)
+          let y = sinTheta * mysin(phiAngle)
+          let z = mycos(theta)
+          print(fmtDecimal(x, 6) + " " + fmtDecimal(y, 6) + " " + fmtDecimal(z, 6))
+          i = i + 1
+        }
+      }
+    }
+    tc = tc + 1
+  }
+}
+
+main()

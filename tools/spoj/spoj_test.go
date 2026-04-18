@@ -27,3 +27,19 @@ func TestListAndDownload(t *testing.T) {
 		t.Fatalf("markdown does not contain problem name")
 	}
 }
+
+func TestListSection(t *testing.T) {
+	for _, sec := range []Section{SectionTutorial, SectionChallenge} {
+		probs, err := ListSection(sec, 0)
+		if err != nil {
+			t.Logf("section %s page 0 error (may be empty): %v", sec, err)
+			continue
+		}
+		t.Logf("section %s: %d problems on page 0", sec, len(probs))
+		for _, p := range probs {
+			if p.Section != sec {
+				t.Errorf("problem %d has section %q, want %q", p.ID, p.Section, sec)
+			}
+		}
+	}
+}

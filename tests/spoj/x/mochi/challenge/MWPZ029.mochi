@@ -1,0 +1,80 @@
+// Solution for SPOJ MWPZ029 - Rooms and Pictures
+// https://www.spoj.com/problems/MWPZ029/
+// Functional graph: find nodes on cycles.
+// Color 0=unvisited, 1=in-progress, 2=done.
+// For each unvisited node, walk until we hit in-progress (cycle found) or done (no new cycle).
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let d = int(input())
+  var tc = 0
+  while tc < d {
+    let n = int(input())
+    let tokens = split(input())
+    // f is 0-indexed: f[i] = tokens[i] - 1
+    var f: list<int> = []
+    var i = 0
+    while i < n {
+      f = append(f, int(tokens[i]) - 1)
+      i = i + 1
+    }
+    // color: 0=unvisited, 1=in-progress, 2=done
+    var color: list<int> = []
+    i = 0
+    while i < n {
+      color = append(color, 0)
+      i = i + 1
+    }
+    var cycleCount = 0
+    i = 0
+    while i < n {
+      if color[i] == 0 {
+        // Walk the path, collect nodes in order
+        var path: list<int> = []
+        var cur = i
+        while color[cur] == 0 {
+          color[cur] = 1
+          path = append(path, cur)
+          cur = f[cur]
+        }
+        // cur is either in-progress (1) or done (2)
+        if color[cur] == 1 {
+          // Found a cycle: count nodes from cur to end of path
+          var found = 0
+          var pi = 0
+          while pi < len(path) {
+            if path[pi] == cur { found = 1 }
+            if found == 1 { cycleCount = cycleCount + 1 }
+            pi = pi + 1
+          }
+        }
+        // Mark all path nodes as done
+        var pi = 0
+        while pi < len(path) {
+          color[path[pi]] = 2
+          pi = pi + 1
+        }
+      }
+      i = i + 1
+    }
+    print(str(cycleCount))
+    tc = tc + 1
+  }
+}
+
+main()

@@ -1,0 +1,65 @@
+// Solution for SPOJ MWPZ034 - Bucket Tower
+// https://www.spoj.com/problems/MWPZ034/
+// Buckets dropped concentrically. Smaller radius fits inside larger.
+// A new bucket rests on the highest existing bucket with radius <= its own.
+// top[r] = current highest top surface among buckets with exactly radius r.
+// For each new bucket (r,h): T = max(top[0..r]), new_top = T + h, top[r] = max(top[r], new_top).
+// Answer = max of all top[r].
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun main() {
+  let d = int(input())
+  var tc = 0
+  while tc < d {
+    let n = int(input())
+    let tokens = split(input())
+    // top[r] = highest top for radius exactly r, index 0..10000
+    var top: list<int> = []
+    var k = 0
+    while k <= 10000 {
+      top = append(top, 0)
+      k = k + 1
+    }
+    var bi = 0
+    while bi < n {
+      let r = int(tokens[bi * 2])
+      let h = int(tokens[bi * 2 + 1])
+      // Find max top for radii 1..r
+      var T = 0
+      var ri = 1
+      while ri <= r {
+        if top[ri] > T { T = top[ri] }
+        ri = ri + 1
+      }
+      let newTop = T + h
+      if newTop > top[r] { top[r] = newTop }
+      bi = bi + 1
+    }
+    // Find overall max height
+    var ans = 0
+    var ri = 1
+    while ri <= 10000 {
+      if top[ri] > ans { ans = top[ri] }
+      ri = ri + 1
+    }
+    print(str(ans))
+    tc = tc + 1
+  }
+}
+
+main()

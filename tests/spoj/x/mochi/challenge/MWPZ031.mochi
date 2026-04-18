@@ -1,0 +1,116 @@
+// Solution for SPOJ MWPZ031 - Cards
+// https://www.spoj.com/problems/MWPZ031/
+// n cards, 0=correct, 1=rotated. Process:
+// Round 0: check initial state.
+// Round 1: if top=1, flip entire deck; check state.
+// Round r (r>=2): do n steps then check state.
+// Each step: take top card, look at new top (deck[1]);
+//   if new top=1, flip all remaining cards (deck[1..n-1]);
+//   put original top at bottom.
+// Find first r>=0 where all cards are 0, or NIGDY if not found within 2n+2 rounds.
+
+fun split(line: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(line) {
+    if line[i:i+1] == " " {
+      if len(cur) > 0 { parts = append(parts, cur); cur = "" }
+    } else {
+      cur = cur + line[i:i+1]
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun allZero(deck: list<int>, n: int): int {
+  var i = 0
+  while i < n {
+    if deck[i] != 0 { return 0 }
+    i = i + 1
+  }
+  return 1
+}
+
+fun main() {
+  let T = int(input())
+  var tc = 0
+  while tc < T {
+    let n = int(input())
+    let cardLine = input()
+    let parts = split(cardLine)
+
+    var deck: list<int> = []
+    var i = 0
+    while i < n {
+      deck = append(deck, int(parts[i]))
+      i = i + 1
+    }
+
+    // Round 0: check initial state
+    if allZero(deck, n) == 1 {
+      print("0")
+      tc = tc + 1
+    } else {
+      // Round 1: optional full flip, then check
+      if deck[0] == 1 {
+        var fi = 0
+        while fi < n {
+          deck[fi] = 1 - deck[fi]
+          fi = fi + 1
+        }
+      }
+
+      var found = 0
+      if allZero(deck, n) == 1 {
+        found = 1
+        print("1")
+      }
+
+      // Rounds 2, 3, ... : do n steps then check
+      var round = 2
+      var maxRounds = 2 * n + 4
+
+      while found == 0 && round <= maxRounds {
+        // Do n steps
+        var step = 0
+        while step < n {
+          let top = deck[0]
+          // Look at new top (deck[1]) - flip rest if new top = 1
+          if n > 1 && deck[1] == 1 {
+            var fi = 1
+            while fi < n {
+              deck[fi] = 1 - deck[fi]
+              fi = fi + 1
+            }
+          }
+          // Rotate: move deck[0] to bottom
+          var ri = 0
+          while ri < n - 1 {
+            deck[ri] = deck[ri + 1]
+            ri = ri + 1
+          }
+          deck[n - 1] = top
+          step = step + 1
+        }
+
+        if allZero(deck, n) == 1 {
+          found = 1
+          print(str(round))
+        }
+
+        round = round + 1
+      }
+
+      if found == 0 {
+        print("NIGDY")
+      }
+
+      tc = tc + 1
+    }
+  }
+}
+
+main()

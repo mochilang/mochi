@@ -1,0 +1,12 @@
+type Result {
+  cat: string
+  val: int
+  flag: bool
+}
+type Item {
+  cat: string
+  val: int
+  flag: bool
+}
+let items: list<Item>
+let result: list<map<string,any>>

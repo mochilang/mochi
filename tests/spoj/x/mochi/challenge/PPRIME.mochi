@@ -1,0 +1,46 @@
+// Solution for SPOJ PPRIME - PPrimes
+// https://www.spoj.com/problems/PPRIME/
+// A PPrime is a prime at a prime position (1-indexed) in the prime sequence.
+// Sieve up to 1500000, collect primes, check which indices are prime, output first 10000.
+
+fun main() {
+  var LIMIT = 1500000
+  var is_prime: list<int> = []
+  var i = 0
+  while i <= LIMIT { is_prime = append(is_prime, 1); i = i + 1 }
+  is_prime[0] = 0
+  is_prime[1] = 0
+  var p = 2
+  while p * p <= LIMIT {
+    if is_prime[p] == 1 {
+      var j = p * p
+      while j <= LIMIT { is_prime[j] = 0; j = j + p }
+    }
+    p = p + 1
+  }
+  var primes: list<int> = []
+  var k = 2
+  while k <= LIMIT {
+    if is_prime[k] == 1 { primes = append(primes, k) }
+    k = k + 1
+  }
+  var pprimes: list<int> = []
+  var idx = 0
+  while idx < len(primes) && len(pprimes) < 10000 {
+    var pos = idx + 1
+    if pos <= LIMIT && is_prime[pos] == 1 {
+      pprimes = append(pprimes, primes[idx])
+    }
+    idx = idx + 1
+  }
+  var out = ""
+  var pi = 0
+  while pi < len(pprimes) {
+    if pi > 0 { out = out + " " }
+    out = out + str(pprimes[pi])
+    pi = pi + 1
+  }
+  print(out)
+}
+
+main()
