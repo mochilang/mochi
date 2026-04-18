@@ -1,0 +1,46 @@
+fun makeFlags(n) {
+  var arr = []
+  var i = 0
+  while i < n {
+    arr = append(arr, false)
+    i = i + 1
+  }
+  return arr
+}
+
+fun countSolutions(n, r, cols, d1, d2) {
+  if r == n { return 1 }
+  var total = 0
+  var c = 0
+  while c < n {
+    let a = r + c
+    let b = r + (n - 1 - c)
+    if cols[c] == false && d1[a] == false && d2[b] == false {
+      cols[c] = true
+      d1[a] = true
+      d2[b] = true
+      total = total + countSolutions(n, r + 1, cols, d1, d2)
+      cols[c] = false
+      d1[a] = false
+      d2[b] = false
+    }
+    c = c + 1
+  }
+  return total
+}
+
+fun readLineNonNil() {
+  let line = input()
+  return line
+}
+
+let t = int(readLineNonNil())
+var tc = 0
+while tc < t {
+  let n = int(readLineNonNil())
+  let cols = makeFlags(n)
+  let d1 = makeFlags(2 * n)
+  let d2 = makeFlags(2 * n)
+  print(countSolutions(n, 0, cols, d1, d2))
+  tc = tc + 1
+}
