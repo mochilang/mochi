@@ -1003,7 +1003,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [ ] `0093-restore-ip-addresses`
 - [ ] `0095-unique-binary-search-trees-ii`
 - [ ] `0096-unique-binary-search-trees`
-- [ ] `0097-interleaving-string`
+- [x] `0097-interleaving-string`
 - [ ] `0098-validate-binary-search-tree`
 - [ ] `0099-recover-binary-search-tree`
 - [ ] `0102-binary-tree-level-order-traversal`

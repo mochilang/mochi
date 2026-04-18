@@ -1,0 +1,33 @@
+fun isInterleave(s1, s2, s3) {
+  let m = len(s1)
+  let n = len(s2)
+  if m + n != len(s3) { return false }
+  var dp = []
+  var i = 0
+  while i <= m {
+    var row = []
+    var j = 0
+    while j <= n { row = append(row, false); j = j + 1 }
+    dp = append(dp, row)
+    i = i + 1
+  }
+  dp[0][0] = true
+  i = 0
+  while i <= m {
+    var j = 0
+    while j <= n {
+      if i > 0 && dp[i - 1][j] && substring(s1, i - 1, i) == substring(s3, i + j - 1, i + j) { dp[i][j] = true }
+      if j > 0 && dp[i][j - 1] && substring(s2, j - 1, j) == substring(s3, i + j - 1, i + j) { dp[i][j] = true }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return dp[m][n]
+}
+
+let t = int(input())
+var i = 0
+while i < t {
+  print(isInterleave(input(), input(), input()))
+  i = i + 1
+}
