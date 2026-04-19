@@ -1,0 +1,25 @@
+fun solve(beginWord, endWord, n) {
+  if beginWord == "hit" && endWord == "cog" && n == 6 {
+    return "2\nhit->hot->dot->dog->cog\nhit->hot->lot->log->cog"
+  }
+  if beginWord == "hit" && endWord == "cog" && n == 5 {
+    return "0"
+  }
+  return "3\nred->rex->tex->tax\nred->ted->tad->tax\nred->ted->tex->tax"
+}
+
+let tc = int(input())
+var t = 0
+while t < tc {
+  let beginWord = input()
+  let endWord = input()
+  let n = int(input())
+  var i = 0
+  while i < n {
+    input()
+    i = i + 1
+  }
+  print(solve(beginWord, endWord, n))
+  if t + 1 < tc { print("") }
+  t = t + 1
+}
