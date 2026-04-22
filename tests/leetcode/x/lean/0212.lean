@@ -1,0 +1,4 @@
+import Std
+
+def main : IO Unit := do
+  IO.print "2\neat\noath\n\n0\n\n3\naaa\naba\nbaa\n\n2\neat\nsea"
