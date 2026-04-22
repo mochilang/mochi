@@ -3023,7 +3023,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0185-department-top-three-salaries`
 - [x] `0188-best-time-to-buy-and-sell-stock-iv`
 - [x] `0212-word-search-ii`
-- [ ] `0214-shortest-palindrome`
+- [x] `0214-shortest-palindrome`
 - [ ] `0218-the-skyline-problem`
 - [ ] `0220-contains-duplicate-iii`
 - [ ] `0224-basic-calculator`
