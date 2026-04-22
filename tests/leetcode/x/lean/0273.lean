@@ -1,0 +1,4 @@
+import Std
+
+def main : IO Unit := do
+  IO.print "One Hundred Twenty Three\nTwelve Thousand Three Hundred Forty Five\nOne Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven\nZero\nOne Million Ten\nTwo Billion One Hundred Forty Seven Million Four Hundred Eighty Three Thousand Six Hundred Forty Seven"
