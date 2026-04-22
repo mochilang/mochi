@@ -3027,7 +3027,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0218-the-skyline-problem`
 - [x] `0220-contains-duplicate-iii`
 - [x] `0224-basic-calculator`
-- [ ] `0233-number-of-digit-one`
+- [x] `0233-number-of-digit-one`
 - [ ] `0239-sliding-window-maximum`
 - [ ] `0248-strobogrammatic-number-iii`
 - [ ] `0262-trips-and-users`
