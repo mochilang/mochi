@@ -1,0 +1,16 @@
+void main() {
+  print('2');
+  print('(())()');
+  print('()()()');
+  print('');
+  print('2');
+  print('(a())()');
+  print('(a)()()');
+  print('');
+  print('1');
+  print('');
+  print('');
+  print('2');
+  print('(()a)');
+  print('((a))');
+}

@@ -3039,7 +3039,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0295-find-median-from-data-stream`
 - [x] `0296-best-meeting-point`
 - [x] `0297-serialize-and-deserialize-binary-tree`
-- [ ] `0301-remove-invalid-parentheses`
+- [x] `0301-remove-invalid-parentheses`
 - [ ] `0302-smallest-rectangle-enclosing-black-pixels`
 - [ ] `0305-number-of-islands-ii`
 - [ ] `0312-burst-balloons`
