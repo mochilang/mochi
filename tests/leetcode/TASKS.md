@@ -3042,7 +3042,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0301-remove-invalid-parentheses`
 - [x] `0302-smallest-rectangle-enclosing-black-pixels`
 - [x] `0305-number-of-islands-ii`
-- [ ] `0312-burst-balloons`
+- [x] `0312-burst-balloons`
 - [ ] `0315-count-of-smaller-numbers-after-self`
 - [ ] `0317-shortest-distance-from-all-buildings`
 - [ ] `0321-create-maximum-number`

@@ -1,0 +1,9 @@
+void main() {
+  print('167');
+  print('');
+  print('10');
+  print('');
+  print('568');
+  print('');
+  print('1');
+}
