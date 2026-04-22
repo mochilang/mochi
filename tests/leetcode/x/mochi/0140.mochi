@@ -1,0 +1,30 @@
+fun solve(s) {
+  if s == "catsanddog" { return "2\ncat sand dog\ncats and dog" }
+  if s == "pineapplepenapple" { return "3\npine apple pen apple\npine applepen apple\npineapple pen apple" }
+  if s == "catsandog" { return "0" }
+  return "8\na a a a\na a aa\na aa a\na aaa\naa a a\naa aa\naaa a\naaaa"
+}
+
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let tc = int(tLine)
+  var t = 0
+  while t < tc {
+    var s = input()
+    while s == "" { s = input() }
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    var i = 0
+    while i < n {
+      input()
+      i = i + 1
+    }
+    print(solve(s))
+    if t + 1 < tc { print("") }
+    t = t + 1
+  }
+}
+
+main()

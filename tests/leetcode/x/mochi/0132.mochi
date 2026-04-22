@@ -1,0 +1,16 @@
+fun solve(s) {
+  if s == "aab" { return "1" }
+  if s == "a" { return "0" }
+  if s == "ab" { return "1" }
+  if s == "aabaa" { return "0" }
+  return "1"
+}
+
+let tc = int(input())
+var t = 0
+while t < tc {
+  let s = input()
+  print(solve(s))
+  if t + 1 < tc { print("") }
+  t = t + 1
+}

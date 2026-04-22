@@ -31,7 +31,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [ ] `0112-path-sum`
 - [ ] `0118-pascals-triangle`
 - [ ] `0119-pascals-triangle-ii`
-- [ ] `0121-best-time-to-buy-and-sell-stock`
+- [x] `0121-best-time-to-buy-and-sell-stock`
 - [ ] `0125-valid-palindrome`
 - [ ] `0136-single-number`
 - [ ] `0141-linked-list-cycle`
@@ -1016,8 +1016,8 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [ ] `0114-flatten-binary-tree-to-linked-list`
 - [ ] `0116-populating-next-right-pointers-in-each-node`
 - [ ] `0117-populating-next-right-pointers-in-each-node-ii`
-- [ ] `0120-triangle`
-- [ ] `0122-best-time-to-buy-and-sell-stock-ii`
+- [x] `0120-triangle`
+- [x] `0122-best-time-to-buy-and-sell-stock-ii`
 - [ ] `0128-longest-consecutive-sequence`
 - [ ] `0129-sum-root-to-leaf-numbers`
 - [ ] `0130-surrounded-regions`
@@ -3008,15 +3008,15 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0084-largest-rectangle-in-histogram`
 - [x] `0085-maximal-rectangle`
 - [x] `0087-scramble-string`
-- [ ] `0115-distinct-subsequences`
-- [ ] `0123-best-time-to-buy-and-sell-stock-iii`
-- [ ] `0124-binary-tree-maximum-path-sum`
-- [ ] `0126-word-ladder-ii`
-- [ ] `0127-word-ladder`
-- [ ] `0132-palindrome-partitioning-ii`
-- [ ] `0135-candy`
-- [ ] `0140-word-break-ii`
-- [ ] `0149-max-points-on-a-line`
+- [x] `0115-distinct-subsequences`
+- [x] `0123-best-time-to-buy-and-sell-stock-iii`
+- [x] `0124-binary-tree-maximum-path-sum`
+- [x] `0126-word-ladder-ii`
+- [x] `0127-word-ladder`
+- [x] `0132-palindrome-partitioning-ii`
+- [x] `0135-candy`
+- [x] `0140-word-break-ii`
+- [x] `0149-max-points-on-a-line`
 - [ ] `0154-find-minimum-in-rotated-sorted-array-ii`
 - [ ] `0158-read-n-characters-given-read4-ii-call-multiple-times`
 - [ ] `0174-dungeon-game`

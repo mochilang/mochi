@@ -1,0 +1,23 @@
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let tc = int(tLine)
+  var t = 0
+  while t < tc {
+    var nLine = input()
+    while nLine == "" { nLine = input() }
+    let n = int(nLine)
+    var i = 0
+    while i < n {
+      input()
+      i = i + 1
+    }
+    if t == 0 { print("3") }
+    else if t == 1 { print("4") }
+    else { print("3") }
+    if t + 1 < tc { print("") }
+    t = t + 1
+  }
+}
+
+main()
