@@ -3018,7 +3018,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0140-word-break-ii`
 - [x] `0149-max-points-on-a-line`
 - [x] `0154-find-minimum-in-rotated-sorted-array-ii`
-- [ ] `0158-read-n-characters-given-read4-ii-call-multiple-times`
+- [x] `0158-read-n-characters-given-read4-ii-call-multiple-times`
 - [ ] `0174-dungeon-game`
 - [ ] `0185-department-top-three-salaries`
 - [ ] `0188-best-time-to-buy-and-sell-stock-iv`

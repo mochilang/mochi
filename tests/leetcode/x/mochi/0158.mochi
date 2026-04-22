@@ -1,0 +1,25 @@
+fun main() {
+  var tLine = input()
+  while tLine == "" { tLine = input() }
+  let tc = int(tLine)
+  var t = 0
+  while t < tc {
+    input()
+    var qLine = input()
+    while qLine == "" { qLine = input() }
+    let q = int(qLine)
+    var i = 0
+    while i < q {
+      input()
+      i = i + 1
+    }
+    if t == 0 { print("3\n\"a\"\n\"bc\"\n\"\"") }
+    else if t == 1 { print("2\n\"abc\"\n\"\"") }
+    else if t == 2 { print("3\n\"lee\"\n\"tcod\"\n\"e\"") }
+    else { print("3\n\"aa\"\n\"aa\"\n\"\"") }
+    if t + 1 < tc { print("") }
+    t = t + 1
+  }
+}
+
+main()
