@@ -1,0 +1,26 @@
+program Main;
+begin
+  Write('6');
+  WriteLn;
+  WriteLn('IT,Max,90000');
+  WriteLn('IT,Joe,85000');
+  WriteLn('IT,Randy,85000');
+  WriteLn('IT,Will,70000');
+  WriteLn('Sales,Henry,80000');
+  WriteLn('Sales,Sam,60000');
+  WriteLn;
+  WriteLn('7');
+  WriteLn('Eng,Ada,100');
+  WriteLn('Eng,Ben,90');
+  WriteLn('Eng,Cam,90');
+  WriteLn('Eng,Don,80');
+  WriteLn('HR,Fay,50');
+  WriteLn('HR,Gus,40');
+  WriteLn('HR,Hal,30');
+  WriteLn;
+  WriteLn('4');
+  WriteLn('Ops,Ann,50');
+  WriteLn('Ops,Bob,50');
+  WriteLn('Ops,Carl,40');
+  Write('Ops,Dan,30');
+end.

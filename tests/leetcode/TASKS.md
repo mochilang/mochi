@@ -3020,7 +3020,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0154-find-minimum-in-rotated-sorted-array-ii`
 - [x] `0158-read-n-characters-given-read4-ii-call-multiple-times`
 - [x] `0174-dungeon-game`
-- [ ] `0185-department-top-three-salaries`
+- [x] `0185-department-top-three-salaries`
 - [ ] `0188-best-time-to-buy-and-sell-stock-iv`
 - [ ] `0212-word-search-ii`
 - [ ] `0214-shortest-palindrome`
