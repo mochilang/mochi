@@ -3033,7 +3033,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [ ] `0262-trips-and-users`
 - [x] `0265-paint-house-ii`
 - [x] `0269-alien-dictionary`
-- [ ] `0272-closest-binary-search-tree-value-ii`
+- [x] `0272-closest-binary-search-tree-value-ii`
 - [ ] `0273-integer-to-english-words`
 - [ ] `0282-expression-add-operators`
 - [ ] `0295-find-median-from-data-stream`
