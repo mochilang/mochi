@@ -3035,7 +3035,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0269-alien-dictionary`
 - [x] `0272-closest-binary-search-tree-value-ii`
 - [x] `0273-integer-to-english-words`
-- [ ] `0282-expression-add-operators`
+- [x] `0282-expression-add-operators`
 - [ ] `0295-find-median-from-data-stream`
 - [ ] `0296-best-meeting-point`
 - [ ] `0297-serialize-and-deserialize-binary-tree`
