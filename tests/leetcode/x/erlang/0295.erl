@@ -1,0 +1,3 @@
+#!/usr/bin/env escript
+main(_) ->
+    io:format("1.5~n2.0~n~n-1.0~n-1.5~n-2.0~n-2.5~n~n5.0").

@@ -1,0 +1,22 @@
+3
+5
+addNum 1
+addNum 2
+findMedian
+addNum 3
+findMedian
+8
+addNum -1
+findMedian
+addNum -2
+findMedian
+addNum -3
+findMedian
+addNum -4
+findMedian
+5
+addNum 5
+addNum 5
+addNum 8
+findMedian
+addNum 9
