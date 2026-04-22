@@ -3015,7 +3015,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0127-word-ladder`
 - [x] `0132-palindrome-partitioning-ii`
 - [x] `0135-candy`
-- [ ] `0140-word-break-ii`
+- [x] `0140-word-break-ii`
 - [ ] `0149-max-points-on-a-line`
 - [ ] `0154-find-minimum-in-rotated-sorted-array-ii`
 - [ ] `0158-read-n-characters-given-read4-ii-call-multiple-times`
