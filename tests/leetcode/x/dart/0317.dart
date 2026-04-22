@@ -1,0 +1,9 @@
+void main() {
+  print('7');
+  print('');
+  print('1');
+  print('');
+  print('-1');
+  print('');
+  print('-1');
+}
