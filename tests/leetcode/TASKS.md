@@ -3029,7 +3029,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0224-basic-calculator`
 - [x] `0233-number-of-digit-one`
 - [x] `0239-sliding-window-maximum`
-- [ ] `0248-strobogrammatic-number-iii`
+- [x] `0248-strobogrammatic-number-iii`
 - [ ] `0262-trips-and-users`
 - [ ] `0265-paint-house-ii`
 - [ ] `0269-alien-dictionary`
