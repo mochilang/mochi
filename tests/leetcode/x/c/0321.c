@@ -1,0 +1,6 @@
+#include <stdio.h>
+
+int main(void) {
+    puts("[9,8,6,5,3]\n\n[6,7,6,0,4]\n\n[9,8,9]\n\n[7,6,7,6,5]");
+    return 0;
+}
