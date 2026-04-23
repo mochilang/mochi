@@ -3077,7 +3077,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0472-concatenated-words`
 - [x] `0479-largest-palindrome-product`
 - [x] `0480-sliding-window-median`
-- [ ] `0483-smallest-good-base`
+- [x] `0483-smallest-good-base`
 - [ ] `0488-zuma-game`
 - [ ] `0489-robot-room-cleaner`
 - [ ] `0493-reverse-pairs`
