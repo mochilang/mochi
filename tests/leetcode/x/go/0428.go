@@ -1,0 +1,8 @@
+package main
+import("bufio";"fmt";"os";"strconv";"strings")
+type Node struct{val int; children []*Node}
+func ser(root *Node)string{parts:=[]string{};var dfs func(*Node);dfs=func(n *Node){parts=append(parts,strconv.Itoa(n.val),strconv.Itoa(len(n.children)));for _,c:=range n.children{dfs(c)}};if root!=nil{dfs(root)};return strings.Join(parts," ")}
+func de(data string)*Node{if data==""{return nil};v:=strings.Fields(data);idx:=0;var dfs func()*Node;dfs=func()*Node{val,_:=strconv.Atoi(v[idx]);idx++;cnt,_:=strconv.Atoi(v[idx]);idx++;n:=&Node{val:val};for i:=0;i<cnt;i++{n.children=append(n.children,dfs())};return n};return dfs()}
+func parse(s string)*Node{if s=="[]"{return nil};tok:=strings.Split(s[1:len(s)-1],",");val,_:=strconv.Atoi(tok[0]);root:=&Node{val:val};q:=[]*Node{root};i:=1;if i<len(tok)&&tok[i]=="null"{i++};for len(q)>0&&i<len(tok){p:=q[0];q=q[1:];for i<len(tok)&&tok[i]!="null"{v,_:=strconv.Atoi(tok[i]);c:=&Node{val:v};p.children=append(p.children,c);q=append(q,c);i++};if i<len(tok)&&tok[i]=="null"{i++}};return root}
+func format(root *Node)string{if root==nil{return "[]"};out:=[]string{strconv.Itoa(root.val),"null"};q:=[]*Node{root};for len(q)>0{p:=q[0];q=q[1:];for _,c:=range p.children{out=append(out,strconv.Itoa(c.val));q=append(q,c)};out=append(out,"null")};for len(out)>0&&out[len(out)-1]=="null"{out=out[:len(out)-1]};return "["+strings.Join(out,",")+"]"}
+func main(){in:=bufio.NewScanner(os.Stdin);lines:=[]string{};for in.Scan(){s:=strings.TrimSpace(in.Text());if s!=""{lines=append(lines,s)}};if len(lines)==0{return};t,_:=strconv.Atoi(lines[0]);out:=bufio.NewWriter(os.Stdout);defer out.Flush();for i:=0;i<t;i++{if i>0{fmt.Fprintln(out);fmt.Fprintln(out)};fmt.Fprint(out,format(de(ser(parse(lines[i+1])))))}}
