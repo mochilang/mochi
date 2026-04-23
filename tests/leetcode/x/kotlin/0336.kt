@@ -1,0 +1,6 @@
+import java.io.BufferedInputStream
+private class FS{val input=BufferedInputStream(System.`in`);val b=ByteArray(1 shl 16);var l=0;var p=0;fun rb():Int{if(p>=l){l=input.read(b);p=0;if(l<=0)return -1};return b[p++].toInt()}fun next():String{var c=rb();while(c<=32&&c>=0)c=rb();val s=StringBuilder();while(c>32){s.append(c.toChar());c=rb()};return s.toString()}}
+fun pal(s:String):Boolean{var i=0;var j=s.length-1;while(i<j){if(s[i++]!=s[j--])return false};return true}
+fun solve(w:Array<String>):List<Pair<Int,Int>>{val pos=HashMap<String,Int>();for(i in w.indices)pos[w[i]]=i;val ans=mutableListOf<Pair<Int,Int>>();for(i in w.indices)for(c in 0..w[i].length){val pre=w[i].substring(0,c);val suf=w[i].substring(c);if(pal(pre)){val j=pos[suf.reversed()];if(j!=null&&j!=i)ans.add(Pair(j,i))};if(c<w[i].length&&pal(suf)){val j=pos[pre.reversed()];if(j!=null&&j!=i)ans.add(Pair(i,j))}};return ans.sortedWith(compareBy<Pair<Int,Int>>{it.first}.thenBy{it.second})}
+fun fmt(p:List<Pair<Int,Int>>)="["+p.joinToString(","){"[${it.first},${it.second}]"}+"]"
+fun main(){val fs=FS();val t=fs.next().toInt();val out=StringBuilder();repeat(t){tc->val n=fs.next().toInt();val w=Array(n){val s=fs.next();if(s=="_")"" else s};if(tc>0)out.append("\n\n");out.append(fmt(solve(w)))};print(out)}
