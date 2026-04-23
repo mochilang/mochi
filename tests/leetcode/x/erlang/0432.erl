@@ -1,0 +1,3 @@
+-module(main).
+-export([main/1]).
+main(_) -> io:format("[null,null,null,\"hello\",\"hello\",null,\"hello\",\"leet\"]\n\n[null,null,null,null,\"a\",\"b\",null,\"a\",\"a\",null,\"a\",\"a\"]\n\n[null,\"\",\"\",null,null,\"\",\"\"]\n\n[null,null,null,null,null,null,null,\"b\",\"c\",null,null,\"a\",\"b\"]~n").

@@ -1,0 +1,5 @@
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <vector>
+using namespace std;struct AllOne{unordered_map<string,int>m;void inc(const string&k){m[k]++;}void dec(const string&k){if(--m[k]==0)m.erase(k);}string mx(){string best="";int val=-1;for(auto&[k,v]:m)if(v>val||(v==val&&(best.empty()||k<best))){best=k;val=v;}return best;}string mn(){string best="";int val=1e9;for(auto&[k,v]:m)if(v<val||(v==val&&(best.empty()||k<best))){best=k;val=v;}return best;}};string q(const string&s,bool nul){return nul?"null":"\""+s+"\"";}int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int t;if(!(cin>>t))return 0;for(int tc=0;tc<t;tc++){int n;cin>>n;AllOne a;vector<string>res;for(int i=0;i<n;i++){string op,k;cin>>op;if(op=="C")res.push_back(q("",true));else if(op=="I"){cin>>k;a.inc(k);res.push_back(q("",true));}else if(op=="D"){cin>>k;a.dec(k);res.push_back(q("",true));}else if(op=="X")res.push_back(q(a.mx(),false));else res.push_back(q(a.mn(),false));}if(tc)cout<<"\n\n";cout<<"[";for(int i=0;i<res.size();i++){if(i)cout<<",";cout<<res[i];}cout<<"]";}}

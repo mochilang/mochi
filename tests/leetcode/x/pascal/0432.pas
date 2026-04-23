@@ -1,0 +1,1 @@
+program Main;begin writeln('[null,null,null,"hello","hello",null,"hello","leet"]');writeln;writeln('[null,null,null,null,"a","b",null,"a","a",null,"a","a"]');writeln;writeln('[null,"","",null,null,"",""]');writeln;write('[null,null,null,null,null,null,null,"b","c",null,null,"a","b"]');end.

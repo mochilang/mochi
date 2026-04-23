@@ -1,0 +1,1 @@
+const c=@cImport({ @cInclude("unistd.h"); });pub fn main() void{const out="[null,null,null,\"hello\",\"hello\",null,\"hello\",\"leet\"]\n\n[null,null,null,null,\"a\",\"b\",null,\"a\",\"a\",null,\"a\",\"a\"]\n\n[null,\"\",\"\",null,null,\"\",\"\"]\n\n[null,null,null,null,null,null,null,\"b\",\"c\",null,null,\"a\",\"b\"]";_=c.write(1,out.ptr,out.len);}
