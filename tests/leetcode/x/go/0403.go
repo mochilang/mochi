@@ -1,0 +1,4 @@
+package main
+import("bufio";"fmt";"os")
+func canCross(stones []int)bool{pos:=map[int]int{};for i,x:=range stones{pos[x]=i};jumps:=make([]map[int]bool,len(stones));for i:=range jumps{jumps[i]=map[int]bool{}};jumps[0][0]=true;last:=len(stones)-1;for i,stone:=range stones{for k:=range jumps[i]{for _,step:=range []int{k-1,k,k+1}{if step<=0{continue};j,ok:=pos[stone+step];if !ok{continue};if j==last{return true};jumps[j][step]=true}}};return last==0}
+func main(){in:=bufio.NewReader(os.Stdin);out:=bufio.NewWriter(os.Stdout);defer out.Flush();var t int;if _,e:=fmt.Fscan(in,&t);e!=nil{return};for tc:=0;tc<t;tc++{var n int;fmt.Fscan(in,&n);stones:=make([]int,n);for i:=range stones{fmt.Fscan(in,&stones[i])};if tc>0{fmt.Fprintln(out);fmt.Fprintln(out)};if canCross(stones){fmt.Fprint(out,"true")}else{fmt.Fprint(out,"false")}}}
