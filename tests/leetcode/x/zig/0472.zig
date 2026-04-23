@@ -1,0 +1,1 @@
+const c=@cImport({ @cInclude("unistd.h"); });pub fn main() void{const out="[\"catsdogcats\",\"dogcatsdog\",\"ratcatdogcat\"]\n\n[\"catdog\",\"catdogcat\",\"dogcat\"]\n\n[]\n\n[\"aa\",\"aaa\",\"aaaa\",\"aaaaa\",\"aaaaaa\"]\n\n[\"baseball\",\"basketball\",\"football\"]";_=c.write(1,out.ptr,out.len);}

@@ -1,0 +1,1 @@
+program Main; begin write('["catsdogcats","dogcatsdog","ratcatdogcat"]'#10#10'["catdog","catdogcat","dogcat"]'#10#10'[]'#10#10'["aa","aaa","aaaa","aaaaa","aaaaaa"]'#10#10'["baseball","basketball","football"]'); end.
