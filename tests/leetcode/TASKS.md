@@ -3061,7 +3061,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0403-frog-jump`
 - [x] `0407-trapping-rain-water-ii`
 - [x] `0410-split-array-largest-sum`
-- [ ] `0411-minimum-unique-word-abbreviation`
+- [x] `0411-minimum-unique-word-abbreviation`
 - [ ] `0420-strong-password-checker`
 - [ ] `0425-word-squares`
 - [ ] `0428-serialize-and-deserialize-n-ary-tree`

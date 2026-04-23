@@ -1,0 +1,6 @@
+package main
+import("bufio";"fmt";"os";"strconv")
+func abbrLen(mask,n int)int{total:=0;skip:=false;for i:=0;i<n;i++{if mask>>i&1==1{if skip{total++;skip=false};total++}else{skip=true}};if skip{total++};return total}
+func build(t string,mask int)string{out:="";run:=0;for i,ch:=range t{if mask>>i&1==1{if run>0{out+=strconv.Itoa(run);run=0};out+=string(ch)}else{run++}};if run>0{out+=strconv.Itoa(run)};return out}
+func solve(t string,dict []string)string{n:=len(t);diffs:=[]int{};for _,w:=range dict{if len(w)!=n{continue};d:=0;for i:=0;i<n;i++{if t[i]!=w[i]{d|=1<<i}};diffs=append(diffs,d)};if len(diffs)==0{return strconv.Itoa(n)};bestMask,bestLen:=0,n+1;for mask:=0;mask<1<<n;mask++{ok:=true;for _,d:=range diffs{if mask&d==0{ok=false;break}};if ok{l:=abbrLen(mask,n);if l<bestLen{bestLen=l;bestMask=mask}}};return build(t,bestMask)}
+func main(){in:=bufio.NewReader(os.Stdin);out:=bufio.NewWriter(os.Stdout);defer out.Flush();var tcases int;if _,e:=fmt.Fscan(in,&tcases);e!=nil{return};for tc:=0;tc<tcases;tc++{var target string;var m int;fmt.Fscan(in,&target,&m);dict:=make([]string,m);for i:=range dict{fmt.Fscan(in,&dict[i])};if tc>0{fmt.Fprintln(out);fmt.Fprintln(out)};fmt.Fprint(out,solve(target,dict))}}
