@@ -1,0 +1,4 @@
+import java.io.BufferedInputStream
+private class FastScanner { private val input=BufferedInputStream(System.`in`); private val buffer=ByteArray(1 shl 16); private var len=0; private var ptr=0; private fun readByte():Int{ if(ptr>=len){ len=input.read(buffer); ptr=0; if(len<=0)return -1}; return buffer[ptr++].toInt()}; fun nextInt():Int{ var c=readByte(); while(c<=32&&c>=0)c=readByte(); var v=0; while(c>32){ v=v*10+c-'0'.code; c=readByte()}; return v } }
+fun minPatches(nums:IntArray, n:Int):Int{ var miss=1L; var i=0; var patches=0; while(miss<=n.toLong()){ if(i<nums.size && nums[i].toLong()<=miss) miss+=nums[i++].toLong() else { miss+=miss; patches++ } }; return patches }
+fun main(){ val fs=FastScanner(); val t=fs.nextInt(); val out=StringBuilder(); repeat(t){tc-> val size=fs.nextInt(); val nums=IntArray(size){fs.nextInt()}; val n=fs.nextInt(); if(tc>0)out.append("\n\n"); out.append(minPatches(nums,n))}; print(out.toString()) }

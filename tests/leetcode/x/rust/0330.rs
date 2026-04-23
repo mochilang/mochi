@@ -1,0 +1,3 @@
+use std::io::{self, Read};
+fn min_patches(nums: &[i64], n: i64) -> i32 { let mut miss = 1i64; let mut i = 0usize; let mut patches = 0; while miss <= n { if i < nums.len() && nums[i] <= miss { miss += nums[i]; i += 1; } else { miss += miss; patches += 1; } } patches }
+fn main(){ let mut s=String::new(); io::stdin().read_to_string(&mut s).unwrap(); let data:Vec<i64>=s.split_whitespace().map(|x|x.parse().unwrap()).collect(); if data.is_empty(){return}; let mut idx=0; let t=data[idx] as usize; idx+=1; let mut out=Vec::new(); for _ in 0..t{ let size=data[idx] as usize; idx+=1; let nums=data[idx..idx+size].to_vec(); idx+=size; let n=data[idx]; idx+=1; out.push(min_patches(&nums,n).to_string()); } print!("{}", out.join("\n\n")); }
