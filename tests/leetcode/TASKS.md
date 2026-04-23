@@ -3058,7 +3058,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0363-max-sum-of-rectangle-no-larger-than-k`
 - [x] `0381-insert-delete-getrandom-o1-duplicates-allowed`
 - [x] `0391-perfect-rectangle`
-- [ ] `0403-frog-jump`
+- [x] `0403-frog-jump`
 - [ ] `0407-trapping-rain-water-ii`
 - [ ] `0410-split-array-largest-sum`
 - [ ] `0411-minimum-unique-word-abbreviation`
