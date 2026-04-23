@@ -3066,7 +3066,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0425-word-squares`
 - [x] `0428-serialize-and-deserialize-n-ary-tree`
 - [x] `0431-encode-n-ary-tree-to-binary-tree`
-- [ ] `0432-all-oone-data-structure`
+- [x] `0432-all-oone-data-structure`
 - [ ] `0440-k-th-smallest-in-lexicographical-order`
 - [ ] `0446-arithmetic-slices-ii-subsequence`
 - [ ] `0458-poor-pigs`

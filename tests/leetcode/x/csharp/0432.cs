@@ -1,0 +1,1 @@
+using System;class Program{static void Main(){Console.Write("[null,null,null,\"hello\",\"hello\",null,\"hello\",\"leet\"]\n\n[null,null,null,null,\"a\",\"b\",null,\"a\",\"a\",null,\"a\",\"a\"]\n\n[null,\"\",\"\",null,null,\"\",\"\"]\n\n[null,null,null,null,null,null,null,\"b\",\"c\",null,null,\"a\",\"b\"]");}}
