@@ -1,0 +1,4 @@
+import java.io.BufferedInputStream
+private class FS{val input=BufferedInputStream(System.`in`);val b=ByteArray(1 shl 16);var l=0;var p=0;fun rb():Int{if(p>=l){l=input.read(b);p=0;if(l<=0)return -1};return b[p++].toInt()}fun next():String{var c=rb();while(c<=32&&c>=0)c=rb();val s=StringBuilder();while(c>32){s.append(c.toChar());c=rb()};return s.toString()}}
+fun rearrange(s:String,k:Int):String{if(k<=1)return s;val c=IntArray(26);val last=IntArray(26){-1000000000};for(ch in s)c[ch-'a']++;val out=StringBuilder();for(p in s.indices){var b=-1;for(i in 0 until 26)if(c[i]>0&&p-last[i]>=k&&(b<0||c[i]>c[b]))b=i;if(b<0)return "";out.append(('a'.code+b).toChar());c[b]--;last[b]=p};return out.toString()}
+fun main(){val fs=FS();val t=fs.next().toInt();val out=StringBuilder();repeat(t){tc->val s=fs.next();val k=fs.next().toInt();if(tc>0)out.append("\n\n");out.append('"').append(rearrange(s,k)).append('"')};print(out)}
