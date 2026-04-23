@@ -1,0 +1,8 @@
+package main
+import("bufio";"fmt";"os";"strconv";"strings")
+type Node struct{val int; children []*Node};type TreeNode struct{val int; left,right *TreeNode}
+func enc(root *Node)*TreeNode{if root==nil{return nil};b:=&TreeNode{val:root.val};var prev *TreeNode;for _,c:=range root.children{e:=enc(c);if prev==nil{b.left=e}else{prev.right=e};prev=e};return b}
+func dec(root *TreeNode)*Node{if root==nil{return nil};n:=&Node{val:root.val};for c:=root.left;c!=nil;c=c.right{n.children=append(n.children,dec(c))};return n}
+func parse(s string)*Node{if s=="[]"{return nil};tok:=strings.Split(s[1:len(s)-1],",");val,_:=strconv.Atoi(tok[0]);root:=&Node{val:val};q:=[]*Node{root};i:=1;if i<len(tok)&&tok[i]=="null"{i++};for len(q)>0&&i<len(tok){p:=q[0];q=q[1:];for i<len(tok)&&tok[i]!="null"{v,_:=strconv.Atoi(tok[i]);c:=&Node{val:v};p.children=append(p.children,c);q=append(q,c);i++};if i<len(tok)&&tok[i]=="null"{i++}};return root}
+func format(root *Node)string{if root==nil{return "[]"};out:=[]string{strconv.Itoa(root.val),"null"};q:=[]*Node{root};for len(q)>0{p:=q[0];q=q[1:];for _,c:=range p.children{out=append(out,strconv.Itoa(c.val));q=append(q,c)};out=append(out,"null")};for len(out)>0&&out[len(out)-1]=="null"{out=out[:len(out)-1]};return "["+strings.Join(out,",")+"]"}
+func main(){in:=bufio.NewScanner(os.Stdin);lines:=[]string{};for in.Scan(){s:=strings.TrimSpace(in.Text());if s!=""{lines=append(lines,s)}};if len(lines)==0{return};t,_:=strconv.Atoi(lines[0]);out:=bufio.NewWriter(os.Stdout);defer out.Flush();for i:=0;i<t;i++{if i>0{fmt.Fprintln(out);fmt.Fprintln(out)};fmt.Fprint(out,format(dec(enc(parse(lines[i+1])))))}}
