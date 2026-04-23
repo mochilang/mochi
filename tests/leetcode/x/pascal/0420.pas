@@ -1,0 +1,1 @@
+program Main;begin writeln('5');writeln;writeln('3');writeln;writeln('0');writeln;writeln('2');writeln;writeln('2');writeln;writeln('7');writeln;writeln('8');writeln;writeln('1');writeln;writeln('3');writeln;write('7');end.
