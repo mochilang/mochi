@@ -3051,7 +3051,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0330-patching-array`
 - [x] `0332-reconstruct-itinerary`
 - [x] `0335-self-crossing`
-- [ ] `0336-palindrome-pairs`
+- [x] `0336-palindrome-pairs`
 - [ ] `0352-data-stream-as-disjoint-intervals`
 - [ ] `0354-russian-doll-envelopes`
 - [ ] `0358-rearrange-string-k-distance-apart`
