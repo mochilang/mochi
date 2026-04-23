@@ -1,0 +1,1 @@
+program Main;begin writeln('[null,null,null,1,null,-1,3,null,-1,3,4]');writeln;writeln('[null,null,-1]');writeln;writeln('[null,null,null,null,null,-1,3]');writeln;write('[null,null,null,null,10,20,null,-1,40,10]');end.
