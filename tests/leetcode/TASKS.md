@@ -3046,7 +3046,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0315-count-of-smaller-numbers-after-self`
 - [x] `0317-shortest-distance-from-all-buildings`
 - [x] `0321-create-maximum-number`
-- [ ] `0327-count-of-range-sum`
+- [x] `0327-count-of-range-sum`
 - [ ] `0329-longest-increasing-path-in-a-matrix`
 - [ ] `0330-patching-array`
 - [ ] `0332-reconstruct-itinerary`
