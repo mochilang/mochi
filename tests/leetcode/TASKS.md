@@ -3053,7 +3053,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0335-self-crossing`
 - [x] `0336-palindrome-pairs`
 - [x] `0352-data-stream-as-disjoint-intervals`
-- [ ] `0354-russian-doll-envelopes`
+- [x] `0354-russian-doll-envelopes`
 - [ ] `0358-rearrange-string-k-distance-apart`
 - [ ] `0363-max-sum-of-rectangle-no-larger-than-k`
 - [ ] `0381-insert-delete-getrandom-o1-duplicates-allowed`
