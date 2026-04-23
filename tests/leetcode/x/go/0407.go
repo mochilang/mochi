@@ -1,0 +1,6 @@
+package main
+import("bufio";"container/heap";"fmt";"os")
+type cell struct{h,r,c int};type hp []cell
+func(p hp)Len()int{return len(p)};func(p hp)Less(i,j int)bool{return p[i].h<p[j].h};func(p hp)Swap(i,j int){p[i],p[j]=p[j],p[i]};func(p *hp)Push(x any){*p=append(*p,x.(cell))};func(p *hp)Pop()any{old:=*p;x:=old[len(old)-1];*p=old[:len(old)-1];return x}
+func trap(g [][]int)int{m:=len(g);if m==0{return 0};n:=len(g[0]);if m<3||n<3{return 0};seen:=make([][]bool,m);for i:=range seen{seen[i]=make([]bool,n)};q:=&hp{};heap.Init(q);add:=func(r,c int){if !seen[r][c]{seen[r][c]=true;heap.Push(q,cell{g[r][c],r,c})}};for r:=0;r<m;r++{add(r,0);add(r,n-1)};for c:=0;c<n;c++{add(0,c);add(m-1,c)};water:=0;dirs:=[][2]int{{1,0},{-1,0},{0,1},{0,-1}};for q.Len()>0{cur:=heap.Pop(q).(cell);for _,d:=range dirs{nr,nc:=cur.r+d[0],cur.c+d[1];if nr<0||nr>=m||nc<0||nc>=n||seen[nr][nc]{continue};seen[nr][nc]=true;nh:=g[nr][nc];if nh<cur.h{water+=cur.h-nh;nh=cur.h};heap.Push(q,cell{nh,nr,nc})}};return water}
+func main(){in:=bufio.NewReader(os.Stdin);out:=bufio.NewWriter(os.Stdout);defer out.Flush();var t int;if _,e:=fmt.Fscan(in,&t);e!=nil{return};for tc:=0;tc<t;tc++{var m,n int;fmt.Fscan(in,&m,&n);g:=make([][]int,m);for i:=range g{g[i]=make([]int,n);for j:=range g[i]{fmt.Fscan(in,&g[i][j])}};if tc>0{fmt.Fprintln(out);fmt.Fprintln(out)};fmt.Fprint(out,trap(g))}}
