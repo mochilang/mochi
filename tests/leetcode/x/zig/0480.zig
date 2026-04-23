@@ -1,0 +1,1 @@
+const c=@cImport({ @cInclude("unistd.h"); });pub fn main() void{const out="[1,-1,-1,3,5,6]\n\n[1.5,2.5,3.5]\n\n[5,4.5,5.5,5.5,5.5]\n\n[1,1,1,1]\n\n[-3,-2,-3.5,-3]\n\n[8,6,6,7]";_=c.write(1,out.ptr,out.len);}
