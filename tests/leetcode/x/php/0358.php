@@ -1,0 +1,2 @@
+<?php function r($s,$k){if($k<=1)return$s;$c=array_fill(0,26,0);$last=array_fill(0,26,-1000000000);for($i=0;$i<strlen($s);$i++)$c[ord($s[$i])-97]++;$out="";for($p=0;$p<strlen($s);$p++){$b=-1;for($i=0;$i<26;$i++)if($c[$i]>0&&$p-$last[$i]>=$k&&($b<0||$c[$i]>$c[$b]))$b=$i;if($b<0)return"";$out.=chr(97+$b);$c[$b]--;$last[$b]=$p;}return$out;}$d=preg_split('/\s+/',trim(stream_get_contents(STDIN)));if(count($d)&&$d[0]!==""){$idx=0;$t=intval($d[$idx++]);$out=[];for($tc=0;$tc<$t;$tc++){$s=$d[$idx++];$k=intval($d[$idx++]);$out[]='"'.r($s,$k).'"';}echo implode("\n\n",$out);}
+?>
