@@ -1,0 +1,5 @@
+package main
+import("bufio";"fmt";"os";"strings")
+func squares(words []string)[][]string{if len(words)==0{return nil};n:=len(words[0]);pref:=map[string][]string{};for _,w:=range words{for i:=0;i<=n;i++{p:=w[:i];pref[p]=append(pref[p],w)}};ans:=[][]string{};var dfs func([]string);dfs=func(sq []string){d:=len(sq);if d==n{cp:=append([]string{},sq...);ans=append(ans,cp);return};var b strings.Builder;for _,row:=range sq{b.WriteByte(row[d])};for _,w:=range pref[b.String()]{dfs(append(sq,w))}};for _,w:=range words{dfs([]string{w})};return ans}
+func format(ans [][]string)string{parts:=[]string{};for _,sq:=range ans{q:=[]string{};for _,w:=range sq{q=append(q,"\""+w+"\"")};parts=append(parts,"["+strings.Join(q,",")+"]")};return "["+strings.Join(parts,",")+"]"}
+func main(){in:=bufio.NewReader(os.Stdin);out:=bufio.NewWriter(os.Stdout);defer out.Flush();var t int;if _,e:=fmt.Fscan(in,&t);e!=nil{return};for tc:=0;tc<t;tc++{var n int;fmt.Fscan(in,&n);words:=make([]string,n);for i:=range words{fmt.Fscan(in,&words[i])};if tc>0{fmt.Fprintln(out);fmt.Fprintln(out)};fmt.Fprint(out,format(squares(words)))}}
