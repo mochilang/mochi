@@ -1,0 +1,4 @@
+package main
+import("bufio";"fmt";"os")
+func solve(trans [][3]int)int{bal:=map[int]int{};for _,t:=range trans{bal[t[0]]-=t[2];bal[t[1]]+=t[2]};debts:=[]int{};for _,v:=range bal{if v!=0{debts=append(debts,v)}};var dfs func(int)int;dfs=func(i int)int{for i<len(debts)&&debts[i]==0{i++};if i==len(debts){return 0};best:=1<<30;seen:=map[int]bool{};for j:=i+1;j<len(debts);j++{if debts[i]*debts[j]<0&&!seen[debts[j]]{seen[debts[j]]=true;debts[j]+=debts[i];v:=1+dfs(i+1);if v<best{best=v};debts[j]-=debts[i];if debts[j]+debts[i]==0{break}}};return best};return dfs(0)}
+func main(){in:=bufio.NewReader(os.Stdin);out:=bufio.NewWriter(os.Stdout);defer out.Flush();var tcases int;if _,e:=fmt.Fscan(in,&tcases);e!=nil{return};for tc:=0;tc<tcases;tc++{var m int;fmt.Fscan(in,&m);trans:=make([][3]int,m);for i:=range trans{fmt.Fscan(in,&trans[i][0],&trans[i][1],&trans[i][2])};if tc>0{fmt.Fprintln(out);fmt.Fprintln(out)};fmt.Fprint(out,solve(trans))}}
