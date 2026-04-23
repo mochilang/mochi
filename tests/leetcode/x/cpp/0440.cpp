@@ -1,0 +1,2 @@
+#include <iostream>
+using namespace std;long long cnt(long long n,long long p){long long steps=0,first=p,next=p+1;while(first<=n){steps+=min(n+1,next)-first;first*=10;next*=10;}return steps;}long long kth(long long n,long long k){long long cur=1;k--;while(k){long long steps=cnt(n,cur);if(steps<=k){cur++;k-=steps;}else{cur*=10;k--;}}return cur;}int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int t;if(!(cin>>t))return 0;for(int tc=0;tc<t;tc++){long long n,k;cin>>n>>k;if(tc)cout<<"\n\n";cout<<kth(n,k);}}
