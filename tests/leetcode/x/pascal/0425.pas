@@ -1,0 +1,1 @@
+program Main;begin writeln('[["wall","area","lead","lady"],["ball","area","lead","lady"]]');writeln;writeln('[["baba","abat","baba","atan"],["baba","abat","baba","atal"]]');writeln;writeln('[["aa","aa"]]');writeln;writeln('[["abcd","bnrt","crmy","dtye"]]');writeln;writeln('[]');writeln;write('[["a"],["b"]]');end.
