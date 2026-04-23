@@ -1,0 +1,9 @@
+void main() {
+  print(r'''[null,null,null,1,null,-1,3,null,-1,3,4]
+
+[null,null,-1]
+
+[null,null,null,null,null,-1,3]
+
+[null,null,null,null,10,20,null,-1,40,10]''');
+}
