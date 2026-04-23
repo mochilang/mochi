@@ -1,0 +1,6 @@
+use std::collections::HashMap;
+use std::io::{self, Read};
+fn visit(a: String, graph: &mut HashMap<String, Vec<String>>, route: &mut Vec<String>) { loop { let next = graph.get_mut(&a).and_then(|v| v.pop()); match next { Some(n) => visit(n, graph, route), None => break } } route.push(a); }
+fn find_itinerary(tickets: Vec<(String,String)>) -> Vec<String> { let mut graph: HashMap<String, Vec<String>> = HashMap::new(); for (a,b) in tickets { graph.entry(a).or_default().push(b); } for v in graph.values_mut() { v.sort_by(|a,b| b.cmp(a)); } let mut route=Vec::new(); visit("JFK".to_string(), &mut graph, &mut route); route.reverse(); route }
+fn fmt(r:&[String])->String{ format!("[{}]", r.iter().map(|s| format!("\"{}\"",s)).collect::<Vec<_>>().join(",")) }
+fn main(){ let mut s=String::new(); io::stdin().read_to_string(&mut s).unwrap(); let data:Vec<String>=s.split_whitespace().map(|x|x.to_string()).collect(); if data.is_empty(){return}; let mut idx=0; let t:usize=data[idx].parse().unwrap(); idx+=1; let mut out=Vec::new(); for _ in 0..t{ let m:usize=data[idx].parse().unwrap(); idx+=1; let mut tickets=Vec::new(); for _ in 0..m{ tickets.push((data[idx].clone(), data[idx+1].clone())); idx+=2; } out.push(fmt(&find_itinerary(tickets))); } print!("{}", out.join("\n\n")); }

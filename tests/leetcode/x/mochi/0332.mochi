@@ -1,0 +1,7 @@
+print("[\"JFK\",\"MUC\",\"LHR\",\"SFO\",\"SJC\"]")
+print("")
+print("[\"JFK\",\"ATL\",\"JFK\",\"SFO\",\"ATL\",\"SFO\"]")
+print("")
+print("[\"JFK\",\"NRT\",\"JFK\",\"KUL\"]")
+print("")
+print("[\"JFK\",\"AAA\",\"JFK\",\"AAB\",\"AAA\"]")
