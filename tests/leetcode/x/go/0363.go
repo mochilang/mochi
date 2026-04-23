@@ -1,0 +1,4 @@
+package main
+import("bufio";"fmt";"os";"sort")
+func maxSumSubmatrix(m [][]int,k int)int{rows,cols:=len(m),len(m[0]);best:=-1<<60;for top:=0;top<rows;top++{sums:=make([]int,cols);for bot:=top;bot<rows;bot++{for c:=0;c<cols;c++{sums[c]+=m[bot][c]};prefix:=[]int{0};cur:=0;for _,x:=range sums{cur+=x;i:=sort.SearchInts(prefix,cur-k);if i<len(prefix)&&cur-prefix[i]>best{best=cur-prefix[i]};j:=sort.SearchInts(prefix,cur);prefix=append(prefix,0);copy(prefix[j+1:],prefix[j:]);prefix[j]=cur}}};return best}
+func main(){in:=bufio.NewReader(os.Stdin);out:=bufio.NewWriter(os.Stdout);defer out.Flush();var t int;if _,err:=fmt.Fscan(in,&t);err!=nil{return};for tc:=0;tc<t;tc++{var r,c int;fmt.Fscan(in,&r,&c);m:=make([][]int,r);for i:=range m{m[i]=make([]int,c);for j:=range m[i]{fmt.Fscan(in,&m[i][j])}};var k int;fmt.Fscan(in,&k);if tc>0{fmt.Fprintln(out);fmt.Fprintln(out)};fmt.Fprint(out,maxSumSubmatrix(m,k))}}
