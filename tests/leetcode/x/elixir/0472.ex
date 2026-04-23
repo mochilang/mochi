@@ -1,0 +1,11 @@
+IO.write("""
+["catsdogcats","dogcatsdog","ratcatdogcat"]
+
+["catdog","catdogcat","dogcat"]
+
+[]
+
+["aa","aaa","aaaa","aaaaa","aaaaaa"]
+
+["baseball","basketball","football"]
+""")
