@@ -3072,7 +3072,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0458-poor-pigs`
 - [x] `0460-lfu-cache`
 - [x] `0465-optimal-account-balancing`
-- [ ] `0466-count-the-repetitions`
+- [x] `0466-count-the-repetitions`
 - [ ] `0471-encode-string-with-shortest-length`
 - [ ] `0472-concatenated-words`
 - [ ] `0479-largest-palindrome-product`
