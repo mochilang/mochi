@@ -3069,7 +3069,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0432-all-oone-data-structure`
 - [x] `0440-k-th-smallest-in-lexicographical-order`
 - [x] `0446-arithmetic-slices-ii-subsequence`
-- [ ] `0458-poor-pigs`
+- [x] `0458-poor-pigs`
 - [ ] `0460-lfu-cache`
 - [ ] `0465-optimal-account-balancing`
 - [ ] `0466-count-the-repetitions`
