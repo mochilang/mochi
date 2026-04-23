@@ -3062,7 +3062,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0407-trapping-rain-water-ii`
 - [x] `0410-split-array-largest-sum`
 - [x] `0411-minimum-unique-word-abbreviation`
-- [ ] `0420-strong-password-checker`
+- [x] `0420-strong-password-checker`
 - [ ] `0425-word-squares`
 - [ ] `0428-serialize-and-deserialize-n-ary-tree`
 - [ ] `0431-encode-n-ary-tree-to-binary-tree`
