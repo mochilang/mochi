@@ -1,0 +1,4 @@
+import java.io.BufferedInputStream
+private class FS{val input=BufferedInputStream(System.`in`);val b=ByteArray(1 shl 16);var l=0;var p=0;fun rb():Int{if(p>=l){l=input.read(b);p=0;if(l<=0)return -1};return b[p++].toInt()}fun nextInt():Int{var c=rb();while(c<=32&&c>=0)c=rb();var v=0;while(c>32){v=v*10+c-'0'.code;c=rb()};return v}}
+fun maxEnv(e:MutableList<IntArray>):Int{e.sortWith(compareBy<IntArray>{it[0]}.thenByDescending{it[1]});val tails=mutableListOf<Int>();for(p in e){var lo=0;var hi=tails.size;while(lo<hi){val m=(lo+hi)/2;if(tails[m]<p[1])lo=m+1 else hi=m};if(lo==tails.size)tails.add(p[1])else tails[lo]=p[1]};return tails.size}
+fun main(){val fs=FS();val t=fs.nextInt();val out=StringBuilder();repeat(t){tc->val n=fs.nextInt();val e=MutableList(n){intArrayOf(fs.nextInt(),fs.nextInt())};if(tc>0)out.append("\n\n");out.append(maxEnv(e))};print(out)}
