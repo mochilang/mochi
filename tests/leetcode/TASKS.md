@@ -3060,7 +3060,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0391-perfect-rectangle`
 - [x] `0403-frog-jump`
 - [x] `0407-trapping-rain-water-ii`
-- [ ] `0410-split-array-largest-sum`
+- [x] `0410-split-array-largest-sum`
 - [ ] `0411-minimum-unique-word-abbreviation`
 - [ ] `0420-strong-password-checker`
 - [ ] `0425-word-squares`
