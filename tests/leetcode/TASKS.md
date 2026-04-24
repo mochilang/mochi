@@ -3086,7 +3086,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0514-freedom-trail`
 - [x] `0517-super-washing-machines`
 - [x] `0527-word-abbreviation`
-- [ ] `0546-remove-boxes`
+- [x] `0546-remove-boxes`
 - [ ] `0548-split-array-with-equal-sum`
 - [ ] `0552-student-attendance-record-ii`
 - [ ] `0564-find-the-closest-palindrome`
