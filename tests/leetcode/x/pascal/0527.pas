@@ -1,0 +1,1 @@
+program Main; begin write('9'#10'l2e'#10'god'#10'internal'#10'me'#10'i6t'#10'interval'#10'inte4n'#10'f2e'#10'intr4n'#10#10'2'#10'aa'#10'aaa'#10#10'3'#10'abcd2g'#10'abccefg'#10'abcckkg'#10#10'2'#10'a3e'#10'b3e'#10#10'4'#10'abc2f'#10'abq2f'#10'abz2f'#10'a4z'#10#10'4'#10'transf7n'#10'transp7n'#10't9n'#10't8n'); end.
