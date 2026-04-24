@@ -3082,7 +3082,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0489-robot-room-cleaner`
 - [x] `0493-reverse-pairs`
 - [x] `0499-the-maze-iii`
-- [ ] `0502-ipo`
+- [x] `0502-ipo`
 - [ ] `0514-freedom-trail`
 - [ ] `0517-super-washing-machines`
 - [ ] `0527-word-abbreviation`
