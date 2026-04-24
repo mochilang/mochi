@@ -3079,7 +3079,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0480-sliding-window-median`
 - [x] `0483-smallest-good-base`
 - [x] `0488-zuma-game`
-- [ ] `0489-robot-room-cleaner`
+- [x] `0489-robot-room-cleaner`
 - [ ] `0493-reverse-pairs`
 - [ ] `0499-the-maze-iii`
 - [ ] `0502-ipo`
