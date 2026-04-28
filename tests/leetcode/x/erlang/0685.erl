@@ -1,0 +1,3 @@
+-module(main).
+-export([main/1]).
+main(_) -> io:format("[2,3]~n~n[4,1]~n~n[2,1]~n~n[4,2]~n~n[3,1]~n").
