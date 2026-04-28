@@ -3105,7 +3105,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0630-course-schedule-iii`
 - [x] `0631-design-excel-sum-formula`
 - [x] `0632-smallest-range-covering-elements-from-k-lists`
-- [ ] `0639-decode-ways-ii`
+- [x] `0639-decode-ways-ii`
 - [ ] `0642-design-search-autocomplete-system`
 - [ ] `0644-maximum-average-subarray-ii`
 - [ ] `0656-coin-path`
