@@ -3094,7 +3094,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [ ] `0569-median-employee-salary`
 - [ ] `0571-find-median-given-frequency-of-numbers`
 - [ ] `0579-find-cumulative-salary-of-an-employee`
-- [ ] `0587-erect-the-fence`
+- [x] `0587-erect-the-fence`
 - [ ] `0588-design-in-memory-file-system`
 - [ ] `0591-tag-validator`
 - [ ] `0600-non-negative-integers-without-consecutive-ones`
