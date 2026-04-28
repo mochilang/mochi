@@ -3120,7 +3120,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0691-stickers-to-spell-word`
 - [x] `0699-falling-squares`
 - [x] `0710-random-pick-with-blacklist`
-- [ ] `0711-number-of-distinct-islands-ii`
+- [x] `0711-number-of-distinct-islands-ii`
 - [ ] `0715-range-module`
 - [ ] `0716-max-stack`
 - [ ] `0719-find-k-th-smallest-pair-distance`
