@@ -3122,7 +3122,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0710-random-pick-with-blacklist`
 - [x] `0711-number-of-distinct-islands-ii`
 - [x] `0715-range-module`
-- [ ] `0716-max-stack`
+- [x] `0716-max-stack`
 - [ ] `0719-find-k-th-smallest-pair-distance`
 - [ ] `0726-number-of-atoms`
 - [ ] `0727-minimum-window-subsequence`
