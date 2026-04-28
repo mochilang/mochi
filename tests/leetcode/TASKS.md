@@ -3108,7 +3108,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0639-decode-ways-ii`
 - [x] `0642-design-search-autocomplete-system`
 - [x] `0644-maximum-average-subarray-ii`
-- [ ] `0656-coin-path`
+- [x] `0656-coin-path`
 - [ ] `0660-remove-9`
 - [ ] `0664-strange-printer`
 - [ ] `0668-kth-smallest-number-in-multiplication-table`
