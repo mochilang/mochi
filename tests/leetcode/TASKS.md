@@ -3118,7 +3118,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0685-redundant-connection-ii`
 - [x] `0689-maximum-sum-of-3-non-overlapping-subarrays`
 - [x] `0691-stickers-to-spell-word`
-- [ ] `0699-falling-squares`
+- [x] `0699-falling-squares`
 - [ ] `0710-random-pick-with-blacklist`
 - [ ] `0711-number-of-distinct-islands-ii`
 - [ ] `0715-range-module`
