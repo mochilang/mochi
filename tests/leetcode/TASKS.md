@@ -3115,7 +3115,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0675-cut-off-trees-for-golf-event`
 - [x] `0679-24-game`
 - [x] `0683-k-empty-slots`
-- [ ] `0685-redundant-connection-ii`
+- [x] `0685-redundant-connection-ii`
 - [ ] `0689-maximum-sum-of-3-non-overlapping-subarrays`
 - [ ] `0691-stickers-to-spell-word`
 - [ ] `0699-falling-squares`
