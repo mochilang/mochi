@@ -3114,7 +3114,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [ ] `0668-kth-smallest-number-in-multiplication-table`
 - [x] `0675-cut-off-trees-for-golf-event`
 - [x] `0679-24-game`
-- [ ] `0683-k-empty-slots`
+- [x] `0683-k-empty-slots`
 - [ ] `0685-redundant-connection-ii`
 - [ ] `0689-maximum-sum-of-3-non-overlapping-subarrays`
 - [ ] `0691-stickers-to-spell-word`
