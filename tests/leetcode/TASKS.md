@@ -3109,7 +3109,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0642-design-search-autocomplete-system`
 - [x] `0644-maximum-average-subarray-ii`
 - [x] `0656-coin-path`
-- [ ] `0660-remove-9`
+- [x] `0660-remove-9`
 - [ ] `0664-strange-printer`
 - [ ] `0668-kth-smallest-number-in-multiplication-table`
 - [ ] `0675-cut-off-trees-for-golf-event`
