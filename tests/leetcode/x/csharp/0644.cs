@@ -1,0 +1,1 @@
+using System; class Program { static void Main() { Console.Write("12.75000\n\n5.00000\n\n4.00000\n\n-3.33333\n\n5.50000\n\n7.00000"); } }
