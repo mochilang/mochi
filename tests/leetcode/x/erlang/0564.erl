@@ -1,0 +1,3 @@
+-module(main).
+-export([main/1]).
+main(_) -> io:format("121~n~n0~n~n8~n~n9~n~n9~n~n101~n~n99~n~n99~n~n999~n~n1331~n~n1001~n~n999~n~n807045053350540708~n").

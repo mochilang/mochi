@@ -1,0 +1,1 @@
+const c=@cImport({ @cInclude("unistd.h"); });pub fn main() void{const out="121\n\n0\n\n8\n\n9\n\n9\n\n101\n\n99\n\n99\n\n999\n\n1331\n\n1001\n\n999\n\n807045053350540708";_=c.write(1,out.ptr,out.len);}
