@@ -3090,7 +3090,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [ ] `0548-split-array-with-equal-sum`
 - [ ] `0552-student-attendance-record-ii`
 - [x] `0564-find-the-closest-palindrome`
-- [ ] `0568-maximum-vacation-days`
+- [x] `0568-maximum-vacation-days`
 - [ ] `0569-median-employee-salary`
 - [ ] `0571-find-median-given-frequency-of-numbers`
 - [ ] `0579-find-cumulative-salary-of-an-employee`
