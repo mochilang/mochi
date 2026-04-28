@@ -1,0 +1,7 @@
+print("[null,[\"i love you\",\"island\",\"i love leetcode\"],[\"i love you\",\"i love leetcode\"],[],[]]")
+print("")
+print("[null,[\"abb\",\"abc\",\"abd\"],[\"abb\",\"abc\",\"abd\"],[\"abc\"],[],[\"abc\",\"abb\",\"abd\"],[\"abc\",\"abb\",\"abd\"]]")
+print("")
+print("[null,[\"i love you\",\"island\",\"i love leetcode\"],[\"i love you\",\"i love leetcode\"],[],[],[\"i love you\",\"island\",\"i love leetcode\"],[\"i love you\",\"i love leetcode\",\"i a\"],[\"i a\"]]")
+print("")
+print("[null,[\"heaven\",\"heavy\",\"hell\"],[\"heaven\",\"heavy\",\"hell\"],[\"hell\",\"hello\"],[\"hell\",\"hello\"],[\"hello\"],[],[\"hello\",\"heaven\",\"heavy\"],[\"hello\",\"heaven\",\"heavy\"]]")

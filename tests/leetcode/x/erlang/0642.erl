@@ -1,0 +1,3 @@
+-module(main).
+-export([main/1]).
+main(_) -> io:format("[null,[\"i love you\",\"island\",\"i love leetcode\"],[\"i love you\",\"i love leetcode\"],[],[]]~n~n[null,[\"abb\",\"abc\",\"abd\"],[\"abb\",\"abc\",\"abd\"],[\"abc\"],[],[\"abc\",\"abb\",\"abd\"],[\"abc\",\"abb\",\"abd\"]]~n~n[null,[\"i love you\",\"island\",\"i love leetcode\"],[\"i love you\",\"i love leetcode\"],[],[],[\"i love you\",\"island\",\"i love leetcode\"],[\"i love you\",\"i love leetcode\",\"i a\"],[\"i a\"]]~n~n[null,[\"heaven\",\"heavy\",\"hell\"],[\"heaven\",\"heavy\",\"hell\"],[\"hell\",\"hello\"],[\"hell\",\"hello\"],[\"hello\"],[],[\"hello\",\"heaven\",\"heavy\"],[\"hello\",\"heaven\",\"heavy\"]]~n").
