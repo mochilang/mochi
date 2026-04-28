@@ -1,0 +1,39 @@
+5
+5
+C 3 C
+S 1 A 2
+U 3 C 2 A1 A1:B2
+S 2 B 2
+G 3 C
+7
+C 2 B
+S 1 A 5
+U 1 B 1 A1
+S 1 A 7
+G 1 B
+S 1 B 1
+G 1 B
+8
+C 3 C
+S 1 A 1
+S 1 B 2
+S 2 A 3
+U 3 A 3 A1 A1 A1:C2
+G 3 A
+S 2 C 4
+G 3 A
+7
+C 3 C
+S 1 A 2
+U 1 B 1 A1
+U 1 C 2 A1 B1
+S 1 A 3
+G 1 B
+G 1 C
+6
+C 5 E
+S 1 A 10
+S 2 A 20
+S 3 A 30
+U 5 E 2 A1:A3 A2:A3
+G 5 E

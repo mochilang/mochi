@@ -3103,7 +3103,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [ ] `0618-students-report-by-geography`
 - [x] `0629-k-inverse-pairs-array`
 - [x] `0630-course-schedule-iii`
-- [ ] `0631-design-excel-sum-formula`
+- [x] `0631-design-excel-sum-formula`
 - [ ] `0632-smallest-range-covering-elements-from-k-lists`
 - [ ] `0639-decode-ways-ii`
 - [ ] `0642-design-search-autocomplete-system`
