@@ -3112,7 +3112,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0660-remove-9`
 - [ ] `0664-strange-printer`
 - [ ] `0668-kth-smallest-number-in-multiplication-table`
-- [ ] `0675-cut-off-trees-for-golf-event`
+- [x] `0675-cut-off-trees-for-golf-event`
 - [ ] `0679-24-game`
 - [ ] `0683-k-empty-slots`
 - [ ] `0685-redundant-connection-ii`
