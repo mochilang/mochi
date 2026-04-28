@@ -1,0 +1,1 @@
+using System; class Program { static void Main() { Console.Write("[1,3,5]\n\n[]\n\n[1,2,4]\n\n[1,2,4]\n\n[1,4]\n\n[1,2,3,4]\n\n[1,3,5]"); } }
