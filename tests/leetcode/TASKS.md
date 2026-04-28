@@ -3101,7 +3101,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [ ] `0601-human-traffic-of-stadium`
 - [ ] `0615-average-salary-departments-vs-company`
 - [ ] `0618-students-report-by-geography`
-- [ ] `0629-k-inverse-pairs-array`
+- [x] `0629-k-inverse-pairs-array`
 - [ ] `0630-course-schedule-iii`
 - [ ] `0631-design-excel-sum-formula`
 - [ ] `0632-smallest-range-covering-elements-from-k-lists`
