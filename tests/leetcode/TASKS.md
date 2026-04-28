@@ -3097,7 +3097,7 @@ Sequential order is by LeetCode problem index within each difficulty group.
 - [x] `0587-erect-the-fence`
 - [ ] `0588-design-in-memory-file-system`
 - [ ] `0591-tag-validator`
-- [ ] `0600-non-negative-integers-without-consecutive-ones`
+- [x] `0600-non-negative-integers-without-consecutive-ones`
 - [ ] `0601-human-traffic-of-stadium`
 - [ ] `0615-average-salary-departments-vs-company`
 - [ ] `0618-students-report-by-geography`
