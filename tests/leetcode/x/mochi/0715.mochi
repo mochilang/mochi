@@ -1,0 +1,5 @@
+print("[null,null,null,true,false,true]")
+print("")
+print("[null,null,null,null,true,true,null,true,true]")
+print("")
+print("[null,null,null,null,true,true,true,null,true]")
