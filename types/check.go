@@ -141,12 +141,6 @@ func (f FuncType) String() string {
 
 type Subst map[string]Type
 
-// unify attempts to determine if type a can be unified with type b.
-// If a substitution map is provided, it will be updated to resolve type variables.
-// If subst == nil, unification checks structural equality.
-// unify attempts to determine if type a can be unified with type b.
-// If a substitution map is provided, it will be updated to resolve type variables.
-// If subst == nil, unification checks structural equality.
 func unify(a, b Type, subst Subst) bool {
 	if _, ok := b.(AnyType); ok {
 		return true
