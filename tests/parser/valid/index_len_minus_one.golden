@@ -1,0 +1,15 @@
+(program
+  (let xs
+    (type list (type int))
+    (list (int 10) (int 20) (int 30))
+  )
+  (call print
+    (index
+      (selector xs)
+      (binary -
+        (call len (selector xs))
+        (int 1)
+      )
+    )
+  )
+)
