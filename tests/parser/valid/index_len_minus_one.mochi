@@ -1,0 +1,2 @@
+let xs: list<int> = [10, 20, 30]
+print(xs[len(xs)-1])
