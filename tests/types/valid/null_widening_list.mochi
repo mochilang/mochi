@@ -1,0 +1,3 @@
+// Snapshot: null leaks into a typed list position.
+// See MEP 4 and MEP 7.
+let xs: list<int> = null
