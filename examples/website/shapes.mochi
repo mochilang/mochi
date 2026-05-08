@@ -1,0 +1,17 @@
+// Sample 2 from mochi-lang.dev homepage: "Types and functions"
+type Rectangle {
+  width: float
+  height: float
+}
+
+fun area(r: Rectangle): float {
+  return r.width * r.height
+}
+
+fun perimeter(r: Rectangle): float {
+  return 2.0 * (r.width + r.height)
+}
+
+let card = Rectangle { width: 3.0, height: 4.0 }
+print(area(card))
+print(perimeter(card))

@@ -1,0 +1,13 @@
+// Sample 4 from mochi-lang.dev homepage: "Generative AI"
+// The "echo" provider is a built-in dummy that returns the prompt unchanged.
+// Swap to "openai", "anthropic", or "google" without changing the call site.
+model dummy {
+  provider: "echo"
+  name: "echo"
+}
+
+let summary = generate text {
+  model: "dummy",
+  prompt: "Explain bytecode in two sentences."
+}
+print(summary)

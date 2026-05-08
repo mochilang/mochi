@@ -1,0 +1,19 @@
+// Sample 5 from mochi-lang.dev homepage: "Datasets"
+type Product {
+  name: string
+  price: int
+}
+
+let products = load "products.json" as Product with { format: "json" }
+
+let top = from p in products
+          where p.price >= 100
+          sort by -p.price
+          take 3
+          select { name: p.name, price: p.price }
+
+for item in top {
+  print(item.name + ", $" + str(item.price))
+}
+
+save top to "top.json"

@@ -1,0 +1,7 @@
+// Sample 1 from mochi-lang.dev homepage: "Hello, Mochi"
+let name = "Mochi"
+print("Hello, " + name + "!")
+
+// Strings concatenate with + and interpolate via str()
+let answer = 42
+print("the answer is " + str(answer))

@@ -1,0 +1,19 @@
+// Sample 6 from mochi-lang.dev homepage: "Tests"
+fun add(a: int, b: int): int {
+  return a + b
+}
+
+fun safe_div(a: int, b: int): int {
+  if b == 0 { return 0 - 1 }
+  return a / b
+}
+
+test "add is commutative" {
+  expect add(2, 3) == add(3, 2)
+}
+
+test "safe_div guards zero" {
+  expect safe_div(10, 2) == 5
+  let z = safe_div(10, 0)
+  expect z == 0 - 1
+}
