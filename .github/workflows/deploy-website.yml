@@ -54,6 +54,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy website/build --project-name=mochilang --branch=${{ github.head_ref || github.ref_name }}
+          command: pages deploy website/build --project-name=mochi-lang --branch=${{ github.head_ref || github.ref_name }}
           workingDirectory: .
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
