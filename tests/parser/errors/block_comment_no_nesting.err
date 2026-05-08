@@ -1,0 +1,8 @@
+error[P999]: tests/parser/errors/block_comment_no_nesting.mochi:1:36: unexpected token "/" (expected PostfixExpr)
+  --> tests/parser/errors/block_comment_no_nesting.mochi:1:36
+
+  1 | let x = /* outer /* inner */ tail */ 1
+    |                                    ^
+
+help:
+  Parse error occurred. Check syntax near this location.
