@@ -1,0 +1,12 @@
+// Snapshot: reading m[k] for an absent k returns the zero value of the
+// map's value type today. For non-zero-bearing types this is a progress
+// violation: the program does not get stuck and does not panic, it just
+// silently produces a fake value.
+//
+// MEP 4 pins the future behaviour to option 1: m[k] should infer to v?
+// (OptionType{V}) once OptionType is wired through inference. This is
+// the path that lines up with MEP 10 A2 and C1. When that lands this
+// fixture moves to tests/types/errors/ with code T0xx.
+type Point { x: int, y: int }
+let pts: map<string, Point> = {"o": Point{x: 0, y: 0}}
+let p: Point = pts["missing"]
