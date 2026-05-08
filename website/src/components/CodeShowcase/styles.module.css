@@ -162,6 +162,18 @@
   margin: 0;
 }
 
+.altWrap {
+  margin-top: 1rem;
+}
+
+.altWrap :global(.theme-code-block) {
+  margin: 0 0 0.4rem 0;
+}
+
+.altWrap :global(.theme-code-block):last-child {
+  margin: 0;
+}
+
 .outputWrap {
   margin-top: 1rem;
 }

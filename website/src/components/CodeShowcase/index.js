@@ -67,6 +67,19 @@ export default function CodeShowcase({ title, lede, samples }) {
                 <CodeBlock language="text">{sample.output}</CodeBlock>
               </div>
             ) : null}
+            {sample.alt ? (
+              <div className={styles.altWrap}>
+                <div className={styles.outputLabel}>
+                  {sample.alt.heading || 'Or as one expression'}
+                </div>
+                <CodeBlock language={sample.alt.language || 'mochi'}>
+                  {sample.alt.code}
+                </CodeBlock>
+                {sample.alt.output ? (
+                  <CodeBlock language="text">{sample.alt.output}</CodeBlock>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
