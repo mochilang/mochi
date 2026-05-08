@@ -1,26 +1,32 @@
 ---
 title: Operators
-description: Complete operator reference for Mochi.
+sidebar_label: Operators
+description: "Complete operator reference for Mochi: arithmetic, comparison, logical, membership, indexing, and the precedence table."
 ---
+
+A table-first reference. The
+[operators manual page](/docs/manual/operators) covers the same material
+with prose and worked examples.
 
 ## Arithmetic
 
 | Operator | Name | Types | Example |
-|---|---|---|---|
-| `+` | Addition | int, float, string | `1 + 2`, `"a" + "b"` |
-| `-` | Subtraction | int, float | `5 - 3` |
-| `*` | Multiplication | int, float | `3 * 4` |
-| `/` | Division | int, float | `10 / 3` |
-| `%` | Modulo | int | `7 % 3` |
-| `**` | Exponentiation | int, float | `2 ** 8` |
-| `-` | Unary negation | int, float | `-x` |
+| --- | --- | --- | --- |
+| `+` | Addition | `int`, `float`, `string`, `list` | `1 + 2`, `"a" + "b"` |
+| `-` | Subtraction | `int`, `float` | `5 - 3` |
+| `*` | Multiplication | `int`, `float` | `3 * 4` |
+| `/` | Division | `int`, `float` | `10 / 3` |
+| `%` | Remainder | `int`, `float` | `7 % 3` |
+| `**` | Exponentiation | `int`, `float` | `2 ** 10` |
+| `-` (unary) | Negate | `int`, `float` | `-x` |
 
-Integer `/` truncates toward zero. Use `float` operands for fractional results.
+Integer `/` truncates toward zero. Convert with `to_float()` for a
+fractional result. `+` is overloaded for `string` and `list` concatenation.
 
 ## Comparison
 
 | Operator | Meaning |
-|---|---|
+| --- | --- |
 | `==` | Equal |
 | `!=` | Not equal |
 | `<` | Less than |
@@ -28,58 +34,74 @@ Integer `/` truncates toward zero. Use `float` operands for fractional results.
 | `>` | Greater than |
 | `>=` | Greater than or equal |
 
-All comparisons return `bool`.
+Comparisons return `bool`. Equality is structural for primitives, structs,
+and collections, and reference identity for function values.
 
 ## Logical
 
 | Operator | Meaning | Notes |
-|---|---|---|
+| --- | --- | --- |
 | `&&` | AND | Short-circuits |
 | `\|\|` | OR | Short-circuits |
 | `!` | NOT | Unary prefix |
 
-## Membership
+## Membership and type tests
 
 | Operator | Meaning |
-|---|---|
-| `in` | Element is in list, set, or map keys |
+| --- | --- |
+| `in` | Element of list / key of map / member of set / substring of string |
+| `is` | Type test (narrows in branches) |
 
 ```mochi
-print(2 in [1, 2, 3])           // true
-print("x" in {"x", "y"})       // true
-print("k" in {"k": "v"})       // true (key membership)
+print(2 in [1, 2, 3])             // true
+print("k" in {"k": "v"})          // true
+print("x" is string)              // true
 ```
 
 ## Range
 
 | Operator | Meaning |
-|---|---|
-| `..` | Exclusive range `[start, end)` |
+| --- | --- |
+| `..` | Half-open range, exclusive on the right |
+| `..=` | Inclusive on both ends |
 
 ```mochi
-for i in 0..5 { print(i) }   // 0 1 2 3 4
+for i in 0..3   { print(i) }      // 0, 1, 2
+for i in 0..=3  { print(i) }      // 0, 1, 2, 3
 ```
 
-## Pipe
+## Pipeline
 
 | Operator | Meaning |
-|---|---|
-| `\|` | Pipe value into function |
+| --- | --- |
+| `\|` | Insert the left-hand value as the first argument to the right-hand call |
 
 ```mochi
-let result = [1,2,3,4,5]
-  | filter(fun(n: int): bool => n % 2 == 0)
-  | map(fun(n: int): int => n * 10)
+let total =
+  [1, 2, 3]
+  | map(fun(n: int): int => n * 2)
+  | reduce(0, fun(a: int, b: int): int => a + b)
+```
+
+## Optional access and defaults
+
+| Operator | Meaning |
+| --- | --- |
+| `?.` | Field / method access; returns `nil` if the receiver is `nil` |
+| `??` | Default value if the left-hand side is `nil` |
+
+```mochi
+let name = user?.name ?? "anonymous"
 ```
 
 ## Set operators
 
 | Operator | Meaning |
-|---|---|
-| `union` | All elements from both sets |
-| `union all` | Union preserving duplicates (list) |
-| `intersect` | Elements in both sets |
-| `except` | Elements in left but not right |
+| --- | --- |
+| `union` | All elements from both inputs |
+| `union all` | Concatenation preserving duplicates |
+| `intersect` | Elements in both inputs |
+| `except` | Elements in left but not in right |
 
 ```mochi
 let a = {1, 2, 3}
@@ -89,42 +111,43 @@ print(a intersect b)   // {2, 3}
 print(a except b)      // {1}
 ```
 
-## Attribute access
+## Attribute and index
 
 | Operator | Meaning |
-|---|---|
-| `.` | Field/method access |
+| --- | --- |
+| `.` | Field or method access |
+| `[i]` | Index a list or string, or look up a key in a map |
+| `[i..j]` | Slice a list or string |
+| `[i..]`, `[..j]` | Slice with one end open |
 
-```mochi
-let p = Point { x: 1.0, y: 2.0 }
-print(p.x)
-```
-
-## Index operator
+## Assignment
 
 | Operator | Meaning |
-|---|---|
-| `[i]` | List index, map key access |
+| --- | --- |
+| `=` | Assign |
+| `+=`, `-=`, `*=`, `/=`, `%=`, `**=` | Compound assignments |
 
-```mochi
-let nums = [10, 20, 30]
-print(nums[1])         // 20
+## Precedence
 
-let m = {"key": "val"}
-print(m["key"])        // val
-```
+Highest (binds tightest) to lowest. Operators on the same row associate as
+shown.
 
-## Precedence table
+| Level | Operators | Associativity |
+| --- | --- | --- |
+| 1 | `?.`, `[…]`, `(…)`, `.` | Left |
+| 2 | unary `-`, `!` | Right |
+| 3 | `**` | Right |
+| 4 | `*`, `/`, `%` | Left |
+| 5 | `+`, `-` | Left |
+| 6 | `..`, `..=` | None |
+| 7 | `<`, `<=`, `>`, `>=` | None |
+| 8 | `==`, `!=`, `in`, `is` | None |
+| 9 | `&&` | Left |
+| 10 | `\|\|` | Left |
+| 11 | `??` | Right |
+| 12 | `\|` (pipeline) | Left |
+| 13 | `union`, `intersect`, `except` | Left |
+| 14 | `=`, `+=`, `-=`, `*=`, `/=`, `%=` | Right |
 
-| Level | Operators |
-|---|---|
-| 9 (highest) | `.`, `[]` |
-| 8 | `**` |
-| 7 | `-` (unary), `!` |
-| 6 | `*`, `/`, `%` |
-| 5 | `+`, `-` |
-| 4 | `<`, `<=`, `>`, `>=` |
-| 3 | `==`, `!=`, `in` |
-| 2 | `&&` |
-| 1 | `\|\|` |
-| 0 (lowest) | Assignment `=` |
+When in doubt, parenthesize. Mochi does not warn about redundant
+parentheses, and they cost nothing at runtime.

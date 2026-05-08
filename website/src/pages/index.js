@@ -1,76 +1,117 @@
 import React from 'react';
-import clsx from 'clsx';
-import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import CodeBlock from '@theme/CodeBlock';
-import styles from './index.module.css';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 
-const HERO_CODE = `\
-// No main() needed — programs run top to bottom
-let name = "world"
-print("Hello, " + name + "!")
+import HeroBanner from '@site/src/components/HeroBanner';
+import FeatureGrid from '@site/src/components/FeatureGrid';
+import CodeShowcase from '@site/src/components/CodeShowcase';
+import InstallTabs from '@site/src/components/InstallTabs';
+import EcosystemGrid from '@site/src/components/EcosystemGrid';
 
-// Functions with type annotations
-fun greet(user: string): string {
-  return "Welcome to Mochi, " + user + "!"
-}
-
-// Agents handle events reactively
-agent greeter {
-  on message(text: string) {
-    emit reply(greet(text))
-  }
-}`;
+import BoltIcon from '@site/static/img/icons/bolt.svg';
+import SparkleIcon from '@site/static/img/icons/sparkle.svg';
+import AgentIcon from '@site/static/img/icons/agent.svg';
+import DataIcon from '@site/static/img/icons/data.svg';
+import BrainIcon from '@site/static/img/icons/brain.svg';
+import TestIcon from '@site/static/img/icons/test.svg';
+import PlugIcon from '@site/static/img/icons/plug.svg';
+import BookIcon from '@site/static/img/icons/book.svg';
+import RocketIcon from '@site/static/img/icons/rocket.svg';
+import WrenchIcon from '@site/static/img/icons/wrench.svg';
 
 const FEATURES = [
   {
-    icon: '🧹',
-    title: 'Clean, expressive syntax',
+    icon: <SparkleIcon />,
+    title: 'Static types, low ceremony',
     description:
-      'Statically typed with Python-like clarity. No boilerplate, no ceremony. Programs run top to bottom — just write code.',
+      'Type inference covers most annotations. Bindings are immutable by default. Programs run top to bottom with no main function and no class wrapper.',
+    bullets: [
+      'let / var with full inference',
+      'union types for nullable values',
+      'expression-oriented syntax',
+    ],
   },
   {
-    icon: '🤖',
-    title: 'Agent-native by design',
+    icon: <AgentIcon />,
+    title: 'Agents in the language',
     description:
-      'First-class agent and stream blocks let you build reactive, event-driven systems without external frameworks.',
+      'agent, stream, and intent are keywords, not a framework. Build event-driven systems without a message bus or actor library.',
+    bullets: [
+      'agent blocks with on handlers',
+      'typed stream events',
+      'intent endpoints exposed as MCP tools',
+    ],
   },
   {
-    icon: '⚡',
-    title: 'Fast bytecode VM',
+    icon: <BrainIcon />,
+    title: 'AI as a primitive',
     description:
-      'Optimized bytecode with constant folding and liveness-based dead code elimination. Single binary, zero dependencies.',
+      'Call language models with a generate block. Configure providers with a model declaration. Tool calling and structured output need no SDK.',
+    bullets: [
+      'generate text and embedding',
+      'tool definitions with description fields',
+      'structured output via as json',
+    ],
   },
   {
-    icon: '🧠',
-    title: 'Built-in AI generation',
+    icon: <DataIcon />,
+    title: 'Datasets in the language',
     description:
-      'Native generate blocks connect to AI models. Produce text, JSON, or structured data without external SDKs.',
+      'Query lists with from / where / select / join. Read and write CSV, JSON, JSONL, and YAML with one keyword.',
+    bullets: [
+      'from … where … select / join',
+      'load and save in 4 formats',
+      'composes with map / filter / reduce',
+    ],
   },
   {
-    icon: '🧪',
-    title: 'Testable by design',
+    icon: <BoltIcon />,
+    title: 'Bytecode VM',
     description:
-      'Built-in test and expect blocks make it easy to test your code as you write it — no testing framework needed.',
+      'Compiles to compact bytecode with constant folding and liveness-based dead-code elimination. One static binary, no runtime dependency.',
+    bullets: [
+      'compact bytecode',
+      'AOT or interpreted',
+      'one static binary',
+    ],
   },
   {
-    icon: '🔌',
-    title: 'Interoperable',
+    icon: <TestIcon />,
+    title: 'Tests next to code',
     description:
-      'Transpiles to Go, Python, and TypeScript. FFI support lets you call native libraries. Use Mochi alongside any stack.',
+      'test and expect blocks live alongside the code they cover. No framework, no separate runner. Run mochi test and the tests run.',
+    bullets: [
+      'test "name" { … } co-located',
+      'expect with rich diffs',
+      'runs from the same toolchain',
+    ],
   },
 ];
 
-const CODE_TABS = [
+const SAMPLES = [
   {
-    label: 'Hello World',
-    code: `let name = "world"
-print("Hello, " + name + "!")`,
-    lang: 'mochi',
+    label: 'Hello, Mochi',
+    hint: 'first program',
+    icon: <RocketIcon />,
+    description:
+      'No main function, no imports, no class wrapper. Write the program and run it.',
+    filename: 'hello.mochi',
+    code: `let name = "Mochi"
+print("Hello, " + name + "!")
+
+// Strings concatenate with + and interpolate via str()
+let answer = 42
+print("the answer is " + str(answer))`,
+    output: `Hello, Mochi!
+the answer is 42`,
   },
   {
-    label: 'Functions & Types',
+    label: 'Types and functions',
+    hint: 'static safety, low ceremony',
+    icon: <BookIcon />,
+    description:
+      'Define data with type. Write functions with fun. The compiler infers most annotations and rejects type errors at compile time.',
+    filename: 'shapes.mochi',
     code: `type Point {
   x: float
   y: float
@@ -83,228 +124,302 @@ fun distance(a: Point, b: Point): float {
 }
 
 let origin = Point { x: 0.0, y: 0.0 }
-let p = Point { x: 3.0, y: 4.0 }
-print(distance(origin, p))  // 5.0`,
-    lang: 'mochi',
+let target = Point { x: 3.0, y: 4.0 }
+print(distance(origin, target))`,
+    output: `5`,
   },
   {
-    label: 'Agents & Streams',
-    code: `agent counter {
-  var count = 0
+    label: 'Agents and streams',
+    hint: 'reactive in 12 lines',
+    icon: <AgentIcon />,
+    description:
+      'Agents hold state and react to events. Streams declare event shapes. Emit publishes one event. No message bus, no actor library.',
+    filename: 'inbox.mochi',
+    code: `stream Message { from: string, body: string }
 
-  on increment() {
-    count = count + 1
-    emit updated(count)
+agent inbox {
+  var unread: int = 0
+
+  on Message as m {
+    unread = unread + 1
+    print("new from " + m.from)
   }
 
-  on reset() {
-    count = 0
-    emit updated(count)
+  intent count(): int {
+    return unread
   }
 }
 
-stream numbers {
-  for i in 1..10 {
-    emit value(i)
-  }
-}`,
-    lang: 'mochi',
+let box = inbox {}
+emit Message { from: "ada", body: "hi" }
+emit Message { from: "lin", body: "hey" }
+print("unread = " + str(box.count()))`,
+    output: `new from ada
+new from lin
+unread = 2`,
   },
   {
     label: 'Generative AI',
-    code: `model gpt {
+    hint: 'generate blocks in the grammar',
+    icon: <BrainIcon />,
+    description:
+      'Configure a provider once with a model block. Call any model with the same generate syntax. Structured output is one suffix, as json.',
+    filename: 'summarize.mochi',
+    code: `model fast {
   provider: "openai"
   name: "gpt-4o-mini"
-  temperature: 0.7
+  temperature: 0.3
 }
 
 let summary = generate text {
-  model: "gpt"
-  prompt: "Summarize the history of computing in 3 sentences."
+  model: "fast"
+  prompt: "Explain bytecode in two sentences."
 }
-
 print(summary)
 
-// Structured output
-let tags = generate text {
-  prompt: "List 5 programming language keywords as JSON array"
-} as json`,
-    lang: 'mochi',
+let plan = generate text {
+  prompt: "Output a plan with title and steps."
+} as json
+print(plan["title"])`,
+  },
+  {
+    label: 'Datasets',
+    hint: 'queries over plain lists',
+    icon: <DataIcon />,
+    description:
+      'load and save handle CSV, JSON, JSONL, and YAML. from / where / select runs SQL-shaped queries over any list of records.',
+    filename: 'top-products.mochi',
+    code: `type Product {
+  name: string
+  price: int
+}
+
+let products = load "products.json" as Product
+
+let top = from p in products
+          where p.price >= 100
+          sort by -p.price
+          take 3
+          select { name: p.name, price: p.price }
+
+for item in top {
+  print(item.name + ", $" + str(item.price))
+}
+
+save top to "top.json"`,
+    output: `Laptop, $1500
+Phone, $900
+Tablet, $600`,
   },
   {
     label: 'Tests',
+    hint: 'co-located, zero setup',
+    icon: <TestIcon />,
+    description:
+      'Tests live next to the code they cover. mochi test runs every test block in a file or directory tree.',
+    filename: 'math.mochi',
     code: `fun add(a: int, b: int): int {
   return a + b
 }
 
-test "addition" {
-  expect add(1, 2) == 3
-  expect add(-1, 1) == 0
-  expect add(0, 0) == 0
+fun safe_div(a: int, b: int): int | nil {
+  if b == 0 { return nil }
+  return a / b
 }
 
-test "string concat" {
-  let s = "Hello" + ", " + "Mochi!"
-  expect s == "Hello, Mochi!"
+test "add is commutative" {
+  expect add(2, 3) == add(3, 2)
+}
+
+test "safe_div guards zero" {
+  expect safe_div(10, 2) == 5
+  expect safe_div(10, 0) == nil
 }`,
-    lang: 'mochi',
+    output: `2 tests passed`,
   },
 ];
 
-function FeatureCard({ icon, title, description }) {
-  return (
-    <div className={clsx('col col--4', styles.featureCol)}>
-      <div className="feature-card">
-        <div className={styles.featureIcon}>{icon}</div>
-        <h3 className={styles.featureTitle}>{title}</h3>
-        <p className={styles.featureDesc}>{description}</p>
-      </div>
-    </div>
-  );
-}
+const INSTALL_OPTIONS = [
+  {
+    label: 'Binary',
+    icon: <BoltIcon />,
+    recommended: true,
+    description:
+      'Download a single static binary for your platform. The fastest path from zero to running Mochi code.',
+    notes: [
+      'Works on macOS (Intel and Apple Silicon) and Linux.',
+      'No runtime, no dependencies. Drop it into /usr/local/bin and run.',
+    ],
+    steps: [
+      {
+        heading: 'Run the install script',
+        language: 'bash',
+        code: `curl -fsSL get.mochi-lang.dev | sh`,
+      },
+      {
+        heading: 'Verify the install',
+        language: 'bash',
+        code: `mochi --version
+mochi run -e 'print("ready")'`,
+      },
+    ],
+  },
+  {
+    label: 'Docker',
+    icon: <PlugIcon />,
+    description:
+      'Run Mochi anywhere Docker runs. Useful for CI pipelines and ephemeral environments.',
+    notes: [
+      'Image is published at ghcr.io/mochilang/mochi.',
+      'Mount the current directory and run any local file.',
+    ],
+    steps: [
+      {
+        heading: 'Pull the image',
+        language: 'bash',
+        code: `docker pull ghcr.io/mochilang/mochi:latest`,
+      },
+      {
+        heading: 'Run a file',
+        language: 'bash',
+        code: `docker run --rm -i \\
+  -v "$PWD:/work" -w /work \\
+  ghcr.io/mochilang/mochi run hello.mochi`,
+      },
+      {
+        heading: 'Optional shell alias',
+        language: 'bash',
+        code: `alias mochi='docker run --rm -i -v "$PWD:/work" -w /work ghcr.io/mochilang/mochi'`,
+      },
+    ],
+  },
+  {
+    label: 'From source',
+    icon: <WrenchIcon />,
+    description:
+      'Build from source to hack on the language, contribute, or run a feature branch.',
+    notes: [
+      'Requires Go 1.21 or newer and GNU make.',
+      'make install also installs Deno for the TypeScript test corpus.',
+    ],
+    steps: [
+      {
+        heading: 'Clone and build',
+        language: 'bash',
+        code: `git clone https://github.com/mochilang/mochi
+cd mochi
+make build`,
+      },
+      {
+        heading: 'Put it on your PATH',
+        language: 'bash',
+        code: `sudo install -m 0755 bin/mochi /usr/local/bin/mochi
+mochi --version`,
+      },
+    ],
+  },
+];
 
-function CodeShowcase() {
-  const [active, setActive] = React.useState(0);
-  return (
-    <div className={styles.codeShowcase}>
-      <div className={styles.codeTabBar}>
-        {CODE_TABS.map((t, i) => (
-          <button
-            key={t.label}
-            className={clsx(styles.codeTab, i === active && styles.codeTabActive)}
-            onClick={() => setActive(i)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-      <CodeBlock language={CODE_TABS[active].lang} className={styles.codeBlock}>
-        {CODE_TABS[active].code}
-      </CodeBlock>
-    </div>
-  );
-}
+const ECOSYSTEM = [
+  {
+    kind: 'Manual',
+    title: 'Mochi Manual',
+    description:
+      'A tour of the language: variables, functions, types, agents, AI generation, and datasets.',
+    url: '/docs/manual/',
+    linkText: 'Read the manual',
+  },
+  {
+    kind: 'Reference',
+    title: 'Language reference',
+    description:
+      'Concise grammar, operator table, statement reference, and an index of every built-in function.',
+    url: '/docs/reference/',
+    linkText: 'Open the reference',
+  },
+  {
+    kind: 'Tutorial',
+    title: 'Build your first program',
+    description:
+      'Walk through a complete Mochi program from a blank file: types, functions, tests, and a CLI entry point.',
+    url: '/docs/manual/get-started',
+    linkText: 'Start the tutorial',
+  },
+  {
+    kind: 'Examples',
+    title: 'Examples',
+    description:
+      'Hundreds of small programs covering agents, datasets, AI, algorithms, and transpilation targets.',
+    url: 'https://github.com/mochilang/mochi/tree/main/examples',
+    linkText: 'Browse on GitHub',
+    external: true,
+  },
+  {
+    kind: 'Roadmap',
+    title: 'Roadmap',
+    description:
+      'Phased plan covering the core language, tooling, transpilation targets, and the path to v1.0.',
+    url: '/docs/roadmap',
+    linkText: 'See the roadmap',
+  },
+  {
+    kind: 'Community',
+    title: 'Discussions and issues',
+    description:
+      'Ask questions, share what you build, and report bugs in the open with the rest of the community.',
+    url: 'https://github.com/mochilang/mochi/discussions',
+    linkText: 'Join the discussion',
+    external: true,
+  },
+];
 
 export default function Home() {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <Layout title="Mochi Programming Language" description={siteConfig.tagline}>
-      {/* Hero */}
-      <header className={clsx('hero hero--primary', styles.heroBanner)}>
-        <div className="container">
-          <div className={styles.heroInner}>
-            <div className={styles.heroText}>
-              <div className={styles.heroBadge}>🍡 Mochi Language</div>
-              <h1 className={styles.heroTitle}>
-                Simple. Safe.<br />Agent-native.
-              </h1>
-              <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
-              <div className={styles.heroCtas}>
-                <Link className="button button--primary button--lg" to="/docs/manual/quickstart">
-                  Get started →
-                </Link>
-                <Link className="button button--secondary button--lg" to="/docs/manual/">
-                  Read the manual
-                </Link>
-              </div>
-              <div className={styles.heroInstall}>
-                <code>curl -fsSL https://mochilang.github.io/mochi/install.sh | sh</code>
-              </div>
-            </div>
-            <div className={styles.heroCode}>
-              <pre className="homepage-hero-code">{HERO_CODE}</pre>
-            </div>
-          </div>
-        </div>
-      </header>
+    <Layout
+      title={`${siteConfig.title}: a small statically typed language for scripts, agents, and AI tools`}
+      description={siteConfig.tagline}
+    >
+      <HeroBanner
+        eyebrow={
+          <>
+            <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: 99, background: 'currentColor' }} />
+            v0.10 ships agents, streams, and datasets in one binary
+          </>
+        }
+        title={
+          <>
+            A small language for <span className="accent">scripts, agents, and AI tools.</span>
+          </>
+        }
+        tagline="Mochi is a statically typed, expression-oriented language. It compiles to compact bytecode, ships agents and streams as keywords, and treats AI generation as a first-order construct."
+        primaryCta={{ url: '/docs/manual/quickstart', label: 'Get started' }}
+        secondaryCta={{ url: '/docs/manual/', label: 'Read the manual' }}
+      />
 
-      <main>
-        {/* Features */}
-        <section className={clsx('homepage-section', styles.featuresSection)}>
-          <div className="container">
-            <h2 className={styles.sectionTitle}>Why Mochi?</h2>
-            <div className="row">
-              {FEATURES.map((f) => (
-                <FeatureCard key={f.title} {...f} />
-              ))}
-            </div>
-          </div>
-        </section>
+      <FeatureGrid
+        title="What Mochi gives you"
+        lede="Six properties that the language and toolchain commit to. Every other feature is built on top of these."
+        features={FEATURES}
+      />
 
-        {/* Code showcase */}
-        <section className={clsx('homepage-section homepage-section--alt', styles.showcaseSection)}>
-          <div className="container">
-            <h2 className={styles.sectionTitle}>See it in action</h2>
-            <p className={styles.sectionSubtitle}>
-              Mochi is simple enough to explore in minutes, powerful enough to build real systems.
-            </p>
-            <CodeShowcase />
-          </div>
-        </section>
+      <CodeShowcase
+        title="Six programs end to end"
+        lede="Each tab is a complete Mochi file. Copy, paste, and run."
+        samples={SAMPLES}
+      />
 
-        {/* Install */}
-        <section className={clsx('homepage-section', styles.installSection)}>
-          <div className="container">
-            <h2 className={styles.sectionTitle}>Install Mochi</h2>
-            <p className={styles.sectionSubtitle}>Three ways to get started.</p>
-            <div className="row">
-              <div className="col col--4">
-                <div className="feature-card">
-                  <h3>Binary</h3>
-                  <p>Download the prebuilt binary for your platform — no setup required.</p>
-                  <CodeBlock language="bash">
-                    {`curl -fsSL https://mochilang.github.io/mochi/install.sh | sh\nmochi run examples/hello.mochi`}
-                  </CodeBlock>
-                </div>
-              </div>
-              <div className="col col--4">
-                <div className="feature-card">
-                  <h3>Docker</h3>
-                  <p>Run Mochi anywhere Docker is available.</p>
-                  <CodeBlock language="bash">
-                    {`docker run -i --rm ghcr.io/mochilang/mochi run examples/hello.mochi`}
-                  </CodeBlock>
-                </div>
-              </div>
-              <div className="col col--4">
-                <div className="feature-card">
-                  <h3>From source</h3>
-                  <p>Build and hack on the language itself.</p>
-                  <CodeBlock language="bash">
-                    {`git clone https://github.com/mochilang/mochi\ncd mochi && make build\nmochi run examples/hello.mochi`}
-                  </CodeBlock>
-                </div>
-              </div>
-            </div>
-            <div className={styles.installCta}>
-              <Link className="button button--primary button--lg" to="/docs/manual/quickstart">
-                Full installation guide
-              </Link>
-            </div>
-          </div>
-        </section>
+      <InstallTabs
+        title="Install"
+        lede="Pick the path that fits your environment. Mochi ships as a single binary, in a Docker image, and as source."
+        options={INSTALL_OPTIONS}
+      />
 
-        {/* Community */}
-        <section className={clsx('homepage-section homepage-section--alt', styles.communitySection)}>
-          <div className="container" style={{ textAlign: 'center' }}>
-            <h2 className={styles.sectionTitle}>Join the community</h2>
-            <p className={styles.sectionSubtitle}>
-              Mochi is open source and built in the open. Contributions are welcome.
-            </p>
-            <div className={styles.communityLinks}>
-              <Link className="button button--secondary button--lg" href="https://github.com/mochilang/mochi">
-                GitHub
-              </Link>
-              <Link className="button button--secondary button--lg" href="https://github.com/mochilang/mochi/issues">
-                Report an issue
-              </Link>
-              <Link className="button button--secondary button--lg" href="https://github.com/mochilang/mochi/discussions">
-                Discussions
-              </Link>
-            </div>
-          </div>
-        </section>
-      </main>
+      <EcosystemGrid
+        title="Next steps"
+        lede="Mochi is small enough to read in an afternoon. These are the next places to go."
+        items={ECOSYSTEM}
+      />
     </Layout>
   );
 }

@@ -1,318 +1,171 @@
 ---
 title: Built-in functions
-description: Standard built-in functions available in every Mochi program.
+description: Standard prelude functions available in every Mochi program.
 sidebar_label: Built-ins
 ---
 
-These functions are available in every Mochi program without any imports.
+Prelude functions are available in every Mochi program without an import.
 
 ## Output
 
-### `print(values...)`
-
-Print values to stdout, separated by spaces, followed by a newline:
+| Function | Returns | Action |
+| --- | --- | --- |
+| `print(values...)` | `unit` | Write to stdout, space-separated, newline-terminated. |
+| `eprint(values...)` | `unit` | Write to stderr. |
 
 ```mochi
 print("Hello", "world")   // Hello world
 print(1 + 2)              // 3
-```
-
-### `eprint(values...)`
-
-Print to stderr:
-
-```mochi
 eprint("Warning:", message)
 ```
 
 ## Type conversions
 
-### `str(value): string`
-
-Convert any value to its string representation:
+| Function | Returns | Action |
+| --- | --- | --- |
+| `str(value)` | `string` | Convert any value to its string form. |
+| `int(value)` | `int` | Parse a string or truncate a float. |
+| `float(value)` | `float` | Parse a string or widen an int. |
+| `bool(value)` | `bool` | Convert via truthiness. |
 
 ```mochi
 str(42)        // "42"
 str(3.14)      // "3.14"
 str(true)      // "true"
 str([1,2,3])   // "[1, 2, 3]"
-```
 
-### `int(value): int`
+int("42")      // 42
+int(3.99)      // 3
 
-Parse a string to integer, or truncate a float:
+float("3.14")  // 3.14
+float(42)      // 42.0
 
-```mochi
-int("42")    // 42
-int(3.99)    // 3
-```
-
-### `float(value): float`
-
-Parse or convert to float:
-
-```mochi
-float("3.14")   // 3.14
-float(42)       // 42.0
-```
-
-### `bool(value): bool`
-
-Convert to boolean:
-
-```mochi
-bool(0)      // false
-bool(1)      // true
-bool("")     // false
-bool("hi")   // true
+bool(0)        // false
+bool(1)        // true
+bool("")       // false
+bool("hi")     // true
 ```
 
 ## Collections
 
-### `len(collection): int`
-
-Return the length of a list, string, map, or set:
+| Function | Returns | Action |
+| --- | --- | --- |
+| `len(collection)` | `int` | Length of a list, string, map, or set. |
+| `keys(map)` | `[K]` | Map keys as a list. |
+| `values(map)` | `[V]` | Map values as a list. |
+| `push(list, value)` | `unit` | Append to a list in place. |
+| `pop(list)` | `T` | Remove and return the last element. |
+| `contains(collection, value)` | `bool` | Equivalent to `value in collection`. |
+| `slice(list, start, end)` | `[T]` | Sub-list `[start, end)`. |
 
 ```mochi
 len([1, 2, 3])      // 3
 len("hello")        // 5
 len({"a": 1})       // 1
-```
 
-### `keys(map): [K]`
-
-Return the keys of a map as a list:
-
-```mochi
-keys({"a": 1, "b": 2})   // ["a", "b"]
-```
-
-### `values(map): [V]`
-
-Return the values of a map:
-
-```mochi
+keys({"a": 1, "b": 2})     // ["a", "b"]
 values({"a": 1, "b": 2})   // [1, 2]
-```
 
-### `push(list, value)`
-
-Append a value to a list (mutates in place):
-
-```mochi
 var nums = [1, 2]
 push(nums, 3)
-print(nums)   // [1, 2, 3]
-```
+print(nums)         // [1, 2, 3]
 
-### `pop(list): T`
+var stack = [1, 2, 3]
+let last = pop(stack)
+print(last, stack)  // 3 [1, 2]
 
-Remove and return the last element:
-
-```mochi
-var nums = [1, 2, 3]
-let last = pop(nums)
-print(last)   // 3
-print(nums)   // [1, 2]
-```
-
-### `contains(collection, value): bool`
-
-Check membership (equivalent to `value in collection`):
-
-```mochi
-contains([1,2,3], 2)   // true
-```
-
-### `slice(list, start, end): [T]`
-
-Return a sub-list:
-
-```mochi
-slice([1,2,3,4,5], 1, 4)   // [2, 3, 4]
+contains([1,2,3], 2)            // true
+slice([1,2,3,4,5], 1, 4)        // [2, 3, 4]
 ```
 
 ## Functional
 
-### `map(list, fn): [U]`
-
-Apply a function to each element:
-
-```mochi
-map([1,2,3], fun(n: int): int => n * 2)   // [2, 4, 6]
-```
-
-### `filter(list, fn): [T]`
-
-Keep elements for which `fn` returns `true`:
+| Function | Returns | Action |
+| --- | --- | --- |
+| `map(list, fn)` | `[U]` | Apply `fn` to each element. |
+| `filter(list, fn)` | `[T]` | Keep elements where `fn` returns `true`. |
+| `reduce(list, fn, initial)` | `U` | Fold to a single value. |
+| `sort(list)` | `[T]` | Sorted copy. |
+| `sort_by(list, fn)` | `[T]` | Sort by a key function. |
+| `reverse(list)` | `[T]` | Reversed copy. |
 
 ```mochi
-filter([1,2,3,4,5], fun(n: int): bool => n % 2 == 0)   // [2, 4]
-```
-
-### `reduce(list, fn, initial): U`
-
-Fold a list into a single value:
-
-```mochi
-reduce([1,2,3,4,5], fun(acc: int, n: int): int => acc + n, 0)   // 15
-```
-
-### `sort(list): [T]`
-
-Return a sorted copy of the list:
-
-```mochi
-sort([3,1,4,1,5])   // [1, 1, 3, 4, 5]
-```
-
-### `sort_by(list, fn): [T]`
-
-Sort by a key function:
-
-```mochi
+map([1,2,3], fun(n: int): int => n * 2)                        // [2, 4, 6]
+filter([1,2,3,4,5], fun(n: int): bool => n % 2 == 0)           // [2, 4]
+reduce([1,2,3,4,5], fun(acc: int, n: int): int => acc + n, 0)  // 15
+sort([3,1,4,1,5])                                              // [1, 1, 3, 4, 5]
 sort_by(users, fun(u: User): int => u.age)
-```
-
-### `reverse(list): [T]`
-
-Return a reversed copy:
-
-```mochi
-reverse([1,2,3])   // [3, 2, 1]
+reverse([1,2,3])                                               // [3, 2, 1]
 ```
 
 ## Math
 
-### `abs(n): T`
-
-Absolute value:
-
-```mochi
-abs(-5)    // 5
-abs(-3.0)  // 3.0
-```
-
-### `min(a, b): T` / `max(a, b): T`
-
-Minimum / maximum of two values:
+| Function | Returns | Action |
+| --- | --- | --- |
+| `abs(n)` | `T` | Absolute value. |
+| `min(a, b)` | `T` | Smaller of two values. |
+| `max(a, b)` | `T` | Larger of two values. |
+| `floor(n)` | `int` | Round toward negative infinity. |
+| `ceil(n)` | `int` | Round toward positive infinity. |
+| `round(n)` | `int` | Round to nearest integer. |
+| `sqrt(n)` | `float` | Square root. |
 
 ```mochi
-min(3, 7)   // 3
-max(3, 7)   // 7
-```
-
-### `floor(n): int` / `ceil(n): int`
-
-Round toward negative / positive infinity:
-
-```mochi
-floor(3.7)   // 3
-ceil(3.2)    // 4
-```
-
-### `round(n): int`
-
-Round to nearest integer:
-
-```mochi
-round(3.5)   // 4
-```
-
-### `sqrt(n): float`
-
-Square root:
-
-```mochi
-sqrt(16.0)   // 4.0
+abs(-5)        // 5
+abs(-3.0)      // 3.0
+min(3, 7)      // 3
+max(3, 7)      // 7
+floor(3.7)     // 3
+ceil(3.2)      // 4
+round(3.5)     // 4
+sqrt(16.0)     // 4.0
 ```
 
 ## Strings
 
-### `split(s, sep): [string]`
-
-Split a string by separator:
-
-```mochi
-split("a,b,c", ",")   // ["a", "b", "c"]
-```
-
-### `join(list, sep): string`
-
-Join a list of strings:
-
-```mochi
-join(["a", "b", "c"], "-")   // "a-b-c"
-```
-
-### `trim(s): string`
-
-Remove leading/trailing whitespace:
+| Function | Returns | Action |
+| --- | --- | --- |
+| `split(s, sep)` | `[string]` | Split by separator. |
+| `join(list, sep)` | `string` | Join string list. |
+| `trim(s)` | `string` | Strip leading and trailing whitespace. |
+| `upper(s)` | `string` | Uppercase. |
+| `lower(s)` | `string` | Lowercase. |
+| `starts_with(s, prefix)` | `bool` | Prefix check. |
+| `ends_with(s, suffix)` | `bool` | Suffix check. |
+| `replace(s, old, new)` | `string` | Replace all occurrences. |
 
 ```mochi
-trim("  hello  ")   // "hello"
-```
-
-### `upper(s)` / `lower(s)`
-
-Change case:
-
-```mochi
-upper("hello")   // "HELLO"
-lower("HELLO")   // "hello"
-```
-
-### `starts_with(s, prefix): bool` / `ends_with(s, suffix): bool`
-
-```mochi
-starts_with("hello", "he")   // true
-ends_with("world", "ld")     // true
-```
-
-### `replace(s, old, new): string`
-
-```mochi
+split("a,b,c", ",")            // ["a", "b", "c"]
+join(["a", "b", "c"], "-")     // "a-b-c"
+trim("  hello  ")              // "hello"
+upper("hello")                 // "HELLO"
+lower("HELLO")                 // "hello"
+starts_with("hello", "he")     // true
+ends_with("world", "ld")       // true
 replace("foo bar foo", "foo", "baz")   // "baz bar baz"
 ```
 
 ## I/O
 
-### `read_file(path): string | nil`
-
-Read a file as a string. Returns `nil` if the file doesn't exist.
-
-### `write_file(path, content: string)`
-
-Write a string to a file (creates or overwrites).
-
-### `read_line(): string`
-
-Read a line from stdin.
+| Function | Returns | Action |
+| --- | --- | --- |
+| `read_file(path)` | `string \| nil` | Read file contents; `nil` when missing. |
+| `write_file(path, content)` | `unit` | Create or overwrite a file. |
+| `read_line()` | `string` | Read a line from stdin. |
 
 ## Misc
 
-### `type_of(value): string`
-
-Return the type name as a string:
+| Function | Returns | Action |
+| --- | --- | --- |
+| `type_of(value)` | `string` | Type name as a string. |
+| `panic(message)` | never | Print and terminate the program. |
+| `assert(condition, message)` | `unit` | Panic with `message` when `condition` is false. |
 
 ```mochi
 type_of(42)        // "int"
 type_of("hello")   // "string"
 type_of([1,2])     // "list"
-```
 
-### `panic(message: string)`
-
-Print message and terminate the program:
-
-```mochi
 panic("unreachable code reached")
-```
-
-### `assert(condition: bool, message: string)`
-
-Panic with message if condition is false:
-
-```mochi
 assert(x > 0, "x must be positive")
 ```

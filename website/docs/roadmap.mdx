@@ -4,84 +4,84 @@ sidebar_label: Roadmap
 description: A summary of plans and priorities for the Mochi language.
 ---
 
-This page provides a high-level roadmap for how Mochi will evolve. It is **directional guidance**, not a fixed release schedule. Priorities shift as we learn from the community.
+This page tracks the direction of the Mochi language. It is directional guidance, not a fixed release schedule. Priorities shift based on community feedback.
 
 :::note Status indicators
 
-- ✅ Done
-- 🚧 In progress
-- ⬜ Planned
+- Done
+- In progress
+- Planned
 
 :::
 
-## v0.x — Current development
+## v0.x (current development)
 
-These are the milestones we're actively working through.
+Active milestones.
 
 ### Language core
 
-- ✅ Bytecode VM with constant folding
-- ✅ Static type inference
-- ✅ `let` / `var` bindings
-- ✅ Functions, closures, arrow syntax
-- ✅ `type` structs
-- ✅ Union types (`T | nil`, `A | B`)
-- ✅ `for`, `while`, `if/else`, `match`
-- ✅ Lists, maps, sets
-- ✅ Packages and imports
-- ✅ Built-in test blocks (`test` / `expect`)
-- ✅ Agents and streams
-- ✅ `generate` blocks (AI generation)
-- ✅ Dataset queries (`from`/`where`/`select`)
-- ✅ FFI (`extern` declarations)
-- 🚧 Generics
-- ⬜ Error propagation operator (`?`)
-- ⬜ Async/await primitives
-- ⬜ Interfaces / protocols
+- Done. Bytecode VM with constant folding.
+- Done. Static type inference.
+- Done. `let` / `var` bindings.
+- Done. Functions, closures, arrow syntax.
+- Done. `type` structs.
+- Done. Union types (`T | nil`, `A | B`).
+- Done. `for`, `while`, `if/else`, `match`.
+- Done. Lists, maps, sets.
+- Done. Packages and imports.
+- Done. Built-in test blocks (`test` / `expect`).
+- Done. Agents and streams.
+- Done. `generate` blocks for AI generation.
+- Done. Dataset queries (`from` / `where` / `select`).
+- Done. FFI through `extern` declarations.
+- In progress. Generics.
+- Planned. Error propagation operator (`?`).
+- Planned. Async / await primitives.
+- Planned. Interfaces and protocols.
 
 ### Tooling
 
-- ✅ `mochi run` — execute programs
-- ✅ `mochi test` — run test blocks
-- ✅ `mochi build` — compile to binary
-- ✅ `mochi serve` — MCP server mode
-- ✅ Docker image (`ghcr.io/mochilang/mochi`)
-- ✅ VS Code syntax highlighting (`mochi-tm`)
-- 🚧 Language server (LSP)
-- ⬜ Formatter (`mochi fmt`)
-- ⬜ Package manager / registry
-- ⬜ REPL improvements
-- ⬜ Debugger
+- Done. `mochi run` executes programs.
+- Done. `mochi test` runs test blocks.
+- Done. `mochi build` compiles to a binary.
+- Done. `mochi serve` runs MCP server mode.
+- Done. Docker image (`ghcr.io/mochilang/mochi`).
+- Done. VS Code syntax highlighting (`mochi-tm`).
+- In progress. Language server (LSP).
+- Planned. Formatter (`mochi fmt`).
+- Planned. Package manager and registry.
+- Planned. REPL improvements.
+- Planned. Debugger.
 
 ### Transpilation
 
-- ✅ Transpile to Go
-- ✅ Transpile to Python
-- ✅ Transpile to TypeScript
-- ⬜ Transpile to Lua
+- Done. Transpile to Go.
+- Done. Transpile to Python.
+- Done. Transpile to TypeScript.
+- Planned. Transpile to Lua.
 
 ### Platform
 
-- ✅ macOS (Intel + Apple Silicon)
-- ✅ Linux (x86_64, ARM64)
-- ✅ Docker
-- 🚧 Windows (native, without WSL)
-- ⬜ WebAssembly
+- Done. macOS (Intel and Apple Silicon).
+- Done. Linux (x86_64, ARM64).
+- Done. Docker.
+- In progress. Native Windows (without WSL).
+- Planned. WebAssembly.
 
-## v1.0 — Stable release
+## v1.0 (stable release)
 
-The 1.0 milestone represents language stability: no breaking changes to the core language after this point.
+The 1.0 milestone marks language stability. No breaking changes to the core language after this point.
 
-To reach 1.0, we need:
+To reach 1.0, Mochi needs:
 
-- ⬜ Language specification v1.0
-- ⬜ Generics finalized
-- ⬜ Stable standard library API
-- ⬜ LSP with IDE integration for VSCode and JetBrains
-- ⬜ Package registry
-- ⬜ Native Windows support
-- ⬜ Comprehensive test suite
+- Language specification v1.0.
+- Generics finalized.
+- Stable standard library API.
+- LSP with IDE integration for VS Code and JetBrains.
+- Package registry.
+- Native Windows support.
+- Comprehensive test suite.
 
 ## Community priorities
 
-The priorities above are influenced by what we hear from users. Tell us what matters most to you in [GitHub Discussions](https://github.com/mochilang/mochi/discussions).
+User feedback shapes the priorities above. File requests in [GitHub Discussions](https://github.com/mochilang/mochi/discussions).

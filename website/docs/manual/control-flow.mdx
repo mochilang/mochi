@@ -1,149 +1,259 @@
 ---
 title: Control flow
-description: Conditionals, loops, and pattern matching in Mochi.
+sidebar_label: Control flow
+description: if/else, for loops, while loops, match expressions, break and continue.
 ---
 
-## Conditionals — `if`
+Mochi has a small set of control-flow constructs: `if` for conditionals,
+`for` and `while` for loops, and `match` for pattern matching. `if` also
+works as an expression, so short branches read cleanly without intermediate
+variables.
 
-The `if` statement evaluates a boolean expression and executes a block:
+## `if`, `else if`, `else`
+
+The statement form has a brace body for each branch:
 
 ```mochi
-if x > 0 {
-  print("positive")
-} else if x < 0 {
-  print("negative")
+if temperature < 0 {
+  print("freezing")
+} else if temperature < 20 {
+  print("mild")
 } else {
-  print("zero")
+  print("warm")
 }
 ```
 
-### `if` as expression
-
-`if` can be used as an expression with `then`/`else`:
+The condition must have type `bool`. Mochi has no implicit truthiness, so
+`if 0` is a compile-time error. Convert numbers and strings explicitly:
 
 ```mochi
-let label = if x > 0 then "positive" else "non-positive"
-print(label)
+if items.len() > 0 { ... }     // ok
+if items.len()        { ... }  // error: condition is not bool
 ```
 
-## Loops — `for`
+Branches are blocks. Each block has its own scope. `let` bindings declared
+inside one branch are not visible outside.
 
-The `for` loop iterates over a range, list, map, or set:
+## `if` as an expression
+
+In a value position, `if` returns the value of the chosen branch. Use
+`then` and `else`:
 
 ```mochi
-// Range (exclusive end)
-for i in 0..5 {
-  print(i)   // 0 1 2 3 4
-}
-
-// List
-let names = ["Alice", "Bob", "Carol"]
-for name in names {
-  print(name)
-}
-
-// Map keys
-let config = {"host": "localhost", "port": "8080"}
-for key in config.keys() {
-  print(key, config[key])
-}
+let label = if score >= 50 then "pass" else "fail"
 ```
 
-## Loops — `while`
-
-Repeat while a condition is true:
+Both branches must produce a value of the same type (or types that combine
+into a known union). The expression form chains naturally:
 
 ```mochi
-var count = 0
-while count < 5 {
-  print(count)
-  count = count + 1
-}
+let grade =
+  if score >= 90 then "A"
+  else if score >= 80 then "B"
+  else if score >= 70 then "C"
+  else "F"
 ```
 
-## `break` and `continue`
-
-Exit a loop early with `break`, or skip to the next iteration with `continue`:
+For longer expression-form branches, wrap each branch in `{ ... }` and end
+with the value:
 
 ```mochi
-for i in 0..10 {
-  if i == 3 { continue }
-  if i == 7 { break }
-  print(i)   // 0 1 2 4 5 6
+let summary = if user.is_admin {
+  let role = "administrator"
+  let last = user.last_login
+  role + " (last seen " + str(last) + ")"
+} else {
+  "regular user"
 }
 ```
 
-## Pattern matching — `match`
+## `for` loops
 
-`match` selects the first arm whose pattern matches the value:
+The general form is `for x in iterable`:
 
 ```mochi
-let day = 3
+for i in 1..4 {
+  print(i)        // 1, 2, 3
+}
 
-match day {
-  1 => print("Monday"),
-  2 => print("Tuesday"),
-  3 => print("Wednesday"),
-  _ => print("Another day"),
+for x in [10, 20, 30] {
+  print(x)
+}
+
+for ch in "hello" {
+  print(ch)
+}
+
+for (k, v) in {"a": 1, "b": 2} {
+  print(k, v)
 }
 ```
 
-The `_` wildcard matches anything not covered by earlier arms.
+### Ranges
 
-### Match with blocks
-
-Each arm can be a block:
+`a..b` produces a half-open range from `a` (inclusive) to `b` (exclusive).
+`a..=b` is inclusive on both ends.
 
 ```mochi
-match status {
-  200 => {
-    print("OK")
-    process()
-  },
-  404 => {
-    print("Not found")
-  },
-  _ => {
-    print("Error:", status)
-  },
+for i in 0..3   { print(i) }   // 0, 1, 2
+for i in 0..=3  { print(i) }   // 0, 1, 2, 3
+```
+
+Ranges are values. Store them in a binding or pass them to any function
+that takes an iterable.
+
+### `break` and `continue`
+
+`break` exits the loop. `continue` skips to the next iteration.
+
+```mochi
+for n in 1..20 {
+  if n % 7 == 0 { break }
+  if n % 2 == 0 { continue }
+  print(n)
 }
 ```
 
-### Match as expression
+## `while` loops
 
 ```mochi
-let name = match day {
-  1 => "Monday",
-  2 => "Tuesday",
-  3 => "Wednesday",
-  _ => "Other",
+var n = 0
+while n < 5 {
+  print(n)
+  n = n + 1
 }
 ```
 
-### Match on strings
+The condition must be `bool` and is evaluated before each iteration. Mochi
+has no `do-while`. To run the body once before checking, place the body
+and condition explicitly:
 
 ```mochi
-let cmd = "start"
-
-match cmd {
-  "start" => begin(),
-  "stop"  => end(),
-  "help"  => print_help(),
-  _       => print("Unknown command:", cmd),
+var attempt = 0
+while true {
+  if try_fetch() { break }
+  attempt = attempt + 1
+  if attempt >= 3 { break }
 }
 ```
 
-## Early return
+`break` and `continue` work the same as in `for`.
 
-Use `return` to exit a function early:
+## `match` expressions
+
+`match` performs pattern matching across literal values, type narrowings,
+and union variants. Each arm is checked in order; the first match wins.
 
 ```mochi
-fun find(n: int, nums: [int]): int {
-  for i in 0..len(nums) {
-    if nums[i] == n {
-      return i
-    }
+fun classify(n: int): string {
+  return match n {
+    0 => "zero",
+    1 => "one",
+    n if n < 0 => "negative",
+    _ => "many"
   }
-  return -1
 }
 ```
+
+Arms separate the pattern from the body with `=>`. A guard (`if ...`)
+optionally constrains the match. `_` is the wildcard.
+
+### Patterns
+
+| Pattern | Matches |
+| --- | --- |
+| `42` | The literal `42`. |
+| `"abc"` | The literal string. |
+| `name` | Any value, binding it to `name`. |
+| `_` | Any value, discarded. |
+| `Variant` | A no-arg union variant. |
+| `Variant(x, y)` | A union variant, binding the constructor arguments. |
+| `[x, y, ...rest]` | A list with at least two elements, head bound. |
+| `{"key": v}` | A map with the given key, value bound. |
+| `n: int` | A value with type narrowed to `int`. |
+
+### Pattern matching on unions
+
+```mochi
+type Tree =
+  Leaf
+  | Node(value: int, left: Tree, right: Tree)
+
+fun sum(t: Tree): int {
+  return match t {
+    Leaf => 0,
+    Node(v, l, r) => v + sum(l) + sum(r)
+  }
+}
+```
+
+The exhaustiveness checker warns when a variant is missing. Suppress the
+warning with a `_ => ...` catch-all when intentional.
+
+### Pattern matching on optional values
+
+```mochi
+fun greet(name: string | nil): string {
+  return match name {
+    nil => "anonymous",
+    n => "hello, " + n
+  }
+}
+```
+
+### Guards
+
+```mochi
+match score {
+  s if s >= 90 => print("A"),
+  s if s >= 80 => print("B"),
+  _ => print("C or below")
+}
+```
+
+Guards are arbitrary boolean expressions. They run only when the structural
+pattern already matches.
+
+## Control flow with collections
+
+`for` over a list pairs naturally with `from / where / select`. The query
+form is often cleanest, with a loop for side effects:
+
+```mochi
+let unread = from b in books where !b.read select b
+for b in unread {
+  print(b.title)
+}
+```
+
+Read more in [datasets](/docs/manual/datasets).
+
+## Short-circuit evaluation
+
+`&&` and `||` are short-circuiting. The right operand is evaluated only when
+needed.
+
+```mochi
+if user != nil && user.is_admin {
+  ...
+}
+```
+
+This is the idiomatic pattern for combining an existence check with a
+follow-on property access.
+
+## Common errors
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| `condition is not bool` | `if` or `while` with a non-bool | Use an explicit comparison. |
+| `match is not exhaustive` | Missing variant or fall-through | Add a branch or `_ => ...`. |
+| `unreachable code after match` | A previous arm covers everything | Remove the trailing branch. |
+| `break outside loop` | `break` in a `match` arm | Use `return` or restructure. |
+
+## Next
+
+- [Functions](/docs/manual/functions): closures, defaults, varargs
+- [Types](/docs/manual/types): structs, unions, methods
+- [Errors](/docs/manual/errors): optional values, `expect`, `panic`
+- [Datasets](/docs/manual/datasets): `from / where / select`

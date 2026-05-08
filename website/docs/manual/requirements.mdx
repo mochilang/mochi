@@ -4,6 +4,9 @@ description: Supported platforms and prerequisites for running Mochi.
 sidebar_label: Requirements
 ---
 
+Mochi runs on macOS, Linux, Windows (via WSL2), and Docker. The binary is
+statically linked, so most installations have no prerequisites.
+
 ## Supported platforms
 
 | Platform | Architecture | Notes |
@@ -17,7 +20,7 @@ sidebar_label: Requirements
 
 ### Binary installation
 
-No prerequisites needed. The Mochi binary is statically linked and self-contained.
+No prerequisites. The Mochi binary is statically linked and self-contained.
 
 ### Docker
 
@@ -25,8 +28,8 @@ No prerequisites needed. The Mochi binary is statically linked and self-containe
 
 ### Build from source
 
-- **Go 1.21 or later** — [Install Go](https://go.dev/dl/)
-- **Make** — available on all Unix-like systems
+- **Go 1.21 or later**: [Install Go](https://go.dev/dl/)
+- **Make**: available on all Unix-like systems
 - Optional: **Deno 1.40+** for TypeScript-based tests (`make install` handles this)
 
 ## Verifying your installation
@@ -37,9 +40,9 @@ After installing, run:
 mochi --version
 ```
 
-You should see output like:
+The output looks like:
 
-```
+```output
 mochi version 0.10.x
 ```
 

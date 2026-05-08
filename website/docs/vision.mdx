@@ -4,56 +4,54 @@ sidebar_label: Vision
 description: The motivations and design principles behind Mochi.
 ---
 
-Our vision for Mochi is a programming language that feels as natural as writing a note — expressive, safe, and small enough to hold in your head — while being powerful enough to build real things: agents, data pipelines, AI-connected tools, and more.
+Mochi is a small statically typed language for scripting, agents, data pipelines, and AI-connected tools. It is designed to be expressive, safe, and small enough to hold in your head.
 
-## The problem we're solving
+## The gap Mochi fills
 
-Modern programming tasks fall into an awkward middle ground. Python is too dynamic and slow. Rust and Go are too verbose for quick scripts. Existing scripting languages lack the static safety needed for reliable automation. And no mainstream language has first-class support for the patterns that matter most in the AI era: reactive event handling, structured AI generation, and data querying.
+Modern programming tasks fall into an awkward middle ground. Python is dynamic and slow. Rust and Go are verbose for short scripts. Existing scripting languages lack the static safety needed for reliable automation. No mainstream language treats reactive event handling, structured AI generation, and data querying as core features.
 
-Mochi tries to fill this gap.
+Mochi targets that gap.
 
-## Core design principles
+## Design principles
 
-### 1. Immutability first
+### Immutability first
 
-`let` is the default. Mutable state is opt-in with `var`. This nudges programs toward correctness and makes code easier to reason about.
+`let` is the default binding. Mutable state is opt-in with `var`. Programs default to correctness and stay easier to reason about.
 
-### 2. No ceremony
+### No ceremony
 
-Programs don't need a `main()`. No class required to write a function. No import needed to call `print()`. The minimum viable program is one line.
+Programs do not need a `main()`. Functions do not need a class. `print()` does not need an import. The minimum viable program is one line.
 
-### 3. Types as documentation
+### Types as documentation
 
-Static types tell the next reader — including your future self — what a value is. Mochi infers them so you don't have to type them everywhere, but they're always present.
+Static types tell the next reader what a value is. Mochi infers them so annotations stay sparse, but the types are always present at compile time.
 
-### 4. First-class agents and streams
+### Agents and streams in the language
 
-Reactive programming should be a language feature, not a library. `agent` blocks encapsulate state and event handlers. `stream` declarations define event schemas. `emit` sends events. These are not bolt-on frameworks — they're part of the language.
+Reactive programming is a language feature, not a library. `agent` blocks encapsulate state and event handlers. `stream` declarations define event schemas. `emit` sends events. These are syntax, not framework calls.
 
-### 5. AI as a primitive
+### AI as a primitive
 
-`generate` blocks treat AI model calls the way other languages treat `print` — a simple, readable expression in the code. No SDK, no async boilerplate, no JSON parsing. You write your intent; Mochi handles the rest.
+`generate` blocks treat AI model calls the way other languages treat `print`: a readable expression in source. No SDK, no async boilerplate, no JSON parsing.
 
-### 6. Small by design
+### Small by design
 
-Mochi doesn't aim to be everything. It aims to be the right tool for a class of problems: scripting, agents, data transformation, and AI-augmented tools. Staying small means staying learnable.
+Mochi targets one class of problems: scripting, agents, data transformation, and AI-augmented tools. Staying small keeps the language learnable.
 
 ## What Mochi is not
 
-Mochi is **not** a systems programming language. It has no manual memory management, no unsafe blocks, no pointer arithmetic. It's not designed for kernels, embedded systems, or GPU computation.
+Mochi is not a systems programming language. It has no manual memory management, no unsafe blocks, no pointer arithmetic. It is not designed for kernels, embedded systems, or GPU computation.
 
-Mochi is **not** trying to replace Python's ecosystem. Python's library ecosystem is vast and valuable. Mochi can call Python and transpile to it — it's complementary, not competitive.
+Mochi does not replace Python's ecosystem. Python's libraries are vast and useful. Mochi calls Python and transpiles to it. The two are complementary.
 
 ## Long-term direction
 
-Over time we plan to:
+- Stabilize the core language at v1.0.
+- Expand the standard library.
+- Ship a package registry.
+- Improve IDE support and the language server.
+- Add native Windows support.
+- Add generics.
+- Provide a notebook-friendly interface for data workflows.
 
-- Stabilize the core language (v1.0)
-- Expand the standard library
-- Build a package registry
-- Improve IDE support and language server
-- Native Windows support
-- Generics
-- A visual/notebook-friendly interface for data workflows
-
-See the [roadmap](/docs/roadmap) for specific planned work.
+See the [roadmap](/docs/roadmap) for current status of each item.
