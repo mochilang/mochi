@@ -1607,7 +1607,7 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 				if !unify(keyType, t.Key, nil) {
 					return nil, errIndexTypeMismatch(idx.Pos, t.Key, keyType)
 				}
-				typ = t.Value
+				typ = OptionType{Elem: t.Value}
 
 			case StringType:
 				if idx.Start == nil && idx.Colon == nil {
@@ -2343,6 +2343,9 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		if !unify(wt, BoolType{}, nil) {
 			return nil, errWhereBoolean(q.Where.Pos)
 		}
+		if name, pos, ok := firstImpureCall(q.Where, child); ok {
+			return nil, errImpurePredicate(pos, name, "where")
+		}
 	}
 
 	var selT Type
@@ -2388,6 +2391,9 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 			}
 			if !unify(ht, BoolType{}, nil) {
 				return nil, errHavingBoolean(q.Group.Having.Pos)
+			}
+			if name, pos, ok := firstImpureCall(q.Group.Having, genv); ok {
+				return nil, errImpurePredicate(pos, name, "having")
 			}
 		}
 		selT, err = checkExpr(q.Select, genv)

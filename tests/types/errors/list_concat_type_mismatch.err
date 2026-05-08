@@ -1,0 +1,8 @@
+1. error[T020]: operator `+` cannot be used on types [int] and [string]
+  --> tests/types/errors/list_concat_type_mismatch.mochi:3:13
+
+  3 | let zs = xs + ys
+    |             ^
+
+help:
+  Choose an operator that supports these operand types.

@@ -62,6 +62,7 @@ var Errors = map[string]diagnostic.Template{
 	"T042": {Code: "T042", Message: "`having` condition must be boolean", Help: "Ensure the condition evaluates to true or false."},
 	"T039": {Code: "T039", Message: "function %s expects %d arguments, got %d", Help: "Pass exactly %d arguments to `%s`."},
 	"T040": {Code: "T040", Message: "`if` condition must be boolean", Help: "Ensure the condition evaluates to true or false."},
+	"T044": {Code: "T044", Message: "impure call to `%s` is not allowed in `%s` predicate", Help: "Only pure functions may be called inside `where` and `having` predicates."},
 }
 
 // --- Wrapper Functions ---
@@ -218,6 +219,10 @@ func errJoinOnBoolean(pos lexer.Position) error {
 
 func errHavingBoolean(pos lexer.Position) error {
 	return Errors["T042"].New(pos)
+}
+
+func errImpurePredicate(pos lexer.Position, name, predicate string) error {
+	return Errors["T044"].New(pos, name, predicate)
 }
 
 func errLenOperand(pos lexer.Position, typ Type) error {

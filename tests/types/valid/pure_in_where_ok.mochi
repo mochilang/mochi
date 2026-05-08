@@ -1,0 +1,2 @@
+let xs = [1, 2, 3, 4, 5]
+let evens = from x in xs where x % 2 == 0 select x

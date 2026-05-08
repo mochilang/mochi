@@ -1,6 +1,10 @@
 package types
 
-import "mochi/parser"
+import (
+	"mochi/parser"
+
+	"github.com/alecthomas/participle/v2/lexer"
+)
 
 // isLiteralExpr returns true if e is a literal expression.
 func IsLiteralExpr(e *parser.Expr) bool {
@@ -150,4 +154,61 @@ func isPureFunction(fn *parser.FunStmt, env *Env) bool {
 		}
 	}
 	return true
+}
+
+// firstImpureCall walks e and returns the name and position of the first
+// call to a function whose Pure flag is false. Returns found=false if all
+// calls in the expression are to pure functions.
+func firstImpureCall(e *parser.Expr, env *Env) (name string, pos lexer.Position, found bool) {
+	if e == nil {
+		return
+	}
+	return firstImpureUnary(e.Binary.Left, env)
+}
+
+func firstImpureUnary(u *parser.Unary, env *Env) (string, lexer.Position, bool) {
+	if n, p, ok := firstImpurePostfix(u.Value, env); ok {
+		return n, p, true
+	}
+	return "", lexer.Position{}, false
+}
+
+func firstImpurePostfix(p *parser.PostfixExpr, env *Env) (string, lexer.Position, bool) {
+	if n, pos, ok := firstImpurePrimary(p.Target, env); ok {
+		return n, pos, true
+	}
+	for _, op := range p.Ops {
+		if op.Call != nil {
+			if p.Target != nil && p.Target.Selector != nil {
+				name := p.Target.Selector.Root
+				t, err := env.GetVar(name)
+				if err == nil {
+					if ft, ok := t.(FuncType); ok && !ft.Pure {
+						return name, p.Target.Pos, true
+					}
+				}
+			}
+		}
+	}
+	return "", lexer.Position{}, false
+}
+
+func firstImpurePrimary(p *parser.Primary, env *Env) (string, lexer.Position, bool) {
+	if p.Call != nil {
+		t, err := env.GetVar(p.Call.Func)
+		if err == nil {
+			if ft, ok := t.(FuncType); ok && !ft.Pure {
+				return p.Call.Func, p.Pos, true
+			}
+		}
+		for _, arg := range p.Call.Args {
+			if n, pos, ok := firstImpureCall(arg, env); ok {
+				return n, pos, true
+			}
+		}
+	}
+	if p.Group != nil {
+		return firstImpureCall(p.Group, env)
+	}
+	return "", lexer.Position{}, false
 }
