@@ -1,0 +1,5 @@
+// Numeric tower (1805): order independence. float + int should also widen.
+let a: float = 2.5
+let b: int = 1
+let c: float = a + b
+expect c == 3.5

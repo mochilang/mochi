@@ -1,0 +1,5 @@
+// Query algebra (1814): from ... where ... select returns a list whose
+// element type is the projection's type.
+let xs: list<int> = [1, 2, 3, 4, 5]
+let evens: list<int> = from x in xs where x % 2 == 0 select x
+expect count(evens) == 2

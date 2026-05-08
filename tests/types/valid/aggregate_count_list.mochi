@@ -1,0 +1,4 @@
+// Aggregate typing (1814): count over a list returns int.
+let xs: list<int> = [1, 2, 3, 4]
+let n: int = count(xs)
+expect n == 4

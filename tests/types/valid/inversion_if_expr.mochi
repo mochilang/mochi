@@ -1,0 +1,5 @@
+// Inversion (1807): an if-expression has the type of its branches'
+// least upper bound. Both branches return int here.
+let n: int = 7
+let label: int = if n % 2 == 0 then 0 else 1
+expect label == 1

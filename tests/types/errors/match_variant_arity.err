@@ -1,0 +1,16 @@
+1. error[T008]: type mismatch: expected Pair, got P
+  --> tests/types/errors/match_variant_arity.mochi:6:3
+
+  6 |   P(a) => a
+    |   ^
+
+help:
+  Change the value to match the expected type.
+   2. error[T002]: undefined variable: r
+  --> tests/types/errors/match_variant_arity.mochi:8:8
+
+  8 | expect r == 1
+    |        ^
+
+help:
+  Check if the variable was declared in this scope.

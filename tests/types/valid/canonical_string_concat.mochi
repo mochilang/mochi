@@ -1,0 +1,5 @@
+// Canonical forms (1807): string + string = string.
+let a: string = "hello "
+let b: string = "world"
+let c: string = a + b
+expect c == "hello world"

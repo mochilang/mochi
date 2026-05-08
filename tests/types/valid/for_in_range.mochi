@@ -1,0 +1,6 @@
+// Inference (1805): for ... in 0..n binds the loop variable to int.
+var total: int = 0
+for i in 0..5 {
+  total = total + i
+}
+expect total == 10

@@ -1,0 +1,8 @@
+// Inference (1805): for ... in list binds the loop variable to the
+// element type.
+let words: list<string> = ["a", "bb", "ccc"]
+var total: int = 0
+for w in words {
+  total = total + len(w)
+}
+expect total == 6

@@ -1,0 +1,8 @@
+1. error[T026]: unknown field `z` on Point
+  --> tests/types/errors/struct_unknown_field_access.mochi:8:7
+
+  8 | print(p.z)
+    |       ^
+
+help:
+  Check the struct definition for valid fields.

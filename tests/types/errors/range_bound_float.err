@@ -1,0 +1,8 @@
+1. error[T023]: range loop requires integer start and end expressions
+  --> tests/types/errors/range_bound_float.mochi:2:1
+
+  2 | for i in 0..2.5 {
+    | ^
+
+help:
+  Use `for i in 0..10` or ensure both expressions are of type `int`.

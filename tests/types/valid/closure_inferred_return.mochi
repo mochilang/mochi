@@ -1,0 +1,5 @@
+// Inference (1805): an arrow-bodied closure infers its return type
+// from the body expression. Verifies the result is callable as int.
+let double = fun(x: int): int => x * 2
+let four: int = double(2)
+expect four == 4

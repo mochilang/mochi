@@ -1,0 +1,24 @@
+1. error[T008]: type mismatch: expected int, got string
+  --> tests/types/errors/multiple_top_level_errors.mochi:3:14
+
+  3 | let a: int = "not an int"
+    |              ^
+
+help:
+  Change the value to match the expected type.
+   2. error[T002]: undefined variable: c
+  --> tests/types/errors/multiple_top_level_errors.mochi:4:9
+
+  4 | let b = c
+    |         ^
+
+help:
+  Check if the variable was declared in this scope.
+   3. error[T003]: unknown function: d
+  --> tests/types/errors/multiple_top_level_errors.mochi:5:7
+
+  5 | print(d(1))
+    |       ^
+
+help:
+  Ensure the function is defined before it's called.

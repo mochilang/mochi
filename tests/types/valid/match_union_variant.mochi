@@ -1,0 +1,11 @@
+// ADT (1813): variant call patterns destructure tagged union values.
+type Shape =
+  Circle(r: int)
+| Square(s: int)
+
+let sh: Shape = Circle(3)
+let area: int = match sh {
+  Circle(r) => r * r * 3
+  Square(s) => s * s
+}
+expect area == 27
