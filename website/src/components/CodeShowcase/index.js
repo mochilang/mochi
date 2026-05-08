@@ -50,6 +50,17 @@ export default function CodeShowcase({ title, lede, samples }) {
                 {sample.code}
               </CodeBlock>
             </div>
+            {sample.input ? (
+              <div className={styles.inputWrap}>
+                <div className={styles.outputLabel}>Input</div>
+                <CodeBlock
+                  language={sample.input.language || 'json'}
+                  title={sample.input.filename}
+                >
+                  {sample.input.code}
+                </CodeBlock>
+              </div>
+            ) : null}
             {sample.output ? (
               <div className={styles.outputWrap}>
                 <div className={styles.outputLabel}>Output</div>

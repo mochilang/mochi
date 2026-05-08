@@ -16,4 +16,4 @@ for item in top {
   print(item.name + ", $" + str(item.price))
 }
 
-save top to "top.json"
+save top to "top.json" with { format: "json" }

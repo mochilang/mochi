@@ -206,7 +206,18 @@ for item in top {
   print(item.name + ", $" + str(item.price))
 }
 
-save top to "top.json"`,
+save top to "top.json" with { format: "json" }`,
+    input: {
+      filename: 'products.json',
+      language: 'json',
+      code: `[
+  {"name": "Laptop",   "price": 1500},
+  {"name": "Phone",    "price": 900},
+  {"name": "Tablet",   "price": 600},
+  {"name": "Mouse",    "price": 40},
+  {"name": "Keyboard", "price": 80}
+]`,
+    },
     output: `Laptop, $1500
 Phone, $900
 Tablet, $600`,
