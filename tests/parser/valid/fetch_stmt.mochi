@@ -1,0 +1,2 @@
+fetch "https://api.example.com/users" into resp
+fetch "https://api.example.com/data" into data with { timeout: 30 }

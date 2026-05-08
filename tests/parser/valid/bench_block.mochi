@@ -1,0 +1,4 @@
+bench "sum list" {
+  let xs = [1, 2, 3, 4, 5]
+  let total = xs[0] + xs[1]
+}

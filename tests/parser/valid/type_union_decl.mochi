@@ -1,0 +1,3 @@
+type Shape = Circle(r: float) | Square(side: float) | Rect(w: float, h: float)
+
+type Result = Ok(value: int) | Err(msg: string)

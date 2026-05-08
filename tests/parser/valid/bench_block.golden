@@ -1,0 +1,13 @@
+(program
+  (bench "sum list"
+    (let xs
+      (list (int 1) (int 2) (int 3) (int 4) (int 5))
+    )
+    (let total
+      (binary +
+        (index (selector xs) (int 0))
+        (index (selector xs) (int 1))
+      )
+    )
+  )
+)

@@ -1,0 +1,7 @@
+fact parent("tom", "bob")
+fact parent("bob", "ann")
+
+rule ancestor(X, Y) :- parent(X, Y)
+rule ancestor(X, Y) :- parent(X, Z), ancestor(Z, Y)
+
+let results = query ancestor("tom", Y)

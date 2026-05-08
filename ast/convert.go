@@ -167,6 +167,20 @@ func FromStatement(s *parser.Statement) *Node {
 				n.Children = append(n.Children, FromStatement(&parser.Statement{Fun: m.Method}))
 			}
 		}
+		for _, v := range s.Type.Variants {
+			vn := &Node{Kind: "variant", Value: v.Name}
+			for _, f := range v.Fields {
+				vn.Children = append(vn.Children, &Node{
+					Kind:     "field",
+					Value:    f.Name,
+					Children: []*Node{FromTypeRef(f.Type)},
+				})
+			}
+			n.Children = append(n.Children, vn)
+		}
+		if s.Type.Alias != nil {
+			n.Children = append(n.Children, &Node{Kind: "alias", Children: []*Node{FromTypeRef(s.Type.Alias)}})
+		}
 		return n
 
 	case s.Test != nil:
@@ -181,6 +195,40 @@ func FromStatement(s *parser.Statement) *Node {
 
 	case s.Expect != nil:
 		return &Node{Kind: "expect", Children: []*Node{FromExpr(s.Expect.Value)}}
+
+	case s.Fetch != nil:
+		n := &Node{Kind: "fetch", Value: s.Fetch.Target}
+		n.Children = append(n.Children, FromExpr(s.Fetch.URL))
+		if s.Fetch.With != nil {
+			n.Children = append(n.Children, FromExpr(s.Fetch.With))
+		}
+		return n
+
+	case s.Fact != nil:
+		n := &Node{Kind: "fact", Value: s.Fact.Pred.Name}
+		for _, arg := range s.Fact.Pred.Args {
+			n.Children = append(n.Children, fromLogicTerm(arg))
+		}
+		return n
+
+	case s.Rule != nil:
+		head := &Node{Kind: "head", Value: s.Rule.Head.Name}
+		for _, arg := range s.Rule.Head.Args {
+			head.Children = append(head.Children, fromLogicTerm(arg))
+		}
+		n := &Node{Kind: "rule", Children: []*Node{head}}
+		for _, cond := range s.Rule.Body {
+			if cond.Pred != nil {
+				cn := &Node{Kind: "cond", Value: cond.Pred.Name}
+				for _, arg := range cond.Pred.Args {
+					cn.Children = append(cn.Children, fromLogicTerm(arg))
+				}
+				n.Children = append(n.Children, cn)
+			} else if cond.Neq != nil {
+				n.Children = append(n.Children, &Node{Kind: "neq", Value: cond.Neq.A + "!=" + cond.Neq.B})
+			}
+		}
+		return n
 
 	default:
 		return &Node{Kind: "unknown"}
@@ -622,8 +670,27 @@ func FromPrimary(p *parser.Primary) *Node {
 
 	case p.Group != nil:
 		return &Node{Kind: "group", Pos: p.Pos, Children: []*Node{FromExpr(p.Group)}}
+
+	case p.LogicQuery != nil:
+		n := &Node{Kind: "query_logic", Value: p.LogicQuery.Pred.Name, Pos: p.Pos}
+		for _, arg := range p.LogicQuery.Pred.Args {
+			n.Children = append(n.Children, fromLogicTerm(arg))
+		}
+		return n
 	}
 
+	return &Node{Kind: "unknown"}
+}
+
+func fromLogicTerm(t *parser.LogicTerm) *Node {
+	switch {
+	case t.Var != nil:
+		return &Node{Kind: "var", Value: *t.Var}
+	case t.Str != nil:
+		return &Node{Kind: "string", Value: *t.Str}
+	case t.Int != nil:
+		return &Node{Kind: "int", Value: fmt.Sprintf("%d", int(*t.Int))}
+	}
 	return &Node{Kind: "unknown"}
 }
 
