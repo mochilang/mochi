@@ -1,0 +1,3 @@
+// Companion to divide_by_zero_literal.mochi. The checker also
+// accepts a literal-zero modulus today. See issue #21146.
+let r: int = 10 % 0

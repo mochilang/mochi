@@ -1,0 +1,7 @@
+// Snapshot: the type checker accepts the literal divide-by-zero case.
+// MEP 7 lists this as a stuck state we want to rule out.
+// The runtime panic is pinned in tests/interpreter/errors/divide_by_zero.err.
+// Decision recorded on issue #21146: leave it to runtime for now;
+// the runtime error[I012] already names the line and column. If we
+// later add a checker rule, this file moves to tests/types/errors/.
+let x: int = 10 / 0
