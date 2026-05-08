@@ -1,0 +1,8 @@
+1. error[T008]: type mismatch: expected Point, got option[Point]
+  --> tests/types/errors/missing_map_key.mochi:3:16
+
+  3 | let p: Point = pts["missing"]
+    |                ^
+
+help:
+  Change the value to match the expected type.

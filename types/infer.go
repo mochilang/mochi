@@ -239,7 +239,7 @@ func inferPostfixType(env *Env, p *parser.PostfixExpr) Type {
 			case ListType:
 				t = tt.Elem
 			case MapType:
-				t = tt.Value
+				t = OptionType{Elem: tt.Value}
 			case StructType:
 				if key, ok := SimpleStringKey(op.Index.Start); ok {
 					if ft, ok2 := tt.Fields[key]; ok2 {
