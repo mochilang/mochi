@@ -1,0 +1,8 @@
+1. error[T040]: `if` condition must be boolean
+  --> tests/types/errors/while_cond_not_bool.mochi:2:7
+
+  2 | while n {
+    |       ^
+
+help:
+  Ensure the condition evaluates to true or false.

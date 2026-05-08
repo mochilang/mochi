@@ -1,0 +1,8 @@
+1. error[T045]: `continue` outside of loop
+  --> tests/types/errors/continue_outside_loop.mochi:1:1
+
+  1 | continue
+    | ^
+
+help:
+  Move `continue` inside a `for` or `while` loop body.

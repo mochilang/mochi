@@ -63,6 +63,7 @@ var Errors = map[string]diagnostic.Template{
 	"T039": {Code: "T039", Message: "function %s expects %d arguments, got %d", Help: "Pass exactly %d arguments to `%s`."},
 	"T040": {Code: "T040", Message: "`if` condition must be boolean", Help: "Ensure the condition evaluates to true or false."},
 	"T044": {Code: "T044", Message: "impure call to `%s` is not allowed in `%s` predicate", Help: "Only pure functions may be called inside `where` and `having` predicates."},
+	"T045": {Code: "T045", Message: "`%s` outside of loop", Help: "Move `%s` inside a `for` or `while` loop body."},
 }
 
 // --- Wrapper Functions ---
@@ -250,4 +251,11 @@ func errArgCount(pos lexer.Position, name string, expected, actual int) error {
 
 func errIfCondBoolean(pos lexer.Position) error {
 	return Errors["T040"].New(pos)
+}
+
+func errBreakContinueOutsideLoop(pos lexer.Position, keyword string) error {
+	tmpl := Errors["T045"]
+	msg := fmt.Sprintf(tmpl.Message, keyword)
+	help := fmt.Sprintf(tmpl.Help, keyword)
+	return diagnostic.New(tmpl.Code, pos, msg, help)
 }

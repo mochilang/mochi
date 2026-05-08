@@ -1,0 +1,8 @@
+1. error[T045]: `break` outside of loop
+  --> tests/types/errors/break_outside_loop.mochi:1:1
+
+  1 | break
+    | ^
+
+help:
+  Move `break` inside a `for` or `while` loop body.

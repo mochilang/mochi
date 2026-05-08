@@ -644,7 +644,7 @@ func Check(prog *parser.Program, env *Env) []error {
 	// Second pass: process type declarations now that all functions are known.
 	for _, stmt := range prog.Statements {
 		if stmt.Type != nil {
-			if err := checkStmt(stmt, env, VoidType{}); err != nil {
+			if err := checkStmt(stmt, env, VoidType{}, false); err != nil {
 				errs = append(errs, err)
 			}
 		}
@@ -653,7 +653,7 @@ func Check(prog *parser.Program, env *Env) []error {
 	// Final pass: check remaining statements, including function bodies.
 	for _, stmt := range prog.Statements {
 		if stmt.Type == nil {
-			if err := checkStmt(stmt, env, VoidType{}); err != nil {
+			if err := checkStmt(stmt, env, VoidType{}, false); err != nil {
 				errs = append(errs, err)
 			}
 		}
@@ -676,7 +676,7 @@ func buildStreamFields(fields []*parser.StreamField, env *Env) (map[string]Type,
 	return out, order
 }
 
-func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
+func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) error {
 	switch {
 	case s.Stream != nil:
 		fields, order := buildStreamFields(s.Stream.Fields, env)
@@ -737,7 +737,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		child := NewEnv(env)
 		child.SetVar(s.On.Alias, st, true)
 		for _, stmt := range s.On.Body {
-			if err := checkStmt(stmt, child, expectedReturn); err != nil {
+			if err := checkStmt(stmt, child, expectedReturn, false); err != nil {
 				return err
 			}
 		}
@@ -1093,7 +1093,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 
 		// Check loop body
 		for _, stmt := range s.For.Body {
-			if err := checkStmt(stmt, child, expectedReturn); err != nil {
+			if err := checkStmt(stmt, child, expectedReturn, true); err != nil {
 				return err
 			}
 		}
@@ -1154,7 +1154,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 						methodEnv.SetVar(p.Name, params[i], true)
 					}
 					for _, stmt := range m.Method.Body {
-						if err := checkStmt(stmt, methodEnv, ret); err != nil {
+						if err := checkStmt(stmt, methodEnv, ret, false); err != nil {
 							return err
 						}
 					}
@@ -1235,7 +1235,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 			child.SetVar(p.Name, params[i], true)
 		}
 		for _, stmt := range s.Fun.Body {
-			if err := checkStmt(stmt, child, ret); err != nil {
+			if err := checkStmt(stmt, child, ret, false); err != nil {
 				return err
 			}
 		}
@@ -1258,7 +1258,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 	case s.Test != nil:
 		child := NewEnv(env)
 		for _, stmt := range s.Test.Body {
-			if err := checkStmt(stmt, child, expectedReturn); err != nil {
+			if err := checkStmt(stmt, child, expectedReturn, false); err != nil {
 				return err
 			}
 		}
@@ -1267,7 +1267,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 	case s.Bench != nil:
 		child := NewEnv(env)
 		for _, stmt := range s.Bench.Body {
-			if err := checkStmt(stmt, child, expectedReturn); err != nil {
+			if err := checkStmt(stmt, child, expectedReturn, false); err != nil {
 				return err
 			}
 		}
@@ -1282,6 +1282,63 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 			return errExpectBoolean(s.Expect.Pos)
 		}
 		return nil
+
+	case s.If != nil:
+		return checkIfStmt(s.If, env, expectedReturn, inLoop)
+
+	case s.While != nil:
+		condT, err := checkExprWithExpected(s.While.Cond, env, nil)
+		if err != nil {
+			return err
+		}
+		if !unify(condT, BoolType{}, nil) {
+			return errIfCondBoolean(s.While.Cond.Pos)
+		}
+		child := NewEnv(env)
+		for _, stmt := range s.While.Body {
+			if err := checkStmt(stmt, child, expectedReturn, true); err != nil {
+				return err
+			}
+		}
+		return nil
+
+	case s.Break != nil:
+		if !inLoop {
+			return errBreakContinueOutsideLoop(s.Break.Pos, "break")
+		}
+		return nil
+
+	case s.Continue != nil:
+		if !inLoop {
+			return errBreakContinueOutsideLoop(s.Continue.Pos, "continue")
+		}
+		return nil
+	}
+	return nil
+}
+
+func checkIfStmt(stmt *parser.IfStmt, env *Env, expectedReturn Type, inLoop bool) error {
+	condT, err := checkExprWithExpected(stmt.Cond, env, nil)
+	if err != nil {
+		return err
+	}
+	if !unify(condT, BoolType{}, nil) {
+		return errIfCondBoolean(stmt.Cond.Pos)
+	}
+	child := NewEnv(env)
+	for _, s := range stmt.Then {
+		if err := checkStmt(s, child, expectedReturn, inLoop); err != nil {
+			return err
+		}
+	}
+	if stmt.ElseIf != nil {
+		return checkIfStmt(stmt.ElseIf, env, expectedReturn, inLoop)
+	}
+	elseChild := NewEnv(env)
+	for _, s := range stmt.Else {
+		if err := checkStmt(s, elseChild, expectedReturn, inLoop); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -2132,7 +2189,7 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 	} else {
 		// Block body
 		for _, stmt := range f.BlockBody {
-			if err := checkStmt(stmt, child, declaredRet); err != nil {
+			if err := checkStmt(stmt, child, declaredRet, false); err != nil {
 				return nil, err
 			}
 		}
@@ -2251,7 +2308,7 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 		}
 		if c.Result == nil {
 			for _, st := range c.Block {
-				if err := checkStmt(st, caseEnv, expected); err != nil {
+				if err := checkStmt(st, caseEnv, expected, false); err != nil {
 					return nil, err
 				}
 			}
