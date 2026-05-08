@@ -1,0 +1,3 @@
+import "mochi/math"
+import python "math" as math
+import "mochi/io" as io

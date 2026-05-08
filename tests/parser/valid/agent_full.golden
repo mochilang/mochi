@@ -53,8 +53,16 @@
     )
   )
   (let monitor (struct Monitor))
-  (unknown)
-  (unknown)
+  (emit SensorReading
+    (id (string sensor-1))
+    (temperature (float 28))
+    (timestamp (call now))
+  )
+  (emit SensorReading
+    (id (string sensor-2))
+    (temperature (float 35.5))
+    (timestamp (call now))
+  )
   (let s
     (call
       (selector status (selector monitor))
