@@ -1,0 +1,8 @@
+1. error[T024]: cannot assign to `xs` (immutable)
+  --> tests/types/errors/mutate_through_let_index.mochi:2:1
+
+  2 | xs[0] = 5
+    | ^
+
+help:
+  Use `var` to declare mutable variables.
