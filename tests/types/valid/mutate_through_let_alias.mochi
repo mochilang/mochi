@@ -1,0 +1,15 @@
+// Snapshot: the direct path `let xs = [1]; xs[0] = 5` is correctly
+// rejected with T024 today (see tests/types/errors/mutate_through_let_*).
+// The remaining soundness hole is aliasing: copying a let-bound list
+// into a var binds the same underlying storage at runtime, so the
+// var-side index assignment mutates the let-side too.
+//
+// This file pins the alias path at type-check time. The runtime side is
+// observable: re-reading xs[0] after ys[0] = 99 returns 99. MEP 10 A3
+// owns the fix; the plan there names the direct path but the alias
+// path is the one that still leaks. When invariance under aliasing
+// (or some equivalent capture-style rule) lands this file moves to
+// tests/types/errors/.
+let xs: list<int> = [1, 2, 3]
+var ys: list<int> = xs
+ys[0] = 99

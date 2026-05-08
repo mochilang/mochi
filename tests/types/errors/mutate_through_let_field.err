@@ -1,0 +1,8 @@
+1. error[T024]: cannot assign to `p` (immutable)
+  --> tests/types/errors/mutate_through_let_field.mochi:3:1
+
+  3 | p.x = 5
+    | ^
+
+help:
+  Use `var` to declare mutable variables.
