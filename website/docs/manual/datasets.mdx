@@ -1,0 +1,164 @@
+---
+title: Datasets
+description: Loading, querying, and saving structured data in Mochi.
+---
+
+Mochi has built-in support for working with structured data. You can load files, query lists like datasets, and save results.
+
+## Loading data
+
+Use `load` to read data files into typed lists:
+
+```mochi
+type Product {
+  name: string
+  price: int
+  category: string
+}
+
+let products = load "products.json" as Product
+```
+
+Supported formats: **JSON**, **JSONL**, **CSV**, **YAML**.
+
+## Querying with `from`
+
+The `from` expression queries a list like a dataset:
+
+```mochi
+let expensive = from p in products
+                where p.price > 500
+                select p
+
+for item in expensive {
+  print(item.name, item.price)
+}
+```
+
+### Filtering — `where`
+
+```mochi
+let electronics = from p in products
+                  where p.category == "electronics"
+                  select p
+```
+
+### Projecting — `select`
+
+Transform the shape of each result:
+
+```mochi
+let names_and_prices = from p in products
+                       select {
+                         name: p.name,
+                         price: p.price,
+                         expensive: p.price > 1000
+                       }
+```
+
+### Sorting — `sort by`
+
+```mochi
+let by_price = from p in products
+               sort by p.price        // ascending
+
+let by_price_desc = from p in products
+                    sort by -p.price  // descending (negate)
+```
+
+### Pagination — `skip` and `take`
+
+```mochi
+let page = from p in products
+           sort by p.name
+           skip 10
+           take 5
+           select p
+```
+
+### Joins
+
+```mochi
+type Order {
+  id: int
+  customer_id: int
+  total: float
+}
+
+type Customer {
+  id: int
+  name: string
+}
+
+let orders = load "orders.json" as Order
+let customers = load "customers.json" as Customer
+
+let result = from o in orders
+             join from c in customers on o.customer_id == c.id
+             select {
+               order_id: o.id,
+               customer: c.name,
+               total: o.total,
+             }
+```
+
+## Saving data
+
+Use `save` to write data to a file:
+
+```mochi
+let adults = from p in people
+             where p.age >= 18
+             select p
+
+save adults to "adults.json"
+save adults to "adults.csv"
+```
+
+## Complete example
+
+```mochi
+type Person {
+  name: string
+  age: int
+  city: string
+}
+
+let people = load "people.yaml" as Person
+
+// Find adults in a specific city, sorted by age
+let local_adults = from p in people
+                   where p.age >= 18 && p.city == "Hanoi"
+                   sort by p.age
+                   select {
+                     name: p.name,
+                     age: p.age,
+                   }
+
+for person in local_adults {
+  print(person.name, "-", person.age)
+}
+
+save local_adults to "hanoi_adults.json"
+```
+
+## Inline datasets
+
+You can query any list, not just loaded files:
+
+```mochi
+let scores = [
+  {"player": "Alice", "score": 95},
+  {"player": "Bob",   "score": 88},
+  {"player": "Carol", "score": 72},
+]
+
+let top = from s in scores
+          sort by -s.score
+          take 2
+          select s
+
+for s in top {
+  print(s.player, s.score)
+}
+```

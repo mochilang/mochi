@@ -1,0 +1,193 @@
+---
+title: Get started with Mochi
+description: Learn the Mochi language by building a complete program.
+sidebar_label: Tutorial
+---
+
+This tutorial teaches you Mochi by building a small, complete program. You'll learn the core language features along the way — variables, functions, collections, control flow, and types.
+
+If you haven't installed Mochi yet, start with the [quickstart](/docs/manual/quickstart).
+
+## What you'll build
+
+A simple **contact book** program that:
+
+1. Stores contacts with names and email addresses
+2. Lets you look up a contact by name
+3. Lists all contacts
+
+## Step 1 — Hello, world
+
+Create `contacts.mochi` and add:
+
+```mochi
+print("Contact Book")
+```
+
+Run it:
+
+```bash
+mochi run contacts.mochi
+```
+
+You should see `Contact Book` printed. Mochi programs run top to bottom — no `main()` needed.
+
+## Step 2 — Define a type
+
+In Mochi, you can define custom types with the `type` keyword:
+
+```mochi
+type Contact {
+  name: string
+  email: string
+}
+```
+
+This defines a struct-like type with two string fields.
+
+## Step 3 — Create some contacts
+
+Now create a list of contacts:
+
+```mochi
+type Contact {
+  name: string
+  email: string
+}
+
+let contacts = [
+  Contact { name: "Alice", email: "alice@example.com" },
+  Contact { name: "Bob",   email: "bob@example.com" },
+  Contact { name: "Carol", email: "carol@example.com" },
+]
+
+print("Loaded", len(contacts), "contacts")
+```
+
+Run it again:
+
+```
+Loaded 3 contacts
+```
+
+`len()` is a built-in function that returns the length of a list.
+
+## Step 4 — Write a lookup function
+
+Let's write a function that searches for a contact by name:
+
+```mochi
+fun find_contact(name: string, contacts: [Contact]): Contact? {
+  for c in contacts {
+    if c.name == name {
+      return c
+    }
+  }
+  return nil
+}
+```
+
+`Contact?` is a union type meaning "a Contact or nil". We return `nil` when no match is found.
+
+Call it:
+
+```mochi
+let result = find_contact("Bob", contacts)
+if result != nil {
+  print("Found:", result.name, result.email)
+} else {
+  print("Not found")
+}
+```
+
+## Step 5 — List all contacts
+
+```mochi
+fun list_contacts(contacts: [Contact]) {
+  for c in contacts {
+    print("-", c.name, "<" + c.email + ">")
+  }
+}
+
+list_contacts(contacts)
+```
+
+## Step 6 — Add tests
+
+Mochi has built-in test blocks. Add tests to verify your lookup function:
+
+```mochi
+test "find existing contact" {
+  let c = find_contact("Alice", contacts)
+  expect c != nil
+  expect c.name == "Alice"
+}
+
+test "find missing contact" {
+  let c = find_contact("Dave", contacts)
+  expect c == nil
+}
+```
+
+Run tests:
+
+```bash
+mochi test contacts.mochi
+```
+
+## Complete program
+
+```mochi
+type Contact {
+  name: string
+  email: string
+}
+
+let contacts = [
+  Contact { name: "Alice", email: "alice@example.com" },
+  Contact { name: "Bob",   email: "bob@example.com" },
+  Contact { name: "Carol", email: "carol@example.com" },
+]
+
+fun find_contact(name: string, contacts: [Contact]): Contact? {
+  for c in contacts {
+    if c.name == name {
+      return c
+    }
+  }
+  return nil
+}
+
+fun list_contacts(contacts: [Contact]) {
+  for c in contacts {
+    print("-", c.name, "<" + c.email + ">")
+  }
+}
+
+// Main program
+print("=== Contact Book ===")
+list_contacts(contacts)
+
+let result = find_contact("Bob", contacts)
+if result != nil {
+  print("\nFound:", result.name, result.email)
+}
+
+test "find existing contact" {
+  let c = find_contact("Alice", contacts)
+  expect c != nil
+  expect c.name == "Alice"
+}
+
+test "find missing contact" {
+  let c = find_contact("Dave", contacts)
+  expect c == nil
+}
+```
+
+## What's next
+
+- [Language basics](/docs/manual/basics) — A deeper dive into all the core concepts
+- [Types](/docs/manual/types) — Union types, generics, and type system details
+- [Agents & Streams](/docs/manual/agents) — Build reactive, event-driven programs
+- [Generative AI](/docs/manual/generative-ai) — Use AI generation from within Mochi

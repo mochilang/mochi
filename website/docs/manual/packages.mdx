@@ -1,0 +1,102 @@
+---
+title: Packages and imports
+description: Organizing Mochi code into packages.
+sidebar_label: Packages
+---
+
+Mochi groups related files into **packages**. Every directory forms a package, and all `.mochi` files within it share the same namespace.
+
+## Declaring a package
+
+Start a file with a `package` declaration to name it:
+
+```mochi
+package mathutils
+
+export fun add(a: int, b: int): int {
+  return a + b
+}
+
+export fun multiply(a: int, b: int): int {
+  return a * b
+}
+
+// private — not accessible from outside
+fun helper(n: int): int {
+  return n * 2
+}
+```
+
+Only names marked with `export` are visible to other packages.
+
+## Importing a package
+
+Use `import` to bring a package into scope:
+
+```mochi
+import "mathutils"
+
+print(mathutils.add(2, 3))        // 5
+print(mathutils.multiply(3, 4))   // 12
+```
+
+### Aliases
+
+Provide an alias with `as`:
+
+```mochi
+import "mathutils" as mu
+
+print(mu.add(2, 3))
+```
+
+If `as` is omitted, the last segment of the path is used as the name.
+
+## Relative imports
+
+Paths starting with `./` or `../` are resolved relative to the importing file:
+
+```mochi
+import "./utils"         // imports utils.mochi or utils/ directory
+import "../shared/math"  // imports from parent directory
+```
+
+The `.mochi` extension may be omitted.
+
+## Standard library
+
+Mochi includes built-in packages for common tasks:
+
+```mochi
+import "math"
+import "strings"
+import "json"
+import "http"
+```
+
+See the [Built-ins reference](/docs/reference/builtins) for what's available without an import.
+
+## Multiple files in a package
+
+All `.mochi` files in a directory share the same package:
+
+```
+myapp/
+  main.mochi        // package myapp
+  helpers.mochi     // package myapp
+  types.mochi       // package myapp
+```
+
+Exported names from all files in the directory are accessible anywhere within the package.
+
+## Circular imports
+
+Circular imports are not allowed. Structure your packages so dependencies flow in one direction.
+
+## External packages
+
+Import third-party packages by path (future: package registry support):
+
+```mochi
+import "github.com/someuser/somepackage"
+```

@@ -1,0 +1,73 @@
+---
+title: Changelog
+description: Release history for the Mochi language.
+---
+
+For the full changelog with all entries, see [CHANGELOG.md](https://github.com/mochilang/mochi/blob/main/CHANGELOG.md) on GitHub.
+
+## Recent releases
+
+### v0.10.x — Current
+
+- Expanded standard library and built-in functions
+- Hundreds of algorithm implementations in the `examples/` directory
+- Improved bytecode optimizer
+- Docker image stabilization (`ghcr.io/mochilang/mochi`)
+- MCP server improvements
+
+### v0.9.x
+
+- Improved type inference for union types
+- `from`/`where`/`select`/`join` dataset queries
+- `load` and `save` for CSV, JSON, JSONL, YAML
+- Pipe operator `|` for functional composition
+
+### v0.8.x
+
+- Agent and stream stabilization
+- `intent` blocks for MCP tool exposure
+- `mochi serve` command
+
+### v0.7.x
+
+- `generate` blocks for AI text generation
+- `generate embedding` for vector embeddings
+- `model` configuration blocks
+- Tool calling in `generate` blocks
+
+### v0.6.x
+
+- Package system (`package`, `export`, `import`)
+- FFI with `extern` declarations
+- Transpilation to Go, Python, TypeScript
+
+### v0.5.x
+
+- Agents (`agent` blocks with `on` handlers)
+- Streams (`stream` definitions, `emit`)
+- `mochi serve` MCP integration
+
+### v0.4.x
+
+- Union types (`T | nil`, `A | B`)
+- `match` expressions
+- Destructuring assignment
+
+### v0.3.x
+
+- Type declarations (`type`)
+- Closures and arrow functions
+- `for`/`while` loops with `break`/`continue`
+
+### v0.2.x
+
+- Static type checking
+- `let` / `var` distinction
+- Built-in test blocks (`test` / `expect`)
+
+### v0.1.x
+
+- Initial release
+- Bytecode VM
+- `fun`, `if`/`else`, lists, maps
+- `print`, `str`, `len` built-ins

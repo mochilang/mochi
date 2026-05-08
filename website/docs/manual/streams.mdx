@@ -1,0 +1,113 @@
+---
+title: Streams
+description: Continuous data pipelines with Mochi streams.
+---
+
+Streams deliver structured events to handlers. They're ideal for continuous data, pipelines, and reactive architectures.
+
+## Defining a stream
+
+Use `stream` to define the shape of events:
+
+```mochi
+stream Sensor { id: string, temperature: float }
+```
+
+## Emitting events
+
+Use `emit` to produce stream events:
+
+```mochi
+emit Sensor { id: "s1", temperature: 22.5 }
+emit Sensor { id: "s2", temperature: 19.0 }
+```
+
+## Handling events
+
+Use `on` at the top level or inside an agent to react to stream events:
+
+```mochi
+on Sensor as s {
+  print(s.id, "->", s.temperature)
+}
+```
+
+Handlers run concurrently when multiple events are emitted in quick succession.
+
+## Streams as generators
+
+A `stream` block can generate a sequence of events:
+
+```mochi
+stream numbers {
+  for i in 1..11 {
+    emit value(i)
+  }
+}
+
+on value(n: int) {
+  print(n)
+}
+```
+
+## Transforming streams
+
+Combine `stream` and `on` to build pipelines:
+
+```mochi
+stream RawData { value: float }
+stream ProcessedData { value: float, category: string }
+
+on RawData as d {
+  let category = if d.value > 100.0 then "high" else "normal"
+  emit ProcessedData { value: d.value, category: category }
+}
+
+on ProcessedData as p {
+  print(p.category, p.value)
+}
+```
+
+## Stream state with agents
+
+Combine streams with agents to accumulate state:
+
+```mochi
+stream Tick {}
+
+agent timer {
+  var ticks = 0
+
+  on Tick {
+    ticks = ticks + 1
+    if ticks % 60 == 0 {
+      emit minute_elapsed(ticks / 60)
+    }
+  }
+
+  intent elapsed(): int {
+    return ticks
+  }
+}
+
+on minute_elapsed(minutes: int) {
+  print("Minute", minutes, "passed")
+}
+```
+
+## HTTP events
+
+Mochi can emit stream events from HTTP endpoints:
+
+```mochi
+stream HttpRequest { method: string, path: string, body: string }
+
+on HttpRequest as req {
+  match req.path {
+    "/health" => emit HttpResponse { status: 200, body: "ok" },
+    _         => emit HttpResponse { status: 404, body: "not found" },
+  }
+}
+```
+
+See [Fetch & HTTP](/docs/manual/generative-ai) for more.

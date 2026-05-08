@@ -1,0 +1,49 @@
+---
+title: Language reference
+sidebar_label: Overview
+description: A concise reference for the Mochi programming language.
+---
+
+The Mochi language reference provides a concise, precise description of the language's syntax and semantics.
+
+For a learning-oriented introduction, see the [Mochi Manual](/docs/manual/).
+
+## Reference sections
+
+- [**Keywords**](/docs/reference/keywords) — All reserved keywords and their uses
+- [**Operators**](/docs/reference/operators) — All operators, syntax, and precedence table
+- [**Built-ins**](/docs/reference/builtins) — Standard built-in functions available without imports
+
+## Grammar overview
+
+```
+Program     = { Statement }
+Statement   = LetDecl | VarDecl | FunDecl | TypeDecl | AgentDecl
+            | StreamDecl | ModelDecl | ImportDecl | PackageDecl
+            | ExportDecl | TestDecl | Expression ";"
+
+LetDecl     = "let" Identifier [ ":" Type ] "=" Expression
+VarDecl     = "var" Identifier [ ":" Type ] "=" Expression
+FunDecl     = "fun" Identifier "(" Params ")" [ ":" Type ] Block
+TypeDecl    = "type" Identifier "{" Fields "}"
+AgentDecl   = "agent" Identifier "{" AgentBody "}"
+StreamDecl  = "stream" Identifier [ "{" Fields "}" ]
+ModelDecl   = "model" Identifier "{" ModelFields "}"
+TestDecl    = "test" StringLit "{" TestBody "}"
+
+Block       = "{" { Statement } "}"
+```
+
+## File structure
+
+A Mochi source file has these optional sections, in order:
+
+1. `package` declaration (optional)
+2. `import` statements
+3. `type`, `model`, `fun`, `agent`, `stream` declarations
+4. Top-level statements (executed in order)
+5. `test` blocks
+
+## Execution model
+
+Mochi programs are compiled to bytecode and executed by the built-in VM. Execution proceeds top-to-bottom. `test` blocks are only run when you invoke `mochi test`.

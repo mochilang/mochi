@@ -1,0 +1,149 @@
+---
+title: Control flow
+description: Conditionals, loops, and pattern matching in Mochi.
+---
+
+## Conditionals — `if`
+
+The `if` statement evaluates a boolean expression and executes a block:
+
+```mochi
+if x > 0 {
+  print("positive")
+} else if x < 0 {
+  print("negative")
+} else {
+  print("zero")
+}
+```
+
+### `if` as expression
+
+`if` can be used as an expression with `then`/`else`:
+
+```mochi
+let label = if x > 0 then "positive" else "non-positive"
+print(label)
+```
+
+## Loops — `for`
+
+The `for` loop iterates over a range, list, map, or set:
+
+```mochi
+// Range (exclusive end)
+for i in 0..5 {
+  print(i)   // 0 1 2 3 4
+}
+
+// List
+let names = ["Alice", "Bob", "Carol"]
+for name in names {
+  print(name)
+}
+
+// Map keys
+let config = {"host": "localhost", "port": "8080"}
+for key in config.keys() {
+  print(key, config[key])
+}
+```
+
+## Loops — `while`
+
+Repeat while a condition is true:
+
+```mochi
+var count = 0
+while count < 5 {
+  print(count)
+  count = count + 1
+}
+```
+
+## `break` and `continue`
+
+Exit a loop early with `break`, or skip to the next iteration with `continue`:
+
+```mochi
+for i in 0..10 {
+  if i == 3 { continue }
+  if i == 7 { break }
+  print(i)   // 0 1 2 4 5 6
+}
+```
+
+## Pattern matching — `match`
+
+`match` selects the first arm whose pattern matches the value:
+
+```mochi
+let day = 3
+
+match day {
+  1 => print("Monday"),
+  2 => print("Tuesday"),
+  3 => print("Wednesday"),
+  _ => print("Another day"),
+}
+```
+
+The `_` wildcard matches anything not covered by earlier arms.
+
+### Match with blocks
+
+Each arm can be a block:
+
+```mochi
+match status {
+  200 => {
+    print("OK")
+    process()
+  },
+  404 => {
+    print("Not found")
+  },
+  _ => {
+    print("Error:", status)
+  },
+}
+```
+
+### Match as expression
+
+```mochi
+let name = match day {
+  1 => "Monday",
+  2 => "Tuesday",
+  3 => "Wednesday",
+  _ => "Other",
+}
+```
+
+### Match on strings
+
+```mochi
+let cmd = "start"
+
+match cmd {
+  "start" => begin(),
+  "stop"  => end(),
+  "help"  => print_help(),
+  _       => print("Unknown command:", cmd),
+}
+```
+
+## Early return
+
+Use `return` to exit a function early:
+
+```mochi
+fun find(n: int, nums: [int]): int {
+  for i in 0..len(nums) {
+    if nums[i] == n {
+      return i
+    }
+  }
+  return -1
+}
+```

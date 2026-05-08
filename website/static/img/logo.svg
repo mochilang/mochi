@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Mochi rice cake on a stick (🍡 inspired) -->
+  <!-- Stick -->
+  <rect x="30" y="36" width="4" height="22" rx="2" fill="#8B6914"/>
+  <!-- Bottom ball (pink) -->
+  <circle cx="32" cy="38" r="10" fill="#F48FB1"/>
+  <!-- Middle ball (white) -->
+  <circle cx="32" cy="22" r="10" fill="#F5F5F5" stroke="#E0E0E0" stroke-width="0.5"/>
+  <!-- Top ball (orange/brand) -->
+  <circle cx="32" cy="6" r="8" fill="#E07B39"/>
+  <!-- Shine on orange ball -->
+  <circle cx="28" cy="3" r="2" fill="rgba(255,255,255,0.4)"/>
+</svg>

@@ -1,0 +1,107 @@
+/* Mochi brand colors */
+:root {
+  --ifm-color-primary: #e07b39;
+  --ifm-color-primary-dark: #c96e30;
+  --ifm-color-primary-darker: #be682d;
+  --ifm-color-primary-darkest: #9d5625;
+  --ifm-color-primary-light: #e48a50;
+  --ifm-color-primary-lighter: #e79059;
+  --ifm-color-primary-lightest: #eda474;
+  --ifm-code-font-size: 93%;
+  --docusaurus-highlighted-code-line-bg: rgba(224, 123, 57, 0.1);
+  --ifm-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ifm-heading-font-weight: 700;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #f5956a;
+  --ifm-color-primary-dark: #f27e4a;
+  --ifm-color-primary-darker: #f0743b;
+  --ifm-color-primary-darkest: #e85e1a;
+  --ifm-color-primary-light: #f8ac8a;
+  --ifm-color-primary-lighter: #f9b599;
+  --ifm-color-primary-lightest: #fccdb9;
+  --docusaurus-highlighted-code-line-bg: rgba(245, 149, 106, 0.15);
+  --ifm-background-color: #0f0f0f;
+  --ifm-background-surface-color: #1a1a1a;
+  --ifm-navbar-background-color: #0f0f0f;
+  --ifm-footer-background-color: #0a0a0a;
+}
+
+/* Hero */
+.hero--primary {
+  background: linear-gradient(135deg, #1a0a00 0%, #2d1200 50%, #1a0a00 100%);
+}
+
+[data-theme='light'] .hero--primary {
+  background: linear-gradient(135deg, #fff5ee 0%, #ffe4cc 50%, #fff5ee 100%);
+}
+
+/* Navbar */
+.navbar {
+  box-shadow: 0 1px 0 0 rgba(224, 123, 57, 0.2);
+}
+
+/* Code blocks */
+.theme-code-block {
+  border-radius: 8px;
+}
+
+/* Feature cards */
+.feature-card {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid rgba(224, 123, 57, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.feature-card:hover {
+  border-color: var(--ifm-color-primary);
+  transform: translateY(-2px);
+}
+
+/* Sidebar headings */
+.sidebar-heading > .menu__link {
+  color: var(--ifm-color-primary);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+}
+
+/* Landing page */
+.homepage-hero-code {
+  background: #1a1a1a;
+  border: 1px solid rgba(224, 123, 57, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  font-family: 'Fira Code', 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  overflow: auto;
+}
+
+[data-theme='light'] .homepage-hero-code {
+  background: #f8f0e8;
+  border-color: rgba(224, 123, 57, 0.4);
+}
+
+.homepage-section {
+  padding: 4rem 0;
+}
+
+.homepage-section--alt {
+  background: var(--ifm-background-surface-color);
+}
+
+/* Badges */
+.badge-mochi {
+  display: inline-block;
+  background: var(--ifm-color-primary);
+  color: #fff;
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}

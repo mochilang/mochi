@@ -1,0 +1,99 @@
+---
+title: Keywords
+description: All reserved keywords in the Mochi language.
+---
+
+The following words are reserved and cannot be used as identifiers.
+
+## Declaration keywords
+
+| Keyword | Purpose |
+|---|---|
+| `let` | Immutable binding |
+| `var` | Mutable binding |
+| `fun` | Function declaration |
+| `type` | Type declaration |
+| `package` | Package declaration |
+| `export` | Export from package |
+| `import` | Import a package |
+| `extern` | Declare external (FFI) function |
+
+## Control flow
+
+| Keyword | Purpose |
+|---|---|
+| `if` | Conditional |
+| `else` | Alternative branch |
+| `then` | Inline if-expression |
+| `for` | For loop |
+| `in` | Iteration / membership |
+| `while` | While loop |
+| `break` | Exit loop |
+| `continue` | Skip to next iteration |
+| `return` | Return from function |
+| `match` | Pattern matching |
+
+## Agents & Streams
+
+| Keyword | Purpose |
+|---|---|
+| `agent` | Agent block |
+| `stream` | Stream definition |
+| `on` | Event handler |
+| `emit` | Emit an event |
+| `intent` | Expose intent endpoint |
+
+## AI generation
+
+| Keyword | Purpose |
+|---|---|
+| `generate` | AI generation block |
+| `model` | Model configuration |
+| `as` | Format conversion (e.g. `as json`) |
+| `tools` | Function tools for generation |
+
+## Data
+
+| Keyword | Purpose |
+|---|---|
+| `load` | Load data file |
+| `save` | Save data to file |
+| `from` | Dataset query |
+| `where` | Filter clause |
+| `select` | Projection clause |
+| `join` | Join clause |
+| `sort` | Sort clause |
+| `by` | Used with `sort` |
+| `skip` | Skip N rows |
+| `take` | Take N rows |
+| `to` | Used with `save` |
+
+## Testing
+
+| Keyword | Purpose |
+|---|---|
+| `test` | Test block |
+| `expect` | Assertion in test |
+
+## Literals
+
+| Keyword | Purpose |
+|---|---|
+| `true` | Boolean true |
+| `false` | Boolean false |
+| `nil` | Null/absent value |
+
+## Set operators
+
+| Keyword | Purpose |
+|---|---|
+| `union` | Set union |
+| `intersect` | Set intersection |
+| `except` | Set difference |
+| `all` | Used with `union all` |
+
+## Fetch
+
+| Keyword | Purpose |
+|---|---|
+| `fetch` | HTTP fetch expression |

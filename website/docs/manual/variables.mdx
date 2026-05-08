@@ -1,0 +1,98 @@
+---
+title: Variables
+description: How to declare and use variables in Mochi.
+---
+
+Mochi variables hold typed values. Bindings are immutable by default.
+
+## Immutable bindings — `let`
+
+Use `let` to create an immutable binding. Once bound, it cannot be reassigned:
+
+```mochi
+let name = "Mochi"
+let pi = 3.14159
+let active = true
+```
+
+Attempting to reassign a `let` binding produces a compile-time error:
+
+```mochi
+let x = 1
+x = 2   // error: cannot assign to immutable binding 'x'
+```
+
+## Mutable bindings — `var`
+
+Use `var` for values that need to change:
+
+```mochi
+var count = 0
+count = count + 1
+count = count + 1
+print(count)   // 2
+```
+
+## Type annotations
+
+Mochi infers types from the initializer. You can also annotate explicitly:
+
+```mochi
+let x: int = 42
+let ratio: float = 3.14
+let message: string = "hello"
+let active: bool = true
+```
+
+Type annotations are required when there's no initializer (rare), or when you want to be explicit.
+
+## Scope
+
+Variables are scoped to the block they're declared in. Nested blocks can shadow outer names:
+
+```mochi
+let x = "outer"
+
+if true {
+  let x = "inner"
+  print(x)   // inner
+}
+
+print(x)     // outer
+```
+
+## Destructuring
+
+Destructure lists and maps:
+
+```mochi
+let [a, b, c] = [1, 2, 3]
+print(a, b, c)   // 1 2 3
+
+let {"name": n, "age": age} = {"name": "Ana", "age": 22}
+print(n, age)    // Ana 22
+```
+
+## Constants
+
+Mochi doesn't have a separate `const` concept — immutable `let` bindings at the top level serve as constants:
+
+```mochi
+let MAX_RETRIES = 3
+let DEFAULT_TIMEOUT = 30
+```
+
+## Nil and optional values
+
+Use union types to express "value or nothing":
+
+```mochi
+let maybe: string | nil = nil
+let value: int | nil = 42
+
+if maybe != nil {
+  print(maybe)
+}
+```
+
+See [Types](/docs/manual/types) for more on union types.

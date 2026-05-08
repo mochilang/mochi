@@ -1,0 +1,100 @@
+---
+title: Errors
+description: Error handling in Mochi.
+---
+
+Mochi uses explicit error values rather than exceptions. This keeps control flow visible and prevents surprising failure modes.
+
+## Nil checks
+
+The simplest error pattern uses `T | nil` union types:
+
+```mochi
+fun parse_int(s: string): int | nil {
+  // returns nil if s is not a valid integer
+}
+
+let n = parse_int("42")
+if n == nil {
+  print("invalid input")
+} else {
+  print("parsed:", n)
+}
+```
+
+## Error values
+
+For richer errors, return a named error type:
+
+```mochi
+type ParseError {
+  message: string
+  input: string
+}
+
+fun parse_age(s: string): int | ParseError {
+  let n = parse_int(s)
+  if n == nil {
+    return ParseError { message: "not a number", input: s }
+  }
+  if n < 0 || n > 150 {
+    return ParseError { message: "out of range", input: s }
+  }
+  return n
+}
+
+let result = parse_age("abc")
+match result {
+  ParseError => print("Error:", result.message),
+  int => print("Age:", result),
+}
+```
+
+## Propagating errors
+
+Pass errors up the call stack by returning them:
+
+```mochi
+fun load_config(path: string): {string: string} | string {
+  let data = read_file(path)
+  if data == nil {
+    return "could not read file: " + path
+  }
+  return parse_config(data)
+}
+
+let cfg = load_config("config.json")
+if cfg is string {
+  print("Error:", cfg)
+  return
+}
+// use cfg as map here
+```
+
+## `expect` in tests
+
+In test blocks, `expect` asserts a condition and reports a failure if false:
+
+```mochi
+test "division" {
+  expect 10 / 2 == 5
+  expect 7 % 3 == 1
+}
+```
+
+Failed `expect` statements print a descriptive message and mark the test as failed, but don't stop the program.
+
+## Panic
+
+For unrecoverable errors, use the built-in `panic()`:
+
+```mochi
+fun must_positive(n: int): int {
+  if n <= 0 {
+    panic("expected positive number, got " + str(n))
+  }
+  return n
+}
+```
+
+`panic()` prints the message and terminates the program immediately. Use it for invariant violations that should never happen in correct code.

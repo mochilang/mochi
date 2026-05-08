@@ -1,0 +1,9 @@
+# Dependencies
+node_modules/
+
+# Build output
+build/
+.docusaurus/
+
+# Generated files
+.cache/

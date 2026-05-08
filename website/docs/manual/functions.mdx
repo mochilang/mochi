@@ -1,0 +1,144 @@
+---
+title: Functions
+description: Defining and calling functions in Mochi.
+---
+
+Functions in Mochi are first-class values. They can be passed to other functions, returned from functions, and stored in variables.
+
+## Basic functions
+
+Declare a function with `fun`:
+
+```mochi
+fun greet(name: string): string {
+  return "Hello, " + name + "!"
+}
+
+print(greet("world"))   // Hello, world!
+```
+
+Every parameter must have a type annotation. The return type follows the parameter list after `:`.
+
+## Void functions
+
+Functions that don't return a value omit the return type:
+
+```mochi
+fun log(message: string) {
+  print("[log]", message)
+}
+```
+
+## Arrow functions
+
+Single-expression functions can use arrow syntax:
+
+```mochi
+let double = fun(x: int): int => x * 2
+let add = fun(a: int, b: int): int => a + b
+```
+
+## First-class functions
+
+Functions are values and can be passed around:
+
+```mochi
+fun apply(f: fun(int): int, value: int): int {
+  return f(value)
+}
+
+fun triple(x: int): int {
+  return x * 3
+}
+
+print(apply(triple, 4))    // 12
+print(apply(double, 4))    // 8
+```
+
+## Closures
+
+Functions capture variables from their enclosing scope:
+
+```mochi
+fun make_adder(n: int): fun(int): int {
+  return fun(x: int): int => x + n
+}
+
+let add5 = make_adder(5)
+print(add5(10))    // 15
+print(add5(3))     // 8
+```
+
+## Recursion
+
+Functions can call themselves:
+
+```mochi
+fun factorial(n: int): int {
+  if n <= 1 { return 1 }
+  return n * factorial(n - 1)
+}
+
+print(factorial(5))   // 120
+```
+
+## Multiple return values
+
+Return a list or map to return multiple values:
+
+```mochi
+fun min_max(nums: [int]): [int] {
+  var lo = nums[0]
+  var hi = nums[0]
+  for n in nums {
+    if n < lo { lo = n }
+    if n > hi { hi = n }
+  }
+  return [lo, hi]
+}
+
+let [lo, hi] = min_max([3, 1, 4, 1, 5, 9])
+print(lo, hi)   // 1 9
+```
+
+## Default parameters
+
+Functions can specify default values using `=`:
+
+```mochi
+fun greet(name: string, greeting: string = "Hello"): string {
+  return greeting + ", " + name + "!"
+}
+
+print(greet("Ana"))            // Hello, Ana!
+print(greet("Ana", "Hi"))      // Hi, Ana!
+```
+
+## Higher-order patterns
+
+Common functional patterns with built-in operators:
+
+```mochi
+let nums = [1, 2, 3, 4, 5]
+
+let evens  = nums | filter(fun(n: int): bool => n % 2 == 0)
+let doubled = evens | map(fun(n: int): int => n * 2)
+let total   = nums | reduce(fun(acc: int, n: int): int => acc + n, 0)
+
+print(doubled)   // [4, 8]
+print(total)     // 15
+```
+
+## Exported functions
+
+Mark functions as exported from a package with `export`:
+
+```mochi
+package math
+
+export fun abs(n: int): int {
+  return if n < 0 then -n else n
+}
+```
+
+See [Packages](/docs/manual/packages) for details.

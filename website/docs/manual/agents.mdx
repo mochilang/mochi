@@ -1,0 +1,143 @@
+---
+title: Agents
+description: Reactive, event-driven programming with Mochi agents.
+---
+
+Agents are one of Mochi's most distinctive features. An agent is a stateful block that reacts to events using `on` handlers.
+
+## Basic agent
+
+```mochi
+agent counter {
+  var count = 0
+
+  on increment() {
+    count = count + 1
+    emit updated(count)
+  }
+
+  on reset() {
+    count = 0
+    emit updated(count)
+  }
+}
+```
+
+The agent maintains its own state (`count`) and reacts to two events: `increment` and `reset`.
+When it handles an event, it can emit new events using `emit`.
+
+## Handlers — `on`
+
+Each `on` block defines a handler for a named event. Handlers receive event data as parameters:
+
+```mochi
+agent logger {
+  on message(text: string) {
+    print("[log]", text)
+    emit logged(text)
+  }
+
+  on error(code: int, msg: string) {
+    print("[error]", code, msg)
+  }
+}
+```
+
+## State
+
+Agents can hold mutable state with `var`:
+
+```mochi
+agent session {
+  var user: string = ""
+  var active = false
+
+  on login(name: string) {
+    user = name
+    active = true
+    emit login_ok(name)
+  }
+
+  on logout() {
+    active = false
+    emit logout_ok(user)
+  }
+}
+```
+
+## Intents
+
+`intent` functions expose callable endpoints on an agent — useful for MCP server integration or structured external queries:
+
+```mochi
+agent monitor {
+  var event_count = 0
+
+  on data(value: float) {
+    event_count = event_count + 1
+  }
+
+  intent status(): string {
+    return "events processed: " + str(event_count)
+  }
+
+  intent reset_count() {
+    event_count = 0
+  }
+}
+
+let m = monitor {}
+print(m.status())
+```
+
+## Emitting events
+
+Agents use `emit` to send events back out:
+
+```mochi
+agent transformer {
+  on input(value: int) {
+    let doubled = value * 2
+    emit output(doubled)
+  }
+}
+```
+
+Other agents or code can listen for `output` events.
+
+## Agent composition
+
+Agents can listen to each other's events:
+
+```mochi
+agent producer {
+  on start() {
+    emit data(1)
+    emit data(2)
+    emit data(3)
+    emit done()
+  }
+}
+
+agent consumer {
+  var total = 0
+
+  on data(n: int) {
+    total = total + n
+  }
+
+  on done() {
+    print("Total:", total)
+  }
+}
+```
+
+## MCP server integration
+
+Agents with `intent` blocks are automatically exposed as tools when running under the Mochi MCP server:
+
+```bash
+mochi serve myagent.mochi
+```
+
+See the [GitHub repo](https://github.com/mochilang/mochi) for MCP integration details.

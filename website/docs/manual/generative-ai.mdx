@@ -1,0 +1,163 @@
+---
+title: Generative AI
+description: Built-in AI generation in Mochi using generate blocks.
+---
+
+Mochi has native support for large language models via `generate` blocks. No SDK imports needed — AI generation is a first-class language feature.
+
+## Basic generation
+
+The simplest form passes a prompt and returns the model's text response:
+
+```mochi
+let poem = generate text {
+  prompt: "Write a haiku about the ocean"
+}
+
+print(poem)
+```
+
+## Model configuration
+
+Define a reusable model with the `model` keyword:
+
+```mochi
+model gpt {
+  provider: "openai"
+  name: "gpt-4o-mini"
+  temperature: 0.7
+  maxTokens: 500
+}
+
+model claude {
+  provider: "anthropic"
+  name: "claude-haiku-4-5"
+  temperature: 0.5
+}
+```
+
+Reference the model by name in `generate` blocks:
+
+```mochi
+let summary = generate text {
+  model: "gpt"
+  prompt: "Summarize the history of programming languages in 2 sentences."
+}
+
+print(summary)
+```
+
+## Generation parameters
+
+```mochi
+let result = generate text {
+  model: "claude"
+  system: "You are a concise technical writer."
+  prompt: "Explain what a hash table is."
+  temperature: 0.3
+  maxTokens: 200
+  stop: ["\n\n", "---"]
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `prompt` | string | The user message |
+| `system` | string | System/context instructions |
+| `model` | string | Model name (defaults to configured default) |
+| `temperature` | float | Randomness 0.0–1.0 |
+| `maxTokens` | int | Maximum output tokens |
+| `stop` | [string] | Stop sequences |
+
+## Structured output
+
+Use `as json` to parse the response as structured data:
+
+```mochi
+let data = generate text {
+  prompt: "Return a JSON object with fields: name (string), score (int)"
+} as json
+
+print(data["name"], data["score"])
+```
+
+Other format modes: `as yaml`, `as list`, `as lines`.
+
+## Tools (function calling)
+
+Expose Mochi functions as tools for the model to call:
+
+```mochi
+fun get_weather(location: string): string {
+  if location == "Paris" {
+    return "sunny, 22°C"
+  }
+  return "weather unavailable"
+}
+
+let answer = generate text {
+  prompt: "What's the weather in Paris right now?"
+  tools: [
+    get_weather {
+      description: "Get current weather for a city"
+    }
+  ]
+}
+
+print(answer)
+```
+
+The model can call `get_weather` to look up real data before composing its answer.
+
+## Embeddings
+
+Use `generate embedding` to get vector representations of text:
+
+```mochi
+let vec = generate embedding {
+  text: "hello world"
+  normalize: true
+}
+
+print("dimensions:", len(vec))
+```
+
+Embeddings are useful for semantic search, similarity comparison, and clustering.
+
+## AI inside agents
+
+Combine `generate` with agents for autonomous, reactive AI workflows:
+
+```mochi
+model assistant {
+  provider: "openai"
+  name: "gpt-4o"
+}
+
+agent chat {
+  on user_message(text: string) {
+    let response = generate text {
+      model: "assistant"
+      prompt: text
+    }
+    emit bot_reply(response)
+  }
+}
+```
+
+## Environment variables
+
+API keys are loaded from environment variables:
+
+| Provider | Variable |
+|---|---|
+| OpenAI | `OPENAI_API_KEY` |
+| Anthropic | `ANTHROPIC_API_KEY` |
+| Ollama (local) | `OLLAMA_BASE_URL` |
+
+Set them before running:
+
+```bash
+export OPENAI_API_KEY=sk-...
+mochi run chat.mochi
+```

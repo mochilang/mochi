@@ -1,0 +1,130 @@
+---
+title: Operators
+description: Complete operator reference for Mochi.
+---
+
+## Arithmetic
+
+| Operator | Name | Types | Example |
+|---|---|---|---|
+| `+` | Addition | int, float, string | `1 + 2`, `"a" + "b"` |
+| `-` | Subtraction | int, float | `5 - 3` |
+| `*` | Multiplication | int, float | `3 * 4` |
+| `/` | Division | int, float | `10 / 3` |
+| `%` | Modulo | int | `7 % 3` |
+| `**` | Exponentiation | int, float | `2 ** 8` |
+| `-` | Unary negation | int, float | `-x` |
+
+Integer `/` truncates toward zero. Use `float` operands for fractional results.
+
+## Comparison
+
+| Operator | Meaning |
+|---|---|
+| `==` | Equal |
+| `!=` | Not equal |
+| `<` | Less than |
+| `<=` | Less than or equal |
+| `>` | Greater than |
+| `>=` | Greater than or equal |
+
+All comparisons return `bool`.
+
+## Logical
+
+| Operator | Meaning | Notes |
+|---|---|---|
+| `&&` | AND | Short-circuits |
+| `\|\|` | OR | Short-circuits |
+| `!` | NOT | Unary prefix |
+
+## Membership
+
+| Operator | Meaning |
+|---|---|
+| `in` | Element is in list, set, or map keys |
+
+```mochi
+print(2 in [1, 2, 3])           // true
+print("x" in {"x", "y"})       // true
+print("k" in {"k": "v"})       // true (key membership)
+```
+
+## Range
+
+| Operator | Meaning |
+|---|---|
+| `..` | Exclusive range `[start, end)` |
+
+```mochi
+for i in 0..5 { print(i) }   // 0 1 2 3 4
+```
+
+## Pipe
+
+| Operator | Meaning |
+|---|---|
+| `\|` | Pipe value into function |
+
+```mochi
+let result = [1,2,3,4,5]
+  | filter(fun(n: int): bool => n % 2 == 0)
+  | map(fun(n: int): int => n * 10)
+```
+
+## Set operators
+
+| Operator | Meaning |
+|---|---|
+| `union` | All elements from both sets |
+| `union all` | Union preserving duplicates (list) |
+| `intersect` | Elements in both sets |
+| `except` | Elements in left but not right |
+
+```mochi
+let a = {1, 2, 3}
+let b = {2, 3, 4}
+print(a union b)       // {1, 2, 3, 4}
+print(a intersect b)   // {2, 3}
+print(a except b)      // {1}
+```
+
+## Attribute access
+
+| Operator | Meaning |
+|---|---|
+| `.` | Field/method access |
+
+```mochi
+let p = Point { x: 1.0, y: 2.0 }
+print(p.x)
+```
+
+## Index operator
+
+| Operator | Meaning |
+|---|---|
+| `[i]` | List index, map key access |
+
+```mochi
+let nums = [10, 20, 30]
+print(nums[1])         // 20
+
+let m = {"key": "val"}
+print(m["key"])        // val
+```
+
+## Precedence table
+
+| Level | Operators |
+|---|---|
+| 9 (highest) | `.`, `[]` |
+| 8 | `**` |
+| 7 | `-` (unary), `!` |
+| 6 | `*`, `/`, `%` |
+| 5 | `+`, `-` |
+| 4 | `<`, `<=`, `>`, `>=` |
+| 3 | `==`, `!=`, `in` |
+| 2 | `&&` |
+| 1 | `\|\|` |
+| 0 (lowest) | Assignment `=` |

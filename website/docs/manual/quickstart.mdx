@@ -1,0 +1,214 @@
+---
+title: Mochi quickstart
+description: Get up and running fast with the Mochi programming language.
+sidebar_label: Quickstart
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+This page gets you running Mochi code as quickly as possible.
+For a more thorough introduction, see the [tutorial](/docs/manual/get-started) or [language basics](/docs/manual/basics).
+
+:::note System requirements
+
+Mochi runs on **macOS**, **Linux**, and **Windows** (via WSL). See [requirements](/docs/manual/requirements) for details.
+
+:::
+
+## Install Mochi
+
+<Tabs groupId="install-method">
+<TabItem value="binary" label="Binary (recommended)">
+
+Download the latest prebuilt binary from the [releases page](https://github.com/mochilang/mochi/releases):
+
+```bash
+# macOS / Linux (one-liner)
+curl -fsSL https://raw.githubusercontent.com/mochilang/mochi/main/scripts/install.sh | sh
+
+# Or download directly and install
+chmod +x mochi
+sudo mv mochi /usr/local/bin/
+```
+
+Verify installation:
+
+```bash
+mochi --version
+```
+
+</TabItem>
+<TabItem value="docker" label="Docker">
+
+Run Mochi without installing anything locally:
+
+```bash
+docker pull ghcr.io/mochilang/mochi:latest
+
+# Run a file
+docker run -i --rm -v "$PWD:/app" -w /app ghcr.io/mochilang/mochi run hello.mochi
+```
+
+Add a shell alias for convenience:
+
+```bash
+alias mochi="docker run -i --rm -v $PWD:/app -w /app ghcr.io/mochilang/mochi"
+```
+
+</TabItem>
+<TabItem value="source" label="From source">
+
+Build Mochi from source (requires Go 1.21+):
+
+```bash
+git clone https://github.com/mochilang/mochi
+cd mochi
+make build
+
+# Optionally install to PATH
+sudo cp bin/mochi /usr/local/bin/
+```
+
+</TabItem>
+</Tabs>
+
+## Hello, world
+
+Create a file named `hello.mochi`:
+
+```mochi
+print("Hello, world!")
+```
+
+Run it:
+
+```bash
+mochi run hello.mochi
+```
+
+Output:
+
+```
+Hello, world!
+```
+
+Unlike many languages, Mochi programs don't need a `main()` function — execution starts at the top of the file.
+
+## Variables
+
+Use `let` for immutable bindings and `var` for mutable ones:
+
+```mochi
+let name = "Mochi"      // immutable
+var count = 0           // mutable
+
+count = count + 1
+print(name, count)      // Mochi 1
+```
+
+## Functions
+
+Functions are declared with `fun`:
+
+```mochi
+fun greet(name: string): string {
+  return "Hello, " + name + "!"
+}
+
+print(greet("world"))   // Hello, world!
+```
+
+Arrow syntax works for single-expression functions:
+
+```mochi
+let double = fun(x: int): int => x * 2
+print(double(5))        // 10
+```
+
+## Control flow
+
+```mochi
+let x = 10
+
+if x > 5 {
+  print("big")
+} else {
+  print("small")
+}
+
+for i in 1..4 {
+  print(i)              // 1 2 3
+}
+
+var n = 3
+while n > 0 {
+  print(n)
+  n = n - 1
+}
+```
+
+## Types
+
+Mochi is statically typed with type inference. Declare custom types with `type`:
+
+```mochi
+type Point {
+  x: float
+  y: float
+}
+
+let p = Point { x: 1.0, y: 2.0 }
+print(p.x, p.y)
+```
+
+## Collections
+
+```mochi
+let nums = [1, 2, 3, 4, 5]
+let evens = nums | filter(fun(n: int): bool => n % 2 == 0)
+let doubled = evens | map(fun(n: int): int => n * 2)
+print(doubled)          // [4, 8]
+
+let config = {"host": "localhost", "port": "8080"}
+print(config["host"])   // localhost
+```
+
+## Tests
+
+Mochi has built-in test support:
+
+```mochi
+fun add(a: int, b: int): int {
+  return a + b
+}
+
+test "addition" {
+  expect add(2, 3) == 5
+  expect add(-1, 1) == 0
+}
+```
+
+Run tests:
+
+```bash
+mochi test hello.mochi
+```
+
+## Agents
+
+Agents handle events reactively:
+
+```mochi
+agent echo {
+  on message(text: string) {
+    emit reply(text)
+  }
+}
+```
+
+## Next steps
+
+- [Tutorial](/docs/manual/get-started) — Build a complete Mochi program step by step
+- [Language basics](/docs/manual/basics) — A thorough overview of the language
+- [Examples](https://github.com/mochilang/mochi/tree/main/examples) — Browse example programs on GitHub

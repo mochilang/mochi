@@ -1,0 +1,140 @@
+---
+title: Types
+description: The type system in Mochi — primitives, structs, and union types.
+---
+
+Mochi is statically typed. Every value has a type known at compile time, but type annotations are usually optional because the compiler infers them.
+
+## Primitive types
+
+| Type | Description | Example |
+|---|---|---|
+| `int` | 64-bit integer | `42`, `-7`, `0` |
+| `float` | 64-bit floating point | `3.14`, `-0.5` |
+| `string` | UTF-8 text | `"hello"` |
+| `bool` | Boolean | `true`, `false` |
+| `nil` | Absence of value | `nil` |
+
+```mochi
+let n: int = 100
+let x: float = 2.718
+let s: string = "hi"
+let ok: bool = false
+```
+
+## Collection types
+
+| Type | Description |
+|---|---|
+| `[T]` | List of elements of type `T` |
+| `{K: V}` | Map from key type `K` to value type `V` |
+| `{T}` | Set of elements of type `T` |
+
+```mochi
+let nums: [int] = [1, 2, 3]
+let config: {string: string} = {"host": "localhost"}
+let tags: {string} = {"a", "b", "c"}
+```
+
+## Struct types
+
+Define custom types with `type`:
+
+```mochi
+type User {
+  name: string
+  age: int
+  email: string
+}
+
+let u = User {
+  name: "Ana",
+  age: 22,
+  email: "ana@example.com",
+}
+
+print(u.name)   // Ana
+```
+
+Fields are accessed with dot notation.
+
+### Methods
+
+You can define functions that operate on a type and call them with dot notation:
+
+```mochi
+type Point {
+  x: float
+  y: float
+}
+
+fun Point.distance(other: Point): float {
+  let dx = self.x - other.x
+  let dy = self.y - other.y
+  return (dx * dx + dy * dy) ** 0.5
+}
+
+let a = Point { x: 0.0, y: 0.0 }
+let b = Point { x: 3.0, y: 4.0 }
+print(a.distance(b))   // 5.0
+```
+
+## Union types
+
+Union types express that a value can be one of several types:
+
+```mochi
+let value: int | string = "hello"
+let maybe: User | nil = nil
+```
+
+The most common use is "optional" values using `T | nil`:
+
+```mochi
+fun find(name: string, users: [User]): User | nil {
+  for u in users {
+    if u.name == name {
+      return u
+    }
+  }
+  return nil
+}
+
+let result = find("Ana", users)
+if result != nil {
+  print(result.name)
+}
+```
+
+## Type inference
+
+Mochi infers types from context. Annotations are optional in most cases:
+
+```mochi
+let x = 42           // inferred: int
+let y = 3.14         // inferred: float
+let s = "hello"      // inferred: string
+let nums = [1, 2, 3] // inferred: [int]
+```
+
+## Function types
+
+Function types use `fun(ArgTypes): ReturnType` syntax:
+
+```mochi
+let transform: fun(int): int = fun(x: int): int => x * 2
+
+// In parameter position:
+fun apply(f: fun(int): int, n: int): int {
+  return f(n)
+}
+```
+
+## Type aliases
+
+You can give a type a shorter name:
+
+```mochi
+type StringList = [string]
+type Callback = fun(string): bool
+```

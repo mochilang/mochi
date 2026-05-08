@@ -1,0 +1,129 @@
+---
+title: Operators
+description: All operators in Mochi and their precedence.
+---
+
+## Arithmetic operators
+
+| Operator | Description | Example |
+|---|---|---|
+| `+` | Addition | `1 + 2` → `3` |
+| `-` | Subtraction | `5 - 3` → `2` |
+| `*` | Multiplication | `3 * 4` → `12` |
+| `/` | Division | `10 / 4` → `2.5` |
+| `%` | Modulo | `7 % 3` → `1` |
+| `**` | Exponentiation | `2 ** 8` → `256` |
+| `-` (unary) | Negation | `-x` |
+
+Integer division truncates toward zero when both operands are `int`. Use at least one `float` operand for fractional results.
+
+## Comparison operators
+
+| Operator | Description |
+|---|---|
+| `==` | Equal |
+| `!=` | Not equal |
+| `<` | Less than |
+| `<=` | Less than or equal |
+| `>` | Greater than |
+| `>=` | Greater than or equal |
+
+Comparisons return `bool`.
+
+## Logical operators
+
+| Operator | Description |
+|---|---|
+| `&&` | Logical AND |
+| `\|\|` | Logical OR |
+| `!` | Logical NOT |
+
+Short-circuit evaluation: `&&` stops at the first `false`, `||` stops at the first `true`.
+
+```mochi
+let x = 5
+print(x > 0 && x < 10)   // true
+print(x < 0 || x == 5)   // true
+print(!true)              // false
+```
+
+## String operators
+
+| Operator | Description |
+|---|---|
+| `+` | Concatenation |
+
+```mochi
+let s = "Hello" + ", " + "world!"
+```
+
+## Collection operators
+
+| Operator | Description |
+|---|---|
+| `in` | Membership test |
+| `+` | List concatenation |
+
+```mochi
+let nums = [1, 2, 3]
+print(2 in nums)        // true
+print(nums + [4, 5])    // [1, 2, 3, 4, 5]
+```
+
+Also available as functional operators via pipe `|`:
+
+```mochi
+let result = nums | filter(fun(n: int): bool => n > 1)
+              | map(fun(n: int): int => n * 2)
+```
+
+### Set operators
+
+```mochi
+let a = {1, 2, 3}
+let b = {2, 3, 4}
+
+let u = a union b         // {1, 2, 3, 4}
+let i = a intersect b     // {2, 3}
+let d = a except b        // {1}
+```
+
+## Range operator
+
+`start..end` creates a range (exclusive end):
+
+```mochi
+for i in 0..5 {
+  print(i)   // 0 1 2 3 4
+}
+```
+
+## Assignment
+
+```mochi
+var x = 10
+x = x + 1
+```
+
+Mochi does not have compound assignment operators (`+=`, `-=`, etc.) — use `x = x + 1`.
+
+## Operator precedence
+
+From highest to lowest:
+
+| Precedence | Operators |
+|---|---|
+| 8 | `**` |
+| 7 | `-` (unary), `!` |
+| 6 | `*`, `/`, `%` |
+| 5 | `+`, `-` |
+| 4 | `<`, `<=`, `>`, `>=` |
+| 3 | `==`, `!=` |
+| 2 | `&&` |
+| 1 | `\|\|` |
+
+Use parentheses to override precedence:
+
+```mochi
+let result = (2 + 3) * 4   // 20, not 14
+```
