@@ -92,6 +92,12 @@ const config = {
             label: 'Reference',
           },
           {
+            type: 'docSidebar',
+            sidebarId: 'mepSidebar',
+            position: 'left',
+            label: 'MEPs',
+          },
+          {
             to: '/docs/roadmap',
             label: 'Roadmap',
             position: 'left',

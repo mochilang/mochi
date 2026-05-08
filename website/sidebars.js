@@ -57,6 +57,49 @@ const sidebars = {
     'reference/operators',
     'reference/builtins',
   ],
+
+  mepSidebar: [
+    'mep/mep-0000',
+    {
+      label: 'Foundations',
+      type: 'category',
+      className: 'sidebar-heading',
+      collapsed: false,
+      items: [
+        'mep/mep-0001',
+        'mep/mep-0002',
+        'mep/mep-0003',
+        'mep/mep-0004',
+        'mep/mep-0005',
+        'mep/mep-0006',
+      ],
+    },
+    {
+      label: 'Soundness',
+      type: 'category',
+      className: 'sidebar-heading',
+      collapsed: false,
+      items: [
+        'mep/mep-0007',
+        'mep/mep-0008',
+        'mep/mep-0009',
+        'mep/mep-0010',
+      ],
+    },
+    {
+      label: 'Standards Track',
+      type: 'category',
+      className: 'sidebar-heading',
+      collapsed: false,
+      items: [
+        'mep/mep-0011',
+        'mep/mep-0012',
+        'mep/mep-0013',
+        'mep/mep-0014',
+        'mep/mep-0015',
+      ],
+    },
+  ],
 };
 
 module.exports = sidebars;
