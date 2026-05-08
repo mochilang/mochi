@@ -154,6 +154,14 @@
   margin: 0;
 }
 
+.inputWrap {
+  margin-top: 1rem;
+}
+
+.inputWrap :global(.theme-code-block) {
+  margin: 0;
+}
+
 .outputWrap {
   margin-top: 1rem;
 }
