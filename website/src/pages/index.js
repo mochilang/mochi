@@ -221,6 +221,13 @@ save top to "top.json" with { format: "json" }`,
     output: `Laptop, $1500
 Phone, $900
 Tablet, $600`,
+    alt: {
+      heading: 'Or as one expression',
+      code: `print(from p in load "products.json" as {name: string, price: int} with { format: "json" }
+      where p.price >= 100 sort by -p.price take 3
+      select p.name + " $" + str(p.price))`,
+      output: `["Laptop $1500", "Phone $900", "Tablet $600"]`,
+    },
   },
   {
     label: 'Tests',
