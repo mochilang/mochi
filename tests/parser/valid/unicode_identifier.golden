@@ -1,0 +1,8 @@
+(program
+  (let "π" (float 3.14))
+  (let "θ_max" (int 90))
+  (let "🎯" (int 1))
+  (call print (selector "π"))
+  (call print (selector "θ_max"))
+  (call print (selector "🎯"))
+)
