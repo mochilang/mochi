@@ -1,0 +1,106 @@
+.section {
+  padding: 6rem 0 4rem;
+  background: var(--mochi-bg-base);
+  position: relative;
+}
+
+.header {
+  max-width: 720px;
+  margin: 0 auto 3rem;
+  text-align: center;
+}
+
+.title {
+  font-family: var(--ifm-heading-font-family);
+  font-size: 2.5rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.75rem 0;
+  color: var(--mochi-text-primary);
+}
+
+.lede {
+  font-size: 1.1rem;
+  line-height: 1.55;
+  color: var(--mochi-text-secondary);
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 996px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--mochi-bg-surface);
+  border: 1px solid var(--mochi-border);
+  border-radius: 0;
+  padding: 1.6rem 1.5rem;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.card:hover {
+  border-color: var(--mochi-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--mochi-shadow-soft);
+}
+
+.cardIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 0;
+  background: var(--mochi-primary-soft);
+  color: var(--mochi-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+}
+
+.cardIcon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.cardTitle {
+  font-family: var(--ifm-heading-font-family);
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--mochi-text-primary);
+}
+
+.cardDesc {
+  font-size: 0.94rem;
+  line-height: 1.55;
+  color: var(--mochi-text-secondary);
+  margin: 0;
+}
+
+.cardBullets {
+  margin: 0.4rem 0 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.88rem;
+  color: var(--mochi-text-secondary);
+}
+
+.cardBullets li {
+  margin-bottom: 0.2rem;
+}

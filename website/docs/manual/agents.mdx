@@ -1,0 +1,338 @@
+---
+title: Agents
+sidebar_label: Agents
+description: Stateful blocks that react to events with on handlers and expose intents to the outside world.
+---
+
+An *agent* is a stateful block that reacts to events. It owns a set of `var`
+fields, declares `on` handlers that respond to typed events, and may expose
+`intent` endpoints that callers, including language models speaking MCP, can
+invoke.
+
+Agents are part of the language. There is no message bus to wire up and no
+actor library to import. You write `agent NAME { ... }` and Mochi handles
+dispatch.
+
+## A first agent
+
+```mochi
+stream Message { from: string, body: string }
+
+agent inbox {
+  var unread: int = 0
+
+  on Message as m {
+    unread = unread + 1
+    print("new from " + m.from)
+  }
+
+  intent count(): int {
+    return unread
+  }
+}
+```
+
+Three things to notice:
+
+1. The agent declares a `var` for state. Multiple `var` fields form the
+   agent's persistent state across handler invocations.
+2. `on Message as m` binds the incoming event to `m` for the body of the
+   handler. Whenever a `Message` is emitted, the handler runs.
+3. `intent count(): int` is a function exposed to outside callers. From
+   inside the program, call `inbox.count()`. From an MCP server, the
+   intent appears as a tool the model can invoke.
+
+To use the agent, instantiate it like a struct:
+
+```mochi
+let box = inbox {}
+emit Message { from: "ada", body: "hi" }
+emit Message { from: "lin", body: "hey" }
+print("unread =", box.count())
+```
+
+```output
+new from ada
+new from lin
+unread = 2
+```
+
+## State
+
+Agent state lives in `var` fields declared at the top of the agent body.
+Each instance has its own state. Two `inbox` agents have two independent
+`unread` counters.
+
+```mochi
+agent counter {
+  var n: int = 0
+  var max: int = 0
+
+  on Tick {
+    n = n + 1
+    if n > max { max = n }
+  }
+}
+```
+
+`let` constants are useful for configuration:
+
+```mochi
+agent rate_limited {
+  let max_per_minute: int = 60
+  var seen: int = 0
+  ...
+}
+```
+
+State updates inside an `on` handler are visible to subsequent handlers on
+the same instance. Mochi serializes handler dispatch per agent instance, so
+locks are unnecessary.
+
+## Event handlers
+
+`on <Stream> as <name>` declares a handler. The handler runs every time the
+named stream emits an event. The bound `name` is the event value.
+
+```mochi
+agent monitor {
+  var max: float = 0.0
+
+  on Sensor as s {
+    if s.temp > max {
+      max = s.temp
+      print("new high:", s.id, s.temp)
+    }
+  }
+}
+```
+
+An agent may declare any number of handlers, including handlers for
+different stream types:
+
+```mochi
+agent dashboard {
+  var sensors: int = 0
+  var alerts: int = 0
+
+  on Sensor as s {
+    sensors = sensors + 1
+  }
+
+  on Alert as a {
+    alerts = alerts + 1
+    print("alert:", a.severity, a.message)
+  }
+}
+```
+
+See [streams](/docs/manual/streams) for the matching declaration syntax.
+
+## Filtering events
+
+Handlers accept a guard. The handler runs only when the predicate is true:
+
+```mochi
+agent on_call {
+  on Alert as a where a.severity >= 3 {
+    notify_pager(a)
+  }
+}
+```
+
+The compiled dispatch matches what the long form would generate, with the
+predicate kept next to the handler signature.
+
+## Emitting from inside a handler
+
+Handlers may emit downstream events. There is no built-in cycle protection;
+avoiding infinite loops is the author's responsibility.
+
+```mochi
+stream LogEntry { level: string, message: string }
+stream Alert { severity: int, message: string }
+
+agent guard {
+  on LogEntry as e where e.level == "error" {
+    emit Alert { severity: 2, message: e.message }
+  }
+}
+```
+
+A common pattern is one agent per concern (`guard` watches errors,
+`on_call` reacts to alerts), wired together by emitting events.
+
+## Intents
+
+`intent` declares a method that callers can invoke. It looks like a
+function, but it is callable from outside the agent and visible to MCP
+hosts.
+
+```mochi
+agent inbox {
+  var unread: int = 0
+
+  on Message as m { unread = unread + 1 }
+
+  intent count(): int { return unread }
+
+  intent mark_all_read() {
+    unread = 0
+  }
+}
+
+let box = inbox {}
+emit Message { from: "ada", body: "hi" }
+print(box.count())   // 1
+box.mark_all_read()
+print(box.count())   // 0
+```
+
+Intents take parameters and return values. They participate in serialized
+dispatch the same way `on` handlers do. Mochi will not run two handlers on
+the same instance concurrently.
+
+### Intents as MCP tools
+
+When an agent is exposed via the MCP server (`mochi serve`), each `intent`
+appears as an MCP tool. Add a description with `:::` to make the tool
+discoverable:
+
+```mochi
+agent inbox {
+  ...
+
+  intent count(): int
+    description = "Returns the number of unread messages."
+  {
+    return unread
+  }
+}
+```
+
+Language models running through an MCP-aware client call the intent the
+same way they call any other tool.
+
+## Lifecycle hooks
+
+| Hook | Runs |
+| --- | --- |
+| `on_start` | Once when the agent is instantiated |
+| `on_stop` | Once when the agent is shutting down |
+| `on_error as err` | When a handler throws |
+
+```mochi
+agent worker {
+  on_start { print("worker up") }
+  on_stop  { print("worker down") }
+
+  on Job as j {
+    expect j.payload != ""
+    process(j)
+  }
+
+  on_error as err {
+    log("worker error: " + err)
+  }
+}
+```
+
+## Composing agents
+
+Mochi has no agent inheritance. Compose by holding a reference to another
+agent and calling its intents:
+
+```mochi
+agent parent {
+  let child: counter = counter {}
+
+  on Tick {
+    child.bump()
+  }
+}
+```
+
+The `child` field is initialized once when `parent` is instantiated. Each
+parent has its own child instance.
+
+## Testing agents
+
+`test` blocks instantiate an agent, emit events, and assert on the intent
+results.
+
+```mochi
+test "inbox counts unread" {
+  let box = inbox {}
+  emit Message { from: "a", body: "x" }
+  emit Message { from: "b", body: "y" }
+  expect box.count() == 2
+}
+```
+
+Because handlers are dispatched serially per instance, the test reads state
+right after each `emit`.
+
+## Common patterns
+
+### Aggregator
+
+```mochi
+agent stats {
+  var total: int = 0
+  var count: int = 0
+
+  on Measurement as m {
+    total = total + m.value
+    count = count + 1
+  }
+
+  intent average(): float {
+    if count == 0 { return 0.0 }
+    return to_float(total) / to_float(count)
+  }
+}
+```
+
+### Window
+
+```mochi
+agent window {
+  var recent: list<int> = []
+  let size: int = 100
+
+  on Tick as t {
+    recent.push(t.value)
+    if len(recent) > size {
+      recent = recent[1..]
+    }
+  }
+}
+```
+
+### Bridge between streams
+
+```mochi
+agent ingest {
+  on Raw as r {
+    let parsed = parse(r.body)
+    if parsed != nil {
+      emit Parsed { record: parsed }
+    }
+  }
+}
+```
+
+## Common errors
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| `agent has no field <name>` | Misspelled state name | Check the `var` declarations. |
+| `intent must declare a return type` | Missing return type | Add `: <type>` after the parameter list. |
+| `cannot emit Stream that is not declared` | Stream type missing | Add `stream <Name> { ... }`. |
+| `recursive emit detected` | Two handlers emit each other's input | Break the cycle. |
+
+## See also
+
+- [Streams](/docs/manual/streams), the typed event channels agents listen on.
+- [Generative AI](/docs/manual/generative-ai) for `generate` blocks and tool calling.
+- [Tutorial](/docs/manual/get-started) for a worked example.

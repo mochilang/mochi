@@ -1,0 +1,182 @@
+---
+title: Changelog
+description: Release history for the Mochi language, distilled to the user-visible changes per version.
+---
+
+This page summarizes the user-visible changes in each minor release.
+Patch-level entries (`0.10.81`, `0.10.80`, etc.) ship internal fixes,
+new examples, and SPOJ algorithm solutions, and are tracked in the
+[full CHANGELOG.md](https://github.com/mochilang/mochi/blob/main/CHANGELOG.md)
+on GitHub.
+
+If you are upgrading from one minor to the next, the items below are
+the ones to read.
+
+## v0.10 — current train
+
+### Highlights
+
+- The first release where every "core feature" advertised on the
+  homepage actually ships in the same binary: agents, streams,
+  generative AI, dataset queries, transpilation, and the test runner.
+- Bytecode optimizer rewrite. Constant folding and dead code
+  elimination now run on the SSA form before bytecode is emitted,
+  cutting the size of compiled scripts by 10 to 30 percent on the
+  example corpus and shaving startup time on cold runs.
+- Standard library expansion. Added `time`, `crypto/sha256`,
+  `path/filepath`, and `regex/match` modules. The prelude grew
+  helpers like `dedup`, `chunks`, `zip`, `enumerate`, and the
+  `safe_to_int` / `safe_to_float` family that returns `T | nil`
+  instead of panicking.
+- Stabilized the Docker image at `ghcr.io/mochilang/mochi`. The
+  image is now multi-arch (amd64, arm64) and pulls under 30 MB.
+- MCP server (`mochi serve`) gained tool descriptions, structured
+  output, and an `--http` flag for plain HTTP JSON-RPC alongside the
+  default stdio transport.
+- Hundreds of new programs under `examples/`, including a complete
+  SPOJ algorithm corpus that doubles as the transpiler test suite.
+
+### Compatibility notes
+
+- `print` no longer adds a trailing space between arguments by
+  default. Use `print(a, " ", b)` if you need explicit spacing.
+- `list.sort` returns a new list instead of mutating in place. The
+  in-place form is `xs.sort_inplace()`. This makes `let sorted =
+  xs.sort()` do what you expect.
+- The dataset query now requires `select` at the end. A bare
+  `from x in xs where p(x)` no longer compiles; write
+  `from x in xs where p(x) select x` to get the previous behavior.
+
+## v0.9
+
+### Added
+
+- Dataset query expressions: `from / where / select / sort by / take`.
+  Joins use `from a in xs from b in ys where a.id == b.id select ...`.
+  The query expression composes with `map` / `filter` / `reduce` and
+  follows the type system end to end.
+- `load "file.csv" as Row` and `save xs to "file.json"` for CSV,
+  JSON, JSONL, and YAML. Format is inferred from the file extension;
+  override with `as csv` / `as json` / `as jsonl` / `as yaml` on the
+  `save` clause.
+- Pipe operator `|`: `value | f` is `f(value)`. Reads left to right
+  and chains naturally with `map` / `filter` / `reduce`.
+- Improved type inference for union types. `match` arms now narrow
+  the binding's type, and the compiler tracks narrowing through
+  guarded branches.
+
+### Changed
+
+- `len` is now a free function on every collection type, replacing
+  the per-type method (`xs.len()` still works as an alias).
+
+## v0.8
+
+### Added
+
+- Agents (`agent { ... }` blocks) and streams (`stream Name { ... }`)
+  promoted from "experimental" to "stable". The runtime guarantees
+  deterministic event ordering within a single agent and atomic
+  state mutations across handlers.
+- `intent` blocks expose agent methods as MCP tools. An agent with
+  `intent count(): int` becomes a callable tool over MCP without any
+  glue code.
+- `mochi serve` runs an MCP server. `--stdio` is the default
+  transport; `--http` adds JSON-RPC over HTTP for editor and CLI
+  clients.
+- Tool calling inside `generate text { ... }`. Tools are declared
+  as functions with a `description:` field and get wired into the
+  generation loop automatically.
+
+### Changed
+
+- `emit` no longer needs the `Stream` prefix when the type is
+  unambiguous. Old: `emit Message { from: "x" }`; new: `emit { from:
+  "x" }` when the surrounding handler accepts only one stream type.
+
+## v0.7
+
+### Added
+
+- `generate text { ... }` and `generate embedding { ... }` as
+  expressions in the grammar. The block accepts `prompt`, `model`,
+  `temperature`, `max_tokens`, and tool definitions.
+- `model name { provider: ..., name: ..., temperature: ... }`
+  declarations for one-time provider configuration. Reference the
+  model by name from any `generate` expression.
+- `as <Type>` suffix for structured output. `generate text { ... }
+  as Plan` returns a typed `Plan` value, with the runtime handling
+  JSON schema generation and decoding.
+- Streaming response support. The runtime exposes the streaming
+  bytes through a built-in iterator when needed, while the default
+  shape is still a single value.
+
+## v0.6
+
+### Added
+
+- Package system: `package`, `export`, and `import "./path" as
+  alias`. Packages are directories of `.mochi` files; only `export`-
+  prefixed declarations are visible across packages.
+- FFI through `extern` declarations. `extern fun call_python(...):
+  ...` lets a Mochi program call a Python function with marshalling
+  generated at the boundary. The Go FFI uses the same syntax.
+- Transpilation to Go, Python, and TypeScript via `mochi transpile
+  main.mochi --to <lang>`. Each target produces idiomatic code that
+  passes the language test suite.
+
+## v0.5
+
+### Added
+
+- Agents (`agent { ... }`) with `on Event as e { ... }` handlers.
+  Initial release of the reactive subsystem.
+- Streams (`stream Name { ... }`) for typed event schemas.
+- `emit` keyword for publishing events into the running system.
+- MCP integration in `mochi serve`. First-pass support; tool
+  description fields landed in v0.8.
+
+## v0.4
+
+### Added
+
+- Union types (`T | nil`, `A | B`) with exhaustiveness checking.
+- `match` expressions with binding patterns and guards.
+- Destructuring assignment in `let` and `var`: `let {x, y} = point`,
+  `let [a, b, c] = xs`.
+
+## v0.3
+
+### Added
+
+- `type` declarations for structs with inline methods.
+- Closures and arrow function syntax (`fun(x) => x + 1`). Closures
+  capture variables by reference and are first-class values.
+- `for` and `while` loops with `break` and `continue`.
+- Range expressions: `0..n` (half-open) and `0..=n` (inclusive).
+
+## v0.2
+
+### Added
+
+- Static type checking. Every expression has a type at compile time.
+- The `let` / `var` distinction (immutable vs mutable bindings).
+- `test "name" { ... }` blocks with `expect` assertions, runnable
+  via `mochi test`.
+
+## v0.1
+
+### Added
+
+- Initial release.
+- Bytecode VM and tree-walking interpreter.
+- `fun` declarations, `if` / `else`, `return`.
+- `list<T>` and `map<K, V>` collection types.
+- Built-in functions: `print`, `str`, `len`, basic numeric helpers.
+
+## See also
+
+- [Roadmap](/docs/roadmap) for what is shipping next.
+- [Manual](/docs/manual/) for the language reference.
+- [Full CHANGELOG.md](https://github.com/mochilang/mochi/blob/main/CHANGELOG.md)
+  on GitHub for every patch release.

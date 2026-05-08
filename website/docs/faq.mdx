@@ -1,0 +1,96 @@
+---
+title: Mochi FAQ
+sidebar_label: FAQ
+description: Frequently asked questions about the Mochi language.
+---
+
+Common questions about Mochi. If a question is missing, open a [GitHub Discussion](https://github.com/mochilang/mochi/discussions).
+
+## Why does Mochi exist?
+
+Mochi targets the gap between dynamic scripting languages and verbose static languages. Scripting, agents, AI generation, and data pipelines benefit from static types, immutability-first design, and built-in support for reactive patterns, without requiring a systems language.
+
+## What kind of programs is Mochi good for?
+
+Mochi fits scripting and automation, agent-oriented programming with `agent`, `stream`, and `intent` blocks, AI-connected applications using `generate` blocks, data transformation through `from` / `where` / `select` queries, and single-binary CLI tools. Mochi is not designed for systems programming, kernel code, or GPU computation.
+
+## Why a new language instead of Python or Go?
+
+Python's dynamic typing produces runtime errors at scale. Go's verbosity adds friction to short scripts. Mochi combines Go's safety and simplicity with Python-like expressiveness, and adds agents, streams, and `generate` blocks that neither language has natively.
+
+## Is Mochi production-ready?
+
+Mochi is under active development. Core language features are stable, but the ecosystem is young. Use it for internal tools, experiments, and projects that can accept a young dependency.
+
+## Why `let` for immutable and `var` for mutable?
+
+`let` reads as a binding from name to value. `var` reads as a slot that changes. Rust, Swift, and Kotlin use the same convention, and the default toward `let` keeps mutable state opt-in.
+
+## Why no `main()` function?
+
+Scripts do not need ceremony. `print("hello")` runs as a complete program. `main()` is a convention from compiled systems languages and does not fit the scripting use case.
+
+## Why are `test` blocks in the same file?
+
+Co-location is the default. Tests next to the code they cover stay easier to maintain, find, and update.
+
+## Does Mochi have classes?
+
+Mochi has `type` for struct-like definitions and function-style methods. It does not have classes with inheritance. Composition and function values cover the same ground for the targeted use cases.
+
+## Will Mochi get generics?
+
+Generics are on the roadmap. The design is in progress, with a focus on keeping the syntax small. See the [roadmap](/docs/roadmap) for status.
+
+## How do I install Mochi?
+
+See the [quickstart](/docs/manual/quickstart) or [requirements](/docs/manual/requirements).
+
+## How do I run a Mochi program?
+
+```bash
+mochi run myfile.mochi
+```
+
+## How do I run tests?
+
+```bash
+mochi test myfile.mochi
+# or run all tests in a directory
+mochi test ./...
+```
+
+## How do I build a binary?
+
+```bash
+mochi build myfile.mochi -o myprogram
+```
+
+## Does Mochi run on Windows?
+
+Mochi runs on Windows via WSL2. Native Windows support is on the roadmap.
+
+## Can I call Go or C libraries from Mochi?
+
+Yes, through `extern` declarations. See the [FFI docs](https://github.com/mochilang/mochi/blob/main/docs/features/ffi.md) on GitHub.
+
+## Can I transpile Mochi to Python or TypeScript?
+
+Yes:
+
+```bash
+mochi transpile myfile.mochi --to python
+mochi transpile myfile.mochi --to typescript
+```
+
+## How do I contribute?
+
+See [CONTRIBUTING.md](https://github.com/mochilang/mochi/blob/main/CONTRIBUTING.md) in the GitHub repo.
+
+## Where do I report bugs?
+
+[GitHub Issues](https://github.com/mochilang/mochi/issues).
+
+## Where can I ask questions?
+
+[GitHub Discussions](https://github.com/mochilang/mochi/discussions).

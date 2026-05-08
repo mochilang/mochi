@@ -1,0 +1,268 @@
+---
+title: Datasets
+sidebar_label: Datasets
+description: load, save, and from / where / select / join queries over plain lists and files.
+---
+
+Mochi has dataset operations built into the language. A program loads a
+CSV, JSON, JSONL, or YAML file into a typed list, queries it with `from /
+where / select`, joins it against another list, sorts and slices the
+result, and saves it back to disk. No imports.
+
+## Loading data
+
+`load <path> as <Type>` reads a file and decodes each record into the
+given type. The format is inferred from the extension.
+
+```mochi
+type Person { name: string, age: int }
+
+let people = load "people.json" as Person
+```
+
+Supported formats:
+
+| Extension | Format |
+| --- | --- |
+| `.csv` | Comma-separated. Header row required. |
+| `.json` | JSON array of objects. |
+| `.jsonl` | One JSON object per line. |
+| `.yaml`, `.yml` | YAML sequence of mappings. |
+
+An explicit format clause overrides inference:
+
+```mochi
+let people = load "raw.txt" as Person format = "jsonl"
+```
+
+If the file cannot be read or a record fails to decode, `load` raises an
+error. Wrap in `try / catch` (see [errors](/docs/manual/errors)) to
+recover.
+
+## A first query
+
+The minimal query is `from <var> in <list> select <expression>`:
+
+```mochi
+let names = from p in people select p.name
+```
+
+`from` introduces a binding (`p`) that ranges over the list. `select`
+shapes each output. The result is a `list<string>`.
+
+A `where` clause filters:
+
+```mochi
+let adults = from p in people
+             where p.age >= 18
+             select p
+```
+
+Each clause is optional except `from` and `select`. Clause order matters:
+`where` runs before `sort by`, which runs before `skip` / `take`.
+
+## Sorting, skipping, taking
+
+```mochi
+let top = from p in people
+         where p.age >= 18
+         sort by -p.age
+         skip 1
+         take 5
+         select p
+```
+
+| Clause | Meaning |
+| --- | --- |
+| `sort by <expr>` | Ascending sort. Prefix with `-` for descending. |
+| `skip n` | Drop the first `n` rows. |
+| `take n` | Keep only the first `n` rows after `skip`. |
+
+Multiple sort keys are written as a comma-separated list:
+
+```mochi
+sort by p.country, -p.age
+```
+
+## Shaping the output
+
+`select` produces any value, not only the original record. Maps and struct
+literals are common.
+
+```mochi
+let summary = from p in people
+              where p.age >= 18
+              select {
+                name: p.name,
+                is_senior: p.age >= 60
+              }
+```
+
+A struct literal works when the shape is also a known type:
+
+```mochi
+type Adult { name: string, age: int }
+
+let adults: list<Adult> = from p in people
+                         where p.age >= 18
+                         select Adult { name: p.name, age: p.age }
+```
+
+## Joins
+
+`join` combines two lists. The `on` clause is the join condition.
+
+```mochi
+type Order { id: int, customer_id: int, total: float }
+type Customer { id: int, name: string }
+
+let orders = load "orders.json" as Order
+let customers = load "customers.json" as Customer
+
+let report = from o in orders
+             join c in customers on o.customer_id == c.id
+             select {
+               order_id: o.id,
+               customer: c.name,
+               total: o.total
+             }
+```
+
+`join` is an inner join. Orders without a matching customer are discarded.
+For an outer join, use `left join`:
+
+```mochi
+let report = from o in orders
+             left join c in customers on o.customer_id == c.id
+             select {
+               order_id: o.id,
+               customer: c?.name ?? "(unknown)",
+               total: o.total
+             }
+```
+
+A `left join` introduces a `Customer | nil` binding because some orders
+have no match. Use `?.` to access fields safely.
+
+## Grouping
+
+`group by` collects rows into buckets. The select clause runs once per
+group.
+
+```mochi
+let by_country = from p in people
+                 group by p.country
+                 select {
+                   country: p.country,
+                   total: len(p)
+                 }
+```
+
+Inside the `select` of a grouped query, the binding (`p` here) refers to
+the *list* of rows in the group, not a single row. Aggregate over it with
+prelude functions like `len`, `sum`, `max`, `avg`:
+
+```mochi
+let stats = from p in people
+            group by p.country
+            select {
+              country: p.country,
+              avg_age: avg(p | map(fun(x: Person): int => x.age))
+            }
+```
+
+## Saving
+
+`save <list> to <path>` writes a list back to disk. Format is inferred
+from the extension; `format = "..."` overrides.
+
+```mochi
+save adults to "adults.json"
+save adults to "adults.jsonl" format = "jsonl"
+```
+
+`save` understands the same four formats as `load`. Unknown extensions
+raise a compile-time error.
+
+## Combining with the rest of the language
+
+`from / where / select` returns an ordinary list. The result passes into
+`for`, into `map` / `filter` / `reduce`, or into another query.
+
+```mochi
+let summary = from p in people where p.age >= 18 select p
+
+for p in summary {
+  print(p.name)
+}
+
+let names = summary | map(fun(p: Person): string => p.name)
+```
+
+A query is a value. Store it in a `let`, return it from a function, or
+pass it as an argument like any other list.
+
+## Common patterns
+
+### Top-K
+
+```mochi
+let top3 = from item in scores
+           sort by -item.value
+           take 3
+           select item
+```
+
+### Filtered count
+
+```mochi
+let unread_count = len(from b in books where !b.read select b)
+```
+
+### Distinct
+
+```mochi
+let distinct_countries = from p in people
+                         select p.country
+                         | unique
+```
+
+`unique` is a prelude helper that removes duplicates from a list while
+preserving order.
+
+### Reading and rewriting
+
+```mochi
+let users = load "users.json" as User
+let updated = from u in users select User { ...u, active: u.last_seen > now() - 30 }
+save updated to "users.json"
+```
+
+The struct spread (`...u`) copies all fields of `u`, then overrides what
+follows.
+
+## Performance notes
+
+- Queries evaluate eagerly. The intermediate result of every clause is a
+  real list in memory.
+- For very large datasets, prefer streaming via `.jsonl` and process row
+  by row with a `for` loop.
+- Joins build a hash table on the smaller side before scanning the larger
+  side. Both inputs need to fit in memory.
+
+## Common errors
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| `cannot decode <field> as <type>` | Type mismatch in the file | Check the source data or the type declaration. |
+| `unknown extension` | `load` from a file with no recognized format | Add `format = "..."`. |
+| `group by must precede select` | Clause order | Reorder the query. |
+| `aggregator over a non-list value` | Calling `len(p)` outside a group | Use the binding only inside a grouped `select`. |
+
+## See also
+
+- [Errors](/docs/manual/errors) for catching `load` failures.
+- [Generative AI](/docs/manual/generative-ai) for feeding query results
+  into a prompt.
+- [Tutorial](/docs/manual/get-started) for a worked example with `load`,
+  query, and `save`.

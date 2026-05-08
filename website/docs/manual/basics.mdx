@@ -1,0 +1,453 @@
+---
+title: Language basics
+sidebar_label: Basics
+description: "A single-page tour of Mochi syntax: variables, functions, types, control flow, and collections."
+---
+
+This page is a single-chapter tour of the parts of Mochi every program uses.
+Each section gives enough context to recognize the syntax, with links into the
+rest of the manual for depth.
+
+For first-time readers, the [quickstart](/docs/manual/quickstart) covers
+installation and running code.
+
+## Comments and identifiers
+
+```mochi
+// Single-line comment
+/* block
+   comment */
+
+let answer = 42        // identifiers are snake_case by convention
+let HTTP_TIMEOUT = 30  // SCREAMING_CASE is conventional for constants
+```
+
+Identifiers may contain letters, digits, and underscores, but cannot begin
+with a digit. Mochi treats identifiers as case-sensitive and reserves the
+keywords listed in the [reference](/docs/reference/keywords).
+
+## Variables and scope
+
+`let` binds an immutable value. `var` binds a mutable one. The compiler
+infers the type unless you annotate it.
+
+```mochi
+let pi = 3.14159          // inferred as float
+var attempts: int = 0     // explicit annotation
+
+attempts = attempts + 1
+```
+
+Variables live in the block they are declared in. Inner blocks may shadow
+outer bindings, which is occasionally useful when narrowing a type.
+
+```mochi
+let id = "outer"
+if true {
+  let id = "inner"
+  print(id)               // "inner"
+}
+print(id)                 // "outer"
+```
+
+Destructuring binds multiple names from a list or a map at once.
+
+```mochi
+let [head, ...tail] = [1, 2, 3, 4]
+let {"name": who, "age": age} = {"name": "Ada", "age": 36}
+
+print(head, tail)         // 1 [2, 3, 4]
+print(who, age)           // Ada 36
+```
+
+Read more on the [variables](/docs/manual/variables) page.
+
+## Primitive types
+
+| Type | Examples |
+| --- | --- |
+| `int` | `0`, `42`, `-1`, `0xff`, `1_000_000` |
+| `float` | `3.14`, `0.5`, `1e9` |
+| `bool` | `true`, `false` |
+| `string` | `"hello"`, `"\n"`, `"₹100"` |
+| `nil` | `nil` (the only value of its type) |
+
+Strings are UTF-8. Numeric literals support underscores for readability.
+Booleans are not interchangeable with integers. Use an explicit `if` to
+convert.
+
+```mochi
+let n = 1_000_000
+let greeting = "héllo"
+let ok: bool = n > 0
+```
+
+## Operators
+
+Mochi has arithmetic, comparison, logical, and membership operators. The full
+precedence table is in the [operators reference](/docs/reference/operators).
+
+```mochi
+let sum = 1 + 2 * 3        // 7
+let pow = 2 ** 10          // 1024
+let mod = 17 % 5           // 2
+let cmp = 3 < 5 && 5 < 7   // true
+let has = "x" in {"x", "y"} // true
+```
+
+`+` concatenates strings and lists. `**` is exponentiation. `||` and `&&`
+are short-circuiting.
+
+## Control flow
+
+`if` is both a statement and an expression.
+
+```mochi
+if temperature < 0 {
+  print("freezing")
+} else if temperature < 20 {
+  print("mild")
+} else {
+  print("warm")
+}
+
+let label = if score >= 50 then "pass" else "fail"
+```
+
+`for` iterates over a range or a collection. `while` repeats while a
+condition is true. `break` and `continue` work as expected.
+
+```mochi
+for i in 1..4 {
+  print(i)                 // 1, 2, 3
+}
+
+for x in [10, 20, 30] {
+  print(x)
+}
+
+var n = 5
+while n > 0 {
+  if n == 3 { break }
+  n = n - 1
+}
+```
+
+`match` supports literal patterns, wildcards, and constructor patterns from
+[union types](/docs/manual/types).
+
+```mochi
+fun classify(n: int): string {
+  return match n {
+    0 => "zero",
+    n if n < 0 => "negative",
+    _ => "positive"
+  }
+}
+```
+
+Read more on the [control flow](/docs/manual/control-flow) page.
+
+## Functions
+
+`fun` declares a function. Return types are explicit; parameter types are
+required.
+
+```mochi
+fun double(x: int): int {
+  return x * 2
+}
+
+let triple = fun(x: int): int => x * 3
+```
+
+Functions are values. They can be passed as arguments, returned from other
+functions, and stored in data structures.
+
+```mochi
+fun apply(f: fun(int): int, x: int): int {
+  return f(x)
+}
+
+print(apply(double, 5))    // 10
+print(apply(triple, 5))    // 15
+```
+
+Closures capture their surrounding scope:
+
+```mochi
+fun counter(): fun(): int {
+  var n = 0
+  return fun(): int => {
+    n = n + 1
+    return n
+  }
+}
+
+let next = counter()
+print(next(), next(), next())  // 1 2 3
+```
+
+Read more on the [functions](/docs/manual/functions) page.
+
+## Types and structs
+
+`type` declares a custom type. Struct fields use a `name: type` shape.
+
+```mochi
+type User {
+  id: int
+  name: string
+  email: string
+}
+
+let ada = User { id: 1, name: "Ada", email: "ada@example.com" }
+print(ada.name)
+```
+
+Methods are declared inside the type body and refer to fields without an
+explicit `self`:
+
+```mochi
+type Circle {
+  radius: float
+
+  fun area(): float {
+    return 3.14159 * radius * radius
+  }
+}
+
+let c = Circle { radius: 2.0 }
+print(c.area())            // 12.56636
+```
+
+### Union types
+
+Unions are written with `|`. They model alternatives and pair naturally with
+`match`.
+
+```mochi
+type Tree =
+  Leaf
+  | Node(value: int, left: Tree, right: Tree)
+
+fun sum(t: Tree): int {
+  return match t {
+    Leaf => 0,
+    Node(v, l, r) => v + sum(l) + sum(r)
+  }
+}
+```
+
+The optional pattern is a union with `nil`:
+
+```mochi
+fun parse(s: string): int | nil {
+  if s == "" { return nil }
+  return to_int(s)
+}
+```
+
+Read more on the [types](/docs/manual/types) page.
+
+## Collections
+
+Mochi has three collection types. Each supports literal syntax, indexed
+access, and iteration.
+
+```mochi
+let numbers = [1, 2, 3]                 // list<int>
+let user = {"name": "Ada", "age": 36}   // map<string, any>
+let tags = {"go", "ai"}                 // set<string>
+
+print(numbers[0])
+print(user["name"])
+print("ai" in tags)
+```
+
+Common operations:
+
+```mochi
+numbers.push(4)
+print(len(numbers))                    // 4
+print(numbers + [5, 6])                // [1, 2, 3, 4, 5, 6]
+
+for k in user.keys() {
+  print(k, user[k])
+}
+```
+
+Higher-order helpers use the pipeline operator `|`:
+
+```mochi
+let evens = numbers | filter(fun(n: int): bool => n % 2 == 0)
+let squared = evens | map(fun(n: int): int => n * n)
+let total = squared | reduce(0, fun(acc: int, n: int): int => acc + n)
+```
+
+Strings behave like read-only lists of characters when indexed:
+
+```mochi
+let s = "hello"
+print(s[0])                            // h
+for ch in s {
+  print(ch)
+}
+```
+
+## Errors and optional values
+
+Mochi's error model has three pieces:
+
+1. Optional unions (`T | nil`) for missing values.
+2. `expect` for assertions inside tests and at runtime.
+3. `panic` for unrecoverable errors.
+
+```mochi
+fun safe_div(a: int, b: int): int | nil {
+  if b == 0 { return nil }
+  return a / b
+}
+
+let result = safe_div(10, 0)
+match result {
+  nil => print("undefined"),
+  n => print(n)
+}
+
+expect safe_div(10, 2) == 5
+```
+
+Read more on the [errors](/docs/manual/errors) page.
+
+## Packages and imports
+
+Group `.mochi` files into a directory and they form a package. The package
+name is declared at the top of each file.
+
+```mochi title="mathutils/add.mochi"
+package mathutils
+
+export fun add(a: int, b: int): int {
+  return a + b
+}
+```
+
+Other files import the package by name.
+
+```mochi title="main.mochi"
+import "mathutils"
+
+print(mathutils.add(2, 3))
+```
+
+Aliasing is available with `as`:
+
+```mochi
+import "mathutils" as mu
+
+print(mu.add(2, 3))
+```
+
+Read more on the [packages](/docs/manual/packages) page.
+
+## Tests
+
+`test` blocks live alongside the code they cover. Mochi has no separate test
+runner.
+
+```mochi
+fun add(a: int, b: int): int {
+  return a + b
+}
+
+test "add is commutative" {
+  expect add(2, 3) == add(3, 2)
+}
+```
+
+```bash
+mochi test math.mochi
+```
+
+## Agents and streams (a glimpse)
+
+A `stream` defines the shape of an event. An `agent` holds state and reacts
+to events with `on` handlers.
+
+```mochi
+stream Sensor { id: string, temp: float }
+
+agent monitor {
+  var max: float = 0.0
+
+  on Sensor as s {
+    if s.temp > max { max = s.temp }
+  }
+
+  intent peak(): float {
+    return max
+  }
+}
+
+let m = monitor {}
+emit Sensor { id: "a", temp: 22.5 }
+emit Sensor { id: "b", temp: 31.0 }
+print(m.peak())                        // 31
+```
+
+Read more in [agents](/docs/manual/agents) and
+[streams](/docs/manual/streams).
+
+## Generative AI (a glimpse)
+
+`generate text` calls a language model. `model` blocks describe providers.
+Tool calling and structured output are part of the syntax.
+
+```mochi
+model fast {
+  provider: "openai"
+  name: "gpt-5.5-mini"
+  temperature: 0.2
+}
+
+let summary = generate text {
+  model: "fast"
+  prompt: "Summarize the manual in one sentence."
+}
+print(summary)
+```
+
+Read more in [generative AI](/docs/manual/generative-ai).
+
+## Datasets (a glimpse)
+
+`from / where / select` queries lists like databases. `load` and `save` move
+data between memory and CSV, JSON, JSONL, or YAML files.
+
+```mochi
+type Product { name: string, price: int }
+
+let products = load "products.json" as Product
+let top = from p in products
+          where p.price >= 100
+          sort by -p.price
+          take 3
+          select p
+```
+
+Read more in [datasets](/docs/manual/datasets).
+
+## Next
+
+- [Variables](/docs/manual/variables): let, var, scoping, destructuring
+- [Functions](/docs/manual/functions): closures, varargs, defaults
+- [Types](/docs/manual/types): structs, unions, methods
+- [Operators](/docs/manual/operators): full operator semantics
+- [Control flow](/docs/manual/control-flow): if, for, while, match
+- [Errors](/docs/manual/errors): optional values, expect, panic
+- [Packages](/docs/manual/packages): multi-file programs
+- [Agents](/docs/manual/agents) and [streams](/docs/manual/streams): reactive constructs
+- [Generative AI](/docs/manual/generative-ai): generate blocks
+- [Datasets](/docs/manual/datasets): queries and persistence
+- [Reference](/docs/reference/): a denser, concept-by-concept index

@@ -1,0 +1,328 @@
+---
+title: Generative AI
+sidebar_label: Generative AI
+description: generate text and embedding blocks, model configuration, parameters, and tool calling. Talk to language models with the same syntax you use to call any other function.
+---
+
+Mochi treats language models as part of the language. The `generate`
+keyword opens a block describing what to generate. The `model` keyword
+names a provider configuration to reuse across calls. Tool calling,
+structured output, streaming, and embeddings are all language features. No
+SDK to import.
+
+## A first generation
+
+```mochi
+let summary = generate text {
+  prompt: "Summarize the manual in one sentence."
+}
+
+print(summary)
+```
+
+`generate text { ... }` returns a `string`. Mochi sends the prompt to the
+configured default model and waits for the response.
+
+Set the default provider once with environment variables (`OPENAI_API_KEY`
+and friends) and the call works without further configuration.
+
+## Configuring a model
+
+A `model` block names a provider configuration. `generate` blocks then
+refer to the model by name.
+
+```mochi
+model fast {
+  provider: "openai"
+  name: "gpt-5.5-mini"
+  temperature: 0.3
+  max_tokens: 200
+}
+
+let summary = generate text {
+  model: "fast"
+  prompt: "Summarize the manual in one sentence."
+}
+```
+
+Recognized fields:
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `provider` | `string` | `"openai"`, `"anthropic"`, `"google"`, `"ollama"`, etc. |
+| `name` | `string` | Provider-specific model identifier (e.g. `"gpt-5.5"`, `"claude-opus-4.7"`, `"gemini-2.5-pro"`). |
+| `temperature` | `float` | 0.0 to 2.0 typically. |
+| `max_tokens` | `int` | Output cap. |
+| `top_p` | `float` | Nucleus sampling. |
+| `seed` | `int` | Deterministic sampling where supported. |
+| `base_url` | `string` | Override the API base URL. |
+| `api_key_env` | `string` | Name of the env var holding the key. |
+
+Fields beyond these pass through to the provider untouched, so new
+provider features work without waiting for Mochi to model them.
+
+Multiple `model` blocks can co-exist. A program can route different
+calls to different providers without changing the call sites:
+
+```mochi
+model fast {
+  provider: "openai"
+  name: "gpt-5.5-mini"
+  temperature: 0.3
+}
+
+model deep {
+  provider: "anthropic"
+  name: "claude-opus-4.7"
+  temperature: 0.2
+}
+
+model cheap {
+  provider: "google"
+  name: "gemini-2.5-flash"
+  temperature: 0.4
+}
+
+let outline  = generate text { model: "fast", prompt: "Outline a blog post." }
+let polished = generate text { model: "deep", prompt: outline }
+let tags     = generate text { model: "cheap", prompt: "Tag: " + polished } as json
+```
+
+## Prompts and system messages
+
+`prompt` is the user message. `system` (optional) is the system
+instruction.
+
+```mochi
+let answer = generate text {
+  model: "fast"
+  system: "You are a terse assistant. Answer in one sentence."
+  prompt: "Why is bytecode useful?"
+}
+```
+
+Prompts use string interpolation freely:
+
+```mochi
+let topic = "agents"
+let intro = generate text {
+  prompt: "Write a one-paragraph intro to " + topic + " for a Mochi user."
+}
+```
+
+## Structured output
+
+`as json` parses the response as JSON and returns a typed value:
+
+```mochi
+type Plan {
+  title: string
+  steps: list<string>
+}
+
+let plan = generate text {
+  model: "fast"
+  prompt: "Output a plan with 'title' and 'steps' fields."
+} as json
+
+print(plan["title"])
+for s in plan["steps"] {
+  print("•", s)
+}
+```
+
+If the response cannot parse as JSON, the call raises an error catchable
+with `try / catch`. Most providers honour an explicit JSON request mode
+when `as json` is set; Mochi opts in automatically when the provider
+supports it.
+
+To get a fully-typed result, annotate the binding:
+
+```mochi
+let plan: Plan = generate text {
+  model: "fast"
+  prompt: "Output a plan with 'title' and 'steps' fields."
+} as json
+```
+
+## Tool calling
+
+Functions can be exposed as tools the model is allowed to call mid-
+generation. Pass a list of function values in the `tools` field. Each tool
+takes a `description` that helps the model choose when to use it.
+
+```mochi
+fun get_weather(city: string): string {
+  if city == "Paris" { return "sunny, 21°C" }
+  return "weather data unavailable"
+}
+
+let answer = generate text {
+  model: "fast"
+  prompt: "What is the weather in Paris?"
+  tools: [
+    get_weather { description: "Returns the current weather for a city." }
+  ]
+}
+
+print(answer)
+```
+
+Mochi handles the tool-call protocol automatically: the model emits a tool
+call, Mochi invokes the function, sends the result back, and waits for the
+model to continue. Multi-step tool calls are supported.
+
+For agents,
+[intents](/docs/manual/agents#intents) double as MCP-exposed tools. Pass an
+agent's intents the same way you would a free-standing function.
+
+## Multiple turns
+
+For a multi-turn conversation, supply a `messages` list instead of a single
+`prompt`:
+
+```mochi
+let answer = generate text {
+  model: "fast"
+  messages: [
+    { role: "system", content: "You are a Mochi mentor." },
+    { role: "user", content: "How do I declare a struct?" },
+    { role: "assistant", content: "With the `type` keyword." },
+    { role: "user", content: "Show an example." }
+  ]
+}
+```
+
+The fields are interpreted by the provider in the standard way.
+
+## Streaming responses
+
+`stream: true` returns tokens as they arrive. The block returns a stream
+the program iterates over:
+
+```mochi
+for chunk in generate text {
+  model: "fast"
+  prompt: "Write a haiku about agents."
+  stream: true
+} {
+  print(chunk)
+}
+```
+
+Most providers support streaming. The chunks are concatenable strings.
+Join them with `+` for the full response.
+
+## Embeddings
+
+`generate embedding` returns a `list<float>` instead of a string. It uses
+the embedding model configured for the provider.
+
+```mochi
+let vec = generate embedding {
+  text: "hello world"
+  normalize: true
+}
+
+print(len(vec))   // depends on the model: e.g. 1536
+```
+
+Use embeddings for similarity search, clustering, or retrieval-augmented
+generation. The prelude provides `cosine_similarity(a, b): float`.
+
+## Caching
+
+`generate` blocks cache results based on the input. Add a `cache` clause
+to enable it:
+
+```mochi
+let summary = generate text {
+  model: "fast"
+  prompt: "Summarize the changelog."
+  cache: true
+}
+```
+
+A second call with the same prompt and model returns the cached value.
+Caches are keyed by a hash of the request and stored under
+`~/.cache/mochi/llm` by default. Override with the `MOCHI_LLM_CACHE` env
+var.
+
+## Error handling
+
+Network or provider errors are raised as catchable errors:
+
+```mochi
+try {
+  let summary = generate text {
+    model: "fast"
+    prompt: "..."
+  }
+  print(summary)
+} catch err {
+  print("generation failed:", err)
+}
+```
+
+Models can also return safety-flagged or empty responses. Inspect the
+return value before using it.
+
+## Common patterns
+
+### One-shot extraction
+
+```mochi
+type Address { street: string, city: string, zip: string }
+
+let address: Address = generate text {
+  model: "fast"
+  prompt: "Extract the address from: '123 Main St, Springfield, 90210'"
+} as json
+```
+
+### Tool-augmented Q&A
+
+```mochi
+fun lookup_doc(query: string): string {
+  // your retrieval logic
+}
+
+let answer = generate text {
+  prompt: "Answer the user's question using the docs."
+  tools: [
+    lookup_doc { description: "Search the project documentation." }
+  ]
+}
+```
+
+### Embedding-based retrieval
+
+```mochi
+let docs: list<Doc> = load "docs.jsonl" as Doc
+
+fun closest(query: string, n: int): list<Doc> {
+  let q = generate embedding { text: query }
+  let scored =
+    from d in docs
+    let score = cosine_similarity(q, d.embedding)
+    sort by -score
+    take n
+    select d
+  return scored
+}
+```
+
+## Common errors
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| `no provider configured` | Missing API key or `model` block | Set the env var or declare a `model`. |
+| `cannot decode response as JSON` | `as json` on a non-JSON response | Adjust the prompt; some providers need explicit instructions. |
+| `tool call did not return` | Tool function panicked | Inspect the panic; consider returning a string error instead. |
+| `streaming not supported` | Provider does not stream | Drop `stream: true`. |
+
+## See also
+
+- [Agents](/docs/manual/agents), whose intents become MCP tools.
+- [Datasets](/docs/manual/datasets) for feeding query results into prompts.
+- [Errors](/docs/manual/errors) for `try / catch` around generation.

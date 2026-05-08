@@ -63,7 +63,8 @@ type CLI struct {
 }
 
 type RunCmd struct {
-	File     string `arg:"positional,required" help:"Path to .mochi source file"`
+	File     string `arg:"positional" help:"Path to .mochi source file"`
+	Expr     string `arg:"-e,--expr" help:"Run an inline Mochi expression instead of a file"`
 	PrintAST bool   `arg:"--ast" help:"Print parsed AST in Lisp format"`
 	Debug    bool   `arg:"--debug" help:"Enable debug output"`
 	Memoize  bool   `arg:"--memo" help:"Enable memoization of pure functions"`
@@ -170,6 +171,18 @@ func formatDuration(d time.Duration) string {
 
 func runFile(cmd *RunCmd) error {
 	start := time.Now()
+	if cmd.Expr != "" {
+		dir, err := os.MkdirTemp("", "mochi-eval-")
+		if err != nil {
+			return fmt.Errorf("creating temp dir: %w", err)
+		}
+		defer os.RemoveAll(dir)
+		path := filepath.Join(dir, "expr.mochi")
+		if err := os.WriteFile(path, []byte(cmd.Expr+"\n"), 0o644); err != nil {
+			return fmt.Errorf("writing expression: %w", err)
+		}
+		cmd.File = path
+	}
 	prog, err := parseOrPrintError(cmd.File)
 	if err != nil {
 		return err
@@ -611,14 +624,23 @@ func newRootCmd() *cobra.Command {
 func newRunCmd() *cobra.Command {
 	var rc RunCmd
 	c := &cobra.Command{
-		Use:   "run <file>",
-		Short: "Run a Mochi source file",
-		Args:  cobra.ExactArgs(1),
+		Use:   "run [file]",
+		Short: "Run a Mochi source file or an inline expression with -e",
+		Args:  cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			rc.File = args[0]
+			if len(args) > 0 {
+				rc.File = args[0]
+			}
+			if rc.Expr == "" && rc.File == "" {
+				return fmt.Errorf("usage: mochi run <file> or mochi run -e '<expr>'")
+			}
+			if rc.Expr != "" && rc.File != "" {
+				return fmt.Errorf("cannot combine -e/--expr with a file argument")
+			}
 			return runFile(&rc)
 		},
 	}
+	c.Flags().StringVarP(&rc.Expr, "expr", "e", "", "Run an inline Mochi expression instead of a file")
 	c.Flags().BoolVar(&rc.PrintAST, "ast", false, "Print parsed AST in Lisp format")
 	c.Flags().BoolVar(&rc.Debug, "debug", false, "Enable debug output")
 	c.Flags().BoolVar(&rc.Memoize, "memo", false, "Enable memoization of pure functions")

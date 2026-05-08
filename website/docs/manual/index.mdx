@@ -1,0 +1,204 @@
+---
+title: The Mochi Manual
+sidebar_label: The Manual
+description: A comprehensive, end-to-end guide to the Mochi programming language.
+hide_table_of_contents: true
+---
+
+import ListingCard from '@site/src/components/Listing/ListingCard';
+import ListingCards from '@site/src/components/Listing/ListingCards';
+
+import RocketIcon from '@site/static/img/icons/rocket.svg';
+import BookIcon from '@site/static/img/icons/book.svg';
+import SparkleIcon from '@site/static/img/icons/sparkle.svg';
+import AgentIcon from '@site/static/img/icons/agent.svg';
+import BrainIcon from '@site/static/img/icons/brain.svg';
+import DataIcon from '@site/static/img/icons/data.svg';
+import TestIcon from '@site/static/img/icons/test.svg';
+import PlugIcon from '@site/static/img/icons/plug.svg';
+import WrenchIcon from '@site/static/img/icons/wrench.svg';
+import BoltIcon from '@site/static/img/icons/bolt.svg';
+
+# The Mochi Manual
+
+The Mochi Manual is the end-to-end guide to the language. It moves from a first
+`print` statement to reactive agents that call language models, with each page
+focused on a single concept.
+
+To suggest a change, [open an issue](https://github.com/mochilang/mochi/issues/new)
+or send a pull request.
+
+## Get started
+
+<ListingCards>
+  <ListingCard
+    icon={<RocketIcon />}
+    title="Quickstart"
+    url="/docs/manual/quickstart"
+    description="Install Mochi and tour the syntax in under fifteen minutes."
+  />
+  <ListingCard
+    icon={<BookIcon />}
+    title="Tutorial"
+    url="/docs/manual/get-started"
+    description="Build a complete Mochi program: types, functions, tests, and a CLI entry point."
+  />
+  <ListingCard
+    icon={<WrenchIcon />}
+    title="System requirements"
+    url="/docs/manual/requirements"
+    description="Supported operating systems, architectures, and what you need before you install."
+  />
+</ListingCards>
+
+:::tip Already comfortable with another language?
+
+If you know Python, Go, or TypeScript, the [language basics](/docs/manual/basics)
+page condenses the syntax into a single tour. The [reference](/docs/reference/)
+is a terser, concept-by-concept index.
+
+:::
+
+## Language basics
+
+Variables, functions, types, and the constructs every program uses.
+
+<ListingCards>
+  <ListingCard
+    icon={<SparkleIcon />}
+    title="Basics overview"
+    url="/docs/manual/basics"
+    description="A single-page tour of the syntax: variables, functions, types, control flow, and collections."
+  />
+  <ListingCard
+    title="Variables"
+    url="/docs/manual/variables"
+    description="Immutable let bindings, mutable var bindings, scoping, and destructuring."
+  />
+  <ListingCard
+    title="Functions"
+    url="/docs/manual/functions"
+    description="Top-level functions, closures, default arguments, varargs, and function values."
+  />
+  <ListingCard
+    title="Types"
+    url="/docs/manual/types"
+    description="Primitive types, type declarations, union types, type aliases, and type inference rules."
+  />
+  <ListingCard
+    title="Operators"
+    url="/docs/manual/operators"
+    description="Arithmetic, comparison, logical, membership, and set operators with precedence rules."
+  />
+  <ListingCard
+    title="Control flow"
+    url="/docs/manual/control-flow"
+    description="if/else expressions, for and while loops, match expressions, break, and continue."
+  />
+  <ListingCard
+    title="Errors"
+    url="/docs/manual/errors"
+    description="Mochi's explicit error model: optional values, error types, expect, and panic."
+  />
+  <ListingCard
+    title="Packages"
+    url="/docs/manual/packages"
+    description="Organize larger programs with package, export, and import."
+  />
+</ListingCards>
+
+## Agents and streams
+
+Agents hold state and react to events. Streams give those events a typed shape.
+
+<ListingCards>
+  <ListingCard
+    icon={<AgentIcon />}
+    title="Agents"
+    url="/docs/manual/agents"
+    description="Stateful blocks that react to events with on handlers and expose intents."
+  />
+  <ListingCard
+    title="Streams"
+    url="/docs/manual/streams"
+    description="Typed event definitions that flow through emit, on, and pipelines."
+  />
+</ListingCards>
+
+## Generative AI
+
+The `generate` block, `model` declaration, and structured output are part of
+the language. A call to a language model uses the same syntax as any other
+function call.
+
+<ListingCards>
+  <ListingCard
+    icon={<BrainIcon />}
+    title="Generative AI"
+    url="/docs/manual/generative-ai"
+    description="generate text and embedding blocks, model configuration, parameters, and tool calling."
+  />
+</ListingCards>
+
+## Working with data
+
+Load files, query lists like a database, and save the results.
+
+<ListingCards>
+  <ListingCard
+    icon={<DataIcon />}
+    title="Datasets"
+    url="/docs/manual/datasets"
+    description="load, save, and from / where / select / join queries over plain lists and files."
+  />
+</ListingCards>
+
+## Standard library and built-ins
+
+<ListingCards>
+  <ListingCard
+    icon={<BoltIcon />}
+    title="Built-in functions"
+    url="/docs/reference/builtins"
+    description="The full index of built-in functions: print, len, map, filter, reduce, and the rest."
+  />
+  <ListingCard
+    title="Keywords"
+    url="/docs/reference/keywords"
+    description="Every reserved keyword in Mochi, what it does, and where it appears."
+  />
+  <ListingCard
+    title="Operators reference"
+    url="/docs/reference/operators"
+    description="The complete operator table with precedence and semantics."
+  />
+</ListingCards>
+
+## Beyond the manual
+
+<ListingCards>
+  <ListingCard
+    icon={<TestIcon />}
+    title="Roadmap"
+    url="/docs/roadmap"
+    description="What's done, what's in progress, and what's planned on the road to v1.0."
+  />
+  <ListingCard
+    icon={<SparkleIcon />}
+    title="Vision"
+    url="/docs/vision"
+    description="The motivations and design principles behind the language."
+  />
+  <ListingCard
+    icon={<PlugIcon />}
+    title="FAQ"
+    url="/docs/faq"
+    description="Answers to the questions asked most often about Mochi."
+  />
+  <ListingCard
+    title="Examples on GitHub"
+    url="https://github.com/mochilang/mochi/tree/main/examples"
+    description="Hundreds of small, runnable programs covering algorithms, agents, datasets, and AI."
+    external
+  />
+</ListingCards>

@@ -1,0 +1,345 @@
+---
+title: Types
+sidebar_label: Types
+description: "The Mochi type system: primitives, structs, union types, type aliases, generics, and inference."
+---
+
+Mochi is statically typed with type inference. The compiler tracks the type
+of every expression at compile time and rarely requires explicit annotations
+outside a public surface.
+
+## Primitive types
+
+| Type | Examples | Notes |
+| --- | --- | --- |
+| `int` | `0`, `1`, `-1`, `0xff`, `1_000_000` | 64-bit signed by default. |
+| `float` | `3.14`, `0.5`, `1e9` | 64-bit IEEE 754 double. |
+| `bool` | `true`, `false` | No implicit conversion to `int`. |
+| `string` | `"abc"`, `"héllo"` | UTF-8, immutable. |
+| `nil` | `nil` | The only value of type `nil`. |
+| `void` | (no values) | The return type of functions that do not return a value. |
+
+All numeric literals can use underscores as digit separators
+(`1_000_000`, `0xff_ff`). Hex literals (`0x...`) and binary literals
+(`0b...`) produce `int`.
+
+## The `any` type
+
+`any` accepts any value but loses type information. Use `any` only at
+boundaries with untyped data such as loose JSON or dynamic dispatch.
+Idiomatic Mochi code rarely uses it.
+
+```mochi
+let things: list<any> = [1, "two", 3.0]
+```
+
+To use a value of type `any`, narrow it with `is` or `match`:
+
+```mochi
+fun describe(value: any): string {
+  match value {
+    n: int => return "int " + str(n),
+    s: string => return "str " + s,
+    _ => return "other"
+  }
+}
+```
+
+## Type inference
+
+The compiler infers the type from the right-hand side of an initializer:
+
+```mochi
+let count = 0          // int
+let pi = 3.14          // float
+let name = "Mochi"     // string
+let xs = [1, 2, 3]     // list<int>
+let user = {"name": "Ada"}  // map<string, string>
+```
+
+Inference also flows through function calls: the compiler picks the most
+specific type that satisfies every constraint.
+
+Add annotations when:
+
+- Inference is too narrow (e.g. an empty list literal: `let xs: list<int> = []`).
+- The binding should accept multiple variants (a union, see below).
+- The binding is part of a public API and a stable shape is desirable.
+
+## Struct types
+
+`type` declares a struct with named, typed fields:
+
+```mochi
+type Point {
+  x: float
+  y: float
+}
+
+let origin = Point { x: 0.0, y: 0.0 }
+let p = Point { x: 3.0, y: 4.0 }
+
+print(p.x, p.y)    // 3 4
+```
+
+Field access uses the dot operator. Field assignment is allowed only on a
+mutable binding:
+
+```mochi
+var pos = Point { x: 0.0, y: 0.0 }
+pos.x = 3.0
+pos.y = 4.0
+```
+
+Constructors require every field. Field order in the literal does not
+matter as long as names are present.
+
+### Inline methods
+
+Methods are declared inside the type body. They access fields directly,
+without an explicit `self` parameter.
+
+```mochi
+type Rect {
+  width: float
+  height: float
+
+  fun area(): float {
+    return width * height
+  }
+
+  fun scale(factor: float): Rect {
+    return Rect { width: width * factor, height: height * factor }
+  }
+}
+
+let r = Rect { width: 2.0, height: 3.0 }
+print(r.area())             // 6
+print(r.scale(2.0).area())  // 24
+```
+
+Methods can call each other and refer to other fields like any other
+expression.
+
+## Union types
+
+A union represents a value that can take one of several shapes. Variants
+are separated by `|`:
+
+```mochi
+type Shape =
+  Circle(radius: float)
+  | Square(side: float)
+  | Triangle(base: float, height: float)
+```
+
+Each variant is a constructor. The parameter list defines the data the
+variant carries. Construct values with the constructor name:
+
+```mochi
+let s1 = Circle(2.0)
+let s2 = Square(3.0)
+```
+
+Use `match` to deconstruct:
+
+```mochi
+fun area(s: Shape): float {
+  return match s {
+    Circle(r) => 3.14159 * r * r,
+    Square(side) => side * side,
+    Triangle(b, h) => 0.5 * b * h
+  }
+}
+```
+
+Variants without parameters are written without parentheses:
+
+```mochi
+type Tree =
+  Leaf
+  | Node(value: int, left: Tree, right: Tree)
+```
+
+The exhaustiveness checker warns if you forget a variant in a `match`.
+
+## Optional and nullable values
+
+The optional pattern is a union with `nil`:
+
+```mochi
+fun find(xs: list<User>, id: int): User | nil {
+  for u in xs {
+    if u.id == id { return u }
+  }
+  return nil
+}
+```
+
+To use a `T | nil` value, narrow it with `match` or with the `?.` operator
+that short-circuits to `nil`:
+
+```mochi
+let u = find(users, 7)
+match u {
+  nil => print("not found"),
+  user => print(user.name)
+}
+
+let name = u?.name      // string | nil
+```
+
+Mochi has no separate `Option<T>` wrapper. `T | nil` is the idiomatic form.
+
+## Type aliases
+
+Use `type` with `=` to give a name to an existing type:
+
+```mochi
+type UserId = int
+type Name = string
+type IntFn = fun(int): int
+```
+
+Aliases are interchangeable with the underlying type. The compiler does not
+enforce a distinction; aliases are for readability. For nominal types, wrap
+the value in a one-field struct:
+
+```mochi
+type UserId { value: int }
+```
+
+## Generic types
+
+Functions and structs can take type parameters. Generics use angle brackets.
+
+```mochi
+fun first<T>(xs: list<T>): T | nil {
+  if len(xs) == 0 { return nil }
+  return xs[0]
+}
+
+print(first([1, 2, 3]))           // 1
+print(first(["a", "b"]))          // a
+```
+
+Structs can also be generic:
+
+```mochi
+type Pair<A, B> {
+  left: A
+  right: B
+}
+
+let p = Pair<int, string> { left: 1, right: "one" }
+```
+
+The compiler infers type arguments at the call site when it can. Provide
+them explicitly with `<...>` when inference is ambiguous.
+
+## Collection types
+
+| Type | Literal | Notes |
+| --- | --- | --- |
+| `list<T>` | `[1, 2, 3]` | Ordered, indexed, mutable in place if `var`. |
+| `map<K, V>` | `{"a": 1, "b": 2}` | Hashed by key. Keys must be hashable. |
+| `set<T>` | `{"a", "b"}` | Unordered, no duplicates. |
+
+These come from the prelude and have type-parameterized methods such as
+`xs.push(value)`, `m.keys()`, and `s.contains(value)`. See the
+[built-ins reference](/docs/reference/builtins) for the full list.
+
+## Function types
+
+Function types are written `fun(<params>): <return>`.
+
+```mochi
+type Predicate = fun(int): bool
+
+fun any(xs: list<int>, p: Predicate): bool {
+  for x in xs {
+    if p(x) { return true }
+  }
+  return false
+}
+
+print(any([1, 2, 3], fun(n: int): bool => n > 2))   // true
+```
+
+A function with no parameters and no return value is `fun(): void`.
+
+## Type narrowing
+
+An `is` test or a `match` arm narrows the binding's type inside that branch:
+
+```mochi
+fun length_of(value: int | string): int {
+  if value is string {
+    return len(value)        // value is string here
+  }
+  return value               // value is int here
+}
+```
+
+`is` returns a `bool`. The compiler tracks the narrowing only inside the
+`if` body. After the `if`, the original type is restored.
+
+## The `void` type
+
+`void` is the return type of functions that produce no value. A `void` value
+cannot be constructed or stored. Calling a `void` function in an expression
+position is a type error.
+
+```mochi
+fun log(msg: string): void {
+  print(msg)
+}
+
+let x = log("hi")   // error: cannot use a void value
+```
+
+## Equality and ordering
+
+Primitive types support `==`, `!=`, and the comparison operators. Structs
+compare equal field by field. Lists, maps, and sets compare element by
+element.
+
+```mochi
+let p1 = Point { x: 1.0, y: 2.0 }
+let p2 = Point { x: 1.0, y: 2.0 }
+print(p1 == p2)      // true
+
+let xs = [1, 2, 3]
+let ys = [1, 2, 3]
+print(xs == ys)      // true
+```
+
+Function values compare by reference identity.
+
+## Reading a complex type
+
+Type expressions are read inside-out:
+
+| Expression | Reads as |
+| --- | --- |
+| `list<int>` | A list whose elements are `int`. |
+| `map<string, list<User>>` | A map from `string` to a list of `User`. |
+| `fun(int, int): int` | A function from two `int` to `int`. |
+| `User \| nil` | Either a `User` or `nil`. |
+| `list<User \| nil>` | A list whose elements are each either `User` or `nil`. |
+
+## Common errors
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| `cannot infer type of empty list literal` | `let xs = []` | Annotate: `let xs: list<int> = []`. |
+| `missing field <name>` | Struct literal incomplete | Provide every required field. |
+| `unknown variant <Name>` | Constructor not part of the union | Check spelling; add the variant to the type. |
+| `match is not exhaustive` | `match` on a union missing a variant | Add a branch or `_ => ...` catch-all. |
+
+## Next
+
+- [Variables](/docs/manual/variables): `let`, `var`, scoping
+- [Functions](/docs/manual/functions): closures, varargs, defaults
+- [Errors](/docs/manual/errors): optional values, `expect`, `panic`
+- [Reference: type declarations](/docs/reference/): full grammar

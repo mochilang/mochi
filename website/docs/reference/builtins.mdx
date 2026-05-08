@@ -1,0 +1,171 @@
+---
+title: Built-in functions
+description: Standard prelude functions available in every Mochi program.
+sidebar_label: Built-ins
+---
+
+Prelude functions are available in every Mochi program without an import.
+
+## Output
+
+| Function | Returns | Action |
+| --- | --- | --- |
+| `print(values...)` | `unit` | Write to stdout, space-separated, newline-terminated. |
+| `eprint(values...)` | `unit` | Write to stderr. |
+
+```mochi
+print("Hello", "world")   // Hello world
+print(1 + 2)              // 3
+eprint("Warning:", message)
+```
+
+## Type conversions
+
+| Function | Returns | Action |
+| --- | --- | --- |
+| `str(value)` | `string` | Convert any value to its string form. |
+| `int(value)` | `int` | Parse a string or truncate a float. |
+| `float(value)` | `float` | Parse a string or widen an int. |
+| `bool(value)` | `bool` | Convert via truthiness. |
+
+```mochi
+str(42)        // "42"
+str(3.14)      // "3.14"
+str(true)      // "true"
+str([1,2,3])   // "[1, 2, 3]"
+
+int("42")      // 42
+int(3.99)      // 3
+
+float("3.14")  // 3.14
+float(42)      // 42.0
+
+bool(0)        // false
+bool(1)        // true
+bool("")       // false
+bool("hi")     // true
+```
+
+## Collections
+
+| Function | Returns | Action |
+| --- | --- | --- |
+| `len(collection)` | `int` | Length of a list, string, map, or set. |
+| `keys(map)` | `[K]` | Map keys as a list. |
+| `values(map)` | `[V]` | Map values as a list. |
+| `push(list, value)` | `unit` | Append to a list in place. |
+| `pop(list)` | `T` | Remove and return the last element. |
+| `contains(collection, value)` | `bool` | Equivalent to `value in collection`. |
+| `slice(list, start, end)` | `[T]` | Sub-list `[start, end)`. |
+
+```mochi
+len([1, 2, 3])      // 3
+len("hello")        // 5
+len({"a": 1})       // 1
+
+keys({"a": 1, "b": 2})     // ["a", "b"]
+values({"a": 1, "b": 2})   // [1, 2]
+
+var nums = [1, 2]
+push(nums, 3)
+print(nums)         // [1, 2, 3]
+
+var stack = [1, 2, 3]
+let last = pop(stack)
+print(last, stack)  // 3 [1, 2]
+
+contains([1,2,3], 2)            // true
+slice([1,2,3,4,5], 1, 4)        // [2, 3, 4]
+```
+
+## Functional
+
+| Function | Returns | Action |
+| --- | --- | --- |
+| `map(list, fn)` | `[U]` | Apply `fn` to each element. |
+| `filter(list, fn)` | `[T]` | Keep elements where `fn` returns `true`. |
+| `reduce(list, fn, initial)` | `U` | Fold to a single value. |
+| `sort(list)` | `[T]` | Sorted copy. |
+| `sort_by(list, fn)` | `[T]` | Sort by a key function. |
+| `reverse(list)` | `[T]` | Reversed copy. |
+
+```mochi
+map([1,2,3], fun(n: int): int => n * 2)                        // [2, 4, 6]
+filter([1,2,3,4,5], fun(n: int): bool => n % 2 == 0)           // [2, 4]
+reduce([1,2,3,4,5], fun(acc: int, n: int): int => acc + n, 0)  // 15
+sort([3,1,4,1,5])                                              // [1, 1, 3, 4, 5]
+sort_by(users, fun(u: User): int => u.age)
+reverse([1,2,3])                                               // [3, 2, 1]
+```
+
+## Math
+
+| Function | Returns | Action |
+| --- | --- | --- |
+| `abs(n)` | `T` | Absolute value. |
+| `min(a, b)` | `T` | Smaller of two values. |
+| `max(a, b)` | `T` | Larger of two values. |
+| `floor(n)` | `int` | Round toward negative infinity. |
+| `ceil(n)` | `int` | Round toward positive infinity. |
+| `round(n)` | `int` | Round to nearest integer. |
+| `sqrt(n)` | `float` | Square root. |
+
+```mochi
+abs(-5)        // 5
+abs(-3.0)      // 3.0
+min(3, 7)      // 3
+max(3, 7)      // 7
+floor(3.7)     // 3
+ceil(3.2)      // 4
+round(3.5)     // 4
+sqrt(16.0)     // 4.0
+```
+
+## Strings
+
+| Function | Returns | Action |
+| --- | --- | --- |
+| `split(s, sep)` | `[string]` | Split by separator. |
+| `join(list, sep)` | `string` | Join string list. |
+| `trim(s)` | `string` | Strip leading and trailing whitespace. |
+| `upper(s)` | `string` | Uppercase. |
+| `lower(s)` | `string` | Lowercase. |
+| `starts_with(s, prefix)` | `bool` | Prefix check. |
+| `ends_with(s, suffix)` | `bool` | Suffix check. |
+| `replace(s, old, new)` | `string` | Replace all occurrences. |
+
+```mochi
+split("a,b,c", ",")            // ["a", "b", "c"]
+join(["a", "b", "c"], "-")     // "a-b-c"
+trim("  hello  ")              // "hello"
+upper("hello")                 // "HELLO"
+lower("HELLO")                 // "hello"
+starts_with("hello", "he")     // true
+ends_with("world", "ld")       // true
+replace("foo bar foo", "foo", "baz")   // "baz bar baz"
+```
+
+## I/O
+
+| Function | Returns | Action |
+| --- | --- | --- |
+| `read_file(path)` | `string \| nil` | Read file contents; `nil` when missing. |
+| `write_file(path, content)` | `unit` | Create or overwrite a file. |
+| `read_line()` | `string` | Read a line from stdin. |
+
+## Misc
+
+| Function | Returns | Action |
+| --- | --- | --- |
+| `type_of(value)` | `string` | Type name as a string. |
+| `panic(message)` | never | Print and terminate the program. |
+| `assert(condition, message)` | `unit` | Panic with `message` when `condition` is false. |
+
+```mochi
+type_of(42)        // "int"
+type_of("hello")   // "string"
+type_of([1,2])     // "list"
+
+panic("unreachable code reached")
+assert(x > 0, "x must be positive")
+```

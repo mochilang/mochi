@@ -1,0 +1,218 @@
+---
+title: Operators
+sidebar_label: Operators
+description: Arithmetic, comparison, logical, membership, and pipeline operators in Mochi, with precedence rules.
+---
+
+Mochi has arithmetic, comparison, logical, membership, pipeline, optional,
+indexing, range, and assignment operators. Each section below lists what an
+operator does, the operand types it accepts, and where it sits in the
+precedence table. The [reference](/docs/reference/operators) repeats the
+table without prose.
+
+## Arithmetic
+
+| Operator | Meaning | Operand types |
+| --- | --- | --- |
+| `+` | Add | `int`, `float`, `string` (concat), `list` (concat) |
+| `-` | Subtract | `int`, `float` |
+| `*` | Multiply | `int`, `float` |
+| `/` | Divide | `int`, `float` |
+| `%` | Remainder | `int`, `float` |
+| `**` | Exponentiation | `int`, `float` |
+| `-` (unary) | Negate | `int`, `float` |
+
+```mochi
+let sum  = 1 + 2          // 3
+let prod = 3 * 4          // 12
+let pow  = 2 ** 10        // 1024
+let mod  = 17 % 5         // 2
+```
+
+`+` is overloaded: on strings it concatenates, on lists it concatenates
+elementwise, and on numbers it adds. Mochi does not convert across types
+implicitly. `"x" + 1` is an error.
+
+Integer division truncates toward zero. To divide and get a float, convert
+explicitly: `to_float(a) / to_float(b)`.
+
+## Comparison
+
+| Operator | Meaning |
+| --- | --- |
+| `==` | Equal |
+| `!=` | Not equal |
+| `<`, `<=` | Less than, less than or equal |
+| `>`, `>=` | Greater than, greater than or equal |
+
+```mochi
+print(2 == 2)            // true
+print("a" != "b")        // true
+print(3 < 5)             // true
+```
+
+Comparison returns a `bool`. Equality is structural for primitives,
+structs, and collections; reference identity for function values. Mixing
+types in a comparison is a type error.
+
+## Logical
+
+| Operator | Meaning |
+| --- | --- |
+| `&&` | Logical AND (short-circuit) |
+| `\|\|` | Logical OR (short-circuit) |
+| `!` | Logical NOT |
+
+```mochi
+let ok = age >= 18 && consented
+let warn = !ok || forced
+```
+
+`&&` and `||` short-circuit: the right operand is evaluated only if it is
+needed. The result type is `bool`.
+
+## Membership
+
+| Operator | Meaning |
+| --- | --- |
+| `in` | Element of a list, key of a map, member of a set, substring of a string |
+| `is` | Type test (narrows in branches) |
+
+```mochi
+print(2 in [1, 2, 3])              // true
+print("ai" in {"go", "ai"})        // true
+print("name" in {"name": "Ada"})   // true
+print("ada" in "ada lovelace")     // true
+
+let value: int | string = "hello"
+if value is string {
+  print(len(value))                // narrowed to string
+}
+```
+
+## Pipeline
+
+`|` threads a value through a function. `value | f(x, y)` is the same as
+`f(value, x, y)`. The value becomes the first argument. The pipeline is
+left-associative, which makes long chains read top to bottom.
+
+```mochi
+let total =
+  [1, 2, 3, 4, 5]
+  | filter(fun(n: int): bool => n % 2 == 1)
+  | map(fun(n: int): int => n * n)
+  | reduce(0, fun(acc: int, n: int): int => acc + n)
+```
+
+When the function takes a single argument, the parentheses are still
+required. `value | f()` works; `value | f` does not.
+
+## Optional access
+
+| Operator | Meaning |
+| --- | --- |
+| `?.` | Field/method access; returns `nil` if the receiver is `nil` |
+| `??` | Default if `nil` |
+
+```mochi
+let name = user?.name ?? "anonymous"
+let length = user?.email?.len() ?? 0
+```
+
+The `??` operator returns its left operand unless that operand is `nil`,
+in which case it returns the right operand.
+
+## Indexing and slicing
+
+| Syntax | Meaning |
+| --- | --- |
+| `xs[i]` | Element at index `i` |
+| `xs[i..j]` | Slice from `i` (inclusive) to `j` (exclusive) |
+| `xs[i..]` | Slice from `i` to end |
+| `xs[..j]` | Slice from start to `j` |
+| `m[k]` | Map value at key `k` |
+| `s[i]` | Character at index `i` (string) |
+
+```mochi
+let xs = [10, 20, 30, 40]
+print(xs[0])           // 10
+print(xs[1..3])        // [20, 30]
+print(xs[..2])         // [10, 20]
+
+let m = {"a": 1, "b": 2}
+print(m["a"])          // 1
+```
+
+Out-of-bounds indexing on a list panics. Missing keys in a map return
+`nil`. Slice ends are clamped to the bounds of the source.
+
+## Range expressions
+
+| Form | Meaning |
+| --- | --- |
+| `a..b` | Half-open range: includes `a`, excludes `b` |
+| `a..=b` | Inclusive range on both ends |
+
+Ranges are iterables. Pass them to `for`, `map`, or `reduce` the same way
+as a list.
+
+```mochi
+for i in 1..=5 { print(i) }     // 1, 2, 3, 4, 5
+let xs = (1..10) | map(fun(n: int): int => n * n)
+```
+
+## Assignment
+
+`=` assigns to a `var` binding. Compound assignments combine an arithmetic
+operator with assignment.
+
+```mochi
+var n = 0
+n = n + 1
+n += 1        // same as n = n + 1
+n -= 1
+n *= 2
+n /= 3
+n %= 5
+```
+
+Compound assignment requires the operator to be defined for the operand
+types. `+=` works on numbers, strings, and lists.
+
+## Precedence
+
+From highest to lowest. Operators on the same row associate as shown.
+
+| Level | Operators | Associativity |
+| --- | --- | --- |
+| 1 | `?.`, `[…]`, `(…)`, `.` | Left |
+| 2 | unary `-`, `!` | Right |
+| 3 | `**` | Right |
+| 4 | `*`, `/`, `%` | Left |
+| 5 | `+`, `-` | Left |
+| 6 | `..`, `..=` | None |
+| 7 | `<`, `<=`, `>`, `>=` | None |
+| 8 | `==`, `!=`, `in`, `is` | None |
+| 9 | `&&` | Left |
+| 10 | `\|\|` | Left |
+| 11 | `??` | Right |
+| 12 | `\|` (pipeline) | Left |
+| 13 | `=`, `+=`, `-=`, `*=`, `/=`, `%=` | Right |
+
+When in doubt, add parentheses. They cost nothing at runtime and make the
+intent clear.
+
+## Common errors
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| `operator + cannot be applied to int and string` | Mixed-type arithmetic | Convert with `str()` or `to_int()`. |
+| `division by zero` | `a / 0` or `a % 0` | Guard with an explicit check. |
+| `index out of bounds` | `xs[len(xs)]` or similar | Check `len()` before indexing. |
+| `cannot use ?. on a non-nullable value` | `T?.x` where `T` cannot be `nil` | Drop the `?.`; plain `.` is correct. |
+
+## Next
+
+- [Reference: operators](/docs/reference/operators): terse precedence table
+- [Variables](/docs/manual/variables): assignment and binding rules
+- [Functions](/docs/manual/functions): function values and pipelines

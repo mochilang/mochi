@@ -1,0 +1,107 @@
+.section {
+  padding: 5rem 0;
+  background: var(--mochi-bg-base);
+}
+
+.header {
+  max-width: 720px;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+}
+
+.title {
+  font-family: var(--ifm-heading-font-family);
+  font-size: 2.5rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.6rem 0;
+  color: var(--mochi-text-primary);
+}
+
+.lede {
+  font-size: 1.1rem;
+  line-height: 1.55;
+  color: var(--mochi-text-secondary);
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  background: var(--mochi-bg-surface);
+  border: 1px solid var(--mochi-border);
+  border-radius: 0;
+  text-decoration: none !important;
+  color: inherit !important;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--mochi-primary), var(--mochi-accent-deep));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+[data-theme='dark'] .card::before {
+  background: linear-gradient(90deg, var(--mochi-accent), var(--mochi-primary));
+}
+
+.card:hover {
+  border-color: var(--mochi-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--mochi-shadow-soft);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.cardKind {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mochi-primary);
+  margin-bottom: 0.5rem;
+}
+
+.cardTitle {
+  font-family: var(--ifm-heading-font-family);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem 0;
+  color: var(--mochi-text-primary);
+}
+
+.cardDesc {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--mochi-text-secondary);
+  margin: 0 0 1rem 0;
+  flex: 1;
+}
+
+.cardLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--mochi-primary);
+}

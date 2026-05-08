@@ -1,0 +1,189 @@
+.hero {
+  position: relative;
+  padding: 6rem 0 5rem;
+  overflow: hidden;
+}
+
+.heroBg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.heroBgGradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 75% 25%, rgba(31, 122, 61, 0.10), transparent 55%),
+    radial-gradient(circle at 20% 85%, rgba(95, 208, 137, 0.07), transparent 55%);
+}
+
+[data-theme='light'] .heroBgGradient {
+  background:
+    radial-gradient(circle at 75% 25%, rgba(31, 122, 61, 0.08), transparent 55%),
+    radial-gradient(circle at 20% 85%, rgba(15, 82, 38, 0.05), transparent 55%);
+}
+
+.heroBgGrid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--mochi-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--mochi-border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 80%);
+  opacity: 0.35;
+}
+
+.heroBgGlow {
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 60%;
+  height: 80%;
+  background: radial-gradient(circle, rgba(31, 122, 61, 0.10), transparent 60%);
+  filter: blur(40px);
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (max-width: 996px) {
+  .heroInner {
+    grid-template-columns: 1fr;
+  }
+
+  .heroCode {
+    display: none;
+  }
+
+  .hero {
+    padding: 4rem 0 3rem;
+  }
+}
+
+.heroText {
+  max-width: 560px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--mochi-primary-soft);
+  color: var(--mochi-primary);
+  border: 1px solid var(--mochi-primary-border);
+  border-radius: 0;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 1.4rem;
+}
+
+.title {
+  font-family: var(--ifm-heading-font-family);
+  font-size: 3.75rem;
+  line-height: 1.05;
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  margin: 0 0 1.25rem 0;
+  color: var(--mochi-text-primary);
+}
+
+.title :global(.accent) {
+  background: linear-gradient(120deg, var(--mochi-primary) 0%, var(--mochi-accent-deep) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-theme='dark'] .title :global(.accent) {
+  background: linear-gradient(120deg, var(--mochi-accent) 0%, var(--mochi-primary-strong) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@media (max-width: 996px) {
+  .title {
+    font-size: 2.75rem;
+  }
+}
+
+.tagline {
+  font-size: 1.18rem;
+  line-height: 1.5;
+  color: var(--mochi-text-secondary);
+  margin: 0 0 2rem 0;
+}
+
+.ctas {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.installLine {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--mochi-bg-surface);
+  border: 1px solid var(--mochi-border);
+  border-radius: 0;
+  padding: 0.55rem 0.85rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.85rem;
+  color: var(--mochi-text-primary);
+  box-shadow: var(--mochi-shadow-soft);
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.installPrompt {
+  color: var(--mochi-text-muted);
+  user-select: none;
+}
+
+.installLine code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  white-space: nowrap;
+}
+
+.copyBtn {
+  background: transparent;
+  border: none;
+  color: var(--mochi-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 0;
+  transition: color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+}
+
+.copyBtn:hover {
+  color: var(--mochi-primary);
+  background: var(--mochi-primary-soft);
+}
+
+.heroCode {
+  position: relative;
+}
+
+.heroCode :global(.theme-code-block) {
+  margin: 0;
+  box-shadow: none;
+}

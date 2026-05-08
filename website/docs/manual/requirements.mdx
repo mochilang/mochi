@@ -1,0 +1,59 @@
+---
+title: System requirements
+description: Supported platforms and prerequisites for running Mochi.
+sidebar_label: Requirements
+---
+
+Mochi runs on macOS, Linux, Windows (via WSL2), and Docker. The binary is
+statically linked, so most installations have no prerequisites.
+
+## Supported platforms
+
+| Platform | Architecture | Notes |
+|---|---|---|
+| macOS 12+ | x86_64, ARM64 (M1/M2/M3) | Fully supported |
+| Linux (Ubuntu 20.04+, Debian 11+) | x86_64, ARM64 | Fully supported |
+| Windows 10/11 via WSL2 | x86_64 | Supported |
+| Docker | Any | Via `ghcr.io/mochilang/mochi` |
+
+## Prerequisites
+
+### Binary installation
+
+No prerequisites. The Mochi binary is statically linked and self-contained.
+
+### Docker
+
+[Docker Desktop](https://www.docker.com/products/docker-desktop/) or Docker Engine on Linux.
+
+### Build from source
+
+- **Go 1.21 or later**: [Install Go](https://go.dev/dl/)
+- **Make**: available on all Unix-like systems
+- Optional: **Deno 1.40+** for TypeScript-based tests (`make install` handles this)
+
+## Verifying your installation
+
+After installing, run:
+
+```bash
+mochi --version
+```
+
+The output looks like:
+
+```output
+mochi version 0.10.x
+```
+
+Then try a quick hello world:
+
+```bash
+echo 'print("Hello!")' | mochi run /dev/stdin
+```
+
+Or create `hello.mochi` and run:
+
+```bash
+mochi run hello.mochi
+```

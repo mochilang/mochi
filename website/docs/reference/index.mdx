@@ -1,0 +1,101 @@
+---
+title: Language reference
+sidebar_label: Overview
+description: A concept-by-concept reference for the Mochi programming language.
+hide_table_of_contents: true
+---
+
+import ListingCard from '@site/src/components/Listing/ListingCard';
+import ListingCards from '@site/src/components/Listing/ListingCards';
+
+A concept-by-concept index of the Mochi language. Denser than the
+[manual](/docs/manual/), and assumes you have already written a small
+program. Each page focuses on syntax, types, and rules.
+
+## Pages
+
+<ListingCards>
+  <ListingCard
+    title="Keywords"
+    url="/docs/reference/keywords"
+    description="Every reserved keyword in Mochi, what it does, and where it appears."
+  />
+  <ListingCard
+    title="Operators"
+    url="/docs/reference/operators"
+    description="The complete operator table: arithmetic, comparison, logical, membership, pipeline, and precedence."
+  />
+  <ListingCard
+    title="Built-in functions"
+    url="/docs/reference/builtins"
+    description="Index of prelude functions: print, len, map, filter, reduce, and the rest."
+  />
+</ListingCards>
+
+## File structure
+
+A Mochi source file has these optional sections, in this order:
+
+| # | Section | Notes |
+| --- | --- | --- |
+| 1 | `package <name>` | Required only for multi-file packages. |
+| 2 | `import` declarations | Pull in packages or FFI modules. |
+| 3 | Top-level declarations | `type`, `model`, `fun`, `agent`, `stream`. |
+| 4 | Top-level statements | Executed top to bottom when the file runs. |
+| 5 | `test` blocks | Run only by `mochi test`. |
+
+## Grammar
+
+```
+Program     = { Statement }
+Statement   = LetDecl | VarDecl | FunDecl | TypeDecl | AgentDecl
+            | StreamDecl | ModelDecl | ImportDecl | PackageDecl
+            | ExportDecl | TestDecl | ExpressionStatement
+
+LetDecl     = "let" Identifier [ ":" Type ] "=" Expression
+VarDecl     = "var" Identifier [ ":" Type ] "=" Expression
+FunDecl     = "fun" Identifier "(" Params ")" [ ":" Type ] Block
+TypeDecl    = "type" Identifier ( StructBody | "=" Union )
+StreamDecl  = "stream" Identifier "{" Fields "}"
+AgentDecl   = "agent" Identifier "{" AgentBody "}"
+ModelDecl   = "model" Identifier "{" ModelFields "}"
+TestDecl    = "test" StringLit Block
+ImportDecl  = "import" [ Lang ] StringLit [ "as" Identifier ]
+
+Block       = "{" { Statement } "}"
+```
+
+## Execution model
+
+Mochi programs compile to bytecode and run on the bundled VM, a stack
+machine with a small set of opcodes. The
+[architecture notes](https://github.com/mochilang/mochi/blob/main/docs/architecture.md)
+in the source repo cover the details.
+
+| Command | Action |
+| --- | --- |
+| `mochi run <file>` | Compile and execute. Bytecode is cached under `~/.cache/mochi`. |
+| `mochi build <file> -o <out>` | Produce a static binary that embeds the runtime. |
+| `mochi test <file-or-dir>` | Compile and run `test` blocks only. |
+| `mochi repl` | Open an interactive session. |
+| `mochi serve` | Start the MCP server. |
+| `mochi transpile <file> --to <lang>` | Emit Go, Python, or TypeScript source. |
+
+## Naming conventions
+
+| Construct | Convention | Example |
+| --- | --- | --- |
+| Local bindings | `snake_case` | `current_user`, `total_pages` |
+| Constants (`let` at module level) | `SCREAMING_CASE` | `MAX_CONNECTIONS` |
+| Type names | `PascalCase` | `User`, `OrderItem` |
+| Stream and union variants | `PascalCase` | `Sensor`, `Leaf`, `Node` |
+| Package names | `snake_case` | `reading_list`, `mathutils` |
+
+## Next
+
+- [Manual](/docs/manual/) covers each concept in tutorial form.
+- [Examples](https://github.com/mochilang/mochi/tree/main/examples) holds
+  hundreds of small, runnable programs across algorithms, agents,
+  datasets, and AI usage.
+- [Issue tracker](https://github.com/mochilang/mochi/issues) for reference
+  pages that are wrong or incomplete.

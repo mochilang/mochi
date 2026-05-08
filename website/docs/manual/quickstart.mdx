@@ -1,0 +1,577 @@
+---
+title: Mochi quickstart
+sidebar_label: Quickstart
+description: Install Mochi and learn the syntax with a hands-on tour you can finish in fifteen minutes.
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+A fifteen-minute, copy-paste tour of Mochi. By the end you will have installed
+`mochi`, written a handful of programs, defined types, queried a small dataset,
+and met the agent and stream constructs the language is built around.
+
+You will:
+
+- Install Mochi and run a one-liner.
+- Bind values, write functions, and branch with `if` and `match`.
+- Define structs and union types.
+- Query a list with `from / where / select`.
+- Emit events into an agent and call a generative model.
+
+For a longer walk-through that ends with a working CLI, see the
+[tutorial](/docs/manual/get-started). For a single condensed page covering
+every part of the syntax, read [language basics](/docs/manual/basics).
+
+:::note Prerequisites
+
+Mochi runs on **macOS** (Intel and Apple Silicon), **Linux** (x86_64 and
+arm64), and **Windows** via WSL. See [system
+requirements](/docs/manual/requirements) for the full matrix.
+
+:::
+
+## 1. Install Mochi
+
+<Tabs groupId="install-method">
+<TabItem value="binary" label="Binary (recommended)">
+
+The install script downloads a static binary for your platform and places it
+on your `PATH`.
+
+```bash
+curl -fsSL get.mochi-lang.dev | sh
+```
+
+Confirm the install:
+
+```bash
+mochi --version
+mochi run -e 'print("ready")'
+```
+
+```output
+mochi 0.10.0
+ready
+```
+
+The binary has no runtime dependencies. Copy it between machines and it keeps
+working.
+
+</TabItem>
+<TabItem value="docker" label="Docker">
+
+Mochi ships as `ghcr.io/mochilang/mochi`. Use it in CI or on hosts where
+global tools are off-limits.
+
+```bash
+docker pull ghcr.io/mochilang/mochi:latest
+
+docker run --rm -i \
+  -v "$PWD:/work" -w /work \
+  ghcr.io/mochilang/mochi run hello.mochi
+```
+
+A shell alias keeps the syntax familiar:
+
+```bash
+alias mochi='docker run --rm -i -v "$PWD:/work" -w /work ghcr.io/mochilang/mochi'
+```
+
+</TabItem>
+<TabItem value="source" label="From source">
+
+Build from a clone to hack on the compiler or run an unreleased branch.
+
+```bash
+git clone https://github.com/mochilang/mochi
+cd mochi
+make build
+sudo install -m 0755 bin/mochi /usr/local/bin/mochi
+mochi --version
+```
+
+The `make` target requires Go 1.21 or newer. `make install` also fetches Deno
+so the TypeScript transpilation tests run.
+
+</TabItem>
+</Tabs>
+
+:::tip Editor support
+
+Syntax highlighting ships in the
+[mochi-lang VS Code extension](https://marketplace.visualstudio.com/items?itemName=mochilang.mochi).
+Vim, Helix, and Neovim users can copy the TextMate grammar from the
+[`editors/`](https://github.com/mochilang/mochi/tree/main/editors) directory
+of the main repo.
+
+:::
+
+## 2. Hello, Mochi
+
+Create `hello.mochi` with a single line:
+
+```mochi title="hello.mochi"
+print("Hello, Mochi!")
+```
+
+Run it:
+
+```bash
+mochi run hello.mochi
+```
+
+```output
+Hello, Mochi!
+```
+
+Three things you did not have to do:
+
+- No `main` function. Top-level statements run top to bottom.
+- No imports for `print`. Common functions come from the prelude.
+- No build step. `mochi run` compiles, caches, and executes in one shot.
+
+To skip the file entirely, evaluate a one-liner with `-e`:
+
+```bash
+mochi run -e 'print(2 + 2 * 5)'
+```
+
+```output
+12
+```
+
+## 3. Variables
+
+Mochi has two binding keywords. `let` is immutable, `var` is mutable.
+
+```mochi
+let name = "Mochi"
+var count = 0
+
+count = count + 1
+print(name, count)
+```
+
+```output
+Mochi 1
+```
+
+The compiler infers the type from the right-hand side. Annotate explicitly
+when you want to be sure:
+
+```mochi
+let answer: int = 42
+let pi: float = 3.14159
+```
+
+Lists and maps destructure in a binding:
+
+```mochi
+let [first, second] = [10, 20]
+let {"name": user_name, "age": user_age} = {"name": "Ada", "age": 36}
+
+print(first + second, user_name, user_age)
+```
+
+```output
+30 Ada 36
+```
+
+A `let` binding cannot be reassigned. The compiler catches the mistake at
+compile time. See the [errors](/docs/manual/errors) page for the full
+diagnostic shape.
+
+## 4. Functions
+
+Functions are declared with `fun`. Parameters are typed and return types are
+explicit.
+
+```mochi
+fun add(a: int, b: int): int {
+  return a + b
+}
+
+print(add(2, 3))
+```
+
+```output
+5
+```
+
+A single-expression function takes the arrow form. Functions are first-class
+values, so you can store them in `let` bindings or pass them around.
+
+```mochi
+let square = fun(x: int): int => x * x
+let twice = fun(f: fun(int): int, x: int): int => f(f(x))
+
+print(square(7))
+print(twice(square, 3))
+```
+
+```output
+49
+81
+```
+
+Recursion works as expected. Mochi does not perform tail-call optimization,
+so write loops when the depth is unbounded.
+
+```mochi
+fun fact(n: int): int {
+  if n <= 1 { return 1 }
+  return n * fact(n - 1)
+}
+
+print(fact(6))
+```
+
+```output
+720
+```
+
+## 5. Control flow
+
+`if` is both a statement and an expression. The expression form uses `then`
+and `else`.
+
+```mochi
+let n = 17
+
+if n % 2 == 0 {
+  print("even")
+} else {
+  print("odd")
+}
+
+let label = if n > 0 then "positive" else "non-positive"
+print(label)
+```
+
+```output
+odd
+positive
+```
+
+Loops use `for ... in` over ranges or collections. `break` and `continue`
+behave the same way as in Python or Go.
+
+```mochi
+for i in 1..4 {
+  print(i)
+}
+
+var total = 0
+for x in [10, 20, 30] {
+  total = total + x
+}
+print("total =", total)
+```
+
+```output
+1
+2
+3
+total = 60
+```
+
+`match` branches on shape:
+
+```mochi
+fun describe(value: int): string {
+  return match value {
+    0 => "zero",
+    1 => "one",
+    _ => "many"
+  }
+}
+
+print(describe(0))
+print(describe(99))
+```
+
+```output
+zero
+many
+```
+
+## 6. Types
+
+Define data with `type`. Field access is dotted, and constructors use brace
+syntax.
+
+```mochi
+type Point {
+  x: float
+  y: float
+}
+
+let origin = Point { x: 0.0, y: 0.0 }
+let target = Point { x: 3.0, y: 4.0 }
+
+fun distance(a: Point, b: Point): float {
+  let dx = a.x - b.x
+  let dy = a.y - b.y
+  return (dx * dx + dy * dy) ** 0.5
+}
+
+print(distance(origin, target))
+```
+
+```output
+5
+```
+
+Union types are written with `|`. They model values that take one of several
+shapes.
+
+```mochi
+type Shape =
+  Circle(radius: float)
+  | Square(side: float)
+  | Triangle(base: float, height: float)
+
+fun area(s: Shape): float {
+  return match s {
+    Circle(r) => 3.14159 * r * r,
+    Square(s) => s * s,
+    Triangle(b, h) => 0.5 * b * h
+  }
+}
+
+print(area(Circle(2.0)))
+print(area(Square(3.0)))
+```
+
+```output
+12.56636
+9
+```
+
+The optional/nullable case is a union with `nil`:
+
+```mochi
+fun safe_div(a: int, b: int): int | nil {
+  if b == 0 { return nil }
+  return a / b
+}
+
+print(safe_div(10, 2))
+print(safe_div(10, 0))
+```
+
+## 7. Collections
+
+Lists, maps, and sets ship in the prelude. They use familiar literal syntax.
+
+```mochi
+let nums = [1, 2, 3, 4, 5]
+let user = {"name": "Ada", "age": 36}
+let tags = {"go", "ai", "scripting"}
+
+print(nums[2])
+print(user["name"])
+print("ai" in tags)
+```
+
+```output
+3
+Ada
+true
+```
+
+Pipelines compose `map`, `filter`, and `reduce` from the prelude:
+
+```mochi
+let evens = nums | filter(fun(n: int): bool => n % 2 == 0)
+let squared = evens | map(fun(n: int): int => n * n)
+let total = squared | reduce(0, fun(acc: int, n: int): int => acc + n)
+
+print(total)
+```
+
+```output
+20
+```
+
+## 8. Tests
+
+`test` blocks live in the same file as the code they cover. `expect` is the
+sole assertion and reports the failing expression with line numbers.
+
+```mochi title="math.mochi"
+fun add(a: int, b: int): int {
+  return a + b
+}
+
+test "add is commutative" {
+  expect add(2, 3) == add(3, 2)
+}
+
+test "add identities" {
+  expect add(0, 7) == 7
+  expect add(7, 0) == 7
+}
+```
+
+```bash
+mochi test math.mochi
+```
+
+```output
+2 tests passed
+```
+
+There is no separate runner, no fixture framework, and no `if __name__ ==
+"__main__"` dance. Run `mochi test` over a file or a directory.
+
+## 9. Datasets
+
+Mochi treats lists like databases. The `from / where / select` query form
+filters, sorts, and shapes data without leaving the language.
+
+```mochi
+type Product {
+  name: string
+  price: int
+}
+
+let products = [
+  Product { name: "Laptop",  price: 1500 },
+  Product { name: "Phone",   price: 900 },
+  Product { name: "Tablet",  price: 600 },
+  Product { name: "Monitor", price: 300 },
+  Product { name: "Mouse",   price: 50 }
+]
+
+let top = from p in products
+          where p.price >= 100
+          sort by -p.price
+          take 3
+          select { name: p.name, price: p.price }
+
+for item in top {
+  print(item.name, "::", item.price)
+}
+```
+
+```output
+Laptop :: 1500
+Phone :: 900
+Tablet :: 600
+```
+
+Swap the literal list for `load` and the same query reads from a file:
+
+```mochi
+let products = load "products.json" as Product
+```
+
+`load` understands CSV, JSON, JSONL, and YAML. `save` writes the same set
+back. See [datasets](/docs/manual/datasets) for the full surface.
+
+## 10. Streams and agents
+
+Mochi has reactive concepts in the language itself. A `stream` is a typed
+event channel. An `agent` holds state and reacts to events with `on`
+handlers, optionally exposing `intent` endpoints to the outside world.
+
+```mochi
+stream Message { from: string, body: string }
+
+agent inbox {
+  var unread: int = 0
+
+  on Message as m {
+    unread = unread + 1
+    print("new from " + m.from)
+  }
+
+  intent count(): int {
+    return unread
+  }
+}
+
+let box = inbox {}
+emit Message { from: "ada", body: "hi" }
+emit Message { from: "lin", body: "hey" }
+print("unread =", box.count())
+```
+
+```output
+new from ada
+new from lin
+unread = 2
+```
+
+Intents are also how Mochi exposes tools to MCP-aware language models. See
+[agents](/docs/manual/agents) and [streams](/docs/manual/streams) for a full
+walk-through.
+
+## 11. Generative AI
+
+`generate text` calls a language model. Configure providers with a `model`
+declaration once, then refer to them by name.
+
+```mochi
+model fast {
+  provider: "openai"
+  name: "gpt-5.5-mini"
+  temperature: 0.3
+}
+
+let summary = generate text {
+  model: "fast"
+  prompt: "Explain bytecode in two sentences."
+}
+
+print(summary)
+```
+
+Add `as json` for structured output, or pass `tools: [...]` to let the model
+call your Mochi functions during generation. See [generative
+AI](/docs/manual/generative-ai) for the full block syntax.
+
+## 12. The REPL
+
+`mochi repl` opens an interactive session. Each line is type-checked the way
+a file would be.
+
+```bash
+mochi repl
+```
+
+```output
+Mochi 0.10.0 :help for commands, :quit to exit
+>>> let xs = [1, 2, 3]
+>>> xs | map(fun(n: int): int => n * 10)
+[10, 20, 30]
+>>> :type xs
+list<int>
+```
+
+REPL commands:
+
+| Command | Action |
+| --- | --- |
+| `:help` | Show all REPL commands. |
+| `:type <expr>` | Print the inferred type of an expression. |
+| `:load <file>` | Source a `.mochi` file into the session. |
+| `:reset` | Clear all bindings. |
+| `:quit` | Exit. |
+
+## Next
+
+- [Tutorial](/docs/manual/get-started) builds a complete CLI app with types,
+  tests, and packaging.
+- [Language basics](/docs/manual/basics) covers every part of the syntax on
+  one page.
+- [Agents](/docs/manual/agents) and [streams](/docs/manual/streams) cover
+  reactive design.
+- [Generative AI](/docs/manual/generative-ai) covers model calls.
+- [Datasets](/docs/manual/datasets) covers `from / where / select`, joins,
+  and file I/O.
+- [Reference](/docs/reference/) is the concept-by-concept index.
+- [Common errors](https://github.com/mochilang/mochi/blob/main/docs/common-language-errors.md)
+  indexes frequent compile-time messages and how to fix them.

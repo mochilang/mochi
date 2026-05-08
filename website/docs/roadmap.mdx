@@ -1,0 +1,176 @@
+---
+title: Mochi roadmap
+sidebar_label: Roadmap
+description: What is shipping next, what depends on what, and the path to a stable v1.0.
+---
+
+This page describes where Mochi is going. It is directional and changes
+with feedback from people using the language. Filed issues and
+discussions on GitHub get read before sprint planning.
+
+The categories below mirror how we work internally: the language and
+its compiler, the toolchain you run, the transpiler exits to other
+ecosystems, and the platforms we target.
+
+:::note Status legend
+Done means it has shipped to a release that you can install today.
+In progress means there is a working branch or open PR.
+Planned means we have committed to building it; the design might still
+shift.
+Considering means we like the idea but have not committed yet.
+:::
+
+## v0.10.x (the current train)
+
+The 0.10 line is the first release where every "core feature" listed
+on the home page actually ships in one binary. The remaining 0.10.x
+patches focus on bug fixes, standard library additions, and
+incremental wins for the bytecode optimizer.
+
+### Language core
+
+- Done. Bytecode VM with constant folding, inline caches for method
+  dispatch, and liveness-based dead-code elimination. `mochi run`
+  caches compiled bytecode under `~/.cache/mochi`, so a hot script
+  starts in single-digit milliseconds after the first run.
+- Done. Static type inference across function calls, generic
+  instantiations, and `match` arms. Empty literals (`let xs = []`)
+  still need an annotation; we are tracking the warts that show up
+  most in the wild.
+- Done. `let` and `var` bindings with the immutable-by-default rule.
+- Done. Functions, closures, and arrow lambdas (`fun(x) => x + 1`).
+  Closures capture by reference and are first-class values.
+- Done. `type` for structs with inline methods (no separate `impl`
+  block). Field access uses the dot operator; field assignment
+  requires a `var` binding.
+- Done. Union types (`T | nil`, `A | B`) with exhaustiveness checking
+  on `match`.
+- Done. `for`, `while`, `if`/`else`, `match`, `break`, `continue`,
+  range expressions (`0..n`, `0..=n`).
+- Done. Built-in collections: `list<T>`, `map<K, V>`, `set<T>` with
+  the prelude methods (`.push`, `.keys`, `.contains`, etc.).
+- Done. Packages and imports. A directory of `.mochi` files is a
+  package; `import "./pkg" as alias` resolves relative paths.
+- Done. Built-in test blocks (`test "name" { ... }`) with `expect`
+  assertions. `mochi test` walks the tree and runs every block.
+- Done. Agents and streams as first-class language constructs:
+  `agent`, `stream`, `emit`, `on Event as e`, `intent`.
+- Done. `generate text { ... }` and `generate embedding { ... }`
+  expressions. Tool calling, structured output (`as <Type>`), and
+  streaming responses are part of the runtime.
+- Done. Dataset queries (`from x in xs where ... select ...`) with
+  `sort by`, `take`, `group by`, and `join`.
+- Done. FFI through `extern` declarations for Go and Python.
+- Done. Pipe operator (`|`) for left-to-right function composition.
+
+### Tooling
+
+- Done. `mochi run`, `mochi test`, `mochi build`, `mochi serve`
+  (MCP server mode), `mochi transpile`.
+- Done. Single static binary distribution. The release tarball is
+  under 20 MB on every supported platform.
+- Done. Docker image at `ghcr.io/mochilang/mochi`. Used by the CI
+  pipelines on the main repo.
+- Done. VS Code syntax highlighting via the `mochi-tm` TextMate
+  bundle.
+- In progress. Language server (LSP). Diagnostics, hover types, and
+  goto-definition are working on the LSP branch. Auto-import,
+  refactoring, and code actions are next.
+- In progress. Native Windows build without WSL. Most of the
+  toolchain runs on Windows already; the remaining blockers are file
+  watching for `mochi serve` and ANSI color in the test runner.
+- Planned. `mochi fmt` formatter. Output is locked-in (no
+  configuration), modeled after `gofmt`.
+- Planned. Package manager and registry. We have a design doc; the
+  registry is the larger piece of work.
+
+### Transpilation
+
+- Done. `--to go`, `--to python`, `--to typescript`. Each target
+  produces idiomatic code that round-trips through the Mochi test
+  suite (the suite runs once natively and once for each target).
+- Considering. `--to lua`, `--to rust`. We have prototypes for both;
+  shipping depends on someone needing them and being willing to own
+  the maintenance.
+- Considering. `--to wasm`. The bytecode VM compiles fine to wasm,
+  but a clean Mochi-to-wasm path would need a separate codegen step.
+
+### Platform
+
+- Done. macOS (Intel and Apple Silicon).
+- Done. Linux (x86_64 and ARM64).
+- Done. Docker.
+- In progress. Windows native (above).
+- Considering. WebAssembly via `mochi build --to wasm`.
+
+## v0.11.x (next minor)
+
+The next minor is scoped to four things:
+
+1. Generics finalized. Function and struct generics work today; what
+   is missing is the type bound syntax (`<T: Comparable>`) and a
+   clearer error message when inference fails. Once landed, generics
+   stop being marked "in progress" everywhere.
+2. Error propagation operator (`?`). Today, `T | nil` plus `match`
+   handles the optional case well, but errors that need to bubble
+   force a verbose pattern. We want `value?` for the common short
+   form, modeled on Rust's `?`.
+3. Async primitives. We have an internal goroutine pool used by the
+   agent runtime. The next release exposes `async` and `await` as
+   keywords with the same scheduling rules. Cancellation and
+   timeouts are part of the surface.
+4. Interface / protocol declarations. `interface` will declare a
+   set of method signatures; types that satisfy the signature are
+   automatically usable wherever the interface is required. This
+   is the last piece needed before the standard library can express
+   things like `Iterable<T>` or `Hashable`.
+
+## v1.0 (stable language)
+
+The 1.0 milestone marks the language as stable. After 1.0, the core
+syntax and semantics will not change in a backwards-incompatible way
+without a `--edition` opt-in.
+
+To get there, Mochi needs:
+
+- A versioned language specification document (today the spec lives
+  in the test suite and a handful of design notes).
+- Generics, async, and interfaces from the 0.11 train shipped and
+  used in the standard library.
+- A stable standard library API, including `io`, `fs`, `time`,
+  `http`, `crypto`, and `json`. Not breaking these later is most of
+  the work.
+- A package registry with semantic-version resolution, lockfiles,
+  and a publish workflow.
+- LSP feature-complete enough that VS Code and JetBrains feel like a
+  first-class IDE experience.
+- Native Windows support without WSL.
+- A test suite that exercises every spec example on every supported
+  platform and every transpiler target.
+
+We are not promising a date. We are promising that 1.0 ships when the
+list above is true and not before.
+
+## Things we are deliberately not building
+
+To stay small, some doors stay closed:
+
+- Operator overloading. `+` on `string` and `list` is the only
+  overload, and it is in the language definition; users cannot
+  overload operators on their own types.
+- Macros. Code that generates code adds an extra layer of debugging
+  for a payoff that templates and codegen tools handle well enough.
+- Inheritance. Composition through structs and methods covers the
+  modeling cases; interfaces (when they ship) cover polymorphism.
+- A template engine, web framework, or ORM in the standard library.
+  These belong in third-party packages.
+
+## How to influence priorities
+
+- Open a [GitHub Discussion](https://github.com/mochilang/mochi/discussions)
+  with the use case. Real programs help us pick the right design more
+  than abstract requests.
+- File a bug with a reproduction. Bug reports get priority over
+  feature work.
+- Ship a patch. The contributor guide is in the repo; small PRs that
+  add tests for missing behavior are easiest to land.

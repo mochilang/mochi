@@ -1,0 +1,335 @@
+---
+title: Functions
+sidebar_label: Functions
+description: Top-level functions, arrow forms, closures, default arguments, varargs, and first-class function values.
+---
+
+Functions in Mochi are values. They can be assigned to variables, passed as
+arguments, returned from other functions, and stored inside data
+structures. Parameter and return types are explicit, and every call is
+type-checked at compile time.
+
+## Declaring functions
+
+Mochi uses `fun` to declare a function with a parameter list, a return
+type, and a brace body:
+
+```mochi
+fun add(a: int, b: int): int {
+  return a + b
+}
+
+print(add(2, 3))   // 5
+```
+
+The return type follows the parameter list after a colon. The body is a
+block of statements, and a `return` supplies the value.
+
+A function that returns nothing uses `void`:
+
+```mochi
+fun greet(name: string): void {
+  print("hello, " + name)
+}
+```
+
+Calling a `void` function in an expression position is a type error.
+
+## Arrow functions
+
+When the body is a single expression, the arrow form is shorter:
+
+```mochi
+let square = fun(x: int): int => x * x
+let double = fun(x: int): int => x * 2
+
+print(square(5))   // 25
+print(double(7))   // 14
+```
+
+The right-hand side of `=>` is the return value. An arrow function works
+anywhere a function value is expected and does not need a name.
+
+```mochi
+[1, 2, 3] | map(fun(n: int): int => n * 10)
+```
+
+## Functions as values
+
+A function value can be stored in a `let` or `var`, passed as an argument,
+or returned from another function.
+
+```mochi
+fun apply(f: fun(int): int, x: int): int {
+  return f(x)
+}
+
+let triple = fun(x: int): int => x * 3
+print(apply(triple, 7))     // 21
+print(apply(square, 9))     // 81
+```
+
+The type of a function is `fun(<param types>): <return type>`. The
+parameter `f` above has type `fun(int): int`.
+
+## Multiple parameters and named call sites
+
+Mochi calls use positional arguments by default. For functions with several
+parameters of the same type, named arguments at the call site improve
+readability.
+
+```mochi
+fun build_user(name: string, age: int, admin: bool): User {
+  return User { name: name, age: age, admin: admin }
+}
+
+let u = build_user(name: "Ada", age: 36, admin: false)
+```
+
+Named arguments must match parameter names exactly. A call may mix
+positional and named arguments as long as positional ones come first.
+
+## Default values
+
+Parameters can have default values. A parameter with a default is optional
+at the call site.
+
+```mochi
+fun http_get(url: string, timeout: int = 30): string {
+  // …
+}
+
+http_get("https://example.com")
+http_get("https://example.com", timeout: 5)
+```
+
+Defaults are evaluated lazily at each call, so they can reference earlier
+parameters or globals. Avoid side effects you would not want repeated.
+
+## Varargs
+
+A `...` in front of a parameter type collects the remaining arguments into
+a list:
+
+```mochi
+fun sum_all(values: ...int): int {
+  return values | reduce(0, fun(acc: int, n: int): int => acc + n)
+}
+
+print(sum_all(1, 2, 3, 4))   // 10
+```
+
+A function may have at most one varargs parameter, and it must be the last
+parameter in the signature.
+
+To pass an existing list as varargs, prefix it with `...` at the call
+site:
+
+```mochi
+let xs = [1, 2, 3, 4]
+print(sum_all(...xs))         // 10
+```
+
+## Closures
+
+Functions capture variables from the enclosing scope by reference. If the
+outer `var` changes, the closure sees the new value.
+
+```mochi
+fun counter(): fun(): int {
+  var n = 0
+  return fun(): int => {
+    n = n + 1
+    return n
+  }
+}
+
+let next = counter()
+print(next())   // 1
+print(next())   // 2
+print(next())   // 3
+```
+
+Closures cover stateful generators and event-handler patterns without a
+separate language feature.
+
+## Recursion
+
+Functions can call themselves. Mochi does not perform tail-call
+optimization, so deeply recursive code may exhaust the stack.
+
+```mochi
+fun fact(n: int): int {
+  if n <= 1 { return 1 }
+  return n * fact(n - 1)
+}
+
+print(fact(8))    // 40320
+```
+
+For unbounded depth, write the same algorithm with a loop and a `var`
+accumulator.
+
+```mochi
+fun fact_iter(n: int): int {
+  var acc = 1
+  for i in 1..(n + 1) {
+    acc = acc * i
+  }
+  return acc
+}
+```
+
+Mutual recursion works between top-level functions because top-level names
+are resolved together. Nested functions can refer to themselves but not to
+sibling locals declared later.
+
+## Higher-order helpers in the prelude
+
+Several common higher-order functions ship in the prelude:
+
+| Function | Signature |
+| --- | --- |
+| `map(xs, f)` | `(list<T>, fun(T): U): list<U>` |
+| `filter(xs, p)` | `(list<T>, fun(T): bool): list<T>` |
+| `reduce(xs, init, f)` | `(list<T>, U, fun(U, T): U): U` |
+| `for_each(xs, f)` | `(list<T>, fun(T): void): void` |
+| `sort_by(xs, key)` | `(list<T>, fun(T): K): list<T>` |
+
+The pipeline operator `|` keeps chains readable:
+
+```mochi
+let total =
+  [1, 2, 3, 4, 5]
+  | filter(fun(n: int): bool => n % 2 == 1)
+  | map(fun(n: int): int => n * n)
+  | reduce(0, fun(acc: int, n: int): int => acc + n)
+
+print(total)   // 35  (1 + 9 + 25)
+```
+
+## Function types in signatures
+
+A function can take or return other functions. The function type syntax is
+`fun(<params>): <return>`.
+
+```mochi
+fun compose(f: fun(int): int, g: fun(int): int): fun(int): int {
+  return fun(x: int): int => f(g(x))
+}
+
+let inc = fun(x: int): int => x + 1
+let double = fun(x: int): int => x * 2
+
+let inc_then_double = compose(double, inc)
+print(inc_then_double(3))    // 8 = (3 + 1) * 2
+```
+
+Type aliases shorten complex signatures. See [types](/docs/manual/types):
+
+```mochi
+type IntFn = fun(int): int
+
+fun compose(f: IntFn, g: IntFn): IntFn {
+  return fun(x: int): int => f(g(x))
+}
+```
+
+## Methods on types
+
+A function declared inside a `type` body becomes a method. Methods
+reference the surrounding fields directly.
+
+```mochi
+type Circle {
+  radius: float
+
+  fun area(): float {
+    return 3.14159 * radius * radius
+  }
+
+  fun scale(factor: float): Circle {
+    return Circle { radius: radius * factor }
+  }
+}
+
+let c = Circle { radius: 2.0 }
+print(c.area())              // 12.56636
+print(c.scale(2.0).area())   // 50.26544
+```
+
+There is no explicit `self` parameter. Read more in
+[types](/docs/manual/types).
+
+## Visibility
+
+Functions declared at the top level of a file are visible to other files in
+the same package. To export a function so other packages can import it,
+prefix the declaration with `export`:
+
+```mochi
+package mathutils
+
+export fun add(a: int, b: int): int {
+  return a + b
+}
+
+fun internal_helper(): int {
+  return 0      // visible only inside the mathutils package
+}
+```
+
+Read more in [packages](/docs/manual/packages).
+
+## Common patterns
+
+### Early return for guards
+
+```mochi
+fun find(xs: list<User>, id: int): User | nil {
+  for u in xs {
+    if u.id == id { return u }
+  }
+  return nil
+}
+```
+
+### Builder via partial application
+
+```mochi
+fun bind_left(f: fun(int, int): int, a: int): fun(int): int {
+  return fun(b: int): int => f(a, b)
+}
+
+let add5 = bind_left(fun(a: int, b: int): int => a + b, 5)
+print(add5(10))    // 15
+```
+
+### Pipeline over a small DSL
+
+```mochi
+fun normalize(s: string): string {
+  return s | trim | lower
+}
+
+print(normalize("  Hello WORLD  "))   // "hello world"
+```
+
+`trim` and `lower` are in the prelude with signature `fun(string):
+string`, so they fit a pipeline directly.
+
+## Common errors
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| `missing return statement` | A non-void function has a path with no return | Add a `return` on every path. |
+| `argument of type T does not match parameter U` | Wrong call-site type | Convert the argument or change the parameter type. |
+| `function takes N arguments but was called with M` | Arity mismatch | Update the call. Defaults make trailing parameters optional. |
+| `cannot infer type of arrow function` | Bare `fun(x) => …` without annotations | Annotate the parameters and the return type. |
+
+## Next
+
+- [Variables](/docs/manual/variables): `let`, `var`, scoping
+- [Types](/docs/manual/types): structs, unions, methods
+- [Control flow](/docs/manual/control-flow): `if`, `for`, `while`, `match`
+- [Errors](/docs/manual/errors): `expect`, `panic`, optional unions

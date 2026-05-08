@@ -1,0 +1,123 @@
+---
+title: Keywords
+sidebar_label: Keywords
+description: Every reserved keyword in Mochi grouped by purpose.
+---
+
+Reserved identifiers, grouped by role. None of these can be used as a
+variable, parameter, or type name.
+
+## Declarations
+
+| Keyword | Purpose |
+| --- | --- |
+| `let` | Immutable binding |
+| `var` | Mutable binding |
+| `fun` | Function declaration |
+| `type` | Type declaration |
+| `package` | Package declaration |
+| `export` | Export a top-level name from a package |
+| `import` | Import a package or FFI module |
+| `extern` | Declare an external (FFI) function or variable |
+
+## Control flow
+
+| Keyword | Purpose |
+| --- | --- |
+| `if` | Conditional |
+| `else` | Alternative branch |
+| `then` | Inline `if` expression |
+| `for` | Loop over a range or collection |
+| `in` | Membership / iteration |
+| `while` | Loop while a condition holds |
+| `break` | Exit a loop |
+| `continue` | Skip to the next iteration |
+| `return` | Return from a function |
+| `match` | Pattern-match expression |
+| `is` | Type test in an expression or pattern |
+
+## Errors
+
+| Keyword | Purpose |
+| --- | --- |
+| `expect` | Assertion (also used inside `test` blocks) |
+| `panic` | Abort with an unrecoverable error |
+| `try` | Begin an error-recovery block |
+| `catch` | Recover from a `try` |
+
+## Agents and streams
+
+| Keyword | Purpose |
+| --- | --- |
+| `agent` | Agent declaration |
+| `stream` | Stream declaration |
+| `on` | Event handler |
+| `emit` | Emit an event |
+| `intent` | Expose a callable endpoint |
+
+## AI generation
+
+| Keyword | Purpose |
+| --- | --- |
+| `generate` | Open a generation block (`generate text`, `generate embedding`) |
+| `model` | Model configuration block |
+| `tools` | Function tools list inside a `generate` block |
+
+## Data
+
+| Keyword | Purpose |
+| --- | --- |
+| `load` | Load a CSV / JSON / JSONL / YAML file |
+| `save` | Save a list to a file |
+| `from` | Begin a query |
+| `where` | Filter clause |
+| `select` | Projection clause |
+| `join`, `left join` | Join clause |
+| `group by` | Aggregation clause |
+| `sort by` | Sort clause |
+| `skip`, `take` | Slice clauses |
+| `to` | Used with `save` |
+| `as` | Type or format coercion (used in `load`, `save`, `as json`) |
+
+## Testing
+
+| Keyword | Purpose |
+| --- | --- |
+| `test` | Test block |
+
+## Literals
+
+| Keyword | Purpose |
+| --- | --- |
+| `true` | Boolean true |
+| `false` | Boolean false |
+| `nil` | The absent value |
+
+## Set operators
+
+| Keyword | Purpose |
+| --- | --- |
+| `union` | Set / list union |
+| `intersect` | Set / list intersection |
+| `except` | Set / list difference |
+| `all` | Used with `union all` to keep duplicates |
+
+## Fetch
+
+| Keyword | Purpose |
+| --- | --- |
+| `fetch` | HTTP fetch expression |
+| `with` | Options block on a `fetch` expression |
+
+## Reserved but not yet used
+
+Reserved for forthcoming features and unavailable as names today:
+
+`async`, `await`, `defer`, `interface`, `trait`, `where` (as a type-bound),
+`yield`.
+
+## Next
+
+- [Operators](/docs/reference/operators) for the operator table.
+- [Built-ins](/docs/reference/builtins) for prelude functions.
+- [Manual](/docs/manual/) for tutorial-style introductions to each concept.

@@ -1,0 +1,255 @@
+---
+title: Packages
+sidebar_label: Packages
+description: Organize larger Mochi programs with package, export, and import, including local imports and FFI imports of Go, Python, and TypeScript modules.
+---
+
+A Mochi package is a directory of `.mochi` files that share a namespace.
+Files declare the package they belong to with `package` at the top of the
+file. Names are private to the package unless marked with `export`.
+
+The `import` form also has a multi-language variant for pulling in Go,
+Python, or TypeScript modules.
+
+## A single-file program is a package
+
+A single-file program needs no `package` declaration. The file forms an
+implicit "main" package.
+
+```mochi title="hello.mochi"
+print("hello")
+```
+
+```bash
+mochi run hello.mochi
+```
+
+## Declaring a package
+
+Add `package <name>` to the top of every file that should belong to the
+same logical unit. The name must match the directory's name.
+
+```mochi title="mathutils/add.mochi"
+package mathutils
+
+export fun add(a: int, b: int): int {
+  return a + b
+}
+```
+
+```mochi title="mathutils/sub.mochi"
+package mathutils
+
+export fun sub(a: int, b: int): int {
+  return a - b
+}
+```
+
+Both files share the namespace. `add.mochi` can call functions from
+`sub.mochi` without importing.
+
+## Exporting names
+
+Top-level definitions are package-private by default. Prefix with `export`
+to make them visible outside the package:
+
+```mochi
+package mathutils
+
+export type Pair {
+  left: int
+  right: int
+}
+
+export fun add(p: Pair): int {
+  return p.left + p.right
+}
+
+fun internal_helper(): int {
+  return 0       // visible only inside mathutils
+}
+```
+
+Both types and functions can be exported. Exporting a type also exports
+its constructor and methods.
+
+## Importing a package
+
+Use `import "<name>"` to pull a package into the current file. The package
+becomes available under its name.
+
+```mochi
+import "mathutils"
+
+print(mathutils.add(Pair { left: 2, right: 3 }))
+```
+
+For a shorter alias, add `as <alias>`:
+
+```mochi
+import "mathutils" as mu
+
+print(mu.add(...))
+```
+
+Without an explicit alias, the package alias is the last segment of the
+path.
+
+## Local imports
+
+Paths beginning with `./` or `../` are resolved relative to the importing
+file. They can name a directory of `.mochi` files or a single `.mochi`
+file. The `.mochi` extension may be omitted.
+
+```mochi
+import "./reading-list" as rl
+import "../shared/types"
+import "./helpers/strings.mochi"
+```
+
+This is the everyday form for multi-file projects.
+
+## Cross-package types and methods
+
+Imported types are referred to via the package name:
+
+```mochi
+import "./reading-list" as rl
+
+let book = rl.Book {
+  title: "Mochi for All",
+  author: "An Onymous",
+  pages: 200,
+  read: false
+}
+```
+
+Methods on the type carry over. Call them with the dot operator on the
+value:
+
+```mochi
+print(book.summary())
+```
+
+## Re-exports
+
+A wrapper package can expose names from an inner package by combining a
+re-import with regular `export`:
+
+```mochi
+package web
+
+import "./internal/router" as router
+
+export fun handle(req: Request): Response {
+  return router.dispatch(req)
+}
+```
+
+To forward a type or function under the same name, declare a wrapper:
+
+```mochi
+export fun add(a: int, b: int): int {
+  return mathutils.add(a, b)
+}
+```
+
+There is no shorthand for forwarding many names at once. The convention is
+to keep the surface small enough that a few `export fun` lines do the job.
+
+## FFI imports for Go, Python, and TypeScript
+
+`import` has a multi-language form for calling into host runtimes. The
+syntax is `import <lang> "<module>" as <alias>`.
+
+### Calling Go
+
+```mochi
+import go "math" as math
+
+extern fun math.Sqrt(x: float): float
+
+print(math.Sqrt(16.0))   // 4
+```
+
+### Calling Python
+
+```mochi
+import python "math" as math
+
+extern fun math.sqrt(x: float): float
+
+print(math.sqrt(49.0))   // 7
+```
+
+### Calling TypeScript
+
+```mochi
+import typescript "./runtime/ffi/deno/math.ts" as math
+
+extern fun math.pow(x: float, y: float): float
+
+print(math.pow(2.0, 8.0))  // 256
+```
+
+For each FFI call, declare the function with `extern fun` so the compiler
+knows its types. The host-side runtime under
+[`runtime/ffi`](https://github.com/mochilang/mochi/tree/main/runtime/ffi)
+implements the bridge.
+
+When `as <alias>` is omitted, the alias defaults to the last path
+component. See [FFI](/docs/manual/packages#ffi-imports-for-go-python-and-typescript)
+in the language guide for the full rules.
+
+## Visibility rules
+
+| Form | Visible inside the package? | Visible outside? |
+| --- | --- | --- |
+| `fun foo()` | Yes | No |
+| `export fun foo()` | Yes | Yes |
+| `let x = …` | Yes | No |
+| `export let x = …` | Yes | Yes |
+| `var x = …` | Yes | No |
+| `export var x = …` | Yes | Yes (mutable cross-package state, use sparingly) |
+| `type T { … }` | Yes | No |
+| `export type T { … }` | Yes | Yes |
+
+## File layout conventions
+
+A typical project tree:
+
+```
+my-app/
+  main.mochi
+  reading-list/
+    book.mochi
+    storage.mochi
+    storage_test.mochi
+  shared/
+    types.mochi
+```
+
+Conventions:
+
+- Files in a package are split by topic, not size. Keep related types and
+  functions together.
+- Test files end in `_test.mochi` and are picked up automatically by
+  `mochi test`.
+- Lowercase, hyphenated directory names; matching package names use
+  underscores: `reading-list/` directory holds `package reading_list`.
+
+## Common errors
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| `package name "X" does not match directory "Y"` | Mismatched declaration | Rename the directory or the `package` line. |
+| `cannot import package "X": not found` | Path typo | Check the path; for local imports, use `./` or `../`. |
+| `name "X" is not exported by package "Y"` | Calling an unexported name | Add `export` to the declaration in the source package. |
+| `cyclic import` | Two packages import each other | Extract shared types to a third package. |
+
+## Next
+
+- [Variables](/docs/manual/variables): visibility starts at the binding
+- [Types](/docs/manual/types): exported types and methods
+- [Tutorial](/docs/manual/get-started): a worked example with a multi-file
+  package

@@ -1,0 +1,277 @@
+---
+title: Variables
+sidebar_label: Variables
+description: Immutable let bindings, mutable var bindings, scoping rules, destructuring, and how Mochi infers types.
+---
+
+A variable is a name that holds a typed value. Every binding in Mochi is
+either immutable (`let`) or mutable (`var`). The compiler infers the type
+from the initializer unless you annotate it. Bindings live in the block
+where they are declared, and inner blocks may shadow outer ones.
+
+## Immutable bindings: `let`
+
+`let` declares a binding that cannot be reassigned.
+
+```mochi
+let name = "Mochi"
+let answer = 42
+let pi = 3.14159
+```
+
+Reassigning a `let` is a compile-time error:
+
+```mochi
+let count = 1
+count = 2  // error: cannot assign to immutable binding `count`
+```
+
+`let` is the default. Most variables in idiomatic Mochi are immutable; use
+`var` only when mutation is required.
+
+## Mutable bindings: `var`
+
+`var` declares a binding whose value can change.
+
+```mochi
+var attempts = 0
+attempts = attempts + 1
+attempts = attempts + 1
+
+print(attempts)  // 2
+```
+
+The type of a `var` is fixed at the point of declaration. Reassigning to a
+value of a different type is an error:
+
+```mochi
+var n = 0
+n = "hello"  // error: cannot assign value of type `string` to `int`
+```
+
+For a value that can hold either of two types, declare it with a
+[union type](/docs/manual/types):
+
+```mochi
+var n: int | string = 0
+n = "hello"  // ok
+```
+
+## Type inference and explicit annotations
+
+The compiler infers the type from the right-hand side of the initializer,
+so most bindings can omit the annotation:
+
+```mochi
+let count = 0          // int
+let pi = 3.14          // float
+let name = "Mochi"     // string
+let ok = true          // bool
+let xs = [1, 2, 3]     // list<int>
+```
+
+Annotate explicitly when:
+
+1. The default inference is too narrow. A literal `[]` infers as
+   `list<unknown>`. Annotate to choose the element type.
+
+   ```mochi
+   var queue: list<string> = []
+   queue.push("first")
+   ```
+
+2. The public API needs to be explicit. Top-level constants, exported
+   names, and function signatures are easier to scan with explicit types.
+
+   ```mochi
+   let HTTP_TIMEOUT: int = 30
+   ```
+
+3. The initializer is one of several union variants. Only an annotation
+   declares the binding broad enough to hold all variants.
+
+   ```mochi
+   let result: int | string = 42
+   ```
+
+## Initialization is required
+
+Every binding must have an initial value. Mochi has no uninitialized
+variables.
+
+```mochi
+let total: int       // error: missing initializer
+var name: string     // error: missing initializer
+```
+
+When no value is available yet, use `nil` and an optional union:
+
+```mochi
+var current: User | nil = nil
+```
+
+## Block scope and shadowing
+
+Variables are visible only inside the block in which they are declared.
+Blocks include function bodies, loop bodies, branches of `if`, and
+explicit `{ }` blocks.
+
+```mochi
+let x = 10
+if true {
+  let x = 20    // shadows the outer x in this block
+  print(x)      // 20
+}
+print(x)        // 10
+```
+
+Shadowing is useful when narrowing a type:
+
+```mochi
+fun describe(value: int | string): string {
+  match value {
+    n: int => {
+      let value = n      // narrowed to int in this branch
+      return "int " + str(value)
+    },
+    s: string => {
+      let value = s      // narrowed to string in this branch
+      return "str " + value
+    }
+  }
+}
+```
+
+A nested block ends at its closing brace. Bindings declared inside it are
+not visible from the enclosing block.
+
+## Destructuring
+
+Destructuring binds several names at once from a list, tuple, or map. The
+pattern on the left of `=` mirrors the shape on the right.
+
+### List patterns
+
+```mochi
+let [first, second] = [10, 20]
+print(first, second)            // 10 20
+```
+
+Capture the rest with `...`:
+
+```mochi
+let [head, ...tail] = [1, 2, 3, 4]
+print(head, tail)               // 1 [2, 3, 4]
+```
+
+Underscore (`_`) skips a position:
+
+```mochi
+let [_, second, _] = ["a", "b", "c"]
+print(second)                   // b
+```
+
+### Map patterns
+
+```mochi
+let {"name": who, "age": age} = {"name": "Ada", "age": 36}
+print(who, age)                 // Ada 36
+```
+
+A missing key in a map pattern raises an error at runtime. When the key
+might be absent, use index access with an explicit `nil` check:
+
+```mochi
+let user = {"name": "Ada"}
+let age = user["age"]           // nil if absent
+```
+
+### Mixed patterns
+
+Patterns nest:
+
+```mochi
+let {"position": [x, y]} = {"position": [3.0, 4.0]}
+print(x, y)                     // 3 4
+```
+
+## Constants and conventions
+
+Mochi has no separate `const` keyword. The convention for module-level
+constants is `let` with uppercase naming:
+
+```mochi
+let HTTP_TIMEOUT = 30
+let DEFAULT_MODEL = "gpt-5.5-mini"
+let MAX_PAGE_SIZE = 100
+```
+
+Local variables use `snake_case`:
+
+```mochi
+let page_size = 25
+var current_user = ada
+```
+
+Type names use `PascalCase`:
+
+```mochi
+type ReadingList { items: list<Book> }
+```
+
+## Type narrowing
+
+When a variable has a union type and a branch checks one of its variants,
+the compiler narrows the type inside that branch.
+
+```mochi
+fun length_of(value: int | string): int {
+  if value is string {
+    return len(value)        // value is `string` here
+  }
+  return value               // value is `int` here
+}
+```
+
+`is` is the runtime type test. `match` performs the same narrowing on each
+arm.
+
+## Globals and side effects
+
+Top-level `let` and `var` bindings are evaluated in file order at program
+start. They are visible to every function declared in the same file. To
+share a `var` across files, mark the file's package and `export` the
+binding:
+
+```mochi
+package config
+
+export var debug: bool = false
+```
+
+```mochi
+import "config"
+
+config.debug = true
+```
+
+Idiomatic Mochi keeps mutable globals to a minimum and passes state through
+arguments. See [packages](/docs/manual/packages) for the full picture.
+
+## Common errors
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| `cannot assign to immutable binding` | Reassigning a `let` | Switch to `var`, or rebind with shadowing. |
+| `binding has no initializer` | A `let` or `var` declared without `= …` | Provide an initial value, possibly `nil` with an optional type. |
+| `cannot infer type of empty list literal` | `let xs = []` with no other hint | Annotate the type: `let xs: list<int> = []`. |
+| `cannot assign value of type T to U` | `var` reassigned to a wider type | Declare the binding with a union type, or convert. |
+
+The full diagnostic catalogue lives at
+[`docs/common-language-errors.md`](https://github.com/mochilang/mochi/blob/main/docs/common-language-errors.md).
+
+## Next
+
+- [Functions](/docs/manual/functions): function values, closures, defaults
+- [Types](/docs/manual/types): primitives, structs, union types
+- [Errors](/docs/manual/errors): optional values, `expect`, `panic`

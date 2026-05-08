@@ -1,0 +1,212 @@
+---
+title: Mochi vision
+sidebar_label: Vision
+description: Why Mochi exists, what we are optimizing for, and the technical decisions that follow from those goals.
+---
+
+Mochi is a small statically typed language for the work that sits between
+shell scripts and full applications: data wrangling, automation, agents
+that react to events, AI-augmented tools, and the glue code around them.
+This page explains what we are optimizing for and the technical bets that
+follow from those goals.
+
+## The problem we keep hitting
+
+Day to day, the same shape of program keeps showing up:
+
+- Read a few files, query them, write a transformed result.
+- Listen for an event, react, emit another event.
+- Call a model, parse the response, do something with it.
+- Wire two services together with twenty lines of glue.
+
+Python handles the shape but pays for it in runtime: dynamic dispatch
+catches type errors at the worst time, dependency installs are slow, and
+shipping the result requires a virtualenv or a container. Go and Rust
+catch the errors at compile time but ask for a `func main`, a module
+declaration, a struct-with-receiver, and a separate test binary before
+you can print "hello". Bash loses the moment data has shape.
+
+We wanted a language that compiles like Go, reads like Python, and
+includes the four things we always end up writing as a library:
+queries over records, an agent runtime, a model call, and a test runner.
+
+## What "small" means concretely
+
+Small is a target with teeth. The language has roughly 25 keywords, one
+expression form for control flow (`if/else/match/for`), one construct
+for sequence work (`from / where / select`), and one for events
+(`agent` / `stream` / `emit`). The toolchain ships as a single static
+binary under 20MB. There is no project file, no package manifest, no
+config layer. A `.mochi` file is a complete program; a directory of
+`.mochi` files is a complete package.
+
+We hold this line by saying no a lot. Operator overloading, macros,
+implicit conversions, generics with associated types, effect systems,
+custom syntax: none of these are in the language. When a feature would
+add a keyword, it has to earn that keyword by making code shorter and
+clearer in a use case we hit weekly.
+
+## The five technical bets
+
+### 1. Static typing with full inference
+
+Every expression has a type at compile time. Inference flows through
+function calls, generic instantiations, and `match` arms, so most
+function bodies need no annotations. Public surfaces (function
+parameters, struct fields, exported types) require types so the
+contract is explicit at the boundary.
+
+The compiler tracks type narrowing through `is` tests and `match`
+arms, which lets `T | nil` replace a separate `Option<T>` type. Union
+types with exhaustiveness checking handle what enums and tagged unions
+do in other languages.
+
+### 2. Compiled to bytecode, ships as one binary
+
+Mochi compiles to a stack-based bytecode and runs on a tree-walking
+interpreter for the first call, then promotes hot loops into compact
+bytecode with constant folding, dead code elimination, and inline
+caches for method dispatch. `mochi run` caches compiled bytecode under
+`~/.cache/mochi`, so repeat invocations approach binary speed.
+
+`mochi build` produces a single self-contained executable with the
+runtime statically linked. The output runs on any machine of the same
+OS and arch with no Mochi install, no virtualenv, no `node_modules`.
+
+### 3. Agents and streams are language constructs
+
+`agent` declares a unit that holds private state and reacts to typed
+events. `stream` declares an event schema. `emit` publishes one event
+into the running system. The runtime guarantees that handlers within
+a single agent observe events in deterministic order and that state
+mutations inside a handler are atomic with respect to other handlers
+on the same agent.
+
+This sits where actor libraries (Akka, Ray) and reactive libraries
+(RxJava, RxJS) live in other ecosystems, with the trade-off that you
+get one well-defined runtime instead of a configurable one. When that
+matters, you can call into Go or Python through `extern`.
+
+### 4. Generative AI as a first-order construct
+
+`generate text { ... }` and `generate embedding { ... }` are
+expressions that take a prompt and a set of structured arguments and
+return a value. Provider configuration lives in a `model` block.
+Tools are declared inline as functions with a `description:` field.
+Structured output uses `as <Type>` to decode the response into a
+typed value.
+
+The runtime handles streaming responses, tool-call loops, retries on
+transient failures, and request caching. Provider details (OpenAI,
+Anthropic, local Ollama, etc.) are runtime configuration, not source
+edits. The same program runs against `gpt-5.5-mini` in development,
+`claude-opus-4.7` in production, and a local Ollama model in CI.
+
+### 5. Datasets as values, queries in the grammar
+
+A list of records is a dataset. `from x in xs where ... select ...`
+is an expression that returns a new list. `load "file.csv" as Row`
+parses CSV, JSON, JSONL, or YAML into a typed list. `save xs to
+"file.json"` writes it back. Joins, sorts, grouping, and aggregation
+follow the SQL pattern but stay in the type system.
+
+This avoids the usual ceremony of pulling in pandas, lodash, or the
+stream collectors API for what is fundamentally a four-line query.
+
+## Toolchain commitments
+
+A language is the part you write; a toolchain is the part you live in.
+Mochi treats the toolchain as part of the contract.
+
+- One installer: `curl get.mochi-lang.dev | sh`. No package manager
+  preamble, no JDK download, no `apt` repository to add.
+- One binary: `mochi run`, `mochi test`, `mochi build`,
+  `mochi serve`, `mochi fmt`, `mochi transpile` are all subcommands of
+  the same executable.
+- Tests next to code: `test "name" { ... }` blocks live in the
+  same file as the function under test. `mochi test ./...` runs every
+  block in the tree.
+- Transpilation as an exit: `mochi transpile main.mochi --to go`
+  produces idiomatic Go. The same flag accepts `python`, `typescript`,
+  and a growing list. If Mochi ever stops being the right tool, you
+  walk away with the source, not a runtime port.
+- Reproducible builds: same input bytes, same output bytes, on
+  every machine.
+
+## What Mochi will not become
+
+Some shapes of program are out of scope, by design.
+
+- Systems programming. No manual memory layout, no unsafe blocks,
+  no inline assembly. If you are writing a kernel module, a hot loop
+  for a video codec, or a microcontroller firmware, Mochi is the wrong
+  tool. Use Rust, Zig, or C.
+- A Python ecosystem replacement. Python has thirty years of
+  numerical, scientific, and ML libraries. We integrate with that
+  ecosystem rather than rebuild it: `extern python` calls Python
+  functions, `mochi transpile --to python` exports Mochi code as
+  Python, and `generate` plays nicely with HuggingFace models served
+  locally.
+- A general scripting language. Mochi targets one job shape (data,
+  agents, AI, automation) very well. For an ad hoc one-liner, `bash`
+  or a Python REPL is still the right call.
+
+## How we make decisions
+
+When two designs would both work, we pick the one that:
+
+1. Removes a keyword rather than adding one.
+2. Reads top to bottom without forward references.
+3. Catches the error at compile time rather than at runtime.
+4. Composes with existing language constructs (functions, types,
+   pattern match) rather than introducing a new mechanism.
+5. Exports cleanly to Go, Python, or TypeScript through the
+   transpiler, so users keep an exit path.
+
+The roadmap items in flight (generics, async, package registry, native
+Windows) are filtered through these same five questions.
+
+## What this looks like in practice
+
+The same logic that takes 60 lines of Python plus FastAPI plus pydantic
+is around 25 lines of Mochi:
+
+```mochi
+type Article {
+  title: string
+  body:  string
+}
+
+let articles = load "articles.jsonl" as Article
+
+let summaries = from a in articles
+                where len(a.body) > 200
+                select {
+                  title: a.title,
+                  tldr: generate text {
+                    prompt: "Summarize in one sentence:\n" + a.body
+                  }
+                }
+
+save summaries to "summaries.json"
+
+test "summaries are non-empty" {
+  for s in summaries {
+    expect len(s.tldr) > 0
+  }
+}
+```
+
+Static types, dataset queries, AI generation, persistence, and tests
+in one file with no imports and no setup. That is the shape of program
+Mochi exists for.
+
+## Where to go next
+
+- [Quickstart](/docs/manual/quickstart): install Mochi and run your
+  first program.
+- [Language tour](/docs/manual/basics): every piece of syntax in one
+  page.
+- [Roadmap](/docs/roadmap): what is shipping in the next few releases.
+- [GitHub](https://github.com/mochilang/mochi): source, issues,
+  discussions.

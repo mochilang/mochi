@@ -1,0 +1,153 @@
+---
+title: Operators
+sidebar_label: Operators
+description: "Complete operator reference for Mochi: arithmetic, comparison, logical, membership, indexing, and the precedence table."
+---
+
+A table-first reference. The
+[operators manual page](/docs/manual/operators) covers the same material
+with prose and worked examples.
+
+## Arithmetic
+
+| Operator | Name | Types | Example |
+| --- | --- | --- | --- |
+| `+` | Addition | `int`, `float`, `string`, `list` | `1 + 2`, `"a" + "b"` |
+| `-` | Subtraction | `int`, `float` | `5 - 3` |
+| `*` | Multiplication | `int`, `float` | `3 * 4` |
+| `/` | Division | `int`, `float` | `10 / 3` |
+| `%` | Remainder | `int`, `float` | `7 % 3` |
+| `**` | Exponentiation | `int`, `float` | `2 ** 10` |
+| `-` (unary) | Negate | `int`, `float` | `-x` |
+
+Integer `/` truncates toward zero. Convert with `to_float()` for a
+fractional result. `+` is overloaded for `string` and `list` concatenation.
+
+## Comparison
+
+| Operator | Meaning |
+| --- | --- |
+| `==` | Equal |
+| `!=` | Not equal |
+| `<` | Less than |
+| `<=` | Less than or equal |
+| `>` | Greater than |
+| `>=` | Greater than or equal |
+
+Comparisons return `bool`. Equality is structural for primitives, structs,
+and collections, and reference identity for function values.
+
+## Logical
+
+| Operator | Meaning | Notes |
+| --- | --- | --- |
+| `&&` | AND | Short-circuits |
+| `\|\|` | OR | Short-circuits |
+| `!` | NOT | Unary prefix |
+
+## Membership and type tests
+
+| Operator | Meaning |
+| --- | --- |
+| `in` | Element of list / key of map / member of set / substring of string |
+| `is` | Type test (narrows in branches) |
+
+```mochi
+print(2 in [1, 2, 3])             // true
+print("k" in {"k": "v"})          // true
+print("x" is string)              // true
+```
+
+## Range
+
+| Operator | Meaning |
+| --- | --- |
+| `..` | Half-open range, exclusive on the right |
+| `..=` | Inclusive on both ends |
+
+```mochi
+for i in 0..3   { print(i) }      // 0, 1, 2
+for i in 0..=3  { print(i) }      // 0, 1, 2, 3
+```
+
+## Pipeline
+
+| Operator | Meaning |
+| --- | --- |
+| `\|` | Insert the left-hand value as the first argument to the right-hand call |
+
+```mochi
+let total =
+  [1, 2, 3]
+  | map(fun(n: int): int => n * 2)
+  | reduce(0, fun(a: int, b: int): int => a + b)
+```
+
+## Optional access and defaults
+
+| Operator | Meaning |
+| --- | --- |
+| `?.` | Field / method access; returns `nil` if the receiver is `nil` |
+| `??` | Default value if the left-hand side is `nil` |
+
+```mochi
+let name = user?.name ?? "anonymous"
+```
+
+## Set operators
+
+| Operator | Meaning |
+| --- | --- |
+| `union` | All elements from both inputs |
+| `union all` | Concatenation preserving duplicates |
+| `intersect` | Elements in both inputs |
+| `except` | Elements in left but not in right |
+
+```mochi
+let a = {1, 2, 3}
+let b = {2, 3, 4}
+print(a union b)       // {1, 2, 3, 4}
+print(a intersect b)   // {2, 3}
+print(a except b)      // {1}
+```
+
+## Attribute and index
+
+| Operator | Meaning |
+| --- | --- |
+| `.` | Field or method access |
+| `[i]` | Index a list or string, or look up a key in a map |
+| `[i..j]` | Slice a list or string |
+| `[i..]`, `[..j]` | Slice with one end open |
+
+## Assignment
+
+| Operator | Meaning |
+| --- | --- |
+| `=` | Assign |
+| `+=`, `-=`, `*=`, `/=`, `%=`, `**=` | Compound assignments |
+
+## Precedence
+
+Highest (binds tightest) to lowest. Operators on the same row associate as
+shown.
+
+| Level | Operators | Associativity |
+| --- | --- | --- |
+| 1 | `?.`, `[…]`, `(…)`, `.` | Left |
+| 2 | unary `-`, `!` | Right |
+| 3 | `**` | Right |
+| 4 | `*`, `/`, `%` | Left |
+| 5 | `+`, `-` | Left |
+| 6 | `..`, `..=` | None |
+| 7 | `<`, `<=`, `>`, `>=` | None |
+| 8 | `==`, `!=`, `in`, `is` | None |
+| 9 | `&&` | Left |
+| 10 | `\|\|` | Left |
+| 11 | `??` | Right |
+| 12 | `\|` (pipeline) | Left |
+| 13 | `union`, `intersect`, `except` | Left |
+| 14 | `=`, `+=`, `-=`, `*=`, `/=`, `%=` | Right |
+
+When in doubt, parenthesize. Mochi does not warn about redundant
+parentheses, and they cost nothing at runtime.

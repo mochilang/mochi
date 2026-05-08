@@ -1,0 +1,460 @@
+---
+title: Build your first Mochi program
+sidebar_label: Tutorial
+description: "Build a complete command-line program in Mochi from a blank file: types, functions, tests, packages, and a CLI entry point."
+---
+
+Build a command-line app that tracks a personal book reading list. The
+program adds books, marks them as read, queries them, and persists state to
+JSON. The language gets introduced step by step alongside the code.
+
+You will:
+
+- Organize a multi-file Mochi project as a package.
+- Define custom types with inline methods.
+- Co-locate `test` blocks with the code they cover.
+- Drive the program from command-line arguments.
+- Persist state to a JSON file.
+- Query records with `from / where / select`.
+
+If Mochi is not installed yet, start with the
+[quickstart](/docs/manual/quickstart). For a single-page summary of every
+piece of syntax, see [language basics](/docs/manual/basics).
+
+:::tip Source code
+
+The finished program lives at
+[`examples/tutorials/reading-list/`](https://github.com/mochilang/mochi/tree/main/examples/tutorials/reading-list)
+in the main repo. Skip ahead to read it whole.
+
+:::
+
+## 1. Set up the project
+
+Create a directory and a single empty file. Mochi has no project metadata
+file. A directory with `.mochi` files in it is already a package.
+
+```bash
+mkdir -p reading-list
+cd reading-list
+touch main.mochi
+```
+
+Open `main.mochi` and add a single line so the program runs end to end:
+
+```mochi title="main.mochi"
+print("reading-list v0.1")
+```
+
+Run it:
+
+```bash
+mochi run main.mochi
+```
+
+```output
+reading-list v0.1
+```
+
+Mochi runs top-level statements in file order. No `main` function required.
+
+## 2. Variables and the binding rules
+
+Add a couple of bindings at the top of the file:
+
+```mochi title="main.mochi"
+let app_name = "reading-list"
+let app_version = "0.1.0"
+var run_count: int = 0
+
+run_count = run_count + 1
+print(app_name, "v" + app_version, "run #" + str(run_count))
+```
+
+`let` is immutable. Reassignment is a compile error. `var` is mutable.
+Annotations are optional; the compiler infers types when omitted. The
+`run_count: int` annotation is explicit, and `str()` converts the integer
+for concatenation.
+
+```bash
+mochi run main.mochi
+```
+
+```output
+reading-list v0.1.0 run #1
+```
+
+:::note Why `str()`?
+
+Mochi does not implicitly convert numbers to strings. `+` on a string and an
+int is a type error, which catches a class of bugs at compile time. The
+[errors](/docs/manual/errors) page goes deeper.
+
+:::
+
+## 3. The Book type
+
+The app needs a Book record. Declare it with `type`:
+
+```mochi
+type Book {
+  title: string
+  author: string
+  pages: int
+  read: bool
+}
+```
+
+Construct values with brace syntax. Field order matches the declaration.
+
+```mochi
+let mythical = Book {
+  title: "The Mythical Man-Month",
+  author: "Frederick Brooks",
+  pages: 322,
+  read: true
+}
+
+print(mythical.title, "by", mythical.author)
+```
+
+Inline methods reference fields directly. There is no explicit `self`
+parameter.
+
+```mochi
+type Book {
+  title: string
+  author: string
+  pages: int
+  read: bool
+
+  fun summary(): string {
+    let status = if read { "[x]" } else { "[ ]" }
+    return status + " " + title + " by " + author + " (" + str(pages) + "p)"
+  }
+}
+
+print(mythical.summary())
+```
+
+```output
+[x] The Mythical Man-Month by Frederick Brooks (322p)
+```
+
+## 4. A list of books
+
+Lists use `[ ]` literal syntax. The element type is inferred from the
+contents.
+
+```mochi
+var library: list<Book> = [
+  Book {
+    title: "The Mythical Man-Month",
+    author: "Frederick Brooks",
+    pages: 322,
+    read: true
+  },
+  Book {
+    title: "Designing Data-Intensive Applications",
+    author: "Martin Kleppmann",
+    pages: 616,
+    read: false
+  }
+]
+
+for book in library {
+  print(book.summary())
+}
+```
+
+A `var` list is mutable in place (`library.push(...)` works) and
+reassignable to a different list.
+
+## 5. Functions and pure helpers
+
+A helper to add a book:
+
+```mochi
+fun add_book(books: list<Book>, b: Book): list<Book> {
+  return books + [b]
+}
+```
+
+`+` on two lists concatenates them. The function returns a new list rather
+than mutating the input. Pure functions are easier to reason about, easier
+to test, and easier to memoize.
+
+A second helper marks a title as read:
+
+```mochi
+fun mark_read(books: list<Book>, title: string): list<Book> {
+  return books | map(fun(b: Book): Book => {
+    if b.title == title {
+      return Book { title: b.title, author: b.author, pages: b.pages, read: true }
+    }
+    return b
+  })
+}
+```
+
+`|` is the pipeline operator: `value | f` is `f(value)`. `map` is in the
+prelude. The lambda updates the matching book without touching the others.
+
+Try it:
+
+```mochi
+let updated = mark_read(library, "Designing Data-Intensive Applications")
+for b in updated {
+  print(b.summary())
+}
+```
+
+```output
+[x] The Mythical Man-Month by Frederick Brooks (322p)
+[x] Designing Data-Intensive Applications by Martin Kleppmann (616p)
+```
+
+## 6. Tests live with the code
+
+Co-locate tests with the functions they cover. Each `test` block has a
+quoted name and a list of `expect` assertions.
+
+```mochi
+test "add_book appends" {
+  let before = []
+  let after = add_book(before, Book {
+    title: "x", author: "y", pages: 1, read: false
+  })
+  expect len(after) == 1
+  expect after[0].title == "x"
+}
+
+test "mark_read flips the flag" {
+  let books = [
+    Book { title: "a", author: "x", pages: 1, read: false },
+    Book { title: "b", author: "y", pages: 2, read: false }
+  ]
+  let updated = mark_read(books, "b")
+  expect updated[0].read == false
+  expect updated[1].read == true
+}
+```
+
+Run the tests:
+
+```bash
+mochi test main.mochi
+```
+
+```output
+2 tests passed
+```
+
+A failing `expect` reports the line, the failing expression, and the left-
+and right-hand values. No setup, no fixtures, no separate runner.
+
+## 7. Querying with `from / where / select`
+
+How many unread books are in the library? A `for` loop works, but Mochi has
+a query expression that reads more like SQL.
+
+```mochi
+let unread = from b in library
+             where !b.read
+             sort by b.pages
+             select b
+
+print("you have", len(unread), "unread book(s):")
+for b in unread {
+  print("  -", b.title, "(" + str(b.pages) + "p)")
+}
+```
+
+The same query rewrites as `filter / sort_by / map`, and sometimes that is
+the right call. For record-shaped data the query form is hard to beat. Read
+more in [datasets](/docs/manual/datasets).
+
+## 8. Reading and writing JSON
+
+The library is hard-coded so far. Replace the literal with a `load` from
+disk and a `save` back.
+
+Create `library.json`:
+
+```json title="library.json"
+[
+  { "title": "The Mythical Man-Month",
+    "author": "Frederick Brooks",
+    "pages": 322,
+    "read": true },
+  { "title": "Designing Data-Intensive Applications",
+    "author": "Martin Kleppmann",
+    "pages": 616,
+    "read": false }
+]
+```
+
+Load it:
+
+```mochi
+let library = load "library.json" as Book
+```
+
+`load` parses the file based on its extension and decodes each record into
+the named type. CSV, JSON, JSONL, and YAML are supported.
+
+`save` is the inverse:
+
+```mochi
+let updated = mark_read(library, "Designing Data-Intensive Applications")
+save updated to "library.json"
+```
+
+The file is rewritten in JSON. For a different format, add `as csv`, `as
+jsonl`, or `as yaml` to the `save` clause.
+
+## 9. Splitting into a package
+
+`main.mochi` is getting busy. Move the `Book` type and helpers into a
+sibling file.
+
+```mochi title="reading-list/book.mochi"
+package reading_list
+
+export type Book {
+  title: string
+  author: string
+  pages: int
+  read: bool
+
+  fun summary(): string {
+    let status = if read { "[x]" } else { "[ ]" }
+    return status + " " + title + " by " + author + " (" + str(pages) + "p)"
+  }
+}
+
+export fun add_book(books: list<Book>, b: Book): list<Book> {
+  return books + [b]
+}
+
+export fun mark_read(books: list<Book>, title: string): list<Book> {
+  return books | map(fun(b: Book): Book => {
+    if b.title == title {
+      return Book { title: b.title, author: b.author, pages: b.pages, read: true }
+    }
+    return b
+  })
+}
+```
+
+Names visible outside the package are marked with `export`. Names without
+`export` are package-private.
+
+`main.mochi` imports the package:
+
+```mochi title="main.mochi"
+import "./reading-list" as rl
+
+let library = load "library.json" as rl.Book
+for b in library {
+  print(b.summary())
+}
+```
+
+Local imports start with `./` or `../` and resolve relative to the importing
+file. The package alias is the last path segment unless overridden with
+`as`. Read more in [packages](/docs/manual/packages).
+
+## 10. A CLI entry point
+
+A real reading-list app takes commands from the user. Mochi exposes the
+program arguments as `args`:
+
+```mochi title="main.mochi"
+import "./reading-list" as rl
+
+let library = load "library.json" as rl.Book
+
+let cmd = if len(args) > 0 then args[0] else "list"
+
+match cmd {
+  "list" => {
+    for b in library {
+      print(b.summary())
+    }
+  },
+  "unread" => {
+    let unread = from b in library where !b.read select b
+    for b in unread {
+      print(b.summary())
+    }
+  },
+  "read" => {
+    let title = args[1]
+    let updated = rl.mark_read(library, title)
+    save updated to "library.json"
+    print("marked", title, "as read")
+  },
+  "add" => {
+    let b = rl.Book {
+      title: args[1],
+      author: args[2],
+      pages: to_int(args[3]),
+      read: false
+    }
+    let updated = rl.add_book(library, b)
+    save updated to "library.json"
+    print("added", b.title)
+  },
+  _ => print("usage: reading-list [list | unread | add | read]")
+}
+```
+
+Run a few commands:
+
+```bash
+mochi run main.mochi list
+mochi run main.mochi unread
+mochi run main.mochi add "Crafting Interpreters" "Robert Nystrom" 600
+mochi run main.mochi read "Crafting Interpreters"
+```
+
+```output
+[x] The Mythical Man-Month by Frederick Brooks (322p)
+[x] Designing Data-Intensive Applications by Martin Kleppmann (616p)
+added Crafting Interpreters
+marked Crafting Interpreters as read
+```
+
+`to_int` is in the prelude. It panics on invalid input. See
+[errors](/docs/manual/errors) for the safer `safe_to_int` form that returns
+`int | nil`.
+
+## 11. Packaging as a single binary
+
+Once the program works, build it into a self-contained binary:
+
+```bash
+mochi build main.mochi -o reading-list
+./reading-list list
+```
+
+The output binary embeds the Mochi runtime. It runs anywhere the host OS
+runs without a separate Mochi install on the target machine.
+
+To stay scripted, `mochi run` caches compiled bytecode under
+`~/.cache/mochi`, so subsequent runs approach binary speed.
+
+## Next
+
+- [HTTP fetch](https://github.com/mochilang/mochi/blob/main/docs/features/http-fetch.md)
+  shows how to query an open book API from this project.
+- [Generative AI](/docs/manual/generative-ai) drives model calls. Use
+  `generate text { ... }` to recommend a next book based on the read pile.
+- [Agents](/docs/manual/agents) wraps the library in an `agent` that emits
+  a `BookAdded` event whenever a new title arrives.
+- `mochi transpile main.mochi --to go` produces an equivalent Go program;
+  same with `--to python` and `--to typescript`.
+- [Language basics](/docs/manual/basics) is a single-page tour of the
+  syntax.
+- [Reference](/docs/reference/) is the concept-by-concept index.

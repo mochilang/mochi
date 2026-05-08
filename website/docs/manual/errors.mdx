@@ -1,0 +1,237 @@
+---
+title: Errors
+sidebar_label: Errors
+description: Mochi's explicit error model with optional values, expect assertions, panic, and try/catch for fallible operations.
+---
+
+Mochi keeps error handling explicit. The model has four pieces:
+
+1. **Optional unions** (`T | nil`) for values that might not exist.
+2. **`expect`** for invariants and tests, which fails loudly when violated.
+3. **`panic`** for unrecoverable errors that should crash the program.
+4. **`try` / `catch`** for fallible host calls (`fetch`, `load`, FFI).
+
+## Optional values
+
+A function that may not produce a value returns `T | nil`. There is no
+separate `Option` wrapper.
+
+```mochi
+fun find(xs: list<User>, id: int): User | nil {
+  for u in xs {
+    if u.id == id { return u }
+  }
+  return nil
+}
+```
+
+Callers handle both cases. `match` is the most explicit form:
+
+```mochi
+let result = find(users, 7)
+
+match result {
+  nil => print("not found"),
+  u => print(u.name)
+}
+```
+
+`if … is …` works for one-armed handling:
+
+```mochi
+if result is nil {
+  return
+}
+print(result.name)        // narrowed to User here
+```
+
+The `?.` operator short-circuits on `nil`:
+
+```mochi
+let name = result?.name    // string | nil
+```
+
+`?? default` provides a fallback:
+
+```mochi
+let display = result?.name ?? "anonymous"
+```
+
+## `expect`
+
+`expect` evaluates a boolean expression. If the value is `true`, execution
+continues. If the value is `false`, the program panics with a message that
+includes the file, line, and source of the failed expression.
+
+```mochi
+fun add(a: int, b: int): int {
+  expect b >= 0    // pre-condition
+  return a + b
+}
+```
+
+Inside `test` blocks, a failing `expect` reports the failure and continues
+to the next test, summarizing at the end. Outside tests, a failing
+`expect` aborts the program. Use it for invariants that should never fail
+in production.
+
+```mochi
+test "add is commutative" {
+  expect add(2, 3) == add(3, 2)
+}
+```
+
+## `panic`
+
+`panic(message)` aborts the program immediately with a stack trace. Use it
+for unrecoverable errors like corrupted state, impossible cases, and
+programmer mistakes.
+
+```mochi
+fun pop(xs: list<int>): int {
+  if len(xs) == 0 {
+    panic("pop on empty list")
+  }
+  let last = xs[len(xs) - 1]
+  return last
+}
+```
+
+A panic cannot be caught. For recoverable failure, return `T | nil` or use
+`try / catch`.
+
+## `try` / `catch`
+
+A few host operations (`fetch`, `load`, and FFI calls) can raise errors
+that bubble up across the language boundary. `try { ... } catch err { ...
+}` recovers from them.
+
+```mochi
+try {
+  let todo = fetch "https://example.com/todos/1" as Todo
+  print(todo.title)
+} catch err {
+  print("request failed:", err)
+}
+```
+
+The `catch` binding has type `string` and holds the failure message
+produced by the host. Use `try` only around operations that can actually
+fail. In ordinary Mochi code, prefer `T | nil` returns.
+
+A `catch` block can re-raise by panicking:
+
+```mochi
+try {
+  ...
+} catch err {
+  panic("could not load: " + err)
+}
+```
+
+## Choosing between `nil`, `expect`, `panic`, and `try`
+
+| Tool | When |
+| --- | --- |
+| `T \| nil` | A value might legitimately be missing. The caller decides what to do. |
+| `expect` | A condition must hold; if it does not, you want to know loudly. |
+| `panic` | The program cannot continue; abort with a useful message. |
+| `try / catch` | A host call can fail; you want to recover or report. |
+
+Reach for `T | nil` first. Use `expect` for pre-/post-conditions and tests.
+Use `panic` sparingly. Use `try / catch` when calling something that can
+fail at runtime.
+
+## Common idioms
+
+### Guard at the top of a function
+
+```mochi
+fun read_config(path: string): Config | nil {
+  if !file_exists(path) { return nil }
+  return load path as Config
+}
+```
+
+### Default with `??`
+
+```mochi
+let port = config?.port ?? 8080
+```
+
+### Re-raise with extra context
+
+```mochi
+try {
+  return fetch url as Todo
+} catch err {
+  panic("fetching " + url + " failed: " + err)
+}
+```
+
+### Convert `nil` to `panic` only at the boundary
+
+```mochi
+fun must_find(xs: list<User>, id: int): User {
+  let u = find(xs, id)
+  if u is nil { panic("user " + str(id) + " not found") }
+  return u
+}
+```
+
+This isolates the panic to a single function so the rest of the codebase
+keeps the optional shape.
+
+## Diagnostics format
+
+Compile-time and runtime messages share a format:
+
+```output
+error: cannot assign value of type `string` to `int`
+   --> main.mochi:4:7
+    |
+  4 | let n: int = "hello"
+    |              ^^^^^^^ expected int
+```
+
+Each diagnostic has a code (`E0123`), a message, the source location, and
+an excerpt of the surrounding code. The
+[`docs/common-language-errors.md`](https://github.com/mochilang/mochi/blob/main/docs/common-language-errors.md)
+guide indexes the codes you are most likely to see.
+
+## Tests and assertions
+
+`test` blocks are described under [tests](/docs/manual/get-started#6-tests-live-with-the-code).
+Inside a test, `expect` failures are collected and summarized rather than
+aborting the suite.
+
+```mochi
+test "find returns the matching user" {
+  let users = [
+    User { id: 1, name: "Ada" },
+    User { id: 2, name: "Lin" }
+  ]
+  let u = find(users, 2)
+  expect u != nil
+  expect u?.name == "Lin"
+}
+```
+
+For richer diff output on equality failures, expect-equal helpers are
+available in the prelude (`expect_eq`, `expect_close_to`, etc.).
+
+## Common errors
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| `cannot use a possibly-nil value` | Indexing `T \| nil` without narrowing | Use `match`, `is nil`, or `?.`. |
+| `expect failed` | An invariant was violated | Trace back to the failing condition. |
+| `unhandled error in try` | `try` with no `catch` | Add a `catch` arm or remove `try`. |
+| `panic in <function>` | Unrecoverable error | Inspect the stack trace and the panic message. |
+
+## Next
+
+- [Variables](/docs/manual/variables): `let`, `var`, scoping
+- [Types](/docs/manual/types): optional unions, structs
+- [Functions](/docs/manual/functions): first-class functions
+- [Tests](/docs/manual/get-started#6-tests-live-with-the-code): `test` and `expect` in practice
