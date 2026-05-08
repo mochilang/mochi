@@ -1,0 +1,8 @@
+1. error[T040]: `if` condition must be boolean
+  --> tests/types/errors/if_cond_not_bool.mochi:2:4
+
+  2 | if x {
+    |    ^
+
+help:
+  Ensure the condition evaluates to true or false.
