@@ -183,6 +183,50 @@ func FromStatement(s *parser.Statement) *Node {
 		}
 		return n
 
+	case s.Import != nil:
+		n := &Node{Kind: "import", Value: s.Import.Path}
+		if s.Import.Lang != nil {
+			n.Children = append(n.Children, &Node{Kind: "lang", Value: *s.Import.Lang})
+		}
+		if s.Import.As != "" {
+			n.Children = append(n.Children, &Node{Kind: "as", Value: s.Import.As})
+		}
+		return n
+
+	case s.ExternType != nil:
+		return &Node{Kind: "extern_type", Value: s.ExternType.Name}
+
+	case s.ExternVar != nil:
+		return &Node{Kind: "extern_var", Value: s.ExternVar.Name(),
+			Children: []*Node{FromTypeRef(s.ExternVar.Type)}}
+
+	case s.ExternFun != nil:
+		n := &Node{Kind: "extern_fun", Value: s.ExternFun.Name()}
+		for _, p := range s.ExternFun.Params {
+			pn := &Node{Kind: "param", Value: p.Name}
+			if p.Type != nil {
+				pn.Children = append(pn.Children, FromTypeRef(p.Type))
+			}
+			n.Children = append(n.Children, pn)
+		}
+		if s.ExternFun.Return != nil {
+			n.Children = append(n.Children, &Node{Kind: "return", Children: []*Node{FromTypeRef(s.ExternFun.Return)}})
+		}
+		return n
+
+	case s.ExternObject != nil:
+		return &Node{Kind: "extern_object", Value: s.ExternObject.Name}
+
+	case s.Emit != nil:
+		n := &Node{Kind: "emit", Value: s.Emit.Stream}
+		for _, f := range s.Emit.Fields {
+			n.Children = append(n.Children, &Node{
+				Kind:     f.Name,
+				Children: []*Node{FromExpr(f.Value)},
+			})
+		}
+		return n
+
 	case s.Test != nil:
 		n := &Node{Kind: "test", Value: s.Test.Name}
 		n.Children = append(n.Children, mapStatements(s.Test.Body)...)

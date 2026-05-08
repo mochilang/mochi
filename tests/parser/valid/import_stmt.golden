@@ -1,0 +1,5 @@
+(program
+  (import mochi/math)
+  (import math (lang python) (as math))
+  (import mochi/io (as io))
+)

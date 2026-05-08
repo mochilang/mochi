@@ -1,0 +1,6 @@
+stream Clicks {
+  x: int
+  y: int
+}
+
+emit Clicks { x: 10, y: 20 }

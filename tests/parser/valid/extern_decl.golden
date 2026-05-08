@@ -1,0 +1,12 @@
+(program
+  (extern_type Handle)
+  (extern_var Math.PI (type float))
+  (extern_fun Math.sqrt
+    (param x (type float))
+    (return (type float))
+  )
+  (extern_fun console.log
+    (param msg (type string))
+  )
+  (extern_object window)
+)

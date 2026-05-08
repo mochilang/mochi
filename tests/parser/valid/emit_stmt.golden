@@ -1,0 +1,7 @@
+(program
+  (stream Clicks (field "x:int") (field "y:int"))
+  (emit Clicks
+    (x (int 10))
+    (y (int 20))
+  )
+)

@@ -1,0 +1,5 @@
+extern type Handle
+extern var Math.PI: float
+extern fun Math.sqrt(x: float) : float
+extern fun console.log(msg: string)
+extern object window
