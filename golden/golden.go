@@ -130,6 +130,7 @@ func RunWithSummary(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 	if len(files) == 0 {
 		t.Fatalf("no test files found: %s", pattern)
 	}
+	sort.Strings(files)
 
 	var passed, failed int
 	for _, src := range files {
@@ -212,7 +213,6 @@ func RunWithSummary(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 			passed++
 		} else {
 			failed++
-			break
 		}
 	}
 
