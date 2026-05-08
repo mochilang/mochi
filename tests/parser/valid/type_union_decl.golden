@@ -1,0 +1,22 @@
+(program
+  (type Shape
+    (variant Circle
+      (field r (type float))
+    )
+    (variant Square
+      (field side (type float))
+    )
+    (variant Rect
+      (field w (type float))
+      (field h (type float))
+    )
+  )
+  (type Result
+    (variant Ok
+      (field value (type int))
+    )
+    (variant Err
+      (field msg (type string))
+    )
+  )
+)

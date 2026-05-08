@@ -1,0 +1,16 @@
+(program
+  (fact parent (string tom) (string bob))
+  (fact parent (string bob) (string ann))
+  (rule
+    (head ancestor (var X) (var Y))
+    (cond parent (var X) (var Y))
+  )
+  (rule
+    (head ancestor (var X) (var Y))
+    (cond parent (var X) (var Z))
+    (cond ancestor (var Z) (var Y))
+  )
+  (let results
+    (query_logic ancestor (string tom) (var Y))
+  )
+)

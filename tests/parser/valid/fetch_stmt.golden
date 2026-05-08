@@ -1,0 +1,9 @@
+(program
+  (fetch resp (string "https://api.example.com/users"))
+  (fetch data
+    (string "https://api.example.com/data")
+    (map
+      (entry (selector timeout) (int 30))
+    )
+  )
+)
