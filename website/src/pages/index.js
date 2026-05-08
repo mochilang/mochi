@@ -112,75 +112,75 @@ the answer is 42`,
     description:
       'Define data with type. Write functions with fun. The compiler infers most annotations and rejects type errors at compile time.',
     filename: 'shapes.mochi',
-    code: `type Point {
-  x: float
-  y: float
+    code: `type Rectangle {
+  width: float
+  height: float
 }
 
-fun distance(a: Point, b: Point): float {
-  let dx = a.x - b.x
-  let dy = a.y - b.y
-  return (dx * dx + dy * dy) ** 0.5
+fun area(r: Rectangle): float {
+  return r.width * r.height
 }
 
-let origin = Point { x: 0.0, y: 0.0 }
-let target = Point { x: 3.0, y: 4.0 }
-print(distance(origin, target))`,
-    output: `5`,
+fun perimeter(r: Rectangle): float {
+  return 2.0 * (r.width + r.height)
+}
+
+let card = Rectangle { width: 3.0, height: 4.0 }
+print(area(card))
+print(perimeter(card))`,
+    output: `12
+14`,
   },
   {
-    label: 'Agents and streams',
-    hint: 'reactive in 12 lines',
+    label: 'Tagged unions',
+    hint: 'pattern matching with exhaustiveness',
     icon: <AgentIcon />,
     description:
-      'Agents hold state and react to events. Streams declare event shapes. Emit publishes one event. No message bus, no actor library.',
-    filename: 'inbox.mochi',
-    code: `stream Message { from: string, body: string }
+      'Tagged union types replace enums, sealed classes, and Option<T>. The match expression destructures variants with exhaustiveness checking at compile time.',
+    filename: 'events.mochi',
+    code: `type Event =
+  Login(user: string)
+  | Message(from: string, body: string)
+  | Logout(user: string)
 
-agent inbox {
-  var unread: int = 0
-
-  on Message as m {
-    unread = unread + 1
-    print("new from " + m.from)
-  }
-
-  intent count(): int {
-    return unread
+fun describe(e: Event): string {
+  return match e {
+    Login(u) => u + " signed in"
+    Message(f, b) => f + " says: " + b
+    Logout(u) => u + " signed out"
   }
 }
 
-let box = inbox {}
-emit Message { from: "ada", body: "hi" }
-emit Message { from: "lin", body: "hey" }
-print("unread = " + str(box.count()))`,
-    output: `new from ada
-new from lin
-unread = 2`,
+let events = [
+  Login { user: "ada" },
+  Message { from: "lin", body: "hey" },
+  Logout { user: "ada" },
+]
+
+for e in events {
+  print(describe(e))
+}`,
+    output: `ada signed in
+lin says: hey
+ada signed out`,
   },
   {
     label: 'Generative AI',
     hint: 'generate blocks in the grammar',
     icon: <BrainIcon />,
     description:
-      'Configure a provider once with a model block. Call any model with the same generate syntax. Structured output is one suffix, as json.',
+      'Configure a provider once with a model block. Call any model with the same generate syntax. Swap echo (the built-in dummy) for openai, anthropic, or google without touching the call site.',
     filename: 'summarize.mochi',
-    code: `model fast {
-  provider: "openai"
-  name: "gpt-5.5-mini"
-  temperature: 0.3
+    code: `model dummy {
+  provider: "echo"
+  name: "echo"
 }
 
 let summary = generate text {
-  model: "fast"
+  model: "dummy",
   prompt: "Explain bytecode in two sentences."
 }
-print(summary)
-
-let plan = generate text {
-  prompt: "Output a plan with title and steps."
-} as json
-print(plan["title"])`,
+print(summary)`,
   },
   {
     label: 'Datasets',
@@ -194,7 +194,7 @@ print(plan["title"])`,
   price: int
 }
 
-let products = load "products.json" as Product
+let products = load "products.json" as Product with { format: "json" }
 
 let top = from p in products
           where p.price >= 100
@@ -222,8 +222,8 @@ Tablet, $600`,
   return a + b
 }
 
-fun safe_div(a: int, b: int): int | nil {
-  if b == 0 { return nil }
+fun safe_div(a: int, b: int): int {
+  if b == 0 { return 0 - 1 }
   return a / b
 }
 
@@ -233,9 +233,11 @@ test "add is commutative" {
 
 test "safe_div guards zero" {
   expect safe_div(10, 2) == 5
-  expect safe_div(10, 0) == nil
+  let z = safe_div(10, 0)
+  expect z == 0 - 1
 }`,
-    output: `2 tests passed`,
+    output: `test add is commutative   ... ok
+test safe_div guards zero ... ok`,
   },
 ];
 

@@ -1,0 +1,23 @@
+// Sample 3 from mochi-lang.dev homepage: "Tagged unions"
+type Event =
+  Login(user: string)
+  | Message(from: string, body: string)
+  | Logout(user: string)
+
+fun describe(e: Event): string {
+  return match e {
+    Login(u) => u + " signed in"
+    Message(f, b) => f + " says: " + b
+    Logout(u) => u + " signed out"
+  }
+}
+
+let events = [
+  Login { user: "ada" },
+  Message { from: "lin", body: "hey" },
+  Logout { user: "ada" },
+]
+
+for e in events {
+  print(describe(e))
+}
