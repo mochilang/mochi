@@ -428,27 +428,15 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		case "sum":
 			if len(p.Call.Args) == 1 {
 				t := ExprType(p.Call.Args[0], env)
+				var elem Type
 				switch tt := t.(type) {
 				case ListType:
-					if _, ok := tt.Elem.(FloatType); ok {
-						return FloatType{}
-					}
-					if isNumeric(tt.Elem) {
-						if _, ok := tt.Elem.(IntType); ok {
-							return IntType{}
-						}
-						return FloatType{}
-					}
+					elem = tt.Elem
 				case GroupType:
-					if _, ok := tt.Elem.(FloatType); ok {
-						return FloatType{}
-					}
-					if isNumeric(tt.Elem) {
-						if _, ok := tt.Elem.(IntType); ok {
-							return IntType{}
-						}
-						return FloatType{}
-					}
+					elem = tt.Elem
+				}
+				if elem != nil && isNumeric(elem) {
+					return elem
 				}
 			}
 			return FloatType{}
