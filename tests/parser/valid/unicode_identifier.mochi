@@ -1,0 +1,6 @@
+let π = 3.14
+let θ_max = 90
+let 🎯 = 1
+print(π)
+print(θ_max)
+print(🎯)
