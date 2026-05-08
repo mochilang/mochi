@@ -1,0 +1,6 @@
+// Preservation (1807): substituting let-bound values does not change typing.
+// The chain x -> y -> z must keep type int across rebindings.
+let x: int = 1
+let y: int = x + 1
+let z: int = y + 1
+expect z == 3

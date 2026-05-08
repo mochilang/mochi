@@ -1,0 +1,4 @@
+// Inference (1805): for ... in range requires int bounds.
+for i in 0..2.5 {
+  print(i)
+}

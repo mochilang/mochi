@@ -1,0 +1,11 @@
+// Canonical forms (1807): closed integer arithmetic stays in int.
+let a: int = 2
+let b: int = 3
+let sum: int = a + b
+let diff: int = b - a
+let prod: int = a * b
+let modd: int = b % a
+expect sum == 5
+expect diff == 1
+expect prod == 6
+expect modd == 1

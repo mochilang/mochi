@@ -5,14 +5,10 @@ import (
 	"mochi/golden"
 	"mochi/parser"
 	"mochi/types"
-	"os"
 	"testing"
 )
 
 func TestTypeChecker_Valid(t *testing.T) {
-	if os.Getenv("RUN_TYPE_VALID") == "" {
-		t.Skip("types valid tests disabled")
-	}
 	golden.Run(t, "tests/types/valid", ".mochi", ".golden", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {

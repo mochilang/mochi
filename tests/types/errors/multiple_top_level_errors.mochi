@@ -1,0 +1,5 @@
+// Soundness (1807): Check is non short circuit. Several mistakes in a
+// single program should each surface as a separate diagnostic.
+let a: int = "not an int"
+let b = c
+print(d(1))

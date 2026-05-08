@@ -1,0 +1,8 @@
+// ADT (1813): a variant call pattern must match the variant's declared arity.
+type Pair = P(a: int, b: int)
+
+let p: Pair = P(1, 2)
+let r: int = match p {
+  P(a) => a
+}
+expect r == 1

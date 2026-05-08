@@ -1,0 +1,4 @@
+// Aggregate typing (1814): sum over an int list returns int.
+let xs: list<int> = [1, 2, 3, 4]
+let s: int = sum(xs)
+expect s == 10

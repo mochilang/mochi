@@ -1,0 +1,9 @@
+// ADT (1813): struct literal and field access flow types correctly.
+type Point {
+  x: int
+  y: int
+}
+
+let p: Point = Point{x: 3, y: 4}
+let dist: int = p.x * p.x + p.y * p.y
+expect dist == 25

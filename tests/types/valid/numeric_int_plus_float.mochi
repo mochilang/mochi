@@ -1,0 +1,5 @@
+// Numeric tower (1804/1805): int + float widens to float.
+let a: int = 1
+let b: float = 2.5
+let c: float = a + b
+expect c == 3.5

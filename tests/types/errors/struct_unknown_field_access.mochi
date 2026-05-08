@@ -1,0 +1,8 @@
+// ADT (1813): reading a non-existent struct field is rejected.
+type Point {
+  x: int
+  y: int
+}
+
+let p: Point = Point{x: 1, y: 2}
+print(p.z)

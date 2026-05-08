@@ -1,0 +1,4 @@
+// Query algebra (1814): sort by and take preserve element type.
+let xs: list<int> = [4, 2, 5, 1, 3]
+let top3: list<int> = from x in xs sort by -x take 3 select x
+expect count(top3) == 3

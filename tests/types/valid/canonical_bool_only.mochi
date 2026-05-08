@@ -1,0 +1,6 @@
+// Canonical forms (1807): the only values of `bool` are `true` and `false`.
+let t: bool = true
+let f: bool = false
+expect t == true
+expect f == false
+expect t != f

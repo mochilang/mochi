@@ -1,0 +1,8 @@
+// Match (1813): literal patterns match by equality.
+let x: int = 2
+let label: string = match x {
+  1 => "one"
+  2 => "two"
+  _ => "other"
+}
+expect label == "two"
