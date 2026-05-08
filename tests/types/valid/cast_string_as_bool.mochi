@@ -1,0 +1,3 @@
+// Third probe in the cast snapshot family. string as bool is
+// unrelated and should be rejected by MEP 11. Today it typechecks.
+let b: bool = "true" as bool

@@ -1,0 +1,8 @@
+// Snapshot: the type checker accepts an int as string cast even though
+// the two types have no compatibility relation. The runtime raises
+// "cannot cast int to string" today.
+//
+// MEP 7 lists this as an escape hatch. MEP 11 owns the fix where the
+// checker rejects the cast at type-check time. When that lands this
+// file moves to tests/types/errors/.
+let s: string = 42 as string
