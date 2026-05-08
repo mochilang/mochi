@@ -1,24 +1,30 @@
-name: Deploy website to GitHub Pages
+name: Deploy website to Cloudflare Pages
 
 on:
   push:
     branches: [main]
     paths:
       - 'website/**'
+      - '.github/workflows/deploy-website.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - '.github/workflows/deploy-website.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
+  deployments: write
+  pull-requests: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: cloudflare-pages-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build Docusaurus site
+  deploy:
+    name: Build & deploy
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -32,7 +38,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: website/package-lock.json
 
@@ -42,19 +48,12 @@ jobs:
       - name: Build website
         run: npm run build
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
         with:
-          path: website/build
-
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy website/build --project-name=mochilang --branch=${{ github.head_ref || github.ref_name }}
+          workingDirectory: .
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

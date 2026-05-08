@@ -167,7 +167,7 @@ unread = 2`,
     filename: 'summarize.mochi',
     code: `model fast {
   provider: "openai"
-  name: "gpt-4o-mini"
+  name: "gpt-5.5-mini"
   temperature: 0.3
 }
 
@@ -397,16 +397,16 @@ export default function Home() {
         secondaryCta={{ url: '/docs/manual/', label: 'Read the manual' }}
       />
 
-      <FeatureGrid
-        title="What Mochi gives you"
-        lede="Six properties that the language and toolchain commit to. Every other feature is built on top of these."
-        features={FEATURES}
-      />
-
       <CodeShowcase
         title="Six programs end to end"
         lede="Each tab is a complete Mochi file. Copy, paste, and run."
         samples={SAMPLES}
+      />
+
+      <FeatureGrid
+        title="What Mochi gives you"
+        lede="Six properties that the language and toolchain commit to. Every other feature is built on top of these."
+        features={FEATURES}
       />
 
       <InstallTabs

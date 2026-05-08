@@ -1,0 +1,7 @@
+name = "mochi-get"
+main = "get-worker.js"
+compatibility_date = "2025-09-01"
+
+routes = [
+  { pattern = "get.mochi-lang.dev/*", zone_name = "mochi-lang.dev" }
+]

@@ -1,24 +1,23 @@
 import React from 'react';
 import Link from '@docusaurus/Link';
+import CodeBlock from '@theme/CodeBlock';
 import styles from './styles.module.css';
 
-const HERO_CODE_LINES = [
-  { line: '// no main() needed — programs run top to bottom', cls: 'comment' },
-  { line: 'let greeting = "Hello, " + name + "!"', cls: '' },
-  { line: 'print(greeting)', cls: '' },
-  { line: '', cls: '' },
-  { line: '// strongly typed — but inference does the work', cls: 'comment' },
-  { line: 'fun greet(user: string): string {', cls: '' },
-  { line: '  return "welcome, " + user', cls: '' },
-  { line: '}', cls: '' },
-  { line: '', cls: '' },
-  { line: '// agents react to events', cls: 'comment' },
-  { line: 'agent inbox {', cls: '' },
-  { line: '  on message(text: string) {', cls: '' },
-  { line: '    emit reply(greet(text))', cls: '' },
-  { line: '  }', cls: '' },
-  { line: '}', cls: '' },
-];
+const HERO_CODE = `// no main needed, programs run top to bottom
+let greeting = "Hello, " + name + "!"
+print(greeting)
+
+// strongly typed, inference does the work
+fun greet(user: string): string {
+  return "welcome, " + user
+}
+
+// agents react to events
+agent inbox {
+  on message(text: string) {
+    emit reply(greet(text))
+  }
+}`;
 
 export default function HeroBanner({
   eyebrow,
@@ -92,25 +91,10 @@ export default function HeroBanner({
               </button>
             </div>
           </div>
-          <div className={styles.heroCode} aria-hidden="true">
-            <div className={styles.codeWindow}>
-              <div className={styles.codeChrome}>
-                <span className={styles.codeDot} style={{ background: '#ff5f57' }} />
-                <span className={styles.codeDot} style={{ background: '#febc2e' }} />
-                <span className={styles.codeDot} style={{ background: '#28c840' }} />
-                <span className={styles.codeFile}>hello.mochi</span>
-              </div>
-              <pre className={styles.codeBody}>
-                {HERO_CODE_LINES.map((row, i) => (
-                  <div key={i} className={styles.codeLine}>
-                    <span className={styles.codeLineNum}>{i + 1}</span>
-                    <span className={row.cls === 'comment' ? styles.codeComment : ''}>
-                      {row.line || ' '}
-                    </span>
-                  </div>
-                ))}
-              </pre>
-            </div>
+          <div className={styles.heroCode}>
+            <CodeBlock language="mochi" title="hello.mochi" showLineNumbers>
+              {HERO_CODE}
+            </CodeBlock>
           </div>
         </div>
       </div>

@@ -8,8 +8,8 @@ const config = {
     'A small, statically typed language for scripting, agents, and AI-augmented tools.',
   favicon: 'img/favicon.svg',
 
-  url: 'https://mochilang.github.io',
-  baseUrl: '/mochi/',
+  url: 'https://mochi-lang.dev',
+  baseUrl: '/',
 
   organizationName: 'mochilang',
   projectName: 'mochi',
@@ -25,7 +25,7 @@ const config = {
 
   stylesheets: [
     {
-      href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap',
+      href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap',
       type: 'text/css',
     },
   ],
@@ -195,9 +195,9 @@ const config = {
       announcementBar: {
         id: 'announcement-v010',
         content:
-          'Mochi v0.10 ships agents, streams, datasets, and AI generation in one binary. <a href="/mochi/docs/changelog">See what is new →</a>',
-        backgroundColor: '#eaf5ee',
-        textColor: '#0e1a12',
+          'Mochi v0.10 ships agents, streams, datasets, and AI generation in one binary. <a href="/docs/changelog">See what is new →</a>',
+        backgroundColor: '#e6f0e1',
+        textColor: '#1a1d12',
         isCloseable: true,
       },
     }),

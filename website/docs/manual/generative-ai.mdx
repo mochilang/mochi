@@ -34,7 +34,7 @@ refer to the model by name.
 ```mochi
 model fast {
   provider: "openai"
-  name: "gpt-4o-mini"
+  name: "gpt-5.5-mini"
   temperature: 0.3
   max_tokens: 200
 }
@@ -49,8 +49,8 @@ Recognized fields:
 
 | Field | Type | Notes |
 | --- | --- | --- |
-| `provider` | `string` | `"openai"`, `"anthropic"`, `"ollama"`, etc. |
-| `name` | `string` | Provider-specific model identifier. |
+| `provider` | `string` | `"openai"`, `"anthropic"`, `"google"`, `"ollama"`, etc. |
+| `name` | `string` | Provider-specific model identifier (e.g. `"gpt-5.5"`, `"claude-opus-4.7"`, `"gemini-2.5-pro"`). |
 | `temperature` | `float` | 0.0 to 2.0 typically. |
 | `max_tokens` | `int` | Output cap. |
 | `top_p` | `float` | Nucleus sampling. |
@@ -60,6 +60,33 @@ Recognized fields:
 
 Fields beyond these pass through to the provider untouched, so new
 provider features work without waiting for Mochi to model them.
+
+Multiple `model` blocks can co-exist. A program can route different
+calls to different providers without changing the call sites:
+
+```mochi
+model fast {
+  provider: "openai"
+  name: "gpt-5.5-mini"
+  temperature: 0.3
+}
+
+model deep {
+  provider: "anthropic"
+  name: "claude-opus-4.7"
+  temperature: 0.2
+}
+
+model cheap {
+  provider: "google"
+  name: "gemini-2.5-flash"
+  temperature: 0.4
+}
+
+let outline  = generate text { model: "fast", prompt: "Outline a blog post." }
+let polished = generate text { model: "deep", prompt: outline }
+let tags     = generate text { model: "cheap", prompt: "Tag: " + polished } as json
+```
 
 ## Prompts and system messages
 

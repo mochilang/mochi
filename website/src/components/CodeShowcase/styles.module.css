@@ -1,8 +1,6 @@
 .section {
   padding: 5rem 0;
   background: var(--mochi-bg-elevated);
-  border-top: 1px solid var(--mochi-border);
-  border-bottom: 1px solid var(--mochi-border);
 }
 
 .header {
@@ -14,7 +12,7 @@
 .title {
   font-family: var(--ifm-heading-font-family);
   font-size: 2.5rem;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: -0.02em;
   margin: 0 0 0.6rem 0;
   color: var(--mochi-text-primary);
@@ -60,7 +58,7 @@
 .tab {
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: 0;
   padding: 0.7rem 0.9rem;
   text-align: left;
   cursor: pointer;
@@ -85,7 +83,7 @@
 .tabIcon {
   width: 28px;
   height: 28px;
-  border-radius: 7px;
+  border-radius: 0;
   background: var(--mochi-primary-soft);
   color: var(--mochi-primary);
   display: flex;
@@ -122,7 +120,7 @@
 .viewport {
   background: var(--mochi-bg-surface);
   border: 1px solid var(--mochi-border);
-  border-radius: 14px;
+  border-radius: 0;
   padding: 1.5rem;
   box-shadow: var(--mochi-shadow-soft);
   min-width: 0;
@@ -135,7 +133,7 @@
 .viewportTitle {
   font-family: var(--ifm-heading-font-family);
   font-size: 1.3rem;
-  font-weight: 700;
+  font-weight: 500;
   margin: 0 0 0.25rem 0;
   letter-spacing: -0.01em;
   color: var(--mochi-text-primary);

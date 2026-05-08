@@ -1,7 +1,6 @@
 .section {
   padding: 5rem 0;
   background: var(--mochi-bg-base);
-  border-top: 1px solid var(--mochi-border);
 }
 
 .header {
@@ -13,7 +12,7 @@
 .title {
   font-family: var(--ifm-heading-font-family);
   font-size: 2.5rem;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: -0.02em;
   margin: 0 0 0.6rem 0;
   color: var(--mochi-text-primary);
@@ -38,7 +37,7 @@
   padding: 1.5rem;
   background: var(--mochi-bg-surface);
   border: 1px solid var(--mochi-border);
-  border-radius: 14px;
+  border-radius: 0;
   text-decoration: none !important;
   color: inherit !important;
   transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
@@ -52,10 +51,14 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--mochi-primary), #f48fb1);
+  height: 2px;
+  background: linear-gradient(90deg, var(--mochi-primary), var(--mochi-accent-deep));
   opacity: 0;
   transition: opacity 0.2s;
+}
+
+[data-theme='dark'] .card::before {
+  background: linear-gradient(90deg, var(--mochi-accent), var(--mochi-primary));
 }
 
 .card:hover {
@@ -80,7 +83,7 @@
 .cardTitle {
   font-family: var(--ifm-heading-font-family);
   font-size: 1.2rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.01em;
   margin: 0 0 0.5rem 0;
   color: var(--mochi-text-primary);

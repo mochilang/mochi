@@ -11,16 +11,17 @@
 
 .title {
   font-family: var(--ifm-heading-font-family);
-  font-size: 2.5rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin: 0 0 0.6rem 0;
+  font-size: 3.4rem;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin: 0 0 0.8rem 0;
   color: var(--mochi-text-primary);
 }
 
 .lede {
-  font-size: 1.1rem;
-  line-height: 1.55;
+  font-size: 1.15rem;
+  line-height: 1.5;
   color: var(--mochi-text-secondary);
   margin: 0;
 }
@@ -37,8 +38,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.55rem 1rem;
-  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  border-radius: 0;
   border: 1px solid var(--mochi-border);
   background: var(--mochi-bg-surface);
   color: var(--mochi-text-secondary);
@@ -68,7 +69,7 @@
 .recommendedBadge {
   display: inline-block;
   padding: 0.05rem 0.4rem;
-  border-radius: 99px;
+  border-radius: 0;
   font-size: 0.7rem;
   font-weight: 600;
   background: rgba(255, 255, 255, 0.2);
@@ -86,9 +87,8 @@
   gap: 2rem;
   background: var(--mochi-bg-surface);
   border: 1px solid var(--mochi-border);
-  border-radius: 14px;
+  border-radius: 0;
   padding: 2rem;
-  box-shadow: var(--mochi-shadow-soft);
 }
 
 @media (max-width: 996px) {
@@ -101,7 +101,7 @@
 .panelTitle {
   font-family: var(--ifm-heading-font-family);
   font-size: 1.4rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.01em;
   margin: 0 0 0.5rem 0;
   color: var(--mochi-text-primary);
@@ -151,9 +151,9 @@
   justify-content: center;
   width: 22px;
   height: 22px;
-  border-radius: 99px;
+  border-radius: 0;
   background: var(--mochi-primary-soft);
   color: var(--mochi-primary);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
 }

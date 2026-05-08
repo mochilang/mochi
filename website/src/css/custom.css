@@ -3,32 +3,34 @@
    ========================================================================= */
 
 :root {
-  /* Brand */
+  /* Brand — matcha green tonal scale */
   --mochi-primary: #1f7a3d;
   --mochi-primary-hover: #155c2d;
   --mochi-primary-strong: #0f5226;
+  --mochi-primary-deep: #082c14;
   --mochi-primary-fg: #ffffff;
-  --mochi-primary-soft: #e6f5ec;
-  --mochi-primary-softer: #f1f9f4;
-  --mochi-primary-border: #c2e0cc;
+  --mochi-primary-soft: #e6f0e1;
+  --mochi-primary-softer: #f0f5ec;
+  --mochi-primary-border: #c2d6b8;
   --mochi-accent: #5fd089;
+  --mochi-accent-deep: #0a4a2c;
 
-  /* Surfaces */
-  --mochi-bg-base: #fbfdfb;
+  /* Surfaces — light cream paper */
+  --mochi-bg-base: #fdfbf5;
   --mochi-bg-surface: #ffffff;
-  --mochi-bg-elevated: #f1f8f3;
-  --mochi-bg-subtle: #f6faf7;
+  --mochi-bg-elevated: #f8f5ec;
+  --mochi-bg-subtle: #fbf8ef;
   --mochi-bg-code: #0e1a12;
 
-  /* Borders */
-  --mochi-border: #dcebe1;
-  --mochi-border-strong: #bcd9c6;
-  --mochi-border-subtle: #ecf3ee;
+  /* Borders — barely-there, rely on background contrast */
+  --mochi-border: rgba(26, 29, 18, 0.06);
+  --mochi-border-strong: rgba(26, 29, 18, 0.12);
+  --mochi-border-subtle: rgba(26, 29, 18, 0.04);
 
   /* Text */
-  --mochi-text-primary: #0e1a12;
-  --mochi-text-secondary: #3e5046;
-  --mochi-text-muted: #6b7d72;
+  --mochi-text-primary: #1a1d12;
+  --mochi-text-secondary: #4a4d3e;
+  --mochi-text-muted: #7a7c6b;
   --mochi-text-inverse: #ffffff;
 
   /* Semantic */
@@ -41,20 +43,17 @@
   --mochi-font-sans:
     "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
     "Helvetica Neue", Arial, sans-serif;
-  --mochi-font-display:
-    "Manrope", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --mochi-font-display: var(--mochi-font-sans);
   --mochi-font-mono:
-    "JetBrains Mono", "SFMono-Regular", "SF Mono", Menlo, Consolas,
-    "Liberation Mono", monospace;
+    "Roboto Mono", "PT Mono", "SFMono-Regular", "SF Mono", Menlo,
+    "Courier New", Courier, monospace;
 
   /* Radius / shadow */
-  --mochi-radius-sm: 6px;
-  --mochi-radius-md: 10px;
-  --mochi-radius-lg: 14px;
-  --mochi-shadow-soft: 0 1px 2px rgba(14, 26, 18, 0.04),
-                       0 8px 24px rgba(14, 26, 18, 0.06);
-  --mochi-shadow-strong: 0 4px 12px rgba(14, 26, 18, 0.08),
-                         0 16px 40px rgba(14, 26, 18, 0.10);
+  --mochi-radius-sm: 0;
+  --mochi-radius-md: 0;
+  --mochi-radius-lg: 0;
+  --mochi-shadow-soft: none;
+  --mochi-shadow-strong: none;
 
   /* Docusaurus theme variables (light) */
   --ifm-color-primary: #1f7a3d;
@@ -66,22 +65,24 @@
   --ifm-color-primary-lightest: #2da458;
 
   --ifm-font-family-base: var(--mochi-font-sans);
-  --ifm-heading-font-family: var(--mochi-font-display);
+  --ifm-heading-font-family: var(--mochi-font-sans);
   --ifm-font-family-monospace: var(--mochi-font-mono);
-  --ifm-heading-font-weight: 700;
-  --ifm-h1-font-size: 2.4rem;
-  --ifm-h2-font-size: 1.7rem;
-  --ifm-h3-font-size: 1.3rem;
+  --ifm-font-size-base: 17px;
+  --ifm-heading-font-weight: 400;
+  --ifm-h1-font-size: 3rem;
+  --ifm-h2-font-size: 2.1rem;
+  --ifm-h3-font-size: 1.4rem;
+  --ifm-h4-font-size: 1.15rem;
   --ifm-line-height-base: 1.65;
 
   --ifm-background-color: var(--mochi-bg-base);
   --ifm-background-surface-color: var(--mochi-bg-surface);
-  --ifm-navbar-background-color: rgba(251, 253, 251, 0.85);
+  --ifm-navbar-background-color: rgba(253, 251, 245, 0.88);
   --ifm-navbar-shadow: inset 0 -1px 0 var(--mochi-border);
 
   --ifm-code-background: rgba(31, 122, 61, 0.08);
   --ifm-code-color: var(--mochi-primary-strong);
-  --ifm-code-border-radius: 4px;
+  --ifm-code-border-radius: 0;
   --ifm-code-padding-horizontal: 0.32em;
   --ifm-code-padding-vertical: 0.12em;
 
@@ -112,9 +113,9 @@
   --mochi-bg-subtle: #0d1610;
   --mochi-bg-code: #050a07;
 
-  --mochi-border: #1f2a23;
-  --mochi-border-strong: #2f4034;
-  --mochi-border-subtle: #18221c;
+  --mochi-border: rgba(255, 255, 255, 0.04);
+  --mochi-border-strong: rgba(255, 255, 255, 0.08);
+  --mochi-border-subtle: rgba(255, 255, 255, 0.02);
 
   --mochi-text-primary: #eef5f0;
   --mochi-text-secondary: #a8b8ad;
@@ -144,10 +145,8 @@
   --ifm-table-head-background: var(--mochi-bg-elevated);
 
   --docusaurus-highlighted-code-line-bg: rgba(95, 208, 137, 0.15);
-  --mochi-shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.2),
-                       0 8px 24px rgba(0, 0, 0, 0.3);
-  --mochi-shadow-strong: 0 4px 12px rgba(0, 0, 0, 0.3),
-                         0 16px 40px rgba(0, 0, 0, 0.45);
+  --mochi-shadow-soft: none;
+  --mochi-shadow-strong: none;
 }
 
 /* =========================================================================
@@ -185,31 +184,42 @@ a:hover {
    ========================================================================= */
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--mochi-font-display);
-  letter-spacing: -0.01em;
+  font-family: var(--mochi-font-sans);
+  letter-spacing: -0.025em;
   color: var(--mochi-text-primary);
+  font-weight: 400;
 }
 
-h1 { letter-spacing: -0.02em; }
-h2 { letter-spacing: -0.015em; }
+h1 { letter-spacing: -0.04em; font-weight: 300; }
+h2 { letter-spacing: -0.03em; font-weight: 400; }
+h3 { letter-spacing: -0.02em; font-weight: 500; }
+h4 { font-weight: 500; }
+h5, h6 { font-weight: 500; }
+
+strong, b { font-weight: 500; }
+
+.markdown h1 {
+  margin-bottom: 1.5rem;
+}
 
 .markdown h2 {
-  margin-top: 2.75rem;
-  font-weight: 700;
+  margin-top: 3.5rem;
+  margin-bottom: 1rem;
 }
 
 .markdown h3 {
-  margin-top: 2rem;
-  font-weight: 700;
+  margin-top: 2.25rem;
+  margin-bottom: 0.75rem;
 }
 
 .markdown h4 {
-  margin-top: 1.5rem;
-  font-weight: 700;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .markdown > p:first-of-type {
-  font-size: 1.08rem;
+  font-size: 1.18rem;
+  line-height: 1.55;
   color: var(--mochi-text-secondary);
 }
 
@@ -292,7 +302,7 @@ h4:hover .hash-link {
 }
 
 .menu__link {
-  border-radius: 6px;
+  border-radius: 0;
   color: var(--mochi-text-secondary);
 }
 
@@ -356,7 +366,7 @@ h4:hover .hash-link {
    ========================================================================= */
 
 .button {
-  border-radius: 8px;
+  border-radius: 0;
   font-weight: 600;
   letter-spacing: -0.005em;
   transition: transform 0.12s, box-shadow 0.12s, background 0.12s,
@@ -367,17 +377,14 @@ h4:hover .hash-link {
   background: var(--mochi-primary);
   border-color: var(--mochi-primary);
   color: var(--mochi-primary-fg);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset,
-              0 1px 2px rgba(14, 26, 18, 0.10);
+  box-shadow: none;
 }
 
 .button--primary:hover {
   background: var(--mochi-primary-hover);
   border-color: var(--mochi-primary-hover);
   color: var(--mochi-primary-fg);
-  transform: translateY(-1px);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset,
-              0 4px 12px rgba(14, 26, 18, 0.14);
+  box-shadow: none;
 }
 
 .button--secondary {
@@ -405,7 +412,7 @@ code {
 .theme-code-block {
   border-radius: var(--mochi-radius-md);
   box-shadow: var(--mochi-shadow-soft);
-  border: 1px solid var(--mochi-border);
+  border: 0;
 }
 
 .prism-code {
@@ -426,6 +433,100 @@ code {
 }
 
 /* =========================================================================
+   Prism token tuning — matcha palette
+   ========================================================================= */
+
+/* Light theme overrides (oneLight base) */
+:root {
+  --mochi-tok-keyword: #1f7a3d;       /* matcha primary */
+  --mochi-tok-builtin: #0a4a2c;       /* deep teal */
+  --mochi-tok-class: #155c2d;
+  --mochi-tok-fn: #1e6b3a;
+  --mochi-tok-string: #2c6e49;
+  --mochi-tok-number: #8b5a00;        /* warm amber for numbers */
+  --mochi-tok-comment: #7a8c80;
+  --mochi-tok-operator: #4a4d3e;
+  --mochi-tok-punct: #4a4d3e;
+  --mochi-tok-bool: #8b5a00;
+}
+
+[data-theme='dark'] {
+  --mochi-tok-keyword: #95e2b1;
+  --mochi-tok-builtin: #5fd089;
+  --mochi-tok-class: #b8ecc9;
+  --mochi-tok-fn: #c3edd0;
+  --mochi-tok-string: #a8e6c2;
+  --mochi-tok-number: #e6c089;
+  --mochi-tok-comment: #6f8076;
+  --mochi-tok-operator: #c1cdc4;
+  --mochi-tok-punct: #c1cdc4;
+  --mochi-tok-bool: #e6c089;
+}
+
+.prism-code .token.keyword,
+.prism-code .token.boolean { font-weight: 600; }
+
+.prism-code .token.keyword       { color: var(--mochi-tok-keyword) !important; }
+.prism-code .token.builtin       { color: var(--mochi-tok-builtin) !important; }
+.prism-code .token.class-name    { color: var(--mochi-tok-class)   !important; }
+.prism-code .token.function-call,
+.prism-code .token.function      { color: var(--mochi-tok-fn)      !important; }
+.prism-code .token.string,
+.prism-code .token.char          { color: var(--mochi-tok-string)  !important; }
+.prism-code .token.number        { color: var(--mochi-tok-number)  !important; }
+.prism-code .token.boolean       { color: var(--mochi-tok-bool)    !important; }
+.prism-code .token.comment       { color: var(--mochi-tok-comment) !important; font-style: italic; }
+.prism-code .token.operator      { color: var(--mochi-tok-operator) !important; }
+.prism-code .token.punctuation   { color: var(--mochi-tok-punct)   !important; }
+.prism-code .token.interpolation-punctuation {
+  color: var(--mochi-tok-keyword) !important;
+}
+
+/* Inline code keeps the matcha tint we already set above */
+
+/* Code block toolbar buttons (copy, word-wrap) — minimal, ghost style */
+.theme-code-block .buttonGroup__atx button,
+.theme-code-block .clean-btn {
+  border-radius: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  border: 0;
+  opacity: 0;
+  padding: 6px;
+  transition: background 0.15s, color 0.15s, opacity 0.15s;
+}
+
+.theme-code-block:hover .buttonGroup__atx button,
+.theme-code-block:hover .clean-btn,
+.theme-code-block .buttonGroup__atx button:focus-visible,
+.theme-code-block .clean-btn:focus-visible {
+  opacity: 1;
+}
+
+.theme-code-block .buttonGroup__atx button:hover,
+.theme-code-block .clean-btn:hover {
+  background: rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+}
+
+[data-theme='light'] .theme-code-block .buttonGroup__atx button,
+[data-theme='light'] .theme-code-block .clean-btn {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='light'] .theme-code-block .buttonGroup__atx button:hover,
+[data-theme='light'] .theme-code-block .clean-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--mochi-primary);
+}
+
+.theme-code-block .buttonGroup__atx button svg,
+.theme-code-block .clean-btn svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* =========================================================================
    Tables
    ========================================================================= */
 
@@ -434,7 +535,7 @@ code {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  border: 1px solid var(--mochi-border);
+  border: 0;
   border-radius: var(--mochi-radius-md);
   overflow: hidden;
   margin: 1.25rem 0 1.75rem;
@@ -488,7 +589,7 @@ code {
   background: var(--mochi-primary-softer);
   color: var(--mochi-text-secondary);
   padding: 0.6rem 1rem;
-  border-radius: 0 8px 8px 0;
+  border-radius: 0;
 }
 
 [data-theme='dark'] .markdown blockquote {
@@ -501,7 +602,7 @@ code {
 
 .footer {
   background: var(--mochi-bg-elevated);
-  border-top: 1px solid var(--mochi-border);
+  border-top: 0;
   color: var(--mochi-text-secondary);
   padding-top: 3rem;
   padding-bottom: 2.5rem;
@@ -554,18 +655,18 @@ div[class^="announcementBar"] {
 
 .listing-card {
   display: block;
-  padding: 1.25rem 1.4rem;
+  padding: 1.4rem 1.5rem;
   background: var(--mochi-bg-surface);
-  border: 1px solid var(--mochi-border);
-  border-radius: var(--mochi-radius-md);
-  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  border: 0;
+  border-radius: 0;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
   text-decoration: none !important;
   color: inherit !important;
   position: relative;
 }
 
 .listing-card:hover {
-  border-color: var(--mochi-primary);
+  background: var(--mochi-primary-softer);
   transform: translateY(-2px);
   box-shadow: var(--mochi-shadow-soft);
 }
@@ -576,7 +677,7 @@ div[class^="announcementBar"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--mochi-primary-soft);
   color: var(--mochi-primary-strong);
   margin-bottom: 0.75rem;
@@ -642,7 +743,7 @@ div[class^="announcementBar"] {
   background: var(--mochi-text-primary);
   color: var(--mochi-bg-base);
   padding: 0.45rem 0.7rem;
-  border-radius: 6px;
+  border-radius: 0;
   font-size: 0.82rem;
   white-space: nowrap;
   z-index: 100;
@@ -676,14 +777,14 @@ div[class^="announcementBar"] {
    ========================================================================= */
 
 .pagination-nav__link {
-  border: 1px solid var(--mochi-border);
-  border-radius: var(--mochi-radius-md);
+  border: 0;
+  background: var(--mochi-bg-surface);
+  border-radius: 0;
   padding: 1rem 1.25rem;
-  transition: border-color 0.15s, background 0.15s;
+  transition: background 0.15s;
 }
 
 .pagination-nav__link:hover {
-  border-color: var(--mochi-primary);
   background: var(--mochi-primary-softer);
 }
 

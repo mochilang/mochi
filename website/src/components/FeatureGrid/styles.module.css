@@ -13,7 +13,7 @@
 .title {
   font-family: var(--ifm-heading-font-family);
   font-size: 2.5rem;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: -0.02em;
   margin: 0 0 0.75rem 0;
   color: var(--mochi-text-primary);
@@ -47,7 +47,7 @@
 .card {
   background: var(--mochi-bg-surface);
   border: 1px solid var(--mochi-border);
-  border-radius: var(--mochi-radius-lg);
+  border-radius: 0;
   padding: 1.6rem 1.5rem;
   transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
   display: flex;
@@ -64,7 +64,7 @@
 .cardIcon {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: 0;
   background: var(--mochi-primary-soft);
   color: var(--mochi-primary);
   display: flex;
@@ -81,7 +81,7 @@
 .cardTitle {
   font-family: var(--ifm-heading-font-family);
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.01em;
   margin: 0;
   color: var(--mochi-text-primary);
