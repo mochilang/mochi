@@ -1418,6 +1418,8 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 			return StringType{}
 		case "bool":
 			return BoolType{}
+		case "unit":
+			return UnitType{}
 		default:
 			if ut, ok := env.GetUnion(*t.Simple); ok {
 				return ut
