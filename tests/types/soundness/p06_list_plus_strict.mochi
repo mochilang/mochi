@@ -1,0 +1,3 @@
+// MEP-4 P6: list `+` on matching element types preserves the element type.
+let a: list<int> = [1, 2] + [3]
+let b: list<string> = ["x"] + ["y", "z"]

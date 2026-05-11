@@ -1,0 +1,8 @@
+ 1. error[T020]: operator `+` cannot be used on types [int] and [string]
+  --> tests/types/soundness/p06_list_plus_heterogeneous.mochi:2:19
+
+  2 | let _ = [1, 2, 3] + ["a", "b"]
+    |                   ^
+
+help:
+  Choose an operator that supports these operand types.

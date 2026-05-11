@@ -30,3 +30,6 @@ jobs:
             -coverprofile=coverage.txt \
             -covermode=atomic \
             ./parser/... ./runtime/vm/...
+
+      - name: Run MEP-4 soundness suite
+        run: go test -vet=off -v ./types/... -run TestSoundness

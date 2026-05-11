@@ -1,0 +1,8 @@
+ 1. error[T003]: unknown function: myfunc
+  --> tests/types/soundness/p18_setfunc_no_lowercase.mochi:6:9
+
+  6 | let _ = myfunc(5)
+    |         ^
+
+help:
+  Ensure the function is defined before it's called.

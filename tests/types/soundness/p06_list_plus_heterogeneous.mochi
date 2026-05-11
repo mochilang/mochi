@@ -1,0 +1,2 @@
+// MEP-4 P6: list `+` with mismatched element types is rejected.
+let _ = [1, 2, 3] + ["a", "b"]

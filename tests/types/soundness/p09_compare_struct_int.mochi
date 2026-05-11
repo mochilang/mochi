@@ -1,0 +1,4 @@
+// MEP-4 P9: comparing a struct value with an int has no sensible meaning.
+type User { id: int }
+let u: User = User{id: 1}
+let _ = u == 5

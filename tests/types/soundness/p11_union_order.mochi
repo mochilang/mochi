@@ -1,0 +1,14 @@
+// MEP-4 P11: union variants iterate in declaration order. Exhaustive match
+// must reach every arm in the order the user wrote them.
+type Shape =
+  Circle(r: int)
+| Square(s: int)
+| Triangle(b: int, h: int)
+
+let sh: Shape = Triangle(3, 4)
+let label: string = match sh {
+  Circle(_) => "c"
+  Square(_) => "s"
+  Triangle(_, _) => "t"
+}
+expect label == "t"

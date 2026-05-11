@@ -1,0 +1,8 @@
+ 1. error[T025]: unknown type: Nope
+  --> tests/types/soundness/p08_unknown_type_name.mochi:2:8
+
+  2 | let x: Nope = 1
+    |        ^
+
+help:
+  Ensure the type is defined before use.

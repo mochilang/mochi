@@ -1,0 +1,7 @@
+// MEP-4 P19: `unit` is a first-class surface type, usable as a return
+// annotation and as the element type of a function-typed binding.
+fun noop(): unit {
+  print("noop")
+}
+let n: fun(): unit = noop
+n()

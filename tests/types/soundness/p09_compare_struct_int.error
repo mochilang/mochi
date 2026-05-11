@@ -1,0 +1,8 @@
+ 1. error[T013]: incompatible types in comparison
+  --> tests/types/soundness/p09_compare_struct_int.mochi:4:11
+
+  4 | let _ = u == 5
+    |           ^
+
+help:
+  Use comparable types like numbers or strings with `<`, `>`.

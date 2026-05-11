@@ -1,0 +1,6 @@
+// MEP-4 P18: SetFunc no longer auto-aliases function names to lowercase,
+// so calling a lower-cased spelling of a CamelCase function is undefined.
+fun MyFunc(x: int): int {
+  return x * 2
+}
+let _ = myfunc(5)

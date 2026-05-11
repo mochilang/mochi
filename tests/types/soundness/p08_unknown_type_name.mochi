@@ -1,0 +1,2 @@
+// MEP-4 P8: a reference to an undeclared type name is reported as T025.
+let x: Nope = 1
