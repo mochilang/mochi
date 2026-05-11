@@ -1,4 +1,4 @@
-//go:build linux
+//go:build linux && chibicc
 
 package chibigo
 
