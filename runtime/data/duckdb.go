@@ -297,8 +297,7 @@ func exprToSQL(e *parser.Expr, resolve func(string) (string, bool)) (string, err
 		return "", err
 	}
 	for _, op := range e.Binary.Right {
-		// op.Right is a *parser.PostfixExpr, so call postfixToSQL directly.
-		right, err := postfixToSQL(op.Right, resolve)
+		right, err := unaryToSQL(op.Right, resolve)
 		if err != nil {
 			return "", err
 		}

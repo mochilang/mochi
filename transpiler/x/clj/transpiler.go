@@ -2543,7 +2543,7 @@ func transpileExpr(e *parser.Expr) (Node, error) {
 	nodes := []Node{left}
 	ops := []string{}
 	for _, op := range e.Binary.Right {
-		right, err := transpilePostfix(op.Right)
+		right, err := transpileUnary(op.Right)
 		if err != nil {
 			return nil, err
 		}

@@ -5747,7 +5747,7 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	var operators []*parser.BinaryOp
 
 	for _, part := range e.Binary.Right {
-		rhs, err := compilePostfix(part.Right)
+		rhs, err := compileUnary(part.Right)
 		if err != nil {
 			return nil, err
 		}

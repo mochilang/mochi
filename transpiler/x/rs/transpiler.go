@@ -5112,13 +5112,10 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	operands := []Expr{first}
 	ops := make([]string, len(e.Binary.Right))
 	for i, op := range e.Binary.Right {
-		// Each operand in the expression may itself contain unary
-		// operators (for example: `-a + b`).  The `Right` field of a
-		// `parser.BinaryOp` is a `*parser.PostfixExpr`, so we must
-		// compile it using `compilePostfix`.  Using `compileUnary` here
-		// resulted in type mismatches after parser changes and caused
-		// algorithms to fail to transpile.
-		right, err := compilePostfix(op.Right)
+		// Each operand may itself contain unary operators (for example, "-a + b").
+		// After the parser change, BinaryOp.Right is now a *parser.Unary, so we
+		// compile it via compileUnary.
+		right, err := compileUnary(op.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -8769,13 +8766,8 @@ func exprUsesNameInCall(e *parser.Expr, name string) bool {
 		return true
 	}
 	for _, op := range e.Binary.Right {
-		// `op.Right` now holds a *parser.Unary.  The previous
-		// Each `BinaryOp.Right` is a `*parser.PostfixExpr`.  The
-		// previous revision mistakenly treated it as a `*parser.Unary`
-		// and delegated to `unaryUsesNameInCall`, which caused build
-		// failures.  Inspect the postfix expression directly so that
-		// any nested calls are detected correctly.
-		if postfixUsesNameInCall(op.Right, name) {
+		// op.Right is a *parser.Unary; delegate to unaryUsesNameInCall.
+		if unaryUsesNameInCall(op.Right, name) {
 			return true
 		}
 	}

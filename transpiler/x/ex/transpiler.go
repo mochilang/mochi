@@ -3775,13 +3775,13 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	typesSlice := []types.Type{types.TypeOfUnary(b.Left, env)}
 	ops := make([]*parser.BinaryOp, len(b.Right))
 	for i, op := range b.Right {
-		expr, err := compilePostfix(op.Right, env)
+		expr, err := compileUnary(op.Right, env)
 		if err != nil {
 			return nil, err
 		}
 		ops[i] = op
 		operands = append(operands, expr)
-		typesSlice = append(typesSlice, types.TypeOfPostfix(op.Right, env))
+		typesSlice = append(typesSlice, types.TypeOfUnary(op.Right, env))
 	}
 	levels := [][]string{
 		{"*", "/", "%"},
@@ -3855,7 +3855,7 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 						}
 						bin := &BinaryExpr{Left: operands[i], Op: opName, Right: operands[i+1], FloatOp: floatOp}
 						if opName == "in" {
-							if _, ok := types.TypeOfPostfix(ops[i].Right, env).(types.MapType); ok {
+							if _, ok := types.TypeOfUnary(ops[i].Right, env).(types.MapType); ok {
 								bin.MapIn = true
 							}
 						} else if opName == "+" {
@@ -5123,7 +5123,7 @@ func gatherVarsExpr(e *parser.Expr, set map[string]struct{}) {
 	}
 	gatherVarsUnary(e.Binary.Left, set)
 	for _, op := range e.Binary.Right {
-		gatherVarsPostfix(op.Right, set)
+		gatherVarsUnary(op.Right, set)
 	}
 }
 

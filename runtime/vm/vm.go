@@ -3105,7 +3105,7 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 	for i, op := range b.Right {
 		expr := op.Right
 		ops[i] = op
-		operands = append(operands, operand{compile: func() int { return fc.compilePostfix(expr) }})
+		operands = append(operands, operand{compile: func() int { return fc.compileUnary(expr) }})
 	}
 
 	levels := [][]string{
@@ -7560,7 +7560,7 @@ func (fc *funcCompiler) preloadFieldConsts(e *parser.Expr) {
 		}
 		walkUnary(e.Binary.Left)
 		for _, op := range e.Binary.Right {
-			walkPostfix(op.Right)
+			walkUnary(op.Right)
 		}
 	}
 
@@ -8129,7 +8129,7 @@ func (fc *funcCompiler) evalConstBinary(b *parser.BinaryExpr) (Value, bool) {
 	operands = append(operands, operand{left, true})
 	ops := make([]*parser.BinaryOp, len(b.Right))
 	for i, part := range b.Right {
-		v, ok := fc.evalConstPostfix(part.Right)
+		v, ok := fc.evalConstUnary(part.Right)
 		if !ok {
 			return Value{}, false
 		}

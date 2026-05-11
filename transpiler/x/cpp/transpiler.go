@@ -5589,7 +5589,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	operands := []Expr{left}
 	ops := []binOp{}
 	for _, part := range b.Right {
-		right, err := convertPostfix(part.Right)
+		right, err := convertUnary(part.Right)
 		if err != nil {
 			return nil, err
 		}

@@ -2752,7 +2752,7 @@ func findUpdatedVars(env *types.Env, list []*parser.Statement, vars map[string]b
 		if e.Binary != nil {
 			scanUnary(e.Binary.Left)
 			for _, op := range e.Binary.Right {
-				scanPostfix(op.Right)
+				scanUnary(op.Right)
 			}
 		}
 	}
@@ -2896,7 +2896,7 @@ func isJoinExpr(e *parser.Expr) bool {
 		return true
 	}
 	for _, op := range e.Binary.Right {
-		if op.Right != nil && hasJoinOp(op.Right) {
+		if op.Right != nil && op.Right.Value != nil && hasJoinOp(op.Right.Value) {
 			return true
 		}
 	}
@@ -4001,7 +4001,7 @@ func evalPrintArg(arg *parser.Expr) (val string, isString bool, ok bool) {
 
 	if lit != nil && len(arg.Binary.Right) == 1 {
 		op := arg.Binary.Right[0]
-		rightLit := op.Right.Target.Lit
+		rightLit := op.Right.Value.Target.Lit
 		if rightLit != nil && rightLit.Str != nil && lit.Str != nil {
 			switch op.Op {
 			case "+":
@@ -4089,7 +4089,7 @@ func evalIntConstBinary(be *parser.BinaryExpr) (int, bool) {
 	vals := []int{v}
 	ops := []string{}
 	for _, op := range be.Right {
-		r, ok := evalIntConstPostfix(op.Right)
+		r, ok := evalIntConstUnary(op.Right)
 		if !ok {
 			return 0, false
 		}
@@ -4215,12 +4215,12 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	ops := []string{}
 
 	for _, op := range e.Binary.Right {
-		right, err := convertPostfix(env, op.Right)
+		right, err := convertUnary(env, op.Right)
 		if err != nil {
 			return nil, err
 		}
 		operands = append(operands, right)
-		typesList = append(typesList, types.TypeOfPostfix(op.Right, env))
+		typesList = append(typesList, types.TypeOfUnary(op.Right, env))
 		ops = append(ops, op.Op)
 	}
 

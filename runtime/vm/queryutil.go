@@ -153,7 +153,7 @@ func exprVars(e *parser.Expr, vars map[string]struct{}) {
 
 	scanUnary(e.Binary.Left)
 	for _, op := range e.Binary.Right {
-		scanPostfix(op.Right)
+		scanUnary(op.Right)
 	}
 }
 
@@ -273,14 +273,14 @@ func eqJoinKeys(on *parser.Expr, leftAlias, rightAlias string) (*parser.Expr, *p
 			if !collect(left) {
 				return false
 			}
-			rightExpr := postfixToExpr(e.Binary.Right[0].Right, e.Binary.Right[0].Pos)
+			rightExpr := unaryToExpr(e.Binary.Right[0].Right)
 			return collect(rightExpr)
 		}
 		if len(e.Binary.Right) != 1 || e.Binary.Right[0].Op != "==" {
 			return false
 		}
 		l := unaryToExpr(e.Binary.Left)
-		r := postfixToExpr(e.Binary.Right[0].Right, e.Binary.Right[0].Pos)
+		r := unaryToExpr(e.Binary.Right[0].Right)
 		if exprUsesOnlyAlias(l, leftAlias) && exprUsesOnlyAlias(r, rightAlias) {
 			pairs = append(pairs, pair{l, r})
 			return true

@@ -2665,7 +2665,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	ops := []string{}
 	leftType := types.TypeOfUnary(b.Left, env)
 	for _, part := range b.Right {
-		rightUnary := &parser.Unary{Value: part.Right}
+		rightUnary := part.Right
 		right, err := convertUnary(rightUnary, env)
 		if err != nil {
 			return nil, err

@@ -4638,12 +4638,12 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 	exprs := []Expr{left}
 	typesList := []types.Type{types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}, env)}
 	for i, op := range b.Right {
-		r, err := convertPostfix(op.Right, env, ctx)
+		r, err := convertUnary(op.Right, env, ctx)
 		if err != nil {
 			return nil, err
 		}
 		exprs = append(exprs, r)
-		typesList = append(typesList, types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, env))
+		typesList = append(typesList, types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: op.Right}}, env))
 		name := op.Op
 		if op.All {
 			name = name + "_all"

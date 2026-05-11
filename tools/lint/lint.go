@@ -138,7 +138,7 @@ func (l *linter) visitExpr(e *parser.Expr) {
 	}
 	l.visitUnary(e.Binary.Left)
 	for _, op := range e.Binary.Right {
-		l.visitPostfix(op.Right)
+		l.visitUnary(op.Right)
 	}
 }
 

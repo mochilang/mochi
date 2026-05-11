@@ -4538,7 +4538,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 	}
 	ops := []opInfo{}
 	for _, op := range b.Right {
-		right, rtyp, err := convertPostfix(op.Right, env, vars)
+		right, rtyp, err := convertUnary(op.Right, env, vars)
 		if err != nil {
 			return nil, "", err
 		}

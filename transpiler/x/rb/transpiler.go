@@ -4354,7 +4354,7 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 type binOp struct {
 	op    string
 	all   bool
-	right *parser.PostfixExpr
+	right *parser.Unary
 }
 
 func convertBinary(b *parser.BinaryExpr) (Expr, error) {
@@ -4370,7 +4370,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 	operands = append(operands, first)
 	for _, p := range b.Right {
-		o, err := convertPostfix(p.Right)
+		o, err := convertUnary(p.Right)
 		if err != nil {
 			return nil, err
 		}

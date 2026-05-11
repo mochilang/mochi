@@ -263,3 +263,116 @@ func TestGrammar_LiteralShapes(t *testing.T) {
 		})
 	}
 }
+
+// TestGrammar_UnaryOnBinaryRHS locks in the symmetry between the left and
+// right operands of binary operators. The textbook layered precedence
+// grammar (Aho-Sethi-Ullman, Crafting Interpreters) requires every binary
+// operand to be a unary-expression. Mochi flattens the binary tower into
+// a list and climbs precedence post-parse, but the invariant must still
+// hold: any unary prefix accepted on the LHS must also be accepted on the
+// RHS. Before MEP 2 the RHS was a PostfixExpr, so `a + -b` failed to parse.
+// This test guarantees the asymmetry never returns.
+func TestGrammar_UnaryOnBinaryRHS(t *testing.T) {
+	cases := []struct {
+		name string
+		src  string
+		// rhsOps is the expected unary prefix sequence on the RHS of the
+		// first BinaryOp. Nil means "no BinaryOp expected".
+		rhsOps []string
+	}{
+		{"minus on RHS of +", `let r = a + -b`, []string{"-"}},
+		{"minus on RHS of -", `let r = a - -b`, []string{"-"}},
+		{"minus on RHS of *", `let r = a * -b`, []string{"-"}},
+		{"minus on RHS of /", `let r = a / -b`, []string{"-"}},
+		{"minus on RHS of %", `let r = a % -b`, []string{"-"}},
+		{"minus on RHS of <", `let r = a < -b`, []string{"-"}},
+		{"minus on RHS of ==", `let r = a == -b`, []string{"-"}},
+		{"not on RHS of &&", `let r = a && !b`, []string{"!"}},
+		{"not on RHS of ||", `let r = a || !b`, []string{"!"}},
+		{"double not on RHS", `let r = a || !!b`, []string{"!", "!"}},
+		{"minus then not on RHS", `let r = a + -!b`, []string{"-", "!"}},
+		{"no prefix on RHS still works", `let r = a + b`, nil},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			prog, err := parser.ParseString(tc.src)
+			if err != nil {
+				t.Fatalf("ParseString(%q): %v", tc.src, err)
+			}
+			if len(prog.Statements) != 1 || prog.Statements[0].Let == nil {
+				t.Fatalf("expected a single let statement, got %#v", prog.Statements)
+			}
+			expr := prog.Statements[0].Let.Value
+			if expr == nil || expr.Binary == nil {
+				t.Fatalf("expected a binary expression value")
+			}
+			if len(expr.Binary.Right) != 1 {
+				t.Fatalf("expected exactly one BinaryOp, got %d", len(expr.Binary.Right))
+			}
+			rhs := expr.Binary.Right[0].Right
+			if rhs == nil {
+				t.Fatalf("BinaryOp.Right is nil")
+			}
+			if len(rhs.Ops) != len(tc.rhsOps) {
+				t.Fatalf("rhs ops = %v, want %v", rhs.Ops, tc.rhsOps)
+			}
+			for i, op := range tc.rhsOps {
+				if rhs.Ops[i] != op {
+					t.Fatalf("rhs ops[%d] = %q, want %q", i, rhs.Ops[i], op)
+				}
+			}
+		})
+	}
+}
+
+// TestGrammar_BinaryOperandsAreSymmetric verifies the invariant that any
+// expression accepted as `LHS op RHS` is also accepted as `RHS op LHS`
+// when the operator is commutative and unary prefixes are allowed. This
+// is the structural test for the symmetry restored by MEP 2.
+func TestGrammar_BinaryOperandsAreSymmetric(t *testing.T) {
+	primaries := []string{
+		"b",
+		"-b",
+		"!b",
+		"--b",
+		"-!b",
+	}
+	for _, p1 := range primaries {
+		for _, p2 := range primaries {
+			src := "let r = " + p1 + " + " + p2
+			t.Run(src, func(t *testing.T) {
+				if _, err := parser.ParseString(src); err != nil {
+					t.Fatalf("ParseString(%q): %v", src, err)
+				}
+			})
+		}
+	}
+}
+
+// TestGrammar_UnaryRHSPrecedence verifies that unary minus on the RHS of
+// a binary operator binds tighter than the binary operator itself, so
+// `a + -b * c` parses as `a + ((-b) * c)`, not `(a + -b) * c` or other
+// shapes. This is the standard layered-grammar treatment of unary.
+func TestGrammar_UnaryRHSPrecedence(t *testing.T) {
+	// We parse `a + -b * c` and check that the RHS of `+` is a single
+	// Unary whose Value is the postfix `b`, and that the BinaryOp list
+	// contains both `+` and `*` so the post-parse precedence pass binds
+	// `-b * c` tighter than `a + ...`.
+	prog, err := parser.ParseString(`let r = a + -b * c`)
+	if err != nil {
+		t.Fatalf("ParseString: %v", err)
+	}
+	be := prog.Statements[0].Let.Value.Binary
+	if len(be.Right) != 2 {
+		t.Fatalf("expected 2 BinaryOps, got %d", len(be.Right))
+	}
+	if be.Right[0].Op != "+" || be.Right[1].Op != "*" {
+		t.Fatalf("ops = %q, %q; want +, *", be.Right[0].Op, be.Right[1].Op)
+	}
+	if got := strings.Join(be.Right[0].Right.Ops, ""); got != "-" {
+		t.Fatalf("first RHS unary ops = %q, want -", got)
+	}
+	if len(be.Right[1].Right.Ops) != 0 {
+		t.Fatalf("second RHS should have no unary prefix")
+	}
+}
