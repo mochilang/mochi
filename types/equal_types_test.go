@@ -41,8 +41,8 @@ func TestEqualTypesByKind(t *testing.T) {
 		// Struct/union name-based equality and struct-in-union carve-out.
 		{
 			"struct same name",
-			StructType{Name: "User", Fields: map[string]Type{"id": IntType{}}},
-			StructType{Name: "User", Fields: map[string]Type{"id": IntType{}}},
+			StructType{Name: "User", Fields: []StructField{{Name: "id", Type: IntType{}}}},
+			StructType{Name: "User", Fields: []StructField{{Name: "id", Type: IntType{}}}},
 			true,
 		},
 		{

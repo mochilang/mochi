@@ -146,14 +146,14 @@ func IsStringAnyMapLike(t Type) bool {
 
 // StructMatches reports whether the provided field map and order slice match the layout of existing.
 func StructMatches(existing StructType, fields map[string]Type, order []string) bool {
-	if len(existing.Fields) != len(fields) || len(existing.Order) != len(order) {
+	if len(existing.Fields) != len(fields) || len(existing.Fields) != len(order) {
 		return false
 	}
-	for i, name := range existing.Order {
-		if order[i] != name {
+	for i, f := range existing.Fields {
+		if order[i] != f.Name {
 			return false
 		}
-		if !EqualTypes(existing.Fields[name], fields[name]) {
+		if !EqualTypes(f.Type, fields[f.Name]) {
 			return false
 		}
 	}
@@ -162,14 +162,15 @@ func StructMatches(existing StructType, fields map[string]Type, order []string) 
 
 // StructTypesMatch reports whether two struct types have the same set of fields and ordering, ignoring their names.
 func StructTypesMatch(a, b StructType) bool {
-	if len(a.Fields) != len(b.Fields) || len(a.Order) != len(b.Order) {
+	if len(a.Fields) != len(b.Fields) {
 		return false
 	}
-	for i, name := range a.Order {
-		if b.Order[i] != name {
+	for i, af := range a.Fields {
+		bf := b.Fields[i]
+		if af.Name != bf.Name {
 			return false
 		}
-		if !EqualTypes(a.Fields[name], b.Fields[name]) {
+		if !EqualTypes(af.Type, bf.Type) {
 			return false
 		}
 	}

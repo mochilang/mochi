@@ -19,36 +19,34 @@ func InferStructFromList(ll *parser.ListLiteral, env *Env) (StructType, bool) {
 	if fm == nil {
 		return StructType{}, false
 	}
-	fields := map[string]Type{}
-	order := make([]string, len(fm.Items))
+	fields := make([]StructField, len(fm.Items))
 	for i, it := range fm.Items {
 		key, ok := SimpleStringKey(it.Key)
 		if !ok {
 			return StructType{}, false
 		}
-		order[i] = key
-		fields[key] = ExprType(it.Value, env)
+		fields[i] = StructField{Name: key, Type: ExprType(it.Value, env)}
 	}
 	for _, el := range ll.Elems[1:] {
 		if el.Binary == nil || len(el.Binary.Right) != 0 {
 			return StructType{}, false
 		}
 		ml := el.Binary.Left.Value.Target.Map
-		if ml == nil || len(ml.Items) != len(order) {
+		if ml == nil || len(ml.Items) != len(fields) {
 			return StructType{}, false
 		}
 		for i, it := range ml.Items {
 			key, ok := SimpleStringKey(it.Key)
-			if !ok || key != order[i] {
+			if !ok || key != fields[i].Name {
 				return StructType{}, false
 			}
 			t := ExprType(it.Value, env)
-			if !EqualTypes(fields[key], t) {
+			if !EqualTypes(fields[i].Type, t) {
 				return StructType{}, false
 			}
 		}
 	}
-	st := StructType{Fields: fields, Order: order}
+	st := StructType{Fields: fields}
 	return st, true
 }
 
@@ -63,17 +61,15 @@ func InferStructFromMapEnv(ml *parser.MapLiteral, env *Env) (StructType, bool) {
 	if ml == nil || len(ml.Items) == 0 {
 		return StructType{}, false
 	}
-	fields := map[string]Type{}
-	order := make([]string, len(ml.Items))
+	fields := make([]StructField, len(ml.Items))
 	for i, it := range ml.Items {
 		key, ok := SimpleStringKey(it.Key)
 		if !ok {
 			return StructType{}, false
 		}
-		order[i] = key
-		fields[key] = ExprType(it.Value, env)
+		fields[i] = StructField{Name: key, Type: ExprType(it.Value, env)}
 	}
-	st := StructType{Fields: fields, Order: order}
+	st := StructType{Fields: fields}
 	return st, true
 }
 
