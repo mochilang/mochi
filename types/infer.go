@@ -142,8 +142,24 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 					}
 					if ops[i] == "+" {
 						if ll, ok := left.(ListType); ok {
-							if rl, ok := right.(ListType); ok && equalTypes(ll.Elem, rl.Elem) {
-								res = ll
+							if rl, ok := right.(ListType); ok {
+								// Match applyBinaryType: unify on elem types
+								// so empty-list concatenation ([1] + []) keeps
+								// the concrete element type, but a genuine
+								// mismatch ([int] + [string]) infers AnyType
+								// rather than silently widening to [any]. The
+								// authoritative error is raised by
+								// applyBinaryType in types/check.go.
+								// See MEP 4 §6 problem 6.
+								if unify(ll.Elem, rl.Elem, nil) {
+									if IsAnyType(ll.Elem) {
+										res = rl
+									} else {
+										res = ll
+									}
+									break
+								}
+								res = AnyType{}
 								break
 							}
 							res = ListType{Elem: AnyType{}}
