@@ -1201,7 +1201,8 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				elemType = IntType{}
 			}
 		} else {
-			// It's a collection loop: `for x in collection`
+			// MEP-5 §Inference for control flow [T-ForList, T-ForMap, T-ForStr]:
+			// any other shape (including bare `any`) is T022.
 			switch t := sourceType.(type) {
 			case ListType:
 				elemType = t.Elem
@@ -1209,8 +1210,6 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				elemType = t.Key // loop iterates over keys
 			case StringType:
 				elemType = StringType{}
-			case AnyType:
-				elemType = AnyType{}
 			default:
 				return errCannotIterate(s.For.Pos, sourceType)
 			}
