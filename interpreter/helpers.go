@@ -109,13 +109,13 @@ func (i *Interpreter) evalMatch(m *parser.MatchExpr) (any, error) {
 			if !ok {
 				continue
 			}
-			if len(call.Args) != len(st.Order) {
+			if len(call.Args) != len(st.Fields) {
 				continue
 			}
 			child := types.NewEnv(i.env)
 			for idx, arg := range call.Args {
 				if n, ok := identName(arg); ok {
-					child.SetValue(n, obj[st.Order[idx]], true)
+					child.SetValue(n, obj[st.Fields[idx].Name], true)
 				}
 			}
 			old := i.env

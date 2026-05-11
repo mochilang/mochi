@@ -39,9 +39,9 @@ func typeToSchema(t types.Type) map[string]any {
 func structToSchema(st types.StructType) map[string]any {
 	props := make(map[string]any, len(st.Fields))
 	required := make([]string, 0, len(st.Fields))
-	for name, ft := range st.Fields {
-		props[name] = typeToSchema(ft)
-		required = append(required, name)
+	for _, f := range st.Fields {
+		props[f.Name] = typeToSchema(f.Type)
+		required = append(required, f.Name)
 	}
 	sort.Strings(required)
 	schema := map[string]any{

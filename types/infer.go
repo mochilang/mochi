@@ -270,7 +270,7 @@ func inferPostfixType(env *Env, p *parser.PostfixExpr) Type {
 				t = OptionType{Elem: tt.Value}
 			case StructType:
 				if key, ok := SimpleStringKey(op.Index.Start); ok {
-					if ft, ok2 := tt.Fields[key]; ok2 {
+					if ft, ok2 := tt.FieldType(key); ok2 {
 						t = ft
 					} else {
 						t = AnyType{}
@@ -364,7 +364,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 					}
 					switch tt := cur.(type) {
 					case StructType:
-						ft, ok := tt.Fields[field]
+						ft, ok := tt.FieldType(field)
 						if !ok {
 							return AnyType{}
 						}
@@ -554,8 +554,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			// Attempt to infer a struct type when all elements are map
 			// literals with matching keys and value types.
 			if ml := first.Binary.Left.Value.Target.Map; ml != nil && len(first.Binary.Right) == 0 {
-				fields := map[string]Type{}
-				order := make([]string, len(ml.Items))
+				fields := make([]StructField, len(ml.Items))
 				valid := true
 				for i, it := range ml.Items {
 					key, ok := SimpleStringKey(it.Key)
@@ -563,8 +562,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 						valid = false
 						break
 					}
-					order[i] = key
-					fields[key] = ExprType(it.Value, env)
+					fields[i] = StructField{Name: key, Type: ExprType(it.Value, env)}
 				}
 				if valid {
 					for _, e := range p.List.Elems[1:] {
@@ -573,20 +571,19 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 							break
 						}
 						ml2 := e.Binary.Left.Value.Target.Map
-						if ml2 == nil || len(ml2.Items) != len(order) {
+						if ml2 == nil || len(ml2.Items) != len(fields) {
 							valid = false
 							break
 						}
 						for i, it := range ml2.Items {
 							key, ok := SimpleStringKey(it.Key)
-							if !ok || key != order[i] {
+							if !ok || key != fields[i].Name {
 								valid = false
 								break
 							}
 							vt := ExprType(it.Value, env)
-							ft := fields[key]
-							if !equalTypes(ft, vt) {
-								fields[key] = AnyType{}
+							if !equalTypes(fields[i].Type, vt) {
+								fields[i].Type = AnyType{}
 							}
 						}
 						if !valid {
@@ -595,7 +592,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 					}
 				}
 				if valid {
-					elemType = StructType{Fields: fields, Order: order}
+					elemType = StructType{Fields: fields}
 				}
 			}
 			if _, ok := elemType.(AnyType); ok {
@@ -663,7 +660,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		return ListType{Elem: elem}
 	case p.Map != nil:
 		if len(p.Map.Items) > 0 {
-			st := StructType{Fields: make(map[string]Type), Order: make([]string, len(p.Map.Items))}
+			fields := make([]StructField, len(p.Map.Items))
 			allConst := true
 			for i, it := range p.Map.Items {
 				key, ok := stringKey(it.Key)
@@ -671,11 +668,10 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 					allConst = false
 					break
 				}
-				st.Fields[key] = ExprType(it.Value, env)
-				st.Order[i] = key
+				fields[i] = StructField{Name: key, Type: ExprType(it.Value, env)}
 			}
 			if allConst {
-				return st
+				return StructType{Fields: fields}
 			}
 		}
 
@@ -835,7 +831,7 @@ func unionFieldPathType(ut UnionType, tail []string) (Type, bool) {
 			if !ok {
 				return nil, false
 			}
-			ft, ok := st.Fields[field]
+			ft, ok := st.FieldType(field)
 			if !ok {
 				return nil, false
 			}
@@ -1177,7 +1173,7 @@ func TypeOfPostfixBasic(u *parser.Unary, env *Env) Type {
 			}
 		case op.Field != nil:
 			if st, ok := t.(StructType); ok {
-				if ft, ok2 := st.Fields[op.Field.Name]; ok2 {
+				if ft, ok2 := st.FieldType(op.Field.Name); ok2 {
 					t = ft
 				} else {
 					t = AnyType{}
@@ -1257,7 +1253,7 @@ func FieldType(t Type, path []string) Type {
 	for _, p := range path {
 		switch tt := t.(type) {
 		case StructType:
-			if f, ok := tt.Fields[p]; ok {
+			if f, ok := tt.FieldType(p); ok {
 				t = f
 			} else {
 				return AnyType{}

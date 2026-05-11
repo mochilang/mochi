@@ -547,16 +547,16 @@ func castValue(pos lexer.Position, t types.Type, v any) (any, error) {
 			return nil, errCastType(pos, v, t)
 		}
 		out := map[string]any{"__name": tt.Name}
-		for name, ft := range tt.Fields {
-			fv, ok := m[name]
+		for _, f := range tt.Fields {
+			fv, ok := m[f.Name]
 			if !ok {
-				return nil, errCastMissingField(pos, name, tt.Name)
+				return nil, errCastMissingField(pos, f.Name, tt.Name)
 			}
-			cv, err := castValue(pos, ft, fv)
+			cv, err := castValue(pos, f.Type, fv)
 			if err != nil {
 				return nil, err
 			}
-			out[name] = cv
+			out[f.Name] = cv
 		}
 		return out, nil
 	default:

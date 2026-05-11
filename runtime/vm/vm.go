@@ -2502,7 +2502,7 @@ func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Funct
 	fc.fn.Name = st.Name + "." + fn.Name
 	fc.fn.TypeParams = append([]string(nil), fn.TypeParams...)
 	fc.fn.Line = fn.Pos.Line
-	fc.fn.NumParams = len(st.Order) + len(fn.Params)
+	fc.fn.NumParams = len(st.FieldNames()) + len(fn.Params)
 	for name, idx := range c.globals {
 		fc.vars[name] = idx
 	}
@@ -2511,7 +2511,7 @@ func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Funct
 	}
 	// struct fields as parameters
 	fc.idx = len(c.globals)
-	for _, field := range st.Order {
+	for _, field := range st.FieldNames() {
 		idx := fc.newReg()
 		fc.vars[field] = idx
 	}
@@ -2519,7 +2519,7 @@ func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Funct
 		idx := fc.newReg()
 		fc.vars[p.Name] = idx
 	}
-	fc.idx = len(c.globals) + len(st.Order) + len(fn.Params)
+	fc.idx = len(c.globals) + len(st.FieldNames()) + len(fn.Params)
 	for _, stmnt := range fn.Body {
 		if err := fc.compileStmt(stmnt); err != nil {
 			return Function{}, err
@@ -3389,9 +3389,9 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 					if !ok {
 						objReg = fc.newReg()
 					}
-					total := len(st.Order) + len(p.Ops[0].Call.Args)
+					total := len(st.FieldNames()) + len(p.Ops[0].Call.Args)
 					regs := make([]int, total)
-					for i, field := range st.Order {
+					for i, field := range st.FieldNames() {
 						key := fc.newReg()
 						fc.emit(p.Target.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: ValueStr, Str: field}})
 						val := fc.newReg()
@@ -3402,7 +3402,7 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 						ar := fc.compileExpr(a)
 						reg := fc.newReg()
 						fc.emit(a.Pos, Instr{Op: OpMove, A: reg, B: ar})
-						regs[len(st.Order)+i] = reg
+						regs[len(st.FieldNames())+i] = reg
 					}
 					dst := fc.newReg()
 					start := 0
@@ -3621,8 +3621,8 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		if st, ok := fc.comp.env.GetStruct(p.Struct.Name); ok {
 			for _, m := range st.Methods {
 				idx := fc.comp.fnIndex[st.Name+"."+m.Decl.Name]
-				caps := make([]int, len(st.Order))
-				for i, name := range st.Order {
+				caps := make([]int, len(st.FieldNames()))
+				for i, name := range st.FieldNames() {
 					caps[i] = fieldRegs[name]
 				}
 				startCap := 0
@@ -3778,7 +3778,7 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 				fc.tags[r] = tagUnknown
 			} else {
 				if len(p.Selector.Tail) == 0 {
-					if st, ok := fc.comp.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 {
+					if st, ok := fc.comp.env.GetStruct(p.Selector.Root); ok && len(st.FieldNames()) == 0 {
 						key := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: "__name"})
 						fc.constReg(p.Pos, Value{Tag: ValueStr, Str: st.Name})
 						dst := fc.newReg()
@@ -4235,7 +4235,7 @@ func (fc *funcCompiler) compileUpdate(u *parser.UpdateStmt) error {
 	if typ, err := fc.comp.env.GetVar(u.Target); err == nil {
 		if lt, ok := typ.(types.ListType); ok {
 			if st, ok := lt.Elem.(types.StructType); ok {
-				for _, f := range st.Order {
+				for _, f := range st.FieldNames() {
 					key := fc.constReg(u.Pos, Value{Tag: ValueStr, Str: f})
 					val := fc.newReg()
 					fc.emit(u.Pos, Instr{Op: OpIndex, A: val, B: item, C: key})
@@ -7025,12 +7025,12 @@ func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
 	}
 	var addStructFields func(reg int, st types.StructType)
 	addStructFields = func(reg int, st types.StructType) {
-		for _, field := range st.Order {
-			fk := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: field})
+		for _, f := range st.Fields {
+			fk := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: f.Name})
 			fv := fc.newReg()
 			fc.emit(q.Pos, Instr{Op: OpIndex, A: fv, B: reg, C: fk})
 			addPair(fk, fv)
-			if ft, ok := st.Fields[field].(types.StructType); ok {
+			if ft, ok := f.Type.(types.StructType); ok {
 				addStructFields(fv, ft)
 			}
 		}
@@ -7298,7 +7298,7 @@ func (fc *funcCompiler) compileMatch(m *parser.MatchExpr) int {
 				for idx, arg := range call.Args {
 					if name, ok := identName(arg); ok {
 						key := fc.newReg()
-						fc.emit(c.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: ValueStr, Str: st.Order[idx]}})
+						fc.emit(c.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: ValueStr, Str: st.FieldNames()[idx]}})
 						val := fc.newReg()
 						fc.emit(c.Pos, Instr{Op: OpIndex, A: val, B: target, C: key})
 						fc.vars[name] = val
@@ -9241,16 +9241,16 @@ func castValue(t types.Type, v any) (any, error) {
 			return nil, fmt.Errorf("cannot cast %T to %s", v, tt.Name)
 		}
 		out := map[string]any{"__name": tt.Name}
-		for name, ft := range tt.Fields {
-			fv, ok := m[name]
+		for _, f := range tt.Fields {
+			fv, ok := m[f.Name]
 			if !ok {
-				return nil, fmt.Errorf("missing field %s for %s", name, tt.Name)
+				return nil, fmt.Errorf("missing field %s for %s", f.Name, tt.Name)
 			}
-			cv, err := castValue(ft, fv)
+			cv, err := castValue(f.Type, fv)
 			if err != nil {
 				return nil, err
 			}
-			out[name] = cv
+			out[f.Name] = cv
 		}
 		return out, nil
 	default:

@@ -76,10 +76,23 @@ type GroupType struct {
 
 func (GroupType) String() string { return "group" }
 
+// StructField is a single declared field of a StructType. The slice of
+// fields on StructType is ordered by declaration sequence so JSON
+// encoding and pretty-printing stay deterministic without a parallel
+// `Order` slice (MEP 4 P10).
+type StructField struct {
+	Name string
+	Type Type
+}
+
+// StructType is the type of a nominal record. Fields are stored as a
+// single ordered slice that doubles as the iteration order and the
+// lookup table (via helper methods). The previous representation kept
+// `Fields map[string]Type` plus `Order []string` in parallel, which
+// could drift; MEP 4 P10 consolidates them.
 type StructType struct {
 	Name    string
-	Fields  map[string]Type
-	Order   []string
+	Fields  []StructField
 	Methods map[string]Method
 }
 
@@ -89,6 +102,70 @@ type Method struct {
 }
 
 func (t StructType) String() string { return t.Name }
+
+// FieldType returns the declared type of the named field, or nil and
+// false if the field is not present.
+func (t StructType) FieldType(name string) (Type, bool) {
+	for _, f := range t.Fields {
+		if f.Name == name {
+			return f.Type, true
+		}
+	}
+	return nil, false
+}
+
+// HasField reports whether the named field is declared on the struct.
+func (t StructType) HasField(name string) bool {
+	_, ok := t.FieldType(name)
+	return ok
+}
+
+// FieldNames returns the field names in declaration order.
+func (t StructType) FieldNames() []string {
+	names := make([]string, len(t.Fields))
+	for i, f := range t.Fields {
+		names[i] = f.Name
+	}
+	return names
+}
+
+// FieldMap returns a fresh lookup map of field name to declared type.
+// Callers that perform many lookups against the same struct should
+// cache the result.
+func (t StructType) FieldMap() map[string]Type {
+	m := make(map[string]Type, len(t.Fields))
+	for _, f := range t.Fields {
+		m[f.Name] = f.Type
+	}
+	return m
+}
+
+// WithField returns a copy of t with the named field's type set to
+// ftype. If the field is already declared the type is updated in
+// place (preserving order); otherwise the field is appended.
+func (t StructType) WithField(name string, ftype Type) StructType {
+	fields := make([]StructField, len(t.Fields))
+	copy(fields, t.Fields)
+	for i, f := range fields {
+		if f.Name == name {
+			fields[i].Type = ftype
+			out := t
+			out.Fields = fields
+			return out
+		}
+	}
+	out := t
+	out.Fields = append(fields, StructField{Name: name, Type: ftype})
+	return out
+}
+
+// NewStructType is a convenience constructor for an ordered field set
+// passed as alternating (name, type) pairs.
+func NewStructType(name string, fields ...StructField) StructType {
+	out := StructType{Name: name}
+	out.Fields = append([]StructField(nil), fields...)
+	return out
+}
 
 type UnionType struct {
 	Name string
@@ -268,12 +345,12 @@ func unify(a, b Type, subst Subst) bool {
 			if len(at.Fields) != len(bt.Fields) {
 				return false
 			}
-			for k, v := range at.Fields {
-				if bv, ok := bt.Fields[k]; ok {
-					if !unify(v, bv, subst) {
-						return false
-					}
-				} else {
+			for _, f := range at.Fields {
+				bv, ok := bt.FieldType(f.Name)
+				if !ok {
+					return false
+				}
+				if !unify(f.Type, bv, subst) {
 					return false
 				}
 			}
@@ -720,32 +797,29 @@ func Check(prog *parser.Program, env *Env) []error {
 
 // --- Helpers ---
 
-func buildStreamFields(fields []*parser.StreamField, env *Env) (map[string]Type, []string) {
-	out := map[string]Type{}
-	order := []string{}
+func buildStreamFields(fields []*parser.StreamField, env *Env) []StructField {
+	out := make([]StructField, 0, len(fields))
 	for _, f := range fields {
 		if f == nil {
 			continue
 		}
-		out[f.Name] = resolveTypeRef(f.Type, env)
-		order = append(order, f.Name)
+		out = append(out, StructField{Name: f.Name, Type: resolveTypeRef(f.Type, env)})
 	}
-	return out, order
+	return out
 }
 
 func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) error {
 	switch {
 	case s.Stream != nil:
-		fields, order := buildStreamFields(s.Stream.Fields, env)
-		st := StructType{Name: s.Stream.Name, Fields: fields, Order: order}
+		fields := buildStreamFields(s.Stream.Fields, env)
+		st := StructType{Name: s.Stream.Name, Fields: fields}
 		env.SetStream(s.Stream.Name, st)
 		env.SetStruct(s.Stream.Name, st)
 		env.types[s.Stream.Name] = st
 		return nil
 
 	case s.Agent != nil:
-		fields := map[string]Type{}
-		order := []string{}
+		var fields []StructField
 		methods := map[string]Method{}
 		for _, blk := range s.Agent.Body {
 			switch {
@@ -754,15 +828,13 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				if blk.Let.Type != nil {
 					t = resolveTypeRef(blk.Let.Type, env)
 				}
-				fields[blk.Let.Name] = t
-				order = append(order, blk.Let.Name)
+				fields = append(fields, StructField{Name: blk.Let.Name, Type: t})
 			case blk.Var != nil:
 				var t Type = AnyType{}
 				if blk.Var.Type != nil {
 					t = resolveTypeRef(blk.Var.Type, env)
 				}
-				fields[blk.Var.Name] = t
-				order = append(order, blk.Var.Name)
+				fields = append(fields, StructField{Name: blk.Var.Name, Type: t})
 			case blk.Intent != nil:
 				params := make([]Type, len(blk.Intent.Params))
 				for i, p := range blk.Intent.Params {
@@ -780,7 +852,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				methods[blk.Intent.Name] = Method{Decl: &parser.FunStmt{Params: blk.Intent.Params, Return: blk.Intent.Return, Body: blk.Intent.Body}, Type: FuncType{Params: params, Return: ret, Pure: pure}}
 			}
 		}
-		st := StructType{Name: s.Agent.Name, Fields: fields, Order: order, Methods: methods}
+		st := StructType{Name: s.Agent.Name, Fields: fields, Methods: methods}
 		env.SetStruct(s.Agent.Name, st)
 		env.SetAgent(s.Agent.Name, s.Agent)
 		env.types[s.Agent.Name] = st
@@ -806,7 +878,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 			return errUnknownStream(s.Emit.Pos, s.Emit.Stream)
 		}
 		for _, f := range s.Emit.Fields {
-			ft, ok := st.Fields[f.Name]
+			ft, ok := st.FieldType(f.Name)
 			if !ok {
 				return errUnknownField(f.Pos, f.Name, st)
 			}
@@ -1011,7 +1083,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				field := fop.Name
 				switch lt := lhsType.(type) {
 				case StructType:
-					ft, ok := lt.Fields[field]
+					ft, ok := lt.FieldType(field)
 					if !ok {
 						return errUnknownField(fop.Pos, field, lt)
 					}
@@ -1074,12 +1146,12 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 			return fmt.Errorf("update element is not struct")
 		}
 		child := NewEnv(env)
-		for name, t := range st.Fields {
-			child.SetVar(name, t, true)
+		for _, f := range st.Fields {
+			child.SetVar(f.Name, f.Type, true)
 		}
 		for _, item := range s.Update.Set.Items {
 			if key, ok := stringKey(item.Key); ok {
-				ft, ok2 := st.Fields[key]
+				ft, ok2 := st.FieldType(key)
 				if !ok2 {
 					return errUnknownField(item.Pos, key, st)
 				}
@@ -1163,17 +1235,15 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 			return nil
 		}
 		if len(s.Type.Members) > 0 {
-			fields := map[string]Type{}
-			order := []string{}
+			var fields []StructField
 			methods := map[string]Method{}
-			st := StructType{Name: s.Type.Name, Fields: fields, Order: order, Methods: methods}
+			st := StructType{Name: s.Type.Name, Fields: fields, Methods: methods}
 			env.SetStruct(s.Type.Name, st)
 			env.types[s.Type.Name] = st
 			// First pass: collect fields
 			for _, m := range s.Type.Members {
 				if m.Field != nil {
-					fields[m.Field.Name] = resolveTypeRef(m.Field.Type, env)
-					order = append(order, m.Field.Name)
+					fields = append(fields, StructField{Name: m.Field.Name, Type: resolveTypeRef(m.Field.Type, env)})
 				}
 			}
 			// Precompute method types so they can reference each other.
@@ -1201,8 +1271,8 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 					ret := meth.Type.Return
 
 					methodEnv := NewEnv(env)
-					for name, t := range fields {
-						methodEnv.SetVar(name, t, true)
+					for _, f := range fields {
+						methodEnv.SetVar(f.Name, f.Type, true)
 					}
 					for name, mt := range methods {
 						methodEnv.SetVar(name, mt.Type, true)
@@ -1220,7 +1290,6 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				}
 			}
 			st.Fields = fields
-			st.Order = order
 			st.Methods = methods
 			env.SetStruct(s.Type.Name, st)
 			env.types[s.Type.Name] = st
@@ -1236,13 +1305,11 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 			env.types[s.Type.Name] = ut
 
 			for _, v := range s.Type.Variants {
-				vf := map[string]Type{}
-				order := []string{}
+				var vf []StructField
 				for _, f := range v.Fields {
-					vf[f.Name] = resolveTypeRef(f.Type, env)
-					order = append(order, f.Name)
+					vf = append(vf, StructField{Name: f.Name, Type: resolveTypeRef(f.Type, env)})
 				}
-				st := StructType{Name: v.Name, Fields: vf, Order: order}
+				st := StructType{Name: v.Name, Fields: vf}
 				variants[v.Name] = st
 				variantOrder = append(variantOrder, v.Name)
 				env.SetStruct(v.Name, st)
@@ -1443,13 +1510,11 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 	}
 
 	if t.Struct != nil {
-		fields := map[string]Type{}
-		order := []string{}
+		var fields []StructField
 		for _, f := range t.Struct.Fields {
-			fields[f.Name] = resolveTypeRef(f.Type, env)
-			order = append(order, f.Name)
+			fields = append(fields, StructField{Name: f.Name, Type: resolveTypeRef(f.Type, env)})
 		}
-		return StructType{Name: "", Fields: fields, Order: order}
+		return StructType{Name: "", Fields: fields}
 	}
 
 	if t.Simple != nil {
@@ -1867,7 +1932,7 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			}
 			switch t := typ.(type) {
 			case StructType:
-				if ft, ok := t.Fields[field]; ok {
+				if ft, ok := t.FieldType(field); ok {
 					typ = ft
 					continue
 				}
@@ -2024,7 +2089,7 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			return MapType{Key: StringType{}, Value: AnyType{}}, nil
 		}
 		for _, field := range p.Struct.Fields {
-			ft, ok := st.Fields[field.Name]
+			ft, ok := st.FieldType(field.Name)
 			if !ok {
 				return nil, errUnknownField(p.Pos, field.Name, st)
 			}
@@ -2355,7 +2420,7 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 		if call, ok := callPattern(c.Pattern); ok {
 			if ut, ok := env.FindUnionByVariant(call.Func); ok {
 				st := ut.Variants[call.Func]
-				if len(call.Args) != len(st.Order) {
+				if len(call.Args) != len(st.Fields) {
 					return nil, errTypeMismatch(c.Pos, targetType, st)
 				}
 				if !unify(targetType, st, nil) {
@@ -2364,7 +2429,7 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 				child := NewEnv(env)
 				for idx, arg := range call.Args {
 					if name, ok := identName(arg); ok {
-						child.SetVar(name, st.Fields[st.Order[idx]], true)
+						child.SetVar(name, st.Fields[idx].Type, true)
 					}
 				}
 				caseEnv = child
@@ -2512,7 +2577,7 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 			}
 			if _, ok := k1.(StringType); ok {
 				if _, ok2 := k2.(StringType); ok2 {
-					keyT = StructType{Name: "pair_string", Fields: map[string]Type{"a": StringType{}, "b": StringType{}}, Order: []string{"a", "b"}}
+					keyT = StructType{Name: "pair_string", Fields: []StructField{{Name: "a", Type: StringType{}}, {Name: "b", Type: StringType{}}}}
 				}
 			}
 			if keyT == nil {
