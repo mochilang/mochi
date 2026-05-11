@@ -702,14 +702,13 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		}
 		return MapType{Key: keyType, Value: valType}
 	case p.Match != nil:
+		// MEP-5 §Match [T-Match]: the principal type is the first arm's
+		// type. Disagreement is rejected by the checker (T008); the
+		// inferrer must not silently widen to AnyType.
 		var rType Type
 		for _, cs := range p.Match.Cases {
-			t := ExprType(cs.Result, env)
-			if rType == nil {
-				rType = t
-			} else if !equalTypes(rType, t) {
-				rType = AnyType{}
-			}
+			rType = ExprType(cs.Result, env)
+			break
 		}
 		if rType == nil {
 			rType = AnyType{}

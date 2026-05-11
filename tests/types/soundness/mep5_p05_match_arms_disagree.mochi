@@ -1,0 +1,6 @@
+// MEP-5 P5: match arms with disagreeing types must be rejected.
+// The prior rule silently widened to `any`, hiding the soundness hole.
+let x = match 1 {
+  1 => 42
+  _ => "no"
+}

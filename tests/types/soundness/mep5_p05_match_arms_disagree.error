@@ -1,0 +1,8 @@
+ 1. error[T008]: type mismatch: expected int, got string
+  --> tests/types/soundness/mep5_p05_match_arms_disagree.mochi:5:3
+
+  5 |   _ => "no"
+    |   ^
+
+help:
+  Change the value to match the expected type.
