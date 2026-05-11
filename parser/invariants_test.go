@@ -92,6 +92,54 @@ func TestInvariants_TypeRefMultiArm(t *testing.T) {
 	}
 }
 
+// TestInvariants_LogicCondMultiArm hand-builds a LogicCond with both Pred and
+// Neq set. The grammar alternation can only set one; the assertion exists so a
+// future refactor that breaks the encoding fails here.
+func TestInvariants_LogicCondMultiArm(t *testing.T) {
+	prog := &Program{
+		Statements: []*Statement{{
+			Rule: &RuleStmt{
+				Head: &LogicPredicate{Name: "p"},
+				Body: []*LogicCond{{
+					Pred: &LogicPredicate{Name: "q"},
+					Neq:  &LogicNeq{A: "x", B: "y"},
+				}},
+			},
+		}},
+	}
+	err := assertProgramInvariants(prog)
+	if err == nil {
+		t.Fatalf("expected invariant violation, got nil")
+	}
+	if !strings.Contains(err.Error(), "logic condition has 2 arms") {
+		t.Fatalf("expected logic-condition arm error, got %q", err.Error())
+	}
+}
+
+// TestInvariants_AgentBlockMultiArm hand-builds an AgentBlock with two arms
+// set. The grammar alternation can only set one; the assertion exists so a
+// future refactor that breaks the encoding fails here.
+func TestInvariants_AgentBlockMultiArm(t *testing.T) {
+	prog := &Program{
+		Statements: []*Statement{{
+			Agent: &AgentDecl{
+				Name: "A",
+				Body: []*AgentBlock{{
+					Let: &LetStmt{Name: "x"},
+					Var: &VarStmt{Name: "y"},
+				}},
+			},
+		}},
+	}
+	err := assertProgramInvariants(prog)
+	if err == nil {
+		t.Fatalf("expected invariant violation, got nil")
+	}
+	if !strings.Contains(err.Error(), "agent block has 2 arms") {
+		t.Fatalf("expected agent-block arm error, got %q", err.Error())
+	}
+}
+
 // TestInvariants_ValidProgramsPass round-trips a representative corpus
 // through ParseString. The post-parse validator now runs on every program,
 // so any false positive in the assertions surfaces here.
@@ -109,6 +157,8 @@ func TestInvariants_ValidProgramsPass(t *testing.T) {
 		`let m = {a: 1, b: 2}`,
 		`let r = a + -b`,
 		`let s = match x { 0 => "zero" 1 => "one" }`,
+		`fact parent("alice", "bob")`,
+		`rule grandparent(X, Z) :- parent(X, Y), parent(Y, Z), X != Z`,
 	}
 	for _, src := range srcs {
 		t.Run(src, func(t *testing.T) {

@@ -126,6 +126,48 @@ func assertStatement(s *Statement) error {
 		if s.Expr.Expr != nil {
 			return assertExpr(s.Expr.Expr)
 		}
+	case s.Rule != nil:
+		for _, c := range s.Rule.Body {
+			if err := assertLogicCond(c); err != nil {
+				return err
+			}
+		}
+	case s.Agent != nil:
+		for _, b := range s.Agent.Body {
+			if err := assertAgentBlock(b); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func assertLogicCond(c *LogicCond) error {
+	if c == nil {
+		return invariant(lexer.Position{}, "logic condition is nil")
+	}
+	arms := [...]bool{c.Pred != nil, c.Neq != nil}
+	if n := countTrue(arms[:]); n != 1 {
+		return invariant(c.Pos, fmt.Sprintf("logic condition has %d arms set, expected exactly 1 of {pred, neq}", n))
+	}
+	return nil
+}
+
+func assertAgentBlock(b *AgentBlock) error {
+	if b == nil {
+		return invariant(lexer.Position{}, "agent block entry is nil")
+	}
+	arms := [...]bool{b.Let != nil, b.Var != nil, b.Assign != nil, b.On != nil, b.Intent != nil}
+	if n := countTrue(arms[:]); n != 1 {
+		return invariant(b.Pos, fmt.Sprintf("agent block has %d arms set, expected exactly 1 of {let, var, assign, on, intent}", n))
+	}
+	switch {
+	case b.Let != nil && b.Let.Value != nil:
+		return assertExpr(b.Let.Value)
+	case b.Var != nil && b.Var.Value != nil:
+		return assertExpr(b.Var.Value)
+	case b.Assign != nil && b.Assign.Value != nil:
+		return assertExpr(b.Assign.Value)
 	}
 	return nil
 }
@@ -247,7 +289,7 @@ func assertPostfixOp(op *PostfixOp) error {
 	}
 	arms := [...]bool{op.Call != nil, op.Index != nil, op.Field != nil, op.Cast != nil}
 	if n := countTrue(arms[:]); n != 1 {
-		return invariant(lexer.Position{}, fmt.Sprintf("postfix op has %d arms set, expected exactly 1 of {call, index, field, cast}", n))
+		return invariant(op.Pos, fmt.Sprintf("postfix op has %d arms set, expected exactly 1 of {call, index, field, cast}", n))
 	}
 	switch {
 	case op.Call != nil:
