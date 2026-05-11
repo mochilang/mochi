@@ -927,8 +927,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if toFloat(c) == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
-			if b.Tag == ValueFloat || c.Tag == ValueFloat || (b.Tag == ValueInt && c.Tag == ValueInt) {
+			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) / toFloat(c)}
+			} else if b.Tag == ValueInt && c.Tag == ValueInt {
+				// MEP-10 B1 Path B: int / int truncates.
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int / c.Int}
 			} else if b.Tag == ValueBigRat || c.Tag == ValueBigRat {
 				br := new(big.Rat).Quo(toRat(b), toRat(c))
 				fr.regs[ins.A] = Value{Tag: ValueBigRat, BigRat: br}
@@ -3227,11 +3230,10 @@ func (fc *funcCompiler) emitBinaryOp(pos lexer.Position, op string, all bool, le
 	case "/":
 		dst := fc.newReg()
 		if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
-			// SQL division with floats yields a float result.
 			fc.emit(pos, Instr{Op: OpDivFloat, A: dst, B: left, C: right})
 		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-			// Perform floating-point division for two integer operands
-			fc.emit(pos, Instr{Op: OpDivFloat, A: dst, B: left, C: right})
+			// MEP-10 B1 Path B: int / int truncates.
+			fc.emit(pos, Instr{Op: OpDivInt, A: dst, B: left, C: right})
 		} else {
 			fc.emit(pos, Instr{Op: OpDiv, A: dst, B: left, C: right})
 		}
