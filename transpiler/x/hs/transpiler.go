@@ -2320,7 +2320,7 @@ func toHsType(t types.Type) string {
 		return tt.Name
 	case types.UnionType:
 		return tt.Name
-	case types.VoidType:
+	case types.UnitType:
 		return "()"
 	default:
 		return "String"

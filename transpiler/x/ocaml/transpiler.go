@@ -4245,7 +4245,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		return &ReturnStmt{Expr: expr}, nil
 	case st.Fun != nil:
 		env.SetFunc(st.Fun.Name, st.Fun)
-		var retTyp types.Type = types.VoidType{}
+		var retTyp types.Type = types.UnitType{}
 		if st.Fun.Return != nil {
 			retTyp = types.ResolveTypeRef(st.Fun.Return, env)
 		}

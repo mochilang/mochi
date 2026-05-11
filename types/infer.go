@@ -394,7 +394,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 				params[i] = AnyType{}
 			}
 		}
-		var ret Type = VoidType{}
+		var ret Type = UnitType{}
 		if p.FunExpr.Return != nil {
 			ret = ResolveTypeRef(p.FunExpr.Return, env)
 		} else if p.FunExpr.ExprBody != nil {
@@ -594,7 +594,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		}
 		return ListType{Elem: elem}
 	case p.Save != nil:
-		return VoidType{}
+		return UnitType{}
 	case p.Query != nil:
 		srcType := ExprType(p.Query.Source, env)
 		var elemType Type = AnyType{}

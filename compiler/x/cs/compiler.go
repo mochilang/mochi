@@ -3386,7 +3386,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	args := make([]string, len(call.Args))
 	var paramTypes []types.Type
-	var retType types.Type = types.VoidType{}
+	var retType types.Type = types.UnitType{}
 	if fn, ok := c.env.GetFunc(call.Func); ok {
 		paramTypes = make([]types.Type, len(fn.Params))
 		for i, p := range fn.Params {

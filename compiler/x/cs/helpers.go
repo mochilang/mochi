@@ -73,7 +73,7 @@ func csTypeOf(t types.Type) string {
 		}
 		ret := csTypeOf(tt.Return)
 		return delegateType(params, ret)
-	case types.VoidType:
+	case types.UnitType:
 		return "void"
 	case types.AnyType:
 		return "dynamic"

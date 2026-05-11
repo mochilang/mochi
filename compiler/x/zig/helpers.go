@@ -56,7 +56,7 @@ func zigTypeOf(t types.Type) string {
 		}
 		ret := zigTypeOf(tt.Return)
 		return fmt.Sprintf("fn(%s) %s", strings.Join(params, ", "), ret)
-	case types.VoidType:
+	case types.UnitType:
 		return "void"
 	default:
 		return "i32"

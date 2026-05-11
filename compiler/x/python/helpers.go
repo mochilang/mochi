@@ -340,7 +340,7 @@ func pyType(t types.Type) string {
 			params[i] = pyType(p)
 		}
 		return "typing.Callable[[" + strings.Join(params, ", ") + "], " + pyType(tt.Return) + "]"
-	case types.VoidType:
+	case types.UnitType:
 		return "None"
 	case types.AnyType:
 		return "object"
@@ -358,7 +358,7 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 		for i, p := range t.Fun.Params {
 			params[i] = c.resolveTypeRef(p)
 		}
-		var ret types.Type = types.VoidType{}
+		var ret types.Type = types.UnitType{}
 		if t.Fun.Return != nil {
 			ret = c.resolveTypeRef(t.Fun.Return)
 		}

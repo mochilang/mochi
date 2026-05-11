@@ -1382,7 +1382,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 					params[i] = types.AnyType{}
 				}
 			}
-			var ret types.Type = types.VoidType{}
+			var ret types.Type = types.UnitType{}
 			if fun.Return != nil {
 				ret = c.resolveTypeRef(fun.Return)
 			}

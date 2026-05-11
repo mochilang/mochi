@@ -738,7 +738,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 			retType = c.inferFunReturnType(fun.Body)
 			c.env = oldEnv
 		} else {
-			retType = types.VoidType{}
+			retType = types.UnitType{}
 		}
 	}
 	ret := cTypeFromType(retType)
@@ -871,7 +871,7 @@ func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) err
 			retType = c.inferFunReturnType(fun.Body)
 			c.env = oldEnv
 		} else {
-			retType = types.VoidType{}
+			retType = types.UnitType{}
 		}
 	}
 	ret := cTypeFromType(retType)
@@ -1130,7 +1130,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				c.env = prev
 			}
 			if ret == nil {
-				ret = types.VoidType{}
+				ret = types.UnitType{}
 			}
 			ft := types.FuncType{Params: params, Return: ret}
 			c.env.SetVar(s.Fun.Name, ft, true)

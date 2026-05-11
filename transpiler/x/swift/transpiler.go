@@ -3458,7 +3458,7 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 		paramName := f.Params[0].Name
 		fn := &FunDecl{Name: "panic", Ret: "Never", Params: []Param{{Name: paramName, Type: "String"}}, Body: []Stmt{&RawStmt{Code: "fatalError(" + paramName + ")"}}}
 		if env != nil {
-			env.SetFuncType("panic", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.VoidType{}})
+			env.SetFuncType("panic", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.UnitType{}})
 			env.SetFunc("panic", f)
 		}
 		return fn, nil
@@ -3496,7 +3496,7 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 				params = append(params, types.AnyType{})
 			}
 		}
-		var retTyp types.Type = types.VoidType{}
+		var retTyp types.Type = types.UnitType{}
 		if f.Return != nil {
 			retTyp = types.ResolveTypeRef(f.Return, env)
 		}
@@ -3515,7 +3515,7 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 			retT = types.OptionType{Elem: retT}
 		}
 	} else {
-		retT = types.VoidType{}
+		retT = types.UnitType{}
 	}
 	child.SetVar("$retType", retT, false)
 	mutFlags := make([]bool, len(f.Params))
@@ -3585,7 +3585,7 @@ func convertReturnStmt(env *types.Env, r *parser.ReturnStmt) (Stmt, error) {
 	}
 	if env != nil {
 		if rt, err := env.GetVar("$retType"); err == nil {
-			if _, ok := rt.(types.VoidType); ok {
+			if _, ok := rt.(types.UnitType); ok {
 				ex = nil
 			} else {
 				typ := swiftTypeOf(rt)

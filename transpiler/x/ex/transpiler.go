@@ -2349,7 +2349,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if env != nil {
 				if t, err := env.GetVar(st.Fun.Name); err == nil {
 					if ft, ok := t.(types.FuncType); ok {
-						if _, ok := ft.Return.(types.VoidType); !ok {
+						if _, ok := ft.Return.(types.UnitType); !ok {
 							definedFuncReturns[name] = true
 						}
 					}
@@ -2812,7 +2812,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if st.Return.Value == nil && len(funcCtxStack) > 0 {
 			ctx := funcCtxStack[len(funcCtxStack)-1]
 			if ctx.firstParam != "" {
-				if _, ok := ctx.returnType.(types.VoidType); !ok {
+				if _, ok := ctx.returnType.(types.UnitType); !ok {
 					def = &VarRef{Name: ctx.firstParam}
 				}
 			}
@@ -2829,7 +2829,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			locals[p.Name] = struct{}{}
 		}
-		var retType types.Type = types.VoidType{}
+		var retType types.Type = types.UnitType{}
 		if st.Fun.Return != nil {
 			retType = types.ResolveTypeRef(st.Fun.Return, env)
 		} else if t, err := env.GetVar(st.Fun.Name); err == nil {

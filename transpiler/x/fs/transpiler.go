@@ -354,7 +354,7 @@ func fsType(t types.Type) string {
 			elem = "(" + elem + ")"
 		}
 		return elem + " option"
-	case types.VoidType:
+	case types.UnitType:
 		return "unit"
 	case types.FuncType:
 		if len(tt.Params) == 0 {

@@ -5668,7 +5668,7 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		if _, ok := types.TypeOfExpr(fn.ExprBody, child).(types.VoidType); ok {
+		if _, ok := types.TypeOfExpr(fn.ExprBody, child).(types.UnitType); ok {
 			stmts = []Stmt{&ExprStmt{Expr: ex}}
 		} else {
 			stmts = []Stmt{&ReturnStmt{Value: ex}}
@@ -7268,7 +7268,7 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 						}
 						if lit, ok := args[i].(*FuncLit); ok {
 							if expFt, ok2 := mt.(types.FuncType); ok2 {
-								if _, ok3 := expFt.Return.(types.VoidType); ok3 && lit.Return != "" {
+								if _, ok3 := expFt.Return.(types.UnitType); ok3 && lit.Return != "" {
 									lit.Return = ""
 									for j, st := range lit.Body {
 										if rs, ok4 := st.(*ReturnStmt); ok4 {
@@ -7756,7 +7756,7 @@ func toGoTypeFromType(t types.Type) string {
 		}
 		ret := toGoTypeFromType(tt.Return)
 		if ret == "" {
-			if _, ok := tt.Return.(types.VoidType); ok {
+			if _, ok := tt.Return.(types.UnitType); ok {
 				return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
 			}
 			ret = "any"
@@ -7764,7 +7764,7 @@ func toGoTypeFromType(t types.Type) string {
 		return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)
 	case types.OptionType:
 		return "*" + toGoTypeFromType(tt.Elem)
-	case types.AnyType, types.VoidType:
+	case types.AnyType, types.UnitType:
 		return ""
 	case types.UnionType:
 		if len(tt.Variants) == 1 {
@@ -8856,7 +8856,7 @@ func fixListLits(expr Expr, env *types.Env) {
 				if vr, ok := el.(*VarRef); ok {
 					if t, err := env.GetVar(vr.Name); err == nil {
 						if ft, ok2 := t.(types.FuncType); ok2 {
-							if _, ok3 := ft.Return.(types.VoidType); !ok3 {
+							if _, ok3 := ft.Return.(types.UnitType); !ok3 {
 								ex.Elems[i] = &FuncLit{Body: []Stmt{&ExprStmt{Expr: &CallExpr{Func: vr.Name}}}}
 							}
 						}
@@ -8929,7 +8929,7 @@ func wrapFuncList(ll *ListLit, env *types.Env) {
 		if vr, ok := el.(*VarRef); ok {
 			if t, err := env.GetVar(vr.Name); err == nil {
 				if ft, ok2 := t.(types.FuncType); ok2 {
-					if _, ok3 := ft.Return.(types.VoidType); !ok3 {
+					if _, ok3 := ft.Return.(types.UnitType); !ok3 {
 						ll.Elems[i] = &FuncLit{Body: []Stmt{&ExprStmt{Expr: &CallExpr{Func: vr.Name}}}}
 					}
 				}

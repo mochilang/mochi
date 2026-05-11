@@ -50,7 +50,7 @@ func resultType(op string, left, right types.Type) types.Type {
 
 // inferFunReturnType returns the unified type of all return statements in body.
 // If return statements have differing types it falls back to AnyType. When no
-// explicit return is present it yields VoidType.
+// explicit return is present it yields UnitType.
 func (c *Compiler) inferFunReturnType(body []*parser.Statement) types.Type {
 	var ret types.Type
 	for _, st := range body {
@@ -64,7 +64,7 @@ func (c *Compiler) inferFunReturnType(body []*parser.Statement) types.Type {
 		}
 	}
 	if ret == nil {
-		return types.VoidType{}
+		return types.UnitType{}
 	}
 	return ret
 }

@@ -243,7 +243,7 @@ func (c *Compiler) typeSpec(t types.Type) string {
 			params[i] = c.typeSpec(p)
 		}
 		return "(" + strings.Join(params, ", ") + " -> " + c.typeSpec(tt.Return) + ")"
-	case types.VoidType:
+	case types.UnitType:
 		return "nil"
 	default:
 		return "any()"

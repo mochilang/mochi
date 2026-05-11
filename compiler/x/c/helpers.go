@@ -385,7 +385,7 @@ func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
 		for i, p := range t.Fun.Params {
 			params[i] = resolveTypeRef(p, env)
 		}
-		var ret types.Type = types.VoidType{}
+		var ret types.Type = types.UnitType{}
 		if t.Fun.Return != nil {
 			ret = resolveTypeRef(t.Fun.Return, env)
 		}
@@ -402,7 +402,7 @@ func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
 		case "bool":
 			return types.BoolType{}
 		case "void":
-			return types.VoidType{}
+			return types.UnitType{}
 		default:
 			if env != nil {
 				if st, ok := env.GetStruct(*t.Simple); ok {

@@ -4442,7 +4442,7 @@ func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
 			params = append(params, types.AnyType{})
 		}
 	}
-	var retType types.Type = types.VoidType{}
+	var retType types.Type = types.UnitType{}
 	if fs.Return != nil {
 		retType = types.ResolveTypeRef(fs.Return, currentEnv)
 	}
@@ -4544,7 +4544,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 							params = append(params, types.AnyType{})
 						}
 					}
-					var ret types.Type = types.VoidType{}
+					var ret types.Type = types.UnitType{}
 					if m.Method.Return != nil {
 						ret = types.ResolveTypeRef(m.Method.Return, currentEnv)
 					}

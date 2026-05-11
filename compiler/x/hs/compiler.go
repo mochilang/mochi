@@ -63,7 +63,7 @@ func (c *Compiler) hsType(t types.Type) string {
 		// errors when functions like Map.lookup were emitted.
 		c.usesMap = true
 		return "Map.Map " + c.hsType(tt.Key) + " " + c.hsType(tt.Value)
-	case types.VoidType:
+	case types.UnitType:
 		return "()"
 	case types.FuncType:
 		parts := make([]string, len(tt.Params))
@@ -671,11 +671,11 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		ft.Return = types.AnyType{}
 	}
 	if ft.Return == nil {
-		ft.Return = types.VoidType{}
+		ft.Return = types.UnitType{}
 	}
-	if _, ok := ft.Return.(types.VoidType); ok {
+	if _, ok := ft.Return.(types.UnitType); ok {
 		inf := c.inferFuncReturn(fun.Body)
-		if _, ok := inf.(types.VoidType); !ok {
+		if _, ok := inf.(types.UnitType); !ok {
 			ft.Return = inf
 		}
 	}
@@ -991,7 +991,7 @@ func (c *Compiler) inferFuncReturn(body []*parser.Statement) types.Type {
 			return c.inferExprType(s.Return.Value)
 		}
 	}
-	return types.VoidType{}
+	return types.UnitType{}
 }
 
 // compileStmtExpr compiles statements to a Maybe-returning expression.
@@ -2005,7 +2005,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		c.env = origEnv
 		return "", err
 	}
-	ret := c.defaultReturn(fn.BlockBody, types.VoidType{})
+	ret := c.defaultReturn(fn.BlockBody, types.UnitType{})
 	c.usesMaybe = true
 	c.env = origEnv
 	return fmt.Sprintf("(\\%s -> fromMaybe (%s) $ %s)", strings.Join(params, " "), ret, expr), nil

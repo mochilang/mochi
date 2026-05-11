@@ -1609,7 +1609,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		ft.Return = c.resolveTypeRef(fun.Return)
 	}
 	if ft.Return == nil {
-		ft.Return = types.VoidType{}
+		ft.Return = types.UnitType{}
 	}
 	if c.env != nil {
 		c.env.SetVar(fun.Name, ft, false)
