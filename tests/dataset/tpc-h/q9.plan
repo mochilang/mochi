@@ -73,13 +73,12 @@ plan:
         )
         (entry
           (selector o_year)
-          (cast
+          (call int
             (call substring
               (selector o_orderdate (selector o))
               (int 0)
               (int 4)
             )
-            (type int)
           )
         )
       )

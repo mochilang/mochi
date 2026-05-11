@@ -1884,7 +1884,11 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 				typ = curryFuncType(ft.Params[argCount:], ft.Return)
 			}
 		} else if cast := op.Cast; cast != nil {
-			typ = resolveTypeRef(cast.Type, env)
+			target := resolveTypeRef(cast.Type, env)
+			if !castOk(typ, target) {
+				return nil, errInvalidCast(op.Pos, typ, target)
+			}
+			typ = target
 		}
 	}
 
@@ -2779,6 +2783,39 @@ func isQueryExpr(e *parser.Expr) bool {
 			continue
 		}
 		return false
+	}
+	return false
+}
+
+// castOk reports whether an `e as T` expression should be accepted by
+// the type checker. The policy is deliberately narrow: every accepted
+// cast must have a well-defined runtime semantics. String parsing and
+// arbitrary cross-kind casts are rejected; use a parsing builtin
+// (`parseIntStr`, `int`, `str`, ...) for those.
+func castOk(from, to Type) bool {
+	if equalTypes(from, to) {
+		return true
+	}
+	if _, ok := from.(AnyType); ok {
+		return true
+	}
+	if _, ok := to.(AnyType); ok {
+		return true
+	}
+	if isNumeric(from) && isNumeric(to) {
+		return true
+	}
+	if u, ok := from.(UnionType); ok {
+		if s, ok := to.(StructType); ok {
+			if _, in := u.Variants[s.Name]; in {
+				return true
+			}
+		}
+	}
+	if _, ok := from.(MapType); ok {
+		if _, ok := to.(StructType); ok {
+			return true
+		}
 	}
 	return false
 }

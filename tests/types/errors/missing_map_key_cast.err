@@ -1,0 +1,8 @@
+1. error[T046]: invalid cast: `option[Point]` as `Point` is not allowed
+  --> tests/types/errors/missing_map_key_cast.mochi:7:31
+
+  7 | let p: Point = pts["missing"] as Point
+    |                               ^
+
+help:
+  Only numeric-tower, union-to-variant, map-to-struct, and any-related casts are allowed. Use a parsing function (e.g. `parseIntStr`) for string conversions.

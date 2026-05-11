@@ -1,0 +1,3 @@
+// MEP-10 A5: `int as string` is rejected at type-check time (T046).
+// Use the explicit `str(42)` conversion builtin instead.
+let s: string = 42 as string

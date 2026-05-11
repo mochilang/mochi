@@ -1,0 +1,8 @@
+1. error[T046]: invalid cast: `string` as `int` is not allowed
+  --> tests/types/errors/cast_string_as_int.mochi:3:22
+
+  3 | let n: int = "hello" as int
+    |                      ^
+
+help:
+  Only numeric-tower, union-to-variant, map-to-struct, and any-related casts are allowed. Use a parsing function (e.g. `parseIntStr`) for string conversions.
