@@ -634,6 +634,35 @@ func Check(prog *parser.Program, env *Env) []error {
 
 	var errs []error
 
+	// Pre-pass: register struct and union name stubs so the function pass
+	// below can resolve forward references in parameter and return types.
+	// The dedicated type-declaration pass that follows replaces each stub
+	// with the fully populated shape.
+	for _, stmt := range prog.Statements {
+		if stmt.Type == nil {
+			continue
+		}
+		if len(stmt.Type.Members) > 0 {
+			stub := StructType{Name: stmt.Type.Name}
+			env.SetStruct(stmt.Type.Name, stub)
+			env.types[stmt.Type.Name] = stub
+			continue
+		}
+		if len(stmt.Type.Variants) > 0 {
+			variants := map[string]StructType{}
+			for _, v := range stmt.Type.Variants {
+				vs := StructType{Name: v.Name}
+				variants[v.Name] = vs
+				env.SetStruct(v.Name, vs)
+			}
+			stub := UnionType{Name: stmt.Type.Name, Variants: variants}
+			env.SetUnion(stmt.Type.Name, stub)
+			env.types[stmt.Type.Name] = stub
+		}
+		// Type aliases are handled during the dedicated pass; the right
+		// hand side may itself be a forward reference.
+	}
+
 	// First pass: gather all function declarations so methods defined in types
 	// can reference them regardless of order in the source file.
 	for _, stmt := range prog.Statements {
