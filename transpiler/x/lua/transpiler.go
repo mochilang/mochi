@@ -2656,7 +2656,7 @@ func isStartPlusOne(start, end *parser.Expr) bool {
 	if !ok || leftName != startName {
 		return false
 	}
-	if val, ok := intValuePostfix(op.Right); ok && val == 1 {
+	if val, ok := intValuePostfix(op.Right.Value); ok && val == 1 {
 		return true
 	}
 	return false
@@ -3302,7 +3302,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	exprs := []Expr{left}
 	ops := []string{}
 	for _, op := range b.Right {
-		right, err := convertPostfix(op.Right)
+		right, err := convertUnary(op.Right)
 		if err != nil {
 			return nil, err
 		}

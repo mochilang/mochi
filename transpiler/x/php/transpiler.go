@@ -2850,7 +2850,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		strFlags = append(strFlags, false)
 	}
 	for _, p := range b.Right {
-		r, err := convertPostfix(p.Right)
+		r, err := convertUnary(p.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -2861,7 +2861,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		ops = append(ops, op)
 		operands = append(operands, r)
 		if transpileEnv != nil {
-			t := types.TypeOfPostfix(p.Right, transpileEnv)
+			t := types.TypeOfUnary(p.Right, transpileEnv)
 			_, ok := t.(types.StringType)
 			strFlags = append(strFlags, ok)
 		} else {

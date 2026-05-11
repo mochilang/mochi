@@ -3033,7 +3033,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			op = "union_all"
 		}
 		operators = append(operators, op)
-		right, err := convertPostfix(part.Right, env)
+		right, err := convertUnary(part.Right, env)
 		if err != nil {
 			return nil, err
 		}

@@ -1109,7 +1109,7 @@ func intConstExpr(e *parser.Expr) (int, bool) {
 	}
 	cur := val
 	for _, op := range e.Binary.Right {
-		r, ok := intConstPostfix(op.Right)
+		r, ok := intConstUnary(op.Right)
 		if !ok {
 			return 0, false
 		}
@@ -1303,7 +1303,7 @@ func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 	}
 	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "in" {
 		leftExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Left}}
-		rightExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: e.Binary.Right[0].Right}}}
+		rightExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: e.Binary.Right[0].Right.Value}}}
 
 		// list membership
 		if leftVal, lok := intConstExpr(leftExpr); lok {
@@ -1355,7 +1355,7 @@ func convertExpr(e *parser.Expr, env *types.Env) (Expr, error) {
 	operands := []Expr{first}
 	ops := make([]*parser.BinaryOp, len(e.Binary.Right))
 	for i, op := range e.Binary.Right {
-		ex, err := convertPostfix(op.Right, env)
+		ex, err := convertUnary(op.Right, env)
 		if err != nil {
 			return nil, err
 		}

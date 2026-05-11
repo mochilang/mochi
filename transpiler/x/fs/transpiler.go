@@ -4948,7 +4948,7 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 	exprs := []Expr{left}
 	ops := []string{}
 	for _, op := range e.Binary.Right {
-		right, err := convertPostfix(op.Right)
+		right, err := convertUnary(op.Right)
 		if err != nil {
 			return nil, err
 		}

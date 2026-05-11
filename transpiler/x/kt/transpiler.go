@@ -5604,7 +5604,7 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	operands := []Expr{first}
 	ops := []string{}
 	for _, part := range e.Binary.Right {
-		r, err := convertPostfix(env, part.Right)
+		r, err := convertUnary(env, part.Right)
 		if err != nil {
 			return nil, err
 		}

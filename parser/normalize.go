@@ -249,7 +249,7 @@ func normalizeExpr(e *Expr) error {
 		return err
 	}
 	for _, op := range e.Binary.Right {
-		if err := normalizePostfix(op.Right); err != nil {
+		if err := normalizeUnary(op.Right); err != nil {
 			return err
 		}
 	}

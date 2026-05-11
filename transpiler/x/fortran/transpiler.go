@@ -2117,7 +2117,7 @@ func evalBinary(b *parser.BinaryExpr) (any, bool) {
 				return true, true
 			}
 		}
-		rhs, ok := evalPostfixConst(part.Right)
+		rhs, ok := evalUnaryConst(part.Right)
 		if !ok {
 			return nil, false
 		}
@@ -2276,11 +2276,11 @@ func toBinaryExpr(b *parser.BinaryExpr, env *types.Env) (string, error) {
 	leftType := types.TypeOfPostfixBasic(b.Left, env)
 
 	for _, part := range b.Right {
-		rhs, err := toPostfix(part.Right, env)
+		rhs, err := toUnary(part.Right, env)
 		if err != nil {
 			return "", err
 		}
-		rightType := types.TypeOfPostfixBasic(&parser.Unary{Value: part.Right}, env)
+		rightType := types.TypeOfPostfixBasic(part.Right, env)
 		opStr, err := mapOp(part.Op, leftType, rightType)
 		if err != nil {
 			return "", err

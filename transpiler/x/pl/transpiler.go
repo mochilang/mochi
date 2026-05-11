@@ -1610,7 +1610,7 @@ func unrollWhile(w *parser.WhileStmt, env *compileEnv) ([]Stmt, error) {
 		if r.Op == "<" || r.Op == "<=" {
 			varName, ok := identNameUnary(be.Left)
 			if ok {
-				endVal, ok := intConstPostfix(r.Right)
+				endVal, ok := intConstPostfix(r.Right.Value)
 				if ok {
 					startExpr := env.constExpr(env.current(varName))
 					startVal, ok := intValue(startExpr)
@@ -1629,7 +1629,7 @@ func unrollWhile(w *parser.WhileStmt, env *compileEnv) ([]Stmt, error) {
 							if last.Assign.Value != nil && last.Assign.Value.Binary != nil && len(last.Assign.Value.Binary.Right) == 1 {
 								b2 := last.Assign.Value.Binary
 								if n, ok2 := identNameUnary(b2.Left); ok2 && n == varName && b2.Right[0].Op == "+" {
-									if iv, ok3 := intConstPostfix(b2.Right[0].Right); ok3 && iv == 1 {
+									if iv, ok3 := intConstPostfix(b2.Right[0].Right.Value); ok3 && iv == 1 {
 										inc = true
 									}
 								}
@@ -1660,7 +1660,7 @@ func unrollWhile(w *parser.WhileStmt, env *compileEnv) ([]Stmt, error) {
 		if r.Op == ">=" || r.Op == ">" {
 			varName, ok := identNameUnary(be.Left)
 			if ok {
-				endVal, ok := intConstPostfix(r.Right)
+				endVal, ok := intConstPostfix(r.Right.Value)
 				if ok {
 					startExpr := env.constExpr(env.current(varName))
 					startVal, ok := intValue(startExpr)
@@ -1679,7 +1679,7 @@ func unrollWhile(w *parser.WhileStmt, env *compileEnv) ([]Stmt, error) {
 							if last.Assign.Value != nil && last.Assign.Value.Binary != nil && len(last.Assign.Value.Binary.Right) == 1 {
 								b2 := last.Assign.Value.Binary
 								if n, ok2 := identNameUnary(b2.Left); ok2 && n == varName && b2.Right[0].Op == "-" {
-									if iv, ok3 := intConstPostfix(b2.Right[0].Right); ok3 && iv == 1 {
+									if iv, ok3 := intConstPostfix(b2.Right[0].Right.Value); ok3 && iv == 1 {
 										dec = true
 									}
 								}
@@ -1710,7 +1710,7 @@ func unrollWhile(w *parser.WhileStmt, env *compileEnv) ([]Stmt, error) {
 		if (r.Op == "<" || r.Op == "<=") && be.Left != nil && be.Left.Value != nil && be.Left.Value.Target.Call != nil {
 			call := be.Left.Value.Target.Call
 			if call.Func == "len" && len(call.Args) == 1 {
-				if n, ok := intConstPostfix(r.Right); ok {
+				if n, ok := intConstPostfix(r.Right.Value); ok {
 					limit := n
 					if r.Op == "<=" {
 						limit++
@@ -2741,7 +2741,7 @@ func toBinary(b *parser.BinaryExpr, env *compileEnv) (Expr, error) {
 		return nil, err
 	}
 	for _, r := range b.Right {
-		right, err := toPostfix(r.Right, env)
+		right, err := toUnary(r.Right, env)
 		if err != nil {
 			return nil, err
 		}

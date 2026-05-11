@@ -4128,7 +4128,7 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	operands := []Expr{first}
 	ops := make([]parser.BinaryOp, 0, len(e.Binary.Right))
 	for _, op := range e.Binary.Right {
-		r, err := compilePostfix(op.Right)
+		r, err := compileUnary(op.Right)
 		if err != nil {
 			return nil, err
 		}

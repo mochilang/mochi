@@ -9391,8 +9391,7 @@ func gatherVarsExpr(e *parser.Expr, vars map[string]struct{}) {
 	}
 	gatherVarsUnary(e.Binary.Left, vars)
 	for _, p := range e.Binary.Right {
-		// Wrap the postfix expression in a Unary node for variable gathering.
-		gatherVarsUnary(&parser.Unary{Value: p.Right}, vars)
+		gatherVarsUnary(p.Right, vars)
 	}
 }
 
@@ -9985,8 +9984,7 @@ func convertExpr(e *parser.Expr) Expr {
 
 	// Convert remaining operators and operands
 	for _, part := range e.Binary.Right {
-		// Wrap postfix expression to reuse convertUnary.
-		rhs := convertUnary(&parser.Unary{Value: part.Right})
+		rhs := convertUnary(part.Right)
 		if rhs == nil {
 			return nil
 		}

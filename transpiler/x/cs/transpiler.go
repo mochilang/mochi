@@ -2944,7 +2944,7 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	}
 	operands = append(operands, first)
 	for _, p := range e.Binary.Right {
-		r, err := compilePostfix(p.Right)
+		r, err := compileUnary(p.Right)
 		if err != nil {
 			return nil, err
 		}

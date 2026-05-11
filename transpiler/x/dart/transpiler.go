@@ -5693,7 +5693,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	ops := make([]string, len(b.Right))
 	opnodes := make([]*parser.BinaryOp, len(b.Right))
 	for i, op := range b.Right {
-		right, err := convertPostfix(op.Right)
+		right, err := convertUnary(op.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -6717,7 +6717,7 @@ func isBoolBinary(b *parser.BinaryExpr) bool {
 		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 			return true
 		}
-		if isBoolPostfix(op.Right) {
+		if isBoolUnary(op.Right) {
 			return true
 		}
 	}

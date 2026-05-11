@@ -478,7 +478,7 @@ func evalExpr(e *parser.Expr, vars map[string]value) (value, error) {
 
 func evalBinary(b *parser.BinaryExpr, vars map[string]value) (value, error) {
 	ops := make([]string, len(b.Right))
-	exprs := make([]*parser.PostfixExpr, len(b.Right)+1)
+	exprs := make([]*parser.Unary, len(b.Right)+1)
 	values := make([]value, len(b.Right)+1)
 	done := make([]bool, len(b.Right)+1)
 
@@ -495,7 +495,7 @@ func evalBinary(b *parser.BinaryExpr, vars map[string]value) (value, error) {
 
 	getVal := func(i int) (value, error) {
 		if !done[i] {
-			v, err := evalPostfix(exprs[i], vars)
+			v, err := evalUnary(exprs[i], vars)
 			if err != nil {
 				return value{}, err
 			}

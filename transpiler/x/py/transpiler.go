@@ -2620,7 +2620,7 @@ func inferTypeFromExpr(e *parser.Expr) types.Type {
 	if len(e.Binary.Right) > 0 {
 		lt := inferTypeFromExpr(exprFromUnary(e.Binary.Left))
 		for _, r := range e.Binary.Right {
-			rt := inferTypeFromExpr(exprFromPostfix(r.Right))
+			rt := inferTypeFromExpr(exprFromUnary(r.Right))
 			switch r.Op {
 			case "&&", "||", "==", "!=", "<", "<=", ">", ">=", "in":
 				lt = types.BoolType{}
@@ -4959,7 +4959,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 	operands = append(operands, first)
 	for _, p := range b.Right {
-		o, err := convertPostfix(p.Right)
+		o, err := convertUnary(p.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -4972,7 +4972,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 
 	if len(ops) == 1 && ops[0] == "/" {
-		if isSumUnary(b.Left) && isSumPostfix(b.Right[0].Right) {
+		if isSumUnary(b.Left) && isSumUnary(b.Right[0].Right) {
 			ops[0] = "//"
 		}
 	}
