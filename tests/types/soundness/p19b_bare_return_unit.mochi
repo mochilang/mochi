@@ -1,0 +1,7 @@
+// MEP-4 P19 follow-up (#21246): a bare `return` inside a unit-returning
+// function used to nil-deref the checker. The Return arm now treats a
+// missing value as `unit` and unifies it against the expected type.
+fun noop(): unit {
+  return
+}
+noop()

@@ -1,0 +1,8 @@
+ 1. error[T010]: return type mismatch: expected int, got unit
+  --> tests/types/soundness/p19c_bare_return_non_unit.mochi:4:3
+
+  4 |   return
+    |   ^
+
+help:
+  Update the return value to match the function's return type.
