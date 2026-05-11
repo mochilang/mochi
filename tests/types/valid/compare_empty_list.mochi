@@ -1,0 +1,4 @@
+// MEP-4 P9: comparing a typed list against the empty-list literal
+// continues to type-check (the empty literal carries element type `any`).
+let xs: list<int> = []
+expect xs == []

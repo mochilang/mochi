@@ -1,0 +1,4 @@
+// MEP-4 P9: a struct and an integer are not comparable.
+type User = { id: int }
+let u = User { id: 1 }
+let x = u == 5

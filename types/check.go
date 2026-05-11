@@ -1572,13 +1572,18 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 			return nil, errOperatorMismatch(pos, op, left, right)
 		}
 	case "==", "!=", "<", "<=", ">", ">=":
-		if !unify(left, right, nil) {
-			if isNumeric(left) && isNumeric(right) {
-				return BoolType{}, nil
-			}
-			return nil, errIncompatibleComparison(pos)
+		// MEP 4 P9. The `any` short-circuit at the top of the function
+		// already handles the soundness escape hatch. Here, `unify` is
+		// used (not `equalTypes`) because empty-list literals carry
+		// element type `any`, and comparing `xs == []` is a common
+		// surface idiom that must continue to type-check.
+		if unify(left, right, nil) {
+			return BoolType{}, nil
 		}
-		return BoolType{}, nil
+		if isNumeric(left) && isNumeric(right) {
+			return BoolType{}, nil
+		}
+		return nil, errIncompatibleComparison(pos)
 	case "in":
 		switch rt := right.(type) {
 		case MapType:
