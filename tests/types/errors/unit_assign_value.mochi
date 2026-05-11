@@ -1,0 +1,2 @@
+// MEP-4 P19: a non-unit value cannot be bound to a unit-typed name.
+let x: unit = 1

@@ -1,0 +1,9 @@
+// MEP-4 P19: `unit` is a surface-level type name.
+// A function declared with `: unit` may be referenced through a variable of
+// matching function type.
+fun greet(): unit {
+  print("hello")
+}
+
+let g: fun(): unit = greet
+g()

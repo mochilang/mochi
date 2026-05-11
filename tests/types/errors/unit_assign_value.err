@@ -1,0 +1,8 @@
+1. error[T008]: type mismatch: expected unit, got int
+  --> tests/types/errors/unit_assign_value.mochi:2:15
+
+  2 | let x: unit = 1
+    |               ^
+
+help:
+  Change the value to match the expected type.
