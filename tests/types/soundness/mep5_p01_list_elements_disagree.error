@@ -1,0 +1,8 @@
+ 1. error[T008]: type mismatch: expected int, got string
+  --> tests/types/soundness/mep5_p01_list_elements_disagree.mochi:3:14
+
+  3 | let xs = [1, "two"]
+    |              ^
+
+help:
+  Change the value to match the expected type.

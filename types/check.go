@@ -2103,6 +2103,10 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		return st, nil
 
 	case p.List != nil:
+		// MEP-5 §Collections [T-List]: every element must unify with the
+		// principal element type. The prior rule widened to AnyType when
+		// elements disagreed, masking the heterogeneity at type-check
+		// time. We now reject with T008.
 		var elemType Type = nil
 		for _, elem := range p.List.Elems {
 			t, err := checkExpr(elem, env)
@@ -2111,8 +2115,10 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			}
 			if elemType == nil {
 				elemType = t
-			} else if !unify(elemType, t, nil) {
-				elemType = AnyType{} // fallback if mixed types
+				continue
+			}
+			if !unify(elemType, t, nil) {
+				return nil, errTypeMismatch(elem.Pos, elemType, t)
 			}
 		}
 		if elemType == nil {
