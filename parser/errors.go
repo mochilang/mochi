@@ -15,17 +15,26 @@ func Parse(path string) (*Program, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	prog, err := Parser.ParseString(path, string(src))
+	text := trimBOM(string(src))
+	if err := preLexScan(path, text); err != nil {
+		return nil, err
+	}
+	prog, err := Parser.ParseString(path, text)
 	if err != nil {
 		return nil, wrapParseError(path, err)
 	}
-	attachDocs(string(src), prog)
+	attachDocs(text, prog)
 	return prog, nil
 }
 
 // wrapParseError upgrades raw participle errors into structured diagnostics.
 func wrapParseError(filename string, err error) error {
+	if wrapped := wrapCaptureError(filename, err); wrapped != err {
+		return wrapped
+	}
+	if wrapped := reportUnknownEscape(filename, err); wrapped != err {
+		return wrapped
+	}
 	var posErr interface{ Position() lexer.Position }
 	if !errors.As(err, &posErr) {
 		return err

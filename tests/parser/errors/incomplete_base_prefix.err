@@ -1,0 +1,8 @@
+error[P046]: incomplete numeric literal "0x": missing digits after base prefix
+  --> tests/parser/errors/incomplete_base_prefix.mochi:1:9
+
+  1 | let n = 0x
+    |         ^
+
+help:
+  `0x`, `0b`, and `0o` must be followed by at least one digit of the chosen base.
