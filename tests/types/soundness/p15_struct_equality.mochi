@@ -1,0 +1,11 @@
+// MEP-4 P15: structural type equality (the equalTypes rewrite) keeps
+// nominally-equal struct types interchangeable when their shapes line up.
+type Pair {
+  x: int
+  y: int
+}
+
+let p1: Pair = Pair{x: 1, y: 2}
+let p2: Pair = Pair{x: p1.x, y: p1.y}
+expect p1.x == p2.x
+expect p1.y == p2.y

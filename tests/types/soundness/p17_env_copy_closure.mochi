@@ -1,0 +1,8 @@
+// MEP-4 P17: Env.Copy preserves the parent chain, so closures still see
+// names from their enclosing scope after the environment is captured.
+let base: int = 100
+fun makeAdder(n: int): fun(int): int {
+  return fun(x: int): int => x + n + base
+}
+let add10 = makeAdder(10)
+expect add10(7) == 117
