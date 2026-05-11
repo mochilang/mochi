@@ -1,0 +1,8 @@
+error[P065]: expression statement has no observable effect
+  --> tests/parser/errors/expr_stmt_useless_arith.mochi:2:1
+
+  2 | x + 2
+    | ^
+
+help:
+  An expression used as a statement must perform I/O or call a function. Bare values, arithmetic, and field/index access compute a result that nothing reads. Use `let _ = ...` if you need to evaluate for a side effect inside an argument, or remove the line.

@@ -27,6 +27,11 @@ var (
 		Message: "unknown import language: %q",
 		Help:    "The supported languages are `go`, `python`, `typescript`, `zig`, `lua`, `clj`, and `clojure`. Omit the language to use the Mochi default, or check the spelling.",
 	}
+	errUselessExprStmt = diagnostic.Template{
+		Code:    "P065",
+		Message: "expression statement has no observable effect",
+		Help:    "An expression used as a statement must perform I/O or call a function. Bare values, arithmetic, and field/index access compute a result that nothing reads. Use `let _ = ...` if you need to evaluate for a side effect inside an argument, or remove the line.",
+	}
 )
 
 // knownImportLangs is the set of host-language identifiers Mochi recognises
@@ -172,9 +177,124 @@ func normalizeStatement(s *Statement) error {
 			if err := normalizeExpr(s.Expr.Expr); err != nil {
 				return err
 			}
+			if !exprHasObservableEffect(s.Expr.Expr) {
+				return errUselessExprStmt.New(s.Expr.Pos)
+			}
 		}
 	}
 	return nil
+}
+
+// exprHasObservableEffect reports whether the expression, evaluated as a
+// statement, can produce a side effect the user might care about. The rule
+// is structural: a call, fetch, save, load, or generate anywhere in the
+// reachable expression makes the statement observable. The traversal does
+// not descend into function literal bodies, because a lambda is a value;
+// the body only runs when the lambda is later invoked.
+func exprHasObservableEffect(e *Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if unaryHasObservableEffect(e.Binary.Left) {
+		return true
+	}
+	for _, op := range e.Binary.Right {
+		if unaryHasObservableEffect(op.Right) {
+			return true
+		}
+	}
+	return false
+}
+
+func unaryHasObservableEffect(u *Unary) bool {
+	if u == nil || u.Value == nil {
+		return false
+	}
+	return postfixHasObservableEffect(u.Value)
+}
+
+func postfixHasObservableEffect(p *PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	for _, op := range p.Ops {
+		if op.Call != nil {
+			return true
+		}
+		if op.Index != nil {
+			if exprHasObservableEffect(op.Index.Start) ||
+				exprHasObservableEffect(op.Index.End) ||
+				exprHasObservableEffect(op.Index.Step) {
+				return true
+			}
+		}
+	}
+	return primaryHasObservableEffect(p.Target)
+}
+
+func primaryHasObservableEffect(p *Primary) bool {
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.Call != nil, p.Fetch != nil, p.Save != nil, p.Load != nil, p.Generate != nil:
+		return true
+	case p.Group != nil:
+		return exprHasObservableEffect(p.Group)
+	case p.If != nil:
+		return ifExprHasObservableEffect(p.If)
+	case p.Match != nil:
+		for _, c := range p.Match.Cases {
+			if exprHasObservableEffect(c.Result) {
+				return true
+			}
+			for _, s := range c.Block {
+				if stmtHasObservableEffect(s) {
+					return true
+				}
+			}
+		}
+		return exprHasObservableEffect(p.Match.Target)
+	case p.List != nil:
+		for _, el := range p.List.Elems {
+			if exprHasObservableEffect(el) {
+				return true
+			}
+		}
+	case p.Map != nil:
+		for _, it := range p.Map.Items {
+			if exprHasObservableEffect(it.Key) || exprHasObservableEffect(it.Value) {
+				return true
+			}
+		}
+	case p.Struct != nil:
+		for _, f := range p.Struct.Fields {
+			if exprHasObservableEffect(f.Value) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func ifExprHasObservableEffect(e *IfExpr) bool {
+	if e == nil {
+		return false
+	}
+	if exprHasObservableEffect(e.Then) || exprHasObservableEffect(e.Else) {
+		return true
+	}
+	return ifExprHasObservableEffect(e.ElseIf)
+}
+
+func stmtHasObservableEffect(s *Statement) bool {
+	if s == nil {
+		return false
+	}
+	if s.Expr != nil {
+		return exprHasObservableEffect(s.Expr.Expr)
+	}
+	return true
 }
 
 func normalizeIfStmt(s *IfStmt) error {

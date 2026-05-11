@@ -1,8 +1,8 @@
 1. error[T018]: type int does not support indexing
-  --> tests/types/errors/not_indexable.mochi:2:1
+  --> tests/types/errors/not_indexable.mochi:2:9
 
-  2 | x[0]
-    | ^
+  2 | let y = x[0]
+    |         ^
 
 help:
   Only `list<T>` and `map<K,V>` can be indexed.
