@@ -1,0 +1,8 @@
+error[P041]: invalid escape sequence in string literal
+  --> tests/parser/errors/invalid_escape_sequence.mochi:1:9
+
+  1 | let s = "a\qb"
+    |         ^
+
+help:
+  Mochi accepts the standard Go escapes: \\, \", \n, \r, \t, \b, \f, \v, \a, \xHH, \uHHHH, \UHHHHHHHH.

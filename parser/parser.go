@@ -45,15 +45,26 @@ func (i *IntLit) Capture(values []string) error {
 }
 
 // --- Mochi Lexer ---
+//
+// The rules below are the canonical lexical grammar of Mochi, mirrored in
+// MEP 1. Rule order is significant: every rule is tried at the current
+// input position and the first one that matches wins. `Bool` precedes
+// `Keyword`, `Keyword` precedes `Ident`, otherwise reserved words would
+// lex as identifiers.
+//
+// Numeric literals do not include a leading `-`. Unary minus is a
+// separate operator so that `len(list)-1` parses as subtraction even
+// inside an index expression like `xs[len(xs)-1]`.
+//
+// The block comment regex matches the longest run ending at the first
+// `*/` and accepts pathological forms such as `/***/` and `/*a**/`. It
+// intentionally does not nest; the pre-lex scanner catches unterminated
+// block comments with a precise diagnostic.
 var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
-	{Name: "Comment", Pattern: `//[^\n]*|#[^\n]*|/\*([^*]|\*+[^*/])*\*/`},
+	{Name: "Comment", Pattern: `//[^\n]*|#[^\n]*|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/`},
 	{Name: "Bool", Pattern: `\b(true|false)\b`},
 	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|emit|type|fun|extern|import|return|break|continue|let|var|if|else|then|for|while|in|generate|match|fetch|load|save|package|export|fact|rule|all|null)\b`},
 	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`},
-	// Numeric literals do not include a leading '-' so that unary
-	// minus is parsed separately as an operator. This allows
-	// expressions like `len(list)-1` inside index operations to
-	// parse correctly.
 	{Name: "Float", Pattern: `\d+\.\d+(?:[eE][+-]?\d+)?|\d+[eE][+-]?\d+`},
 	{Name: "Int", Pattern: `0[xX][0-9a-fA-F]+|0[bB][01]+|0[oO][0-7]+|\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"\\])*"`},
@@ -666,11 +677,15 @@ var Parser = participle.MustBuild[Program](
 )
 
 func ParseString(src string) (*Program, error) {
-	prog, err := Parser.ParseString("", src)
-	if err != nil {
+	text := trimBOM(src)
+	if err := preLexScan("", text); err != nil {
 		return nil, fmt.Errorf("parse error: %w", err)
 	}
-	attachDocs(src, prog)
+	prog, err := Parser.ParseString("", text)
+	if err != nil {
+		return nil, fmt.Errorf("parse error: %w", wrapParseError("", err))
+	}
+	attachDocs(text, prog)
 	return prog, nil
 }
 

@@ -1,0 +1,8 @@
+error[P043]: invalid numeric literal: missing whitespace before "e"
+  --> tests/parser/errors/numeric_adjacent_ident.mochi:1:9
+
+  1 | let n = 1e
+    |         ^
+
+help:
+  Separate the numeric literal from the following identifier with whitespace.

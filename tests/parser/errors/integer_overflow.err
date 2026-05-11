@@ -1,0 +1,8 @@
+error[P045]: integer literal 9999999999999999999 is out of range for a 64-bit signed integer
+  --> tests/parser/errors/integer_overflow.mochi:1:8
+
+  1 | let n = 9999999999999999999
+    |        ^
+
+help:
+  Use a value in the range [-9223372036854775808, 9223372036854775807].

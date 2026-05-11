@@ -1,0 +1,8 @@
+error[P042]: unterminated block comment
+  --> tests/parser/errors/unterminated_block_comment.mochi:1:1
+
+  1 | /* never closed
+    | ^
+
+help:
+  Block comments must be closed with `*/`; they do not nest.
