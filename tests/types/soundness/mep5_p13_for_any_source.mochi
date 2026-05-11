@@ -1,0 +1,7 @@
+// MEP-5 P13: `for x in source` where source has type `any` is T022.
+// The prior behaviour silently bound `x : any`, masking a soundness hole.
+fun iter(xs: any) {
+  for x in xs {
+    print(x)
+  }
+}
