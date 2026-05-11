@@ -2976,7 +2976,7 @@ func kotlinTypeFromType(t types.Type) string {
 		useHelper("importBigInt")
 		useHelper("bigRatHelpers")
 		return "BigRat"
-	case types.VoidType, *types.VoidType:
+	case types.UnitType, *types.UnitType:
 		return "Unit"
 	case types.AnyType, *types.AnyType:
 		return "Any?"
@@ -3961,7 +3961,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				bodyEnv.SetVar(p0.Name, pt, true)
 				ftParams = append(ftParams, pt)
 			}
-			var retType types.Type = types.VoidType{}
+			var retType types.Type = types.UnitType{}
 			if st.Fun.Return != nil {
 				retType = types.ResolveTypeRef(st.Fun.Return, env)
 			}
@@ -4633,7 +4633,7 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				bodyEnv.SetVar(p0.Name, pt, true)
 				ftParams = append(ftParams, pt)
 			}
-			var retType types.Type = types.VoidType{}
+			var retType types.Type = types.UnitType{}
 			if s.Fun.Return != nil {
 				retType = types.ResolveTypeRef(s.Fun.Return, env)
 			}

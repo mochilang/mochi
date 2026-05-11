@@ -4785,7 +4785,7 @@ func typeFromRef(tr *parser.TypeRef) string {
 		for i, p := range tr.Fun.Params {
 			params[i] = stringToType(typeFromRef(p))
 		}
-		var ret types.Type = types.VoidType{}
+		var ret types.Type = types.UnitType{}
 		if tr.Fun.Return != nil {
 			ret = stringToType(typeFromRef(tr.Fun.Return))
 		}
@@ -4856,7 +4856,7 @@ func pasTypeFromType(t types.Type) string {
 			return currProg.addFuncAlias(v)
 		}
 		return ""
-	case types.VoidType:
+	case types.UnitType:
 		return ""
 	case types.AnyType:
 		currProg.UseVariants = true
@@ -4881,7 +4881,7 @@ func stringToType(s string) types.Type {
 		return types.BigRatType{}
 	default:
 		if s == "" {
-			return types.VoidType{}
+			return types.UnitType{}
 		}
 		return types.StructType{Name: s}
 	}

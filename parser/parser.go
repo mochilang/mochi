@@ -353,6 +353,7 @@ type RuleStmt struct {
 }
 
 type LogicCond struct {
+	Pos  lexer.Position  `json:"pos,omitempty" parser:""`
 	Pred *LogicPredicate `json:"pred,omitempty" parser:"@@"`
 	Neq  *LogicNeq       `json:"neq,omitempty" parser:"| @@"`
 }
@@ -415,10 +416,11 @@ type PostfixExpr struct {
 }
 
 type PostfixOp struct {
-	Call  *CallOp  `json:"call,omitempty" parser:"@@"`
-	Index *IndexOp `json:"index,omitempty" parser:"| @@"`
-	Field *FieldOp `json:"field,omitempty" parser:"| @@"`
-	Cast  *CastOp  `json:"cast,omitempty" parser:"| @@"`
+	Pos   lexer.Position `json:"pos,omitempty" parser:""`
+	Call  *CallOp        `json:"call,omitempty" parser:"@@"`
+	Index *IndexOp       `json:"index,omitempty" parser:"| @@"`
+	Field *FieldOp       `json:"field,omitempty" parser:"| @@"`
+	Cast  *CastOp        `json:"cast,omitempty" parser:"| @@"`
 }
 
 type FieldOp struct {
@@ -676,11 +678,12 @@ type AgentDecl struct {
 }
 
 type AgentBlock struct {
-	Let    *LetStmt    `json:"let,omitempty" parser:"@@"`
-	Var    *VarStmt    `json:"var,omitempty" parser:"| @@"`
-	Assign *AssignStmt `json:"assign,omitempty" parser:"| @@"`
-	On     *OnHandler  `json:"on,omitempty" parser:"| @@"`
-	Intent *IntentDecl `json:"intent,omitempty" parser:"| @@"`
+	Pos    lexer.Position `json:"pos,omitempty" parser:""`
+	Let    *LetStmt       `json:"let,omitempty" parser:"@@"`
+	Var    *VarStmt       `json:"var,omitempty" parser:"| @@"`
+	Assign *AssignStmt    `json:"assign,omitempty" parser:"| @@"`
+	On     *OnHandler     `json:"on,omitempty" parser:"| @@"`
+	Intent *IntentDecl    `json:"intent,omitempty" parser:"| @@"`
 }
 
 type IntentDecl struct {
@@ -710,6 +713,9 @@ func ParseString(src string) (*Program, error) {
 		return nil, fmt.Errorf("parse error: %w", wrapParseError("", err))
 	}
 	if err := normalizeProgram(prog); err != nil {
+		return nil, fmt.Errorf("parse error: %w", err)
+	}
+	if err := assertProgramInvariants(prog); err != nil {
 		return nil, fmt.Errorf("parse error: %w", err)
 	}
 	attachDocs(text, prog)

@@ -440,7 +440,7 @@ func parsePasType(s string) types.Type {
 		if endIdx > 0 {
 			paramsPart := s[strings.Index(s, "(")+1 : endIdx]
 			rest := strings.TrimSpace(s[endIdx+1:])
-			var ret types.Type = types.VoidType{}
+			var ret types.Type = types.UnitType{}
 			if !proc {
 				if strings.HasPrefix(rest, ":") {
 					ret = parsePasType(strings.TrimSpace(rest[1:]))

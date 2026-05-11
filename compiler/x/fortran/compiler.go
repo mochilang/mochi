@@ -389,7 +389,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if call := callExpr(s.Expr.Expr); call != nil {
 			if t, err := c.env.GetVar(call.Func); err == nil {
 				if ft, ok := t.(types.FuncType); ok {
-					if _, ok := ft.Return.(types.VoidType); ok {
+					if _, ok := ft.Return.(types.UnitType); ok {
 						args := make([]string, len(call.Args))
 						for i, a := range call.Args {
 							v, err := c.compileExpr(a)
@@ -905,7 +905,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	if fn.Return == nil {
 		if t, err := c.env.GetVar(fn.Name); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
-				if _, ok := ft.Return.(types.VoidType); ok {
+				if _, ok := ft.Return.(types.UnitType); ok {
 					isVoid = true
 				} else {
 					retType = c.typeNameFromTypes(ft.Return)
@@ -2790,7 +2790,7 @@ func (c *Compiler) typeNameFromTypes(t types.Type) string {
 	case types.StructType:
 		st := t.(types.StructType)
 		return fmt.Sprintf("type(%s)", c.structName(st.Name))
-	case types.VoidType:
+	case types.UnitType:
 		return ""
 	default:
 		return "integer"

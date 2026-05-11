@@ -168,7 +168,7 @@ func goType(t types.Type) string {
 			return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
 		}
 		return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)
-	case types.VoidType:
+	case types.UnitType:
 		return ""
 	case types.AnyType:
 		return "any"

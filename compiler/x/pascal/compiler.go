@@ -1113,7 +1113,7 @@ func typeString(t types.Type) string {
 		for i, p := range tt.Params {
 			params[i] = fmt.Sprintf("p%d: %s", i, typeString(p))
 		}
-		if tt.Return == nil || tt.Return == (types.VoidType{}) {
+		if tt.Return == nil || tt.Return == (types.UnitType{}) {
 			return fmt.Sprintf("procedure(%s) is nested", strings.Join(params, "; "))
 		}
 		return fmt.Sprintf("function(%s): %s is nested", strings.Join(params, "; "), typeString(tt.Return))

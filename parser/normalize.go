@@ -17,7 +17,38 @@ var (
 		Message: "match case has no result expression or block",
 		Help:    "Provide a result after `=>`, e.g. `0 => \"zero\"`, or a block: `0 => { ... }`.",
 	}
+	errPatternShape = diagnostic.Template{
+		Code:    "P063",
+		Message: "match case pattern is not a recognised pattern shape",
+		Help:    "A pattern must be a literal (e.g. `1`, `\"foo\"`, `true`, `null`), an identifier (e.g. `x`, `_`, or a variant name like `Leaf`), or a variant constructor call (e.g. `Node(l, v, r)`). Compound expressions, indexing, field access, casts, and quoted constructors are not patterns.",
+	}
+	errUnknownImportLang = diagnostic.Template{
+		Code:    "P064",
+		Message: "unknown import language: %q",
+		Help:    "The supported languages are `go`, `python`, `typescript`, `zig`, `lua`, `clj`, and `clojure`. Omit the language to use the Mochi default, or check the spelling.",
+	}
+	errUselessExprStmt = diagnostic.Template{
+		Code:    "P065",
+		Message: "expression statement has no observable effect",
+		Help:    "An expression used as a statement must perform I/O or call a function. Bare values, arithmetic, and field/index access compute a result that nothing reads. Use `let _ = ...` if you need to evaluate for a side effect inside an argument, or remove the line.",
+	}
 )
+
+// knownImportLangs is the set of host-language identifiers Mochi recognises
+// in an `import <lang> "path" ...` statement. Backends consume `*ImportStmt`
+// and dispatch on `Lang`; a value outside this set has no consumer and
+// silently no-ops. Rejecting it at parse time turns a typo like
+// `import pythn "math" as math` into a positioned diagnostic instead of a
+// runtime "module not found" much later.
+var knownImportLangs = map[string]struct{}{
+	"go":         {},
+	"python":     {},
+	"typescript": {},
+	"zig":        {},
+	"lua":        {},
+	"clj":        {},
+	"clojure":    {},
+}
 
 // normalizeProgram performs the post-parse pass that turns the raw
 // participle parse into a fully validated Mochi AST. It does three jobs:
@@ -137,14 +168,133 @@ func normalizeStatement(s *Statement) error {
 				return err
 			}
 		}
+	case s.Import != nil:
+		if err := validateImportLang(s.Import); err != nil {
+			return err
+		}
 	case s.Expr != nil:
 		if s.Expr.Expr != nil {
 			if err := normalizeExpr(s.Expr.Expr); err != nil {
 				return err
 			}
+			if !exprHasObservableEffect(s.Expr.Expr) {
+				return errUselessExprStmt.New(s.Expr.Pos)
+			}
 		}
 	}
 	return nil
+}
+
+// exprHasObservableEffect reports whether the expression, evaluated as a
+// statement, can produce a side effect the user might care about. The rule
+// is structural: a call, fetch, save, load, or generate anywhere in the
+// reachable expression makes the statement observable. The traversal does
+// not descend into function literal bodies, because a lambda is a value;
+// the body only runs when the lambda is later invoked.
+func exprHasObservableEffect(e *Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if unaryHasObservableEffect(e.Binary.Left) {
+		return true
+	}
+	for _, op := range e.Binary.Right {
+		if unaryHasObservableEffect(op.Right) {
+			return true
+		}
+	}
+	return false
+}
+
+func unaryHasObservableEffect(u *Unary) bool {
+	if u == nil || u.Value == nil {
+		return false
+	}
+	return postfixHasObservableEffect(u.Value)
+}
+
+func postfixHasObservableEffect(p *PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	for _, op := range p.Ops {
+		if op.Call != nil {
+			return true
+		}
+		if op.Index != nil {
+			if exprHasObservableEffect(op.Index.Start) ||
+				exprHasObservableEffect(op.Index.End) ||
+				exprHasObservableEffect(op.Index.Step) {
+				return true
+			}
+		}
+	}
+	return primaryHasObservableEffect(p.Target)
+}
+
+func primaryHasObservableEffect(p *Primary) bool {
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.Call != nil, p.Fetch != nil, p.Save != nil, p.Load != nil, p.Generate != nil:
+		return true
+	case p.Group != nil:
+		return exprHasObservableEffect(p.Group)
+	case p.If != nil:
+		return ifExprHasObservableEffect(p.If)
+	case p.Match != nil:
+		for _, c := range p.Match.Cases {
+			if exprHasObservableEffect(c.Result) {
+				return true
+			}
+			for _, s := range c.Block {
+				if stmtHasObservableEffect(s) {
+					return true
+				}
+			}
+		}
+		return exprHasObservableEffect(p.Match.Target)
+	case p.List != nil:
+		for _, el := range p.List.Elems {
+			if exprHasObservableEffect(el) {
+				return true
+			}
+		}
+	case p.Map != nil:
+		for _, it := range p.Map.Items {
+			if exprHasObservableEffect(it.Key) || exprHasObservableEffect(it.Value) {
+				return true
+			}
+		}
+	case p.Struct != nil:
+		for _, f := range p.Struct.Fields {
+			if exprHasObservableEffect(f.Value) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func ifExprHasObservableEffect(e *IfExpr) bool {
+	if e == nil {
+		return false
+	}
+	if exprHasObservableEffect(e.Then) || exprHasObservableEffect(e.Else) {
+		return true
+	}
+	return ifExprHasObservableEffect(e.ElseIf)
+}
+
+func stmtHasObservableEffect(s *Statement) bool {
+	if s == nil {
+		return false
+	}
+	if s.Expr != nil {
+		return exprHasObservableEffect(s.Expr.Expr)
+	}
+	return true
 }
 
 func normalizeIfStmt(s *IfStmt) error {
@@ -191,6 +341,21 @@ func normalizeTypeDecl(td *TypeDecl) error {
 	return nil
 }
 
+// validateImportLang rejects `import <lang> "..." as ...` where <lang> is
+// not in the language's registered host set. The grammar admits any
+// identifier in that position because Mochi imports are open to any
+// backend; the runtime rejects unknown values with a "module not found"
+// far later. Catching the typo at parse time keeps the diagnostic local.
+func validateImportLang(im *ImportStmt) error {
+	if im == nil || im.Lang == nil {
+		return nil
+	}
+	if _, ok := knownImportLangs[*im.Lang]; ok {
+		return nil
+	}
+	return errUnknownImportLang.New(im.Pos, *im.Lang)
+}
+
 // validateIndexOp rejects `xs[]`, `xs[:]`, and `xs[::]`. The grammar
 // accepts those shapes because every component is independently optional.
 // A valid index/slice must carry at least one of {start, end, step}.
@@ -235,7 +400,64 @@ func validateMatchCase(c *MatchCase) error {
 	if c.Result == nil && len(c.Block) == 0 {
 		return errMatchCaseMissingBody.New(c.Pos)
 	}
-	return nil
+	return validatePatternShape(c.Pattern, c.Pos)
+}
+
+// validatePatternShape enforces the four pattern shapes spelled out in
+// MEP 5 §"Inference for matches":
+//
+//   - literal: a `Primary.Lit`, with no prefix operators
+//   - identifier: a `Primary.Selector` with one component and no postfix
+//     ops (covers `_`, a bare bind, and a nullary variant name)
+//   - variant call: a `Primary.Call` whose args are themselves patterns
+//   - parenthesised pattern: `Primary.Group` wrapping a pattern
+//
+// Anything else (binary ops, indexing, field access, casts, list/map/struct
+// literals, conditionals, lambdas, queries) is rejected with P063. The
+// grammar admits these because pattern position reuses `*Expr`; the check
+// is structural and runs during the normalisation pass.
+func validatePatternShape(e *Expr, pos lexer.Position) error {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	if len(e.Binary.Right) != 0 {
+		return errPatternShape.New(pos)
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil {
+		return errPatternShape.New(pos)
+	}
+	if len(u.Ops) != 0 {
+		return errPatternShape.New(pos)
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return errPatternShape.New(pos)
+	}
+	prim := p.Target
+	if prim == nil {
+		return errPatternShape.New(pos)
+	}
+	switch {
+	case prim.Lit != nil:
+		return nil
+	case prim.Selector != nil:
+		if len(prim.Selector.Tail) != 0 {
+			return errPatternShape.New(pos)
+		}
+		return nil
+	case prim.Call != nil:
+		for _, a := range prim.Call.Args {
+			if err := validatePatternShape(a, pos); err != nil {
+				return err
+			}
+		}
+		return nil
+	case prim.Group != nil:
+		return validatePatternShape(prim.Group, pos)
+	default:
+		return errPatternShape.New(pos)
+	}
 }
 
 // normalizeExpr recursively descends into expressions to validate nested
@@ -362,6 +584,25 @@ func normalizePrimary(p *Primary) error {
 		}
 	case p.Query != nil:
 		return normalizeQueryExpr(p.Query)
+	case p.Load != nil:
+		if err := validateLoadSavePath(p.Load, nil); err != nil {
+			return err
+		}
+		if p.Load.With != nil {
+			return normalizeExpr(p.Load.With)
+		}
+	case p.Save != nil:
+		if err := validateLoadSavePath(nil, p.Save); err != nil {
+			return err
+		}
+		if p.Save.Src != nil {
+			if err := normalizeExpr(p.Save.Src); err != nil {
+				return err
+			}
+		}
+		if p.Save.With != nil {
+			return normalizeExpr(p.Save.With)
+		}
 	}
 	return nil
 }

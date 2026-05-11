@@ -26,6 +26,9 @@ func Parse(path string) (*Program, error) {
 	if err := normalizeProgram(prog); err != nil {
 		return nil, err
 	}
+	if err := assertProgramInvariants(prog); err != nil {
+		return nil, err
+	}
 	attachDocs(text, prog)
 	return prog, nil
 }

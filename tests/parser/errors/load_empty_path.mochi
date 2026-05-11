@@ -1,0 +1,2 @@
+type Row { name: string }
+let rows = load "" as Row

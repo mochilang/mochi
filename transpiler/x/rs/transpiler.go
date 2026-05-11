@@ -7795,7 +7795,7 @@ func rustTypeFromType(t types.Type) string {
 		return rustIdent(tt.Name)
 	case types.UnionType:
 		return rustIdent(tt.Name)
-	case types.VoidType:
+	case types.UnitType:
 		return "()"
 	case types.FuncType:
 		params := make([]string, len(tt.Params))

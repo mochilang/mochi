@@ -68,7 +68,7 @@ func (c *Compiler) inferFunReturnType(body []*parser.Statement) types.Type {
 		}
 	}
 	if ret == nil {
-		return types.VoidType{}
+		return types.UnitType{}
 	}
 	return ret
 }

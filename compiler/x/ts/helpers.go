@@ -324,7 +324,7 @@ func tsType(t types.Type) string {
 		}
 		ret := tsType(tt.Return)
 		return fmt.Sprintf("(%s) => %s", strings.Join(args, ", "), ret)
-	case types.VoidType:
+	case types.UnitType:
 		return "void"
 	case types.AnyType:
 		return "any"

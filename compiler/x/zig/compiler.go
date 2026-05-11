@@ -234,7 +234,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		if fn.Return != nil {
 			ft.Return = c.resolveTypeRef(fn.Return)
 		} else {
-			ft.Return = types.VoidType{}
+			ft.Return = types.UnitType{}
 		}
 		c.env.SetVar(fn.Name, ft, false)
 	}
@@ -413,7 +413,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				for i, p := range m.Method.Params {
 					params[i] = c.resolveTypeRef(p.Type)
 				}
-				var ret types.Type = types.VoidType{}
+				var ret types.Type = types.UnitType{}
 				if m.Method.Return != nil {
 					ret = c.resolveTypeRef(m.Method.Return)
 				}

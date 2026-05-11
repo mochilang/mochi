@@ -168,7 +168,7 @@ let r = match v {
   _ => "other"
 }`,
 		`let v = 0
-let r = match v { 0 => { 1 } }`,
+let r = match v { 0 => { print(1) } }`,
 		`let v = 0
 let r = match v {
   0 => 1

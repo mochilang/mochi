@@ -9035,7 +9035,7 @@ func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
 		for i, p := range t.Fun.Params {
 			params[i] = resolveTypeRef(p, env)
 		}
-		var ret types.Type = types.VoidType{}
+		var ret types.Type = types.UnitType{}
 		if t.Fun.Return != nil {
 			ret = resolveTypeRef(t.Fun.Return, env)
 		}

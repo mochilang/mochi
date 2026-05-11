@@ -1024,7 +1024,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		}
 		paramTypes[i] = typ
 	}
-	var retT types.Type = types.VoidType{}
+	var retT types.Type = types.UnitType{}
 	if ft.Return != nil {
 		retT = ft.Return
 	} else if fun.Return != nil {
@@ -1208,7 +1208,7 @@ func (c *Compiler) compileMethod(structName string, env *types.Env, fun *parser.
 		}
 		paramTypes[i] = typ
 	}
-	var retT types.Type = types.VoidType{}
+	var retT types.Type = types.UnitType{}
 	if ft.Return != nil {
 		retT = ft.Return
 	} else if fun.Return != nil {

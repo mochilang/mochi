@@ -2574,7 +2574,7 @@ func (c *Compiler) ocamlType(t types.Type) string {
 		}
 		parts = append(parts, ret)
 		return strings.Join(parts, " -> ")
-	case types.VoidType:
+	case types.UnitType:
 		return "unit"
 	}
 	return "Obj.t"

@@ -44,9 +44,9 @@ type BoolType struct{}
 
 func (BoolType) String() string { return "bool" }
 
-type VoidType struct{}
+type UnitType struct{}
 
-func (VoidType) String() string { return "void" }
+func (UnitType) String() string { return "unit" }
 
 type ListType struct {
 	Elem Type
@@ -130,7 +130,7 @@ func (f FuncType) String() string {
 		}
 	}
 	s += ")"
-	if f.Return != nil && f.Return.String() != "void" {
+	if f.Return != nil && f.Return.String() != "unit" {
 		s += ": " + f.Return.String()
 	}
 	if f.Pure {
@@ -348,8 +348,8 @@ func unify(a, b Type, subst Subst) bool {
 		_, ok := b.(BoolType)
 		return ok
 
-	case VoidType:
-		_, ok := b.(VoidType)
+	case UnitType:
+		_, ok := b.(UnitType)
 		return ok
 
 	default:
@@ -385,7 +385,7 @@ func unify(a, b Type, subst Subst) bool {
 func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("print", FuncType{
 		Params:   []Type{AnyType{}},
-		Return:   VoidType{},
+		Return:   UnitType{},
 		Variadic: true,
 	}, false)
 	env.SetVar("len", FuncType{
@@ -451,7 +451,7 @@ func Check(prog *parser.Program, env *Env) []error {
 	}, false)
 	env.SetVar("json", FuncType{
 		Params: []Type{AnyType{}},
-		Return: VoidType{},
+		Return: UnitType{},
 	}, false)
 	env.SetVar("to_json", FuncType{
 		Params: []Type{AnyType{}},
@@ -631,7 +631,7 @@ func Check(prog *parser.Program, env *Env) []error {
 					params[i] = AnyType{}
 				}
 			}
-			var ret Type = VoidType{}
+			var ret Type = UnitType{}
 			if stmt.Fun.Return != nil {
 				ret = resolveTypeRef(stmt.Fun.Return, env)
 			}
@@ -644,7 +644,7 @@ func Check(prog *parser.Program, env *Env) []error {
 	// Second pass: process type declarations now that all functions are known.
 	for _, stmt := range prog.Statements {
 		if stmt.Type != nil {
-			if err := checkStmt(stmt, env, VoidType{}, false); err != nil {
+			if err := checkStmt(stmt, env, UnitType{}, false); err != nil {
 				errs = append(errs, err)
 			}
 		}
@@ -653,7 +653,7 @@ func Check(prog *parser.Program, env *Env) []error {
 	// Final pass: check remaining statements, including function bodies.
 	for _, stmt := range prog.Statements {
 		if stmt.Type == nil {
-			if err := checkStmt(stmt, env, VoidType{}, false); err != nil {
+			if err := checkStmt(stmt, env, UnitType{}, false); err != nil {
 				errs = append(errs, err)
 			}
 		}
@@ -1129,7 +1129,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 						}
 						params[i] = resolveTypeRef(p.Type, env)
 					}
-					var ret Type = VoidType{}
+					var ret Type = UnitType{}
 					if m.Method.Return != nil {
 						ret = resolveTypeRef(m.Method.Return, env)
 					}
@@ -1349,7 +1349,7 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 		for i, p := range t.Fun.Params {
 			params[i] = resolveTypeRef(p, env)
 		}
-		var ret Type = VoidType{}
+		var ret Type = UnitType{}
 		if t.Fun.Return != nil {
 			ret = resolveTypeRef(t.Fun.Return, env)
 		}
@@ -2081,14 +2081,14 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 
 	case p.Save != nil:
 		if _, err := checkExpr(p.Save.Src, env); err != nil {
-			return VoidType{}, err
+			return UnitType{}, err
 		}
 		if p.Save.With != nil {
 			if _, err := checkExpr(p.Save.With, env); err != nil {
-				return VoidType{}, err
+				return UnitType{}, err
 			}
 		}
-		return VoidType{}, nil
+		return UnitType{}, nil
 
 	case p.Match != nil:
 		return checkMatchExpr(p.Match, env, expected)
