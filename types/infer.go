@@ -947,13 +947,19 @@ func equalTypes(a, b Type) bool {
 		if !ok {
 			return false
 		}
-		if len(at.Params) != len(bt.Params) || at.Variadic != bt.Variadic {
+		if len(at.Params) != len(bt.Params) {
+			return false
+		}
+		if (at.Variadic == nil) != (bt.Variadic == nil) {
 			return false
 		}
 		for i := range at.Params {
 			if !equalTypes(at.Params[i], bt.Params[i]) {
 				return false
 			}
+		}
+		if at.Variadic != nil && !equalTypes(at.Variadic, bt.Variadic) {
+			return false
 		}
 		return equalTypes(at.Return, bt.Return)
 	case *TypeVar:

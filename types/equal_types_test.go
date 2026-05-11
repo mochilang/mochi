@@ -78,7 +78,7 @@ func TestEqualTypesByKind(t *testing.T) {
 		},
 		{
 			"func variadic mismatch",
-			FuncType{Params: []Type{IntType{}}, Return: BoolType{}, Variadic: true},
+			FuncType{Params: []Type{IntType{}}, Return: BoolType{}, Variadic: IntType{}},
 			FuncType{Params: []Type{IntType{}}, Return: BoolType{}},
 			false,
 		},

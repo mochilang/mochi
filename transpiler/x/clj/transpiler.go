@@ -3406,7 +3406,7 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		} else if transpileEnv != nil {
 			if typ, err := transpileEnv.GetVar(string(sym)); err == nil {
 				callArity := len(elems) - 1
-				if ft, ok := typ.(types.FuncType); ok && !ft.Variadic && len(ft.Params) > callArity {
+				if ft, ok := typ.(types.FuncType); ok && ft.Variadic == nil && len(ft.Params) > callArity {
 					elems = append([]Node{Symbol("partial"), sym}, elems[1:]...)
 					return &List{Elems: elems}, nil
 				}
