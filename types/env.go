@@ -285,11 +285,16 @@ func (e *Env) GetFunc(name string) (*parser.FunStmt, bool) {
 	return nil, false
 }
 
-// Copy creates a shallow copy of the current environment with no parent.
-// Useful for closures capturing current bindings.
+// Copy creates a shallow copy of the current environment that keeps the
+// parent chain intact. The local maps are cloned so that mutations to the
+// copy do not leak back into the original scope, while the parent pointer
+// is preserved so lookups in the copy still see bindings from enclosing
+// scopes. This matches standard lexical-closure semantics and fixes MEP 4
+// §6 problem 17 where the previous flatten-and-detach behaviour dropped
+// outer-scope bindings from closures defined inside nested scopes.
 func (e *Env) Copy() *Env {
 	newEnv := &Env{
-		parent:  nil, // flatten parent chain
+		parent:  e.parent,
 		types:   make(map[string]Type, len(e.types)),
 		mut:     make(map[string]bool, len(e.mut)),
 		values:  make(map[string]any, len(e.values)),
