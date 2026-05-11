@@ -1,0 +1,7 @@
+// MEP-10 A5: map index returns `option[V]`. Silently casting the
+// option to its underlying type is rejected (T046). Use `match` or
+// the `?` unwrap operator (once MEP-4 A2 lands) to handle the absent
+// case explicitly.
+type Point { x: int, y: int }
+let pts: map<string, Point> = {"o": Point{x: 0, y: 0}}
+let p: Point = pts["missing"] as Point

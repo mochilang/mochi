@@ -1,0 +1,3 @@
+// MEP-10 A5: `string as int` is rejected at type-check time (T046).
+// Use the `int(...)` parsing builtin for an explicit conversion.
+let n: int = "hello" as int

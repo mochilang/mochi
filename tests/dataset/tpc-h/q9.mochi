@@ -57,7 +57,7 @@ let result =
         o.o_orderdate >= start_date && o.o_orderdate <= end_date
   group by {
     nation: n.n_name,
-    o_year: substring(o.o_orderdate, 0, 4) as int
+    o_year: int(substring(o.o_orderdate, 0, 4))
   } into g
   sort by [ g.key.nation, -g.key.o_year ]
   select {
