@@ -101,6 +101,16 @@ type AnyType struct{}
 
 func (AnyType) String() string { return "any" }
 
+// TypeVar is the polymorphism kind used to represent a generic type
+// parameter. Its methods take a pointer receiver because identity, not
+// value, is what distinguishes two type variables: a fresh `*TypeVar`
+// with the same `Name` as an existing one must compare unequal under
+// unification. Every other kind in this package is a value type with
+// value receivers. If a future kind needs the same identity semantics
+// (a `RowVar` for row polymorphism is the obvious candidate, planned
+// under MEP 11), it should follow the same convention so callers can
+// rely on a single discriminator (`x.(*TypeVar)` vs `x.(SomeValueKind)`).
+// See MEP 4 §6 problem 14 and MEP 12.
 type TypeVar struct {
 	Name string
 }
