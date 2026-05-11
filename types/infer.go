@@ -1,7 +1,6 @@
 package types
 
 import (
-	"reflect"
 	"strings"
 
 	"mochi/ast"
@@ -825,54 +824,118 @@ func unionFieldPathType(ut UnionType, tail []string) (Type, bool) {
 	return result, true
 }
 
+// equalTypes is the structural-equality relation on Type kinds. Each kind
+// in the type-system table (types/check.go:16-140) gets its own case so a
+// new kind cannot be silently treated as equal by reflect.DeepEqual.
+// Equality is symmetric, so each case only needs to handle the matching
+// kind on the other side (with the explicit struct/union carve-out so a
+// struct counts as equal to a union it is a variant of).
+//
+// The int/int64 carve-out is preserved verbatim: until MEP 5 lands the
+// final numeric tower decision, the checker needs int and int64 to be
+// interchangeable. Tracked separately under MEP 4 §6 problem 1.
+//
+// See MEP 4 §6 problem 15.
 func equalTypes(a, b Type) bool {
-	if _, ok := a.(AnyType); ok {
-		_, ok2 := b.(AnyType)
-		return ok2
+	// int/int64 carve-out. Both kinds use the same Go-level int64
+	// storage, and most numeric builtins return int64 while user code
+	// is typed at int.
+	if (isInt(a) || isInt64(a)) && (isInt(b) || isInt64(b)) {
+		return true
 	}
-	if _, ok := b.(AnyType); ok {
-		_, ok2 := a.(AnyType)
-		return ok2
-	}
-	if la, ok := a.(ListType); ok {
-		if lb, ok := b.(ListType); ok {
-			return equalTypes(la.Elem, lb.Elem)
+	switch at := a.(type) {
+	case IntType:
+		_, ok := b.(IntType)
+		return ok
+	case Int64Type:
+		_, ok := b.(Int64Type)
+		return ok
+	case FloatType:
+		_, ok := b.(FloatType)
+		return ok
+	case BigIntType:
+		_, ok := b.(BigIntType)
+		return ok
+	case BigRatType:
+		_, ok := b.(BigRatType)
+		return ok
+	case StringType:
+		_, ok := b.(StringType)
+		return ok
+	case BoolType:
+		_, ok := b.(BoolType)
+		return ok
+	case UnitType:
+		_, ok := b.(UnitType)
+		return ok
+	case AnyType:
+		_, ok := b.(AnyType)
+		return ok
+	case ListType:
+		bt, ok := b.(ListType)
+		if !ok {
+			return false
 		}
-	}
-	if ma, ok := a.(MapType); ok {
-		if mb, ok := b.(MapType); ok {
-			return equalTypes(ma.Key, mb.Key) && equalTypes(ma.Value, mb.Value)
+		return equalTypes(at.Elem, bt.Elem)
+	case MapType:
+		bt, ok := b.(MapType)
+		if !ok {
+			return false
 		}
-	}
-	if oa, ok := a.(OptionType); ok {
-		if ob, ok := b.(OptionType); ok {
-			return equalTypes(oa.Elem, ob.Elem)
+		return equalTypes(at.Key, bt.Key) && equalTypes(at.Value, bt.Value)
+	case OptionType:
+		bt, ok := b.(OptionType)
+		if !ok {
+			return false
 		}
-	}
-	if ua, ok := a.(UnionType); ok {
-		if sb, ok := b.(StructType); ok {
-			if _, ok := ua.Variants[sb.Name]; ok {
-				return true
+		return equalTypes(at.Elem, bt.Elem)
+	case GroupType:
+		bt, ok := b.(GroupType)
+		if !ok {
+			return false
+		}
+		return equalTypes(at.Key, bt.Key) && equalTypes(at.Elem, bt.Elem)
+	case StructType:
+		switch bt := b.(type) {
+		case StructType:
+			return at.Name == bt.Name
+		case UnionType:
+			_, ok := bt.Variants[at.Name]
+			return ok
+		}
+		return false
+	case UnionType:
+		switch bt := b.(type) {
+		case UnionType:
+			return at.Name == bt.Name
+		case StructType:
+			_, ok := at.Variants[bt.Name]
+			return ok
+		}
+		return false
+	case FuncType:
+		bt, ok := b.(FuncType)
+		if !ok {
+			return false
+		}
+		if len(at.Params) != len(bt.Params) || at.Variadic != bt.Variadic {
+			return false
+		}
+		for i := range at.Params {
+			if !equalTypes(at.Params[i], bt.Params[i]) {
+				return false
 			}
 		}
-	}
-	if ub, ok := b.(UnionType); ok {
-		if sa, ok := a.(StructType); ok {
-			if _, ok := ub.Variants[sa.Name]; ok {
-				return true
-			}
+		return equalTypes(at.Return, bt.Return)
+	case *TypeVar:
+		bt, ok := b.(*TypeVar)
+		if !ok {
+			return false
 		}
+		// TypeVar identity is by pointer (MEP 4 §6 problem 14).
+		return at == bt
 	}
-	if isInt64(a) && (isInt64(b) || isInt(b)) {
-		return true
-	}
-	if isInt64(b) && (isInt64(a) || isInt(a)) {
-		return true
-	}
-	if isInt(a) && isInt(b) {
-		return true
-	}
-	return reflect.DeepEqual(a, b)
+	return false
 }
 
 func isInt64(t Type) bool  { _, ok := t.(Int64Type); return ok }
