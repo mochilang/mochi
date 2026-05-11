@@ -158,7 +158,20 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 					}
 					res = AnyType{}
 				case "==", "!=", "<", "<=", ">", ">=":
-					res = BoolType{}
+					// MEP 4 P9: keep inference honest with the check
+					// pass. `any` keeps its escape-hatch behaviour;
+					// otherwise comparable operands must be equal-kinded
+					// or both numeric.
+					switch {
+					case IsAnyType(left) || IsAnyType(right):
+						res = BoolType{}
+					case equalTypes(left, right):
+						res = BoolType{}
+					case isNumeric(left) && isNumeric(right):
+						res = BoolType{}
+					default:
+						res = AnyType{}
+					}
 				case "&&", "||":
 					if isBool(left) && isBool(right) {
 						res = BoolType{}
