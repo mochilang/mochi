@@ -1,0 +1,8 @@
+ 1. error[T022]: cannot iterate over type any
+  --> tests/types/soundness/mep5_p13_for_any_source.mochi:4:3
+
+  4 |   for x in xs {
+    |   ^
+
+help:
+  Only `list<T>`, `map<K,V>`, or integer ranges are allowed in `for ... in ...` loops.
