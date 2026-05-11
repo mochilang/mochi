@@ -5,7 +5,6 @@ import (
 	"io"
 	"mochi/parser"
 	"os"
-	"strings"
 )
 
 // ModelSpec defines a named model configuration.
@@ -258,15 +257,11 @@ func (e *Env) GetValue(name string) (any, error) {
 
 // --- Function Binding ---
 
-// SetFunc binds a named function.
+// SetFunc binds a named function. The binding is stored under the exact
+// name; case-folded aliases (if any) belong in the FFI layer that owns
+// the name-mangling policy, not in the language-level binding API.
 func (e *Env) SetFunc(name string, fn *parser.FunStmt) {
 	e.funcs[name] = fn
-	lower := strings.ToLower(name)
-	if lower != name {
-		if _, ok := e.funcs[lower]; !ok {
-			e.funcs[lower] = fn
-		}
-	}
 }
 
 // SetFuncType binds a function name to its static type.
