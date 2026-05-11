@@ -1,0 +1,2 @@
+let xs = [1, 2]
+let r = match xs { xs[0] => "first" _ => "rest" }

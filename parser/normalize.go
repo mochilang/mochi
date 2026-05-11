@@ -17,6 +17,11 @@ var (
 		Message: "match case has no result expression or block",
 		Help:    "Provide a result after `=>`, e.g. `0 => \"zero\"`, or a block: `0 => { ... }`.",
 	}
+	errPatternShape = diagnostic.Template{
+		Code:    "P063",
+		Message: "match case pattern is not a recognised pattern shape",
+		Help:    "A pattern must be a literal (e.g. `1`, `\"foo\"`, `true`, `null`), an identifier (e.g. `x`, `_`, or a variant name like `Leaf`), or a variant constructor call (e.g. `Node(l, v, r)`). Compound expressions, indexing, field access, casts, and quoted constructors are not patterns.",
+	}
 )
 
 // normalizeProgram performs the post-parse pass that turns the raw
@@ -235,7 +240,64 @@ func validateMatchCase(c *MatchCase) error {
 	if c.Result == nil && len(c.Block) == 0 {
 		return errMatchCaseMissingBody.New(c.Pos)
 	}
-	return nil
+	return validatePatternShape(c.Pattern, c.Pos)
+}
+
+// validatePatternShape enforces the four pattern shapes spelled out in
+// MEP 5 §"Inference for matches":
+//
+//   - literal: a `Primary.Lit`, with no prefix operators
+//   - identifier: a `Primary.Selector` with one component and no postfix
+//     ops (covers `_`, a bare bind, and a nullary variant name)
+//   - variant call: a `Primary.Call` whose args are themselves patterns
+//   - parenthesised pattern: `Primary.Group` wrapping a pattern
+//
+// Anything else (binary ops, indexing, field access, casts, list/map/struct
+// literals, conditionals, lambdas, queries) is rejected with P063. The
+// grammar admits these because pattern position reuses `*Expr`; the check
+// is structural and runs during the normalisation pass.
+func validatePatternShape(e *Expr, pos lexer.Position) error {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	if len(e.Binary.Right) != 0 {
+		return errPatternShape.New(pos)
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil {
+		return errPatternShape.New(pos)
+	}
+	if len(u.Ops) != 0 {
+		return errPatternShape.New(pos)
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return errPatternShape.New(pos)
+	}
+	prim := p.Target
+	if prim == nil {
+		return errPatternShape.New(pos)
+	}
+	switch {
+	case prim.Lit != nil:
+		return nil
+	case prim.Selector != nil:
+		if len(prim.Selector.Tail) != 0 {
+			return errPatternShape.New(pos)
+		}
+		return nil
+	case prim.Call != nil:
+		for _, a := range prim.Call.Args {
+			if err := validatePatternShape(a, pos); err != nil {
+				return err
+			}
+		}
+		return nil
+	case prim.Group != nil:
+		return validatePatternShape(prim.Group, pos)
+	default:
+		return errPatternShape.New(pos)
+	}
 }
 
 // normalizeExpr recursively descends into expressions to validate nested

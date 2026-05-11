@@ -1,0 +1,8 @@
+error[P063]: match case pattern is not a recognised pattern shape
+  --> tests/parser/errors/match_case_pattern_index.mochi:2:20
+
+  2 | let r = match xs { xs[0] => "first" _ => "rest" }
+    |                    ^
+
+help:
+  A pattern must be a literal (e.g. `1`, `"foo"`, `true`, `null`), an identifier (e.g. `x`, `_`, or a variant name like `Leaf`), or a variant constructor call (e.g. `Node(l, v, r)`). Compound expressions, indexing, field access, casts, and quoted constructors are not patterns.
