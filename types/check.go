@@ -684,11 +684,6 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: IntType{},
 		Pure:   true,
 	}, false)
-	env.SetVar("keys", FuncType{
-		Params: []Type{MapType{Key: AnyType{}, Value: AnyType{}}},
-		Return: ListType{Elem: AnyType{}},
-		Pure:   true,
-	}, false)
 	env.SetVar("min", FuncType{
 		Params: []Type{AnyType{}},
 		Return: AnyType{},
@@ -707,11 +702,6 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("reduce", FuncType{
 		Params: []Type{AnyType{}, AnyType{}, AnyType{}},
 		Return: AnyType{},
-		Pure:   true,
-	}, false)
-	env.SetVar("keys", FuncType{
-		Params: []Type{AnyType{}},
-		Return: ListType{Elem: AnyType{}},
 		Pure:   true,
 	}, false)
 	env.SetVar("eval", FuncType{
