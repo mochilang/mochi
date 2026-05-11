@@ -1,0 +1,11 @@
+// Snapshot: AnyType unifies with concrete types in both directions, so an
+// `any`-typed binding can flow into any concrete position without a
+// diagnostic. The checker accepts the program below today.
+//
+// MEP 7 lists this as the "AnyType unifies in both directions" escape hatch.
+// MEP 5 §Inference closes it by treating `any` as a top with no automatic
+// promotion; MEP 11 owns the subtyping decision. When that fix lands this
+// file moves to tests/types/errors/.
+let x: any = 1
+let y: int = x
+let z = x + 1
