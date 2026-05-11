@@ -177,29 +177,18 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 					// pass. `any` keeps its escape-hatch behaviour;
 					// otherwise comparable operands must be equal-kinded
 					// or both numeric.
-					switch {
-					case IsAnyType(left) || IsAnyType(right):
-						res = BoolType{}
-					case equalTypes(left, right):
-						res = BoolType{}
-					case isNumeric(left) && isNumeric(right):
-						res = BoolType{}
-					default:
-						res = AnyType{}
-					}
+					// Comparisons and equality are always bool-typed; the
+					// checker rejects nonsensical operand pairs separately
+					// (MEP-5 T-Eq / T-Cmp). The inferrer never widens to any.
+					res = BoolType{}
 				case "&&", "||":
-					if isBool(left) && isBool(right) {
-						res = BoolType{}
-					} else {
-						res = AnyType{}
-					}
+					// Boolean connectives are always bool-typed; the checker
+					// rejects non-bool operands (MEP-5 P16).
+					res = BoolType{}
 				case "in":
-					switch right.(type) {
-					case MapType, ListType, StringType:
-						res = BoolType{}
-					default:
-						res = AnyType{}
-					}
+					// `in` is always bool-typed; the checker rejects non-iterable
+					// right operands separately.
+					res = BoolType{}
 				case "union", "union_all", "except", "intersect":
 					if ll, ok := left.(ListType); ok {
 						if rl, ok := right.(ListType); ok {

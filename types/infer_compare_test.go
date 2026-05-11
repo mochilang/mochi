@@ -21,10 +21,13 @@ func inferRHS(t *testing.T, expr string) types.Type {
 	return types.ExprType(prog.Statements[0].Let.Value, types.NewEnv(nil))
 }
 
-// TestInferComparisonHonest pins MEP-4 P9: inference must not claim a
-// cross-kind comparison has type `bool`. The check pass rejects the
-// program; inference should report `any` so downstream tools do not
-// silently consume a wrong type.
+// TestInferComparisonHonest pins MEP-5 P16: comparisons and equality are
+// always bool-typed at the inference layer (the operator's principal
+// result kind is `bool`); cross-kind operand mismatches are reported by
+// the checker as T030, not by widening the inferrer's result to `any`.
+// This supersedes the previous MEP-4 P9 fallback that returned `any` so
+// downstream tools would not consume a wrong type: under MEP-5 the
+// inferrer never returns `any` as a fallback at all.
 func TestInferComparisonHonest(t *testing.T) {
 	cases := []struct {
 		name string
@@ -33,9 +36,9 @@ func TestInferComparisonHonest(t *testing.T) {
 	}{
 		{"int_eq_int", `1 == 2`, "bool"},
 		{"int_lt_int", `1 < 2`, "bool"},
-		{"int_eq_string", `1 == "x"`, "any"},
-		{"struct_eq_int", `{a: 1} == 2`, "any"},
-		{"bool_eq_int", `true == 1`, "any"},
+		{"int_eq_string", `1 == "x"`, "bool"},
+		{"struct_eq_int", `{a: 1} == 2`, "bool"},
+		{"bool_eq_int", `true == 1`, "bool"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
