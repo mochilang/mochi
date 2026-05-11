@@ -1,0 +1,3 @@
+// MEP-5 P1: list literals with disagreeing element types must be rejected.
+// The prior rule silently widened to `any`, hiding the soundness hole.
+let xs = [1, "two"]
