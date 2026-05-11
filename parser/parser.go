@@ -217,6 +217,7 @@ type TypeField struct {
 // --- Type System ---
 
 type TypeRef struct {
+	Pos     lexer.Position    `json:"pos,omitempty" parser:""`
 	Fun     *FunType          `json:"fun,omitempty" parser:"@@"`
 	Generic *GenericType      `json:"generic,omitempty" parser:"| @@"`
 	Struct  *InlineStructType `json:"struct,omitempty" parser:"| @@"`

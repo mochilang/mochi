@@ -1,0 +1,8 @@
+1. error[T025]: unknown type: Int
+  --> tests/types/errors/unknown_type_name.mochi:2:12
+
+  2 | let count: Int = 0
+    |            ^
+
+help:
+  Ensure the type is defined before use.

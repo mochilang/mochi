@@ -1,0 +1,2 @@
+// MEP-4 P8: a typo in a type position should not silently widen to `any`.
+let count: Int = 0
