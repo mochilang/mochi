@@ -1,0 +1,15 @@
+// MEP-4 P8 follow-up (#21245): functions can reference struct types that
+// are declared later in the file. Type names are pre-registered before
+// the function-decl pass walks signatures.
+fun id(p: Pair): Pair {
+  return p
+}
+
+type Pair {
+  x: int
+  y: int
+}
+
+let p: Pair = Pair{x: 1, y: 2}
+let q: Pair = id(p)
+expect q.x == 1
