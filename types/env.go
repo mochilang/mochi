@@ -28,8 +28,35 @@ type Env struct {
 	funcs   map[string]*parser.FunStmt   // function declarations
 	models  map[string]ModelSpec         // model aliases
 
+	// diagnostics accumulates errors raised in contexts (such as
+	// resolveTypeRef) that cannot return errors to their caller. Only
+	// the root env holds the slice; helpers walk up to find it.
+	diagnostics []error
+
 	output io.Writer // default: os.Stdout
 	input  io.Reader // default: os.Stdin
+}
+
+// RecordDiagnostic appends an error to the root env's diagnostic list.
+// resolveTypeRef calls this when an unknown type name is encountered.
+func (e *Env) RecordDiagnostic(err error) {
+	root := e
+	for root.parent != nil {
+		root = root.parent
+	}
+	root.diagnostics = append(root.diagnostics, err)
+}
+
+// TakeDiagnostics returns and clears the accumulated diagnostics on the
+// root env. Check calls it once after every pass.
+func (e *Env) TakeDiagnostics() []error {
+	root := e
+	for root.parent != nil {
+		root = root.parent
+	}
+	out := root.diagnostics
+	root.diagnostics = nil
+	return out
 }
 
 // Types exposes the map of locally declared variable types.

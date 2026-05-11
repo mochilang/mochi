@@ -673,6 +673,9 @@ func Check(prog *parser.Program, env *Env) []error {
 			}
 		}
 	}
+	// Flush diagnostics raised in resolveTypeRef and other contexts
+	// that cannot return errors directly to a caller.
+	errs = append(errs, env.TakeDiagnostics()...)
 	return errs
 }
 
@@ -1408,6 +1411,8 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 		switch *t.Simple {
 		case "int":
 			return IntType{}
+		case "int64":
+			return Int64Type{}
 		case "float":
 			return FloatType{}
 		case "bigint":
@@ -1420,6 +1425,8 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 			return BoolType{}
 		case "unit":
 			return UnitType{}
+		case "any":
+			return AnyType{}
 		default:
 			if ut, ok := env.GetUnion(*t.Simple); ok {
 				return ut
@@ -1433,11 +1440,28 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 			if ut, ok := env.FindUnionByVariant(*t.Simple); ok {
 				return ut
 			}
+			if isTypeParamName(*t.Simple) {
+				return AnyType{}
+			}
+			env.RecordDiagnostic(errUnknownType(t.Pos, *t.Simple))
 			return AnyType{}
 		}
 	}
 
 	return AnyType{}
+}
+
+// isTypeParamName recognises single uppercase letters used as generic
+// type-parameter names (`T`, `K`, `V`). MEP 12 will plumb a real type-
+// parameter scope through resolveTypeRef; until then this heuristic
+// keeps the unknown-type-name diagnostic from firing on names that are
+// already valid in generic positions.
+func isTypeParamName(name string) bool {
+	if len(name) != 1 {
+		return false
+	}
+	c := name[0]
+	return c >= 'A' && c <= 'Z'
 }
 
 func resolveTypeName(name string, env *Env) Type {

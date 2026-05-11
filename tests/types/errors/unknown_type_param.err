@@ -1,0 +1,8 @@
+1. error[T025]: unknown type: Role
+  --> tests/types/errors/unknown_type_param.mochi:2:35
+
+  2 | type User = { name: string, role: Role }
+    |                                   ^
+
+help:
+  Ensure the type is defined before use.

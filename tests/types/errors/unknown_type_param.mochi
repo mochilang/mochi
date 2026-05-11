@@ -1,0 +1,2 @@
+// MEP-4 P8: an unknown struct field type fails with T025.
+type User = { name: string, role: Role }
