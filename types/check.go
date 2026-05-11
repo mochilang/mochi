@@ -2621,11 +2621,9 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 				if _, ok := at.(AnyType); !ok && !isNumeric(at) {
 					return nil, errSumOperand(q.Select.Pos, at)
 				}
-				if _, ok := at.(FloatType); ok {
-					selT = FloatType{}
-				} else {
-					selT = IntType{}
-				}
+				// Preserve the element type per MEP-5 P2; widening to int/float
+				// lost precision for bigint/bigrat/int64 summands.
+				selT = at
 			case "avg":
 				if _, ok := at.(AnyType); !ok && !isNumeric(at) {
 					return nil, errSumOperand(q.Select.Pos, at)
