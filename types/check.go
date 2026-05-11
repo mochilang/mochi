@@ -1296,6 +1296,12 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 		return err
 
 	case s.Return != nil:
+		if s.Return.Value == nil {
+			if !unify(UnitType{}, expectedReturn, nil) {
+				return errReturnMismatch(s.Return.Pos, expectedReturn, UnitType{})
+			}
+			return nil
+		}
 		actual, err := checkExprWithExpected(s.Return.Value, env, expectedReturn)
 		if err != nil {
 			return err

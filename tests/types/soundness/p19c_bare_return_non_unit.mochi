@@ -1,0 +1,5 @@
+// MEP-4 P19 follow-up: a bare `return` in a function that promised a
+// non-unit return type is a return-type mismatch, not a nil-deref panic.
+fun answer(): int {
+  return
+}
