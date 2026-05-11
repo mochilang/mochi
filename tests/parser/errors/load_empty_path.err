@@ -1,0 +1,8 @@
+error[P062]: load/save path is the empty string
+  --> tests/parser/errors/load_empty_path.mochi:2:12
+
+  2 | let rows = load "" as Row
+    |            ^
+
+help:
+  Omit the literal entirely to use stdin/stdout (e.g. `load as T` or `save x`), or supply a real path.

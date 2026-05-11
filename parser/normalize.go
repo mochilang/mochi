@@ -362,6 +362,25 @@ func normalizePrimary(p *Primary) error {
 		}
 	case p.Query != nil:
 		return normalizeQueryExpr(p.Query)
+	case p.Load != nil:
+		if err := validateLoadSavePath(p.Load, nil); err != nil {
+			return err
+		}
+		if p.Load.With != nil {
+			return normalizeExpr(p.Load.With)
+		}
+	case p.Save != nil:
+		if err := validateLoadSavePath(nil, p.Save); err != nil {
+			return err
+		}
+		if p.Save.Src != nil {
+			if err := normalizeExpr(p.Save.Src); err != nil {
+				return err
+			}
+		}
+		if p.Save.With != nil {
+			return normalizeExpr(p.Save.With)
+		}
 	}
 	return nil
 }

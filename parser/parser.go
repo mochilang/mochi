@@ -712,6 +712,9 @@ func ParseString(src string) (*Program, error) {
 	if err := normalizeProgram(prog); err != nil {
 		return nil, fmt.Errorf("parse error: %w", err)
 	}
+	if err := assertProgramInvariants(prog); err != nil {
+		return nil, fmt.Errorf("parse error: %w", err)
+	}
 	attachDocs(text, prog)
 	return prog, nil
 }
