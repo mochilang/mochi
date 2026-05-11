@@ -1,0 +1,8 @@
+error[P064]: unknown import language: "pythn"
+  --> tests/parser/errors/import_unknown_lang.mochi:1:1
+
+  1 | import pythn "math" as math
+    | ^
+
+help:
+  The supported languages are `go`, `python`, `typescript`, `zig`, `lua`, `clj`, and `clojure`. Omit the language to use the Mochi default, or check the spelling.

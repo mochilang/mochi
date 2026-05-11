@@ -22,7 +22,28 @@ var (
 		Message: "match case pattern is not a recognised pattern shape",
 		Help:    "A pattern must be a literal (e.g. `1`, `\"foo\"`, `true`, `null`), an identifier (e.g. `x`, `_`, or a variant name like `Leaf`), or a variant constructor call (e.g. `Node(l, v, r)`). Compound expressions, indexing, field access, casts, and quoted constructors are not patterns.",
 	}
+	errUnknownImportLang = diagnostic.Template{
+		Code:    "P064",
+		Message: "unknown import language: %q",
+		Help:    "The supported languages are `go`, `python`, `typescript`, `zig`, `lua`, `clj`, and `clojure`. Omit the language to use the Mochi default, or check the spelling.",
+	}
 )
+
+// knownImportLangs is the set of host-language identifiers Mochi recognises
+// in an `import <lang> "path" ...` statement. Backends consume `*ImportStmt`
+// and dispatch on `Lang`; a value outside this set has no consumer and
+// silently no-ops. Rejecting it at parse time turns a typo like
+// `import pythn "math" as math` into a positioned diagnostic instead of a
+// runtime "module not found" much later.
+var knownImportLangs = map[string]struct{}{
+	"go":         {},
+	"python":     {},
+	"typescript": {},
+	"zig":        {},
+	"lua":        {},
+	"clj":        {},
+	"clojure":    {},
+}
 
 // normalizeProgram performs the post-parse pass that turns the raw
 // participle parse into a fully validated Mochi AST. It does three jobs:
@@ -142,6 +163,10 @@ func normalizeStatement(s *Statement) error {
 				return err
 			}
 		}
+	case s.Import != nil:
+		if err := validateImportLang(s.Import); err != nil {
+			return err
+		}
 	case s.Expr != nil:
 		if s.Expr.Expr != nil {
 			if err := normalizeExpr(s.Expr.Expr); err != nil {
@@ -194,6 +219,21 @@ func normalizeTypeDecl(td *TypeDecl) error {
 	td.Variants = append(td.Variants, v)
 	td.SingleVariant = nil
 	return nil
+}
+
+// validateImportLang rejects `import <lang> "..." as ...` where <lang> is
+// not in the language's registered host set. The grammar admits any
+// identifier in that position because Mochi imports are open to any
+// backend; the runtime rejects unknown values with a "module not found"
+// far later. Catching the typo at parse time keeps the diagnostic local.
+func validateImportLang(im *ImportStmt) error {
+	if im == nil || im.Lang == nil {
+		return nil
+	}
+	if _, ok := knownImportLangs[*im.Lang]; ok {
+		return nil
+	}
+	return errUnknownImportLang.New(im.Pos, *im.Lang)
 }
 
 // validateIndexOp rejects `xs[]`, `xs[:]`, and `xs[::]`. The grammar
