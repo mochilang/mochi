@@ -1,0 +1,8 @@
+error[P060]: index expression has no key, range, or step
+  --> tests/parser/errors/empty_slice.mochi:2:11
+
+  2 | let y = xs[:]
+    |           ^
+
+help:
+  Use `xs[i]` for a subscript, or supply at least one of start/end/step in a slice like `xs[1:]`, `xs[:3]`, or `xs[::2]`.

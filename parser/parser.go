@@ -162,14 +162,30 @@ type ForStmt struct {
 }
 
 // --- User-defined Types ---
-
+//
+// The body of a `type` declaration has four mutually exclusive shapes,
+// listed below in the order participle tries them with UseLookahead. The
+// alternation is expressed as a cross-field group: the opening `(` is on
+// `Members` and the closing `)` is on `Alias`.
+//
+//  1. Struct      `type T = { field : T, ... }`  (the leading `=` is optional)
+//  2. Variants    `type T = A | B | ...`         (two or more variants)
+//  3. SingleVar   `type T = Ctor(field: T, ...)` (one variant *with* fields)
+//  4. Alias       `type T = TypeRef`             (everything else)
+//
+// Branch 3 exists so that a single-constructor union written without a
+// leading `|` still parses; without it `type Pair = P(a: int, b: int)`
+// would be ambiguous against the alias branch. SingleVariant is folded
+// into Variants by normalizeProgram so downstream consumers see a single
+// slice. See MEP 2 §"Type declarations".
 type TypeDecl struct {
-	Pos      lexer.Position `json:"pos,omitempty" parser:""`
-	Name     string         `json:"name,omitempty" parser:"'type' @Ident"`
-	Doc      string         `json:"doc,omitempty" parser:""`
-	Members  []*TypeMember  `json:"members,omitempty" parser:"[ [ '=' ] '{' @@ { [ ',' ] @@ } [ ',' ]? '}' ]"`
-	Variants []*TypeVariant `json:"variants,omitempty" parser:"[ '=' @@ { '|' @@ } ]"`
-	Alias    *TypeRef       `json:"alias,omitempty" parser:"[ '=' @@ ]"`
+	Pos           lexer.Position   `json:"pos,omitempty" parser:""`
+	Name          string           `json:"name,omitempty" parser:"'type' @Ident"`
+	Doc           string           `json:"doc,omitempty" parser:""`
+	Members       []*TypeMember    `json:"members,omitempty" parser:"  ( [ '=' ] '{' @@ { [ ',' ] @@ } [ ',' ]? '}'"`
+	Variants      []*TypeVariant   `json:"variants,omitempty" parser:"| '=' @@ ( '|' @@ )+"`
+	SingleVariant *TypeVariantHead `json:"-" parser:"| '=' @@"`
+	Alias         *TypeRef         `json:"alias,omitempty" parser:"| '=' @@ )"`
 }
 
 type TypeMember struct {
@@ -181,6 +197,14 @@ type TypeVariant struct {
 	Pos    lexer.Position `json:"pos,omitempty" parser:""`
 	Name   string         `json:"name,omitempty" parser:"@Ident"`
 	Fields []*TypeField   `json:"fields,omitempty" parser:"[ '(' @@ { ',' @@ } [ ',' ]? ')' | '{' @@* '}' ]"`
+}
+
+// TypeVariantHead is a variant whose fields are mandatory. It exists only
+// to disambiguate `type T = Ctor(...)` from `type T = AliasTo`.
+type TypeVariantHead struct {
+	Pos    lexer.Position `json:"pos,omitempty" parser:""`
+	Name   string         `json:"name,omitempty" parser:"@Ident"`
+	Fields []*TypeField   `json:"fields,omitempty" parser:"( '(' @@ { ',' @@ } [ ',' ]? ')' | '{' @@* '}' )"`
 }
 
 type TypeField struct {
@@ -684,6 +708,9 @@ func ParseString(src string) (*Program, error) {
 	prog, err := Parser.ParseString("", text)
 	if err != nil {
 		return nil, fmt.Errorf("parse error: %w", wrapParseError("", err))
+	}
+	if err := normalizeProgram(prog); err != nil {
+		return nil, fmt.Errorf("parse error: %w", err)
 	}
 	attachDocs(text, prog)
 	return prog, nil

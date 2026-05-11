@@ -1,0 +1,8 @@
+error[P061]: match case has no result expression or block
+  --> tests/parser/errors/match_case_missing_body.mochi:2:19
+
+  2 | let r = match v { 0 => }
+    |                   ^
+
+help:
+  Provide a result after `=>`, e.g. `0 => "zero"`, or a block: `0 => { ... }`.

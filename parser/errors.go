@@ -23,6 +23,9 @@ func Parse(path string) (*Program, error) {
 	if err != nil {
 		return nil, wrapParseError(path, err)
 	}
+	if err := normalizeProgram(prog); err != nil {
+		return nil, err
+	}
 	attachDocs(text, prog)
 	return prog, nil
 }
