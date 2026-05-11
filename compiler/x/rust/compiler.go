@@ -3940,7 +3940,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 					}
 				}
 			}
-			if !ft.Variadic && len(args) < len(ft.Params) {
+			if ft.Variadic == nil && len(args) < len(ft.Params) {
 				missing := len(ft.Params) - len(args)
 				params := make([]string, missing)
 				for i := range params {

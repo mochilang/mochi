@@ -122,11 +122,15 @@ type TypeVar struct {
 
 func (t *TypeVar) String() string { return t.Name }
 
+// FuncType is the type of a function value. Params is the fixed prefix
+// of parameter types. Variadic is the element type of the trailing
+// varargs sequence, or nil if the function is not variadic (MEP 4 P13).
+// Pure is the inferred purity flag (MEP 4 P7).
 type FuncType struct {
 	Params   []Type
 	Return   Type
 	Pure     bool
-	Variadic bool
+	Variadic Type
 }
 
 func (f FuncType) String() string {
@@ -137,11 +141,11 @@ func (f FuncType) String() string {
 		}
 		s += p.String()
 	}
-	if f.Variadic {
+	if f.Variadic != nil {
 		if len(f.Params) > 0 {
-			s += ", ..."
+			s += ", ..." + f.Variadic.String()
 		} else {
-			s += "..."
+			s += "..." + f.Variadic.String()
 		}
 	}
 	s += ")"
@@ -309,13 +313,19 @@ func unify(a, b Type, subst Subst) bool {
 
 	case FuncType:
 		bt, ok := b.(FuncType)
-		if !ok || at.Variadic != bt.Variadic || len(at.Params) != len(bt.Params) {
+		if !ok || len(at.Params) != len(bt.Params) {
+			return false
+		}
+		if (at.Variadic == nil) != (bt.Variadic == nil) {
 			return false
 		}
 		for i := range at.Params {
 			if !unify(at.Params[i], bt.Params[i], subst) {
 				return false
 			}
+		}
+		if at.Variadic != nil && !unify(at.Variadic, bt.Variadic, subst) {
+			return false
 		}
 		return unify(at.Return, bt.Return, subst)
 
@@ -399,9 +409,9 @@ func unify(a, b Type, subst Subst) bool {
 
 func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("print", FuncType{
-		Params:   []Type{AnyType{}},
+		Params:   []Type{},
 		Return:   UnitType{},
-		Variadic: true,
+		Variadic: AnyType{},
 	}, false)
 	env.SetVar("len", FuncType{
 		Params: []Type{AnyType{}}, // loosely typed
@@ -414,10 +424,10 @@ func Check(prog *parser.Program, env *Env) []error {
 		Pure:   true,
 	}, false)
 	env.SetVar("concat", FuncType{
-		Params:   []Type{ListType{Elem: AnyType{}}},
+		Params:   []Type{},
 		Return:   ListType{Elem: AnyType{}},
 		Pure:     true,
-		Variadic: true,
+		Variadic: ListType{Elem: AnyType{}},
 	}, false)
 	env.SetVar("first", FuncType{
 		Params: []Type{ListType{Elem: AnyType{}}},
@@ -455,10 +465,10 @@ func Check(prog *parser.Program, env *Env) []error {
 		Pure:   true,
 	}, false)
 	env.SetVar("range", FuncType{
-		Params:   []Type{IntType{}},
+		Params:   []Type{},
 		Return:   ListType{Elem: IntType{}},
 		Pure:     true,
-		Variadic: true,
+		Variadic: IntType{},
 	}, false)
 	env.SetVar("now", FuncType{
 		Params: []Type{},
@@ -1923,7 +1933,7 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		argCount := len(p.Call.Args)
 		paramCount := len(ft.Params)
 
-		if exp, ok := builtinArity[p.Call.Func]; ok && !ft.Variadic {
+		if exp, ok := builtinArity[p.Call.Func]; ok && ft.Variadic == nil {
 			if _, defined := env.GetFunc(p.Call.Func); !defined {
 				if argCount != exp {
 					return nil, errArgCount(p.Pos, p.Call.Func, exp, argCount)
@@ -1931,15 +1941,13 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			}
 		}
 
-		if !ft.Variadic && argCount > paramCount {
+		if ft.Variadic == nil && argCount > paramCount {
 			return nil, errTooManyArgs(p.Pos, paramCount, argCount)
 		}
 
-		// check fixed parameters
+		// Params is the fixed prefix; ft.Variadic (if non-nil) types the
+		// trailing varargs sequence (MEP 4 P13).
 		fixed := paramCount
-		if ft.Variadic && paramCount > 0 {
-			fixed = paramCount - 1
-		}
 
 		argTypes := make([]Type, argCount)
 		for i := 0; i < argCount && i < fixed; i++ {
@@ -1953,13 +1961,8 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			}
 		}
 
-		var variadicType Type
-		if ft.Variadic {
-			if paramCount == 0 {
-				variadicType = AnyType{}
-			} else {
-				variadicType = ft.Params[paramCount-1]
-			}
+		if ft.Variadic != nil {
+			variadicType := ft.Variadic
 			for i := fixed; i < argCount; i++ {
 				at, err := checkExprWithExpected(p.Call.Args[i], env, variadicType)
 				if err != nil {
