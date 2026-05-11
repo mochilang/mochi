@@ -2473,8 +2473,13 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 		}
 		if resultType == nil {
 			resultType = rType
-		} else if !unify(resultType, rType, nil) {
-			resultType = AnyType{}
+			continue
+		}
+		// MEP-5 §Match [T-Match]: every arm's result type must unify with
+		// the principal type. Heterogeneous arms are T008; the prior rule
+		// silently widened to AnyType.
+		if !unify(resultType, rType, nil) {
+			return nil, errTypeMismatch(c.Pos, resultType, rType)
 		}
 	}
 	if resultType == nil {
