@@ -91,8 +91,13 @@ type Method struct {
 func (t StructType) String() string { return t.Name }
 
 type UnionType struct {
-	Name     string
+	Name string
+	// Variants stores the per-variant struct type keyed by variant name.
+	// Order preserves the declaration order of variants and is the
+	// canonical iteration sequence (MEP 4 P11). Variants is kept in
+	// sync but is not authoritative for ordering.
 	Variants map[string]StructType
+	Order    []string
 }
 
 func (t UnionType) String() string { return t.Name }
@@ -1183,7 +1188,8 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 			// Build the union with a shared variants map so recursive
 			// references resolve correctly as variants are populated.
 			variants := map[string]StructType{}
-			ut := UnionType{Name: s.Type.Name, Variants: variants}
+			variantOrder := make([]string, 0, len(s.Type.Variants))
+			ut := UnionType{Name: s.Type.Name, Variants: variants, Order: variantOrder}
 			env.SetUnion(s.Type.Name, ut)
 			env.types[s.Type.Name] = ut
 
@@ -1196,6 +1202,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				}
 				st := StructType{Name: v.Name, Fields: vf, Order: order}
 				variants[v.Name] = st
+				variantOrder = append(variantOrder, v.Name)
 				env.SetStruct(v.Name, st)
 				params := make([]Type, 0, len(v.Fields))
 				for _, f := range v.Fields {
@@ -1206,6 +1213,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 					env.SetVar(v.Name, UnionType{Name: s.Type.Name, Variants: nil}, false)
 				}
 			}
+			ut.Order = variantOrder
 			env.SetUnion(s.Type.Name, ut)
 			env.types[s.Type.Name] = ut
 			return nil
