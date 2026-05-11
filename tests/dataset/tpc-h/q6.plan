@@ -1,4 +1,4 @@
-type: int
+type: any
 plan:
 (select
   (call sum
