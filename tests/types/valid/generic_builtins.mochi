@@ -1,8 +1,10 @@
 // MEP-12.4: first / distinct / keys / values / push / append are
 // generic. The instantiated return type matches the inferred element /
 // key / value type, so no `as T` cast is needed at the consumer.
+// MEP-16 Stage 4: `first` now returns `T?` so the caller supplies a
+// fallback with `??` or narrows through the option binding.
 let xs: list<int> = [3, 1, 4, 1, 5, 9]
-let head: int = first(xs)
+let head: int = first(xs) ?? 0
 let uniq: list<int> = distinct(xs)
 expect head == 3
 expect len(uniq) == 5
