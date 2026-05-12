@@ -1,0 +1,4 @@
+// MEP-16 T059: comparing `none` (or any option-typed value) against a
+// bare non-optional operand is rejected. The result can never be true
+// because the option's payload, when present, is wrapped in `Some`.
+let bad = 5 == none

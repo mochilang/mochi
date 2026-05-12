@@ -77,6 +77,7 @@ var Errors = map[string]diagnostic.Template{
 	"T056": {Code: "T056", Message: "`sort by` expression must be an ordered type, got %s", Help: "Ordered types are int, int64, bigint, bigrat, float, bool, and string. Project a scalar field of an ordered type, or compare with an explicit key."},
 	"T057": {Code: "T057", Message: "`select distinct` expression must be a hashable type, got %s", Help: "Distinct deduplicates by structural equality. Function values do not have a stable hash. Project a scalar or record of scalars."},
 	"T058": {Code: "T058", Message: "dereference of optional `%s` requires a none guard", Help: "Narrow with `if %s != none { ... }` first, or supply a fallback (`?? default`)."},
+	"T059": {Code: "T059", Message: "comparison with `none` requires an optional operand, got %s", Help: "`none` is the empty side of `Option<T>`; comparing it to a non-optional value can never be true. Either change the operand to `T?` or drop the comparison."},
 }
 
 // --- Wrapper Functions ---
@@ -227,6 +228,10 @@ func errOptionalDeref(pos lexer.Position, name string) error {
 	msg := fmt.Sprintf(tmpl.Message, name)
 	help := fmt.Sprintf(tmpl.Help, name)
 	return diagnostic.New(tmpl.Code, pos, msg, help)
+}
+
+func errNoneComparison(pos lexer.Position, other Type) error {
+	return Errors["T059"].New(pos, other)
 }
 
 func errFetchURLString(pos lexer.Position) error {

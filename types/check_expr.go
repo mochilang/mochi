@@ -143,6 +143,22 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 		if isNumeric(left) && isNumeric(right) {
 			return BoolType{}, nil
 		}
+		// MEP-16 T059: comparing an option to a non-option is rejected
+		// only for equality. The result can never be true (an option's
+		// payload, when present, lives inside the `Some` wrapper, not
+		// at the same level as a bare value).
+		if op == "==" || op == "!=" {
+			if _, lOpt := left.(OptionType); lOpt {
+				if _, rOpt := right.(OptionType); !rOpt {
+					return nil, errNoneComparison(pos, right)
+				}
+			}
+			if _, rOpt := right.(OptionType); rOpt {
+				if _, lOpt := left.(OptionType); !lOpt {
+					return nil, errNoneComparison(pos, left)
+				}
+			}
+		}
 		return nil, errIncompatibleComparison(pos)
 	case "in":
 		switch rt := right.(type) {
