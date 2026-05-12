@@ -1,0 +1,8 @@
+1. error[T059]: comparison with `none` requires an optional operand, got int
+  --> tests/types/errors/none_compared_with_int.mochi:4:13
+
+  4 | let bad = 5 == none
+    |             ^
+
+help:
+  `none` is the empty side of `Option<T>`; comparing it to a non-optional value can never be true. Either change the operand to `T?` or drop the comparison.

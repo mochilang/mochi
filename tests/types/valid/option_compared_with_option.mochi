@@ -1,0 +1,8 @@
+// MEP-16 R3: comparing two option-typed values is well-typed. The
+// comparison happens at the option layer; T059 only fires when one
+// side is non-optional.
+let p: int? = 7
+let q: int? = none
+expect (p == none) == false
+expect (q == none) == true
+expect (p == q) == false
