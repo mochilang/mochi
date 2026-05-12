@@ -1,8 +1,8 @@
-1. error[T008]: type mismatch: expected bool, got int
-  --> tests/types/errors/query_where_bool_required.mochi:5:30
+1. error[T033]: `where` condition must be boolean
+  --> tests/types/errors/query_where_bool_required.mochi:3:30
 
-  5 | let bad = from x in xs where x select x
+  3 | let bad = from x in xs where x select x
     |                              ^
 
 help:
-  Change the value to match the expected type.
+  Ensure the condition evaluates to true or false.
