@@ -73,6 +73,7 @@ var Errors = map[string]diagnostic.Template{
 	"T052": {Code: "T052", Message: "cannot alias `%s` (%s) into a binding of type %s", Help: "Aliasing widens the source's element type, which would let a write through the alias deposit a value the source cannot hold. Aggregate element, key, and value types are invariant at aliasing sites. Clone explicitly (e.g. `[...xs]`, `{...m}`) or declare the destination with the source's exact element type."},
 	"T053": {Code: "T053", Message: "struct literal `%s` is missing required field(s) %s", Help: "Provide a value for every declared field. Mochi structs do not have field defaults."},
 	"T054": {Code: "T054", Message: "redundant match arm: %s", Help: "Remove the arm or merge it with the earlier arm it duplicates. Mochi does not have pattern guards, so duplicate patterns can never both fire."},
+	"T055": {Code: "T055", Message: "`%s` operand must be `int`, got %s", Help: "`skip` and `take` count rows; supply an integer expression."},
 }
 
 // --- Wrapper Functions ---
@@ -314,6 +315,10 @@ func errStructMissingField(pos lexer.Position, structName string, missing []stri
 
 func errMatchArmRedundant(pos lexer.Position, reason string) error {
 	return Errors["T054"].New(pos, reason)
+}
+
+func errSkipTakeIntOperand(pos lexer.Position, clause string, got Type) error {
+	return Errors["T055"].New(pos, clause, got)
 }
 
 func errMatchNonExhaustive(pos lexer.Position, unionName string, missing []string) error {
