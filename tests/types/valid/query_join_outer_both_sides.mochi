@@ -1,0 +1,10 @@
+// Outer join cardinality: union of both sides' unmatched rows plus the inner intersection.
+// Two left rows, two right rows, one match, one unmatched on each side -> three rows total.
+type Order { id: int, cid: int }
+type Cust  { id: int, name: string }
+let orders: list<Order> = [Order{id: 1, cid: 10}, Order{id: 2, cid: 99}]
+let custs:  list<Cust>  = [Cust{id: 10, name: "a"}, Cust{id: 20, name: "b"}]
+let joined = from o in orders
+             outer join c in custs on o.cid == c.id
+             select {o: o, c: c}
+expect count(joined) == 3
