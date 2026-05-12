@@ -138,6 +138,25 @@ func identFromUnary(u *parser.Unary) string {
 	return sel.Root
 }
 
+// isNoneLiteralExpr reports whether e is the bare `none` literal. It
+// drives MEP-16 N3 match-arm narrowing: a `none` pattern leaves the
+// scrutinee option-typed, while every other arm narrows it to T.
+func isNoneLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	return isNoneLiteralUnary(e.Binary.Left)
+}
+
+// optionElem unwraps an OptionType to its element. The second return
+// reports whether t was an option in the first place.
+func optionElem(t Type) (Type, bool) {
+	if opt, ok := t.(OptionType); ok {
+		return opt.Elem, true
+	}
+	return nil, false
+}
+
 // isNoneLiteralUnary reports whether u is the bare `none` literal.
 func isNoneLiteralUnary(u *parser.Unary) bool {
 	if u == nil || len(u.Ops) != 0 || u.Value == nil {

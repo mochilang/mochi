@@ -1,0 +1,8 @@
+// MEP-16 N3: narrowing applies to the whole arm body, so multiple
+// uses of the scrutinee inside the wildcard arm all see T.
+let p: int? = 4
+let result: int = match p {
+  none => -1
+  _ => p * p + p
+}
+expect result == 20

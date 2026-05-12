@@ -1,0 +1,9 @@
+// MEP-16 N3: when the scrutinee of a `match` is a bare option-typed
+// binding, the wildcard arm sees the binding narrowed to T because
+// the `none` arm matched and short-circuited everything else.
+let p: int? = 5
+let label: int = match p {
+  none => 0
+  _ => p + 1
+}
+expect label == 6

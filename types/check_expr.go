@@ -1221,6 +1221,12 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 	if err != nil {
 		return nil, err
 	}
+	// MEP-16 N3: when the scrutinee is a bare option-typed binding, the
+	// arm whose pattern is `none` keeps the binding's option type; every
+	// other arm proves the value is non-none, so the binding narrows to
+	// the wrapped element. The narrowing is applied per arm below.
+	scrutineeName := bareIdentName(m.Target)
+	scrutineeElem, scrutineeIsOption := optionElem(targetType)
 	var resultType Type
 	// MEP-10 A4: track variant coverage when the scrutinee is a union.
 	// A wildcard `_` (or an identifier binding that does not name a
@@ -1296,6 +1302,15 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 			}
 		} else {
 			hasCatchAll = true
+		}
+		// MEP-16 N3: apply scrutinee narrowing. The `none` literal arm
+		// leaves the binding option-typed; any other pattern narrows it
+		// to the wrapped element since `none` would have matched the
+		// none arm and short-circuited.
+		if scrutineeIsOption && scrutineeName != "" {
+			if !isNoneLiteralExpr(c.Pattern) {
+				caseEnv = narrowedEnv(caseEnv, map[string]Type{scrutineeName: scrutineeElem})
+			}
 		}
 		if c.Result == nil {
 			for _, st := range c.Block {
