@@ -1,0 +1,8 @@
+1. error[T020]: operator `+` cannot be used on types option[int] and int
+  --> tests/types/errors/option_narrow_reassign.mochi:10:18
+
+ 10 |   let b: int = x + 1
+    |                  ^
+
+help:
+  Choose an operator that supports these operand types.

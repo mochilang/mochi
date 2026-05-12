@@ -972,7 +972,10 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 		declaredRet = &TypeVar{Name: "R"}
 	}
 
-	child := NewEnv(env)
+	// MEP-16 N6: the closure may run after the outer scope mutates a
+	// narrowed binding. Strip any flow-narrowed shadows so the body
+	// reads outer bindings at their declared types.
+	child := NewEnv(closureBoundaryEnv(env))
 	for i, p := range f.Params {
 		child.SetVar(p.Name, paramTypes[i], true)
 	}

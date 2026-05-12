@@ -1,0 +1,9 @@
+// MEP-16 N6: a closure body resets narrowing to the declared type.
+// `x` is `int?` inside the lambda even though the surrounding scope
+// narrowed it to `int`.
+var x: int? = 5
+if x != none {
+  let f = fun(): int { return x + 1 }
+  let r: int = f()
+  expect r == 6
+}
