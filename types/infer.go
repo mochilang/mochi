@@ -112,31 +112,11 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 				var res Type
 				switch ops[i] {
 				case "+", "-", "*", "/", "%":
-					if ops[i] == "/" && isInt(left) && isInt(right) {
-						res = IntType{}
-						break
-					}
-					if (isInt64(left) && (isInt64(right) || isInt(right))) ||
-						(isInt64(right) && isInt(left)) {
-						res = Int64Type{}
-						break
-					}
-					if isBigRat(left) || isBigRat(right) {
-						res = BigRatType{}
-						break
-					}
-					if (isFloat(left) || isFloat(right)) &&
-						(isInt(left) || isFloat(left) || isInt64(left)) &&
-						(isInt(right) || isFloat(right) || isInt64(right)) {
-						res = FloatType{}
-						break
-					}
-					if isBigInt(left) || isBigInt(right) {
-						res = BigIntType{}
-						break
-					}
-					if isInt(left) && isInt(right) {
-						res = IntType{}
+					// MEP-10 B2: numeric mix is the lattice join. Replaces
+					// the prior order-dependent cascade so `bigint - float`
+					// and `float - bigint` produce the same result type.
+					if joined, ok := numericJoin(left, right); ok {
+						res = joined
 						break
 					}
 					if ops[i] == "+" {
@@ -955,6 +935,73 @@ func equalTypes(a, b Type) bool {
 		return at == bt
 	}
 	return false
+}
+
+// numericJoin returns the lattice join of two numeric kinds, or
+// (nil, false) if either operand is not numeric. The lattice is:
+//
+//	int <: int64 <: bigint <: bigrat
+//	             float <: bigrat
+//
+// The two integer-side and float-side chains meet at bigrat. This is
+// the soundness fix for MEP-10 B2: the prior cascade was order-
+// dependent so `bigint - float` and `float - bigint` could produce
+// different result types. The lattice is symmetric by construction.
+func numericJoin(a, b Type) (Type, bool) {
+	ra, ok := numericRank(a)
+	if !ok {
+		return nil, false
+	}
+	rb, ok := numericRank(b)
+	if !ok {
+		return nil, false
+	}
+	const (
+		rInt    = 0
+		rInt64  = 1
+		rBigInt = 2
+		rFloat  = 3
+		rBigRat = 4
+	)
+	// Float absorbs int and int64 (matches runtime coercion) but
+	// promotes to bigrat when paired with bigint or bigrat so we do
+	// not silently lose precision on a value too large for IEEE 754.
+	if ra == rFloat || rb == rFloat {
+		if ra == rBigInt || rb == rBigInt || ra == rBigRat || rb == rBigRat {
+			return BigRatType{}, true
+		}
+		return FloatType{}, true
+	}
+	if ra > rb {
+		ra, rb = rb, ra
+	}
+	switch rb {
+	case rInt:
+		return IntType{}, true
+	case rInt64:
+		return Int64Type{}, true
+	case rBigInt:
+		return BigIntType{}, true
+	case rBigRat:
+		return BigRatType{}, true
+	}
+	return nil, false
+}
+
+func numericRank(t Type) (int, bool) {
+	switch t.(type) {
+	case IntType:
+		return 0, true
+	case Int64Type:
+		return 1, true
+	case BigIntType:
+		return 2, true
+	case FloatType:
+		return 3, true
+	case BigRatType:
+		return 4, true
+	}
+	return 0, false
 }
 
 func isInt64(t Type) bool  { _, ok := t.(Int64Type); return ok }
