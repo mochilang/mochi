@@ -447,7 +447,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			if len(p.Call.Args) == 1 {
 				t := ExprType(p.Call.Args[0], env)
 				if lt, ok := t.(ListType); ok {
-					return lt.Elem
+					return OptionType{Elem: lt.Elem}
 				}
 			}
 			return AnyType{}

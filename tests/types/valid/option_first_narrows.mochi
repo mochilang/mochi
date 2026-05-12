@@ -1,0 +1,17 @@
+// MEP-16 Stage 4: `first` returns `T?` so the empty case no longer
+// panics at runtime. Callers either supply a fallback with `??` or
+// narrow through the option binding.
+let xs: list<int> = [10, 20, 30]
+let ys: list<int> = []
+
+let head: int = first(xs) ?? -1
+expect head == 10
+
+let missing: int = first(ys) ?? -1
+expect missing == -1
+
+let opt: int? = first(xs)
+if opt != none {
+  let doubled: int = opt * 2
+  expect doubled == 20
+}

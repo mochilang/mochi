@@ -40,13 +40,14 @@ func Check(prog *parser.Program, env *Env) []error {
 		Variadic:   ListType{Elem: concatT},
 		TypeParams: []string{"T"},
 	}, false)
-	// first<T>(xs: list<T>): T - MEP-12.4. Generic so the result of
-	// first(list<int>) is int rather than any, and the user no longer
-	// needs an `as T` cast at the consumer site.
+	// first<T>(xs: list<T>): T? - MEP-12.4 generic, MEP-16 Stage 4.
+	// Under MEP-16 the empty list returns `none` instead of panicking,
+	// so the static signature must say `T?`. Callers handle empties
+	// with `first(xs) ?? default` or by narrowing through the binding.
 	firstT := &TypeVar{Name: "T"}
 	env.SetVar("first", FuncType{
 		Params:     []Type{ListType{Elem: firstT}},
-		Return:     firstT,
+		Return:     OptionType{Elem: firstT},
 		Pure:       true,
 		TypeParams: []string{"T"},
 	}, false)

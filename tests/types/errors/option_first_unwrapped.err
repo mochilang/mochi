@@ -1,0 +1,8 @@
+1. error[T008]: type mismatch: expected int, got option[int]
+  --> tests/types/errors/option_first_unwrapped.mochi:4:17
+
+  4 | let head: int = first(xs)
+    |                 ^
+
+help:
+  Change the value to match the expected type.
