@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	dartcode "mochi/archived/x/dart"
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
 	"mochi/types"

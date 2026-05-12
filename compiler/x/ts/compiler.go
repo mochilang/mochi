@@ -16,7 +16,7 @@ import (
 
 	meta "mochi/compiler/meta"
 
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/types"
 )

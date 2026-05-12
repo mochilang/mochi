@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	cobolcode "mochi/archived/x/cobol"
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
 	"mochi/types"

@@ -14,7 +14,7 @@ import (
 
 	javacode "mochi/archived/x/java"
 	"mochi/golden"
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
 	"mochi/types"

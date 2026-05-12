@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	swiftcode "mochi/archived/x/swift"
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
 	"mochi/types"

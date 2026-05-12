@@ -45,7 +45,7 @@ import (
 	swiftcode "mochi/archived/x/swift"
 	wasmcode "mochi/archived/x/wasm"
 	zigcode "mochi/archived/x/zig"
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
 	"mochi/types"

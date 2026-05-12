@@ -15,7 +15,7 @@ import (
 	"time"
 	"unicode"
 
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/runtime/data"
 	testpkg "mochi/runtime/ffi/go/testpkg"

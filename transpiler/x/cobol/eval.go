@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/types"
 )

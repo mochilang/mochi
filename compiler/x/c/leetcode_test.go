@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	ccode "mochi/archived/x/c"
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
 	"mochi/types"
