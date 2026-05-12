@@ -1,0 +1,8 @@
+1. error[T026]: unknown field `z` on Point
+  --> tests/types/errors/struct_literal_unknown_field.mochi:9:16
+
+  9 | let _: Point = Point{x: 1, y: 2, z: 3}
+    |                ^
+
+help:
+  Check the struct definition for valid fields.

@@ -3,14 +3,9 @@ package types
 import (
 	"strings"
 
-	"mochi/ast"
+
 	"mochi/parser"
 )
-
-// ResolveTypeRef exposes resolveTypeRef for external packages.
-func ResolveTypeRef(t *parser.TypeRef, env *Env) Type {
-	return resolveTypeRef(t, env)
-}
 
 // ExprType returns the static type of expression e using env.
 func ExprType(e *parser.Expr, env *Env) Type {
@@ -285,7 +280,7 @@ func inferPostfixType(env *Env, p *parser.PostfixExpr) Type {
 				t = AnyType{}
 			}
 		} else if op.Cast != nil {
-			t = ResolveTypeRef(op.Cast.Type, env)
+			t = resolveTypeRef(op.Cast.Type, env)
 		}
 	}
 	return t
@@ -386,14 +381,14 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		params := make([]Type, len(p.FunExpr.Params))
 		for i, par := range p.FunExpr.Params {
 			if par.Type != nil {
-				params[i] = ResolveTypeRef(par.Type, env)
+				params[i] = resolveTypeRef(par.Type, env)
 			} else {
 				params[i] = AnyType{}
 			}
 		}
 		var ret Type = UnitType{}
 		if p.FunExpr.Return != nil {
-			ret = ResolveTypeRef(p.FunExpr.Return, env)
+			ret = resolveTypeRef(p.FunExpr.Return, env)
 		} else if p.FunExpr.ExprBody != nil {
 			ret = ExprType(p.FunExpr.ExprBody, env)
 		}
@@ -579,7 +574,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 	case p.Load != nil:
 		var elem Type = MapType{Key: StringType{}, Value: AnyType{}}
 		if p.Load.Type != nil {
-			elem = ResolveTypeRef(p.Load.Type, env)
+			elem = resolveTypeRef(p.Load.Type, env)
 			if p.Load.Type.Simple != nil {
 				if st, ok := env.GetStruct(*p.Load.Type.Simple); elem == (AnyType{}) && ok {
 					elem = st
@@ -687,11 +682,6 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 	return AnyType{}
 }
 
-// IfExprType returns the static type of an if-expression.
-func IfExprType(ie *parser.IfExpr, env *Env) Type {
-	return inferIfExprType(ie, env)
-}
-
 func inferIfExprType(ie *parser.IfExpr, env *Env) Type {
 	if ie == nil {
 		return AnyType{}
@@ -730,62 +720,6 @@ func inferIfExprType(ie *parser.IfExpr, env *Env) Type {
 		return BoolType{}
 	}
 	return AnyType{}
-}
-
-// ResultType returns the resulting type of applying op to left and right.
-func ResultType(op string, left, right Type) Type {
-	switch op {
-	case "+", "-", "*", "/", "%":
-		if isNumeric(left) && isNumeric(right) {
-			if isBigRat(left) || isBigRat(right) {
-				return BigRatType{}
-			}
-			if isBigInt(left) || isBigInt(right) {
-				return BigIntType{}
-			}
-			if (isInt64(left) && (isInt64(right) || isInt(right))) ||
-				(isInt64(right) && isInt(left)) {
-				return Int64Type{}
-			}
-			if isFloat(left) || isFloat(right) {
-				return FloatType{}
-			}
-			if isInt(left) && isInt(right) {
-				return IntType{}
-			}
-			return IntType{}
-		}
-		if op == "+" {
-			if isString(left) || isString(right) {
-				return StringType{}
-			}
-			if ll, ok := left.(ListType); ok {
-				if rl, ok := right.(ListType); ok {
-					if equalTypes(ll.Elem, rl.Elem) {
-						return ll
-					}
-					return ListType{Elem: AnyType{}}
-				}
-				return ListType{Elem: AnyType{}}
-			}
-		}
-		return AnyType{}
-	case "==", "!=", "<", "<=", ">", ">=", "in", "&&", "||":
-		return BoolType{}
-	case "union", "union_all", "except", "intersect":
-		if llist, ok := left.(ListType); ok {
-			if rlist, ok := right.(ListType); ok {
-				if equalTypes(llist.Elem, rlist.Elem) {
-					return llist
-				}
-				return ListType{Elem: AnyType{}}
-			}
-			return ListType{Elem: AnyType{}}
-		}
-		return AnyType{}
-	default:
-		return AnyType{}
-	}
 }
 
 // unionFieldPathType attempts to resolve a field path across all variants of a union.
@@ -1040,282 +974,3 @@ func SimpleStringKey(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
-// NodeType returns the static type of the given AST node using env when
-// available. It handles only a subset of node kinds sufficient for the COBOL
-// backend.
-func NodeType(n *ast.Node, env *Env) Type {
-	if n == nil {
-		return AnyType{}
-	}
-	switch n.Kind {
-	case "int":
-		return IntType{}
-	case "float":
-		return FloatType{}
-	case "string":
-		return StringType{}
-	case "bool":
-		return BoolType{}
-	case "list":
-		var elem Type = AnyType{}
-		if len(n.Children) > 0 {
-			elem = NodeType(n.Children[0], env)
-		}
-		return ListType{Elem: elem}
-	case "fetch":
-		return StringType{}
-	case "selector":
-		if env != nil {
-			if t, err := env.GetVar(n.Value.(string)); err == nil {
-				return t
-			}
-		}
-		return AnyType{}
-	case "call":
-		if env != nil {
-			if t, err := env.GetVar(n.Value.(string)); err == nil {
-				if ft, ok := t.(FuncType); ok {
-					return ft.Return
-				}
-			}
-		}
-		return AnyType{}
-	case "binary":
-		lt := NodeType(n.Children[0], env)
-		rt := NodeType(n.Children[1], env)
-		op := n.Value.(string)
-		switch op {
-		case "+", "-", "*", "/", "%":
-			if isFloat(lt) || isFloat(rt) {
-				return FloatType{}
-			}
-			if isInt(lt) && isInt(rt) {
-				return IntType{}
-			}
-			if op == "+" && isString(lt) && isString(rt) {
-				return StringType{}
-			}
-			if op == "+" && isList(lt) && isList(rt) {
-				llt := lt.(ListType)
-				rlt := rt.(ListType)
-				if equalTypes(llt.Elem, rlt.Elem) {
-					return llt
-				}
-			}
-			return AnyType{}
-		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
-			return BoolType{}
-		}
-	case "group":
-		return NodeType(n.Children[0], env)
-	case "unary":
-		return NodeType(n.Children[0], env)
-	case "index":
-		base := NodeType(n.Children[0], env)
-		if lt, ok := base.(ListType); ok {
-			if len(n.Children) > 1 && (n.Children[1].Kind == "start" || n.Children[1].Kind == "end" || len(n.Children) > 2) {
-				return lt
-			}
-			return lt.Elem
-		}
-		if isString(base) {
-			return StringType{}
-		}
-	case "if_expr":
-		thenT := NodeType(n.Children[1], env)
-		if len(n.Children) > 2 {
-			elseT := NodeType(n.Children[2], env)
-			if equalTypes(thenT, elseT) {
-				return thenT
-			}
-			return AnyType{}
-		}
-		return thenT
-	case "match":
-		var t Type
-		for _, cs := range n.Children[1:] {
-			r := NodeType(cs.Children[1], env)
-			if t == nil {
-				t = r
-				continue
-			}
-			if !equalTypes(t, r) {
-				t = AnyType{}
-			}
-		}
-		if t == nil {
-			return AnyType{}
-		}
-		return t
-	}
-	return AnyType{}
-}
-
-// IsString reports whether n has static type string.
-func IsString(n *ast.Node, env *Env) bool {
-	_, ok := NodeType(n, env).(StringType)
-	return ok
-}
-
-// IsFloat reports whether n has static type float.
-func IsFloat(n *ast.Node, env *Env) bool {
-	_, ok := NodeType(n, env).(FloatType)
-	return ok
-}
-
-// IsList reports whether n has static list type.
-func IsList(n *ast.Node, env *Env) bool {
-	_, ok := NodeType(n, env).(ListType)
-	return ok
-}
-
-// TypeOfExprBasic performs lightweight type inference for dynamic backends.
-// It distinguishes literals, lists, maps and known variable references.
-func TypeOfExprBasic(e *parser.Expr, env *Env) Type {
-	if e == nil {
-		return AnyType{}
-	}
-	if id, ok := identName(e); ok && env != nil {
-		if t, err := env.GetVar(id); err == nil {
-			return t
-		}
-	}
-	return TypeOfPostfixBasic(e.Binary.Left, env)
-}
-
-// TypeOfPostfixBasic infers the type of a unary expression using simple rules.
-func TypeOfPostfixBasic(u *parser.Unary, env *Env) Type {
-	if u == nil {
-		return AnyType{}
-	}
-	t := TypeOfPrimaryBasic(u.Value.Target, env)
-	for _, op := range u.Value.Ops {
-		switch {
-		case op.Index != nil:
-			switch tt := t.(type) {
-			case ListType:
-				t = tt.Elem
-			case MapType:
-				t = tt.Value
-			default:
-				t = AnyType{}
-			}
-		case op.Field != nil:
-			if st, ok := t.(StructType); ok {
-				if ft, ok2 := st.FieldType(op.Field.Name); ok2 {
-					t = ft
-				} else {
-					t = AnyType{}
-				}
-			} else {
-				t = AnyType{}
-			}
-		case op.Call != nil:
-			if ft, ok := t.(FuncType); ok {
-				t = ft.Return
-			} else {
-				t = AnyType{}
-			}
-		case op.Cast != nil:
-			t = ResolveTypeRef(op.Cast.Type, env)
-		}
-	}
-	return t
-}
-
-// TypeOfPrimaryBasic infers the type of a primary expression using simple rules.
-func TypeOfPrimaryBasic(p *parser.Primary, env *Env) Type {
-	if p == nil {
-		return AnyType{}
-	}
-	switch {
-	case p.Lit != nil:
-		switch {
-		case p.Lit.Str != nil:
-			return StringType{}
-		case p.Lit.Int != nil:
-			return IntType{}
-		case p.Lit.Float != nil:
-			return FloatType{}
-		case p.Lit.Bool != nil:
-			return BoolType{}
-		case p.Lit.Null:
-			return AnyType{}
-		}
-	case p.List != nil:
-		return ListType{Elem: AnyType{}}
-	case p.Map != nil:
-		return MapType{Key: AnyType{}, Value: AnyType{}}
-	case p.Selector != nil:
-		if env != nil {
-			if len(p.Selector.Tail) > 0 {
-				full := p.Selector.Root + "." + strings.Join(p.Selector.Tail, ".")
-				if t, err := env.GetVar(full); err == nil {
-					return t
-				}
-			}
-			if t, err := env.GetVar(p.Selector.Root); err == nil {
-				return FieldType(t, p.Selector.Tail)
-			}
-		}
-	case p.Call != nil:
-		switch p.Call.Func {
-		case "to_string", "str", "input":
-			return StringType{}
-		}
-	}
-	return AnyType{}
-}
-
-// IsListType reports whether t is a list type.
-func IsListType(t Type) bool { return isList(t) }
-
-// IsMapType reports whether t is a map type.
-func IsMapType(t Type) bool { _, ok := t.(MapType); return ok }
-
-// IsStringType reports whether t is a string type.
-func IsStringType(t Type) bool { return isString(t) }
-
-// FieldType returns the type reached by following path through the given type.
-// It returns AnyType if the path cannot be resolved.
-func FieldType(t Type, path []string) Type {
-	for _, p := range path {
-		switch tt := t.(type) {
-		case StructType:
-			if f, ok := tt.FieldType(p); ok {
-				t = f
-			} else {
-				return AnyType{}
-			}
-		case MapType:
-			if p == "length" || p == "size" {
-				t = IntType{}
-			} else {
-				t = tt.Value
-			}
-		case ListType:
-			if p == "size" || p == "length" {
-				t = IntType{}
-			} else {
-				t = tt.Elem
-			}
-		case StringType:
-			if p == "length" || p == "size" {
-				t = IntType{}
-			} else {
-				return AnyType{}
-			}
-		case GroupType:
-			if p == "key" {
-				t = tt.Key
-			} else if p == "items" {
-				t = ListType{Elem: tt.Elem}
-			} else {
-				return AnyType{}
-			}
-		default:
-			return AnyType{}
-		}
-	}
-	return t
-}

@@ -1,0 +1,12 @@
+// MEP-13 §Irredundancy: a match arm that names a variant already
+// covered by an earlier arm is unreachable. Mochi does not have
+// pattern guards, so the duplicate can never fire on a different
+// predicate; T054 rejects it.
+type Shape = Circle(r: int) | Square(s: int)
+
+let v: Shape = Circle(1)
+let n: int = match v {
+  Circle(r) => r
+  Square(s) => s
+  Circle(x) => x
+}

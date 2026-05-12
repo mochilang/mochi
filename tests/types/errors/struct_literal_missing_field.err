@@ -1,0 +1,8 @@
+1. error[T053]: struct literal `Point` is missing required field(s) `y`
+  --> tests/types/errors/struct_literal_missing_field.mochi:10:16
+
+ 10 | let _: Point = Point{x: 3}
+    |                ^
+
+help:
+  Provide a value for every declared field. Mochi structs do not have field defaults.

@@ -1,0 +1,9 @@
+// MEP-13 §Union typing: a variant constructor called with more
+// arguments than declared is rejected with T006. The constructor
+// surface is a FuncType, so this is the same arity check that fires
+// on any non-variadic call.
+type Shape =
+  Circle(r: int)
+| Rect(w: int, h: int)
+
+let r: Shape = Rect(1, 2, 3)
