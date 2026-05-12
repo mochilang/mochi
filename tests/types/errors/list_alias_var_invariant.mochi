@@ -1,0 +1,7 @@
+// MEP-10 B3 / T052: aliasing a `list<int>` var into a `list<any>` var
+// would create a write hole. A later `ys[0] = "hello"` would deposit
+// a string into the int-typed storage that xs still reads from.
+// Element types are invariant at the aliasing point; the destination
+// must declare the source's exact element type or clone the list.
+var xs: list<int> = [1, 2, 3]
+var ys: list<any> = xs

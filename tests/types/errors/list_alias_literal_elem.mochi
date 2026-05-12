@@ -1,0 +1,6 @@
+// MEP-10 B3e / T052: a list literal `[xs]` used as a `list<list<any>>`
+// stores a reference to xs inside bag. A later `bag[0][i] = "..."`
+// would corrupt reads through xs. Aggregate invariance applies to
+// element expressions inside literals at structural aggregate slots.
+var xs: list<int> = [1, 2, 3]
+var bag: list<list<any>> = [xs]
