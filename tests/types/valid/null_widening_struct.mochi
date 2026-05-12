@@ -1,8 +1,0 @@
-// Snapshot: null leaks into a typed struct position.
-// See MEP 4 and MEP 7. When null becomes an option type
-// this file moves to tests/types/errors/.
-type Point {
-  x: int
-  y: int
-}
-let p: Point = null

@@ -1,7 +1,7 @@
 1. error[T044]: impure call to `print` is not allowed in `where` predicate
   --> tests/types/errors/impure_in_where_rejected.mochi:2:33
 
-  2 | let result = from x in xs where print(x) == null select x
+  2 | let result = from x in xs where print(x) == print(x) select x
     |                                 ^
 
 help:
