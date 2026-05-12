@@ -172,8 +172,10 @@ func isNoneLiteralUnary(u *parser.Unary) bool {
 
 // narrowedEnv returns a child env where each (name, type) in narrowed
 // shadows the parent binding. The child preserves the parent's
-// mutability flag for the binding. When narrowed is empty the parent
-// env is returned unchanged so the common path stays allocation-free.
+// mutability flag for the binding and marks the shadow so MEP-16 N4
+// can recover the declared type at assignment sites. When narrowed is
+// empty the parent env is returned unchanged so the common path stays
+// allocation-free.
 func narrowedEnv(env *Env, narrowed map[string]Type) *Env {
 	if len(narrowed) == 0 {
 		return env
@@ -182,6 +184,40 @@ func narrowedEnv(env *Env, narrowed map[string]Type) *Env {
 	for name, t := range narrowed {
 		mut, _ := env.isMutable(name)
 		child.SetVar(name, t, mut)
+		child.narrowed[name] = true
 	}
 	return child
+}
+
+// closureBoundaryEnv strips every flow-narrowed shadow visible from env
+// by overlaying the declared types of those bindings. Closures cannot
+// rely on outer narrowing because the body may run after the outer
+// scope has reassigned the binding; MEP-16 N6 resets to declared types
+// at the closure boundary.
+func closureBoundaryEnv(env *Env) *Env {
+	if env == nil {
+		return env
+	}
+	collected := map[string]Type{}
+	for e := env; e != nil; e = e.parent {
+		for name := range e.narrowed {
+			if _, seen := collected[name]; seen {
+				continue
+			}
+			declared, err := env.DeclaredVarType(name)
+			if err != nil {
+				continue
+			}
+			collected[name] = declared
+		}
+	}
+	if len(collected) == 0 {
+		return env
+	}
+	out := NewEnv(env)
+	for name, t := range collected {
+		mut, _ := env.isMutable(name)
+		out.SetVar(name, t, mut)
+	}
+	return out
 }

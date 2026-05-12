@@ -1,0 +1,3 @@
+// MEP-16 R7: `??` is defined only for option-typed LHS. Applying it
+// to a bare `T` is meaningless and is rejected at type-check time.
+let bad = 5 ?? 0

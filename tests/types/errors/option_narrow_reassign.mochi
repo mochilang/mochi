@@ -1,0 +1,13 @@
+// MEP-16 N4: reassignment inside a narrowed scope drops the narrowing
+// from the assignment site onward. The second `x + 1` sees `x : int?`
+// again and is rejected by R4 (T008).
+fun maybe(): int? { return none }
+
+var x: int? = 5
+if x != none {
+  let a: int = x + 1
+  x = maybe()
+  let b: int = x + 1
+  expect a == 6
+  expect b == 0
+}

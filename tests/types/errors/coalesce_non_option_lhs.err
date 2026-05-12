@@ -1,0 +1,8 @@
+1. error[T020]: operator `??` cannot be used on types int and int
+  --> tests/types/errors/coalesce_non_option_lhs.mochi:3:13
+
+  3 | let bad = 5 ?? 0
+    |             ^
+
+help:
+  Choose an operator that supports these operand types.

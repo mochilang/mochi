@@ -1,0 +1,10 @@
+// MEP-16 N4: when the reassignment RHS is a non-option `T`, the
+// narrowing stays valid because the binding is still proven non-`none`.
+var x: int? = 1
+if x != none {
+  let a: int = x + 10
+  x = 7
+  let b: int = x + 100
+  expect a == 11
+  expect b == 107
+}

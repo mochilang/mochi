@@ -28,6 +28,12 @@ type Env struct {
 	funcs   map[string]*parser.FunStmt   // function declarations
 	models  map[string]ModelSpec         // model aliases
 
+	// narrowed marks bindings whose entry in `types` is a flow-narrowed
+	// shadow rather than a fresh declaration. `declaredVarType` skips
+	// these so MEP-16 N4 can resolve an assignment's target against the
+	// original declared type rather than the tightened option element.
+	narrowed map[string]bool
+
 	// typeParams holds the active generic type parameters in this scope.
 	// resolveTypeRef consults this so that names like `T` and `K` inside
 	// a `fun foo<T, K>(...)` signature resolve to the same TypeVar
@@ -91,6 +97,7 @@ func NewEnv(parent *Env) *Env {
 		values:  make(map[string]any),
 		funcs:   make(map[string]*parser.FunStmt),
 		models:  make(map[string]ModelSpec),
+		narrowed: make(map[string]bool),
 		typeParams: make(map[string]*TypeVar),
 		output:  out,
 		input:   in,
@@ -254,6 +261,36 @@ func (e *Env) GetVar(name string) (Type, error) {
 		return e.parent.GetVar(name)
 	}
 	return nil, fmt.Errorf("undefined variable: %s", name)
+}
+
+// DeclaredVarType looks up the binding's declared type, skipping any
+// narrowed shadow installed by flow narrowing. Returns the original
+// type the binding was declared with (e.g., `int?` even when narrowed
+// to `int` in the current scope). Falls back to GetVar when no
+// declaration is found, which would be a bug elsewhere in the checker.
+func (e *Env) DeclaredVarType(name string) (Type, error) {
+	if t, ok := e.types[name]; ok && !e.narrowed[name] {
+		return t, nil
+	}
+	if e.parent != nil {
+		return e.parent.DeclaredVarType(name)
+	}
+	if t, ok := e.types[name]; ok {
+		return t, nil
+	}
+	return nil, fmt.Errorf("undefined variable: %s", name)
+}
+
+// IsNarrowed reports whether name's current binding in env or any parent
+// is a flow-narrowed shadow (true) rather than a plain declaration.
+func (e *Env) IsNarrowed(name string) bool {
+	if _, ok := e.types[name]; ok {
+		return e.narrowed[name]
+	}
+	if e.parent != nil {
+		return e.parent.IsNarrowed(name)
+	}
+	return false
 }
 
 func (e *Env) isMutable(name string) (bool, bool) {

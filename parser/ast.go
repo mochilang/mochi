@@ -337,7 +337,7 @@ type BinaryExpr struct {
 
 type BinaryOp struct {
 	Pos   lexer.Position `json:"pos,omitempty" parser:""`
-	Op    string         `json:"op,omitempty" parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%' | 'in' | '&&' | '||' | 'union' | 'except' | 'intersect')"`
+	Op    string         `json:"op,omitempty" parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%' | 'in' | '&&' | '||' | '??' | 'union' | 'except' | 'intersect')"`
 	All   bool           `json:"all,omitempty" parser:"[ @'all' ]"`
 	Right *Unary         `json:"right,omitempty" parser:"@@"`
 }
@@ -354,11 +354,30 @@ type PostfixExpr struct {
 }
 
 type PostfixOp struct {
+	Pos         lexer.Position `json:"pos,omitempty" parser:""`
+	Call        *CallOp        `json:"call,omitempty" parser:"@@"`
+	SafeField   *SafeFieldOp   `json:"safe_field,omitempty" parser:"| @@"`
+	SafeIndex   *SafeIndexOp   `json:"safe_index,omitempty" parser:"| @@"`
+	Index       *IndexOp       `json:"index,omitempty" parser:"| @@"`
+	Field       *FieldOp       `json:"field,omitempty" parser:"| @@"`
+	Cast        *CastOp        `json:"cast,omitempty" parser:"| @@"`
+}
+
+// SafeFieldOp models the MEP-16 `?.` postfix selector. `a?.f` reads as
+// "if a holds a value, take field f, otherwise none". The type checker
+// requires the receiver to be option-typed and lifts the field type
+// back into `Option`.
+type SafeFieldOp struct {
+	Pos  lexer.Position `json:"pos,omitempty" parser:""`
+	Name string         `json:"name,omitempty" parser:"'?' '.' @Ident"`
+}
+
+// SafeIndexOp models the MEP-16 `?[ ]` postfix index. `a?[k]` reads as
+// "if a holds a value, look up k, otherwise none". The receiver must
+// be `list<T>?` or `map<K, V>?`; the element type is option-wrapped.
+type SafeIndexOp struct {
 	Pos   lexer.Position `json:"pos,omitempty" parser:""`
-	Call  *CallOp        `json:"call,omitempty" parser:"@@"`
-	Index *IndexOp       `json:"index,omitempty" parser:"| @@"`
-	Field *FieldOp       `json:"field,omitempty" parser:"| @@"`
-	Cast  *CastOp        `json:"cast,omitempty" parser:"| @@"`
+	Start *Expr          `json:"start,omitempty" parser:"'?' '[' @@ ']'"`
 }
 
 type FieldOp struct {

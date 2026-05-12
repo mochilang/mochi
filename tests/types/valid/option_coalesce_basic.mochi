@@ -1,0 +1,8 @@
+// MEP-16 R7: `a ?? b` returns the wrapped value of `a` when present,
+// otherwise evaluates `b`. With `a : T?` and `b : T`, the result is T.
+let p: int? = none
+let q: int? = 7
+let a: int = p ?? 0
+let b: int = q ?? 0
+expect a == 0
+expect b == 7

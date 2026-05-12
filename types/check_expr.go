@@ -72,6 +72,7 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env, expected Type) (Type, error
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"??"},
 		{"union", "union_all", "except", "intersect"},
 	} {
 		for i := 0; i < len(operators); {
@@ -222,6 +223,29 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 			return nil, errOperatorMismatch(pos, op, left, right)
 		}
 		return BoolType{}, nil
+	case "??":
+		// MEP-16 R7: `??` requires the LHS to be optional. If the RHS is
+		// also optional, the result keeps the option layer; otherwise the
+		// option layer is shed because every `none` lane is replaced.
+		lopt, lok := left.(OptionType)
+		if !lok {
+			return nil, errOperatorMismatch(pos, op, left, right)
+		}
+		if ropt, rok := right.(OptionType); rok {
+			if unify(lopt.Elem, ropt.Elem, nil) {
+				return OptionType{Elem: lopt.Elem}, nil
+			}
+			return OptionType{Elem: AnyType{}}, nil
+		}
+		if unify(lopt.Elem, right, nil) {
+			return lopt.Elem, nil
+		}
+		if isNumeric(lopt.Elem) && isNumeric(right) {
+			if joined, ok := numericJoin(lopt.Elem, right); ok {
+				return joined, nil
+			}
+		}
+		return nil, errOperatorMismatch(pos, op, left, right)
 	default:
 		return nil, errUnsupportedOperator(pos, op)
 	}
@@ -381,10 +405,102 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 				return nil, errInvalidCast(op.Pos, typ, target)
 			}
 			typ = target
+		} else if sf := op.SafeField; sf != nil {
+			// MEP-16 R5: `a?.f` requires `a : T?` and lifts `T.f : U`
+			// back into `U?`. If the receiver is already `U?` from an
+			// earlier `?.` step, the rule chains.
+			opt, ok := typ.(OptionType)
+			if !ok {
+				if _, isAny := typ.(AnyType); isAny {
+					typ = OptionType{Elem: AnyType{}}
+					continue
+				}
+				return nil, errSafeFieldNonOption(op.Pos, sf.Name, typ)
+			}
+			fieldT, err := safeFieldType(op.Pos, opt.Elem, sf.Name)
+			if err != nil {
+				return nil, err
+			}
+			typ = OptionType{Elem: fieldT}
+		} else if si := op.SafeIndex; si != nil {
+			// MEP-16 R6: `a?[k]` requires `a : list<T>?` or
+			// `a : map<K, V>?` and lifts the element type back into
+			// option form.
+			opt, ok := typ.(OptionType)
+			if !ok {
+				if _, isAny := typ.(AnyType); isAny {
+					if _, err := checkExpr(si.Start, env); err != nil {
+						return nil, err
+					}
+					typ = OptionType{Elem: AnyType{}}
+					continue
+				}
+				return nil, errSafeIndexNonOption(op.Pos, typ)
+			}
+			elemT, err := safeIndexType(op.Pos, opt.Elem, si.Start, env)
+			if err != nil {
+				return nil, err
+			}
+			typ = OptionType{Elem: elemT}
 		}
 	}
 
 	return typ, nil
+}
+
+// safeFieldType resolves a `?.f` step given the wrapped element type.
+// Mirrors the field-access cases from the bare Selector path but is
+// restricted to struct fields and `any` since `?.` only makes sense on
+// addressable named members.
+func safeFieldType(pos lexer.Position, elem Type, name string) (Type, error) {
+	switch t := elem.(type) {
+	case StructType:
+		if ft, ok := t.FieldType(name); ok {
+			return ft, nil
+		}
+		if m, ok := t.Methods[name]; ok {
+			return m.Type, nil
+		}
+		return nil, errUnknownField(pos, name, t)
+	case AnyType:
+		return AnyType{}, nil
+	case MapType:
+		if unify(t.Key, StringType{}, nil) {
+			return t.Value, nil
+		}
+	}
+	return nil, errSafeFieldNonStruct(pos, name, elem)
+}
+
+// safeIndexType resolves a `?[k]` step given the wrapped element type.
+// Supports list and map receivers; everything else is a type error.
+func safeIndexType(pos lexer.Position, elem Type, key *parser.Expr, env *Env) (Type, error) {
+	switch t := elem.(type) {
+	case ListType:
+		keyT, err := checkExpr(key, env)
+		if err != nil {
+			return nil, err
+		}
+		if !(unify(keyT, IntType{}, nil) || unify(keyT, Int64Type{}, nil)) {
+			return nil, errIndexNotInteger(pos)
+		}
+		return t.Elem, nil
+	case MapType:
+		keyT, err := checkExpr(key, env)
+		if err != nil {
+			return nil, err
+		}
+		if !unify(keyT, t.Key, nil) {
+			return nil, errIndexTypeMismatch(pos, t.Key, keyT)
+		}
+		return t.Value, nil
+	case AnyType:
+		if _, err := checkExpr(key, env); err != nil {
+			return nil, err
+		}
+		return AnyType{}, nil
+	}
+	return nil, errSafeIndexNonIndexable(pos, elem)
 }
 
 func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
@@ -948,7 +1064,10 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 		declaredRet = &TypeVar{Name: "R"}
 	}
 
-	child := NewEnv(env)
+	// MEP-16 N6: the closure may run after the outer scope mutates a
+	// narrowed binding. Strip any flow-narrowed shadows so the body
+	// reads outer bindings at their declared types.
+	child := NewEnv(closureBoundaryEnv(env))
 	for i, p := range f.Params {
 		child.SetVar(p.Name, paramTypes[i], true)
 	}

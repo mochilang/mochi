@@ -853,6 +853,7 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"??"},
 		{"union", "union_all", "except", "intersect"},
 	}
 
@@ -874,6 +875,22 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 			if contains(level, opName) {
 				left := valueOf(&operands[i])
 				var dst int
+				if opName == "??" {
+					// MEP-16 Stage 3: `a ?? b` evaluates `b` only when `a`
+					// is `none`. We move LHS into dst, jump over the RHS
+					// when not-null, otherwise overwrite with RHS.
+					dst = fc.newReg()
+					fc.emit(ops[i].Pos, Instr{Op: OpMove, A: dst, B: left})
+					jmp := len(fc.fn.Code)
+					fc.emit(ops[i].Pos, Instr{Op: OpJumpIfNotNull, A: dst})
+					right := valueOf(&operands[i+1])
+					fc.emit(ops[i].Pos, Instr{Op: OpMove, A: dst, B: right})
+					fc.fn.Code[jmp].B = len(fc.fn.Code)
+					operands[i] = operand{reg: dst, done: true}
+					operands = append(operands[:i+1], operands[i+2:]...)
+					ops = append(ops[:i], ops[i+1:]...)
+					continue
+				}
 				if opName == "&&" || opName == "||" {
 					dst = fc.newReg()
 					fc.emit(ops[i].Pos, Instr{Op: OpMove, A: dst, B: left})
@@ -1244,6 +1261,20 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 			idx := fc.comp.addType(typ)
 			dst := fc.newReg()
 			fc.emit(op.Cast.Pos, Instr{Op: OpCast, A: dst, B: r, C: idx})
+			r = dst
+		} else if sf := op.SafeField; sf != nil {
+			// MEP-16 R5: lower `a?.f` to OpIndex with the field name as
+			// key. OpIndex already short-circuits on a null receiver.
+			key := fc.constReg(op.Pos, Value{Tag: ValueStr, Str: sf.Name})
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpIndex, A: dst, B: r, C: key})
+			r = dst
+		} else if si := op.SafeIndex; si != nil {
+			// MEP-16 R6: lower `a?[k]` to OpIndex. OpIndex returns null
+			// when the source is null, which preserves the option layer.
+			idx := fc.compileExpr(si.Start)
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpIndex, A: dst, B: r, C: idx})
 			r = dst
 		}
 	}
@@ -2986,6 +3017,7 @@ func (fc *funcCompiler) evalConstBinary(b *parser.BinaryExpr) (Value, bool) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"??"},
 		{"union", "union_all", "except", "intersect"},
 	}
 
@@ -3058,6 +3090,8 @@ func (fc *funcCompiler) evalConstPostfix(p *parser.PostfixExpr) (Value, bool) {
 			}
 			v = FromAny(cv)
 		case op.Call != nil || op.Index != nil || op.Field != nil:
+			return Value{}, false
+		case op.SafeField != nil || op.SafeIndex != nil:
 			return Value{}, false
 		}
 	}
@@ -3254,6 +3288,14 @@ func applyBinaryConst(op string, a, b Value) (Value, bool) {
 		if a.Tag == ValueBool && b.Tag == ValueBool {
 			return Value{Tag: ValueBool, Bool: a.Bool || b.Bool}, true
 		}
+	case "??":
+		// MEP-16 Stage 3: constant-fold the coalesce. If the LHS is
+		// `none`, take the RHS; otherwise the LHS already carries the
+		// value.
+		if a.Tag == ValueNull {
+			return b, true
+		}
+		return a, true
 	case "in":
 		switch b.Tag {
 		case ValueList:
