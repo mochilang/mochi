@@ -1,0 +1,8 @@
+1. error[T020]: operator `+` cannot be used on types option[int] and int
+  --> tests/types/errors/option_narrow_closure_boundary.mochi:6:33
+
+  6 |   let f = fun(): int { return x + 1 }
+    |                                 ^
+
+help:
+  Choose an operator that supports these operand types.

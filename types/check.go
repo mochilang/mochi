@@ -604,7 +604,11 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 		return nil
 
 	case s.Assign != nil:
-		lhsType, err := env.GetVar(s.Assign.Name)
+		// MEP-16 N4: when the LHS binding is narrowed (e.g., inside
+		// `if x != none { ... }`), the assignment must reference the
+		// declared type, not the narrowed shadow. Otherwise rebinding to
+		// the wider option type would be rejected.
+		lhsType, err := env.DeclaredVarType(s.Assign.Name)
 		if err != nil {
 			return errAssignUndeclared(s.Assign.Pos, s.Assign.Name)
 		}
@@ -730,7 +734,10 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 		if err != nil {
 			return err
 		}
-		if !unify(lhsType, rhsType, nil) {
+		// MEP-10 R1 also covers assignment: a non-option `int` flows
+		// into an `int?` slot via auto-wrap. The let-binding path
+		// already uses Assignable; mirror it here.
+		if !unify(lhsType, rhsType, nil) && !Assignable(rhsType, lhsType) {
 			return errCannotAssign(s.Assign.Pos, rhsType, s.Assign.Name, lhsType)
 		}
 		// MEP-10 B3d: when the LHS targets a slot reached through an
