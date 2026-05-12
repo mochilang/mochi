@@ -1,0 +1,8 @@
+1. error[T056]: `sort by` expression must be an ordered type, got Box
+  --> tests/types/errors/query_sort_by_unordered.mochi:6:32
+
+  6 | let bad = from x in xs sort by x select x
+    |                                ^
+
+help:
+  Ordered types are int, int64, bigint, bigrat, float, bool, and string. Project a scalar field of an ordered type, or compare with an explicit key.
