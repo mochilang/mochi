@@ -998,6 +998,19 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				if !Assignable(exprType, typ) {
 					return errTypeMismatch(s.Var.Pos, typ, exprType)
 				}
+				// MEP-10 B3: when the source is a bare identifier
+				// referring to an aliasable aggregate, the new binding
+				// shares storage with the source. A widened element
+				// type (e.g. `list<int>` into `list<any>`) lets a
+				// later `ys[i] = ...` deposit a value the source's
+				// static type rejects, corrupting reads through the
+				// source name. Aliasing requires structural equality
+				// on aggregate element, key, and value types.
+				if src := bareIdentName(s.Var.Value); src != "" {
+					if isAliasableAggregate(exprType) && !equalKinds(exprType, typ) {
+						return errAliasWidensElement(s.Var.Pos, src, exprType, typ)
+					}
+				}
 			}
 		} else if s.Var.Value != nil {
 			var err error
