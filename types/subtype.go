@@ -154,29 +154,40 @@ func Subtype(s, t Type) bool {
 // need permanent looseness route through an explicit `as any` cast
 // once #79 lands.
 func Assignable(src, dst Type) bool {
-	if _, ok := src.(AnyType); ok {
-		return true
-	}
+	// MEP-11.3 (MEP-10 A1). A value typed `any` no longer flows into a
+	// concrete slot without an explicit `as T` cast. The dst=any
+	// direction stays valid (covered by Subtype's T-Top rule below).
+	return assignableAt(src, dst, false)
+}
+
+// assignableAt is the recursion that powers Assignable. The
+// elementContext flag carries the "empty collection literal" carve-out
+// across structural descents: `[]` is `[any]`, `{}` is `{any: any}`,
+// and `null` is `option[any]`. Inside those positions we still admit
+// src=Any because it represents the literal's polymorphic element
+// type, not a user-typed `any` value. At the top level the flag is
+// false and the bare-any escape is closed.
+func assignableAt(src, dst Type, elementContext bool) bool {
 	if _, ok := dst.(AnyType); ok {
 		return true
 	}
-	// Empty collection literals carry an `any` element type
-	// (`[]` is `[any]`, `{}` is `{any: any}`). Until MEP-12 wires
-	// generic literals through inference, treat those shapes as
-	// assignable into any concrete collection. The recursion is on
-	// the same boundary as Subtype's structural rules.
+	if elementContext {
+		if _, ok := src.(AnyType); ok {
+			return true
+		}
+	}
 	switch sv := src.(type) {
 	case ListType:
 		if dv, ok := dst.(ListType); ok {
-			return Assignable(sv.Elem, dv.Elem)
+			return assignableAt(sv.Elem, dv.Elem, true)
 		}
 	case MapType:
 		if dv, ok := dst.(MapType); ok {
-			return Assignable(sv.Key, dv.Key) && Assignable(sv.Value, dv.Value)
+			return assignableAt(sv.Key, dv.Key, true) && assignableAt(sv.Value, dv.Value, true)
 		}
 	case OptionType:
 		if dv, ok := dst.(OptionType); ok {
-			return Assignable(sv.Elem, dv.Elem)
+			return assignableAt(sv.Elem, dv.Elem, true)
 		}
 	}
 	return Subtype(src, dst)
