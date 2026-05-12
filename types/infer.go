@@ -830,12 +830,6 @@ func unionFieldPathType(ut UnionType, tail []string) (Type, bool) {
 //
 // See MEP 4 §6 problem 15.
 func equalTypes(a, b Type) bool {
-	// int/int64 carve-out. Both kinds use the same Go-level int64
-	// storage, and most numeric builtins return int64 while user code
-	// is typed at int.
-	if (isInt(a) || isInt64(a)) && (isInt(b) || isInt64(b)) {
-		return true
-	}
 	switch at := a.(type) {
 	case IntType:
 		_, ok := b.(IntType)

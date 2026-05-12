@@ -18,7 +18,8 @@ func TestEqualTypesByKind(t *testing.T) {
 	}{
 		// Reflexive primitives.
 		{"int=int", IntType{}, IntType{}, true},
-		{"int=int64 (carve-out)", IntType{}, Int64Type{}, true},
+		// P1 (task #104): carve-out removed. equalTypes is strict on kind.
+		{"int=int64 (strict)", IntType{}, Int64Type{}, false},
 		{"int=float", IntType{}, FloatType{}, false},
 		{"float=float", FloatType{}, FloatType{}, true},
 		{"bigint=bigint", BigIntType{}, BigIntType{}, true},
