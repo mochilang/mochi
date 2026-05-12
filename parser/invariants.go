@@ -287,9 +287,9 @@ func assertPostfixOp(op *PostfixOp) error {
 	if op == nil {
 		return invariant(lexer.Position{}, "postfix op is nil")
 	}
-	arms := [...]bool{op.Call != nil, op.Index != nil, op.Field != nil, op.Cast != nil}
+	arms := [...]bool{op.Call != nil, op.Index != nil, op.Field != nil, op.Cast != nil, op.SafeField != nil, op.SafeIndex != nil}
 	if n := countTrue(arms[:]); n != 1 {
-		return invariant(op.Pos, fmt.Sprintf("postfix op has %d arms set, expected exactly 1 of {call, index, field, cast}", n))
+		return invariant(op.Pos, fmt.Sprintf("postfix op has %d arms set, expected exactly 1 of {call, index, field, cast, safe_field, safe_index}", n))
 	}
 	switch {
 	case op.Call != nil:

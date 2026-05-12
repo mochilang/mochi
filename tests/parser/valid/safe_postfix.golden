@@ -1,0 +1,16 @@
+(program
+  (let a
+    (safe_selector f (selector b))
+  )
+  (let c
+    (safe_selector h
+      (safe_selector g (selector d))
+    )
+  )
+  (let e
+    (safe_index (selector f) (int 0))
+  )
+  (let g
+    (safe_index (selector h) (selector k))
+  )
+)

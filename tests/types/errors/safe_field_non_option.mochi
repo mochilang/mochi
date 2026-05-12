@@ -1,0 +1,5 @@
+// MEP-16 R5: `?.` is only defined for option-typed receivers. Applying
+// it to a bare `T` is meaningless.
+type Box { value: int }
+let b: Box = Box { value: 1 }
+let v = b?.value
