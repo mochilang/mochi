@@ -1,0 +1,4 @@
+fun ghost<T>(x: any): T {
+  return x as T
+}
+print(ghost(1))

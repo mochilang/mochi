@@ -2581,7 +2581,11 @@ func firstFreeTypeVar(t Type, sub Subst) string {
 	if len(free) == 0 {
 		return ""
 	}
-	return free[0]
+	name := free[0]
+	if i := strings.IndexByte(name, '#'); i >= 0 {
+		return name[:i]
+	}
+	return name
 }
 
 // structuralTypeVarName returns the first TypeVar's declared name found
