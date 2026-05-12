@@ -1,0 +1,10 @@
+// Sort by an ordered projection of a struct field type-checks (MEP-14.6).
+type Box {
+  size: int
+  label: string
+}
+let xs: list<Box> = [Box{size: 2, label: "b"}, Box{size: 1, label: "a"}]
+let by_size: list<Box> = from x in xs sort by x.size select x
+let by_label: list<Box> = from x in xs sort by x.label select x
+print(len(by_size))
+print(len(by_label))
