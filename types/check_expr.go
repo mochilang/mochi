@@ -1340,6 +1340,25 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		}
 	}
 
+	if q.Skip != nil {
+		skipT, err := checkExpr(q.Skip, child)
+		if err != nil {
+			return nil, err
+		}
+		if _, ok := skipT.(AnyType); !ok && !unify(skipT, IntType{}, nil) {
+			return nil, errSkipTakeIntOperand(q.Skip.Pos, "skip", skipT)
+		}
+	}
+	if q.Take != nil {
+		takeT, err := checkExpr(q.Take, child)
+		if err != nil {
+			return nil, err
+		}
+		if _, ok := takeT.(AnyType); !ok && !unify(takeT, IntType{}, nil) {
+			return nil, errSkipTakeIntOperand(q.Take.Pos, "take", takeT)
+		}
+	}
+
 	var selT Type
 	if q.Group != nil {
 		var keyT Type
