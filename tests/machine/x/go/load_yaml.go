@@ -27,7 +27,7 @@ type Adult struct {
 
 func main() {
 	people := func() []Person {
-		rows := _load("tests/interpreter/valid/people.yaml", func() map[string]any {
+		rows := _load("archived/tests/interpreter/valid/people.yaml", func() map[string]any {
 			m := map[string]any{}
 			_copyToMap(m, map[string]string{"format": "yaml"})
 			return m

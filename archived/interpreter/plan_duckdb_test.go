@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
 	"mochi/types"

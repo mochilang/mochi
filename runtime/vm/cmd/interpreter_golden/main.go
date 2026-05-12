@@ -17,7 +17,7 @@ func fileExists(path string) bool {
 }
 
 func main() {
-	files, err := filepath.Glob("tests/interpreter/valid/*.mochi")
+	files, err := filepath.Glob("archived/tests/interpreter/valid/*.mochi")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "glob error:", err)
 		os.Exit(1)

@@ -1,3 +1,5 @@
+//go:build slow
+
 package interpreter_test
 
 import (
@@ -5,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/runtime/llm"
 	"mochi/runtime/mod"

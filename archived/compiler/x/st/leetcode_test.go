@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	stcode "mochi/archived/x/st"
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
 	"mochi/types"
