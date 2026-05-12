@@ -18,7 +18,12 @@ func checkExprWithExpected(e *parser.Expr, env *Env, expected Type) (Type, error
 		return nil, err
 	}
 	if expected != nil && !unify(actual, expected, nil) {
-		return nil, errTypeMismatch(e.Pos, expected, actual)
+		// MEP-16 R1: a non-option `actual` is allowed to flow into an
+		// option `expected`. The widening is silent at the type layer;
+		// the value carries itself as the `Some` payload.
+		if !Assignable(actual, expected) {
+			return nil, errTypeMismatch(e.Pos, expected, actual)
+		}
 	}
 	return actual, nil
 }

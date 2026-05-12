@@ -1,0 +1,7 @@
+// MEP-16 R1: a non-option value of type T is assignable to a T? slot
+// without an explicit wrap. The widening is silent at the type layer;
+// the value carries itself as the `Some` payload of the option.
+let n: int = 7
+let m: int? = n
+let total = if m != none { m + 1 } else { 0 }
+expect total == 8

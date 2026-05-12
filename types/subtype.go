@@ -190,6 +190,14 @@ func assignableAt(src, dst Type, elementContext bool) bool {
 			return assignableAt(sv.Elem, dv.Elem, true)
 		}
 	}
+	// MEP-16 R1: a non-option `src` flows into an option `dst` when it
+	// would flow into the wrapped element. The wrap is silent at the
+	// type layer; the value carries itself as the `Some` payload.
+	if dv, ok := dst.(OptionType); ok {
+		if _, srcOpt := src.(OptionType); !srcOpt {
+			return assignableAt(src, dv.Elem, elementContext)
+		}
+	}
 	return Subtype(src, dst)
 }
 
