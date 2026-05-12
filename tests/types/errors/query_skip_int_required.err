@@ -1,0 +1,8 @@
+1. error[T055]: `skip` operand must be `int`, got float
+  --> tests/types/errors/query_skip_int_required.mochi:3:29
+
+  3 | let bad = from x in xs skip 1.5 select x
+    |                             ^
+
+help:
+  `skip` and `take` count rows; supply an integer expression.

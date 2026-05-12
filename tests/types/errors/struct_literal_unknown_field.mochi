@@ -1,0 +1,9 @@
+// MEP-13 §Struct typing: a struct literal that names a field the type
+// did not declare is rejected with T026. There is no implicit
+// extension of struct shape from literal context.
+type Point {
+  x: int
+  y: int
+}
+
+let _: Point = Point{x: 1, y: 2, z: 3}

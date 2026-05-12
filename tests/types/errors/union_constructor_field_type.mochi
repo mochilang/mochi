@@ -1,0 +1,9 @@
+// MEP-13 §Union typing: a variant constructor called with the right
+// arity but a field value whose type does not unify with the declared
+// field type is rejected with T008. The constructor surface is a
+// FuncType, so this rides the standard call-argument check.
+type Shape =
+  Circle(r: int)
+| Square(s: int)
+
+let c: Shape = Circle("not an int")
