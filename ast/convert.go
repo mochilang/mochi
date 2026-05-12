@@ -511,6 +511,10 @@ func FromPostfixExpr(p *parser.PostfixExpr) *Node {
 			n = &Node{Kind: "cast", Pos: cast.Pos, Children: []*Node{n, FromTypeRef(cast.Type)}}
 		} else if field := op.Field; field != nil {
 			n = &Node{Kind: "selector", Value: field.Name, Pos: field.Pos, Children: []*Node{n}}
+		} else if sf := op.SafeField; sf != nil {
+			n = &Node{Kind: "safe_selector", Value: sf.Name, Pos: sf.Pos, Children: []*Node{n}}
+		} else if si := op.SafeIndex; si != nil {
+			n = &Node{Kind: "safe_index", Pos: si.Pos, Children: []*Node{n, FromExpr(si.Start)}}
 		}
 	}
 	return n

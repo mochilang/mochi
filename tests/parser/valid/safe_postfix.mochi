@@ -1,0 +1,4 @@
+let a = b?.f
+let c = d?.g?.h
+let e = f?[0]
+let g = h?[k]

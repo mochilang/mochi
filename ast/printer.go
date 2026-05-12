@@ -289,6 +289,10 @@ func exprString(n *Node) string {
 			return fmt.Sprintf("%v", n.Value)
 		}
 		return exprString(n.Children[0]) + "." + n.Value.(string)
+	case "safe_selector":
+		return exprString(n.Children[0]) + "?." + n.Value.(string)
+	case "safe_index":
+		return fmt.Sprintf("%s?[%s]", exprString(n.Children[0]), exprString(n.Children[1]))
 	case "call":
 		start := 0
 		var callee string

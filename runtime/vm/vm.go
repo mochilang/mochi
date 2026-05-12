@@ -1262,6 +1262,20 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 			dst := fc.newReg()
 			fc.emit(op.Cast.Pos, Instr{Op: OpCast, A: dst, B: r, C: idx})
 			r = dst
+		} else if sf := op.SafeField; sf != nil {
+			// MEP-16 R5: lower `a?.f` to OpIndex with the field name as
+			// key. OpIndex already short-circuits on a null receiver.
+			key := fc.constReg(op.Pos, Value{Tag: ValueStr, Str: sf.Name})
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpIndex, A: dst, B: r, C: key})
+			r = dst
+		} else if si := op.SafeIndex; si != nil {
+			// MEP-16 R6: lower `a?[k]` to OpIndex. OpIndex returns null
+			// when the source is null, which preserves the option layer.
+			idx := fc.compileExpr(si.Start)
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpIndex, A: dst, B: r, C: idx})
+			r = dst
 		}
 	}
 	return r
@@ -3076,6 +3090,8 @@ func (fc *funcCompiler) evalConstPostfix(p *parser.PostfixExpr) (Value, bool) {
 			}
 			v = FromAny(cv)
 		case op.Call != nil || op.Index != nil || op.Field != nil:
+			return Value{}, false
+		case op.SafeField != nil || op.SafeIndex != nil:
 			return Value{}, false
 		}
 	}

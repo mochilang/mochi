@@ -1,0 +1,8 @@
+1. error[T060]: safe-call `?.value` requires an option-typed receiver, got Box
+  --> tests/types/errors/safe_field_non_option.mochi:5:10
+
+  5 | let v = b?.value
+    |          ^
+
+help:
+  `a?.f` is only defined when `a : T?`. Drop the `?` for a plain field access, or change the receiver's type.

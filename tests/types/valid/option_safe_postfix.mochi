@@ -1,0 +1,15 @@
+// MEP-16 R5/R6: `?.` and `?[ ]` lift the field/element type back into
+// `Option`. The receiver must be option-typed.
+type Person { name: string, age: int }
+let p: Person? = Person { name: "ada", age: 30 }
+let n: string? = p?.name
+
+let xs: list<int>? = [1, 2, 3]
+let head: int? = xs?[0]
+
+let ys: list<int>? = none
+let miss: int? = ys?[0]
+
+expect n != none
+expect head != none
+expect miss == none
