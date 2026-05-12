@@ -1,0 +1,3 @@
+// MEP-10 A2: `null` is `option[any]` and does not flow into a non-option
+// list slot. Use `list<int>?` for a nullable list binding.
+let xs: list<int> = null

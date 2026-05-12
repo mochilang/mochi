@@ -1914,7 +1914,12 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		case p.Lit.Bool != nil:
 			return BoolType{}, nil
 		case p.Lit.Null:
-			return AnyType{}, nil
+			// MEP-10 A2: `null` is the lone value of `option[any]`. It
+			// unifies with any other option type via the top-level any
+			// case in `unify`, and against `any` itself via the top
+			// short-circuit. A non-option target like `int` no longer
+			// accepts `null` without an explicit option-typed slot.
+			return OptionType{Elem: AnyType{}}, nil
 		}
 
 	case p.Selector != nil:

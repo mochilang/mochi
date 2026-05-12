@@ -1,2 +1,2 @@
 let xs = [1, 2, 3, 4]
-let result = from x in xs where print(x) == null select x
+let result = from x in xs where print(x) == print(x) select x
