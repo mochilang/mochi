@@ -1,0 +1,6 @@
+// `sort by` expression must be of an ordered type (T056).
+type Box {
+  size: int
+}
+let xs: list<Box> = [Box{size: 2}, Box{size: 1}]
+let bad = from x in xs sort by x select x
