@@ -1,0 +1,8 @@
+1. error[T050]: non-exhaustive match on union `List`: missing variant(s) `Nil`
+  --> tests/types/errors/recursive_list_missing_nil.mochi:7:10
+
+  7 |   return match xs {
+    |          ^
+
+help:
+  Add an arm for each missing variant or use a wildcard `_` arm to cover the remainder.
