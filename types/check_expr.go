@@ -623,6 +623,7 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			}
 			return MapType{Key: StringType{}, Value: AnyType{}}, nil
 		}
+		provided := make(map[string]bool, len(p.Struct.Fields))
 		for _, field := range p.Struct.Fields {
 			ft, ok := st.FieldType(field.Name)
 			if !ok {
@@ -635,6 +636,20 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			if !unify(ft, valT, nil) {
 				return nil, errTypeMismatch(field.Value.Pos, ft, valT)
 			}
+			provided[field.Name] = true
+		}
+		// MEP-13 §Struct typing: every declared field must be provided.
+		// There are no field defaults today, so an omitted field would
+		// leave the struct value with a missing slot that downstream
+		// reads observe as nil.
+		var missing []string
+		for _, f := range st.Fields {
+			if !provided[f.Name] {
+				missing = append(missing, f.Name)
+			}
+		}
+		if len(missing) > 0 {
+			return nil, errStructMissingField(p.Pos, st.Name, missing)
 		}
 		return st, nil
 
@@ -1137,8 +1152,16 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 	// matched explicitly.
 	matchedVariants := map[string]bool{}
 	hasCatchAll := false
+	// MEP-13 §Irredundancy: a literal pattern that repeats an earlier
+	// one is rejected, as are any arms that follow a catch-all. We do
+	// not have pattern guards, so two arms with the same pattern can
+	// never both fire.
+	seenLiterals := map[string]bool{}
 	for _, c := range m.Cases {
 		caseEnv := env
+		if hasCatchAll {
+			return nil, errMatchArmRedundant(c.Pos, "arm after catch-all is unreachable")
+		}
 		if call, ok := callPattern(c.Pattern); ok {
 			if ut, ok := env.FindUnionByVariant(call.Func); ok {
 				st := ut.Variants[call.Func]
@@ -1147,6 +1170,9 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 				}
 				if !unify(targetType, st, nil) {
 					return nil, errTypeMismatch(c.Pos, targetType, st)
+				}
+				if matchedVariants[call.Func] {
+					return nil, errMatchArmRedundant(c.Pos, "duplicate variant `"+call.Func+"`")
 				}
 				matchedVariants[call.Func] = true
 				child := NewEnv(env)
@@ -1162,6 +1188,9 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 				st := ut.Variants[ident]
 				if !unify(targetType, st, nil) {
 					return nil, errTypeMismatch(c.Pos, targetType, st)
+				}
+				if matchedVariants[ident] {
+					return nil, errMatchArmRedundant(c.Pos, "duplicate variant `"+ident+"`")
 				}
 				matchedVariants[ident] = true
 			} else if !isUnderscoreExpr(c.Pattern) {
@@ -1182,6 +1211,12 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 			}
 			if !unify(targetType, pType, nil) {
 				return nil, errTypeMismatch(c.Pos, targetType, pType)
+			}
+			if key := literalPatternKey(c.Pattern); key != "" {
+				if seenLiterals[key] {
+					return nil, errMatchArmRedundant(c.Pos, "duplicate literal pattern")
+				}
+				seenLiterals[key] = true
 			}
 		} else {
 			hasCatchAll = true
@@ -1293,15 +1328,34 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 	}
 
 	if q.Where != nil {
-		wt, err := checkExprWithExpected(q.Where, child, BoolType{})
+		wt, err := checkExpr(q.Where, child)
 		if err != nil {
 			return nil, err
 		}
-		if !unify(wt, BoolType{}, nil) {
+		if _, ok := wt.(AnyType); !ok && !unify(wt, BoolType{}, nil) {
 			return nil, errWhereBoolean(q.Where.Pos)
 		}
 		if name, pos, ok := firstImpureCall(q.Where, child); ok {
 			return nil, errImpurePredicate(pos, name, "where")
+		}
+	}
+
+	if q.Skip != nil {
+		skipT, err := checkExpr(q.Skip, child)
+		if err != nil {
+			return nil, err
+		}
+		if _, ok := skipT.(AnyType); !ok && !unify(skipT, IntType{}, nil) {
+			return nil, errSkipTakeIntOperand(q.Skip.Pos, "skip", skipT)
+		}
+	}
+	if q.Take != nil {
+		takeT, err := checkExpr(q.Take, child)
+		if err != nil {
+			return nil, err
+		}
+		if _, ok := takeT.(AnyType); !ok && !unify(takeT, IntType{}, nil) {
+			return nil, errSkipTakeIntOperand(q.Take.Pos, "take", takeT)
 		}
 	}
 
@@ -1342,11 +1396,11 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		gStruct := GroupType{Key: keyT, Elem: elemT}
 		genv.SetVar(q.Group.Name, gStruct, true)
 		if q.Group.Having != nil {
-			ht, err := checkExprWithExpected(q.Group.Having, genv, BoolType{})
+			ht, err := checkExpr(q.Group.Having, genv)
 			if err != nil {
 				return nil, err
 			}
-			if !unify(ht, BoolType{}, nil) {
+			if _, ok := ht.(AnyType); !ok && !unify(ht, BoolType{}, nil) {
 				return nil, errHavingBoolean(q.Group.Having.Pos)
 			}
 			if name, pos, ok := firstImpureCall(q.Group.Having, genv); ok {
@@ -1396,11 +1450,13 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 	if err != nil {
 		return nil, err
 	}
-	if _, _, ok := aggregateCallName(q.Select); ok {
-		if expected != nil && !unify(selT, expected, nil) {
-			return nil, errTypeMismatch(q.Pos, expected, selT)
+	if q.Group == nil {
+		if _, _, ok := aggregateCallName(q.Select); ok {
+			if expected != nil && !unify(selT, expected, nil) {
+				return nil, errTypeMismatch(q.Pos, expected, selT)
+			}
+			return selT, nil
 		}
-		return selT, nil
 	}
 	result := ListType{Elem: selT}
 	if expected != nil && !unify(result, expected, nil) {
@@ -1978,6 +2034,42 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 		return nil
 	}
 	return nil
+}
+
+// literalPatternKey returns a canonical string key for a literal pattern
+// in a match arm, or "" if e is not a literal. The key is used by the
+// MEP-13 §Irredundancy check to detect a duplicate literal pattern
+// across arms; the position is irrelevant for equality, only the
+// literal value matters.
+func literalPatternKey(e *parser.Expr) string {
+	if e == nil {
+		return ""
+	}
+	if len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Lit == nil {
+		return ""
+	}
+	lit := p.Target.Lit
+	switch {
+	case lit.Int != nil:
+		return fmt.Sprintf("int:%d", int(*lit.Int))
+	case lit.Float != nil:
+		return fmt.Sprintf("float:%v", *lit.Float)
+	case lit.Str != nil:
+		return fmt.Sprintf("str:%q", *lit.Str)
+	case lit.Bool != nil:
+		return fmt.Sprintf("bool:%v", bool(*lit.Bool))
+	case lit.Null:
+		return "null"
+	}
+	return ""
 }
 
 func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {

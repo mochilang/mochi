@@ -1,0 +1,12 @@
+// MEP-13 §Irredundancy: once a catch-all `_` arm has fired, every
+// later arm is unreachable. T054 rejects the unreachable arm so the
+// author either drops the dead arm or reorders it ahead of the
+// wildcard.
+type Shape = Circle(r: int) | Square(s: int)
+
+let v: Shape = Circle(1)
+let n: int = match v {
+  Circle(r) => r
+  _ => 0
+  Square(s) => s
+}

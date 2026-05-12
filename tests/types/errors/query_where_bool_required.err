@@ -1,0 +1,8 @@
+1. error[T033]: `where` condition must be boolean
+  --> tests/types/errors/query_where_bool_required.mochi:3:30
+
+  3 | let bad = from x in xs where x select x
+    |                              ^
+
+help:
+  Ensure the condition evaluates to true or false.
