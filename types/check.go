@@ -208,6 +208,11 @@ type FuncType struct {
 	Return   Type
 	Pure     bool
 	Variadic Type
+	// TypeParams lists the names of TypeVars quantified at this
+	// signature (MEP-12). A non-empty value means the function is
+	// generic: the call site freshens these names via Instantiate before
+	// unifying arguments. Non-generic functions leave the field nil.
+	TypeParams []string
 }
 
 func (f FuncType) String() string {
@@ -684,15 +689,26 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: IntType{},
 		Pure:   true,
 	}, false)
+	// min/max are generic over the list element type (MEP-12.4):
+	//     min<T>(xs: list<T>): T
+	//     max<T>(xs: list<T>): T
+	// The TypeVar names match the TypeParams entry so the call-site
+	// Instantiate freshens them. The legacy unifier still admits an
+	// `any` argument (a `list<any>` carries `AnyType` element) without
+	// constraining T, so the return falls back to the fresh variable.
+	minT := &TypeVar{Name: "T"}
 	env.SetVar("min", FuncType{
-		Params: []Type{AnyType{}},
-		Return: AnyType{},
-		Pure:   true,
+		Params:     []Type{ListType{Elem: minT}},
+		Return:     minT,
+		Pure:       true,
+		TypeParams: []string{"T"},
 	}, false)
+	maxT := &TypeVar{Name: "T"}
 	env.SetVar("max", FuncType{
-		Params: []Type{AnyType{}},
-		Return: AnyType{},
-		Pure:   true,
+		Params:     []Type{ListType{Elem: maxT}},
+		Return:     maxT,
+		Pure:       true,
+		TypeParams: []string{"T"},
 	}, false)
 	env.SetVar("round", FuncType{
 		Params: []Type{FloatType{}, IntType{}},
@@ -2010,6 +2026,19 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		if !ok {
 			return nil, errNotFunction(p.Pos, p.Call.Func)
 		}
+		// MEP-12.2: instantiate TypeParams with fresh vars so distinct
+		// call sites of the same generic function get distinct vars. The
+		// returned `callSubst` accumulates per-arg bindings; it is
+		// applied to the return type after all args are typed so the
+		// caller sees a concrete result (e.g. `min(list<int>) → int`).
+		callSubst := Subst{}
+		if len(ft.TypeParams) > 0 {
+			inst, sub := Instantiate(ft, ft.TypeParams)
+			ft = inst.(FuncType)
+			for k, v := range sub {
+				callSubst[k] = v
+			}
+		}
 		argCount := len(p.Call.Args)
 		paramCount := len(ft.Params)
 
@@ -2031,13 +2060,25 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 
 		argTypes := make([]Type, argCount)
 		for i := 0; i < argCount && i < fixed; i++ {
-			at, err := checkExprWithExpected(p.Call.Args[i], env, ft.Params[i])
+			expected := callSubst.Apply(ft.Params[i])
+			// MEP-12.2: if the expected param still contains unbound
+			// TypeVars after substitution, skip the hint-driven check
+			// (it routes through Subtype, which has no TypeVar rule) and
+			// let the call-site unifier bind the var from the inferred
+			// argument type instead.
+			hint := expected
+			if len(FreeTypeVars(expected, callSubst)) > 0 {
+				hint = nil
+			}
+			at, err := checkExprWithExpected(p.Call.Args[i], env, hint)
 			if err != nil {
 				return nil, err
 			}
 			argTypes[i] = at
-			if !unify(at, ft.Params[i], nil) {
-				return nil, errArgTypeMismatch(p.Pos, i, ft.Params[i], at)
+			if next, err := Unify(at, expected, callSubst); err == nil {
+				callSubst = next
+			} else if !unify(at, expected, nil) {
+				return nil, errArgTypeMismatch(p.Pos, i, expected, at)
 			}
 		}
 
@@ -2058,7 +2099,7 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 					return nil, err
 				}
 			}
-			ret := ft.Return
+			ret := callSubst.Apply(ft.Return)
 			if p.Call.Func == "keys" && len(argTypes) == 1 {
 				if mt, ok := argTypes[0].(MapType); ok {
 					ret = ListType{Elem: mt.Key}
@@ -2076,7 +2117,7 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				return nil, err
 			}
 		}
-		ret := ft.Return
+		ret := callSubst.Apply(ft.Return)
 		if p.Call.Func == "keys" && len(argTypes) == 1 {
 			if mt, ok := argTypes[0].(MapType); ok {
 				ret = ListType{Elem: mt.Key}
