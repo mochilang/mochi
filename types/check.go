@@ -2097,6 +2097,15 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			if next, err := Unify(at, expected, callSubst); err == nil {
 				callSubst = next
 			} else if !unify(at, expected, nil) {
+				// MEP-12.3: when a generic call fails to unify, surface
+				// T047 with the offending type parameter rather than the
+				// generic T007 mismatch. The legacy fallback above keeps
+				// non-generic calls on T007.
+				if len(ft.TypeParams) > 0 {
+					if name := firstFreeTypeVar(ft.Params[i], callSubst); name != "" {
+						return nil, errTypeParamConflict(p.Pos, name, expected, at)
+					}
+				}
 				return nil, errArgTypeMismatch(p.Pos, i, expected, at)
 			}
 		}
@@ -2145,6 +2154,15 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		if p.Call.Func == "values" && len(argTypes) == 1 {
 			if mt, ok := argTypes[0].(MapType); ok {
 				ret = ListType{Elem: mt.Value}
+			}
+		}
+		// MEP-12.3: T048 when the declared generic result still mentions
+		// an unbound type parameter after argument unification. Only
+		// fire on full applications; partial application still carries
+		// the unbound var through the curried result.
+		if len(ft.TypeParams) > 0 && argCount == paramCount {
+			if name := firstFreeTypeVar(ret, callSubst); name != "" {
+				return nil, errTypeParamEscapes(p.Pos, name)
 			}
 		}
 		if argCount == paramCount {
@@ -2464,6 +2482,18 @@ func bareIdentName(e *parser.Expr) string {
 		return ""
 	}
 	return sel.Root
+}
+
+// firstFreeTypeVar returns the lexicographically first free TypeVar
+// name in t after applying sub, or "" if none. It powers the T047 and
+// T048 messages so the user sees the offending parameter rather than
+// the substitution-internal label.
+func firstFreeTypeVar(t Type, sub Subst) string {
+	free := FreeTypeVars(t, sub)
+	if len(free) == 0 {
+		return ""
+	}
+	return free[0]
 }
 
 // isAliasableAggregate reports whether t is a value kind whose storage
