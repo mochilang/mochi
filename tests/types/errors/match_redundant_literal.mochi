@@ -1,0 +1,11 @@
+// MEP-13 §Irredundancy: a literal pattern that repeats one already
+// listed in an earlier arm is unreachable. Literal-equality patterns
+// have no guard form, so the duplicate cannot fire on a different
+// predicate; T054 rejects it.
+let x: int = 1
+let label: string = match x {
+  1 => "one"
+  2 => "two"
+  1 => "uno"
+  _ => "other"
+}
