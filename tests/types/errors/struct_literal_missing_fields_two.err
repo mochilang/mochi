@@ -1,0 +1,8 @@
+1. error[T053]: struct literal `Box` is missing required field(s) `h` and `d`
+  --> tests/types/errors/struct_literal_missing_fields_two.mochi:9:14
+
+  9 | let _: Box = Box{w: 1}
+    |              ^
+
+help:
+  Provide a value for every declared field. Mochi structs do not have field defaults.
