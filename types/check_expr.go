@@ -28,6 +28,17 @@ func checkExprWithExpected(e *parser.Expr, env *Env, expected Type) (Type, error
 	return actual, nil
 }
 func checkBinaryExpr(b *parser.BinaryExpr, env *Env, expected Type) (Type, error) {
+	// MEP-16 N2: split the chain at the lowest-precedence boolean
+	// operator and recurse. The RHS of `&&` is checked with the LHS's
+	// truthy narrowing applied; the RHS of `||` is checked with the
+	// falsy narrowing. Precedence climbing handles every other op.
+	if idx := lastLogicalIndex(b, "||"); idx >= 0 {
+		return checkLogicalChain(b, idx, "||", env)
+	}
+	if idx := lastLogicalIndex(b, "&&"); idx >= 0 {
+		return checkLogicalChain(b, idx, "&&", env)
+	}
+
 	left, err := checkUnary(b.Left, env, expected)
 	if err != nil {
 		return nil, err
@@ -85,6 +96,34 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env, expected Type) (Type, error
 		return nil, fmt.Errorf("unexpected state after binary type eval")
 	}
 	return operands[0], nil
+}
+
+// checkLogicalChain type-checks a binary expression whose chain
+// contains the logical operator op at position idx. The RHS sub-binary
+// is evaluated under the narrowing implied by the LHS being truthy
+// (for `&&`) or falsy (for `||`); the operator is then applied between
+// the two side types. Used by MEP-16 N2.
+func checkLogicalChain(b *parser.BinaryExpr, idx int, op string, env *Env) (Type, error) {
+	lhs, rhs := splitBinaryAt(b, idx)
+	lhsType, err := checkBinaryExpr(lhs, env, nil)
+	if err != nil {
+		return nil, err
+	}
+	truthy, falsy := optionNarrowingBinary(lhs, env)
+	var rhsEnv *Env
+	switch op {
+	case "&&":
+		rhsEnv = narrowedEnv(env, truthy)
+	case "||":
+		rhsEnv = narrowedEnv(env, falsy)
+	default:
+		rhsEnv = env
+	}
+	rhsType, err := checkBinaryExpr(rhs, rhsEnv, nil)
+	if err != nil {
+		return nil, err
+	}
+	return applyBinaryType(b.Right[idx].Pos, op, lhsType, rhsType)
 }
 
 func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, error) {

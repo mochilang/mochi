@@ -1,0 +1,6 @@
+// MEP-16 N2: the RHS of `&&` sees the narrowing implied by the LHS
+// being truthy. After `p != none`, the binding p is typed as int in
+// the conjunction's right operand, so `p + 1` type-checks.
+let p: int? = 7
+let ok = p != none && p + 1 > 0
+expect ok == true
