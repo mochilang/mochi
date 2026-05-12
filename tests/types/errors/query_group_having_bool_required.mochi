@@ -1,0 +1,9 @@
+// `having` predicate inside `group by` must be `bool`. MEP-14 lists this
+// as T042 but today `checkExprWithExpected` short-circuits with T008
+// first. The fixture pins the actual diagnostic until the T042 path is
+// reached.
+let xs: list<int> = [1, 2, 3]
+let bad = from x in xs
+          group by x % 2 into g
+          having g
+          select g

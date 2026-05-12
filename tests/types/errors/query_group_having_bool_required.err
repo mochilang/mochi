@@ -1,0 +1,8 @@
+1. error[T008]: type mismatch: expected bool, got group
+  --> tests/types/errors/query_group_having_bool_required.mochi:8:18
+
+  8 |           having g
+    |                  ^
+
+help:
+  Change the value to match the expected type.
