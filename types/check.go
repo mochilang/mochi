@@ -926,6 +926,17 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 
 	case s.Var != nil:
 		name := s.Var.Name
+		// MEP-10 A3: reject aliasing an immutable aggregate into a
+		// mutable binding. `let xs: list<int>; var ys = xs` would share
+		// storage; a later `ys[0] = ...` would mutate xs too. Clone
+		// explicitly or declare the source as `var`.
+		if src := bareIdentName(s.Var.Value); src != "" {
+			if mut, err := env.IsMutable(src); err == nil && !mut {
+				if srcT, err := env.GetVar(src); err == nil && isAliasableAggregate(srcT) {
+					return errAliasImmutableAggregate(s.Var.Pos, src)
+				}
+			}
+		}
 		var typ Type
 		if s.Var.Type != nil {
 			typ = resolveTypeRef(s.Var.Type, env)
@@ -2411,6 +2422,41 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 	}
 
 	return FuncType{Params: paramTypes, Return: declaredRet}, nil
+}
+
+// bareIdentName returns the source identifier if e is a single
+// identifier reference with no operators, indices, or selectors. It
+// drives the MEP-10 A3 alias-into-var check; only a bare reference
+// can share storage with the source binding.
+func bareIdentName(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return ""
+	}
+	px := u.Value
+	if len(px.Ops) != 0 || px.Target == nil {
+		return ""
+	}
+	sel := px.Target.Selector
+	if sel == nil || len(sel.Tail) != 0 {
+		return ""
+	}
+	return sel.Root
+}
+
+// isAliasableAggregate reports whether t is a value kind whose storage
+// is shared on copy (list, map, struct). These are the kinds where an
+// alias from an immutable binding into a mutable one would let writes
+// through the alias mutate the original.
+func isAliasableAggregate(t Type) bool {
+	switch t.(type) {
+	case ListType, MapType, StructType:
+		return true
+	}
+	return false
 }
 
 func curryFuncType(params []Type, ret Type) Type {
