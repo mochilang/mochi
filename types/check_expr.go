@@ -1450,11 +1450,13 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 	if err != nil {
 		return nil, err
 	}
-	if _, _, ok := aggregateCallName(q.Select); ok {
-		if expected != nil && !unify(selT, expected, nil) {
-			return nil, errTypeMismatch(q.Pos, expected, selT)
+	if q.Group == nil {
+		if _, _, ok := aggregateCallName(q.Select); ok {
+			if expected != nil && !unify(selT, expected, nil) {
+				return nil, errTypeMismatch(q.Pos, expected, selT)
+			}
+			return selT, nil
 		}
-		return selT, nil
 	}
 	result := ListType{Elem: selT}
 	if expected != nil && !unify(result, expected, nil) {
