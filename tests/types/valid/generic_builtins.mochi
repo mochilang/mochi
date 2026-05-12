@@ -1,11 +1,16 @@
-// MEP-12.4: first / distinct / keys / values are generic. The
-// instantiated return type matches the inferred element / key / value
-// type, so no `as T` cast is needed at the consumer.
+// MEP-12.4: first / distinct / keys / values / push / append are
+// generic. The instantiated return type matches the inferred element /
+// key / value type, so no `as T` cast is needed at the consumer.
 let xs: list<int> = [3, 1, 4, 1, 5, 9]
 let head: int = first(xs)
 let uniq: list<int> = distinct(xs)
 expect head == 3
 expect len(uniq) == 5
+
+let pushed: list<int> = push(xs, 7)
+let appended: list<int> = append(xs, 8)
+expect len(pushed) == 7
+expect len(appended) == 7
 
 let m: map<string, int> = {"a": 1, "b": 2}
 let ks: list<string> = keys(m)

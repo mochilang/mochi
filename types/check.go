@@ -501,10 +501,16 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: IntType{},
 		Pure:   true,
 	}, false)
+	// append<T>(xs: list<T>, x: T): list<T> - MEP-12.4. The element type
+	// is pinned by the first argument; the second must unify with it,
+	// so push of a string into a list<int> now fails T047 at the call
+	// site instead of widening the result to list<any>.
+	appendT := &TypeVar{Name: "T"}
 	env.SetVar("append", FuncType{
-		Params: []Type{ListType{Elem: AnyType{}}, AnyType{}},
-		Return: ListType{Elem: AnyType{}},
-		Pure:   true,
+		Params:     []Type{ListType{Elem: appendT}, appendT},
+		Return:     ListType{Elem: appendT},
+		Pure:       true,
+		TypeParams: []string{"T"},
 	}, false)
 	env.SetVar("concat", FuncType{
 		Params:   []Type{},
@@ -536,10 +542,13 @@ func Check(prog *parser.Program, env *Env) []error {
 		Pure:       true,
 		TypeParams: []string{"T"},
 	}, false)
+	// push<T>(xs: list<T>, x: T): list<T> - MEP-12.4 mirror of append.
+	pushT := &TypeVar{Name: "T"}
 	env.SetVar("push", FuncType{
-		Params: []Type{ListType{Elem: AnyType{}}, AnyType{}},
-		Return: ListType{Elem: AnyType{}},
-		Pure:   true,
+		Params:     []Type{ListType{Elem: pushT}, pushT},
+		Return:     ListType{Elem: pushT},
+		Pure:       true,
+		TypeParams: []string{"T"},
 	}, false)
 	// keys<K,V>(m: map<K,V>): list<K> - MEP-12.4. Existing call-site
 	// post-processing in checkPrimary already specialises the return
