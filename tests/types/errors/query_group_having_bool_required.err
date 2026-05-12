@@ -1,0 +1,8 @@
+1. error[T042]: `having` condition must be boolean
+  --> tests/types/errors/query_group_having_bool_required.mochi:5:18
+
+  5 |           having g
+    |                  ^
+
+help:
+  Ensure the condition evaluates to true or false.

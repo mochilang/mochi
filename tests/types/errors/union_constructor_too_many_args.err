@@ -1,0 +1,8 @@
+1. error[T006]: too many arguments: expected 2, got 3
+  --> tests/types/errors/union_constructor_too_many_args.mochi:9:16
+
+  9 | let r: Shape = Rect(1, 2, 3)
+    |                ^
+
+help:
+  Remove extra arguments or update the function definition.

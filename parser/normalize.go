@@ -689,6 +689,3 @@ func normalizeQueryExpr(q *QueryExpr) error {
 	}
 	return nil
 }
-
-// avoid unused import in case lexer.Position is needed in future templates.
-var _ = lexer.Position{}

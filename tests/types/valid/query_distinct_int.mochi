@@ -1,0 +1,6 @@
+// `select distinct` deduplicates the projection. Today the checker
+// imposes no hashable constraint on the element type; int is the
+// trivially safe case.
+let xs: list<int> = [1, 2, 1, 3, 2, 3]
+let uniq: list<int> = from x in xs select distinct x
+expect count(uniq) == 3

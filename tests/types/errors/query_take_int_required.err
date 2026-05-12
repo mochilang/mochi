@@ -1,0 +1,8 @@
+1. error[T055]: `take` operand must be `int`, got string
+  --> tests/types/errors/query_take_int_required.mochi:3:29
+
+  3 | let bad = from x in xs take "two" select x
+    |                             ^
+
+help:
+  `skip` and `take` count rows; supply an integer expression.
