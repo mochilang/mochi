@@ -1,5 +1,3 @@
-// Query `where` predicate must be `bool`. MEP-14 lists this as T033 but
-// today `checkExprWithExpected` short-circuits with T008 first. The
-// fixture pins the actual diagnostic until the T033 path is reached.
+// Query `where` predicate must be `bool` (T033).
 let xs: list<int> = [1, 2, 3]
 let bad = from x in xs where x select x

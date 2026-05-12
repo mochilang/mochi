@@ -1328,11 +1328,11 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 	}
 
 	if q.Where != nil {
-		wt, err := checkExprWithExpected(q.Where, child, BoolType{})
+		wt, err := checkExpr(q.Where, child)
 		if err != nil {
 			return nil, err
 		}
-		if !unify(wt, BoolType{}, nil) {
+		if _, ok := wt.(AnyType); !ok && !unify(wt, BoolType{}, nil) {
 			return nil, errWhereBoolean(q.Where.Pos)
 		}
 		if name, pos, ok := firstImpureCall(q.Where, child); ok {
@@ -1396,11 +1396,11 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		gStruct := GroupType{Key: keyT, Elem: elemT}
 		genv.SetVar(q.Group.Name, gStruct, true)
 		if q.Group.Having != nil {
-			ht, err := checkExprWithExpected(q.Group.Having, genv, BoolType{})
+			ht, err := checkExpr(q.Group.Having, genv)
 			if err != nil {
 				return nil, err
 			}
-			if !unify(ht, BoolType{}, nil) {
+			if _, ok := ht.(AnyType); !ok && !unify(ht, BoolType{}, nil) {
 				return nil, errHavingBoolean(q.Group.Having.Pos)
 			}
 			if name, pos, ok := firstImpureCall(q.Group.Having, genv); ok {

@@ -1,8 +1,8 @@
-1. error[T008]: type mismatch: expected bool, got group
-  --> tests/types/errors/query_group_having_bool_required.mochi:8:18
+1. error[T042]: `having` condition must be boolean
+  --> tests/types/errors/query_group_having_bool_required.mochi:5:18
 
-  8 |           having g
+  5 |           having g
     |                  ^
 
 help:
-  Change the value to match the expected type.
+  Ensure the condition evaluates to true or false.
