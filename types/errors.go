@@ -75,6 +75,7 @@ var Errors = map[string]diagnostic.Template{
 	"T054": {Code: "T054", Message: "redundant match arm: %s", Help: "Remove the arm or merge it with the earlier arm it duplicates. Mochi does not have pattern guards, so duplicate patterns can never both fire."},
 	"T055": {Code: "T055", Message: "`%s` operand must be `int`, got %s", Help: "`skip` and `take` count rows; supply an integer expression."},
 	"T056": {Code: "T056", Message: "`sort by` expression must be an ordered type, got %s", Help: "Ordered types are int, int64, bigint, bigrat, float, bool, and string. Project a scalar field of an ordered type, or compare with an explicit key."},
+	"T057": {Code: "T057", Message: "`select distinct` expression must be a hashable type, got %s", Help: "Distinct deduplicates by structural equality. Function values do not have a stable hash. Project a scalar or record of scalars."},
 }
 
 // --- Wrapper Functions ---
@@ -324,6 +325,10 @@ func errSkipTakeIntOperand(pos lexer.Position, clause string, got Type) error {
 
 func errSortByOrdered(pos lexer.Position, got Type) error {
 	return Errors["T056"].New(pos, got)
+}
+
+func errDistinctHashable(pos lexer.Position, got Type) error {
+	return Errors["T057"].New(pos, got)
 }
 
 func errMatchNonExhaustive(pos lexer.Position, unionName string, missing []string) error {
