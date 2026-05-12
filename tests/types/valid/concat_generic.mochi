@@ -1,0 +1,10 @@
+// MEP-12.4: concat is generic in the element type. The variadic
+// unifier in checkPrimary pins T from the first argument; later
+// arguments whose element type disagrees would fail T047.
+let xs: list<int> = [1, 2]
+let ys: list<int> = [3, 4]
+let zs: list<int> = concat(xs, ys)
+expect len(zs) == 4
+
+let ss: list<string> = concat(["a"], ["b", "c"])
+expect len(ss) == 3

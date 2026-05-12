@@ -52,9 +52,10 @@ func (sub Subst) Apply(t Type) Type {
 			params[i] = sub.Apply(p)
 		}
 		out := FuncType{
-			Params: params,
-			Return: sub.Apply(v.Return),
-			Pure:   v.Pure,
+			Params:     params,
+			Return:     sub.Apply(v.Return),
+			Pure:       v.Pure,
+			TypeParams: append([]string(nil), v.TypeParams...),
 		}
 		if v.Variadic != nil {
 			out.Variadic = sub.Apply(v.Variadic)
@@ -193,13 +194,10 @@ func unifyInto(a, b Type, sub Subst) error {
 	a = sub.Apply(a)
 	b = sub.Apply(b)
 
-	if _, ok := a.(AnyType); ok {
-		return nil
-	}
-	if _, ok := b.(AnyType); ok {
-		return nil
-	}
-
+	// TypeVar before AnyType: when one side is a TypeVar and the other
+	// is AnyType, bind the var to any. Otherwise the any short-circuit
+	// below would leave the var unbound and the call-site escape check
+	// (T048) would fire even though the call is well-formed.
 	if av, ok := a.(*TypeVar); ok {
 		if bv, ok := b.(*TypeVar); ok && av.Name == bv.Name {
 			return nil
@@ -208,6 +206,13 @@ func unifyInto(a, b Type, sub Subst) error {
 	}
 	if bv, ok := b.(*TypeVar); ok {
 		return sub.Bind(bv.Name, a)
+	}
+
+	if _, ok := a.(AnyType); ok {
+		return nil
+	}
+	if _, ok := b.(AnyType); ok {
+		return nil
 	}
 
 	switch av := a.(type) {

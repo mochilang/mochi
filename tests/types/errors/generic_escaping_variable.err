@@ -1,0 +1,8 @@
+1. error[T048]: type parameter `T` escapes function result
+  --> tests/types/errors/generic_escaping_variable.mochi:4:7
+
+  4 | print(ghost(1))
+    |       ^
+
+help:
+  The result type still mentions `T` after argument unification. Constrain the parameter at a call argument or supply an explicit type argument.

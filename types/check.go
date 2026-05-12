@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/alecthomas/participle/v2/lexer"
 	"mochi/parser"
@@ -505,41 +506,66 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: ListType{Elem: AnyType{}},
 		Pure:   true,
 	}, false)
+	// concat<T>(...xs: list<T>): list<T> - MEP-12.4. Every argument is
+	// a list<T>; the variadic unifier in checkPrimary pins T from the
+	// first argument and rejects any later argument whose element type
+	// disagrees with T047.
+	concatT := &TypeVar{Name: "T"}
 	env.SetVar("concat", FuncType{
-		Params:   []Type{},
-		Return:   ListType{Elem: AnyType{}},
-		Pure:     true,
-		Variadic: ListType{Elem: AnyType{}},
+		Params:     []Type{},
+		Return:     ListType{Elem: concatT},
+		Pure:       true,
+		Variadic:   ListType{Elem: concatT},
+		TypeParams: []string{"T"},
 	}, false)
+	// first<T>(xs: list<T>): T - MEP-12.4. Generic so the result of
+	// first(list<int>) is int rather than any, and the user no longer
+	// needs an `as T` cast at the consumer site.
+	firstT := &TypeVar{Name: "T"}
 	env.SetVar("first", FuncType{
-		Params: []Type{ListType{Elem: AnyType{}}},
-		Return: AnyType{},
-		Pure:   true,
+		Params:     []Type{ListType{Elem: firstT}},
+		Return:     firstT,
+		Pure:       true,
+		TypeParams: []string{"T"},
 	}, false)
 	env.SetVar("reverse", FuncType{
 		Params: []Type{AnyType{}},
 		Return: AnyType{},
 		Pure:   true,
 	}, false)
+	// distinct<T>(xs: list<T>): list<T> - MEP-12.4. Shape-preserving;
+	// the result list element type matches the input.
+	distinctT := &TypeVar{Name: "T"}
 	env.SetVar("distinct", FuncType{
-		Params: []Type{ListType{Elem: AnyType{}}},
-		Return: ListType{Elem: AnyType{}},
-		Pure:   true,
+		Params:     []Type{ListType{Elem: distinctT}},
+		Return:     ListType{Elem: distinctT},
+		Pure:       true,
+		TypeParams: []string{"T"},
 	}, false)
 	env.SetVar("push", FuncType{
 		Params: []Type{ListType{Elem: AnyType{}}, AnyType{}},
 		Return: ListType{Elem: AnyType{}},
 		Pure:   true,
 	}, false)
+	// keys<K,V>(m: map<K,V>): list<K> - MEP-12.4. Existing call-site
+	// post-processing in checkPrimary already specialises the return
+	// from the inferred map type; this declaration carries the same
+	// shape through the call-site instantiator as well.
+	keysK := &TypeVar{Name: "K"}
+	keysV := &TypeVar{Name: "V"}
 	env.SetVar("keys", FuncType{
-		Params: []Type{MapType{Key: AnyType{}, Value: AnyType{}}},
-		Return: ListType{Elem: AnyType{}},
-		Pure:   true,
+		Params:     []Type{MapType{Key: keysK, Value: keysV}},
+		Return:     ListType{Elem: keysK},
+		Pure:       true,
+		TypeParams: []string{"K", "V"},
 	}, false)
+	valuesK := &TypeVar{Name: "K"}
+	valuesV := &TypeVar{Name: "V"}
 	env.SetVar("values", FuncType{
-		Params: []Type{MapType{Key: AnyType{}, Value: AnyType{}}},
-		Return: ListType{Elem: AnyType{}},
-		Pure:   true,
+		Params:     []Type{MapType{Key: valuesK, Value: valuesV}},
+		Return:     ListType{Elem: valuesV},
+		Pure:       true,
+		TypeParams: []string{"K", "V"},
 	}, false)
 	env.SetVar("collect", FuncType{
 		Params: []Type{AnyType{}},
@@ -715,10 +741,20 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: FloatType{},
 		Pure:   true,
 	}, false)
+	// reduce is generic over the list element type and the accumulator
+	// type (MEP-12.4):
+	//     reduce<A, B>(xs: list<A>, fn: fun(B, A): B, init: B): B
+	reduceA := &TypeVar{Name: "A"}
+	reduceB := &TypeVar{Name: "B"}
 	env.SetVar("reduce", FuncType{
-		Params: []Type{AnyType{}, AnyType{}, AnyType{}},
-		Return: AnyType{},
-		Pure:   true,
+		Params: []Type{
+			ListType{Elem: reduceA},
+			FuncType{Params: []Type{reduceB, reduceA}, Return: reduceB},
+			reduceB,
+		},
+		Return:     reduceB,
+		Pure:       true,
+		TypeParams: []string{"A", "B"},
 	}, false)
 	env.SetVar("eval", FuncType{
 		Params: []Type{StringType{}},
@@ -760,20 +796,32 @@ func Check(prog *parser.Program, env *Env) []error {
 	// can reference them regardless of order in the source file.
 	for _, stmt := range prog.Statements {
 		if stmt.Fun != nil {
+			sigEnv := env
+			if len(stmt.Fun.TypeParams) > 0 {
+				sigEnv = NewEnv(env)
+				for _, tp := range stmt.Fun.TypeParams {
+					sigEnv.SetTypeParam(tp, &TypeVar{Name: tp})
+				}
+			}
 			params := make([]Type, len(stmt.Fun.Params))
 			for i, p := range stmt.Fun.Params {
 				if p.Type != nil {
-					params[i] = resolveTypeRef(p.Type, env)
+					params[i] = resolveTypeRef(p.Type, sigEnv)
 				} else {
 					params[i] = AnyType{}
 				}
 			}
 			var ret Type = UnitType{}
 			if stmt.Fun.Return != nil {
-				ret = resolveTypeRef(stmt.Fun.Return, env)
+				ret = resolveTypeRef(stmt.Fun.Return, sigEnv)
 			}
 			pure := isPureFunction(stmt.Fun, env)
-			env.SetVar(stmt.Fun.Name, FuncType{Params: params, Return: ret, Pure: pure}, false)
+			env.SetVar(stmt.Fun.Name, FuncType{
+				Params:     params,
+				Return:     ret,
+				Pure:       pure,
+				TypeParams: append([]string(nil), stmt.Fun.TypeParams...),
+			}, false)
 			env.SetFunc(stmt.Fun.Name, stmt.Fun)
 		}
 	}
@@ -1361,6 +1409,13 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 
 	case s.Fun != nil:
 		name := s.Fun.Name
+		sigEnv := env
+		if len(s.Fun.TypeParams) > 0 {
+			sigEnv = NewEnv(env)
+			for _, tp := range s.Fun.TypeParams {
+				sigEnv.SetTypeParam(tp, &TypeVar{Name: tp})
+			}
+		}
 		params := []Type{}
 		for _, p := range s.Fun.Params {
 			if p.Type == nil {
@@ -1368,18 +1423,23 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				// annotations by defaulting them to `any`.
 				params = append(params, AnyType{})
 			} else {
-				params = append(params, resolveTypeRef(p.Type, env))
+				params = append(params, resolveTypeRef(p.Type, sigEnv))
 			}
 		}
 		var ret Type = AnyType{}
 		if s.Fun.Return != nil {
-			ret = resolveTypeRef(s.Fun.Return, env)
+			ret = resolveTypeRef(s.Fun.Return, sigEnv)
 		}
 		pure := isPureFunction(s.Fun, env)
-		env.SetVar(name, FuncType{Params: params, Return: ret, Pure: pure}, false)
+		env.SetVar(name, FuncType{
+			Params:     params,
+			Return:     ret,
+			Pure:       pure,
+			TypeParams: append([]string(nil), s.Fun.TypeParams...),
+		}, false)
 		env.SetFunc(name, s.Fun)
 
-		child := NewEnv(env)
+		child := NewEnv(sigEnv)
 		for i, p := range s.Fun.Params {
 			child.SetVar(p.Name, params[i], true)
 		}
@@ -1569,6 +1629,9 @@ func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 		case "any":
 			return AnyType{}
 		default:
+			if tv, ok := env.LookupTypeParam(*t.Simple); ok {
+				return tv
+			}
 			if ut, ok := env.GetUnion(*t.Simple); ok {
 				return ut
 			}
@@ -2061,13 +2124,17 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		argTypes := make([]Type, argCount)
 		for i := 0; i < argCount && i < fixed; i++ {
 			expected := callSubst.Apply(ft.Params[i])
-			// MEP-12.2: if the expected param still contains unbound
-			// TypeVars after substitution, skip the hint-driven check
-			// (it routes through Subtype, which has no TypeVar rule) and
-			// let the call-site unifier bind the var from the inferred
-			// argument type instead.
+			// MEP-12.2/12.3: when the original parameter mentions any
+			// TypeVar quantified by this signature, never propagate the
+			// hint. Two cases:
+			//   (1) the var is still unbound: Subtype has no TypeVar
+			//       rule, so the hint-driven check would mishandle it.
+			//   (2) the var was bound by an earlier argument: forcing
+			//       the bound type as a hint would surface a T008 in
+			//       place of the more informative T047 unify-conflict
+			//       diagnostic the call-site Unify produces below.
 			hint := expected
-			if len(FreeTypeVars(expected, callSubst)) > 0 {
+			if len(FreeTypeVars(ft.Params[i], Subst{})) > 0 {
 				hint = nil
 			}
 			at, err := checkExprWithExpected(p.Call.Args[i], env, hint)
@@ -2078,20 +2145,46 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			if next, err := Unify(at, expected, callSubst); err == nil {
 				callSubst = next
 			} else if !unify(at, expected, nil) {
+				// MEP-12.3: when a generic call fails to unify, surface
+				// T047 with the offending type parameter rather than the
+				// generic T007 mismatch. The legacy fallback above keeps
+				// non-generic calls on T007.
+				if len(ft.TypeParams) > 0 {
+					// Use the structural TypeVar name from the
+					// pre-substitution param so we can report the
+					// original declared name (e.g. `T`) even after
+					// Instantiate freshened it to `T#1`.
+					if name := structuralTypeVarName(ft.Params[i]); name != "" {
+						return nil, errTypeParamConflict(p.Pos, name, expected, at)
+					}
+				}
 				return nil, errArgTypeMismatch(p.Pos, i, expected, at)
 			}
 		}
 
 		if ft.Variadic != nil {
 			variadicType := ft.Variadic
+			variadicIsGeneric := len(FreeTypeVars(ft.Variadic, Subst{})) > 0
 			for i := fixed; i < argCount; i++ {
-				at, err := checkExprWithExpected(p.Call.Args[i], env, variadicType)
+				expected := callSubst.Apply(variadicType)
+				hint := expected
+				if variadicIsGeneric {
+					hint = nil
+				}
+				at, err := checkExprWithExpected(p.Call.Args[i], env, hint)
 				if err != nil {
 					return nil, err
 				}
 				argTypes[i] = at
-				if !unify(at, variadicType, nil) {
-					return nil, errArgTypeMismatch(p.Pos, i, variadicType, at)
+				if next, err := Unify(at, expected, callSubst); err == nil {
+					callSubst = next
+				} else if !unify(at, expected, nil) {
+					if len(ft.TypeParams) > 0 {
+						if name := structuralTypeVarName(variadicType); name != "" {
+							return nil, errTypeParamConflict(p.Pos, name, expected, at)
+						}
+					}
+					return nil, errArgTypeMismatch(p.Pos, i, expected, at)
 				}
 			}
 			if _, defined := env.GetFunc(p.Call.Func); !defined {
@@ -2110,6 +2203,20 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 					ret = ListType{Elem: mt.Value}
 				}
 			}
+			// MEP-12.4: reverse mirrors its argument's static shape.
+			// The declared signature stays loose (any -> any) so the
+			// list-or-string discriminator in checkBuiltinCall still
+			// applies; the post-process here pins the return type at
+			// the call site, so reverse([1,2,3]) types as list<int>
+			// rather than any.
+			if p.Call.Func == "reverse" && len(argTypes) == 1 {
+				switch at := argTypes[0].(type) {
+				case ListType:
+					ret = at
+				case StringType:
+					ret = StringType{}
+				}
+			}
 			return ret, nil
 		}
 		if _, defined := env.GetFunc(p.Call.Func); !defined {
@@ -2126,6 +2233,24 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		if p.Call.Func == "values" && len(argTypes) == 1 {
 			if mt, ok := argTypes[0].(MapType); ok {
 				ret = ListType{Elem: mt.Value}
+			}
+		}
+		// MEP-12.4: reverse mirrors its argument's static shape.
+		if p.Call.Func == "reverse" && len(argTypes) == 1 {
+			switch at := argTypes[0].(type) {
+			case ListType:
+				ret = at
+			case StringType:
+				ret = StringType{}
+			}
+		}
+		// MEP-12.3: T048 when the declared generic result still mentions
+		// an unbound type parameter after argument unification. Only
+		// fire on full applications; partial application still carries
+		// the unbound var through the curried result.
+		if len(ft.TypeParams) > 0 && argCount == paramCount {
+			if name := firstFreeTypeVar(ret, callSubst); name != "" {
+				return nil, errTypeParamEscapes(p.Pos, name)
 			}
 		}
 		if argCount == paramCount {
@@ -2445,6 +2570,38 @@ func bareIdentName(e *parser.Expr) string {
 		return ""
 	}
 	return sel.Root
+}
+
+// firstFreeTypeVar returns the lexicographically first free TypeVar
+// name in t after applying sub, or "" if none. It powers the T047 and
+// T048 messages so the user sees the offending parameter rather than
+// the substitution-internal label.
+func firstFreeTypeVar(t Type, sub Subst) string {
+	free := FreeTypeVars(t, sub)
+	if len(free) == 0 {
+		return ""
+	}
+	name := free[0]
+	if i := strings.IndexByte(name, '#'); i >= 0 {
+		return name[:i]
+	}
+	return name
+}
+
+// structuralTypeVarName returns the first TypeVar's declared name found
+// in t, ignoring substitutions. The "T#N" suffix introduced by
+// FreshTypeVar is stripped so the caller surfaces the user-declared
+// parameter name (e.g. "T") in diagnostics.
+func structuralTypeVarName(t Type) string {
+	free := FreeTypeVars(t, Subst{})
+	if len(free) == 0 {
+		return ""
+	}
+	name := free[0]
+	if i := strings.IndexByte(name, '#'); i >= 0 {
+		return name[:i]
+	}
+	return name
 }
 
 // isAliasableAggregate reports whether t is a value kind whose storage

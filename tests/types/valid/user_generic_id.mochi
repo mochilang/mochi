@@ -1,0 +1,14 @@
+fun id<T>(x: T): T {
+  return x
+}
+
+fun pair<A, B>(a: A, b: B): A {
+  return a
+}
+
+let n: int = id(5)
+let s: string = id("hello")
+let first: int = pair(1, "two")
+print(n)
+print(s)
+print(first)
