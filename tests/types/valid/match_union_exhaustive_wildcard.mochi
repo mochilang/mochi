@@ -1,0 +1,12 @@
+// MEP-10 A4: a wildcard `_` arm covers the remaining variants.
+type Shape =
+  Circle(r: int)
+| Square(s: int)
+| Triangle(base: int, height: int)
+
+let sh: Shape = Square(4)
+let kind: string = match sh {
+  Circle(r) => "circle"
+  _ => "polygon"
+}
+expect kind == "polygon"

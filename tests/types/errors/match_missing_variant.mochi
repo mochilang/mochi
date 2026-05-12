@@ -1,0 +1,12 @@
+// MEP-10 A4: match must cover every variant of a union scrutinee.
+type Shape =
+  Circle(r: int)
+| Square(s: int)
+| Triangle(base: int, height: int)
+
+fun classify(sh: Shape): string {
+  return match sh {
+    Circle(r) => "c"
+    Square(s) => "s"
+  }
+}

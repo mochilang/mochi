@@ -1,0 +1,8 @@
+1. error[T050]: non-exhaustive match on union `Shape`: missing variant(s) `Triangle`
+  --> tests/types/errors/match_missing_variant.mochi:8:10
+
+  8 |   return match sh {
+    |          ^
+
+help:
+  Add an arm for each missing variant or use a wildcard `_` arm to cover the remainder.
