@@ -1466,6 +1466,15 @@ func checkIfStmt(stmt *parser.IfStmt, env *Env, expectedReturn Type, inLoop bool
 }
 
 func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
+	typ := resolveTypeRefInner(t, env)
+	if t.Optional {
+		// MEP-10 C1: `T?` desugars to `option[T]`.
+		typ = OptionType{Elem: typ}
+	}
+	return typ
+}
+
+func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 	if t.Fun != nil {
 		params := make([]Type, len(t.Fun.Params))
 		for i, p := range t.Fun.Params {
