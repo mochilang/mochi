@@ -1,0 +1,16 @@
+// MEP-13 §Recursive ADTs: a union variant may reference the union
+// itself in its field types. The decl walk uses a shared variants map
+// so `tail: List` resolves to the same UnionType being constructed.
+// A recursive function over the union type-checks as long as every
+// variant arm appears in the match (closes T050 exhaustiveness too).
+type List = Cons(head: int, tail: List) | Nil
+
+fun length(xs: List): int {
+  return match xs {
+    Cons(h, t) => 1 + length(t)
+    Nil => 0
+  }
+}
+
+let xs: List = Cons(1, Cons(2, Cons(3, Nil)))
+let n: int = length(xs)
