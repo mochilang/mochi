@@ -1,0 +1,7 @@
+// MEP-11.3 / MEP-10 A1. `any` is no longer a silent two-way top. A
+// value typed `any` only flows into another `any` slot; concrete
+// positions require an explicit `as T` cast (MEP-10 A5 allows
+// `any as _`).
+let x: any = 1
+let y: int = x
+let z = x + 1

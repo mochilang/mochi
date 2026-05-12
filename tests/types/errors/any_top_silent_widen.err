@@ -1,0 +1,8 @@
+1. error[T008]: type mismatch: expected int, got any
+  --> tests/types/errors/any_top_silent_widen.mochi:6:1
+
+  6 | let y: int = x
+    | ^
+
+help:
+  Change the value to match the expected type.

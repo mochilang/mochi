@@ -888,7 +888,11 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				if err != nil {
 					return err
 				}
-				if !unify(typ, exprType, nil) {
+				// MEP-11.2: route the let-binding check through
+				// Assignable rather than unify. Direction matters:
+				// the value flows into the declared slot, so we ask
+				// `Assignable(rhs, declared)` not the symmetric form.
+				if !Assignable(exprType, typ) {
 					return errTypeMismatch(s.Let.Pos, typ, exprType)
 				}
 			}
@@ -914,7 +918,9 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				if err != nil {
 					return err
 				}
-				if !unify(typ, exprType, nil) {
+				// MEP-11.2: route the var-binding check through
+				// Assignable; see the matching change on Let above.
+				if !Assignable(exprType, typ) {
 					return errTypeMismatch(s.Var.Pos, typ, exprType)
 				}
 			}
@@ -1678,24 +1684,15 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 	case "+", "-", "*", "/", "%":
 		switch {
 		case isNumeric(left) && isNumeric(right):
-			if op == "/" {
-				if _, ok := left.(IntType); ok {
-					if _, ok2 := right.(IntType); ok2 {
-						return IntType{}, nil
-					}
-				}
-			}
-			if unify(left, BigRatType{}, nil) || unify(right, BigRatType{}, nil) {
-				return BigRatType{}, nil
-			}
-			if unify(left, FloatType{}, nil) || unify(right, FloatType{}, nil) {
-				return FloatType{}, nil
-			}
-			if unify(left, BigIntType{}, nil) || unify(right, BigIntType{}, nil) {
-				return BigIntType{}, nil
-			}
-			if unify(left, Int64Type{}, nil) || unify(right, Int64Type{}, nil) {
-				return Int64Type{}, nil
+			// MEP-10 B2: numeric mix is the lattice join. The same
+			// helper drives inferBinaryType so the inferrer and the
+			// checker agree on the result type kind. Without this,
+			// inferring `int + int = int` while the checker reports
+			// `bigint` produced spurious "expected int, got bigint"
+			// errors at let-binding sites once MEP-11.2 routed those
+			// through Subtype.
+			if joined, ok := numericJoin(left, right); ok {
+				return joined, nil
 			}
 			return IntType{}, nil
 		case op == "+" && (unify(left, StringType{}, nil) || unify(right, StringType{}, nil)):
@@ -1917,7 +1914,12 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		case p.Lit.Bool != nil:
 			return BoolType{}, nil
 		case p.Lit.Null:
-			return AnyType{}, nil
+			// MEP-10 A2: `null` is the lone value of `option[any]`. It
+			// unifies with any other option type via the top-level any
+			// case in `unify`, and against `any` itself via the top
+			// short-circuit. A non-option target like `int` no longer
+			// accepts `null` without an explicit option-typed slot.
+			return OptionType{Elem: AnyType{}}, nil
 		}
 
 	case p.Selector != nil:

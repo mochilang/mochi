@@ -142,6 +142,57 @@ func Subtype(s, t Type) bool {
 	return false
 }
 
+// Assignable reports whether a value of type src can flow into a
+// position declared to accept dst, under the relaxed rules used today
+// while the MEP-10 A1 any-audit is in flight (MEP-11.2). It is
+// Subtype plus an explicit allowance for AnyType on either side.
+//
+// The helper exists so that let / var / assign / argument / return
+// all share one call site. The MEP-11.3 (any-tightening) task then
+// removes the AnyType-on-source escape to close MEP-10 A1 without
+// having to re-route every individual call site again. Callers that
+// need permanent looseness route through an explicit `as any` cast
+// once #79 lands.
+func Assignable(src, dst Type) bool {
+	// MEP-11.3 (MEP-10 A1). A value typed `any` no longer flows into a
+	// concrete slot without an explicit `as T` cast. The dst=any
+	// direction stays valid (covered by Subtype's T-Top rule below).
+	return assignableAt(src, dst, false)
+}
+
+// assignableAt is the recursion that powers Assignable. The
+// elementContext flag carries the "empty collection literal" carve-out
+// across structural descents: `[]` is `[any]`, `{}` is `{any: any}`,
+// and `null` is `option[any]`. Inside those positions we still admit
+// src=Any because it represents the literal's polymorphic element
+// type, not a user-typed `any` value. At the top level the flag is
+// false and the bare-any escape is closed.
+func assignableAt(src, dst Type, elementContext bool) bool {
+	if _, ok := dst.(AnyType); ok {
+		return true
+	}
+	if elementContext {
+		if _, ok := src.(AnyType); ok {
+			return true
+		}
+	}
+	switch sv := src.(type) {
+	case ListType:
+		if dv, ok := dst.(ListType); ok {
+			return assignableAt(sv.Elem, dv.Elem, true)
+		}
+	case MapType:
+		if dv, ok := dst.(MapType); ok {
+			return assignableAt(sv.Key, dv.Key, true) && assignableAt(sv.Value, dv.Value, true)
+		}
+	case OptionType:
+		if dv, ok := dst.(OptionType); ok {
+			return assignableAt(sv.Elem, dv.Elem, true)
+		}
+	}
+	return Subtype(src, dst)
+}
+
 // equalKinds is a small structural equality used by Subtype to discharge
 // T-Refl on compound kinds and to enforce the invariance rules on Map
 // and Group children. It deliberately does not call Subtype recursively

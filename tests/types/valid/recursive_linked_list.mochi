@@ -1,0 +1,16 @@
+// MEP-10 B8: a self-referential union (Cons/Nil) type checks
+// because the variants map is populated before fields resolve, so
+// the `tail: List` field can reference the enclosing union.
+type List =
+  Nil
+| Cons(head: int, tail: List)
+
+let three: List = Cons(3, Nil)
+let two: List = Cons(2, three)
+let one: List = Cons(1, two)
+
+let label: string = match one {
+  Nil => "empty"
+  Cons(h, t) => "non-empty"
+}
+expect label == "non-empty"

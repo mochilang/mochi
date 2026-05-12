@@ -1,6 +1,8 @@
 // Aggregate typing (1814): min and max over an int list return int.
 let xs: list<int> = [3, 1, 4, 1, 5, 9, 2, 6]
-let lo: int = min(xs)
-let hi: int = max(xs)
+// min/max return `any` today; explicit cast required until MEP-12
+// tightens the builtins to TypeVar (#89).
+let lo: int = min(xs) as int
+let hi: int = max(xs) as int
 expect lo == 1
 expect hi == 9
