@@ -67,6 +67,9 @@ var Errors = map[string]diagnostic.Template{
 	"T046": {Code: "T046", Message: "invalid cast: `%s` as `%s` is not allowed", Help: "Only numeric-tower, union-to-variant, map-to-struct, and any-related casts are allowed. Use a parsing function (e.g. `parseIntStr`) for string conversions."},
 	"T050": {Code: "T050", Message: "non-exhaustive match on union `%s`: missing variant(s) %s", Help: "Add an arm for each missing variant or use a wildcard `_` arm to cover the remainder."},
 	"T051": {Code: "T051", Message: "cannot alias immutable aggregate `%s` into a mutable binding", Help: "Aliasing a let-bound list, map, or struct into a `var` would let writes through the alias mutate the original. Clone explicitly (e.g. `[...xs]`, `{...m}`) or bind the source as `var`."},
+	"T047": {Code: "T047", Message: "cannot unify type parameter `%s`: %s vs %s", Help: "Two argument positions require incompatible bindings for the same generic parameter. Pick argument types that agree."},
+	"T048": {Code: "T048", Message: "type parameter `%s` escapes function result", Help: "The result type still mentions `%s` after argument unification. Constrain the parameter at a call argument or supply an explicit type argument."},
+	"T049": {Code: "T049", Message: "type argument arity mismatch for `%s`: expected %d, got %d", Help: "Supply exactly one type argument per declared type parameter."},
 }
 
 // --- Wrapper Functions ---
@@ -77,6 +80,21 @@ func errLetMissingTypeOrValue(pos lexer.Position) error {
 
 func errAliasImmutableAggregate(pos lexer.Position, src string) error {
 	return Errors["T051"].New(pos, src)
+}
+
+func errTypeParamConflict(pos lexer.Position, name string, bound, attempt Type) error {
+	return Errors["T047"].New(pos, name, bound, attempt)
+}
+
+func errTypeParamEscapes(pos lexer.Position, name string) error {
+	tmpl := Errors["T048"]
+	msg := fmt.Sprintf(tmpl.Message, name)
+	help := fmt.Sprintf(tmpl.Help, name)
+	return diagnostic.New(tmpl.Code, pos, msg, help)
+}
+
+func errTypeArgArity(pos lexer.Position, fn string, expected, actual int) error {
+	return Errors["T049"].New(pos, fn, expected, actual)
 }
 
 func errAssignUndeclared(pos lexer.Position, name string) error {
