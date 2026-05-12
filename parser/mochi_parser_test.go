@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"mochi/golden"
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
 	"mochi/types"

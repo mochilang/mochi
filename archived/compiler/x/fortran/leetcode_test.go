@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	ftncode "mochi/archived/x/fortran"
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
 	"mochi/types"

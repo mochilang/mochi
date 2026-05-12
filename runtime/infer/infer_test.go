@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	denoffi "mochi/runtime/ffi/deno"
 	goffi "mochi/runtime/ffi/go"

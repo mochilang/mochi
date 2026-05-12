@@ -92,7 +92,7 @@ import (
 	zigast "mochi/archived/aster/x/zig"
 
 	"mochi/ast"
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/mcp"
 	"mochi/parser"
 	"mochi/repl"

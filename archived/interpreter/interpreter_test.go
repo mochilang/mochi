@@ -1,3 +1,5 @@
+//go:build slow
+
 package interpreter_test
 
 import (
@@ -11,7 +13,7 @@ import (
 	"testing"
 
 	"mochi/golden"
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/parser"
 	goffi "mochi/runtime/ffi/go"
 	"mochi/runtime/llm"
@@ -25,7 +27,7 @@ func TestInterpreter_ValidPrograms(t *testing.T) {
 	if _, err := exec.LookPath("deno"); err != nil {
 		t.Skip("deno not installed")
 	}
-	golden.Run(t, "tests/interpreter/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+	golden.Run(t, "archived/tests/interpreter/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -68,7 +70,7 @@ func TestInterpreter_ValidPrograms(t *testing.T) {
 
 func TestInterpreter_RuntimeErrors(t *testing.T) {
 	t.Skip("disabled in current environment")
-	golden.Run(t, "tests/interpreter/errors", ".mochi", ".err", func(src string) ([]byte, error) {
+	golden.Run(t, "archived/tests/interpreter/errors", ".mochi", ".err", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)

@@ -32,7 +32,7 @@ import (
 	python "mochi/runtime/ffi/python"
 
 	"mochi/ast"
-	"mochi/interpreter"
+	"mochi/archived/interpreter"
 	"mochi/mcp"
 	"mochi/parser"
 	"mochi/repl"
