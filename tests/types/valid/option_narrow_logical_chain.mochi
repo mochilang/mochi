@@ -1,0 +1,7 @@
+// MEP-16 N2: chained `&&` accumulates narrowings left-to-right. With
+// p and q both option-typed, after `p != none && q != none` both
+// bindings are narrowed for the final conjunct.
+let p: int? = 1
+let q: int? = 2
+let combined = p != none && q != none && p + q > 0
+expect combined == true

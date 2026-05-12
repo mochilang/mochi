@@ -1,0 +1,6 @@
+// MEP-16 N2: the RHS of `||` sees the falsy-side narrowing of the
+// LHS. After `p == none` is rejected, p is typed as int in the second
+// operand so `p > 0` type-checks.
+let p: int? = 3
+let safe = p == none || p > 0
+expect safe == true
