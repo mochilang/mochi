@@ -212,3 +212,65 @@ func firstImpurePrimary(p *parser.Primary, env *Env) (string, lexer.Position, bo
 	}
 	return "", lexer.Position{}, false
 }
+
+// statementHasImpureCall reports whether s contains any call to a
+// non-pure function in its directly evaluated expressions. It powers
+// MEP-16 N5 narrowing invalidation: after a statement whose evaluation
+// could call an impure function, every `var` binding loses narrowing.
+// Nested control-flow bodies (if / while / for) are not inspected here;
+// their own narrowed envs handle invalidation locally, and the
+// conservative drop on the cond / source expression is enough to cover
+// the outer scope.
+func statementHasImpureCall(s *parser.Statement, env *Env) bool {
+	if s == nil {
+		return false
+	}
+	switch {
+	case s.Let != nil:
+		return exprHasImpureCall(s.Let.Value, env)
+	case s.Var != nil:
+		return exprHasImpureCall(s.Var.Value, env)
+	case s.Assign != nil:
+		if exprHasImpureCall(s.Assign.Value, env) {
+			return true
+		}
+		for _, idx := range s.Assign.Index {
+			if exprHasImpureCall(idx.Start, env) || exprHasImpureCall(idx.End, env) {
+				return true
+			}
+		}
+		return false
+	case s.Return != nil:
+		return exprHasImpureCall(s.Return.Value, env)
+	case s.Expr != nil:
+		return exprHasImpureCall(s.Expr.Expr, env)
+	case s.If != nil:
+		return exprHasImpureCall(s.If.Cond, env)
+	case s.While != nil:
+		return exprHasImpureCall(s.While.Cond, env)
+	case s.For != nil:
+		if exprHasImpureCall(s.For.Source, env) {
+			return true
+		}
+		return exprHasImpureCall(s.For.RangeEnd, env)
+	case s.Update != nil:
+		if s.Update.Where != nil && exprHasImpureCall(s.Update.Where, env) {
+			return true
+		}
+		for _, it := range s.Update.Set.Items {
+			if exprHasImpureCall(it.Value, env) {
+				return true
+			}
+		}
+		return false
+	}
+	return false
+}
+
+func exprHasImpureCall(e *parser.Expr, env *Env) bool {
+	if e == nil {
+		return false
+	}
+	_, _, ok := firstImpureCall(e, env)
+	return ok
+}
