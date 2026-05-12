@@ -789,20 +789,32 @@ func Check(prog *parser.Program, env *Env) []error {
 	// can reference them regardless of order in the source file.
 	for _, stmt := range prog.Statements {
 		if stmt.Fun != nil {
+			sigEnv := env
+			if len(stmt.Fun.TypeParams) > 0 {
+				sigEnv = NewEnv(env)
+				for _, tp := range stmt.Fun.TypeParams {
+					sigEnv.SetTypeParam(tp, &TypeVar{Name: tp})
+				}
+			}
 			params := make([]Type, len(stmt.Fun.Params))
 			for i, p := range stmt.Fun.Params {
 				if p.Type != nil {
-					params[i] = resolveTypeRef(p.Type, env)
+					params[i] = resolveTypeRef(p.Type, sigEnv)
 				} else {
 					params[i] = AnyType{}
 				}
 			}
 			var ret Type = UnitType{}
 			if stmt.Fun.Return != nil {
-				ret = resolveTypeRef(stmt.Fun.Return, env)
+				ret = resolveTypeRef(stmt.Fun.Return, sigEnv)
 			}
 			pure := isPureFunction(stmt.Fun, env)
-			env.SetVar(stmt.Fun.Name, FuncType{Params: params, Return: ret, Pure: pure}, false)
+			env.SetVar(stmt.Fun.Name, FuncType{
+				Params:     params,
+				Return:     ret,
+				Pure:       pure,
+				TypeParams: append([]string(nil), stmt.Fun.TypeParams...),
+			}, false)
 			env.SetFunc(stmt.Fun.Name, stmt.Fun)
 		}
 	}
@@ -1390,6 +1402,13 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 
 	case s.Fun != nil:
 		name := s.Fun.Name
+		sigEnv := env
+		if len(s.Fun.TypeParams) > 0 {
+			sigEnv = NewEnv(env)
+			for _, tp := range s.Fun.TypeParams {
+				sigEnv.SetTypeParam(tp, &TypeVar{Name: tp})
+			}
+		}
 		params := []Type{}
 		for _, p := range s.Fun.Params {
 			if p.Type == nil {
@@ -1397,18 +1416,23 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				// annotations by defaulting them to `any`.
 				params = append(params, AnyType{})
 			} else {
-				params = append(params, resolveTypeRef(p.Type, env))
+				params = append(params, resolveTypeRef(p.Type, sigEnv))
 			}
 		}
 		var ret Type = AnyType{}
 		if s.Fun.Return != nil {
-			ret = resolveTypeRef(s.Fun.Return, env)
+			ret = resolveTypeRef(s.Fun.Return, sigEnv)
 		}
 		pure := isPureFunction(s.Fun, env)
-		env.SetVar(name, FuncType{Params: params, Return: ret, Pure: pure}, false)
+		env.SetVar(name, FuncType{
+			Params:     params,
+			Return:     ret,
+			Pure:       pure,
+			TypeParams: append([]string(nil), s.Fun.TypeParams...),
+		}, false)
 		env.SetFunc(name, s.Fun)
 
-		child := NewEnv(env)
+		child := NewEnv(sigEnv)
 		for i, p := range s.Fun.Params {
 			child.SetVar(p.Name, params[i], true)
 		}
@@ -1598,6 +1622,9 @@ func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 		case "any":
 			return AnyType{}
 		default:
+			if tv, ok := env.LookupTypeParam(*t.Simple); ok {
+				return tv
+			}
 			if ut, ok := env.GetUnion(*t.Simple); ok {
 				return ut
 			}

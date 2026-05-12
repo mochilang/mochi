@@ -28,6 +28,13 @@ type Env struct {
 	funcs   map[string]*parser.FunStmt   // function declarations
 	models  map[string]ModelSpec         // model aliases
 
+	// typeParams holds the active generic type parameters in this scope.
+	// resolveTypeRef consults this so that names like `T` and `K` inside
+	// a `fun foo<T, K>(...)` signature resolve to the same TypeVar
+	// instance across the parameter list and return type. Populated by
+	// the function-decl walks in check.go.
+	typeParams map[string]*TypeVar
+
 	// diagnostics accumulates errors raised in contexts (such as
 	// resolveTypeRef) that cannot return errors to their caller. Only
 	// the root env holds the slice; helpers walk up to find it.
@@ -84,6 +91,7 @@ func NewEnv(parent *Env) *Env {
 		values:  make(map[string]any),
 		funcs:   make(map[string]*parser.FunStmt),
 		models:  make(map[string]ModelSpec),
+		typeParams: make(map[string]*TypeVar),
 		output:  out,
 		input:   in,
 	}
@@ -147,6 +155,24 @@ func (e *Env) GetStream(name string) (StructType, bool) {
 		return e.parent.GetStream(name)
 	}
 	return StructType{}, false
+}
+
+// SetTypeParam registers a generic type-parameter name in the current
+// scope. resolveTypeRef consults LookupTypeParam to resolve such names.
+func (e *Env) SetTypeParam(name string, tv *TypeVar) {
+	e.typeParams[name] = tv
+}
+
+// LookupTypeParam searches for a generic type-parameter binding in the
+// current scope and parents.
+func (e *Env) LookupTypeParam(name string) (*TypeVar, bool) {
+	if tv, ok := e.typeParams[name]; ok {
+		return tv, true
+	}
+	if e.parent != nil {
+		return e.parent.LookupTypeParam(name)
+	}
+	return nil, false
 }
 
 // LookupType searches for a named type in the current scope and parents.
