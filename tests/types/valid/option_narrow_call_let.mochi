@@ -1,0 +1,13 @@
+// MEP-16 N5: an impure call inside a narrowed scope does not drop
+// narrowing for `let` bindings, because the target cannot be reassigned.
+// `x` remains `int` after `touch()` runs.
+fun touch() { print("touched") }
+
+let x: int? = 5
+if x != none {
+  let a: int = x + 1
+  touch()
+  let b: int = x + 1
+  expect a == 6
+  expect b == 6
+}

@@ -1,0 +1,13 @@
+// MEP-16 N5: an impure call inside a narrowed scope drops narrowing
+// for every `var` binding from the call site onward. The second
+// `x + 1` sees `x : int?` again and is rejected by R4 (T020).
+fun touch() { print("touched") }
+
+var x: int? = 5
+if x != none {
+  let a: int = x + 1
+  touch()
+  let b: int = x + 1
+  expect a == 6
+  expect b == 6
+}

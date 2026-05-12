@@ -221,3 +221,37 @@ func closureBoundaryEnv(env *Env) *Env {
 	}
 	return out
 }
+
+// dropMutableNarrowings drops every flow-narrowed shadow of a mutable
+// (`var`) binding visible from env by overlaying the binding's declared
+// type onto env. It implements MEP-16 N5: a call to a non-pure function
+// inside a narrowed scope cannot reason about which `var` was mutated,
+// so each `var` loses narrowing from the call site onward. Immutable
+// (`let`) bindings keep narrowing because the target cannot be
+// reassigned.
+func dropMutableNarrowings(env *Env) {
+	if env == nil {
+		return
+	}
+	seen := map[string]bool{}
+	for e := env; e != nil; e = e.parent {
+		for name := range e.narrowed {
+			if seen[name] {
+				continue
+			}
+			seen[name] = true
+			mut, _ := env.isMutable(name)
+			if !mut {
+				continue
+			}
+			if _, local := env.types[name]; local {
+				continue
+			}
+			declared, err := env.DeclaredVarType(name)
+			if err != nil {
+				continue
+			}
+			env.SetVar(name, declared, true)
+		}
+	}
+}

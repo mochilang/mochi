@@ -1132,6 +1132,13 @@ func checkIfStmt(stmt *parser.IfStmt, env *Env, expectedReturn Type, inLoop bool
 		if err := checkStmt(s, child, expectedReturn, inLoop); err != nil {
 			return err
 		}
+		// MEP-16 N5: after a statement whose evaluation could call a
+		// non-pure function, drop every `var` narrowing visible from
+		// child. `let` bindings keep narrowing because the target
+		// cannot be reassigned.
+		if statementHasImpureCall(s, child) {
+			dropMutableNarrowings(child)
+		}
 	}
 	if stmt.ElseIf != nil {
 		return checkIfStmt(stmt.ElseIf, narrowedEnv(env, falsy), expectedReturn, inLoop)
@@ -1140,6 +1147,9 @@ func checkIfStmt(stmt *parser.IfStmt, env *Env, expectedReturn Type, inLoop bool
 	for _, s := range stmt.Else {
 		if err := checkStmt(s, elseChild, expectedReturn, inLoop); err != nil {
 			return err
+		}
+		if statementHasImpureCall(s, elseChild) {
+			dropMutableNarrowings(elseChild)
 		}
 	}
 	return nil
