@@ -1,0 +1,11 @@
+// MEP-10 B3b / T052: passing a `list<int>` into a parameter declared
+// `list<any>` aliases the int-typed storage into a slot that allows
+// writes through the parameter name. A callee `ys[0] = "x"` would
+// corrupt reads through the caller's xs. Aggregate parameters share
+// the same invariance rule as `var` bindings (B3).
+fun corrupt(ys: list<any>) {
+  ys[0] = "hello"
+}
+
+var xs: list<int> = [1, 2, 3]
+corrupt(xs)

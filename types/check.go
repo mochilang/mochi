@@ -1007,7 +1007,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				// source name. Aliasing requires structural equality
 				// on aggregate element, key, and value types.
 				if src := bareIdentName(s.Var.Value); src != "" {
-					if isAliasableAggregate(exprType) && !equalKinds(exprType, typ) {
+					if isAliasableAggregate(exprType) && isAliasableAggregate(typ) && !equalKinds(exprType, typ) {
 						return errAliasWidensElement(s.Var.Pos, src, exprType, typ)
 					}
 				}
@@ -2172,6 +2172,23 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 					}
 				}
 				return nil, errArgTypeMismatch(p.Pos, i, expected, at)
+			}
+			// MEP-10 B3b: when the argument is a bare reference to an
+			// aliasable aggregate and the parameter slot is the same
+			// aggregate kind with a widened element / key / value
+			// type, the callee can deposit a value the source's
+			// static type rejects through the alias. Require
+			// structural equality. The check is narrow: it skips
+			// `any`-typed parameters (the design-loose interop
+			// position) because no structural write through the
+			// parameter is reachable without an explicit `as` cast,
+			// which the runtime guard from MEP-11.7 checks at the
+			// boundary.
+			if src := bareIdentName(p.Call.Args[i]); src != "" {
+				paramFinal := callSubst.Apply(ft.Params[i])
+				if isAliasableAggregate(at) && isAliasableAggregate(paramFinal) && !equalKinds(at, paramFinal) {
+					return nil, errAliasWidensElement(p.Pos, src, at, paramFinal)
+				}
 			}
 		}
 
