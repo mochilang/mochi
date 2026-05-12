@@ -1,0 +1,10 @@
+// MEP-16 N1 (if-statement form): the else-block of `if x == none`
+// sees x narrowed to T.
+let p: int? = 4
+var doubled: int = 0
+if p == none {
+  doubled = 0
+} else {
+  doubled = p * 2
+}
+expect doubled == 8
