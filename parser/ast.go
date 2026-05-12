@@ -337,7 +337,7 @@ type BinaryExpr struct {
 
 type BinaryOp struct {
 	Pos   lexer.Position `json:"pos,omitempty" parser:""`
-	Op    string         `json:"op,omitempty" parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%' | 'in' | '&&' | '||' | 'union' | 'except' | 'intersect')"`
+	Op    string         `json:"op,omitempty" parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%' | 'in' | '&&' | '||' | '??' | 'union' | 'except' | 'intersect')"`
 	All   bool           `json:"all,omitempty" parser:"[ @'all' ]"`
 	Right *Unary         `json:"right,omitempty" parser:"@@"`
 }

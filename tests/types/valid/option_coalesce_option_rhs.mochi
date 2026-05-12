@@ -1,0 +1,8 @@
+// MEP-16 R7: when both operands are optional, the result keeps the
+// option layer because the RHS may also be `none`. The trailing `??`
+// flattens to a concrete int for the equality check.
+let p: int? = none
+let q: int? = 9
+let fallback: int? = p ?? q
+let v: int = fallback ?? 0
+expect v == 9

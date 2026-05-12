@@ -68,7 +68,7 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Float", Pattern: `\d+\.\d+(?:[eE][+-]?\d+)?|\d+[eE][+-]?\d+`},
 	{Name: "Int", Pattern: `0[xX][0-9a-fA-F]+|0[bB][01]+|0[oO][0-7]+|\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"\\])*"`},
-	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|[-+*/%=<>!|{}\[\](),.:?]`},
+	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|\?\?|[-+*/%=<>!|{}\[\](),.:?]`},
 	{Name: "Whitespace", Pattern: `[ \t\n\r;]+`},
 })
 
