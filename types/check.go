@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/alecthomas/participle/v2/lexer"
 	"mochi/parser"
@@ -2117,13 +2118,17 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		argTypes := make([]Type, argCount)
 		for i := 0; i < argCount && i < fixed; i++ {
 			expected := callSubst.Apply(ft.Params[i])
-			// MEP-12.2: if the expected param still contains unbound
-			// TypeVars after substitution, skip the hint-driven check
-			// (it routes through Subtype, which has no TypeVar rule) and
-			// let the call-site unifier bind the var from the inferred
-			// argument type instead.
+			// MEP-12.2/12.3: when the original parameter mentions any
+			// TypeVar quantified by this signature, never propagate the
+			// hint. Two cases:
+			//   (1) the var is still unbound: Subtype has no TypeVar
+			//       rule, so the hint-driven check would mishandle it.
+			//   (2) the var was bound by an earlier argument: forcing
+			//       the bound type as a hint would surface a T008 in
+			//       place of the more informative T047 unify-conflict
+			//       diagnostic the call-site Unify produces below.
 			hint := expected
-			if len(FreeTypeVars(expected, callSubst)) > 0 {
+			if len(FreeTypeVars(ft.Params[i], Subst{})) > 0 {
 				hint = nil
 			}
 			at, err := checkExprWithExpected(p.Call.Args[i], env, hint)
@@ -2139,7 +2144,11 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				// generic T007 mismatch. The legacy fallback above keeps
 				// non-generic calls on T007.
 				if len(ft.TypeParams) > 0 {
-					if name := firstFreeTypeVar(ft.Params[i], callSubst); name != "" {
+					// Use the structural TypeVar name from the
+					// pre-substitution param so we can report the
+					// original declared name (e.g. `T`) even after
+					// Instantiate freshened it to `T#1`.
+					if name := structuralTypeVarName(ft.Params[i]); name != "" {
 						return nil, errTypeParamConflict(p.Pos, name, expected, at)
 					}
 				}
@@ -2531,6 +2540,22 @@ func firstFreeTypeVar(t Type, sub Subst) string {
 		return ""
 	}
 	return free[0]
+}
+
+// structuralTypeVarName returns the first TypeVar's declared name found
+// in t, ignoring substitutions. The "T#N" suffix introduced by
+// FreshTypeVar is stripped so the caller surfaces the user-declared
+// parameter name (e.g. "T") in diagnostics.
+func structuralTypeVarName(t Type) string {
+	free := FreeTypeVars(t, Subst{})
+	if len(free) == 0 {
+		return ""
+	}
+	name := free[0]
+	if i := strings.IndexByte(name, '#'); i >= 0 {
+		return name[:i]
+	}
+	return name
 }
 
 // isAliasableAggregate reports whether t is a value kind whose storage
