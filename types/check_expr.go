@@ -360,6 +360,14 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				prefix = prefix + "." + field
 				continue
 			}
+			// MEP-16 R4 / T058: a field access on an Option<T> binding
+			// is rejected unless the binding has been narrowed (e.g.
+			// inside `if x != null { ... }`). The narrowed env shadows
+			// the binding with T, so the OptionType reaches here only
+			// when no guard is in scope.
+			if _, opt := typ.(OptionType); opt {
+				return nil, errOptionalDeref(p.Pos, prefix)
+			}
 			switch t := typ.(type) {
 			case StructType:
 				if ft, ok := t.FieldType(field); ok {
@@ -1112,19 +1120,27 @@ func checkIfExpr(ie *parser.IfExpr, env *Env, expected Type) (Type, error) {
 		return nil, errIfCondBoolean(ie.Cond.Pos)
 	}
 
-	thenT, err := checkExprWithExpected(ie.Then, env, expected)
+	// MEP-16 N1: tighten Option<T> bindings to T inside the branch
+	// that proves the value is present. `if x != null { ... }` narrows
+	// x in the then-branch; `if x == null { ... } else { ... }`
+	// narrows x in the else-branch.
+	truthy, falsy := optionNarrowing(ie.Cond, env)
+	thenEnv := narrowedEnv(env, truthy)
+	elseEnv := narrowedEnv(env, falsy)
+
+	thenT, err := checkExprWithExpected(ie.Then, thenEnv, expected)
 	if err != nil {
 		return nil, err
 	}
 
 	var elseT Type = AnyType{}
 	if ie.ElseIf != nil {
-		elseT, err = checkIfExpr(ie.ElseIf, env, thenT)
+		elseT, err = checkIfExpr(ie.ElseIf, elseEnv, thenT)
 		if err != nil {
 			return nil, err
 		}
 	} else if ie.Else != nil {
-		elseT, err = checkExprWithExpected(ie.Else, env, thenT)
+		elseT, err = checkExprWithExpected(ie.Else, elseEnv, thenT)
 		if err != nil {
 			return nil, err
 		}

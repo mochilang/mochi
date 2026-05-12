@@ -1,0 +1,5 @@
+// MEP-16 N1 (else form): `if x == null { ... } else { ... }` narrows
+// x from Option<T> to T inside the else-branch.
+let p: int? = null
+let total = if p == null { 0 } else { p + 1 }
+expect total == 0
