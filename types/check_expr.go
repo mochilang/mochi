@@ -1152,8 +1152,16 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 	// matched explicitly.
 	matchedVariants := map[string]bool{}
 	hasCatchAll := false
+	// MEP-13 §Irredundancy: a literal pattern that repeats an earlier
+	// one is rejected, as are any arms that follow a catch-all. We do
+	// not have pattern guards, so two arms with the same pattern can
+	// never both fire.
+	seenLiterals := map[string]bool{}
 	for _, c := range m.Cases {
 		caseEnv := env
+		if hasCatchAll {
+			return nil, errMatchArmRedundant(c.Pos, "arm after catch-all is unreachable")
+		}
 		if call, ok := callPattern(c.Pattern); ok {
 			if ut, ok := env.FindUnionByVariant(call.Func); ok {
 				st := ut.Variants[call.Func]
@@ -1162,6 +1170,9 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 				}
 				if !unify(targetType, st, nil) {
 					return nil, errTypeMismatch(c.Pos, targetType, st)
+				}
+				if matchedVariants[call.Func] {
+					return nil, errMatchArmRedundant(c.Pos, "duplicate variant `"+call.Func+"`")
 				}
 				matchedVariants[call.Func] = true
 				child := NewEnv(env)
@@ -1177,6 +1188,9 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 				st := ut.Variants[ident]
 				if !unify(targetType, st, nil) {
 					return nil, errTypeMismatch(c.Pos, targetType, st)
+				}
+				if matchedVariants[ident] {
+					return nil, errMatchArmRedundant(c.Pos, "duplicate variant `"+ident+"`")
 				}
 				matchedVariants[ident] = true
 			} else if !isUnderscoreExpr(c.Pattern) {
@@ -1197,6 +1211,12 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 			}
 			if !unify(targetType, pType, nil) {
 				return nil, errTypeMismatch(c.Pos, targetType, pType)
+			}
+			if key := literalPatternKey(c.Pattern); key != "" {
+				if seenLiterals[key] {
+					return nil, errMatchArmRedundant(c.Pos, "duplicate literal pattern")
+				}
+				seenLiterals[key] = true
 			}
 		} else {
 			hasCatchAll = true
@@ -1993,6 +2013,42 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 		return nil
 	}
 	return nil
+}
+
+// literalPatternKey returns a canonical string key for a literal pattern
+// in a match arm, or "" if e is not a literal. The key is used by the
+// MEP-13 §Irredundancy check to detect a duplicate literal pattern
+// across arms; the position is irrelevant for equality, only the
+// literal value matters.
+func literalPatternKey(e *parser.Expr) string {
+	if e == nil {
+		return ""
+	}
+	if len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Lit == nil {
+		return ""
+	}
+	lit := p.Target.Lit
+	switch {
+	case lit.Int != nil:
+		return fmt.Sprintf("int:%d", int(*lit.Int))
+	case lit.Float != nil:
+		return fmt.Sprintf("float:%v", *lit.Float)
+	case lit.Str != nil:
+		return fmt.Sprintf("str:%q", *lit.Str)
+	case lit.Bool != nil:
+		return fmt.Sprintf("bool:%v", bool(*lit.Bool))
+	case lit.Null:
+		return "null"
+	}
+	return ""
 }
 
 func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
