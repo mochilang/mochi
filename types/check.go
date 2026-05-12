@@ -1193,6 +1193,22 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 		if !unify(lhsType, rhsType, nil) {
 			return errCannotAssign(s.Assign.Pos, rhsType, s.Assign.Name, lhsType)
 		}
+		// MEP-10 B3d: when the LHS targets a slot reached through an
+		// index or field (`bag[i]`, `r.items`) and the RHS names live
+		// aggregate storage, the assignment aliases the RHS into a slot
+		// with a widened element type. A later write through
+		// `bag[i][j]` would deposit a value the RHS's static type
+		// rejects, corrupting reads through the RHS name. Require
+		// structural equality at the slot type. Fresh-value RHS
+		// (literals, calls, computed values) keep working since
+		// aliasSourceLabel only fires on live-storage paths.
+		if len(s.Assign.Index) > 0 || len(s.Assign.Field) > 0 {
+			if src := aliasSourceLabel(s.Assign.Value); src != "" {
+				if isAliasableAggregate(rhsType) && isAliasableAggregate(lhsType) && !equalKinds(rhsType, lhsType) {
+					return errAliasWidensElement(s.Assign.Pos, src, rhsType, lhsType)
+				}
+			}
+		}
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			if ContainsAny(rhsType) {
 				if _, ok := lhsType.(AnyType); ok {

@@ -1,0 +1,8 @@
+1. error[T052]: cannot alias `xs` ([int]) into a binding of type [any]
+  --> tests/types/errors/list_alias_lhs_index.mochi:7:1
+
+  7 | bag[0] = xs
+    | ^
+
+help:
+  Aliasing widens the source's element type, which would let a write through the alias deposit a value the source cannot hold. Aggregate element, key, and value types are invariant at aliasing sites. Clone explicitly (e.g. `[...xs]`, `{...m}`) or declare the destination with the source's exact element type.
