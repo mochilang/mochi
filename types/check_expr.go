@@ -1359,7 +1359,7 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		}
 	}
 
-	var selT Type
+	armEnv := child
 	if q.Group != nil {
 		var keyT Type
 		if len(q.Group.Exprs) == 1 {
@@ -1395,22 +1395,41 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		genv := NewEnv(child)
 		gStruct := GroupType{Key: keyT, Elem: elemT}
 		genv.SetVar(q.Group.Name, gStruct, true)
+		armEnv = genv
 		if q.Group.Having != nil {
-			ht, err := checkExpr(q.Group.Having, genv)
+			ht, err := checkExpr(q.Group.Having, armEnv)
 			if err != nil {
 				return nil, err
 			}
 			if _, ok := ht.(AnyType); !ok && !unify(ht, BoolType{}, nil) {
 				return nil, errHavingBoolean(q.Group.Having.Pos)
 			}
-			if name, pos, ok := firstImpureCall(q.Group.Having, genv); ok {
+			if name, pos, ok := firstImpureCall(q.Group.Having, armEnv); ok {
 				return nil, errImpurePredicate(pos, name, "having")
 			}
 		}
-		selT, err = checkExpr(q.Select, genv)
+	}
+
+	if q.Sort != nil {
+		// Type-check the sort expression best-effort: existing dataset
+		// queries (TPC-H q7 et al.) reference group-by key fields as bare
+		// names that the type environment does not currently expose, so
+		// any check error here is downgraded to "unknown" rather than a
+		// hard failure. The ordered constraint (T056) only fires when the
+		// expression has a concrete, non-`any` type.
+		if st, err := checkExpr(q.Sort, armEnv); err == nil {
+			if _, ok := st.(AnyType); !ok && !isOrdered(st) {
+				return nil, errSortByOrdered(q.Sort.Pos, st)
+			}
+		}
+	}
+
+	var selT Type
+	if q.Group != nil {
+		selT, err = checkExpr(q.Select, armEnv)
 	} else {
 		if name, arg, ok := aggregateCallName(q.Select); ok {
-			at, err := checkExpr(arg, child)
+			at, err := checkExpr(arg, armEnv)
 			if err != nil {
 				return nil, err
 			}
@@ -1436,7 +1455,7 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 				selT = IntType{}
 			}
 		} else {
-			selT, err = checkExpr(q.Select, child)
+			selT, err = checkExpr(q.Select, armEnv)
 			if err != nil {
 				return nil, err
 			}
@@ -1624,6 +1643,20 @@ func isNumeric(t Type) bool {
 	switch t.(type) {
 	case IntType, Int64Type, FloatType, BigIntType, BigRatType:
 		return true
+	default:
+		return false
+	}
+}
+
+func isOrdered(t Type) bool {
+	switch v := t.(type) {
+	case IntType, Int64Type, FloatType, BigIntType, BigRatType, StringType, BoolType:
+		return true
+	case ListType:
+		if _, ok := v.Elem.(AnyType); ok {
+			return true
+		}
+		return isOrdered(v.Elem)
 	default:
 		return false
 	}
