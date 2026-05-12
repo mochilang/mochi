@@ -1115,16 +1115,20 @@ func checkIfStmt(stmt *parser.IfStmt, env *Env, expectedReturn Type, inLoop bool
 	if !unify(condT, BoolType{}, nil) {
 		return errIfCondBoolean(stmt.Cond.Pos)
 	}
-	child := NewEnv(env)
+	// MEP-16 N1: same narrowing the if-expression path applies. The
+	// then-block sees the truthy narrowing and the else-block sees the
+	// falsy narrowing of bare option-typed bindings compared to `none`.
+	truthy, falsy := optionNarrowing(stmt.Cond, env)
+	child := NewEnv(narrowedEnv(env, truthy))
 	for _, s := range stmt.Then {
 		if err := checkStmt(s, child, expectedReturn, inLoop); err != nil {
 			return err
 		}
 	}
 	if stmt.ElseIf != nil {
-		return checkIfStmt(stmt.ElseIf, env, expectedReturn, inLoop)
+		return checkIfStmt(stmt.ElseIf, narrowedEnv(env, falsy), expectedReturn, inLoop)
 	}
-	elseChild := NewEnv(env)
+	elseChild := NewEnv(narrowedEnv(env, falsy))
 	for _, s := range stmt.Else {
 		if err := checkStmt(s, elseChild, expectedReturn, inLoop); err != nil {
 			return err

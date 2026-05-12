@@ -1,0 +1,8 @@
+// MEP-16 N1 (if-statement form): `if x != none { ... }` narrows x to
+// T in the then-block, mirroring the if-expression case.
+let p: int? = 9
+var sum: int = 0
+if p != none {
+  sum = p + 1
+}
+expect sum == 10
