@@ -70,6 +70,7 @@ var Errors = map[string]diagnostic.Template{
 	"T047": {Code: "T047", Message: "cannot unify type parameter `%s`: %s vs %s", Help: "Two argument positions require incompatible bindings for the same generic parameter. Pick argument types that agree."},
 	"T048": {Code: "T048", Message: "type parameter `%s` escapes function result", Help: "The result type still mentions `%s` after argument unification. Constrain the parameter at a call argument or supply an explicit type argument."},
 	"T049": {Code: "T049", Message: "type argument arity mismatch for `%s`: expected %d, got %d", Help: "Supply exactly one type argument per declared type parameter."},
+	"T052": {Code: "T052", Message: "cannot alias `%s` (%s) into a binding of type %s", Help: "Aliasing widens the source's element type, which would let a write through the alias deposit a value the source cannot hold. Aggregate element, key, and value types are invariant at aliasing sites. Clone explicitly (e.g. `[...xs]`, `{...m}`) or declare the destination with the source's exact element type."},
 }
 
 // --- Wrapper Functions ---
@@ -80,6 +81,10 @@ func errLetMissingTypeOrValue(pos lexer.Position) error {
 
 func errAliasImmutableAggregate(pos lexer.Position, src string) error {
 	return Errors["T051"].New(pos, src)
+}
+
+func errAliasWidensElement(pos lexer.Position, src string, srcT, dstT Type) error {
+	return Errors["T052"].New(pos, src, srcT, dstT)
 }
 
 func errTypeParamConflict(pos lexer.Position, name string, bound, attempt Type) error {
