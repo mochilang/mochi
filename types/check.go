@@ -2203,6 +2203,20 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 					ret = ListType{Elem: mt.Value}
 				}
 			}
+			// MEP-12.4: reverse mirrors its argument's static shape.
+			// The declared signature stays loose (any -> any) so the
+			// list-or-string discriminator in checkBuiltinCall still
+			// applies; the post-process here pins the return type at
+			// the call site, so reverse([1,2,3]) types as list<int>
+			// rather than any.
+			if p.Call.Func == "reverse" && len(argTypes) == 1 {
+				switch at := argTypes[0].(type) {
+				case ListType:
+					ret = at
+				case StringType:
+					ret = StringType{}
+				}
+			}
 			return ret, nil
 		}
 		if _, defined := env.GetFunc(p.Call.Func); !defined {
@@ -2219,6 +2233,15 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		if p.Call.Func == "values" && len(argTypes) == 1 {
 			if mt, ok := argTypes[0].(MapType); ok {
 				ret = ListType{Elem: mt.Value}
+			}
+		}
+		// MEP-12.4: reverse mirrors its argument's static shape.
+		if p.Call.Func == "reverse" && len(argTypes) == 1 {
+			switch at := argTypes[0].(type) {
+			case ListType:
+				ret = at
+			case StringType:
+				ret = StringType{}
 			}
 		}
 		// MEP-12.3: T048 when the declared generic result still mentions
