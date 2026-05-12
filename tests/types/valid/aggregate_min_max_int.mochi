@@ -1,8 +1,8 @@
-// Aggregate typing (1814): min and max over an int list return int.
+// Aggregate typing: min and max are generic over the list element
+// type (MEP-12). The call site instantiates T with the inferred
+// element type, so `min(list<int>)` returns `int` without a cast.
 let xs: list<int> = [3, 1, 4, 1, 5, 9, 2, 6]
-// min/max return `any` today; explicit cast required until MEP-12
-// tightens the builtins to TypeVar (#89).
-let lo: int = min(xs) as int
-let hi: int = max(xs) as int
+let lo: int = min(xs)
+let hi: int = max(xs)
 expect lo == 1
 expect hi == 9
