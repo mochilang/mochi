@@ -3072,6 +3072,18 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 		r := fc.compileExpr(s.Expect.Value)
 		fc.emit(s.Expect.Pos, Instr{Op: OpExpect, A: r})
 		return nil
+	case s.Agent != nil:
+		return fmt.Errorf("agent declarations are interpreter-only; the bytecode VM does not implement them (MEP-10 C3)")
+	case s.Stream != nil:
+		return fmt.Errorf("stream declarations are interpreter-only; the bytecode VM does not implement them (MEP-10 C3)")
+	case s.Fact != nil:
+		return fmt.Errorf("fact declarations are interpreter-only; the bytecode VM does not implement them (MEP-10 C3)")
+	case s.Rule != nil:
+		return fmt.Errorf("rule declarations are interpreter-only; the bytecode VM does not implement them (MEP-10 C3)")
+	case s.On != nil:
+		return fmt.Errorf("on handlers are interpreter-only; the bytecode VM does not implement them (MEP-10 C3)")
+	case s.Emit != nil:
+		return fmt.Errorf("emit statements are interpreter-only; the bytecode VM does not implement them (MEP-10 C3)")
 	}
 	return nil
 }
