@@ -1,0 +1,16 @@
+// MEP-10 A4 / MEP-13 §Exhaustiveness: when two or more variants are
+// uncovered, every missing name appears in the T050 diagnostic so the
+// fix is mechanical. The formatter joins two names with ` and `; three
+// or more switch to a comma-separated list with `and` before the last.
+type Shape =
+  Circle(r: int)
+| Square(s: int)
+| Triangle(base: int, height: int)
+| Pentagon(side: int)
+
+fun classify(sh: Shape): string {
+  return match sh {
+    Circle(r) => "c"
+    Square(s) => "s"
+  }
+}
