@@ -1,0 +1,7 @@
+// A grouped aggregate produces one row per group, so the result is a
+// list of sums, not a scalar (MEP-14.5).
+let xs: list<int> = [1, 2, 3, 4, 5]
+let totals: list<int> = from x in xs
+                        group by x % 2 into g
+                        select sum(g)
+expect count(totals) == 2
