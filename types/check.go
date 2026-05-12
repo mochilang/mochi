@@ -1012,6 +1012,13 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 						return errAliasWidensElement(s.Var.Pos, src, exprType, typ)
 					}
 				}
+				// MEP-10 B3e: when the value is a list or map
+				// literal targeting a structural aggregate slot,
+				// reject element expressions that name live
+				// aggregate storage of a narrower element type.
+				if err := checkLiteralAliasElements(s.Var.Value, env, typ); err != nil {
+					return err
+				}
 			}
 		} else if s.Var.Value != nil {
 			var err error
@@ -1207,6 +1214,11 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				if isAliasableAggregate(rhsType) && isAliasableAggregate(lhsType) && !equalKinds(rhsType, lhsType) {
 					return errAliasWidensElement(s.Assign.Pos, src, rhsType, lhsType)
 				}
+			}
+			// MEP-10 B3e at index/field LHS: literal RHS may still
+			// contain alias source elements (`bag[0] = [xs]`).
+			if err := checkLiteralAliasElements(s.Assign.Value, env, lhsType); err != nil {
+				return err
 			}
 		}
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
@@ -2658,6 +2670,74 @@ func aliasSourceLabel(e *parser.Expr) string {
 		}
 	}
 	return label
+}
+
+// checkLiteralAliasElements walks list and map literals in e and
+// rejects element expressions that name live aggregate storage
+// (via aliasSourceLabel) when the expected element / value type is
+// a structural aggregate widening the source's element type.
+// MEP-10 B3e: `var bag: list<list<any>> = [xs]` where `xs : list<int>`
+// stores a reference to xs in bag; a later `bag[0][i] = ...` would
+// corrupt reads through xs. Recurses into nested literals so deeper
+// shapes (`list<list<list<any>>>` from `[[xs]]`) are caught too.
+func checkLiteralAliasElements(e *parser.Expr, env *Env, expected Type) error {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return nil
+	}
+	px := u.Value
+	if len(px.Ops) != 0 || px.Target == nil {
+		return nil
+	}
+	target := px.Target
+	switch et := expected.(type) {
+	case ListType:
+		if target.List == nil {
+			return nil
+		}
+		for _, el := range target.List.Elems {
+			if err := checkOneLiteralAliasElem(el, env, et.Elem); err != nil {
+				return err
+			}
+			if err := checkLiteralAliasElements(el, env, et.Elem); err != nil {
+				return err
+			}
+		}
+	case MapType:
+		if target.Map == nil {
+			return nil
+		}
+		for _, kv := range target.Map.Items {
+			if err := checkOneLiteralAliasElem(kv.Value, env, et.Value); err != nil {
+				return err
+			}
+			if err := checkLiteralAliasElements(kv.Value, env, et.Value); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func checkOneLiteralAliasElem(e *parser.Expr, env *Env, expected Type) error {
+	src := aliasSourceLabel(e)
+	if src == "" {
+		return nil
+	}
+	if !isAliasableAggregate(expected) {
+		return nil
+	}
+	actT, err := checkExpr(e, env)
+	if err != nil {
+		return nil
+	}
+	if isAliasableAggregate(actT) && !equalKinds(actT, expected) {
+		return errAliasWidensElement(e.Pos, src, actT, expected)
+	}
+	return nil
 }
 
 // firstFreeTypeVar returns the lexicographically first free TypeVar
