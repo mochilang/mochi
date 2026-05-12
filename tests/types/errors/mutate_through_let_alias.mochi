@@ -1,0 +1,7 @@
+// MEP-10 A3 / T051: aliasing an immutable aggregate into a mutable
+// binding is rejected. The earlier valid/ snapshot pinned the leak
+// (writes through ys mutated xs); the rule closes it by requiring an
+// explicit clone (e.g. `var ys: list<int> = [...xs]`) or declaring
+// the source as `var`.
+let xs: list<int> = [1, 2, 3]
+var ys: list<int> = xs

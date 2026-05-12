@@ -66,12 +66,17 @@ var Errors = map[string]diagnostic.Template{
 	"T045": {Code: "T045", Message: "`%s` outside of loop", Help: "Move `%s` inside a `for` or `while` loop body."},
 	"T046": {Code: "T046", Message: "invalid cast: `%s` as `%s` is not allowed", Help: "Only numeric-tower, union-to-variant, map-to-struct, and any-related casts are allowed. Use a parsing function (e.g. `parseIntStr`) for string conversions."},
 	"T050": {Code: "T050", Message: "non-exhaustive match on union `%s`: missing variant(s) %s", Help: "Add an arm for each missing variant or use a wildcard `_` arm to cover the remainder."},
+	"T051": {Code: "T051", Message: "cannot alias immutable aggregate `%s` into a mutable binding", Help: "Aliasing a let-bound list, map, or struct into a `var` would let writes through the alias mutate the original. Clone explicitly (e.g. `[...xs]`, `{...m}`) or bind the source as `var`."},
 }
 
 // --- Wrapper Functions ---
 
 func errLetMissingTypeOrValue(pos lexer.Position) error {
 	return Errors["T000"].New(pos)
+}
+
+func errAliasImmutableAggregate(pos lexer.Position, src string) error {
+	return Errors["T051"].New(pos, src)
 }
 
 func errAssignUndeclared(pos lexer.Position, name string) error {

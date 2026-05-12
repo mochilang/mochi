@@ -1,0 +1,8 @@
+1. error[T051]: cannot alias immutable aggregate `xs` into a mutable binding
+  --> tests/types/errors/mutate_through_let_alias.mochi:7:1
+
+  7 | var ys: list<int> = xs
+    | ^
+
+help:
+  Aliasing a let-bound list, map, or struct into a `var` would let writes through the alias mutate the original. Clone explicitly (e.g. `[...xs]`, `{...m}`) or bind the source as `var`.
