@@ -1,0 +1,8 @@
+// MEP-10 B1 Path B: `int / int` truncates toward zero.
+// The checker types the result as `int` and the runtime returns the
+// integer quotient. Use a float operand (e.g. `5.0 / 2`) for rational
+// division.
+let q: int = 5 / 2
+let r: int = -7 / 2
+expect q == 2
+expect r == -3
