@@ -32,6 +32,7 @@ const (
 	OpReturn
 	OpNot
 	OpJumpIfTrue
+	OpJumpIfNotNull
 	OpNow
 	OpRealNow
 	OpMem
@@ -168,6 +169,8 @@ func (op Op) String() string {
 		return "Not"
 	case OpJumpIfTrue:
 		return "JumpIfTrue"
+	case OpJumpIfNotNull:
+		return "JumpIfNotNull"
 	case OpNow:
 		return "Now"
 	case OpRealNow:

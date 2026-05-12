@@ -577,6 +577,10 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if fr.regs[ins.A].Truthy() {
 				fr.ip = ins.B
 			}
+		case OpJumpIfNotNull:
+			if fr.regs[ins.A].Tag != ValueNull {
+				fr.ip = ins.B
+			}
 		case OpLen:
 			v := fr.regs[ins.B]
 			switch v.Tag {

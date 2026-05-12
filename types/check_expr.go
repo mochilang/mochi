@@ -72,6 +72,7 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env, expected Type) (Type, error
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"??"},
 		{"union", "union_all", "except", "intersect"},
 	} {
 		for i := 0; i < len(operators); {
@@ -222,6 +223,29 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 			return nil, errOperatorMismatch(pos, op, left, right)
 		}
 		return BoolType{}, nil
+	case "??":
+		// MEP-16 R7: `??` requires the LHS to be optional. If the RHS is
+		// also optional, the result keeps the option layer; otherwise the
+		// option layer is shed because every `none` lane is replaced.
+		lopt, lok := left.(OptionType)
+		if !lok {
+			return nil, errOperatorMismatch(pos, op, left, right)
+		}
+		if ropt, rok := right.(OptionType); rok {
+			if unify(lopt.Elem, ropt.Elem, nil) {
+				return OptionType{Elem: lopt.Elem}, nil
+			}
+			return OptionType{Elem: AnyType{}}, nil
+		}
+		if unify(lopt.Elem, right, nil) {
+			return lopt.Elem, nil
+		}
+		if isNumeric(lopt.Elem) && isNumeric(right) {
+			if joined, ok := numericJoin(lopt.Elem, right); ok {
+				return joined, nil
+			}
+		}
+		return nil, errOperatorMismatch(pos, op, left, right)
 	default:
 		return nil, errUnsupportedOperator(pos, op)
 	}
