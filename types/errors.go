@@ -65,6 +65,7 @@ var Errors = map[string]diagnostic.Template{
 	"T044": {Code: "T044", Message: "impure call to `%s` is not allowed in `%s` predicate", Help: "Only pure functions may be called inside `where` and `having` predicates."},
 	"T045": {Code: "T045", Message: "`%s` outside of loop", Help: "Move `%s` inside a `for` or `while` loop body."},
 	"T046": {Code: "T046", Message: "invalid cast: `%s` as `%s` is not allowed", Help: "Only numeric-tower, union-to-variant, map-to-struct, and any-related casts are allowed. Use a parsing function (e.g. `parseIntStr`) for string conversions."},
+	"T050": {Code: "T050", Message: "non-exhaustive match on union `%s`: missing variant(s) %s", Help: "Add an arm for each missing variant or use a wildcard `_` arm to cover the remainder."},
 }
 
 // --- Wrapper Functions ---
@@ -256,6 +257,29 @@ func errIfCondBoolean(pos lexer.Position) error {
 
 func errInvalidCast(pos lexer.Position, from, to Type) error {
 	return Errors["T046"].New(pos, from, to)
+}
+
+func errMatchNonExhaustive(pos lexer.Position, unionName string, missing []string) error {
+	var quoted []string
+	for _, name := range missing {
+		quoted = append(quoted, "`"+name+"`")
+	}
+	list := ""
+	switch len(quoted) {
+	case 1:
+		list = quoted[0]
+	case 2:
+		list = quoted[0] + " and " + quoted[1]
+	default:
+		for i, q := range quoted {
+			if i == len(quoted)-1 {
+				list += "and " + q
+			} else {
+				list += q + ", "
+			}
+		}
+	}
+	return Errors["T050"].New(pos, unionName, list)
 }
 
 func errBreakContinueOutsideLoop(pos lexer.Position, keyword string) error {

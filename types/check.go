@@ -2414,6 +2414,12 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 		return nil, err
 	}
 	var resultType Type
+	// MEP-10 A4: track variant coverage when the scrutinee is a union.
+	// A wildcard `_` (or an identifier binding that does not name a
+	// variant) covers the remainder; otherwise every variant must be
+	// matched explicitly.
+	matchedVariants := map[string]bool{}
+	hasCatchAll := false
 	for _, c := range m.Cases {
 		caseEnv := env
 		if call, ok := callPattern(c.Pattern); ok {
@@ -2425,6 +2431,7 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 				if !unify(targetType, st, nil) {
 					return nil, errTypeMismatch(c.Pos, targetType, st)
 				}
+				matchedVariants[call.Func] = true
 				child := NewEnv(env)
 				for idx, arg := range call.Args {
 					if name, ok := identName(arg); ok {
@@ -2439,6 +2446,7 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 				if !unify(targetType, st, nil) {
 					return nil, errTypeMismatch(c.Pos, targetType, st)
 				}
+				matchedVariants[ident] = true
 			} else if !isUnderscoreExpr(c.Pattern) {
 				pType, err := checkExpr(c.Pattern, env)
 				if err != nil {
@@ -2447,6 +2455,8 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 				if !unify(targetType, pType, nil) {
 					return nil, errTypeMismatch(c.Pos, targetType, pType)
 				}
+			} else {
+				hasCatchAll = true
 			}
 		} else if !isUnderscoreExpr(c.Pattern) {
 			pType, err := checkExpr(c.Pattern, env)
@@ -2456,6 +2466,8 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 			if !unify(targetType, pType, nil) {
 				return nil, errTypeMismatch(c.Pos, targetType, pType)
 			}
+		} else {
+			hasCatchAll = true
 		}
 		if c.Result == nil {
 			for _, st := range c.Block {
@@ -2479,6 +2491,21 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 		// silently widened to AnyType.
 		if !unify(resultType, rType, nil) {
 			return nil, errTypeMismatch(c.Pos, resultType, rType)
+		}
+	}
+	// MEP-10 A4: when the scrutinee is a union, every variant must be
+	// covered by an explicit arm or a wildcard `_` arm. The check runs
+	// after all arms have been typed so the error pinpoints the match
+	// site rather than an arbitrary arm.
+	if ut, ok := targetType.(UnionType); ok && !hasCatchAll {
+		var missing []string
+		for _, name := range ut.Order {
+			if !matchedVariants[name] {
+				missing = append(missing, name)
+			}
+		}
+		if len(missing) > 0 {
+			return nil, errMatchNonExhaustive(m.Pos, ut.Name, missing)
 		}
 	}
 	if resultType == nil {
