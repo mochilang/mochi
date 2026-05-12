@@ -1,0 +1,6 @@
+// `having` predicate inside `group by` must be `bool` (T042).
+let xs: list<int> = [1, 2, 3]
+let bad = from x in xs
+          group by x % 2 into g
+          having g
+          select g

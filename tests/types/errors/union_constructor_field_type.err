@@ -1,0 +1,8 @@
+1. error[T008]: type mismatch: expected int, got string
+  --> tests/types/errors/union_constructor_field_type.mochi:9:23
+
+  9 | let c: Shape = Circle("not an int")
+    |                       ^
+
+help:
+  Change the value to match the expected type.

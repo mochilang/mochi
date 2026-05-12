@@ -1,0 +1,10 @@
+// Query projection into a struct: the result is `[Pair]` where Pair is
+// the anonymous struct shape (MEP-14, MEP-5 P2).
+type Pair { x: int, y: int }
+let xs: list<int> = [1, 2, 3]
+let ys: list<int> = [10, 20, 30]
+let pairs: list<Pair> = from a in xs
+                        from b in ys
+                        where a + b == 13
+                        select Pair{x: a, y: b}
+expect count(pairs) == 3

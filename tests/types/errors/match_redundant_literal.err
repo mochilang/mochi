@@ -1,0 +1,8 @@
+1. error[T054]: redundant match arm: duplicate literal pattern
+  --> tests/types/errors/match_redundant_literal.mochi:9:3
+
+  9 |   1 => "uno"
+    |   ^
+
+help:
+  Remove the arm or merge it with the earlier arm it duplicates. Mochi does not have pattern guards, so duplicate patterns can never both fire.
