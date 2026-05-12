@@ -78,6 +78,10 @@ var Errors = map[string]diagnostic.Template{
 	"T057": {Code: "T057", Message: "`select distinct` expression must be a hashable type, got %s", Help: "Distinct deduplicates by structural equality. Function values do not have a stable hash. Project a scalar or record of scalars."},
 	"T058": {Code: "T058", Message: "dereference of optional `%s` requires a none guard", Help: "Narrow with `if %s != none { ... }` first, or supply a fallback (`?? default`)."},
 	"T059": {Code: "T059", Message: "comparison with `none` requires an optional operand, got %s", Help: "`none` is the empty side of `Option<T>`; comparing it to a non-optional value can never be true. Either change the operand to `T?` or drop the comparison."},
+	"T060": {Code: "T060", Message: "safe-call `?.%s` requires an option-typed receiver, got %s", Help: "`a?.f` is only defined when `a : T?`. Drop the `?` for a plain field access, or change the receiver's type."},
+	"T061": {Code: "T061", Message: "safe-call `?.%s` requires the wrapped type to be a struct, got %s", Help: "The element side of the option must expose a field named `%s`."},
+	"T062": {Code: "T062", Message: "safe-index `?[ ]` requires an option-typed receiver, got %s", Help: "`a?[k]` is only defined when `a : list<T>?` or `a : map<K, V>?`. Drop the `?` for a plain index access."},
+	"T063": {Code: "T063", Message: "safe-index `?[ ]` requires the wrapped type to be a list or map, got %s", Help: "Only `list<T>` and `map<K, V>` support indexed access after `?[`."},
 }
 
 // --- Wrapper Functions ---
@@ -232,6 +236,25 @@ func errOptionalDeref(pos lexer.Position, name string) error {
 
 func errNoneComparison(pos lexer.Position, other Type) error {
 	return Errors["T059"].New(pos, other)
+}
+
+func errSafeFieldNonOption(pos lexer.Position, field string, typ Type) error {
+	return Errors["T060"].New(pos, field, typ)
+}
+
+func errSafeFieldNonStruct(pos lexer.Position, field string, typ Type) error {
+	tmpl := Errors["T061"]
+	msg := fmt.Sprintf(tmpl.Message, field, typ)
+	help := fmt.Sprintf(tmpl.Help, field)
+	return diagnostic.New(tmpl.Code, pos, msg, help)
+}
+
+func errSafeIndexNonOption(pos lexer.Position, typ Type) error {
+	return Errors["T062"].New(pos, typ)
+}
+
+func errSafeIndexNonIndexable(pos lexer.Position, typ Type) error {
+	return Errors["T063"].New(pos, typ)
 }
 
 func errFetchURLString(pos lexer.Position) error {

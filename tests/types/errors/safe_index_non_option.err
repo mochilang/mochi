@@ -1,0 +1,8 @@
+1. error[T062]: safe-index `?[ ]` requires an option-typed receiver, got [int]
+  --> tests/types/errors/safe_index_non_option.mochi:3:11
+
+  3 | let v = xs?[0]
+    |           ^
+
+help:
+  `a?[k]` is only defined when `a : list<T>?` or `a : map<K, V>?`. Drop the `?` for a plain index access.
