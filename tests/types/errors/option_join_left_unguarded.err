@@ -1,0 +1,8 @@
+1. error[T058]: dereference of optional `c` requires a none guard
+  --> tests/types/errors/option_join_left_unguarded.mochi:11:20
+
+ 11 |             select c.name
+    |                    ^
+
+help:
+  Narrow with `if c != none { ... }` first, or supply a fallback (`?? default`).

@@ -1,0 +1,12 @@
+// MEP-16 R10: `outer join` retypes BOTH sides to `Option<T>`. The on
+// clause sees them as plain `T`, but the select clause must narrow
+// before accessing fields.
+type Order { id: int, cid: int }
+type Cust  { id: int, name: string }
+
+let orders: list<Order> = [Order{id: 1, cid: 10}]
+let custs:  list<Cust>  = [Cust{id: 10, name: "a"}]
+
+let result = from o in orders
+             outer join c in custs on o.cid == c.id
+             select c.name

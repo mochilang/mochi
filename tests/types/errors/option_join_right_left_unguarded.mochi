@@ -1,0 +1,12 @@
+// MEP-16 R10: after a `right join`, the left side becomes `Option<T>`
+// while the join's variable keeps its plain type. Accessing the now-
+// optional left binding without narrowing raises T058.
+type Order { id: int, cid: int }
+type Cust  { id: int, name: string }
+
+let orders: list<Order> = [Order{id: 1, cid: 10}]
+let custs:  list<Cust>  = [Cust{id: 10, name: "a"}]
+
+let result = from o in orders
+             right join c in custs on o.cid == c.id
+             select o.id

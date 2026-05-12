@@ -1,0 +1,13 @@
+// MEP-16 R10: after a `left join`, the right side is `Option<T>`.
+// Narrowing recovers the wrapped struct so its fields can be read.
+type Order { id: int, cid: int }
+type Cust  { id: int, name: string }
+
+let orders: list<Order> = [Order{id: 1, cid: 10}, Order{id: 2, cid: 99}]
+let custs:  list<Cust>  = [Cust{id: 10, name: "a"}]
+
+let names = from o in orders
+            left join c in custs on o.cid == c.id
+            select (if c != none { c.name } else { "?" })
+
+expect count(names) == 2
