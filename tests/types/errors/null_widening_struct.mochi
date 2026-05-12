@@ -1,7 +1,7 @@
-// MEP-10 A2: `null` is `option[any]` and does not flow into a non-option
+// MEP-10 A2: `none` is `option[any]` and does not flow into a non-option
 // struct slot. Use `Point?` if you need a nullable struct binding.
 type Point {
   x: int
   y: int
 }
-let p: Point = null
+let p: Point = none

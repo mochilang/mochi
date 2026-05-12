@@ -4457,7 +4457,7 @@ func (c *Compiler) simpleConstJSON(e *parser.Expr) (string, bool) {
 	case l.Str != nil:
 		s := strings.ReplaceAll(*l.Str, "\"", "\\\"")
 		return fmt.Sprintf("\"%s\"", s), true
-	case l.Null:
+	case l.None:
 		return "null", true
 	}
 	return "", false

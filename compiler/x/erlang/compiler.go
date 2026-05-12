@@ -2189,7 +2189,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 		return "false"
 	case l.Str != nil:
 		return fmt.Sprintf("%q", *l.Str)
-	case l.Null:
+	case l.None:
 		return "undefined"
 	default:
 		return "undefined"

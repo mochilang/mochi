@@ -4,7 +4,7 @@ type Program {
 }
 fun Program.Main() {
   _models["quick"] = new Dictionary<string, object> { { "provider", "openai" } }
-  var x = _genText("hi", "quick", null)
+  var x = _genText("hi", "quick", none)
   print(x)
 }
 fun Program._genText(prompt: string, model: string, Dictionary<string, p): string {

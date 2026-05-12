@@ -6482,7 +6482,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		return &FloatLit{Value: *p.Lit.Float}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
-	case p.Lit != nil && p.Lit.Null:
+	case p.Lit != nil && p.Lit.None:
 		return &NullLit{}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		return newVarRef(env, p.Selector.Root), nil

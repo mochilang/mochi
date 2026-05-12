@@ -1531,7 +1531,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Lit.Str != nil {
 			return strconv.Quote(*p.Lit.Str), nil
 		}
-		if p.Lit.Null {
+		if p.Lit.None {
 			return "nil", nil
 		}
 	case p.List != nil:

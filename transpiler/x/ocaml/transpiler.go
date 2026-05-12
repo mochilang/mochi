@@ -5657,7 +5657,7 @@ func convertLiteral(l *parser.Literal) (Expr, string, error) {
 	if l.Str != nil {
 		return &StringLit{Value: *l.Str}, "string", nil
 	}
-	if l.Null {
+	if l.None {
 		return &RawExpr{Code: "nil"}, "", nil
 	}
 	return nil, "", fmt.Errorf("unsupported literal")

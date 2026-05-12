@@ -8,30 +8,30 @@ type Todo {
 type Program {
 }
 fun Program.Main() {
-  var todo = _cast<Todo>((_fetch("https://jsonplaceholder.typicode.com/todos/1", null)))
+  var todo = _cast<Todo>((_fetch("https://jsonplaceholder.typicode.com/todos/1", none)))
   print(todo.title)
 }
 fun Program._fetch(url: string, Dictionary<string, opts): any {
   var method = "GET"
-  if opts != null && opts.ContainsKey("method")) method = Convert.ToString(opts["method"]) {
-  var query = opts != null && opts.ContainsKey("query") ? opts["query"] as Dictionary<string, object> : null
-  if query != null {
+  if opts != none && opts.ContainsKey("method")) method = Convert.ToString(opts["method"]) {
+  var query = opts != none && opts.ContainsKey("query") ? opts["query"] as Dictionary<string, object> : none
+  if query != none {
   var qs = System.Web.HttpUtility.ParseQueryString("")
   for kv in query) qs[kv.Key] = Convert.ToString(kv.Value) {
   var sep = url.Contains('?') ? '&' : '?'
   url = url + sep + qs.ToString()
   }
   var req = new HttpRequestMessage(new HttpMethod(method), url)
-  if opts != null && opts.ContainsKey("headers") {
+  if opts != none && opts.ContainsKey("headers") {
   var hs = opts["headers"] as Dictionary<string, object>
-  if hs != null) foreach (var kv in hs) req.Headers.TryAddWithoutValidation(kv.Key, Convert.ToString(kv.Value)) {
+  if hs != none) foreach (var kv in hs) req.Headers.TryAddWithoutValidation(kv.Key, Convert.ToString(kv.Value)) {
   }
-  if opts != null && opts.ContainsKey("body") {
+  if opts != none && opts.ContainsKey("body") {
   var data = JsonSerializer.Serialize(opts["body"])
   req.Content = new StringContent(data, System.Text.Encoding.UTF8, "application/json")
   }
   var client = new HttpClient()
-  if opts != null && opts.ContainsKey("timeout") {
+  if opts != none && opts.ContainsKey("timeout") {
   var t = Convert.ToDouble(opts["timeout"])
   client.Timeout = TimeSpan.FromSeconds(t)
   }
@@ -61,8 +61,8 @@ fun Program._cast(v: any) {
   var res = (System.Collections.IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(args))
   var mCast = typeof(Program).GetMethod("_cast")
   for kv in d {
-  var k = mCast.MakeGenericMethod(args[0]).Invoke(null, new object[]{kv.Key})
-  var val = mCast.MakeGenericMethod(args[1]).Invoke(null, new object[]{kv.Value})
+  var k = mCast.MakeGenericMethod(args[0]).Invoke(none, new object[]{kv.Key})
+  var val = mCast.MakeGenericMethod(args[1]).Invoke(none, new object[]{kv.Value})
   res.Add(k, val)
   }
   return (T)res

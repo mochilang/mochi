@@ -2303,7 +2303,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 			return "true"
 		}
 		return "false"
-	case l.Null:
+	case l.None:
 		return "()"
 	default:
 		return "()"

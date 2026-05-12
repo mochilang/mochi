@@ -18,7 +18,7 @@ fun create_hash_table(size: int): HashTable {
   var vals: list<int> = []
   var i = 0
   while i < size {
-    vals = append(vals, null)
+    vals = append(vals, none)
     i = i + 1
   }
   return HashTable{ size_table: size, values: vals, lim_charge: 0.75 }
@@ -32,7 +32,7 @@ fun balanced_factor(table: HashTable): float {
   var count = 0
   var i = 0
   while i < len(table.values) {
-    if table.values[i] != null {
+    if table.values[i] != none {
       count = count + 1
     }
     i = i + 1
@@ -43,7 +43,7 @@ fun balanced_factor(table: HashTable): float {
 fun collision_resolution(table: HashTable, key: int): int {
   var i = 1
   var new_key = hash_function(table, key + i * i)
-  while table.values[new_key] != null && table.values[new_key] != key {
+  while table.values[new_key] != none && table.values[new_key] != key {
     i = i + 1
     if balanced_factor(table) >= table.lim_charge {
       return table.size_table
@@ -56,14 +56,14 @@ fun collision_resolution(table: HashTable, key: int): int {
 fun insert_data(table: HashTable, data: int): void {
   var key = hash_function(table, data)
   var vals = table.values
-  if vals[key] == null {
+  if vals[key] == none {
     vals[key] = data
   } else if vals[key] == data {
     table.values = vals
     return
   } else {
     let new_key = collision_resolution(table, key)
-    if new_key < len(vals) && vals[new_key] == null {
+    if new_key < len(vals) && vals[new_key] == none {
       vals[new_key] = data
     }
   }
@@ -95,7 +95,7 @@ fun keys_to_string(table: HashTable): string {
   var i = 0
   while i < len(table.values) {
     let v = table.values[i]
-    if v != null {
+    if v != none {
       if !first { result = result + ", " }
       result = result + int_to_string(i) + ": " + int_to_string(v)
       first = false

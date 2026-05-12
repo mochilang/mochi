@@ -4,7 +4,7 @@ Perform inorder traversal on a binary search tree.
 Each node stores an integer value and indices of its left and right
 children. A child index of -1 means the child is absent. Nodes are kept
 in a list inside a TreeState record. Values are inserted iteratively by
-walking from the root and linking a new node when a null child is
+walking from the root and linking a new node when a none child is
 encountered. Inorder traversal recursively processes the left subtree,
 current node, then the right subtree, producing values in ascending
 order. The traversal visits each node exactly once, giving O(n) time

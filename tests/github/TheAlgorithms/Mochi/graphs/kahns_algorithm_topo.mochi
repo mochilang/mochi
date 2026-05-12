@@ -60,7 +60,7 @@ fun topological_sort(graph: map<int, list<int>>): list<int> {
     }
   }
   if processed != len(graph) {
-    return null
+    return none
   }
   return order
 }

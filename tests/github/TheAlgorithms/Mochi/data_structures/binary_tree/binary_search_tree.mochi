@@ -3,7 +3,7 @@ Implement a Binary Search Tree (BST) that supports insertion, search,
 inorder traversal, finding minimum and maximum values, and deletion.
 
 Each node is a list `[value, left, right]` where the child entries are
-either nested nodes or `null`.  This functional structure allows us to
+either nested nodes or `none`.  This functional structure allows us to
 construct and return new trees without mutating shared state.
 
 * `insert` places a new value by descending left or right until an
@@ -22,11 +22,11 @@ for n stored values.
 */
 
 fun create_node(value: int): list<any> {
-  return [value, null, null]
+  return [value, none, none]
 }
 
 fun insert(node: list<any>, value: int): list<any> {
-  if node == null { return create_node(value) }
+  if node == none { return create_node(value) }
   if value < node[0] {
     node[1] = insert(node[1], value)
   } else if value > node[0] {
@@ -36,7 +36,7 @@ fun insert(node: list<any>, value: int): list<any> {
 }
 
 fun search(node: list<any>, value: int): bool {
-  if node == null { return false }
+  if node == none { return false }
   if value == node[0] { return true }
   if value < node[0] {
     return search(node[1], value)
@@ -45,7 +45,7 @@ fun search(node: list<any>, value: int): bool {
 }
 
 fun inorder(node: list<any>, acc: list<int>): list<int> {
-  if node == null { return acc }
+  if node == none { return acc }
   let left_acc = inorder(node[1], acc)
   let with_node = append(left_acc, node[0])
   return inorder(node[2], with_node)
@@ -53,25 +53,25 @@ fun inorder(node: list<any>, acc: list<int>): list<int> {
 
 fun find_min(node: list<any>): int {
   var current = node
-  while current[1] != null { current = current[1] }
+  while current[1] != none { current = current[1] }
   return current[0]
 }
 
 fun find_max(node: list<any>): int {
   var current = node
-  while current[2] != null { current = current[2] }
+  while current[2] != none { current = current[2] }
   return current[0]
 }
 
 fun delete(node: list<any>, value: int): list<any> {
-  if node == null { return null }
+  if node == none { return none }
   if value < node[0] {
     node[1] = delete(node[1], value)
   } else if value > node[0] {
     node[2] = delete(node[2], value)
   } else {
-    if node[1] == null { return node[2] }
-    if node[2] == null { return node[1] }
+    if node[1] == none { return node[2] }
+    if node[2] == none { return node[1] }
     let min_val = find_min(node[2])
     node[0] = min_val
     node[2] = delete(node[2], min_val)
@@ -80,7 +80,7 @@ fun delete(node: list<any>, value: int): list<any> {
 }
 
 fun main() {
-  var root: list<any> = null
+  var root: list<any> = none
   let nums: list<int> = [8, 3, 6, 1, 10, 14, 13, 4, 7]
   for v in nums {
     root = insert(root, v)

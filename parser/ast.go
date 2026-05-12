@@ -551,7 +551,7 @@ type Literal struct {
 	Float *float64       `json:"float,omitempty" parser:"| @Float"`
 	Bool  *boolLit       `json:"bool,omitempty" parser:"| @('true' | 'false')"`
 	Str   *string        `json:"str,omitempty" parser:"| @String"`
-	Null  bool           `json:"null,omitempty" parser:"| @'null'"`
+	None  bool           `json:"none,omitempty" parser:"| @'none'"`
 }
 
 // --- Stream / Struct ---

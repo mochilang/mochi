@@ -75,7 +75,7 @@ let tab1 = [
 ]
 
 /* SELECT - CASE + 97 WHEN 46 THEN 33 END * 10, + 90 AS col1 */
-var result = [[(-(if (97 != null && 46 != null && 97 == 46) then 33 else null)) * 10, 90]]
+var result = [[(-(if (97 != none && 46 != none && 97 == 46) then 33 else none)) * 10, 90]]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
@@ -92,6 +92,6 @@ for x in flatResult {
   print(x)
 }
 test "case197" {
-  expect flatResult == [90, null]
+  expect flatResult == [90, none]
 }
 

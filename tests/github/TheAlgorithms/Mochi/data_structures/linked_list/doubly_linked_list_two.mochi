@@ -225,8 +225,8 @@ fun print_list(ll: LinkedList) {
 
 fun main() {
   var ll = empty_list()
-  print(str(get_head_data(ll)))  // null
-  print(str(get_tail_data(ll)))  // null
+  print(str(get_head_data(ll)))  // none
+  print(str(get_tail_data(ll)))  // none
   print(str(is_empty(ll)))
   insert(ll, 10)
   print(str(get_head_data(ll)))

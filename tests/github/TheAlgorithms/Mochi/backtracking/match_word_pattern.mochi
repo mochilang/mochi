@@ -11,7 +11,7 @@ fun get_value(keys: list<string>, values: list<string>, key: string): string {
     }
     i = i + 1
   }
-  return null
+  return none
 }
 
 fun contains_value(values: list<string>, value: string): bool {
@@ -34,7 +34,7 @@ fun backtrack(pattern: string, input_string: string, pi: int, si: int, keys: lis
   }
   let ch = substring(pattern, pi, pi + 1)
   let mapped = get_value(keys, values, ch)
-  if mapped != null {
+  if mapped != none {
     if substring(input_string, si, si + len(mapped)) == mapped {
       return backtrack(pattern, input_string, pi + 1, si + len(mapped), keys, values)
     }

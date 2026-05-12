@@ -1,7 +1,7 @@
 /*
 Flatten a binary tree into a right-skewed linked list.
 
-Each node's left child pointer is set to null and its right child
+Each node's left child pointer is set to none and its right child
 pointer points to the next node in preorder. The algorithm works
 by visiting nodes in preorder, collecting their values, and
 reconstructing the traversal as a linear list. A small example tree

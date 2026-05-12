@@ -815,7 +815,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "#f", nil
 	case l.Str != nil:
 		return fmt.Sprintf("%q", *l.Str), nil
-	case l.Null:
+	case l.None:
 		return "'()", nil
 	default:
 		return "", fmt.Errorf("unknown literal")

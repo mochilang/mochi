@@ -19,14 +19,14 @@ t = Node(left=Leaf, value=1, right=Node(left=Leaf, value=2, right=Leaf))
 print(sum_tree(t))
 
 */
-var Leaf = null
+var Leaf = none
 type Node {
   left: Tree
   value: int
   right: Tree
 }
 fun sum_tree(t: int): int {
-  return if t == Leaf then 0 else if t != null then sum_tree(t.left) + t.value + sum_tree(t.right) else null
+  return if t == Leaf then 0 else if t != none then sum_tree(t.left) + t.value + sum_tree(t.right) else none
 }
 var t = Node {left: Leaf, value: 1, right: Node {left: Leaf, value: 2, right: Leaf}}
 print(sum_tree(t))

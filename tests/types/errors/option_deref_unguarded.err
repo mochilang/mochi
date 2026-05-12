@@ -5,4 +5,4 @@
     |             ^
 
 help:
-  Narrow with `if p != null { ... }` first, or supply a fallback (`?? default`).
+  Narrow with `if p != none { ... }` first, or supply a fallback (`?? default`).

@@ -6540,7 +6540,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &IntLit{Value: int(*p.Lit.Int)}, nil
 	case p.Lit != nil && p.Lit.Float != nil:
 		return &FloatLit{Value: *p.Lit.Float}, nil
-	case p.Lit != nil && p.Lit.Null:
+	case p.Lit != nil && p.Lit.None:
 		return &Name{Name: "null"}, nil
 	case p.List != nil:
 		var elems []Expr

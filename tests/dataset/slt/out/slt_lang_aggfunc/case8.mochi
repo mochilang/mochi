@@ -4,7 +4,7 @@
 # filtered before being passed into the aggregate function.
 # EVIDENCE-OF: R-31453-41389 For example, the function "count(distinct
 # X)" will return the number of distinct values of column X instead of
-# the total number of non-null values in column X.
+# the total number of non-none values in column X.
 INSERT INTO t1 VALUES(2,'true')
 INSERT INTO t1 VALUES(2,'true')
 */
@@ -24,7 +24,7 @@ let t1 = [
     y: "fal" + "se",
   },
   t1Row {
-    x: null,
+    x: none,
     y: "NULL",
   },
   t1Row {
@@ -39,7 +39,7 @@ let t1 = [
 
 /* SELECT count(DISTINCT x) FROM t1 */
 let result = count(distinct(from row in t1
-  where row.x != null
+  where row.x != none
   select row))
 print(result)
 

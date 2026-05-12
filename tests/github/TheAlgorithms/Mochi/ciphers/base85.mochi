@@ -7,7 +7,7 @@ concatenates the bits.  The bit stream is padded with zero bits to the next
 converted to base 85 by repeatedly dividing by 85.  Digits are mapped to the
 ASCII range '!' (33) to 'u' (117).  The helper converts the integer using a
 recursive function and the result is reversed.  Padding characters are
-removed based on the number of null bytes added.
+removed based on the number of none bytes added.
 
 Decoding reverses this process.  The encoded text is padded with 'u' (the
 highest base85 digit) until its length is a multiple of five.  Each group of

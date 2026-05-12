@@ -376,7 +376,7 @@ function main(): void {
   }
   test_case3();
 }
-function _append<T>(lst: T[] | null, v: T): T[] {
+function _append<T>(lst: T[] | none, v: T): T[] {
   const out = lst ? lst.slice() : [];
   out.push(v);
   return out;

@@ -1,6 +1,6 @@
 // MEP-16 T058: a field access on an Option<T> binding without a none
-// guard is rejected. The fix is `if p != null { p.name }` or a `??`
+// guard is rejected. The fix is `if p != none { p.name }` or a `??`
 // fallback.
 type Person { name: string }
-let p: Person? = null
+let p: Person? = none
 let label = p.name

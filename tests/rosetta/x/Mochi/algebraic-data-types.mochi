@@ -6,7 +6,7 @@ fun node(cl: string, le: any, aa: int, ri: any): map<string, any> {
 }
 
 fun treeString(t: any): string {
-  if t == null {
+  if t == none {
     return "E"
   }
   let m = t as map<string, any>
@@ -14,25 +14,25 @@ fun treeString(t: any): string {
 }
 
 fun balance(t: any): any {
-  if t == null { return t }
+  if t == none { return t }
   let m = t as map<string, any>
   if m["cl"] != "B" {
     return t
   }
   let le = m["le"]
   let ri = m["ri"]
-  if le != null {
+  if le != none {
     let leMap = le as map<string, any>
     if leMap["cl"] == "R" {
       let lele = leMap["le"]
-      if lele != null {
+      if lele != none {
         let leleMap = lele as map<string, any>
         if leleMap["cl"] == "R" {
           return node("R", node("B", leleMap["le"], leleMap["aa"], leleMap["ri"]), leMap["aa"], node("B", leMap["ri"], m["aa"], ri))
         }
       }
       let leri = leMap["ri"]
-      if leri != null {
+      if leri != none {
         let leriMap = leri as map<string, any>
         if leriMap["cl"] == "R" {
           return node("R", node("B", leMap["le"], leMap["aa"], leriMap["le"]), leriMap["aa"], node("B", leriMap["ri"], m["aa"], ri))
@@ -40,18 +40,18 @@ fun balance(t: any): any {
       }
     }
   }
-  if ri != null {
+  if ri != none {
     let riMap = ri as map<string, any>
     if riMap["cl"] == "R" {
       let rile = riMap["le"]
-      if rile != null {
+      if rile != none {
         let rileMap = rile as map<string, any>
         if rileMap["cl"] == "R" {
           return node("R", node("B", m["le"], m["aa"], rileMap["le"]), rileMap["aa"], node("B", rileMap["ri"], riMap["aa"], riMap["ri"]))
         }
       }
       let riri = riMap["ri"]
-      if riri != null {
+      if riri != none {
         let ririMap = riri as map<string, any>
         if ririMap["cl"] == "R" {
           return node("R", node("B", m["le"], m["aa"], riMap["le"]), riMap["aa"], node("B", ririMap["le"], ririMap["aa"], ririMap["ri"]))
@@ -63,8 +63,8 @@ fun balance(t: any): any {
 }
 
 fun ins(tr: any, x: int): any {
-  if tr == null {
-    return node("R", null, x, null)
+  if tr == none {
+    return node("R", none, x, none)
   }
   if x < tr["aa"] {
     return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]))
@@ -77,12 +77,12 @@ fun ins(tr: any, x: int): any {
 
 fun insert(tr: any, x: int): any {
   let t = ins(tr, x)
-  if t == null { return null }
+  if t == none { return none }
   let m = t as map<string, any>
   return node("B", m["le"], m["aa"], m["ri"])
 }
 
-var tr: any = null
+var tr: any = none
 var i = 1
 while i <= 16 {
   tr = insert(tr, i)

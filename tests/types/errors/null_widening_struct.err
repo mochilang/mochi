@@ -1,7 +1,7 @@
 1. error[T008]: type mismatch: expected Point, got option[any]
   --> tests/types/errors/null_widening_struct.mochi:7:16
 
-  7 | let p: Point = null
+  7 | let p: Point = none
     |                ^
 
 help:

@@ -30,7 +30,7 @@ let link_type = [
 ]
 
 let movie_companies = [
-  { movie_id: 1, company_id: 1, company_type_id: 1, note: null },
+  { movie_id: 1, company_id: 1, company_type_id: 1, note: none },
   { movie_id: 2, company_id: 2, company_type_id: 1, note: "extra" }
 ]
 
@@ -75,7 +75,7 @@ let matches =
     ct.kind == "production companies" &&
     k.keyword == "sequel" &&
     lt.link.contains("follow") &&
-    mc.note == null &&
+    mc.note == none &&
     (mi.info == "Sweden" || mi.info == "Germany" ||
      mi.info == "Swedish" || mi.info == "German") &&
     t.production_year >= 1950 && t.production_year <= 2000 &&

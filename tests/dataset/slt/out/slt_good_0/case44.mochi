@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT + 63 * COALESCE ( + 65, - 70 + - 19 ) AS col0 */
-var result = [63 * (if 65 != null then 65 else (-70) + (-19))]
+var result = [63 * (if 65 != none then 65 else (-70) + (-19))]
 result = from x in result
   order by str(x)
   select x

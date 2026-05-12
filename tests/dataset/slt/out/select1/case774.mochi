@@ -228,10 +228,10 @@ var result = from row in t1
   where (row.a > row.b - 2 && row.a < row.b + 2)
   order by [row.d, count(from x in t1
   where x.c > row.c && x.d < row.d
-  select x), row.b - row.c, if (row.a + 1 != null && row.b != null && row.a + 1 == row.b) then 111 else if (row.a + 1 != null && row.c != null && row.a + 1 == row.c) then 222 else if (row.a + 1 != null && row.d != null && row.a + 1 == row.d) then 333 else if (row.a + 1 != null && row.e != null && row.a + 1 == row.e) then 444 else 555]
+  select x), row.b - row.c, if (row.a + 1 != none && row.b != none && row.a + 1 == row.b) then 111 else if (row.a + 1 != none && row.c != none && row.a + 1 == row.c) then 222 else if (row.a + 1 != none && row.d != none && row.a + 1 == row.d) then 333 else if (row.a + 1 != none && row.e != none && row.a + 1 == row.e) then 444 else 555]
   select [row.b - row.c, row.d, count(from x in t1
   where x.c > row.c && x.d < row.d
-  select x), if (row.a + 1 != null && row.b != null && row.a + 1 == row.b) then 111 else if (row.a + 1 != null && row.c != null && row.a + 1 == row.c) then 222 else if (row.a + 1 != null && row.d != null && row.a + 1 == row.d) then 333 else if (row.a + 1 != null && row.e != null && row.a + 1 == row.e) then 444 else 555]
+  select x), if (row.a + 1 != none && row.b != none && row.a + 1 == row.b) then 111 else if (row.a + 1 != none && row.c != none && row.a + 1 == row.c) then 222 else if (row.a + 1 != none && row.d != none && row.a + 1 == row.d) then 333 else if (row.a + 1 != none && row.e != none && row.a + 1 == row.e) then 444 else 555]
 var flatResult = []
 for row in result {
   for x in row {

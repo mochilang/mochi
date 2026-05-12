@@ -1,5 +1,5 @@
 // Left join cardinality: every left row appears once.
-// Unmatched left rows get the right side as null (any) today; see MEP-14 and MEP-10 A2.
+// Unmatched left rows get the right side as none (any) today; see MEP-14 and MEP-10 A2.
 // One match + one unmatched left row -> result has two rows.
 type Order { id: int, cid: int }
 type Cust  { id: int, name: string }

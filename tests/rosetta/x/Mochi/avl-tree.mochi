@@ -3,7 +3,7 @@
 // storing integers and prints the tree state as JSON.
 
 fun Node(data: int): map<string, any> {
-  return {"Data": data, "Balance": 0, "Link": [null, null]}
+  return {"Data": data, "Balance": 0, "Link": [none, none]}
 }
 
 fun getLink(n: map<string, any>, dir: int): any {
@@ -66,7 +66,7 @@ fun insertBalance(root: map<string, any>, dir: int): map<string, any> {
 }
 
 fun insertR(root: any, data: int): map<string, any> {
-  if root == null { return {"node": Node(data), "done": false} }
+  if root == none { return {"node": Node(data), "done": false} }
   var node = root as map<string, any>
   var dir = 0
   if (node["Data"] as int) < data { dir = 1 }
@@ -106,13 +106,13 @@ fun removeBalance(root: map<string, any>, dir: int): map<string, any> {
 }
 
 fun removeR(root: any, data: int): map<string, any> {
-  if root == null { return {"node": null, "done": false} }
+  if root == none { return {"node": none, "done": false} }
   var node = root as map<string, any>
   if (node["Data"] as int) == data {
-    if getLink(node, 0) == null { return {"node": getLink(node, 1), "done": false} }
-    if getLink(node, 1) == null { return {"node": getLink(node, 0), "done": false} }
+    if getLink(node, 0) == none { return {"node": getLink(node, 1), "done": false} }
+    if getLink(node, 1) == none { return {"node": getLink(node, 0), "done": false} }
     var heir = getLink(node, 0)
-    while getLink(heir, 1) != null {
+    while getLink(heir, 1) != none {
       heir = getLink(heir, 1)
     }
     node["Data"] = heir["Data"]
@@ -146,7 +146,7 @@ fun indentStr(n: int): string {
 
 fun dumpNode(node: any, indent: int, comma: bool) {
   let sp = indentStr(indent)
-  if node == null {
+  if node == none {
     var line = sp + "null"
     if comma { line = line + "," }
     print(line)
@@ -169,7 +169,7 @@ fun dump(node: any, indent: int) {
 }
 
 fun main() {
-  var tree = null
+  var tree = none
   print("Empty tree:")
   dump(tree, 0)
   print("")

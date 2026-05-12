@@ -11352,7 +11352,7 @@ func convertUnary(u *parser.Unary) Expr {
 		}
 		return &IntLit{Value: 0}
 	}
-	if lit.Null && len(u.Ops) == 0 {
+	if lit.None && len(u.Ops) == 0 {
 		return &NullLit{}
 	}
 	return nil

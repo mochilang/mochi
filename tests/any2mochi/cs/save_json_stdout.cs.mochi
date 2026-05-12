@@ -6,10 +6,10 @@ fun Program.Main() {
   _save(people, "-", new Dictionary<string, string> { { "format", "json" } })
 }
 fun Program._save(src: any, path: string, Dictionary<string, opts) {
-  var rows = src as IEnumerable<dynamic>; if (rows == null) return
-  var format = opts != null && opts.ContainsKey("format") ? Convert.ToString(opts["format"]) : "csv"
-  var header = opts != null && opts.ContainsKey("header") ? Convert.ToBoolean(opts["header"]) : false
-  var delim = opts != null && opts.ContainsKey("delimiter") ? Convert.ToString(opts["delimiter"])[0] : ','
+  var rows = src as IEnumerable<dynamic>; if (rows == none) return
+  var format = opts != none && opts.ContainsKey("format") ? Convert.ToString(opts["format"]) : "csv"
+  var header = opts != none && opts.ContainsKey("header") ? Convert.ToBoolean(opts["header"]) : false
+  var delim = opts != none && opts.ContainsKey("delimiter") ? Convert.ToString(opts["delimiter"])[0] : ','
   switch (format) {
   case "jsonl":
   var lines = rows.Select(r => JsonSerializer.Serialize(r))

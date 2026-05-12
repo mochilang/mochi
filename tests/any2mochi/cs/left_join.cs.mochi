@@ -14,7 +14,7 @@ fun Program.Main() {
   _res.Add(new Dictionary<string, dynamic> { { "orderId", o.id }, { "customer", c }, { "total", o.total } })
   }
   if !_matched {
-  var c = null
+  var c = none
   _res.Add(new Dictionary<string, dynamic> { { "orderId", o.id }, { "customer", c }, { "total", o.total } })
   }
   }

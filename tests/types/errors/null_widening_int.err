@@ -1,7 +1,7 @@
 1. error[T008]: type mismatch: expected int, got option[any]
   --> tests/types/errors/null_widening_int.mochi:3:14
 
-  3 | let x: int = null
+  3 | let x: int = none
     |              ^
 
 help:

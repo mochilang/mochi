@@ -20,7 +20,7 @@ var (
 	errPatternShape = diagnostic.Template{
 		Code:    "P063",
 		Message: "match case pattern is not a recognised pattern shape",
-		Help:    "A pattern must be a literal (e.g. `1`, `\"foo\"`, `true`, `null`), an identifier (e.g. `x`, `_`, or a variant name like `Leaf`), or a variant constructor call (e.g. `Node(l, v, r)`). Compound expressions, indexing, field access, casts, and quoted constructors are not patterns.",
+		Help:    "A pattern must be a literal (e.g. `1`, `\"foo\"`, `true`, `none`), an identifier (e.g. `x`, `_`, or a variant name like `Leaf`), or a variant constructor call (e.g. `Node(l, v, r)`). Compound expressions, indexing, field access, casts, and quoted constructors are not patterns.",
 	}
 	errUnknownImportLang = diagnostic.Template{
 		Code:    "P064",

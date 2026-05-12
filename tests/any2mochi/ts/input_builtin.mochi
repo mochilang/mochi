@@ -1,6 +1,6 @@
 fun _input(): string {
   let v = prompt("")
-  return v === null ? "" : v
+  return v === none ? "" : v
 }
 let input1: string
 let input2: string

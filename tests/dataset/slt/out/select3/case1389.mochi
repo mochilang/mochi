@@ -13,10 +13,10 @@ type t1Row {
 let t1 = [
   t1Row {
     a: 104,
-    b: null,
+    b: none,
     c: 102,
     d: 101,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 107,
@@ -26,7 +26,7 @@ let t1 = [
     e: 109,
   },
   t1Row {
-    a: null,
+    a: none,
     b: 112,
     c: 113,
     d: 114,
@@ -34,7 +34,7 @@ let t1 = [
   },
   t1Row {
     a: 115,
-    b: null,
+    b: none,
     c: 119,
     d: 116,
     e: 117,
@@ -44,7 +44,7 @@ let t1 = [
     b: 124,
     c: 123,
     d: 122,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 127,
@@ -78,21 +78,21 @@ let t1 = [
     a: 149,
     b: 145,
     c: 147,
-    d: null,
+    d: none,
     e: 146,
   },
   t1Row {
     a: 153,
     b: 151,
     c: 150,
-    d: null,
-    e: null,
+    d: none,
+    e: none,
   },
   t1Row {
     a: 159,
     b: 158,
     c: 155,
-    d: null,
+    d: none,
     e: 157,
   },
   t1Row {
@@ -106,7 +106,7 @@ let t1 = [
     a: 168,
     b: 167,
     c: 166,
-    d: null,
+    d: none,
     e: 165,
   },
   t1Row {
@@ -120,7 +120,7 @@ let t1 = [
     a: 179,
     b: 175,
     c: 176,
-    d: null,
+    d: none,
     e: 177,
   },
   t1Row {
@@ -153,17 +153,17 @@ let t1 = [
   },
   t1Row {
     a: 201,
-    b: null,
+    b: none,
     c: 202,
     d: 203,
     e: 204,
   },
   t1Row {
-    a: null,
+    a: none,
     b: 206,
     c: 208,
     d: 207,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 213,
@@ -203,7 +203,7 @@ let t1 = [
   t1Row {
     a: 239,
     b: 236,
-    c: null,
+    c: none,
     d: 238,
     e: 237,
   },
@@ -211,8 +211,8 @@ let t1 = [
     a: 243,
     b: 240,
     c: 244,
-    d: null,
-    e: null,
+    d: none,
+    e: none,
   },
   t1Row {
     a: 245,
@@ -229,7 +229,7 @@ let sub0 = avg(from x in t1
 
 var result = from row in t1
   where row.d > row.e
-  select [if row.a < 0 then -(row.a) else row.a, (row.a + row.b + row.c + row.d + row.e) / 5, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, if (row.a + 1 != null && row.b != null && row.a + 1 == row.b) then 111 else if (row.a + 1 != null && row.c != null && row.a + 1 == row.c) then 222 else if (row.a + 1 != null && row.d != null && row.a + 1 == row.d) then 333 else if (row.a + 1 != null && row.e != null && row.a + 1 == row.e) then 444 else 555, count(from x in t1
+  select [if row.a < 0 then -(row.a) else row.a, (row.a + row.b + row.c + row.d + row.e) / 5, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, if (row.a + 1 != none && row.b != none && row.a + 1 == row.b) then 111 else if (row.a + 1 != none && row.c != none && row.a + 1 == row.c) then 222 else if (row.a + 1 != none && row.d != none && row.a + 1 == row.d) then 333 else if (row.a + 1 != none && row.e != none && row.a + 1 == row.e) then 444 else 555, count(from x in t1
   where x.b < row.b
   select x), if row.c > sub0 then row.a * 2 else row.b * 10]
 result = from row in result
@@ -248,6 +248,6 @@ for x in flatResult {
   print(x)
 }
 test "case1389" {
-  expect flatResult == [1, 10, 111, 1120, 127, 127, 1290, 1300, 131, 132, 137, 138, 1390, 14, 1600, 162, 163, 182, 182, 19, 1902, 1985, 2046, 21, 212, 213, 220, 222, 222, 23, 232, 234, 2360, 239, 24, 2432, 245, 247, 26, 2728, 3, 3175, 333, 333, 333, 3331, 3473, 364, 3706, 4, 426, 440, 444, 444, 444, 468, 490, 5, 555, 555, 555, null, null, null, null, null]
+  expect flatResult == [1, 10, 111, 1120, 127, 127, 1290, 1300, 131, 132, 137, 138, 1390, 14, 1600, 162, 163, 182, 182, 19, 1902, 1985, 2046, 21, 212, 213, 220, 222, 222, 23, 232, 234, 2360, 239, 24, 2432, 245, 247, 26, 2728, 3, 3175, 333, 333, 333, 3331, 3473, 364, 3706, 4, 426, 440, 444, 444, 444, 468, 490, 5, 555, 555, 555, none, none, none, none, none]
 }
 

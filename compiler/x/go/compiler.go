@@ -4158,7 +4158,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 			return "true", nil
 		}
 		return "false", nil
-	case l.Null:
+	case l.None:
 		return "nil", nil
 	default:
 		return "nil", fmt.Errorf("invalid literal")

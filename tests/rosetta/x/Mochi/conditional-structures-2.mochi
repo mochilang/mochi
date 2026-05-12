@@ -3,9 +3,9 @@
 fun example2(flag: bool) {
   if flag {
     // statements
-    null
+    none
   } else {
     // other statements
-    null
+    none
   }
 }

@@ -1504,7 +1504,7 @@ func constValue(e *parser.Expr) (any, bool) {
 			return bool(*lit.Bool), true
 		case lit.Str != nil:
 			return *lit.Str, true
-		case lit.Null:
+		case lit.None:
 			return nil, true
 		}
 	case pf.Target.Map != nil:

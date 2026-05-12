@@ -33,7 +33,7 @@ let records =
     w_state: w.state,
     i_item_id: i.item_id,
     sold_date: d.date,
-    net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
+    net: cs.price - (if cr == none { 0.0 } else { cr.refunded })
   }
 
 let result =

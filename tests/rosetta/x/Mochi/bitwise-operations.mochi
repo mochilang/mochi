@@ -132,7 +132,7 @@ fun bitwise(a: int, b: int) {
   print("not: " + bin16(bit_not(a)))
   if b < 0 {
     print("Right operand is negative, but all shifts require an unsigned right operand (shift distance).")
-    return null
+    return none
   }
   print("shl: " + bin16(shl(a,b)))
   print("shr: " + bin16(shr(a,b)))

@@ -16,7 +16,7 @@ foreach ($orders as $o) {
       }
     }
     if (!$matched) {
-      $i = null;
+      $i = none;
       if ($o["customerId"] == $c["id"]) {
         $result[] = ["orderId" => $o["id"], "name" => $c["name"], "item" => $i];
       }

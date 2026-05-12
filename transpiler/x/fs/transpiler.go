@@ -5612,7 +5612,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return &FloatLit{Value: *p.Lit.Float}, nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
-	case p.Lit != nil && p.Lit.Null:
+	case p.Lit != nil && p.Lit.None:
 		funcHasNull = true
 		return &NullLit{}, nil
 	case p.List != nil:

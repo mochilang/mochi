@@ -272,16 +272,16 @@ function main(): void {
         key: [
           (row.a < 0) ? (-(row.a)) : row.a,
           row.e,
-          ((!_equal(row.a + 1, null) && !_equal(row.b, null)) &&
+          ((!_equal(row.a + 1, none) && !_equal(row.b, none)) &&
               ((row.a + 1) == row.b))
             ? 111
-            : (((!_equal(row.a + 1, null) && !_equal(row.c, null)) &&
+            : (((!_equal(row.a + 1, none) && !_equal(row.c, none)) &&
                 ((row.a + 1) == row.c))
               ? 222
-              : (((!_equal(row.a + 1, null) && !_equal(row.d, null)) &&
+              : (((!_equal(row.a + 1, none) && !_equal(row.d, none)) &&
                   ((row.a + 1) == row.d))
                 ? 333
-                : (((!_equal(row.a + 1, null) && !_equal(row.e, null)) &&
+                : (((!_equal(row.a + 1, none) && !_equal(row.e, none)) &&
                     ((row.a + 1) == row.e))
                   ? 444
                   : 555))),
@@ -310,16 +310,16 @@ function main(): void {
         Math.trunc(((((row.a + row.b) + row.c) + row.d) + row.e) / 5),
         (row.a < 0) ? (-(row.a)) : row.a,
         row.e,
-        ((!_equal(row.a + 1, null) && !_equal(row.b, null)) &&
+        ((!_equal(row.a + 1, none) && !_equal(row.b, none)) &&
             ((row.a + 1) == row.b))
           ? 111
-          : (((!_equal(row.a + 1, null) && !_equal(row.c, null)) &&
+          : (((!_equal(row.a + 1, none) && !_equal(row.c, none)) &&
               ((row.a + 1) == row.c))
             ? 222
-            : (((!_equal(row.a + 1, null) && !_equal(row.d, null)) &&
+            : (((!_equal(row.a + 1, none) && !_equal(row.d, none)) &&
                 ((row.a + 1) == row.d))
               ? 333
-              : (((!_equal(row.a + 1, null) && !_equal(row.e, null)) &&
+              : (((!_equal(row.a + 1, none) && !_equal(row.e, none)) &&
                   ((row.a + 1) == row.e))
                 ? 444
                 : 555))),
@@ -339,7 +339,7 @@ function main(): void {
   }
   test_case5();
 }
-function _append<T>(lst: T[] | null, v: T): T[] {
+function _append<T>(lst: T[] | none, v: T): T[] {
   const out = lst ? lst.slice() : [];
   out.push(v);
   return out;

@@ -77,7 +77,7 @@ let tab2 = [
 
 /* SELECT + + col2 * - col0 + - col2 col2 FROM tab1 WHERE NULL > + - col0 + - 72 */
 var result = from row in tab1
-  where (null) > (-(row.col0)) + (-72)
+  where (none) > (-(row.col0)) + (-72)
   select row.col2 * (-(row.col0)) - row.col2
 result = from x in result
   order by str(x)

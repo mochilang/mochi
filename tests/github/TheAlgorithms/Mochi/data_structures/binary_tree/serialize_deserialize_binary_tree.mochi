@@ -13,7 +13,7 @@ output, or "null" if the node is absent.
 
 Deserialization consumes the comma separated values one by one,
 recursively creating nodes and assigning their left and right children.
-Since the traversal includes explicit null markers, the process runs in
+Since the traversal includes explicit none markers, the process runs in
 O(n) time for n nodes and results in an exact copy of the original
 binary tree.
 

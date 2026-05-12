@@ -522,7 +522,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return "false", nil
 		}
-		if p.Lit.Null {
+		if p.Lit.None {
 			return "nil", nil
 		}
 	case p.List != nil:

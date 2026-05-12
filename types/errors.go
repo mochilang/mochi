@@ -76,7 +76,7 @@ var Errors = map[string]diagnostic.Template{
 	"T055": {Code: "T055", Message: "`%s` operand must be `int`, got %s", Help: "`skip` and `take` count rows; supply an integer expression."},
 	"T056": {Code: "T056", Message: "`sort by` expression must be an ordered type, got %s", Help: "Ordered types are int, int64, bigint, bigrat, float, bool, and string. Project a scalar field of an ordered type, or compare with an explicit key."},
 	"T057": {Code: "T057", Message: "`select distinct` expression must be a hashable type, got %s", Help: "Distinct deduplicates by structural equality. Function values do not have a stable hash. Project a scalar or record of scalars."},
-	"T058": {Code: "T058", Message: "dereference of optional `%s` requires a none guard", Help: "Narrow with `if %s != null { ... }` first, or supply a fallback (`?? default`)."},
+	"T058": {Code: "T058", Message: "dereference of optional `%s` requires a none guard", Help: "Narrow with `if %s != none { ... }` first, or supply a fallback (`?? default`)."},
 }
 
 // --- Wrapper Functions ---

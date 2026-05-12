@@ -3664,7 +3664,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "false", nil
 	case l.Str != nil:
 		return strconv.Quote(*l.Str), nil
-	case l.Null:
+	case l.None:
 		return "null", nil
 	default:
 		return "", fmt.Errorf("unknown literal")

@@ -17,7 +17,7 @@ let t1 = [
     y: "fal" + "se",
   },
   t1Row {
-    x: null,
+    x: none,
     y: "NULL",
   },
   t1Row {
@@ -32,10 +32,10 @@ let t1 = [
 
 /* SELECT min(y) FROM t1 */
 let result = min(from row in t1
-  where row.y != null
+  where row.y != none
   select (row.y as float))
 print(result)
 
 test "case14" {
-  expect result == null
+  expect result == none
 }

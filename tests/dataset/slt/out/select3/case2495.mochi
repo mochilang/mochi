@@ -13,10 +13,10 @@ type t1Row {
 let t1 = [
   t1Row {
     a: 104,
-    b: null,
+    b: none,
     c: 102,
     d: 101,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 107,
@@ -26,7 +26,7 @@ let t1 = [
     e: 109,
   },
   t1Row {
-    a: null,
+    a: none,
     b: 112,
     c: 113,
     d: 114,
@@ -34,7 +34,7 @@ let t1 = [
   },
   t1Row {
     a: 115,
-    b: null,
+    b: none,
     c: 119,
     d: 116,
     e: 117,
@@ -44,7 +44,7 @@ let t1 = [
     b: 124,
     c: 123,
     d: 122,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 127,
@@ -78,21 +78,21 @@ let t1 = [
     a: 149,
     b: 145,
     c: 147,
-    d: null,
+    d: none,
     e: 146,
   },
   t1Row {
     a: 153,
     b: 151,
     c: 150,
-    d: null,
-    e: null,
+    d: none,
+    e: none,
   },
   t1Row {
     a: 159,
     b: 158,
     c: 155,
-    d: null,
+    d: none,
     e: 157,
   },
   t1Row {
@@ -106,7 +106,7 @@ let t1 = [
     a: 168,
     b: 167,
     c: 166,
-    d: null,
+    d: none,
     e: 165,
   },
   t1Row {
@@ -120,7 +120,7 @@ let t1 = [
     a: 179,
     b: 175,
     c: 176,
-    d: null,
+    d: none,
     e: 177,
   },
   t1Row {
@@ -153,17 +153,17 @@ let t1 = [
   },
   t1Row {
     a: 201,
-    b: null,
+    b: none,
     c: 202,
     d: 203,
     e: 204,
   },
   t1Row {
-    a: null,
+    a: none,
     b: 206,
     c: 208,
     d: 207,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 213,
@@ -203,7 +203,7 @@ let t1 = [
   t1Row {
     a: 239,
     b: 236,
-    c: null,
+    c: none,
     d: 238,
     e: 237,
   },
@@ -211,8 +211,8 @@ let t1 = [
     a: 243,
     b: 240,
     c: 244,
-    d: null,
-    e: null,
+    d: none,
+    e: none,
   },
   t1Row {
     a: 245,
@@ -230,7 +230,7 @@ var result = from row in t1
   select x) > 0
   select [if row.a < 0 then -(row.a) else row.a, row.e, count(from x in t1
   where x.b < row.b
-  select x), if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, if (row.a + 1 != null && row.b != null && row.a + 1 == row.b) then 111 else if (row.a + 1 != null && row.c != null && row.a + 1 == row.c) then 222 else if (row.a + 1 != null && row.d != null && row.a + 1 == row.d) then 333 else if (row.a + 1 != null && row.e != null && row.a + 1 == row.e) then 444 else 555]
+  select x), if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, if (row.a + 1 != none && row.b != none && row.a + 1 == row.b) then 111 else if (row.a + 1 != none && row.c != none && row.a + 1 == row.c) then 222 else if (row.a + 1 != none && row.d != none && row.a + 1 == row.d) then 333 else if (row.a + 1 != none && row.e != none && row.a + 1 == row.e) then 444 else 555]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
@@ -247,6 +247,6 @@ for x in flatResult {
   print(x)
 }
 test "case2495" {
-  expect flatResult == [1, 1, 1, 1, 1, 1, 1, 10, 110, 111, 111, 12, 126, 127, 13, 131, 132, 135, 138, 14, 142, 144, 15, 157, 159, 162, 163, 17, 173, 174, 177, 179, 180, 182, 188, 189, 19, 197, 199, 2, 2, 2, 2, 20, 21, 210, 213, 216, 219, 22, 220, 221, 222, 227, 229, 23, 230, 234, 237, 239, 24, 245, 246, 26, 3, 3, 3, 3, 3, 3, 3, 333, 333, 333, 333, 4, 4, 4, 444, 444, 444, 444, 5, 555, 555, 555, 555, 555, 555, 555, 555, 6, 9, null, null]
+  expect flatResult == [1, 1, 1, 1, 1, 1, 1, 10, 110, 111, 111, 12, 126, 127, 13, 131, 132, 135, 138, 14, 142, 144, 15, 157, 159, 162, 163, 17, 173, 174, 177, 179, 180, 182, 188, 189, 19, 197, 199, 2, 2, 2, 2, 20, 21, 210, 213, 216, 219, 22, 220, 221, 222, 227, 229, 23, 230, 234, 237, 239, 24, 245, 246, 26, 3, 3, 3, 3, 3, 3, 3, 333, 333, 333, 333, 4, 4, 4, 444, 444, 444, 444, 5, 555, 555, 555, 555, 555, 555, 555, 555, 6, 9, none, none]
 }
 

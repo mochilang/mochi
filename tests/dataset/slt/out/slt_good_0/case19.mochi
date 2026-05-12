@@ -76,7 +76,7 @@ let tab2 = [
 
 /* SELECT 38 AS col2, - col0 AS col2 FROM tab2 WHERE + col2 IS NOT NULL */
 var result = from row in tab2
-  where row.col2 != null
+  where row.col2 != none
   select [38, (-(row.col0))]
 result = from row in result
   order by join(from v in row select str(v), " " )

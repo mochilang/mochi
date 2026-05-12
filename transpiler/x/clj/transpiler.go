@@ -3426,7 +3426,7 @@ func transpileLiteral(l *parser.Literal) (Node, error) {
 		return FloatLit(*l.Float), nil
 	case l.Bool != nil:
 		return BoolLit(*l.Bool), nil
-	case l.Null:
+	case l.None:
 		return Symbol("nil"), nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")

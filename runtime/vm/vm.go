@@ -1308,7 +1308,7 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		case p.Lit.Bool != nil:
 			v := Value{Tag: ValueBool, Bool: bool(*p.Lit.Bool)}
 			return fc.constReg(p.Pos, v)
-		case p.Lit.Null:
+		case p.Lit.None:
 			v := Value{Tag: ValueNull}
 			return fc.constReg(p.Pos, v)
 		}
@@ -2260,7 +2260,7 @@ func constPrimary(p *parser.Primary) (Value, bool) {
 		if p.Lit.Str != nil {
 			return Value{Tag: ValueStr, Str: *p.Lit.Str}, true
 		}
-		if p.Lit.Null {
+		if p.Lit.None {
 			return Value{Tag: ValueNull}, true
 		}
 	}
@@ -2283,7 +2283,7 @@ func literalToValue(l *parser.Literal) (Value, bool) {
 		return Value{Tag: ValueStr, Str: *l.Str}, true
 	case l.Bool != nil:
 		return Value{Tag: ValueBool, Bool: bool(*l.Bool)}, true
-	case l.Null:
+	case l.None:
 		return Value{Tag: ValueNull}, true
 	default:
 		return Value{}, false
@@ -2296,7 +2296,7 @@ func valueToExpr(v Value) *parser.Expr {
 		return &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: lit}}}}}
 	}
 	if v.Tag == ValueNull {
-		return &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: &parser.Literal{Null: true}}}}}}
+		return &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: &parser.Literal{None: true}}}}}}
 	}
 	return nil
 }

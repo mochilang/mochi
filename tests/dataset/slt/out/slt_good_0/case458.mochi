@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT - + COALESCE ( + 50, 2, - 23 ) */
-var result = [(-((if 50 != null then 50 else if 2 != null then 2 else (-23))))]
+var result = [(-((if 50 != none then 50 else if 2 != none then 2 else (-23))))]
 result = from x in result
   order by str(x)
   select x

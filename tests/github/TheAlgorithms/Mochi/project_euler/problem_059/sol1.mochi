@@ -76,7 +76,7 @@ fun try_key(ciphertext: list<int>, key: list<int>): string {
   let klen = len(key)
   while i < len(ciphertext) {
     let decodedchar = xor(ciphertext[i], key[i % klen])
-    if !is_valid_ascii(decodedchar) { return null }
+    if !is_valid_ascii(decodedchar) { return none }
     decoded = decoded + chr(decodedchar)
     i = i + 1
   }
@@ -93,7 +93,7 @@ fun filter_valid_chars(ciphertext: list<int>): list<string> {
       while k < len(LOWERCASE_INTS) {
         let key = [LOWERCASE_INTS[i], LOWERCASE_INTS[j], LOWERCASE_INTS[k]]
         let decoded = try_key(ciphertext, key)
-        if decoded != null {
+        if decoded != none {
           possibles = append(possibles, decoded)
         }
         k = k + 1

@@ -17,7 +17,7 @@ let t1 = [
     y: "fal" + "se",
   },
   t1Row {
-    x: null,
+    x: none,
     y: "NULL",
   },
   t1Row {
@@ -32,7 +32,7 @@ let t1 = [
 
 /* SELECT avg(y) FROM t1 */
 let result = avg(from row in t1
-  where row.y != null
+  where row.y != none
   select (row.y as float))
 print(result)
 

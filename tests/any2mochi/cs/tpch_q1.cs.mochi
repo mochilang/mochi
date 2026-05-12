@@ -11,7 +11,7 @@ fun Program.Main() {
   test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus()
 }
 fun Program._avg(v: any): float {
-  if v == null) return 0.0 {
+  if v == none) return 0.0 {
   var _n = 0
   var _sum = 0
   for it in v {
@@ -54,7 +54,7 @@ fun _Group.expect(cond: bool) {
   if !cond) throw new Exception("expect failed") {
 }
 fun _Group._sum(v: any): float {
-  if v == null) return 0.0 {
+  if v == none) return 0.0 {
   var _sum = 0
   for it in v {
   _sum += Convert.ToDouble(it)

@@ -28,14 +28,14 @@ let t1 = [
     y: "fal" + "se",
   },
   t1Row {
-    x: null,
+    x: none,
     y: "NULL",
   },
 ]
 
 /* SELECT count(DISTINCT x) FROM t1 */
 let result = count(distinct(from row in t1
-  where row.x != null
+  where row.x != none
   select row))
 print(result)
 
