@@ -1,0 +1,8 @@
+1. error[T057]: `select distinct` expression must be a hashable type, got fun(int): int
+  --> tests/types/errors/query_distinct_non_hashable.mochi:4:40
+
+  4 | let bad = from x in xs select distinct double
+    |                                        ^
+
+help:
+  Distinct deduplicates by structural equality. Function values do not have a stable hash. Project a scalar or record of scalars.

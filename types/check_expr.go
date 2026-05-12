@@ -1440,15 +1440,15 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 			if err != nil {
 				return nil, err
 			}
-			result := ListType{Elem: selT}
-			if expected != nil && !unify(result, expected, nil) {
-				return nil, errTypeMismatch(q.Pos, expected, result)
-			}
-			return result, nil
 		}
 	}
 	if err != nil {
 		return nil, err
+	}
+	if q.Distinct {
+		if !isHashable(selT) {
+			return nil, errDistinctHashable(q.Select.Pos, selT)
+		}
 	}
 	if q.Group == nil {
 		if _, _, ok := aggregateCallName(q.Select); ok {
@@ -1624,6 +1624,37 @@ func isNumeric(t Type) bool {
 	switch t.(type) {
 	case IntType, Int64Type, FloatType, BigIntType, BigRatType:
 		return true
+	default:
+		return false
+	}
+}
+
+func isHashable(t Type) bool {
+	switch v := t.(type) {
+	case IntType, Int64Type, FloatType, BigIntType, BigRatType, StringType, BoolType, UnitType, AnyType:
+		return true
+	case ListType:
+		return isHashable(v.Elem)
+	case MapType:
+		return isHashable(v.Key) && isHashable(v.Value)
+	case OptionType:
+		return isHashable(v.Elem)
+	case StructType:
+		for _, f := range v.Fields {
+			if !isHashable(f.Type) {
+				return false
+			}
+		}
+		return true
+	case UnionType:
+		for _, s := range v.Variants {
+			if !isHashable(s) {
+				return false
+			}
+		}
+		return true
+	case FuncType, GroupType:
+		return false
 	default:
 		return false
 	}
