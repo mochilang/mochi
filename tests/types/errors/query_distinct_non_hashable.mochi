@@ -1,0 +1,4 @@
+// `select distinct` requires a hashable expression type (T057).
+let double = fun(x: int): int => x * 2
+let xs: list<int> = [1, 2, 3]
+let bad = from x in xs select distinct double
