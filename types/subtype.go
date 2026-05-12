@@ -142,6 +142,46 @@ func Subtype(s, t Type) bool {
 	return false
 }
 
+// Assignable reports whether a value of type src can flow into a
+// position declared to accept dst, under the relaxed rules used today
+// while the MEP-10 A1 any-audit is in flight (MEP-11.2). It is
+// Subtype plus an explicit allowance for AnyType on either side.
+//
+// The helper exists so that let / var / assign / argument / return
+// all share one call site. The MEP-11.3 (any-tightening) task then
+// removes the AnyType-on-source escape to close MEP-10 A1 without
+// having to re-route every individual call site again. Callers that
+// need permanent looseness route through an explicit `as any` cast
+// once #79 lands.
+func Assignable(src, dst Type) bool {
+	if _, ok := src.(AnyType); ok {
+		return true
+	}
+	if _, ok := dst.(AnyType); ok {
+		return true
+	}
+	// Empty collection literals carry an `any` element type
+	// (`[]` is `[any]`, `{}` is `{any: any}`). Until MEP-12 wires
+	// generic literals through inference, treat those shapes as
+	// assignable into any concrete collection. The recursion is on
+	// the same boundary as Subtype's structural rules.
+	switch sv := src.(type) {
+	case ListType:
+		if dv, ok := dst.(ListType); ok {
+			return Assignable(sv.Elem, dv.Elem)
+		}
+	case MapType:
+		if dv, ok := dst.(MapType); ok {
+			return Assignable(sv.Key, dv.Key) && Assignable(sv.Value, dv.Value)
+		}
+	case OptionType:
+		if dv, ok := dst.(OptionType); ok {
+			return Assignable(sv.Elem, dv.Elem)
+		}
+	}
+	return Subtype(src, dst)
+}
+
 // equalKinds is a small structural equality used by Subtype to discharge
 // T-Refl on compound kinds and to enforce the invariance rules on Map
 // and Group children. It deliberately does not call Subtype recursively
