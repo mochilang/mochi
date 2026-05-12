@@ -506,11 +506,17 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: ListType{Elem: AnyType{}},
 		Pure:   true,
 	}, false)
+	// concat<T>(...xs: list<T>): list<T> - MEP-12.4. Every argument is
+	// a list<T>; the variadic unifier in checkPrimary pins T from the
+	// first argument and rejects any later argument whose element type
+	// disagrees with T047.
+	concatT := &TypeVar{Name: "T"}
 	env.SetVar("concat", FuncType{
-		Params:   []Type{},
-		Return:   ListType{Elem: AnyType{}},
-		Pure:     true,
-		Variadic: ListType{Elem: AnyType{}},
+		Params:     []Type{},
+		Return:     ListType{Elem: concatT},
+		Pure:       true,
+		Variadic:   ListType{Elem: concatT},
+		TypeParams: []string{"T"},
 	}, false)
 	// first<T>(xs: list<T>): T - MEP-12.4. Generic so the result of
 	// first(list<int>) is int rather than any, and the user no longer
@@ -2158,14 +2164,27 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 
 		if ft.Variadic != nil {
 			variadicType := ft.Variadic
+			variadicIsGeneric := len(FreeTypeVars(ft.Variadic, Subst{})) > 0
 			for i := fixed; i < argCount; i++ {
-				at, err := checkExprWithExpected(p.Call.Args[i], env, variadicType)
+				expected := callSubst.Apply(variadicType)
+				hint := expected
+				if variadicIsGeneric {
+					hint = nil
+				}
+				at, err := checkExprWithExpected(p.Call.Args[i], env, hint)
 				if err != nil {
 					return nil, err
 				}
 				argTypes[i] = at
-				if !unify(at, variadicType, nil) {
-					return nil, errArgTypeMismatch(p.Pos, i, variadicType, at)
+				if next, err := Unify(at, expected, callSubst); err == nil {
+					callSubst = next
+				} else if !unify(at, expected, nil) {
+					if len(ft.TypeParams) > 0 {
+						if name := structuralTypeVarName(variadicType); name != "" {
+							return nil, errTypeParamConflict(p.Pos, name, expected, at)
+						}
+					}
+					return nil, errArgTypeMismatch(p.Pos, i, expected, at)
 				}
 			}
 			if _, defined := env.GetFunc(p.Call.Func); !defined {
