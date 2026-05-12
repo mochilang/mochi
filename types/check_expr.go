@@ -623,6 +623,7 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			}
 			return MapType{Key: StringType{}, Value: AnyType{}}, nil
 		}
+		provided := make(map[string]bool, len(p.Struct.Fields))
 		for _, field := range p.Struct.Fields {
 			ft, ok := st.FieldType(field.Name)
 			if !ok {
@@ -635,6 +636,20 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			if !unify(ft, valT, nil) {
 				return nil, errTypeMismatch(field.Value.Pos, ft, valT)
 			}
+			provided[field.Name] = true
+		}
+		// MEP-13 §Struct typing: every declared field must be provided.
+		// There are no field defaults today, so an omitted field would
+		// leave the struct value with a missing slot that downstream
+		// reads observe as nil.
+		var missing []string
+		for _, f := range st.Fields {
+			if !provided[f.Name] {
+				missing = append(missing, f.Name)
+			}
+		}
+		if len(missing) > 0 {
+			return nil, errStructMissingField(p.Pos, st.Name, missing)
 		}
 		return st, nil
 

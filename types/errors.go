@@ -71,6 +71,7 @@ var Errors = map[string]diagnostic.Template{
 	"T048": {Code: "T048", Message: "type parameter `%s` escapes function result", Help: "The result type still mentions `%s` after argument unification. Constrain the parameter at a call argument or supply an explicit type argument."},
 	"T049": {Code: "T049", Message: "type argument arity mismatch for `%s`: expected %d, got %d", Help: "Supply exactly one type argument per declared type parameter."},
 	"T052": {Code: "T052", Message: "cannot alias `%s` (%s) into a binding of type %s", Help: "Aliasing widens the source's element type, which would let a write through the alias deposit a value the source cannot hold. Aggregate element, key, and value types are invariant at aliasing sites. Clone explicitly (e.g. `[...xs]`, `{...m}`) or declare the destination with the source's exact element type."},
+	"T053": {Code: "T053", Message: "struct literal `%s` is missing required field(s) %s", Help: "Provide a value for every declared field. Mochi structs do not have field defaults."},
 }
 
 // --- Wrapper Functions ---
@@ -285,6 +286,29 @@ func errIfCondBoolean(pos lexer.Position) error {
 
 func errInvalidCast(pos lexer.Position, from, to Type) error {
 	return Errors["T046"].New(pos, from, to)
+}
+
+func errStructMissingField(pos lexer.Position, structName string, missing []string) error {
+	var quoted []string
+	for _, name := range missing {
+		quoted = append(quoted, "`"+name+"`")
+	}
+	list := ""
+	switch len(quoted) {
+	case 1:
+		list = quoted[0]
+	case 2:
+		list = quoted[0] + " and " + quoted[1]
+	default:
+		for i, q := range quoted {
+			if i == len(quoted)-1 {
+				list += "and " + q
+			} else {
+				list += q + ", "
+			}
+		}
+	}
+	return Errors["T053"].New(pos, structName, list)
 }
 
 func errMatchNonExhaustive(pos lexer.Position, unionName string, missing []string) error {
