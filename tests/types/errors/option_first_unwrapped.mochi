@@ -1,0 +1,4 @@
+// MEP-16 Stage 4: `first(xs)` is `T?`, not `T`. Binding it to a `T`
+// slot without a fallback raises T008.
+let xs: list<int> = [1, 2, 3]
+let head: int = first(xs)
