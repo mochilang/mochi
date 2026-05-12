@@ -511,35 +511,54 @@ func Check(prog *parser.Program, env *Env) []error {
 		Pure:     true,
 		Variadic: ListType{Elem: AnyType{}},
 	}, false)
+	// first<T>(xs: list<T>): T - MEP-12.4. Generic so the result of
+	// first(list<int>) is int rather than any, and the user no longer
+	// needs an `as T` cast at the consumer site.
+	firstT := &TypeVar{Name: "T"}
 	env.SetVar("first", FuncType{
-		Params: []Type{ListType{Elem: AnyType{}}},
-		Return: AnyType{},
-		Pure:   true,
+		Params:     []Type{ListType{Elem: firstT}},
+		Return:     firstT,
+		Pure:       true,
+		TypeParams: []string{"T"},
 	}, false)
 	env.SetVar("reverse", FuncType{
 		Params: []Type{AnyType{}},
 		Return: AnyType{},
 		Pure:   true,
 	}, false)
+	// distinct<T>(xs: list<T>): list<T> - MEP-12.4. Shape-preserving;
+	// the result list element type matches the input.
+	distinctT := &TypeVar{Name: "T"}
 	env.SetVar("distinct", FuncType{
-		Params: []Type{ListType{Elem: AnyType{}}},
-		Return: ListType{Elem: AnyType{}},
-		Pure:   true,
+		Params:     []Type{ListType{Elem: distinctT}},
+		Return:     ListType{Elem: distinctT},
+		Pure:       true,
+		TypeParams: []string{"T"},
 	}, false)
 	env.SetVar("push", FuncType{
 		Params: []Type{ListType{Elem: AnyType{}}, AnyType{}},
 		Return: ListType{Elem: AnyType{}},
 		Pure:   true,
 	}, false)
+	// keys<K,V>(m: map<K,V>): list<K> - MEP-12.4. Existing call-site
+	// post-processing in checkPrimary already specialises the return
+	// from the inferred map type; this declaration carries the same
+	// shape through the call-site instantiator as well.
+	keysK := &TypeVar{Name: "K"}
+	keysV := &TypeVar{Name: "V"}
 	env.SetVar("keys", FuncType{
-		Params: []Type{MapType{Key: AnyType{}, Value: AnyType{}}},
-		Return: ListType{Elem: AnyType{}},
-		Pure:   true,
+		Params:     []Type{MapType{Key: keysK, Value: keysV}},
+		Return:     ListType{Elem: keysK},
+		Pure:       true,
+		TypeParams: []string{"K", "V"},
 	}, false)
+	valuesK := &TypeVar{Name: "K"}
+	valuesV := &TypeVar{Name: "V"}
 	env.SetVar("values", FuncType{
-		Params: []Type{MapType{Key: AnyType{}, Value: AnyType{}}},
-		Return: ListType{Elem: AnyType{}},
-		Pure:   true,
+		Params:     []Type{MapType{Key: valuesK, Value: valuesV}},
+		Return:     ListType{Elem: valuesV},
+		Pure:       true,
+		TypeParams: []string{"K", "V"},
 	}, false)
 	env.SetVar("collect", FuncType{
 		Params: []Type{AnyType{}},
