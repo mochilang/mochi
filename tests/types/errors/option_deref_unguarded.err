@@ -1,0 +1,8 @@
+1. error[T058]: dereference of optional `p` requires a none guard
+  --> tests/types/errors/option_deref_unguarded.mochi:6:13
+
+  6 | let label = p.name
+    |             ^
+
+help:
+  Narrow with `if p != null { ... }` first, or supply a fallback (`?? default`).

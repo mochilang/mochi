@@ -1,0 +1,6 @@
+// MEP-16 N1: `if x != null { ... }` narrows x from Option<T> to T
+// inside the then-branch. The static path: p has declared type int?,
+// the then-branch sees p : int and the arithmetic type-checks.
+let p: int? = null
+let total = if p != null { p + 1 } else { 0 }
+expect total == 0
