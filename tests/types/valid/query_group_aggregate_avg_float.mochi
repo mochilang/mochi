@@ -1,0 +1,7 @@
+// `avg(g)` per group is `float`, so a grouped avg projection has type
+// `[float]` (MEP-14.5).
+let xs: list<int> = [1, 2, 3, 4, 5]
+let means: list<float> = from x in xs
+                         group by x % 2 into g
+                         select avg(g)
+expect count(means) == 2
