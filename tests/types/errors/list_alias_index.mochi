@@ -1,0 +1,7 @@
+// MEP-10 B3c / T052: indexing a `list<list<int>>` returns live storage
+// that aliases the inner row. Binding it to a `list<any>` var would
+// let a later `r[i] = "..."` widen the row's element type and corrupt
+// reads through the parent. Aliasing requires structural equality at
+// index and field reads, not just bare identifiers.
+var rows: list<list<int>> = [[1, 2], [3, 4]]
+var r: list<any> = rows[0]
