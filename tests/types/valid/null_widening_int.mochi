@@ -1,5 +1,0 @@
-// Snapshot: null leaks into a typed int position.
-// MEP 4 lists null as a candidate for an option type.
-// MEP 7 lists this as an escape hatch in the "not sound today" table.
-// When that fix lands this file should move to tests/types/errors/.
-let x: int = null
