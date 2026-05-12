@@ -1,0 +1,8 @@
+1. error[T047]: cannot unify type parameter `T`: int vs string
+  --> tests/types/errors/generic_param_conflict.mochi:5:7
+
+  5 | print(pair(1, "two"))
+    |       ^
+
+help:
+  Two argument positions require incompatible bindings for the same generic parameter. Pick argument types that agree.
