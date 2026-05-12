@@ -734,10 +734,20 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: FloatType{},
 		Pure:   true,
 	}, false)
+	// reduce is generic over the list element type and the accumulator
+	// type (MEP-12.4):
+	//     reduce<A, B>(xs: list<A>, fn: fun(B, A): B, init: B): B
+	reduceA := &TypeVar{Name: "A"}
+	reduceB := &TypeVar{Name: "B"}
 	env.SetVar("reduce", FuncType{
-		Params: []Type{AnyType{}, AnyType{}, AnyType{}},
-		Return: AnyType{},
-		Pure:   true,
+		Params: []Type{
+			ListType{Elem: reduceA},
+			FuncType{Params: []Type{reduceB, reduceA}, Return: reduceB},
+			reduceB,
+		},
+		Return:     reduceB,
+		Pure:       true,
+		TypeParams: []string{"A", "B"},
 	}, false)
 	env.SetVar("eval", FuncType{
 		Params: []Type{StringType{}},
