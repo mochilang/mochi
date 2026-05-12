@@ -1,0 +1,10 @@
+// MEP-13 §Recursive ADTs: the exhaustiveness check on a union scrutinee
+// (T050) also catches a recursive base case omission. Forgetting the
+// `Nil` arm here is rejected even though the body is otherwise valid.
+type List = Cons(head: int, tail: List) | Nil
+
+fun headOr(xs: List, def: int): int {
+  return match xs {
+    Cons(h, t) => h
+  }
+}
