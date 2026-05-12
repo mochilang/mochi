@@ -998,15 +998,16 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				if !Assignable(exprType, typ) {
 					return errTypeMismatch(s.Var.Pos, typ, exprType)
 				}
-				// MEP-10 B3: when the source is a bare identifier
-				// referring to an aliasable aggregate, the new binding
-				// shares storage with the source. A widened element
-				// type (e.g. `list<int>` into `list<any>`) lets a
-				// later `ys[i] = ...` deposit a value the source's
-				// static type rejects, corrupting reads through the
-				// source name. Aliasing requires structural equality
-				// on aggregate element, key, and value types.
-				if src := bareIdentName(s.Var.Value); src != "" {
+				// MEP-10 B3 / B3c: when the source expression names
+				// live aggregate storage (bare identifier, an index
+				// chain like `rows[0]`, or a field chain like
+				// `obj.f`), the new binding shares storage with the
+				// source. A widened element type lets a later
+				// `ys[i] = ...` deposit a value the source's static
+				// type rejects, corrupting reads through the source.
+				// Aliasing requires structural equality on aggregate
+				// element, key, and value types.
+				if src := aliasSourceLabel(s.Var.Value); src != "" {
 					if isAliasableAggregate(exprType) && isAliasableAggregate(typ) && !equalKinds(exprType, typ) {
 						return errAliasWidensElement(s.Var.Pos, src, exprType, typ)
 					}
@@ -2173,18 +2174,19 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				}
 				return nil, errArgTypeMismatch(p.Pos, i, expected, at)
 			}
-			// MEP-10 B3b: when the argument is a bare reference to an
-			// aliasable aggregate and the parameter slot is the same
-			// aggregate kind with a widened element / key / value
-			// type, the callee can deposit a value the source's
-			// static type rejects through the alias. Require
-			// structural equality. The check is narrow: it skips
+			// MEP-10 B3b / B3c: when the argument names live
+			// aggregate storage (bare ident, `rows[i]`, `obj.f`)
+			// and the parameter slot is the same aggregate kind
+			// with a widened element / key / value type, the
+			// callee can deposit a value the source's static type
+			// rejects through the alias. Require structural
+			// equality. The check is narrow: it skips
 			// `any`-typed parameters (the design-loose interop
 			// position) because no structural write through the
 			// parameter is reachable without an explicit `as` cast,
 			// which the runtime guard from MEP-11.7 checks at the
 			// boundary.
-			if src := bareIdentName(p.Call.Args[i]); src != "" {
+			if src := aliasSourceLabel(p.Call.Args[i]); src != "" {
 				paramFinal := callSubst.Apply(ft.Params[i])
 				if isAliasableAggregate(at) && isAliasableAggregate(paramFinal) && !equalKinds(at, paramFinal) {
 					return nil, errAliasWidensElement(p.Pos, src, at, paramFinal)
@@ -2600,6 +2602,46 @@ func bareIdentName(e *parser.Expr) string {
 		return ""
 	}
 	return sel.Root
+}
+
+// aliasSourceLabel returns a short human-readable name for the
+// aliasable source expression e: a bare identifier, an index chain
+// (`rows[0]`), or a field chain (`obj.f`). It returns "" when the
+// expression cannot name live storage (literals, calls, casts,
+// computed values). MEP-10 B3c uses this to widen B3 beyond bare
+// identifiers so index/field reads of aliasable aggregates also
+// reject element-widening alias targets.
+func aliasSourceLabel(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return ""
+	}
+	px := u.Value
+	if px.Target == nil {
+		return ""
+	}
+	sel := px.Target.Selector
+	if sel == nil {
+		return ""
+	}
+	label := sel.Root
+	for _, t := range sel.Tail {
+		label += "." + t
+	}
+	for _, op := range px.Ops {
+		switch {
+		case op.Field != nil:
+			label += "." + op.Field.Name
+		case op.Index != nil:
+			label += "[...]"
+		default:
+			return ""
+		}
+	}
+	return label
 }
 
 // firstFreeTypeVar returns the lexicographically first free TypeVar

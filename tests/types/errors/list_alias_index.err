@@ -1,0 +1,8 @@
+1. error[T052]: cannot alias `rows[...]` ([int]) into a binding of type [any]
+  --> tests/types/errors/list_alias_index.mochi:7:1
+
+  7 | var r: list<any> = rows[0]
+    | ^
+
+help:
+  Aliasing widens the source's element type, which would let a write through the alias deposit a value the source cannot hold. Aggregate element, key, and value types are invariant at aliasing sites. Clone explicitly (e.g. `[...xs]`, `{...m}`) or declare the destination with the source's exact element type.
