@@ -1,0 +1,8 @@
+1. error[T054]: redundant match arm: arm after catch-all is unreachable
+  --> tests/types/errors/match_arm_after_wildcard.mochi:11:3
+
+ 11 |   Square(s) => s
+    |   ^
+
+help:
+  Remove the arm or merge it with the earlier arm it duplicates. Mochi does not have pattern guards, so duplicate patterns can never both fire.

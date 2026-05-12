@@ -1,0 +1,9 @@
+// MEP-13 §Struct typing: when two or more fields are omitted, every
+// missing name appears in the diagnostic so the fix is mechanical.
+type Box {
+  w: int
+  h: int
+  d: int
+}
+
+let _: Box = Box{w: 1}

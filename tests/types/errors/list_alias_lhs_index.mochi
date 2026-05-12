@@ -1,0 +1,7 @@
+// MEP-10 B3d / T052: assigning a `list<int>` into a `list<any>` slot
+// reached via `bag[0]` aliases the int-typed storage into a slot whose
+// element type allows writes that the source cannot hold. A later
+// `bag[0][0] = "boom"` would corrupt reads through `xs`.
+var xs: list<int> = [1, 2, 3]
+var bag: list<list<any>> = [[]]
+bag[0] = xs

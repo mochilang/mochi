@@ -1,0 +1,10 @@
+// MEP-13 §Struct typing: every declared field must be supplied in a
+// struct literal. There are no field defaults today, so an omitted
+// field would leave the struct value with a missing slot that
+// downstream reads observe as `nil` at runtime.
+type Point {
+  x: int
+  y: int
+}
+
+let _: Point = Point{x: 3}
