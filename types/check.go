@@ -570,10 +570,18 @@ func Check(prog *parser.Program, env *Env) []error {
 		Pure:       true,
 		TypeParams: []string{"K", "V"},
 	}, false)
+	// collect<T>(xs: list<T>): list<T> - MEP-12.4. The legacy any
+	// signature also accepted GroupType; that overload is preserved by
+	// checkBuiltinCall's "list or group" arity check, which runs after
+	// the call-site unifier and rejects everything else with a tailored
+	// message. For the list arm the parametric signature pins the
+	// element type so consumers no longer need an explicit cast.
+	collectT := &TypeVar{Name: "T"}
 	env.SetVar("collect", FuncType{
-		Params: []Type{AnyType{}},
-		Return: ListType{Elem: AnyType{}},
-		Pure:   true,
+		Params:     []Type{ListType{Elem: collectT}},
+		Return:     ListType{Elem: collectT},
+		Pure:       true,
+		TypeParams: []string{"T"},
 	}, false)
 	env.SetVar("range", FuncType{
 		Params:   []Type{},
