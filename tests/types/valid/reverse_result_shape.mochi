@@ -1,0 +1,11 @@
+// MEP-12.4: reverse's return type mirrors the argument's static
+// shape. For list<T> the result is list<T>; for string it is string.
+// Before this, the return was widened to any and consumers needed an
+// explicit cast.
+let xs: list<int> = [1, 2, 3]
+let ys: list<int> = reverse(xs)
+expect len(ys) == 3
+expect ys[0] == 3
+
+let s: string = reverse("abc")
+expect s == "cba"

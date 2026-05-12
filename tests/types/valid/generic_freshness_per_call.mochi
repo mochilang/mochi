@@ -1,0 +1,13 @@
+// MEP-12 §Test obligations: freshness-per-call. Two calls of the
+// same generic function with disjoint argument types must not collide
+// on the shared type parameter. Each call site allocates fresh
+// TypeVars (T#N) via Instantiate so the substitution from call A
+// cannot poison call B.
+fun id<T>(x: T): T {
+  return x
+}
+
+let i: int = id(7)
+let s: string = id("seven")
+expect i == 7
+expect s == "seven"
