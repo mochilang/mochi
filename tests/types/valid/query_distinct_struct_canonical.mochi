@@ -1,0 +1,8 @@
+// `select distinct` over a struct value with hashable fields type-checks (MEP-14.7).
+type Row {
+  id: int
+  label: string
+}
+let rs: list<Row> = [Row{id: 1, label: "a"}, Row{id: 1, label: "a"}, Row{id: 2, label: "b"}]
+let uniq: list<Row> = from r in rs select distinct r
+print(len(uniq))
