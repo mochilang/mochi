@@ -9,7 +9,7 @@ fun removeKey(m: map<string, int>, k: string): map<string, int> {
 }
 
 fun main() {
-  var x: map<string, int> = null
+  var x: map<string, int> = none
   x = {}
   x["foo"] = 3
 

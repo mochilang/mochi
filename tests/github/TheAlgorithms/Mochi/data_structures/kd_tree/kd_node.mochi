@@ -3,7 +3,7 @@ Construct a single node for a k-dimensional tree (KD-Tree).
 Each node stores a point in k-dimensional space and indexes of its
 left and right child nodes. Indexes are integers referring to positions
 in an array of nodes. A value of -1 denotes the absence of a child.
-This representation mirrors pointer-based nodes but avoids null values
+This representation mirrors pointer-based nodes but avoids none values
 and dynamic typing. We build a tiny two-dimensional tree and print the
 coordinates and child links of the root node to demonstrate usage.
 */

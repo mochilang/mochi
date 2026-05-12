@@ -19,13 +19,13 @@ fun Program.Main() {
   _res.Add(new Dictionary<string, dynamic> { { "order", o }, { "customer", c } })
   }
   if !_m {
-  var c = null
+  var c = none
   _res.Add(new Dictionary<string, dynamic> { { "order", o }, { "customer", c } })
   }
   }
   for int i in 0.._joinItems.Count {
   if !_matched[i] {
-  var o = null
+  var o = none
   var c = _joinItems[i]
   _res.Add(new Dictionary<string, dynamic> { { "order", o }, { "customer", c } })
   }

@@ -1482,7 +1482,7 @@ func constValue(e *parser.Expr) (any, bool) {
 			return bool(*lit.Bool), true
 		case lit.Str != nil:
 			return *lit.Str, true
-		case lit.Null:
+		case lit.None:
 			return nil, true
 		}
 	case pf.Target.Map != nil:
@@ -4794,7 +4794,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if p.Lit.Bool != nil {
 			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 		}
-		if p.Lit.Null {
+		if p.Lit.None {
 			return &NullLit{}, nil
 		}
 		return nil, fmt.Errorf("unsupported literal")

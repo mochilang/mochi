@@ -6,27 +6,27 @@ fun Node(value: string, next: any, prev: any): map<string, any> {
 }
 
 fun main() {
-  var a = Node("A", null, null)
-  var b = Node("B", null, a)
+  var a = Node("A", none, none)
+  var b = Node("B", none, a)
   a["next"] = b
-  var c = Node("C", null, b)
+  var c = Node("C", none, b)
   b["next"] = c
 
   var p = a
   var line = ""
-  while p != null {
+  while p != none {
     line = line + (p["value"] as string)
     p = p["next"]
-    if p != null { line = line + " " }
+    if p != none { line = line + " " }
   }
   print(line)
 
   p = c
   line = ""
-  while p != null {
+  while p != none {
     line = line + (p["value"] as string)
     p = p["prev"]
-    if p != null { line = line + " " }
+    if p != none { line = line + " " }
   }
   print(line)
 }

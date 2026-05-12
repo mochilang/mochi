@@ -3,10 +3,10 @@
 fun example8(b1: bool, b2: bool) {
   if b1 {
     // fall through to next check
-    null
+    none
   }
   if b2 {
     // other statements
-    null
+    none
   }
 }

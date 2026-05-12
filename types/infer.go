@@ -301,7 +301,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			return StringType{}
 		case p.Lit.Bool != nil:
 			return BoolType{}
-		case p.Lit.Null:
+		case p.Lit.None:
 			return AnyType{}
 		}
 	case p.Selector != nil:

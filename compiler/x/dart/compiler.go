@@ -2476,7 +2476,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 		s = strings.ReplaceAll(s, "\n", "\\n")
 		s = strings.ReplaceAll(s, "\r", "\\r")
 		return "'" + strings.Trim(s, "\"") + "'"
-	case l.Null:
+	case l.None:
 		return "null"
 	default:
 		return "null"

@@ -5495,7 +5495,7 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			return &LitExpr{Value: "false", IsString: false}, nil
 		}
-		if pr.Lit.Null {
+		if pr.Lit.None {
 			return &LitExpr{Value: "nil", IsString: false}, nil
 		}
 		return nil, fmt.Errorf("unsupported literal")
@@ -6132,7 +6132,7 @@ func isNullLiteral(e *parser.Expr) bool {
 		return false
 	}
 	if l := p.Target.Lit; l != nil {
-		return l.Null
+		return l.None
 	}
 	return false
 }

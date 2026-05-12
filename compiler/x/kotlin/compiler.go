@@ -1573,7 +1573,7 @@ func (c *Compiler) literal(l *parser.Literal) string {
 		return s
 	case l.Bool != nil:
 		return fmt.Sprintf("%t", bool(*l.Bool))
-	case l.Null:
+	case l.None:
 		return "null"
 	}
 	return "null"

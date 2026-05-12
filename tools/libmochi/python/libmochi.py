@@ -61,7 +61,7 @@ def eval(code: str) -> str:
 
 def _to_mochi(v: Any) -> str:
     if v is None:
-        return "null"
+        return "none"
     if isinstance(v, bool):
         return "true" if v else "false"
     if isinstance(v, (int, float)):

@@ -32,7 +32,7 @@ fun copy(xs: list<int>): list<int> {
 }
 
 fun cartN(lists: any): list<list<int>> {
-  if lists == null { return [] }
+  if lists == none { return [] }
   let a = lists as list<list<int>>
   if len(a) == 0 { return [[]] }
   var out: list<list<int>> = []
@@ -62,7 +62,7 @@ fun main() {
   print(llStr(cartN([[1,2,3],[30],[500,100]])))
   print(llStr(cartN([[1,2,3],[],[500,100]])))
   print("")
-  print(llStr(cartN(null)))
+  print(llStr(cartN(none)))
   print(llStr(cartN([])))
 }
 

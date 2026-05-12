@@ -20,9 +20,9 @@ fun main() {
   let outfile = ""            // destination path (ignored)
   let gzipFlag = false        // compress output
 
-  var w: any = null           // represents os.Stdout or a file handle
+  var w: any = none           // represents os.Stdout or a file handle
   if outfile != "" {          // would open outfile here
-    w = null
+    w = none
   }
   if gzipFlag {               // wrap in gzip writer if requested
     w = gzipWriter(w)

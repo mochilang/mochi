@@ -10,7 +10,7 @@ fun Program.Main() {
   print(n)
 }
 fun Program._sum(v: any): float {
-  if v == null) return 0.0 {
+  if v == none) return 0.0 {
   var _sum = 0
   for it in v {
   _sum += Convert.ToDouble(it)

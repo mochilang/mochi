@@ -299,7 +299,7 @@ function main(): void {
   test_case1();
 }
 function _avg(v: any): number {
-  let list: any[] | null = null;
+  let list: any[] | none = none;
   if (Array.isArray(v)) list = v;
   else if (v && typeof v === "object") {
     if (Array.isArray((v as any).items)) list = (v as any).items;

@@ -77,10 +77,10 @@ let result =
         c1.dyear == 2001 && c2.dyear == 2002 &&
         w1.dyear == 2001 && w2.dyear == 2002 &&
         s1.year_total > 0 && c1.year_total > 0 && w1.year_total > 0 &&
-        (if c1.year_total > 0 { c2.year_total / c1.year_total } else { null }) >
-        (if s1.year_total > 0 { s2.year_total / s1.year_total } else { null }) &&
-        (if c1.year_total > 0 { c2.year_total / c1.year_total } else { null }) >
-        (if w1.year_total > 0 { w2.year_total / w1.year_total } else { null })
+        (if c1.year_total > 0 { c2.year_total / c1.year_total } else { none }) >
+        (if s1.year_total > 0 { s2.year_total / s1.year_total } else { none }) &&
+        (if c1.year_total > 0 { c2.year_total / c1.year_total } else { none }) >
+        (if w1.year_total > 0 { w2.year_total / w1.year_total } else { none })
   sort by [s2.customer_id, s2.customer_first_name, s2.customer_last_name, s2.customer_login]
   select {
     customer_id: s2.customer_id,

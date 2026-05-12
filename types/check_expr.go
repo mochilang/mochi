@@ -339,7 +339,7 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			return StringType{}, nil
 		case p.Lit.Bool != nil:
 			return BoolType{}, nil
-		case p.Lit.Null:
+		case p.Lit.None:
 			// MEP-10 A2: `null` is the lone value of `option[any]`. It
 			// unifies with any other option type via the top-level any
 			// case in `unify`, and against `any` itself via the top
@@ -2146,7 +2146,7 @@ func literalPatternKey(e *parser.Expr) string {
 		return fmt.Sprintf("str:%q", *lit.Str)
 	case lit.Bool != nil:
 		return fmt.Sprintf("bool:%v", bool(*lit.Bool))
-	case lit.Null:
+	case lit.None:
 		return "null"
 	}
 	return ""

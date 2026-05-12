@@ -31,7 +31,7 @@ fun find_substring(s: string, sub: string, from: int): int {
 
 fun fetch_pharmacy_and_price_list(drug_name: string, zip_code: string): list<map<string,string>> {
   if drug_name == "" || zip_code == "" {
-    return null
+    return none
   }
   var results: list<map<string,string>> = []
   var pos = 0
@@ -70,7 +70,7 @@ fun fetch_pharmacy_and_price_list(drug_name: string, zip_code: string): list<map
 }
 
 let pharmacy_price_list = fetch_pharmacy_and_price_list("aspirin", "30303")
-if pharmacy_price_list != null {
+if pharmacy_price_list != none {
   var i = 0
   while i < len(pharmacy_price_list) {
     let entry = pharmacy_price_list[i]

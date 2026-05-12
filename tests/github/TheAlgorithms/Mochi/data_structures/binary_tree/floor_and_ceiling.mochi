@@ -10,7 +10,7 @@ the key with the current node:
   move to the left child.
 - If the key is larger, the node becomes the tentative floor and we move to
 the right child.
-The search ends when a match is found or a null child is reached.  This takes
+The search ends when a match is found or a none child is reached.  This takes
 O(h) time where *h* is the height of the tree.
 
 The example builds a BST containing the keys 3, 5, 7, 10, 15, 20 and 25.  It
@@ -36,8 +36,8 @@ fun inorder(nodes: list<Node>, idx: int): list<int> {
 }
 
 fun floor_ceiling(nodes: list<Node>, idx: int, key: int): list<int> {
-  var floor_val = null
-  var ceiling_val = null
+  var floor_val = none
+  var ceiling_val = none
   var current = idx
   while current != (-1) {
     let node = nodes[current]

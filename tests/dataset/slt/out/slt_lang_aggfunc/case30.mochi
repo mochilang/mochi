@@ -17,7 +17,7 @@ let t1 = [
     y: "fal" + "se",
   },
   t1Row {
-    x: null,
+    x: none,
     y: "NULL",
   },
   t1Row {
@@ -32,7 +32,7 @@ let t1 = [
 
 /* SELECT count(x) FROM t1 WHERE y='false' */
 let result = count(from row in t1
-  where (row.y != null && "false" != null && row.y == "false") && row.x != null
+  where (row.y != none && "false" != none && row.y == "false") && row.x != none
   select row)
 print(result)
 

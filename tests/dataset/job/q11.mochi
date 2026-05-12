@@ -21,9 +21,9 @@ let link_type = [
 ]
 
 let movie_companies = [
-  { movie_id: 10, company_id: 1, company_type_id: 1, note: null },
-  { movie_id: 20, company_id: 2, company_type_id: 1, note: null },
-  { movie_id: 30, company_id: 3, company_type_id: 1, note: null }
+  { movie_id: 10, company_id: 1, company_type_id: 1, note: none },
+  { movie_id: 20, company_id: 2, company_type_id: 1, note: none },
+  { movie_id: 30, company_id: 3, company_type_id: 1, note: none }
 ]
 
 let movie_keyword = [
@@ -59,7 +59,7 @@ let matches =
         ct.kind == "production companies" &&
         k.keyword == "sequel" &&
         lt.link.contains("follow") &&
-        mc.note == null &&
+        mc.note == none &&
         t.production_year >= 1950 && t.production_year <= 2000 &&
         ml.movie_id == mk.movie_id &&
         ml.movie_id == mc.movie_id &&

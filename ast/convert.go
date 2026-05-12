@@ -708,7 +708,7 @@ func FromPrimary(p *parser.Primary) *Node {
 			return &Node{Kind: "string", Value: *p.Lit.Str, Pos: p.Lit.Pos}
 		case p.Lit.Bool != nil:
 			return &Node{Kind: "bool", Value: bool(*p.Lit.Bool), Pos: p.Lit.Pos}
-		case p.Lit.Null:
+		case p.Lit.None:
 			return &Node{Kind: "null", Pos: p.Lit.Pos}
 		}
 

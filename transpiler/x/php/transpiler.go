@@ -3883,7 +3883,7 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &FloatLit{Value: *l.Float}, nil
 	case l.Bool != nil:
 		return &BoolLit{Value: bool(*l.Bool)}, nil
-	case l.Null:
+	case l.None:
 		return &NullLit{}, nil
 	}
 	return nil, fmt.Errorf("unsupported literal")

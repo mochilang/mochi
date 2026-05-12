@@ -13,7 +13,7 @@ fun _now(): int {
   return ((os.time() * 1000000000) + math.floor((os.clock() * 1000000000)))
 }
 fun _padStart() {
-  if ((ch == null) || (ch == "")) {
+  if ((ch == none) || (ch == "")) {
     let ch = " "
   }
   if (len(s) >= len) {
@@ -32,10 +32,10 @@ fun _gcd() {
   return a
 }
 fun _bigrat() {
-  if ((((type(n) == "table") && (n.num != null)) && (n.den != null)) && (d == null)) {
+  if ((((type(n) == "table") && (n.num != none)) && (n.den != none)) && (d == none)) {
     return n
   }
-  if (d == null) {
+  if (d == none) {
     let d = 1
   }
   if (d < 0) {
@@ -58,13 +58,13 @@ fun _div() {
   return _bigrat((a.num * b.den), (a.den * b.num))
 }
 fun num(x: int) {
-  if ((type(x) == "table") && (x.num != null)) {
+  if ((type(x) == "table") && (x.num != none)) {
     return x.num
   }
   return x
 }
 fun denom(x): int {
-  if ((type(x) == "table") && (x.den != null)) {
+  if ((type(x) == "table") && (x.den != none)) {
     return x.den
   }
   return 1
@@ -97,7 +97,7 @@ fun _indexOf() {
 }
 fun _parseIntStr() {
   let n = tonumber(str, 10)
-  if (n == null) {
+  if (n == none) {
     return 0
   }
   return math.floor(n)
@@ -106,7 +106,7 @@ fun slice() {
   if (s < 0) {
     var s = (len(lst) + s)
   }
-  if (e == null) {
+  if (e == none) {
     let e = len(lst)
   }
   let r = []

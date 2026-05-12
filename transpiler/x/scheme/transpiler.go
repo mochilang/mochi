@@ -1962,7 +1962,7 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		return StringLit(*p.Lit.Str), nil
 	case p.Lit != nil && p.Lit.Bool != nil:
 		return BoolLit(bool(*p.Lit.Bool)), nil
-	case p.Lit != nil && p.Lit.Null:
+	case p.Lit != nil && p.Lit.None:
 		return voidSym(), nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		if p.Selector.Root == "nil" {

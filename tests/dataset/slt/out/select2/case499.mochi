@@ -13,10 +13,10 @@ type t1Row {
 let t1 = [
   t1Row {
     a: 104,
-    b: null,
+    b: none,
     c: 102,
     d: 101,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 107,
@@ -26,7 +26,7 @@ let t1 = [
     e: 109,
   },
   t1Row {
-    a: null,
+    a: none,
     b: 112,
     c: 113,
     d: 114,
@@ -34,7 +34,7 @@ let t1 = [
   },
   t1Row {
     a: 115,
-    b: null,
+    b: none,
     c: 119,
     d: 116,
     e: 117,
@@ -44,7 +44,7 @@ let t1 = [
     b: 124,
     c: 123,
     d: 122,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 127,
@@ -78,21 +78,21 @@ let t1 = [
     a: 149,
     b: 145,
     c: 147,
-    d: null,
+    d: none,
     e: 146,
   },
   t1Row {
     a: 153,
     b: 151,
     c: 150,
-    d: null,
-    e: null,
+    d: none,
+    e: none,
   },
   t1Row {
     a: 159,
     b: 158,
     c: 155,
-    d: null,
+    d: none,
     e: 157,
   },
   t1Row {
@@ -106,7 +106,7 @@ let t1 = [
     a: 168,
     b: 167,
     c: 166,
-    d: null,
+    d: none,
     e: 165,
   },
   t1Row {
@@ -120,7 +120,7 @@ let t1 = [
     a: 179,
     b: 175,
     c: 176,
-    d: null,
+    d: none,
     e: 177,
   },
   t1Row {
@@ -153,17 +153,17 @@ let t1 = [
   },
   t1Row {
     a: 201,
-    b: null,
+    b: none,
     c: 202,
     d: 203,
     e: 204,
   },
   t1Row {
-    a: null,
+    a: none,
     b: 206,
     c: 208,
     d: 207,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 213,
@@ -203,7 +203,7 @@ let t1 = [
   t1Row {
     a: 239,
     b: 236,
-    c: null,
+    c: none,
     d: 238,
     e: 237,
   },
@@ -211,8 +211,8 @@ let t1 = [
     a: 243,
     b: 240,
     c: 244,
-    d: null,
-    e: null,
+    d: none,
+    e: none,
   },
   t1Row {
     a: 245,
@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE b>c AND (e>c OR e<d) AND coalesce(a,b,c,d,e)<>0 */
 var result = from row in t1
-  where row.b > row.c && (row.e > row.c || row.e < row.d) && (if row.a != null then row.a else if row.b != null then row.b else if row.c != null then row.c else if row.d != null then row.d else row.e) != 0
+  where row.b > row.c && (row.e > row.c || row.e < row.d) && (if row.a != none then row.a else if row.b != none then row.b else if row.c != none then row.c else if row.d != none then row.d else row.e) != 0
   select count(from x in t1
   where x.c > row.c && x.d < row.d
   select x)

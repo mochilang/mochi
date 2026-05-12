@@ -1816,7 +1816,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			s = strings.ReplaceAll(s, "\n", "\\n")
 			return fmt.Sprintf("'%s'", s), nil
 		}
-		if p.Lit.Null {
+		if p.Lit.None {
 			return "Null", nil
 		}
 	case p.Selector != nil:

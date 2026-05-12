@@ -77,7 +77,7 @@ let tab2 = [
 
 /* SELECT SUM ( + + col0 ) FROM tab0 */
 let result = sum(from row in tab0
-  where row.col0 != null
+  where row.col0 != none
   select row.col0)
 print(result)
 

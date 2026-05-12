@@ -1,5 +1,5 @@
 fun _avg(v): int {
-  let list: any[] | null = null
+  let list: any[] | none = none
   if Array.isArray(v) {
   }
   let sum = 0

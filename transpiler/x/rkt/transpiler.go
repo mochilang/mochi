@@ -3247,7 +3247,7 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		}
 		return &Name{Name: "#f"}, nil
 	}
-	if l.Null {
+	if l.None {
 		return &Name{Name: "#f"}, nil
 	}
 	if l.Str != nil {

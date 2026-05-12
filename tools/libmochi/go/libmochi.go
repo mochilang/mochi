@@ -87,7 +87,7 @@ func Call(code, fn string, args []any, opts *RunOptions) (any, error) {
 
 func toMochi(v any) (string, error) {
 	if v == nil {
-		return "null", nil
+		return "none", nil
 	}
 	rv := reflect.ValueOf(v)
 	switch rv.Kind() {

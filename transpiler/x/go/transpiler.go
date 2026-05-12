@@ -7557,7 +7557,7 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		if p.Lit.Bool != nil {
 			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 		}
-		if p.Lit.Null {
+		if p.Lit.None {
 			// Determine the expected type of this null literal. If it's used
 			// in a numeric context (e.g. assigned to an int), emit a sentinel
 			// value instead of Go's nil so the generated code remains

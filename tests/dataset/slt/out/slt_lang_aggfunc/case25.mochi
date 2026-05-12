@@ -17,7 +17,7 @@ let t1 = [
     y: "fal" + "se",
   },
   t1Row {
-    x: null,
+    x: none,
     y: "NULL",
   },
   t1Row {
@@ -32,7 +32,7 @@ let t1 = [
 
 /* SELECT avg(DISTINCT x) FROM t1 */
 let result = avg(distinct(from row in t1
-  where row.x != null
+  where row.x != none
   select row.x))
 print(result)
 

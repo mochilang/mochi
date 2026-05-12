@@ -13,10 +13,10 @@ type t1Row {
 let t1 = [
   t1Row {
     a: 104,
-    b: null,
+    b: none,
     c: 102,
     d: 101,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 107,
@@ -26,7 +26,7 @@ let t1 = [
     e: 109,
   },
   t1Row {
-    a: null,
+    a: none,
     b: 112,
     c: 113,
     d: 114,
@@ -34,7 +34,7 @@ let t1 = [
   },
   t1Row {
     a: 115,
-    b: null,
+    b: none,
     c: 119,
     d: 116,
     e: 117,
@@ -44,7 +44,7 @@ let t1 = [
     b: 124,
     c: 123,
     d: 122,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 127,
@@ -78,21 +78,21 @@ let t1 = [
     a: 149,
     b: 145,
     c: 147,
-    d: null,
+    d: none,
     e: 146,
   },
   t1Row {
     a: 153,
     b: 151,
     c: 150,
-    d: null,
-    e: null,
+    d: none,
+    e: none,
   },
   t1Row {
     a: 159,
     b: 158,
     c: 155,
-    d: null,
+    d: none,
     e: 157,
   },
   t1Row {
@@ -106,7 +106,7 @@ let t1 = [
     a: 168,
     b: 167,
     c: 166,
-    d: null,
+    d: none,
     e: 165,
   },
   t1Row {
@@ -120,7 +120,7 @@ let t1 = [
     a: 179,
     b: 175,
     c: 176,
-    d: null,
+    d: none,
     e: 177,
   },
   t1Row {
@@ -153,17 +153,17 @@ let t1 = [
   },
   t1Row {
     a: 201,
-    b: null,
+    b: none,
     c: 202,
     d: 203,
     e: 204,
   },
   t1Row {
-    a: null,
+    a: none,
     b: 206,
     c: 208,
     d: 207,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 213,
@@ -203,7 +203,7 @@ let t1 = [
   t1Row {
     a: 239,
     b: 236,
-    c: null,
+    c: none,
     d: 238,
     e: 237,
   },
@@ -211,8 +211,8 @@ let t1 = [
     a: 243,
     b: 240,
     c: 244,
-    d: null,
-    e: null,
+    d: none,
+    e: none,
   },
   t1Row {
     a: 245,
@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, (a+b+c+d+e)/5, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), b, c-d FROM t1 WHERE coalesce(a,b,c,d,e)<>0 */
 var result = from row in t1
-  where (if row.a != null then row.a else if row.b != null then row.b else if row.c != null then row.c else if row.d != null then row.d else row.e) != 0
+  where (if row.a != none then row.a else if row.b != none then row.b else if row.c != none then row.c else if row.d != none then row.d else row.e) != 0
   select [if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, (row.a + row.b + row.c + row.d + row.e) / 5, count(from x in t1
   where x.b < row.b
   select x), row.b, row.c - row.d]
@@ -245,6 +245,6 @@ for x in flatResult {
   print(x)
 }
 test "case169" {
-  expect flatResult == [-1, -1, -1, -1, -1, -2, -2, -2, -3, -3, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 105, 107, 11, 111, 112, 12, 124, 127, 129, 13, 130, 132, 137, 139, 14, 142, 143, 145, 15, 151, 158, 16, 160, 162, 167, 17, 170, 172, 175, 18, 181, 182, 186, 187, 19, 192, 194, 197, 198, 2, 2, 2, 2, 20, 206, 21, 211, 212, 217, 218, 22, 222, 222, 222, 222, 222, 222, 222, 222, 223, 227, 228, 23, 232, 232, 236, 24, 240, 247, 249, 25, 26, 3, 3, 3, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 4, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 5, 6, 7, 8, 9, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+  expect flatResult == [-1, -1, -1, -1, -1, -2, -2, -2, -3, -3, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 105, 107, 11, 111, 112, 12, 124, 127, 129, 13, 130, 132, 137, 139, 14, 142, 143, 145, 15, 151, 158, 16, 160, 162, 167, 17, 170, 172, 175, 18, 181, 182, 186, 187, 19, 192, 194, 197, 198, 2, 2, 2, 2, 20, 206, 21, 211, 212, 217, 218, 22, 222, 222, 222, 222, 222, 222, 222, 222, 223, 227, 228, 23, 232, 232, 236, 24, 240, 247, 249, 25, 26, 3, 3, 3, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 4, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 5, 6, 7, 8, 9, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none]
 }
 

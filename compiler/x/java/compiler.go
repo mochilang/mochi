@@ -2732,7 +2732,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "true", nil
 			}
 			return "false", nil
-		case p.Lit.Null:
+		case p.Lit.None:
 			return "null", nil
 		}
 	case p.Selector != nil:

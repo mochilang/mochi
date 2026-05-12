@@ -5,7 +5,7 @@ fun Program.Main() {
   print(_avg(new long[] { 1, 2, 3 }))
 }
 fun Program._avg(v: any): float {
-  if v == null) return 0.0 {
+  if v == none) return 0.0 {
   var _n = 0
   var _sum = 0
   for it in v {

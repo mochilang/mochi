@@ -2,8 +2,8 @@ package types
 
 import "mochi/parser"
 
-// optionNarrowing inspects a boolean expression for `x == null` or
-// `x != null` patterns and reports which option-typed bindings can be
+// optionNarrowing inspects a boolean expression for `x == none` or
+// `x != none` patterns and reports which option-typed bindings can be
 // tightened to their wrapped element type in the truthy and falsy
 // branches. It implements MEP-16 N1 (if-condition narrowing).
 //
@@ -20,14 +20,14 @@ func optionNarrowing(e *parser.Expr, env *Env) (truthy, falsy map[string]Type) {
 
 	leftName := identFromUnary(e.Binary.Left)
 	rightName := identFromUnary(e.Binary.Right[0].Right)
-	leftNull := isNullLiteralUnary(e.Binary.Left)
-	rightNull := isNullLiteralUnary(e.Binary.Right[0].Right)
+	leftNone := isNoneLiteralUnary(e.Binary.Left)
+	rightNone := isNoneLiteralUnary(e.Binary.Right[0].Right)
 
 	var bind string
 	switch {
-	case leftName != "" && rightNull:
+	case leftName != "" && rightNone:
 		bind = leftName
-	case rightName != "" && leftNull:
+	case rightName != "" && leftNone:
 		bind = rightName
 	default:
 		return nil, nil
@@ -66,8 +66,8 @@ func identFromUnary(u *parser.Unary) string {
 	return sel.Root
 }
 
-// isNullLiteralUnary reports whether u is the bare `null` literal.
-func isNullLiteralUnary(u *parser.Unary) bool {
+// isNoneLiteralUnary reports whether u is the bare `none` literal.
+func isNoneLiteralUnary(u *parser.Unary) bool {
 	if u == nil || len(u.Ops) != 0 || u.Value == nil {
 		return false
 	}
@@ -76,7 +76,7 @@ func isNullLiteralUnary(u *parser.Unary) bool {
 		return false
 	}
 	lit := px.Target.Lit
-	return lit != nil && lit.Null
+	return lit != nil && lit.None
 }
 
 // narrowedEnv returns a child env where each (name, type) in narrowed

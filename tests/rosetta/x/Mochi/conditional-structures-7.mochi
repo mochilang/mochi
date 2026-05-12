@@ -6,10 +6,10 @@ fun example7() {
   let x = fetch_()
   if x == "cheese" {
     // statements
-    null
+    none
   } else if someCondition() {
     // other statements
-    null
+    none
   }
 }
 

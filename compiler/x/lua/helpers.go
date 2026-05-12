@@ -404,7 +404,7 @@ func literalValue(e *parser.Expr) (any, bool) {
 		return v, true
 	case lit.Str != nil:
 		return *lit.Str, true
-	case lit.Null:
+	case lit.None:
 		return nil, true
 	}
 	return nil, false

@@ -9,7 +9,7 @@ fun Program.Main() {
 }
 fun Program._sliceList(l: any, i: int, j: int): list<any> {
   var list = l as System.Collections.IList
-  if list == null) return new List<dynamic>() {
+  if list == none) return new List<dynamic>() {
   var start = i
   var end = j
   var n = list.Count

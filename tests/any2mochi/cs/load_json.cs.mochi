@@ -14,9 +14,9 @@ fun Program.Main() {
   }
 }
 fun Program._load(path: string, Dictionary<string, opts): list<any> {
-  var format = opts != null && opts.ContainsKey("format") ? Convert.ToString(opts["format"]) : "csv"
-  var header = opts != null && opts.ContainsKey("header") ? Convert.ToBoolean(opts["header"]) : true
-  var delim = opts != null && opts.ContainsKey("delimiter") ? Convert.ToString(opts["delimiter"])[0] : ','
+  var format = opts != none && opts.ContainsKey("format") ? Convert.ToString(opts["format"]) : "csv"
+  var header = opts != none && opts.ContainsKey("header") ? Convert.ToBoolean(opts["header"]) : true
+  var delim = opts != none && opts.ContainsKey("delimiter") ? Convert.ToString(opts["delimiter"])[0] : ','
   var text
   if string.IsNullOrEmpty(path) || path == "-" {
   text = Console.In.ReadToEnd()
@@ -45,13 +45,13 @@ fun Program._load(path: string, Dictionary<string, opts): list<any> {
   default:
   var lines = text.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
   var out = new List<dynamic>()
-  var headers = null
+  var headers = none
   for int i in 0..lines.Length {
   var parts = lines[i].Split(delim)
   if i == 0 && header) { headers = parts; continue; } {
   var obj = new Dictionary<string, object>()
   for int j in 0..parts.Length {
-  var key = headers != null && j < headers.Length ? headers[j] : $"col{j}"
+  var key = headers != none && j < headers.Length ? headers[j] : $"col{j}"
   obj[key] = parts[j]
   }
   out.Add(obj)
@@ -81,8 +81,8 @@ fun Program._cast(v: any) {
   var res = (System.Collections.IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(args))
   var mCast = typeof(Program).GetMethod("_cast")
   for kv in d {
-  var k = mCast.MakeGenericMethod(args[0]).Invoke(null, new object[]{kv.Key})
-  var val = mCast.MakeGenericMethod(args[1]).Invoke(null, new object[]{kv.Value})
+  var k = mCast.MakeGenericMethod(args[0]).Invoke(none, new object[]{kv.Key})
+  var val = mCast.MakeGenericMethod(args[1]).Invoke(none, new object[]{kv.Value})
   res.Add(k, val)
   }
   return (T)res

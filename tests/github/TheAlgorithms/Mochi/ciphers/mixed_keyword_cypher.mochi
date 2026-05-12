@@ -65,7 +65,7 @@ fun get_value(keys: list<string>, values: list<string>, key: string): string {
     }
     i = i + 1
   }
-  return null
+  return none
 }
 
 fun print_mapping(keys: list<string>, values: list<string>) {
@@ -154,7 +154,7 @@ fun mixed_keyword(keyword: string, plaintext: string, verbose: bool): string {
   while i < len(plaintext_u) {
     let ch = plaintext_u[i]
     let mapped = get_value(keys, values, ch)
-    if mapped == null {
+    if mapped == none {
       result = result + ch
     } else {
       result = result + mapped

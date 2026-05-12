@@ -356,9 +356,9 @@ func assertLiteral(l *Literal) error {
 	if l == nil {
 		return invariant(lexer.Position{}, "literal is nil")
 	}
-	arms := [...]bool{l.Int != nil, l.Float != nil, l.Bool != nil, l.Str != nil, l.Null}
+	arms := [...]bool{l.Int != nil, l.Float != nil, l.Bool != nil, l.Str != nil, l.None}
 	if n := countTrue(arms[:]); n != 1 {
-		return invariant(l.Pos, fmt.Sprintf("literal has %d arms set, expected exactly 1 of {int, float, bool, str, null}", n))
+		return invariant(l.Pos, fmt.Sprintf("literal has %d arms set, expected exactly 1 of {int, float, bool, str, none}", n))
 	}
 	return nil
 }

@@ -4692,7 +4692,7 @@ func compileLiteral(l *parser.Literal) (Expr, error) {
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
-	case l.Null:
+	case l.None:
 		return &NilLit{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")

@@ -17,7 +17,7 @@ let t1 = [
     y: "fal" + "se",
   },
   t1Row {
-    x: null,
+    x: none,
     y: "NULL",
   },
   t1Row {
@@ -32,9 +32,9 @@ let t1 = [
 
 /* SELECT total(DISTINCT x) FROM t1 */
 var result = sum(distinct(from row in t1
-  where row.x != null
+  where row.x != none
   select row.x))
-result = if result == null then 0.0 else (result as float)
+result = if result == none then 0.0 else (result as float)
 print(result)
 
 test "case53" {

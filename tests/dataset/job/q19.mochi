@@ -66,9 +66,9 @@ let matches =
         ] &&
         cn.country_code == "[us]" &&
         it.info == "release dates" &&
-        mc.note != null &&
+        mc.note != none &&
         (mc.note.contains("(USA)") || mc.note.contains("(worldwide)")) &&
-        mi.info != null &&
+        mi.info != none &&
         ((mi.info.contains("Japan:") && mi.info.contains("200")) ||
          (mi.info.contains("USA:") && mi.info.contains("200"))) &&
         n.gender == "f" &&

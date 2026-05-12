@@ -18,7 +18,7 @@ are implemented recursively:
   orders.
 
 All nodes are stored in an array and referenced by integer indexes.
-`-1` represents a null pointer. This avoids the use of the `any` type and
+`-1` represents a none pointer. This avoids the use of the `any` type and
 keeps the structure fully typed.
 */
 

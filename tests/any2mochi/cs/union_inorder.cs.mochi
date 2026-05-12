@@ -48,8 +48,8 @@ fun Program._cast(v: any) {
   var res = (System.Collections.IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(args))
   var mCast = typeof(Program).GetMethod("_cast")
   for kv in d {
-  var k = mCast.MakeGenericMethod(args[0]).Invoke(null, new object[]{kv.Key})
-  var val = mCast.MakeGenericMethod(args[1]).Invoke(null, new object[]{kv.Value})
+  var k = mCast.MakeGenericMethod(args[0]).Invoke(none, new object[]{kv.Key})
+  var val = mCast.MakeGenericMethod(args[1]).Invoke(none, new object[]{kv.Value})
   res.Add(k, val)
   }
   return (T)res

@@ -5007,7 +5007,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if p.Lit.Bool != nil {
 			return &BoolLit{Value: bool(*p.Lit.Bool)}, nil
 		}
-		if p.Lit.Null {
+		if p.Lit.None {
 			return &NullLit{}, nil
 		}
 		return nil, fmt.Errorf("unsupported literal")

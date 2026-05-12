@@ -13,10 +13,10 @@ type t1Row {
 let t1 = [
   t1Row {
     a: 104,
-    b: null,
+    b: none,
     c: 102,
     d: 101,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 107,
@@ -26,7 +26,7 @@ let t1 = [
     e: 109,
   },
   t1Row {
-    a: null,
+    a: none,
     b: 112,
     c: 113,
     d: 114,
@@ -34,7 +34,7 @@ let t1 = [
   },
   t1Row {
     a: 115,
-    b: null,
+    b: none,
     c: 119,
     d: 116,
     e: 117,
@@ -44,7 +44,7 @@ let t1 = [
     b: 124,
     c: 123,
     d: 122,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 127,
@@ -78,21 +78,21 @@ let t1 = [
     a: 149,
     b: 145,
     c: 147,
-    d: null,
+    d: none,
     e: 146,
   },
   t1Row {
     a: 153,
     b: 151,
     c: 150,
-    d: null,
-    e: null,
+    d: none,
+    e: none,
   },
   t1Row {
     a: 159,
     b: 158,
     c: 155,
-    d: null,
+    d: none,
     e: 157,
   },
   t1Row {
@@ -106,7 +106,7 @@ let t1 = [
     a: 168,
     b: 167,
     c: 166,
-    d: null,
+    d: none,
     e: 165,
   },
   t1Row {
@@ -120,7 +120,7 @@ let t1 = [
     a: 179,
     b: 175,
     c: 176,
-    d: null,
+    d: none,
     e: 177,
   },
   t1Row {
@@ -153,17 +153,17 @@ let t1 = [
   },
   t1Row {
     a: 201,
-    b: null,
+    b: none,
     c: 202,
     d: 203,
     e: 204,
   },
   t1Row {
-    a: null,
+    a: none,
     b: 206,
     c: 208,
     d: 207,
-    e: null,
+    e: none,
   },
   t1Row {
     a: 213,
@@ -203,7 +203,7 @@ let t1 = [
   t1Row {
     a: 239,
     b: 236,
-    c: null,
+    c: none,
     d: 238,
     e: 237,
   },
@@ -211,8 +211,8 @@ let t1 = [
     a: 243,
     b: 240,
     c: 244,
-    d: null,
-    e: null,
+    d: none,
+    e: none,
   },
   t1Row {
     a: 245,
@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT d-e, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, b-c, e, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, abs(b-c) FROM t1 WHERE a IS NULL */
 var result = from row in t1
-  where row.a == null
-  select [row.d - row.e, if (row.a + 1 != null && row.b != null && row.a + 1 == row.b) then 111 else if (row.a + 1 != null && row.c != null && row.a + 1 == row.c) then 222 else if (row.a + 1 != null && row.d != null && row.a + 1 == row.d) then 333 else if (row.a + 1 != null && row.e != null && row.a + 1 == row.e) then 444 else 555, row.b - row.c, row.e, if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c]
+  where row.a == none
+  select [row.d - row.e, if (row.a + 1 != none && row.b != none && row.a + 1 == row.b) then 111 else if (row.a + 1 != none && row.c != none && row.a + 1 == row.c) then 222 else if (row.a + 1 != none && row.d != none && row.a + 1 == row.d) then 333 else if (row.a + 1 != none && row.e != none && row.a + 1 == row.e) then 444 else 555, row.b - row.c, row.e, if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
@@ -243,6 +243,6 @@ for x in flatResult {
   print(x)
 }
 test "case73" {
-  expect flatResult == [-1, -2, 1, 110, 2, 4, 444, 444, 555, 555, null, null]
+  expect flatResult == [-1, -2, 1, 110, 2, 4, 444, 444, 555, 555, none, none]
 }
 

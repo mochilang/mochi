@@ -3346,7 +3346,7 @@ func constValue(e *parser.Expr) (any, bool) {
 			return bool(*lit.Bool), true
 		case lit.Str != nil:
 			return *lit.Str, true
-		case lit.Null:
+		case lit.None:
 			return nil, true
 		}
 	case pf.Target.Map != nil:
@@ -6717,7 +6717,7 @@ func convertLiteral(l *parser.Literal) (Expr, error) {
 		return &BoolLit{Value: bool(*l.Bool)}, nil
 	case l.Str != nil:
 		return &StringLit{Value: *l.Str}, nil
-	case l.Null:
+	case l.None:
 		return &AtomLit{Name: "nil"}, nil
 	default:
 		return nil, fmt.Errorf("unsupported literal")

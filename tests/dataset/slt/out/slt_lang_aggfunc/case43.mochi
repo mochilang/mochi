@@ -17,7 +17,7 @@ let t1 = [
     y: "fal" + "se",
   },
   t1Row {
-    x: null,
+    x: none,
     y: "NULL",
   },
   t1Row {
@@ -30,12 +30,12 @@ let t1 = [
   },
 ]
 
-/* SELECT max(DISTINCT x) FROM t1 WHERE y='null' */
+/* SELECT max(DISTINCT x) FROM t1 WHERE y='none' */
 let result = max(distinct(from row in t1
-  where (row.y != null && "null" != null && row.y == "null") && row.x != null
+  where (row.y != none && "null" != none && row.y == "null") && row.x != none
   select row.x))
 print(result)
 
 test "case43" {
-  expect result == null
+  expect result == none
 }

@@ -1491,7 +1491,7 @@ func (c *Compiler) compileLiteral(lit *parser.Literal) (string, error) {
 			return "true", nil
 		}
 		return "false", nil
-	case lit.Null:
+	case lit.None:
 		return "nil", nil
 	}
 	return "nil", fmt.Errorf("unknown literal")

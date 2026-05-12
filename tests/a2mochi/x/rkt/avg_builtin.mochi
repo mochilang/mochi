@@ -4,6 +4,6 @@
 #lang racket
 (require racket/list racket/string)
 
-(displayln (if (null? (list 1 2 3)) 0 (exact->inexact (/ (apply + (list 1 2 3)) (length (list 1 2 3))))))
+(displayln (if (none? (list 1 2 3)) 0 (exact->inexact (/ (apply + (list 1 2 3)) (length (list 1 2 3))))))
 */
 print(avg([1,2,3]))
