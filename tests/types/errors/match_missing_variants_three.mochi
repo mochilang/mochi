@@ -1,0 +1,16 @@
+// MEP-10 A4 / MEP-13 §Exhaustiveness: when three or more variants are
+// uncovered, the formatter switches to a comma-separated list with
+// `and` before the final name.
+type Shape =
+  Circle(r: int)
+| Square(s: int)
+| Triangle(base: int, height: int)
+| Pentagon(side: int)
+| Hexagon(side: int)
+
+fun classify(sh: Shape): string {
+  return match sh {
+    Circle(r) => "c"
+    Square(s) => "s"
+  }
+}
