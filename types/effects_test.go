@@ -59,6 +59,104 @@ func TestFuncTypePure(t *testing.T) {
 	}
 }
 
+// TestDeclaredEffects_Accepted exercises MEP-15 Stage 2b: a function
+// that annotates an effect set the body actually produces should
+// type-check cleanly, and the declared set should appear on the
+// FuncType so callers see the published contract.
+func TestDeclaredEffects_Accepted(t *testing.T) {
+	cases := []struct {
+		name string
+		src  string
+		fn   string
+		want types.EffectSet
+	}{
+		{"exact match", "fun greet(name: string) ! io { print(name) }", "greet", types.NewEffectSet(types.EffectIO)},
+		{"wider than body", "fun maybe_print(name: string) ! io, time { }", "maybe_print", types.NewEffectSet(types.EffectIO, types.EffectTime)},
+		{"declared without body effects", "fun reserve() ! fs { }", "reserve", types.NewEffectSet(types.EffectFS)},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			prog, err := parser.ParseString(tc.src)
+			if err != nil {
+				t.Fatalf("parse: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("Check: %v", errs)
+			}
+			ty, err := env.GetVar(tc.fn)
+			if err != nil {
+				t.Fatalf("GetVar: %v", err)
+			}
+			ft := ty.(types.FuncType)
+			if ft.Effects != tc.want {
+				t.Fatalf("Effects=%s want %s", ft.Effects, tc.want)
+			}
+		})
+	}
+}
+
+// TestDeclaredEffects_Rejected exercises T065: when the inferred set
+// exceeds the declared annotation, type-check must fail.
+func TestDeclaredEffects_Rejected(t *testing.T) {
+	src := "fun stamp(): int ! io { return now() }"
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	errs := types.Check(prog, env)
+	if len(errs) == 0 {
+		t.Fatalf("expected T065 diagnostic, got none")
+	}
+	found := false
+	for _, e := range errs {
+		if msg := e.Error(); contains(msg, "T065") {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("expected T065 in %v", errs)
+	}
+}
+
+// TestDeclaredEffects_UnknownLabel exercises T064: an unknown label
+// in the annotation must surface a diagnostic rather than silently
+// expand the closed vocabulary.
+func TestDeclaredEffects_UnknownLabel(t *testing.T) {
+	src := "fun broken() ! quantum { }"
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	errs := types.Check(prog, env)
+	found := false
+	for _, e := range errs {
+		if contains(e.Error(), "T064") {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("expected T064 in %v", errs)
+	}
+}
+
+func contains(s, sub string) bool {
+	return len(s) >= len(sub) && indexOf(s, sub) >= 0
+}
+
+func indexOf(s, sub string) int {
+	for i := 0; i+len(sub) <= len(s); i++ {
+		if s[i:i+len(sub)] == sub {
+			return i
+		}
+	}
+	return -1
+}
+
 // TestInferFunctionEffects exercises the MEP-15 Stage 2 body walker
 // via the public Check pipeline. Each row registers a single function
 // and asserts the effect set that propagates back through the env

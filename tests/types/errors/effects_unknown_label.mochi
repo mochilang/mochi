@@ -1,0 +1,4 @@
+// MEP-15 stage 2b T064: unknown labels in an effect annotation are
+// rejected up front. The closed vocabulary is io, fs, net, time, meta.
+fun broken() ! quantum {
+}

@@ -1,0 +1,8 @@
+1. error[T065]: function `stamp` declares effects io but its body produces time
+  --> tests/types/errors/effects_declared_exceeds_inferred.mochi:5:1
+
+  5 | fun stamp(): int ! io {
+    | ^
+
+help:
+  Either add the missing label(s) to the `!` annotation, or remove the call that produces the extra effect.

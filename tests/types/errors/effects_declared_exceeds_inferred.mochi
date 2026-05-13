@@ -1,0 +1,7 @@
+// MEP-15 stage 2b T065: the body produces `time` (via now()) but the
+// declaration only promises `io`. The annotation is the public
+// contract, so the call to now() must either be removed or the
+// annotation must add `time`.
+fun stamp(): int ! io {
+  return now()
+}
