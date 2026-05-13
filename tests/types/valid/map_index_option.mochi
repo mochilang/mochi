@@ -1,0 +1,7 @@
+// MEP-16 R8: map index returns `V?` because the key may be missing.
+// The result must be guarded before use as a bare `V`.
+let m: map<string, int> = {"a": 1, "b": 2}
+let hit: int? = m["a"]
+let miss: int? = m["missing"]
+expect hit != none
+expect miss == none

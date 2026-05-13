@@ -1,0 +1,4 @@
+// MEP-16 R8: map index now returns `V?`, so binding directly into
+// `V` without a guard is rejected.
+let m: map<string, int> = {"a": 1}
+let bad: int = m["a"]
