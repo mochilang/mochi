@@ -1,8 +1,8 @@
-1. error[T044]: impure call to `print` is not allowed in `where` predicate
+1. error[T044]: call to `print` produces effect(s) io, not allowed in `where` predicate
   --> tests/types/errors/impure_in_where_rejected.mochi:2:33
 
   2 | let result = from x in xs where print(x) == print(x) select x
     |                                 ^
 
 help:
-  Only pure functions may be called inside `where` and `having` predicates.
+  Only pure functions may be called inside `where` and `having` predicates. Refactor the predicate to read pre-computed values, or move the effectful call outside the query.

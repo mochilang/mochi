@@ -62,7 +62,7 @@ var Errors = map[string]diagnostic.Template{
 	"T042": {Code: "T042", Message: "`having` condition must be boolean", Help: "Ensure the condition evaluates to true or false."},
 	"T039": {Code: "T039", Message: "function %s expects %d arguments, got %d", Help: "Pass exactly %d arguments to `%s`."},
 	"T040": {Code: "T040", Message: "`if` condition must be boolean", Help: "Ensure the condition evaluates to true or false."},
-	"T044": {Code: "T044", Message: "impure call to `%s` is not allowed in `%s` predicate", Help: "Only pure functions may be called inside `where` and `having` predicates."},
+	"T044": {Code: "T044", Message: "call to `%s` produces effect(s) %s, not allowed in `%s` predicate", Help: "Only pure functions may be called inside `where` and `having` predicates. Refactor the predicate to read pre-computed values, or move the effectful call outside the query."},
 	"T045": {Code: "T045", Message: "`%s` outside of loop", Help: "Move `%s` inside a `for` or `while` loop body."},
 	"T046": {Code: "T046", Message: "invalid cast: `%s` as `%s` is not allowed", Help: "Only numeric-tower, union-to-variant, map-to-struct, and any-related casts are allowed. Use a parsing function (e.g. `parseIntStr`) for string conversions."},
 	"T050": {Code: "T050", Message: "non-exhaustive match on union `%s`: missing variant(s) %s", Help: "Add an arm for each missing variant or use a wildcard `_` arm to cover the remainder."},
@@ -295,8 +295,8 @@ func errHavingBoolean(pos lexer.Position) error {
 	return Errors["T042"].New(pos)
 }
 
-func errImpurePredicate(pos lexer.Position, name, predicate string) error {
-	return Errors["T044"].New(pos, name, predicate)
+func errImpurePredicate(pos lexer.Position, name, predicate string, effects EffectSet) error {
+	return Errors["T044"].New(pos, name, effects.String(), predicate)
 }
 
 func errUnknownEffectLabel(pos lexer.Position, label string) error {
