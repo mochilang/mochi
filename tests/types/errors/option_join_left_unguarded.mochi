@@ -1,0 +1,11 @@
+// MEP-16 R10: the right side of a `left join` is `Option<T>` after the
+// `on` clause. Unguarded field access in `select` raises T058.
+type Order { id: int, cid: int }
+type Cust  { id: int, name: string }
+
+let orders: list<Order> = [Order{id: 1, cid: 10}]
+let custs:  list<Cust>  = [Cust{id: 10, name: "a"}]
+
+let names = from o in orders
+            left join c in custs on o.cid == c.id
+            select c.name

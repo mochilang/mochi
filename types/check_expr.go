@@ -1495,6 +1495,11 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 	}
 	child := NewEnv(env)
 	child.SetVar(q.Var, elemT, true)
+	// leftSide tracks the binding names contributed by the query's
+	// primary source and every prior `from` / `join`. MEP-16 R10 needs
+	// this list because a `right`/`outer` join retypes every left-side
+	// binding to `Option<T>` after the `on` clause executes.
+	leftSide := []string{q.Var}
 
 	for _, f := range q.Froms {
 		ft, err := checkExpr(f.Src, child)
@@ -1511,6 +1516,7 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 			return nil, errJoinSourceList(f.Pos)
 		}
 		child.SetVar(f.Var, fe, true)
+		leftSide = append(leftSide, f.Var)
 	}
 
 	for _, j := range q.Joins {
@@ -1535,6 +1541,12 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		if !unify(onT, BoolType{}, nil) {
 			return nil, errJoinOnBoolean(j.On.Pos)
 		}
+		// MEP-16 R10: option-retype the bindings that may be unmatched
+		// after the join completes. The `on` clause above sees both
+		// sides as `T` because it runs on candidate pairs; subsequent
+		// `where`/`select` see the post-join types.
+		applyJoinSideRetype(child, j.Side, j.Var, leftSide)
+		leftSide = append(leftSide, j.Var)
 	}
 
 	if q.Where != nil {
@@ -1758,6 +1770,52 @@ func stringKey(e *parser.Expr) (string, bool) {
 		return *p.Target.Lit.Str, true
 	}
 	return "", false
+}
+
+// applyJoinSideRetype implements MEP-16 R10. After a join's `on`
+// clause runs, bindings on the side that may be unmatched become
+// `Option<T>`:
+//
+//   - `left  join r in xs on c`: r becomes `Option<T>`.
+//   - `right join r in xs on c`: every previously bound name becomes
+//     `Option<T>` while r keeps its `T` type.
+//   - `outer join r in xs on c`: both sides become `Option<T>`.
+//
+// A nil Side means an inner join, which preserves the input types.
+// Already-optional bindings stay as-is to keep the operation
+// idempotent for chained joins.
+func applyJoinSideRetype(env *Env, side *string, rightVar string, leftSide []string) {
+	if side == nil {
+		return
+	}
+	switch *side {
+	case "left":
+		wrapBindingOptional(env, rightVar)
+	case "right":
+		for _, name := range leftSide {
+			wrapBindingOptional(env, name)
+		}
+	case "outer":
+		for _, name := range leftSide {
+			wrapBindingOptional(env, name)
+		}
+		wrapBindingOptional(env, rightVar)
+	}
+}
+
+// wrapBindingOptional re-types `name` in env to `Option<T>` where T is
+// its current type. No-op if the binding is already optional or
+// missing.
+func wrapBindingOptional(env *Env, name string) {
+	t, err := env.GetVar(name)
+	if err != nil {
+		return
+	}
+	if _, ok := t.(OptionType); ok {
+		return
+	}
+	mut, _ := env.isMutable(name)
+	env.SetVar(name, OptionType{Elem: t}, mut)
 }
 
 func aggregateCallName(e *parser.Expr) (string, *parser.Expr, bool) {
