@@ -59,6 +59,7 @@ const sidebars = {
   ],
 
   mepSidebar: [
+    'mep/index',
     'mep/mep-0000',
     {
       label: 'Foundations',
@@ -97,6 +98,7 @@ const sidebars = {
         'mep/mep-0013',
         'mep/mep-0014',
         'mep/mep-0015',
+        'mep/mep-0016',
       ],
     },
   ],
