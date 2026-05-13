@@ -1102,7 +1102,22 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 		}
 	}
 
-	return FuncType{Params: paramTypes, Return: declaredRet}, nil
+	// MEP-15 Stage 3b: validate the optional `! eff, ...` annotation on
+	// the closure. T064 fires for unknown labels; T065 fires when the
+	// inferred body effects escape the declared upper bound.
+	effects := inferFunExprEffects(f, child)
+	if len(f.Effects) > 0 {
+		declaredEff, labelErrs := parseFunExprEffects(f)
+		for _, le := range labelErrs {
+			env.RecordDiagnostic(le)
+		}
+		if !effects.IsSubset(declaredEff) {
+			env.RecordDiagnostic(errEffectsExceedDeclared(pos, "<fun>", declaredEff, effects))
+		}
+		effects = declaredEff
+	}
+
+	return FuncType{Params: paramTypes, Return: declaredRet, Effects: effects}, nil
 }
 
 // bareIdentName returns the source identifier if e is a single

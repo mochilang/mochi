@@ -144,6 +144,86 @@ func TestDeclaredEffects_UnknownLabel(t *testing.T) {
 	}
 }
 
+// TestFunExpr_DeclaredEffects exercises MEP-15 Stage 3b: a closure
+// (anonymous function expression) accepts the same `! eff, ...`
+// annotation as a top-level FunStmt, and the declared set propagates
+// to the FuncType produced by the let binding.
+func TestFunExpr_DeclaredEffects(t *testing.T) {
+	cases := []struct {
+		name string
+		src  string
+		want types.EffectSet
+	}{
+		{"block body io", "let f = fun(name: string) ! io { print(name) }", types.NewEffectSet(types.EffectIO)},
+		{"expr body time", "let stamp = fun(): int64 ! time => now()", types.NewEffectSet(types.EffectTime)},
+		{"declared wider than body", "let noop = fun(name: string) ! io, fs { print(name) }", types.NewEffectSet(types.EffectIO, types.EffectFS)},
+		{"no annotation infers pure", "let id = fun(x: int): int => x", types.EmptyEffects},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			prog, err := parser.ParseString(tc.src)
+			if err != nil {
+				t.Fatalf("parse: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("Check: %v", errs)
+			}
+			target := tc.src[4:]
+			target = target[:indexOf(target, " ")]
+			ty, err := env.GetVar(target)
+			if err != nil {
+				t.Fatalf("GetVar(%q): %v", target, err)
+			}
+			ft, ok := ty.(types.FuncType)
+			if !ok {
+				t.Fatalf("expected FuncType, got %T", ty)
+			}
+			if ft.Effects != tc.want {
+				t.Fatalf("Effects=%s want %s", ft.Effects.String(), tc.want.String())
+			}
+		})
+	}
+}
+
+// TestFunExpr_UnknownEffectLabel exercises T064 on FunExpr: an unknown
+// label in the `!` annotation of an anonymous function must surface a
+// diagnostic.
+func TestFunExpr_UnknownEffectLabel(t *testing.T) {
+	src := "let f = fun(x: int): int ! quantum => x"
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	errs := types.Check(prog, env)
+	for _, e := range errs {
+		if contains(e.Error(), "T064") {
+			return
+		}
+	}
+	t.Fatalf("expected T064 in %v", errs)
+}
+
+// TestFunExpr_EffectsExceedDeclared exercises T065 on FunExpr: when
+// the inferred body effects escape the declared upper bound, type
+// check must reject the closure.
+func TestFunExpr_EffectsExceedDeclared(t *testing.T) {
+	src := "let stamp = fun(): int64 ! io => now()"
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	errs := types.Check(prog, env)
+	for _, e := range errs {
+		if contains(e.Error(), "T065") {
+			return
+		}
+	}
+	t.Fatalf("expected T065 in %v", errs)
+}
+
 func contains(s, sub string) bool {
 	return len(s) >= len(sub) && indexOf(s, sub) >= 0
 }

@@ -1,18 +1,32 @@
 package types
 
-import "mochi/parser"
+import (
+	"mochi/parser"
+
+	"github.com/alecthomas/participle/v2/lexer"
+)
 
 // parseDeclaredEffects converts the raw label list on FunStmt.Effects
 // into a typed EffectSet. Each unknown label produces a T064
 // diagnostic but the parse keeps going so the caller sees every bad
 // label in one pass.
 func parseDeclaredEffects(fn *parser.FunStmt) (EffectSet, []error) {
+	return parseEffectLabels(fn.Pos, fn.Effects)
+}
+
+// parseFunExprEffects mirrors parseDeclaredEffects for anonymous
+// function expressions. MEP-15 Stage 3b extends T064 to FunExpr.
+func parseFunExprEffects(f *parser.FunExpr) (EffectSet, []error) {
+	return parseEffectLabels(f.Pos, f.Effects)
+}
+
+func parseEffectLabels(pos lexer.Position, labels []string) (EffectSet, []error) {
 	var set EffectSet
 	var errs []error
-	for _, name := range fn.Effects {
+	for _, name := range labels {
 		label, ok := ParseEffectLabel(name)
 		if !ok {
-			errs = append(errs, errUnknownEffectLabel(fn.Pos, name))
+			errs = append(errs, errUnknownEffectLabel(pos, name))
 			continue
 		}
 		set = set.Add(label)
@@ -34,19 +48,43 @@ func inferFunctionEffects(fn *parser.FunStmt, env *Env) EffectSet {
 	if fn == nil {
 		return EmptyEffects
 	}
+	child := funBodyEnv(env, fn.Params)
+	var effs EffectSet
+	for _, stmt := range fn.Body {
+		effs = effs.Union(stmtEffects(stmt, child))
+	}
+	return effs
+}
+
+// inferFunExprEffects walks the body of an anonymous function and
+// returns the union of effect labels reachable from it. ExprBody and
+// BlockBody are handled symmetrically so `fun(x) => print(x)` and the
+// equivalent block produce the same set.
+func inferFunExprEffects(f *parser.FunExpr, env *Env) EffectSet {
+	if f == nil {
+		return EmptyEffects
+	}
+	child := funBodyEnv(env, f.Params)
+	var effs EffectSet
+	if f.ExprBody != nil {
+		effs = effs.Union(exprEffects(f.ExprBody, child))
+	}
+	for _, stmt := range f.BlockBody {
+		effs = effs.Union(stmtEffects(stmt, child))
+	}
+	return effs
+}
+
+func funBodyEnv(env *Env, params []*parser.Param) *Env {
 	child := NewEnv(env)
-	for _, p := range fn.Params {
+	for _, p := range params {
 		if p.Type != nil {
 			child.SetVar(p.Name, resolveTypeRef(p.Type, env), false)
 		} else {
 			child.SetVar(p.Name, AnyType{}, false)
 		}
 	}
-	var effs EffectSet
-	for _, stmt := range fn.Body {
-		effs = effs.Union(stmtEffects(stmt, child))
-	}
-	return effs
+	return child
 }
 
 // stmtEffects returns the effects produced by evaluating s in env. The
