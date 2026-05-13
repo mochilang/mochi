@@ -16,7 +16,7 @@ func EvalPureCall(call *parser.CallExpr, env *types.Env) (*parser.Literal, bool)
 		return nil, false
 	}
 	ft, ok := t.(types.FuncType)
-	if !ok || !ft.Pure {
+	if !ok || !ft.Pure() {
 		return nil, false
 	}
 	for _, arg := range call.Args {
@@ -105,7 +105,7 @@ func isConstCall(call *parser.CallExpr, env *types.Env) bool {
 		return false
 	}
 	ft, ok := t.(types.FuncType)
-	if !ok || !ft.Pure {
+	if !ok || !ft.Pure() {
 		return false
 	}
 	for _, a := range call.Args {

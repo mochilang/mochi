@@ -54,7 +54,7 @@ func (sub Subst) Apply(t Type) Type {
 		out := FuncType{
 			Params:     params,
 			Return:     sub.Apply(v.Return),
-			Pure:       v.Pure,
+			Effects:    v.Effects,
 			TypeParams: append([]string(nil), v.TypeParams...),
 		}
 		if v.Variadic != nil {

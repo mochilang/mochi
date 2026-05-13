@@ -1829,7 +1829,7 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 
 		if i.memoize {
 			if t, err := i.types.GetVar(c.Func); err == nil {
-				if ft, ok := t.(types.FuncType); ok && ft.Pure {
+				if ft, ok := t.(types.FuncType); ok && ft.Pure() {
 					key := argsKey(argVals)
 					if fnCache, ok := i.memo[c.Func]; ok {
 						if res, ok := fnCache[key]; ok {
@@ -1965,7 +1965,7 @@ func (i *Interpreter) shouldInline(name string, fn *parser.FunStmt) bool {
 		return false
 	}
 	if t, err := i.types.GetVar(name); err == nil {
-		if ft, ok := t.(types.FuncType); ok && ft.Pure {
+		if ft, ok := t.(types.FuncType); ok && ft.Pure() {
 			if i.callCounts[name] > 10 {
 				return true
 			}

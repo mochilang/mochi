@@ -2935,7 +2935,7 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 
 	// Fold calls to user-defined pure functions.
 	if t, err := fc.comp.env.GetVar(call.Func); err == nil {
-		if ft, ok := t.(types.FuncType); ok && ft.Pure {
+		if ft, ok := t.(types.FuncType); ok && ft.Pure() {
 			if val, ok2 := fc.evalPureFunc(call.Func, args); ok2 {
 				return val, true
 			}
