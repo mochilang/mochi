@@ -3929,8 +3929,8 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					if st.Import.Auto && env != nil {
 						env.SetVar(alias+".pi", types.FloatType{}, false)
 						env.SetVar(alias+".e", types.FloatType{}, false)
-						env.SetVar(alias+".sqrt", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}, Pure: true}, false)
-						env.SetVar(alias+".pow", types.FuncType{Params: []types.Type{types.FloatType{}, types.FloatType{}}, Return: types.FloatType{}, Pure: true}, false)
+						env.SetVar(alias+".sqrt", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}}, false)
+						env.SetVar(alias+".pow", types.FuncType{Params: []types.Type{types.FloatType{}, types.FloatType{}}, Return: types.FloatType{}}, false)
 					}
 				}
 			}

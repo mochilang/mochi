@@ -201,17 +201,25 @@ func (t *TypeVar) String() string { return t.Name }
 // FuncType is the type of a function value. Params is the fixed prefix
 // of parameter types. Variadic is the element type of the trailing
 // varargs sequence, or nil if the function is not variadic (MEP 4 P13).
-// Pure is the inferred purity flag (MEP 4 P7).
+// Effects is the inferred effect set (MEP-15 E1). The empty set means
+// the function is pure.
 type FuncType struct {
 	Params   []Type
 	Return   Type
-	Pure     bool
+	Effects  EffectSet
 	Variadic Type
 	// TypeParams lists the names of TypeVars quantified at this
 	// signature (MEP-12). A non-empty value means the function is
 	// generic: the call site freshens these names via Instantiate before
 	// unifying arguments. Non-generic functions leave the field nil.
 	TypeParams []string
+}
+
+// Pure reports whether the function is pure, that is, carries an empty
+// effect set. MEP-15 keeps this as a method for source-compatibility
+// with call sites that used the legacy `Pure bool` field.
+func (f FuncType) Pure() bool {
+	return f.Effects.IsEmpty()
 }
 
 func (f FuncType) String() string {
@@ -233,8 +241,8 @@ func (f FuncType) String() string {
 	if f.Return != nil && f.Return.String() != "unit" {
 		s += ": " + f.Return.String()
 	}
-	if f.Pure {
-		s += " [pure]"
+	if !f.Effects.IsEmpty() {
+		s += " ! " + f.Effects.String()
 	}
 	return s
 }

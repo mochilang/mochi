@@ -1921,8 +1921,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 				&RawStmt{Code: fmt.Sprintf("(define (%s_ToUpper s) (string-upcase s))", alias)},
 			)
 			if env != nil {
-				env.SetVar(alias+".TrimSpace", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}, Pure: true}, false)
-				env.SetVar(alias+".ToUpper", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}, Pure: true}, false)
+				env.SetVar(alias+".TrimSpace", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}}, false)
+				env.SetVar(alias+".ToUpper", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}}, false)
 			}
 		} else if st.Import.Lang != nil && *st.Import.Lang == "python" && st.Import.Path == "math" {
 			r.Stmts = append(r.Stmts,
@@ -1936,24 +1936,24 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			if env != nil {
 				env.SetVar(alias+".pi", types.FloatType{}, false)
 				env.SetVar(alias+".e", types.FloatType{}, false)
-				env.SetVar(alias+".sqrt", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}, Pure: true}, false)
-				env.SetVar(alias+".pow", types.FuncType{Params: []types.Type{types.FloatType{}, types.FloatType{}}, Return: types.FloatType{}, Pure: true}, false)
-				env.SetVar(alias+".sin", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}, Pure: true}, false)
-				env.SetVar(alias+".log", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}, Pure: true}, false)
+				env.SetVar(alias+".sqrt", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}}, false)
+				env.SetVar(alias+".pow", types.FuncType{Params: []types.Type{types.FloatType{}, types.FloatType{}}, Return: types.FloatType{}}, false)
+				env.SetVar(alias+".sin", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}}, false)
+				env.SetVar(alias+".log", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}}, false)
 			}
 		} else if st.Import.Lang != nil && *st.Import.Lang == "python" && st.Import.Path == "subprocess" {
 			r.Stmts = append(r.Stmts,
 				&RawStmt{Code: fmt.Sprintf("(define (%s_getoutput cmd) (with-output-to-string (lambda () (system cmd))))", alias)},
 			)
 			if env != nil {
-				env.SetVar(alias+".getoutput", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}, Pure: false}, false)
+				env.SetVar(alias+".getoutput", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}, Effects: types.NewEffectSet(types.EffectIO)}, false)
 			}
 		} else if st.Import.Lang != nil && *st.Import.Lang == "go" && st.Import.Path == "net" {
 			r.Stmts = append(r.Stmts,
 				&RawStmt{Code: fmt.Sprintf("(define (%s_LookupHost host) (list '() #f))", alias)},
 			)
 			if env != nil {
-				env.SetVar(alias+".LookupHost", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.ListType{Elem: types.AnyType{}}, Pure: false}, false)
+				env.SetVar(alias+".LookupHost", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.ListType{Elem: types.AnyType{}}, Effects: types.NewEffectSet(types.EffectNet)}, false)
 			}
 		} else if st.Import.Lang != nil && *st.Import.Lang == "go" && st.Import.Path == "os" {
 			r.Stmts = append(r.Stmts,
@@ -1962,8 +1962,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 				&RawStmt{Code: "  (for/list ([n (environment-variables-names (current-environment-variables))]) (let ([s (bytes->string/utf-8 n)]) (string-append s \"=\" (or (getenv s) \"\")))) )"},
 			)
 			if env != nil {
-				env.SetVar(alias+".Getenv", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}, Pure: true}, false)
-				env.SetVar(alias+".Environ", types.FuncType{Params: []types.Type{}, Return: types.ListType{Elem: types.StringType{}}, Pure: true}, false)
+				env.SetVar(alias+".Getenv", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}}, false)
+				env.SetVar(alias+".Environ", types.FuncType{Params: []types.Type{}, Return: types.ListType{Elem: types.StringType{}}}, false)
 			}
 		} else if st.Import.Auto && st.Import.Path == "mochi/runtime/ffi/go/testpkg" {
 			if alias == "" {
@@ -1978,12 +1978,12 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 				&RawStmt{Code: fmt.Sprintf("(define (%s_MD5Hex s) (let ([in (open-input-string (format \"~a\" s))]) (define b (md5-bytes in)) (close-input-port in) (bytes->hex-string b)))", alias)},
 			)
 			if env != nil {
-				env.SetVar(alias+".Add", types.FuncType{Params: []types.Type{types.IntType{}, types.IntType{}}, Return: types.IntType{}, Pure: true}, false)
+				env.SetVar(alias+".Add", types.FuncType{Params: []types.Type{types.IntType{}, types.IntType{}}, Return: types.IntType{}}, false)
 				env.SetVar(alias+".Pi", types.FloatType{}, false)
 				env.SetVar(alias+".Answer", types.IntType{}, false)
-				env.SetVar(alias+".FifteenPuzzleExample", types.FuncType{Params: []types.Type{}, Return: types.StringType{}, Pure: true}, false)
-				env.SetVar(alias+".ECDSAExample", types.FuncType{Params: []types.Type{}, Return: types.MapType{Key: types.StringType{}, Value: types.AnyType{}}, Pure: true}, false)
-				env.SetVar(alias+".MD5Hex", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}, Pure: true}, false)
+				env.SetVar(alias+".FifteenPuzzleExample", types.FuncType{Params: []types.Type{}, Return: types.StringType{}}, false)
+				env.SetVar(alias+".ECDSAExample", types.FuncType{Params: []types.Type{}, Return: types.MapType{Key: types.StringType{}, Value: types.AnyType{}}}, false)
+				env.SetVar(alias+".MD5Hex", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.StringType{}}, false)
 			}
 		}
 	}

@@ -10,12 +10,12 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("print", FuncType{
 		Params:   []Type{},
 		Return:   UnitType{},
+		Effects:  NewEffectSet(EffectIO),
 		Variadic: AnyType{},
 	}, false)
 	env.SetVar("len", FuncType{
 		Params: []Type{AnyType{}}, // loosely typed
 		Return: IntType{},
-		Pure:   true,
 	}, false)
 	// append<T>(xs: list<T>, x: T): list<T> - MEP-12.4. The element type
 	// is pinned by the first argument; the second must unify with it,
@@ -25,7 +25,6 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("append", FuncType{
 		Params:     []Type{ListType{Elem: appendT}, appendT},
 		Return:     ListType{Elem: appendT},
-		Pure:       true,
 		TypeParams: []string{"T"},
 	}, false)
 	// concat<T>(...xs: list<T>): list<T> - MEP-12.4. Every argument is
@@ -36,7 +35,6 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("concat", FuncType{
 		Params:     []Type{},
 		Return:     ListType{Elem: concatT},
-		Pure:       true,
 		Variadic:   ListType{Elem: concatT},
 		TypeParams: []string{"T"},
 	}, false)
@@ -48,13 +46,11 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("first", FuncType{
 		Params:     []Type{ListType{Elem: firstT}},
 		Return:     OptionType{Elem: firstT},
-		Pure:       true,
 		TypeParams: []string{"T"},
 	}, false)
 	env.SetVar("reverse", FuncType{
 		Params: []Type{AnyType{}},
 		Return: AnyType{},
-		Pure:   true,
 	}, false)
 	// distinct<T>(xs: list<T>): list<T> - MEP-12.4. Shape-preserving;
 	// the result list element type matches the input.
@@ -62,7 +58,6 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("distinct", FuncType{
 		Params:     []Type{ListType{Elem: distinctT}},
 		Return:     ListType{Elem: distinctT},
-		Pure:       true,
 		TypeParams: []string{"T"},
 	}, false)
 	// push<T>(xs: list<T>, x: T): list<T> - MEP-12.4 mirror of append.
@@ -70,7 +65,6 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("push", FuncType{
 		Params:     []Type{ListType{Elem: pushT}, pushT},
 		Return:     ListType{Elem: pushT},
-		Pure:       true,
 		TypeParams: []string{"T"},
 	}, false)
 	// keys<K,V>(m: map<K,V>): list<K> - MEP-12.4. Existing call-site
@@ -82,7 +76,6 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("keys", FuncType{
 		Params:     []Type{MapType{Key: keysK, Value: keysV}},
 		Return:     ListType{Elem: keysK},
-		Pure:       true,
 		TypeParams: []string{"K", "V"},
 	}, false)
 	valuesK := &TypeVar{Name: "K"}
@@ -90,7 +83,6 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("values", FuncType{
 		Params:     []Type{MapType{Key: valuesK, Value: valuesV}},
 		Return:     ListType{Elem: valuesV},
-		Pure:       true,
 		TypeParams: []string{"K", "V"},
 	}, false)
 	// collect<T>(xs: list<T>): list<T> - MEP-12.4. The legacy any
@@ -103,151 +95,127 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("collect", FuncType{
 		Params:     []Type{ListType{Elem: collectT}},
 		Return:     ListType{Elem: collectT},
-		Pure:       true,
 		TypeParams: []string{"T"},
 	}, false)
 	env.SetVar("range", FuncType{
 		Params:   []Type{},
 		Return:   ListType{Elem: IntType{}},
-		Pure:     true,
 		Variadic: IntType{},
 	}, false)
 	env.SetVar("now", FuncType{
-		Params: []Type{},
-		Return: Int64Type{},
+		Params:  []Type{},
+		Return:  Int64Type{},
+		Effects: NewEffectSet(EffectTime),
 	}, false)
 	env.SetVar("json", FuncType{
-		Params: []Type{AnyType{}},
-		Return: UnitType{},
+		Params:  []Type{AnyType{}},
+		Return:  UnitType{},
+		Effects: NewEffectSet(EffectIO),
 	}, false)
 	env.SetVar("to_json", FuncType{
 		Params: []Type{AnyType{}},
 		Return: StringType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("str", FuncType{
 		Params: []Type{AnyType{}},
 		Return: StringType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("parseIntStr", FuncType{
 		Params: []Type{StringType{}, IntType{}},
 		Return: IntType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("int", FuncType{
 		Params: []Type{AnyType{}},
 		Return: IntType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("upper", FuncType{
 		Params: []Type{StringType{}},
 		Return: StringType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("lower", FuncType{
 		Params: []Type{AnyType{}},
 		Return: StringType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("trim", FuncType{
 		Params: []Type{StringType{}},
 		Return: StringType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("contains", FuncType{
 		Params: []Type{StringType{}, StringType{}},
 		Return: BoolType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("split", FuncType{
 		Params: []Type{StringType{}, StringType{}},
 		Return: ListType{Elem: StringType{}},
-		Pure:   true,
 	}, false)
 	env.SetVar("join", FuncType{
 		Params: []Type{ListType{Elem: StringType{}}, StringType{}},
 		Return: StringType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("substring", FuncType{
 		Params: []Type{StringType{}, IntType{}, IntType{}},
 		Return: StringType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("padStart", FuncType{
 		Params: []Type{StringType{}, IntType{}, StringType{}},
 		Return: StringType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("substr", FuncType{
 		Params: []Type{StringType{}, IntType{}, IntType{}},
 		Return: StringType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("indexOf", FuncType{
 		Params: []Type{StringType{}, StringType{}},
 		Return: IntType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("repeat", FuncType{
 		Params: []Type{StringType{}, IntType{}},
 		Return: StringType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("sha256", FuncType{
 		Params: []Type{AnyType{}},
 		Return: ListType{Elem: IntType{}},
-		Pure:   true,
 	}, false)
 	env.SetVar("num", FuncType{
 		Params: []Type{AnyType{}},
 		Return: BigIntType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("denom", FuncType{
 		Params: []Type{AnyType{}},
 		Return: BigIntType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("input", FuncType{
-		Params: []Type{},
-		Return: StringType{},
+		Params:  []Type{},
+		Return:  StringType{},
+		Effects: NewEffectSet(EffectIO),
 	}, false)
 	env.SetVar("count", FuncType{
 		Params: []Type{AnyType{}},
 		Return: IntType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("exists", FuncType{
 		Params: []Type{AnyType{}},
 		Return: BoolType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("avg", FuncType{
 		Params: []Type{AnyType{}},
 		Return: FloatType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("abs", FuncType{
 		Params: []Type{AnyType{}},
 		Return: AnyType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("ceil", FuncType{
 		Params: []Type{AnyType{}},
 		Return: FloatType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("floor", FuncType{
 		Params: []Type{AnyType{}},
 		Return: FloatType{},
-		Pure:   true,
 	}, false)
 	env.SetVar("sum", FuncType{
 		Params: []Type{AnyType{}},
 		Return: IntType{},
-		Pure:   true,
 	}, false)
 	// min/max are generic over the list element type (MEP-12.4):
 	//     min<T>(xs: list<T>): T
@@ -260,20 +228,17 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("min", FuncType{
 		Params:     []Type{ListType{Elem: minT}},
 		Return:     minT,
-		Pure:       true,
 		TypeParams: []string{"T"},
 	}, false)
 	maxT := &TypeVar{Name: "T"}
 	env.SetVar("max", FuncType{
 		Params:     []Type{ListType{Elem: maxT}},
 		Return:     maxT,
-		Pure:       true,
 		TypeParams: []string{"T"},
 	}, false)
 	env.SetVar("round", FuncType{
 		Params: []Type{FloatType{}, IntType{}},
 		Return: FloatType{},
-		Pure:   true,
 	}, false)
 	// reduce is generic over the list element type and the accumulator
 	// type (MEP-12.4):
@@ -287,12 +252,12 @@ func Check(prog *parser.Program, env *Env) []error {
 			reduceB,
 		},
 		Return:     reduceB,
-		Pure:       true,
 		TypeParams: []string{"A", "B"},
 	}, false)
 	env.SetVar("eval", FuncType{
-		Params: []Type{StringType{}},
-		Return: AnyType{},
+		Params:  []Type{StringType{}},
+		Return:  AnyType{},
+		Effects: NewEffectSet(EffectMeta),
 	}, false)
 
 	var errs []error
@@ -353,7 +318,7 @@ func Check(prog *parser.Program, env *Env) []error {
 			env.SetVar(stmt.Fun.Name, FuncType{
 				Params:     params,
 				Return:     ret,
-				Pure:       pure,
+				Effects:    legacyEffectsFromPure(pure),
 				TypeParams: append([]string(nil), stmt.Fun.TypeParams...),
 			}, false)
 			env.SetFunc(stmt.Fun.Name, stmt.Fun)
@@ -437,7 +402,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 					ret = resolveTypeRef(blk.Intent.Return, env)
 				}
 				pure := isPureFunction(&parser.FunStmt{Params: blk.Intent.Params, Return: blk.Intent.Return, Body: blk.Intent.Body}, env)
-				methods[blk.Intent.Name] = Method{Decl: &parser.FunStmt{Params: blk.Intent.Params, Return: blk.Intent.Return, Body: blk.Intent.Body}, Type: FuncType{Params: params, Return: ret, Pure: pure}}
+				methods[blk.Intent.Name] = Method{Decl: &parser.FunStmt{Params: blk.Intent.Params, Return: blk.Intent.Return, Body: blk.Intent.Body}, Type: FuncType{Params: params, Return: ret, Effects: legacyEffectsFromPure(pure)}}
 			}
 		}
 		st := StructType{Name: s.Agent.Name, Fields: fields, Methods: methods}
@@ -939,7 +904,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 						}
 					}
 					pure := isPureFunction(&parser.FunStmt{Params: m.Method.Params, Return: m.Method.Return, Body: m.Method.Body}, methodEnv)
-					methods[m.Method.Name] = Method{Decl: m.Method, Type: FuncType{Params: params, Return: ret, Pure: pure}}
+					methods[m.Method.Name] = Method{Decl: m.Method, Type: FuncType{Params: params, Return: ret, Effects: legacyEffectsFromPure(pure)}}
 				}
 			}
 			st.Fields = fields
@@ -1017,7 +982,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 		env.SetVar(name, FuncType{
 			Params:     params,
 			Return:     ret,
-			Pure:       pure,
+			Effects:    legacyEffectsFromPure(pure),
 			TypeParams: append([]string(nil), s.Fun.TypeParams...),
 		}, false)
 		env.SetFunc(name, s.Fun)

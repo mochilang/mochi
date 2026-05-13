@@ -47,7 +47,7 @@ func isPureCall(call *parser.CallExpr, env *Env) bool {
 		return false
 	}
 	ft, ok := t.(FuncType)
-	if !ok || !ft.Pure {
+	if !ok || !ft.Pure() {
 		return false
 	}
 	for _, arg := range call.Args {
@@ -183,7 +183,7 @@ func firstImpurePostfix(p *parser.PostfixExpr, env *Env) (string, lexer.Position
 				name := p.Target.Selector.Root
 				t, err := env.GetVar(name)
 				if err == nil {
-					if ft, ok := t.(FuncType); ok && !ft.Pure {
+					if ft, ok := t.(FuncType); ok && !ft.Pure() {
 						return name, p.Target.Pos, true
 					}
 				}
@@ -197,7 +197,7 @@ func firstImpurePrimary(p *parser.Primary, env *Env) (string, lexer.Position, bo
 	if p.Call != nil {
 		t, err := env.GetVar(p.Call.Func)
 		if err == nil {
-			if ft, ok := t.(FuncType); ok && !ft.Pure {
+			if ft, ok := t.(FuncType); ok && !ft.Pure() {
 				return p.Call.Func, p.Pos, true
 			}
 		}
