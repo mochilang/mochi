@@ -2,6 +2,24 @@ package types
 
 import "mochi/parser"
 
+// parseDeclaredEffects converts the raw label list on FunStmt.Effects
+// into a typed EffectSet. Each unknown label produces a T064
+// diagnostic but the parse keeps going so the caller sees every bad
+// label in one pass.
+func parseDeclaredEffects(fn *parser.FunStmt) (EffectSet, []error) {
+	var set EffectSet
+	var errs []error
+	for _, name := range fn.Effects {
+		label, ok := ParseEffectLabel(name)
+		if !ok {
+			errs = append(errs, errUnknownEffectLabel(fn.Pos, name))
+			continue
+		}
+		set = set.Add(label)
+	}
+	return set, errs
+}
+
 // inferFunctionEffects walks fn's body and returns the union of
 // effect labels carried by each call and statement-level construct it
 // reaches. MEP-15 Stage 2: replaces the boolean legacyEffectsFromPure

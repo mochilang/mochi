@@ -209,6 +209,7 @@ type FunStmt struct {
 	TypeParams []string       `json:"type_params,omitempty" parser:"[ '<' @Ident { ',' @Ident } '>' ]"`
 	Params     []*Param       `json:"params,omitempty" parser:"'(' [ @@ { ',' @@ } ] ')'"`
 	Return     *TypeRef       `json:"return,omitempty" parser:"[ ':' @@ ]"`
+	Effects    []string       `json:"effects,omitempty" parser:"[ '!' @Ident { ',' @Ident } ]"`
 	Body       []*Statement   `json:"body,omitempty" parser:"'{' @@* '}'"`
 }
 
@@ -547,6 +548,7 @@ type FunExpr struct {
 	TypeParams []string       `json:"type_params,omitempty" parser:"'fun' [ '<' @Ident { ',' @Ident } '>' ]"`
 	Params     []*Param       `json:"params,omitempty" parser:"'(' [ @@ { ',' @@ } ] ')'"`
 	Return     *TypeRef       `json:"return,omitempty" parser:"[ ':' @@ ]"`
+	Effects    []string       `json:"effects,omitempty" parser:"[ '!' @Ident { ',' @Ident } ]"`
 	BlockBody  []*Statement   `json:"blockbody,omitempty" parser:"[ '{' @@* '}' ]"`
 	ExprBody   *Expr          `json:"exprbody,omitempty" parser:"[ '=>' @@ ]"`
 }

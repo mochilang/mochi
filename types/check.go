@@ -292,7 +292,10 @@ func Check(prog *parser.Program, env *Env) []error {
 	}
 
 	// First pass: gather all function declarations so methods defined in types
-	// can reference them regardless of order in the source file.
+	// can reference them regardless of order in the source file. MEP-15 Stage
+	// 2b: a non-empty Effects annotation on FunStmt seeds the signature with
+	// the declared upper bound; T064 fires here for unknown labels.
+	declared := map[string]EffectSet{}
 	for _, stmt := range prog.Statements {
 		if stmt.Fun != nil {
 			sigEnv := env
@@ -314,10 +317,17 @@ func Check(prog *parser.Program, env *Env) []error {
 			if stmt.Fun.Return != nil {
 				ret = resolveTypeRef(stmt.Fun.Return, sigEnv)
 			}
+			seed := EmptyEffects
+			if len(stmt.Fun.Effects) > 0 {
+				d, labelErrs := parseDeclaredEffects(stmt.Fun)
+				errs = append(errs, labelErrs...)
+				declared[stmt.Fun.Name] = d
+				seed = d
+			}
 			env.SetVar(stmt.Fun.Name, FuncType{
 				Params:     params,
 				Return:     ret,
-				Effects:    EmptyEffects,
+				Effects:    seed,
 				TypeParams: append([]string(nil), stmt.Fun.TypeParams...),
 			}, false)
 			env.SetFunc(stmt.Fun.Name, stmt.Fun)
@@ -328,11 +338,17 @@ func Check(prog *parser.Program, env *Env) []error {
 	// fixpoint over the top-level function signatures. The bitset
 	// lattice has at most 1<<effectMax states; each function climbs
 	// monotonically so the loop terminates after at most effectMax
-	// sweeps of the dependency graph.
+	// sweeps of the dependency graph. Annotated functions are pinned
+	// to their declared set so callers see the published contract;
+	// inference still runs against the same env to populate the
+	// downstream check below.
 	for {
 		changed := false
 		for _, stmt := range prog.Statements {
 			if stmt.Fun == nil {
+				continue
+			}
+			if _, pinned := declared[stmt.Fun.Name]; pinned {
 				continue
 			}
 			t, err := env.GetVar(stmt.Fun.Name)
@@ -352,6 +368,23 @@ func Check(prog *parser.Program, env *Env) []error {
 		}
 		if !changed {
 			break
+		}
+	}
+
+	// MEP-15 Stage 2b: T065 declared-exceeds-inferred. For each
+	// annotated function, re-run the walker against the finalized env
+	// and reject any inferred label that escapes the declared set.
+	for _, stmt := range prog.Statements {
+		if stmt.Fun == nil {
+			continue
+		}
+		d, ok := declared[stmt.Fun.Name]
+		if !ok {
+			continue
+		}
+		inferred := inferFunctionEffects(stmt.Fun, env)
+		if !inferred.IsSubset(d) {
+			errs = append(errs, errEffectsExceedDeclared(stmt.Fun.Pos, stmt.Fun.Name, d, inferred))
 		}
 	}
 
@@ -1008,10 +1041,20 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 		if s.Fun.Return != nil {
 			ret = resolveTypeRef(s.Fun.Return, sigEnv)
 		}
+		// Top-level FunStmts already had their FuncType registered by
+		// the Check pre-pass, where T064 and T065 diagnostics fired.
+		// Nested FunStmts run the inference walker here and inherit
+		// the declared set (if any) silently; their effects propagate
+		// to outer callers through the next inference pass.
+		effects := inferFunctionEffects(s.Fun, env)
+		if len(s.Fun.Effects) > 0 {
+			declared, _ := parseDeclaredEffects(s.Fun)
+			effects = declared
+		}
 		env.SetVar(name, FuncType{
 			Params:     params,
 			Return:     ret,
-			Effects:    inferFunctionEffects(s.Fun, env),
+			Effects:    effects,
 			TypeParams: append([]string(nil), s.Fun.TypeParams...),
 		}, false)
 		env.SetFunc(name, s.Fun)

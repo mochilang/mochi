@@ -1,0 +1,10 @@
+// MEP-15 stage 2b: an annotation may be wider than the inferred set,
+// since it is an upper bound on observable effects.
+fun maybe_chatter(name: string) ! io, time {
+  print(name)
+}
+
+fun snapshot(): int ! io, time {
+  print(1)
+  return now()
+}

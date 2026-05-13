@@ -1,4 +1,4 @@
-error[P052]: tests/parser/errors/missing_paren.mochi:1:23: unexpected token ":" (expected ")" (":" TypeRef)? "{" Statement* "}")
+error[P052]: tests/parser/errors/missing_paren.mochi:1:23: unexpected token ":" (expected ")" (":" TypeRef)? ("!" <ident> ("," <ident>)*)? "{" Statement* "}")
   --> tests/parser/errors/missing_paren.mochi:1:23
 
   1 | fun add(a: int, b: int: int {

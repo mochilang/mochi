@@ -82,6 +82,8 @@ var Errors = map[string]diagnostic.Template{
 	"T061": {Code: "T061", Message: "safe-call `?.%s` requires the wrapped type to be a struct, got %s", Help: "The element side of the option must expose a field named `%s`."},
 	"T062": {Code: "T062", Message: "safe-index `?[ ]` requires an option-typed receiver, got %s", Help: "`a?[k]` is only defined when `a : list<T>?` or `a : map<K, V>?`. Drop the `?` for a plain index access."},
 	"T063": {Code: "T063", Message: "safe-index `?[ ]` requires the wrapped type to be a list or map, got %s", Help: "Only `list<T>` and `map<K, V>` support indexed access after `?[`."},
+	"T064": {Code: "T064", Message: "unknown effect label `%s`", Help: "Effect annotations may only mention the closed label set: io, fs, net, time, meta."},
+	"T065": {Code: "T065", Message: "function `%s` declares effects %s but its body produces %s", Help: "Either add the missing label(s) to the `!` annotation, or remove the call that produces the extra effect."},
 }
 
 // --- Wrapper Functions ---
@@ -295,6 +297,14 @@ func errHavingBoolean(pos lexer.Position) error {
 
 func errImpurePredicate(pos lexer.Position, name, predicate string) error {
 	return Errors["T044"].New(pos, name, predicate)
+}
+
+func errUnknownEffectLabel(pos lexer.Position, label string) error {
+	return Errors["T064"].New(pos, label)
+}
+
+func errEffectsExceedDeclared(pos lexer.Position, name string, declared, inferred EffectSet) error {
+	return Errors["T065"].New(pos, name, declared.String(), inferred.String())
 }
 
 func errLenOperand(pos lexer.Position, typ Type) error {
