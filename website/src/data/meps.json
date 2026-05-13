@@ -1,0 +1,138 @@
+[
+  {
+    "number": 0,
+    "title": "Index of Mochi Enhancement Proposals",
+    "status": "Active",
+    "type": "Process",
+    "description": "Index of Mochi Enhancement Proposals.",
+    "slug": "/docs/mep/mep-0000"
+  },
+  {
+    "number": 1,
+    "title": "Lexer",
+    "status": "Informational",
+    "type": "Informational",
+    "description": "Mochi's token classes, reserved words, lexical errors, and conformance corpus, specified end-to-end with no corner cases.",
+    "slug": "/docs/mep/mep-0001"
+  },
+  {
+    "number": 2,
+    "title": "Grammar",
+    "status": "Informational",
+    "type": "Informational",
+    "description": "Mochi's PEG grammar in full, with the design principles and conformance obligations that fix the language.",
+    "slug": "/docs/mep/mep-0002"
+  },
+  {
+    "number": 3,
+    "title": "Abstract Syntax Tree",
+    "status": "Informational",
+    "type": "Informational",
+    "description": "Mochi's AST as a closed family of tagged unions, the encoding that makes parse output unambiguous, and the soundness invariants every consumer can rely on.",
+    "slug": "/docs/mep/mep-0003"
+  },
+  {
+    "number": 4,
+    "title": "Type System",
+    "status": "Informational",
+    "type": "Informational",
+    "description": "The kinds, the comparisons, the numeric tower, and the places where Mochi's type system does not yet do what it claims.",
+    "slug": "/docs/mep/mep-0004"
+  },
+  {
+    "number": 5,
+    "title": "Type Inference",
+    "status": "Standards Track",
+    "type": "Standards Track",
+    "description": "Strict static algebraic type inference. Principal types, no implicit any, no null.",
+    "slug": "/docs/mep/mep-0005"
+  },
+  {
+    "number": 6,
+    "title": "Type Checker",
+    "status": "Informational",
+    "type": "Informational",
+    "description": "Entry point, builtin environment, statement walk, and the diagnostic catalogue.",
+    "slug": "/docs/mep/mep-0006"
+  },
+  {
+    "number": 7,
+    "title": "Soundness",
+    "status": "Active",
+    "type": "Process",
+    "description": "Progress, preservation, and the test obligations that prove them.",
+    "slug": "/docs/mep/mep-0007"
+  },
+  {
+    "number": 8,
+    "title": "Test Strategy",
+    "status": "Active",
+    "type": "Process",
+    "description": "The five test layers, the golden harness, and the TAPL chapter mapping.",
+    "slug": "/docs/mep/mep-0008"
+  },
+  {
+    "number": 9,
+    "title": "Fixture Catalogue",
+    "status": "Informational",
+    "type": "Informational",
+    "description": "Inventory of parser and type fixtures with a property coverage matrix.",
+    "slug": "/docs/mep/mep-0009"
+  },
+  {
+    "number": 10,
+    "title": "Known Gaps and Weakness Review",
+    "status": "Informational",
+    "type": "Informational",
+    "description": "Catalogue of soundness gaps, surprising behavior, and tracked follow-ups.",
+    "slug": "/docs/mep/mep-0010"
+  },
+  {
+    "number": 11,
+    "title": "Subtyping and Variance",
+    "status": "Active",
+    "type": "Standards Track",
+    "description": "A separate subtype predicate, the variance lattice, and the closure of any.",
+    "slug": "/docs/mep/mep-0011"
+  },
+  {
+    "number": 12,
+    "title": "Parametric Polymorphism",
+    "status": "Active",
+    "type": "Standards Track",
+    "description": "System-F-lite call-site inference, fresh type variables, and the end of any-builtins.",
+    "slug": "/docs/mep/mep-0012"
+  },
+  {
+    "number": 13,
+    "title": "Algebraic Data Types and Match",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Struct and union typing rules, match exhaustiveness, irredundancy, and recursive types.",
+    "slug": "/docs/mep/mep-0013"
+  },
+  {
+    "number": 14,
+    "title": "Query Algebra",
+    "status": "Informational",
+    "type": "Informational",
+    "description": "LINQ-shaped query expressions, clause-by-clause type rules, and aggregate semantics.",
+    "slug": "/docs/mep/mep-0014"
+  },
+  {
+    "number": 15,
+    "title": "Effects",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "A labeled effect system over function types. Pure by default, inferred from the body, annotatable at module boundaries, enforced where purity matters.",
+    "slug": "/docs/mep/mep-0015"
+  },
+  {
+    "number": 16,
+    "title": "Null Safety",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Total option discipline with no force unwrap, flow narrowing, safe-call and coalesce operators, and a no-panic guarantee.",
+    "slug": "/docs/mep/mep-0016"
+  }
+]

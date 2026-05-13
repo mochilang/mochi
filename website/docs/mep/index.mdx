@@ -1,0 +1,92 @@
+---
+title: Mochi Enhancement Proposals
+slug: /mep
+sidebar_position: 0
+sidebar_label: Index
+description: Auto-generated list of every Mochi Enhancement Proposal (MEP), grouped by type and sorted by number.
+---
+
+import meps from '@site/src/data/meps.json';
+
+# Mochi Enhancement Proposals
+
+A MEP is a design document for the Mochi language, type system, and toolchain. The full process is described in [MEP 0](/docs/mep/mep-0000). The list below is generated from the frontmatter of every `mep-NNNN.md` file in the docs tree, so new proposals appear here automatically once `npm run gen:meps` (or any `npm start` / `npm run build`) regenerates the manifest.
+
+export const statusColor = (s) => {
+  const v = (s || '').toLowerCase();
+  if (v === 'final' || v === 'accepted') return '#1f883d';
+  if (v === 'active') return '#0969da';
+  if (v === 'draft') return '#9a6700';
+  if (v === 'rejected' || v === 'withdrawn') return '#cf222e';
+  return '#6e7781';
+};
+
+export const StatusPill = ({ children }) => (
+  <span
+    style={{
+      display: 'inline-block',
+      padding: '0.1rem 0.5rem',
+      borderRadius: '999px',
+      fontSize: '0.75rem',
+      fontWeight: 600,
+      color: '#fff',
+      background: statusColor(children),
+      verticalAlign: 'middle',
+    }}
+  >
+    {children}
+  </span>
+);
+
+export const MEPGroup = ({ heading, entries }) => (
+  <>
+    <h2>{heading}</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style={{ width: '4rem' }}>MEP</th>
+          <th>Title</th>
+          <th style={{ width: '6rem' }}>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {entries.map((e) => (
+          <tr key={e.number}>
+            <td><code>{String(e.number).padStart(4, '0')}</code></td>
+            <td>
+              <a href={e.slug}><strong>{e.title}</strong></a>
+              {e.description ? <div style={{ fontSize: '0.85rem', opacity: 0.75 }}>{e.description}</div> : null}
+            </td>
+            <td><StatusPill>{e.status || 'Unknown'}</StatusPill></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </>
+);
+
+export const groupOrder = ['Process', 'Informational', 'Standards Track'];
+
+export const grouped = (() => {
+  const byType = new Map();
+  for (const e of meps) {
+    const key = e.type || 'Other';
+    if (!byType.has(key)) byType.set(key, []);
+    byType.get(key).push(e);
+  }
+  const ordered = [];
+  for (const k of groupOrder) {
+    if (byType.has(k)) {
+      ordered.push([k, byType.get(k)]);
+      byType.delete(k);
+    }
+  }
+  for (const [k, v] of byType) ordered.push([k, v]);
+  return ordered;
+})();
+
+<MEPGroup heading="All MEPs" entries={meps} />
+
+{grouped.map(([type, entries]) => (
+  <MEPGroup key={type} heading={type} entries={entries} />
+))}
