@@ -80,19 +80,6 @@ func NewEffectSet(labels ...EffectLabel) EffectSet {
 // so call sites read clearly.
 var EmptyEffects = EffectSet(0)
 
-// legacyEffectsFromPure bridges Stage 1 from the previous boolean
-// purity flag to the typed effect set. `pure==true` maps to the
-// canonical pure set; `pure==false` maps to a non-empty sentinel so
-// existing call-site checks (T044, MEP-16 N5) still trip on the same
-// functions they did before. Stage 2 replaces every caller with a
-// real body-walked inference and removes this helper.
-func legacyEffectsFromPure(pure bool) EffectSet {
-	if pure {
-		return EmptyEffects
-	}
-	return NewEffectSet(EffectIO)
-}
-
 // Has reports whether l is in the set.
 func (s EffectSet) Has(l EffectLabel) bool {
 	return s&(1<<l) != 0

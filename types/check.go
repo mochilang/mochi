@@ -314,14 +314,44 @@ func Check(prog *parser.Program, env *Env) []error {
 			if stmt.Fun.Return != nil {
 				ret = resolveTypeRef(stmt.Fun.Return, sigEnv)
 			}
-			pure := isPureFunction(stmt.Fun, env)
 			env.SetVar(stmt.Fun.Name, FuncType{
 				Params:     params,
 				Return:     ret,
-				Effects:    legacyEffectsFromPure(pure),
+				Effects:    EmptyEffects,
 				TypeParams: append([]string(nil), stmt.Fun.TypeParams...),
 			}, false)
 			env.SetFunc(stmt.Fun.Name, stmt.Fun)
+		}
+	}
+
+	// MEP-15 Stage 2: iterate body-walked effect inference to a
+	// fixpoint over the top-level function signatures. The bitset
+	// lattice has at most 1<<effectMax states; each function climbs
+	// monotonically so the loop terminates after at most effectMax
+	// sweeps of the dependency graph.
+	for {
+		changed := false
+		for _, stmt := range prog.Statements {
+			if stmt.Fun == nil {
+				continue
+			}
+			t, err := env.GetVar(stmt.Fun.Name)
+			if err != nil {
+				continue
+			}
+			ft, ok := t.(FuncType)
+			if !ok {
+				continue
+			}
+			newEffs := inferFunctionEffects(stmt.Fun, env)
+			if newEffs != ft.Effects {
+				ft.Effects = newEffs
+				env.SetVar(stmt.Fun.Name, ft, false)
+				changed = true
+			}
+		}
+		if !changed {
+			break
 		}
 	}
 
@@ -401,8 +431,8 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				if blk.Intent.Return != nil {
 					ret = resolveTypeRef(blk.Intent.Return, env)
 				}
-				pure := isPureFunction(&parser.FunStmt{Params: blk.Intent.Params, Return: blk.Intent.Return, Body: blk.Intent.Body}, env)
-				methods[blk.Intent.Name] = Method{Decl: &parser.FunStmt{Params: blk.Intent.Params, Return: blk.Intent.Return, Body: blk.Intent.Body}, Type: FuncType{Params: params, Return: ret, Effects: legacyEffectsFromPure(pure)}}
+				intentFn := &parser.FunStmt{Params: blk.Intent.Params, Return: blk.Intent.Return, Body: blk.Intent.Body}
+				methods[blk.Intent.Name] = Method{Decl: intentFn, Type: FuncType{Params: params, Return: ret, Effects: inferFunctionEffects(intentFn, env)}}
 			}
 		}
 		st := StructType{Name: s.Agent.Name, Fields: fields, Methods: methods}
@@ -903,8 +933,8 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 							return err
 						}
 					}
-					pure := isPureFunction(&parser.FunStmt{Params: m.Method.Params, Return: m.Method.Return, Body: m.Method.Body}, methodEnv)
-					methods[m.Method.Name] = Method{Decl: m.Method, Type: FuncType{Params: params, Return: ret, Effects: legacyEffectsFromPure(pure)}}
+					methodFn := &parser.FunStmt{Params: m.Method.Params, Return: m.Method.Return, Body: m.Method.Body}
+					methods[m.Method.Name] = Method{Decl: m.Method, Type: FuncType{Params: params, Return: ret, Effects: inferFunctionEffects(methodFn, methodEnv)}}
 				}
 			}
 			st.Fields = fields
@@ -978,11 +1008,10 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 		if s.Fun.Return != nil {
 			ret = resolveTypeRef(s.Fun.Return, sigEnv)
 		}
-		pure := isPureFunction(s.Fun, env)
 		env.SetVar(name, FuncType{
 			Params:     params,
 			Return:     ret,
-			Effects:    legacyEffectsFromPure(pure),
+			Effects:    inferFunctionEffects(s.Fun, env),
 			TypeParams: append([]string(nil), s.Fun.TypeParams...),
 		}, false)
 		env.SetFunc(name, s.Fun)
