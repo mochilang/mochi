@@ -1557,8 +1557,8 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		if _, ok := wt.(AnyType); !ok && !unify(wt, BoolType{}, nil) {
 			return nil, errWhereBoolean(q.Where.Pos)
 		}
-		if name, pos, ok := firstImpureCall(q.Where, child); ok {
-			return nil, errImpurePredicate(pos, name, "where")
+		if name, pos, effects, ok := firstImpureCall(q.Where, child); ok {
+			return nil, errImpurePredicate(pos, name, "where", effects)
 		}
 	}
 
@@ -1626,8 +1626,8 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 			if _, ok := ht.(AnyType); !ok && !unify(ht, BoolType{}, nil) {
 				return nil, errHavingBoolean(q.Group.Having.Pos)
 			}
-			if name, pos, ok := firstImpureCall(q.Group.Having, armEnv); ok {
-				return nil, errImpurePredicate(pos, name, "having")
+			if name, pos, effects, ok := firstImpureCall(q.Group.Having, armEnv); ok {
+				return nil, errImpurePredicate(pos, name, "having", effects)
 			}
 		}
 	}

@@ -156,26 +156,26 @@ func isPureFunction(fn *parser.FunStmt, env *Env) bool {
 	return true
 }
 
-// firstImpureCall walks e and returns the name and position of the first
-// call to a function whose Pure flag is false. Returns found=false if all
-// calls in the expression are to pure functions.
-func firstImpureCall(e *parser.Expr, env *Env) (name string, pos lexer.Position, found bool) {
+// firstImpureCall walks e and returns the name, position, and effect
+// set of the first call whose callee carries a non-empty effect set.
+// Returns found=false if every reachable call is pure.
+func firstImpureCall(e *parser.Expr, env *Env) (name string, pos lexer.Position, effects EffectSet, found bool) {
 	if e == nil {
 		return
 	}
 	return firstImpureUnary(e.Binary.Left, env)
 }
 
-func firstImpureUnary(u *parser.Unary, env *Env) (string, lexer.Position, bool) {
-	if n, p, ok := firstImpurePostfix(u.Value, env); ok {
-		return n, p, true
+func firstImpureUnary(u *parser.Unary, env *Env) (string, lexer.Position, EffectSet, bool) {
+	if n, p, eff, ok := firstImpurePostfix(u.Value, env); ok {
+		return n, p, eff, true
 	}
-	return "", lexer.Position{}, false
+	return "", lexer.Position{}, EmptyEffects, false
 }
 
-func firstImpurePostfix(p *parser.PostfixExpr, env *Env) (string, lexer.Position, bool) {
-	if n, pos, ok := firstImpurePrimary(p.Target, env); ok {
-		return n, pos, true
+func firstImpurePostfix(p *parser.PostfixExpr, env *Env) (string, lexer.Position, EffectSet, bool) {
+	if n, pos, eff, ok := firstImpurePrimary(p.Target, env); ok {
+		return n, pos, eff, true
 	}
 	for _, op := range p.Ops {
 		if op.Call != nil {
@@ -184,33 +184,33 @@ func firstImpurePostfix(p *parser.PostfixExpr, env *Env) (string, lexer.Position
 				t, err := env.GetVar(name)
 				if err == nil {
 					if ft, ok := t.(FuncType); ok && !ft.Pure() {
-						return name, p.Target.Pos, true
+						return name, p.Target.Pos, ft.Effects, true
 					}
 				}
 			}
 		}
 	}
-	return "", lexer.Position{}, false
+	return "", lexer.Position{}, EmptyEffects, false
 }
 
-func firstImpurePrimary(p *parser.Primary, env *Env) (string, lexer.Position, bool) {
+func firstImpurePrimary(p *parser.Primary, env *Env) (string, lexer.Position, EffectSet, bool) {
 	if p.Call != nil {
 		t, err := env.GetVar(p.Call.Func)
 		if err == nil {
 			if ft, ok := t.(FuncType); ok && !ft.Pure() {
-				return p.Call.Func, p.Pos, true
+				return p.Call.Func, p.Pos, ft.Effects, true
 			}
 		}
 		for _, arg := range p.Call.Args {
-			if n, pos, ok := firstImpureCall(arg, env); ok {
-				return n, pos, true
+			if n, pos, eff, ok := firstImpureCall(arg, env); ok {
+				return n, pos, eff, true
 			}
 		}
 	}
 	if p.Group != nil {
 		return firstImpureCall(p.Group, env)
 	}
-	return "", lexer.Position{}, false
+	return "", lexer.Position{}, EmptyEffects, false
 }
 
 // statementHasImpureCall reports whether s contains any call to a
@@ -271,6 +271,6 @@ func exprHasImpureCall(e *parser.Expr, env *Env) bool {
 	if e == nil {
 		return false
 	}
-	_, _, ok := firstImpureCall(e, env)
+	_, _, _, ok := firstImpureCall(e, env)
 	return ok
 }
