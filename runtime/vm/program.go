@@ -8,13 +8,21 @@ import (
 )
 
 type Instr struct {
-	Op   Op
-	A    int
-	B    int
-	C    int
-	D    int
-	Val  Value // inline constant for OpConst
-	Line int   // source line for disassembly
+	Op Op
+	// Quick is MEP-18 Phase C's bytecode rewriting slot. When non-zero
+	// it overrides Op in the dispatch loop, letting MEP-19 quickening
+	// patch a generic opcode (OpIndex) to a tag-specialized variant
+	// (OpIndex_List) without touching the original Op. A site that
+	// observes a polymorphic tag deopts by clearing Quick back to 0
+	// and bumping the per-Function quickMisses counter; after
+	// siteMaxMisses the site is bypassed for the lifetime of the run.
+	Quick uint8
+	A     int
+	B     int
+	C     int
+	D     int
+	Val   Value // inline constant for OpConst
+	Line  int   // source line for disassembly
 }
 
 type Function struct {
@@ -24,6 +32,17 @@ type Function struct {
 	Name       string
 	TypeParams []string
 	Line       int // source line of function definition
+
+	// callSites is MEP-19's per-instruction monomorphic call cache.
+	// nil until the first OpCallV in this function executes; sized to
+	// len(Code). Slots are also nil until first observation.
+	callSites []*callSite `json:"-"`
+
+	// quickMisses is MEP-19's per-instruction polymorphism counter for
+	// quickened sites (OpIndex, etc). nil until the first quickenable
+	// op runs; sized to len(Code). When a slot reaches siteMaxMisses
+	// the site is bypassed and Quick is never re-set.
+	quickMisses []uint8 `json:"-"`
 }
 
 type Program struct {

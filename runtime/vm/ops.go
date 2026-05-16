@@ -107,6 +107,15 @@ const (
 	OpGoCall
 	OpGoAutoCall
 	OpPyCall
+
+	// MEP-19 quickened opcodes. These never appear in compiled
+	// bytecode directly; the dispatch loop reads Instr.Quick and
+	// substitutes one of these in place of the generic op after the
+	// site has observed a stable runtime tag. A tag mismatch deopts
+	// the site (Quick=0) and bumps the per-Function miss counter.
+	OpIndex_List
+	OpIndex_Map
+	OpIndex_Str
 )
 
 func (op Op) String() string {
@@ -293,6 +302,12 @@ func (op Op) String() string {
 		return "GoAutoCall"
 	case OpPyCall:
 		return "PyCall"
+	case OpIndex_List:
+		return "Index_List"
+	case OpIndex_Map:
+		return "Index_Map"
+	case OpIndex_Str:
+		return "Index_Str"
 	default:
 		return "?"
 	}
