@@ -680,7 +680,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: string(runes[idx])}
 			default:
-				fr.regs[ins.A] = Value{Tag: ValueNull}
+				// MEP-5 P7: indexing a non-list/map/string is a
+				// type error caught at check time (T-Index/T026).
+				// If we reach here something upstream is broken.
+				// Report it instead of papering over with null.
+				return Value{}, m.newError(fmt.Errorf("cannot index value of this kind"), trace, ins.Line)
 			}
 		case OpSlice:
 			src := fr.regs[ins.B]
