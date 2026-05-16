@@ -262,5 +262,13 @@
     "type": "Standards Track",
     "description": "Third of three competing JIT strategy specs for vm2. Two compilation tiers stacked on the interpreter: tier 1 is the MEP-30 copy-and-patch baseline JIT; tier 2 is a typed-SSA optimizing method JIT that consumes type feedback from MEP-27 inline caches, performs profile-guided inlining and escape analysis, and emits native code with linear-scan register allocation. Bidirectional on-stack replacement (OSR) moves frames between interpreter, tier 1, and tier 2 mid-execution; speculative tier-2 code deopts back to tier 1 on guard failure. Lineage traces to HotSpot C1/C2, JSC's four-tier strategy (LLInt, Baseline, DFG, FTL), and V8's Ignition / Sparkplug / Maglev / Turbofan pipeline. This MEP specifies tier transitions, the optimizing IR, the deopt protocol, the inlining heuristic, and predicts a 4-8x speedup with the broadest workload coverage of the three options.",
     "slug": "/docs/mep/mep-0032"
+  },
+  {
+    "number": 33,
+    "title": "MEP-30 Template JIT - Measured Results",
+    "status": "Informational",
+    "type": "Informational",
+    "description": "First measured-results report for the MEP-30 template / copy-and-patch baseline JIT. A reference prototype lives under runtime/jit/tmpljit and implements a 6-opcode register VM plus a copy-and-patch JIT that lowers each opcode to a fixed AArch64 instruction sequence and stitches them into an mmap'd executable page. On a canonical fillsum workload at N=1024 on Apple M4, the JIT runs at 418 ns/op vs 7177 ns/op for the same-shape interpreter, a 17.2x speedup, beating LuaJIT (532 ns/op) and matching hand-written Go (499 ns/op) within 17%. At N=10000 the JIT edges out Go native (3883 vs 5025 ns/op) because the JIT loop carries no Go preemption check. CPython 3.14 lands at 23899 ns/op, ~57x slower than the JIT. Results validate the MEP-30 design and recommend proceeding to a full vm2-opcode prototype.",
+    "slug": "/docs/mep/mep-0033"
   }
 ]

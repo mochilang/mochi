@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"mochi/runtime/jit"
+	jit "mochi/archived/jit_legacy"
 )
 
 func main() {

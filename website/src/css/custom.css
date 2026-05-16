@@ -857,3 +857,62 @@ div[class^="announcementBar"] {
   color: var(--mochi-text-primary);
   font-weight: 600;
 }
+
+/* =========================================================================
+   Mobile: navbar drawer + tables
+   ========================================================================= */
+
+/* The navbar uses a translucent bg + backdrop-filter for the desktop blur
+   effect, but the mobile slide-out drawer (`.navbar-sidebar`) inherits the
+   same custom property and ends up see-through / unreadable on phones.
+   Force an opaque surface and drop the blur so the hamburger menu is
+   actually usable. */
+.navbar-sidebar,
+.navbar-sidebar__backdrop {
+  background: var(--mochi-bg-base);
+}
+
+.navbar-sidebar {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-right: 1px solid var(--mochi-border);
+}
+
+.navbar-sidebar__backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.navbar-sidebar__brand {
+  background: var(--mochi-bg-base);
+  border-bottom: 1px solid var(--mochi-border);
+  box-shadow: none;
+}
+
+.navbar-sidebar__items {
+  background: var(--mochi-bg-base);
+}
+
+.navbar-sidebar .menu__link {
+  color: var(--mochi-text-primary);
+}
+
+.navbar__toggle {
+  color: var(--mochi-text-primary);
+}
+
+/* MEP listing table (and any wide markdown table): on phones, allow
+   horizontal scroll instead of squashing 3 columns into a 360px viewport,
+   and tighten the cell padding so the title column has room to breathe. */
+@media (max-width: 640px) {
+  .markdown table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: 0.88rem;
+  }
+
+  .markdown table th,
+  .markdown table td {
+    padding: 0.5rem 0.55rem;
+  }
+}
