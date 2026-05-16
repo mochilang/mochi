@@ -10,9 +10,9 @@ n = {{ .N }}
 
 start = time.perf_counter()
 result = fib(n)
-duration = (time.perf_counter() - start) * 1000
+duration = (time.perf_counter() - start) * 1e6
 
 print(json.dumps({
-    "duration_ms": duration,
+    "duration_us": duration,
     "output": result,
 }))

@@ -16,9 +16,9 @@ b = [[i * j for j in range(size)] for i in range(size)]
 start = time.perf_counter()
 for _ in range(repeat):
     last = matmul(a, b)
-duration = (time.perf_counter() - start) * 1000
+duration = (time.perf_counter() - start) * 1e6
 
 print(json.dumps({
-    "duration_ms": duration,
+    "duration_us": duration,
     "output": last[0][0],
 }))
