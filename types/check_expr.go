@@ -1045,11 +1045,17 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 	paramTypes := make([]Type, len(f.Params))
 	for i, p := range f.Params {
 		if p.Type == nil {
-			// Default missing parameter types to `any` rather than
-			// failing. This allows algorithms that omit explicit
-			// parameter annotations to type-check, falling back to
-			// dynamic behaviour.
-			paramTypes[i] = AnyType{}
+			// MEP-5 P17: when the call-site supplies an expected
+			// `fun(τ₁,…): τR` shape, route each missing parameter
+			// type through that signature instead of defaulting to
+			// `any`. This is the bidirectional rule for unannotated
+			// lambdas. The fallback to `any` only fires when there
+			// is no enclosing expected type at all.
+			if expectedFunc != nil && i < len(expectedFunc.Params) {
+				paramTypes[i] = expectedFunc.Params[i]
+			} else {
+				paramTypes[i] = AnyType{}
+			}
 		} else {
 			paramTypes[i] = resolveTypeRef(p.Type, env)
 		}

@@ -1,0 +1,6 @@
+// MEP-5 P17: when a lambda lacks parameter annotations but the call site
+// supplies an expected `fun(τ₁,…): τR` signature, the parameter types
+// flow from the expected signature into the lambda body.
+fun apply(f: fun(int): int, x: int): int { return f(x) }
+let r: int = apply(fun(x) => x + 1, 5)
+expect r == 6
