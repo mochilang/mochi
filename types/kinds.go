@@ -68,6 +68,20 @@ type OptionType struct {
 
 func (t OptionType) String() string { return fmt.Sprintf("option[%s]", t.Elem.String()) }
 
+// ResultType is the second designated parameterised kind from MEP-4 /
+// MEP-5 §Option and Result. It carries an Ok type (the value produced
+// on success) and an Err type (the value produced on failure). The
+// surface syntax is `result<T, E>`. Consumers must destructure with
+// `match { Ok(v) => ..., Err(e) => ... }` before using the inner value.
+type ResultType struct {
+	Ok  Type
+	Err Type
+}
+
+func (t ResultType) String() string {
+	return fmt.Sprintf("result[%s, %s]", t.Ok.String(), t.Err.String())
+}
+
 type GroupType struct {
 	Key  Type
 	Elem Type

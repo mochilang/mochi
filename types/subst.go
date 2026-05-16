@@ -44,6 +44,8 @@ func (sub Subst) Apply(t Type) Type {
 		return MapType{Key: sub.Apply(v.Key), Value: sub.Apply(v.Value)}
 	case OptionType:
 		return OptionType{Elem: sub.Apply(v.Elem)}
+	case ResultType:
+		return ResultType{Ok: sub.Apply(v.Ok), Err: sub.Apply(v.Err)}
 	case GroupType:
 		return GroupType{Key: sub.Apply(v.Key), Elem: sub.Apply(v.Elem)}
 	case FuncType:
@@ -132,6 +134,8 @@ func occurs(name string, t Type, sub Subst) bool {
 		return occurs(name, v.Key, sub) || occurs(name, v.Value, sub)
 	case OptionType:
 		return occurs(name, v.Elem, sub)
+	case ResultType:
+		return occurs(name, v.Ok, sub) || occurs(name, v.Err, sub)
 	case GroupType:
 		return occurs(name, v.Key, sub) || occurs(name, v.Elem, sub)
 	case FuncType:
@@ -237,6 +241,15 @@ func unifyInto(a, b Type, sub Subst) error {
 			return mismatch(a, b)
 		}
 		return unifyInto(av.Elem, bv.Elem, sub)
+	case ResultType:
+		bv, ok := b.(ResultType)
+		if !ok {
+			return mismatch(a, b)
+		}
+		if err := unifyInto(av.Ok, bv.Ok, sub); err != nil {
+			return err
+		}
+		return unifyInto(av.Err, bv.Err, sub)
 	case GroupType:
 		bv, ok := b.(GroupType)
 		if !ok {

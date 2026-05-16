@@ -11,6 +11,8 @@ func ContainsAny(t Type) bool {
 		return ContainsAny(tt.Key) || ContainsAny(tt.Value)
 	case OptionType:
 		return ContainsAny(tt.Elem)
+	case ResultType:
+		return ContainsAny(tt.Ok) || ContainsAny(tt.Err)
 	case GroupType:
 		return ContainsAny(tt.Key) || ContainsAny(tt.Elem)
 	case StructType:

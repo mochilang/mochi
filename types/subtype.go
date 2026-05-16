@@ -83,6 +83,16 @@ func Subtype(s, t Type) bool {
 		}
 		return Subtype(sv.Elem, tv.Elem)
 
+	case ResultType:
+		// MEP-11 §T-Result-Cov. result[S, E] <: result[T, F] when
+		// S <: T and E <: F. Both axes are covariant because the
+		// constructor only produces inhabitants of the two arms.
+		tv, ok := t.(ResultType)
+		if !ok {
+			return false
+		}
+		return Subtype(sv.Ok, tv.Ok) && Subtype(sv.Err, tv.Err)
+
 	case StructType:
 		// MEP-11 §T-Struct-Nominal. Struct typing is nominal: two
 		// structs are related iff they share a declared name. The
@@ -189,6 +199,10 @@ func assignableAt(src, dst Type, elementContext bool) bool {
 		if dv, ok := dst.(OptionType); ok {
 			return assignableAt(sv.Elem, dv.Elem, true)
 		}
+	case ResultType:
+		if dv, ok := dst.(ResultType); ok {
+			return assignableAt(sv.Ok, dv.Ok, true) && assignableAt(sv.Err, dv.Err, true)
+		}
 	}
 	// MEP-16 R1: a non-option `src` flows into an option `dst` when it
 	// would flow into the wrapped element. The wrap is silent at the
@@ -246,6 +260,9 @@ func equalKinds(a, b Type) bool {
 	case OptionType:
 		bv, ok := b.(OptionType)
 		return ok && equalKinds(av.Elem, bv.Elem)
+	case ResultType:
+		bv, ok := b.(ResultType)
+		return ok && equalKinds(av.Ok, bv.Ok) && equalKinds(av.Err, bv.Err)
 	case GroupType:
 		bv, ok := b.(GroupType)
 		return ok && equalKinds(av.Key, bv.Key) && equalKinds(av.Elem, bv.Elem)

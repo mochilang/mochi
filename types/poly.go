@@ -97,6 +97,9 @@ func collectFreeVars(t Type, sub Subst, seen map[string]struct{}) {
 		collectFreeVars(v.Value, sub, seen)
 	case OptionType:
 		collectFreeVars(v.Elem, sub, seen)
+	case ResultType:
+		collectFreeVars(v.Ok, sub, seen)
+		collectFreeVars(v.Err, sub, seen)
 	case GroupType:
 		collectFreeVars(v.Key, sub, seen)
 		collectFreeVars(v.Elem, sub, seen)

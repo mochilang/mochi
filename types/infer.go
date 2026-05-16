@@ -810,6 +810,12 @@ func equalTypes(a, b Type) bool {
 			return false
 		}
 		return equalTypes(at.Elem, bt.Elem)
+	case ResultType:
+		bt, ok := b.(ResultType)
+		if !ok {
+			return false
+		}
+		return equalTypes(at.Ok, bt.Ok) && equalTypes(at.Err, bt.Err)
 	case GroupType:
 		bt, ok := b.(GroupType)
 		if !ok {

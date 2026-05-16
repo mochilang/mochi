@@ -80,6 +80,25 @@ func unify(a, b Type, subst Subst) bool {
 			return false
 		}
 
+	case ResultType:
+		switch bt := b.(type) {
+		case ResultType:
+			return unify(at.Ok, bt.Ok, subst) && unify(at.Err, bt.Err, subst)
+		case AnyType:
+			return true
+		case *TypeVar:
+			if subst != nil {
+				if val, ok := subst[bt.Name]; ok {
+					return unify(at, val, subst)
+				}
+				subst[bt.Name] = at
+				return true
+			}
+			return false
+		default:
+			return false
+		}
+
 	case GroupType:
 		switch bt := b.(type) {
 		case GroupType:
@@ -237,6 +256,11 @@ func unify(a, b Type, subst Subst) bool {
 		case OptionType:
 			if ot, ok := a.(OptionType); ok {
 				return unify(ot.Elem, bt.Elem, subst)
+			}
+			return false
+		case ResultType:
+			if rt, ok := a.(ResultType); ok {
+				return unify(rt.Ok, bt.Ok, subst) && unify(rt.Err, bt.Err, subst)
 			}
 			return false
 		default:
