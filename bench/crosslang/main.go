@@ -25,8 +25,18 @@ import (
 )
 
 type program struct {
-	name string // bench/template/math/<name> subdir
-	ns   []int  // sizes to run
+	category string // bench/template/<category>/<name> subdir; "" defaults to "math"
+	name     string // bench/template/<category>/<name> subdir
+	ns       []int  // sizes to run
+}
+
+// cat returns the effective category, defaulting math entries to "math"
+// so existing rows do not need to be edited when new categories land.
+func (p program) cat() string {
+	if p.category == "" {
+		return "math"
+	}
+	return p.category
 }
 
 // Per-program sizes. fact_rec and mul_loop cap at sizes whose result
@@ -38,12 +48,16 @@ type program struct {
 // ranking of vm2 vs CPython vs Lua. The remaining sizes already span
 // 10x–100x dynamic range, which is plenty for a comparison sweep.
 var programs = []program{
-	{"fact_rec", []int{10, 13}},
-	{"fib_iter", []int{10, 20}},
-	{"fib_rec", []int{15, 20}},
-	{"mul_loop", []int{10, 13}},
-	{"prime_count", []int{50, 100}},
-	{"sum_loop", []int{1000, 10000}},
+	{name: "fact_rec", ns: []int{10, 13}},
+	{name: "fib_iter", ns: []int{10, 20}},
+	{name: "fib_rec", ns: []int{15, 20}},
+	{name: "mul_loop", ns: []int{10, 13}},
+	{name: "prime_count", ns: []int{50, 100}},
+	{name: "sum_loop", ns: []int{1000, 10000}},
+	// MEP-24 §2 strings subsystem. Concat loop exercises the
+	// allocating string-concat path: N appends per inner call,
+	// repeated `repeats` times by each language harness.
+	{category: "strings", name: "concat_loop", ns: []int{10, 30}},
 }
 
 type result struct {
@@ -84,9 +98,9 @@ func main() {
 	var results []result
 	for _, p := range programs {
 		for _, n := range p.ns {
-			results = append(results, runVM2(vm2Bin, p.name, n))
-			results = append(results, runNative(repoRoot, tmp, p.name, n, "py", "python3"))
-			results = append(results, runNative(repoRoot, tmp, p.name, n, "lua", "lua"))
+			results = append(results, runVM2(vm2Bin, p.cat(), p.name, n))
+			results = append(results, runNative(repoRoot, tmp, p.cat(), p.name, n, "py", "python3"))
+			results = append(results, runNative(repoRoot, tmp, p.cat(), p.name, n, "lua", "lua"))
 		}
 	}
 
@@ -124,29 +138,29 @@ func main() {
 	}
 }
 
-func runVM2(bin, prog string, n int) result {
-	progName := "math_" + prog
+func runVM2(bin, cat, prog string, n int) result {
+	progName := cat + "_" + prog
 	cmd := exec.Command(bin, "-program", progName, "-n", fmt.Sprintf("%d", n))
-	return runCmd(prog, n, "vm2", cmd)
+	return runCmd(cat, prog, n, "vm2", cmd)
 }
 
-func runNative(repoRoot, tmp, prog string, n int, suffix, interpreter string) result {
-	srcPath := filepath.Join(repoRoot, "bench", "template", "math", prog, prog+"."+suffix)
+func runNative(repoRoot, tmp, cat, prog string, n int, suffix, interpreter string) result {
+	srcPath := filepath.Join(repoRoot, "bench", "template", cat, prog, prog+"."+suffix)
 	src, err := os.ReadFile(srcPath)
 	if err != nil {
-		return result{Program: prog, N: n, Lang: suffix, Err: err.Error()}
+		return result{Program: cat + "/" + prog, N: n, Lang: suffix, Err: err.Error()}
 	}
 	rendered := strings.ReplaceAll(string(src), "{{ .N }}", fmt.Sprintf("%d", n))
-	out := filepath.Join(tmp, fmt.Sprintf("%s_%d.%s", prog, n, suffix))
+	out := filepath.Join(tmp, fmt.Sprintf("%s_%s_%d.%s", cat, prog, n, suffix))
 	if err := os.WriteFile(out, []byte(rendered), 0644); err != nil {
-		return result{Program: prog, N: n, Lang: suffix, Err: err.Error()}
+		return result{Program: cat + "/" + prog, N: n, Lang: suffix, Err: err.Error()}
 	}
 	cmd := exec.Command(interpreter, out)
-	return runCmd(prog, n, suffix, cmd)
+	return runCmd(cat, prog, n, suffix, cmd)
 }
 
-func runCmd(prog string, n int, lang string, cmd *exec.Cmd) result {
-	r := result{Program: prog, N: n, Lang: lang}
+func runCmd(cat, prog string, n int, lang string, cmd *exec.Cmd) result {
+	r := result{Program: cat + "/" + prog, N: n, Lang: lang}
 	var stdout, stderr strings.Builder
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
