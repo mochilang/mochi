@@ -248,6 +248,53 @@ func TestT066_ReservedForPurePositions(t *testing.T) {
 	}
 }
 
+// TestHOFCallbackEffects verifies MEP-15 E5: a call to a HOF that
+// receives a function-typed argument inherits the argument's effects at
+// the call site. Three scenarios:
+//   - literal FunExpr with !io body → call site inherits io
+//   - named function with !io effects → call site inherits io
+//   - literal FunExpr with pure body → call site stays pure
+func TestHOFCallbackEffects(t *testing.T) {
+	const src = `
+fun do_print(x: int): int { print(x); return x }
+fun apply(f: fun(int): int, x: int): int { return f(x) }
+fun hof_literal_io(): int   { return apply(fun(x: int): int { print(x); return x }, 5) }
+fun hof_named_io(): int     { return apply(do_print, 5) }
+fun hof_literal_pure(): int { return apply(fun(x: int): int { return x * 2 }, 5) }
+`
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("Check: %v", errs)
+	}
+	cases := []struct {
+		fn   string
+		want types.EffectSet
+	}{
+		{"hof_literal_io", types.NewEffectSet(types.EffectIO)},
+		{"hof_named_io", types.NewEffectSet(types.EffectIO)},
+		{"hof_literal_pure", types.EmptyEffects},
+	}
+	for _, tc := range cases {
+		t.Run(tc.fn, func(t *testing.T) {
+			v, err := env.GetVar(tc.fn)
+			if err != nil {
+				t.Fatalf("GetVar(%q): %v", tc.fn, err)
+			}
+			ft, ok := v.(types.FuncType)
+			if !ok {
+				t.Fatalf("expected FuncType for %q, got %T", tc.fn, v)
+			}
+			if ft.Effects != tc.want {
+				t.Fatalf("%s: got %s, want %s", tc.fn, ft.Effects, tc.want)
+			}
+		})
+	}
+}
+
 func contains(s, sub string) bool {
 	return len(s) >= len(sub) && indexOf(s, sub) >= 0
 }
