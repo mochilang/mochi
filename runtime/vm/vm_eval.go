@@ -175,7 +175,15 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		}
 		ins := fr.fn.Code[fr.ip]
 		fr.ip++
-		switch ins.Op {
+		// MEP-18 Phase C: a per-Instr Quick byte lets MEP-19 rewrite
+		// a generic opcode to a tag-specialized variant in place. Zero
+		// (the default) means "no rewrite, dispatch on Op". Mismatches
+		// in the specialized handler clear Quick and bump quickMisses.
+		op := ins.Op
+		if q := ins.Quick; q != 0 {
+			op = Op(q)
+		}
+		switch op {
 		case OpConst:
 			fr.regs[ins.A] = ins.Val
 		case OpMove:
@@ -684,6 +692,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				// returning a null at OOB would inject a value of
 				// the wrong static type. Use `xs?[i]` for the safe
 				// Option-returning variant.
+				tryQuicken(fr.fn, fr.ip-1, OpIndex_List)
 				idx := idxVal.Int
 				if idx < 0 {
 					idx += len(src.List)
@@ -709,6 +718,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				default:
 					key = valueToString(idxVal)
 				}
+				tryQuicken(fr.fn, fr.ip-1, OpIndex_Map)
 				if v, ok := src.Map[key]; ok {
 					fr.regs[ins.A] = v
 				} else {
@@ -728,6 +738,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				// OOB or on a non-int index would inject a value of
 				// the wrong static type. Slicing (`s[a:b]`) is the
 				// shape that recovers when the range is unknown.
+				tryQuicken(fr.fn, fr.ip-1, OpIndex_Str)
 				if idxVal.Tag != ValueInt {
 					return Value{}, m.newError(fmt.Errorf("string index must be int"), trace, ins.Line)
 				}
@@ -747,6 +758,74 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				// Report it instead of papering over with null.
 				return Value{}, m.newError(fmt.Errorf("cannot index value of this kind"), trace, ins.Line)
 			}
+		case OpIndex_List:
+			// MEP-19 quickened OpIndex: container observed as list.
+			// Tag mismatch deopts to the generic handler.
+			src := fr.regs[ins.B]
+			if src.Tag != ValueList {
+				deoptQuicken(fr.fn, fr.ip-1)
+				fr.ip--
+				continue
+			}
+			idx := fr.regs[ins.C].Int
+			if idx < 0 {
+				idx += len(src.List)
+			}
+			if idx < 0 || idx >= len(src.List) {
+				return Value{}, m.newError(fmt.Errorf("list index out of range: %d (len %d)", fr.regs[ins.C].Int, len(src.List)), trace, ins.Line)
+			}
+			fr.regs[ins.A] = src.List[idx]
+		case OpIndex_Map:
+			src := fr.regs[ins.B]
+			if src.Tag != ValueMap {
+				deoptQuicken(fr.fn, fr.ip-1)
+				fr.ip--
+				continue
+			}
+			idxVal := fr.regs[ins.C]
+			var key string
+			switch idxVal.Tag {
+			case ValueStr:
+				key = idxVal.Str
+			case ValueInt:
+				key = fmt.Sprintf("%d", idxVal.Int)
+			default:
+				key = valueToString(idxVal)
+			}
+			if v, ok := src.Map[key]; ok {
+				fr.regs[ins.A] = v
+			} else {
+				found := Value{Tag: ValueNull}
+				for _, vv := range src.Map {
+					if vv.Tag == ValueMap {
+						if val, ok := vv.Map[key]; ok {
+							found = val
+							break
+						}
+					}
+				}
+				fr.regs[ins.A] = found
+			}
+		case OpIndex_Str:
+			src := fr.regs[ins.B]
+			if src.Tag != ValueStr {
+				deoptQuicken(fr.fn, fr.ip-1)
+				fr.ip--
+				continue
+			}
+			idxVal := fr.regs[ins.C]
+			if idxVal.Tag != ValueInt {
+				return Value{}, m.newError(fmt.Errorf("string index must be int"), trace, ins.Line)
+			}
+			runes := []rune(src.Str)
+			idx := idxVal.Int
+			if idx < 0 {
+				idx += len(runes)
+			}
+			if idx < 0 || idx >= len(runes) {
+				return Value{}, m.newError(fmt.Errorf("string index out of range: %d (len %d)", idxVal.Int, len(runes)), trace, ins.Line)
+			}
+			fr.regs[ins.A] = Value{Tag: ValueStr, Str: string(runes[idx])}
 		case OpSlice:
 			src := fr.regs[ins.B]
 			startVal := fr.regs[ins.C]

@@ -39,3 +39,31 @@ func siteFor(fn *Function, ip int) *callSite {
 	}
 	return cs
 }
+
+// tryQuicken patches Instr.Quick to q at the given ip, unless the
+// site has already been bypassed for polymorphism. Bypassed sites
+// stay generic for the rest of the run.
+func tryQuicken(fn *Function, ip int, q Op) {
+	if fn.quickMisses == nil {
+		fn.quickMisses = make([]uint8, len(fn.Code))
+	}
+	if fn.quickMisses[ip] >= siteMaxMisses {
+		return
+	}
+	fn.Code[ip].Quick = uint8(q)
+}
+
+// deoptQuicken is called when a quickened handler observes a tag
+// that does not match its specialization. It clears Quick so the
+// next dispatch goes through the generic op, and bumps the miss
+// counter. After siteMaxMisses misses tryQuicken will refuse to
+// re-quicken the slot for the lifetime of the run.
+func deoptQuicken(fn *Function, ip int) {
+	if fn.quickMisses == nil {
+		fn.quickMisses = make([]uint8, len(fn.Code))
+	}
+	fn.Code[ip].Quick = 0
+	if fn.quickMisses[ip] < 255 {
+		fn.quickMisses[ip]++
+	}
+}
