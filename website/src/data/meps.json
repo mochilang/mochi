@@ -134,5 +134,53 @@
     "type": "Standards Track",
     "description": "Total option discipline with no force unwrap, flow narrowing, safe-call and coalesce operators, and a no-panic guarantee.",
     "slug": "/docs/mep/mep-0016"
+  },
+  {
+    "number": 17,
+    "title": "VM Performance Methodology and Baseline",
+    "status": "Draft",
+    "type": "Process",
+    "description": "How Mochi measures, reports, and gates VM performance changes, with a reference benchmark suite and a regression budget.",
+    "slug": "/docs/mep/mep-0017"
+  },
+  {
+    "number": 18,
+    "title": "Bytecode Dispatch in a Go-Hosted VM",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "What dispatch techniques work for the Mochi VM under the constraints of the Go runtime, with a concrete plan for the next 18 months.",
+    "slug": "/docs/mep/mep-0018"
+  },
+  {
+    "number": 19,
+    "title": "Adaptive Specialization and Inline Caches",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Quickening generic opcodes into typed variants on first observation, plus monomorphic and polymorphic inline caches for the few remaining dynamic call sites.",
+    "slug": "/docs/mep/mep-0019"
+  },
+  {
+    "number": 20,
+    "title": "Value Representation and Allocation Discipline",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "A tighter Value struct, sync.Pool for frames and slabs, and an escape audit on the hot path of the Mochi VM.",
+    "slug": "/docs/mep/mep-0020"
+  },
+  {
+    "number": 21,
+    "title": "VM Conformance and Differential Testing",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Beyond golden files, fuzz the bytecode compiler, differential-test interpreter against constant folding, and prove laws via property tests so MEP-18 through MEP-22 cannot regress correctness.",
+    "slug": "/docs/mep/mep-0021"
+  },
+  {
+    "number": 22,
+    "title": "Baseline JIT via Copy-and-Patch (Deferred)",
+    "status": "Deferred",
+    "type": "Informational",
+    "description": "A non-optimizing baseline JIT built on copy-and-patch compilation, planned as the long-term tier above the interpreter once MEP-18 through MEP-21 are exhausted.",
+    "slug": "/docs/mep/mep-0022"
   }
 ]
