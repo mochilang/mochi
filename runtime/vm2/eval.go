@@ -188,6 +188,33 @@ func (vm *VM) Run() (Cell, error) {
 			consts = fr.Fn.Consts
 			ip = fr.IP
 			regs[retReg] = ret
+		case OpLoadStrK:
+			regs[ins.A] = vm.newString(fr.Fn.StrConsts[ins.B])
+		case OpConcatStr:
+			a := vm.Objects[regs[ins.B].Ptr()].(*vmString)
+			b := vm.Objects[regs[ins.C].Ptr()].(*vmString)
+			out := make([]byte, len(a.bytes)+len(b.bytes))
+			copy(out, a.bytes)
+			copy(out[len(a.bytes):], b.bytes)
+			regs[ins.A] = vm.newString(out)
+		case OpLenStr:
+			s := vm.Objects[regs[ins.B].Ptr()].(*vmString)
+			regs[ins.A] = CInt(int64(len(s.bytes)))
+		case OpIndexStr:
+			s := vm.Objects[regs[ins.B].Ptr()].(*vmString)
+			i := regs[ins.C].Int()
+			if i < 0 || i >= int64(len(s.bytes)) {
+				fr.IP = ip
+				return ret, errors.New("vm2: string index out of range")
+			}
+			regs[ins.A] = vm.newString([]byte{s.bytes[i]})
+		case OpEqualStr:
+			a := vm.Objects[regs[ins.B].Ptr()].(*vmString)
+			b := vm.Objects[regs[ins.C].Ptr()].(*vmString)
+			regs[ins.A] = CBool(strEqual(a, b))
+		case OpHashStr:
+			s := vm.Objects[regs[ins.B].Ptr()].(*vmString)
+			regs[ins.A] = CInt(int64(strHash(s)))
 		case OpHalt:
 			fr.IP = ip
 			return ret, errors.New("vm2: OpHalt reached")

@@ -111,6 +111,44 @@ func (b *Builder) EqualI64(x, y ValueID) ValueID {
 	return b.emit(Inst{Op: OpEqualI64, Type: TBool, Args: []ValueID{x, y}})
 }
 
+// ConstStr returns a TStr value for the literal s, interning it into
+// the function's string pool so repeated identical literals share an
+// Aux index (and ultimately a single Function.StrConsts entry).
+func (b *Builder) ConstStr(s string) ValueID {
+	idx := -1
+	for i, t := range b.fn.Strings {
+		if t == s {
+			idx = i
+			break
+		}
+	}
+	if idx < 0 {
+		idx = len(b.fn.Strings)
+		b.fn.Strings = append(b.fn.Strings, s)
+	}
+	return b.emit(Inst{Op: OpConstStr, Type: TStr, Aux: int64(idx)})
+}
+
+func (b *Builder) ConcatStr(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpConcatStr, Type: TStr, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) LenStr(x ValueID) ValueID {
+	return b.emit(Inst{Op: OpLenStr, Type: TI64, Args: []ValueID{x}})
+}
+
+func (b *Builder) IndexStr(x, i ValueID) ValueID {
+	return b.emit(Inst{Op: OpIndexStr, Type: TStr, Args: []ValueID{x, i}})
+}
+
+func (b *Builder) EqualStr(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpEqualStr, Type: TBool, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) HashStr(x ValueID) ValueID {
+	return b.emit(Inst{Op: OpHashStr, Type: TI64, Args: []ValueID{x}})
+}
+
 // Call invokes function at funcIdx with the given args. retType is the
 // caller-supplied result type; the verifier later checks it against
 // the callee's signature once Module is assembled.

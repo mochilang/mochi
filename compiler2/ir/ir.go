@@ -17,6 +17,7 @@ const (
 	TF64
 	TBool
 	TPtr
+	TStr
 )
 
 func (t Type) String() string {
@@ -31,6 +32,8 @@ func (t Type) String() string {
 		return "bool"
 	case TPtr:
 		return "ptr"
+	case TStr:
+		return "str"
 	}
 	return "?"
 }
@@ -60,6 +63,17 @@ const (
 	OpLessI64
 	OpLessEqI64
 	OpEqualI64
+
+	// String subsystem (MEP-24 §2). OpConstStr's Aux is the index into
+	// the function-local string constant pool the builder maintains; the
+	// emitter merges those into Function.StrConsts. OpIndexStr may trap
+	// on OOB so it is not treated as pure by DCE.
+	OpConstStr  // Aux = idx into Function.Strings
+	OpConcatStr // Args[0] ++ Args[1]
+	OpLenStr    // len(Args[0])
+	OpIndexStr  // Args[0][Args[1]]
+	OpEqualStr  // Args[0] == Args[1]
+	OpHashStr   // hash(Args[0])
 
 	// Call: Aux = function index, Args = arg values. May have effects;
 	// optimizers must treat as opaque.
@@ -108,6 +122,10 @@ type Function struct {
 	Entry      BlockID
 	Values     []Inst // indexed by ValueID
 	ValueBlock []BlockID
+	// Strings is the per-function string pool referenced by OpConstStr.
+	// Aux on an OpConstStr is an index into this slice. The pool is
+	// deduplicated by the builder; emit forwards it to vm2.Function.StrConsts.
+	Strings []string
 }
 
 // NumValues returns the count of SSA values defined in the function.

@@ -35,6 +35,7 @@ func All() []Program {
 		{Name: "math_fib_iter", Build: BuildFibIter, Expect: ExpectFibIter},
 		{Name: "math_fib_rec", Build: BuildFibRec, Expect: ExpectFibRec},
 		{Name: "math_prime_count", Build: BuildPrimeCount, Expect: ExpectPrimeCount},
+		{Name: "strings_concat_loop", Build: BuildStringsConcatLoop, Expect: ExpectStringsConcatLoop},
 	}
 }
 

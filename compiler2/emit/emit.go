@@ -243,6 +243,30 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 				emit(vm2.Instr{Op: vm2.OpEqualI64, A: dst,
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpConstStr:
+				// Aux indexes into f.Strings; copy bytes verbatim into
+				// the vm2 string-const pool. The pool is forwarded onto
+				// the emitted vm2.Function below, no dedup beyond what
+				// the builder already did per function.
+				emit(vm2.Instr{Op: vm2.OpLoadStrK, A: dst, B: int32(ins.Aux)})
+			case ir.OpConcatStr:
+				emit(vm2.Instr{Op: vm2.OpConcatStr, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpLenStr:
+				emit(vm2.Instr{Op: vm2.OpLenStr, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpIndexStr:
+				emit(vm2.Instr{Op: vm2.OpIndexStr, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpEqualStr:
+				emit(vm2.Instr{Op: vm2.OpEqualStr, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpHashStr:
+				emit(vm2.Instr{Op: vm2.OpHashStr, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
 			case ir.OpCall:
 				for i, a := range ins.Args {
 					emit(vm2.Instr{Op: vm2.OpMove,
@@ -359,12 +383,18 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		}
 	}
 
+	strConsts := make([][]byte, len(f.Strings))
+	for i, s := range f.Strings {
+		strConsts[i] = []byte(s)
+	}
+
 	return &vm2.Function{
 		Name:      f.Name,
 		NumParams: np,
 		NumRegs:   numRegs,
 		Code:      code,
 		Consts:    consts,
+		StrConsts: strConsts,
 	}, nil
 }
 

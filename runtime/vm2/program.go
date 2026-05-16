@@ -17,6 +17,12 @@ type Function struct {
 	NumRegs   int
 	Code      []Instr
 	Consts    []Cell
+	// StrConsts holds the raw bytes of string-typed constants. The
+	// emit-time index in StrConsts is the operand B value of an
+	// OpLoadStrK; the dispatch loop materializes a fresh vmString on
+	// first use via newString. Carrying bytes rather than pre-allocated
+	// *vmStrings keeps Function trivially serializable later.
+	StrConsts [][]byte
 }
 
 // Program is the unit of execution. Main names the entry function.
