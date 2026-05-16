@@ -14,9 +14,9 @@ last = 0
 start = time.perf_counter()
 for _ in range(repeat):
     last = fib(n)
-duration = (time.perf_counter() - start) * 1000
+duration = (time.perf_counter() - start) * 1e6
 
 print(json.dumps({
-    "duration_ms": duration,
+    "duration_us": duration,
     "output": last,
 }))

@@ -99,6 +99,20 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 		// templates = append(templates, Template{Lang: "mochi_cython", Path: path, Suffix: suffix, Command: nil})
 		templates = append(templates, Template{Lang: "mochi_ts", Path: path, Suffix: suffix, Command: []string{"deno", "run", "--allow-env", "--quiet"}})
 
+		// MEP-23 cross-language baseline: hand-written sibling
+		// implementations, not transpiled from Mochi. The .py and .lua
+		// files live next to the .mochi template; we only register them
+		// if they actually exist on disk.
+		dir := strings.TrimSuffix(path, "/"+name+".mochi")
+		nativePy := dir + "/" + name + ".py"
+		if _, err := templatesFS.ReadFile(nativePy); err == nil {
+			templates = append(templates, Template{Lang: "native_py", Path: nativePy, Suffix: ".py", Command: []string{"python3"}})
+		}
+		nativeLua := dir + "/" + name + ".lua"
+		if _, err := templatesFS.ReadFile(nativeLua); err == nil {
+			templates = append(templates, Template{Lang: "native_lua", Path: nativeLua, Suffix: ".lua", Command: []string{"lua"}})
+		}
+
 		benches = append(benches, generateBenchmarks(tempDir, category, name, cfg, templates)...)
 		return nil
 	})
@@ -346,6 +360,10 @@ func report(results []Result) {
 				//      langName = "Python (Cython)"
 			case "mochi_ts":
 				langName = "Typescript"
+			case "native_py":
+				langName = "Python (native)"
+			case "native_lua":
+				langName = "Lua (native)"
 			}
 
 			status := "✓"
@@ -647,6 +665,10 @@ func exportMarkdown(results []Result) error {
 				//      langName = "Python (Cython)"
 			case "mochi_ts":
 				langName = "Typescript"
+			case "native_py":
+				langName = "Python (native)"
+			case "native_lua":
+				langName = "Lua (native)"
 			}
 			b.WriteString(fmt.Sprintf("| %s | %.0f | %s |\n", langName, r.DurationUs, plus))
 		}
