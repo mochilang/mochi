@@ -238,5 +238,29 @@
     "type": "Informational",
     "description": "Head-to-head benchmark of the three dispatch strategies specified in MEP-26 (Migration), MEP-27 (Inline Cache) and MEP-28 (AOT codegen) on canonical workloads for two containers, lists (fill_sum) and strings (concat_loop). Sibling prototype packages under runtime/vm2/listopt/ and runtime/vm2/stropt/ implement each strategy in isolation. Lists, AOT wins narrowly, IC regresses substantially. Strings, all three rope-aware strategies trounce the today-shape baseline because the algorithmic O(N²) to O(N) win swamps the dispatch cost. The two containers point at opposite engineering choices, and the result inverts the design-stage MEP predictions in both cases.",
     "slug": "/docs/mep/mep-0029"
+  },
+  {
+    "number": 30,
+    "title": "VM2 JIT Option A - Template / Copy-and-Patch Baseline JIT",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "First of three competing JIT strategy specs for vm2. Each opcode handler is pre-compiled once into a position-independent native snippet, stored as a byte slice keyed by (opcode, shape-tuple), then concatenated and patched into an mmap'd executable buffer at function load. No IR, no register allocator, no inliner. The result is a non-optimizing baseline JIT in the lineage of V8 Sparkplug, JSC's Baseline JIT, and CPython 3.13's copy-and-patch JIT. This MEP specifies the snippet harvesting pipeline, the patcher ABI, the interpreter-compatible frame layout that makes OSR trivial, the deopt-free guard model, the distribution story (single Go binary, no cgo), and predicts a 2-4x speedup over the vm2 interpreter on fill_sum-class workloads.",
+    "slug": "/docs/mep/mep-0030"
+  },
+  {
+    "number": 31,
+    "title": "VM2 JIT Option B - Tracing JIT over Typed Loops",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Second of three competing JIT strategy specs for vm2. The interpreter counts iterations of every back-edge; when a counter trips, the runtime begins recording a linear trace of typed Cell operations starting from that back-edge. The trace is closed when control returns to the same back-edge, optimized in straight-line form (constant folding, allocation removal, guard hoisting), and compiled to native via golang-asm. Subsequent iterations execute the compiled trace; any guard failure side-exits back to the interpreter. Lineage traces to LuaJIT (single-level, hand-coded) and PyPy (meta-tracing, RPython-generated). This MEP specifies the trace recorder, the trace-IR with explicit guards, the guard-keyed side-exit table, the trace tree shape, and predicts a 5-15x speedup on numeric loops at a 4-6x larger engineering scope than MEP-30.",
+    "slug": "/docs/mep/mep-0031"
+  },
+  {
+    "number": 32,
+    "title": "VM2 JIT Option C - Tiered Method JIT with Type Feedback",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Third of three competing JIT strategy specs for vm2. Two compilation tiers stacked on the interpreter: tier 1 is the MEP-30 copy-and-patch baseline JIT; tier 2 is a typed-SSA optimizing method JIT that consumes type feedback from MEP-27 inline caches, performs profile-guided inlining and escape analysis, and emits native code with linear-scan register allocation. Bidirectional on-stack replacement (OSR) moves frames between interpreter, tier 1, and tier 2 mid-execution; speculative tier-2 code deopts back to tier 1 on guard failure. Lineage traces to HotSpot C1/C2, JSC's four-tier strategy (LLInt, Baseline, DFG, FTL), and V8's Ignition / Sparkplug / Maglev / Turbofan pipeline. This MEP specifies tier transitions, the optimizing IR, the deopt protocol, the inlining heuristic, and predicts a 4-8x speedup with the broadest workload coverage of the three options.",
+    "slug": "/docs/mep/mep-0032"
   }
 ]
