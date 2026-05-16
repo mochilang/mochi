@@ -25,6 +25,18 @@ func (vm *VM) Run() (Cell, error) {
 			fr.Regs[ins.A] = CInt(fr.Regs[ins.B].Int() - fr.Regs[ins.C].Int())
 		case OpMulI64:
 			fr.Regs[ins.A] = CInt(fr.Regs[ins.B].Int() * fr.Regs[ins.C].Int())
+		case OpDivI64:
+			d := fr.Regs[ins.C].Int()
+			if d == 0 {
+				return ret, errors.New("vm2: division by zero")
+			}
+			fr.Regs[ins.A] = CInt(fr.Regs[ins.B].Int() / d)
+		case OpModI64:
+			d := fr.Regs[ins.C].Int()
+			if d == 0 {
+				return ret, errors.New("vm2: mod by zero")
+			}
+			fr.Regs[ins.A] = CInt(fr.Regs[ins.B].Int() % d)
 		case OpLessI64:
 			fr.Regs[ins.A] = CBool(fr.Regs[ins.B].Int() < fr.Regs[ins.C].Int())
 		case OpLessEqI64:

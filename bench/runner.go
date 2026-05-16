@@ -69,6 +69,17 @@ const keepTempFiles = false
 func Benchmarks(tempDir, mochiBin string) []Bench {
 	var benches []Bench
 
+	// Pre-build the compiler2/vm2 subprocess runner once into tempDir.
+	// Each math benchmark below registers a `mochi_vm2` template that
+	// invokes this binary with -program/-n flags rather than rendering
+	// a Mochi source file. This gives the rusage measurement a clean
+	// peak RSS reading for the vm2 process alone (no toolchain noise).
+	vm2Bin := filepath.Join(tempDir, "vm2runner")
+	if err := exec.Command("go", "build", "-o", vm2Bin, "./bench/vm2runner").Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "vm2runner build failed: %v\n", err)
+		vm2Bin = ""
+	}
+
 	_ = fs.WalkDir(templatesFS, "template", func(path string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() {
 			return nil
@@ -95,6 +106,9 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 		templates := []Template{
 			{Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
+		}
+		if vm2Bin != "" {
+			templates = append(templates, Template{Lang: "mochi_vm2", Path: path, Suffix: ".vm2", Command: []string{vm2Bin}})
 		}
 		if os.Getenv("MOCHI_SKIP_C") != "1" && name != "matrix_mul" {
 			templates = append(templates, Template{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil})
@@ -141,6 +155,22 @@ func generateBenchmarks(tempDir, category, name string, cfg Range, templates []T
 		}
 
 		for _, t := range templates {
+			// mochi_vm2 does not render a Mochi source file: it
+			// invokes the pre-built vm2runner with -program/-n flags
+			// pointing at compiler2/corpus, which holds the same
+			// program shapes as the .mochi templates.
+			if t.Lang == "mochi_vm2" {
+				progName := fmt.Sprintf("%s_%s", category, name)
+				benches = append(benches, Bench{
+					Name: fmt.Sprintf("%s.%s.%d.%s", category, name, n, t.Lang),
+					Command: append(append([]string(nil), t.Command...),
+						"-program", progName,
+						"-n", fmt.Sprintf("%d", n),
+					),
+				})
+				continue
+			}
+
 			actualSuffix := t.Suffix
 
 			fileName := fmt.Sprintf("%s_%s_%d%s", category, name, n, actualSuffix)
@@ -386,6 +416,8 @@ func report(results []Result) {
 			switch langName {
 			case "mochi_vm":
 				langName = "Mochi (VM)"
+			case "mochi_vm2":
+				langName = "Mochi (vm2)"
 			case "mochi_go":
 				langName = "Mochi (Go)"
 			case "mochi_c":
@@ -692,6 +724,8 @@ func exportMarkdown(results []Result) error {
 			switch langName {
 			case "mochi_vm":
 				langName = "Mochi (VM)"
+			case "mochi_vm2":
+				langName = "Mochi (vm2)"
 			case "mochi_go":
 				langName = "Mochi (Go)"
 			case "mochi_c":

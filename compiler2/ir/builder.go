@@ -91,6 +91,14 @@ func (b *Builder) MulI64(x, y ValueID) ValueID {
 	return b.emit(Inst{Op: OpMulI64, Type: TI64, Args: []ValueID{x, y}})
 }
 
+func (b *Builder) DivI64(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpDivI64, Type: TI64, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) ModI64(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpModI64, Type: TI64, Args: []ValueID{x, y}})
+}
+
 func (b *Builder) LessI64(x, y ValueID) ValueID {
 	return b.emit(Inst{Op: OpLessI64, Type: TBool, Args: []ValueID{x, y}})
 }
