@@ -270,5 +270,13 @@
     "type": "Informational",
     "description": "First measured-results report for the MEP-30 template / copy-and-patch baseline JIT. A reference prototype lives under runtime/jit/tmpljit and implements a 6-opcode register VM plus a copy-and-patch JIT that lowers each opcode to a fixed AArch64 instruction sequence and stitches them into an mmap'd executable page. On a canonical fillsum workload at N=1024 on Apple M4, the JIT runs at 418 ns/op vs 7177 ns/op for the same-shape interpreter, a 17.2x speedup, beating LuaJIT (532 ns/op) and matching hand-written Go (499 ns/op) within 17%. At N=10000 the JIT edges out Go native (3883 vs 5025 ns/op) because the JIT loop carries no Go preemption check. CPython 3.14 lands at 23899 ns/op, ~57x slower than the JIT. Results validate the MEP-30 design and recommend proceeding to a full vm2-opcode prototype.",
     "slug": "/docs/mep/mep-0033"
+  },
+  {
+    "number": 34,
+    "title": "VM2 Full-Opcode JIT - Lists, Strings, Maps, Sets, Structs",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Production-track spec for the next JIT after the MEP-30 prototype. Extends MEP-30's template / copy-and-patch design from the 6-opcode tmpljit toy to the full vm2 opcode set, with first-class native support for the five container subsystems (lists, strings, maps, sets, structs). Specifies per-opcode codegen templates, the frame-compatibility contract that lets the JIT and the vm2 interpreter share a Cell-shaped register file across calls, the Cell NaN-boxing fast paths and slow-path runtime callbacks, the cross-architecture backend split (darwin/arm64 + linux/amd64 from day one), and the benchmark plan that gates merge: head-to-head against the vm2 interpreter, LuaJIT, Lua 5.5, and CPython 3.14 on the MEP-23 corpus and on each container's hot ops. Predicts 3-6x over vm2 on list / arithmetic loops, 1.5-3x on string and map workloads, and parity with LuaJIT on numeric loops by Phase 3.",
+    "slug": "/docs/mep/mep-0034"
   }
 ]
