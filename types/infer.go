@@ -7,16 +7,30 @@ import (
 	"mochi/parser"
 )
 
-// ExprType returns the static type of expression e using env.
+// ExprType returns the static type of expression e in env using pure
+// synthesis (no expected type). It is the no-hint entry point of the
+// unified inference pass; see exprTypeWithHint for the bidirectional
+// variant.
 func ExprType(e *parser.Expr, env *Env) Type {
-	if e == nil {
-		return AnyType{}
-	}
-	return inferBinaryType(env, e.Binary)
+	return exprTypeWithHint(e, nil, env)
 }
 
-// ExprTypeHint infers the type of e using a hint for list literals.
+// ExprTypeHint runs the unified inference pass with an outer hint that
+// disambiguates list/map literals at the top of e. A nil hint is the
+// same as ExprType. Compiler backends use this when threading a
+// declared slot type (let binder, return type, call argument) into the
+// inferrer so empty literals and homogeneous literals pick up the
+// declared element shape instead of falling back to `any`.
 func ExprTypeHint(e *parser.Expr, hint Type, env *Env) Type {
+	return exprTypeWithHint(e, hint, env)
+}
+
+// exprTypeWithHint is the shared implementation of ExprType and
+// ExprTypeHint. MEP-5 P19: collapse the two public entries into a
+// single pass. Deeper bidirectional propagation (threading the hint
+// through every recursion node, not just top-level list/map literals)
+// is left to the MEP-12 Algorithm W layer.
+func exprTypeWithHint(e *parser.Expr, hint Type, env *Env) Type {
 	if e == nil {
 		return AnyType{}
 	}
@@ -26,9 +40,9 @@ func ExprTypeHint(e *parser.Expr, hint Type, env *Env) Type {
 				if len(ll.Elems) == 0 {
 					return ListType{Elem: lt.Elem}
 				}
-				elem := ExprTypeHint(ll.Elems[0], lt.Elem, env)
+				elem := exprTypeWithHint(ll.Elems[0], lt.Elem, env)
 				for _, el := range ll.Elems[1:] {
-					t := ExprTypeHint(el, lt.Elem, env)
+					t := exprTypeWithHint(el, lt.Elem, env)
 					if !equalTypes(elem, t) {
 						elem = AnyType{}
 						break
@@ -44,11 +58,11 @@ func ExprTypeHint(e *parser.Expr, hint Type, env *Env) Type {
 				if len(ml.Items) == 0 {
 					return MapType{Key: mt.Key, Value: mt.Value}
 				}
-				key := ExprTypeHint(ml.Items[0].Key, mt.Key, env)
-				val := ExprTypeHint(ml.Items[0].Value, mt.Value, env)
+				key := exprTypeWithHint(ml.Items[0].Key, mt.Key, env)
+				val := exprTypeWithHint(ml.Items[0].Value, mt.Value, env)
 				for _, it := range ml.Items[1:] {
-					kt := ExprTypeHint(it.Key, mt.Key, env)
-					vt := ExprTypeHint(it.Value, mt.Value, env)
+					kt := exprTypeWithHint(it.Key, mt.Key, env)
+					vt := exprTypeWithHint(it.Value, mt.Value, env)
 					if !equalTypes(key, kt) {
 						key = AnyType{}
 					}
@@ -60,7 +74,7 @@ func ExprTypeHint(e *parser.Expr, hint Type, env *Env) Type {
 			}
 		}
 	}
-	return ExprType(e, env)
+	return inferBinaryType(env, e.Binary)
 }
 
 func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
