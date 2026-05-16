@@ -1732,7 +1732,41 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			if fnVal.Tag == ValueFunc {
 				cl := fnVal.Func.(*closure)
-				all := append(append([]Value{}, cl.args...), args...)
+				// MEP-19 call IC + no-captures shortcut. When the
+				// call site is monomorphic on a no-capture closure
+				// (the HofMap and ClosureDispatch shape), skip the
+				// merged-args allocation entirely. The cache slot
+				// also lets a future polymorphic extension upgrade
+				// in place.
+				ip := fr.ip - 1
+				cs := siteFor(fr.fn, ip)
+				var all []Value
+				if !cs.bypassed && cs.closurePtr == cl {
+					if cs.captureLen == 0 {
+						all = args
+					} else {
+						all = make([]Value, cs.captureLen+len(args))
+						copy(all, cl.args)
+						copy(all[cs.captureLen:], args)
+					}
+				} else {
+					if !cs.bypassed {
+						if cs.closurePtr != nil && cs.misses < siteMaxMisses {
+							cs.misses++
+							if cs.misses >= siteMaxMisses {
+								cs.bypassed = true
+							}
+						}
+						cs.closurePtr = cl
+						cs.fn = &m.prog.Funcs[cl.fn]
+						cs.captureLen = len(cl.args)
+					}
+					if len(cl.args) == 0 {
+						all = args
+					} else {
+						all = append(append([]Value{}, cl.args...), args...)
+					}
+				}
 				res, err := m.call(cl.fn, all, append(trace, StackFrame{Func: m.prog.funcName(cl.fn), Line: ins.Line}))
 				if err != nil {
 					if vmErr, ok := err.(*VMError); ok {

@@ -24,6 +24,11 @@ type Function struct {
 	Name       string
 	TypeParams []string
 	Line       int // source line of function definition
+
+	// callSites is MEP-19's per-instruction monomorphic call cache.
+	// nil until the first OpCallV in this function executes; sized to
+	// len(Code). Slots are also nil until first observation.
+	callSites []*callSite `json:"-"`
 }
 
 type Program struct {
