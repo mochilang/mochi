@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/fatih/color"
@@ -53,6 +54,11 @@ type Range struct {
 type Result struct {
 	Name       string  `json:"name"`
 	DurationUs float64 `json:"duration_us"`
+	// MemoryBytes is the peak resident set size of the child process,
+	// in bytes. It is captured from getrusage(RUSAGE_CHILDREN) maxrss
+	// after each run and converted to bytes per host: macOS reports
+	// maxrss in bytes, Linux/BSDs in kilobytes.
+	MemoryBytes int64 `json:"memory_bytes,omitempty"`
 	// Success    bool    `json:"success"`
 	Output any `json:"output"`
 	Lang   string
@@ -254,6 +260,13 @@ func Run() {
 		err := cmd.Run()
 		externalDuration := timeNowUs() - externalStart
 
+		var memBytes int64
+		if cmd.ProcessState != nil {
+			if ru, ok := cmd.ProcessState.SysUsage().(*syscall.Rusage); ok && ru != nil {
+				memBytes = int64(ru.Maxrss) * maxrssBytesMultiplier
+			}
+		}
+
 		if err != nil {
 			fmt.Printf("❌ %-32s (err: %v)\n", b.Name, err)
 			if stderr.Len() > 0 {
@@ -283,17 +296,42 @@ func Run() {
 
 		r.Name = b.Name
 		r.Lang = strings.Split(b.Name, ".")[3]
+		if r.MemoryBytes == 0 {
+			r.MemoryBytes = memBytes
+		}
 		results = append(results, r)
 
-		fmt.Printf("✅ %-32s ⏱ %.0fµs (ext: %.2fµs)\n",
+		fmt.Printf("✅ %-32s ⏱ %.0fµs (ext: %.2fµs)  📦 %s\n",
 			r.Name,
-			r.DurationUs,     // internal timing
-			externalDuration) // outer exec timing
+			r.DurationUs,      // internal timing
+			externalDuration,  // outer exec timing
+			formatBytes(r.MemoryBytes))
 	}
 
 	report(results)
 	if err := exportMarkdown(results); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to write BENCHMARK.md: %v\n", err)
+	}
+}
+
+func formatBytes(n int64) string {
+	if n <= 0 {
+		return "n/a"
+	}
+	const (
+		kb = 1024
+		mb = 1024 * kb
+		gb = 1024 * mb
+	)
+	switch {
+	case n >= gb:
+		return fmt.Sprintf("%.2f GB", float64(n)/float64(gb))
+	case n >= mb:
+		return fmt.Sprintf("%.2f MB", float64(n)/float64(mb))
+	case n >= kb:
+		return fmt.Sprintf("%.2f KB", float64(n)/float64(kb))
+	default:
+		return fmt.Sprintf("%d B", n)
 	}
 }
 
@@ -367,10 +405,11 @@ func report(results []Result) {
 			}
 
 			status := "✓"
-			fmt.Printf("  %s %-24s %8.0fµs  %s\n",
+			fmt.Printf("  %s %-24s %8.0fµs  %10s  %s\n",
 				color.New(color.FgGreen).Sprint(status),
 				langName,
 				r.DurationUs,
+				formatBytes(r.MemoryBytes),
 				color.New(color.FgCyan).Sprint("✓ Best")+plus)
 		}
 	}
@@ -638,8 +677,8 @@ func exportMarkdown(results []Result) error {
 		})
 
 		b.WriteString("## " + g + "\n")
-		b.WriteString("| Language | Time (µs) | +/- |\n")
-		b.WriteString("| --- | ---: | --- |\n")
+		b.WriteString("| Language | Time (µs) | Memory | +/- |\n")
+		b.WriteString("| --- | ---: | ---: | --- |\n")
 
 		best := set[0].DurationUs
 		for _, r := range set {
@@ -670,7 +709,7 @@ func exportMarkdown(results []Result) error {
 			case "native_lua":
 				langName = "Lua (native)"
 			}
-			b.WriteString(fmt.Sprintf("| %s | %.0f | %s |\n", langName, r.DurationUs, plus))
+			b.WriteString(fmt.Sprintf("| %s | %.0f | %s | %s |\n", langName, r.DurationUs, formatBytes(r.MemoryBytes), plus))
 		}
 
 		b.WriteString("\n")

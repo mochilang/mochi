@@ -24,6 +24,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"mochi/parser"
@@ -89,10 +90,26 @@ func runOnce(tb testing.TB, p *vm.Program, w io.Writer) {
 func benchOne(b *testing.B, name string) {
 	p := compileProgram(b, name)
 	b.ReportAllocs()
+
+	var startMem, endMem runtime.MemStats
+	runtime.GC()
+	runtime.ReadMemStats(&startMem)
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		runOnce(b, p, io.Discard)
 	}
+	b.StopTimer()
+
+	runtime.ReadMemStats(&endMem)
+	// HeapInuse-MB: heap pages in use after the workload finishes,
+	// approximating the live-set size the workload pinned. Sys-MB:
+	// total bytes obtained from the OS, approximating process RSS.
+	// Both are reported per-run (not per-op) so they read directly
+	// as peak memory cost of executing the program once.
+	b.ReportMetric(float64(endMem.HeapInuse)/1024/1024, "heap-MB")
+	b.ReportMetric(float64(endMem.Sys)/1024/1024, "sys-MB")
+	b.ReportMetric(float64(endMem.TotalAlloc-startMem.TotalAlloc)/float64(b.N), "total-B/op")
 }
 
 func BenchmarkVM_Fib(b *testing.B)             { benchOne(b, "fib") }

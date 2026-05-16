@@ -1,0 +1,54 @@
+goos: darwin
+goarch: arm64
+pkg: mochi/runtime/vm/bench
+cpu: Apple M4
+BenchmarkVM_Fib-10                	       5	 104453375 ns/op	364738902 B/op	  515554 allocs/op
+BenchmarkVM_Fib-10                	       5	 104814217 ns/op	364739014 B/op	  515555 allocs/op
+BenchmarkVM_Fib-10                	       6	  99617354 ns/op	364739309 B/op	  515557 allocs/op
+BenchmarkVM_Fib-10                	       6	 100853944 ns/op	364738805 B/op	  515553 allocs/op
+BenchmarkVM_Fib-10                	       6	  99131458 ns/op	364738824 B/op	  515553 allocs/op
+BenchmarkVM_IterSum-10            	     538	   1169604 ns/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_IterSum-10            	     535	   1115600 ns/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_IterSum-10            	     535	   1112623 ns/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_IterSum-10            	     542	   1140071 ns/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_IterSum-10            	     546	   1120682 ns/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_StringCat-10          	    2620	    246371 ns/op	  536211 B/op	    1007 allocs/op
+BenchmarkVM_StringCat-10          	    2509	    683686 ns/op	  536226 B/op	    1007 allocs/op
+BenchmarkVM_StringCat-10          	    1999	    263298 ns/op	  536205 B/op	    1007 allocs/op
+BenchmarkVM_StringCat-10          	    2335	    262151 ns/op	  536207 B/op	    1007 allocs/op
+BenchmarkVM_StringCat-10          	    2545	    241018 ns/op	  536207 B/op	    1007 allocs/op
+BenchmarkVM_MapGet-10             	     278	   2050693 ns/op	    9070 B/op	      11 allocs/op
+BenchmarkVM_MapGet-10             	     295	   2002334 ns/op	    9070 B/op	      11 allocs/op
+BenchmarkVM_MapGet-10             	     300	   1995218 ns/op	    9070 B/op	      11 allocs/op
+BenchmarkVM_MapGet-10             	     294	   2043896 ns/op	    9070 B/op	      11 allocs/op
+BenchmarkVM_MapGet-10             	     303	   1992889 ns/op	    9070 B/op	      11 allocs/op
+BenchmarkVM_ListBuild-10          	       5	 108656858 ns/op	467745568 B/op	    4099 allocs/op
+BenchmarkVM_ListBuild-10          	       5	 110127292 ns/op	467745120 B/op	    4095 allocs/op
+BenchmarkVM_ListBuild-10          	       5	 108393408 ns/op	467745321 B/op	    4096 allocs/op
+BenchmarkVM_ListBuild-10          	       5	 110976333 ns/op	467745052 B/op	    4094 allocs/op
+BenchmarkVM_ListBuild-10          	       5	 115642550 ns/op	467745433 B/op	    4097 allocs/op
+BenchmarkVM_StructField-10        	     126	   4706312 ns/op	12011898 B/op	   20016 allocs/op
+BenchmarkVM_StructField-10        	     126	   4695622 ns/op	12011900 B/op	   20016 allocs/op
+BenchmarkVM_StructField-10        	     127	   4689840 ns/op	12011889 B/op	   20016 allocs/op
+BenchmarkVM_StructField-10        	     100	   5052501 ns/op	12011908 B/op	   20016 allocs/op
+BenchmarkVM_StructField-10        	     126	   4721309 ns/op	12011889 B/op	   20016 allocs/op
+BenchmarkVM_HofMap-10             	      67	  10436723 ns/op	47861291 B/op	    4135 allocs/op
+BenchmarkVM_HofMap-10             	      58	  10504494 ns/op	47861246 B/op	    4135 allocs/op
+BenchmarkVM_HofMap-10             	      60	  10529336 ns/op	47861248 B/op	    4136 allocs/op
+BenchmarkVM_HofMap-10             	      55	  10454169 ns/op	47861420 B/op	    4136 allocs/op
+BenchmarkVM_HofMap-10             	      58	  10403844 ns/op	47861176 B/op	    4135 allocs/op
+BenchmarkVM_QuerySelect-10        	       4	 139573136 ns/op	529086364 B/op	   18145 allocs/op
+BenchmarkVM_QuerySelect-10        	       4	 125626916 ns/op	529086676 B/op	   18148 allocs/op
+BenchmarkVM_QuerySelect-10        	       4	 130760438 ns/op	529086164 B/op	   18143 allocs/op
+BenchmarkVM_QuerySelect-10        	       5	 128027975 ns/op	529086460 B/op	   18146 allocs/op
+BenchmarkVM_QuerySelect-10        	       4	 130019323 ns/op	529086364 B/op	   18145 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     274	   2254280 ns/op	 3287285 B/op	   20019 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     277	   2165988 ns/op	 3287304 B/op	   20019 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     280	   2144307 ns/op	 3287284 B/op	   20019 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     276	   2159739 ns/op	 3287282 B/op	   20019 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     277	   2163345 ns/op	 3287317 B/op	   20019 allocs/op
+BenchmarkVM_JsonEmit-10           	     780	    715324 ns/op	 2038884 B/op	    3260 allocs/op
+BenchmarkVM_JsonEmit-10           	     846	    716972 ns/op	 2038940 B/op	    3260 allocs/op
+BenchmarkVM_JsonEmit-10           	     832	    753698 ns/op	 2038808 B/op	    3260 allocs/op
+BenchmarkVM_JsonEmit-10           	     799	    715739 ns/op	 2038812 B/op	    3260 allocs/op
+BenchmarkVM_JsonEmit-10           	     841	    719626 ns/op	 2038769 B/op	    3259 allocs/op
