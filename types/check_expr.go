@@ -959,28 +959,41 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				}
 			}
 		}
+		// MEP-5 P8: fetch returns result<…, IOError>. The success
+		// arm is the bidirectional `expected` if the call site
+		// supplied one (typical pattern: `let x: User = fetch ...`
+		// flows User into the Ok arm and forces the user to
+		// destructure). Without an expected, fall back to
+		// result<any, IOError>.
+		var ok Type = AnyType{}
 		if expected != nil {
-			return expected, nil
+			ok = unwrapResultOk(expected)
 		}
-		return AnyType{}, nil
+		return ResultType{Ok: ok, Err: ioErrorType(env)}, nil
 
 	case p.Load != nil:
+		// MEP-5 P8: load returns result<list<T>, IOError>. The
+		// success arm carries the typed-load element if the source
+		// includes `as Type`, otherwise list<any>.
 		var elem Type = AnyType{}
 		if p.Load.Type != nil {
 			elem = resolveTypeRef(p.Load.Type, env)
 		}
-		return ListType{Elem: elem}, nil
+		return ResultType{Ok: ListType{Elem: elem}, Err: ioErrorType(env)}, nil
 
 	case p.Save != nil:
+		// MEP-5 P8: save returns result<unit, IOError>. unit on the
+		// Ok arm because save is a side-effecting sink; IOError on
+		// the Err arm matches load and fetch.
 		if _, err := checkExpr(p.Save.Src, env); err != nil {
-			return UnitType{}, err
+			return ResultType{Ok: UnitType{}, Err: ioErrorType(env)}, err
 		}
 		if p.Save.With != nil {
 			if _, err := checkExpr(p.Save.With, env); err != nil {
-				return UnitType{}, err
+				return ResultType{Ok: UnitType{}, Err: ioErrorType(env)}, err
 			}
 		}
-		return UnitType{}, nil
+		return ResultType{Ok: UnitType{}, Err: ioErrorType(env)}, nil
 
 	case p.Match != nil:
 		return checkMatchExpr(p.Match, env, expected)
@@ -2435,4 +2448,26 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 		return nil, false
 	}
 	return p.Target.Call, true
+}
+
+// ioErrorType resolves the prelude's IOError union. Falling back to
+// AnyType keeps the checker robust if a future embedder runs without
+// registerErrorTypes.
+func ioErrorType(env *Env) Type {
+	if ut, ok := env.GetUnion("IOError"); ok {
+		return ut
+	}
+	return AnyType{}
+}
+
+// unwrapResultOk returns the Ok arm of a Result expected type. If the
+// expected type is anything else, it is returned unchanged. This is the
+// bidirectional rule for `let x: T = fetch ...` style call sites: the
+// outer let says T, so the inner fetch's Ok arm is T and the user must
+// destructure to peel the Result.
+func unwrapResultOk(expected Type) Type {
+	if rt, ok := expected.(ResultType); ok {
+		return rt.Ok
+	}
+	return expected
 }
