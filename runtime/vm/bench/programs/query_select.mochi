@@ -1,0 +1,11 @@
+var xs: list<int> = []
+for i in 0..2000 {
+  xs = append(xs, i)
+}
+let evens = from x in xs where x % 2 == 0 select x
+var total = 0
+for v in evens {
+  total = total + v
+}
+print(len(evens))
+print(total)

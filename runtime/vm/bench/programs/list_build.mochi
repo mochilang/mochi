@@ -1,0 +1,6 @@
+var xs: list<int> = []
+for i in 0..2000 {
+  xs = append(xs, i)
+}
+print(len(xs))
+print(xs[1999])

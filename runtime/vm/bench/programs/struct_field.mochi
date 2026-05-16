@@ -1,0 +1,10 @@
+type Counter {
+  value: int
+  step: int
+}
+
+var c = Counter { value: 0, step: 1 }
+for i in 0..5000 {
+  c = Counter { value: c.value + c.step, step: c.step }
+}
+print(c.value)

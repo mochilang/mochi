@@ -1,0 +1,9 @@
+let m = {"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}
+let keys = ["a", "b", "c", "d", "e"]
+var total = 0
+for r in 0..2000 {
+  for k in keys {
+    total = total + (m[k] ?? 0)
+  }
+}
+print(total)

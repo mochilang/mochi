@@ -1,0 +1,5 @@
+var s = ""
+for i in 0..1000 {
+  s = s + "x"
+}
+print(len(s))

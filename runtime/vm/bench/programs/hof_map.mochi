@@ -1,0 +1,19 @@
+fun map_int(xs: list<int>, f: fun(int): int): list<int> {
+  var out: list<int> = []
+  for x in xs {
+    out = append(out, f(x))
+  }
+  return out
+}
+
+let square = fun(x: int): int => x * x
+var xs: list<int> = []
+for i in 0..500 {
+  xs = append(xs, i)
+}
+let ys = map_int(xs, square)
+var total = 0
+for y in ys {
+  total = total + y
+}
+print(total)
