@@ -34,6 +34,8 @@ var corpusSizes = []corpusSize{
 	{"strings_concat_loop", 64},
 	// Lists subsystem (MEP-24 §3). Fill 128 ints then sum them.
 	{"lists_fill_sum", 128},
+	// Maps subsystem (MEP-24 §4). Fill 128 int->int entries, sum reads.
+	{"maps_fill_sum", 128},
 }
 
 func sizeFor(name string) int64 {
@@ -113,3 +115,4 @@ func BenchmarkVM2_FibRecTmpl(b *testing.B)  { benchCorpus(b, corpus.Program{Name
 func BenchmarkVM2_PrimeCount(b *testing.B)  { benchCorpus(b, corpus.Program{Name: "math_prime_count", Build: corpus.BuildPrimeCount, Expect: corpus.ExpectPrimeCount}) }
 func BenchmarkVM2_StringsConcatLoop(b *testing.B) { benchCorpus(b, corpus.Program{Name: "strings_concat_loop", Build: corpus.BuildStringsConcatLoop, Expect: corpus.ExpectStringsConcatLoop}) }
 func BenchmarkVM2_ListsFillSum(b *testing.B) { benchCorpus(b, corpus.Program{Name: "lists_fill_sum", Build: corpus.BuildListsFillSum, Expect: corpus.ExpectListsFillSum}) }
+func BenchmarkVM2_MapsFillSum(b *testing.B)  { benchCorpus(b, corpus.Program{Name: "maps_fill_sum", Build: corpus.BuildMapsFillSum, Expect: corpus.ExpectMapsFillSum}) }

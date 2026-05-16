@@ -174,6 +174,34 @@ func (b *Builder) ListPush(l, v ValueID) ValueID {
 	return b.emit(Inst{Op: OpListPush, Type: TUnit, Args: []ValueID{l, v}})
 }
 
+// NewMap allocates a fresh empty map.
+func (b *Builder) NewMap() ValueID {
+	return b.emit(Inst{Op: OpNewMap, Type: TMap})
+}
+
+func (b *Builder) MapLen(m ValueID) ValueID {
+	return b.emit(Inst{Op: OpMapLen, Type: TI64, Args: []ValueID{m}})
+}
+
+// MapGet returns m[k]. Value type is unknown to the IR (maps are
+// untyped at MVP), so the caller passes the expected value type. A
+// missing key reads back as a null Cell at runtime.
+func (b *Builder) MapGet(m, k ValueID, val Type) ValueID {
+	return b.emit(Inst{Op: OpMapGet, Type: val, Args: []ValueID{m, k}})
+}
+
+func (b *Builder) MapHas(m, k ValueID) ValueID {
+	return b.emit(Inst{Op: OpMapHas, Type: TBool, Args: []ValueID{m, k}})
+}
+
+func (b *Builder) MapSet(m, k, v ValueID) ValueID {
+	return b.emit(Inst{Op: OpMapSet, Type: TUnit, Args: []ValueID{m, k, v}})
+}
+
+func (b *Builder) MapDel(m, k ValueID) ValueID {
+	return b.emit(Inst{Op: OpMapDel, Type: TUnit, Args: []ValueID{m, k}})
+}
+
 // Call invokes function at funcIdx with the given args. retType is the
 // caller-supplied result type; the verifier later checks it against
 // the callee's signature once Module is assembled.

@@ -40,6 +40,8 @@ var repeats = map[string]int{
 	"strings_concat_loop": 1000,
 	// Lists subsystem (MEP-24 §3).
 	"lists_fill_sum": 1000,
+	// Maps subsystem (MEP-24 §4).
+	"maps_fill_sum": 1000,
 }
 
 func main() {

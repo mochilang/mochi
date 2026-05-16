@@ -270,6 +270,27 @@ func (vm *VM) Run() (Cell, error) {
 		case OpListPush:
 			l := vm.listAt(regs[ins.A])
 			l.data = append(l.data, regs[ins.B])
+		case OpNewMap:
+			regs[ins.A] = vm.newMap()
+		case OpMapLen:
+			regs[ins.A] = CInt(int64(len(vm.mapAt(regs[ins.B]).entries)))
+		case OpMapGet:
+			m := vm.mapAt(regs[ins.B])
+			if v, ok := m.entries[vm.mapKeyOf(regs[ins.C])]; ok {
+				regs[ins.A] = v
+			} else {
+				regs[ins.A] = CNull()
+			}
+		case OpMapHas:
+			m := vm.mapAt(regs[ins.B])
+			_, ok := m.entries[vm.mapKeyOf(regs[ins.C])]
+			regs[ins.A] = CBool(ok)
+		case OpMapSet:
+			m := vm.mapAt(regs[ins.A])
+			m.entries[vm.mapKeyOf(regs[ins.B])] = regs[ins.C]
+		case OpMapDel:
+			m := vm.mapAt(regs[ins.A])
+			delete(m.entries, vm.mapKeyOf(regs[ins.B]))
 		case OpHalt:
 			fr.IP = ip
 			return ret, errors.New("vm2: OpHalt reached")

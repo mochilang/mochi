@@ -65,4 +65,15 @@ const (
 	OpListGet  // A = listAt(B).data[regs[C].Int()]; traps on OOB
 	OpListSet  // listAt(regs[A]).data[regs[B].Int()] = regs[C]; traps on OOB
 	OpListPush // listAt(regs[A]).data = append(..., regs[B]); amortized O(1)
+
+	// Map subsystem (MEP-24 §4). Maps are mutable; Objects[idx] holds a
+	// *vmMap whose entries is a Go map[any]Cell. Key normalization
+	// (string bytes for str keys, scalar value for int/bool/null,
+	// identity for other ptr) lives in mapKeyOf.
+	OpNewMap // A = newMap()
+	OpMapLen // A = i64(len(mapAt(regs[B]).entries))
+	OpMapGet // A = mapAt(regs[B]).entries[mapKeyOf(regs[C])]; missing -> CNull()
+	OpMapHas // A = bool(present in mapAt(regs[B]), key=regs[C])
+	OpMapSet // mapAt(regs[A]).entries[mapKeyOf(regs[B])] = regs[C]
+	OpMapDel // delete(mapAt(regs[A]).entries, mapKeyOf(regs[B]))
 )
