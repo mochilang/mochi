@@ -1,0 +1,76 @@
+goos: darwin
+goarch: arm64
+pkg: mochi/runtime/vm/bench
+cpu: Apple M4
+BenchmarkVM_Fib-10                	      16	  63001211 ns/op	         2.617 heap-MB	        18.28 sys-MB	 364739817 total-B/op	364739817 B/op	  515557 allocs/op
+BenchmarkVM_Fib-10                	      19	  62074178 ns/op	         4.492 heap-MB	        18.28 sys-MB	 364738915 total-B/op	364738915 B/op	  515554 allocs/op
+BenchmarkVM_Fib-10                	      19	  62100522 ns/op	         4.266 heap-MB	        18.28 sys-MB	 364738974 total-B/op	364738974 B/op	  515554 allocs/op
+BenchmarkVM_Fib-10                	      20	  62815498 ns/op	         3.367 heap-MB	        18.28 sys-MB	 364738858 total-B/op	364738858 B/op	  515553 allocs/op
+BenchmarkVM_Fib-10                	      19	  58623379 ns/op	         4.672 heap-MB	        18.28 sys-MB	 364738927 total-B/op	364738927 B/op	  515554 allocs/op
+BenchmarkVM_Fib-10                	      20	  58705677 ns/op	         3.719 heap-MB	        18.28 sys-MB	 364738981 total-B/op	364738980 B/op	  515554 allocs/op
+BenchmarkVM_Fib-10                	      19	  62239754 ns/op	         5.148 heap-MB	        18.28 sys-MB	 364738933 total-B/op	364738933 B/op	  515554 allocs/op
+BenchmarkVM_Fib-10                	      20	  63430975 ns/op	         2.914 heap-MB	        18.28 sys-MB	 364739119 total-B/op	364739118 B/op	  515555 allocs/op
+BenchmarkVM_Fib-10                	      19	  62501007 ns/op	         4.234 heap-MB	        18.28 sys-MB	 364738974 total-B/op	364738974 B/op	  515554 allocs/op
+BenchmarkVM_Fib-10                	      19	  61887680 ns/op	         4.812 heap-MB	        18.28 sys-MB	 364738909 total-B/op	364738909 B/op	  515554 allocs/op
+BenchmarkVM_IterSum-10            	    1520	    792669 ns/op	         3.383 heap-MB	        18.28 sys-MB	      5387 total-B/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_IterSum-10            	    1502	    796259 ns/op	         3.297 heap-MB	        18.28 sys-MB	      5388 total-B/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_IterSum-10            	    1518	    793385 ns/op	         3.344 heap-MB	        18.28 sys-MB	      5387 total-B/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_IterSum-10            	    1510	    793332 ns/op	         3.250 heap-MB	        18.28 sys-MB	      5387 total-B/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_IterSum-10            	    1512	    791879 ns/op	         3.203 heap-MB	        18.28 sys-MB	      5387 total-B/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_IterSum-10            	    1514	    797014 ns/op	         3.328 heap-MB	        18.28 sys-MB	      5387 total-B/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_IterSum-10            	    1520	    791972 ns/op	         3.250 heap-MB	        18.28 sys-MB	      5387 total-B/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_IterSum-10            	     716	   1636691 ns/op	         2.492 heap-MB	        18.28 sys-MB	      5389 total-B/op	    5388 B/op	       8 allocs/op
+BenchmarkVM_IterSum-10            	    1500	    793018 ns/op	         3.172 heap-MB	        18.28 sys-MB	      5388 total-B/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_IterSum-10            	    1512	    800299 ns/op	         3.289 heap-MB	        18.28 sys-MB	      5388 total-B/op	    5387 B/op	       8 allocs/op
+BenchmarkVM_MapGet-10             	     864	   1390628 ns/op	         3.281 heap-MB	        18.28 sys-MB	      9070 total-B/op	    9070 B/op	      11 allocs/op
+BenchmarkVM_MapGet-10             	     460	   2664377 ns/op	         2.883 heap-MB	        18.28 sys-MB	      9072 total-B/op	    9072 B/op	      11 allocs/op
+BenchmarkVM_MapGet-10             	     850	   2593155 ns/op	         3.117 heap-MB	        18.28 sys-MB	      9070 total-B/op	    9070 B/op	      11 allocs/op
+BenchmarkVM_MapGet-10             	     866	   1384154 ns/op	         3.234 heap-MB	        18.28 sys-MB	      9071 total-B/op	    9070 B/op	      11 allocs/op
+BenchmarkVM_MapGet-10             	     866	   2620975 ns/op	         3.305 heap-MB	        18.28 sys-MB	      9071 total-B/op	    9071 B/op	      11 allocs/op
+BenchmarkVM_MapGet-10             	     847	   1408156 ns/op	         3.086 heap-MB	        18.28 sys-MB	      9071 total-B/op	    9070 B/op	      11 allocs/op
+BenchmarkVM_MapGet-10             	     861	   1398337 ns/op	         3.242 heap-MB	        18.28 sys-MB	      9071 total-B/op	    9070 B/op	      11 allocs/op
+BenchmarkVM_MapGet-10             	     867	   1387573 ns/op	         3.211 heap-MB	        18.28 sys-MB	      9070 total-B/op	    9069 B/op	      11 allocs/op
+BenchmarkVM_MapGet-10             	     848	   1409184 ns/op	         3.094 heap-MB	        18.28 sys-MB	      9070 total-B/op	    9070 B/op	      11 allocs/op
+BenchmarkVM_MapGet-10             	     850	   1400582 ns/op	         3.062 heap-MB	        18.28 sys-MB	      9071 total-B/op	    9070 B/op	      11 allocs/op
+BenchmarkVM_ListBuild-10          	      18	  65761190 ns/op	         3.703 heap-MB	        18.55 sys-MB	 467745225 total-B/op	467745224 B/op	    4095 allocs/op
+BenchmarkVM_ListBuild-10          	      18	  63810942 ns/op	         3.484 heap-MB	        18.55 sys-MB	 467745078 total-B/op	467745077 B/op	    4094 allocs/op
+BenchmarkVM_ListBuild-10          	      19	  64958002 ns/op	         3.047 heap-MB	        18.55 sys-MB	 467745056 total-B/op	467745056 B/op	    4094 allocs/op
+BenchmarkVM_ListBuild-10          	      18	  67062340 ns/op	         3.703 heap-MB	        18.55 sys-MB	 467745084 total-B/op	467745084 B/op	    4094 allocs/op
+BenchmarkVM_ListBuild-10          	      19	  66239890 ns/op	         4.141 heap-MB	        18.55 sys-MB	 467745304 total-B/op	467745304 B/op	    4096 allocs/op
+BenchmarkVM_ListBuild-10          	      18	  65214995 ns/op	         3.266 heap-MB	        18.55 sys-MB	 467745308 total-B/op	467745308 B/op	    4096 allocs/op
+BenchmarkVM_ListBuild-10          	      18	  66641451 ns/op	         3.266 heap-MB	        22.62 sys-MB	 467745420 total-B/op	467745420 B/op	    4097 allocs/op
+BenchmarkVM_ListBuild-10          	      16	  64341997 ns/op	         3.922 heap-MB	        22.62 sys-MB	 467745450 total-B/op	467745450 B/op	    4098 allocs/op
+BenchmarkVM_ListBuild-10          	      18	  67264514 ns/op	         4.359 heap-MB	        22.62 sys-MB	 467745283 total-B/op	467745283 B/op	    4096 allocs/op
+BenchmarkVM_ListBuild-10          	      18	  65231356 ns/op	         3.484 heap-MB	        22.62 sys-MB	 467745271 total-B/op	467745270 B/op	    4096 allocs/op
+BenchmarkVM_HofMap-10             	     199	   5927546 ns/op	         2.711 heap-MB	        22.62 sys-MB	  47804729 total-B/op	47804729 B/op	    3634 allocs/op
+BenchmarkVM_HofMap-10             	     200	   6084010 ns/op	         4.086 heap-MB	        22.62 sys-MB	  47804855 total-B/op	47804854 B/op	    3635 allocs/op
+BenchmarkVM_HofMap-10             	     198	   5972499 ns/op	         3.156 heap-MB	        22.62 sys-MB	  47804975 total-B/op	47804975 B/op	    3636 allocs/op
+BenchmarkVM_HofMap-10             	     201	   6056489 ns/op	         4.523 heap-MB	        22.62 sys-MB	  47804983 total-B/op	47804982 B/op	    3636 allocs/op
+BenchmarkVM_HofMap-10             	     198	   6580391 ns/op	         3.938 heap-MB	        22.62 sys-MB	  47804881 total-B/op	47804881 B/op	    3635 allocs/op
+BenchmarkVM_HofMap-10             	     100	  11522499 ns/op	         3.148 heap-MB	        22.62 sys-MB	  47805072 total-B/op	47805072 B/op	    3636 allocs/op
+BenchmarkVM_HofMap-10             	     196	   6029827 ns/op	         4.531 heap-MB	        22.62 sys-MB	  47805104 total-B/op	47805103 B/op	    3637 allocs/op
+BenchmarkVM_HofMap-10             	     200	   6232974 ns/op	         3.148 heap-MB	        22.62 sys-MB	  47805166 total-B/op	47805165 B/op	    3637 allocs/op
+BenchmarkVM_HofMap-10             	     198	   6103534 ns/op	         3.922 heap-MB	        22.62 sys-MB	  47805106 total-B/op	47805106 B/op	    3637 allocs/op
+BenchmarkVM_HofMap-10             	     195	   6121477 ns/op	         4.469 heap-MB	        22.62 sys-MB	  47804983 total-B/op	47804982 B/op	    3636 allocs/op
+BenchmarkVM_QuerySelect-10        	      14	  77284357 ns/op	         4.281 heap-MB	        22.62 sys-MB	 529086119 total-B/op	529086118 B/op	   18143 allocs/op
+BenchmarkVM_QuerySelect-10        	      14	  74538488 ns/op	         3.406 heap-MB	        22.87 sys-MB	 529086422 total-B/op	529086421 B/op	   18146 allocs/op
+BenchmarkVM_QuerySelect-10        	      15	  75789000 ns/op	         4.719 heap-MB	        22.87 sys-MB	 529086348 total-B/op	529086347 B/op	   18145 allocs/op
+BenchmarkVM_QuerySelect-10        	      15	  73772739 ns/op	         4.062 heap-MB	        22.87 sys-MB	 529086316 total-B/op	529086316 B/op	   18144 allocs/op
+BenchmarkVM_QuerySelect-10        	      15	  72987258 ns/op	         3.961 heap-MB	        22.87 sys-MB	 529086491 total-B/op	529086491 B/op	   18146 allocs/op
+BenchmarkVM_QuerySelect-10        	      15	  76477606 ns/op	         3.953 heap-MB	        22.87 sys-MB	 529086025 total-B/op	529086024 B/op	   18142 allocs/op
+BenchmarkVM_QuerySelect-10        	      15	  75648272 ns/op	         2.977 heap-MB	        22.87 sys-MB	 529086388 total-B/op	529086388 B/op	   18145 allocs/op
+BenchmarkVM_QuerySelect-10        	      15	  73681547 ns/op	         4.609 heap-MB	        22.87 sys-MB	 529086196 total-B/op	529086196 B/op	   18144 allocs/op
+BenchmarkVM_QuerySelect-10        	      15	  74576508 ns/op	         3.078 heap-MB	        22.87 sys-MB	 529086384 total-B/op	529086384 B/op	   18145 allocs/op
+BenchmarkVM_QuerySelect-10        	      16	  76126125 ns/op	         3.953 heap-MB	        22.87 sys-MB	 529086378 total-B/op	529086378 B/op	   18145 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     619	   1958780 ns/op	         3.938 heap-MB	        22.87 sys-MB	   2839036 total-B/op	 2839035 B/op	   16018 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     924	   1308766 ns/op	         4.781 heap-MB	        22.87 sys-MB	   2839049 total-B/op	 2839048 B/op	   16018 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     612	   1933811 ns/op	         2.914 heap-MB	        22.87 sys-MB	   2839050 total-B/op	 2839049 B/op	   16018 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     925	   1319782 ns/op	         2.656 heap-MB	        22.87 sys-MB	   2839050 total-B/op	 2839050 B/op	   16018 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     920	   1943676 ns/op	         4.688 heap-MB	        22.87 sys-MB	   2839028 total-B/op	 2839027 B/op	   16018 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     619	   1937300 ns/op	         4.086 heap-MB	        22.87 sys-MB	   2839039 total-B/op	 2839038 B/op	   16018 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     621	   1947038 ns/op	         4.930 heap-MB	        22.87 sys-MB	   2839037 total-B/op	 2839037 B/op	   16018 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     619	   1938297 ns/op	         2.719 heap-MB	        22.87 sys-MB	   2839051 total-B/op	 2839051 B/op	   16018 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     920	   2024914 ns/op	         2.727 heap-MB	        22.87 sys-MB	   2839036 total-B/op	 2839035 B/op	   16018 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     566	   1955324 ns/op	         2.805 heap-MB	        22.87 sys-MB	   2839034 total-B/op	 2839034 B/op	   16018 allocs/op
+PASS
+ok  	mochi/runtime/vm/bench	102.974s

@@ -879,10 +879,15 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			val := fr.regs[ins.C]
 			switch dst.Tag {
 			case ValueNull:
+				// Autovivify path: do NOT quicken. A site that
+				// sometimes sees null (first write) and sometimes
+				// sees list (subsequent writes) would deopt on
+				// every first-write into a fresh variable.
 				dst.Tag = ValueList
 				dst.List = make([]Value, idxVal.Int+1)
 				dst.List[idxVal.Int] = val
 			case ValueList:
+				tryQuicken(fr.fn, fr.ip-1, OpSetIndex_List)
 				idx := idxVal.Int
 				if idx < 0 {
 					idx += len(dst.List)
@@ -906,6 +911,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				default:
 					key = valueToString(idxVal)
 				}
+				tryQuicken(fr.fn, fr.ip-1, OpSetIndex_Map)
 				if dst.Map == nil {
 					dst.Map = map[string]Value{}
 				}
@@ -913,6 +919,49 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid index target"), trace, ins.Line)
 			}
+		case OpSetIndex_List:
+			// MEP-19 quickened OpSetIndex: target observed as list.
+			// Tag mismatch (including the autovivify null path) deopts.
+			dst := &fr.regs[ins.A]
+			if dst.Tag != ValueList {
+				deoptQuicken(fr.fn, fr.ip-1)
+				fr.ip--
+				continue
+			}
+			idx := fr.regs[ins.B].Int
+			if idx < 0 {
+				idx += len(dst.List)
+			}
+			if idx < 0 {
+				return Value{}, m.newError(fmt.Errorf("index out of range"), trace, ins.Line)
+			}
+			if idx >= len(dst.List) {
+				newList := make([]Value, idx+1)
+				copy(newList, dst.List)
+				dst.List = newList
+			}
+			dst.List[idx] = fr.regs[ins.C]
+		case OpSetIndex_Map:
+			dst := &fr.regs[ins.A]
+			if dst.Tag != ValueMap {
+				deoptQuicken(fr.fn, fr.ip-1)
+				fr.ip--
+				continue
+			}
+			idxVal := fr.regs[ins.B]
+			var key string
+			switch idxVal.Tag {
+			case ValueStr:
+				key = idxVal.Str
+			case ValueInt:
+				key = fmt.Sprintf("%d", idxVal.Int)
+			default:
+				key = valueToString(idxVal)
+			}
+			if dst.Map == nil {
+				dst.Map = map[string]Value{}
+			}
+			dst.Map[key] = fr.regs[ins.C]
 		case OpMakeList:
 			n := ins.B
 			start := ins.C
