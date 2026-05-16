@@ -182,7 +182,7 @@ func postfixEffects(p *parser.PostfixExpr, env *Env) EffectSet {
 	for _, op := range p.Ops {
 		if op.Call != nil {
 			for _, a := range op.Call.Args {
-				eff = eff.Union(exprEffects(a, env))
+				eff = eff.Union(exprEffects(a, env)).Union(callableEffects(a, env))
 			}
 			if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
 				if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
@@ -212,7 +212,7 @@ func primaryEffects(p *parser.Primary, env *Env) EffectSet {
 			}
 		}
 		for _, a := range p.Call.Args {
-			eff = eff.Union(exprEffects(a, env))
+			eff = eff.Union(exprEffects(a, env)).Union(callableEffects(a, env))
 		}
 		return eff
 	case p.Group != nil:
@@ -223,6 +223,49 @@ func primaryEffects(p *parser.Primary, env *Env) EffectSet {
 		return NewEffectSet(EffectFS)
 	case p.Save != nil:
 		return NewEffectSet(EffectFS)
+	}
+	return EmptyEffects
+}
+
+// callableEffects returns the effect set that would be incurred by
+// *calling* the value produced by e, as opposed to merely evaluating
+// it. Constructing a closure is pure; calling it may not be.
+//
+// The function recognises two "bare callable" forms:
+//   - a FunExpr literal with no surrounding operators → infer its body effects
+//   - a plain identifier (Selector with no field tail) of function type
+//     → return the FuncType.Effects already recorded in env
+//
+// Any other expression shape returns EmptyEffects. This is a deliberate
+// conservative choice: we only propagate effects we can see statically.
+// Indirect dispatch through complex expressions is left to the call site
+// that actually invokes the stored value.
+func callableEffects(e *parser.Expr, env *Env) EffectSet {
+	if e == nil || e.Binary == nil {
+		return EmptyEffects
+	}
+	// Only the "bare" case: no binary ops, no unary ops, no postfix ops.
+	b := e.Binary
+	if len(b.Right) > 0 {
+		return EmptyEffects
+	}
+	u := b.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return EmptyEffects
+	}
+	p := u.Value.Target
+	if p == nil {
+		return EmptyEffects
+	}
+	switch {
+	case p.FunExpr != nil:
+		return inferFunExprEffects(p.FunExpr, env)
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if ft, ok := t.(FuncType); ok {
+				return ft.Effects
+			}
+		}
 	}
 	return EmptyEffects
 }
