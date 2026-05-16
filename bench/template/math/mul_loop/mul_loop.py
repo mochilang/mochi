@@ -3,7 +3,7 @@ import time
 
 def mul(n):
     result = 1
-    for i in range(1, n + 1):
+    for i in range(1, n):
         result *= i
     return result
 
