@@ -639,6 +639,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 				fr.regs[ins.A] = src.List[idx]
 			case ValueMap:
+				// MEP-5 §Collections: m[k] : option<ν>. The runtime
+				// uses ValueNull as the in-memory representation of
+				// None and the bare value as Some(x); consumers
+				// destructure on the null/non-null pivot. See the
+				// long note at OpFirst for why there is no boxed
+				// Some tag. The key is also tried on any nested map
+				// value as a legacy "find in any subtree" fallback.
 				var key string
 				switch idxVal.Tag {
 				case ValueStr:
@@ -1137,6 +1144,15 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			line = strings.TrimRight(line, "\r\n")
 			fr.regs[ins.A] = Value{Tag: ValueStr, Str: line}
 		case OpFirst:
+			// MEP-5 P7: first() is typed `(list<τ>) -> option<τ>`
+			// in types/check.go. The runtime uses ValueNull as the
+			// in-memory representation of None and the bare value
+			// as the representation of Some(x); consumers (match,
+			// `??`, `?[`) destructure on the null/non-null pivot.
+			// There is intentionally no boxed Some tag; introducing
+			// one would touch every code generator. The contract is
+			// "null at an Option-typed slot means None", and the
+			// type checker keeps null out of every other slot.
 			lst := fr.regs[ins.B]
 			if lst.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("first expects list"), trace, ins.Line)
