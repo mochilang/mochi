@@ -10,6 +10,12 @@ const (
 	OpLoadConstI            // A = Consts[B]
 	OpMove                  // A = B
 	OpAddI64                // A = B + C (signed 48-bit; overflow is implementation-defined)
+	// A = B + sign-extend(C). Fuses an OpLoadConstI of a 32-bit-fitting
+	// integer immediately followed by an OpAddI64 that consumes it as
+	// its only use. Saves one dispatch + one const-pool load per loop
+	// step counter (e.g. `i = i + 1` lowers to one of these instead of
+	// load-const-then-add).
+	OpAddI64K
 	OpSubI64                // A = B - C
 	OpMulI64                // A = B * C
 	OpDivI64                // A = B / C (truncated; division by zero traps)
@@ -33,5 +39,11 @@ const (
 	OpJumpIfNotEqualI64  // if A != B then IP = C
 	OpCall                  // A = call Funcs[B], args [C..C+D); RetReg=A
 	OpTailCall              // tail-call Funcs[A] with args [B..B+C); reuses frame
-	OpReturn                // return A to caller's RetReg
+	// Same-function tail call. Params already live in regs[0..np) thanks
+	// to parallel moves the emitter inserted into the param slots, so
+	// the dispatch handler just rewinds IP. No frame swap, no memmove,
+	// no callee lookup. Hot self-recursion loops (every `for` lowered
+	// to a tail-recursive helper) go through this path.
+	OpTailCallSelf
+	OpReturn // return A to caller's RetReg
 )
