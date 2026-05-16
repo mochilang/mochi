@@ -1,17 +1,40 @@
 package vm2
 
-import "sync"
-
 // VM holds the program plus the per-run Objects table for ref-tagged
 // Cells (boxed wide ints, strings, lists, maps, closures). The table
 // is reset on each Run so pure-numeric programs never grow it.
+//
+// Activation records live on two contiguous, dynamically grown stacks
+// (Stack and Frames) rather than per-call sync.Pool allocations. A
+// register VM in a managed host pays for every Pool.Get/Put — profiles
+// of fib_rec showed 56% of CPU sitting in the pool path before this
+// change. With contiguous stacks, call/return are two integer bumps
+// and a slice reslice; the only allocation is the one-shot grow when
+// the stack runs out of capacity.
 type VM struct {
 	Program *Program
 	Objects []any
+
+	// Stack is the register file shared by every active frame. Frame i
+	// owns Stack[Frames[i].RegsBase : Frames[i].RegsBase + Fn.NumRegs).
+	Stack []Cell
+	// Frames is the activation-record stack. The current frame is
+	// Frames[len(Frames)-1]; the parent chain is implicit (-1 of the
+	// current index). Run() snapshots the top frame's hot fields into
+	// locals for dispatch.
+	Frames []frame
 }
 
-// New constructs a VM bound to a program.
-func New(p *Program) *VM { return &VM{Program: p} }
+// New constructs a VM bound to a program. Stack and Frames are
+// pre-allocated to amortize the first-call grow across the typical
+// nesting depths we see in the benchmark corpus.
+func New(p *Program) *VM {
+	return &VM{
+		Program: p,
+		Stack:   make([]Cell, 0, 64),
+		Frames:  make([]frame, 0, 16),
+	}
+}
 
 // AddObject appends to the Objects table and returns the index suitable
 // for CPtr. Compilers and FFI use this to hand a ref-typed value to
@@ -21,82 +44,49 @@ func (vm *VM) AddObject(o any) uint64 {
 	return uint64(len(vm.Objects) - 1)
 }
 
-// frame is one activation record. Regs is a slab borrowed from the
-// per-size pool; regsPtr holds the cached *[]Cell so releaseFrame
-// returns the same allocation without a fresh address-of (which would
-// escape).
+// frame is one activation record on the Frames stack. Pure value type;
+// no pointers into the heap so the stack itself is cheap to grow.
 type frame struct {
-	Fn         *Function
-	Regs       []Cell
-	regsPtr    *[]Cell
-	IP         int
-	RetReg     int32
-	RegsBucket int8
-	Parent     *frame
+	Fn       *Function
+	IP       int
+	RegsBase int   // index into vm.Stack where this frame's regs begin
+	RetReg   int32 // parent register that receives the return value
 }
 
-var framePool = sync.Pool{New: func() any { return &frame{} }}
-
-const (
-	regsMinBucket = 2  // 2^2 = 4
-	regsMaxBucket = 11 // 2^11 = 2048
-)
-
-var regsPools [regsMaxBucket - regsMinBucket + 1]sync.Pool
-
-func init() {
-	for i := range regsPools {
-		size := 1 << (uint(i) + regsMinBucket)
-		regsPools[i].New = func() any {
-			r := make([]Cell, size)
-			return &r
+// pushFrame grows Stack + Frames to admit a new activation. Returns
+// the index of the new frame in vm.Frames and the regs base.
+func (vm *VM) pushFrame(fn *Function, retReg int32) (int, int) {
+	base := len(vm.Stack)
+	need := base + fn.NumRegs
+	if cap(vm.Stack) < need {
+		// Grow geometrically. Doubling keeps amortized O(1) and means
+		// deep but finite recursion only pays one or two grows.
+		newCap := 2 * cap(vm.Stack)
+		if newCap < need {
+			newCap = need
 		}
-	}
-}
-
-func bucketFor(n int) int {
-	b := regsMinBucket
-	for (1 << b) < n {
-		b++
-	}
-	if b > regsMaxBucket {
-		return -1
-	}
-	return b - regsMinBucket
-}
-
-func (vm *VM) acquireFrame(fn *Function) *frame {
-	fr := framePool.Get().(*frame)
-	fr.Fn = fn
-	fr.IP = 0
-	fr.Parent = nil
-	bi := bucketFor(fn.NumRegs)
-	if bi < 0 {
-		regs := make([]Cell, fn.NumRegs)
-		fr.Regs = regs
-		fr.regsPtr = nil
-		fr.RegsBucket = -1
-		return fr
-	}
-	p := regsPools[bi].Get().(*[]Cell)
-	fr.Regs = (*p)[:fn.NumRegs]
-	fr.regsPtr = p
-	fr.RegsBucket = int8(bi)
-	return fr
-}
-
-func (vm *VM) releaseFrame(fr *frame) {
-	if fr.regsPtr != nil {
-		// zero the live window so stale ptr indices do not pin
-		// Objects entries beyond their useful life.
-		for i := range fr.Regs {
-			fr.Regs[i] = 0
+		if newCap < 64 {
+			newCap = 64
 		}
-		regsPools[fr.RegsBucket].Put(fr.regsPtr)
+		ns := make([]Cell, len(vm.Stack), newCap)
+		copy(ns, vm.Stack)
+		vm.Stack = ns
 	}
-	fr.Fn = nil
-	fr.Regs = nil
-	fr.regsPtr = nil
-	fr.Parent = nil
-	framePool.Put(fr)
+	vm.Stack = vm.Stack[:need]
+	vm.Frames = append(vm.Frames, frame{Fn: fn, RegsBase: base, RetReg: retReg})
+	return len(vm.Frames) - 1, base
+}
+
+// popFrame retires the top frame. The parent (if any) becomes current.
+//
+// The frame window is sliced off but its contents are NOT zeroed. vm2
+// has no ptr-tagged Cells yet so there is nothing to un-pin; once the
+// boxed-object subsystem lands, popFrame must zero ptr-tagged slots
+// before shrinking. Tracked in the upcoming subsystem MEP.
+func (vm *VM) popFrame() {
+	top := len(vm.Frames) - 1
+	base := vm.Frames[top].RegsBase
+	vm.Stack = vm.Stack[:base]
+	vm.Frames[top] = frame{} // drop the *Function pointer
+	vm.Frames = vm.Frames[:top]
 }

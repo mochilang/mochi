@@ -112,7 +112,11 @@ func isPure(op ir.Op) bool {
 		ir.OpConstI64, ir.OpConstBool,
 		ir.OpAddI64, ir.OpSubI64, ir.OpMulI64,
 		ir.OpLessI64, ir.OpLessEqI64, ir.OpEqualI64,
+		ir.OpConstStr, ir.OpConcatStr, ir.OpLenStr,
+		ir.OpEqualStr, ir.OpHashStr,
 		ir.OpPhi:
+		// OpIndexStr is intentionally excluded: it can trap on OOB and
+		// must not be eliminated even when its result is unused.
 		return true
 	}
 	return false

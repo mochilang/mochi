@@ -46,4 +46,15 @@ const (
 	// to a tail-recursive helper) go through this path.
 	OpTailCallSelf
 	OpReturn // return A to caller's RetReg
+
+	// String subsystem (MEP-24 §2). Strings are immutable; every
+	// allocating op produces a fresh *vmString registered in
+	// vm.Objects. Cell encoding is tagPtr whose payload is the
+	// Objects index.
+	OpLoadStrK  // A = newString(Fn.StrConsts[B])
+	OpConcatStr // A = newString(strAt(B).bytes ++ strAt(C).bytes)
+	OpLenStr    // A = i64(len(strAt(B).bytes))
+	OpIndexStr  // A = newString(one-byte slice strAt(B)[regs[C].Int()]); traps on OOB
+	OpEqualStr  // A = bool(strEqual(strAt(B), strAt(C)))
+	OpHashStr   // A = i64(strHash(strAt(B)))  // exposed mostly for map-key prep + tests
 )

@@ -28,6 +28,10 @@ var corpusSizes = []corpusSize{
 	{"math_fib_iter", 30},     // matches template size 30
 	{"math_fib_rec", 25},      // fib(25) = 75025
 	{"math_prime_count", 100}, // primes in [2, 100)
+	// Strings subsystem (MEP-24 §2). Concat loop exercises the
+	// allocating path: N appends of a single-byte literal to a
+	// growing buffer.
+	{"strings_concat_loop", 64},
 }
 
 func sizeFor(name string) int64 {
@@ -105,3 +109,4 @@ func BenchmarkVM2_FactRec(b *testing.B)     { benchCorpus(b, corpus.Program{Name
 func BenchmarkVM2_FibIter(b *testing.B)     { benchCorpus(b, corpus.Program{Name: "math_fib_iter", Build: corpus.BuildFibIter, Expect: corpus.ExpectFibIter}) }
 func BenchmarkVM2_FibRecTmpl(b *testing.B)  { benchCorpus(b, corpus.Program{Name: "math_fib_rec", Build: corpus.BuildFibRec, Expect: corpus.ExpectFibRec}) }
 func BenchmarkVM2_PrimeCount(b *testing.B)  { benchCorpus(b, corpus.Program{Name: "math_prime_count", Build: corpus.BuildPrimeCount, Expect: corpus.ExpectPrimeCount}) }
+func BenchmarkVM2_StringsConcatLoop(b *testing.B) { benchCorpus(b, corpus.Program{Name: "strings_concat_loop", Build: corpus.BuildStringsConcatLoop, Expect: corpus.ExpectStringsConcatLoop}) }
