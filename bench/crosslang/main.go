@@ -61,6 +61,9 @@ var programs = []program{
 	// MEP-24 §3 lists subsystem. Fill+sum exercises the OpNewList /
 	// OpListPush growth path plus OpListGet on the read-back pass.
 	{category: "lists", name: "fill_sum", ns: []int{10, 100}},
+	// MEP-24 §4 maps subsystem. Same fill+sum shape but keyed by int;
+	// exercises OpNewMap, OpMapSet, OpMapGet through Go's map[any]Cell.
+	{category: "maps", name: "fill_sum", ns: []int{10, 100}},
 }
 
 type result struct {

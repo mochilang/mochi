@@ -19,6 +19,7 @@ const (
 	TPtr
 	TStr
 	TList
+	TMap
 )
 
 func (t Type) String() string {
@@ -37,6 +38,8 @@ func (t Type) String() string {
 		return "str"
 	case TList:
 		return "list"
+	case TMap:
+		return "map"
 	}
 	return "?"
 }
@@ -86,6 +89,17 @@ const (
 	OpListGet  // Args[0][Args[1]]
 	OpListSet  // Args[0][Args[1]] = Args[2]; result type TUnit
 	OpListPush // Args[0].push(Args[1]); result type TUnit
+
+	// Map subsystem (MEP-24 §4). Maps are reference-typed; OpNewMap
+	// produces a fresh TMap value. OpMapGet returns the value type (or
+	// TUnit/null sentinel when callers do not care); OpMapSet/OpMapDel
+	// mutate and have TUnit result.
+	OpNewMap // (no args)
+	OpMapLen // len(Args[0])
+	OpMapGet // Args[0][Args[1]]; missing key -> null cell
+	OpMapHas // bool(present(Args[0], Args[1]))
+	OpMapSet // Args[0][Args[1]] = Args[2]; TUnit
+	OpMapDel // delete Args[0][Args[1]]; TUnit
 
 	// Call: Aux = function index, Args = arg values. May have effects;
 	// optimizers must treat as opaque.

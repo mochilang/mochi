@@ -37,6 +37,7 @@ func All() []Program {
 		{Name: "math_prime_count", Build: BuildPrimeCount, Expect: ExpectPrimeCount},
 		{Name: "strings_concat_loop", Build: BuildStringsConcatLoop, Expect: ExpectStringsConcatLoop},
 		{Name: "lists_fill_sum", Build: BuildListsFillSum, Expect: ExpectListsFillSum},
+		{Name: "maps_fill_sum", Build: BuildMapsFillSum, Expect: ExpectMapsFillSum},
 	}
 }
 

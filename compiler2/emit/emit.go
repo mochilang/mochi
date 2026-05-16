@@ -285,6 +285,28 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 				emit(vm2.Instr{Op: vm2.OpListPush,
 					A: int32(finalReg[ins.Args[0]]),
 					B: int32(finalReg[ins.Args[1]])})
+			case ir.OpNewMap:
+				emit(vm2.Instr{Op: vm2.OpNewMap, A: dst})
+			case ir.OpMapLen:
+				emit(vm2.Instr{Op: vm2.OpMapLen, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpMapGet:
+				emit(vm2.Instr{Op: vm2.OpMapGet, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpMapHas:
+				emit(vm2.Instr{Op: vm2.OpMapHas, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpMapSet:
+				emit(vm2.Instr{Op: vm2.OpMapSet,
+					A: int32(finalReg[ins.Args[0]]),
+					B: int32(finalReg[ins.Args[1]]),
+					C: int32(finalReg[ins.Args[2]])})
+			case ir.OpMapDel:
+				emit(vm2.Instr{Op: vm2.OpMapDel,
+					A: int32(finalReg[ins.Args[0]]),
+					B: int32(finalReg[ins.Args[1]])})
 			case ir.OpCall:
 				for i, a := range ins.Args {
 					emit(vm2.Instr{Op: vm2.OpMove,

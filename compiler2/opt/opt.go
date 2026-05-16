@@ -115,10 +115,11 @@ func isPure(op ir.Op) bool {
 		ir.OpConstStr, ir.OpConcatStr, ir.OpLenStr,
 		ir.OpEqualStr, ir.OpHashStr,
 		ir.OpNewList, ir.OpListLen,
+		ir.OpNewMap, ir.OpMapLen, ir.OpMapHas,
 		ir.OpPhi:
 		// Excluded on purpose:
-		//   OpIndexStr / OpListGet — may trap on OOB.
-		//   OpListSet / OpListPush — mutate.
+		//   OpIndexStr / OpListGet / OpMapGet — may trap or read live state.
+		//   OpListSet / OpListPush / OpMapSet / OpMapDel — mutate.
 		return true
 	}
 	return false
