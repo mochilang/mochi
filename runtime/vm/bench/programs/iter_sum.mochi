@@ -1,0 +1,5 @@
+var total = 0
+for i in 1..10000 {
+  total = total + i
+}
+print(total)

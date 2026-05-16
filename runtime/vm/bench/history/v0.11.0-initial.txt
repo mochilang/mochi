@@ -1,0 +1,36 @@
+goos: darwin
+goarch: arm64
+pkg: mochi/runtime/vm/bench
+cpu: Apple M4
+BenchmarkVM_Fib-10                	      13	  91727795 ns/op	411071900 B/op	 2654247 allocs/op
+BenchmarkVM_Fib-10                	      13	  97775997 ns/op	411072206 B/op	 2654247 allocs/op
+BenchmarkVM_Fib-10                	      12	 112309837 ns/op	411072028 B/op	 2654248 allocs/op
+BenchmarkVM_IterSum-10            	     403	   2659631 ns/op	 3206594 B/op	  119999 allocs/op
+BenchmarkVM_IterSum-10            	     511	   2339652 ns/op	 3206596 B/op	  119999 allocs/op
+BenchmarkVM_IterSum-10            	     520	   2422028 ns/op	 3206585 B/op	  119999 allocs/op
+BenchmarkVM_StringCat-10          	    4228	    245515 ns/op	  696264 B/op	    7006 allocs/op
+BenchmarkVM_StringCat-10          	    5103	    242769 ns/op	  696268 B/op	    7006 allocs/op
+BenchmarkVM_StringCat-10          	    5000	    237811 ns/op	  696264 B/op	    7006 allocs/op
+BenchmarkVM_MapGet-10             	     369	   3361553 ns/op	 3434589 B/op	  130012 allocs/op
+BenchmarkVM_MapGet-10             	     350	   3271177 ns/op	 3434592 B/op	  130012 allocs/op
+BenchmarkVM_MapGet-10             	     369	   3245287 ns/op	 3434598 B/op	  130012 allocs/op
+BenchmarkVM_ListBuild-10          	      15	  78439511 ns/op	468065141 B/op	   16094 allocs/op
+BenchmarkVM_ListBuild-10          	      14	  76866402 ns/op	468065158 B/op	   16094 allocs/op
+BenchmarkVM_ListBuild-10          	      14	  76819116 ns/op	468065100 B/op	   16094 allocs/op
+BenchmarkVM_StructField-10        	     295	   4030040 ns/op	13611811 B/op	   80014 allocs/op
+BenchmarkVM_StructField-10        	     295	   4158372 ns/op	13611813 B/op	   80014 allocs/op
+BenchmarkVM_StructField-10        	     289	   4095154 ns/op	13611805 B/op	   80014 allocs/op
+BenchmarkVM_HofMap-10             	     169	   7435841 ns/op	48263575 B/op	   19128 allocs/op
+BenchmarkVM_HofMap-10             	     150	   8105978 ns/op	48263457 B/op	   19127 allocs/op
+BenchmarkVM_HofMap-10             	     148	   7772811 ns/op	48263724 B/op	   19129 allocs/op
+BenchmarkVM_QuerySelect-10        	      12	  94205153 ns/op	530046004 B/op	   54136 allocs/op
+BenchmarkVM_QuerySelect-10        	      12	  98773743 ns/op	530045553 B/op	   54133 allocs/op
+BenchmarkVM_QuerySelect-10        	      12	  95941597 ns/op	530046030 B/op	   54137 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     422	   2713046 ns/op	 5298877 B/op	   97008 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     441	   2716386 ns/op	 5298882 B/op	   97008 allocs/op
+BenchmarkVM_ClosureDispatch-10    	     438	   2829424 ns/op	 5298903 B/op	   97008 allocs/op
+BenchmarkVM_JsonEmit-10           	    2131	    531847 ns/op	 2060868 B/op	    4199 allocs/op
+BenchmarkVM_JsonEmit-10           	    2254	    557571 ns/op	 2060823 B/op	    4199 allocs/op
+BenchmarkVM_JsonEmit-10           	    2071	    627749 ns/op	 2060943 B/op	    4199 allocs/op
+PASS
+ok  	mochi/runtime/vm/bench	43.292s

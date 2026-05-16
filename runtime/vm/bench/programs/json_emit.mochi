@@ -1,0 +1,11 @@
+// Stand-in for the json_round program in MEP-17. Mochi has no
+// json.parse builtin and to_json is unimplemented in the VM, so we
+// stress the serialize side only: build a moderately deep nested
+// structure and emit it once via json(). The timed loop hits map
+// traversal, list iteration, string allocation, and the JSON
+// encoder hot path.
+var rows: list<map<string, int>> = []
+for i in 0..50 {
+  rows = append(rows, {"id": i, "score": i * 3, "rank": i % 10})
+}
+json({"count": len(rows), "rows": rows})
