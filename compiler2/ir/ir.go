@@ -55,6 +55,8 @@ const (
 	OpAddI64
 	OpSubI64
 	OpMulI64
+	OpDivI64
+	OpModI64
 	OpLessI64
 	OpLessEqI64
 	OpEqualI64

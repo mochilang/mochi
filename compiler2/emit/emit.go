@@ -117,6 +117,14 @@ func compileFunction(f *ir.Function, ra regalloc.Result) (*vm2.Function, error) 
 				emit(vm2.Instr{Op: vm2.OpMulI64, A: dst,
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpDivI64:
+				emit(vm2.Instr{Op: vm2.OpDivI64, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpModI64:
+				emit(vm2.Instr{Op: vm2.OpModI64, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
 			case ir.OpLessI64:
 				emit(vm2.Instr{Op: vm2.OpLessI64, A: dst,
 					B: int32(finalReg[ins.Args[0]]),

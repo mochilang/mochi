@@ -12,6 +12,8 @@ const (
 	OpAddI64                // A = B + C (signed 48-bit; overflow is implementation-defined)
 	OpSubI64                // A = B - C
 	OpMulI64                // A = B * C
+	OpDivI64                // A = B / C (truncated; division by zero traps)
+	OpModI64                // A = B % C (truncated, sign of dividend; mod by zero traps)
 	OpLessI64               // A = B < C  (bool)
 	OpLessEqI64             // A = B <= C (bool)
 	OpEqualI64              // A = B == C (bool)
