@@ -101,6 +101,20 @@ const sidebars = {
         'mep/mep-0016',
       ],
     },
+    {
+      label: 'VM & Runtime',
+      type: 'category',
+      className: 'sidebar-heading',
+      collapsed: false,
+      items: [
+        'mep/mep-0017',
+        'mep/mep-0018',
+        'mep/mep-0019',
+        'mep/mep-0020',
+        'mep/mep-0021',
+        'mep/mep-0022',
+      ],
+    },
   ],
 };
 
