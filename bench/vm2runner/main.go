@@ -34,6 +34,10 @@ var repeats = map[string]int{
 	// loops externally via b.N.
 	"fib":      1,
 	"iter_sum": 1,
+	// Strings subsystem (MEP-24 §2). The repeat count keeps wall-clock
+	// in the same ~1ms ballpark as the math kernels so the harness sees
+	// it as just another column.
+	"strings_concat_loop": 1000,
 }
 
 func main() {
