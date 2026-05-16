@@ -39,6 +39,21 @@ func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 					Value: resolveTypeRef(args[1], env),
 				}
 			}
+		case "option":
+			// MEP-5 §Option. `option<T>` is the long form of the `T?`
+			// shorthand handled by the Optional flag above.
+			if len(args) == 1 {
+				return OptionType{Elem: resolveTypeRef(args[0], env)}
+			}
+		case "result":
+			// MEP-5 §Option and Result. `result<T, E>` is the surface
+			// syntax for ResultType{Ok: T, Err: E}.
+			if len(args) == 2 {
+				return ResultType{
+					Ok:  resolveTypeRef(args[0], env),
+					Err: resolveTypeRef(args[1], env),
+				}
+			}
 		}
 		// Fallback: unknown generic type
 		return AnyType{}
