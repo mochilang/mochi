@@ -4,6 +4,8 @@ import (
 	"mochi/parser"
 	"mochi/types"
 	"testing"
+
+	"github.com/alecthomas/participle/v2/lexer"
 )
 
 func TestEffectSet_Basics(t *testing.T) {
@@ -222,6 +224,28 @@ func TestFunExpr_EffectsExceedDeclared(t *testing.T) {
 		}
 	}
 	t.Fatalf("expected T065 in %v", errs)
+}
+
+// TestT066_ReservedForPurePositions pins the message contract for the
+// diagnostic MEP-15 reserves for `const` declarations and struct field
+// defaults. No surface emits T066 today, so the test renders the
+// template directly to lock in code, message, and help text.
+func TestT066_ReservedForPurePositions(t *testing.T) {
+	tpl, ok := types.Errors["T066"]
+	if !ok {
+		t.Fatalf("T066 missing from Errors map")
+	}
+	if tpl.Code != "T066" {
+		t.Fatalf("Code=%q want T066", tpl.Code)
+	}
+	d := tpl.New(lexer.Position{}, types.NewEffectSet(types.EffectIO).String(), "`const` initializer")
+	const wantMsg = "expression produces effect(s) io, not allowed in `const` initializer"
+	if d.Msg != wantMsg {
+		t.Fatalf("Msg=%q want %q", d.Msg, wantMsg)
+	}
+	if !contains(d.Help, "pure expression") {
+		t.Fatalf("Help missing `pure expression` hint: %q", d.Help)
+	}
 }
 
 func contains(s, sub string) bool {

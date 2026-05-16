@@ -84,6 +84,7 @@ var Errors = map[string]diagnostic.Template{
 	"T063": {Code: "T063", Message: "safe-index `?[ ]` requires the wrapped type to be a list or map, got %s", Help: "Only `list<T>` and `map<K, V>` support indexed access after `?[`."},
 	"T064": {Code: "T064", Message: "unknown effect label `%s`", Help: "Effect annotations may only mention the closed label set: io, fs, net, time, meta."},
 	"T065": {Code: "T065", Message: "function `%s` declares effects %s but its body produces %s", Help: "Either add the missing label(s) to the `!` annotation, or remove the call that produces the extra effect."},
+	"T066": {Code: "T066", Message: "expression produces effect(s) %s, not allowed in %s", Help: "This position requires a pure expression. Replace the effectful call with a pre-computed value, or hoist the call out so only its result reaches this position."},
 }
 
 // --- Wrapper Functions ---
@@ -305,6 +306,14 @@ func errUnknownEffectLabel(pos lexer.Position, label string) error {
 
 func errEffectsExceedDeclared(pos lexer.Position, name string, declared, inferred EffectSet) error {
 	return Errors["T065"].New(pos, name, declared.String(), inferred.String())
+}
+
+// errEffectInPurePosition is reserved for the pure positions MEP-15
+// promises will gain a gate once `const` declarations and struct field
+// defaults land. No call site emits it today; the constructor exists so
+// the diagnostic message contract is pinned by tests.
+func errEffectInPurePosition(pos lexer.Position, context string, effects EffectSet) error {
+	return Errors["T066"].New(pos, effects.String(), context)
 }
 
 func errLenOperand(pos lexer.Position, typ Type) error {
