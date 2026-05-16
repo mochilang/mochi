@@ -57,4 +57,12 @@ const (
 	OpIndexStr  // A = newString(one-byte slice strAt(B)[regs[C].Int()]); traps on OOB
 	OpEqualStr  // A = bool(strEqual(strAt(B), strAt(C)))
 	OpHashStr   // A = i64(strHash(strAt(B)))  // exposed mostly for map-key prep + tests
+
+	// List subsystem (MEP-24 §3). Lists are growable []Cell buffers
+	// held in vm.Objects; a list-valued Cell is tagPtr.
+	OpNewList  // A = newList(capHint=B)
+	OpListLen  // A = i64(len(listAt(B).data))
+	OpListGet  // A = listAt(B).data[regs[C].Int()]; traps on OOB
+	OpListSet  // listAt(regs[A]).data[regs[B].Int()] = regs[C]; traps on OOB
+	OpListPush // listAt(regs[A]).data = append(..., regs[B]); amortized O(1)
 )

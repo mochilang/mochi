@@ -58,6 +58,9 @@ var programs = []program{
 	// allocating string-concat path: N appends per inner call,
 	// repeated `repeats` times by each language harness.
 	{category: "strings", name: "concat_loop", ns: []int{10, 30}},
+	// MEP-24 §3 lists subsystem. Fill+sum exercises the OpNewList /
+	// OpListPush growth path plus OpListGet on the read-back pass.
+	{category: "lists", name: "fill_sum", ns: []int{10, 100}},
 }
 
 type result struct {

@@ -114,9 +114,11 @@ func isPure(op ir.Op) bool {
 		ir.OpLessI64, ir.OpLessEqI64, ir.OpEqualI64,
 		ir.OpConstStr, ir.OpConcatStr, ir.OpLenStr,
 		ir.OpEqualStr, ir.OpHashStr,
+		ir.OpNewList, ir.OpListLen,
 		ir.OpPhi:
-		// OpIndexStr is intentionally excluded: it can trap on OOB and
-		// must not be eliminated even when its result is unused.
+		// Excluded on purpose:
+		//   OpIndexStr / OpListGet — may trap on OOB.
+		//   OpListSet / OpListPush — mutate.
 		return true
 	}
 	return false

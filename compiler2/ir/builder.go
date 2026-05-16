@@ -149,6 +149,31 @@ func (b *Builder) HashStr(x ValueID) ValueID {
 	return b.emit(Inst{Op: OpHashStr, Type: TI64, Args: []ValueID{x}})
 }
 
+// NewList allocates a fresh list with the given capacity hint.
+func (b *Builder) NewList(capHint int64) ValueID {
+	return b.emit(Inst{Op: OpNewList, Type: TList, Aux: capHint})
+}
+
+func (b *Builder) ListLen(l ValueID) ValueID {
+	return b.emit(Inst{Op: OpListLen, Type: TI64, Args: []ValueID{l}})
+}
+
+// ListGet returns l[i]. Element type is unknown to the IR (lists are
+// untyped at MVP), so the caller passes the expected element type.
+func (b *Builder) ListGet(l, i ValueID, elem Type) ValueID {
+	return b.emit(Inst{Op: OpListGet, Type: elem, Args: []ValueID{l, i}})
+}
+
+// ListSet writes v into l[i]. Returns the side-effect SSA value (TUnit).
+func (b *Builder) ListSet(l, i, v ValueID) ValueID {
+	return b.emit(Inst{Op: OpListSet, Type: TUnit, Args: []ValueID{l, i, v}})
+}
+
+// ListPush appends v to l. Returns the side-effect SSA value (TUnit).
+func (b *Builder) ListPush(l, v ValueID) ValueID {
+	return b.emit(Inst{Op: OpListPush, Type: TUnit, Args: []ValueID{l, v}})
+}
+
 // Call invokes function at funcIdx with the given args. retType is the
 // caller-supplied result type; the verifier later checks it against
 // the callee's signature once Module is assembled.

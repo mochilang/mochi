@@ -247,6 +247,29 @@ func (vm *VM) Run() (Cell, error) {
 			regs[ins.A] = CBool(vm.strEqualCell(regs[ins.B], regs[ins.C]))
 		case OpHashStr:
 			regs[ins.A] = CInt(int64(vm.strHashCell(regs[ins.B])))
+		case OpNewList:
+			regs[ins.A] = vm.newList(int(ins.B))
+		case OpListLen:
+			regs[ins.A] = CInt(int64(len(vm.listAt(regs[ins.B]).data)))
+		case OpListGet:
+			l := vm.listAt(regs[ins.B])
+			i := regs[ins.C].Int()
+			if i < 0 || i >= int64(len(l.data)) {
+				fr.IP = ip
+				return ret, errors.New("vm2: list index out of range")
+			}
+			regs[ins.A] = l.data[i]
+		case OpListSet:
+			l := vm.listAt(regs[ins.A])
+			i := regs[ins.B].Int()
+			if i < 0 || i >= int64(len(l.data)) {
+				fr.IP = ip
+				return ret, errors.New("vm2: list index out of range")
+			}
+			l.data[i] = regs[ins.C]
+		case OpListPush:
+			l := vm.listAt(regs[ins.A])
+			l.data = append(l.data, regs[ins.B])
 		case OpHalt:
 			fr.IP = ip
 			return ret, errors.New("vm2: OpHalt reached")
