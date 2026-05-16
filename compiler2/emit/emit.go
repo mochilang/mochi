@@ -51,8 +51,11 @@ func compileFunction(f *ir.Function, ra regalloc.Result) (*vm2.Function, error) 
 	// staging block above the assigned range.
 	maxArgs := 0
 	for _, ins := range f.Values {
-		if ins.Op == ir.OpCall && len(ins.Args) > maxArgs {
-			maxArgs = len(ins.Args)
+		switch ins.Op {
+		case ir.OpCall, ir.OpTailCall:
+			if len(ins.Args) > maxArgs {
+				maxArgs = len(ins.Args)
+			}
 		}
 	}
 	callBase := np + ra.NumRegs
@@ -135,6 +138,15 @@ func compileFunction(f *ir.Function, ra regalloc.Result) (*vm2.Function, error) 
 				emit(vm2.Instr{Op: vm2.OpCall, A: dst,
 					B: int32(ins.Aux),
 					C: int32(callBase), D: int32(len(ins.Args))})
+			case ir.OpTailCall:
+				for i, a := range ins.Args {
+					emit(vm2.Instr{Op: vm2.OpMove,
+						A: int32(callBase + i),
+						B: int32(finalReg[a])})
+				}
+				emit(vm2.Instr{Op: vm2.OpTailCall,
+					A: int32(ins.Aux),
+					B: int32(callBase), C: int32(len(ins.Args))})
 			case ir.OpRet:
 				if len(ins.Args) > 0 {
 					emit(vm2.Instr{Op: vm2.OpReturn, A: int32(finalReg[ins.Args[0]])})

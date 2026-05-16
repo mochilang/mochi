@@ -64,9 +64,10 @@ const (
 	OpCall
 
 	// Terminators: must appear once and only at end of block.
-	OpRet    // Args[0] = value (or none for TUnit)
-	OpBr     // AuxBlocks[0] = target
-	OpCondBr // Args[0] = cond, AuxBlocks[0] = then, AuxBlocks[1] = else
+	OpRet      // Args[0] = value (or none for TUnit)
+	OpBr       // AuxBlocks[0] = target
+	OpCondBr   // Args[0] = cond, AuxBlocks[0] = then, AuxBlocks[1] = else
+	OpTailCall // tail call. Aux = function index, Args = arg values; transfers control without growing the frame stack.
 
 	// Phi: must appear at head of block. Args[i] pairs with AuxBlocks[i].
 	OpPhi
@@ -84,7 +85,7 @@ type Inst struct {
 // IsTerminator reports whether the op ends a block.
 func (op Op) IsTerminator() bool {
 	switch op {
-	case OpRet, OpBr, OpCondBr:
+	case OpRet, OpBr, OpCondBr, OpTailCall:
 		return true
 	}
 	return false
