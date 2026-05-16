@@ -14,12 +14,53 @@ package types
 // is called once at the top of Check(). Embedders that want a reduced
 // surface can call the per-group functions directly instead.
 func registerPrelude(env *Env) {
+	registerErrorTypes(env)
 	registerCollectionBuiltins(env)
 	registerStringBuiltins(env)
 	registerNumericBuiltins(env)
 	registerTimeBuiltins(env)
 	registerMetaBuiltins(env)
 	registerIOBuiltins(env)
+}
+
+// registerErrorTypes installs the prelude's closed union error kinds.
+// Today the only one is IOError, which is the error arm of the
+// `result<…, IOError>` returns produced by load / save / fetch.
+// Variants are kept narrow and named after the actual failure modes
+// that the runtime can distinguish, so a match has at most five arms.
+func registerErrorTypes(env *Env) {
+	notFound := StructType{Name: "NotFound", Fields: []StructField{
+		{Name: "path", Type: StringType{}},
+	}}
+	permDenied := StructType{Name: "PermissionDenied", Fields: []StructField{
+		{Name: "path", Type: StringType{}},
+	}}
+	invalidFmt := StructType{Name: "InvalidFormat", Fields: []StructField{
+		{Name: "path", Type: StringType{}},
+		{Name: "reason", Type: StringType{}},
+	}}
+	netErr := StructType{Name: "NetworkError", Fields: []StructField{
+		{Name: "url", Type: StringType{}},
+		{Name: "reason", Type: StringType{}},
+	}}
+	ioFailure := StructType{Name: "IOFailure", Fields: []StructField{
+		{Name: "reason", Type: StringType{}},
+	}}
+	for _, st := range []StructType{notFound, permDenied, invalidFmt, netErr, ioFailure} {
+		env.SetStruct(st.Name, st)
+	}
+	ioError := UnionType{
+		Name: "IOError",
+		Variants: map[string]StructType{
+			"NotFound":         notFound,
+			"PermissionDenied": permDenied,
+			"InvalidFormat":    invalidFmt,
+			"NetworkError":     netErr,
+			"IOFailure":        ioFailure,
+		},
+		Order: []string{"NotFound", "PermissionDenied", "InvalidFormat", "NetworkError", "IOFailure"},
+	}
+	env.SetUnion("IOError", ioError)
 }
 
 // registerCollectionBuiltins covers list, map, and group operations.
