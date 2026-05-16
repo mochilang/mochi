@@ -119,6 +119,7 @@ const sidebars = {
         'mep/mep-0026',
         'mep/mep-0027',
         'mep/mep-0028',
+        'mep/mep-0029',
       ],
     },
   ],
