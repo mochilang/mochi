@@ -1,0 +1,27 @@
+fun fill_sum(n: int): int {
+  var xs: list<int> = []
+  for i in 0..n {
+    xs = append(xs, i)
+  }
+  var s = 0
+  for j in 0..n {
+    s = s + xs[j]
+  }
+  return s
+}
+
+let n = {{ .N }}
+let repeat = 1000
+var last = 0
+
+let start = now()
+for i in 0..repeat {
+  last = fill_sum(n)
+}
+let duration = (now() - start) / 1000
+
+
+json({
+  "duration_us": duration,
+  "output": last,
+})

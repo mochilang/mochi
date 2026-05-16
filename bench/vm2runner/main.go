@@ -38,6 +38,8 @@ var repeats = map[string]int{
 	// in the same ~1ms ballpark as the math kernels so the harness sees
 	// it as just another column.
 	"strings_concat_loop": 1000,
+	// Lists subsystem (MEP-24 §3).
+	"lists_fill_sum": 1000,
 }
 
 func main() {

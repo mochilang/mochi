@@ -18,6 +18,7 @@ const (
 	TBool
 	TPtr
 	TStr
+	TList
 )
 
 func (t Type) String() string {
@@ -34,6 +35,8 @@ func (t Type) String() string {
 		return "ptr"
 	case TStr:
 		return "str"
+	case TList:
+		return "list"
 	}
 	return "?"
 }
@@ -74,6 +77,15 @@ const (
 	OpIndexStr  // Args[0][Args[1]]
 	OpEqualStr  // Args[0] == Args[1]
 	OpHashStr   // hash(Args[0])
+
+	// List subsystem (MEP-24 §3). Lists are reference-typed; the
+	// allocating ops produce a fresh TList value. ListGet may trap on
+	// OOB (not pure); ListSet/ListPush mutate and are never pure.
+	OpNewList  // Aux = capacity hint
+	OpListLen  // len(Args[0])
+	OpListGet  // Args[0][Args[1]]
+	OpListSet  // Args[0][Args[1]] = Args[2]; result type TUnit
+	OpListPush // Args[0].push(Args[1]); result type TUnit
 
 	// Call: Aux = function index, Args = arg values. May have effects;
 	// optimizers must treat as opaque.
