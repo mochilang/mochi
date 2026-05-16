@@ -64,6 +64,60 @@ func compileFunction(f *ir.Function, ra regalloc.Result) (*vm2.Function, error) 
 		numRegs = np
 	}
 
+	// Use counts for fusion safety: a compare can be folded into the
+	// following OpCondBr only if it has exactly one use (that CondBr).
+	useCount := make([]int, len(f.Values))
+	for _, ins := range f.Values {
+		for _, a := range ins.Args {
+			useCount[a]++
+		}
+	}
+
+	// Per-block scan: identify compare→CondBr pairs we can fuse. Both
+	// must live in the same block, the compare must immediately precede
+	// the CondBr, and the compare's result must have exactly one use.
+	// Suppress the compare emit; emit a fused jump in place of the
+	// CondBr. When fallthrough matches one of the targets we also skip
+	// the trailing OpJump.
+	suppressCmp := make(map[ir.ValueID]bool)
+	fuseCondBr := make(map[ir.ValueID]ir.ValueID) // condbr vid -> cmp vid
+	for bi := range f.Blocks {
+		blk := f.Blocks[bi]
+		insts := blk.Insts
+		if len(insts) < 2 {
+			continue
+		}
+		last := insts[len(insts)-1]
+		lastIns := f.Values[last]
+		if lastIns.Op != ir.OpCondBr {
+			continue
+		}
+		cmpVid := lastIns.Args[0]
+		// Find the cmp's position: must be the immediately preceding
+		// instruction in this block that isn't OpInvalid (DCE'd).
+		var prev ir.ValueID = -1
+		for i := len(insts) - 2; i >= 0; i-- {
+			if f.Values[insts[i]].Op != ir.OpInvalid {
+				prev = insts[i]
+				break
+			}
+		}
+		if prev != cmpVid {
+			continue
+		}
+		cmpIns := f.Values[cmpVid]
+		switch cmpIns.Op {
+		case ir.OpLessI64, ir.OpLessEqI64, ir.OpEqualI64:
+		default:
+			continue
+		}
+		if useCount[cmpVid] != 1 {
+			continue
+		}
+		suppressCmp[cmpVid] = true
+		fuseCondBr[last] = cmpVid
+	}
+
 	// Const pool with dedup.
 	consts := []vm2.Cell{}
 	constIdx := map[vm2.Cell]int32{}
@@ -126,14 +180,23 @@ func compileFunction(f *ir.Function, ra regalloc.Result) (*vm2.Function, error) 
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
 			case ir.OpLessI64:
+				if suppressCmp[vid] {
+					break
+				}
 				emit(vm2.Instr{Op: vm2.OpLessI64, A: dst,
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
 			case ir.OpLessEqI64:
+				if suppressCmp[vid] {
+					break
+				}
 				emit(vm2.Instr{Op: vm2.OpLessEqI64, A: dst,
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
 			case ir.OpEqualI64:
+				if suppressCmp[vid] {
+					break
+				}
 				emit(vm2.Instr{Op: vm2.OpEqualI64, A: dst,
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
@@ -165,10 +228,55 @@ func compileFunction(f *ir.Function, ra regalloc.Result) (*vm2.Function, error) 
 				idx := emit(vm2.Instr{Op: vm2.OpJump})
 				pending = append(pending, pendingJump{insIdx: idx, target: ins.AuxBlocks[0], field: 'A'})
 			case ir.OpCondBr:
+				thenB := ins.AuxBlocks[0]
+				elseB := ins.AuxBlocks[1]
+				var nextB ir.BlockID = -1
+				if bi+1 < len(f.Blocks) {
+					nextB = f.Blocks[bi+1].ID
+				}
+				if cmpVid, ok := fuseCondBr[vid]; ok {
+					cmp := f.Values[cmpVid]
+					b := int32(finalReg[cmp.Args[0]])
+					c := int32(finalReg[cmp.Args[1]])
+					// Direct (jump-if-true) and inverted forms per cmp op.
+					// Picking inverted means we jump to elseB on the
+					// negated predicate; that's only valid when thenB is
+					// the fallthrough, so we can drop the trailing jump.
+					var direct, inverted vm2.Op
+					switch cmp.Op {
+					case ir.OpLessI64:
+						direct, inverted = vm2.OpJumpIfLessI64, vm2.OpJumpIfGreaterEqI64
+					case ir.OpLessEqI64:
+						direct, inverted = vm2.OpJumpIfLessEqI64, vm2.OpJumpIfGreaterI64
+					case ir.OpEqualI64:
+						direct, inverted = vm2.OpJumpIfEqualI64, vm2.OpJumpIfNotEqualI64
+					}
+					switch {
+					case elseB == nextB:
+						// Jump on true to thenB, fall through to elseB.
+						idx := emit(vm2.Instr{Op: direct, A: b, B: c})
+						pending = append(pending, pendingJump{insIdx: idx, target: thenB, field: 'C'})
+					case thenB == nextB:
+						// Jump on !cond to elseB, fall through to thenB.
+						idx := emit(vm2.Instr{Op: inverted, A: b, B: c})
+						pending = append(pending, pendingJump{insIdx: idx, target: elseB, field: 'C'})
+					default:
+						idx := emit(vm2.Instr{Op: direct, A: b, B: c})
+						pending = append(pending, pendingJump{insIdx: idx, target: thenB, field: 'C'})
+						idx2 := emit(vm2.Instr{Op: vm2.OpJump})
+						pending = append(pending, pendingJump{insIdx: idx2, target: elseB, field: 'A'})
+					}
+					break
+				}
+				// Unfused fallback: jump on false to elseB; fall
+				// through on true. Drop the trailing OpJump when thenB
+				// is the layout-next block.
 				idx := emit(vm2.Instr{Op: vm2.OpJumpIfFalse, A: int32(finalReg[ins.Args[0]])})
-				pending = append(pending, pendingJump{insIdx: idx, target: ins.AuxBlocks[1], field: 'B'})
-				idx2 := emit(vm2.Instr{Op: vm2.OpJump})
-				pending = append(pending, pendingJump{insIdx: idx2, target: ins.AuxBlocks[0], field: 'A'})
+				pending = append(pending, pendingJump{insIdx: idx, target: elseB, field: 'B'})
+				if thenB != nextB {
+					idx2 := emit(vm2.Instr{Op: vm2.OpJump})
+					pending = append(pending, pendingJump{insIdx: idx2, target: thenB, field: 'A'})
+				}
 			case ir.OpInvalid:
 				// DCE'd
 			case ir.OpPhi:
@@ -181,10 +289,13 @@ func compileFunction(f *ir.Function, ra regalloc.Result) (*vm2.Function, error) 
 
 	for _, pj := range pending {
 		target := blockPC[pj.target]
-		if pj.field == 'A' {
+		switch pj.field {
+		case 'A':
 			code[pj.insIdx].A = target
-		} else {
+		case 'B':
 			code[pj.insIdx].B = target
+		case 'C':
+			code[pj.insIdx].C = target
 		}
 	}
 

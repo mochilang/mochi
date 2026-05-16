@@ -32,13 +32,18 @@ type program struct {
 // Per-program sizes. fact_rec and mul_loop cap at sizes whose result
 // fits in vm2's 48-bit signed Cell payload (max ~1.4e14): 16! and 16!
 // respectively. Lifting that cap requires vm2 boxed-int support.
+//
+// The largest N from each program was dropped (per user feedback): the
+// big-N rows ran for tens of seconds without changing the relative
+// ranking of vm2 vs CPython vs Lua. The remaining sizes already span
+// 10x–100x dynamic range, which is plenty for a comparison sweep.
 var programs = []program{
-	{"fact_rec", []int{10, 13, 16}},
-	{"fib_iter", []int{10, 20, 30}},
-	{"fib_rec", []int{15, 20, 25}},
-	{"mul_loop", []int{10, 13, 17}},
-	{"prime_count", []int{50, 100, 300}},
-	{"sum_loop", []int{1000, 10000, 100000}},
+	{"fact_rec", []int{10, 13}},
+	{"fib_iter", []int{10, 20}},
+	{"fib_rec", []int{15, 20}},
+	{"mul_loop", []int{10, 13}},
+	{"prime_count", []int{50, 100}},
+	{"sum_loop", []int{1000, 10000}},
 }
 
 type result struct {

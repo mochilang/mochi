@@ -49,6 +49,30 @@ func (vm *VM) Run() (Cell, error) {
 			if !fr.Regs[ins.A].Bool() {
 				fr.IP = int(ins.B)
 			}
+		case OpJumpIfLessI64:
+			if fr.Regs[ins.A].Int() < fr.Regs[ins.B].Int() {
+				fr.IP = int(ins.C)
+			}
+		case OpJumpIfLessEqI64:
+			if fr.Regs[ins.A].Int() <= fr.Regs[ins.B].Int() {
+				fr.IP = int(ins.C)
+			}
+		case OpJumpIfGreaterI64:
+			if fr.Regs[ins.A].Int() > fr.Regs[ins.B].Int() {
+				fr.IP = int(ins.C)
+			}
+		case OpJumpIfGreaterEqI64:
+			if fr.Regs[ins.A].Int() >= fr.Regs[ins.B].Int() {
+				fr.IP = int(ins.C)
+			}
+		case OpJumpIfEqualI64:
+			if fr.Regs[ins.A].Int() == fr.Regs[ins.B].Int() {
+				fr.IP = int(ins.C)
+			}
+		case OpJumpIfNotEqualI64:
+			if fr.Regs[ins.A].Int() != fr.Regs[ins.B].Int() {
+				fr.IP = int(ins.C)
+			}
 		case OpCall:
 			callee := vm.Program.Funcs[ins.B]
 			newFr := vm.acquireFrame(callee)
@@ -60,27 +84,22 @@ func (vm *VM) Run() (Cell, error) {
 		case OpTailCall:
 			callee := vm.Program.Funcs[ins.A]
 			n := int(ins.C)
-			// Snapshot args before overwriting any register that
-			// might alias the destination slots.
-			var buf [16]Cell
-			var args []Cell
-			if n <= len(buf) {
-				args = buf[:n]
-			} else {
-				args = make([]Cell, n)
-			}
-			copy(args, fr.Regs[ins.B:int(ins.B)+n])
+			// Args at fr.Regs[B..B+n) never alias params [0..n)
+			// because emit.go always picks B = callBase = np +
+			// ra.NumRegs, so B >= np >= n. Direct forward copy is
+			// safe; no snapshot needed.
 			if callee == fr.Fn {
-				// Same function: reuse frame in place.
-				copy(fr.Regs[:n], args)
+				copy(fr.Regs[:n], fr.Regs[ins.B:int(ins.B)+n])
 				fr.IP = 0
 			} else {
-				// Different function: swap frame contents.
 				parent := fr.Parent
 				retReg := fr.RetReg
-				vm.releaseFrame(fr)
+				// Acquire the new frame before releasing the old
+				// one so the source and destination Regs are
+				// guaranteed-distinct slices; only then release.
 				newFr := vm.acquireFrame(callee)
-				copy(newFr.Regs[:n], args)
+				copy(newFr.Regs[:n], fr.Regs[ins.B:int(ins.B)+n])
+				vm.releaseFrame(fr)
 				newFr.RetReg = retReg
 				newFr.Parent = parent
 				fr = newFr
