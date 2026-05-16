@@ -116,6 +116,8 @@ const (
 	OpIndex_List
 	OpIndex_Map
 	OpIndex_Str
+	OpSetIndex_List
+	OpSetIndex_Map
 )
 
 func (op Op) String() string {
@@ -308,6 +310,10 @@ func (op Op) String() string {
 		return "Index_Map"
 	case OpIndex_Str:
 		return "Index_Str"
+	case OpSetIndex_List:
+		return "SetIndex_List"
+	case OpSetIndex_Map:
+		return "SetIndex_Map"
 	default:
 		return "?"
 	}
