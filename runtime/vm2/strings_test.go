@@ -23,17 +23,35 @@ func runStrProg(t *testing.T, numRegs int, strConsts [][]byte, code []Instr) (Ce
 	return got, vm
 }
 
+// strString returns the bytes backing a string Cell in either form.
+func strString(vm *VM, c Cell) string {
+	var buf [MaxInlineStr]byte
+	return string(vm.strBytes(c, &buf))
+}
+
 func TestLoadStrK(t *testing.T) {
+	// "hello" is 5 bytes, exactly MaxInlineStr — packed inline.
 	got, vm := runStrProg(t, 1, [][]byte{[]byte("hello")}, []Instr{
 		{Op: OpLoadStrK, A: 0, B: 0},
 		{Op: OpReturn, A: 0},
 	})
-	if !got.IsPtr() {
-		t.Fatalf("want ptr cell, got %x", uint64(got))
+	if !got.IsStr() || !got.IsSStr() {
+		t.Fatalf("want inline string cell, got %x", uint64(got))
 	}
-	s := vm.stringAt(got)
-	if string(s.bytes) != "hello" {
-		t.Fatalf("want hello, got %q", s.bytes)
+	if s := strString(vm, got); s != "hello" {
+		t.Fatalf("want hello, got %q", s)
+	}
+
+	// 6-byte string overflows the inline budget; falls back to heap.
+	got, vm = runStrProg(t, 1, [][]byte{[]byte("hello!")}, []Instr{
+		{Op: OpLoadStrK, A: 0, B: 0},
+		{Op: OpReturn, A: 0},
+	})
+	if !got.IsStr() || !got.IsPtr() {
+		t.Fatalf("want heap string cell, got %x", uint64(got))
+	}
+	if string(vm.stringAt(got).bytes) != "hello!" {
+		t.Fatalf("want hello!, got %q", vm.stringAt(got).bytes)
 	}
 }
 
@@ -44,8 +62,8 @@ func TestConcatStr(t *testing.T) {
 		{Op: OpConcatStr, A: 2, B: 0, C: 1},
 		{Op: OpReturn, A: 2},
 	})
-	if string(vm.stringAt(got).bytes) != "foobar" {
-		t.Fatalf("want foobar, got %q", vm.stringAt(got).bytes)
+	if s := strString(vm, got); s != "foobar" {
+		t.Fatalf("want foobar, got %q", s)
 	}
 }
 
@@ -78,7 +96,7 @@ func TestIndexStr(t *testing.T) {
 	if err != nil {
 		t.Fatalf("run: %v", err)
 	}
-	if s := string(vm.stringAt(got).bytes); s != "b" {
+	if s := strString(vm, got); s != "b" {
 		t.Fatalf("want \"b\", got %q", s)
 	}
 }
