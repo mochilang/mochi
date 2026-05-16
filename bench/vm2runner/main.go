@@ -75,10 +75,16 @@ func main() {
 		die("vm2runner: emit %s: %v", *prog, err)
 	}
 
+	// Single VM reused across reps. Matches Lua / CPython, where the
+	// interpreter state is created once and the user code runs in a
+	// loop; otherwise we'd be benchmarking VM construction overhead
+	// per rep, not the interpreter loop. Run() resets Stack/Frames
+	// internally between invocations.
+	vm := vm2.New(program)
 	var last int64
 	start := time.Now()
 	for i := 0; i < repeat; i++ {
-		got, err := vm2.New(program).Run()
+		got, err := vm.Run()
 		if err != nil {
 			die("vm2runner: run %s: %v", *prog, err)
 		}
