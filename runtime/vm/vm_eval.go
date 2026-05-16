@@ -1811,35 +1811,26 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			if fnVal.Tag == ValueFunc {
 				cl := fnVal.Func.(*closure)
-				// MEP-19 call IC + no-captures shortcut. When the
-				// call site is monomorphic on a no-capture closure
-				// (the HofMap and ClosureDispatch shape), skip the
-				// merged-args allocation entirely. The cache slot
-				// also lets a future polymorphic extension upgrade
-				// in place.
+				// MEP-19 polymorphic call IC + no-captures shortcut.
+				// Caches up to siteSlots distinct closures per call
+				// site. ClosureDispatch's four-way rotation fills
+				// all four slots in the first iteration; every
+				// subsequent call is a hit and skips both the
+				// closure resolution and the capture-merge alloc.
 				ip := fr.ip - 1
 				cs := siteFor(fr.fn, ip)
+				captureLen, hit := cs.lookup(cl)
 				var all []Value
-				if !cs.bypassed && cs.closurePtr == cl {
-					if cs.captureLen == 0 {
+				if hit {
+					if captureLen == 0 {
 						all = args
 					} else {
-						all = make([]Value, cs.captureLen+len(args))
+						all = make([]Value, captureLen+len(args))
 						copy(all, cl.args)
-						copy(all[cs.captureLen:], args)
+						copy(all[captureLen:], args)
 					}
 				} else {
-					if !cs.bypassed {
-						if cs.closurePtr != nil && cs.misses < siteMaxMisses {
-							cs.misses++
-							if cs.misses >= siteMaxMisses {
-								cs.bypassed = true
-							}
-						}
-						cs.closurePtr = cl
-						cs.fn = &m.prog.Funcs[cl.fn]
-						cs.captureLen = len(cl.args)
-					}
+					cs.observe(cl)
 					if len(cl.args) == 0 {
 						all = args
 					} else {
