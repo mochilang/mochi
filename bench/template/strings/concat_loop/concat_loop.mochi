@@ -1,0 +1,23 @@
+fun concat_loop(n: int): int {
+  var acc = "a"
+  for i in 0..n {
+    acc = acc + "a"
+  }
+  return len(acc)
+}
+
+let n = {{ .N }}
+let repeat = 1000
+var last = 0
+
+let start = now()
+for i in 0..repeat {
+  last = concat_loop(n)
+}
+let duration = (now() - start) / 1000
+
+
+json({
+  "duration_us": duration,
+  "output": last,
+})
