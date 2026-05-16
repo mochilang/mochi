@@ -3,7 +3,7 @@ import time
 
 def sum_loop(n):
     total = 0
-    for i in range(1, n + 1):
+    for i in range(1, n):
         total += i
     return total
 
