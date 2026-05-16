@@ -169,10 +169,10 @@
   },
   {
     "number": 21,
-    "title": "VM Conformance and Differential Testing",
+    "title": "Compiler2 and VM2 Co-Design for Maximum Interpreter Throughput",
     "status": "Draft",
     "type": "Standards Track",
-    "description": "Beyond golden files, fuzz the bytecode compiler, differential-test interpreter against constant folding, and prove laws via property tests so MEP-18 through MEP-22 cannot regress correctness.",
+    "description": "A first-principles redesign of the Mochi compile-and-execute pipeline. Replace the observation-driven runtime with a typed SSA compiler (compiler2) that emits monomorphic bytecode into a redesigned vm2 with NaN-boxed 8-byte values, register allocation, tail calls, and bounds-check elision. No backward compatibility constraints. Target the absolute throughput ceiling of a Go-hosted interpreter on statically typed source.",
     "slug": "/docs/mep/mep-0021"
   },
   {
@@ -180,7 +180,63 @@
     "title": "Baseline JIT via Copy-and-Patch (Deferred)",
     "status": "Deferred",
     "type": "Informational",
-    "description": "A non-optimizing baseline JIT built on copy-and-patch compilation, planned as the long-term tier above the interpreter once MEP-18 through MEP-21 are exhausted.",
+    "description": "A non-optimizing baseline JIT built on copy-and-patch compilation, planned as the long-term tier above the interpreter once MEP-18 through MEP-21 are exhausted. Co-designed with MEP-21 typed bytecode so the JIT consumes already-typed instructions and inherits zero speculative complexity from a dynamic front end.",
     "slug": "/docs/mep/mep-0022"
+  },
+  {
+    "number": 23,
+    "title": "Cross-language Baseline Benchmarks",
+    "status": "Draft",
+    "type": "Process",
+    "description": "A periodic, hand-written cross-language benchmark suite that positions Mochi against Python and Lua on the same workloads, separate from the MEP-17 per-PR gate.",
+    "slug": "/docs/mep/mep-0023"
+  },
+  {
+    "number": 24,
+    "title": "VM2 Subsystem Design (Objects, Strings, Structs, Lists, Maps, Closures, GC, Errors)",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "A consolidated subsystem design for vm2 that replaces the ad-hoc per-feature opcode growth of MEPs 18-21 with a single coherent plan for value representation, heap-allocated types, garbage collection, exception/Result handling, and the porting path to feature parity with the legacy VM. Co-designed with a comprehensive correctness + benchmark gate.",
+    "slug": "/docs/mep/mep-0024"
+  },
+  {
+    "number": 25,
+    "title": "VM2 Data Model (Strings, Lists, Maps, Sets, Structs)",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Algorithmically modern in-memory representations for vm2's five core container kinds, strings, lists, maps, sets, structs, replacing the MEP-24 MVP shapes with shapes that close the Lua gap on the cross-language baseline and stay competitive after a future JIT lands. Specifies SSO + rope strings, type-specialized lists, Swiss-style int-keyed maps, presence-only set storage, and slot-packed structs. Implementation strategy is selected from three competing approaches detailed in MEP-26, MEP-27, MEP-28.",
+    "slug": "/docs/mep/mep-0025"
+  },
+  {
+    "number": 26,
+    "title": "VM2 Data Model Option 1 - Monomorphic + One-Way Migration",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "First of three competing dispatch-strategy specs for the MEP-25 data model. Each container starts in the smallest shape that fits its first operation and migrates exactly once, in place, to a more general shape on the first operation that does not fit. The monomorphic-then-generic lattice is the same one used by V8 hidden classes, PyPy storage strategies, Lua table promotion, CRuby shape trees, and Rust SmallVec. This MEP specifies the lattice formally, derives per-op steady-state cost, bounds migration cost over a program lifetime, analyzes JIT integration, and predicts MEP-23 numbers.",
+    "slug": "/docs/mep/mep-0026"
+  },
+  {
+    "number": 27,
+    "title": "VM2 Data Model Option 2 - Polymorphic + Inline Caches",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Second of three competing dispatch-strategy specs for the MEP-25 data model. Every container kind exposes one polymorphic shape, but each opcode site carries a small inline cache of recently-seen sub-shapes. The hot path stays monomorphic at the call-site granularity while the runtime remains structurally polymorphic. Lineage traces to Self, Smalltalk-80, V8, and SpiderMonkey. This MEP specifies the IC slot layout, the monomorphic / polymorphic / megamorphic state machine, per-op cost, IC memory budget, JIT integration, and predicts MEP-23 numbers.",
+    "slug": "/docs/mep/mep-0027"
+  },
+  {
+    "number": 28,
+    "title": "VM2 Data Model Option 3 - AOT Codegen Specialization",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Third of three competing dispatch-strategy specs for the MEP-25 data model. The compiler enumerates each opcode's operand-shape tuple at emit time and lowers each tuple to a distinct specialized opcode. No shape dispatch at runtime, no inline caches, no migration. The interpreter loop dispatches on opcode and runs specialized code directly. Lineage traces to LuaJIT specialized opcodes, Julia method specialization, Crystal and Nim monomorphization, and Rust generic instantiation. This MEP specifies the (op, shape) enumeration scheme, the bytecode size impact, the codegen explosion bound, the fallback path for shape-unknown sites, the JIT cooperation model, and predicts MEP-23 numbers.",
+    "slug": "/docs/mep/mep-0028"
+  },
+  {
+    "number": 29,
+    "title": "VM2 Dispatch Strategy - Measured Results",
+    "status": "Informational",
+    "type": "Informational",
+    "description": "Head-to-head benchmark of the three dispatch strategies specified in MEP-26 (Migration), MEP-27 (Inline Cache) and MEP-28 (AOT codegen) on canonical workloads for two containers, lists (fill_sum) and strings (concat_loop). Sibling prototype packages under runtime/vm2/listopt/ and runtime/vm2/stropt/ implement each strategy in isolation. Lists, AOT wins narrowly, IC regresses substantially. Strings, all three rope-aware strategies trounce the today-shape baseline because the algorithmic O(N²) to O(N) win swamps the dispatch cost. The two containers point at opposite engineering choices, and the result inverts the design-stage MEP predictions in both cases.",
+    "slug": "/docs/mep/mep-0029"
   }
 ]
