@@ -771,7 +771,10 @@ func evalIndexConst(container, idx Value) (Value, bool) {
 			i += n
 		}
 		if i < 0 || i >= n {
-			return Value{Tag: ValueNull}, true
+			// MEP-5 P7: don't fold OOB list index to null;
+			// leave it for the runtime, which now reports
+			// the error instead of injecting a null.
+			return Value{}, false
 		}
 		return container.List[i], true
 	case ValueMap:
@@ -798,7 +801,8 @@ func evalIndexConst(container, idx Value) (Value, bool) {
 			i += len(runes)
 		}
 		if i < 0 || i >= len(runes) {
-			return Value{Tag: ValueNull}, true
+			// MEP-5 P7: see ValueList branch above.
+			return Value{}, false
 		}
 		return Value{Tag: ValueStr, Str: string(runes[i])}, true
 	}

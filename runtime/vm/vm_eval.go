@@ -625,13 +625,17 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			switch src.Tag {
 			case ValueList:
+				// MEP-5 P7: the static rule `xs : [τ] ⊢ xs[i] : τ`
+				// gives the result type τ unconditionally. Silently
+				// returning a null at OOB would inject a value of
+				// the wrong static type. Use `xs?[i]` for the safe
+				// Option-returning variant.
 				idx := idxVal.Int
 				if idx < 0 {
 					idx += len(src.List)
 				}
 				if idx < 0 || idx >= len(src.List) {
-					fr.regs[ins.A] = Value{Tag: ValueNull}
-					break
+					return Value{}, m.newError(fmt.Errorf("list index out of range: %d (len %d)", idxVal.Int, len(src.List)), trace, ins.Line)
 				}
 				fr.regs[ins.A] = src.List[idx]
 			case ValueMap:
@@ -659,9 +663,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					fr.regs[ins.A] = found
 				}
 			case ValueStr:
+				// MEP-5 P7: `s : string ⊢ s[i] : string`. A null on
+				// OOB or on a non-int index would inject a value of
+				// the wrong static type. Slicing (`s[a:b]`) is the
+				// shape that recovers when the range is unknown.
 				if idxVal.Tag != ValueInt {
-					fr.regs[ins.A] = Value{Tag: ValueNull}
-					break
+					return Value{}, m.newError(fmt.Errorf("string index must be int"), trace, ins.Line)
 				}
 				runes := []rune(src.Str)
 				idx := idxVal.Int
@@ -669,8 +676,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					idx += len(runes)
 				}
 				if idx < 0 || idx >= len(runes) {
-					fr.regs[ins.A] = Value{Tag: ValueNull}
-					break
+					return Value{}, m.newError(fmt.Errorf("string index out of range: %d (len %d)", idxVal.Int, len(runes)), trace, ins.Line)
 				}
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: string(runes[idx])}
 			default:
