@@ -183,6 +183,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpAdd:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if b.Tag == ValueInt && c.Tag == ValueInt {
+				if r, ok := addIntOverflow(b.Int, c.Int); ok {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: r}
+					break
+				}
+			}
 			if b.Tag == ValueNull || c.Tag == ValueNull {
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 				break
@@ -208,6 +214,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpAddInt:
 			bVal := fr.regs[ins.B]
 			cVal := fr.regs[ins.C]
+			if bVal.Tag == ValueInt && cVal.Tag == ValueInt {
+				if r, ok := addIntOverflow(bVal.Int, cVal.Int); ok {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: r}
+					break
+				}
+			}
 			if bVal.Tag == ValueNull || cVal.Tag == ValueNull {
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 			} else {
@@ -229,6 +241,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpSub:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if b.Tag == ValueInt && c.Tag == ValueInt {
+				if r, ok := subIntOverflow(b.Int, c.Int); ok {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: r}
+					break
+				}
+			}
 			if b.Tag == ValueNull || c.Tag == ValueNull {
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 				break
@@ -252,6 +270,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpSubInt:
 			bVal := fr.regs[ins.B]
 			cVal := fr.regs[ins.C]
+			if bVal.Tag == ValueInt && cVal.Tag == ValueInt {
+				if r, ok := subIntOverflow(bVal.Int, cVal.Int); ok {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: r}
+					break
+				}
+			}
 			if bVal.Tag == ValueNull || cVal.Tag == ValueNull {
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 			} else {
@@ -303,6 +327,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpMul:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if b.Tag == ValueInt && c.Tag == ValueInt {
+				if r, ok := mulIntOverflow(b.Int, c.Int); ok {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: r}
+					break
+				}
+			}
 			if b.Tag == ValueNull || c.Tag == ValueNull {
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 				break
@@ -326,6 +356,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpMulInt:
 			bVal := fr.regs[ins.B]
 			cVal := fr.regs[ins.C]
+			if bVal.Tag == ValueInt && cVal.Tag == ValueInt {
+				if r, ok := mulIntOverflow(bVal.Int, cVal.Int); ok {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: r}
+					break
+				}
+			}
 			if bVal.Tag == ValueNull || cVal.Tag == ValueNull {
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 			} else {
@@ -380,6 +416,15 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpDivInt:
 			bVal := fr.regs[ins.B]
 			cVal := fr.regs[ins.C]
+			if bVal.Tag == ValueInt && cVal.Tag == ValueInt {
+				if cVal.Int == 0 {
+					return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
+				}
+				if !(bVal.Int == -1<<63 && cVal.Int == -1) {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: bVal.Int / cVal.Int}
+					break
+				}
+			}
 			if bVal.Tag == ValueNull || cVal.Tag == ValueNull {
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 			} else {
@@ -431,6 +476,15 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpModInt:
 			bVal := fr.regs[ins.B]
 			cVal := fr.regs[ins.C]
+			if bVal.Tag == ValueInt && cVal.Tag == ValueInt {
+				if cVal.Int == 0 {
+					return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
+				}
+				if !(bVal.Int == -1<<63 && cVal.Int == -1) {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: bVal.Int % cVal.Int}
+					break
+				}
+			}
 			if bVal.Tag == ValueNull || cVal.Tag == ValueNull {
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 			} else {
