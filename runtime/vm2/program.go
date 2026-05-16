@@ -19,10 +19,16 @@ type Function struct {
 	Consts    []Cell
 	// StrConsts holds the raw bytes of string-typed constants. The
 	// emit-time index in StrConsts is the operand B value of an
-	// OpLoadStrK; the dispatch loop materializes a fresh vmString on
-	// first use via newString. Carrying bytes rather than pre-allocated
-	// *vmStrings keeps Function trivially serializable later.
+	// OpLoadStrK. Carrying bytes (rather than pre-allocated *vmStrings)
+	// keeps Function trivially serializable later.
 	StrConsts [][]byte
+	// StrCells is the per-Cell view of StrConsts used by the dispatch
+	// loop. Entries with len <= MaxInlineStr are packed inline at
+	// runtime materialization (no allocation); longer entries are
+	// allocated once into the running VM's Objects table and the Cell
+	// is cached here. This field is populated by VM.Run; not part of
+	// the on-disk Program shape.
+	StrCells []Cell
 }
 
 // Program is the unit of execution. Main names the entry function.

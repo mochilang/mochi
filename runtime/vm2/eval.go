@@ -17,6 +17,23 @@ func (vm *VM) Run() (Cell, error) {
 	vm.Stack = vm.Stack[:0]
 	vm.Frames = vm.Frames[:0]
 
+	// Materialize string-constant Cells per function. Short literals
+	// pack inline (no Objects entry); long literals allocate once and
+	// the resulting CPtr is cached so OpLoadStrK is a slice read on the
+	// hot path.
+	for _, fn := range vm.Program.Funcs {
+		if len(fn.StrCells) != len(fn.StrConsts) {
+			fn.StrCells = make([]Cell, len(fn.StrConsts))
+		}
+		for i, b := range fn.StrConsts {
+			if len(b) <= MaxInlineStr {
+				fn.StrCells[i] = CSStr(b)
+			} else {
+				fn.StrCells[i] = vm.newString(b)
+			}
+		}
+	}
+
 	main := vm.Program.Funcs[vm.Program.Main]
 	frIdx, base := vm.pushFrame(main, 0)
 	fr := &vm.Frames[frIdx]
@@ -189,32 +206,47 @@ func (vm *VM) Run() (Cell, error) {
 			ip = fr.IP
 			regs[retReg] = ret
 		case OpLoadStrK:
-			regs[ins.A] = vm.newString(fr.Fn.StrConsts[ins.B])
+			regs[ins.A] = fr.Fn.StrCells[ins.B]
 		case OpConcatStr:
-			a := vm.Objects[regs[ins.B].Ptr()].(*vmString)
-			b := vm.Objects[regs[ins.C].Ptr()].(*vmString)
-			out := make([]byte, len(a.bytes)+len(b.bytes))
-			copy(out, a.bytes)
-			copy(out[len(a.bytes):], b.bytes)
-			regs[ins.A] = vm.newString(out)
+			ca, cb := regs[ins.B], regs[ins.C]
+			// Inline + inline with combined len <= 5: pack directly,
+			// no allocation. Concat_loop hits this for the first few
+			// iterations and stays in inline space for all results
+			// whose final length fits.
+			if ca.IsSStr() && cb.IsSStr() {
+				la, lb := ca.SStrLen(), cb.SStrLen()
+				if la+lb <= MaxInlineStr {
+					pa := uint64(ca) & sstrByteMask
+					pb := uint64(cb) & sstrByteMask
+					packed := pa | (pb << (uint(la) * 8))
+					regs[ins.A] = Cell(tagSStr | uint64(la+lb)<<sstrLenShift | packed)
+					break
+				}
+			}
+			var abuf, bbuf [MaxInlineStr]byte
+			ab := vm.strBytes(ca, &abuf)
+			bb := vm.strBytes(cb, &bbuf)
+			out := make([]byte, len(ab)+len(bb))
+			copy(out, ab)
+			copy(out[len(ab):], bb)
+			regs[ins.A] = vm.makeStr(out)
 		case OpLenStr:
-			s := vm.Objects[regs[ins.B].Ptr()].(*vmString)
-			regs[ins.A] = CInt(int64(len(s.bytes)))
+			regs[ins.A] = CInt(int64(vm.strLen(regs[ins.B])))
 		case OpIndexStr:
-			s := vm.Objects[regs[ins.B].Ptr()].(*vmString)
+			c := regs[ins.B]
 			i := regs[ins.C].Int()
-			if i < 0 || i >= int64(len(s.bytes)) {
+			n := int64(vm.strLen(c))
+			if i < 0 || i >= n {
 				fr.IP = ip
 				return ret, errors.New("vm2: string index out of range")
 			}
-			regs[ins.A] = vm.newString([]byte{s.bytes[i]})
+			var buf [MaxInlineStr]byte
+			bs := vm.strBytes(c, &buf)
+			regs[ins.A] = CSStr([]byte{bs[i]})
 		case OpEqualStr:
-			a := vm.Objects[regs[ins.B].Ptr()].(*vmString)
-			b := vm.Objects[regs[ins.C].Ptr()].(*vmString)
-			regs[ins.A] = CBool(strEqual(a, b))
+			regs[ins.A] = CBool(vm.strEqualCell(regs[ins.B], regs[ins.C]))
 		case OpHashStr:
-			s := vm.Objects[regs[ins.B].Ptr()].(*vmString)
-			regs[ins.A] = CInt(int64(strHash(s)))
+			regs[ins.A] = CInt(int64(vm.strHashCell(regs[ins.B])))
 		case OpHalt:
 			fr.IP = ip
 			return ret, errors.New("vm2: OpHalt reached")

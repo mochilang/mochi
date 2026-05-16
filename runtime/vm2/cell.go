@@ -13,6 +13,7 @@ import "math"
 //
 //	0x0000..0xFFEF  -> float64 (normal or subnormal)
 //	0x7FF8          -> canonical qNaN, treated as float
+//	0xFFFB          -> inline short string (length in payload bits 40..47, up to 5 bytes in 0..39)
 //	0xFFFC          -> int (low 48 bits, signed)
 //	0xFFFD          -> bool (low bit)
 //	0xFFFE          -> null
@@ -25,12 +26,21 @@ type Cell uint64
 const (
 	qNaN    uint64 = 0x7FF8000000000000
 	tagMask uint64 = 0xFFFF000000000000
+	tagSStr uint64 = 0xFFFB000000000000
 	tagInt  uint64 = 0xFFFC000000000000
 	tagBool uint64 = 0xFFFD000000000000
 	tagNull uint64 = 0xFFFE000000000000
 	tagPtr  uint64 = 0xFFFF000000000000
 
 	payloadMask uint64 = 0x0000FFFFFFFFFFFF
+
+	// MaxInlineStr is the maximum byte length packable as tagSStr. With
+	// 48 payload bits, 8 bits hold the length and 40 bits hold up to 5
+	// raw bytes packed little-endian.
+	MaxInlineStr = 5
+	sstrLenShift = 40
+	sstrLenMask  = 0xFF
+	sstrByteMask = uint64(1)<<sstrLenShift - 1
 
 	// MaxInlineInt and MinInlineInt are the inclusive bounds of an int
 	// that fits in a Cell without boxing into Objects.
@@ -67,11 +77,46 @@ func CPtr(idx uint64) Cell {
 	return Cell(tagPtr | idx&payloadMask)
 }
 
-func (c Cell) IsFloat() bool { return uint64(c)&tagMask < tagInt }
+func (c Cell) IsFloat() bool { return uint64(c)&tagMask < tagSStr }
+func (c Cell) IsSStr() bool  { return uint64(c)&tagMask == tagSStr }
 func (c Cell) IsInt() bool   { return uint64(c)&tagMask == tagInt }
 func (c Cell) IsBool() bool  { return uint64(c)&tagMask == tagBool }
 func (c Cell) IsNull() bool  { return uint64(c)&tagMask == tagNull }
 func (c Cell) IsPtr() bool   { return uint64(c)&tagMask == tagPtr }
+
+// IsStr reports whether c carries a string value (inline or heap).
+func (c Cell) IsStr() bool {
+	t := uint64(c) & tagMask
+	return t == tagSStr || t == tagPtr
+}
+
+// CSStr packs up to MaxInlineStr bytes into an inline string Cell.
+// The caller must ensure len(b) <= MaxInlineStr.
+func CSStr(b []byte) Cell {
+	var packed uint64
+	for i, x := range b {
+		packed |= uint64(x) << (uint(i) * 8)
+	}
+	return Cell(tagSStr | uint64(len(b))<<sstrLenShift | packed)
+}
+
+// SStrLen returns the byte length of an inline string Cell. Caller
+// must have verified IsSStr.
+func (c Cell) SStrLen() int {
+	return int((uint64(c) >> sstrLenShift) & sstrLenMask)
+}
+
+// SStrBytes writes the inline string bytes into buf and returns a
+// subslice. Caller must have verified IsSStr; buf must have room for
+// MaxInlineStr bytes.
+func (c Cell) SStrBytes(buf *[MaxInlineStr]byte) []byte {
+	n := c.SStrLen()
+	packed := uint64(c) & sstrByteMask
+	for i := range n {
+		buf[i] = byte(packed >> (uint(i) * 8))
+	}
+	return buf[:n]
+}
 
 func (c Cell) Float() float64 { return math.Float64frombits(uint64(c)) }
 
