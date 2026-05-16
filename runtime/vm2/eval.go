@@ -2,32 +2,48 @@ package vm2
 
 import "errors"
 
-// Run executes Program.Main and returns the final Cell. Objects is
-// reset before dispatch; callers that pre-populate it (e.g. tests
-// loading boxed wide ints) must do so after Run starts via a hook in
-// a later step.
+// Run executes Program.Main and returns the final Cell.
 //
-// Hot dispatch state — the current frame's instruction stream, register
-// slab, and IP — is hoisted into locals so the inner loop reads them
-// from CPU registers rather than chasing fr.* through memory on every
-// op. The locals are re-synced on frame transitions (Call / TailCall /
-// Return). This is worth ~5–15% on tight integer loops because the
-// alternative (`fr.Fn.Code[fr.IP]` + `fr.Regs[...]`) costs an extra
-// pointer chase per opcode for every register touch.
+// Dispatch state (code, regs, ip) is hoisted into locals across the
+// inner loop so the inner loop reads them from CPU registers rather
+// than chasing the frame pointer through memory on every op. Locals
+// are re-synced on every frame transition (Call / TailCall non-self /
+// Return); same-fn tail calls only need an IP rewind. The stack-based
+// frame model in vm.go means call/return are two integer bumps + a
+// reslice — no sync.Pool round trips, which were 56% of fib_rec CPU
+// before this refactor.
 func (vm *VM) Run() (Cell, error) {
 	vm.Objects = vm.Objects[:0]
+	vm.Stack = vm.Stack[:0]
+	vm.Frames = vm.Frames[:0]
+
 	main := vm.Program.Funcs[vm.Program.Main]
-	fr := vm.acquireFrame(main)
+	frIdx, base := vm.pushFrame(main, 0)
+	fr := &vm.Frames[frIdx]
 	code := fr.Fn.Code
-	regs := fr.Regs
+	regs := vm.Stack[base:]
+	consts := fr.Fn.Consts
 	ip := 0
 	var ret Cell
+
+	// reload syncs hot locals from the current top frame after any
+	// operation that swapped frames or grew vm.Stack (which can
+	// invalidate the prior `regs` slice header).
+	reload := func() {
+		fr = &vm.Frames[len(vm.Frames)-1]
+		code = fr.Fn.Code
+		regs = vm.Stack[fr.RegsBase:]
+		consts = fr.Fn.Consts
+		ip = fr.IP
+	}
+	_ = reload
+
 	for {
 		ins := &code[ip]
 		ip++
 		switch ins.Op {
 		case OpLoadConstI:
-			regs[ins.A] = fr.Fn.Consts[ins.B]
+			regs[ins.A] = consts[ins.B]
 		case OpMove:
 			regs[ins.A] = regs[ins.B]
 		case OpAddI64:
@@ -90,52 +106,86 @@ func (vm *VM) Run() (Cell, error) {
 			}
 		case OpCall:
 			callee := vm.Program.Funcs[ins.B]
-			newFr := vm.acquireFrame(callee)
 			n := int(ins.D)
-			copy(newFr.Regs[:n], regs[ins.C:int(ins.C)+n])
-			newFr.RetReg = ins.A
-			newFr.Parent = fr
+			// Save caller IP before pushFrame in case the push grows
+			// vm.Stack and invalidates regs.
 			fr.IP = ip
-			fr = newFr
+			// Snapshot args before the push: pushFrame can grow
+			// vm.Stack and move the backing array, so we cannot read
+			// the source slice through the old regs view afterwards.
+			argSrc := int(ins.C)
+			var argBuf [16]Cell
+			var args []Cell
+			if n <= len(argBuf) {
+				args = argBuf[:n]
+			} else {
+				args = make([]Cell, n)
+			}
+			copy(args, regs[argSrc:argSrc+n])
+			_, newBase := vm.pushFrame(callee, ins.A)
+			copy(vm.Stack[newBase:newBase+n], args)
+			fr = &vm.Frames[len(vm.Frames)-1]
 			code = fr.Fn.Code
-			regs = fr.Regs
+			regs = vm.Stack[newBase:]
+			consts = fr.Fn.Consts
 			ip = 0
 		case OpTailCallSelf:
 			ip = 0
 		case OpTailCall:
 			callee := vm.Program.Funcs[ins.A]
 			n := int(ins.C)
-			// Args at regs[B..B+n) never alias params [0..n)
-			// because emit.go always picks B = callBase = np +
-			// ra.NumRegs, so B >= np >= n. Direct forward copy is
-			// safe; no snapshot needed.
-			if callee == fr.Fn {
-				copy(regs[:n], regs[ins.B:int(ins.B)+n])
-				ip = 0
+			// Snapshot args before any stack mutation. Cross-fn tail
+			// call: replace the current frame in place by shrinking
+			// to its base, then pushing the new callee. RetReg and
+			// parent are preserved by keeping len(Frames) unchanged
+			// across the pop/push.
+			argSrc := int(ins.B)
+			var argBuf [16]Cell
+			var args []Cell
+			if n <= len(argBuf) {
+				args = argBuf[:n]
 			} else {
-				parent := fr.Parent
-				retReg := fr.RetReg
-				newFr := vm.acquireFrame(callee)
-				copy(newFr.Regs[:n], regs[ins.B:int(ins.B)+n])
-				vm.releaseFrame(fr)
-				newFr.RetReg = retReg
-				newFr.Parent = parent
-				fr = newFr
-				code = fr.Fn.Code
-				regs = fr.Regs
-				ip = 0
+				args = make([]Cell, n)
 			}
+			copy(args, regs[argSrc:argSrc+n])
+			retReg := fr.RetReg
+			// Pop current frame's stack window (without popping the
+			// Frames slot — we'll overwrite it). No zero-out: vm2 has
+			// no ptr-tagged Cells yet; once boxed objects land this
+			// must zero ptr slots before reuse.
+			base := fr.RegsBase
+			vm.Stack = vm.Stack[:base]
+			// Grow if necessary for the callee.
+			need := base + callee.NumRegs
+			if cap(vm.Stack) < need {
+				newCap := 2 * cap(vm.Stack)
+				if newCap < need {
+					newCap = need
+				}
+				ns := make([]Cell, len(vm.Stack), newCap)
+				copy(ns, vm.Stack)
+				vm.Stack = ns
+			}
+			vm.Stack = vm.Stack[:need]
+			copy(vm.Stack[base:base+n], args)
+			top := len(vm.Frames) - 1
+			vm.Frames[top] = frame{Fn: callee, RegsBase: base, RetReg: retReg}
+			fr = &vm.Frames[top]
+			code = callee.Code
+			regs = vm.Stack[base:]
+			consts = callee.Consts
+			ip = 0
 		case OpReturn:
 			ret = regs[ins.A]
 			retReg := fr.RetReg
-			parent := fr.Parent
-			vm.releaseFrame(fr)
-			if parent == nil {
+			vm.popFrame()
+			if len(vm.Frames) == 0 {
 				return ret, nil
 			}
-			fr = parent
+			fr = &vm.Frames[len(vm.Frames)-1]
 			code = fr.Fn.Code
-			regs = fr.Regs
+			regs = vm.Stack[fr.RegsBase:]
+			consts = fr.Fn.Consts
 			ip = fr.IP
 			regs[retReg] = ret
 		case OpHalt:
