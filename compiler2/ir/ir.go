@@ -20,6 +20,11 @@ const (
 	TStr
 	TList
 	TMap
+	// Typed array kinds (MEP-37 §3.3). Each is a separate IR type so
+	// the verifier can pick the matching element-typed Get/Set op.
+	TF64Array
+	TI64Array
+	TU8Array
 )
 
 func (t Type) String() string {
@@ -40,6 +45,12 @@ func (t Type) String() string {
 		return "list"
 	case TMap:
 		return "map"
+	case TF64Array:
+		return "f64array"
+	case TI64Array:
+		return "i64array"
+	case TU8Array:
+		return "u8array"
 	}
 	return "?"
 }
@@ -109,6 +120,48 @@ const (
 	OpMapHas // bool(present(Args[0], Args[1]))
 	OpMapSet // Args[0][Args[1]] = Args[2]; TUnit
 	OpMapDel // delete Args[0][Args[1]]; TUnit
+
+	// Float arithmetic subsystem (MEP-37 §3.2). OpConstF64 carries the
+	// float bit-pattern in Aux (read back via math.Float64frombits in
+	// emit so the constant pool stores a single CFloat cell).
+	OpConstF64
+	OpAddF64
+	OpSubF64
+	OpMulF64
+	OpDivF64
+	OpNegF64
+	OpAbsF64
+	OpSqrtF64
+	OpLessF64
+	OpLessEqF64
+	OpEqualF64
+	// OpFmaF64 computes Args[0]*Args[1] + Args[2] with a single rounding
+	// (math.FMA in the runtime). Lowered by emit when a mul has exactly
+	// one use and that use is the matching add; the builder also exposes
+	// a direct constructor for IR producers that already know the
+	// pattern (Mandelbrot's iteration).
+	OpFmaF64
+	// Numeric conversions; see vm2/ops.go for the truncation contract.
+	OpI64ToF64
+	OpF64ToI64
+
+	// Typed array subsystem (MEP-37 §3.3). The allocator opcode takes a
+	// length argument; element ops take an array and an int index. The
+	// verifier checks that Get/Set are dispatched against the matching
+	// array kind so a TF64Array.Set with an i64 value is a build-time
+	// error.
+	OpNewF64Array // Args[0] = length
+	OpF64ArrLen   // len(Args[0])
+	OpF64ArrGet   // Args[0][Args[1]] -> TF64
+	OpF64ArrSet   // Args[0][Args[1]] = Args[2]; TUnit
+	OpNewI64Array
+	OpI64ArrLen
+	OpI64ArrGet
+	OpI64ArrSet
+	OpNewU8Array
+	OpU8ArrLen
+	OpU8ArrGet // result type TI64 (byte widened to int)
+	OpU8ArrSet // Args[2] is a TI64 value; runtime truncates to byte
 
 	// Call: Aux = function index, Args = arg values. May have effects;
 	// optimizers must treat as opaque.

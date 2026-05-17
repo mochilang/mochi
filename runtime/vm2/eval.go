@@ -1,6 +1,9 @@
 package vm2
 
-import "errors"
+import (
+	"errors"
+	"math"
+)
 
 // Run executes Program.Main and returns the final Cell.
 //
@@ -331,6 +334,94 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 		case OpMapDel:
 			m := vm.mapAt(regs[ins.A])
 			delete(m.entries, vm.mapKeyOf(regs[ins.B]))
+		case OpLoadConstF:
+			regs[ins.A] = consts[ins.B]
+		case OpAddF64:
+			regs[ins.A] = CFloat(regs[ins.B].Float() + regs[ins.C].Float())
+		case OpSubF64:
+			regs[ins.A] = CFloat(regs[ins.B].Float() - regs[ins.C].Float())
+		case OpMulF64:
+			regs[ins.A] = CFloat(regs[ins.B].Float() * regs[ins.C].Float())
+		case OpDivF64:
+			regs[ins.A] = CFloat(regs[ins.B].Float() / regs[ins.C].Float())
+		case OpNegF64:
+			regs[ins.A] = CFloat(-regs[ins.B].Float())
+		case OpAbsF64:
+			regs[ins.A] = CFloat(math.Abs(regs[ins.B].Float()))
+		case OpSqrtF64:
+			regs[ins.A] = CFloat(math.Sqrt(regs[ins.B].Float()))
+		case OpLessF64:
+			regs[ins.A] = CBool(regs[ins.B].Float() < regs[ins.C].Float())
+		case OpLessEqF64:
+			regs[ins.A] = CBool(regs[ins.B].Float() <= regs[ins.C].Float())
+		case OpEqualF64:
+			regs[ins.A] = CBool(regs[ins.B].Float() == regs[ins.C].Float())
+		case OpFmaF64:
+			regs[ins.A] = CFloat(math.FMA(regs[ins.B].Float(), regs[ins.C].Float(), regs[ins.D].Float()))
+		case OpI64ToF64:
+			regs[ins.A] = CFloat(float64(regs[ins.B].Int()))
+		case OpF64ToI64:
+			regs[ins.A] = CInt(int64(regs[ins.B].Float()))
+		case OpNewF64Array:
+			regs[ins.A] = vm.newF64Array(int(regs[ins.B].Int()))
+		case OpF64ArrLen:
+			regs[ins.A] = CInt(int64(len(vm.f64ArrAt(regs[ins.B]).data)))
+		case OpF64ArrGet:
+			a := vm.f64ArrAt(regs[ins.B])
+			i := regs[ins.C].Int()
+			if i < 0 || i >= int64(len(a.data)) {
+				fr.IP = ip
+				return ret, errors.New("vm2: f64 array index out of range")
+			}
+			regs[ins.A] = CFloat(a.data[i])
+		case OpF64ArrSet:
+			a := vm.f64ArrAt(regs[ins.A])
+			i := regs[ins.B].Int()
+			if i < 0 || i >= int64(len(a.data)) {
+				fr.IP = ip
+				return ret, errors.New("vm2: f64 array index out of range")
+			}
+			a.data[i] = regs[ins.C].Float()
+		case OpNewI64Array:
+			regs[ins.A] = vm.newI64Array(int(regs[ins.B].Int()))
+		case OpI64ArrLen:
+			regs[ins.A] = CInt(int64(len(vm.i64ArrAt(regs[ins.B]).data)))
+		case OpI64ArrGet:
+			a := vm.i64ArrAt(regs[ins.B])
+			i := regs[ins.C].Int()
+			if i < 0 || i >= int64(len(a.data)) {
+				fr.IP = ip
+				return ret, errors.New("vm2: i64 array index out of range")
+			}
+			regs[ins.A] = CInt(a.data[i])
+		case OpI64ArrSet:
+			a := vm.i64ArrAt(regs[ins.A])
+			i := regs[ins.B].Int()
+			if i < 0 || i >= int64(len(a.data)) {
+				fr.IP = ip
+				return ret, errors.New("vm2: i64 array index out of range")
+			}
+			a.data[i] = regs[ins.C].Int()
+		case OpNewU8Array:
+			regs[ins.A] = vm.newU8Array(int(regs[ins.B].Int()))
+		case OpU8ArrLen:
+			regs[ins.A] = CInt(int64(len(vm.u8ArrAt(regs[ins.B]).data)))
+		case OpU8ArrGet:
+			a := vm.u8ArrAt(regs[ins.B])
+			i := regs[ins.C].Int()
+			if i < 0 || i >= int64(len(a.data)) {
+				fr.IP = ip
+				return ret, errors.New("vm2: u8 array index out of range")
+			}
+			regs[ins.A] = CInt(int64(a.data[i]))
+		case OpU8ArrSet:
+			a := vm.u8ArrAt(regs[ins.A])
+			i := regs[ins.B].Int()
+			if i < 0 || i >= int64(len(a.data)) {
+				fr.IP = ip
+				return ret, errors.New("vm2: u8 array index out of range")
+			}
+			a.data[i] = byte(regs[ins.C].Int())
 		case OpHalt:
 			fr.IP = ip
 			return ret, errors.New("vm2: OpHalt reached")

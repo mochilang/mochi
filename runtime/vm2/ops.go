@@ -82,4 +82,51 @@ const (
 	OpMapHas // A = bool(present in mapAt(regs[B]), key=regs[C])
 	OpMapSet // mapAt(regs[A]).entries[mapKeyOf(regs[B])] = regs[C]
 	OpMapDel // delete(mapAt(regs[A]).entries, mapKeyOf(regs[B]))
+
+	// Float arithmetic subsystem (MEP-37 §3.2). Operands and result are
+	// float64 Cells decoded via Cell.Float / encoded via CFloat. None of
+	// these trap: divide-by-zero produces ±Inf or NaN per IEEE-754, and
+	// the dispatch handler stays branch-free.
+	OpLoadConstF // A = Consts[B] (float64 const, cell already produced by CFloat)
+	OpAddF64     // A = B + C
+	OpSubF64     // A = B - C
+	OpMulF64     // A = B * C
+	OpDivF64     // A = B / C
+	OpNegF64     // A = -B
+	OpAbsF64     // A = math.Abs(B)
+	OpSqrtF64    // A = math.Sqrt(B)
+	OpLessF64    // A = B < C  (bool)
+	OpLessEqF64  // A = B <= C (bool)
+	OpEqualF64   // A = B == C (bool) — IEEE equality, NaN compares unequal
+	// Fused multiply-add. A = (B * C) + D. emit picks this over
+	// OpMulF64+OpAddF64 when the multiply has exactly one use and that
+	// use is the add (MEP-37 §3.2). The runtime uses math.FMA so the
+	// rounding is single-rounded, matching Go's `math.FMA`.
+	OpFmaF64
+	// Numeric conversions. The BG kernels mix int loop counters with
+	// float arithmetic (matrix index → coefficient, body count → step),
+	// so the i64↔f64 round-trip lives next to the float opcodes rather
+	// than in a separate conversion family.
+	OpI64ToF64 // A = float64(regs[B].Int())
+	OpF64ToI64 // A = int64(regs[B].Float())  (truncation toward zero)
+
+	// Typed array subsystem (MEP-37 §3.3). Element type is fixed at
+	// allocation; storage is a flat Go slice carried through Cell.Obj.
+	// Get/Set ops trap on OOB. Length operand is taken as a register
+	// holding an int Cell so dynamic sizing works without immediate
+	// staging.
+	OpNewF64Array // A = newF64Array(regs[B].Int())
+	OpF64ArrLen   // A = i64(len(f64ArrAt(regs[B]).data))
+	OpF64ArrGet   // A = CFloat(f64ArrAt(regs[B]).data[regs[C].Int()])
+	OpF64ArrSet   // f64ArrAt(regs[A]).data[regs[B].Int()] = regs[C].Float()
+
+	OpNewI64Array // A = newI64Array(regs[B].Int())
+	OpI64ArrLen   // A = i64(len(i64ArrAt(regs[B]).data))
+	OpI64ArrGet   // A = CInt(i64ArrAt(regs[B]).data[regs[C].Int()])
+	OpI64ArrSet   // i64ArrAt(regs[A]).data[regs[B].Int()] = regs[C].Int()
+
+	OpNewU8Array // A = newU8Array(regs[B].Int())
+	OpU8ArrLen   // A = i64(len(u8ArrAt(regs[B]).data))
+	OpU8ArrGet   // A = CInt(int64(u8ArrAt(regs[B]).data[regs[C].Int()]))
+	OpU8ArrSet   // u8ArrAt(regs[A]).data[regs[B].Int()] = byte(regs[C].Int())
 )

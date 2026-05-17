@@ -6,6 +6,7 @@ package emit
 
 import (
 	"fmt"
+	"math"
 
 	"mochi/compiler2/ir"
 	"mochi/compiler2/regalloc"
@@ -356,6 +357,102 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 				emit(vm2.Instr{Op: vm2.OpMapDel,
 					A: int32(finalReg[ins.Args[0]]),
 					B: int32(finalReg[ins.Args[1]])})
+			case ir.OpConstF64:
+				f := math.Float64frombits(uint64(ins.Aux))
+				emit(vm2.Instr{Op: vm2.OpLoadConstF, A: dst, B: cAdd(vm2.CFloat(f))})
+			case ir.OpAddF64:
+				emit(vm2.Instr{Op: vm2.OpAddF64, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpSubF64:
+				emit(vm2.Instr{Op: vm2.OpSubF64, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpMulF64:
+				emit(vm2.Instr{Op: vm2.OpMulF64, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpDivF64:
+				emit(vm2.Instr{Op: vm2.OpDivF64, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpNegF64:
+				emit(vm2.Instr{Op: vm2.OpNegF64, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpAbsF64:
+				emit(vm2.Instr{Op: vm2.OpAbsF64, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpSqrtF64:
+				emit(vm2.Instr{Op: vm2.OpSqrtF64, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpLessF64:
+				emit(vm2.Instr{Op: vm2.OpLessF64, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpLessEqF64:
+				emit(vm2.Instr{Op: vm2.OpLessEqF64, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpEqualF64:
+				emit(vm2.Instr{Op: vm2.OpEqualF64, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpFmaF64:
+				emit(vm2.Instr{Op: vm2.OpFmaF64, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]]),
+					D: int32(finalReg[ins.Args[2]])})
+			case ir.OpI64ToF64:
+				emit(vm2.Instr{Op: vm2.OpI64ToF64, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpF64ToI64:
+				emit(vm2.Instr{Op: vm2.OpF64ToI64, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpNewF64Array:
+				emit(vm2.Instr{Op: vm2.OpNewF64Array, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpF64ArrLen:
+				emit(vm2.Instr{Op: vm2.OpF64ArrLen, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpF64ArrGet:
+				emit(vm2.Instr{Op: vm2.OpF64ArrGet, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpF64ArrSet:
+				emit(vm2.Instr{Op: vm2.OpF64ArrSet,
+					A: int32(finalReg[ins.Args[0]]),
+					B: int32(finalReg[ins.Args[1]]),
+					C: int32(finalReg[ins.Args[2]])})
+			case ir.OpNewI64Array:
+				emit(vm2.Instr{Op: vm2.OpNewI64Array, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpI64ArrLen:
+				emit(vm2.Instr{Op: vm2.OpI64ArrLen, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpI64ArrGet:
+				emit(vm2.Instr{Op: vm2.OpI64ArrGet, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpI64ArrSet:
+				emit(vm2.Instr{Op: vm2.OpI64ArrSet,
+					A: int32(finalReg[ins.Args[0]]),
+					B: int32(finalReg[ins.Args[1]]),
+					C: int32(finalReg[ins.Args[2]])})
+			case ir.OpNewU8Array:
+				emit(vm2.Instr{Op: vm2.OpNewU8Array, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpU8ArrLen:
+				emit(vm2.Instr{Op: vm2.OpU8ArrLen, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpU8ArrGet:
+				emit(vm2.Instr{Op: vm2.OpU8ArrGet, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpU8ArrSet:
+				emit(vm2.Instr{Op: vm2.OpU8ArrSet,
+					A: int32(finalReg[ins.Args[0]]),
+					B: int32(finalReg[ins.Args[1]]),
+					C: int32(finalReg[ins.Args[2]])})
 			case ir.OpCall:
 				for i, a := range ins.Args {
 					emit(vm2.Instr{Op: vm2.OpMove,
@@ -487,7 +584,8 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 			continue
 		}
 		switch ins.Type {
-		case ir.TStr, ir.TList, ir.TMap, ir.TPtr:
+		case ir.TStr, ir.TList, ir.TMap, ir.TPtr,
+			ir.TF64Array, ir.TI64Array, ir.TU8Array:
 			hasContainer = true
 		}
 		if hasContainer {
