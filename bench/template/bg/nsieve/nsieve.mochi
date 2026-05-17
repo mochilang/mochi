@@ -1,0 +1,38 @@
+// Sieve of Eratosthenes from the Computer Language Benchmarks Game.
+// Counts primes p where 2 <= p <= N. Mochi peer for bench/crosslang.
+
+fun nsieve(n: int): int {
+  var xs: list<int> = []
+  for _ in 0..(n + 1) {
+    xs = append(xs, 0)
+  }
+  var count = 0
+  var i = 2
+  while i <= n {
+    if xs[i] == 0 {
+      count = count + 1
+      var j = i * i
+      while j <= n {
+        xs[j] = 1
+        j = j + i
+      }
+    }
+    i = i + 1
+  }
+  return count
+}
+
+let n = {{ .N }}
+let repeat = 50
+var last = 0
+
+let start = now()
+for _ in 0..repeat {
+  last = nsieve(n)
+}
+let duration = (now() - start) / 1000
+
+json({
+  "duration_us": duration,
+  "output": last,
+})

@@ -47,6 +47,13 @@ const (
 	tagNull  uint64 = 0xFFFE000000000000
 	tagPtr   uint64 = 0xFFFF000000000000
 
+	// tagPtrStrFlag is bit 47 of a tagPtr cell's payload: set when the
+	// pointee is a heap *vmString, cleared for *vmList / *vmMap / *vmSet /
+	// *vmStruct / *vmClosure. mapKeyOf consults this flag in Phase 2 so it
+	// can collapse heap strings to byte-content keys without walking the
+	// retired Objects[] indirection.
+	tagPtrStrFlag uint64 = 1 << 47
+
 	payloadMask uint64 = 0x0000FFFFFFFFFFFF
 
 	MaxInlineStr = 5
@@ -99,8 +106,16 @@ func (c Cell) IsPtr() bool   { return c.Bits&tagMask == tagPtr }
 
 // IsStr reports whether c carries a string value (inline or heap).
 func (c Cell) IsStr() bool {
-	t := c.Bits & tagMask
-	return t == tagSStr || t == tagPtr
+	if c.IsSStr() {
+		return true
+	}
+	return c.IsHeapStr()
+}
+
+// IsHeapStr reports whether c is a tagPtr cell whose pointee is a
+// *vmString. The flag is set by newString at construction time.
+func (c Cell) IsHeapStr() bool {
+	return c.Bits&tagMask == tagPtr && c.Bits&tagPtrStrFlag != 0
 }
 
 // CSStr packs up to MaxInlineStr bytes into an inline string Cell.

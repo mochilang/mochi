@@ -1,0 +1,32 @@
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+func concatLoop(n int) int {
+	acc := "a"
+	for i := 0; i < n; i++ {
+		acc = acc + "a"
+	}
+	return len(acc)
+}
+
+func main() {
+	const n = {{ .N }}
+	const repeat = 1000
+	var last int
+
+	start := time.Now()
+	for i := 0; i < repeat; i++ {
+		last = concatLoop(n)
+	}
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      last,
+	})
+}

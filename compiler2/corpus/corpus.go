@@ -38,6 +38,11 @@ func All() []Program {
 		{Name: "strings_concat_loop", Build: BuildStringsConcatLoop, Expect: ExpectStringsConcatLoop},
 		{Name: "lists_fill_sum", Build: BuildListsFillSum, Expect: ExpectListsFillSum},
 		{Name: "maps_fill_sum", Build: BuildMapsFillSum, Expect: ExpectMapsFillSum},
+		// MEP-23 Benchmarks Game suite. nsieve stresses the list payload
+		// path; binary_trees stresses container allocation + reclamation
+		// (the MEP 36 headline).
+		{Name: "bg_nsieve", Build: BuildNsieve, Expect: ExpectNsieve},
+		{Name: "bg_binary_trees", Build: BuildBinaryTrees, Expect: ExpectBinaryTrees},
 	}
 }
 

@@ -1,0 +1,39 @@
+// Computer Language Benchmarks Game binary_trees, hand-written Mochi.
+// Trees are encoded as nested 2-element lists (no struct support in
+// vm2 yet): a leaf is `[]` and an internal node is `[left, right]`.
+// This is the MEP-36 headline GC benchmark: many short-lived list
+// allocations dying as the frame holding them returns.
+
+fun make_tree(depth: int): list<any> {
+  if depth == 0 {
+    return []
+  }
+  return [make_tree(depth - 1), make_tree(depth - 1)]
+}
+
+fun check_tree(t: list<any>): int {
+  if len(t) == 0 {
+    return 1
+  }
+  return 1 + check_tree(t[0] as list<any>) + check_tree(t[1] as list<any>)
+}
+
+let depth = {{ .N }}
+var iters = 1
+var k = 0
+while k < depth {
+  iters = iters * 2
+  k = k + 1
+}
+
+var total = 0
+let start = now()
+for _ in 0..iters {
+  total = total + check_tree(make_tree(depth))
+}
+let duration = (now() - start) / 1000
+
+json({
+  "duration_us": duration,
+  "output": total,
+})

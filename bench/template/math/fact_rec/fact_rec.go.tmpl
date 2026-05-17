@@ -1,0 +1,36 @@
+// Template peer for the math/fact_rec benchmark. The .go.tmpl
+// extension keeps `go build ./...` and gopls from picking up the
+// unrendered template; bench/crosslang substitutes `{{ .N }}` and
+// writes the result to main.go before invoking `go build`.
+
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+func fact(n int) int {
+	if n == 0 {
+		return 1
+	}
+	return n * fact(n-1)
+}
+
+func main() {
+	const n = {{ .N }}
+	const repeat = 1000
+	var last int
+
+	start := time.Now()
+	for i := 0; i < repeat; i++ {
+		last = fact(n)
+	}
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      last,
+	})
+}

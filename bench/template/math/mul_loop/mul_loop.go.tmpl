@@ -1,0 +1,32 @@
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+func mul(n int) int {
+	result := 1
+	for i := 1; i < n; i++ {
+		result *= i
+	}
+	return result
+}
+
+func main() {
+	const n = {{ .N }}
+	const repeat = 1000
+	var last int
+
+	start := time.Now()
+	for i := 0; i < repeat; i++ {
+		last = mul(n)
+	}
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      last,
+	})
+}

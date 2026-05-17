@@ -1,0 +1,27 @@
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+func fib(n int) int {
+	if n <= 1 {
+		return n
+	}
+	return fib(n-1) + fib(n-2)
+}
+
+func main() {
+	const n = {{ .N }}
+
+	start := time.Now()
+	result := fib(n)
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      result,
+	})
+}

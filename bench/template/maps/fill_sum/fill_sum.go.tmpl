@@ -1,0 +1,36 @@
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+func fillSum(n int) int {
+	m := make(map[int]int, n)
+	for i := 0; i < n; i++ {
+		m[i] = i
+	}
+	s := 0
+	for j := 0; j < n; j++ {
+		s += m[j]
+	}
+	return s
+}
+
+func main() {
+	const n = {{ .N }}
+	const repeat = 1000
+	var last int
+
+	start := time.Now()
+	for i := 0; i < repeat; i++ {
+		last = fillSum(n)
+	}
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      last,
+	})
+}

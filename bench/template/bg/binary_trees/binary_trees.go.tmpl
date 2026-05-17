@@ -1,0 +1,49 @@
+// Template peer for the bg/binary_trees benchmark. Trees are nested
+// 2-element slices so all four language peers (Mochi, Python, Lua,
+// Go) walk the same data shape. The .go.tmpl extension keeps the
+// unrendered template out of `go build ./...` and gopls; the harness
+// substitutes `{{ .N }}` before invoking `go build`.
+
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+type Tree []Tree
+
+func makeTree(depth int) Tree {
+	if depth == 0 {
+		return Tree{}
+	}
+	return Tree{makeTree(depth - 1), makeTree(depth - 1)}
+}
+
+func checkTree(t Tree) int {
+	if len(t) == 0 {
+		return 1
+	}
+	return 1 + checkTree(t[0]) + checkTree(t[1])
+}
+
+func main() {
+	const depth = {{ .N }}
+	iters := 1
+	for k := 0; k < depth; k++ {
+		iters *= 2
+	}
+
+	total := 0
+	start := time.Now()
+	for i := 0; i < iters; i++ {
+		total += checkTree(makeTree(depth))
+	}
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      total,
+	})
+}

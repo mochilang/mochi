@@ -4,15 +4,9 @@ package vm2jit
 
 import (
 	"fmt"
-	"unsafe"
 
 	"mochi/runtime/vm2"
 )
-
-// vmObjectsLDROff is the LDR-Xt scaled imm12 (offset/8) for the start
-// of VM.Objects (the slice-header data-pointer word). Computed at init
-// so a VM struct re-layout flows automatically into the JIT.
-var vmObjectsLDROff = uint32(unsafe.Offsetof(vm2.VM{}.Objects) / 8)
 
 // AArch64 GPR mapping: vm2 register r[i] -> x(9+i), i.e. x9-x15 (7 slots).
 // These are temporary (caller-saved) in AAPCS64, so the JIT'd function
@@ -150,8 +144,8 @@ func emitCmpBoolI64(xA, xB, xC uint32, cset func(uint32) uint32) []uint32 {
 }
 
 // listLenWords is the fixed instruction count of an OpListLen lowering:
-// 4 (tag check) + 9 (fast body) + 1 (b past_deopt) + deoptStubWords.
-func listLenWords(fn *vm2.Function) int { return 14 + deoptStubWords(fn) }
+// 4 (tag check) + 5 (fast body) + 1 (b past_deopt) + deoptStubWords.
+func listLenWords(fn *vm2.Function) int { return 10 + deoptStubWords(fn) }
 
 // instrWordCountARM64 returns the exact number of 32-bit words that
 // lowerInstrARM64 will emit for ins. Must be pure and consistent.
@@ -433,15 +427,12 @@ func emitDeoptStubARM64(fn *vm2.Function, idx int) []uint32 {
 //	cmp  x8, x16                ; eq if regs[B] is tagPtr
 //	b.ne <deopt>
 //
-// Fast body (9 words): walk jf.vm -> Objects[idx] -> *vmList -> slice.len
-// and pack the int48 result into regs[A]:
+// Fast body (5 words): read the typed *vmList directly from regs[B].Obj
+// (offset B*16+8 from x0; imm12 scaled by 8 = B*2+1) and pack the int48
+// length into regs[A]:
 //
-//	ldur x16, [x0, #-8]        ; x16 = jf.vm
-//	ldr  x16, [x16, #Objects]  ; x16 = vm.Objects.data pointer
-//	andMask48 x17, xB           ; x17 = idx = regs[B].Ptr()
-//	add  x16, x16, x17, lsl#4  ; x16 = &Objects[idx]      (entries are 16 B)
-//	ldr  x16, [x16, #8]         ; x16 = *vmList            (iface data word)
-//	ldr  x16, [x16, #8]         ; x16 = slice.len          (slice header +8)
+//	ldr  x16, [x0, #(B*16+8)]  ; x16 = regs[B].Obj = *vmList
+//	ldr  x16, [x16, #8]         ; x16 = slice.len  (vmList.data header +8)
 //	andMask48 x8, x16           ; x8 = len & payloadMask
 //	movz x16, #0xFFFC, lsl#48  ; x16 = tagInt
 //	orr  xA, x8, x16            ; regs[A] = CInt(len)
@@ -468,13 +459,11 @@ func emitListLenFastARM64(fn *vm2.Function, idx int, xA, xB uint32) []uint32 {
 	bneIdx := len(ws)
 	ws = append(ws, 0) // placeholder for b.ne
 
-	// Fast body.
+	// Fast body. B is the source register index; regs[B].Obj is at
+	// byte offset B*16+8 from x0, so imm12 (scaled by 8) = B*2+1.
+	regBObjImm := uint32(xB-9)*2 + 1
 	ws = append(ws,
-		ldur64(16, 0, -8),
-		ldr64(16, 16, vmObjectsLDROff),
-		andMask48(17, xB),
-		addRegLSL(16, 16, 17, 4),
-		ldr64(16, 16, 1), // +8 (interface data word)
+		ldr64(16, 0, regBObjImm),
 		ldr64(16, 16, 1), // +8 (slice header len)
 		andMask48(8, 16),
 		movzTagInt(),

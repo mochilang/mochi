@@ -86,13 +86,14 @@ func (vm *VM) pushFrame(fn *Function, retReg int32) (int, int) {
 
 // popFrame retires the top frame. The parent (if any) becomes current.
 //
-// The frame window is sliced off but its contents are NOT zeroed. vm2
-// has no ptr-tagged Cells yet so there is nothing to un-pin; once the
-// boxed-object subsystem lands, popFrame must zero ptr-tagged slots
-// before shrinking. Tracked in the upcoming subsystem MEP.
+// MEP-36 Phase 2: zero the popped window before reslicing so any typed
+// pointers carried in Cell.Obj are dropped and the host GC can reclaim
+// dead containers. Without the clear, a *vmList kept alive by a retired
+// register would linger until that slot is overwritten by a later frame.
 func (vm *VM) popFrame() {
 	top := len(vm.Frames) - 1
 	base := vm.Frames[top].RegsBase
+	clear(vm.Stack[base:])
 	vm.Stack = vm.Stack[:base]
 	vm.Frames[top] = frame{} // drop the *Function pointer
 	vm.Frames = vm.Frames[:top]
