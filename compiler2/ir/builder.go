@@ -346,6 +346,70 @@ func (b *Builder) PairSnd(p ValueID, elem Type) ValueID {
 	return b.emit(Inst{Op: OpPairSnd, Type: elem, Args: []ValueID{p}})
 }
 
+// NewBytes allocates a fresh writable view of length n bytes (MEP-38
+// §3.1.1). The returned view's owns=true at runtime, so OpBytesSet is
+// legal until any slicing op (which produces a fresh owns=false view).
+func (b *Builder) NewBytes(n ValueID) ValueID {
+	return b.emit(Inst{Op: OpBytesNew, Type: TBytes, Args: []ValueID{n}})
+}
+
+// BytesLen returns the length of the view.
+func (b *Builder) BytesLen(v ValueID) ValueID {
+	return b.emit(Inst{Op: OpBytesLen, Type: TI64, Args: []ValueID{v}})
+}
+
+// BytesGet returns the byte (widened to i64) at index i. Traps on OOB.
+func (b *Builder) BytesGet(v, i ValueID) ValueID {
+	return b.emit(Inst{Op: OpBytesGet, Type: TI64, Args: []ValueID{v, i}})
+}
+
+// BytesSet writes byte(v) into the view at index i. Traps on OOB and
+// traps at runtime if the view is non-owning (verifier admits the op
+// on any TBytes; the runtime enforces ownership).
+func (b *Builder) BytesSet(view, i, val ValueID) ValueID {
+	return b.emit(Inst{Op: OpBytesSet, Type: TUnit, Args: []ValueID{view, i, val}})
+}
+
+// BytesSlice returns a fresh read-only view aliasing view[off:off+n].
+// Traps on OOB. The new view's runtime owns=false so OpBytesSet against
+// it traps; readers can chain slices freely.
+func (b *Builder) BytesSlice(view, off, n ValueID) ValueID {
+	return b.emit(Inst{Op: OpBytesSlice, Type: TBytes, Args: []ValueID{view, off, n}})
+}
+
+// BytesEqual returns a bool: byte-wise compare of two views.
+func (b *Builder) BytesEqual(a, c ValueID) ValueID {
+	return b.emit(Inst{Op: OpBytesEqual, Type: TBool, Args: []ValueID{a, c}})
+}
+
+// BytesHash returns FNV-1a 64-bit hash of the view, matching vmString's
+// hash so a map keyed by view or string over the same bytes collides
+// consistently.
+func (b *Builder) BytesHash(v ValueID) ValueID {
+	return b.emit(Inst{Op: OpBytesHash, Type: TI64, Args: []ValueID{v}})
+}
+
+// BytesFromU8Array returns a read-only view aliasing the U8Array's
+// backing slice. The view's lifetime is tied to the array's via Go GC.
+func (b *Builder) BytesFromU8Array(a ValueID) ValueID {
+	return b.emit(Inst{Op: OpBytesFromU8Array, Type: TBytes, Args: []ValueID{a}})
+}
+
+// BytesFromStr returns a read-only view aliasing the string's bytes.
+func (b *Builder) BytesFromStr(s ValueID) ValueID {
+	return b.emit(Inst{Op: OpBytesFromStr, Type: TBytes, Args: []ValueID{s}})
+}
+
+// StdoutWriteBytes writes the view to vm.Stdout (the VM's io.Writer).
+func (b *Builder) StdoutWriteBytes(v ValueID) ValueID {
+	return b.emit(Inst{Op: OpStdoutWriteBytes, Type: TUnit, Args: []ValueID{v}})
+}
+
+// StdinReadAll slurps the VM's io.Reader into a fresh owning view.
+func (b *Builder) StdinReadAll() ValueID {
+	return b.emit(Inst{Op: OpStdinReadAll, Type: TBytes})
+}
+
 // Call invokes function at funcIdx with the given args. retType is the
 // caller-supplied result type; the verifier later checks it against
 // the callee's signature once Module is assembled.

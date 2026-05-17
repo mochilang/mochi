@@ -220,6 +220,13 @@ func isDeoptableOp(op vm2.Op) bool {
 		// reason as Phase 1: the JIT does not emit pair construction or
 		// projection code yet.
 		vm2.OpNewPair, vm2.OpPairFst, vm2.OpPairSnd,
+		// MEP-38 Phase 1 byte-view ops + minimal I/O. Deopt for now; a
+		// follow-up phase lowers OpBytesGet/OpBytesSet directly so the
+		// reverse_complement inner loop stays in JIT-compiled code.
+		vm2.OpBytesNew, vm2.OpBytesLen, vm2.OpBytesGet, vm2.OpBytesSet,
+		vm2.OpBytesSlice, vm2.OpBytesEqual, vm2.OpBytesHash,
+		vm2.OpBytesFromU8Array, vm2.OpBytesFromStr,
+		vm2.OpStdoutWriteBytes, vm2.OpStdinReadAll,
 		vm2.OpHalt:
 		return true
 	}

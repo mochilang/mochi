@@ -2,7 +2,9 @@ package vm2
 
 import (
 	"errors"
+	"io"
 	"math"
+	"unsafe"
 )
 
 // Run executes Program.Main and returns the final Cell.
@@ -428,6 +430,62 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			regs[ins.A] = vm.pairAt(regs[ins.B]).a
 		case OpPairSnd:
 			regs[ins.A] = vm.pairAt(regs[ins.B]).b
+		case OpBytesNew:
+			regs[ins.A] = vm.newBytes(int(regs[ins.B].Int()))
+		case OpBytesLen:
+			regs[ins.A] = CInt(int64(vm.bytesAt(regs[ins.B]).n))
+		case OpBytesGet:
+			b := vm.bytesAt(regs[ins.B])
+			i := regs[ins.C].Int()
+			if i < 0 || i >= int64(b.n) {
+				fr.IP = ip
+				return ret, errors.New("vm2: bytes index out of range")
+			}
+			regs[ins.A] = CInt(int64(b.buf[b.off+int(i)]))
+		case OpBytesSet:
+			b := vm.bytesAt(regs[ins.A])
+			if !b.owns {
+				fr.IP = ip
+				return ret, errors.New("vm2: bytes write to non-owning view")
+			}
+			i := regs[ins.B].Int()
+			if i < 0 || i >= int64(b.n) {
+				fr.IP = ip
+				return ret, errors.New("vm2: bytes index out of range")
+			}
+			b.buf[b.off+int(i)] = byte(regs[ins.C].Int())
+		case OpBytesSlice:
+			src := vm.bytesAt(regs[ins.B])
+			off := regs[ins.C].Int()
+			n := regs[ins.D].Int()
+			if off < 0 || n < 0 || off+n > int64(src.n) {
+				fr.IP = ip
+				return ret, errors.New("vm2: bytes slice out of range")
+			}
+			v := &vmBytes{buf: src.buf, off: src.off + int(off), n: int(n), owns: false}
+			regs[ins.A] = Cell{Bits: tagPtr, Obj: unsafe.Pointer(v)}
+		case OpBytesEqual:
+			regs[ins.A] = vm.bytesEqual(regs[ins.B], regs[ins.C])
+		case OpBytesHash:
+			regs[ins.A] = vm.bytesHash(regs[ins.B])
+		case OpBytesFromU8Array:
+			regs[ins.A] = vm.bytesFromU8Array(regs[ins.B])
+		case OpBytesFromStr:
+			regs[ins.A] = vm.bytesFromStr(regs[ins.B])
+		case OpStdoutWriteBytes:
+			b := vm.bytesAt(regs[ins.A])
+			if _, err := vm.Stdout.Write(b.buf[b.off : b.off+b.n]); err != nil {
+				fr.IP = ip
+				return ret, err
+			}
+		case OpStdinReadAll:
+			data, err := io.ReadAll(vm.Stdin)
+			if err != nil {
+				fr.IP = ip
+				return ret, err
+			}
+			bv := &vmBytes{buf: data, off: 0, n: len(data), owns: true}
+			regs[ins.A] = Cell{Bits: tagPtr, Obj: unsafe.Pointer(bv)}
 		case OpHalt:
 			fr.IP = ip
 			return ret, errors.New("vm2: OpHalt reached")

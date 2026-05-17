@@ -463,6 +463,44 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 			case ir.OpPairSnd:
 				emit(vm2.Instr{Op: vm2.OpPairSnd, A: dst,
 					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpBytesNew:
+				emit(vm2.Instr{Op: vm2.OpBytesNew, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpBytesLen:
+				emit(vm2.Instr{Op: vm2.OpBytesLen, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpBytesGet:
+				emit(vm2.Instr{Op: vm2.OpBytesGet, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpBytesSet:
+				emit(vm2.Instr{Op: vm2.OpBytesSet,
+					A: int32(finalReg[ins.Args[0]]),
+					B: int32(finalReg[ins.Args[1]]),
+					C: int32(finalReg[ins.Args[2]])})
+			case ir.OpBytesSlice:
+				emit(vm2.Instr{Op: vm2.OpBytesSlice, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]]),
+					D: int32(finalReg[ins.Args[2]])})
+			case ir.OpBytesEqual:
+				emit(vm2.Instr{Op: vm2.OpBytesEqual, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpBytesHash:
+				emit(vm2.Instr{Op: vm2.OpBytesHash, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpBytesFromU8Array:
+				emit(vm2.Instr{Op: vm2.OpBytesFromU8Array, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpBytesFromStr:
+				emit(vm2.Instr{Op: vm2.OpBytesFromStr, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpStdoutWriteBytes:
+				emit(vm2.Instr{Op: vm2.OpStdoutWriteBytes,
+					A: int32(finalReg[ins.Args[0]])})
+			case ir.OpStdinReadAll:
+				emit(vm2.Instr{Op: vm2.OpStdinReadAll, A: dst})
 			case ir.OpCall:
 				for i, a := range ins.Args {
 					emit(vm2.Instr{Op: vm2.OpMove,
@@ -595,7 +633,7 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		}
 		switch ins.Type {
 		case ir.TStr, ir.TList, ir.TMap, ir.TPtr,
-			ir.TF64Array, ir.TI64Array, ir.TU8Array, ir.TPair:
+			ir.TF64Array, ir.TI64Array, ir.TU8Array, ir.TPair, ir.TBytes:
 			hasContainer = true
 		}
 		if hasContainer {

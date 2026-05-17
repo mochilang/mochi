@@ -1,5 +1,10 @@
 package vm2
 
+import (
+	"io"
+	"os"
+)
+
 // VM holds the program and the activation-record stacks. Container
 // payloads (lists, maps, strings, closures) live on the Go heap and
 // reach the host GC via typed pointers carried in Cell.Obj — there is
@@ -31,6 +36,13 @@ type VM struct {
 	// dangle. pairNext indexes the next free slot across all chunks.
 	pairChunks []*pairChunk
 	pairNext   int
+
+	// Stdout and Stdin route OpStdoutWriteBytes and OpStdinReadAll (MEP-38
+	// §3.1.3). The defaults wire to os.Stdout/Stdin; test harnesses
+	// replace both with bytes.Buffer for deterministic comparison
+	// against a Go reference.
+	Stdout io.Writer
+	Stdin  io.Reader
 }
 
 // New constructs a VM bound to a program. Stack and Frames are
@@ -41,6 +53,8 @@ func New(p *Program) *VM {
 		Program: p,
 		Stack:   make([]Cell, 0, 64),
 		Frames:  make([]frame, 0, 16),
+		Stdout:  os.Stdout,
+		Stdin:   os.Stdin,
 	}
 }
 
