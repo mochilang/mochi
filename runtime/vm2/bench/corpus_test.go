@@ -40,6 +40,16 @@ var corpusSizes = []corpusSize{
 	// N so the in-process oracle test stays fast (a few ms per row).
 	{"bg_nsieve", 1000},
 	{"bg_binary_trees", 8},
+	// MEP-39 §6.1: fannkuch_redux. N is the outer trial count; one
+	// Build call already encodes N iterations of the fixed-size (7)
+	// permutation kernel.
+	{"bg_fannkuch_redux", 1000},
+	// MEP-39 §6.2: mandelbrot. N is the grid side; one Build call
+	// encodes N*N pixel iterations with maxIter = 50.
+	{"bg_mandelbrot", 100},
+	// MEP-39 §6.3: n_body. N is the outer step count; the system is
+	// 5 bodies with deterministic init.
+	{"bg_n_body", 1000},
 }
 
 func sizeFor(name string) int64 {
@@ -122,3 +132,6 @@ func BenchmarkVM2_ListsFillSum(b *testing.B) { benchCorpus(b, corpus.Program{Nam
 func BenchmarkVM2_MapsFillSum(b *testing.B)  { benchCorpus(b, corpus.Program{Name: "maps_fill_sum", Build: corpus.BuildMapsFillSum, Expect: corpus.ExpectMapsFillSum}) }
 func BenchmarkVM2_BG_Nsieve(b *testing.B)       { benchCorpus(b, corpus.Program{Name: "bg_nsieve", Build: corpus.BuildNsieve, Expect: corpus.ExpectNsieve}) }
 func BenchmarkVM2_BG_BinaryTrees(b *testing.B)  { benchCorpus(b, corpus.Program{Name: "bg_binary_trees", Build: corpus.BuildBinaryTrees, Expect: corpus.ExpectBinaryTrees}) }
+func BenchmarkVM2_BG_FannkuchRedux(b *testing.B) { benchCorpus(b, corpus.Program{Name: "bg_fannkuch_redux", Build: corpus.BuildFannkuchRedux, Expect: corpus.ExpectFannkuchRedux}) }
+func BenchmarkVM2_BG_Mandelbrot(b *testing.B)    { benchCorpus(b, corpus.Program{Name: "bg_mandelbrot", Build: corpus.BuildMandelbrot, Expect: corpus.ExpectMandelbrot}) }
+func BenchmarkVM2_BG_NBody(b *testing.B)         { benchCorpus(b, corpus.Program{Name: "bg_n_body", Build: corpus.BuildNBody, Expect: corpus.ExpectNBody}) }

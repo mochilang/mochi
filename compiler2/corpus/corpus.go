@@ -51,6 +51,11 @@ func All() []Program {
 		// N is the side of an N x N grid in [-2, 1] x [-1, 1] with
 		// maxIter = 50; output is the sum of per-pixel escape counts.
 		{Name: "bg_mandelbrot", Build: BuildMandelbrot, Expect: ExpectMandelbrot},
+		// MEP-39 §6.3: parameterised n_body. N is the outer step count;
+		// the system is 5 bodies with deterministic init. Output is
+		// floor(energy * 1e9) so the cross-lang harness can compare
+		// integer values without f64 stringification.
+		{Name: "bg_n_body", Build: BuildNBody, Expect: ExpectNBody},
 	}
 }
 
