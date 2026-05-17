@@ -467,6 +467,95 @@ func TestNaNBoxingRoundtrip(t *testing.T) {
 	}
 }
 
+// --- OpCall integration: interpreter calls JIT'd callee ---
+
+// TestOpCallRoutesToJIT verifies the full interpreter→JIT dispatch path.
+// fn[0] (main) is interpreted; fn[1] (add) is JIT-compiled. The interpreter
+// executes OpCall which detects JITCode != nil and routes through JITCallFn.
+func TestOpCallRoutesToJIT(t *testing.T) {
+	callee := &vm2.Function{
+		Name:    "add_jit",
+		NumRegs: 2,
+		Code: []vm2.Instr{
+			{Op: vm2.OpAddI64, A: 0, B: 0, C: 1},
+			{Op: vm2.OpReturn, A: 0},
+		},
+	}
+	// JIT-compile the callee.
+	cf, err := vm2jit.Compile(callee)
+	if err != nil {
+		t.Skipf("Compile: %v", err)
+	}
+	defer cf.Free()
+
+	// main: r0=30, r1=12, r2=call callee(r0,r1), return r2
+	main := &vm2.Function{
+		Name:    "main",
+		NumRegs: 3,
+		Consts:  []vm2.Cell{vm2.CInt(30), vm2.CInt(12)},
+		Code: []vm2.Instr{
+			{Op: vm2.OpLoadConstI, A: 0, B: 0},       // r0 = 30
+			{Op: vm2.OpLoadConstI, A: 1, B: 1},       // r1 = 12
+			{Op: vm2.OpCall, A: 2, B: 1, C: 0, D: 2}, // r2 = fn[1](r0, r1)
+			{Op: vm2.OpReturn, A: 2},
+		},
+	}
+	prog := &vm2.Program{Funcs: []*vm2.Function{main, callee}, Main: 0}
+	vm := vm2.New(prog)
+	got, err := vm.Run()
+	if err != nil {
+		t.Fatalf("vm.Run: %v", err)
+	}
+	if got.Int() != 42 {
+		t.Fatalf("interpreter→JIT call: got %d want 42", got.Int())
+	}
+}
+
+// TestOpCallRoutesToJITLoop tests interpreter→JIT for a loop inside the JIT'd callee.
+// main calls a JIT'd sumN(n) which computes 0+1+...+(n-1).
+func TestOpCallRoutesToJITLoop(t *testing.T) {
+	callee := &vm2.Function{
+		Name:    "sum_n_jit",
+		NumRegs: 3,
+		Code: []vm2.Instr{
+			// r0=sum(in), r1=i(in), r2=n(in)
+			{Op: vm2.OpAddI64, A: 0, B: 0, C: 1},        // r0 += r1
+			{Op: vm2.OpAddI64K, A: 1, B: 1, C: 1},       // r1 += 1
+			{Op: vm2.OpJumpIfLessI64, A: 1, B: 2, C: 0}, // if r1<r2 goto 0
+			{Op: vm2.OpReturn, A: 0},
+		},
+	}
+	cf, err := vm2jit.Compile(callee)
+	if err != nil {
+		t.Skipf("Compile: %v", err)
+	}
+	defer cf.Free()
+
+	// main: r0=0, r1=0, r2=100, r3=call callee(r0,r1,r2), return r3
+	main := &vm2.Function{
+		Name:    "main",
+		NumRegs: 4,
+		Consts:  []vm2.Cell{vm2.CInt(0), vm2.CInt(0), vm2.CInt(100)},
+		Code: []vm2.Instr{
+			{Op: vm2.OpLoadConstI, A: 0, B: 0},        // r0 = 0 (sum)
+			{Op: vm2.OpLoadConstI, A: 1, B: 1},        // r1 = 0 (i)
+			{Op: vm2.OpLoadConstI, A: 2, B: 2},        // r2 = 100 (n)
+			{Op: vm2.OpCall, A: 3, B: 1, C: 0, D: 3}, // r3 = callee(r0,r1,r2)
+			{Op: vm2.OpReturn, A: 3},
+		},
+	}
+	prog := &vm2.Program{Funcs: []*vm2.Function{main, callee}, Main: 0}
+	vm := vm2.New(prog)
+	got, err := vm.Run()
+	if err != nil {
+		t.Fatalf("vm.Run: %v", err)
+	}
+	want := int64(100 * 99 / 2) // 4950
+	if got.Int() != want {
+		t.Fatalf("interpreter→JIT sum(100): got %d want %d", got.Int(), want)
+	}
+}
+
 // --- benchmarks ---
 
 // BenchmarkJITSumN benchmarks a tight JIT loop (sum 0..N-1).

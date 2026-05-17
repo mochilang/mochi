@@ -296,17 +296,17 @@ func lowerInstrARM64(fn *vm2.Function, idx int, ins vm2.Instr, pcMap []int) ([]u
 		return []uint32{tbz(xA, 0, off)}, nil
 
 	case vm2.OpJumpIfLessI64:
-		return emitCondBranchARM64(xA, xB, int(ins.C), 0xB /*LT*/, idx, pcMap, branchOff)
+		return emitCondBranchARM64(xA, xB, int(ins.C), 0xB /*LT*/, branchOff)
 	case vm2.OpJumpIfLessEqI64:
-		return emitCondBranchARM64(xA, xB, int(ins.C), 0xD /*LE*/, idx, pcMap, branchOff)
+		return emitCondBranchARM64(xA, xB, int(ins.C), 0xD /*LE*/, branchOff)
 	case vm2.OpJumpIfGreaterI64:
-		return emitCondBranchARM64(xA, xB, int(ins.C), 0xC /*GT*/, idx, pcMap, branchOff)
+		return emitCondBranchARM64(xA, xB, int(ins.C), 0xC /*GT*/, branchOff)
 	case vm2.OpJumpIfGreaterEqI64:
-		return emitCondBranchARM64(xA, xB, int(ins.C), 0xA /*GE*/, idx, pcMap, branchOff)
+		return emitCondBranchARM64(xA, xB, int(ins.C), 0xA /*GE*/, branchOff)
 	case vm2.OpJumpIfEqualI64:
-		return emitCondBranchARM64(xA, xB, int(ins.C), 0x0 /*EQ*/, idx, pcMap, branchOff)
+		return emitCondBranchARM64(xA, xB, int(ins.C), 0x0 /*EQ*/, branchOff)
 	case vm2.OpJumpIfNotEqualI64:
-		return emitCondBranchARM64(xA, xB, int(ins.C), 0x1 /*NE*/, idx, pcMap, branchOff)
+		return emitCondBranchARM64(xA, xB, int(ins.C), 0x1 /*NE*/, branchOff)
 
 	case vm2.OpReturn:
 		n := fn.NumRegs
@@ -328,7 +328,7 @@ func lowerInstrARM64(fn *vm2.Function, idx int, ins vm2.Instr, pcMap []int) ([]u
 
 // emitCondBranchARM64 emits: sbfx(x8,xA) + sbfx(x17,xB) + cmp(x8,x17) + b.cond(target).
 // The b.cond is at word offset 3 within this instruction's output.
-func emitCondBranchARM64(xA, xB uint32, targetBC int, cond uint32, idx int, pcMap []int,
+func emitCondBranchARM64(xA, xB uint32, targetBC int, cond uint32,
 	branchOff func(int, int, int) (int32, error)) ([]uint32, error) {
 	off, err := branchOff(3, targetBC, 19) // b.cond imm19
 	if err != nil {
