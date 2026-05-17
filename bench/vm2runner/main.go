@@ -46,6 +46,10 @@ var repeats = map[string]int{
 	// invocation already runs the full BG kernel once at the chosen N.
 	"bg_nsieve":       50,
 	"bg_binary_trees": 1,
+	// MEP-39: fannkuch_redux scaled form. N is the outer trial count
+	// (the inner permutation size is fixed at 7), so a single Build
+	// call already encodes N iterations. The harness loops once.
+	"bg_fannkuch_redux": 1,
 }
 
 func main() {
