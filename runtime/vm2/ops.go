@@ -67,7 +67,37 @@ const (
 	// no callee lookup. Hot self-recursion loops (every `for` lowered
 	// to a tail-recursive helper) go through this path.
 	OpTailCallSelf
+	// OpTailCallSelfA3 fuses a 3-parameter self-tail-call's parallel-move
+	// schedule and IP rewind into one dispatch. Encoding:
+	//
+	//	A = src reg for param 0
+	//	B = src reg for param 1
+	//	C = src reg for param 2
+	//
+	// Dispatch is regs[0]=regs[A]; regs[1]=regs[B]; regs[2]=regs[C]; ip=0.
+	// emit picks this form only when the recursive call has exactly 3
+	// args and no cyclic dst<-src dependency among them (cycles still go
+	// through the OpMove + OpTailCallSelf parallel-move path). The pair
+	// loop kernels (BuildPair*Kernel) all take this form, so the iter
+	// body collapses from 2 OpMoves + OpTailCallSelf to one op.
+	OpTailCallSelfA3
 	OpReturn // return A to caller's RetReg
+
+	// Return-superop family (MEP-38 §A.6). Each fuses a small
+	// expression tree with the trailing OpReturn into a single dispatch.
+	// The leaves of recursive BG kernels (checkTree returns 1, makeTree
+	// returns newPair(...)) and the inductive branches (checkTree
+	// returns 1 + left + right) make up ~30% of the dispatches in
+	// binary_trees, so collapsing each pattern to one op moves the
+	// dispatch budget back toward call-overhead, not body-eval.
+	//
+	//	OpReturnI64K:    return CInt(int64(A))            -- fuses ConstI64+Return
+	//	OpReturnAddSum:  return CInt(int64(A) + regs[B].Int() + regs[C].Int())
+	//	                                                  -- fuses (AddI64K|ConstI64+AddI64)+AddI64+Return
+	//	OpReturnNewPair: return newPair(regs[B], regs[C]) -- fuses NewPair+Return
+	OpReturnI64K
+	OpReturnAddSum
+	OpReturnNewPair
 
 	// String subsystem (MEP-24 §2). Strings are immutable; every
 	// allocating op produces a fresh *vmString reached through
