@@ -4,6 +4,6 @@ package vm2jit
 
 import "mochi/runtime/vm2"
 
-func lowerARM64(_ *vm2.Function, _ int, _ vm2.Instr) ([]uint32, error) {
+func lowerFnARM64(_ *vm2.Function) ([]uint32, error) {
 	return nil, ErrUnsupported
 }

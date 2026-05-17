@@ -2,6 +2,7 @@ package vm2jit
 
 import (
 	"errors"
+	"fmt"
 
 	"mochi/runtime/vm2"
 )
@@ -42,9 +43,17 @@ func (c *CompiledFunc) Free() error {
 //
 // Phase 1 supports: arithmetic, control flow, list opcodes, call/return.
 // Opcodes outside Phase 1's scope cause Compile to return ErrNotImplemented.
+// maxJITRegs is the maximum number of vm2 registers supported by any JIT
+// backend. Functions with more registers must be interpreted.
+const maxJITRegs = 7
+
 func Compile(fn *vm2.Function) (*CompiledFunc, error) {
 	if hostArch < 0 {
 		return nil, ErrUnsupported
+	}
+	if fn.NumRegs > maxJITRegs {
+		return nil, fmt.Errorf("%w: %s uses %d registers (max %d)",
+			ErrNotImplemented, fn.Name, fn.NumRegs, maxJITRegs)
 	}
 	words, err := lowerFunction(fn, hostArch)
 	if err != nil {
