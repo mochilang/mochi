@@ -286,5 +286,13 @@
     "type": "Standards Track",
     "description": "Survey of modern auto memory management (Perceus / Koka / Roc, Inko, Lobster, Verona / Reggio regions, Immix / LXR, MMTk, generational ZGC / Shenandoah, JSC Riptide) and a design overview for reclaiming entries in the vm2 Objects table. Today the table is append-only inside a Run: every list, map, heap string, closure, and boxed big-int allocated by a program stays live until Run exits, regardless of whether the program still references it. This MEP proposes three implementation options (Perceus-style reference counting with reuse, per-frame region arenas, and an Immix / LXR mark-region collector layered over the Objects table) and a recommendation.",
     "slug": "/docs/mep/mep-0035"
+  },
+  {
+    "number": 36,
+    "title": "Restructure VM2 to Reuse Go's GC",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Restructure the vm2 value representation so that pointer-shaped values (lists, maps, heap strings, closures, boxed big ints, structs, sets) are stored as real Go pointers visible to Go's tricolor concurrent mark-sweep collector, and the per-Run Objects []any indirection table is deleted. Today the NaN-boxed Cell hides every pointer inside a uint64, so Go's GC traces only the table, never the values, and the table grows monotonically for the lifetime of a Run. This MEP surveys modern VM-on-host-GC designs (Goja, starlark-go, Yaegi, Truffle, WasmGC, CRuby + MMTk), the Go-specific cost of interface boxing and the hybrid write barrier, and the allocation-minimization literature (Perceus, Roc, PLDI 2024 dynamic heapification, V8 Smi, .NET / Valhalla value types), then specifies the refactor: a struct Cell with an unsafe.Pointer slot for GC-traced payloads, an inline scalar slot for ints / bools / floats / short strings, a per-Run free list of typed pointers for object reuse, and a compile-time last-use bit on registers that enables in-place mutation for the common append / update pattern. The goal is zero allocations on the hot path for pure-numeric loops, one Go-tracked allocation per container constructor and zero per element, and full reclamation of dead containers between GC cycles without a custom collector.",
+    "slug": "/docs/mep/mep-0036"
   }
 ]
