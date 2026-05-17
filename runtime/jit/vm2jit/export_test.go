@@ -24,5 +24,5 @@ func CallDirect(fn *vm2.Function, v *vm2.VM, regs []vm2.Cell) vm2.Cell {
 		n = maxJITRegs
 	}
 	copy(jf.regs[:n], regs[:n])
-	return vm2.Cell(trampoline.Call(fn.JITCode, unsafe.Pointer(&jf.regs[0])))
+	return vm2.Cell{Bits: trampoline.Call(fn.JITCode, unsafe.Pointer(&jf.regs[0]))}
 }

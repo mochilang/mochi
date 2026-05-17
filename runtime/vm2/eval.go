@@ -242,10 +242,10 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			if ca.IsSStr() && cb.IsSStr() {
 				la, lb := ca.SStrLen(), cb.SStrLen()
 				if la+lb <= MaxInlineStr {
-					pa := uint64(ca) & sstrByteMask
-					pb := uint64(cb) & sstrByteMask
+					pa := ca.Bits & sstrByteMask
+					pb := cb.Bits & sstrByteMask
 					packed := pa | (pb << (uint(la) * 8))
-					regs[ins.A] = Cell(tagSStr | uint64(la+lb)<<sstrLenShift | packed)
+					regs[ins.A] = Cell{Bits: tagSStr | uint64(la+lb)<<sstrLenShift | packed}
 					break
 				}
 			}

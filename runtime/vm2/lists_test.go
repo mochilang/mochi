@@ -40,7 +40,7 @@ func TestNewListCapHint(t *testing.T) {
 		{Op: OpReturn, A: 0},
 	})
 	if !got.IsPtr() {
-		t.Fatalf("want ptr cell, got %x", uint64(got))
+		t.Fatalf("want ptr cell, got %x", got.Bits)
 	}
 	l := vm.listAt(got)
 	if cap(l.data) != 4 {

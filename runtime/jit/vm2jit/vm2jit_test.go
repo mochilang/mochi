@@ -88,7 +88,7 @@ func TestReturnRegister(t *testing.T) {
 	want := vm2.CInt(42)
 	got := callJIT(fn, regs(2, vm2.CInt(0), want))
 	if got != want {
-		t.Fatalf("got %016x, want %016x", uint64(got), uint64(want))
+		t.Fatalf("got %016x, want %016x", got.Bits, want.Bits)
 	}
 }
 
@@ -581,7 +581,7 @@ func TestJITListLenFastPath(t *testing.T) {
 	for i := int64(0); i < 5; i++ {
 		vm2.JITListPush(vm, list, vm2.CInt(i*i))
 	}
-	got := vm2jit.CallDirect(callee, vm, []vm2.Cell{list, 0})
+	got := vm2jit.CallDirect(callee, vm, []vm2.Cell{list, {}})
 	if pc, ok := vm2.DecodeDeopt(got); ok {
 		t.Fatalf("fast path deopted unexpectedly at pc=%d", pc)
 	}
@@ -610,10 +610,10 @@ func TestJITListLenTagMissDeopts(t *testing.T) {
 	}
 	defer cf.Free()
 
-	got := vm2jit.CallDirect(callee, nil, []vm2.Cell{vm2.CInt(7), 0})
+	got := vm2jit.CallDirect(callee, nil, []vm2.Cell{vm2.CInt(7), {}})
 	pc, ok := vm2.DecodeDeopt(got)
 	if !ok {
-		t.Fatalf("expected deopt sentinel, got %016x", uint64(got))
+		t.Fatalf("expected deopt sentinel, got %016x", got.Bits)
 	}
 	if pc != 0 {
 		t.Fatalf("deopt pc: got %d want 0 (OpListLen index)", pc)

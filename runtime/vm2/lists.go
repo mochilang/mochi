@@ -1,5 +1,7 @@
 package vm2
 
+import "unsafe"
+
 // vmList is the heap representation of a list (MEP-24 §3). Element type
 // specialization is intentionally deferred: every slot is a Cell so int
 // elements pay the tag overhead. A follow-on MEP gated on profile
@@ -13,18 +15,30 @@ type vmList struct {
 }
 
 // newList allocates a *vmList with the given capacity and registers it
-// in the VM's Objects table. The returned Cell is a tagPtr.
+// in the VM's Objects table. The returned Cell is a tagPtr whose Obj
+// field carries the typed *vmList so the host GC can trace the pointee
+// directly; the Objects[] index in the bits payload is the self-heal
+// fallback used by callers that lost the typed pointer (e.g. across the
+// JIT trampoline).
 func (vm *VM) newList(capHint int) Cell {
 	if capHint < 0 {
 		capHint = 0
 	}
-	return CPtr(vm.AddObject(&vmList{data: make([]Cell, 0, capHint)}))
+	l := &vmList{data: make([]Cell, 0, capHint)}
+	c := CPtr(vm.AddObject(l))
+	c.Obj = unsafe.Pointer(l)
+	return c
 }
 
-// listAt fetches the *vmList backing a tagPtr cell. Caller must have
-// verified the cell carries a list; the typed opcodes guarantee that
-// statically.
+// listAt fetches the *vmList backing a tagPtr cell. Self-healing: if the
+// Cell carries a typed pointer (set by newList), return it directly;
+// otherwise fall back to the Objects[] table lookup so cells that came
+// through a non-pointer-preserving path (JIT regs, persisted const pool)
+// still resolve.
 func (vm *VM) listAt(c Cell) *vmList {
+	if p := c.PtrTo(); p != nil {
+		return (*vmList)(p)
+	}
 	return vm.Objects[c.Ptr()].(*vmList)
 }
 
