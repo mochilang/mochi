@@ -91,6 +91,8 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			regs[ins.A] = CInt(regs[ins.B].Int() + regs[ins.C].Int())
 		case OpAddI64K:
 			regs[ins.A] = CInt(regs[ins.B].Int() + int64(ins.C))
+		case OpSubI64K:
+			regs[ins.A] = CInt(regs[ins.B].Int() - int64(ins.C))
 		case OpSubI64:
 			regs[ins.A] = CInt(regs[ins.B].Int() - regs[ins.C].Int())
 		case OpMulI64:
@@ -143,6 +145,14 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			}
 		case OpJumpIfNotEqualI64:
 			if regs[ins.A].Int() != regs[ins.B].Int() {
+				ip = int(ins.C)
+			}
+		case OpJumpIfEqualI64K:
+			if regs[ins.A].Int() == int64(ins.B) {
+				ip = int(ins.C)
+			}
+		case OpJumpIfNotEqualI64K:
+			if regs[ins.A].Int() != int64(ins.B) {
 				ip = int(ins.C)
 			}
 		case OpCall:
@@ -325,6 +335,94 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			regs = vm.Stack[newBase:]
 			consts = fr.Fn.Consts
 			ip = 0
+		case OpCallSelfA1:
+			callee := fr.Fn
+			fr.IP = ip
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				vm.Stack[base] = regs[ins.C]
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				regs = vm.Stack[base:]
+				ip = 0
+				break
+			}
+			a0 := regs[ins.C]
+			_, newBase := vm.pushFrame(callee, ins.A)
+			vm.Stack[newBase] = a0
+			fr = &vm.Frames[len(vm.Frames)-1]
+			regs = vm.Stack[newBase:]
+			ip = 0
+		case OpCallSelfA2:
+			callee := fr.Fn
+			fr.IP = ip
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				vm.Stack[base] = regs[ins.C]
+				vm.Stack[base+1] = regs[ins.D]
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				regs = vm.Stack[base:]
+				ip = 0
+				break
+			}
+			a0, a1 := regs[ins.C], regs[ins.D]
+			_, newBase := vm.pushFrame(callee, ins.A)
+			vm.Stack[newBase] = a0
+			vm.Stack[newBase+1] = a1
+			fr = &vm.Frames[len(vm.Frames)-1]
+			regs = vm.Stack[newBase:]
+			ip = 0
+		case OpPairFstCallSelfA2:
+			callee := fr.Fn
+			fr.IP = ip
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				vm.Stack[base] = (*vmPair)(regs[ins.C].PtrTo()).a
+				vm.Stack[base+1] = regs[ins.D]
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				regs = vm.Stack[base:]
+				ip = 0
+				break
+			}
+			a0 := (*vmPair)(regs[ins.C].PtrTo()).a
+			a1 := regs[ins.D]
+			_, newBase := vm.pushFrame(callee, ins.A)
+			vm.Stack[newBase] = a0
+			vm.Stack[newBase+1] = a1
+			fr = &vm.Frames[len(vm.Frames)-1]
+			regs = vm.Stack[newBase:]
+			ip = 0
+		case OpPairSndCallSelfA2:
+			callee := fr.Fn
+			fr.IP = ip
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				vm.Stack[base] = (*vmPair)(regs[ins.C].PtrTo()).b
+				vm.Stack[base+1] = regs[ins.D]
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				regs = vm.Stack[base:]
+				ip = 0
+				break
+			}
+			a0 := (*vmPair)(regs[ins.C].PtrTo()).b
+			a1 := regs[ins.D]
+			_, newBase := vm.pushFrame(callee, ins.A)
+			vm.Stack[newBase] = a0
+			vm.Stack[newBase+1] = a1
+			fr = &vm.Frames[len(vm.Frames)-1]
+			regs = vm.Stack[newBase:]
+			ip = 0
 		case OpTailCallSelf:
 			ip = 0
 		case OpTailCallSelfA3:
@@ -443,6 +541,25 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			regs[retReg] = ret
 		case OpReturnNewPair:
 			ret = vm.newPair(regs[ins.B], regs[ins.C])
+			retReg := fr.RetReg
+			top := len(vm.Frames) - 1
+			poppedBase := fr.RegsBase
+			if fr.Fn.HasContainerSlots {
+				clear(vm.Stack[poppedBase:])
+			}
+			vm.Stack = vm.Stack[:poppedBase]
+			vm.Frames = vm.Frames[:top]
+			if top <= target {
+				return ret, nil
+			}
+			fr = &vm.Frames[top-1]
+			code = fr.Fn.Code
+			regs = vm.Stack[fr.RegsBase:]
+			consts = fr.Fn.Consts
+			ip = fr.IP
+			regs[retReg] = ret
+		case OpReturnNewPairKK:
+			ret = vm.newPair(CInt(int64(ins.B)), CInt(int64(ins.C)))
 			retReg := fr.RetReg
 			top := len(vm.Frames) - 1
 			poppedBase := fr.RegsBase

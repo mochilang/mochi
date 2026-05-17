@@ -16,6 +16,11 @@ const (
 	// step counter (e.g. `i = i + 1` lowers to one of these instead of
 	// load-const-then-add).
 	OpAddI64K
+	// A = B - sign-extend(C). Same fusion shape as OpAddI64K but for
+	// subtract-by-immediate. Hot for recursive-decrement kernels
+	// (binary_trees.makeTree(d-1) / checkTree(t, d-1) where the constant
+	// 1 is loaded and immediately subtracted from the depth parameter).
+	OpSubI64K
 	OpSubI64                // A = B - C
 	OpMulI64                // A = B * C
 	OpDivI64                // A = B / C (truncated; division by zero traps)
@@ -37,6 +42,15 @@ const (
 	OpJumpIfGreaterEqI64 // if A >= B then IP = C
 	OpJumpIfEqualI64     // if A == B then IP = C
 	OpJumpIfNotEqualI64  // if A != B then IP = C
+	// Immediate-form i64 compare + conditional branch. B is a 32-bit
+	// sign-extended immediate; saves the const-load + register round-trip
+	// that the (OpLoadConstI -> OpJumpIfEqualI64) pair would require.
+	// Hot for "if d == 0 return" leaf-guard tests in recursive BG kernels.
+	//
+	//	OpJumpIfEqualI64K:    if regs[A].Int() == int64(B) then IP = C
+	//	OpJumpIfNotEqualI64K: if regs[A].Int() != int64(B) then IP = C
+	OpJumpIfEqualI64K
+	OpJumpIfNotEqualI64K
 	OpCall                  // A = call Funcs[B], args [C..C+D); RetReg=A
 	// Direct call specializations for 1-arg and 2-arg calls. The arg
 	// values are read straight from the caller's registers (no staging
@@ -60,6 +74,23 @@ const (
 	//	OpPairSndCallA2: A=retReg, B=calleeIdx, C=pairSrcReg, D=arg1Reg
 	OpPairFstCallA2
 	OpPairSndCallA2
+	// Self-recursive call specializations (MEP-38 §A.7). When the callee
+	// index equals the currently-executing function's index the dispatch
+	// can skip vm.Program.Funcs[B] (callee == fr.Fn) and the
+	// code/consts pointer reload (they would be reassigned to the same
+	// values). The interpreter still pushes a new frame; the only thing
+	// that changes is the per-call constant lookup. Hot path for
+	// binary_trees.makeTree / checkTree where every recursive call is
+	// self-recursive.
+	//
+	//	OpCallSelfA1:        A=retReg, C=arg0Reg
+	//	OpCallSelfA2:        A=retReg, C=arg0Reg, D=arg1Reg
+	//	OpPairFstCallSelfA2: A=retReg, C=pairSrcReg, D=arg1Reg
+	//	OpPairSndCallSelfA2: A=retReg, C=pairSrcReg, D=arg1Reg
+	OpCallSelfA1
+	OpCallSelfA2
+	OpPairFstCallSelfA2
+	OpPairSndCallSelfA2
 	OpTailCall              // tail-call Funcs[A] with args [B..B+C); reuses frame
 	// Same-function tail call. Params already live in regs[0..np) thanks
 	// to parallel moves the emitter inserted into the param slots, so
@@ -98,6 +129,12 @@ const (
 	OpReturnI64K
 	OpReturnAddSum
 	OpReturnNewPair
+	// OpReturnNewPairKK fuses two OpLoadConstI immediates with OpNewPair
+	// + OpReturn. Hot for the makeTree leaf path which returns the
+	// constant pair (0, 0); the unfused form is four dispatches per leaf
+	// call (load, load, newPair, return). Encoding: B = first const,
+	// C = second const, both sign-extended i64 values.
+	OpReturnNewPairKK
 
 	// String subsystem (MEP-24 §2). Strings are immutable; every
 	// allocating op produces a fresh *vmString reached through
