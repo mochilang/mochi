@@ -47,6 +47,10 @@ func All() []Program {
 		// Inner permutation size is fixed at 7 (matching the canonical
 		// BG reference); N is the outer trial count.
 		{Name: "bg_fannkuch_redux", Build: BuildFannkuchRedux, Expect: ExpectFannkuchRedux},
+		// MEP-39 §6.2: parameterised cross-lang form of mandelbrot.
+		// N is the side of an N x N grid in [-2, 1] x [-1, 1] with
+		// maxIter = 50; output is the sum of per-pixel escape counts.
+		{Name: "bg_mandelbrot", Build: BuildMandelbrot, Expect: ExpectMandelbrot},
 	}
 }
 

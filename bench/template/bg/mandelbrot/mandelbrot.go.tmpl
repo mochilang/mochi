@@ -1,0 +1,49 @@
+// Template peer for the bg/mandelbrot benchmark. Mirrors the
+// mandelbrot.mochi shape: an N x N grid over [-2, 1] x [-1, 1] with
+// max_iter = 50, output is the sum of per-pixel escape counts.
+
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+func escapeCount(cx, cy float64, maxIter int) int {
+	zr := 0.0
+	zi := 0.0
+	for n := 0; n < maxIter; n++ {
+		r2 := zr * zr
+		i2 := zi * zi
+		if r2+i2 > 4.0 {
+			return n
+		}
+		nzi := 2.0*zr*zi + cy
+		nzr := (r2 - i2) + cx
+		zr, zi = nzr, nzi
+	}
+	return maxIter
+}
+
+func main() {
+	const side = {{ .N }}
+	const maxIter = 50
+	total := 0
+	sideF := float64(side)
+
+	start := time.Now()
+	for row := 0; row < side; row++ {
+		cy := float64(row)/sideF*2.0 - 1.0
+		for col := 0; col < side; col++ {
+			cx := float64(col)/sideF*3.0 - 2.0
+			total += escapeCount(cx, cy, maxIter)
+		}
+	}
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      total,
+	})
+}
