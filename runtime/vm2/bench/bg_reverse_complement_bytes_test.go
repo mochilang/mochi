@@ -73,8 +73,59 @@ func TestBGReverseComplementBytesKernel(t *testing.T) {
 	}
 }
 
+// TestBGReverseComplementBytesKernelInlined verifies the kernel still
+// computes the same answer after MEP-38 §3.3 leaf-inline has been
+// applied. Bound to the same Go reference as the non-inlined variant.
+func TestBGReverseComplementBytesKernelInlined(t *testing.T) {
+	m := corpus.BuildReverseComplementBytesKernel()
+	opt.LeafInline(m)
+	for _, f := range m.Funcs {
+		opt.ConstFold(f)
+		opt.DCE(f)
+		opt.TailCall(f)
+	}
+	prog, err := emit.Compile(m)
+	if err != nil {
+		t.Fatalf("compile: %v", err)
+	}
+	got, err := vm2.New(prog).Run()
+	if err != nil {
+		t.Fatalf("run: %v", err)
+	}
+	if got.Int() != goReverseComplementBytesKernel() {
+		t.Fatalf("inlined kernel = %d, want %d",
+			got.Int(), goReverseComplementBytesKernel())
+	}
+}
+
 func BenchmarkVM2_BG_ReverseComplementBytesKernel(b *testing.B) {
 	m := corpus.BuildReverseComplementBytesKernel()
+	for _, f := range m.Funcs {
+		opt.ConstFold(f)
+		opt.DCE(f)
+		opt.TailCall(f)
+	}
+	prog, err := emit.Compile(m)
+	if err != nil {
+		b.Fatalf("compile: %v", err)
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		if _, err := vm2.New(prog).Run(); err != nil {
+			b.Fatalf("run: %v", err)
+		}
+	}
+}
+
+// BenchmarkVM2_BG_ReverseComplementBytesKernelInlined runs the same
+// kernel with MEP-38 §3.3 leaf-inline applied: complement() and
+// baseFor() get copied into the hot loops, so the inner step has no
+// OpCall / OpReturn round trip and the interpreter stays inside the
+// caller's frame.
+func BenchmarkVM2_BG_ReverseComplementBytesKernelInlined(b *testing.B) {
+	m := corpus.BuildReverseComplementBytesKernel()
+	opt.LeafInline(m)
 	for _, f := range m.Funcs {
 		opt.ConstFold(f)
 		opt.DCE(f)

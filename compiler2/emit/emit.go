@@ -213,6 +213,60 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		return len(code) - 1
 	}
 
+	// MEP-38 §3.3 leaf-inline phi resolution: lower each ir.OpPhi at the
+	// head of a block to OpMove instructions emitted at the end of each
+	// predecessor, immediately before the predecessor's terminator. The
+	// leaf inliner only produces phis whose predecessors terminate in
+	// OpBr (a single successor), so every move scheduled here lives on a
+	// non-critical edge; the assumption is enforced via a runtime check
+	// the first time a phi with a non-OpBr predecessor would be lowered.
+	phiMovesByPred := make(map[ir.BlockID][]pmove)
+	hasPhi := false
+	for _, blk := range f.Blocks {
+		for _, vid := range blk.Insts {
+			ins := f.Values[vid]
+			if ins.Op != ir.OpPhi {
+				continue
+			}
+			hasPhi = true
+			if finalReg[vid] < 0 {
+				continue
+			}
+			dstReg := int32(finalReg[vid])
+			for i, predID := range ins.AuxBlocks {
+				srcVid := ins.Args[i]
+				if finalReg[srcVid] < 0 {
+					continue
+				}
+				srcReg := int32(finalReg[srcVid])
+				phiMovesByPred[predID] = append(phiMovesByPred[predID],
+					pmove{dst: dstReg, src: srcReg})
+			}
+		}
+	}
+	// Critical-edge check: if any phi-target block has a predecessor that
+	// terminates in OpCondBr (two successors), the moves can't be safely
+	// hoisted ahead of the branch without edge splitting. Reject loudly
+	// so the caller knows to split critical edges before emit.
+	if hasPhi {
+		for _, blk := range f.Blocks {
+			if len(phiMovesByPred[blk.ID]) == 0 {
+				continue
+			}
+			term := f.Values[blk.Insts[len(blk.Insts)-1]]
+			if term.Op != ir.OpBr {
+				return nil, fmt.Errorf("emit %s: phi predecessor block %d terminates in %d, only OpBr predecessors are supported (split critical edges first)", f.Name, blk.ID, term.Op)
+			}
+		}
+	}
+	flushPhiMoves := func(predID ir.BlockID) {
+		moves := phiMovesByPred[predID]
+		if len(moves) == 0 {
+			return
+		}
+		emitParallelMoves(moves, int32(callBase), emit)
+	}
+
 	for bi := range f.Blocks {
 		blockPC[bi] = int32(len(code))
 		blk := f.Blocks[bi]
@@ -543,6 +597,7 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					emit(vm2.Instr{Op: vm2.OpReturn, A: 0})
 				}
 			case ir.OpBr:
+				flushPhiMoves(blk.ID)
 				idx := emit(vm2.Instr{Op: vm2.OpJump})
 				pending = append(pending, pendingJump{insIdx: idx, target: ins.AuxBlocks[0], field: 'A'})
 			case ir.OpCondBr:
@@ -598,7 +653,10 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 			case ir.OpInvalid:
 				// DCE'd
 			case ir.OpPhi:
-				return nil, fmt.Errorf("emit %s: phi at vid %d not supported in step 7", f.Name, vid)
+				// Phi nodes lower to OpMove instructions emitted at the
+				// end of each predecessor block, not at the phi's own
+				// site. The pre-pass above already populated
+				// phiMovesByPred; nothing to emit here.
 			default:
 				return nil, fmt.Errorf("emit %s: unsupported op %d at vid %d", f.Name, ins.Op, vid)
 			}
