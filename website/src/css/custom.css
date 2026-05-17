@@ -246,10 +246,21 @@ h4:hover .hash-link {
    ========================================================================= */
 
 .navbar {
-  backdrop-filter: saturate(180%) blur(12px);
-  -webkit-backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid var(--mochi-border);
   box-shadow: none;
+}
+
+/* Apply the translucent blur only on desktop. On mobile (≤ 996px,
+   the Docusaurus drawer breakpoint), `backdrop-filter` would make
+   `.navbar` a containing block for its `position: fixed` descendants,
+   which clips the slide-in drawer (`.navbar-sidebar`) to the navbar's
+   own height. Result: the hamburger toggle fires, the drawer opens,
+   but the user sees nothing because it has been compressed to ~60px. */
+@media (min-width: 997px) {
+  .navbar {
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+  }
 }
 
 .navbar__brand {

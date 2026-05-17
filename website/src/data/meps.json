@@ -42,7 +42,7 @@
   {
     "number": 5,
     "title": "Type Inference",
-    "status": "Standards Track",
+    "status": "Active",
     "type": "Standards Track",
     "description": "Strict static algebraic type inference. Principal types, no implicit any, no null.",
     "slug": "/docs/mep/mep-0005"
@@ -138,7 +138,7 @@
   {
     "number": 17,
     "title": "VM Performance Methodology and Baseline",
-    "status": "Draft",
+    "status": "Active",
     "type": "Process",
     "description": "How Mochi measures, reports, and gates VM performance changes, with a reference benchmark suite and a regression budget.",
     "slug": "/docs/mep/mep-0017"
@@ -146,7 +146,7 @@
   {
     "number": 18,
     "title": "Bytecode Dispatch in a Go-Hosted VM",
-    "status": "Draft",
+    "status": "Active",
     "type": "Standards Track",
     "description": "What dispatch techniques work for the Mochi VM under the constraints of the Go runtime, with a concrete plan for the next 18 months.",
     "slug": "/docs/mep/mep-0018"
@@ -154,7 +154,7 @@
   {
     "number": 19,
     "title": "Adaptive Specialization and Inline Caches",
-    "status": "Draft",
+    "status": "Active",
     "type": "Standards Track",
     "description": "Quickening generic opcodes into typed variants on first observation, plus monomorphic and polymorphic inline caches for the few remaining dynamic call sites.",
     "slug": "/docs/mep/mep-0019"
@@ -162,7 +162,7 @@
   {
     "number": 20,
     "title": "Value Representation and Allocation Discipline",
-    "status": "Draft",
+    "status": "Active",
     "type": "Standards Track",
     "description": "A tighter Value struct, sync.Pool for frames and slabs, and an escape audit on the hot path of the Mochi VM.",
     "slug": "/docs/mep/mep-0020"
@@ -170,7 +170,7 @@
   {
     "number": 21,
     "title": "Compiler2 and VM2 Co-Design for Maximum Interpreter Throughput",
-    "status": "Draft",
+    "status": "Active",
     "type": "Standards Track",
     "description": "A first-principles redesign of the Mochi compile-and-execute pipeline. Replace the observation-driven runtime with a typed SSA compiler (compiler2) that emits monomorphic bytecode into a redesigned vm2 with NaN-boxed 8-byte values, register allocation, tail calls, and bounds-check elision. No backward compatibility constraints. Target the absolute throughput ceiling of a Go-hosted interpreter on statically typed source.",
     "slug": "/docs/mep/mep-0021"
@@ -186,7 +186,7 @@
   {
     "number": 23,
     "title": "Cross-language Baseline Benchmarks",
-    "status": "Draft",
+    "status": "Active",
     "type": "Process",
     "description": "A periodic, hand-written cross-language benchmark suite that positions Mochi against Python and Lua on the same workloads, separate from the MEP-17 per-PR gate.",
     "slug": "/docs/mep/mep-0023"
@@ -194,7 +194,7 @@
   {
     "number": 24,
     "title": "VM2 Subsystem Design (Objects, Strings, Structs, Lists, Maps, Closures, GC, Errors)",
-    "status": "Draft",
+    "status": "Active",
     "type": "Standards Track",
     "description": "A consolidated subsystem design for vm2 that replaces the ad-hoc per-feature opcode growth of MEPs 18-21 with a single coherent plan for value representation, heap-allocated types, garbage collection, exception/Result handling, and the porting path to feature parity with the legacy VM. Co-designed with a comprehensive correctness + benchmark gate.",
     "slug": "/docs/mep/mep-0024"
@@ -202,7 +202,7 @@
   {
     "number": 25,
     "title": "VM2 Data Model (Strings, Lists, Maps, Sets, Structs)",
-    "status": "Draft",
+    "status": "Active",
     "type": "Standards Track",
     "description": "Algorithmically modern in-memory representations for vm2's five core container kinds, strings, lists, maps, sets, structs, replacing the MEP-24 MVP shapes with shapes that close the Lua gap on the cross-language baseline and stay competitive after a future JIT lands. Specifies SSO + rope strings, type-specialized lists, Swiss-style int-keyed maps, presence-only set storage, and slot-packed structs. Implementation strategy is selected from three competing approaches detailed in MEP-26, MEP-27, MEP-28.",
     "slug": "/docs/mep/mep-0025"
@@ -242,7 +242,7 @@
   {
     "number": 30,
     "title": "VM2 JIT Option A - Template / Copy-and-Patch Baseline JIT",
-    "status": "Draft",
+    "status": "Active",
     "type": "Standards Track",
     "description": "First of three competing JIT strategy specs for vm2. Each opcode handler is pre-compiled once into a position-independent native snippet, stored as a byte slice keyed by (opcode, shape-tuple), then concatenated and patched into an mmap'd executable buffer at function load. No IR, no register allocator, no inliner. The result is a non-optimizing baseline JIT in the lineage of V8 Sparkplug, JSC's Baseline JIT, and CPython 3.13's copy-and-patch JIT. This MEP specifies the snippet harvesting pipeline, the patcher ABI, the interpreter-compatible frame layout that makes OSR trivial, the deopt-free guard model, the distribution story (single Go binary, no cgo), and predicts a 2-4x speedup over the vm2 interpreter on fill_sum-class workloads.",
     "slug": "/docs/mep/mep-0030"
@@ -274,9 +274,17 @@
   {
     "number": 34,
     "title": "VM2 Full-Opcode JIT - Lists, Strings, Maps, Sets, Structs",
-    "status": "Draft",
+    "status": "Active",
     "type": "Standards Track",
     "description": "Production-track spec for the next JIT after the MEP-30 prototype. Extends MEP-30's template / copy-and-patch design from the 6-opcode tmpljit toy to the full vm2 opcode set, with first-class native support for the five container subsystems (lists, strings, maps, sets, structs). Specifies per-opcode codegen templates, the frame-compatibility contract that lets the JIT and the vm2 interpreter share a Cell-shaped register file across calls, the Cell NaN-boxing fast paths and slow-path runtime callbacks, the cross-architecture backend split (darwin/arm64 + linux/amd64 from day one), and the benchmark plan that gates merge: head-to-head against the vm2 interpreter, LuaJIT, Lua 5.5, and CPython 3.14 on the MEP-23 corpus and on each container's hot ops. Predicts 3-6x over vm2 on list / arithmetic loops, 1.5-3x on string and map workloads, and parity with LuaJIT on numeric loops by Phase 3.",
     "slug": "/docs/mep/mep-0034"
+  },
+  {
+    "number": 35,
+    "title": "Auto Memory Management for the VM2 Objects Table",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Survey of modern auto memory management (Perceus / Koka / Roc, Inko, Lobster, Verona / Reggio regions, Immix / LXR, MMTk, generational ZGC / Shenandoah, JSC Riptide) and a design overview for reclaiming entries in the vm2 Objects table. Today the table is append-only inside a Run: every list, map, heap string, closure, and boxed big-int allocated by a program stays live until Run exits, regardless of whether the program still references it. This MEP proposes three implementation options (Perceus-style reference counting with reuse, per-frame region arenas, and an Immix / LXR mark-region collector layered over the Objects table) and a recommendation.",
+    "slug": "/docs/mep/mep-0035"
   }
 ]
