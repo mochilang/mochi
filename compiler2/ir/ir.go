@@ -29,6 +29,11 @@ const (
 	// holds a *vmPair allocated through the per-VM arena; the runtime's
 	// monotonic-per-VM lifetime means the pointer never dangles.
 	TPair
+	// Byte view (MEP-38 §3.1). Cell.Obj holds a *vmBytes carrying
+	// (buf, off, n, owns); writable iff produced by OpBytesNew or
+	// OpStdinReadAll, read-only via OpBytesSlice / OpBytesFromU8Array
+	// / OpBytesFromStr.
+	TBytes
 )
 
 func (t Type) String() string {
@@ -57,6 +62,8 @@ func (t Type) String() string {
 		return "u8array"
 	case TPair:
 		return "pair"
+	case TBytes:
+		return "bytes"
 	}
 	return "?"
 }
@@ -176,6 +183,22 @@ const (
 	OpNewPair // Args[0]=fst, Args[1]=snd -> TPair
 	OpPairFst // Args[0] -> Cell at the .a slot
 	OpPairSnd // Args[0] -> Cell at the .b slot
+
+	// Byte-view subsystem (MEP-38 §3.1). The view type is TBytes; ops
+	// constructed against any other type are a verifier error. OpBytesSet
+	// is only legal at runtime against an owning view (§3.1.4); the
+	// IR-level verifier admits it on any TBytes, the runtime traps.
+	OpBytesNew         // Args[0] = length (TI64) -> TBytes
+	OpBytesLen         // len(Args[0])
+	OpBytesGet         // Args[0][Args[1]] -> TI64
+	OpBytesSet         // Args[0][Args[1]] = Args[2]; TUnit
+	OpBytesSlice       // Args[0][Args[1] : Args[1]+Args[2]] -> TBytes
+	OpBytesEqual       // Args[0] == Args[1] -> TBool
+	OpBytesHash        // hash(Args[0]) -> TI64
+	OpBytesFromU8Array // Args[0] -> TBytes view (read-only)
+	OpBytesFromStr     // Args[0] -> TBytes view (read-only)
+	OpStdoutWriteBytes // write Args[0]; TUnit
+	OpStdinReadAll     // (no args) -> TBytes
 
 	// Call: Aux = function index, Args = arg values. May have effects;
 	// optimizers must treat as opaque.

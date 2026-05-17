@@ -140,4 +140,25 @@ const (
 	OpNewPair // A = newPair(regs[B], regs[C])
 	OpPairFst // A = pairAt(regs[B]).a
 	OpPairSnd // A = pairAt(regs[B]).b
+
+	// Byte-view subsystem (MEP-38 §3.1). vmBytes is a (buf, off, n)
+	// view onto a backing byte slice; views are immutable except
+	// through OpBytesSet on an owning view (allocator-minted, see
+	// §3.1.4). Construction is via OpBytesNew, OpBytesFromU8Array,
+	// OpBytesFromStr, or OpStdinReadAll.
+	OpBytesNew         // A = newBytes(regs[B].Int())
+	OpBytesLen         // A = i64(bytesAt(regs[B]).n)
+	OpBytesGet         // A = CInt(int64(buf[off+regs[C].Int()])); OOB traps
+	OpBytesSet         // bytesSet(regs[A], regs[B].Int(), regs[C].Int()); OOB or !owns traps
+	OpBytesSlice       // A = bytesSlice(regs[B], regs[C].Int(), regs[D].Int())
+	OpBytesEqual       // A = bool(bytesEqual(regs[B], regs[C]))
+	OpBytesHash        // A = i64(bytesHash(regs[B]))
+	OpBytesFromU8Array // A = bytesFromU8Array(regs[B])
+	OpBytesFromStr     // A = bytesFromStr(regs[B])
+
+	// Minimal I/O (MEP-38 §3.1.3). vm.Stdout / vm.Stdin default to
+	// os.Stdout / os.Stdin; tests rewrite both to bytes.Buffer for
+	// deterministic comparison against a Go reference.
+	OpStdoutWriteBytes // write regs[A] view to vm.Stdout
+	OpStdinReadAll     // A = newBytes from io.ReadAll(vm.Stdin)
 )
