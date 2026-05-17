@@ -4,10 +4,8 @@ package vm2jit_test
 
 import (
 	"testing"
-	"unsafe"
 
 	"mochi/runtime/jit/vm2jit"
-	"mochi/runtime/jit/vm2jit/trampoline"
 	"mochi/runtime/vm2"
 )
 
@@ -25,10 +23,10 @@ func compileOrSkip(t *testing.T, fn *vm2.Function) *vm2jit.CompiledFunc {
 	return cf
 }
 
-// callJIT runs a JIT'd function with the given register file and returns the
-// Cell left in x0 by the epilogue.
-func callJIT(fn *vm2.Function, regs []vm2.Cell) vm2.Cell {
-	return vm2.Cell(trampoline.Call(fn.JITCode, unsafe.Pointer(&regs[0])))
+// callJIT runs a JIT'd arithmetic function with the given register file.
+// Uses a nil VM pointer (safe for opcodes that don't touch the Objects table).
+func callJIT(fn *vm2.Function, r []vm2.Cell) vm2.Cell {
+	return vm2jit.CallDirect(fn, nil, r)
 }
 
 // regs builds a Cell slice of length n with the given initial values.
@@ -41,17 +39,19 @@ func regs(n int, vals ...vm2.Cell) []vm2.Cell {
 // --- compile scaffold tests ---
 
 func TestCompileUnsupportedOpcode(t *testing.T) {
+	// Any defined opcode either lowers natively or to a deopt stub. Pick a
+	// value past the defined enum range to force ErrNotImplemented.
 	fn := &vm2.Function{
-		Name:    "alloc_list",
-		NumRegs: 2,
+		Name:    "bad_op",
+		NumRegs: 1,
 		Code: []vm2.Instr{
-			{Op: vm2.OpNewList, A: 0, B: 4},
+			{Op: vm2.Op(255), A: 0},
 			{Op: vm2.OpReturn, A: 0},
 		},
 	}
 	_, err := vm2jit.Compile(fn)
 	if err == nil {
-		t.Fatal("expected error for OpNewList, got nil")
+		t.Fatal("expected error for undefined opcode, got nil")
 	}
 }
 
@@ -553,6 +553,51 @@ func TestOpCallRoutesToJITLoop(t *testing.T) {
 	want := int64(100 * 99 / 2) // 4950
 	if got.Int() != want {
 		t.Fatalf("interpreter→JIT sum(100): got %d want %d", got.Int(), want)
+	}
+}
+
+// TestJITDeoptResume exercises the Phase 1.5 deopt path end-to-end. The
+// callee first runs a natively-lowered AddI64K (computing r1 = r0+1 in
+// JIT registers), then hits a deoptable OpNewList. The JIT spills its
+// registers via the deopt stub, returns a sentinel-tagged Cell, and the
+// init.go wrapper promotes the JIT frame into a real vm2 frame so the
+// interpreter can finish the list creation and return the *JIT-computed*
+// r1 — proving that the native work survives the deopt.
+func TestJITDeoptResume(t *testing.T) {
+	callee := &vm2.Function{
+		Name:    "deopt_callee",
+		NumRegs: 4,
+		Code: []vm2.Instr{
+			{Op: vm2.OpAddI64K, A: 1, B: 0, C: 1}, // r1 = r0 + 1 (JIT native)
+			{Op: vm2.OpNewList, A: 2, B: 0},       // deopts at idx=1
+			{Op: vm2.OpListLen, A: 3, B: 2},       // interpreter resumes
+			{Op: vm2.OpReturn, A: 1},              // return r1
+		},
+	}
+	cf, err := vm2jit.Compile(callee)
+	if err != nil {
+		t.Skipf("Compile: %v", err)
+	}
+	defer cf.Free()
+
+	main := &vm2.Function{
+		Name:    "main",
+		NumRegs: 2,
+		Consts:  []vm2.Cell{vm2.CInt(41)},
+		Code: []vm2.Instr{
+			{Op: vm2.OpLoadConstI, A: 0, B: 0},       // r0 = 41
+			{Op: vm2.OpCall, A: 1, B: 1, C: 0, D: 1}, // r1 = callee(r0)
+			{Op: vm2.OpReturn, A: 1},
+		},
+	}
+	prog := &vm2.Program{Funcs: []*vm2.Function{main, callee}, Main: 0}
+	vm := vm2.New(prog)
+	got, err := vm.Run()
+	if err != nil {
+		t.Fatalf("vm.Run: %v", err)
+	}
+	if got.Int() != 42 {
+		t.Fatalf("deopt resume: got %d want 42", got.Int())
 	}
 }
 

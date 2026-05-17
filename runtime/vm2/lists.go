@@ -27,3 +27,41 @@ func (vm *VM) newList(capHint int) Cell {
 func (vm *VM) listAt(c Cell) *vmList {
 	return vm.Objects[c.Ptr()].(*vmList)
 }
+
+// JIT slow-path accessors — called by runtime/jit/vm2jit for list opcodes.
+// These wrap the unexported vmList primitives with exported signatures.
+
+// JITNewList allocates a new list with the given capacity hint and returns
+// its Cell. Equivalent to OpNewList.
+func JITNewList(vm *VM, capHint int64) Cell { return vm.newList(int(capHint)) }
+
+// JITListLen returns CInt(len(list)) for the list at listCell.
+func JITListLen(vm *VM, listCell Cell) Cell {
+	return CInt(int64(len(vm.listAt(listCell).data)))
+}
+
+// JITListGet returns list[index]. Panics on out-of-bounds.
+func JITListGet(vm *VM, listCell Cell, indexCell Cell) Cell {
+	l := vm.listAt(listCell)
+	i := indexCell.Int()
+	if i < 0 || i >= int64(len(l.data)) {
+		panic("vm2/jit: list index out of range")
+	}
+	return l.data[i]
+}
+
+// JITListSet writes value to list[index]. Panics on out-of-bounds.
+func JITListSet(vm *VM, listCell Cell, indexCell Cell, valueCell Cell) {
+	l := vm.listAt(listCell)
+	i := indexCell.Int()
+	if i < 0 || i >= int64(len(l.data)) {
+		panic("vm2/jit: list index out of range")
+	}
+	l.data[i] = valueCell
+}
+
+// JITListPush appends value to the list at listCell. Amortised O(1).
+func JITListPush(vm *VM, listCell Cell, valueCell Cell) {
+	l := vm.listAt(listCell)
+	l.data = append(l.data, valueCell)
+}

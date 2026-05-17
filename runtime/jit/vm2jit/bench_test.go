@@ -12,10 +12,8 @@ package vm2jit_test
 
 import (
 	"testing"
-	"unsafe"
 
 	"mochi/runtime/jit/vm2jit"
-	"mochi/runtime/jit/vm2jit/trampoline"
 	"mochi/runtime/vm2"
 )
 
@@ -106,9 +104,10 @@ func TestFibIter(t *testing.T) {
 	}
 }
 
-// callJITRaw calls the JIT function directly via trampoline (used by bench helpers).
+// callJITRaw calls the JIT function via CallDirect with a nil VM pointer.
+// Safe for arithmetic-only benchmarks; list opcodes need a real VM.
 func callJITRaw(fn *vm2.Function, r []vm2.Cell) vm2.Cell {
-	return vm2.Cell(trampoline.Call(fn.JITCode, unsafe.Pointer(&r[0])))
+	return vm2jit.CallDirect(fn, nil, r)
 }
 
 // --- fib_iter benchmarks ---
