@@ -1,0 +1,132 @@
+// Template peer for the bg/n_body benchmark. Mirrors the canonical
+// Benchmarks Game n_body initial conditions (Sun + Jupiter, Saturn,
+// Uranus, Neptune) and the kernel structure used by compiler2/corpus
+// (BuildNBody / ExpectNBody). N is the outer advance + posUpdate step
+// count; output is int64(energy * 1e9), truncated toward zero.
+
+package main
+
+import (
+	"encoding/json"
+	"math"
+	"os"
+	"time"
+)
+
+const (
+	nBodies      = 5
+	dt           = 0.01
+	daysPerYear  = 365.24
+)
+
+var solarMass = 4 * math.Pi * math.Pi
+
+func main() {
+	const steps = {{ .N }}
+
+	posX := [nBodies]float64{
+		0,
+		4.84143144246472090e+00,
+		8.34336671824457987e+00,
+		1.28943695621391310e+01,
+		1.53796971148509165e+01,
+	}
+	posY := [nBodies]float64{
+		0,
+		-1.16032004402742839e+00,
+		4.12479856412430479e+00,
+		-1.51111514016986312e+01,
+		-2.59193146099879641e+01,
+	}
+	posZ := [nBodies]float64{
+		0,
+		-1.03622044471123109e-01,
+		-4.03523417114321381e-01,
+		-2.23307578892655734e-01,
+		1.79258772950371181e-01,
+	}
+	velX := [nBodies]float64{
+		0,
+		1.66007664274403694e-03 * daysPerYear,
+		-2.76742510726862411e-03 * daysPerYear,
+		2.96460137564761618e-03 * daysPerYear,
+		2.68067772490389322e-03 * daysPerYear,
+	}
+	velY := [nBodies]float64{
+		0,
+		7.69901118419740425e-03 * daysPerYear,
+		4.99852801234917238e-03 * daysPerYear,
+		2.37847173959480950e-03 * daysPerYear,
+		1.62824170038242295e-03 * daysPerYear,
+	}
+	velZ := [nBodies]float64{
+		0,
+		-6.90460016972063023e-05 * daysPerYear,
+		2.30417297573763929e-05 * daysPerYear,
+		-2.96589568540237556e-05 * daysPerYear,
+		-9.51592254519715870e-05 * daysPerYear,
+	}
+	mass := [nBodies]float64{
+		solarMass,
+		9.54791938424326609e-04 * solarMass,
+		2.85885980666130812e-04 * solarMass,
+		4.36624404335156298e-05 * solarMass,
+		5.15138902046611451e-05 * solarMass,
+	}
+
+	var px, py, pz float64
+	for i := 1; i < nBodies; i++ {
+		px -= velX[i] * mass[i]
+		py -= velY[i] * mass[i]
+		pz -= velZ[i] * mass[i]
+	}
+	velX[0] = px / solarMass
+	velY[0] = py / solarMass
+	velZ[0] = pz / solarMass
+
+	start := time.Now()
+	for k := 0; k < steps; k++ {
+		for i := 0; i < nBodies; i++ {
+			for j := i + 1; j < nBodies; j++ {
+				dx := posX[i] - posX[j]
+				dy := posY[i] - posY[j]
+				dz := posZ[i] - posZ[j]
+				d2 := dx*dx + dy*dy + dz*dz
+				mag := dt / (d2 * math.Sqrt(d2))
+				miMag := mass[i] * mag
+				mjMag := mass[j] * mag
+				velX[i] -= dx * mjMag
+				velY[i] -= dy * mjMag
+				velZ[i] -= dz * mjMag
+				velX[j] += dx * miMag
+				velY[j] += dy * miMag
+				velZ[j] += dz * miMag
+			}
+		}
+		for i := 0; i < nBodies; i++ {
+			posX[i] += velX[i] * dt
+			posY[i] += velY[i] * dt
+			posZ[i] += velZ[i] * dt
+		}
+	}
+	var e float64
+	for i := 0; i < nBodies; i++ {
+		kin := 0.5 * mass[i] * (velX[i]*velX[i] + velY[i]*velY[i] + velZ[i]*velZ[i])
+		var pot float64
+		for j := i + 1; j < nBodies; j++ {
+			dx := posX[i] - posX[j]
+			dy := posY[i] - posY[j]
+			dz := posZ[i] - posZ[j]
+			r := math.Sqrt(dx*dx + dy*dy + dz*dz)
+			pot += mass[i] * mass[j] / r
+		}
+		e += kin - pot
+	}
+	output := int64(e * 1e9)
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      output,
+	})
+}

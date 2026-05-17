@@ -79,6 +79,12 @@ var programs = []program{
 	// [-2, 1] x [-1, 1] with maxIter = 50; output is the sum of
 	// per-pixel escape counts. See bench/template/bg/mandelbrot/.
 	{category: "bg", name: "mandelbrot", ns: []int{100, 200}},
+	// MEP-39 §6.3: BG n_body. N is the number of advance + posUpdate
+	// step iterations over the canonical five-body Sun+gas-giants
+	// configuration. Output is int64(energy * 1e9), so cross-lang
+	// peers can integer-compare without f64 stringification quirks.
+	// See bench/template/bg/n_body/.
+	{category: "bg", name: "n_body", ns: []int{1000, 5000}},
 }
 
 type result struct {

@@ -53,6 +53,9 @@ var repeats = map[string]int{
 	// MEP-39 §6.2: mandelbrot. N is the side of the N x N grid; a
 	// single Build call already encodes N^2 pixel iterations.
 	"bg_mandelbrot": 1,
+	// MEP-39 §6.3: n_body. N is the outer step count; a single Build
+	// call already runs N advance + posUpdate iterations.
+	"bg_n_body": 1,
 }
 
 func main() {
