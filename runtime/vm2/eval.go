@@ -35,12 +35,34 @@ func (vm *VM) Run() (Cell, error) {
 	}
 
 	main := vm.Program.Funcs[vm.Program.Main]
-	frIdx, base := vm.pushFrame(main, 0)
-	fr := &vm.Frames[frIdx]
+	vm.pushFrame(main, 0)
+	return vm.runLoop(0)
+}
+
+// RunTopFrame resumes the interpreter at the current top frame's IP and
+// runs until that frame pops (i.e., until len(vm.Frames) drops to its
+// pre-call value). Used by the vm2jit deopt-resume wrapper: when a JIT
+// function exits with a deopt sentinel, the wrapper pushes the JIT
+// function's frame, sets IP to the deopt PC, copies the JIT register
+// state back into vm.Stack, then calls RunTopFrame to finish the
+// function on the interpreter. The returned Cell is the value of the
+// function's OpReturn.
+func (vm *VM) RunTopFrame() (Cell, error) {
+	return vm.runLoop(len(vm.Frames) - 1)
+}
+
+// runLoop is the interpreter's inner dispatch. It runs until the frame
+// indexed by target pops (i.e., until len(vm.Frames) <= target). For
+// Run() target is 0 (no frames left means main returned); for
+// RunTopFrame the target is the depth at which the JIT-resumed frame
+// sits, so the loop returns the moment that specific frame's OpReturn
+// fires.
+func (vm *VM) runLoop(target int) (Cell, error) {
+	fr := &vm.Frames[len(vm.Frames)-1]
 	code := fr.Fn.Code
-	regs := vm.Stack[base:]
+	regs := vm.Stack[fr.RegsBase:]
 	consts := fr.Fn.Consts
-	ip := 0
+	ip := fr.IP
 	var ret Cell
 
 	// reload syncs hot locals from the current top frame after any
@@ -200,7 +222,7 @@ func (vm *VM) Run() (Cell, error) {
 			ret = regs[ins.A]
 			retReg := fr.RetReg
 			vm.popFrame()
-			if len(vm.Frames) == 0 {
+			if len(vm.Frames) <= target {
 				return ret, nil
 			}
 			fr = &vm.Frames[len(vm.Frames)-1]

@@ -26,11 +26,18 @@ type Cell uint64
 const (
 	qNaN    uint64 = 0x7FF8000000000000
 	tagMask uint64 = 0xFFFF000000000000
-	tagSStr uint64 = 0xFFFB000000000000
-	tagInt  uint64 = 0xFFFC000000000000
-	tagBool uint64 = 0xFFFD000000000000
-	tagNull uint64 = 0xFFFE000000000000
-	tagPtr  uint64 = 0xFFFF000000000000
+	// tagDeopt is the JIT deopt sentinel. The low 48 bits hold the
+	// bytecode PC at which the interpreter should resume. Deopt cells
+	// only exist for the few nanoseconds between a JIT epilogue and the
+	// wrapper's check; they are never stored in regs or seen by user
+	// code. The tag value is chosen below tagSStr so it stays inside the
+	// NaN-box range without colliding with any user-visible type.
+	tagDeopt uint64 = 0xFFFA000000000000
+	tagSStr  uint64 = 0xFFFB000000000000
+	tagInt   uint64 = 0xFFFC000000000000
+	tagBool  uint64 = 0xFFFD000000000000
+	tagNull  uint64 = 0xFFFE000000000000
+	tagPtr   uint64 = 0xFFFF000000000000
 
 	payloadMask uint64 = 0x0000FFFFFFFFFFFF
 
@@ -133,4 +140,22 @@ func (c Cell) Ptr() uint64 { return uint64(c) & payloadMask }
 // loss. Compilers should box wider ints through the Objects table.
 func FitsInline(i int64) bool {
 	return i >= MinInlineInt && i <= MaxInlineInt
+}
+
+// EncodeDeopt produces the sentinel Cell returned by a JIT deopt stub.
+// pc is the bytecode index at which the interpreter should resume; the
+// low 48 bits of the Cell carry pc unchanged. Used by the vm2jit ARM64
+// code generator when emitting a deopt point.
+func EncodeDeopt(pc int) Cell {
+	return Cell(tagDeopt | uint64(pc)&payloadMask)
+}
+
+// DecodeDeopt reports whether c is a deopt sentinel and, if so, returns
+// the carried bytecode PC. Used by the vm2jit wrapper to distinguish a
+// JIT deopt return from an OpReturn return value.
+func DecodeDeopt(c Cell) (pc int, ok bool) {
+	if uint64(c)&tagMask != tagDeopt {
+		return 0, false
+	}
+	return int(uint64(c) & payloadMask), true
 }

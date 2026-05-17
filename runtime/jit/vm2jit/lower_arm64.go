@@ -51,7 +51,7 @@ func ldr64(xt, xn, imm12 uint32) uint32 {
 func str64(xt, xn, imm12 uint32) uint32 {
 	return 0xF9000000 | ((imm12 & 0xFFF) << 10) | ((xn & 0x1F) << 5) | (xt & 0x1F)
 }
-func bImm(off26 int32) uint32  { return 0x14000000 | uint32(off26&0x3FFFFFF) }
+func bImm(off26 int32) uint32 { return 0x14000000 | uint32(off26&0x3FFFFFF) }
 func bCond(cond uint32, off19 int32) uint32 {
 	return 0x54000000 | (uint32(off19&0x7FFFF) << 5) | (cond & 0xF)
 }
@@ -92,16 +92,16 @@ func movzTagInt() uint32 { return movz(16, 0xFFFC, 3) }
 func movzTagBool() uint32 { return movz(17, 0xFFFD, 3) }
 
 // movImm64 emits exactly 4 instructions (movz + 3×movk) to load any
-// 64-bit value into xd. Using a fixed 4-word encoding ensures instrWordCountARM64
-// returns the same value regardless of the constant's magnitude, which is
-// critical for the two-pass pcMap calculation.
+// 64-bit value into xd. Using a fixed 4-word encoding ensures
+// instrWordCountARM64 returns the same value regardless of the constant's
+// magnitude, which is critical for the two-pass pcMap calculation.
 func movImm64(xd uint32, v int64) []uint32 {
 	u := uint64(v)
 	return []uint32{
-		movz(xd, uint32(u)&0xFFFF, 0),
-		movk(xd, uint32(u>>16)&0xFFFF, 1),
-		movk(xd, uint32(u>>32)&0xFFFF, 2),
-		movk(xd, uint32(u>>48)&0xFFFF, 3),
+		movz(xd, uint32(u&0xFFFF), 0),
+		movk(xd, uint32((u>>16)&0xFFFF), 1),
+		movk(xd, uint32((u>>32)&0xFFFF), 2),
+		movk(xd, uint32((u>>48)&0xFFFF), 3),
 	}
 }
 
@@ -126,7 +126,7 @@ func emitCmpBoolI64(xA, xB, xC uint32, cset func(uint32) uint32) []uint32 {
 		sbfx48(17, xC),
 		cmpReg(8, 17),
 		cset(8),
-		movzTagBool(),      // x17 = tagBool
+		movzTagBool(),     // x17 = tagBool
 		orrReg(xA, 8, 17), // xA  = x8 | tagBool
 	}
 }
@@ -164,34 +164,71 @@ func instrWordCountARM64(fn *vm2.Function, ins vm2.Instr) (int, error) {
 		}
 		return n + 2, nil // N×str + mov x0 + ret
 	default:
+		// Anything else compiles to a deopt stub. See deoptStubWords.
+		if isDeoptableOp(ins.Op) {
+			return deoptStubWords(fn), nil
+		}
 		return 0, fmt.Errorf("%w: %v", ErrNotImplemented, ins.Op)
 	}
+}
+
+// isDeoptableOp reports whether ins.Op is a vm2 opcode the JIT lowers as
+// a deopt stub in Phase 1.5. Any opcode that touches the allocator, the
+// Objects table, or vm.Frames (i.e., everything outside arithmetic /
+// comparison / control-flow / Move / Return) lands here.
+func isDeoptableOp(op vm2.Op) bool {
+	switch op {
+	case vm2.OpLoadStrK, vm2.OpConcatStr, vm2.OpLenStr, vm2.OpIndexStr,
+		vm2.OpEqualStr, vm2.OpHashStr,
+		vm2.OpNewList, vm2.OpListLen, vm2.OpListGet, vm2.OpListSet, vm2.OpListPush,
+		vm2.OpNewMap, vm2.OpMapLen, vm2.OpMapGet, vm2.OpMapHas, vm2.OpMapSet, vm2.OpMapDel,
+		vm2.OpCall, vm2.OpTailCall, vm2.OpTailCallSelf,
+		vm2.OpHalt:
+		return true
+	}
+	return false
+}
+
+// deoptStubWords returns the fixed word count of a deopt stub for a
+// function with this many live JIT registers. Sequence:
+//
+//	N × str64(x(9+r), x0, r)   spill live regs back to regs[]
+//	4 × movImm64(x0, sentinel)  load sentinel-tagged PC
+//	1 × ret                     return to wrapper
+//
+// PC is the deopting bytecode index, embedded as a 64-bit immediate so
+// the stub is position-independent and the per-opcode size stays
+// constant (which the two-pass pcMap requires).
+func deoptStubWords(fn *vm2.Function) int {
+	n := fn.NumRegs
+	if n > maxRegs {
+		n = maxRegs
+	}
+	return n + 4 + 1
 }
 
 // compileFnARM64 performs the two-pass compilation:
 // Pass 1 builds pcMap (absolute word index for each bytecode instruction).
 // Pass 2 emits all words with correct branch offsets from pcMap.
 func compileFnARM64(fn *vm2.Function) ([]uint32, error) {
-	// Pass 1: prologue + word-count per instruction → pcMap.
 	prologue := prologueARM64(fn)
 	pcMap := make([]int, len(fn.Code)+1)
 	pcMap[0] = len(prologue)
 	for i, ins := range fn.Code {
 		cnt, err := instrWordCountARM64(fn, ins)
 		if err != nil {
-			return nil, fmt.Errorf("instr %d (%v): %w", i, ins.Op, err)
+			return nil, err
 		}
 		pcMap[i+1] = pcMap[i] + cnt
 	}
 
-	// Pass 2: emit words.
 	total := pcMap[len(fn.Code)]
 	words := make([]uint32, 0, total)
 	words = append(words, prologue...)
 	for i, ins := range fn.Code {
 		ws, err := lowerInstrARM64(fn, i, ins, pcMap)
 		if err != nil {
-			return nil, fmt.Errorf("instr %d (%v): %w", i, ins.Op, err)
+			return nil, err
 		}
 		words = append(words, ws...)
 	}
@@ -228,8 +265,8 @@ func lowerInstrARM64(fn *vm2.Function, idx int, ins vm2.Instr, pcMap []int) ([]u
 		off := dst - src
 		half := 1 << (maxBits - 1)
 		if off < -half || off >= half {
-			return 0, fmt.Errorf("branch from instr %d to %d: offset %d out of %d-bit range",
-				idx, targetBC, off, maxBits)
+			return 0, fmt.Errorf("%w: branch out of range (off=%d, bits=%d)",
+				ErrNotImplemented, off, maxBits)
 		}
 		return int32(off), nil
 	}
@@ -322,8 +359,32 @@ func lowerInstrARM64(fn *vm2.Function, idx int, ins vm2.Instr, pcMap []int) ([]u
 		return ws, nil
 
 	default:
+		if isDeoptableOp(ins.Op) {
+			return emitDeoptStubARM64(fn, idx), nil
+		}
 		return nil, fmt.Errorf("%w: %v", ErrNotImplemented, ins.Op)
 	}
+}
+
+// emitDeoptStubARM64 emits the Phase 1.5 deopt sequence for the
+// instruction at bytecode index idx. Each live JIT register is spilled
+// back to its slot in regs[]; x0 is loaded with vm2.EncodeDeopt(idx);
+// the function returns. The wrapper in init.go inspects x0, detects the
+// sentinel via vm2.DecodeDeopt, promotes the JIT frame to a real vm2
+// frame at IP=idx, and resumes the interpreter for that frame.
+func emitDeoptStubARM64(fn *vm2.Function, idx int) []uint32 {
+	n := fn.NumRegs
+	if n > maxRegs {
+		n = maxRegs
+	}
+	sentinel := uint64(vm2.EncodeDeopt(idx))
+	ws := make([]uint32, 0, n+4+1)
+	for r := 0; r < n; r++ {
+		ws = append(ws, str64(uint32(9+r), 0, uint32(r)))
+	}
+	ws = append(ws, movImm64(0, int64(sentinel))...)
+	ws = append(ws, ret())
+	return ws
 }
 
 // emitCondBranchARM64 emits: sbfx(x8,xA) + sbfx(x17,xB) + cmp(x8,x17) + b.cond(target).

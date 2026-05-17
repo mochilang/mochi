@@ -53,6 +53,13 @@ type frame struct {
 	RetReg   int32 // parent register that receives the return value
 }
 
+// PushFrame is the exported entry point used by the JIT deopt path to
+// promote a JIT register file back into a real activation record before
+// resuming via RunTopFrame. Identical contract to pushFrame.
+func (vm *VM) PushFrame(fn *Function, retReg int32) (int, int) {
+	return vm.pushFrame(fn, retReg)
+}
+
 // pushFrame grows Stack + Frames to admit a new activation. Returns
 // the index of the new frame in vm.Frames and the regs base.
 func (vm *VM) pushFrame(fn *Function, retReg int32) (int, int) {
