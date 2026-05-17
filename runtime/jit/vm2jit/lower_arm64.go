@@ -323,7 +323,7 @@ func isDeoptableOp(op vm2.Op) bool {
 		vm2.OpNewMap, vm2.OpMapLen, vm2.OpMapGet, vm2.OpMapHas, vm2.OpMapSet, vm2.OpMapDel,
 		vm2.OpCall, vm2.OpCallA1, vm2.OpCallA2,
 		vm2.OpPairFstCallA2, vm2.OpPairSndCallA2,
-		vm2.OpTailCall, vm2.OpTailCallSelf,
+		vm2.OpTailCall, vm2.OpTailCallSelf, vm2.OpTailCallSelfA3,
 		// MEP-38 Phase 2 (§3.2.1) lowers OpLoadConstF, OpAddF64, OpSubF64,
 		// OpMulF64, OpDivF64, OpNegF64, OpAbsF64, OpSqrtF64, OpLessF64,
 		// OpLessEqF64, OpEqualF64, OpFmaF64, OpI64ToF64, OpF64ToI64 to
@@ -335,6 +335,10 @@ func isDeoptableOp(op vm2.Op) bool {
 		// reason as Phase 1: the JIT does not emit pair construction or
 		// projection code yet.
 		vm2.OpNewPair, vm2.OpPairFst, vm2.OpPairSnd,
+		// MEP-38 §A.6 return-superop family. The const and add-sum forms
+		// could be lowered natively (no allocation), but the new-pair form
+		// touches the arena. All three deopt to the interpreter for now.
+		vm2.OpReturnI64K, vm2.OpReturnAddSum, vm2.OpReturnNewPair,
 		// MEP-38 Phase 1 byte-view ops + minimal I/O. Deopt for now; a
 		// follow-up phase lowers OpBytesGet/OpBytesSet directly so the
 		// reverse_complement inner loop stays in JIT-compiled code.

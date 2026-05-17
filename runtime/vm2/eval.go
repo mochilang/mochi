@@ -327,6 +327,14 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			ip = 0
 		case OpTailCallSelf:
 			ip = 0
+		case OpTailCallSelfA3:
+			a0 := regs[ins.A]
+			a1 := regs[ins.B]
+			a2 := regs[ins.C]
+			regs[0] = a0
+			regs[1] = a1
+			regs[2] = a2
+			ip = 0
 		case OpTailCall:
 			callee := vm.Program.Funcs[ins.A]
 			n := int(ins.C)
@@ -379,6 +387,63 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			// pointers (HasContainerSlots); int/bool/pair-only frames
 			// skip the clear entirely. Pure-int kernels (fib_rec,
 			// binary_trees) take this branch on every return.
+			top := len(vm.Frames) - 1
+			poppedBase := fr.RegsBase
+			if fr.Fn.HasContainerSlots {
+				clear(vm.Stack[poppedBase:])
+			}
+			vm.Stack = vm.Stack[:poppedBase]
+			vm.Frames = vm.Frames[:top]
+			if top <= target {
+				return ret, nil
+			}
+			fr = &vm.Frames[top-1]
+			code = fr.Fn.Code
+			regs = vm.Stack[fr.RegsBase:]
+			consts = fr.Fn.Consts
+			ip = fr.IP
+			regs[retReg] = ret
+		case OpReturnI64K:
+			ret = CInt(int64(ins.A))
+			retReg := fr.RetReg
+			top := len(vm.Frames) - 1
+			poppedBase := fr.RegsBase
+			if fr.Fn.HasContainerSlots {
+				clear(vm.Stack[poppedBase:])
+			}
+			vm.Stack = vm.Stack[:poppedBase]
+			vm.Frames = vm.Frames[:top]
+			if top <= target {
+				return ret, nil
+			}
+			fr = &vm.Frames[top-1]
+			code = fr.Fn.Code
+			regs = vm.Stack[fr.RegsBase:]
+			consts = fr.Fn.Consts
+			ip = fr.IP
+			regs[retReg] = ret
+		case OpReturnAddSum:
+			ret = CInt(int64(ins.A) + regs[ins.B].Int() + regs[ins.C].Int())
+			retReg := fr.RetReg
+			top := len(vm.Frames) - 1
+			poppedBase := fr.RegsBase
+			if fr.Fn.HasContainerSlots {
+				clear(vm.Stack[poppedBase:])
+			}
+			vm.Stack = vm.Stack[:poppedBase]
+			vm.Frames = vm.Frames[:top]
+			if top <= target {
+				return ret, nil
+			}
+			fr = &vm.Frames[top-1]
+			code = fr.Fn.Code
+			regs = vm.Stack[fr.RegsBase:]
+			consts = fr.Fn.Consts
+			ip = fr.IP
+			regs[retReg] = ret
+		case OpReturnNewPair:
+			ret = vm.newPair(regs[ins.B], regs[ins.C])
+			retReg := fr.RetReg
 			top := len(vm.Frames) - 1
 			poppedBase := fr.RegsBase
 			if fr.Fn.HasContainerSlots {

@@ -222,6 +222,78 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		fuseCondBr[last] = cmpVid
 	}
 
+	// Return-superop fusions (MEP-38 §A.6). Each OpRet that consumes a
+	// single-use defining op of one of the recognized shapes is rewritten
+	// to a fused OpReturn* that computes the value inline. The three
+	// shapes are tuned to the recursive BG kernels:
+	//
+	//	checkTree leaf:   Ret(ConstI64(1))                 -> OpReturnI64K
+	//	checkTree branch: Ret(AddI64(AddI64K(1, l), r))    -> OpReturnAddSum
+	//	makeTree any:     Ret(NewPair(l, r))               -> OpReturnNewPair
+	//
+	// The pre-pass marks the inner instructions as suppress[] so their
+	// standalone emit sites are skipped; the OpRet emit site picks up the
+	// fused form from these maps.
+	type retSumInfo struct {
+		k    int64
+		regA ir.ValueID // sumA: addK[].nonConstArg
+		regB ir.ValueID // the other AddI64 operand
+	}
+	fuseRetI64K := make(map[ir.ValueID]int64)
+	fuseRetAddSum := make(map[ir.ValueID]retSumInfo)
+	fuseRetNewPair := make(map[ir.ValueID]ir.ValueID) // ret vid -> NewPair vid
+	for bi := range f.Blocks {
+		blk := f.Blocks[bi]
+		insts := blk.Insts
+		if len(insts) == 0 {
+			continue
+		}
+		last := insts[len(insts)-1]
+		lastIns := f.Values[last]
+		if lastIns.Op != ir.OpRet || len(lastIns.Args) != 1 {
+			continue
+		}
+		argVid := lastIns.Args[0]
+		argIns := f.Values[argVid]
+		if useCount[argVid] != 1 || f.ValueBlock[argVid] != blk.ID {
+			continue
+		}
+		switch argIns.Op {
+		case ir.OpConstI64:
+			k := argIns.Aux
+			if k < -(1<<31) || k > (1<<31)-1 {
+				continue
+			}
+			suppress[argVid] = true
+			fuseRetI64K[last] = k
+		case ir.OpNewPair:
+			suppress[argVid] = true
+			fuseRetNewPair[last] = argVid
+		case ir.OpAddI64:
+			// Prefer the 3-operand triple-add form when one operand is a
+			// single-use AddI64K (already captured in addK[]). The inner
+			// AddI64 / AddI64K and the ConstI64 it folded are all
+			// suppressed in favor of one OpReturnAddSum.
+			a0, a1 := argIns.Args[0], argIns.Args[1]
+			tryTriple := func(innerVid, otherVid ir.ValueID) bool {
+				info, ok := addK[innerVid]
+				if !ok {
+					return false
+				}
+				if useCount[innerVid] != 1 || f.ValueBlock[innerVid] != blk.ID {
+					return false
+				}
+				suppress[argVid] = true
+				suppress[innerVid] = true
+				fuseRetAddSum[last] = retSumInfo{k: info.k, regA: info.nonConstArg, regB: otherVid}
+				return true
+			}
+			if !tryTriple(a0, a1) {
+				tryTriple(a1, a0)
+			}
+		}
+	}
+
 	// Const pool with dedup.
 	consts := []vm2.Cell{}
 	constIdx := map[vm2.Cell]int32{}
@@ -321,6 +393,9 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 			case ir.OpConstBool:
 				emit(vm2.Instr{Op: vm2.OpLoadConstI, A: dst, B: cAdd(vm2.CBool(ins.Aux != 0))})
 			case ir.OpAddI64:
+				if suppress[vid] {
+					break
+				}
 				if info, ok := addK[vid]; ok {
 					emit(vm2.Instr{Op: vm2.OpAddI64K, A: dst,
 						B: int32(finalReg[info.nonConstArg]),
@@ -545,6 +620,9 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					B: int32(finalReg[ins.Args[1]]),
 					C: int32(finalReg[ins.Args[2]])})
 			case ir.OpNewPair:
+				if suppress[vid] {
+					break
+				}
 				emit(vm2.Instr{Op: vm2.OpNewPair, A: dst,
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
@@ -641,6 +719,27 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					// loop-heavy programs (every `for` lowers to one of
 					// these). callBase is unused on this path and
 					// serves as the cycle-breaking temp register.
+					//
+					// 3-arg fast path: when the schedule has no cycles
+					// (no param i's src reads any other param j's value
+					// being overwritten in this step), fuse all three
+					// moves and the IP rewind into one OpTailCallSelfA3
+					// dispatch. This is the steady-state for the BuildPair*
+					// loop kernels (MEP-38 §A.5).
+					if len(ins.Args) == 3 {
+						s0 := int32(finalReg[ins.Args[0]])
+						s1 := int32(finalReg[ins.Args[1]])
+						s2 := int32(finalReg[ins.Args[2]])
+						// Cycle exists iff a src reg names a dst slot that
+						// some other move writes. Since dst regs are 0,1,2,
+						// any src in {0,1,2} could be a cycle source. The
+						// fused op reads all 3 srcs into temporaries before
+						// writing dsts, so no cycles can form: it's safe
+						// even when srcs overlap dsts.
+						emit(vm2.Instr{Op: vm2.OpTailCallSelfA3,
+							A: s0, B: s1, C: s2})
+						break
+					}
 					moves := make([]pmove, 0, len(ins.Args))
 					for i, a := range ins.Args {
 						moves = append(moves, pmove{dst: int32(i), src: int32(finalReg[a])})
@@ -658,6 +757,24 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 						B: int32(callBase), C: int32(len(ins.Args))})
 				}
 			case ir.OpRet:
+				if k, ok := fuseRetI64K[vid]; ok {
+					emit(vm2.Instr{Op: vm2.OpReturnI64K, A: int32(k)})
+					break
+				}
+				if info, ok := fuseRetAddSum[vid]; ok {
+					emit(vm2.Instr{Op: vm2.OpReturnAddSum,
+						A: int32(info.k),
+						B: int32(finalReg[info.regA]),
+						C: int32(finalReg[info.regB])})
+					break
+				}
+				if npVid, ok := fuseRetNewPair[vid]; ok {
+					npIns := f.Values[npVid]
+					emit(vm2.Instr{Op: vm2.OpReturnNewPair,
+						B: int32(finalReg[npIns.Args[0]]),
+						C: int32(finalReg[npIns.Args[1]])})
+					break
+				}
 				if len(ins.Args) > 0 {
 					emit(vm2.Instr{Op: vm2.OpReturn, A: int32(finalReg[ins.Args[0]])})
 				} else {
