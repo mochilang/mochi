@@ -1582,5 +1582,137 @@
     "max_us": 131,
     "memory_bytes": 4276224,
     "output": 27145
+  },
+  {
+    "program": "bg/mandelbrot",
+    "n": 100,
+    "lang": "vm2",
+    "runs": 3,
+    "median_us": 14943,
+    "min_us": 11890,
+    "max_us": 16569,
+    "memory_bytes": 5210112,
+    "output": 173482
+  },
+  {
+    "program": "bg/mandelbrot",
+    "n": 100,
+    "lang": "py",
+    "runs": 3,
+    "median_us": 30174.45805016905,
+    "min_us": 28255.917015485466,
+    "max_us": 33404.16704304516,
+    "memory_bytes": 14073856,
+    "output": 173482
+  },
+  {
+    "program": "bg/mandelbrot",
+    "n": 100,
+    "lang": "pypy",
+    "runs": 3,
+    "median_us": 8247.499936260283,
+    "min_us": 6914.792000316083,
+    "max_us": 8270.66705096513,
+    "memory_bytes": 35520512,
+    "output": 173482
+  },
+  {
+    "program": "bg/mandelbrot",
+    "n": 100,
+    "lang": "lua",
+    "runs": 3,
+    "median_us": 8542,
+    "min_us": 8523,
+    "max_us": 8675,
+    "memory_bytes": 1884160,
+    "output": 173482
+  },
+  {
+    "program": "bg/mandelbrot",
+    "n": 100,
+    "lang": "luajit",
+    "runs": 3,
+    "median_us": 941,
+    "min_us": 859,
+    "max_us": 1277,
+    "memory_bytes": 1884160,
+    "output": 173482
+  },
+  {
+    "program": "bg/mandelbrot",
+    "n": 100,
+    "lang": "go",
+    "runs": 3,
+    "median_us": 378,
+    "min_us": 377,
+    "max_us": 391,
+    "memory_bytes": 4358144,
+    "output": 173482
+  },
+  {
+    "program": "bg/mandelbrot",
+    "n": 200,
+    "lang": "vm2",
+    "runs": 3,
+    "median_us": 44460,
+    "min_us": 42878,
+    "max_us": 45502,
+    "memory_bytes": 5242880,
+    "output": 692665
+  },
+  {
+    "program": "bg/mandelbrot",
+    "n": 200,
+    "lang": "py",
+    "runs": 3,
+    "median_us": 92372.95901402831,
+    "min_us": 91974.25004094839,
+    "max_us": 100952.08301208913,
+    "memory_bytes": 13418496,
+    "output": 692665
+  },
+  {
+    "program": "bg/mandelbrot",
+    "n": 200,
+    "lang": "pypy",
+    "runs": 3,
+    "median_us": 8987.915934994817,
+    "min_us": 8979.1250647977,
+    "max_us": 9085.74997447431,
+    "memory_bytes": 35225600,
+    "output": 692665
+  },
+  {
+    "program": "bg/mandelbrot",
+    "n": 200,
+    "lang": "lua",
+    "runs": 3,
+    "median_us": 31945,
+    "min_us": 31887,
+    "max_us": 32244,
+    "memory_bytes": 1638400,
+    "output": 692665
+  },
+  {
+    "program": "bg/mandelbrot",
+    "n": 200,
+    "lang": "luajit",
+    "runs": 3,
+    "median_us": 2632,
+    "min_us": 2625,
+    "max_us": 2637,
+    "memory_bytes": 1753088,
+    "output": 692665
+  },
+  {
+    "program": "bg/mandelbrot",
+    "n": 200,
+    "lang": "go",
+    "runs": 3,
+    "median_us": 1459,
+    "min_us": 1449,
+    "max_us": 1501,
+    "memory_bytes": 4521984,
+    "output": 692665
   }
 ]

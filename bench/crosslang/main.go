@@ -75,6 +75,10 @@ var programs = []program{
 	// 7-element inner permutation. Output is the sum of per-trial flip
 	// counts. See bench/template/bg/fannkuch_redux/ for the Mochi peer.
 	{category: "bg", name: "fannkuch_redux", ns: []int{1000, 10000}},
+	// MEP-39 §6.2: BG mandelbrot. N is the side of an N x N grid in
+	// [-2, 1] x [-1, 1] with maxIter = 50; output is the sum of
+	// per-pixel escape counts. See bench/template/bg/mandelbrot/.
+	{category: "bg", name: "mandelbrot", ns: []int{100, 200}},
 }
 
 type result struct {

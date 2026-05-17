@@ -50,6 +50,9 @@ var repeats = map[string]int{
 	// (the inner permutation size is fixed at 7), so a single Build
 	// call already encodes N iterations. The harness loops once.
 	"bg_fannkuch_redux": 1,
+	// MEP-39 §6.2: mandelbrot. N is the side of the N x N grid; a
+	// single Build call already encodes N^2 pixel iterations.
+	"bg_mandelbrot": 1,
 }
 
 func main() {

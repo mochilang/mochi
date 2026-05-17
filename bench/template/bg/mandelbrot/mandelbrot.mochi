@@ -1,0 +1,47 @@
+// MEP-39 cross-lang mandelbrot. Grid is N x N over [-2, 1] x [-1, 1],
+// max_iter = 50, output is the sum of per-pixel escape counts. The
+// naive `2*zr*zi + cy` form is used in place of FMA because escape
+// counts match bit-for-bit for the N values this harness runs.
+
+fun escape_count(cx: float, cy: float, max_iter: int): int {
+  var zr = 0.0
+  var zi = 0.0
+  var n = 0
+  while n < max_iter {
+    let r2 = zr * zr
+    let i2 = zi * zi
+    if r2 + i2 > 4.0 {
+      return n
+    }
+    let nzi = 2.0 * zr * zi + cy
+    let nzr = (r2 - i2) + cx
+    zr = nzr
+    zi = nzi
+    n = n + 1
+  }
+  return max_iter
+}
+
+let side = {{ .N }}
+let max_iter = 50
+let side_f = side as float
+var total = 0
+
+let start = now()
+var row = 0
+while row < side {
+  let cy = (row as float) / side_f * 2.0 - 1.0
+  var col = 0
+  while col < side {
+    let cx = (col as float) / side_f * 3.0 - 2.0
+    total = total + escape_count(cx, cy, max_iter)
+    col = col + 1
+  }
+  row = row + 1
+}
+let duration = (now() - start) / 1000
+
+json({
+  "duration_us": duration,
+  "output": total,
+})
