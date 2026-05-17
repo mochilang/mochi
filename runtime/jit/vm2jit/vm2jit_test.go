@@ -556,6 +556,70 @@ func TestOpCallRoutesToJITLoop(t *testing.T) {
 	}
 }
 
+// TestJITListLenFastPath exercises the Phase 2 OpListLen fast path. The
+// callee has a single OpListLen + OpReturn so the JIT must lower OpListLen
+// natively (no deopt for the body to fall through to). Test builds a real
+// list in vm.Objects, calls the JIT'd callee directly via CallDirect, and
+// asserts the returned Cell carries the expected int48 length.
+func TestJITListLenFastPath(t *testing.T) {
+	callee := &vm2.Function{
+		Name:    "list_len",
+		NumRegs: 2,
+		Code: []vm2.Instr{
+			{Op: vm2.OpListLen, A: 1, B: 0},
+			{Op: vm2.OpReturn, A: 1},
+		},
+	}
+	cf, err := vm2jit.Compile(callee)
+	if err != nil {
+		t.Skipf("Compile: %v", err)
+	}
+	defer cf.Free()
+
+	vm := vm2.New(&vm2.Program{Funcs: []*vm2.Function{callee}, Main: 0})
+	list := vm2.JITNewList(vm, 0)
+	for i := int64(0); i < 5; i++ {
+		vm2.JITListPush(vm, list, vm2.CInt(i*i))
+	}
+	got := vm2jit.CallDirect(callee, vm, []vm2.Cell{list, 0})
+	if pc, ok := vm2.DecodeDeopt(got); ok {
+		t.Fatalf("fast path deopted unexpectedly at pc=%d", pc)
+	}
+	if got.Int() != 5 {
+		t.Fatalf("list_len: got %d want 5", got.Int())
+	}
+}
+
+// TestJITListLenTagMissDeopts verifies the OpListLen tag check fires when
+// regs[B] is not tagPtr. Passing a CInt should cause b.ne -> deopt stub ->
+// sentinel-tagged Cell. We bypass the wrapper's resume by going through
+// the trampoline indirectly (CallDirect); the returned Cell must DecodeDeopt
+// cleanly to the failing PC (instruction index 0 in this fn).
+func TestJITListLenTagMissDeopts(t *testing.T) {
+	callee := &vm2.Function{
+		Name:    "list_len_mismatch",
+		NumRegs: 2,
+		Code: []vm2.Instr{
+			{Op: vm2.OpListLen, A: 1, B: 0},
+			{Op: vm2.OpReturn, A: 1},
+		},
+	}
+	cf, err := vm2jit.Compile(callee)
+	if err != nil {
+		t.Skipf("Compile: %v", err)
+	}
+	defer cf.Free()
+
+	got := vm2jit.CallDirect(callee, nil, []vm2.Cell{vm2.CInt(7), 0})
+	pc, ok := vm2.DecodeDeopt(got)
+	if !ok {
+		t.Fatalf("expected deopt sentinel, got %016x", uint64(got))
+	}
+	if pc != 0 {
+		t.Fatalf("deopt pc: got %d want 0 (OpListLen index)", pc)
+	}
+}
+
 // TestJITDeoptResume exercises the Phase 1.5 deopt path end-to-end. The
 // callee first runs a natively-lowered AddI64K (computing r1 = r0+1 in
 // JIT registers), then hits a deoptable OpNewList. The JIT spills its
