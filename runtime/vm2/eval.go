@@ -53,8 +53,6 @@ func (vm *VM) Run() (Cell, error) {
 		consts = fr.Fn.Consts
 		ip = fr.IP
 	}
-	_ = reload
-
 	for {
 		ins := &code[ip]
 		ip++
@@ -124,13 +122,19 @@ func (vm *VM) Run() (Cell, error) {
 		case OpCall:
 			callee := vm.Program.Funcs[ins.B]
 			n := int(ins.D)
-			// Save caller IP before pushFrame in case the push grows
-			// vm.Stack and invalidates regs.
 			fr.IP = ip
+			argSrc := int(ins.C)
+			// Route to JIT when available. JITCallFn handles the full
+			// frame protocol; on return we reload hot locals because
+			// vm.Stack may have grown during the call.
+			if callee.JITCode != nil && JITCallFn != nil {
+				regs[ins.A] = JITCallFn(vm, callee, fr.RegsBase+argSrc, n, ins.A)
+				reload()
+				break
+			}
 			// Snapshot args before the push: pushFrame can grow
 			// vm.Stack and move the backing array, so we cannot read
 			// the source slice through the old regs view afterwards.
-			argSrc := int(ins.C)
 			var argBuf [16]Cell
 			var args []Cell
 			if n <= len(argBuf) {

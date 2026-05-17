@@ -1,5 +1,13 @@
 package vm2
 
+import "unsafe"
+
+// JITCallFn is installed by runtime/jit/vm2jit on package init.
+// When non-nil and a callee has a non-nil JITCode, OpCall routes
+// through this hook instead of pushing an interpreter frame.
+// Signature: (vm *VM, callee *Function, argBase, nArgs int, retReg int32) Cell
+var JITCallFn func(*VM, *Function, int, int, int32) Cell
+
 // Instr is a single bytecode instruction. Fixed 20 bytes (one cache
 // line holds three). Variable-length encoding is a later MEP-21 v2
 // item; the fixed form keeps step 3 minimal.
@@ -29,6 +37,11 @@ type Function struct {
 	// is cached here. This field is populated by VM.Run; not part of
 	// the on-disk Program shape.
 	StrCells []Cell
+	// JITCode is set by runtime/jit/vm2jit when this function has been
+	// compiled to native code. A nil value means the interpreter is used.
+	// The field holds an arch-specific function pointer; vm2jit installs
+	// JITCallFn to call it correctly. vm2 itself treats this as opaque.
+	JITCode unsafe.Pointer
 }
 
 // Program is the unit of execution. Main names the entry function.
