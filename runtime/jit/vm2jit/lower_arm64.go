@@ -201,9 +201,21 @@ func isDeoptableOp(op vm2.Op) bool {
 	switch op {
 	case vm2.OpLoadStrK, vm2.OpConcatStr, vm2.OpLenStr, vm2.OpIndexStr,
 		vm2.OpEqualStr, vm2.OpHashStr,
-		vm2.OpNewList, vm2.OpListGet, vm2.OpListSet, vm2.OpListPush,
+		vm2.OpNewList, vm2.OpListGet, vm2.OpListSet, vm2.OpListPush, vm2.OpListAppend,
 		vm2.OpNewMap, vm2.OpMapLen, vm2.OpMapGet, vm2.OpMapHas, vm2.OpMapSet, vm2.OpMapDel,
 		vm2.OpCall, vm2.OpTailCall, vm2.OpTailCallSelf,
+		// MEP-37 Phase 1 ops deopt to the interpreter: the JIT does not
+		// emit float arithmetic or typed-array code yet; once n_body or
+		// mandelbrot benchmarks justify it, the lower_arm64 emitter
+		// gains direct float lowering and these move to the supported
+		// set.
+		vm2.OpLoadConstF, vm2.OpAddF64, vm2.OpSubF64, vm2.OpMulF64,
+		vm2.OpDivF64, vm2.OpNegF64, vm2.OpAbsF64, vm2.OpSqrtF64,
+		vm2.OpLessF64, vm2.OpLessEqF64, vm2.OpEqualF64, vm2.OpFmaF64,
+		vm2.OpI64ToF64, vm2.OpF64ToI64,
+		vm2.OpNewF64Array, vm2.OpF64ArrLen, vm2.OpF64ArrGet, vm2.OpF64ArrSet,
+		vm2.OpNewI64Array, vm2.OpI64ArrLen, vm2.OpI64ArrGet, vm2.OpI64ArrSet,
+		vm2.OpNewU8Array, vm2.OpU8ArrLen, vm2.OpU8ArrGet, vm2.OpU8ArrSet,
 		vm2.OpHalt:
 		return true
 	}

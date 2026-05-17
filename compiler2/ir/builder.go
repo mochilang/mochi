@@ -1,6 +1,9 @@
 package ir
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 // Builder is the SSA construction helper. It maintains a current
 // insertion block; callers create blocks, switch between them, append
@@ -210,6 +213,117 @@ func (b *Builder) MapSet(m, k, v ValueID) ValueID {
 
 func (b *Builder) MapDel(m, k ValueID) ValueID {
 	return b.emit(Inst{Op: OpMapDel, Type: TUnit, Args: []ValueID{m, k}})
+}
+
+// ConstF64 emits a float64 constant. The bit pattern travels in Aux so
+// the Inst stays scalar; emit reconstructs the float via
+// math.Float64frombits when picking a constant-pool index.
+func (b *Builder) ConstF64(v float64) ValueID {
+	return b.emit(Inst{Op: OpConstF64, Type: TF64, Aux: int64(math.Float64bits(v))})
+}
+
+func (b *Builder) AddF64(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpAddF64, Type: TF64, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) SubF64(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpSubF64, Type: TF64, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) MulF64(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpMulF64, Type: TF64, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) DivF64(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpDivF64, Type: TF64, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) NegF64(x ValueID) ValueID {
+	return b.emit(Inst{Op: OpNegF64, Type: TF64, Args: []ValueID{x}})
+}
+
+func (b *Builder) AbsF64(x ValueID) ValueID {
+	return b.emit(Inst{Op: OpAbsF64, Type: TF64, Args: []ValueID{x}})
+}
+
+func (b *Builder) SqrtF64(x ValueID) ValueID {
+	return b.emit(Inst{Op: OpSqrtF64, Type: TF64, Args: []ValueID{x}})
+}
+
+func (b *Builder) LessF64(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpLessF64, Type: TBool, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) LessEqF64(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpLessEqF64, Type: TBool, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) EqualF64(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpEqualF64, Type: TBool, Args: []ValueID{x, y}})
+}
+
+// FmaF64 emits a fused multiply-add: a*b + c with a single rounding.
+func (b *Builder) FmaF64(a, c, d ValueID) ValueID {
+	return b.emit(Inst{Op: OpFmaF64, Type: TF64, Args: []ValueID{a, c, d}})
+}
+
+// I64ToF64 widens an i64 SSA value to f64 (lossy for magnitudes
+// exceeding 2^53; the BG kernels stay well inside that window).
+func (b *Builder) I64ToF64(x ValueID) ValueID {
+	return b.emit(Inst{Op: OpI64ToF64, Type: TF64, Args: []ValueID{x}})
+}
+
+// F64ToI64 truncates an f64 toward zero into an i64 SSA value.
+func (b *Builder) F64ToI64(x ValueID) ValueID {
+	return b.emit(Inst{Op: OpF64ToI64, Type: TI64, Args: []ValueID{x}})
+}
+
+func (b *Builder) NewF64Array(n ValueID) ValueID {
+	return b.emit(Inst{Op: OpNewF64Array, Type: TF64Array, Args: []ValueID{n}})
+}
+
+func (b *Builder) F64ArrLen(a ValueID) ValueID {
+	return b.emit(Inst{Op: OpF64ArrLen, Type: TI64, Args: []ValueID{a}})
+}
+
+func (b *Builder) F64ArrGet(a, i ValueID) ValueID {
+	return b.emit(Inst{Op: OpF64ArrGet, Type: TF64, Args: []ValueID{a, i}})
+}
+
+func (b *Builder) F64ArrSet(a, i, v ValueID) ValueID {
+	return b.emit(Inst{Op: OpF64ArrSet, Type: TUnit, Args: []ValueID{a, i, v}})
+}
+
+func (b *Builder) NewI64Array(n ValueID) ValueID {
+	return b.emit(Inst{Op: OpNewI64Array, Type: TI64Array, Args: []ValueID{n}})
+}
+
+func (b *Builder) I64ArrLen(a ValueID) ValueID {
+	return b.emit(Inst{Op: OpI64ArrLen, Type: TI64, Args: []ValueID{a}})
+}
+
+func (b *Builder) I64ArrGet(a, i ValueID) ValueID {
+	return b.emit(Inst{Op: OpI64ArrGet, Type: TI64, Args: []ValueID{a, i}})
+}
+
+func (b *Builder) I64ArrSet(a, i, v ValueID) ValueID {
+	return b.emit(Inst{Op: OpI64ArrSet, Type: TUnit, Args: []ValueID{a, i, v}})
+}
+
+func (b *Builder) NewU8Array(n ValueID) ValueID {
+	return b.emit(Inst{Op: OpNewU8Array, Type: TU8Array, Args: []ValueID{n}})
+}
+
+func (b *Builder) U8ArrLen(a ValueID) ValueID {
+	return b.emit(Inst{Op: OpU8ArrLen, Type: TI64, Args: []ValueID{a}})
+}
+
+func (b *Builder) U8ArrGet(a, i ValueID) ValueID {
+	return b.emit(Inst{Op: OpU8ArrGet, Type: TI64, Args: []ValueID{a, i}})
+}
+
+func (b *Builder) U8ArrSet(a, i, v ValueID) ValueID {
+	return b.emit(Inst{Op: OpU8ArrSet, Type: TUnit, Args: []ValueID{a, i, v}})
 }
 
 // Call invokes function at funcIdx with the given args. retType is the
