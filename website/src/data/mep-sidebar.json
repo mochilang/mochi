@@ -62,7 +62,10 @@
     "label": "Memory",
     "items": [
       "mep/mep-0035",
-      "mep/mep-0036"
+      "mep/mep-0036",
+      "mep/mep-0037",
+      "mep/mep-0038",
+      "mep/mep-0039"
     ]
   }
 ]
