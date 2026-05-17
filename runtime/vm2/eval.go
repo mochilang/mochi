@@ -295,6 +295,21 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 		case OpListPush:
 			l := vm.listAt(regs[ins.A])
 			l.data = append(l.data, regs[ins.B])
+		case OpListAppend:
+			// Functional append. emit sets InstrFlagBLastUse when the
+			// source list operand is statically dead after this read; in
+			// that case we mutate the source and reuse its pointer,
+			// skipping the per-call backing-array copy. Otherwise we
+			// allocate a fresh *vmList so callers that still observe the
+			// source see it unchanged.
+			if ins.Flags&InstrFlagBLastUse != 0 {
+				src := regs[ins.B]
+				l := vm.listAt(src)
+				l.data = append(l.data, regs[ins.C])
+				regs[ins.A] = src
+			} else {
+				regs[ins.A] = vm.listAppendCopy(regs[ins.B], regs[ins.C])
+			}
 		case OpNewMap:
 			regs[ins.A] = vm.newMap()
 		case OpMapLen:

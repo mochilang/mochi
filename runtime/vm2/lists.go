@@ -67,3 +67,21 @@ func JITListPush(vm *VM, listCell Cell, valueCell Cell) {
 	l := vm.listAt(listCell)
 	l.data = append(l.data, valueCell)
 }
+
+// listAppendCopy returns a fresh Cell whose backing *vmList is a copy
+// of src.data with elem appended. The new list starts with capacity =
+// len(src.data)+1; subsequent fluent appends on the same chain will
+// grow the new array (not src's), preserving src.
+//
+// This is the slow path for OpListAppend: it preserves Mochi's
+// functional-append semantics. emit picks this path whenever the
+// source-list operand is read by some downstream instruction; the
+// in-place fast path runs only when emit set InstrFlagBLastUse.
+func (vm *VM) listAppendCopy(src Cell, elem Cell) Cell {
+	s := vm.listAt(src)
+	nd := make([]Cell, len(s.data), len(s.data)+1)
+	copy(nd, s.data)
+	nd = append(nd, elem)
+	nl := &vmList{data: nd}
+	return Cell{Bits: tagPtr, Obj: unsafe.Pointer(nl)}
+}
