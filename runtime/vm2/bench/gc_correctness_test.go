@@ -22,11 +22,16 @@ import (
 	vm2 "mochi/runtime/vm2"
 )
 
-// TestObjectsTableResetPerRun verifies that the per-Run reset
-// documented in runtime/vm2/eval.go:16 actually happens: a second
-// Run() on the same VM observes len(vm.Objects) starting at zero
-// growth and ending bounded.
-func TestObjectsTableResetPerRun(t *testing.T) {
+// TestObjectsTableStaysEmptyAfterRun pins the MEP-36 Phase 2 invariant:
+// container constructors (newList / newMap / newString) no longer
+// register in vm.Objects. The Objects table is retained for the
+// self-heal AddObject path (FFI, wide-int boxing) but the corpus
+// programs that previously populated it must now observe len(Objects)
+// == 0 after Run.
+//
+// Phase 3 will delete the field outright; this test exists to catch a
+// regression that re-routes container constructors through AddObject.
+func TestObjectsTableStaysEmptyAfterRun(t *testing.T) {
 	prog := compileCorpus(t, corpus.Program{
 		Name:   "lists_fill_sum",
 		Build:  corpus.BuildListsFillSum,
@@ -37,67 +42,50 @@ func TestObjectsTableResetPerRun(t *testing.T) {
 	if _, err := vm.Run(); err != nil {
 		t.Fatalf("first run: %v", err)
 	}
-	firstLen := len(vm.Objects)
-	if firstLen == 0 {
-		t.Fatalf("first run produced an empty Objects table, expected at least one container")
+	if got := len(vm.Objects); got != 0 {
+		t.Fatalf("Phase 2 expects empty Objects table after Run; got len=%d", got)
 	}
 
 	if _, err := vm.Run(); err != nil {
 		t.Fatalf("second run: %v", err)
 	}
-	if got := len(vm.Objects); got != firstLen {
-		t.Fatalf("Objects table size drifted across runs: first=%d second=%d", firstLen, got)
+	if got := len(vm.Objects); got != 0 {
+		t.Fatalf("Phase 2 expects empty Objects table across runs; got len=%d", got)
 	}
 }
 
-// TestObjectsTableTypeIdentity verifies that a Cell carrying a ref
-// index resolves to the expected Go type via vm.Objects, for every
-// container constructor exercised by the corpus. This is the
-// invariant the new Cell.Ptr accessors must continue to satisfy.
-func TestObjectsTableTypeIdentity(t *testing.T) {
-	type slot struct {
-		idx     uint64
-		wantTyp string
-	}
-
+// TestPhase2TypedPointersTraceContainers verifies that the corpus
+// programs which used to register containers in Objects now thread
+// their typed pointers through Cell.Obj. We do not have a direct hook
+// into the running register file from the test, so we run the program
+// and assert the result matches the expected value — a proxy for the
+// pointer path working end-to-end. The complementary "no Objects
+// growth" assertion lives in TestObjectsTableStaysEmptyAfterRun.
+func TestPhase2TypedPointersTraceContainers(t *testing.T) {
 	cases := []struct {
 		name  string
 		build func(int64) *ir.Module
+		want  func(int64) int64
 		size  int64
 	}{
-		{"lists_fill_sum", corpus.BuildListsFillSum, sizeFor("lists_fill_sum")},
-		{"maps_fill_sum", corpus.BuildMapsFillSum, sizeFor("maps_fill_sum")},
-		{"strings_concat_loop", corpus.BuildStringsConcatLoop, sizeFor("strings_concat_loop")},
+		{"lists_fill_sum", corpus.BuildListsFillSum, corpus.ExpectListsFillSum, sizeFor("lists_fill_sum")},
+		{"maps_fill_sum", corpus.BuildMapsFillSum, corpus.ExpectMapsFillSum, sizeFor("maps_fill_sum")},
+		{"strings_concat_loop", corpus.BuildStringsConcatLoop, corpus.ExpectStringsConcatLoop, sizeFor("strings_concat_loop")},
 	}
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			prog := compileCorpus(t, corpus.Program{Name: tc.name, Build: tc.build}, tc.size)
+			prog := compileCorpus(t, corpus.Program{Name: tc.name, Build: tc.build, Expect: tc.want}, tc.size)
 			vm := vm2.New(prog)
-			if _, err := vm.Run(); err != nil {
+			got, err := vm.Run()
+			if err != nil {
 				t.Fatalf("run: %v", err)
 			}
-			if len(vm.Objects) == 0 {
-				t.Fatalf("Objects table is empty after %s", tc.name)
+			if want := tc.want(tc.size); got.Int() != want {
+				t.Fatalf("%s: got=%d want=%d", tc.name, got.Int(), want)
 			}
-			// Every entry must be non-nil and one of the recognised
-			// concrete types. We do not assume a particular ordering;
-			// the contract is that the table holds container payloads,
-			// not raw bytes or untyped pointers.
-			for i, obj := range vm.Objects {
-				if obj == nil {
-					t.Fatalf("Objects[%d] is nil", i)
-				}
-				switch obj.(type) {
-				case interface{ Data() []vm2.Cell }, // future-proof for typed accessors
-					*[]vm2.Cell:
-					// list-shaped — accepted
-				default:
-					typeName := goTypeName(obj)
-					if !isExpectedObjectType(typeName) {
-						t.Fatalf("Objects[%d] has unexpected Go type %q", i, typeName)
-					}
-				}
+			if len(vm.Objects) != 0 {
+				t.Fatalf("%s: container constructors leaked into Objects (len=%d)", tc.name, len(vm.Objects))
 			}
 		})
 	}

@@ -64,6 +64,13 @@ var programs = []program{
 	// MEP-24 §4 maps subsystem. Same fill+sum shape but keyed by int;
 	// exercises OpNewMap, OpMapSet, OpMapGet through Go's map[any]Cell.
 	{category: "maps", name: "fill_sum", ns: []int{10, 100}},
+	// MEP-23 Benchmarks Game suite. nsieve exercises the list payload
+	// throughput path; binary_trees exercises container construction
+	// and reclamation (MEP-36 headline). N for binary_trees is the
+	// depth: 2^depth trees built and discarded, each with 2^(depth+1)-1
+	// nodes, so the allocation count grows fast — keep depth modest.
+	{category: "bg", name: "nsieve", ns: []int{1000, 10000}},
+	{category: "bg", name: "binary_trees", ns: []int{8, 10}},
 }
 
 type result struct {
@@ -76,9 +83,26 @@ type result struct {
 	Err         string  `json:"err,omitempty"`
 }
 
+// aggregate is the Benchmarks Game-style summary of repeat invocations of
+// one (program, n, lang) tuple. Median is the headline; min/max bound the
+// noise floor. See MEP-23 §"Benchmarks Game methodology" for the rules.
+type aggregate struct {
+	Program     string  `json:"program"`
+	N           int     `json:"n"`
+	Lang        string  `json:"lang"`
+	Runs        int     `json:"runs"`
+	MedianUs    float64 `json:"median_us"`
+	MinUs       float64 `json:"min_us"`
+	MaxUs       float64 `json:"max_us"`
+	MemoryBytes int64   `json:"memory_bytes"` // max across runs
+	Output      any     `json:"output"`       // from the median run
+	Err         string  `json:"err,omitempty"`
+}
+
 func main() {
 	outJSON := flag.String("json", "", "write per-result JSON array to this file")
 	outMD := flag.String("md", "", "write markdown summary to this file")
+	repeat := flag.Int("repeat", 1, "run each (program,n,lang) tuple this many times and report median (Benchmarks Game-style)")
 	flag.Parse()
 
 	repoRoot, err := os.Getwd()
@@ -101,23 +125,29 @@ func main() {
 		die("vm2runner build: %v", err)
 	}
 
-	var results []result
+	if *repeat < 1 {
+		*repeat = 1
+	}
+
+	var aggs []aggregate
 	for _, p := range programs {
 		for _, n := range p.ns {
-			results = append(results, runVM2(vm2Bin, p.cat(), p.name, n))
-			results = append(results, runNative(repoRoot, tmp, p.cat(), p.name, n, "py", "python3"))
-			results = append(results, runNative(repoRoot, tmp, p.cat(), p.name, n, "lua", "lua"))
+			aggs = append(aggs,
+				measure(*repeat, func() result { return runVM2(vm2Bin, p.cat(), p.name, n) }),
+				measure(*repeat, func() result { return runNative(repoRoot, tmp, p.cat(), p.name, n, "py", "python3") }),
+				measure(*repeat, func() result { return runNative(repoRoot, tmp, p.cat(), p.name, n, "lua", "lua") }),
+				measure(*repeat, func() result { return runGo(repoRoot, tmp, p.cat(), p.name, n) }),
+			)
 		}
 	}
 
-	// Print live progress + final table.
-	for _, r := range results {
-		if r.Err != "" {
-			fmt.Printf("[%s n=%d] %-6s ERR: %s\n", r.Program, r.N, r.Lang, r.Err)
+	for _, a := range aggs {
+		if a.Err != "" {
+			fmt.Printf("[%s n=%d] %-6s ERR: %s\n", a.Program, a.N, a.Lang, a.Err)
 			continue
 		}
-		fmt.Printf("[%s n=%d] %-6s %10.0f us  %8d B  -> %v\n",
-			r.Program, r.N, r.Lang, r.DurationUs, r.MemoryBytes, r.Output)
+		fmt.Printf("[%s n=%d] %-6s median=%10.0f us  min=%10.0f us  max=%10.0f us  mem=%8d B  -> %v\n",
+			a.Program, a.N, a.Lang, a.MedianUs, a.MinUs, a.MaxUs, a.MemoryBytes, a.Output)
 	}
 
 	if *outJSON != "" {
@@ -127,13 +157,13 @@ func main() {
 		}
 		enc := json.NewEncoder(f)
 		enc.SetIndent("", "  ")
-		if err := enc.Encode(results); err != nil {
+		if err := enc.Encode(aggs); err != nil {
 			die("encode json: %v", err)
 		}
 		f.Close()
 	}
 
-	md := renderMarkdown(results)
+	md := renderMarkdown(aggs)
 	if *outMD != "" {
 		if err := os.WriteFile(*outMD, []byte(md), 0644); err != nil {
 			die("write md: %v", err)
@@ -148,6 +178,54 @@ func runVM2(bin, cat, prog string, n int) result {
 	progName := cat + "_" + prog
 	cmd := exec.Command(bin, "-program", progName, "-n", fmt.Sprintf("%d", n))
 	return runCmd(cat, prog, n, "vm2", cmd)
+}
+
+// runGo compiles the Go peer once per (program,n) tuple and then runs
+// the binary. Pre-building isolates `go build` time from the timing
+// window, matching what we do for vm2runner. Subsequent runs of the
+// same (program,n) re-use the cached binary so the median-of-K loop
+// pays the build cost exactly once.
+//
+// Source layout convention: `bench/template/<cat>/<prog>/<prog>.go`
+// is a complete `package main` that takes N via `{{ .N }}`
+// substitution (same as the .py / .lua peers), times an inner loop,
+// and writes `{"duration_us": X, "output": Y}` to stdout.
+func runGo(repoRoot, tmp, cat, prog string, n int) result {
+	r := result{Program: cat + "/" + prog, N: n, Lang: "go"}
+	// .go.tmpl rather than .go: an unrendered template that contains
+	// `{{ .N }}` is not valid Go, so the .go extension would make
+	// gopls and `go build ./...` complain. The template extension
+	// keeps the file out of the package graph until we render it.
+	srcPath := filepath.Join(repoRoot, "bench", "template", cat, prog, prog+".go.tmpl")
+	src, err := os.ReadFile(srcPath)
+	if err != nil {
+		r.Err = err.Error()
+		return r
+	}
+	rendered := strings.ReplaceAll(string(src), "{{ .N }}", fmt.Sprintf("%d", n))
+	srcDir := filepath.Join(tmp, fmt.Sprintf("%s_%s_%d_go", cat, prog, n))
+	if err := os.MkdirAll(srcDir, 0755); err != nil {
+		r.Err = err.Error()
+		return r
+	}
+	srcOut := filepath.Join(srcDir, "main.go")
+	if err := os.WriteFile(srcOut, []byte(rendered), 0644); err != nil {
+		r.Err = err.Error()
+		return r
+	}
+	bin := filepath.Join(srcDir, "bench")
+	if _, err := os.Stat(bin); err != nil {
+		build := exec.Command("go", "build", "-o", bin, srcOut)
+		build.Dir = repoRoot
+		var berr strings.Builder
+		build.Stderr = &berr
+		if err := build.Run(); err != nil {
+			r.Err = fmt.Sprintf("go build: %v: %s", err, strings.TrimSpace(berr.String()))
+			return r
+		}
+	}
+	cmd := exec.Command(bin)
+	return runCmd(cat, prog, n, "go", cmd)
 }
 
 func runNative(repoRoot, tmp, cat, prog string, n int, suffix, interpreter string) result {
@@ -203,24 +281,79 @@ func maxrssBytes(raw int64) int64 {
 	return raw * 1024 // kilobytes on Linux/BSD
 }
 
-func renderMarkdown(results []result) string {
+// measure runs fn `runs` times and aggregates the results into one row.
+// We report the median because (1) it's robust to outliers from OS
+// scheduling jitter and (2) the Benchmarks Game uses it; min/max bracket
+// the noise floor so callers can see whether the median is meaningful.
+//
+// A run that errors poisons the whole aggregate — we don't carry partial
+// results forward because a flaky failure (e.g. python3 not found on one
+// of the iterations) silently halving the data set is exactly the
+// pathology median-of-runs is supposed to prevent.
+func measure(runs int, fn func() result) aggregate {
+	out := aggregate{Runs: runs}
+	if runs <= 0 {
+		runs = 1
+	}
+	durations := make([]float64, 0, runs)
+	var sample result
+	var maxMem int64
+	for i := 0; i < runs; i++ {
+		r := fn()
+		if i == 0 {
+			out.Program, out.N, out.Lang = r.Program, r.N, r.Lang
+		}
+		if r.Err != "" {
+			out.Program, out.N, out.Lang, out.Err = r.Program, r.N, r.Lang, r.Err
+			return out
+		}
+		durations = append(durations, r.DurationUs)
+		if r.MemoryBytes > maxMem {
+			maxMem = r.MemoryBytes
+		}
+		// Remember a sample for Output reporting; the table only shows
+		// one Output per (program,n,lang) so we keep the last run's,
+		// after the equality check has already happened across rows.
+		sample = r
+	}
+	sort.Float64s(durations)
+	out.MinUs = durations[0]
+	out.MaxUs = durations[len(durations)-1]
+	out.MedianUs = median(durations)
+	out.MemoryBytes = maxMem
+	out.Output = sample.Output
+	return out
+}
+
+func median(sorted []float64) float64 {
+	n := len(sorted)
+	if n == 0 {
+		return 0
+	}
+	if n%2 == 1 {
+		return sorted[n/2]
+	}
+	return (sorted[n/2-1] + sorted[n/2]) / 2
+}
+
+func renderMarkdown(aggs []aggregate) string {
 	type key struct {
 		prog string
 		n    int
 	}
-	groups := map[key]map[string]result{}
+	groups := map[key]map[string]aggregate{}
 	var orderedKeys []key
 	seen := map[key]bool{}
-	for _, r := range results {
-		k := key{r.Program, r.N}
+	for _, a := range aggs {
+		k := key{a.Program, a.N}
 		if !seen[k] {
 			seen[k] = true
 			orderedKeys = append(orderedKeys, k)
 		}
 		if groups[k] == nil {
-			groups[k] = map[string]result{}
+			groups[k] = map[string]aggregate{}
 		}
-		groups[k][r.Lang] = r
+		groups[k][a.Lang] = a
 	}
 	sort.Slice(orderedKeys, func(i, j int) bool {
 		if orderedKeys[i].prog != orderedKeys[j].prog {
@@ -230,48 +363,52 @@ func renderMarkdown(results []result) string {
 	})
 
 	var sb strings.Builder
-	sb.WriteString("| Program | N | vm2 (µs) | CPython (µs) | Lua (µs) | vm2 / CPython | vm2 / Lua | vm2 RSS | CPython RSS | Lua RSS | match |\n")
-	sb.WriteString("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---:|\n")
+	sb.WriteString("| Program | N | vm2 (µs) | CPython (µs) | Lua (µs) | Go (µs) | vm2 / CPython | vm2 / Lua | vm2 / Go | vm2 RSS | CPython RSS | Lua RSS | Go RSS | match |\n")
+	sb.WriteString("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---:|\n")
 	for _, k := range orderedKeys {
 		row := groups[k]
 		vm2 := row["vm2"]
 		py := row["py"]
 		lua := row["lua"]
-		cell := func(r result) string {
-			if r.Err != "" {
+		goRow := row["go"]
+		cell := func(a aggregate) string {
+			if a.Err != "" {
 				return "ERR"
 			}
-			if r.DurationUs == 0 {
+			if a.MedianUs == 0 {
 				return "—"
 			}
-			return fmt.Sprintf("%.0f", r.DurationUs)
+			return fmt.Sprintf("%.0f", a.MedianUs)
 		}
-		ratio := func(num, den result) string {
-			if num.Err != "" || den.Err != "" || den.DurationUs == 0 {
+		ratio := func(num, den aggregate) string {
+			if num.Err != "" || den.Err != "" || den.MedianUs == 0 {
 				return "—"
 			}
-			return fmt.Sprintf("%.2fx", num.DurationUs/den.DurationUs)
+			return fmt.Sprintf("%.2fx", num.MedianUs/den.MedianUs)
 		}
-		rss := func(r result) string {
-			if r.MemoryBytes <= 0 {
+		rss := func(a aggregate) string {
+			if a.MemoryBytes <= 0 {
 				return "—"
 			}
-			return formatBytes(r.MemoryBytes)
+			return formatBytes(a.MemoryBytes)
 		}
 		match := "✓"
-		// Compare outputs as canonical Go-formatted strings; treat
-		// missing values as non-matching.
-		out := func(r result) string { return fmt.Sprintf("%v", r.Output) }
+		out := func(a aggregate) string { return fmt.Sprintf("%v", a.Output) }
+		// Go is optional: the row may not have a .go peer yet. Only
+		// participate in the output-equality check when present and
+		// non-error so missing .go files do not flip the match flag.
+		hasGo := goRow.Lang == "go" && goRow.Err == ""
 		if vm2.Err != "" || py.Err != "" || lua.Err != "" {
 			match = "ERR"
-		} else if out(vm2) != out(py) || out(vm2) != out(lua) {
-			match = fmt.Sprintf("✗ (vm2=%v py=%v lua=%v)", vm2.Output, py.Output, lua.Output)
+		} else if out(vm2) != out(py) || out(vm2) != out(lua) ||
+			(hasGo && out(vm2) != out(goRow)) {
+			match = fmt.Sprintf("✗ (vm2=%v py=%v lua=%v go=%v)", vm2.Output, py.Output, lua.Output, goRow.Output)
 		}
-		fmt.Fprintf(&sb, "| `%s` | %d | %s | %s | %s | %s | %s | %s | %s | %s | %s |\n",
+		fmt.Fprintf(&sb, "| `%s` | %d | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |\n",
 			k.prog, k.n,
-			cell(vm2), cell(py), cell(lua),
-			ratio(vm2, py), ratio(vm2, lua),
-			rss(vm2), rss(py), rss(lua),
+			cell(vm2), cell(py), cell(lua), cell(goRow),
+			ratio(vm2, py), ratio(vm2, lua), ratio(vm2, goRow),
+			rss(vm2), rss(py), rss(lua), rss(goRow),
 			match,
 		)
 	}

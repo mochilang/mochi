@@ -36,6 +36,10 @@ var corpusSizes = []corpusSize{
 	{"lists_fill_sum", 128},
 	// Maps subsystem (MEP-24 §4). Fill 128 int->int entries, sum reads.
 	{"maps_fill_sum", 128},
+	// MEP-23 Benchmarks Game suite. Sizes match the smallest crosslang
+	// N so the in-process oracle test stays fast (a few ms per row).
+	{"bg_nsieve", 1000},
+	{"bg_binary_trees", 8},
 }
 
 func sizeFor(name string) int64 {
@@ -116,3 +120,5 @@ func BenchmarkVM2_PrimeCount(b *testing.B)  { benchCorpus(b, corpus.Program{Name
 func BenchmarkVM2_StringsConcatLoop(b *testing.B) { benchCorpus(b, corpus.Program{Name: "strings_concat_loop", Build: corpus.BuildStringsConcatLoop, Expect: corpus.ExpectStringsConcatLoop}) }
 func BenchmarkVM2_ListsFillSum(b *testing.B) { benchCorpus(b, corpus.Program{Name: "lists_fill_sum", Build: corpus.BuildListsFillSum, Expect: corpus.ExpectListsFillSum}) }
 func BenchmarkVM2_MapsFillSum(b *testing.B)  { benchCorpus(b, corpus.Program{Name: "maps_fill_sum", Build: corpus.BuildMapsFillSum, Expect: corpus.ExpectMapsFillSum}) }
+func BenchmarkVM2_BG_Nsieve(b *testing.B)       { benchCorpus(b, corpus.Program{Name: "bg_nsieve", Build: corpus.BuildNsieve, Expect: corpus.ExpectNsieve}) }
+func BenchmarkVM2_BG_BinaryTrees(b *testing.B)  { benchCorpus(b, corpus.Program{Name: "bg_binary_trees", Build: corpus.BuildBinaryTrees, Expect: corpus.ExpectBinaryTrees}) }

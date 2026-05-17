@@ -1,0 +1,42 @@
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+func isPrime(n int) bool {
+	if n < 2 {
+		return false
+	}
+	for i := 2; i < n; i++ {
+		if n%i == 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func main() {
+	const n = {{ .N }}
+	const repeat = 100
+	var last int
+
+	start := time.Now()
+	for i := 0; i < repeat; i++ {
+		count := 0
+		for k := 2; k <= n; k++ {
+			if isPrime(k) {
+				count++
+			}
+		}
+		last = count
+	}
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      last,
+	})
+}

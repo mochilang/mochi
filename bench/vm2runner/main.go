@@ -42,6 +42,10 @@ var repeats = map[string]int{
 	"lists_fill_sum": 1000,
 	// Maps subsystem (MEP-24 §4).
 	"maps_fill_sum": 1000,
+	// MEP-23 Benchmarks Game suite. Lower repeat counts because each
+	// invocation already runs the full BG kernel once at the chosen N.
+	"bg_nsieve":       50,
+	"bg_binary_trees": 1,
 }
 
 func main() {

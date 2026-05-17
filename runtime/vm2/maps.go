@@ -17,19 +17,14 @@ type vmMap struct {
 
 func (vm *VM) newMap() Cell {
 	m := &vmMap{entries: map[any]Cell{}}
-	c := CPtr(vm.AddObject(m))
-	c.Obj = unsafe.Pointer(m)
-	return c
+	return Cell{Bits: tagPtr, Obj: unsafe.Pointer(m)}
 }
 
-// mapAt fetches the *vmMap backing a tagPtr cell. Self-healing: prefer
-// the typed pointer set at construction; fall back to the Objects[]
-// index for cells whose typed pointer was stripped in transit.
+// mapAt fetches the *vmMap backing a tagPtr cell. Phase 2: the typed
+// pointer is the only reference path; newMap no longer populates
+// vm.Objects.
 func (vm *VM) mapAt(c Cell) *vmMap {
-	if p := c.PtrTo(); p != nil {
-		return (*vmMap)(p)
-	}
-	return vm.Objects[c.Ptr()].(*vmMap)
+	return (*vmMap)(c.PtrTo())
 }
 
 // mapKeyOf normalizes a Cell into a Go map key. Strings collapse to
@@ -41,18 +36,17 @@ func (vm *VM) mapKeyOf(c Cell) any {
 	case c.IsSStr():
 		var buf [MaxInlineStr]byte
 		return string(c.SStrBytes(&buf))
+	case c.IsHeapStr():
+		// Heap strings collapse to byte-content keys so a fresh-but-equal
+		// *vmString hits the same map entry. The tagPtrStrFlag bit set
+		// by newString is what discriminates this from other pointer
+		// cells now that we no longer route through Objects[].
+		s := (*vmString)(c.PtrTo())
+		return string(s.bytes)
 	case c.IsPtr():
-		// Only *vmString gets byte-equal keys; other pointer kinds use
-		// identity (the tagPtr Cell). Maps over lists/structs/closures
-		// therefore key on object identity, matching Mochi semantics.
-		// This needs the Objects[] type assertion to discriminate the
-		// pointee kind (the typed-pointer self-heal accessors require
-		// the caller to know the type statically, which mapKeyOf does
-		// not). When P3 retires Objects[], a per-Cell kind tag or a
-		// separate string-keyed fast path replaces this branch.
-		if s, ok := vm.Objects[c.Ptr()].(*vmString); ok {
-			return string(s.bytes)
-		}
+		// Other pointer kinds (lists, maps, structs, closures) use
+		// identity (the tagPtr Cell bits) as the map key, matching
+		// Mochi semantics.
 		return c.Bits
 	case c.IsInt():
 		return c.Int()

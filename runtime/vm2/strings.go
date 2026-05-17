@@ -15,18 +15,17 @@ type vmString struct {
 	hash  uint64 // 0 means "not computed yet"; 0 collisions recompute
 }
 
-// newString allocates a *vmString and registers it in the VM's
-// Objects table. The returned Cell carries the table index in its Bits
-// payload and the typed *vmString in Obj so the host GC can trace the
-// pointee through the Cell directly.
+// newString allocates a *vmString and returns a tagPtr Cell carrying
+// the typed pointer in Obj and the tagPtrStrFlag bit in Bits (so
+// mapKeyOf can recognise it as a heap string without consulting the
+// Objects[] table). Phase 2 of MEP-36: no longer registers in
+// vm.Objects; the host GC traces the *vmString through Cell.Obj.
 //
 // Prefer makeStr for runtime construction: it returns an inline tagSStr
 // Cell when len(b) <= MaxInlineStr, avoiding allocation entirely.
 func (vm *VM) newString(b []byte) Cell {
 	s := &vmString{bytes: b}
-	c := CPtr(vm.AddObject(s))
-	c.Obj = unsafe.Pointer(s)
-	return c
+	return Cell{Bits: tagPtr | tagPtrStrFlag, Obj: unsafe.Pointer(s)}
 }
 
 // makeStr returns a string Cell for b. Length <= MaxInlineStr is
@@ -38,16 +37,12 @@ func (vm *VM) makeStr(b []byte) Cell {
 	return vm.newString(b)
 }
 
-// stringAt fetches the *vmString backing the cell. Self-healing: prefer
-// the typed pointer set at construction; fall back to the Objects[]
-// index for cells whose typed pointer was stripped in transit (e.g.
-// JIT-trampoline boundary, const-pool reconstitution). Caller must have
-// already checked the cell is a heap (tagPtr) string.
+// stringAt fetches the *vmString backing the cell. Caller must have
+// already checked the cell is a heap (tagPtr) string. Phase 2: the
+// typed pointer is the only reference path; newString no longer
+// populates vm.Objects.
 func (vm *VM) stringAt(c Cell) *vmString {
-	if p := c.PtrTo(); p != nil {
-		return (*vmString)(p)
-	}
-	return vm.Objects[c.Ptr()].(*vmString)
+	return (*vmString)(c.PtrTo())
 }
 
 // strLen returns the byte length of a string Cell (inline or heap).

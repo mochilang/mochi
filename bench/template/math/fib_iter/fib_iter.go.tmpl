@@ -1,0 +1,35 @@
+// Template peer for the math/fib_iter benchmark; see
+// bench/crosslang for the {{ .N }} → main.go substitution flow.
+
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+func fib(n int) int {
+	a, b := 0, 1
+	for i := 0; i < n; i++ {
+		a, b = b, a+b
+	}
+	return a
+}
+
+func main() {
+	const n = {{ .N }}
+	const repeat = 1000
+	var last int
+
+	start := time.Now()
+	for i := 0; i < repeat; i++ {
+		last = fib(n)
+	}
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      last,
+	})
+}

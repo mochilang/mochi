@@ -14,32 +14,23 @@ type vmList struct {
 	data []Cell
 }
 
-// newList allocates a *vmList with the given capacity and registers it
-// in the VM's Objects table. The returned Cell is a tagPtr whose Obj
-// field carries the typed *vmList so the host GC can trace the pointee
-// directly; the Objects[] index in the bits payload is the self-heal
-// fallback used by callers that lost the typed pointer (e.g. across the
-// JIT trampoline).
+// newList allocates a *vmList with the given capacity and returns a
+// tagPtr Cell whose Obj field carries the typed pointer so the host GC
+// can trace the pointee directly. Phase 2 of MEP-36: no longer
+// registers in vm.Objects.
 func (vm *VM) newList(capHint int) Cell {
 	if capHint < 0 {
 		capHint = 0
 	}
 	l := &vmList{data: make([]Cell, 0, capHint)}
-	c := CPtr(vm.AddObject(l))
-	c.Obj = unsafe.Pointer(l)
-	return c
+	return Cell{Bits: tagPtr, Obj: unsafe.Pointer(l)}
 }
 
-// listAt fetches the *vmList backing a tagPtr cell. Self-healing: if the
-// Cell carries a typed pointer (set by newList), return it directly;
-// otherwise fall back to the Objects[] table lookup so cells that came
-// through a non-pointer-preserving path (JIT regs, persisted const pool)
-// still resolve.
+// listAt fetches the *vmList backing a tagPtr cell. Phase 2: the typed
+// pointer is the only reference path; newList no longer populates
+// vm.Objects.
 func (vm *VM) listAt(c Cell) *vmList {
-	if p := c.PtrTo(); p != nil {
-		return (*vmList)(p)
-	}
-	return vm.Objects[c.Ptr()].(*vmList)
+	return (*vmList)(c.PtrTo())
 }
 
 // JIT slow-path accessors — called by runtime/jit/vm2jit for list opcodes.
