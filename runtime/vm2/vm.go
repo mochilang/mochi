@@ -24,6 +24,13 @@ type VM struct {
 	// current index). Run() snapshots the top frame's hot fields into
 	// locals for dispatch.
 	Frames []frame
+
+	// pairChunks is the per-VM arena for vmPair allocations (MEP-37 §3.4).
+	// Chunks grow on demand; addresses within a chunk are stable for the
+	// chunk's lifetime, so vmPair* pointers carried in Cell.Obj never
+	// dangle. pairNext indexes the next free slot across all chunks.
+	pairChunks []*pairChunk
+	pairNext   int
 }
 
 // New constructs a VM bound to a program. Stack and Frames are

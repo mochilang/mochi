@@ -129,4 +129,15 @@ const (
 	OpU8ArrLen   // A = i64(len(u8ArrAt(regs[B]).data))
 	OpU8ArrGet   // A = CInt(int64(u8ArrAt(regs[B]).data[regs[C].Int()]))
 	OpU8ArrSet   // u8ArrAt(regs[A]).data[regs[B].Int()] = byte(regs[C].Int())
+
+	// Pair subsystem (MEP-37 §3.4). Pairs are immutable two-element
+	// tuples carried via Cell.Obj as *vmPair; allocation goes through a
+	// chunked per-VM arena that keeps pointers stable across chunk grows.
+	// The motivating workload is BG binary_trees, which builds ~2M
+	// two-element nodes per run; *vmList costs one Go heap allocation
+	// plus a []Cell tail per node, whereas *vmPair amortizes to one
+	// chunk allocation per 256 nodes with no slice header overhead.
+	OpNewPair // A = newPair(regs[B], regs[C])
+	OpPairFst // A = pairAt(regs[B]).a
+	OpPairSnd // A = pairAt(regs[B]).b
 )

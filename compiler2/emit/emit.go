@@ -453,6 +453,16 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					A: int32(finalReg[ins.Args[0]]),
 					B: int32(finalReg[ins.Args[1]]),
 					C: int32(finalReg[ins.Args[2]])})
+			case ir.OpNewPair:
+				emit(vm2.Instr{Op: vm2.OpNewPair, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpPairFst:
+				emit(vm2.Instr{Op: vm2.OpPairFst, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpPairSnd:
+				emit(vm2.Instr{Op: vm2.OpPairSnd, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
 			case ir.OpCall:
 				for i, a := range ins.Args {
 					emit(vm2.Instr{Op: vm2.OpMove,
@@ -585,7 +595,7 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		}
 		switch ins.Type {
 		case ir.TStr, ir.TList, ir.TMap, ir.TPtr,
-			ir.TF64Array, ir.TI64Array, ir.TU8Array:
+			ir.TF64Array, ir.TI64Array, ir.TU8Array, ir.TPair:
 			hasContainer = true
 		}
 		if hasContainer {
