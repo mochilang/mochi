@@ -97,6 +97,104 @@ func lsrImm(xd, xn, shift uint32) uint32 {
 	return 0xD340FC00 | ((shift & 0x3F) << 16) | ((xn & 0x1F) << 5) | (xd & 0x1F)
 }
 
+// --- AArch64 NEON / FP encoders (MEP-38 §3.2.1 float JIT lowering) ---
+//
+// Float Cells store the float64 bits directly in Cell.Bits (the
+// IsFloat predicate is `Bits & 0xFFFF0000_00000000 < 0x7FFB0000_00000000`,
+// matched by every normal/subnormal double plus the canonical qNaN
+// 0x7FF8). The JIT moves bits between GPR (xN) and FPR (dN) via FMOV,
+// performs the FP arithmetic in dN, and stores back. No tag bits are
+// applied; the bit pattern *is* the Cell. NaN bit patterns are not
+// canonicalized by the JIT (matches Go's native FP behavior and is
+// consistent with vm2's runtime which only canonicalizes at CFloat
+// construction; arithmetic on already-tagged cells preserves bits).
+
+// faddD, fsubD, fmulD, fdivD: FP data-processing (2 source), ftype=01 (double).
+// Encoding: 0 00 11110 01 1 Rm op2 10 Rn Rd, op2 in {0010,0011,0000,0001}.
+func faddD(dd, dn, dm uint32) uint32 {
+	return 0x1E602800 | ((dm & 0x1F) << 16) | ((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+func fsubD(dd, dn, dm uint32) uint32 {
+	return 0x1E603800 | ((dm & 0x1F) << 16) | ((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+func fmulD(dd, dn, dm uint32) uint32 {
+	return 0x1E600800 | ((dm & 0x1F) << 16) | ((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+func fdivD(dd, dn, dm uint32) uint32 {
+	return 0x1E601800 | ((dm & 0x1F) << 16) | ((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+
+// fabsD, fnegD, fsqrtD: FP data-processing (1 source), ftype=01 (double).
+// Encoding: 0 00 11110 01 1 opc 10000 Rn Rd, opc in {000001, 000010, 000011}.
+func fabsD(dd, dn uint32) uint32  { return 0x1E60C000 | ((dn & 0x1F) << 5) | (dd & 0x1F) }
+func fnegD(dd, dn uint32) uint32  { return 0x1E614000 | ((dn & 0x1F) << 5) | (dd & 0x1F) }
+func fsqrtD(dd, dn uint32) uint32 { return 0x1E61C000 | ((dn & 0x1F) << 5) | (dd & 0x1F) }
+
+// fcmpD: FCMP Dn, Dm, ftype=01. Sets PSTATE.NZCV; no Rd field.
+func fcmpD(dn, dm uint32) uint32 {
+	return 0x1E602000 | ((dm & 0x1F) << 16) | ((dn & 0x1F) << 5)
+}
+
+// fmovDX: FMOV Xd, Dn (bit-pattern copy double → 64-bit GPR, no convert).
+// fmovXD: FMOV Dd, Xn (bit-pattern copy 64-bit GPR → double, no convert).
+// sf=1, ftype=01, rmode=00, opcode=110 (DtoX) / 111 (XtoD).
+func fmovDX(xd, dn uint32) uint32 { return 0x9E660000 | ((dn & 0x1F) << 5) | (xd & 0x1F) }
+func fmovXD(dd, xn uint32) uint32 { return 0x9E670000 | ((xn & 0x1F) << 5) | (dd & 0x1F) }
+
+// scvtfD: SCVTF Dd, Xn, signed 64-bit int to double.
+// fcvtzsD: FCVTZS Xd, Dn, double to signed 64-bit int (round toward zero).
+func scvtfD(dd, xn uint32) uint32  { return 0x9E620000 | ((xn & 0x1F) << 5) | (dd & 0x1F) }
+func fcvtzsD(xd, dn uint32) uint32 { return 0x9E780000 | ((dn & 0x1F) << 5) | (xd & 0x1F) }
+
+// fmaddD: FMADD Dd, Dn, Dm, Da → Dd = Da + Dn*Dm. ftype=01, o2=0, o0=0.
+// Maps OpFmaF64(A = B*C + D) with Dd=A, Dn=B, Dm=C, Da=D.
+func fmaddD(dd, dn, dm, da uint32) uint32 {
+	return 0x1F400000 | ((dm & 0x1F) << 16) | ((da & 0x1F) << 10) | ((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+
+// csetMI / csetLS: CSET aliases for ordered float comparisons.
+// CSET Xd, MI  = CSINC Xd, XZR, XZR, NOT(MI)=PL.  cond field 0x5.
+// CSET Xd, LS  = CSINC Xd, XZR, XZR, NOT(LS)=HI.  cond field 0x8.
+// MI is true after FCMP iff Vn < Vm and ordered (NaN sets V=1, clears N).
+// LS is true after FCMP iff Vn <= Vm and ordered (NaN sets C=1, Z=0; LS = !C || Z, so unordered → false).
+func csetMI(xd uint32) uint32 { return 0x9A9F07E0 | (0x5 << 12) | (xd & 0x1F) }
+func csetLS(xd uint32) uint32 { return 0x9A9F07E0 | (0x8 << 12) | (xd & 0x1F) }
+
+// --- FP emit helpers ---
+
+// emitBinopF64 emits the 4-instruction sequence for a binary FP op:
+// fmov d0, xB; fmov d1, xC; fop d2, d0, d1; fmov xA, d2.
+func emitBinopF64(xA, xB, xC uint32, op func(dd, dn, dm uint32) uint32) []uint32 {
+	return []uint32{
+		fmovXD(0, xB), // d0 = bits(B)
+		fmovXD(1, xC), // d1 = bits(C)
+		op(2, 0, 1),   // d2 = op(d0, d1)
+		fmovDX(xA, 2), // xA = bits(d2)
+	}
+}
+
+// emitUnopF64 emits: fmov d0, xB; fop d1, d0; fmov xA, d1.
+func emitUnopF64(xA, xB uint32, op func(dd, dn uint32) uint32) []uint32 {
+	return []uint32{
+		fmovXD(0, xB),
+		op(1, 0),
+		fmovDX(xA, 1),
+	}
+}
+
+// emitCmpBoolF64 emits the 6-instruction sequence for a float comparison
+// producing a bool Cell: fmov + fmov + fcmp + cset + movzTagBool + orr.
+func emitCmpBoolF64(xA, xB, xC uint32, cset func(uint32) uint32) []uint32 {
+	return []uint32{
+		fmovXD(0, xB),
+		fmovXD(1, xC),
+		fcmpD(0, 1),
+		cset(8),
+		movzTagBool(),     // x17 = tagBool
+		orrReg(xA, 8, 17), // xA  = x8 | tagBool
+	}
+}
+
 // movzTagInt emits MOVZ x16, #0xFFFC, LSL#48, loading tagInt into x16.
 func movzTagInt() uint32 { return movz(16, 0xFFFC, 3) }
 
@@ -173,6 +271,26 @@ func instrWordCountARM64(fn *vm2.Function, ins vm2.Instr) (int, error) {
 	case vm2.OpJumpIfLessI64, vm2.OpJumpIfLessEqI64, vm2.OpJumpIfGreaterI64,
 		vm2.OpJumpIfGreaterEqI64, vm2.OpJumpIfEqualI64, vm2.OpJumpIfNotEqualI64:
 		return 4, nil // sbfx + sbfx + cmp + b.cond
+
+	// --- MEP-38 §3.2.1 float lowering ---
+	case vm2.OpLoadConstF:
+		if int(ins.B) >= len(fn.Consts) {
+			return 0, fmt.Errorf("%w: float const index %d out of range", ErrNotImplemented, ins.B)
+		}
+		return 4, nil // movz + 3×movk (the float bits)
+	case vm2.OpAddF64, vm2.OpSubF64, vm2.OpMulF64, vm2.OpDivF64:
+		return 4, nil // fmov + fmov + fop + fmov
+	case vm2.OpNegF64, vm2.OpAbsF64, vm2.OpSqrtF64:
+		return 3, nil // fmov + fop + fmov
+	case vm2.OpLessF64, vm2.OpLessEqF64, vm2.OpEqualF64:
+		return 6, nil // fmov + fmov + fcmp + cset + movzTagBool + orr
+	case vm2.OpFmaF64:
+		return 5, nil // 3×fmov(in) + fmadd + fmov(out)
+	case vm2.OpI64ToF64:
+		return 3, nil // sbfx + scvtf + fmov
+	case vm2.OpF64ToI64:
+		return 5, nil // fmov + fcvtzs + andMask + movzTagInt + orr
+
 	case vm2.OpReturn:
 		n := fn.NumRegs
 		if n > maxRegs {
@@ -204,15 +322,10 @@ func isDeoptableOp(op vm2.Op) bool {
 		vm2.OpNewList, vm2.OpListGet, vm2.OpListSet, vm2.OpListPush, vm2.OpListAppend,
 		vm2.OpNewMap, vm2.OpMapLen, vm2.OpMapGet, vm2.OpMapHas, vm2.OpMapSet, vm2.OpMapDel,
 		vm2.OpCall, vm2.OpTailCall, vm2.OpTailCallSelf,
-		// MEP-37 Phase 1 ops deopt to the interpreter: the JIT does not
-		// emit float arithmetic or typed-array code yet; once n_body or
-		// mandelbrot benchmarks justify it, the lower_arm64 emitter
-		// gains direct float lowering and these move to the supported
-		// set.
-		vm2.OpLoadConstF, vm2.OpAddF64, vm2.OpSubF64, vm2.OpMulF64,
-		vm2.OpDivF64, vm2.OpNegF64, vm2.OpAbsF64, vm2.OpSqrtF64,
-		vm2.OpLessF64, vm2.OpLessEqF64, vm2.OpEqualF64, vm2.OpFmaF64,
-		vm2.OpI64ToF64, vm2.OpF64ToI64,
+		// MEP-38 Phase 2 (§3.2.1) lowers OpLoadConstF, OpAddF64, OpSubF64,
+		// OpMulF64, OpDivF64, OpNegF64, OpAbsF64, OpSqrtF64, OpLessF64,
+		// OpLessEqF64, OpEqualF64, OpFmaF64, OpI64ToF64, OpF64ToI64 to
+		// NEON FP arithmetic. They are no longer in the deopt set.
 		vm2.OpNewF64Array, vm2.OpF64ArrLen, vm2.OpF64ArrGet, vm2.OpF64ArrSet,
 		vm2.OpNewI64Array, vm2.OpI64ArrLen, vm2.OpI64ArrGet, vm2.OpI64ArrSet,
 		vm2.OpNewU8Array, vm2.OpU8ArrLen, vm2.OpU8ArrGet, vm2.OpU8ArrSet,
@@ -363,6 +476,56 @@ func lowerInstrARM64(fn *vm2.Function, idx int, ins vm2.Instr, pcMap []int) ([]u
 		return emitCmpBoolI64(xA, xB, xC, csetLE), nil
 	case vm2.OpEqualI64:
 		return emitCmpBoolI64(xA, xB, xC, csetEQ), nil
+
+	// --- MEP-38 §3.2.1 float lowering ---
+	case vm2.OpLoadConstF:
+		return movImm64(xA, int64(fn.Consts[ins.B].Bits)), nil
+	case vm2.OpAddF64:
+		return emitBinopF64(xA, xB, xC, faddD), nil
+	case vm2.OpSubF64:
+		return emitBinopF64(xA, xB, xC, fsubD), nil
+	case vm2.OpMulF64:
+		return emitBinopF64(xA, xB, xC, fmulD), nil
+	case vm2.OpDivF64:
+		return emitBinopF64(xA, xB, xC, fdivD), nil
+	case vm2.OpNegF64:
+		return emitUnopF64(xA, xB, fnegD), nil
+	case vm2.OpAbsF64:
+		return emitUnopF64(xA, xB, fabsD), nil
+	case vm2.OpSqrtF64:
+		return emitUnopF64(xA, xB, fsqrtD), nil
+	case vm2.OpLessF64:
+		return emitCmpBoolF64(xA, xB, xC, csetMI), nil
+	case vm2.OpLessEqF64:
+		return emitCmpBoolF64(xA, xB, xC, csetLS), nil
+	case vm2.OpEqualF64:
+		return emitCmpBoolF64(xA, xB, xC, csetEQ), nil
+	case vm2.OpFmaF64:
+		// A = B*C + D. FMADD Dd, Dn, Dm, Da = Da + Dn*Dm; map d0=B, d1=C, d2=D, d3=A.
+		xD := r2x(int32(ins.D))
+		return []uint32{
+			fmovXD(0, xB),
+			fmovXD(1, xC),
+			fmovXD(2, xD),
+			fmaddD(3, 0, 1, 2),
+			fmovDX(xA, 3),
+		}, nil
+	case vm2.OpI64ToF64:
+		// xB carries a tagInt Cell. Unbox to int64 (sbfx48), convert, store.
+		return []uint32{
+			sbfx48(8, xB),
+			scvtfD(0, 8),
+			fmovDX(xA, 0),
+		}, nil
+	case vm2.OpF64ToI64:
+		// xB carries float bits. Convert, mask, retag.
+		return []uint32{
+			fmovXD(0, xB),
+			fcvtzsD(8, 0),
+			andMask48(8, 8),
+			movzTagInt(),
+			orrReg(xA, 8, 16),
+		}, nil
 
 	case vm2.OpJump:
 		off, err := branchOff(0, int(ins.A), 26)
