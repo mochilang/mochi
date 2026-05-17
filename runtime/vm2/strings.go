@@ -3,8 +3,9 @@ package vm2
 import "unsafe"
 
 // vmString is the heap representation of a string. Strings are
-// immutable and held in the Objects table; a string-valued Cell is a
-// tagPtr whose payload is the Objects index of a *vmString.
+// immutable; a string-valued Cell is a tagPtr whose Obj field carries
+// the *vmString so the host GC reaches it directly. The tagPtrStrFlag
+// bit (see cell.go) tells mapKeyOf to treat the pointee as a string.
 //
 // The header carries a memoized FNV-1a hash. Map keys (subsystem §4)
 // will read this; until then the field is just paying for itself on
@@ -17,9 +18,8 @@ type vmString struct {
 
 // newString allocates a *vmString and returns a tagPtr Cell carrying
 // the typed pointer in Obj and the tagPtrStrFlag bit in Bits (so
-// mapKeyOf can recognise it as a heap string without consulting the
-// Objects[] table). Phase 2 of MEP-36: no longer registers in
-// vm.Objects; the host GC traces the *vmString through Cell.Obj.
+// mapKeyOf recognises it as a heap string). The host GC traces the
+// *vmString through Cell.Obj.
 //
 // Prefer makeStr for runtime construction: it returns an inline tagSStr
 // Cell when len(b) <= MaxInlineStr, avoiding allocation entirely.
@@ -38,9 +38,7 @@ func (vm *VM) makeStr(b []byte) Cell {
 }
 
 // stringAt fetches the *vmString backing the cell. Caller must have
-// already checked the cell is a heap (tagPtr) string. Phase 2: the
-// typed pointer is the only reference path; newString no longer
-// populates vm.Objects.
+// already checked the cell is a heap (tagPtr) string.
 func (vm *VM) stringAt(c Cell) *vmString {
 	return (*vmString)(c.PtrTo())
 }
@@ -66,10 +64,9 @@ func (vm *VM) strBytes(c Cell, buf *[MaxInlineStr]byte) []byte {
 
 // strEqualCell compares two string Cells (inline or heap) for byte
 // equality. Inline/inline takes the fast Bits-equal path; heap/heap
-// also short-circuits on a Bits match (same Objects index = same
-// *vmString, regardless of whether one side carries the typed pointer
-// and the other does not). Mixed and unmatched heap/heap fall back to
-// byte compare via strEqual.
+// short-circuits on a Bits match (same payload + same Obj pointer =
+// same string). Mixed and unmatched heap/heap fall back to byte
+// compare via strEqual.
 func (vm *VM) strEqualCell(a, b Cell) bool {
 	if a.Bits == b.Bits {
 		return true

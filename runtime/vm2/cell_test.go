@@ -75,21 +75,6 @@ func TestCellNull(t *testing.T) {
 	}
 }
 
-func TestCellPtr(t *testing.T) {
-	for _, idx := range []uint64{0, 1, 42, payloadMask} {
-		c := CPtr(idx)
-		if !c.IsPtr() {
-			t.Fatalf("CPtr(%d) not IsPtr: %#x", idx, c.Bits)
-		}
-		if c.IsInt() || c.IsFloat() || c.IsBool() || c.IsNull() {
-			t.Fatalf("CPtr(%d) tag collision", idx)
-		}
-		if got := c.Ptr(); got != idx {
-			t.Fatalf("CPtr(%d).Ptr() = %d", idx, got)
-		}
-	}
-}
-
 func TestFitsInline(t *testing.T) {
 	cases := []struct {
 		v  int64

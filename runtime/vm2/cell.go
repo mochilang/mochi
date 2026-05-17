@@ -7,10 +7,8 @@ import (
 
 // Cell is the 16-byte tagged value used by vm2 throughout. It is the
 // MEP-36 Option X layout: the 8-byte NaN-boxed Bits field carries the
-// same tag/payload encoding the runtime used in its pre-refactor
-// uint64 form, and Ptr carries a Go-typed pointer for pointer-tagged
-// cells so the host GC can reach the pointee directly without going
-// through vm.Objects.
+// tag/payload encoding, and Obj carries a Go-typed pointer for
+// pointer-tagged cells so the host GC reaches the pointee directly.
 //
 // Bits layout (high 16 bits):
 //
@@ -21,12 +19,11 @@ import (
 //	0xFFFC          -> int (low 48 bits, signed)
 //	0xFFFD          -> bool (low bit)
 //	0xFFFE          -> null
-//	0xFFFF          -> ptr: low 48 bits are an Objects[] index for the
-//	                  self-heal fallback; Ptr field carries the typed
-//	                  Go pointer when it is populated.
+//	0xFFFF          -> ptr (typed Go pointer in Obj; bit 47 of payload
+//	                  is tagPtrStrFlag for *vmString vs other pointees).
 //
-// Int is 48-bit signed (range -2^47 .. 2^47-1). Wider ints are boxed
-// into the Objects table by the compiler; see CPtr.
+// Int is 48-bit signed (range -2^47 .. 2^47-1). Wider ints fall back
+// to float64 boxing.
 type Cell struct {
 	Bits uint64
 	// Obj carries the Go-typed pointer for pointer-tagged cells, set by
@@ -88,15 +85,6 @@ func CBool(b bool) Cell {
 
 func CNull() Cell { return Cell{Bits: tagNull} }
 
-// CPtr boxes a 48-bit unsigned index into the owning VM's Objects table.
-// The typed-pointer companion is filled in by the container constructors
-// (newList, newMap, newString) that have access to the actual *T at
-// construction time; CPtr alone leaves Ptr nil and callers fall through
-// the self-heal accessor path.
-func CPtr(idx uint64) Cell {
-	return Cell{Bits: tagPtr | idx&payloadMask}
-}
-
 func (c Cell) IsFloat() bool { return c.Bits&tagMask < tagSStr }
 func (c Cell) IsSStr() bool  { return c.Bits&tagMask == tagSStr }
 func (c Cell) IsInt() bool   { return c.Bits&tagMask == tagInt }
@@ -151,12 +139,10 @@ func (c Cell) Int() int64 { return int64(c.Bits<<16) >> 16 }
 
 func (c Cell) Bool() bool { return c.Bits&1 != 0 }
 
-// Ptr returns the 48-bit index into VM.Objects (the self-heal fallback path).
-func (c Cell) Ptr() uint64 { return c.Bits & payloadMask }
-
-// PtrTo returns the Go-typed pointer carried by this Cell, or nil if
-// the cell has no populated typed pointer yet. Callers cast through
-// unsafe.Pointer to the concrete type (e.g. (*vmList)(c.PtrTo())).
+// PtrTo returns the Go-typed pointer carried by this Cell. Callers
+// cast through unsafe.Pointer to the concrete type (e.g.
+// (*vmList)(c.PtrTo())). Tag dispatch (IsPtr / IsHeapStr) tells the
+// caller which concrete type to expect.
 func (c Cell) PtrTo() unsafe.Pointer { return c.Obj }
 
 // FitsInline reports whether i can be boxed inline by CInt without loss.

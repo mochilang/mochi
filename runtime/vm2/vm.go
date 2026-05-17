@@ -1,8 +1,10 @@
 package vm2
 
-// VM holds the program plus the per-run Objects table for ref-tagged
-// Cells (boxed wide ints, strings, lists, maps, closures). The table
-// is reset on each Run so pure-numeric programs never grow it.
+// VM holds the program and the activation-record stacks. Container
+// payloads (lists, maps, strings, closures) live on the Go heap and
+// reach the host GC via typed pointers carried in Cell.Obj — there is
+// no longer a side `Objects[]` registry to keep in sync (MEP-36
+// Phase 3).
 //
 // Activation records live on two contiguous, dynamically grown stacks
 // (Stack and Frames) rather than per-call sync.Pool allocations. A
@@ -13,7 +15,6 @@ package vm2
 // the stack runs out of capacity.
 type VM struct {
 	Program *Program
-	Objects []any
 
 	// Stack is the register file shared by every active frame. Frame i
 	// owns Stack[Frames[i].RegsBase : Frames[i].RegsBase + Fn.NumRegs).
@@ -34,14 +35,6 @@ func New(p *Program) *VM {
 		Stack:   make([]Cell, 0, 64),
 		Frames:  make([]frame, 0, 16),
 	}
-}
-
-// AddObject appends to the Objects table and returns the index suitable
-// for CPtr. Compilers and FFI use this to hand a ref-typed value to
-// running code.
-func (vm *VM) AddObject(o any) uint64 {
-	vm.Objects = append(vm.Objects, o)
-	return uint64(len(vm.Objects) - 1)
 }
 
 // frame is one activation record on the Frames stack. Pure value type;

@@ -559,7 +559,7 @@ func TestOpCallRoutesToJITLoop(t *testing.T) {
 // TestJITListLenFastPath exercises the Phase 2 OpListLen fast path. The
 // callee has a single OpListLen + OpReturn so the JIT must lower OpListLen
 // natively (no deopt for the body to fall through to). Test builds a real
-// list in vm.Objects, calls the JIT'd callee directly via CallDirect, and
+// list via JITNewList, calls the JIT'd callee directly via CallDirect, and
 // asserts the returned Cell carries the expected int48 length.
 func TestJITListLenFastPath(t *testing.T) {
 	callee := &vm2.Function{

@@ -16,8 +16,7 @@ type vmList struct {
 
 // newList allocates a *vmList with the given capacity and returns a
 // tagPtr Cell whose Obj field carries the typed pointer so the host GC
-// can trace the pointee directly. Phase 2 of MEP-36: no longer
-// registers in vm.Objects.
+// can trace the pointee directly (MEP-36 Phase 2+).
 func (vm *VM) newList(capHint int) Cell {
 	if capHint < 0 {
 		capHint = 0
@@ -26,9 +25,7 @@ func (vm *VM) newList(capHint int) Cell {
 	return Cell{Bits: tagPtr, Obj: unsafe.Pointer(l)}
 }
 
-// listAt fetches the *vmList backing a tagPtr cell. Phase 2: the typed
-// pointer is the only reference path; newList no longer populates
-// vm.Objects.
+// listAt fetches the *vmList backing a tagPtr cell.
 func (vm *VM) listAt(c Cell) *vmList {
 	return (*vmList)(c.PtrTo())
 }

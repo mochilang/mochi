@@ -48,9 +48,9 @@ const (
 	OpReturn // return A to caller's RetReg
 
 	// String subsystem (MEP-24 §2). Strings are immutable; every
-	// allocating op produces a fresh *vmString registered in
-	// vm.Objects. Cell encoding is tagPtr whose payload is the
-	// Objects index.
+	// allocating op produces a fresh *vmString reached through
+	// Cell.Obj. Inline literals (<=5 bytes) pack into a tagSStr Cell
+	// and skip allocation entirely.
 	OpLoadStrK  // A = newString(Fn.StrConsts[B])
 	OpConcatStr // A = newString(strAt(B).bytes ++ strAt(C).bytes)
 	OpLenStr    // A = i64(len(strAt(B).bytes))
@@ -59,15 +59,15 @@ const (
 	OpHashStr   // A = i64(strHash(strAt(B)))  // exposed mostly for map-key prep + tests
 
 	// List subsystem (MEP-24 §3). Lists are growable []Cell buffers
-	// held in vm.Objects; a list-valued Cell is tagPtr.
+	// reached through Cell.Obj; a list-valued Cell is tagPtr.
 	OpNewList  // A = newList(capHint=B)
 	OpListLen  // A = i64(len(listAt(B).data))
 	OpListGet  // A = listAt(B).data[regs[C].Int()]; traps on OOB
 	OpListSet  // listAt(regs[A]).data[regs[B].Int()] = regs[C]; traps on OOB
 	OpListPush // listAt(regs[A]).data = append(..., regs[B]); amortized O(1)
 
-	// Map subsystem (MEP-24 §4). Maps are mutable; Objects[idx] holds a
-	// *vmMap whose entries is a Go map[any]Cell. Key normalization
+	// Map subsystem (MEP-24 §4). Maps are mutable; Cell.Obj points to
+	// a *vmMap whose entries is a Go map[any]Cell. Key normalization
 	// (string bytes for str keys, scalar value for int/bool/null,
 	// identity for other ptr) lives in mapKeyOf.
 	OpNewMap // A = newMap()
