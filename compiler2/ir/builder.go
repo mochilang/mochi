@@ -174,6 +174,16 @@ func (b *Builder) ListPush(l, v ValueID) ValueID {
 	return b.emit(Inst{Op: OpListPush, Type: TUnit, Args: []ValueID{l, v}})
 }
 
+// ListAppend models Mochi's functional `xs.append(v)`: returns a new
+// list value equal to l with v pushed, leaving l unchanged in the
+// general case. emit lowers this to vm2.OpListAppend; the runtime
+// allocates a fresh backing array unless emit's last-use analysis
+// determines l is dead after this read, in which case the runtime
+// mutates l in place and returns the same pointer (MEP-36 §3.5).
+func (b *Builder) ListAppend(l, v ValueID) ValueID {
+	return b.emit(Inst{Op: OpListAppend, Type: TList, Args: []ValueID{l, v}})
+}
+
 // NewMap allocates a fresh empty map.
 func (b *Builder) NewMap() ValueID {
 	return b.emit(Inst{Op: OpNewMap, Type: TMap})

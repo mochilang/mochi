@@ -11,12 +11,29 @@ var JITCallFn func(*VM, *Function, int, int, int32) Cell
 // Instr is a single bytecode instruction. Fixed 20 bytes (one cache
 // line holds three). Variable-length encoding is a later MEP-21 v2
 // item; the fixed form keeps step 3 minimal.
+//
+// Flags carries operand-level annotations consumed by container ops on
+// their fast paths. Today only the last-use bits are defined (MEP-36
+// Phase 3c §3.5): a 1 in InstrFlagBLastUse / InstrFlagCLastUse means
+// the corresponding operand register's read is its final read within
+// the function, so the op may treat the receiver as exclusively owned.
+// Ops that don't care about the bits ignore them; the encoding is
+// forward-compatible with future per-operand attributes.
 type Instr struct {
 	Op      Op
-	_       [3]byte
+	Flags   uint8
+	_       [2]byte
 	A, B, C int32
 	D       int32
 }
+
+// Operand-flag bits carried in Instr.Flags. Each container op documents
+// which operand positions it inspects; setting a flag for an operand
+// the op does not consult is a no-op (the dispatcher ignores it).
+const (
+	InstrFlagBLastUse uint8 = 1 << 0 // operand B is at last use after this op
+	InstrFlagCLastUse uint8 = 1 << 1 // operand C is at last use after this op
+)
 
 // Function is a compiled top-level function or method body.
 type Function struct {

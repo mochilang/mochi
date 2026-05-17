@@ -73,6 +73,38 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		}
 	}
 
+	// Program-point lookup: walking f.Values in ValueID order is the
+	// same linearization regalloc uses by default (one program point
+	// per non-DCE'd value, in block-ID order). We track the running
+	// position so each emit site can ask "is this operand's read the
+	// value's last use?" by comparing pos against ra.LastUse[opVid].
+	// pos[vid] >= 0 means defined; -1 means unreached / DCE'd.
+	pos := make([]int, len(f.Values))
+	for i := range pos {
+		pos[i] = -1
+	}
+	{
+		p := 0
+		for _, blk := range f.Blocks {
+			for _, vid := range blk.Insts {
+				pos[vid] = p
+				p++
+			}
+		}
+	}
+	isLastUseOf := func(useVid, operandVid ir.ValueID) bool {
+		// Operand never used after this point if useVid's position is
+		// at least the operand's LastUse. We use >= because an unread
+		// value has LastUse == defPos (no extension); in that case the
+		// first reader is by definition the last.
+		if ra.LastUse == nil {
+			return false
+		}
+		up := pos[useVid]
+		lu := ra.LastUse[operandVid]
+		return up >= 0 && lu >= 0 && up >= lu
+	}
+
 	// Per-block scan: identify compare→CondBr pairs we can fuse. Both
 	// must live in the same block, the compare must immediately precede
 	// the CondBr, and the compare's result must have exactly one use.
@@ -285,6 +317,23 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 				emit(vm2.Instr{Op: vm2.OpListPush,
 					A: int32(finalReg[ins.Args[0]]),
 					B: int32(finalReg[ins.Args[1]])})
+			case ir.OpListAppend:
+				// MEP-36 Phase 3c §3.5: tag the source-list operand
+				// (B) as last-use whenever the IR confirms no later
+				// instruction reads it. The dispatcher then mutates
+				// the source instead of copying. emit doesn't need
+				// to prove uniqueness of the underlying *vmList; the
+				// builder contract is that ListAppend reads its first
+				// arg, so if regalloc says no later read exists, no
+				// aliased caller can observe the in-place mutation.
+				flags := uint8(0)
+				if isLastUseOf(vid, ins.Args[0]) {
+					flags |= vm2.InstrFlagBLastUse
+				}
+				emit(vm2.Instr{Op: vm2.OpListAppend, Flags: flags,
+					A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
 			case ir.OpNewMap:
 				emit(vm2.Instr{Op: vm2.OpNewMap, A: dst})
 			case ir.OpMapLen:

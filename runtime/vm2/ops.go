@@ -65,6 +65,12 @@ const (
 	OpListGet  // A = listAt(B).data[regs[C].Int()]; traps on OOB
 	OpListSet  // listAt(regs[A]).data[regs[B].Int()] = regs[C]; traps on OOB
 	OpListPush // listAt(regs[A]).data = append(..., regs[B]); amortized O(1)
+	// Functional list append (MEP-36 §3.5). A = clone(B).push(C). Default
+	// allocates a fresh *vmList; with Flags&InstrFlagBLastUse, the runtime
+	// elides the clone, mutates B in place, and stores B's pointer into A.
+	// This is the spec's anchor for `xs.append(1).append(2)` collapsing to
+	// one backing array when the intermediate is dead.
+	OpListAppend
 
 	// Map subsystem (MEP-24 §4). Maps are mutable; Cell.Obj points to
 	// a *vmMap whose entries is a Go map[any]Cell. Key normalization

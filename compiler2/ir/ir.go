@@ -89,6 +89,15 @@ const (
 	OpListGet  // Args[0][Args[1]]
 	OpListSet  // Args[0][Args[1]] = Args[2]; result type TUnit
 	OpListPush // Args[0].push(Args[1]); result type TUnit
+	// OpListAppend models Mochi's functional append: result is a new
+	// TList equal to Args[0] with Args[1] pushed; Args[0] is unchanged.
+	// Without copy-elision the implementation allocates a fresh backing
+	// array. The emitter consults the regalloc last-use map: when
+	// Args[0] is at last use, it sets the MEP-36 Phase 3c last-use bit
+	// on operand B and the runtime mutates the source in place, returning
+	// the same pointer. This is the IR's anchor for the spec's "fluent
+	// chain captures in-place" claim ([§3.5](#35-compile-time-last-use-bit)).
+	OpListAppend
 
 	// Map subsystem (MEP-24 §4). Maps are reference-typed; OpNewMap
 	// produces a fresh TMap value. OpMapGet returns the value type (or

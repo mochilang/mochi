@@ -22,6 +22,18 @@ type Result struct {
 	// NumRegs is the total count of physical registers used (max
 	// reg index + 1, or 0 if no live values).
 	NumRegs int
+	// Pos[valueID] is the linearized program point assigned to each
+	// SSA value's definition. -1 for DCE'd values. The emitter uses
+	// this together with LastUse to decide whether a given operand
+	// read is the value's last use within the function.
+	Pos []int
+	// LastUse[valueID] is the program point of the last instruction
+	// that reads the value, or Pos[valueID] when the value is
+	// defined but never read (no extension). The emitter consults
+	// this when setting MEP-36 Phase 3c operand-last-use bits on
+	// container ops: if the position of an op consuming valueID v
+	// equals LastUse[v], that read is the final read.
+	LastUse []int
 }
 
 // Run computes register assignments for fn. blockOrder controls the
@@ -85,6 +97,19 @@ func Run(fn *ir.Function, blockOrder []ir.BlockID) Result {
 		}
 	}
 
+	// Snapshot last-use positions before we re-sort intervals; the
+	// emitter needs this map keyed by ValueID. extension above already
+	// pushed each entry's end to the max read position, so intervals[i].end
+	// is precisely the last-read program point (or the def position when
+	// the value is unread).
+	lastUse := make([]int, len(fn.Values))
+	for i := range lastUse {
+		lastUse[i] = -1
+	}
+	for _, iv := range intervals {
+		lastUse[iv.vid] = iv.end
+	}
+
 	sort.Slice(intervals, func(i, j int) bool {
 		return intervals[i].start < intervals[j].start
 	})
@@ -132,5 +157,5 @@ func Run(fn *ir.Function, blockOrder []ir.BlockID) Result {
 		act = append(act, active{end: iv.end, reg: r, vid: iv.vid})
 	}
 
-	return Result{Reg: reg, NumRegs: maxReg + 1}
+	return Result{Reg: reg, NumRegs: maxReg + 1, Pos: pos, LastUse: lastUse}
 }
