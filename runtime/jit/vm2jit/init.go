@@ -46,7 +46,7 @@ func jitCall(v *vm2.VM, fn *vm2.Function, argBase int, n int, _ int32) vm2.Cell 
 	jf := &jitFrame{}
 	jf.vm = v
 	copy(jf.regs[:n], v.Stack[argBase:argBase+n])
-	result := vm2.Cell(trampoline.Call(fn.JITCode, unsafe.Pointer(&jf.regs[0])))
+	result := vm2.Cell{Bits: trampoline.Call(fn.JITCode, unsafe.Pointer(&jf.regs[0]))}
 	if pc, ok := vm2.DecodeDeopt(result); ok {
 		return resumeFromDeopt(v, fn, jf, pc)
 	}

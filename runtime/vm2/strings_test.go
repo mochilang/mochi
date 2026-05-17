@@ -36,7 +36,7 @@ func TestLoadStrK(t *testing.T) {
 		{Op: OpReturn, A: 0},
 	})
 	if !got.IsStr() || !got.IsSStr() {
-		t.Fatalf("want inline string cell, got %x", uint64(got))
+		t.Fatalf("want inline string cell, got %x", got.Bits)
 	}
 	if s := strString(vm, got); s != "hello" {
 		t.Fatalf("want hello, got %q", s)
@@ -48,7 +48,7 @@ func TestLoadStrK(t *testing.T) {
 		{Op: OpReturn, A: 0},
 	})
 	if !got.IsStr() || !got.IsPtr() {
-		t.Fatalf("want heap string cell, got %x", uint64(got))
+		t.Fatalf("want heap string cell, got %x", got.Bits)
 	}
 	if string(vm.stringAt(got).bytes) != "hello!" {
 		t.Fatalf("want hello!, got %q", vm.stringAt(got).bytes)

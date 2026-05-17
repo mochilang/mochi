@@ -271,7 +271,10 @@ func prologueARM64(fn *vm2.Function) []uint32 {
 	}
 	ws := make([]uint32, n)
 	for r := 0; r < n; r++ {
-		ws[r] = ldr64(uint32(9+r), 0, uint32(r))
+		// Cell is 16 bytes (Bits at offset 0, Obj at offset 8). The
+		// ldr64 imm12 is scaled by 8, so r*2 yields byte offset r*16,
+		// loading regs[r].Bits into x(9+r).
+		ws[r] = ldr64(uint32(9+r), 0, uint32(r)*2)
 	}
 	return ws
 }
@@ -300,7 +303,7 @@ func lowerInstrARM64(fn *vm2.Function, idx int, ins vm2.Instr, pcMap []int) ([]u
 
 	switch ins.Op {
 	case vm2.OpLoadConstI:
-		return movImm64(xA, int64(fn.Consts[ins.B])), nil
+		return movImm64(xA, int64(fn.Consts[ins.B].Bits)), nil
 
 	case vm2.OpMove:
 		return []uint32{movReg(xA, xB)}, nil
@@ -379,7 +382,9 @@ func lowerInstrARM64(fn *vm2.Function, idx int, ins vm2.Instr, pcMap []int) ([]u
 		}
 		ws := make([]uint32, 0, n+2)
 		for r := 0; r < n; r++ {
-			ws = append(ws, str64(uint32(9+r), 0, uint32(r)))
+			// 16-byte Cell stride: imm12 scaled by 8, so r*2 = byte
+			// offset r*16. Stores x(9+r) into regs[r].Bits.
+			ws = append(ws, str64(uint32(9+r), 0, uint32(r)*2))
 		}
 		ws = append(ws, movReg(0, uint32(9+int(ins.A)))) // x0 = result Cell
 		ws = append(ws, ret())
@@ -407,10 +412,12 @@ func emitDeoptStubARM64(fn *vm2.Function, idx int) []uint32 {
 	if n > maxRegs {
 		n = maxRegs
 	}
-	sentinel := uint64(vm2.EncodeDeopt(idx))
+	sentinel := vm2.EncodeDeopt(idx).Bits
 	ws := make([]uint32, 0, n+4+1)
 	for r := 0; r < n; r++ {
-		ws = append(ws, str64(uint32(9+r), 0, uint32(r)))
+		// 16-byte Cell stride: imm12*8 = byte offset, so r*2 spills
+		// x(9+r) back to regs[r].Bits.
+		ws = append(ws, str64(uint32(9+r), 0, uint32(r)*2))
 	}
 	ws = append(ws, movImm64(0, int64(sentinel))...)
 	ws = append(ws, ret())

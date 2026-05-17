@@ -1,5 +1,9 @@
 package vm2
 
+import (
+	"unsafe"
+)
+
 // vmMap is the heap representation of a map (MEP-24 §4). The MVP uses
 // Go's built-in map keyed on a normalized `any` so equality follows
 // Go's comparable semantics: ints/bools/strings compare by value, and
@@ -12,10 +16,19 @@ type vmMap struct {
 }
 
 func (vm *VM) newMap() Cell {
-	return CPtr(vm.AddObject(&vmMap{entries: map[any]Cell{}}))
+	m := &vmMap{entries: map[any]Cell{}}
+	c := CPtr(vm.AddObject(m))
+	c.Obj = unsafe.Pointer(m)
+	return c
 }
 
+// mapAt fetches the *vmMap backing a tagPtr cell. Self-healing: prefer
+// the typed pointer set at construction; fall back to the Objects[]
+// index for cells whose typed pointer was stripped in transit.
 func (vm *VM) mapAt(c Cell) *vmMap {
+	if p := c.PtrTo(); p != nil {
+		return (*vmMap)(p)
+	}
 	return vm.Objects[c.Ptr()].(*vmMap)
 }
 
@@ -32,10 +45,15 @@ func (vm *VM) mapKeyOf(c Cell) any {
 		// Only *vmString gets byte-equal keys; other pointer kinds use
 		// identity (the tagPtr Cell). Maps over lists/structs/closures
 		// therefore key on object identity, matching Mochi semantics.
+		// This needs the Objects[] type assertion to discriminate the
+		// pointee kind (the typed-pointer self-heal accessors require
+		// the caller to know the type statically, which mapKeyOf does
+		// not). When P3 retires Objects[], a per-Cell kind tag or a
+		// separate string-keyed fast path replaces this branch.
 		if s, ok := vm.Objects[c.Ptr()].(*vmString); ok {
 			return string(s.bytes)
 		}
-		return uint64(c)
+		return c.Bits
 	case c.IsInt():
 		return c.Int()
 	case c.IsBool():
@@ -43,5 +61,5 @@ func (vm *VM) mapKeyOf(c Cell) any {
 	case c.IsNull():
 		return nil
 	}
-	return uint64(c)
+	return c.Bits
 }

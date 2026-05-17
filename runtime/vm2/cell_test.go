@@ -7,8 +7,8 @@ import (
 )
 
 func TestCellSize(t *testing.T) {
-	if got := unsafe.Sizeof(Cell(0)); got != 8 {
-		t.Fatalf("Cell size = %d, want 8", got)
+	if got := unsafe.Sizeof(Cell{}); got != 16 {
+		t.Fatalf("Cell size = %d, want 16", got)
 	}
 }
 
@@ -16,10 +16,10 @@ func TestCellInt(t *testing.T) {
 	for _, v := range []int64{0, 1, -1, 42, -42, MaxInlineInt, MinInlineInt, 1 << 30, -(1 << 30)} {
 		c := CInt(v)
 		if !c.IsInt() {
-			t.Fatalf("CInt(%d) not IsInt: %#x", v, uint64(c))
+			t.Fatalf("CInt(%d) not IsInt: %#x", v, c.Bits)
 		}
 		if c.IsFloat() || c.IsBool() || c.IsNull() || c.IsPtr() {
-			t.Fatalf("CInt(%d) tag collision: %#x", v, uint64(c))
+			t.Fatalf("CInt(%d) tag collision: %#x", v, c.Bits)
 		}
 		if got := c.Int(); got != v {
 			t.Fatalf("CInt(%d).Int() = %d", v, got)
@@ -32,10 +32,10 @@ func TestCellFloat(t *testing.T) {
 	for _, v := range cases {
 		c := CFloat(v)
 		if !c.IsFloat() {
-			t.Fatalf("CFloat(%g) not IsFloat: %#x", v, uint64(c))
+			t.Fatalf("CFloat(%g) not IsFloat: %#x", v, c.Bits)
 		}
 		if c.IsInt() || c.IsBool() || c.IsNull() || c.IsPtr() {
-			t.Fatalf("CFloat(%g) tag collision: %#x", v, uint64(c))
+			t.Fatalf("CFloat(%g) tag collision: %#x", v, c.Bits)
 		}
 		if got := c.Float(); got != v {
 			t.Fatalf("CFloat(%g).Float() = %g", v, got)
@@ -43,7 +43,7 @@ func TestCellFloat(t *testing.T) {
 	}
 	nan := CFloat(math.NaN())
 	if !nan.IsFloat() {
-		t.Fatalf("NaN cell not IsFloat: %#x", uint64(nan))
+		t.Fatalf("NaN cell not IsFloat: %#x", nan.Bits)
 	}
 	if !math.IsNaN(nan.Float()) {
 		t.Fatalf("NaN cell decoded to non-NaN: %g", nan.Float())
@@ -79,7 +79,7 @@ func TestCellPtr(t *testing.T) {
 	for _, idx := range []uint64{0, 1, 42, payloadMask} {
 		c := CPtr(idx)
 		if !c.IsPtr() {
-			t.Fatalf("CPtr(%d) not IsPtr: %#x", idx, uint64(c))
+			t.Fatalf("CPtr(%d) not IsPtr: %#x", idx, c.Bits)
 		}
 		if c.IsInt() || c.IsFloat() || c.IsBool() || c.IsNull() {
 			t.Fatalf("CPtr(%d) tag collision", idx)

@@ -46,7 +46,7 @@ func TestMapSetGetInt(t *testing.T) {
 	}
 	got := runMapProg(t, &Program{Funcs: []*Function{main}, Main: 0})
 	if !got.IsNull() {
-		t.Fatalf("missing key = %#x, want null", uint64(got))
+		t.Fatalf("missing key = %#x, want null", got.Bits)
 	}
 
 	main.Code = []Instr{

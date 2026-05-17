@@ -1,5 +1,7 @@
 package vm2
 
+import "unsafe"
+
 // vmString is the heap representation of a string. Strings are
 // immutable and held in the Objects table; a string-valued Cell is a
 // tagPtr whose payload is the Objects index of a *vmString.
@@ -14,12 +16,17 @@ type vmString struct {
 }
 
 // newString allocates a *vmString and registers it in the VM's
-// Objects table. The returned Cell carries the table index.
+// Objects table. The returned Cell carries the table index in its Bits
+// payload and the typed *vmString in Obj so the host GC can trace the
+// pointee through the Cell directly.
 //
 // Prefer makeStr for runtime construction: it returns an inline tagSStr
 // Cell when len(b) <= MaxInlineStr, avoiding allocation entirely.
 func (vm *VM) newString(b []byte) Cell {
-	return CPtr(vm.AddObject(&vmString{bytes: b}))
+	s := &vmString{bytes: b}
+	c := CPtr(vm.AddObject(s))
+	c.Obj = unsafe.Pointer(s)
+	return c
 }
 
 // makeStr returns a string Cell for b. Length <= MaxInlineStr is
@@ -31,10 +38,15 @@ func (vm *VM) makeStr(b []byte) Cell {
 	return vm.newString(b)
 }
 
-// stringAt fetches the *vmString backing the cell. Caller must have
-// already checked the cell is a heap (tagPtr) string; inline strings
-// have no *vmString.
+// stringAt fetches the *vmString backing the cell. Self-healing: prefer
+// the typed pointer set at construction; fall back to the Objects[]
+// index for cells whose typed pointer was stripped in transit (e.g.
+// JIT-trampoline boundary, const-pool reconstitution). Caller must have
+// already checked the cell is a heap (tagPtr) string.
 func (vm *VM) stringAt(c Cell) *vmString {
+	if p := c.PtrTo(); p != nil {
+		return (*vmString)(p)
+	}
 	return vm.Objects[c.Ptr()].(*vmString)
 }
 
@@ -58,10 +70,13 @@ func (vm *VM) strBytes(c Cell, buf *[MaxInlineStr]byte) []byte {
 }
 
 // strEqualCell compares two string Cells (inline or heap) for byte
-// equality. Inline/inline takes the fast Cell == Cell path; mixed and
-// heap/heap fall back to byte compare via strEqual.
+// equality. Inline/inline takes the fast Bits-equal path; heap/heap
+// also short-circuits on a Bits match (same Objects index = same
+// *vmString, regardless of whether one side carries the typed pointer
+// and the other does not). Mixed and unmatched heap/heap fall back to
+// byte compare via strEqual.
 func (vm *VM) strEqualCell(a, b Cell) bool {
-	if a == b {
+	if a.Bits == b.Bits {
 		return true
 	}
 	if a.IsSStr() && b.IsSStr() {
