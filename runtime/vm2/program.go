@@ -42,6 +42,14 @@ type Function struct {
 	// The field holds an arch-specific function pointer; vm2jit installs
 	// JITCallFn to call it correctly. vm2 itself treats this as opaque.
 	JITCode unsafe.Pointer
+	// HasContainerSlots is true when any register in this function's
+	// window may hold a typed pointer Cell (list, map, string, ptr) at
+	// some point during execution. MEP-36 Phase 3: popFrame skips the
+	// clear(stack[base:]) sweep when this is false, restoring int-only
+	// programs (fib_rec, fact_rec, fib_iter, mul_loop) to their Phase 1
+	// numbers (see MEP-36 Appendix C.3). emit computes the flag from the
+	// IR value-type stream.
+	HasContainerSlots bool
 }
 
 // Program is the unit of execution. Main names the entry function.

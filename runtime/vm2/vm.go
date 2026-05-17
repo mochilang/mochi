@@ -90,10 +90,19 @@ func (vm *VM) pushFrame(fn *Function, retReg int32) (int, int) {
 // pointers carried in Cell.Obj are dropped and the host GC can reclaim
 // dead containers. Without the clear, a *vmList kept alive by a retired
 // register would linger until that slot is overwritten by a later frame.
+//
+// MEP-36 Phase 3: skip the clear when the popped function has no
+// container-typed value in its register window. The flag is computed at
+// emit time from the IR value-type stream; pure int/bool programs
+// (fib_rec, fact_rec, fib_iter, mul_loop) recover their Phase 1 numbers
+// while container-touching frames keep the reclamation contract.
 func (vm *VM) popFrame() {
 	top := len(vm.Frames) - 1
-	base := vm.Frames[top].RegsBase
-	clear(vm.Stack[base:])
+	fr := vm.Frames[top]
+	base := fr.RegsBase
+	if fr.Fn.HasContainerSlots {
+		clear(vm.Stack[base:])
+	}
 	vm.Stack = vm.Stack[:base]
 	vm.Frames[top] = frame{} // drop the *Function pointer
 	vm.Frames = vm.Frames[:top]
