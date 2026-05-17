@@ -428,13 +428,32 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		strConsts[i] = []byte(s)
 	}
 
+	// MEP-36 Phase 3: a register window holds a container only if some
+	// IR value of container type (TStr/TList/TMap/TPtr) was assigned a
+	// real register. Pure int/bool functions get HasContainerSlots=false
+	// and popFrame elides the clear sweep.
+	hasContainer := false
+	for vid, ins := range f.Values {
+		if finalReg[vid] < 0 {
+			continue
+		}
+		switch ins.Type {
+		case ir.TStr, ir.TList, ir.TMap, ir.TPtr:
+			hasContainer = true
+		}
+		if hasContainer {
+			break
+		}
+	}
+
 	return &vm2.Function{
-		Name:      f.Name,
-		NumParams: np,
-		NumRegs:   numRegs,
-		Code:      code,
-		Consts:    consts,
-		StrConsts: strConsts,
+		Name:              f.Name,
+		NumParams:         np,
+		NumRegs:           numRegs,
+		Code:              code,
+		Consts:            consts,
+		StrConsts:         strConsts,
+		HasContainerSlots: hasContainer,
 	}, nil
 }
 

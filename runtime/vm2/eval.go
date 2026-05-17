@@ -13,14 +13,13 @@ import "errors"
 // reslice — no sync.Pool round trips, which were 56% of fib_rec CPU
 // before this refactor.
 func (vm *VM) Run() (Cell, error) {
-	vm.Objects = vm.Objects[:0]
 	vm.Stack = vm.Stack[:0]
 	vm.Frames = vm.Frames[:0]
 
 	// Materialize string-constant Cells per function. Short literals
-	// pack inline (no Objects entry); long literals allocate once and
-	// the resulting CPtr is cached so OpLoadStrK is a slice read on the
-	// hot path.
+	// pack inline; long literals allocate a *vmString once and the
+	// resulting Cell is cached so OpLoadStrK is a slice read on the hot
+	// path. The Go GC traces the pointee through Cell.Obj.
 	for _, fn := range vm.Program.Funcs {
 		if len(fn.StrCells) != len(fn.StrConsts) {
 			fn.StrCells = make([]Cell, len(fn.StrConsts))

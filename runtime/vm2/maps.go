@@ -20,9 +20,7 @@ func (vm *VM) newMap() Cell {
 	return Cell{Bits: tagPtr, Obj: unsafe.Pointer(m)}
 }
 
-// mapAt fetches the *vmMap backing a tagPtr cell. Phase 2: the typed
-// pointer is the only reference path; newMap no longer populates
-// vm.Objects.
+// mapAt fetches the *vmMap backing a tagPtr cell.
 func (vm *VM) mapAt(c Cell) *vmMap {
 	return (*vmMap)(c.PtrTo())
 }
@@ -39,8 +37,7 @@ func (vm *VM) mapKeyOf(c Cell) any {
 	case c.IsHeapStr():
 		// Heap strings collapse to byte-content keys so a fresh-but-equal
 		// *vmString hits the same map entry. The tagPtrStrFlag bit set
-		// by newString is what discriminates this from other pointer
-		// cells now that we no longer route through Objects[].
+		// by newString discriminates strings from other pointer cells.
 		s := (*vmString)(c.PtrTo())
 		return string(s.bytes)
 	case c.IsPtr():

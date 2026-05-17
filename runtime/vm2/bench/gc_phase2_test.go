@@ -1,21 +1,20 @@
-// Phase 2 GC tests for MEP-36.
+// Phase 2/3 GC tests for MEP-36.
 //
-// These tests pin the memory-management properties that Phase 2 of
-// MEP-36 was designed to deliver:
+// These tests pin the memory-management properties that Phase 2 and
+// Phase 3 of MEP-36 jointly deliver:
 //
-//  1. Container constructors no longer populate vm.Objects: containers
-//     are reachable from the operand stack via Cell.Obj only.
-//  2. popFrame clear()s the popped window so a container that was the
-//     callee's last reference becomes reclaimable on the next GC.
+//  1. Container constructors do not populate a side Objects[] table:
+//     containers are reachable from the operand stack via Cell.Obj
+//     only. The field has been removed entirely in Phase 3; what the
+//     tests here actually prove is the live-heap reclamation contract
+//     that motivated the removal.
+//  2. popFrame clear()s the popped window when the frame held a
+//     container, so a container that was the callee's last reference
+//     becomes reclaimable on the next GC. Phase 3 skips the clear for
+//     int-only frames; the reclamation contract still holds.
 //  3. Repeated Run() calls do not grow live heap: dead containers from
 //     a previous Run are collected before the next steady-state sample.
-//  4. The Objects table no longer carries container payloads, so its
-//     length stays at 0 even on container-heavy workloads.
-//
-// These properties are the precondition for Phase 3 (delete the
-// Objects table outright); a regression that re-routes container
-// constructors through AddObject would be caught by point 4, a
-// regression that drops the popFrame clear would be caught by point 2.
+//  4. Dropping the VM lets the GC reclaim everything the VM held.
 package bench
 
 import (
@@ -28,13 +27,10 @@ import (
 
 // TestPhase2_PopFrameReclamation pins property (2): a container
 // allocated inside a callee frame becomes reclaimable once the callee
-// returns. We attach a Go finalizer to a list constructed by the
-// running program, drop the only Mochi-side reference by overwriting
-// the result register, force GC, and require the finalizer to fire.
-//
-// We exercise this indirectly by running a corpus program that builds
-// a list inside a function, returns its length, and discards the list;
-// then we drive enough GC cycles to flush the popped frame's slots.
+// returns. We exercise this indirectly by running a corpus program
+// that builds a list inside a function, returns its length, and
+// discards the list; then we drive enough GC cycles to flush the
+// popped frame's slots.
 func TestPhase2_PopFrameReclamation(t *testing.T) {
 	prog := compileCorpus(t, corpus.Program{
 		Name:   "lists_fill_sum",
@@ -76,32 +72,11 @@ func TestPhase2_PopFrameReclamation(t *testing.T) {
 	}
 }
 
-// TestPhase2_ObjectsTableEmptyAcrossWorkloads pins property (4): no
-// corpus program populates vm.Objects in Phase 2. This is the static
-// guarantee that lets us delete Objects in Phase 3.
-func TestPhase2_ObjectsTableEmptyAcrossWorkloads(t *testing.T) {
-	for _, p := range corpus.All() {
-		t.Run(p.Name, func(t *testing.T) {
-			prog := compileCorpus(t, p, sizeFor(p.Name))
-			vm := vm2.New(prog)
-			for i := range 8 {
-				if _, err := vm.Run(); err != nil {
-					t.Fatalf("run %d: %v", i, err)
-				}
-				if got := len(vm.Objects); got != 0 {
-					t.Fatalf("run %d: Objects table grew to %d, expected 0", i, got)
-				}
-			}
-		})
-	}
-}
-
-// TestPhase2_LiveHeapBoundedAcrossManyRuns is the stronger version of
-// the Phase 0 bounded-Objects test: Phase 2's reclamation guarantee
-// says live heap (not just the Objects table) stays flat. We run each
-// container-heavy program 128 times on a reused VM and assert HeapAlloc
-// after a forced GC stays within a small multiple of the first-run
-// reading.
+// TestPhase2_LiveHeapBoundedAcrossManyRuns is the steady-state form of
+// the reclamation contract: live heap (HeapAlloc) stays flat across
+// 128 runs of every container-heavy corpus program on a reused VM.
+// A regression that pins per-Run containers would scale linearly with
+// the iteration count.
 func TestPhase2_LiveHeapBoundedAcrossManyRuns(t *testing.T) {
 	cases := []struct {
 		name string
@@ -145,12 +120,12 @@ func TestPhase2_LiveHeapBoundedAcrossManyRuns(t *testing.T) {
 	}
 }
 
-// TestPhase2_FreshVMReclaimableAfterDrop pins property (2) on the
-// fresh-VM embedding pattern (one VM per request). After the closure
-// returns, the entire VM (including its Stack with all live Cells) must
-// be reclaimable. We use a sentinel registered via AddObject (the only
-// remaining Objects[] consumer in Phase 2) to prove the VM is fully
-// unreachable.
+// TestPhase2_FreshVMReclaimableAfterDrop pins the fresh-VM embedding
+// pattern (one VM per request): once the closure returns, the entire
+// VM (including its Stack with all live Cells) must be reclaimable.
+// We attach a finalizer to the *VM itself; without MEP-36's
+// reachability fix (containers reachable only through Cell.Obj on the
+// Stack, not pinned in a side registry), the finalizer would never run.
 func TestPhase2_FreshVMReclaimableAfterDrop(t *testing.T) {
 	prog := compileCorpus(t, corpus.Program{
 		Name:   "lists_fill_sum",
@@ -164,14 +139,12 @@ func TestPhase2_FreshVMReclaimableAfterDrop(t *testing.T) {
 		if _, err := vm.Run(); err != nil {
 			t.Fatalf("run: %v", err)
 		}
-		sentinel := &struct{ _ [128]byte }{}
-		runtime.SetFinalizer(sentinel, func(_ any) {
+		runtime.SetFinalizer(vm, func(_ *vm2.VM) {
 			select {
 			case finalized <- struct{}{}:
 			default:
 			}
 		})
-		vm.AddObject(sentinel)
 	}
 	allocateAndDrop()
 
