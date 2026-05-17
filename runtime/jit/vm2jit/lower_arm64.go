@@ -216,6 +216,10 @@ func isDeoptableOp(op vm2.Op) bool {
 		vm2.OpNewF64Array, vm2.OpF64ArrLen, vm2.OpF64ArrGet, vm2.OpF64ArrSet,
 		vm2.OpNewI64Array, vm2.OpI64ArrLen, vm2.OpI64ArrGet, vm2.OpI64ArrSet,
 		vm2.OpNewU8Array, vm2.OpU8ArrLen, vm2.OpU8ArrGet, vm2.OpU8ArrSet,
+		// MEP-37 Phase 2 pair ops deopt to the interpreter for the same
+		// reason as Phase 1: the JIT does not emit pair construction or
+		// projection code yet.
+		vm2.OpNewPair, vm2.OpPairFst, vm2.OpPairSnd,
 		vm2.OpHalt:
 		return true
 	}

@@ -422,6 +422,12 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				return ret, errors.New("vm2: u8 array index out of range")
 			}
 			a.data[i] = byte(regs[ins.C].Int())
+		case OpNewPair:
+			regs[ins.A] = vm.newPair(regs[ins.B], regs[ins.C])
+		case OpPairFst:
+			regs[ins.A] = vm.pairAt(regs[ins.B]).a
+		case OpPairSnd:
+			regs[ins.A] = vm.pairAt(regs[ins.B]).b
 		case OpHalt:
 			fr.IP = ip
 			return ret, errors.New("vm2: OpHalt reached")
