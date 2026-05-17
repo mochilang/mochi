@@ -79,6 +79,40 @@ func BenchmarkVM2_BG_BinaryTreesPairKernel(b *testing.B) {
 	}
 }
 
+// BenchmarkVM2_BG_BinaryTreesPairKernelReused matches the way a real
+// AOT consumer would dispatch: compile once, hold one VM, Reset
+// between runs so the Stack / Frames / pair arena backing arrays are
+// reused. Fair head-to-head against the Go reference (which also pays
+// no per-call runtime construction cost).
+func BenchmarkVM2_BG_BinaryTreesPairKernelReused(b *testing.B) {
+	const D = int64(8)
+	m := corpus.BuildBinaryTreesKernel(D)
+	opt.LeafInline(m)
+	for _, f := range m.Funcs {
+		opt.ConstFold(f)
+		opt.DCE(f)
+		opt.TailCall(f)
+	}
+	prog, err := emit.Compile(m)
+	if err != nil {
+		b.Fatalf("compile: %v", err)
+	}
+	vm := vm2.New(prog)
+	// Warm: run once so any one-shot grows (Stack, Frames, pairChunks)
+	// land before the timed loop.
+	if _, err := vm.Run(); err != nil {
+		b.Fatalf("warm run: %v", err)
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		vm.Reset()
+		if _, err := vm.Run(); err != nil {
+			b.Fatalf("run: %v", err)
+		}
+	}
+}
+
 func BenchmarkGo_BG_BinaryTreesPairKernel(b *testing.B) {
 	const D = int64(8)
 	b.ReportAllocs()

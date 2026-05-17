@@ -321,7 +321,8 @@ func isDeoptableOp(op vm2.Op) bool {
 		vm2.OpEqualStr, vm2.OpHashStr,
 		vm2.OpNewList, vm2.OpListGet, vm2.OpListSet, vm2.OpListPush, vm2.OpListAppend,
 		vm2.OpNewMap, vm2.OpMapLen, vm2.OpMapGet, vm2.OpMapHas, vm2.OpMapSet, vm2.OpMapDel,
-		vm2.OpCall, vm2.OpTailCall, vm2.OpTailCallSelf,
+		vm2.OpCall, vm2.OpCallA1, vm2.OpCallA2,
+		vm2.OpTailCall, vm2.OpTailCallSelf,
 		// MEP-38 Phase 2 (§3.2.1) lowers OpLoadConstF, OpAddF64, OpSubF64,
 		// OpMulF64, OpDivF64, OpNegF64, OpAbsF64, OpSqrtF64, OpLessF64,
 		// OpLessEqF64, OpEqualF64, OpFmaF64, OpI64ToF64, OpF64ToI64 to

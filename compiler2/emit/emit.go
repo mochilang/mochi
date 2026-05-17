@@ -556,14 +556,31 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 			case ir.OpStdinReadAll:
 				emit(vm2.Instr{Op: vm2.OpStdinReadAll, A: dst})
 			case ir.OpCall:
-				for i, a := range ins.Args {
-					emit(vm2.Instr{Op: vm2.OpMove,
-						A: int32(callBase + i),
-						B: int32(finalReg[a])})
+				// MEP-38 Phase 4.5: specialize 1- and 2-arg calls. Skip
+				// the staging-window OpMove sequence and let the
+				// dispatch handler read source registers directly. Cuts
+				// 1-2 dispatches per call site on the dominant arities
+				// in the BG corpus.
+				switch len(ins.Args) {
+				case 1:
+					emit(vm2.Instr{Op: vm2.OpCallA1, A: dst,
+						B: int32(ins.Aux),
+						C: int32(finalReg[ins.Args[0]])})
+				case 2:
+					emit(vm2.Instr{Op: vm2.OpCallA2, A: dst,
+						B: int32(ins.Aux),
+						C: int32(finalReg[ins.Args[0]]),
+						D: int32(finalReg[ins.Args[1]])})
+				default:
+					for i, a := range ins.Args {
+						emit(vm2.Instr{Op: vm2.OpMove,
+							A: int32(callBase + i),
+							B: int32(finalReg[a])})
+					}
+					emit(vm2.Instr{Op: vm2.OpCall, A: dst,
+						B: int32(ins.Aux),
+						C: int32(callBase), D: int32(len(ins.Args))})
 				}
-				emit(vm2.Instr{Op: vm2.OpCall, A: dst,
-					B: int32(ins.Aux),
-					C: int32(callBase), D: int32(len(ins.Args))})
 			case ir.OpTailCall:
 				if int(ins.Aux) == selfIdx {
 					// Same-function tail call. Move args directly into
@@ -681,9 +698,16 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 	}
 
 	// MEP-36 Phase 3: a register window holds a container only if some
-	// IR value of container type (TStr/TList/TMap/TPtr) was assigned a
-	// real register. Pure int/bool functions get HasContainerSlots=false
+	// IR value of GC-managed container type was assigned a real
+	// register. Pure int/bool/pair functions get HasContainerSlots=false
 	// and popFrame elides the clear sweep.
+	//
+	// MEP-38 Phase 4.5: TPair is excluded. Pair memory lives in the
+	// per-VM arena (pairChunks) and stays alive for the duration of the
+	// Run, so zeroing a TPair register on frame pop doesn't release
+	// anything to the host GC. binary_trees stresses this: every
+	// makeTree/checkTree frame held only int + pair temporaries, and
+	// the wasted clear was 7-10% of total runtime.
 	hasContainer := false
 	for vid, ins := range f.Values {
 		if finalReg[vid] < 0 {
@@ -691,7 +715,7 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		}
 		switch ins.Type {
 		case ir.TStr, ir.TList, ir.TMap, ir.TPtr,
-			ir.TF64Array, ir.TI64Array, ir.TU8Array, ir.TPair, ir.TBytes:
+			ir.TF64Array, ir.TI64Array, ir.TU8Array, ir.TBytes:
 			hasContainer = true
 		}
 		if hasContainer {

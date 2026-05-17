@@ -58,6 +58,24 @@ func New(p *Program) *VM {
 	}
 }
 
+// Reset rewinds the VM's mutable state (Stack length, Frames length,
+// pair-arena bump cursor) so the same VM can run Program again without
+// reallocating its backing arrays. Capacity is preserved: Stack and
+// Frames keep whatever they grew to on the last Run, and the pair
+// arena keeps its chunk list so the next allocation skips the chunk
+// alloc until pairChunks is exhausted again.
+//
+// This is the AOT-style "compile once, run many" entry point used by
+// benchmarks (MEP-38 Appendix A.4). Calling Run twice without Reset
+// works only when the program's main has no side effects, so library
+// consumers that care about repeatability should always Reset between
+// runs.
+func (vm *VM) Reset() {
+	vm.Stack = vm.Stack[:0]
+	vm.Frames = vm.Frames[:0]
+	vm.pairNext = 0
+}
+
 // frame is one activation record on the Frames stack. Pure value type;
 // no pointers into the heap so the stack itself is cheap to grow.
 type frame struct {
@@ -112,12 +130,16 @@ func (vm *VM) pushFrame(fn *Function, retReg int32) (int, int) {
 // while container-touching frames keep the reclamation contract.
 func (vm *VM) popFrame() {
 	top := len(vm.Frames) - 1
-	fr := vm.Frames[top]
+	fr := &vm.Frames[top]
 	base := fr.RegsBase
 	if fr.Fn.HasContainerSlots {
 		clear(vm.Stack[base:])
 	}
 	vm.Stack = vm.Stack[:base]
-	vm.Frames[top] = frame{} // drop the *Function pointer
+	// The *Function pointer is reachable from vm.Program.Funcs, so the
+	// GC keeps it alive regardless of what sits in this frame slot. We
+	// used to zero it ("drop the *Function pointer") but that fires a
+	// pointer write barrier on every return; the slot will be
+	// overwritten by the next pushFrame anyway.
 	vm.Frames = vm.Frames[:top]
 }

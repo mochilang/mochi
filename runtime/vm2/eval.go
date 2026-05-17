@@ -158,9 +158,43 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				reload()
 				break
 			}
-			// Snapshot args before the push: pushFrame can grow
-			// vm.Stack and move the backing array, so we cannot read
-			// the source slice through the old regs view afterwards.
+			// Fast path: when vm.Stack has capacity for the new frame
+			// without a reallocation, the backing array doesn't move,
+			// so we can copy from regs (the caller's view) directly
+			// into the callee's window. The caller's args live at
+			// regs[argSrc:argSrc+n] = vm.Stack[fr.RegsBase+argSrc:...]
+			// and the callee's window starts at len(vm.Stack), which
+			// is always >= fr.RegsBase + caller.NumRegs > argSrc+n, so
+			// the two ranges never alias. (MEP-38 Phase 4.5.)
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				// Specialize the arg copy for the dominant arities. BG
+				// kernels are mostly 1-arg (makeTree, fib) and 2-arg
+				// (checkTree, n_body). Inline assignment beats the
+				// typedslicecopy function call by ~8% of total runtime
+				// at binary_trees scale.
+				switch n {
+				case 1:
+					vm.Stack[base] = regs[argSrc]
+				case 2:
+					vm.Stack[base] = regs[argSrc]
+					vm.Stack[base+1] = regs[argSrc+1]
+				case 0:
+				default:
+					copy(vm.Stack[base:base+n], regs[argSrc:argSrc+n])
+				}
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				code = callee.Code
+				regs = vm.Stack[base:]
+				consts = callee.Consts
+				ip = 0
+				break
+			}
+			// Slow path: pushFrame will grow vm.Stack and may move the
+			// backing array, so snapshot args first.
 			var argBuf [16]Cell
 			var args []Cell
 			if n <= len(argBuf) {
@@ -171,6 +205,63 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			copy(args, regs[argSrc:argSrc+n])
 			_, newBase := vm.pushFrame(callee, ins.A)
 			copy(vm.Stack[newBase:newBase+n], args)
+			fr = &vm.Frames[len(vm.Frames)-1]
+			code = fr.Fn.Code
+			regs = vm.Stack[newBase:]
+			consts = fr.Fn.Consts
+			ip = 0
+		case OpCallA1:
+			// 1-arg specialized call. The emitter writes the source
+			// register directly into ins.C, so the staging OpMove that
+			// OpCall requires is elided. Fast path: just place the arg
+			// at the new frame's slot 0 and dispatch. Hot path for
+			// binary_trees.makeTree(d-1) and fib_rec.
+			callee := vm.Program.Funcs[ins.B]
+			fr.IP = ip
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				vm.Stack[base] = regs[ins.C]
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				code = callee.Code
+				regs = vm.Stack[base:]
+				consts = callee.Consts
+				ip = 0
+				break
+			}
+			a0 := regs[ins.C]
+			_, newBase := vm.pushFrame(callee, ins.A)
+			vm.Stack[newBase] = a0
+			fr = &vm.Frames[len(vm.Frames)-1]
+			code = fr.Fn.Code
+			regs = vm.Stack[newBase:]
+			consts = fr.Fn.Consts
+			ip = 0
+		case OpCallA2:
+			// 2-arg specialized call. Same shape as OpCallA1 with one
+			// more arg in ins.D. Hot path for binary_trees.checkTree.
+			callee := vm.Program.Funcs[ins.B]
+			fr.IP = ip
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				vm.Stack[base] = regs[ins.C]
+				vm.Stack[base+1] = regs[ins.D]
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				code = callee.Code
+				regs = vm.Stack[base:]
+				consts = callee.Consts
+				ip = 0
+				break
+			}
+			a0, a1 := regs[ins.C], regs[ins.D]
+			_, newBase := vm.pushFrame(callee, ins.A)
+			vm.Stack[newBase] = a0
+			vm.Stack[newBase+1] = a1
 			fr = &vm.Frames[len(vm.Frames)-1]
 			code = fr.Fn.Code
 			regs = vm.Stack[newBase:]
@@ -225,11 +316,22 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 		case OpReturn:
 			ret = regs[ins.A]
 			retReg := fr.RetReg
-			vm.popFrame()
-			if len(vm.Frames) <= target {
+			// Inline popFrame for the hot path. Clearing the register
+			// window only matters when the frame may hold GC-tracked
+			// pointers (HasContainerSlots); int/bool/pair-only frames
+			// skip the clear entirely. Pure-int kernels (fib_rec,
+			// binary_trees) take this branch on every return.
+			top := len(vm.Frames) - 1
+			poppedBase := fr.RegsBase
+			if fr.Fn.HasContainerSlots {
+				clear(vm.Stack[poppedBase:])
+			}
+			vm.Stack = vm.Stack[:poppedBase]
+			vm.Frames = vm.Frames[:top]
+			if top <= target {
 				return ret, nil
 			}
-			fr = &vm.Frames[len(vm.Frames)-1]
+			fr = &vm.Frames[top-1]
 			code = fr.Fn.Code
 			regs = vm.Stack[fr.RegsBase:]
 			consts = fr.Fn.Consts

@@ -38,6 +38,17 @@ const (
 	OpJumpIfEqualI64     // if A == B then IP = C
 	OpJumpIfNotEqualI64  // if A != B then IP = C
 	OpCall                  // A = call Funcs[B], args [C..C+D); RetReg=A
+	// Direct call specializations for 1-arg and 2-arg calls. The arg
+	// values are read straight from the caller's registers (no staging
+	// move into a callBase window), so the emitter omits the leading
+	// OpMove instructions and the dispatch loop sees ~30% fewer
+	// instructions per call site on BG kernels. Hot path for
+	// binary_trees (makeTree(d-1) and checkTree(fst, d-1)) and fib_rec.
+	//
+	//	OpCallA1: A = retReg, B = calleeIdx, C = arg0Reg
+	//	OpCallA2: A = retReg, B = calleeIdx, C = arg0Reg, D = arg1Reg
+	OpCallA1
+	OpCallA2
 	OpTailCall              // tail-call Funcs[A] with args [B..B+C); reuses frame
 	// Same-function tail call. Params already live in regs[0..np) thanks
 	// to parallel moves the emitter inserted into the param slots, so
