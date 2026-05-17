@@ -4,9 +4,15 @@ package vm2jit
 
 import (
 	"fmt"
+	"unsafe"
 
 	"mochi/runtime/vm2"
 )
+
+// vmObjectsLDROff is the LDR-Xt scaled imm12 (offset/8) for the start
+// of VM.Objects (the slice-header data-pointer word). Computed at init
+// so a VM struct re-layout flows automatically into the JIT.
+var vmObjectsLDROff = uint32(unsafe.Offsetof(vm2.VM{}.Objects) / 8)
 
 // AArch64 GPR mapping: vm2 register r[i] -> x(9+i), i.e. x9-x15 (7 slots).
 // These are temporary (caller-saved) in AAPCS64, so the JIT'd function
@@ -25,6 +31,9 @@ func movk(xd, imm16, hw uint32) uint32 {
 }
 func addReg(xd, xn, xm uint32) uint32 {
 	return 0x8B000000 | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+func addRegLSL(xd, xn, xm, shift uint32) uint32 {
+	return 0x8B000000 | ((xm & 0x1F) << 16) | ((shift & 0x3F) << 10) | ((xn & 0x1F) << 5) | (xd & 0x1F)
 }
 func subReg(xd, xn, xm uint32) uint32 {
 	return 0xCB000000 | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5) | (xd & 0x1F)
@@ -47,6 +56,9 @@ func orrReg(xd, xn, xm uint32) uint32 {
 func movReg(xd, xm uint32) uint32 { return 0xAA0003E0 | ((xm & 0x1F) << 16) | (xd & 0x1F) }
 func ldr64(xt, xn, imm12 uint32) uint32 {
 	return 0xF9400000 | ((imm12 & 0xFFF) << 10) | ((xn & 0x1F) << 5) | (xt & 0x1F)
+}
+func ldur64(xt, xn uint32, imm9 int32) uint32 {
+	return 0xF8400000 | ((uint32(imm9) & 0x1FF) << 12) | ((xn & 0x1F) << 5) | (xt & 0x1F)
 }
 func str64(xt, xn, imm12 uint32) uint32 {
 	return 0xF9000000 | ((imm12 & 0xFFF) << 10) | ((xn & 0x1F) << 5) | (xt & 0x1F)
@@ -83,6 +95,12 @@ func sbfx48(xd, xn uint32) uint32 {
 // Base 0x92400000: sf=1, opc=00, class=Logical(100100), N=1.
 func andMask48(xd, xn uint32) uint32 {
 	return 0x92400000 | (47 << 10) | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+// lsrImm emits LSR Xd, Xn, #shift (alias for UBFM Xd, Xn, #shift, #63).
+// shift must be in 0..63. Used for tag-extraction in Phase 2 fast paths.
+func lsrImm(xd, xn, shift uint32) uint32 {
+	return 0xD340FC00 | ((shift & 0x3F) << 16) | ((xn & 0x1F) << 5) | (xd & 0x1F)
 }
 
 // movzTagInt emits MOVZ x16, #0xFFFC, LSL#48, loading tagInt into x16.
@@ -131,6 +149,10 @@ func emitCmpBoolI64(xA, xB, xC uint32, cset func(uint32) uint32) []uint32 {
 	}
 }
 
+// listLenWords is the fixed instruction count of an OpListLen lowering:
+// 4 (tag check) + 9 (fast body) + 1 (b past_deopt) + deoptStubWords.
+func listLenWords(fn *vm2.Function) int { return 14 + deoptStubWords(fn) }
+
 // instrWordCountARM64 returns the exact number of 32-bit words that
 // lowerInstrARM64 will emit for ins. Must be pure and consistent.
 func instrWordCountARM64(fn *vm2.Function, ins vm2.Instr) (int, error) {
@@ -163,6 +185,8 @@ func instrWordCountARM64(fn *vm2.Function, ins vm2.Instr) (int, error) {
 			n = maxRegs
 		}
 		return n + 2, nil // N×str + mov x0 + ret
+	case vm2.OpListLen:
+		return listLenWords(fn), nil
 	default:
 		// Anything else compiles to a deopt stub. See deoptStubWords.
 		if isDeoptableOp(ins.Op) {
@@ -173,14 +197,17 @@ func instrWordCountARM64(fn *vm2.Function, ins vm2.Instr) (int, error) {
 }
 
 // isDeoptableOp reports whether ins.Op is a vm2 opcode the JIT lowers as
-// a deopt stub in Phase 1.5. Any opcode that touches the allocator, the
-// Objects table, or vm.Frames (i.e., everything outside arithmetic /
-// comparison / control-flow / Move / Return) lands here.
+// a deopt stub. Any opcode that touches the allocator, the Objects table,
+// or vm.Frames (i.e., everything outside arithmetic / comparison /
+// control-flow / Move / Return / Phase 2 fast paths) lands here.
+//
+// Phase 2 fast paths (read-only, no allocation, no growth): OpListLen.
+// More to come as the read-only opcode set lands.
 func isDeoptableOp(op vm2.Op) bool {
 	switch op {
 	case vm2.OpLoadStrK, vm2.OpConcatStr, vm2.OpLenStr, vm2.OpIndexStr,
 		vm2.OpEqualStr, vm2.OpHashStr,
-		vm2.OpNewList, vm2.OpListLen, vm2.OpListGet, vm2.OpListSet, vm2.OpListPush,
+		vm2.OpNewList, vm2.OpListGet, vm2.OpListSet, vm2.OpListPush,
 		vm2.OpNewMap, vm2.OpMapLen, vm2.OpMapGet, vm2.OpMapHas, vm2.OpMapSet, vm2.OpMapDel,
 		vm2.OpCall, vm2.OpTailCall, vm2.OpTailCallSelf,
 		vm2.OpHalt:
@@ -358,6 +385,9 @@ func lowerInstrARM64(fn *vm2.Function, idx int, ins vm2.Instr, pcMap []int) ([]u
 		ws = append(ws, ret())
 		return ws, nil
 
+	case vm2.OpListLen:
+		return emitListLenFastARM64(fn, idx, xA, xB), nil
+
 	default:
 		if isDeoptableOp(ins.Op) {
 			return emitDeoptStubARM64(fn, idx), nil
@@ -384,6 +414,76 @@ func emitDeoptStubARM64(fn *vm2.Function, idx int) []uint32 {
 	}
 	ws = append(ws, movImm64(0, int64(sentinel))...)
 	ws = append(ws, ret())
+	return ws
+}
+
+// emitListLenFastARM64 emits the Phase 2 OpListLen lowering. Sequence:
+//
+// Tag check (4 words):
+//
+//	lsr  x8, xB, #48           ; x8 = top 16 bits of regs[B]
+//	movz x16, #0xFFFF           ; x16 = tagPtr's high 16
+//	cmp  x8, x16                ; eq if regs[B] is tagPtr
+//	b.ne <deopt>
+//
+// Fast body (9 words): walk jf.vm -> Objects[idx] -> *vmList -> slice.len
+// and pack the int48 result into regs[A]:
+//
+//	ldur x16, [x0, #-8]        ; x16 = jf.vm
+//	ldr  x16, [x16, #Objects]  ; x16 = vm.Objects.data pointer
+//	andMask48 x17, xB           ; x17 = idx = regs[B].Ptr()
+//	add  x16, x16, x17, lsl#4  ; x16 = &Objects[idx]      (entries are 16 B)
+//	ldr  x16, [x16, #8]         ; x16 = *vmList            (iface data word)
+//	ldr  x16, [x16, #8]         ; x16 = slice.len          (slice header +8)
+//	andMask48 x8, x16           ; x8 = len & payloadMask
+//	movz x16, #0xFFFC, lsl#48  ; x16 = tagInt
+//	orr  xA, x8, x16            ; regs[A] = CInt(len)
+//
+// Tail (1 word): jump past the local deopt stub so the happy path
+// flows into the next instruction.
+//
+//	b <past_deopt>
+//
+// Followed by a standard deopt stub (deoptStubWords). Tag-miss control
+// transfers to that stub, which spills live regs and returns the
+// sentinel-tagged PC for this instruction; the wrapper finishes the
+// op on the interpreter exactly as Phase 1.5 does.
+func emitListLenFastARM64(fn *vm2.Function, idx int, xA, xB uint32) []uint32 {
+	n := listLenWords(fn)
+	ws := make([]uint32, 0, n)
+
+	// Tag check.
+	ws = append(ws,
+		lsrImm(8, xB, 48),
+		movz(16, 0xFFFF, 0),
+		cmpReg(8, 16),
+	)
+	bneIdx := len(ws)
+	ws = append(ws, 0) // placeholder for b.ne
+
+	// Fast body.
+	ws = append(ws,
+		ldur64(16, 0, -8),
+		ldr64(16, 16, vmObjectsLDROff),
+		andMask48(17, xB),
+		addRegLSL(16, 16, 17, 4),
+		ldr64(16, 16, 1), // +8 (interface data word)
+		ldr64(16, 16, 1), // +8 (slice header len)
+		andMask48(8, 16),
+		movzTagInt(),
+		orrReg(xA, 8, 16),
+	)
+	bIdx := len(ws)
+	ws = append(ws, 0) // placeholder for b past_deopt
+
+	// Local deopt stub.
+	deoptStart := len(ws)
+	ws = append(ws, emitDeoptStubARM64(fn, idx)...)
+	pastDeopt := len(ws)
+
+	// Fix branch offsets (in instruction units).
+	ws[bneIdx] = bCond(0x1 /*NE*/, int32(deoptStart-bneIdx))
+	ws[bIdx] = bImm(int32(pastDeopt - bIdx))
 	return ws
 }
 
