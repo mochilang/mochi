@@ -326,6 +326,26 @@ func (b *Builder) U8ArrSet(a, i, v ValueID) ValueID {
 	return b.emit(Inst{Op: OpU8ArrSet, Type: TUnit, Args: []ValueID{a, i, v}})
 }
 
+// NewPair allocates a fresh vmPair carrying (fst, snd). Result is TPair.
+// Element type is unrestricted (Cell); the runtime treats both slots as
+// opaque cells, so a pair can carry an i64 in one slot and another pair
+// in the other, which is exactly the shape binary_trees needs (leaf
+// pairs hold two i64s, branch pairs hold two TPair children).
+func (b *Builder) NewPair(fst, snd ValueID) ValueID {
+	return b.emit(Inst{Op: OpNewPair, Type: TPair, Args: []ValueID{fst, snd}})
+}
+
+// PairFst reads the first slot of a TPair. Caller supplies the expected
+// element type because the pair itself is Cell-typed at the IR.
+func (b *Builder) PairFst(p ValueID, elem Type) ValueID {
+	return b.emit(Inst{Op: OpPairFst, Type: elem, Args: []ValueID{p}})
+}
+
+// PairSnd reads the second slot of a TPair.
+func (b *Builder) PairSnd(p ValueID, elem Type) ValueID {
+	return b.emit(Inst{Op: OpPairSnd, Type: elem, Args: []ValueID{p}})
+}
+
 // Call invokes function at funcIdx with the given args. retType is the
 // caller-supplied result type; the verifier later checks it against
 // the callee's signature once Module is assembled.

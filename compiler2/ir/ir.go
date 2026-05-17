@@ -25,6 +25,10 @@ const (
 	TF64Array
 	TI64Array
 	TU8Array
+	// Pair (MEP-37 §3.4). Packed two-element immutable tuple. Cell.Obj
+	// holds a *vmPair allocated through the per-VM arena; the runtime's
+	// monotonic-per-VM lifetime means the pointer never dangles.
+	TPair
 )
 
 func (t Type) String() string {
@@ -51,6 +55,8 @@ func (t Type) String() string {
 		return "i64array"
 	case TU8Array:
 		return "u8array"
+	case TPair:
+		return "pair"
 	}
 	return "?"
 }
@@ -162,6 +168,14 @@ const (
 	OpU8ArrLen
 	OpU8ArrGet // result type TI64 (byte widened to int)
 	OpU8ArrSet // Args[2] is a TI64 value; runtime truncates to byte
+
+	// Pair subsystem (MEP-37 §3.4). Packed two-element tuples backed by
+	// the per-VM vmPair arena. Construction is one OpNewPair; reads are
+	// pure (no traps), so DCE may drop them; the constructor is treated
+	// as opaque because the arena allocator is observable.
+	OpNewPair // Args[0]=fst, Args[1]=snd -> TPair
+	OpPairFst // Args[0] -> Cell at the .a slot
+	OpPairSnd // Args[0] -> Cell at the .b slot
 
 	// Call: Aux = function index, Args = arg values. May have effects;
 	// optimizers must treat as opaque.
