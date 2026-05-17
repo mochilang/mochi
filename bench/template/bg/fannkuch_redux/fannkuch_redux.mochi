@@ -1,0 +1,46 @@
+// MEP-39 cross-lang fannkuch_redux. Inner permutation size is fixed at
+// 7; N is the outer trial count. Each trial rotates a 7-element base
+// permutation and counts the number of prefix reversals needed until
+// perm[0] == 1. The sum of per-trial flip counts is the return value
+// (deterministic per N so vm2 / py / lua / go peers can cross-check).
+
+fun count_flips(perm: list<int>): int {
+  var flips = 0
+  var head = perm[0]
+  while head != 1 {
+    var lo = 0
+    var hi = head - 1
+    while lo < hi {
+      let tmp = perm[lo]
+      perm[lo] = perm[hi]
+      perm[hi] = tmp
+      lo = lo + 1
+      hi = hi - 1
+    }
+    head = perm[0]
+    flips = flips + 1
+  }
+  return flips
+}
+
+let trials = {{ .N }}
+var total = 0
+var perm: list<int> = [0, 0, 0, 0, 0, 0, 0]
+
+let start = now()
+var k = 0
+while k < trials {
+  var i = 0
+  while i < 7 {
+    perm[i] = ((i + k) % 7) + 1
+    i = i + 1
+  }
+  total = total + count_flips(perm)
+  k = k + 1
+}
+let duration = (now() - start) / 1000
+
+json({
+  "duration_us": duration,
+  "output": total,
+})

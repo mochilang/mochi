@@ -43,6 +43,10 @@ func All() []Program {
 		// (the MEP 36 headline).
 		{Name: "bg_nsieve", Build: BuildNsieve, Expect: ExpectNsieve},
 		{Name: "bg_binary_trees", Build: BuildBinaryTrees, Expect: ExpectBinaryTrees},
+		// MEP-39 §4.1: parameterised cross-lang form of fannkuch_redux.
+		// Inner permutation size is fixed at 7 (matching the canonical
+		// BG reference); N is the outer trial count.
+		{Name: "bg_fannkuch_redux", Build: BuildFannkuchRedux, Expect: ExpectFannkuchRedux},
 	}
 }
 

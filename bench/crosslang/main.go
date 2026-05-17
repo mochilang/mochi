@@ -71,6 +71,10 @@ var programs = []program{
 	// nodes, so the allocation count grows fast — keep depth modest.
 	{category: "bg", name: "nsieve", ns: []int{1000, 10000}},
 	{category: "bg", name: "binary_trees", ns: []int{8, 10}},
+	// MEP-39: BG fannkuch_redux. N is the outer trial count over a fixed
+	// 7-element inner permutation. Output is the sum of per-trial flip
+	// counts. See bench/template/bg/fannkuch_redux/ for the Mochi peer.
+	{category: "bg", name: "fannkuch_redux", ns: []int{1000, 10000}},
 }
 
 type result struct {
@@ -103,7 +107,30 @@ func main() {
 	outJSON := flag.String("json", "", "write per-result JSON array to this file")
 	outMD := flag.String("md", "", "write markdown summary to this file")
 	repeat := flag.Int("repeat", 1, "run each (program,n,lang) tuple this many times and report median (Benchmarks Game-style)")
+	langs := flag.String("langs", "vm2,py,pypy,lua,luajit,go", "comma-separated subset of languages to run")
+	progFilter := flag.String("programs", "", "optional comma-separated <cat>/<name> filter (e.g. bg/fannkuch_redux)")
 	flag.Parse()
+
+	wantLang := func(l string) bool {
+		for _, s := range strings.Split(*langs, ",") {
+			if strings.TrimSpace(s) == l {
+				return true
+			}
+		}
+		return false
+	}
+	wantProg := func(cat, name string) bool {
+		if *progFilter == "" {
+			return true
+		}
+		key := cat + "/" + name
+		for _, s := range strings.Split(*progFilter, ",") {
+			if strings.TrimSpace(s) == key {
+				return true
+			}
+		}
+		return false
+	}
 
 	repoRoot, err := os.Getwd()
 	if err != nil {
@@ -131,13 +158,38 @@ func main() {
 
 	var aggs []aggregate
 	for _, p := range programs {
+		if !wantProg(p.cat(), p.name) {
+			continue
+		}
 		for _, n := range p.ns {
-			aggs = append(aggs,
-				measure(*repeat, func() result { return runVM2(vm2Bin, p.cat(), p.name, n) }),
-				measure(*repeat, func() result { return runNative(repoRoot, tmp, p.cat(), p.name, n, "py", "python3") }),
-				measure(*repeat, func() result { return runNative(repoRoot, tmp, p.cat(), p.name, n, "lua", "lua") }),
-				measure(*repeat, func() result { return runGo(repoRoot, tmp, p.cat(), p.name, n) }),
-			)
+			if wantLang("vm2") {
+				aggs = append(aggs, measure(*repeat, func() result { return runVM2(vm2Bin, p.cat(), p.name, n) }))
+			}
+			if wantLang("py") {
+				aggs = append(aggs, measure(*repeat, func() result { return runNative(repoRoot, tmp, p.cat(), p.name, n, "py", "py", "python3") }))
+			}
+			if wantLang("pypy") {
+				// PyPy runs the same .py source as CPython; the column
+				// captures the JIT delta independently. macOS install:
+				// `brew install pypy3.11` provides `pypy3.11` on PATH.
+				// Linux: download from pypy.org, symlink as `pypy3`.
+				aggs = append(aggs, measure(*repeat, func() result {
+					return runNative(repoRoot, tmp, p.cat(), p.name, n, "py", "pypy", pypyBinary())
+				}))
+			}
+			if wantLang("lua") {
+				aggs = append(aggs, measure(*repeat, func() result { return runNative(repoRoot, tmp, p.cat(), p.name, n, "lua", "lua", "lua") }))
+			}
+			if wantLang("luajit") {
+				// LuaJIT runs the same .lua source as the lua peer
+				// because BG kernels use only Lua 5.1-compatible
+				// features (no integer division, no bitwise ops in
+				// the kernel itself; arithmetic is plain numbers).
+				aggs = append(aggs, measure(*repeat, func() result { return runNative(repoRoot, tmp, p.cat(), p.name, n, "lua", "luajit", "luajit") }))
+			}
+			if wantLang("go") {
+				aggs = append(aggs, measure(*repeat, func() result { return runGo(repoRoot, tmp, p.cat(), p.name, n) }))
+			}
 		}
 	}
 
@@ -228,19 +280,24 @@ func runGo(repoRoot, tmp, cat, prog string, n int) result {
 	return runCmd(cat, prog, n, "go", cmd)
 }
 
-func runNative(repoRoot, tmp, cat, prog string, n int, suffix, interpreter string) result {
+// runNative drives a single-file interpreted peer.
+//
+// suffix is the source-file extension (e.g. "py", "lua") which selects
+// the template; langLabel is the column key in the report (e.g. "py",
+// "pypy", "lua", "luajit"); interpreter is the binary to exec.
+func runNative(repoRoot, tmp, cat, prog string, n int, suffix, langLabel, interpreter string) result {
 	srcPath := filepath.Join(repoRoot, "bench", "template", cat, prog, prog+"."+suffix)
 	src, err := os.ReadFile(srcPath)
 	if err != nil {
-		return result{Program: cat + "/" + prog, N: n, Lang: suffix, Err: err.Error()}
+		return result{Program: cat + "/" + prog, N: n, Lang: langLabel, Err: err.Error()}
 	}
 	rendered := strings.ReplaceAll(string(src), "{{ .N }}", fmt.Sprintf("%d", n))
-	out := filepath.Join(tmp, fmt.Sprintf("%s_%s_%d.%s", cat, prog, n, suffix))
+	out := filepath.Join(tmp, fmt.Sprintf("%s_%s_%d_%s.%s", cat, prog, n, langLabel, suffix))
 	if err := os.WriteFile(out, []byte(rendered), 0644); err != nil {
-		return result{Program: cat + "/" + prog, N: n, Lang: suffix, Err: err.Error()}
+		return result{Program: cat + "/" + prog, N: n, Lang: langLabel, Err: err.Error()}
 	}
 	cmd := exec.Command(interpreter, out)
-	return runCmd(cat, prog, n, suffix, cmd)
+	return runCmd(cat, prog, n, langLabel, cmd)
 }
 
 func runCmd(cat, prog string, n int, lang string, cmd *exec.Cmd) result {
@@ -363,13 +420,15 @@ func renderMarkdown(aggs []aggregate) string {
 	})
 
 	var sb strings.Builder
-	sb.WriteString("| Program | N | vm2 (µs) | CPython (µs) | Lua (µs) | Go (µs) | vm2 / CPython | vm2 / Lua | vm2 / Go | vm2 RSS | CPython RSS | Lua RSS | Go RSS | match |\n")
+	sb.WriteString("| Program | N | vm2 (µs) | CPython (µs) | PyPy (µs) | Lua (µs) | LuaJIT (µs) | Go (µs) | vm2 / Go | vm2 / CPython | vm2 / PyPy | vm2 / Lua | vm2 / LuaJIT | match |\n")
 	sb.WriteString("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---:|\n")
 	for _, k := range orderedKeys {
 		row := groups[k]
 		vm2 := row["vm2"]
 		py := row["py"]
+		pypy := row["pypy"]
 		lua := row["lua"]
+		luajit := row["luajit"]
 		goRow := row["go"]
 		cell := func(a aggregate) string {
 			if a.Err != "" {
@@ -386,29 +445,29 @@ func renderMarkdown(aggs []aggregate) string {
 			}
 			return fmt.Sprintf("%.2fx", num.MedianUs/den.MedianUs)
 		}
-		rss := func(a aggregate) string {
-			if a.MemoryBytes <= 0 {
-				return "—"
-			}
-			return formatBytes(a.MemoryBytes)
-		}
 		match := "✓"
 		out := func(a aggregate) string { return fmt.Sprintf("%v", a.Output) }
-		// Go is optional: the row may not have a .go peer yet. Only
-		// participate in the output-equality check when present and
-		// non-error so missing .go files do not flip the match flag.
-		hasGo := goRow.Lang == "go" && goRow.Err == ""
-		if vm2.Err != "" || py.Err != "" || lua.Err != "" {
+		check := func(a aggregate) bool {
+			return a.Lang != "" && a.Err == "" && a.MedianUs > 0
+		}
+		if vm2.Err != "" {
 			match = "ERR"
-		} else if out(vm2) != out(py) || out(vm2) != out(lua) ||
-			(hasGo && out(vm2) != out(goRow)) {
-			match = fmt.Sprintf("✗ (vm2=%v py=%v lua=%v go=%v)", vm2.Output, py.Output, lua.Output, goRow.Output)
+		} else {
+			peers := []aggregate{py, pypy, lua, luajit, goRow}
+			for _, peer := range peers {
+				if !check(peer) {
+					continue
+				}
+				if out(vm2) != out(peer) {
+					match = fmt.Sprintf("✗ (vm2=%v %s=%v)", vm2.Output, peer.Lang, peer.Output)
+					break
+				}
+			}
 		}
 		fmt.Fprintf(&sb, "| `%s` | %d | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |\n",
 			k.prog, k.n,
-			cell(vm2), cell(py), cell(lua), cell(goRow),
-			ratio(vm2, py), ratio(vm2, lua), ratio(vm2, goRow),
-			rss(vm2), rss(py), rss(lua), rss(goRow),
+			cell(vm2), cell(py), cell(pypy), cell(lua), cell(luajit), cell(goRow),
+			ratio(vm2, goRow), ratio(vm2, py), ratio(vm2, pypy), ratio(vm2, lua), ratio(vm2, luajit),
 			match,
 		)
 	}
@@ -433,4 +492,17 @@ func formatBytes(n int64) string {
 func die(format string, args ...any) {
 	fmt.Fprintf(os.Stderr, format+"\n", args...)
 	os.Exit(1)
+}
+
+// pypyBinary locates a pypy3 binary on PATH. macOS via brew installs
+// `pypy3.11` (versioned), Linux distributions typically install plain
+// `pypy3`. We check the versioned name first because that is what
+// brew puts on PATH.
+func pypyBinary() string {
+	for _, name := range []string{"pypy3.11", "pypy3.12", "pypy3.10", "pypy3", "pypy"} {
+		if p, err := exec.LookPath(name); err == nil {
+			return p
+		}
+	}
+	return "pypy3" // let exec fail with a clear error message
 }

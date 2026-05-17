@@ -1,0 +1,47 @@
+// Template peer for the bg/fannkuch_redux benchmark. Mirrors the
+// fannkuch_redux.mochi shape: inner permutation size fixed at 7, N is
+// the outer trial count, output is the sum of per-trial flip counts.
+
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+func countFlips(perm *[7]int) int {
+	flips := 0
+	head := perm[0]
+	for head != 1 {
+		lo, hi := 0, head-1
+		for lo < hi {
+			perm[lo], perm[hi] = perm[hi], perm[lo]
+			lo++
+			hi--
+		}
+		head = perm[0]
+		flips++
+	}
+	return flips
+}
+
+func main() {
+	const trials = {{ .N }}
+	total := 0
+	var perm [7]int
+
+	start := time.Now()
+	for k := 0; k < trials; k++ {
+		for i := 0; i < 7; i++ {
+			perm[i] = ((i+k)%7 + 1)
+		}
+		total += countFlips(&perm)
+	}
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      total,
+	})
+}
