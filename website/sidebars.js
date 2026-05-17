@@ -122,6 +122,29 @@ const sidebars = {
         'mep/mep-0029',
       ],
     },
+    {
+      label: 'JIT',
+      type: 'category',
+      className: 'sidebar-heading',
+      collapsed: false,
+      items: [
+        'mep/mep-0030',
+        'mep/mep-0031',
+        'mep/mep-0032',
+        'mep/mep-0033',
+        'mep/mep-0034',
+      ],
+    },
+    {
+      label: 'Memory',
+      type: 'category',
+      className: 'sidebar-heading',
+      collapsed: false,
+      items: [
+        'mep/mep-0035',
+        'mep/mep-0036',
+      ],
+    },
   ],
 };
 
