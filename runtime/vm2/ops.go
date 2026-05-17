@@ -49,6 +49,17 @@ const (
 	//	OpCallA2: A = retReg, B = calleeIdx, C = arg0Reg, D = arg1Reg
 	OpCallA1
 	OpCallA2
+	// Pair-projection fused calls (MEP-38 §A.5). Fuses a single-use
+	// OpPairFst / OpPairSnd into the OpCallA2 that consumes its result
+	// as arg0, eliminating the intermediate dispatch + register write.
+	// Encoding mirrors OpCallA2 except C carries the pair source register
+	// (not the unwrapped arg0). Hot path for binary_trees.checkTree where
+	// the two recursive calls each read one half of the input pair.
+	//
+	//	OpPairFstCallA2: A=retReg, B=calleeIdx, C=pairSrcReg, D=arg1Reg
+	//	OpPairSndCallA2: A=retReg, B=calleeIdx, C=pairSrcReg, D=arg1Reg
+	OpPairFstCallA2
+	OpPairSndCallA2
 	OpTailCall              // tail-call Funcs[A] with args [B..B+C); reuses frame
 	// Same-function tail call. Params already live in regs[0..np) thanks
 	// to parallel moves the emitter inserted into the param slots, so

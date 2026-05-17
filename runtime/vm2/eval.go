@@ -267,6 +267,64 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			regs = vm.Stack[newBase:]
 			consts = fr.Fn.Consts
 			ip = 0
+		case OpPairFstCallA2:
+			// Fused OpPairFst + OpCallA2. arg0 is the .a half of the pair
+			// in regs[ins.C]; arg1 is regs[ins.D]. Saves one dispatch + the
+			// intermediate register write the standalone OpPairFst would
+			// have performed. Hot path for binary_trees.checkTree(fst,d-1).
+			callee := vm.Program.Funcs[ins.B]
+			fr.IP = ip
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				vm.Stack[base] = (*vmPair)(regs[ins.C].PtrTo()).a
+				vm.Stack[base+1] = regs[ins.D]
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				code = callee.Code
+				regs = vm.Stack[base:]
+				consts = callee.Consts
+				ip = 0
+				break
+			}
+			a0 := (*vmPair)(regs[ins.C].PtrTo()).a
+			a1 := regs[ins.D]
+			_, newBase := vm.pushFrame(callee, ins.A)
+			vm.Stack[newBase] = a0
+			vm.Stack[newBase+1] = a1
+			fr = &vm.Frames[len(vm.Frames)-1]
+			code = fr.Fn.Code
+			regs = vm.Stack[newBase:]
+			consts = fr.Fn.Consts
+			ip = 0
+		case OpPairSndCallA2:
+			callee := vm.Program.Funcs[ins.B]
+			fr.IP = ip
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				vm.Stack[base] = (*vmPair)(regs[ins.C].PtrTo()).b
+				vm.Stack[base+1] = regs[ins.D]
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				code = callee.Code
+				regs = vm.Stack[base:]
+				consts = callee.Consts
+				ip = 0
+				break
+			}
+			a0 := (*vmPair)(regs[ins.C].PtrTo()).b
+			a1 := regs[ins.D]
+			_, newBase := vm.pushFrame(callee, ins.A)
+			vm.Stack[newBase] = a0
+			vm.Stack[newBase+1] = a1
+			fr = &vm.Frames[len(vm.Frames)-1]
+			code = fr.Fn.Code
+			regs = vm.Stack[newBase:]
+			consts = fr.Fn.Consts
+			ip = 0
 		case OpTailCallSelf:
 			ip = 0
 		case OpTailCall:
