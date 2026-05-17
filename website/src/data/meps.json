@@ -290,9 +290,33 @@
   {
     "number": 36,
     "title": "Restructure VM2 to Reuse Go's GC",
+    "status": "Active",
+    "type": "Standards Track",
+    "description": "Restructure the vm2 value representation so container payloads (lists, maps, heap strings, closures, boxed big ints, structs, sets) are reachable from each operand-stack slot via a real Go pointer, and the per-Run Objects []any indirection table can be reclaimed mid-Run. Today the NaN-boxed Cell stores a 48-bit index into Objects []any, so every list/map/string read pays a bounds check plus a type assertion (5 to 8 percent of CPU on container workloads per MEP-29), and Objects is append-only within a Run so dead containers cannot be freed until Run() exits. This MEP surveys modern VM-on-host-GC designs (Goja, starlark-go, Yaegi, Truffle, WasmGC, CRuby + MMTk), the Go-specific cost of interface boxing and the hybrid write barrier, and the allocation-minimization literature (Perceus, Roc, PLDI 2024 dynamic heapification, V8 Smi, .NET / Valhalla value types). It then specifies the smallest refactor that pays off: keep the 8-byte NaN-boxed Bits field, add a single 8-byte unsafe.Pointer field that GC traces on pointer-tagged cells (so Cell becomes 16 bytes, not 24), kill the indirection in container accessors, and zero pointer slots on popFrame so dead containers become collectible. Goal: zero allocations on the hot path for pure-numeric loops, one Go-tracked allocation per container constructor and zero per element, and full reclamation of dead containers between GC cycles, with the operand stack growing by 2x rather than 3x.",
+    "slug": "/docs/mep/mep-0036"
+  },
+  {
+    "number": 37,
+    "title": "Benchmarks Game Parity with Go",
+    "status": "Active",
+    "type": "Standards Track",
+    "description": "Define the full Computer Language Benchmarks Game corpus as a long-running performance target for vm2, audit each program's data and control-flow shape against the current runtime, and specify the data-model and VM enhancements required to reach within 2x of `go run` on each. The catalog covers the ten canonical BG benchmarks (binary_trees, fannkuch_redux, fasta, k_nucleotide, mandelbrot, n_body, pidigits, regex_redux, reverse_complement, spectral_norm). The gap analysis identifies four bottlenecks vm2 must close to reach Go parity: missing float arithmetic opcodes (every numeric BG kernel besides binary_trees / fannkuch is double-dominated), boxed Cell storage for homogeneous arrays (each element pays 16 bytes plus indirection where Go uses 8 bytes inline), per-node heap allocation for tree-shaped data, and absence of byte-string slicing without copy. The plan lands in four phases, each independently mergeable and benchmark-gated, with the headline goal being end-to-end BG numbers within 2x of Go on the workloads phase 1+2 cover and a credible path on the remaining four.",
+    "slug": "/docs/mep/mep-0037"
+  },
+  {
+    "number": 38,
+    "title": "Closing the BG Gap to 2x Go via Byte Views and Native Lowering",
     "status": "Draft",
     "type": "Standards Track",
-    "description": "Restructure the vm2 value representation so that pointer-shaped values (lists, maps, heap strings, closures, boxed big ints, structs, sets) are stored as real Go pointers visible to Go's tricolor concurrent mark-sweep collector, and the per-Run Objects []any indirection table is deleted. Today the NaN-boxed Cell hides every pointer inside a uint64, so Go's GC traces only the table, never the values, and the table grows monotonically for the lifetime of a Run. This MEP surveys modern VM-on-host-GC designs (Goja, starlark-go, Yaegi, Truffle, WasmGC, CRuby + MMTk), the Go-specific cost of interface boxing and the hybrid write barrier, and the allocation-minimization literature (Perceus, Roc, PLDI 2024 dynamic heapification, V8 Smi, .NET / Valhalla value types), then specifies the refactor: a struct Cell with an unsafe.Pointer slot for GC-traced payloads, an inline scalar slot for ints / bools / floats / short strings, a per-Run free list of typed pointers for object reuse, and a compile-time last-use bit on registers that enables in-place mutation for the common append / update pattern. The goal is zero allocations on the hot path for pure-numeric loops, one Go-tracked allocation per container constructor and zero per element, and full reclamation of dead containers between GC cycles without a custom collector.",
-    "slug": "/docs/mep/mep-0036"
+    "description": "Extend MEP-37 with the concrete plan that takes vm2 from its current 115x-171x ratios on the Benchmarks Game corpus down to the 2x-of-Go target stated in MEP-37's abstract. Layer one (this MEP) ships the byte-view runtime (vmBytes) and minimal stdin/stdout that MEP-37 §3.5 deferred. Layer two ships JIT lowering for the typed-array and float-arithmetic op families so each BG kernel's hot loop compiles to native arm64/amd64 instead of going through the dispatch interpreter. Layer three ships a leaf-inline emit pass that absorbs per-byte function calls like reverse_complement's complement(). Each layer is independently mergeable; the BG gate progresses one program at a time as the layer that program needs lands. The MEP also contains a deep-research appendix that derives the theoretical lower bound for each kernel's runtime from the host hardware's instruction-issue rate, cache hierarchy, and branch mispredict cost, and shows where the current vm2 dispatch loop sits relative to that bound.",
+    "slug": "/docs/mep/mep-0038"
+  },
+  {
+    "number": 39,
+    "title": "Full Benchmarks Game Suite Across mochi/go/python/lua",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Bring the cross-language benchmark harness up to the canonical Benchmarks Game suite (all 10 programs) with parity templates in mochi, go, python, and lua. MEP-37 and MEP-38 covered six programs at the IR-builder level (binary_trees, n_body, mandelbrot, fannkuch_redux, spectral_norm, reverse_complement) but only binary_trees and nsieve had cross-lang templates wired into bench/crosslang. This MEP closes that gap on two fronts: (a) scaffold cross-lang templates for the five existing IR kernels plus four missing programs (fasta, k-nucleotide, pidigits, regex-redux), and (b) add the runtime features those programs need (bignum in vm2 for pidigits, regex builtins audit for regex-redux). The MEP captures the pre-implementation baseline for the 11 currently wired programs, the post-implementation full-suite baseline, and then deep-dives the per-program optimization theory required to land each program inside the 2x-of-Go gate that MEP-37 set.",
+    "slug": "/docs/mep/mep-0039"
   }
 ]
