@@ -113,6 +113,48 @@ func BenchmarkVM2_BG_BinaryTreesPairKernelReused(b *testing.B) {
 	}
 }
 
+// BenchmarkVM2_BG_BinaryTreesPairKernelDeepReused stresses the pair
+// arena at a depth where the count of allocations dominates the count
+// of recursive calls. At D=12 the kernel builds 2^13 - 1 = 8191 nodes
+// per run; Go's heap allocator must collect, while vm2 just bumps the
+// arena cursor past the 256-pair chunk boundary 32 times. MEP-38
+// Appendix A.4 calls this the "pair arena demo" benchmark.
+func BenchmarkVM2_BG_BinaryTreesPairKernelDeepReused(b *testing.B) {
+	const D = int64(12)
+	m := corpus.BuildBinaryTreesKernel(D)
+	opt.LeafInline(m)
+	for _, f := range m.Funcs {
+		opt.ConstFold(f)
+		opt.DCE(f)
+		opt.TailCall(f)
+	}
+	prog, err := emit.Compile(m)
+	if err != nil {
+		b.Fatalf("compile: %v", err)
+	}
+	vm := vm2.New(prog)
+	if _, err := vm.Run(); err != nil {
+		b.Fatalf("warm run: %v", err)
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		vm.Reset()
+		if _, err := vm.Run(); err != nil {
+			b.Fatalf("run: %v", err)
+		}
+	}
+}
+
+func BenchmarkGo_BG_BinaryTreesPairKernelDeep(b *testing.B) {
+	const D = int64(12)
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = goBinaryTreesKernel(D)
+	}
+}
+
 func BenchmarkGo_BG_BinaryTreesPairKernel(b *testing.B) {
 	const D = int64(8)
 	b.ReportAllocs()

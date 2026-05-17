@@ -125,6 +125,43 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		k           int64
 		nonConstArg ir.ValueID
 	}
+	// fusePairCall maps a 2-arg OpCall vid to the fused pair-projection
+	// op (OpPairFstCallA2 / OpPairSndCallA2) when arg0 is a single-use
+	// OpPairFst / OpPairSnd in the same block. The intermediate PairFst
+	// emit is suppressed; the call carries the pair source register
+	// directly. MEP-38 §A.5: cuts one dispatch per pair-walking recursion
+	// step (binary_trees.checkTree).
+	type pairCallInfo struct {
+		op      vm2.Op
+		pairSrc ir.ValueID // value held in the pair source register
+	}
+	fusePairCall := make(map[ir.ValueID]pairCallInfo)
+	for vid, ins := range f.Values {
+		if ins.Op != ir.OpCall || len(ins.Args) != 2 {
+			continue
+		}
+		arg0Vid := ins.Args[0]
+		arg0 := f.Values[arg0Vid]
+		if useCount[arg0Vid] != 1 {
+			continue
+		}
+		var fused vm2.Op
+		switch arg0.Op {
+		case ir.OpPairFst:
+			fused = vm2.OpPairFstCallA2
+		case ir.OpPairSnd:
+			fused = vm2.OpPairSndCallA2
+		default:
+			continue
+		}
+		// Same-block fusion only: cross-block reg-reuse by regalloc could
+		// invalidate the pair source register at the call site.
+		if f.ValueBlock[arg0Vid] != f.ValueBlock[vid] {
+			continue
+		}
+		suppress[arg0Vid] = true
+		fusePairCall[ir.ValueID(vid)] = pairCallInfo{op: fused, pairSrc: arg0.Args[0]}
+	}
 	addK := make(map[ir.ValueID]addKInfo)
 	for vid, ins := range f.Values {
 		if ins.Op != ir.OpAddI64 {
@@ -512,9 +549,15 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
 			case ir.OpPairFst:
+				if suppress[vid] {
+					break
+				}
 				emit(vm2.Instr{Op: vm2.OpPairFst, A: dst,
 					B: int32(finalReg[ins.Args[0]])})
 			case ir.OpPairSnd:
+				if suppress[vid] {
+					break
+				}
 				emit(vm2.Instr{Op: vm2.OpPairSnd, A: dst,
 					B: int32(finalReg[ins.Args[0]])})
 			case ir.OpBytesNew:
@@ -561,6 +604,13 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 				// dispatch handler read source registers directly. Cuts
 				// 1-2 dispatches per call site on the dominant arities
 				// in the BG corpus.
+				if info, ok := fusePairCall[vid]; ok {
+					emit(vm2.Instr{Op: info.op, A: dst,
+						B: int32(ins.Aux),
+						C: int32(finalReg[info.pairSrc]),
+						D: int32(finalReg[ins.Args[1]])})
+					break
+				}
 				switch len(ins.Args) {
 				case 1:
 					emit(vm2.Instr{Op: vm2.OpCallA1, A: dst,
