@@ -185,6 +185,42 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 			try(a0, a1)
 		}
 	}
+	// subK mirrors addK but with no commutativity: only the right-hand
+	// operand (the subtrahend) can fold into the immediate slot.
+	// makeTree(d-1) / checkTree(t, d-1) lower to (sub d, ConstI64(1))
+	// and become a single OpSubI64K dispatch.
+	type subKInfo struct {
+		k   int64
+		src ir.ValueID
+	}
+	subK := make(map[ir.ValueID]subKInfo)
+	for vid, ins := range f.Values {
+		if ins.Op != ir.OpSubI64 {
+			continue
+		}
+		rhs := ins.Args[1]
+		c := f.Values[rhs]
+		if c.Op != ir.OpConstI64 || useCount[rhs] != 1 {
+			continue
+		}
+		k := c.Aux
+		if k < -(1<<31) || k > (1<<31)-1 {
+			continue
+		}
+		suppress[rhs] = true
+		subK[ir.ValueID(vid)] = subKInfo{k: k, src: ins.Args[0]}
+	}
+	// fuseCmpConst marks a fused cmp+condbr whose const operand should be
+	// inlined into the K-form jump op (avoids the OpLoadConstI dispatch
+	// + register slot). Only populated for OpEqualI64 with one
+	// ConstI64 arg whose value fits in i32; less/lessEq with a const
+	// could be added analogously but the BG corpus uses equality for the
+	// only hot cases (leaf-guard checks in recursive kernels).
+	type cmpConstInfo struct {
+		k       int64
+		nonReg  ir.ValueID
+	}
+	fuseCmpConst := make(map[ir.ValueID]cmpConstInfo)
 	for bi := range f.Blocks {
 		blk := f.Blocks[bi]
 		insts := blk.Insts
@@ -220,6 +256,25 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		}
 		suppress[cmpVid] = true
 		fuseCondBr[last] = cmpVid
+		if cmpIns.Op == ir.OpEqualI64 {
+			a0, a1 := cmpIns.Args[0], cmpIns.Args[1]
+			tryK := func(constArg, otherArg ir.ValueID) bool {
+				c := f.Values[constArg]
+				if c.Op != ir.OpConstI64 || useCount[constArg] != 1 {
+					return false
+				}
+				k := c.Aux
+				if k < -(1<<31) || k > (1<<31)-1 {
+					return false
+				}
+				suppress[constArg] = true
+				fuseCmpConst[cmpVid] = cmpConstInfo{k: k, nonReg: otherArg}
+				return true
+			}
+			if !tryK(a1, a0) {
+				tryK(a0, a1)
+			}
+		}
 	}
 
 	// Return-superop fusions (MEP-38 §A.6). Each OpRet that consumes a
@@ -239,9 +294,13 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		regA ir.ValueID // sumA: addK[].nonConstArg
 		regB ir.ValueID // the other AddI64 operand
 	}
+	type retPairKKInfo struct {
+		k0, k1 int64
+	}
 	fuseRetI64K := make(map[ir.ValueID]int64)
 	fuseRetAddSum := make(map[ir.ValueID]retSumInfo)
 	fuseRetNewPair := make(map[ir.ValueID]ir.ValueID) // ret vid -> NewPair vid
+	fuseRetNewPairKK := make(map[ir.ValueID]retPairKKInfo)
 	for bi := range f.Blocks {
 		blk := f.Blocks[bi]
 		insts := blk.Insts
@@ -268,7 +327,20 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 			fuseRetI64K[last] = k
 		case ir.OpNewPair:
 			suppress[argVid] = true
-			fuseRetNewPair[last] = argVid
+			// KK form when both NewPair args are single-use ConstI64s that
+			// fit in i32. Hot for makeTree's d==0 leaf: return newPair(0, 0).
+			a0, a1 := argIns.Args[0], argIns.Args[1]
+			c0, c1 := f.Values[a0], f.Values[a1]
+			if c0.Op == ir.OpConstI64 && c1.Op == ir.OpConstI64 &&
+				useCount[a0] == 1 && useCount[a1] == 1 &&
+				c0.Aux >= -(1<<31) && c0.Aux <= (1<<31)-1 &&
+				c1.Aux >= -(1<<31) && c1.Aux <= (1<<31)-1 {
+				suppress[a0] = true
+				suppress[a1] = true
+				fuseRetNewPairKK[last] = retPairKKInfo{k0: c0.Aux, k1: c1.Aux}
+			} else {
+				fuseRetNewPair[last] = argVid
+			}
 		case ir.OpAddI64:
 			// Prefer the 3-operand triple-add form when one operand is a
 			// single-use AddI64K (already captured in addK[]). The inner
@@ -406,6 +478,12 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
 			case ir.OpSubI64:
+				if info, ok := subK[vid]; ok {
+					emit(vm2.Instr{Op: vm2.OpSubI64K, A: dst,
+						B: int32(finalReg[info.src]),
+						C: int32(info.k)})
+					break
+				}
 				emit(vm2.Instr{Op: vm2.OpSubI64, A: dst,
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
@@ -683,19 +761,37 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 				// 1-2 dispatches per call site on the dominant arities
 				// in the BG corpus.
 				if info, ok := fusePairCall[vid]; ok {
-					emit(vm2.Instr{Op: info.op, A: dst,
+					op := info.op
+					if int(ins.Aux) == selfIdx {
+						switch info.op {
+						case vm2.OpPairFstCallA2:
+							op = vm2.OpPairFstCallSelfA2
+						case vm2.OpPairSndCallA2:
+							op = vm2.OpPairSndCallSelfA2
+						}
+					}
+					emit(vm2.Instr{Op: op, A: dst,
 						B: int32(ins.Aux),
 						C: int32(finalReg[info.pairSrc]),
 						D: int32(finalReg[ins.Args[1]])})
 					break
 				}
+				self := int(ins.Aux) == selfIdx
 				switch len(ins.Args) {
 				case 1:
-					emit(vm2.Instr{Op: vm2.OpCallA1, A: dst,
+					op := vm2.OpCallA1
+					if self {
+						op = vm2.OpCallSelfA1
+					}
+					emit(vm2.Instr{Op: op, A: dst,
 						B: int32(ins.Aux),
 						C: int32(finalReg[ins.Args[0]])})
 				case 2:
-					emit(vm2.Instr{Op: vm2.OpCallA2, A: dst,
+					op := vm2.OpCallA2
+					if self {
+						op = vm2.OpCallSelfA2
+					}
+					emit(vm2.Instr{Op: op, A: dst,
 						B: int32(ins.Aux),
 						C: int32(finalReg[ins.Args[0]]),
 						D: int32(finalReg[ins.Args[1]])})
@@ -768,6 +864,12 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 						C: int32(finalReg[info.regB])})
 					break
 				}
+				if info, ok := fuseRetNewPairKK[vid]; ok {
+					emit(vm2.Instr{Op: vm2.OpReturnNewPairKK,
+						B: int32(info.k0),
+						C: int32(info.k1)})
+					break
+				}
 				if npVid, ok := fuseRetNewPair[vid]; ok {
 					npIns := f.Values[npVid]
 					emit(vm2.Instr{Op: vm2.OpReturnNewPair,
@@ -793,6 +895,26 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 				}
 				if cmpVid, ok := fuseCondBr[vid]; ok {
 					cmp := f.Values[cmpVid]
+					// K-form for equality with one ConstI64 operand: inline
+					// the constant into the jump op, drop the OpLoadConstI.
+					if kinfo, kok := fuseCmpConst[cmpVid]; kok {
+						a := int32(finalReg[kinfo.nonReg])
+						k := int32(kinfo.k)
+						switch {
+						case elseB == nextB:
+							idx := emit(vm2.Instr{Op: vm2.OpJumpIfEqualI64K, A: a, B: k})
+							pending = append(pending, pendingJump{insIdx: idx, target: thenB, field: 'C'})
+						case thenB == nextB:
+							idx := emit(vm2.Instr{Op: vm2.OpJumpIfNotEqualI64K, A: a, B: k})
+							pending = append(pending, pendingJump{insIdx: idx, target: elseB, field: 'C'})
+						default:
+							idx := emit(vm2.Instr{Op: vm2.OpJumpIfEqualI64K, A: a, B: k})
+							pending = append(pending, pendingJump{insIdx: idx, target: thenB, field: 'C'})
+							idx2 := emit(vm2.Instr{Op: vm2.OpJump})
+							pending = append(pending, pendingJump{insIdx: idx2, target: elseB, field: 'A'})
+						}
+						break
+					}
 					b := int32(finalReg[cmp.Args[0]])
 					c := int32(finalReg[cmp.Args[1]])
 					// Direct (jump-if-true) and inverted forms per cmp op.
