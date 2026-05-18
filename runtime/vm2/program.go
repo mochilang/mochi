@@ -84,6 +84,15 @@ type Function struct {
 	LeafReturnA  int32 // OpReturnI64K: the constant return value
 	LeafReturnB  int32 // OpReturnNewPairKK: pair.fst
 	LeafReturnC  int32 // OpReturnNewPairKK: pair.snd
+
+	// BranchEntryIP is the ip to use when entering this function on the
+	// branch path. For leaf-shape callees the entry guard at pc=0 jumps
+	// to pc=2 when the arg fails the guard test; if the caller already
+	// performed the guard test inline (via the leaf shortcut) and saw a
+	// mismatch, the frame can start directly at pc=2 to skip the guard
+	// dispatch. MEP-39 §6.10 iter 5: set to 2 by AnalyzeLeafShape when
+	// the leaf-shape match succeeds, else 0 (default entry).
+	BranchEntryIP int32
 }
 
 // LeafKind classifies the cached leaf-return shape (see Function.LeafKind).

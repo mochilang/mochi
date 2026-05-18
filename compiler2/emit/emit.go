@@ -212,6 +212,69 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		suppress[rhs] = true
 		subK[ir.ValueID(vid)] = subKInfo{k: k, src: ins.Args[0]}
 	}
+	// SubK+Call fusion (MEP-39 §6.10 iter 5). When a SubI64K(_, 1) result
+	// is consumed only by self-recursive calls in fusable arg positions,
+	// each consumer call emits a Sub1 variant that re-derives `src - 1`
+	// inline, and the standalone SubI64K is suppressed. Hot path for
+	// binary_trees.make_tree (two consecutive calls share `d-1`) and
+	// check_tree (two pair-fused calls share `d-1`). Both call sites
+	// recompute the subtraction; doubling the subtract is cheaper than
+	// the dispatch it eliminates.
+	fuseCallSub1 := make(map[ir.ValueID]ir.ValueID) // call vid -> src reg vid
+	for subVid, info := range subK {
+		if info.k != 1 {
+			continue
+		}
+		// Find every use of subVid; each must be a self-recursive call
+		// that lands in either OpCallSelfA1 or a fusePairCall (PairFst /
+		// PairSnd) shape with the sub result as arg1.
+		uses := []ir.ValueID{}
+		ok := true
+		for vid, ins := range f.Values {
+			if pos[vid] < 0 || ir.ValueID(vid) == subVid {
+				continue
+			}
+			for argIdx, a := range ins.Args {
+				if a != subVid {
+					continue
+				}
+				if ins.Op != ir.OpCall || int(ins.Aux) != selfIdx {
+					ok = false
+					break
+				}
+				switch len(ins.Args) {
+				case 1:
+					if argIdx != 0 {
+						ok = false
+					}
+				case 2:
+					if argIdx != 1 {
+						ok = false
+						break
+					}
+					if _, hasFuse := fusePairCall[ir.ValueID(vid)]; !hasFuse {
+						ok = false
+					}
+				default:
+					ok = false
+				}
+				if !ok {
+					break
+				}
+				uses = append(uses, ir.ValueID(vid))
+			}
+			if !ok {
+				break
+			}
+		}
+		if !ok || len(uses) == 0 {
+			continue
+		}
+		suppress[subVid] = true
+		for _, callVid := range uses {
+			fuseCallSub1[callVid] = info.src
+		}
+	}
 	// mulK mirrors addK: multiply is commutative so either operand can
 	// be the immediate. Hot for LCG / hash chains in MEP-39 §6.6 fasta
 	// (`seed * 3877` and `hash * 1009` both fold). The i32 immediate
@@ -602,6 +665,9 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
 			case ir.OpSubI64:
+				if suppress[vid] {
+					break
+				}
 				if info, ok := subK[vid]; ok {
 					emit(vm2.Instr{Op: vm2.OpSubI64K, A: dst,
 						B: int32(finalReg[info.src]),
@@ -944,6 +1010,30 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 				// dispatch handler read source registers directly. Cuts
 				// 1-2 dispatches per call site on the dominant arities
 				// in the BG corpus.
+				if subSrc, ok := fuseCallSub1[vid]; ok {
+					// MEP-39 §6.10 iter 5: the call's depth operand is a
+					// SubI64K(_, 1) that's been suppressed in favor of a
+					// Sub1-fused call variant. Re-derive `src - 1`
+					// inline at dispatch.
+					if info, hasFusePair := fusePairCall[vid]; hasFusePair {
+						var op vm2.Op
+						switch info.op {
+						case vm2.OpPairFstCallA2:
+							op = vm2.OpPairFstCallSelfA2Sub1
+						case vm2.OpPairSndCallA2:
+							op = vm2.OpPairSndCallSelfA2Sub1
+						}
+						emit(vm2.Instr{Op: op, A: dst,
+							B: int32(ins.Aux),
+							C: int32(finalReg[info.pairSrc]),
+							D: int32(finalReg[subSrc])})
+						break
+					}
+					emit(vm2.Instr{Op: vm2.OpCallSelfA1Sub1, A: dst,
+						B: int32(ins.Aux),
+						C: int32(finalReg[subSrc])})
+					break
+				}
 				if info, ok := fusePairCall[vid]; ok {
 					op := info.op
 					if int(ins.Aux) == selfIdx {
