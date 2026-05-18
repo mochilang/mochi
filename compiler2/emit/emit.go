@@ -26,6 +26,7 @@ func Compile(m *ir.Module) (*vm2.Program, error) {
 		if err != nil {
 			return nil, fmt.Errorf("emit %s: %w", f.Name, err)
 		}
+		vm2.AnalyzeLeafShape(fn)
 		funcs[i] = fn
 	}
 	return &vm2.Program{Funcs: funcs, Main: m.Main}, nil

@@ -252,6 +252,12 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			// at the new frame's slot 0 and dispatch. Hot path for
 			// binary_trees.makeTree(d-1) and fib_rec.
 			callee := vm.Program.Funcs[ins.B]
+			if callee.LeafKind != LeafKindNone {
+				if r, ok := callee.tryLeafA1(vm, regs[ins.C]); ok {
+					regs[ins.A] = r
+					break
+				}
+			}
 			fr.IP = ip
 			base := len(vm.Stack)
 			need := base + callee.NumRegs
@@ -278,6 +284,12 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			// 2-arg specialized call. Same shape as OpCallA1 with one
 			// more arg in ins.D. Hot path for binary_trees.checkTree.
 			callee := vm.Program.Funcs[ins.B]
+			if callee.LeafKind != LeafKindNone {
+				if r, ok := callee.tryLeafA2(vm, regs[ins.C], regs[ins.D]); ok {
+					regs[ins.A] = r
+					break
+				}
+			}
 			fr.IP = ip
 			base := len(vm.Stack)
 			need := base + callee.NumRegs
@@ -308,6 +320,12 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			// intermediate register write the standalone OpPairFst would
 			// have performed. Hot path for binary_trees.checkTree(fst,d-1).
 			callee := vm.Program.Funcs[ins.B]
+			if callee.LeafKind != LeafKindNone {
+				if r, ok := callee.tryLeafA2Guard1(vm, regs[ins.D]); ok {
+					regs[ins.A] = r
+					break
+				}
+			}
 			fr.IP = ip
 			base := len(vm.Stack)
 			need := base + callee.NumRegs
@@ -335,6 +353,12 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			ip = 0
 		case OpPairSndCallA2:
 			callee := vm.Program.Funcs[ins.B]
+			if callee.LeafKind != LeafKindNone {
+				if r, ok := callee.tryLeafA2Guard1(vm, regs[ins.D]); ok {
+					regs[ins.A] = r
+					break
+				}
+			}
 			fr.IP = ip
 			base := len(vm.Stack)
 			need := base + callee.NumRegs
@@ -362,6 +386,12 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			ip = 0
 		case OpCallSelfA1:
 			callee := fr.Fn
+			if callee.LeafKind != LeafKindNone {
+				if r, ok := callee.tryLeafA1(vm, regs[ins.C]); ok {
+					regs[ins.A] = r
+					break
+				}
+			}
 			fr.IP = ip
 			base := len(vm.Stack)
 			need := base + callee.NumRegs
@@ -382,6 +412,12 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			ip = 0
 		case OpCallSelfA2:
 			callee := fr.Fn
+			if callee.LeafKind != LeafKindNone {
+				if r, ok := callee.tryLeafA2(vm, regs[ins.C], regs[ins.D]); ok {
+					regs[ins.A] = r
+					break
+				}
+			}
 			fr.IP = ip
 			base := len(vm.Stack)
 			need := base + callee.NumRegs
@@ -404,6 +440,12 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			ip = 0
 		case OpPairFstCallSelfA2:
 			callee := fr.Fn
+			if callee.LeafKind != LeafKindNone {
+				if r, ok := callee.tryLeafA2Guard1(vm, regs[ins.D]); ok {
+					regs[ins.A] = r
+					break
+				}
+			}
 			fr.IP = ip
 			base := len(vm.Stack)
 			need := base + callee.NumRegs
@@ -427,6 +469,12 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			ip = 0
 		case OpPairSndCallSelfA2:
 			callee := fr.Fn
+			if callee.LeafKind != LeafKindNone {
+				if r, ok := callee.tryLeafA2Guard1(vm, regs[ins.D]); ok {
+					regs[ins.A] = r
+					break
+				}
+			}
 			fr.IP = ip
 			base := len(vm.Stack)
 			need := base + callee.NumRegs
