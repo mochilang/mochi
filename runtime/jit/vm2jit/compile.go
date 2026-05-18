@@ -45,7 +45,11 @@ func (c *CompiledFunc) Free() error {
 // Opcodes outside Phase 1's scope cause Compile to return ErrNotImplemented.
 // maxJITRegs is the maximum number of vm2 registers supported by any JIT
 // backend. Functions with more registers must be interpreted.
-const maxJITRegs = 7
+//
+// MEP-39 §6.13 (Phase B-lite) bumps the limit from 7 to 9 by adding two
+// callee-saved slots (x19, x20 on AArch64) behind an STP/LDP frame.
+// Phase B-full will push the remaining x21..x28 in 80-byte STP pairs.
+const maxJITRegs = 9
 
 func Compile(fn *vm2.Function) (*CompiledFunc, error) {
 	if hostArch < 0 {

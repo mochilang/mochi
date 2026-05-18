@@ -436,6 +436,107 @@ func TestCountLoop(t *testing.T) {
 	}
 }
 
+// TestCalleeSavedReturnR7 exercises the MEP-39 §6.13 Phase B-lite path
+// (NumRegs=8): the prologue must STP x19/x20 onto the stack, the body
+// must read r7 from x19, and OpReturn must spill x19 into regs[7]
+// before LDP restores the caller's x19. Returning r7 specifically
+// catches the ordering bug where LDP runs before the result move.
+func TestCalleeSavedReturnR7(t *testing.T) {
+	fn := &vm2.Function{
+		Name:    "ret_r7",
+		NumRegs: 8,
+		Code:    []vm2.Instr{{Op: vm2.OpReturn, A: 7}},
+	}
+	compileOrSkip(t, fn)
+	want := vm2.CInt(0xABCDEF)
+	r := regs(8, vm2.CInt(0), vm2.CInt(0), vm2.CInt(0), vm2.CInt(0),
+		vm2.CInt(0), vm2.CInt(0), vm2.CInt(0), want)
+	got := callJIT(fn, r)
+	if got != want {
+		t.Fatalf("r7: got %016x, want %016x", got.Bits, want.Bits)
+	}
+}
+
+// TestCalleeSavedReturnR8 mirrors the above for r8 -> x20. This is the
+// second slot in the STP/LDP pair; if the pre-index offset or the Rt2
+// field is wrong, the JIT'd code will crash or return the wrong value.
+func TestCalleeSavedReturnR8(t *testing.T) {
+	fn := &vm2.Function{
+		Name:    "ret_r8",
+		NumRegs: 9,
+		Code:    []vm2.Instr{{Op: vm2.OpReturn, A: 8}},
+	}
+	compileOrSkip(t, fn)
+	want := vm2.CInt(-12345)
+	r := regs(9, vm2.CInt(0), vm2.CInt(0), vm2.CInt(0), vm2.CInt(0),
+		vm2.CInt(0), vm2.CInt(0), vm2.CInt(0), vm2.CInt(0), want)
+	got := callJIT(fn, r)
+	if got != want {
+		t.Fatalf("r8: got %016x, want %016x", got.Bits, want.Bits)
+	}
+}
+
+// TestCalleeSavedAddR7R8 exercises arithmetic on r7+r8 (both callee-
+// saved slots) and returns r0. The body unboxes from x19, x20, computes
+// in x8, masks/retags, and writes back to x9 (r0). Catches r2x mapping
+// errors that confuse caller-saved and callee-saved slots.
+func TestCalleeSavedAddR7R8(t *testing.T) {
+	fn := &vm2.Function{
+		Name:    "add_r7_r8",
+		NumRegs: 9,
+		Code: []vm2.Instr{
+			// r0 = r7 + r8
+			{Op: vm2.OpAddI64, A: 0, B: 7, C: 8},
+			{Op: vm2.OpReturn, A: 0},
+		},
+	}
+	compileOrSkip(t, fn)
+	r := regs(9, vm2.CInt(0), vm2.CInt(0), vm2.CInt(0), vm2.CInt(0),
+		vm2.CInt(0), vm2.CInt(0), vm2.CInt(0),
+		vm2.CInt(100), vm2.CInt(23))
+	got := callJIT(fn, r)
+	if got.Int() != 123 {
+		t.Fatalf("add_r7_r8: got %d, want 123", got.Int())
+	}
+}
+
+// TestCalleeSavedDeoptStub exercises the deopt path when the function
+// uses the callee-saved frame. The deopt stub must spill r7 from x19
+// (and r8 from x20 when present) before LDP restores the caller's
+// values, then load the sentinel into x0 and RET with a balanced
+// stack. CallDirect does not run resumeFromDeopt, so the sentinel
+// itself is the expected return; the test passes if the trampoline
+// returns cleanly without a crash.
+func TestCalleeSavedDeoptStub(t *testing.T) {
+	// r1 = bytesNew(r0)  — OpBytesNew is always a deopt. The deopt
+	// stub fires immediately; r7 must round-trip into regs[7] so the
+	// interpreter sees the correct state if it ever runs resume.
+	fn := &vm2.Function{
+		Name:    "deopt_r7",
+		NumRegs: 8,
+		Code: []vm2.Instr{
+			{Op: vm2.OpBytesNew, A: 1, B: 0},
+			{Op: vm2.OpReturn, A: 7},
+		},
+	}
+	cf, err := vm2jit.Compile(fn)
+	if err != nil {
+		t.Skipf("Compile: %v", err)
+	}
+	defer cf.Free()
+
+	got := vm2jit.CallDirect(fn, nil, []vm2.Cell{
+		vm2.CInt(0), {}, {}, {}, {}, {}, {}, vm2.CInt(7777),
+	})
+	pc, ok := vm2.DecodeDeopt(got)
+	if !ok {
+		t.Fatalf("expected deopt sentinel, got %016x", got.Bits)
+	}
+	if pc != 0 {
+		t.Fatalf("expected deopt at pc=0, got pc=%d", pc)
+	}
+}
+
 // TestNaNBoxingRoundtrip verifies that the JIT correctly round-trips extreme
 // int48 values through the NaN-boxing pack/unpack cycle.
 func TestNaNBoxingRoundtrip(t *testing.T) {
