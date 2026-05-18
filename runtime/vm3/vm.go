@@ -360,6 +360,23 @@ func (vm *VM) run() (Cell, error) {
 				args = make([]int64, n)
 			}
 			copy(args, regsI64[op.B:op.B+uint16(n)])
+			// Phase 6.2c: if the callee has been JIT'd, route through
+			// the trampoline instead of pushing an interpreter frame.
+			// The JIT's recursive self-calls live on the JIT's own
+			// stack and do not touch vm.frames. On deopt we fall
+			// through to the interpreter path so the function restarts
+			// from PC=0 under the interpreter.
+			if callee.JITCode != nil && JITCallFn != nil {
+				bits, deopt, err := JITCallFn(vm, callee, args, nil)
+				if err != nil {
+					return Cell(0), err
+				}
+				if !deopt {
+					regsI64[op.A] = int64(bits)
+					pc++
+					continue
+				}
+			}
 			// Stash caller state so we resume one past the call site.
 			fr.pc = pc + 1
 			vm.pushFrame(callee, op.A, BankI64)

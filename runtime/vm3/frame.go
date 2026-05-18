@@ -1,5 +1,7 @@
 package vm3
 
+import "unsafe"
+
 // Frame is one activation record. Each frame holds a base index into
 // each of the VM's three typed register stacks; the live window for
 // this activation is stack[base : base + fn.NumRegs*]. Storing only
@@ -47,6 +49,19 @@ type Function struct {
 
 	ParamBanks []Bank
 	ResultBank Bank
+
+	// JIT slots. Populated by runtime/jit/vm3jit.CompileAndCache when
+	// the function lowers cleanly on the host arch; vm3 reads them in
+	// OpCallI64 dispatch and routes through JITCallFn when JITCode is
+	// non-nil. JITCompiled is the sticky negative-cache flag: once a
+	// compile attempt has run, we do not retry on every call. The
+	// CompiledFunc that owns the mmap'd page (and keeps JITCode valid)
+	// is held by the caller of CompileAndCache, typically a
+	// vm3runner-style harness or a test. JITHasF64 selects the
+	// 4-argument trampoline (CallStatusFF) for f64-touching kernels.
+	JITCode     unsafe.Pointer
+	JITCompiled bool
+	JITHasF64   bool
 }
 
 // Bank identifies one of the three typed register banks.
