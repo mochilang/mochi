@@ -20,6 +20,40 @@ const (
 	StatusListGrow int64 = 2
 )
 
+// hasRegRegDivMod reports whether fn contains any reg-reg OpDivI64 or
+// OpModI64 (the K-form variants reject /0 at Compile time and need no
+// runtime guard, so they do not contribute to the deopt block).
+func hasRegRegDivMod(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpDivI64 || op.Code == vm3.OpModI64 {
+			return true
+		}
+	}
+	return false
+}
+
+// hasListPushI64 reports whether fn contains any OpListPushI64. Each
+// site emits an inline cap check + conditional branch to the
+// StatusListGrow deopt block (Phase 6.2d.2.c).
+func hasListPushI64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpListPushI64 {
+			return true
+		}
+	}
+	return false
+}
+
+// hasListGetI64 reports whether fn contains any OpListGetI64.
+func hasListGetI64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpListGetI64 {
+			return true
+		}
+	}
+	return false
+}
+
 // popcount32 counts set bits in v. Used to size OpCallI64 spill loops
 // on every backend.
 func popcount32(v uint32) int {
@@ -105,6 +139,23 @@ func defUseI64(fn *vm3.Function, op vm3.Op) (uint32, uint32) {
 			uses |= 1 << (op.B + uint16(k))
 		}
 		return a, uses
+	case vm3.OpCallMixed:
+		// Conservative liveness for the cross-fn path: the callee's
+		// ParamBanks live in another Function record we do not thread
+		// through this helper, so over-approximate uses to the 8-slot
+		// window starting at op.B (ParamBanks length is bounded by 8
+		// in the snapshot arrays in vm3.VM.OpCallMixed). Over-stating
+		// uses at the call site only feeds back into predecessor
+		// liveness, which produces correct (possibly larger) spill
+		// sets at upstream call sites; the call site's own spill mask
+		// derives from liveOut, which is unaffected. defs follow the
+		// retBank: only the i64 bank reuses op.A as an i64 reg index.
+		var defs uint32
+		if vm3.Bank(op.BankFlags&0x3) == vm3.BankI64 {
+			defs = a
+		}
+		uses := uint32(0xFF) << op.B
+		return defs, uses
 	}
 	return 0, 0
 }

@@ -206,11 +206,51 @@ func CompileAndCache(prog *vm3.Program, idx uint32) (*CompiledFunc, error) {
 // behavior). The returned slice holds the CompiledFunc handles in
 // declaration order; nil entries indicate functions the JIT could
 // not compile on this host.
+//
+// Compile order is two-pass to satisfy the cross-fn OpCallMixed
+// admission (Phase 6.2d.2.b step 1): the caller's site needs
+// callee.JITCode set so the BLR sequence can encode the absolute
+// branch address. Pass 1 compiles every fn that has no cross-fn
+// OpCallMixed in its body (leaves and self-recursive callees); pass 2
+// compiles the rest. Mutual recursion via OpCallMixed (A calls B,
+// B calls A) is not admitted by step 1: pass 1 skips both since each
+// has a cross-fn site, and pass 2 finds neither callee with JITCode
+// set; the JIT falls back to the interpreter for both. The two-pass
+// scheme is sufficient for the lists_fill_sum shape (main calls fill
+// then sum, neither callee calls main back), which is the only
+// cross-fn pattern admitted in step 1.
 func CompileProgram(prog *vm3.Program) []*CompiledFunc {
 	out := make([]*CompiledFunc, len(prog.Funcs))
-	for i := range prog.Funcs {
+	for i, fn := range prog.Funcs {
+		if hasAnyCrossFnCallMixed(fn, i) {
+			continue
+		}
+		cf, _ := CompileAndCache(prog, uint32(i))
+		out[i] = cf
+	}
+	for i, fn := range prog.Funcs {
+		if !hasAnyCrossFnCallMixed(fn, i) {
+			continue
+		}
 		cf, _ := CompileAndCache(prog, uint32(i))
 		out[i] = cf
 	}
 	return out
+}
+
+// hasAnyCrossFnCallMixed reports whether fn (at index selfIdx in its
+// containing Program) issues at least one OpCallMixed to a callee
+// other than itself. Used by CompileProgram to split pass 1 (leaves)
+// from pass 2 (callers).
+func hasAnyCrossFnCallMixed(fn *vm3.Function, selfIdx int) bool {
+	for _, op := range fn.Code {
+		if op.Code != vm3.OpCallMixed {
+			continue
+		}
+		if int(uint16(op.C)) == selfIdx {
+			continue
+		}
+		return true
+	}
+	return false
 }
