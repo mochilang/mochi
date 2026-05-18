@@ -1,0 +1,44 @@
+// Template peer for the bg/fasta benchmark. Mirrors fasta.mochi:
+// an LCG random generator + HOMO_SAPIENS 4-entry cumprob lookup +
+// rolling i64 hash so the cross-lang harness compares a single
+// integer across every peer. See MEP-39 §6.6.
+
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+func lookup(prob float64) int64 {
+	if prob < 0.3029549426680 {
+		return 97
+	}
+	if prob < 0.5009432431601 {
+		return 99
+	}
+	if prob < 0.6984905497992 {
+		return 103
+	}
+	return 116
+}
+
+func main() {
+	const n = {{ .N }}
+	start := time.Now()
+	var seed int64 = 42
+	var h int64 = 0
+	for i := 0; i < n; i++ {
+		seed = (seed*3877 + 29573) % 139968
+		prob := float64(seed) / 139968.0
+		b := lookup(prob)
+		h = (h*1009 + b) % 2147483647
+	}
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      h,
+	})
+}

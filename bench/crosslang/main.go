@@ -98,6 +98,12 @@ var programs = []program{
 	// integer-compare sum(out). When N is a multiple of 4, the
 	// expected output is (N/4) * 287. See bench/template/bg/reverse_complement/.
 	{category: "bg", name: "reverse_complement", ns: []int{4096, 16384}},
+	// MEP-39 §6.6: BG fasta kernel. N is the LCG iteration count.
+	// Each iter: state = (state*3877 + 29573) % 139968; prob =
+	// state / 139968; byte = HOMO_SAPIENS-cumprob lookup (a, c, g,
+	// t); hash = (hash * 1009 + byte) % (2^31 - 1). Output is the
+	// final hash. See bench/template/bg/fasta/.
+	{category: "bg", name: "fasta", ns: []int{10000, 100000}},
 }
 
 type result struct {
