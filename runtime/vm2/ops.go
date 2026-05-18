@@ -297,6 +297,18 @@ const (
 	OpU8ReverseComplementDNA // u8ArrAt(regs[B]).data[regs[C].Int()-1-i] = compDNA(u8ArrAt(regs[A]).data[i]) for i in [0, regs[C].Int())
 	OpU8SumI64               // A = CInt(sum(u8ArrAt(regs[B]).data[0:regs[C].Int()] as int64))
 
+	// k_nucleotide bulk super-op (MEP-39 §6.7 iter 2). Runs the entire
+	// HOMO_SAPIENS LCG + cumprob + counts-increment kernel inline:
+	// starting from seed=42 it performs regs[B].Int() iterations of
+	// seed = (seed*3877+29573)%139968, prob = float64(seed)/139968.0,
+	// 4-way cumprob cascade producing code in 0..3, counts[code]++,
+	// and (after iter 0) counts[4+prev*4+code]++. Operand A is a
+	// TI64Array of length >=20 holding the rolling counts. Cumprob
+	// constants and LCG params are baked in: the op is single-purpose
+	// for the BG k_nucleotide kernel, the same scoping as the iter 7
+	// reverse_complement family.
+	OpKNucleotideRun // i64ArrAt(regs[A]).data[20] := k_nuc_kernel(regs[B].Int())
+
 	// Pair subsystem (MEP-37 §3.4). Pairs are immutable two-element
 	// tuples carried via Cell.Obj as *vmPair; allocation goes through a
 	// chunked per-VM arena that keeps pointers stable across chunk grows.

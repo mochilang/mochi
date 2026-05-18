@@ -346,6 +346,15 @@ func (b *Builder) U8SumI64(arr, n ValueID) ValueID {
 	return b.emit(Inst{Op: OpU8SumI64, Type: TI64, Args: []ValueID{arr, n}})
 }
 
+// KNucleotideRun drives the canonical BG k_nucleotide kernel inline:
+// the LCG (seed=42, *3877+29573 %139968), the HOMO_SAPIENS cumprob
+// cascade, the 1-mer counts[code]++, and (after iter 0) the 2-mer
+// counts[4+prev*4+code]++. Operand counts must be a TI64Array of
+// length >=20. One dispatch at the vm2 level (MEP-39 §6.7 iter 2).
+func (b *Builder) KNucleotideRun(counts, n ValueID) ValueID {
+	return b.emit(Inst{Op: OpKNucleotideRun, Type: TUnit, Args: []ValueID{counts, n}})
+}
+
 // NewPair allocates a fresh vmPair carrying (fst, snd). Result is TPair.
 // Element type is unrestricted (Cell); the runtime treats both slots as
 // opaque cells, so a pair can carry an i64 in one slot and another pair
