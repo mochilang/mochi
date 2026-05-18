@@ -44,6 +44,17 @@ type VM struct {
 	// sync.Pool path so the hot list/map kernels skip the pool
 	// Get/Put cost (~20 ns/call on Apple M4).
 	jitState any
+
+	// jitScratchListIdx is the ArenaList slab index of the per-VM
+	// "scratch list" slot reused across every JIT entry that needs a
+	// PC=0 OpNewList pre-alloc (Phase 6.2d.2.b step 2.E). -1 sentinel
+	// means uninitialized. Created once on first call by
+	// EnsureScratchList; never returned to freeLists, so the slot
+	// stays under every subsequent SnapshotForJITEntry mark and the
+	// cells backing array is retained across iterations. This avoids
+	// the per-iter slab truncate + cells re-make cycle that step 2.D
+	// otherwise paid every iteration.
+	jitScratchListIdx int32
 }
 
 // JITState returns the per-VM JIT scratch handle, or nil if none has
@@ -90,11 +101,26 @@ func (vm *VM) DeoptScratchCell(n int) []Cell {
 }
 
 // New constructs an empty VM.
-func New() *VM { return &VM{} }
+func New() *VM { return &VM{jitScratchListIdx: -1} }
 
 // NewWithProgram constructs a VM bound to prog. OpCall* opcodes look
 // up callees via prog.Funcs.
-func NewWithProgram(prog *Program) *VM { return &VM{prog: prog} }
+func NewWithProgram(prog *Program) *VM { return &VM{prog: prog, jitScratchListIdx: -1} }
+
+// EnsureScratchList returns the JIT entry's per-VM "scratch list" Cell
+// handle, allocating the underlying slab slot on first call. The slot
+// is never returned to freeLists: subsequent calls just reset its len
+// to zero and bump gen so the JIT body sees an empty list at a stable
+// slab index. The cells backing array is reused (or grown if capHint
+// exceeds cap) across iterations, sidestepping the truncate + re-make
+// cycle that step 2.D's snapshot/restore otherwise paid. Phase
+// 6.2d.2.b step 2.E.
+func (vm *VM) EnsureScratchList(capHint int) Cell {
+	if vm.jitScratchListIdx < 0 {
+		vm.jitScratchListIdx = int32(vm.arenas.allocScratchList(capHint))
+	}
+	return vm.arenas.resetScratchList(uint32(vm.jitScratchListIdx), capHint)
+}
 
 // Arenas returns the VM's arena state.
 func (vm *VM) Arenas() *Arenas { return &vm.arenas }

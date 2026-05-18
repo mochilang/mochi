@@ -82,6 +82,34 @@ func (a *Arenas) takeListSlot(capHint int) (idx uint32, gen uint16) {
 	return idx, 0
 }
 
+// allocScratchList reserves a new slab slot that is never returned to
+// freeLists, so its slab index is stable for the lifetime of the
+// Arenas. Used by VM.EnsureScratchList (Phase 6.2d.2.b step 2.E).
+func (a *Arenas) allocScratchList(capHint int) uint32 {
+	idx := uint32(len(a.Lists))
+	a.Lists = append(a.Lists, vmList{
+		flags: flagAlive,
+		cells: make([]Cell, 0, capHint),
+	})
+	return idx
+}
+
+// resetScratchList rewinds the scratch slot at idx to a fresh state:
+// len=0, gen bumped, cells re-sliced (or re-made if capHint exceeds
+// the retained cap). Returns the new handle Cell.
+func (a *Arenas) resetScratchList(idx uint32, capHint int) Cell {
+	l := &a.Lists[idx]
+	if cap(l.cells) < capHint {
+		l.cells = make([]Cell, 0, capHint)
+	} else {
+		l.cells = l.cells[:0]
+	}
+	l.flags = flagAlive
+	l.len = 0
+	l.gen++
+	return MakeHandle(ArenaList, l.gen, idx)
+}
+
 // AllocMap reserves an empty open-addressed map slot.
 func (a *Arenas) AllocMap(capHint int) Cell {
 	idx, gen := a.takeMapSlot(capHint)
