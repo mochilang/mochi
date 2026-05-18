@@ -318,5 +318,13 @@
     "type": "Standards Track",
     "description": "Bring the cross-language benchmark harness up to the canonical Benchmarks Game suite (all 10 programs) with parity templates in mochi, go, python, and lua. MEP-37 and MEP-38 covered six programs at the IR-builder level (binary_trees, n_body, mandelbrot, fannkuch_redux, spectral_norm, reverse_complement) but only binary_trees and nsieve had cross-lang templates wired into bench/crosslang. This MEP closes that gap on two fronts: (a) scaffold cross-lang templates for the five existing IR kernels plus four missing programs (fasta, k-nucleotide, pidigits, regex-redux), and (b) add the runtime features those programs need (bignum in vm2 for pidigits, regex builtins audit for regex-redux). The MEP captures the pre-implementation baseline for the 11 currently wired programs, the post-implementation full-suite baseline, and then deep-dives the per-program optimization theory required to land each program inside the 2x-of-Go gate that MEP-37 set.",
     "slug": "/docs/mep/mep-0039"
+  },
+  {
+    "number": 40,
+    "title": "vm3 + compiler3: 8-byte handle Cell, typed arenas, static-type-driven dispatch",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "First-principles successor stack to runtime/vm2 + compiler2. Replaces the 16-byte split Cell (Bits uint64 + Obj unsafe.Pointer) with an 8-byte NaN-boxed handle Cell that addresses per-type Go-allocated arenas. Replaces the single Cell[] frame register file with three typed banks (regsI64, regsF64, regsCell). Replaces compiler2's flat IR with compiler3's static-type-driven IR that propagates Mochi's static type system end-to-end so the interpreter and JIT never reason about types at runtime. Keeps Go's GC by making arena slabs the only pointer roots (handles are uint64 indices into typed slabs, not pointers). Phased to a production cut-over of bench harness, language server, and REPL over roughly six months.",
+    "slug": "/docs/mep/mep-0040"
   }
 ]
