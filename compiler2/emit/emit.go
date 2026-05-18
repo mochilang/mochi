@@ -905,6 +905,19 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					A: int32(finalReg[ins.Args[0]]),
 					B: int32(finalReg[ins.Args[1]]),
 					C: int32(finalReg[ins.Args[2]])})
+			case ir.OpU8FillACGT:
+				emit(vm2.Instr{Op: vm2.OpU8FillACGT,
+					A: int32(finalReg[ins.Args[0]]),
+					B: int32(finalReg[ins.Args[1]])})
+			case ir.OpU8ReverseComplementDNA:
+				emit(vm2.Instr{Op: vm2.OpU8ReverseComplementDNA,
+					A: int32(finalReg[ins.Args[0]]),
+					B: int32(finalReg[ins.Args[1]]),
+					C: int32(finalReg[ins.Args[2]])})
+			case ir.OpU8SumI64:
+				emit(vm2.Instr{Op: vm2.OpU8SumI64, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
 			case ir.OpNewPair:
 				if suppress[vid] {
 					break

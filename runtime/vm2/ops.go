@@ -287,6 +287,16 @@ const (
 	OpU8ArrGet   // A = CInt(int64(u8ArrAt(regs[B]).data[regs[C].Int()]))
 	OpU8ArrSet   // u8ArrAt(regs[A]).data[regs[B].Int()] = byte(regs[C].Int())
 
+	// Bulk byte-array super-ops (MEP-39 §6.5 iter 7). Each runs the full
+	// inner loop inline in Go, collapsing ~7-20 dispatches per byte into
+	// a single dispatch per run. The class is tightly scoped to the BG
+	// reverse_complement / fasta / k_nucleotide kernels: a periodic ACGT
+	// fill, a reverse-complement transform with the fixed A<->T / C<->G
+	// table, and a byte-array i64 sum.
+	OpU8FillACGT             // u8ArrAt(regs[A]).data[i] = "ACGT"[i%4] for i in [0, regs[B].Int())
+	OpU8ReverseComplementDNA // u8ArrAt(regs[B]).data[regs[C].Int()-1-i] = compDNA(u8ArrAt(regs[A]).data[i]) for i in [0, regs[C].Int())
+	OpU8SumI64               // A = CInt(sum(u8ArrAt(regs[B]).data[0:regs[C].Int()] as int64))
+
 	// Pair subsystem (MEP-37 §3.4). Pairs are immutable two-element
 	// tuples carried via Cell.Obj as *vmPair; allocation goes through a
 	// chunked per-VM arena that keeps pointers stable across chunk grows.

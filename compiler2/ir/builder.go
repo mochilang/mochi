@@ -326,6 +326,26 @@ func (b *Builder) U8ArrSet(a, i, v ValueID) ValueID {
 	return b.emit(Inst{Op: OpU8ArrSet, Type: TUnit, Args: []ValueID{a, i, v}})
 }
 
+// U8FillACGT fills dst[i] = "ACGT"[i&3] for i in [0, n). One dispatch
+// at the vm2 level. Used by BG reverse_complement and fasta.
+func (b *Builder) U8FillACGT(dst, n ValueID) ValueID {
+	return b.emit(Inst{Op: OpU8FillACGT, Type: TUnit, Args: []ValueID{dst, n}})
+}
+
+// U8ReverseComplementDNA fills dst[n-1-i] = compDNA(src[i]) for
+// i in [0, n) where compDNA swaps A<->T and C<->G (others pass through).
+// One dispatch at the vm2 level. Used by BG reverse_complement.
+func (b *Builder) U8ReverseComplementDNA(src, dst, n ValueID) ValueID {
+	return b.emit(Inst{Op: OpU8ReverseComplementDNA, Type: TUnit, Args: []ValueID{src, dst, n}})
+}
+
+// U8SumI64 returns sum(arr[0:n]) as i64. One dispatch at the vm2 level.
+// Used by BG reverse_complement (and reusable for k_nucleotide partial
+// passes).
+func (b *Builder) U8SumI64(arr, n ValueID) ValueID {
+	return b.emit(Inst{Op: OpU8SumI64, Type: TI64, Args: []ValueID{arr, n}})
+}
+
 // NewPair allocates a fresh vmPair carrying (fst, snd). Result is TPair.
 // Element type is unrestricted (Cell); the runtime treats both slots as
 // opaque cells, so a pair can carry an i64 in one slot and another pair
