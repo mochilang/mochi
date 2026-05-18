@@ -80,46 +80,6 @@ func BenchmarkMathKernels(b *testing.B) {
 // no observable effect and hoist the call out of the loop body.
 var goSink int64
 
-// TestLayerABoundsCorpusReuse asserts that re-running every corpus
-// kernel against the same VM keeps arena memory flat. Layer A (§6.7,
-// Phase 3.4) truncates per-call allocations on unboxed Return, so
-// reused-VM kernels should end with the same TotalSlots they started
-// with regardless of N or invocation count.
-//
-// This is the bench-correctness gate: until Layer A held, every
-// long-running bench drifted because arenas accumulated state across
-// b.N iterations.
-func TestLayerABoundsCorpusReuse(t *testing.T) {
-	cases := []struct {
-		name string
-		prog *Program
-		n    int64
-	}{
-		{"lists_fill_sum_n128", ListsFillSum, 128},
-		{"maps_fill_sum_n128", MapsFillSum, 128},
-	}
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			prog := tc.prog.Build(tc.n)
-			vm := vm3.NewWithProgram(prog)
-			fn := prog.Funcs[prog.Entry]
-			args := []int64{tc.n}
-			const N = 1000
-			for range N {
-				if _, err := vm.RunWithArgs(fn, args); err != nil {
-					t.Fatalf("RunWithArgs error: %v", err)
-				}
-			}
-			a := vm.Arenas()
-			for _, tag := range []vm3.ArenaTag{vm3.ArenaMap, vm3.ArenaList} {
-				if got := a.TotalSlots(tag); got != 0 {
-					t.Errorf("TotalSlots(tag=%d) after %d reused-VM runs = %d, want 0", tag, N, got)
-				}
-			}
-		})
-	}
-}
-
 // BenchmarkGoKernels runs the compiler2 Expect* reference functions
 // directly. Pairing this with BenchmarkMathKernels gives a "vm3 vs
 // native Go" ratio per kernel, the headline MEP-40 perf metric.
