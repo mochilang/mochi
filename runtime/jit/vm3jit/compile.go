@@ -98,6 +98,14 @@ type Options struct {
 	// disables self-recursion: any OpCallI64 returns ErrNotImplemented
 	// and the caller falls back to the interpreter.
 	SelfIdx int
+
+	// Prog is fn's containing Program. When set, the JIT can resolve
+	// callees in cross-fn OpCallMixed sites (Phase 6.2d.2.b) and
+	// inspect their JITCode + ParamBanks at compile time. nil
+	// disables cross-fn admission: any OpCallMixed to a non-self
+	// callee returns ErrNotImplemented and the caller falls back to
+	// the interpreter.
+	Prog *vm3.Program
 }
 
 // DefaultOptions returns the conservative defaults for callers that
@@ -118,7 +126,7 @@ func CompileInProgram(prog *vm3.Program, idx uint32) (*CompiledFunc, error) {
 	if int(idx) >= len(prog.Funcs) {
 		return nil, fmt.Errorf("vm3jit: fn idx %d out of range (Funcs=%d)", idx, len(prog.Funcs))
 	}
-	return CompileWithOptions(prog.Funcs[idx], Options{SelfIdx: int(idx)})
+	return CompileWithOptions(prog.Funcs[idx], Options{SelfIdx: int(idx), Prog: prog})
 }
 
 // CompileWithOptions is the explicit-options form. Phase 6.0..6.2b
@@ -226,10 +234,79 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 				return fmt.Errorf("%w: %s pc %d TailCallMixed not a self-tail with argBase=0",
 					ErrNotImplemented, fn.Name, i)
 			}
+		case vm3.OpCallMixed:
+			if err := checkCrossFnCallMixedAdmissible(fn, op, i, opts); err != nil {
+				return err
+			}
 		default:
 			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses opcode %d outside the sum-shape whitelist",
 				ErrNotImplemented, fn.Name, i, op.Code)
 		}
+	}
+	return nil
+}
+
+// checkCrossFnCallMixedAdmissible enforces the Phase 6.2d.2.b step 1
+// whitelist for cross-fn OpCallMixed sites. The narrow scope avoids
+// the deopt passthrough block work: callees that can deopt
+// (OpListPushI64, reg-reg Div/Mod) are rejected because the caller's
+// BLR path does not currently spill caller state on a callee-side
+// deopt, so vm.deopt* would carry only the callee's regs and the
+// caller's interp resume would garble the caller frame. Step 2/3
+// adds the missing piece; until then, only deopt-free callees are
+// admitted.
+//
+// Resource budget: total live regs across the caller+callee frame
+// must fit in the jitFrame3 buffer. I64 has 4096 slots so any sane
+// pair fits; F64 caps at MaxF64Regs and Cell at MaxCellRegs, so the
+// sum is enforced explicitly.
+func checkCrossFnCallMixedAdmissible(fn *vm3.Function, op vm3.Op, pc int, opts Options) error {
+	if opts.Prog == nil {
+		return fmt.Errorf("%w: %s pc %d CallMixed needs opts.Prog (use CompileInProgram)",
+			ErrNotImplemented, fn.Name, pc)
+	}
+	idx := int(uint16(op.C))
+	if idx >= len(opts.Prog.Funcs) {
+		return fmt.Errorf("%w: %s pc %d CallMixed callee idx %d out of range (Funcs=%d)",
+			ErrNotImplemented, fn.Name, pc, idx, len(opts.Prog.Funcs))
+	}
+	if opts.SelfIdx >= 0 && idx == opts.SelfIdx {
+		return fmt.Errorf("%w: %s pc %d CallMixed to self (idx %d) not admitted; use OpTailCallMixed for self-tail",
+			ErrNotImplemented, fn.Name, pc, idx)
+	}
+	callee := opts.Prog.Funcs[idx]
+	if callee.JITCode == nil {
+		return fmt.Errorf("%w: %s pc %d CallMixed callee %s has no JITCode (not compiled yet)",
+			ErrNotImplemented, fn.Name, pc, callee.Name)
+	}
+	if hasListPushI64(callee) || hasRegRegDivMod(callee) {
+		return fmt.Errorf("%w: %s pc %d CallMixed callee %s can deopt (step 1 admits only deopt-free callees)",
+			ErrNotImplemented, fn.Name, pc, callee.Name)
+	}
+	// Frame budget: caller and callee share the same jitFrame3 buffer;
+	// each frame's regs<bank> window must be disjoint, so the union
+	// must fit in MaxF64Regs / MaxCellRegs respectively.
+	if int(fn.NumRegsF64)+int(callee.NumRegsF64) > maxF64RegsARM64 {
+		return fmt.Errorf("%w: %s pc %d CallMixed total f64 regs %d+%d > %d",
+			ErrNotImplemented, fn.Name, pc,
+			fn.NumRegsF64, callee.NumRegsF64, maxF64RegsARM64)
+	}
+	if int(fn.NumRegsCell)+int(callee.NumRegsCell) > maxCellRegs {
+		return fmt.Errorf("%w: %s pc %d CallMixed total cell regs %d+%d > %d",
+			ErrNotImplemented, fn.Name, pc,
+			fn.NumRegsCell, callee.NumRegsCell, maxCellRegs)
+	}
+	// Caller restrictions to keep the BLR site self-contained in step 1:
+	//   - no F64 bank in the caller (would need v0..v7 spill across BLR)
+	//   - no list ops in the caller body (would conflict with the x20
+	//     arena-ctx stash this site relies on)
+	if fn.NumRegsF64 > 0 {
+		return fmt.Errorf("%w: %s pc %d CallMixed caller has %d f64 regs (step 1 admits only i64+cell callers)",
+			ErrNotImplemented, fn.Name, pc, fn.NumRegsF64)
+	}
+	if hasListGetI64(fn) || hasListPushI64(fn) {
+		return fmt.Errorf("%w: %s pc %d CallMixed caller has list ops in body (step 1 reserves x20 for arena ctx)",
+			ErrNotImplemented, fn.Name, pc)
 	}
 	return nil
 }

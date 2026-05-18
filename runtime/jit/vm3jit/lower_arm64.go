@@ -90,11 +90,19 @@ func computeCallSpills(fn *vm3.Function) []uint32 {
 		}
 	}
 	for i, op := range fn.Code {
-		if op.Code != vm3.OpCallI64 {
+		switch op.Code {
+		case vm3.OpCallI64, vm3.OpCallMixed:
+		default:
 			continue
 		}
 		mask := uint32(0x7F) // caller-saved (regs 0..6 → x9..x15)
-		dstBit := uint32(1) << op.A
+		// dstBit excludes A only when retBank places the result in the
+		// i64 bank. For OpCallI64 the result is always i64; for
+		// OpCallMixed read the bank flag.
+		var dstBit uint32
+		if op.Code == vm3.OpCallI64 || vm3.Bank(op.BankFlags&0x3) == vm3.BankI64 {
+			dstBit = uint32(1) << op.A
+		}
 		spills[i] = (liveOut[i] &^ dstBit) & mask
 	}
 	return spills
@@ -184,58 +192,35 @@ func calleeSavedPairRegs(fn *vm3.Function) []uint32 {
 	return pairs
 }
 
-// hasRegRegDivMod reports whether fn contains any reg-reg OpDivI64 or
-// OpModI64 (the K-form variants reject /0 at Compile time and need no
-// runtime guard, so they do not contribute to the deopt block).
-func hasRegRegDivMod(fn *vm3.Function) bool {
-	for _, op := range fn.Code {
-		if op.Code == vm3.OpDivI64 || op.Code == vm3.OpModI64 {
-			return true
-		}
-	}
-	return false
-}
-
-// hasListPushI64 reports whether fn contains any OpListPushI64. Each
-// site emits an inline cap check + conditional branch to the
-// StatusListGrow deopt block (Phase 6.2d.2.c).
-func hasListPushI64(fn *vm3.Function) bool {
-	for _, op := range fn.Code {
-		if op.Code == vm3.OpListPushI64 {
-			return true
-		}
-	}
-	return false
-}
-
-// hasListGetI64 reports whether fn contains any OpListGetI64.
-func hasListGetI64(fn *vm3.Function) bool {
-	for _, op := range fn.Code {
-		if op.Code == vm3.OpListGetI64 {
-			return true
-		}
-	}
-	return false
-}
+// hasRegRegDivMod, hasListPushI64, hasListGetI64 live in lower_common.go
+// (used by both arch-specific lowering and the arch-independent
+// admissibility check in compile.go).
 
 // hoistedCellReg returns the regsCell index whose slab byte address can
 // be cached in x20 for the lifetime of the call, or -1 if no hoist
 // applies. Phase 6.2d.2.c.1 caches regsCell[0]'s slab base when fn has
-// exactly one cell reg (the lists_fill_sum kernel shape: fill/sum each
-// own a single list handle that stays put across every OpListGetI64 /
-// OpListPushI64 inside their loops). OpListGetI64 / OpListPushI64
-// emitters detect this and skip the per-op UXTW + MUL + ADD lane,
-// dropping 4 instructions per opcode in the inner loop.
+// exactly one cell reg AND a list opcode in the body (the
+// lists_fill_sum kernel shape: fill/sum each own a single list handle
+// that stays put across every OpListGetI64 / OpListPushI64 inside
+// their loops). OpListGetI64 / OpListPushI64 emitters detect this and
+// skip the per-op UXTW + MUL + ADD lane, dropping 4 instructions per
+// opcode in the inner loop.
 //
 // Why gate on NumRegsCell == 1: when the function carries multiple
 // cells we can only pin one slab base in x20, and the bytecode could
 // freely interleave Gets/Pushes against different cells; keeping the
 // non-hoisted recompute path for those is simpler than picking a
-// "primary" cell and tracking which sites hit it. For the current
-// corpus shape (NumRegsCell == 1) every cell reference is by definition
-// against regsCell[0], so the hoist is trivially safe.
+// "primary" cell and tracking which sites hit it.
+//
+// Why also gate on hasListGetI64 || hasListPushI64: cell-bank fns that
+// only thread a Cell through to a cross-fn OpCallMixed (Phase
+// 6.2d.2.b "main" shape) have no list op in their body, so the hoist
+// would waste the prologue's UXTW+MUL+ADD without ever being read.
+// Skipping the hoist here frees x20 for the cross-fn arena ctx stash
+// (lowerARM64 emits MOV x20, x4 at prologue end when
+// hasCrossFnCallMixed and no slab hoist applies).
 func hoistedCellReg(fn *vm3.Function) int {
-	if fn.NumRegsCell == 1 {
+	if fn.NumRegsCell == 1 && (hasListGetI64(fn) || hasListPushI64(fn)) {
 		return 0
 	}
 	return -1
@@ -411,19 +396,128 @@ func deoptStartForStatus(fn *vm3.Function, baseStart int, status int64) int {
 	return baseStart // unreachable for callers that gate emission
 }
 
-// isNonLeaf reports whether fn issues any native BL (currently only
-// self-recursive OpCallI64 is lowered to BL; everything else routes
-// through the interpreter and so does not need x30 saved). Non-leaf
-// fns must push x29:x30 as an extra outermost STP pair so the JIT'd
-// callee can use BL/RET without clobbering the caller's return
-// address.
+// isNonLeaf reports whether fn issues any native BL or BLR. Self-
+// recursive OpCallI64 lowers to BL, and cross-fn OpCallMixed (Phase
+// 6.2d.2.b) lowers to BLR; both write x30, so the caller must push
+// x29:x30 as an extra outermost STP pair. OpTailCallMixed lowers to a
+// backward B (no link), so it does not by itself force non-leaf.
 func isNonLeaf(fn *vm3.Function) bool {
 	for _, op := range fn.Code {
-		if op.Code == vm3.OpCallI64 {
+		if op.Code == vm3.OpCallI64 || op.Code == vm3.OpCallMixed {
 			return true
 		}
 	}
 	return false
+}
+
+// hasCrossFnCallMixed reports whether fn contains an OpCallMixed to a
+// callee other than itself. Cross-fn callmixed sites need the
+// jitArenaCtx address stashed in x20 across the BLR (callee's prologue
+// reloads x19 = listsBase from [x4]); self OpCallMixed would conflict
+// with self-tail-call's x20 hoist convention and is not admitted by
+// the whitelist.
+func hasCrossFnCallMixed(fn *vm3.Function, opts Options) bool {
+	for _, op := range fn.Code {
+		if op.Code != vm3.OpCallMixed {
+			continue
+		}
+		if opts.SelfIdx >= 0 && int(uint16(op.C)) == opts.SelfIdx {
+			continue
+		}
+		return true
+	}
+	return false
+}
+
+// needsArenaCtxStash reports whether the prologue should emit MOV x20,
+// x4 to preserve the jitArenaCtx address across a cross-fn BLR. Only
+// triggers when fn has a cross-fn OpCallMixed AND the slab-base hoist
+// does not also claim x20 (the two uses collide; admitting both would
+// need an extra callee-saved reg, which the current frame layout does
+// not reserve).
+func needsArenaCtxStash(fn *vm3.Function, opts Options) bool {
+	if !hasCrossFnCallMixed(fn, opts) {
+		return false
+	}
+	return hoistedCellReg(fn) < 0
+}
+
+// resolveCrossFnCallee returns the callee for a cross-fn OpCallMixed at
+// op. Mirrors the gating in checkCrossFnCallMixedAdmissible so callers
+// in lower_arm64 can fail with ErrNotImplemented if a caller slips past
+// the admissibility check (e.g. via test fixtures that bypass compile.go).
+func resolveCrossFnCallee(opts Options, op vm3.Op) (*vm3.Function, error) {
+	if opts.Prog == nil {
+		return nil, fmt.Errorf("%w: CallMixed needs opts.Prog", ErrNotImplemented)
+	}
+	idx := int(uint16(op.C))
+	if idx < 0 || idx >= len(opts.Prog.Funcs) {
+		return nil, fmt.Errorf("%w: CallMixed callee idx %d out of range", ErrNotImplemented, idx)
+	}
+	if opts.SelfIdx >= 0 && idx == opts.SelfIdx {
+		return nil, fmt.Errorf("%w: CallMixed to self idx %d not admitted", ErrNotImplemented, idx)
+	}
+	callee := opts.Prog.Funcs[idx]
+	if callee.JITCode == nil {
+		return nil, fmt.Errorf("%w: CallMixed callee %s has no JITCode", ErrNotImplemented, callee.Name)
+	}
+	return callee, nil
+}
+
+// countParamBanks returns the per-bank arg counts for callee.ParamBanks.
+// Used by crossFnCallMixedWordsARM64 to size the BLR sequence's arg STR
+// runs.
+func countParamBanks(callee *vm3.Function) (nI64, nF64, nCell int) {
+	for _, b := range callee.ParamBanks {
+		switch b {
+		case vm3.BankI64:
+			nI64++
+		case vm3.BankF64:
+			nF64++
+		case vm3.BankCell:
+			nCell++
+		}
+	}
+	return
+}
+
+// crossFnCallMixedWordsARM64 returns the word count for the BLR
+// sequence at a cross-fn OpCallMixed site. The sequence is:
+//
+//	nSpill * STR x(9+r),[x0,#r*8]        ; spill caller-saved i64
+//	nI64Args  * STR src,[x0,#(callerNI64+k)*8]
+//	nF64Args  * STR Dsrc,[x2,#(callerNF64+k)*8]
+//	nCellArgs * STR src,[x3,#(callerNCell+k)*8]
+//	STP x0,x2,[SP,#-16]!
+//	STP x3,xzr,[SP,#-16]!
+//	[ADD x0,x0,#(callerNI64*8)]          ; only if callerNI64>0
+//	[ADD x2,x2,#(callerNF64*8)]          ; only if callerNF64>0
+//	[ADD x3,x3,#(callerNCell*8)]         ; only if callerNCell>0
+//	MOV x4,x20                            ; restore arena ctx
+//	movImm64(x16, &callee.JITCode)
+//	BLR x16
+//	MOV x17,x0                            ; capture i64 result
+//	LDP x3,xzr,[SP],#16
+//	LDP x0,x2,[SP],#16
+//	nSpill * LDR x(9+r),[x0,#r*8]
+//	MOV xA,x17                            ; deliver result to dst
+func crossFnCallMixedWordsARM64(fn, callee *vm3.Function, spillMask uint32) int {
+	nSpill := popcount32(spillMask)
+	nI64Args, nF64Args, nCellArgs := countParamBanks(callee)
+	bumps := 0
+	if fn.NumRegsI64 > 0 {
+		bumps++
+	}
+	if fn.NumRegsF64 > 0 {
+		bumps++
+	}
+	if fn.NumRegsCell > 0 {
+		bumps++
+	}
+	addr := int64(uintptr(callee.JITCode))
+	// 2*nSpill spill+reload + arg STRs + 2 STP + bumps + 1 MOV x4,x20 +
+	// movImm64 + 1 BLR + 1 MOV x17,x0 + 2 LDP + 1 MOV xA,x17.
+	return 2*nSpill + nI64Args + nF64Args + nCellArgs + 2 + bumps + 1 + movImm64WordCount(addr) + 1 + 1 + 2 + 1
 }
 
 // numLRPair returns 1 if fn needs the x29:x30 outermost STP/LDP pair,
@@ -502,7 +596,11 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 	pairs := len(pairRegs)
 	lrPair := numLRPair(fn)
 	cellScratch := numCellScratchPairs(fn)
-	prologueWords := lrPair + pairs + int(fn.NumRegsI64) + int(fn.NumRegsF64) + int(fn.NumRegsCell) + cellScratch + hoistPrologueWordsARM64(fn)
+	arenaCtxStash := 0
+	if needsArenaCtxStash(fn, opts) {
+		arenaCtxStash = 1 // MOV x20, x4
+	}
+	prologueWords := lrPair + pairs + int(fn.NumRegsI64) + int(fn.NumRegsF64) + int(fn.NumRegsCell) + cellScratch + hoistPrologueWordsARM64(fn) + arenaCtxStash
 	spillSets := computeCallSpills(fn)
 
 	pcMap := make([]int, len(fn.Code)+1)
@@ -574,6 +672,16 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 		if hoistsCellsLenARM64(fn) {
 			ws = append(ws, ldr64(23, 20, (cellsOff+8)/8))
 		}
+	}
+	// Cross-fn OpCallMixed arena-ctx stash (Phase 6.2d.2.b step 1). x4
+	// holds the jitArenaCtx pointer the trampoline pinned at JIT entry;
+	// it gets clobbered by callee-saved discipline (intra-procedure
+	// scratch) the moment another opcode needs x4, and callees that
+	// dereference x4 in their own prologue need the same address. Park
+	// x4 in callee-saved x20 here so each cross-fn BLR site can restore
+	// x4 from x20 right before the branch.
+	if needsArenaCtxStash(fn, opts) {
+		ws = append(ws, movReg(20, 4))
 	}
 
 	for i, op := range fn.Code {
@@ -772,6 +880,13 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 				ErrNotImplemented, uint16(op.C), opts.SelfIdx, op.B)
 		}
 		return 1, nil
+
+	case vm3.OpCallMixed:
+		callee, err := resolveCrossFnCallee(opts, op)
+		if err != nil {
+			return 0, err
+		}
+		return crossFnCallMixedWordsARM64(fn, callee, spillSets[idx]), nil
 
 	default:
 		return 0, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
@@ -1004,6 +1119,57 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		}
 		// Move result into caller's pinned dst register.
 		ws = append(ws, movReg(xA, 16))
+		return ws, nil
+
+	case vm3.OpCallMixed:
+		callee, err := resolveCrossFnCallee(opts, op)
+		if err != nil {
+			return nil, err
+		}
+		spillMask := spillSets[idx]
+		callerI64 := int(fn.NumRegsI64)
+		callerF64 := int(fn.NumRegsF64)
+		callerCell := int(fn.NumRegsCell)
+		ws := make([]uint32, 0, crossFnCallMixedWordsARM64(fn, callee, spillMask))
+		for r := uint16(0); r < 7; r++ {
+			if spillMask&(1<<r) != 0 {
+				ws = append(ws, str64(uint32(9+r), 0, uint32(r)))
+			}
+		}
+		for k, b := range callee.ParamBanks {
+			argReg := op.B + uint16(k)
+			switch b {
+			case vm3.BankI64:
+				ws = append(ws, str64(r2x(fn, argReg), 0, uint32(callerI64+k)))
+			case vm3.BankF64:
+				ws = append(ws, strD(r2d(argReg), 2, uint32(callerF64+k)))
+			case vm3.BankCell:
+				ws = append(ws, str64(r2cell(argReg), 3, uint32(callerCell+k)))
+			}
+		}
+		ws = append(ws, stpPreIdx64(0, 2, 31, -16))
+		ws = append(ws, stpPreIdx64(3, 31, 31, -16))
+		if callerI64 > 0 {
+			ws = append(ws, addImm64(0, 0, uint32(callerI64*8)))
+		}
+		if callerF64 > 0 {
+			ws = append(ws, addImm64(2, 2, uint32(callerF64*8)))
+		}
+		if callerCell > 0 {
+			ws = append(ws, addImm64(3, 3, uint32(callerCell*8)))
+		}
+		ws = append(ws, movReg(4, 20))
+		ws = append(ws, movImm64(16, int64(uintptr(callee.JITCode)))...)
+		ws = append(ws, blr(16))
+		ws = append(ws, movReg(17, 0))
+		ws = append(ws, ldpPostIdx64(3, 31, 31, 16))
+		ws = append(ws, ldpPostIdx64(0, 2, 31, 16))
+		for r := uint16(0); r < 7; r++ {
+			if spillMask&(1<<r) != 0 {
+				ws = append(ws, ldr64(uint32(9+r), 0, uint32(r)))
+			}
+		}
+		ws = append(ws, movReg(xA, 17))
 		return ws, nil
 
 	case vm3.OpListGetI64:
@@ -1319,6 +1485,16 @@ func bImm(off26 int32) uint32 {
 // OpCallI64 to call back into the same JIT page.
 func bl(off26 int32) uint32 {
 	return 0x94000000 | uint32(off26&0x3FFFFFF)
+}
+
+// blr encodes BLR Xn: branch with link to the absolute address held in
+// Xn (writes x30 with the return address). Used by cross-fn OpCallMixed
+// to invoke a JIT'd callee whose entry pointer lives outside this code
+// page (BL's 26-bit pc-rel range tops out at +/-128 MiB, smaller than
+// the gap between independently mmap'd JIT pages, so we materialize the
+// 64-bit entry in x16 with movImm64 and BLR through it).
+func blr(xn uint32) uint32 {
+	return 0xD63F0000 | ((xn & 0x1F) << 5)
 }
 
 // addImm64 encodes ADD Xd, Xn, #imm12 (64-bit, shift=0). Used by the
