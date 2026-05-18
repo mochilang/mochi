@@ -260,6 +260,129 @@ func BenchmarkPrimeCountGoFair(b *testing.B) {
 	vm3jitSink = s
 }
 
+//go:noinline
+func goFactRecBench(n int64) int64 {
+	if n <= 1 {
+		return 1
+	}
+	return n * goFactRecBench(n-1)
+}
+
+//go:noinline
+func goFibRecBench(n int64) int64 {
+	if n < 2 {
+		return n
+	}
+	return goFibRecBench(n-1) + goFibRecBench(n-2)
+}
+
+// BenchmarkFactRecJIT measures the JIT'd fact_rec with self-recursive
+// BL lowering. n=15 keeps the result inside i64 (15! = 1307674368000)
+// and gives a deep enough call stack to make the spill/reload sequence
+// visible in the timing.
+func BenchmarkFactRecJIT(b *testing.B) {
+	prog := corpus.FactRec.Build(0)
+	cf, err := vm3jit.CompileInProgram(prog, prog.Entry)
+	if err != nil {
+		b.Fatalf("CompileInProgram: %v", err)
+	}
+	defer cf.Free()
+	entry := cf.Entry()
+	regs := make([]int64, 8192)
+	const n = int64(15)
+	var status int64
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		regs[0] = n + int64(i&1)
+		s += int64(trampoline.CallStatus(entry, unsafe.Pointer(&regs[0]), unsafe.Pointer(&status)))
+		if status != 0 {
+			b.Fatalf("unexpected deopt: status=%d", status)
+		}
+	}
+	vm3jitSink = s
+}
+
+func BenchmarkFactRecGoFair(b *testing.B) {
+	const n = int64(15)
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		s += goFactRecBench(n + int64(i&1))
+	}
+	vm3jitSink = s
+}
+
+func BenchmarkFactRecInterp(b *testing.B) {
+	prog := corpus.FactRec.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	vm := vm3.NewWithProgram(prog)
+	const n = int64(15)
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		got, err := vm.RunWithArgs(fn, []int64{n + int64(i&1)})
+		if err != nil {
+			b.Fatalf("RunWithArgs: %v", err)
+		}
+		s += got.Int()
+	}
+	vm3jitSink = s
+}
+
+// BenchmarkFibRecJIT measures the JIT'd fib_rec with two self-recursive
+// BL sites per activation. n=25 gives ~242k call activations (a real
+// recursion-bound kernel; the BL/spill/reload cost dominates).
+func BenchmarkFibRecJIT(b *testing.B) {
+	prog := corpus.FibRec.Build(0)
+	cf, err := vm3jit.CompileInProgram(prog, prog.Entry)
+	if err != nil {
+		b.Fatalf("CompileInProgram: %v", err)
+	}
+	defer cf.Free()
+	entry := cf.Entry()
+	regs := make([]int64, 8192)
+	const n = int64(25)
+	var status int64
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		regs[0] = n + int64(i&1)
+		s += int64(trampoline.CallStatus(entry, unsafe.Pointer(&regs[0]), unsafe.Pointer(&status)))
+		if status != 0 {
+			b.Fatalf("unexpected deopt: status=%d", status)
+		}
+	}
+	vm3jitSink = s
+}
+
+func BenchmarkFibRecGoFair(b *testing.B) {
+	const n = int64(25)
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		s += goFibRecBench(n + int64(i&1))
+	}
+	vm3jitSink = s
+}
+
+func BenchmarkFibRecInterp(b *testing.B) {
+	prog := corpus.FibRec.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	vm := vm3.NewWithProgram(prog)
+	const n = int64(25)
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		got, err := vm.RunWithArgs(fn, []int64{n + int64(i&1)})
+		if err != nil {
+			b.Fatalf("RunWithArgs: %v", err)
+		}
+		s += got.Int()
+	}
+	vm3jitSink = s
+}
+
 func BenchmarkPrimeCountInterp(b *testing.B) {
 	prog := corpus.PrimeCount.Build(0)
 	fn := prog.Funcs[prog.Entry]

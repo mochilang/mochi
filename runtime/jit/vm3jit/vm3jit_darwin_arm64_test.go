@@ -227,6 +227,89 @@ func TestCompilePrimeCountMatchesInterp(t *testing.T) {
 		[]int64{2, 10, 100, 1000})
 }
 
+// TestCompileFactRecMatchesInterp validates the JIT'd fact_rec against
+// the interpreter across a range of N. fact_rec exercises self-recursive
+// OpCallI64 (Phase 6.1d): the JIT lowers the call to a native BL inside
+// the same code page, with caller-saved spill/reload and a window bump
+// in x0.
+func TestCompileFactRecMatchesInterp(t *testing.T) {
+	prog := corpus.FactRec.Build(0)
+	for _, n := range []int64{0, 1, 2, 3, 5, 10, 12, 15} {
+		got := runJITProgRecursive(t, prog, n)
+		vm := vm3.NewWithProgram(prog)
+		want, err := vm.RunWithArgs(prog.Funcs[prog.Entry], []int64{n})
+		if err != nil {
+			t.Fatalf("interp fact_rec(%d): %v", n, err)
+		}
+		if got != want.Int() {
+			t.Errorf("fact_rec(%d): jit=%d interp=%d", n, got, want.Int())
+		}
+	}
+}
+
+// TestCompileFibRecMatchesInterp validates the JIT'd fib_rec across the
+// same N range that corpus_test.go pins. Two self-recursive call sites
+// per activation, so this exercises both the spill/reload symmetry and
+// the BL offset math at two distinct call-site PCs.
+func TestCompileFibRecMatchesInterp(t *testing.T) {
+	prog := corpus.FibRec.Build(0)
+	for _, n := range []int64{0, 1, 2, 5, 10, 15, 20} {
+		got := runJITProgRecursive(t, prog, n)
+		vm := vm3.NewWithProgram(prog)
+		want, err := vm.RunWithArgs(prog.Funcs[prog.Entry], []int64{n})
+		if err != nil {
+			t.Fatalf("interp fib_rec(%d): %v", n, err)
+		}
+		if got != want.Int() {
+			t.Errorf("fib_rec(%d): jit=%d interp=%d", n, got, want.Int())
+		}
+	}
+}
+
+// TestRejectNonSelfCallI64 confirms that an OpCallI64 whose callee idx
+// does not match the compile-time SelfIdx is rejected with
+// ErrNotImplemented so callers fall back to the interpreter. This is
+// the Phase 6.1d guard rail; full inter-function calls come later.
+func TestRejectNonSelfCallI64(t *testing.T) {
+	fn := &vm3.Function{
+		Name:       "bad_call",
+		NumRegsI64: 2,
+		ParamBanks: []vm3.Bank{vm3.BankI64},
+		ResultBank: vm3.BankI64,
+		Code: []vm3.Op{
+			vm3.MakeOp(vm3.OpCallI64, 1, 0, 7),
+			vm3.MakeOp(vm3.OpReturnI64, 1, 0, 0),
+		},
+	}
+	prog := &vm3.Program{Funcs: []*vm3.Function{fn}, Entry: 0}
+	if _, err := vm3jit.CompileInProgram(prog, 0); err == nil {
+		t.Fatal("expected ErrNotImplemented for non-self CallI64, got nil")
+	}
+}
+
+// runJITProgRecursive compiles fn = prog.Funcs[Entry] with the
+// Program-aware helper (so the JIT knows its own callee index for
+// self-recursion) and runs it on a large window buffer big enough to
+// hold the deepest recursion the corpus uses. The buffer is sized for
+// the largest test input (fib_rec(20) needs ~20 frames * 5 regs).
+func runJITProgRecursive(t *testing.T, prog *vm3.Program, arg int64) int64 {
+	t.Helper()
+	cf, err := vm3jit.CompileInProgram(prog, prog.Entry)
+	if err != nil {
+		t.Fatalf("CompileInProgram: %v", err)
+	}
+	defer cf.Free()
+	// 8192 slots is plenty for fact_rec(20) / fib_rec(20).
+	regs := make([]int64, 8192)
+	regs[0] = arg
+	var status int64
+	got := trampoline.CallStatus(cf.Entry(), unsafe.Pointer(&regs[0]), unsafe.Pointer(&status))
+	if status != vm3jit.StatusOK {
+		t.Fatalf("unexpected deopt: status=%d", status)
+	}
+	return int64(got)
+}
+
 // TestRejectF64 confirms a function with f64 banks is rejected by the
 // 6.0 gate (so callers fall back to the interpreter cleanly).
 func TestRejectF64(t *testing.T) {
