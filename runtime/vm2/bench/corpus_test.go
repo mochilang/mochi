@@ -62,6 +62,10 @@ var corpusSizes = []corpusSize{
 	// MEP-39 §6.7: k_nucleotide. N is the LCG iteration count; one
 	// LCG step + 1-mer inc + 2-mer inc per inner iter.
 	{"bg_k_nucleotide", 10000},
+	// MEP-39 §6.8: pidigits. N is the digit count; the Gibbons spigot
+	// algorithm allocates a fresh bignum per iter so N stays modest for
+	// the oracle test (the cross-lang harness scales to 1000/10000).
+	{"bg_pidigits", 200},
 }
 
 func sizeFor(name string) int64 {
@@ -151,3 +155,4 @@ func BenchmarkVM2_BG_SpectralNorm(b *testing.B)  { benchCorpus(b, corpus.Program
 func BenchmarkVM2_BG_ReverseComplement(b *testing.B) { benchCorpus(b, corpus.Program{Name: "bg_reverse_complement", Build: corpus.BuildReverseComplement, Expect: corpus.ExpectReverseComplement}) }
 func BenchmarkVM2_BG_Fasta(b *testing.B)         { benchCorpus(b, corpus.Program{Name: "bg_fasta", Build: corpus.BuildFasta, Expect: corpus.ExpectFasta}) }
 func BenchmarkVM2_BG_KNucleotide(b *testing.B)   { benchCorpus(b, corpus.Program{Name: "bg_k_nucleotide", Build: corpus.BuildKNucleotide, Expect: corpus.ExpectKNucleotide}) }
+func BenchmarkVM2_BG_Pidigits(b *testing.B)      { benchCorpus(b, corpus.Program{Name: "bg_pidigits", Build: corpus.BuildPidigits, Expect: corpus.ExpectPidigits}) }

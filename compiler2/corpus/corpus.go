@@ -75,6 +75,12 @@ func All() []Program {
 		// 2-mer counts, folded into a single i64 hash so the cross-
 		// lang harness compares a single i64 across every peer.
 		{Name: "bg_k_nucleotide", Build: BuildKNucleotide, Expect: ExpectKNucleotide},
+		// MEP-39 §6.8: parameterised pidigits kernel. N is the number
+		// of decimal digits to emit; the Gibbons unbounded spigot keeps
+		// arbitrary-precision (q, r, t) state plus i64 (k, n, l) and
+		// folds emitted digits into a rolling i64 hash so peers can
+		// integer-compare. Exercises the bignum subsystem (§4.2.3).
+		{Name: "bg_pidigits", Build: BuildPidigits, Expect: ExpectPidigits},
 	}
 }
 

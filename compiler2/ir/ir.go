@@ -224,6 +224,7 @@ const (
 	OpLessBigInt   // Args[0] < Args[1] -> TBool
 	OpEqualBigInt  // Args[0] == Args[1] -> TBool
 	OpI64ToBigInt  // Args[0] (TI64) -> TBigInt
+	OpBigIntToI64  // Args[0] (TBigInt) -> TI64 (low 64 bits; pidigits' digit candidate)
 	OpBigIntToStr  // Args[0] (TBigInt) -> TStr
 
 	// Call: Aux = function index, Args = arg values. May have effects;

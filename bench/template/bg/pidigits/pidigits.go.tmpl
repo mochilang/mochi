@@ -1,0 +1,86 @@
+// Template peer for the bg/pidigits benchmark. Mirrors
+// pidigits.mochi (the Mochi reference) and the IR builder in
+// compiler2/corpus/bg_pidigits_scaled.go: the Gibbons unbounded
+// spigot keeps (q, r, t) as math/big.Int plus i64 (k, n, l), and
+// folds each emitted digit into a rolling i64 hash
+// h = (h*10 + digit) % 2147483647 so the harness compares one
+// integer across every peer. See MEP-39 §6.8.
+
+package main
+
+import (
+	"encoding/json"
+	"math/big"
+	"os"
+	"time"
+)
+
+func main() {
+	const n = {{ .N }}
+	start := time.Now()
+
+	q := big.NewInt(1)
+	r := big.NewInt(0)
+	t := big.NewInt(1)
+	k := int64(1)
+	nd := int64(3)
+	l := int64(3)
+	var h int64
+	rem := int64(n)
+
+	four := big.NewInt(4)
+	three := big.NewInt(3)
+	ten := big.NewInt(10)
+	two := big.NewInt(2)
+	mod := int64(2147483647)
+
+	for rem > 0 {
+		lhs := new(big.Int).Mul(four, q)
+		lhs.Add(lhs, r)
+		nbig := big.NewInt(nd)
+		ntp := new(big.Int).Mul(nbig, t)
+		rhs := new(big.Int).Add(ntp, t)
+		if lhs.Cmp(rhs) < 0 {
+			h = (h*10 + nd) % mod
+			newQ := new(big.Int).Mul(ten, q)
+			rMinus := new(big.Int).Sub(r, ntp)
+			newR := new(big.Int).Mul(ten, rMinus)
+			threeQplusR := new(big.Int).Mul(three, q)
+			threeQplusR.Add(threeQplusR, r)
+			tenTimes := new(big.Int).Mul(ten, threeQplusR)
+			div := new(big.Int).Quo(tenTimes, t)
+			tenN := big.NewInt(10 * nd)
+			newNbig := new(big.Int).Sub(div, tenN)
+			q = newQ
+			r = newR
+			nd = newNbig.Int64()
+			rem--
+		} else {
+			kbig := big.NewInt(k)
+			lbig := big.NewInt(l)
+			twoQ := new(big.Int).Mul(two, q)
+			twoQplusR := new(big.Int).Add(twoQ, r)
+			nr := new(big.Int).Mul(twoQplusR, lbig)
+			newQ := new(big.Int).Mul(q, kbig)
+			newT := new(big.Int).Mul(t, lbig)
+			sevenKplus2 := big.NewInt(7*k + 2)
+			qTerm := new(big.Int).Mul(q, sevenKplus2)
+			rL := new(big.Int).Mul(r, lbig)
+			numer := new(big.Int).Add(qTerm, rL)
+			newNbig := new(big.Int).Quo(numer, newT)
+			q = newQ
+			r = nr
+			t = newT
+			nd = newNbig.Int64()
+			k++
+			l += 2
+		}
+	}
+
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      h,
+	})
+}

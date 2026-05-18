@@ -69,6 +69,11 @@ var repeats = map[string]int{
 	// LCG step + 1-mer inc + 2-mer inc per inner iter, then a 20-key
 	// summarise pass at the end.
 	"bg_k_nucleotide": 1,
+	// MEP-39 §6.8: pidigits. N is the decimal-digit count emitted by
+	// the Gibbons unbounded spigot; one Build call already encodes the
+	// full produce/consume loop until N digits are folded into the
+	// rolling i64 hash.
+	"bg_pidigits": 1,
 }
 
 func main() {
