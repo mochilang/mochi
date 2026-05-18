@@ -44,13 +44,26 @@ const (
 	OpJumpIfNotEqualI64  // if A != B then IP = C
 	// Immediate-form i64 compare + conditional branch. B is a 32-bit
 	// sign-extended immediate; saves the const-load + register round-trip
-	// that the (OpLoadConstI -> OpJumpIfEqualI64) pair would require.
-	// Hot for "if d == 0 return" leaf-guard tests in recursive BG kernels.
+	// that the (OpLoadConstI -> OpJumpIfXxxI64) pair would require. Hot
+	// for "if d == 0 return" leaf-guard tests in recursive BG kernels
+	// and for any cascade comparing a register against a constant table
+	// (MEP-39 §6.6 fasta iteration 3: the inlined cumprob threshold
+	// cascade compares the LCG output against three i64 constants per
+	// iter; the K-forms collapse three const-loads + three compare ops
+	// into three single dispatches).
 	//
-	//	OpJumpIfEqualI64K:    if regs[A].Int() == int64(B) then IP = C
-	//	OpJumpIfNotEqualI64K: if regs[A].Int() != int64(B) then IP = C
+	//	OpJumpIfEqualI64K:      if regs[A].Int() == int64(B) then IP = C
+	//	OpJumpIfNotEqualI64K:   if regs[A].Int() != int64(B) then IP = C
+	//	OpJumpIfLessI64K:       if regs[A].Int() <  int64(B) then IP = C
+	//	OpJumpIfLessEqI64K:     if regs[A].Int() <= int64(B) then IP = C
+	//	OpJumpIfGreaterI64K:    if regs[A].Int() >  int64(B) then IP = C
+	//	OpJumpIfGreaterEqI64K:  if regs[A].Int() >= int64(B) then IP = C
 	OpJumpIfEqualI64K
 	OpJumpIfNotEqualI64K
+	OpJumpIfLessI64K
+	OpJumpIfLessEqI64K
+	OpJumpIfGreaterI64K
+	OpJumpIfGreaterEqI64K
 	OpCall                  // A = call Funcs[B], args [C..C+D); RetReg=A
 	// Direct call specializations for 1-arg and 2-arg calls. The arg
 	// values are read straight from the caller's registers (no staging

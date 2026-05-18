@@ -156,6 +156,22 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			if regs[ins.A].Int() != int64(ins.B) {
 				ip = int(ins.C)
 			}
+		case OpJumpIfLessI64K:
+			if regs[ins.A].Int() < int64(ins.B) {
+				ip = int(ins.C)
+			}
+		case OpJumpIfLessEqI64K:
+			if regs[ins.A].Int() <= int64(ins.B) {
+				ip = int(ins.C)
+			}
+		case OpJumpIfGreaterI64K:
+			if regs[ins.A].Int() > int64(ins.B) {
+				ip = int(ins.C)
+			}
+		case OpJumpIfGreaterEqI64K:
+			if regs[ins.A].Int() >= int64(ins.B) {
+				ip = int(ins.C)
+			}
 		case OpCall:
 			callee := vm.Program.Funcs[ins.B]
 			n := int(ins.D)

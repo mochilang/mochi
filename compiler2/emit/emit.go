@@ -213,13 +213,18 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 	}
 	// fuseCmpConst marks a fused cmp+condbr whose const operand should be
 	// inlined into the K-form jump op (avoids the OpLoadConstI dispatch
-	// + register slot). Only populated for OpEqualI64 with one
-	// ConstI64 arg whose value fits in i32; less/lessEq with a const
-	// could be added analogously but the BG corpus uses equality for the
-	// only hot cases (leaf-guard checks in recursive kernels).
+	// + register slot). Populated for OpEqualI64, OpLessI64, OpLessEqI64
+	// with one ConstI64 arg whose value fits in i32. The constSide field
+	// tells the emit site which side held the constant: 1 for rhs (the
+	// commutative-friendly case for Equal, and the natural case for the
+	// Less/LessEq forms), 0 for lhs (only valid for Equal, where the
+	// emit site swaps to the symmetric K-form). MEP-39 §6.6 fasta
+	// iteration 3 motivates Less/LessEq: the inlined cumprob cascade
+	// compares the LCG output against three i64 thresholds per iter.
 	type cmpConstInfo struct {
-		k       int64
-		nonReg  ir.ValueID
+		k         int64
+		nonReg    ir.ValueID
+		constSide uint8 // 0 = lhs is const, 1 = rhs is const
 	}
 	fuseCmpConst := make(map[ir.ValueID]cmpConstInfo)
 	for bi := range f.Blocks {
@@ -257,9 +262,12 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		}
 		suppress[cmpVid] = true
 		fuseCondBr[last] = cmpVid
-		if cmpIns.Op == ir.OpEqualI64 {
+		switch cmpIns.Op {
+		case ir.OpEqualI64:
+			// Equal is commutative; try rhs first so we keep the
+			// (otherReg, k) shape that OpJumpIfEqualI64K expects.
 			a0, a1 := cmpIns.Args[0], cmpIns.Args[1]
-			tryK := func(constArg, otherArg ir.ValueID) bool {
+			tryK := func(constArg, otherArg ir.ValueID, side uint8) bool {
 				c := f.Values[constArg]
 				if c.Op != ir.OpConstI64 || useCount[constArg] != 1 {
 					return false
@@ -269,12 +277,29 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					return false
 				}
 				suppress[constArg] = true
-				fuseCmpConst[cmpVid] = cmpConstInfo{k: k, nonReg: otherArg}
+				fuseCmpConst[cmpVid] = cmpConstInfo{k: k, nonReg: otherArg, constSide: side}
 				return true
 			}
-			if !tryK(a1, a0) {
-				tryK(a0, a1)
+			if !tryK(a1, a0, 1) {
+				tryK(a0, a1, 0)
 			}
+		case ir.OpLessI64, ir.OpLessEqI64:
+			// Less/LessEq are not commutative; only fuse when the rhs is
+			// the constant. The lhs-constant case would need an inverted
+			// op (e.g. K < reg ≡ reg > K), which we could add later; the
+			// fasta cumprob cascade only generates rhs-const, so leave
+			// the symmetric form for follow-up.
+			rhs := cmpIns.Args[1]
+			c := f.Values[rhs]
+			if c.Op != ir.OpConstI64 || useCount[rhs] != 1 {
+				continue
+			}
+			k := c.Aux
+			if k < -(1<<31) || k > (1<<31)-1 {
+				continue
+			}
+			suppress[rhs] = true
+			fuseCmpConst[cmpVid] = cmpConstInfo{k: k, nonReg: cmpIns.Args[0], constSide: 1}
 		}
 	}
 
@@ -954,20 +979,36 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 				}
 				if cmpVid, ok := fuseCondBr[vid]; ok {
 					cmp := f.Values[cmpVid]
-					// K-form for equality with one ConstI64 operand: inline
-					// the constant into the jump op, drop the OpLoadConstI.
+					// K-form for cmp with one ConstI64 operand: inline the
+					// constant into the jump op, drop the OpLoadConstI.
 					if kinfo, kok := fuseCmpConst[cmpVid]; kok {
 						a := int32(finalReg[kinfo.nonReg])
 						k := int32(kinfo.k)
+						// Pick the direct/inverted K-ops for this cmp shape.
+						// Equality is symmetric so the constSide doesn't
+						// matter; less/lessEq only fuse with rhs-const so
+						// the inverted op is the >= / > variant. The
+						// inverted form is emitted when the layout-next
+						// block is the true branch, so we can drop the
+						// trailing OpJump.
+						var directK, invertedK vm2.Op
+						switch cmp.Op {
+						case ir.OpEqualI64:
+							directK, invertedK = vm2.OpJumpIfEqualI64K, vm2.OpJumpIfNotEqualI64K
+						case ir.OpLessI64:
+							directK, invertedK = vm2.OpJumpIfLessI64K, vm2.OpJumpIfGreaterEqI64K
+						case ir.OpLessEqI64:
+							directK, invertedK = vm2.OpJumpIfLessEqI64K, vm2.OpJumpIfGreaterI64K
+						}
 						switch {
 						case elseB == nextB:
-							idx := emit(vm2.Instr{Op: vm2.OpJumpIfEqualI64K, A: a, B: k})
+							idx := emit(vm2.Instr{Op: directK, A: a, B: k})
 							pending = append(pending, pendingJump{insIdx: idx, target: thenB, field: 'C'})
 						case thenB == nextB:
-							idx := emit(vm2.Instr{Op: vm2.OpJumpIfNotEqualI64K, A: a, B: k})
+							idx := emit(vm2.Instr{Op: invertedK, A: a, B: k})
 							pending = append(pending, pendingJump{insIdx: idx, target: elseB, field: 'C'})
 						default:
-							idx := emit(vm2.Instr{Op: vm2.OpJumpIfEqualI64K, A: a, B: k})
+							idx := emit(vm2.Instr{Op: directK, A: a, B: k})
 							pending = append(pending, pendingJump{insIdx: idx, target: thenB, field: 'C'})
 							idx2 := emit(vm2.Instr{Op: vm2.OpJump})
 							pending = append(pending, pendingJump{insIdx: idx2, target: elseB, field: 'A'})
