@@ -67,7 +67,33 @@ type Function struct {
 	// numbers (see MEP-36 Appendix C.3). emit computes the flag from the
 	// IR value-type stream.
 	HasContainerSlots bool
+
+	// Leaf-shape callee shortcut (MEP-39 §6.10 iter 3). Set during emit
+	// when this function's entry matches:
+	//
+	//   pc=0: OpJumpIfNotEqualI64K guardReg, K, 2
+	//   pc=1: OpReturnI64K Vint     OR     OpReturnNewPairKK _, Pa, Pb
+	//
+	// i.e. "if param_guard != K then continue; else return constant".
+	// At the call site, dispatch handlers test the cached guard against
+	// the incoming argument and materialize the constant return without
+	// pushing a frame. LeafKind == LeafKindNone disables the shortcut.
+	LeafKind     LeafKind
+	LeafGuardReg int32 // index of the param to test (callee-side)
+	LeafGuardK   int32 // sign-extended K to compare against
+	LeafReturnA  int32 // OpReturnI64K: the constant return value
+	LeafReturnB  int32 // OpReturnNewPairKK: pair.fst
+	LeafReturnC  int32 // OpReturnNewPairKK: pair.snd
 }
+
+// LeafKind classifies the cached leaf-return shape (see Function.LeafKind).
+type LeafKind uint8
+
+const (
+	LeafKindNone           LeafKind = iota
+	LeafKindReturnI64K              // ret = CInt(LeafReturnA)
+	LeafKindReturnNewPairKK         // ret = newPair(CInt(LeafReturnB), CInt(LeafReturnC))
+)
 
 // Program is the unit of execution. Main names the entry function.
 type Program struct {
