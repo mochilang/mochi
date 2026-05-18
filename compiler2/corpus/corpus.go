@@ -56,6 +56,10 @@ func All() []Program {
 		// floor(energy * 1e9) so the cross-lang harness can compare
 		// integer values without f64 stringification.
 		{Name: "bg_n_body", Build: BuildNBody, Expect: ExpectNBody},
+		// MEP-39 §6.4: parameterised spectral_norm. N is the vector
+		// dimension; the inner power-method runs 10 iterations (5
+		// pairs of AtAu) and the result is floor(sqrt(uBu/uu) * 1e9).
+		{Name: "bg_spectral_norm", Build: BuildSpectralNorm, Expect: ExpectSpectralNorm},
 	}
 }
 
