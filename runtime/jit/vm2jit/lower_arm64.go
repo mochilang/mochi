@@ -10,37 +10,91 @@ import (
 
 // AArch64 GPR mapping: vm2 register r[i] -> host x register.
 //
-//	r[0..6] -> x9..x15  (caller-saved temps; no save/restore needed)
-//	r[7]    -> x19      (callee-saved; requires STP/LDP frame)
-//	r[8]    -> x20      (callee-saved; requires STP/LDP frame)
+//	r[0..6]  -> x9..x15  (caller-saved temps; no save/restore needed)
+//	r[7..16] -> x19..x28 (callee-saved; pushed as 1..5 STP/LDP pairs)
 //
-// MEP-39 §6.13 (Phase B-lite) introduces the x19/x20 slots so the JIT
-// can cover functions whose linear-scan allocator chose 8 or 9 live
-// registers. When fn.NumRegs > 7, the prologue pushes STP x19, x20,
-// [SP, #-16]! and every exit path (OpReturn, deopt stub) restores via
-// LDP x19, x20, [SP], #16 so the stack stays balanced. x0 (the regs
-// pointer) is caller-saved and is preserved through the body since no
-// arithmetic opcode touches it.
+// MEP-39 §6.14 (Phase B) generalises §6.13's single-pair frame to all
+// five AArch64 callee-saved GPR pairs. The prologue pushes
+// numCalleeSavedPairs(fn) STP frames (pre-index, 16-byte each); every
+// exit path (OpReturn, deopt stub) pops them in reverse order via LDP
+// post-index. x0 (the regs pointer) is caller-saved and survives the
+// body since no arithmetic opcode touches it. x18 is Darwin-reserved
+// and is never used.
 func r2x(r int32) uint32 {
-	switch r {
-	case 7:
-		return 19
-	case 8:
-		return 20
-	default:
+	if r < 7 {
 		return uint32(r) + 9
 	}
+	return uint32(r) + 12 // r7->x19, r8->x20, ..., r16->x28
 }
 
-// usesCalleeSaved reports whether fn needs the STP/LDP x19/x20 frame.
-// True iff the function actually uses r7 or r8 (NumRegs > 7, clamped
-// at maxRegs).
-func usesCalleeSaved(fn *vm2.Function) bool {
+// numCalleeSavedPairs returns the number of x19..x28 STP/LDP pairs the
+// frame for fn must push. Each pair covers two register slots; an
+// 8-register function still pushes the first pair (x19/x20) even
+// though x20 is unused, because pre-index STP is a 16-byte
+// alignment-preserving 1-instruction op and partial pairs would waste
+// alignment without saving anything.
+func numCalleeSavedPairs(fn *vm2.Function) int {
 	n := fn.NumRegs
 	if n > maxRegs {
 		n = maxRegs
 	}
-	return n > 7
+	if n <= 7 {
+		return 0
+	}
+	return (n - 7 + 1) / 2
+}
+
+// jitProfitable is a static profitability gate for Phase B functions.
+// The current backend deopts at the first non-lowered opcode and never
+// re-enters JIT for that invocation, so any deoptable op on the hot
+// path means the JIT pays prologue + spill + LDP + sentinel + a
+// Go-side resumeFromDeopt for zero saved work.
+//
+// MEP-39 §6.14 records the concrete regression that motivated this
+// gate: bumping the register cap from 9 to 17 newly admits outer
+// "controller" functions (e.g. spectral_norm.main, mandelbrot.main)
+// whose bodies are dominated by OpCall into still-non-JIT inner
+// kernels. Without the gate the deopt-on-call thrash made the BG-vs-Go
+// ratio strictly worse on a focused crosslang run.
+//
+// The gate only kicks in for functions that need the §6.14 frame
+// extension (NumRegs > 9). Functions that already fit under §6.13's
+// single-pair frame keep the pre-Phase-B policy: any JIT'd code is
+// kept, on the empirical evidence that the §6.13 baseline was a win
+// at 1/21 BG coverage. This avoids regressing the existing baseline
+// just because the deopt-fraction heuristic happens to be pessimistic
+// on a small fn.
+//
+// Heuristic: among newly-admitted functions, if the body has any
+// deoptable op AND non-deopt ops are fewer than
+// profitabilityNonDeoptRatio per deopt, refuse to JIT. The ratio is
+// conservative (10:1) so inner loops with one entry-time deopt (e.g.
+// NewU8Array followed by a long arithmetic body) still JIT, but the
+// "alloc + N Calls + Return" controller shape is rejected.
+//
+// Once iter 14 lowers OpCall as a JIT-side fast path so JIT'd-to-JIT'd
+// calls do not deopt, this gate relaxes (likely to NumRegs > maxRegs
+// only, i.e. effectively off).
+const profitabilityNonDeoptRatio = 10
+
+func jitProfitable(fn *vm2.Function) bool {
+	// Functions that fit under §6.13's single-pair frame use the
+	// pre-Phase-B policy (no gate). Only the newly-admitted §6.14
+	// functions need profitability scrutiny.
+	if fn.NumRegs <= 9 {
+		return true
+	}
+	deopt := 0
+	for _, ins := range fn.Code {
+		if isDeoptableOp(ins.Op) {
+			deopt++
+		}
+	}
+	if deopt == 0 {
+		return true
+	}
+	nonDeopt := len(fn.Code) - deopt
+	return nonDeopt >= profitabilityNonDeoptRatio*deopt
 }
 
 // --- AArch64 instruction encoders ---
@@ -340,13 +394,9 @@ func instrWordCountARM64(fn *vm2.Function, ins vm2.Instr) (int, error) {
 		if n > maxRegs {
 			n = maxRegs
 		}
-		// N×str + mov x0 + ret, plus LDP x19,x20 when the function uses
-		// the callee-saved frame (NumRegs > 7, MEP-39 §6.13).
-		w := n + 2
-		if usesCalleeSaved(fn) {
-			w++
-		}
-		return w, nil
+		// N×str + mov x0 + numPairs×LDP + ret. The LDPs unwind the
+		// callee-saved frame established by the prologue. MEP-39 §6.14.
+		return n + 2 + numCalleeSavedPairs(fn), nil
 	case vm2.OpListLen:
 		return listLenWords(fn), nil
 	default:
@@ -426,10 +476,10 @@ func isDeoptableOp(op vm2.Op) bool {
 // deoptStubWords returns the fixed word count of a deopt stub for a
 // function with this many live JIT registers. Sequence:
 //
-//	N × str64(x_r, x0, r)         spill live regs back to regs[]
-//	(opt) LDP x19, x20, [SP], #16 restore callee-saved frame
-//	4 × movImm64(x0, sentinel)    load sentinel-tagged PC
-//	1 × ret                       return to wrapper
+//	N × str64(x_r, x0, r)               spill live regs back to regs[]
+//	numPairs × LDP x{2k+19}, x{2k+20}   restore callee-saved frame
+//	4 × movImm64(x0, sentinel)          load sentinel-tagged PC
+//	1 × ret                             return to wrapper
 //
 // PC is the deopting bytecode index, embedded as a 64-bit immediate so
 // the stub is position-independent and the per-opcode size stays
@@ -439,11 +489,7 @@ func deoptStubWords(fn *vm2.Function) int {
 	if n > maxRegs {
 		n = maxRegs
 	}
-	w := n + 4 + 1
-	if usesCalleeSaved(fn) {
-		w++
-	}
-	return w
+	return n + numCalleeSavedPairs(fn) + 4 + 1
 }
 
 // compileFnARM64 performs the two-pass compilation:
@@ -474,31 +520,40 @@ func compileFnARM64(fn *vm2.Function) ([]uint32, error) {
 	return words, nil
 }
 
-// prologueARM64 emits the function entry sequence. When the function
-// uses the callee-saved register frame (NumRegs > 7) the prologue first
-// pushes x19/x20 via STP, then it loads each live vm2 register from the
-// regs pointer in x0 into its host x register (via r2x).
+// prologueARM64 emits the function entry sequence. The prologue first
+// pushes numCalleeSavedPairs(fn) STP/LDP pairs of x19..x28 (each as a
+// pre-index `stp x{2k+19}, x{2k+20}, [sp, #-16]!`), then loads each
+// live vm2 register from the regs pointer in x0 into its host x
+// register (via r2x). SP stays 16-byte aligned because each STP is a
+// 16-byte push (AAPCS64).
 func prologueARM64(fn *vm2.Function) []uint32 {
 	n := fn.NumRegs
 	if n > maxRegs {
 		n = maxRegs
 	}
-	saveFrame := usesCalleeSaved(fn)
-	cap := n
-	if saveFrame {
-		cap++
-	}
-	ws := make([]uint32, 0, cap)
-	if saveFrame {
-		// stp x19, x20, [sp, #-16]!  — push the two callee-saved regs.
-		// SP stays 16-byte aligned (AAPCS64).
-		ws = append(ws, stpPreIdx64(19, 20, 31, -16))
+	pairs := numCalleeSavedPairs(fn)
+	ws := make([]uint32, 0, n+pairs)
+	for k := 0; k < pairs; k++ {
+		// Push pair k = (x_{2k+19}, x_{2k+20}). Pre-index writeback
+		// drops SP by 16 each time. Reverse order in the epilogue.
+		ws = append(ws, stpPreIdx64(uint32(2*k+19), uint32(2*k+20), 31, -16))
 	}
 	for r := 0; r < n; r++ {
 		// Cell is 16 bytes (Bits at offset 0, Obj at offset 8). The
 		// ldr64 imm12 is scaled by 8, so r*2 yields byte offset r*16,
 		// loading regs[r].Bits into r2x(r).
 		ws = append(ws, ldr64(r2x(int32(r)), 0, uint32(r)*2))
+	}
+	return ws
+}
+
+// emitCalleeSavedEpilogueARM64 appends numPairs `ldp x{2k+19},
+// x{2k+20}, [sp], #16` instructions to ws in REVERSE order of the
+// prologue's pushes, so each LDP pops the topmost STP frame and SP
+// returns to its entry value.
+func emitCalleeSavedEpilogueARM64(ws []uint32, pairs int) []uint32 {
+	for k := pairs - 1; k >= 0; k-- {
+		ws = append(ws, ldpPostIdx64(uint32(2*k+19), uint32(2*k+20), 31, 16))
 	}
 	return ws
 }
@@ -654,19 +709,17 @@ func lowerInstrARM64(fn *vm2.Function, idx int, ins vm2.Instr, pcMap []int) ([]u
 		if n > maxRegs {
 			n = maxRegs
 		}
-		ws := make([]uint32, 0, n+3)
+		pairs := numCalleeSavedPairs(fn)
+		ws := make([]uint32, 0, n+pairs+2)
 		for r := 0; r < n; r++ {
 			// 16-byte Cell stride: imm12 scaled by 8, so r*2 = byte
 			// offset r*16. Stores r2x(r) into regs[r].Bits.
 			ws = append(ws, str64(r2x(int32(r)), 0, uint32(r)*2))
 		}
 		// Move the result register to x0 BEFORE restoring callee-saved.
-		// If r2x(ins.A) is x19 or x20, LDP would clobber the result.
+		// If r2x(ins.A) is one of x19..x28, the LDPs would clobber it.
 		ws = append(ws, movReg(0, r2x(int32(ins.A))))
-		if usesCalleeSaved(fn) {
-			// ldp x19, x20, [sp], #16 — restore callee-saved frame.
-			ws = append(ws, ldpPostIdx64(19, 20, 31, 16))
-		}
+		ws = emitCalleeSavedEpilogueARM64(ws, pairs)
 		ws = append(ws, ret())
 		return ws, nil
 
@@ -684,29 +737,27 @@ func lowerInstrARM64(fn *vm2.Function, idx int, ins vm2.Instr, pcMap []int) ([]u
 // emitDeoptStubARM64 emits the Phase 1.5 deopt sequence for the
 // instruction at bytecode index idx. Each live JIT register is spilled
 // back to its slot in regs[]; if the function uses the callee-saved
-// frame (MEP-39 §6.13) the stub also pops it; x0 is loaded with
-// vm2.EncodeDeopt(idx); the function returns. The wrapper in init.go
-// inspects x0, detects the sentinel via vm2.DecodeDeopt, promotes the
-// JIT frame to a real vm2 frame at IP=idx, and resumes the interpreter
-// for that frame.
+// frame (MEP-39 §6.14) the stub also pops every pair in reverse order;
+// x0 is loaded with vm2.EncodeDeopt(idx); the function returns. The
+// wrapper in init.go inspects x0, detects the sentinel via
+// vm2.DecodeDeopt, promotes the JIT frame to a real vm2 frame at
+// IP=idx, and resumes the interpreter for that frame.
 func emitDeoptStubARM64(fn *vm2.Function, idx int) []uint32 {
 	n := fn.NumRegs
 	if n > maxRegs {
 		n = maxRegs
 	}
+	pairs := numCalleeSavedPairs(fn)
 	sentinel := vm2.EncodeDeopt(idx).Bits
-	ws := make([]uint32, 0, n+4+2)
+	ws := make([]uint32, 0, n+pairs+4+1)
 	for r := 0; r < n; r++ {
 		// 16-byte Cell stride: imm12*8 = byte offset, so r*2 spills
 		// r2x(r) back to regs[r].Bits.
 		ws = append(ws, str64(r2x(int32(r)), 0, uint32(r)*2))
 	}
-	if usesCalleeSaved(fn) {
-		// ldp x19, x20, [sp], #16 — must come AFTER the spills so the
-		// JIT-side x19/x20 values reach regs[] before the caller's
-		// originals are restored.
-		ws = append(ws, ldpPostIdx64(19, 20, 31, 16))
-	}
+	// Restore callee-saved pairs AFTER spills so the JIT-side values
+	// reach regs[] before the caller's originals are restored.
+	ws = emitCalleeSavedEpilogueARM64(ws, pairs)
 	ws = append(ws, movImm64(0, int64(sentinel))...)
 	ws = append(ws, ret())
 	return ws
@@ -794,9 +845,10 @@ func emitCondBranchARM64(xA, xB uint32, targetBC int, cond uint32,
 }
 
 // maxRegs is the maximum number of vm2 registers the JIT can handle:
-// x9-x15 (caller-saved temps, 7 slots) plus x19, x20 (callee-saved,
-// pushed by the STP/LDP frame in prologueARM64). MEP-39 §6.13.
-const maxRegs = 9
+// x9-x15 (caller-saved temps, 7 slots) plus x19-x28 (callee-saved,
+// pushed as up to five STP/LDP pairs by prologueARM64). MEP-39 §6.14.
+// x18 is Darwin-platform-reserved and is never used.
+const maxRegs = 17
 
 // lowerFnARM64 is the full-function entry point called by lower.go on arm64.
 func lowerFnARM64(fn *vm2.Function) ([]uint32, error) {

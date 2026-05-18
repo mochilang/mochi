@@ -9,6 +9,15 @@ import (
 	"mochi/runtime/vm2"
 )
 
+// CompileForceForTest lowers fn unconditionally, skipping the
+// profitability and cap gates the public Compile applies. Tests use
+// this to exercise the deopt stub machinery on small synthetic
+// functions that the gate would reject. Production callers must use
+// Compile.
+func CompileForceForTest(fn *vm2.Function) (*CompiledFunc, error) {
+	return compileNoGate(fn)
+}
+
 // CallDirect is exported for test/benchmark use only.
 // It creates a jitFrame with the given vm pointer and register values,
 // then invokes fn's JIT code via the trampoline. vm may be nil for
