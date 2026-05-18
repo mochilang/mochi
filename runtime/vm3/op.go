@@ -102,6 +102,13 @@ const (
 	OpListGetI64  // regsI64[A] = arenas.ListGet(regsCell[B], regsI64[uint16(C)]).Int()
 	OpListSetI64  // arenas list at regsCell[A] at regsI64[uint16(C)] = CInt(regsI64[B])
 
+	// Maps (Phase 3.3). i64-keyed open-addressed maps. A is the map
+	// reg in the caller's Cell bank; B is the key reg in I64 bank; C
+	// is the value reg in I64 bank (or dst reg for Get).
+	OpNewMap        // regsCell[A] = arenas.AllocMap(capHint=0)
+	OpMapSetI64I64  // arenas.MapSetI64(regsCell[A], regsI64[B], regsI64[uint16(C)])
+	OpMapGetI64I64  // regsI64[A] = arenas.MapGetI64(regsCell[B], regsI64[uint16(C)])
+
 	// Phase 3.2+ placeholders. Bodies land in their own sub-phases.
 	OpListGetF64
 	OpListGetCell

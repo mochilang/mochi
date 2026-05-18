@@ -24,5 +24,6 @@ func All() []*Program {
 		PrimeCount,
 		StringsConcatLoop,
 		ListsFillSum,
+		MapsFillSum,
 	}
 }
