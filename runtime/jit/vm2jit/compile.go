@@ -46,10 +46,21 @@ func (c *CompiledFunc) Free() error {
 // maxJITRegs is the maximum number of vm2 registers supported by any JIT
 // backend. Functions with more registers must be interpreted.
 //
-// MEP-39 §6.13 (Phase B-lite) bumps the limit from 7 to 9 by adding two
-// callee-saved slots (x19, x20 on AArch64) behind an STP/LDP frame.
-// Phase B-full will push the remaining x21..x28 in 80-byte STP pairs.
-const maxJITRegs = 9
+// MEP-39 §6.14 (Phase B full) takes the limit from 9 to 17 by pushing
+// all five AArch64 callee-saved GPR pairs (x19..x28) in the prologue.
+// The cap lift exposes a follow-up regression: outer-loop functions
+// that newly JIT but still deopt on every OpCall to non-JIT'd inner
+// loops can pay more in prologue + deopt-resume than they save. The
+// regression is recorded in §6.14 and addressed by gating with
+// jitProfitable (this file) until iter 14 lowers OpCall as a JIT-side
+// fast path.
+const maxJITRegs = 17
+
+// ErrUnprofitable is returned by Compile when fn is structurally
+// unprofitable to JIT under the current backend (see jitProfitable).
+// It is wrapped in ErrNotImplemented so existing callers that only
+// distinguish "JIT'd vs interp" continue to work.
+var ErrUnprofitable = fmt.Errorf("%w: deopt fraction too high", ErrNotImplemented)
 
 func Compile(fn *vm2.Function) (*CompiledFunc, error) {
 	if hostArch < 0 {
@@ -58,6 +69,20 @@ func Compile(fn *vm2.Function) (*CompiledFunc, error) {
 	if fn.NumRegs > maxJITRegs {
 		return nil, fmt.Errorf("%w: %s uses %d registers (max %d)",
 			ErrNotImplemented, fn.Name, fn.NumRegs, maxJITRegs)
+	}
+	if !jitProfitable(fn) {
+		return nil, fmt.Errorf("%w: %s", ErrUnprofitable, fn.Name)
+	}
+	return compileNoGate(fn)
+}
+
+// compileNoGate lowers fn unconditionally (skipping the cap and
+// profitability gate Compile applies). The deopt-stub tests use this
+// via export_test.go to exercise machinery that the public gate would
+// reject as unprofitable.
+func compileNoGate(fn *vm2.Function) (*CompiledFunc, error) {
+	if hostArch < 0 {
+		return nil, ErrUnsupported
 	}
 	words, err := lowerFunction(fn, hostArch)
 	if err != nil {
@@ -72,8 +97,6 @@ func Compile(fn *vm2.Function) (*CompiledFunc, error) {
 		return nil, err
 	}
 	cf := &CompiledFunc{fn: fn, code: page, arch: hostArch}
-	// Install the entry point. The trampoline reads this pointer to call
-	// into the JIT'd code; vm2's OpCall hook checks fn.JITCode != nil.
 	fn.JITCode = pageEntry(page)
 	return cf, nil
 }

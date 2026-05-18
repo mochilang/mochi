@@ -500,6 +500,76 @@ func TestCalleeSavedAddR7R8(t *testing.T) {
 	}
 }
 
+// TestCalleeSavedReturnR16 exercises the maximum-cap path (NumRegs=17,
+// r16 -> x28). This validates the fifth STP/LDP pair (x27, x28) and
+// confirms r2x's high boundary maps correctly.
+func TestCalleeSavedReturnR16(t *testing.T) {
+	fn := &vm2.Function{
+		Name:    "ret_r16",
+		NumRegs: 17,
+		Code:    []vm2.Instr{{Op: vm2.OpReturn, A: 16}},
+	}
+	compileOrSkip(t, fn)
+	want := vm2.CInt(0xDEADBEEF)
+	r := make([]vm2.Cell, 17)
+	for i := range r {
+		r[i] = vm2.CInt(int64(i))
+	}
+	r[16] = want
+	got := callJIT(fn, r)
+	if got != want {
+		t.Fatalf("r16: got %016x, want %016x", got.Bits, want.Bits)
+	}
+}
+
+// TestCalleeSavedAddR9R16 spans the second and fifth STP/LDP pairs
+// (x21 and x28). Catches mapping bugs where the prologue or epilogue
+// emits pairs in the wrong order or with swapped register operands.
+func TestCalleeSavedAddR9R16(t *testing.T) {
+	fn := &vm2.Function{
+		Name:    "add_r9_r16",
+		NumRegs: 17,
+		Code: []vm2.Instr{
+			{Op: vm2.OpAddI64, A: 0, B: 9, C: 16},
+			{Op: vm2.OpReturn, A: 0},
+		},
+	}
+	compileOrSkip(t, fn)
+	r := make([]vm2.Cell, 17)
+	r[9] = vm2.CInt(100)
+	r[16] = vm2.CInt(23)
+	got := callJIT(fn, r)
+	if got.Int() != 123 {
+		t.Fatalf("add_r9_r16: got %d, want 123", got.Int())
+	}
+}
+
+// TestCalleeSavedRoundTripEverySlot fills every slot r0..r16 with a
+// distinct value, returns each in turn, and verifies the JIT routes
+// the correct host register through the spill/result/LDP sequence.
+// Catches off-by-one bugs in r2x or the epilogue ordering that only
+// show up at specific register indices.
+func TestCalleeSavedRoundTripEverySlot(t *testing.T) {
+	const N = 17
+	r := make([]vm2.Cell, N)
+	for i := range r {
+		r[i] = vm2.CInt(int64(0x1000 + i))
+	}
+	for slot := range N {
+		fn := &vm2.Function{
+			Name:    "ret_slot",
+			NumRegs: N,
+			Code:    []vm2.Instr{{Op: vm2.OpReturn, A: int32(slot)}},
+		}
+		compileOrSkip(t, fn)
+		got := callJIT(fn, r)
+		want := r[slot]
+		if got != want {
+			t.Fatalf("slot %d: got %016x, want %016x", slot, got.Bits, want.Bits)
+		}
+	}
+}
+
 // TestCalleeSavedDeoptStub exercises the deopt path when the function
 // uses the callee-saved frame. The deopt stub must spill r7 from x19
 // (and r8 from x20 when present) before LDP restores the caller's
@@ -519,7 +589,10 @@ func TestCalleeSavedDeoptStub(t *testing.T) {
 			{Op: vm2.OpReturn, A: 7},
 		},
 	}
-	cf, err := vm2jit.Compile(fn)
+	// Use CompileForceForTest: jitProfitable rejects this synthetic fn
+	// (1 deoptable op, 1 non-deopt), but the deopt stub is exactly the
+	// machinery we want to test.
+	cf, err := vm2jit.CompileForceForTest(fn)
 	if err != nil {
 		t.Skipf("Compile: %v", err)
 	}
@@ -739,7 +812,9 @@ func TestJITDeoptResume(t *testing.T) {
 			{Op: vm2.OpReturn, A: 1},              // return r1
 		},
 	}
-	cf, err := vm2jit.Compile(callee)
+	// Force-compile: jitProfitable rejects this 3:1 non-deopt:deopt ratio,
+	// but the test specifically exercises the deopt-resume path.
+	cf, err := vm2jit.CompileForceForTest(callee)
 	if err != nil {
 		t.Skipf("Compile: %v", err)
 	}
