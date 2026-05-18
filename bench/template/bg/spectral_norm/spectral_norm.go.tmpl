@@ -1,0 +1,74 @@
+// Template peer for the bg/spectral_norm benchmark. Mirrors the
+// spectral_norm.mochi shape: power-method estimate of the dominant
+// eigenvalue of the Hilbert-like matrix
+//
+//	A(i, j) = 1 / ((i + j)(i + j + 1)/2 + i + 1)
+//
+// over an N-dimensional vector. The inner loop runs 10 iterations
+// (5 pairs of AtAu) and the result is floor(sqrt(uBu/uu) * 1e9) so
+// the cross-lang harness can compare integer values without f64
+// stringification.
+
+package main
+
+import (
+	"encoding/json"
+	"math"
+	"os"
+	"time"
+)
+
+func evalA(i, j int) float64 {
+	s := i + j
+	return 1.0 / float64(s*(s+1)/2+i+1)
+}
+
+func mulAv(src, dst []float64, n int) {
+	for i := 0; i < n; i++ {
+		sum := 0.0
+		for j := 0; j < n; j++ {
+			sum += evalA(i, j) * src[j]
+		}
+		dst[i] = sum
+	}
+}
+
+func mulAtv(src, dst []float64, n int) {
+	for i := 0; i < n; i++ {
+		sum := 0.0
+		for j := 0; j < n; j++ {
+			sum += evalA(j, i) * src[j]
+		}
+		dst[i] = sum
+	}
+}
+
+func main() {
+	const n = {{ .N }}
+	u := make([]float64, n)
+	v := make([]float64, n)
+	tmp := make([]float64, n)
+	for i := range u {
+		u[i] = 1.0
+	}
+
+	start := time.Now()
+	for k := 0; k < 5; k++ {
+		mulAv(u, tmp, n)
+		mulAtv(tmp, v, n)
+		mulAv(v, tmp, n)
+		mulAtv(tmp, u, n)
+	}
+	uv, vv := 0.0, 0.0
+	for i := 0; i < n; i++ {
+		uv += u[i] * v[i]
+		vv += v[i] * v[i]
+	}
+	out := int64(math.Sqrt(uv/vv) * 1e9)
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      out,
+	})
+}

@@ -85,6 +85,13 @@ var programs = []program{
 	// peers can integer-compare without f64 stringification quirks.
 	// See bench/template/bg/n_body/.
 	{category: "bg", name: "n_body", ns: []int{1000, 5000}},
+	// MEP-39 §6.4: BG spectral_norm. N is the dimension of the vector
+	// fed to the power-method estimate of the dominant eigenvalue of
+	// the Hilbert-like matrix A(i, j) = 1/((i+j)(i+j+1)/2 + i + 1).
+	// Output is floor(sqrt(uBu/uu) * 1e9). The inner power loop always
+	// runs 10 iterations (5 pairs of AtAu) regardless of N. See
+	// bench/template/bg/spectral_norm/.
+	{category: "bg", name: "spectral_norm", ns: []int{100, 200}},
 }
 
 type result struct {

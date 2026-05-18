@@ -1,0 +1,62 @@
+// MEP-39 spectral_norm Mochi reference. Power-method estimate of the
+// dominant eigenvalue of the Hilbert-like matrix
+//   A(i, j) = 1 / ((i + j)(i + j + 1)/2 + i + 1)
+// over an N-dimensional vector. The vm2 path actually runs
+// `compiler2/corpus/bg_spectral_norm_scaled.go` (the IR builder), so
+// this file is the source-level reference: it documents the exact
+// arithmetic the cross-lang peers replicate.
+
+import python "math" as math
+extern fun math.sqrt(x: float): float
+
+let N = 100
+
+fun eval_a(i: int, j: int): float {
+  let s = i + j
+  return 1.0 / float(s * (s + 1) / 2 + i + 1)
+}
+
+fun mul_av(src: [float], dst: [float], n: int) {
+  for i in 0..n {
+    var s = 0.0
+    for j in 0..n {
+      s = s + eval_a(i, j) * src[j]
+    }
+    dst[i] = s
+  }
+}
+
+fun mul_atv(src: [float], dst: [float], n: int) {
+  for i in 0..n {
+    var s = 0.0
+    for j in 0..n {
+      s = s + eval_a(j, i) * src[j]
+    }
+    dst[i] = s
+  }
+}
+
+var u: [float] = []
+var v: [float] = []
+var tmp: [float] = []
+for _ in 0..N {
+  u = u + [1.0]
+  v = v + [0.0]
+  tmp = tmp + [0.0]
+}
+
+for _ in 0..5 {
+  mul_av(u, tmp, N)
+  mul_atv(tmp, v, N)
+  mul_av(v, tmp, N)
+  mul_atv(tmp, u, N)
+}
+
+var uv = 0.0
+var vv = 0.0
+for i in 0..N {
+  uv = uv + u[i] * v[i]
+  vv = vv + v[i] * v[i]
+}
+
+print(int(math.sqrt(uv / vv) * 1e9))

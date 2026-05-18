@@ -56,6 +56,9 @@ var repeats = map[string]int{
 	// MEP-39 §6.3: n_body. N is the outer step count; a single Build
 	// call already runs N advance + posUpdate iterations.
 	"bg_n_body": 1,
+	// MEP-39 §6.4: spectral_norm. N is the vector dimension; the
+	// inner power-method always runs 10 iterations regardless of N.
+	"bg_spectral_norm": 1,
 }
 
 func main() {
