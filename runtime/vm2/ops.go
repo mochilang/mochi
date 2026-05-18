@@ -309,6 +309,17 @@ const (
 	// reverse_complement family.
 	OpKNucleotideRun // i64ArrAt(regs[A]).data[20] := k_nuc_kernel(regs[B].Int())
 
+	// Mandelbrot per-pixel kernel super-op (MEP-39 §6.2 iter 2). Runs the
+	// canonical BG mandelbrot scaled kernel inline: for each pixel
+	// (row, col) in the regs[B] x regs[C] grid (col across, row down),
+	// the op maps to cx,cy in [-2, 1] x [-1, 1], iterates
+	// z = z^2 + c until |z|^2 > 4 or count reaches regs[D].Int(), and
+	// stores the escape count as a byte into u8ArrAt(regs[A]).data at
+	// index row*w + col. The imaginary axis uses math.FMA for the
+	// 2*zr*zi + cy step, matching the float arithmetic the
+	// builder-emitted OpFmaF64 produces.
+	OpMandelbrotKernel // u8ArrAt(regs[A]).data := mandelbrot(w=regs[B].Int(), h=regs[C].Int(), maxIter=regs[D].Int())
+
 	// Pair subsystem (MEP-37 §3.4). Pairs are immutable two-element
 	// tuples carried via Cell.Obj as *vmPair; allocation goes through a
 	// chunked per-VM arena that keeps pointers stable across chunk grows.

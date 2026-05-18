@@ -355,6 +355,16 @@ func (b *Builder) KNucleotideRun(counts, n ValueID) ValueID {
 	return b.emit(Inst{Op: OpKNucleotideRun, Type: TUnit, Args: []ValueID{counts, n}})
 }
 
+// MandelbrotKernel drives the canonical BG mandelbrot per-pixel kernel
+// inline: for each (row, col) in [0, h) x [0, w), maps to cx,cy in
+// [-2, 1] x [-1, 1] and iterates z = z^2 + c until |z|^2 > 4 or the
+// escape count reaches maxIter; stores the count as a byte into
+// out[row*w + col]. Operand out must be a TU8Array of length >=w*h.
+// One dispatch at the vm2 level (MEP-39 §6.2 iter 2).
+func (b *Builder) MandelbrotKernel(out, w, h, maxIter ValueID) ValueID {
+	return b.emit(Inst{Op: OpMandelbrotKernel, Type: TUnit, Args: []ValueID{out, w, h, maxIter}})
+}
+
 // NewPair allocates a fresh vmPair carrying (fst, snd). Result is TPair.
 // Element type is unrestricted (Cell); the runtime treats both slots as
 // opaque cells, so a pair can carry an i64 in one slot and another pair

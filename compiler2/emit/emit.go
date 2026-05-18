@@ -922,6 +922,12 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 				emit(vm2.Instr{Op: vm2.OpKNucleotideRun,
 					A: int32(finalReg[ins.Args[0]]),
 					B: int32(finalReg[ins.Args[1]])})
+			case ir.OpMandelbrotKernel:
+				emit(vm2.Instr{Op: vm2.OpMandelbrotKernel,
+					A: int32(finalReg[ins.Args[0]]),
+					B: int32(finalReg[ins.Args[1]]),
+					C: int32(finalReg[ins.Args[2]]),
+					D: int32(finalReg[ins.Args[3]])})
 			case ir.OpNewPair:
 				if suppress[vid] {
 					break

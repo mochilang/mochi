@@ -1142,6 +1142,41 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				sum += int64(a[i])
 			}
 			regs[ins.A] = CInt(sum)
+		case OpMandelbrotKernel:
+			out := vm.u8ArrAt(regs[ins.A]).data
+			w := regs[ins.B].Int()
+			h := regs[ins.C].Int()
+			maxIter := regs[ins.D].Int()
+			if w < 0 || h < 0 || maxIter < 0 {
+				fr.IP = ip
+				return ret, errors.New("vm2: mandelbrot kernel negative dimension")
+			}
+			if int64(len(out)) < w*h {
+				fr.IP = ip
+				return ret, errors.New("vm2: mandelbrot kernel output buffer too small")
+			}
+			wF := float64(w)
+			hF := float64(h)
+			for row := int64(0); row < h; row++ {
+				cy := float64(row)/hF*2.0 - 1.0
+				base := row * w
+				for col := int64(0); col < w; col++ {
+					cx := float64(col)/wF*3.0 - 2.0
+					zr, zi := 0.0, 0.0
+					var k int64
+					for k = 0; k < maxIter; k++ {
+						r2 := zr * zr
+						i2 := zi * zi
+						if r2+i2 > 4.0 {
+							break
+						}
+						nzi := math.FMA(2.0*zr, zi, cy)
+						nzr := (r2 - i2) + cx
+						zr, zi = nzr, nzi
+					}
+					out[base+col] = byte(k)
+				}
+			}
 		case OpKNucleotideRun:
 			counts := vm.i64ArrAt(regs[ins.A]).data
 			n := regs[ins.B].Int()
