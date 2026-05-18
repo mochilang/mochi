@@ -18,3 +18,8 @@ func CallStatus(_ unsafe.Pointer, _ unsafe.Pointer, _ unsafe.Pointer) uint64 {
 func CallStatusFF(_ unsafe.Pointer, _ unsafe.Pointer, _ unsafe.Pointer, _ unsafe.Pointer) uint64 {
 	panic("trampoline: not yet implemented on this platform")
 }
+
+// CallStatusM panics on platforms without a JIT backend.
+func CallStatusM(_ unsafe.Pointer, _ unsafe.Pointer, _ unsafe.Pointer, _ unsafe.Pointer, _ unsafe.Pointer, _ unsafe.Pointer) uint64 {
+	panic("trampoline: not yet implemented on this platform")
+}

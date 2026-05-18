@@ -45,3 +45,23 @@ TEXT ·CallStatusFF(SB),NOSPLIT,$0-40
 	CALL	(R16)
 	MOVD	R0, ret+32(FP)
 	RET
+
+// func CallStatusM(entry, regsI64, status, regsF64, regsCell, arenaCtx unsafe.Pointer) uint64
+//
+// MEP-40 Phase 6.2d.2.a mixed-bank trampoline. ABI0: args at FP+0..+40,
+// result at FP+48. Pins R0 = regsI64, R1 = status, R2 = regsF64, R3 =
+// regsCell, R4 = *jitArenaCtx so a Cell-bank JIT'd fn can access all
+// three register windows plus the arena slab base pointers without
+// going back through the interpreter. Existing Call / CallStatus /
+// CallStatusFF variants stay unchanged so i64- and f64-only kernels
+// pay no extra register-pinning cost.
+TEXT ·CallStatusM(SB),NOSPLIT,$0-56
+	MOVD	entry+0(FP), R16
+	MOVD	regsI64+8(FP), R0
+	MOVD	status+16(FP), R1
+	MOVD	regsF64+24(FP), R2
+	MOVD	regsCell+32(FP), R3
+	MOVD	arenaCtx+40(FP), R4
+	CALL	(R16)
+	MOVD	R0, ret+48(FP)
+	RET

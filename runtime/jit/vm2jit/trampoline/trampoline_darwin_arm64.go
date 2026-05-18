@@ -28,3 +28,12 @@ func CallStatus(entry unsafe.Pointer, regs unsafe.Pointer, status unsafe.Pointer
 // return-channel stays a single uint64 (caller does
 // math.Float64frombits). Used by all kernels with NumRegsF64 > 0.
 func CallStatusFF(entry unsafe.Pointer, regsI64 unsafe.Pointer, status unsafe.Pointer, regsF64 unsafe.Pointer) uint64
+
+// CallStatusM is the MEP-40 Phase 6.2d.2.a mixed-bank trampoline. ABI on
+// AArch64: x0 = regsI64, x1 = status, x2 = regsF64, x3 = regsCell, x4 =
+// *jitArenaCtx. The JIT accesses the Cell register window through
+// [x3 + r*8] (Cell is 8 bytes wide, raw uint64 representation) and
+// resolves arena slab base pointers via [x4 + offset]. Existing
+// kernels keep their CallStatus / CallStatusFF entry; only fns with
+// NumRegsCell > 0 are dispatched via this trampoline.
+func CallStatusM(entry unsafe.Pointer, regsI64 unsafe.Pointer, status unsafe.Pointer, regsF64 unsafe.Pointer, regsCell unsafe.Pointer, arenaCtx unsafe.Pointer) uint64
