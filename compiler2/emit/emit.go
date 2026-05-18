@@ -7,6 +7,7 @@ package emit
 import (
 	"fmt"
 	"math"
+	"math/big"
 
 	"mochi/compiler2/ir"
 	"mochi/compiler2/regalloc"
@@ -377,6 +378,22 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		consts = append(consts, c)
 		constIdx[c] = i
 		return i
+	}
+
+	// Bignum pool: parse each f.BigInts[i] once into a *big.Int and box
+	// it into a single CBigInt cell. The IR pool is already deduplicated
+	// per literal by the builder, so this preserves the one-cell-per-
+	// literal invariant downstream. Without this cache, two OpConstBigInt
+	// with the same Aux would each allocate a fresh *big.Int, and the
+	// per-Cell dedup in cAdd would see them as distinct (Cell.Obj
+	// pointers differ), inflating the Consts pool.
+	bigIntCells := make([]vm2.Cell, len(f.BigInts))
+	for i, s := range f.BigInts {
+		bi, ok := new(big.Int).SetString(s, 10)
+		if !ok {
+			return nil, fmt.Errorf("emit %s: invalid bignum literal %q", f.Name, s)
+		}
+		bigIntCells[i] = vm2.CBigInt(bi)
 	}
 
 	// Emit per block in block-ID order. Record blockPC[bid] = pc at
@@ -754,6 +771,45 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					A: int32(finalReg[ins.Args[0]])})
 			case ir.OpStdinReadAll:
 				emit(vm2.Instr{Op: vm2.OpStdinReadAll, A: dst})
+			case ir.OpConstBigInt:
+				// bigIntCells was pre-populated above (one cell per IR pool
+				// entry, deduplicated by literal). Route through cAdd so
+				// the per-Cell const-pool dedup folds duplicate references.
+				emit(vm2.Instr{Op: vm2.OpLoadConstI, A: dst, B: cAdd(bigIntCells[ins.Aux])})
+			case ir.OpAddBigInt:
+				emit(vm2.Instr{Op: vm2.OpAddBigInt, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpSubBigInt:
+				emit(vm2.Instr{Op: vm2.OpSubBigInt, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpMulBigInt:
+				emit(vm2.Instr{Op: vm2.OpMulBigInt, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpDivBigInt:
+				emit(vm2.Instr{Op: vm2.OpDivBigInt, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpModBigInt:
+				emit(vm2.Instr{Op: vm2.OpModBigInt, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpLessBigInt:
+				emit(vm2.Instr{Op: vm2.OpLessBigInt, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpEqualBigInt:
+				emit(vm2.Instr{Op: vm2.OpEqualBigInt, A: dst,
+					B: int32(finalReg[ins.Args[0]]),
+					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpI64ToBigInt:
+				emit(vm2.Instr{Op: vm2.OpI64ToBigInt, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpBigIntToStr:
+				emit(vm2.Instr{Op: vm2.OpBigIntToStr, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
 			case ir.OpCall:
 				// MEP-38 Phase 4.5: specialize 1- and 2-arg calls. Skip
 				// the staging-window OpMove sequence and let the
@@ -1004,7 +1060,8 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		}
 		switch ins.Type {
 		case ir.TStr, ir.TList, ir.TMap, ir.TPtr,
-			ir.TF64Array, ir.TI64Array, ir.TU8Array, ir.TBytes:
+			ir.TF64Array, ir.TI64Array, ir.TU8Array, ir.TBytes,
+			ir.TBigInt:
 			hasContainer = true
 		}
 		if hasContainer {

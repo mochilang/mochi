@@ -250,4 +250,24 @@ const (
 	// deterministic comparison against a Go reference.
 	OpStdoutWriteBytes // write regs[A] view to vm.Stdout
 	OpStdinReadAll     // A = newBytes from io.ReadAll(vm.Stdin)
+
+	// Bignum subsystem (MEP-39 §4.2.3). Arbitrary-precision signed
+	// integers backed by *big.Int reached through Cell.Obj. Every op
+	// allocates a fresh *big.Int for its result; in-place reuse is a
+	// follow-on once profile evidence shows it pays. Each arithmetic op
+	// takes two bignum operands and writes a bignum result; compares
+	// take two bignums and write a bool. OpI64ToBigInt widens an i64
+	// loop counter into a fresh bignum (needed because pidigits' digit
+	// counter stays i64 while its accumulators are bignums).
+	// OpBigIntToStr formats the bignum in base-10 into a fresh heap
+	// string Cell so the program can print it.
+	OpAddBigInt    // A = CBigInt(bigIntAt(regs[B]) + bigIntAt(regs[C]))
+	OpSubBigInt    // A = CBigInt(bigIntAt(regs[B]) - bigIntAt(regs[C]))
+	OpMulBigInt    // A = CBigInt(bigIntAt(regs[B]) * bigIntAt(regs[C]))
+	OpDivBigInt    // A = CBigInt(bigIntAt(regs[B]) / bigIntAt(regs[C])); div by zero traps
+	OpModBigInt    // A = CBigInt(bigIntAt(regs[B]) % bigIntAt(regs[C])); mod by zero traps
+	OpLessBigInt   // A = CBool(bigIntAt(regs[B]).Cmp(bigIntAt(regs[C])) < 0)
+	OpEqualBigInt  // A = CBool(bigIntAt(regs[B]).Cmp(bigIntAt(regs[C])) == 0)
+	OpI64ToBigInt  // A = CBigInt(new(big.Int).SetInt64(regs[B].Int()))
+	OpBigIntToStr  // A = newString(bigIntAt(regs[B]).Text(10))
 )
