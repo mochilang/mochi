@@ -629,6 +629,107 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			fr = &vm.Frames[len(vm.Frames)-1]
 			regs = vm.Stack[newBase:]
 			ip = int(callee.BranchEntryIP)
+		case OpCallSelfA1Sub1RetNewPair:
+			// Fused OpCallSelfA1Sub1 + OpReturnNewPair. The next
+			// instruction in the function is the standalone OpReturnNewPair
+			// that handles the miss path; the hit path pops the parent
+			// frame directly here, skipping that dispatch.
+			callee := fr.Fn
+			argv := regs[ins.C].Int() - 1
+			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 0 && argv == int64(callee.LeafGuardK) {
+				var right Cell
+				if lk == LeafKindReturnI64K {
+					right = CInt(int64(callee.LeafReturnA))
+				} else {
+					right = vm.newPair(CInt(int64(callee.LeafReturnB)), CInt(int64(callee.LeafReturnC)))
+				}
+				ret = vm.newPair(regs[ins.B], right)
+				retReg := fr.RetReg
+				top := len(vm.Frames) - 1
+				poppedBase := fr.RegsBase
+				if fr.Fn.HasContainerSlots {
+					clear(vm.Stack[poppedBase:])
+				}
+				vm.Stack = vm.Stack[:poppedBase]
+				vm.Frames = vm.Frames[:top]
+				if top <= target {
+					return ret, nil
+				}
+				fr = &vm.Frames[top-1]
+				code = fr.Fn.Code
+				regs = vm.Stack[fr.RegsBase:]
+				consts = fr.Fn.Consts
+				ip = fr.IP
+				regs[retReg] = ret
+				break
+			}
+			fr.IP = ip
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				vm.Stack[base] = CInt(argv)
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				regs = vm.Stack[base:]
+				ip = int(callee.BranchEntryIP)
+				break
+			}
+			a0 := CInt(argv)
+			_, newBase := vm.pushFrame(callee, ins.A)
+			vm.Stack[newBase] = a0
+			fr = &vm.Frames[len(vm.Frames)-1]
+			regs = vm.Stack[newBase:]
+			ip = int(callee.BranchEntryIP)
+		case OpPairSndCallSelfA2Sub1RetAddSum:
+			// Fused OpPairSndCallSelfA2Sub1 + OpReturnAddSum K=1. Hit
+			// path pops parent frame directly with ret = 1 + lcnt + rcnt;
+			// miss path falls through to the standalone OpReturnAddSum
+			// that follows in the emitted code.
+			callee := fr.Fn
+			argv := regs[ins.D].Int() - 1
+			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 1 && argv == int64(callee.LeafGuardK) && lk == LeafKindReturnI64K {
+				ret = CInt(1 + regs[ins.B].Int() + int64(callee.LeafReturnA))
+				retReg := fr.RetReg
+				top := len(vm.Frames) - 1
+				poppedBase := fr.RegsBase
+				if fr.Fn.HasContainerSlots {
+					clear(vm.Stack[poppedBase:])
+				}
+				vm.Stack = vm.Stack[:poppedBase]
+				vm.Frames = vm.Frames[:top]
+				if top <= target {
+					return ret, nil
+				}
+				fr = &vm.Frames[top-1]
+				code = fr.Fn.Code
+				regs = vm.Stack[fr.RegsBase:]
+				consts = fr.Fn.Consts
+				ip = fr.IP
+				regs[retReg] = ret
+				break
+			}
+			fr.IP = ip
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				vm.Stack[base] = (*vmPair)(regs[ins.C].PtrTo()).b
+				vm.Stack[base+1] = CInt(argv)
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				regs = vm.Stack[base:]
+				ip = int(callee.BranchEntryIP)
+				break
+			}
+			a0 := (*vmPair)(regs[ins.C].PtrTo()).b
+			a1 := CInt(argv)
+			_, newBase := vm.pushFrame(callee, ins.A)
+			vm.Stack[newBase] = a0
+			vm.Stack[newBase+1] = a1
+			fr = &vm.Frames[len(vm.Frames)-1]
+			regs = vm.Stack[newBase:]
+			ip = int(callee.BranchEntryIP)
 		case OpTailCallSelf:
 			ip = 0
 		case OpTailCallSelfA3:
