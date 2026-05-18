@@ -21,10 +21,24 @@ const (
 	// (binary_trees.makeTree(d-1) / checkTree(t, d-1) where the constant
 	// 1 is loaded and immediately subtracted from the depth parameter).
 	OpSubI64K
-	OpSubI64                // A = B - C
-	OpMulI64                // A = B * C
-	OpDivI64                // A = B / C (truncated; division by zero traps)
-	OpModI64                // A = B % C (truncated, sign of dividend; mod by zero traps)
+	OpSubI64 // A = B - C
+	// A = B * sign-extend(C). Same fusion shape as OpAddI64K but for
+	// multiply-by-immediate. Hot for LCG/hash chains in the BG suite
+	// (MEP-39 §6.6 fasta iteration 4: `seed = (seed * 3877 + 29573) %
+	// 139968` and `hash = (hash * 1009 + byte) % 2147483647` both fold
+	// their multiplier here). The multiplicand is treated as signed
+	// 64-bit so wrap-around matches OpMulI64.
+	OpMulI64K
+	OpMulI64 // A = B * C
+	OpDivI64 // A = B / C (truncated; division by zero traps)
+	// A = B % sign-extend(C). Same fusion shape as OpAddI64K but for
+	// mod-by-immediate. Hot for LCG/hash chains in the BG suite
+	// (MEP-39 §6.6 fasta iteration 4: the LCG modulus 139968 and the
+	// hash modulus 2147483647 both fit in i32). Mod-by-zero traps
+	// (the i32 immediate cannot be 0 because emit-side fusion only
+	// fires for non-zero ConstI64 inputs).
+	OpModI64K
+	OpModI64 // A = B % C (truncated, sign of dividend; mod by zero traps)
 	OpLessI64               // A = B < C  (bool)
 	OpLessEqI64             // A = B <= C (bool)
 	OpEqualI64              // A = B == C (bool)

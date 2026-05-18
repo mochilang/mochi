@@ -96,6 +96,8 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			regs[ins.A] = CInt(regs[ins.B].Int() - int64(ins.C))
 		case OpSubI64:
 			regs[ins.A] = CInt(regs[ins.B].Int() - regs[ins.C].Int())
+		case OpMulI64K:
+			regs[ins.A] = CInt(regs[ins.B].Int() * int64(ins.C))
 		case OpMulI64:
 			regs[ins.A] = CInt(regs[ins.B].Int() * regs[ins.C].Int())
 		case OpDivI64:
@@ -105,6 +107,9 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				return ret, errors.New("vm2: division by zero")
 			}
 			regs[ins.A] = CInt(regs[ins.B].Int() / d)
+		case OpModI64K:
+			// emit-side fusion guarantees the immediate is non-zero
+			regs[ins.A] = CInt(regs[ins.B].Int() % int64(ins.C))
 		case OpModI64:
 			d := regs[ins.C].Int()
 			if d == 0 {
