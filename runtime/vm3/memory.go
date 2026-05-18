@@ -177,3 +177,155 @@ func filterFreeList(free []uint32, freeMark, slabMark uint32) []uint32 {
 	}
 	return kept
 }
+
+// Layer B of the §6.7 memory plan: handle-aware copy-up on return.
+//
+// handleCellReturn is the Cell-return analogue of truncateToMarks. It
+// is called by OpReturnCell. The strategy:
+//
+//	1. If ret is unboxed (CInt / CFloat / CSStr / CBool / CNull), no
+//	   handle is escaping, so truncateToMarks fires as in Layer A.
+//	2. If ret is a handle pointing to a slot below the frame's mark,
+//	   the slot is external (caller's or pre-frame). Truncate as in
+//	   Layer A; the handle stays valid because its slot was never
+//	   inside the local range.
+//	3. If ret is a handle pointing to a local slot (idx >= mark for
+//	   its arena), the slot's referenced cells are scanned. If any
+//	   contained cell is itself a local-range handle, abort: leave
+//	   the slabs intact for Layer D's mark-sweep (Phase 5).
+//	4. Otherwise the slot is "leaf-like": no deep references into
+//	   local arenas. Copy the slot's struct down to the mark
+//	   position, rewrite the returned handle to point at the mark,
+//	   and truncate the arena to mark+1.
+//
+// Returns the (possibly rewritten) handle Cell that the caller should
+// place into the caller's retReg.
+func (a *Arenas) handleCellReturn(ret Cell, marks, freeMarks *[numArenaTags]uint32) Cell {
+	if !ret.IsHandle() {
+		a.truncateToMarks(marks, freeMarks)
+		return ret
+	}
+	tag, gen, idx := ret.DecodeHandle()
+	mark := marks[tag]
+	if idx < mark {
+		a.truncateToMarks(marks, freeMarks)
+		return ret
+	}
+	if a.containsLocalHandle(tag, idx, marks) {
+		return ret
+	}
+	if idx != mark {
+		a.moveSlot(tag, idx, mark)
+	}
+	marks[tag] = mark + 1
+	a.truncateToMarks(marks, freeMarks)
+	marks[tag] = mark
+	return MakeHandle(tag, gen, mark)
+}
+
+// containsLocalHandle reports whether the slot at (tag, idx) references
+// any cell whose handle points into the local range (idx >= mark for
+// its own arena). Only embedded Cell fields are scanned; arenas with
+// no Cell payload (String, Bytes, Bignum, F64Arr, I64Arr, U8Arr) can
+// never reference local handles and return false.
+func (a *Arenas) containsLocalHandle(tag ArenaTag, idx uint32, marks *[numArenaTags]uint32) bool {
+	switch tag {
+	case ArenaList:
+		l := &a.Lists[idx]
+		cells := l.cells
+		if uint32(len(cells)) > l.len {
+			cells = cells[:l.len]
+		}
+		for _, c := range cells {
+			if cellIsLocal(c, marks) {
+				return true
+			}
+		}
+	case ArenaMap:
+		m := &a.Maps[idx]
+		for i := range m.table {
+			e := &m.table[i]
+			if e.hash == 0 {
+				continue
+			}
+			if cellIsLocal(e.key, marks) || cellIsLocal(e.value, marks) {
+				return true
+			}
+		}
+	case ArenaSet:
+		s := &a.Sets[idx]
+		for i := range s.table {
+			e := &s.table[i]
+			if e.hash == 0 {
+				continue
+			}
+			if cellIsLocal(e.key, marks) {
+				return true
+			}
+		}
+	case ArenaStruct:
+		s := &a.Structs[idx]
+		for _, f := range s.fields {
+			if cellIsLocal(f, marks) {
+				return true
+			}
+		}
+	case ArenaClosure:
+		c := &a.Closures[idx]
+		for _, u := range c.upvalues {
+			if cellIsLocal(u, marks) {
+				return true
+			}
+		}
+	case ArenaPair:
+		p := &a.Pairs[idx]
+		if cellIsLocal(p.fst, marks) || cellIsLocal(p.snd, marks) {
+			return true
+		}
+	}
+	return false
+}
+
+// cellIsLocal reports whether c is a handle into the local range of
+// its arena (idx >= mark for that arena).
+func cellIsLocal(c Cell, marks *[numArenaTags]uint32) bool {
+	if !c.IsHandle() {
+		return false
+	}
+	t, _, i := c.DecodeHandle()
+	return i >= marks[t]
+}
+
+// moveSlot copies the slot record from slab[src] to slab[dst] for the
+// given arena tag. After the copy the two slots share their backing
+// slice headers, so the source's backing arrays remain reachable via
+// dst once src is truncated away. Caller must guarantee dst < src
+// (so the truncation drops src, not dst).
+func (a *Arenas) moveSlot(tag ArenaTag, src, dst uint32) {
+	switch tag {
+	case ArenaString:
+		a.Strings[dst] = a.Strings[src]
+	case ArenaList:
+		a.Lists[dst] = a.Lists[src]
+	case ArenaMap:
+		a.Maps[dst] = a.Maps[src]
+	case ArenaSet:
+		a.Sets[dst] = a.Sets[src]
+	case ArenaStruct:
+		a.Structs[dst] = a.Structs[src]
+	case ArenaClosure:
+		a.Closures[dst] = a.Closures[src]
+	case ArenaBignum:
+		a.Bignums[dst] = a.Bignums[src]
+	case ArenaBytes:
+		a.Bytes[dst] = a.Bytes[src]
+	case ArenaPair:
+		a.Pairs[dst] = a.Pairs[src]
+	case ArenaF64Arr:
+		a.F64Arrs[dst] = a.F64Arrs[src]
+	case ArenaI64Arr:
+		a.I64Arrs[dst] = a.I64Arrs[src]
+	case ArenaU8Arr:
+		a.U8Arrs[dst] = a.U8Arrs[src]
+	}
+}

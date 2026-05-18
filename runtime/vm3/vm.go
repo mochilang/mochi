@@ -457,6 +457,12 @@ func (vm *VM) run() (Cell, error) {
 		case OpReturnCell:
 			ret := regsCell[op.A]
 			retReg := fr.retReg
+			// Layer B: handle-aware copy-up. The returned Cell may be a
+			// handle into the local arena range; relocate it to slot
+			// marks[tag] so the rest of the frame's allocations can be
+			// truncated away. Unboxed Cell payloads and external handles
+			// trigger the same Layer A truncate path used by OpReturnI64.
+			ret = arenas.handleCellReturn(ret, &fr.marks, &fr.freeMarks)
 			if fn.NumRegsCell > 0 {
 				clear(regsCell)
 			}

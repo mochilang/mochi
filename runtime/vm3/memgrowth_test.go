@@ -124,3 +124,157 @@ func TestLayerABoundsReusedVM(t *testing.T) {
 		t.Errorf("TotalSlots(ArenaList) after %d reused-VM runs = %d, want 0", N, got)
 	}
 }
+
+// TestLayerBCopyUpReturnedList asserts that returning a freshly
+// allocated list via OpReturnCell keeps exactly the returned slot in
+// the arena and truncates every other allocation:
+//
+//   - Function allocates a temp map (ArenaMap), then a list, pushes
+//     a few i64 values, and returns the list.
+//   - After one Run: ArenaMap is empty (Layer A behavior carried over),
+//     ArenaList has one live slot at index 0 (Layer B copy-up).
+//   - The returned handle still resolves to a 3-element list.
+func TestLayerBCopyUpReturnedList(t *testing.T) {
+	main := &Function{
+		Name:        "buildAndReturn",
+		NumRegsI64:  1,
+		NumRegsCell: 2,
+		ResultBank:  BankCell,
+		Code: []Op{
+			MakeOp(OpNewMap, 0, 0, 0), // temp map, will be truncated
+			MakeOp(OpNewList, 1, 0, 0),
+			MakeOp(OpConstI64K, 0, 0, 10),
+			MakeOp(OpListPushI64, 1, 0, 0),
+			MakeOp(OpConstI64K, 0, 0, 20),
+			MakeOp(OpListPushI64, 1, 0, 0),
+			MakeOp(OpConstI64K, 0, 0, 30),
+			MakeOp(OpListPushI64, 1, 0, 0),
+			MakeOp(OpReturnCell, 1, 0, 0),
+		},
+	}
+	prog := &Program{Funcs: []*Function{main}, Entry: 0}
+	vm := NewWithProgram(prog)
+	ret, err := vm.Run(main)
+	if err != nil {
+		t.Fatalf("Run error: %v", err)
+	}
+	if !ret.IsHandle() {
+		t.Fatalf("ret is not a handle: %x", uint64(ret))
+	}
+	tag, _, idx := ret.DecodeHandle()
+	if tag != ArenaList {
+		t.Fatalf("ret tag = %d, want ArenaList", tag)
+	}
+	if idx != 0 {
+		t.Errorf("ret idx after Layer B copy-up = %d, want 0", idx)
+	}
+	if got := vm.Arenas().TotalSlots(ArenaList); got != 1 {
+		t.Errorf("TotalSlots(ArenaList) = %d, want 1 (only returned slot)", got)
+	}
+	if got := vm.Arenas().TotalSlots(ArenaMap); got != 0 {
+		t.Errorf("TotalSlots(ArenaMap) = %d, want 0 (temp truncated)", got)
+	}
+	if n := vm.Arenas().ListLen(ret); n != 3 {
+		t.Errorf("returned ListLen = %d, want 3", n)
+	}
+}
+
+// TestLayerBBoundsTempAllocations asserts that a function which
+// allocates multiple temp containers but returns only one keeps every
+// arena except the returned-handle arena bounded across many reused-VM
+// invocations. ArenaList grows by 1 per call (one returned list per
+// run); ArenaMap stays at 0.
+func TestLayerBBoundsTempAllocations(t *testing.T) {
+	main := &Function{
+		Name:        "tempAllocsThenReturnList",
+		NumRegsI64:  1,
+		NumRegsCell: 4,
+		ResultBank:  BankCell,
+		Code: []Op{
+			MakeOp(OpNewMap, 0, 0, 0),  // temp1
+			MakeOp(OpNewMap, 1, 0, 0),  // temp2
+			MakeOp(OpNewList, 2, 0, 0), // temp list (will be dropped, idx > mark)
+			MakeOp(OpNewList, 3, 0, 0), // returned list
+			MakeOp(OpReturnCell, 3, 0, 0),
+		},
+	}
+	prog := &Program{Funcs: []*Function{main}, Entry: 0}
+	vm := NewWithProgram(prog)
+	const N = 1000
+	for range N {
+		if _, err := vm.Run(main); err != nil {
+			t.Fatalf("Run error: %v", err)
+		}
+	}
+	if got := vm.Arenas().TotalSlots(ArenaMap); got != 0 {
+		t.Errorf("TotalSlots(ArenaMap) after %d runs = %d, want 0", N, got)
+	}
+	// ArenaList grows by 1 per call (returned slot survives). Phase 5
+	// mark-sweep will reclaim those across calls; for now we just
+	// verify the growth is linear and matches N exactly, proving the
+	// other temp list is truncated.
+	if got := vm.Arenas().TotalSlots(ArenaList); got != N {
+		t.Errorf("TotalSlots(ArenaList) after %d runs = %d, want %d", N, got, N)
+	}
+}
+
+// TestLayerBAbortsOnLocalCellRef asserts that the conservative branch
+// of Layer B fires when the returned slot contains a local-range
+// handle. The returned list holds a reference to a freshly allocated
+// string (local handle), so handleCellReturn must leave the slabs
+// intact to avoid a use-after-free. ArenaList and ArenaString should
+// both retain their slots after Run.
+func TestLayerBAbortsOnLocalCellRef(t *testing.T) {
+	main := &Function{
+		Name:        "listWithLocalString",
+		NumRegsI64:  1,
+		NumRegsCell: 2,
+		ResultBank:  BankCell,
+		Consts:      []Cell{CSStr([]byte("ok"))},
+		Code: []Op{
+			MakeOp(OpNewList, 0, 0, 0),
+			// Use a string handle from the const pool? CSStr is inline,
+			// not a handle. We need a real arena-allocated string. The
+			// simplest way to plant a local-range handle into a list is
+			// via direct manipulation in the test setup. Instead, just
+			// return the list as-is and verify the contains-scan
+			// recognizes the embedded slot we plant manually.
+			MakeOp(OpReturnCell, 0, 0, 0),
+		},
+	}
+	prog := &Program{Funcs: []*Function{main}, Entry: 0}
+	vm := NewWithProgram(prog)
+	// Plant a real arena-allocated string into the VM's arena before
+	// the Run, then poke a list-side reference. Easier path: drive the
+	// helper directly via a synthetic frame in the next subtest.
+	_ = prog
+	_ = vm
+	a := &Arenas{}
+	// Pre-frame allocation (below mark): a string at idx 0.
+	external := a.AllocString([]byte("ext"))
+	var marks, freeMarks [numArenaTags]uint32
+	// Snapshot marks; freeMarks remain zero.
+	a.snapshotMarks(&marks, &freeMarks)
+	// Locally allocate a list and a string (both above marks).
+	localStr := a.AllocString([]byte("local"))
+	listCell := a.AllocList(0, 0)
+	tag, _, lidx := listCell.DecodeHandle()
+	if tag != ArenaList {
+		t.Fatalf("list tag = %d", tag)
+	}
+	a.Lists[lidx].cells = append(a.Lists[lidx].cells, localStr)
+	a.Lists[lidx].len = 1
+	// Layer B should detect the embedded local string and skip
+	// truncation entirely.
+	ret := a.handleCellReturn(listCell, &marks, &freeMarks)
+	if ret != listCell {
+		t.Errorf("handle was rewritten: got %x want %x", uint64(ret), uint64(listCell))
+	}
+	if a.TotalSlots(ArenaList) != 1 {
+		t.Errorf("ArenaList truncated despite local ref: TotalSlots=%d", a.TotalSlots(ArenaList))
+	}
+	if a.TotalSlots(ArenaString) != 2 {
+		t.Errorf("ArenaString truncated despite local ref: TotalSlots=%d", a.TotalSlots(ArenaString))
+	}
+	_ = external
+}
