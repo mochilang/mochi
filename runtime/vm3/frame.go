@@ -6,6 +6,12 @@ package vm3
 // indices keeps the Frame record small and lets the call path avoid
 // per-call register-slice allocation, which dominates recursive
 // workloads.
+//
+// marks / freeMarks snapshot every arena slab's len() and free-list
+// len() at pushFrame. On an unboxed Return* the interpreter calls
+// arenas.truncateToMarks to slice each slab back to its mark and drop
+// any free-list entries pointing above the mark. This is Layer A of
+// the §6.7 memory plan: per-call region reclamation, no trace.
 type Frame struct {
 	fn *Function
 	pc int
@@ -19,7 +25,14 @@ type Frame struct {
 	retReg uint16
 	// retBank tags which bank retReg lives in.
 	retBank Bank
+
+	marks     [numArenaTags]uint32
+	freeMarks [numArenaTags]uint32
 }
+
+// numArenaTags is one past the last ArenaTag enumerator. Sized to fit
+// every tag so a Frame can hold one mark per arena without indirection.
+const numArenaTags = 12
 
 // Function is a compiled vm3 function. Each activation reserves
 // NumRegs* slots in each typed register stack.
