@@ -8,6 +8,16 @@ import "mochi/runtime/vm3"
 const (
 	StatusOK        int64 = 0
 	StatusDivByZero int64 = 1
+	// StatusListGrow is the deopt code written by OpListPushI64 when
+	// cells.len >= cells.cap, signalling the JIT cannot append in
+	// place. The deopt block also spills all pinned regs back to the
+	// regsX base arrays so the interpreter can resume from PC=0 with
+	// the JIT's final state via the deopt-scratch protocol in vm3.VM
+	// (Phase 6.2d.2.c). Kernels admitted under the OpListPushI64
+	// whitelist have a single loop entry at PC=0, so restart at PC=0
+	// with the spilled regs reproduces the next iteration of the
+	// fill loop without losing state.
+	StatusListGrow int64 = 2
 )
 
 // popcount32 counts set bits in v. Used to size OpCallI64 spill loops

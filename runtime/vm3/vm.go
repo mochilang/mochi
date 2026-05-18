@@ -23,6 +23,51 @@ type VM struct {
 	stackF64  []float64
 	stackCell []Cell
 	frames    []Frame
+
+	// Deopt-resume scratch: when a JIT'd callee deopts, jitCall writes
+	// the callee's spilled register state here (via DeoptScratchI64 /
+	// DeoptScratchF64 / DeoptScratchCell). OpCallI64 / OpCallMixed then
+	// populate the freshly pushed frame from these slices instead of the
+	// original args, so the interpreter resumes from PC=0 with the JIT's
+	// final state (Phase 6.2d.2.c). Slices are grown lazily by the JIT
+	// callback; the interpreter reads len(deoptCell) > 0 etc. via the
+	// fn.NumRegsX prefix when copying.
+	deoptI64  []int64
+	deoptF64  []float64
+	deoptCell []Cell
+}
+
+// DeoptScratchI64 returns the deopt-resume i64 scratch sized to n, growing
+// the backing array if needed. The JIT writes spilled i64 register state
+// into the returned slice before a deopt return; OpCallI64 / OpCallMixed
+// in run() then copy it into the new interp frame.
+func (vm *VM) DeoptScratchI64(n int) []int64 {
+	if cap(vm.deoptI64) < n {
+		vm.deoptI64 = make([]int64, n, max(n, 16))
+	} else {
+		vm.deoptI64 = vm.deoptI64[:n]
+	}
+	return vm.deoptI64
+}
+
+// DeoptScratchF64 mirrors DeoptScratchI64 for the f64 bank.
+func (vm *VM) DeoptScratchF64(n int) []float64 {
+	if cap(vm.deoptF64) < n {
+		vm.deoptF64 = make([]float64, n, max(n, 8))
+	} else {
+		vm.deoptF64 = vm.deoptF64[:n]
+	}
+	return vm.deoptF64
+}
+
+// DeoptScratchCell mirrors DeoptScratchI64 for the Cell bank.
+func (vm *VM) DeoptScratchCell(n int) []Cell {
+	if cap(vm.deoptCell) < n {
+		vm.deoptCell = make([]Cell, n, max(n, 4))
+	} else {
+		vm.deoptCell = vm.deoptCell[:n]
+	}
+	return vm.deoptCell
 }
 
 // New constructs an empty VM.
@@ -364,9 +409,12 @@ func (vm *VM) run() (Cell, error) {
 			// Phase 6.2c: if the callee has been JIT'd, route through
 			// the trampoline instead of pushing an interpreter frame.
 			// The JIT's recursive self-calls live on the JIT's own
-			// stack and do not touch vm.frames. On deopt we fall
-			// through to the interpreter path so the function restarts
-			// from PC=0 under the interpreter.
+			// stack and do not touch vm.frames. On deopt jitCall writes
+			// the callee's spilled register state into vm.deopt*; we
+			// pick it up below to populate the resume frame so the
+			// interpreter starts at PC=0 with the JIT's final state
+			// (Phase 6.2d.2.c deopt-resume protocol).
+			resumeFromDeopt := false
 			if callee.JITCode != nil && JITCallFn != nil {
 				bits, deopt, err := JITCallFn(vm, callee, args, nil, nil)
 				if err != nil {
@@ -377,6 +425,7 @@ func (vm *VM) run() (Cell, error) {
 					pc++
 					continue
 				}
+				resumeFromDeopt = true
 			}
 			// Stash caller state so we resume one past the call site.
 			fr.pc = pc + 1
@@ -390,7 +439,11 @@ func (vm *VM) run() (Cell, error) {
 			regsF64 = vm.stackF64[fr.baseF64 : fr.baseF64+int(fn.NumRegsF64)]
 			regsCell = vm.stackCell[fr.baseCell : fr.baseCell+int(fn.NumRegsCell)]
 			consts = fn.Consts
-			copy(regsI64, args)
+			if resumeFromDeopt {
+				copy(regsI64, vm.deoptI64)
+			} else {
+				copy(regsI64, args)
+			}
 		case OpCallF64:
 			callee := vm.prog.Funcs[uint16(op.C)]
 			n := callee.NumF64Params()
@@ -575,7 +628,10 @@ func (vm *VM) run() (Cell, error) {
 			return EncodeDeopt(int(uint16(op.C))), nil
 
 		case OpNewList:
-			regsCell[op.A] = arenas.AllocList(0, 0)
+			// op.C is the cap hint (0 if unknown). A known cap pre-grows
+			// the cells slice so a JIT'd push fast-path never deopts on
+			// grow for a kernel whose final size is known at allocation.
+			regsCell[op.A] = arenas.AllocList(0, int(op.C))
 			pc++
 		case OpListLenI64:
 			regsI64[op.A] = int64(arenas.ListLen(regsCell[op.B]))
@@ -668,7 +724,12 @@ func (vm *VM) run() (Cell, error) {
 			// the trampoline. The JIT's pinned regs are loaded from the
 			// argsI64/argsF64/argsCell slices in jitCall, matching the
 			// same param-bank position-indexed convention used by the
-			// interp's pushFrame path. On deopt we fall through.
+			// interp's pushFrame path. On deopt jitCall writes the
+			// callee's spilled register state into vm.deopt*; we pick
+			// it up below to populate the resume frame so the
+			// interpreter starts at PC=0 with the JIT's final state
+			// (Phase 6.2d.2.c deopt-resume protocol).
+			resumeFromDeopt := false
 			if callee.JITCode != nil && JITCallFn != nil {
 				retBank := Bank(op.BankFlags & 0x3)
 				bits, deopt, err := JITCallFn(vm, callee, argI64[:len(pbs)], argF64[:len(pbs)], argCell[:len(pbs)])
@@ -687,6 +748,7 @@ func (vm *VM) run() (Cell, error) {
 					pc++
 					continue
 				}
+				resumeFromDeopt = true
 			}
 			fr.pc = pc + 1
 			retBank := Bank(op.BankFlags & 0x3)
@@ -700,14 +762,20 @@ func (vm *VM) run() (Cell, error) {
 			regsF64 = vm.stackF64[fr.baseF64 : fr.baseF64+int(fn.NumRegsF64)]
 			regsCell = vm.stackCell[fr.baseCell : fr.baseCell+int(fn.NumRegsCell)]
 			consts = fn.Consts
-			for k, b := range pbs {
-				switch b {
-				case BankI64:
-					regsI64[k] = argI64[k]
-				case BankF64:
-					regsF64[k] = argF64[k]
-				case BankCell:
-					regsCell[k] = argCell[k]
+			if resumeFromDeopt {
+				copy(regsI64, vm.deoptI64)
+				copy(regsF64, vm.deoptF64)
+				copy(regsCell, vm.deoptCell)
+			} else {
+				for k, b := range pbs {
+					switch b {
+					case BankI64:
+						regsI64[k] = argI64[k]
+					case BankF64:
+						regsF64[k] = argF64[k]
+					case BankCell:
+						regsCell[k] = argCell[k]
+					}
 				}
 			}
 

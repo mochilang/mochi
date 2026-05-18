@@ -10,12 +10,12 @@ import (
 	"mochi/runtime/vm3"
 )
 
-// TestListsFillSumSumKernelCompiles confirms the Phase 6.2d.2.a step 2
-// gate: vm3jit.CompileProgram admits the sum kernel (idx=2) of
-// lists_fill_sum on ARM64. main (idx=0) uses OpNewList which is outside
-// the sum-shape whitelist and is expected to fall back to interp; fill
-// (idx=1) uses OpListPushI64 which is also outside the whitelist.
-func TestListsFillSumSumKernelCompiles(t *testing.T) {
+// TestListsFillSumKernelsCompile confirms the Phase 6.2d.2.c gate:
+// vm3jit.CompileProgram admits both the sum (idx=2) and fill (idx=1)
+// kernels of lists_fill_sum on ARM64. main (idx=0) still falls back to
+// the interpreter because it uses OpNewList, which is outside the
+// Cell-bank whitelist.
+func TestListsFillSumKernelsCompile(t *testing.T) {
 	prog := corpus.ListsFillSum.Build(128)
 	cfs := vm3jit.CompileProgram(prog)
 	defer func() {
@@ -28,8 +28,8 @@ func TestListsFillSumSumKernelCompiles(t *testing.T) {
 	if got := prog.Funcs[2].JITCode; got == nil {
 		t.Fatalf("sum (idx=2) did not compile: JITCode is nil")
 	}
-	if got := prog.Funcs[1].JITCode; got != nil {
-		t.Fatalf("fill (idx=1) unexpectedly compiled: should fall back to interp pending Phase 6.2d.2.c")
+	if got := prog.Funcs[1].JITCode; got == nil {
+		t.Fatalf("fill (idx=1) did not compile: JITCode is nil")
 	}
 	if got := prog.Funcs[0].JITCode; got != nil {
 		t.Fatalf("main (idx=0) unexpectedly compiled: should fall back to interp pending OpNewList lowering")

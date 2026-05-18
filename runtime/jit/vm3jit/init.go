@@ -147,10 +147,20 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 			unsafe.Pointer(&jf.status))
 	}
 	if jf.status != 0 {
-		// Status-word deopt (StatusDivByZero etc.). Phase 6.2c keeps
-		// it simple: signal deopt and let the interpreter restart the
-		// callee from PC=0. A later sub-phase can recover JIT-spilled
-		// regs and resume at the exact deopt PC.
+		// Deopt-resume protocol (Phase 6.2d.2.c). The JIT's per-fn
+		// deopt block spills every pinned reg back to jf.regsX before
+		// writing *status and returning, so jf carries the JIT's final
+		// state. Copy it into vm.deopt* so OpCallI64 / OpCallMixed can
+		// populate the new interp frame from the spilled state instead
+		// of the original args; the interpreter then restarts at PC=0
+		// and the loop kernels (the only shape admitted under the
+		// whitelist) pick up exactly where the JIT left off.
+		nI64 := int(fn.NumRegsI64)
+		nF64 := int(fn.NumRegsF64)
+		nCell := int(fn.NumRegsCell)
+		copy(vm.DeoptScratchI64(nI64), jf.regsI64[:nI64])
+		copy(vm.DeoptScratchF64(nF64), jf.regsF64[:nF64])
+		copy(vm.DeoptScratchCell(nCell), jf.regsCell[:nCell])
 		return 0, true, nil
 	}
 	return bits, false, nil
