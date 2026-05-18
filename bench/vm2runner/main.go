@@ -59,6 +59,9 @@ var repeats = map[string]int{
 	// MEP-39 §6.4: spectral_norm. N is the vector dimension; the
 	// inner power-method always runs 10 iterations regardless of N.
 	"bg_spectral_norm": 1,
+	// MEP-39 §6.5: reverse_complement. N is the buffer length; one
+	// fill + one reverse-complement pass + one sum at that size.
+	"bg_reverse_complement": 1,
 }
 
 func main() {
