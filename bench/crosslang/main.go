@@ -92,6 +92,12 @@ var programs = []program{
 	// runs 10 iterations (5 pairs of AtAu) regardless of N. See
 	// bench/template/bg/spectral_norm/.
 	{category: "bg", name: "spectral_norm", ns: []int{100, 200}},
+	// MEP-39 §6.5: BG reverse_complement. N is the buffer length;
+	// the buffer is filled with the ACGT cycle, the entire range
+	// is reverse-complemented into a second buffer, and the peers
+	// integer-compare sum(out). When N is a multiple of 4, the
+	// expected output is (N/4) * 287. See bench/template/bg/reverse_complement/.
+	{category: "bg", name: "reverse_complement", ns: []int{4096, 16384}},
 }
 
 type result struct {

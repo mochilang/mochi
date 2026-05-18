@@ -1,0 +1,54 @@
+// Template peer for the bg/reverse_complement benchmark. Mirrors
+// the reverse_complement.mochi shape: fill an N-byte buffer with the
+// repeating "ACGT" pattern, reverse-complement into a second buffer
+// (A<->T, C<->G), then return sum(out) as int64 so the cross-lang
+// harness can integer-compare. When N is a multiple of 4 the result
+// is (N/4) * 287.
+
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+func complement(c byte) byte {
+	switch c {
+	case 'A':
+		return 'T'
+	case 'T':
+		return 'A'
+	case 'C':
+		return 'G'
+	case 'G':
+		return 'C'
+	default:
+		return c
+	}
+}
+
+func main() {
+	const n = {{ .N }}
+	in := make([]byte, n)
+	out := make([]byte, n)
+	bases := [4]byte{'A', 'C', 'G', 'T'}
+
+	start := time.Now()
+	for i := 0; i < n; i++ {
+		in[i] = bases[i%4]
+	}
+	for i := 0; i < n; i++ {
+		out[n-1-i] = complement(in[i])
+	}
+	var sum int64
+	for i := 0; i < n; i++ {
+		sum += int64(out[i])
+	}
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      sum,
+	})
+}

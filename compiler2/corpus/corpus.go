@@ -60,6 +60,11 @@ func All() []Program {
 		// dimension; the inner power-method runs 10 iterations (5
 		// pairs of AtAu) and the result is floor(sqrt(uBu/uu) * 1e9).
 		{Name: "bg_spectral_norm", Build: BuildSpectralNorm, Expect: ExpectSpectralNorm},
+		// MEP-39 §6.5: parameterised reverse_complement. N is the
+		// buffer length; fill with the ACGT cycle, reverse-complement
+		// into a second buffer, return sum(out) so peers can integer-
+		// compare. When N is a multiple of 4, sum = (N/4) * 287.
+		{Name: "bg_reverse_complement", Build: BuildReverseComplement, Expect: ExpectReverseComplement},
 	}
 }
 

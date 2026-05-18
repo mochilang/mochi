@@ -1,0 +1,41 @@
+// MEP-39 reverse_complement Mochi reference. Fill an N-byte buffer
+// with the repeating ACGT cycle, reverse-complement into a second
+// buffer (A<->T, C<->G), and print sum(out). The vm2 path actually
+// runs `compiler2/corpus/bg_reverse_complement_scaled.go` (the IR
+// builder); this file is the source-level reference documenting the
+// arithmetic the cross-lang peers replicate. When N is a multiple
+// of 4 the result is (N/4) * 287.
+
+let N = 4096
+
+fun complement(c: int): int {
+  if c == 65 { return 84 }
+  if c == 84 { return 65 }
+  if c == 67 { return 71 }
+  if c == 71 { return 67 }
+  return c
+}
+
+var in_buf: [int] = []
+var out_buf: [int] = []
+for _ in 0..N {
+  in_buf = in_buf + [0]
+  out_buf = out_buf + [0]
+}
+
+let bases: [int] = [65, 67, 71, 84]
+
+for i in 0..N {
+  in_buf[i] = bases[i % 4]
+}
+
+for i in 0..N {
+  out_buf[N - 1 - i] = complement(in_buf[i])
+}
+
+var total = 0
+for i in 0..N {
+  total = total + out_buf[i]
+}
+
+print(total)
