@@ -326,5 +326,13 @@
     "type": "Standards Track",
     "description": "First-principles successor stack to runtime/vm2 + compiler2. Replaces the 16-byte split Cell (Bits uint64 + Obj unsafe.Pointer) with an 8-byte NaN-boxed handle Cell that addresses per-type Go-allocated arenas. Replaces the single Cell[] frame register file with three typed banks (regsI64, regsF64, regsCell). Replaces compiler2's flat IR with compiler3's static-type-driven IR that propagates Mochi's static type system end-to-end so the interpreter and JIT never reason about types at runtime. Keeps Go's GC by making arena slabs the only pointer roots (handles are uint64 indices into typed slabs, not pointers). Phased to a production cut-over of bench harness, language server, and REPL over roughly six months.",
     "slug": "/docs/mep/mep-0040"
+  },
+  {
+    "number": 41,
+    "title": "Memory Safety: capability handles, generational references, and CISA-roadmap alignment",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "A first-principles memory-safety MEP for Mochi as of May 2026. Positions Mochi as a memory-safe language in the CISA / NSA / ONCD taxonomy by formalizing the safety property already paid for by the vm3 + compiler3 stack: an 8-byte handle Cell that is mathematically a Vale generational reference (POPL 2023 wave), an MSWasm-style unforgeable capability (OOPSLA 2024 Iris mechanization), and a CHERI-shape fat pointer at the language layer. Specifies the bytecode verifier rules that make handle integrity an invariant, the typed-arena partition that doubles as a kalloc_type / xzone typed-allocator (Apple MIE 2025), generation-as-secret hygiene against Tag Confidentiality Enforcement style leaks, optional reference modes (consume / borrow / inout / weak) layered on OxCaml-style mode axes, FFI sealing for safe Go-runtime handoff, and W^X + PAC/BTI + Spectre-index-masking hardening for the vm3jit code page. Includes a phased plan that culminates in a public Mochi memory-safety statement aligned to the CISA Secure-by-Design Pledge January 1 2026 roadmap obligation.",
+    "slug": "/docs/mep/mep-0041"
   }
 ]
