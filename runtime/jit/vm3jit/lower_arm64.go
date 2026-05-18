@@ -17,6 +17,11 @@ import (
 // them freely. x19..x28 are callee-saved; functions that touch any of
 // those slots push them as STP/LDP pairs in the prologue/epilogue.
 // x0 carries the regsI64 base pointer (set by the trampoline).
+// x1 carries the optional *int64 status word pointer (set by
+// trampoline.CallStatus). The JIT writes a non-zero status code via
+// [x1] on a deopt path (divide-by-zero etc.) before returning. Phase
+// 6.1c+ codegen assumes x1 is always live and never clobbers it; the
+// happy path leaves *status at its caller-pre-zeroed value.
 // x16/x17 are intra-procedure scratches available to any encoder.
 //
 // vm3 i64 registers are stored as raw int64 (no NaN-box, no tag). A
@@ -25,6 +30,14 @@ import (
 // register with no tag arithmetic. This is the key simplification
 // over vm2jit and the reason a small instruction count per opcode is
 // achievable for arithmetic kernels.
+
+// Status codes the JIT writes to *(x1) on a deopt path. Caller checks
+// this word after a CallStatus return and routes to the corresponding
+// vm3 error if non-zero.
+const (
+	StatusOK         int64 = 0
+	StatusDivByZero  int64 = 1
+)
 func r2x(r uint16) uint32 {
 	if r < 7 {
 		return uint32(r) + 9
@@ -48,6 +61,49 @@ func numCalleeSavedPairs(fn *vm3.Function) int {
 	return (n - 7 + 1) / 2
 }
 
+// hasRegRegDivMod reports whether fn contains any reg-reg OpDivI64 or
+// OpModI64 (the K-form variants reject /0 at Compile time and need no
+// runtime guard, so they do not contribute to the deopt block).
+func hasRegRegDivMod(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpDivI64 || op.Code == vm3.OpModI64 {
+			return true
+		}
+	}
+	return false
+}
+
+// deoptBlockWordsARM64 returns the number of instruction words the
+// per-function shared deopt block occupies, or 0 if no opcode in fn can
+// take a deopt path. The block lives at the very end of the JIT stream;
+// every CBZ-guarded check branches to its start.
+//
+// Block layout (when emitted):
+//
+//	MOV  x16, #status_code
+//	STR  x16, [x1]                  ; write *status
+//	<pop callee-saved pairs>        ; numCalleeSavedPairs LDPs
+//	RET
+func deoptBlockWordsARM64(fn *vm3.Function) int {
+	if !hasRegRegDivMod(fn) {
+		return 0
+	}
+	return 2 + numCalleeSavedPairs(fn) + 1
+}
+
+// emitDeoptBlockARM64 emits the shared deopt block for fn at the end
+// of the instruction stream. statusCode is the int64 value the JIT
+// writes to *(x1) before unwinding. Callers compute the branch offset
+// from each guard site to this block via pcMap[len(fn.Code)] (the word
+// index where the block starts).
+func emitDeoptBlockARM64(fn *vm3.Function, statusCode int64) []uint32 {
+	ws := movImm64(16, statusCode)
+	ws = append(ws, str64(16, 1, 0))
+	ws = emitCalleeSavedEpilogueARM64(ws, numCalleeSavedPairs(fn))
+	ws = append(ws, ret())
+	return ws
+}
+
 // lowerARM64 returns the AArch64 instruction-word stream for fn. Two
 // passes: pass 1 computes pcMap[i] = word index where the lowering of
 // bytecode i starts; pass 2 emits real instructions, resolving branch
@@ -66,7 +122,8 @@ func lowerARM64(fn *vm3.Function) ([]uint32, error) {
 		pcMap[i+1] = pcMap[i] + n
 	}
 
-	total := pcMap[len(fn.Code)]
+	deoptStart := pcMap[len(fn.Code)]
+	total := deoptStart + deoptBlockWordsARM64(fn)
 	ws := make([]uint32, 0, total)
 
 	// Prologue: push callee-saved pairs, then load each live reg from
@@ -79,7 +136,7 @@ func lowerARM64(fn *vm3.Function) ([]uint32, error) {
 	}
 
 	for i, op := range fn.Code {
-		emit, err := emitInstrARM64(fn, op, i, pcMap)
+		emit, err := emitInstrARM64(fn, op, i, pcMap, deoptStart)
 		if err != nil {
 			return nil, fmt.Errorf("vm3jit/%s: pc %d op=%d: %w", fn.Name, i, op.Code, err)
 		}
@@ -88,6 +145,13 @@ func lowerARM64(fn *vm3.Function) ([]uint32, error) {
 				fn.Name, i, op.Code, got, want)
 		}
 		ws = append(ws, emit...)
+	}
+	if len(ws) != deoptStart {
+		return nil, fmt.Errorf("vm3jit/%s: code stream %d words, predicted %d",
+			fn.Name, len(ws), deoptStart)
+	}
+	if hasRegRegDivMod(fn) {
+		ws = append(ws, emitDeoptBlockARM64(fn, StatusDivByZero)...)
 	}
 	if len(ws) != total {
 		return nil, fmt.Errorf("vm3jit/%s: final stream %d words, predicted %d",
@@ -125,6 +189,12 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op) (int, error) {
 		return 1, nil
 	case vm3.OpAddI64, vm3.OpSubI64, vm3.OpMulI64:
 		return 1, nil
+	case vm3.OpDivI64:
+		// CBZ xC, deopt ; SDIV xA, xB, xC.
+		return 2, nil
+	case vm3.OpModI64:
+		// CBZ xC, deopt ; SDIV x17, xB, xC ; MSUB xA, x17, xC, xB.
+		return 3, nil
 	case vm3.OpNegI64:
 		return 1, nil
 	case vm3.OpAddI64K, vm3.OpSubI64K, vm3.OpMulI64K:
@@ -165,8 +235,11 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op) (int, error) {
 // emitInstrARM64 emits the AArch64 instructions for op at bytecode
 // index idx. pcMap[i] is the word offset where instruction i's
 // lowering begins (and pcMap[len(Code)] is the word offset of the
-// fall-through past the last instruction).
-func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int) ([]uint32, error) {
+// fall-through past the last instruction; that is also the deopt
+// block start when one is emitted). deoptStart is supplied separately
+// so guard-checked opcodes (Div/Mod) can compute CBZ offsets without
+// re-deriving it.
+func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStart int) ([]uint32, error) {
 	xA := r2x(op.A)
 	xB := r2x(op.B)
 
@@ -190,6 +263,24 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int) ([]uint32
 	case vm3.OpMulI64:
 		xC := r2x(uint16(op.C))
 		return []uint32{mulReg(xA, xB, xC)}, nil
+	case vm3.OpDivI64:
+		xC := r2x(uint16(op.C))
+		off, err := branchOff(pcMap[idx], deoptStart, 19)
+		if err != nil {
+			return nil, fmt.Errorf("DivI64 deopt branch: %w", err)
+		}
+		return []uint32{cbz64(xC, off), sdivReg(xA, xB, xC)}, nil
+	case vm3.OpModI64:
+		xC := r2x(uint16(op.C))
+		off, err := branchOff(pcMap[idx], deoptStart, 19)
+		if err != nil {
+			return nil, fmt.Errorf("ModI64 deopt branch: %w", err)
+		}
+		return []uint32{
+			cbz64(xC, off),
+			sdivReg(17, xB, xC),
+			msubReg(xA, 17, xC, xB),
+		}, nil
 	case vm3.OpNegI64:
 		return []uint32{negReg(xA, xB)}, nil
 
@@ -375,6 +466,19 @@ func movReg(xd, xm uint32) uint32 {
 
 func ldr64(xt, xn, imm12 uint32) uint32 {
 	return 0xF9400000 | ((imm12 & 0xFFF) << 10) | ((xn & 0x1F) << 5) | (xt & 0x1F)
+}
+
+// str64 encodes STR Xt, [Xn, #imm12*8] (unsigned-offset 64-bit). Used
+// by the deopt block to write the status code through *(x1).
+func str64(xt, xn, imm12 uint32) uint32 {
+	return 0xF9000000 | ((imm12 & 0xFFF) << 10) | ((xn & 0x1F) << 5) | (xt & 0x1F)
+}
+
+// cbz64 encodes CBZ Xt, <pc-rel> (64-bit, branch if Xt is zero).
+// off19 is a signed instruction-word offset; caller must pre-validate
+// that it fits in 19 bits via branchOff(_, _, 19).
+func cbz64(xt uint32, off19 int32) uint32 {
+	return 0xB4000000 | (uint32(off19&0x7FFFF) << 5) | (xt & 0x1F)
 }
 
 func bImm(off26 int32) uint32 {
