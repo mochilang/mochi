@@ -82,6 +82,10 @@ func (vm *VM) pushFrame(fn *Function, retReg uint16, retBank Bank) {
 		retReg:   retReg,
 		retBank:  retBank,
 	})
+	// Layer A: snapshot arena lengths so an unboxed Return can drop
+	// every slot allocated in this activation.
+	fr := &vm.frames[len(vm.frames)-1]
+	vm.arenas.snapshotMarks(&fr.marks, &fr.freeMarks)
 }
 
 func growI64(s []int64, need int) []int64 {
@@ -383,6 +387,10 @@ func (vm *VM) run() (Cell, error) {
 			ret := regsI64[op.A]
 			retReg := fr.retReg
 			retBank := fr.retBank
+			// Layer A: unboxed return, so any handle allocated in this
+			// activation is dead. Truncate arenas back to the marks
+			// captured at pushFrame before clearing the cell window.
+			arenas.truncateToMarks(&fr.marks, &fr.freeMarks)
 			// Pop the current frame; stacks are sliced back to the
 			// caller's high-water mark. Don't bother clearing i64/f64
 			// (no GC implications); clear cell to release Go-heap refs
@@ -418,6 +426,7 @@ func (vm *VM) run() (Cell, error) {
 			ret := regsF64[op.A]
 			retReg := fr.retReg
 			retBank := fr.retBank
+			arenas.truncateToMarks(&fr.marks, &fr.freeMarks)
 			if fn.NumRegsCell > 0 {
 				clear(regsCell)
 			}
@@ -471,6 +480,7 @@ func (vm *VM) run() (Cell, error) {
 		case OpReturnConstK:
 			ret := int64(op.C)
 			retReg := fr.retReg
+			arenas.truncateToMarks(&fr.marks, &fr.freeMarks)
 			if fn.NumRegsCell > 0 {
 				clear(regsCell)
 			}
