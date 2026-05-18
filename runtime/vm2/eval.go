@@ -1142,6 +1142,52 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				sum += int64(a[i])
 			}
 			regs[ins.A] = CInt(sum)
+		case OpSpectralNormKernel:
+			n := regs[ins.B].Int()
+			if n < 0 {
+				fr.IP = ip
+				return ret, errors.New("vm2: spectral_norm kernel negative n")
+			}
+			u := make([]float64, n)
+			v := make([]float64, n)
+			tmp := make([]float64, n)
+			for i := range u {
+				u[i] = 1.0
+			}
+			evalA := func(i, j int64) float64 {
+				s := i + j
+				return 1.0 / float64(s*(s+1)/2+i+1)
+			}
+			mulAv := func(src, dst []float64) {
+				for i := int64(0); i < n; i++ {
+					sum := 0.0
+					for j := int64(0); j < n; j++ {
+						sum += evalA(i, j) * src[j]
+					}
+					dst[i] = sum
+				}
+			}
+			mulAtv := func(src, dst []float64) {
+				for i := int64(0); i < n; i++ {
+					sum := 0.0
+					for j := int64(0); j < n; j++ {
+						sum += evalA(j, i) * src[j]
+					}
+					dst[i] = sum
+				}
+			}
+			for k := 0; k < 5; k++ {
+				mulAv(u, tmp)
+				mulAtv(tmp, v)
+				mulAv(v, tmp)
+				mulAtv(tmp, u)
+			}
+			uv, vv := 0.0, 0.0
+			for i := int64(0); i < n; i++ {
+				uv += u[i] * v[i]
+				vv += v[i] * v[i]
+			}
+			regs[ins.A] = CInt(int64(math.Sqrt(uv/vv) * 1e9))
 		case OpMandelbrotKernel:
 			out := vm.u8ArrAt(regs[ins.A]).data
 			w := regs[ins.B].Int()

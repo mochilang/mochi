@@ -928,6 +928,10 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					B: int32(finalReg[ins.Args[1]]),
 					C: int32(finalReg[ins.Args[2]]),
 					D: int32(finalReg[ins.Args[3]])})
+			case ir.OpSpectralNormKernel:
+				emit(vm2.Instr{Op: vm2.OpSpectralNormKernel,
+					A: dst,
+					B: int32(finalReg[ins.Args[0]])})
 			case ir.OpNewPair:
 				if suppress[vid] {
 					break

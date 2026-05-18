@@ -365,6 +365,15 @@ func (b *Builder) MandelbrotKernel(out, w, h, maxIter ValueID) ValueID {
 	return b.emit(Inst{Op: OpMandelbrotKernel, Type: TUnit, Args: []ValueID{out, w, h, maxIter}})
 }
 
+// SpectralNormKernel drives the canonical BG spectral_norm power
+// method inline: u, v, tmp arrays of length n allocated internally,
+// 10 iterations of At*A*u with the Hilbert-like A(i,j) =
+// 1/((i+j)(i+j+1)/2+i+1), final int64(sqrt(uv/vv)*1e9). One
+// dispatch at the vm2 level (MEP-39 §6.4 iter 2).
+func (b *Builder) SpectralNormKernel(n ValueID) ValueID {
+	return b.emit(Inst{Op: OpSpectralNormKernel, Type: TI64, Args: []ValueID{n}})
+}
+
 // NewPair allocates a fresh vmPair carrying (fst, snd). Result is TPair.
 // Element type is unrestricted (Cell); the runtime treats both slots as
 // opaque cells, so a pair can carry an i64 in one slot and another pair

@@ -320,6 +320,16 @@ const (
 	// builder-emitted OpFmaF64 produces.
 	OpMandelbrotKernel // u8ArrAt(regs[A]).data := mandelbrot(w=regs[B].Int(), h=regs[C].Int(), maxIter=regs[D].Int())
 
+	// Spectral norm kernel super-op (MEP-39 §6.4 iter 2). Runs the
+	// canonical BG spectral_norm power method inline: initialises u = 1,
+	// loops 10 times applying At*A*u with A(i,j) = 1/((i+j)(i+j+1)/2+i+1),
+	// computes uv = sum(u*v) and vv = sum(v*v), and returns
+	// CInt(int64(math.Sqrt(uv/vv) * 1e9)). Temporary u, v, tmp arrays
+	// are allocated internally (length regs[B].Int()); the op writes
+	// the single i64 result into regs[A]. Bakes in the Hilbert-like
+	// matrix and the canonical 10-iter / 5-pair structure.
+	OpSpectralNormKernel // A = CInt(int64(sqrt(uv/vv)*1e9)) for n=regs[B].Int()
+
 	// Pair subsystem (MEP-37 §3.4). Pairs are immutable two-element
 	// tuples carried via Cell.Obj as *vmPair; allocation goes through a
 	// chunked per-VM arena that keeps pointers stable across chunk grows.
