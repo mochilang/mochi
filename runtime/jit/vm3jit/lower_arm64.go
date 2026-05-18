@@ -38,6 +38,12 @@ func r2x(r uint16) uint32 {
 	return uint32(r) - 7 + 19
 }
 
+// r2d maps a vm3 f64 register slot to the AArch64 SIMD register
+// number (V0..V7 / D0..D7). Caller pre-checks r < maxF64RegsARM64.
+// The same register number is used for both V (128-bit) and D
+// (lower 64-bit) views; the instruction encoding chooses the view.
+func r2d(r uint16) uint32 { return uint32(r) }
+
 // computeCallSpills runs a backward liveness pass over fn.Code and
 // returns, for each bytecode index, the bitset of caller-saved i64
 // registers (bank 0..6, mapped to x9..x15) that must be spilled to the
@@ -164,9 +170,13 @@ func emitDeoptBlockARM64(fn *vm3.Function, statusCode int64) []uint32 {
 // destinations through pcMap. opts.SelfIdx, when >= 0, enables self-
 // recursive OpCallI64 to lower to a native BL inside this page.
 func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
+	if fn.NumRegsF64 > 0 && isNonLeaf(fn) {
+		return nil, fmt.Errorf("%w: %s has both f64 regs and OpCallI64 (Phase 6.2b leaves f64+self-recursion to a later sub-phase)",
+			ErrNotImplemented, fn.Name)
+	}
 	pairs := numCalleeSavedPairs(fn)
 	lrPair := numLRPair(fn)
-	prologueWords := lrPair + pairs + int(fn.NumRegsI64)
+	prologueWords := lrPair + pairs + int(fn.NumRegsI64) + int(fn.NumRegsF64)
 	spillSets := computeCallSpills(fn)
 
 	pcMap := make([]int, len(fn.Code)+1)
@@ -185,7 +195,8 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 
 	// Prologue: push x29:x30 (outermost) if non-leaf, then push
 	// callee-saved pairs, then load each live reg from [x0, #r*8] into
-	// its pinned host register.
+	// its pinned host register, then load each live f64 reg from
+	// [x2, #r*8] into V0..V7.
 	if lrPair == 1 {
 		ws = append(ws, stpPreIdx64(29, 30, 31, -16))
 	}
@@ -194,6 +205,9 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 	}
 	for r := uint32(0); r < uint32(fn.NumRegsI64); r++ {
 		ws = append(ws, ldr64(r2x(uint16(r)), 0, r))
+	}
+	for r := uint32(0); r < uint32(fn.NumRegsF64); r++ {
+		ws = append(ws, ldrD(r2d(uint16(r)), 2, r))
 	}
 
 	for i, op := range fn.Code {
@@ -295,6 +309,41 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 	case vm3.OpReturnConstK:
 		// movImm64 into x0; <pop callee-saved frame>; <pop x29:x30>; RET.
 		return movImm64WordCount(int64(op.C)) + numCalleeSavedPairs(fn) + numLRPair(fn) + 1, nil
+	case vm3.OpReturnF64:
+		// FMOV x0, D<retSlot>; <pop callee-saved frame>; <pop x29:x30>; RET.
+		// Bit-cast the f64 in d<A> to a uint64 in x0 so the trampoline
+		// return channel carries either bank uniformly.
+		return 2 + numCalleeSavedPairs(fn) + numLRPair(fn), nil
+
+	case vm3.OpConstF64K:
+		// MOV imm into x16 with the IEEE 754 bit-pattern, then
+		// FMOV D<A>, x16 to bit-cast into the SIMD register. No
+		// constant pool lookup at runtime; the bits are baked into
+		// the JIT'd stream.
+		idx := int(uint16(op.C))
+		if idx >= len(fn.Consts) {
+			return 0, fmt.Errorf("%w: ConstF64K idx %d out of range", ErrNotImplemented, idx)
+		}
+		bits := int64(uint64(fn.Consts[idx]))
+		return movImm64WordCount(bits) + 1, nil
+
+	case vm3.OpMovF64:
+		return 1, nil
+	case vm3.OpAddF64, vm3.OpSubF64, vm3.OpMulF64, vm3.OpDivF64:
+		return 1, nil
+	case vm3.OpNegF64:
+		return 1, nil
+
+	case vm3.OpCmpEqF64Br, vm3.OpCmpNeF64Br,
+		vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br,
+		vm3.OpCmpGtF64Br, vm3.OpCmpGeF64Br:
+		// FCMP Dn, Dm ; B.cond <target>.
+		return 2, nil
+
+	case vm3.OpI64ToF64:
+		return 1, nil
+	case vm3.OpF64ToI64:
+		return 1, nil
 	case vm3.OpCallI64:
 		// Self-recursion only. Anything else routes back through the
 		// interpreter via ErrNotImplemented.
@@ -433,6 +482,53 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		ws = emitFrameEpilogueARM64(ws, numCalleeSavedPairs(fn), numLRPair(fn))
 		ws = append(ws, ret())
 		return ws, nil
+
+	case vm3.OpReturnF64:
+		// FMOV x0, D<A>: bit-cast the f64 result to a uint64 in x0
+		// so the trampoline returns the bit pattern. Caller does
+		// math.Float64frombits to recover the f64. Then run the
+		// epilogue exactly like OpReturnI64.
+		ws := []uint32{fmovXD(0, r2d(op.A))}
+		ws = emitFrameEpilogueARM64(ws, numCalleeSavedPairs(fn), numLRPair(fn))
+		ws = append(ws, ret())
+		return ws, nil
+
+	case vm3.OpConstF64K:
+		dA := r2d(op.A)
+		bits := int64(uint64(fn.Consts[int(uint16(op.C))]))
+		ws := movImm64(16, bits)
+		ws = append(ws, fmovDX(dA, 16))
+		return ws, nil
+
+	case vm3.OpMovF64:
+		return []uint32{fmovDD(r2d(op.A), r2d(op.B))}, nil
+	case vm3.OpAddF64:
+		return []uint32{faddD(r2d(op.A), r2d(op.B), r2d(uint16(op.C)))}, nil
+	case vm3.OpSubF64:
+		return []uint32{fsubD(r2d(op.A), r2d(op.B), r2d(uint16(op.C)))}, nil
+	case vm3.OpMulF64:
+		return []uint32{fmulD(r2d(op.A), r2d(op.B), r2d(uint16(op.C)))}, nil
+	case vm3.OpDivF64:
+		return []uint32{fdivD(r2d(op.A), r2d(op.B), r2d(uint16(op.C)))}, nil
+	case vm3.OpNegF64:
+		return []uint32{fnegD(r2d(op.A), r2d(op.B))}, nil
+
+	case vm3.OpCmpEqF64Br, vm3.OpCmpNeF64Br,
+		vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br,
+		vm3.OpCmpGtF64Br, vm3.OpCmpGeF64Br:
+		cond := condForCmpF64(op.Code)
+		dstWord := pcMap[int(uint16(op.C))]
+		srcWord := pcMap[idx] + 1
+		off, err := branchOff(srcWord, dstWord, 19)
+		if err != nil {
+			return nil, err
+		}
+		return []uint32{fcmpD(r2d(op.A), r2d(op.B)), bCond(cond, off)}, nil
+
+	case vm3.OpI64ToF64:
+		return []uint32{scvtfDX(r2d(op.A), r2x(op.B))}, nil
+	case vm3.OpF64ToI64:
+		return []uint32{fcvtzsXD(r2x(op.A), r2d(op.B))}, nil
 
 	case vm3.OpCallI64:
 		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
@@ -717,4 +813,102 @@ func movImm64WordCount(v int64) int {
 		return 1
 	}
 	return n
+}
+
+// --- AArch64 SIMD/FP encoders (scalar double, V0..V31) ---
+//
+// All encoders take and return raw register numbers (0..31) in the
+// "D" (lower 64-bit lane) view of the SIMD bank. The full-vector "V"
+// view shares the same register number.
+
+// ldrD encodes LDR Dt, [Xn, #imm12*8] (load 64-bit FP register from
+// memory at base+imm12*8). Used by the prologue to fill the pinned
+// f64 slots from regsF64 (x2).
+func ldrD(dt, xn, imm12 uint32) uint32 {
+	return 0xFD400000 | ((imm12 & 0xFFF) << 10) | ((xn & 0x1F) << 5) | (dt & 0x1F)
+}
+
+// fmovDX encodes FMOV Dd, Xn (general -> SIMD bit-cast).
+// Used by OpConstF64K after loading the IEEE 754 bit-pattern into x16.
+func fmovDX(dd, xn uint32) uint32 {
+	return 0x9E670000 | ((xn & 0x1F) << 5) | (dd & 0x1F)
+}
+
+// fmovXD encodes FMOV Xd, Dn (SIMD -> general bit-cast).
+// Used by OpReturnF64 to copy d<retSlot> into x0 so the trampoline
+// can return the raw IEEE 754 bit pattern.
+func fmovXD(xd, dn uint32) uint32 {
+	return 0x9E660000 | ((dn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+// fmovDD encodes FMOV Dd, Dn (SIMD reg-reg copy, double).
+func fmovDD(dd, dn uint32) uint32 {
+	return 0x1E604000 | ((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+
+// faddD encodes FADD Dd, Dn, Dm (scalar double).
+func faddD(dd, dn, dm uint32) uint32 {
+	return 0x1E602800 | ((dm & 0x1F) << 16) | ((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+
+// fsubD encodes FSUB Dd, Dn, Dm.
+func fsubD(dd, dn, dm uint32) uint32 {
+	return 0x1E603800 | ((dm & 0x1F) << 16) | ((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+
+// fmulD encodes FMUL Dd, Dn, Dm.
+func fmulD(dd, dn, dm uint32) uint32 {
+	return 0x1E600800 | ((dm & 0x1F) << 16) | ((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+
+// fdivD encodes FDIV Dd, Dn, Dm.
+func fdivD(dd, dn, dm uint32) uint32 {
+	return 0x1E601800 | ((dm & 0x1F) << 16) | ((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+
+// fnegD encodes FNEG Dd, Dn.
+func fnegD(dd, dn uint32) uint32 {
+	return 0x1E614000 | ((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+
+// fcmpD encodes FCMP Dn, Dm (scalar double compare). Sets NZCV from
+// the IEEE 754 unordered-aware comparison: ordered Eq/Ne/Lt/Le/Gt/Ge
+// branch under the standard cond codes; NaN sets V (and C) so ordered
+// predicates fail naturally without an extra unordered check.
+func fcmpD(dn, dm uint32) uint32 {
+	return 0x1E602000 | ((dm & 0x1F) << 16) | ((dn & 0x1F) << 5)
+}
+
+// scvtfDX encodes SCVTF Dd, Xn (signed 64-bit int -> double, round to
+// nearest even). Used by OpI64ToF64.
+func scvtfDX(dd, xn uint32) uint32 {
+	return 0x9E620000 | ((xn & 0x1F) << 5) | (dd & 0x1F)
+}
+
+// fcvtzsXD encodes FCVTZS Xd, Dn (double -> signed 64-bit int,
+// truncating toward zero). Used by OpF64ToI64.
+func fcvtzsXD(xd, dn uint32) uint32 {
+	return 0x9E780000 | ((dn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+// condForCmpF64 returns the AArch64 B.cond condition code for a vm3
+// f64 reg-reg compare-and-branch opcode. Ordered predicates use the
+// standard unsigned condition codes (HI/HS/MI/LS) because FCMP sets
+// the flags so unordered (NaN) operands fail Lt/Le/Gt/Ge naturally.
+func condForCmpF64(code vm3.OpCode) uint32 {
+	switch code {
+	case vm3.OpCmpEqF64Br:
+		return 0x0 // EQ
+	case vm3.OpCmpNeF64Br:
+		return 0x1 // NE
+	case vm3.OpCmpLtF64Br:
+		return 0x4 // MI (FCMP sets N=1 iff Dn < Dm ordered; unordered keeps N=0)
+	case vm3.OpCmpLeF64Br:
+		return 0x9 // LS (C clear OR Z set; works because FCMP sets C=0 if Dn < Dm)
+	case vm3.OpCmpGtF64Br:
+		return 0xC // GT (Z clear AND N==V)
+	case vm3.OpCmpGeF64Br:
+		return 0xA // GE (N==V)
+	}
+	return 0
 }

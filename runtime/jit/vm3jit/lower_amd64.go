@@ -97,9 +97,17 @@ func r2xAMD64(r uint16) int {
 // (R12..R14). The prologue pushes those before clobbering them.
 func calleeSavedSlot(r uint16) bool { return r >= 6 && r < 9 }
 
+// usesR14ForF64 reports whether the AMD64 backend repurposes R14 as
+// the regsF64 base pointer for fn. This stacks on top of the SysV
+// callee-saved rule: R14 is also Go's G register, so we must push/pop
+// it regardless of how it is used inside the JIT'd body.
+func usesR14ForF64(fn *vm3.Function) bool { return fn.NumRegsF64 > 0 }
+
 // numCalleeSavedPushesAMD64 returns the number of R12..R14 pushes the
 // prologue needs for fn, plus the always-present RBX and R15 pushes
 // (2). Used by both the prologue emitter and the byte-count predictor.
+// R14 is pushed when (a) i64 slot 8 lands in R14 OR (b) R14 holds the
+// regsF64 base for an f64-touching fn.
 func numCalleeSavedPushesAMD64(fn *vm3.Function) int {
 	n := int(fn.NumRegsI64)
 	if n > maxI64RegsAMD64 {
@@ -113,7 +121,7 @@ func numCalleeSavedPushesAMD64(fn *vm3.Function) int {
 	if n > 7 {
 		count++
 	}
-	if n > 8 {
+	if n > 8 || usesR14ForF64(fn) {
 		count++
 	}
 	return count
@@ -192,6 +200,10 @@ func computeCallSpillsAMD64(fn *vm3.Function) []uint32 {
 // destinations through pcMap. opts.SelfIdx (>= 0) enables self-recursive
 // OpCallI64 as a native CALL inside the same code page.
 func lowerAMD64(fn *vm3.Function, opts Options) ([]byte, error) {
+	if fn.NumRegsF64 > 0 && isNonLeafAMD64(fn) {
+		return nil, fmt.Errorf("%w: %s has both f64 regs and OpCallI64 (Phase 6.2b leaves f64+self-recursion to a later sub-phase)",
+			ErrNotImplemented, fn.Name)
+	}
 	prologueBytes := prologueLenAMD64(fn)
 	spillSets := computeCallSpillsAMD64(fn)
 
@@ -238,6 +250,7 @@ func lowerAMD64(fn *vm3.Function, opts Options) ([]byte, error) {
 // to seed pcMap[0].
 func prologueLenAMD64(fn *vm3.Function) int {
 	n := int(fn.NumRegsI64)
+	nF := int(fn.NumRegsF64)
 	pushes := numCalleeSavedPushesAMD64(fn)
 	// push rbx, push r15: each REX.B-extended push of r12..r15 is 2
 	// bytes; push rbx is 1 byte. Compute exactly.
@@ -250,7 +263,7 @@ func prologueLenAMD64(fn *vm3.Function) int {
 	if n > 7 {
 		bytes += pushBytes(xR13)
 	}
-	if n > 8 {
+	if n > 8 || usesR14ForF64(fn) {
 		bytes += pushBytes(xR14)
 	}
 	if alignFixupBytesAMD64(fn) != 0 {
@@ -258,8 +271,15 @@ func prologueLenAMD64(fn *vm3.Function) int {
 	}
 	// mov %rdi, %rbx (3 bytes), mov %rsi, %r15 (3 bytes).
 	bytes += 3 + 3
-	// Each pinned slot load is mov disp32(%rbx), <reg> = 7 bytes.
+	// mov %rdx, %r14 (3 bytes) when R14 holds regsF64 base.
+	if usesR14ForF64(fn) {
+		bytes += 3
+	}
+	// Each pinned i64 slot load is mov disp32(%rbx), <reg> = 7 bytes.
 	bytes += 7 * n
+	// Each pinned f64 slot load is movsd disp32(%r14), xmm<r> = 9 bytes
+	// (REX.B-prefixed because R14 is r >= 8).
+	bytes += 9 * nF
 	_ = pushes
 	return bytes
 }
@@ -289,6 +309,7 @@ func popBytes(r int) int { return pushBytes(r) }
 //	...
 func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 	n := int(fn.NumRegsI64)
+	nF := int(fn.NumRegsF64)
 	buf = append(buf, push64(xRBX)...)
 	buf = append(buf, push64(xR15)...)
 	if n > 6 {
@@ -297,7 +318,7 @@ func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 	if n > 7 {
 		buf = append(buf, push64(xR13)...)
 	}
-	if n > 8 {
+	if n > 8 || usesR14ForF64(fn) {
 		buf = append(buf, push64(xR14)...)
 	}
 	if alignFixupBytesAMD64(fn) != 0 {
@@ -305,8 +326,14 @@ func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 	}
 	buf = append(buf, mov64RR(xRDI, xRBX)...)
 	buf = append(buf, mov64RR(xRSI, xR15)...)
+	if usesR14ForF64(fn) {
+		buf = append(buf, mov64RR(xRDX, xR14)...)
+	}
 	for r := 0; r < n; r++ {
 		buf = append(buf, mov64LoadDisp32(r2xAMD64(uint16(r)), xRBX, int32(r*8))...)
+	}
+	for r := 0; r < nF; r++ {
+		buf = append(buf, movsdLoadXMMFromR14(r, int32(r*8))...)
 	}
 	return buf
 }
@@ -320,7 +347,7 @@ func emitEpilogueAMD64(buf []byte, fn *vm3.Function) []byte {
 	if alignFixupBytesAMD64(fn) != 0 {
 		buf = append(buf, addRSPImm8(8)...)
 	}
-	if n > 8 {
+	if n > 8 || usesR14ForF64(fn) {
 		buf = append(buf, pop64(xR14)...)
 	}
 	if n > 7 {
@@ -343,7 +370,7 @@ func epilogueBytesAMD64(fn *vm3.Function) int {
 	if alignFixupBytesAMD64(fn) != 0 {
 		bytes += 4 // add $8, %rsp
 	}
-	if n > 8 {
+	if n > 8 || usesR14ForF64(fn) {
 		bytes += popBytes(xR14)
 	}
 	if n > 7 {
@@ -452,6 +479,53 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 	case vm3.OpReturnConstK:
 		// mov $imm, %rax + epilogue.
 		return movImm64ByteCount(int64(op.C), xRAX) + epilogueBytesAMD64(fn), nil
+	case vm3.OpReturnF64:
+		// movq xmm<A>, %rax (5) + epilogue.
+		return 5 + epilogueBytesAMD64(fn), nil
+
+	case vm3.OpConstF64K:
+		idx := int(uint16(op.C))
+		if idx >= len(fn.Consts) {
+			return 0, fmt.Errorf("%w: ConstF64K idx %d out of range", ErrNotImplemented, idx)
+		}
+		bits := int64(uint64(fn.Consts[idx]))
+		// mov $imm, %rcx (7 or 10) ; movq xmm<A>, %rcx (5).
+		return movImm64ByteCount(bits, xRCX) + 5, nil
+
+	case vm3.OpMovF64:
+		// movsd xmm<A>, xmm<B>: 4 bytes (xmm0..7 only, no REX needed).
+		return 4, nil
+	case vm3.OpAddF64, vm3.OpSubF64, vm3.OpMulF64, vm3.OpDivF64:
+		// optional movsd xmm<A>, xmm<B> (4) ; <op>sd xmm<A>, xmm<C> (4).
+		if op.A == op.B {
+			return 4, nil
+		}
+		return 8, nil
+	case vm3.OpNegF64:
+		// mov $signbit, %rcx (10) ; movq xmm15, %rcx (5, REX.W+R) ;
+		// optional movsd xmm<A>, xmm<B> (4) ; xorpd xmm<A>, xmm15 (5, REX.B).
+		if op.A == op.B {
+			return 10 + 5 + 5, nil
+		}
+		return 10 + 5 + 4 + 5, nil
+
+	case vm3.OpCmpEqF64Br, vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br:
+		// ucomisd xmm<A>, xmm<B> (4) ; jp +6 (6) ; jcc rel32 (6).
+		return 4 + 6 + 6, nil
+	case vm3.OpCmpNeF64Br:
+		// ucomisd (4) ; jp target (6) ; jne target (6).
+		return 4 + 6 + 6, nil
+	case vm3.OpCmpGtF64Br, vm3.OpCmpGeF64Br:
+		// ucomisd (4) ; jcc rel32 (6).
+		return 4 + 6, nil
+
+	case vm3.OpI64ToF64:
+		// cvtsi2sd xmm<A>, %r<B> (5, F2 REX.W 0F 2A /r — 5 bytes when
+		// xmm0..7 and i64 reg needs REX.B for r >= 8).
+		return cvtsi2sdByteCount(op.B), nil
+	case vm3.OpF64ToI64:
+		// cvttsd2si %r<A>, xmm<B>: F2 REX.W 0F 2C /r — 5 bytes.
+		return cvttsd2siByteCount(op.A), nil
 	case vm3.OpCallI64:
 		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
 			return 0, fmt.Errorf("%w: CallI64 to non-self idx %d (SelfIdx=%d)",
@@ -577,6 +651,92 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		out := movImm64(xRAX, int64(op.C))
 		out = emitEpilogueAMD64(out, fn)
 		return out, nil
+	case vm3.OpReturnF64:
+		// movq %rax, %xmm<A>: bit-cast f64 to int64 in RAX, then run
+		// the epilogue (which preserves RAX through pops).
+		out := movqR64FromXMM(xRAX, int(op.A))
+		out = emitEpilogueAMD64(out, fn)
+		return out, nil
+
+	case vm3.OpConstF64K:
+		bits := int64(uint64(fn.Consts[int(uint16(op.C))]))
+		out := movImm64(xRCX, bits)
+		out = append(out, movqXMMFromR64(int(op.A), xRCX)...)
+		return out, nil
+
+	case vm3.OpMovF64:
+		return movsdRR(int(op.A), int(op.B)), nil
+	case vm3.OpAddF64:
+		var out []byte
+		if op.A != op.B {
+			out = append(out, movsdRR(int(op.A), int(op.B))...)
+		}
+		out = append(out, addsdRR(int(op.A), int(uint16(op.C)))...)
+		return out, nil
+	case vm3.OpSubF64:
+		var out []byte
+		if op.A != op.B {
+			out = append(out, movsdRR(int(op.A), int(op.B))...)
+		}
+		out = append(out, subsdRR(int(op.A), int(uint16(op.C)))...)
+		return out, nil
+	case vm3.OpMulF64:
+		var out []byte
+		if op.A != op.B {
+			out = append(out, movsdRR(int(op.A), int(op.B))...)
+		}
+		out = append(out, mulsdRR(int(op.A), int(uint16(op.C)))...)
+		return out, nil
+	case vm3.OpDivF64:
+		var out []byte
+		if op.A != op.B {
+			out = append(out, movsdRR(int(op.A), int(op.B))...)
+		}
+		out = append(out, divsdRR(int(op.A), int(uint16(op.C)))...)
+		return out, nil
+	case vm3.OpNegF64:
+		// xmm15 = bit-pattern 0x8000000000000000 ; result = src ^ xmm15.
+		signBit := uint64(1) << 63
+		out := movImm64(xRCX, int64(signBit))
+		out = append(out, movqXMMFromR64(15, xRCX)...)
+		if op.A != op.B {
+			out = append(out, movsdRR(int(op.A), int(op.B))...)
+		}
+		out = append(out, xorpdRR(int(op.A), 15)...)
+		return out, nil
+
+	case vm3.OpCmpEqF64Br, vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br:
+		// ucomisd ; jp +6 (skip the je/jb/jbe) ; jcc target.
+		dst := pcMap[int(uint16(op.C))]
+		out := ucomisdRR(int(op.A), int(op.B))
+		out = append(out, jccRel32(byte(0xA), 6)...) // JP rel32 over the next 6 bytes
+		src := pcMap[idx] + len(out) + 6
+		rel := int32(dst - src)
+		cc := condForCmpF64AMD64(op.Code)
+		out = append(out, jccRel32(cc, rel)...)
+		return out, nil
+	case vm3.OpCmpNeF64Br:
+		// ucomisd ; jp target ; jne target.
+		dst := pcMap[int(uint16(op.C))]
+		out := ucomisdRR(int(op.A), int(op.B))
+		src1 := pcMap[idx] + len(out) + 6
+		out = append(out, jccRel32(byte(0xA), int32(dst-src1))...) // JP target
+		src2 := pcMap[idx] + len(out) + 6
+		out = append(out, jccRel32(byte(0x5), int32(dst-src2))...) // JNE target
+		return out, nil
+	case vm3.OpCmpGtF64Br, vm3.OpCmpGeF64Br:
+		// ucomisd ; ja/jae target (single 6-byte branch).
+		dst := pcMap[int(uint16(op.C))]
+		out := ucomisdRR(int(op.A), int(op.B))
+		src := pcMap[idx] + len(out) + 6
+		cc := condForCmpF64AMD64(op.Code)
+		out = append(out, jccRel32(cc, int32(dst-src))...)
+		return out, nil
+
+	case vm3.OpI64ToF64:
+		return cvtsi2sd(int(op.A), int(r2xAMD64(op.B))), nil
+	case vm3.OpF64ToI64:
+		return cvttsd2si(int(r2xAMD64(op.A)), int(op.B)), nil
 	case vm3.OpCallI64:
 		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
 			return nil, fmt.Errorf("%w: CallI64 to non-self idx %d (SelfIdx=%d)",
@@ -951,4 +1111,129 @@ func appendImm32(out []byte, v int32) []byte {
 	var b [4]byte
 	binary.LittleEndian.PutUint32(b[:], uint32(v))
 	return append(out, b[:]...)
+}
+
+// --- SSE2 / XMM encoders for the f64 bank ---
+//
+// All forms here keep REX optional (4-byte encodings) when both operands
+// are xmm0..7 to match byteCountAMD64's predictions. When either side is
+// xmm8..15 a REX prefix is added, growing the encoding by one byte. The
+// 5-byte form is used by xorpd against xmm15 in OpNegF64 and by the
+// MOVQ GPR<->XMM bit-cast ops where REX.W is always present.
+
+// sseRR2 emits `<F2-prefix>sse op xmmDst, xmmSrc` for ADDSD/SUBSD/
+// MULSD/DIVSD/MOVSD. Opcodes are F2 [REX] 0F xx /r.
+func sseRR2(opc byte, dst, src int) []byte {
+	if dst < 8 && src < 8 {
+		return []byte{0xF2, 0x0F, opc, modRM(3, byte(dst), byte(src))}
+	}
+	return []byte{0xF2, rex(false, dst >= 8, false, src >= 8), 0x0F, opc, modRM(3, byte(dst&7), byte(src&7))}
+}
+
+// movsdRR emits `movsd xmmDst, xmmSrc` (low-64-bit register copy).
+// Opcode F2 [REX] 0F 10 /r. Always emits the instruction even when
+// dst==src so byteCount predictions stay deterministic.
+func movsdRR(dst, src int) []byte { return sseRR2(0x10, dst, src) }
+
+// addsdRR emits `addsd xmmDst, xmmSrc`. Opcode F2 [REX] 0F 58 /r.
+func addsdRR(dst, src int) []byte { return sseRR2(0x58, dst, src) }
+
+// subsdRR emits `subsd xmmDst, xmmSrc`. Opcode F2 [REX] 0F 5C /r.
+func subsdRR(dst, src int) []byte { return sseRR2(0x5C, dst, src) }
+
+// mulsdRR emits `mulsd xmmDst, xmmSrc`. Opcode F2 [REX] 0F 59 /r.
+func mulsdRR(dst, src int) []byte { return sseRR2(0x59, dst, src) }
+
+// divsdRR emits `divsd xmmDst, xmmSrc`. Opcode F2 [REX] 0F 5E /r.
+func divsdRR(dst, src int) []byte { return sseRR2(0x5E, dst, src) }
+
+// movsdLoadXMMFromR14 emits `movsd xmm<dst>, disp32(%r14)`.
+// Opcode F2 REX.B 0F 10 /r disp32. REX is always present (REX.B for R14
+// in the r/m field). Always 9 bytes for xmm0..7 destinations.
+func movsdLoadXMMFromR14(dst int, disp int32) []byte {
+	out := []byte{0xF2, rex(false, dst >= 8, false, true), 0x0F, 0x10, modRM(2, byte(dst&7), byte(xR14&7))}
+	return appendImm32(out, disp)
+}
+
+// xorpdRR emits `xorpd xmmDst, xmmSrc`. Opcode 66 [REX] 0F 57 /r. Used
+// by OpNegF64 to flip the sign bit by XOR with xmm15 holding
+// 0x8000000000000000.
+func xorpdRR(dst, src int) []byte {
+	if dst < 8 && src < 8 {
+		return []byte{0x66, 0x0F, 0x57, modRM(3, byte(dst), byte(src))}
+	}
+	return []byte{0x66, rex(false, dst >= 8, false, src >= 8), 0x0F, 0x57, modRM(3, byte(dst&7), byte(src&7))}
+}
+
+// ucomisdRR emits `ucomisd xmmLhs, xmmRhs` (unordered compare, sets
+// EFLAGS). Opcode 66 [REX] 0F 2E /r. The f64 compare-and-branch lowers
+// to a UCOMISD followed by a JP-guarded JCC pair (or single JA/JAE for
+// Gt/Ge).
+func ucomisdRR(lhs, rhs int) []byte {
+	if lhs < 8 && rhs < 8 {
+		return []byte{0x66, 0x0F, 0x2E, modRM(3, byte(lhs), byte(rhs))}
+	}
+	return []byte{0x66, rex(false, lhs >= 8, false, rhs >= 8), 0x0F, 0x2E, modRM(3, byte(lhs&7), byte(rhs&7))}
+}
+
+// movqXMMFromR64 emits `movq xmmDst, rSrc64` (GPR-to-XMM bit-cast).
+// Opcode 66 REX.W 0F 6E /r. xmm goes in reg field, r64 in r/m field.
+// REX.W is always set so the encoding is always 5 bytes.
+func movqXMMFromR64(xmm, r64 int) []byte {
+	return []byte{0x66, rex(true, xmm >= 8, false, r64 >= 8), 0x0F, 0x6E, modRM(3, byte(xmm&7), byte(r64&7))}
+}
+
+// movqR64FromXMM emits `movq rDst64, xmmSrc` (XMM-to-GPR bit-cast).
+// Opcode 66 REX.W 0F 7E /r. Used by OpReturnF64 to deliver the f64 in
+// RAX (where the trampoline picks it up as a uint64 and the Go caller
+// reads with math.Float64frombits).
+func movqR64FromXMM(r64, xmm int) []byte {
+	return []byte{0x66, rex(true, xmm >= 8, false, r64 >= 8), 0x0F, 0x7E, modRM(3, byte(xmm&7), byte(r64&7))}
+}
+
+// cvtsi2sd emits `cvtsi2sd xmmDst, rSrc64` (signed int64 to double).
+// Opcode F2 REX.W 0F 2A /r. Always 5 bytes.
+func cvtsi2sd(xmm, r64 int) []byte {
+	return []byte{0xF2, rex(true, xmm >= 8, false, r64 >= 8), 0x0F, 0x2A, modRM(3, byte(xmm&7), byte(r64&7))}
+}
+
+// cvttsd2si emits `cvttsd2si rDst64, xmmSrc` (truncating double to
+// signed int64). Opcode F2 REX.W 0F 2C /r. Always 5 bytes.
+func cvttsd2si(r64, xmm int) []byte {
+	return []byte{0xF2, rex(true, r64 >= 8, false, xmm >= 8), 0x0F, 0x2C, modRM(3, byte(r64&7), byte(xmm&7))}
+}
+
+// cvtsi2sdByteCount mirrors cvtsi2sd; REX.W is always present so the
+// encoding is always 5 bytes regardless of operand register selection.
+func cvtsi2sdByteCount(r uint16) int { return 5 }
+
+// cvttsd2siByteCount mirrors cvttsd2si; always 5 bytes.
+func cvttsd2siByteCount(r uint16) int { return 5 }
+
+// condForCmpF64AMD64 returns the JCC condition for an f64 compare-and-
+// branch. UCOMISD sets EFLAGS for `lhs RELATION rhs`:
+//
+//	greater: CF=0, ZF=0, PF=0
+//	less:    CF=1, ZF=0, PF=0
+//	equal:   CF=0, ZF=1, PF=0
+//	unordered (NaN): CF=1, ZF=1, PF=1
+//
+// Eq/Lt/Le are emitted as a JP-skip-+6 + JCC pair so the JCC only fires
+// on the ordered case. Gt/Ge are JA/JAE, which require CF=0 and so
+// naturally exclude the NaN path. Ne is special-cased inline as
+// JP-to-target + JNE-to-target so NaN propagates to a branch.
+func condForCmpF64AMD64(code vm3.OpCode) byte {
+	switch code {
+	case vm3.OpCmpEqF64Br:
+		return 0x4 // JE  (ZF=1)
+	case vm3.OpCmpLtF64Br:
+		return 0x2 // JB  (CF=1)
+	case vm3.OpCmpLeF64Br:
+		return 0x6 // JBE (CF=1 OR ZF=1)
+	case vm3.OpCmpGtF64Br:
+		return 0x7 // JA  (CF=0 AND ZF=0)
+	case vm3.OpCmpGeF64Br:
+		return 0x3 // JAE (CF=0)
+	}
+	return 0x4
 }

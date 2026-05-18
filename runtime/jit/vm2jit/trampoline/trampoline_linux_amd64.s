@@ -30,3 +30,19 @@ TEXT ·CallStatus(SB),NOSPLIT,$0-32
 	CALL	AX
 	MOVQ	AX, ret+24(FP)
 	RET
+
+// func CallStatusFF(entry, regsI64, status, regsF64 unsafe.Pointer) uint64
+//
+// ABI0: entry at FP+0, regsI64 at FP+8, status at FP+16, regsF64 at FP+24,
+// result at FP+32. Adds DX = regsF64 to the CallStatus ABI. The JIT
+// loads/stores XMM slots via `movsd disp32(%r14), xmm` after copying DX
+// into R14 in its prologue. Result is a bare uint64 (the JIT bit-casts
+// an f64 result via `movq %xmm<retSlot>, %rax` in its epilogue).
+TEXT ·CallStatusFF(SB),NOSPLIT,$0-40
+	MOVQ	entry+0(FP), AX
+	MOVQ	regsI64+8(FP), DI
+	MOVQ	status+16(FP), SI
+	MOVQ	regsF64+24(FP), DX
+	CALL	AX
+	MOVQ	AX, ret+32(FP)
+	RET
