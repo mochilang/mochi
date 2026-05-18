@@ -10,41 +10,48 @@ import "mochi/compiler2/ir"
 // table lookup, summarised by a Horner-style hash so the cross-lang
 // harness compares a single i64 across every peer.
 //
-// Iteration 1 uses the HOMO_SAPIENS 4-entry table (a, c, g, t). The
-// 15-entry IUB table is iteration 2; the integer-threshold optimisation
-// (replace FP comparisons with precomputed i64 thresholds) is iteration
-// 3. See MEP-39 §6.6 for the mechanism ranking.
+// Iteration 1 ran the HOMO_SAPIENS 4-entry table through an FP cascade
+// invoked via a Call to a separate `lookup` function: every iter cost
+// one I64ToF64 + DivF64 to build prob = seed/139968.0, one Call to
+// lookup (with full frame setup), an average of two LessF64 comparisons
+// inside lookup, and a Return. Iteration 2 (this version) inlines the
+// cascade into the loop body and uses precomputed i64 thresholds. The
+// loop fans out four tail-recursive leaves (one per a/c/g/t bucket);
+// opt.TailCall still fuses each leaf's Ret(call_self) into a single
+// OpTailCallSelfA4 dispatch, so the inlining costs no extra control-
+// flow ops. Net per-iter dispatch drops from ~18 (iter 1) to ~13
+// (iter 2). The thresholds are picked so the i64 comparison is
+// bit-identical to the original FP cascade for every seed in
+// [0, 139968). See MEP-39 §6.6 mechanism 2 for the lift theory.
 //
 // LCG:
 //
 //	seed = (seed * 3877 + 29573) % 139968    // Lehmer/canonical BG params
-//	prob = float64(seed) / 139968.0
 //
-// HOMO_SAPIENS cumprob table (cumulative):
+// HOMO_SAPIENS cumprob table, post-iteration-2 (i64 thresholds; each is
+// the smallest seed s where float64(s)/139968.0 fails the FP compare,
+// computed once in computeFastaThresholds below):
 //
-//	0.3029549426680 → 'a' (97)
-//	0.5009432431601 → 'c' (99)
-//	0.6984905497992 → 'g' (103)
-//	1.0             → 't' (116)
+//	seed <  42404 → 'a' (97)     // FP equiv: prob < 0.3029549426680
+//	seed <  70117 → 'c' (99)     // FP equiv: prob < 0.5009432431601
+//	seed <  97767 → 'g' (103)    // FP equiv: prob < 0.6984905497992
+//	otherwise     → 't' (116)
 //
 // Rolling i64 hash:
 //
 //	hash = (hash * 1009 + byte) % 2147483647    // Mersenne prime mod
 //
-// Three IR functions:
+// Two IR functions:
 //
 //	main()                    = loop(42, 0, 0, N); return hash
-//	loop(seed, hash, i, n)    = tail-rec, one LCG step + one lookup + one hash update
-//	lookup(prob) -> byte      = 4-way FP cascade
+//	loop(seed, hash, i, n)    = tail-rec, LCG step + inline lookup
+//	                            cascade + hash update; 4 tail-call leaves
 //
-// `loop` returns TI64 (the hash) via Ret(call_result) so opt.TailCall
-// folds it into a single OpTailCallSelfA4. `lookup` is TI64 and uses
-// straight returns from leaf blocks.
+// Each leaf ends with `Ret(call_self)` so opt.TailCall folds them all
+// into OpTailCallSelfA4 dispatches.
 func BuildFasta(n int64) *ir.Module {
-	const (
-		loopIdx   = 1
-		lookupIdx = 2
-	)
+	const loopIdx = 1
+	thrA, thrC, thrG := fastaThrA, fastaThrC, fastaThrG
 
 	// main(): call loop(42, 0, 0, N), return its result.
 	bMain := ir.NewBuilder("main", nil, ir.TI64)
@@ -61,54 +68,76 @@ func BuildFasta(n int64) *ir.Module {
 	pSeed, pHash, pI, pN := bL.Param(0), bL.Param(1), bL.Param(2), bL.Param(3)
 	lDone := bL.NewBlock()
 	lStep := bL.NewBlock()
+	bChkC := bL.NewBlock()
+	bChkG := bL.NewBlock()
+	bA := bL.NewBlock()
+	bC := bL.NewBlock()
+	bG := bL.NewBlock()
+	bT := bL.NewBlock()
+
 	bL.CondBr(bL.LessI64(pI, pN), lStep, lDone)
 	bL.SwitchTo(lDone)
 	bL.Ret(pHash)
+
 	bL.SwitchTo(lStep)
 	// LCG: new_seed = (seed * 3877 + 29573) % 139968
 	mul := bL.MulI64(pSeed, bL.ConstI64(3877))
 	add := bL.AddI64(mul, bL.ConstI64(29573))
 	newSeed := bL.ModI64(add, bL.ConstI64(139968))
-	// prob = float64(new_seed) / 139968.0
-	seedF := bL.I64ToF64(newSeed)
-	prob := bL.DivF64(seedF, bL.ConstF64(139968.0))
-	// byte = lookup(prob)
-	byteV := bL.Call(lookupIdx, ir.TI64, prob)
-	// hash update: new_hash = (hash * 1009 + byte) % 2147483647
-	hMul := bL.MulI64(pHash, bL.ConstI64(1009))
-	hAdd := bL.AddI64(hMul, byteV)
-	newHash := bL.ModI64(hAdd, bL.ConstI64(2147483647))
-	// recurse
-	rec := bL.Call(loopIdx, ir.TI64,
-		newSeed, newHash, bL.AddI64(pI, bL.ConstI64(1)), pN)
-	bL.Ret(rec)
+	// Inline lookup cascade against precomputed i64 thresholds.
+	bL.CondBr(bL.LessI64(newSeed, bL.ConstI64(thrA)), bA, bChkC)
+	bL.SwitchTo(bChkC)
+	bL.CondBr(bL.LessI64(newSeed, bL.ConstI64(thrC)), bC, bChkG)
+	bL.SwitchTo(bChkG)
+	bL.CondBr(bL.LessI64(newSeed, bL.ConstI64(thrG)), bG, bT)
 
-	// lookup(prob): 4-way FP cascade returning the byte for that bucket.
-	bLU := ir.NewBuilder("lookup", []ir.Type{ir.TF64}, ir.TI64)
-	pP := bLU.Param(0)
-	luAB := bLU.NewBlock() // return 'a'
-	luChkC := bLU.NewBlock()
-	luCB := bLU.NewBlock() // return 'c'
-	luChkG := bLU.NewBlock()
-	luGB := bLU.NewBlock() // return 'g'
-	luTB := bLU.NewBlock() // return 't'
-	bLU.CondBr(bLU.LessF64(pP, bLU.ConstF64(0.3029549426680)), luAB, luChkC)
-	bLU.SwitchTo(luAB)
-	bLU.Ret(bLU.ConstI64(97))
-	bLU.SwitchTo(luChkC)
-	bLU.CondBr(bLU.LessF64(pP, bLU.ConstF64(0.5009432431601)), luCB, luChkG)
-	bLU.SwitchTo(luCB)
-	bLU.Ret(bLU.ConstI64(99))
-	bLU.SwitchTo(luChkG)
-	bLU.CondBr(bLU.LessF64(pP, bLU.ConstF64(0.6984905497992)), luGB, luTB)
-	bLU.SwitchTo(luGB)
-	bLU.Ret(bLU.ConstI64(103))
-	bLU.SwitchTo(luTB)
-	bLU.Ret(bLU.ConstI64(116))
+	emitLeaf := func(block ir.BlockID, byteVal int64) {
+		bL.SwitchTo(block)
+		hMul := bL.MulI64(pHash, bL.ConstI64(1009))
+		hAdd := bL.AddI64(hMul, bL.ConstI64(byteVal))
+		newHash := bL.ModI64(hAdd, bL.ConstI64(2147483647))
+		nextI := bL.AddI64(pI, bL.ConstI64(1))
+		rec := bL.Call(loopIdx, ir.TI64, newSeed, newHash, nextI, pN)
+		bL.Ret(rec)
+	}
+	emitLeaf(bA, 97)
+	emitLeaf(bC, 99)
+	emitLeaf(bG, 103)
+	emitLeaf(bT, 116)
 
 	return &ir.Module{Funcs: []*ir.Function{
-		bMain.Function(), bL.Function(), bLU.Function(),
+		bMain.Function(), bL.Function(),
 	}, Main: 0}
+}
+
+// fastaThrA / fastaThrC / fastaThrG are the i64 cutoffs used by the
+// iteration-2 lookup. They are computed once at package init via the
+// same FP arithmetic the iteration-1 builder used, so the i64 path is
+// bit-identical to the FP cascade (same byte, same hash) for every
+// seed in [0, 139968). See ExpectFasta for the matching oracle.
+var (
+	fastaThrA int64
+	fastaThrC int64
+	fastaThrG int64
+)
+
+func init() {
+	computeFastaThresholds()
+}
+
+func computeFastaThresholds() {
+	for s := int64(0); s < 139968; s++ {
+		p := float64(s) / 139968.0
+		if p < 0.3029549426680 {
+			fastaThrA = s + 1
+		}
+		if p < 0.5009432431601 {
+			fastaThrC = s + 1
+		}
+		if p < 0.6984905497992 {
+			fastaThrG = s + 1
+		}
+	}
 }
 
 // ExpectFasta runs the same algorithm in plain Go so the oracle test
