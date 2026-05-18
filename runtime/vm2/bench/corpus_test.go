@@ -59,6 +59,9 @@ var corpusSizes = []corpusSize{
 	// MEP-39 §6.6: fasta. N is the LCG iteration count; one inner
 	// step per iter (LCG + cumprob lookup + hash update).
 	{"bg_fasta", 10000},
+	// MEP-39 §6.7: k_nucleotide. N is the LCG iteration count; one
+	// LCG step + 1-mer inc + 2-mer inc per inner iter.
+	{"bg_k_nucleotide", 10000},
 }
 
 func sizeFor(name string) int64 {
@@ -147,3 +150,4 @@ func BenchmarkVM2_BG_NBody(b *testing.B)         { benchCorpus(b, corpus.Program
 func BenchmarkVM2_BG_SpectralNorm(b *testing.B)  { benchCorpus(b, corpus.Program{Name: "bg_spectral_norm", Build: corpus.BuildSpectralNorm, Expect: corpus.ExpectSpectralNorm}) }
 func BenchmarkVM2_BG_ReverseComplement(b *testing.B) { benchCorpus(b, corpus.Program{Name: "bg_reverse_complement", Build: corpus.BuildReverseComplement, Expect: corpus.ExpectReverseComplement}) }
 func BenchmarkVM2_BG_Fasta(b *testing.B)         { benchCorpus(b, corpus.Program{Name: "bg_fasta", Build: corpus.BuildFasta, Expect: corpus.ExpectFasta}) }
+func BenchmarkVM2_BG_KNucleotide(b *testing.B)   { benchCorpus(b, corpus.Program{Name: "bg_k_nucleotide", Build: corpus.BuildKNucleotide, Expect: corpus.ExpectKNucleotide}) }

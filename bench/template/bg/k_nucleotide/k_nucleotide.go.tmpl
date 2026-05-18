@@ -1,0 +1,53 @@
+// Template peer for the bg/k_nucleotide benchmark. Mirrors
+// k_nucleotide.mochi: an LCG random generator + HOMO_SAPIENS 4-entry
+// cumprob lookup returning 2-bit codes 0..3; int-keyed map holds
+// 1-mer (keys 0..3) and 2-mer (keys 4..19) counts; output is a
+// rolling i64 hash over the 20 counts so peers integer-compare a
+// single value. See MEP-39 §6.7.
+
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+func lookup(prob float64) int64 {
+	if prob < 0.3029549426680 {
+		return 0
+	}
+	if prob < 0.5009432431601 {
+		return 1
+	}
+	if prob < 0.6984905497992 {
+		return 2
+	}
+	return 3
+}
+
+func main() {
+	const n = {{ .N }}
+	start := time.Now()
+	counts := make(map[int64]int64, 20)
+	seed := (int64(42)*3877 + 29573) % 139968
+	prev := lookup(float64(seed) / 139968.0)
+	counts[prev] = 1
+	for i := int64(1); i < n; i++ {
+		seed = (seed*3877 + 29573) % 139968
+		code := lookup(float64(seed) / 139968.0)
+		counts[code]++
+		counts[4+prev*4+code]++
+		prev = code
+	}
+	var h int64
+	for k := int64(0); k < 20; k++ {
+		h = (h*1009 + counts[k]) % 2147483647
+	}
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      h,
+	})
+}

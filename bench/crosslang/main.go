@@ -104,6 +104,12 @@ var programs = []program{
 	// t); hash = (hash * 1009 + byte) % (2^31 - 1). Output is the
 	// final hash. See bench/template/bg/fasta/.
 	{category: "bg", name: "fasta", ns: []int{10000, 100000}},
+	// MEP-39 §6.7: BG k_nucleotide kernel. N is the LCG iteration
+	// count. Each iter pushes one base into 1-mer and 2-mer count
+	// tables (int-keyed map; keys 0..3 = 1-mers, 4..19 = 2-mers).
+	// Output is a rolling i64 hash over the 20 counts. See
+	// bench/template/bg/k_nucleotide/.
+	{category: "bg", name: "k_nucleotide", ns: []int{10000, 100000}},
 }
 
 type result struct {

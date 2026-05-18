@@ -1,0 +1,43 @@
+// MEP-39 k_nucleotide Mochi reference. LCG random generator paired
+// with a HOMO_SAPIENS 4-entry cumprob lookup that returns the 2-bit
+// code (0/1/2/3 for a/c/g/t). The kernel maintains 1-mer and 2-mer
+// counts in a single int-keyed map (keys 0..3 = 1-mers,
+// 4..19 = 2-mers indexed by `4 + prev*4 + cur`) and folds the 20
+// counts into a rolling i64 hash so the cross-lang harness compares
+// a single integer across every peer. The vm2 path runs
+// `compiler2/corpus/bg_k_nucleotide_scaled.go` (the IR builder);
+// this file is the source-level reference documenting the
+// arithmetic the cross-lang peers replicate.
+
+let N = 10000
+
+fun lookup(prob: float): int {
+  if prob < 0.3029549426680 { return 0 }
+  if prob < 0.5009432431601 { return 1 }
+  if prob < 0.6984905497992 { return 2 }
+  return 3
+}
+
+var counts: map<int, int> = {}
+var seed = (42 * 3877 + 29573) % 139968
+var prev = lookup(float(seed) / 139968.0)
+counts[prev] = 1
+
+for i in 1..N {
+  seed = (seed * 3877 + 29573) % 139968
+  let prob = float(seed) / 139968.0
+  let code = lookup(prob)
+  let c1 = counts[code]
+  counts[code] = c1 + 1
+  let key2 = 4 + prev * 4 + code
+  let c2 = counts[key2]
+  counts[key2] = c2 + 1
+  prev = code
+}
+
+var h = 0
+for k in 0..20 {
+  let c = counts[k]
+  h = (h * 1009 + c) % 2147483647
+}
+print(h)
