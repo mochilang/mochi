@@ -35,7 +35,7 @@ func lowerARM64(fn *vm3.Function) ([]uint32, error) {
 	pcMap := make([]int, len(fn.Code)+1)
 	pcMap[0] = prologueWords
 	for i, op := range fn.Code {
-		n, err := wordCountARM64(op)
+		n, err := wordCountARM64(fn, op)
 		if err != nil {
 			return nil, fmt.Errorf("vm3jit/%s: pc %d: %w", fn.Name, i, err)
 		}
@@ -69,26 +69,55 @@ func lowerARM64(fn *vm3.Function) ([]uint32, error) {
 
 // wordCountARM64 returns the exact number of 32-bit words emitInstrARM64
 // will produce for op. Used by pass 1 to lay out pcMap.
-func wordCountARM64(op vm3.Op) (int, error) {
+func wordCountARM64(fn *vm3.Function, op vm3.Op) (int, error) {
 	switch op.Code {
 	case vm3.OpConstI64K:
 		// movImm64 emits 1..4 movz/movk words depending on the sign-extended
 		// 16-bit constant. For C in [0, 65535] one movz; for negative values
 		// a movn or up to 4 movz/movk pairs.
 		return movImm64WordCount(int64(op.C)), nil
-	case vm3.OpAddI64:
+	case vm3.OpConstI64KW:
+		idx := int(uint16(op.C))
+		if idx >= len(fn.Consts) {
+			return 0, fmt.Errorf("%w: ConstI64KW idx %d out of range", ErrNotImplemented, idx)
+		}
+		return movImm64WordCount(fn.Consts[idx].Int()), nil
+	case vm3.OpMovI64:
 		return 1, nil
-	case vm3.OpAddI64K:
-		// Always lower as: MOV imm into x16; ADD xd, xn, x16. Total cost
-		// is movImm64 words + 1 ADD. Const range -32768..32767 (int16).
+	case vm3.OpAddI64, vm3.OpSubI64, vm3.OpMulI64:
+		return 1, nil
+	case vm3.OpNegI64:
+		return 1, nil
+	case vm3.OpAddI64K, vm3.OpSubI64K, vm3.OpMulI64K:
+		// MOV imm into x16; <op> xd, xn, x16.
 		return movImm64WordCount(int64(op.C)) + 1, nil
-	case vm3.OpCmpGeI64Br:
+	case vm3.OpDivI64K, vm3.OpModI64K:
+		if op.C == 0 {
+			return 0, fmt.Errorf("%w: opcode %d divide-by-zero immediate", ErrNotImplemented, op.Code)
+		}
+		if op.Code == vm3.OpDivI64K {
+			return movImm64WordCount(int64(op.C)) + 1, nil
+		}
+		// ModI64K: MOV imm into x16; SDIV x17, xb, x16; MSUB xa, x17, x16, xb.
+		return movImm64WordCount(int64(op.C)) + 2, nil
+	case vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
+		vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
+		vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br:
+		// CMP xA, xB; B.cond <target>.
 		return 2, nil
+	case vm3.OpCmpEqI64KBr, vm3.OpCmpNeI64KBr,
+		vm3.OpCmpLtI64KBr, vm3.OpCmpLeI64KBr,
+		vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr:
+		// MOV imm into x16; CMP xA, x16; B.cond <target>.
+		return movImm64WordCount(int64(int16(op.B))) + 2, nil
 	case vm3.OpJump:
 		return 1, nil
 	case vm3.OpReturnI64:
 		// MOV x0, xA; RET.
 		return 2, nil
+	case vm3.OpReturnConstK:
+		// movImm64 into x0; RET.
+		return movImm64WordCount(int64(op.C)) + 1, nil
 	default:
 		return 0, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 	}
@@ -106,25 +135,71 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int) ([]uint32
 	case vm3.OpConstI64K:
 		return movImm64(xA, int64(op.C)), nil
 
+	case vm3.OpConstI64KW:
+		v := fn.Consts[int(uint16(op.C))].Int()
+		return movImm64(xA, v), nil
+
+	case vm3.OpMovI64:
+		return []uint32{movReg(xA, xB)}, nil
+
 	case vm3.OpAddI64:
-		// op.C is int16 storage but holds a uint16 register index.
 		xC := r2x(uint16(op.C))
 		return []uint32{addReg(xA, xB, xC)}, nil
+	case vm3.OpSubI64:
+		xC := r2x(uint16(op.C))
+		return []uint32{subReg(xA, xB, xC)}, nil
+	case vm3.OpMulI64:
+		xC := r2x(uint16(op.C))
+		return []uint32{mulReg(xA, xB, xC)}, nil
+	case vm3.OpNegI64:
+		return []uint32{negReg(xA, xB)}, nil
 
 	case vm3.OpAddI64K:
 		ws := movImm64(16, int64(op.C))
-		ws = append(ws, addReg(xA, xB, 16))
+		return append(ws, addReg(xA, xB, 16)), nil
+	case vm3.OpSubI64K:
+		ws := movImm64(16, int64(op.C))
+		return append(ws, subReg(xA, xB, 16)), nil
+	case vm3.OpMulI64K:
+		ws := movImm64(16, int64(op.C))
+		return append(ws, mulReg(xA, xB, 16)), nil
+	case vm3.OpDivI64K:
+		ws := movImm64(16, int64(op.C))
+		return append(ws, sdivReg(xA, xB, 16)), nil
+	case vm3.OpModI64K:
+		// x17 = xB / x16 ; xA = xB - x17 * x16.
+		ws := movImm64(16, int64(op.C))
+		ws = append(ws, sdivReg(17, xB, 16))
+		ws = append(ws, msubReg(xA, 17, 16, xB))
 		return ws, nil
 
-	case vm3.OpCmpGeI64Br:
+	case vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
+		vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
+		vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br:
+		cond := condForCmpReg(op.Code)
 		dstWord := pcMap[int(uint16(op.C))]
-		// CMP at pcMap[idx]; B.GE at pcMap[idx]+1.
 		srcWord := pcMap[idx] + 1
 		off, err := branchOff(srcWord, dstWord, 19)
 		if err != nil {
 			return nil, err
 		}
-		return []uint32{cmpReg(xA, xB), bCond(0xA /*GE*/, off)}, nil
+		return []uint32{cmpReg(xA, xB), bCond(cond, off)}, nil
+
+	case vm3.OpCmpEqI64KBr, vm3.OpCmpNeI64KBr,
+		vm3.OpCmpLtI64KBr, vm3.OpCmpLeI64KBr,
+		vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr:
+		cond := condForCmpKImm(op.Code)
+		imm := int64(int16(op.B))
+		ws := movImm64(16, imm)
+		cmpWord := pcMap[idx] + len(ws)
+		bWord := cmpWord + 1
+		dstWord := pcMap[int(uint16(op.C))]
+		off, err := branchOff(bWord, dstWord, 19)
+		if err != nil {
+			return nil, err
+		}
+		ws = append(ws, cmpReg(xA, 16), bCond(cond, off))
+		return ws, nil
 
 	case vm3.OpJump:
 		dstWord := pcMap[int(uint16(op.C))]
@@ -138,10 +213,53 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int) ([]uint32
 	case vm3.OpReturnI64:
 		return []uint32{movReg(0, xA), ret()}, nil
 
+	case vm3.OpReturnConstK:
+		ws := movImm64(0, int64(op.C))
+		return append(ws, ret()), nil
+
 	default:
-		_ = fn
 		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 	}
+}
+
+// condForCmpReg returns the AArch64 B.cond condition code for a vm3
+// reg-reg compare-and-branch opcode.
+func condForCmpReg(code vm3.OpCode) uint32 {
+	switch code {
+	case vm3.OpCmpEqI64Br:
+		return 0x0 // EQ
+	case vm3.OpCmpNeI64Br:
+		return 0x1 // NE
+	case vm3.OpCmpLtI64Br:
+		return 0xB // LT
+	case vm3.OpCmpLeI64Br:
+		return 0xD // LE
+	case vm3.OpCmpGtI64Br:
+		return 0xC // GT
+	case vm3.OpCmpGeI64Br:
+		return 0xA // GE
+	}
+	return 0
+}
+
+// condForCmpKImm returns the AArch64 B.cond condition code for a vm3
+// reg-imm compare-and-branch opcode.
+func condForCmpKImm(code vm3.OpCode) uint32 {
+	switch code {
+	case vm3.OpCmpEqI64KBr:
+		return 0x0
+	case vm3.OpCmpNeI64KBr:
+		return 0x1
+	case vm3.OpCmpLtI64KBr:
+		return 0xB
+	case vm3.OpCmpLeI64KBr:
+		return 0xD
+	case vm3.OpCmpGtI64KBr:
+		return 0xC
+	case vm3.OpCmpGeI64KBr:
+		return 0xA
+	}
+	return 0
 }
 
 // branchOff computes the signed instruction-word displacement from
@@ -176,6 +294,29 @@ func movn(xd, imm16, hw uint32) uint32 {
 
 func addReg(xd, xn, xm uint32) uint32 {
 	return 0x8B000000 | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+func subReg(xd, xn, xm uint32) uint32 {
+	return 0xCB000000 | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+func negReg(xd, xm uint32) uint32 {
+	// NEG xd, xm == SUB xd, xzr, xm (Rn = 31).
+	return 0xCB0003E0 | ((xm & 0x1F) << 16) | (xd & 0x1F)
+}
+
+func mulReg(xd, xn, xm uint32) uint32 {
+	// MUL xd, xn, xm == MADD xd, xn, xm, xzr (Ra = 31).
+	return 0x9B007C00 | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+func sdivReg(xd, xn, xm uint32) uint32 {
+	return 0x9AC00C00 | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+func msubReg(xd, xn, xm, xa uint32) uint32 {
+	// MSUB xd, xn, xm, xa: bit 15 (o0) = 1.
+	return 0x9B008000 | ((xm & 0x1F) << 16) | ((xa & 0x1F) << 10) | ((xn & 0x1F) << 5) | (xd & 0x1F)
 }
 
 func cmpReg(xn, xm uint32) uint32 {

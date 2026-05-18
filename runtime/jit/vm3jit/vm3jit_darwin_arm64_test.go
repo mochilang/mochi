@@ -12,11 +12,12 @@ import (
 	"mochi/runtime/vm3"
 )
 
-// runJITSumLoop compiles sum_loop and calls it via the trampoline,
-// returning the i64 result. The regs window must live for the
-// duration of the call; the trampoline is NOSPLIT so Go's stack
-// cannot grow under it and the &regs[0] pointer stays valid.
-func runJITSumLoop(t *testing.T, fn *vm3.Function, arg int64) int64 {
+// runJITI64Kernel compiles fn and calls it via the trampoline with a
+// single i64 argument in regs[0], returning the i64 result. The regs
+// window must live for the duration of the call; the trampoline is
+// NOSPLIT so Go's stack cannot grow under it and the &regs[0] pointer
+// stays valid.
+func runJITI64Kernel(t *testing.T, fn *vm3.Function, arg int64) int64 {
 	t.Helper()
 	cf, err := vm3jit.Compile(fn)
 	if err != nil {
@@ -33,17 +34,63 @@ func runJITSumLoop(t *testing.T, fn *vm3.Function, arg int64) int64 {
 // the vm3 interpreter across a range of N and confirms bit-identical
 // results. This is the Phase 6.0 correctness gate.
 func TestCompileSumLoopMatchesInterp(t *testing.T) {
-	prog := corpus.SumLoop.Build(0)
+	checkKernelAgainstInterp(t, "sum_loop", corpus.SumLoop,
+		[]int64{0, 1, 2, 10, 100, 10001})
+}
+
+// TestCompileMulLoopMatchesInterp validates the JIT'd mul_loop across
+// a range of N. Exercises OpMulI64 + OpAddI64K + OpCmpGeI64Br.
+func TestCompileMulLoopMatchesInterp(t *testing.T) {
+	checkKernelAgainstInterp(t, "mul_loop", corpus.MulLoop,
+		[]int64{0, 1, 2, 3, 10, 15})
+}
+
+// TestCompileFibIterMatchesInterp validates the JIT'd fib_iter against
+// the interpreter across N in the same range corpus_test.go pins
+// (0..20). Exercises OpMovI64 + OpAddI64 + OpAddI64K + OpCmpGeI64Br.
+// At N >= 90 the interpreter and JIT diverge but the JIT result matches
+// the mathematical fib(N); see TestFibIterJITHighN.
+func TestCompileFibIterMatchesInterp(t *testing.T) {
+	checkKernelAgainstInterp(t, "fib_iter", corpus.FibIter,
+		[]int64{0, 1, 2, 5, 10, 15, 20})
+}
+
+// TestFibIterJITHighN confirms the JIT computes the mathematically
+// correct fib(N) for large N where the recurrence still fits in i64
+// (i.e. N <= 92). The JIT does not delegate to the interpreter, so any
+// discrepancy here is a JIT codegen bug.
+func TestFibIterJITHighN(t *testing.T) {
+	prog := corpus.FibIter.Build(0)
 	fn := prog.Funcs[prog.Entry]
-	for _, n := range []int64{0, 1, 2, 10, 100, 10001} {
-		got := runJITSumLoop(t, fn, n)
-		vm := vm3.NewWithProgram(prog)
+	cases := []struct {
+		n, want int64
+	}{
+		{30, 832040},
+		{50, 12586269025},
+		{70, 190392490709135},
+		{90, 2880067194370816120},
+	}
+	for _, c := range cases {
+		got := runJITI64Kernel(t, fn, c.n)
+		if got != c.want {
+			t.Errorf("fib_iter(%d): jit=%d want=%d", c.n, got, c.want)
+		}
+	}
+}
+
+func checkKernelAgainstInterp(t *testing.T, name string, prog *corpus.Program, ns []int64) {
+	t.Helper()
+	p := prog.Build(0)
+	fn := p.Funcs[p.Entry]
+	for _, n := range ns {
+		got := runJITI64Kernel(t, fn, n)
+		vm := vm3.NewWithProgram(p)
 		want, err := vm.RunWithArgs(fn, []int64{n})
 		if err != nil {
-			t.Fatalf("interp sum_loop(%d): %v", n, err)
+			t.Fatalf("interp %s(%d): %v", name, n, err)
 		}
 		if got != want.Int() {
-			t.Errorf("sum_loop(%d): jit=%d interp=%d", n, got, want.Int())
+			t.Errorf("%s(%d): jit=%d interp=%d", name, n, got, want.Int())
 		}
 	}
 }
