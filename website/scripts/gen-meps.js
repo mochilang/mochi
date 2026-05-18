@@ -34,7 +34,8 @@ const sidebarGroups = [
   { label: 'Standards Track', min: 11, max: 16 },
   { label: 'VM & Runtime',    min: 17, max: 29 },
   { label: 'JIT',             min: 30, max: 34 },
-  { label: 'Memory',          min: 35, max: 9999 },
+  { label: 'Memory',          min: 35, max: 41 },
+  { label: 'Codegen',         min: 42, max: 9999 },
 ];
 
 const entries = [];
