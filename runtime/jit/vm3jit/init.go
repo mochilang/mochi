@@ -12,13 +12,24 @@ func init() {
 	vm3.JITCallFn = jitCall
 }
 
+// jitFrame3RegsI64Words is the number of int64 slots reserved for the
+// JIT's per-call regs buffer. The JIT's self-recursive call protocol
+// (lower_arm64.go) bumps the regs base pointer by NumRegsI64*8 at every
+// BL, so the buffer must hold (max_depth + 1) * NumRegsI64 entries. For
+// the worst corpus kernel fib_rec(n=25) this is roughly 2*25 levels *
+// 3 regs = 150 int64s; allocating 4096 covers depth-1k recursion in any
+// 4-reg fn with comfortable headroom. The trampoline is NOSPLIT so the
+// buffer must be heap-allocated up front; sizing it generously is
+// cheaper than allocating per call.
+const jitFrame3RegsI64Words = 4096
+
 // jitFrame3 is the per-call scratch the vm3 interp -> JIT boundary
 // hands to the trampoline. Heap-allocated so the Go GC will not move it
-// during the native call; reset (not cleared) between calls within a
-// single OpCallI64 site since the JIT writes the slots it uses and
-// reads only its declared params. status is pre-zeroed.
+// during the native call; the JIT writes the slots it uses and reads
+// only its declared params, so we do not clear between calls. status is
+// reset to zero by jitCall before each call.
 type jitFrame3 struct {
-	regsI64 [MaxI64Regs]int64
+	regsI64 [jitFrame3RegsI64Words]int64
 	regsF64 [MaxF64Regs]float64
 	status  int64
 }
@@ -48,6 +59,7 @@ func jitCall(_ *vm3.VM, fn *vm3.Function, argsI64 []int64, _ []float64) (uint64,
 	jf := &jitFrame3{}
 	n := min(len(argsI64), MaxI64Regs)
 	copy(jf.regsI64[:n], argsI64[:n])
+	jf.status = 0
 
 	var bits uint64
 	if fn.JITHasF64 {
