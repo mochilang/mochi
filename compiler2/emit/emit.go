@@ -988,6 +988,20 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 							A: s0, B: s1, C: s2})
 						break
 					}
+					if len(ins.Args) == 4 {
+						s0 := int32(finalReg[ins.Args[0]])
+						s1 := int32(finalReg[ins.Args[1]])
+						s2 := int32(finalReg[ins.Args[2]])
+						s3 := int32(finalReg[ins.Args[3]])
+						// Same cycle-safety argument as A3: the dispatch
+						// reads all 4 srcs into temporaries before writing
+						// regs[0..3], so overlap is harmless. MEP-39 §6.6
+						// fasta leaf bodies (4 args: seed, hash, i, n) take
+						// this path.
+						emit(vm2.Instr{Op: vm2.OpTailCallSelfA4,
+							A: s0, B: s1, C: s2, D: s3})
+						break
+					}
 					moves := make([]pmove, 0, len(ins.Args))
 					for i, a := range ins.Args {
 						moves = append(moves, pmove{dst: int32(i), src: int32(finalReg[a])})

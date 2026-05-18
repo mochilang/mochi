@@ -455,6 +455,16 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			regs[1] = a1
 			regs[2] = a2
 			ip = 0
+		case OpTailCallSelfA4:
+			a0 := regs[ins.A]
+			a1 := regs[ins.B]
+			a2 := regs[ins.C]
+			a3 := regs[ins.D]
+			regs[0] = a0
+			regs[1] = a1
+			regs[2] = a2
+			regs[3] = a3
+			ip = 0
 		case OpTailCall:
 			callee := vm.Program.Funcs[ins.A]
 			n := int(ins.C)

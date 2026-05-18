@@ -139,6 +139,20 @@ const (
 	// loop kernels (BuildPair*Kernel) all take this form, so the iter
 	// body collapses from 2 OpMoves + OpTailCallSelf to one op.
 	OpTailCallSelfA3
+	// OpTailCallSelfA4 is the 4-parameter sibling of A3. Encoding:
+	//
+	//	A = src reg for param 0
+	//	B = src reg for param 1
+	//	C = src reg for param 2
+	//	D = src reg for param 3
+	//
+	// Dispatch reads all 4 sources into temporaries first (so it is safe
+	// when srcs overlap dsts) then writes regs[0..3] and rewinds ip. The
+	// MEP-39 §6.6 fasta leaves (loop(seed, hash, i, n) recurse with all
+	// four params) use this form: each leaf collapses from 3 OpMoves +
+	// OpTailCallSelf (the loop bound `n` is identity-passed so the
+	// parallel-move scheduler emits 3 moves, not 4) to one op.
+	OpTailCallSelfA4
 	OpReturn // return A to caller's RetReg
 
 	// Return-superop family (MEP-38 §A.6). Each fuses a small
