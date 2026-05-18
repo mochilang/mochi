@@ -17,12 +17,11 @@ var ErrUnsupported = errors.New("vm3jit: no backend for this architecture")
 // Callers fall back to the vm3 interpreter.
 var ErrNotImplemented = errors.New("vm3jit: not implemented")
 
-// maxI64Regs is the Phase 6.0 cap on simultaneously live i64
-// registers. x9..x15 are AArch64 caller-saved temps; the function
-// body owns all seven without a prologue/epilogue frame save. Phase
-// 6.1 lifts the cap by pushing callee-saved x19..x28 (mirroring
-// vm2jit MEP-39 §6.14 Phase B).
-const maxI64Regs = 7
+// maxI64Regs is the cap on simultaneously live i64 registers in the
+// JIT. Slots 0..6 land in x9..x15 (caller-saved, free); slots 7..16
+// land in x19..x28 (callee-saved, requires STP/LDP pairs in the
+// prologue/epilogue). Mirrors vm2jit MEP-39 §6.14 Phase B.
+const maxI64Regs = 17
 
 // CompiledFunc is a handle to a vm3jit-compiled function. It owns the
 // executable page and must be freed via Free when the function is
