@@ -1142,6 +1142,47 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				sum += int64(a[i])
 			}
 			regs[ins.A] = CInt(sum)
+		case OpKNucleotideRun:
+			counts := vm.i64ArrAt(regs[ins.A]).data
+			n := regs[ins.B].Int()
+			if len(counts) < 20 {
+				fr.IP = ip
+				return ret, errors.New("vm2: k_nucleotide counts array too small")
+			}
+			if n > 0 {
+				seed := (int64(42)*3877 + 29573) % 139968
+				prob := float64(seed) / 139968.0
+				var prev int64
+				switch {
+				case prob < 0.3029549426680:
+					prev = 0
+				case prob < 0.5009432431601:
+					prev = 1
+				case prob < 0.6984905497992:
+					prev = 2
+				default:
+					prev = 3
+				}
+				counts[prev]++
+				for i := int64(1); i < n; i++ {
+					seed = (seed*3877 + 29573) % 139968
+					prob = float64(seed) / 139968.0
+					var code int64
+					switch {
+					case prob < 0.3029549426680:
+						code = 0
+					case prob < 0.5009432431601:
+						code = 1
+					case prob < 0.6984905497992:
+						code = 2
+					default:
+						code = 3
+					}
+					counts[code]++
+					counts[4+prev*4+code]++
+					prev = code
+				}
+			}
 		case OpNewPair:
 			regs[ins.A] = vm.newPair(regs[ins.B], regs[ins.C])
 		case OpPairFst:

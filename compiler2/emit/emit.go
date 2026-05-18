@@ -918,6 +918,10 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 				emit(vm2.Instr{Op: vm2.OpU8SumI64, A: dst,
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
+			case ir.OpKNucleotideRun:
+				emit(vm2.Instr{Op: vm2.OpKNucleotideRun,
+					A: int32(finalReg[ins.Args[0]]),
+					B: int32(finalReg[ins.Args[1]])})
 			case ir.OpNewPair:
 				if suppress[vid] {
 					break
