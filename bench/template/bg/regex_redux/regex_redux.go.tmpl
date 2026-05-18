@@ -1,0 +1,35 @@
+// Template peer for the bg/regex_redux benchmark. Mirrors regex_redux.mochi:
+// LCG-generated DNA stream + 4-byte rolling window matched against two
+// length-4 alternation patterns. Output is the match count. See MEP-39 §6.9.
+
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"time"
+)
+
+func main() {
+	const n = {{ .N }}
+	start := time.Now()
+	var seed int64 = 42
+	var win int64 = 0
+	var count int64 = 0
+	for i := int64(0); i < n; i++ {
+		seed = (seed*3877 + 29573) % 139968
+		code := (seed * 4) / 139968
+		win = ((win << 2) & 0xFF) | code
+		if i >= 3 {
+			if win == 47 || win == 248 {
+				count++
+			}
+		}
+	}
+	durUs := float64(time.Since(start).Microseconds())
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_us": durUs,
+		"output":      count,
+	})
+}

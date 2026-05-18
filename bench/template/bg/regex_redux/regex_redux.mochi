@@ -1,0 +1,36 @@
+// MEP-39 §6.9 regex_redux Mochi reference. vm2 has no regex ops
+// (see MEP-39 §4.2.4 path (b)), so the kernel is a plain state-
+// machine scan: deterministic DNA stream of N codes 0..3 via the
+// same fasta LCG, with a 4-byte rolling window packed 2 bits per
+// code into an int, matched against two length-4 alternation
+// patterns ("agtt", "ttga"). The vm2 path runs
+// `compiler2/corpus/bg_regex_redux_scaled.go` (the IR builder);
+// this file documents the arithmetic the cross-lang peers
+// replicate.
+//
+// Encoding: a=0, c=1, g=2, t=3. Window: ((w << 2) & 0xFF) | code,
+// so after >= 4 codes the window holds the last 4 codes
+// big-endian. "agtt" = 0,2,3,3 -> 0b00101111 = 47. "ttga" =
+// 3,3,2,0 -> 0b11111000 = 248. Output is the match count.
+
+let N = 10000
+
+var seed = 42
+var win = 0
+var count = 0
+for i in 0..N {
+  seed = (seed * 3877 + 29573) % 139968
+  let code = (seed * 4) / 139968
+  win = ((win * 4) % 256) + code
+  if i >= 3 {
+    if win == 47 {
+      count = count + 1
+    } else {
+      if win == 248 {
+        count = count + 1
+      }
+    }
+  }
+}
+
+print(count)

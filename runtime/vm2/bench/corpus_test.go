@@ -66,6 +66,9 @@ var corpusSizes = []corpusSize{
 	// algorithm allocates a fresh bignum per iter so N stays modest for
 	// the oracle test (the cross-lang harness scales to 1000/10000).
 	{"bg_pidigits", 200},
+	// MEP-39 §6.9: regex_redux. N is the DNA stream length; one LCG
+	// step + one window shift + one match check per inner iter.
+	{"bg_regex_redux", 10000},
 }
 
 func sizeFor(name string) int64 {
@@ -156,3 +159,4 @@ func BenchmarkVM2_BG_ReverseComplement(b *testing.B) { benchCorpus(b, corpus.Pro
 func BenchmarkVM2_BG_Fasta(b *testing.B)         { benchCorpus(b, corpus.Program{Name: "bg_fasta", Build: corpus.BuildFasta, Expect: corpus.ExpectFasta}) }
 func BenchmarkVM2_BG_KNucleotide(b *testing.B)   { benchCorpus(b, corpus.Program{Name: "bg_k_nucleotide", Build: corpus.BuildKNucleotide, Expect: corpus.ExpectKNucleotide}) }
 func BenchmarkVM2_BG_Pidigits(b *testing.B)      { benchCorpus(b, corpus.Program{Name: "bg_pidigits", Build: corpus.BuildPidigits, Expect: corpus.ExpectPidigits}) }
+func BenchmarkVM2_BG_RegexRedux(b *testing.B)    { benchCorpus(b, corpus.Program{Name: "bg_regex_redux", Build: corpus.BuildRegexRedux, Expect: corpus.ExpectRegexRedux}) }
