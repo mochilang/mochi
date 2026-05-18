@@ -497,10 +497,21 @@ func countParamBanks(callee *vm3.Function) (nI64, nF64, nCell int) {
 //	movImm64(x16, &callee.JITCode)
 //	BLR x16
 //	MOV x17,x0                            ; capture i64 result
+//	[LDR x16,[x1]]                        ; only if callee can deopt
 //	LDP x3,xzr,[SP],#16
 //	LDP x0,x2,[SP],#16
 //	nSpill * LDR x(9+r),[x0,#r*8]
+//	[CBNZ x16,passthrough]                ; only if callee can deopt
 //	MOV xA,x17                            ; deliver result to dst
+//
+// The 2 extra words (LDR x16,[x1] + CBNZ x16,passthrough) are emitted
+// only when the callee has at least one deopt-capable opcode in its
+// body. The LDR comes after MOV x17,x0 (x1 is preserved by the callee
+// so the post-BLR read sees the same status word the trampoline passed
+// in); the CBNZ lands after the LDP+LDR-reload sequence so SP and the
+// caller's regs bases are back to their prologue state when the branch
+// is taken (the passthrough block runs the frame epilogue against that
+// state).
 func crossFnCallMixedWordsARM64(fn, callee *vm3.Function, spillMask uint32) int {
 	nSpill := popcount32(spillMask)
 	nI64Args, nF64Args, nCellArgs := countParamBanks(callee)
@@ -515,9 +526,114 @@ func crossFnCallMixedWordsARM64(fn, callee *vm3.Function, spillMask uint32) int 
 		bumps++
 	}
 	addr := int64(uintptr(callee.JITCode))
+	deoptExtra := 0
+	if crossFnDeoptCallee(callee) {
+		deoptExtra = 2 // LDR x16,[x1] + CBNZ x16,passthrough
+	}
 	// 2*nSpill spill+reload + arg STRs + 2 STP + bumps + 1 MOV x4,x20 +
-	// movImm64 + 1 BLR + 1 MOV x17,x0 + 2 LDP + 1 MOV xA,x17.
-	return 2*nSpill + nI64Args + nF64Args + nCellArgs + 2 + bumps + 1 + movImm64WordCount(addr) + 1 + 1 + 2 + 1
+	// movImm64 + 1 BLR + 1 MOV x17,x0 + 2 LDP + 1 MOV xA,x17 +
+	// optional deopt-passthrough check (LDR + CBNZ).
+	return 2*nSpill + nI64Args + nF64Args + nCellArgs + 2 + bumps + 1 + movImm64WordCount(addr) + 1 + 1 + 2 + 1 + deoptExtra
+}
+
+// crossFnDeoptCallee reports whether a cross-fn OpCallMixed callee can
+// raise a non-zero status code from a deopt-capable opcode (list push,
+// reg-reg div/mod). When true, the caller's BLR site emits the
+// LDR x16,[x1] + CBNZ x16,passthrough pair so a callee-side deopt
+// propagates back through the caller without writing the caller's own
+// status (the callee already did).
+func crossFnDeoptCallee(callee *vm3.Function) bool {
+	return hasListPushI64(callee) || hasRegRegDivMod(callee)
+}
+
+// needsCrossFnDeoptPassthrough reports whether fn must emit a single
+// passthrough deopt block at the end of its code stream. True iff fn
+// has at least one cross-fn OpCallMixed whose callee can deopt; the
+// block is shared by every such site since they all need the same
+// shape (spill caller pinned regs, run frame epilogue, RET) and none
+// of them write *status (the callee already did).
+func needsCrossFnDeoptPassthrough(fn *vm3.Function, opts Options) bool {
+	if opts.Prog == nil {
+		return false
+	}
+	for _, op := range fn.Code {
+		if op.Code != vm3.OpCallMixed {
+			continue
+		}
+		idx := int(uint16(op.C))
+		if opts.SelfIdx >= 0 && idx == opts.SelfIdx {
+			continue
+		}
+		if idx < 0 || idx >= len(opts.Prog.Funcs) {
+			continue
+		}
+		callee := opts.Prog.Funcs[idx]
+		if callee.JITCode == nil {
+			continue
+		}
+		if crossFnDeoptCallee(callee) {
+			return true
+		}
+	}
+	return false
+}
+
+// passthroughBlockWordsARM64 returns the size of fn's cross-fn deopt
+// passthrough block. Same shape as a normal per-status deopt block
+// minus the MOV x16,#status + STR x16,[x1] pair (the callee already
+// wrote the status, so the caller's passthrough must not overwrite
+// it). Zero when fn has no deopt-capable cross-fn callees.
+func passthroughBlockWordsARM64(fn *vm3.Function, opts Options) int {
+	if !needsCrossFnDeoptPassthrough(fn, opts) {
+		return 0
+	}
+	return deoptBlockWordsARM64Status(fn) - 2
+}
+
+// emitPassthroughDeoptBlockARM64 emits the cross-fn deopt passthrough
+// block. Layout matches emitDeoptBlockARM64 except no MOV x16,#status
+// and no STR x16,[x1] (caller did not raise its own status; it is
+// propagating the callee's). Lives at the very end of the code stream
+// so every cross-fn OpCallMixed site CBNZes to the same offset.
+func emitPassthroughDeoptBlockARM64(fn *vm3.Function) []uint32 {
+	nI64 := int(fn.NumRegsI64)
+	if nI64 > maxI64Regs {
+		nI64 = maxI64Regs
+	}
+	if fn.NumRegsCell > 0 && nI64 > maxI64RegsCellARM64 {
+		nI64 = maxI64RegsCellARM64
+	}
+	nF64 := int(fn.NumRegsF64)
+	if nF64 > maxF64RegsARM64 {
+		nF64 = maxF64RegsARM64
+	}
+	nCell := int(fn.NumRegsCell)
+	if nCell > maxCellRegs {
+		nCell = maxCellRegs
+	}
+	ws := make([]uint32, 0, deoptBlockWordsARM64Status(fn)-2)
+	if hoistsCellsLenARM64(fn) {
+		ws = emitCellsLenFlushARM64(ws)
+	}
+	for r := uint32(0); r < uint32(nI64); r++ {
+		ws = append(ws, str64(r2x(fn, uint16(r)), 0, r))
+	}
+	for r := uint32(0); r < uint32(nF64); r++ {
+		ws = append(ws, strD(r2d(uint16(r)), 2, r))
+	}
+	for r := uint32(0); r < uint32(nCell); r++ {
+		ws = append(ws, str64(r2cell(uint16(r)), 3, r))
+	}
+	ws = emitFrameEpilogueARM64(ws, calleeSavedPairRegs(fn), numLRPair(fn))
+	ws = append(ws, ret())
+	return ws
+}
+
+// passthroughStartARM64 returns the word offset where fn's passthrough
+// deopt block begins, given the first per-status deopt block start.
+// Each OpCallMixed site uses this to compute the CBNZ branch offset.
+func passthroughStartARM64(fn *vm3.Function, deoptStart int) int {
+	return deoptStart + len(deoptStatusesUsedARM64(fn))*deoptBlockWordsARM64Status(fn)
 }
 
 // numLRPair returns 1 if fn needs the x29:x30 outermost STP/LDP pair,
@@ -615,7 +731,8 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 
 	deoptStart := pcMap[len(fn.Code)]
 	statuses := deoptStatusesUsedARM64(fn)
-	total := deoptStart + len(statuses)*deoptBlockWordsARM64Status(fn)
+	passthroughWords := passthroughBlockWordsARM64(fn, opts)
+	total := deoptStart + len(statuses)*deoptBlockWordsARM64Status(fn) + passthroughWords
 	ws := make([]uint32, 0, total)
 
 	// Prologue: push x29:x30 (outermost) if non-leaf, then push
@@ -701,6 +818,9 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 	}
 	for _, status := range statuses {
 		ws = append(ws, emitDeoptBlockARM64(fn, status)...)
+	}
+	if passthroughWords > 0 {
+		ws = append(ws, emitPassthroughDeoptBlockARM64(fn)...)
 	}
 	if len(ws) != total {
 		return nil, fmt.Errorf("vm3jit/%s: final stream %d words, predicted %d",
@@ -887,6 +1007,18 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 			return 0, err
 		}
 		return crossFnCallMixedWordsARM64(fn, callee, spillSets[idx]), nil
+
+	case vm3.OpNewList:
+		// Phase 6.2d.2.b step 2: when fn.JITPreAllocList is set the JIT
+		// skips fn.Code[0]'s OpNewList entirely; jitCall (Go side) writes
+		// the pre-allocated list handle into jf.regsCell[A] before the
+		// trampoline call, and the prologue's LDR x_cell, [x3, #A*8]
+		// picks it up into the pinned reg. Only the PC=0 instance is
+		// skipped; any later OpNewList is left for a future sub-phase.
+		if idx == 0 && fn.JITPreAllocList {
+			return 0, nil
+		}
+		return 0, fmt.Errorf("%w: opcode %d (inline NewList unsupported)", ErrNotImplemented, op.Code)
 
 	default:
 		return 0, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
@@ -1130,6 +1262,7 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		callerI64 := int(fn.NumRegsI64)
 		callerF64 := int(fn.NumRegsF64)
 		callerCell := int(fn.NumRegsCell)
+		needsDeoptCheck := crossFnDeoptCallee(callee)
 		ws := make([]uint32, 0, crossFnCallMixedWordsARM64(fn, callee, spillMask))
 		for r := uint16(0); r < 7; r++ {
 			if spillMask&(1<<r) != 0 {
@@ -1162,6 +1295,16 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		ws = append(ws, movImm64(16, int64(uintptr(callee.JITCode)))...)
 		ws = append(ws, blr(16))
 		ws = append(ws, movReg(17, 0))
+		if needsDeoptCheck {
+			// Load *(x1) into x16 BEFORE the LDPs restore SP, while x1
+			// still points at the trampoline's status word (the callee
+			// preserves x1 across its body by convention). Phase
+			// 6.2d.2.b step 2: deferred CBNZ comes after the LDR-reload
+			// run below so SP and caller bases are at prologue-push
+			// level when the branch is taken; the passthrough block
+			// runs the same frame epilogue as a normal deopt block.
+			ws = append(ws, ldr64(16, 1, 0))
+		}
 		ws = append(ws, ldpPostIdx64(3, 31, 31, 16))
 		ws = append(ws, ldpPostIdx64(0, 2, 31, 16))
 		for r := uint16(0); r < 7; r++ {
@@ -1169,8 +1312,26 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 				ws = append(ws, ldr64(uint32(9+r), 0, uint32(r)))
 			}
 		}
+		if needsDeoptCheck {
+			ptStart := passthroughStartARM64(fn, deoptStart)
+			srcWord := pcMap[idx] + len(ws)
+			off, err := branchOff(srcWord, ptStart, 19)
+			if err != nil {
+				return nil, fmt.Errorf("CallMixed deopt passthrough branch: %w", err)
+			}
+			ws = append(ws, cbnz64(16, off))
+		}
 		ws = append(ws, movReg(xA, 17))
 		return ws, nil
+
+	case vm3.OpNewList:
+		if idx == 0 && fn.JITPreAllocList {
+			// Skipped: jitCall pre-allocated the list and wrote the
+			// handle to regsCell[A]; the prologue loaded it into the
+			// pinned reg before this PC. Emit zero words.
+			return []uint32{}, nil
+		}
+		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 
 	case vm3.OpListGetI64:
 		// regsI64[A] = arenas.Lists[handleIdx(regsCell[B])].cells[regsI64[C]].Int()
@@ -1474,6 +1635,14 @@ func str64(xt, xn, imm12 uint32) uint32 {
 // that it fits in 19 bits via branchOff(_, _, 19).
 func cbz64(xt uint32, off19 int32) uint32 {
 	return 0xB4000000 | (uint32(off19&0x7FFFF) << 5) | (xt & 0x1F)
+}
+
+// cbnz64 encodes CBNZ Xt, <pc-rel> (64-bit, branch if Xt is non-zero).
+// Same encoding as cbz64 with bit 24 set. Used by cross-fn OpCallMixed
+// to branch into the passthrough deopt block when the callee left a
+// non-zero status code in [x1].
+func cbnz64(xt uint32, off19 int32) uint32 {
+	return 0xB5000000 | (uint32(off19&0x7FFFF) << 5) | (xt & 0x1F)
 }
 
 func bImm(off26 int32) uint32 {

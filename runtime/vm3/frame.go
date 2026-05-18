@@ -59,9 +59,17 @@ type Function struct {
 	// is held by the caller of CompileAndCache, typically a
 	// vm3runner-style harness or a test. JITHasF64 selects the
 	// 4-argument trampoline (CallStatusFF) for f64-touching kernels.
-	JITCode     unsafe.Pointer
-	JITCompiled bool
-	JITHasF64   bool
+	//
+	// JITPreAllocList is set by the JIT when fn.Code[0] is an OpNewList
+	// whose lowered body was skipped on the JIT side; vm3jit.jitCall
+	// pre-allocates the list on the Go side before entering the
+	// trampoline so the JIT can drop the inline allocation. Used to
+	// admit `lists_fill_sum` main without growing the JIT into the
+	// arena slab fast path (Phase 6.2d.2.b step 2).
+	JITCode         unsafe.Pointer
+	JITCompiled     bool
+	JITHasF64       bool
+	JITPreAllocList bool
 }
 
 // Bank identifies one of the three typed register banks.

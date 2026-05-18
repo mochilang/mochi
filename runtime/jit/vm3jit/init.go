@@ -95,6 +95,30 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 	clear(jf.regsF64[:nF64])
 	nCell := min(int(fn.NumRegsCell), MaxCellRegs)
 	clear(jf.regsCell[:nCell])
+	// Per-call arena mark/restore (Phase 6.2d.2.b step 2.D). The JIT
+	// entry path is the trampoline analogue of the interp's pushFrame:
+	// without a snapshot here, every JIT'd call that allocates from an
+	// arena (e.g. the PC=0 pre-alloc OpNewList below) would leak a slot
+	// per call, since the trampoline does not run the interp's per-frame
+	// truncateToMarks. The snapshot must happen BEFORE pre-alloc so the
+	// pre-alloc'd list is itself reclaimed on clean return; on deopt we
+	// skip the restore so the spilled deopt handles stay valid for the
+	// interp's resume.
+	var marks vm3.CallScopeMarks
+	vm.Arenas().SnapshotForJITEntry(&marks)
+	// Phase 6.2d.2.b step 2: PC=0 OpNewList pre-alloc. When the JIT
+	// admission marked fn.JITPreAllocList, the lowered code skipped
+	// fn.Code[0]'s OpNewList — pre-allocate the list here so the JIT's
+	// downstream OpCallMixed sites see the handle in jf.regsCell[A].
+	// The arenaCtx snapshot below happens AFTER this alloc so the JIT
+	// prologue caches the post-allocation arenas.Lists base.
+	if fn.JITPreAllocList {
+		op0 := fn.Code[0]
+		dest := int(op0.A)
+		if dest < MaxCellRegs {
+			jf.regsCell[dest] = vm.Arenas().AllocList(0, int(op0.C))
+		}
+	}
 	// Lay out params per ParamBanks position-indexed convention: argsX[k]
 	// is meaningful iff fn.ParamBanks[k] == BankX. For i64-only callees
 	// (OpCallI64 / Phase 6.2c path) argsCell/argsF64 are nil and we use
@@ -162,8 +186,17 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 		copy(vm.DeoptScratchI64(nI64), jf.regsI64[:nI64])
 		copy(vm.DeoptScratchF64(nF64), jf.regsF64[:nF64])
 		copy(vm.DeoptScratchCell(nCell), jf.regsCell[:nCell])
+		// Deopt resumes in the interp at PC=0 with the spilled state,
+		// including any Cell handles allocated by the JIT before deopt.
+		// Leave the arenas at their post-call lengths so those handles
+		// remain valid; the resumed interp frame will set its own marks
+		// and reclaim as normal on its own Return.
 		return 0, true, nil
 	}
+	// Clean unboxed return: reclaim any arena slot allocated during the
+	// JIT'd call. Safe because the only admitted Cell-bank entry shape
+	// (lists_fill_sum main) returns int64; no handle escapes.
+	vm.Arenas().RestoreUnboxedReturn(&marks)
 	return bits, false, nil
 }
 
@@ -191,13 +224,57 @@ func CompileAndCache(prog *vm3.Program, idx uint32) (*CompiledFunc, error) {
 		return nil, nil
 	}
 	fn.JITCompiled = true
+	// Phase 6.2d.2.b step 2: detect the lists_fill_sum main shape so the
+	// lowerer can emit zero words for PC=0's OpNewList. Setting this
+	// before CompileInProgram lets the lowerer's wordCountARM64 pass and
+	// emitInstrARM64 both see the flag at the same time. If the function
+	// fails admission for some other reason we still leave the flag set;
+	// it is read only by jitCall, which only fires when JITCode is non-
+	// nil (i.e. when admission did succeed).
+	fn.JITPreAllocList = canPreAllocList(fn)
 	cf, err := CompileInProgram(prog, idx)
 	if err != nil {
+		fn.JITPreAllocList = false
 		return nil, err
 	}
 	fn.JITCode = cf.Entry()
 	fn.JITHasF64 = fn.NumRegsF64 > 0
 	return cf, nil
+}
+
+// canPreAllocList reports whether the JIT should pre-allocate the list
+// produced by fn.Code[0] in the Go-side jitCall and skip its lowering.
+// Pre-condition for safety:
+//
+//   - fn.Code[0] is an OpNewList that writes to regsCell[A] with A in
+//     range for the Cell-bank window.
+//   - No other op in fn writes to regsCell[A] (otherwise the JIT would
+//     overwrite the pre-allocated handle without the lowerer seeing
+//     the data-flow).
+//
+// The Cell-bank admissibility check in compile.go further requires
+// that fn has no list ops in its body (so x20 stays free for the
+// cross-fn arena-ctx stash). That, combined with this pre-alloc check,
+// is sufficient for the `lists_fill_sum` main shape: OpNewList then a
+// pair of OpCallMixed sites that only read regsCell[A].
+func canPreAllocList(fn *vm3.Function) bool {
+	if len(fn.Code) == 0 || fn.Code[0].Code != vm3.OpNewList {
+		return false
+	}
+	dest := fn.Code[0].A
+	if int(dest) >= int(fn.NumRegsCell) || int(dest) >= MaxCellRegs {
+		return false
+	}
+	for i := 1; i < len(fn.Code); i++ {
+		op := fn.Code[i]
+		if op.Code == vm3.OpNewList && op.A == dest {
+			return false
+		}
+		if op.Code == vm3.OpNewMap && op.A == dest {
+			return false
+		}
+	}
+	return true
 }
 
 // CompileProgram is the convenience entry point that walks every

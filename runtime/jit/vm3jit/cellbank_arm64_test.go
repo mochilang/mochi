@@ -10,11 +10,11 @@ import (
 	"mochi/runtime/vm3"
 )
 
-// TestListsFillSumKernelsCompile confirms the Phase 6.2d.2.c gate:
-// vm3jit.CompileProgram admits both the sum (idx=2) and fill (idx=1)
-// kernels of lists_fill_sum on ARM64. main (idx=0) still falls back to
-// the interpreter because it uses OpNewList, which is outside the
-// Cell-bank whitelist.
+// TestListsFillSumKernelsCompile confirms the Phase 6.2d.2.b step 2
+// gate: vm3jit.CompileProgram admits all three kernels of
+// lists_fill_sum on ARM64: sum (idx=2) and fill (idx=1) at PC=0 by
+// the inline Cell-bank lowering, and main (idx=0) via the OpNewList
+// pre-alloc skip + cross-fn OpCallMixed deopt-passthrough wedge.
 func TestListsFillSumKernelsCompile(t *testing.T) {
 	prog := corpus.ListsFillSum.Build(128)
 	cfs := vm3jit.CompileProgram(prog)
@@ -31,8 +31,11 @@ func TestListsFillSumKernelsCompile(t *testing.T) {
 	if got := prog.Funcs[1].JITCode; got == nil {
 		t.Fatalf("fill (idx=1) did not compile: JITCode is nil")
 	}
-	if got := prog.Funcs[0].JITCode; got != nil {
-		t.Fatalf("main (idx=0) unexpectedly compiled: should fall back to interp pending OpNewList lowering")
+	if got := prog.Funcs[0].JITCode; got == nil {
+		t.Fatalf("main (idx=0) did not compile: should be admitted via OpNewList pre-alloc + cross-fn deopt-passthrough")
+	}
+	if !prog.Funcs[0].JITPreAllocList {
+		t.Fatalf("main (idx=0) JITPreAllocList not set: pre-alloc skip path should be active")
 	}
 }
 
