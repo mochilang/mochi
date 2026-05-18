@@ -211,6 +211,62 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		suppress[rhs] = true
 		subK[ir.ValueID(vid)] = subKInfo{k: k, src: ins.Args[0]}
 	}
+	// mulK mirrors addK: multiply is commutative so either operand can
+	// be the immediate. Hot for LCG / hash chains in MEP-39 §6.6 fasta
+	// (`seed * 3877` and `hash * 1009` both fold). The i32 immediate
+	// covers every multiplier the BG corpus uses.
+	type mulKInfo struct {
+		k           int64
+		nonConstArg ir.ValueID
+	}
+	mulK := make(map[ir.ValueID]mulKInfo)
+	for vid, ins := range f.Values {
+		if ins.Op != ir.OpMulI64 {
+			continue
+		}
+		a0, a1 := ins.Args[0], ins.Args[1]
+		try := func(constArg, otherArg ir.ValueID) bool {
+			c := f.Values[constArg]
+			if c.Op != ir.OpConstI64 || useCount[constArg] != 1 {
+				return false
+			}
+			k := c.Aux
+			if k < -(1<<31) || k > (1<<31)-1 {
+				return false
+			}
+			suppress[constArg] = true
+			mulK[ir.ValueID(vid)] = mulKInfo{k: k, nonConstArg: otherArg}
+			return true
+		}
+		if !try(a1, a0) {
+			try(a0, a1)
+		}
+	}
+	// modK mirrors subK (not commutative): only the rhs (divisor) can
+	// fold. Hot for LCG / hash chains in MEP-39 §6.6 fasta (% 139968
+	// and % 2147483647). emit-side fusion enforces non-zero immediate
+	// so the dispatch path skips the mod-by-zero check.
+	type modKInfo struct {
+		k   int64
+		src ir.ValueID
+	}
+	modK := make(map[ir.ValueID]modKInfo)
+	for vid, ins := range f.Values {
+		if ins.Op != ir.OpModI64 {
+			continue
+		}
+		rhs := ins.Args[1]
+		c := f.Values[rhs]
+		if c.Op != ir.OpConstI64 || useCount[rhs] != 1 {
+			continue
+		}
+		k := c.Aux
+		if k == 0 || k < -(1<<31) || k > (1<<31)-1 {
+			continue
+		}
+		suppress[rhs] = true
+		modK[ir.ValueID(vid)] = modKInfo{k: k, src: ins.Args[0]}
+	}
 	// fuseCmpConst marks a fused cmp+condbr whose const operand should be
 	// inlined into the K-form jump op (avoids the OpLoadConstI dispatch
 	// + register slot). Populated for OpEqualI64, OpLessI64, OpLessEqI64
@@ -530,6 +586,12 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
 			case ir.OpMulI64:
+				if info, ok := mulK[vid]; ok {
+					emit(vm2.Instr{Op: vm2.OpMulI64K, A: dst,
+						B: int32(finalReg[info.nonConstArg]),
+						C: int32(info.k)})
+					break
+				}
 				emit(vm2.Instr{Op: vm2.OpMulI64, A: dst,
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
@@ -538,6 +600,12 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
 			case ir.OpModI64:
+				if info, ok := modK[vid]; ok {
+					emit(vm2.Instr{Op: vm2.OpModI64K, A: dst,
+						B: int32(finalReg[info.src]),
+						C: int32(info.k)})
+					break
+				}
 				emit(vm2.Instr{Op: vm2.OpModI64, A: dst,
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
