@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"math"
+	"math/big"
 	"unsafe"
 )
 
@@ -828,6 +829,39 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			}
 			bv := &vmBytes{buf: data, off: 0, n: len(data), owns: true}
 			regs[ins.A] = Cell{Bits: tagPtr, Obj: unsafe.Pointer(bv)}
+		case OpAddBigInt:
+			r := new(big.Int).Add(vm.bigIntAt(regs[ins.B]), vm.bigIntAt(regs[ins.C]))
+			regs[ins.A] = CBigInt(r)
+		case OpSubBigInt:
+			r := new(big.Int).Sub(vm.bigIntAt(regs[ins.B]), vm.bigIntAt(regs[ins.C]))
+			regs[ins.A] = CBigInt(r)
+		case OpMulBigInt:
+			r := new(big.Int).Mul(vm.bigIntAt(regs[ins.B]), vm.bigIntAt(regs[ins.C]))
+			regs[ins.A] = CBigInt(r)
+		case OpDivBigInt:
+			bv := vm.bigIntAt(regs[ins.C])
+			if bv.Sign() == 0 {
+				fr.IP = ip
+				return ret, errors.New("vm2: bignum division by zero")
+			}
+			r := new(big.Int).Quo(vm.bigIntAt(regs[ins.B]), bv)
+			regs[ins.A] = CBigInt(r)
+		case OpModBigInt:
+			bv := vm.bigIntAt(regs[ins.C])
+			if bv.Sign() == 0 {
+				fr.IP = ip
+				return ret, errors.New("vm2: bignum mod by zero")
+			}
+			r := new(big.Int).Rem(vm.bigIntAt(regs[ins.B]), bv)
+			regs[ins.A] = CBigInt(r)
+		case OpLessBigInt:
+			regs[ins.A] = CBool(vm.bigIntAt(regs[ins.B]).Cmp(vm.bigIntAt(regs[ins.C])) < 0)
+		case OpEqualBigInt:
+			regs[ins.A] = CBool(vm.bigIntAt(regs[ins.B]).Cmp(vm.bigIntAt(regs[ins.C])) == 0)
+		case OpI64ToBigInt:
+			regs[ins.A] = CBigInt(new(big.Int).SetInt64(regs[ins.B].Int()))
+		case OpBigIntToStr:
+			regs[ins.A] = vm.makeStr([]byte(vm.bigIntAt(regs[ins.B]).Text(10)))
 		case OpHalt:
 			fr.IP = ip
 			return ret, errors.New("vm2: OpHalt reached")

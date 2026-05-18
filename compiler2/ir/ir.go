@@ -34,6 +34,11 @@ const (
 	// OpStdinReadAll, read-only via OpBytesSlice / OpBytesFromU8Array
 	// / OpBytesFromStr.
 	TBytes
+	// Bignum (MEP-39 §4.2.3). Arbitrary-precision signed integers
+	// backed by *big.Int through Cell.Obj. Distinct from TI64 so the
+	// builder dispatches OpAddBigInt vs OpAddI64 without operand
+	// inspection at runtime; the verifier rejects mixed-width arithmetic.
+	TBigInt
 )
 
 func (t Type) String() string {
@@ -64,6 +69,8 @@ func (t Type) String() string {
 		return "pair"
 	case TBytes:
 		return "bytes"
+	case TBigInt:
+		return "bigint"
 	}
 	return "?"
 }
@@ -200,6 +207,25 @@ const (
 	OpStdoutWriteBytes // write Args[0]; TUnit
 	OpStdinReadAll     // (no args) -> TBytes
 
+	// Bignum subsystem (MEP-39 §4.2.3). Constants live in
+	// Function.BigInts (decimal strings, deduplicated); OpConstBigInt's
+	// Aux is the index into that pool. Emit parses the string into a
+	// *big.Int once and pre-boxes the resulting Cell into Program.Consts
+	// so OpConstBigInt lowers to an OpLoadConstI in vm2 (no new
+	// const-load opcode). Arithmetic ops produce a fresh TBigInt (no
+	// in-place mutation today). OpI64ToBigInt widens an i64 loop
+	// counter; OpBigIntToStr formats in base-10 for print/io.
+	OpConstBigInt  // Aux = idx into Function.BigInts
+	OpAddBigInt    // Args[0] + Args[1] -> TBigInt
+	OpSubBigInt    // Args[0] - Args[1] -> TBigInt
+	OpMulBigInt    // Args[0] * Args[1] -> TBigInt
+	OpDivBigInt    // Args[0] / Args[1] -> TBigInt; div by zero traps
+	OpModBigInt    // Args[0] % Args[1] -> TBigInt; mod by zero traps
+	OpLessBigInt   // Args[0] < Args[1] -> TBool
+	OpEqualBigInt  // Args[0] == Args[1] -> TBool
+	OpI64ToBigInt  // Args[0] (TI64) -> TBigInt
+	OpBigIntToStr  // Args[0] (TBigInt) -> TStr
+
 	// Call: Aux = function index, Args = arg values. May have effects;
 	// optimizers must treat as opaque.
 	OpCall
@@ -251,6 +277,13 @@ type Function struct {
 	// Aux on an OpConstStr is an index into this slice. The pool is
 	// deduplicated by the builder; emit forwards it to vm2.Function.StrConsts.
 	Strings []string
+	// BigInts is the per-function bignum constant pool referenced by
+	// OpConstBigInt. Each entry is a base-10 decimal string (so the IR
+	// stays trivially serializable). Emit parses each entry into a
+	// *big.Int once, boxes it via vm2.CBigInt, and stores the resulting
+	// Cell in Program.Consts; OpConstBigInt lowers to OpLoadConstI with
+	// that Consts index. The pool is deduplicated by the builder.
+	BigInts []string
 }
 
 // NumValues returns the count of SSA values defined in the function.

@@ -410,6 +410,66 @@ func (b *Builder) StdinReadAll() ValueID {
 	return b.emit(Inst{Op: OpStdinReadAll, Type: TBytes})
 }
 
+// ConstBigInt returns a TBigInt value for the literal s (a base-10
+// decimal string), interning it into the function's bignum pool so
+// repeated identical literals share an Aux index and ultimately a
+// single Program.Consts cell. The builder does not validate s; the
+// emit-time big.Int.SetString reports parse failures.
+func (b *Builder) ConstBigInt(s string) ValueID {
+	idx := -1
+	for i, t := range b.fn.BigInts {
+		if t == s {
+			idx = i
+			break
+		}
+	}
+	if idx < 0 {
+		idx = len(b.fn.BigInts)
+		b.fn.BigInts = append(b.fn.BigInts, s)
+	}
+	return b.emit(Inst{Op: OpConstBigInt, Type: TBigInt, Aux: int64(idx)})
+}
+
+func (b *Builder) AddBigInt(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpAddBigInt, Type: TBigInt, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) SubBigInt(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpSubBigInt, Type: TBigInt, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) MulBigInt(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpMulBigInt, Type: TBigInt, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) DivBigInt(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpDivBigInt, Type: TBigInt, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) ModBigInt(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpModBigInt, Type: TBigInt, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) LessBigInt(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpLessBigInt, Type: TBool, Args: []ValueID{x, y}})
+}
+
+func (b *Builder) EqualBigInt(x, y ValueID) ValueID {
+	return b.emit(Inst{Op: OpEqualBigInt, Type: TBool, Args: []ValueID{x, y}})
+}
+
+// I64ToBigInt widens an i64 SSA value to TBigInt. Used by pidigits to
+// promote a digit counter into the same arithmetic as the spigot's
+// numerator/denominator accumulators.
+func (b *Builder) I64ToBigInt(x ValueID) ValueID {
+	return b.emit(Inst{Op: OpI64ToBigInt, Type: TBigInt, Args: []ValueID{x}})
+}
+
+// BigIntToStr formats a TBigInt in base-10 into a heap string.
+func (b *Builder) BigIntToStr(x ValueID) ValueID {
+	return b.emit(Inst{Op: OpBigIntToStr, Type: TStr, Args: []ValueID{x}})
+}
+
 // Call invokes function at funcIdx with the given args. retType is the
 // caller-supplied result type; the verifier later checks it against
 // the callee's signature once Module is assembled.

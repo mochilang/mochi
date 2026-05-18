@@ -354,6 +354,13 @@ func isDeoptableOp(op vm2.Op) bool {
 		vm2.OpBytesSlice, vm2.OpBytesEqual, vm2.OpBytesHash,
 		vm2.OpBytesFromU8Array, vm2.OpBytesFromStr,
 		vm2.OpStdoutWriteBytes, vm2.OpStdinReadAll,
+		// MEP-39 §4.2.3 bignum subsystem. Every bignum op allocates a
+		// fresh *big.Int and touches the Go heap; JIT lowering would
+		// have to inline the math/big primitives, which isn't worth it
+		// until pidigits-scale profiles say so. Deopt to the interpreter.
+		vm2.OpAddBigInt, vm2.OpSubBigInt, vm2.OpMulBigInt, vm2.OpDivBigInt,
+		vm2.OpModBigInt, vm2.OpLessBigInt, vm2.OpEqualBigInt,
+		vm2.OpI64ToBigInt, vm2.OpBigIntToStr,
 		vm2.OpHalt:
 		return true
 	}
