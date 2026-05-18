@@ -1095,6 +1095,53 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				return ret, errors.New("vm2: u8 array index out of range")
 			}
 			a.data[i] = byte(regs[ins.C].Int())
+		case OpU8FillACGT:
+			a := vm.u8ArrAt(regs[ins.A])
+			n := int(regs[ins.B].Int())
+			if n < 0 || n > len(a.data) {
+				fr.IP = ip
+				return ret, errors.New("vm2: u8 fill ACGT length out of range")
+			}
+			dst := a.data[:n]
+			for i := 0; i < n; i++ {
+				dst[i] = "ACGT"[i&3]
+			}
+		case OpU8ReverseComplementDNA:
+			src := vm.u8ArrAt(regs[ins.A]).data
+			dst := vm.u8ArrAt(regs[ins.B]).data
+			n := int(regs[ins.C].Int())
+			if n < 0 || n > len(src) || n > len(dst) {
+				fr.IP = ip
+				return ret, errors.New("vm2: u8 reverse complement length out of range")
+			}
+			for i := 0; i < n; i++ {
+				var c byte
+				switch src[i] {
+				case 'A':
+					c = 'T'
+				case 'T':
+					c = 'A'
+				case 'C':
+					c = 'G'
+				case 'G':
+					c = 'C'
+				default:
+					c = src[i]
+				}
+				dst[n-1-i] = c
+			}
+		case OpU8SumI64:
+			a := vm.u8ArrAt(regs[ins.B]).data
+			n := int(regs[ins.C].Int())
+			if n < 0 || n > len(a) {
+				fr.IP = ip
+				return ret, errors.New("vm2: u8 sum length out of range")
+			}
+			var sum int64
+			for i := 0; i < n; i++ {
+				sum += int64(a[i])
+			}
+			regs[ins.A] = CInt(sum)
 		case OpNewPair:
 			regs[ins.A] = vm.newPair(regs[ins.B], regs[ins.C])
 		case OpPairFst:

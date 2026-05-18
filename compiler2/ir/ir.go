@@ -183,6 +183,12 @@ const (
 	OpU8ArrGet // result type TI64 (byte widened to int)
 	OpU8ArrSet // Args[2] is a TI64 value; runtime truncates to byte
 
+	// Bulk byte-array super-ops (MEP-39 §6.5 iter 7). Each collapses a
+	// per-byte interpreter loop into one dispatch.
+	OpU8FillACGT             // Args[0]=dst (TU8Array), Args[1]=n (TI64); dst[i] = "ACGT"[i&3] for i in [0,n); TUnit
+	OpU8ReverseComplementDNA // Args[0]=src, Args[1]=dst, Args[2]=n; dst[n-1-i] = compDNA(src[i]) for i in [0,n); TUnit
+	OpU8SumI64               // Args[0]=arr, Args[1]=n; returns sum(arr[0:n]) as TI64
+
 	// Pair subsystem (MEP-37 §3.4). Packed two-element tuples backed by
 	// the per-VM vmPair arena. Construction is one OpNewPair; reads are
 	// pure (no traps), so DCE may drop them; the constructor is treated
