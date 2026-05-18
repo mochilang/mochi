@@ -123,12 +123,16 @@ func CompileInProgram(prog *vm3.Program, idx uint32) (*CompiledFunc, error) {
 
 // CompileWithOptions is the explicit-options form. Phase 6.0..6.2b
 // accepts i64-only and i64+f64 functions whose opcode set is covered
-// by the host backend (lower_arm64 / lower_amd64). Cell-bank usage is
-// still routed back to the interpreter (Phase 6.2c+).
+// by the host backend (lower_arm64 / lower_amd64). Phase 6.2d.2.a
+// step 2 admits Cell-bank fns on ARM64 whose opcode set is a strict
+// subset of {OpListGetI64, OpAddI64*, OpCmp*Br, OpTailCallMixed self-tail,
+// OpReturnI64, OpMovI64, OpConstI64K} (the lists_fill_sum "sum" shape).
+// AMD64 still rejects Cell-bank pending its own lowering (Phase 6.2d.2.e).
 func CompileWithOptions(fn *vm3.Function, opts Options) (*CompiledFunc, error) {
 	if fn.NumRegsCell != 0 {
-		return nil, fmt.Errorf("%w: %s has Cell bank usage (Cell=%d)",
-			ErrNotImplemented, fn.Name, fn.NumRegsCell)
+		if err := checkCellBankAdmissible(fn, opts); err != nil {
+			return nil, err
+		}
 	}
 	i64Cap, f64Cap, archOK := archCaps(fn)
 	if !archOK {
@@ -182,6 +186,54 @@ func lowerHost(fn *vm3.Function, opts Options) ([]byte, error) {
 	}
 }
 
+// maxI64RegsCellARM64 is the i64 cap on ARM64 when fn carries a Cell
+// bank: callee-saved slots 7..10 land in x21..x24 (4 max), with x19/x20
+// stolen for cached arena base pointers (listsBase / future mapsBase).
+// Caller-saved slots 0..6 in x9..x15 are unchanged.
+const maxI64RegsCellARM64 = 11
+
+// checkCellBankAdmissible enforces the sum-shape whitelist for Cell-bank
+// fns on ARM64 (Phase 6.2d.2.a step 2). The whitelist is intentionally
+// narrow: only the opcodes the sum kernel actually uses are admitted,
+// so unrelated Cell-bank fns (fill, map workloads, ...) keep falling
+// back to the interpreter until their own sub-phases land. AMD64 has
+// no Cell-bank lowering yet, so any Cell usage is rejected there.
+func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
+	if hostArch != ArchARM64 {
+		return fmt.Errorf("%w: %s has Cell bank usage (Cell=%d) — no AMD64 backend yet",
+			ErrNotImplemented, fn.Name, fn.NumRegsCell)
+	}
+	if int(fn.NumRegsCell) > maxCellRegs {
+		return fmt.Errorf("%w: %s uses %d Cell regs (max %d on this arch)",
+			ErrNotImplemented, fn.Name, fn.NumRegsCell, maxCellRegs)
+	}
+	for i, op := range fn.Code {
+		switch op.Code {
+		case vm3.OpConstI64K, vm3.OpMovI64,
+			vm3.OpAddI64, vm3.OpSubI64, vm3.OpMulI64,
+			vm3.OpAddI64K, vm3.OpSubI64K, vm3.OpMulI64K,
+			vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
+			vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
+			vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br,
+			vm3.OpCmpEqI64KBr, vm3.OpCmpNeI64KBr,
+			vm3.OpCmpLtI64KBr, vm3.OpCmpLeI64KBr,
+			vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr,
+			vm3.OpJump, vm3.OpReturnI64, vm3.OpReturnConstK,
+			vm3.OpListGetI64:
+			continue
+		case vm3.OpTailCallMixed:
+			if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx || op.B != 0 {
+				return fmt.Errorf("%w: %s pc %d TailCallMixed not a self-tail with argBase=0",
+					ErrNotImplemented, fn.Name, i)
+			}
+		default:
+			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses opcode %d outside the sum-shape whitelist",
+				ErrNotImplemented, fn.Name, i, op.Code)
+		}
+	}
+	return nil
+}
+
 // archMaxI64Regs returns the host architecture's cap on simultaneously
 // live i64 registers, and whether the architecture is supported at
 // all. AArch64 supports 17 (x9..x15 caller-saved + x19..x28
@@ -212,7 +264,11 @@ func archMaxI64Regs() (int, bool) {
 func archCaps(fn *vm3.Function) (int, int, bool) {
 	switch hostArch {
 	case ArchARM64:
-		return maxI64Regs, maxF64RegsARM64, true
+		i64Cap := maxI64Regs
+		if fn.NumRegsCell > 0 {
+			i64Cap = maxI64RegsCellARM64
+		}
+		return i64Cap, maxF64RegsARM64, true
 	case ArchAMD64:
 		i64Cap := maxI64RegsAMD64
 		if fn.NumRegsF64 > 0 {
