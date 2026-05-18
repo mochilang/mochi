@@ -107,6 +107,9 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				return ret, errors.New("vm2: division by zero")
 			}
 			regs[ins.A] = CInt(regs[ins.B].Int() / d)
+		case OpDivI64K:
+			// emit-side fusion guarantees the immediate is non-zero
+			regs[ins.A] = CInt(regs[ins.B].Int() / int64(ins.C))
 		case OpModI64K:
 			// emit-side fusion guarantees the immediate is non-zero
 			regs[ins.A] = CInt(regs[ins.B].Int() % int64(ins.C))
@@ -464,6 +467,18 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			regs[1] = a1
 			regs[2] = a2
 			regs[3] = a3
+			ip = 0
+		case OpTailCallSelfA5:
+			a0 := regs[ins.A]
+			a1 := regs[uint32(ins.B)>>16]
+			a2 := regs[uint32(ins.B)&0xFFFF]
+			a3 := regs[uint32(ins.C)>>16]
+			a4 := regs[uint32(ins.C)&0xFFFF]
+			regs[0] = a0
+			regs[1] = a1
+			regs[2] = a2
+			regs[3] = a3
+			regs[4] = a4
 			ip = 0
 		case OpTailCall:
 			callee := vm.Program.Funcs[ins.A]

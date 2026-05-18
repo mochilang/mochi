@@ -326,6 +326,7 @@ func isDeoptableOp(op vm2.Op) bool {
 		vm2.OpCallSelfA1, vm2.OpCallSelfA2,
 		vm2.OpPairFstCallSelfA2, vm2.OpPairSndCallSelfA2,
 		vm2.OpTailCall, vm2.OpTailCallSelf, vm2.OpTailCallSelfA3, vm2.OpTailCallSelfA4,
+		vm2.OpTailCallSelfA5,
 		// MEP-38 §A.7 immediate-form i64 fusions. The JIT can lower these
 		// natively (they are just register-immediate arithmetic and
 		// compares), but Phase 1 keeps them as deopt stubs so the new
@@ -335,7 +336,7 @@ func isDeoptableOp(op vm2.Op) bool {
 		vm2.OpSubI64K, vm2.OpJumpIfEqualI64K, vm2.OpJumpIfNotEqualI64K,
 		vm2.OpJumpIfLessI64K, vm2.OpJumpIfLessEqI64K,
 		vm2.OpJumpIfGreaterI64K, vm2.OpJumpIfGreaterEqI64K,
-		vm2.OpMulI64K, vm2.OpModI64K,
+		vm2.OpMulI64K, vm2.OpModI64K, vm2.OpDivI64K,
 		// MEP-38 Phase 2 (§3.2.1) lowers OpLoadConstF, OpAddF64, OpSubF64,
 		// OpMulF64, OpDivF64, OpNegF64, OpAbsF64, OpSqrtF64, OpLessF64,
 		// OpLessEqF64, OpEqualF64, OpFmaF64, OpI64ToF64, OpF64ToI64 to
