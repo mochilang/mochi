@@ -31,13 +31,6 @@ import (
 // over vm2jit and the reason a small instruction count per opcode is
 // achievable for arithmetic kernels.
 
-// Status codes the JIT writes to *(x1) on a deopt path. Caller checks
-// this word after a CallStatus return and routes to the corresponding
-// vm3 error if non-zero.
-const (
-	StatusOK         int64 = 0
-	StatusDivByZero  int64 = 1
-)
 func r2x(r uint16) uint32 {
 	if r < 7 {
 		return uint32(r) + 9
@@ -45,19 +38,12 @@ func r2x(r uint16) uint32 {
 	return uint32(r) - 7 + 19
 }
 
-// popcount32 counts set bits in v. Used to size OpCallI64 spill loops.
-func popcount32(v uint32) int {
-	v = v - ((v >> 1) & 0x55555555)
-	v = (v & 0x33333333) + ((v >> 2) & 0x33333333)
-	v = (v + (v >> 4)) & 0x0F0F0F0F
-	return int((v * 0x01010101) >> 24)
-}
-
 // computeCallSpills runs a backward liveness pass over fn.Code and
 // returns, for each bytecode index, the bitset of caller-saved i64
 // registers (bank 0..6, mapped to x9..x15) that must be spilled to the
 // caller window across the call. For non-call opcodes the entry is 0.
 // Self-recursive OpCallI64 sites use this to skip spilling dead regs.
+// Shared helpers liveSuccUnion / defUseI64 live in lower_common.go.
 func computeCallSpills(fn *vm3.Function) []uint32 {
 	n := len(fn.Code)
 	spills := make([]uint32, n)
@@ -86,86 +72,6 @@ func computeCallSpills(fn *vm3.Function) []uint32 {
 		spills[i] = (liveOut[i] &^ dstBit) & mask
 	}
 	return spills
-}
-
-// liveSuccUnion is the live-in union across the successors of pc i.
-// Branch opcodes have two successors (fall-through and op.C target);
-// Jump has one (op.C); Return* have none; everything else falls
-// through to i+1.
-func liveSuccUnion(fn *vm3.Function, i int, liveIn []uint32) uint32 {
-	op := fn.Code[i]
-	switch op.Code {
-	case vm3.OpReturnI64, vm3.OpReturnConstK, vm3.OpReturnF64:
-		return 0
-	case vm3.OpJump:
-		t := int(uint16(op.C))
-		if t < 0 || t > len(fn.Code) {
-			return 0
-		}
-		return liveIn[t]
-	case vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
-		vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
-		vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br,
-		vm3.OpCmpEqI64KBr, vm3.OpCmpNeI64KBr,
-		vm3.OpCmpLtI64KBr, vm3.OpCmpLeI64KBr,
-		vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr:
-		t := int(uint16(op.C))
-		if t < 0 || t > len(fn.Code) {
-			return liveIn[i+1]
-		}
-		return liveIn[i+1] | liveIn[t]
-	default:
-		if i+1 <= len(fn.Code) {
-			return liveIn[i+1]
-		}
-		return 0
-	}
-}
-
-// defUseI64 returns (defs, uses) bitmasks for op over fn's i64 register
-// bank. Bit r is set iff register r is defined/used. For OpCallI64 the
-// uses cover op.B..op.B+nArgs-1.
-func defUseI64(fn *vm3.Function, op vm3.Op) (uint32, uint32) {
-	a := uint32(1) << op.A
-	b := uint32(1) << op.B
-	c := uint32(1) << uint16(op.C)
-	switch op.Code {
-	case vm3.OpConstI64K, vm3.OpConstI64KW:
-		return a, 0
-	case vm3.OpMovI64:
-		return a, b
-	case vm3.OpAddI64, vm3.OpSubI64, vm3.OpMulI64,
-		vm3.OpDivI64, vm3.OpModI64:
-		return a, b | c
-	case vm3.OpNegI64:
-		return a, b
-	case vm3.OpAddI64K, vm3.OpSubI64K, vm3.OpMulI64K,
-		vm3.OpDivI64K, vm3.OpModI64K:
-		return a, b
-	case vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
-		vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
-		vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br:
-		return 0, a | b
-	case vm3.OpCmpEqI64KBr, vm3.OpCmpNeI64KBr,
-		vm3.OpCmpLtI64KBr, vm3.OpCmpLeI64KBr,
-		vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr:
-		return 0, a
-	case vm3.OpJump:
-		return 0, 0
-	case vm3.OpReturnI64:
-		return 0, a
-	case vm3.OpReturnConstK:
-		return 0, 0
-	case vm3.OpCallI64:
-		// Args are i64 regs op.B..op.B+nArgs-1.
-		var uses uint32
-		n := fn.NumI64Params()
-		for k := 0; k < n; k++ {
-			uses |= 1 << (op.B + uint16(k))
-		}
-		return a, uses
-	}
-	return 0, 0
 }
 
 // numCalleeSavedPairs returns the number of x19..x28 STP/LDP pairs the

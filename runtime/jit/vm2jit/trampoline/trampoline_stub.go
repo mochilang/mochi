@@ -1,4 +1,4 @@
-//go:build !(darwin && arm64)
+//go:build !(darwin && arm64) && !(linux && amd64)
 
 package trampoline
 

@@ -1,9 +1,6 @@
 package vm3jit
 
-import (
-	"encoding/binary"
-	"unsafe"
-)
+import "unsafe"
 
 // pageAlloc reserves an OS page large enough for nBytes of native
 // code. The page is RW but not yet executable.
@@ -11,14 +8,13 @@ func pageAlloc(nBytes int) ([]byte, error) {
 	return pageAllocOS(nBytes)
 }
 
-// pageWrite copies words into page and flips it to RX. words is a
-// little-endian-packed AArch64 instruction stream.
-func pageWrite(page []byte, words []uint32) error {
-	buf := make([]byte, len(words)*4)
-	for i, w := range words {
-		binary.LittleEndian.PutUint32(buf[i*4:], w)
-	}
-	return pageMakeExecOS(page, buf)
+// pageWrite copies raw native code into page and flips it to RX. Each
+// backend is responsible for producing the platform's byte stream;
+// pageWrite is intentionally byte-oriented so it can carry both
+// fixed-width (AArch64: little-endian-packed 32-bit words) and
+// variable-width (x86_64) instruction encodings.
+func pageWrite(page []byte, raw []byte) error {
+	return pageMakeExecOS(page, raw)
 }
 
 // pageFree releases a page from pageAlloc.
