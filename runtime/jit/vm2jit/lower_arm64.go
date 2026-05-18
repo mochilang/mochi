@@ -329,8 +329,11 @@ func isDeoptableOp(op vm2.Op) bool {
 		// MEP-38 §A.7 immediate-form i64 fusions. The JIT can lower these
 		// natively (they are just register-immediate arithmetic and
 		// compares), but Phase 1 keeps them as deopt stubs so the new
-		// emitter paths land without a JIT change.
+		// emitter paths land without a JIT change. MEP-39 §6.6 iteration 3
+		// adds the Less/LessEq/Greater/GreaterEq K-forms to the family.
 		vm2.OpSubI64K, vm2.OpJumpIfEqualI64K, vm2.OpJumpIfNotEqualI64K,
+		vm2.OpJumpIfLessI64K, vm2.OpJumpIfLessEqI64K,
+		vm2.OpJumpIfGreaterI64K, vm2.OpJumpIfGreaterEqI64K,
 		// MEP-38 Phase 2 (§3.2.1) lowers OpLoadConstF, OpAddF64, OpSubF64,
 		// OpMulF64, OpDivF64, OpNegF64, OpAbsF64, OpSqrtF64, OpLessF64,
 		// OpLessEqF64, OpEqualF64, OpFmaF64, OpI64ToF64, OpF64ToI64 to
