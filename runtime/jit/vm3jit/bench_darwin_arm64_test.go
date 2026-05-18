@@ -86,3 +86,119 @@ func BenchmarkSumLoopInterp(b *testing.B) {
 	}
 	vm3jitSink = s
 }
+
+//go:noinline
+func goMulLoopBench(n int64) int64 {
+	p := int64(1)
+	for i := int64(1); i < n; i++ {
+		p *= i
+	}
+	return p
+}
+
+//go:noinline
+func goFibIterBench(n int64) int64 {
+	a, b := int64(0), int64(1)
+	for i := int64(0); i < n; i++ {
+		a, b = b, a+b
+	}
+	return a
+}
+
+// BenchmarkMulLoopJIT measures the JIT'd mul_loop. n=16 matches
+// compiler3/corpus benches so cross-comparison is apples-to-apples.
+func BenchmarkMulLoopJIT(b *testing.B) {
+	prog := corpus.MulLoop.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	cf, err := vm3jit.Compile(fn)
+	if err != nil {
+		b.Fatalf("Compile: %v", err)
+	}
+	defer cf.Free()
+	entry := cf.Entry()
+	const n = int64(16)
+	var regs [vm3jit.MaxI64Regs]int64
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		regs[0] = n + int64(i&1)
+		s += int64(trampoline.Call(entry, unsafe.Pointer(&regs[0])))
+	}
+	vm3jitSink = s
+}
+
+func BenchmarkMulLoopGoFair(b *testing.B) {
+	const n = int64(16)
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		s += goMulLoopBench(n + int64(i&1))
+	}
+	vm3jitSink = s
+}
+
+func BenchmarkMulLoopInterp(b *testing.B) {
+	prog := corpus.MulLoop.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	vm := vm3.NewWithProgram(prog)
+	const n = int64(16)
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		got, err := vm.RunWithArgs(fn, []int64{n + int64(i&1)})
+		if err != nil {
+			b.Fatalf("RunWithArgs: %v", err)
+		}
+		s += got.Int()
+	}
+	vm3jitSink = s
+}
+
+// BenchmarkFibIterJIT measures the JIT'd fib_iter at the same N
+// compiler3/corpus benches use (30).
+func BenchmarkFibIterJIT(b *testing.B) {
+	prog := corpus.FibIter.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	cf, err := vm3jit.Compile(fn)
+	if err != nil {
+		b.Fatalf("Compile: %v", err)
+	}
+	defer cf.Free()
+	entry := cf.Entry()
+	const n = int64(30)
+	var regs [vm3jit.MaxI64Regs]int64
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		regs[0] = n + int64(i&1)
+		s += int64(trampoline.Call(entry, unsafe.Pointer(&regs[0])))
+	}
+	vm3jitSink = s
+}
+
+func BenchmarkFibIterGoFair(b *testing.B) {
+	const n = int64(30)
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		s += goFibIterBench(n + int64(i&1))
+	}
+	vm3jitSink = s
+}
+
+func BenchmarkFibIterInterp(b *testing.B) {
+	prog := corpus.FibIter.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	vm := vm3.NewWithProgram(prog)
+	const n = int64(30)
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		got, err := vm.RunWithArgs(fn, []int64{n + int64(i&1)})
+		if err != nil {
+			b.Fatalf("RunWithArgs: %v", err)
+		}
+		s += got.Int()
+	}
+	vm3jitSink = s
+}
