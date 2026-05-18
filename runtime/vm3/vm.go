@@ -35,7 +35,26 @@ type VM struct {
 	deoptI64  []int64
 	deoptF64  []float64
 	deoptCell []Cell
+
+	// jitState is an opaque handle to a per-VM JIT scratch frame
+	// (vm3jit's *jitFrame3, type-erased to break the import cycle).
+	// Lazily populated on first JIT call so VMs that never hit the
+	// JIT pay nothing. Reused across every OpCallMixed/OpCallI64 ->
+	// JITCallFn dispatch within the VM, replacing the prior
+	// sync.Pool path so the hot list/map kernels skip the pool
+	// Get/Put cost (~20 ns/call on Apple M4).
+	jitState any
 }
+
+// JITState returns the per-VM JIT scratch handle, or nil if none has
+// been attached yet. Type-erased so the vm3 package does not need to
+// reference vm3jit-private types.
+func (vm *VM) JITState() any { return vm.jitState }
+
+// SetJITState stores the per-VM JIT scratch handle. vm3jit's jitCall
+// lazily allocates one *jitFrame3 on first use and parks it here so
+// the rest of the VM's runtime reuses the same 32 KB buffer.
+func (vm *VM) SetJITState(s any) { vm.jitState = s }
 
 // DeoptScratchI64 returns the deopt-resume i64 scratch sized to n, growing
 // the backing array if needed. The JIT writes spilled i64 register state

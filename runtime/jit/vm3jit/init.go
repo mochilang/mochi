@@ -2,7 +2,6 @@ package vm3jit
 
 import (
 	"errors"
-	"sync"
 	"unsafe"
 
 	"mochi/runtime/jit/vm2jit/trampoline"
@@ -13,17 +12,20 @@ func init() {
 	vm3.JITCallFn = jitCall
 }
 
-// jitFramePool reuses jitFrame3 scratch buffers across calls. Each
-// jitFrame3 is ~32 KB (4096 i64 slots plus the f64/Cell/arena fields),
-// so heap-allocating one per call dwarfs the JIT body's runtime for
-// small kernels (sum_n128: ~250 ns native body, ~700 ns frame alloc).
-// The pool keeps the trampoline's pinned pointers valid for the
-// duration of one Call: jitCall acquires before dispatch, releases
-// after the result is read. The previous reset is cheap (the JIT only
-// reads its declared params, so we only need to zero status + the
-// param-bank slots jitCall writes).
-var jitFramePool = sync.Pool{
-	New: func() any { return new(jitFrame3) },
+// vmJITFrame fetches the per-VM jitFrame3 scratch buffer, allocating
+// it on the first call. The buffer (~32 KB: 4096 i64 slots plus the
+// f64/Cell/arena fields) is parked on the VM via vm3.VM.SetJITState
+// so it survives across every OpCall*-driven jitCall within the VM,
+// replacing the prior sync.Pool path. For the lists_fill_sum kernel
+// the win is roughly 20 ns/call (two pool Get/Put pairs at ~10 ns
+// each on Apple M4); the buffer cost is paid once per VM lifetime.
+func vmJITFrame(vm *vm3.VM) *jitFrame3 {
+	if jf, ok := vm.JITState().(*jitFrame3); ok && jf != nil {
+		return jf
+	}
+	jf := new(jitFrame3)
+	vm.SetJITState(jf)
+	return jf
 }
 
 // jitFrame3RegsI64Words is the number of int64 slots reserved for the
@@ -81,8 +83,7 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 	if fn.JITCode == nil {
 		return 0, false, errors.New("vm3jit: jitCall on fn without JITCode")
 	}
-	jf := jitFramePool.Get().(*jitFrame3)
-	defer jitFramePool.Put(jf)
+	jf := vmJITFrame(vm)
 	// Zero the slots the JIT's prologue will load. Pool reuse leaves
 	// prior call's values in scratch slots; the JIT may load them into
 	// pinned regs before any write, so we have to match the interp's
