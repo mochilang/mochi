@@ -65,8 +65,9 @@ func BenchmarkCorpusJITRunner(b *testing.B) {
 			fn := prog.Funcs[prog.Entry]
 			b.ResetTimer()
 			var s int64
-			if fn.JITCode != nil {
-				// Entry function compiled: dispatch through the
+			switch {
+			case fn.JITCode != nil && fn.NumRegsCell == 0:
+				// i64-only (or i64+f64) entry: dispatch through the
 				// trampoline directly, the same path JITCallFn uses
 				// internally for callee dispatch. Sized regs buffer
 				// matches init.go's jitFrame3 so recursive callees
@@ -97,12 +98,26 @@ func BenchmarkCorpusJITRunner(b *testing.B) {
 						}
 					}
 				}
-			} else {
-				// Entry not JIT-compiled (Cell-bank fn): run the
-				// program through the interpreter. JITCallFn still
-				// routes any JIT'd callee through native code, but
-				// for the current corpus the container entries have
-				// no inner JIT'd callees so this is interp-only.
+			case fn.JITCode != nil:
+				// Cell-bank entry (Phase 6.2d.2.b step 2: lists_fill_sum
+				// main): route through vm.RunWithArgs which calls into
+				// JITCallFn after populating arenaCtx + regsCell from
+				// the per-VM jitFrame3. Re-use one VM across iterations
+				// so arena setup amortizes out of the per-call cost.
+				vm := vm3.NewWithProgram(prog)
+				args := []int64{tc.n}
+				for i := 0; i < b.N; i++ {
+					args[0] = tc.n + int64(i&1)
+					got, err := vm.RunWithArgs(fn, args)
+					if err != nil {
+						b.Fatalf("RunWithArgs %s: %v", tc.name, err)
+					}
+					s += got.Int()
+				}
+			default:
+				// Entry not JIT-compiled: run the program through the
+				// interpreter. JITCallFn still routes any JIT'd callee
+				// through native code.
 				vm := vm3.NewWithProgram(prog)
 				args := []int64{tc.n}
 				for i := 0; i < b.N; i++ {

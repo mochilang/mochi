@@ -15,6 +15,37 @@ package vm3
 // value (i64 / f64 / SStr / bool / null). Functions that return a
 // handle into the local arena range are handled by Layer B (Phase 3.5).
 
+// CallScopeMarks is an opaque arena-snapshot record. Exported so the
+// JIT entry path can mirror the interp's per-frame snapshotMarks /
+// truncateToMarks discipline across a trampoline call boundary, where
+// the interp's Frame-resident mark arrays are not in scope. Layout
+// matches the unexported per-frame fields so the existing helpers can
+// fill / consume the same memory without a copy.
+type CallScopeMarks struct {
+	marks     [numArenaTags]uint32
+	freeMarks [numArenaTags]uint32
+}
+
+// SnapshotForJITEntry captures every slab and free-list length into m.
+// Pairs with RestoreUnboxedReturn on a JIT call's clean-return path:
+// any arena slot allocated between the two calls (e.g. by jitCall's
+// PC=0 pre-alloc OpNewList or by the JIT'd body) is released back to
+// the free-list once the call returns an unboxed value. Skip the
+// restore on deopt so the spilled vm.deopt* handles stay valid for the
+// interpreter's resume path.
+func (a *Arenas) SnapshotForJITEntry(m *CallScopeMarks) {
+	a.snapshotMarks(&m.marks, &m.freeMarks)
+}
+
+// RestoreUnboxedReturn truncates each arena back to the snapshot held
+// in m. Caller must guarantee the JIT'd call returned an unboxed value
+// (no handle escapes from the call), mirroring Layer A's precondition
+// in §6.7. The lists_fill_sum main shape (Phase 6.2d.2.b step 2) is
+// safe by construction: main returns int64.
+func (a *Arenas) RestoreUnboxedReturn(m *CallScopeMarks) {
+	a.truncateToMarks(&m.marks, &m.freeMarks)
+}
+
 // snapshotMarks records every slab and free-list length into the
 // caller-supplied arrays. Called from pushFrame.
 func (a *Arenas) snapshotMarks(marks, freeMarks *[numArenaTags]uint32) {

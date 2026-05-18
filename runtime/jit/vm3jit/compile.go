@@ -229,6 +229,16 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 			vm3.OpJump, vm3.OpReturnI64, vm3.OpReturnConstK,
 			vm3.OpListGetI64, vm3.OpListPushI64:
 			continue
+		case vm3.OpNewList:
+			// Phase 6.2d.2.b step 2: admit at pc=0 when the lowerer can
+			// skip its emission (jitCall pre-allocates the list on the
+			// Go side). canPreAllocList further requires no other op in
+			// fn overwrites the cell.
+			if i == 0 && canPreAllocList(fn) {
+				continue
+			}
+			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses inline OpNewList (only pc=0 with pre-alloc is admitted)",
+				ErrNotImplemented, fn.Name, i)
 		case vm3.OpTailCallMixed:
 			if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx || op.B != 0 {
 				return fmt.Errorf("%w: %s pc %d TailCallMixed not a self-tail with argBase=0",
@@ -246,15 +256,16 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 	return nil
 }
 
-// checkCrossFnCallMixedAdmissible enforces the Phase 6.2d.2.b step 1
-// whitelist for cross-fn OpCallMixed sites. The narrow scope avoids
-// the deopt passthrough block work: callees that can deopt
-// (OpListPushI64, reg-reg Div/Mod) are rejected because the caller's
-// BLR path does not currently spill caller state on a callee-side
-// deopt, so vm.deopt* would carry only the callee's regs and the
-// caller's interp resume would garble the caller frame. Step 2/3
-// adds the missing piece; until then, only deopt-free callees are
-// admitted.
+// checkCrossFnCallMixedAdmissible enforces the cross-fn OpCallMixed
+// whitelist. Step 1 (deopt-free callees only) was the initial wedge;
+// step 2 (Phase 6.2d.2.b) extends admission to deopt-capable callees
+// (OpListPushI64, reg-reg Div/Mod) by having the caller's BLR site
+// load *(x1) into x16 right after the call, then CBNZ to a single
+// per-fn passthrough deopt block that spills the caller's pinned regs
+// and runs the frame epilogue without writing the caller's own
+// status. The callee already wrote the status before its own deopt
+// block returned, so the propagated value reaches the trampoline
+// unchanged and jitCall surfaces it as deopt=true.
 //
 // Resource budget: total live regs across the caller+callee frame
 // must fit in the jitFrame3 buffer. I64 has 4096 slots so any sane
@@ -279,10 +290,6 @@ func checkCrossFnCallMixedAdmissible(fn *vm3.Function, op vm3.Op, pc int, opts O
 		return fmt.Errorf("%w: %s pc %d CallMixed callee %s has no JITCode (not compiled yet)",
 			ErrNotImplemented, fn.Name, pc, callee.Name)
 	}
-	if hasListPushI64(callee) || hasRegRegDivMod(callee) {
-		return fmt.Errorf("%w: %s pc %d CallMixed callee %s can deopt (step 1 admits only deopt-free callees)",
-			ErrNotImplemented, fn.Name, pc, callee.Name)
-	}
 	// Frame budget: caller and callee share the same jitFrame3 buffer;
 	// each frame's regs<bank> window must be disjoint, so the union
 	// must fit in MaxF64Regs / MaxCellRegs respectively.
@@ -296,16 +303,16 @@ func checkCrossFnCallMixedAdmissible(fn *vm3.Function, op vm3.Op, pc int, opts O
 			ErrNotImplemented, fn.Name, pc,
 			fn.NumRegsCell, callee.NumRegsCell, maxCellRegs)
 	}
-	// Caller restrictions to keep the BLR site self-contained in step 1:
+	// Caller restrictions to keep the BLR site self-contained:
 	//   - no F64 bank in the caller (would need v0..v7 spill across BLR)
 	//   - no list ops in the caller body (would conflict with the x20
 	//     arena-ctx stash this site relies on)
 	if fn.NumRegsF64 > 0 {
-		return fmt.Errorf("%w: %s pc %d CallMixed caller has %d f64 regs (step 1 admits only i64+cell callers)",
+		return fmt.Errorf("%w: %s pc %d CallMixed caller has %d f64 regs (admits only i64+cell callers)",
 			ErrNotImplemented, fn.Name, pc, fn.NumRegsF64)
 	}
 	if hasListGetI64(fn) || hasListPushI64(fn) {
-		return fmt.Errorf("%w: %s pc %d CallMixed caller has list ops in body (step 1 reserves x20 for arena ctx)",
+		return fmt.Errorf("%w: %s pc %d CallMixed caller has list ops in body (reserves x20 for arena ctx)",
 			ErrNotImplemented, fn.Name, pc)
 	}
 	return nil

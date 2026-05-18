@@ -117,11 +117,57 @@ func (vm *VM) Run(fn *Function) (Cell, error) {
 
 // RunWithArgs executes fn with i64 arguments laid into regsI64[0..]
 // before dispatch. Used by tests and bench harness.
+//
+// When fn has been JIT'd (fn.JITCode != nil and the global JITCallFn is
+// installed) the entry function itself is routed through the trampoline
+// instead of pushing an interpreter frame. This is the Phase 6.2d.2.b
+// step 2 path that admits whole-program JIT for kernels whose main
+// dispatches into JIT'd callees (e.g. `lists_fill_sum`): the bench
+// harness then skips the interp loop entirely for the entry function.
+// On a clean return the trampoline's i64 result Cell is returned via
+// CInt; for ResultBank=BankF64 the bits decode back through Float64frombits.
+// On a deopt the interpreter is re-entered with the JIT's spilled state
+// copied into the entry frame's register window via the deopt-resume
+// protocol, so the kernel keeps making progress.
 func (vm *VM) RunWithArgs(fn *Function, argsI64 []int64) (Cell, error) {
 	vm.frames = vm.frames[:0]
 	vm.stackI64 = vm.stackI64[:0]
 	vm.stackF64 = vm.stackF64[:0]
 	vm.stackCell = vm.stackCell[:0]
+	if fn.JITCode != nil && JITCallFn != nil {
+		bits, deopt, err := JITCallFn(vm, fn, argsI64, nil, nil)
+		if err != nil {
+			return Cell(0), err
+		}
+		if !deopt {
+			switch fn.ResultBank {
+			case BankF64:
+				return CFloat(math.Float64frombits(bits)), nil
+			case BankCell:
+				return Cell(bits), nil
+			default:
+				return CInt(int64(bits)), nil
+			}
+		}
+		vm.pushFrame(fn, 0, BankI64)
+		regsI64 := vm.stackI64[vm.frames[0].baseI64 : vm.frames[0].baseI64+int(fn.NumRegsI64)]
+		if n := min(len(vm.deoptI64), len(regsI64)); n > 0 {
+			copy(regsI64[:n], vm.deoptI64[:n])
+		}
+		if fn.NumRegsF64 > 0 {
+			regsF64 := vm.stackF64[vm.frames[0].baseF64 : vm.frames[0].baseF64+int(fn.NumRegsF64)]
+			if n := min(len(vm.deoptF64), len(regsF64)); n > 0 {
+				copy(regsF64[:n], vm.deoptF64[:n])
+			}
+		}
+		if fn.NumRegsCell > 0 {
+			regsCell := vm.stackCell[vm.frames[0].baseCell : vm.frames[0].baseCell+int(fn.NumRegsCell)]
+			if n := min(len(vm.deoptCell), len(regsCell)); n > 0 {
+				copy(regsCell[:n], vm.deoptCell[:n])
+			}
+		}
+		return vm.run()
+	}
 	vm.pushFrame(fn, 0, BankI64)
 	if len(argsI64) > 0 {
 		copy(vm.stackI64[vm.frames[0].baseI64:], argsI64)
