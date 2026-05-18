@@ -520,6 +520,16 @@ func (vm *VM) run() (Cell, error) {
 			arenas.Lists[idx].cells[regsI64[uint16(op.C)]] = CInt(regsI64[op.B])
 			pc++
 
+		case OpNewMap:
+			regsCell[op.A] = arenas.AllocMap(0)
+			pc++
+		case OpMapSetI64I64:
+			arenas.MapSetI64(regsCell[op.A], regsI64[op.B], regsI64[uint16(op.C)])
+			pc++
+		case OpMapGetI64I64:
+			regsI64[op.A] = arenas.MapGetI64(regsCell[op.B], regsI64[uint16(op.C)])
+			pc++
+
 		case OpConstStrKW:
 			regsCell[op.A] = consts[uint16(op.C)]
 			pc++

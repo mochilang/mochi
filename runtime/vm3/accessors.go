@@ -173,6 +173,70 @@ func (a *Arenas) Free(c Cell) {
 	}
 }
 
+// TotalSlots reports how many slots (alive + free) arena tag t currently
+// holds. Useful for monitoring monotonic arena growth in long-running VMs
+// before Phase 6 GC lands.
+func (a *Arenas) TotalSlots(t ArenaTag) int {
+	switch t {
+	case ArenaString:
+		return len(a.Strings)
+	case ArenaList:
+		return len(a.Lists)
+	case ArenaMap:
+		return len(a.Maps)
+	case ArenaSet:
+		return len(a.Sets)
+	case ArenaStruct:
+		return len(a.Structs)
+	case ArenaClosure:
+		return len(a.Closures)
+	case ArenaBignum:
+		return len(a.Bignums)
+	case ArenaBytes:
+		return len(a.Bytes)
+	case ArenaPair:
+		return len(a.Pairs)
+	case ArenaF64Arr:
+		return len(a.F64Arrs)
+	case ArenaI64Arr:
+		return len(a.I64Arrs)
+	case ArenaU8Arr:
+		return len(a.U8Arrs)
+	}
+	return 0
+}
+
+// Reset returns every slot to the free state and clears backing slices.
+// Intended for benchmarks and tests that reuse a VM across many program
+// runs and want bounded memory without Phase 6 GC. Production code should
+// instead let the Phase 6 mark-sweep collector retire dead slots.
+func (a *Arenas) Reset() {
+	a.Strings = a.Strings[:0]
+	a.Lists = a.Lists[:0]
+	a.Maps = a.Maps[:0]
+	a.Sets = a.Sets[:0]
+	a.Structs = a.Structs[:0]
+	a.Closures = a.Closures[:0]
+	a.Bignums = a.Bignums[:0]
+	a.Bytes = a.Bytes[:0]
+	a.Pairs = a.Pairs[:0]
+	a.F64Arrs = a.F64Arrs[:0]
+	a.I64Arrs = a.I64Arrs[:0]
+	a.U8Arrs = a.U8Arrs[:0]
+	a.freeStrings = a.freeStrings[:0]
+	a.freeLists = a.freeLists[:0]
+	a.freeMaps = a.freeMaps[:0]
+	a.freeSets = a.freeSets[:0]
+	a.freeStructs = a.freeStructs[:0]
+	a.freeClosures = a.freeClosures[:0]
+	a.freeBignums = a.freeBignums[:0]
+	a.freeBytes = a.freeBytes[:0]
+	a.freePairs = a.freePairs[:0]
+	a.freeF64Arrs = a.freeF64Arrs[:0]
+	a.freeI64Arrs = a.freeI64Arrs[:0]
+	a.freeU8Arrs = a.freeU8Arrs[:0]
+}
+
 // LiveSlots reports how many alive slots arena tag t currently holds.
 func (a *Arenas) LiveSlots(t ArenaTag) int {
 	switch t {
