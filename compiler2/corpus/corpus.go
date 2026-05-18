@@ -70,6 +70,11 @@ func All() []Program {
 		// a rolling i64 hash so the cross-lang harness compares a
 		// single i64 across every peer.
 		{Name: "bg_fasta", Build: BuildFasta, Expect: ExpectFasta},
+		// MEP-39 §6.7: parameterised k_nucleotide kernel. N is the
+		// LCG iteration count; an int-keyed map holds 1-mer and
+		// 2-mer counts, folded into a single i64 hash so the cross-
+		// lang harness compares a single i64 across every peer.
+		{Name: "bg_k_nucleotide", Build: BuildKNucleotide, Expect: ExpectKNucleotide},
 	}
 }
 

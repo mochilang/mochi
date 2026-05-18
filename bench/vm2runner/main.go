@@ -65,6 +65,10 @@ var repeats = map[string]int{
 	// MEP-39 §6.6: fasta. N is the LCG iteration count; one LCG step
 	// + one cumprob lookup + one hash update per inner iter.
 	"bg_fasta": 1,
+	// MEP-39 §6.7: k_nucleotide. N is the LCG iteration count; one
+	// LCG step + 1-mer inc + 2-mer inc per inner iter, then a 20-key
+	// summarise pass at the end.
+	"bg_k_nucleotide": 1,
 }
 
 func main() {
