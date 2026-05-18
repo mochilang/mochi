@@ -24,6 +24,8 @@ func TestMathKernelsMatchVm2(t *testing.T) {
 		{"fib_rec", FibRec, []int64{0, 1, 2, 5, 10, 15, 20}, c2corpus.ExpectFibRec},
 		{"prime_count", PrimeCount, []int64{0, 2, 10, 50, 100}, c2corpus.ExpectPrimeCount},
 		{"strings_concat_loop", StringsConcatLoop, []int64{0, 1, 2, 5, 10, 50}, c2corpus.ExpectStringsConcatLoop},
+		{"lists_fill_sum", ListsFillSum, []int64{0, 1, 2, 10, 100, 128}, c2corpus.ExpectListsFillSum},
+		{"maps_fill_sum", MapsFillSum, []int64{0, 1, 2, 10, 100, 128}, c2corpus.ExpectMapsFillSum},
 	}
 	for _, tc := range cases {
 		for _, n := range tc.ns {
@@ -57,6 +59,8 @@ func BenchmarkMathKernels(b *testing.B) {
 		{"fib_rec_n25", FibRec, 25},
 		{"prime_count_n100", PrimeCount, 100},
 		{"strings_concat_loop_n64", StringsConcatLoop, 64},
+		{"lists_fill_sum_n128", ListsFillSum, 128},
+		{"maps_fill_sum_n128", MapsFillSum, 128},
 	}
 	for _, tc := range cases {
 		b.Run(tc.name, func(b *testing.B) {
@@ -97,6 +101,7 @@ func BenchmarkGoKernels(b *testing.B) {
 		{"fib_rec_n25", c2corpus.ExpectFibRec, 25},
 		{"prime_count_n100", c2corpus.ExpectPrimeCount, 100},
 		{"strings_concat_loop_n64", c2corpus.ExpectStringsConcatLoop, 64},
+		{"lists_fill_sum_n128", c2corpus.ExpectListsFillSum, 128},
 	}
 	for _, tc := range cases {
 		b.Run(tc.name, func(b *testing.B) {
