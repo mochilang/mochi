@@ -110,6 +110,31 @@ var programs = []program{
 	// Output is a rolling i64 hash over the 20 counts. See
 	// bench/template/bg/k_nucleotide/.
 	{category: "bg", name: "k_nucleotide", ns: []int{10000, 100000}},
+	// MEP-39 §6.8: BG pidigits kernel. N is the decimal-digit count
+	// emitted by the Gibbons unbounded spigot. Each iter does a bignum
+	// compare (4q+r < nt+t) plus either a "produce" branch (3 bignum
+	// muls + 1 div + 1 sub + 1 digit fold) or a "consume" branch (5
+	// bignum muls + 1 div + state refine). Output is the rolling i64
+	// hash over emitted digits, h = (h*10+digit) % (2^31-1). See
+	// bench/template/bg/pidigits/. Lua and LuaJIT lack native bignum,
+	// so they appear as "—" in the table (see skipLang below); the BG
+	// canon uses an external `lgmp` peer for those columns.
+	{category: "bg", name: "pidigits", ns: []int{1000, 10000}},
+}
+
+// skipLang lists (<cat>/<name>, lang) pairs whose peer is intentionally
+// not provided because the language lacks a load-bearing primitive (e.g.
+// pidigits needs arbitrary-precision integers; Lua has only 64-bit
+// numerics in 5.1 / LuaJIT, and writing an inline pure-Lua bignum just
+// to fill a cell would dominate the bench measurement). The harness
+// silently omits these peers; the table column shows "—" rather than
+// "ERR" so it is clear at a glance the omission is by design.
+var skipLang = map[string]map[string]bool{
+	"bg/pidigits": {"lua": true, "luajit": true},
+}
+
+func isSkipped(cat, prog, lang string) bool {
+	return skipLang[cat+"/"+prog][lang]
 }
 
 type result struct {
@@ -212,10 +237,10 @@ func main() {
 					return runNative(repoRoot, tmp, p.cat(), p.name, n, "py", "pypy", pypyBinary())
 				}))
 			}
-			if wantLang("lua") {
+			if wantLang("lua") && !isSkipped(p.cat(), p.name, "lua") {
 				aggs = append(aggs, measure(*repeat, func() result { return runNative(repoRoot, tmp, p.cat(), p.name, n, "lua", "lua", "lua") }))
 			}
-			if wantLang("luajit") {
+			if wantLang("luajit") && !isSkipped(p.cat(), p.name, "luajit") {
 				// LuaJIT runs the same .lua source as the lua peer
 				// because BG kernels use only Lua 5.1-compatible
 				// features (no integer division, no bitwise ops in

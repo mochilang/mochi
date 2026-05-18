@@ -107,6 +107,17 @@ func TestBignumLessEqual(t *testing.T) {
 	}
 }
 
+func TestBignumBigIntToI64(t *testing.T) {
+	got, _ := runBignumProg(t, 2, []Cell{CBigInt(big.NewInt(-1234567890))}, []Instr{
+		{Op: OpLoadConstI, A: 0, B: 0},
+		{Op: OpBigIntToI64, A: 1, B: 0},
+		{Op: OpReturn, A: 1},
+	})
+	if got.Int() != -1234567890 {
+		t.Fatalf("want -1234567890, got %d", got.Int())
+	}
+}
+
 func TestBignumI64ToBigIntAndToStr(t *testing.T) {
 	got, _ := runBignumProg(t, 3, []Cell{CInt(123456789)}, []Instr{
 		{Op: OpLoadConstI, A: 0, B: 0},

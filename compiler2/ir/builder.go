@@ -465,6 +465,14 @@ func (b *Builder) I64ToBigInt(x ValueID) ValueID {
 	return b.emit(Inst{Op: OpI64ToBigInt, Type: TBigInt, Args: []ValueID{x}})
 }
 
+// BigIntToI64 narrows a TBigInt to its low 64 bits as TI64. pidigits
+// uses this on its digit candidate (Gibbons invariant guarantees the
+// value fits in i64 once the produce branch settles); callers that
+// cannot guarantee the bound must check the magnitude beforehand.
+func (b *Builder) BigIntToI64(x ValueID) ValueID {
+	return b.emit(Inst{Op: OpBigIntToI64, Type: TI64, Args: []ValueID{x}})
+}
+
 // BigIntToStr formats a TBigInt in base-10 into a heap string.
 func (b *Builder) BigIntToStr(x ValueID) ValueID {
 	return b.emit(Inst{Op: OpBigIntToStr, Type: TStr, Args: []ValueID{x}})

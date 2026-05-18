@@ -360,7 +360,7 @@ func isDeoptableOp(op vm2.Op) bool {
 		// until pidigits-scale profiles say so. Deopt to the interpreter.
 		vm2.OpAddBigInt, vm2.OpSubBigInt, vm2.OpMulBigInt, vm2.OpDivBigInt,
 		vm2.OpModBigInt, vm2.OpLessBigInt, vm2.OpEqualBigInt,
-		vm2.OpI64ToBigInt, vm2.OpBigIntToStr,
+		vm2.OpI64ToBigInt, vm2.OpBigIntToI64, vm2.OpBigIntToStr,
 		vm2.OpHalt:
 		return true
 	}

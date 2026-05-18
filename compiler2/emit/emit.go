@@ -807,6 +807,9 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 			case ir.OpI64ToBigInt:
 				emit(vm2.Instr{Op: vm2.OpI64ToBigInt, A: dst,
 					B: int32(finalReg[ins.Args[0]])})
+			case ir.OpBigIntToI64:
+				emit(vm2.Instr{Op: vm2.OpBigIntToI64, A: dst,
+					B: int32(finalReg[ins.Args[0]])})
 			case ir.OpBigIntToStr:
 				emit(vm2.Instr{Op: vm2.OpBigIntToStr, A: dst,
 					B: int32(finalReg[ins.Args[0]])})

@@ -1,0 +1,19 @@
+// MEP-39 §6.8 pidigits Mochi reference. The Gibbons unbounded spigot
+// keeps an arbitrary-precision (q, r, t) state plus i64 (k, n, l)
+// and either produces a digit (predicate: 4q+r < nt+t) or refines
+// the state. Iteration 1 folds each emitted digit into a rolling
+// i64 hash, h = (h*10 + digit) % 2147483647, so the cross-lang
+// harness can compare a single integer across peers without string
+// formatting. Source-level Mochi does not yet have bignum literals
+// or arithmetic exposed in the surface language; vm2 runs this via
+// the IR builder in compiler2/corpus/bg_pidigits_scaled.go which
+// emits the OpAddBigInt / OpMulBigInt / OpDivBigInt / OpLessBigInt
+// / OpI64ToBigInt / OpBigIntToI64 ops landed in MEP-39 §4.2.3. The
+// other peers (Go, Python, Lua) replicate the algorithm using each
+// language's bignum facility (math/big, int, pure-Lua base-1e7
+// digit arrays respectively).
+
+let N = 10000
+
+print("vm2 runs this via compiler2/corpus/bg_pidigits_scaled.go; this .mochi peer is a source-level reference (no bignum surface syntax yet)")
+print(N)

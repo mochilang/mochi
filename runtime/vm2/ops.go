@@ -269,5 +269,6 @@ const (
 	OpLessBigInt   // A = CBool(bigIntAt(regs[B]).Cmp(bigIntAt(regs[C])) < 0)
 	OpEqualBigInt  // A = CBool(bigIntAt(regs[B]).Cmp(bigIntAt(regs[C])) == 0)
 	OpI64ToBigInt  // A = CBigInt(new(big.Int).SetInt64(regs[B].Int()))
+	OpBigIntToI64  // A = CInt(bigIntAt(regs[B]).Int64()); low 64 bits if oversize
 	OpBigIntToStr  // A = newString(bigIntAt(regs[B]).Text(10))
 )

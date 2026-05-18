@@ -860,6 +860,8 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			regs[ins.A] = CBool(vm.bigIntAt(regs[ins.B]).Cmp(vm.bigIntAt(regs[ins.C])) == 0)
 		case OpI64ToBigInt:
 			regs[ins.A] = CBigInt(new(big.Int).SetInt64(regs[ins.B].Int()))
+		case OpBigIntToI64:
+			regs[ins.A] = CInt(vm.bigIntAt(regs[ins.B]).Int64())
 		case OpBigIntToStr:
 			regs[ins.A] = vm.makeStr([]byte(vm.bigIntAt(regs[ins.B]).Text(10)))
 		case OpHalt:
