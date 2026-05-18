@@ -46,3 +46,22 @@ TEXT ·CallStatusFF(SB),NOSPLIT,$0-40
 	CALL	AX
 	MOVQ	AX, ret+32(FP)
 	RET
+
+// func CallStatusM(entry, regsI64, status, regsF64, regsCell, arenaCtx unsafe.Pointer) uint64
+//
+// MEP-40 Phase 6.2d.2.a mixed-bank trampoline. ABI0: args at FP+0..+40,
+// result at FP+48. AMD64 Cell-bank lowering (Phase 6.2d.2.e) is still
+// planned; on Linux/AMD64 today the JIT rejects any cell-bank function
+// at compile time, so this entry exists only to keep the Go decl
+// symmetric with darwin/arm64. Pinning is: DI = regsI64, SI = status,
+// DX = regsF64, CX = regsCell, R8 = *jitArenaCtx (SysV args 1..5).
+TEXT ·CallStatusM(SB),NOSPLIT,$0-56
+	MOVQ	entry+0(FP), AX
+	MOVQ	regsI64+8(FP), DI
+	MOVQ	status+16(FP), SI
+	MOVQ	regsF64+24(FP), DX
+	MOVQ	regsCell+32(FP), CX
+	MOVQ	arenaCtx+40(FP), R8
+	CALL	AX
+	MOVQ	AX, ret+48(FP)
+	RET
