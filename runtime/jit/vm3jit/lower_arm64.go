@@ -19,7 +19,10 @@ import (
 //	  regsI64[r]  -> x(21 + r - 7)  for r in [7, 11)  (callee-saved, 4 max)
 //	  regsCell[r] -> x(25 + r)      for r in [0, 4)   (callee-saved, 4 max)
 //	  x19 = cached arenas.Lists base ptr  (loaded once at prologue)
-//	  x20 = reserved for future arena-base caches (mapsBase, ...)
+//	  x20 = cached &arenas.Lists[idx]     when hoistedCellReg(fn) == 0
+//	        (Phase 6.2d.2.c.1: loop-invariant slab byte address for
+//	         regsCell[0]; ListGet/Push use [x20, #cellsOff+..] instead
+//	         of recomputing the slab offset every iter)
 //	  x4  = &jitArenaCtx                  (set by trampoline.CallStatusM)
 //	  x3  = regsCell base                 (set by trampoline.CallStatusM)
 //
@@ -196,6 +199,41 @@ func hasListPushI64(fn *vm3.Function) bool {
 	return false
 }
 
+// hoistedCellReg returns the regsCell index whose slab byte address can
+// be cached in x20 for the lifetime of the call, or -1 if no hoist
+// applies. Phase 6.2d.2.c.1 caches regsCell[0]'s slab base when fn has
+// exactly one cell reg (the lists_fill_sum kernel shape: fill/sum each
+// own a single list handle that stays put across every OpListGetI64 /
+// OpListPushI64 inside their loops). OpListGetI64 / OpListPushI64
+// emitters detect this and skip the per-op UXTW + MUL + ADD lane,
+// dropping 4 instructions per opcode in the inner loop.
+//
+// Why gate on NumRegsCell == 1: when the function carries multiple
+// cells we can only pin one slab base in x20, and the bytecode could
+// freely interleave Gets/Pushes against different cells; keeping the
+// non-hoisted recompute path for those is simpler than picking a
+// "primary" cell and tracking which sites hit it. For the current
+// corpus shape (NumRegsCell == 1) every cell reference is by definition
+// against regsCell[0], so the hoist is trivially safe.
+func hoistedCellReg(fn *vm3.Function) int {
+	if fn.NumRegsCell == 1 {
+		return 0
+	}
+	return -1
+}
+
+// hoistPrologueWordsARM64 returns the extra prologue words needed to
+// cache the slab base address for hoistedCellReg(fn) in x20. Zero when
+// no hoist applies.
+func hoistPrologueWordsARM64(fn *vm3.Function) int {
+	if hoistedCellReg(fn) < 0 {
+		return 0
+	}
+	stride := int64(vm3.JITListSlabStride())
+	// UXTW + MOV stride + MUL + ADD.
+	return movImm64WordCount(stride) + 3
+}
+
 // deoptStatusesUsedARM64 returns the deopt status codes fn references,
 // in emission order. Caller emits one block per status; the order here
 // also fixes the per-status block offsets (StatusDivByZero block first,
@@ -339,7 +377,7 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 	pairs := len(pairRegs)
 	lrPair := numLRPair(fn)
 	cellScratch := numCellScratchPairs(fn)
-	prologueWords := lrPair + pairs + int(fn.NumRegsI64) + int(fn.NumRegsF64) + int(fn.NumRegsCell) + cellScratch
+	prologueWords := lrPair + pairs + int(fn.NumRegsI64) + int(fn.NumRegsF64) + int(fn.NumRegsCell) + cellScratch + hoistPrologueWordsARM64(fn)
 	spillSets := computeCallSpills(fn)
 
 	pcMap := make([]int, len(fn.Code)+1)
@@ -382,6 +420,19 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 	}
 	if cellScratch > 0 {
 		ws = append(ws, ldr64(19, 4, 0))
+	}
+	// Slab-base hoist (Phase 6.2d.2.c.1): when one cell reg owns every
+	// list reference in fn, compute &arenas.Lists[handleIdx] once into
+	// x20 so each OpListGet/OpListPush inside the loop skips the UXTW +
+	// MOV stride + MUL + ADD recompute. The handle stays put for the
+	// lifetime of the call (no opcode in the whitelist mutates a cell
+	// reg), so the cached base is loop-invariant by construction.
+	if h := hoistedCellReg(fn); h >= 0 {
+		stride := int64(vm3.JITListSlabStride())
+		ws = append(ws, uxtwReg(16, r2cell(uint16(h))))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(20, 16, 19))
 	}
 
 	for i, op := range fn.Code {
@@ -534,18 +585,26 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 
 	case vm3.OpListGetI64:
 		// Inline read-only list[i] -> i64 fast path. See emitInstrARM64
-		// for the exact sequence; 7 instruction words total
-		// (UXTW + MOV stride + MUL + ADD + LDR cells + LDR cell + SBFX).
-		// The MOV-stride lane is sized by movImm64WordCount of the
-		// runtime sizeof(vmList) so a future field addition stays exact.
+		// for the exact sequence; 7 instruction words in the cold form
+		// (UXTW + MOV stride + MUL + ADD + LDR cells + LDR cell + SBFX),
+		// or 3 words when hoistedCellReg(fn) matches op.B and x20 holds
+		// the cached slab address (LDR cells + LDR cell + SBFX).
+		if h := hoistedCellReg(fn); h >= 0 && int(op.B) == h {
+			return 3, nil
+		}
 		stride := int64(vm3.JITListSlabStride())
 		return movImm64WordCount(stride) + 6, nil
 
 	case vm3.OpListPushI64:
-		// Inline push-with-cap-check fast path. See emitInstrARM64 for
-		// the exact 15-word sequence (or movImm64WordCount(stride)+14
-		// when stride does not fit in a single MOVZ). On cap exhaustion
+		// Inline push-with-cap-check fast path. The cold form is
+		// movImm64WordCount(stride)+14 words (UXTW + MOV stride + MUL +
+		// ADD lane + 11-instr body). When hoistedCellReg(fn) matches
+		// op.A the first 4 instructions collapse into the cached x20
+		// slab base and the body shrinks to 11 words. On cap exhaustion
 		// the inline B.HS branches to the StatusListGrow deopt block.
+		if h := hoistedCellReg(fn); h >= 0 && int(op.A) == h {
+			return 11, nil
+		}
 		stride := int64(vm3.JITListSlabStride())
 		return movImm64WordCount(stride) + 14, nil
 
@@ -784,6 +843,7 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 	case vm3.OpListGetI64:
 		// regsI64[A] = arenas.Lists[handleIdx(regsCell[B])].cells[regsI64[C]].Int()
 		//
+		// Cold form (per-op slab recompute, when no hoist applies):
 		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
 		//   MOV  x17, #SIZEOF_VMLIST           ; stride (baked from runtime layout)
 		//   MUL  x16, x16, x17                 ; slab byte offset
@@ -791,10 +851,22 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		//   LDR  x16, [x16, #CELLS_OFFSET]     ; cells slice data ptr (head of header)
 		//   LDR  x17, [x16, xIdx, lsl #3]      ; cells[idxReg]
 		//   SBFX xA, x17, #0, #48              ; sign-extend the 48-bit Int payload
-		stride := int64(vm3.JITListSlabStride())
+		//
+		// Hot form (hoistedCellReg matches op.B, x20 == &arenas.Lists[idx]):
+		//   LDR  x17, [x20, #CELLS_OFFSET]     ; cells.ptr
+		//   LDR  x17, [x17, xIdx, lsl #3]      ; cells[idxReg]
+		//   SBFX xA, x17, #0, #48              ; sign-extend payload
 		cellsOff := uint32(vm3.JITListCellsOffset())
-		xCell := r2cell(op.B)
 		xIdx := r2x(fn, uint16(op.C))
+		if h := hoistedCellReg(fn); h >= 0 && int(op.B) == h {
+			ws := make([]uint32, 0, 3)
+			ws = append(ws, ldr64(17, 20, cellsOff/8))
+			ws = append(ws, ldrRegLsl3(17, 17, xIdx))
+			ws = append(ws, sbfx48(xA, 17))
+			return ws, nil
+		}
+		stride := int64(vm3.JITListSlabStride())
+		xCell := r2cell(op.B)
 		ws := make([]uint32, 0, movImm64WordCount(stride)+6)
 		ws = append(ws, uxtwReg(16, xCell))
 		ws = append(ws, movImm64(17, stride)...)
@@ -826,6 +898,7 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// StatusListGrow). The OpNewList capHint sized for the bench
 		// keeps the steady-state inside the fast path.
 		//
+		// Cold form (per-op slab recompute):
 		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
 		//   MOV  x17, #SIZEOF_VMLIST           ; stride
 		//   MUL  x16, x16, x17                 ; slab byte offset
@@ -841,14 +914,51 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		//   ADD  x4,  x4, #1                   ; len++
 		//   STR  x4,  [x16, #CELLS_OFF+8]      ; write cells.len
 		//   STR  w4,  [x16, #4]                ; write vmList.len (u32)
-		stride := int64(vm3.JITListSlabStride())
+		//
+		// Hot form (hoistedCellReg matches op.A, x20 == &arenas.Lists[idx]):
+		//   LDR  x4,  [x20, #CELLS_OFF+8]      ; cells.len
+		//   LDR  x17, [x20, #CELLS_OFF+16]     ; cells.cap
+		//   CMP  x4,  x17
+		//   B.HS deopt_listgrow
+		//   LDR  x17, [x20, #CELLS_OFF]        ; cells.ptr
+		//   MOVZ x16, #0xFFFA, LSL #48
+		//   BFI  x16, xVal, #0, #48
+		//   STR  x16, [x17, x4, LSL #3]
+		//   ADD  x4,  x4, #1
+		//   STR  x4,  [x20, #CELLS_OFF+8]
+		//   STR  w4,  [x20, #4]
+		// In the hot form x20 is pinned (cached slab base) so the boxed
+		// Cell scratch moves to x16; in the cold form x20 is free and the
+		// slab address has already left x16, so the old x20 scratch is
+		// kept to minimize churn.
 		cellsOff := uint32(vm3.JITListCellsOffset())
-		cellsPtrImm12 := cellsOff / 8     // 1
+		cellsPtrImm12 := cellsOff / 8        // 1
 		cellsLenImm12 := (cellsOff + 8) / 8  // 2
 		cellsCapImm12 := (cellsOff + 16) / 8 // 3
-		xCell := r2cell(op.A)
 		xVal := r2x(fn, op.B)
 		lgStart := deoptStartForStatus(fn, deoptStart, StatusListGrow)
+		if h := hoistedCellReg(fn); h >= 0 && int(op.A) == h {
+			ws := make([]uint32, 0, 11)
+			ws = append(ws, ldr64(4, 20, cellsLenImm12))
+			ws = append(ws, ldr64(17, 20, cellsCapImm12))
+			ws = append(ws, cmpReg(4, 17))
+			bWord := pcMap[idx] + len(ws)
+			off, err := branchOff(bWord, lgStart, 19)
+			if err != nil {
+				return nil, fmt.Errorf("ListPushI64 deopt branch: %w", err)
+			}
+			ws = append(ws, bCond(0x2, off)) // B.HS
+			ws = append(ws, ldr64(17, 20, cellsPtrImm12))
+			ws = append(ws, movz(16, 0xFFFA, 3))
+			ws = append(ws, bfi48(16, xVal))
+			ws = append(ws, str64RegLsl3(16, 17, 4))
+			ws = append(ws, addImm64(4, 4, 1))
+			ws = append(ws, str64(4, 20, cellsLenImm12))
+			ws = append(ws, strW(4, 20, 1)) // vmList.len at byte offset 4 (imm12=1, 4-byte stride)
+			return ws, nil
+		}
+		stride := int64(vm3.JITListSlabStride())
+		xCell := r2cell(op.A)
 		ws := make([]uint32, 0, movImm64WordCount(stride)+14)
 		ws = append(ws, uxtwReg(16, xCell))
 		ws = append(ws, movImm64(17, stride)...)
@@ -869,7 +979,7 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		ws = append(ws, str64RegLsl3(20, 17, 4))
 		ws = append(ws, addImm64(4, 4, 1))
 		ws = append(ws, str64(4, 16, cellsLenImm12))
-		ws = append(ws, strW(4, 16, 1)) // vmList.len at byte offset 4 (imm12=1 for 4-byte stride)
+		ws = append(ws, strW(4, 16, 1)) // vmList.len at byte offset 4 (imm12=1, 4-byte stride)
 		return ws, nil
 
 	default:
