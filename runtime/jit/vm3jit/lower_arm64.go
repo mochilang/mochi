@@ -45,6 +45,129 @@ func r2x(r uint16) uint32 {
 	return uint32(r) - 7 + 19
 }
 
+// popcount32 counts set bits in v. Used to size OpCallI64 spill loops.
+func popcount32(v uint32) int {
+	v = v - ((v >> 1) & 0x55555555)
+	v = (v & 0x33333333) + ((v >> 2) & 0x33333333)
+	v = (v + (v >> 4)) & 0x0F0F0F0F
+	return int((v * 0x01010101) >> 24)
+}
+
+// computeCallSpills runs a backward liveness pass over fn.Code and
+// returns, for each bytecode index, the bitset of caller-saved i64
+// registers (bank 0..6, mapped to x9..x15) that must be spilled to the
+// caller window across the call. For non-call opcodes the entry is 0.
+// Self-recursive OpCallI64 sites use this to skip spilling dead regs.
+func computeCallSpills(fn *vm3.Function) []uint32 {
+	n := len(fn.Code)
+	spills := make([]uint32, n)
+	liveIn := make([]uint32, n+1) // liveIn[n] = 0 (post-exit)
+	liveOut := make([]uint32, n)
+	for changed := true; changed; {
+		changed = false
+		for i := n - 1; i >= 0; i-- {
+			op := fn.Code[i]
+			out := liveSuccUnion(fn, i, liveIn)
+			d, u := defUseI64(fn, op)
+			in := u | (out &^ d)
+			if out != liveOut[i] || in != liveIn[i] {
+				liveOut[i] = out
+				liveIn[i] = in
+				changed = true
+			}
+		}
+	}
+	for i, op := range fn.Code {
+		if op.Code != vm3.OpCallI64 {
+			continue
+		}
+		mask := uint32(0x7F) // caller-saved (regs 0..6 → x9..x15)
+		dstBit := uint32(1) << op.A
+		spills[i] = (liveOut[i] &^ dstBit) & mask
+	}
+	return spills
+}
+
+// liveSuccUnion is the live-in union across the successors of pc i.
+// Branch opcodes have two successors (fall-through and op.C target);
+// Jump has one (op.C); Return* have none; everything else falls
+// through to i+1.
+func liveSuccUnion(fn *vm3.Function, i int, liveIn []uint32) uint32 {
+	op := fn.Code[i]
+	switch op.Code {
+	case vm3.OpReturnI64, vm3.OpReturnConstK, vm3.OpReturnF64:
+		return 0
+	case vm3.OpJump:
+		t := int(uint16(op.C))
+		if t < 0 || t > len(fn.Code) {
+			return 0
+		}
+		return liveIn[t]
+	case vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
+		vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
+		vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br,
+		vm3.OpCmpEqI64KBr, vm3.OpCmpNeI64KBr,
+		vm3.OpCmpLtI64KBr, vm3.OpCmpLeI64KBr,
+		vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr:
+		t := int(uint16(op.C))
+		if t < 0 || t > len(fn.Code) {
+			return liveIn[i+1]
+		}
+		return liveIn[i+1] | liveIn[t]
+	default:
+		if i+1 <= len(fn.Code) {
+			return liveIn[i+1]
+		}
+		return 0
+	}
+}
+
+// defUseI64 returns (defs, uses) bitmasks for op over fn's i64 register
+// bank. Bit r is set iff register r is defined/used. For OpCallI64 the
+// uses cover op.B..op.B+nArgs-1.
+func defUseI64(fn *vm3.Function, op vm3.Op) (uint32, uint32) {
+	a := uint32(1) << op.A
+	b := uint32(1) << op.B
+	c := uint32(1) << uint16(op.C)
+	switch op.Code {
+	case vm3.OpConstI64K, vm3.OpConstI64KW:
+		return a, 0
+	case vm3.OpMovI64:
+		return a, b
+	case vm3.OpAddI64, vm3.OpSubI64, vm3.OpMulI64,
+		vm3.OpDivI64, vm3.OpModI64:
+		return a, b | c
+	case vm3.OpNegI64:
+		return a, b
+	case vm3.OpAddI64K, vm3.OpSubI64K, vm3.OpMulI64K,
+		vm3.OpDivI64K, vm3.OpModI64K:
+		return a, b
+	case vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
+		vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
+		vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br:
+		return 0, a | b
+	case vm3.OpCmpEqI64KBr, vm3.OpCmpNeI64KBr,
+		vm3.OpCmpLtI64KBr, vm3.OpCmpLeI64KBr,
+		vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr:
+		return 0, a
+	case vm3.OpJump:
+		return 0, 0
+	case vm3.OpReturnI64:
+		return 0, a
+	case vm3.OpReturnConstK:
+		return 0, 0
+	case vm3.OpCallI64:
+		// Args are i64 regs op.B..op.B+nArgs-1.
+		var uses uint32
+		n := fn.NumI64Params()
+		for k := 0; k < n; k++ {
+			uses |= 1 << (op.B + uint16(k))
+		}
+		return a, uses
+	}
+	return 0, 0
+}
+
 // numCalleeSavedPairs returns the number of x19..x28 STP/LDP pairs the
 // frame for fn must push. Each pair covers two register slots. The
 // final pair is pushed even if only one of its two regs is live, since
@@ -73,6 +196,31 @@ func hasRegRegDivMod(fn *vm3.Function) bool {
 	return false
 }
 
+// isNonLeaf reports whether fn issues any native BL (currently only
+// self-recursive OpCallI64 is lowered to BL; everything else routes
+// through the interpreter and so does not need x30 saved). Non-leaf
+// fns must push x29:x30 as an extra outermost STP pair so the JIT'd
+// callee can use BL/RET without clobbering the caller's return
+// address.
+func isNonLeaf(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpCallI64 {
+			return true
+		}
+	}
+	return false
+}
+
+// numLRPair returns 1 if fn needs the x29:x30 outermost STP/LDP pair,
+// 0 otherwise. The pair is independent of numCalleeSavedPairs and lives
+// in addition to those (x19..x28 register saves).
+func numLRPair(fn *vm3.Function) int {
+	if isNonLeaf(fn) {
+		return 1
+	}
+	return 0
+}
+
 // deoptBlockWordsARM64 returns the number of instruction words the
 // per-function shared deopt block occupies, or 0 if no opcode in fn can
 // take a deopt path. The block lives at the very end of the JIT stream;
@@ -88,7 +236,7 @@ func deoptBlockWordsARM64(fn *vm3.Function) int {
 	if !hasRegRegDivMod(fn) {
 		return 0
 	}
-	return 2 + numCalleeSavedPairs(fn) + 1
+	return 2 + numCalleeSavedPairs(fn) + numLRPair(fn) + 1
 }
 
 // emitDeoptBlockARM64 emits the shared deopt block for fn at the end
@@ -99,7 +247,7 @@ func deoptBlockWordsARM64(fn *vm3.Function) int {
 func emitDeoptBlockARM64(fn *vm3.Function, statusCode int64) []uint32 {
 	ws := movImm64(16, statusCode)
 	ws = append(ws, str64(16, 1, 0))
-	ws = emitCalleeSavedEpilogueARM64(ws, numCalleeSavedPairs(fn))
+	ws = emitFrameEpilogueARM64(ws, numCalleeSavedPairs(fn), numLRPair(fn))
 	ws = append(ws, ret())
 	return ws
 }
@@ -107,15 +255,18 @@ func emitDeoptBlockARM64(fn *vm3.Function, statusCode int64) []uint32 {
 // lowerARM64 returns the AArch64 instruction-word stream for fn. Two
 // passes: pass 1 computes pcMap[i] = word index where the lowering of
 // bytecode i starts; pass 2 emits real instructions, resolving branch
-// destinations through pcMap.
-func lowerARM64(fn *vm3.Function) ([]uint32, error) {
+// destinations through pcMap. opts.SelfIdx, when >= 0, enables self-
+// recursive OpCallI64 to lower to a native BL inside this page.
+func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 	pairs := numCalleeSavedPairs(fn)
-	prologueWords := pairs + int(fn.NumRegsI64)
+	lrPair := numLRPair(fn)
+	prologueWords := lrPair + pairs + int(fn.NumRegsI64)
+	spillSets := computeCallSpills(fn)
 
 	pcMap := make([]int, len(fn.Code)+1)
 	pcMap[0] = prologueWords
 	for i, op := range fn.Code {
-		n, err := wordCountARM64(fn, op)
+		n, err := wordCountARM64(fn, op, opts, spillSets, i)
 		if err != nil {
 			return nil, fmt.Errorf("vm3jit/%s: pc %d: %w", fn.Name, i, err)
 		}
@@ -126,8 +277,12 @@ func lowerARM64(fn *vm3.Function) ([]uint32, error) {
 	total := deoptStart + deoptBlockWordsARM64(fn)
 	ws := make([]uint32, 0, total)
 
-	// Prologue: push callee-saved pairs, then load each live reg from
-	// [x0, #r*8] into its pinned host register.
+	// Prologue: push x29:x30 (outermost) if non-leaf, then push
+	// callee-saved pairs, then load each live reg from [x0, #r*8] into
+	// its pinned host register.
+	if lrPair == 1 {
+		ws = append(ws, stpPreIdx64(29, 30, 31, -16))
+	}
 	for k := 0; k < pairs; k++ {
 		ws = append(ws, stpPreIdx64(uint32(2*k+19), uint32(2*k+20), 31, -16))
 	}
@@ -136,7 +291,7 @@ func lowerARM64(fn *vm3.Function) ([]uint32, error) {
 	}
 
 	for i, op := range fn.Code {
-		emit, err := emitInstrARM64(fn, op, i, pcMap, deoptStart)
+		emit, err := emitInstrARM64(fn, op, i, pcMap, deoptStart, opts, spillSets)
 		if err != nil {
 			return nil, fmt.Errorf("vm3jit/%s: pc %d op=%d: %w", fn.Name, i, op.Code, err)
 		}
@@ -160,19 +315,26 @@ func lowerARM64(fn *vm3.Function) ([]uint32, error) {
 	return ws, nil
 }
 
-// emitCalleeSavedEpilogueARM64 appends pairs LDP instructions to ws in
-// REVERSE order of the prologue's pushes so each pop matches the
-// topmost STP frame and SP returns to its entry value.
-func emitCalleeSavedEpilogueARM64(ws []uint32, pairs int) []uint32 {
+// emitFrameEpilogueARM64 appends LDP instructions to ws in REVERSE
+// order of the prologue's pushes so each pop matches the topmost STP
+// frame and SP returns to its entry value. pairs is the number of
+// x19..x28 STP pairs, lrPair is 1 if x29:x30 was pushed as the
+// outermost pair (non-leaf fns).
+func emitFrameEpilogueARM64(ws []uint32, pairs, lrPair int) []uint32 {
 	for k := pairs - 1; k >= 0; k-- {
 		ws = append(ws, ldpPostIdx64(uint32(2*k+19), uint32(2*k+20), 31, 16))
+	}
+	if lrPair == 1 {
+		ws = append(ws, ldpPostIdx64(29, 30, 31, 16))
 	}
 	return ws
 }
 
 // wordCountARM64 returns the exact number of 32-bit words emitInstrARM64
-// will produce for op. Used by pass 1 to lay out pcMap.
-func wordCountARM64(fn *vm3.Function, op vm3.Op) (int, error) {
+// will produce for op. Used by pass 1 to lay out pcMap. spillSets and
+// idx are only consulted for OpCallI64; for other opcodes the spill
+// set is irrelevant.
+func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint32, idx int) (int, error) {
 	switch op.Code {
 	case vm3.OpConstI64K:
 		// movImm64 emits 1..4 movz/movk words depending on the sign-extended
@@ -222,11 +384,23 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op) (int, error) {
 	case vm3.OpJump:
 		return 1, nil
 	case vm3.OpReturnI64:
-		// MOV x0, xA; <pop callee-saved frame>; RET.
-		return 2 + numCalleeSavedPairs(fn), nil
+		// MOV x0, xA; <pop callee-saved frame>; <pop x29:x30 if non-leaf>; RET.
+		return 2 + numCalleeSavedPairs(fn) + numLRPair(fn), nil
 	case vm3.OpReturnConstK:
-		// movImm64 into x0; <pop callee-saved frame>; RET.
-		return movImm64WordCount(int64(op.C)) + numCalleeSavedPairs(fn) + 1, nil
+		// movImm64 into x0; <pop callee-saved frame>; <pop x29:x30>; RET.
+		return movImm64WordCount(int64(op.C)) + numCalleeSavedPairs(fn) + numLRPair(fn) + 1, nil
+	case vm3.OpCallI64:
+		// Self-recursion only. Anything else routes back through the
+		// interpreter via ErrNotImplemented.
+		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
+			return 0, fmt.Errorf("%w: CallI64 to non-self idx %d (SelfIdx=%d)",
+				ErrNotImplemented, uint16(op.C), opts.SelfIdx)
+		}
+		nSpill := popcount32(spillSets[idx])
+		nArgs := fn.NumI64Params()
+		// nSpill STRs + nArgs STRs + STP x0 + ADD x0 + BL + MOV x16,x0 +
+		// LDP x0 + nSpill LDRs + MOV pinned[dst],x16.
+		return 2*nSpill + nArgs + 6, nil
 	default:
 		return 0, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 	}
@@ -239,7 +413,7 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op) (int, error) {
 // block start when one is emitted). deoptStart is supplied separately
 // so guard-checked opcodes (Div/Mod) can compute CBZ offsets without
 // re-deriving it.
-func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStart int) ([]uint32, error) {
+func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStart int, opts Options, spillSets []uint32) ([]uint32, error) {
 	xA := r2x(op.A)
 	xB := r2x(op.B)
 
@@ -344,14 +518,59 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// MOV x0, xA BEFORE the LDPs: if xA is one of x19..x28 the
 		// epilogue would clobber it.
 		ws := []uint32{movReg(0, xA)}
-		ws = emitCalleeSavedEpilogueARM64(ws, numCalleeSavedPairs(fn))
+		ws = emitFrameEpilogueARM64(ws, numCalleeSavedPairs(fn), numLRPair(fn))
 		ws = append(ws, ret())
 		return ws, nil
 
 	case vm3.OpReturnConstK:
 		ws := movImm64(0, int64(op.C))
-		ws = emitCalleeSavedEpilogueARM64(ws, numCalleeSavedPairs(fn))
+		ws = emitFrameEpilogueARM64(ws, numCalleeSavedPairs(fn), numLRPair(fn))
 		ws = append(ws, ret())
+		return ws, nil
+
+	case vm3.OpCallI64:
+		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
+			return nil, fmt.Errorf("%w: CallI64 to non-self idx %d (SelfIdx=%d)",
+				ErrNotImplemented, uint16(op.C), opts.SelfIdx)
+		}
+		spillMask := spillSets[idx]
+		nSpill := popcount32(spillMask)
+		nArgs := fn.NumI64Params()
+		nRegsI64 := int(fn.NumRegsI64)
+		ws := make([]uint32, 0, 2*nSpill+nArgs+6)
+		// Spill only the caller-saved pinned regs that are live across
+		// this call, computed by backward liveness in computeCallSpills.
+		for r := uint16(0); r < 7; r++ {
+			if spillMask&(1<<r) != 0 {
+				ws = append(ws, str64(uint32(9+r), 0, uint32(r)))
+			}
+		}
+		// Write args into callee's window slots at offset NumRegsI64*8.
+		for k := 0; k < nArgs; k++ {
+			src := r2x(op.B + uint16(k))
+			ws = append(ws, str64(src, 0, uint32(nRegsI64+k)))
+		}
+		// Save caller's x0 (regs base), bump to callee window, BL.
+		ws = append(ws, stpPreIdx64(0, 31, 31, -16))
+		ws = append(ws, addImm64(0, 0, uint32(nRegsI64*8)))
+		entryWord := 0
+		callSiteWord := pcMap[idx] + len(ws)
+		off, err := branchOff(callSiteWord, entryWord, 26)
+		if err != nil {
+			return nil, fmt.Errorf("CallI64 BL: %w", err)
+		}
+		ws = append(ws, bl(off))
+		// Capture result into x16, restore caller's x0.
+		ws = append(ws, movReg(16, 0))
+		ws = append(ws, ldpPostIdx64(0, 31, 31, 16))
+		// Reload only the regs we spilled.
+		for r := uint16(0); r < 7; r++ {
+			if spillMask&(1<<r) != 0 {
+				ws = append(ws, ldr64(uint32(9+r), 0, uint32(r)))
+			}
+		}
+		// Move result into caller's pinned dst register.
+		ws = append(ws, movReg(xA, 16))
 		return ws, nil
 
 	default:
@@ -483,6 +702,20 @@ func cbz64(xt uint32, off19 int32) uint32 {
 
 func bImm(off26 int32) uint32 {
 	return 0x14000000 | uint32(off26&0x3FFFFFF)
+}
+
+// bl encodes BL <pc-rel>: same imm26 field as B, top opcode bit set so
+// the CPU writes x30 with the return address. Used by self-recursive
+// OpCallI64 to call back into the same JIT page.
+func bl(off26 int32) uint32 {
+	return 0x94000000 | uint32(off26&0x3FFFFFF)
+}
+
+// addImm64 encodes ADD Xd, Xn, #imm12 (64-bit, shift=0). Used by the
+// OpCallI64 lowering to bump x0 from caller's regs base to callee's
+// window (offset NumRegsI64*8 bytes).
+func addImm64(xd, xn, imm12 uint32) uint32 {
+	return 0x91000000 | ((imm12 & 0xFFF) << 10) | ((xn & 0x1F) << 5) | (xd & 0x1F)
 }
 
 func bCond(cond uint32, off19 int32) uint32 {

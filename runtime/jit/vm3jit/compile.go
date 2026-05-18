@@ -53,12 +53,43 @@ func (c *CompiledFunc) Free() error {
 	return err
 }
 
+// Options tunes Compile's behavior. Zero value disables features that
+// need extra context from the caller.
+type Options struct {
+	// SelfIdx is fn's index in its containing Program. When set
+	// (>= 0), the JIT lowers self-recursive OpCallI64 (op.C ==
+	// SelfIdx) to a native BL inside the same code page. -1
+	// disables self-recursion: any OpCallI64 returns ErrNotImplemented
+	// and the caller falls back to the interpreter.
+	SelfIdx int
+}
+
+// DefaultOptions returns the conservative defaults for callers that
+// build a fn standalone (no Program context).
+func DefaultOptions() Options { return Options{SelfIdx: -1} }
+
 // Compile lowers fn to native code for the host architecture and
-// returns the handle. Phase 6.0 only accepts i64-only functions whose
-// opcode set is covered by lower_arm64. Anything else returns
-// ErrNotImplemented so callers can fall back to the interpreter
-// cleanly.
+// returns the handle. Equivalent to CompileWithOptions(fn,
+// DefaultOptions()).
 func Compile(fn *vm3.Function) (*CompiledFunc, error) {
+	return CompileWithOptions(fn, DefaultOptions())
+}
+
+// CompileInProgram is the convenience form for Programs: it looks up
+// fn = prog.Funcs[idx] and threads idx through as opts.SelfIdx so the
+// JIT can lower self-recursive OpCallI64.
+func CompileInProgram(prog *vm3.Program, idx uint32) (*CompiledFunc, error) {
+	if int(idx) >= len(prog.Funcs) {
+		return nil, fmt.Errorf("vm3jit: fn idx %d out of range (Funcs=%d)", idx, len(prog.Funcs))
+	}
+	return CompileWithOptions(prog.Funcs[idx], Options{SelfIdx: int(idx)})
+}
+
+// CompileWithOptions is the explicit-options form. Phase 6.0..6.1d
+// only accepts i64-only functions whose opcode set is covered by
+// lower_arm64. Anything else returns ErrNotImplemented so callers can
+// fall back to the interpreter cleanly.
+func CompileWithOptions(fn *vm3.Function, opts Options) (*CompiledFunc, error) {
 	if hostArch != ArchARM64 {
 		return nil, ErrUnsupported
 	}
@@ -70,7 +101,7 @@ func Compile(fn *vm3.Function) (*CompiledFunc, error) {
 		return nil, fmt.Errorf("%w: %s uses %d i64 regs (max %d in 6.0)",
 			ErrNotImplemented, fn.Name, fn.NumRegsI64, maxI64Regs)
 	}
-	words, err := lowerARM64(fn)
+	words, err := lowerARM64(fn, opts)
 	if err != nil {
 		return nil, err
 	}
