@@ -78,7 +78,24 @@ const (
 	// JIT uses this to bail back to the interpreter at exact PC.
 	OpDeopt
 
-	// Phase 3 (placeholder; bodies arrive when Phase 3 lands).
+	// Strings (Phase 3.1).
+	OpConstStrKW // regsCell[A] = Function.Consts[uint16(C)] (a Cell-tagged string)
+	OpLenStr     // regsI64[A] = len(string at regsCell[B])
+	OpConcatStr  // regsCell[A] = regsCell[B] ++ regsCell[uint16(C)]
+
+	// Mixed-bank calls (Phase 3.1). Args live at regs<bank>[B + k] in
+	// the caller for each param k whose bank is given by callee
+	// ParamBanks[k]. Callee receives them at regs<bank>[k]. Slots in
+	// banks other than ParamBanks[k] at position B+k are unused. A
+	// names the caller's return slot in retBank (BankFlags low 2 bits).
+	// C carries callee Function index.
+	OpCallMixed
+	// OpTailCallMixed: like OpCallMixed but reuses the current frame.
+	// No retReg / retBank fields are read; the existing frame's retReg
+	// and retBank are preserved.
+	OpTailCallMixed
+
+	// Phase 3.2+ placeholders. Bodies land in their own sub-phases.
 	OpListGetI64
 	OpListGetF64
 	OpListGetCell

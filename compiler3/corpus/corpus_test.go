@@ -23,6 +23,7 @@ func TestMathKernelsMatchVm2(t *testing.T) {
 		{"fact_rec", FactRec, []int64{0, 1, 2, 3, 5, 10, 13}, c2corpus.ExpectFactRec},
 		{"fib_rec", FibRec, []int64{0, 1, 2, 5, 10, 15, 20}, c2corpus.ExpectFibRec},
 		{"prime_count", PrimeCount, []int64{0, 2, 10, 50, 100}, c2corpus.ExpectPrimeCount},
+		{"strings_concat_loop", StringsConcatLoop, []int64{0, 1, 2, 5, 10, 50}, c2corpus.ExpectStringsConcatLoop},
 	}
 	for _, tc := range cases {
 		for _, n := range tc.ns {
@@ -55,6 +56,7 @@ func BenchmarkMathKernels(b *testing.B) {
 		{"fact_rec_n12", FactRec, 12},
 		{"fib_rec_n25", FibRec, 25},
 		{"prime_count_n100", PrimeCount, 100},
+		{"strings_concat_loop_n64", StringsConcatLoop, 64},
 	}
 	for _, tc := range cases {
 		b.Run(tc.name, func(b *testing.B) {
@@ -94,6 +96,7 @@ func BenchmarkGoKernels(b *testing.B) {
 		{"fact_rec_n12", c2corpus.ExpectFactRec, 12},
 		{"fib_rec_n25", c2corpus.ExpectFibRec, 25},
 		{"prime_count_n100", c2corpus.ExpectPrimeCount, 100},
+		{"strings_concat_loop_n64", c2corpus.ExpectStringsConcatLoop, 64},
 	}
 	for _, tc := range cases {
 		b.Run(tc.name, func(b *testing.B) {
