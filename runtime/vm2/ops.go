@@ -297,38 +297,19 @@ const (
 	OpU8ReverseComplementDNA // u8ArrAt(regs[B]).data[regs[C].Int()-1-i] = compDNA(u8ArrAt(regs[A]).data[i]) for i in [0, regs[C].Int())
 	OpU8SumI64               // A = CInt(sum(u8ArrAt(regs[B]).data[0:regs[C].Int()] as int64))
 
-	// k_nucleotide bulk super-op (MEP-39 §6.7 iter 2). Runs the entire
-	// HOMO_SAPIENS LCG + cumprob + counts-increment kernel inline:
-	// starting from seed=42 it performs regs[B].Int() iterations of
-	// seed = (seed*3877+29573)%139968, prob = float64(seed)/139968.0,
-	// 4-way cumprob cascade producing code in 0..3, counts[code]++,
-	// and (after iter 0) counts[4+prev*4+code]++. Operand A is a
-	// TI64Array of length >=20 holding the rolling counts. Cumprob
-	// constants and LCG params are baked in: the op is single-purpose
-	// for the BG k_nucleotide kernel, the same scoping as the iter 7
-	// reverse_complement family.
-	OpKNucleotideRun // i64ArrAt(regs[A]).data[20] := k_nuc_kernel(regs[B].Int())
-
-	// Mandelbrot per-pixel kernel super-op (MEP-39 §6.2 iter 2). Runs the
-	// canonical BG mandelbrot scaled kernel inline: for each pixel
-	// (row, col) in the regs[B] x regs[C] grid (col across, row down),
-	// the op maps to cx,cy in [-2, 1] x [-1, 1], iterates
-	// z = z^2 + c until |z|^2 > 4 or count reaches regs[D].Int(), and
-	// stores the escape count as a byte into u8ArrAt(regs[A]).data at
-	// index row*w + col. The imaginary axis uses math.FMA for the
-	// 2*zr*zi + cy step, matching the float arithmetic the
-	// builder-emitted OpFmaF64 produces.
-	OpMandelbrotKernel // u8ArrAt(regs[A]).data := mandelbrot(w=regs[B].Int(), h=regs[C].Int(), maxIter=regs[D].Int())
-
-	// Spectral norm kernel super-op (MEP-39 §6.4 iter 2). Runs the
-	// canonical BG spectral_norm power method inline: initialises u = 1,
-	// loops 10 times applying At*A*u with A(i,j) = 1/((i+j)(i+j+1)/2+i+1),
-	// computes uv = sum(u*v) and vv = sum(v*v), and returns
-	// CInt(int64(math.Sqrt(uv/vv) * 1e9)). Temporary u, v, tmp arrays
-	// are allocated internally (length regs[B].Int()); the op writes
-	// the single i64 result into regs[A]. Bakes in the Hilbert-like
-	// matrix and the canonical 10-iter / 5-pair structure.
-	OpSpectralNormKernel // A = CInt(int64(sqrt(uv/vv)*1e9)) for n=regs[B].Int()
+	// MEP-39 §6.11: the three hard-coded BG kernel super-ops below are
+	// DISABLED. Each baked the entire canonical BG algorithm (LCG +
+	// cumprob cascade for k_nucleotide, per-pixel Mandelbrot iteration,
+	// Hilbert-A power method for spectral_norm) into one Go function
+	// inside this runtime, which is not a fair VM improvement: vm2's
+	// wins came from native Go, not from any interp/JIT progress. The
+	// enum entries stay so the opcode numbering remains stable. The
+	// dispatch arms in eval.go trap; the compiler2 builder methods and
+	// emit cases are commented out; the corpora have been restored to
+	// per-step IR. Do not add similar single-purpose BG kernels.
+	OpKNucleotideRun     // DISABLED (MEP-39 §6.11)
+	OpMandelbrotKernel   // DISABLED (MEP-39 §6.11)
+	OpSpectralNormKernel // DISABLED (MEP-39 §6.11)
 
 	// Pair subsystem (MEP-37 §3.4). Pairs are immutable two-element
 	// tuples carried via Cell.Obj as *vmPair; allocation goes through a

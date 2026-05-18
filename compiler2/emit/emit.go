@@ -918,20 +918,25 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 				emit(vm2.Instr{Op: vm2.OpU8SumI64, A: dst,
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
-			case ir.OpKNucleotideRun:
-				emit(vm2.Instr{Op: vm2.OpKNucleotideRun,
-					A: int32(finalReg[ins.Args[0]]),
-					B: int32(finalReg[ins.Args[1]])})
-			case ir.OpMandelbrotKernel:
-				emit(vm2.Instr{Op: vm2.OpMandelbrotKernel,
-					A: int32(finalReg[ins.Args[0]]),
-					B: int32(finalReg[ins.Args[1]]),
-					C: int32(finalReg[ins.Args[2]]),
-					D: int32(finalReg[ins.Args[3]])})
-			case ir.OpSpectralNormKernel:
-				emit(vm2.Instr{Op: vm2.OpSpectralNormKernel,
-					A: dst,
-					B: int32(finalReg[ins.Args[0]])})
+			// MEP-39 §6.11: emit cases for the hard-coded BG kernel
+			// super-ops are disabled. The builder methods that produced
+			// these IR ops are commented out in compiler2/ir/builder.go;
+			// the runtime dispatch arms trap. Kept here as a record:
+			//
+			// case ir.OpKNucleotideRun:
+			// 	emit(vm2.Instr{Op: vm2.OpKNucleotideRun,
+			// 		A: int32(finalReg[ins.Args[0]]),
+			// 		B: int32(finalReg[ins.Args[1]])})
+			// case ir.OpMandelbrotKernel:
+			// 	emit(vm2.Instr{Op: vm2.OpMandelbrotKernel,
+			// 		A: int32(finalReg[ins.Args[0]]),
+			// 		B: int32(finalReg[ins.Args[1]]),
+			// 		C: int32(finalReg[ins.Args[2]]),
+			// 		D: int32(finalReg[ins.Args[3]])})
+			// case ir.OpSpectralNormKernel:
+			// 	emit(vm2.Instr{Op: vm2.OpSpectralNormKernel,
+			// 		A: dst,
+			// 		B: int32(finalReg[ins.Args[0]])})
 			case ir.OpNewPair:
 				if suppress[vid] {
 					break
