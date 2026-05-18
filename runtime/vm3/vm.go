@@ -129,6 +129,7 @@ func (vm *VM) run() (Cell, error) {
 	regsF64 := vm.stackF64[fr.baseF64 : fr.baseF64+int(fn.NumRegsF64)]
 	regsCell := vm.stackCell[fr.baseCell : fr.baseCell+int(fn.NumRegsCell)]
 	consts := fn.Consts
+	arenas := &vm.arenas
 
 	for {
 		op := code[pc]
@@ -494,6 +495,138 @@ func (vm *VM) run() (Cell, error) {
 		case OpDeopt:
 			fr.pc = pc
 			return EncodeDeopt(int(uint16(op.C))), nil
+
+		case OpConstStrKW:
+			regsCell[op.A] = consts[uint16(op.C)]
+			pc++
+		case OpLenStr:
+			c := regsCell[op.B]
+			if c.IsSStr() {
+				regsI64[op.A] = int64(c.SStrLen())
+			} else {
+				regsI64[op.A] = int64(len(arenas.StringBytes(c)))
+			}
+			pc++
+		case OpConcatStr:
+			lhs := regsCell[op.B]
+			rhs := regsCell[uint16(op.C)]
+			var lbuf, rbuf [MaxInlineStr]byte
+			var lb, rb []byte
+			if lhs.IsSStr() {
+				lb = lhs.SStrBytes(&lbuf)
+			} else {
+				lb = arenas.StringBytes(lhs)
+			}
+			if rhs.IsSStr() {
+				rb = rhs.SStrBytes(&rbuf)
+			} else {
+				rb = arenas.StringBytes(rhs)
+			}
+			nlen := len(lb) + len(rb)
+			if nlen <= MaxInlineStr {
+				var merged [MaxInlineStr]byte
+				copy(merged[:], lb)
+				copy(merged[len(lb):], rb)
+				regsCell[op.A] = CSStr(merged[:nlen])
+			} else {
+				regsCell[op.A] = arenas.AllocStringConcat(lb, rb)
+			}
+			pc++
+
+		case OpCallMixed:
+			callee := vm.prog.Funcs[uint16(op.C)]
+			pbs := callee.ParamBanks
+			// Snapshot args before pushFrame (which may regrow slabs).
+			var argI64 [8]int64
+			var argF64 [8]float64
+			var argCell [8]Cell
+			argBase := op.B
+			for k, b := range pbs {
+				idx := argBase + uint16(k)
+				switch b {
+				case BankI64:
+					argI64[k] = regsI64[idx]
+				case BankF64:
+					argF64[k] = regsF64[idx]
+				case BankCell:
+					argCell[k] = regsCell[idx]
+				}
+			}
+			fr.pc = pc + 1
+			retBank := Bank(op.BankFlags & 0x3)
+			vm.pushFrame(callee, op.A, retBank)
+			top++
+			fr = &vm.frames[top]
+			fn = callee
+			code = fn.Code
+			pc = 0
+			regsI64 = vm.stackI64[fr.baseI64 : fr.baseI64+int(fn.NumRegsI64)]
+			regsF64 = vm.stackF64[fr.baseF64 : fr.baseF64+int(fn.NumRegsF64)]
+			regsCell = vm.stackCell[fr.baseCell : fr.baseCell+int(fn.NumRegsCell)]
+			consts = fn.Consts
+			for k, b := range pbs {
+				switch b {
+				case BankI64:
+					regsI64[k] = argI64[k]
+				case BankF64:
+					regsF64[k] = argF64[k]
+				case BankCell:
+					regsCell[k] = argCell[k]
+				}
+			}
+
+		case OpTailCallMixed:
+			callee := vm.prog.Funcs[uint16(op.C)]
+			// Self-tail-call with arg-base 0: args already live in the
+			// canonical regs<bank>[k] positions matching ParamBanks[k].
+			// No copies / clears needed; just rewind PC.
+			if callee == fn && op.B == 0 {
+				pc = 0
+				continue
+			}
+			pbs := callee.ParamBanks
+			var argI64 [8]int64
+			var argF64 [8]float64
+			var argCell [8]Cell
+			argBase := op.B
+			for k, b := range pbs {
+				idx := argBase + uint16(k)
+				switch b {
+				case BankI64:
+					argI64[k] = regsI64[idx]
+				case BankF64:
+					argF64[k] = regsF64[idx]
+				case BankCell:
+					argCell[k] = regsCell[idx]
+				}
+			}
+			fr.fn = callee
+			fn = callee
+			code = fn.Code
+			pc = 0
+			endI := fr.baseI64 + int(callee.NumRegsI64)
+			vm.stackI64 = growI64(vm.stackI64, endI)
+			regsI64 = vm.stackI64[fr.baseI64:endI]
+			clear(regsI64)
+			endF := fr.baseF64 + int(callee.NumRegsF64)
+			vm.stackF64 = growF64(vm.stackF64, endF)
+			regsF64 = vm.stackF64[fr.baseF64:endF]
+			clear(regsF64)
+			endC := fr.baseCell + int(callee.NumRegsCell)
+			vm.stackCell = growCell(vm.stackCell, endC)
+			regsCell = vm.stackCell[fr.baseCell:endC]
+			clear(regsCell)
+			consts = fn.Consts
+			for k, b := range pbs {
+				switch b {
+				case BankI64:
+					regsI64[k] = argI64[k]
+				case BankF64:
+					regsF64[k] = argF64[k]
+				case BankCell:
+					regsCell[k] = argCell[k]
+				}
+			}
 
 		default:
 			fr.pc = pc

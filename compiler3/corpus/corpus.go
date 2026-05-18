@@ -22,5 +22,6 @@ func All() []*Program {
 		FactRec,
 		FibRec,
 		PrimeCount,
+		StringsConcatLoop,
 	}
 }
