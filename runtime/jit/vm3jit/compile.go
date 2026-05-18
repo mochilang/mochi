@@ -1,6 +1,7 @@
 package vm3jit
 
 import (
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"unsafe"
@@ -18,10 +19,20 @@ var ErrUnsupported = errors.New("vm3jit: no backend for this architecture")
 var ErrNotImplemented = errors.New("vm3jit: not implemented")
 
 // maxI64Regs is the cap on simultaneously live i64 registers in the
-// JIT. Slots 0..6 land in x9..x15 (caller-saved, free); slots 7..16
-// land in x19..x28 (callee-saved, requires STP/LDP pairs in the
+// AArch64 JIT. Slots 0..6 land in x9..x15 (caller-saved, free); slots
+// 7..16 land in x19..x28 (callee-saved, requires STP/LDP pairs in the
 // prologue/epilogue). Mirrors vm2jit MEP-39 §6.14 Phase B.
 const maxI64Regs = 17
+
+// maxI64RegsAMD64 is the cap on the AMD64 backend. Slots 0..5 land in
+// RSI, RDI, R8, R9, R10, R11 (caller-saved); slots 6..8 land in R12,
+// R13, R14 (callee-saved, pushed/popped in prologue/epilogue). The
+// remaining x86_64 GPRs are reserved: RAX is the return register and
+// IDIV quotient; RCX is scratch; RDX is IDIV remainder; RBX holds the
+// regsI64 base pointer (preserved by the SysV ABI across our internal
+// CALL); R15 holds the *int64 status word pointer; RSP/RBP are the
+// stack. See lower_amd64.go.
+const maxI64RegsAMD64 = 9
 
 // CompiledFunc is a handle to a vm3jit-compiled function. It owns the
 // executable page and must be freed via Free when the function is
@@ -38,9 +49,11 @@ func (c *CompiledFunc) CodeLen() int { return len(c.code) }
 // first argument of trampoline.Call.
 func (c *CompiledFunc) Entry() unsafe.Pointer { return pageEntry(c.code) }
 
-// MaxI64Regs is the cap on simultaneously-live i64 registers Phase
-// 6.0 supports. Exported so tests and callers can size their reg
-// scratch buffers correctly.
+// MaxI64Regs is the cap on simultaneously-live i64 registers the
+// AArch64 backend supports. Exported so tests and callers can size
+// their reg scratch buffers correctly. The AMD64 backend caps lower
+// (see maxI64RegsAMD64); tests that target both architectures must
+// stay within the smaller value.
 const MaxI64Regs = maxI64Regs
 
 // Free releases the executable page.
@@ -86,32 +99,72 @@ func CompileInProgram(prog *vm3.Program, idx uint32) (*CompiledFunc, error) {
 }
 
 // CompileWithOptions is the explicit-options form. Phase 6.0..6.1d
-// only accepts i64-only functions whose opcode set is covered by
-// lower_arm64. Anything else returns ErrNotImplemented so callers can
-// fall back to the interpreter cleanly.
+// only accepts i64-only functions whose opcode set is covered by the
+// host backend (lower_arm64 / lower_amd64). Anything else returns
+// ErrNotImplemented so callers can fall back to the interpreter
+// cleanly.
 func CompileWithOptions(fn *vm3.Function, opts Options) (*CompiledFunc, error) {
-	if hostArch != ArchARM64 {
-		return nil, ErrUnsupported
-	}
 	if fn.NumRegsF64 != 0 || fn.NumRegsCell != 0 {
 		return nil, fmt.Errorf("%w: %s has non-i64 bank usage (F64=%d Cell=%d)",
 			ErrNotImplemented, fn.Name, fn.NumRegsF64, fn.NumRegsCell)
 	}
-	if fn.NumRegsI64 > maxI64Regs {
-		return nil, fmt.Errorf("%w: %s uses %d i64 regs (max %d in 6.0)",
-			ErrNotImplemented, fn.Name, fn.NumRegsI64, maxI64Regs)
+	cap, archOK := archMaxI64Regs()
+	if !archOK {
+		return nil, ErrUnsupported
 	}
-	words, err := lowerARM64(fn, opts)
+	if int(fn.NumRegsI64) > cap {
+		return nil, fmt.Errorf("%w: %s uses %d i64 regs (max %d on this arch)",
+			ErrNotImplemented, fn.Name, fn.NumRegsI64, cap)
+	}
+	raw, err := lowerHost(fn, opts)
 	if err != nil {
 		return nil, err
 	}
-	page, err := pageAlloc(len(words) * 4)
+	page, err := pageAlloc(len(raw))
 	if err != nil {
 		return nil, err
 	}
-	if err := pageWrite(page, words); err != nil {
+	if err := pageWrite(page, raw); err != nil {
 		_ = pageFree(page)
 		return nil, err
 	}
 	return &CompiledFunc{fn: fn, code: page}, nil
+}
+
+// lowerHost dispatches to the per-arch lowerer and returns the raw
+// little-endian byte stream for the executable page.
+func lowerHost(fn *vm3.Function, opts Options) ([]byte, error) {
+	switch hostArch {
+	case ArchARM64:
+		words, err := lowerARM64(fn, opts)
+		if err != nil {
+			return nil, err
+		}
+		buf := make([]byte, len(words)*4)
+		for i, w := range words {
+			binary.LittleEndian.PutUint32(buf[i*4:], w)
+		}
+		return buf, nil
+	case ArchAMD64:
+		return lowerAMD64(fn, opts)
+	default:
+		return nil, ErrUnsupported
+	}
+}
+
+// archMaxI64Regs returns the host architecture's cap on simultaneously
+// live i64 registers, and whether the architecture is supported at
+// all. AArch64 supports 17 (x9..x15 caller-saved + x19..x28
+// callee-saved). AMD64 supports 12 (R10/R11/RDI/RSI/RDX/RCX/R8/R9
+// caller-saved + R12..R15 callee-saved; RBX is reserved for the
+// regsI64 base pointer).
+func archMaxI64Regs() (int, bool) {
+	switch hostArch {
+	case ArchARM64:
+		return maxI64Regs, true
+	case ArchAMD64:
+		return maxI64RegsAMD64, true
+	default:
+		return 0, false
+	}
 }
