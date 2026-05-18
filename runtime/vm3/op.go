@@ -114,6 +114,23 @@ const (
 	OpListGetCell
 	OpListSetF64
 	OpListSetCell
+
+	// F64 compare-and-branch (Phase 6.2b). C carries target PC (uint16).
+	// IEEE 754 unordered comparisons: NaN forces the branch condition to
+	// false for ordered predicates (Lt/Le/Gt/Ge), so a NaN operand never
+	// branches under those. Eq compares as unordered-false (NaN != NaN);
+	// Ne returns true when either operand is NaN.
+	OpCmpEqF64Br // if regsF64[A] == regsF64[B] jump to uint16(C)
+	OpCmpNeF64Br
+	OpCmpLtF64Br
+	OpCmpLeF64Br
+	OpCmpGtF64Br
+	OpCmpGeF64Br
+
+	// Bank casts (Phase 6.2b). Used by FP kernels that thread an i64
+	// loop counter through an f64 accumulator.
+	OpI64ToF64 // regsF64[A] = float64(regsI64[B])
+	OpF64ToI64 // regsI64[A] = int64(regsF64[B]) (truncating, Go semantics)
 )
 
 // Op is a single 8-byte vm3 bytecode word. Layout:

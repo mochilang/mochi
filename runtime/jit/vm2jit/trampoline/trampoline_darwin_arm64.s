@@ -29,3 +29,19 @@ TEXT ·CallStatus(SB),NOSPLIT,$0-32
 	CALL	(R16)
 	MOVD	R0, ret+24(FP)
 	RET
+
+// func CallStatusFF(entry, regsI64, status, regsF64 unsafe.Pointer) uint64
+//
+// ABI0: entry at FP+0, regsI64 at FP+8, status at FP+16, regsF64 at FP+24,
+// result at FP+32. Adds R2 = regsF64 to the CallStatus ABI so JIT'd f64
+// kernels can load/store regsF64[r] via [x2, #r*8]. Result is a bare
+// uint64 (the JIT bit-casts an f64 result via FMOV x0, d<retSlot> in
+// its epilogue; caller uses math.Float64frombits).
+TEXT ·CallStatusFF(SB),NOSPLIT,$0-40
+	MOVD	entry+0(FP), R16
+	MOVD	regsI64+8(FP), R0
+	MOVD	status+16(FP), R1
+	MOVD	regsF64+24(FP), R2
+	CALL	(R16)
+	MOVD	R0, ret+32(FP)
+	RET

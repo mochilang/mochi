@@ -32,7 +32,25 @@ const maxI64Regs = 17
 // regsI64 base pointer (preserved by the SysV ABI across our internal
 // CALL); R15 holds the *int64 status word pointer; RSP/RBP are the
 // stack. See lower_amd64.go.
+//
+// When fn.NumRegsF64 > 0 the AMD64 backend additionally steals R14 to
+// hold the regsF64 base pointer, dropping the effective i64 cap to 8.
 const maxI64RegsAMD64 = 9
+
+// maxF64RegsARM64 is the cap on simultaneously-live f64 registers in
+// the AArch64 backend. Slots 0..7 land in v0..v7 (caller-saved SIMD/FP).
+// Phase 6.2b kernels are f64-only inside the loop body, no calls cross
+// the f64 slots, so we do not yet need v8..v15 (callee-saved). The
+// regsF64 base pointer is pinned in x2 by the CallStatusFF trampoline
+// and copied into x3 in the prologue (x3 is otherwise unused; freeing
+// x2 for scratch is unnecessary because the prologue keeps it live).
+const maxF64RegsARM64 = 8
+
+// maxF64RegsAMD64 is the AMD64 cap. Slots 0..7 land in xmm0..xmm7
+// (caller-saved on SysV). The regsF64 base pointer arrives in RDX and
+// is parked in R14 by the prologue. When NumRegsF64 > 0 the i64 cap
+// drops to 8 because R14 is stolen.
+const maxF64RegsAMD64 = 8
 
 // CompiledFunc is a handle to a vm3jit-compiled function. It owns the
 // executable page and must be freed via Free when the function is
@@ -55,6 +73,11 @@ func (c *CompiledFunc) Entry() unsafe.Pointer { return pageEntry(c.code) }
 // (see maxI64RegsAMD64); tests that target both architectures must
 // stay within the smaller value.
 const MaxI64Regs = maxI64Regs
+
+// MaxF64Regs is the cap on simultaneously-live f64 registers the JIT
+// supports on either architecture (currently 8 on both AArch64 and
+// AMD64; see maxF64RegsARM64 / maxF64RegsAMD64).
+const MaxF64Regs = maxF64RegsARM64
 
 // Free releases the executable page.
 func (c *CompiledFunc) Free() error {
@@ -98,23 +121,30 @@ func CompileInProgram(prog *vm3.Program, idx uint32) (*CompiledFunc, error) {
 	return CompileWithOptions(prog.Funcs[idx], Options{SelfIdx: int(idx)})
 }
 
-// CompileWithOptions is the explicit-options form. Phase 6.0..6.1d
-// only accepts i64-only functions whose opcode set is covered by the
-// host backend (lower_arm64 / lower_amd64). Anything else returns
-// ErrNotImplemented so callers can fall back to the interpreter
-// cleanly.
+// CompileWithOptions is the explicit-options form. Phase 6.0..6.2b
+// accepts i64-only and i64+f64 functions whose opcode set is covered
+// by the host backend (lower_arm64 / lower_amd64). Cell-bank usage is
+// still routed back to the interpreter (Phase 6.2c+).
 func CompileWithOptions(fn *vm3.Function, opts Options) (*CompiledFunc, error) {
-	if fn.NumRegsF64 != 0 || fn.NumRegsCell != 0 {
-		return nil, fmt.Errorf("%w: %s has non-i64 bank usage (F64=%d Cell=%d)",
-			ErrNotImplemented, fn.Name, fn.NumRegsF64, fn.NumRegsCell)
+	if fn.NumRegsCell != 0 {
+		return nil, fmt.Errorf("%w: %s has Cell bank usage (Cell=%d)",
+			ErrNotImplemented, fn.Name, fn.NumRegsCell)
 	}
-	cap, archOK := archMaxI64Regs()
+	i64Cap, f64Cap, archOK := archCaps(fn)
 	if !archOK {
 		return nil, ErrUnsupported
 	}
-	if int(fn.NumRegsI64) > cap {
-		return nil, fmt.Errorf("%w: %s uses %d i64 regs (max %d on this arch)",
-			ErrNotImplemented, fn.Name, fn.NumRegsI64, cap)
+	if int(fn.NumRegsI64) > i64Cap {
+		return nil, fmt.Errorf("%w: %s uses %d i64 regs (max %d on this arch%s)",
+			ErrNotImplemented, fn.Name, fn.NumRegsI64, i64Cap, capNote(fn))
+	}
+	if int(fn.NumRegsF64) > f64Cap {
+		return nil, fmt.Errorf("%w: %s uses %d f64 regs (max %d on this arch)",
+			ErrNotImplemented, fn.Name, fn.NumRegsF64, f64Cap)
+	}
+	if fn.NumRegsF64 > 0 && fn.ResultBank != vm3.BankF64 && fn.ResultBank != vm3.BankI64 {
+		return nil, fmt.Errorf("%w: %s f64 fn returns non-{i64,f64} bank",
+			ErrNotImplemented, fn.Name)
 	}
 	raw, err := lowerHost(fn, opts)
 	if err != nil {
@@ -155,9 +185,13 @@ func lowerHost(fn *vm3.Function, opts Options) ([]byte, error) {
 // archMaxI64Regs returns the host architecture's cap on simultaneously
 // live i64 registers, and whether the architecture is supported at
 // all. AArch64 supports 17 (x9..x15 caller-saved + x19..x28
-// callee-saved). AMD64 supports 12 (R10/R11/RDI/RSI/RDX/RCX/R8/R9
-// caller-saved + R12..R15 callee-saved; RBX is reserved for the
-// regsI64 base pointer).
+// callee-saved). AMD64 supports 9 (RSI/RDI/R8/R9/R10/R11 caller-saved
+// + R12..R14 callee-saved; RBX is reserved for the regsI64 base
+// pointer and R15 for the *status word).
+//
+// Deprecated: kept for callers outside the JIT itself. Internal call
+// sites should use archCaps(fn) which folds in the F64-driven i64-cap
+// reduction on AMD64.
 func archMaxI64Regs() (int, bool) {
 	switch hostArch {
 	case ArchARM64:
@@ -167,4 +201,34 @@ func archMaxI64Regs() (int, bool) {
 	default:
 		return 0, false
 	}
+}
+
+// archCaps returns the host architecture's caps on simultaneously-live
+// (i64, f64) registers given fn's bank shape, along with whether the
+// architecture is supported. On AMD64, when fn.NumRegsF64 > 0 the i64
+// cap drops to 8 because R14 is repurposed to hold the regsF64 base
+// pointer (the regsI64 base lives in RBX, *status in R15). AArch64 is
+// unaffected: the regsF64 base lives in x2, which is already free.
+func archCaps(fn *vm3.Function) (int, int, bool) {
+	switch hostArch {
+	case ArchARM64:
+		return maxI64Regs, maxF64RegsARM64, true
+	case ArchAMD64:
+		i64Cap := maxI64RegsAMD64
+		if fn.NumRegsF64 > 0 {
+			i64Cap = maxI64RegsAMD64 - 1 // steal R14 for regsF64 base
+		}
+		return i64Cap, maxF64RegsAMD64, true
+	default:
+		return 0, 0, false
+	}
+}
+
+// capNote explains the AMD64 i64-cap reduction for the error message
+// when fn would otherwise have fit but the F64 bank steals R14.
+func capNote(fn *vm3.Function) string {
+	if hostArch == ArchAMD64 && fn.NumRegsF64 > 0 {
+		return " with f64 regs in use; R14 is stolen for the regsF64 base pointer"
+	}
+	return ""
 }

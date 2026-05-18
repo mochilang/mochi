@@ -3,6 +3,7 @@
 package vm3jit_test
 
 import (
+	"math"
 	"testing"
 	"unsafe"
 
@@ -310,17 +311,17 @@ func runJITProgRecursive(t *testing.T, prog *vm3.Program, arg int64) int64 {
 	return int64(got)
 }
 
-// TestRejectF64 confirms a function with f64 banks is rejected by the
-// 6.0 gate (so callers fall back to the interpreter cleanly).
-func TestRejectF64(t *testing.T) {
+// TestRejectTooManyF64 confirms the 6.2b f64 reg cap rejects oversize
+// functions so callers fall back to the interpreter.
+func TestRejectTooManyF64(t *testing.T) {
 	fn := &vm3.Function{
-		Name:       "f64_reject",
-		NumRegsF64: 1,
+		Name:       "wide_f64",
+		NumRegsF64: vm3jit.MaxF64Regs + 1,
 		ResultBank: vm3.BankF64,
 		Code:       []vm3.Op{vm3.MakeOp(vm3.OpReturnF64, 0, 0, 0)},
 	}
 	if _, err := vm3jit.Compile(fn); err == nil {
-		t.Fatal("expected ErrNotImplemented for f64 fn, got nil")
+		t.Fatal("expected ErrNotImplemented for oversize f64 fn, got nil")
 	}
 }
 
@@ -335,5 +336,82 @@ func TestRejectTooManyI64(t *testing.T) {
 	}
 	if _, err := vm3jit.Compile(fn); err == nil {
 		t.Fatal("expected ErrNotImplemented for too-many-i64 fn, got nil")
+	}
+}
+
+// runJITF64Kernel compiles fn (single i64 param, f64 result) and calls
+// it via the CallStatusFF trampoline. Returns the f64 result and the
+// status word. F64 corpus kernels in Phase 6.2b use this.
+func runJITF64Kernel(t *testing.T, fn *vm3.Function, arg int64) (float64, int64) {
+	t.Helper()
+	cf, err := vm3jit.Compile(fn)
+	if err != nil {
+		t.Fatalf("Compile: %v", err)
+	}
+	defer cf.Free()
+	var regsI64 [vm3jit.MaxI64Regs]int64
+	regsI64[0] = arg
+	var regsF64 [vm3jit.MaxF64Regs]float64
+	var status int64
+	bits := trampoline.CallStatusFF(cf.Entry(),
+		unsafe.Pointer(&regsI64[0]),
+		unsafe.Pointer(&status),
+		unsafe.Pointer(&regsF64[0]))
+	return math.Float64frombits(bits), status
+}
+
+// TestCompileF64DotSumMatchesInterp validates Phase 6.2b f64 lowering.
+// F64DotSum exercises OpI64ToF64, OpMulF64, OpAddF64, OpConstF64K,
+// OpReturnF64 alongside the existing i64 cmp/br/AddK kernel shape.
+func TestCompileF64DotSumMatchesInterp(t *testing.T) {
+	prog := corpus.F64DotSum.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	for _, n := range []int64{0, 1, 2, 10, 100, 1000} {
+		got, status := runJITF64Kernel(t, fn, n)
+		if status != vm3jit.StatusOK {
+			t.Fatalf("unexpected deopt n=%d status=%d", n, status)
+		}
+		vm := vm3.NewWithProgram(prog)
+		want, err := vm.RunWithArgs(fn, []int64{n})
+		if err != nil {
+			t.Fatalf("interp n=%d: %v", n, err)
+		}
+		if got != want.Float() {
+			t.Errorf("f64_dot_sum(%d): jit=%g interp=%g", n, got, want.Float())
+		}
+	}
+}
+
+// TestCompileF64ThresholdMatchesInterp drives Phase 6.2b's F64 cmp/br
+// path (OpCmpLtF64Br) and the mixed-bank return: an f64-touching fn
+// that returns i64 via OpReturnI64 / OpReturnConstK.
+func TestCompileF64ThresholdMatchesInterp(t *testing.T) {
+	prog := corpus.F64Threshold.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	cf, err := vm3jit.Compile(fn)
+	if err != nil {
+		t.Fatalf("Compile: %v", err)
+	}
+	defer cf.Free()
+	for _, n := range []int64{0, 1, 5, 10, 11, 20, 100} {
+		var regsI64 [vm3jit.MaxI64Regs]int64
+		regsI64[0] = n
+		var regsF64 [vm3jit.MaxF64Regs]float64
+		var status int64
+		got := int64(trampoline.CallStatusFF(cf.Entry(),
+			unsafe.Pointer(&regsI64[0]),
+			unsafe.Pointer(&status),
+			unsafe.Pointer(&regsF64[0])))
+		if status != vm3jit.StatusOK {
+			t.Fatalf("unexpected deopt n=%d status=%d", n, status)
+		}
+		vm := vm3.NewWithProgram(prog)
+		want, err := vm.RunWithArgs(fn, []int64{n})
+		if err != nil {
+			t.Fatalf("interp n=%d: %v", n, err)
+		}
+		if got != want.Int() {
+			t.Errorf("f64_threshold(%d): jit=%d interp=%d", n, got, want.Int())
+		}
 	}
 }

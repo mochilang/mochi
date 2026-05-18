@@ -299,6 +299,50 @@ func (vm *VM) run() (Cell, error) {
 				pc++
 			}
 
+		case OpCmpEqF64Br:
+			if regsF64[op.A] == regsF64[op.B] {
+				pc = int(uint16(op.C))
+			} else {
+				pc++
+			}
+		case OpCmpNeF64Br:
+			if regsF64[op.A] != regsF64[op.B] {
+				pc = int(uint16(op.C))
+			} else {
+				pc++
+			}
+		case OpCmpLtF64Br:
+			if regsF64[op.A] < regsF64[op.B] {
+				pc = int(uint16(op.C))
+			} else {
+				pc++
+			}
+		case OpCmpLeF64Br:
+			if regsF64[op.A] <= regsF64[op.B] {
+				pc = int(uint16(op.C))
+			} else {
+				pc++
+			}
+		case OpCmpGtF64Br:
+			if regsF64[op.A] > regsF64[op.B] {
+				pc = int(uint16(op.C))
+			} else {
+				pc++
+			}
+		case OpCmpGeF64Br:
+			if regsF64[op.A] >= regsF64[op.B] {
+				pc = int(uint16(op.C))
+			} else {
+				pc++
+			}
+
+		case OpI64ToF64:
+			regsF64[op.A] = float64(regsI64[op.B])
+			pc++
+		case OpF64ToI64:
+			regsI64[op.A] = int64(regsF64[op.B])
+			pc++
+
 		case OpJump:
 			pc = int(uint16(op.C))
 
