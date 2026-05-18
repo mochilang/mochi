@@ -1,9 +1,6 @@
 package vm3
 
-import (
-	"errors"
-	"testing"
-)
+import "testing"
 
 func TestNewVMHasEmptyArenas(t *testing.T) {
 	vm := New()
@@ -15,9 +12,5 @@ func TestNewVMHasEmptyArenas(t *testing.T) {
 	}
 }
 
-func TestRunReturnsNotImplemented(t *testing.T) {
-	vm := New()
-	if _, err := vm.Run(&Function{}); !errors.Is(err, ErrNotImplemented) {
-		t.Fatalf("Run: got %v want ErrNotImplemented", err)
-	}
-}
+// Phase 2 ships a working math-subset interpreter. End-to-end tests
+// live alongside the corpus programs that exercise each opcode group.

@@ -1,20 +1,11 @@
-// Package corpus holds compiler3 hand-built IR programs used to
-// validate end-to-end builds before the Mochi-source frontend lands on
-// compiler3. Mirrors compiler2/corpus so the bench harness can drop in
-// vm3 alongside vm2 without rewriting templates.
+// Package corpus holds compiler3 hand-built programs used to validate
+// end-to-end builds before the Mochi-source frontend lands on
+// compiler3. Mirrors compiler2/corpus so the bench harness can drop
+// vm3 in alongside vm2 without rewriting templates.
 //
-// Phase 0 ships only the scaffold; programs port over in Phase 2.
+// Each entry is a *Program with a Name and a Build(n int64) function
+// that returns a runnable *vm3.Program. The Build function shapes the
+// bytecode for the requested N (where the corpus program uses N as a
+// size knob, otherwise Build ignores it and the harness loops
+// externally via b.N).
 package corpus
-
-import "mochi/compiler3/ir"
-
-// Program names one corpus entry: a function builder keyed by name,
-// parameterized by N (the per-program size knob shared with bench/).
-type Program struct {
-	Name  string
-	Build func(n int64) *ir.Function
-}
-
-// All returns every registered corpus program. Phase 0 ships an empty
-// list; Phase 2 starts populating it.
-func All() []*Program { return nil }
