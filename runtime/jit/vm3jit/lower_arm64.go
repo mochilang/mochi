@@ -8,14 +8,16 @@ import (
 	"mochi/runtime/vm3"
 )
 
-// Register pinning for Phase 6.0:
+// Register pinning:
 //
-//	regsI64[r] -> x(9 + r)  for r in [0, maxI64Regs)
+//	regsI64[r] -> x(9 + r)        for r in [0, 7)   (caller-saved)
+//	regsI64[r] -> x(19 + r - 7)   for r in [7, 17)  (callee-saved)
 //
 // x9..x15 are AArch64 caller-saved temporaries; the JIT can clobber
-// them freely without a callee-saved frame. x0 carries the regsI64
-// base pointer (set by the trampoline). x16/x17 are intra-procedure
-// scratches available to any encoder.
+// them freely. x19..x28 are callee-saved; functions that touch any of
+// those slots push them as STP/LDP pairs in the prologue/epilogue.
+// x0 carries the regsI64 base pointer (set by the trampoline).
+// x16/x17 are intra-procedure scratches available to any encoder.
 //
 // vm3 i64 registers are stored as raw int64 (no NaN-box, no tag). A
 // single LDR/STR moves a value between the regsI64 stack window and
@@ -23,14 +25,36 @@ import (
 // register with no tag arithmetic. This is the key simplification
 // over vm2jit and the reason a small instruction count per opcode is
 // achievable for arithmetic kernels.
-func r2x(r uint16) uint32 { return uint32(r) + 9 }
+func r2x(r uint16) uint32 {
+	if r < 7 {
+		return uint32(r) + 9
+	}
+	return uint32(r) - 7 + 19
+}
+
+// numCalleeSavedPairs returns the number of x19..x28 STP/LDP pairs the
+// frame for fn must push. Each pair covers two register slots. The
+// final pair is pushed even if only one of its two regs is live, since
+// AArch64 STP is a single 16-byte op and partial pairs would waste
+// alignment without saving anything.
+func numCalleeSavedPairs(fn *vm3.Function) int {
+	n := int(fn.NumRegsI64)
+	if n > maxI64Regs {
+		n = maxI64Regs
+	}
+	if n <= 7 {
+		return 0
+	}
+	return (n - 7 + 1) / 2
+}
 
 // lowerARM64 returns the AArch64 instruction-word stream for fn. Two
 // passes: pass 1 computes pcMap[i] = word index where the lowering of
 // bytecode i starts; pass 2 emits real instructions, resolving branch
 // destinations through pcMap.
 func lowerARM64(fn *vm3.Function) ([]uint32, error) {
-	prologueWords := int(fn.NumRegsI64)
+	pairs := numCalleeSavedPairs(fn)
+	prologueWords := pairs + int(fn.NumRegsI64)
 
 	pcMap := make([]int, len(fn.Code)+1)
 	pcMap[0] = prologueWords
@@ -45,8 +69,13 @@ func lowerARM64(fn *vm3.Function) ([]uint32, error) {
 	total := pcMap[len(fn.Code)]
 	ws := make([]uint32, 0, total)
 
+	// Prologue: push callee-saved pairs, then load each live reg from
+	// [x0, #r*8] into its pinned host register.
+	for k := 0; k < pairs; k++ {
+		ws = append(ws, stpPreIdx64(uint32(2*k+19), uint32(2*k+20), 31, -16))
+	}
 	for r := uint32(0); r < uint32(fn.NumRegsI64); r++ {
-		ws = append(ws, ldr64(r+9, 0, r))
+		ws = append(ws, ldr64(r2x(uint16(r)), 0, r))
 	}
 
 	for i, op := range fn.Code {
@@ -65,6 +94,16 @@ func lowerARM64(fn *vm3.Function) ([]uint32, error) {
 			fn.Name, len(ws), total)
 	}
 	return ws, nil
+}
+
+// emitCalleeSavedEpilogueARM64 appends pairs LDP instructions to ws in
+// REVERSE order of the prologue's pushes so each pop matches the
+// topmost STP frame and SP returns to its entry value.
+func emitCalleeSavedEpilogueARM64(ws []uint32, pairs int) []uint32 {
+	for k := pairs - 1; k >= 0; k-- {
+		ws = append(ws, ldpPostIdx64(uint32(2*k+19), uint32(2*k+20), 31, 16))
+	}
+	return ws
 }
 
 // wordCountARM64 returns the exact number of 32-bit words emitInstrARM64
@@ -113,11 +152,11 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op) (int, error) {
 	case vm3.OpJump:
 		return 1, nil
 	case vm3.OpReturnI64:
-		// MOV x0, xA; RET.
-		return 2, nil
+		// MOV x0, xA; <pop callee-saved frame>; RET.
+		return 2 + numCalleeSavedPairs(fn), nil
 	case vm3.OpReturnConstK:
-		// movImm64 into x0; RET.
-		return movImm64WordCount(int64(op.C)) + 1, nil
+		// movImm64 into x0; <pop callee-saved frame>; RET.
+		return movImm64WordCount(int64(op.C)) + numCalleeSavedPairs(fn) + 1, nil
 	default:
 		return 0, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 	}
@@ -211,11 +250,18 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int) ([]uint32
 		return []uint32{bImm(off)}, nil
 
 	case vm3.OpReturnI64:
-		return []uint32{movReg(0, xA), ret()}, nil
+		// MOV x0, xA BEFORE the LDPs: if xA is one of x19..x28 the
+		// epilogue would clobber it.
+		ws := []uint32{movReg(0, xA)}
+		ws = emitCalleeSavedEpilogueARM64(ws, numCalleeSavedPairs(fn))
+		ws = append(ws, ret())
+		return ws, nil
 
 	case vm3.OpReturnConstK:
 		ws := movImm64(0, int64(op.C))
-		return append(ws, ret()), nil
+		ws = emitCalleeSavedEpilogueARM64(ws, numCalleeSavedPairs(fn))
+		ws = append(ws, ret())
+		return ws, nil
 
 	default:
 		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
@@ -340,6 +386,23 @@ func bCond(cond uint32, off19 int32) uint32 {
 }
 
 func ret() uint32 { return 0xD65F03C0 }
+
+// stpPreIdx64 encodes STP Xt1, Xt2, [Xn, #imm]! (64-bit pre-index,
+// writeback). imm is a 7-bit signed multiple of 8 bytes, so the
+// instruction-level immediate is imm/8. Used to push callee-saved
+// pairs in 16-byte chunks (imm = -16).
+func stpPreIdx64(xt1, xt2, xn uint32, imm int32) uint32 {
+	imm7 := uint32(imm/8) & 0x7F
+	return 0xA9800000 | (imm7 << 15) | ((xt2 & 0x1F) << 10) | ((xn & 0x1F) << 5) | (xt1 & 0x1F)
+}
+
+// ldpPostIdx64 encodes LDP Xt1, Xt2, [Xn], #imm (64-bit post-index,
+// writeback). imm is a 7-bit signed multiple of 8. Used to pop the
+// callee-saved pairs in 16-byte chunks (imm = +16).
+func ldpPostIdx64(xt1, xt2, xn uint32, imm int32) uint32 {
+	imm7 := uint32(imm/8) & 0x7F
+	return 0xA8C00000 | (imm7 << 15) | ((xt2 & 0x1F) << 10) | ((xn & 0x1F) << 5) | (xt1 & 0x1F)
+}
 
 // movImm64 emits the shortest movz/movn/movk sequence that loads v
 // into xd. Negative values prefer movn (one-instruction load for

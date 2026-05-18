@@ -95,6 +95,43 @@ func checkKernelAgainstInterp(t *testing.T, name string, prog *corpus.Program, n
 	}
 }
 
+// TestWideI64Frame exercises the callee-saved prologue/epilogue by
+// compiling a function with NumRegsI64 in the [8, 17] range. Each
+// register gets assigned a distinct value, then a chain of moves and
+// adds proves all slots are reachable and survive the function-entry
+// load + the final epilogue's LDP pops.
+func TestWideI64Frame(t *testing.T) {
+	// fn(x) := x + 1 + 2 + ... + 11 + 12 = x + 78.
+	//   regs[0] = x (param)
+	//   regs[1..12] = constants 1..12
+	//   regs[0] = regs[0] + regs[k] for k in 1..12
+	//   return regs[0]
+	const N = 13 // 1 param + 12 consts; all need distinct host regs
+	code := []vm3.Op{}
+	for k := uint16(1); k <= 12; k++ {
+		code = append(code, vm3.MakeOp(vm3.OpConstI64K, k, 0, int16(k)))
+	}
+	for k := uint16(1); k <= 12; k++ {
+		code = append(code, vm3.MakeOp(vm3.OpAddI64, 0, 0, int16(k)))
+	}
+	code = append(code, vm3.MakeOp(vm3.OpReturnI64, 0, 0, 0))
+
+	fn := &vm3.Function{
+		Name:       "wide_chain",
+		NumRegsI64: N,
+		ParamBanks: []vm3.Bank{vm3.BankI64},
+		ResultBank: vm3.BankI64,
+		Code:       code,
+	}
+	for _, x := range []int64{0, 1, 100, -5} {
+		got := runJITI64Kernel(t, fn, x)
+		want := x + 78
+		if got != want {
+			t.Errorf("wide_chain(%d) = %d want %d", x, got, want)
+		}
+	}
+}
+
 // TestRejectF64 confirms a function with f64 banks is rejected by the
 // 6.0 gate (so callers fall back to the interpreter cleanly).
 func TestRejectF64(t *testing.T) {
