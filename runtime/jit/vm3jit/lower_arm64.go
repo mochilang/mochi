@@ -112,7 +112,7 @@ func computeCallSpills(fn *vm3.Function) []uint32 {
 // Existing i64-only fns (NumRegsCell == 0) keep the original layout
 // at x19..x28.
 func numCalleeSavedPairs(fn *vm3.Function) int {
-	return numCellScratchPairs(fn) + numI64CalleeSavedPairs(fn) + numCellCalleeSavedPairs(fn)
+	return numCellScratchPairs(fn) + extraCellScratchPairsARM64(fn) + numI64CalleeSavedPairs(fn) + numCellCalleeSavedPairs(fn)
 }
 
 // numCellScratchPairs is 1 when fn uses any Cell reg (we push x19:x20
@@ -152,12 +152,21 @@ func numCellCalleeSavedPairs(fn *vm3.Function) int {
 }
 
 // calleeSavedPairRegs returns the first reg of each STP/LDP pair in
-// prologue push order. For sum (NumRegsI64=4, NumRegsCell=1) this is
-// [19, 25]: STP x19:x20 (cellscratch), STP x25:x26 (cell reg 0).
+// prologue push order. For sum (NumRegsI64=4, NumRegsCell=1, has Get
+// only) this is [19, 21, 25]: STP x19:x20 (cellscratch + slab base),
+// STP x21:x22 (cells.cap + cells.ptr; cap unused for sum but pushed
+// alongside ptr), STP x25:x26 (cell reg 0). For fill (has Push) the
+// list grows with STP x23:x24 (cells.len + unused) before x25.
 func calleeSavedPairRegs(fn *vm3.Function) []uint32 {
 	pairs := make([]uint32, 0, numCalleeSavedPairs(fn))
 	if numCellScratchPairs(fn) > 0 {
 		pairs = append(pairs, 19)
+	}
+	if hoistsCellsPtrARM64(fn) || hoistsCellsCapARM64(fn) {
+		pairs = append(pairs, 21)
+	}
+	if hoistsCellsLenARM64(fn) {
+		pairs = append(pairs, 23)
 	}
 	i64Pairs := numI64CalleeSavedPairs(fn)
 	if i64Pairs > 0 {
@@ -199,6 +208,16 @@ func hasListPushI64(fn *vm3.Function) bool {
 	return false
 }
 
+// hasListGetI64 reports whether fn contains any OpListGetI64.
+func hasListGetI64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpListGetI64 {
+			return true
+		}
+	}
+	return false
+}
+
 // hoistedCellReg returns the regsCell index whose slab byte address can
 // be cached in x20 for the lifetime of the call, or -1 if no hoist
 // applies. Phase 6.2d.2.c.1 caches regsCell[0]'s slab base when fn has
@@ -223,15 +242,118 @@ func hoistedCellReg(fn *vm3.Function) int {
 }
 
 // hoistPrologueWordsARM64 returns the extra prologue words needed to
-// cache the slab base address for hoistedCellReg(fn) in x20. Zero when
-// no hoist applies.
+// cache the slab base address for hoistedCellReg(fn) in x20 plus any
+// pinned cells header fields (Phase 6.2d.2.c.2). Zero when no hoist
+// applies.
 func hoistPrologueWordsARM64(fn *vm3.Function) int {
 	if hoistedCellReg(fn) < 0 {
 		return 0
 	}
 	stride := int64(vm3.JITListSlabStride())
-	// UXTW + MOV stride + MUL + ADD.
-	return movImm64WordCount(stride) + 3
+	// Slab base hoist: UXTW + MOV stride + MUL + ADD.
+	n := movImm64WordCount(stride) + 3
+	if hoistsCellsPtrARM64(fn) {
+		n++ // LDR x22, [x20, #cellsPtr]
+	}
+	if hoistsCellsCapARM64(fn) {
+		n++ // LDR x21, [x20, #cellsCap]
+	}
+	if hoistsCellsLenARM64(fn) {
+		n++ // LDR x23, [x20, #cellsLen]
+	}
+	return n
+}
+
+// slabFieldHoistOKARM64 reports whether fn's frame has the x21..x24
+// callee-saved register range free for the slab-field hoist. The
+// existing layout reserves x21..x24 for regsI64 slots 7..10 (the
+// callee-saved i64 lane on Cell-bank fns), so when NumRegsI64 > 7 we
+// skip the slab-field hoist and fall back to the 6.2d.2.c.1 slab-base
+// hoist alone. Lists_fill_sum's fill (NumRegsI64=3) and sum (=4) fit.
+func slabFieldHoistOKARM64(fn *vm3.Function) bool {
+	if hoistedCellReg(fn) < 0 {
+		return false
+	}
+	return int(fn.NumRegsI64) <= 7
+}
+
+// hoistsCellsPtrARM64 reports whether the prologue should pin
+// cells.ptr in x22 (Phase 6.2d.2.c.2). Applies whenever the slab-field
+// hoist is admissible and fn has at least one OpListGetI64 or
+// OpListPushI64 against the hoisted cell. cells.ptr is loop-invariant
+// inside the whitelist (only an OpListPushI64 cap-exhaust grow could
+// move it; that path deopts before reaching the next op).
+func hoistsCellsPtrARM64(fn *vm3.Function) bool {
+	if !slabFieldHoistOKARM64(fn) {
+		return false
+	}
+	return hasListGetI64(fn) || hasListPushI64(fn)
+}
+
+// hoistsCellsCapARM64 reports whether the prologue should pin
+// cells.cap in x21. Only OpListPushI64 reads cap (for the inline
+// cap-check); read-only sum fns skip this load.
+func hoistsCellsCapARM64(fn *vm3.Function) bool {
+	if !slabFieldHoistOKARM64(fn) {
+		return false
+	}
+	return hasListPushI64(fn)
+}
+
+// hoistsCellsLenARM64 reports whether the prologue should pin
+// cells.len in x23 and bump it in-register across pushes, flushing
+// back to memory at every Return* and at the StatusListGrow deopt
+// block. Read-only fns (sum) leave cells.len in memory.
+func hoistsCellsLenARM64(fn *vm3.Function) bool {
+	if !slabFieldHoistOKARM64(fn) {
+		return false
+	}
+	return hasListPushI64(fn)
+}
+
+// cellsLenFlushWords returns the number of words a Return* or deopt
+// block needs to flush the pinned cells.len (x23) back to memory so
+// the interpreter sees the up-to-date list length. Two words when
+// cells.len is hoisted (STR x23 into the slice header at byte 16 plus
+// STR w23 into vmList.len at byte 4); 0 otherwise.
+func cellsLenFlushWords(fn *vm3.Function) int {
+	if hoistsCellsLenARM64(fn) {
+		return 2
+	}
+	return 0
+}
+
+// emitCellsLenFlushARM64 appends the two STR words that copy x23
+// (pinned cells.len) back to memory. The slab base is in x20, so
+// cells.len lives at [x20, #16] (imm12=2, 8-byte stride) and the
+// 32-bit vmList.len mirror lives at [x20, #4] (imm12=1, 4-byte stride).
+func emitCellsLenFlushARM64(ws []uint32) []uint32 {
+	cellsOff := uint32(vm3.JITListCellsOffset())
+	ws = append(ws, str64(23, 20, (cellsOff+8)/8))
+	ws = append(ws, strW(23, 20, 1))
+	return ws
+}
+
+// extraCellScratchPairsARM64 returns the number of additional STP/LDP
+// pairs above the base x19:x20 cellscratch pair that the slab-field
+// hoist (Phase 6.2d.2.c.2) needs:
+//   - 1 extra pair (x21:x22) when cells.cap or cells.ptr is pinned
+//   - 1 more pair (x23:x24) when cells.len is pinned
+// 0 otherwise. The pairs always come in adjacent twos because AArch64
+// STP/LDP operates on 16-byte slices; x_unused (x22 when only cap
+// pinned, x24 always) is pushed/popped along for free.
+func extraCellScratchPairsARM64(fn *vm3.Function) int {
+	if !slabFieldHoistOKARM64(fn) {
+		return 0
+	}
+	pairs := 0
+	if hoistsCellsPtrARM64(fn) || hoistsCellsCapARM64(fn) {
+		pairs++
+	}
+	if hoistsCellsLenARM64(fn) {
+		pairs++
+	}
+	return pairs
 }
 
 // deoptStatusesUsedARM64 returns the deopt status codes fn references,
@@ -272,7 +394,7 @@ func deoptBlockWordsARM64Status(fn *vm3.Function) int {
 	if nCell > maxCellRegs {
 		nCell = maxCellRegs
 	}
-	return 2 + nI64 + nF64 + nCell + numCalleeSavedPairs(fn) + numLRPair(fn) + 1
+	return 2 + nI64 + nF64 + nCell + numCalleeSavedPairs(fn) + numLRPair(fn) + 1 + cellsLenFlushWords(fn)
 }
 
 // deoptStartForStatus returns the word offset where the deopt block
@@ -347,6 +469,9 @@ func emitDeoptBlockARM64(fn *vm3.Function, statusCode int64) []uint32 {
 		nCell = maxCellRegs
 	}
 	ws := make([]uint32, 0, deoptBlockWordsARM64Status(fn))
+	if hoistsCellsLenARM64(fn) {
+		ws = emitCellsLenFlushARM64(ws)
+	}
 	for r := uint32(0); r < uint32(nI64); r++ {
 		ws = append(ws, str64(r2x(fn, uint16(r)), 0, r))
 	}
@@ -433,6 +558,22 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 		ws = append(ws, movImm64(17, stride)...)
 		ws = append(ws, mulReg(16, 16, 17))
 		ws = append(ws, addReg(20, 16, 19))
+		// Phase 6.2d.2.c.2: pin the loop-invariant cells slice header
+		// fields in callee-saved regs. cells.ptr (x22) and cells.cap
+		// (x21) never change inside the whitelist (a cap-exhaust deopt
+		// returns to the interp before reaching the next op); cells.len
+		// (x23) is bumped in-register by each push and flushed back at
+		// every Return* and at the StatusListGrow deopt block.
+		cellsOff := uint32(vm3.JITListCellsOffset())
+		if hoistsCellsPtrARM64(fn) {
+			ws = append(ws, ldr64(22, 20, cellsOff/8))
+		}
+		if hoistsCellsCapARM64(fn) {
+			ws = append(ws, ldr64(21, 20, (cellsOff+16)/8))
+		}
+		if hoistsCellsLenARM64(fn) {
+			ws = append(ws, ldr64(23, 20, (cellsOff+8)/8))
+		}
 	}
 
 	for i, op := range fn.Code {
@@ -530,16 +671,17 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 	case vm3.OpJump:
 		return 1, nil
 	case vm3.OpReturnI64:
+		// [STR x23,[x20,#16]; STR w23,[x20,#4]] when cells.len pinned;
 		// MOV x0, xA; <pop callee-saved frame>; <pop x29:x30 if non-leaf>; RET.
-		return 2 + numCalleeSavedPairs(fn) + numLRPair(fn), nil
+		return 2 + numCalleeSavedPairs(fn) + numLRPair(fn) + cellsLenFlushWords(fn), nil
 	case vm3.OpReturnConstK:
-		// movImm64 into x0; <pop callee-saved frame>; <pop x29:x30>; RET.
-		return movImm64WordCount(int64(op.C)) + numCalleeSavedPairs(fn) + numLRPair(fn) + 1, nil
+		// [flush] movImm64 into x0; <pop callee-saved frame>; <pop x29:x30>; RET.
+		return movImm64WordCount(int64(op.C)) + numCalleeSavedPairs(fn) + numLRPair(fn) + 1 + cellsLenFlushWords(fn), nil
 	case vm3.OpReturnF64:
-		// FMOV x0, D<retSlot>; <pop callee-saved frame>; <pop x29:x30>; RET.
+		// [flush] FMOV x0, D<retSlot>; <pop callee-saved frame>; <pop x29:x30>; RET.
 		// Bit-cast the f64 in d<A> to a uint64 in x0 so the trampoline
 		// return channel carries either bank uniformly.
-		return 2 + numCalleeSavedPairs(fn) + numLRPair(fn), nil
+		return 2 + numCalleeSavedPairs(fn) + numLRPair(fn) + cellsLenFlushWords(fn), nil
 
 	case vm3.OpConstF64K:
 		// MOV imm into x16 with the IEEE 754 bit-pattern, then
@@ -585,11 +727,16 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 
 	case vm3.OpListGetI64:
 		// Inline read-only list[i] -> i64 fast path. See emitInstrARM64
-		// for the exact sequence; 7 instruction words in the cold form
-		// (UXTW + MOV stride + MUL + ADD + LDR cells + LDR cell + SBFX),
-		// or 3 words when hoistedCellReg(fn) matches op.B and x20 holds
-		// the cached slab address (LDR cells + LDR cell + SBFX).
+		// for the exact sequence; 7 words in the cold form (UXTW + MOV
+		// stride + MUL + ADD + LDR cells + LDR cell + SBFX); 3 words
+		// when hoistedCellReg matches op.B and x20 holds the cached
+		// slab address (LDR cells + LDR cell + SBFX); 2 words when
+		// cells.ptr is additionally pinned in x22 (Phase 6.2d.2.c.2),
+		// collapsing to LDR cell + SBFX.
 		if h := hoistedCellReg(fn); h >= 0 && int(op.B) == h {
+			if hoistsCellsPtrARM64(fn) {
+				return 2, nil
+			}
 			return 3, nil
 		}
 		stride := int64(vm3.JITListSlabStride())
@@ -600,9 +747,16 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// movImm64WordCount(stride)+14 words (UXTW + MOV stride + MUL +
 		// ADD lane + 11-instr body). When hoistedCellReg(fn) matches
 		// op.A the first 4 instructions collapse into the cached x20
-		// slab base and the body shrinks to 11 words. On cap exhaustion
-		// the inline B.HS branches to the StatusListGrow deopt block.
+		// slab base and the body shrinks to 11 words. When the slab-
+		// field hoist also applies (Phase 6.2d.2.c.2, x21=cap, x22=ptr,
+		// x23=len) the body shrinks to 6 words: CMP + B.HS + MOVZ +
+		// BFI + STR + ADD; cells.len stays in x23 until Return* or
+		// deopt flushes it. On cap exhaustion the inline B.HS branches
+		// to the StatusListGrow deopt block.
 		if h := hoistedCellReg(fn); h >= 0 && int(op.A) == h {
+			if hoistsCellsLenARM64(fn) {
+				return 6, nil
+			}
 			return 11, nil
 		}
 		stride := int64(vm3.JITListSlabStride())
@@ -737,13 +891,21 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 	case vm3.OpReturnI64:
 		// MOV x0, xA BEFORE the LDPs: if xA is one of x19..x28 the
 		// epilogue would clobber it.
-		ws := []uint32{movReg(0, xA)}
+		ws := make([]uint32, 0, 2+numCalleeSavedPairs(fn)+numLRPair(fn)+cellsLenFlushWords(fn))
+		if hoistsCellsLenARM64(fn) {
+			ws = emitCellsLenFlushARM64(ws)
+		}
+		ws = append(ws, movReg(0, xA))
 		ws = emitFrameEpilogueARM64(ws, calleeSavedPairRegs(fn), numLRPair(fn))
 		ws = append(ws, ret())
 		return ws, nil
 
 	case vm3.OpReturnConstK:
-		ws := movImm64(0, int64(op.C))
+		ws := make([]uint32, 0, movImm64WordCount(int64(op.C))+numCalleeSavedPairs(fn)+numLRPair(fn)+1+cellsLenFlushWords(fn))
+		if hoistsCellsLenARM64(fn) {
+			ws = emitCellsLenFlushARM64(ws)
+		}
+		ws = append(ws, movImm64(0, int64(op.C))...)
 		ws = emitFrameEpilogueARM64(ws, calleeSavedPairRegs(fn), numLRPair(fn))
 		ws = append(ws, ret())
 		return ws, nil
@@ -753,7 +915,11 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// so the trampoline returns the bit pattern. Caller does
 		// math.Float64frombits to recover the f64. Then run the
 		// epilogue exactly like OpReturnI64.
-		ws := []uint32{fmovXD(0, r2d(op.A))}
+		ws := make([]uint32, 0, 2+numCalleeSavedPairs(fn)+numLRPair(fn)+cellsLenFlushWords(fn))
+		if hoistsCellsLenARM64(fn) {
+			ws = emitCellsLenFlushARM64(ws)
+		}
+		ws = append(ws, fmovXD(0, r2d(op.A)))
 		ws = emitFrameEpilogueARM64(ws, calleeSavedPairRegs(fn), numLRPair(fn))
 		ws = append(ws, ret())
 		return ws, nil
@@ -856,9 +1022,19 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		//   LDR  x17, [x20, #CELLS_OFFSET]     ; cells.ptr
 		//   LDR  x17, [x17, xIdx, lsl #3]      ; cells[idxReg]
 		//   SBFX xA, x17, #0, #48              ; sign-extend payload
+		//
+		// Hottest form (Phase 6.2d.2.c.2, x22 == cells.ptr):
+		//   LDR  x17, [x22, xIdx, lsl #3]      ; cells[idxReg]
+		//   SBFX xA, x17, #0, #48              ; sign-extend payload
 		cellsOff := uint32(vm3.JITListCellsOffset())
 		xIdx := r2x(fn, uint16(op.C))
 		if h := hoistedCellReg(fn); h >= 0 && int(op.B) == h {
+			if hoistsCellsPtrARM64(fn) {
+				ws := make([]uint32, 0, 2)
+				ws = append(ws, ldrRegLsl3(17, 22, xIdx))
+				ws = append(ws, sbfx48(xA, 17))
+				return ws, nil
+			}
 			ws := make([]uint32, 0, 3)
 			ws = append(ws, ldr64(17, 20, cellsOff/8))
 			ws = append(ws, ldrRegLsl3(17, 17, xIdx))
@@ -927,6 +1103,16 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		//   ADD  x4,  x4, #1
 		//   STR  x4,  [x20, #CELLS_OFF+8]
 		//   STR  w4,  [x20, #4]
+		//
+		// Hottest form (Phase 6.2d.2.c.2, x21=cap, x22=ptr, x23=len):
+		//   CMP  x23, x21
+		//   B.HS deopt_listgrow
+		//   MOVZ x16, #0xFFFA, LSL #48
+		//   BFI  x16, xVal, #0, #48
+		//   STR  x16, [x22, x23, LSL #3]
+		//   ADD  x23, x23, #1
+		// (no in-loop stores back to cells.len or vmList.len; the
+		// epilogue and the deopt block flush x23 to memory.)
 		// In the hot form x20 is pinned (cached slab base) so the boxed
 		// Cell scratch moves to x16; in the cold form x20 is free and the
 		// slab address has already left x16, so the old x20 scratch is
@@ -938,6 +1124,21 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		xVal := r2x(fn, op.B)
 		lgStart := deoptStartForStatus(fn, deoptStart, StatusListGrow)
 		if h := hoistedCellReg(fn); h >= 0 && int(op.A) == h {
+			if hoistsCellsLenARM64(fn) {
+				ws := make([]uint32, 0, 6)
+				ws = append(ws, cmpReg(23, 21))
+				bWord := pcMap[idx] + len(ws)
+				off, err := branchOff(bWord, lgStart, 19)
+				if err != nil {
+					return nil, fmt.Errorf("ListPushI64 deopt branch: %w", err)
+				}
+				ws = append(ws, bCond(0x2, off)) // B.HS
+				ws = append(ws, movz(16, 0xFFFA, 3))
+				ws = append(ws, bfi48(16, xVal))
+				ws = append(ws, str64RegLsl3(16, 22, 23))
+				ws = append(ws, addImm64(23, 23, 1))
+				return ws, nil
+			}
 			ws := make([]uint32, 0, 11)
 			ws = append(ws, ldr64(4, 20, cellsLenImm12))
 			ws = append(ws, ldr64(17, 20, cellsCapImm12))
