@@ -58,59 +58,12 @@ func AnalyzeLeafShape(fn *Function) {
 	}
 }
 
-// leafReturnCell materializes the cached leaf return value. Caller must
-// ensure fn.LeafKind != LeafKindNone before invoking.
-func (fn *Function) leafReturnCell(vm *VM) Cell {
-	if fn.LeafKind == LeafKindReturnI64K {
-		return CInt(int64(fn.LeafReturnA))
-	}
-	// LeafKindReturnNewPairKK
-	return vm.newPair(CInt(int64(fn.LeafReturnB)), CInt(int64(fn.LeafReturnC)))
-}
-
-// tryLeafA1 returns (leafReturn, true) when fn matches the cached leaf
-// shape on a single-arg call (guard reg must be 0). Used by OpCallA1
-// and OpCallSelfA1 dispatch.
-func (fn *Function) tryLeafA1(vm *VM, a0 Cell) (Cell, bool) {
-	if fn.LeafGuardReg != 0 {
-		return Cell{}, false
-	}
-	if a0.Int() != int64(fn.LeafGuardK) {
-		return Cell{}, false
-	}
-	return fn.leafReturnCell(vm), true
-}
-
-// tryLeafA2 returns (leafReturn, true) when fn matches the cached leaf
-// shape on a two-arg call. Used by OpCallA2 / OpCallSelfA2 dispatch.
-// Both args are inspected, indexed by fn.LeafGuardReg.
-func (fn *Function) tryLeafA2(vm *VM, a0, a1 Cell) (Cell, bool) {
-	var g int64
-	switch fn.LeafGuardReg {
-	case 0:
-		g = a0.Int()
-	case 1:
-		g = a1.Int()
-	default:
-		return Cell{}, false
-	}
-	if g != int64(fn.LeafGuardK) {
-		return Cell{}, false
-	}
-	return fn.leafReturnCell(vm), true
-}
-
-// tryLeafA2Guard1 returns (leafReturn, true) when fn matches the cached
-// leaf shape AND the guard register is arg1. Used by the Pair-fused
-// call sites (OpPairFst/SndCallA2, OpPairFst/SndCallSelfA2): arg0 is a
-// pair half there, which the guard cannot meaningfully be compared
-// against without extracting the half, so we only handle guard-on-arg1.
-func (fn *Function) tryLeafA2Guard1(vm *VM, a1 Cell) (Cell, bool) {
-	if fn.LeafGuardReg != 1 {
-		return Cell{}, false
-	}
-	if a1.Int() != int64(fn.LeafGuardK) {
-		return Cell{}, false
-	}
-	return fn.leafReturnCell(vm), true
-}
+// The leaf shortcut is consumed inline in each of the eight call-site
+// dispatch arms in eval.go. Earlier iterations of this code routed the
+// guard/materialize step through tryLeafA1 / tryLeafA2 / tryLeafA2Guard1
+// + leafReturnCell helpers, but Go's inliner rejected them at cost > 80
+// (one materialize-newPair call plus the guard switch); function-call
+// overhead then dominated the saved frame setup on hot kernels. Iter 4
+// of MEP-39 §6.10 inlines the check directly: each arm reads
+// LeafKind, LeafGuardReg, and LeafGuardK from the callee and short-
+// circuits to a CInt or vm.newPair before paying the frame-push cost.

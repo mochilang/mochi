@@ -252,11 +252,13 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			// at the new frame's slot 0 and dispatch. Hot path for
 			// binary_trees.makeTree(d-1) and fib_rec.
 			callee := vm.Program.Funcs[ins.B]
-			if callee.LeafKind != LeafKindNone {
-				if r, ok := callee.tryLeafA1(vm, regs[ins.C]); ok {
-					regs[ins.A] = r
-					break
+			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 0 && regs[ins.C].Int() == int64(callee.LeafGuardK) {
+				if lk == LeafKindReturnI64K {
+					regs[ins.A] = CInt(int64(callee.LeafReturnA))
+				} else {
+					regs[ins.A] = vm.newPair(CInt(int64(callee.LeafReturnB)), CInt(int64(callee.LeafReturnC)))
 				}
+				break
 			}
 			fr.IP = ip
 			base := len(vm.Stack)
@@ -284,9 +286,23 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			// 2-arg specialized call. Same shape as OpCallA1 with one
 			// more arg in ins.D. Hot path for binary_trees.checkTree.
 			callee := vm.Program.Funcs[ins.B]
-			if callee.LeafKind != LeafKindNone {
-				if r, ok := callee.tryLeafA2(vm, regs[ins.C], regs[ins.D]); ok {
-					regs[ins.A] = r
+			if lk := callee.LeafKind; lk != LeafKindNone {
+				var g int64
+				ok := true
+				switch callee.LeafGuardReg {
+				case 0:
+					g = regs[ins.C].Int()
+				case 1:
+					g = regs[ins.D].Int()
+				default:
+					ok = false
+				}
+				if ok && g == int64(callee.LeafGuardK) {
+					if lk == LeafKindReturnI64K {
+						regs[ins.A] = CInt(int64(callee.LeafReturnA))
+					} else {
+						regs[ins.A] = vm.newPair(CInt(int64(callee.LeafReturnB)), CInt(int64(callee.LeafReturnC)))
+					}
 					break
 				}
 			}
@@ -320,11 +336,13 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			// intermediate register write the standalone OpPairFst would
 			// have performed. Hot path for binary_trees.checkTree(fst,d-1).
 			callee := vm.Program.Funcs[ins.B]
-			if callee.LeafKind != LeafKindNone {
-				if r, ok := callee.tryLeafA2Guard1(vm, regs[ins.D]); ok {
-					regs[ins.A] = r
-					break
+			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 1 && regs[ins.D].Int() == int64(callee.LeafGuardK) {
+				if lk == LeafKindReturnI64K {
+					regs[ins.A] = CInt(int64(callee.LeafReturnA))
+				} else {
+					regs[ins.A] = vm.newPair(CInt(int64(callee.LeafReturnB)), CInt(int64(callee.LeafReturnC)))
 				}
+				break
 			}
 			fr.IP = ip
 			base := len(vm.Stack)
@@ -353,11 +371,13 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			ip = 0
 		case OpPairSndCallA2:
 			callee := vm.Program.Funcs[ins.B]
-			if callee.LeafKind != LeafKindNone {
-				if r, ok := callee.tryLeafA2Guard1(vm, regs[ins.D]); ok {
-					regs[ins.A] = r
-					break
+			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 1 && regs[ins.D].Int() == int64(callee.LeafGuardK) {
+				if lk == LeafKindReturnI64K {
+					regs[ins.A] = CInt(int64(callee.LeafReturnA))
+				} else {
+					regs[ins.A] = vm.newPair(CInt(int64(callee.LeafReturnB)), CInt(int64(callee.LeafReturnC)))
 				}
+				break
 			}
 			fr.IP = ip
 			base := len(vm.Stack)
@@ -386,11 +406,13 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			ip = 0
 		case OpCallSelfA1:
 			callee := fr.Fn
-			if callee.LeafKind != LeafKindNone {
-				if r, ok := callee.tryLeafA1(vm, regs[ins.C]); ok {
-					regs[ins.A] = r
-					break
+			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 0 && regs[ins.C].Int() == int64(callee.LeafGuardK) {
+				if lk == LeafKindReturnI64K {
+					regs[ins.A] = CInt(int64(callee.LeafReturnA))
+				} else {
+					regs[ins.A] = vm.newPair(CInt(int64(callee.LeafReturnB)), CInt(int64(callee.LeafReturnC)))
 				}
+				break
 			}
 			fr.IP = ip
 			base := len(vm.Stack)
@@ -412,9 +434,23 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			ip = 0
 		case OpCallSelfA2:
 			callee := fr.Fn
-			if callee.LeafKind != LeafKindNone {
-				if r, ok := callee.tryLeafA2(vm, regs[ins.C], regs[ins.D]); ok {
-					regs[ins.A] = r
+			if lk := callee.LeafKind; lk != LeafKindNone {
+				var g int64
+				ok := true
+				switch callee.LeafGuardReg {
+				case 0:
+					g = regs[ins.C].Int()
+				case 1:
+					g = regs[ins.D].Int()
+				default:
+					ok = false
+				}
+				if ok && g == int64(callee.LeafGuardK) {
+					if lk == LeafKindReturnI64K {
+						regs[ins.A] = CInt(int64(callee.LeafReturnA))
+					} else {
+						regs[ins.A] = vm.newPair(CInt(int64(callee.LeafReturnB)), CInt(int64(callee.LeafReturnC)))
+					}
 					break
 				}
 			}
@@ -440,11 +476,13 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			ip = 0
 		case OpPairFstCallSelfA2:
 			callee := fr.Fn
-			if callee.LeafKind != LeafKindNone {
-				if r, ok := callee.tryLeafA2Guard1(vm, regs[ins.D]); ok {
-					regs[ins.A] = r
-					break
+			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 1 && regs[ins.D].Int() == int64(callee.LeafGuardK) {
+				if lk == LeafKindReturnI64K {
+					regs[ins.A] = CInt(int64(callee.LeafReturnA))
+				} else {
+					regs[ins.A] = vm.newPair(CInt(int64(callee.LeafReturnB)), CInt(int64(callee.LeafReturnC)))
 				}
+				break
 			}
 			fr.IP = ip
 			base := len(vm.Stack)
@@ -469,11 +507,13 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			ip = 0
 		case OpPairSndCallSelfA2:
 			callee := fr.Fn
-			if callee.LeafKind != LeafKindNone {
-				if r, ok := callee.tryLeafA2Guard1(vm, regs[ins.D]); ok {
-					regs[ins.A] = r
-					break
+			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 1 && regs[ins.D].Int() == int64(callee.LeafGuardK) {
+				if lk == LeafKindReturnI64K {
+					regs[ins.A] = CInt(int64(callee.LeafReturnA))
+				} else {
+					regs[ins.A] = vm.newPair(CInt(int64(callee.LeafReturnB)), CInt(int64(callee.LeafReturnC)))
 				}
+				break
 			}
 			fr.IP = ip
 			base := len(vm.Stack)
