@@ -84,47 +84,60 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 		return 0, false, errors.New("vm3jit: jitCall on fn without JITCode")
 	}
 	jf := vmJITFrame(vm)
-	// Zero the slots the JIT's prologue will load. Pool reuse leaves
-	// prior call's values in scratch slots; the JIT may load them into
-	// pinned regs before any write, so we have to match the interp's
-	// "fresh frame starts zeroed" semantics for non-param slots. Param
-	// slots are immediately overwritten below.
+	// Phase 6.2d.2.b step 2.E fast path: JITPreAllocList kernels (the
+	// lists/maps entry shape) have a predictable param layout (argsI64
+	// only, ParamBanks not consulted) and the JIT body writes every
+	// scratch slot before reading it -- skip the per-bank clear()s and
+	// the ParamBanks switch, and slot the warm-cache scratch list
+	// directly into regsCell[A]. Snapshot/restore is also skipped (the
+	// scratch slot is the only allocation, and it lives across calls).
+	if fn.JITPreAllocList {
+		op0 := fn.Code[0]
+		dest := int(op0.A)
+		if dest < MaxCellRegs {
+			jf.regsCell[dest] = vm.EnsureScratchList(int(op0.C))
+		}
+		n := min(len(argsI64), MaxI64Regs)
+		copy(jf.regsI64[:n], argsI64[:n])
+		jf.status = 0
+		populateArenaCtx(&jf.arenaCtx, vm.Arenas())
+		bits := trampoline.CallStatusM(
+			fn.JITCode,
+			unsafe.Pointer(&jf.regsI64[0]),
+			unsafe.Pointer(&jf.status),
+			unsafe.Pointer(&jf.regsF64[0]),
+			unsafe.Pointer(&jf.regsCell[0]),
+			unsafe.Pointer(&jf.arenaCtx))
+		if jf.status != 0 {
+			nI64 := int(fn.NumRegsI64)
+			nF64 := int(fn.NumRegsF64)
+			nCell := int(fn.NumRegsCell)
+			copy(vm.DeoptScratchI64(nI64), jf.regsI64[:nI64])
+			copy(vm.DeoptScratchF64(nF64), jf.regsF64[:nF64])
+			copy(vm.DeoptScratchCell(nCell), jf.regsCell[:nCell])
+			return 0, true, nil
+		}
+		return bits, false, nil
+	}
+	// General-case path. Zero the slots the JIT's prologue will load;
+	// pool reuse leaves prior call's values in scratch slots and the
+	// JIT may load them into pinned regs before any write.
 	nI64 := min(int(fn.NumRegsI64), MaxI64Regs)
 	clear(jf.regsI64[:nI64])
 	nF64 := min(int(fn.NumRegsF64), MaxF64Regs)
 	clear(jf.regsF64[:nF64])
 	nCell := min(int(fn.NumRegsCell), MaxCellRegs)
 	clear(jf.regsCell[:nCell])
-	// Per-call arena mark/restore (Phase 6.2d.2.b step 2.D). The JIT
-	// entry path is the trampoline analogue of the interp's pushFrame:
-	// without a snapshot here, every JIT'd call that allocates from an
-	// arena (e.g. the PC=0 pre-alloc OpNewList below) would leak a slot
-	// per call, since the trampoline does not run the interp's per-frame
-	// truncateToMarks. The snapshot must happen BEFORE pre-alloc so the
-	// pre-alloc'd list is itself reclaimed on clean return; on deopt we
-	// skip the restore so the spilled deopt handles stay valid for the
-	// interp's resume.
+	// Per-call arena mark/restore: snapshot before the trampoline,
+	// restore on clean return. Deopt skips the restore so the spilled
+	// vm.deopt* handles stay valid for the interp's resume.
 	var marks vm3.CallScopeMarks
 	vm.Arenas().SnapshotForJITEntry(&marks)
-	// Phase 6.2d.2.b step 2: PC=0 OpNewList pre-alloc. When the JIT
-	// admission marked fn.JITPreAllocList, the lowered code skipped
-	// fn.Code[0]'s OpNewList — pre-allocate the list here so the JIT's
-	// downstream OpCallMixed sites see the handle in jf.regsCell[A].
-	// The arenaCtx snapshot below happens AFTER this alloc so the JIT
-	// prologue caches the post-allocation arenas.Lists base.
-	if fn.JITPreAllocList {
-		op0 := fn.Code[0]
-		dest := int(op0.A)
-		if dest < MaxCellRegs {
-			jf.regsCell[dest] = vm.Arenas().AllocList(0, int(op0.C))
-		}
-	}
 	// Lay out params per ParamBanks position-indexed convention: argsX[k]
 	// is meaningful iff fn.ParamBanks[k] == BankX. For i64-only callees
-	// (OpCallI64 / Phase 6.2c path) argsCell/argsF64 are nil and we use
-	// the fast path: copy argsI64 directly into regsI64[0..]. For mixed-
-	// bank callees (Phase 6.2d.2.b path, OpCallMixed) walk ParamBanks and
-	// drop each arg into its bank's regs<X>[k] slot.
+	// argsCell/argsF64 are nil and we use the fast path: copy argsI64
+	// directly into regsI64[0..]. For mixed-bank callees walk ParamBanks
+	// and drop each arg into its bank's regs<X>[k] slot.
 	if fn.NumRegsCell == 0 && len(argsCell) == 0 {
 		n := min(len(argsI64), MaxI64Regs)
 		copy(jf.regsI64[:n], argsI64[:n])
@@ -194,8 +207,8 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 		return 0, true, nil
 	}
 	// Clean unboxed return: reclaim any arena slot allocated during the
-	// JIT'd call. Safe because the only admitted Cell-bank entry shape
-	// (lists_fill_sum main) returns int64; no handle escapes.
+	// JIT'd call. Safe because admitted Cell-bank callees return
+	// unboxed scalars; no handle escapes the call.
 	vm.Arenas().RestoreUnboxedReturn(&marks)
 	return bits, false, nil
 }
