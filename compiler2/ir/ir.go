@@ -190,6 +190,7 @@ const (
 	OpU8ReverseComplementDNA // Args[0]=src, Args[1]=dst, Args[2]=n; dst[n-1-i] = compDNA(src[i]) for i in [0,n); TUnit
 	OpU8SumI64               // Args[0]=arr, Args[1]=n; returns sum(arr[0:n]) as TI64
 	OpKNucleotideRun         // Args[0]=counts (TI64Array length>=20), Args[1]=n; bakes in canonical LCG (seed=42, *3877+29573 %139968) and HOMO_SAPIENS cumprob cascade; TUnit
+	OpMandelbrotKernel       // Args[0]=out (TU8Array length>=w*h), Args[1]=w, Args[2]=h, Args[3]=maxIter; out[row*w+col] = escape count for canonical [-2,1]x[-1,1] grid; TUnit
 
 	// Pair subsystem (MEP-37 §3.4). Packed two-element tuples backed by
 	// the per-VM vmPair arena. Construction is one OpNewPair; reads are
