@@ -39,6 +39,11 @@ type Arenas struct {
 const (
 	flagAlive  uint8 = 1 << 0
 	flagShared uint8 = 1 << 1
+	// flagMarked is set by Phase 5 mark-sweep during the mark phase and
+	// cleared during the sweep phase. A slot with flagAlive but not
+	// flagMarked at sweep time is freed; an alive+marked slot retains
+	// its flagAlive and has flagMarked cleared.
+	flagMarked uint8 = 1 << 2
 )
 
 type vmString struct {
