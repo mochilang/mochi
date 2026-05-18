@@ -81,6 +81,13 @@ func All() []Program {
 		// folds emitted digits into a rolling i64 hash so peers can
 		// integer-compare. Exercises the bignum subsystem (§4.2.3).
 		{Name: "bg_pidigits", Build: BuildPidigits, Expect: ExpectPidigits},
+		// MEP-39 §6.9: parameterised regex_redux kernel. vm2 has no
+		// regex ops (§4.2.4 path (b)), so the kernel is a plain state-
+		// machine scan: deterministic DNA stream of N codes 0..3 with
+		// a 4-byte rolling window matched against two length-4
+		// alternation patterns ("agtt", "ttga"). Output is the i64
+		// match count.
+		{Name: "bg_regex_redux", Build: BuildRegexRedux, Expect: ExpectRegexRedux},
 	}
 }
 

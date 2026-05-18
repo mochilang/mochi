@@ -74,6 +74,9 @@ var repeats = map[string]int{
 	// full produce/consume loop until N digits are folded into the
 	// rolling i64 hash.
 	"bg_pidigits": 1,
+	// MEP-39 §6.9: regex_redux. N is the DNA stream length; one LCG
+	// step + one window shift + one match check per inner iter.
+	"bg_regex_redux": 1,
 }
 
 func main() {

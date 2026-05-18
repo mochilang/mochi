@@ -120,6 +120,13 @@ var programs = []program{
 	// so they appear as "—" in the table (see skipLang below); the BG
 	// canon uses an external `lgmp` peer for those columns.
 	{category: "bg", name: "pidigits", ns: []int{1000, 10000}},
+	// MEP-39 §6.9: BG regex_redux kernel. vm2 has no regex ops (see
+	// MEP-39 §4.2.4 path (b)), so the kernel is a plain state-machine
+	// scan: deterministic DNA stream of N codes 0..3 via the same
+	// fasta LCG, with a 4-byte rolling window matched against two
+	// length-4 alternation patterns ("agtt", "ttga"). Output is the
+	// i64 match count. See bench/template/bg/regex_redux/.
+	{category: "bg", name: "regex_redux", ns: []int{1000, 10000}},
 }
 
 // skipLang lists (<cat>/<name>, lang) pairs whose peer is intentionally
