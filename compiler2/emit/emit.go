@@ -267,6 +267,31 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		suppress[rhs] = true
 		modK[ir.ValueID(vid)] = modKInfo{k: k, src: ins.Args[0]}
 	}
+	// divK mirrors modK (not commutative): only the rhs (divisor) can
+	// fold. Hot for LCG-bucketing chains in MEP-39 §6.9 regex_redux
+	// (`code = (seed * 4) / 139968`). emit-side fusion enforces non-zero
+	// immediate so the dispatch path skips the div-by-zero check.
+	type divKInfo struct {
+		k   int64
+		src ir.ValueID
+	}
+	divK := make(map[ir.ValueID]divKInfo)
+	for vid, ins := range f.Values {
+		if ins.Op != ir.OpDivI64 {
+			continue
+		}
+		rhs := ins.Args[1]
+		c := f.Values[rhs]
+		if c.Op != ir.OpConstI64 || useCount[rhs] != 1 {
+			continue
+		}
+		k := c.Aux
+		if k == 0 || k < -(1<<31) || k > (1<<31)-1 {
+			continue
+		}
+		suppress[rhs] = true
+		divK[ir.ValueID(vid)] = divKInfo{k: k, src: ins.Args[0]}
+	}
 	// fuseCmpConst marks a fused cmp+condbr whose const operand should be
 	// inlined into the K-form jump op (avoids the OpLoadConstI dispatch
 	// + register slot). Populated for OpEqualI64, OpLessI64, OpLessEqI64
@@ -596,6 +621,12 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
 			case ir.OpDivI64:
+				if info, ok := divK[vid]; ok {
+					emit(vm2.Instr{Op: vm2.OpDivI64K, A: dst,
+						B: int32(finalReg[info.src]),
+						C: int32(info.k)})
+					break
+				}
 				emit(vm2.Instr{Op: vm2.OpDivI64, A: dst,
 					B: int32(finalReg[ins.Args[0]]),
 					C: int32(finalReg[ins.Args[1]])})
@@ -1001,6 +1032,28 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 						emit(vm2.Instr{Op: vm2.OpTailCallSelfA4,
 							A: s0, B: s1, C: s2, D: s3})
 						break
+					}
+					if len(ins.Args) == 5 {
+						s0 := int32(finalReg[ins.Args[0]])
+						s1 := int32(finalReg[ins.Args[1]])
+						s2 := int32(finalReg[ins.Args[2]])
+						s3 := int32(finalReg[ins.Args[3]])
+						s4 := int32(finalReg[ins.Args[4]])
+						// A5 packs srcs 1+2 into B and 3+4 into C as
+						// `(hi << 16) | lo`. Reg indices must fit in 16
+						// bits; if any source overflows, fall through to
+						// the parallel-move + OpTailCallSelf path. MEP-39
+						// §6.9 regex_redux loops with 5 args (seed, win,
+						// cnt, i, n) and all three branch arms recurse
+						// with the full param set, so every iter takes
+						// this path.
+						if s1>>16 == 0 && s2>>16 == 0 && s3>>16 == 0 && s4>>16 == 0 {
+							emit(vm2.Instr{Op: vm2.OpTailCallSelfA5,
+								A: s0,
+								B: (s1 << 16) | s2,
+								C: (s3 << 16) | s4})
+							break
+						}
 					}
 					moves := make([]pmove, 0, len(ins.Args))
 					for i, a := range ins.Args {

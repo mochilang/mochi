@@ -31,6 +31,16 @@ const (
 	OpMulI64K
 	OpMulI64 // A = B * C
 	OpDivI64 // A = B / C (truncated; division by zero traps)
+	// A = B / sign-extend(C). Same fusion shape as OpModI64K but for
+	// truncated div-by-immediate. Hot for LCG-bucketing chains in the
+	// BG suite (MEP-39 §6.9 regex_redux iteration 2: `code = (seed * 4)
+	// / 139968` collapses the code-load + register round-trip that the
+	// unfused (OpLoadConstI -> OpDivI64) pair requires; the same shape
+	// fires anywhere a ConstI64 feeds the rhs of an OpDivI64). The
+	// immediate cannot be 0 because emit-side fusion only fires for
+	// non-zero ConstI64 inputs, so the dispatch path skips the
+	// division-by-zero check.
+	OpDivI64K
 	// A = B % sign-extend(C). Same fusion shape as OpAddI64K but for
 	// mod-by-immediate. Hot for LCG/hash chains in the BG suite
 	// (MEP-39 §6.6 fasta iteration 4: the LCG modulus 139968 and the
@@ -153,6 +163,23 @@ const (
 	// OpTailCallSelf (the loop bound `n` is identity-passed so the
 	// parallel-move scheduler emits 3 moves, not 4) to one op.
 	OpTailCallSelfA4
+	// OpTailCallSelfA5 is the 5-parameter sibling of A3/A4. Instr has
+	// four int32 fields so two pairs of source-reg indices are packed
+	// into B and C as `(src_hi << 16) | src_lo`. Encoding:
+	//
+	//	A = src reg for param 0
+	//	B = (src for param 1) << 16 | (src for param 2)
+	//	C = (src for param 3) << 16 | (src for param 4)
+	//	D = unused
+	//
+	// emit-side fusion only fires when every source reg index fits in
+	// 16 bits (vm2 functions rarely allocate more than a few hundred
+	// regs); otherwise the parallel-move + OpTailCallSelf path is used.
+	// MEP-39 §6.9 regex_redux loops with `loop(seed, win, cnt, i, n)`,
+	// a 5-arg tail-rec body whose three branch arms (no-match, agtt,
+	// ttga) all recurse with all five params populated; A5 collapses
+	// the per-branch (3 or 4 OpMoves + OpTailCallSelf) into one op.
+	OpTailCallSelfA5
 	OpReturn // return A to caller's RetReg
 
 	// Return-superop family (MEP-38 §A.6). Each fuses a small
