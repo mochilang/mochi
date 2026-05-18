@@ -32,6 +32,24 @@ func (a *Arenas) takeStringSlot() (idx uint32, gen uint16) {
 	return idx, 0
 }
 
+// AllocStringConcat reserves a string slot whose contents are left++right.
+// Saves the intermediate []byte allocation that AllocString would need.
+func (a *Arenas) AllocStringConcat(left, right []byte) Cell {
+	idx, gen := a.takeStringSlot()
+	s := &a.Strings[idx]
+	nlen := len(left) + len(right)
+	if cap(s.data) < nlen {
+		s.data = make([]byte, nlen)
+	} else {
+		s.data = s.data[:nlen]
+	}
+	copy(s.data, left)
+	copy(s.data[len(left):], right)
+	s.len = uint32(nlen)
+	s.flags = flagAlive
+	return MakeHandle(ArenaString, gen, idx)
+}
+
 // AllocList reserves a list slot with the given element type and
 // capacity hint, and returns a tagHandle Cell.
 func (a *Arenas) AllocList(elemType uint8, capHint int) Cell {
