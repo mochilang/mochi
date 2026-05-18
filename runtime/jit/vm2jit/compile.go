@@ -76,6 +76,37 @@ func Compile(fn *vm2.Function) (*CompiledFunc, error) {
 	return compileNoGate(fn)
 }
 
+// CompileProgram attempts to JIT-compile every function in p. It
+// returns the number of functions that were successfully compiled
+// (and now have fn.JITCode set) and the total number of functions
+// considered. Per-function errors are silently absorbed: any failure
+// (unsupported arch, NumRegs over cap, unprofitable, unlowerable
+// opcode) leaves fn.JITCode nil so the interpreter's OpCall fast
+// path naturally falls through. The returned handles are owned by
+// the caller and must be Free'd before the program is discarded.
+//
+// MEP-39 §6.15 wires this into bench/vm2runner so the iter 12-13
+// JIT scaffolding actually fires on the bench path.
+func CompileProgram(p *vm2.Program) (handles []*CompiledFunc, compiled, total int) {
+	if p == nil {
+		return nil, 0, 0
+	}
+	total = len(p.Funcs)
+	handles = make([]*CompiledFunc, 0, total)
+	for _, fn := range p.Funcs {
+		if fn == nil {
+			continue
+		}
+		cf, err := Compile(fn)
+		if err != nil {
+			continue
+		}
+		handles = append(handles, cf)
+		compiled++
+	}
+	return handles, compiled, total
+}
+
 // compileNoGate lowers fn unconditionally (skipping the cap and
 // profitability gate Compile applies). The deopt-stub tests use this
 // via export_test.go to exercise machinery that the public gate would

@@ -18,6 +18,7 @@ import (
 	"mochi/compiler2/corpus"
 	"mochi/compiler2/emit"
 	"mochi/compiler2/opt"
+	"mochi/runtime/jit/vm2jit"
 	vm2 "mochi/runtime/vm2"
 )
 
@@ -117,6 +118,15 @@ func main() {
 	if err != nil {
 		die("vm2runner: emit %s: %v", *prog, err)
 	}
+
+	// MEP-39 §6.15: best-effort JIT pass before the timed loop.
+	// CompileProgram silently skips functions the backend can't handle
+	// (unsupported arch, NumRegs over cap, unprofitable, unlowerable
+	// opcode), leaving fn.JITCode nil so the interpreter's OpCall fast
+	// path naturally falls through. Handles are kept alive for the
+	// duration of main; the OS reclaims pages on exit.
+	jitHandles, _, _ := vm2jit.CompileProgram(program)
+	_ = jitHandles
 
 	// Single VM reused across reps. Matches Lua / CPython, where the
 	// interpreter state is created once and the user code runs in a
