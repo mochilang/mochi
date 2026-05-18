@@ -2,96 +2,34 @@
 //
 // Every Value carries a static Type (i64, f64, bool, str, list, map,
 // struct, ...). Passes preserve type; lowering picks the opcode by
-// type. See MEP-40 §7.1.
+// type. See MEP-40 §7.1, §10 Phase 4.1.
+//
+// Phase 4.1 lands the core IR shape: Function / Block / Value /
+// Terminator plus an op set rich enough to express every kernel in
+// compiler3/corpus. Hand-built IR fixtures (one per corpus kernel)
+// live in compiler3/ir/fixture.go and are consumed by Phase 4.2
+// (opt passes), Phase 4.3 (regalloc), and Phase 4.4 (emit). Phase
+// 4.5 wires typed AST -> ir.Function via compiler3/build.
+//
+// Conventions:
+//
+//   - Every Value has a unique ID across its Function. The ID is the
+//     Function.Values slice index.
+//   - A Block names the Values it owns in Block.Values, in producer
+//     order. The last "Value" is the terminator's source, if any.
+//   - Phi nodes are first-class: Value.Op == OpPhi, and Value.Args
+//     carries pairs of (predecessor-block-ID, incoming-value-ID).
+//   - Terminators name their static successors via Terminator.Target /
+//     IfTrue / IfFalse and carry one operand via Terminator.Value
+//     (the conditional for TermBranch, the returned value for
+//     TermReturn).
+//   - Parameter values use Op == OpParam with no Args; their Type is
+//     the parameter's declared type.
+//   - Constants embed their payload in Value.Const (sign-extended for
+//     i64, bit-cast for f64; the bool variant uses 0/1).
+//
+// The IR validates as SSA: every Value is defined in exactly one
+// Block, every use refers to a previously-defined Value (per the
+// dominator tree, with Phi as the explicit join). Validate(fn)
+// enforces these properties and is called by every fixture test.
 package ir
-
-// Type is the static type tag attached to every SSA Value.
-type Type uint8
-
-const (
-	TypeInvalid Type = iota
-	TypeI64
-	TypeF64
-	TypeBool
-	TypeStr
-	TypeList
-	TypeMap
-	TypeSet
-	TypeStruct
-	TypeClosure
-	TypeBignum
-	TypeBytes
-	TypePair
-	TypeF64Arr
-	TypeI64Arr
-	TypeU8Arr
-	TypeAny
-)
-
-// OpCode identifies which IR operation a Value represents. Phase 0
-// declares only the placeholder set; Phase 2 expands.
-type OpCode uint8
-
-const (
-	OpInvalid OpCode = iota
-	OpConst
-	OpParam
-	OpAdd
-	OpSub
-	OpMul
-	OpDiv
-	OpCmpEq
-	OpCmpLt
-	OpCall
-	OpReturn
-)
-
-// Value is one SSA-form IR node. Type is mandatory; the type checker
-// proves it before compiler3 sees the value.
-type Value struct {
-	ID       uint32
-	Type     Type
-	ElemType Type
-	StructID uint32
-	Op       OpCode
-	Args     []uint32
-	Const    int64
-}
-
-// Terminator is a block's exit instruction. Phase 0 declares the kinds
-// the spec requires; bodies arrive in Phase 2.
-type Terminator struct {
-	Kind   TerminatorKind
-	Target uint32
-	IfTrue uint32
-	IfFalse uint32
-	Value  uint32
-}
-
-type TerminatorKind uint8
-
-const (
-	TermInvalid TerminatorKind = iota
-	TermJump
-	TermBranch
-	TermReturn
-)
-
-// Block is a basic block in the function's CFG.
-type Block struct {
-	ID     uint32
-	Values []uint32
-	Preds  []uint32
-	Succs  []uint32
-	Term   Terminator
-}
-
-// Function is the compilation unit handed from the type-aware build to
-// the optimization pipeline.
-type Function struct {
-	Name   string
-	Params []Value
-	Result Type
-	Blocks []Block
-	Values []Value
-}
