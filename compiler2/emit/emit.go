@@ -1339,6 +1339,37 @@ func compileFunction(f *ir.Function, ra regalloc.Result, selfIdx int) (*vm2.Func
 		}
 	}
 
+	// Peephole: fuse [SubK self-call] + [fused-return] when adjacent and
+	// the call's destination feeds the return op's right operand. The
+	// fused op short-circuits the leaf-shortcut hit path through one
+	// dispatch instead of two; on miss it falls through to the original
+	// return op which stays at code[i+1]. MEP-39 §6.10 iter 6.
+	for i := 0; i+1 < len(code); i++ {
+		call := code[i]
+		ret := code[i+1]
+		switch call.Op {
+		case vm2.OpCallSelfA1Sub1:
+			if ret.Op == vm2.OpReturnNewPair && ret.C == call.A {
+				code[i] = vm2.Instr{
+					Op: vm2.OpCallSelfA1Sub1RetNewPair,
+					A:  call.A,
+					B:  ret.B,
+					C:  call.C,
+				}
+			}
+		case vm2.OpPairSndCallSelfA2Sub1:
+			if ret.Op == vm2.OpReturnAddSum && ret.A == 1 && ret.C == call.A {
+				code[i] = vm2.Instr{
+					Op: vm2.OpPairSndCallSelfA2Sub1RetAddSum,
+					A:  call.A,
+					B:  ret.B,
+					C:  call.C,
+					D:  call.D,
+				}
+			}
+		}
+	}
+
 	return &vm2.Function{
 		Name:              f.Name,
 		NumParams:         np,

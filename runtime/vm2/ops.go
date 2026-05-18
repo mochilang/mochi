@@ -358,4 +358,22 @@ const (
 	OpCallSelfA1Sub1
 	OpPairFstCallSelfA2Sub1
 	OpPairSndCallSelfA2Sub1
+
+	// Call+Return fused ops (MEP-39 §6.10 iter 6). Each fuses a
+	// SubK+self-call op with the immediately following Return-superop.
+	// Emit fires when the LAST call before a fused-return op feeds that
+	// return op's operand: that call site can pop the parent frame
+	// directly on a leaf-shortcut hit (saving one OpReturn* dispatch)
+	// or fall through to the standalone Return-superop on a miss.
+	//
+	// OpCallSelfA1Sub1RetNewPair: fuse [OpCallSelfA1Sub1 right, src;
+	//   OpReturnNewPair B=left, C=right]. A=rightReg (miss-path slot),
+	//   B=leftReg (other newPair input), C=srcReg (arg0 = regs[C] - 1).
+	//
+	// OpPairSndCallSelfA2Sub1RetAddSum: fuse [OpPairSndCallSelfA2Sub1
+	//   right, pair, depth; OpReturnAddSum K=1, B=left, C=right].
+	//   A=rightReg (miss-path slot), B=leftReg (other addSum input),
+	//   C=pairReg, D=depthReg (arg1 = regs[D] - 1). K is fixed to 1.
+	OpCallSelfA1Sub1RetNewPair
+	OpPairSndCallSelfA2Sub1RetAddSum
 )
