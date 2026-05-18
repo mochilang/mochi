@@ -10,8 +10,18 @@ import (
 
 // Register pinning:
 //
-//	regsI64[r] -> x(9 + r)        for r in [0, 7)   (caller-saved)
-//	regsI64[r] -> x(19 + r - 7)   for r in [7, 17)  (callee-saved)
+//	i64-only fns:
+//	  regsI64[r] -> x(9 + r)        for r in [0, 7)   (caller-saved)
+//	  regsI64[r] -> x(19 + r - 7)   for r in [7, 17)  (callee-saved)
+//
+//	Cell-bank fns (Phase 6.2d.2.a step 2):
+//	  regsI64[r]  -> x(9 + r)       for r in [0, 7)   (caller-saved)
+//	  regsI64[r]  -> x(21 + r - 7)  for r in [7, 11)  (callee-saved, 4 max)
+//	  regsCell[r] -> x(25 + r)      for r in [0, 4)   (callee-saved, 4 max)
+//	  x19 = cached arenas.Lists base ptr  (loaded once at prologue)
+//	  x20 = reserved for future arena-base caches (mapsBase, ...)
+//	  x4  = &jitArenaCtx                  (set by trampoline.CallStatusM)
+//	  x3  = regsCell base                 (set by trampoline.CallStatusM)
 //
 // x9..x15 are AArch64 caller-saved temporaries; the JIT can clobber
 // them freely. x19..x28 are callee-saved; functions that touch any of
@@ -31,12 +41,19 @@ import (
 // over vm2jit and the reason a small instruction count per opcode is
 // achievable for arithmetic kernels.
 
-func r2x(r uint16) uint32 {
+func r2x(fn *vm3.Function, r uint16) uint32 {
 	if r < 7 {
 		return uint32(r) + 9
 	}
+	if fn.NumRegsCell > 0 {
+		return uint32(r) - 7 + 21
+	}
 	return uint32(r) - 7 + 19
 }
+
+// r2cell maps a vm3 Cell register slot to its pinned AArch64 callee-
+// saved register (x25..x28). Caller has pre-checked r < maxCellRegs.
+func r2cell(r uint16) uint32 { return uint32(r) + 25 }
 
 // r2d maps a vm3 f64 register slot to the AArch64 SIMD register
 // number (V0..V7 / D0..D7). Caller pre-checks r < maxF64RegsARM64.
@@ -80,12 +97,34 @@ func computeCallSpills(fn *vm3.Function) []uint32 {
 	return spills
 }
 
-// numCalleeSavedPairs returns the number of x19..x28 STP/LDP pairs the
-// frame for fn must push. Each pair covers two register slots. The
-// final pair is pushed even if only one of its two regs is live, since
-// AArch64 STP is a single 16-byte op and partial pairs would waste
-// alignment without saving anything.
+// numCalleeSavedPairs returns the total number of x19..x28 STP/LDP
+// pairs the frame for fn must push. Each pair covers two register
+// slots. The final pair is pushed even if only one of its two regs is
+// live, since AArch64 STP is a single 16-byte op and partial pairs
+// would waste alignment without saving anything.
+//
+// For Cell-bank fns (NumRegsCell > 0) the layout always pushes one
+// extra "cellscratch" pair (x19:x20) that caches arena base pointers
+// (x19 = listsBase) plus one pair per two Cell regs at x25..x28.
+// Existing i64-only fns (NumRegsCell == 0) keep the original layout
+// at x19..x28.
 func numCalleeSavedPairs(fn *vm3.Function) int {
+	return numCellScratchPairs(fn) + numI64CalleeSavedPairs(fn) + numCellCalleeSavedPairs(fn)
+}
+
+// numCellScratchPairs is 1 when fn uses any Cell reg (we push x19:x20
+// to cache arena base pointers and free them up across self-tail
+// branches), 0 otherwise.
+func numCellScratchPairs(fn *vm3.Function) int {
+	if fn.NumRegsCell == 0 {
+		return 0
+	}
+	return 1
+}
+
+// numI64CalleeSavedPairs is the number of x19..x28 (or x21..x24 when
+// cell-bank) pairs that back regsI64 slots 7..NumRegsI64-1.
+func numI64CalleeSavedPairs(fn *vm3.Function) int {
 	n := int(fn.NumRegsI64)
 	if n > maxI64Regs {
 		n = maxI64Regs
@@ -94,6 +133,43 @@ func numCalleeSavedPairs(fn *vm3.Function) int {
 		return 0
 	}
 	return (n - 7 + 1) / 2
+}
+
+// numCellCalleeSavedPairs is the number of x25..x28 pairs that back
+// regsCell slots 0..NumRegsCell-1.
+func numCellCalleeSavedPairs(fn *vm3.Function) int {
+	n := int(fn.NumRegsCell)
+	if n > maxCellRegs {
+		n = maxCellRegs
+	}
+	if n == 0 {
+		return 0
+	}
+	return (n + 1) / 2
+}
+
+// calleeSavedPairRegs returns the first reg of each STP/LDP pair in
+// prologue push order. For sum (NumRegsI64=4, NumRegsCell=1) this is
+// [19, 25]: STP x19:x20 (cellscratch), STP x25:x26 (cell reg 0).
+func calleeSavedPairRegs(fn *vm3.Function) []uint32 {
+	pairs := make([]uint32, 0, numCalleeSavedPairs(fn))
+	if numCellScratchPairs(fn) > 0 {
+		pairs = append(pairs, 19)
+	}
+	i64Pairs := numI64CalleeSavedPairs(fn)
+	if i64Pairs > 0 {
+		i64Start := uint32(19)
+		if fn.NumRegsCell > 0 {
+			i64Start = 21
+		}
+		for k := 0; k < i64Pairs; k++ {
+			pairs = append(pairs, i64Start+uint32(2*k))
+		}
+	}
+	for k := 0; k < numCellCalleeSavedPairs(fn); k++ {
+		pairs = append(pairs, 25+uint32(2*k))
+	}
+	return pairs
 }
 
 // hasRegRegDivMod reports whether fn contains any reg-reg OpDivI64 or
@@ -159,7 +235,7 @@ func deoptBlockWordsARM64(fn *vm3.Function) int {
 func emitDeoptBlockARM64(fn *vm3.Function, statusCode int64) []uint32 {
 	ws := movImm64(16, statusCode)
 	ws = append(ws, str64(16, 1, 0))
-	ws = emitFrameEpilogueARM64(ws, numCalleeSavedPairs(fn), numLRPair(fn))
+	ws = emitFrameEpilogueARM64(ws, calleeSavedPairRegs(fn), numLRPair(fn))
 	ws = append(ws, ret())
 	return ws
 }
@@ -174,9 +250,11 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 		return nil, fmt.Errorf("%w: %s has both f64 regs and OpCallI64 (Phase 6.2b leaves f64+self-recursion to a later sub-phase)",
 			ErrNotImplemented, fn.Name)
 	}
-	pairs := numCalleeSavedPairs(fn)
+	pairRegs := calleeSavedPairRegs(fn)
+	pairs := len(pairRegs)
 	lrPair := numLRPair(fn)
-	prologueWords := lrPair + pairs + int(fn.NumRegsI64) + int(fn.NumRegsF64)
+	cellScratch := numCellScratchPairs(fn)
+	prologueWords := lrPair + pairs + int(fn.NumRegsI64) + int(fn.NumRegsF64) + int(fn.NumRegsCell) + cellScratch
 	spillSets := computeCallSpills(fn)
 
 	pcMap := make([]int, len(fn.Code)+1)
@@ -200,14 +278,24 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 	if lrPair == 1 {
 		ws = append(ws, stpPreIdx64(29, 30, 31, -16))
 	}
-	for k := 0; k < pairs; k++ {
-		ws = append(ws, stpPreIdx64(uint32(2*k+19), uint32(2*k+20), 31, -16))
+	for _, r := range pairRegs {
+		ws = append(ws, stpPreIdx64(r, r+1, 31, -16))
 	}
 	for r := uint32(0); r < uint32(fn.NumRegsI64); r++ {
-		ws = append(ws, ldr64(r2x(uint16(r)), 0, r))
+		ws = append(ws, ldr64(r2x(fn, uint16(r)), 0, r))
 	}
 	for r := uint32(0); r < uint32(fn.NumRegsF64); r++ {
 		ws = append(ws, ldrD(r2d(uint16(r)), 2, r))
+	}
+	// Cell-bank fns: load each pinned Cell reg from regsCell base (x3),
+	// then cache arenas.Lists base in x19 from the jitArenaCtx (x4).
+	// listsBase lives at offset 0 of jitArenaCtx; future bases (mapsBase,
+	// ...) move into x20.
+	for r := uint32(0); r < uint32(fn.NumRegsCell); r++ {
+		ws = append(ws, ldr64(r2cell(uint16(r)), 3, r))
+	}
+	if cellScratch > 0 {
+		ws = append(ws, ldr64(19, 4, 0))
 	}
 
 	for i, op := range fn.Code {
@@ -237,12 +325,13 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 
 // emitFrameEpilogueARM64 appends LDP instructions to ws in REVERSE
 // order of the prologue's pushes so each pop matches the topmost STP
-// frame and SP returns to its entry value. pairs is the number of
-// x19..x28 STP pairs, lrPair is 1 if x29:x30 was pushed as the
-// outermost pair (non-leaf fns).
-func emitFrameEpilogueARM64(ws []uint32, pairs, lrPair int) []uint32 {
-	for k := pairs - 1; k >= 0; k-- {
-		ws = append(ws, ldpPostIdx64(uint32(2*k+19), uint32(2*k+20), 31, 16))
+// frame and SP returns to its entry value. pairRegs is the prologue's
+// push order (first reg of each pair); lrPair is 1 if x29:x30 was
+// pushed as the outermost pair (non-leaf fns).
+func emitFrameEpilogueARM64(ws []uint32, pairRegs []uint32, lrPair int) []uint32 {
+	for k := len(pairRegs) - 1; k >= 0; k-- {
+		r := pairRegs[k]
+		ws = append(ws, ldpPostIdx64(r, r+1, 31, 16))
 	}
 	if lrPair == 1 {
 		ws = append(ws, ldpPostIdx64(29, 30, 31, 16))
@@ -356,6 +445,27 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// nSpill STRs + nArgs STRs + STP x0 + ADD x0 + BL + MOV x16,x0 +
 		// LDP x0 + nSpill LDRs + MOV pinned[dst],x16.
 		return 2*nSpill + nArgs + 6, nil
+
+	case vm3.OpListGetI64:
+		// Inline read-only list[i] -> i64 fast path. See emitInstrARM64
+		// for the exact sequence; 7 instruction words total
+		// (UXTW + MOV stride + MUL + ADD + LDR cells + LDR cell + SBFX).
+		// The MOV-stride lane is sized by movImm64WordCount of the
+		// runtime sizeof(vmList) so a future field addition stays exact.
+		stride := int64(vm3.JITListSlabStride())
+		return movImm64WordCount(stride) + 6, nil
+
+	case vm3.OpTailCallMixed:
+		// Self-tail-call with arg-base 0 lowers to a single backward B
+		// (interp matches with `pc = 0; continue`). The args already live
+		// in their pinned regs by construction. Anything else (different
+		// callee or B != 0) routes back through the interpreter.
+		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx || op.B != 0 {
+			return 0, fmt.Errorf("%w: TailCallMixed to non-self idx %d or non-zero argBase (SelfIdx=%d, B=%d)",
+				ErrNotImplemented, uint16(op.C), opts.SelfIdx, op.B)
+		}
+		return 1, nil
+
 	default:
 		return 0, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 	}
@@ -369,8 +479,8 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 // so guard-checked opcodes (Div/Mod) can compute CBZ offsets without
 // re-deriving it.
 func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStart int, opts Options, spillSets []uint32) ([]uint32, error) {
-	xA := r2x(op.A)
-	xB := r2x(op.B)
+	xA := r2x(fn, op.A)
+	xB := r2x(fn, op.B)
 
 	switch op.Code {
 	case vm3.OpConstI64K:
@@ -384,23 +494,23 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		return []uint32{movReg(xA, xB)}, nil
 
 	case vm3.OpAddI64:
-		xC := r2x(uint16(op.C))
+		xC := r2x(fn, uint16(op.C))
 		return []uint32{addReg(xA, xB, xC)}, nil
 	case vm3.OpSubI64:
-		xC := r2x(uint16(op.C))
+		xC := r2x(fn, uint16(op.C))
 		return []uint32{subReg(xA, xB, xC)}, nil
 	case vm3.OpMulI64:
-		xC := r2x(uint16(op.C))
+		xC := r2x(fn, uint16(op.C))
 		return []uint32{mulReg(xA, xB, xC)}, nil
 	case vm3.OpDivI64:
-		xC := r2x(uint16(op.C))
+		xC := r2x(fn, uint16(op.C))
 		off, err := branchOff(pcMap[idx], deoptStart, 19)
 		if err != nil {
 			return nil, fmt.Errorf("DivI64 deopt branch: %w", err)
 		}
 		return []uint32{cbz64(xC, off), sdivReg(xA, xB, xC)}, nil
 	case vm3.OpModI64:
-		xC := r2x(uint16(op.C))
+		xC := r2x(fn, uint16(op.C))
 		off, err := branchOff(pcMap[idx], deoptStart, 19)
 		if err != nil {
 			return nil, fmt.Errorf("ModI64 deopt branch: %w", err)
@@ -473,13 +583,13 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// MOV x0, xA BEFORE the LDPs: if xA is one of x19..x28 the
 		// epilogue would clobber it.
 		ws := []uint32{movReg(0, xA)}
-		ws = emitFrameEpilogueARM64(ws, numCalleeSavedPairs(fn), numLRPair(fn))
+		ws = emitFrameEpilogueARM64(ws, calleeSavedPairRegs(fn), numLRPair(fn))
 		ws = append(ws, ret())
 		return ws, nil
 
 	case vm3.OpReturnConstK:
 		ws := movImm64(0, int64(op.C))
-		ws = emitFrameEpilogueARM64(ws, numCalleeSavedPairs(fn), numLRPair(fn))
+		ws = emitFrameEpilogueARM64(ws, calleeSavedPairRegs(fn), numLRPair(fn))
 		ws = append(ws, ret())
 		return ws, nil
 
@@ -489,7 +599,7 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// math.Float64frombits to recover the f64. Then run the
 		// epilogue exactly like OpReturnI64.
 		ws := []uint32{fmovXD(0, r2d(op.A))}
-		ws = emitFrameEpilogueARM64(ws, numCalleeSavedPairs(fn), numLRPair(fn))
+		ws = emitFrameEpilogueARM64(ws, calleeSavedPairRegs(fn), numLRPair(fn))
 		ws = append(ws, ret())
 		return ws, nil
 
@@ -526,9 +636,9 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		return []uint32{fcmpD(r2d(op.A), r2d(op.B)), bCond(cond, off)}, nil
 
 	case vm3.OpI64ToF64:
-		return []uint32{scvtfDX(r2d(op.A), r2x(op.B))}, nil
+		return []uint32{scvtfDX(r2d(op.A), r2x(fn, op.B))}, nil
 	case vm3.OpF64ToI64:
-		return []uint32{fcvtzsXD(r2x(op.A), r2d(op.B))}, nil
+		return []uint32{fcvtzsXD(r2x(fn, op.A), r2d(op.B))}, nil
 
 	case vm3.OpCallI64:
 		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
@@ -549,7 +659,7 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		}
 		// Write args into callee's window slots at offset NumRegsI64*8.
 		for k := 0; k < nArgs; k++ {
-			src := r2x(op.B + uint16(k))
+			src := r2x(fn, op.B+uint16(k))
 			ws = append(ws, str64(src, 0, uint32(nRegsI64+k)))
 		}
 		// Save caller's x0 (regs base), bump to callee window, BL.
@@ -574,6 +684,43 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// Move result into caller's pinned dst register.
 		ws = append(ws, movReg(xA, 16))
 		return ws, nil
+
+	case vm3.OpListGetI64:
+		// regsI64[A] = arenas.Lists[handleIdx(regsCell[B])].cells[regsI64[C]].Int()
+		//
+		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
+		//   MOV  x17, #SIZEOF_VMLIST           ; stride (baked from runtime layout)
+		//   MUL  x16, x16, x17                 ; slab byte offset
+		//   ADD  x16, x16, x19                 ; x19 = cached arenas.Lists base
+		//   LDR  x16, [x16, #CELLS_OFFSET]     ; cells slice data ptr (head of header)
+		//   LDR  x17, [x16, xIdx, lsl #3]      ; cells[idxReg]
+		//   SBFX xA, x17, #0, #48              ; sign-extend the 48-bit Int payload
+		stride := int64(vm3.JITListSlabStride())
+		cellsOff := uint32(vm3.JITListCellsOffset())
+		xCell := r2cell(op.B)
+		xIdx := r2x(fn, uint16(op.C))
+		ws := make([]uint32, 0, movImm64WordCount(stride)+6)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(16, 16, cellsOff/8))
+		ws = append(ws, ldrRegLsl3(17, 16, xIdx))
+		ws = append(ws, sbfx48(xA, 17))
+		return ws, nil
+
+	case vm3.OpTailCallMixed:
+		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx || op.B != 0 {
+			return nil, fmt.Errorf("%w: TailCallMixed to non-self idx %d or non-zero argBase (SelfIdx=%d, B=%d)",
+				ErrNotImplemented, uint16(op.C), opts.SelfIdx, op.B)
+		}
+		dstWord := pcMap[0]
+		srcWord := pcMap[idx]
+		off, err := branchOff(srcWord, dstWord, 26)
+		if err != nil {
+			return nil, fmt.Errorf("TailCallMixed self-tail branch: %w", err)
+		}
+		return []uint32{bImm(off)}, nil
 
 	default:
 		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
@@ -741,6 +888,31 @@ func stpPreIdx64(xt1, xt2, xn uint32, imm int32) uint32 {
 func ldpPostIdx64(xt1, xt2, xn uint32, imm int32) uint32 {
 	imm7 := uint32(imm/8) & 0x7F
 	return 0xA8C00000 | (imm7 << 15) | ((xt2 & 0x1F) << 10) | ((xn & 0x1F) << 5) | (xt1 & 0x1F)
+}
+
+// uxtwReg encodes UXTW Xd, Wn: zero-extend the low 32 bits of Xn into
+// Xd. Equivalent to UBFM Xd, Xn, #0, #31 (immr=0, imms=31, sf=1, N=1).
+// Used by OpListGetI64 to extract the 32-bit slab index from a handle.
+func uxtwReg(xd, xn uint32) uint32 {
+	// UBFM (64): sf=1, N=1, immr=0, imms=31 -> 0xD3407C00 base
+	return 0xD3407C00 | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+// ldrRegLsl3 encodes LDR Xt, [Xn, Xm, LSL #3]: load 64-bit with
+// register-scaled offset (scale=3 for 8-byte stride). Used by
+// OpListGetI64 to read cells[idxReg] given the cells slice data ptr in
+// xn and the i64 index in xm.
+func ldrRegLsl3(xt, xn, xm uint32) uint32 {
+	// LDR (register, 64-bit): size=11, V=0, opc=01, option=011 (LSL), S=1
+	return 0xF8607800 | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5) | (xt & 0x1F)
+}
+
+// sbfx48 encodes SBFX Xd, Xn, #0, #48: sign-extend the low 48 bits of
+// Xn into Xd. Equivalent to SBFM Xd, Xn, #0, #47 (immr=0, imms=47,
+// sf=1, N=1). Used by OpListGetI64 to recover the signed Int48 payload
+// from a Cell (the high 16 bits hold the NaN-box tag).
+func sbfx48(xd, xn uint32) uint32 {
+	return 0x9340BC00 | ((xn & 0x1F) << 5) | (xd & 0x1F)
 }
 
 // movImm64 emits the shortest movz/movn/movk sequence that loads v

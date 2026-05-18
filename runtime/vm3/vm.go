@@ -3,6 +3,7 @@ package vm3
 import (
 	"errors"
 	"fmt"
+	"math"
 )
 
 // VM is a vm3 interpreter instance.
@@ -367,7 +368,7 @@ func (vm *VM) run() (Cell, error) {
 			// through to the interpreter path so the function restarts
 			// from PC=0 under the interpreter.
 			if callee.JITCode != nil && JITCallFn != nil {
-				bits, deopt, err := JITCallFn(vm, callee, args, nil)
+				bits, deopt, err := JITCallFn(vm, callee, args, nil, nil)
 				if err != nil {
 					return Cell(0), err
 				}
@@ -661,6 +662,30 @@ func (vm *VM) run() (Cell, error) {
 					argF64[k] = regsF64[idx]
 				case BankCell:
 					argCell[k] = regsCell[idx]
+				}
+			}
+			// Phase 6.2d.2.b: if the callee has been JIT'd, route through
+			// the trampoline. The JIT's pinned regs are loaded from the
+			// argsI64/argsF64/argsCell slices in jitCall, matching the
+			// same param-bank position-indexed convention used by the
+			// interp's pushFrame path. On deopt we fall through.
+			if callee.JITCode != nil && JITCallFn != nil {
+				retBank := Bank(op.BankFlags & 0x3)
+				bits, deopt, err := JITCallFn(vm, callee, argI64[:len(pbs)], argF64[:len(pbs)], argCell[:len(pbs)])
+				if err != nil {
+					return Cell(0), err
+				}
+				if !deopt {
+					switch retBank {
+					case BankI64:
+						regsI64[op.A] = int64(bits)
+					case BankF64:
+						regsF64[op.A] = math.Float64frombits(bits)
+					case BankCell:
+						regsCell[op.A] = Cell(bits)
+					}
+					pc++
+					continue
 				}
 			}
 			fr.pc = pc + 1

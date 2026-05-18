@@ -2,6 +2,7 @@ package vm3jit
 
 import (
 	"errors"
+	"sync"
 	"unsafe"
 
 	"mochi/runtime/jit/vm2jit/trampoline"
@@ -10,6 +11,19 @@ import (
 
 func init() {
 	vm3.JITCallFn = jitCall
+}
+
+// jitFramePool reuses jitFrame3 scratch buffers across calls. Each
+// jitFrame3 is ~32 KB (4096 i64 slots plus the f64/Cell/arena fields),
+// so heap-allocating one per call dwarfs the JIT body's runtime for
+// small kernels (sum_n128: ~250 ns native body, ~700 ns frame alloc).
+// The pool keeps the trampoline's pinned pointers valid for the
+// duration of one Call: jitCall acquires before dispatch, releases
+// after the result is read. The previous reset is cheap (the JIT only
+// reads its declared params, so we only need to zero status + the
+// param-bank slots jitCall writes).
+var jitFramePool = sync.Pool{
+	New: func() any { return new(jitFrame3) },
 }
 
 // jitFrame3RegsI64Words is the number of int64 slots reserved for the
@@ -28,10 +42,21 @@ const jitFrame3RegsI64Words = 4096
 // during the native call; the JIT writes the slots it uses and reads
 // only its declared params, so we do not clear between calls. status is
 // reset to zero by jitCall before each call.
+//
+// regsCell carries the Cell-bank window for Phase 6.2d.2.a step 2.
+// arenaCtx is a snapshot of the arena slab base pointers populated by
+// jitCall just before the trampoline dispatch; its address is pinned in
+// x4 (AArch64) / R8 (AMD64) by trampoline.CallStatusM, and the JIT's
+// prologue dereferences it once to cache listsBase in a callee-saved
+// reg. Layout order is deliberate: arenaCtx sits before status so cold
+// fields stay grouped at the end of the cache line that holds the
+// status word.
 type jitFrame3 struct {
-	regsI64 [jitFrame3RegsI64Words]int64
-	regsF64 [MaxF64Regs]float64
-	status  int64
+	regsI64  [jitFrame3RegsI64Words]int64
+	regsF64  [MaxF64Regs]float64
+	regsCell [MaxCellRegs]vm3.Cell
+	arenaCtx jitArenaCtx
+	status   int64
 }
 
 // jitCall is installed as vm3.JITCallFn. It is called by the interp
@@ -52,23 +77,70 @@ type jitFrame3 struct {
 //     we return deopt=true so the interpreter restarts the callee
 //     from PC=0 under its normal pushFrame path. Since the JIT does
 //     not allocate from arenas (Phase 6.2c+), no rollback is needed.
-func jitCall(_ *vm3.VM, fn *vm3.Function, argsI64 []int64, _ []float64) (uint64, bool, error) {
+func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, argsCell []vm3.Cell) (uint64, bool, error) {
 	if fn.JITCode == nil {
 		return 0, false, errors.New("vm3jit: jitCall on fn without JITCode")
 	}
-	jf := &jitFrame3{}
-	n := min(len(argsI64), MaxI64Regs)
-	copy(jf.regsI64[:n], argsI64[:n])
+	jf := jitFramePool.Get().(*jitFrame3)
+	defer jitFramePool.Put(jf)
+	// Zero the slots the JIT's prologue will load. Pool reuse leaves
+	// prior call's values in scratch slots; the JIT may load them into
+	// pinned regs before any write, so we have to match the interp's
+	// "fresh frame starts zeroed" semantics for non-param slots. Param
+	// slots are immediately overwritten below.
+	nI64 := min(int(fn.NumRegsI64), MaxI64Regs)
+	clear(jf.regsI64[:nI64])
+	nF64 := min(int(fn.NumRegsF64), MaxF64Regs)
+	clear(jf.regsF64[:nF64])
+	nCell := min(int(fn.NumRegsCell), MaxCellRegs)
+	clear(jf.regsCell[:nCell])
+	// Lay out params per ParamBanks position-indexed convention: argsX[k]
+	// is meaningful iff fn.ParamBanks[k] == BankX. For i64-only callees
+	// (OpCallI64 / Phase 6.2c path) argsCell/argsF64 are nil and we use
+	// the fast path: copy argsI64 directly into regsI64[0..]. For mixed-
+	// bank callees (Phase 6.2d.2.b path, OpCallMixed) walk ParamBanks and
+	// drop each arg into its bank's regs<X>[k] slot.
+	if fn.NumRegsCell == 0 && len(argsCell) == 0 {
+		n := min(len(argsI64), MaxI64Regs)
+		copy(jf.regsI64[:n], argsI64[:n])
+	} else {
+		for k, b := range fn.ParamBanks {
+			switch b {
+			case vm3.BankI64:
+				if k < len(argsI64) && k < MaxI64Regs {
+					jf.regsI64[k] = argsI64[k]
+				}
+			case vm3.BankF64:
+				if k < len(argsF64) && k < MaxF64Regs {
+					jf.regsF64[k] = argsF64[k]
+				}
+			case vm3.BankCell:
+				if k < len(argsCell) && k < MaxCellRegs {
+					jf.regsCell[k] = argsCell[k]
+				}
+			}
+		}
+	}
 	jf.status = 0
 
 	var bits uint64
-	if fn.JITHasF64 {
+	switch {
+	case fn.NumRegsCell > 0:
+		populateArenaCtx(&jf.arenaCtx, vm.Arenas())
+		bits = trampoline.CallStatusM(
+			fn.JITCode,
+			unsafe.Pointer(&jf.regsI64[0]),
+			unsafe.Pointer(&jf.status),
+			unsafe.Pointer(&jf.regsF64[0]),
+			unsafe.Pointer(&jf.regsCell[0]),
+			unsafe.Pointer(&jf.arenaCtx))
+	case fn.JITHasF64:
 		bits = trampoline.CallStatusFF(
 			fn.JITCode,
 			unsafe.Pointer(&jf.regsI64[0]),
 			unsafe.Pointer(&jf.status),
 			unsafe.Pointer(&jf.regsF64[0]))
-	} else {
+	default:
 		bits = trampoline.CallStatus(
 			fn.JITCode,
 			unsafe.Pointer(&jf.regsI64[0]),
