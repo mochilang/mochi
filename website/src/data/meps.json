@@ -334,5 +334,13 @@
     "type": "Standards Track",
     "description": "A first-principles memory-safety MEP for Mochi as of May 2026. Positions Mochi as a memory-safe language in the CISA / NSA / ONCD taxonomy by formalizing the safety property already paid for by the vm3 + compiler3 stack: an 8-byte handle Cell that is mathematically a Vale generational reference (POPL 2023 wave), an MSWasm-style unforgeable capability (OOPSLA 2024 Iris mechanization), and a CHERI-shape fat pointer at the language layer. Specifies the bytecode verifier rules that make handle integrity an invariant, the typed-arena partition that doubles as a kalloc_type / xzone typed-allocator (Apple MIE 2025), generation-as-secret hygiene against Tag Confidentiality Enforcement style leaks, optional reference modes (consume / borrow / inout / weak) layered on OxCaml-style mode axes, FFI sealing for safe Go-runtime handoff, and W^X + PAC/BTI + Spectre-index-masking hardening for the vm3jit code page. Includes a phased plan that culminates in a public Mochi memory-safety statement aligned to the CISA Secure-by-Design Pledge January 1 2026 roadmap obligation.",
     "slug": "/docs/mep/mep-0041"
+  },
+  {
+    "number": 42,
+    "title": "Native Code Emission: copy-and-patch JIT, C-as-target AOT, and a Wasm-first cross-platform story",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "A first-principles native code-emission MEP for Mochi as of May 2026. compiler3 already produces a typed IR with proven SSA value types; MEP-42 specifies how that IR lowers to host machine code on every platform Mochi can credibly ship to. The architecture chooses two complementary phase-1 backends: a copy-and-patch JIT (Xu+Kjolstad PLDI 2021, validated by CPython 3.13 in October 2024) for hot-loop execution under `mochi run`, and C-as-target AOT (Nim / V / Vala lineage) for `mochi build` distributable binaries. Phase 1 targets five host combinations (x86_64 Linux, aarch64 Linux, aarch64 macOS, x86_64 macOS, wasm32+WasmGC), all reachable from any Go host without cgo. Phase 2 adds Windows x86_64/aarch64, riscv64 Linux, an APE bundler, plus a native Wasm emitter and a QBE backend for higher-quality small binaries. Linker strategy: LLD by default, system linker fallback, self-hosted ELF/Mach-O/PE writers in phase 2 following Go cmd/link. Runtime strategy: glibc default, musl static-PIE for portable mode. Debug strategy: DWARF 5 line tables phase 1, full DWARF + optional PDB phase 2. The closest existing analog is Crystal; the case study to learn most from is .NET NativeAOT.",
+    "slug": "/docs/mep/mep-0042"
   }
 ]
