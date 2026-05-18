@@ -346,33 +346,25 @@ func (b *Builder) U8SumI64(arr, n ValueID) ValueID {
 	return b.emit(Inst{Op: OpU8SumI64, Type: TI64, Args: []ValueID{arr, n}})
 }
 
-// KNucleotideRun drives the canonical BG k_nucleotide kernel inline:
-// the LCG (seed=42, *3877+29573 %139968), the HOMO_SAPIENS cumprob
-// cascade, the 1-mer counts[code]++, and (after iter 0) the 2-mer
-// counts[4+prev*4+code]++. Operand counts must be a TI64Array of
-// length >=20. One dispatch at the vm2 level (MEP-39 §6.7 iter 2).
-func (b *Builder) KNucleotideRun(counts, n ValueID) ValueID {
-	return b.emit(Inst{Op: OpKNucleotideRun, Type: TUnit, Args: []ValueID{counts, n}})
-}
-
-// MandelbrotKernel drives the canonical BG mandelbrot per-pixel kernel
-// inline: for each (row, col) in [0, h) x [0, w), maps to cx,cy in
-// [-2, 1] x [-1, 1] and iterates z = z^2 + c until |z|^2 > 4 or the
-// escape count reaches maxIter; stores the count as a byte into
-// out[row*w + col]. Operand out must be a TU8Array of length >=w*h.
-// One dispatch at the vm2 level (MEP-39 §6.2 iter 2).
-func (b *Builder) MandelbrotKernel(out, w, h, maxIter ValueID) ValueID {
-	return b.emit(Inst{Op: OpMandelbrotKernel, Type: TUnit, Args: []ValueID{out, w, h, maxIter}})
-}
-
-// SpectralNormKernel drives the canonical BG spectral_norm power
-// method inline: u, v, tmp arrays of length n allocated internally,
-// 10 iterations of At*A*u with the Hilbert-like A(i,j) =
-// 1/((i+j)(i+j+1)/2+i+1), final int64(sqrt(uv/vv)*1e9). One
-// dispatch at the vm2 level (MEP-39 §6.4 iter 2).
-func (b *Builder) SpectralNormKernel(n ValueID) ValueID {
-	return b.emit(Inst{Op: OpSpectralNormKernel, Type: TI64, Args: []ValueID{n}})
-}
+// MEP-39 §6.11: KNucleotideRun, MandelbrotKernel, SpectralNormKernel
+// builder methods are disabled. Each emitted a single OpXKernel super-op
+// that ran the entire canonical BG algorithm in native Go inside the
+// runtime, which is not a fair VM improvement (vm2 wins came from the
+// runtime, not from interpretation/JIT progress). The methods stay as
+// a commented record so the audit trail is preserved; the corpora that
+// called them have been restored to per-step IR.
+//
+// func (b *Builder) KNucleotideRun(counts, n ValueID) ValueID {
+// 	return b.emit(Inst{Op: OpKNucleotideRun, Type: TUnit, Args: []ValueID{counts, n}})
+// }
+//
+// func (b *Builder) MandelbrotKernel(out, w, h, maxIter ValueID) ValueID {
+// 	return b.emit(Inst{Op: OpMandelbrotKernel, Type: TUnit, Args: []ValueID{out, w, h, maxIter}})
+// }
+//
+// func (b *Builder) SpectralNormKernel(n ValueID) ValueID {
+// 	return b.emit(Inst{Op: OpSpectralNormKernel, Type: TI64, Args: []ValueID{n}})
+// }
 
 // NewPair allocates a fresh vmPair carrying (fst, snd). Result is TPair.
 // Element type is unrestricted (Cell); the runtime treats both slots as

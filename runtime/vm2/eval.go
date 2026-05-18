@@ -1142,128 +1142,140 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				sum += int64(a[i])
 			}
 			regs[ins.A] = CInt(sum)
-		case OpSpectralNormKernel:
-			n := regs[ins.B].Int()
-			if n < 0 {
-				fr.IP = ip
-				return ret, errors.New("vm2: spectral_norm kernel negative n")
-			}
-			u := make([]float64, n)
-			v := make([]float64, n)
-			tmp := make([]float64, n)
-			for i := range u {
-				u[i] = 1.0
-			}
-			evalA := func(i, j int64) float64 {
-				s := i + j
-				return 1.0 / float64(s*(s+1)/2+i+1)
-			}
-			mulAv := func(src, dst []float64) {
-				for i := int64(0); i < n; i++ {
-					sum := 0.0
-					for j := int64(0); j < n; j++ {
-						sum += evalA(i, j) * src[j]
-					}
-					dst[i] = sum
-				}
-			}
-			mulAtv := func(src, dst []float64) {
-				for i := int64(0); i < n; i++ {
-					sum := 0.0
-					for j := int64(0); j < n; j++ {
-						sum += evalA(j, i) * src[j]
-					}
-					dst[i] = sum
-				}
-			}
-			for k := 0; k < 5; k++ {
-				mulAv(u, tmp)
-				mulAtv(tmp, v)
-				mulAv(v, tmp)
-				mulAtv(tmp, u)
-			}
-			uv, vv := 0.0, 0.0
-			for i := int64(0); i < n; i++ {
-				uv += u[i] * v[i]
-				vv += v[i] * v[i]
-			}
-			regs[ins.A] = CInt(int64(math.Sqrt(uv/vv) * 1e9))
-		case OpMandelbrotKernel:
-			out := vm.u8ArrAt(regs[ins.A]).data
-			w := regs[ins.B].Int()
-			h := regs[ins.C].Int()
-			maxIter := regs[ins.D].Int()
-			if w < 0 || h < 0 || maxIter < 0 {
-				fr.IP = ip
-				return ret, errors.New("vm2: mandelbrot kernel negative dimension")
-			}
-			if int64(len(out)) < w*h {
-				fr.IP = ip
-				return ret, errors.New("vm2: mandelbrot kernel output buffer too small")
-			}
-			wF := float64(w)
-			hF := float64(h)
-			for row := int64(0); row < h; row++ {
-				cy := float64(row)/hF*2.0 - 1.0
-				base := row * w
-				for col := int64(0); col < w; col++ {
-					cx := float64(col)/wF*3.0 - 2.0
-					zr, zi := 0.0, 0.0
-					var k int64
-					for k = 0; k < maxIter; k++ {
-						r2 := zr * zr
-						i2 := zi * zi
-						if r2+i2 > 4.0 {
-							break
-						}
-						nzi := math.FMA(2.0*zr, zi, cy)
-						nzr := (r2 - i2) + cx
-						zr, zi = nzr, nzi
-					}
-					out[base+col] = byte(k)
-				}
-			}
-		case OpKNucleotideRun:
-			counts := vm.i64ArrAt(regs[ins.A]).data
-			n := regs[ins.B].Int()
-			if len(counts) < 20 {
-				fr.IP = ip
-				return ret, errors.New("vm2: k_nucleotide counts array too small")
-			}
-			if n > 0 {
-				seed := (int64(42)*3877 + 29573) % 139968
-				prob := float64(seed) / 139968.0
-				var prev int64
-				switch {
-				case prob < 0.3029549426680:
-					prev = 0
-				case prob < 0.5009432431601:
-					prev = 1
-				case prob < 0.6984905497992:
-					prev = 2
-				default:
-					prev = 3
-				}
-				counts[prev]++
-				for i := int64(1); i < n; i++ {
-					seed = (seed*3877 + 29573) % 139968
-					prob = float64(seed) / 139968.0
-					var code int64
-					switch {
-					case prob < 0.3029549426680:
-						code = 0
-					case prob < 0.5009432431601:
-						code = 1
-					case prob < 0.6984905497992:
-						code = 2
-					default:
-						code = 3
-					}
-					counts[code]++
-					counts[4+prev*4+code]++
-					prev = code
-				}
-			}
+		case OpSpectralNormKernel, OpMandelbrotKernel, OpKNucleotideRun:
+			// MEP-39 §6.11: the iter-2 hard-coded BG kernel super-ops
+			// (OpSpectralNormKernel, OpMandelbrotKernel, OpKNucleotideRun)
+			// have been disabled. Each baked the entire canonical BG
+			// algorithm into one dispatch arm, which is not a fair VM
+			// improvement: the vm2 win came from the runtime executing
+			// native Go, not from the interpreter/JIT. The opcodes stay
+			// in the enum (and the dispatch arms below stay as a
+			// commented record) so the audit trail is preserved; the
+			// active dispatch traps if anything tries to emit one.
+			fr.IP = ip
+			return ret, errors.New("vm2: hard-coded BG kernel super-op disabled (MEP-39 §6.11)")
+			// case OpSpectralNormKernel:
+			// 	n := regs[ins.B].Int()
+			// 	if n < 0 {
+			// 		fr.IP = ip
+			// 		return ret, errors.New("vm2: spectral_norm kernel negative n")
+			// 	}
+			// 	u := make([]float64, n)
+			// 	v := make([]float64, n)
+			// 	tmp := make([]float64, n)
+			// 	for i := range u {
+			// 		u[i] = 1.0
+			// 	}
+			// 	evalA := func(i, j int64) float64 {
+			// 		s := i + j
+			// 		return 1.0 / float64(s*(s+1)/2+i+1)
+			// 	}
+			// 	mulAv := func(src, dst []float64) {
+			// 		for i := int64(0); i < n; i++ {
+			// 			sum := 0.0
+			// 			for j := int64(0); j < n; j++ {
+			// 				sum += evalA(i, j) * src[j]
+			// 			}
+			// 			dst[i] = sum
+			// 		}
+			// 	}
+			// 	mulAtv := func(src, dst []float64) {
+			// 		for i := int64(0); i < n; i++ {
+			// 			sum := 0.0
+			// 			for j := int64(0); j < n; j++ {
+			// 				sum += evalA(j, i) * src[j]
+			// 			}
+			// 			dst[i] = sum
+			// 		}
+			// 	}
+			// 	for k := 0; k < 5; k++ {
+			// 		mulAv(u, tmp)
+			// 		mulAtv(tmp, v)
+			// 		mulAv(v, tmp)
+			// 		mulAtv(tmp, u)
+			// 	}
+			// 	uv, vv := 0.0, 0.0
+			// 	for i := int64(0); i < n; i++ {
+			// 		uv += u[i] * v[i]
+			// 		vv += v[i] * v[i]
+			// 	}
+			// 	regs[ins.A] = CInt(int64(math.Sqrt(uv/vv) * 1e9))
+			// case OpMandelbrotKernel:
+			// 	out := vm.u8ArrAt(regs[ins.A]).data
+			// 	w := regs[ins.B].Int()
+			// 	h := regs[ins.C].Int()
+			// 	maxIter := regs[ins.D].Int()
+			// 	if w < 0 || h < 0 || maxIter < 0 {
+			// 		fr.IP = ip
+			// 		return ret, errors.New("vm2: mandelbrot kernel negative dimension")
+			// 	}
+			// 	if int64(len(out)) < w*h {
+			// 		fr.IP = ip
+			// 		return ret, errors.New("vm2: mandelbrot kernel output buffer too small")
+			// 	}
+			// 	wF := float64(w)
+			// 	hF := float64(h)
+			// 	for row := int64(0); row < h; row++ {
+			// 		cy := float64(row)/hF*2.0 - 1.0
+			// 		base := row * w
+			// 		for col := int64(0); col < w; col++ {
+			// 			cx := float64(col)/wF*3.0 - 2.0
+			// 			zr, zi := 0.0, 0.0
+			// 			var k int64
+			// 			for k = 0; k < maxIter; k++ {
+			// 				r2 := zr * zr
+			// 				i2 := zi * zi
+			// 				if r2+i2 > 4.0 {
+			// 					break
+			// 				}
+			// 				nzi := math.FMA(2.0*zr, zi, cy)
+			// 				nzr := (r2 - i2) + cx
+			// 				zr, zi = nzr, nzi
+			// 			}
+			// 			out[base+col] = byte(k)
+			// 		}
+			// 	}
+			// case OpKNucleotideRun:
+			// 	counts := vm.i64ArrAt(regs[ins.A]).data
+			// 	n := regs[ins.B].Int()
+			// 	if len(counts) < 20 {
+			// 		fr.IP = ip
+			// 		return ret, errors.New("vm2: k_nucleotide counts array too small")
+			// 	}
+			// 	if n > 0 {
+			// 		seed := (int64(42)*3877 + 29573) % 139968
+			// 		prob := float64(seed) / 139968.0
+			// 		var prev int64
+			// 		switch {
+			// 		case prob < 0.3029549426680:
+			// 			prev = 0
+			// 		case prob < 0.5009432431601:
+			// 			prev = 1
+			// 		case prob < 0.6984905497992:
+			// 			prev = 2
+			// 		default:
+			// 			prev = 3
+			// 		}
+			// 		counts[prev]++
+			// 		for i := int64(1); i < n; i++ {
+			// 			seed = (seed*3877 + 29573) % 139968
+			// 			prob = float64(seed) / 139968.0
+			// 			var code int64
+			// 			switch {
+			// 			case prob < 0.3029549426680:
+			// 				code = 0
+			// 			case prob < 0.5009432431601:
+			// 				code = 1
+			// 			case prob < 0.6984905497992:
+			// 				code = 2
+			// 			default:
+			// 				code = 3
+			// 			}
+			// 			counts[code]++
+			// 			counts[4+prev*4+code]++
+			// 			prev = code
+			// 		}
+			// 	}
 		case OpNewPair:
 			regs[ins.A] = vm.newPair(regs[ins.B], regs[ins.C])
 		case OpPairFst:
