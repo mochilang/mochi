@@ -3,6 +3,7 @@
 package vm3jit_test
 
 import (
+	"math"
 	"testing"
 	"unsafe"
 
@@ -388,6 +389,141 @@ func BenchmarkPrimeCountInterp(b *testing.B) {
 	fn := prog.Funcs[prog.Entry]
 	vm := vm3.NewWithProgram(prog)
 	const n = int64(1000)
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		got, err := vm.RunWithArgs(fn, []int64{n + int64(i&1)})
+		if err != nil {
+			b.Fatalf("RunWithArgs: %v", err)
+		}
+		s += got.Int()
+	}
+	vm3jitSink = s
+}
+
+//go:noinline
+func goF64DotSumBench(n int64) float64 {
+	var s float64
+	for i := int64(0); i < n; i++ {
+		s += float64(i) * 0.5
+	}
+	return s
+}
+
+//go:noinline
+func goF64ThresholdBench(n int64) int64 {
+	for i := int64(1); i <= n; i++ {
+		if 1.0/float64(i) < 0.1 {
+			return i
+		}
+	}
+	return 0
+}
+
+// vm3jitFSink defeats dead-store elimination for f64 bench loops.
+var vm3jitFSink float64
+
+// BenchmarkF64DotSumJIT measures the JIT'd f64_dot_sum kernel: drives
+// OpI64ToF64 / OpMulF64 / OpAddF64 / OpConstF64K / OpReturnF64 with an
+// inner i64 counter. N=1000 matches the corpus default.
+func BenchmarkF64DotSumJIT(b *testing.B) {
+	prog := corpus.F64DotSum.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	cf, err := vm3jit.Compile(fn)
+	if err != nil {
+		b.Fatalf("Compile: %v", err)
+	}
+	defer cf.Free()
+	entry := cf.Entry()
+
+	const n = int64(1000)
+	var regsI64 [vm3jit.MaxI64Regs]int64
+	var regsF64 [vm3jit.MaxF64Regs]float64
+	var status int64
+	var s float64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		regsI64[0] = n + int64(i&1)
+		bits := trampoline.CallStatusFF(entry,
+			unsafe.Pointer(&regsI64[0]),
+			unsafe.Pointer(&status),
+			unsafe.Pointer(&regsF64[0]))
+		s += math.Float64frombits(bits)
+	}
+	vm3jitFSink = s
+}
+
+func BenchmarkF64DotSumGoFair(b *testing.B) {
+	const n = int64(1000)
+	var s float64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		s += goF64DotSumBench(n + int64(i&1))
+	}
+	vm3jitFSink = s
+}
+
+func BenchmarkF64DotSumInterp(b *testing.B) {
+	prog := corpus.F64DotSum.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	vm := vm3.NewWithProgram(prog)
+	const n = int64(1000)
+	var s float64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		got, err := vm.RunWithArgs(fn, []int64{n + int64(i&1)})
+		if err != nil {
+			b.Fatalf("RunWithArgs: %v", err)
+		}
+		s += got.Float()
+	}
+	vm3jitFSink = s
+}
+
+// BenchmarkF64ThresholdJIT measures OpCmpLtF64Br + OpDivF64 + mixed-bank
+// return (f64-touching fn returns i64). The kernel terminates at i=11
+// for any n>=11, so the inner loop runs a fixed number of iterations.
+func BenchmarkF64ThresholdJIT(b *testing.B) {
+	prog := corpus.F64Threshold.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	cf, err := vm3jit.Compile(fn)
+	if err != nil {
+		b.Fatalf("Compile: %v", err)
+	}
+	defer cf.Free()
+	entry := cf.Entry()
+
+	const n = int64(100)
+	var regsI64 [vm3jit.MaxI64Regs]int64
+	var regsF64 [vm3jit.MaxF64Regs]float64
+	var status int64
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		regsI64[0] = n + int64(i&1)
+		s += int64(trampoline.CallStatusFF(entry,
+			unsafe.Pointer(&regsI64[0]),
+			unsafe.Pointer(&status),
+			unsafe.Pointer(&regsF64[0])))
+	}
+	vm3jitSink = s
+}
+
+func BenchmarkF64ThresholdGoFair(b *testing.B) {
+	const n = int64(100)
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		s += goF64ThresholdBench(n + int64(i&1))
+	}
+	vm3jitSink = s
+}
+
+func BenchmarkF64ThresholdInterp(b *testing.B) {
+	prog := corpus.F64Threshold.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	vm := vm3.NewWithProgram(prog)
+	const n = int64(100)
 	var s int64
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
