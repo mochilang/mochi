@@ -496,6 +496,30 @@ func (vm *VM) run() (Cell, error) {
 			fr.pc = pc
 			return EncodeDeopt(int(uint16(op.C))), nil
 
+		case OpNewList:
+			regsCell[op.A] = arenas.AllocList(0, 0)
+			pc++
+		case OpListLenI64:
+			regsI64[op.A] = int64(arenas.ListLen(regsCell[op.B]))
+			pc++
+		case OpListPushI64:
+			lst := regsCell[op.A]
+			_, _, idx := lst.DecodeHandle()
+			l := &arenas.Lists[idx]
+			l.cells = append(l.cells, CInt(regsI64[op.B]))
+			l.len = uint32(len(l.cells))
+			pc++
+		case OpListGetI64:
+			lst := regsCell[op.B]
+			_, _, idx := lst.DecodeHandle()
+			regsI64[op.A] = arenas.Lists[idx].cells[regsI64[uint16(op.C)]].Int()
+			pc++
+		case OpListSetI64:
+			lst := regsCell[op.A]
+			_, _, idx := lst.DecodeHandle()
+			arenas.Lists[idx].cells[regsI64[uint16(op.C)]] = CInt(regsI64[op.B])
+			pc++
+
 		case OpConstStrKW:
 			regsCell[op.A] = consts[uint16(op.C)]
 			pc++

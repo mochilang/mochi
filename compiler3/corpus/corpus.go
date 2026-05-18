@@ -23,5 +23,6 @@ func All() []*Program {
 		FibRec,
 		PrimeCount,
 		StringsConcatLoop,
+		ListsFillSum,
 	}
 }
