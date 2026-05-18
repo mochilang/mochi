@@ -55,7 +55,14 @@ func AnalyzeLeafShape(fn *Function) {
 		fn.LeafGuardK = g.B
 		fn.LeafReturnB = l.B
 		fn.LeafReturnC = l.C
+	default:
+		return
 	}
+	// Branch entry: a leaf-shape callee whose caller already performed
+	// the guard test inline (and chose the non-leaf path) can start the
+	// new frame at pc=2, skipping the redundant OpJumpIfNotEqualI64K
+	// guard dispatch. MEP-39 §6.10 iter 5.
+	fn.BranchEntryIP = 2
 }
 
 // The leaf shortcut is consumed inline in each of the eight call-site

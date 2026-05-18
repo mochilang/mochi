@@ -339,4 +339,23 @@ const (
 	OpI64ToBigInt  // A = CBigInt(new(big.Int).SetInt64(regs[B].Int()))
 	OpBigIntToI64  // A = CInt(bigIntAt(regs[B]).Int64()); low 64 bits if oversize
 	OpBigIntToStr  // A = newString(bigIntAt(regs[B]).Text(10))
+
+	// SubK-fused self-recursive calls (MEP-39 §6.10 iter 5).
+	//
+	// Each variant subtracts 1 from a parameter register inline before
+	// the call, instead of consuming a SubI64K op output. Emitted when
+	// the compiler proves every use of a SubI64K(reg, 1) is one of
+	// these call forms (the SubI64K is then DCE'd via suppress[]).
+	//
+	// Used by recursive descent kernels (binary_trees.make_tree /
+	// check_tree) where two consecutive calls share `d-1`: with the
+	// fusion both calls re-derive `d-1` from the source register, and
+	// the standalone SubI64K disappears.
+	//
+	//	OpCallSelfA1Sub1:        A=retReg, C=arg0SrcReg (arg0 = regs[C] - 1)
+	//	OpPairFstCallSelfA2Sub1: A=retReg, C=pairSrcReg, D=arg1SrcReg (arg1 = regs[D] - 1)
+	//	OpPairSndCallSelfA2Sub1: A=retReg, C=pairSrcReg, D=arg1SrcReg (arg1 = regs[D] - 1)
+	OpCallSelfA1Sub1
+	OpPairFstCallSelfA2Sub1
+	OpPairSndCallSelfA2Sub1
 )

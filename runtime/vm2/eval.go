@@ -271,7 +271,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				code = callee.Code
 				regs = vm.Stack[base:]
 				consts = callee.Consts
-				ip = 0
+				ip = int(callee.BranchEntryIP)
 				break
 			}
 			a0 := regs[ins.C]
@@ -281,7 +281,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			code = fr.Fn.Code
 			regs = vm.Stack[newBase:]
 			consts = fr.Fn.Consts
-			ip = 0
+			ip = int(callee.BranchEntryIP)
 		case OpCallA2:
 			// 2-arg specialized call. Same shape as OpCallA1 with one
 			// more arg in ins.D. Hot path for binary_trees.checkTree.
@@ -318,7 +318,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				code = callee.Code
 				regs = vm.Stack[base:]
 				consts = callee.Consts
-				ip = 0
+				ip = int(callee.BranchEntryIP)
 				break
 			}
 			a0, a1 := regs[ins.C], regs[ins.D]
@@ -329,7 +329,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			code = fr.Fn.Code
 			regs = vm.Stack[newBase:]
 			consts = fr.Fn.Consts
-			ip = 0
+			ip = int(callee.BranchEntryIP)
 		case OpPairFstCallA2:
 			// Fused OpPairFst + OpCallA2. arg0 is the .a half of the pair
 			// in regs[ins.C]; arg1 is regs[ins.D]. Saves one dispatch + the
@@ -356,7 +356,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				code = callee.Code
 				regs = vm.Stack[base:]
 				consts = callee.Consts
-				ip = 0
+				ip = int(callee.BranchEntryIP)
 				break
 			}
 			a0 := (*vmPair)(regs[ins.C].PtrTo()).a
@@ -368,7 +368,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			code = fr.Fn.Code
 			regs = vm.Stack[newBase:]
 			consts = fr.Fn.Consts
-			ip = 0
+			ip = int(callee.BranchEntryIP)
 		case OpPairSndCallA2:
 			callee := vm.Program.Funcs[ins.B]
 			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 1 && regs[ins.D].Int() == int64(callee.LeafGuardK) {
@@ -391,7 +391,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				code = callee.Code
 				regs = vm.Stack[base:]
 				consts = callee.Consts
-				ip = 0
+				ip = int(callee.BranchEntryIP)
 				break
 			}
 			a0 := (*vmPair)(regs[ins.C].PtrTo()).b
@@ -403,7 +403,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			code = fr.Fn.Code
 			regs = vm.Stack[newBase:]
 			consts = fr.Fn.Consts
-			ip = 0
+			ip = int(callee.BranchEntryIP)
 		case OpCallSelfA1:
 			callee := fr.Fn
 			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 0 && regs[ins.C].Int() == int64(callee.LeafGuardK) {
@@ -423,7 +423,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
 				fr = &vm.Frames[len(vm.Frames)-1]
 				regs = vm.Stack[base:]
-				ip = 0
+				ip = int(callee.BranchEntryIP)
 				break
 			}
 			a0 := regs[ins.C]
@@ -431,7 +431,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			vm.Stack[newBase] = a0
 			fr = &vm.Frames[len(vm.Frames)-1]
 			regs = vm.Stack[newBase:]
-			ip = 0
+			ip = int(callee.BranchEntryIP)
 		case OpCallSelfA2:
 			callee := fr.Fn
 			if lk := callee.LeafKind; lk != LeafKindNone {
@@ -464,7 +464,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
 				fr = &vm.Frames[len(vm.Frames)-1]
 				regs = vm.Stack[base:]
-				ip = 0
+				ip = int(callee.BranchEntryIP)
 				break
 			}
 			a0, a1 := regs[ins.C], regs[ins.D]
@@ -473,7 +473,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			vm.Stack[newBase+1] = a1
 			fr = &vm.Frames[len(vm.Frames)-1]
 			regs = vm.Stack[newBase:]
-			ip = 0
+			ip = int(callee.BranchEntryIP)
 		case OpPairFstCallSelfA2:
 			callee := fr.Fn
 			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 1 && regs[ins.D].Int() == int64(callee.LeafGuardK) {
@@ -494,7 +494,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
 				fr = &vm.Frames[len(vm.Frames)-1]
 				regs = vm.Stack[base:]
-				ip = 0
+				ip = int(callee.BranchEntryIP)
 				break
 			}
 			a0 := (*vmPair)(regs[ins.C].PtrTo()).a
@@ -504,7 +504,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			vm.Stack[newBase+1] = a1
 			fr = &vm.Frames[len(vm.Frames)-1]
 			regs = vm.Stack[newBase:]
-			ip = 0
+			ip = int(callee.BranchEntryIP)
 		case OpPairSndCallSelfA2:
 			callee := fr.Fn
 			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 1 && regs[ins.D].Int() == int64(callee.LeafGuardK) {
@@ -525,7 +525,7 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
 				fr = &vm.Frames[len(vm.Frames)-1]
 				regs = vm.Stack[base:]
-				ip = 0
+				ip = int(callee.BranchEntryIP)
 				break
 			}
 			a0 := (*vmPair)(regs[ins.C].PtrTo()).b
@@ -535,7 +535,100 @@ func (vm *VM) runLoop(target int) (Cell, error) {
 			vm.Stack[newBase+1] = a1
 			fr = &vm.Frames[len(vm.Frames)-1]
 			regs = vm.Stack[newBase:]
-			ip = 0
+			ip = int(callee.BranchEntryIP)
+		case OpCallSelfA1Sub1:
+			callee := fr.Fn
+			argv := regs[ins.C].Int() - 1
+			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 0 && argv == int64(callee.LeafGuardK) {
+				if lk == LeafKindReturnI64K {
+					regs[ins.A] = CInt(int64(callee.LeafReturnA))
+				} else {
+					regs[ins.A] = vm.newPair(CInt(int64(callee.LeafReturnB)), CInt(int64(callee.LeafReturnC)))
+				}
+				break
+			}
+			fr.IP = ip
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				vm.Stack[base] = CInt(argv)
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				regs = vm.Stack[base:]
+				ip = int(callee.BranchEntryIP)
+				break
+			}
+			a0 := CInt(argv)
+			_, newBase := vm.pushFrame(callee, ins.A)
+			vm.Stack[newBase] = a0
+			fr = &vm.Frames[len(vm.Frames)-1]
+			regs = vm.Stack[newBase:]
+			ip = int(callee.BranchEntryIP)
+		case OpPairFstCallSelfA2Sub1:
+			callee := fr.Fn
+			argv := regs[ins.D].Int() - 1
+			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 1 && argv == int64(callee.LeafGuardK) {
+				if lk == LeafKindReturnI64K {
+					regs[ins.A] = CInt(int64(callee.LeafReturnA))
+				} else {
+					regs[ins.A] = vm.newPair(CInt(int64(callee.LeafReturnB)), CInt(int64(callee.LeafReturnC)))
+				}
+				break
+			}
+			fr.IP = ip
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				vm.Stack[base] = (*vmPair)(regs[ins.C].PtrTo()).a
+				vm.Stack[base+1] = CInt(argv)
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				regs = vm.Stack[base:]
+				ip = int(callee.BranchEntryIP)
+				break
+			}
+			a0 := (*vmPair)(regs[ins.C].PtrTo()).a
+			a1 := CInt(argv)
+			_, newBase := vm.pushFrame(callee, ins.A)
+			vm.Stack[newBase] = a0
+			vm.Stack[newBase+1] = a1
+			fr = &vm.Frames[len(vm.Frames)-1]
+			regs = vm.Stack[newBase:]
+			ip = int(callee.BranchEntryIP)
+		case OpPairSndCallSelfA2Sub1:
+			callee := fr.Fn
+			argv := regs[ins.D].Int() - 1
+			if lk := callee.LeafKind; lk != LeafKindNone && callee.LeafGuardReg == 1 && argv == int64(callee.LeafGuardK) {
+				if lk == LeafKindReturnI64K {
+					regs[ins.A] = CInt(int64(callee.LeafReturnA))
+				} else {
+					regs[ins.A] = vm.newPair(CInt(int64(callee.LeafReturnB)), CInt(int64(callee.LeafReturnC)))
+				}
+				break
+			}
+			fr.IP = ip
+			base := len(vm.Stack)
+			need := base + callee.NumRegs
+			if cap(vm.Stack) >= need {
+				vm.Stack = vm.Stack[:need]
+				vm.Stack[base] = (*vmPair)(regs[ins.C].PtrTo()).b
+				vm.Stack[base+1] = CInt(argv)
+				vm.Frames = append(vm.Frames, frame{Fn: callee, RegsBase: base, RetReg: ins.A})
+				fr = &vm.Frames[len(vm.Frames)-1]
+				regs = vm.Stack[base:]
+				ip = int(callee.BranchEntryIP)
+				break
+			}
+			a0 := (*vmPair)(regs[ins.C].PtrTo()).b
+			a1 := CInt(argv)
+			_, newBase := vm.pushFrame(callee, ins.A)
+			vm.Stack[newBase] = a0
+			vm.Stack[newBase+1] = a1
+			fr = &vm.Frames[len(vm.Frames)-1]
+			regs = vm.Stack[newBase:]
+			ip = int(callee.BranchEntryIP)
 		case OpTailCallSelf:
 			ip = 0
 		case OpTailCallSelfA3:
