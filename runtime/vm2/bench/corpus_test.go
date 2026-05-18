@@ -56,6 +56,9 @@ var corpusSizes = []corpusSize{
 	// MEP-39 §6.5: reverse_complement. N is the buffer length; one
 	// fill + one reverse-complement pass + one sum at that size.
 	{"bg_reverse_complement", 4096},
+	// MEP-39 §6.6: fasta. N is the LCG iteration count; one inner
+	// step per iter (LCG + cumprob lookup + hash update).
+	{"bg_fasta", 10000},
 }
 
 func sizeFor(name string) int64 {
@@ -143,3 +146,4 @@ func BenchmarkVM2_BG_Mandelbrot(b *testing.B)    { benchCorpus(b, corpus.Program
 func BenchmarkVM2_BG_NBody(b *testing.B)         { benchCorpus(b, corpus.Program{Name: "bg_n_body", Build: corpus.BuildNBody, Expect: corpus.ExpectNBody}) }
 func BenchmarkVM2_BG_SpectralNorm(b *testing.B)  { benchCorpus(b, corpus.Program{Name: "bg_spectral_norm", Build: corpus.BuildSpectralNorm, Expect: corpus.ExpectSpectralNorm}) }
 func BenchmarkVM2_BG_ReverseComplement(b *testing.B) { benchCorpus(b, corpus.Program{Name: "bg_reverse_complement", Build: corpus.BuildReverseComplement, Expect: corpus.ExpectReverseComplement}) }
+func BenchmarkVM2_BG_Fasta(b *testing.B)         { benchCorpus(b, corpus.Program{Name: "bg_fasta", Build: corpus.BuildFasta, Expect: corpus.ExpectFasta}) }

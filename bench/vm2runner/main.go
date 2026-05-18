@@ -62,6 +62,9 @@ var repeats = map[string]int{
 	// MEP-39 §6.5: reverse_complement. N is the buffer length; one
 	// fill + one reverse-complement pass + one sum at that size.
 	"bg_reverse_complement": 1,
+	// MEP-39 §6.6: fasta. N is the LCG iteration count; one LCG step
+	// + one cumprob lookup + one hash update per inner iter.
+	"bg_fasta": 1,
 }
 
 func main() {

@@ -65,6 +65,11 @@ func All() []Program {
 		// into a second buffer, return sum(out) so peers can integer-
 		// compare. When N is a multiple of 4, sum = (N/4) * 287.
 		{Name: "bg_reverse_complement", Build: BuildReverseComplement, Expect: ExpectReverseComplement},
+		// MEP-39 §6.6: parameterised fasta kernel. N is the LCG
+		// iteration count; HOMO_SAPIENS 4-entry cumprob lookup feeds
+		// a rolling i64 hash so the cross-lang harness compares a
+		// single i64 across every peer.
+		{Name: "bg_fasta", Build: BuildFasta, Expect: ExpectFasta},
 	}
 }
 
