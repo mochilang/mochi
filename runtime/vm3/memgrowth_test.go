@@ -65,3 +65,62 @@ func TestArenaFreeListReuse(t *testing.T) {
 		t.Errorf("generation did not bump on reuse: gen=%d", gen)
 	}
 }
+
+// TestLayerATruncatesUnboxedReturn asserts that running a program which
+// allocates a map and returns an unboxed i64 leaves the map slab empty:
+// Layer A's frame mark drops every slot allocated above the caller's
+// high-water mark on Return*.
+func TestLayerATruncatesUnboxedReturn(t *testing.T) {
+	// Single-function program: alloc a map into regsCell[0], do nothing
+	// with it, return constant 0 (unboxed via OpReturnConstK).
+	main := &Function{
+		Name:        "allocAndDrop",
+		NumRegsI64:  1,
+		NumRegsCell: 1,
+		ResultBank:  BankI64,
+		Code: []Op{
+			MakeOp(OpNewMap, 0, 0, 0),
+			MakeOp(OpReturnConstK, 0, 0, 0),
+		},
+	}
+	prog := &Program{Funcs: []*Function{main}, Entry: 0}
+	vm := NewWithProgram(prog)
+	if _, err := vm.Run(main); err != nil {
+		t.Fatalf("Run error: %v", err)
+	}
+	if got := vm.Arenas().TotalSlots(ArenaMap); got != 0 {
+		t.Errorf("TotalSlots(ArenaMap) after unboxed return = %d, want 0 (Layer A truncate)", got)
+	}
+}
+
+// TestLayerABoundsReusedVM asserts that re-running an allocating
+// program against the same VM keeps arena memory flat: Layer A drops
+// each call's allocations on return, so 1000 invocations end with the
+// same TotalSlots as one invocation.
+func TestLayerABoundsReusedVM(t *testing.T) {
+	main := &Function{
+		Name:        "allocAndDrop",
+		NumRegsI64:  1,
+		NumRegsCell: 2,
+		ResultBank:  BankI64,
+		Code: []Op{
+			MakeOp(OpNewMap, 0, 0, 0),
+			MakeOp(OpNewList, 1, 0, 0),
+			MakeOp(OpReturnConstK, 0, 0, 0),
+		},
+	}
+	prog := &Program{Funcs: []*Function{main}, Entry: 0}
+	vm := NewWithProgram(prog)
+	const N = 1000
+	for range N {
+		if _, err := vm.Run(main); err != nil {
+			t.Fatalf("Run error: %v", err)
+		}
+	}
+	if got := vm.Arenas().TotalSlots(ArenaMap); got != 0 {
+		t.Errorf("TotalSlots(ArenaMap) after %d reused-VM runs = %d, want 0", N, got)
+	}
+	if got := vm.Arenas().TotalSlots(ArenaList); got != 0 {
+		t.Errorf("TotalSlots(ArenaList) after %d reused-VM runs = %d, want 0", N, got)
+	}
+}
