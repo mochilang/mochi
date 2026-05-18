@@ -12,12 +12,26 @@ import (
 	"mochi/runtime/vm3"
 )
 
-// runJITI64Kernel compiles fn and calls it via the trampoline with a
-// single i64 argument in regs[0], returning the i64 result. The regs
-// window must live for the duration of the call; the trampoline is
-// NOSPLIT so Go's stack cannot grow under it and the &regs[0] pointer
-// stays valid.
+// runJITI64Kernel compiles fn and calls it via the status-word
+// trampoline with a single i64 argument in regs[0], returning the i64
+// result. The regs window and status word must live for the duration
+// of the call; the trampoline is NOSPLIT so Go's stack cannot grow
+// under it and the &regs[0] / &status pointers stay valid. On a
+// non-zero status the test fails (callers that expect a deopt path
+// should use runJITI64KernelStatus instead).
 func runJITI64Kernel(t *testing.T, fn *vm3.Function, arg int64) int64 {
+	t.Helper()
+	got, status := runJITI64KernelStatus(t, fn, arg)
+	if status != vm3jit.StatusOK {
+		t.Fatalf("unexpected deopt: status=%d", status)
+	}
+	return got
+}
+
+// runJITI64KernelStatus is the variant that surfaces the deopt status
+// to the caller. Tests for the divide-by-zero path use this to assert
+// status == StatusDivByZero.
+func runJITI64KernelStatus(t *testing.T, fn *vm3.Function, arg int64) (int64, int64) {
 	t.Helper()
 	cf, err := vm3jit.Compile(fn)
 	if err != nil {
@@ -26,8 +40,9 @@ func runJITI64Kernel(t *testing.T, fn *vm3.Function, arg int64) int64 {
 	defer cf.Free()
 	var regs [vm3jit.MaxI64Regs]int64
 	regs[0] = arg
-	got := trampoline.Call(cf.Entry(), unsafe.Pointer(&regs[0]))
-	return int64(got)
+	var status int64
+	got := trampoline.CallStatus(cf.Entry(), unsafe.Pointer(&regs[0]), unsafe.Pointer(&status))
+	return int64(got), status
 }
 
 // TestCompileSumLoopMatchesInterp runs the JIT'd sum_loop alongside
@@ -130,6 +145,86 @@ func TestWideI64Frame(t *testing.T) {
 			t.Errorf("wide_chain(%d) = %d want %d", x, got, want)
 		}
 	}
+}
+
+// TestCompileDivModI64 exercises reg-reg OpDivI64 and OpModI64 codegen
+// on a couple of canonical (B, C) pairs and checks results match Go's
+// signed div/mod semantics. The shared deopt block is laid out at the
+// end of the JIT stream but is never reached on the happy path.
+func TestCompileDivModI64(t *testing.T) {
+	cases := []struct {
+		op           vm3.OpCode
+		b, c         int64
+		want         int64
+	}{
+		{vm3.OpDivI64, 100, 7, 100 / 7},
+		{vm3.OpDivI64, -100, 7, -100 / 7},
+		{vm3.OpDivI64, 100, -7, 100 / -7},
+		{vm3.OpModI64, 100, 7, 100 % 7},
+		{vm3.OpModI64, -100, 7, -100 % 7},
+		{vm3.OpModI64, 100, -7, 100 % -7},
+	}
+	for _, c := range cases {
+		// fn(_) := { r1 = b ; r2 = c ; r0 = r1 OP r2 ; return r0 }
+		fn := &vm3.Function{
+			Name:       "div_mod",
+			NumRegsI64: 3,
+			ParamBanks: []vm3.Bank{vm3.BankI64},
+			ResultBank: vm3.BankI64,
+			Code: []vm3.Op{
+				vm3.MakeOp(vm3.OpConstI64KW, 1, 0, 0),
+				vm3.MakeOp(vm3.OpConstI64KW, 2, 0, 1),
+				vm3.MakeOp(c.op, 0, 1, 2),
+				vm3.MakeOp(vm3.OpReturnI64, 0, 0, 0),
+			},
+			Consts: []vm3.Cell{vm3.CInt(c.b), vm3.CInt(c.c)},
+		}
+		got := runJITI64Kernel(t, fn, 0)
+		if got != c.want {
+			t.Errorf("%d %v %d: jit=%d want=%d", c.b, c.op, c.c, got, c.want)
+		}
+	}
+}
+
+// TestDivByZeroDeopt confirms the CBZ guard on reg-reg OpDivI64 routes
+// to the shared deopt block, which writes StatusDivByZero through x1
+// before returning. The result value is undefined and the test
+// inspects only the status word.
+func TestDivByZeroDeopt(t *testing.T) {
+	// fn(x) := { r1 = 1 ; r0 = r1 / x }. Pass x=0 to trigger deopt.
+	fn := &vm3.Function{
+		Name:       "div_by_zero",
+		NumRegsI64: 2,
+		ParamBanks: []vm3.Bank{vm3.BankI64},
+		ResultBank: vm3.BankI64,
+		Code: []vm3.Op{
+			vm3.MakeOp(vm3.OpConstI64K, 1, 0, 1),
+			vm3.MakeOp(vm3.OpDivI64, 0, 1, 0),
+			vm3.MakeOp(vm3.OpReturnI64, 0, 0, 0),
+		},
+	}
+	_, status := runJITI64KernelStatus(t, fn, 0)
+	if status != vm3jit.StatusDivByZero {
+		t.Fatalf("status: got %d want StatusDivByZero=%d", status, vm3jit.StatusDivByZero)
+	}
+	// Happy path on the same fn with non-zero divisor must clear.
+	got, status := runJITI64KernelStatus(t, fn, 7)
+	if status != vm3jit.StatusOK {
+		t.Fatalf("happy-path status: got %d want OK", status)
+	}
+	if got != 0 {
+		// signed: 1 / 7 = 0 (rounds toward zero).
+		t.Errorf("1/7: got %d want 0", got)
+	}
+}
+
+// TestCompilePrimeCountMatchesInterp runs the JIT'd prime_count
+// kernel (which uses reg-reg OpMulI64 + OpModI64) against the
+// interpreter across a small range of N. This is the first corpus
+// kernel that needs the /0 guard.
+func TestCompilePrimeCountMatchesInterp(t *testing.T) {
+	checkKernelAgainstInterp(t, "prime_count", corpus.PrimeCount,
+		[]int64{2, 10, 100, 1000})
 }
 
 // TestRejectF64 confirms a function with f64 banks is rejected by the

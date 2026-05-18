@@ -202,3 +202,77 @@ func BenchmarkFibIterInterp(b *testing.B) {
 	}
 	vm3jitSink = s
 }
+
+//go:noinline
+func goPrimeCountBench(n int64) int64 {
+	count := int64(0)
+	for i := int64(2); i < n; i++ {
+		isPrime := int64(1)
+		for j := int64(2); j*j <= i; j++ {
+			if i%j == 0 {
+				isPrime = 0
+				break
+			}
+		}
+		if isPrime != 0 {
+			count++
+		}
+	}
+	return count
+}
+
+// BenchmarkPrimeCountJIT measures the JIT'd prime_count at N=1000.
+// The kernel exercises reg-reg OpMulI64 and OpModI64 plus the CBZ
+// /0 guard (which never trips on the happy path, since j starts at 2
+// and increments by 1). Phase 6.1c gate: this ratio must clear the
+// 2x-of-Go bar.
+func BenchmarkPrimeCountJIT(b *testing.B) {
+	prog := corpus.PrimeCount.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	cf, err := vm3jit.Compile(fn)
+	if err != nil {
+		b.Fatalf("Compile: %v", err)
+	}
+	defer cf.Free()
+	entry := cf.Entry()
+	const n = int64(1000)
+	var regs [vm3jit.MaxI64Regs]int64
+	var status int64
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		regs[0] = n + int64(i&1)
+		s += int64(trampoline.CallStatus(entry, unsafe.Pointer(&regs[0]), unsafe.Pointer(&status)))
+		if status != 0 {
+			b.Fatalf("unexpected deopt: status=%d", status)
+		}
+	}
+	vm3jitSink = s
+}
+
+func BenchmarkPrimeCountGoFair(b *testing.B) {
+	const n = int64(1000)
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		s += goPrimeCountBench(n + int64(i&1))
+	}
+	vm3jitSink = s
+}
+
+func BenchmarkPrimeCountInterp(b *testing.B) {
+	prog := corpus.PrimeCount.Build(0)
+	fn := prog.Funcs[prog.Entry]
+	vm := vm3.NewWithProgram(prog)
+	const n = int64(1000)
+	var s int64
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		got, err := vm.RunWithArgs(fn, []int64{n + int64(i&1)})
+		if err != nil {
+			b.Fatalf("RunWithArgs: %v", err)
+		}
+		s += got.Int()
+	}
+	vm3jitSink = s
+}
