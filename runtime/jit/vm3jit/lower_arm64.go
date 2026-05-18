@@ -184,6 +184,73 @@ func hasRegRegDivMod(fn *vm3.Function) bool {
 	return false
 }
 
+// hasListPushI64 reports whether fn contains any OpListPushI64. Each
+// site emits an inline cap check + conditional branch to the
+// StatusListGrow deopt block (Phase 6.2d.2.c).
+func hasListPushI64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpListPushI64 {
+			return true
+		}
+	}
+	return false
+}
+
+// deoptStatusesUsedARM64 returns the deopt status codes fn references,
+// in emission order. Caller emits one block per status; the order here
+// also fixes the per-status block offsets (StatusDivByZero block first,
+// then StatusListGrow, ...). Returned slice is empty when fn has no
+// deopt sites.
+func deoptStatusesUsedARM64(fn *vm3.Function) []int64 {
+	var s []int64
+	if hasRegRegDivMod(fn) {
+		s = append(s, StatusDivByZero)
+	}
+	if hasListPushI64(fn) {
+		s = append(s, StatusListGrow)
+	}
+	return s
+}
+
+// deoptBlockWordsARM64Status returns the word count of one deopt block
+// for fn. All blocks share the same shape (MOV status, STR status,
+// spill pinned regs, frame epilogue, RET); only the status code value
+// differs, so the word count is the same per block.
+func deoptBlockWordsARM64Status(fn *vm3.Function) int {
+	// MOV + STR status + i64 spills + f64 spills + cell spills +
+	// epilogue LDPs + RET.
+	nI64 := int(fn.NumRegsI64)
+	if nI64 > maxI64Regs {
+		nI64 = maxI64Regs
+	}
+	if fn.NumRegsCell > 0 && nI64 > maxI64RegsCellARM64 {
+		nI64 = maxI64RegsCellARM64
+	}
+	nF64 := int(fn.NumRegsF64)
+	if nF64 > maxF64RegsARM64 {
+		nF64 = maxF64RegsARM64
+	}
+	nCell := int(fn.NumRegsCell)
+	if nCell > maxCellRegs {
+		nCell = maxCellRegs
+	}
+	return 2 + nI64 + nF64 + nCell + numCalleeSavedPairs(fn) + numLRPair(fn) + 1
+}
+
+// deoptStartForStatus returns the word offset where the deopt block
+// for `status` lives, given the first-block start (`baseStart`) in the
+// emitted stream. Each block is `deoptBlockWordsARM64Status(fn)` words
+// long; the order matches deoptStatusesUsedARM64.
+func deoptStartForStatus(fn *vm3.Function, baseStart int, status int64) int {
+	per := deoptBlockWordsARM64Status(fn)
+	for i, s := range deoptStatusesUsedARM64(fn) {
+		if s == status {
+			return baseStart + i*per
+		}
+	}
+	return baseStart // unreachable for callers that gate emission
+}
+
 // isNonLeaf reports whether fn issues any native BL (currently only
 // self-recursive OpCallI64 is lowered to BL; everything else routes
 // through the interpreter and so does not need x30 saved). Non-leaf
@@ -209,31 +276,49 @@ func numLRPair(fn *vm3.Function) int {
 	return 0
 }
 
-// deoptBlockWordsARM64 returns the number of instruction words the
-// per-function shared deopt block occupies, or 0 if no opcode in fn can
-// take a deopt path. The block lives at the very end of the JIT stream;
-// every CBZ-guarded check branches to its start.
+// emitDeoptBlockARM64 emits one per-status deopt block for fn at the
+// end of the instruction stream. statusCode is the int64 value the JIT
+// writes to *(x1) before unwinding. Every pinned i64/f64/cell reg is
+// spilled back to its base array first so vm3.JITCallFn can copy the
+// JIT's final state into vm.deopt* and the interpreter can resume the
+// callee from PC=0 with the spilled values.
 //
-// Block layout (when emitted):
+// Block layout:
 //
+//	STR Xr, [x0, #r*8]   ; for each pinned i64 reg (NumRegsI64 entries)
+//	STR Dr, [x2, #r*8]   ; for each pinned f64 reg (NumRegsF64 entries)
+//	STR Xr, [x3, #r*8]   ; for each pinned cell reg (NumRegsCell entries)
 //	MOV  x16, #status_code
-//	STR  x16, [x1]                  ; write *status
-//	<pop callee-saved pairs>        ; numCalleeSavedPairs LDPs
+//	STR  x16, [x1]
+//	<frame epilogue>
 //	RET
-func deoptBlockWordsARM64(fn *vm3.Function) int {
-	if !hasRegRegDivMod(fn) {
-		return 0
-	}
-	return 2 + numCalleeSavedPairs(fn) + numLRPair(fn) + 1
-}
-
-// emitDeoptBlockARM64 emits the shared deopt block for fn at the end
-// of the instruction stream. statusCode is the int64 value the JIT
-// writes to *(x1) before unwinding. Callers compute the branch offset
-// from each guard site to this block via pcMap[len(fn.Code)] (the word
-// index where the block starts).
 func emitDeoptBlockARM64(fn *vm3.Function, statusCode int64) []uint32 {
-	ws := movImm64(16, statusCode)
+	nI64 := int(fn.NumRegsI64)
+	if nI64 > maxI64Regs {
+		nI64 = maxI64Regs
+	}
+	if fn.NumRegsCell > 0 && nI64 > maxI64RegsCellARM64 {
+		nI64 = maxI64RegsCellARM64
+	}
+	nF64 := int(fn.NumRegsF64)
+	if nF64 > maxF64RegsARM64 {
+		nF64 = maxF64RegsARM64
+	}
+	nCell := int(fn.NumRegsCell)
+	if nCell > maxCellRegs {
+		nCell = maxCellRegs
+	}
+	ws := make([]uint32, 0, deoptBlockWordsARM64Status(fn))
+	for r := uint32(0); r < uint32(nI64); r++ {
+		ws = append(ws, str64(r2x(fn, uint16(r)), 0, r))
+	}
+	for r := uint32(0); r < uint32(nF64); r++ {
+		ws = append(ws, strD(r2d(uint16(r)), 2, r))
+	}
+	for r := uint32(0); r < uint32(nCell); r++ {
+		ws = append(ws, str64(r2cell(uint16(r)), 3, r))
+	}
+	ws = append(ws, movImm64(16, statusCode)...)
 	ws = append(ws, str64(16, 1, 0))
 	ws = emitFrameEpilogueARM64(ws, calleeSavedPairRegs(fn), numLRPair(fn))
 	ws = append(ws, ret())
@@ -268,7 +353,8 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 	}
 
 	deoptStart := pcMap[len(fn.Code)]
-	total := deoptStart + deoptBlockWordsARM64(fn)
+	statuses := deoptStatusesUsedARM64(fn)
+	total := deoptStart + len(statuses)*deoptBlockWordsARM64Status(fn)
 	ws := make([]uint32, 0, total)
 
 	// Prologue: push x29:x30 (outermost) if non-leaf, then push
@@ -313,8 +399,8 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 		return nil, fmt.Errorf("vm3jit/%s: code stream %d words, predicted %d",
 			fn.Name, len(ws), deoptStart)
 	}
-	if hasRegRegDivMod(fn) {
-		ws = append(ws, emitDeoptBlockARM64(fn, StatusDivByZero)...)
+	for _, status := range statuses {
+		ws = append(ws, emitDeoptBlockARM64(fn, status)...)
 	}
 	if len(ws) != total {
 		return nil, fmt.Errorf("vm3jit/%s: final stream %d words, predicted %d",
@@ -455,6 +541,14 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		stride := int64(vm3.JITListSlabStride())
 		return movImm64WordCount(stride) + 6, nil
 
+	case vm3.OpListPushI64:
+		// Inline push-with-cap-check fast path. See emitInstrARM64 for
+		// the exact 15-word sequence (or movImm64WordCount(stride)+14
+		// when stride does not fit in a single MOVZ). On cap exhaustion
+		// the inline B.HS branches to the StatusListGrow deopt block.
+		stride := int64(vm3.JITListSlabStride())
+		return movImm64WordCount(stride) + 14, nil
+
 	case vm3.OpTailCallMixed:
 		// Self-tail-call with arg-base 0 lowers to a single backward B
 		// (interp matches with `pc = 0; continue`). The args already live
@@ -504,14 +598,16 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		return []uint32{mulReg(xA, xB, xC)}, nil
 	case vm3.OpDivI64:
 		xC := r2x(fn, uint16(op.C))
-		off, err := branchOff(pcMap[idx], deoptStart, 19)
+		dz := deoptStartForStatus(fn, deoptStart, StatusDivByZero)
+		off, err := branchOff(pcMap[idx], dz, 19)
 		if err != nil {
 			return nil, fmt.Errorf("DivI64 deopt branch: %w", err)
 		}
 		return []uint32{cbz64(xC, off), sdivReg(xA, xB, xC)}, nil
 	case vm3.OpModI64:
 		xC := r2x(fn, uint16(op.C))
-		off, err := branchOff(pcMap[idx], deoptStart, 19)
+		dz := deoptStartForStatus(fn, deoptStart, StatusDivByZero)
+		off, err := branchOff(pcMap[idx], dz, 19)
 		if err != nil {
 			return nil, fmt.Errorf("ModI64 deopt branch: %w", err)
 		}
@@ -722,6 +818,60 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		}
 		return []uint32{bImm(off)}, nil
 
+	case vm3.OpListPushI64:
+		// regsCell[A] holds the list handle, regsI64[B] the i64 to push.
+		// Inline write-side fast path mirrors the interp's
+		// "append-and-bump" with one extra cap check so a cells-slice
+		// regrow is deferred to the interpreter (deopt with
+		// StatusListGrow). The OpNewList capHint sized for the bench
+		// keeps the steady-state inside the fast path.
+		//
+		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
+		//   MOV  x17, #SIZEOF_VMLIST           ; stride
+		//   MUL  x16, x16, x17                 ; slab byte offset
+		//   ADD  x16, x16, x19                 ; x19 = cached lists base
+		//   LDR  x4,  [x16, #CELLS_OFF+8]      ; cells.len
+		//   LDR  x17, [x16, #CELLS_OFF+16]     ; cells.cap
+		//   CMP  x4,  x17
+		//   B.HS deopt_listgrow                ; if len >= cap
+		//   LDR  x17, [x16, #CELLS_OFF]        ; cells.ptr
+		//   MOVZ x20, #0xFFFA, LSL #48         ; tagInt48
+		//   BFI  x20, xVal, #0, #48            ; pack 48-bit payload
+		//   STR  x20, [x17, x4, LSL #3]        ; cells[len] = boxed Cell
+		//   ADD  x4,  x4, #1                   ; len++
+		//   STR  x4,  [x16, #CELLS_OFF+8]      ; write cells.len
+		//   STR  w4,  [x16, #4]                ; write vmList.len (u32)
+		stride := int64(vm3.JITListSlabStride())
+		cellsOff := uint32(vm3.JITListCellsOffset())
+		cellsPtrImm12 := cellsOff / 8     // 1
+		cellsLenImm12 := (cellsOff + 8) / 8  // 2
+		cellsCapImm12 := (cellsOff + 16) / 8 // 3
+		xCell := r2cell(op.A)
+		xVal := r2x(fn, op.B)
+		lgStart := deoptStartForStatus(fn, deoptStart, StatusListGrow)
+		ws := make([]uint32, 0, movImm64WordCount(stride)+14)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(4, 16, cellsLenImm12))
+		ws = append(ws, ldr64(17, 16, cellsCapImm12))
+		ws = append(ws, cmpReg(4, 17))
+		bWord := pcMap[idx] + len(ws)
+		off, err := branchOff(bWord, lgStart, 19)
+		if err != nil {
+			return nil, fmt.Errorf("ListPushI64 deopt branch: %w", err)
+		}
+		ws = append(ws, bCond(0x2, off)) // B.HS
+		ws = append(ws, ldr64(17, 16, cellsPtrImm12))
+		ws = append(ws, movz(20, 0xFFFA, 3))
+		ws = append(ws, bfi48(20, xVal))
+		ws = append(ws, str64RegLsl3(20, 17, 4))
+		ws = append(ws, addImm64(4, 4, 1))
+		ws = append(ws, str64(4, 16, cellsLenImm12))
+		ws = append(ws, strW(4, 16, 1)) // vmList.len at byte offset 4 (imm12=1 for 4-byte stride)
+		return ws, nil
+
 	default:
 		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 	}
@@ -913,6 +1063,34 @@ func ldrRegLsl3(xt, xn, xm uint32) uint32 {
 // from a Cell (the high 16 bits hold the NaN-box tag).
 func sbfx48(xd, xn uint32) uint32 {
 	return 0x9340BC00 | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+// bfi48 encodes BFI Xd, Xn, #0, #48: copy the low 48 bits of Xn into
+// the low 48 bits of Xd (leaving the upper 16 bits of Xd intact).
+// Alias for BFM Xd, Xn, #0, #47 (immr=0, imms=47, sf=1, N=1). Used by
+// OpListPushI64 to pack an i64 payload into a pre-tagged Cell.
+func bfi48(xd, xn uint32) uint32 {
+	return 0xB340BC00 | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+// str64RegLsl3 encodes STR Xt, [Xn, Xm, LSL #3]: store 64-bit with
+// register-scaled offset (scale=3 for 8-byte stride). Used by
+// OpListPushI64 to write cells[len] = boxedCell.
+func str64RegLsl3(xt, xn, xm uint32) uint32 {
+	return 0xF8207800 | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5) | (xt & 0x1F)
+}
+
+// strW encodes STR Wt, [Xn, #imm12*4] (unsigned-offset 32-bit). Used
+// by OpListPushI64 to write the low 32 bits of the updated length back
+// into vmList.len at byte offset 4.
+func strW(wt, xn, imm12 uint32) uint32 {
+	return 0xB9000000 | ((imm12 & 0xFFF) << 10) | ((xn & 0x1F) << 5) | (wt & 0x1F)
+}
+
+// strD encodes STR Dt, [Xn, #imm12*8] (unsigned-offset 64-bit FP).
+// Used by the deopt block to spill pinned f64 regs back to regsF64.
+func strD(dt, xn, imm12 uint32) uint32 {
+	return 0xFD000000 | ((imm12 & 0xFFF) << 10) | ((xn & 0x1F) << 5) | (dt & 0x1F)
 }
 
 // movImm64 emits the shortest movz/movn/movk sequence that loads v
