@@ -56,8 +56,18 @@ func r2x(fn *vm3.Function, r uint16) uint32 {
 }
 
 // r2cell maps a vm3 Cell register slot to its pinned AArch64 callee-
-// saved register (x25..x28). Caller has pre-checked r < maxCellRegs.
-func r2cell(r uint16) uint32 { return uint32(r) + 25 }
+// saved register. Cells 0..3 sit in x25..x28 (unchanged); cells 4..7
+// sit in x21..x24 (Phase 6.3.4.j.3). Caller has pre-checked
+// r < maxCellRegs. When fn.NumRegsCell > 4 the admissibility check in
+// compile.go also forbids NumRegsI64 > 7 so the cell-4..7 lane and the
+// i64-7..10 callee-saved lane (which also lives at x21..x24) never
+// overlap.
+func r2cell(r uint16) uint32 {
+	if r < 4 {
+		return uint32(r) + 25
+	}
+	return uint32(r) + 17 // r=4→21, r=5→22, r=6→23, r=7→24
+}
 
 // r2d maps a vm3 f64 register slot to the AArch64 SIMD register
 // number (V0..V7 / D0..D7). Caller pre-checks r < maxF64RegsARM64.
@@ -166,6 +176,14 @@ func numCellCalleeSavedPairs(fn *vm3.Function) int {
 // STP x21:x22 (cells.cap + cells.ptr; cap unused for sum but pushed
 // alongside ptr), STP x25:x26 (cell reg 0). For fill (has Push) the
 // list grows with STP x23:x24 (cells.len + unused) before x25.
+//
+// Phase 6.3.4.j.3 extends cell-bank to NumRegsCell up to 8: cells 0..3
+// stay at x25..x28 (pairs k=0,1), cells 4..7 land at x21..x24 (pairs
+// k=2,3 → first regs 21, 23). The x21:x22 / x23:x24 pairs are
+// mutually exclusive with the slab-field hoist (hoist only applies at
+// NumRegsCell==1) and with the i64-callee-saved lane (the
+// admissibility check forbids NumRegsCell > 4 with NumRegsI64 > 7),
+// so the same pair never carries two banks simultaneously.
 func calleeSavedPairRegs(fn *vm3.Function) []uint32 {
 	pairs := make([]uint32, 0, numCalleeSavedPairs(fn))
 	if numCellScratchPairs(fn) > 0 {
@@ -188,7 +206,20 @@ func calleeSavedPairRegs(fn *vm3.Function) []uint32 {
 		}
 	}
 	for k := 0; k < numCellCalleeSavedPairs(fn); k++ {
-		pairs = append(pairs, 25+uint32(2*k))
+		// Cells 0..3 live in x25:x26 (k=0) and x27:x28 (k=1).
+		// Cells 4..7 live in x21:x22 (k=2) and x23:x24 (k=3).
+		var first uint32
+		switch k {
+		case 0:
+			first = 25
+		case 1:
+			first = 27
+		case 2:
+			first = 21
+		case 3:
+			first = 23
+		}
+		pairs = append(pairs, first)
 	}
 	hoistStart := tableHoistRegStartARM64(fn)
 	for k := 0; k < numTableHoistPairsARM64(fn); k++ {
@@ -1221,6 +1252,24 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		stride := int64(vm3.JITListSlabStride())
 		return movImm64WordCount(stride) + 7, nil
 
+	case vm3.OpListGetF64:
+		// Inline f64-typed list load. CFloat stores raw IEEE 754 bits
+		// so there is no sign-extend step; the cold form mirrors the
+		// i64 cold form minus the SBFX. No hoist applies to n_body
+		// (NumRegsCell=7), so only the cold form lands in this phase:
+		//   UXTW x16, w_cell ; MOV x17, #stride ; MUL ; ADD x16, x19 ;
+		//   LDR x16, [x16, #CELLS_OFFSET] ; LDR Dt, [x16, xIdx, LSL #3]
+		stride := int64(vm3.JITListSlabStride())
+		return movImm64WordCount(stride) + 5, nil
+
+	case vm3.OpListSetF64:
+		// Inline f64-typed list store. CFloat is unbox-free so no
+		// MOVZ tag / BFI pack step is needed. Cold form:
+		//   UXTW x16, w_cell ; MOV x17, #stride ; MUL ; ADD x16, x19 ;
+		//   LDR x17, [x16, #CELLS_OFFSET] ; STR Dt, [x17, xIdx, LSL #3]
+		stride := int64(vm3.JITListSlabStride())
+		return movImm64WordCount(stride) + 5, nil
+
 	case vm3.OpMapSetI64I64:
 		// Phase 6.2d.2.d step 4: inline open-addressed map set with a
 		// load-factor 0.5 grow check that deopts via StatusMapGrow.
@@ -1268,9 +1317,14 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// skips fn.Code[0]'s OpNewList entirely; jitCall (Go side) writes
 		// the pre-allocated list handle into jf.regsCell[A] before the
 		// trampoline call, and the prologue's LDR x_cell, [x3, #A*8]
-		// picks it up into the pinned reg. Only the PC=0 instance is
-		// skipped; any later OpNewList is left for a future sub-phase.
+		// picks it up into the pinned reg.
+		//
+		// Phase 6.3.4.j.3 extends the skip to a K-op prefix of inline
+		// OpNewLists; jitCall pre-allocates K lists and seeds each cell.
 		if idx == 0 && fn.JITPreAllocList {
+			return 0, nil
+		}
+		if idx < int(fn.JITPreAllocListPrefix) {
 			return 0, nil
 		}
 		return 0, fmt.Errorf("%w: opcode %d (inline NewList unsupported)", ErrNotImplemented, op.Code)
@@ -1620,6 +1674,11 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 			// Skipped: jitCall pre-allocated the list and wrote the
 			// handle to regsCell[A]; the prologue loaded it into the
 			// pinned reg before this PC. Emit zero words.
+			return []uint32{}, nil
+		}
+		if idx < int(fn.JITPreAllocListPrefix) {
+			// Phase 6.3.4.j.3 multi-list prefix: same skip rationale,
+			// jitCall pre-seeded K cells before the trampoline.
 			return []uint32{}, nil
 		}
 		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
@@ -2105,6 +2164,58 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		ws = append(ws, str64RegLsl3(20, 17, xIdx))
 		return ws, nil
 
+	case vm3.OpListGetF64:
+		// regsF64[A] = arenas.Lists[handleIdx(regsCell[B])].cells[regsI64[C]].Float()
+		//
+		// Cold form (no hoist):
+		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
+		//   MOV  x17, #SIZEOF_VMLIST           ; stride
+		//   MUL  x16, x16, x17                 ; slab byte offset
+		//   ADD  x16, x16, x19                 ; x19 = cached lists base
+		//   LDR  x16, [x16, #CELLS_OFFSET]     ; cells.ptr
+		//   LDR  Dt,  [x16, xIdx, LSL #3]      ; cells[idxReg] as raw f64 bits
+		//
+		// No SBFX: CFloat stores IEEE 754 bits directly, so the load
+		// produces the f64 payload bit-for-bit identical to the
+		// interp's .Float() decoder.
+		cellsOff := uint32(vm3.JITListCellsOffset())
+		xIdx := r2x(fn, uint16(op.C))
+		stride := int64(vm3.JITListSlabStride())
+		xCell := r2cell(op.B)
+		dA := r2d(op.A)
+		ws := make([]uint32, 0, movImm64WordCount(stride)+5)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(16, 16, cellsOff/8))
+		ws = append(ws, ldrDRegLsl3(dA, 16, xIdx))
+		return ws, nil
+
+	case vm3.OpListSetF64:
+		// arenas.Lists[handleIdx(regsCell[A])].cells[regsI64[C]] = CFloat(regsF64[B])
+		//
+		// Cold form (no hoist):
+		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
+		//   MOV  x17, #SIZEOF_VMLIST           ; stride
+		//   MUL  x16, x16, x17                 ; slab byte offset
+		//   ADD  x16, x16, x19                 ; x19 = cached lists base
+		//   LDR  x17, [x16, #CELLS_OFFSET]     ; cells.ptr
+		//   STR  Dt,  [x17, xIdx, LSL #3]      ; cells[idxReg] = raw f64 bits
+		cellsOff := uint32(vm3.JITListCellsOffset())
+		xIdx := r2x(fn, uint16(op.C))
+		stride := int64(vm3.JITListSlabStride())
+		xCell := r2cell(op.A)
+		dB := r2d(op.B)
+		ws := make([]uint32, 0, movImm64WordCount(stride)+5)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(17, 16, cellsOff/8))
+		ws = append(ws, strDRegLsl3(dB, 17, xIdx))
+		return ws, nil
+
 	default:
 		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 	}
@@ -2316,6 +2427,14 @@ func ldrRegLsl3(xt, xn, xm uint32) uint32 {
 	return 0xF8607800 | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5) | (xt & 0x1F)
 }
 
+// ldrDRegLsl3 encodes LDR Dt, [Xn, Xm, LSL #3]: load a 64-bit FP
+// register from base+idx*8. Identical to ldrRegLsl3 except V=1
+// (SIMD&FP variant). Used by OpListGetF64 to read cells[idxReg] as
+// raw f64 bits into a D-register.
+func ldrDRegLsl3(dt, xn, xm uint32) uint32 {
+	return 0xFC607800 | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5) | (dt & 0x1F)
+}
+
 // sbfx48 encodes SBFX Xd, Xn, #0, #48: sign-extend the low 48 bits of
 // Xn into Xd. Equivalent to SBFM Xd, Xn, #0, #47 (immr=0, imms=47,
 // sf=1, N=1). Used by OpListGetI64 to recover the signed Int48 payload
@@ -2337,6 +2456,14 @@ func bfi48(xd, xn uint32) uint32 {
 // OpListPushI64 to write cells[len] = boxedCell.
 func str64RegLsl3(xt, xn, xm uint32) uint32 {
 	return 0xF8207800 | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5) | (xt & 0x1F)
+}
+
+// strDRegLsl3 encodes STR Dt, [Xn, Xm, LSL #3]: store a 64-bit FP
+// register at base+idx*8. Used by OpListSetF64 to write a raw f64
+// payload into cells[idxReg]. The CFloat encoding stores the IEEE
+// 754 bits directly, so no NaN-box tag is added on the way in.
+func strDRegLsl3(dt, xn, xm uint32) uint32 {
+	return 0xFC207800 | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5) | (dt & 0x1F)
 }
 
 // strW encodes STR Wt, [Xn, #imm12*4] (unsigned-offset 32-bit). Used
