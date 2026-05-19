@@ -1440,6 +1440,13 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 		// Bit-cast the f64 in d<A> to a uint64 in x0 so the trampoline
 		// return channel carries either bank uniformly.
 		return 2 + numCalleeSavedPairs(fn) + numLRPair(fn) + cellsLenFlushWords(fn), nil
+	case vm3.OpReturnCell:
+		// [flush] MOV x0, <pinned cell reg>; <pop callee-saved frame>; <pop x29:x30>; RET.
+		// The pinned Cell register holds the 64-bit Cell payload; the
+		// trampoline returns it bit-for-bit and jitCall surfaces it via
+		// regsCell[retReg] without going through RestoreUnboxedReturn
+		// (Phase 6.3.4.m.4a).
+		return 2 + numCalleeSavedPairs(fn) + numLRPair(fn) + cellsLenFlushWords(fn), nil
 
 	case vm3.OpConstF64K:
 		// MOV imm into x16 with the IEEE 754 bit-pattern, then
@@ -1914,6 +1921,19 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 			ws = emitCellsLenFlushARM64(ws)
 		}
 		ws = append(ws, fmovXD(0, r2d(op.A)))
+		ws = emitFrameEpilogueARM64(ws, calleeSavedPairRegs(fn), numLRPair(fn))
+		ws = append(ws, ret())
+		return ws, nil
+
+	case vm3.OpReturnCell:
+		// MOV x0, <pinned cell reg> BEFORE the LDPs: the cell regs live
+		// in x25..x28 / x21..x24, which the epilogue restores. Move
+		// first, then run the standard epilogue. Phase 6.3.4.m.4a.
+		ws := make([]uint32, 0, 2+numCalleeSavedPairs(fn)+numLRPair(fn)+cellsLenFlushWords(fn))
+		if hoistsCellsLenARM64(fn) {
+			ws = emitCellsLenFlushARM64(ws)
+		}
+		ws = append(ws, movReg(0, r2cell(op.A)))
 		ws = emitFrameEpilogueARM64(ws, calleeSavedPairRegs(fn), numLRPair(fn))
 		ws = append(ws, ret())
 		return ws, nil
