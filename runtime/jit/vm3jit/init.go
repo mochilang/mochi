@@ -52,6 +52,17 @@ func vmJITFrame(vm *vm3.VM) *jitFrame3 {
 // cheaper than allocating per call.
 const jitFrame3RegsI64Words = 4096
 
+// jitFrame3RegsCellWords is the Cell-bank mirror of jitFrame3RegsI64Words.
+// Sized for the self-recursive OpCallMixed protocol (Phase 6.3.4.m.3):
+// each BL bumps the regsCell base pointer by NumRegsCell*8, so the buffer
+// must hold (max_depth + 1) * NumRegsCell Cell handles. binary_trees'
+// check_tree carries NumRegsCell=3 and the bench drives depth up to ~14,
+// needing ~45 slots; 256 covers depth ~85 for any 3-reg fn or depth ~32
+// for the architectural max of 8 cell regs. MaxCellRegs (the per-fn
+// pinned-register cap) stays at 8 because that is fixed by the AArch64
+// callee-saved range x21..x28.
+const jitFrame3RegsCellWords = 256
+
 // jitFrame3 is the per-call scratch the vm3 interp -> JIT boundary
 // hands to the trampoline. Heap-allocated so the Go GC will not move it
 // during the native call; the JIT writes the slots it uses and reads
@@ -69,7 +80,7 @@ const jitFrame3RegsI64Words = 4096
 type jitFrame3 struct {
 	regsI64  [jitFrame3RegsI64Words]int64
 	regsF64  [MaxF64Regs]float64
-	regsCell [MaxCellRegs]vm3.Cell
+	regsCell [jitFrame3RegsCellWords]vm3.Cell
 	arenaCtx jitArenaCtx
 	status   int64
 }

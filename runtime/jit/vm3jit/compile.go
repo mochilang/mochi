@@ -301,6 +301,12 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 					ErrNotImplemented, fn.Name, i)
 			}
 		case vm3.OpCallMixed:
+			if opts.SelfIdx >= 0 && int(uint16(op.C)) == opts.SelfIdx {
+				if err := checkSelfCallMixedAdmissible(fn, op, i, opts); err != nil {
+					return err
+				}
+				continue
+			}
 			if err := checkCrossFnCallMixedAdmissible(fn, op, i, opts); err != nil {
 				return err
 			}
@@ -338,7 +344,7 @@ func checkCrossFnCallMixedAdmissible(fn *vm3.Function, op vm3.Op, pc int, opts O
 			ErrNotImplemented, fn.Name, pc, idx, len(opts.Prog.Funcs))
 	}
 	if opts.SelfIdx >= 0 && idx == opts.SelfIdx {
-		return fmt.Errorf("%w: %s pc %d CallMixed to self (idx %d) not admitted; use OpTailCallMixed for self-tail",
+		return fmt.Errorf("%w: %s pc %d CallMixed to self (idx %d) routed to self-call admission",
 			ErrNotImplemented, fn.Name, pc, idx)
 	}
 	callee := opts.Prog.Funcs[idx]
@@ -369,6 +375,45 @@ func checkCrossFnCallMixedAdmissible(fn *vm3.Function, op vm3.Op, pc int, opts O
 	}
 	if hasListGetI64(fn) || hasListPushI64(fn) {
 		return fmt.Errorf("%w: %s pc %d CallMixed caller has list ops in body (reserves x20 for arena ctx)",
+			ErrNotImplemented, fn.Name, pc)
+	}
+	return nil
+}
+
+// checkSelfCallMixedAdmissible enforces the self-OpCallMixed whitelist
+// (Phase 6.3.4.m.3). Self-recursion via a PC-relative BL inside the same
+// JIT page is the cell-bank mirror of the existing OpCallI64 self path:
+// the trampoline-pinned x4 = &jitArenaCtx is stashed in x20 at prologue
+// end (same as cross-fn CallMixed) and reloaded into x4 right before each
+// BL site so the recursive prologue's LDR x19, [x4, #...] sees the same
+// arena ctx pointer.
+//
+// Resource constraints:
+//   - No f64 regs in the caller (mirrors cross-fn restriction; self-call
+//     would otherwise need v0..v7 spill across BL).
+//   - No list ops in the caller body (would conflict with the x20 arena-
+//     ctx stash, same as cross-fn).
+//   - NumRegsCell must fit in MaxCellRegs (already enforced by the global
+//     cell-bank reg cap). Per-fn slot use is NumRegsCell; recursion depth
+//     is bounded by jitFrame3RegsCellWords / NumRegsCell at runtime.
+//
+// op.B is the arg base on the caller side (offset into the caller's regs
+// window where args[0] sits); for self-call we require op.B==0 only when
+// the recursive call's argv matches the leaf shape. Currently we admit
+// any op.B as long as the caller's window holds the args at the expected
+// slots, since the BL site writes args at callerN+k offsets which are
+// always valid relative to the bumped base.
+func checkSelfCallMixedAdmissible(fn *vm3.Function, op vm3.Op, pc int, opts Options) error {
+	if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
+		return fmt.Errorf("%w: %s pc %d checkSelfCallMixedAdmissible called for non-self CallMixed",
+			ErrNotImplemented, fn.Name, pc)
+	}
+	if fn.NumRegsF64 > 0 {
+		return fmt.Errorf("%w: %s pc %d self-CallMixed caller has %d f64 regs (admits only i64+cell callers)",
+			ErrNotImplemented, fn.Name, pc, fn.NumRegsF64)
+	}
+	if hasListGetI64(fn) || hasListPushI64(fn) {
+		return fmt.Errorf("%w: %s pc %d self-CallMixed caller has list ops in body (reserves x20 for arena ctx)",
 			ErrNotImplemented, fn.Name, pc)
 	}
 	return nil

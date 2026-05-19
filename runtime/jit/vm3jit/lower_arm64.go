@@ -867,9 +867,7 @@ func isNonLeaf(fn *vm3.Function) bool {
 // hasCrossFnCallMixed reports whether fn contains an OpCallMixed to a
 // callee other than itself. Cross-fn callmixed sites need the
 // jitArenaCtx address stashed in x20 across the BLR (callee's prologue
-// reloads x19 = listsBase from [x4]); self OpCallMixed would conflict
-// with self-tail-call's x20 hoist convention and is not admitted by
-// the whitelist.
+// reloads x19 = listsBase from [x4]).
 func hasCrossFnCallMixed(fn *vm3.Function, opts Options) bool {
 	for _, op := range fn.Code {
 		if op.Code != vm3.OpCallMixed {
@@ -883,14 +881,36 @@ func hasCrossFnCallMixed(fn *vm3.Function, opts Options) bool {
 	return false
 }
 
+// hasSelfCallMixed reports whether fn contains an OpCallMixed back to
+// itself (Phase 6.3.4.m.3). Self-CallMixed sites lower to a PC-relative
+// BL inside the same JIT page; the BL target is the prologue at word 0
+// so the recursive frame re-enters with x4 still pointing at
+// jitArenaCtx. The recursive callee saves/restores all pinned regs the
+// usual way (frame prologue STP / epilogue LDP), so the caller only has
+// to spill the caller-saved i64 lane (x9..x15).
+func hasSelfCallMixed(fn *vm3.Function, opts Options) bool {
+	if opts.SelfIdx < 0 {
+		return false
+	}
+	for _, op := range fn.Code {
+		if op.Code != vm3.OpCallMixed {
+			continue
+		}
+		if int(uint16(op.C)) == opts.SelfIdx {
+			return true
+		}
+	}
+	return false
+}
+
 // needsArenaCtxStash reports whether the prologue should emit MOV x20,
-// x4 to preserve the jitArenaCtx address across a cross-fn BLR. Only
-// triggers when fn has a cross-fn OpCallMixed AND the slab-base hoist
-// does not also claim x20 (the two uses collide; admitting both would
-// need an extra callee-saved reg, which the current frame layout does
-// not reserve).
+// x4 to preserve the jitArenaCtx address across a BL/BLR call. Triggers
+// for either cross-fn or self OpCallMixed AND only when the slab-base
+// hoist does not also claim x20 (the two uses collide; admitting both
+// would need an extra callee-saved reg, which the current frame layout
+// does not reserve).
 func needsArenaCtxStash(fn *vm3.Function, opts Options) bool {
-	if !hasCrossFnCallMixed(fn, opts) {
+	if !hasCrossFnCallMixed(fn, opts) && !hasSelfCallMixed(fn, opts) {
 		return false
 	}
 	return hoistedCellReg(fn) < 0
@@ -900,6 +920,8 @@ func needsArenaCtxStash(fn *vm3.Function, opts Options) bool {
 // op. Mirrors the gating in checkCrossFnCallMixedAdmissible so callers
 // in lower_arm64 can fail with ErrNotImplemented if a caller slips past
 // the admissibility check (e.g. via test fixtures that bypass compile.go).
+// Returns an error if op targets self; use resolveCallMixedCallee for
+// the dispatch that also handles self-call.
 func resolveCrossFnCallee(opts Options, op vm3.Op) (*vm3.Function, error) {
 	if opts.Prog == nil {
 		return nil, fmt.Errorf("%w: CallMixed needs opts.Prog", ErrNotImplemented)
@@ -916,6 +938,18 @@ func resolveCrossFnCallee(opts Options, op vm3.Op) (*vm3.Function, error) {
 		return nil, fmt.Errorf("%w: CallMixed callee %s has no JITCode", ErrNotImplemented, callee.Name)
 	}
 	return callee, nil
+}
+
+// resolveCallMixedCallee returns the callee for any OpCallMixed (self
+// or cross-fn) and whether the call is self-recursion. Used by emit /
+// word-count sites so the same code path can size both branch shapes.
+func resolveCallMixedCallee(fn *vm3.Function, opts Options, op vm3.Op) (*vm3.Function, bool, error) {
+	idx := int(uint16(op.C))
+	if opts.SelfIdx >= 0 && idx == opts.SelfIdx {
+		return fn, true, nil
+	}
+	callee, err := resolveCrossFnCallee(opts, op)
+	return callee, false, err
 }
 
 // countParamBanks returns the per-bank arg counts for callee.ParamBanks.
@@ -967,6 +1001,17 @@ func countParamBanks(callee *vm3.Function) (nI64, nF64, nCell int) {
 // is taken (the passthrough block runs the frame epilogue against that
 // state).
 func crossFnCallMixedWordsARM64(fn, callee *vm3.Function, spillMask uint32) int {
+	return callMixedWordsARM64(fn, callee, spillMask, false)
+}
+
+// callMixedWordsARM64 sizes the OpCallMixed BLR/BL sequence. isSelf
+// switches the branch shape: MOVZ x16,#addr + BLR x16 for cross-fn,
+// single PC-relative BL for self-recursion (Phase 6.3.4.m.3). Self-call
+// also skips the deopt-passthrough check (the body's only deopt sources
+// are the recursive call itself; deeper levels propagate via the same
+// passthrough block, and check_tree-shaped fns have no other deopt-
+// capable opcodes in their body).
+func callMixedWordsARM64(fn, callee *vm3.Function, spillMask uint32, isSelf bool) int {
 	nSpill := popcount32(spillMask)
 	nI64Args, nF64Args, nCellArgs := countParamBanks(callee)
 	bumps := 0
@@ -979,15 +1024,19 @@ func crossFnCallMixedWordsARM64(fn, callee *vm3.Function, spillMask uint32) int 
 	if fn.NumRegsCell > 0 {
 		bumps++
 	}
-	addr := int64(uintptr(callee.JITCode))
+	branchWords := 1 // BL
+	if !isSelf {
+		addr := int64(uintptr(callee.JITCode))
+		branchWords = movImm64WordCount(addr) + 1 // MOVZ + BLR
+	}
 	deoptExtra := 0
-	if crossFnDeoptCallee(callee) {
+	if !isSelf && crossFnDeoptCallee(callee) {
 		deoptExtra = 2 // LDR x16,[x1] + CBNZ x16,passthrough
 	}
 	// 2*nSpill spill+reload + arg STRs + 2 STP + bumps + 1 MOV x4,x20 +
-	// movImm64 + 1 BLR + 1 MOV x17,x0 + 2 LDP + 1 MOV xA,x17 +
-	// optional deopt-passthrough check (LDR + CBNZ).
-	return 2*nSpill + nI64Args + nF64Args + nCellArgs + 2 + bumps + 1 + movImm64WordCount(addr) + 1 + 1 + 2 + 1 + deoptExtra
+	// branch + 1 MOV x17,x0 + 2 LDP + 1 MOV xA,x17 + optional deopt-
+	// passthrough check (LDR + CBNZ).
+	return 2*nSpill + nI64Args + nF64Args + nCellArgs + 2 + bumps + 1 + branchWords + 1 + 2 + 1 + deoptExtra
 }
 
 // crossFnDeoptCallee reports whether a cross-fn OpCallMixed callee can
@@ -1586,11 +1635,11 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 		return 1, nil
 
 	case vm3.OpCallMixed:
-		callee, err := resolveCrossFnCallee(opts, op)
+		callee, isSelf, err := resolveCallMixedCallee(fn, opts, op)
 		if err != nil {
 			return 0, err
 		}
-		return crossFnCallMixedWordsARM64(fn, callee, spillSets[idx]), nil
+		return callMixedWordsARM64(fn, callee, spillSets[idx], isSelf), nil
 
 	case vm3.OpNewList:
 		// Phase 6.2d.2.b step 2: when fn.JITPreAllocList is set the JIT
@@ -1997,7 +2046,7 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		return ws, nil
 
 	case vm3.OpCallMixed:
-		callee, err := resolveCrossFnCallee(opts, op)
+		callee, isSelf, err := resolveCallMixedCallee(fn, opts, op)
 		if err != nil {
 			return nil, err
 		}
@@ -2005,8 +2054,8 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		callerI64 := int(fn.NumRegsI64)
 		callerF64 := int(fn.NumRegsF64)
 		callerCell := int(fn.NumRegsCell)
-		needsDeoptCheck := crossFnDeoptCallee(callee)
-		ws := make([]uint32, 0, crossFnCallMixedWordsARM64(fn, callee, spillMask))
+		needsDeoptCheck := !isSelf && crossFnDeoptCallee(callee)
+		ws := make([]uint32, 0, callMixedWordsARM64(fn, callee, spillMask, isSelf))
 		for r := uint16(0); r < 7; r++ {
 			if spillMask&(1<<r) != 0 {
 				ws = append(ws, str64(uint32(9+r), 0, uint32(r)))
@@ -2035,8 +2084,18 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 			ws = append(ws, addImm64(3, 3, uint32(callerCell*8)))
 		}
 		ws = append(ws, movReg(4, 20))
-		ws = append(ws, movImm64(16, int64(uintptr(callee.JITCode)))...)
-		ws = append(ws, blr(16))
+		if isSelf {
+			entryWord := 0
+			callSiteWord := pcMap[idx] + len(ws)
+			off, blErr := branchOff(callSiteWord, entryWord, 26)
+			if blErr != nil {
+				return nil, fmt.Errorf("self-CallMixed BL: %w", blErr)
+			}
+			ws = append(ws, bl(off))
+		} else {
+			ws = append(ws, movImm64(16, int64(uintptr(callee.JITCode)))...)
+			ws = append(ws, blr(16))
+		}
 		ws = append(ws, movReg(17, 0))
 		if needsDeoptCheck {
 			// Load *(x1) into x16 BEFORE the LDPs restore SP, while x1
