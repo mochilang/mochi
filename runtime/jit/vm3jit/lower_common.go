@@ -176,6 +176,33 @@ func hasI64ArrayOp(fn *vm3.Function) bool {
 	return hasI64ArrayGetI64(fn) || hasI64ArraySetI64(fn) || hasI64ArrayPushI64(fn) || hasI64ArrayLenI64(fn)
 }
 
+// hasPairFst reports whether fn contains any OpPairFst.
+func hasPairFst(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpPairFst {
+			return true
+		}
+	}
+	return false
+}
+
+// hasPairSnd reports whether fn contains any OpPairSnd.
+func hasPairSnd(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpPairSnd {
+			return true
+		}
+	}
+	return false
+}
+
+// hasPairOp reports whether fn touches the Pair slab via any of the
+// JIT-lowered pair-arena ops (Phase 6.3.4.m.2). Used by the prologue
+// to decide whether to load pairsBase into the slab-base pin.
+func hasPairOp(fn *vm3.Function) bool {
+	return hasPairFst(fn) || hasPairSnd(fn)
+}
+
 // popcount32 counts set bits in v. Used to size OpCallI64 spill loops
 // on every backend.
 func popcount32(v uint32) int {

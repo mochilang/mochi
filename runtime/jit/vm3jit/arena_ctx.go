@@ -40,6 +40,7 @@ type jitArenaCtx struct {
 	mapsBase    unsafe.Pointer
 	f64ArrsBase unsafe.Pointer
 	i64ArrsBase unsafe.Pointer
+	pairsBase   unsafe.Pointer
 }
 
 // populateArenaCtx snapshots the Arenas slab base pointers the JIT
@@ -51,4 +52,5 @@ func populateArenaCtx(ctx *jitArenaCtx, arenas *vm3.Arenas) {
 	ctx.mapsBase = arenas.JITMapsBase()
 	ctx.f64ArrsBase = arenas.JITF64ArrsBase()
 	ctx.i64ArrsBase = arenas.JITI64ArrsBase()
+	ctx.pairsBase = arenas.JITPairsBase()
 }
