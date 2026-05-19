@@ -324,18 +324,17 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 }
 
 // checkCellBankAdmissibleAMD64 is the AMD64 cell-bank whitelist (Phase
-// 6.3.4.m.4c.1 + m.4c.2). The initial scaffold admits only opcodes the
-// AMD64 backend has lowered:
+// 6.3.4.m.4c.1 .. m.4c.3). The scaffold admits:
 //
 //   - the i64 arithmetic / compare-and-branch / control-flow set the
-//     existing lower_amd64 supports, plus
-//   - OpReturnCell, lowered by m.4c.2 as mov disp32(%rbp), %rax + epilogue.
+//     existing lower_amd64 supports,
+//   - OpReturnCell (m.4c.2), and
+//   - OpPairFst / OpPairSnd (m.4c.3), the read-only pair access pair.
 //
-// Pair ops (OpPairFst/Snd, OpNewPair) land in m.4c.3 / m.4c.4;
-// OpCallMixed (self + cross-fn) lands in m.4c.5; list/map ops are out
-// of scope for the binary_trees closure (m.4c.6). f64 banks remain
-// rejected because cell-bank repurposes R14 for *jitArenaCtx and R14 is
-// the f64 base on AMD64.
+// OpNewPair lands in m.4c.4; OpCallMixed (self + cross-fn) lands in
+// m.4c.5; list/map ops are out of scope for the binary_trees closure
+// (m.4c.6). f64 banks remain rejected because cell-bank repurposes R14
+// for *jitArenaCtx and R14 is the f64 base on AMD64.
 func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
 	if fn.NumRegsF64 > 0 {
 		return fmt.Errorf("%w: %s has both Cell and f64 banks (AMD64 m.4c.1 admits Cell+I64 only; R14 shared)",
@@ -357,10 +356,11 @@ func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
 			vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr,
 			vm3.OpJump,
 			vm3.OpReturnI64, vm3.OpReturnConstK, vm3.OpReturnCell,
+			vm3.OpPairFst, vm3.OpPairSnd,
 			vm3.OpLookupI64KW:
 			continue
 		default:
-			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses opcode %d (AMD64 cell-bank scaffold m.4c.1+m.4c.2 only; m.4c.3 adds OpPairFst/Snd, m.4c.4 OpNewPair, m.4c.5 OpCallMixed)",
+			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses opcode %d (AMD64 cell-bank scaffold m.4c.1..m.4c.3 only; m.4c.4 adds OpNewPair, m.4c.5 OpCallMixed)",
 				ErrNotImplemented, fn.Name, i, op.Code)
 		}
 	}

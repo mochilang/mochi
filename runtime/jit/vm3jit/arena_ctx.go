@@ -79,3 +79,12 @@ func jitArenaCtxPairsLenOff() uintptr {
 func jitArenaCtxPairsCapOff() uintptr {
 	return unsafe.Offsetof(jitArenaCtx{}.pairsCap)
 }
+
+// jitArenaCtxPairsBaseOff is the byte offset of pairsBase within
+// jitArenaCtx. AMD64 OpPairFst/OpPairSnd (Phase 6.3.4.m.4c.3) load it
+// from R14+disp32 to recover the pair slab base; the ARM64 backend
+// snapshots it directly into x19 in the prologue so no offset is
+// referenced from the lowering on that arch.
+func jitArenaCtxPairsBaseOff() uintptr {
+	return unsafe.Offsetof(jitArenaCtx{}.pairsBase)
+}
