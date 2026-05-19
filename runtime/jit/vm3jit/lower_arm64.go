@@ -1496,23 +1496,35 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 		// Only admitted when the map handle lives in the hoisted Cell
 		// reg (regsCell[0]) so the slab byte address is pre-pinned in
 		// x20. The kernel additionally uses x13/x14/x15 as scratch +
-		// loop-invariant pins; gate on NumRegsI64 <= 4 so r2x never
-		// emits those host regs for vm3 i64 regs. See
-		// mapSetI64I64WordsARM64 for the body shape.
-		if h := hoistedCellReg(fn); h < 0 || int(op.A) != h || slabKindARM64(fn) != slabKindMap || fn.NumRegsI64 > 4 {
-			return 0, fmt.Errorf("%w: opcode %d (MapSetI64I64 without map-slab hoist or NumRegsI64>4)", ErrNotImplemented, op.Code)
+		// loop-invariant pins.
+		//
+		// Phase 6.3.4.f.2: when NumRegsI64 > 4 the vm3 regs 4..6 land
+		// in x13/x14/x15, so the kernel emits a 3-word entry-spill /
+		// 3-word exit-restore pair around the body to preserve any
+		// frame-resident values. Reject if the kernel's own operands
+		// (key/val) sit in slots 4..6 — those values would be clobbered
+		// mid-body without anywhere to recover from.
+		if h := hoistedCellReg(fn); h < 0 || int(op.A) != h || slabKindARM64(fn) != slabKindMap {
+			return 0, fmt.Errorf("%w: opcode %d (MapSetI64I64 without map-slab hoist)", ErrNotImplemented, op.Code)
 		}
-		return mapSetI64I64WordsARM64, nil
+		if mapKernelOperandClobber(op) {
+			return 0, fmt.Errorf("%w: opcode %d (MapSetI64I64 key/val in slots 4..6 collides with kernel scratch)", ErrNotImplemented, op.Code)
+		}
+		return mapSetI64I64WordsARM64 + mapScratchSpillWordsARM64(fn), nil
 
 	case vm3.OpMapGetI64I64:
 		// Phase 6.2d.2.d step 4 mirror of OpMapSetI64I64: inline open-
 		// addressed lookup with empty-table early-return. Same hoist
-		// gate as MapSet plus the NumRegsI64 <= 4 ceiling so x13..x15
-		// stay free for the probe loop.
-		if h := hoistedCellReg(fn); h < 0 || int(op.B) != h || slabKindARM64(fn) != slabKindMap || fn.NumRegsI64 > 4 {
-			return 0, fmt.Errorf("%w: opcode %d (MapGetI64I64 without map-slab hoist or NumRegsI64>4)", ErrNotImplemented, op.Code)
+		// gate as MapSet. Phase 6.3.4.f.2 adds the same scratch-spill
+		// frame around the body when NumRegsI64 > 4; op.A (dst) and
+		// op.C (key) must not be in slots 4..6.
+		if h := hoistedCellReg(fn); h < 0 || int(op.B) != h || slabKindARM64(fn) != slabKindMap {
+			return 0, fmt.Errorf("%w: opcode %d (MapGetI64I64 without map-slab hoist)", ErrNotImplemented, op.Code)
 		}
-		return mapGetI64I64WordsARM64, nil
+		if mapKernelOperandClobber(op) {
+			return 0, fmt.Errorf("%w: opcode %d (MapGetI64I64 dst/key in slots 4..6 collides with kernel scratch)", ErrNotImplemented, op.Code)
+		}
+		return mapGetI64I64WordsARM64 + mapScratchSpillWordsARM64(fn), nil
 
 	case vm3.OpTailCallMixed:
 		// Self-tail-call with arg-base 0 lowers to a single backward B
@@ -1548,6 +1560,15 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 			return 0, nil
 		}
 		return 0, fmt.Errorf("%w: opcode %d (inline NewList unsupported)", ErrNotImplemented, op.Code)
+
+	case vm3.OpNewMap:
+		// Phase 6.3.4.f.2: when fn.JITPreAllocMap is set the JIT skips
+		// fn.Code[0]'s OpNewMap entirely; jitCall pre-allocates the map
+		// and seeds jf.regsCell[A] before the trampoline.
+		if idx == 0 && fn.JITPreAllocMap {
+			return 0, nil
+		}
+		return 0, fmt.Errorf("%w: opcode %d (inline NewMap unsupported)", ErrNotImplemented, op.Code)
 
 	default:
 		return 0, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
@@ -1929,6 +1950,15 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		}
 		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 
+	case vm3.OpNewMap:
+		if idx == 0 && fn.JITPreAllocMap {
+			// Phase 6.3.4.f.2 skip: jitCall pre-allocated the map and
+			// wrote the handle to regsCell[A]; prologue loaded it into
+			// the pinned reg before this PC. Emit zero words.
+			return []uint32{}, nil
+		}
+		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
+
 	case vm3.OpListGetI64:
 		// regsI64[A] = arenas.Lists[handleIdx(regsCell[B])].cells[regsI64[C]].Int()
 		//
@@ -2031,7 +2061,21 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		opStart := pcMap[idx]
 		endLabel := pcMap[idx+1]
 
-		ws := make([]uint32, 0, mapSetI64I64WordsARM64)
+		// Phase 6.3.4.f.2: when NumRegsI64 > 4 the vm3 regs 4..6 live in
+		// the kernel's scratch host regs (x13/x14/x15). Save them at
+		// kernel entry to the caller window so the kernel body can use
+		// the host regs freely, restore them at exit. spillW = 3 means
+		// the body offsets shift by +3 in the lowered word stream.
+		spillW := mapScratchSpillWordsARM64(fn)
+		restoreStart := opStart + spillW + mapSetI64I64WordsARM64
+
+		ws := make([]uint32, 0, mapSetI64I64WordsARM64+2*spillW)
+		if spillW > 0 {
+			ws = append(ws, str64(13, 0, 4)) // STR x13, [x0, #4*8] (slot for r4)
+			ws = append(ws, str64(14, 0, 5)) // STR x14, [x0, #5*8] (slot for r5)
+			ws = append(ws, str64(15, 0, 6)) // STR x15, [x0, #6*8] (slot for r6)
+		}
+
 		// 0..6: pre-amble.
 		ws = append(ws, ldr64(4, 20, tableLenImm12))      // 0
 		ws = append(ws, ldrW(16, 20, nLiveImm12))         // 1
@@ -2054,8 +2098,8 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 
 		// 22..35: probe loop body.
 		probeTopWord := opStart + len(ws)                 // 22
-		fillBlockWord := opStart + 39
-		nextWord := opStart + 36
+		fillBlockWord := opStart + spillW + 39
+		nextWord := opStart + spillW + 36
 
 		ws = append(ws, ldr64(13, 20, tablePtrImm12))     // 22
 		ws = append(ws, maddReg(16, 17, 15, 13))          // 23
@@ -2086,7 +2130,14 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		ws = append(ws, bfi48(13, xVal))                  // 33
 		ws = append(ws, str64(13, 16, entryValImm12))     // 34
 		bWord = opStart + len(ws)                         // 35
-		off, err = branchOff(bWord, endLabel, 26)
+		// Phase 6.3.4.f.2: when spilling, B done targets the restore
+		// block (which falls through to endLabel) instead of endLabel
+		// directly. spillW=0 keeps the original behavior.
+		doneTarget := endLabel
+		if spillW > 0 {
+			doneTarget = restoreStart
+		}
+		off, err = branchOff(bWord, doneTarget, 26)
 		if err != nil {
 			return nil, fmt.Errorf("MapSetI64I64 done B: %w", err)
 		}
@@ -2112,6 +2163,12 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		ws = append(ws, ldrW(13, 20, nLiveImm12))         // 45
 		ws = append(ws, addImm64(13, 13, 1))              // 46
 		ws = append(ws, strW(13, 20, nLiveImm12))         // 47
+
+		if spillW > 0 {
+			ws = append(ws, ldr64(13, 0, 4)) // LDR x13, [x0, #4*8]
+			ws = append(ws, ldr64(14, 0, 5))
+			ws = append(ws, ldr64(15, 0, 6))
+		}
 		return ws, nil
 
 	case vm3.OpMapGetI64I64:
@@ -2153,10 +2210,22 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 
 		opStart := pcMap[idx]
 		endLabel := pcMap[idx+1]
-		missWord := opStart + 35
-		nextWord := opStart + 32
+		// Phase 6.3.4.f.2: scratch spill prologue for NumRegsI64>4 (see
+		// OpMapSetI64I64 emit for rationale). Internal labels shift by
+		// +spillW; the B done now targets the restore block instead of
+		// endLabel so the LDRs always run before exit.
+		spillW := mapScratchSpillWordsARM64(fn)
+		restoreStart := opStart + spillW + mapGetI64I64WordsARM64
+		missWord := opStart + spillW + 35
+		nextWord := opStart + spillW + 32
 
-		ws := make([]uint32, 0, mapGetI64I64WordsARM64)
+		ws := make([]uint32, 0, mapGetI64I64WordsARM64+2*spillW)
+		if spillW > 0 {
+			ws = append(ws, str64(13, 0, 4))
+			ws = append(ws, str64(14, 0, 5))
+			ws = append(ws, str64(15, 0, 6))
+		}
+
 		// 0..3: pre-amble.
 		ws = append(ws, ldr64(4, 20, tableLenImm12))      // 0
 		cbzWord := opStart + len(ws)                      // 1
@@ -2205,7 +2274,11 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		ws = append(ws, ldr64(13, 16, entryValImm12))     // 29
 		ws = append(ws, sbfx48(xA, 13))                   // 30: xA = value.Int()
 		bWord := opStart + len(ws)                        // 31
-		off, err = branchOff(bWord, endLabel, 26)
+		doneTarget := endLabel
+		if spillW > 0 {
+			doneTarget = restoreStart
+		}
+		off, err = branchOff(bWord, doneTarget, 26)
 		if err != nil {
 			return nil, fmt.Errorf("MapGetI64I64 done B: %w", err)
 		}
@@ -2223,6 +2296,12 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 
 		// 35: miss → xA = 0.
 		ws = append(ws, movz(xA, 0, 0))                   // 35
+
+		if spillW > 0 {
+			ws = append(ws, ldr64(13, 0, 4))
+			ws = append(ws, ldr64(14, 0, 5))
+			ws = append(ws, ldr64(15, 0, 6))
+		}
 		return ws, nil
 
 	case vm3.OpTailCallMixed:
@@ -2816,6 +2895,39 @@ const mapSetI64I64WordsARM64 = 48
 // minus the grow check (LDR cap + CBZ empty), the fill block, and the
 // nLive bump.
 const mapGetI64I64WordsARM64 = 36
+
+// mapScratchSpillWordsARM64 reports the prologue word count consumed by
+// the x13/x14/x15 spill at map kernel entry. Phase 6.3.4.f.2: only
+// emitted when fn.NumRegsI64 > 4 (otherwise vm3 regs 4..6 don't exist
+// and x13/x14/x15 carry no live data the kernel needs to preserve).
+// Three STRs at entry, three matching LDRs at exit; this helper returns
+// the entry-half count so the body's internal labels can shift by +N
+// while the buffer is sized with `mapXWordsARM64 + 2*spillW`.
+func mapScratchSpillWordsARM64(fn *vm3.Function) int {
+	if fn.NumRegsI64 > 4 {
+		return 3
+	}
+	return 0
+}
+
+// mapKernelOperandClobber reports whether op uses x13/x14/x15 (host
+// regs for vm3 r4/r5/r6) as one of its key/value/dst operands when
+// NumRegsI64 > 4. The map kernel's inner body clobbers those host
+// regs mid-flight, and the entry-spill / exit-restore pair preserves
+// only the *frame-resident* user values that bracket the kernel — not
+// values the kernel itself is supposed to read at later instructions.
+// Reject such layouts so compiler3 callers know to keep keys/vals out
+// of slots 4..6.
+func mapKernelOperandClobber(op vm3.Op) bool {
+	in456 := func(r uint16) bool { return r >= 4 && r <= 6 }
+	switch op.Code {
+	case vm3.OpMapSetI64I64:
+		return in456(op.B) || in456(uint16(op.C))
+	case vm3.OpMapGetI64I64:
+		return in456(op.A) || in456(uint16(op.C))
+	}
+	return false
+}
 
 // emitSplitmix64ARM64 emits the 14-word splitmix64 sequence that
 // computes h = hashI64(xKey) into x4. Uses x16 as the multiplier

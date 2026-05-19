@@ -88,11 +88,20 @@ type Function struct {
 	// K=1 retains the existing single-list shape (with JITPreAllocList
 	// true gating the warm-scratch path). K>1 uses fresh allocation per
 	// call; the warm-scratch optimization is left to a follow-up.
+	// JITPreAllocMap (Phase 6.3.4.f.2) mirrors JITPreAllocList for the
+	// OpNewMap-at-pc=0 shape used by k_nucleotide and any other kernel
+	// that allocates a single map at entry then operates on it via
+	// OpMapSetI64I64 / OpMapGetI64I64. jitCall reads fn.Code[0].A and .C
+	// to allocate the map with the static capHint before the trampoline
+	// and seeds jf.regsCell[A]; the JIT lowerer emits zero words for
+	// pc=0 so the prologue's LDR x_cell, [x3, #A*8] picks up the
+	// pre-seeded handle.
 	JITCode               unsafe.Pointer
 	JITCompiled           bool
 	JITHasF64             bool
 	JITPreAllocList       bool
 	JITPreAllocListPrefix uint16
+	JITPreAllocMap        bool
 }
 
 // Bank identifies one of the three typed register banks.
