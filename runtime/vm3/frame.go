@@ -96,12 +96,20 @@ type Function struct {
 	// and seeds jf.regsCell[A]; the JIT lowerer emits zero words for
 	// pc=0 so the prologue's LDR x_cell, [x3, #A*8] picks up the
 	// pre-seeded handle.
-	JITCode               unsafe.Pointer
-	JITCompiled           bool
-	JITHasF64             bool
-	JITPreAllocList       bool
-	JITPreAllocListPrefix uint16
-	JITPreAllocMap        bool
+	// JITPreAllocF64ArrPrefix (Phase 6.3.4.j.5.b) mirrors
+	// JITPreAllocListPrefix for the OpNewF64Array prefix shape. n_body and
+	// peers allocate position/velocity/mass arrays as a contiguous K-op
+	// run at fn entry; jitCall pre-allocates them on the Go side against
+	// the per-call arena snapshot and seeds regsCell[op.A]. The JIT lowerer
+	// emits zero words for those PCs so the prologue's LDR x_cell,
+	// [x3, #A*8] picks up the pre-seeded handle.
+	JITCode                  unsafe.Pointer
+	JITCompiled              bool
+	JITHasF64                bool
+	JITPreAllocList          bool
+	JITPreAllocListPrefix    uint16
+	JITPreAllocMap           bool
+	JITPreAllocF64ArrPrefix  uint16
 }
 
 // Bank identifies one of the three typed register banks.

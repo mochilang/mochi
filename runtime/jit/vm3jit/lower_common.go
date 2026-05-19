@@ -92,6 +92,44 @@ func hasMapOpI64(fn *vm3.Function) bool {
 	return hasMapSetI64I64(fn) || hasMapGetI64I64(fn)
 }
 
+// hasF64ArrayGetF64 reports whether fn contains any OpF64ArrayGetF64.
+func hasF64ArrayGetF64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpF64ArrayGetF64 {
+			return true
+		}
+	}
+	return false
+}
+
+// hasF64ArraySetF64 reports whether fn contains any OpF64ArraySetF64.
+func hasF64ArraySetF64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpF64ArraySetF64 {
+			return true
+		}
+	}
+	return false
+}
+
+// hasF64ArrayLenI64 reports whether fn contains any OpF64ArrayLenI64.
+func hasF64ArrayLenI64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpF64ArrayLenI64 {
+			return true
+		}
+	}
+	return false
+}
+
+// hasF64ArrayOp reports whether fn touches the F64Arr slab via any of
+// the JIT-lowered typed-f64-array ops (Phase 6.3.4.j.5.b). Used by the
+// prologue to decide whether to load f64ArrsBase into the slab-base
+// pin (x19 on ARM64).
+func hasF64ArrayOp(fn *vm3.Function) bool {
+	return hasF64ArrayGetF64(fn) || hasF64ArraySetF64(fn) || hasF64ArrayLenI64(fn)
+}
+
 // popcount32 counts set bits in v. Used to size OpCallI64 spill loops
 // on every backend.
 func popcount32(v uint32) int {

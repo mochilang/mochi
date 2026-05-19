@@ -210,6 +210,21 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 			jf.regsCell[op.A] = vm.Arenas().AllocMap(int(op.C))
 		}
 	}
+	// Phase 6.3.4.j.5.b: OpNewF64Array pre-alloc. fn.JITPreAllocF64ArrPrefix
+	// > 0 means the JIT skipped a contiguous K-op run of OpNewF64Array at
+	// PC=0; allocate K typed arrays here so the prologue's LDR x_cell picks
+	// up the pre-seeded handles. The Go-side allocations are bounded by
+	// the per-call arena snapshot so RestoreUnboxedReturn reclaims them
+	// on clean return.
+	if k := int(fn.JITPreAllocF64ArrPrefix); k > 0 {
+		arenas := vm.Arenas()
+		for i := 0; i < k; i++ {
+			op := fn.Code[i]
+			if int(op.A) < MaxCellRegs {
+				jf.regsCell[op.A] = arenas.AllocF64Arr(int(uint16(op.C)))
+			}
+		}
+	}
 	// Lay out params per ParamBanks position-indexed convention: argsX[k]
 	// is meaningful iff fn.ParamBanks[k] == BankX. For i64-only callees
 	// argsCell/argsF64 are nil and we use the fast path: copy argsI64
@@ -326,11 +341,13 @@ func CompileAndCache(prog *vm3.Program, idx uint32) (*CompiledFunc, error) {
 	fn.JITPreAllocList = canPreAllocList(fn)
 	fn.JITPreAllocListPrefix = preAllocListPrefix(fn)
 	fn.JITPreAllocMap = canPreAllocMap(fn)
+	fn.JITPreAllocF64ArrPrefix = preAllocF64ArrPrefix(fn)
 	cf, err := CompileInProgram(prog, idx)
 	if err != nil {
 		fn.JITPreAllocList = false
 		fn.JITPreAllocListPrefix = 0
 		fn.JITPreAllocMap = false
+		fn.JITPreAllocF64ArrPrefix = 0
 		return nil, err
 	}
 	fn.JITCode = cf.Entry()
@@ -458,6 +475,51 @@ func canPreAllocMap(fn *vm3.Function) bool {
 		}
 	}
 	return true
+}
+
+// preAllocF64ArrPrefix returns K such that fn.Code[0..K-1] is a
+// contiguous run of OpNewF64Array ops the JIT can lift into jitCall
+// (Phase 6.3.4.j.5.b). Each op must write a distinct cell reg within
+// the cell-bank window, and no subsequent op may overwrite any of
+// those cells via OpNewList / OpNewMap / OpNewF64Array. Returns 0 when
+// the prefix is empty or when the safety guard fails.
+func preAllocF64ArrPrefix(fn *vm3.Function) uint16 {
+	if len(fn.Code) == 0 || fn.Code[0].Code != vm3.OpNewF64Array {
+		return 0
+	}
+	cellCap := int(fn.NumRegsCell)
+	if cellCap > MaxCellRegs {
+		cellCap = MaxCellRegs
+	}
+	seen := make(map[uint16]bool)
+	k := 0
+	for i := 0; i < len(fn.Code); i++ {
+		op := fn.Code[i]
+		if op.Code != vm3.OpNewF64Array {
+			break
+		}
+		if int(op.A) >= cellCap {
+			break
+		}
+		if seen[op.A] {
+			break
+		}
+		seen[op.A] = true
+		k = i + 1
+	}
+	if k == 0 {
+		return 0
+	}
+	for i := k; i < len(fn.Code); i++ {
+		op := fn.Code[i]
+		if op.Code != vm3.OpNewList && op.Code != vm3.OpNewMap && op.Code != vm3.OpNewF64Array {
+			continue
+		}
+		if seen[op.A] {
+			return 0
+		}
+	}
+	return uint16(k)
 }
 
 // CompileProgram is the convenience entry point that walks every

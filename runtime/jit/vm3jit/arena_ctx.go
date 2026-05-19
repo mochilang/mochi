@@ -36,8 +36,9 @@ const MaxCellRegs = maxCellRegs
 // grow-aware sub-phase will add a deopt-on-grow guard mirroring
 // 6.2d.2.c's StatusListGrow.
 type jitArenaCtx struct {
-	listsBase unsafe.Pointer
-	mapsBase  unsafe.Pointer
+	listsBase   unsafe.Pointer
+	mapsBase    unsafe.Pointer
+	f64ArrsBase unsafe.Pointer
 }
 
 // populateArenaCtx snapshots the Arenas slab base pointers the JIT
@@ -47,4 +48,5 @@ type jitArenaCtx struct {
 func populateArenaCtx(ctx *jitArenaCtx, arenas *vm3.Arenas) {
 	ctx.listsBase = arenas.JITListsBase()
 	ctx.mapsBase = arenas.JITMapsBase()
+	ctx.f64ArrsBase = arenas.JITF64ArrsBase()
 }
