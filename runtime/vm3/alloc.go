@@ -110,6 +110,22 @@ func (a *Arenas) resetScratchList(idx uint32, capHint int) Cell {
 	return MakeHandle(ArenaList, l.gen, idx)
 }
 
+// regrowScratchList doubles the scratch slot's cap (re-makes the
+// cells backing array), resets len=0, bumps gen, and returns the
+// fresh handle. Phase 6.2d.2.b step 2.F: invoked after a
+// StatusListGrow deopt so the immediate retry has headroom to
+// complete its push loop. Doubling amortizes growth across runtime
+// size variation so a kernel only pays one deopt per cap doubling.
+func (a *Arenas) regrowScratchList(idx uint32) Cell {
+	l := &a.Lists[idx]
+	newCap := max(cap(l.cells)*2, 16)
+	l.cells = make([]Cell, 0, newCap)
+	l.flags = flagAlive
+	l.len = 0
+	l.gen++
+	return MakeHandle(ArenaList, l.gen, idx)
+}
+
 // AllocMap reserves an empty open-addressed map slot.
 func (a *Arenas) AllocMap(capHint int) Cell {
 	idx, gen := a.takeMapSlot(capHint)
