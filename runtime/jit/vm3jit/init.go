@@ -187,6 +187,19 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 	// vm.deopt* handles stay valid for the interp's resume.
 	var marks vm3.CallScopeMarks
 	vm.Arenas().SnapshotForJITEntry(&marks)
+	// Phase 6.3.4.j.3 multi-list pre-alloc: fn.JITPreAllocListPrefix > 0
+	// means the JIT skipped the first K OpNewList ops; allocate them
+	// here against the just-snapshotted arena marks so the per-call
+	// restore reclaims them on clean return. The K=1 warm-scratch shape
+	// is handled by the JITPreAllocList branch above and never reaches
+	// this point.
+	if fn.JITPreAllocListPrefix > 0 {
+		arenas := vm.Arenas()
+		for i := 0; i < int(fn.JITPreAllocListPrefix); i++ {
+			op := fn.Code[i]
+			jf.regsCell[op.A] = arenas.AllocList(0, int(op.C))
+		}
+	}
 	// Lay out params per ParamBanks position-indexed convention: argsX[k]
 	// is meaningful iff fn.ParamBanks[k] == BankX. For i64-only callees
 	// argsCell/argsF64 are nil and we use the fast path: copy argsI64
@@ -301,9 +314,11 @@ func CompileAndCache(prog *vm3.Program, idx uint32) (*CompiledFunc, error) {
 	// it is read only by jitCall, which only fires when JITCode is non-
 	// nil (i.e. when admission did succeed).
 	fn.JITPreAllocList = canPreAllocList(fn)
+	fn.JITPreAllocListPrefix = preAllocListPrefix(fn)
 	cf, err := CompileInProgram(prog, idx)
 	if err != nil {
 		fn.JITPreAllocList = false
+		fn.JITPreAllocListPrefix = 0
 		return nil, err
 	}
 	fn.JITCode = cf.Entry()
@@ -334,6 +349,12 @@ func canPreAllocList(fn *vm3.Function) bool {
 	if int(dest) >= int(fn.NumRegsCell) || int(dest) >= MaxCellRegs {
 		return false
 	}
+	// Single-list warm-scratch shape: fn.Code[1] is not also an
+	// OpNewList. The K>1 prefix path takes over via
+	// JITPreAllocListPrefix when there is a contiguous run.
+	if len(fn.Code) > 1 && fn.Code[1].Code == vm3.OpNewList {
+		return false
+	}
 	for i := 1; i < len(fn.Code); i++ {
 		op := fn.Code[i]
 		if op.Code == vm3.OpNewList && op.A == dest {
@@ -344,6 +365,63 @@ func canPreAllocList(fn *vm3.Function) bool {
 		}
 	}
 	return true
+}
+
+// preAllocListPrefix returns the length K of the contiguous OpNewList
+// prefix at fn.Code[0..K-1] that can be lifted into jitCall. K satisfies
+// these invariants (Phase 6.3.4.j.3):
+//
+//   - Each op fn.Code[i] for i<K is an OpNewList writing to a distinct
+//     regsCell[A] with A < min(NumRegsCell, MaxCellRegs).
+//   - No subsequent op (i >= K) writes regsCell[A] via OpNewList or
+//     OpNewMap (would clobber the pre-seeded handle without the lowerer
+//     seeing the data flow).
+//
+// Returns 0 when the prefix is empty. The single-list warm-scratch
+// shape (K=1) is recognized by canPreAllocList separately; this helper
+// reports it as K=1 too, so K=0 strictly means "no pre-alloc". The
+// existing JITPreAllocList flag continues to gate the warm-scratch
+// path; JITPreAllocListPrefix gates the JIT-side skip and (for K>1)
+// the fresh-alloc multi-list path in jitCall.
+func preAllocListPrefix(fn *vm3.Function) uint16 {
+	if len(fn.Code) == 0 || fn.Code[0].Code != vm3.OpNewList {
+		return 0
+	}
+	cellCap := int(fn.NumRegsCell)
+	if cellCap > MaxCellRegs {
+		cellCap = MaxCellRegs
+	}
+	seen := make(map[uint16]bool)
+	k := 0
+	for i := 0; i < len(fn.Code); i++ {
+		op := fn.Code[i]
+		if op.Code != vm3.OpNewList {
+			break
+		}
+		if int(op.A) >= cellCap {
+			break
+		}
+		if seen[op.A] {
+			break
+		}
+		seen[op.A] = true
+		k = i + 1
+	}
+	if k == 0 {
+		return 0
+	}
+	// No subsequent op may overwrite any pre-seeded cell via
+	// OpNewList / OpNewMap.
+	for i := k; i < len(fn.Code); i++ {
+		op := fn.Code[i]
+		if op.Code != vm3.OpNewList && op.Code != vm3.OpNewMap {
+			continue
+		}
+		if seen[op.A] {
+			return 0
+		}
+	}
+	return uint16(k)
 }
 
 // CompileProgram is the convenience entry point that walks every

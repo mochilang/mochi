@@ -83,9 +83,13 @@ func ExpectN_body(steps int64) float64 {
 // the surface this port targets so the JIT lowering in Phase
 // 6.3.4.j.3 can stay inside the existing cells-slab hoist.
 //
-// Register banks (NumRegs: 9 / 8 / 7):
+// Register banks (NumRegs: 7 / 8 / 7):
 //
-//	I64: 0 steps_in, 1 s, 2 i, 3 j, 4 p, 5 bi, 6 bj, 7 push_zero, 8 unused
+//	I64: 0 steps_in, 1 s, 2 i, 3 j, 4 p, 5 bi, 6 bj/push_zero
+//	     (reg 6 carries push_zero pc 7..16 and bj pc 137..159; the lifetimes
+//	     don't overlap, so they share the slot to keep i64 reg 7+ free —
+//	     otherwise the JIT's cell-bank lane at x21..x24 would clash with
+//	     the new cell-4..7 lay-out introduced in Phase 6.3.4.j.3).
 //	F64: 0..7 working file (reused across phases)
 //	Cell: 0 pos_x, 1 pos_y, 2 pos_z, 3 vel_x, 4 vel_y, 5 vel_z, 6 mass
 //
@@ -120,7 +124,7 @@ var N_body = &Program{
 	Build: func(_ int64) *vm3.Program {
 		fn := &vm3.Function{
 			Name:        "n_body",
-			NumRegsI64:  9,
+			NumRegsI64:  7,
 			NumRegsF64:  8,
 			NumRegsCell: 7,
 			ParamBanks:  []vm3.Bank{vm3.BankI64},
@@ -145,18 +149,20 @@ var N_body = &Program{
 				vm3.MakeOp(vm3.OpNewList, 4, 0, 0),
 				vm3.MakeOp(vm3.OpNewList, 5, 0, 0),
 				vm3.MakeOp(vm3.OpNewList, 6, 0, 0),
-				// --- push 5 zeros into each list (pc 7..18). i64 reg 7 holds 0; reg 2 is loop i.
-				vm3.MakeOp(vm3.OpConstI64K, 7, 0, 0), // pc=7: tmp_zero = 0
+				// --- push 5 zeros into each list (pc 7..18). i64 reg 6 holds 0
+				// (reg 6 is later reused as the energy-phase bj; lifetimes
+				// don't overlap, see header note). Reg 2 is loop i.
+				vm3.MakeOp(vm3.OpConstI64K, 6, 0, 0), // pc=7: tmp_zero = 0
 				vm3.MakeOp(vm3.OpConstI64K, 2, 0, 0), // pc=8: i = 0
 				// push_loop pc=9
 				vm3.MakeOp(vm3.OpCmpGeI64KBr, 2, 5, 19), // pc=9: if i>=5 -> push_done
-				vm3.MakeOp(vm3.OpListPushI64, 0, 7, 0),  // pc=10
-				vm3.MakeOp(vm3.OpListPushI64, 1, 7, 0),  // pc=11
-				vm3.MakeOp(vm3.OpListPushI64, 2, 7, 0),  // pc=12
-				vm3.MakeOp(vm3.OpListPushI64, 3, 7, 0),  // pc=13
-				vm3.MakeOp(vm3.OpListPushI64, 4, 7, 0),  // pc=14
-				vm3.MakeOp(vm3.OpListPushI64, 5, 7, 0),  // pc=15
-				vm3.MakeOp(vm3.OpListPushI64, 6, 7, 0),  // pc=16
+				vm3.MakeOp(vm3.OpListPushI64, 0, 6, 0),  // pc=10
+				vm3.MakeOp(vm3.OpListPushI64, 1, 6, 0),  // pc=11
+				vm3.MakeOp(vm3.OpListPushI64, 2, 6, 0),  // pc=12
+				vm3.MakeOp(vm3.OpListPushI64, 3, 6, 0),  // pc=13
+				vm3.MakeOp(vm3.OpListPushI64, 4, 6, 0),  // pc=14
+				vm3.MakeOp(vm3.OpListPushI64, 5, 6, 0),  // pc=15
+				vm3.MakeOp(vm3.OpListPushI64, 6, 6, 0),  // pc=16
 				vm3.MakeOp(vm3.OpAddI64K, 2, 2, 1),      // pc=17: i++
 				vm3.MakeOp(vm3.OpJump, 0, 0, 9),         // pc=18: -> push_loop
 				// push_done pc=19

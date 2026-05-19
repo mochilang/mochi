@@ -7,11 +7,14 @@ import (
 )
 
 // maxCellRegs is the cap on simultaneously-live Cell registers in the
-// vm3jit backend. AArch64 pins Cell regs 0..3 in x25..x28; AMD64
-// Cell-bank lowering (Phase 6.2d.2.e) will mirror this on its own
-// callee-saved range. Bumping the cap requires growing jitFrame3 and
-// allocating more callee-saved pairs in the prologue.
-const maxCellRegs = 4
+// vm3jit backend. AArch64 pins Cell regs 0..3 in x25..x28 and Cell regs
+// 4..7 in x21..x24 (the latter overlaps the i64 callee-saved lane, so
+// fns with NumRegsCell > 4 must keep NumRegsI64 <= 7 — see archCaps and
+// the i64-cap gate in compile.go). AMD64 Cell-bank lowering (Phase
+// 6.2d.2.e) will mirror this on its own callee-saved range. Bumping the
+// cap further requires growing jitFrame3 and allocating more callee-
+// saved pairs in the prologue.
+const maxCellRegs = 8
 
 // MaxCellRegs is exported for tests and external callers that size
 // scratch buffers for the Cell bank.
