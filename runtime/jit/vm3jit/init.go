@@ -200,6 +200,16 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 			jf.regsCell[op.A] = arenas.AllocList(0, int(op.C))
 		}
 	}
+	// Phase 6.3.4.f.2: OpNewMap pre-alloc. fn.JITPreAllocMap is set when
+	// fn.Code[0] is an OpNewMap that the lowerer skipped; allocate the
+	// map here against the just-snapshotted arena marks and seed the cell
+	// reg the JIT prologue will load.
+	if fn.JITPreAllocMap {
+		op := fn.Code[0]
+		if int(op.A) < MaxCellRegs {
+			jf.regsCell[op.A] = vm.Arenas().AllocMap(int(op.C))
+		}
+	}
 	// Lay out params per ParamBanks position-indexed convention: argsX[k]
 	// is meaningful iff fn.ParamBanks[k] == BankX. For i64-only callees
 	// argsCell/argsF64 are nil and we use the fast path: copy argsI64
@@ -315,10 +325,12 @@ func CompileAndCache(prog *vm3.Program, idx uint32) (*CompiledFunc, error) {
 	// nil (i.e. when admission did succeed).
 	fn.JITPreAllocList = canPreAllocList(fn)
 	fn.JITPreAllocListPrefix = preAllocListPrefix(fn)
+	fn.JITPreAllocMap = canPreAllocMap(fn)
 	cf, err := CompileInProgram(prog, idx)
 	if err != nil {
 		fn.JITPreAllocList = false
 		fn.JITPreAllocListPrefix = 0
+		fn.JITPreAllocMap = false
 		return nil, err
 	}
 	fn.JITCode = cf.Entry()
@@ -422,6 +434,30 @@ func preAllocListPrefix(fn *vm3.Function) uint16 {
 		}
 	}
 	return uint16(k)
+}
+
+// canPreAllocMap mirrors canPreAllocList for an OpNewMap at fn.Code[0].
+// Phase 6.3.4.f.2: lets cell-bank kernels that allocate a single map at
+// entry then operate on it (k_nucleotide and similar) skip the JIT-side
+// emission of OpNewMap; jitCall calls arenas.AllocMap with the static
+// capHint encoded in op.C and seeds jf.regsCell[A] before the
+// trampoline. Pre-condition for safety: no later op overwrites the
+// same cell via OpNewList or OpNewMap.
+func canPreAllocMap(fn *vm3.Function) bool {
+	if len(fn.Code) == 0 || fn.Code[0].Code != vm3.OpNewMap {
+		return false
+	}
+	dest := fn.Code[0].A
+	if int(dest) >= int(fn.NumRegsCell) || int(dest) >= MaxCellRegs {
+		return false
+	}
+	for i := 1; i < len(fn.Code); i++ {
+		op := fn.Code[i]
+		if (op.Code == vm3.OpNewMap || op.Code == vm3.OpNewList) && op.A == dest {
+			return false
+		}
+	}
+	return true
 }
 
 // CompileProgram is the convenience entry point that walks every

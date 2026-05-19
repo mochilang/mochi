@@ -217,9 +217,11 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 	}
 	for i, op := range fn.Code {
 		switch op.Code {
-		case vm3.OpConstI64K, vm3.OpMovI64,
+		case vm3.OpConstI64K, vm3.OpConstI64KW, vm3.OpMovI64,
 			vm3.OpAddI64, vm3.OpSubI64, vm3.OpMulI64,
+			vm3.OpDivI64, vm3.OpModI64,
 			vm3.OpAddI64K, vm3.OpSubI64K, vm3.OpMulI64K,
+			vm3.OpDivI64K, vm3.OpModI64K,
 			vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
 			vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
 			vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br,
@@ -256,6 +258,16 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 				continue
 			}
 			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses inline OpNewList (only pre-alloc prefix is admitted)",
+				ErrNotImplemented, fn.Name, i)
+		case vm3.OpNewMap:
+			// Phase 6.3.4.f.2: admit at pc=0 when the OpNewMap can be
+			// lifted into jitCall (canPreAllocMap). The lowerer emits
+			// zero words; the prologue picks up the pre-seeded handle
+			// from jf.regsCell[A].
+			if i == 0 && canPreAllocMap(fn) {
+				continue
+			}
+			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses inline OpNewMap (only pre-alloc at pc=0 is admitted)",
 				ErrNotImplemented, fn.Name, i)
 		case vm3.OpTailCallMixed:
 			if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx || op.B != 0 {
