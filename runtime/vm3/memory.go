@@ -104,8 +104,13 @@ func (a *Arenas) truncateToMarks(marks, freeMarks *[numArenaTags]uint32) {
 	if m := marks[ArenaMap]; uint32(len(a.Maps)) > m {
 		tail := a.Maps[m:]
 		for i := range tail {
-			tail[i].table = nil
+			// Keep tail[i].table alive in the (now beyond-len, still
+			// in-cap) slot so the next takeMapSlot at this index can
+			// reuse the backing array instead of paying for a fresh
+			// make([]mapEntry, cap). The slot's flags=0 still marks
+			// it as logically free.
 			tail[i].flags = 0
+			tail[i].nLive = 0
 		}
 		a.Maps = a.Maps[:m]
 		a.freeMaps = filterFreeList(a.freeMaps, freeMarks[ArenaMap], m)

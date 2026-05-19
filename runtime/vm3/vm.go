@@ -55,6 +55,23 @@ type VM struct {
 	// the per-iter slab truncate + cells re-make cycle that step 2.D
 	// otherwise paid every iteration.
 	jitScratchListIdx int32
+
+	// callArgsI64/F64/Cell are the per-VM arg-snapshot scratch used by
+	// OpCallMixed and OpTailCallMixed (Phase 6.2d.2.d step 3). The
+	// interpreter loop snapshots caller-side reg values into these
+	// fixed-size arrays before pushing the callee's frame (which may
+	// regrow the typed stacks and invalidate the cached regsX slices).
+	// Storing them on the VM struct keeps the slice headers
+	// `callArgsI64[:len(pbs)]` passed to JITCallFn pointing at heap-
+	// stable backing, so Go's escape analysis no longer needs to heap-
+	// allocate them per call. Cap of 8 mirrors the prior local
+	// declarations; admission limits ParamBanks to 8 entries so this is
+	// always sufficient (a runtime callee with more params would have
+	// been rejected by the JIT and would push an interp frame, where
+	// these scratches are also large enough).
+	callArgsI64  [8]int64
+	callArgsF64  [8]float64
+	callArgsCell [8]Cell
 }
 
 // JITState returns the per-VM JIT scratch handle, or nil if none has
@@ -808,9 +825,13 @@ func (vm *VM) run() (Cell, error) {
 			callee := vm.prog.Funcs[uint16(op.C)]
 			pbs := callee.ParamBanks
 			// Snapshot args before pushFrame (which may regrow slabs).
-			var argI64 [8]int64
-			var argF64 [8]float64
-			var argCell [8]Cell
+			// Reuse the per-VM callArgs* scratch so slices passed to
+			// JITCallFn keep heap-stable backing and Go's escape
+			// analysis stops heap-allocating one [8]int64/[8]float64/
+			// [8]Cell triple per call (Phase 6.2d.2.d step 3).
+			argI64 := &vm.callArgsI64
+			argF64 := &vm.callArgsF64
+			argCell := &vm.callArgsCell
 			argBase := op.B
 			for k, b := range pbs {
 				idx := argBase + uint16(k)
@@ -892,9 +913,9 @@ func (vm *VM) run() (Cell, error) {
 				continue
 			}
 			pbs := callee.ParamBanks
-			var argI64 [8]int64
-			var argF64 [8]float64
-			var argCell [8]Cell
+			argI64 := &vm.callArgsI64
+			argF64 := &vm.callArgsF64
+			argCell := &vm.callArgsCell
 			argBase := op.B
 			for k, b := range pbs {
 				idx := argBase + uint16(k)
