@@ -203,6 +203,16 @@ const (
 	OpI64ArrayPushI64 // arenas.I64Arrs[idx].data = append(..., regsI64[B])
 	OpI64ArrayGetI64  // regsI64[A] = arenas.I64Arrs[idx].data[regsI64[uint16(C)]]
 	OpI64ArraySetI64  // arenas.I64Arrs[idx].data[regsI64[uint16(C)]] = regsI64[B]
+
+	// Pair (Phase 6.3.4.m.1). The vmPair arena was provisioned by Phase
+	// 3.6 and is the storage shape for binary_trees: every interior tree
+	// node is an immutable 2-Cell pair. Leaves carry whatever happens to
+	// be in the two slots; the canonical kernel reaches them only after
+	// a depth check, never via PairFst/PairSnd. The opcode trio mirrors
+	// AllocPair/PairFst/PairSnd in accessors.go.
+	OpNewPair // regsCell[A] = arenas.AllocPair(regsCell[B], regsCell[uint16(C)])
+	OpPairFst // regsCell[A] = arenas.PairFst(regsCell[B])
+	OpPairSnd // regsCell[A] = arenas.PairSnd(regsCell[B])
 )
 
 // Op is a single 8-byte vm3 bytecode word. Layout:

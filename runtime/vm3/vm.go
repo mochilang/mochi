@@ -848,6 +848,16 @@ func (vm *VM) run() (Cell, error) {
 			arenas.I64Arrs[idx].data[regsI64[uint16(op.C)]] = regsI64[op.B]
 			pc++
 
+		case OpNewPair:
+			regsCell[op.A] = arenas.AllocPair(regsCell[op.B], regsCell[uint16(op.C)])
+			pc++
+		case OpPairFst:
+			regsCell[op.A] = arenas.PairFst(regsCell[op.B])
+			pc++
+		case OpPairSnd:
+			regsCell[op.A] = arenas.PairSnd(regsCell[op.B])
+			pc++
+
 		case OpNewMap:
 			regsCell[op.A] = arenas.AllocMap(int(uint16(op.C)))
 			pc++

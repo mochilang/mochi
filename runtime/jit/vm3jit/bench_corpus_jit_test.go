@@ -66,6 +66,8 @@ func BenchmarkCorpusJITRunner(b *testing.B) {
 		{"fannkuch_redux_n10000", corpus.FannkuchRedux, 10000},
 		{"reverse_complement_n1000", corpus.ReverseComplement, 1000},
 		{"reverse_complement_n10000", corpus.ReverseComplement, 10000},
+		{"binary_trees_n10", corpus.BinaryTrees, 10},
+		{"binary_trees_n12", corpus.BinaryTrees, 12},
 	}
 	for _, tc := range cases {
 		b.Run(tc.name, func(b *testing.B) {
