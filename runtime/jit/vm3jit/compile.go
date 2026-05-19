@@ -227,7 +227,8 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 			vm3.OpCmpLtI64KBr, vm3.OpCmpLeI64KBr,
 			vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr,
 			vm3.OpJump, vm3.OpReturnI64, vm3.OpReturnConstK,
-			vm3.OpListGetI64, vm3.OpListPushI64:
+			vm3.OpListGetI64, vm3.OpListPushI64,
+			vm3.OpMapSetI64I64, vm3.OpMapGetI64I64:
 			continue
 		case vm3.OpNewList:
 			// Phase 6.2d.2.b step 2: admit at pc=0 when the lowerer can

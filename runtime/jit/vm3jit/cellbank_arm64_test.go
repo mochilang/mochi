@@ -67,3 +67,54 @@ func TestListsFillSumEndToEnd(t *testing.T) {
 		}
 	}
 }
+
+// TestMapsFillSumKernelsCompile is the Phase 6.2d.2.d step 4 mirror of
+// TestListsFillSumKernelsCompile: confirms fill (idx=1, contains
+// OpMapSetI64I64) and sum (idx=2, contains OpMapGetI64I64) compile under
+// the inline open-addressed lowering on ARM64.
+func TestMapsFillSumKernelsCompile(t *testing.T) {
+	prog := corpus.MapsFillSum.Build(128)
+	cfs := vm3jit.CompileProgram(prog)
+	defer func() {
+		for _, cf := range cfs {
+			if cf != nil {
+				_ = cf.Free()
+			}
+		}
+	}()
+	if got := prog.Funcs[1].JITCode; got == nil {
+		t.Fatalf("fill (idx=1, OpMapSetI64I64) did not compile: JITCode is nil")
+	}
+	if got := prog.Funcs[2].JITCode; got == nil {
+		t.Fatalf("sum (idx=2, OpMapGetI64I64) did not compile: JITCode is nil")
+	}
+}
+
+// TestMapsFillSumEndToEnd runs corpus.MapsFillSum through vm3 with the
+// JIT installed. Main runs in the interpreter; its inner OpCallMixed →
+// fill / sum sites route through JIT'd code via JITCallFn. Expected
+// result is n*(n-1)/2 (same as lists_fill_sum since values match keys).
+func TestMapsFillSumEndToEnd(t *testing.T) {
+	cases := []int64{0, 1, 2, 8, 32, 64, 128}
+	for _, n := range cases {
+		prog := corpus.MapsFillSum.Build(n)
+		cfs := vm3jit.CompileProgram(prog)
+		vm := vm3.NewWithProgram(prog)
+		got, err := vm.RunWithArgs(prog.Funcs[prog.Entry], []int64{n})
+		for _, cf := range cfs {
+			if cf != nil {
+				_ = cf.Free()
+			}
+		}
+		if err != nil {
+			t.Fatalf("RunWithArgs(n=%d): %v", n, err)
+		}
+		want := n * (n - 1) / 2
+		if n <= 0 {
+			want = 0
+		}
+		if got.Int() != want {
+			t.Errorf("maps_fill_sum(n=%d): got=%d want=%d", n, got.Int(), want)
+		}
+	}
+}
