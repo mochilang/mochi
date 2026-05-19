@@ -25,15 +25,26 @@ import (
 // Reserved (never holds a pinned slot):
 //
 //	RAX (0) - scratch, i64 return value, IDIV quotient
-//	RCX (1) - scratch (free for use within a single opcode lowering)
+//	RCX (1) - scratch / regsCell base on entry (moved to RBP in cell-bank prologue)
 //	RDX (2) - scratch, IDIV remainder, CQO sign-extension high half
 //	RBX (3) - regsI64 base pointer (set from RDI in prologue,
 //	          preserved by the SysV-style callee-save we do for RBX,
 //	          so it survives our internal CALL on self-recursion)
 //	RSP (4) - stack pointer
-//	RBP (5) - frame pointer (unused but kept reserved for callstack
-//	          tooling; never touched by the JIT)
+//	RBP (5) - frame pointer (unused for i64-only fns; cell-bank fns
+//	          (Phase 6.3.4.m.4c.1) repurpose it as regsCell base
+//	          loaded from RCX, with the original RBP pushed/popped in
+//	          the prologue/epilogue)
+//	R8  (8) - *jitArenaCtx on entry when cell-bank (moved to R14)
 //	R15(15) - *int64 status word pointer (set from RSI in prologue)
+//
+// Cell-bank fns additionally pin:
+//
+//	RBP (5)  - regsCell base pointer (loaded from RCX in prologue)
+//	R14 (14) - *jitArenaCtx (loaded from R8 in prologue)
+//
+// R14 is shared with the f64 base path, so the cell-bank prologue
+// rejects fn.NumRegsF64 > 0 to keep the pinning unambiguous.
 //
 // The trampoline calls us with the SysV ABI:
 //
@@ -104,11 +115,19 @@ func calleeSavedSlot(r uint16) bool { return r >= 6 && r < 9 }
 // it regardless of how it is used inside the JIT'd body.
 func usesR14ForF64(fn *vm3.Function) bool { return fn.NumRegsF64 > 0 }
 
-// numCalleeSavedPushesAMD64 returns the number of R12..R14 pushes the
+// isCellBankAMD64 reports whether fn carries the Cell register bank.
+// Phase 6.3.4.m.4c.1 cell-bank fns repurpose RBP as the regsCell base
+// and R14 as the *jitArenaCtx pointer, so the prologue pushes both and
+// the epilogue pops them. usesR14ForF64 and isCellBankAMD64 are mutually
+// exclusive: lowerAMD64 rejects the combination.
+func isCellBankAMD64(fn *vm3.Function) bool { return fn.NumRegsCell > 0 }
+
+// numCalleeSavedPushesAMD64 returns the number of R12..R14/RBP pushes the
 // prologue needs for fn, plus the always-present RBX and R15 pushes
 // (2). Used by both the prologue emitter and the byte-count predictor.
 // R14 is pushed when (a) i64 slot 8 lands in R14 OR (b) R14 holds the
-// regsF64 base for an f64-touching fn.
+// regsF64 base for an f64-touching fn OR (c) R14 holds *jitArenaCtx for
+// a cell-bank fn. RBP is pushed only for cell-bank fns (regsCell base).
 func numCalleeSavedPushesAMD64(fn *vm3.Function) int {
 	n := int(fn.NumRegsI64)
 	if n > maxI64RegsAMD64 {
@@ -122,8 +141,11 @@ func numCalleeSavedPushesAMD64(fn *vm3.Function) int {
 	if n > 7 {
 		count++
 	}
-	if n > 8 || usesR14ForF64(fn) {
+	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
 		count++
+	}
+	if isCellBankAMD64(fn) {
+		count++ // RBP for regsCell base
 	}
 	return count
 }
@@ -205,6 +227,14 @@ func lowerAMD64(fn *vm3.Function, opts Options) ([]byte, error) {
 		return nil, fmt.Errorf("%w: %s has both f64 regs and OpCallI64 (Phase 6.2b leaves f64+self-recursion to a later sub-phase)",
 			ErrNotImplemented, fn.Name)
 	}
+	if isCellBankAMD64(fn) && fn.NumRegsF64 > 0 {
+		return nil, fmt.Errorf("%w: %s has both Cell and f64 banks (AMD64 cell-bank Phase 6.3.4.m.4c.1 admits Cell+I64 only; R14 is shared)",
+			ErrNotImplemented, fn.Name)
+	}
+	if isCellBankAMD64(fn) && int(fn.NumRegsI64) > 8 {
+		return nil, fmt.Errorf("%w: %s has Cell bank with NumRegsI64=%d (>8); R14 reserved for *jitArenaCtx",
+			ErrNotImplemented, fn.Name, fn.NumRegsI64)
+	}
 	prologueBytes := prologueLenAMD64(fn)
 	spillSets := computeCallSpillsAMD64(fn)
 
@@ -264,8 +294,11 @@ func prologueLenAMD64(fn *vm3.Function) int {
 	if n > 7 {
 		bytes += pushBytes(xR13)
 	}
-	if n > 8 || usesR14ForF64(fn) {
+	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
 		bytes += pushBytes(xR14)
+	}
+	if isCellBankAMD64(fn) {
+		bytes += pushBytes(xRBP)
 	}
 	if alignFixupBytesAMD64(fn) != 0 {
 		bytes += 4 // sub $8, %rsp == REX.W 83 /5 ib (4 bytes)
@@ -275,6 +308,10 @@ func prologueLenAMD64(fn *vm3.Function) int {
 	// mov %rdx, %r14 (3 bytes) when R14 holds regsF64 base.
 	if usesR14ForF64(fn) {
 		bytes += 3
+	}
+	// Cell-bank: mov %rcx, %rbp (3) + mov %r8, %r14 (3).
+	if isCellBankAMD64(fn) {
+		bytes += 3 + 3
 	}
 	// Each pinned i64 slot load is mov disp32(%rbx), <reg> = 7 bytes.
 	bytes += 7 * n
@@ -319,8 +356,11 @@ func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 	if n > 7 {
 		buf = append(buf, push64(xR13)...)
 	}
-	if n > 8 || usesR14ForF64(fn) {
+	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
 		buf = append(buf, push64(xR14)...)
+	}
+	if isCellBankAMD64(fn) {
+		buf = append(buf, push64(xRBP)...)
 	}
 	if alignFixupBytesAMD64(fn) != 0 {
 		buf = append(buf, subRSPImm8(8)...)
@@ -329,6 +369,10 @@ func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 	buf = append(buf, mov64RR(xRSI, xR15)...)
 	if usesR14ForF64(fn) {
 		buf = append(buf, mov64RR(xRDX, xR14)...)
+	}
+	if isCellBankAMD64(fn) {
+		buf = append(buf, mov64RR(xRCX, xRBP)...)
+		buf = append(buf, mov64RR(xR8, xR14)...)
 	}
 	for r := 0; r < n; r++ {
 		buf = append(buf, mov64LoadDisp32(r2xAMD64(uint16(r)), xRBX, int32(r*8))...)
@@ -348,7 +392,10 @@ func emitEpilogueAMD64(buf []byte, fn *vm3.Function) []byte {
 	if alignFixupBytesAMD64(fn) != 0 {
 		buf = append(buf, addRSPImm8(8)...)
 	}
-	if n > 8 || usesR14ForF64(fn) {
+	if isCellBankAMD64(fn) {
+		buf = append(buf, pop64(xRBP)...)
+	}
+	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
 		buf = append(buf, pop64(xR14)...)
 	}
 	if n > 7 {
@@ -371,7 +418,10 @@ func epilogueBytesAMD64(fn *vm3.Function) int {
 	if alignFixupBytesAMD64(fn) != 0 {
 		bytes += 4 // add $8, %rsp
 	}
-	if n > 8 || usesR14ForF64(fn) {
+	if isCellBankAMD64(fn) {
+		bytes += popBytes(xRBP)
+	}
+	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
 		bytes += popBytes(xR14)
 	}
 	if n > 7 {
@@ -498,6 +548,12 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 	case vm3.OpReturnF64:
 		// movq xmm<A>, %rax (5) + epilogue.
 		return 5 + epilogueBytesAMD64(fn), nil
+	case vm3.OpReturnCell:
+		// mov disp32(%rbp), %rax (7) + epilogue. RBP holds the regsCell
+		// base for cell-bank fns (Phase 6.3.4.m.4c.2); the cell handle
+		// in slot A is loaded into RAX so the trampoline returns it
+		// bit-for-bit through Go's uint64 result channel.
+		return 7 + epilogueBytesAMD64(fn), nil
 
 	case vm3.OpConstF64K:
 		idx := int(uint16(op.C))
@@ -733,6 +789,13 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// movq %rax, %xmm<A>: bit-cast f64 to int64 in RAX, then run
 		// the epilogue (which preserves RAX through pops).
 		out := movqR64FromXMM(xRAX, int(op.A))
+		out = emitEpilogueAMD64(out, fn)
+		return out, nil
+	case vm3.OpReturnCell:
+		// Phase 6.3.4.m.4c.2: cell-bank return. Load regsCell[A] from
+		// RBP+disp32 into RAX, then run the epilogue. RBP is restored
+		// by the epilogue's pop sequence; RAX carries the handle through.
+		out := mov64LoadDisp32(xRAX, xRBP, int32(op.A)*8)
 		out = emitEpilogueAMD64(out, fn)
 		return out, nil
 

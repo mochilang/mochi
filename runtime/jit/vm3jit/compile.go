@@ -204,16 +204,21 @@ const maxI64RegsCellARM64 = 11
 // fns on ARM64 (Phase 6.2d.2.a step 2). The whitelist is intentionally
 // narrow: only the opcodes the sum kernel actually uses are admitted,
 // so unrelated Cell-bank fns (fill, map workloads, ...) keep falling
-// back to the interpreter until their own sub-phases land. AMD64 has
-// no Cell-bank lowering yet, so any Cell usage is rejected there.
+// back to the interpreter until their own sub-phases land. AMD64 admits
+// the narrow scaffold opcode set (i64-only + OpReturnCell) starting in
+// Phase 6.3.4.m.4c.1/.2; pair ops, list/map ops, and OpCallMixed are
+// added in m.4c.3+.
 func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
-	if hostArch != ArchARM64 {
-		return fmt.Errorf("%w: %s has Cell bank usage (Cell=%d) — no AMD64 backend yet",
-			ErrNotImplemented, fn.Name, fn.NumRegsCell)
-	}
 	if int(fn.NumRegsCell) > maxCellRegs {
 		return fmt.Errorf("%w: %s uses %d Cell regs (max %d on this arch)",
 			ErrNotImplemented, fn.Name, fn.NumRegsCell, maxCellRegs)
+	}
+	if hostArch == ArchAMD64 {
+		return checkCellBankAdmissibleAMD64(fn, opts)
+	}
+	if hostArch != ArchARM64 {
+		return fmt.Errorf("%w: %s has Cell bank usage (Cell=%d) on unsupported arch",
+			ErrNotImplemented, fn.Name, fn.NumRegsCell)
 	}
 	for i, op := range fn.Code {
 		switch op.Code {
@@ -312,6 +317,50 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 			}
 		default:
 			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses opcode %d outside the sum-shape whitelist",
+				ErrNotImplemented, fn.Name, i, op.Code)
+		}
+	}
+	return nil
+}
+
+// checkCellBankAdmissibleAMD64 is the AMD64 cell-bank whitelist (Phase
+// 6.3.4.m.4c.1 + m.4c.2). The initial scaffold admits only opcodes the
+// AMD64 backend has lowered:
+//
+//   - the i64 arithmetic / compare-and-branch / control-flow set the
+//     existing lower_amd64 supports, plus
+//   - OpReturnCell, lowered by m.4c.2 as mov disp32(%rbp), %rax + epilogue.
+//
+// Pair ops (OpPairFst/Snd, OpNewPair) land in m.4c.3 / m.4c.4;
+// OpCallMixed (self + cross-fn) lands in m.4c.5; list/map ops are out
+// of scope for the binary_trees closure (m.4c.6). f64 banks remain
+// rejected because cell-bank repurposes R14 for *jitArenaCtx and R14 is
+// the f64 base on AMD64.
+func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
+	if fn.NumRegsF64 > 0 {
+		return fmt.Errorf("%w: %s has both Cell and f64 banks (AMD64 m.4c.1 admits Cell+I64 only; R14 shared)",
+			ErrNotImplemented, fn.Name)
+	}
+	for i, op := range fn.Code {
+		switch op.Code {
+		case vm3.OpConstI64K, vm3.OpConstI64KW, vm3.OpMovI64,
+			vm3.OpAddI64, vm3.OpSubI64, vm3.OpMulI64,
+			vm3.OpDivI64, vm3.OpModI64,
+			vm3.OpAddI64K, vm3.OpSubI64K, vm3.OpMulI64K,
+			vm3.OpDivI64K, vm3.OpModI64K,
+			vm3.OpNegI64,
+			vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
+			vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
+			vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br,
+			vm3.OpCmpEqI64KBr, vm3.OpCmpNeI64KBr,
+			vm3.OpCmpLtI64KBr, vm3.OpCmpLeI64KBr,
+			vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr,
+			vm3.OpJump,
+			vm3.OpReturnI64, vm3.OpReturnConstK, vm3.OpReturnCell,
+			vm3.OpLookupI64KW:
+			continue
+		default:
+			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses opcode %d (AMD64 cell-bank scaffold m.4c.1+m.4c.2 only; m.4c.3 adds OpPairFst/Snd, m.4c.4 OpNewPair, m.4c.5 OpCallMixed)",
 				ErrNotImplemented, fn.Name, i, op.Code)
 		}
 	}
@@ -465,6 +514,13 @@ func archCaps(fn *vm3.Function) (int, int, bool) {
 		i64Cap := maxI64RegsAMD64
 		if fn.NumRegsF64 > 0 {
 			i64Cap = maxI64RegsAMD64 - 1 // steal R14 for regsF64 base
+		}
+		if fn.NumRegsCell > 0 {
+			// Phase 6.3.4.m.4c.1: cell-bank steals R14 (arenaCtx) and
+			// RBP (regsCell). R14 was the i64 slot-8 home, so the
+			// cap drops by one. RBP is normally reserved (not in
+			// r2xAMD64's range), so no further i64 reduction.
+			i64Cap = maxI64RegsAMD64 - 1
 		}
 		return i64Cap, maxF64RegsAMD64, true
 	default:
