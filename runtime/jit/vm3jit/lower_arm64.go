@@ -4,6 +4,7 @@ package vm3jit
 
 import (
 	"fmt"
+	"unsafe"
 
 	"mochi/runtime/vm3"
 )
@@ -120,7 +121,7 @@ func computeCallSpills(fn *vm3.Function) []uint32 {
 // Existing i64-only fns (NumRegsCell == 0) keep the original layout
 // at x19..x28.
 func numCalleeSavedPairs(fn *vm3.Function) int {
-	return numCellScratchPairs(fn) + extraCellScratchPairsARM64(fn) + numI64CalleeSavedPairs(fn) + numCellCalleeSavedPairs(fn)
+	return numCellScratchPairs(fn) + extraCellScratchPairsARM64(fn) + numI64CalleeSavedPairs(fn) + numCellCalleeSavedPairs(fn) + numTableHoistPairsARM64(fn)
 }
 
 // numCellScratchPairs is 1 when fn uses any Cell reg (we push x19:x20
@@ -189,7 +190,126 @@ func calleeSavedPairRegs(fn *vm3.Function) []uint32 {
 	for k := 0; k < numCellCalleeSavedPairs(fn); k++ {
 		pairs = append(pairs, 25+uint32(2*k))
 	}
+	hoistStart := tableHoistRegStartARM64(fn)
+	for k := 0; k < numTableHoistPairsARM64(fn); k++ {
+		pairs = append(pairs, hoistStart+uint32(2*k))
+	}
 	return pairs
+}
+
+// lookupTableIdxsARM64 returns the I64 table indices referenced by
+// OpLookupI64KW sites in fn.Code, in first-occurrence order, capped to
+// tableHoistCapARM64(fn). Indices beyond the cap fall back to the per-
+// site movImm64 + LDR sequence (the unhoisted lowering still works,
+// just at 4 extra inner-loop words per site).
+//
+// Hoisting a table base costs one callee-saved register and a 1..4-word
+// movImm64 in the prologue, in exchange for collapsing every per-site
+// OpLookupI64KW from `movImm64+LDR` (2..5 words) to a single LDR. For
+// dispatch-bound kernels (the Phase 6.4 switch-lookup shape) this is a
+// 60..80% reduction in inner-loop instruction count per dispatch.
+//
+// Empty or out-of-range tables are skipped here (the emitter rejects
+// them via ErrNotImplemented at wordCount/emit time); they do not
+// consume a hoist slot.
+func lookupTableIdxsARM64(fn *vm3.Function) []uint16 {
+	capN := tableHoistCapARM64(fn)
+	if capN <= 0 {
+		return nil
+	}
+	seen := make(map[uint16]bool)
+	idxs := make([]uint16, 0, capN)
+	for _, op := range fn.Code {
+		if op.Code != vm3.OpLookupI64KW {
+			continue
+		}
+		t := uint16(op.C)
+		if seen[t] {
+			continue
+		}
+		if int(t) >= len(fn.I64Tables) || len(fn.I64Tables[t]) == 0 {
+			continue
+		}
+		seen[t] = true
+		idxs = append(idxs, t)
+		if len(idxs) >= capN {
+			break
+		}
+	}
+	return idxs
+}
+
+// tableHoistCapARM64 returns the maximum number of OpLookupI64KW table
+// bases that can be hoisted into callee-saved regs for fn. The budget
+// is the unused tail of x19..x28 after the i64 / cell-bank / cell-
+// scratch / extra-scratch pair allocations claim their share. Cell-
+// bank fns currently skip table hoists (their x19..x28 layout is
+// fully committed to arena base + slab field pins; admitting a hoist
+// would need a new layout slot we do not reserve in Phase 6.4.b).
+func tableHoistCapARM64(fn *vm3.Function) int {
+	if fn.NumRegsCell > 0 {
+		return 0
+	}
+	used := 2 * numI64CalleeSavedPairs(fn)
+	avail := 10 - used // x19..x28 is 10 regs
+	if avail < 0 {
+		return 0
+	}
+	return avail
+}
+
+// tableHoistRegStartARM64 returns the first callee-saved host register
+// reserved for table hoists. Sits immediately after the existing i64
+// callee-saved range (x19 + 2*numI64CalleeSavedPairs) so the existing
+// reg-pinning math is unchanged.
+func tableHoistRegStartARM64(fn *vm3.Function) uint32 {
+	return 19 + uint32(2*numI64CalleeSavedPairs(fn))
+}
+
+// numTableHoistPairsARM64 returns the count of STP/LDP pairs the
+// prologue must push to back fn's hoisted table bases. Ceil(numHoists
+// / 2); the final pair may carry an unused half (same pattern as
+// numI64CalleeSavedPairs for an odd reg count).
+func numTableHoistPairsARM64(fn *vm3.Function) int {
+	n := len(lookupTableIdxsARM64(fn))
+	if n == 0 {
+		return 0
+	}
+	return (n + 1) / 2
+}
+
+// tableHoistRegARM64 returns the host register holding the base
+// address &fn.I64Tables[tableIdx][0], or 0 (= zero register) when the
+// table is not hoisted. Callers must check the return value: a zero
+// indicates "fall back to the per-op movImm64 + LDR sequence".
+func tableHoistRegARM64(fn *vm3.Function, tableIdx uint16) uint32 {
+	idxs := lookupTableIdxsARM64(fn)
+	if len(idxs) == 0 {
+		return 0
+	}
+	start := tableHoistRegStartARM64(fn)
+	for k, t := range idxs {
+		if t == tableIdx {
+			return start + uint32(k)
+		}
+	}
+	return 0
+}
+
+// tableHoistPrologueWordsARM64 returns the prologue word count needed
+// to load every hoisted table's base address into its pinned host reg.
+// Sum of movImm64WordCount over each table's heap address.
+func tableHoistPrologueWordsARM64(fn *vm3.Function) int {
+	idxs := lookupTableIdxsARM64(fn)
+	if len(idxs) == 0 {
+		return 0
+	}
+	n := 0
+	for _, t := range idxs {
+		base := int64(uintptr(unsafe.Pointer(&fn.I64Tables[t][0])))
+		n += movImm64WordCount(base)
+	}
+	return n
 }
 
 // hasRegRegDivMod, hasListPushI64, hasListGetI64 live in lower_common.go
@@ -779,7 +899,7 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 	if needsArenaCtxStash(fn, opts) {
 		arenaCtxStash = 1 // MOV x20, x4
 	}
-	prologueWords := lrPair + pairs + int(fn.NumRegsI64) + int(fn.NumRegsF64) + int(fn.NumRegsCell) + cellScratch + hoistPrologueWordsARM64(fn) + arenaCtxStash
+	prologueWords := lrPair + pairs + int(fn.NumRegsI64) + int(fn.NumRegsF64) + int(fn.NumRegsCell) + cellScratch + hoistPrologueWordsARM64(fn) + arenaCtxStash + tableHoistPrologueWordsARM64(fn)
 	spillSets := computeCallSpills(fn)
 
 	pcMap := make([]int, len(fn.Code)+1)
@@ -862,6 +982,20 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 	// x4 from x20 right before the branch.
 	if needsArenaCtxStash(fn, opts) {
 		ws = append(ws, movReg(20, 4))
+	}
+
+	// Phase 6.4.b: hoist OpLookupI64KW table-base addresses into
+	// callee-saved regs. The bases are loop-invariant by construction
+	// (fn.I64Tables is owned by the Function record and never mutated
+	// after CompileProgram), so each OpLookupI64KW in the body becomes
+	// a single LDR Xd, [Xhoist, Xidx, LSL #3] instead of the cold
+	// `movImm64 + LDR` pair. Mirrors Go CL 756340's dispatch-shape win.
+	if idxs := lookupTableIdxsARM64(fn); len(idxs) > 0 {
+		start := tableHoistRegStartARM64(fn)
+		for k, t := range idxs {
+			base := int64(uintptr(unsafe.Pointer(&fn.I64Tables[t][0])))
+			ws = append(ws, movImm64(start+uint32(k), base)...)
+		}
 	}
 
 	for i, op := range fn.Code {
@@ -992,6 +1126,8 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		return 1, nil
 	case vm3.OpNegF64:
 		return 1, nil
+	case vm3.OpFmaF64:
+		return 1, nil
 
 	case vm3.OpCmpEqF64Br, vm3.OpCmpNeF64Br,
 		vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br,
@@ -1003,6 +1139,19 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		return 1, nil
 	case vm3.OpF64ToI64:
 		return 1, nil
+	case vm3.OpLookupI64KW:
+		// Hoisted form (Phase 6.4.b): 1 word (LDR Xd, [Xhoist, Xidx, LSL #3]).
+		// Cold form: movImm64(x16, &fn.I64Tables[c][0]) + LDR.
+		tableIdx := int(uint16(op.C))
+		if tableIdx >= len(fn.I64Tables) || len(fn.I64Tables[tableIdx]) == 0 {
+			return 0, fmt.Errorf("%w: LookupI64KW table %d out of range or empty",
+				ErrNotImplemented, tableIdx)
+		}
+		if tableHoistRegARM64(fn, uint16(tableIdx)) != 0 {
+			return 1, nil
+		}
+		base := int64(uintptr(unsafe.Pointer(&fn.I64Tables[tableIdx][0])))
+		return movImm64WordCount(base) + 1, nil
 	case vm3.OpCallI64:
 		// Self-recursion only. Anything else routes back through the
 		// interpreter via ErrNotImplemented.
@@ -1052,6 +1201,23 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		}
 		stride := int64(vm3.JITListSlabStride())
 		return movImm64WordCount(stride) + 14, nil
+
+	case vm3.OpListSetI64:
+		// Inline write-side fast path. No cap check (caller guarantees
+		// index in-bounds via the algorithm; same as the interp which
+		// has no bounds check either). Hottest form (x22 == cells.ptr):
+		// 3 words (MOVZ tag + BFI payload + STR). Hot form (x20 ==
+		// slab base, no cells.ptr pin): 4 words (LDR cells.ptr + MOVZ +
+		// BFI + STR). Cold form: movImm64(stride)+7 words (UXTW + MOV
+		// stride + MUL + ADD + LDR ptr + MOVZ + BFI + STR).
+		if h := hoistedCellReg(fn); h >= 0 && int(op.A) == h {
+			if hoistsCellsPtrARM64(fn) {
+				return 3, nil
+			}
+			return 4, nil
+		}
+		stride := int64(vm3.JITListSlabStride())
+		return movImm64WordCount(stride) + 7, nil
 
 	case vm3.OpMapSetI64I64:
 		// Phase 6.2d.2.d step 4: inline open-addressed map set with a
@@ -1277,6 +1443,10 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		return []uint32{fdivD(r2d(op.A), r2d(op.B), r2d(uint16(op.C)))}, nil
 	case vm3.OpNegF64:
 		return []uint32{fnegD(r2d(op.A), r2d(op.B))}, nil
+	case vm3.OpFmaF64:
+		mul2 := uint16(op.C) & 0xFF
+		addend := (uint16(op.C) >> 8) & 0xFF
+		return []uint32{fmaddD(r2d(op.A), r2d(op.B), r2d(mul2), r2d(addend))}, nil
 
 	case vm3.OpCmpEqF64Br, vm3.OpCmpNeF64Br,
 		vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br,
@@ -1294,6 +1464,36 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		return []uint32{scvtfDX(r2d(op.A), r2x(fn, op.B))}, nil
 	case vm3.OpF64ToI64:
 		return []uint32{fcvtzsXD(r2x(fn, op.A), r2d(op.B))}, nil
+
+	case vm3.OpLookupI64KW:
+		// regsI64[A] = fn.I64Tables[uint16(C)][regsI64[B]]
+		//
+		// The table is a Go-owned []int64 that lives as long as the
+		// Function record. Caller must have emitted a prior OpCmpGeI64KBr
+		// bounds check against len(table); the load itself is unchecked
+		// (mirrors the interpreter's `fn.I64Tables[c][regs[B]]`).
+		//
+		// Hoisted form (Phase 6.4.b): the prologue pinned &I64Tables[c][0]
+		// in a callee-saved register. One indexed load:
+		//   LDR Xd, [Xhoist, Xidx, LSL #3]
+		//
+		// Cold form (no hoist budget left): emit the cold pair:
+		//   movImm64(x16, &fn.I64Tables[c][0])    ; 1..4 movz/movk words
+		//   LDR Xd, [x16, Xidx, LSL #3]
+		tableIdx := int(uint16(op.C))
+		if tableIdx >= len(fn.I64Tables) || len(fn.I64Tables[tableIdx]) == 0 {
+			return nil, fmt.Errorf("%w: LookupI64KW table %d out of range or empty",
+				ErrNotImplemented, tableIdx)
+		}
+		xDst := r2x(fn, op.A)
+		xIdx := r2x(fn, op.B)
+		if hoist := tableHoistRegARM64(fn, uint16(tableIdx)); hoist != 0 {
+			return []uint32{ldrRegLsl3(xDst, hoist, xIdx)}, nil
+		}
+		base := int64(uintptr(unsafe.Pointer(&fn.I64Tables[tableIdx][0])))
+		ws := movImm64(16, base)
+		ws = append(ws, ldrRegLsl3(xDst, 16, xIdx))
+		return ws, nil
 
 	case vm3.OpCallI64:
 		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
@@ -1846,6 +2046,61 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		ws = append(ws, strW(4, 16, 1)) // vmList.len at byte offset 4 (imm12=1, 4-byte stride)
 		return ws, nil
 
+	case vm3.OpListSetI64:
+		// arenas.Lists[handleIdx(regsCell[A])].cells[regsI64[C]] =
+		//   CInt(regsI64[B])
+		//
+		// Cold form (per-op slab recompute):
+		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
+		//   MOV  x17, #SIZEOF_VMLIST           ; stride
+		//   MUL  x16, x16, x17                 ; slab byte offset
+		//   ADD  x16, x16, x19                 ; x19 = cached lists base
+		//   LDR  x17, [x16, #CELLS_OFFSET]     ; cells.ptr
+		//   MOVZ x20, #0xFFFA, LSL #48         ; tagInt48
+		//   BFI  x20, xVal, #0, #48            ; pack 48-bit payload
+		//   STR  x20, [x17, xIdx, LSL #3]      ; cells[idxReg] = packed
+		//
+		// Hot form (hoistedCellReg matches op.A, x20 == slab base):
+		//   LDR  x17, [x20, #CELLS_OFFSET]
+		//   MOVZ x16, #0xFFFA, LSL #48
+		//   BFI  x16, xVal, #0, #48
+		//   STR  x16, [x17, xIdx, LSL #3]
+		//
+		// Hottest form (Phase 6.2d.2.c.2, x22 == cells.ptr):
+		//   MOVZ x16, #0xFFFA, LSL #48
+		//   BFI  x16, xVal, #0, #48
+		//   STR  x16, [x22, xIdx, LSL #3]
+		cellsOff := uint32(vm3.JITListCellsOffset())
+		xIdx := r2x(fn, uint16(op.C))
+		xVal := r2x(fn, op.B)
+		if h := hoistedCellReg(fn); h >= 0 && int(op.A) == h {
+			if hoistsCellsPtrARM64(fn) {
+				ws := make([]uint32, 0, 3)
+				ws = append(ws, movz(16, 0xFFFA, 3))
+				ws = append(ws, bfi48(16, xVal))
+				ws = append(ws, str64RegLsl3(16, 22, xIdx))
+				return ws, nil
+			}
+			ws := make([]uint32, 0, 4)
+			ws = append(ws, ldr64(17, 20, cellsOff/8))
+			ws = append(ws, movz(16, 0xFFFA, 3))
+			ws = append(ws, bfi48(16, xVal))
+			ws = append(ws, str64RegLsl3(16, 17, xIdx))
+			return ws, nil
+		}
+		stride := int64(vm3.JITListSlabStride())
+		xCell := r2cell(op.A)
+		ws := make([]uint32, 0, movImm64WordCount(stride)+7)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(17, 16, cellsOff/8))
+		ws = append(ws, movz(20, 0xFFFA, 3))
+		ws = append(ws, bfi48(20, xVal))
+		ws = append(ws, str64RegLsl3(20, 17, xIdx))
+		return ws, nil
+
 	default:
 		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 	}
@@ -2329,6 +2584,13 @@ func fdivD(dd, dn, dm uint32) uint32 {
 // fnegD encodes FNEG Dd, Dn.
 func fnegD(dd, dn uint32) uint32 {
 	return 0x1E614000 | ((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+
+// fmaddD encodes FMADD Dd, Dn, Dm, Da (scalar double, fused multiply-add).
+// Dd = Dn * Dm + Da with a single rounding step (IEEE 754-2008 fused).
+func fmaddD(dd, dn, dm, da uint32) uint32 {
+	return 0x1F400000 | ((dm & 0x1F) << 16) | ((da & 0x1F) << 10) |
+		((dn & 0x1F) << 5) | (dd & 0x1F)
 }
 
 // fcmpD encodes FCMP Dn, Dm (scalar double compare). Sets NZCV from

@@ -390,6 +390,11 @@ func (vm *VM) run() (Cell, error) {
 		case OpNegF64:
 			regsF64[op.A] = -regsF64[op.B]
 			pc++
+		case OpFmaF64:
+			mul2 := uint16(op.C) & 0xFF
+			addend := (uint16(op.C) >> 8) & 0xFF
+			regsF64[op.A] = math.FMA(regsF64[op.B], regsF64[mul2], regsF64[addend])
+			pc++
 
 		case OpCmpEqI64Br:
 			if regsI64[op.A] == regsI64[op.B] {
@@ -507,6 +512,10 @@ func (vm *VM) run() (Cell, error) {
 			pc++
 		case OpF64ToI64:
 			regsI64[op.A] = int64(regsF64[op.B])
+			pc++
+
+		case OpLookupI64KW:
+			regsI64[op.A] = fn.I64Tables[uint16(op.C)][regsI64[op.B]]
 			pc++
 
 		case OpJump:

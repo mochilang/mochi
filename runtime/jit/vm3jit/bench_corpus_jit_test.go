@@ -50,6 +50,12 @@ func BenchmarkCorpusJITRunner(b *testing.B) {
 		{"strings_concat_loop_n64", corpus.StringsConcatLoop, 64},
 		{"lists_fill_sum_n128", corpus.ListsFillSum, 128},
 		{"maps_fill_sum_n128", corpus.MapsFillSum, 128},
+		{"nsieve_n1000", corpus.Nsieve, 1000},
+		{"nsieve_n10000", corpus.Nsieve, 10000},
+		{"fasta_n10000", corpus.Fasta, 10000},
+		{"fasta_n100000", corpus.Fasta, 100000},
+		{"mandelbrot_n100", corpus.Mandelbrot, 100},
+		{"mandelbrot_n300", corpus.Mandelbrot, 300},
 	}
 	for _, tc := range cases {
 		b.Run(tc.name, func(b *testing.B) {

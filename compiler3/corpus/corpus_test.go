@@ -26,6 +26,9 @@ func TestMathKernelsMatchVm2(t *testing.T) {
 		{"strings_concat_loop", StringsConcatLoop, []int64{0, 1, 2, 5, 10, 50}, c2corpus.ExpectStringsConcatLoop},
 		{"lists_fill_sum", ListsFillSum, []int64{0, 1, 2, 10, 100, 128}, c2corpus.ExpectListsFillSum},
 		{"maps_fill_sum", MapsFillSum, []int64{0, 1, 2, 10, 100, 128}, c2corpus.ExpectMapsFillSum},
+		{"nsieve", Nsieve, []int64{0, 1, 2, 10, 50, 100, 1000}, c2corpus.ExpectNsieve},
+		{"fasta", Fasta, []int64{0, 1, 2, 10, 100, 1000, 10000}, c2corpus.ExpectFasta},
+		{"mandelbrot", Mandelbrot, []int64{0, 1, 2, 5, 10, 50, 100}, c2corpus.ExpectMandelbrot},
 	}
 	for _, tc := range cases {
 		for _, n := range tc.ns {
@@ -61,6 +64,12 @@ func BenchmarkMathKernels(b *testing.B) {
 		{"strings_concat_loop_n64", StringsConcatLoop, 64},
 		{"lists_fill_sum_n128", ListsFillSum, 128},
 		{"maps_fill_sum_n128", MapsFillSum, 128},
+		{"nsieve_n1000", Nsieve, 1000},
+		{"nsieve_n10000", Nsieve, 10000},
+		{"fasta_n10000", Fasta, 10000},
+		{"fasta_n100000", Fasta, 100000},
+		{"mandelbrot_n100", Mandelbrot, 100},
+		{"mandelbrot_n300", Mandelbrot, 300},
 	}
 	for _, tc := range cases {
 		b.Run(tc.name, func(b *testing.B) {
@@ -142,6 +151,12 @@ func BenchmarkGoKernels(b *testing.B) {
 		{"prime_count_n100", c2corpus.ExpectPrimeCount, 100},
 		{"strings_concat_loop_n64", c2corpus.ExpectStringsConcatLoop, 64},
 		{"lists_fill_sum_n128", c2corpus.ExpectListsFillSum, 128},
+		{"nsieve_n1000", c2corpus.ExpectNsieve, 1000},
+		{"nsieve_n10000", c2corpus.ExpectNsieve, 10000},
+		{"fasta_n10000", c2corpus.ExpectFasta, 10000},
+		{"fasta_n100000", c2corpus.ExpectFasta, 100000},
+		{"mandelbrot_n100", c2corpus.ExpectMandelbrot, 100},
+		{"mandelbrot_n300", c2corpus.ExpectMandelbrot, 300},
 	}
 	for _, tc := range cases {
 		b.Run(tc.name, func(b *testing.B) {

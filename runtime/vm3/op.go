@@ -131,6 +131,30 @@ const (
 	// loop counter through an f64 accumulator.
 	OpI64ToF64 // regsF64[A] = float64(regsI64[B])
 	OpF64ToI64 // regsI64[A] = int64(regsF64[B]) (truncating, Go semantics)
+
+	// Fused multiply-add (Phase 6.3.4.h). 3-source f64:
+	//   regsF64[A] = math.FMA(regsF64[B], regsF64[uint16(C)&0xFF],
+	//                         regsF64[(uint16(C)>>8)&0xFF])
+	// C packs two 8-bit f64 register indices (mul2 in low byte, addend
+	// in high byte). 8 bits is sufficient because MaxF64Regs is 8 on
+	// both ARM64 and AMD64. On ARM64 this lowers to a single FMADD
+	// instruction (one rounding step, IEEE 754-2008 fused). Bit-identical
+	// to Go's math.FMA, so corpus kernels that thread accumulators
+	// through `nz = math.FMA(a*b, c, d)` (mandelbrot, n_body) can be
+	// ported bit-for-bit.
+	OpFmaF64
+
+	// Switch-statement lookup-table optimization (Phase 6.4, port of
+	// Go CL 756340 / golang/go#78203). regsI64[A] = fn.I64Tables[uint16(C)]
+	// [regsI64[B]]. I64Tables is a Go-owned [][]int64 living on the
+	// Function, so the load is one indexed read with no arena
+	// resolution and no Cell boxing. The op is unchecked: the caller
+	// must have emitted a prior OpCmpGeI64KBr (or proven the index in
+	// range) so the load cannot run past the table. A naive switch
+	// lowers to a chain of OpCmpEqI64KBr; the table form lowers to one
+	// OpCmpGeI64KBr + one OpLookupI64KW + the case-body return. See
+	// compiler3/corpus/switch_lookup.go for the bench shape.
+	OpLookupI64KW
 )
 
 // Op is a single 8-byte vm3 bytecode word. Layout:
