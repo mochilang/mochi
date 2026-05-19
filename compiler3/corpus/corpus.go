@@ -30,5 +30,6 @@ func All() []*Program {
 		Mandelbrot,
 		KNucleotide,
 		N_body,
+		SpectralNorm,
 	}
 }
