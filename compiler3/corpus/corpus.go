@@ -33,5 +33,6 @@ func All() []*Program {
 		SpectralNorm,
 		FannkuchRedux,
 		ReverseComplement,
+		BinaryTrees,
 	}
 }
