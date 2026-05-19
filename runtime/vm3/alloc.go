@@ -163,6 +163,34 @@ func (a *Arenas) takeMapSlot(capHint int) (idx uint32, gen uint16) {
 		return
 	}
 	idx = uint32(len(a.Maps))
+	// Soft-reuse: truncateToMarks left the slot beyond len(a.Maps) but
+	// inside cap with its prior table backing intact. If the next slot's
+	// retained table has enough cap to hold the requested tabLen, reuse
+	// it (clear contents in place) so we skip the per-call
+	// make([]mapEntry, tabLen) on the hot path of kernels like
+	// maps_fill_sum.
+	if int(idx) < cap(a.Maps) {
+		full := a.Maps[:cap(a.Maps)]
+		prev := full[idx]
+		if tabLen > 0 && cap(prev.table) >= tabLen {
+			tab := prev.table[:tabLen]
+			clear(tab)
+			a.Maps = append(a.Maps, vmMap{
+				gen:   prev.gen + 1,
+				flags: flagAlive,
+				table: tab,
+			})
+			return idx, prev.gen + 1
+		}
+		if tabLen == 0 && cap(prev.table) > 0 {
+			a.Maps = append(a.Maps, vmMap{
+				gen:   prev.gen + 1,
+				flags: flagAlive,
+				table: prev.table[:0],
+			})
+			return idx, prev.gen + 1
+		}
+	}
 	var tab []mapEntry
 	if tabLen > 0 {
 		tab = make([]mapEntry, tabLen)
