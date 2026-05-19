@@ -2,6 +2,23 @@ package vm3jit
 
 import "mochi/runtime/vm3"
 
+// countParamBanks returns the per-bank arg counts for callee.ParamBanks.
+// Used by OpCallMixed lowering on both ARM64 and AMD64 to size the
+// caller-side arg-store run.
+func countParamBanks(callee *vm3.Function) (nI64, nF64, nCell int) {
+	for _, b := range callee.ParamBanks {
+		switch b {
+		case vm3.BankI64:
+			nI64++
+		case vm3.BankF64:
+			nF64++
+		case vm3.BankCell:
+			nCell++
+		}
+	}
+	return
+}
+
 // Status codes the JIT writes through *(status word ptr) on a deopt
 // path. Caller checks this word after a trampoline.CallStatus return
 // and routes to the corresponding vm3 error if non-zero.
