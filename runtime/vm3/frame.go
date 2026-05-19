@@ -50,6 +50,16 @@ type Function struct {
 	ParamBanks []Bank
 	ResultBank Bank
 
+	// I64Tables holds compile-time constant i64 lookup tables (Phase 6.4,
+	// port of Go CL 756340). OpLookupI64KW indexes I64Tables[uint16(C)]
+	// directly: no arena resolution, no Cell boxing. Each table is a
+	// plain Go-owned []int64 slice that lives as long as the Function.
+	// Tables are emitted by compiler3's switch-to-lookup pass; sites
+	// with sparse case ranges fall back to the cmp-chain lowering. The
+	// JIT bakes &I64Tables[i][0] as an immediate so the lookup is a
+	// single LDR after a (separate) bounds check.
+	I64Tables [][]int64
+
 	// JIT slots. Populated by runtime/jit/vm3jit.CompileAndCache when
 	// the function lowers cleanly on the host arch; vm3 reads them in
 	// OpCallI64 dispatch and routes through JITCallFn when JITCode is

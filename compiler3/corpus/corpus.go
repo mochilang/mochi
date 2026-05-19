@@ -25,5 +25,8 @@ func All() []*Program {
 		StringsConcatLoop,
 		ListsFillSum,
 		MapsFillSum,
+		Nsieve,
+		Fasta,
+		Mandelbrot,
 	}
 }
