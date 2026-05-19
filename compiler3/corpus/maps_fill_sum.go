@@ -32,7 +32,17 @@ import "mochi/runtime/vm3"
 // regsI64[3] = acc. regsI64[0] is scratch for OpMapGetI64I64 destination.
 var MapsFillSum = &Program{
 	Name: "maps_fill_sum",
-	Build: func(_ int64) *vm3.Program {
+	Build: func(n int64) *vm3.Program {
+		// Pre-size the map table so the kernel skips the log(n)
+		// growMap rehashes during fill (Phase 6.2d.2.d step 1). op.C
+		// is a uint16; we clamp the requested entry count to that
+		// range, which is enough for every corpus n. The arena helper
+		// converts the entry count into a power-of-two table size
+		// honoring the load-factor 0.5 threshold.
+		capHint := int16(0)
+		if n > 0 && n <= 0x7FFF {
+			capHint = int16(n)
+		}
 		main := &vm3.Function{
 			Name:        "main",
 			NumRegsI64:  4,
@@ -40,7 +50,7 @@ var MapsFillSum = &Program{
 			ParamBanks:  []vm3.Bank{vm3.BankI64},
 			ResultBank:  vm3.BankI64,
 			Code: []vm3.Op{
-				vm3.MakeOp(vm3.OpNewMap, 0, 0, 0),
+				vm3.MakeOp(vm3.OpNewMap, 0, 0, capHint),
 				vm3.MakeOp(vm3.OpConstI64K, 1, 0, 0),
 				vm3.MakeOp(vm3.OpMovI64, 2, 0, 0),
 				{Code: vm3.OpCallMixed, BankFlags: uint8(vm3.BankI64), A: 3, B: 0, C: 1},

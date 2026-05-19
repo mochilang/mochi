@@ -758,7 +758,7 @@ func (vm *VM) run() (Cell, error) {
 			pc++
 
 		case OpNewMap:
-			regsCell[op.A] = arenas.AllocMap(0)
+			regsCell[op.A] = arenas.AllocMap(int(uint16(op.C)))
 			pc++
 		case OpMapSetI64I64:
 			arenas.MapSetI64(regsCell[op.A], regsI64[op.B], regsI64[uint16(op.C)])

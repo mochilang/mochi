@@ -12,6 +12,21 @@ package vm3
 
 const mapInitCap = 8
 
+// mapCapForEntries returns the smallest power-of-two table size that
+// holds nEntries inserts without crossing the load-factor 0.5 grow
+// trigger (2*(nLive+1) > cap). Floor is mapInitCap.
+func mapCapForEntries(nEntries int) int {
+	if nEntries <= 0 {
+		return mapInitCap
+	}
+	need := uint32(2*nEntries) + 2
+	c := uint32(mapInitCap)
+	for c < need {
+		c <<= 1
+	}
+	return int(c)
+}
+
 func hashI64(k int64) uint64 {
 	x := uint64(k)
 	x ^= x >> 30
