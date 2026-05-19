@@ -1128,6 +1128,8 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		return 1, nil
 	case vm3.OpFmaF64:
 		return 1, nil
+	case vm3.OpSqrtF64:
+		return 1, nil
 
 	case vm3.OpCmpEqF64Br, vm3.OpCmpNeF64Br,
 		vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br,
@@ -1447,6 +1449,8 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		mul2 := uint16(op.C) & 0xFF
 		addend := (uint16(op.C) >> 8) & 0xFF
 		return []uint32{fmaddD(r2d(op.A), r2d(op.B), r2d(mul2), r2d(addend))}, nil
+	case vm3.OpSqrtF64:
+		return []uint32{fsqrtD(r2d(op.A), r2d(op.B))}, nil
 
 	case vm3.OpCmpEqF64Br, vm3.OpCmpNeF64Br,
 		vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br,
@@ -2584,6 +2588,12 @@ func fdivD(dd, dn, dm uint32) uint32 {
 // fnegD encodes FNEG Dd, Dn.
 func fnegD(dd, dn uint32) uint32 {
 	return 0x1E614000 | ((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+
+// fsqrtD encodes FSQRT Dd, Dn (scalar double square root).
+// IEEE 754 correctly-rounded, bit-identical to Go's math.Sqrt on arm64.
+func fsqrtD(dd, dn uint32) uint32 {
+	return 0x1E61C000 | ((dn & 0x1F) << 5) | (dd & 0x1F)
 }
 
 // fmaddD encodes FMADD Dd, Dn, Dm, Da (scalar double, fused multiply-add).

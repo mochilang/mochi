@@ -395,6 +395,9 @@ func (vm *VM) run() (Cell, error) {
 			addend := (uint16(op.C) >> 8) & 0xFF
 			regsF64[op.A] = math.FMA(regsF64[op.B], regsF64[mul2], regsF64[addend])
 			pc++
+		case OpSqrtF64:
+			regsF64[op.A] = math.Sqrt(regsF64[op.B])
+			pc++
 
 		case OpCmpEqI64Br:
 			if regsI64[op.A] == regsI64[op.B] {

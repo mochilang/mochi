@@ -155,6 +155,15 @@ const (
 	// OpCmpGeI64KBr + one OpLookupI64KW + the case-body return. See
 	// compiler3/corpus/switch_lookup.go for the bench shape.
 	OpLookupI64KW
+
+	// Scalar f64 square root (Phase 6.3.4.j prep). 2-source f64:
+	//   regsF64[A] = math.Sqrt(regsF64[B])
+	// IEEE 754 correctly-rounded, bit-identical to Go's math.Sqrt
+	// (which on arm64 is a single FSQRT). On ARM64 lowers to one
+	// FSQRT Dd, Dn (0x1E61C000 | (B<<5) | A). On AMD64 lowers to
+	// SQRTSD xmmA, xmmB. Prereq for n_body's inner-loop distance
+	// computation (sqrt(dx*dx + dy*dy + dz*dz)).
+	OpSqrtF64
 )
 
 // Op is a single 8-byte vm3 bytecode word. Layout:
