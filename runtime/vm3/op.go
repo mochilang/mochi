@@ -188,6 +188,21 @@ const (
 	OpF64ArrayPushF64 // arenas.F64Arrs[idx].data = append(..., regsF64[B])
 	OpF64ArrayGetF64  // regsF64[A] = arenas.F64Arrs[idx].data[regsI64[uint16(C)]]
 	OpF64ArraySetF64  // arenas.F64Arrs[idx].data[regsI64[uint16(C)]] = regsF64[B]
+
+	// Typed i64 array ops (Phase 6.3.4.l.4). Backed by vmI64Array
+	// (flat []int64), structurally parallel to OpF64Array*. Wins are
+	// identical: 8-byte payload per element instead of 16-byte
+	// Cell-wrapped, and the per-access path skips the CInt tag
+	// round-trip. On ARM64 each access lowers to LDR/STR Xd, [Xptr,
+	// Xidx, LSL #3]; on AMD64 to MOV reg, [rptr + ridx*8]. Generic:
+	// any i64-only list that does not need Cell-tagged payload
+	// qualifies (reverse_complement's in/out byte buffers,
+	// fannkuch_redux's perm, k_nucleotide's count arrays).
+	OpNewI64Array     // regsCell[A] = arenas.AllocI64Arr(int(uint16(C)))
+	OpI64ArrayLenI64  // regsI64[A] = int64(len(arenas.I64Arrs[idx].data))
+	OpI64ArrayPushI64 // arenas.I64Arrs[idx].data = append(..., regsI64[B])
+	OpI64ArrayGetI64  // regsI64[A] = arenas.I64Arrs[idx].data[regsI64[uint16(C)]]
+	OpI64ArraySetI64  // arenas.I64Arrs[idx].data[regsI64[uint16(C)]] = regsI64[B]
 )
 
 // Op is a single 8-byte vm3 bytecode word. Layout:

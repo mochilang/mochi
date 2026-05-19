@@ -360,18 +360,20 @@ const (
 	slabKindList
 	slabKindMap
 	slabKindF64Arr
+	slabKindI64Arr
 )
 
 // slabKindARM64 classifies fn by which slab its inline body references.
 // Returns slabKindNone when fn references multiple slabs or none (mixed
 // kernels are rejected by checkCellBankAdmissible separately so they
 // never reach codegen). Phase 6.3.4.j.5.b adds slabKindF64Arr for
-// typed-f64-array kernels: any OpF64Array{Get,Set,Len} use makes the
-// fn an f64arr kernel.
+// typed-f64-array kernels; Phase 6.3.4.l.4 adds slabKindI64Arr for
+// typed-i64-array kernels.
 func slabKindARM64(fn *vm3.Function) slabKind {
 	hasList := hasListGetI64(fn) || hasListPushI64(fn)
 	hasMap := hasMapOpI64(fn)
 	hasF64Arr := hasF64ArrayOp(fn)
+	hasI64Arr := hasI64ArrayOp(fn)
 	n := 0
 	if hasList {
 		n++
@@ -380,6 +382,9 @@ func slabKindARM64(fn *vm3.Function) slabKind {
 		n++
 	}
 	if hasF64Arr {
+		n++
+	}
+	if hasI64Arr {
 		n++
 	}
 	if n != 1 {
@@ -392,6 +397,8 @@ func slabKindARM64(fn *vm3.Function) slabKind {
 		return slabKindMap
 	case hasF64Arr:
 		return slabKindF64Arr
+	case hasI64Arr:
+		return slabKindI64Arr
 	}
 	return slabKindNone
 }
@@ -399,14 +406,17 @@ func slabKindARM64(fn *vm3.Function) slabKind {
 // slabBaseOffARM64 returns the byte offset within jitArenaCtx of the
 // slab base pointer the prologue should load into x19. Mirrors the
 // field order in jitArenaCtx: listsBase at offset 0, mapsBase at 8,
-// f64ArrsBase at 16. Fns with no slab kind default to listsBase so the
-// existing list-only admit set keeps its prologue word count unchanged.
+// f64ArrsBase at 16, i64ArrsBase at 24. Fns with no slab kind default
+// to listsBase so the existing list-only admit set keeps its prologue
+// word count unchanged.
 func slabBaseOffARM64(fn *vm3.Function) uint32 {
 	switch slabKindARM64(fn) {
 	case slabKindMap:
 		return 8
 	case slabKindF64Arr:
 		return 16
+	case slabKindI64Arr:
+		return 24
 	}
 	return 0
 }
@@ -420,6 +430,8 @@ func slabStrideARM64(fn *vm3.Function) int64 {
 		return int64(vm3.JITMapSlabStride())
 	case slabKindF64Arr:
 		return int64(vm3.JITF64ArrSlabStride())
+	case slabKindI64Arr:
+		return int64(vm3.JITI64ArrSlabStride())
 	}
 	return int64(vm3.JITListSlabStride())
 }
@@ -1603,6 +1615,44 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 		}
 		return 0, fmt.Errorf("%w: opcode %d (inline NewF64Array unsupported)", ErrNotImplemented, op.Code)
 
+	case vm3.OpNewI64Array:
+		// Phase 6.3.4.l.4 mirror: prefix pre-alloc skip.
+		if idx < int(fn.JITPreAllocI64ArrPrefix) {
+			return 0, nil
+		}
+		return 0, fmt.Errorf("%w: opcode %d (inline NewI64Array unsupported)", ErrNotImplemented, op.Code)
+
+	case vm3.OpI64ArrayGetI64:
+		// Cold form (6 inst): UXTW + MOV stride + MUL + ADD x19 + LDR
+		// data.ptr + LDR Xd, [ptr, xIdx, LSL #3].
+		stride := int64(vm3.JITI64ArrSlabStride())
+		return movImm64WordCount(stride) + 5, nil
+
+	case vm3.OpI64ArraySetI64:
+		// Cold form (6 inst): same as Get but final STR Xs.
+		stride := int64(vm3.JITI64ArrSlabStride())
+		return movImm64WordCount(stride) + 5, nil
+
+	case vm3.OpI64ArrayLenI64:
+		// Cold form (5 inst): UXTW + MOV stride + MUL + ADD x19 + LDR Wd.
+		stride := int64(vm3.JITI64ArrSlabStride())
+		return movImm64WordCount(stride) + 4, nil
+
+	case vm3.OpI64ArrayPushI64:
+		// Inline append: bounds-check vs cap; deopt to interp on grow.
+		// Cold form (~12 inst incl. bounds check + STR Xs + len bump):
+		//   UXTW + MOV stride + MUL + ADD x19   ; x16 = &slab
+		//   LDR Wlen, [x16, #LEN]               ; cur len
+		//   LDR Xcap, [x16, #DATA+16]           ; cap (slice hdr)
+		//   CMP Xlen, Xcap                       ; len == cap?
+		//   B.HS deopt_listgrow                  ; defer to interp
+		//   LDR Xptr, [x16, #DATA]               ; data.ptr
+		//   STR Xs, [Xptr, Xlen, LSL #3]
+		//   ADD Wlen, Wlen, #1
+		//   STR Wlen, [x16, #LEN]
+		stride := int64(vm3.JITI64ArrSlabStride())
+		return movImm64WordCount(stride) + 9, nil
+
 	case vm3.OpF64ArrayGetF64:
 		// Inline typed-f64-array load. Cold form (6 inst):
 		//   UXTW x16, w_cell ; MOV x17, #stride ; MUL ; ADD x16, x19 ;
@@ -2026,6 +2076,14 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		// arrays and seeded jf.regsCell[A] for each pc in the prefix;
 		// the prologue loaded the handles into pinned cell regs.
 		if idx < int(fn.JITPreAllocF64ArrPrefix) {
+			return []uint32{}, nil
+		}
+		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
+
+	case vm3.OpNewI64Array:
+		// Phase 6.3.4.l.4 skip: jitCall pre-allocated K typed i64 arrays
+		// and seeded jf.regsCell[A] for each pc in the prefix.
+		if idx < int(fn.JITPreAllocI64ArrPrefix) {
 			return []uint32{}, nil
 		}
 		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
@@ -2693,6 +2751,117 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		ws = append(ws, mulReg(16, 16, 17))
 		ws = append(ws, addReg(16, 16, 19))
 		ws = append(ws, ldrW(xA, 16, lenOff/4))
+		return ws, nil
+
+	case vm3.OpI64ArrayGetI64:
+		// regsI64[A] = arenas.I64Arrs[handleIdx(regsCell[B])].data[regsI64[C]]
+		//
+		// Cold form (6 inst):
+		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
+		//   MOV  x17, #SIZEOF_VMI64ARRAY      ; stride
+		//   MUL  x16, x16, x17                ; slab byte offset
+		//   ADD  x16, x16, x19                ; x19 = cached i64arrs base
+		//   LDR  x16, [x16, #DATA_OFFSET]     ; data.ptr (first 8 bytes of slice hdr)
+		//   LDR  Xd,  [x16, xIdx, LSL #3]     ; data[idxReg] (raw i64)
+		dataOff := uint32(vm3.JITI64ArrDataOffset())
+		xIdx := r2x(fn, uint16(op.C))
+		xCell := r2cell(op.B)
+		stride := int64(vm3.JITI64ArrSlabStride())
+		ws := make([]uint32, 0, movImm64WordCount(stride)+5)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(16, 16, dataOff/8))
+		ws = append(ws, ldrRegLsl3(xA, 16, xIdx))
+		return ws, nil
+
+	case vm3.OpI64ArraySetI64:
+		// arenas.I64Arrs[handleIdx(regsCell[A])].data[regsI64[C]] = regsI64[B]
+		//
+		// Cold form (6 inst):
+		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
+		//   MOV  x17, #SIZEOF_VMI64ARRAY      ; stride
+		//   MUL  x16, x16, x17                ; slab byte offset
+		//   ADD  x16, x16, x19                ; x19 = cached i64arrs base
+		//   LDR  x17, [x16, #DATA_OFFSET]     ; data.ptr
+		//   STR  Xs,  [x17, xIdx, LSL #3]     ; data[idxReg] = raw i64
+		dataOff := uint32(vm3.JITI64ArrDataOffset())
+		xIdx := r2x(fn, uint16(op.C))
+		xCell := r2cell(op.A)
+		stride := int64(vm3.JITI64ArrSlabStride())
+		ws := make([]uint32, 0, movImm64WordCount(stride)+5)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(17, 16, dataOff/8))
+		ws = append(ws, str64RegLsl3(xB, 17, xIdx))
+		return ws, nil
+
+	case vm3.OpI64ArrayLenI64:
+		// regsI64[A] = int64(arenas.I64Arrs[handleIdx(regsCell[B])].len)
+		//
+		// Cold form (5 inst). Mirrors OpF64ArrayLenI64. The slab's u32
+		// .len is bumped in lockstep with len(data) by AllocI64Arr/Push.
+		lenOff := uint32(vm3.JITI64ArrLenOffset())
+		xCell := r2cell(op.B)
+		stride := int64(vm3.JITI64ArrSlabStride())
+		ws := make([]uint32, 0, movImm64WordCount(stride)+4)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldrW(xA, 16, lenOff/4))
+		return ws, nil
+
+	case vm3.OpI64ArrayPushI64:
+		// arenas.I64Arrs[idx].data = append(..., regsI64[B])
+		//
+		// Cold form: bounds-check vs cap; deopt to interp on grow via
+		// StatusListGrow (reuse the same status code; the deopt block
+		// already restores all regs and resumes interp).
+		//   UXTW x16, w_cell                  ; idx
+		//   MOV  x17, #SIZEOF_VMI64ARRAY      ; stride
+		//   MUL  x16, x16, x17                ; slab byte offset
+		//   ADD  x16, x16, x19                ; x19 = i64arrs base
+		//   LDR  x4,  [x16, #DATA+8]          ; data.len
+		//   LDR  x17, [x16, #DATA+16]         ; data.cap
+		//   CMP  x4,  x17
+		//   B.HS deopt_listgrow                ; if len >= cap
+		//   LDR  x17, [x16, #DATA]             ; data.ptr
+		//   STR  Xs,  [x17, x4, LSL #3]        ; data[len] = val
+		//   ADD  x4,  x4, #1                   ; len++
+		//   STR  x4,  [x16, #DATA+8]           ; commit data.len
+		//   STR  W4,  [x16, #LEN]              ; vmI64Array.len (u32)
+		dataOff := uint32(vm3.JITI64ArrDataOffset())
+		lenOff := uint32(vm3.JITI64ArrLenOffset())
+		dataPtrImm12 := dataOff / 8        // ptr
+		dataLenImm12 := (dataOff + 8) / 8  // len
+		dataCapImm12 := (dataOff + 16) / 8 // cap
+		xCell := r2cell(op.A)
+		xVal := r2x(fn, op.B)
+		stride := int64(vm3.JITI64ArrSlabStride())
+		lgStart := deoptStartForStatus(fn, deoptStart, StatusListGrow)
+		ws := make([]uint32, 0, movImm64WordCount(stride)+12)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(4, 16, dataLenImm12))
+		ws = append(ws, ldr64(17, 16, dataCapImm12))
+		ws = append(ws, cmpReg(4, 17))
+		bWord := pcMap[idx] + len(ws)
+		off, err := branchOff(bWord, lgStart, 19)
+		if err != nil {
+			return nil, fmt.Errorf("I64ArrayPushI64 deopt branch: %w", err)
+		}
+		ws = append(ws, bCond(0x2, off)) // B.HS
+		ws = append(ws, ldr64(17, 16, dataPtrImm12))
+		ws = append(ws, str64RegLsl3(xVal, 17, 4))
+		ws = append(ws, addImm64(4, 4, 1))
+		ws = append(ws, str64(4, 16, dataLenImm12))
+		ws = append(ws, strW(4, 16, lenOff/4))
 		return ws, nil
 
 	default:

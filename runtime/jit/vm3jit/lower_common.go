@@ -130,6 +130,52 @@ func hasF64ArrayOp(fn *vm3.Function) bool {
 	return hasF64ArrayGetF64(fn) || hasF64ArraySetF64(fn) || hasF64ArrayLenI64(fn)
 }
 
+// hasI64ArrayGetI64 reports whether fn contains any OpI64ArrayGetI64.
+func hasI64ArrayGetI64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpI64ArrayGetI64 {
+			return true
+		}
+	}
+	return false
+}
+
+// hasI64ArraySetI64 reports whether fn contains any OpI64ArraySetI64.
+func hasI64ArraySetI64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpI64ArraySetI64 {
+			return true
+		}
+	}
+	return false
+}
+
+// hasI64ArrayPushI64 reports whether fn contains any OpI64ArrayPushI64.
+func hasI64ArrayPushI64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpI64ArrayPushI64 {
+			return true
+		}
+	}
+	return false
+}
+
+// hasI64ArrayLenI64 reports whether fn contains any OpI64ArrayLenI64.
+func hasI64ArrayLenI64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpI64ArrayLenI64 {
+			return true
+		}
+	}
+	return false
+}
+
+// hasI64ArrayOp reports whether fn touches the I64Arr slab via any of
+// the JIT-lowered typed-i64-array ops (Phase 6.3.4.l.4).
+func hasI64ArrayOp(fn *vm3.Function) bool {
+	return hasI64ArrayGetI64(fn) || hasI64ArraySetI64(fn) || hasI64ArrayPushI64(fn) || hasI64ArrayLenI64(fn)
+}
+
 // popcount32 counts set bits in v. Used to size OpCallI64 spill loops
 // on every backend.
 func popcount32(v uint32) int {

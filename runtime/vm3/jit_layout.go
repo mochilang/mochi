@@ -122,3 +122,35 @@ func (a *Arenas) JITF64ArrsBase() unsafe.Pointer {
 	}
 	return unsafe.Pointer(&a.F64Arrs[0])
 }
+
+// JITI64ArrSlabStride returns the byte distance between consecutive
+// vmI64Array entries in Arenas.I64Arrs. Phase 6.3.4.l.4 mirror of
+// JITF64ArrSlabStride for the typed i64-array slab.
+func JITI64ArrSlabStride() uintptr {
+	return unsafe.Sizeof(vmI64Array{})
+}
+
+// JITI64ArrDataOffset returns the byte offset of the data slice header
+// within vmI64Array. The slice header at this offset is laid out as
+// {ptr u64, len u64, cap u64} per Go's slice header convention; vm3jit
+// loads the first 8 bytes (data.ptr) for typed i64 access.
+func JITI64ArrDataOffset() uintptr {
+	return unsafe.Offsetof(vmI64Array{}.data)
+}
+
+// JITI64ArrLenOffset returns the byte offset of the len field within
+// vmI64Array. OpI64ArrayLenI64 reads it as a u32 zero-extended to i64
+// (the slab's len is bumped in lockstep with len(data) by Push).
+func JITI64ArrLenOffset() uintptr {
+	return unsafe.Offsetof(vmI64Array{}.len)
+}
+
+// JITI64ArrsBase returns an unsafe.Pointer to the first element of
+// arenas.I64Arrs, or nil if the slab is empty. Mirror of JITF64ArrsBase
+// for the typed i64-array slab.
+func (a *Arenas) JITI64ArrsBase() unsafe.Pointer {
+	if len(a.I64Arrs) == 0 {
+		return nil
+	}
+	return unsafe.Pointer(&a.I64Arrs[0])
+}

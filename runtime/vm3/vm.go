@@ -822,6 +822,32 @@ func (vm *VM) run() (Cell, error) {
 			arenas.F64Arrs[idx].data[regsI64[uint16(op.C)]] = regsF64[op.B]
 			pc++
 
+		case OpNewI64Array:
+			regsCell[op.A] = arenas.AllocI64Arr(int(uint16(op.C)))
+			pc++
+		case OpI64ArrayLenI64:
+			arr := regsCell[op.B]
+			_, _, idx := arr.DecodeHandle()
+			regsI64[op.A] = int64(len(arenas.I64Arrs[idx].data))
+			pc++
+		case OpI64ArrayPushI64:
+			arr := regsCell[op.A]
+			_, _, idx := arr.DecodeHandle()
+			a := &arenas.I64Arrs[idx]
+			a.data = append(a.data, regsI64[op.B])
+			a.len = uint32(len(a.data))
+			pc++
+		case OpI64ArrayGetI64:
+			arr := regsCell[op.B]
+			_, _, idx := arr.DecodeHandle()
+			regsI64[op.A] = arenas.I64Arrs[idx].data[regsI64[uint16(op.C)]]
+			pc++
+		case OpI64ArraySetI64:
+			arr := regsCell[op.A]
+			_, _, idx := arr.DecodeHandle()
+			arenas.I64Arrs[idx].data[regsI64[uint16(op.C)]] = regsI64[op.B]
+			pc++
+
 		case OpNewMap:
 			regsCell[op.A] = arenas.AllocMap(int(uint16(op.C)))
 			pc++
