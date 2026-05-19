@@ -509,6 +509,30 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		}
 		return 10 + 5 + 4 + 5, nil
 
+	case vm3.OpFmaF64:
+		// Phase 6.3.4.h.2 AMD64 lowering: VFMADDxxxSD selected so dst
+		// stays in xmm<A> and the three FMA operands map to vm3's
+		// semantics A = B*mul2 + addend without extra moves when one of
+		// the operands already aliases A. All four code paths emit a
+		// single 5-byte VEX-encoded instruction; only the catch-all
+		// (no alias) needs a leading movsd (4 bytes) to set A := B
+		// before the 132 form.
+		mul2 := int(uint16(op.C) & 0xFF)
+		addend := int((uint16(op.C) >> 8) & 0xFF)
+		a, b := int(op.A), int(op.B)
+		if a == b || a == addend || a == mul2 {
+			return 5, nil
+		}
+		return 4 + 5, nil
+	case vm3.OpSqrtF64:
+		// optional movsd xmm<A>, xmm<B> (4) ; sqrtsd xmm<A>, xmm<A> (4).
+		// (sqrtsd's source can match its dest, so we always operate
+		// in-place after the optional copy.)
+		if op.A == op.B {
+			return 4, nil
+		}
+		return 8, nil
+
 	case vm3.OpCmpEqF64Br, vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br:
 		// ucomisd xmm<A>, xmm<B> (4) ; jp +6 (6) ; jcc rel32 (6).
 		return 4 + 6 + 6, nil
@@ -704,6 +728,28 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		}
 		out = append(out, xorpdRR(int(op.A), 15)...)
 		return out, nil
+
+	case vm3.OpFmaF64:
+		mul2 := int(uint16(op.C) & 0xFF)
+		addend := int((uint16(op.C) >> 8) & 0xFF)
+		a, b := int(op.A), int(op.B)
+		switch {
+		case a == b:
+			return vfmaddSDRR(0x98, a, addend, mul2), nil
+		case a == addend:
+			return vfmaddSDRR(0xB8, a, b, mul2), nil
+		case a == mul2:
+			return vfmaddSDRR(0xA8, a, b, addend), nil
+		default:
+			out := movsdRR(a, b)
+			return append(out, vfmaddSDRR(0x98, a, addend, mul2)...), nil
+		}
+	case vm3.OpSqrtF64:
+		var out []byte
+		if op.A != op.B {
+			out = append(out, movsdRR(int(op.A), int(op.B))...)
+		}
+		return append(out, sqrtsdRR(int(op.A), int(op.A))...), nil
 
 	case vm3.OpCmpEqF64Br, vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br:
 		// ucomisd ; jp +6 (skip the je/jb/jbe) ; jcc target.
@@ -1146,6 +1192,34 @@ func mulsdRR(dst, src int) []byte { return sseRR2(0x59, dst, src) }
 
 // divsdRR emits `divsd xmmDst, xmmSrc`. Opcode F2 [REX] 0F 5E /r.
 func divsdRR(dst, src int) []byte { return sseRR2(0x5E, dst, src) }
+
+// sqrtsdRR emits `sqrtsd xmmDst, xmmSrc`. Opcode F2 [REX] 0F 51 /r.
+// IEEE 754 correctly-rounded scalar square root; bit-identical to Go's
+// math.Sqrt on AMD64 (which emits the same SQRTSD). Phase 6.3.4.h.2
+// (AMD64 catch-up for OpSqrtF64, mirror of ARM64 FSQRT in lower_arm64).
+func sqrtsdRR(dst, src int) []byte { return sseRR2(0x51, dst, src) }
+
+// vfmaddSDRR emits a 3-byte-VEX-encoded VFMADDxxxSD xmmDst, xmmSrc1, xmmSrc2.
+// opc selects the FMA3 variant:
+//
+//	0x98 = VFMADD132SD: dst = dst*src2 + src1
+//	0xA8 = VFMADD213SD: dst = src1*dst + src2
+//	0xB8 = VFMADD231SD: dst = src1*src2 + dst
+//
+// All operands must live in xmm0..7 (vm3 caps f64 regs at 8). Encoding:
+//
+//	C4 byte1 byte2 opc modrm   (5 bytes total)
+//	  byte1 = 11100010b = 0xE2  (R̄=X̄=B̄=1, mmmmm=00010 for 0F 38 escape)
+//	  byte2 = 1 vvvv 0 01b      (W=1, ~src1 in vvvv, L=0, pp=01 for 66)
+//	  modrm = 11 dst src2       (register-register, ModRM.r/m = src2)
+//
+// Used by Phase 6.3.4.h.2 (AMD64 catch-up for OpFmaF64, mirror of ARM64
+// FMADD in lower_arm64). Bit-identical to math.FMA per IEEE 754-2008.
+func vfmaddSDRR(opc byte, dst, src1, src2 int) []byte {
+	vvvv := byte(0xF) ^ byte(src1&0xF)
+	byte2 := byte(0x80) | (vvvv << 3) | 0x01
+	return []byte{0xC4, 0xE2, byte2, opc, modRM(3, byte(dst&7), byte(src2&7))}
+}
 
 // movsdLoadXMMFromR14 emits `movsd xmm<dst>, disp32(%r14)`.
 // Opcode F2 REX.B 0F 10 /r disp32. REX is always present (REX.B for R14

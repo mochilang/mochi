@@ -1,4 +1,4 @@
-//go:build darwin && arm64
+//go:build (darwin && arm64) || (linux && amd64)
 
 package vm3jit_test
 
@@ -14,7 +14,9 @@ import (
 // OpSqrtF64 lowering. F64SqrtSum is the f64 dual of F64DotSum: it
 // drives an i64 counter through OpSqrtF64 + OpAddF64 and confirms the
 // JIT'd FSQRT result is bit-identical to math.Sqrt across N in the
-// n_body inner-loop range.
+// n_body inner-loop range. The lowering covers both ARM64 (FSQRT) and
+// AMD64 (SQRTSD), so this test runs platform-agnostic; Phase 6.3.4.h.2
+// (2026-05-19) drops the prior darwin&&arm64 build tag.
 func TestCompileF64SqrtSumMatchesInterp(t *testing.T) {
 	prog := corpus.F64SqrtSum.Build(0)
 	fn := prog.Funcs[prog.Entry]
