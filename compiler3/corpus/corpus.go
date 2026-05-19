@@ -32,5 +32,6 @@ func All() []*Program {
 		N_body,
 		SpectralNorm,
 		FannkuchRedux,
+		ReverseComplement,
 	}
 }
