@@ -103,6 +103,11 @@ type Function struct {
 	// the per-call arena snapshot and seeds regsCell[op.A]. The JIT lowerer
 	// emits zero words for those PCs so the prologue's LDR x_cell,
 	// [x3, #A*8] picks up the pre-seeded handle.
+	// JITPreAllocI64ArrPrefix (Phase 6.3.4.l.4) mirrors
+	// JITPreAllocF64ArrPrefix for the OpNewI64Array prefix shape used by
+	// reverse_complement and any other typed-i64-array kernel. jitCall
+	// pre-allocates K i64 arrays and seeds regsCell[op.A] before the
+	// trampoline so the JIT lowerer emits zero words for those PCs.
 	JITCode                  unsafe.Pointer
 	JITCompiled              bool
 	JITHasF64                bool
@@ -110,6 +115,7 @@ type Function struct {
 	JITPreAllocListPrefix    uint16
 	JITPreAllocMap           bool
 	JITPreAllocF64ArrPrefix  uint16
+	JITPreAllocI64ArrPrefix  uint16
 }
 
 // Bank identifies one of the three typed register banks.

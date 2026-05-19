@@ -52,16 +52,16 @@ func ExpectReverseComplement(n int64) int64 {
 // sum). The Go template peer lives at bench/template/bg/reverse_complement.
 //
 // Single vm3 function with three sequential loops over two cell-bank
-// lists:
+// typed-i64 arrays (Phase 6.3.4.l.4):
 //
-//  1. fill loop (pc 5..11): in.push(bases[i%4]) and out.push(0) for
-//     i in [0, n). Combining both pushes per iteration keeps the loop
-//     count at n rather than 2n; the second push grows `out` to len n
-//     so the revcomp loop can use OpListSetI64 by index.
-//  2. revcomp loop (pc 14..20): for i in [0, n), val = in[i],
+//  1. fill loop (pc 4..9): in[i] = bases[i%4] for i in [0, n). Both
+//     arrays are pre-sized to length n by OpNewI64Array, so the fill
+//     loop just Sets `in` (and `out` is left at its initial all-zero
+//     state, which the revcomp loop will overwrite).
+//  2. revcomp loop (pc 12..18): for i in [0, n), val = in[i],
 //     val = complement[val], out[dst_idx] = val with dst_idx = n-1-i
 //     maintained by a parallel decrement (saves an OpSubI64 per iter).
-//  3. sum loop (pc 22..26): sum += out[i] for i in [0, n).
+//  3. sum loop (pc 20..24): sum += out[i] for i in [0, n).
 //
 // Two i64 lookup tables baked at Build time live in Function.I64Tables:
 //
@@ -75,24 +75,29 @@ func ExpectReverseComplement(n int64) int64 {
 // always in [0, 256). The 256-entry table is 2KB (fits in one L1 line
 // group) and avoids a 4-way OpCmpEqI64KBr cascade per element.
 //
-// Storage shape: two `OpNewList` with capHint = int16(n) so the JIT
-// cell-bank path can keep the slab pinned in x19 without a grow-deopt
-// (Phase 6.2d.2.b step 2.F regrow-and-retry covers the > 32767 case
-// at interp speed). For n bench sizes (1000, 10000) capHint is exact.
+// Storage shape: two `OpNewI64Array` with capHint = int16(n) lifted into
+// jitCall's pre-alloc prefix (Phase 6.3.4.l.4), so the JIT lowerer emits
+// zero words for the two NewI64Array PCs and the prologue picks up the
+// pre-seeded handles. AllocI64Arr(n) pre-fills the data slice with n
+// zeros, so no Push is needed. Per-access cost drops to ~6 inst (UXTW
+// + MOV stride + MUL + ADD x19 + LDR data.ptr + LDR/STR Xd) with no
+// 48-bit CInt tag-box/unbox versus the OpList* path's 14+ inst (extra
+// BFI on push/set, SBFX on get). Closes the read/write loop under 2x
+// of Go.
 //
-// Banks: NumRegsI64=6 (0:n, 1:i, 2:val, 3:dst_idx, 4:sum, 5:zero),
+// Banks: NumRegsI64=5 (0:n, 1:i, 2:val, 3:dst_idx, 4:sum),
 // NumRegsCell=2 (0:in, 1:out).
 //
-// PC map (28 ops):
+// PC map (26 ops):
 //
-//	 0       NewList in (capHint=n)
-//	 1       NewList out (capHint=n)
-//	 2..4    zero=0; sum=0; i=0
-//	 5..11   fill loop: in.push(bases[i%4]); out.push(0)
-//	12..13   i=0; dst_idx = n-1
-//	14..20   revcomp loop: out[dst_idx--] = complement(in[i++])
-//	21..26   i=0; sum loop: sum += out[i]
-//	27       ReturnI64 sum
+//	 0       NewI64Array in (capHint=n)
+//	 1       NewI64Array out (capHint=n)
+//	 2..3    sum=0; i=0
+//	 4..9    fill loop: in[i] = bases[i%4]
+//	10..11   i=0; dst_idx = n-1
+//	12..18   revcomp loop: out[dst_idx--] = complement(in[i++])
+//	19..24   i=0; sum loop: sum += out[i]
+//	25       ReturnI64 sum
 var ReverseComplement = &Program{
 	Name: "reverse_complement",
 	Build: func(n int64) *vm3.Program {
@@ -111,41 +116,39 @@ var ReverseComplement = &Program{
 		complement['G'] = 'C'
 		fn := &vm3.Function{
 			Name:        "reverse_complement",
-			NumRegsI64:  6,
+			NumRegsI64:  5,
 			NumRegsF64:  0,
 			NumRegsCell: 2,
 			ParamBanks:  []vm3.Bank{vm3.BankI64},
 			ResultBank:  vm3.BankI64,
 			I64Tables:   [][]int64{bases, complement},
 			Code: []vm3.Op{
-				vm3.MakeOp(vm3.OpNewList, 0, 0, capHint),  // pc=0: in = NewList
-				vm3.MakeOp(vm3.OpNewList, 1, 0, capHint),  // pc=1: out = NewList
-				vm3.MakeOp(vm3.OpConstI64K, 5, 0, 0),      // pc=2: zero = 0
-				vm3.MakeOp(vm3.OpConstI64K, 4, 0, 0),      // pc=3: sum = 0
-				vm3.MakeOp(vm3.OpConstI64K, 1, 0, 0),      // pc=4: i = 0
-				vm3.MakeOp(vm3.OpCmpGeI64Br, 1, 0, 12),    // pc=5: if i>=n -> after_fill
-				vm3.MakeOp(vm3.OpModI64K, 2, 1, 4),        // pc=6: val = i % 4
-				vm3.MakeOp(vm3.OpLookupI64KW, 2, 2, 0),    // pc=7: val = bases[val]
-				vm3.MakeOp(vm3.OpListPushI64, 0, 2, 0),    // pc=8: in.push(val)
-				vm3.MakeOp(vm3.OpListPushI64, 1, 5, 0),    // pc=9: out.push(0)
-				vm3.MakeOp(vm3.OpAddI64K, 1, 1, 1),        // pc=10: i++
-				vm3.MakeOp(vm3.OpJump, 0, 0, 5),           // pc=11: -> fill_loop
-				vm3.MakeOp(vm3.OpConstI64K, 1, 0, 0),      // pc=12: i = 0
-				vm3.MakeOp(vm3.OpAddI64K, 3, 0, -1),       // pc=13: dst_idx = n - 1
-				vm3.MakeOp(vm3.OpCmpGeI64Br, 1, 0, 21),    // pc=14: if i>=n -> after_rev
-				vm3.MakeOp(vm3.OpListGetI64, 2, 0, 1),     // pc=15: val = in[i]
-				vm3.MakeOp(vm3.OpLookupI64KW, 2, 2, 1),    // pc=16: val = complement[val]
-				vm3.MakeOp(vm3.OpListSetI64, 1, 2, 3),     // pc=17: out[dst_idx] = val
-				vm3.MakeOp(vm3.OpAddI64K, 1, 1, 1),        // pc=18: i++
-				vm3.MakeOp(vm3.OpAddI64K, 3, 3, -1),       // pc=19: dst_idx--
-				vm3.MakeOp(vm3.OpJump, 0, 0, 14),          // pc=20: -> rev_loop
-				vm3.MakeOp(vm3.OpConstI64K, 1, 0, 0),      // pc=21: i = 0
-				vm3.MakeOp(vm3.OpCmpGeI64Br, 1, 0, 27),    // pc=22: if i>=n -> end
-				vm3.MakeOp(vm3.OpListGetI64, 2, 1, 1),     // pc=23: val = out[i]
-				vm3.MakeOp(vm3.OpAddI64, 4, 4, 2),         // pc=24: sum += val
-				vm3.MakeOp(vm3.OpAddI64K, 1, 1, 1),        // pc=25: i++
-				vm3.MakeOp(vm3.OpJump, 0, 0, 22),          // pc=26: -> sum_loop
-				vm3.MakeOp(vm3.OpReturnI64, 4, 0, 0),      // pc=27: return sum
+				vm3.MakeOp(vm3.OpNewI64Array, 0, 0, capHint), // pc=0: in = NewI64Array(n)
+				vm3.MakeOp(vm3.OpNewI64Array, 1, 0, capHint), // pc=1: out = NewI64Array(n)
+				vm3.MakeOp(vm3.OpConstI64K, 4, 0, 0),         // pc=2: sum = 0
+				vm3.MakeOp(vm3.OpConstI64K, 1, 0, 0),         // pc=3: i = 0
+				vm3.MakeOp(vm3.OpCmpGeI64Br, 1, 0, 10),       // pc=4: if i>=n -> after_fill
+				vm3.MakeOp(vm3.OpModI64K, 2, 1, 4),           // pc=5: val = i % 4
+				vm3.MakeOp(vm3.OpLookupI64KW, 2, 2, 0),       // pc=6: val = bases[val]
+				vm3.MakeOp(vm3.OpI64ArraySetI64, 0, 2, 1),    // pc=7: in[i] = val
+				vm3.MakeOp(vm3.OpAddI64K, 1, 1, 1),           // pc=8: i++
+				vm3.MakeOp(vm3.OpJump, 0, 0, 4),              // pc=9: -> fill_loop
+				vm3.MakeOp(vm3.OpConstI64K, 1, 0, 0),         // pc=10: i = 0
+				vm3.MakeOp(vm3.OpAddI64K, 3, 0, -1),          // pc=11: dst_idx = n - 1
+				vm3.MakeOp(vm3.OpCmpGeI64Br, 1, 0, 19),       // pc=12: if i>=n -> after_rev
+				vm3.MakeOp(vm3.OpI64ArrayGetI64, 2, 0, 1),    // pc=13: val = in[i]
+				vm3.MakeOp(vm3.OpLookupI64KW, 2, 2, 1),       // pc=14: val = complement[val]
+				vm3.MakeOp(vm3.OpI64ArraySetI64, 1, 2, 3),    // pc=15: out[dst_idx] = val
+				vm3.MakeOp(vm3.OpAddI64K, 1, 1, 1),           // pc=16: i++
+				vm3.MakeOp(vm3.OpAddI64K, 3, 3, -1),          // pc=17: dst_idx--
+				vm3.MakeOp(vm3.OpJump, 0, 0, 12),             // pc=18: -> rev_loop
+				vm3.MakeOp(vm3.OpConstI64K, 1, 0, 0),         // pc=19: i = 0
+				vm3.MakeOp(vm3.OpCmpGeI64Br, 1, 0, 25),       // pc=20: if i>=n -> end
+				vm3.MakeOp(vm3.OpI64ArrayGetI64, 2, 1, 1),    // pc=21: val = out[i]
+				vm3.MakeOp(vm3.OpAddI64, 4, 4, 2),            // pc=22: sum += val
+				vm3.MakeOp(vm3.OpAddI64K, 1, 1, 1),           // pc=23: i++
+				vm3.MakeOp(vm3.OpJump, 0, 0, 20),             // pc=24: -> sum_loop
+				vm3.MakeOp(vm3.OpReturnI64, 4, 0, 0),         // pc=25: return sum
 			},
 		}
 		return &vm3.Program{Funcs: []*vm3.Function{fn}, Entry: 0}

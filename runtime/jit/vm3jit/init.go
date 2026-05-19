@@ -225,6 +225,16 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 			}
 		}
 	}
+	// Phase 6.3.4.l.4: OpNewI64Array pre-alloc, mirror of F64Arr branch.
+	if k := int(fn.JITPreAllocI64ArrPrefix); k > 0 {
+		arenas := vm.Arenas()
+		for i := 0; i < k; i++ {
+			op := fn.Code[i]
+			if int(op.A) < MaxCellRegs {
+				jf.regsCell[op.A] = arenas.AllocI64Arr(int(uint16(op.C)))
+			}
+		}
+	}
 	// Lay out params per ParamBanks position-indexed convention: argsX[k]
 	// is meaningful iff fn.ParamBanks[k] == BankX. For i64-only callees
 	// argsCell/argsF64 are nil and we use the fast path: copy argsI64
@@ -342,12 +352,14 @@ func CompileAndCache(prog *vm3.Program, idx uint32) (*CompiledFunc, error) {
 	fn.JITPreAllocListPrefix = preAllocListPrefix(fn)
 	fn.JITPreAllocMap = canPreAllocMap(fn)
 	fn.JITPreAllocF64ArrPrefix = preAllocF64ArrPrefix(fn)
+	fn.JITPreAllocI64ArrPrefix = preAllocI64ArrPrefix(fn)
 	cf, err := CompileInProgram(prog, idx)
 	if err != nil {
 		fn.JITPreAllocList = false
 		fn.JITPreAllocListPrefix = 0
 		fn.JITPreAllocMap = false
 		fn.JITPreAllocF64ArrPrefix = 0
+		fn.JITPreAllocI64ArrPrefix = 0
 		return nil, err
 	}
 	fn.JITCode = cf.Entry()
@@ -512,7 +524,50 @@ func preAllocF64ArrPrefix(fn *vm3.Function) uint16 {
 	}
 	for i := k; i < len(fn.Code); i++ {
 		op := fn.Code[i]
-		if op.Code != vm3.OpNewList && op.Code != vm3.OpNewMap && op.Code != vm3.OpNewF64Array {
+		if op.Code != vm3.OpNewList && op.Code != vm3.OpNewMap && op.Code != vm3.OpNewF64Array && op.Code != vm3.OpNewI64Array {
+			continue
+		}
+		if seen[op.A] {
+			return 0
+		}
+	}
+	return uint16(k)
+}
+
+// preAllocI64ArrPrefix is the Phase 6.3.4.l.4 mirror of
+// preAllocF64ArrPrefix for OpNewI64Array. Same safety guards: contiguous
+// K-op prefix, each writing a distinct cell reg in the cell-bank window,
+// and no subsequent new-allocation op overwrites those cells.
+func preAllocI64ArrPrefix(fn *vm3.Function) uint16 {
+	if len(fn.Code) == 0 || fn.Code[0].Code != vm3.OpNewI64Array {
+		return 0
+	}
+	cellCap := int(fn.NumRegsCell)
+	if cellCap > MaxCellRegs {
+		cellCap = MaxCellRegs
+	}
+	seen := make(map[uint16]bool)
+	k := 0
+	for i := 0; i < len(fn.Code); i++ {
+		op := fn.Code[i]
+		if op.Code != vm3.OpNewI64Array {
+			break
+		}
+		if int(op.A) >= cellCap {
+			break
+		}
+		if seen[op.A] {
+			break
+		}
+		seen[op.A] = true
+		k = i + 1
+	}
+	if k == 0 {
+		return 0
+	}
+	for i := k; i < len(fn.Code); i++ {
+		op := fn.Code[i]
+		if op.Code != vm3.OpNewList && op.Code != vm3.OpNewMap && op.Code != vm3.OpNewF64Array && op.Code != vm3.OpNewI64Array {
 			continue
 		}
 		if seen[op.A] {

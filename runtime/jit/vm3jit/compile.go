@@ -234,6 +234,7 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 			vm3.OpMapSetI64I64, vm3.OpMapGetI64I64,
 			vm3.OpLookupI64KW,
 			vm3.OpF64ArrayGetF64, vm3.OpF64ArraySetF64, vm3.OpF64ArrayLenI64,
+			vm3.OpI64ArrayGetI64, vm3.OpI64ArraySetI64, vm3.OpI64ArrayPushI64, vm3.OpI64ArrayLenI64,
 			vm3.OpConstF64K, vm3.OpMovF64,
 			vm3.OpAddF64, vm3.OpSubF64, vm3.OpMulF64, vm3.OpDivF64,
 			vm3.OpNegF64, vm3.OpFmaF64, vm3.OpSqrtF64,
@@ -283,6 +284,15 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 				continue
 			}
 			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses inline OpNewF64Array (only pre-alloc prefix is admitted)",
+				ErrNotImplemented, fn.Name, i)
+		case vm3.OpNewI64Array:
+			// Phase 6.3.4.l.4 mirror of OpNewF64Array: admit at i < K
+			// where K is the contiguous OpNewI64Array prefix length the
+			// JIT lifted into jitCall.
+			if k := int(preAllocI64ArrPrefix(fn)); k > 0 && i < k {
+				continue
+			}
+			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses inline OpNewI64Array (only pre-alloc prefix is admitted)",
 				ErrNotImplemented, fn.Name, i)
 		case vm3.OpTailCallMixed:
 			if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx || op.B != 0 {
