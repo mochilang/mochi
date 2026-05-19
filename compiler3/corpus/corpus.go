@@ -31,5 +31,6 @@ func All() []*Program {
 		KNucleotide,
 		N_body,
 		SpectralNorm,
+		FannkuchRedux,
 	}
 }
