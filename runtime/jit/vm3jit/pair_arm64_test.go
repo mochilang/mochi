@@ -168,6 +168,67 @@ func TestCheckTreeJITAdmission(t *testing.T) {
 	}
 }
 
+// TestReturnCellJIT exercises Phase 6.3.4.m.4a admission and ARM64
+// lowering of OpReturnCell. A JIT'd helper takes a Cell arg and echoes
+// it via OpReturnCell; an interp-side driver builds a pair, calls the
+// helper, and returns the helper's Cell result. The trampoline must
+// carry the Cell handle in x0 bit-for-bit, jitCall must skip the
+// unboxed-truncate path (handles point into the local arena range and
+// would be invalidated), and the returned Cell must crack to a valid
+// ArenaPair handle.
+func TestReturnCellJIT(t *testing.T) {
+	helper := &vm3.Function{
+		Name:        "echo_cell",
+		NumRegsI64:  0,
+		NumRegsCell: 1,
+		ParamBanks:  []vm3.Bank{vm3.BankCell},
+		ResultBank:  vm3.BankCell,
+		Code: []vm3.Op{
+			vm3.MakeOp(vm3.OpReturnCell, 0, 0, 0), // pc=0: return regsCell[0]
+		},
+	}
+	driver := &vm3.Function{
+		Name:        "driver",
+		NumRegsI64:  1,
+		NumRegsCell: 2,
+		ParamBanks:  []vm3.Bank{vm3.BankI64},
+		ResultBank:  vm3.BankCell,
+		Code: []vm3.Op{
+			vm3.MakeOp(vm3.OpNewPair, 0, 1, 1),                                        // pc=0: regsCell[0] = pair(CNull, CNull)
+			{Code: vm3.OpCallMixed, BankFlags: uint8(vm3.BankCell), A: 1, B: 0, C: 1}, // pc=1: regsCell[1] = helper(regsCell[0])
+			vm3.MakeOp(vm3.OpReturnCell, 1, 0, 0),                                     // pc=2: return regsCell[1]
+		},
+	}
+	prog := &vm3.Program{Funcs: []*vm3.Function{driver, helper}, Entry: 0}
+	cfs := vm3jit.CompileProgram(prog)
+	defer func() {
+		for _, cf := range cfs {
+			if cf != nil {
+				_ = cf.Free()
+			}
+		}
+	}()
+	if helper.JITCode == nil {
+		t.Fatalf("helper JITCode is nil (OpReturnCell should compile)")
+	}
+	preDeopt := vm3jit.DeoptCount
+	vm := vm3.NewWithProgram(prog)
+	got, err := vm.RunWithArgs(prog.Funcs[prog.Entry], []int64{0})
+	if err != nil {
+		t.Fatalf("RunWithArgs: %v", err)
+	}
+	if d := vm3jit.DeoptCount - preDeopt; d != 0 {
+		t.Fatalf("unexpected deopt count delta: %d", d)
+	}
+	if !got.IsHandle() {
+		t.Fatalf("returned Cell is not a handle: %#x", uint64(got))
+	}
+	tag, _, _ := got.DecodeHandle()
+	if tag != vm3.ArenaPair {
+		t.Fatalf("returned Cell tag = %d, want ArenaPair (%d)", tag, vm3.ArenaPair)
+	}
+}
+
 // TestBinaryTreesEndToEndWithJIT runs the full binary_trees kernel
 // through CompileProgram. After Phase 6.3.4.m.3 check_tree is admitted
 // (self-OpCallMixed + OpPairFst/Snd) and runs natively; make_tree and

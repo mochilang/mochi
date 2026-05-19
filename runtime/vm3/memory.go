@@ -46,6 +46,18 @@ func (a *Arenas) RestoreUnboxedReturn(m *CallScopeMarks) {
 	a.truncateToMarks(&m.marks, &m.freeMarks)
 }
 
+// HandleCellReturn is the Layer B analogue of RestoreUnboxedReturn for
+// the JIT entry path (Phase 6.3.4.m.4a). It mirrors what OpReturnCell
+// does on the interp side: if the returned Cell is unboxed or points
+// below the snapshot, truncate the arena range; if it points into the
+// local range, copy-up to the mark and truncate the rest; abort the
+// truncate when the slot transitively references other local handles
+// (Layer D mark-sweep will reclaim later). The returned Cell is the
+// possibly-rewritten handle the caller should hand back to the interp.
+func (a *Arenas) HandleCellReturn(ret Cell, m *CallScopeMarks) Cell {
+	return a.handleCellReturn(ret, &m.marks, &m.freeMarks)
+}
+
 // snapshotMarks records every slab and free-list length into the
 // caller-supplied arrays. Called from pushFrame.
 func (a *Arenas) snapshotMarks(marks, freeMarks *[numArenaTags]uint32) {

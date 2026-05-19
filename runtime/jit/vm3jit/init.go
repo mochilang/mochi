@@ -321,10 +321,16 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 		// and reclaim as normal on its own Return.
 		return 0, true, nil
 	}
-	// Clean unboxed return: reclaim any arena slot allocated during the
-	// JIT'd call. Safe because admitted Cell-bank callees return
-	// unboxed scalars; no handle escapes the call.
-	vm.Arenas().RestoreUnboxedReturn(&marks)
+	// Clean return: reclaim arena slots allocated during the JIT'd call.
+	// Phase 6.3.4.m.4a: when the callee returns a Cell (ResultBank=Cell),
+	// use Layer B handle-aware copy-up so a returned local handle stays
+	// valid across the truncate. Otherwise the returned value is unboxed
+	// (i64/f64), and Layer A's plain truncate suffices.
+	if fn.ResultBank == vm3.BankCell {
+		bits = uint64(vm.Arenas().HandleCellReturn(vm3.Cell(bits), &marks))
+	} else {
+		vm.Arenas().RestoreUnboxedReturn(&marks)
+	}
 	return bits, false, nil
 }
 
