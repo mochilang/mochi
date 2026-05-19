@@ -5,6 +5,7 @@ package vm3jit
 import (
 	"encoding/binary"
 	"fmt"
+	"unsafe"
 
 	"mochi/runtime/vm3"
 )
@@ -550,6 +551,18 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 	case vm3.OpF64ToI64:
 		// cvttsd2si %r<A>, xmm<B>: F2 REX.W 0F 2C /r — 5 bytes.
 		return cvttsd2siByteCount(op.A), nil
+	case vm3.OpLookupI64KW:
+		// Phase 6.4.c cold form: movabs %rax, &table[0] (10 bytes)
+		// then mov %xDst, [%rax + %xIdx*8] (3..4 bytes depending on
+		// dst/idx REX needs). Hoist support deferred; the table base
+		// load is per-site for now.
+		tableIdx := int(uint16(op.C))
+		if tableIdx >= len(fn.I64Tables) || len(fn.I64Tables[tableIdx]) == 0 {
+			return 0, fmt.Errorf("%w: LookupI64KW table %d out of range or empty",
+				ErrNotImplemented, tableIdx)
+		}
+		base := int64(uintptr(unsafe.Pointer(&fn.I64Tables[tableIdx][0])))
+		return movImm64ByteCount(base, xRAX) + mov64LoadIdxLsl3ByteCount(r2xAMD64(op.A), xRAX, r2xAMD64(op.B)), nil
 	case vm3.OpCallI64:
 		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
 			return 0, fmt.Errorf("%w: CallI64 to non-self idx %d (SelfIdx=%d)",
@@ -783,6 +796,24 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		return cvtsi2sd(int(op.A), int(r2xAMD64(op.B))), nil
 	case vm3.OpF64ToI64:
 		return cvttsd2si(int(r2xAMD64(op.A)), int(op.B)), nil
+	case vm3.OpLookupI64KW:
+		// regsI64[A] = fn.I64Tables[uint16(C)][regsI64[B]]
+		//
+		// Cold form (Phase 6.4.c): load the table base into a scratch
+		// GPR (RAX, never in r2xAMD64's range) then indexed-load through
+		// it. Caller pre-emits OpCmpGeI64KBr against the table length so
+		// the load itself is unchecked (mirrors the interpreter and the
+		// ARM64 lowering). Hoisting the base into a callee-saved reg is
+		// the natural follow-up; deferred until the cold form lands.
+		tableIdx := int(uint16(op.C))
+		if tableIdx >= len(fn.I64Tables) || len(fn.I64Tables[tableIdx]) == 0 {
+			return nil, fmt.Errorf("%w: LookupI64KW table %d out of range or empty",
+				ErrNotImplemented, tableIdx)
+		}
+		base := int64(uintptr(unsafe.Pointer(&fn.I64Tables[tableIdx][0])))
+		out := movImm64(xRAX, base)
+		out = append(out, mov64LoadIdxLsl3(r2xAMD64(op.A), xRAX, r2xAMD64(op.B))...)
+		return out, nil
 	case vm3.OpCallI64:
 		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
 			return nil, fmt.Errorf("%w: CallI64 to non-self idx %d (SelfIdx=%d)",
@@ -1048,6 +1079,40 @@ func mov64LoadDisp32(dst, base int, disp int32) []byte {
 	out = appendImm32(out, disp)
 	return out
 }
+
+// mov64LoadIdxLsl3 emits `mov rDst, [rBase + rIdx*8]`. Opcode REX.W [REX.R]
+// [REX.X] [REX.B] 8B ModR/M(mod=00, reg=dst, rm=100=SIB) SIB(scale=11,
+// index, base). Phase 6.4.c uses this for the AMD64 OpLookupI64KW cold
+// lowering: load `fn.I64Tables[c][regsI64[B]]` into the destination
+// register after a scratch register holds the table base.
+//
+// Caller pre-checks that rBase is not RBP or R13 (those need mod=01
+// with disp8=0 to disambiguate from the [disp32] form) and that rIdx is
+// not RSP (RSP as SIB.index means "no index"). The vm3 i64 reg
+// allocator never produces those clashes: r2xAMD64 maps slots 0..8 to
+// RSI/RDI/R8/R9/R10/R11/R12/R13/R14, and this helper is only invoked
+// with rBase=RAX (scratch). R13 as index is fine, the [disp32]
+// exception applies only to the SIB.base field.
+func mov64LoadIdxLsl3(dst, base, idx int) []byte {
+	rexW := byte(0x48)
+	if dst >= 8 {
+		rexW |= 0x04 // REX.R
+	}
+	if idx >= 8 {
+		rexW |= 0x02 // REX.X
+	}
+	if base >= 8 {
+		rexW |= 0x01 // REX.B
+	}
+	mod := modRM(0, byte(dst&7), 4) // rm=100 = SIB follows
+	sib := byte(3<<6) | byte((idx&7)<<3) | byte(base&7)
+	return []byte{rexW, 0x8B, mod, sib}
+}
+
+// mov64LoadIdxLsl3ByteCount mirrors mov64LoadIdxLsl3. The encoding is
+// always 4 bytes for any combination of dst/base/idx since REX, opcode,
+// ModR/M, and SIB are each one byte.
+func mov64LoadIdxLsl3ByteCount(dst, base, idx int) int { return 4 }
 
 // mov64StoreDisp32 emits `mov rSrc, disp32(rBase)`. Opcode REX.W 89 /r
 // with mod=10 (disp32). Same SIB restriction as the load form.
