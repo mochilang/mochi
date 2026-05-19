@@ -228,17 +228,34 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 			vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr,
 			vm3.OpJump, vm3.OpReturnI64, vm3.OpReturnConstK,
 			vm3.OpListGetI64, vm3.OpListPushI64, vm3.OpListSetI64,
-			vm3.OpMapSetI64I64, vm3.OpMapGetI64I64:
+			vm3.OpListGetF64, vm3.OpListSetF64,
+			vm3.OpMapSetI64I64, vm3.OpMapGetI64I64,
+			vm3.OpConstF64K, vm3.OpMovF64,
+			vm3.OpAddF64, vm3.OpSubF64, vm3.OpMulF64, vm3.OpDivF64,
+			vm3.OpNegF64, vm3.OpFmaF64, vm3.OpSqrtF64,
+			vm3.OpCmpEqF64Br, vm3.OpCmpNeF64Br,
+			vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br,
+			vm3.OpCmpGtF64Br, vm3.OpCmpGeF64Br,
+			vm3.OpI64ToF64, vm3.OpF64ToI64,
+			vm3.OpReturnF64:
 			continue
 		case vm3.OpNewList:
 			// Phase 6.2d.2.b step 2: admit at pc=0 when the lowerer can
 			// skip its emission (jitCall pre-allocates the list on the
 			// Go side). canPreAllocList further requires no other op in
 			// fn overwrites the cell.
+			//
+			// Phase 6.3.4.j.3 generalizes the skip to a contiguous prefix
+			// of K OpNewList ops at pc 0..K-1. Admit when the op falls
+			// inside the prefix (preAllocListPrefix returns K>0 and
+			// i<K).
 			if i == 0 && canPreAllocList(fn) {
 				continue
 			}
-			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses inline OpNewList (only pc=0 with pre-alloc is admitted)",
+			if k := int(preAllocListPrefix(fn)); k > 0 && i < k {
+				continue
+			}
+			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses inline OpNewList (only pre-alloc prefix is admitted)",
 				ErrNotImplemented, fn.Name, i)
 		case vm3.OpTailCallMixed:
 			if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx || op.B != 0 {
@@ -352,6 +369,13 @@ func archCaps(fn *vm3.Function) (int, int, bool) {
 		i64Cap := maxI64Regs
 		if fn.NumRegsCell > 0 {
 			i64Cap = maxI64RegsCellARM64
+		}
+		// Phase 6.3.4.j.3: when NumRegsCell > 4 the lower-cell range
+		// (cells 4..7) overlaps the i64 callee-saved lane (x21..x24),
+		// so callers must keep i64 in the caller-saved bank (regs 0..6
+		// at x9..x15).
+		if fn.NumRegsCell > 4 {
+			i64Cap = 7
 		}
 		return i64Cap, maxF64RegsARM64, true
 	case ArchAMD64:

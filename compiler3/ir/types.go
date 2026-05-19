@@ -129,6 +129,9 @@ const (
 	OpListPushI64
 	OpListGetI64
 	OpListSetI64
+	// F64 list ops (Phase 6.3.4.j.1 vm3 surface).
+	OpListGetF64
+	OpListSetF64
 
 	// Map ops (Phase 3.3 vm3 surface).
 	OpNewMap
@@ -223,6 +226,10 @@ func (o OpCode) String() string {
 		return "list.get.i64"
 	case OpListSetI64:
 		return "list.set.i64"
+	case OpListGetF64:
+		return "list.get.f64"
+	case OpListSetF64:
+		return "list.set.f64"
 	case OpNewMap:
 		return "newmap"
 	case OpMapSetI64I64:

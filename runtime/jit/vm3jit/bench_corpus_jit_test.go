@@ -58,6 +58,8 @@ func BenchmarkCorpusJITRunner(b *testing.B) {
 		{"mandelbrot_n300", corpus.Mandelbrot, 300},
 		{"k_nucleotide_n10000", corpus.KNucleotide, 10000},
 		{"k_nucleotide_n100000", corpus.KNucleotide, 100000},
+		{"n_body_n100", corpus.N_body, 100},
+		{"n_body_n10000", corpus.N_body, 10000},
 	}
 	for _, tc := range cases {
 		b.Run(tc.name, func(b *testing.B) {

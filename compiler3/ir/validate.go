@@ -185,6 +185,10 @@ func opContract(o OpCode) opSig {
 		return opSig{TypeI64, [3]Type{TypeList, TypeI64}}
 	case OpListSetI64:
 		return opSig{TypeUnit, [3]Type{TypeList, TypeI64, TypeI64}}
+	case OpListGetF64:
+		return opSig{TypeF64, [3]Type{TypeList, TypeI64}}
+	case OpListSetF64:
+		return opSig{TypeUnit, [3]Type{TypeList, TypeI64, TypeF64}}
 	case OpNewMap:
 		return opSig{TypeMap, [3]Type{}}
 	case OpMapSetI64I64:

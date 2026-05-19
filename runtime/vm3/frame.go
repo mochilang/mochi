@@ -75,11 +75,24 @@ type Function struct {
 	// pre-allocates the list on the Go side before entering the
 	// trampoline so the JIT can drop the inline allocation. Used to
 	// admit `lists_fill_sum` main without growing the JIT into the
-	// arena slab fast path (Phase 6.2d.2.b step 2).
-	JITCode         unsafe.Pointer
-	JITCompiled     bool
-	JITHasF64       bool
-	JITPreAllocList bool
+	// arena slab fast path (Phase 6.2d.2.b step 2). This flag is the
+	// warm-scratch shape (single OpNewList at pc=0 reused across calls
+	// via vm.EnsureScratchList); multi-list kernels use
+	// JITPreAllocListPrefix instead.
+	//
+	// JITPreAllocListPrefix (Phase 6.3.4.j.3) generalizes the skip to a
+	// contiguous prefix of K OpNewList ops at pc 0..K-1, each writing a
+	// distinct cell reg, none of them overwritten by a later op. jitCall
+	// allocates K fresh lists and seeds the cell regs before the
+	// trampoline; the JIT lowerer emits zero words for those PCs.
+	// K=1 retains the existing single-list shape (with JITPreAllocList
+	// true gating the warm-scratch path). K>1 uses fresh allocation per
+	// call; the warm-scratch optimization is left to a follow-up.
+	JITCode               unsafe.Pointer
+	JITCompiled           bool
+	JITHasF64             bool
+	JITPreAllocList       bool
+	JITPreAllocListPrefix uint16
 }
 
 // Bank identifies one of the three typed register banks.
