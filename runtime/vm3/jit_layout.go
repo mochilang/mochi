@@ -154,3 +154,34 @@ func (a *Arenas) JITI64ArrsBase() unsafe.Pointer {
 	}
 	return unsafe.Pointer(&a.I64Arrs[0])
 }
+
+// JITPairSlabStride returns the byte distance between consecutive
+// vmPair entries in Arenas.Pairs. Phase 6.3.4.m.2 mirror of
+// JITI64ArrSlabStride for the pair-arena slab.
+func JITPairSlabStride() uintptr {
+	return unsafe.Sizeof(vmPair{})
+}
+
+// JITPairFstOffset returns the byte offset of vmPair.fst within the
+// pair record. vm3jit bakes this immediate into OpPairFst lowering.
+func JITPairFstOffset() uintptr {
+	return unsafe.Offsetof(vmPair{}.fst)
+}
+
+// JITPairSndOffset returns the byte offset of vmPair.snd within the
+// pair record. vm3jit bakes this immediate into OpPairSnd lowering.
+func JITPairSndOffset() uintptr {
+	return unsafe.Offsetof(vmPair{}.snd)
+}
+
+// JITPairsBase returns an unsafe.Pointer to the first element of
+// arenas.Pairs, or nil if the slab is empty. Mirror of JITI64ArrsBase
+// for the pair-arena slab. Phase 6.3.4.m.2 admits OpPairFst / OpPairSnd
+// (read-only) so the snapshot stays valid for the full call; OpNewPair
+// admission lands in a follow-up sub-phase.
+func (a *Arenas) JITPairsBase() unsafe.Pointer {
+	if len(a.Pairs) == 0 {
+		return nil
+	}
+	return unsafe.Pointer(&a.Pairs[0])
+}

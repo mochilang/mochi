@@ -361,6 +361,7 @@ const (
 	slabKindMap
 	slabKindF64Arr
 	slabKindI64Arr
+	slabKindPair
 )
 
 // slabKindARM64 classifies fn by which slab its inline body references.
@@ -368,12 +369,14 @@ const (
 // kernels are rejected by checkCellBankAdmissible separately so they
 // never reach codegen). Phase 6.3.4.j.5.b adds slabKindF64Arr for
 // typed-f64-array kernels; Phase 6.3.4.l.4 adds slabKindI64Arr for
-// typed-i64-array kernels.
+// typed-i64-array kernels; Phase 6.3.4.m.2 adds slabKindPair for
+// pair-arena kernels.
 func slabKindARM64(fn *vm3.Function) slabKind {
 	hasList := hasListGetI64(fn) || hasListPushI64(fn)
 	hasMap := hasMapOpI64(fn)
 	hasF64Arr := hasF64ArrayOp(fn)
 	hasI64Arr := hasI64ArrayOp(fn)
+	hasPair := hasPairOp(fn)
 	n := 0
 	if hasList {
 		n++
@@ -385,6 +388,9 @@ func slabKindARM64(fn *vm3.Function) slabKind {
 		n++
 	}
 	if hasI64Arr {
+		n++
+	}
+	if hasPair {
 		n++
 	}
 	if n != 1 {
@@ -399,6 +405,8 @@ func slabKindARM64(fn *vm3.Function) slabKind {
 		return slabKindF64Arr
 	case hasI64Arr:
 		return slabKindI64Arr
+	case hasPair:
+		return slabKindPair
 	}
 	return slabKindNone
 }
@@ -406,9 +414,9 @@ func slabKindARM64(fn *vm3.Function) slabKind {
 // slabBaseOffARM64 returns the byte offset within jitArenaCtx of the
 // slab base pointer the prologue should load into x19. Mirrors the
 // field order in jitArenaCtx: listsBase at offset 0, mapsBase at 8,
-// f64ArrsBase at 16, i64ArrsBase at 24. Fns with no slab kind default
-// to listsBase so the existing list-only admit set keeps its prologue
-// word count unchanged.
+// f64ArrsBase at 16, i64ArrsBase at 24, pairsBase at 32. Fns with no
+// slab kind default to listsBase so the existing list-only admit set
+// keeps its prologue word count unchanged.
 func slabBaseOffARM64(fn *vm3.Function) uint32 {
 	switch slabKindARM64(fn) {
 	case slabKindMap:
@@ -417,6 +425,8 @@ func slabBaseOffARM64(fn *vm3.Function) uint32 {
 		return 16
 	case slabKindI64Arr:
 		return 24
+	case slabKindPair:
+		return 32
 	}
 	return 0
 }
@@ -432,6 +442,8 @@ func slabStrideARM64(fn *vm3.Function) int64 {
 		return int64(vm3.JITF64ArrSlabStride())
 	case slabKindI64Arr:
 		return int64(vm3.JITI64ArrSlabStride())
+	case slabKindPair:
+		return int64(vm3.JITPairSlabStride())
 	}
 	return int64(vm3.JITListSlabStride())
 }
@@ -1682,6 +1694,13 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 		stride := int64(vm3.JITF64ArrSlabStride())
 		return movImm64WordCount(stride) + 4, nil
 
+	case vm3.OpPairFst, vm3.OpPairSnd:
+		// Cold form (5 inst): UXTW + MOV stride + MUL + ADD x19 + LDR.
+		// The destination Cell reg is loaded directly via the indexed
+		// LDR from (slab byte addr + fstOff or sndOff). Phase 6.3.4.m.2.
+		stride := int64(vm3.JITPairSlabStride())
+		return movImm64WordCount(stride) + 4, nil
+
 	default:
 		return 0, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 	}
@@ -2813,6 +2832,45 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		ws = append(ws, mulReg(16, 16, 17))
 		ws = append(ws, addReg(16, 16, 19))
 		ws = append(ws, ldrW(xA, 16, lenOff/4))
+		return ws, nil
+
+	case vm3.OpPairFst:
+		// regsCell[A] = arenas.Pairs[handleIdx(regsCell[B])].fst
+		//
+		// Cold form (5 inst). Phase 6.3.4.m.2 read-only pair access.
+		// The Cell payload masks down to a 32-bit slab index; the
+		// indexed LDR pulls the fst Cell straight into the pinned A reg.
+		//   UXTW x16, w_cellB                 ; idx = handle & 0xFFFFFFFF
+		//   MOV  x17, #SIZEOF_VMPAIR          ; stride (24)
+		//   MUL  x16, x16, x17                ; slab byte offset
+		//   ADD  x16, x16, x19                ; x19 = cached pairs base
+		//   LDR  xCellA, [x16, #FST_OFFSET]   ; fst (Cell u64)
+		fstOff := uint32(vm3.JITPairFstOffset())
+		xCellB := r2cell(op.B)
+		xCellA := r2cell(op.A)
+		stride := int64(vm3.JITPairSlabStride())
+		ws := make([]uint32, 0, movImm64WordCount(stride)+4)
+		ws = append(ws, uxtwReg(16, xCellB))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(xCellA, 16, fstOff/8))
+		return ws, nil
+
+	case vm3.OpPairSnd:
+		// regsCell[A] = arenas.Pairs[handleIdx(regsCell[B])].snd
+		//
+		// Cold form (5 inst). Mirror of OpPairFst with offset 16.
+		sndOff := uint32(vm3.JITPairSndOffset())
+		xCellB := r2cell(op.B)
+		xCellA := r2cell(op.A)
+		stride := int64(vm3.JITPairSlabStride())
+		ws := make([]uint32, 0, movImm64WordCount(stride)+4)
+		ws = append(ws, uxtwReg(16, xCellB))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(xCellA, 16, sndOff/8))
 		return ws, nil
 
 	case vm3.OpI64ArrayPushI64:
