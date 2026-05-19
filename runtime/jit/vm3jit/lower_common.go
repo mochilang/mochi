@@ -136,6 +136,178 @@ func liveSuccUnion(fn *vm3.Function, i int, liveIn []uint32) uint32 {
 	}
 }
 
+// fmaFusion describes a JIT-level peephole that absorbs the OpMulF64
+// at mulIdx into the OpAddF64 or OpSubF64 at mulIdx+1, emitting a
+// single ARM64 FMADD or FMSUB (or AMD64 VFMADD/VFMSUB) in place of
+// the two-instruction sequence. Phase 6.3.4.j.4b.
+//
+// FMADD encodes Dd = Da + Dn*Dm and FMSUB encodes Dd = Da - Dn*Dm.
+// For OpAddF64 the fusion is FMADD with Da = the non-mul-result
+// addend. For OpSubF64 the fusion is FMSUB only when the subtrahend
+// (op.C) equals the mul's destination; otherwise the shape would
+// require FNMSUB-style restructuring and is left unfused.
+//
+// All five register indices live in fn's f64 register bank (8 entries,
+// MaxF64Regs).
+type fmaFusion struct {
+	Kind byte   // 'a' for FMADD, 's' for FMSUB
+	Dd   uint16 // dest reg (op.A of the consuming Add/SubF64)
+	Dn   uint16 // first mul source (mul.B)
+	Dm   uint16 // second mul source (uint16(mul.C))
+	Da   uint16 // the non-mul-result addend / minuend
+}
+
+// fmaFusionAt reports whether the OpAddF64 / OpSubF64 at idx fuses
+// with the preceding OpMulF64 at idx-1 into a single FMADD or FMSUB.
+// Used by both lower_arm64 and lower_amd64.
+//
+// Safety conditions:
+//   - idx >= 1 and fn.Code[idx-1].Code == OpMulF64.
+//   - fn.Code[idx].Code is OpAddF64 (Add fuses to FMADD) or OpSubF64
+//     with op.C == mul.A (Sub fuses to FMSUB).
+//   - mul.A is not live past idx (next access of mul.A in fn.Code
+//     is either a re-definition or end-of-function).
+//   - No branch in fn.Code targets idx (forbids landing on the
+//     consumer without the absorbed MUL having executed).
+//   - Both ops sit clear of any cells.ptr refresh PC the lowering
+//     might inject; that check is backend-local and goes in the
+//     caller (the refresh prefix only touches x-regs, so a fusion
+//     straddling refreshPC is actually safe, but we filter it out
+//     here to keep the analysis self-contained).
+func fmaFusionAt(fn *vm3.Function, idx int) (fmaFusion, bool) {
+	if idx < 1 || idx >= len(fn.Code) {
+		return fmaFusion{}, false
+	}
+	mul := fn.Code[idx-1]
+	op := fn.Code[idx]
+	if mul.Code != vm3.OpMulF64 {
+		return fmaFusion{}, false
+	}
+	var f fmaFusion
+	f.Dd = op.A
+	f.Dn = mul.B
+	f.Dm = uint16(mul.C)
+	switch op.Code {
+	case vm3.OpAddF64:
+		switch {
+		case op.B == mul.A && uint16(op.C) != mul.A:
+			f.Da = uint16(op.C)
+		case uint16(op.C) == mul.A && op.B != mul.A:
+			f.Da = op.B
+		default:
+			return fmaFusion{}, false
+		}
+		f.Kind = 'a'
+	case vm3.OpSubF64:
+		if uint16(op.C) != mul.A || op.B == mul.A {
+			return fmaFusion{}, false
+		}
+		f.Da = op.B
+		f.Kind = 's'
+	default:
+		return fmaFusion{}, false
+	}
+	if isF64LiveAfter(fn, idx, mul.A) {
+		return fmaFusion{}, false
+	}
+	if branchTargetsContain(fn, idx) {
+		return fmaFusion{}, false
+	}
+	return f, true
+}
+
+// fmaFusionAbsorbed reports whether the op at idx is an OpMulF64 that
+// gets absorbed into a fusion at idx+1. Used by lowering to emit zero
+// words for the absorbed MUL.
+func fmaFusionAbsorbed(fn *vm3.Function, idx int) bool {
+	if idx < 0 || idx+1 >= len(fn.Code) {
+		return false
+	}
+	if fn.Code[idx].Code != vm3.OpMulF64 {
+		return false
+	}
+	_, ok := fmaFusionAt(fn, idx+1)
+	return ok
+}
+
+// isF64LiveAfter returns true if some op after idx reads f64 register r
+// before any op redefines it. End-of-function counts as not-live.
+func isF64LiveAfter(fn *vm3.Function, idx int, r uint16) bool {
+	for j := idx + 1; j < len(fn.Code); j++ {
+		d, u := defUseF64(fn.Code[j])
+		bit := uint16(1) << r
+		if u&bit != 0 {
+			return true
+		}
+		if d&bit != 0 {
+			return false
+		}
+	}
+	return false
+}
+
+// defUseF64 returns (defs, uses) bitmasks over fn's f64 register bank
+// for op. Bit r is set iff f64 register r is defined / used. Used by
+// the FMA fusion liveness check.
+func defUseF64(op vm3.Op) (uint16, uint16) {
+	a := uint16(1) << op.A
+	b := uint16(1) << op.B
+	c := uint16(1) << uint16(op.C)
+	switch op.Code {
+	case vm3.OpMovF64, vm3.OpNegF64, vm3.OpSqrtF64:
+		return a, b
+	case vm3.OpConstF64K:
+		return a, 0
+	case vm3.OpAddF64, vm3.OpSubF64, vm3.OpMulF64, vm3.OpDivF64:
+		return a, b | c
+	case vm3.OpFmaF64:
+		mul2 := uint16(1) << (uint16(op.C) & 0xFF)
+		addend := uint16(1) << ((uint16(op.C) >> 8) & 0xFF)
+		return a, b | mul2 | addend
+	case vm3.OpCmpEqF64Br, vm3.OpCmpNeF64Br,
+		vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br,
+		vm3.OpCmpGtF64Br, vm3.OpCmpGeF64Br:
+		return 0, a | b
+	case vm3.OpListGetF64:
+		return a, 0
+	case vm3.OpListSetF64:
+		return 0, b
+	case vm3.OpI64ToF64:
+		return a, 0
+	case vm3.OpF64ToI64:
+		return 0, b
+	case vm3.OpReturnF64:
+		return 0, a
+	case vm3.OpCallF64:
+		return a, 0
+	}
+	return 0, 0
+}
+
+// branchTargetsContain reports whether any branch or jump op in fn
+// targets bytecode index target. Used by FMA fusion to forbid landing
+// on a consumer that would otherwise execute without its absorbed MUL.
+func branchTargetsContain(fn *vm3.Function, target int) bool {
+	for _, op := range fn.Code {
+		switch op.Code {
+		case vm3.OpJump,
+			vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
+			vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
+			vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br,
+			vm3.OpCmpEqI64KBr, vm3.OpCmpNeI64KBr,
+			vm3.OpCmpLtI64KBr, vm3.OpCmpLeI64KBr,
+			vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr,
+			vm3.OpCmpEqF64Br, vm3.OpCmpNeF64Br,
+			vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br,
+			vm3.OpCmpGtF64Br, vm3.OpCmpGeF64Br:
+			if int(uint16(op.C)) == target {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // defUseI64 returns (defs, uses) bitmasks for op over fn's i64 register
 // bank. Bit r is set iff register r is defined/used. For OpCallI64 the
 // uses cover op.B..op.B+nArgs-1.

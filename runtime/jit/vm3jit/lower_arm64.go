@@ -1358,7 +1358,14 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 
 	case vm3.OpMovF64:
 		return 1, nil
-	case vm3.OpAddF64, vm3.OpSubF64, vm3.OpMulF64, vm3.OpDivF64:
+	case vm3.OpMulF64:
+		if fmaFusionAbsorbed(fn, idx) {
+			return 0, nil
+		}
+		return 1, nil
+	case vm3.OpAddF64, vm3.OpSubF64:
+		return 1, nil
+	case vm3.OpDivF64:
 		return 1, nil
 	case vm3.OpNegF64:
 		return 1, nil
@@ -1720,10 +1727,19 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 	case vm3.OpMovF64:
 		return []uint32{fmovDD(r2d(op.A), r2d(op.B))}, nil
 	case vm3.OpAddF64:
+		if f, ok := fmaFusionAt(fn, idx); ok && f.Kind == 'a' {
+			return []uint32{fmaddD(r2d(f.Dd), r2d(f.Dn), r2d(f.Dm), r2d(f.Da))}, nil
+		}
 		return []uint32{faddD(r2d(op.A), r2d(op.B), r2d(uint16(op.C)))}, nil
 	case vm3.OpSubF64:
+		if f, ok := fmaFusionAt(fn, idx); ok && f.Kind == 's' {
+			return []uint32{fmsubD(r2d(f.Dd), r2d(f.Dn), r2d(f.Dm), r2d(f.Da))}, nil
+		}
 		return []uint32{fsubD(r2d(op.A), r2d(op.B), r2d(uint16(op.C)))}, nil
 	case vm3.OpMulF64:
+		if fmaFusionAbsorbed(fn, idx) {
+			return nil, nil
+		}
 		return []uint32{fmulD(r2d(op.A), r2d(op.B), r2d(uint16(op.C)))}, nil
 	case vm3.OpDivF64:
 		return []uint32{fdivD(r2d(op.A), r2d(op.B), r2d(uint16(op.C)))}, nil
@@ -2969,6 +2985,15 @@ func fsqrtD(dd, dn uint32) uint32 {
 // Dd = Dn * Dm + Da with a single rounding step (IEEE 754-2008 fused).
 func fmaddD(dd, dn, dm, da uint32) uint32 {
 	return 0x1F400000 | ((dm & 0x1F) << 16) | ((da & 0x1F) << 10) |
+		((dn & 0x1F) << 5) | (dd & 0x1F)
+}
+
+// fmsubD encodes FMSUB Dd, Dn, Dm, Da (scalar double, fused multiply-sub).
+// Dd = Da - Dn * Dm with a single rounding step (IEEE 754-2008 fused).
+// Bit 15 (o0) is 1 vs FMADD's 0 in the ARMv8 floating-point data-processing
+// 3-source encoding.
+func fmsubD(dd, dn, dm, da uint32) uint32 {
+	return 0x1F408000 | ((dm & 0x1F) << 16) | ((da & 0x1F) << 10) |
 		((dn & 0x1F) << 5) | (dd & 0x1F)
 }
 
