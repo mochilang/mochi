@@ -27,10 +27,10 @@ Table-vs-chain ratio in JIT:
 
 The N=10000 median is the cleaner read since per-iteration cost
 dominates loop overhead. Speedup is **~19% median** at N=10000, below the
-spec's <0.50 promise (mirroring Go CL 756340's -63%). The gap to the
+spec's under 0.50 promise (mirroring Go CL 756340's -63%). The gap to the
 spec target is explained below.
 
-### Why the ratio is 0.81 instead of <0.50 on Apple M4
+### Why the ratio is 0.81 instead of under 0.50 on Apple M4
 
 The cmp-chain dispatch is 8 sequential `CMP+B.COND` instructions per
 key. The 32749-period LCG cycles through ~30% of its period over 10k
@@ -58,7 +58,7 @@ absorbs most of the dispatch fanout; the table form still wins, just
 less dramatically.
 
 A linux/amd64 re-bench on server2 is expected to land closer to the
-spec target (<0.50) once the same hoisted lowering is ported to
+spec target (under 0.50) once the same hoisted lowering is ported to
 lower_amd64.go (currently the AMD64 path falls back to interp for
 OpLookupI64KW, mirroring OpFmaF64's AMD64 deferral).
 
