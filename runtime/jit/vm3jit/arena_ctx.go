@@ -41,6 +41,16 @@ type jitArenaCtx struct {
 	f64ArrsBase unsafe.Pointer
 	i64ArrsBase unsafe.Pointer
 	pairsBase   unsafe.Pointer
+	// pairsLen is the current append cursor into a.Pairs the JIT sees;
+	// initialized from uint64(len(a.Pairs)) and bumped in-register by
+	// each inline OpNewPair (Phase 6.3.4.m.4b). The caller copies it
+	// back into the Go slice header on clean return so subsequent
+	// interp accesses see the JIT-allocated pairs. pairsCap is the
+	// matching cap snapshot; the inline alloc deopts via
+	// StatusPairGrow when pairsLen >= pairsCap so the slab can be
+	// regrown without violating Go's slice invariants.
+	pairsLen uint64
+	pairsCap uint64
 }
 
 // populateArenaCtx snapshots the Arenas slab base pointers the JIT
@@ -53,4 +63,19 @@ func populateArenaCtx(ctx *jitArenaCtx, arenas *vm3.Arenas) {
 	ctx.f64ArrsBase = arenas.JITF64ArrsBase()
 	ctx.i64ArrsBase = arenas.JITI64ArrsBase()
 	ctx.pairsBase = arenas.JITPairsBase()
+	ctx.pairsLen = uint64(arenas.PairsLen())
+	ctx.pairsCap = uint64(arenas.PairsCap())
+}
+
+// jitArenaCtxPairsLenOff is the byte offset of the pairsLen field in
+// jitArenaCtx; the ARM64 emit bakes it as an LDR/STR imm12 (divide by
+// 8 for the 64-bit-stride immediate) so a layout change here is
+// picked up by the lowering automatically.
+func jitArenaCtxPairsLenOff() uintptr {
+	return unsafe.Offsetof(jitArenaCtx{}.pairsLen)
+}
+
+// jitArenaCtxPairsCapOff mirrors jitArenaCtxPairsLenOff for pairsCap.
+func jitArenaCtxPairsCapOff() uintptr {
+	return unsafe.Offsetof(jitArenaCtx{}.pairsCap)
 }

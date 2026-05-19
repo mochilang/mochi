@@ -18,11 +18,19 @@ func init() {
 // in either path is visible from a single bench run. Not load-bearing
 // for correctness; tests assert specific counts to lock the steady-state
 // no-deopt path on lists_fill_sum.
+//
+// PairGrowRetry counts StatusPairGrow deopts that the general-case path
+// resolved by regrowing Arenas.Pairs and re-invoking the trampoline
+// (Phase 6.3.4.m.4b). The retry's clean-return path does NOT bump
+// DeoptCount: the JIT body ran to completion under a larger cap, and
+// surfacing the regrow as a deopt would mask steady-state correctness
+// in tests (binary_trees' make_tree pays one regrow per cap doubling).
 var (
-	DeoptCount             uint64
-	DeoptCountPreAlloc     uint64
+	DeoptCount              uint64
+	DeoptCountPreAlloc      uint64
 	DeoptCountPreAllocRetry uint64
-	DeoptCountGeneral      uint64
+	DeoptCountGeneral       uint64
+	DeoptCountPairGrowRetry uint64
 )
 
 // vmJITFrame fetches the per-VM jitFrame3 scratch buffer, allocating
@@ -298,8 +306,85 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 			unsafe.Pointer(&jf.status))
 	}
 	if jf.status != 0 {
+		// Phase 6.3.4.m.4b StatusPairGrow retry. The inline OpNewPair
+		// kernel deopts when its in-register pairsLen cursor reaches
+		// pairsCap; grow Arenas.Pairs cap on the Go side and re-invoke
+		// the trampoline from PC=0 with the original args + freshly
+		// snapshotted ctx. Mirrors the JITPreAllocList warm-cache retry
+		// for OpListPushI64 (StatusListGrow). On retry success we skip
+		// the DeoptCount bump because the JIT body completes cleanly
+		// under the larger cap; the regrow is a steady-state cost of
+		// recursive allocators (binary_trees' make_tree), not a fall-
+		// back to the interp.
+		if jf.status == StatusPairGrow && fn.NumRegsCell > 0 {
+			arenas := vm.Arenas()
+			arenas.JITRegrowPairsCap()
+			// The JIT may have appended pairs before deopting; commit
+			// the high-water cursor before regrow tears down the stale
+			// snapshot, then reload pairsBase/pairsLen/pairsCap.
+			arenas.JITCommitPairsLen(int(jf.arenaCtx.pairsLen))
+			// Re-seed regs: zero pinned banks, then re-lay-out args.
+			nI64Re := min(int(fn.NumRegsI64), MaxI64Regs)
+			clear(jf.regsI64[:nI64Re])
+			nF64Re := min(int(fn.NumRegsF64), MaxF64Regs)
+			clear(jf.regsF64[:nF64Re])
+			nCellRe := min(int(fn.NumRegsCell), MaxCellRegs)
+			clear(jf.regsCell[:nCellRe])
+			if fn.NumRegsCell == 0 && len(argsCell) == 0 {
+				m := min(len(argsI64), MaxI64Regs)
+				copy(jf.regsI64[:m], argsI64[:m])
+			} else {
+				for k, b := range fn.ParamBanks {
+					switch b {
+					case vm3.BankI64:
+						if k < len(argsI64) && k < MaxI64Regs {
+							jf.regsI64[k] = argsI64[k]
+						}
+					case vm3.BankF64:
+						if k < len(argsF64) && k < MaxF64Regs {
+							jf.regsF64[k] = argsF64[k]
+						}
+					case vm3.BankCell:
+						if k < len(argsCell) && k < MaxCellRegs {
+							jf.regsCell[k] = argsCell[k]
+						}
+					}
+				}
+			}
+			jf.status = 0
+			populateArenaCtx(&jf.arenaCtx, arenas)
+			bits = trampoline.CallStatusM(
+				fn.JITCode,
+				unsafe.Pointer(&jf.regsI64[0]),
+				unsafe.Pointer(&jf.status),
+				unsafe.Pointer(&jf.regsF64[0]),
+				unsafe.Pointer(&jf.regsCell[0]),
+				unsafe.Pointer(&jf.arenaCtx))
+			if jf.status == 0 {
+				DeoptCountPairGrowRetry++
+				arenas.JITCommitPairsLen(int(jf.arenaCtx.pairsLen))
+				if fn.ResultBank == vm3.BankCell {
+					bits = uint64(arenas.HandleCellReturn(vm3.Cell(bits), &marks))
+				} else {
+					arenas.RestoreUnboxedReturn(&marks)
+				}
+				return bits, false, nil
+			}
+			// Retry still deopted: fall through to the general deopt
+			// path below. pairsLen committed at the top of the retry
+			// branch reflects allocations from the FIRST attempt; we
+			// commit again post-retry so any further appends are
+			// visible to the resumed interp.
+		}
 		DeoptCount++
 		DeoptCountGeneral++
+		// Phase 6.3.4.m.4b: commit JIT-allocated pairs before resuming
+		// in the interp so the resumed frame sees the same arena state
+		// the JIT left behind. Handles spilled into vm.deopt* point at
+		// indices in [origLen, ctx.pairsLen); without the commit those
+		// indices are past Arenas.Pairs' Go-visible len and any subseq
+		// PairFst/PairSnd would index out of bounds.
+		vm.Arenas().JITCommitPairsLen(int(jf.arenaCtx.pairsLen))
 		// Deopt-resume protocol (Phase 6.2d.2.c). The JIT's per-fn
 		// deopt block spills every pinned reg back to jf.regsX before
 		// writing *status and returning, so jf carries the JIT's final
@@ -322,6 +407,12 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 		return 0, true, nil
 	}
 	// Clean return: reclaim arena slots allocated during the JIT'd call.
+	// Phase 6.3.4.m.4b: commit JIT-allocated pairs first so they survive
+	// the per-call arena restore for ResultBank=Cell (HandleCellReturn
+	// promotes a returned handle to the outer frame's mark; allocations
+	// the returned handle does not reach are reclaimed). The commit is a
+	// no-op when fn has no OpNewPair.
+	vm.Arenas().JITCommitPairsLen(int(jf.arenaCtx.pairsLen))
 	// Phase 6.3.4.m.4a: when the callee returns a Cell (ResultBank=Cell),
 	// use Layer B handle-aware copy-up so a returned local handle stays
 	// valid across the truncate. Otherwise the returned value is unboxed

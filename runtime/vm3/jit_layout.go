@@ -174,14 +174,70 @@ func JITPairSndOffset() uintptr {
 	return unsafe.Offsetof(vmPair{}.snd)
 }
 
-// JITPairsBase returns an unsafe.Pointer to the first element of
-// arenas.Pairs, or nil if the slab is empty. Mirror of JITI64ArrsBase
-// for the pair-arena slab. Phase 6.3.4.m.2 admits OpPairFst / OpPairSnd
-// (read-only) so the snapshot stays valid for the full call; OpNewPair
-// admission lands in a follow-up sub-phase.
+// JITPairsBase returns an unsafe.Pointer to the start of the Pairs
+// backing array. Phase 6.3.4.m.4b: unlike the read-only slab snapshots
+// (Lists/Maps/F64Arrs/I64Arrs) the JIT writes new pair slots through
+// this base via inline OpNewPair, so we need a valid base whenever
+// cap(a.Pairs) > 0 even if len(a.Pairs) == 0 (the common case for the
+// first call after JITRegrowPairsCap). unsafe.SliceData gives the
+// backing array pointer regardless of len; it returns nil only when
+// cap == 0, in which case the JIT will deopt via StatusPairGrow on its
+// first inline OpNewPair (initial pairsCap=0 trips the cap check).
 func (a *Arenas) JITPairsBase() unsafe.Pointer {
-	if len(a.Pairs) == 0 {
-		return nil
+	return unsafe.Pointer(unsafe.SliceData(a.Pairs))
+}
+
+// PairsLen returns the current len of Arenas.Pairs. vm3jit snapshots
+// this into jitArenaCtx.pairsLen so inline OpNewPair (Phase 6.3.4.m.4b)
+// can bump an in-register append cursor without crossing back to Go.
+// The caller copies the updated cursor back into the slice header on
+// clean return so subsequent interp accesses see the JIT-allocated
+// pairs.
+func (a *Arenas) PairsLen() int {
+	return len(a.Pairs)
+}
+
+// PairsCap returns the current cap of Arenas.Pairs. vm3jit snapshots
+// this into jitArenaCtx.pairsCap as the grow-deopt threshold for inline
+// OpNewPair. When pairsLen reaches pairsCap the kernel raises
+// StatusPairGrow so the slab can be regrown without violating Go's
+// slice invariants.
+func (a *Arenas) PairsCap() int {
+	return cap(a.Pairs)
+}
+
+// JITCommitPairsLen rewinds Arenas.Pairs slice header to length n,
+// preserving the underlying backing array. Phase 6.3.4.m.4b: vm3jit
+// bumps a JIT-local pairsLen cursor in jitArenaCtx as inline OpNewPair
+// appends fresh slots; the caller commits the cursor here on clean
+// return (or on deopt) so subsequent interp accesses see the JIT-
+// allocated entries. n must lie in [len(a.Pairs), cap(a.Pairs)].
+func (a *Arenas) JITCommitPairsLen(n int) {
+	if n <= len(a.Pairs) {
+		return
 	}
-	return unsafe.Pointer(&a.Pairs[0])
+	if n > cap(a.Pairs) {
+		return
+	}
+	a.Pairs = a.Pairs[:n]
+}
+
+// JITRegrowPairsCap doubles cap(Arenas.Pairs) (minimum 16) by re-making
+// the backing array and copying live entries forward. Phase 6.3.4.m.4b:
+// invoked after a StatusPairGrow deopt so the immediate retry of an
+// OpNewPair-bearing JIT body has headroom to complete its allocations
+// without re-deopting. Doubling amortizes growth across runtime size
+// variation so a recursive allocator pays at most one deopt per cap
+// doubling. Existing handles into the old array stay live only for the
+// remainder of the JIT's deopt-spill path: callers that snapshot via
+// JITPairsBase must re-snapshot after a regrow.
+func (a *Arenas) JITRegrowPairsCap() {
+	cur := cap(a.Pairs)
+	newCap := cur * 2
+	if newCap < 16 {
+		newCap = 16
+	}
+	newSlice := make([]vmPair, len(a.Pairs), newCap)
+	copy(newSlice, a.Pairs)
+	a.Pairs = newSlice
 }

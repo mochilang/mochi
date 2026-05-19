@@ -808,6 +808,9 @@ func deoptStatusesUsedARM64(fn *vm3.Function) []int64 {
 	if hasMapSetI64I64(fn) {
 		s = append(s, StatusMapGrow)
 	}
+	if hasNewPair(fn) {
+		s = append(s, StatusPairGrow)
+	}
 	return s
 }
 
@@ -904,13 +907,14 @@ func hasSelfCallMixed(fn *vm3.Function, opts Options) bool {
 }
 
 // needsArenaCtxStash reports whether the prologue should emit MOV x20,
-// x4 to preserve the jitArenaCtx address across a BL/BLR call. Triggers
-// for either cross-fn or self OpCallMixed AND only when the slab-base
-// hoist does not also claim x20 (the two uses collide; admitting both
-// would need an extra callee-saved reg, which the current frame layout
-// does not reserve).
+// x4 to preserve the jitArenaCtx address. Triggers for cross-fn or self
+// OpCallMixed (the BL/BLR callee reloads x4 = ctx from x20), and for
+// inline OpNewPair (the body LDRs/STRs ctx.pairsLen and ctx.pairsCap off
+// x20). Only fires when the slab-base hoist does not also claim x20
+// (the two uses collide; admitting both would need an extra callee-
+// saved reg, which the current frame layout does not reserve).
 func needsArenaCtxStash(fn *vm3.Function, opts Options) bool {
-	if !hasCrossFnCallMixed(fn, opts) && !hasSelfCallMixed(fn, opts) {
+	if !hasCrossFnCallMixed(fn, opts) && !hasSelfCallMixed(fn, opts) && !hasNewPair(fn) {
 		return false
 	}
 	return hoistedCellReg(fn) < 0
@@ -1030,7 +1034,7 @@ func callMixedWordsARM64(fn, callee *vm3.Function, spillMask uint32, isSelf bool
 		branchWords = movImm64WordCount(addr) + 1 // MOVZ + BLR
 	}
 	deoptExtra := 0
-	if !isSelf && crossFnDeoptCallee(callee) {
+	if crossFnDeoptCallee(callee) {
 		deoptExtra = 2 // LDR x16,[x1] + CBNZ x16,passthrough
 	}
 	// 2*nSpill spill+reload + arg STRs + 2 STP + bumps + 1 MOV x4,x20 +
@@ -1039,22 +1043,32 @@ func callMixedWordsARM64(fn, callee *vm3.Function, spillMask uint32, isSelf bool
 	return 2*nSpill + nI64Args + nF64Args + nCellArgs + 2 + bumps + 1 + branchWords + 1 + 2 + 1 + deoptExtra
 }
 
-// crossFnDeoptCallee reports whether a cross-fn OpCallMixed callee can
-// raise a non-zero status code from a deopt-capable opcode (list push,
-// reg-reg div/mod). When true, the caller's BLR site emits the
-// LDR x16,[x1] + CBNZ x16,passthrough pair so a callee-side deopt
-// propagates back through the caller without writing the caller's own
-// status (the callee already did).
+// crossFnDeoptCallee reports whether an OpCallMixed callee can raise a
+// non-zero status code from a deopt-capable opcode (list push, reg-reg
+// div/mod, or inline OpNewPair which deopts on StatusPairGrow). When
+// true, the caller's BL/BLR site emits the LDR x16,[x1] + CBNZ x16,
+// passthrough pair so a callee-side deopt propagates back through the
+// caller without writing the caller's own status (the callee already
+// did). Used for both cross-fn and self-recursive OpCallMixed: when
+// fn calls itself and fn itself can deopt, the BL site needs the same
+// check (Phase 6.3.4.m.4b: make_tree's self-recursive call must
+// propagate StatusPairGrow up to jitCall).
 func crossFnDeoptCallee(callee *vm3.Function) bool {
-	return hasListPushI64(callee) || hasRegRegDivMod(callee)
+	return hasListPushI64(callee) || hasRegRegDivMod(callee) || hasNewPair(callee) || hasI64ArrayPushI64(callee)
 }
 
 // needsCrossFnDeoptPassthrough reports whether fn must emit a single
 // passthrough deopt block at the end of its code stream. True iff fn
-// has at least one cross-fn OpCallMixed whose callee can deopt; the
-// block is shared by every such site since they all need the same
-// shape (spill caller pinned regs, run frame epilogue, RET) and none
-// of them write *status (the callee already did).
+// has at least one OpCallMixed (cross-fn OR self-recursive) whose
+// callee can deopt; the block is shared by every such site since they
+// all need the same shape (spill caller pinned regs, run frame
+// epilogue, RET) and none of them write *status (the callee already
+// did).
+//
+// Phase 6.3.4.m.4b: self-recursive callees can now deopt (OpNewPair
+// raises StatusPairGrow), so the self-call BL site needs the same
+// LDR+CBNZ propagation as cross-fn; emit the shared passthrough block
+// when fn itself is deopt-capable and contains a self OpCallMixed.
 func needsCrossFnDeoptPassthrough(fn *vm3.Function, opts Options) bool {
 	if opts.Prog == nil {
 		return false
@@ -1065,6 +1079,9 @@ func needsCrossFnDeoptPassthrough(fn *vm3.Function, opts Options) bool {
 		}
 		idx := int(uint16(op.C))
 		if opts.SelfIdx >= 0 && idx == opts.SelfIdx {
+			if crossFnDeoptCallee(fn) {
+				return true
+			}
 			continue
 		}
 		if idx < 0 || idx >= len(opts.Prog.Funcs) {
@@ -1757,6 +1774,16 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 		stride := int64(vm3.JITPairSlabStride())
 		return movImm64WordCount(stride) + 4, nil
 
+	case vm3.OpNewPair:
+		// Cold form (16 inst). Phase 6.3.4.m.4b inline allocator. Snaps
+		// ctx.pairsLen/pairsCap from x20, deopts on cap exhaustion,
+		// computes slab addr at pairsBase (x19) + pairsLen*24, writes
+		// the gen+flags header u32 then fst/snd Cells, builds the
+		// ArenaPair handle into the destination Cell reg, then bumps
+		// pairsLen back into ctx.
+		stride := int64(vm3.JITPairSlabStride())
+		return movImm64WordCount(stride) + 15, nil
+
 	default:
 		return 0, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 	}
@@ -2074,7 +2101,7 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		callerI64 := int(fn.NumRegsI64)
 		callerF64 := int(fn.NumRegsF64)
 		callerCell := int(fn.NumRegsCell)
-		needsDeoptCheck := !isSelf && crossFnDeoptCallee(callee)
+		needsDeoptCheck := crossFnDeoptCallee(callee)
 		ws := make([]uint32, 0, callMixedWordsARM64(fn, callee, spillMask, isSelf))
 		for r := uint16(0); r < 7; r++ {
 			if spillMask&(1<<r) != 0 {
@@ -2143,7 +2170,21 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 			}
 			ws = append(ws, cbnz64(16, off))
 		}
-		ws = append(ws, movReg(xA, 17))
+		// Phase 6.3.4.m.4b: route the trampoline's x0 result into the
+		// caller's pinned register for the result bank declared by
+		// BankFlags. xA defaults to the i64 mapping (r2x); for BankCell
+		// callees the destination is r2cell(op.A) instead. f64 results
+		// move through a D-register fmov; the existing fmovDX helper
+		// covers it but the corpus has no f64-returning OpCallMixed so
+		// we leave that branch as ErrNotImplemented.
+		switch vm3.Bank(op.BankFlags) {
+		case vm3.BankCell:
+			ws = append(ws, movReg(r2cell(op.A), 17))
+		case vm3.BankF64:
+			return nil, fmt.Errorf("%w: OpCallMixed with f64 result", ErrNotImplemented)
+		default:
+			ws = append(ws, movReg(xA, 17))
+		}
 		return ws, nil
 
 	case vm3.OpNewList:
@@ -2950,6 +2991,69 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		ws = append(ws, mulReg(16, 16, 17))
 		ws = append(ws, addReg(16, 16, 19))
 		ws = append(ws, ldr64(xCellA, 16, sndOff/8))
+		return ws, nil
+
+	case vm3.OpNewPair:
+		// regsCell[A] = arenas.AllocPair(regsCell[B], regsCell[uint16(op.C)])
+		//
+		// Inline pair allocator (Phase 6.3.4.m.4b). The JIT bumps a
+		// snapshot of pairsLen kept in jitArenaCtx (x20) so make_tree-
+		// style recursive allocators do not cross back into Go for each
+		// pair. When pairsLen reaches pairsCap the JIT raises
+		// StatusPairGrow; jitCall regrows the slab on the Go side and
+		// retries the trampoline. The free-list reuse path on the Go
+		// side is skipped here: every JIT-allocated pair is appended at
+		// the slab tail with gen=0, so we never need to bump a slot's
+		// gen and the header write collapses to a single u32 STR.
+		//
+		// Cold form (16 inst):
+		//   LDR   x4,  [x20, #pairsLenImm12]   ; pairsLen
+		//   LDR   x17, [x20, #pairsCapImm12]   ; pairsCap
+		//   CMP   x4,  x17
+		//   B.HS  deopt_pairgrow                ; if pairsLen >= pairsCap
+		//   MOVZ  x17, #SIZEOF_VMPAIR           ; stride (24)
+		//   MUL   x16, x4,  x17                 ; slab byte offset
+		//   ADD   x16, x16, x19                 ; + pairsBase
+		//   MOVZ  w17, #1, LSL #16              ; header = flagAlive<<16 | gen=0
+		//   STR   w17, [x16, #0]                ; vmPair{gen,flags,pad}
+		//   STR   x_fst, [x16, #FST_OFFSET/8]   ; fst Cell
+		//   STR   x_snd, [x16, #SND_OFFSET/8]   ; snd Cell
+		//   UXTW  x_dst, w4                     ; idx → low 32 bits of handle
+		//   MOVK  x_dst, #0x8000, LSL #32       ; (ArenaPair=8) << 44
+		//   MOVK  x_dst, #0xFFFF, LSL #48       ; tagHandle = 0xFFFF
+		//   ADD   x4,  x4, #1                   ; pairsLen++
+		//   STR   x4,  [x20, #pairsLenImm12]    ; commit pairsLen
+		fstOff := uint32(vm3.JITPairFstOffset())
+		sndOff := uint32(vm3.JITPairSndOffset())
+		pairsLenImm12 := uint32(jitArenaCtxPairsLenOff()) / 8
+		pairsCapImm12 := uint32(jitArenaCtxPairsCapOff()) / 8
+		xCellB := r2cell(op.B)
+		xCellC := r2cell(uint16(op.C))
+		xCellA := r2cell(op.A)
+		stride := int64(vm3.JITPairSlabStride())
+		pgStart := deoptStartForStatus(fn, deoptStart, StatusPairGrow)
+		ws := make([]uint32, 0, movImm64WordCount(stride)+15)
+		ws = append(ws, ldr64(4, 20, pairsLenImm12))
+		ws = append(ws, ldr64(17, 20, pairsCapImm12))
+		ws = append(ws, cmpReg(4, 17))
+		bWord := pcMap[idx] + len(ws)
+		off, err := branchOff(bWord, pgStart, 19)
+		if err != nil {
+			return nil, fmt.Errorf("NewPair deopt branch: %w", err)
+		}
+		ws = append(ws, bCond(0x2, off)) // B.HS
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 4, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, movz(17, 1, 1)) // MOVZ w17, #1, LSL #16 → 0x10000
+		ws = append(ws, strW(17, 16, 0))
+		ws = append(ws, str64(xCellB, 16, fstOff/8))
+		ws = append(ws, str64(xCellC, 16, sndOff/8))
+		ws = append(ws, uxtwReg(xCellA, 4))
+		ws = append(ws, movk(xCellA, 0x8000, 2)) // MOVK x_dst, #0x8000, LSL #32
+		ws = append(ws, movk(xCellA, 0xFFFF, 3)) // MOVK x_dst, #0xFFFF, LSL #48
+		ws = append(ws, addImm64(4, 4, 1))
+		ws = append(ws, str64(4, 20, pairsLenImm12))
 		return ws, nil
 
 	case vm3.OpI64ArrayPushI64:

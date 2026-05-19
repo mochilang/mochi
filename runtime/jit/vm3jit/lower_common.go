@@ -25,6 +25,16 @@ const (
 	// never grows the table so it does not emit a deopt for grow,
 	// only for an empty-table miss (also routed via StatusMapGrow).
 	StatusMapGrow int64 = 3
+	// StatusPairGrow is the deopt code written by OpNewPair when the
+	// pair slab's len has reached cap; the JIT cannot extend the
+	// underlying Go slice in place and the slab must be regrown by
+	// the caller. The deopt block spills pinned regs and routes back
+	// through the interpreter at PC=0 (Phase 6.3.4.m.4b). jitCall
+	// recognizes this status, doubles the pair-slab cap (without
+	// touching len), re-snapshots the arena ctx, and re-enters the
+	// trampoline from PC=0 with the original args, mirroring the
+	// JITPreAllocList warm-cache retry pattern for OpListPushI64.
+	StatusPairGrow int64 = 4
 )
 
 // hasRegRegDivMod reports whether fn contains any reg-reg OpDivI64 or
@@ -196,11 +206,24 @@ func hasPairSnd(fn *vm3.Function) bool {
 	return false
 }
 
+// hasNewPair reports whether fn contains any OpNewPair. Each site
+// emits an inline cap check + conditional branch to the StatusPairGrow
+// deopt block (Phase 6.3.4.m.4b).
+func hasNewPair(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpNewPair {
+			return true
+		}
+	}
+	return false
+}
+
 // hasPairOp reports whether fn touches the Pair slab via any of the
-// JIT-lowered pair-arena ops (Phase 6.3.4.m.2). Used by the prologue
-// to decide whether to load pairsBase into the slab-base pin.
+// JIT-lowered pair-arena ops (Phase 6.3.4.m.2 reads, m.4b inline alloc).
+// Used by the prologue to decide whether to load pairsBase into the
+// slab-base pin.
 func hasPairOp(fn *vm3.Function) bool {
-	return hasPairFst(fn) || hasPairSnd(fn)
+	return hasPairFst(fn) || hasPairSnd(fn) || hasNewPair(fn)
 }
 
 // popcount32 counts set bits in v. Used to size OpCallI64 spill loops
