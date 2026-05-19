@@ -785,6 +785,16 @@ func (vm *VM) run() (Cell, error) {
 			_, _, idx := lst.DecodeHandle()
 			arenas.Lists[idx].cells[regsI64[uint16(op.C)]] = CInt(regsI64[op.B])
 			pc++
+		case OpListGetF64:
+			lst := regsCell[op.B]
+			_, _, idx := lst.DecodeHandle()
+			regsF64[op.A] = arenas.Lists[idx].cells[regsI64[uint16(op.C)]].Float()
+			pc++
+		case OpListSetF64:
+			lst := regsCell[op.A]
+			_, _, idx := lst.DecodeHandle()
+			arenas.Lists[idx].cells[regsI64[uint16(op.C)]] = CFloat(regsF64[op.B])
+			pc++
 
 		case OpNewMap:
 			regsCell[op.A] = arenas.AllocMap(int(uint16(op.C)))

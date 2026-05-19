@@ -109,10 +109,16 @@ const (
 	OpMapSetI64I64  // arenas.MapSetI64(regsCell[A], regsI64[B], regsI64[uint16(C)])
 	OpMapGetI64I64  // regsI64[A] = arenas.MapGetI64(regsCell[B], regsI64[uint16(C)])
 
-	// Phase 3.2+ placeholders. Bodies land in their own sub-phases.
-	OpListGetF64
+	// F64 list ops (Phase 6.3.4.j.1). Mirror OpListGetI64/OpListSetI64
+	// but exchange the f64 register bank with the Cell-encoded payload
+	// (CFloat round-trip). Used by n_body to keep position/velocity
+	// arrays of f64 values out of the i64 register pressure.
+	OpListGetF64 // regsF64[A] = arenas.Lists[idx].cells[regsI64[uint16(C)]].Float()
+	OpListSetF64 // arenas list at regsCell[A] at regsI64[uint16(C)] = CFloat(regsF64[B])
+
+	// Cell list ops (Phase 3.6 placeholder). Bodies land when the
+	// struct/closure/set lowering needs untyped Cell payloads.
 	OpListGetCell
-	OpListSetF64
 	OpListSetCell
 
 	// F64 compare-and-branch (Phase 6.2b). C carries target PC (uint16).
