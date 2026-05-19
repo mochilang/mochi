@@ -126,21 +126,36 @@ func (a *Arenas) regrowScratchList(idx uint32) Cell {
 	return MakeHandle(ArenaList, l.gen, idx)
 }
 
-// AllocMap reserves an empty open-addressed map slot.
+// AllocMap reserves an open-addressed map slot. capHint is the expected
+// number of inserts the caller plans to perform; when > 0 the table is
+// pre-sized to the smallest power-of-two that holds capHint entries
+// without crossing the load-factor 0.5 grow trigger, so the first n
+// inserts skip the otherwise log(n) growMap rehashes. capHint == 0
+// keeps the historical lazy-alloc shape (empty table, first insert
+// grows to mapInitCap).
 func (a *Arenas) AllocMap(capHint int) Cell {
 	idx, gen := a.takeMapSlot(capHint)
 	return MakeHandle(ArenaMap, gen, idx)
 }
 
 func (a *Arenas) takeMapSlot(capHint int) (idx uint32, gen uint16) {
+	tabLen := 0
+	if capHint > 0 {
+		tabLen = mapCapForEntries(capHint)
+	}
 	if n := len(a.freeMaps); n > 0 {
 		idx = a.freeMaps[n-1]
 		a.freeMaps = a.freeMaps[:n-1]
 		a.Maps[idx].gen++
 		gen = a.Maps[idx].gen
 		a.Maps[idx].nLive = 0
-		if cap(a.Maps[idx].table) < capHint {
-			a.Maps[idx].table = make([]mapEntry, 0, capHint)
+		if tabLen > 0 {
+			if cap(a.Maps[idx].table) < tabLen {
+				a.Maps[idx].table = make([]mapEntry, tabLen)
+			} else {
+				a.Maps[idx].table = a.Maps[idx].table[:tabLen]
+				clear(a.Maps[idx].table)
+			}
 		} else {
 			a.Maps[idx].table = a.Maps[idx].table[:0]
 		}
@@ -148,9 +163,13 @@ func (a *Arenas) takeMapSlot(capHint int) (idx uint32, gen uint16) {
 		return
 	}
 	idx = uint32(len(a.Maps))
+	var tab []mapEntry
+	if tabLen > 0 {
+		tab = make([]mapEntry, tabLen)
+	}
 	a.Maps = append(a.Maps, vmMap{
 		flags: flagAlive,
-		table: make([]mapEntry, 0, capHint),
+		table: tab,
 	})
 	return idx, 0
 }
