@@ -1510,7 +1510,7 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 		if mapKernelOperandClobber(op) {
 			return 0, fmt.Errorf("%w: opcode %d (MapSetI64I64 key/val in slots 4..6 collides with kernel scratch)", ErrNotImplemented, op.Code)
 		}
-		return mapSetI64I64WordsARM64 + mapScratchSpillWordsARM64(fn), nil
+		return mapSetI64I64WordsARM64 + 2*mapScratchSpillWordsARM64(fn), nil
 
 	case vm3.OpMapGetI64I64:
 		// Phase 6.2d.2.d step 4 mirror of OpMapSetI64I64: inline open-
@@ -1524,7 +1524,7 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 		if mapKernelOperandClobber(op) {
 			return 0, fmt.Errorf("%w: opcode %d (MapGetI64I64 dst/key in slots 4..6 collides with kernel scratch)", ErrNotImplemented, op.Code)
 		}
-		return mapGetI64I64WordsARM64 + mapScratchSpillWordsARM64(fn), nil
+		return mapGetI64I64WordsARM64 + 2*mapScratchSpillWordsARM64(fn), nil
 
 	case vm3.OpTailCallMixed:
 		// Self-tail-call with arg-base 0 lowers to a single backward B
@@ -2902,7 +2902,11 @@ const mapGetI64I64WordsARM64 = 36
 // and x13/x14/x15 carry no live data the kernel needs to preserve).
 // Three STRs at entry, three matching LDRs at exit; this helper returns
 // the entry-half count so the body's internal labels can shift by +N
-// while the buffer is sized with `mapXWordsARM64 + 2*spillW`.
+// while the buffer is sized with `mapXWordsARM64 + 2*spillW`. Phase
+// 6.3.4.f.3: wordCountARM64Body must also predict `mapXWordsARM64 +
+// 2*spillW` (the buffer cap) rather than `mapXWordsARM64 + spillW`;
+// otherwise the verifier rejects every map kernel emit when
+// NumRegsI64 > 4, silently preventing JIT admission.
 func mapScratchSpillWordsARM64(fn *vm3.Function) int {
 	if fn.NumRegsI64 > 4 {
 		return 3
