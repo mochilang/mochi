@@ -196,6 +196,59 @@ func calleeSavedPairRegs(fn *vm3.Function) []uint32 {
 // (used by both arch-specific lowering and the arch-independent
 // admissibility check in compile.go).
 
+// slabKind discriminates which Arena slab a Cell-bank fn references
+// through its inline opcodes. Phase 6.2d.2.d step 4 extends the
+// single-slab hoist from list-only to admit map kernels; subsequent
+// sub-phases (sets, structs) will add more variants. fns that mix
+// kinds (e.g. both list and map opcodes) fall back to slabKindNone
+// because the current frame layout only pins one slab base in x19.
+type slabKind uint8
+
+const (
+	slabKindNone slabKind = iota
+	slabKindList
+	slabKindMap
+)
+
+// slabKindARM64 classifies fn by which slab its inline body references.
+// Returns slabKindNone when fn references neither slab or both (mixed
+// kernels are rejected by checkCellBankAdmissible separately so they
+// never reach codegen).
+func slabKindARM64(fn *vm3.Function) slabKind {
+	hasList := hasListGetI64(fn) || hasListPushI64(fn)
+	hasMap := hasMapOpI64(fn)
+	switch {
+	case hasList && !hasMap:
+		return slabKindList
+	case hasMap && !hasList:
+		return slabKindMap
+	default:
+		return slabKindNone
+	}
+}
+
+// slabBaseOffARM64 returns the byte offset within jitArenaCtx of the
+// slab base pointer the prologue should load into x19. Mirrors the
+// field order in jitArenaCtx: listsBase at offset 0, mapsBase at 8.
+// Fns with no slab kind default to listsBase so the existing list-only
+// admit set keeps its prologue word count unchanged.
+func slabBaseOffARM64(fn *vm3.Function) uint32 {
+	if slabKindARM64(fn) == slabKindMap {
+		return 8
+	}
+	return 0
+}
+
+// slabStrideARM64 returns the byte distance between consecutive slab
+// entries for fn's slab kind. Used by the slab-base hoist (UXTW + MOV
+// stride + MUL + ADD) and by per-op cold-form recompute paths.
+func slabStrideARM64(fn *vm3.Function) int64 {
+	if slabKindARM64(fn) == slabKindMap {
+		return int64(vm3.JITMapSlabStride())
+	}
+	return int64(vm3.JITListSlabStride())
+}
+
 // hoistedCellReg returns the regsCell index whose slab byte address can
 // be cached in x20 for the lifetime of the call, or -1 if no hoist
 // applies. Phase 6.2d.2.c.1 caches regsCell[0]'s slab base when fn has
@@ -220,7 +273,7 @@ func calleeSavedPairRegs(fn *vm3.Function) []uint32 {
 // (lowerARM64 emits MOV x20, x4 at prologue end when
 // hasCrossFnCallMixed and no slab hoist applies).
 func hoistedCellReg(fn *vm3.Function) int {
-	if fn.NumRegsCell == 1 && (hasListGetI64(fn) || hasListPushI64(fn)) {
+	if fn.NumRegsCell == 1 && slabKindARM64(fn) != slabKindNone {
 		return 0
 	}
 	return -1
@@ -234,7 +287,7 @@ func hoistPrologueWordsARM64(fn *vm3.Function) int {
 	if hoistedCellReg(fn) < 0 {
 		return 0
 	}
-	stride := int64(vm3.JITListSlabStride())
+	stride := slabStrideARM64(fn)
 	// Slab base hoist: UXTW + MOV stride + MUL + ADD.
 	n := movImm64WordCount(stride) + 3
 	if hoistsCellsPtrARM64(fn) {
@@ -257,6 +310,13 @@ func hoistPrologueWordsARM64(fn *vm3.Function) int {
 // hoist alone. Lists_fill_sum's fill (NumRegsI64=3) and sum (=4) fit.
 func slabFieldHoistOKARM64(fn *vm3.Function) bool {
 	if hoistedCellReg(fn) < 0 {
+		return false
+	}
+	// Map kernels (Phase 6.2d.2.d step 4) read table.ptr / cap /
+	// nLive directly off x20 inside the inline kernel and do not pin
+	// dedicated x21..x24 hoist regs yet. Skip the list-only field
+	// hoists so the frame keeps its smaller layout.
+	if slabKindARM64(fn) != slabKindList {
 		return false
 	}
 	return int(fn.NumRegsI64) <= 7
@@ -353,6 +413,9 @@ func deoptStatusesUsedARM64(fn *vm3.Function) []int64 {
 	}
 	if hasListPushI64(fn) {
 		s = append(s, StatusListGrow)
+	}
+	if hasMapSetI64I64(fn) {
+		s = append(s, StatusMapGrow)
 	}
 	return s
 }
@@ -752,14 +815,14 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 		ws = append(ws, ldrD(r2d(uint16(r)), 2, r))
 	}
 	// Cell-bank fns: load each pinned Cell reg from regsCell base (x3),
-	// then cache arenas.Lists base in x19 from the jitArenaCtx (x4).
-	// listsBase lives at offset 0 of jitArenaCtx; future bases (mapsBase,
-	// ...) move into x20.
+	// then cache the slab base pointer in x19 from the jitArenaCtx (x4).
+	// listsBase lives at offset 0 of jitArenaCtx; mapsBase at offset 8.
+	// slabBaseOffARM64(fn) picks the right one for the body's slab kind.
 	for r := uint32(0); r < uint32(fn.NumRegsCell); r++ {
 		ws = append(ws, ldr64(r2cell(uint16(r)), 3, r))
 	}
 	if cellScratch > 0 {
-		ws = append(ws, ldr64(19, 4, 0))
+		ws = append(ws, ldr64(19, 4, slabBaseOffARM64(fn)/8))
 	}
 	// Slab-base hoist (Phase 6.2d.2.c.1): when one cell reg owns every
 	// list reference in fn, compute &arenas.Lists[handleIdx] once into
@@ -768,7 +831,7 @@ func lowerARM64(fn *vm3.Function, opts Options) ([]uint32, error) {
 	// lifetime of the call (no opcode in the whitelist mutates a cell
 	// reg), so the cached base is loop-invariant by construction.
 	if h := hoistedCellReg(fn); h >= 0 {
-		stride := int64(vm3.JITListSlabStride())
+		stride := slabStrideARM64(fn)
 		ws = append(ws, uxtwReg(16, r2cell(uint16(h))))
 		ws = append(ws, movImm64(17, stride)...)
 		ws = append(ws, mulReg(16, 16, 17))
@@ -989,6 +1052,30 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		}
 		stride := int64(vm3.JITListSlabStride())
 		return movImm64WordCount(stride) + 14, nil
+
+	case vm3.OpMapSetI64I64:
+		// Phase 6.2d.2.d step 4: inline open-addressed map set with a
+		// load-factor 0.5 grow check that deopts via StatusMapGrow.
+		// Only admitted when the map handle lives in the hoisted Cell
+		// reg (regsCell[0]) so the slab byte address is pre-pinned in
+		// x20. The kernel additionally uses x13/x14/x15 as scratch +
+		// loop-invariant pins; gate on NumRegsI64 <= 4 so r2x never
+		// emits those host regs for vm3 i64 regs. See
+		// mapSetI64I64WordsARM64 for the body shape.
+		if h := hoistedCellReg(fn); h < 0 || int(op.A) != h || slabKindARM64(fn) != slabKindMap || fn.NumRegsI64 > 4 {
+			return 0, fmt.Errorf("%w: opcode %d (MapSetI64I64 without map-slab hoist or NumRegsI64>4)", ErrNotImplemented, op.Code)
+		}
+		return mapSetI64I64WordsARM64, nil
+
+	case vm3.OpMapGetI64I64:
+		// Phase 6.2d.2.d step 4 mirror of OpMapSetI64I64: inline open-
+		// addressed lookup with empty-table early-return. Same hoist
+		// gate as MapSet plus the NumRegsI64 <= 4 ceiling so x13..x15
+		// stay free for the probe loop.
+		if h := hoistedCellReg(fn); h < 0 || int(op.B) != h || slabKindARM64(fn) != slabKindMap || fn.NumRegsI64 > 4 {
+			return 0, fmt.Errorf("%w: opcode %d (MapGetI64I64 without map-slab hoist or NumRegsI64>4)", ErrNotImplemented, op.Code)
+		}
+		return mapGetI64I64WordsARM64, nil
 
 	case vm3.OpTailCallMixed:
 		// Self-tail-call with arg-base 0 lowers to a single backward B
@@ -1380,6 +1467,255 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		ws = append(ws, sbfx48(xA, 17))
 		return ws, nil
 
+	case vm3.OpMapSetI64I64:
+		// Phase 6.2d.2.d step 4: inline open-addressed map set on the
+		// hoisted Cell reg (x20 = &arenas.Maps[idx]).
+		//
+		//   pre-amble (7 words):
+		//     LDR  x4,  [x20, #tableLen]        ; cap (table.len)
+		//     LDR  W16, [x20, #nLive]           ; current nLive
+		//     ADD  x16, x16, #1                 ; nLive+1
+		//     CMP  x4,  x16, LSL #1             ; cap vs 2*(nLive+1)
+		//     B.LO deopt_mapgrow                ; load factor >= 0.5
+		//     SUB  x14, x4,  #1                 ; mask = cap - 1
+		//     MOV  x15, #SIZEOF_MAPENTRY        ; probe stride (24)
+		//   splitmix64 → x4 = h (14 words)
+		//   AND  x17, x4, x14                   ; pos = h & mask
+		//   probe_top:
+		//     LDR  x13, [x20, #tablePtr]
+		//     MADD x16, x17, x15, x13           ; entry_addr
+		//     LDR  x13, [x16, #entry.hash]
+		//     CBZ  x13, fill_block              ; empty slot
+		//     CMP  x13, x4                       ; hash match?
+		//     B.NE next
+		//     LDR  x13, [x16, #entry.key]       ; e.key Cell
+		//     SBFX x13, x13, #0, #48            ; unbox int48
+		//     CMP  x13, xKey                     ; key match?
+		//     B.NE next
+		//     MOVZ x13, #0xFFFA, LSL #48        ; tag
+		//     BFI  x13, xVal, #0, #48           ; box value
+		//     STR  x13, [x16, #entry.value]
+		//     B    done
+		//   next: ADD pos+1; AND pos&mask; B probe_top
+		//   fill_block:
+		//     STR  x4,  [x16, #entry.hash]      ; e.hash = h
+		//     MOVZ x13, #0xFFFA, LSL #48        ; tag
+		//     BFI  x13, xKey, #0, #48           ; box key
+		//     STR  x13, [x16, #entry.key]
+		//     BFI  x13, xVal, #0, #48           ; replace low48 with val (tag preserved)
+		//     STR  x13, [x16, #entry.value]
+		//     LDR  W13, [x20, #nLive]           ; reload nLive
+		//     ADD  x13, x13, #1                 ; nLive+1
+		//     STR  W13, [x20, #nLive]           ; commit
+		xKey := r2x(fn, op.B)
+		xVal := r2x(fn, uint16(op.C))
+		mgStart := deoptStartForStatus(fn, deoptStart, StatusMapGrow)
+		tableOff := uint32(vm3.JITMapTableOffset())
+		tablePtrImm12 := tableOff / 8
+		tableLenImm12 := (tableOff + 8) / 8
+		entryHashImm12 := uint32(vm3.JITMapEntryHashOffset()) / 8
+		entryKeyImm12 := uint32(vm3.JITMapEntryKeyOffset()) / 8
+		entryValImm12 := uint32(vm3.JITMapEntryValueOffset()) / 8
+		nLiveImm12 := uint32(vm3.JITMapNLiveOffset()) / 4
+		stride := uint32(vm3.JITMapEntryStride())
+
+		opStart := pcMap[idx]
+		endLabel := pcMap[idx+1]
+
+		ws := make([]uint32, 0, mapSetI64I64WordsARM64)
+		// 0..6: pre-amble.
+		ws = append(ws, ldr64(4, 20, tableLenImm12))      // 0
+		ws = append(ws, ldrW(16, 20, nLiveImm12))         // 1
+		ws = append(ws, addImm64(16, 16, 1))              // 2
+		ws = append(ws, cmpShiftLSL(4, 16, 1))            // 3
+		bWord := opStart + len(ws)                        // 4
+		off, err := branchOff(bWord, mgStart, 19)
+		if err != nil {
+			return nil, fmt.Errorf("MapSetI64I64 grow deopt: %w", err)
+		}
+		ws = append(ws, bCond(0x3, off))                  // 4: B.LO
+		ws = append(ws, subImm64(14, 4, 1))               // 5: SUB mask
+		ws = append(ws, movz(15, stride, 0))              // 6: MOV stride
+
+		// 7..20: splitmix64 → x4 = h.
+		ws = append(ws, emitSplitmix64ARM64(xKey)...)
+
+		// 21: AND pos.
+		ws = append(ws, andReg(17, 4, 14))
+
+		// 22..35: probe loop body.
+		probeTopWord := opStart + len(ws)                 // 22
+		fillBlockWord := opStart + 39
+		nextWord := opStart + 36
+
+		ws = append(ws, ldr64(13, 20, tablePtrImm12))     // 22
+		ws = append(ws, maddReg(16, 17, 15, 13))          // 23
+		ws = append(ws, ldr64(13, 16, entryHashImm12))    // 24
+		cbzWord := opStart + len(ws)                      // 25
+		off, err = branchOff(cbzWord, fillBlockWord, 19)
+		if err != nil {
+			return nil, fmt.Errorf("MapSetI64I64 fill CBZ: %w", err)
+		}
+		ws = append(ws, cbz64(13, off))                   // 25
+		ws = append(ws, cmpReg(13, 4))                    // 26
+		bneWord := opStart + len(ws)                      // 27
+		off, err = branchOff(bneWord, nextWord, 19)
+		if err != nil {
+			return nil, fmt.Errorf("MapSetI64I64 hash mismatch: %w", err)
+		}
+		ws = append(ws, bCond(0x1, off))                  // 27: B.NE
+		ws = append(ws, ldr64(13, 16, entryKeyImm12))     // 28
+		ws = append(ws, sbfx48(13, 13))                   // 29
+		ws = append(ws, cmpReg(13, xKey))                 // 30
+		bneWord = opStart + len(ws)                       // 31
+		off, err = branchOff(bneWord, nextWord, 19)
+		if err != nil {
+			return nil, fmt.Errorf("MapSetI64I64 key mismatch: %w", err)
+		}
+		ws = append(ws, bCond(0x1, off))                  // 31: B.NE
+		ws = append(ws, movz(13, 0xFFFA, 3))              // 32
+		ws = append(ws, bfi48(13, xVal))                  // 33
+		ws = append(ws, str64(13, 16, entryValImm12))     // 34
+		bWord = opStart + len(ws)                         // 35
+		off, err = branchOff(bWord, endLabel, 26)
+		if err != nil {
+			return nil, fmt.Errorf("MapSetI64I64 done B: %w", err)
+		}
+		ws = append(ws, bImm(off))                        // 35: B done
+
+		// 36..38: next.
+		ws = append(ws, addImm64(17, 17, 1))              // 36
+		ws = append(ws, andReg(17, 17, 14))               // 37
+		bWord = opStart + len(ws)                         // 38
+		off, err = branchOff(bWord, probeTopWord, 26)
+		if err != nil {
+			return nil, fmt.Errorf("MapSetI64I64 probe back: %w", err)
+		}
+		ws = append(ws, bImm(off))                        // 38: B probe_top
+
+		// 39..47: fill_block.
+		ws = append(ws, str64(4, 16, entryHashImm12))     // 39
+		ws = append(ws, movz(13, 0xFFFA, 3))              // 40
+		ws = append(ws, bfi48(13, xKey))                  // 41
+		ws = append(ws, str64(13, 16, entryKeyImm12))     // 42
+		ws = append(ws, bfi48(13, xVal))                  // 43: replace low48 of x13 with val, tag in bits 48..63 preserved
+		ws = append(ws, str64(13, 16, entryValImm12))     // 44
+		ws = append(ws, ldrW(13, 20, nLiveImm12))         // 45
+		ws = append(ws, addImm64(13, 13, 1))              // 46
+		ws = append(ws, strW(13, 20, nLiveImm12))         // 47
+		return ws, nil
+
+	case vm3.OpMapGetI64I64:
+		// Phase 6.2d.2.d step 4 mirror of OpMapSetI64I64: inline open-
+		// addressed lookup. xA receives e.value.Int() on hit, or 0 on
+		// empty-table / miss.
+		//
+		//   pre-amble (4 words):
+		//     LDR  x4,  [x20, #tableLen]        ; cap
+		//     CBZ  x4,  miss                    ; empty table → 0
+		//     SUB  x14, x4, #1                  ; mask
+		//     MOV  x15, #SIZEOF_MAPENTRY
+		//   splitmix64 → x4 = h (14 words)
+		//   AND  x17, x4, x14                   ; pos
+		//   probe_top:
+		//     LDR  x13, [x20, #tablePtr]
+		//     MADD x16, x17, x15, x13
+		//     LDR  x13, [x16, #entry.hash]
+		//     CBZ  x13, miss                    ; empty entry → 0
+		//     CMP  x13, x4
+		//     B.NE next
+		//     LDR  x13, [x16, #entry.key]
+		//     SBFX x13, x13, #0, #48
+		//     CMP  x13, xKey
+		//     B.NE next
+		//     LDR  x13, [x16, #entry.value]
+		//     SBFX xA,  x13, #0, #48            ; result
+		//     B    done
+		//   next: ADD pos+1; AND mask; B probe_top
+		//   miss: MOVZ xA, #0                   ; xA = 0
+		xKey := r2x(fn, uint16(op.C))
+		tableOff := uint32(vm3.JITMapTableOffset())
+		tablePtrImm12 := tableOff / 8
+		tableLenImm12 := (tableOff + 8) / 8
+		entryHashImm12 := uint32(vm3.JITMapEntryHashOffset()) / 8
+		entryKeyImm12 := uint32(vm3.JITMapEntryKeyOffset()) / 8
+		entryValImm12 := uint32(vm3.JITMapEntryValueOffset()) / 8
+		stride := uint32(vm3.JITMapEntryStride())
+
+		opStart := pcMap[idx]
+		endLabel := pcMap[idx+1]
+		missWord := opStart + 35
+		nextWord := opStart + 32
+
+		ws := make([]uint32, 0, mapGetI64I64WordsARM64)
+		// 0..3: pre-amble.
+		ws = append(ws, ldr64(4, 20, tableLenImm12))      // 0
+		cbzWord := opStart + len(ws)                      // 1
+		off, err := branchOff(cbzWord, missWord, 19)
+		if err != nil {
+			return nil, fmt.Errorf("MapGetI64I64 empty CBZ: %w", err)
+		}
+		ws = append(ws, cbz64(4, off))                    // 1
+		ws = append(ws, subImm64(14, 4, 1))               // 2
+		ws = append(ws, movz(15, stride, 0))              // 3
+
+		// 4..17: splitmix64 → x4 = h.
+		ws = append(ws, emitSplitmix64ARM64(xKey)...)
+
+		// 18: AND pos.
+		ws = append(ws, andReg(17, 4, 14))
+
+		// 19..31: probe loop body.
+		probeTopWord := opStart + len(ws)                 // 19
+
+		ws = append(ws, ldr64(13, 20, tablePtrImm12))     // 19
+		ws = append(ws, maddReg(16, 17, 15, 13))          // 20
+		ws = append(ws, ldr64(13, 16, entryHashImm12))    // 21
+		cbzWord = opStart + len(ws)                       // 22
+		off, err = branchOff(cbzWord, missWord, 19)
+		if err != nil {
+			return nil, fmt.Errorf("MapGetI64I64 miss CBZ: %w", err)
+		}
+		ws = append(ws, cbz64(13, off))                   // 22
+		ws = append(ws, cmpReg(13, 4))                    // 23
+		bneWord := opStart + len(ws)                      // 24
+		off, err = branchOff(bneWord, nextWord, 19)
+		if err != nil {
+			return nil, fmt.Errorf("MapGetI64I64 hash mismatch: %w", err)
+		}
+		ws = append(ws, bCond(0x1, off))                  // 24: B.NE
+		ws = append(ws, ldr64(13, 16, entryKeyImm12))     // 25
+		ws = append(ws, sbfx48(13, 13))                   // 26
+		ws = append(ws, cmpReg(13, xKey))                 // 27
+		bneWord = opStart + len(ws)                       // 28
+		off, err = branchOff(bneWord, nextWord, 19)
+		if err != nil {
+			return nil, fmt.Errorf("MapGetI64I64 key mismatch: %w", err)
+		}
+		ws = append(ws, bCond(0x1, off))                  // 28: B.NE
+		ws = append(ws, ldr64(13, 16, entryValImm12))     // 29
+		ws = append(ws, sbfx48(xA, 13))                   // 30: xA = value.Int()
+		bWord := opStart + len(ws)                        // 31
+		off, err = branchOff(bWord, endLabel, 26)
+		if err != nil {
+			return nil, fmt.Errorf("MapGetI64I64 done B: %w", err)
+		}
+		ws = append(ws, bImm(off))                        // 31: B done
+
+		// 32..34: next.
+		ws = append(ws, addImm64(17, 17, 1))              // 32
+		ws = append(ws, andReg(17, 17, 14))               // 33
+		bWord = opStart + len(ws)                         // 34
+		off, err = branchOff(bWord, probeTopWord, 26)
+		if err != nil {
+			return nil, fmt.Errorf("MapGetI64I64 probe back: %w", err)
+		}
+		ws = append(ws, bImm(off))                        // 34: B probe_top
+
+		// 35: miss → xA = 0.
+		ws = append(ws, movz(xA, 0, 0))                   // 35
+		return ws, nil
+
 	case vm3.OpTailCallMixed:
 		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx || op.B != 0 {
 			return nil, fmt.Errorf("%w: TailCallMixed to non-self idx %d or non-zero argBase (SelfIdx=%d, B=%d)",
@@ -1616,6 +1952,14 @@ func cmpReg(xn, xm uint32) uint32 {
 	return 0xEB00001F | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5)
 }
 
+// cmpShiftLSL encodes CMP Xn, Xm, LSL #amount (64-bit shifted register
+// compare, alias for SUBS XZR, Xn, Xm, LSL #amount). amount fits in 6
+// bits (0..63). Used by OpMapSetI64I64 to fuse the LSL #1 of nLive+1
+// into the cap-vs-2*(nLive+1) load-factor check.
+func cmpShiftLSL(xn, xm, amount uint32) uint32 {
+	return 0xEB00001F | ((xm & 0x1F) << 16) | ((amount & 0x3F) << 10) | ((xn & 0x1F) << 5)
+}
+
 func movReg(xd, xm uint32) uint32 {
 	return 0xAA0003E0 | ((xm & 0x1F) << 16) | (xd & 0x1F)
 }
@@ -1741,6 +2085,116 @@ func str64RegLsl3(xt, xn, xm uint32) uint32 {
 // into vmList.len at byte offset 4.
 func strW(wt, xn, imm12 uint32) uint32 {
 	return 0xB9000000 | ((imm12 & 0xFFF) << 10) | ((xn & 0x1F) << 5) | (wt & 0x1F)
+}
+
+// ldrW encodes LDR Wt, [Xn, #imm12*4] (unsigned-offset 32-bit, zero-
+// extended into Xt). Used by OpMapSetI64I64 to read vmMap.nLive (a u32
+// at byte offset 4 of vmMap).
+func ldrW(wt, xn, imm12 uint32) uint32 {
+	return 0xB9400000 | ((imm12 & 0xFFF) << 10) | ((xn & 0x1F) << 5) | (wt & 0x1F)
+}
+
+// subImm64 encodes SUB Xd, Xn, #imm12 (64-bit, shift=0). Mirror of
+// addImm64 with bit 30 set. Used by OpMapSetI64I64/OpMapGetI64I64 to
+// compute mask = cap - 1.
+func subImm64(xd, xn, imm12 uint32) uint32 {
+	return 0xD1000000 | ((imm12 & 0xFFF) << 10) | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+// andReg encodes AND Xd, Xn, Xm (64-bit shifted register, shift=LSL #0,
+// N=0). Used by OpMapSetI64I64/OpMapGetI64I64 to compute pos = h & mask
+// inside the probe loop.
+func andReg(xd, xn, xm uint32) uint32 {
+	return 0x8A000000 | ((xm & 0x1F) << 16) | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+// eorLsr encodes EOR Xd, Xn, Xm, LSR #amount (64-bit shifted register,
+// shift=01 LSR, N=0). Used by the splitmix64 hash sequence.
+func eorLsr(xd, xn, xm, amount uint32) uint32 {
+	return 0xCA400000 | ((xm & 0x1F) << 16) | ((amount & 0x3F) << 10) | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+// lslImm encodes LSL Xd, Xn, #imm (64-bit logical shift left, alias for
+// UBFM Xd, Xn, #(-imm MOD 64), #(63-imm)). imm must be in 1..63. Used
+// by OpMapSetI64I64 to compute 2*(nLive+1).
+func lslImm(xd, xn, imm uint32) uint32 {
+	immr := (64 - imm) & 0x3F
+	imms := uint32(63) - imm
+	return 0xD3400000 | (immr << 16) | (imms << 10) | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+// orrImmBit0 encodes ORR Xd, Xn, #1 (logical immediate, N=1, immr=0,
+// imms=0 → mask 0x1). Used by the splitmix64 hash sequence to force
+// the low bit so a zero-hash never collides with the "empty entry"
+// sentinel in mapEntry.hash.
+func orrImmBit0(xd, xn uint32) uint32 {
+	return 0xB2400000 | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+// maddReg encodes MADD Xd, Xn, Xm, Xa (64-bit multiply-add). Used by
+// OpMapSetI64I64/OpMapGetI64I64 to compute the probe entry address
+// (&entry = pos * sizeof(mapEntry) + tablePtr) in one instruction.
+func maddReg(xd, xn, xm, xa uint32) uint32 {
+	return 0x9B000000 | ((xm & 0x1F) << 16) | ((xa & 0x1F) << 10) | ((xn & 0x1F) << 5) | (xd & 0x1F)
+}
+
+// splitmix64C1 and splitmix64C2 are the multiplier constants for the
+// hashI64 sequence in runtime/vm3/maps.go. Kept here as int64 (the
+// uint64 → int64 cast is a bit-pattern reinterpret) so the JIT's
+// movImm64 helper can bake them into the instruction stream alongside
+// the rest of the hash code. The two-step uint64-var → int64 pattern
+// dodges Go's constant-overflow rule (both values have bit 63 set).
+var (
+	splitmix64C1U uint64 = 0xbf58476d1ce4e5b9
+	splitmix64C2U uint64 = 0x94d049bb133111eb
+	splitmix64C1         = int64(splitmix64C1U)
+	splitmix64C2         = int64(splitmix64C2U)
+)
+
+// mapSetI64I64WordsARM64 is the static word count of an inline
+// OpMapSetI64I64 lowering. The body is:
+//
+//	7  pre-amble (LDR cap, LDR W nLive, ADD nLive+1, CMP-LSL #1,
+//	   B.LO deopt, SUB mask, MOV stride)
+//	14 splitmix64 (EOR + 4-word movImm + MUL + EOR + 4-word movImm +
+//	   MUL + EOR + ORR-imm-1)
+//	1  AND pos
+//	14 probe loop body (LDR tablePtr, MADD entry_addr, LDR hash,
+//	   CBZ fill, CMP hash, B.NE next, LDR key, SBFX, CMP key,
+//	   B.NE next, MOVZ tag, BFI val, STR value, B done)
+//	3  next (ADD pos+1, AND mask, B probe_top)
+//	9  fill block (STR hash, MOVZ tag, BFI key, STR key, BFI val,
+//	   STR value, LDR W nLive, ADD nLive+1, STR W nLive)
+const mapSetI64I64WordsARM64 = 48
+
+// mapGetI64I64WordsARM64 is the static word count of an inline
+// OpMapGetI64I64 lowering. Same scaffolding as mapSetI64I64WordsARM64
+// minus the grow check (LDR cap + CBZ empty), the fill block, and the
+// nLive bump.
+const mapGetI64I64WordsARM64 = 36
+
+// emitSplitmix64ARM64 emits the 14-word splitmix64 sequence that
+// computes h = hashI64(xKey) into x4. Uses x16 as the multiplier
+// scratch. Output is identical to runtime/vm3/maps.go's hashI64:
+//
+//	x4 = uint64(xKey)
+//	x4 ^= x4 >> 30
+//	x4 *= 0xbf58476d1ce4e5b9
+//	x4 ^= x4 >> 27
+//	x4 *= 0x94d049bb133111eb
+//	x4 ^= x4 >> 31
+//	x4 |= 1
+func emitSplitmix64ARM64(xKey uint32) []uint32 {
+	ws := make([]uint32, 0, 14)
+	ws = append(ws, eorLsr(4, xKey, xKey, 30))
+	ws = append(ws, movImm64(16, splitmix64C1)...)
+	ws = append(ws, mulReg(4, 4, 16))
+	ws = append(ws, eorLsr(4, 4, 4, 27))
+	ws = append(ws, movImm64(16, splitmix64C2)...)
+	ws = append(ws, mulReg(4, 4, 16))
+	ws = append(ws, eorLsr(4, 4, 4, 31))
+	ws = append(ws, orrImmBit0(4, 4))
+	return ws
 }
 
 // strD encodes STR Dt, [Xn, #imm12*8] (unsigned-offset 64-bit FP).

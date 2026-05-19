@@ -18,6 +18,13 @@ const (
 	// with the spilled regs reproduces the next iteration of the
 	// fill loop without losing state.
 	StatusListGrow int64 = 2
+	// StatusMapGrow is the deopt code written by OpMapSetI64I64 when
+	// the load-factor 0.5 trigger (2*(nLive+1) > cap) fires. Like
+	// StatusListGrow it spills pinned regs and routes back through
+	// the interpreter at PC=0 (Phase 6.2d.2.d step 4). OpMapGetI64I64
+	// never grows the table so it does not emit a deopt for grow,
+	// only for an empty-table miss (also routed via StatusMapGrow).
+	StatusMapGrow int64 = 3
 )
 
 // hasRegRegDivMod reports whether fn contains any reg-reg OpDivI64 or
@@ -52,6 +59,37 @@ func hasListGetI64(fn *vm3.Function) bool {
 		}
 	}
 	return false
+}
+
+// hasMapSetI64I64 reports whether fn contains any OpMapSetI64I64. Each
+// site emits inline splitmix64 + probe loop + 3 stores + nLive bump,
+// gated on a load-factor 0.5 grow check that deopts via StatusMapGrow
+// (Phase 6.2d.2.d step 4).
+func hasMapSetI64I64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpMapSetI64I64 {
+			return true
+		}
+	}
+	return false
+}
+
+// hasMapGetI64I64 reports whether fn contains any OpMapGetI64I64.
+func hasMapGetI64I64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpMapGetI64I64 {
+			return true
+		}
+	}
+	return false
+}
+
+// hasMapOpI64 reports whether fn touches the map slab via either of
+// the JIT-lowered map ops. Used by the prologue to decide whether to
+// load mapsBase (vs listsBase) into the slab-base pin and whether to
+// reserve the auxiliary scratch pair holding {mask, table.ptr}.
+func hasMapOpI64(fn *vm3.Function) bool {
+	return hasMapSetI64I64(fn) || hasMapGetI64I64(fn)
 }
 
 // popcount32 counts set bits in v. Used to size OpCallI64 spill loops
