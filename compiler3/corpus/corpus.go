@@ -28,5 +28,6 @@ func All() []*Program {
 		Nsieve,
 		Fasta,
 		Mandelbrot,
+		KNucleotide,
 	}
 }

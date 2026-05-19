@@ -29,6 +29,7 @@ func TestMathKernelsMatchVm2(t *testing.T) {
 		{"nsieve", Nsieve, []int64{0, 1, 2, 10, 50, 100, 1000}, c2corpus.ExpectNsieve},
 		{"fasta", Fasta, []int64{0, 1, 2, 10, 100, 1000, 10000}, c2corpus.ExpectFasta},
 		{"mandelbrot", Mandelbrot, []int64{0, 1, 2, 5, 10, 50, 100}, c2corpus.ExpectMandelbrot},
+		{"k_nucleotide", KNucleotide, []int64{0, 1, 2, 10, 100, 1000}, c2corpus.ExpectKNucleotide},
 	}
 	for _, tc := range cases {
 		for _, n := range tc.ns {
@@ -70,6 +71,8 @@ func BenchmarkMathKernels(b *testing.B) {
 		{"fasta_n100000", Fasta, 100000},
 		{"mandelbrot_n100", Mandelbrot, 100},
 		{"mandelbrot_n300", Mandelbrot, 300},
+		{"k_nucleotide_n10000", KNucleotide, 10000},
+		{"k_nucleotide_n100000", KNucleotide, 100000},
 	}
 	for _, tc := range cases {
 		b.Run(tc.name, func(b *testing.B) {
@@ -157,6 +160,8 @@ func BenchmarkGoKernels(b *testing.B) {
 		{"fasta_n100000", c2corpus.ExpectFasta, 100000},
 		{"mandelbrot_n100", c2corpus.ExpectMandelbrot, 100},
 		{"mandelbrot_n300", c2corpus.ExpectMandelbrot, 300},
+		{"k_nucleotide_n10000", c2corpus.ExpectKNucleotide, 10000},
+		{"k_nucleotide_n100000", c2corpus.ExpectKNucleotide, 100000},
 	}
 	for _, tc := range cases {
 		b.Run(tc.name, func(b *testing.B) {
