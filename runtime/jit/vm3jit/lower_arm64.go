@@ -507,6 +507,198 @@ func hoistsCellsLenARM64(fn *vm3.Function) bool {
 	return hasListPushI64(fn)
 }
 
+// cellsPtrHoistRefreshPC returns the PC at which fn should refresh
+// every K-prefix pinned cell register from `handle` to `cells.ptr`,
+// or -1 if the hoist does not apply.
+//
+// Phase 6.3.4.j.4a: for K-prefix kernels (NumRegsCell>=2) the existing
+// slab-field hoist (x21=cap, x22=ptr, x23=len) only applies when
+// NumRegsCell==1, because x21..x24 are then claimed by cells 4..7. To
+// recover the per-access savings (5 inst per OpListGetF64/SetF64) for
+// multi-cell kernels we overwrite each x_cell with `cells.ptr` at one
+// post-push refresh PC: before that PC the register holds the handle
+// (needed for OpListPushI64 / OpNewList stubs), after it the register
+// holds the f64 array base directly so each Get/Set collapses to a
+// single LDR/STR Dt.
+//
+// Detection (n_body's shape):
+//  1. Find lastPushPC = max pc of OpListPushI64 in fn.Code.
+//  2. Find a CmpGe*Br at pc < lastPushPC whose target > lastPushPC.
+//     That target is the loop-exit landing pad; we refresh there.
+//  3. Verify no deopt-emitting op (OpListPushI64, reg-reg DivI64/ModI64,
+//     OpMapSetI64I64) exists at pc >= refreshPC. A deopt would spill
+//     x_cell (now holding cells.ptr) back into regsCell, corrupting
+//     the handle.
+//  4. Verify no forward branch from pc < refreshPC targets a pc in
+//     (refreshPC, end] (which would skip the refresh and reach a
+//     post-refresh f64 site with x_cell still holding a handle).
+//  5. Verify the op AT refreshPC has no internal `pcMap[idx] + K`
+//     arithmetic (which would break if we prepend refresh words to its
+//     emission). OpConstI64K / OpAddI64K / OpMovI64 / OpListGet/Set
+//     are safe; Cmp*Br variants are not.
+//
+// Returns -1 when any check fails (the kernel falls back to the cold
+// 6-inst Get/Set form for every site).
+func cellsPtrHoistRefreshPC(fn *vm3.Function) int {
+	if fn.NumRegsCell < 2 {
+		return -1
+	}
+	if int(fn.NumRegsCell) > maxCellRegs {
+		return -1
+	}
+	lastPushPC := -1
+	for i, op := range fn.Code {
+		if op.Code == vm3.OpListPushI64 {
+			lastPushPC = i
+		}
+	}
+	if lastPushPC < 0 {
+		return -1
+	}
+	refreshPC := -1
+	for i := 0; i < lastPushPC; i++ {
+		op := fn.Code[i]
+		switch op.Code {
+		case vm3.OpCmpGeI64KBr, vm3.OpCmpGtI64KBr,
+			vm3.OpCmpEqI64KBr, vm3.OpCmpNeI64KBr,
+			vm3.OpCmpLtI64KBr, vm3.OpCmpLeI64KBr,
+			vm3.OpCmpGeI64Br, vm3.OpCmpGtI64Br,
+			vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
+			vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br:
+			t := int(uint16(op.C))
+			if t > lastPushPC && (refreshPC < 0 || t < refreshPC) {
+				refreshPC = t
+			}
+		}
+	}
+	if refreshPC < 0 || refreshPC >= len(fn.Code) {
+		return -1
+	}
+	for i := refreshPC; i < len(fn.Code); i++ {
+		switch fn.Code[i].Code {
+		case vm3.OpListPushI64, vm3.OpDivI64, vm3.OpModI64,
+			vm3.OpMapSetI64I64:
+			return -1
+		}
+	}
+	for i := 0; i < refreshPC; i++ {
+		op := fn.Code[i]
+		switch op.Code {
+		case vm3.OpJump,
+			vm3.OpCmpGeI64KBr, vm3.OpCmpGtI64KBr,
+			vm3.OpCmpEqI64KBr, vm3.OpCmpNeI64KBr,
+			vm3.OpCmpLtI64KBr, vm3.OpCmpLeI64KBr,
+			vm3.OpCmpGeI64Br, vm3.OpCmpGtI64Br,
+			vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
+			vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br:
+			t := int(uint16(op.C))
+			if t > refreshPC {
+				return -1
+			}
+		}
+	}
+	switch fn.Code[refreshPC].Code {
+	case vm3.OpConstI64K, vm3.OpConstI64KW, vm3.OpConstF64K,
+		vm3.OpMovI64, vm3.OpMovF64,
+		vm3.OpAddI64K, vm3.OpSubI64K, vm3.OpMulI64K,
+		vm3.OpAddI64, vm3.OpSubI64, vm3.OpMulI64,
+		vm3.OpAddF64, vm3.OpSubF64, vm3.OpMulF64, vm3.OpDivF64,
+		vm3.OpNegI64, vm3.OpNegF64,
+		vm3.OpI64ToF64, vm3.OpF64ToI64,
+		vm3.OpListGetF64, vm3.OpListSetF64:
+	default:
+		return -1
+	}
+	return refreshPC
+}
+
+// cellsPtrHoistedCells returns the regsCell indices whose x_cell
+// register fn's emit loop will overwrite with `cells.ptr` at the
+// refresh PC. Only cells that fn actually touches via OpListGetF64 or
+// OpListSetF64 at pc >= refreshPC are hoisted; cells used only in
+// the push phase (or unused post-refresh) keep their handle value
+// since hoisting them would waste 4 inst per cell in the refresh
+// block without any matching per-access savings.
+func cellsPtrHoistedCells(fn *vm3.Function) []uint16 {
+	refreshPC := cellsPtrHoistRefreshPC(fn)
+	if refreshPC < 0 {
+		return nil
+	}
+	nCell := int(fn.NumRegsCell)
+	if nCell > maxCellRegs {
+		nCell = maxCellRegs
+	}
+	seen := make([]bool, nCell)
+	var cells []uint16
+	for i := refreshPC; i < len(fn.Code); i++ {
+		op := fn.Code[i]
+		var c int = -1
+		switch op.Code {
+		case vm3.OpListGetF64:
+			c = int(op.B)
+		case vm3.OpListSetF64:
+			c = int(op.A)
+		}
+		if c >= 0 && c < nCell && !seen[c] {
+			seen[c] = true
+			cells = append(cells, uint16(c))
+		}
+	}
+	return cells
+}
+
+// cellsPtrHoistRefreshWords is the word cost of the cells.ptr refresh
+// sequence prepended at refreshPC. 0 when the hoist is not active.
+// One shared MOVZ x17, #stride (since stride fits in 16 bits for the
+// list slab; movImm64WordCount(40)=1) plus 4 inst per hoisted cell
+// (UXTW + MUL + ADD + LDR).
+func cellsPtrHoistRefreshWords(fn *vm3.Function) int {
+	cells := cellsPtrHoistedCells(fn)
+	if len(cells) == 0 {
+		return 0
+	}
+	stride := int64(vm3.JITListSlabStride())
+	return movImm64WordCount(stride) + 4*len(cells)
+}
+
+// cellsPtrHoistedAt reports whether OpListGetF64 / OpListSetF64 at
+// bytecode index idx can use the 1-inst form (x_cell already holds
+// cells.ptr). Caller passes the cell index used by the op.
+func cellsPtrHoistedAt(fn *vm3.Function, idx int, cell uint16) bool {
+	refreshPC := cellsPtrHoistRefreshPC(fn)
+	if refreshPC < 0 || idx < refreshPC {
+		return false
+	}
+	for _, c := range cellsPtrHoistedCells(fn) {
+		if c == cell {
+			return true
+		}
+	}
+	return false
+}
+
+// emitCellsPtrRefreshARM64 appends the refresh sequence that overwrites
+// every hoisted x_cell with the corresponding cells.ptr. Called once at
+// refreshPC, prepended to that PC's normal op emit so any branch that
+// targets refreshPC lands on the refresh first.
+func emitCellsPtrRefreshARM64(ws []uint32, fn *vm3.Function) []uint32 {
+	cells := cellsPtrHoistedCells(fn)
+	if len(cells) == 0 {
+		return ws
+	}
+	stride := int64(vm3.JITListSlabStride())
+	cellsOff := uint32(vm3.JITListCellsOffset())
+	ws = append(ws, movImm64(17, stride)...)
+	for _, c := range cells {
+		xCell := r2cell(c)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(xCell, 16, cellsOff/8))
+	}
+	return ws
+}
+
 // cellsLenFlushWords returns the number of words a Return* or deopt
 // block needs to flush the pinned cells.len (x23) back to memory so
 // the interpreter sees the up-to-date list length. Two words when
@@ -1078,6 +1270,19 @@ func emitFrameEpilogueARM64(ws []uint32, pairRegs []uint32, lrPair int) []uint32
 // idx are only consulted for OpCallI64; for other opcodes the spill
 // set is irrelevant.
 func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint32, idx int) (int, error) {
+	base, err := wordCountARM64Body(fn, op, opts, spillSets, idx)
+	if err != nil {
+		return 0, err
+	}
+	if idx == cellsPtrHoistRefreshPC(fn) {
+		base += cellsPtrHoistRefreshWords(fn)
+	}
+	return base, nil
+}
+
+// wordCountARM64Body is the inner switch over op.Code. wordCountARM64
+// wraps it to fold in the cells.ptr refresh prefix at refreshPC.
+func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint32, idx int) (int, error) {
 	switch op.Code {
 	case vm3.OpConstI64K:
 		// movImm64 emits 1..4 movz/movk words depending on the sign-extended
@@ -1254,19 +1459,27 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 
 	case vm3.OpListGetF64:
 		// Inline f64-typed list load. CFloat stores raw IEEE 754 bits
-		// so there is no sign-extend step; the cold form mirrors the
-		// i64 cold form minus the SBFX. No hoist applies to n_body
-		// (NumRegsCell=7), so only the cold form lands in this phase:
+		// so there is no sign-extend step. Cold form (6 inst):
 		//   UXTW x16, w_cell ; MOV x17, #stride ; MUL ; ADD x16, x19 ;
 		//   LDR x16, [x16, #CELLS_OFFSET] ; LDR Dt, [x16, xIdx, LSL #3]
+		// Hot form (Phase 6.3.4.j.4a, x_cell already holds cells.ptr
+		// post-refresh): 1 inst (LDR Dt, [x_cell, xIdx, LSL #3]).
+		if cellsPtrHoistedAt(fn, idx, op.B) {
+			return 1, nil
+		}
 		stride := int64(vm3.JITListSlabStride())
 		return movImm64WordCount(stride) + 5, nil
 
 	case vm3.OpListSetF64:
 		// Inline f64-typed list store. CFloat is unbox-free so no
-		// MOVZ tag / BFI pack step is needed. Cold form:
+		// MOVZ tag / BFI pack step is needed. Cold form (6 inst):
 		//   UXTW x16, w_cell ; MOV x17, #stride ; MUL ; ADD x16, x19 ;
 		//   LDR x17, [x16, #CELLS_OFFSET] ; STR Dt, [x17, xIdx, LSL #3]
+		// Hot form (Phase 6.3.4.j.4a, x_cell already holds cells.ptr
+		// post-refresh): 1 inst (STR Dt, [x_cell, xIdx, LSL #3]).
+		if cellsPtrHoistedAt(fn, idx, op.A) {
+			return 1, nil
+		}
 		stride := int64(vm3.JITListSlabStride())
 		return movImm64WordCount(stride) + 5, nil
 
@@ -1342,6 +1555,23 @@ func wordCountARM64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 // so guard-checked opcodes (Div/Mod) can compute CBZ offsets without
 // re-deriving it.
 func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStart int, opts Options, spillSets []uint32) ([]uint32, error) {
+	body, err := emitInstrARM64Body(fn, op, idx, pcMap, deoptStart, opts, spillSets)
+	if err != nil {
+		return nil, err
+	}
+	if idx != cellsPtrHoistRefreshPC(fn) {
+		return body, nil
+	}
+	refresh := emitCellsPtrRefreshARM64(nil, fn)
+	if len(refresh) == 0 {
+		return body, nil
+	}
+	return append(refresh, body...), nil
+}
+
+// emitInstrARM64Body is the inner emit dispatch. emitInstrARM64 wraps
+// it to prepend the cells.ptr refresh sequence at refreshPC.
+func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStart int, opts Options, spillSets []uint32) ([]uint32, error) {
 	xA := r2x(fn, op.A)
 	xB := r2x(fn, op.B)
 
@@ -2167,7 +2397,7 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 	case vm3.OpListGetF64:
 		// regsF64[A] = arenas.Lists[handleIdx(regsCell[B])].cells[regsI64[C]].Float()
 		//
-		// Cold form (no hoist):
+		// Cold form (no hoist, 6 inst):
 		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
 		//   MOV  x17, #SIZEOF_VMLIST           ; stride
 		//   MUL  x16, x16, x17                 ; slab byte offset
@@ -2175,14 +2405,20 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		//   LDR  x16, [x16, #CELLS_OFFSET]     ; cells.ptr
 		//   LDR  Dt,  [x16, xIdx, LSL #3]      ; cells[idxReg] as raw f64 bits
 		//
+		// Hot form (Phase 6.3.4.j.4a, x_cell holds cells.ptr post-refresh):
+		//   LDR  Dt,  [x_cell, xIdx, LSL #3]   ; 1 inst.
+		//
 		// No SBFX: CFloat stores IEEE 754 bits directly, so the load
 		// produces the f64 payload bit-for-bit identical to the
 		// interp's .Float() decoder.
 		cellsOff := uint32(vm3.JITListCellsOffset())
 		xIdx := r2x(fn, uint16(op.C))
-		stride := int64(vm3.JITListSlabStride())
 		xCell := r2cell(op.B)
 		dA := r2d(op.A)
+		if cellsPtrHoistedAt(fn, idx, op.B) {
+			return []uint32{ldrDRegLsl3(dA, xCell, xIdx)}, nil
+		}
+		stride := int64(vm3.JITListSlabStride())
 		ws := make([]uint32, 0, movImm64WordCount(stride)+5)
 		ws = append(ws, uxtwReg(16, xCell))
 		ws = append(ws, movImm64(17, stride)...)
@@ -2195,18 +2431,24 @@ func emitInstrARM64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 	case vm3.OpListSetF64:
 		// arenas.Lists[handleIdx(regsCell[A])].cells[regsI64[C]] = CFloat(regsF64[B])
 		//
-		// Cold form (no hoist):
+		// Cold form (no hoist, 6 inst):
 		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
 		//   MOV  x17, #SIZEOF_VMLIST           ; stride
 		//   MUL  x16, x16, x17                 ; slab byte offset
 		//   ADD  x16, x16, x19                 ; x19 = cached lists base
 		//   LDR  x17, [x16, #CELLS_OFFSET]     ; cells.ptr
 		//   STR  Dt,  [x17, xIdx, LSL #3]      ; cells[idxReg] = raw f64 bits
+		//
+		// Hot form (Phase 6.3.4.j.4a, x_cell holds cells.ptr post-refresh):
+		//   STR  Dt,  [x_cell, xIdx, LSL #3]   ; 1 inst.
 		cellsOff := uint32(vm3.JITListCellsOffset())
 		xIdx := r2x(fn, uint16(op.C))
-		stride := int64(vm3.JITListSlabStride())
 		xCell := r2cell(op.A)
 		dB := r2d(op.B)
+		if cellsPtrHoistedAt(fn, idx, op.A) {
+			return []uint32{strDRegLsl3(dB, xCell, xIdx)}, nil
+		}
+		stride := int64(vm3.JITListSlabStride())
 		ws := make([]uint32, 0, movImm64WordCount(stride)+5)
 		ws = append(ws, uxtwReg(16, xCell))
 		ws = append(ws, movImm64(17, stride)...)
