@@ -235,7 +235,7 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 			vm3.OpLookupI64KW,
 			vm3.OpF64ArrayGetF64, vm3.OpF64ArraySetF64, vm3.OpF64ArrayLenI64,
 			vm3.OpI64ArrayGetI64, vm3.OpI64ArraySetI64, vm3.OpI64ArrayPushI64, vm3.OpI64ArrayLenI64,
-			vm3.OpPairFst, vm3.OpPairSnd,
+			vm3.OpPairFst, vm3.OpPairSnd, vm3.OpNewPair,
 			vm3.OpConstF64K, vm3.OpMovF64,
 			vm3.OpAddF64, vm3.OpSubF64, vm3.OpMulF64, vm3.OpDivF64,
 			vm3.OpNegF64, vm3.OpFmaF64, vm3.OpSqrtF64,
