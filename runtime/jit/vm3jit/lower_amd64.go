@@ -421,15 +421,30 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		return movImm64ByteCount(fn.Consts[k].Int(), r2xAMD64(op.A)), nil
 	case vm3.OpMovI64:
 		return 3, nil // mov r64, r64
-	case vm3.OpAddI64, vm3.OpSubI64:
-		// mov xA, xB if xA != xB (3); add/sub xA, xC (3).
+	case vm3.OpAddI64:
+		// Two-operand AMD64 form: dest is also one source. Cases:
+		//   A == B : add xA, xC                              (3)
+		//   A == C : add xA, xB (commutative, skips the mov) (3)
+		//   else   : mov xB, xA; add xA, xC                  (6)
+		if op.A == op.B || op.A == uint16(op.C) {
+			return 3, nil
+		}
+		return 6, nil
+	case vm3.OpSubI64:
+		// Sub is not commutative, so A == C needs a different shape:
+		//   A == B : sub xA, xC               (3)
+		//   A == C : sub xA, xB; neg xA       (6)  — A = -(C - B) = B - C
+		//   else   : mov xB, xA; sub xA, xC   (6)
 		if op.A == op.B {
 			return 3, nil
 		}
 		return 6, nil
 	case vm3.OpMulI64:
-		// mov xA, xB if xA != xB (3); imul xA, xC (4).
-		if op.A == op.B {
+		// imul is commutative, mirror OpAddI64:
+		//   A == B : imul xA, xC                              (4)
+		//   A == C : imul xA, xB (skip mov via commutativity) (4)
+		//   else   : mov xB, xA; imul xA, xC                  (7)
+		if op.A == op.B || op.A == uint16(op.C) {
 			return 4, nil
 		}
 		return 7, nil
@@ -572,9 +587,14 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		nArgs := fn.NumI64Params()
 		// Each spill store: mov xS, disp32(%rbx) = 7 bytes.
 		// Each arg store: mov xS, disp32(%rbx) = 7 bytes.
-		// add $N*8, %rbx (7); call rel32 (5); sub $N*8, %rbx (7); mov %rax, xA (3).
+		// lea N*8(%rbx), %rdi (7) — set RDI = callee window so the
+		//   recursive callee's `mov %rdi, %rbx` prologue step receives
+		//   a valid pointer rather than a stale slot-1 value.
+		// mov %r15, %rsi (3) — propagate status pointer so the callee
+		//   prologue's `mov %rsi, %r15` keeps R15 = *status.
+		// call rel32 (5); mov %rax, xA (3).
 		// Each spill reload: mov disp32(%rbx), xS = 7 bytes.
-		return 7*nSpill + 7*nArgs + 7 + 5 + 7 + 3 + 7*nSpill, nil
+		return 7*nSpill + 7*nArgs + 7 + 3 + 5 + 3 + 7*nSpill, nil
 	default:
 		return 0, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 	}
@@ -598,28 +618,49 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 	case vm3.OpMovI64:
 		return mov64RR(xB, xA), nil
 	case vm3.OpAddI64:
+		// Commutative; collapse A == C via commutativity to avoid
+		// `mov xB, xA` clobbering xC when A and C share a register.
 		xC := r2xAMD64(uint16(op.C))
 		var out []byte
-		if op.A != op.B {
+		switch {
+		case op.A == op.B:
+			out = append(out, add64RR(xC, xA)...)
+		case op.A == uint16(op.C):
+			out = append(out, add64RR(xB, xA)...)
+		default:
 			out = append(out, mov64RR(xB, xA)...)
+			out = append(out, add64RR(xC, xA)...)
 		}
-		out = append(out, add64RR(xC, xA)...)
 		return out, nil
 	case vm3.OpSubI64:
+		// Non-commutative; A == C uses sub+neg so we don't lose the
+		// original C value before the subtract: A = -(C - B) = B - C.
 		xC := r2xAMD64(uint16(op.C))
 		var out []byte
-		if op.A != op.B {
+		switch {
+		case op.A == op.B:
+			out = append(out, sub64RR(xC, xA)...)
+		case op.A == uint16(op.C):
+			out = append(out, sub64RR(xB, xA)...)
+			out = append(out, neg64R(xA)...)
+		default:
 			out = append(out, mov64RR(xB, xA)...)
+			out = append(out, sub64RR(xC, xA)...)
 		}
-		out = append(out, sub64RR(xC, xA)...)
 		return out, nil
 	case vm3.OpMulI64:
+		// imul is commutative; mirror OpAddI64.
 		xC := r2xAMD64(uint16(op.C))
 		var out []byte
-		if op.A != op.B {
+		switch {
+		case op.A == op.B:
+			out = append(out, imul64RR(xC, xA)...)
+		case op.A == uint16(op.C):
+			out = append(out, imul64RR(xB, xA)...)
+		default:
 			out = append(out, mov64RR(xB, xA)...)
+			out = append(out, imul64RR(xC, xA)...)
 		}
-		out = append(out, imul64RR(xC, xA)...)
 		return out, nil
 	case vm3.OpNegI64:
 		var out []byte
@@ -834,15 +875,19 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 			src := r2xAMD64(op.B + uint16(k))
 			out = append(out, mov64StoreDisp32(src, xRBX, int32(nRegsI64+k)*8)...)
 		}
-		// Bump RBX to callee window.
-		out = append(out, add64RImm32(xRBX, int32(nRegsI64)*8)...)
+		// Re-establish the SysV first/second arg registers the prologue
+		// expects (RDI = regs base, RSI = status). The callee prologue
+		// runs `mov %rdi, %rbx` / `mov %rsi, %r15`, so leaving stale
+		// slot-1 / slot-0 values in RDI/RSI would clobber RBX with
+		// junk and segfault on the first pinned-slot load. Keep RBX
+		// unchanged here — the callee derives its own window from RDI.
+		out = append(out, lea64Disp32(xRDI, xRBX, int32(nRegsI64)*8)...)
+		out = append(out, mov64RR(xR15, xRSI)...)
 		// CALL rel32 to entry (byte 0).
 		entry := 0
 		callSite := pcMap[idx] + len(out) + 5
 		rel := int32(entry - callSite)
 		out = append(out, callRel32(rel)...)
-		// Restore RBX.
-		out = append(out, sub64RImm32(xRBX, int32(nRegsI64)*8)...)
 		// Move result into destination slot (RAX → xA).
 		out = append(out, mov64RR(xRAX, xA)...)
 		// Reload spilled slots.
@@ -1187,6 +1232,16 @@ func pop64(r int) []byte {
 // subRSPImm8 emits `sub rsp, imm8` (4 bytes). Used for stack alignment.
 func subRSPImm8(imm int8) []byte {
 	return []byte{0x48, 0x83, modRM(3, 5, xRSP), byte(imm)}
+}
+
+// lea64Disp32 emits `lea rDst, [rBase + disp32]`. Opcode REX.W 8D /r
+// with mod=10 (disp32). Used at the self-recursive OpCallI64 site to
+// load RDI with the callee's regs-window base before the CALL so the
+// callee prologue's `mov %rdi, %rbx` lands on a valid pointer.
+func lea64Disp32(dst, base int, disp int32) []byte {
+	out := []byte{rex(true, dst >= 8, false, base >= 8), 0x8D, modRM(2, byte(dst), byte(base))}
+	out = appendImm32(out, disp)
+	return out
 }
 
 // addRSPImm8 emits `add rsp, imm8` (4 bytes).
