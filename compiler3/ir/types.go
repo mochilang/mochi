@@ -138,6 +138,15 @@ const (
 	OpMapSetI64I64
 	OpMapGetI64I64
 
+	// Typed f64 array ops (Phase 6.3.4.j.5 vm3 surface). Flat
+	// vmF64Array backing skips the 16-byte Cell payload (8 bytes
+	// per element) used by OpListGetF64/SetF64.
+	OpNewF64Array
+	OpF64ArrayLenI64
+	OpF64ArrayPushF64
+	OpF64ArrayGetF64
+	OpF64ArraySetF64
+
 	// Calls. Args[0..] are the argument values; the callee is named by
 	// Value.Const (function index in the Function's owning Program).
 	OpCall
@@ -236,6 +245,16 @@ func (o OpCode) String() string {
 		return "map.set.i64.i64"
 	case OpMapGetI64I64:
 		return "map.get.i64.i64"
+	case OpNewF64Array:
+		return "newf64array"
+	case OpF64ArrayLenI64:
+		return "f64arr.len.i64"
+	case OpF64ArrayPushF64:
+		return "f64arr.push.f64"
+	case OpF64ArrayGetF64:
+		return "f64arr.get.f64"
+	case OpF64ArraySetF64:
+		return "f64arr.set.f64"
 	case OpCall:
 		return "call"
 	case OpTailCall:

@@ -796,6 +796,32 @@ func (vm *VM) run() (Cell, error) {
 			arenas.Lists[idx].cells[regsI64[uint16(op.C)]] = CFloat(regsF64[op.B])
 			pc++
 
+		case OpNewF64Array:
+			regsCell[op.A] = arenas.AllocF64Arr(int(uint16(op.C)))
+			pc++
+		case OpF64ArrayLenI64:
+			arr := regsCell[op.B]
+			_, _, idx := arr.DecodeHandle()
+			regsI64[op.A] = int64(len(arenas.F64Arrs[idx].data))
+			pc++
+		case OpF64ArrayPushF64:
+			arr := regsCell[op.A]
+			_, _, idx := arr.DecodeHandle()
+			a := &arenas.F64Arrs[idx]
+			a.data = append(a.data, regsF64[op.B])
+			a.len = uint32(len(a.data))
+			pc++
+		case OpF64ArrayGetF64:
+			arr := regsCell[op.B]
+			_, _, idx := arr.DecodeHandle()
+			regsF64[op.A] = arenas.F64Arrs[idx].data[regsI64[uint16(op.C)]]
+			pc++
+		case OpF64ArraySetF64:
+			arr := regsCell[op.A]
+			_, _, idx := arr.DecodeHandle()
+			arenas.F64Arrs[idx].data[regsI64[uint16(op.C)]] = regsF64[op.B]
+			pc++
+
 		case OpNewMap:
 			regsCell[op.A] = arenas.AllocMap(int(uint16(op.C)))
 			pc++

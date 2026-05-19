@@ -170,6 +170,24 @@ const (
 	// SQRTSD xmmA, xmmB. Prereq for n_body's inner-loop distance
 	// computation (sqrt(dx*dx + dy*dy + dz*dz)).
 	OpSqrtF64
+
+	// Typed f64 array ops (Phase 6.3.4.j.5). Backed by vmF64Array
+	// (flat []float64), so each element is 8 bytes instead of the
+	// 16-byte Cell payload an OpList* uses. Two structural wins:
+	// (a) half the cache footprint per element (5 bodies x 7 arrays
+	// = 280 bytes in F64Array vs 560 bytes in Cell-Lists, fits in
+	// a single L1 line vs two), and (b) the per-access path skips
+	// the CFloat tag round-trip (no shift-and-mask on read, no
+	// tag re-emit on write). On ARM64 the JIT lowering collapses
+	// to a single LDR/STR Dt, [Xptr, Xidx, LSL #3] per access
+	// instead of the j.4a-hoisted Cell-list 2-instruction form
+	// (LDR Xcell + extract f64 bits). Generic: any f64-only list
+	// that does not need a Cell-tagged payload qualifies.
+	OpNewF64Array     // regsCell[A] = arenas.AllocF64Arr(int(uint16(C)))
+	OpF64ArrayLenI64  // regsI64[A] = int64(len(arenas.F64Arrs[idx].data))
+	OpF64ArrayPushF64 // arenas.F64Arrs[idx].data = append(..., regsF64[B])
+	OpF64ArrayGetF64  // regsF64[A] = arenas.F64Arrs[idx].data[regsI64[uint16(C)]]
+	OpF64ArraySetF64  // arenas.F64Arrs[idx].data[regsI64[uint16(C)]] = regsF64[B]
 )
 
 // Op is a single 8-byte vm3 bytecode word. Layout:
