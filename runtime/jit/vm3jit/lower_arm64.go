@@ -359,33 +359,54 @@ const (
 	slabKindNone slabKind = iota
 	slabKindList
 	slabKindMap
+	slabKindF64Arr
 )
 
 // slabKindARM64 classifies fn by which slab its inline body references.
-// Returns slabKindNone when fn references neither slab or both (mixed
+// Returns slabKindNone when fn references multiple slabs or none (mixed
 // kernels are rejected by checkCellBankAdmissible separately so they
-// never reach codegen).
+// never reach codegen). Phase 6.3.4.j.5.b adds slabKindF64Arr for
+// typed-f64-array kernels: any OpF64Array{Get,Set,Len} use makes the
+// fn an f64arr kernel.
 func slabKindARM64(fn *vm3.Function) slabKind {
 	hasList := hasListGetI64(fn) || hasListPushI64(fn)
 	hasMap := hasMapOpI64(fn)
-	switch {
-	case hasList && !hasMap:
-		return slabKindList
-	case hasMap && !hasList:
-		return slabKindMap
-	default:
+	hasF64Arr := hasF64ArrayOp(fn)
+	n := 0
+	if hasList {
+		n++
+	}
+	if hasMap {
+		n++
+	}
+	if hasF64Arr {
+		n++
+	}
+	if n != 1 {
 		return slabKindNone
 	}
+	switch {
+	case hasList:
+		return slabKindList
+	case hasMap:
+		return slabKindMap
+	case hasF64Arr:
+		return slabKindF64Arr
+	}
+	return slabKindNone
 }
 
 // slabBaseOffARM64 returns the byte offset within jitArenaCtx of the
 // slab base pointer the prologue should load into x19. Mirrors the
-// field order in jitArenaCtx: listsBase at offset 0, mapsBase at 8.
-// Fns with no slab kind default to listsBase so the existing list-only
-// admit set keeps its prologue word count unchanged.
+// field order in jitArenaCtx: listsBase at offset 0, mapsBase at 8,
+// f64ArrsBase at 16. Fns with no slab kind default to listsBase so the
+// existing list-only admit set keeps its prologue word count unchanged.
 func slabBaseOffARM64(fn *vm3.Function) uint32 {
-	if slabKindARM64(fn) == slabKindMap {
+	switch slabKindARM64(fn) {
+	case slabKindMap:
 		return 8
+	case slabKindF64Arr:
+		return 16
 	}
 	return 0
 }
@@ -394,8 +415,11 @@ func slabBaseOffARM64(fn *vm3.Function) uint32 {
 // entries for fn's slab kind. Used by the slab-base hoist (UXTW + MOV
 // stride + MUL + ADD) and by per-op cold-form recompute paths.
 func slabStrideARM64(fn *vm3.Function) int64 {
-	if slabKindARM64(fn) == slabKindMap {
+	switch slabKindARM64(fn) {
+	case slabKindMap:
 		return int64(vm3.JITMapSlabStride())
+	case slabKindF64Arr:
+		return int64(vm3.JITF64ArrSlabStride())
 	}
 	return int64(vm3.JITListSlabStride())
 }
@@ -1570,6 +1594,44 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 		}
 		return 0, fmt.Errorf("%w: opcode %d (inline NewMap unsupported)", ErrNotImplemented, op.Code)
 
+	case vm3.OpNewF64Array:
+		// Phase 6.3.4.j.5.b: when fn.JITPreAllocF64ArrPrefix > 0 the JIT
+		// skips the contiguous OpNewF64Array prefix; jitCall allocates K
+		// typed arrays and seeds jf.regsCell[A] before the trampoline.
+		if idx < int(fn.JITPreAllocF64ArrPrefix) {
+			return 0, nil
+		}
+		return 0, fmt.Errorf("%w: opcode %d (inline NewF64Array unsupported)", ErrNotImplemented, op.Code)
+
+	case vm3.OpF64ArrayGetF64:
+		// Inline typed-f64-array load. Cold form (6 inst):
+		//   UXTW x16, w_cell ; MOV x17, #stride ; MUL ; ADD x16, x19 ;
+		//   LDR x16, [x16, #DATA_OFFSET] ; LDR Dt, [x16, xIdx, LSL #3]
+		// vmF64Array.data is a slice header at #DATA_OFFSET; the first 8
+		// bytes are the data.ptr, so a single LDR after the slab-byte-
+		// address compute gives the backing array, and an indexed LDR
+		// reads the f64 value bit-for-bit (no tag round-trip).
+		stride := int64(vm3.JITF64ArrSlabStride())
+		return movImm64WordCount(stride) + 5, nil
+
+	case vm3.OpF64ArraySetF64:
+		// Inline typed-f64-array store. Same shape as Get but the final
+		// instruction is STR Dt instead of LDR Dt. Stores the IEEE 754
+		// bits directly into data[idx], skipping the Cell payload pack
+		// step that OpListSetI64 needs for NaN-boxed int48.
+		stride := int64(vm3.JITF64ArrSlabStride())
+		return movImm64WordCount(stride) + 5, nil
+
+	case vm3.OpF64ArrayLenI64:
+		// Inline typed-f64-array len. Reads the slab-side u32 len field
+		// (which is bumped in lockstep with len(data) by Push, so it
+		// matches int64(len(data)) bit-for-bit) and zero-extends to i64
+		// via the W-form LDR. Cold form (5 inst):
+		//   UXTW x16, w_cell ; MOV x17, #stride ; MUL ; ADD x16, x19 ;
+		//   LDR Wd, [x16, #LEN_OFFSET]
+		stride := int64(vm3.JITF64ArrSlabStride())
+		return movImm64WordCount(stride) + 4, nil
+
 	default:
 		return 0, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 	}
@@ -1955,6 +2017,15 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 			// Phase 6.3.4.f.2 skip: jitCall pre-allocated the map and
 			// wrote the handle to regsCell[A]; prologue loaded it into
 			// the pinned reg before this PC. Emit zero words.
+			return []uint32{}, nil
+		}
+		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
+
+	case vm3.OpNewF64Array:
+		// Phase 6.3.4.j.5.b skip: jitCall pre-allocated K typed f64
+		// arrays and seeded jf.regsCell[A] for each pc in the prefix;
+		// the prologue loaded the handles into pinned cell regs.
+		if idx < int(fn.JITPreAllocF64ArrPrefix) {
 			return []uint32{}, nil
 		}
 		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
@@ -2551,6 +2622,77 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		ws = append(ws, addReg(16, 16, 19))
 		ws = append(ws, ldr64(17, 16, cellsOff/8))
 		ws = append(ws, strDRegLsl3(dB, 17, xIdx))
+		return ws, nil
+
+	case vm3.OpF64ArrayGetF64:
+		// regsF64[A] = arenas.F64Arrs[handleIdx(regsCell[B])].data[regsI64[C]]
+		//
+		// Cold form (6 inst):
+		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
+		//   MOV  x17, #SIZEOF_VMF64ARRAY      ; stride
+		//   MUL  x16, x16, x17                ; slab byte offset
+		//   ADD  x16, x16, x19                ; x19 = cached f64arrs base
+		//   LDR  x16, [x16, #DATA_OFFSET]     ; data.ptr (first 8 bytes of slice hdr)
+		//   LDR  Dt,  [x16, xIdx, LSL #3]     ; data[idxReg] (raw f64 bits)
+		dataOff := uint32(vm3.JITF64ArrDataOffset())
+		xIdx := r2x(fn, uint16(op.C))
+		xCell := r2cell(op.B)
+		dA := r2d(op.A)
+		stride := int64(vm3.JITF64ArrSlabStride())
+		ws := make([]uint32, 0, movImm64WordCount(stride)+5)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(16, 16, dataOff/8))
+		ws = append(ws, ldrDRegLsl3(dA, 16, xIdx))
+		return ws, nil
+
+	case vm3.OpF64ArraySetF64:
+		// arenas.F64Arrs[handleIdx(regsCell[A])].data[regsI64[C]] = regsF64[B]
+		//
+		// Cold form (6 inst):
+		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
+		//   MOV  x17, #SIZEOF_VMF64ARRAY      ; stride
+		//   MUL  x16, x16, x17                ; slab byte offset
+		//   ADD  x16, x16, x19                ; x19 = cached f64arrs base
+		//   LDR  x17, [x16, #DATA_OFFSET]     ; data.ptr
+		//   STR  Dt,  [x17, xIdx, LSL #3]     ; data[idxReg] = raw f64 bits
+		dataOff := uint32(vm3.JITF64ArrDataOffset())
+		xIdx := r2x(fn, uint16(op.C))
+		xCell := r2cell(op.A)
+		dB := r2d(op.B)
+		stride := int64(vm3.JITF64ArrSlabStride())
+		ws := make([]uint32, 0, movImm64WordCount(stride)+5)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(17, 16, dataOff/8))
+		ws = append(ws, strDRegLsl3(dB, 17, xIdx))
+		return ws, nil
+
+	case vm3.OpF64ArrayLenI64:
+		// regsI64[A] = int64(arenas.F64Arrs[handleIdx(regsCell[B])].len)
+		//
+		// Cold form (5 inst). The slab's u32 .len is bumped in lockstep
+		// with len(data) by AllocF64Arr/Push, so reading it matches
+		// int64(len(data)) bit-for-bit. The W-form LDR zero-extends into
+		// the 64-bit dest reg for free.
+		//   UXTW x16, w_cell                  ; idx = handle & 0xFFFFFFFF
+		//   MOV  x17, #SIZEOF_VMF64ARRAY      ; stride
+		//   MUL  x16, x16, x17                ; slab byte offset
+		//   ADD  x16, x16, x19                ; x19 = cached f64arrs base
+		//   LDR  Wd,  [x16, #LEN_OFFSET/4]    ; zero-extends to Xd
+		lenOff := uint32(vm3.JITF64ArrLenOffset())
+		xCell := r2cell(op.B)
+		stride := int64(vm3.JITF64ArrSlabStride())
+		ws := make([]uint32, 0, movImm64WordCount(stride)+4)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldrW(xA, 16, lenOff/4))
 		return ws, nil
 
 	default:

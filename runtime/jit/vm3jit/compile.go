@@ -232,6 +232,7 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 			vm3.OpListGetI64, vm3.OpListPushI64, vm3.OpListSetI64,
 			vm3.OpListGetF64, vm3.OpListSetF64,
 			vm3.OpMapSetI64I64, vm3.OpMapGetI64I64,
+			vm3.OpF64ArrayGetF64, vm3.OpF64ArraySetF64, vm3.OpF64ArrayLenI64,
 			vm3.OpConstF64K, vm3.OpMovF64,
 			vm3.OpAddF64, vm3.OpSubF64, vm3.OpMulF64, vm3.OpDivF64,
 			vm3.OpNegF64, vm3.OpFmaF64, vm3.OpSqrtF64,
@@ -268,6 +269,19 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 				continue
 			}
 			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses inline OpNewMap (only pre-alloc at pc=0 is admitted)",
+				ErrNotImplemented, fn.Name, i)
+		case vm3.OpNewF64Array:
+			// Phase 6.3.4.j.5.b: admit at i < K where K is the contiguous
+			// OpNewF64Array prefix length the JIT lifted into jitCall.
+			// The lowerer emits zero words for each pre-allocated PC; the
+			// prologue's LDR x_cell, [x3, #A*8] picks up the seeded
+			// handle. Inline OpNewF64Array outside the prefix routes back
+			// to the interpreter (it would need an inline arena-alloc
+			// kernel that we have not lowered yet).
+			if k := int(preAllocF64ArrPrefix(fn)); k > 0 && i < k {
+				continue
+			}
+			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses inline OpNewF64Array (only pre-alloc prefix is admitted)",
 				ErrNotImplemented, fn.Name, i)
 		case vm3.OpTailCallMixed:
 			if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx || op.B != 0 {
