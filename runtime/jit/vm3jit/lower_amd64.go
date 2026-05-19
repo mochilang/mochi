@@ -555,6 +555,16 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// bit-for-bit through Go's uint64 result channel.
 		return 7 + epilogueBytesAMD64(fn), nil
 
+	case vm3.OpPairFst, vm3.OpPairSnd:
+		// Phase 6.3.4.m.4c.3. Cold form (6 inst):
+		//   mov  disp32(%rbp), %eax       ; idx = low 32 of regsCell[B] (zero-ext, 6B)
+		//   imul $stride, %rax, %rax      ; rax = idx * 24 (REX.W 69 /r imm32, 7B)
+		//   mov  pairsBaseOff(%r14), %rcx ; rcx = pairsBase (REX.WB 8B /r disp32, 7B)
+		//   add  %rcx, %rax               ; rax = pairsBase + idx*stride (REX.W 01 /r, 3B)
+		//   mov  fst/sndOff(%rax), %rcx   ; rcx = fst/snd Cell (REX.W 8B /r disp32, 7B)
+		//   mov  %rcx, disp32(%rbp)       ; regsCell[A] = rcx (REX.W 89 /r disp32, 7B)
+		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 7, nil
+
 	case vm3.OpConstF64K:
 		idx := int(uint16(op.C))
 		if idx >= len(fn.Consts) {
@@ -797,6 +807,28 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// by the epilogue's pop sequence; RAX carries the handle through.
 		out := mov64LoadDisp32(xRAX, xRBP, int32(op.A)*8)
 		out = emitEpilogueAMD64(out, fn)
+		return out, nil
+
+	case vm3.OpPairFst, vm3.OpPairSnd:
+		// Phase 6.3.4.m.4c.3: regsCell[A] = arenas.Pairs[handleIdx(regsCell[B])].fst/snd.
+		// RBP = regsCell base; R14 = *jitArenaCtx. The slab idx lives
+		// in the low 32 bits of the Cell handle (ArenaPair never spans
+		// more than 2^32 slots), so a 32-bit load is enough to mask off
+		// the tag bits while zero-extending into RAX.
+		stride := int64(vm3.JITPairSlabStride())
+		var fieldOff int32
+		if op.Code == vm3.OpPairFst {
+			fieldOff = int32(vm3.JITPairFstOffset())
+		} else {
+			fieldOff = int32(vm3.JITPairSndOffset())
+		}
+		pairsBaseOff := int32(jitArenaCtxPairsBaseOff())
+		out := mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
+		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, pairsBaseOff)...)
+		out = append(out, add64RR(xRCX, xRAX)...)
+		out = append(out, mov64LoadDisp32(xRCX, xRAX, fieldOff)...)
+		out = append(out, mov64StoreDisp32(xRCX, xRBP, int32(op.A)*8)...)
 		return out, nil
 
 	case vm3.OpConstF64K:
@@ -1186,6 +1218,38 @@ func mov64LoadDisp32(dst, base int, disp int32) []byte {
 	out := []byte{rex(true, dst >= 8, false, base >= 8), 0x8B, modRM(2, byte(dst), byte(base))}
 	out = appendImm32(out, disp)
 	return out
+}
+
+// mov32LoadDisp32 emits `mov disp32(rBase), %eDst`, a 32-bit load that
+// zero-extends to the full 64-bit destination per AMD64 semantics.
+// Used by OpPairFst/OpPairSnd (Phase 6.3.4.m.4c.3) to extract the low
+// 32 bits of a Cell handle (the slab idx) without a separate UXTW.
+// Encoding: optional REX (no W) + 8B /r mod=10 + disp32. 6 bytes when
+// neither dst nor base needs REX, 7 bytes when one does.
+func mov32LoadDisp32(dst, base int, disp int32) []byte {
+	var out []byte
+	if dst >= 8 || base >= 8 {
+		var r byte = 0x40
+		if dst >= 8 {
+			r |= 0x04
+		}
+		if base >= 8 {
+			r |= 0x01
+		}
+		out = append(out, r)
+	}
+	out = append(out, 0x8B, modRM(2, byte(dst&7), byte(base&7)))
+	out = appendImm32(out, disp)
+	return out
+}
+
+// mov32LoadDisp32ByteCount mirrors mov32LoadDisp32 for byte-count
+// prediction.
+func mov32LoadDisp32ByteCount(dst, base int) int {
+	if dst >= 8 || base >= 8 {
+		return 7
+	}
+	return 6
 }
 
 // mov64LoadIdxLsl3 emits `mov rDst, [rBase + rIdx*8]`. Opcode REX.W [REX.R]
