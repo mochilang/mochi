@@ -15,7 +15,7 @@ The vm3 port collapses the 4-function tail-recursive vm2 shape (`main`, `fill`, 
 2. **Interpreter dispatch.** Every `OpListSetI64` is ~5-10 host instructions; Go compiles it to a single store. The inner mark loop touches `xs[j]` once and increments `j` by `i`, so 2 list ops + 2 arith ops per iter, vs ~3 instructions in Go.
 3. **No JIT yet.** Nsieve's inner loop uses `OpListSetI64` which is not on the Cell-bank admission whitelist (`runtime/jit/vm3jit/compile.go:217-256`). Adding `OpListSetI64` lowering + admission is the next concrete lever; rough est: 5-10x speedup once it lowers, putting nsieve in the 6-15x of Go range.
 
-Closing the residual 6-15x to <2x then requires either:
+Closing the residual 6-15x to under 2x then requires either:
 - A typed-bytes list bank (i8 / bytes, eliminates the 8x density tax), or
 - Loop hoisting of the slab base + bounds metadata (already done for `OpListGetI64`/`OpListPushI64` in the `lists_fill_sum` warm cache; same hoist applies here once `OpListSetI64` is admitted).
 
