@@ -244,3 +244,66 @@ func TestCellBankScaffoldWithI64AMD64(t *testing.T) {
 		t.Fatalf("returned Cell tag = %d, want ArenaPair (%d)", tag, vm3.ArenaPair)
 	}
 }
+
+// TestNewPairJITAMD64 exercises Phase 6.3.4.m.4c.4: AMD64 OpNewPair
+// inline allocation in cell-bank. The helper receives one Cell arg
+// (CNull from the driver), allocates a pair via OpNewPair with both
+// fst and snd set to the input Cell, then returns the new pair via
+// OpReturnCell. Asserts:
+//   - helper JITCode is non-nil (admission accepted OpNewPair).
+//   - deopt count is unchanged (StatusPairGrow not raised: pairsCap
+//     is sized for many allocs, one call is well under).
+//   - returned Cell decodes to a valid ArenaPair handle.
+func TestNewPairJITAMD64(t *testing.T) {
+	helper := &vm3.Function{
+		Name:        "amd64_new_pair",
+		NumRegsI64:  0,
+		NumRegsCell: 2,
+		ParamBanks:  []vm3.Bank{vm3.BankCell},
+		ResultBank:  vm3.BankCell,
+		Code: []vm3.Op{
+			vm3.MakeOp(vm3.OpNewPair, 1, 0, 0),    // pc=0: regsCell[1] = pair(regsCell[0], regsCell[0])
+			vm3.MakeOp(vm3.OpReturnCell, 1, 0, 0), // pc=1: return regsCell[1]
+		},
+	}
+	driver := &vm3.Function{
+		Name:        "driver",
+		NumRegsI64:  1,
+		NumRegsCell: 2,
+		ParamBanks:  []vm3.Bank{vm3.BankI64},
+		ResultBank:  vm3.BankCell,
+		Code: []vm3.Op{
+			vm3.MakeOp(vm3.OpNewPair, 0, 1, 1),                                        // pc=0: regsCell[0] = pair(CNull, CNull) (seed cell arg)
+			{Code: vm3.OpCallMixed, BankFlags: uint8(vm3.BankCell), A: 1, B: 0, C: 1}, // pc=1: regsCell[1] = helper(regsCell[0])
+			vm3.MakeOp(vm3.OpReturnCell, 1, 0, 0),                                     // pc=2: return regsCell[1]
+		},
+	}
+	prog := &vm3.Program{Funcs: []*vm3.Function{driver, helper}, Entry: 0}
+	cfs := vm3jit.CompileProgram(prog)
+	defer func() {
+		for _, cf := range cfs {
+			if cf != nil {
+				_ = cf.Free()
+			}
+		}
+	}()
+	if helper.JITCode == nil {
+		t.Fatalf("helper JITCode is nil; AMD64 cell-bank should admit OpNewPair (m.4c.4)")
+	}
+	preDeopt := vm3jit.DeoptCount
+	vm := vm3.NewWithProgram(prog)
+	got, err := vm.RunWithArgs(prog.Funcs[prog.Entry], []int64{0})
+	if err != nil {
+		t.Fatalf("RunWithArgs: %v", err)
+	}
+	if d := vm3jit.DeoptCount - preDeopt; d != 0 {
+		t.Fatalf("unexpected deopt count delta: %d (expected 0; pairsCap should accommodate one inline alloc)", d)
+	}
+	if !got.IsHandle() {
+		t.Fatalf("returned Cell is not a handle: %#x", uint64(got))
+	}
+	tag, _, _ := got.DecodeHandle()
+	if tag != vm3.ArenaPair {
+		t.Fatalf("returned Cell tag = %d, want ArenaPair (%d)", tag, vm3.ArenaPair)
+	}
+}

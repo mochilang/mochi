@@ -267,8 +267,8 @@ func lowerAMD64(fn *vm3.Function, opts Options) ([]byte, error) {
 		return nil, fmt.Errorf("vm3jit/%s: code stream %d bytes, predicted %d",
 			fn.Name, len(buf), deoptStart)
 	}
-	if hasRegRegDivModAMD64(fn) {
-		buf = append(buf, emitDeoptBlockAMD64(fn, StatusDivByZero)...)
+	for _, status := range deoptStatusesUsedAMD64(fn) {
+		buf = append(buf, emitDeoptBlockAMD64(fn, status)...)
 	}
 	if len(buf) != total {
 		return nil, fmt.Errorf("vm3jit/%s: final stream %d bytes, predicted %d",
@@ -436,21 +436,58 @@ func epilogueBytesAMD64(fn *vm3.Function) int {
 	return bytes
 }
 
-// deoptBlockBytesAMD64 returns the byte length of the shared deopt
-// block, or 0 if no opcode in fn can deopt.
+// deoptStatusesUsedAMD64 returns the deopt status codes fn references,
+// in emission order. Caller emits one block per status; the order here
+// also fixes the per-status block offsets (StatusDivByZero first, then
+// StatusListGrow / StatusMapGrow / StatusPairGrow). Returned slice is
+// empty when fn has no deopt sites. Mirrors deoptStatusesUsedARM64.
+func deoptStatusesUsedAMD64(fn *vm3.Function) []int64 {
+	var s []int64
+	if hasRegRegDivModAMD64(fn) {
+		s = append(s, StatusDivByZero)
+	}
+	if hasNewPair(fn) {
+		s = append(s, StatusPairGrow)
+	}
+	return s
+}
+
+// deoptBlockBytesAMD64Status returns the byte length of ONE deopt block.
+// All blocks share the same shape (7-byte mov $status, (%r15) + epilogue)
+// so the byte count is the same per block.
+func deoptBlockBytesAMD64Status(fn *vm3.Function) int {
+	return 7 + epilogueBytesAMD64(fn)
+}
+
+// deoptBlockBytesAMD64 returns the byte length of all per-status deopt
+// blocks combined, or 0 if no opcode in fn can deopt.
 func deoptBlockBytesAMD64(fn *vm3.Function) int {
-	if !hasRegRegDivModAMD64(fn) {
+	statuses := deoptStatusesUsedAMD64(fn)
+	if len(statuses) == 0 {
 		return 0
 	}
-	// 7-byte mov $statusCode, (%r15) + epilogue.
-	return 7 + epilogueBytesAMD64(fn)
+	return len(statuses) * deoptBlockBytesAMD64Status(fn)
+}
+
+// deoptStartForStatusAMD64 returns the byte offset where the deopt block
+// for `status` lives, given the first-block start (`baseStart`) in the
+// emitted stream. Each block is deoptBlockBytesAMD64Status(fn) bytes
+// long; the order matches deoptStatusesUsedAMD64.
+func deoptStartForStatusAMD64(fn *vm3.Function, baseStart int, status int64) int {
+	per := deoptBlockBytesAMD64Status(fn)
+	for i, s := range deoptStatusesUsedAMD64(fn) {
+		if s == status {
+			return baseStart + i*per
+		}
+	}
+	return baseStart
 }
 
 // emitDeoptBlockAMD64 emits the shared deopt block: write statusCode
 // through *r15, then run the epilogue. Every guard branches here.
 func emitDeoptBlockAMD64(fn *vm3.Function, statusCode int64) []byte {
 	// `movq $statusCode, (%r15)` with imm32 sign-ext. statusCode must
-	// fit in int32 (StatusDivByZero = 1, fine).
+	// fit in int32 (StatusPairGrow = 4, fine).
 	out := movMemImm32R15Indirect(int32(statusCode))
 	out = emitEpilogueAMD64(out, fn)
 	return out
@@ -564,6 +601,31 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		//   mov  fst/sndOff(%rax), %rcx   ; rcx = fst/snd Cell (REX.W 8B /r disp32, 7B)
 		//   mov  %rcx, disp32(%rbp)       ; regsCell[A] = rcx (REX.W 89 /r disp32, 7B)
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 7, nil
+
+	case vm3.OpNewPair:
+		// Phase 6.3.4.m.4c.4. Inline pair allocator on AMD64 cell-bank.
+		// Mirrors the ARM64 ws kernel: bumps a snapshot of pairsLen kept
+		// in jitArenaCtx, deopts on cap exhaustion via StatusPairGrow.
+		// Cold form (18 inst):
+		//   mov  pairsLenOff(%r14), %rax       ; 7B  rax = pairsLen
+		//   mov  pairsCapOff(%r14), %rcx       ; 7B  rcx = pairsCap
+		//   cmp  %rcx, %rax                    ; 3B  rax vs rcx
+		//   jae  deopt_pairgrow                ; 6B  rel32
+		//   mov  pairsBaseOff(%r14), %rdx      ; 7B  rdx = pairsBase
+		//   imul $stride, %rax, %rcx           ; 7B  rcx = pairsLen * 24
+		//   add  %rdx, %rcx                    ; 3B  rcx = pairsBase + idx*stride
+		//   movl $0x10000, (%rcx)              ; 6B  header u32 = flagAlive<<16
+		//   mov  disp32(%rbp), %rdx            ; 7B  rdx = regsCell[B] (fst)
+		//   mov  %rdx, fstOff(%rcx)            ; 7B  store fst (disp32 form)
+		//   mov  disp32(%rbp), %rdx            ; 7B  rdx = regsCell[uint16(C)] (snd)
+		//   mov  %rdx, sndOff(%rcx)            ; 7B  store snd (disp32 form)
+		//   mov  %eax, %edx                    ; 2B  rdx = idx, high 32 zeroed
+		//   movabs $0xFFFF800000000000, %rcx   ; 10B handle tag bits constant
+		//   or   %rcx, %rdx                    ; 3B  rdx = handle
+		//   mov  %rdx, disp32(%rbp)            ; 7B  regsCell[A] = handle
+		//   inc  %rax                          ; 3B  pairsLen++
+		//   mov  %rax, pairsLenOff(%r14)       ; 7B  commit pairsLen
+		return 7 + 7 + 3 + 6 + 7 + 7 + 3 + 6 + 7 + 7 + 7 + 7 + 2 + 10 + 3 + 7 + 3 + 7, nil
 
 	case vm3.OpConstF64K:
 		idx := int(uint16(op.C))
@@ -737,10 +799,12 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		return out, nil
 	case vm3.OpDivI64:
 		xC := r2xAMD64(uint16(op.C))
-		return emitDivOrMod(fn, xA, xB, xC, pcMap[idx], deoptStart, true), nil
+		dz := deoptStartForStatusAMD64(fn, deoptStart, StatusDivByZero)
+		return emitDivOrMod(fn, xA, xB, xC, pcMap[idx], dz, true), nil
 	case vm3.OpModI64:
 		xC := r2xAMD64(uint16(op.C))
-		return emitDivOrMod(fn, xA, xB, xC, pcMap[idx], deoptStart, false), nil
+		dz := deoptStartForStatusAMD64(fn, deoptStart, StatusDivByZero)
+		return emitDivOrMod(fn, xA, xB, xC, pcMap[idx], dz, false), nil
 	case vm3.OpAddI64K:
 		var out []byte
 		if op.A != op.B {
@@ -829,6 +893,52 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		out = append(out, add64RR(xRCX, xRAX)...)
 		out = append(out, mov64LoadDisp32(xRCX, xRAX, fieldOff)...)
 		out = append(out, mov64StoreDisp32(xRCX, xRBP, int32(op.A)*8)...)
+		return out, nil
+
+	case vm3.OpNewPair:
+		// Phase 6.3.4.m.4c.4: inline pair allocator. The JIT bumps a
+		// snapshot of pairsLen kept in jitArenaCtx (R14) so make_tree-
+		// style recursive allocators do not cross back into Go for
+		// every pair. When pairsLen == pairsCap the JIT raises
+		// StatusPairGrow; jitCall regrows the slab and retries the
+		// trampoline. The free-list reuse path is skipped: every JIT-
+		// allocated pair is appended at the slab tail with gen=0, so
+		// the header write collapses to a single u32 store.
+		stride := int64(vm3.JITPairSlabStride())
+		fstOff := int32(vm3.JITPairFstOffset())
+		sndOff := int32(vm3.JITPairSndOffset())
+		pairsLenOff := int32(jitArenaCtxPairsLenOff())
+		pairsCapOff := int32(jitArenaCtxPairsCapOff())
+		pairsBaseOff := int32(jitArenaCtxPairsBaseOff())
+		pgStart := deoptStartForStatusAMD64(fn, deoptStart, StatusPairGrow)
+		// pairsLen → rax, pairsCap → rcx, cmp + jae deopt.
+		out := mov64LoadDisp32(xRAX, xR14, pairsLenOff)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, pairsCapOff)...)
+		out = append(out, cmp64RR(xRCX, xRAX)...) // cmp rax, rcx (sets flags from rax-rcx)
+		afterJae := pcMap[idx] + len(out) + 6
+		out = append(out, jccRel32(ccAE, int32(pgStart-afterJae))...)
+		// pairsBase → rdx; slot ptr = pairsBase + pairsLen*stride in rcx.
+		out = append(out, mov64LoadDisp32(xRDX, xR14, pairsBaseOff)...)
+		out = append(out, imul64RRImm32(xRCX, xRAX, int32(stride))...)
+		out = append(out, add64RR(xRDX, xRCX)...)
+		// header u32 = flagAlive<<16 | gen=0 = 0x10000.
+		out = append(out, movMemImm32Disp0(xRCX, 0x10000)...)
+		// store fst (regsCell[B]).
+		out = append(out, mov64LoadDisp32(xRDX, xRBP, int32(op.B)*8)...)
+		out = append(out, mov64StoreDisp32(xRDX, xRCX, fstOff)...)
+		// store snd (regsCell[uint16(C)]).
+		out = append(out, mov64LoadDisp32(xRDX, xRBP, int32(uint16(op.C))*8)...)
+		out = append(out, mov64StoreDisp32(xRDX, xRCX, sndOff)...)
+		// build handle: rdx = idx; rcx = 0xFFFF800000000000; rdx |= rcx.
+		out = append(out, mov32RR(xRAX, xRDX)...)
+		// handleTag = (ArenaPair=8 << 44) | (tagHandle=0xFFFF << 48) = 0xFFFF_8000_0000_0000.
+		// As signed int64 = -2^47.
+		out = append(out, movRImm64(xRCX, -0x800000000000)...)
+		out = append(out, or64RR(xRCX, xRDX)...)
+		out = append(out, mov64StoreDisp32(xRDX, xRBP, int32(op.A)*8)...)
+		// pairsLen++; commit.
+		out = append(out, inc64R(xRAX)...)
+		out = append(out, mov64StoreDisp32(xRAX, xR14, pairsLenOff)...)
 		return out, nil
 
 	case vm3.OpConstF64K:
@@ -1048,6 +1158,7 @@ func emitDivKOrModK(xA, xB int, imm int32, isDiv bool) []byte {
 const (
 	ccZ  = 0x4 // JZ / JE: equal
 	ccNZ = 0x5 // JNZ / JNE
+	ccAE = 0x3 // JAE: unsigned >= (CF=0)
 	ccL  = 0xC // JL: signed less
 	ccGE = 0xD // JGE: signed greater-equal
 	ccLE = 0xE // JLE
@@ -1250,6 +1361,56 @@ func mov32LoadDisp32ByteCount(dst, base int) int {
 		return 7
 	}
 	return 6
+}
+
+// mov32RR emits `mov %eSrc, %eDst`, a 32-bit reg-reg copy that
+// zero-extends to the full 64-bit destination per AMD64 semantics.
+// Opcode 89 /r mod=11. 2 bytes when neither reg needs REX, 3 bytes
+// otherwise. Used by OpNewPair (Phase 6.3.4.m.4c.4) to copy the
+// low-32 pairsLen idx into a separate handle-building register.
+func mov32RR(src, dst int) []byte {
+	var out []byte
+	if src >= 8 || dst >= 8 {
+		var r byte = 0x40
+		if src >= 8 {
+			r |= 0x04 // REX.R
+		}
+		if dst >= 8 {
+			r |= 0x01 // REX.B
+		}
+		out = append(out, r)
+	}
+	out = append(out, 0x89, modRM(3, byte(src&7), byte(dst&7)))
+	return out
+}
+
+// or64RR emits `or %rSrc, %rDst` (Intel: or rDst, rSrc). Opcode REX.W
+// 09 /r mod=11.
+func or64RR(src, dst int) []byte {
+	return []byte{rex(true, src >= 8, false, dst >= 8), 0x09, modRM(3, byte(src), byte(dst))}
+}
+
+// inc64R emits `inc %rDst`. Opcode REX.W FF /0 mod=11. 3 bytes.
+// Phase 6.3.4.m.4c.4 uses it to bump pairsLen by one before the
+// commit-store.
+func inc64R(dst int) []byte {
+	return []byte{rex(true, false, false, dst >= 8), 0xFF, modRM(3, 0, byte(dst))}
+}
+
+// movMemImm32Disp0 emits `movl $imm32, (rBase)` — a 32-bit store of
+// imm32 to memory at rBase with no displacement. Opcode C7 /0 imm32
+// with mod=00. Caller must pre-check rBase != RBP/R13 (those need the
+// disp8=0 mod=01 form to avoid the [disp32] decoding) and rBase != RSP
+// (would require a SIB byte). Used by OpNewPair to write the vmPair
+// header u32 = flagAlive<<16 | gen=0 in a single 6-byte store.
+func movMemImm32Disp0(base int, imm int32) []byte {
+	var out []byte
+	if base >= 8 {
+		out = append(out, 0x41) // REX.B
+	}
+	out = append(out, 0xC7, modRM(0, 0, byte(base&7)))
+	out = appendImm32(out, imm)
+	return out
 }
 
 // mov64LoadIdxLsl3 emits `mov rDst, [rBase + rIdx*8]`. Opcode REX.W [REX.R]
