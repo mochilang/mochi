@@ -19,18 +19,22 @@ const MaxCellRegs = maxCellRegs
 
 // jitArenaCtx carries the per-call arena snapshot the JIT prologue
 // loads into its pinned base registers (x4 = &jitArenaCtx on AArch64).
-// Only listsBase is dynamic so far; stride/offset constants are baked
-// into the JIT stream as immediates from JITListSlabStride and
-// JITListCellsOffset. Future Cell-op support (maps, sets, ...) extends
-// this struct with mapsBase / setsBase / etc.
+// listsBase is the cached &Arenas.Lists[0]; mapsBase is the same for
+// Arenas.Maps. The prologue picks one to load into x19 based on which
+// slab kind the body references (lists vs maps). Stride/offset
+// constants are baked into the JIT stream as immediates from the
+// JITListSlabStride / JITMapSlabStride etc. helpers. Future Cell-op
+// support (sets, structs, ...) extends this struct with setsBase /
+// structsBase / etc.
 //
-// Phase 6.2d.2.a step 2 only handles read-only OpListGetI64, which
-// cannot grow the slab during the call, so snapshotting listsBase
-// once at JIT entry is safe. Phase 6.2d.2.c (inline OpListPushI64)
-// will add a deopt-on-grow guard so a slab reallocation cannot leave
-// the JIT reading from a stale base.
+// Phase 6.2d.2.d step 4 admits map kernels (OpMapSetI64I64 /
+// OpMapGetI64I64) whose pre-sized table never grows during the call,
+// so snapshotting mapsBase once at JIT entry is safe. A future
+// grow-aware sub-phase will add a deopt-on-grow guard mirroring
+// 6.2d.2.c's StatusListGrow.
 type jitArenaCtx struct {
 	listsBase unsafe.Pointer
+	mapsBase  unsafe.Pointer
 }
 
 // populateArenaCtx snapshots the Arenas slab base pointers the JIT
@@ -39,4 +43,5 @@ type jitArenaCtx struct {
 // risking a Go-managed pointer escape.
 func populateArenaCtx(ctx *jitArenaCtx, arenas *vm3.Arenas) {
 	ctx.listsBase = arenas.JITListsBase()
+	ctx.mapsBase = arenas.JITMapsBase()
 }
