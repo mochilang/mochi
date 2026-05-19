@@ -122,6 +122,18 @@ func (vm *VM) EnsureScratchList(capHint int) Cell {
 	return vm.arenas.resetScratchList(uint32(vm.jitScratchListIdx), capHint)
 }
 
+// RegrowScratchList doubles the warm scratch list's cap and returns a
+// fresh handle (Phase 6.2d.2.b step 2.F). Called by vm3jit after a
+// StatusListGrow deopt in the PreAlloc fast path so the immediate
+// retry sees a list large enough to complete its push loop without
+// re-deopting. Returns the zero Cell when no scratch slot exists yet.
+func (vm *VM) RegrowScratchList() Cell {
+	if vm.jitScratchListIdx < 0 {
+		return Cell(0)
+	}
+	return vm.arenas.regrowScratchList(uint32(vm.jitScratchListIdx))
+}
+
 // Arenas returns the VM's arena state.
 func (vm *VM) Arenas() *Arenas { return &vm.arenas }
 

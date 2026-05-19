@@ -12,6 +12,19 @@ func init() {
 	vm3.JITCallFn = jitCall
 }
 
+// DeoptCount is a diagnostic counter for jitCall deopt-return paths.
+// Phase 6.2d.2.b step 2.F observability: split across PreAlloc retry
+// outcomes and the general-case deopt-to-interp fallback so a regression
+// in either path is visible from a single bench run. Not load-bearing
+// for correctness; tests assert specific counts to lock the steady-state
+// no-deopt path on lists_fill_sum.
+var (
+	DeoptCount             uint64
+	DeoptCountPreAlloc     uint64
+	DeoptCountPreAllocRetry uint64
+	DeoptCountGeneral      uint64
+)
+
 // vmJITFrame fetches the per-VM jitFrame3 scratch buffer, allocating
 // it on the first call. The buffer (~32 KB: 4096 i64 slots plus the
 // f64/Cell/arena fields) is parked on the VM via vm3.VM.SetJITState
@@ -109,6 +122,47 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 			unsafe.Pointer(&jf.regsCell[0]),
 			unsafe.Pointer(&jf.arenaCtx))
 		if jf.status != 0 {
+			DeoptCount++
+			DeoptCountPreAlloc++
+			// Phase 6.2d.2.b step 2.F: a StatusListGrow deopt on the
+			// PreAlloc path means the warm scratch list's cap is short
+			// of the runtime size (the static OpNewList capHint is
+			// frozen at Build time, but the bench perturbs n). Double
+			// the cap and retry the trampoline once: the JIT body
+			// then re-runs the kernel from PC=0 against the regrown
+			// list and completes its push loop without deopting.
+			// Subsequent calls reuse the larger cap (resetScratchList
+			// is a no-op when cur cap >= hint), so the deopt is paid
+			// at most once per cap doubling. Generic to any
+			// JITPreAllocList kernel whose runtime size exceeds the
+			// static capHint baked into PC=0's OpNewList.
+			if jf.status == StatusListGrow && dest < MaxCellRegs {
+				newHandle := vm.RegrowScratchList()
+				if newHandle != 0 {
+					nI64Re := min(int(fn.NumRegsI64), MaxI64Regs)
+					clear(jf.regsI64[:nI64Re])
+					nF64Re := min(int(fn.NumRegsF64), MaxF64Regs)
+					clear(jf.regsF64[:nF64Re])
+					nCellRe := min(int(fn.NumRegsCell), MaxCellRegs)
+					clear(jf.regsCell[:nCellRe])
+					jf.regsCell[dest] = newHandle
+					m := min(len(argsI64), MaxI64Regs)
+					copy(jf.regsI64[:m], argsI64[:m])
+					jf.status = 0
+					populateArenaCtx(&jf.arenaCtx, vm.Arenas())
+					bits = trampoline.CallStatusM(
+						fn.JITCode,
+						unsafe.Pointer(&jf.regsI64[0]),
+						unsafe.Pointer(&jf.status),
+						unsafe.Pointer(&jf.regsF64[0]),
+						unsafe.Pointer(&jf.regsCell[0]),
+						unsafe.Pointer(&jf.arenaCtx))
+					if jf.status == 0 {
+						DeoptCountPreAllocRetry++
+						return bits, false, nil
+					}
+				}
+			}
 			nI64 := int(fn.NumRegsI64)
 			nF64 := int(fn.NumRegsF64)
 			nCell := int(fn.NumRegsCell)
@@ -185,6 +239,8 @@ func jitCall(vm *vm3.VM, fn *vm3.Function, argsI64 []int64, argsF64 []float64, a
 			unsafe.Pointer(&jf.status))
 	}
 	if jf.status != 0 {
+		DeoptCount++
+		DeoptCountGeneral++
 		// Deopt-resume protocol (Phase 6.2d.2.c). The JIT's per-fn
 		// deopt block spills every pinned reg back to jf.regsX before
 		// writing *status and returning, so jf carries the JIT's final
