@@ -1399,9 +1399,9 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 			return 0, fmt.Errorf("%w: ConstF64K idx %d out of range", ErrNotImplemented, idx)
 		}
 		if f64ConstHoistedXMMAMD64(fn, uint16(idx)) >= 0 {
-			// movsd xmm<A>, xmm<hoisted>: 5 bytes (REX needed since the
-			// hoist target xmm >= 8 forces REX.B regardless of dst).
-			return 5, nil
+			// movaps xmm<A>, xmm<hoisted>: 4 bytes (REX.B set because
+			// the hoisted xmm is xmm8..14; dst is an f64-slot xmm0..7).
+			return 4, nil
 		}
 		bits := int64(uint64(fn.Consts[idx]))
 		// mov $imm, %rcx (7 or 10) ; movq xmm<A>, %rcx (5).
@@ -2066,7 +2066,12 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 	case vm3.OpConstF64K:
 		idx := int(uint16(op.C))
 		if xmm := f64ConstHoistedXMMAMD64(fn, uint16(idx)); xmm >= 0 {
-			return movsdRR(int(op.A), xmm), nil
+			// movaps (full 128-bit copy) instead of movsd: movsd
+			// reg,reg only writes the low 64 and so carries a false
+			// dependency through xmm[A]'s upper bits. xmm[A] is the
+			// divsd output reg in the hot loop, so a false-dep movsd
+			// serialized iterations through the prior divsd result.
+			return movapsRR(int(op.A), xmm), nil
 		}
 		bits := int64(uint64(fn.Consts[idx]))
 		out := movImm64(xRCX, bits)
@@ -3171,6 +3176,25 @@ func sseRR2(opc byte, dst, src int) []byte {
 // Opcode F2 [REX] 0F 10 /r. Always emits the instruction even when
 // dst==src so byteCount predictions stay deterministic.
 func movsdRR(dst, src int) []byte { return sseRR2(0x10, dst, src) }
+
+// movapsRR emits `movaps xmmDst, xmmSrc` (full 128-bit register copy).
+// Opcode 0F 28 /r, optional REX. 3 bytes when both regs are xmm0..7,
+// 4 bytes when either side is xmm8..15.
+//
+// Unlike movsd reg,reg (a partial 64-bit write that preserves the upper
+// 64 bits of dst and so carries a false dependency through dst's prior
+// value), movaps writes the full 128 bits and is treated by the
+// renamer as a dependency-breaking move. This matters for the
+// hoisted-f64-const reload (Phase 6.3.4.n.12) where dst is repeatedly
+// overwritten by a long-latency op (divsd) in the inner loop: using
+// movsd serialized iterations through the prior div result; movaps
+// frees the rename and exposes loop-level ILP.
+func movapsRR(dst, src int) []byte {
+	if dst < 8 && src < 8 {
+		return []byte{0x0F, 0x28, modRM(3, byte(dst), byte(src))}
+	}
+	return []byte{rex(false, dst >= 8, false, src >= 8), 0x0F, 0x28, modRM(3, byte(dst&7), byte(src&7))}
+}
 
 // addsdRR emits `addsd xmmDst, xmmSrc`. Opcode F2 [REX] 0F 58 /r.
 func addsdRR(dst, src int) []byte { return sseRR2(0x58, dst, src) }
