@@ -622,10 +622,11 @@ func archCaps(fn *vm3.Function) (int, int, bool) {
 			i64Cap = maxI64RegsAMD64 - 2
 		}
 		if fn.NumRegsCell > 0 && fn.NumRegsF64 > 0 {
-			// Phase 6.3.4.n.3: Cell+F64 fns additionally pin R12 as the
-			// regsF64 base because R14 is already the *jitArenaCtx
-			// pointer for cell-bank fns. R12 is i64 slot 6, so cap = 6.
-			i64Cap = 6
+			// Phase 6.3.4.n.4: Cell+F64 fns pin R12 as the regsF64 base
+			// (R14 is the *jitArenaCtx for cell-bank fns) and remap
+			// i64 slot 6 from R12 to R13. Slot 7's old home (R13) is
+			// now consumed by slot 6, so the effective cap is 7.
+			i64Cap = 7
 		}
 		return i64Cap, maxF64RegsAMD64, true
 	default:

@@ -82,7 +82,18 @@ const (
 
 // r2xAMD64 maps a vm3 i64 register slot to the x86_64 GPR it is pinned
 // to. Caller must pre-check r < maxI64RegsAMD64.
-func r2xAMD64(r uint16) int {
+//
+// The mapping depends on fn's bank shape. The normal layout is slot 0..5
+// in RSI/RDI/R8..R11 (caller-saved), slot 6..9 in R12/R13/R14/RBP
+// (callee-saved). Phase 6.3.4.n.4 remaps slot 6 to R13 when fn is
+// cell-bank+f64 because R12 already holds the regsF64 base. The
+// remapping shifts slot 7's old home (R13) off the available set, so
+// the cap rises from 6 to 7 in that shape (slots 0..6 fit, slot 7+
+// rejected at the admission gate).
+func r2xAMD64(fn *vm3.Function, r uint16) int {
+	if r == 6 && usesR12ForF64AMD64(fn) {
+		return xR13
+	}
 	switch r {
 	case 0:
 		return xRSI
@@ -153,6 +164,29 @@ func f64BaseGPRAMD64(fn *vm3.Function) int {
 // admission: R12 takes over as the regsF64 base.
 func isCellBankAMD64(fn *vm3.Function) bool { return fn.NumRegsCell > 0 }
 
+// usesR12ForI64AMD64 reports whether i64 slot 6 maps to R12 for fn.
+// Normally slot 6 = R12, but cell+f64 fns repurpose R12 as the regsF64
+// base (Phase 6.3.4.n.3), and slot 6 is remapped to R13 in that case
+// (Phase 6.3.4.n.4).
+func usesR12ForI64AMD64(fn *vm3.Function) bool {
+	if usesR12ForF64AMD64(fn) {
+		return false
+	}
+	return int(fn.NumRegsI64) > 6
+}
+
+// usesR13ForI64AMD64 reports whether R13 holds an i64 slot for fn. R13
+// is slot 7 in the normal layout; cell+f64 fns remap slot 6 (the old
+// R12 home) to R13 because R12 is the regsF64 base in that shape
+// (Phase 6.3.4.n.4).
+func usesR13ForI64AMD64(fn *vm3.Function) bool {
+	n := int(fn.NumRegsI64)
+	if usesR12ForF64AMD64(fn) {
+		return n > 6
+	}
+	return n > 7
+}
+
 // numCalleeSavedPushesAMD64 returns the number of R12..R14/RBP pushes the
 // prologue needs for fn, plus the always-present RBX and R15 pushes
 // (2). Used by both the prologue emitter and the byte-count predictor.
@@ -169,10 +203,10 @@ func numCalleeSavedPushesAMD64(fn *vm3.Function) int {
 	}
 	// RBX and R15 are always pushed; R12..R14 only if their slot is used.
 	count := 2
-	if n > 6 || usesR12ForF64AMD64(fn) {
+	if usesR12ForI64AMD64(fn) || usesR12ForF64AMD64(fn) {
 		count++
 	}
-	if n > 7 {
+	if usesR13ForI64AMD64(fn) {
 		count++
 	}
 	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
@@ -480,11 +514,12 @@ func lowerAMD64(fn *vm3.Function, opts Options) ([]byte, error) {
 		return nil, fmt.Errorf("%w: %s has both f64 regs and OpCallI64 (Phase 6.2b leaves f64+self-recursion to a later sub-phase)",
 			ErrNotImplemented, fn.Name)
 	}
-	if isCellBankAMD64(fn) && fn.NumRegsF64 > 0 && int(fn.NumRegsI64) > 6 {
-		// Phase 6.3.4.n.3: Cell+F64 fns pin the regsF64 base in R12
-		// (i64 slot 6). The remaining usable i64 slots are 0..5, i.e.
-		// NumRegsI64 <= 6.
-		return nil, fmt.Errorf("%w: %s has Cell+F64 banks with NumRegsI64=%d (>6); R12 reserved for regsF64 base on AMD64",
+	if isCellBankAMD64(fn) && fn.NumRegsF64 > 0 && int(fn.NumRegsI64) > 7 {
+		// Phase 6.3.4.n.4: Cell+F64 fns pin the regsF64 base in R12 and
+		// remap i64 slot 6 to R13 (instead of R12). Slots 0..5 stay in
+		// RSI/RDI/R8..R11 and slot 6 in R13; slot 7 is unavailable
+		// because R12 is reserved for the f64 base. Effective cap = 7.
+		return nil, fmt.Errorf("%w: %s has Cell+F64 banks with NumRegsI64=%d (>7); R12/R14/RBP reserved for f64base/arenaCtx/regsCell on AMD64",
 			ErrNotImplemented, fn.Name, fn.NumRegsI64)
 	}
 	if isCellBankAMD64(fn) && fn.NumRegsF64 == 0 && int(fn.NumRegsI64) > 8 {
@@ -548,10 +583,10 @@ func prologueLenAMD64(fn *vm3.Function) int {
 	bytes := 0
 	bytes += pushBytes(xRBX)
 	bytes += pushBytes(xR15)
-	if n > 6 || usesR12ForF64AMD64(fn) {
+	if usesR12ForI64AMD64(fn) || usesR12ForF64AMD64(fn) {
 		bytes += pushBytes(xR12)
 	}
-	if n > 7 {
+	if usesR13ForI64AMD64(fn) {
 		bytes += pushBytes(xR13)
 	}
 	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
@@ -623,10 +658,10 @@ func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 	nF := int(fn.NumRegsF64)
 	buf = append(buf, push64(xRBX)...)
 	buf = append(buf, push64(xR15)...)
-	if n > 6 || usesR12ForF64AMD64(fn) {
+	if usesR12ForI64AMD64(fn) || usesR12ForF64AMD64(fn) {
 		buf = append(buf, push64(xR12)...)
 	}
-	if n > 7 {
+	if usesR13ForI64AMD64(fn) {
 		buf = append(buf, push64(xR13)...)
 	}
 	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
@@ -651,7 +686,7 @@ func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 		buf = append(buf, mov64RR(xRDX, xR12)...)
 	}
 	for r := 0; r < n; r++ {
-		buf = append(buf, mov64LoadDisp32(r2xAMD64(uint16(r)), xRBX, int32(r*8))...)
+		buf = append(buf, mov64LoadDisp32(r2xAMD64(fn, uint16(r)), xRBX, int32(r*8))...)
 	}
 	f64Base := f64BaseGPRAMD64(fn)
 	for r := 0; r < nF; r++ {
@@ -691,10 +726,10 @@ func emitEpilogueAMD64(buf []byte, fn *vm3.Function) []byte {
 	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
 		buf = append(buf, pop64(xR14)...)
 	}
-	if n > 7 {
+	if usesR13ForI64AMD64(fn) {
 		buf = append(buf, pop64(xR13)...)
 	}
-	if n > 6 || usesR12ForF64AMD64(fn) {
+	if usesR12ForI64AMD64(fn) || usesR12ForF64AMD64(fn) {
 		buf = append(buf, pop64(xR12)...)
 	}
 	buf = append(buf, pop64(xR15)...)
@@ -717,10 +752,10 @@ func epilogueBytesAMD64(fn *vm3.Function) int {
 	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
 		bytes += popBytes(xR14)
 	}
-	if n > 7 {
+	if usesR13ForI64AMD64(fn) {
 		bytes += popBytes(xR13)
 	}
-	if n > 6 || usesR12ForF64AMD64(fn) {
+	if usesR12ForI64AMD64(fn) || usesR12ForF64AMD64(fn) {
 		bytes += popBytes(xR12)
 	}
 	bytes += popBytes(xR15)
@@ -795,13 +830,13 @@ func emitDeoptBlockAMD64(fn *vm3.Function, statusCode int64) []byte {
 func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint32, idx int) (int, error) {
 	switch op.Code {
 	case vm3.OpConstI64K:
-		return movImm64ByteCount(int64(op.C), r2xAMD64(op.A)), nil
+		return movImm64ByteCount(int64(op.C), r2xAMD64(fn, op.A)), nil
 	case vm3.OpConstI64KW:
 		k := int(uint16(op.C))
 		if k >= len(fn.Consts) {
 			return 0, fmt.Errorf("%w: ConstI64KW idx %d out of range", ErrNotImplemented, k)
 		}
-		return movImm64ByteCount(fn.Consts[k].Int(), r2xAMD64(op.A)), nil
+		return movImm64ByteCount(fn.Consts[k].Int(), r2xAMD64(fn, op.A)), nil
 	case vm3.OpMovI64:
 		return 3, nil // mov r64, r64
 	case vm3.OpAddI64:
@@ -1021,7 +1056,7 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// otherwise; the SIB-store is always 4B because mov64StoreIdxLsl3
 		// emits REX.W unconditionally.
 		if hoistsCellsPtrAMD64(fn) {
-			xIdx := r2xAMD64(uint16(op.C))
+			xIdx := r2xAMD64(fn, uint16(op.C))
 			tagBytes := 7
 			if xIdx >= 8 {
 				tagBytes = 8
@@ -1151,7 +1186,7 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 				ErrNotImplemented, tableIdx)
 		}
 		base := int64(uintptr(unsafe.Pointer(&fn.I64Tables[tableIdx][0])))
-		return movImm64ByteCount(base, xRAX) + mov64LoadIdxLsl3ByteCount(r2xAMD64(op.A), xRAX, r2xAMD64(op.B)), nil
+		return movImm64ByteCount(base, xRAX) + mov64LoadIdxLsl3ByteCount(r2xAMD64(fn, op.A), xRAX, r2xAMD64(fn, op.B)), nil
 
 	case vm3.OpF64ArrayGetF64:
 		// Phase 6.3.4.n.3 cold form (AMD64 mirror of ARM64 OpF64ArrayGetF64).
@@ -1306,8 +1341,8 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 // byte offset of the deopt block; guard sites compute a JZ rel32
 // offset to it.
 func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStart int, opts Options, spillSets []uint32) ([]byte, error) {
-	xA := r2xAMD64(op.A)
-	xB := r2xAMD64(op.B)
+	xA := r2xAMD64(fn, op.A)
+	xB := r2xAMD64(fn, op.B)
 	switch op.Code {
 	case vm3.OpConstI64K:
 		return movImm64(xA, int64(op.C)), nil
@@ -1319,7 +1354,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 	case vm3.OpAddI64:
 		// Commutative; collapse A == C via commutativity to avoid
 		// `mov xB, xA` clobbering xC when A and C share a register.
-		xC := r2xAMD64(uint16(op.C))
+		xC := r2xAMD64(fn, uint16(op.C))
 		var out []byte
 		switch {
 		case op.A == op.B:
@@ -1334,7 +1369,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 	case vm3.OpSubI64:
 		// Non-commutative; A == C uses sub+neg so we don't lose the
 		// original C value before the subtract: A = -(C - B) = B - C.
-		xC := r2xAMD64(uint16(op.C))
+		xC := r2xAMD64(fn, uint16(op.C))
 		var out []byte
 		switch {
 		case op.A == op.B:
@@ -1349,7 +1384,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		return out, nil
 	case vm3.OpMulI64:
 		// imul is commutative; mirror OpAddI64.
-		xC := r2xAMD64(uint16(op.C))
+		xC := r2xAMD64(fn, uint16(op.C))
 		var out []byte
 		switch {
 		case op.A == op.B:
@@ -1369,11 +1404,11 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		out = append(out, neg64R(xA)...)
 		return out, nil
 	case vm3.OpDivI64:
-		xC := r2xAMD64(uint16(op.C))
+		xC := r2xAMD64(fn, uint16(op.C))
 		dz := deoptStartForStatusAMD64(fn, deoptStart, StatusDivByZero)
 		return emitDivOrMod(fn, xA, xB, xC, pcMap[idx], dz, true), nil
 	case vm3.OpModI64:
-		xC := r2xAMD64(uint16(op.C))
+		xC := r2xAMD64(fn, uint16(op.C))
 		dz := deoptStartForStatusAMD64(fn, deoptStart, StatusDivByZero)
 		return emitDivOrMod(fn, xA, xB, xC, pcMap[idx], dz, false), nil
 	case vm3.OpAddI64K:
@@ -1400,7 +1435,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
 		vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br:
 		cc := condForCmpRegAMD64(op.Code)
-		xCmpB := r2xAMD64(op.B)
+		xCmpB := r2xAMD64(fn, op.B)
 		src := pcMap[idx] + 3 + 6
 		dst := pcMap[int(uint16(op.C))]
 		rel := int32(dst - src)
@@ -1524,8 +1559,8 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// Phase 6.3.4.n.2.f: when hoistsCellsPtrAMD64(fn) the prologue
 		// already cached cells.ptr at disp8(%rbx); skip the
 		// slab/cells.ptr compute chain.
-		xIdx := r2xAMD64(uint16(op.C))
-		xA := r2xAMD64(op.A)
+		xIdx := r2xAMD64(fn, uint16(op.C))
+		xA := r2xAMD64(fn, op.A)
 		var out []byte
 		if hoistsCellsPtrAMD64(fn) {
 			out = mov64LoadDisp8(xRAX, xRBX, int8(hoistDispAMD64(fn)))
@@ -1557,7 +1592,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// constant-indexed load to disp8 when idxK*8 fits in [-128, 127]
 		// (the common case: small constant indices like 0..15).
 		idxK := int32(uint16(op.C)) * 8
-		xA := r2xAMD64(op.A)
+		xA := r2xAMD64(fn, op.A)
 		var out []byte
 		if hoistsCellsPtrAMD64(fn) {
 			out = mov64LoadDisp8(xRAX, xRBX, int8(hoistDispAMD64(fn)))
@@ -1597,8 +1632,8 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// Phase 6.3.4.n.2.f: when hoistsCellsPtrAMD64(fn) the cells.ptr
 		// is already cached at disp8(%rbx); skip the slab/cells.ptr
 		// compute chain (RCX is then free up to the movabs tag load).
-		xIdx := r2xAMD64(uint16(op.C))
-		xVal := r2xAMD64(op.B)
+		xIdx := r2xAMD64(fn, uint16(op.C))
+		xVal := r2xAMD64(fn, op.B)
 		if hoistsCellsPtrAMD64(fn) {
 			// Hot form: cells.ptr is pinned at disp8(%rbx). Use the
 			// OpListPushI64 "raw SIB store + 16-bit tag overwrite"
@@ -1654,7 +1689,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		cellsLenOff := cellsOff + 8
 		cellsCapOff := cellsOff + 16
 		listsBaseOff := int32(jitArenaCtxListsBaseOff())
-		xVal := r2xAMD64(op.B)
+		xVal := r2xAMD64(fn, op.B)
 		lgStart := deoptStartForStatusAMD64(fn, deoptStart, StatusListGrow)
 		out := mov32LoadDisp32(xRAX, xRBP, int32(op.A)*8)
 		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
@@ -1766,9 +1801,9 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		return out, nil
 
 	case vm3.OpI64ToF64:
-		return cvtsi2sd(int(op.A), int(r2xAMD64(op.B))), nil
+		return cvtsi2sd(int(op.A), int(r2xAMD64(fn, op.B))), nil
 	case vm3.OpF64ToI64:
-		return cvttsd2si(int(r2xAMD64(op.A)), int(op.B)), nil
+		return cvttsd2si(int(r2xAMD64(fn, op.A)), int(op.B)), nil
 	case vm3.OpLookupI64KW:
 		// regsI64[A] = fn.I64Tables[uint16(C)][regsI64[B]]
 		//
@@ -1785,7 +1820,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		}
 		base := int64(uintptr(unsafe.Pointer(&fn.I64Tables[tableIdx][0])))
 		out := movImm64(xRAX, base)
-		out = append(out, mov64LoadIdxLsl3(r2xAMD64(op.A), xRAX, r2xAMD64(op.B))...)
+		out = append(out, mov64LoadIdxLsl3(r2xAMD64(fn, op.A), xRAX, r2xAMD64(fn, op.B))...)
 		return out, nil
 
 	case vm3.OpF64ArrayGetF64:
@@ -1797,7 +1832,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		stride := int64(vm3.JITF64ArrSlabStride())
 		dataOff := int32(vm3.JITF64ArrDataOffset())
 		baseOff := int32(jitArenaCtxF64ArrsBaseOff())
-		xIdx := r2xAMD64(uint16(op.C))
+		xIdx := r2xAMD64(fn, uint16(op.C))
 		out := mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
 		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
 		out = append(out, mov64LoadDisp32(xRCX, xR14, baseOff)...)
@@ -1811,7 +1846,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		stride := int64(vm3.JITF64ArrSlabStride())
 		dataOff := int32(vm3.JITF64ArrDataOffset())
 		baseOff := int32(jitArenaCtxF64ArrsBaseOff())
-		xIdx := r2xAMD64(uint16(op.C))
+		xIdx := r2xAMD64(fn, uint16(op.C))
 		out := mov32LoadDisp32(xRAX, xRBP, int32(op.A)*8)
 		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
 		out = append(out, mov64LoadDisp32(xRCX, xR14, baseOff)...)
@@ -1825,7 +1860,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		stride := int64(vm3.JITF64ArrSlabStride())
 		lenOff := int32(vm3.JITF64ArrLenOffset())
 		baseOff := int32(jitArenaCtxF64ArrsBaseOff())
-		xA := r2xAMD64(op.A)
+		xA := r2xAMD64(fn, op.A)
 		out := mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
 		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
 		out = append(out, mov64LoadDisp32(xRCX, xR14, baseOff)...)
@@ -1839,8 +1874,8 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		stride := int64(vm3.JITI64ArrSlabStride())
 		dataOff := int32(vm3.JITI64ArrDataOffset())
 		baseOff := int32(jitArenaCtxI64ArrsBaseOff())
-		xIdx := r2xAMD64(uint16(op.C))
-		xA := r2xAMD64(op.A)
+		xIdx := r2xAMD64(fn, uint16(op.C))
+		xA := r2xAMD64(fn, op.A)
 		out := mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
 		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
 		out = append(out, mov64LoadDisp32(xRCX, xR14, baseOff)...)
@@ -1854,8 +1889,8 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		stride := int64(vm3.JITI64ArrSlabStride())
 		dataOff := int32(vm3.JITI64ArrDataOffset())
 		baseOff := int32(jitArenaCtxI64ArrsBaseOff())
-		xIdx := r2xAMD64(uint16(op.C))
-		xB := r2xAMD64(op.B)
+		xIdx := r2xAMD64(fn, uint16(op.C))
+		xB := r2xAMD64(fn, op.B)
 		out := mov32LoadDisp32(xRAX, xRBP, int32(op.A)*8)
 		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
 		out = append(out, mov64LoadDisp32(xRCX, xR14, baseOff)...)
@@ -1868,7 +1903,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		stride := int64(vm3.JITI64ArrSlabStride())
 		lenOff := int32(vm3.JITI64ArrLenOffset())
 		baseOff := int32(jitArenaCtxI64ArrsBaseOff())
-		xA := r2xAMD64(op.A)
+		xA := r2xAMD64(fn, op.A)
 		out := mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
 		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
 		out = append(out, mov64LoadDisp32(xRCX, xR14, baseOff)...)
@@ -1902,12 +1937,12 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// Spill live caller-saved slots (0..5).
 		for r := uint16(0); r < 6; r++ {
 			if spillMask&(1<<r) != 0 {
-				out = append(out, mov64StoreDisp32(r2xAMD64(r), xRBX, int32(r)*8)...)
+				out = append(out, mov64StoreDisp32(r2xAMD64(fn, r), xRBX, int32(r)*8)...)
 			}
 		}
 		// Write args into callee window at offset NumRegsI64*8.
 		for k := 0; k < nArgs; k++ {
-			src := r2xAMD64(op.B + uint16(k))
+			src := r2xAMD64(fn, op.B + uint16(k))
 			out = append(out, mov64StoreDisp32(src, xRBX, int32(nRegsI64+k)*8)...)
 		}
 		// Re-establish the SysV first/second arg registers the prologue
@@ -1928,7 +1963,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// Reload spilled slots.
 		for r := uint16(0); r < 6; r++ {
 			if spillMask&(1<<r) != 0 {
-				out = append(out, mov64LoadDisp32(r2xAMD64(r), xRBX, int32(r)*8)...)
+				out = append(out, mov64LoadDisp32(r2xAMD64(fn, r), xRBX, int32(r)*8)...)
 			}
 		}
 		return out, nil
@@ -1970,7 +2005,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// Spill live caller-saved i64 slots.
 		for r := uint16(0); r < 6; r++ {
 			if spillMask&(1<<r) != 0 {
-				out = append(out, mov64StoreDisp32(r2xAMD64(r), xRBX, int32(r)*8)...)
+				out = append(out, mov64StoreDisp32(r2xAMD64(fn, r), xRBX, int32(r)*8)...)
 			}
 		}
 		// Write args bank-by-bank using the callee's ParamBanks (the
@@ -1982,7 +2017,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 			argReg := op.B + uint16(k)
 			switch b {
 			case vm3.BankI64:
-				src := r2xAMD64(argReg)
+				src := r2xAMD64(fn, argReg)
 				out = append(out, mov64StoreDisp32(src, xRBX, int32(callerI64+k)*8)...)
 			case vm3.BankCell:
 				// Cell args live at [%rbp + argReg*8]; load via RDX
@@ -2021,7 +2056,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// outside r2xAMD64's range, so spill reloads don't clobber it.
 		for r := uint16(0); r < 6; r++ {
 			if spillMask&(1<<r) != 0 {
-				out = append(out, mov64LoadDisp32(r2xAMD64(r), xRBX, int32(r)*8)...)
+				out = append(out, mov64LoadDisp32(r2xAMD64(fn, r), xRBX, int32(r)*8)...)
 			}
 		}
 		// Optional deopt propagation. If the callee can deopt, the
