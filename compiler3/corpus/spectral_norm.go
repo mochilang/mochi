@@ -76,10 +76,15 @@ func ExpectSpectralNorm(n int64) float64 {
 var SpectralNorm = &Program{
 	Name: "spectral_norm",
 	Build: func(n int64) *vm3.Program {
-		if n < 0 || n > 32767 {
-			panic("spectral_norm: n must fit in int16 for OpNewF64Array")
+		// The bench harness perturbs args[0] = tc.n + (i & 1) to defeat
+		// constant folding, so the kernel may be called with a runtime n
+		// of either tc.n or tc.n+1. Both u and v are pre-allocated with
+		// a baked size at build time; provision one extra slot so the
+		// perturbed call cannot overrun.
+		if n < 0 || n > 32766 {
+			panic("spectral_norm: n must fit in int16-1 for OpNewF64Array")
 		}
-		size := int16(n)
+		size := int16(n + 1)
 		fn := &vm3.Function{
 			Name:        "spectral_norm",
 			NumRegsI64:  5,
