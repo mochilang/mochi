@@ -2310,7 +2310,12 @@ func mov32StoreDisp8(src, base int, disp int8) []byte {
 // this with rBase=RDX). 7 bytes when neither reg needs REX, 8 bytes
 // otherwise.
 func mov16ImmStoreSIBDisp8(imm uint16, base, idx int, disp int8) []byte {
-	var out []byte
+	// Prefix order: 0x66 (operand-size, group 3) must precede REX, since
+	// REX must immediately precede the opcode byte. The earlier ordering
+	// (REX then 0x66) caused the CPU to ignore the REX prefix entirely,
+	// dropping REX.X and silently demoting an R8..R15 index to RAX..RDI,
+	// producing wild addresses when the SIB index was a high register.
+	out := []byte{0x66}
 	if base >= 8 || idx >= 8 {
 		var r byte = 0x40
 		if idx >= 8 {
@@ -2322,7 +2327,7 @@ func mov16ImmStoreSIBDisp8(imm uint16, base, idx int, disp int8) []byte {
 		out = append(out, r)
 	}
 	sib := byte(3<<6) | byte((idx&7)<<3) | byte(base&7)
-	out = append(out, 0x66, 0xC7, modRM(1, 0, 4), sib, byte(disp))
+	out = append(out, 0xC7, modRM(1, 0, 4), sib, byte(disp))
 	var b [2]byte
 	binary.LittleEndian.PutUint16(b[:], imm)
 	return append(out, b[:]...)
