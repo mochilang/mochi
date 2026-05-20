@@ -1174,6 +1174,15 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		if op.C == 0 {
 			return 0, fmt.Errorf("%w: opcode %d divide-by-zero immediate", ErrNotImplemented, op.Code)
 		}
+		if _, ok := pow2ShiftI64(int64(int32(op.C))); ok {
+			// Phase 6.3.4.n.13 shift-based lowering: see
+			// emitDivKOrModKPow2AMD64. Div is 21 bytes, Mod is 31
+			// (mov+sar+shr+add+sar = 18, then +shl+mov+sub+mov = 13).
+			if op.Code == vm3.OpDivI64K {
+				return 21, nil
+			}
+			return 31, nil
+		}
 		if _, _, corr, ok := signedMagicI64(int64(int32(op.C))); ok {
 			// Phase 6.3.4.n.2.h magic-multiply shape: see
 			// emitDivKOrModKMagicAMD64 for byte-count derivation.
@@ -2532,6 +2541,9 @@ func emitDivOrMod(fn *vm3.Function, xA, xB, xC, opOff, deoptStart int, isDiv boo
 // apply automatically; on fannkuch_redux the init loop OpModI64K=7
 // executes 7n times so the savings are linear in n.
 func emitDivKOrModK(xA, xB int, imm int32, isDiv bool) []byte {
+	if k, ok := pow2ShiftI64(int64(imm)); ok {
+		return emitDivKOrModKPow2AMD64(xA, xB, k, isDiv)
+	}
 	if M, s, corr, ok := signedMagicI64(int64(imm)); ok {
 		return emitDivKOrModKMagicAMD64(xA, xB, M, s, corr, imm, isDiv)
 	}
@@ -2544,6 +2556,56 @@ func emitDivKOrModK(xA, xB int, imm int32, isDiv bool) []byte {
 	} else {
 		out = append(out, mov64RR(xRDX, xA)...)
 	}
+	return out
+}
+
+// emitDivKOrModKPow2AMD64 emits a shift-based lowering for OpDivI64K /
+// OpModI64K when the divisor is 2^k (k>=1). Generic textbook
+// transformation: for truncating-toward-zero signed division,
+//
+//	q = (n + ((n>>63) & (d-1))) >> k
+//	r = n - (q << k)
+//
+// We materialise the correction mask via `sar 63 ; shr 64-k`, leaving
+// 0 for non-negative n and (2^k - 1) for negative n. The sar/shr pair
+// is uniform across k=1..62 (one cycle longer than the dedicated k=1
+// `shr 63` shortcut, but only 4 bytes more and the spec_norm hot path
+// only needs k=1 so it is not worth a branch).
+//
+//	mov rB, rax        ; 3   (skipped if rB == rax — never happens
+//	                   ;      since xB never aliases rax in the reg map)
+//	sar rax, 63        ; 4
+//	shr rax, 64-k      ; 4
+//	add rB, rax        ; 3   (rax += rB → rax = n + correction)
+//	sar rax, k         ; 4
+//
+// For Div the result lives in rax:
+//
+//	mov rax, xA        ; 3   (skipped if xA == rax — never happens)
+//
+// For Mod we recover r = n - q*d = n - (q << k):
+//
+//	shl rax, k         ; 4   ; rax = q * d
+//	mov rB, rdx        ; 3
+//	sub rax, rdx       ; 3   ; rdx = n - q*d
+//	mov rdx, xA        ; 3
+//
+// Total bytes: Div = 21, Mod = 31. Critical path ~5cy (mov, sar, shr,
+// add, sar) for Div vs ~30cy for IDIV on EPYC Zen3. Phase 6.3.4.n.13.
+func emitDivKOrModKPow2AMD64(xA, xB int, k uint, isDiv bool) []byte {
+	out := mov64RR(xB, xRAX)
+	out = append(out, sar64RImm8(xRAX, 63)...)
+	out = append(out, shr64RImm8(xRAX, uint8(64-k))...)
+	out = append(out, add64RR(xB, xRAX)...)
+	out = append(out, sar64RImm8(xRAX, uint8(k))...)
+	if isDiv {
+		out = append(out, mov64RR(xRAX, xA)...)
+		return out
+	}
+	out = append(out, shl64RImm8(xRAX, uint8(k))...)
+	out = append(out, mov64RR(xB, xRDX)...)
+	out = append(out, sub64RR(xRAX, xRDX)...)
+	out = append(out, mov64RR(xRDX, xA)...)
 	return out
 }
 
