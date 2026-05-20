@@ -1075,9 +1075,20 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// movsd xmm<A>, xmm<B>: 4 bytes (xmm0..7 only, no REX needed).
 		return 4, nil
 	case vm3.OpAddF64, vm3.OpSubF64, vm3.OpMulF64, vm3.OpDivF64:
-		// optional movsd xmm<A>, xmm<B> (4) ; <op>sd xmm<A>, xmm<C> (4).
-		if op.A == op.B {
+		// A == B: <op>sd xmm<A>, xmm<C> (4 bytes).
+		// A == C, commutative (Add/Mul): <op>sd xmm<A>, xmm<B> (4).
+		// A == C, non-commutative (Sub/Div): movsd xmm15, xmm<C> (5) ;
+		//   movsd xmm<A>, xmm<B> (4) ; <op>sd xmm<A>, xmm15 (5) = 14.
+		// Otherwise: movsd xmm<A>, xmm<B> (4) ; <op>sd xmm<A>, xmm<C> (4).
+		a, b, c := op.A, op.B, uint16(op.C)
+		if a == b {
 			return 4, nil
+		}
+		if uint16(a) == c {
+			if op.Code == vm3.OpAddF64 || op.Code == vm3.OpMulF64 {
+				return 4, nil
+			}
+			return 14, nil
 		}
 		return 8, nil
 	case vm3.OpNegF64:
@@ -1686,33 +1697,13 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 	case vm3.OpMovF64:
 		return movsdRR(int(op.A), int(op.B)), nil
 	case vm3.OpAddF64:
-		var out []byte
-		if op.A != op.B {
-			out = append(out, movsdRR(int(op.A), int(op.B))...)
-		}
-		out = append(out, addsdRR(int(op.A), int(uint16(op.C)))...)
-		return out, nil
+		return emitSSEArithAMD64(addsdRR, int(op.A), int(op.B), int(uint16(op.C)), true), nil
 	case vm3.OpSubF64:
-		var out []byte
-		if op.A != op.B {
-			out = append(out, movsdRR(int(op.A), int(op.B))...)
-		}
-		out = append(out, subsdRR(int(op.A), int(uint16(op.C)))...)
-		return out, nil
+		return emitSSEArithAMD64(subsdRR, int(op.A), int(op.B), int(uint16(op.C)), false), nil
 	case vm3.OpMulF64:
-		var out []byte
-		if op.A != op.B {
-			out = append(out, movsdRR(int(op.A), int(op.B))...)
-		}
-		out = append(out, mulsdRR(int(op.A), int(uint16(op.C)))...)
-		return out, nil
+		return emitSSEArithAMD64(mulsdRR, int(op.A), int(op.B), int(uint16(op.C)), true), nil
 	case vm3.OpDivF64:
-		var out []byte
-		if op.A != op.B {
-			out = append(out, movsdRR(int(op.A), int(op.B))...)
-		}
-		out = append(out, divsdRR(int(op.A), int(uint16(op.C)))...)
-		return out, nil
+		return emitSSEArithAMD64(divsdRR, int(op.A), int(op.B), int(uint16(op.C)), false), nil
 	case vm3.OpNegF64:
 		// xmm15 = bit-pattern 0x8000000000000000 ; result = src ^ xmm15.
 		signBit := uint64(1) << 63
@@ -2702,6 +2693,30 @@ func mulsdRR(dst, src int) []byte { return sseRR2(0x59, dst, src) }
 
 // divsdRR emits `divsd xmmDst, xmmSrc`. Opcode F2 [REX] 0F 5E /r.
 func divsdRR(dst, src int) []byte { return sseRR2(0x5E, dst, src) }
+
+// emitSSEArithAMD64 lowers a 2-operand SSE arithmetic op `xmm[a] =
+// xmm[b] OP xmm[c]` while correctly handling the A==C!=B aliasing case
+// that the naive "movsd a,b ; OP a,c" sequence clobbers. For commutative
+// ops (Add, Mul) the A==C case collapses to `OP a, b` since A already
+// holds C's value. For non-commutative ops (Sub, Div) the divisor or
+// subtrahend in xmm[C] must be saved to scratch xmm15 before the move,
+// then OP'd from xmm15. The byteCount for these ops must mirror this
+// shape (see byteCountAMD64's OpAddF64/SubF64/MulF64/DivF64 case).
+func emitSSEArithAMD64(op func(dst, src int) []byte, a, b, c int, commutative bool) []byte {
+	if a == b {
+		return op(a, c)
+	}
+	if a == c {
+		if commutative {
+			return op(a, b)
+		}
+		out := movsdRR(15, c)
+		out = append(out, movsdRR(a, b)...)
+		return append(out, op(a, 15)...)
+	}
+	out := movsdRR(a, b)
+	return append(out, op(a, c)...)
+}
 
 // sqrtsdRR emits `sqrtsd xmmDst, xmmSrc`. Opcode F2 [REX] 0F 51 /r.
 // IEEE 754 correctly-rounded scalar square root; bit-identical to Go's
