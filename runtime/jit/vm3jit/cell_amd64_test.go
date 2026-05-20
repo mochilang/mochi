@@ -309,8 +309,8 @@ func TestSelfCallMixedI64ReturnAMD64(t *testing.T) {
 	if d := vm3jit.DeoptCount - preDeopt; d != 0 {
 		t.Fatalf("unexpected deopt count delta: %d", d)
 	}
-	if int64(got) != 2 {
-		t.Fatalf("got %d, want 2", int64(got))
+	if got.Int() != 2 {
+		t.Fatalf("got %d, want 2", got.Int())
 	}
 }
 
