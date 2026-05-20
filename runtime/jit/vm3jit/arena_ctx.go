@@ -97,3 +97,19 @@ func jitArenaCtxPairsBaseOff() uintptr {
 func jitArenaCtxListsBaseOff() uintptr {
 	return unsafe.Offsetof(jitArenaCtx{}.listsBase)
 }
+
+// jitArenaCtxF64ArrsBaseOff is the byte offset of f64ArrsBase within
+// jitArenaCtx. AMD64 OpF64ArrayGetF64/OpF64ArraySetF64 (Phase 6.3.4.n.3)
+// load it from R14+disp32 to recover the F64 array slab base on
+// cell-bank fns.
+func jitArenaCtxF64ArrsBaseOff() uintptr {
+	return unsafe.Offsetof(jitArenaCtx{}.f64ArrsBase)
+}
+
+// jitArenaCtxI64ArrsBaseOff is the byte offset of i64ArrsBase within
+// jitArenaCtx. AMD64 OpI64ArrayGetI64/OpI64ArraySetI64 (Phase 6.3.4.n.3)
+// load it from R14+disp32 to recover the I64 array slab base on
+// cell-bank fns.
+func jitArenaCtxI64ArrsBaseOff() uintptr {
+	return unsafe.Offsetof(jitArenaCtx{}.i64ArrsBase)
+}
