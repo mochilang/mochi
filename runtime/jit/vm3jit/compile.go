@@ -327,8 +327,8 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 }
 
 // checkCellBankAdmissibleAMD64 is the AMD64 cell-bank whitelist (Phase
-// 6.3.4.m.4c.1 .. m.4c.6, extended in n.2.a and n.2.b). The scaffold
-// admits:
+// 6.3.4.m.4c.1 .. m.4c.6, extended in n.2.a, n.2.b, and n.2.c). The
+// scaffold admits:
 //
 //   - the i64 arithmetic / compare-and-branch / control-flow set the
 //     existing lower_amd64 supports,
@@ -338,14 +338,17 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 //   - OpCallMixed self-recursive (m.4c.5),
 //   - OpCallMixed cross-fn (m.4c.6), provided the callee is JIT-compiled,
 //     has no f64 regs, and has no f64 params,
-//   - OpListGetI64 (n.2.a), the read-only list access op, and
-//   - OpListSetI64 (n.2.b), the write side of the list access pair
-//     (cold form only; hoisted slab-base optimizations come in later
-//     sub-phases).
+//   - OpListGetI64 (n.2.a), the read-only list access op,
+//   - OpListSetI64 (n.2.b), the write side of the list access pair, and
+//   - OpListPushI64 + OpNewList (n.2.c). OpListPushI64 uses the inline
+//     cap-check + StatusListGrow deopt fast path; OpNewList is admitted
+//     only at the pre-alloc prefix (jitCall pre-allocates the list slab,
+//     the emit step writes zero bytes). All cold form; hoisted slab-base
+//     optimizations come in later sub-phases.
 //
-// Map ops, OpListPushI64, and OpNewList are still out of scope until
-// the next sub-phases. f64 banks remain rejected because cell-bank
-// repurposes R14 for *jitArenaCtx and R14 is the f64 base on AMD64.
+// Map ops on cell-bank AMD64 are still out of scope. f64 banks remain
+// rejected because cell-bank repurposes R14 for *jitArenaCtx and R14 is
+// the f64 base on AMD64.
 func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
 	if fn.NumRegsF64 > 0 {
 		return fmt.Errorf("%w: %s has both Cell and f64 banks (AMD64 m.4c.1 admits Cell+I64 only; R14 shared)",
@@ -368,9 +371,21 @@ func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
 			vm3.OpJump,
 			vm3.OpReturnI64, vm3.OpReturnConstK, vm3.OpReturnCell,
 			vm3.OpPairFst, vm3.OpPairSnd, vm3.OpNewPair,
-			vm3.OpListGetI64, vm3.OpListSetI64,
+			vm3.OpListGetI64, vm3.OpListSetI64, vm3.OpListPushI64,
 			vm3.OpLookupI64KW:
 			continue
+		case vm3.OpNewList:
+			// Phase 6.3.4.n.2.c: admit at pc=0 when the lowerer can skip
+			// emission (jitCall pre-allocates the list). Inline OpNewList
+			// outside the pre-alloc prefix routes back to the interpreter.
+			if i == 0 && canPreAllocList(fn) {
+				continue
+			}
+			if k := int(preAllocListPrefix(fn)); k > 0 && i < k {
+				continue
+			}
+			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses inline OpNewList (only pre-alloc prefix is admitted on AMD64)",
+				ErrNotImplemented, fn.Name, i)
 		case vm3.OpCallMixed:
 			idx := int(uint16(op.C))
 			isSelf := opts.SelfIdx >= 0 && idx == opts.SelfIdx
