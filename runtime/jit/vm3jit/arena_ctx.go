@@ -113,3 +113,10 @@ func jitArenaCtxF64ArrsBaseOff() uintptr {
 func jitArenaCtxI64ArrsBaseOff() uintptr {
 	return unsafe.Offsetof(jitArenaCtx{}.i64ArrsBase)
 }
+
+// jitArenaCtxMapsBaseOff is the byte offset of mapsBase within
+// jitArenaCtx. AMD64 OpMapGetI64I64/OpMapSetI64I64 (Phase 6.3.4.n.8.b/c)
+// load it from R14+disp32 to recover the map slab base on cell-bank fns.
+func jitArenaCtxMapsBaseOff() uintptr {
+	return unsafe.Offsetof(jitArenaCtx{}.mapsBase)
+}

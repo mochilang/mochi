@@ -388,6 +388,23 @@ func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
 			vm3.OpF64ArrayGetF64, vm3.OpF64ArraySetF64, vm3.OpF64ArrayLenI64,
 			vm3.OpI64ArrayGetI64, vm3.OpI64ArraySetI64, vm3.OpI64ArrayLenI64:
 			continue
+		case vm3.OpMapGetI64I64:
+			// Phase 6.3.4.n.8.b: AMD64 inline open-addressed lookup.
+			// Kernel clobbers R10/R11/R12 (vm3 slots 4/5/6) as pos /
+			// entry_addr / load scratch. Reject layouts where op.A or
+			// op.C lands in those slots (mirror of ARM64
+			// mapKernelOperandClobber). Also reject cell+f64 layouts
+			// because R12 is the f64 base in that shape and the kernel
+			// must clobber R12.
+			if usesR12ForF64AMD64(fn) {
+				return fmt.Errorf("%w: %s pc %d Cell+F64 OpMapGetI64I64 (R12 is f64 base; kernel needs R12 free)",
+					ErrNotImplemented, fn.Name, i)
+			}
+			if mapKernelOperandClobberAMD64(op) {
+				return fmt.Errorf("%w: %s pc %d OpMapGetI64I64 with op.A=%d op.C=%d in slots 4..6 (kernel clobbers R10/R11/R12)",
+					ErrNotImplemented, fn.Name, i, op.A, uint16(op.C))
+			}
+			continue
 		case vm3.OpNewF64Array, vm3.OpNewI64Array:
 			// Phase 6.3.4.n.3: admit at the pre-alloc K-prefix only.
 			// jitCall pre-allocates the slab; emit step skips the op.
