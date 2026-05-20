@@ -15,9 +15,10 @@ import (
 
 // maxI64RegsAMD64 mirrors the internal AMD64 i64 cap. The wide_chain
 // test sizes its chain to fit. Slots 0..5 land in RSI/RDI/R8/R9/R10/R11
-// (caller-saved); slots 6..8 land in R12/R13/R14 (callee-saved, pushed
-// in prologue).
-const maxI64RegsAMD64 = 9
+// (caller-saved); slots 6..9 land in R12/R13/R14/RBP (callee-saved,
+// pushed in prologue). Phase 6.3.4.n.1 lifted the cap from 9 to 10
+// by adding RBP as slot 9 for non-cell-bank fns.
+const maxI64RegsAMD64 = 10
 
 // runJITI64Kernel compiles fn and calls it via the status-word
 // trampoline with a single i64 argument in regs[0], returning the i64
@@ -98,22 +99,24 @@ func checkKernelAgainstInterp(t *testing.T, name string, prog *corpus.Program, n
 }
 
 // TestWideI64Frame exercises the callee-saved prologue/epilogue on
-// AMD64. NumRegsI64 = 9 spans slots 0..8: slots 0..5 land in
-// RSI/RDI/R8/R9/R10/R11 (caller-saved); slots 6..8 land in R12/R13/R14
-// (callee-saved, pushed in the prologue). The chain proves every slot
-// is reachable and survives function entry plus the epilogue POPs.
+// AMD64. NumRegsI64 = 10 spans slots 0..9: slots 0..5 land in
+// RSI/RDI/R8/R9/R10/R11 (caller-saved); slots 6..9 land in
+// R12/R13/R14/RBP (callee-saved, pushed in the prologue). The chain
+// proves every slot is reachable and survives function entry plus the
+// epilogue POPs. Phase 6.3.4.n.1 extended the chain to slot 9 (RBP)
+// after the cap was lifted from 9 to 10.
 func TestWideI64Frame(t *testing.T) {
-	// fn(x) := x + 1 + 2 + ... + 7 + 8 = x + 36.
+	// fn(x) := x + 1 + 2 + ... + 9 = x + 45.
 	//   regs[0] = x (param)
-	//   regs[1..8] = constants 1..8
-	//   regs[0] = regs[0] + regs[k] for k in 1..8
+	//   regs[1..9] = constants 1..9
+	//   regs[0] = regs[0] + regs[k] for k in 1..9
 	//   return regs[0]
 	const N = maxI64RegsAMD64
 	code := []vm3.Op{}
-	for k := uint16(1); k <= 8; k++ {
+	for k := uint16(1); k <= 9; k++ {
 		code = append(code, vm3.MakeOp(vm3.OpConstI64K, k, 0, int16(k)))
 	}
-	for k := uint16(1); k <= 8; k++ {
+	for k := uint16(1); k <= 9; k++ {
 		code = append(code, vm3.MakeOp(vm3.OpAddI64, 0, 0, int16(k)))
 	}
 	code = append(code, vm3.MakeOp(vm3.OpReturnI64, 0, 0, 0))
@@ -127,7 +130,7 @@ func TestWideI64Frame(t *testing.T) {
 	}
 	for _, x := range []int64{0, 1, 100, -5} {
 		got := runJITI64Kernel(t, fn, x)
-		want := x + 36
+		want := x + 45
 		if got != want {
 			t.Errorf("wide_chain(%d) = %d want %d", x, got, want)
 		}
