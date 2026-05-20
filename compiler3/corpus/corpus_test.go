@@ -156,6 +156,8 @@ func BenchmarkGoKernels(b *testing.B) {
 		{"lists_fill_sum_n128", c2corpus.ExpectListsFillSum, 128},
 		{"nsieve_n1000", c2corpus.ExpectNsieve, 1000},
 		{"nsieve_n10000", c2corpus.ExpectNsieve, 10000},
+		{"fannkuch_redux_n1000", c2corpus.ExpectFannkuchRedux, 1000},
+		{"fannkuch_redux_n10000", c2corpus.ExpectFannkuchRedux, 10000},
 		{"fasta_n10000", c2corpus.ExpectFasta, 10000},
 		{"fasta_n100000", c2corpus.ExpectFasta, 100000},
 		{"mandelbrot_n100", c2corpus.ExpectMandelbrot, 100},
