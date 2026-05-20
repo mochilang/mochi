@@ -785,6 +785,11 @@ func (vm *VM) run() (Cell, error) {
 			_, _, idx := lst.DecodeHandle()
 			arenas.Lists[idx].cells[regsI64[uint16(op.C)]] = CInt(regsI64[op.B])
 			pc++
+		case OpListGetI64K:
+			lst := regsCell[op.B]
+			_, _, idx := lst.DecodeHandle()
+			regsI64[op.A] = arenas.Lists[idx].cells[uint16(op.C)].Int()
+			pc++
 		case OpListGetF64:
 			lst := regsCell[op.B]
 			_, _, idx := lst.DecodeHandle()

@@ -1531,6 +1531,25 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 		stride := int64(vm3.JITListSlabStride())
 		return movImm64WordCount(stride) + 6, nil
 
+	case vm3.OpListGetI64K:
+		// Phase 6.3.4.n.2.e: constant-index variant of OpListGetI64.
+		// Bakes the immediate idx into the cells-array LDR's imm12,
+		// replacing the LSL #3-scaled register-offset form. Saves no
+		// instructions vs the reg form (still LDR + SBFX in the hot
+		// shape), but frees the loop's i64 register that would have
+		// held the index, which matters for kernels squeezed against
+		// the AMD64 cell-bank cap (NumRegsI64 ≤ 8) and reduces ARM64
+		// pressure too. K is uint16(op.C) and the cell stride is 8,
+		// so the imm12 is K directly (max addressable K = 4095).
+		if h := hoistedCellReg(fn); h >= 0 && int(op.B) == h {
+			if hoistsCellsPtrARM64(fn) {
+				return 2, nil
+			}
+			return 3, nil
+		}
+		stride := int64(vm3.JITListSlabStride())
+		return movImm64WordCount(stride) + 6, nil
+
 	case vm3.OpListPushI64:
 		// Inline push-with-cap-check fast path. The cold form is
 		// movImm64WordCount(stride)+14 words (UXTW + MOV stride + MUL +
@@ -2254,6 +2273,47 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		ws = append(ws, addReg(16, 16, 19))
 		ws = append(ws, ldr64(16, 16, cellsOff/8))
 		ws = append(ws, ldrRegLsl3(17, 16, xIdx))
+		ws = append(ws, sbfx48(xA, 17))
+		return ws, nil
+
+	case vm3.OpListGetI64K:
+		// Phase 6.3.4.n.2.e: constant-index list read mirroring
+		// OpListGetI64 with idxK baked into the cells-array LDR's
+		// imm12 instead of an index register. Cold form (cellsOff/8
+		// for the slab→ptr LDR, then idxK for the ptr→cell LDR):
+		//   UXTW x16, w_cell ; MOV x17, #stride ; MUL ; ADD x16, x19 ;
+		//   LDR x16, [x16, #CELLS_OFFSET] ; LDR x17, [x16, #idxK*8] ;
+		//   SBFX xA, x17, #0, #48
+		// Hot form (hoistedCellReg matches op.B, no cells.ptr pin):
+		//   LDR x17, [x20, #CELLS_OFFSET] ; LDR x17, [x17, #idxK*8] ;
+		//   SBFX xA, x17, #0, #48
+		// Hottest form (cells.ptr pinned in x22):
+		//   LDR x17, [x22, #idxK*8] ; SBFX xA, x17, #0, #48
+		cellsOff := uint32(vm3.JITListCellsOffset())
+		idxK := uint32(uint16(op.C))
+		xA := r2x(fn, op.A)
+		if h := hoistedCellReg(fn); h >= 0 && int(op.B) == h {
+			if hoistsCellsPtrARM64(fn) {
+				ws := make([]uint32, 0, 2)
+				ws = append(ws, ldr64(17, 22, idxK))
+				ws = append(ws, sbfx48(xA, 17))
+				return ws, nil
+			}
+			ws := make([]uint32, 0, 3)
+			ws = append(ws, ldr64(17, 20, cellsOff/8))
+			ws = append(ws, ldr64(17, 17, idxK))
+			ws = append(ws, sbfx48(xA, 17))
+			return ws, nil
+		}
+		stride := int64(vm3.JITListSlabStride())
+		xCell := r2cell(op.B)
+		ws := make([]uint32, 0, movImm64WordCount(stride)+6)
+		ws = append(ws, uxtwReg(16, xCell))
+		ws = append(ws, movImm64(17, stride)...)
+		ws = append(ws, mulReg(16, 16, 17))
+		ws = append(ws, addReg(16, 16, 19))
+		ws = append(ws, ldr64(16, 16, cellsOff/8))
+		ws = append(ws, ldr64(17, 16, idxK))
 		ws = append(ws, sbfx48(xA, 17))
 		return ws, nil
 

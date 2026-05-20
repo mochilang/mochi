@@ -794,6 +794,26 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		//   mov  %rax, x_A                ; regsI64[A] = signed payload (REX.W 89 /r, 3B)
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 4 + 4 + 4 + 3, nil
 
+	case vm3.OpListGetI64K:
+		// Phase 6.3.4.n.2.e: constant-index list read. Mirrors
+		// OpListGetI64 cold form but bakes the (uint16(C)) idx into a
+		// disp32 load instead of the SIB form, freeing the i64 reg
+		// that would have held the loop index. Trade: the SIB load is
+		// 4 bytes, the disp32 load is 7 bytes, so the op is 3 bytes
+		// longer than the reg-form; the win is one fewer live i64
+		// register, which matters for fannkuch_redux (squeezes
+		// NumRegsI64 from 10 to 8 to fit the AMD64 cell-bank cap).
+		//   mov  disp32(%rbp), %eax       ; idx = low 32 of regsCell[B] (zero-ext, 6B)
+		//   imul $stride, %rax, %rax      ; rax = idx * sizeof(vmList) (7B)
+		//   mov  listsBaseOff(%r14), %rcx ; rcx = arenas.Lists base    (7B)
+		//   add  %rcx, %rax               ; rax = &arenas.Lists[idx]   (3B)
+		//   mov  cellsOff(%rax), %rax     ; rax = cells.ptr            (7B)
+		//   mov  disp32(%rax), %rax       ; rax = cells[idxK]          (7B; idxK*8 in disp32)
+		//   shl  $16, %rax                ; SBFX prep                  (4B)
+		//   sar  $16, %rax                ; sign-extend low 48 bits    (4B)
+		//   mov  %rax, x_A                ; regsI64[A] = signed payload (3B)
+		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 7 + 4 + 4 + 3, nil
+
 	case vm3.OpListSetI64:
 		// Phase 6.3.4.n.2.b cold form, AMD64 mirror of the ARM64
 		// OpListSetI64 (no hoist):
@@ -1244,6 +1264,28 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		out = append(out, add64RR(xRCX, xRAX)...)
 		out = append(out, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
 		out = append(out, mov64LoadIdxLsl3(xRAX, xRAX, xIdx)...)
+		out = append(out, shl64RImm8(xRAX, 16)...)
+		out = append(out, sar64RImm8(xRAX, 16)...)
+		out = append(out, mov64RR(xRAX, xA)...)
+		return out, nil
+
+	case vm3.OpListGetI64K:
+		// Phase 6.3.4.n.2.e: constant-index list read. Mirrors OpListGetI64
+		// but bakes idx*8 into the cells-array load's disp32, eliminating
+		// the dependence on a live i64 register for the index. Frees one
+		// i64 slot in the kernel; fannkuch_redux uses this to fit
+		// NumRegsI64=8 under the AMD64 cell-bank cap.
+		stride := int64(vm3.JITListSlabStride())
+		cellsOff := int32(vm3.JITListCellsOffset())
+		listsBaseOff := int32(jitArenaCtxListsBaseOff())
+		idxK := int32(uint16(op.C)) * 8
+		xA := r2xAMD64(op.A)
+		out := mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
+		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
+		out = append(out, add64RR(xRCX, xRAX)...)
+		out = append(out, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
+		out = append(out, mov64LoadDisp32(xRAX, xRAX, idxK)...)
 		out = append(out, shl64RImm8(xRAX, 16)...)
 		out = append(out, sar64RImm8(xRAX, 16)...)
 		out = append(out, mov64RR(xRAX, xA)...)
