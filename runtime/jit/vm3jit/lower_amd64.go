@@ -1176,11 +1176,12 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		}
 		if _, ok := pow2ShiftI64(int64(int32(op.C))); ok {
 			// Phase 6.3.4.n.13 shift-based lowering: see
-			// emitDivKOrModKPow2AMD64. Div is 21 bytes, Mod is 34.
+			// emitDivKOrModKPow2AMD64. Div is 21 bytes, Mod is 31
+			// (mov+sar+shr+add+sar = 18, then +shl+mov+sub+mov = 13).
 			if op.Code == vm3.OpDivI64K {
 				return 21, nil
 			}
-			return 34, nil
+			return 31, nil
 		}
 		if _, _, corr, ok := signedMagicI64(int64(int32(op.C))); ok {
 			// Phase 6.3.4.n.2.h magic-multiply shape: see
@@ -2589,7 +2590,7 @@ func emitDivKOrModK(xA, xB int, imm int32, isDiv bool) []byte {
 //	sub rax, rdx       ; 3   ; rdx = n - q*d
 //	mov rdx, xA        ; 3
 //
-// Total bytes: Div = 21, Mod = 34. Critical path ~5cy (mov, sar, shr,
+// Total bytes: Div = 21, Mod = 31. Critical path ~5cy (mov, sar, shr,
 // add, sar) for Div vs ~30cy for IDIV on EPYC Zen3. Phase 6.3.4.n.13.
 func emitDivKOrModKPow2AMD64(xA, xB int, k uint, isDiv bool) []byte {
 	out := mov64RR(xB, xRAX)
