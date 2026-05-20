@@ -812,7 +812,22 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		if op.C == 0 {
 			return 0, fmt.Errorf("%w: opcode %d divide-by-zero immediate", ErrNotImplemented, op.Code)
 		}
-		// mov $imm, %rcx (7) ; mov xB, %rax (3) ; cqo (2) ; idiv %rcx (3) ; mov %rax|%rdx, xA (3).
+		if _, _, corr, ok := signedMagicI64(int64(int32(op.C))); ok {
+			// Phase 6.3.4.n.2.h magic-multiply shape: see
+			// emitDivKOrModKMagicAMD64 for byte-count derivation.
+			// Simple form is 30B (Div) / 43B (Mod); +3B when the
+			// magic multiplier overflows int64 and needs the
+			// `add rdx, rB` correction step.
+			extra := 0
+			if corr {
+				extra = 3
+			}
+			if op.Code == vm3.OpDivI64K {
+				return 30 + extra, nil
+			}
+			return 43 + extra, nil
+		}
+		// IDIV-K fallback: mov $imm, %rcx (7) ; mov xB, %rax (3) ; cqo (2) ; idiv %rcx (3) ; mov %rax|%rdx, xA (3).
 		return 18, nil
 	case vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
 		vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
@@ -1895,7 +1910,18 @@ func emitDivOrMod(fn *vm3.Function, xA, xB, xC, opOff, deoptStart int, isDiv boo
 //	cqo                           ; 2
 //	idiv %rcx                     ; 3
 //	mov  %rax|%rdx, %rXa          ; 3
+//
+// Phase 6.3.4.n.2.h: when imm has a fitting magic multiplier
+// (signedMagicI64 returns ok=true), the lowering switches to
+// emitDivKOrModKMagicAMD64 which replaces IDIV (~30 cycles on EPYC) with
+// a single one-operand IMUL (~3-4 cycles) plus shifts and adds. This is
+// the same generic compiler optimization the Go reference and LLVM
+// apply automatically; on fannkuch_redux the init loop OpModI64K=7
+// executes 7n times so the savings are linear in n.
 func emitDivKOrModK(xA, xB int, imm int32, isDiv bool) []byte {
+	if M, s, corr, ok := signedMagicI64(int64(imm)); ok {
+		return emitDivKOrModKMagicAMD64(xA, xB, M, s, corr, imm, isDiv)
+	}
 	out := movRImm32SignExt(xRCX, imm)
 	out = append(out, mov64RR(xB, xRAX)...)
 	out = append(out, cqoBytes()...)
@@ -1905,6 +1931,57 @@ func emitDivKOrModK(xA, xB int, imm int32, isDiv bool) []byte {
 	} else {
 		out = append(out, mov64RR(xRDX, xA)...)
 	}
+	return out
+}
+
+// emitDivKOrModKMagicAMD64 emits the Phase 6.3.4.n.2.h magic-multiply
+// lowering for OpDivI64K / OpModI64K. Caller has verified via
+// signedMagicI64 that imm has a fitting magic and supplies the
+// correction flag (true when the unsigned magic overflows int64; the
+// signed-product hi underrepresents the unsigned-product hi by n, so
+// we add n back).
+//
+// xB is the vm3 i64 register slot mapped by r2xAMD64; it is always in
+// {RSI, RDI, R8..R14, RBP}, never RAX/RCX/RDX, so the algorithm can
+// freely clobber the latter three. xA is also in that set and may
+// alias xB; the last read of xB happens before the final write to xA.
+//
+//	mov  $M, %rax                 ; 10  (REX.W B8 imm64)
+//	imul rB                       ; 3   (REX.W F7 /5 modrm)
+//	add  rB, %rdx (if corr)       ; 3   ; recover unsigned hi
+//	sar  rdx, $s                  ; 4   (REX.W C1 /7 ib)
+//	mov  rB, %rax                 ; 3
+//	shr  %rax, $63                ; 4
+//	add  %rax, %rdx               ; 3   ; rdx = q (truncated)
+//
+// For Div:
+//
+//	mov  %rdx, xA                 ; 3   ; 30 (or 33 with corr) bytes
+//
+// For Mod (r = n - q*d):
+//
+//	imul rdx, rdx, $d             ; 7   (REX.W 69 /r imm32) ; rdx = q*d
+//	mov  rB, %rax                 ; 3   ; rax = n
+//	sub  %rdx, %rax               ; 3   ; rax = n - q*d
+//	mov  %rax, xA                 ; 3   ; 43 (or 46 with corr) bytes
+func emitDivKOrModKMagicAMD64(xA, xB int, M int64, s uint, needsCorrection bool, d int32, isDiv bool) []byte {
+	out := movRImm64(xRAX, M)
+	out = append(out, imul64ROne(xB)...)
+	if needsCorrection {
+		out = append(out, add64RR(xB, xRDX)...)
+	}
+	out = append(out, sar64RImm8(xRDX, uint8(s))...)
+	out = append(out, mov64RR(xB, xRAX)...)
+	out = append(out, shr64RImm8(xRAX, 63)...)
+	out = append(out, add64RR(xRAX, xRDX)...)
+	if isDiv {
+		out = append(out, mov64RR(xRDX, xA)...)
+		return out
+	}
+	out = append(out, imul64RRImm32(xRDX, xRDX, d)...)
+	out = append(out, mov64RR(xB, xRAX)...)
+	out = append(out, sub64RR(xRDX, xRAX)...)
+	out = append(out, mov64RR(xRAX, xA)...)
 	return out
 }
 
@@ -2088,6 +2165,15 @@ func shr64RImm8(dst int, imm uint8) []byte {
 // is the dividend; RAX = quotient, RDX = remainder on return.
 func idiv64R(divisor int) []byte {
 	return []byte{rex(true, false, false, divisor >= 8), 0xF7, modRM(3, 7, byte(divisor))}
+}
+
+// imul64ROne emits one-operand `imul %rSrc` (Intel: imul rSrc). Opcode
+// REX.W F7 /5: RDX:RAX = sign_extend(RAX) * rSrc (full 128-bit signed
+// product). Used by the Phase 6.3.4.n.2.h signed-mod-by-constant
+// magic-multiply lowering to replace the ~30-cycle IDIV with a ~3-cycle
+// IMUL on hot loop bodies (Granlund-Montgomery, Hacker's Delight §10-4).
+func imul64ROne(r int) []byte {
+	return []byte{rex(true, false, false, r >= 8), 0xF7, modRM(3, 5, byte(r))}
 }
 
 // test64RR emits `test %rSrc, %rDst` (Intel: test rDst, rSrc).
