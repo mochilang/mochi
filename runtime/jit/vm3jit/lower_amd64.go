@@ -777,6 +777,20 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		//   mov  %rax, pairsLenOff(%r14)       ; 7B  commit pairsLen
 		return 7 + 7 + 3 + 6 + 7 + 7 + 3 + 6 + 7 + 7 + 7 + 7 + 2 + 10 + 3 + 7 + 3 + 7, nil
 
+	case vm3.OpListGetI64:
+		// Phase 6.3.4.n.2.a cold form, AMD64 mirror of the ARM64
+		// OpListGetI64 (no hoist):
+		//   mov  disp32(%rbp), %eax       ; idx = low 32 of regsCell[B] (zero-ext, 6B)
+		//   imul $stride, %rax, %rax      ; rax = idx * sizeof(vmList) (REX.W 69 /r imm32, 7B)
+		//   mov  listsBaseOff(%r14), %rcx ; rcx = arenas.Lists base (REX.WB 8B /r disp32, 7B)
+		//   add  %rcx, %rax               ; rax = &arenas.Lists[idx] (REX.W 01 /r, 3B)
+		//   mov  cellsOff(%rax), %rax     ; rax = cells.ptr (REX.W 8B /r disp32, 7B)
+		//   mov  [%rax + xIdx*8], %rax    ; rax = cells[regsI64[C]] (REX.W 8B /r SIB, 4B)
+		//   shl  $16, %rax                ; SBFX prep                  (REX.W C1 /4 ib, 4B)
+		//   sar  $16, %rax                ; sign-extend low 48 bits   (REX.W C1 /7 ib, 4B)
+		//   mov  %rax, x_A                ; regsI64[A] = signed payload (REX.W 89 /r, 3B)
+		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 4 + 4 + 4 + 3, nil
+
 	case vm3.OpConstF64K:
 		idx := int(uint16(op.C))
 		if idx >= len(fn.Consts) {
@@ -1158,6 +1172,30 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// pairsLen++; commit.
 		out = append(out, inc64R(xRAX)...)
 		out = append(out, mov64StoreDisp32(xRAX, xR14, pairsLenOff)...)
+		return out, nil
+
+	case vm3.OpListGetI64:
+		// Phase 6.3.4.n.2.a: regsI64[A] = arenas.Lists[handleIdx(regsCell[B])].cells[regsI64[C]].Int().
+		// Cold form mirroring the ARM64 cold path (no hoisted slab base
+		// or cells.ptr pin). RAX is the scratch slab-address/payload
+		// register; RCX holds the listsBase load. xIdx is the pinned
+		// register for regsI64[C]; xA is the pinned register for
+		// regsI64[A]. The shl/sar pair is the AMD64 equivalent of ARM64
+		// SBFX: it sign-extends the low 48 bits of the boxed Int48 cell.
+		stride := int64(vm3.JITListSlabStride())
+		cellsOff := int32(vm3.JITListCellsOffset())
+		listsBaseOff := int32(jitArenaCtxListsBaseOff())
+		xIdx := r2xAMD64(uint16(op.C))
+		xA := r2xAMD64(op.A)
+		out := mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
+		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
+		out = append(out, add64RR(xRCX, xRAX)...)
+		out = append(out, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
+		out = append(out, mov64LoadIdxLsl3(xRAX, xRAX, xIdx)...)
+		out = append(out, shl64RImm8(xRAX, 16)...)
+		out = append(out, sar64RImm8(xRAX, 16)...)
+		out = append(out, mov64RR(xRAX, xA)...)
 		return out, nil
 
 	case vm3.OpConstF64K:
@@ -1643,6 +1681,21 @@ func cmp64RImm32(dst int, imm int32) []byte {
 // neg64R emits `neg %rDst` (rDst = -rDst). Opcode REX.W F7 /3.
 func neg64R(dst int) []byte {
 	return []byte{rex(true, false, false, dst >= 8), 0xF7, modRM(3, 3, byte(dst))}
+}
+
+// shl64RImm8 emits `shl %rDst, imm8`. Opcode REX.W C1 /4 ib. Phase
+// 6.3.4.n.2.a uses this with sar64RImm8 (16-bit shift pair) as the
+// AMD64 SBFX-equivalent that sign-extends the low 48 bits of a NaN-
+// boxed int48 payload from arenas.Lists[i].cells[j]. 4 bytes.
+func shl64RImm8(dst int, imm uint8) []byte {
+	return []byte{rex(true, false, false, dst >= 8), 0xC1, modRM(3, 4, byte(dst&7)), imm}
+}
+
+// sar64RImm8 emits `sar %rDst, imm8`. Opcode REX.W C1 /7 ib. Paired
+// with shl64RImm8 to sign-extend an N-bit signed value packed in the
+// low N bits of a register: shl by (64-N), sar by (64-N). 4 bytes.
+func sar64RImm8(dst int, imm uint8) []byte {
+	return []byte{rex(true, false, false, dst >= 8), 0xC1, modRM(3, 7, byte(dst&7)), imm}
 }
 
 // idiv64R emits `idiv %rDivisor` (signed). Opcode REX.W F7 /7. RDX:RAX
