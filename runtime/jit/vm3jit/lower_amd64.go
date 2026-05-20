@@ -458,6 +458,154 @@ func hoistPrologueBytesAMD64(fn *vm3.Function) int {
 	return 6 + 7 + 7 + 3 + 7 + storeBytes
 }
 
+// hoistsF64ArrDataPtrsAMD64 reports whether the AMD64 prologue should
+// pre-resolve and cache each constant-cell F64Array's data pointer.
+// "Constant cell" means the cell is written exactly once by an
+// OpNewF64Array in the JITPreAllocF64ArrPrefix K-prefix (which jitCall
+// pre-allocates before the trampoline) and never overwritten anywhere
+// else in the function. preAllocF64ArrPrefix already enforces that
+// safety guard, so the data slice pointer is invariant for the entire
+// call: F64ArraySet writes into existing slots and never appends.
+//
+// When active, OpF64ArrayGetF64 / OpF64ArraySetF64 swap their 6-inst /
+// ~36-byte slab-resolution chain for a 2-inst / ~10-byte hot form that
+// reads the cached ptr from a scratch regsI64 slot. The cache lives
+// past NumRegsI64 (the interpreter never reads above that bound) at
+// disp = (NumRegsI64 + cellPtrHoistOffsetAMD64(fn) + k) * 8 from RBX.
+// Phase 6.3.4.n.11.
+//
+// Gates:
+//
+//   - isCellBankAMD64(fn): RBP must hold the regsCell base so the
+//     prologue can read each pinned cell's handle.
+//   - fn.JITPreAllocF64ArrPrefix > 0: there is at least one constant
+//     F64Array cell to cache. Higher K = larger prologue but also more
+//     body savings.
+//   - !isNonLeafAMD64(fn): any internal call could in principle invoke
+//     a callee that overwrites the cached cells. n_body / spectral_norm
+//     are leaf kernels so this gate is comfortable.
+//   - Body contains at least one OpF64ArrayGetF64 / OpF64ArraySetF64
+//     referencing a hoisted cell. Without a use, the prologue would
+//     waste K * 30 bytes for zero hot-path benefit.
+//   - NumRegsI64 + numF64ArrDataPtrHoistsAMD64 + (1 if hoistsCellsPtrAMD64) <= maxI64Regs:
+//     the cache must fit in the jitFrame3.regsI64 scratch area without
+//     overrunning the interpreter's deopt-state read window. maxI64Regs
+//     is 17 and the F64Array-using kernels stay well below that.
+func hoistsF64ArrDataPtrsAMD64(fn *vm3.Function) bool {
+	if !isCellBankAMD64(fn) {
+		return false
+	}
+	k := int(fn.JITPreAllocF64ArrPrefix)
+	if k == 0 {
+		return false
+	}
+	if isNonLeafAMD64(fn) {
+		return false
+	}
+	hoistedSlots := make(map[uint16]bool, k)
+	for i := 0; i < k; i++ {
+		hoistedSlots[fn.Code[i].A] = true
+	}
+	hasUse := false
+	for _, op := range fn.Code {
+		switch op.Code {
+		case vm3.OpF64ArrayGetF64:
+			if hoistedSlots[op.B] {
+				hasUse = true
+			}
+		case vm3.OpF64ArraySetF64:
+			if hoistedSlots[op.A] {
+				hasUse = true
+			}
+		}
+		if hasUse {
+			break
+		}
+	}
+	if !hasUse {
+		return false
+	}
+	base := int(fn.NumRegsI64)
+	if hoistsCellsPtrAMD64(fn) {
+		base++
+	}
+	if base+k > maxI64Regs {
+		return false
+	}
+	return true
+}
+
+// numF64ArrDataPtrHoistsAMD64 returns the number of constant F64Array
+// cells whose data pointers are cached by the prologue. Zero when
+// hoistsF64ArrDataPtrsAMD64(fn) is false.
+func numF64ArrDataPtrHoistsAMD64(fn *vm3.Function) int {
+	if !hoistsF64ArrDataPtrsAMD64(fn) {
+		return 0
+	}
+	return int(fn.JITPreAllocF64ArrPrefix)
+}
+
+// f64ArrDataPtrHoistDispAMD64 returns the disp from RBX (= &regsI64[0])
+// at which the k-th constant F64Array cell's data pointer is stashed.
+// The k-th cached pointer lives in the cell at fn.Code[k].A (since the
+// K-prefix at pc=0..K-1 is the canonical ordering). Caller must check
+// hoistsF64ArrDataPtrsAMD64(fn) first; the disp is undefined otherwise.
+func f64ArrDataPtrHoistDispAMD64(fn *vm3.Function, k int) int32 {
+	base := int(fn.NumRegsI64)
+	if hoistsCellsPtrAMD64(fn) {
+		base++
+	}
+	return int32((base + k) * 8)
+}
+
+// f64ArrDataPtrHoistSlotAMD64 returns k such that the data pointer for
+// regsCell[cellSlot] is cached at index k in the hoist table (k in
+// [0, numF64ArrDataPtrHoistsAMD64(fn))), or -1 if cellSlot is not
+// hoisted. The k-th cached cell is fn.Code[k].A by construction.
+func f64ArrDataPtrHoistSlotAMD64(fn *vm3.Function, cellSlot uint16) int {
+	if !hoistsF64ArrDataPtrsAMD64(fn) {
+		return -1
+	}
+	k := int(fn.JITPreAllocF64ArrPrefix)
+	for i := 0; i < k; i++ {
+		if fn.Code[i].A == cellSlot {
+			return i
+		}
+	}
+	return -1
+}
+
+// f64ArrDataPtrHoistPrologueBytesAMD64 returns the extra prologue bytes
+// needed to populate the F64Array data-ptr cache. Each hoisted cell
+// emits the same 6-step resolution chain plus one store:
+//
+//	mov  (cellSlot*8)(%rbp), %eax  ; idx = low 32 of regsCell[cellSlot]  (6B)
+//	imul $stride, %rax, %rax       ; rax = idx * sizeof(vmF64Array)      (7B)
+//	mov  f64ArrsBaseOff(%r14), %rcx; rcx = arenas.F64Arrs base           (7B)
+//	add  %rcx, %rax                ; rax = &arenas.F64Arrs[idx]          (3B)
+//	mov  dataOff(%rax), %rax       ; rax = data.ptr                      (7B)
+//	mov  %rax, hoistDisp(%rbx)     ; cache it                            (4 or 7B)
+//
+// mov32LoadDisp32 always emits mod=10 disp32 (6B for RAX<-RBP, no REX),
+// matching the cold-form encoders so byteCount and emit stay in sync.
+// Only the final store can shrink to disp8 when the hoist slot fits.
+func f64ArrDataPtrHoistPrologueBytesAMD64(fn *vm3.Function) int {
+	n := numF64ArrDataPtrHoistsAMD64(fn)
+	if n == 0 {
+		return 0
+	}
+	total := 0
+	for k := 0; k < n; k++ {
+		storeBytes := 4 // mov %rax, disp8(%rbx)
+		hoistDisp := f64ArrDataPtrHoistDispAMD64(fn, k)
+		if hoistDisp < -128 || hoistDisp > 127 {
+			storeBytes = 7
+		}
+		total += 6 + 7 + 7 + 3 + 7 + storeBytes
+	}
+	return total
+}
+
 // computeCallSpillsAMD64 runs backward liveness exactly like the
 // AArch64 backend, but emits a mask over slots 0..5 (caller-saved on
 // AMD64) instead of 0..6.
@@ -626,6 +774,8 @@ func prologueLenAMD64(fn *vm3.Function) int {
 	// Phase 6.3.4.n.2.f: cells.ptr hoist setup (cold form: 0 bytes when
 	// gate fails; ~34 bytes when active). See hoistPrologueBytesAMD64.
 	bytes += hoistPrologueBytesAMD64(fn)
+	// Phase 6.3.4.n.11: F64Array data-ptr cache for constant cells.
+	bytes += f64ArrDataPtrHoistPrologueBytesAMD64(fn)
 	_ = pushes
 	return bytes
 }
@@ -706,6 +856,28 @@ func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 			buf = append(buf, mov64StoreDisp8(xRAX, xRBX, int8(hoistDisp))...)
 		} else {
 			buf = append(buf, mov64StoreDisp32(xRAX, xRBX, hoistDisp)...)
+		}
+	}
+	// Phase 6.3.4.n.11: cache the data ptr of each constant F64Array cell
+	// so OpF64ArrayGet/SetF64 can drop their 6-inst slab-resolution chain
+	// to a 2-inst hot form (mov hoistDisp(%rbx), %rax + movsd via SIB).
+	if nHoist := numF64ArrDataPtrHoistsAMD64(fn); nHoist > 0 {
+		stride := int64(vm3.JITF64ArrSlabStride())
+		dataOff := int32(vm3.JITF64ArrDataOffset())
+		baseOff := int32(jitArenaCtxF64ArrsBaseOff())
+		for k := 0; k < nHoist; k++ {
+			cellSlot := int32(fn.Code[k].A) * 8
+			hoistDisp := f64ArrDataPtrHoistDispAMD64(fn, k)
+			buf = append(buf, mov32LoadDisp32(xRAX, xRBP, cellSlot)...)
+			buf = append(buf, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+			buf = append(buf, mov64LoadDisp32(xRCX, xR14, baseOff)...)
+			buf = append(buf, add64RR(xRCX, xRAX)...)
+			buf = append(buf, mov64LoadDisp32(xRAX, xRAX, dataOff)...)
+			if hoistDisp >= -128 && hoistDisp <= 127 {
+				buf = append(buf, mov64StoreDisp8(xRAX, xRBX, int8(hoistDisp))...)
+			} else {
+				buf = append(buf, mov64StoreDisp32(xRAX, xRBX, hoistDisp)...)
+			}
 		}
 	}
 	return buf
@@ -1227,11 +1399,35 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		//   add  %rcx, %rax               ; rax = &arenas.F64Arrs[idx]    (3B)
 		//   mov  dataOff(%rax), %rax      ; rax = data.ptr                (7B)
 		//   movsd  [%rax + xIdx*8], xmm<A> ; xmm<A> = data[regsI64[C]]    (6B SIB-scale3)
+		//
+		// Phase 6.3.4.n.11 hot form (cell hoisted): the data ptr was
+		// resolved once in the prologue and cached at hoistDisp(%rbx);
+		// load it then SIB-index. The mov64Load can shrink to disp8 when
+		// the hoist disp fits, giving 4+6 = 10B vs 36B cold.
+		if k := f64ArrDataPtrHoistSlotAMD64(fn, op.B); k >= 0 {
+			hoistDisp := f64ArrDataPtrHoistDispAMD64(fn, k)
+			loadBytes := 4
+			if hoistDisp < -128 || hoistDisp > 127 {
+				loadBytes = 7
+			}
+			return loadBytes + 6, nil
+		}
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 6, nil
 	case vm3.OpF64ArraySetF64:
 		// Phase 6.3.4.n.3 cold form (AMD64 mirror of ARM64 OpF64ArraySetF64).
 		// arenas.F64Arrs[handleIdx(regsCell[A])].data[regsI64[C]] = regsF64[B].
 		// Same byte budget as Get: 6+7+7+3+7+6.
+		//
+		// Phase 6.3.4.n.11 hot form (cell hoisted): same shape as Get's
+		// hot form but the final movsd is a store. 4+6 = 10B.
+		if k := f64ArrDataPtrHoistSlotAMD64(fn, op.A); k >= 0 {
+			hoistDisp := f64ArrDataPtrHoistDispAMD64(fn, k)
+			loadBytes := 4
+			if hoistDisp < -128 || hoistDisp > 127 {
+				loadBytes = 7
+			}
+			return loadBytes + 6, nil
+		}
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 6, nil
 	case vm3.OpF64ArrayLenI64:
 		// Phase 6.3.4.n.3 cold form: load the slab's u32 .len into a
@@ -1868,6 +2064,23 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// f64ArrsBase load). The final movsd loads data[regsI64[C]] into
 		// xmm<A>; raw f64 bits round-trip with no boxing since the slab
 		// stores native float64 data.
+		//
+		// Phase 6.3.4.n.11 hot form: skip the slab-resolution chain when
+		// the cell's data ptr was hoisted at prologue. The cached ptr at
+		// hoistDisp(%rbx) is loaded into RAX in one mov, then the SIB
+		// movsd indexes into it. 4+6 = 10B vs 36B cold.
+		if k := f64ArrDataPtrHoistSlotAMD64(fn, op.B); k >= 0 {
+			hoistDisp := f64ArrDataPtrHoistDispAMD64(fn, k)
+			xIdx := r2xAMD64(fn, uint16(op.C))
+			var out []byte
+			if hoistDisp >= -128 && hoistDisp <= 127 {
+				out = mov64LoadDisp8(xRAX, xRBX, int8(hoistDisp))
+			} else {
+				out = mov64LoadDisp32(xRAX, xRBX, hoistDisp)
+			}
+			out = append(out, movsdLoadXMMIdxLsl3(int(op.A), xRAX, xIdx)...)
+			return out, nil
+		}
 		stride := int64(vm3.JITF64ArrSlabStride())
 		dataOff := int32(vm3.JITF64ArrDataOffset())
 		baseOff := int32(jitArenaCtxF64ArrsBaseOff())
@@ -1882,6 +2095,20 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 
 	case vm3.OpF64ArraySetF64:
 		// Phase 6.3.4.n.3 cold form. arenas.F64Arrs[regsCell[A]].data[regsI64[C]] = regsF64[B].
+		//
+		// Phase 6.3.4.n.11 hot form (mirror of Get's hot form, store dir).
+		if k := f64ArrDataPtrHoistSlotAMD64(fn, op.A); k >= 0 {
+			hoistDisp := f64ArrDataPtrHoistDispAMD64(fn, k)
+			xIdx := r2xAMD64(fn, uint16(op.C))
+			var out []byte
+			if hoistDisp >= -128 && hoistDisp <= 127 {
+				out = mov64LoadDisp8(xRAX, xRBX, int8(hoistDisp))
+			} else {
+				out = mov64LoadDisp32(xRAX, xRBX, hoistDisp)
+			}
+			out = append(out, movsdStoreXMMIdxLsl3(int(op.B), xRAX, xIdx)...)
+			return out, nil
+		}
 		stride := int64(vm3.JITF64ArrSlabStride())
 		dataOff := int32(vm3.JITF64ArrDataOffset())
 		baseOff := int32(jitArenaCtxF64ArrsBaseOff())
