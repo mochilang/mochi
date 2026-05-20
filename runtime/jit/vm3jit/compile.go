@@ -324,18 +324,18 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 }
 
 // checkCellBankAdmissibleAMD64 is the AMD64 cell-bank whitelist (Phase
-// 6.3.4.m.4c.1 .. m.4c.4). The scaffold admits:
+// 6.3.4.m.4c.1 .. m.4c.5). The scaffold admits:
 //
 //   - the i64 arithmetic / compare-and-branch / control-flow set the
 //     existing lower_amd64 supports,
 //   - OpReturnCell (m.4c.2),
-//   - OpPairFst / OpPairSnd (m.4c.3), the read-only pair access pair, and
-//   - OpNewPair (m.4c.4), the inline allocator with StatusPairGrow deopt.
+//   - OpPairFst / OpPairSnd (m.4c.3), the read-only pair access pair,
+//   - OpNewPair (m.4c.4), the inline allocator with StatusPairGrow deopt, and
+//   - OpCallMixed (m.4c.5), self-recursive only (cross-fn is m.4c.6).
 //
-// OpCallMixed (self + cross-fn) lands in m.4c.5; list/map ops are out
-// of scope for the binary_trees closure (m.4c.6). f64 banks remain
-// rejected because cell-bank repurposes R14 for *jitArenaCtx and R14
-// is the f64 base on AMD64.
+// list/map ops are out of scope for the binary_trees closure. f64
+// banks remain rejected because cell-bank repurposes R14 for
+// *jitArenaCtx and R14 is the f64 base on AMD64.
 func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
 	if fn.NumRegsF64 > 0 {
 		return fmt.Errorf("%w: %s has both Cell and f64 banks (AMD64 m.4c.1 admits Cell+I64 only; R14 shared)",
@@ -360,8 +360,25 @@ func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
 			vm3.OpPairFst, vm3.OpPairSnd, vm3.OpNewPair,
 			vm3.OpLookupI64KW:
 			continue
+		case vm3.OpCallMixed:
+			// Self-recursive only on AMD64. Cross-fn cell-bank
+			// OpCallMixed lowers in a later sub-phase (m.4c.6).
+			idx := int(uint16(op.C))
+			if opts.SelfIdx < 0 || idx != opts.SelfIdx {
+				return fmt.Errorf("%w: %s pc %d Cell-bank cross-fn OpCallMixed not yet admitted on AMD64 (m.4c.5 self-only; m.4c.6 adds cross-fn)",
+					ErrNotImplemented, fn.Name, i)
+			}
+			// Reject f64 params for the same R14-sharing reason that
+			// rejects cell-bank fns with NumRegsF64 > 0.
+			for k, b := range fn.ParamBanks {
+				if b == vm3.BankF64 {
+					return fmt.Errorf("%w: %s pc %d Cell-bank OpCallMixed has f64 param at %d",
+						ErrNotImplemented, fn.Name, i, k)
+				}
+			}
+			continue
 		default:
-			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses opcode %d (AMD64 cell-bank scaffold m.4c.1..m.4c.4 only; m.4c.5 adds OpCallMixed)",
+			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses opcode %d (AMD64 cell-bank scaffold m.4c.1..m.4c.5 only; m.4c.6 adds cross-fn OpCallMixed)",
 				ErrNotImplemented, fn.Name, i, op.Code)
 		}
 	}

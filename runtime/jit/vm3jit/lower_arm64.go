@@ -956,23 +956,6 @@ func resolveCallMixedCallee(fn *vm3.Function, opts Options, op vm3.Op) (*vm3.Fun
 	return callee, false, err
 }
 
-// countParamBanks returns the per-bank arg counts for callee.ParamBanks.
-// Used by crossFnCallMixedWordsARM64 to size the BLR sequence's arg STR
-// runs.
-func countParamBanks(callee *vm3.Function) (nI64, nF64, nCell int) {
-	for _, b := range callee.ParamBanks {
-		switch b {
-		case vm3.BankI64:
-			nI64++
-		case vm3.BankF64:
-			nF64++
-		case vm3.BankCell:
-			nCell++
-		}
-	}
-	return
-}
-
 // crossFnCallMixedWordsARM64 returns the word count for the BLR
 // sequence at a cross-fn OpCallMixed site. The sequence is:
 //
