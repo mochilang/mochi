@@ -327,7 +327,8 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 }
 
 // checkCellBankAdmissibleAMD64 is the AMD64 cell-bank whitelist (Phase
-// 6.3.4.m.4c.1 .. m.4c.6, extended in n.2.a). The scaffold admits:
+// 6.3.4.m.4c.1 .. m.4c.6, extended in n.2.a and n.2.b). The scaffold
+// admits:
 //
 //   - the i64 arithmetic / compare-and-branch / control-flow set the
 //     existing lower_amd64 supports,
@@ -336,13 +337,15 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 //   - OpNewPair (m.4c.4), the inline allocator with StatusPairGrow deopt,
 //   - OpCallMixed self-recursive (m.4c.5),
 //   - OpCallMixed cross-fn (m.4c.6), provided the callee is JIT-compiled,
-//     has no f64 regs, and has no f64 params, and
-//   - OpListGetI64 (n.2.a), the read-only list access op (cold form
-//     only; hoisted slab-base optimizations come in later sub-phases).
+//     has no f64 regs, and has no f64 params,
+//   - OpListGetI64 (n.2.a), the read-only list access op, and
+//   - OpListSetI64 (n.2.b), the write side of the list access pair
+//     (cold form only; hoisted slab-base optimizations come in later
+//     sub-phases).
 //
-// Map ops and the list write/push ops are out of scope until the next
-// sub-phases. f64 banks remain rejected because cell-bank repurposes
-// R14 for *jitArenaCtx and R14 is the f64 base on AMD64.
+// Map ops, OpListPushI64, and OpNewList are still out of scope until
+// the next sub-phases. f64 banks remain rejected because cell-bank
+// repurposes R14 for *jitArenaCtx and R14 is the f64 base on AMD64.
 func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
 	if fn.NumRegsF64 > 0 {
 		return fmt.Errorf("%w: %s has both Cell and f64 banks (AMD64 m.4c.1 admits Cell+I64 only; R14 shared)",
@@ -365,7 +368,7 @@ func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
 			vm3.OpJump,
 			vm3.OpReturnI64, vm3.OpReturnConstK, vm3.OpReturnCell,
 			vm3.OpPairFst, vm3.OpPairSnd, vm3.OpNewPair,
-			vm3.OpListGetI64,
+			vm3.OpListGetI64, vm3.OpListSetI64,
 			vm3.OpLookupI64KW:
 			continue
 		case vm3.OpCallMixed:

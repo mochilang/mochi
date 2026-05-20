@@ -791,6 +791,22 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		//   mov  %rax, x_A                ; regsI64[A] = signed payload (REX.W 89 /r, 3B)
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 4 + 4 + 4 + 3, nil
 
+	case vm3.OpListSetI64:
+		// Phase 6.3.4.n.2.b cold form, AMD64 mirror of the ARM64
+		// OpListSetI64 (no hoist):
+		//   mov  disp32(%rbp), %eax       ; idx = low 32 of regsCell[A] (6B)
+		//   imul $stride, %rax, %rax      ; rax = idx*sizeof(vmList)    (7B)
+		//   mov  listsBaseOff(%r14), %rcx ; rcx = arenas.Lists base    (7B)
+		//   add  %rcx, %rax               ; rax = &arenas.Lists[idx]   (3B)
+		//   mov  cellsOff(%rax), %rax     ; rax = cells.ptr            (7B)
+		//   mov  xVal, %rdx               ; rdx = val                  (3B)
+		//   shl  $16, %rdx                ; rdx <<= 16                  (4B)
+		//   shr  $16, %rdx                ; rdx = val & 0xFFFF_FFFF_FFFF (4B)
+		//   movabs $0xFFFA<<48, %rcx      ; rcx = Int48 tag             (10B)
+		//   or   %rcx, %rdx               ; rdx = tagged payload       (3B)
+		//   mov  %rdx, [%rax + xIdx*8]    ; cells[regsI64[C]] = packed (4B)
+		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 3 + 4 + 4 + 10 + 3 + 4, nil
+
 	case vm3.OpConstF64K:
 		idx := int(uint16(op.C))
 		if idx >= len(fn.Consts) {
@@ -1196,6 +1212,36 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		out = append(out, shl64RImm8(xRAX, 16)...)
 		out = append(out, sar64RImm8(xRAX, 16)...)
 		out = append(out, mov64RR(xRAX, xA)...)
+		return out, nil
+
+	case vm3.OpListSetI64:
+		// Phase 6.3.4.n.2.b: arenas.Lists[handleIdx(regsCell[A])].cells[regsI64[C]] = CInt(regsI64[B]).
+		// Cold form mirroring the ARM64 cold path (no hoisted slab base
+		// or cells.ptr pin). RAX is the scratch slab-address/cells.ptr
+		// register; RDX holds the packed payload; RCX is reused as
+		// listsBase scratch and then as the Int48 tag immediate. xVal /
+		// xIdx are pinned r2xAMD64 registers (slots 0..7 only, so they
+		// never alias RAX/RCX/RDX). The shl/shr-logical pair masks the
+		// low 48 bits of the value; the movabs supplies the high-16-bit
+		// Int48 tag (0xFFFA in the top 16 of the 64-bit word). The
+		// final SIB store mirrors the ARM64 STR with LSL #3 index.
+		stride := int64(vm3.JITListSlabStride())
+		cellsOff := int32(vm3.JITListCellsOffset())
+		listsBaseOff := int32(jitArenaCtxListsBaseOff())
+		xIdx := r2xAMD64(uint16(op.C))
+		xVal := r2xAMD64(op.B)
+		tag := uint64(0xFFFA) << 48
+		out := mov32LoadDisp32(xRAX, xRBP, int32(op.A)*8)
+		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
+		out = append(out, add64RR(xRCX, xRAX)...)
+		out = append(out, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
+		out = append(out, mov64RR(xVal, xRDX)...)
+		out = append(out, shl64RImm8(xRDX, 16)...)
+		out = append(out, shr64RImm8(xRDX, 16)...)
+		out = append(out, movRImm64(xRCX, int64(tag))...)
+		out = append(out, or64RR(xRCX, xRDX)...)
+		out = append(out, mov64StoreIdxLsl3(xRDX, xRAX, xIdx)...)
 		return out, nil
 
 	case vm3.OpConstF64K:
@@ -1698,6 +1744,14 @@ func sar64RImm8(dst int, imm uint8) []byte {
 	return []byte{rex(true, false, false, dst >= 8), 0xC1, modRM(3, 7, byte(dst&7)), imm}
 }
 
+// shr64RImm8 emits `shr %rDst, imm8` (logical shift right). Opcode
+// REX.W C1 /5 ib. Phase 6.3.4.n.2.b pairs it with shl64RImm8 (shl 16
+// then shr 16 logical) to mask a 64-bit value to its low 48 bits
+// before OR-ing in the Int48 tag for the cell store. 4 bytes.
+func shr64RImm8(dst int, imm uint8) []byte {
+	return []byte{rex(true, false, false, dst >= 8), 0xC1, modRM(3, 5, byte(dst&7)), imm}
+}
+
 // idiv64R emits `idiv %rDivisor` (signed). Opcode REX.W F7 /7. RDX:RAX
 // is the dividend; RAX = quotient, RDX = remainder on return.
 func idiv64R(divisor int) []byte {
@@ -1838,6 +1892,28 @@ func mov64LoadIdxLsl3(dst, base, idx int) []byte {
 // always 4 bytes for any combination of dst/base/idx since REX, opcode,
 // ModR/M, and SIB are each one byte.
 func mov64LoadIdxLsl3ByteCount(dst, base, idx int) int { return 4 }
+
+// mov64StoreIdxLsl3 emits `mov rSrc, [rBase + rIdx*8]`. Opcode REX.W
+// 89 /r with mod=00 and SIB(scale=3, index=rIdx, base=rBase). Mirrors
+// mov64LoadIdxLsl3 for the write direction. Caller must pre-check that
+// rBase is not RBP/R13 (those need mod=01/10+disp under the SIB.base
+// quirk); for Phase 6.3.4.n.2.b the base is RAX (cells.ptr from a
+// prior load), so the quirk is avoided.
+func mov64StoreIdxLsl3(src, base, idx int) []byte {
+	rexW := byte(0x48)
+	if src >= 8 {
+		rexW |= 0x04 // REX.R
+	}
+	if idx >= 8 {
+		rexW |= 0x02 // REX.X
+	}
+	if base >= 8 {
+		rexW |= 0x01 // REX.B
+	}
+	mod := modRM(0, byte(src&7), 4) // rm=100 = SIB follows
+	sib := byte(3<<6) | byte((idx&7)<<3) | byte(base&7)
+	return []byte{rexW, 0x89, mod, sib}
+}
 
 // mov64StoreDisp32 emits `mov rSrc, disp32(rBase)`. Opcode REX.W 89 /r
 // with mod=10 (disp32). Same SIB restriction as the load form.
