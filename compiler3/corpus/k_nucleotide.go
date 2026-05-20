@@ -5,10 +5,20 @@ import "mochi/runtime/vm3"
 // KNucleotide: Phase 6.3.4.f single-function port of the BG k_nucleotide
 // kernel. Mirrors compiler2/corpus.BuildKNucleotide (4-fn loop/summ/lookup
 // shape) but collapses to one vm3 function with inline LCG, i64-threshold
-// cascade, and back-jump, so the hot loop carries no cross-fn call. This
-// is the same shape choice we made for fasta in Phase 6.3.4.d: drop the
-// per-iter dispatch + parameter shuffle and let the JIT see a flat
-// loop-body once the Cell-bank admission grows to cover this opcode mix.
+// cascade, and back-jump, so the hot loop carries no cross-fn call.
+//
+// Phase 6.3.4.n.8.e refactor: MOD_LCG, HASH_MOD, and the three fastaThr
+// thresholds previously lived in dedicated i64 registers (r4..r7, plus
+// r1 reused for HASH_MOD in the summ loop). Each of those is constant
+// across the kernel, so they fold into instruction immediates via the
+// wide-K opcodes OpModI64KW / OpCmpLtI64KWBr (B = Consts pool index).
+// That drops NumRegsI64 from 11 to 7, which fits both the ARM64 cell-bank
+// cap of 11 and the AMD64 cell-bank effective cap of 8 (maxI64=10 minus
+// RBP/R14 stolen for regsCell / arenaCtx). The transform is textbook
+// constant-folding-into-immediates; on AMD64 the LCG modulus and the
+// HASH_MOD constant both fit in int32, so the wide-K lowering reduces
+// to the same 7-byte IMM32 sequence used by OpCmpLtI64K / OpModI64K
+// with no extra cost. Bit-identical output.
 //
 // Algorithm:
 //
@@ -29,93 +39,100 @@ import "mochi/runtime/vm3"
 // thresholds in fastaThr{A,C,G} were chosen to make the integer cascade
 // equivalent to the float-prob cascade for every seed in [0, 139968).
 //
-// Bank: i64 + Cell. NumRegsI64 = 11 (fits the cell-bank ARM64 cap so the
-// JIT admits the entire function). Slot reuse: r0/r1/r2 carry n/seed/i
-// in the inner loop, then h/HASH_MOD/k in the summ loop after the inner
-// loop ends. The map kernel clobbers x13/x14/x15 (= r4/r5/r6 in the
-// cell-bank layout), so the constants in r4..r6 are spilled+restored by
-// the kernel; map keys/values are kept out of r4..r6 so xKey/xVal are
-// never read post-clobber:
+// Bank: i64 + Cell. NumRegsI64 = 7 (fits both ARM64 and AMD64 cell-bank
+// caps). The ARM64 map kernel uses x13/x14/x15 (= vm3 i64 slots 4..6)
+// as scratch/loop-invariant pins and explicitly forbids any map-op
+// key/val/dst operand from sitting in slots 4..6. Layout therefore
+// places the four map-op operands (code, key2, v, prev) in slots 0..3,
+// and pushes the three loop-carried non-operands (n, seed, i) into
+// slots 4..6, where the map kernel's entry-spill/exit-restore pair
+// preserves them across each map call:
 //
-//	r0=n→h    r4=MOD_LCG  r7=thrG    r10=v
-//	r1=seed→HASH_MOD r5=thrA  r8=code
-//	r2=i→k    r6=thrC   r9=key2
-//	r3=prev
+//	r0=code→h    r4=i        r6=n
+//	r1=key2      r5=seed
+//	r2=v         (r6 receives n via OpMovI64 at PC 1; param arrives at r0)
+//	r3=prev→k
+//
+// In the summ loop, code/key2/prev slots are reused: r0=h (was code),
+// r3=k (was prev), r2=v (unchanged).
 //
 // NumRegsCell = 1 (regsCell[0] = m).
 //
-// Bytecode (60 ops):
+// Consts:
+//	[0] = 139968    (MOD_LCG; OpModI64KW)
+//	[1] = 2147483647 (HASH_MOD; OpModI64KW)
+//	[2] = fastaThrA (OpCmpLtI64KWBr)
+//	[3] = fastaThrC (OpCmpLtI64KWBr)
+//	[4] = fastaThrG (OpCmpLtI64KWBr)
 //
-//	 0  NewMap      0, 0, 20      ; m = AllocMap(capHint=20) (pc=0 so JIT can pre-alloc)
-//	 1  ConstI64KW  4, 0, 0       ; MOD_LCG  = 139968
-//	 2  ConstI64KW  5, 0, 2       ; thrA
-//	 3  ConstI64KW  6, 0, 3       ; thrC
-//	 4  ConstI64KW  7, 0, 4       ; thrG
-//	 5  ConstI64K   1, 0, 42      ; seed = 42
-//	 6  MulI64K     1, 1, 3877
-//	 7  AddI64K     1, 1, 29573
-//	 8  ModI64      1, 1, 4       ; seed %= MOD_LCG
-//	 9  CmpLtI64Br  1, 5, 14      ; if seed < thrA -> BOOT_A
-//	10  CmpLtI64Br  1, 6, 16      ; if seed < thrC -> BOOT_C
-//	11  CmpLtI64Br  1, 7, 18      ; if seed < thrG -> BOOT_G
-//	12  ConstI64K   3, 0, 3       ; prev = 3 (t fall-through)
-//	13  Jump              19
-//	14  ConstI64K   3, 0, 0       ; BOOT_A: prev = 0 (a)
-//	15  Jump              19
-//	16  ConstI64K   3, 0, 1       ; BOOT_C: prev = 1 (c)
-//	17  Jump              19
-//	18  ConstI64K   3, 0, 2       ; BOOT_G: prev = 2 (g); fall through
-//	19  MapGetI64I64 10, 0, 3     ; v = m[prev]
-//	20  AddI64K     10, 10, 1
-//	21  MapSetI64I64 0, 3, 10     ; m[prev] = v
-//	22  ConstI64K   2, 0, 1       ; i = 1
-//	    loop_top (PC=23):
-//	23  CmpGeI64Br  2, 0, 49      ; if i >= n -> loop_end
-//	24  MulI64K     1, 1, 3877
-//	25  AddI64K     1, 1, 29573
-//	26  ModI64      1, 1, 4
-//	27  CmpLtI64Br  1, 5, 32      ; ITER_A
-//	28  CmpLtI64Br  1, 6, 34      ; ITER_C
-//	29  CmpLtI64Br  1, 7, 36      ; ITER_G
-//	30  ConstI64K   8, 0, 3       ; code = 3 (t)
-//	31  Jump              37
-//	32  ConstI64K   8, 0, 0       ; ITER_A
-//	33  Jump              37
-//	34  ConstI64K   8, 0, 1       ; ITER_C
-//	35  Jump              37
-//	36  ConstI64K   8, 0, 2       ; ITER_G; fall through
-//	37  MapGetI64I64 10, 0, 8     ; v = m[code]
-//	38  AddI64K     10, 10, 1
-//	39  MapSetI64I64 0, 8, 10     ; m[code] = v
-//	40  MulI64K     9, 3, 4       ; key2 = prev*4
-//	41  AddI64      9, 9, 8       ; key2 += code
-//	42  AddI64K     9, 9, 4       ; key2 += 4
-//	43  MapGetI64I64 10, 0, 9     ; v = m[key2]
-//	44  AddI64K     10, 10, 1
-//	45  MapSetI64I64 0, 9, 10
-//	46  MovI64      3, 8, 0       ; prev = code
-//	47  AddI64K     2, 2, 1       ; i++
-//	48  Jump              23
-//	    loop_end (PC=49):
-//	49  ConstI64K   0, 0, 0       ; h = 0 (reuse r0; n is dead post-loop)
-//	50  ConstI64KW  1, 0, 1       ; HASH_MOD = 2147483647 (reuse r1)
-//	51  ConstI64K   2, 0, 0       ; k = 0 (reuse r2)
-//	    summ_top (PC=52):
-//	52  CmpGeI64KBr 2, 20, 59     ; if k >= 20 -> summ_end
-//	53  MapGetI64I64 10, 0, 2     ; v = m[k]
-//	54  MulI64K     0, 0, 1009    ; h *= 1009
-//	55  AddI64      0, 0, 10      ; h += v
-//	56  ModI64      0, 0, 1       ; h %= HASH_MOD
-//	57  AddI64K     2, 2, 1       ; k++
-//	58  Jump              52
-//	    summ_end (PC=59):
-//	59  ReturnI64   0, 0, 0
+// Bytecode (56 ops):
+//
+//	 0  NewMap        0, 0, 20       ; regsCell[0] = m (cap=20)
+//	 1  MovI64        6, 0, 0        ; r6 = r0 (param n moves out of r0)
+//	 2  ConstI64K     5, 0, 42       ; seed(r5) = 42
+//	 3  MulI64K       5, 5, 3877
+//	 4  AddI64K       5, 5, 29573
+//	 5  ModI64KW      5, 5, 0        ; seed %= Consts[0]
+//	 6  CmpLtI64KWBr  5, 2, 11       ; if seed<thrA -> BOOT_A
+//	 7  CmpLtI64KWBr  5, 3, 13       ; if seed<thrC -> BOOT_C
+//	 8  CmpLtI64KWBr  5, 4, 15       ; if seed<thrG -> BOOT_G
+//	 9  ConstI64K     3, 0, 3        ; prev = 3 (T fall-through)
+//	10  Jump                16
+//	11  ConstI64K     3, 0, 0        ; BOOT_A
+//	12  Jump                16
+//	13  ConstI64K     3, 0, 1        ; BOOT_C
+//	14  Jump                16
+//	15  ConstI64K     3, 0, 2        ; BOOT_G
+//	16  MapGetI64I64  2, 0, 3        ; v(r2) = m[prev(r3)]
+//	17  AddI64K       2, 2, 1
+//	18  MapSetI64I64  0, 3, 2        ; m[prev] = v
+//	19  ConstI64K     4, 0, 1        ; i = 1
+//	    loop_top (PC=20):
+//	20  CmpGeI64Br    4, 6, 46       ; if i >= n -> loop_end
+//	21  MulI64K       5, 5, 3877
+//	22  AddI64K       5, 5, 29573
+//	23  ModI64KW      5, 5, 0        ; seed %= Consts[0]
+//	24  CmpLtI64KWBr  5, 2, 29       ; ITER_A
+//	25  CmpLtI64KWBr  5, 3, 31       ; ITER_C
+//	26  CmpLtI64KWBr  5, 4, 33       ; ITER_G
+//	27  ConstI64K     0, 0, 3        ; code(r0) = 3 (T)
+//	28  Jump                34
+//	29  ConstI64K     0, 0, 0        ; ITER_A
+//	30  Jump                34
+//	31  ConstI64K     0, 0, 1        ; ITER_C
+//	32  Jump                34
+//	33  ConstI64K     0, 0, 2        ; ITER_G
+//	34  MapGetI64I64  2, 0, 0        ; v = m[code]
+//	35  AddI64K       2, 2, 1
+//	36  MapSetI64I64  0, 0, 2        ; m[code] = v
+//	37  MulI64K       1, 3, 4        ; key2(r1) = prev*4
+//	38  AddI64        1, 1, 0        ; key2 += code
+//	39  AddI64K       1, 1, 4        ; key2 += 4
+//	40  MapGetI64I64  2, 0, 1        ; v = m[key2]
+//	41  AddI64K       2, 2, 1
+//	42  MapSetI64I64  0, 1, 2        ; m[key2] = v
+//	43  MovI64        3, 0, 0        ; prev = code
+//	44  AddI64K       4, 4, 1        ; i++
+//	45  Jump                20
+//	    loop_end (PC=46):
+//	46  ConstI64K     0, 0, 0        ; h(r0) = 0
+//	47  ConstI64K     3, 0, 0        ; k(r3) = 0
+//	    summ_top (PC=48):
+//	48  CmpGeI64KBr   3, 20, 55      ; if k >= 20 -> summ_end
+//	49  MapGetI64I64  2, 0, 3        ; v = m[k]
+//	50  MulI64K       0, 0, 1009     ; h *= 1009
+//	51  AddI64        0, 0, 2        ; h += v
+//	52  ModI64KW      0, 0, 1        ; h %= Consts[1] (HASH_MOD)
+//	53  AddI64K       3, 3, 1        ; k++
+//	54  Jump                48
+//	    summ_end (PC=55):
+//	55  ReturnI64     0, 0, 0
 var KNucleotide = &Program{
 	Name: "k_nucleotide",
 	Build: func(_ int64) *vm3.Program {
 		fn := &vm3.Function{
 			Name:        "k_nucleotide",
-			NumRegsI64:  11,
+			NumRegsI64:  7,
 			NumRegsCell: 1,
 			ParamBanks:  []vm3.Bank{vm3.BankI64},
 			ResultBank:  vm3.BankI64,
@@ -128,64 +145,60 @@ var KNucleotide = &Program{
 			},
 			Code: []vm3.Op{
 				vm3.MakeOp(vm3.OpNewMap, 0, 0, 20),
-				vm3.MakeOp(vm3.OpConstI64KW, 4, 0, 0),
-				vm3.MakeOp(vm3.OpConstI64KW, 5, 0, 2),
-				vm3.MakeOp(vm3.OpConstI64KW, 6, 0, 3),
-				vm3.MakeOp(vm3.OpConstI64KW, 7, 0, 4),
-				vm3.MakeOp(vm3.OpConstI64K, 1, 0, 42),
-				vm3.MakeOp(vm3.OpMulI64K, 1, 1, 3877),
-				vm3.MakeOp(vm3.OpAddI64K, 1, 1, 29573),
-				vm3.MakeOp(vm3.OpModI64, 1, 1, 4),
-				vm3.MakeOp(vm3.OpCmpLtI64Br, 1, 5, 14),
-				vm3.MakeOp(vm3.OpCmpLtI64Br, 1, 6, 16),
-				vm3.MakeOp(vm3.OpCmpLtI64Br, 1, 7, 18),
+				vm3.MakeOp(vm3.OpMovI64, 6, 0, 0),
+				vm3.MakeOp(vm3.OpConstI64K, 5, 0, 42),
+				vm3.MakeOp(vm3.OpMulI64K, 5, 5, 3877),
+				vm3.MakeOp(vm3.OpAddI64K, 5, 5, 29573),
+				vm3.MakeOp(vm3.OpModI64KW, 5, 5, 0),
+				vm3.MakeOp(vm3.OpCmpLtI64KWBr, 5, 2, 11),
+				vm3.MakeOp(vm3.OpCmpLtI64KWBr, 5, 3, 13),
+				vm3.MakeOp(vm3.OpCmpLtI64KWBr, 5, 4, 15),
 				vm3.MakeOp(vm3.OpConstI64K, 3, 0, 3),
-				vm3.MakeOp(vm3.OpJump, 0, 0, 19),
+				vm3.MakeOp(vm3.OpJump, 0, 0, 16),
 				vm3.MakeOp(vm3.OpConstI64K, 3, 0, 0),
-				vm3.MakeOp(vm3.OpJump, 0, 0, 19),
+				vm3.MakeOp(vm3.OpJump, 0, 0, 16),
 				vm3.MakeOp(vm3.OpConstI64K, 3, 0, 1),
-				vm3.MakeOp(vm3.OpJump, 0, 0, 19),
+				vm3.MakeOp(vm3.OpJump, 0, 0, 16),
 				vm3.MakeOp(vm3.OpConstI64K, 3, 0, 2),
-				vm3.MakeOp(vm3.OpMapGetI64I64, 10, 0, 3),
-				vm3.MakeOp(vm3.OpAddI64K, 10, 10, 1),
-				vm3.MakeOp(vm3.OpMapSetI64I64, 0, 3, 10),
-				vm3.MakeOp(vm3.OpConstI64K, 2, 0, 1),
-				vm3.MakeOp(vm3.OpCmpGeI64Br, 2, 0, 49),
-				vm3.MakeOp(vm3.OpMulI64K, 1, 1, 3877),
-				vm3.MakeOp(vm3.OpAddI64K, 1, 1, 29573),
-				vm3.MakeOp(vm3.OpModI64, 1, 1, 4),
-				vm3.MakeOp(vm3.OpCmpLtI64Br, 1, 5, 32),
-				vm3.MakeOp(vm3.OpCmpLtI64Br, 1, 6, 34),
-				vm3.MakeOp(vm3.OpCmpLtI64Br, 1, 7, 36),
-				vm3.MakeOp(vm3.OpConstI64K, 8, 0, 3),
-				vm3.MakeOp(vm3.OpJump, 0, 0, 37),
-				vm3.MakeOp(vm3.OpConstI64K, 8, 0, 0),
-				vm3.MakeOp(vm3.OpJump, 0, 0, 37),
-				vm3.MakeOp(vm3.OpConstI64K, 8, 0, 1),
-				vm3.MakeOp(vm3.OpJump, 0, 0, 37),
-				vm3.MakeOp(vm3.OpConstI64K, 8, 0, 2),
-				vm3.MakeOp(vm3.OpMapGetI64I64, 10, 0, 8),
-				vm3.MakeOp(vm3.OpAddI64K, 10, 10, 1),
-				vm3.MakeOp(vm3.OpMapSetI64I64, 0, 8, 10),
-				vm3.MakeOp(vm3.OpMulI64K, 9, 3, 4),
-				vm3.MakeOp(vm3.OpAddI64, 9, 9, 8),
-				vm3.MakeOp(vm3.OpAddI64K, 9, 9, 4),
-				vm3.MakeOp(vm3.OpMapGetI64I64, 10, 0, 9),
-				vm3.MakeOp(vm3.OpAddI64K, 10, 10, 1),
-				vm3.MakeOp(vm3.OpMapSetI64I64, 0, 9, 10),
-				vm3.MakeOp(vm3.OpMovI64, 3, 8, 0),
+				vm3.MakeOp(vm3.OpMapGetI64I64, 2, 0, 3),
 				vm3.MakeOp(vm3.OpAddI64K, 2, 2, 1),
-				vm3.MakeOp(vm3.OpJump, 0, 0, 23),
+				vm3.MakeOp(vm3.OpMapSetI64I64, 0, 3, 2),
+				vm3.MakeOp(vm3.OpConstI64K, 4, 0, 1),
+				vm3.MakeOp(vm3.OpCmpGeI64Br, 4, 6, 46),
+				vm3.MakeOp(vm3.OpMulI64K, 5, 5, 3877),
+				vm3.MakeOp(vm3.OpAddI64K, 5, 5, 29573),
+				vm3.MakeOp(vm3.OpModI64KW, 5, 5, 0),
+				vm3.MakeOp(vm3.OpCmpLtI64KWBr, 5, 2, 29),
+				vm3.MakeOp(vm3.OpCmpLtI64KWBr, 5, 3, 31),
+				vm3.MakeOp(vm3.OpCmpLtI64KWBr, 5, 4, 33),
+				vm3.MakeOp(vm3.OpConstI64K, 0, 0, 3),
+				vm3.MakeOp(vm3.OpJump, 0, 0, 34),
 				vm3.MakeOp(vm3.OpConstI64K, 0, 0, 0),
-				vm3.MakeOp(vm3.OpConstI64KW, 1, 0, 1),
-				vm3.MakeOp(vm3.OpConstI64K, 2, 0, 0),
-				vm3.MakeOp(vm3.OpCmpGeI64KBr, 2, 20, 59),
-				vm3.MakeOp(vm3.OpMapGetI64I64, 10, 0, 2),
-				vm3.MakeOp(vm3.OpMulI64K, 0, 0, 1009),
-				vm3.MakeOp(vm3.OpAddI64, 0, 0, 10),
-				vm3.MakeOp(vm3.OpModI64, 0, 0, 1),
+				vm3.MakeOp(vm3.OpJump, 0, 0, 34),
+				vm3.MakeOp(vm3.OpConstI64K, 0, 0, 1),
+				vm3.MakeOp(vm3.OpJump, 0, 0, 34),
+				vm3.MakeOp(vm3.OpConstI64K, 0, 0, 2),
+				vm3.MakeOp(vm3.OpMapGetI64I64, 2, 0, 0),
 				vm3.MakeOp(vm3.OpAddI64K, 2, 2, 1),
-				vm3.MakeOp(vm3.OpJump, 0, 0, 52),
+				vm3.MakeOp(vm3.OpMapSetI64I64, 0, 0, 2),
+				vm3.MakeOp(vm3.OpMulI64K, 1, 3, 4),
+				vm3.MakeOp(vm3.OpAddI64, 1, 1, 0),
+				vm3.MakeOp(vm3.OpAddI64K, 1, 1, 4),
+				vm3.MakeOp(vm3.OpMapGetI64I64, 2, 0, 1),
+				vm3.MakeOp(vm3.OpAddI64K, 2, 2, 1),
+				vm3.MakeOp(vm3.OpMapSetI64I64, 0, 1, 2),
+				vm3.MakeOp(vm3.OpMovI64, 3, 0, 0),
+				vm3.MakeOp(vm3.OpAddI64K, 4, 4, 1),
+				vm3.MakeOp(vm3.OpJump, 0, 0, 20),
+				vm3.MakeOp(vm3.OpConstI64K, 0, 0, 0),
+				vm3.MakeOp(vm3.OpConstI64K, 3, 0, 0),
+				vm3.MakeOp(vm3.OpCmpGeI64KBr, 3, 20, 55),
+				vm3.MakeOp(vm3.OpMapGetI64I64, 2, 0, 3),
+				vm3.MakeOp(vm3.OpMulI64K, 0, 0, 1009),
+				vm3.MakeOp(vm3.OpAddI64, 0, 0, 2),
+				vm3.MakeOp(vm3.OpModI64KW, 0, 0, 1),
+				vm3.MakeOp(vm3.OpAddI64K, 3, 3, 1),
+				vm3.MakeOp(vm3.OpJump, 0, 0, 48),
 				vm3.MakeOp(vm3.OpReturnI64, 0, 0, 0),
 			},
 		}
