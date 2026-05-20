@@ -101,6 +101,7 @@ const (
 	OpListPushI64 // arenas list at regsCell[A] gets CInt(regsI64[B])
 	OpListGetI64  // regsI64[A] = arenas.ListGet(regsCell[B], regsI64[uint16(C)]).Int()
 	OpListSetI64  // arenas list at regsCell[A] at regsI64[uint16(C)] = CInt(regsI64[B])
+	OpListGetI64K // regsI64[A] = arenas.ListGet(regsCell[B], int64(uint16(C))).Int(); idx is K not reg
 
 	// Maps (Phase 3.3). i64-keyed open-addressed maps. A is the map
 	// reg in the caller's Cell bank; B is the key reg in I64 bank; C
