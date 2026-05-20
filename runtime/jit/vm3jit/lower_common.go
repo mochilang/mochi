@@ -383,6 +383,16 @@ func fmaFusionAt(fn *vm3.Function, idx int) (fmaFusion, bool) {
 	default:
 		return fmaFusion{}, false
 	}
+	// Skip fusion when the add/sub is a reduction (dst aliases the
+	// non-mul addend). On Zen3 the FMA latency (4-5cy) exceeds plain
+	// addsd / subsd (3cy), so fusing into an accumulator extends the
+	// loop-carried dep chain by 1-2cy/iter. Apple M1 has the same
+	// gap (fmadd 4cy vs fadd 3cy). Unfused, the mul can run in
+	// parallel and only the add lies on the critical path.
+	// Phase 6.3.4.n.12.c.
+	if f.Dd == f.Da {
+		return fmaFusion{}, false
+	}
 	if isF64LiveAfter(fn, idx, mul.A) {
 		return fmaFusion{}, false
 	}
