@@ -383,6 +383,16 @@ func fmaFusionAt(fn *vm3.Function, idx int) (fmaFusion, bool) {
 	default:
 		return fmaFusion{}, false
 	}
+	// Skip fusion when the add/sub is a reduction (dst aliases the
+	// non-mul addend). On Zen3 the FMA latency (4-5cy) exceeds plain
+	// addsd / subsd (3cy), so fusing into an accumulator extends the
+	// loop-carried dep chain by 1-2cy/iter. Apple M1 has the same
+	// gap (fmadd 4cy vs fadd 3cy). Unfused, the mul can run in
+	// parallel and only the add lies on the critical path.
+	// Phase 6.3.4.n.12.c.
+	if f.Dd == f.Da {
+		return fmaFusion{}, false
+	}
 	if isF64LiveAfter(fn, idx, mul.A) {
 		return fmaFusion{}, false
 	}
@@ -447,6 +457,17 @@ func defUseF64(op vm3.Op) (uint16, uint16) {
 	case vm3.OpListGetF64:
 		return a, 0
 	case vm3.OpListSetF64:
+		return 0, b
+	case vm3.OpF64ArrayGetF64:
+		// regsF64[A] = arenas.F64Arrs[regsCell[B]].data[regsI64[C]]
+		// Defines f64 reg A; reads cellReg B and i64 reg C (neither f64).
+		return a, 0
+	case vm3.OpF64ArraySetF64:
+		// arenas.F64Arrs[regsCell[A]].data[regsI64[C]] = regsF64[B]
+		// No f64 def; uses f64 reg B (the stored value).
+		return 0, b
+	case vm3.OpF64ArrayPushF64:
+		// arenas.F64Arrs[regsCell[A]].data append regsF64[B]
 		return 0, b
 	case vm3.OpI64ToF64:
 		return a, 0
