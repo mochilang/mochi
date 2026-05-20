@@ -1408,13 +1408,19 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		return movImm64ByteCount(bits, xRCX) + 5, nil
 
 	case vm3.OpMovF64:
-		// movsd xmm<A>, xmm<B>: 4 bytes (xmm0..7 only, no REX needed).
-		return 4, nil
+		// movaps xmm<A>, xmm<B>: 3 bytes (xmm0..7 only, no REX needed).
+		// movaps over movsd here because movsd reg-reg is a partial
+		// 64-bit write that creates a false dependency through the
+		// destination's upper bits; movaps writes all 128 bits and is
+		// treated by the renamer as dependency-breaking, which matters
+		// for the spectral_norm / n_body inner loops where xmm<A> is
+		// often the long-latency divsd output reg.
+		return 3, nil
 	case vm3.OpAddF64, vm3.OpSubF64, vm3.OpMulF64, vm3.OpDivF64:
 		// Phase 6.3.4.n.7 FMA fusion: an OpMulF64 absorbed into the
 		// following OpAddF64/OpSubF64 emits zero bytes here, and the
 		// consuming Add/Sub emits VFMADD/VFNMADD (5 bytes when Dd
-		// already aliases one of {Da, Dn, Dm}, else movsd+VFMADD = 9).
+		// already aliases one of {Da, Dn, Dm}, else movaps+VFMADD = 8).
 		if op.Code == vm3.OpMulF64 && fmaFusionAbsorbed(fn, idx) {
 			return 0, nil
 		}
@@ -1423,14 +1429,16 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 				if int(f.Dd) == int(f.Dn) || int(f.Dd) == int(f.Dm) || int(f.Dd) == int(f.Da) {
 					return 5, nil
 				}
-				return 4 + 5, nil
+				return 3 + 5, nil
 			}
 		}
 		// A == B: <op>sd xmm<A>, xmm<C> (4 bytes).
 		// A == C, commutative (Add/Mul): <op>sd xmm<A>, xmm<B> (4).
-		// A == C, non-commutative (Sub/Div): movsd xmm15, xmm<C> (5) ;
-		//   movsd xmm<A>, xmm<B> (4) ; <op>sd xmm<A>, xmm15 (5) = 14.
-		// Otherwise: movsd xmm<A>, xmm<B> (4) ; <op>sd xmm<A>, xmm<C> (4).
+		// A == C, non-commutative (Sub/Div): movaps xmm15, xmm<C> (4) ;
+		//   movaps xmm<A>, xmm<B> (3) ; <op>sd xmm<A>, xmm15 (5) = 12.
+		// Otherwise: movaps xmm<A>, xmm<B> (3) ; <op>sd xmm<A>, xmm<C> (4).
+		// See n.12.b prep-move false-dep fix for the rationale on
+		// using movaps instead of movsd here.
 		a, b, c := op.A, op.B, uint16(op.C)
 		if a == b {
 			return 4, nil
@@ -1439,16 +1447,16 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 			if op.Code == vm3.OpAddF64 || op.Code == vm3.OpMulF64 {
 				return 4, nil
 			}
-			return 14, nil
+			return 12, nil
 		}
-		return 8, nil
+		return 7, nil
 	case vm3.OpNegF64:
 		// mov $signbit, %rcx (10) ; movq xmm15, %rcx (5, REX.W+R) ;
-		// optional movsd xmm<A>, xmm<B> (4) ; xorpd xmm<A>, xmm15 (5, REX.B).
+		// optional movaps xmm<A>, xmm<B> (3) ; xorpd xmm<A>, xmm15 (5, REX.B).
 		if op.A == op.B {
 			return 10 + 5 + 5, nil
 		}
-		return 10 + 5 + 4 + 5, nil
+		return 10 + 5 + 3 + 5, nil
 
 	case vm3.OpFmaF64:
 		// Phase 6.3.4.h.2 AMD64 lowering: VFMADDxxxSD selected so dst
@@ -1456,7 +1464,7 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// semantics A = B*mul2 + addend without extra moves when one of
 		// the operands already aliases A. All four code paths emit a
 		// single 5-byte VEX-encoded instruction; only the catch-all
-		// (no alias) needs a leading movsd (4 bytes) to set A := B
+		// (no alias) needs a leading movaps (3 bytes) to set A := B
 		// before the 132 form.
 		mul2 := int(uint16(op.C) & 0xFF)
 		addend := int((uint16(op.C) >> 8) & 0xFF)
@@ -1464,15 +1472,15 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		if a == b || a == addend || a == mul2 {
 			return 5, nil
 		}
-		return 4 + 5, nil
+		return 3 + 5, nil
 	case vm3.OpSqrtF64:
-		// optional movsd xmm<A>, xmm<B> (4) ; sqrtsd xmm<A>, xmm<A> (4).
+		// optional movaps xmm<A>, xmm<B> (3) ; sqrtsd xmm<A>, xmm<A> (4).
 		// (sqrtsd's source can match its dest, so we always operate
 		// in-place after the optional copy.)
 		if op.A == op.B {
 			return 4, nil
 		}
-		return 8, nil
+		return 7, nil
 
 	case vm3.OpCmpEqF64Br, vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br:
 		// ucomisd xmm<A>, xmm<B> (4) ; jp +6 (6) ; jcc rel32 (6).
@@ -2079,7 +2087,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		return out, nil
 
 	case vm3.OpMovF64:
-		return movsdRR(int(op.A), int(op.B)), nil
+		return movapsRR(int(op.A), int(op.B)), nil
 	case vm3.OpAddF64:
 		if f, ok := fmaFusionAt(fn, idx); ok && f.Kind == 'a' {
 			return emitFMA3SDFusedAMD64(false, f), nil
@@ -2103,7 +2111,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		out := movImm64(xRCX, int64(signBit))
 		out = append(out, movqXMMFromR64(15, xRCX)...)
 		if op.A != op.B {
-			out = append(out, movsdRR(int(op.A), int(op.B))...)
+			out = append(out, movapsRR(int(op.A), int(op.B))...)
 		}
 		out = append(out, xorpdRR(int(op.A), 15)...)
 		return out, nil
@@ -2120,13 +2128,13 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		case a == mul2:
 			return vfmaddSDRR(0xA8, a, b, addend), nil
 		default:
-			out := movsdRR(a, b)
+			out := movapsRR(a, b)
 			return append(out, vfmaddSDRR(0x98, a, addend, mul2)...), nil
 		}
 	case vm3.OpSqrtF64:
 		var out []byte
 		if op.A != op.B {
-			out = append(out, movsdRR(int(op.A), int(op.B))...)
+			out = append(out, movapsRR(int(op.A), int(op.B))...)
 		}
 		return append(out, sqrtsdRR(int(op.A), int(op.A))...), nil
 
@@ -3224,11 +3232,11 @@ func emitSSEArithAMD64(op func(dst, src int) []byte, a, b, c int, commutative bo
 		if commutative {
 			return op(a, b)
 		}
-		out := movsdRR(15, c)
-		out = append(out, movsdRR(a, b)...)
+		out := movapsRR(15, c)
+		out = append(out, movapsRR(a, b)...)
 		return append(out, op(a, 15)...)
 	}
-	out := movsdRR(a, b)
+	out := movapsRR(a, b)
 	return append(out, op(a, c)...)
 }
 
@@ -3288,7 +3296,7 @@ func emitFMA3SDFusedAMD64(neg bool, f fmaFusion) []byte {
 	case dd == dm:
 		return vfmaddSDRR(op213, dd, dn, da)
 	default:
-		out := movsdRR(dd, da)
+		out := movapsRR(dd, da)
 		return append(out, vfmaddSDRR(op231, dd, dn, dm)...)
 	}
 }
