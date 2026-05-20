@@ -970,9 +970,17 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// preserved.
 		//   mov  hoistDisp(%rbx), %rax        ; rax = cells.ptr        (4B)
 		//   mov  xVal, [%rax + xIdx*8]        ; cells[idx] = raw xVal  (4B)
-		//   movw $0xFFFA, 6(%rax,%xIdx,8)     ; overwrite tag bytes    (7B)
+		//   movw $0xFFFA, 6(%rax,%xIdx,8)     ; overwrite tag bytes    (7 or 8B)
+		// The tag-store is 8B when xIdx >= R8 (REX.X needed) and 7B
+		// otherwise; the SIB-store is always 4B because mov64StoreIdxLsl3
+		// emits REX.W unconditionally.
 		if hoistsCellsPtrAMD64(fn) {
-			return 4 + 4 + 7, nil
+			xIdx := r2xAMD64(uint16(op.C))
+			tagBytes := 7
+			if xIdx >= 8 {
+				tagBytes = 8
+			}
+			return 4 + 4 + tagBytes, nil
 		}
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 3 + 4 + 4 + 10 + 3 + 4, nil
 
