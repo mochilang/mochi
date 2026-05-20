@@ -405,6 +405,21 @@ func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
 					ErrNotImplemented, fn.Name, i, op.A, uint16(op.C))
 			}
 			continue
+		case vm3.OpMapSetI64I64:
+			// Phase 6.3.4.n.8.c: AMD64 inline open-addressed insert/update.
+			// Same scratch/clobber constraints as OpMapGetI64I64: kernel
+			// clobbers R10/R11/R12 (vm3 slots 4/5/6) mid-flight, deopts
+			// via StatusMapGrow when 2*(nLive+1) > cap so the slab can
+			// regrow without violating the table invariants.
+			if usesR12ForF64AMD64(fn) {
+				return fmt.Errorf("%w: %s pc %d Cell+F64 OpMapSetI64I64 (R12 is f64 base; kernel needs R12 free)",
+					ErrNotImplemented, fn.Name, i)
+			}
+			if mapKernelOperandClobberAMD64(op) {
+				return fmt.Errorf("%w: %s pc %d OpMapSetI64I64 with op.B=%d op.C=%d in slots 4..6 (kernel clobbers R10/R11/R12)",
+					ErrNotImplemented, fn.Name, i, op.B, uint16(op.C))
+			}
+			continue
 		case vm3.OpNewF64Array, vm3.OpNewI64Array:
 			// Phase 6.3.4.n.3: admit at the pre-alloc K-prefix only.
 			// jitCall pre-allocates the slab; emit step skips the op.
@@ -427,6 +442,17 @@ func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
 				continue
 			}
 			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses inline OpNewList (only pre-alloc prefix is admitted on AMD64)",
+				ErrNotImplemented, fn.Name, i)
+		case vm3.OpNewMap:
+			// Phase 6.3.4.n.8.d: admit at pc=0 when canPreAllocMap holds.
+			// jitCall pre-allocates the map and writes the handle into
+			// jf.regsCell[A] before the trampoline; the lowerer emits zero
+			// bytes. Inline OpNewMap outside the pre-alloc slot routes back
+			// to the interpreter on AMD64 (same as ARM64).
+			if i == 0 && canPreAllocMap(fn) {
+				continue
+			}
+			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses inline OpNewMap (only pre-alloc at pc=0 is admitted on AMD64)",
 				ErrNotImplemented, fn.Name, i)
 		case vm3.OpCallMixed:
 			idx := int(uint16(op.C))
