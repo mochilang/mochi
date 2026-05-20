@@ -3602,55 +3602,58 @@ var (
 )
 
 // emitSplitmix64AMD64 emits the AMD64 splitmix64 sequence that computes
-// h = hashI64(xKey) in-place in register xKey. xScratch is a free
-// scratch register (not equal to xKey) used to materialize the 64-bit
-// multipliers and to hold the shifted copies.
+// h = hashI64(xKey) into register xOut, preserving xKey. xTmp is a
+// transient scratch used to materialize the 64-bit multipliers and to
+// hold the shifted copies between xor steps.
 //
 // The output is bit-identical to runtime/vm3/maps.go's hashI64:
 //
-//	xKey ^= xKey >> 30
-//	xKey *= 0xbf58476d1ce4e5b9
-//	xKey ^= xKey >> 27
-//	xKey *= 0x94d049bb133111eb
-//	xKey ^= xKey >> 31
-//	xKey |= 1
+//	xOut = xKey
+//	xOut ^= xOut >> 30
+//	xOut *= 0xbf58476d1ce4e5b9
+//	xOut ^= xOut >> 27
+//	xOut *= 0x94d049bb133111eb
+//	xOut ^= xOut >> 31
+//	xOut |= 1
 //
 // The `| 1` step forces the low bit so the hash never collides with the
 // "empty slot" sentinel (hash == 0). Phase 6.3.4.n.8 uses this for the
-// inline map kernel probe-index computation.
+// inline map kernel probe-index computation; the kernel needs xKey
+// preserved so the per-probe `cmp stored.key, xKey` step can run after
+// the hash is computed.
 //
-// Caller must ensure xKey != xScratch and that both registers are free
-// to clobber across this sequence (no live state in either).
-func emitSplitmix64AMD64(xKey, xScratch int) []byte {
+// Caller must ensure xKey, xOut, xTmp are three distinct registers and
+// that xOut and xTmp are both free to clobber across this sequence.
+func emitSplitmix64AMD64(xKey, xOut, xTmp int) []byte {
 	var out []byte
-	// xScratch = xKey; xScratch >>= 30; xKey ^= xScratch
-	out = append(out, mov64RR(xKey, xScratch)...)
-	out = append(out, shr64RImm8(xScratch, 30)...)
-	out = append(out, xor64RR(xScratch, xKey)...)
-	// xScratch = C1; xKey *= xScratch
-	out = append(out, movImm64(xScratch, splitmix64C1AMD64)...)
-	out = append(out, imul64RR(xScratch, xKey)...)
-	// xScratch = xKey; xScratch >>= 27; xKey ^= xScratch
-	out = append(out, mov64RR(xKey, xScratch)...)
-	out = append(out, shr64RImm8(xScratch, 27)...)
-	out = append(out, xor64RR(xScratch, xKey)...)
-	// xScratch = C2; xKey *= xScratch
-	out = append(out, movImm64(xScratch, splitmix64C2AMD64)...)
-	out = append(out, imul64RR(xScratch, xKey)...)
-	// xScratch = xKey; xScratch >>= 31; xKey ^= xScratch
-	out = append(out, mov64RR(xKey, xScratch)...)
-	out = append(out, shr64RImm8(xScratch, 31)...)
-	out = append(out, xor64RR(xScratch, xKey)...)
-	// xKey |= 1
-	out = append(out, or64RImm8(xKey, 1)...)
+	// xOut = xKey; xOut >>= 30; xOut ^= xKey  -> xOut = key ^ (key>>30)
+	out = append(out, mov64RR(xKey, xOut)...)
+	out = append(out, shr64RImm8(xOut, 30)...)
+	out = append(out, xor64RR(xKey, xOut)...)
+	// xTmp = C1; xOut *= xTmp
+	out = append(out, movImm64(xTmp, splitmix64C1AMD64)...)
+	out = append(out, imul64RR(xTmp, xOut)...)
+	// xTmp = xOut; xTmp >>= 27; xOut ^= xTmp
+	out = append(out, mov64RR(xOut, xTmp)...)
+	out = append(out, shr64RImm8(xTmp, 27)...)
+	out = append(out, xor64RR(xTmp, xOut)...)
+	// xTmp = C2; xOut *= xTmp
+	out = append(out, movImm64(xTmp, splitmix64C2AMD64)...)
+	out = append(out, imul64RR(xTmp, xOut)...)
+	// xTmp = xOut; xTmp >>= 31; xOut ^= xTmp
+	out = append(out, mov64RR(xOut, xTmp)...)
+	out = append(out, shr64RImm8(xTmp, 31)...)
+	out = append(out, xor64RR(xTmp, xOut)...)
+	// xOut |= 1
+	out = append(out, or64RImm8(xOut, 1)...)
 	return out
 }
 
 // emitSplitmix64AMD64ByteCount mirrors emitSplitmix64AMD64. The byte
-// count is constant for any (xKey, xScratch) pair because all helpers
-// in the sequence (mov64RR, shr64RImm8, xor64RR, imul64RR, or64RImm8,
-// and movImm64 with the > int32 constants) have register-independent
-// encoding lengths once REX is forced on by REX.W.
+// count is constant for any (xKey, xOut, xTmp) triple because all
+// helpers in the sequence (mov64RR, shr64RImm8, xor64RR, imul64RR,
+// or64RImm8, and movImm64 with the > int32 constants) have register-
+// independent encoding lengths once REX is forced on by REX.W.
 //
 //	mov64RR        3 bytes
 //	shr64RImm8     4 bytes

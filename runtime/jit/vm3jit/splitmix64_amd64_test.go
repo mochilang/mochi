@@ -149,94 +149,98 @@ func TestJmpRel8EncodingAMD64(t *testing.T) {
 }
 
 // TestEmitSplitmix64AMD64ByteCount verifies the byte-count helper
-// matches the actual emit length for representative register choices.
-// The byte count is invariant across (xKey, xScratch) because every
+// matches the actual emit length for representative register triples.
+// The byte count is invariant across (xKey, xOut, xTmp) because every
 // instruction in the sequence has REX-independent length once REX.W
 // forces a REX byte.
 func TestEmitSplitmix64AMD64ByteCount(t *testing.T) {
-	pairs := []struct{ key, scratch int }{
-		{xRSI, xRAX}, // common case: vm3 slot-0 with RAX scratch
-		{xRDI, xRDX}, // slot-1 with RDX scratch
-		{xR8, xRAX},
-		{xR14, xRDX},
-		{xRBP, xRAX},
+	triples := []struct{ key, out, tmp int }{
+		{xRSI, xRAX, xRDX}, // common case: vm3 slot-0 key, RAX hash, RDX tmp
+		{xRDI, xRAX, xRDX}, // slot-1 key
+		{xR8, xRAX, xRDX},
+		{xR14, xRAX, xRDX},
+		{xRBP, xRAX, xRDX},
+		{xRSI, xR9, xR10}, // extended-reg out/tmp still 62B because REX.W forces REX
 	}
 	want := emitSplitmix64AMD64ByteCount()
-	for _, p := range pairs {
-		got := len(emitSplitmix64AMD64(p.key, p.scratch))
+	for _, tri := range triples {
+		got := len(emitSplitmix64AMD64(tri.key, tri.out, tri.tmp))
 		if got != want {
-			t.Errorf("emitSplitmix64AMD64(key=%d, scratch=%d) len=%d, want %d",
-				p.key, p.scratch, got, want)
+			t.Errorf("emitSplitmix64AMD64(key=%d, out=%d, tmp=%d) len=%d, want %d",
+				tri.key, tri.out, tri.tmp, got, want)
 		}
 	}
 }
 
 // TestEmitSplitmix64AMD64Layout verifies that the emitted byte stream
 // matches the expected instruction sequence at the byte level for a
-// representative (xKey=RSI, xScratch=RAX) pair. This catches off-by-one
-// errors in the emit sequence (wrong operand direction, missing imm,
-// stale opcode) before the splitmix64 sequence is wired into the map
-// kernel.
+// representative (xKey=RSI, xOut=RAX, xTmp=RDX) triple. This catches
+// off-by-one errors in the emit sequence (wrong operand direction,
+// missing imm, stale opcode) before the splitmix64 sequence is wired
+// into the map kernel. The output register (RAX) holds h on return;
+// xKey (RSI) must be untouched so the per-probe key comparison still
+// sees the original i64.
 //
 // The expected stream is the concatenation of:
 //
 //	mov rax, rsi               48 89 F0                3
 //	shr rax, 30                48 C1 E8 1E             4
-//	xor rsi, rax               48 31 C6                3
-//	movabs rax, C1            48 B8 <C1 LE 8 bytes>   10
-//	imul rsi, rax              48 0F AF F0             4
-//	mov rax, rsi               48 89 F0                3
-//	shr rax, 27                48 C1 E8 1B             4
-//	xor rsi, rax               48 31 C6                3
-//	movabs rax, C2            48 B8 <C2 LE 8 bytes>   10
-//	imul rsi, rax              48 0F AF F0             4
-//	mov rax, rsi               48 89 F0                3
-//	shr rax, 31                48 C1 E8 1F             4
-//	xor rsi, rax               48 31 C6                3
-//	or rsi, 1                  48 83 CE 01             4
+//	xor rax, rsi               48 31 F0                3
+//	movabs rdx, C1            48 BA <C1 LE 8 bytes>   10
+//	imul rax, rdx              48 0F AF C2             4
+//	mov rdx, rax               48 89 C2                3
+//	shr rdx, 27                48 C1 EA 1B             4
+//	xor rax, rdx               48 31 D0                3
+//	movabs rdx, C2            48 BA <C2 LE 8 bytes>   10
+//	imul rax, rdx              48 0F AF C2             4
+//	mov rdx, rax               48 89 C2                3
+//	shr rdx, 31                48 C1 EA 1F             4
+//	xor rax, rdx               48 31 D0                3
+//	or rax, 1                  48 83 C8 01             4
 //
 // Total: 62 bytes.
 func TestEmitSplitmix64AMD64Layout(t *testing.T) {
 	const xKey = xRSI
-	const xScratch = xRAX
-	got := emitSplitmix64AMD64(xKey, xScratch)
+	const xOut = xRAX
+	const xTmp = xRDX
+	got := emitSplitmix64AMD64(xKey, xOut, xTmp)
 	var want []byte
 	// mov rax, rsi  (mov64RR(src=RSI, dst=RAX))
 	want = append(want, 0x48, 0x89, 0xF0)
 	// shr rax, 30
 	want = append(want, 0x48, 0xC1, 0xE8, 30)
-	// xor rsi, rax  (xor64RR(src=RAX, dst=RSI))
-	want = append(want, 0x48, 0x31, 0xC6)
-	// movabs rax, C1
-	want = append(want, 0x48, 0xB8)
+	// xor rax, rsi  (xor64RR(src=RSI, dst=RAX))
+	want = append(want, 0x48, 0x31, 0xF0)
+	// movabs rdx, C1
+	want = append(want, 0x48, 0xBA)
 	var c1le [8]byte
 	binary.LittleEndian.PutUint64(c1le[:], splitmix64C1AMD64U)
 	want = append(want, c1le[:]...)
-	// imul rsi, rax  (imul64RR(src=RAX, dst=RSI))
-	want = append(want, 0x48, 0x0F, 0xAF, 0xF0)
-	// mov rax, rsi
-	want = append(want, 0x48, 0x89, 0xF0)
-	// shr rax, 27
-	want = append(want, 0x48, 0xC1, 0xE8, 27)
-	// xor rsi, rax
-	want = append(want, 0x48, 0x31, 0xC6)
-	// movabs rax, C2
-	want = append(want, 0x48, 0xB8)
+	// imul rax, rdx  (imul64RR(src=RDX, dst=RAX))
+	want = append(want, 0x48, 0x0F, 0xAF, 0xC2)
+	// mov rdx, rax  (mov64RR(src=RAX, dst=RDX))
+	want = append(want, 0x48, 0x89, 0xC2)
+	// shr rdx, 27
+	want = append(want, 0x48, 0xC1, 0xEA, 27)
+	// xor rax, rdx  (xor64RR(src=RDX, dst=RAX))
+	want = append(want, 0x48, 0x31, 0xD0)
+	// movabs rdx, C2
+	want = append(want, 0x48, 0xBA)
 	var c2le [8]byte
 	binary.LittleEndian.PutUint64(c2le[:], splitmix64C2AMD64U)
 	want = append(want, c2le[:]...)
-	// imul rsi, rax
-	want = append(want, 0x48, 0x0F, 0xAF, 0xF0)
-	// mov rax, rsi
-	want = append(want, 0x48, 0x89, 0xF0)
-	// shr rax, 31
-	want = append(want, 0x48, 0xC1, 0xE8, 31)
-	// xor rsi, rax
-	want = append(want, 0x48, 0x31, 0xC6)
-	// or rsi, 1   (or64RImm8(dst=RSI, imm=1))
-	want = append(want, 0x48, 0x83, 0xCE, 0x01)
+	// imul rax, rdx
+	want = append(want, 0x48, 0x0F, 0xAF, 0xC2)
+	// mov rdx, rax
+	want = append(want, 0x48, 0x89, 0xC2)
+	// shr rdx, 31
+	want = append(want, 0x48, 0xC1, 0xEA, 31)
+	// xor rax, rdx
+	want = append(want, 0x48, 0x31, 0xD0)
+	// or rax, 1   (or64RImm8(dst=RAX, imm=1))
+	want = append(want, 0x48, 0x83, 0xC8, 0x01)
 	if !bytes.Equal(got, want) {
-		t.Fatalf("emitSplitmix64AMD64(RSI, RAX) mismatch:\n got: % x\nwant: % x", got, want)
+		t.Fatalf("emitSplitmix64AMD64(RSI, RAX, RDX) mismatch:\n got: % x\nwant: % x", got, want)
 	}
 }
 
@@ -246,33 +250,43 @@ func TestEmitSplitmix64AMD64Layout(t *testing.T) {
 // hashI64 for representative keys. This catches algorithmic bugs (wrong
 // shift count, swapped multiplier, missing |1) independently of the
 // byte-level layout check.
+//
+// The sim also asserts the key register is preserved (xKey untouched),
+// which the map kernel relies on for the per-probe `cmp stored.key,
+// xKey` step.
 func TestEmitSplitmix64AMD64MatchesHashI64(t *testing.T) {
 	keys := []int64{
 		0, 1, -1, 2, -2, 7, 42, 1 << 32, -(1 << 32),
 		1<<63 - 1, -(1 << 63), 3141592653589793238,
 	}
 	for _, k := range keys {
-		// Mirror the AMD64 emit sequence in scalar Go. xKey holds the
-		// key throughout; xScratch is a transient.
-		x := uint64(k)
-		// xScratch = xKey; xScratch >>= 30; xKey ^= xScratch
-		tmp := x
-		tmp >>= 30
-		x ^= tmp
-		// xScratch = C1; xKey *= xScratch
-		x *= splitmix64C1AMD64U
-		tmp = x
+		// Mirror the AMD64 emit sequence in scalar Go. key stays in
+		// xKey throughout; out is the hash accumulator; tmp is a
+		// transient.
+		key := uint64(k)
+		// out = key; out >>= 30; out ^= key  -> out = key ^ (key>>30)
+		out := key
+		out >>= 30
+		out ^= key
+		// tmp = C1; out *= tmp
+		out *= splitmix64C1AMD64U
+		// tmp = out; tmp >>= 27; out ^= tmp
+		tmp := out
 		tmp >>= 27
-		x ^= tmp
-		x *= splitmix64C2AMD64U
-		tmp = x
+		out ^= tmp
+		// tmp = C2; out *= tmp
+		out *= splitmix64C2AMD64U
+		tmp = out
 		tmp >>= 31
-		x ^= tmp
-		x |= 1
+		out ^= tmp
+		out |= 1
 		// Reference output from runtime/vm3/maps.go.
 		ref := splitmix64Reference(k)
-		if x != ref {
-			t.Errorf("k=%d: emit-sim got %#x want %#x", k, x, ref)
+		if out != ref {
+			t.Errorf("k=%d: emit-sim got %#x want %#x", k, out, ref)
+		}
+		if key != uint64(k) {
+			t.Errorf("k=%d: key clobbered by sim (got %#x want %#x)", k, key, uint64(k))
 		}
 	}
 }
