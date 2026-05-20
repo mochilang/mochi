@@ -580,8 +580,14 @@ func prologueLenAMD64(fn *vm3.Function) int {
 	// Each pinned i64 slot load is mov disp32(%rbx), <reg> = 7 bytes.
 	bytes += 7 * n
 	// Each pinned f64 slot load is movsd disp32(%base), xmm<r> = 9 bytes
-	// (REX.B-prefixed because the f64 base is always R12 or R14).
-	bytes += 9 * nF
+	// (REX.B-prefixed because the f64 base is always R12 or R14). When
+	// the base is R12 (cell-bank+f64), the SIB-follows quirk on rm=100
+	// adds one extra SIB byte per load (see movsdLoadXMMFromGPR).
+	perLoad := 9
+	if usesR12ForF64AMD64(fn) {
+		perLoad = 10
+	}
+	bytes += perLoad * nF
 	// Phase 6.3.4.n.2.f: cells.ptr hoist setup (cold form: 0 bytes when
 	// gate fails; ~34 bytes when active). See hoistPrologueBytesAMD64.
 	bytes += hoistPrologueBytesAMD64(fn)
