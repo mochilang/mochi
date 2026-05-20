@@ -2929,6 +2929,61 @@ func or64RR(src, dst int) []byte {
 	return []byte{rex(true, src >= 8, false, dst >= 8), 0x09, modRM(3, byte(src), byte(dst))}
 }
 
+// and64RR emits `and %rSrc, %rDst` (Intel: and rDst, rSrc). Opcode
+// REX.W 21 /r mod=11. 3 bytes. Phase 6.3.4.n.8 uses this to mask a
+// splitmix64 hash by `(len(table) - 1)` to compute the probe index.
+func and64RR(src, dst int) []byte {
+	return []byte{rex(true, src >= 8, false, dst >= 8), 0x21, modRM(3, byte(src), byte(dst))}
+}
+
+// xor64RR emits `xor %rSrc, %rDst` (Intel: xor rDst, rSrc). Opcode
+// REX.W 31 /r mod=11. 3 bytes. Phase 6.3.4.n.8 uses this for the
+// splitmix64 sequence (`x ^= x >> N`) and to zero a scratch register
+// via `xor rX, rX` when initializing the probe loop counter.
+func xor64RR(src, dst int) []byte {
+	return []byte{rex(true, src >= 8, false, dst >= 8), 0x31, modRM(3, byte(src), byte(dst))}
+}
+
+// or64RImm8 emits `or %rDst, imm8` (sign-extended to 64-bit). Opcode
+// REX.W 83 /1 ib. 4 bytes. Phase 6.3.4.n.8 uses it for the final
+// `x |= 1` step of splitmix64, which forces the low bit of the hash
+// so the entry's hash word never collides with the "empty slot" sentinel
+// (hash == 0).
+func or64RImm8(dst int, imm int8) []byte {
+	return []byte{rex(true, false, false, dst >= 8), 0x83, modRM(3, 1, byte(dst&7)), byte(imm)}
+}
+
+// mov32StoreDisp32 emits `mov %eSrc, disp32(rBase)`, a 32-bit store
+// with a 32-bit signed displacement. Opcode 89 /r mod=10 disp32. 6
+// bytes when neither reg needs REX, 7 bytes otherwise. Phase 6.3.4.n.8
+// uses it to write the new map.nLive (a u32 at offset
+// arenaCtxMapTableNLiveOffset within the vmMap header) after a
+// successful insert.
+func mov32StoreDisp32(src, base int, disp int32) []byte {
+	var out []byte
+	if src >= 8 || base >= 8 {
+		var r byte = 0x40
+		if src >= 8 {
+			r |= 0x04 // REX.R
+		}
+		if base >= 8 {
+			r |= 0x01 // REX.B
+		}
+		out = append(out, r)
+	}
+	out = append(out, 0x89, modRM(2, byte(src&7), byte(base&7)))
+	out = appendImm32(out, disp)
+	return out
+}
+
+// mov32StoreDisp32ByteCount mirrors mov32StoreDisp32.
+func mov32StoreDisp32ByteCount(src, base int) int {
+	if src >= 8 || base >= 8 {
+		return 7
+	}
+	return 6
+}
+
 // inc64R emits `inc %rDst`. Opcode REX.W FF /0 mod=11. 3 bytes.
 // Phase 6.3.4.m.4c.4 uses it to bump pairsLen by one before the
 // commit-store.
@@ -3193,6 +3248,25 @@ func retByte() byte { return 0xC3 }
 func jccRel32(cc byte, rel int32) []byte {
 	out := []byte{0x0F, 0x80 | cc}
 	return appendImm32(out, rel)
+}
+
+// jccRel8 emits the short form `jcc rel8` (2 bytes). cc is the low
+// nibble of the conditional jump opcode (e.g. ccZ, ccNZ, ccB, ccAE).
+// rel8 is the signed byte displacement from the end of this 2-byte
+// instruction to the jump target. Phase 6.3.4.n.8 uses this for the
+// open-addressed-probe inner loop in OpMapGet/Set, where the slot-hit
+// and slot-empty branches both forward-jump a few dozen bytes.
+//
+// Caller is responsible for fitting the target inside the int8 range
+// (-128..127); if not, fall back to jccRel32 (6 bytes).
+func jccRel8(cc byte, rel int8) []byte {
+	return []byte{0x70 | cc, byte(rel)}
+}
+
+// jmpRel8 emits the short form `jmp rel8` (2 bytes). Same int8
+// displacement convention as jccRel8.
+func jmpRel8(rel int8) []byte {
+	return []byte{0xEB, byte(rel)}
 }
 
 // jmpRel32 emits `jmp rel32` (5 bytes).
@@ -3513,3 +3587,85 @@ func condForCmpF64AMD64(code vm3.OpCode) byte {
 	}
 	return 0x4
 }
+
+// splitmix64C1AMD64 and splitmix64C2AMD64 mirror runtime/vm3/maps.go's
+// hashI64 multiplier constants. Both have the high bit set, so each
+// fits only as a full 10-byte movabs on AMD64. They live in a `var`
+// block rather than `const` because Go forbids const conversion of a
+// uint64 whose value overflows int64; the two-step uint64-var → int64
+// dance is a bit-pattern reinterpret at runtime.
+var (
+	splitmix64C1AMD64U uint64 = 0xbf58476d1ce4e5b9
+	splitmix64C2AMD64U uint64 = 0x94d049bb133111eb
+	splitmix64C1AMD64         = int64(splitmix64C1AMD64U)
+	splitmix64C2AMD64         = int64(splitmix64C2AMD64U)
+)
+
+// emitSplitmix64AMD64 emits the AMD64 splitmix64 sequence that computes
+// h = hashI64(xKey) in-place in register xKey. xScratch is a free
+// scratch register (not equal to xKey) used to materialize the 64-bit
+// multipliers and to hold the shifted copies.
+//
+// The output is bit-identical to runtime/vm3/maps.go's hashI64:
+//
+//	xKey ^= xKey >> 30
+//	xKey *= 0xbf58476d1ce4e5b9
+//	xKey ^= xKey >> 27
+//	xKey *= 0x94d049bb133111eb
+//	xKey ^= xKey >> 31
+//	xKey |= 1
+//
+// The `| 1` step forces the low bit so the hash never collides with the
+// "empty slot" sentinel (hash == 0). Phase 6.3.4.n.8 uses this for the
+// inline map kernel probe-index computation.
+//
+// Caller must ensure xKey != xScratch and that both registers are free
+// to clobber across this sequence (no live state in either).
+func emitSplitmix64AMD64(xKey, xScratch int) []byte {
+	var out []byte
+	// xScratch = xKey; xScratch >>= 30; xKey ^= xScratch
+	out = append(out, mov64RR(xKey, xScratch)...)
+	out = append(out, shr64RImm8(xScratch, 30)...)
+	out = append(out, xor64RR(xScratch, xKey)...)
+	// xScratch = C1; xKey *= xScratch
+	out = append(out, movImm64(xScratch, splitmix64C1AMD64)...)
+	out = append(out, imul64RR(xScratch, xKey)...)
+	// xScratch = xKey; xScratch >>= 27; xKey ^= xScratch
+	out = append(out, mov64RR(xKey, xScratch)...)
+	out = append(out, shr64RImm8(xScratch, 27)...)
+	out = append(out, xor64RR(xScratch, xKey)...)
+	// xScratch = C2; xKey *= xScratch
+	out = append(out, movImm64(xScratch, splitmix64C2AMD64)...)
+	out = append(out, imul64RR(xScratch, xKey)...)
+	// xScratch = xKey; xScratch >>= 31; xKey ^= xScratch
+	out = append(out, mov64RR(xKey, xScratch)...)
+	out = append(out, shr64RImm8(xScratch, 31)...)
+	out = append(out, xor64RR(xScratch, xKey)...)
+	// xKey |= 1
+	out = append(out, or64RImm8(xKey, 1)...)
+	return out
+}
+
+// emitSplitmix64AMD64ByteCount mirrors emitSplitmix64AMD64. The byte
+// count is constant for any (xKey, xScratch) pair because all helpers
+// in the sequence (mov64RR, shr64RImm8, xor64RR, imul64RR, or64RImm8,
+// and movImm64 with the > int32 constants) have register-independent
+// encoding lengths once REX is forced on by REX.W.
+//
+//	mov64RR        3 bytes
+//	shr64RImm8     4 bytes
+//	xor64RR        3 bytes
+//	movImm64 C1   10 bytes (high bit set -> full 64-bit imm form)
+//	imul64RR       4 bytes
+//	mov64RR        3 bytes
+//	shr64RImm8     4 bytes
+//	xor64RR        3 bytes
+//	movImm64 C2   10 bytes
+//	imul64RR       4 bytes
+//	mov64RR        3 bytes
+//	shr64RImm8     4 bytes
+//	xor64RR        3 bytes
+//	or64RImm8      4 bytes
+//	             ----------
+//	             62 bytes
+func emitSplitmix64AMD64ByteCount() int { return 62 }
