@@ -317,6 +317,84 @@ func hasRegRegDivModAMD64(fn *vm3.Function) bool {
 	return false
 }
 
+// hoistsCellsPtrAMD64 reports whether the AMD64 prologue should pre-
+// compute cells.ptr from regsCell[0]'s handle and stash it in the
+// regsI64[NumRegsI64] backing slot for the lifetime of the call. When
+// active, OpListGet/OpListGetK/OpListSet emit the hot form (one disp32
+// load from RBX instead of the listsBase + imul + cellsOff chain), and
+// OpListPushI64 still reads the slab address cold (it needs cells.cap
+// and cells.len fields, not just cells.ptr).
+//
+// Gates (Phase 6.3.4.n.2.f):
+//
+//   - NumRegsCell == 1: we only hoist one cell's slab; multi-cell
+//     kernels would need a hoist slot per cell and a per-op disambiguator.
+//   - has at least one OpListGet/OpListGetK/OpListSet/OpListPushI64:
+//     otherwise the prologue would waste ~34 bytes computing a hoist
+//     value nothing in the body reads.
+//   - !isNonLeafAMD64(fn): any internal CALL (self-recursive or
+//     cross-fn) may transitively trigger an OpListPushI64 grow, which
+//     moves the arena slab and invalidates the hoisted cells.ptr.
+//     Refreshing the hoist after every call would erase most of the
+//     win, so we just skip the optimization for non-leaf fns.
+//   - !isCellBankAMD64(fn) is false (i.e. fn IS cell-bank): RBP must
+//     hold the regsCell base for the prologue to read the handle from.
+//
+// The hoist disp is hoistDispAMD64(fn) = NumRegsI64 * 8: just past the
+// last pinned slot, into a regsI64 backing word that NumRegsI64 stops
+// short of. The interpreter never reads that slot (sized by NumRegsI64),
+// so the JIT can park a scratch value there without corrupting deopt
+// state. The slot is only valid for the duration of one trampoline
+// call; jitCall does not preserve it across calls (it is not in the
+// pinned-slot range).
+func hoistsCellsPtrAMD64(fn *vm3.Function) bool {
+	if !isCellBankAMD64(fn) {
+		return false
+	}
+	if fn.NumRegsCell != 1 {
+		return false
+	}
+	if isNonLeafAMD64(fn) {
+		return false
+	}
+	if !(hasListGetI64(fn) || hasListGetI64K(fn) || hasListSetI64(fn) || hasListPushI64(fn)) {
+		return false
+	}
+	return true
+}
+
+// hoistDispAMD64 returns the disp from RBX (= &regsI64[0]) at which the
+// hoisted cells.ptr is stashed. The slot is just past the live pinned
+// regs (NumRegsI64 * 8). Caller must check hoistsCellsPtrAMD64(fn)
+// first; the disp is undefined otherwise.
+func hoistDispAMD64(fn *vm3.Function) int32 {
+	return int32(fn.NumRegsI64) * 8
+}
+
+// hoistPrologueBytesAMD64 returns the additional prologue byte count
+// needed to compute the hoisted cells.ptr when hoistsCellsPtrAMD64(fn)
+// is true. The sequence is:
+//
+//	mov  disp32(%rbp), %eax     ; idx = regsCell[0] low 32 (6B)
+//	imul $stride, %rax, %rax    ; rax = idx*sizeof(vmList) (7B)
+//	mov  listsBaseOff(%r14), %rcx ; rcx = arenas.Lists base (7B)
+//	add  %rcx, %rax             ; rax = &arenas.Lists[idx] (3B)
+//	mov  cellsOff(%rax), %rax   ; rax = cells.ptr          (7B)
+//	mov  %rax, hoistDisp(%rbx)  ; store at hoist slot      (4 or 7B)
+//
+// disp8 fits when hoistDispAMD64(fn) ∈ [-128, 127]; AMD64 cell-bank
+// caps NumRegsI64 at 8, so disp is 0..64 — always disp8.
+func hoistPrologueBytesAMD64(fn *vm3.Function) int {
+	if !hoistsCellsPtrAMD64(fn) {
+		return 0
+	}
+	storeBytes := 4 // mov %rax, disp8(%rbx)
+	if hoistDispAMD64(fn) < -128 || hoistDispAMD64(fn) > 127 {
+		storeBytes = 7
+	}
+	return 6 + 7 + 7 + 3 + 7 + storeBytes
+}
+
 // computeCallSpillsAMD64 runs backward liveness exactly like the
 // AArch64 backend, but emits a mask over slots 0..5 (caller-saved on
 // AMD64) instead of 0..6.
@@ -468,6 +546,9 @@ func prologueLenAMD64(fn *vm3.Function) int {
 	// Each pinned f64 slot load is movsd disp32(%r14), xmm<r> = 9 bytes
 	// (REX.B-prefixed because R14 is r >= 8).
 	bytes += 9 * nF
+	// Phase 6.3.4.n.2.f: cells.ptr hoist setup (cold form: 0 bytes when
+	// gate fails; ~34 bytes when active). See hoistPrologueBytesAMD64.
+	bytes += hoistPrologueBytesAMD64(fn)
 	_ = pushes
 	return bytes
 }
@@ -529,6 +610,22 @@ func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 	}
 	for r := 0; r < nF; r++ {
 		buf = append(buf, movsdLoadXMMFromR14(r, int32(r*8))...)
+	}
+	if hoistsCellsPtrAMD64(fn) {
+		stride := int64(vm3.JITListSlabStride())
+		cellsOff := int32(vm3.JITListCellsOffset())
+		listsBaseOff := int32(jitArenaCtxListsBaseOff())
+		hoistDisp := hoistDispAMD64(fn)
+		buf = append(buf, mov32LoadDisp32(xRAX, xRBP, 0)...)
+		buf = append(buf, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+		buf = append(buf, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
+		buf = append(buf, add64RR(xRCX, xRAX)...)
+		buf = append(buf, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
+		if hoistDisp >= -128 && hoistDisp <= 127 {
+			buf = append(buf, mov64StoreDisp8(xRAX, xRBX, int8(hoistDisp))...)
+		} else {
+			buf = append(buf, mov64StoreDisp32(xRAX, xRBX, hoistDisp)...)
+		}
 	}
 	return buf
 }
@@ -792,6 +889,20 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		//   shl  $16, %rax                ; SBFX prep                  (REX.W C1 /4 ib, 4B)
 		//   sar  $16, %rax                ; sign-extend low 48 bits   (REX.W C1 /7 ib, 4B)
 		//   mov  %rax, x_A                ; regsI64[A] = signed payload (REX.W 89 /r, 3B)
+		//
+		// Phase 6.3.4.n.2.f hot form (hoistsCellsPtrAMD64 true): the
+		// prologue already stashed cells.ptr at disp8(%rbx). We replace
+		// the 5-instruction slab/cells.ptr compute chain (mov32, imul,
+		// mov listsBase, add, mov cellsOff = 30B) with a single
+		// mov64LoadDisp8 (4B), saving 26B per op.
+		//   mov  hoistDisp(%rbx), %rax    ; rax = cells.ptr            (4B)
+		//   mov  [%rax + xIdx*8], %rax    ; rax = cells[regsI64[C]]    (4B)
+		//   shl  $16, %rax                ; SBFX prep                  (4B)
+		//   sar  $16, %rax                ; sign-extend low 48 bits    (4B)
+		//   mov  %rax, x_A                ; regsI64[A] = signed payload (3B)
+		if hoistsCellsPtrAMD64(fn) {
+			return 4 + 4 + 4 + 4 + 3, nil
+		}
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 4 + 4 + 4 + 3, nil
 
 	case vm3.OpListGetI64K:
@@ -812,6 +923,25 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		//   shl  $16, %rax                ; SBFX prep                  (4B)
 		//   sar  $16, %rax                ; sign-extend low 48 bits    (4B)
 		//   mov  %rax, x_A                ; regsI64[A] = signed payload (3B)
+		//
+		// Phase 6.3.4.n.2.f hot form (hoistsCellsPtrAMD64 true): swap
+		// the 5-instruction slab/cells.ptr chain (30B) for the disp8
+		// load of the stashed cells.ptr (4B). The disp32 load of the
+		// constant-indexed cell is unchanged (7B); shorter disp8 form
+		// when idxK*8 fits in [-128, 127] saves another 3B.
+		//   mov  hoistDisp(%rbx), %rax    ; rax = cells.ptr            (4B)
+		//   mov  idxK*8(%rax), %rax       ; rax = cells[idxK]          (4 or 7B)
+		//   shl  $16, %rax                ; SBFX prep                  (4B)
+		//   sar  $16, %rax                ; sign-extend low 48 bits    (4B)
+		//   mov  %rax, x_A                ; regsI64[A] = signed payload (3B)
+		if hoistsCellsPtrAMD64(fn) {
+			idxK := int32(uint16(op.C)) * 8
+			load := 7
+			if idxK >= -128 && idxK <= 127 {
+				load = 4
+			}
+			return 4 + load + 4 + 4 + 3, nil
+		}
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 7 + 4 + 4 + 3, nil
 
 	case vm3.OpListSetI64:
@@ -828,6 +958,20 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		//   movabs $0xFFFA<<48, %rcx      ; rcx = Int48 tag             (10B)
 		//   or   %rcx, %rdx               ; rdx = tagged payload       (3B)
 		//   mov  %rdx, [%rax + xIdx*8]    ; cells[regsI64[C]] = packed (4B)
+		//
+		// Phase 6.3.4.n.2.f hot form (hoistsCellsPtrAMD64 true): swap
+		// the 5-instruction slab/cells.ptr chain (30B) for the disp8
+		// load (4B). The rest of the packed-Cell prep is identical.
+		//   mov  hoistDisp(%rbx), %rax    ; rax = cells.ptr            (4B)
+		//   mov  xVal, %rdx               ;                            (3B)
+		//   shl  $16, %rdx                ;                            (4B)
+		//   shr  $16, %rdx                ;                            (4B)
+		//   movabs $0xFFFA<<48, %rcx      ;                            (10B)
+		//   or   %rcx, %rdx               ;                            (3B)
+		//   mov  %rdx, [%rax + xIdx*8]    ;                            (4B)
+		if hoistsCellsPtrAMD64(fn) {
+			return 4 + 3 + 4 + 4 + 10 + 3 + 4, nil
+		}
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 3 + 4 + 4 + 10 + 3 + 4, nil
 
 	case vm3.OpListPushI64:
@@ -1253,16 +1397,25 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// register for regsI64[C]; xA is the pinned register for
 		// regsI64[A]. The shl/sar pair is the AMD64 equivalent of ARM64
 		// SBFX: it sign-extends the low 48 bits of the boxed Int48 cell.
-		stride := int64(vm3.JITListSlabStride())
-		cellsOff := int32(vm3.JITListCellsOffset())
-		listsBaseOff := int32(jitArenaCtxListsBaseOff())
+		//
+		// Phase 6.3.4.n.2.f: when hoistsCellsPtrAMD64(fn) the prologue
+		// already cached cells.ptr at disp8(%rbx); skip the
+		// slab/cells.ptr compute chain.
 		xIdx := r2xAMD64(uint16(op.C))
 		xA := r2xAMD64(op.A)
-		out := mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
-		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
-		out = append(out, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
-		out = append(out, add64RR(xRCX, xRAX)...)
-		out = append(out, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
+		var out []byte
+		if hoistsCellsPtrAMD64(fn) {
+			out = mov64LoadDisp8(xRAX, xRBX, int8(hoistDispAMD64(fn)))
+		} else {
+			stride := int64(vm3.JITListSlabStride())
+			cellsOff := int32(vm3.JITListCellsOffset())
+			listsBaseOff := int32(jitArenaCtxListsBaseOff())
+			out = mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
+			out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+			out = append(out, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
+			out = append(out, add64RR(xRCX, xRAX)...)
+			out = append(out, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
+		}
 		out = append(out, mov64LoadIdxLsl3(xRAX, xRAX, xIdx)...)
 		out = append(out, shl64RImm8(xRAX, 16)...)
 		out = append(out, sar64RImm8(xRAX, 16)...)
@@ -1275,17 +1428,32 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// the dependence on a live i64 register for the index. Frees one
 		// i64 slot in the kernel; fannkuch_redux uses this to fit
 		// NumRegsI64=8 under the AMD64 cell-bank cap.
-		stride := int64(vm3.JITListSlabStride())
-		cellsOff := int32(vm3.JITListCellsOffset())
-		listsBaseOff := int32(jitArenaCtxListsBaseOff())
+		//
+		// Phase 6.3.4.n.2.f: when hoistsCellsPtrAMD64(fn) the cells.ptr
+		// is already cached at disp8(%rbx); we also shrink the
+		// constant-indexed load to disp8 when idxK*8 fits in [-128, 127]
+		// (the common case: small constant indices like 0..15).
 		idxK := int32(uint16(op.C)) * 8
 		xA := r2xAMD64(op.A)
-		out := mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
-		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
-		out = append(out, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
-		out = append(out, add64RR(xRCX, xRAX)...)
-		out = append(out, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
-		out = append(out, mov64LoadDisp32(xRAX, xRAX, idxK)...)
+		var out []byte
+		if hoistsCellsPtrAMD64(fn) {
+			out = mov64LoadDisp8(xRAX, xRBX, int8(hoistDispAMD64(fn)))
+			if idxK >= -128 && idxK <= 127 {
+				out = append(out, mov64LoadDisp8(xRAX, xRAX, int8(idxK))...)
+			} else {
+				out = append(out, mov64LoadDisp32(xRAX, xRAX, idxK)...)
+			}
+		} else {
+			stride := int64(vm3.JITListSlabStride())
+			cellsOff := int32(vm3.JITListCellsOffset())
+			listsBaseOff := int32(jitArenaCtxListsBaseOff())
+			out = mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
+			out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+			out = append(out, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
+			out = append(out, add64RR(xRCX, xRAX)...)
+			out = append(out, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
+			out = append(out, mov64LoadDisp32(xRAX, xRAX, idxK)...)
+		}
 		out = append(out, shl64RImm8(xRAX, 16)...)
 		out = append(out, sar64RImm8(xRAX, 16)...)
 		out = append(out, mov64RR(xRAX, xA)...)
@@ -1302,17 +1470,26 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// low 48 bits of the value; the movabs supplies the high-16-bit
 		// Int48 tag (0xFFFA in the top 16 of the 64-bit word). The
 		// final SIB store mirrors the ARM64 STR with LSL #3 index.
-		stride := int64(vm3.JITListSlabStride())
-		cellsOff := int32(vm3.JITListCellsOffset())
-		listsBaseOff := int32(jitArenaCtxListsBaseOff())
+		//
+		// Phase 6.3.4.n.2.f: when hoistsCellsPtrAMD64(fn) the cells.ptr
+		// is already cached at disp8(%rbx); skip the slab/cells.ptr
+		// compute chain (RCX is then free up to the movabs tag load).
 		xIdx := r2xAMD64(uint16(op.C))
 		xVal := r2xAMD64(op.B)
 		tag := uint64(0xFFFA) << 48
-		out := mov32LoadDisp32(xRAX, xRBP, int32(op.A)*8)
-		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
-		out = append(out, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
-		out = append(out, add64RR(xRCX, xRAX)...)
-		out = append(out, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
+		var out []byte
+		if hoistsCellsPtrAMD64(fn) {
+			out = mov64LoadDisp8(xRAX, xRBX, int8(hoistDispAMD64(fn)))
+		} else {
+			stride := int64(vm3.JITListSlabStride())
+			cellsOff := int32(vm3.JITListCellsOffset())
+			listsBaseOff := int32(jitArenaCtxListsBaseOff())
+			out = mov32LoadDisp32(xRAX, xRBP, int32(op.A)*8)
+			out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+			out = append(out, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
+			out = append(out, add64RR(xRCX, xRAX)...)
+			out = append(out, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
+		}
 		out = append(out, mov64RR(xVal, xRDX)...)
 		out = append(out, shl64RImm8(xRDX, 16)...)
 		out = append(out, shr64RImm8(xRDX, 16)...)
@@ -2057,6 +2234,24 @@ func mov64StoreDisp32(src, base int, disp int32) []byte {
 	out := []byte{rex(true, src >= 8, false, base >= 8), 0x89, modRM(2, byte(src), byte(base))}
 	out = appendImm32(out, disp)
 	return out
+}
+
+// mov64LoadDisp8 emits `mov disp8(rBase), rDst`, a 64-bit load with an
+// 8-bit signed displacement. Opcode REX.W 8B /r mod=01 disp8. 4 bytes.
+// Used by the Phase 6.3.4.n.2.f cells.ptr hoist hot form to read the
+// stashed cells.ptr at &regsI64[NumRegsI64] (disp = NumRegsI64*8, which
+// is in 0..64 since the AMD64 cell-bank caps NumRegsI64 at 8). Caller
+// must pre-check that rBase != RSP/R12 (would require a SIB byte).
+func mov64LoadDisp8(dst, base int, disp int8) []byte {
+	return []byte{rex(true, dst >= 8, false, base >= 8), 0x8B, modRM(1, byte(dst&7), byte(base&7)), byte(disp)}
+}
+
+// mov64StoreDisp8 emits `mov rSrc, disp8(rBase)`, the store mirror of
+// mov64LoadDisp8. Opcode REX.W 89 /r mod=01 disp8. 4 bytes. Used by
+// the Phase 6.3.4.n.2.f hoist prologue to stash cells.ptr at
+// &regsI64[NumRegsI64].
+func mov64StoreDisp8(src, base int, disp int8) []byte {
+	return []byte{rex(true, src >= 8, false, base >= 8), 0x89, modRM(1, byte(src&7), byte(base&7)), byte(disp)}
 }
 
 // mov32StoreDisp8 emits `mov %eSrc, disp8(rBase)`, a 32-bit reg-to-mem

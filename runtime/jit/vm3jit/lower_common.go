@@ -88,6 +88,31 @@ func hasListGetI64(fn *vm3.Function) bool {
 	return false
 }
 
+// hasListGetI64K reports whether fn contains any OpListGetI64K (the
+// Phase 6.3.4.n.2.e constant-index variant). Both this and hasListGetI64
+// are read by the AMD64 cells.ptr hoist gate so the prologue only pays
+// the slab-pointer compute when a hot list read is in the body.
+func hasListGetI64K(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpListGetI64K {
+			return true
+		}
+	}
+	return false
+}
+
+// hasListSetI64 reports whether fn contains any OpListSetI64. The AMD64
+// cells.ptr hoist also benefits set sites (each saves the listsBase +
+// imul + cellsOff load chain).
+func hasListSetI64(fn *vm3.Function) bool {
+	for _, op := range fn.Code {
+		if op.Code == vm3.OpListSetI64 {
+			return true
+		}
+	}
+	return false
+}
+
 // hasMapSetI64I64 reports whether fn contains any OpMapSetI64I64. Each
 // site emits inline splitmix64 + probe loop + 3 stores + nLive bump,
 // gated on a load-factor 0.5 grow check that deopts via StatusMapGrow
