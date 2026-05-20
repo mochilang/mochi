@@ -1125,6 +1125,21 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// movsd xmm<A>, xmm<B>: 4 bytes (xmm0..7 only, no REX needed).
 		return 4, nil
 	case vm3.OpAddF64, vm3.OpSubF64, vm3.OpMulF64, vm3.OpDivF64:
+		// Phase 6.3.4.n.7 FMA fusion: an OpMulF64 absorbed into the
+		// following OpAddF64/OpSubF64 emits zero bytes here, and the
+		// consuming Add/Sub emits VFMADD/VFNMADD (5 bytes when Dd
+		// already aliases one of {Da, Dn, Dm}, else movsd+VFMADD = 9).
+		if op.Code == vm3.OpMulF64 && fmaFusionAbsorbed(fn, idx) {
+			return 0, nil
+		}
+		if op.Code == vm3.OpAddF64 || op.Code == vm3.OpSubF64 {
+			if f, ok := fmaFusionAt(fn, idx); ok {
+				if int(f.Dd) == int(f.Dn) || int(f.Dd) == int(f.Dm) || int(f.Dd) == int(f.Da) {
+					return 5, nil
+				}
+				return 4 + 5, nil
+			}
+		}
 		// A == B: <op>sd xmm<A>, xmm<C> (4 bytes).
 		// A == C, commutative (Add/Mul): <op>sd xmm<A>, xmm<B> (4).
 		// A == C, non-commutative (Sub/Div): movsd xmm15, xmm<C> (5) ;
@@ -1747,10 +1762,19 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 	case vm3.OpMovF64:
 		return movsdRR(int(op.A), int(op.B)), nil
 	case vm3.OpAddF64:
+		if f, ok := fmaFusionAt(fn, idx); ok && f.Kind == 'a' {
+			return emitFMA3SDFusedAMD64(false, f), nil
+		}
 		return emitSSEArithAMD64(addsdRR, int(op.A), int(op.B), int(uint16(op.C)), true), nil
 	case vm3.OpSubF64:
+		if f, ok := fmaFusionAt(fn, idx); ok && f.Kind == 's' {
+			return emitFMA3SDFusedAMD64(true, f), nil
+		}
 		return emitSSEArithAMD64(subsdRR, int(op.A), int(op.B), int(uint16(op.C)), false), nil
 	case vm3.OpMulF64:
+		if fmaFusionAbsorbed(fn, idx) {
+			return nil, nil
+		}
 		return emitSSEArithAMD64(mulsdRR, int(op.A), int(op.B), int(uint16(op.C)), true), nil
 	case vm3.OpDivF64:
 		return emitSSEArithAMD64(divsdRR, int(op.A), int(op.B), int(uint16(op.C)), false), nil
@@ -2865,6 +2889,39 @@ func vfmaddSDRR(opc byte, dst, src1, src2 int) []byte {
 	vvvv := byte(0xF) ^ byte(src1&0xF)
 	byte2 := byte(0x80) | (vvvv << 3) | 0x01
 	return []byte{0xC4, 0xE2, byte2, opc, modRM(3, byte(dst&7), byte(src2&7))}
+}
+
+// emitFMA3SDFusedAMD64 emits the AMD64 lowering for the fmaFusion peephole
+// (Phase 6.3.4.j.4b / .n.7). For Kind 'a' the target is Dd = Dn*Dm + Da
+// and we pick the VFMADD3xx variant whose dst-as-input alias matches one of
+// {Dn, Dm, Da}. For Kind 's' the target is Dd = Da - Dn*Dm, and we use
+// the VFNMADD3xx family (opcodes 0x9C / 0xAC / 0xBC, parallel to the
+// VFMADD 0x98/0xA8/0xB8 used by OpFmaF64). When Dd does not alias any
+// of the three sources we first copy Da into Dd via movsd and then emit
+// the 231 form (dst = src1*src2 + dst).
+//
+// Encoding-wise this reuses vfmaddSDRR; the opcode byte alone selects
+// FMADD vs FNMADD. The byte counter must agree (5 bytes alias-shape,
+// 4+5 bytes otherwise) — see byteCountAMD64.
+func emitFMA3SDFusedAMD64(neg bool, f fmaFusion) []byte {
+	dd, dn, dm, da := int(f.Dd), int(f.Dn), int(f.Dm), int(f.Da)
+	var op132, op213, op231 byte
+	if !neg {
+		op132, op213, op231 = 0x98, 0xA8, 0xB8
+	} else {
+		op132, op213, op231 = 0x9C, 0xAC, 0xBC
+	}
+	switch {
+	case dd == da:
+		return vfmaddSDRR(op231, dd, dn, dm)
+	case dd == dn:
+		return vfmaddSDRR(op132, dd, da, dm)
+	case dd == dm:
+		return vfmaddSDRR(op213, dd, dn, da)
+	default:
+		out := movsdRR(dd, da)
+		return append(out, vfmaddSDRR(op231, dd, dn, dm)...)
+	}
 }
 
 // movsdLoadXMMFromGPR emits `movsd xmm<dst>, disp32(%baseGPR)`.
