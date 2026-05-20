@@ -596,6 +596,9 @@ func deoptStatusesUsedAMD64(fn *vm3.Function) []int64 {
 	if hasRegRegDivModAMD64(fn) {
 		s = append(s, StatusDivByZero)
 	}
+	if hasListPushI64(fn) {
+		s = append(s, StatusListGrow)
+	}
 	if hasNewPair(fn) {
 		s = append(s, StatusPairGrow)
 	}
@@ -806,6 +809,38 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		//   or   %rcx, %rdx               ; rdx = tagged payload       (3B)
 		//   mov  %rdx, [%rax + xIdx*8]    ; cells[regsI64[C]] = packed (4B)
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 3 + 4 + 4 + 10 + 3 + 4, nil
+
+	case vm3.OpListPushI64:
+		// Phase 6.3.4.n.2.c cold form, AMD64 mirror of the ARM64
+		// OpListPushI64 (no hoist):
+		//   mov  disp32(%rbp), %eax        ; idx = low 32 of regsCell[A] (6B)
+		//   imul $stride, %rax, %rax       ; rax = idx*sizeof(vmList)    (7B)
+		//   mov  listsBaseOff(%r14), %rcx  ; rcx = arenas.Lists base    (7B)
+		//   add  %rcx, %rax                ; rax = &arenas.Lists[idx]  (3B)
+		//   mov  cellsLenOff(%rax), %rcx   ; rcx = cells.len           (7B)
+		//   mov  cellsCapOff(%rax), %rdx   ; rdx = cells.cap           (7B)
+		//   cmp  %rdx, %rcx                ; flags = len - cap         (3B)
+		//   jae  deopt_listgrow            ; len >= cap → deopt        (6B)
+		//   mov  cellsOff(%rax), %rdx      ; rdx = cells.ptr           (7B)
+		//   mov  xVal, [%rdx + %rcx*8]     ; cells[len] = raw xVal     (4B)
+		//   movw $0xFFFA, 6(%rdx,%rcx,8)   ; overwrite tag bytes 6,7   (7B)
+		//   inc  %rcx                      ; len++                     (3B)
+		//   mov  %rcx, cellsLenOff(%rax)   ; commit cells.len          (7B)
+		//   mov  %ecx, 4(%rax)             ; commit vmList.len (u32)   (3B)
+		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 7 + 3 + 6 + 7 + 4 + 7 + 3 + 7 + 3, nil
+
+	case vm3.OpNewList:
+		// Phase 6.3.4.n.2.c: when fn.JITPreAllocList is set the JIT skips
+		// fn.Code[0]'s OpNewList entirely; jitCall (Go side) writes the
+		// pre-allocated list handle into jf.regsCell[A] before the
+		// trampoline call. Same skip rule for the contiguous K-prefix.
+		if idx == 0 && fn.JITPreAllocList {
+			return 0, nil
+		}
+		if idx < int(fn.JITPreAllocListPrefix) {
+			return 0, nil
+		}
+		return 0, fmt.Errorf("%w: opcode %d (inline NewList unsupported)", ErrNotImplemented, op.Code)
 
 	case vm3.OpConstF64K:
 		idx := int(uint16(op.C))
@@ -1244,6 +1279,64 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		out = append(out, mov64StoreIdxLsl3(xRDX, xRAX, xIdx)...)
 		return out, nil
 
+	case vm3.OpListPushI64:
+		// Phase 6.3.4.n.2.c: arenas.Lists[handleIdx(regsCell[A])] appends
+		// CInt(regsI64[B]) when cells.len < cells.cap; otherwise raises
+		// StatusListGrow and the interpreter regrows + retries via jitCall.
+		//
+		// Cold form (no slab/cells.ptr/cells.cap pin). RAX holds the slab
+		// address through the whole op; RCX is reused first as listsBase
+		// scratch, then as cells.len (live until step 13/14), and RDX as
+		// cells.cap then cells.ptr (live for the SIB store and the tag
+		// overwrite). xVal is a pinned r2xAMD64 register (slot 0..7 only).
+		//
+		// The packed-Cell store exploits the layout: byte 0..5 of the
+		// stored 8-byte xVal hold the low-48 payload (negative values are
+		// represented in two's complement so bits 0..47 already encode the
+		// signed payload), and the 16-bit immediate write at offset 6
+		// overwrites bytes 6..7 with the 0xFFFA Int48 tag in one shot. No
+		// fourth scratch is needed; the read-back via OpListGetI64 reverses
+		// the sign-extend pair (shl/sar by 16) and recovers the original
+		// i64 across the full int48 range.
+		stride := int64(vm3.JITListSlabStride())
+		cellsOff := int32(vm3.JITListCellsOffset())
+		cellsLenOff := cellsOff + 8
+		cellsCapOff := cellsOff + 16
+		listsBaseOff := int32(jitArenaCtxListsBaseOff())
+		xVal := r2xAMD64(op.B)
+		lgStart := deoptStartForStatusAMD64(fn, deoptStart, StatusListGrow)
+		out := mov32LoadDisp32(xRAX, xRBP, int32(op.A)*8)
+		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
+		out = append(out, add64RR(xRCX, xRAX)...)
+		out = append(out, mov64LoadDisp32(xRCX, xRAX, cellsLenOff)...)
+		out = append(out, mov64LoadDisp32(xRDX, xRAX, cellsCapOff)...)
+		out = append(out, cmp64RR(xRDX, xRCX)...) // flags = rcx - rdx = len - cap
+		afterJae := pcMap[idx] + len(out) + 6
+		out = append(out, jccRel32(ccAE, int32(lgStart-afterJae))...)
+		out = append(out, mov64LoadDisp32(xRDX, xRAX, cellsOff)...)
+		out = append(out, mov64StoreIdxLsl3(xVal, xRDX, xRCX)...)
+		out = append(out, mov16ImmStoreSIBDisp8(0xFFFA, xRDX, xRCX, 6)...)
+		out = append(out, inc64R(xRCX)...)
+		out = append(out, mov64StoreDisp32(xRCX, xRAX, cellsLenOff)...)
+		out = append(out, mov32StoreDisp8(xRCX, xRAX, 4)...)
+		return out, nil
+
+	case vm3.OpNewList:
+		// Phase 6.3.4.n.2.c: when fn.JITPreAllocList is set the JIT skips
+		// fn.Code[0]'s OpNewList entirely; jitCall (Go side) writes the
+		// pre-allocated list handle into jf.regsCell[A] before the
+		// trampoline. Inline OpNewList outside the pre-alloc prefix is
+		// still out of scope on AMD64 (would need an inline arena-alloc
+		// kernel) and the admission gate rejects it.
+		if idx == 0 && fn.JITPreAllocList {
+			return []byte{}, nil
+		}
+		if idx < int(fn.JITPreAllocListPrefix) {
+			return []byte{}, nil
+		}
+		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
+
 	case vm3.OpConstF64K:
 		bits := int64(uint64(fn.Consts[int(uint16(op.C))]))
 		out := movImm64(xRCX, bits)
@@ -1582,6 +1675,7 @@ const (
 	ccZ  = 0x4 // JZ / JE: equal
 	ccNZ = 0x5 // JNZ / JNE
 	ccAE = 0x3 // JAE: unsigned >= (CF=0)
+	ccBE = 0x6 // JBE: unsigned <= (CF=1 OR ZF=1)
 	ccL  = 0xC // JL: signed less
 	ccGE = 0xD // JGE: signed greater-equal
 	ccLE = 0xE // JLE
@@ -1921,6 +2015,61 @@ func mov64StoreDisp32(src, base int, disp int32) []byte {
 	out := []byte{rex(true, src >= 8, false, base >= 8), 0x89, modRM(2, byte(src), byte(base))}
 	out = appendImm32(out, disp)
 	return out
+}
+
+// mov32StoreDisp8 emits `mov %eSrc, disp8(rBase)`, a 32-bit reg-to-mem
+// store with an 8-bit signed displacement. Opcode 89 /r with mod=01
+// disp8. No REX is emitted when neither register needs the high bit.
+// Used by Phase 6.3.4.n.2.c to write vmList.len (a u32 at byte offset
+// 4 of the slab) as a side-effect of OpListPushI64. 3 bytes when
+// neither reg needs REX, 4 bytes otherwise. Caller pre-checks that
+// rBase is not RSP/R12 (would require a SIB byte) and not RBP/R13 in
+// mod=00, which is moot here since mod=01 forces a disp8.
+func mov32StoreDisp8(src, base int, disp int8) []byte {
+	var out []byte
+	if src >= 8 || base >= 8 {
+		var r byte = 0x40
+		if src >= 8 {
+			r |= 0x04 // REX.R
+		}
+		if base >= 8 {
+			r |= 0x01 // REX.B
+		}
+		out = append(out, r)
+	}
+	out = append(out, 0x89, modRM(1, byte(src&7), byte(base&7)), byte(disp))
+	return out
+}
+
+// mov16ImmStoreSIBDisp8 emits `movw $imm16, disp8(rBase, rIdx, 8)`, a
+// 16-bit immediate store at the address `rBase + rIdx*8 + disp8`.
+// Encoding: 66 (operand-size prefix) C7 /0 with mod=01, rm=100 (SIB
+// follows), SIB(scale=11, index=rIdx, base=rBase), disp8, imm16. Phase
+// 6.3.4.n.2.c uses this to overwrite the top 16 bits of a just-stored
+// 8-byte Cell with the Int48 tag (0xFFFA) at byte offset 6 of the
+// slot, packing the 48-bit payload with the tag in a single 7-byte
+// instruction. Caller pre-checks rIdx != RSP and rBase != RBP/R13
+// w/ mod=00 (here mod=01 so the [disp32]-quirk does not apply, but
+// rBase=RBP would still need a different SIB encoding; we only call
+// this with rBase=RDX). 7 bytes when neither reg needs REX, 8 bytes
+// otherwise.
+func mov16ImmStoreSIBDisp8(imm uint16, base, idx int, disp int8) []byte {
+	var out []byte
+	if base >= 8 || idx >= 8 {
+		var r byte = 0x40
+		if idx >= 8 {
+			r |= 0x02 // REX.X
+		}
+		if base >= 8 {
+			r |= 0x01 // REX.B
+		}
+		out = append(out, r)
+	}
+	sib := byte(3<<6) | byte((idx&7)<<3) | byte(base&7)
+	out = append(out, 0x66, 0xC7, modRM(1, 0, 4), sib, byte(disp))
+	var b [2]byte
+	binary.LittleEndian.PutUint16(b[:], imm)
+	return append(out, b[:]...)
 }
 
 // movMemImm32R15Indirect emits `movq $imm32, (%r15)` (sign-extended).
