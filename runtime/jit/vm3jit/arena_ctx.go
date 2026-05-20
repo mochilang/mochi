@@ -88,3 +88,12 @@ func jitArenaCtxPairsCapOff() uintptr {
 func jitArenaCtxPairsBaseOff() uintptr {
 	return unsafe.Offsetof(jitArenaCtx{}.pairsBase)
 }
+
+// jitArenaCtxListsBaseOff is the byte offset of listsBase within
+// jitArenaCtx. AMD64 OpListGetI64 (Phase 6.3.4.n.2.a) loads it from
+// R14+disp32 to recover the list slab base. The ARM64 backend pins
+// this in x19 via the prologue's slabBaseOffARM64 dispatch and so
+// does not need the offset surfaced through a helper.
+func jitArenaCtxListsBaseOff() uintptr {
+	return unsafe.Offsetof(jitArenaCtx{}.listsBase)
+}
