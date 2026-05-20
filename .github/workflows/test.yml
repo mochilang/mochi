@@ -12,9 +12,11 @@ jobs:
 
     steps:
       - name: Checkout code
+        id: checkout
         uses: actions/checkout@v6
 
       - name: Set up Go
+        id: setup-go
         uses: actions/setup-go@v6
         with:
           go-version: '^1.26'
@@ -22,14 +24,25 @@ jobs:
             go.sum
 
       - name: Build
-        run: go build -v ./...
+        id: build
+        run: |
+          echo "::group::Step: build"
+          go build -v ./...
+          echo "::endgroup::"
 
       - name: Run tests
+        id: tests
         run: |
+          echo "::group::Step: tests"
           go test -vet=off -v -race \
             -coverprofile=coverage.txt \
             -covermode=atomic \
             ./parser/... ./runtime/vm/...
+          echo "::endgroup::"
 
       - name: Run MEP-4 soundness suite
-        run: go test -vet=off -v ./types/... -run TestSoundness
+        id: soundness
+        run: |
+          echo "::group::Step: soundness"
+          go test -vet=off -v ./types/... -run TestSoundness
+          echo "::endgroup::"

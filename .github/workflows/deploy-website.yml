@@ -24,18 +24,20 @@ concurrency:
 
 jobs:
   deploy:
-    name: Build & deploy
+    name: Build and deploy website
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: website
     steps:
       - name: Checkout
+        id: checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set up Node.js
+        id: setup-node
         uses: actions/setup-node@v6
         with:
           node-version: 22
@@ -43,10 +45,18 @@ jobs:
           cache-dependency-path: website/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        id: install
+        run: |
+          echo "::group::Step: install"
+          npm ci
+          echo "::endgroup::"
 
       - name: Build website
-        run: npm run build
+        id: build
+        run: |
+          echo "::group::Step: build"
+          npm run build
+          echo "::endgroup::"
 
       - name: Deploy to Cloudflare Pages
         id: deploy
