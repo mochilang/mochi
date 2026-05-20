@@ -26,16 +26,19 @@ const maxI64Regs = 17
 
 // maxI64RegsAMD64 is the cap on the AMD64 backend. Slots 0..5 land in
 // RSI, RDI, R8, R9, R10, R11 (caller-saved); slots 6..8 land in R12,
-// R13, R14 (callee-saved, pushed/popped in prologue/epilogue). The
-// remaining x86_64 GPRs are reserved: RAX is the return register and
-// IDIV quotient; RCX is scratch; RDX is IDIV remainder; RBX holds the
-// regsI64 base pointer (preserved by the SysV ABI across our internal
-// CALL); R15 holds the *int64 status word pointer; RSP/RBP are the
-// stack. See lower_amd64.go.
+// R13, R14 (callee-saved, pushed/popped in prologue/epilogue); slot 9
+// lands in RBP (callee-saved, pushed/popped). The remaining x86_64
+// GPRs are reserved: RAX is the return register and IDIV quotient;
+// RCX is scratch; RDX is IDIV remainder; RBX holds the regsI64 base
+// pointer (preserved by the SysV ABI across our internal CALL); R15
+// holds the *int64 status word pointer; RSP is the stack pointer.
+// See lower_amd64.go.
 //
 // When fn.NumRegsF64 > 0 the AMD64 backend additionally steals R14 to
 // hold the regsF64 base pointer, dropping the effective i64 cap to 8.
-const maxI64RegsAMD64 = 9
+// When fn.NumRegsCell > 0 the backend steals R14 (arenaCtx) and RBP
+// (regsCell base), dropping the effective i64 cap to 8 as well.
+const maxI64RegsAMD64 = 10
 
 // maxF64RegsARM64 is the cap on simultaneously-live f64 registers in
 // the AArch64 backend. Slots 0..7 land in v0..v7 (caller-saved SIMD/FP).
@@ -518,8 +521,8 @@ func checkSelfCallMixedAdmissible(fn *vm3.Function, op vm3.Op, pc int, opts Opti
 // archMaxI64Regs returns the host architecture's cap on simultaneously
 // live i64 registers, and whether the architecture is supported at
 // all. AArch64 supports 17 (x9..x15 caller-saved + x19..x28
-// callee-saved). AMD64 supports 9 (RSI/RDI/R8/R9/R10/R11 caller-saved
-// + R12..R14 callee-saved; RBX is reserved for the regsI64 base
+// callee-saved). AMD64 supports 10 (RSI/RDI/R8/R9/R10/R11 caller-saved
+// + R12..R14 + RBP callee-saved; RBX is reserved for the regsI64 base
 // pointer and R15 for the *status word).
 //
 // Deprecated: kept for callers outside the JIT itself. Internal call
@@ -560,14 +563,17 @@ func archCaps(fn *vm3.Function) (int, int, bool) {
 	case ArchAMD64:
 		i64Cap := maxI64RegsAMD64
 		if fn.NumRegsF64 > 0 {
-			i64Cap = maxI64RegsAMD64 - 1 // steal R14 for regsF64 base
+			// Phase 6.3.4.n.1: slot 8 (R14) is stolen for the regsF64
+			// base, so cap drops by two from the new maxI64RegsAMD64=10
+			// (slot 9 RBP is technically free but the allocator is dense,
+			// so we cannot skip slot 8). Effective cap = 8.
+			i64Cap = maxI64RegsAMD64 - 2
 		}
 		if fn.NumRegsCell > 0 {
-			// Phase 6.3.4.m.4c.1: cell-bank steals R14 (arenaCtx) and
-			// RBP (regsCell). R14 was the i64 slot-8 home, so the
-			// cap drops by one. RBP is normally reserved (not in
-			// r2xAMD64's range), so no further i64 reduction.
-			i64Cap = maxI64RegsAMD64 - 1
+			// Phase 6.3.4.m.4c.1 + 6.3.4.n.1: cell-bank steals R14
+			// (arenaCtx) and RBP (regsCell). Slot 8 and slot 9 are both
+			// unavailable, so the cap drops by two: effective cap = 8.
+			i64Cap = maxI64RegsAMD64 - 2
 		}
 		return i64Cap, maxF64RegsAMD64, true
 	default:

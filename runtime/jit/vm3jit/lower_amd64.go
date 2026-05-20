@@ -21,6 +21,9 @@ import (
 //	regsI64[6] -> R12  (callee-saved)
 //	regsI64[7] -> R13  (callee-saved)
 //	regsI64[8] -> R14  (callee-saved)
+//	regsI64[9] -> RBP  (callee-saved, i64-only fns; cell-bank fns
+//	                    repurpose RBP as the regsCell base so slot 9 is
+//	                    only available when fn.NumRegsCell == 0)
 //
 // Reserved (never holds a pinned slot):
 //
@@ -31,10 +34,6 @@ import (
 //	          preserved by the SysV-style callee-save we do for RBX,
 //	          so it survives our internal CALL on self-recursion)
 //	RSP (4) - stack pointer
-//	RBP (5) - frame pointer (unused for i64-only fns; cell-bank fns
-//	          (Phase 6.3.4.m.4c.1) repurpose it as regsCell base
-//	          loaded from RCX, with the original RBP pushed/popped in
-//	          the prologue/epilogue)
 //	R8  (8) - *jitArenaCtx on entry when cell-bank (moved to R14)
 //	R15(15) - *int64 status word pointer (set from RSI in prologue)
 //
@@ -44,7 +43,9 @@ import (
 //	R14 (14) - *jitArenaCtx (loaded from R8 in prologue)
 //
 // R14 is shared with the f64 base path, so the cell-bank prologue
-// rejects fn.NumRegsF64 > 0 to keep the pinning unambiguous.
+// rejects fn.NumRegsF64 > 0 to keep the pinning unambiguous. RBP is
+// shared between the i64 slot-9 home and the cell-bank regsCell base,
+// so cell-bank fns also cap at NumRegsI64 <= 8 (slots 0..7).
 //
 // The trampoline calls us with the SysV ABI:
 //
@@ -101,13 +102,15 @@ func r2xAMD64(r uint16) int {
 		return xR13
 	case 8:
 		return xR14
+	case 9:
+		return xRBP
 	}
 	return -1
 }
 
 // calleeSavedSlot reports whether slot r lands in a callee-saved GPR
-// (R12..R14). The prologue pushes those before clobbering them.
-func calleeSavedSlot(r uint16) bool { return r >= 6 && r < 9 }
+// (R12..R14, RBP). The prologue pushes those before clobbering them.
+func calleeSavedSlot(r uint16) bool { return r >= 6 && r < 10 }
 
 // usesR14ForF64 reports whether the AMD64 backend repurposes R14 as
 // the regsF64 base pointer for fn. This stacks on top of the SysV
@@ -127,7 +130,9 @@ func isCellBankAMD64(fn *vm3.Function) bool { return fn.NumRegsCell > 0 }
 // (2). Used by both the prologue emitter and the byte-count predictor.
 // R14 is pushed when (a) i64 slot 8 lands in R14 OR (b) R14 holds the
 // regsF64 base for an f64-touching fn OR (c) R14 holds *jitArenaCtx for
-// a cell-bank fn. RBP is pushed only for cell-bank fns (regsCell base).
+// a cell-bank fn. RBP is pushed when (a) i64 slot 9 lands in RBP
+// (Phase 6.3.4.n.1) OR (b) RBP holds the regsCell base for a cell-bank
+// fn.
 func numCalleeSavedPushesAMD64(fn *vm3.Function) int {
 	n := int(fn.NumRegsI64)
 	if n > maxI64RegsAMD64 {
@@ -144,8 +149,8 @@ func numCalleeSavedPushesAMD64(fn *vm3.Function) int {
 	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
 		count++
 	}
-	if isCellBankAMD64(fn) {
-		count++ // RBP for regsCell base
+	if n > 9 || isCellBankAMD64(fn) {
+		count++ // RBP for slot 9 (i64-only) or regsCell base (cell-bank)
 	}
 	return count
 }
@@ -442,7 +447,7 @@ func prologueLenAMD64(fn *vm3.Function) int {
 	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
 		bytes += pushBytes(xR14)
 	}
-	if isCellBankAMD64(fn) {
+	if n > 9 || isCellBankAMD64(fn) {
 		bytes += pushBytes(xRBP)
 	}
 	if alignFixupBytesAMD64(fn) != 0 {
@@ -504,7 +509,7 @@ func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
 		buf = append(buf, push64(xR14)...)
 	}
-	if isCellBankAMD64(fn) {
+	if n > 9 || isCellBankAMD64(fn) {
 		buf = append(buf, push64(xRBP)...)
 	}
 	if alignFixupBytesAMD64(fn) != 0 {
@@ -537,7 +542,7 @@ func emitEpilogueAMD64(buf []byte, fn *vm3.Function) []byte {
 	if alignFixupBytesAMD64(fn) != 0 {
 		buf = append(buf, addRSPImm8(8)...)
 	}
-	if isCellBankAMD64(fn) {
+	if n > 9 || isCellBankAMD64(fn) {
 		buf = append(buf, pop64(xRBP)...)
 	}
 	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
@@ -563,7 +568,7 @@ func epilogueBytesAMD64(fn *vm3.Function) int {
 	if alignFixupBytesAMD64(fn) != 0 {
 		bytes += 4 // add $8, %rsp
 	}
-	if isCellBankAMD64(fn) {
+	if n > 9 || isCellBankAMD64(fn) {
 		bytes += popBytes(xRBP)
 	}
 	if n > 8 || usesR14ForF64(fn) || isCellBankAMD64(fn) {
