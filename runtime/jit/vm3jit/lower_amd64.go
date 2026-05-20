@@ -443,10 +443,19 @@ func hoistDispAMD64(fn *vm3.Function) int32 {
 //	mov  listsBaseOff(%r14), %rcx ; rcx = arenas.Lists base (7B)
 //	add  %rcx, %rax             ; rax = &arenas.Lists[idx] (3B)
 //	mov  cellsOff(%rax), %rax   ; rax = cells.ptr          (7B)
+//	mov  %rax, %rdx             ; RDX = cells.ptr pin      (3B; n.2.g)
 //	mov  %rax, hoistDisp(%rbx)  ; store at hoist slot      (4 or 7B)
 //
 // disp8 fits when hoistDispAMD64(fn) ∈ [-128, 127]; AMD64 cell-bank
 // caps NumRegsI64 at 8, so disp is 0..64 — always disp8.
+//
+// Phase 6.3.4.n.2.g: an extra `mov %rax, %rdx` pre-loads RDX with
+// cells.ptr so the FIRST List* hot form can skip the disp8(%rbx)
+// reload. RDX is caller-saved; the dataflow in
+// computeRDXValidAtEntryAMD64 tracks where it remains pinned vs
+// clobbered (DivMod / ListPush / NewPair / CallMixed). The disp8 backup
+// store is still emitted so List* ops past a clobber can reload the
+// pin from %rbx via the long sub-form.
 func hoistPrologueBytesAMD64(fn *vm3.Function) int {
 	if !hoistsCellsPtrAMD64(fn) {
 		return 0
@@ -455,7 +464,123 @@ func hoistPrologueBytesAMD64(fn *vm3.Function) int {
 	if hoistDispAMD64(fn) < -128 || hoistDispAMD64(fn) > 127 {
 		storeBytes = 7
 	}
-	return 6 + 7 + 7 + 3 + 7 + storeBytes
+	return 6 + 7 + 7 + 3 + 7 + 3 + storeBytes
+}
+
+// clobbersRDXAMD64 reports whether op may write or trash RDX in the
+// AMD64 lowering. The cells.ptr RDX pin (Phase 6.3.4.n.2.g) is
+// invalidated by these ops:
+//
+//   - OpDivI64 / OpModI64: emitDivOrMod uses CQO + IDIV (RDX:RAX).
+//   - OpDivI64K / OpModI64K: emitDivKOrModK same.
+//   - OpListPushI64: cold form uses RDX as cells.cap then cells.ptr.
+//   - OpNewPair: inline allocator stores pairsBase into RDX.
+//   - OpCallI64: native CALL; callee may clobber any caller-saved reg.
+//   - OpCallMixed: same plus the Cell-arg copy loop uses RDX as scratch.
+//
+// All other ops in the AMD64 lowering touch only RAX/RCX or pinned
+// slot regs, leaving RDX untouched. List* hot forms (Get/GetK/Set)
+// either use RDX directly (rdxValid==true) or load disp8(%rbx) into
+// RDX themselves (rdxValid==false), so they ESTABLISH the pin rather
+// than clobber it; see isListHotFormAMD64.
+func clobbersRDXAMD64(op vm3.Op) bool {
+	switch op.Code {
+	case vm3.OpDivI64, vm3.OpModI64,
+		vm3.OpDivI64K, vm3.OpModI64K,
+		vm3.OpListPushI64,
+		vm3.OpNewPair,
+		vm3.OpCallI64, vm3.OpCallMixed:
+		return true
+	}
+	return false
+}
+
+// isListHotFormAMD64 reports whether op is a List* read/write that
+// runs the hoisted hot form on fn (Phase 6.3.4.n.2.f). The Phase
+// 6.3.4.n.2.g RDX pin uses this to gate the no-load sub-form:
+// rdxValid==true callers emit the short variant (4B saved per op);
+// rdxValid==false callers emit a load-into-RDX variant that
+// re-establishes the pin for subsequent ops in the same basic block.
+func isListHotFormAMD64(fn *vm3.Function, op vm3.Op) bool {
+	if !hoistsCellsPtrAMD64(fn) {
+		return false
+	}
+	switch op.Code {
+	case vm3.OpListGetI64, vm3.OpListGetI64K, vm3.OpListSetI64:
+		return true
+	}
+	return false
+}
+
+// computeBranchTargetsAMD64 returns a per-pc boolean indicating whether
+// any other op branches to it. Used by computeRDXValidAtEntryAMD64 to
+// conservatively reset the RDX pin at every join point: a predecessor
+// arriving via back-edge or forward jump may have clobbered RDX, and
+// we lack a full fixed-point dataflow.
+func computeBranchTargetsAMD64(fn *vm3.Function) []bool {
+	n := len(fn.Code)
+	targets := make([]bool, n)
+	for _, op := range fn.Code {
+		dst := -1
+		switch op.Code {
+		case vm3.OpJump,
+			vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
+			vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
+			vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br,
+			vm3.OpCmpEqI64KBr, vm3.OpCmpNeI64KBr,
+			vm3.OpCmpLtI64KBr, vm3.OpCmpLeI64KBr,
+			vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr,
+			vm3.OpCmpEqF64Br, vm3.OpCmpNeF64Br,
+			vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br,
+			vm3.OpCmpGtF64Br, vm3.OpCmpGeF64Br:
+			dst = int(uint16(op.C))
+		}
+		if dst >= 0 && dst < n {
+			targets[dst] = true
+		}
+	}
+	return targets
+}
+
+// computeRDXValidAtEntryAMD64 returns a per-pc boolean indicating
+// whether the JIT may assume %rdx still holds cells.ptr (the Phase
+// 6.3.4.n.2.g pin) at the entry to bytecode i. Linear forward pass:
+//
+//   - At pc 0 RDX is valid (emitPrologueAMD64 sets it).
+//   - At any branch target RDX is invalidated (conservative; we do
+//     not track per-predecessor liveness).
+//   - clobbersRDXAMD64 invalidates RDX post-op.
+//   - isListHotFormAMD64 re-establishes RDX (the load-into-RDX
+//     sub-form runs when rdxValid is false at entry).
+//   - All other ops preserve RDX.
+//
+// Returns nil when hoistsCellsPtrAMD64(fn) is false; callers default
+// any indexed access to false in that case.
+func computeRDXValidAtEntryAMD64(fn *vm3.Function) []bool {
+	if !hoistsCellsPtrAMD64(fn) {
+		return nil
+	}
+	n := len(fn.Code)
+	valid := make([]bool, n+1)
+	targets := computeBranchTargetsAMD64(fn)
+	valid[0] = true
+	for i := 0; i < n; i++ {
+		cur := valid[i]
+		if targets[i] {
+			cur = false
+		}
+		valid[i] = cur
+		op := fn.Code[i]
+		switch {
+		case clobbersRDXAMD64(op):
+			valid[i+1] = false
+		case isListHotFormAMD64(fn, op):
+			valid[i+1] = true
+		default:
+			valid[i+1] = cur
+		}
+	}
+	return valid
 }
 
 // computeCallSpillsAMD64 runs backward liveness exactly like the
@@ -528,11 +653,12 @@ func lowerAMD64(fn *vm3.Function, opts Options) ([]byte, error) {
 	}
 	prologueBytes := prologueLenAMD64(fn)
 	spillSets := computeCallSpillsAMD64(fn)
+	rdxValid := computeRDXValidAtEntryAMD64(fn)
 
 	pcMap := make([]int, len(fn.Code)+1)
 	pcMap[0] = prologueBytes
 	for i, op := range fn.Code {
-		n, err := byteCountAMD64(fn, op, opts, spillSets, i)
+		n, err := byteCountAMD64(fn, op, opts, spillSets, i, rdxValid)
 		if err != nil {
 			return nil, fmt.Errorf("vm3jit/%s: pc %d: %w", fn.Name, i, err)
 		}
@@ -545,7 +671,7 @@ func lowerAMD64(fn *vm3.Function, opts Options) ([]byte, error) {
 	buf := make([]byte, 0, total)
 	buf = emitPrologueAMD64(buf, fn)
 	for i, op := range fn.Code {
-		emit, err := emitInstrAMD64(fn, op, i, pcMap, deoptStart, opts, spillSets)
+		emit, err := emitInstrAMD64(fn, op, i, pcMap, deoptStart, opts, spillSets, rdxValid)
 		if err != nil {
 			return nil, fmt.Errorf("vm3jit/%s: pc %d op=%d: %w", fn.Name, i, op.Code, err)
 		}
@@ -702,6 +828,7 @@ func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 		buf = append(buf, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
 		buf = append(buf, add64RR(xRCX, xRAX)...)
 		buf = append(buf, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
+		buf = append(buf, mov64RR(xRAX, xRDX)...)
 		if hoistDisp >= -128 && hoistDisp <= 127 {
 			buf = append(buf, mov64StoreDisp8(xRAX, xRBX, int8(hoistDisp))...)
 		} else {
@@ -826,8 +953,10 @@ func emitDeoptBlockAMD64(fn *vm3.Function, statusCode int64) []byte {
 
 // byteCountAMD64 returns the exact byte length emitInstrAMD64 will emit
 // for op. Used by pass 1 to lay out pcMap. spillSets and idx are only
-// consulted for OpCallI64.
-func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint32, idx int) (int, error) {
+// consulted for OpCallI64. rdxValid is the per-pc cells.ptr-in-RDX
+// liveness vector from computeRDXValidAtEntryAMD64 (Phase 6.3.4.n.2.g);
+// callers pass nil when the hoist gate is off.
+func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint32, idx int, rdxValid []bool) (int, error) {
 	switch op.Code {
 	case vm3.OpConstI64K:
 		return movImm64ByteCount(int64(op.C), r2xAMD64(fn, op.A)), nil
@@ -976,13 +1105,24 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// the 5-instruction slab/cells.ptr compute chain (mov32, imul,
 		// mov listsBase, add, mov cellsOff = 30B) with a single
 		// mov64LoadDisp8 (4B), saving 26B per op.
-		//   mov  hoistDisp(%rbx), %rax    ; rax = cells.ptr            (4B)
+		//   mov  hoistDisp(%rbx), %rax    ; rax = cells.ptr            (4B)  [n.2.f only]
 		//   mov  [%rax + xIdx*8], %rax    ; rax = cells[regsI64[C]]    (4B)
 		//   shl  $16, %rax                ; SBFX prep                  (4B)
 		//   sar  $16, %rax                ; sign-extend low 48 bits    (4B)
 		//   mov  %rax, x_A                ; regsI64[A] = signed payload (3B)
+		//
+		// Phase 6.3.4.n.2.g RDX-pin: when rdxValid[idx] is true the
+		// first load is dropped (RDX already holds cells.ptr) and the
+		// SIB load reads through %rdx — saves 4B and one L1 hit per op.
+		// When rdxValid is false the long sub-form loads disp8(%rbx)
+		// into %rdx instead of %rax (same total 19B), re-establishing
+		// the pin for the next List* op in the block.
 		if hoistsCellsPtrAMD64(fn) {
-			return 4 + 4 + 4 + 4 + 3, nil
+			loadBytes := 4
+			if idx < len(rdxValid) && rdxValid[idx] {
+				loadBytes = 0
+			}
+			return loadBytes + 4 + 4 + 4 + 3, nil
 		}
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 4 + 4 + 4 + 3, nil
 
@@ -1010,18 +1150,27 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// load of the stashed cells.ptr (4B). The disp32 load of the
 		// constant-indexed cell is unchanged (7B); shorter disp8 form
 		// when idxK*8 fits in [-128, 127] saves another 3B.
-		//   mov  hoistDisp(%rbx), %rax    ; rax = cells.ptr            (4B)
+		//   mov  hoistDisp(%rbx), %rax    ; rax = cells.ptr            (4B)  [n.2.f only]
 		//   mov  idxK*8(%rax), %rax       ; rax = cells[idxK]          (4 or 7B)
 		//   shl  $16, %rax                ; SBFX prep                  (4B)
 		//   sar  $16, %rax                ; sign-extend low 48 bits    (4B)
 		//   mov  %rax, x_A                ; regsI64[A] = signed payload (3B)
+		//
+		// Phase 6.3.4.n.2.g RDX-pin: when rdxValid[idx] is true the
+		// first load is dropped and the constant-indexed load reads
+		// idxK*8(%rdx). False-entry falls back to mov disp8(%rbx),%rdx
+		// so subsequent List* ops can use the pin.
 		if hoistsCellsPtrAMD64(fn) {
 			idxK := int32(uint16(op.C)) * 8
 			load := 7
 			if idxK >= -128 && idxK <= 127 {
 				load = 4
 			}
-			return 4 + load + 4 + 4 + 3, nil
+			pinLoad := 4
+			if idx < len(rdxValid) && rdxValid[idx] {
+				pinLoad = 0
+			}
+			return pinLoad + load + 4 + 4 + 3, nil
 		}
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 7 + 4 + 4 + 3, nil
 
@@ -1049,19 +1198,28 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// in the same line; OpListGetI64's shl/sar pair sign-extends
 		// the low 48 regardless of what was there, so round-trip is
 		// preserved.
-		//   mov  hoistDisp(%rbx), %rax        ; rax = cells.ptr        (4B)
+		//   mov  hoistDisp(%rbx), %rax        ; rax = cells.ptr        (4B)  [n.2.f only]
 		//   mov  xVal, [%rax + xIdx*8]        ; cells[idx] = raw xVal  (4B)
 		//   movw $0xFFFA, 6(%rax,%xIdx,8)     ; overwrite tag bytes    (7 or 8B)
 		// The tag-store is 8B when xIdx >= R8 (REX.X needed) and 7B
 		// otherwise; the SIB-store is always 4B because mov64StoreIdxLsl3
 		// emits REX.W unconditionally.
+		//
+		// Phase 6.3.4.n.2.g RDX-pin: when rdxValid[idx] is true the
+		// SIB store and tag overwrite read base=%rdx directly, skipping
+		// the disp8(%rbx) reload. False-entry loads disp8(%rbx) into
+		// %rdx (4B), same total but re-establishes the pin.
 		if hoistsCellsPtrAMD64(fn) {
 			xIdx := r2xAMD64(fn, uint16(op.C))
 			tagBytes := 7
 			if xIdx >= 8 {
 				tagBytes = 8
 			}
-			return 4 + 4 + tagBytes, nil
+			pinLoad := 4
+			if idx < len(rdxValid) && rdxValid[idx] {
+				pinLoad = 0
+			}
+			return pinLoad + 4 + tagBytes, nil
 		}
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 3 + 4 + 4 + 10 + 3 + 4, nil
 
@@ -1340,7 +1498,7 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 // the last instruction and the deopt block start). deoptStart is the
 // byte offset of the deopt block; guard sites compute a JZ rel32
 // offset to it.
-func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStart int, opts Options, spillSets []uint32) ([]byte, error) {
+func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStart int, opts Options, spillSets []uint32, rdxValid []bool) ([]byte, error) {
 	xA := r2xAMD64(fn, op.A)
 	xB := r2xAMD64(fn, op.B)
 	switch op.Code {
@@ -1562,8 +1720,18 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		xIdx := r2xAMD64(fn, uint16(op.C))
 		xA := r2xAMD64(fn, op.A)
 		var out []byte
+		base := xRAX
 		if hoistsCellsPtrAMD64(fn) {
-			out = mov64LoadDisp8(xRAX, xRBX, int8(hoistDispAMD64(fn)))
+			// Phase 6.3.4.n.2.g: when rdxValid the pin in %rdx is live;
+			// skip the disp8(%rbx) reload and read the SIB load through
+			// %rdx. Otherwise load disp8(%rbx) into %rdx (not %rax) so
+			// the pin is re-established for the next List* op.
+			if idx < len(rdxValid) && rdxValid[idx] {
+				base = xRDX
+			} else {
+				out = mov64LoadDisp8(xRDX, xRBX, int8(hoistDispAMD64(fn)))
+				base = xRDX
+			}
 		} else {
 			stride := int64(vm3.JITListSlabStride())
 			cellsOff := int32(vm3.JITListCellsOffset())
@@ -1574,7 +1742,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 			out = append(out, add64RR(xRCX, xRAX)...)
 			out = append(out, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
 		}
-		out = append(out, mov64LoadIdxLsl3(xRAX, xRAX, xIdx)...)
+		out = append(out, mov64LoadIdxLsl3(xRAX, base, xIdx)...)
 		out = append(out, shl64RImm8(xRAX, 16)...)
 		out = append(out, sar64RImm8(xRAX, 16)...)
 		out = append(out, mov64RR(xRAX, xA)...)
@@ -1595,11 +1763,14 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		xA := r2xAMD64(fn, op.A)
 		var out []byte
 		if hoistsCellsPtrAMD64(fn) {
-			out = mov64LoadDisp8(xRAX, xRBX, int8(hoistDispAMD64(fn)))
+			base := xRDX
+			if !(idx < len(rdxValid) && rdxValid[idx]) {
+				out = mov64LoadDisp8(xRDX, xRBX, int8(hoistDispAMD64(fn)))
+			}
 			if idxK >= -128 && idxK <= 127 {
-				out = append(out, mov64LoadDisp8(xRAX, xRAX, int8(idxK))...)
+				out = append(out, mov64LoadDisp8(xRAX, base, int8(idxK))...)
 			} else {
-				out = append(out, mov64LoadDisp32(xRAX, xRAX, idxK)...)
+				out = append(out, mov64LoadDisp32(xRAX, base, idxK)...)
 			}
 		} else {
 			stride := int64(vm3.JITListSlabStride())
@@ -1635,16 +1806,21 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		xIdx := r2xAMD64(fn, uint16(op.C))
 		xVal := r2xAMD64(fn, op.B)
 		if hoistsCellsPtrAMD64(fn) {
-			// Hot form: cells.ptr is pinned at disp8(%rbx). Use the
-			// OpListPushI64 "raw SIB store + 16-bit tag overwrite"
-			// trick: the 16-bit write at offset 6 overwrites bytes
-			// 6..7 of the just-stored xVal with 0xFFFA. The low 48
-			// bits of xVal already hold the signed payload (two's
-			// complement preserves them), so OpListGetI64's shl/sar
-			// sign-extend recovers the original i64 round-trip.
-			out := mov64LoadDisp8(xRAX, xRBX, int8(hoistDispAMD64(fn)))
-			out = append(out, mov64StoreIdxLsl3(xVal, xRAX, xIdx)...)
-			out = append(out, mov16ImmStoreSIBDisp8(0xFFFA, xRAX, xIdx, 6)...)
+			// Hot form: cells.ptr is pinned at disp8(%rbx) (n.2.f) and
+			// in %rdx when rdxValid (n.2.g). Use the OpListPushI64
+			// "raw SIB store + 16-bit tag overwrite" trick: the 16-bit
+			// write at offset 6 overwrites bytes 6..7 of the just-
+			// stored xVal with 0xFFFA. The low 48 bits of xVal already
+			// hold the signed payload (two's complement preserves them),
+			// so OpListGetI64's shl/sar sign-extend recovers the
+			// original i64 round-trip.
+			var out []byte
+			base := xRDX
+			if !(idx < len(rdxValid) && rdxValid[idx]) {
+				out = mov64LoadDisp8(xRDX, xRBX, int8(hoistDispAMD64(fn)))
+			}
+			out = append(out, mov64StoreIdxLsl3(xVal, base, xIdx)...)
+			out = append(out, mov16ImmStoreSIBDisp8(0xFFFA, base, xIdx, 6)...)
 			return out, nil
 		}
 		// Cold form: recompute slab + cells.ptr, then mask-and-OR pack.
