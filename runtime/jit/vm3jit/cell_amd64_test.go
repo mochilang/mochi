@@ -377,6 +377,72 @@ func TestSelfCallMixedCellReturnAMD64(t *testing.T) {
 	}
 }
 
+// TestCrossFnCallMixedAMD64 exercises Phase 6.3.4.m.4c.6: AMD64
+// cell-bank cross-fn OpCallMixed. The caller is cell-bank (so its
+// OpCallMixed routes through the cell-bank lowering, not the i64-only
+// path), holds one Cell, and calls a separate cell-bank helper whose
+// only opcode is OpReturnConstK. Asserts:
+//   - both caller and helper get JITCode (the 2-pass CompileProgram
+//     compiles the leaf helper first and then admits the caller).
+//   - the returned I64 == 42.
+//   - zero deopt fires (the helper has no deopt-capable opcode, so the
+//     caller emits no post-CALL status check).
+func TestCrossFnCallMixedAMD64(t *testing.T) {
+	// helper(c Cell) -> I64: always returns 42 via OpReturnConstK.
+	helper := &vm3.Function{
+		Name:        "amd64_crossfn_helper",
+		NumRegsI64:  1,
+		NumRegsCell: 1,
+		ParamBanks:  []vm3.Bank{vm3.BankCell},
+		ResultBank:  vm3.BankI64,
+		Code: []vm3.Op{
+			vm3.MakeOp(vm3.OpReturnConstK, 0, 0, 42), // pc=0: return 42
+		},
+	}
+	// caller(seed I64) -> I64: cell-bank (NumRegsCell > 0); allocates
+	// a pair to obtain a Cell handle, then cross-fn calls helper with
+	// that Cell and returns the i64 result.
+	caller := &vm3.Function{
+		Name:        "amd64_crossfn_caller",
+		NumRegsI64:  1,
+		NumRegsCell: 1,
+		ParamBanks:  []vm3.Bank{vm3.BankI64},
+		ResultBank:  vm3.BankI64,
+		Code: []vm3.Op{
+			vm3.MakeOp(vm3.OpNewPair, 0, 0, 0),                                       // pc=0: regsCell[0] = pair(CNull, CNull)
+			{Code: vm3.OpCallMixed, BankFlags: uint8(vm3.BankI64), A: 0, B: 0, C: 1}, // pc=1: regsI64[0] = helper(regsCell[0])
+			vm3.MakeOp(vm3.OpReturnI64, 0, 0, 0),                                     // pc=2: return regsI64[0]
+		},
+	}
+	prog := &vm3.Program{Funcs: []*vm3.Function{caller, helper}, Entry: 0}
+	cfs := vm3jit.CompileProgram(prog)
+	defer func() {
+		for _, cf := range cfs {
+			if cf != nil {
+				_ = cf.Free()
+			}
+		}
+	}()
+	if helper.JITCode == nil {
+		t.Fatalf("helper JITCode is nil; AMD64 cell-bank should admit OpReturnConstK leaf")
+	}
+	if caller.JITCode == nil {
+		t.Fatalf("caller JITCode is nil; AMD64 cell-bank should admit cross-fn OpCallMixed (m.4c.6)")
+	}
+	preDeopt := vm3jit.DeoptCount
+	vm := vm3.NewWithProgram(prog)
+	got, err := vm.RunWithArgs(prog.Funcs[prog.Entry], []int64{0})
+	if err != nil {
+		t.Fatalf("RunWithArgs: %v", err)
+	}
+	if d := vm3jit.DeoptCount - preDeopt; d != 0 {
+		t.Fatalf("unexpected deopt count delta: %d", d)
+	}
+	if got.Int() != 42 {
+		t.Fatalf("got %d, want 42", got.Int())
+	}
+}
+
 // TestNewPairJITAMD64 exercises Phase 6.3.4.m.4c.4: AMD64 OpNewPair
 // inline allocation in cell-bank. The helper receives one Cell arg
 // (CNull from the driver), allocates a pair via OpNewPair with both
