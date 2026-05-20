@@ -961,16 +961,18 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		//
 		// Phase 6.3.4.n.2.f hot form (hoistsCellsPtrAMD64 true): swap
 		// the 5-instruction slab/cells.ptr chain (30B) for the disp8
-		// load (4B). The rest of the packed-Cell prep is identical.
-		//   mov  hoistDisp(%rbx), %rax    ; rax = cells.ptr            (4B)
-		//   mov  xVal, %rdx               ;                            (3B)
-		//   shl  $16, %rdx                ;                            (4B)
-		//   shr  $16, %rdx                ;                            (4B)
-		//   movabs $0xFFFA<<48, %rcx      ;                            (10B)
-		//   or   %rcx, %rdx               ;                            (3B)
-		//   mov  %rdx, [%rax + xIdx*8]    ;                            (4B)
+		// load (4B), and replace the mask-and-OR pack (3+4+4+10+3+4=28B)
+		// with the OpListPushI64-style "raw SIB store + 16-bit tag
+		// overwrite" pair (4+7=11B). The high 16 bits of xVal leak into
+		// the cell store, but the 16-bit tag immediate overwrites them
+		// in the same line; OpListGetI64's shl/sar pair sign-extends
+		// the low 48 regardless of what was there, so round-trip is
+		// preserved.
+		//   mov  hoistDisp(%rbx), %rax        ; rax = cells.ptr        (4B)
+		//   mov  xVal, [%rax + xIdx*8]        ; cells[idx] = raw xVal  (4B)
+		//   movw $0xFFFA, 6(%rax,%xIdx,8)     ; overwrite tag bytes    (7B)
 		if hoistsCellsPtrAMD64(fn) {
-			return 4 + 3 + 4 + 4 + 10 + 3 + 4, nil
+			return 4 + 4 + 7, nil
 		}
 		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 3 + 4 + 4 + 10 + 3 + 4, nil
 
@@ -1476,20 +1478,29 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		// compute chain (RCX is then free up to the movabs tag load).
 		xIdx := r2xAMD64(uint16(op.C))
 		xVal := r2xAMD64(op.B)
-		tag := uint64(0xFFFA) << 48
-		var out []byte
 		if hoistsCellsPtrAMD64(fn) {
-			out = mov64LoadDisp8(xRAX, xRBX, int8(hoistDispAMD64(fn)))
-		} else {
-			stride := int64(vm3.JITListSlabStride())
-			cellsOff := int32(vm3.JITListCellsOffset())
-			listsBaseOff := int32(jitArenaCtxListsBaseOff())
-			out = mov32LoadDisp32(xRAX, xRBP, int32(op.A)*8)
-			out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
-			out = append(out, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
-			out = append(out, add64RR(xRCX, xRAX)...)
-			out = append(out, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
+			// Hot form: cells.ptr is pinned at disp8(%rbx). Use the
+			// OpListPushI64 "raw SIB store + 16-bit tag overwrite"
+			// trick: the 16-bit write at offset 6 overwrites bytes
+			// 6..7 of the just-stored xVal with 0xFFFA. The low 48
+			// bits of xVal already hold the signed payload (two's
+			// complement preserves them), so OpListGetI64's shl/sar
+			// sign-extend recovers the original i64 round-trip.
+			out := mov64LoadDisp8(xRAX, xRBX, int8(hoistDispAMD64(fn)))
+			out = append(out, mov64StoreIdxLsl3(xVal, xRAX, xIdx)...)
+			out = append(out, mov16ImmStoreSIBDisp8(0xFFFA, xRAX, xIdx, 6)...)
+			return out, nil
 		}
+		// Cold form: recompute slab + cells.ptr, then mask-and-OR pack.
+		stride := int64(vm3.JITListSlabStride())
+		cellsOff := int32(vm3.JITListCellsOffset())
+		listsBaseOff := int32(jitArenaCtxListsBaseOff())
+		tag := uint64(0xFFFA) << 48
+		out := mov32LoadDisp32(xRAX, xRBP, int32(op.A)*8)
+		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, listsBaseOff)...)
+		out = append(out, add64RR(xRCX, xRAX)...)
+		out = append(out, mov64LoadDisp32(xRAX, xRAX, cellsOff)...)
 		out = append(out, mov64RR(xVal, xRDX)...)
 		out = append(out, shl64RImm8(xRDX, 16)...)
 		out = append(out, shr64RImm8(xRDX, 16)...)
