@@ -347,14 +347,14 @@ func checkCellBankAdmissible(fn *vm3.Function, opts Options) error {
 //     the emit step writes zero bytes). All cold form; hoisted slab-base
 //     optimizations come in later sub-phases.
 //
-// Map ops on cell-bank AMD64 are still out of scope. f64 banks remain
-// rejected because cell-bank repurposes R14 for *jitArenaCtx and R14 is
-// the f64 base on AMD64.
+// Map ops on cell-bank AMD64 are still out of scope. Phase 6.3.4.n.3
+// admits Cell+F64 fns by pinning the regsF64 base in R12 (instead of
+// R14) so spectral_norm and friends can JIT on linux/amd64. The
+// admission gate additionally allows the F64 arithmetic / Const / Mov /
+// Conv / Return ops plus OpF64ArrayGet/Set/Len and the matching I64
+// array opcodes; OpNewF64Array / OpNewI64Array are admitted only at the
+// pre-alloc K-prefix (jitCall pre-allocates the slab).
 func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
-	if fn.NumRegsF64 > 0 {
-		return fmt.Errorf("%w: %s has both Cell and f64 banks (AMD64 m.4c.1 admits Cell+I64 only; R14 shared)",
-			ErrNotImplemented, fn.Name)
-	}
 	for i, op := range fn.Code {
 		switch op.Code {
 		case vm3.OpConstI64K, vm3.OpConstI64KW, vm3.OpMovI64,
@@ -374,8 +374,31 @@ func checkCellBankAdmissibleAMD64(fn *vm3.Function, opts Options) error {
 			vm3.OpPairFst, vm3.OpPairSnd, vm3.OpNewPair,
 			vm3.OpListGetI64, vm3.OpListSetI64, vm3.OpListPushI64,
 			vm3.OpListGetI64K,
-			vm3.OpLookupI64KW:
+			vm3.OpLookupI64KW,
+			// Phase 6.3.4.n.3: F64 bank ops admitted on cell-bank+f64.
+			vm3.OpConstF64K, vm3.OpMovF64,
+			vm3.OpAddF64, vm3.OpSubF64, vm3.OpMulF64, vm3.OpDivF64,
+			vm3.OpNegF64, vm3.OpFmaF64, vm3.OpSqrtF64,
+			vm3.OpCmpEqF64Br, vm3.OpCmpNeF64Br,
+			vm3.OpCmpLtF64Br, vm3.OpCmpLeF64Br,
+			vm3.OpCmpGtF64Br, vm3.OpCmpGeF64Br,
+			vm3.OpI64ToF64, vm3.OpF64ToI64,
+			vm3.OpReturnF64,
+			// Phase 6.3.4.n.3: F64Array and I64Array element accessors.
+			vm3.OpF64ArrayGetF64, vm3.OpF64ArraySetF64, vm3.OpF64ArrayLenI64,
+			vm3.OpI64ArrayGetI64, vm3.OpI64ArraySetI64, vm3.OpI64ArrayLenI64:
 			continue
+		case vm3.OpNewF64Array, vm3.OpNewI64Array:
+			// Phase 6.3.4.n.3: admit at the pre-alloc K-prefix only.
+			// jitCall pre-allocates the slab; emit step skips the op.
+			if op.Code == vm3.OpNewF64Array && i < int(fn.JITPreAllocF64ArrPrefix) {
+				continue
+			}
+			if op.Code == vm3.OpNewI64Array && i < int(fn.JITPreAllocI64ArrPrefix) {
+				continue
+			}
+			return fmt.Errorf("%w: %s pc %d Cell-bank fn uses inline %v (only pre-alloc K-prefix is admitted on AMD64)",
+				ErrNotImplemented, fn.Name, i, op.Code)
 		case vm3.OpNewList:
 			// Phase 6.3.4.n.2.c: admit at pc=0 when the lowerer can skip
 			// emission (jitCall pre-allocates the list). Inline OpNewList
@@ -597,6 +620,12 @@ func archCaps(fn *vm3.Function) (int, int, bool) {
 			// (arenaCtx) and RBP (regsCell). Slot 8 and slot 9 are both
 			// unavailable, so the cap drops by two: effective cap = 8.
 			i64Cap = maxI64RegsAMD64 - 2
+		}
+		if fn.NumRegsCell > 0 && fn.NumRegsF64 > 0 {
+			// Phase 6.3.4.n.3: Cell+F64 fns additionally pin R12 as the
+			// regsF64 base because R14 is already the *jitArenaCtx
+			// pointer for cell-bank fns. R12 is i64 slot 6, so cap = 6.
+			i64Cap = 6
 		}
 		return i64Cap, maxF64RegsAMD64, true
 	default:

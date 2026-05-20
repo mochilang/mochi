@@ -113,16 +113,44 @@ func r2xAMD64(r uint16) int {
 func calleeSavedSlot(r uint16) bool { return r >= 6 && r < 10 }
 
 // usesR14ForF64 reports whether the AMD64 backend repurposes R14 as
-// the regsF64 base pointer for fn. This stacks on top of the SysV
-// callee-saved rule: R14 is also Go's G register, so we must push/pop
-// it regardless of how it is used inside the JIT'd body.
-func usesR14ForF64(fn *vm3.Function) bool { return fn.NumRegsF64 > 0 }
+// the regsF64 base pointer for fn. This applies to non-cell-bank f64
+// fns; cell-bank+f64 fns route the f64 base through R12 instead so
+// R14 stays free for the *jitArenaCtx pointer (Phase 6.3.4.n.3).
+// R14 is also Go's G register, so we must push/pop it regardless of
+// how it is used inside the JIT'd body.
+func usesR14ForF64(fn *vm3.Function) bool {
+	return fn.NumRegsF64 > 0 && !isCellBankAMD64(fn)
+}
+
+// usesR12ForF64AMD64 reports whether fn pins the regsF64 base in R12
+// instead of R14. Phase 6.3.4.n.3 enables this for cell-bank+f64 fns
+// because R14 already carries *jitArenaCtx. The trade-off is one fewer
+// i64 slot (R12 is i64 slot 6), so callers must cap NumRegsI64 <= 6
+// when both Cell and F64 banks are present (see archCaps + admission
+// gate).
+func usesR12ForF64AMD64(fn *vm3.Function) bool {
+	return fn.NumRegsF64 > 0 && isCellBankAMD64(fn)
+}
+
+// f64BaseGPRAMD64 returns the x86_64 GPR holding the regsF64 base
+// pointer for fn, or -1 when fn has no f64 bank. Non-cell-bank f64
+// fns use R14; cell-bank+f64 fns use R12 (R14 is reserved for the
+// arena ctx pointer in that case).
+func f64BaseGPRAMD64(fn *vm3.Function) int {
+	if fn.NumRegsF64 == 0 {
+		return -1
+	}
+	if isCellBankAMD64(fn) {
+		return xR12
+	}
+	return xR14
+}
 
 // isCellBankAMD64 reports whether fn carries the Cell register bank.
 // Phase 6.3.4.m.4c.1 cell-bank fns repurpose RBP as the regsCell base
 // and R14 as the *jitArenaCtx pointer, so the prologue pushes both and
-// the epilogue pops them. usesR14ForF64 and isCellBankAMD64 are mutually
-// exclusive: lowerAMD64 rejects the combination.
+// the epilogue pops them. Phase 6.3.4.n.3 adds the cell-bank+f64
+// admission: R12 takes over as the regsF64 base.
 func isCellBankAMD64(fn *vm3.Function) bool { return fn.NumRegsCell > 0 }
 
 // numCalleeSavedPushesAMD64 returns the number of R12..R14/RBP pushes the
@@ -132,7 +160,8 @@ func isCellBankAMD64(fn *vm3.Function) bool { return fn.NumRegsCell > 0 }
 // regsF64 base for an f64-touching fn OR (c) R14 holds *jitArenaCtx for
 // a cell-bank fn. RBP is pushed when (a) i64 slot 9 lands in RBP
 // (Phase 6.3.4.n.1) OR (b) RBP holds the regsCell base for a cell-bank
-// fn.
+// fn. R12 is pushed when (a) i64 slot 6 lands in R12 OR (b) R12 holds
+// the regsF64 base for a cell-bank+f64 fn (Phase 6.3.4.n.3).
 func numCalleeSavedPushesAMD64(fn *vm3.Function) int {
 	n := int(fn.NumRegsI64)
 	if n > maxI64RegsAMD64 {
@@ -140,7 +169,7 @@ func numCalleeSavedPushesAMD64(fn *vm3.Function) int {
 	}
 	// RBX and R15 are always pushed; R12..R14 only if their slot is used.
 	count := 2
-	if n > 6 {
+	if n > 6 || usesR12ForF64AMD64(fn) {
 		count++
 	}
 	if n > 7 {
@@ -451,11 +480,14 @@ func lowerAMD64(fn *vm3.Function, opts Options) ([]byte, error) {
 		return nil, fmt.Errorf("%w: %s has both f64 regs and OpCallI64 (Phase 6.2b leaves f64+self-recursion to a later sub-phase)",
 			ErrNotImplemented, fn.Name)
 	}
-	if isCellBankAMD64(fn) && fn.NumRegsF64 > 0 {
-		return nil, fmt.Errorf("%w: %s has both Cell and f64 banks (AMD64 cell-bank Phase 6.3.4.m.4c.1 admits Cell+I64 only; R14 is shared)",
-			ErrNotImplemented, fn.Name)
+	if isCellBankAMD64(fn) && fn.NumRegsF64 > 0 && int(fn.NumRegsI64) > 6 {
+		// Phase 6.3.4.n.3: Cell+F64 fns pin the regsF64 base in R12
+		// (i64 slot 6). The remaining usable i64 slots are 0..5, i.e.
+		// NumRegsI64 <= 6.
+		return nil, fmt.Errorf("%w: %s has Cell+F64 banks with NumRegsI64=%d (>6); R12 reserved for regsF64 base on AMD64",
+			ErrNotImplemented, fn.Name, fn.NumRegsI64)
 	}
-	if isCellBankAMD64(fn) && int(fn.NumRegsI64) > 8 {
+	if isCellBankAMD64(fn) && fn.NumRegsF64 == 0 && int(fn.NumRegsI64) > 8 {
 		return nil, fmt.Errorf("%w: %s has Cell bank with NumRegsI64=%d (>8); R14 reserved for *jitArenaCtx",
 			ErrNotImplemented, fn.Name, fn.NumRegsI64)
 	}
@@ -516,7 +548,7 @@ func prologueLenAMD64(fn *vm3.Function) int {
 	bytes := 0
 	bytes += pushBytes(xRBX)
 	bytes += pushBytes(xR15)
-	if n > 6 {
+	if n > 6 || usesR12ForF64AMD64(fn) {
 		bytes += pushBytes(xR12)
 	}
 	if n > 7 {
@@ -541,10 +573,14 @@ func prologueLenAMD64(fn *vm3.Function) int {
 	if isCellBankAMD64(fn) {
 		bytes += 3 + 3
 	}
+	// Cell-bank+f64: mov %rdx, %r12 (3) for the regsF64 base.
+	if usesR12ForF64AMD64(fn) {
+		bytes += 3
+	}
 	// Each pinned i64 slot load is mov disp32(%rbx), <reg> = 7 bytes.
 	bytes += 7 * n
-	// Each pinned f64 slot load is movsd disp32(%r14), xmm<r> = 9 bytes
-	// (REX.B-prefixed because R14 is r >= 8).
+	// Each pinned f64 slot load is movsd disp32(%base), xmm<r> = 9 bytes
+	// (REX.B-prefixed because the f64 base is always R12 or R14).
 	bytes += 9 * nF
 	// Phase 6.3.4.n.2.f: cells.ptr hoist setup (cold form: 0 bytes when
 	// gate fails; ~34 bytes when active). See hoistPrologueBytesAMD64.
@@ -581,7 +617,7 @@ func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 	nF := int(fn.NumRegsF64)
 	buf = append(buf, push64(xRBX)...)
 	buf = append(buf, push64(xR15)...)
-	if n > 6 {
+	if n > 6 || usesR12ForF64AMD64(fn) {
 		buf = append(buf, push64(xR12)...)
 	}
 	if n > 7 {
@@ -605,11 +641,15 @@ func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 		buf = append(buf, mov64RR(xRCX, xRBP)...)
 		buf = append(buf, mov64RR(xR8, xR14)...)
 	}
+	if usesR12ForF64AMD64(fn) {
+		buf = append(buf, mov64RR(xRDX, xR12)...)
+	}
 	for r := 0; r < n; r++ {
 		buf = append(buf, mov64LoadDisp32(r2xAMD64(uint16(r)), xRBX, int32(r*8))...)
 	}
+	f64Base := f64BaseGPRAMD64(fn)
 	for r := 0; r < nF; r++ {
-		buf = append(buf, movsdLoadXMMFromR14(r, int32(r*8))...)
+		buf = append(buf, movsdLoadXMMFromGPR(r, f64Base, int32(r*8))...)
 	}
 	if hoistsCellsPtrAMD64(fn) {
 		stride := int64(vm3.JITListSlabStride())
@@ -648,7 +688,7 @@ func emitEpilogueAMD64(buf []byte, fn *vm3.Function) []byte {
 	if n > 7 {
 		buf = append(buf, pop64(xR13)...)
 	}
-	if n > 6 {
+	if n > 6 || usesR12ForF64AMD64(fn) {
 		buf = append(buf, pop64(xR12)...)
 	}
 	buf = append(buf, pop64(xR15)...)
@@ -674,7 +714,7 @@ func epilogueBytesAMD64(fn *vm3.Function) int {
 	if n > 7 {
 		bytes += popBytes(xR13)
 	}
-	if n > 6 {
+	if n > 6 || usesR12ForF64AMD64(fn) {
 		bytes += popBytes(xR12)
 	}
 	bytes += popBytes(xR15)
@@ -1095,6 +1135,62 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		}
 		base := int64(uintptr(unsafe.Pointer(&fn.I64Tables[tableIdx][0])))
 		return movImm64ByteCount(base, xRAX) + mov64LoadIdxLsl3ByteCount(r2xAMD64(op.A), xRAX, r2xAMD64(op.B)), nil
+
+	case vm3.OpF64ArrayGetF64:
+		// Phase 6.3.4.n.3 cold form (AMD64 mirror of ARM64 OpF64ArrayGetF64).
+		// regsF64[A] = arenas.F64Arrs[handleIdx(regsCell[B])].data[regsI64[C]].
+		//   mov  disp32(%rbp), %eax       ; idx = low 32 of regsCell[B]   (6B)
+		//   imul $stride, %rax, %rax      ; rax = idx * sizeof(vmF64Array) (7B)
+		//   mov  f64ArrsBaseOff(%r14), %rcx ; rcx = arenas.F64Arrs base   (7B)
+		//   add  %rcx, %rax               ; rax = &arenas.F64Arrs[idx]    (3B)
+		//   mov  dataOff(%rax), %rax      ; rax = data.ptr                (7B)
+		//   movsd  [%rax + xIdx*8], xmm<A> ; xmm<A> = data[regsI64[C]]    (6B SIB-scale3)
+		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 6, nil
+	case vm3.OpF64ArraySetF64:
+		// Phase 6.3.4.n.3 cold form (AMD64 mirror of ARM64 OpF64ArraySetF64).
+		// arenas.F64Arrs[handleIdx(regsCell[A])].data[regsI64[C]] = regsF64[B].
+		// Same byte budget as Get: 6+7+7+3+7+6.
+		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 6, nil
+	case vm3.OpF64ArrayLenI64:
+		// Phase 6.3.4.n.3 cold form: load the slab's u32 .len into a
+		// dest GPR (zero-extend to 64 bits).
+		//   mov  disp32(%rbp), %eax       ; idx = low 32 of regsCell[B] (6B)
+		//   imul $stride, %rax, %rax      ;                              (7B)
+		//   mov  f64ArrsBaseOff(%r14), %rcx ;                            (7B)
+		//   add  %rcx, %rax               ;                              (3B)
+		//   mov  lenOff(%rax), %eax       ; rax<-len (32-bit form zero-ext, 6B disp32 form)
+		//   mov  %rax, x_A                ;                              (3B)
+		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + mov32LoadDisp32ByteCount(xRAX, xRAX) + 3, nil
+	case vm3.OpI64ArrayGetI64:
+		// Phase 6.3.4.n.3 cold form (mirror OpF64ArrayGetF64 but the
+		// final load is mov64 SIB into the i64 dest reg, 4B).
+		//   mov  disp32(%rbp), %eax       ; idx                          (6B)
+		//   imul $stride, %rax, %rax      ;                              (7B)
+		//   mov  i64ArrsBaseOff(%r14), %rcx ;                            (7B)
+		//   add  %rcx, %rax               ;                              (3B)
+		//   mov  dataOff(%rax), %rax      ; rax = data.ptr               (7B)
+		//   mov  [%rax + xIdx*8], xA      ; xA = data[idx]               (4B)
+		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 4, nil
+	case vm3.OpI64ArraySetI64:
+		// Phase 6.3.4.n.3 cold form: same shape as Get but final is a
+		// 4-byte SIB store of xB through [rax + xIdx*8].
+		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + 7 + 4, nil
+	case vm3.OpI64ArrayLenI64:
+		return mov32LoadDisp32ByteCount(xRAX, xRBP) + 7 + 7 + 3 + mov32LoadDisp32ByteCount(xRAX, xRAX) + 3, nil
+	case vm3.OpNewF64Array:
+		// Phase 6.3.4.n.3: jitCall pre-allocates the slab and writes the
+		// handle into regsCell[A]; the emit step writes zero bytes when
+		// the op is in the pre-alloc K-prefix.
+		if idx < int(fn.JITPreAllocF64ArrPrefix) {
+			return 0, nil
+		}
+		return 0, fmt.Errorf("%w: opcode %d (inline NewF64Array unsupported)", ErrNotImplemented, op.Code)
+	case vm3.OpNewI64Array:
+		if idx < int(fn.JITPreAllocI64ArrPrefix) {
+			return 0, nil
+		}
+		return 0, fmt.Errorf("%w: opcode %d (inline NewI64Array unsupported)", ErrNotImplemented, op.Code)
+
 	case vm3.OpCallI64:
 		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
 			return 0, fmt.Errorf("%w: CallI64 to non-self idx %d (SelfIdx=%d)",
@@ -1694,6 +1790,109 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		out := movImm64(xRAX, base)
 		out = append(out, mov64LoadIdxLsl3(r2xAMD64(op.A), xRAX, r2xAMD64(op.B))...)
 		return out, nil
+
+	case vm3.OpF64ArrayGetF64:
+		// Phase 6.3.4.n.3 cold form. Mirrors OpListGetI64's cold-form
+		// slab compute (RAX as scratch for the slab address; RCX for the
+		// f64ArrsBase load). The final movsd loads data[regsI64[C]] into
+		// xmm<A>; raw f64 bits round-trip with no boxing since the slab
+		// stores native float64 data.
+		stride := int64(vm3.JITF64ArrSlabStride())
+		dataOff := int32(vm3.JITF64ArrDataOffset())
+		baseOff := int32(jitArenaCtxF64ArrsBaseOff())
+		xIdx := r2xAMD64(uint16(op.C))
+		out := mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
+		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, baseOff)...)
+		out = append(out, add64RR(xRCX, xRAX)...)
+		out = append(out, mov64LoadDisp32(xRAX, xRAX, dataOff)...)
+		out = append(out, movsdLoadXMMIdxLsl3(int(op.A), xRAX, xIdx)...)
+		return out, nil
+
+	case vm3.OpF64ArraySetF64:
+		// Phase 6.3.4.n.3 cold form. arenas.F64Arrs[regsCell[A]].data[regsI64[C]] = regsF64[B].
+		stride := int64(vm3.JITF64ArrSlabStride())
+		dataOff := int32(vm3.JITF64ArrDataOffset())
+		baseOff := int32(jitArenaCtxF64ArrsBaseOff())
+		xIdx := r2xAMD64(uint16(op.C))
+		out := mov32LoadDisp32(xRAX, xRBP, int32(op.A)*8)
+		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, baseOff)...)
+		out = append(out, add64RR(xRCX, xRAX)...)
+		out = append(out, mov64LoadDisp32(xRAX, xRAX, dataOff)...)
+		out = append(out, movsdStoreXMMIdxLsl3(int(op.B), xRAX, xIdx)...)
+		return out, nil
+
+	case vm3.OpF64ArrayLenI64:
+		// Phase 6.3.4.n.3 cold form. regsI64[A] = int64(F64Arrs[B].len).
+		stride := int64(vm3.JITF64ArrSlabStride())
+		lenOff := int32(vm3.JITF64ArrLenOffset())
+		baseOff := int32(jitArenaCtxF64ArrsBaseOff())
+		xA := r2xAMD64(op.A)
+		out := mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
+		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, baseOff)...)
+		out = append(out, add64RR(xRCX, xRAX)...)
+		out = append(out, mov32LoadDisp32(xRAX, xRAX, lenOff)...)
+		out = append(out, mov64RR(xRAX, xA)...)
+		return out, nil
+
+	case vm3.OpI64ArrayGetI64:
+		// Phase 6.3.4.n.3 cold form. regsI64[A] = I64Arrs[B].data[regsI64[C]].
+		stride := int64(vm3.JITI64ArrSlabStride())
+		dataOff := int32(vm3.JITI64ArrDataOffset())
+		baseOff := int32(jitArenaCtxI64ArrsBaseOff())
+		xIdx := r2xAMD64(uint16(op.C))
+		xA := r2xAMD64(op.A)
+		out := mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
+		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, baseOff)...)
+		out = append(out, add64RR(xRCX, xRAX)...)
+		out = append(out, mov64LoadDisp32(xRAX, xRAX, dataOff)...)
+		out = append(out, mov64LoadIdxLsl3(xA, xRAX, xIdx)...)
+		return out, nil
+
+	case vm3.OpI64ArraySetI64:
+		// Phase 6.3.4.n.3 cold form. I64Arrs[A].data[regsI64[C]] = regsI64[B].
+		stride := int64(vm3.JITI64ArrSlabStride())
+		dataOff := int32(vm3.JITI64ArrDataOffset())
+		baseOff := int32(jitArenaCtxI64ArrsBaseOff())
+		xIdx := r2xAMD64(uint16(op.C))
+		xB := r2xAMD64(op.B)
+		out := mov32LoadDisp32(xRAX, xRBP, int32(op.A)*8)
+		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, baseOff)...)
+		out = append(out, add64RR(xRCX, xRAX)...)
+		out = append(out, mov64LoadDisp32(xRAX, xRAX, dataOff)...)
+		out = append(out, mov64StoreIdxLsl3(xB, xRAX, xIdx)...)
+		return out, nil
+
+	case vm3.OpI64ArrayLenI64:
+		stride := int64(vm3.JITI64ArrSlabStride())
+		lenOff := int32(vm3.JITI64ArrLenOffset())
+		baseOff := int32(jitArenaCtxI64ArrsBaseOff())
+		xA := r2xAMD64(op.A)
+		out := mov32LoadDisp32(xRAX, xRBP, int32(op.B)*8)
+		out = append(out, imul64RRImm32(xRAX, xRAX, int32(stride))...)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, baseOff)...)
+		out = append(out, add64RR(xRCX, xRAX)...)
+		out = append(out, mov32LoadDisp32(xRAX, xRAX, lenOff)...)
+		out = append(out, mov64RR(xRAX, xA)...)
+		return out, nil
+
+	case vm3.OpNewF64Array:
+		// Phase 6.3.4.n.3: pre-allocated by jitCall; emit nothing.
+		if idx < int(fn.JITPreAllocF64ArrPrefix) {
+			return []byte{}, nil
+		}
+		return nil, fmt.Errorf("%w: opcode %d (inline NewF64Array unsupported)", ErrNotImplemented, op.Code)
+
+	case vm3.OpNewI64Array:
+		if idx < int(fn.JITPreAllocI64ArrPrefix) {
+			return []byte{}, nil
+		}
+		return nil, fmt.Errorf("%w: opcode %d (inline NewI64Array unsupported)", ErrNotImplemented, op.Code)
+
 	case vm3.OpCallI64:
 		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
 			return nil, fmt.Errorf("%w: CallI64 to non-self idx %d (SelfIdx=%d)",
@@ -2526,12 +2725,66 @@ func vfmaddSDRR(opc byte, dst, src1, src2 int) []byte {
 	return []byte{0xC4, 0xE2, byte2, opc, modRM(3, byte(dst&7), byte(src2&7))}
 }
 
-// movsdLoadXMMFromR14 emits `movsd xmm<dst>, disp32(%r14)`.
-// Opcode F2 REX.B 0F 10 /r disp32. REX is always present (REX.B for R14
-// in the r/m field). Always 9 bytes for xmm0..7 destinations.
-func movsdLoadXMMFromR14(dst int, disp int32) []byte {
-	out := []byte{0xF2, rex(false, dst >= 8, false, true), 0x0F, 0x10, modRM(2, byte(dst&7), byte(xR14&7))}
+// movsdLoadXMMFromGPR emits `movsd xmm<dst>, disp32(%baseGPR)`.
+// Opcode F2 [REX] 0F 10 /r disp32. REX is emitted when dst or base
+// needs the high bit (R8..R15, including R12/R14 used as the f64
+// base). 8 bytes when no REX, 9 bytes with REX. Phase 6.3.4.n.3
+// generalizes the original movsdLoadXMMFromR14 so cell-bank+f64 fns
+// can pin the f64 base in R12.
+func movsdLoadXMMFromGPR(dst int, base int, disp int32) []byte {
+	var out []byte
+	if dst >= 8 || base >= 8 {
+		out = []byte{0xF2, rex(false, dst >= 8, false, base >= 8), 0x0F, 0x10, modRM(2, byte(dst&7), byte(base&7))}
+	} else {
+		out = []byte{0xF2, 0x0F, 0x10, modRM(2, byte(dst), byte(base))}
+	}
 	return appendImm32(out, disp)
+}
+
+// movsdLoadXMMIdxLsl3 emits `movsd xmm<dst>, [r<base> + r<idx>*8]`.
+// Opcode F2 [REX] 0F 10 /r with mod=00, ModR/M.r/m=100 (SIB follows),
+// SIB(scale=3, index=idx, base=base). Used by Phase 6.3.4.n.3 to load
+// an F64Array element after the cells.ptr has been computed into the
+// base GPR. Caller must pre-check rBase is not RBP/R13 (those need
+// mod=01+disp under the SIB.base quirk). Returns 5 bytes; the F2
+// prefix is one byte, REX is one byte (always emitted because we may
+// have base >= 8 or idx >= 8), then opcode + ModR/M + SIB. When dst,
+// base, and idx are all xmm0..7 / RAX..RDI the REX byte still gets
+// emitted (0x40) for predictability of the byte count.
+func movsdLoadXMMIdxLsl3(dst, base, idx int) []byte {
+	rexB := byte(0x40)
+	if dst >= 8 {
+		rexB |= 0x04 // REX.R
+	}
+	if idx >= 8 {
+		rexB |= 0x02 // REX.X
+	}
+	if base >= 8 {
+		rexB |= 0x01 // REX.B
+	}
+	mod := modRM(0, byte(dst&7), 4) // rm=100 = SIB follows
+	sib := byte(3<<6) | byte((idx&7)<<3) | byte(base&7)
+	return []byte{0xF2, rexB, 0x0F, 0x10, mod, sib}
+}
+
+// movsdStoreXMMIdxLsl3 emits `movsd [r<base> + r<idx>*8], xmm<src>`.
+// Opcode F2 [REX] 0F 11 /r SIB. Mirrors movsdLoadXMMIdxLsl3 for the
+// store side. Same RBP/R13 base caveat as the load. Returns 6 bytes
+// like the load.
+func movsdStoreXMMIdxLsl3(src, base, idx int) []byte {
+	rexB := byte(0x40)
+	if src >= 8 {
+		rexB |= 0x04 // REX.R
+	}
+	if idx >= 8 {
+		rexB |= 0x02 // REX.X
+	}
+	if base >= 8 {
+		rexB |= 0x01 // REX.B
+	}
+	mod := modRM(0, byte(src&7), 4)
+	sib := byte(3<<6) | byte((idx&7)<<3) | byte(base&7)
+	return []byte{0xF2, rexB, 0x0F, 0x11, mod, sib}
 }
 
 // xorpdRR emits `xorpd xmmDst, xmmSrc`. Opcode 66 [REX] 0F 57 /r. Used
