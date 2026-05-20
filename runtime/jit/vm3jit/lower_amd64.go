@@ -606,6 +606,105 @@ func f64ArrDataPtrHoistPrologueBytesAMD64(fn *vm3.Function) int {
 	return total
 }
 
+// f64ConstHoistAMD64 binds an entry in fn.Consts to a caller-saved
+// xmm reg that the prologue pre-loads. Body OpConstF64K instances that
+// reference the same const index then emit a single 5-byte movsd from
+// the cached xmm instead of the cold movabs+movq sequence (12-15 bytes
+// plus a GPR<->XMM cross-domain transfer).
+type f64ConstHoistAMD64 struct {
+	idx uint16
+	xmm int
+}
+
+// hoistsF64ConstsAMD64 returns the deterministic list of f64 consts the
+// AMD64 prologue should pre-load into xmm8..xmm14. A const idx is
+// hoisted when its OpConstF64K appears in fn.Code at least twice; in
+// loops this collapses the reload's 12-15 bytes (movabs + movq via
+// GPR) plus a domain-crossing latency stall to a single 5-byte
+// movsd-xmm-xmm. xmm15 is reserved as the OpSub/OpDiv aliasing scratch
+// and the OpNegF64 sign-bit reg, so the cache has 7 slots (xmm8..14).
+//
+// Gates:
+//
+//   - fn.NumRegsF64 > 0: OpConstF64K targets an f64 reg so a fn with
+//     no f64 bank cannot emit one; skip the prologue cost.
+//   - !isNonLeafAMD64(fn): xmm8..xmm15 are caller-saved in SysV ABI.
+//     Any internal CALL would clobber the cache; restrict to leaves
+//     until a save/restore is added. n_body / spectral_norm are
+//     single-fn leaves, fitting comfortably here.
+//   - count(constIdx) >= 2: a single use would save zero bytes on the
+//     fast path (5B movsd vs. 12-15B cold) but pay 12-15B in the
+//     prologue. Two uses break even at 24-30B saved vs. 12-15B
+//     prologue, and any loop pushes the win much higher.
+//
+// First-occurrence order keeps assignments deterministic across pcMap
+// passes; cap at 7 entries to leave xmm15 untouched.
+func hoistsF64ConstsAMD64(fn *vm3.Function) []f64ConstHoistAMD64 {
+	if fn.NumRegsF64 == 0 {
+		return nil
+	}
+	if isNonLeafAMD64(fn) {
+		return nil
+	}
+	counts := make(map[uint16]int, len(fn.Consts))
+	for _, op := range fn.Code {
+		if op.Code != vm3.OpConstF64K {
+			continue
+		}
+		idx := uint16(op.C)
+		if int(idx) >= len(fn.Consts) {
+			continue
+		}
+		counts[idx]++
+	}
+	const maxHoists = 7 // xmm8..xmm14
+	var out []f64ConstHoistAMD64
+	seen := make(map[uint16]bool, len(counts))
+	for _, op := range fn.Code {
+		if op.Code != vm3.OpConstF64K {
+			continue
+		}
+		idx := uint16(op.C)
+		if seen[idx] || counts[idx] < 2 {
+			continue
+		}
+		seen[idx] = true
+		out = append(out, f64ConstHoistAMD64{idx: idx, xmm: 8 + len(out)})
+		if len(out) == maxHoists {
+			break
+		}
+	}
+	return out
+}
+
+// f64ConstHoistedXMMAMD64 returns the xmm reg holding fn.Consts[idx]
+// per hoistsF64ConstsAMD64, or -1 if no hoist applies.
+func f64ConstHoistedXMMAMD64(fn *vm3.Function, idx uint16) int {
+	for _, h := range hoistsF64ConstsAMD64(fn) {
+		if h.idx == idx {
+			return h.xmm
+		}
+	}
+	return -1
+}
+
+// f64ConstHoistPrologueBytesAMD64 returns the extra prologue bytes
+// needed to populate the F64 const cache. Each hoist is
+// `mov $bits, %rcx` (7 or 10) + `movq xmm[N], %rcx` (5, REX.W
+// always present for the movq-to-xmm form and xmm>=8 forces REX.R).
+func f64ConstHoistPrologueBytesAMD64(fn *vm3.Function) int {
+	hoists := hoistsF64ConstsAMD64(fn)
+	if len(hoists) == 0 {
+		return 0
+	}
+	total := 0
+	for _, h := range hoists {
+		bits := int64(uint64(fn.Consts[int(h.idx)]))
+		total += movImm64ByteCount(bits, xRCX) + 5
+	}
+	return total
+}
+
 // computeCallSpillsAMD64 runs backward liveness exactly like the
 // AArch64 backend, but emits a mask over slots 0..5 (caller-saved on
 // AMD64) instead of 0..6.
@@ -776,6 +875,8 @@ func prologueLenAMD64(fn *vm3.Function) int {
 	bytes += hoistPrologueBytesAMD64(fn)
 	// Phase 6.3.4.n.11: F64Array data-ptr cache for constant cells.
 	bytes += f64ArrDataPtrHoistPrologueBytesAMD64(fn)
+	// Phase 6.3.4.n.12: F64 const cache for repeated OpConstF64K loads.
+	bytes += f64ConstHoistPrologueBytesAMD64(fn)
 	_ = pushes
 	return bytes
 }
@@ -879,6 +980,14 @@ func emitPrologueAMD64(buf []byte, fn *vm3.Function) []byte {
 				buf = append(buf, mov64StoreDisp32(xRAX, xRBX, hoistDisp)...)
 			}
 		}
+	}
+	// Phase 6.3.4.n.12: pre-load repeated f64 constants into xmm8..xmm14
+	// so each body OpConstF64K collapses to a 5-byte movsd from the cached
+	// xmm rather than reloading via movabs+movq every site.
+	for _, h := range hoistsF64ConstsAMD64(fn) {
+		bits := int64(uint64(fn.Consts[int(h.idx)]))
+		buf = append(buf, movImm64(xRCX, bits)...)
+		buf = append(buf, movqXMMFromR64(h.xmm, xRCX)...)
 	}
 	return buf
 }
@@ -1288,6 +1397,11 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		idx := int(uint16(op.C))
 		if idx >= len(fn.Consts) {
 			return 0, fmt.Errorf("%w: ConstF64K idx %d out of range", ErrNotImplemented, idx)
+		}
+		if f64ConstHoistedXMMAMD64(fn, uint16(idx)) >= 0 {
+			// movaps xmm<A>, xmm<hoisted>: 4 bytes (REX.B set because
+			// the hoisted xmm is xmm8..14; dst is an f64-slot xmm0..7).
+			return 4, nil
 		}
 		bits := int64(uint64(fn.Consts[idx]))
 		// mov $imm, %rcx (7 or 10) ; movq xmm<A>, %rcx (5).
@@ -1950,7 +2064,16 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 
 	case vm3.OpConstF64K:
-		bits := int64(uint64(fn.Consts[int(uint16(op.C))]))
+		idx := int(uint16(op.C))
+		if xmm := f64ConstHoistedXMMAMD64(fn, uint16(idx)); xmm >= 0 {
+			// movaps (full 128-bit copy) instead of movsd: movsd
+			// reg,reg only writes the low 64 and so carries a false
+			// dependency through xmm[A]'s upper bits. xmm[A] is the
+			// divsd output reg in the hot loop, so a false-dep movsd
+			// serialized iterations through the prior divsd result.
+			return movapsRR(int(op.A), xmm), nil
+		}
+		bits := int64(uint64(fn.Consts[idx]))
 		out := movImm64(xRCX, bits)
 		out = append(out, movqXMMFromR64(int(op.A), xRCX)...)
 		return out, nil
@@ -3053,6 +3176,25 @@ func sseRR2(opc byte, dst, src int) []byte {
 // Opcode F2 [REX] 0F 10 /r. Always emits the instruction even when
 // dst==src so byteCount predictions stay deterministic.
 func movsdRR(dst, src int) []byte { return sseRR2(0x10, dst, src) }
+
+// movapsRR emits `movaps xmmDst, xmmSrc` (full 128-bit register copy).
+// Opcode 0F 28 /r, optional REX. 3 bytes when both regs are xmm0..7,
+// 4 bytes when either side is xmm8..15.
+//
+// Unlike movsd reg,reg (a partial 64-bit write that preserves the upper
+// 64 bits of dst and so carries a false dependency through dst's prior
+// value), movaps writes the full 128 bits and is treated by the
+// renamer as a dependency-breaking move. This matters for the
+// hoisted-f64-const reload (Phase 6.3.4.n.12) where dst is repeatedly
+// overwritten by a long-latency op (divsd) in the inner loop: using
+// movsd serialized iterations through the prior div result; movaps
+// frees the rename and exposes loop-level ILP.
+func movapsRR(dst, src int) []byte {
+	if dst < 8 && src < 8 {
+		return []byte{0x0F, 0x28, modRM(3, byte(dst), byte(src))}
+	}
+	return []byte{rex(false, dst >= 8, false, src >= 8), 0x0F, 0x28, modRM(3, byte(dst&7), byte(src&7))}
+}
 
 // addsdRR emits `addsd xmmDst, xmmSrc`. Opcode F2 [REX] 0F 58 /r.
 func addsdRR(dst, src int) []byte { return sseRR2(0x58, dst, src) }
