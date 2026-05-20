@@ -1058,6 +1058,9 @@ func deoptStatusesUsedAMD64(fn *vm3.Function) []int64 {
 	if hasListPushI64(fn) {
 		s = append(s, StatusListGrow)
 	}
+	if hasMapSetI64I64(fn) {
+		s = append(s, StatusMapGrow)
+	}
 	if hasNewPair(fn) {
 		s = append(s, StatusPairGrow)
 	}
@@ -1347,6 +1350,27 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		//   miss (3B): xor xA, xA.
 		return mapGetI64I64BytesAMD64(fn), nil
 
+	case vm3.OpMapSetI64I64:
+		// Phase 6.3.4.n.8.c: inline open-addressed insert/update, AMD64
+		// mirror of the ARM64 OpMapSetI64I64. Bytes: 259 kernel + optional
+		// 24-byte spill sandwich when NumRegsI64 > 4. Layout breakdown:
+		//
+		//   pre-amble (53B): mov32 load handle, imul slabStride, load
+		//     mapsBase, add slab addr, load tableLen disp8, load nLive32
+		//     disp8, inc, shl 1, cmp cap vs 2*(nLive+1), JB deopt,
+		//     load tablePtr disp8, dec (mask = cap-1).
+		//   splitmix64 (62B): xKey -> RAX via R12 tmp (xKey preserved).
+		//   probe init (6B): mov pos=h, and mask.
+		//   probe body (69B): imul pos*24, add tablePtr, load entry.hash,
+		//     test+JZ fill, cmp h+JNE next, load entry.key+SBFX+cmp xKey+
+		//     JNE next, write entry.value (raw + 16-bit tag overwrite),
+		//     jmp done.
+		//   next (11B): inc pos, and mask, jmp probeTop.
+		//   fill_block (58B): write entry.hash=h, entry.key (raw+tag),
+		//     entry.value (raw+tag), reload slab addr (mov handle, imul,
+		//     load mapsBase, add), load+inc+store nLive32.
+		return mapSetI64I64BytesAMD64(fn), nil
+
 	case vm3.OpListSetI64:
 		// Phase 6.3.4.n.2.b cold form, AMD64 mirror of the ARM64
 		// OpListSetI64 (no hoist):
@@ -1418,6 +1442,15 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 			return 0, nil
 		}
 		return 0, fmt.Errorf("%w: opcode %d (inline NewList unsupported)", ErrNotImplemented, op.Code)
+
+	case vm3.OpNewMap:
+		// Phase 6.3.4.n.8.d: AMD64 mirror of the ARM64 pre-alloc skip.
+		// jitCall (Go side) writes the pre-allocated map handle into
+		// jf.regsCell[A] before the trampoline; the prologue picks it up.
+		if idx == 0 && fn.JITPreAllocMap {
+			return 0, nil
+		}
+		return 0, fmt.Errorf("%w: opcode %d (inline NewMap unsupported on AMD64)", ErrNotImplemented, op.Code)
 
 	case vm3.OpConstF64K:
 		idx := int(uint16(op.C))
@@ -2133,6 +2166,170 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		}
 		return out, nil
 
+	case vm3.OpMapSetI64I64:
+		// Phase 6.3.4.n.8.c: AMD64 mirror of the ARM64 OpMapSetI64I64.
+		// Inline open-addressed insert/update over
+		// arenas.Maps[regsCell[A]].table using the splitmix64 hash. Pre-
+		// amble deopts via StatusMapGrow when 2*(nLive+1) > cap so the
+		// interpreter regrows the table without violating the slab's
+		// power-of-2/load-factor invariants.
+		//
+		// Register plan (cell-bank fn, NumRegsF64 == 0):
+		//   RAX = pre-amble slab addr; post-splitmix64 holds h
+		//   RCX = pre-amble cap then mask; fill_block slab-recompute scratch
+		//   RDX = pre-amble nLive scratch; probe loop tablePtr (pinned)
+		//   R10 = pos (= h & mask, incremented per probe miss)
+		//   R11 = entry_addr = tablePtr + pos*24 (recomputed per probe)
+		//   R12 = splitmix64 xTmp, then per-iteration load scratch for
+		//         entry.hash / entry.key
+		//   xKey = r2xAMD64(fn, op.B) — preserved across the kernel
+		//   xVal = r2xAMD64(fn, uint16(op.C)) — preserved across the kernel
+		//
+		// R10/R11/R12 alias vm3 slots 4/5/6; if NumRegsI64 > 4 we spill
+		// all three to [RBX + 4*8/5*8/6*8] at kernel entry and restore
+		// at exit. Admission gate rejects op.B/op.C in slots 4..6. Cell+
+		// f64 layouts (R12 = regsF64 base) are rejected at the gate
+		// because the kernel must clobber R12 as the splitmix64 tmp /
+		// load scratch.
+		xKey := r2xAMD64(fn, op.B)
+		xVal := r2xAMD64(fn, uint16(op.C))
+		stride := int32(vm3.JITMapSlabStride())
+		tableOff := int8(vm3.JITMapTableOffset())
+		tablePtrOff := tableOff
+		tableLenOff := tableOff + 8
+		entryHashOff := int8(vm3.JITMapEntryHashOffset())
+		entryKeyOff := int8(vm3.JITMapEntryKeyOffset())
+		entryValOff := int8(vm3.JITMapEntryValueOffset())
+		nLiveOff := int8(vm3.JITMapNLiveOffset())
+		mapsBaseOff := int32(jitArenaCtxMapsBaseOff())
+		entryStride := int32(vm3.JITMapEntryStride())
+		spillBytes := mapScratchSpillBytesAMD64(fn)
+		mgStart := deoptStartForStatusAMD64(fn, deoptStart, StatusMapGrow)
+
+		var out []byte
+
+		// Spill prologue (12B when NumRegsI64 > 4, else 0B).
+		if spillBytes > 0 {
+			out = append(out, mov64StoreDisp8(xR10, xRBX, int8(4*8))...)
+			out = append(out, mov64StoreDisp8(xR11, xRBX, int8(5*8))...)
+			out = append(out, mov64StoreDisp8(xR12, xRBX, int8(6*8))...)
+		}
+		kernelStart := len(out)
+
+		// Pre-amble: resolve slab, load cap/nLive, deopt-on-grow, load
+		// tablePtr, mask = cap - 1. (53 bytes.)
+		out = append(out, mov32LoadDisp32(xRAX, xRBP, int32(op.A)*8)...)
+		out = append(out, imul64RRImm32(xRAX, xRAX, stride)...)
+		out = append(out, mov64LoadDisp32(xRCX, xR14, mapsBaseOff)...)
+		out = append(out, add64RR(xRCX, xRAX)...)
+		out = append(out, mov64LoadDisp8(xRCX, xRAX, tableLenOff)...) // cap → RCX
+		out = append(out, mov32LoadDisp8(xRDX, xRAX, nLiveOff)...)    // nLive → RDX
+		out = append(out, inc64R(xRDX)...)                            // nLive+1
+		out = append(out, shl64RImm8(xRDX, 1)...)                     // 2*(nLive+1)
+		out = append(out, cmp64RR(xRDX, xRCX)...)                     // flags = RCX - RDX
+		// JB rel32 mgStart: cap < 2*(nLive+1) → deopt for grow.
+		afterJB := pcMap[idx] + len(out) + 6
+		out = append(out, jccRel32(ccB, int32(mgStart-afterJB))...)
+		out = append(out, mov64LoadDisp8(xRDX, xRAX, tablePtrOff)...) // tablePtr → RDX
+		out = append(out, dec64R(xRCX)...)                            // mask = cap - 1
+
+		// Splitmix64(xKey, RAX, R12) -> RAX = h. (62 bytes.)
+		out = append(out, emitSplitmix64AMD64(xKey, xRAX, xR12)...)
+
+		// Probe init: R10 = h & mask. (6 bytes.)
+		out = append(out, mov64RR(xRAX, xR10)...)
+		out = append(out, and64RR(xRCX, xR10)...)
+
+		// probeTop:
+		probeTopOff := len(out)
+		// R11 = pos*24 + tablePtr.
+		out = append(out, imul64RRImm32(xR11, xR10, entryStride)...)
+		out = append(out, add64RR(xRDX, xR11)...)
+		// R12 = entry.hash; if zero, fill_block (empty slot insert).
+		out = append(out, mov64LoadDisp8(xR12, xR11, entryHashOff)...)
+		out = append(out, test64RR(xR12, xR12)...)
+		fillJZ := len(out)
+		out = append(out, jccRel32(ccZ, 0)...) // JZ fill_block
+		// cmp h, entry.hash; if not equal, next.
+		out = append(out, cmp64RR(xRAX, xR12)...)
+		hashJNE := len(out)
+		out = append(out, jccRel32(ccNZ, 0)...) // JNE next
+		// R12 = entry.key; SBFX48; cmp xKey, R12; if not equal, next.
+		out = append(out, mov64LoadDisp8(xR12, xR11, entryKeyOff)...)
+		out = append(out, shl64RImm8(xR12, 16)...)
+		out = append(out, sar64RImm8(xR12, 16)...)
+		out = append(out, cmp64RR(xKey, xR12)...)
+		keyJNE := len(out)
+		out = append(out, jccRel32(ccNZ, 0)...) // JNE next
+		// Match: write xVal to entry.value as raw store + tag overwrite,
+		// then jmp done. Bytes 0..5 of the 8-byte store are the low-48
+		// payload; the 16-bit imm store at +6 overwrites the top 16 bits
+		// with the Int48 tag (0xFFFA).
+		out = append(out, mov64StoreDisp8(xVal, xR11, entryValOff)...)
+		out = append(out, mov16ImmStoreDisp8(0xFFFA, xR11, entryValOff+6)...)
+		doneJMP := len(out)
+		out = append(out, jmpRel32(0)...) // jmp done
+
+		// next:
+		nextOff := len(out)
+		out = append(out, inc64R(xR10)...)
+		out = append(out, and64RR(xRCX, xR10)...)
+		nextJMP := len(out)
+		out = append(out, jmpRel32(0)...) // jmp probeTop
+
+		// fill_block: empty slot found. Insert (h, xKey, xVal), then
+		// bump nLive. The slab address (RAX) was clobbered by splitmix64,
+		// so reload via the handle in regsCell[A] using RCX as scratch.
+		fillOff := len(out)
+		out = append(out, mov64StoreDisp8(xRAX, xR11, entryHashOff)...) // entry.hash = h
+		out = append(out, mov64StoreDisp8(xKey, xR11, entryKeyOff)...)
+		out = append(out, mov16ImmStoreDisp8(0xFFFA, xR11, entryKeyOff+6)...)
+		out = append(out, mov64StoreDisp8(xVal, xR11, entryValOff)...)
+		out = append(out, mov16ImmStoreDisp8(0xFFFA, xR11, entryValOff+6)...)
+		// Reload slab addr into RCX (mask is dead, h in RAX is dead).
+		out = append(out, mov32LoadDisp32(xRCX, xRBP, int32(op.A)*8)...)
+		out = append(out, imul64RRImm32(xRCX, xRCX, stride)...)
+		out = append(out, mov64LoadDisp32(xRAX, xR14, mapsBaseOff)...)
+		out = append(out, add64RR(xRAX, xRCX)...) // RCX = slab addr
+		// Bump nLive: load u32, inc64 (zero-extended), store u32.
+		out = append(out, mov32LoadDisp8(xRAX, xRCX, nLiveOff)...)
+		out = append(out, inc64R(xRAX)...)
+		out = append(out, mov32StoreDisp8(xRAX, xRCX, nLiveOff)...)
+
+		// done:
+		doneOff := len(out)
+
+		// Restore epilogue.
+		if spillBytes > 0 {
+			out = append(out, mov64LoadDisp8(xR10, xRBX, int8(4*8))...)
+			out = append(out, mov64LoadDisp8(xR11, xRBX, int8(5*8))...)
+			out = append(out, mov64LoadDisp8(xR12, xRBX, int8(6*8))...)
+		}
+
+		// Patch rel32 placeholders. jccRel32/jmpRel32 are 6/5 bytes; the
+		// rel32 is the last 4 bytes of each. Source for rel32 is the
+		// byte immediately following the instruction.
+		patchRel32 := func(insnStart int, insnLen int, targetOff int) {
+			src := insnStart + insnLen
+			rel := int32(targetOff - src)
+			out[insnStart+insnLen-4] = byte(rel)
+			out[insnStart+insnLen-3] = byte(rel >> 8)
+			out[insnStart+insnLen-2] = byte(rel >> 16)
+			out[insnStart+insnLen-1] = byte(rel >> 24)
+		}
+		patchRel32(fillJZ, 6, fillOff)
+		patchRel32(hashJNE, 6, nextOff)
+		patchRel32(keyJNE, 6, nextOff)
+		patchRel32(doneJMP, 5, doneOff)
+		patchRel32(nextJMP, 5, probeTopOff)
+
+		// Sanity check: kernel body size must match byte count predictor.
+		if len(out)-kernelStart != mapSetI64I64KernelBytesAMD64+spillBytes {
+			return nil, fmt.Errorf("MapSetI64I64 AMD64 kernel size mismatch: emitted %d want %d (spill=%d)",
+				len(out)-kernelStart, mapSetI64I64KernelBytesAMD64+spillBytes, spillBytes)
+		}
+		return out, nil
+
 	case vm3.OpListSetI64:
 		// Phase 6.3.4.n.2.b: arenas.Lists[handleIdx(regsCell[A])].cells[regsI64[C]] = CInt(regsI64[B]).
 		// Cold form mirroring the ARM64 cold path (no hoisted slab base
@@ -2235,6 +2432,16 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 			return []byte{}, nil
 		}
 		if idx < int(fn.JITPreAllocListPrefix) {
+			return []byte{}, nil
+		}
+		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
+
+	case vm3.OpNewMap:
+		// Phase 6.3.4.n.8.d: pre-alloc skip mirror of the ARM64 emitter.
+		// jitCall pre-allocates the map and writes the handle to
+		// regsCell[A]; the prologue loads it into the pinned cell reg
+		// before this PC, so the emit step writes zero bytes.
+		if idx == 0 && fn.JITPreAllocMap {
 			return []byte{}, nil
 		}
 		return nil, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
@@ -2823,6 +3030,7 @@ func emitDivKOrModKMagicAMD64(xA, xB int, M int64, s uint, needsCorrection bool,
 const (
 	ccZ  = 0x4 // JZ / JE: equal
 	ccNZ = 0x5 // JNZ / JNE
+	ccB  = 0x2 // JB: unsigned < (CF=1)
 	ccAE = 0x3 // JAE: unsigned >= (CF=0)
 	ccBE = 0x6 // JBE: unsigned <= (CF=1 OR ZF=1)
 	ccL  = 0xC // JL: signed less
@@ -3270,6 +3478,56 @@ func mov32StoreDisp8(src, base int, disp int8) []byte {
 	}
 	out = append(out, 0x89, modRM(1, byte(src&7), byte(base&7)), byte(disp))
 	return out
+}
+
+// mov32LoadDisp8 emits `mov disp8(rBase), eDst`, a 32-bit load with an
+// 8-bit signed displacement that zero-extends into the 64-bit dst per
+// AMD64 semantics. Opcode 8B /r mod=01 disp8 (no REX.W). 3 bytes when
+// neither reg needs REX, 4 bytes otherwise. Phase 6.3.4.n.8.c uses this
+// to read vmMap.nLive (a u32 at byte offset 4 of the slab). Caller
+// pre-checks rBase != RSP/R12 (would require a SIB byte).
+func mov32LoadDisp8(dst, base int, disp int8) []byte {
+	var out []byte
+	if dst >= 8 || base >= 8 {
+		var r byte = 0x40
+		if dst >= 8 {
+			r |= 0x04 // REX.R
+		}
+		if base >= 8 {
+			r |= 0x01 // REX.B
+		}
+		out = append(out, r)
+	}
+	out = append(out, 0x8B, modRM(1, byte(dst&7), byte(base&7)), byte(disp))
+	return out
+}
+
+// mov32LoadDisp8ByteCount mirrors mov32LoadDisp8 for byte-count
+// prediction.
+func mov32LoadDisp8ByteCount(dst, base int) int {
+	if dst >= 8 || base >= 8 {
+		return 4
+	}
+	return 3
+}
+
+// mov16ImmStoreDisp8 emits `movw $imm16, disp8(rBase)`, a 16-bit
+// immediate store at `rBase + disp8` (no SIB). Encoding: 0x66
+// (operand-size prefix) [REX.B if rBase>=8] C7 /0 ModR/M(mod=01, rm=base)
+// disp8 imm16. Phase 6.3.4.n.8.c uses this to overwrite the top 16 bits
+// of a just-stored Cell (the key or value field of a mapEntry) with the
+// Int48 tag (0xFFFA) at byte offset +6, packing the 48-bit payload with
+// the tag in one extra instruction. Caller pre-checks rBase != RSP/R12
+// (would require a SIB byte). 6 bytes when rBase < 8, 7 bytes otherwise.
+func mov16ImmStoreDisp8(imm uint16, base int, disp int8) []byte {
+	out := []byte{0x66}
+	if base >= 8 {
+		out = append(out, 0x41) // REX.B
+	}
+	out = append(out, 0xC7, modRM(1, 0, byte(base&7)), byte(disp))
+	var b [2]byte
+	binary.LittleEndian.PutUint16(b[:], imm)
+	return append(out, b[:]...)
 }
 
 // mov16ImmStoreSIBDisp8 emits `movw $imm16, disp8(rBase, rIdx, 8)`, a
@@ -3859,6 +4117,19 @@ func mapGetI64I64BytesAMD64(fn *vm3.Function) int {
 // mapGetI64I64KernelBytesAMD64 is the static byte count of the inline
 // OpMapGetI64I64 kernel body, excluding the optional spill sandwich.
 const mapGetI64I64KernelBytesAMD64 = 198
+
+// mapSetI64I64BytesAMD64 returns the static byte count of an inline
+// AMD64 OpMapSetI64I64 lowering (Phase 6.3.4.n.8.c). The body is
+// 259 bytes plus 2 * mapScratchSpillBytesAMD64 for the entry-spill /
+// exit-restore sandwich when NumRegsI64 > 4. See the comment block in
+// the emit case for a per-instruction breakdown.
+func mapSetI64I64BytesAMD64(fn *vm3.Function) int {
+	return mapSetI64I64KernelBytesAMD64 + 2*mapScratchSpillBytesAMD64(fn)
+}
+
+// mapSetI64I64KernelBytesAMD64 is the static byte count of the inline
+// OpMapSetI64I64 kernel body, excluding the optional spill sandwich.
+const mapSetI64I64KernelBytesAMD64 = 259
 
 // emitSplitmix64AMD64ByteCount mirrors emitSplitmix64AMD64. The byte
 // count is constant for any (xKey, xOut, xTmp) triple because all
