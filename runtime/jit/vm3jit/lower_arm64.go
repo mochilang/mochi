@@ -1416,6 +1416,18 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 		}
 		// ModI64K: MOV imm into x16; SDIV x17, xb, x16; MSUB xa, x17, x16, xb.
 		return movImm64WordCount(int64(op.C)) + 2, nil
+	case vm3.OpModI64KW:
+		// MOV imm64 into x16; SDIV x17, xb, x16; MSUB xa, x17, x16, xb.
+		// Phase 6.3.4.n.8.e: wide divisor sourced from Function.Consts.
+		k := int(uint16(op.C))
+		if k >= len(fn.Consts) {
+			return 0, fmt.Errorf("%w: ModI64KW idx %d out of range", ErrNotImplemented, k)
+		}
+		d := fn.Consts[k].Int()
+		if d == 0 {
+			return 0, fmt.Errorf("%w: ModI64KW divide-by-zero immediate", ErrNotImplemented)
+		}
+		return movImm64WordCount(d) + 2, nil
 	case vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
 		vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
 		vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br:
@@ -1426,6 +1438,17 @@ func wordCountARM64Body(fn *vm3.Function, op vm3.Op, opts Options, spillSets []u
 		vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr:
 		// MOV imm into x16; CMP xA, x16; B.cond <target>.
 		return movImm64WordCount(int64(int16(op.B))) + 2, nil
+	case vm3.OpCmpEqI64KWBr, vm3.OpCmpNeI64KWBr,
+		vm3.OpCmpLtI64KWBr, vm3.OpCmpLeI64KWBr,
+		vm3.OpCmpGtI64KWBr, vm3.OpCmpGeI64KWBr:
+		// MOV imm64 into x16; CMP xA, x16; B.cond <target>.
+		// Phase 6.3.4.n.8.e: wide immediate sourced from Function.Consts.
+		k := int(uint16(op.B))
+		if k >= len(fn.Consts) {
+			return 0, fmt.Errorf("%w: Cmp*I64KWBr idx %d out of range", ErrNotImplemented, k)
+		}
+		v := fn.Consts[k].Int()
+		return movImm64WordCount(v) + 2, nil
 	case vm3.OpJump:
 		return 1, nil
 	case vm3.OpReturnI64:
@@ -1880,6 +1903,20 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		ws = append(ws, sdivReg(17, xB, 16))
 		ws = append(ws, msubReg(xA, 17, 16, xB))
 		return ws, nil
+	case vm3.OpModI64KW:
+		// Phase 6.3.4.n.8.e: wide divisor from Consts.
+		k := int(uint16(op.C))
+		if k >= len(fn.Consts) {
+			return nil, fmt.Errorf("%w: ModI64KW idx %d out of range", ErrNotImplemented, k)
+		}
+		d := fn.Consts[k].Int()
+		if d == 0 {
+			return nil, fmt.Errorf("%w: ModI64KW divide-by-zero immediate", ErrNotImplemented)
+		}
+		ws := movImm64(16, d)
+		ws = append(ws, sdivReg(17, xB, 16))
+		ws = append(ws, msubReg(xA, 17, 16, xB))
+		return ws, nil
 
 	case vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
 		vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
@@ -1899,6 +1936,25 @@ func emitInstrARM64Body(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deopt
 		cond := condForCmpKImm(op.Code)
 		imm := int64(int16(op.B))
 		ws := movImm64(16, imm)
+		cmpWord := pcMap[idx] + len(ws)
+		bWord := cmpWord + 1
+		dstWord := pcMap[int(uint16(op.C))]
+		off, err := branchOff(bWord, dstWord, 19)
+		if err != nil {
+			return nil, err
+		}
+		ws = append(ws, cmpReg(xA, 16), bCond(cond, off))
+		return ws, nil
+	case vm3.OpCmpEqI64KWBr, vm3.OpCmpNeI64KWBr,
+		vm3.OpCmpLtI64KWBr, vm3.OpCmpLeI64KWBr,
+		vm3.OpCmpGtI64KWBr, vm3.OpCmpGeI64KWBr:
+		// Phase 6.3.4.n.8.e: wide immediate from Consts.
+		k := int(uint16(op.B))
+		if k >= len(fn.Consts) {
+			return nil, fmt.Errorf("%w: Cmp*I64KWBr idx %d out of range", ErrNotImplemented, k)
+		}
+		cond := condForCmpKWImm(op.Code)
+		ws := movImm64(16, fn.Consts[k].Int())
 		cmpWord := pcMap[idx] + len(ws)
 		bWord := cmpWord + 1
 		dstWord := pcMap[int(uint16(op.C))]
@@ -3188,6 +3244,27 @@ func condForCmpKImm(code vm3.OpCode) uint32 {
 	case vm3.OpCmpGtI64KBr:
 		return 0xC
 	case vm3.OpCmpGeI64KBr:
+		return 0xA
+	}
+	return 0
+}
+
+// condForCmpKWImm mirrors condForCmpKImm for the wide-K-form (Phase
+// 6.3.4.n.8.e) compare-and-branch ops that look the immediate up in
+// Function.Consts.
+func condForCmpKWImm(code vm3.OpCode) uint32 {
+	switch code {
+	case vm3.OpCmpEqI64KWBr:
+		return 0x0
+	case vm3.OpCmpNeI64KWBr:
+		return 0x1
+	case vm3.OpCmpLtI64KWBr:
+		return 0xB
+	case vm3.OpCmpLeI64KWBr:
+		return 0xD
+	case vm3.OpCmpGtI64KWBr:
+		return 0xC
+	case vm3.OpCmpGeI64KWBr:
 		return 0xA
 	}
 	return 0

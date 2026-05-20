@@ -1173,6 +1173,13 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 	case vm3.OpMulI64K:
 		// imul xA, xB, imm32 (7) — three-operand form, no need to copy first.
 		return 7, nil
+	case vm3.OpModI64KW:
+		k := int(uint16(op.C))
+		if k >= len(fn.Consts) {
+			return 0, fmt.Errorf("%w: ModI64KW idx %d out of range", ErrNotImplemented, k)
+		}
+		d := fn.Consts[k].Int()
+		return modI64KWByteCountAMD64(d)
 	case vm3.OpDivI64K, vm3.OpModI64K:
 		if op.C == 0 {
 			return 0, fmt.Errorf("%w: opcode %d divide-by-zero immediate", ErrNotImplemented, op.Code)
@@ -1213,6 +1220,20 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		vm3.OpCmpGtI64KBr, vm3.OpCmpGeI64KBr:
 		// cmp xA, imm32 (7) ; jcc rel32 (6).
 		return 13, nil
+	case vm3.OpCmpEqI64KWBr, vm3.OpCmpNeI64KWBr,
+		vm3.OpCmpLtI64KWBr, vm3.OpCmpLeI64KWBr,
+		vm3.OpCmpGtI64KWBr, vm3.OpCmpGeI64KWBr:
+		k := int(uint16(op.B))
+		if k >= len(fn.Consts) {
+			return 0, fmt.Errorf("%w: Cmp*I64KWBr idx %d out of range", ErrNotImplemented, k)
+		}
+		v := fn.Consts[k].Int()
+		if v >= -(1<<31) && v <= (1<<31)-1 {
+			// cmp xA, imm32 (7) ; jcc rel32 (6).
+			return 13, nil
+		}
+		// mov $imm64, %rax (10) ; cmp xA, %rax (3) ; jcc rel32 (6).
+		return 19, nil
 	case vm3.OpJump:
 		return 5, nil // jmp rel32
 	case vm3.OpReturnI64:
@@ -1838,6 +1859,25 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		return emitDivKOrModK(xA, xB, int32(op.C), true), nil
 	case vm3.OpModI64K:
 		return emitDivKOrModK(xA, xB, int32(op.C), false), nil
+	case vm3.OpModI64KW:
+		k := int(uint16(op.C))
+		if k >= len(fn.Consts) {
+			return nil, fmt.Errorf("%w: ModI64KW idx %d out of range", ErrNotImplemented, k)
+		}
+		d := fn.Consts[k].Int()
+		if d == 0 {
+			return nil, fmt.Errorf("%w: ModI64KW divide-by-zero immediate", ErrNotImplemented)
+		}
+		if d >= -(1<<31) && d <= (1<<31)-1 {
+			return emitDivKOrModK(xA, xB, int32(d), false), nil
+		}
+		// Wide divisor: mov $imm64,%rcx ; mov xB,%rax ; cqo ; idiv %rcx ; mov %rdx, xA.
+		out := movRImm64(xRCX, d)
+		out = append(out, mov64RR(xB, xRAX)...)
+		out = append(out, cqoBytes()...)
+		out = append(out, idiv64R(xRCX)...)
+		out = append(out, mov64RR(xRDX, xA)...)
+		return out, nil
 	case vm3.OpCmpEqI64Br, vm3.OpCmpNeI64Br,
 		vm3.OpCmpLtI64Br, vm3.OpCmpLeI64Br,
 		vm3.OpCmpGtI64Br, vm3.OpCmpGeI64Br:
@@ -1858,6 +1898,30 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		dst := pcMap[int(uint16(op.C))]
 		rel := int32(dst - src)
 		out := cmp64RImm32(xA, imm)
+		out = append(out, jccRel32(cc, rel)...)
+		return out, nil
+	case vm3.OpCmpEqI64KWBr, vm3.OpCmpNeI64KWBr,
+		vm3.OpCmpLtI64KWBr, vm3.OpCmpLeI64KWBr,
+		vm3.OpCmpGtI64KWBr, vm3.OpCmpGeI64KWBr:
+		k := int(uint16(op.B))
+		if k >= len(fn.Consts) {
+			return nil, fmt.Errorf("%w: Cmp*I64KWBr idx %d out of range", ErrNotImplemented, k)
+		}
+		v := fn.Consts[k].Int()
+		cc := condForCmpKWImmAMD64(op.Code)
+		dst := pcMap[int(uint16(op.C))]
+		if v >= -(1<<31) && v <= (1<<31)-1 {
+			src := pcMap[idx] + 7 + 6
+			rel := int32(dst - src)
+			out := cmp64RImm32(xA, int32(v))
+			out = append(out, jccRel32(cc, rel)...)
+			return out, nil
+		}
+		// Wide imm: mov $imm64,%rax ; cmp xA, %rax ; jcc rel32.
+		src := pcMap[idx] + 10 + 3 + 6
+		rel := int32(dst - src)
+		out := movRImm64(xRAX, v)
+		out = append(out, cmp64RR(xRAX, xA)...)
 		out = append(out, jccRel32(cc, rel)...)
 		return out, nil
 	case vm3.OpJump:
@@ -2890,6 +2954,32 @@ func emitDivOrMod(fn *vm3.Function, xA, xB, xC, opOff, deoptStart int, isDiv boo
 	return out
 }
 
+// modI64KWByteCountAMD64 mirrors emitInstrAMD64's OpModI64KW emit path.
+// If the divisor fits int32 it reuses the OpModI64K lowering (which
+// includes the pow2 / signed-magic shortcuts), so the byte count is the
+// same as the equivalent OpModI64K. Otherwise the lowering falls back
+// to a `mov $imm64, %rcx ; mov xB, %rax ; cqo ; idiv %rcx ; mov %rdx, xA`
+// sequence (10 + 3 + 2 + 3 + 3 = 21 bytes). Phase 6.3.4.n.8.e.
+func modI64KWByteCountAMD64(d int64) (int, error) {
+	if d == 0 {
+		return 0, fmt.Errorf("%w: ModI64KW divide-by-zero immediate", ErrNotImplemented)
+	}
+	if d >= -(1<<31) && d <= (1<<31)-1 {
+		if _, ok := pow2ShiftI64(d); ok {
+			return 31, nil
+		}
+		if _, _, corr, ok := signedMagicI64(d); ok {
+			extra := 0
+			if corr {
+				extra = 3
+			}
+			return 43 + extra, nil
+		}
+		return 18, nil
+	}
+	return 21, nil
+}
+
 // emitDivKOrModK lowers OpDivI64K / OpModI64K. The K is a non-zero
 // immediate so there is no deopt path; RCX is used as the divisor.
 //
@@ -3076,6 +3166,27 @@ func condForCmpKImmAMD64(code vm3.OpCode) byte {
 	case vm3.OpCmpGtI64KBr:
 		return ccG
 	case vm3.OpCmpGeI64KBr:
+		return ccGE
+	}
+	return ccZ
+}
+
+// condForCmpKWImmAMD64 mirrors condForCmpKImmAMD64 for the wide-K-form
+// (Phase 6.3.4.n.8.e) compare-and-branch opcodes that look the immediate
+// up in Function.Consts.
+func condForCmpKWImmAMD64(code vm3.OpCode) byte {
+	switch code {
+	case vm3.OpCmpEqI64KWBr:
+		return ccZ
+	case vm3.OpCmpNeI64KWBr:
+		return ccNZ
+	case vm3.OpCmpLtI64KWBr:
+		return ccL
+	case vm3.OpCmpLeI64KWBr:
+		return ccLE
+	case vm3.OpCmpGtI64KWBr:
+		return ccG
+	case vm3.OpCmpGeI64KWBr:
 		return ccGE
 	}
 	return ccZ

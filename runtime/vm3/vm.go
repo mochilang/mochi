@@ -374,6 +374,14 @@ func (vm *VM) run() (Cell, error) {
 			}
 			regsI64[op.A] = regsI64[op.B] % int64(op.C)
 			pc++
+		case OpModI64KW:
+			d := consts[uint16(op.C)].Int()
+			if d == 0 {
+				fr.pc = pc
+				return CNull(), ErrDivByZero
+			}
+			regsI64[op.A] = regsI64[op.B] % d
+			pc++
 
 		case OpAddF64:
 			regsF64[op.A] = regsF64[op.B] + regsF64[uint16(op.C)]
@@ -468,6 +476,43 @@ func (vm *VM) run() (Cell, error) {
 			}
 		case OpCmpGeI64KBr:
 			if regsI64[op.A] >= int64(int16(op.B)) {
+				pc = int(uint16(op.C))
+			} else {
+				pc++
+			}
+
+		case OpCmpEqI64KWBr:
+			if regsI64[op.A] == consts[op.B].Int() {
+				pc = int(uint16(op.C))
+			} else {
+				pc++
+			}
+		case OpCmpNeI64KWBr:
+			if regsI64[op.A] != consts[op.B].Int() {
+				pc = int(uint16(op.C))
+			} else {
+				pc++
+			}
+		case OpCmpLtI64KWBr:
+			if regsI64[op.A] < consts[op.B].Int() {
+				pc = int(uint16(op.C))
+			} else {
+				pc++
+			}
+		case OpCmpLeI64KWBr:
+			if regsI64[op.A] <= consts[op.B].Int() {
+				pc = int(uint16(op.C))
+			} else {
+				pc++
+			}
+		case OpCmpGtI64KWBr:
+			if regsI64[op.A] > consts[op.B].Int() {
+				pc = int(uint16(op.C))
+			} else {
+				pc++
+			}
+		case OpCmpGeI64KWBr:
+			if regsI64[op.A] >= consts[op.B].Int() {
 				pc = int(uint16(op.C))
 			} else {
 				pc++

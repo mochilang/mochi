@@ -34,6 +34,7 @@ const (
 	OpMulI64K  // regsI64[A] = regsI64[B] * int16(C)
 	OpDivI64K  // regsI64[A] = regsI64[B] / int16(C)
 	OpModI64K  // regsI64[A] = regsI64[B] % int16(C)
+	OpModI64KW // regsI64[A] = regsI64[B] % Function.Consts[uint16(C)].Int() (wide; pool lookup)
 
 	// F64 arithmetic.
 	OpAddF64 // regsF64[A] = regsF64[B] + regsF64[uint16(C)]
@@ -59,6 +60,19 @@ const (
 	OpCmpLeI64KBr
 	OpCmpGtI64KBr
 	OpCmpGeI64KBr
+
+	// I64 compare-and-branch wide-K-form (Phase 6.3.4.n.8.e). B carries a
+	// uint16 index into Function.Consts, C carries the target PC (uint16).
+	// Lets a kernel compare against an int64 constant that does not fit in
+	// the 16-bit int16(B) slot used by OpCmp*I64KBr, without burning an
+	// i64 register to hold the constant. Modern compilers (Go, LLVM, GCC)
+	// apply the same constant-folding-into-immediates transform.
+	OpCmpEqI64KWBr // if regsI64[A] == Function.Consts[uint16(B)].Int() jump to uint16(C)
+	OpCmpNeI64KWBr
+	OpCmpLtI64KWBr
+	OpCmpLeI64KWBr
+	OpCmpGtI64KWBr
+	OpCmpGeI64KWBr
 
 	// Unconditional jump. C carries target PC (uint16).
 	OpJump
