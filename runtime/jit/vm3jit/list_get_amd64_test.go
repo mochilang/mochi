@@ -40,7 +40,7 @@ func TestListGetI64AMD64(t *testing.T) {
 		ParamBanks:  []vm3.Bank{vm3.BankI64},
 		ResultBank:  vm3.BankI64,
 		Code: []vm3.Op{
-			vm3.MakeOp(vm3.OpNewList, 0, 0, 0),                                       // pc=0: regsCell[0] = []
+			vm3.MakeOp(vm3.OpNewList, 0, 0, 8),                                       // pc=0: regsCell[0] = make([]Cell, 0, 8)
 			vm3.MakeOp(vm3.OpConstI64K, 1, 0, 10),                                    // pc=1: regsI64[1] = 10
 			vm3.MakeOp(vm3.OpListPushI64, 0, 1, 0),                                   // pc=2: list.push(10)
 			vm3.MakeOp(vm3.OpConstI64K, 1, 0, 20),                                    // pc=3: regsI64[1] = 20
