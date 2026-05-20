@@ -2728,15 +2728,21 @@ func vfmaddSDRR(opc byte, dst, src1, src2 int) []byte {
 // movsdLoadXMMFromGPR emits `movsd xmm<dst>, disp32(%baseGPR)`.
 // Opcode F2 [REX] 0F 10 /r disp32. REX is emitted when dst or base
 // needs the high bit (R8..R15, including R12/R14 used as the f64
-// base). 8 bytes when no REX, 9 bytes with REX. Phase 6.3.4.n.3
-// generalizes the original movsdLoadXMMFromR14 so cell-bank+f64 fns
-// can pin the f64 base in R12.
+// base). When base&7 == 4 (RSP or R12) the SIB-follows quirk forces
+// an extra SIB byte (0x24 = scale=0/index=none/base=4) between the
+// ModR/M and the disp32. Phase 6.3.4.n.3 generalizes the original
+// movsdLoadXMMFromR14 so cell-bank+f64 fns can pin the f64 base in
+// R12; without the SIB byte the decoder reads the first byte of
+// disp32 as SIB and the whole prologue desyncs.
 func movsdLoadXMMFromGPR(dst int, base int, disp int32) []byte {
 	var out []byte
 	if dst >= 8 || base >= 8 {
 		out = []byte{0xF2, rex(false, dst >= 8, false, base >= 8), 0x0F, 0x10, modRM(2, byte(dst&7), byte(base&7))}
 	} else {
 		out = []byte{0xF2, 0x0F, 0x10, modRM(2, byte(dst), byte(base))}
+	}
+	if base&7 == 4 {
+		out = append(out, 0x24)
 	}
 	return appendImm32(out, disp)
 }
