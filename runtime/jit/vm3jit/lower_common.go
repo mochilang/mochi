@@ -448,6 +448,17 @@ func defUseF64(op vm3.Op) (uint16, uint16) {
 		return a, 0
 	case vm3.OpListSetF64:
 		return 0, b
+	case vm3.OpF64ArrayGetF64:
+		// regsF64[A] = arenas.F64Arrs[regsCell[B]].data[regsI64[C]]
+		// Defines f64 reg A; reads cellReg B and i64 reg C (neither f64).
+		return a, 0
+	case vm3.OpF64ArraySetF64:
+		// arenas.F64Arrs[regsCell[A]].data[regsI64[C]] = regsF64[B]
+		// No f64 def; uses f64 reg B (the stored value).
+		return 0, b
+	case vm3.OpF64ArrayPushF64:
+		// arenas.F64Arrs[regsCell[A]].data append regsF64[B]
+		return 0, b
 	case vm3.OpI64ToF64:
 		return a, 0
 	case vm3.OpF64ToI64:
