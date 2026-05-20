@@ -178,8 +178,8 @@ func isNonLeafAMD64(fn *vm3.Function) bool {
 }
 
 // hasSelfCallMixedAMD64 reports whether fn contains an OpCallMixed
-// back to itself (Phase 6.3.4.m.4c.5). Cross-fn OpCallMixed on AMD64 is
-// not yet admitted, so any non-self OpCallMixed is rejected upstream.
+// back to itself (Phase 6.3.4.m.4c.5). Cross-fn OpCallMixed on AMD64
+// is admitted in Phase 6.3.4.m.4c.6 (see hasCrossFnCallMixedAMD64).
 func hasSelfCallMixedAMD64(fn *vm3.Function, opts Options) bool {
 	if opts.SelfIdx < 0 {
 		return false
@@ -195,6 +195,29 @@ func hasSelfCallMixedAMD64(fn *vm3.Function, opts Options) bool {
 	return false
 }
 
+// hasCrossFnCallMixedAMD64 reports whether fn contains an OpCallMixed
+// to a different function (not self). When true, the JIT emits a
+// movabs + indirect call sequence (Phase 6.3.4.m.4c.6) and the admission
+// gate requires the callee to be JIT-compiled.
+func hasCrossFnCallMixedAMD64(fn *vm3.Function, opts Options) bool {
+	if opts.Prog == nil {
+		return false
+	}
+	for _, op := range fn.Code {
+		if op.Code != vm3.OpCallMixed {
+			continue
+		}
+		idx := int(uint16(op.C))
+		if opts.SelfIdx >= 0 && idx == opts.SelfIdx {
+			continue
+		}
+		if idx >= 0 && idx < len(opts.Prog.Funcs) {
+			return true
+		}
+	}
+	return false
+}
+
 // selfDeoptCalleeAMD64 reports whether a self-recursive OpCallMixed
 // site needs the post-CALL status-word check + jne-to-passthrough.
 // True iff fn itself has any deopt-capable opcode (mirrors the ARM64
@@ -203,16 +226,55 @@ func selfDeoptCalleeAMD64(fn *vm3.Function) bool {
 	return hasRegRegDivModAMD64(fn) || hasNewPair(fn)
 }
 
-// needsPassthroughAMD64 reports whether fn must emit the shared
-// passthrough deopt block at the end of its code stream. Currently
-// triggered only by self-recursive OpCallMixed sites in cell-bank fns
-// whose body can deopt (binary_trees make_tree raises StatusPairGrow
-// from inline OpNewPair).
-func needsPassthroughAMD64(fn *vm3.Function, opts Options) bool {
-	if !hasSelfCallMixedAMD64(fn, opts) {
+// crossFnDeoptCalleeAMD64 mirrors crossFnDeoptCallee in lower_arm64.go.
+// True iff the callee has any deopt-capable opcode (reg-reg div/mod,
+// OpNewPair). Cell-bank callees on AMD64 only use reg-reg div/mod or
+// OpNewPair today; list / map / i64-array deopts are not yet admitted
+// on AMD64 cell-bank.
+func crossFnDeoptCalleeAMD64(callee *vm3.Function) bool {
+	return hasRegRegDivModAMD64(callee) || hasNewPair(callee)
+}
+
+// needsCrossFnPassthroughAMD64 reports whether fn has at least one
+// cross-fn OpCallMixed whose callee can deopt and thus needs the
+// shared passthrough deopt block emitted at the tail of fn's code.
+func needsCrossFnPassthroughAMD64(fn *vm3.Function, opts Options) bool {
+	if opts.Prog == nil {
 		return false
 	}
-	return selfDeoptCalleeAMD64(fn)
+	for _, op := range fn.Code {
+		if op.Code != vm3.OpCallMixed {
+			continue
+		}
+		idx := int(uint16(op.C))
+		if opts.SelfIdx >= 0 && idx == opts.SelfIdx {
+			continue
+		}
+		if idx < 0 || idx >= len(opts.Prog.Funcs) {
+			continue
+		}
+		callee := opts.Prog.Funcs[idx]
+		if callee.JITCode == nil {
+			continue
+		}
+		if crossFnDeoptCalleeAMD64(callee) {
+			return true
+		}
+	}
+	return false
+}
+
+// needsPassthroughAMD64 reports whether fn must emit the shared
+// passthrough deopt block at the end of its code stream. Triggered by
+// self-recursive OpCallMixed sites in cell-bank fns whose body can
+// deopt (binary_trees make_tree raises StatusPairGrow from inline
+// OpNewPair) OR by cross-fn OpCallMixed sites to deopt-capable callees
+// (Phase 6.3.4.m.4c.6).
+func needsPassthroughAMD64(fn *vm3.Function, opts Options) bool {
+	if hasSelfCallMixedAMD64(fn, opts) && selfDeoptCalleeAMD64(fn) {
+		return true
+	}
+	return needsCrossFnPassthroughAMD64(fn, opts)
 }
 
 // passthroughBlockBytesAMD64 mirrors passthroughBlockWordsARM64. The
@@ -807,9 +869,8 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// Each spill reload: mov disp32(%rbx), xS = 7 bytes.
 		return 7*nSpill + 7*nArgs + 7 + 3 + 5 + 3 + 7*nSpill, nil
 	case vm3.OpCallMixed:
-		// Phase 6.3.4.m.4c.5: AMD64 self-recursive OpCallMixed. Only the
-		// self-call shape is admitted; cross-fn lowers in a later sub-
-		// phase. Sequence:
+		// Phase 6.3.4.m.4c.5/.6: AMD64 cell-bank OpCallMixed (self and
+		// cross-fn). Sequence:
 		//   spill caller-saved i64 slots (7B each)
 		//   write i64 args   (7B each)
 		//   write cell args  (14B each: load via %rdx, store back)
@@ -817,19 +878,35 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		//   mov %r15, %rsi                (3B)
 		//   lea callerCell*8(%rbp), %rcx  (7B; 3B mov if callerCell=0)
 		//   mov %r14, %r8                 (3B)
-		//   call rel32                    (5B)
+		//   self:    call rel32 to byte 0         (5B)
+		//   crossfn: movabs $callee.JITCode, %r10 (10B); call *%r10 (3B)
 		//   reload spills                 (7B each)
 		//   optional deopt check: cmpq $0,(%r15) (4B) + jne rel32 (6B)
 		//   store result: mov %rax, xA (3B i64) or mov %rax, disp32(%rbp) (7B cell)
-		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
-			return 0, fmt.Errorf("%w: CallMixed to non-self idx %d (SelfIdx=%d); AMD64 cross-fn cell-bank not yet admitted",
-				ErrNotImplemented, uint16(op.C), opts.SelfIdx)
+		calleeIdx := int(uint16(op.C))
+		isSelf := opts.SelfIdx >= 0 && calleeIdx == opts.SelfIdx
+		var callee *vm3.Function
+		if isSelf {
+			callee = fn
+		} else {
+			if opts.Prog == nil {
+				return 0, fmt.Errorf("%w: CallMixed cross-fn needs opts.Prog", ErrNotImplemented)
+			}
+			if calleeIdx < 0 || calleeIdx >= len(opts.Prog.Funcs) {
+				return 0, fmt.Errorf("%w: CallMixed callee idx %d out of range",
+					ErrNotImplemented, calleeIdx)
+			}
+			callee = opts.Prog.Funcs[calleeIdx]
+			if callee.JITCode == nil {
+				return 0, fmt.Errorf("%w: CallMixed callee %s has no JITCode",
+					ErrNotImplemented, callee.Name)
+			}
 		}
 		nSpill := popcount32(spillSets[idx])
 		callerI64 := int(fn.NumRegsI64)
 		callerCell := int(fn.NumRegsCell)
-		nI64Args, _, nCellArgs := countParamBanks(fn)
-		if _, nF64Args, _ := countParamBanks(fn); nF64Args != 0 {
+		nI64Args, nF64Args, nCellArgs := countParamBanks(callee)
+		if nF64Args != 0 {
 			return 0, fmt.Errorf("%w: CallMixed with f64 args (AMD64 cell-bank rejects f64)",
 				ErrNotImplemented)
 		}
@@ -845,15 +922,21 @@ func byteCountAMD64(fn *vm3.Function, op vm3.Op, opts Options, spillSets []uint3
 		// ABI setup: RDI = i64 base, RSI = status (mov %r15,%rsi 3B),
 		// RCX = cell base, R8 = arena ctx (mov %r14,%r8 3B).
 		abiBytes := baseI64Bytes + 3 + baseCellBytes + 3
+		callBytes := 5
+		if !isSelf {
+			callBytes = 10 + 3 // movabs $imm, %r10 + call *%r10
+		}
 		deoptBytes := 0
-		if selfDeoptCalleeAMD64(fn) {
+		if isSelf && selfDeoptCalleeAMD64(fn) {
 			deoptBytes = 4 + 6 // cmpq $0,(%r15) + jne rel32
+		} else if !isSelf && crossFnDeoptCalleeAMD64(callee) {
+			deoptBytes = 4 + 6
 		}
 		resultBytes := 3 // mov %rax, xA (BankI64)
 		if vm3.Bank(op.BankFlags&0x3) == vm3.BankCell {
 			resultBytes = 7 // mov %rax, disp32(%rbp)
 		}
-		return 7*nSpill + argBytes + abiBytes + 5 + 7*nSpill + deoptBytes + resultBytes, nil
+		return 7*nSpill + argBytes + abiBytes + callBytes + 7*nSpill + deoptBytes + resultBytes, nil
 	default:
 		return 0, fmt.Errorf("%w: opcode %d", ErrNotImplemented, op.Code)
 	}
@@ -1234,19 +1317,35 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 		}
 		return out, nil
 	case vm3.OpCallMixed:
-		// Phase 6.3.4.m.4c.5: self-recursive OpCallMixed on AMD64
-		// cell-bank. Mirrors the AArch64 lowering's contract: write i64
+		// Phase 6.3.4.m.4c.5/.6: AMD64 cell-bank OpCallMixed (self and
+		// cross-fn). Mirrors the AArch64 lowering's contract: write i64
 		// args into the i64 window via RBX-relative stores, cell args
 		// into the cell window via RBP-relative stores (load-through-
 		// RDX two-step since AMD64 has no mem-to-mem move). Then set
-		// up the SysV ABI for the recursive CALL (RDI = callee regsI64
-		// base, RSI = status, RCX = callee regsCell base, R8 = arena
-		// ctx) and CALL rel32 to the prologue at offset 0. After the
-		// CALL, optionally propagate the callee's status code via
-		// cmpq $0,(%r15) + jne passthrough, then route the result.
-		if opts.SelfIdx < 0 || int(uint16(op.C)) != opts.SelfIdx {
-			return nil, fmt.Errorf("%w: CallMixed to non-self idx %d (SelfIdx=%d)",
-				ErrNotImplemented, uint16(op.C), opts.SelfIdx)
+		// up the SysV ABI for the callee (RDI = callee regsI64 base,
+		// RSI = status, RCX = callee regsCell base, R8 = arena ctx).
+		// Self: CALL rel32 to byte 0. Cross-fn: movabs $callee.JITCode,
+		// %r10 + CALL *%r10. After the CALL, optionally propagate the
+		// callee's status code via cmpq $0,(%r15) + jne passthrough,
+		// then route the result.
+		calleeIdx := int(uint16(op.C))
+		isSelf := opts.SelfIdx >= 0 && calleeIdx == opts.SelfIdx
+		var callee *vm3.Function
+		if isSelf {
+			callee = fn
+		} else {
+			if opts.Prog == nil {
+				return nil, fmt.Errorf("%w: CallMixed cross-fn needs opts.Prog", ErrNotImplemented)
+			}
+			if calleeIdx < 0 || calleeIdx >= len(opts.Prog.Funcs) {
+				return nil, fmt.Errorf("%w: CallMixed callee idx %d out of range",
+					ErrNotImplemented, calleeIdx)
+			}
+			callee = opts.Prog.Funcs[calleeIdx]
+			if callee.JITCode == nil {
+				return nil, fmt.Errorf("%w: CallMixed callee %s has no JITCode",
+					ErrNotImplemented, callee.Name)
+			}
 		}
 		spillMask := spillSets[idx]
 		callerI64 := int(fn.NumRegsI64)
@@ -1258,10 +1357,12 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 				out = append(out, mov64StoreDisp32(r2xAMD64(r), xRBX, int32(r)*8)...)
 			}
 		}
-		// Write args bank-by-bank. argReg = op.B + k follows the
-		// ARM64 convention (slot indices are shared across banks; the
-		// bank-specific reg in the caller is r2x*(argReg)).
-		for k, b := range fn.ParamBanks {
+		// Write args bank-by-bank using the callee's ParamBanks (the
+		// cross-fn callee may have a different shape than the caller).
+		// argReg = op.B + k follows the ARM64 convention (slot indices
+		// are shared across banks; the bank-specific reg in the caller
+		// is r2x*(argReg)).
+		for k, b := range callee.ParamBanks {
 			argReg := op.B + uint16(k)
 			switch b {
 			case vm3.BankI64:
@@ -1278,7 +1379,7 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 					ErrNotImplemented, b)
 			}
 		}
-		// SysV ABI setup for the recursive callee.
+		// SysV ABI setup for the callee.
 		if callerI64 == 0 {
 			out = append(out, mov64RR(xRBX, xRDI)...)
 		} else {
@@ -1291,10 +1392,15 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 			out = append(out, lea64Disp32(xRCX, xRBP, int32(callerCell)*8)...)
 		}
 		out = append(out, mov64RR(xR14, xR8)...)
-		// CALL rel32 to entry (byte 0).
-		callSite := pcMap[idx] + len(out) + 5
-		rel := int32(0 - callSite)
-		out = append(out, callRel32(rel)...)
+		// CALL: self uses rel32 to byte 0; cross-fn uses movabs+CALL r10.
+		if isSelf {
+			callSite := pcMap[idx] + len(out) + 5
+			rel := int32(0 - callSite)
+			out = append(out, callRel32(rel)...)
+		} else {
+			out = append(out, movRImm64(xR10, int64(uintptr(callee.JITCode)))...)
+			out = append(out, callIndirectR10()...)
+		}
 		// Reload spilled slots. The result still sits in RAX which is
 		// outside r2xAMD64's range, so spill reloads don't clobber it.
 		for r := uint16(0); r < 6; r++ {
@@ -1302,11 +1408,17 @@ func emitInstrAMD64(fn *vm3.Function, op vm3.Op, idx int, pcMap []int, deoptStar
 				out = append(out, mov64LoadDisp32(r2xAMD64(r), xRBX, int32(r)*8)...)
 			}
 		}
-		// Optional deopt propagation. If the callee (= fn, self) can
-		// deopt, the callee's deopt block writes a non-zero status to
-		// (%r15) before returning. We do a memory-form cmp (no scratch
-		// reg clobber) and JNE into the shared passthrough block.
-		if selfDeoptCalleeAMD64(fn) {
+		// Optional deopt propagation. If the callee can deopt, the
+		// callee's deopt block writes a non-zero status to (%r15)
+		// before returning. We do a memory-form cmp (no scratch reg
+		// clobber) and JNE into the shared passthrough block.
+		needsDeoptCheck := false
+		if isSelf {
+			needsDeoptCheck = selfDeoptCalleeAMD64(fn)
+		} else {
+			needsDeoptCheck = crossFnDeoptCalleeAMD64(callee)
+		}
+		if needsDeoptCheck {
 			out = append(out, cmpMemImm8R15Indirect(0)...)
 			ptStart := passthroughStartAMD64(fn, deoptStart)
 			afterJNE := pcMap[idx] + len(out) + 6
@@ -1789,6 +1901,16 @@ func jmpRel32(rel int32) []byte {
 func callRel32(rel int32) []byte {
 	out := []byte{0xE8}
 	return appendImm32(out, rel)
+}
+
+// callIndirectR10 emits `call *%r10` (3 bytes: 41 FF D2). Used by
+// cross-fn OpCallMixed (Phase 6.3.4.m.4c.6) after a `movabs $callee,
+// %r10` loads the callee's entry pointer. R10 is caller-saved and not
+// pinned to any vm3 i64 slot at the call site (the spill/reload step
+// runs before the movabs, so any live i64 in slot-4=R10 has been
+// saved). Opcode FF /2 (mod=11, reg=2, rm=R10 with REX.B).
+func callIndirectR10() []byte {
+	return []byte{0x41, 0xFF, modRM(3, 2, byte(xR10&7))}
 }
 
 // appendImm32 appends a little-endian 32-bit integer to out.
