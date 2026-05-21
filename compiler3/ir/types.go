@@ -353,6 +353,12 @@ type GoBinding struct {
 	// type-system markers; the safety property is invariant rather
 	// than dynamic at the Go target. See MEP-43 Phase 10.
 	SealHandles bool
+	// IsValue is true when this binding names an exported package-level
+	// var or const, not a function. The emitter renders these as
+	// `alias.Name` (no parens, no args); ArgTypes is empty and Result
+	// carries the value's Go-source type. This is the FFI counterpart
+	// of `OpConst` for symbols whose value is decided at link time.
+	IsValue bool
 }
 
 // Value is one SSA-form IR node. Type is mandatory; the type checker
