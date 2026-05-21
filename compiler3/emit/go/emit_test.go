@@ -524,3 +524,110 @@ func intStr(n int64) string {
 	}
 	return digits
 }
+
+// TestEmitBitwiseI64 covers the Phase 4.1.1 bitwise/shift family in
+// the Go target. Verifies the emitter writes the Go form for AND,
+// OR, XOR, SHL, SHR. Shifts cast the right operand to uint64 because
+// Go requires unsigned shift counts.
+func TestEmitBitwiseI64(t *testing.T) {
+	for _, c := range []struct {
+		op   ir.OpCode
+		want string
+	}{
+		{ir.OpAndI64, "v0 & v1"},
+		{ir.OpOrI64, "v0 | v1"},
+		{ir.OpXorI64, "v0 ^ v1"},
+		{ir.OpShlI64, "v0 << uint64(v1)"},
+		{ir.OpShrI64, "v0 >> uint64(v1)"},
+	} {
+		fn := &ir.Function{Name: "bw", Result: ir.TypeI64}
+		a := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpParam})
+		b := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpParam})
+		fn.Params = []uint32{a, b}
+		bid := fn.AddBlock()
+		r := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: c.op, Args: []uint32{a, b}})
+		blk := fn.Block(bid)
+		blk.Values = []uint32{r}
+		blk.Term = ir.Terminator{Kind: ir.TermReturn, Value: r}
+		src, err := Emit(&Program{PkgName: "demo", Funcs: []*ir.Function{fn}})
+		if err != nil {
+			t.Fatalf("%s: Emit: %v", c.op, err)
+		}
+		if !strings.Contains(string(src), c.want) {
+			t.Errorf("%s: missing %q in:\n%s", c.op, c.want, src)
+		}
+	}
+}
+
+// TestEmitNotI64Go covers bitwise complement lowering on the Go
+// target. Go spells it `^x`, not `~x`.
+func TestEmitNotI64Go(t *testing.T) {
+	fn := &ir.Function{Name: "not_i64", Result: ir.TypeI64}
+	a := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpParam})
+	fn.Params = []uint32{a}
+	bid := fn.AddBlock()
+	r := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpNotI64, Args: []uint32{a}})
+	blk := fn.Block(bid)
+	blk.Values = []uint32{r}
+	blk.Term = ir.Terminator{Kind: ir.TermReturn, Value: r}
+	src, err := Emit(&Program{PkgName: "demo", Funcs: []*ir.Function{fn}})
+	if err != nil {
+		t.Fatalf("Emit: %v", err)
+	}
+	if !strings.Contains(string(src), "= ^v0") {
+		t.Errorf("missing `^v0`:\n%s", src)
+	}
+}
+
+// TestEmitCompareF64Go covers the six f64 comparisons on the Go
+// target. The result is a Go bool, no explicit cast needed.
+func TestEmitCompareF64Go(t *testing.T) {
+	for _, c := range []struct {
+		op   ir.OpCode
+		want string
+	}{
+		{ir.OpCmpEqF64, "v0 == v1"},
+		{ir.OpCmpNeF64, "v0 != v1"},
+		{ir.OpCmpLtF64, "v0 < v1"},
+		{ir.OpCmpLeF64, "v0 <= v1"},
+		{ir.OpCmpGtF64, "v0 > v1"},
+		{ir.OpCmpGeF64, "v0 >= v1"},
+	} {
+		fn := &ir.Function{Name: "fcmp", Result: ir.TypeBool}
+		a := fn.AddValue(ir.Value{Type: ir.TypeF64, Op: ir.OpParam})
+		b := fn.AddValue(ir.Value{Type: ir.TypeF64, Op: ir.OpParam})
+		fn.Params = []uint32{a, b}
+		bid := fn.AddBlock()
+		r := fn.AddValue(ir.Value{Type: ir.TypeBool, Op: c.op, Args: []uint32{a, b}})
+		blk := fn.Block(bid)
+		blk.Values = []uint32{r}
+		blk.Term = ir.Terminator{Kind: ir.TermReturn, Value: r}
+		src, err := Emit(&Program{PkgName: "demo", Funcs: []*ir.Function{fn}})
+		if err != nil {
+			t.Fatalf("%s: Emit: %v", c.op, err)
+		}
+		if !strings.Contains(string(src), c.want) {
+			t.Errorf("%s: missing %q in:\n%s", c.op, c.want, src)
+		}
+	}
+}
+
+// TestEmitNotBoolGo covers logical NOT on the Go target. Go spells
+// it `!x`.
+func TestEmitNotBoolGo(t *testing.T) {
+	fn := &ir.Function{Name: "not_b", Result: ir.TypeBool}
+	a := fn.AddValue(ir.Value{Type: ir.TypeBool, Op: ir.OpParam})
+	fn.Params = []uint32{a}
+	bid := fn.AddBlock()
+	r := fn.AddValue(ir.Value{Type: ir.TypeBool, Op: ir.OpNotBool, Args: []uint32{a}})
+	blk := fn.Block(bid)
+	blk.Values = []uint32{r}
+	blk.Term = ir.Terminator{Kind: ir.TermReturn, Value: r}
+	src, err := Emit(&Program{PkgName: "demo", Funcs: []*ir.Function{fn}})
+	if err != nil {
+		t.Fatalf("Emit: %v", err)
+	}
+	if !strings.Contains(string(src), "= !v0") {
+		t.Errorf("missing `!v0`:\n%s", src)
+	}
+}

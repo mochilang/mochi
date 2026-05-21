@@ -205,6 +205,14 @@ func opContract(o OpCode) opSig {
 		return opSig{TypeF64, [3]Type{TypeF64Arr, TypeI64}}
 	case OpF64ArraySetF64:
 		return opSig{TypeUnit, [3]Type{TypeF64Arr, TypeI64, TypeF64}}
+	case OpAndI64, OpOrI64, OpXorI64, OpShlI64, OpShrI64:
+		return opSig{TypeI64, [3]Type{TypeI64, TypeI64}}
+	case OpNotI64:
+		return opSig{TypeI64, [3]Type{TypeI64}}
+	case OpCmpEqF64, OpCmpNeF64, OpCmpLtF64, OpCmpLeF64, OpCmpGtF64, OpCmpGeF64:
+		return opSig{TypeBool, [3]Type{TypeF64, TypeF64}}
+	case OpNotBool:
+		return opSig{TypeBool, [3]Type{TypeBool}}
 	}
 	// OpParam, OpConst, OpPhi, OpCall, OpTailCall: the validator
 	// can't pre-compute their signature without more context, so we

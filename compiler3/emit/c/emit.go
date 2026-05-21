@@ -281,6 +281,16 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 	case ir.OpCmpEqI64Imm, ir.OpCmpNeI64Imm, ir.OpCmpLtI64Imm, ir.OpCmpLeI64Imm, ir.OpCmpGtI64Imm, ir.OpCmpGeI64Imm:
 		op := i64ImmCmpOp(v.Op)
 		fmt.Fprintf(w, "    %s = (%s %s (int64_t)%dLL) ? 1 : 0;\n", name, valueName(v.Args[0]), op, v.Const)
+	case ir.OpAndI64, ir.OpOrI64, ir.OpXorI64, ir.OpShlI64, ir.OpShrI64:
+		op := i64BitwiseOp(v.Op)
+		fmt.Fprintf(w, "    %s = %s %s %s;\n", name, valueName(v.Args[0]), op, valueName(v.Args[1]))
+	case ir.OpNotI64:
+		fmt.Fprintf(w, "    %s = ~%s;\n", name, valueName(v.Args[0]))
+	case ir.OpCmpEqF64, ir.OpCmpNeF64, ir.OpCmpLtF64, ir.OpCmpLeF64, ir.OpCmpGtF64, ir.OpCmpGeF64:
+		op := f64CmpOp(v.Op)
+		fmt.Fprintf(w, "    %s = (%s %s %s) ? 1 : 0;\n", name, valueName(v.Args[0]), op, valueName(v.Args[1]))
+	case ir.OpNotBool:
+		fmt.Fprintf(w, "    %s = %s ? 0 : 1;\n", name, valueName(v.Args[0]))
 	case ir.OpCall, ir.OpTailCall:
 		// Intra-program call. v.Const indexes into Program.Funcs;
 		// args are SSA values in declared order. The emitter writes
@@ -514,6 +524,40 @@ func i64ImmCmpOp(op ir.OpCode) string {
 	case ir.OpCmpGtI64Imm:
 		return ">"
 	case ir.OpCmpGeI64Imm:
+		return ">="
+	}
+	return "?"
+}
+
+func i64BitwiseOp(op ir.OpCode) string {
+	switch op {
+	case ir.OpAndI64:
+		return "&"
+	case ir.OpOrI64:
+		return "|"
+	case ir.OpXorI64:
+		return "^"
+	case ir.OpShlI64:
+		return "<<"
+	case ir.OpShrI64:
+		return ">>"
+	}
+	return "?"
+}
+
+func f64CmpOp(op ir.OpCode) string {
+	switch op {
+	case ir.OpCmpEqF64:
+		return "=="
+	case ir.OpCmpNeF64:
+		return "!="
+	case ir.OpCmpLtF64:
+		return "<"
+	case ir.OpCmpLeF64:
+		return "<="
+	case ir.OpCmpGtF64:
+		return ">"
+	case ir.OpCmpGeF64:
 		return ">="
 	}
 	return "?"
