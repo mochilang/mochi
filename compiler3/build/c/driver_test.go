@@ -879,6 +879,47 @@ print(int(math.sqrt(uv / vv) * 1e9))
 	}
 }
 
+// TestBuildSourceNowBuiltin pins the Phase 4.3.13 `now()` builtin on
+// the C target: lowers to mochi_now_us(), which wraps POSIX
+// gettimeofday. The wall-clock unit + epoch matches the Go target's
+// `time.Now().UnixMicro()`, so two back-to-back calls produce
+// monotonically non-decreasing values.
+func TestBuildSourceNowBuiltin(t *testing.T) {
+	src := `let a = now()
+let b = now()
+if b >= a {
+  print(1)
+} else {
+  print(0)
+}
+`
+	if got, want := runMochiBuild(t, src), "1\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceNowDeltaArith pins that `now()` participates in
+// normal i64 arithmetic on the C target. Sum-of-0..999 = 499500.
+func TestBuildSourceNowDeltaArith(t *testing.T) {
+	src := `let start = now()
+var sum = 0
+var i = 0
+while i < 1000 {
+  sum = sum + i
+  i = i + 1
+}
+let duration = (now() - start) / 1000
+if duration >= 0 {
+  print(sum)
+} else {
+  print(-1)
+}
+`
+	if got, want := runMochiBuild(t, src), "499500\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceMathPiConst pins the Phase 4.3.9 math.pi constant
 // read on the C target: 4*pi*pi truncated = 39.
 func TestBuildSourceMathPiConst(t *testing.T) {

@@ -312,6 +312,9 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 	case ir.OpF64ArrayConcat:
 		fmt.Fprintf(w, "\t%s = append(append([]float64{}, %s...), %s...)\n",
 			name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpNow:
+		imports["time"] = true
+		fmt.Fprintf(w, "\t%s = time.Now().UnixMicro()\n", name)
 	case ir.OpCall, ir.OpTailCall:
 		callee := all[v.Const]
 		fmt.Fprintf(w, "\t%s = %s(", name, callee.Name)

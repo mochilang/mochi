@@ -63,6 +63,7 @@ func Emit(p *Program) ([]byte, error) {
 	usesPrint := false
 	usesListI64 := false
 	usesF64Array := false
+	usesNow := false
 	for _, fn := range p.Funcs {
 		for _, v := range fn.Values {
 			switch v.Op {
@@ -83,6 +84,8 @@ func Emit(p *Program) ([]byte, error) {
 			case ir.OpNewF64Array, ir.OpF64ArrayLenI64, ir.OpF64ArrayPushF64,
 				ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64, ir.OpF64ArrayConcat:
 				usesF64Array = true
+			case ir.OpNow:
+				usesNow = true
 			}
 		}
 	}
@@ -100,6 +103,9 @@ func Emit(p *Program) ([]byte, error) {
 	}
 	if usesF64Array {
 		buf.WriteString("#include \"mochi_f64_array.h\"\n")
+	}
+	if usesNow {
+		buf.WriteString("#include \"mochi_time.h\"\n")
 	}
 	buf.WriteString("\n")
 
@@ -340,6 +346,8 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = mochi_list_i64_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpF64ArrayConcat:
 		fmt.Fprintf(w, "    %s = mochi_f64_array_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpNow:
+		fmt.Fprintf(w, "    %s = mochi_now_us();\n", name)
 	case ir.OpCall, ir.OpTailCall:
 		// Intra-program call. v.Const indexes into Program.Funcs;
 		// args are SSA values in declared order. The emitter writes

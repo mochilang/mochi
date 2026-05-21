@@ -754,6 +754,50 @@ print(int(math.sqrt(uv / vv) * 1e9))
 	}
 }
 
+// TestLowerNowBuiltin pins the Phase 4.3.13 `now()` builtin: lowers
+// to OpNow with TypeI64 result; two back-to-back calls return a
+// monotonically non-decreasing value (the second is >= the first).
+// The test checks the ordering invariant rather than a fixed value
+// because `now()` is wall-clock by design.
+func TestLowerNowBuiltin(t *testing.T) {
+	src := `let a = now()
+let b = now()
+if b >= a {
+  print(1)
+} else {
+  print(0)
+}
+`
+	got := runEnd2End(t, src)
+	if got != "1\n" {
+		t.Errorf("got %q, want %q", got, "1\n")
+	}
+}
+
+// TestLowerNowDeltaArith pins that `now()` participates in normal i64
+// arithmetic: a duration computed as `(now() - start) / 1000` is an
+// i64 expression with no surprises in the lowerer.
+func TestLowerNowDeltaArith(t *testing.T) {
+	src := `let start = now()
+var sum = 0
+var i = 0
+while i < 1000 {
+  sum = sum + i
+  i = i + 1
+}
+let duration = (now() - start) / 1000
+if duration >= 0 {
+  print(sum)
+} else {
+  print(-1)
+}
+`
+	got := runEnd2End(t, src)
+	if got != "499500\n" {
+		t.Errorf("got %q, want %q", got, "499500\n")
+	}
+}
+
 // TestLowerMathPiConst pins the Phase 4.3.9 `math.pi` constant read:
 // `extern let math.pi: float` is accepted as a no-op binding; the
 // selector read lowers to OpConst of TypeF64 with the math.Pi value.
