@@ -1316,6 +1316,9 @@ func (b *builder) lowerPrimary(p *parser.Primary) (uint32, error) {
 			if imp, ok := b.goImports[p.Selector.Root]; ok {
 				return b.lowerGoValue(imp, p.Selector.Tail[0])
 			}
+			if id, ok, err := b.tryLowerMathConst(p.Selector.Root, p.Selector.Tail); ok {
+				return id, err
+			}
 		}
 		if len(p.Selector.Tail) != 0 {
 			return 0, fmt.Errorf("frontend: selector tail %v unsupported in MVP", p.Selector.Tail)
@@ -1574,6 +1577,31 @@ func (b *builder) lowerBuiltinCall(c *parser.CallExpr) (uint32, bool, error) {
 // are no-ops at compiler3-lower time. Only `math.sqrt` is recognised
 // in Phase 4.3.5; further entries (`pow`, `log`, ...) extend the
 // switch.
+// tryLowerMathConst recognises `math.<name>` selector reads against a
+// known math constant. It mirrors the math-builtin function-call
+// dispatch (Phase 4.3.5) but for value-reads rather than calls. The
+// Mochi source advertises the binding via `extern let math.pi: float`
+// (skipped at top-level statement collection) plus the usual
+// `import python "math" as math`; both are no-op declarations at
+// compiler3-lower time. Phase 4.3.9 covers `pi` and `e`; further
+// constants extend the switch.
+func (b *builder) tryLowerMathConst(root string, tail []string) (uint32, bool, error) {
+	if root != "math" || len(tail) != 1 {
+		return 0, false, nil
+	}
+	var v float64
+	switch tail[0] {
+	case "pi":
+		v = math.Pi
+	case "e":
+		v = math.E
+	default:
+		return 0, false, nil
+	}
+	id := b.addValue(ir.Value{Type: ir.TypeF64, Op: ir.OpConst, Const: int64(math.Float64bits(v))})
+	return id, true, nil
+}
+
 func (b *builder) tryLowerMathBuiltin(root string, tail []string, callArgs []*parser.Expr) (uint32, bool, error) {
 	if root != "math" || len(tail) != 1 {
 		return 0, false, nil
