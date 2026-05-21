@@ -41,3 +41,28 @@ double mochi_f64_array_get(const mochi_f64_array *a, int64_t i) {
 void mochi_f64_array_set(mochi_f64_array *a, int64_t i, double v) {
     a->data[i] = v;
 }
+
+mochi_f64_array *mochi_f64_array_concat(const mochi_f64_array *a, const mochi_f64_array *b) {
+    mochi_f64_array *out = mochi_f64_array_new();
+    int64_t total = a->len + b->len;
+    if (total > 0) {
+        double *nd = (double *)malloc((size_t)total * sizeof(double));
+        if (nd == NULL) {
+            abort();
+        }
+        if (a->len > 0) {
+            for (int64_t i = 0; i < a->len; i++) {
+                nd[i] = a->data[i];
+            }
+        }
+        if (b->len > 0) {
+            for (int64_t i = 0; i < b->len; i++) {
+                nd[a->len + i] = b->data[i];
+            }
+        }
+        out->data = nd;
+        out->cap = total;
+        out->len = total;
+    }
+    return out;
+}

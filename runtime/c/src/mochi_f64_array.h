@@ -39,6 +39,7 @@ int64_t mochi_f64_array_len(const mochi_f64_array *a);
 void mochi_f64_array_push(mochi_f64_array *a, double v);
 double mochi_f64_array_get(const mochi_f64_array *a, int64_t i);
 void mochi_f64_array_set(mochi_f64_array *a, int64_t i, double v);
+mochi_f64_array *mochi_f64_array_concat(const mochi_f64_array *a, const mochi_f64_array *b);
 
 #ifdef __cplusplus
 }

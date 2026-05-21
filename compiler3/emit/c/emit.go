@@ -78,10 +78,10 @@ func Emit(p *Program) ([]byte, error) {
 				}
 				return nil, fmt.Errorf("emit %s: OpCallGo to %s.%s: %w", fn.Name, b.Pkg, b.Name, ErrUnsupportedFFI)
 			case ir.OpNewList, ir.OpListLenI64, ir.OpListPushI64,
-				ir.OpListGetI64, ir.OpListSetI64:
+				ir.OpListGetI64, ir.OpListSetI64, ir.OpListConcatI64:
 				usesListI64 = true
 			case ir.OpNewF64Array, ir.OpF64ArrayLenI64, ir.OpF64ArrayPushF64,
-				ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64:
+				ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64, ir.OpF64ArrayConcat:
 				usesF64Array = true
 			}
 		}
@@ -336,6 +336,10 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = mochi_f64_array_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpF64ArraySetF64:
 		fmt.Fprintf(w, "    mochi_f64_array_set(%s, %s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
+	case ir.OpListConcatI64:
+		fmt.Fprintf(w, "    %s = mochi_list_i64_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpF64ArrayConcat:
+		fmt.Fprintf(w, "    %s = mochi_f64_array_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpCall, ir.OpTailCall:
 		// Intra-program call. v.Const indexes into Program.Funcs;
 		// args are SSA values in declared order. The emitter writes

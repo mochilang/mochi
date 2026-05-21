@@ -42,3 +42,24 @@ int64_t mochi_list_i64_get(const mochi_list_i64 *l, int64_t i) {
 void mochi_list_i64_set(mochi_list_i64 *l, int64_t i, int64_t v) {
     l->data[i] = v;
 }
+
+mochi_list_i64 *mochi_list_i64_concat(const mochi_list_i64 *a, const mochi_list_i64 *b) {
+    mochi_list_i64 *out = mochi_list_i64_new();
+    int64_t total = a->len + b->len;
+    if (total > 0) {
+        int64_t *nd = (int64_t *)malloc((size_t)total * sizeof(int64_t));
+        if (nd == NULL) {
+            abort();
+        }
+        if (a->len > 0) {
+            memcpy(nd, a->data, (size_t)a->len * sizeof(int64_t));
+        }
+        if (b->len > 0) {
+            memcpy(nd + a->len, b->data, (size_t)b->len * sizeof(int64_t));
+        }
+        out->data = nd;
+        out->cap = total;
+        out->len = total;
+    }
+    return out;
+}

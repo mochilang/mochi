@@ -306,6 +306,12 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 		fmt.Fprintf(w, "\t%s = %s[%s]\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpF64ArraySetF64:
 		fmt.Fprintf(w, "\t%s[%s] = %s\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
+	case ir.OpListConcatI64:
+		fmt.Fprintf(w, "\t%s = append(append([]int64{}, %s...), %s...)\n",
+			name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpF64ArrayConcat:
+		fmt.Fprintf(w, "\t%s = append(append([]float64{}, %s...), %s...)\n",
+			name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpCall, ir.OpTailCall:
 		callee := all[v.Const]
 		fmt.Fprintf(w, "\t%s = %s(", name, callee.Name)
