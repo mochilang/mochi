@@ -5,11 +5,11 @@
 // compile-time error.
 //
 // The verifier is the single point of memory-safety policy described
-// in docs/security/threat-model.md. Phase 1 of MEP-41 (the present
-// package) covers rule classes A through D. Rule class E (reference
-// modes) lands in Phase 4. Generation opacity (rule class C) is
-// completed in Phase 2; the Phase 1 version installs the structural
-// no-gen-leaking-op invariant via the producer-kind table.
+// in docs/security/threat-model.md. Phase 1 of MEP-41 covers rule
+// classes A through D. Generation opacity (rule class C) is completed
+// in Phase 2; the Phase 1 version installs the structural
+// no-gen-leaking-op invariant via the producer-kind table. Phase 4
+// adds rule class E (reference-mode discipline) on top.
 //
 // The four rule classes Phase 1 enforces:
 //
@@ -36,6 +36,18 @@
 //     The check piggybacks on ir.Validate's operand-type table (which
 //     was originally written for type preservation) and re-affirms
 //     it under the rule-D label.
+//
+//   - Class E (reference-mode discipline). The optional borrow / consume
+//     / inout / weak annotations from MEP-41 §6.9 carry verifier
+//     obligations: borrow values may not appear as the first argument
+//     to a mutating Dispatch op, consume values may appear in at most
+//     one Dispatch use, weak values may never appear as a Dispatch arg
+//     (the surface language must wire `try_deref`, MEP-16 §6.6, to
+//     turn a weak handle into a checked RefModeNone temporary). inout
+//     values carry an exclusivity obligation that the present checker
+//     records but defers to the frontend until the surface language is
+//     in tree. Default-mode Values are unaffected (their Function has
+//     nil RefModes).
 //
 // The package exposes a single panicking helper (`mustClassifyAll`)
 // invoked from a `init()` that asserts the kindOf switch covers every
@@ -190,6 +202,7 @@ func kindOf(o ir.OpCode) ProducerKind {
 // visible spec-violating change in code review.
 func init() {
 	mustClassifyAll()
+	mustClassifyAllDispatch()
 }
 
 // mustClassifyAll walks every OpCode in [OpInvalid+1, lastOpCode] and
@@ -239,6 +252,9 @@ func Function(fn *ir.Function) error {
 	}
 	if err := checkRuleD(fn); err != nil {
 		return fmt.Errorf("verify rule D (arena dispatch): %w", err)
+	}
+	if err := checkRuleE(fn); err != nil {
+		return fmt.Errorf("verify rule E (reference modes): %w", err)
 	}
 	return nil
 }
@@ -396,6 +412,158 @@ func contractResult(o ir.OpCode) ir.Type {
 		return ir.TypeF64
 	}
 	return ir.TypeInvalid
+}
+
+// opIsMutating reports whether a KindDispatch op is a write to the
+// arena it dispatches into. Rule E uses this classification to refuse
+// mutating ops on borrow-tagged values.
+//
+// Read Dispatch ops: OpLenStr, OpListLenI64, OpListGetI64, OpListGetF64,
+// OpMapGetI64I64, OpF64ArrayLenI64, OpF64ArrayGetF64.
+//
+// Write Dispatch ops: OpListPushI64, OpListSetI64, OpListSetF64,
+// OpMapSetI64I64, OpF64ArrayPushF64, OpF64ArraySetF64.
+//
+// Adding a new Dispatch op to ir/types.go without classifying it here
+// would silently default to "non-mutating" for rule E purposes. The
+// init() coverage check below catches this by asserting every
+// KindDispatch op appears in either readDispatchOps or writeDispatchOps.
+func opIsMutating(o ir.OpCode) bool {
+	switch o {
+	case ir.OpListPushI64, ir.OpListSetI64, ir.OpListSetF64,
+		ir.OpMapSetI64I64,
+		ir.OpF64ArrayPushF64, ir.OpF64ArraySetF64:
+		return true
+	}
+	return false
+}
+
+// readDispatchOps lists every KindDispatch op that does not mutate its
+// arena. Kept as data (rather than a switch) so the coverage check can
+// enumerate both halves of the dispatch op set.
+var readDispatchOps = []ir.OpCode{
+	ir.OpLenStr,
+	ir.OpListLenI64,
+	ir.OpListGetI64,
+	ir.OpListGetF64,
+	ir.OpMapGetI64I64,
+	ir.OpF64ArrayLenI64,
+	ir.OpF64ArrayGetF64,
+}
+
+// writeDispatchOps lists every KindDispatch op that mutates its arena.
+var writeDispatchOps = []ir.OpCode{
+	ir.OpListPushI64,
+	ir.OpListSetI64,
+	ir.OpListSetF64,
+	ir.OpMapSetI64I64,
+	ir.OpF64ArrayPushF64,
+	ir.OpF64ArraySetF64,
+}
+
+// checkRuleE verifies the §6.9 reference-mode obligations. Default-mode
+// functions (nil RefModes) pass trivially; the rest of the checker only
+// runs when at least one Value carries a non-default mode.
+//
+// The checker walks every KindDispatch Value (the only IR consumers of
+// a handle), looks up the mode of the dispatch's handle argument
+// (Args[0]), and applies the per-mode obligation:
+//
+//   - RefModeNone: no obligation. Falls through.
+//
+//   - RefModeBorrow: every Dispatch arg targeting a borrowed Value must
+//     be a read op. A write op is a rule violation. Borrow values may
+//     be Dispatch arg multiple times (read-only sharing is the point).
+//
+//   - RefModeInout: read and write ops are both permitted. The
+//     exclusivity obligation (no other live alias) is a surface-language
+//     property that the frontend must enforce; rule E records the mode
+//     so a future SSA-level alias analysis can be wired in.
+//
+//   - RefModeConsume: at most one Dispatch op may consume the binding.
+//     Reading a consumed Value twice is a rule violation. The intent is
+//     to enable `gc.kill`-style deterministic free after the consume
+//     point.
+//
+//   - RefModeWeak: no Dispatch op may take a weak Value as Args[0].
+//     The surface language must wire `try_deref` (MEP-16 §6.6) to
+//     materialize an Option-typed RefModeNone temporary.
+//
+// Move-shaped ops (OpPhi, OpParam) do not count as Dispatch uses; the
+// SSA join itself preserves the mode obligation downstream.
+func checkRuleE(fn *ir.Function) error {
+	if len(fn.RefModes) == 0 {
+		return nil
+	}
+	consumeUses := make(map[uint32]int, len(fn.RefModes))
+	for i := range fn.Values {
+		v := &fn.Values[i]
+		if kindOf(v.Op) != KindDispatch {
+			continue
+		}
+		if len(v.Args) == 0 {
+			continue
+		}
+		srcID := v.Args[0]
+		if int(srcID) >= len(fn.Values) {
+			return fmt.Errorf("v%d op=%s: dispatch arg v%d out of range", i, v.Op, srcID)
+		}
+		mode := fn.RefModeOf(srcID)
+		switch mode {
+		case ir.RefModeNone, ir.RefModeInout:
+			// inout permits any dispatch; exclusivity is the frontend's
+			// responsibility until the surface language lands.
+		case ir.RefModeBorrow:
+			if opIsMutating(v.Op) {
+				return fmt.Errorf("v%d op=%s: mutating dispatch on borrow-tagged v%d (rule E §6.9; demote the source to RefModeInout or copy before mutation)", i, v.Op, srcID)
+			}
+		case ir.RefModeConsume:
+			consumeUses[srcID]++
+			if consumeUses[srcID] > 1 {
+				return fmt.Errorf("v%d op=%s: consume-tagged v%d used %d times (rule E §6.9; at most one dispatch use per consume binding)", i, v.Op, srcID, consumeUses[srcID])
+			}
+		case ir.RefModeWeak:
+			return fmt.Errorf("v%d op=%s: dispatch on weak-tagged v%d (rule E §6.9; route through try_deref to materialize an Option-typed temporary before the dispatch)", i, v.Op, srcID)
+		default:
+			return fmt.Errorf("v%d op=%s: dispatch arg v%d carries unknown RefMode=%d", i, v.Op, srcID, mode)
+		}
+	}
+	return nil
+}
+
+// mustClassifyAllDispatch asserts every KindDispatch op is listed in
+// either readDispatchOps or writeDispatchOps. A new Dispatch op added
+// to ir/types.go without classifying it here would silently default to
+// non-mutating in checkRuleE, which could mask a borrow-mode violation.
+// Running this check at init time keeps the spec-in-sync rule (MEP-41
+// §13) machine-enforced for rule E in the same way mustClassifyAll does
+// for rule C.
+func mustClassifyAllDispatch() {
+	seen := make(map[ir.OpCode]bool)
+	for _, o := range readDispatchOps {
+		if opIsMutating(o) {
+			panic(fmt.Sprintf("verify: %s listed in readDispatchOps but opIsMutating reports true", o))
+		}
+		seen[o] = true
+	}
+	for _, o := range writeDispatchOps {
+		if !opIsMutating(o) {
+			panic(fmt.Sprintf("verify: %s listed in writeDispatchOps but opIsMutating reports false", o))
+		}
+		if seen[o] {
+			panic(fmt.Sprintf("verify: %s listed in both readDispatchOps and writeDispatchOps", o))
+		}
+		seen[o] = true
+	}
+	const lastOpCode = ir.OpCallGo
+	for o := ir.OpInvalid + 1; o <= lastOpCode; o++ {
+		if kindOf(o) != KindDispatch {
+			continue
+		}
+		if !seen[o] {
+			panic(fmt.Sprintf("verify: Dispatch OpCode %s (=%d) is not classified for rule E; add it to readDispatchOps or writeDispatchOps in compiler3/verify/verify.go", o, o))
+		}
+	}
 }
 
 // dispatchArena returns the arena Type a KindDispatch op reads from.

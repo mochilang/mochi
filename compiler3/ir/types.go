@@ -437,6 +437,14 @@ type Function struct {
 	Values     []Value
 	GoBindings []GoBinding
 	SourceFile string
+
+	// RefModes records the MEP-41 §6.9 reference-mode tag for the
+	// Values whose Mochi-surface binding carried one. Nil for any
+	// function compiled from default-mode source. Keys are Value IDs;
+	// values are RefMode. See compiler3/ir/refmode.go for the
+	// SetRefMode / RefModeOf accessors and the rule class E checker in
+	// compiler3/verify.
+	RefModes map[uint32]RefMode
 }
 
 // Builder helpers ----------------------------------------------------
