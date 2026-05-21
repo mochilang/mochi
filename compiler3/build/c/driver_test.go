@@ -441,6 +441,63 @@ print(total)
 	}
 }
 
+// TestBuildSourceMathSqrtBuiltin pins the Phase 4.3.5 math.sqrt
+// builtin through the C target: the `import python "math"` plus
+// `extern fun math.sqrt(x: float): float` declarations are accepted
+// as no-op bindings, and the call site lowers to OpSqrtF64 which
+// the C emitter renders as `sqrt(v)` and the driver links with -lm.
+// sqrt(2) * sqrt(2) round-trips through f64 to 2 cast to int.
+func TestBuildSourceMathSqrtBuiltin(t *testing.T) {
+	src := `import python "math" as math
+extern fun math.sqrt(x: float): float
+
+let r = math.sqrt(2.0) * math.sqrt(2.0)
+print(r as int)
+`
+	if got, want := runMochiBuild(t, src), "2\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceNbodyDistanceKernel pins the n_body softened-distance
+// expression `1 / (d2 * sqrt(d2))` through the C target for a 3-4-5
+// right triangle: d2 = 25, sqrt(25) = 5, 1/(25*5) = 0.008. Scaled by
+// 1e9 and cast to int, the result is 8000000. This is the load-bearing
+// Phase 4.3.5 gate for the n_body kernel: math.sqrt + the precedence-
+// climbing fix (without precedence, `dx*dx + dy*dy + dz*dz` evaluated
+// left-to-right gave a wrong d2 and the test would fail with INT64_MAX
+// from NaN-to-int).
+func TestBuildSourceNbodyDistanceKernel(t *testing.T) {
+	src := `import python "math" as math
+extern fun math.sqrt(x: float): float
+
+let dx = 3.0
+let dy = 4.0
+let dz = 0.0
+let d2 = dx * dx + dy * dy + dz * dz
+let factor = 1.0 / (d2 * math.sqrt(d2))
+print((factor * 1.0e9) as int)
+`
+	if got, want := runMochiBuild(t, src), "8000000\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourcePrecedenceClimbing pins the Phase 4.3.5 precedence-
+// climbing reducer in lowerBinary: `1 + 2 * 3` must be `1 + (2*3)` = 7,
+// not the previous left-assoc shape `((1+2)*3)` = 9. Without this,
+// every multi-operator non-parenthesised expression in the benchmark
+// games would silently miscompile.
+func TestBuildSourcePrecedenceClimbing(t *testing.T) {
+	src := `print(1 + 2 * 3)
+print(2 * 3 + 4)
+print(1 + 2 * 3 + 4 * 5)
+`
+	if got, want := runMochiBuild(t, src), "7\n10\n27\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceFibIter is the §10.7 unblock for the iterative Fib
 // benchmark: while loop, mutated `a`/`b`/`i`, and a `let t` inside the
 // body that the phi-at-header must NOT track (it's body-scoped).

@@ -105,6 +105,12 @@ func Build(p *cgen.Program, opts Options) (Result, error) {
 	args = append(args, opts.CCFlags...)
 	args = append(args, "-o", binPath, srcPath)
 	args = append(args, runtimeSources...)
+	// Always link with libm. The C target's emit.go unconditionally
+	// includes <math.h>, and Phase 4.3.5 onward emits real math
+	// builtins (sqrt and friends). On glibc/musl Linux libm is a
+	// separate archive; on macOS / *BSD the symbols live in libSystem
+	// so -lm is a no-op there. Either way it is harmless.
+	args = append(args, "-lm")
 
 	cmd := exec.Command(cc, args...)
 	out, err := cmd.CombinedOutput()

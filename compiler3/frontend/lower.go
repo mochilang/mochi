@@ -86,10 +86,15 @@ func Lower(prog *parser.Program) (*gogen.Program, error) {
 	}
 
 	// Wrap top-level (non-fun) statements in a synthetic `main`. If
-	// there are no top-level statements, no main is emitted.
+	// there are no top-level statements, no main is emitted. Import
+	// and ExternFun declarations are recognised here as binding-only
+	// statements: they advertise a name (e.g. `math.sqrt`) that the
+	// frontend resolves through a builtin path rather than as a real
+	// call into a Mochi function, so no IR is emitted for them.
 	var topLevel []*parser.Statement
 	for _, st := range prog.Statements {
-		if st.Fun != nil || st.Import != nil {
+		if st.Fun != nil || st.Import != nil || st.ExternFun != nil ||
+			st.ExternVar != nil || st.ExternType != nil || st.ExternObject != nil {
 			continue
 		}
 		topLevel = append(topLevel, st)
@@ -873,21 +878,62 @@ func (b *builder) lowerBinary(be *parser.BinaryExpr) (uint32, error) {
 	if len(be.Right) == 0 {
 		return left, nil
 	}
-	// MVP: left-associative without precedence; sufficient for the
-	// numeric fixtures because most have only one operator or
-	// fully-parenthesised expressions.
-	cur := left
+	// Phase 4.3.5: lower with standard operator precedence (Shunting-
+	// Yard reduction). The parser yields a flat sequence Left, [Op,
+	// Right]*; we fold pairs from highest precedence down so that
+	// `a * b + c * d` becomes `(a*b) + (c*d)`, not `((a*b)+c)*d`.
+	// Without this, mandelbrot's fully-parenthesised expressions still
+	// happen to be correct (`2.0 * zr * zi + cy` is left-assoc-
+	// friendly), but n_body and spectral_norm's `dx*dx + dy*dy`
+	// shapes silently miscompile.
+	values := []uint32{left}
+	ops := make([]string, 0, len(be.Right))
 	for _, op := range be.Right {
 		rhs, err := b.lowerUnary(op.Right)
 		if err != nil {
 			return 0, err
 		}
-		cur, err = b.applyBinOp(op.Op, cur, rhs)
-		if err != nil {
-			return 0, err
+		values = append(values, rhs)
+		ops = append(ops, op.Op)
+	}
+	// Reduce pairs left-to-right, sweeping precedence levels from
+	// highest to lowest. Each sweep collapses adjacent operands joined
+	// by an operator at the current level into one combined value.
+	for _, level := range binaryPrecedenceLevels {
+		i := 0
+		for i < len(ops) {
+			if !level[ops[i]] {
+				i++
+				continue
+			}
+			combined, err := b.applyBinOp(ops[i], values[i], values[i+1])
+			if err != nil {
+				return 0, err
+			}
+			values[i] = combined
+			values = append(values[:i+1], values[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return cur, nil
+	if len(values) != 1 || len(ops) != 0 {
+		return 0, fmt.Errorf("frontend: binary precedence reduce left %d values, %d ops (operators present that have no precedence level)", len(values), len(ops))
+	}
+	return values[0], nil
+}
+
+// binaryPrecedenceLevels lists operator precedence buckets from
+// highest to lowest. Each bucket is left-associative; sweep order
+// gives the natural math reading of `a * b + c` -> `(a*b) + c`.
+// `in`, set ops (`union` / `except` / `intersect`), and `??` are
+// listed even though the MVP frontend doesn't yet implement them,
+// so the precedence shape lands once they do.
+var binaryPrecedenceLevels = []map[string]bool{
+	{"*": true, "/": true, "%": true},
+	{"+": true, "-": true, "union": true, "except": true, "intersect": true},
+	{"==": true, "!=": true, "<": true, "<=": true, ">": true, ">=": true, "in": true},
+	{"&&": true},
+	{"||": true},
+	{"??": true},
 }
 
 func (b *builder) applyBinOp(op string, l, r uint32) (uint32, error) {
@@ -1022,6 +1068,18 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 		sel := pe.Target.Selector
 		if imp, ok := b.goImports[sel.Root]; ok && len(sel.Tail) == 1 {
 			return b.lowerGoCall(imp, sel.Tail[0], pe.Ops[0].Call.Args)
+		}
+		// Phase 4.3.5: `math.sqrt(x)` is recognised as a builtin
+		// regardless of the import language (python or go) or whether
+		// the import statement is present at all. The Mochi source
+		// declares the binding via `import python "math" as math` plus
+		// `extern fun math.sqrt(x: float): float`; both statements are
+		// no-ops at compiler3-lower time, and the call site lowers
+		// directly to OpSqrtF64. This keeps the IR target-agnostic
+		// while letting the Go emitter route to `math.Sqrt` and the
+		// C emitter to `sqrt` (linked with -lm).
+		if id, ok, err := b.tryLowerMathBuiltin(sel.Root, sel.Tail, pe.Ops[0].Call.Args); ok {
+			return id, err
 		}
 	}
 	if len(pe.Ops) == 0 {
@@ -1302,6 +1360,40 @@ func (b *builder) lowerBuiltinCall(c *parser.CallExpr) (uint32, bool, error) {
 			return list, true, nil
 		}
 		return 0, true, fmt.Errorf("frontend: append() target type %s unsupported (need list)", listType)
+	}
+	return 0, false, nil
+}
+
+// tryLowerMathBuiltin recognises `math.<name>(args)` selector-call
+// shapes and lowers them to one of the OpMath* opcodes. Returns
+// (id, true, nil) on a successful lower; (0, false, nil) when the
+// receiver/method pair is not a known math builtin (so the caller can
+// fall through to other dispatch paths); (0, true, err) when the name
+// is a builtin but the arguments are malformed.
+//
+// The Mochi source advertises the binding via `import python "math" as
+// math` plus `extern fun math.sqrt(x: float): float`; both statements
+// are no-ops at compiler3-lower time. Only `math.sqrt` is recognised
+// in Phase 4.3.5; further entries (`pow`, `log`, ...) extend the
+// switch.
+func (b *builder) tryLowerMathBuiltin(root string, tail []string, callArgs []*parser.Expr) (uint32, bool, error) {
+	if root != "math" || len(tail) != 1 {
+		return 0, false, nil
+	}
+	switch tail[0] {
+	case "sqrt":
+		if len(callArgs) != 1 {
+			return 0, true, fmt.Errorf("frontend: math.sqrt expects 1 arg, got %d", len(callArgs))
+		}
+		argID, err := b.lowerExpr(callArgs[0])
+		if err != nil {
+			return 0, true, err
+		}
+		if b.fn.Values[argID].Type != ir.TypeF64 {
+			return 0, true, fmt.Errorf("frontend: math.sqrt requires float arg, got %s", b.fn.Values[argID].Type)
+		}
+		id := b.addValue(ir.Value{Type: ir.TypeF64, Op: ir.OpSqrtF64, Args: []uint32{argID}})
+		return id, true, nil
 	}
 	return 0, false, nil
 }

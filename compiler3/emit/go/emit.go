@@ -268,6 +268,9 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 		fmt.Fprintf(w, "\t%s = float64(%s)\n", name, valueName(v.Args[0]))
 	case ir.OpF64ToI64:
 		fmt.Fprintf(w, "\t%s = int64(%s)\n", name, valueName(v.Args[0]))
+	case ir.OpSqrtF64:
+		imports["math"] = true
+		fmt.Fprintf(w, "\t%s = math.Sqrt(%s)\n", name, valueName(v.Args[0]))
 	case ir.OpLenStr:
 		fmt.Fprintf(w, "\t%s = int64(len(%s))\n", name, valueName(v.Args[0]))
 	case ir.OpConcatStr:
