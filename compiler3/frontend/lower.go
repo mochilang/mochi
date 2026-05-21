@@ -222,8 +222,28 @@ func lowerFun(p *gogen.Program, idx uint32, fs *parser.FunStmt, userFns map[stri
 }
 
 func lowerType(t *parser.TypeRef) (ir.Type, error) {
-	if t == nil || t.Simple == nil {
-		return ir.TypeInvalid, fmt.Errorf("frontend: only simple type names are supported in the MVP")
+	if t == nil {
+		return ir.TypeInvalid, fmt.Errorf("frontend: nil type ref")
+	}
+	if t.Generic != nil {
+		// Phase 4.3.1: `list<int>` (the typed-i64 array shape) is the
+		// only generic the MVP frontend lowers. ElemType inspection
+		// happens at the call site that constructs a TypeList value;
+		// here we only need to assert the surface form is supported.
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			el, err := lowerType(t.Generic.Args[0])
+			if err != nil {
+				return ir.TypeInvalid, fmt.Errorf("frontend: list element: %w", err)
+			}
+			if el != ir.TypeI64 {
+				return ir.TypeInvalid, fmt.Errorf("frontend: list<%s> unsupported in MVP (only list<int>)", el)
+			}
+			return ir.TypeList, nil
+		}
+		return ir.TypeInvalid, fmt.Errorf("frontend: generic %s<...> unsupported in MVP", t.Generic.Name)
+	}
+	if t.Simple == nil {
+		return ir.TypeInvalid, fmt.Errorf("frontend: only simple and list<...> type names are supported in the MVP")
 	}
 	switch *t.Simple {
 	case "int":
@@ -269,9 +289,11 @@ func (b *builder) lowerStmt(st *parser.Statement) error {
 	case st.Var != nil:
 		return b.lowerLet(st.Var.Name, st.Var.Value)
 	case st.Assign != nil:
-		// MVP: only plain `name = expr` (no index/field assignment).
-		if len(st.Assign.Index) != 0 || len(st.Assign.Field) != 0 {
-			return fmt.Errorf("frontend: indexed/field assignment unsupported in MVP")
+		if len(st.Assign.Field) != 0 {
+			return fmt.Errorf("frontend: field assignment unsupported in MVP")
+		}
+		if len(st.Assign.Index) != 0 {
+			return b.lowerIndexedAssign(st.Assign)
 		}
 		return b.lowerLet(st.Assign.Name, st.Assign.Value)
 	case st.Return != nil:
@@ -285,6 +307,47 @@ func (b *builder) lowerStmt(st *parser.Statement) error {
 		return err
 	}
 	return fmt.Errorf("frontend: statement kind unsupported in MVP")
+}
+
+// lowerIndexedAssign handles `xs[i] = v`. MVP scope is a single-level
+// IndexOp on a TypeList(elem=i64) binding. Multi-level indices (xs[i][j])
+// and field-then-index chains stay rejected until a later phase.
+func (b *builder) lowerIndexedAssign(a *parser.AssignStmt) error {
+	if len(a.Index) != 1 {
+		return fmt.Errorf("frontend: multi-level indexed assignment unsupported in MVP")
+	}
+	idxOp := a.Index[0]
+	if idxOp.Colon != nil || idxOp.Colon2 != nil || idxOp.End != nil || idxOp.Step != nil || idxOp.Start == nil {
+		return fmt.Errorf("frontend: slice assignment unsupported in MVP")
+	}
+	listID, ok := b.values[a.Name]
+	if !ok {
+		return fmt.Errorf("frontend: indexed assign to unbound identifier %q", a.Name)
+	}
+	if b.fn.Values[listID].Type != ir.TypeList {
+		return fmt.Errorf("frontend: indexed assign on non-list %s", b.fn.Values[listID].Type)
+	}
+	idxID, err := b.lowerExpr(idxOp.Start)
+	if err != nil {
+		return err
+	}
+	if b.fn.Values[idxID].Type != ir.TypeI64 {
+		return fmt.Errorf("frontend: list index must be i64, got %s", b.fn.Values[idxID].Type)
+	}
+	valID, err := b.lowerExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	if b.fn.Values[valID].Type != ir.TypeI64 {
+		return fmt.Errorf("frontend: list<int> store requires i64 value, got %s", b.fn.Values[valID].Type)
+	}
+	b.addValue(ir.Value{
+		Type:     ir.TypeUnit,
+		ElemType: ir.TypeI64,
+		Op:       ir.OpListSetI64,
+		Args:     []uint32{listID, idxID, valID},
+	})
+	return nil
 }
 
 func (b *builder) lowerLet(name string, e *parser.Expr) error {
@@ -687,10 +750,43 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 			return b.lowerGoCall(imp, sel.Tail[0], pe.Ops[0].Call.Args)
 		}
 	}
-	if len(pe.Ops) != 0 {
-		return 0, fmt.Errorf("frontend: postfix ops unsupported in MVP")
+	if len(pe.Ops) == 0 {
+		return b.lowerPrimary(pe.Target)
 	}
-	return b.lowerPrimary(pe.Target)
+	// Phase 4.3.1: a chain of IndexOp postfixes on a Primary lowers
+	// to OpListGetI64. Only single-level i64 indexing is supported in
+	// the MVP; ranges and multi-level chains stay rejected so the A/B
+	// harness skips the fixture rather than miscompiling.
+	cur, err := b.lowerPrimary(pe.Target)
+	if err != nil {
+		return 0, err
+	}
+	for _, op := range pe.Ops {
+		if op.Index == nil {
+			return 0, fmt.Errorf("frontend: non-index postfix unsupported in MVP")
+		}
+		idx := op.Index
+		if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil || idx.Start == nil {
+			return 0, fmt.Errorf("frontend: slice indexing unsupported in MVP")
+		}
+		if b.fn.Values[cur].Type != ir.TypeList {
+			return 0, fmt.Errorf("frontend: index on non-list %s", b.fn.Values[cur].Type)
+		}
+		iID, err := b.lowerExpr(idx.Start)
+		if err != nil {
+			return 0, err
+		}
+		if b.fn.Values[iID].Type != ir.TypeI64 {
+			return 0, fmt.Errorf("frontend: list index must be i64, got %s", b.fn.Values[iID].Type)
+		}
+		cur = b.addValue(ir.Value{
+			Type:     ir.TypeI64,
+			ElemType: ir.TypeI64,
+			Op:       ir.OpListGetI64,
+			Args:     []uint32{cur, iID},
+		})
+	}
+	return cur, nil
 }
 
 func (b *builder) lowerPrimary(p *parser.Primary) (uint32, error) {
@@ -713,10 +809,43 @@ func (b *builder) lowerPrimary(p *parser.Primary) (uint32, error) {
 		return id, nil
 	case p.Call != nil:
 		return b.lowerCall(p.Call)
+	case p.List != nil:
+		return b.lowerListLiteral(p.List)
 	case p.Group != nil:
 		return b.lowerExpr(p.Group)
 	}
 	return 0, fmt.Errorf("frontend: primary form unsupported in MVP")
+}
+
+// lowerListLiteral lowers `[e1, e2, ...]` to OpNewList plus a chain of
+// OpListPushI64 ops, one per element. The empty form `[]` produces an
+// OpNewList with ElemType=TypeI64; the type is inferred from the
+// context only when elements are present, otherwise it defaults to i64
+// (the MVP's sole supported element type). Non-i64 elements surface a
+// frontend error.
+func (b *builder) lowerListLiteral(lit *parser.ListLiteral) (uint32, error) {
+	listID := b.addValue(ir.Value{
+		Type:     ir.TypeList,
+		ElemType: ir.TypeI64,
+		Op:       ir.OpNewList,
+	})
+	for _, el := range lit.Elems {
+		vid, err := b.lowerExpr(el)
+		if err != nil {
+			return 0, err
+		}
+		if b.fn.Values[vid].Type != ir.TypeI64 {
+			return 0, fmt.Errorf("frontend: list literal element type %s unsupported (only i64 in MVP)",
+				b.fn.Values[vid].Type)
+		}
+		b.addValue(ir.Value{
+			Type:     ir.TypeUnit,
+			ElemType: ir.TypeI64,
+			Op:       ir.OpListPushI64,
+			Args:     []uint32{listID, vid},
+		})
+	}
+	return listID, nil
 }
 
 func (b *builder) lowerLiteral(lit *parser.Literal) (uint32, error) {
@@ -736,6 +865,12 @@ func (b *builder) lowerLiteral(lit *parser.Literal) (uint32, error) {
 }
 
 func (b *builder) lowerCall(c *parser.CallExpr) (uint32, error) {
+	// Builtins: `len(xs)` and `append(xs, v)` map to dedicated IR ops
+	// rather than a user-declared `fun`. They're checked before the
+	// user-fun lookup so a Mochi program cannot shadow them.
+	if id, ok, err := b.lowerBuiltinCall(c); ok {
+		return id, err
+	}
 	entry, ok := b.userFns[c.Func]
 	if !ok {
 		return 0, fmt.Errorf("frontend: unknown function %q (only user-declared funs callable in MVP)", c.Func)
@@ -751,6 +886,73 @@ func (b *builder) lowerCall(c *parser.CallExpr) (uint32, error) {
 	callee := b.prog.Funcs[entry.index]
 	id := b.addValue(ir.Value{Type: callee.Result, Op: ir.OpCall, Args: args, Const: int64(entry.index)})
 	return id, nil
+}
+
+// lowerBuiltinCall recognises the small set of builtin function names
+// that lower to dedicated IR ops. Returns (id, true, nil) on match,
+// (0, false, nil) when the name is not a builtin, and (_, true, err)
+// when the name matches but the argument shape is wrong.
+//
+// Phase 4.3.1 covers `len(xs)` and `append(xs, v)` against list<int>;
+// `len("s")` against TypeStr is wired through OpLenStr in the same
+// case for free since the IR op already exists.
+func (b *builder) lowerBuiltinCall(c *parser.CallExpr) (uint32, bool, error) {
+	switch c.Func {
+	case "len":
+		if len(c.Args) != 1 {
+			return 0, true, fmt.Errorf("frontend: len() takes 1 argument, got %d", len(c.Args))
+		}
+		arg, err := b.lowerExpr(c.Args[0])
+		if err != nil {
+			return 0, true, err
+		}
+		switch b.fn.Values[arg].Type {
+		case ir.TypeList:
+			id := b.addValue(ir.Value{
+				Type: ir.TypeI64, Op: ir.OpListLenI64, Args: []uint32{arg},
+			})
+			return id, true, nil
+		case ir.TypeStr:
+			id := b.addValue(ir.Value{
+				Type: ir.TypeI64, Op: ir.OpLenStr, Args: []uint32{arg},
+			})
+			return id, true, nil
+		default:
+			return 0, true, fmt.Errorf("frontend: len() on %s unsupported in MVP",
+				b.fn.Values[arg].Type)
+		}
+	case "append":
+		if len(c.Args) != 2 {
+			return 0, true, fmt.Errorf("frontend: append() takes 2 arguments, got %d", len(c.Args))
+		}
+		list, err := b.lowerExpr(c.Args[0])
+		if err != nil {
+			return 0, true, err
+		}
+		val, err := b.lowerExpr(c.Args[1])
+		if err != nil {
+			return 0, true, err
+		}
+		if b.fn.Values[list].Type != ir.TypeList {
+			return 0, true, fmt.Errorf("frontend: append() target type %s unsupported (need list)",
+				b.fn.Values[list].Type)
+		}
+		if b.fn.Values[val].Type != ir.TypeI64 {
+			return 0, true, fmt.Errorf("frontend: append() value type %s unsupported (need i64)",
+				b.fn.Values[val].Type)
+		}
+		// Push mutates the list in place; the SSA "result" of append
+		// is the same list value. The caller's `xs = append(xs, v)`
+		// rebinds the name to itself, which is correct.
+		b.addValue(ir.Value{
+			Type:     ir.TypeUnit,
+			ElemType: ir.TypeI64,
+			Op:       ir.OpListPushI64,
+			Args:     []uint32{list, val},
+		})
+		return list, true, nil
+	}
+	return 0, false, nil
 }
 
 // lowerGoCall handles a `pkg.Func(args)` call against a resolved
