@@ -305,6 +305,10 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = (%s %s %s) ? 1 : 0;\n", name, valueName(v.Args[0]), op, valueName(v.Args[1]))
 	case ir.OpNotBool:
 		fmt.Fprintf(w, "    %s = %s ? 0 : 1;\n", name, valueName(v.Args[0]))
+	case ir.OpI64ToF64:
+		fmt.Fprintf(w, "    %s = (double)%s;\n", name, valueName(v.Args[0]))
+	case ir.OpF64ToI64:
+		fmt.Fprintf(w, "    %s = (int64_t)%s;\n", name, valueName(v.Args[0]))
 	case ir.OpNewList:
 		// New empty list: allocates a header on the heap with NULL data.
 		// The first push lazily reserves capacity; this matches the

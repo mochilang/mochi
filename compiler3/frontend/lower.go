@@ -1036,39 +1036,61 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 		return 0, err
 	}
 	for _, op := range pe.Ops {
-		if op.Index == nil {
-			return 0, fmt.Errorf("frontend: non-index postfix unsupported in MVP")
-		}
-		idx := op.Index
-		if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil || idx.Start == nil {
-			return 0, fmt.Errorf("frontend: slice indexing unsupported in MVP")
-		}
-		curType := b.fn.Values[cur].Type
-		if curType != ir.TypeList && curType != ir.TypeF64Arr {
-			return 0, fmt.Errorf("frontend: index on non-list %s", curType)
-		}
-		iID, err := b.lowerExpr(idx.Start)
-		if err != nil {
-			return 0, err
-		}
-		if b.fn.Values[iID].Type != ir.TypeI64 {
-			return 0, fmt.Errorf("frontend: list index must be i64, got %s", b.fn.Values[iID].Type)
-		}
-		switch curType {
-		case ir.TypeList:
-			cur = b.addValue(ir.Value{
-				Type:     ir.TypeI64,
-				ElemType: ir.TypeI64,
-				Op:       ir.OpListGetI64,
-				Args:     []uint32{cur, iID},
-			})
-		case ir.TypeF64Arr:
-			cur = b.addValue(ir.Value{
-				Type:     ir.TypeF64,
-				ElemType: ir.TypeF64,
-				Op:       ir.OpF64ArrayGetF64,
-				Args:     []uint32{cur, iID},
-			})
+		switch {
+		case op.Index != nil:
+			idx := op.Index
+			if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil || idx.Start == nil {
+				return 0, fmt.Errorf("frontend: slice indexing unsupported in MVP")
+			}
+			curType := b.fn.Values[cur].Type
+			if curType != ir.TypeList && curType != ir.TypeF64Arr {
+				return 0, fmt.Errorf("frontend: index on non-list %s", curType)
+			}
+			iID, err := b.lowerExpr(idx.Start)
+			if err != nil {
+				return 0, err
+			}
+			if b.fn.Values[iID].Type != ir.TypeI64 {
+				return 0, fmt.Errorf("frontend: list index must be i64, got %s", b.fn.Values[iID].Type)
+			}
+			switch curType {
+			case ir.TypeList:
+				cur = b.addValue(ir.Value{
+					Type:     ir.TypeI64,
+					ElemType: ir.TypeI64,
+					Op:       ir.OpListGetI64,
+					Args:     []uint32{cur, iID},
+				})
+			case ir.TypeF64Arr:
+				cur = b.addValue(ir.Value{
+					Type:     ir.TypeF64,
+					ElemType: ir.TypeF64,
+					Op:       ir.OpF64ArrayGetF64,
+					Args:     []uint32{cur, iID},
+				})
+			}
+		case op.Cast != nil:
+			// Phase 4.3.4: `x as float` / `x as int` for the i64<->f64
+			// pair. Other numeric widenings and any non-numeric cast
+			// stay rejected so the harness skips the fixture rather
+			// than miscompiling.
+			dst, err := lowerType(op.Cast.Type)
+			if err != nil {
+				return 0, fmt.Errorf("frontend: cast target: %w", err)
+			}
+			src := b.fn.Values[cur].Type
+			switch {
+			case src == dst:
+				// no-op cast; preserve SSA shape.
+			case src == ir.TypeI64 && dst == ir.TypeF64:
+				cur = b.addValue(ir.Value{Type: ir.TypeF64, Op: ir.OpI64ToF64, Args: []uint32{cur}})
+			case src == ir.TypeF64 && dst == ir.TypeI64:
+				cur = b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpF64ToI64, Args: []uint32{cur}})
+			default:
+				return 0, fmt.Errorf("frontend: cast %s -> %s unsupported in MVP", src, dst)
+			}
+		default:
+			return 0, fmt.Errorf("frontend: non-index/non-cast postfix unsupported in MVP")
 		}
 	}
 	return cur, nil

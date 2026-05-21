@@ -377,6 +377,70 @@ print(nsieve(100))
 	}
 }
 
+// TestBuildSourceCastIntToFloatRoundTrip pins the Phase 4.3.4 cast
+// surface through the C target: `n as float` lowers to OpI64ToF64
+// (emits `(double)n`), and `f as int` to OpF64ToI64 (`(int64_t)f`).
+// The constant 7 round-trips through f64 arithmetic without loss.
+func TestBuildSourceCastIntToFloatRoundTrip(t *testing.T) {
+	src := `let n = 7
+let f = (n as float) / 2.0
+let back = (f * 2.0) as int
+print(back + n)
+`
+	if got, want := runMochiBuild(t, src), "14\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceMandelbrotKernel is the Phase 4.3.4 load-bearing
+// gate: a stripped mandelbrot kernel that compiles via
+// `mochi build --target=c` and produces 4629 for a 16x16 grid with
+// max_iter=50. The program exercises int<->float casts inside nested
+// while loops with early return inside if. This is the program the
+// benchmark games' mandelbrot fixture reduces to once the harness's
+// `now()` / `json({...})` instrumentation is removed.
+func TestBuildSourceMandelbrotKernel(t *testing.T) {
+	src := `fun escape_count(cx: float, cy: float, max_iter: int): int {
+  var zr = 0.0
+  var zi = 0.0
+  var n = 0
+  while n < max_iter {
+    let r2 = zr * zr
+    let i2 = zi * zi
+    if r2 + i2 > 4.0 {
+      return n
+    }
+    let nzi = 2.0 * zr * zi + cy
+    let nzr = (r2 - i2) + cx
+    zr = nzr
+    zi = nzi
+    n = n + 1
+  }
+  return max_iter
+}
+
+let side = 16
+let max_iter = 50
+let side_f = side as float
+var total = 0
+var row = 0
+while row < side {
+  let cy = (row as float) / side_f * 2.0 - 1.0
+  var col = 0
+  while col < side {
+    let cx = (col as float) / side_f * 3.0 - 2.0
+    total = total + escape_count(cx, cy, max_iter)
+    col = col + 1
+  }
+  row = row + 1
+}
+print(total)
+`
+	if got, want := runMochiBuild(t, src), "4629\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceFibIter is the §10.7 unblock for the iterative Fib
 // benchmark: while loop, mutated `a`/`b`/`i`, and a `let t` inside the
 // body that the phi-at-header must NOT track (it's body-scoped).

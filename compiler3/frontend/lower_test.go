@@ -280,6 +280,69 @@ print(sumf(4))
 	}
 }
 
+// TestLowerCastIntToFloatRoundTrip pins the Phase 4.3.4 `as` cast
+// surface: an i64 widened to f64 and the result floored back through
+// `as int`. The constant 7 round-trips through f64 arithmetic without
+// loss, so the program prints 7 plus the original sum.
+func TestLowerCastIntToFloatRoundTrip(t *testing.T) {
+	src := `let n = 7
+let f = (n as float) / 2.0
+let back = (f * 2.0) as int
+print(back + n)
+`
+	got := runEnd2End(t, src)
+	if got != "14\n" {
+		t.Errorf("got %q, want %q", got, "14\n")
+	}
+}
+
+// TestLowerMandelbrotKernel is the load-bearing Phase 4.3.4 gate: a
+// stripped mandelbrot kernel that exercises int<->float casts inside
+// nested while loops with early return inside if. The Go and C targets
+// both produce 4629 for a 16x16 grid with max_iter=50.
+func TestLowerMandelbrotKernel(t *testing.T) {
+	src := `fun escape_count(cx: float, cy: float, max_iter: int): int {
+  var zr = 0.0
+  var zi = 0.0
+  var n = 0
+  while n < max_iter {
+    let r2 = zr * zr
+    let i2 = zi * zi
+    if r2 + i2 > 4.0 {
+      return n
+    }
+    let nzi = 2.0 * zr * zi + cy
+    let nzr = (r2 - i2) + cx
+    zr = nzr
+    zi = nzi
+    n = n + 1
+  }
+  return max_iter
+}
+
+let side = 16
+let max_iter = 50
+let side_f = side as float
+var total = 0
+var row = 0
+while row < side {
+  let cy = (row as float) / side_f * 2.0 - 1.0
+  var col = 0
+  while col < side {
+    let cx = (col as float) / side_f * 3.0 - 2.0
+    total = total + escape_count(cx, cy, max_iter)
+    col = col + 1
+  }
+  row = row + 1
+}
+print(total)
+`
+	got := runEnd2End(t, src)
+	if got != "4629\n" {
+		t.Errorf("got %q, want %q", got, "4629\n")
+	}
+}
+
 // TestLowerNsieve is the load-bearing Phase 4.3.2 gate: a stripped
 // nsieve(100) returning the prime count (25). It exercises range-for
 // with nested while, indexed reads/writes, len(), and the synthetic
