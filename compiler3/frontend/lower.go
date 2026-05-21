@@ -681,7 +681,7 @@ func (b *builder) lowerWhile(s *parser.WhileStmt) error {
 // loop count.
 func (b *builder) lowerFor(s *parser.ForStmt) error {
 	if s.RangeEnd == nil {
-		return fmt.Errorf("frontend: for-in over a collection unsupported in MVP (only `for x in lo..hi`)")
+		return b.lowerForCollection(s)
 	}
 	lo, err := b.lowerExpr(s.Source)
 	if err != nil {
@@ -794,6 +794,159 @@ func (b *builder) lowerFor(s *parser.ForStmt) error {
 	// loop. Without this, a subsequent reference to `loopName` in the
 	// outer scope would resolve to the header phi, which is wrong if
 	// the user had a same-named outer binding.
+	if hadOld {
+		b.values[loopName] = oldVal
+	} else {
+		delete(b.values, loopName)
+	}
+	return nil
+}
+
+// lowerForCollection lowers `for x in xs { body }` for a list-typed xs.
+// The desugared shape is:
+//
+//	var i = 0
+//	while i < len(xs) {
+//	  let x = xs[i]
+//	  <body>
+//	  i = i + 1
+//	}
+//
+// This is built directly in IR rather than via a synthesized AST so the
+// loop variable scoping matches `for ... in lo..hi`: x is reset on every
+// iteration to the indexed read of xs[i], not phi-tracked across the
+// back-edge. The index counter i and any other pre-loop bindings ARE
+// phi-tracked at the header (same shape as lowerWhile).
+//
+// The list value xs is lowered once in the pre-header and captured in
+// SSA, so a mutation of the binding `xs` inside the body does not change
+// what is iterated over. The same holds for `len(xs)`, which is also
+// computed once in the pre-header.
+//
+// Supported list element types: i64 (TypeList) and f64 (TypeF64Arr).
+// Any other element type rejects.
+func (b *builder) lowerForCollection(s *parser.ForStmt) error {
+	xs, err := b.lowerExpr(s.Source)
+	if err != nil {
+		return err
+	}
+	listType := b.fn.Values[xs].Type
+	var lenOp ir.OpCode
+	var getOp ir.OpCode
+	var elemType ir.Type
+	switch listType {
+	case ir.TypeList:
+		lenOp, getOp, elemType = ir.OpListLenI64, ir.OpListGetI64, ir.TypeI64
+	case ir.TypeF64Arr:
+		lenOp, getOp, elemType = ir.OpF64ArrayLenI64, ir.OpF64ArrayGetF64, ir.TypeF64
+	default:
+		return fmt.Errorf("frontend: for-in over %s unsupported (need list)", listType)
+	}
+	lenID := b.addValue(ir.Value{Type: ir.TypeI64, Op: lenOp, Args: []uint32{xs}})
+	zero := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpConst, Const: 0})
+
+	loopName := s.Name
+	oldVal, hadOld := b.values[loopName]
+	// Reserve an index counter under a fresh internal name. It will be
+	// phi-tracked at the header alongside any other pre-loop bindings.
+	// Using a name that can't collide with user identifiers ($ is not in
+	// the Mochi ident grammar) keeps the env from accidentally exposing
+	// it to inner expressions.
+	idxName := "$for_idx_" + loopName
+	b.values[idxName] = zero
+
+	preID := b.curBlock
+	headID := b.fn.AddBlock()
+	bodyID := b.fn.AddBlock()
+	contID := b.fn.AddBlock()
+
+	names := make([]string, 0, len(b.values))
+	for name := range b.values {
+		if name == loopName {
+			continue
+		}
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	preVals := make([]uint32, len(names))
+	for i, name := range names {
+		preVals[i] = b.values[name]
+	}
+
+	b.terminator(ir.Terminator{Kind: ir.TermJump, Target: headID})
+
+	b.curBlock = headID
+	b.terminated = false
+	phis := make([]uint32, len(names))
+	var idxPhi uint32
+	for i, name := range names {
+		preVid := preVals[i]
+		phiVid := b.addValue(ir.Value{
+			Type: b.fn.Values[preVid].Type,
+			Op:   ir.OpPhi,
+			Args: []uint32{preID, preVid, bodyID, 0},
+		})
+		phis[i] = phiVid
+		b.values[name] = phiVid
+		if name == idxName {
+			idxPhi = phiVid
+		}
+	}
+	cond := b.addValue(ir.Value{
+		Type: ir.TypeBool,
+		Op:   ir.OpCmpLtI64,
+		Args: []uint32{idxPhi, lenID},
+	})
+	b.terminator(ir.Terminator{Kind: ir.TermBranch, Value: cond, IfTrue: bodyID, IfFalse: contID})
+
+	b.curBlock = bodyID
+	b.terminated = false
+	// Bind the loop variable to xs[idx] for the duration of the body.
+	elemID := b.addValue(ir.Value{
+		Type:     elemType,
+		ElemType: elemType,
+		Op:       getOp,
+		Args:     []uint32{xs, idxPhi},
+	})
+	b.values[loopName] = elemID
+	for _, st := range s.Body {
+		if err := b.lowerStmt(st); err != nil {
+			return err
+		}
+		if b.terminated {
+			break
+		}
+	}
+	if !b.terminated {
+		// Synthetic `i = i + 1` step. Use the current idx binding from
+		// the env (normally the header phi).
+		cur := b.values[idxName]
+		one := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpConst, Const: 1})
+		next := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpAddI64, Args: []uint32{cur, one}})
+		b.values[idxName] = next
+		endBlock := b.curBlock
+		for i, name := range names {
+			b.fn.Values[phis[i]].Args[2] = endBlock
+			b.fn.Values[phis[i]].Args[3] = b.values[name]
+		}
+		b.terminator(ir.Terminator{Kind: ir.TermJump, Target: headID})
+	} else {
+		head := b.fn.Block(headID)
+		head.Preds = []uint32{preID}
+		for _, phiVid := range phis {
+			phi := &b.fn.Values[phiVid]
+			phi.Args = phi.Args[:2]
+		}
+	}
+
+	b.curBlock = contID
+	b.terminated = false
+	for i, name := range names {
+		b.values[name] = phis[i]
+	}
+	// The idx counter is dead after the loop. Drop the synthetic binding
+	// so a later for-in over the same name does not collide.
+	delete(b.values, idxName)
 	if hadOld {
 		b.values[loopName] = oldVal
 	} else {
