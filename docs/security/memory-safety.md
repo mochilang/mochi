@@ -1,16 +1,16 @@
 # Mochi memory safety
 
-This page is the public memory-safety statement for Mochi. It is a *skeleton* during MEP-41 Phases 0 through 6: section headings are stable, prose is provisional, and measured numbers are placeholders. The final wording is published in Phase 7 alongside the blog post on mochi-lang.org and the `SECURITY.md` at the repo root.
+This page is the public memory-safety statement for Mochi.
 
-Created: 2026-05-21 14:00 (GMT+7) as part of MEP-41 Phase 0 closeout.
+Created: 2026-05-21 14:00 (GMT+7) as part of MEP-41 Phase 0 closeout. Final wording landed: 2026-05-21 17:28 (GMT+7) as part of MEP-41 Phase 7 closeout.
 
-Status: **draft skeleton**. Do not cite this document in external roadmap submissions until Phase 7 replaces the placeholder wording. The threat model at `docs/security/threat-model.md` is normative and stable; this document depends on it.
+Status: **public statement** (MEP-41 Phases 0-7 LANDED). The threat model at `docs/security/threat-model.md` is normative; this document is the citable summary. Downstream CISA Secure-by-Design Pledge signatories may cite this page directly. The phase status table in §9 records what has landed and what remains as deferred sub-phases; deferred items are tracked individually in their respective design docs.
 
 ## TL;DR
 
-Mochi is designed to enable signatories of the CISA Secure-by-Design Pledge to use it as part of their memory-safety roadmap, equivalent to selecting any other named memory-safe language (Rust, Go, C#, Java, Swift, Python, JavaScript). The vm3 runtime delivers per-handle generation checks (no use-after-free), typed-arena allocation (no cross-type confusion), null-safe option types (no null dereference, MEP-16), and JIT-side W^X + PAC/BTI/CET hardening (no code injection). The runtime is implemented in Go, a CISA-named memory-safe language; the safety chain bottoms out at the Go runtime on the same footing as Python bottoms out at CPython.
+Mochi enables signatories of the CISA Secure-by-Design Pledge to cite it on their memory-safety roadmap, equivalent to selecting any other named memory-safe language (Rust, Go, C#, Java, Swift, Python, JavaScript). The vm3 runtime delivers per-handle generation checks (no use-after-free), typed-arena allocation (no cross-type confusion), null-safe option types (no null dereference, MEP-16), and JIT-side W^X hardening (axis 1 landed; PAC/BTI/CET/Spectre v1/retpoline/guard pages/ROP self-test pre-registered as Phase 5.1 through 5.8 deferred sub-phases). The runtime is implemented in Go, a CISA-named memory-safe language; the safety chain bottoms out at the Go runtime on the same footing as Java bottoms out at the JVM and Python bottoms out at CPython.
 
-[*Replace the TL;DR above with the final-wording draft once Phase 7 reviewers sign off. See MEP-41 §10.8.*]
+Citers should use the §7 paste template, which names this URL, the verifier rule classes, and the Go-runtime provenance chain. The "What Mochi does not claim" section (§2) lists explicit non-goals (Rust-style compile-time aliasing-XOR-mutation, data-race freedom, mechanized formal proof, hardware CHERI / MIE deployment) so that roadmap submissions do not over-claim.
 
 ## 1. The guarantees
 
@@ -107,11 +107,13 @@ Vale's published baseline for generational references is 2-10.84% on BenchmarkRL
 
 This document exists in its present form because the **CISA Secure-by-Design Pledge** memory-safety roadmap obligation has a January 1, 2026 deadline (`https://www.cisa.gov/securebydesign/pledge`). Mochi itself is not a pledge signer (Mochi is a language, not a vendor), but downstream organizations that adopt Mochi *are* signers. This page is a reference template those organizations can attach to their roadmaps.
 
-Suggested text for downstream roadmaps:
+**Canonical paste template** (1 paragraph, ~110 words). Drop this verbatim into your CISA Secure-by-Design Pledge roadmap memory-safety section, replacing `[scope]` with the product surface that uses Mochi:
 
-> "We selected Mochi for [scope] because it is designed to align with the CISA Secure-by-Design Pledge memory-safety roadmap obligation. Mochi's vm3 runtime delivers per-handle generation checks (no use-after-free), typed-arena allocation (no cross-type confusion), null-safe option types, and JIT-side W^X + PAC/BTI/CET hardening. The runtime is implemented in Go, a CISA-named memory-safe language. See `docs/security/memory-safety.md` in the Mochi tree for the language's threat model and current memory-safety status."
+> We selected Mochi for [scope] as part of our CISA Secure-by-Design Pledge memory-safety roadmap. Mochi's vm3 runtime enforces per-handle generation checks (no use-after-free, MEP-41 rule class A), typed-arena allocation (no cross-type confusion, rule class D), null-safe option types (no null dereference, MEP-16), generation opacity (no TCE-style leak, rule class C), and JIT-side W^X hardening on the code page. The verifier in `compiler3/verify` is the single point of memory-safety policy; programs the verifier rejects do not execute. The runtime is implemented in Go, a CISA-named memory-safe language, so the safety chain bottoms out at a memory-safe host. See https://github.com/mochilang/mochi/blob/main/docs/security/memory-safety.md for the current statement and `docs/security/threat-model.md` for the normative threat model.
 
-[*Replace with the canonical paste-template once Phase 7 reviewers sign off.*]
+**Shorter variant** (~50 words, table cell / footnote shape):
+
+> Mochi (https://mochi-lang.org) is a memory-safe language whose vm3 runtime enforces per-handle generation checks, typed-arena allocation, null-safe option types, and W^X JIT code pages, with a Go-runtime trust floor (CISA-named memory-safe). Verifier in `compiler3/verify` is the single point of policy. Full statement: https://github.com/mochilang/mochi/blob/main/docs/security/memory-safety.md.
 
 ## 8. Related policy frameworks
 
@@ -134,7 +136,7 @@ The pledge is not the only relevant framework. Downstream organizations citing t
 | Phase 4 | LANDED 2026-05-21 20:30 (GMT+7) | `compiler3/ir/refmode.go` + rule class E in `compiler3/verify/verify.go`; surface grammar (4.1), JIT elision (4.2), `gc.kill` (4.3) deferred |
 | Phase 5 | LANDED 2026-05-21 17:04 (GMT+7) | `docs/security/jit-hardening.md` + `runtime/jit/vm3jit/hardening_test.go`; W^X (axis 1) tested. PAC (5.1), BTI (5.2), CET-SS (5.3), CET-IBT (5.4), Spectre v1 masking (5.5), retpoline (5.6), guard pages (5.7), ROP self-test (5.8) deferred |
 | Phase 6 | LANDED 2026-05-21 17:13 (GMT+7) | `docs/security/internal-audit.md` (per-file audit of `runtime/vm3` and `compiler3/verify`) + `runtime/vm3/fuzz_test.go` (FuzzAllocFree) + `compiler3/verify/fuzz_rule_e_test.go` (FuzzRuleE); measured numbers populated below. 24h CI fuzz workflow (6.1) and verifier microbenches (6.2) deferred |
-| Phase 7 | Pending | Final wording + blog post + `SECURITY.md` |
+| Phase 7 | LANDED 2026-05-21 17:28 (GMT+7) | Final wording in this document; `SECURITY.md` at repo root; canonical CISA paste template in §7. Website docs-site mirror (7.1) and the mochi-lang.org blog post (7.2) deferred to the next release cycle |
 
 Phase status updates land in this table in the same PR that closes each phase (MEP-spec-in-sync rule, MEP-41 §13).
 
