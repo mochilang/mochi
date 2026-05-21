@@ -540,6 +540,37 @@ print(int(eval_a(0, 0) * 1.0e9))
 	}
 }
 
+// TestBuildSourceForInListI64 pins the Phase 4.3.7 collection-iter
+// surface on the C target for list<int>. Sum of [10,20,30] is 60.
+func TestBuildSourceForInListI64(t *testing.T) {
+	src := `let xs: list<int> = [10, 20, 30]
+var s = 0
+for x in xs {
+  s = s + x
+}
+print(s)
+`
+	if got, want := runMochiBuild(t, src), "60\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceForInListF64 pins the Phase 4.3.7 collection-iter
+// surface on the C target for list<float>. The body sums an f64 list
+// and the truncating Phase 4.3.6 `int(...)` gives 6.
+func TestBuildSourceForInListF64(t *testing.T) {
+	src := `let xs: list<float> = [1.5, 2.0, 2.5]
+var s = 0.0
+for x in xs {
+  s = s + x
+}
+print(int(s))
+`
+	if got, want := runMochiBuild(t, src), "6\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceFibIter is the §10.7 unblock for the iterative Fib
 // benchmark: while loop, mutated `a`/`b`/`i`, and a `let t` inside the
 // body that the phi-at-header must NOT track (it's body-scoped).

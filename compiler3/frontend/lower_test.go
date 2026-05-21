@@ -429,6 +429,58 @@ print(int(eval_a(0, 0) * 1.0e9))
 	}
 }
 
+// TestLowerForInListI64 pins the Phase 4.3.7 collection-iter surface
+// for list<int>: iterating `for x in xs` over a 3-element list and
+// summing the values produces 60.
+func TestLowerForInListI64(t *testing.T) {
+	src := `let xs: list<int> = [10, 20, 30]
+var s = 0
+for x in xs {
+  s = s + x
+}
+print(s)
+`
+	got := runEnd2End(t, src)
+	if got != "60\n" {
+		t.Errorf("got %q, want %q", got, "60\n")
+	}
+}
+
+// TestLowerForInListF64 pins the Phase 4.3.7 collection-iter surface
+// for list<float>: iterating a 3-element f64 list, summing, then
+// truncating to int via the Phase 4.3.6 `int(...)` builtin gives 6
+// (= 1.5 + 2.0 + 2.5 truncated).
+func TestLowerForInListF64(t *testing.T) {
+	src := `let xs: list<float> = [1.5, 2.0, 2.5]
+var s = 0.0
+for x in xs {
+  s = s + x
+}
+print(int(s))
+`
+	got := runEnd2End(t, src)
+	if got != "6\n" {
+		t.Errorf("got %q, want %q", got, "6\n")
+	}
+}
+
+// TestLowerForInListEmpty pins the zero-iteration shape: a `for x in xs`
+// over an empty list runs the body 0 times, so the accumulator keeps
+// its pre-loop value.
+func TestLowerForInListEmpty(t *testing.T) {
+	src := `var xs: list<int> = []
+var s = 42
+for x in xs {
+  s = s + x
+}
+print(s)
+`
+	got := runEnd2End(t, src)
+	if got != "42\n" {
+		t.Errorf("got %q, want %q", got, "42\n")
+	}
+}
+
 // TestLowerNsieve is the load-bearing Phase 4.3.2 gate: a stripped
 // nsieve(100) returning the prime count (25). It exercises range-for
 // with nested while, indexed reads/writes, len(), and the synthetic
