@@ -143,14 +143,16 @@ func TestStencilValidate(t *testing.T) {
 	}
 }
 
-// TestStencilsAMD64Valid runs every Phase 1 amd64 stencil through
-// validate() so a regression in the hand-written table (off-by-one
-// offset, accidental overlap, RelocInvalid leak) is caught at
-// package-test time, not at runtime.
-func TestStencilsAMD64Valid(t *testing.T) {
+// TestStencilsHostValid runs every host stencil through validate() so
+// a regression in the hand-written table (off-by-one offset,
+// accidental overlap, RelocInvalid leak) is caught at package-test
+// time, not at runtime. The test is arch-portable: it consults
+// archStencils() so amd64, arm64, and the empty fallback are all
+// covered without per-arch duplication.
+func TestStencilsHostValid(t *testing.T) {
 	tab := archStencils()
 	if tab == nil {
-		t.Skip("no stencil table for this GOARCH (phase 1 ships amd64 only)")
+		t.Skip("no stencil table for this GOARCH (phase 1 target matrix lists 5 hosts)")
 	}
 	for op, s := range tab {
 		if err := s.validate(); err != nil {

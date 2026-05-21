@@ -3,6 +3,8 @@ package copypatch
 import (
 	"encoding/binary"
 	"testing"
+
+	"mochi/compiler3/ir"
 )
 
 // TestCacheNewMismatch ensures NewCache rejects a mismatched (rw, rx)
@@ -27,7 +29,7 @@ func TestCacheNewMismatch(t *testing.T) {
 // returned entry address must equal the rx-base.
 func TestCacheInstallSingle(t *testing.T) {
 	if !Supported() {
-		t.Skip("phase 1 ships amd64 only")
+		t.Skip("host has no stencil table")
 	}
 	page := make([]byte, 4096)
 	c, err := NewCache(page, page)
@@ -67,9 +69,12 @@ func TestCacheInstallSingle(t *testing.T) {
 	if got := c.HighWater(); got != len(code) {
 		t.Errorf("HighWater post-install = %d, want %d", got, len(code))
 	}
-	// The OpConst stencil's imm64 sits at offset 2..10; after patch it
-	// must hold (1 + (Const - 1)) = Const = 0xCAFE.
-	if got := binary.LittleEndian.Uint64(page[2:10]); got != 0xCAFE {
+	// The OpConst stencil's imm64 patch site is arch-specific: offset 2
+	// on amd64 (mov rax, imm64), offset 8 on arm64 (the literal pool
+	// slot following ldr+b). After patch it must hold (1 + (Const - 1))
+	// = Const = 0xCAFE.
+	off := archStencils()[ir.OpConst].Relocs[0].Offset
+	if got := binary.LittleEndian.Uint64(page[off : off+8]); got != 0xCAFE {
 		t.Errorf("patched imm64 = 0x%x, want 0xCAFE", got)
 	}
 }
@@ -79,7 +84,7 @@ func TestCacheInstallSingle(t *testing.T) {
 // blob's bytes must be undisturbed.
 func TestCacheInstallSequence(t *testing.T) {
 	if !Supported() {
-		t.Skip("phase 1 ships amd64 only")
+		t.Skip("host has no stencil table")
 	}
 	page := make([]byte, 4096)
 	c, _ := NewCache(page, page)
@@ -111,11 +116,13 @@ func TestCacheInstallSequence(t *testing.T) {
 		t.Errorf("entryB - entryA = %d, want %d (len(codeA))",
 			entryB-entryA, len(codeA))
 	}
-	// Verify both imm64 patch sites carry the right constants.
-	if got := binary.LittleEndian.Uint64(page[2:10]); got != 0x1111 {
+	// Verify both imm64 patch sites carry the right constants. The
+	// patch offset is arch-specific (see TestCacheInstallSingle).
+	off := int(archStencils()[ir.OpConst].Relocs[0].Offset)
+	if got := binary.LittleEndian.Uint64(page[off : off+8]); got != 0x1111 {
 		t.Errorf("blob A imm64 = 0x%x, want 0x1111", got)
 	}
-	if got := binary.LittleEndian.Uint64(page[len(codeA)+2 : len(codeA)+10]); got != 0x2222 {
+	if got := binary.LittleEndian.Uint64(page[len(codeA)+off : len(codeA)+off+8]); got != 0x2222 {
 		t.Errorf("blob B imm64 = 0x%x, want 0x2222", got)
 	}
 }

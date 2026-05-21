@@ -189,7 +189,17 @@ func cmpImmReloc() []RelocSite {
 
 // archStencils returns the stencil table for the host GOARCH. The
 // build-tagged file ensures only one definition is linked into the
-// final binary; non-amd64 builds get the stencils_other.go fallback.
+// final binary; non-amd64 builds get stencils_arm64.go or the
+// stencils_other.go fallback.
 func archStencils() map[ir.OpCode]Stencil {
 	return stencilsAMD64
+}
+
+// archSupportsBranches reports whether the emitter can lower inter-
+// block terminators (`TermJump`, `TermBranch`) for the host GOARCH.
+// True on amd64 (Phase 2.0); false on arm64 until Phase 2.1 ports the
+// rel26/cbz encodings; false on every other host until that host gets
+// its own arch-specific terminator-byte sequence.
+func archSupportsBranches() bool {
+	return true
 }
