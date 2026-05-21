@@ -1525,6 +1525,12 @@ func (b *builder) lowerBuiltinCall(c *parser.CallExpr) (uint32, bool, error) {
 		default:
 			return 0, true, fmt.Errorf("frontend: float(%s) unsupported in MVP", b.fn.Values[arg].Type)
 		}
+	case "now":
+		if len(c.Args) != 0 {
+			return 0, true, fmt.Errorf("frontend: now() takes 0 arguments, got %d", len(c.Args))
+		}
+		id := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpNow})
+		return id, true, nil
 	}
 	switch c.Func {
 	case "len":

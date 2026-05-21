@@ -236,6 +236,13 @@ const (
 	// runtime concat helper.
 	OpListConcatI64
 	OpF64ArrayConcat
+
+	// Bench-harness builtins (Phase 4.3.13). OpNow returns the current
+	// wall-clock time in microseconds since the Unix epoch as i64.
+	// Go emit: `time.Now().UnixMicro()`. C emit: `mochi_now_us()`,
+	// which wraps POSIX `gettimeofday` to produce the same microsecond
+	// granularity. The op takes no SSA args.
+	OpNow
 )
 
 // String renders an OpCode's short name. Used by Validate and IR
@@ -344,6 +351,8 @@ func (o OpCode) String() string {
 		return "list.concat.i64"
 	case OpF64ArrayConcat:
 		return "f64arr.concat"
+	case OpNow:
+		return "now"
 	case OpCall:
 		return "call"
 	case OpTailCall:
