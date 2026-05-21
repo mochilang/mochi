@@ -384,6 +384,51 @@ print((factor * 1.0e9) as int)
 	}
 }
 
+// TestLowerIntCallCastFromFloat pins the Phase 4.3.6 `int(x)` builtin
+// against an f64 argument: 1.7 truncates to 1, byte-matching the C
+// target's `(int64_t)1.7`. This is the surface spectral_norm uses
+// (`int(math.sqrt(uv / vv) * 1e9)`).
+func TestLowerIntCallCastFromFloat(t *testing.T) {
+	src := `let x = 1.7
+print(int(x))
+`
+	got := runEnd2End(t, src)
+	if got != "1\n" {
+		t.Errorf("got %q, want %q", got, "1\n")
+	}
+}
+
+// TestLowerFloatCallCastFromInt pins the Phase 4.3.6 `float(x)` builtin
+// against an i64 argument: 7 widens to 7.0, the f64 divide produces
+// 3.5, and the result casts back to int 3.
+func TestLowerFloatCallCastFromInt(t *testing.T) {
+	src := `let n = 7
+let half = float(n) / 2.0
+print(int(half))
+`
+	got := runEnd2End(t, src)
+	if got != "3\n" {
+		t.Errorf("got %q, want %q", got, "3\n")
+	}
+}
+
+// TestLowerSpectralEvalKernel is the load-bearing Phase 4.3.6 gate: a
+// single eval of spectral_norm's `eval_a(i, j) = 1 / float(s*(s+1)/2 +
+// i + 1)` matrix entry for i=0, j=0. The expected value is 1/1=1.0,
+// scaled by 1e9 and cast back to int is 1000000000.
+func TestLowerSpectralEvalKernel(t *testing.T) {
+	src := `fun eval_a(i: int, j: int): float {
+  let s = i + j
+  return 1.0 / float(s * (s + 1) / 2 + i + 1)
+}
+print(int(eval_a(0, 0) * 1.0e9))
+`
+	got := runEnd2End(t, src)
+	if got != "1000000000\n" {
+		t.Errorf("got %q, want %q", got, "1000000000\n")
+	}
+}
+
 // TestLowerNsieve is the load-bearing Phase 4.3.2 gate: a stripped
 // nsieve(100) returning the prime count (25). It exercises range-for
 // with nested while, indexed reads/writes, len(), and the synthetic
