@@ -389,12 +389,18 @@ type Terminator struct {
 // Block is a basic block in the function's CFG. Values lists the IDs
 // of the SSA values produced by this block, in producer order. Phi
 // values, if present, must appear at the head of Values.
+//
+// SourceLine, when non-zero, is the Mochi-source line this block
+// originates from. Phase 7 of MEP-43 uses it to emit `//line` directives
+// at block boundaries so a `go build` error inside the generated file
+// surfaces with the user's Mochi coordinates.
 type Block struct {
-	ID     uint32
-	Values []uint32
-	Preds  []uint32
-	Succs  []uint32
-	Term   Terminator
+	ID         uint32
+	Values     []uint32
+	Preds      []uint32
+	Succs      []uint32
+	Term       Terminator
+	SourceLine uint32
 }
 
 // Function is the compilation unit handed from the type-aware build
@@ -405,6 +411,11 @@ type Block struct {
 // GoBindings names the Go symbols this function calls via the
 // `import go "path"` form; each OpCallGo Value indexes into this
 // table via Value.Const. Empty when the function does no FFI.
+//
+// SourceFile, when non-empty, is the Mochi-source file path. Phase 7
+// of MEP-43 pairs it with Block.SourceLine to emit `//line` directives
+// at every block boundary so Go-toolchain diagnostics can be rewritten
+// to point at the user's `.mochi` file.
 type Function struct {
 	Name       string
 	Params     []uint32
@@ -412,6 +423,7 @@ type Function struct {
 	Blocks     []Block
 	Values     []Value
 	GoBindings []GoBinding
+	SourceFile string
 }
 
 // Builder helpers ----------------------------------------------------

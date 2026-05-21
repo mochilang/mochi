@@ -28,9 +28,22 @@ type Program struct {
 // runtime/mochi/* only if the IR references it. Returns the source
 // bytes and any errors. The emitter does not invoke `go build`;
 // callers feed the bytes to the toolchain.
+//
+// When any function in p carries a SourceFile, the emitter writes
+// `//line file:N` directives at function and block boundaries so the
+// Go toolchain reports diagnostics with Mochi-source coordinates. In
+// that mode the final gofmt pass is skipped because gofmt may reflow
+// lines and break the directives' line-for-line mapping.
 func Emit(p *Program) ([]byte, error) {
 	if p.PkgName == "" {
 		p.PkgName = "main"
+	}
+	hasSourceMap := false
+	for _, fn := range p.Funcs {
+		if fn.SourceFile != "" {
+			hasSourceMap = true
+			break
+		}
 	}
 	var body bytes.Buffer
 	imports := map[string]bool{}
@@ -75,6 +88,12 @@ func Emit(p *Program) ([]byte, error) {
 	}
 	src.Write(body.Bytes())
 
+	if hasSourceMap {
+		// Phase 7: skip gofmt to preserve the line-for-line mapping
+		// between emitted Go and Mochi-source `//line` directives.
+		return src.Bytes(), nil
+	}
+
 	// gofmt the output. If gofmt rejects the source, return it
 	// verbatim so the caller can debug; the test pipeline runs
 	// `go vet` over the result so a broken emit will surface there.
@@ -87,6 +106,18 @@ func Emit(p *Program) ([]byte, error) {
 
 // emitFunc walks one Function and emits its Go form.
 func emitFunc(w *bytes.Buffer, fn *ir.Function, all []*ir.Function, imports map[string]bool) error {
+	// Optional source-map: anchor the function at the first block's
+	// SourceLine. Subsequent blocks emit their own //line directives.
+	if fn.SourceFile != "" {
+		line := uint32(0)
+		if len(fn.Blocks) > 0 {
+			line = fn.Blocks[0].SourceLine
+		}
+		if line == 0 {
+			line = 1
+		}
+		fmt.Fprintf(w, "//line %s:%d\n", fn.SourceFile, line)
+	}
 	// Header.
 	fmt.Fprintf(w, "func %s(", fn.Name)
 	for i, pid := range fn.Params {
@@ -133,6 +164,11 @@ func emitFunc(w *bytes.Buffer, fn *ir.Function, all []*ir.Function, imports map[
 	rpo := reversePostorder(fn)
 	for i, bid := range rpo {
 		blk := fn.Block(bid)
+		// Block-level //line directive so any error inside this block's
+		// emission shows the Mochi-source line, not the generated file.
+		if fn.SourceFile != "" && blk.SourceLine != 0 {
+			fmt.Fprintf(w, "//line %s:%d\n", fn.SourceFile, blk.SourceLine)
+		}
 		// Label for non-entry blocks so jumps and branches can target.
 		if i > 0 {
 			fmt.Fprintf(w, "L%d:\n", bid)
