@@ -302,6 +302,8 @@ func (b *builder) lowerStmt(st *parser.Statement) error {
 		return b.lowerIf(st.If)
 	case st.While != nil:
 		return b.lowerWhile(st.While)
+	case st.For != nil:
+		return b.lowerFor(st.For)
 	case st.Expr != nil:
 		_, err := b.lowerExprAsStmt(st.Expr.Expr)
 		return err
@@ -384,6 +386,14 @@ func (b *builder) lowerIf(s *parser.IfStmt) error {
 	elseID := b.fn.AddBlock()
 	contID := b.fn.AddBlock()
 
+	// Snapshot the env at entry so the else branch sees the same
+	// pre-if bindings the then branch saw, and so the merge can phi-
+	// join values that diverge between the two paths.
+	preEnv := make(map[string]uint32, len(b.values))
+	for k, v := range b.values {
+		preEnv[k] = v
+	}
+
 	b.terminator(ir.Terminator{Kind: ir.TermBranch, Value: cond, IfTrue: thenID, IfFalse: elseID})
 
 	// Then.
@@ -397,8 +407,22 @@ func (b *builder) lowerIf(s *parser.IfStmt) error {
 			break
 		}
 	}
+	var thenEnv map[string]uint32
+	var thenEnd uint32
+	thenTerminated := b.terminated
 	if !b.terminated {
+		thenEnd = b.curBlock
+		thenEnv = make(map[string]uint32, len(b.values))
+		for k, v := range b.values {
+			thenEnv[k] = v
+		}
 		b.terminator(ir.Terminator{Kind: ir.TermJump, Target: contID})
+	}
+
+	// Restore the pre-if env so else sees the same bindings then did.
+	b.values = make(map[string]uint32, len(preEnv))
+	for k, v := range preEnv {
+		b.values[k] = v
 	}
 
 	// Else.
@@ -418,13 +442,62 @@ func (b *builder) lowerIf(s *parser.IfStmt) error {
 			}
 		}
 	}
+	var elseEnv map[string]uint32
+	var elseEnd uint32
+	elseTerminated := b.terminated
 	if !b.terminated {
+		elseEnd = b.curBlock
+		elseEnv = make(map[string]uint32, len(b.values))
+		for k, v := range b.values {
+			elseEnv[k] = v
+		}
 		b.terminator(ir.Terminator{Kind: ir.TermJump, Target: contID})
 	}
 
-	// Continuation: empty block; caller continues lowering here.
+	// Continuation: phi-join bindings that diverge between the two
+	// paths. When only one branch terminated, the merge has a single
+	// predecessor and we can use that branch's env directly. When both
+	// terminated, the contID block is unreachable; clear its preds.
 	b.curBlock = contID
 	b.terminated = false
+	switch {
+	case thenTerminated && elseTerminated:
+		// Unreachable merge.
+	case thenTerminated:
+		b.values = elseEnv
+	case elseTerminated:
+		b.values = thenEnv
+	default:
+		// Both branches reach the merge. For every name in the pre-if
+		// env, phi-join if the two paths diverge; otherwise keep the
+		// common value. Names introduced only inside a branch are
+		// dropped (their scope ended at the branch).
+		names := make([]string, 0, len(preEnv))
+		for name := range preEnv {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		newEnv := make(map[string]uint32, len(names))
+		for _, name := range names {
+			tv, tok := thenEnv[name]
+			ev, eok := elseEnv[name]
+			if !tok || !eok {
+				newEnv[name] = preEnv[name]
+				continue
+			}
+			if tv == ev {
+				newEnv[name] = tv
+				continue
+			}
+			phiVid := b.addValue(ir.Value{
+				Type: b.fn.Values[tv].Type,
+				Op:   ir.OpPhi,
+				Args: []uint32{thenEnd, tv, elseEnd, ev},
+			})
+			newEnv[name] = phiVid
+		}
+		b.values = newEnv
+	}
 	return nil
 }
 
@@ -496,8 +569,12 @@ func (b *builder) lowerWhile(s *parser.WhileStmt) error {
 	}
 	if !b.terminated {
 		// Patch back-edge slots from the post-body env before jumping.
-		// terminator() appends bodyID to header.Preds for us.
+		// The predecessor block is b.curBlock (the actual end of the
+		// body), which differs from bodyID when the body contains
+		// nested control flow that ends in a merge block.
+		endBlock := b.curBlock
 		for i, name := range names {
+			b.fn.Values[phis[i]].Args[2] = endBlock
 			b.fn.Values[phis[i]].Args[3] = b.values[name]
 		}
 		b.terminator(ir.Terminator{Kind: ir.TermJump, Target: headID})
@@ -519,6 +596,143 @@ func (b *builder) lowerWhile(s *parser.WhileStmt) error {
 	b.terminated = false
 	for i, name := range names {
 		b.values[name] = phis[i]
+	}
+	return nil
+}
+
+// lowerFor lowers `for x in lo..hi { body }` (integer range) to the
+// same phi-at-header CFG shape as lowerWhile, with the loop variable
+// `x` as one of the snapshotted bindings. Pre-header initialises `x`
+// to `lo`; the header phi joins (pre-header `x`, body's `x + 1`); the
+// header's cond is `x < hi`; the body lowers each statement, then
+// inserts the synthetic `x = x + 1` step at the end. The range form
+// is the only ForStmt shape the MVP frontend lowers; collection-iter
+// (`for x in xs { body }`, where xs is a list) stays rejected until
+// Phase 4.3.x widens the surface.
+//
+// Bounds may be any TypeI64 expression including local bindings and
+// nested arithmetic; they are evaluated once in the pre-header and
+// captured in SSA, so a mutation inside the body does not affect the
+// loop count.
+func (b *builder) lowerFor(s *parser.ForStmt) error {
+	if s.RangeEnd == nil {
+		return fmt.Errorf("frontend: for-in over a collection unsupported in MVP (only `for x in lo..hi`)")
+	}
+	lo, err := b.lowerExpr(s.Source)
+	if err != nil {
+		return err
+	}
+	hi, err := b.lowerExpr(s.RangeEnd)
+	if err != nil {
+		return err
+	}
+	if b.fn.Values[lo].Type != ir.TypeI64 {
+		return fmt.Errorf("frontend: for-range lo must be i64, got %s", b.fn.Values[lo].Type)
+	}
+	if b.fn.Values[hi].Type != ir.TypeI64 {
+		return fmt.Errorf("frontend: for-range hi must be i64, got %s", b.fn.Values[hi].Type)
+	}
+
+	loopName := s.Name
+	// Save the shadowed binding (if any) so the loop variable does not
+	// leak past the loop. Mochi semantics scope the for-variable to the
+	// loop body; both targets observe that by restoring the prior env
+	// at the cont block.
+	oldVal, hadOld := b.values[loopName]
+	b.values[loopName] = lo
+
+	preID := b.curBlock
+	headID := b.fn.AddBlock()
+	bodyID := b.fn.AddBlock()
+	contID := b.fn.AddBlock()
+
+	names := make([]string, 0, len(b.values))
+	for name := range b.values {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	preVals := make([]uint32, len(names))
+	for i, name := range names {
+		preVals[i] = b.values[name]
+	}
+
+	b.terminator(ir.Terminator{Kind: ir.TermJump, Target: headID})
+
+	b.curBlock = headID
+	b.terminated = false
+	phis := make([]uint32, len(names))
+	var loopPhi uint32
+	for i, name := range names {
+		preVid := preVals[i]
+		phiVid := b.addValue(ir.Value{
+			Type: b.fn.Values[preVid].Type,
+			Op:   ir.OpPhi,
+			Args: []uint32{preID, preVid, bodyID, 0},
+		})
+		phis[i] = phiVid
+		b.values[name] = phiVid
+		if name == loopName {
+			loopPhi = phiVid
+		}
+	}
+	cond := b.addValue(ir.Value{
+		Type: ir.TypeBool,
+		Op:   ir.OpCmpLtI64,
+		Args: []uint32{loopPhi, hi},
+	})
+	b.terminator(ir.Terminator{Kind: ir.TermBranch, Value: cond, IfTrue: bodyID, IfFalse: contID})
+
+	b.curBlock = bodyID
+	b.terminated = false
+	for _, st := range s.Body {
+		if err := b.lowerStmt(st); err != nil {
+			return err
+		}
+		if b.terminated {
+			break
+		}
+	}
+	if !b.terminated {
+		// Synthetic `x = x + 1` step at the end of the body. The
+		// increment runs against the current SSA binding for `x`,
+		// which is normally the header phi but would be a rebind if
+		// the user shadowed the loop variable inside the body.
+		cur := b.values[loopName]
+		one := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpConst, Const: 1})
+		next := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpAddI64, Args: []uint32{cur, one}})
+		b.values[loopName] = next
+		// Patch back-edge slots. The predecessor block is b.curBlock
+		// (the actual end of the body), which differs from bodyID when
+		// the body contains nested control flow that ends in a merge
+		// block (e.g., an inner if-statement).
+		endBlock := b.curBlock
+		for i, name := range names {
+			b.fn.Values[phis[i]].Args[2] = endBlock
+			b.fn.Values[phis[i]].Args[3] = b.values[name]
+		}
+		b.terminator(ir.Terminator{Kind: ir.TermJump, Target: headID})
+	} else {
+		head := b.fn.Block(headID)
+		head.Preds = []uint32{preID}
+		for _, phiVid := range phis {
+			phi := &b.fn.Values[phiVid]
+			phi.Args = phi.Args[:2]
+		}
+	}
+
+	b.curBlock = contID
+	b.terminated = false
+	for i, name := range names {
+		b.values[name] = phis[i]
+	}
+	// Restore the shadowed binding; the loop variable is dead after the
+	// loop. Without this, a subsequent reference to `loopName` in the
+	// outer scope would resolve to the header phi, which is wrong if
+	// the user had a same-named outer binding.
+	if hadOld {
+		b.values[loopName] = oldVal
+	} else {
+		delete(b.values, loopName)
 	}
 	return nil
 }

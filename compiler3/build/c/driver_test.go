@@ -267,6 +267,75 @@ print(xs[2])
 	}
 }
 
+// TestBuildSourceForRangeSum pins the Phase 4.3.2 range-for surface
+// through the C target: a `for i in 1..(n+1)` loop with a mutable
+// accumulator must compile and produce the same output as the Go
+// target.
+func TestBuildSourceForRangeSum(t *testing.T) {
+	src := `fun sumRange(n: int): int {
+  var s = 0
+  for i in 1..(n + 1) {
+    s = s + i
+  }
+  return s
+}
+print(sumRange(10))
+`
+	if got, want := runMochiBuild(t, src), "55\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceForRangeUnderscore covers the `_` loop variable: a
+// range-for that runs N iterations without referring to the index.
+func TestBuildSourceForRangeUnderscore(t *testing.T) {
+	src := `fun fillFive(): int {
+  var xs: list<int> = []
+  for _ in 0..5 {
+    xs = append(xs, 0)
+  }
+  return len(xs)
+}
+print(fillFive())
+`
+	if got, want := runMochiBuild(t, src), "5\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceNsieve is the Phase 4.3.2 load-bearing gate: a
+// stripped nsieve(100)=25 program compiles via `mochi build
+// --target=c` and produces the same byte-stream as `mochi run`.
+// Exercises range-for, nested while, indexed list ops, and the
+// if-merge phi join all in one program.
+func TestBuildSourceNsieve(t *testing.T) {
+	src := `fun nsieve(m: int): int {
+  var flags: list<int> = []
+  var i = 0
+  while i < m {
+    flags = append(flags, 1)
+    i = i + 1
+  }
+  var count = 0
+  for k in 2..m {
+    if flags[k] == 1 {
+      count = count + 1
+      var j = k + k
+      while j < m {
+        flags[j] = 0
+        j = j + k
+      }
+    }
+  }
+  return count
+}
+print(nsieve(100))
+`
+	if got, want := runMochiBuild(t, src), "25\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceFibIter is the §10.7 unblock for the iterative Fib
 // benchmark: while loop, mutated `a`/`b`/`i`, and a `let t` inside the
 // body that the phi-at-header must NOT track (it's body-scoped).
