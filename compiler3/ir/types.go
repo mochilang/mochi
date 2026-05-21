@@ -176,6 +176,15 @@ const (
 	OpQueryLeftJoin   // same shape as OpQueryJoin; combineFn signature is func(L, R, hasR bool) Out
 	OpQueryOuterJoin  // same shape; combineFn signature is func(L, R, hasL, hasR bool) Out
 	OpQueryCrossJoin  // Args=[leftList, rightList, combineFnRef]
+
+	// OpCallGo invokes an imported Go symbol resolved at Mochi compile
+	// time by compiler3/ffi/resolve. The Value.Const indexes into the
+	// owning Function's GoBindings table; Args lists the SSA value IDs
+	// of the call arguments in declared order. The emitter prints a
+	// literal Go call (alias.Name(arg0, arg1, ...)) and registers the
+	// binding's import path so the generated file has a normal Go
+	// import. There is no Mochi-side reflection at the call site.
+	OpCallGo
 )
 
 // String renders an OpCode's short name. Used by Validate and IR
@@ -308,8 +317,35 @@ func (o OpCode) String() string {
 		return "query.outerjoin"
 	case OpQueryCrossJoin:
 		return "query.crossjoin"
+	case OpCallGo:
+		return "call.go"
 	}
 	return "?"
+}
+
+// GoBinding names an imported Go symbol resolved at Mochi compile
+// time. Phase 6 attaches one GoBinding per FFI call site; the IR
+// references it by index via OpCallGo.Const. ArgTypes and Result are
+// captured so a future Phase 7 type-check pass can validate without
+// re-querying the resolver.
+type GoBinding struct {
+	// Pkg is the Go import path, e.g. "strings", "math/big".
+	Pkg string
+	// Alias is the Go-source-level alias, e.g. "strings" or "big".
+	// The default is the last path segment; Mochi `as` shadows it.
+	Alias string
+	// Name is the function or method name as it appears under the
+	// alias in the emitted source.
+	Name string
+	// ArgTypes lists the static Go types of the call arguments in
+	// declared order. Each entry is a Go-source-shape string the
+	// emitter can paste verbatim (string, int64, []byte, ...).
+	ArgTypes []string
+	// Result is the Go-source-shape of the call's return type.
+	// Empty means void; a comma-joined list (e.g. "string,error")
+	// names a multi-value return, but Phase 6 sticks to single-value
+	// signatures and leaves error handling to Phase 7.
+	Result string
 }
 
 // Value is one SSA-form IR node. Type is mandatory; the type checker
@@ -365,12 +401,17 @@ type Block struct {
 // to the optimization pipeline. Values is indexed by ID. Blocks is
 // indexed by Block.ID. Params lists the parameter Values in declared
 // order (their Type is the param type; their Op is OpParam).
+//
+// GoBindings names the Go symbols this function calls via the
+// `import go "path"` form; each OpCallGo Value indexes into this
+// table via Value.Const. Empty when the function does no FFI.
 type Function struct {
-	Name   string
-	Params []uint32
-	Result Type
-	Blocks []Block
-	Values []Value
+	Name       string
+	Params     []uint32
+	Result     Type
+	Blocks     []Block
+	Values     []Value
+	GoBindings []GoBinding
 }
 
 // Builder helpers ----------------------------------------------------
