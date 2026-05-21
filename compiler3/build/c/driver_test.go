@@ -498,6 +498,48 @@ print(1 + 2 * 3 + 4 * 5)
 	}
 }
 
+// TestBuildSourceIntCallCastFromFloat pins the Phase 4.3.6 `int(x)`
+// builtin against an f64 argument: emits `(int64_t)x`, truncating
+// toward zero (1.7 -> 1). This is the surface spectral_norm uses to
+// produce the final printable integer.
+func TestBuildSourceIntCallCastFromFloat(t *testing.T) {
+	src := `let x = 1.7
+print(int(x))
+`
+	if got, want := runMochiBuild(t, src), "1\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceFloatCallCastFromInt pins the Phase 4.3.6 `float(x)`
+// builtin against an i64 argument: emits `(double)x`, then divides as
+// f64. 7 widened to 7.0, halved to 3.5, cast back to int 3.
+func TestBuildSourceFloatCallCastFromInt(t *testing.T) {
+	src := `let n = 7
+let half = float(n) / 2.0
+print(int(half))
+`
+	if got, want := runMochiBuild(t, src), "3\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceSpectralEvalKernel is the load-bearing Phase 4.3.6
+// gate on the C target: a single eval of spectral_norm's `eval_a(i,j)
+// = 1 / float(s*(s+1)/2 + i + 1)` matrix entry at i=0, j=0. The
+// expected value is 1/1 = 1.0; scaled by 1e9 and truncated, 1000000000.
+func TestBuildSourceSpectralEvalKernel(t *testing.T) {
+	src := `fun eval_a(i: int, j: int): float {
+  let s = i + j
+  return 1.0 / float(s * (s + 1) / 2 + i + 1)
+}
+print(int(eval_a(0, 0) * 1.0e9))
+`
+	if got, want := runMochiBuild(t, src), "1000000000\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceFibIter is the §10.7 unblock for the iterative Fib
 // benchmark: while loop, mutated `a`/`b`/`i`, and a `let t` inside the
 // body that the phi-at-header must NOT track (it's body-scoped).

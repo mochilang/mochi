@@ -1290,8 +1290,46 @@ func (b *builder) lowerCall(c *parser.CallExpr) (uint32, error) {
 //
 // Phase 4.3.1 covers `len(xs)` and `append(xs, v)` against list<int>;
 // `len("s")` against TypeStr is wired through OpLenStr in the same
-// case for free since the IR op already exists.
+// case for free since the IR op already exists. Phase 4.3.6 adds
+// `int(x)` and `float(x)` as the function-call surface of the
+// i64<->f64 cast pair landed in Phase 4.3.4.
 func (b *builder) lowerBuiltinCall(c *parser.CallExpr) (uint32, bool, error) {
+	switch c.Func {
+	case "int":
+		if len(c.Args) != 1 {
+			return 0, true, fmt.Errorf("frontend: int() takes 1 argument, got %d", len(c.Args))
+		}
+		arg, err := b.lowerExpr(c.Args[0])
+		if err != nil {
+			return 0, true, err
+		}
+		switch b.fn.Values[arg].Type {
+		case ir.TypeI64:
+			return arg, true, nil
+		case ir.TypeF64:
+			id := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpF64ToI64, Args: []uint32{arg}})
+			return id, true, nil
+		default:
+			return 0, true, fmt.Errorf("frontend: int(%s) unsupported in MVP", b.fn.Values[arg].Type)
+		}
+	case "float":
+		if len(c.Args) != 1 {
+			return 0, true, fmt.Errorf("frontend: float() takes 1 argument, got %d", len(c.Args))
+		}
+		arg, err := b.lowerExpr(c.Args[0])
+		if err != nil {
+			return 0, true, err
+		}
+		switch b.fn.Values[arg].Type {
+		case ir.TypeF64:
+			return arg, true, nil
+		case ir.TypeI64:
+			id := b.addValue(ir.Value{Type: ir.TypeF64, Op: ir.OpI64ToF64, Args: []uint32{arg}})
+			return id, true, nil
+		default:
+			return 0, true, fmt.Errorf("frontend: float(%s) unsupported in MVP", b.fn.Values[arg].Type)
+		}
+	}
 	switch c.Func {
 	case "len":
 		if len(c.Args) != 1 {
