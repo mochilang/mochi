@@ -343,8 +343,16 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 		if alias == "" {
 			alias = defaultAlias(b.Pkg)
 		}
+		if b.SealHandles {
+			imports["mochi/runtime/mochi/ffi"] = true
+		}
+		// Phase 10: when this binding seals handles, wrap the return
+		// value in `ffi.Unseal[T]` and each argument in `ffi.Seal[T]`
+		// where T is the declared Go arg/result type from the binding.
 		if b.Result == "" {
 			fmt.Fprintf(w, "\t%s.%s(", alias, b.Name)
+		} else if b.SealHandles {
+			fmt.Fprintf(w, "\t%s = ffi.Unseal[%s](%s.%s(", name, b.Result, alias, b.Name)
 		} else {
 			fmt.Fprintf(w, "\t%s = %s.%s(", name, alias, b.Name)
 		}
@@ -352,9 +360,17 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 			if i > 0 {
 				w.WriteString(", ")
 			}
-			w.WriteString(valueName(aid))
+			if b.SealHandles && i < len(b.ArgTypes) {
+				fmt.Fprintf(w, "ffi.Seal[%s](%s)", b.ArgTypes[i], valueName(aid))
+			} else {
+				w.WriteString(valueName(aid))
+			}
 		}
-		w.WriteString(")\n")
+		if b.Result != "" && b.SealHandles {
+			w.WriteString("))\n")
+		} else {
+			w.WriteString(")\n")
+		}
 	case ir.OpPhi:
 		// Declared in prelude; no body emit.
 		return nil
