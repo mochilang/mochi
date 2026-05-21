@@ -224,6 +224,49 @@ while n > 0 {
 	}
 }
 
+// TestBuildSourceListAppendAndIndex is the Phase 4.3.1 integration
+// gate: a Mochi script using the typed-i64 list surface (empty list
+// literal, append, indexed read, len, indexed write) compiles via
+// `mochi build --target=c` to a binary whose stdout byte-matches the
+// Go target's output for the same source. This exercises every list
+// op the IR declares: OpNewList, OpListPushI64, OpListGetI64,
+// OpListLenI64, OpListSetI64.
+func TestBuildSourceListAppendAndIndex(t *testing.T) {
+	src := `fun sumlist(n: int): int {
+  var xs: list<int> = []
+  var i = 0
+  while i < n {
+    xs = append(xs, i + 1)
+    i = i + 1
+  }
+  var s = 0
+  var k = 0
+  while k < len(xs) {
+    s = s + xs[k]
+    k = k + 1
+  }
+  xs[0] = 100
+  return s + xs[0]
+}
+print(sumlist(10))
+`
+	if got, want := runMochiBuild(t, src), "155\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceListLiteralRead pins the non-empty list-literal
+// shape through the C target: `[10, 20, 30]` lowers to OpNewList +
+// three OpListPushI64, and `xs[2]` reads back 30.
+func TestBuildSourceListLiteralRead(t *testing.T) {
+	src := `let xs: list<int> = [10, 20, 30]
+print(xs[2])
+`
+	if got, want := runMochiBuild(t, src), "30\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceFibIter is the §10.7 unblock for the iterative Fib
 // benchmark: while loop, mutated `a`/`b`/`i`, and a `let t` inside the
 // body that the phi-at-header must NOT track (it's body-scoped).

@@ -61,21 +61,25 @@ func Emit(p *Program) ([]byte, error) {
 	// and lets the driver decide what runtime files to drop next to
 	// gen.c.
 	usesPrint := false
+	usesListI64 := false
 	for _, fn := range p.Funcs {
 		for _, v := range fn.Values {
-			if v.Op != ir.OpCallGo {
-				continue
+			switch v.Op {
+			case ir.OpCallGo:
+				if int(v.Const) < 0 || int(v.Const) >= len(fn.GoBindings) {
+					return nil, fmt.Errorf("emit %s: OpCallGo v%d: Const %d out of range (have %d bindings)",
+						fn.Name, v.ID, v.Const, len(fn.GoBindings))
+				}
+				b := fn.GoBindings[v.Const]
+				if isPrintBinding(b) {
+					usesPrint = true
+					continue
+				}
+				return nil, fmt.Errorf("emit %s: OpCallGo to %s.%s: %w", fn.Name, b.Pkg, b.Name, ErrUnsupportedFFI)
+			case ir.OpNewList, ir.OpListLenI64, ir.OpListPushI64,
+				ir.OpListGetI64, ir.OpListSetI64:
+				usesListI64 = true
 			}
-			if int(v.Const) < 0 || int(v.Const) >= len(fn.GoBindings) {
-				return nil, fmt.Errorf("emit %s: OpCallGo v%d: Const %d out of range (have %d bindings)",
-					fn.Name, v.ID, v.Const, len(fn.GoBindings))
-			}
-			b := fn.GoBindings[v.Const]
-			if isPrintBinding(b) {
-				usesPrint = true
-				continue
-			}
-			return nil, fmt.Errorf("emit %s: OpCallGo to %s.%s: %w", fn.Name, b.Pkg, b.Name, ErrUnsupportedFFI)
 		}
 	}
 
@@ -86,6 +90,9 @@ func Emit(p *Program) ([]byte, error) {
 	buf.WriteString("#include <math.h>\n")
 	if usesPrint {
 		buf.WriteString("#include \"print.h\"\n")
+	}
+	if usesListI64 {
+		buf.WriteString("#include \"mochi_list_i64.h\"\n")
 	}
 	buf.WriteString("\n")
 
@@ -291,6 +298,21 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = (%s %s %s) ? 1 : 0;\n", name, valueName(v.Args[0]), op, valueName(v.Args[1]))
 	case ir.OpNotBool:
 		fmt.Fprintf(w, "    %s = %s ? 0 : 1;\n", name, valueName(v.Args[0]))
+	case ir.OpNewList:
+		// New empty list: allocates a header on the heap with NULL data.
+		// The first push lazily reserves capacity; this matches the
+		// Go target's `[]int64{}` shape (nil slice grown by append).
+		fmt.Fprintf(w, "    %s = mochi_list_i64_new();\n", name)
+	case ir.OpListLenI64:
+		fmt.Fprintf(w, "    %s = mochi_list_i64_len(%s);\n", name, valueName(v.Args[0]))
+	case ir.OpListPushI64:
+		// Mutates the heap struct in place; the C pointer in Args[0]
+		// stays valid. The op produces a TypeUnit value with no LHS.
+		fmt.Fprintf(w, "    mochi_list_i64_push(%s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpListGetI64:
+		fmt.Fprintf(w, "    %s = mochi_list_i64_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpListSetI64:
+		fmt.Fprintf(w, "    mochi_list_i64_set(%s, %s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
 	case ir.OpCall, ir.OpTailCall:
 		// Intra-program call. v.Const indexes into Program.Funcs;
 		// args are SSA values in declared order. The emitter writes
@@ -439,6 +461,14 @@ func cType(t ir.Type) string {
 		return "double"
 	case ir.TypeBool:
 		return "int"
+	case ir.TypeList:
+		// Phase 4.3.1: list<int>. The MVP frontend only constructs
+		// TypeList values with ElemType=TypeI64, so the cgen pointer
+		// type can be fixed here without consulting ElemType. When
+		// Phase 4.3.2 widens to f64/bool elements, this switch will
+		// branch on Value.ElemType (which cgen would need to start
+		// threading through cType's caller).
+		return "mochi_list_i64*"
 	case ir.TypeUnit, ir.TypeInvalid:
 		return "void"
 	}

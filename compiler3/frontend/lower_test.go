@@ -151,3 +151,47 @@ func TestLowerUnsupportedSurfacesError(t *testing.T) {
 		t.Fatal("expected error for unsupported string literal in MVP, got nil")
 	}
 }
+
+// TestLowerListAppendAndIndex pins the Phase 4.3.1 typed-i64-array
+// surface: empty list literal, append, indexed read, len, and indexed
+// write must all lower and produce the same output under both
+// emitters. This test verifies the Go path; the C path is pinned by
+// the matching TestBuildSourceListAppendAndIndex in build/c.
+func TestLowerListAppendAndIndex(t *testing.T) {
+	src := `fun sumlist(n: int): int {
+  var xs: list<int> = []
+  var i = 0
+  while i < n {
+    xs = append(xs, i + 1)
+    i = i + 1
+  }
+  var s = 0
+  var k = 0
+  while k < len(xs) {
+    s = s + xs[k]
+    k = k + 1
+  }
+  xs[0] = 100
+  return s + xs[0]
+}
+print(sumlist(10))
+`
+	got := runEnd2End(t, src)
+	if got != "155\n" {
+		t.Errorf("got %q, want %q", got, "155\n")
+	}
+}
+
+// TestLowerListLiteralWithElems exercises the non-empty list literal
+// shape: `[1, 2, 3]` lowers to OpNewList followed by three pushes. The
+// program reads back the third element to confirm push-then-get is a
+// round trip.
+func TestLowerListLiteralWithElems(t *testing.T) {
+	src := `let xs: list<int> = [10, 20, 30]
+print(xs[2])
+`
+	got := runEnd2End(t, src)
+	if got != "30\n" {
+		t.Errorf("got %q, want %q", got, "30\n")
+	}
+}
