@@ -231,7 +231,7 @@ func TestMemorySafetyStatementCitesProvenanceChain(t *testing.T) {
 
 // TestMemorySafetyStatementSkeletonStatus asserts the page is clearly
 // marked as a Phase-0 skeleton (not yet authorized for citation).
-// Phase 7 (week 22) replaces this status; before then, external citers
+// Phase 7 replaces this status; before then, external citers
 // should be redirected to MEP-41 §10.8.
 func TestMemorySafetyStatementSkeletonStatus(t *testing.T) {
 	got := readSibling(t, "memory-safety.md")

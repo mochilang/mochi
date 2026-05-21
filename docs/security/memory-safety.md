@@ -2,9 +2,9 @@
 
 This page is the public memory-safety statement for Mochi. It is a *skeleton* during MEP-41 Phases 0 through 6: section headings are stable, prose is provisional, and measured numbers are placeholders. The final wording is published in Phase 7 alongside the blog post on mochi-lang.org and the `SECURITY.md` at the repo root.
 
-Created: 2026-05-21 (GMT+7) as part of MEP-41 Phase 0 closeout.
+Created: 2026-05-21 14:00 (GMT+7) as part of MEP-41 Phase 0 closeout.
 
-Status: **draft skeleton**. Do not cite this document in external roadmap submissions until Phase 7 (week 22) replaces the placeholder wording. The threat model at `docs/security/threat-model.md` is normative and stable; this document depends on it.
+Status: **draft skeleton**. Do not cite this document in external roadmap submissions until Phase 7 replaces the placeholder wording. The threat model at `docs/security/threat-model.md` is normative and stable; this document depends on it.
 
 ## TL;DR
 
@@ -66,7 +66,7 @@ The full enumeration is at `docs/security/threat-model.md`. The short version:
 
 ## 5. JIT hardening posture
 
-[*Placeholder. Measured numbers land in Phase 5 (week 18) and are filled in here in Phase 6 (week 21).*]
+[*Placeholder. Measured numbers land in Phase 5 and are filled in here in Phase 6.*]
 
 The vm3jit code page is hardened against the standard JIT-side attacker classes:
 
@@ -114,16 +114,16 @@ The pledge is not the only relevant framework. Downstream organizations citing t
 
 ## 9. Status by phase
 
-| Phase | Window | Status | Artifact |
-|-------|--------|--------|----------|
-| Phase 0 | Week 1 | LANDED 2026-05-21 (GMT+7) | This skeleton + `docs/security/threat-model.md` |
-| Phase 1 | Weeks 2-4 | LANDED 2026-05-21 (GMT+7) | `compiler3/verify/` rule classes A-D + fuzz harness |
-| Phase 2 | Weeks 5-6 | LANDED 2026-05-21 (GMT+7) | Gen opacity audit + AST-test backstop (`docs/security/gen-opacity-audit.md`) |
-| Phase 3 | Weeks 7-10 | Pending | Quarantine, guard slabs, sealed handles |
-| Phase 4 | Weeks 11-14 | Pending | Reference modes (consume/borrow/inout/weak) |
-| Phase 5 | Weeks 15-18 | Pending | vm3jit hardening (W^X, PAC, BTI, CET, masking) |
-| Phase 6 | Weeks 19-21 | Pending | Audit + 24h fuzz + measured numbers in §5, §6 |
-| Phase 7 | Week 22 | Pending | Final wording + blog post + `SECURITY.md` |
+| Phase | Status | Artifact |
+|-------|--------|----------|
+| Phase 0 | LANDED 2026-05-21 14:00 (GMT+7) | This skeleton + `docs/security/threat-model.md` |
+| Phase 1 | LANDED 2026-05-21 17:30 (GMT+7) | `compiler3/verify/` rule classes A-D + fuzz harness |
+| Phase 2 | LANDED 2026-05-21 18:00 (GMT+7) | Gen opacity audit + AST-test backstop (`docs/security/gen-opacity-audit.md`) |
+| Phase 3 | LANDED 2026-05-21 19:30 (GMT+7) | `runtime/vm3/quarantine.go` + `sealing.go` + `docs/security/quarantine-design.md`; guard slabs (3.1) and OpSeal/OpUnseal (3.2) deferred |
+| Phase 4 | Pending | Reference modes (consume/borrow/inout/weak) |
+| Phase 5 | Pending | vm3jit hardening (W^X, PAC, BTI, CET, masking) |
+| Phase 6 | Pending | Audit + 24h fuzz + measured numbers in §5, §6 |
+| Phase 7 | Pending | Final wording + blog post + `SECURITY.md` |
 
 Phase status updates land in this table in the same PR that closes each phase (MEP-spec-in-sync rule, MEP-41 §13).
 

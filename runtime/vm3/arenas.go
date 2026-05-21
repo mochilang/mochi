@@ -34,6 +34,15 @@ type Arenas struct {
 	freeF64Arrs  []uint32
 	freeI64Arrs  []uint32
 	freeU8Arrs   []uint32
+
+	// wrapQ is the per-arena FIFO ring of wrap-prone slot indices.
+	// See runtime/vm3/quarantine.go (MEP-41 Phase 3).
+	wrapQ wrapQuarantine
+
+	// qcfg holds the per-VM-tunable quarantine thresholds. Zero
+	// values use the package defaults (DefaultWrapWarn and
+	// DefaultWrapQuarantineDepth).
+	qcfg quarantineConfig
 }
 
 const (

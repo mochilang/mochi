@@ -1,6 +1,6 @@
 # Generation opacity audit (MEP-41 Phase 2)
 
-Created: 2026-05-21 (GMT+7). Author: MEP-41 Phase 2 closeout.
+Created: 2026-05-21 18:00 (GMT+7). Author: MEP-41 Phase 2 closeout.
 
 This document is the per-call-site audit promised by MEP-41 §8 Phase 2 deliverable two ("audit of every existing vm3 opcode for compliance with rule class C"). It is the human-readable companion to `runtime/vm3/genopacity_test.go`, which encodes the same finding as an executable AST check.
 
