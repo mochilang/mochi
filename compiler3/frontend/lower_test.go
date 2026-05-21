@@ -89,6 +89,54 @@ if n > 3 {
 	}
 }
 
+func TestLowerWhileCountdown(t *testing.T) {
+	src := `var n = 5
+while n > 0 {
+  print(n)
+  n = n - 1
+}
+`
+	got := runEnd2End(t, src)
+	if got != "5\n4\n3\n2\n1\n" {
+		t.Errorf("got %q, want %q", got, "5\n4\n3\n2\n1\n")
+	}
+}
+
+func TestLowerWhileFibIter(t *testing.T) {
+	src := `fun fib(n: int): int {
+  var a = 0
+  var b = 1
+  var i = 0
+  while i < n {
+    let t = a + b
+    a = b
+    b = t
+    i = i + 1
+  }
+  return a
+}
+print(fib(10))
+`
+	got := runEnd2End(t, src)
+	if got != "55\n" {
+		t.Errorf("got %q, want %q", got, "55\n")
+	}
+}
+
+func TestLowerWhileSkippedWhenFalse(t *testing.T) {
+	src := `var n = 0
+while n > 0 {
+  print(999)
+  n = n - 1
+}
+print(42)
+`
+	got := runEnd2End(t, src)
+	if got != "42\n" {
+		t.Errorf("got %q, want %q", got, "42\n")
+	}
+}
+
 // TestLowerUnsupportedSurfacesError asserts that an unsupported form
 // produces a frontend error rather than a silent miscompile. The A/B
 // harness relies on this to mark the fixture skipped.

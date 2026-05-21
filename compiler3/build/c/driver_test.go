@@ -206,6 +206,47 @@ if n > 3 {
 	}
 }
 
+// TestBuildSourceWhileCountdown is the Phase 4.1.2 integration gate:
+// a script with a `while` loop must compile to a binary whose output
+// matches what `mochi run` produces. This is the smallest while-test
+// that exercises phi-at-header (the loop counter `n` decreases each
+// iteration, so its SSA value at the header is a join of pre-loop and
+// back-edge values).
+func TestBuildSourceWhileCountdown(t *testing.T) {
+	src := `var n = 5
+while n > 0 {
+  print(n)
+  n = n - 1
+}
+`
+	if got, want := runMochiBuild(t, src), "5\n4\n3\n2\n1\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceFibIter is the §10.7 unblock for the iterative Fib
+// benchmark: while loop, mutated `a`/`b`/`i`, and a `let t` inside the
+// body that the phi-at-header must NOT track (it's body-scoped).
+func TestBuildSourceFibIter(t *testing.T) {
+	src := `fun fib(n: int): int {
+  var a = 0
+  var b = 1
+  var i = 0
+  while i < n {
+    let t = a + b
+    a = b
+    b = t
+    i = i + 1
+  }
+  return a
+}
+print(fib(10))
+`
+	if got, want := runMochiBuild(t, src), "55\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceRejectsImportGo pins the by-design rejection of
 // general Go FFI in the C target. The script `import go "testpkg"`
 // must surface ErrUnsupportedFFI (wrapped) at build time, not
