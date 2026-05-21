@@ -73,7 +73,8 @@
   {
     "label": "Codegen",
     "items": [
-      "mep/mep-0042"
+      "mep/mep-0042",
+      "mep/mep-0043"
     ]
   }
 ]
