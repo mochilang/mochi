@@ -346,6 +346,13 @@ type GoBinding struct {
 	// names a multi-value return, but Phase 6 sticks to single-value
 	// signatures and leaves error handling to Phase 7.
 	Result string
+	// SealHandles enables MEP-41 §6.7 sealing at this call boundary.
+	// When true, every argument that carries a Mochi handle (list,
+	// map, set, struct) is wrapped in `ffi.Seal[T]` and the return
+	// value is wrapped in `ffi.Unseal[T]`. The runtime helpers are
+	// type-system markers; the safety property is invariant rather
+	// than dynamic at the Go target. See MEP-43 Phase 10.
+	SealHandles bool
 }
 
 // Value is one SSA-form IR node. Type is mandatory; the type checker
