@@ -33,6 +33,7 @@ import (
 
 	"mochi/ast"
 	"mochi/archived/interpreter"
+	gobuild "mochi/compiler3/build/go"
 	"mochi/mcp"
 	"mochi/parser"
 	"mochi/repl"
@@ -51,6 +52,7 @@ var (
 
 type CLI struct {
 	Run        *RunCmd        `arg:"subcommand:run" help:"Run a Mochi source file"`
+	Build      *BuildCmd      `arg:"subcommand:build" help:"Compile a Mochi source file to a target language"`
 	Test       *TestCmd       `arg:"subcommand:test" help:"Run test blocks inside a Mochi source file"`
 	Init       *InitCmd       `arg:"subcommand:init" help:"Initialize a new Mochi module"`
 	Get        *GetCmd        `arg:"subcommand:get" help:"Download module dependencies"`
@@ -60,6 +62,20 @@ type CLI struct {
 	Serve      *ServeCmd      `arg:"subcommand:serve" help:"Start MCP server over stdio"`
 	Cheatsheet *CheatsheetCmd `arg:"subcommand:cheatsheet" help:"Print language cheatsheet"`
 	Version    bool           `arg:"--version" help:"Print version info and exit"`
+}
+
+// BuildCmd is the MEP-43 close-out CLI shell: `mochi build` drives the
+// Mochi-to-IR frontend + compiler3/emit/go emitter to produce Go from
+// a Mochi source. The flags map one-to-one to gobuild.Options fields.
+type BuildCmd struct {
+	File           string `arg:"positional,required" help:"Path to .mochi source file"`
+	Target         string `arg:"--target" default:"go" help:"Target language (go)"`
+	Emit           string `arg:"--emit" default:"executable" help:"Emit shape (executable|go-library)"`
+	Out            string `arg:"--out" help:"Output directory (default: a fresh temp dir)"`
+	KeepEmit       bool   `arg:"--keep-emit" help:"Retain the emitted .go file(s) after build"`
+	Module         string `arg:"--module" help:"Module path baked into go.mod (required for --emit=go-library)"`
+	PkgName        string `arg:"--package" help:"Package name override"`
+	RuntimeReplace string `arg:"--runtime-replace" help:"Local replace directive for mochi runtime (library mode)"`
 }
 
 type RunCmd struct {
@@ -167,6 +183,56 @@ func formatDuration(d time.Duration) string {
 	default:
 		return fmt.Sprintf("%.2fs", d.Seconds())
 	}
+}
+
+// runBuild dispatches the `mochi build` subcommand. It maps CLI flags
+// onto gobuild.Options and runs the Mochi-to-IR frontend + emit/go
+// pipeline. The MEP-43 close-out: this is the user-facing shell for
+// Phase 7's --keep-emit and Phase 8's --emit=go-library.
+func runBuild(cmd *BuildCmd) error {
+	if cmd.Target != "go" {
+		return fmt.Errorf("build: only --target=go is supported in this release (got %q)", cmd.Target)
+	}
+	var mode gobuild.Mode
+	switch cmd.Emit {
+	case "", "executable":
+		mode = gobuild.ModeExecutable
+	case "go-library":
+		mode = gobuild.ModeLibrary
+		if cmd.Module == "" {
+			return fmt.Errorf("build: --emit=go-library requires --module=<path>")
+		}
+	default:
+		return fmt.Errorf("build: unknown --emit value %q (expected executable|go-library)", cmd.Emit)
+	}
+	outDir := cmd.Out
+	if outDir == "" {
+		tmp, err := os.MkdirTemp("", "mochi-build-")
+		if err != nil {
+			return fmt.Errorf("build: temp dir: %w", err)
+		}
+		outDir = tmp
+	}
+	opts := gobuild.Options{
+		Mode:           mode,
+		OutDir:         outDir,
+		KeepEmit:       cmd.KeepEmit,
+		ModulePath:     cmd.Module,
+		PkgName:        cmd.PkgName,
+		RuntimeReplace: cmd.RuntimeReplace,
+	}
+	r, err := gobuild.BuildSource(cmd.File, opts)
+	if err != nil {
+		return err
+	}
+	if mode == gobuild.ModeExecutable {
+		fmt.Printf("emitted %s\n", r.EntryPoint)
+	} else {
+		for _, f := range r.Files {
+			fmt.Printf("emitted %s\n", f)
+		}
+	}
+	return nil
 }
 
 func runFile(cmd *RunCmd) error {
@@ -608,6 +674,7 @@ func newRootCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		newRunCmd(),
+		newBuildCmd(),
 		newTestCmd(),
 		newInitCmd(),
 		newGetCmd(),
@@ -646,6 +713,27 @@ func newRunCmd() *cobra.Command {
 	c.Flags().BoolVar(&rc.Memoize, "memo", false, "Enable memoization of pure functions")
 	c.Flags().BoolVar(&rc.Fold, "aot", false, "Fold pure calls before execution")
 	c.Flags().BoolVar(&rc.PrintIR, "ir", false, "Print VM assembly and exit")
+	return c
+}
+
+func newBuildCmd() *cobra.Command {
+	var bc BuildCmd
+	c := &cobra.Command{
+		Use:   "build <file>",
+		Short: "Compile a Mochi source file to a target language (MEP-43)",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			bc.File = args[0]
+			return runBuild(&bc)
+		},
+	}
+	c.Flags().StringVar(&bc.Target, "target", "go", "Target language (go)")
+	c.Flags().StringVar(&bc.Emit, "emit", "executable", "Emit shape (executable|go-library)")
+	c.Flags().StringVar(&bc.Out, "out", "", "Output directory (default: a fresh temp dir)")
+	c.Flags().BoolVar(&bc.KeepEmit, "keep-emit", false, "Retain the emitted .go file(s) after build")
+	c.Flags().StringVar(&bc.Module, "module", "", "Module path baked into go.mod (required for --emit=go-library)")
+	c.Flags().StringVar(&bc.PkgName, "package", "", "Package name override")
+	c.Flags().StringVar(&bc.RuntimeReplace, "runtime-replace", "", "Local replace directive for mochi runtime (library mode)")
 	return c
 }
 

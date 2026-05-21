@@ -28,17 +28,22 @@ type CorpusReport struct {
 	Fixtures  []FixtureResult
 }
 
-// LoadGoldenLegacy returns a Runner whose RunLegacy reads the matching
-// `.mochi.out` next to the fixture file as Stdout, with ExitCode 0.
-// RunNew is delegated. Used by RunCorpus when the actual legacy
-// transpiler shouldn't be invoked (golden outputs are the reference).
+// LoadGoldenLegacy returns a Runner whose RunLegacy reads the golden
+// stdout file next to the fixture (e.g. `let_and_print.mochi` -> `let_and_print.out`)
+// as the legacy result. RunNew is delegated. Used by RunCorpus when
+// the actual legacy transpiler shouldn't be invoked; the golden output
+// is the canonical reference instead.
 type LoadGoldenLegacy struct {
 	New Runner
 }
 
-// RunLegacy reads the matching `<fixture>.mochi.out` file.
+// RunLegacy reads the golden stdout file matching the fixture path.
+// The convention in tests/vm/valid is `<base>.mochi` paired with
+// `<base>.out`; the `.mochi.out` sibling is a different artifact (IR
+// dump) and is not the stdout golden.
 func (g LoadGoldenLegacy) RunLegacy(fixture string) Result {
-	out, err := os.ReadFile(fixture + ".out")
+	base := strings.TrimSuffix(fixture, ".mochi")
+	out, err := os.ReadFile(base + ".out")
 	if err != nil {
 		return Result{Err: fmt.Errorf("golden: %w", err)}
 	}

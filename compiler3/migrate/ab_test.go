@@ -79,12 +79,18 @@ func TestRunBothDiverge(t *testing.T) {
 	}
 }
 
-// TestDefaultRunnerIsPending asserts the default Runner returns
-// ErrNewPathPending for the new leg.
-func TestDefaultRunnerIsPending(t *testing.T) {
+// TestDefaultRunnerIsFrontendDriven asserts the default Runner drives
+// the Mochi-to-IR frontend + emit/go + go-run pipeline. A missing
+// source surfaces as a real error (parse failure) rather than
+// ErrNewPathPending; pending is reserved for MVP-unsupported Mochi
+// surfaces. Verified by the end-to-end FrontendRunner tests.
+func TestDefaultRunnerIsFrontendDriven(t *testing.T) {
 	r := Default()
-	res := r.RunNew("anything.mochi")
-	if !errors.Is(res.Err, ErrNewPathPending) {
-		t.Errorf("Default.RunNew should be pending; got Err=%v", res.Err)
+	res := r.RunNew("does-not-exist.mochi")
+	if errors.Is(res.Err, ErrNewPathPending) {
+		t.Errorf("Default.RunNew should report a real parse error for a missing file; got pending")
+	}
+	if res.Err == nil {
+		t.Errorf("Default.RunNew on missing file should return an error")
 	}
 }

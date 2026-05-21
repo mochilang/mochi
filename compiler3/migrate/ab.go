@@ -81,7 +81,10 @@ func (PendingRunner) RunNew(fixture string) Result {
 	return Result{Err: ErrNewPathPending}
 }
 
-// Default returns the pending runner used by tests until the new path
-// is operational. Phase 9 implementations replace this with a runner
-// that drives compiler3/emit/go end-to-end.
-func Default() Runner { return PendingRunner{} }
+// Default returns the runner used by Phase-9 closeout: the new leg
+// runs the Mochi-to-IR frontend + compiler3/emit/go + `go run`, and
+// the legacy leg falls back to the .out golden (callers compose it
+// with their own legacy runner via FrontendRunner.Legacy if they want
+// a true legacy A/B). MVP-unsupported fixtures surface as
+// ErrNewPathPending so they are reported as skips, not regressions.
+func Default() Runner { return LoadGoldenLegacy{New: FrontendRunner{}} }
