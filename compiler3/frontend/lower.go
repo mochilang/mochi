@@ -1338,62 +1338,69 @@ func (b *builder) lowerPrimary(p *parser.Primary) (uint32, error) {
 // lowerListLiteral lowers `[e1, e2, ...]` to an empty-list constructor
 // (OpNewList for i64, OpNewF64Array for f64) plus a chain of push ops.
 // The element type is taken from b.expectedListElem when set (by a
-// `var xs: list<T> = ...` declaration), and falls back to i64 when
-// unset (matching the existing default for an untyped `[]`).
+// `var xs: list<T> = ...` declaration). When the declaration omits the
+// type annotation, lowerListLiteral lowers the first element first and
+// infers the element type from it (Phase 4.3.8). Empty literals with
+// no hint still default to i64.
 func (b *builder) lowerListLiteral(lit *parser.ListLiteral) (uint32, error) {
 	elem := b.expectedListElem
+	var firstID uint32
+	var firstLowered bool
 	if elem == ir.TypeInvalid {
-		elem = ir.TypeI64
+		if len(lit.Elems) > 0 {
+			id, err := b.lowerExpr(lit.Elems[0])
+			if err != nil {
+				return 0, err
+			}
+			firstID = id
+			firstLowered = true
+			switch b.fn.Values[id].Type {
+			case ir.TypeI64:
+				elem = ir.TypeI64
+			case ir.TypeF64:
+				elem = ir.TypeF64
+			default:
+				return 0, fmt.Errorf("frontend: list literal element type %s unsupported in MVP", b.fn.Values[id].Type)
+			}
+		} else {
+			elem = ir.TypeI64
+		}
 	}
+	var listType, elemType ir.Type
+	var newOp, pushOp ir.OpCode
 	switch elem {
 	case ir.TypeI64:
-		listID := b.addValue(ir.Value{
-			Type:     ir.TypeList,
-			ElemType: ir.TypeI64,
-			Op:       ir.OpNewList,
-		})
-		for _, el := range lit.Elems {
-			vid, err := b.lowerExpr(el)
-			if err != nil {
-				return 0, err
-			}
-			if b.fn.Values[vid].Type != ir.TypeI64 {
-				return 0, fmt.Errorf("frontend: list<int> literal element type %s unsupported",
-					b.fn.Values[vid].Type)
-			}
-			b.addValue(ir.Value{
-				Type:     ir.TypeUnit,
-				ElemType: ir.TypeI64,
-				Op:       ir.OpListPushI64,
-				Args:     []uint32{listID, vid},
-			})
-		}
-		return listID, nil
+		listType, elemType = ir.TypeList, ir.TypeI64
+		newOp, pushOp = ir.OpNewList, ir.OpListPushI64
 	case ir.TypeF64:
-		listID := b.addValue(ir.Value{
-			Type:     ir.TypeF64Arr,
-			ElemType: ir.TypeF64,
-			Op:       ir.OpNewF64Array,
-		})
-		for _, el := range lit.Elems {
-			vid, err := b.lowerExpr(el)
+		listType, elemType = ir.TypeF64Arr, ir.TypeF64
+		newOp, pushOp = ir.OpNewF64Array, ir.OpF64ArrayPushF64
+	default:
+		return 0, fmt.Errorf("frontend: list literal with element type %s unsupported", elem)
+	}
+	listID := b.addValue(ir.Value{Type: listType, ElemType: elemType, Op: newOp})
+	for i, el := range lit.Elems {
+		var vid uint32
+		if i == 0 && firstLowered {
+			vid = firstID
+		} else {
+			id, err := b.lowerExpr(el)
 			if err != nil {
 				return 0, err
 			}
-			if b.fn.Values[vid].Type != ir.TypeF64 {
-				return 0, fmt.Errorf("frontend: list<float> literal element type %s unsupported (write 1.0 not 1)",
-					b.fn.Values[vid].Type)
-			}
-			b.addValue(ir.Value{
-				Type:     ir.TypeUnit,
-				ElemType: ir.TypeF64,
-				Op:       ir.OpF64ArrayPushF64,
-				Args:     []uint32{listID, vid},
-			})
+			vid = id
 		}
-		return listID, nil
+		if b.fn.Values[vid].Type != elemType {
+			return 0, fmt.Errorf("frontend: list<%s> literal element type %s unsupported", elemType, b.fn.Values[vid].Type)
+		}
+		b.addValue(ir.Value{
+			Type:     ir.TypeUnit,
+			ElemType: elemType,
+			Op:       pushOp,
+			Args:     []uint32{listID, vid},
+		})
 	}
-	return 0, fmt.Errorf("frontend: list literal with element type %s unsupported", elem)
+	return listID, nil
 }
 
 func (b *builder) lowerLiteral(lit *parser.Literal) (uint32, error) {

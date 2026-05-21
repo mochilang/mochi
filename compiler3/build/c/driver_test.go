@@ -540,6 +540,37 @@ print(int(eval_a(0, 0) * 1.0e9))
 	}
 }
 
+// TestBuildSourceListInferFloatElem pins the Phase 4.3.8 element-type
+// inference on the C target: a float-element literal without a type
+// annotation lowers via mochi_f64_array, not mochi_list_i64.
+func TestBuildSourceListInferFloatElem(t *testing.T) {
+	src := `var xs = [1.0, 2.0, 3.0]
+print(int(xs[1]))
+`
+	if got, want := runMochiBuild(t, src), "2\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceNbodyInitVectors pins a stripped n_body top-level
+// shape on the C target. The full benchmark still needs harness
+// scaffolding, but the var-bound float list + indexed reads now
+// compile.
+func TestBuildSourceNbodyInitVectors(t *testing.T) {
+	src := `var pos_x = [0.0, 4.84, 8.34, 12.89, 15.37]
+var i = 0
+var sum = 0.0
+while i < 5 {
+  sum = sum + pos_x[i]
+  i = i + 1
+}
+print(int(sum))
+`
+	if got, want := runMochiBuild(t, src), "41\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceForInListI64 pins the Phase 4.3.7 collection-iter
 // surface on the C target for list<int>. Sum of [10,20,30] is 60.
 func TestBuildSourceForInListI64(t *testing.T) {

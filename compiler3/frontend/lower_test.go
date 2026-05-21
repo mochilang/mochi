@@ -429,6 +429,54 @@ print(int(eval_a(0, 0) * 1.0e9))
 	}
 }
 
+// TestLowerListInferFloatElem pins the Phase 4.3.8 element-type
+// inference: `var xs = [1.0, 2.0, 3.0]` (no type annotation) lowers
+// to OpNewF64Array, not the default OpNewList, because the first
+// element is an f64 literal. Indexed read returns 2.0; truncated to
+// int gives 2.
+func TestLowerListInferFloatElem(t *testing.T) {
+	src := `var xs = [1.0, 2.0, 3.0]
+print(int(xs[1]))
+`
+	got := runEnd2End(t, src)
+	if got != "2\n" {
+		t.Errorf("got %q, want %q", got, "2\n")
+	}
+}
+
+// TestLowerListInferIntElem pins backward compat: an untyped int
+// literal list still infers TypeI64 from the first element, matching
+// the pre-Phase-4.3.8 default.
+func TestLowerListInferIntElem(t *testing.T) {
+	src := `var xs = [10, 20, 30]
+print(xs[2])
+`
+	got := runEnd2End(t, src)
+	if got != "30\n" {
+		t.Errorf("got %q, want %q", got, "30\n")
+	}
+}
+
+// TestLowerNbodyInitVectors pins a stripped n_body top-level shape: a
+// var-bound float list at module scope, indexed reads inside a while
+// loop. This is the gated form that Phase 4.3.8 inference unlocks; the
+// full n_body fixture still needs the harness shape.
+func TestLowerNbodyInitVectors(t *testing.T) {
+	src := `var pos_x = [0.0, 4.84, 8.34, 12.89, 15.37]
+var i = 0
+var sum = 0.0
+while i < 5 {
+  sum = sum + pos_x[i]
+  i = i + 1
+}
+print(int(sum))
+`
+	got := runEnd2End(t, src)
+	if got != "41\n" {
+		t.Errorf("got %q, want %q", got, "41\n")
+	}
+}
+
 // TestLowerForInListI64 pins the Phase 4.3.7 collection-iter surface
 // for list<int>: iterating `for x in xs` over a 3-element list and
 // summing the values produces 60.
