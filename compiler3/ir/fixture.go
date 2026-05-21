@@ -192,6 +192,79 @@ func FixtureAddPair() *Function {
 	return fn
 }
 
+// FixtureGoCallToUpper builds the SSA IR for a single-arg FFI call:
+//
+//	fun shout(s: str) -> str { return strings.ToUpper(s) }
+//
+// The Mochi `import go "strings"` lowers to a single GoBinding in the
+// function's binding table; OpCallGo names it by index and the
+// emitter prints `strings.ToUpper(v0)` plus the `"strings"` import.
+func FixtureGoCallToUpper() *Function {
+	fn := &Function{Name: "shout", Result: TypeStr}
+	fn.GoBindings = []GoBinding{{
+		Pkg:      "strings",
+		Alias:    "strings",
+		Name:     "ToUpper",
+		ArgTypes: []string{"string"},
+		Result:   "string",
+	}}
+	sID := fn.AddValue(Value{Type: TypeStr, Op: OpParam})
+	fn.Params = []uint32{sID}
+	entryID := fn.AddBlock()
+	ret := fn.AddValue(Value{Type: TypeStr, Op: OpCallGo, Args: []uint32{sID}, Const: 0})
+	entry := fn.Block(entryID)
+	entry.Values = []uint32{ret}
+	entry.Term = Terminator{Kind: TermReturn, Value: ret}
+	return fn
+}
+
+// FixtureGoCallContains builds a two-arg FFI call:
+//
+//	fun has(s: str, sub: str) -> bool { return strings.Contains(s, sub) }
+//
+// Exercises multi-argument OpCallGo lowering.
+func FixtureGoCallContains() *Function {
+	fn := &Function{Name: "has", Result: TypeBool}
+	fn.GoBindings = []GoBinding{{
+		Pkg:      "strings",
+		Alias:    "strings",
+		Name:     "Contains",
+		ArgTypes: []string{"string", "string"},
+		Result:   "bool",
+	}}
+	sID := fn.AddValue(Value{Type: TypeStr, Op: OpParam})
+	subID := fn.AddValue(Value{Type: TypeStr, Op: OpParam})
+	fn.Params = []uint32{sID, subID}
+	entryID := fn.AddBlock()
+	ret := fn.AddValue(Value{Type: TypeBool, Op: OpCallGo, Args: []uint32{sID, subID}, Const: 0})
+	entry := fn.Block(entryID)
+	entry.Values = []uint32{ret}
+	entry.Term = Terminator{Kind: TermReturn, Value: ret}
+	return fn
+}
+
+// FixtureGoCallAlias builds a single-arg FFI call where the Mochi
+// `import go "strings" as s` shadows the default alias. The emitter
+// must produce `import s "strings"` and call `s.ToUpper(...)`.
+func FixtureGoCallAlias() *Function {
+	fn := &Function{Name: "shout", Result: TypeStr}
+	fn.GoBindings = []GoBinding{{
+		Pkg:      "strings",
+		Alias:    "s",
+		Name:     "ToUpper",
+		ArgTypes: []string{"string"},
+		Result:   "string",
+	}}
+	sID := fn.AddValue(Value{Type: TypeStr, Op: OpParam})
+	fn.Params = []uint32{sID}
+	entryID := fn.AddBlock()
+	ret := fn.AddValue(Value{Type: TypeStr, Op: OpCallGo, Args: []uint32{sID}, Const: 0})
+	entry := fn.Block(entryID)
+	entry.Values = []uint32{ret}
+	entry.Term = Terminator{Kind: TermReturn, Value: ret}
+	return fn
+}
+
 // FixtureFactRec builds the SSA IR for the recursive factorial
 // kernel. Source:
 //

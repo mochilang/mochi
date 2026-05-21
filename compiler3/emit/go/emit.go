@@ -34,7 +34,16 @@ func Emit(p *Program) ([]byte, error) {
 	}
 	var body bytes.Buffer
 	imports := map[string]bool{}
+	importAlias := map[string]string{}
 	for _, fn := range p.Funcs {
+		// Pre-seed importAlias from this function's Go bindings; the
+		// emitter never invents an alias different from the binding
+		// table's, so emission order is irrelevant for correctness.
+		for _, b := range fn.GoBindings {
+			if b.Alias != "" && b.Alias != defaultAlias(b.Pkg) {
+				importAlias[b.Pkg] = b.Alias
+			}
+		}
 		if err := emitFunc(&body, fn, p.Funcs, imports); err != nil {
 			return nil, fmt.Errorf("emit %s: %w", fn.Name, err)
 		}
@@ -56,7 +65,11 @@ func Emit(p *Program) ([]byte, error) {
 		sort.Strings(paths)
 		fmt.Fprintf(&src, "import (\n")
 		for _, ip := range paths {
-			fmt.Fprintf(&src, "\t%q\n", ip)
+			if a, ok := importAlias[ip]; ok {
+				fmt.Fprintf(&src, "\t%s %q\n", a, ip)
+			} else {
+				fmt.Fprintf(&src, "\t%q\n", ip)
+			}
 		}
 		fmt.Fprintf(&src, ")\n\n")
 	}
@@ -284,6 +297,28 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 		fmt.Fprintf(w, "\t%s = query.CrossJoin[int64, int64, int64](%s, %s, %s)\n",
 			name, valueName(v.Args[0]), valueName(v.Args[1]),
 			fnName(fn, all, v.Args[2]))
+	case ir.OpCallGo:
+		if int(v.Const) >= len(fn.GoBindings) {
+			return fmt.Errorf("OpCallGo v%d: Const %d out of range (have %d bindings)", v.ID, v.Const, len(fn.GoBindings))
+		}
+		b := fn.GoBindings[v.Const]
+		imports[b.Pkg] = true
+		alias := b.Alias
+		if alias == "" {
+			alias = defaultAlias(b.Pkg)
+		}
+		if b.Result == "" {
+			fmt.Fprintf(w, "\t%s.%s(", alias, b.Name)
+		} else {
+			fmt.Fprintf(w, "\t%s = %s.%s(", name, alias, b.Name)
+		}
+		for i, aid := range v.Args {
+			if i > 0 {
+				w.WriteString(", ")
+			}
+			w.WriteString(valueName(aid))
+		}
+		w.WriteString(")\n")
 	case ir.OpPhi:
 		// Declared in prelude; no body emit.
 		return nil
@@ -339,6 +374,20 @@ func emitTerminator(w *bytes.Buffer, fn *ir.Function, blk *ir.Block, all []*ir.F
 }
 
 func valueName(id uint32) string { return fmt.Sprintf("v%d", id) }
+
+// defaultAlias returns the last path segment of a Go import path,
+// matching the implicit package alias `go build` would assign. The
+// emitter uses this when a GoBinding leaves Alias blank.
+func defaultAlias(pkg string) string {
+	last := pkg
+	for i := len(pkg) - 1; i >= 0; i-- {
+		if pkg[i] == '/' {
+			last = pkg[i+1:]
+			break
+		}
+	}
+	return last
+}
 
 // fnName returns the Go function name referenced by an OpFnRef value.
 // The argument is the SSA value ID of an OpFnRef; the helper looks

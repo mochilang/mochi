@@ -441,6 +441,70 @@ func TestEmitQueryEmitsRuntimeImport(t *testing.T) {
 	}
 }
 
+// TestEmitGoCallToUpper verifies that OpCallGo lowers `strings.ToUpper`
+// to a literal Go call, that the `"strings"` stdlib import appears in
+// the emitted source, and that running the result produces the upper
+// cased input. No Mochi-side reflection, no runtime registry.
+func TestEmitGoCallToUpper(t *testing.T) {
+	fn := ir.FixtureGoCallToUpper()
+	src, err := Emit(&Program{PkgName: "main", Funcs: []*ir.Function{fn}})
+	if err != nil {
+		t.Fatalf("Emit: %v\n%s", err, src)
+	}
+	srcStr := string(src)
+	if !strings.Contains(srcStr, "\"strings\"") {
+		t.Errorf("emitted source missing strings import:\n%s", srcStr)
+	}
+	if !strings.Contains(srcStr, "strings.ToUpper(") {
+		t.Errorf("emitted source missing strings.ToUpper call:\n%s", srcStr)
+	}
+	if strings.Contains(srcStr, "Call(") || strings.Contains(srcStr, "reflect.") {
+		t.Errorf("emitted source must not use reflection or Call(name, args...):\n%s", srcStr)
+	}
+	withMain := srcStr + "\nfunc main() {\n\tprintln(shout(\"hello\"))\n}\n"
+	if got := runGo(t, withMain); got != "HELLO\n" {
+		t.Errorf("shout(\"hello\") = %q, want HELLO", got)
+	}
+}
+
+// TestEmitGoCallContains exercises a 2-arg Go FFI call returning bool.
+func TestEmitGoCallContains(t *testing.T) {
+	fn := ir.FixtureGoCallContains()
+	src, err := Emit(&Program{PkgName: "main", Funcs: []*ir.Function{fn}})
+	if err != nil {
+		t.Fatalf("Emit: %v\n%s", err, src)
+	}
+	if !strings.Contains(string(src), "strings.Contains(") {
+		t.Errorf("emitted source missing strings.Contains call:\n%s", src)
+	}
+	withMain := string(src) + "\nfunc main() {\n\tprintln(has(\"hello\", \"ell\"))\n}\n"
+	if got := runGo(t, withMain); got != "true\n" {
+		t.Errorf("has(\"hello\",\"ell\") = %q, want true", got)
+	}
+}
+
+// TestEmitGoCallAlias asserts the emitter prints a non-default alias
+// (Mochi `import go "strings" as s`) as `import s "strings"` in the
+// generated file, and emits `s.ToUpper(...)` at call sites.
+func TestEmitGoCallAlias(t *testing.T) {
+	fn := ir.FixtureGoCallAlias()
+	src, err := Emit(&Program{PkgName: "main", Funcs: []*ir.Function{fn}})
+	if err != nil {
+		t.Fatalf("Emit: %v\n%s", err, src)
+	}
+	srcStr := string(src)
+	if !strings.Contains(srcStr, "s \"strings\"") {
+		t.Errorf("emitted source missing aliased import (s \"strings\"):\n%s", srcStr)
+	}
+	if !strings.Contains(srcStr, "s.ToUpper(") {
+		t.Errorf("emitted source missing s.ToUpper call:\n%s", srcStr)
+	}
+	withMain := srcStr + "\nfunc main() {\n\tprintln(shout(\"hi\"))\n}\n"
+	if got := runGo(t, withMain); got != "HI\n" {
+		t.Errorf("aliased shout(\"hi\") = %q, want HI", got)
+	}
+}
+
 func intStr(n int64) string {
 	if n == 0 {
 		return "0"
