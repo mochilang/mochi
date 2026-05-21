@@ -1,6 +1,7 @@
 package cgen
 
 import (
+	"errors"
 	"strings"
 	"testing"
 
@@ -199,6 +200,126 @@ func TestEmitConstI64Min(t *testing.T) {
 		t.Fatalf("Emit: %v", err)
 	}
 	mustContain(t, string(src), "-9223372036854775807LL - 1")
+}
+
+// TestEmitOpCallIntraProgram pins the Phase 4.1 lowering for OpCall:
+// a function "twice" doubles its argument, "main" calls it. The
+// emitted source must contain a direct `v2 = twice(v0);` call site
+// and no FFI-style indirection.
+func TestEmitOpCallIntraProgram(t *testing.T) {
+	twice := &ir.Function{Name: "twice", Result: ir.TypeI64}
+	pid := twice.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpParam})
+	twice.Params = []uint32{pid}
+	tbid := twice.AddBlock()
+	mul := twice.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpMulI64Imm, Args: []uint32{pid}, Const: 2})
+	tblk := twice.Block(tbid)
+	tblk.Values = []uint32{mul}
+	tblk.Term = ir.Terminator{Kind: ir.TermReturn, Value: mul}
+
+	caller := &ir.Function{Name: "caller", Result: ir.TypeI64}
+	cbid := caller.AddBlock()
+	five := caller.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpConst, Const: 5})
+	// Const=0 refs Funcs[0] (twice).
+	call := caller.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpCall, Args: []uint32{five}, Const: 0})
+	cblk := caller.Block(cbid)
+	cblk.Values = []uint32{five, call}
+	cblk.Term = ir.Terminator{Kind: ir.TermReturn, Value: call}
+
+	src, err := Emit(&Program{Funcs: []*ir.Function{twice, caller}, Main: "caller"})
+	if err != nil {
+		t.Fatalf("Emit: %v", err)
+	}
+	s := string(src)
+	mustContain(t, s, "static int64_t twice(int64_t v0)")
+	mustContain(t, s, "v1 = twice(v0);")
+}
+
+// TestEmitOpCallGoPrint covers the print sentinel: OpCallGo with
+// binding {Pkg:"fmt", Name:"Println"} must lower to a mochi_print_*
+// runtime call dispatched by the arg type, and the source must
+// #include "print.h".
+func TestEmitOpCallGoPrint(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		argType ir.Type
+		want    string
+	}{
+		{"i64", ir.TypeI64, "mochi_print_i64(v0);"},
+		{"f64", ir.TypeF64, "mochi_print_f64(v0);"},
+		{"bool", ir.TypeBool, "mochi_print_bool(v0);"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			fn := &ir.Function{Name: "say", Result: ir.TypeUnit}
+			arg := fn.AddValue(ir.Value{Type: tc.argType, Op: ir.OpParam})
+			fn.Params = []uint32{arg}
+			fn.GoBindings = []ir.GoBinding{{Pkg: "fmt", Alias: "fmt", Name: "Println"}}
+			bid := fn.AddBlock()
+			call := fn.AddValue(ir.Value{Type: ir.TypeUnit, Op: ir.OpCallGo, Args: []uint32{arg}, Const: 0})
+			blk := fn.Block(bid)
+			blk.Values = []uint32{call}
+			blk.Term = ir.Terminator{Kind: ir.TermReturn}
+
+			src, err := Emit(&Program{Funcs: []*ir.Function{fn}})
+			if err != nil {
+				t.Fatalf("Emit: %v", err)
+			}
+			s := string(src)
+			mustContain(t, s, "#include \"print.h\"")
+			mustContain(t, s, tc.want)
+		})
+	}
+}
+
+// TestEmitOpCallGoFFIRejected pins the by-design rejection of any
+// OpCallGo binding that is not the print sentinel. The C target
+// cannot satisfy general Go FFI under the no-cgo identity; users
+// who need that surface must build with --target=go. The emitter
+// reports ErrUnsupportedFFI so the driver can route the diagnostic.
+func TestEmitOpCallGoFFIRejected(t *testing.T) {
+	fn := &ir.Function{Name: "addk", Result: ir.TypeI64}
+	arg := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpParam})
+	fn.Params = []uint32{arg}
+	fn.GoBindings = []ir.GoBinding{{
+		Pkg: "testpkg", Alias: "testpkg", Name: "Add",
+		ArgTypes: []string{"int64", "int64"}, Result: "int64",
+	}}
+	bid := fn.AddBlock()
+	call := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpCallGo, Args: []uint32{arg, arg}, Const: 0})
+	blk := fn.Block(bid)
+	blk.Values = []uint32{call}
+	blk.Term = ir.Terminator{Kind: ir.TermReturn, Value: call}
+
+	_, err := Emit(&Program{Funcs: []*ir.Function{fn}})
+	if err == nil {
+		t.Fatalf("expected ErrUnsupportedFFI, got nil")
+	}
+	if !errors.Is(err, ErrUnsupportedFFI) {
+		t.Errorf("expected ErrUnsupportedFFI, got %v", err)
+	}
+}
+
+// TestEmitOpCallGoPrintArgTypeUnsupported covers the path where the
+// print sentinel is invoked with an argument outside the Phase 4.1
+// scalar set (Phase 4.2 lands TypeStr). The emitter must surface
+// ErrUnsupportedType, not silently emit garbled C.
+func TestEmitOpCallGoPrintArgTypeUnsupported(t *testing.T) {
+	fn := &ir.Function{Name: "say", Result: ir.TypeUnit}
+	arg := fn.AddValue(ir.Value{Type: ir.TypeStr, Op: ir.OpParam})
+	fn.Params = []uint32{arg}
+	fn.GoBindings = []ir.GoBinding{{Pkg: "fmt", Alias: "fmt", Name: "Println"}}
+	bid := fn.AddBlock()
+	call := fn.AddValue(ir.Value{Type: ir.TypeUnit, Op: ir.OpCallGo, Args: []uint32{arg}, Const: 0})
+	blk := fn.Block(bid)
+	blk.Values = []uint32{call}
+	blk.Term = ir.Terminator{Kind: ir.TermReturn}
+
+	_, err := Emit(&Program{Funcs: []*ir.Function{fn}})
+	if err == nil {
+		t.Fatalf("expected ErrUnsupportedType, got nil")
+	}
+	if !errors.Is(err, ErrUnsupportedType) {
+		t.Errorf("expected ErrUnsupportedType, got %v", err)
+	}
 }
 
 func mustContain(t *testing.T, s, sub string) {
