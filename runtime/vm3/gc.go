@@ -187,7 +187,7 @@ func (a *Arenas) sweep() {
 		s.flags &^= flagAlive
 		s.data = nil
 		s.gen++
-		a.freeStrings = append(a.freeStrings, uint32(i))
+		a.routeToFreeOrQuarantine(ArenaString, uint32(i))
 	}
 	for i := range a.Lists {
 		s := &a.Lists[i]
@@ -201,7 +201,7 @@ func (a *Arenas) sweep() {
 		s.flags &^= flagAlive
 		s.cells = nil
 		s.gen++
-		a.freeLists = append(a.freeLists, uint32(i))
+		a.routeToFreeOrQuarantine(ArenaList, uint32(i))
 	}
 	for i := range a.Maps {
 		s := &a.Maps[i]
@@ -215,7 +215,7 @@ func (a *Arenas) sweep() {
 		s.flags &^= flagAlive
 		s.table = nil
 		s.gen++
-		a.freeMaps = append(a.freeMaps, uint32(i))
+		a.routeToFreeOrQuarantine(ArenaMap, uint32(i))
 	}
 	for i := range a.Sets {
 		s := &a.Sets[i]
@@ -229,7 +229,7 @@ func (a *Arenas) sweep() {
 		s.flags &^= flagAlive
 		s.table = nil
 		s.gen++
-		a.freeSets = append(a.freeSets, uint32(i))
+		a.routeToFreeOrQuarantine(ArenaSet, uint32(i))
 	}
 	for i := range a.Structs {
 		s := &a.Structs[i]
@@ -243,7 +243,7 @@ func (a *Arenas) sweep() {
 		s.flags &^= flagAlive
 		s.fields = nil
 		s.gen++
-		a.freeStructs = append(a.freeStructs, uint32(i))
+		a.routeToFreeOrQuarantine(ArenaStruct, uint32(i))
 	}
 	for i := range a.Closures {
 		s := &a.Closures[i]
@@ -257,7 +257,7 @@ func (a *Arenas) sweep() {
 		s.flags &^= flagAlive
 		s.upvalues = nil
 		s.gen++
-		a.freeClosures = append(a.freeClosures, uint32(i))
+		a.routeToFreeOrQuarantine(ArenaClosure, uint32(i))
 	}
 	for i := range a.Bignums {
 		s := &a.Bignums[i]
@@ -271,7 +271,7 @@ func (a *Arenas) sweep() {
 		s.flags &^= flagAlive
 		s.words = nil
 		s.gen++
-		a.freeBignums = append(a.freeBignums, uint32(i))
+		a.routeToFreeOrQuarantine(ArenaBignum, uint32(i))
 	}
 	for i := range a.Bytes {
 		s := &a.Bytes[i]
@@ -285,7 +285,7 @@ func (a *Arenas) sweep() {
 		s.flags &^= flagAlive
 		s.data = nil
 		s.gen++
-		a.freeBytes = append(a.freeBytes, uint32(i))
+		a.routeToFreeOrQuarantine(ArenaBytes, uint32(i))
 	}
 	for i := range a.Pairs {
 		s := &a.Pairs[i]
@@ -298,7 +298,7 @@ func (a *Arenas) sweep() {
 		}
 		s.flags &^= flagAlive
 		s.gen++
-		a.freePairs = append(a.freePairs, uint32(i))
+		a.routeToFreeOrQuarantine(ArenaPair, uint32(i))
 	}
 	for i := range a.F64Arrs {
 		s := &a.F64Arrs[i]
@@ -312,7 +312,7 @@ func (a *Arenas) sweep() {
 		s.flags &^= flagAlive
 		s.data = nil
 		s.gen++
-		a.freeF64Arrs = append(a.freeF64Arrs, uint32(i))
+		a.routeToFreeOrQuarantine(ArenaF64Arr, uint32(i))
 	}
 	for i := range a.I64Arrs {
 		s := &a.I64Arrs[i]
@@ -326,7 +326,7 @@ func (a *Arenas) sweep() {
 		s.flags &^= flagAlive
 		s.data = nil
 		s.gen++
-		a.freeI64Arrs = append(a.freeI64Arrs, uint32(i))
+		a.routeToFreeOrQuarantine(ArenaI64Arr, uint32(i))
 	}
 	for i := range a.U8Arrs {
 		s := &a.U8Arrs[i]
@@ -340,6 +340,6 @@ func (a *Arenas) sweep() {
 		s.flags &^= flagAlive
 		s.data = nil
 		s.gen++
-		a.freeU8Arrs = append(a.freeU8Arrs, uint32(i))
+		a.routeToFreeOrQuarantine(ArenaU8Arr, uint32(i))
 	}
 }

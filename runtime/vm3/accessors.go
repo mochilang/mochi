@@ -120,57 +120,54 @@ func (a *Arenas) U8Arr(c Cell) []byte {
 // Free returns slot idx of arena tag to the free list. Callers must
 // guarantee no live handles reference the slot; debug-mode generation
 // checks (Phase 6) catch violations.
+//
+// The reuse path runs through routeToFreeOrQuarantine (MEP-41 Phase 3):
+// slots whose current generation has approached the 12-bit wrap point
+// take the wrap-quarantine slow path; all others take the existing
+// LIFO free-list fast path. See runtime/vm3/quarantine.go for the
+// wrap-detection design.
 func (a *Arenas) Free(c Cell) {
 	tag, _, idx := c.DecodeHandle()
 	switch tag {
 	case ArenaString:
 		a.Strings[idx].flags &^= flagAlive
 		a.Strings[idx].data = nil
-		a.freeStrings = append(a.freeStrings, idx)
 	case ArenaList:
 		a.Lists[idx].flags &^= flagAlive
 		a.Lists[idx].cells = nil
-		a.freeLists = append(a.freeLists, idx)
 	case ArenaMap:
 		a.Maps[idx].flags &^= flagAlive
 		a.Maps[idx].table = nil
-		a.freeMaps = append(a.freeMaps, idx)
 	case ArenaSet:
 		a.Sets[idx].flags &^= flagAlive
 		a.Sets[idx].table = nil
-		a.freeSets = append(a.freeSets, idx)
 	case ArenaStruct:
 		a.Structs[idx].flags &^= flagAlive
 		a.Structs[idx].fields = nil
-		a.freeStructs = append(a.freeStructs, idx)
 	case ArenaClosure:
 		a.Closures[idx].flags &^= flagAlive
 		a.Closures[idx].upvalues = nil
-		a.freeClosures = append(a.freeClosures, idx)
 	case ArenaBignum:
 		a.Bignums[idx].flags &^= flagAlive
 		a.Bignums[idx].words = nil
-		a.freeBignums = append(a.freeBignums, idx)
 	case ArenaBytes:
 		a.Bytes[idx].flags &^= flagAlive
 		a.Bytes[idx].data = nil
-		a.freeBytes = append(a.freeBytes, idx)
 	case ArenaPair:
 		a.Pairs[idx].flags &^= flagAlive
-		a.freePairs = append(a.freePairs, idx)
 	case ArenaF64Arr:
 		a.F64Arrs[idx].flags &^= flagAlive
 		a.F64Arrs[idx].data = nil
-		a.freeF64Arrs = append(a.freeF64Arrs, idx)
 	case ArenaI64Arr:
 		a.I64Arrs[idx].flags &^= flagAlive
 		a.I64Arrs[idx].data = nil
-		a.freeI64Arrs = append(a.freeI64Arrs, idx)
 	case ArenaU8Arr:
 		a.U8Arrs[idx].flags &^= flagAlive
 		a.U8Arrs[idx].data = nil
-		a.freeU8Arrs = append(a.freeU8Arrs, idx)
+	default:
+		return
 	}
+	a.routeToFreeOrQuarantine(tag, idx)
 }
 
 // TotalSlots reports how many slots (alive + free) arena tag t currently

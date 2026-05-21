@@ -2,7 +2,7 @@
 
 This document enumerates the trust boundaries in a running Mochi program and names what each boundary is protecting against. It is the operational ground-truth that the verifier rules in MEP-41 §6.2 mechanize and that the public memory-safety statement in MEP-41 §10.8 summarizes. The page is referenced from MEP-41 §6.1, and any rewording in MEP-41 should round-trip into this document in the same PR (MEP-spec-in-sync rule, MEP-41 §13).
 
-Created: 2026-05-21 (GMT+7) as part of MEP-41 Phase 0 closeout.
+Created: 2026-05-21 14:00 (GMT+7) as part of MEP-41 Phase 0 closeout.
 
 ## 1. Scope and out-of-scope
 
