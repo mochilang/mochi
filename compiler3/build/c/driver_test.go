@@ -119,6 +119,120 @@ func TestResolveCC(t *testing.T) {
 	}
 }
 
+// runMochiBuild compiles src as Mochi via the full frontend → IR →
+// C → cc pipeline, runs the produced binary, and returns its stdout.
+// This is the Phase 4.1 integration gate: a Mochi source compiles
+// to a single binary whose output byte-matches `mochi run` on the
+// same source. Skip when cc is unavailable.
+func runMochiBuild(t *testing.T, src string) string {
+	t.Helper()
+	cc := resolveCC("")
+	if _, err := exec.LookPath(cc); err != nil {
+		t.Skipf("cc %q not available: %v", cc, err)
+	}
+	dir := t.TempDir()
+	srcPath := filepath.Join(dir, "test.mochi")
+	if err := os.WriteFile(srcPath, []byte(src), 0o644); err != nil {
+		t.Fatalf("write src: %v", err)
+	}
+	binPath := filepath.Join(dir, "bin")
+	if _, err := BuildSource(srcPath, Options{
+		OutDir:     dir,
+		BinaryPath: binPath,
+	}); err != nil {
+		t.Fatalf("BuildSource: %v", err)
+	}
+	out, err := exec.Command(binPath).Output()
+	if err != nil {
+		t.Fatalf("run %s: %v", binPath, err)
+	}
+	return string(out)
+}
+
+// TestBuildSourceLetAndPrint is the first Phase 4.1 integration
+// gate: a script with `let` bindings and a single `print(i + j)`
+// must compile to a binary that prints "30\n" on stdout, matching
+// what `mochi run` produces on the same source.
+func TestBuildSourceLetAndPrint(t *testing.T) {
+	src := `let a = 10
+let b: int = 20
+print(a + b)
+`
+	if got, want := runMochiBuild(t, src), "30\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceArithChain pins the precedence-respecting lowering
+// through parens.
+func TestBuildSourceArithChain(t *testing.T) {
+	src := `let a = 7
+let b = 3
+print((a + b) * 2)
+`
+	if got, want := runMochiBuild(t, src), "20\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceFunCall pins the Phase 4.1 intra-program-call gate:
+// a user-defined fun is invoked from script body, and the C target
+// lowers OpCall to a direct C function call.
+func TestBuildSourceFunCall(t *testing.T) {
+	src := `fun double(n: int): int {
+  return n * 2
+}
+let x = 21
+print(double(x))
+`
+	if got, want := runMochiBuild(t, src), "42\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceIfElse pins control-flow lowering through if/else
+// with a print() in each branch.
+func TestBuildSourceIfElse(t *testing.T) {
+	src := `let n = 5
+if n > 3 {
+  print(1)
+} else {
+  print(0)
+}
+`
+	got := runMochiBuild(t, src)
+	if !strings.HasPrefix(got, "1") {
+		t.Errorf("got %q, want prefix %q", got, "1")
+	}
+}
+
+// TestBuildSourceRejectsImportGo pins the by-design rejection of
+// general Go FFI in the C target. The script `import go "testpkg"`
+// must surface ErrUnsupportedFFI (wrapped) at build time, not
+// silently produce a binary that crashes at runtime.
+func TestBuildSourceRejectsImportGo(t *testing.T) {
+	src := `import go "mochi/runtime/ffi/go/testpkg" as testpkg auto
+print(testpkg.Add(2, 3))
+`
+	cc := resolveCC("")
+	if _, err := exec.LookPath(cc); err != nil {
+		t.Skipf("cc %q not available: %v", cc, err)
+	}
+	dir := t.TempDir()
+	srcPath := filepath.Join(dir, "test.mochi")
+	if err := os.WriteFile(srcPath, []byte(src), 0o644); err != nil {
+		t.Fatalf("write src: %v", err)
+	}
+	_, err := BuildSource(srcPath, Options{OutDir: dir})
+	if err == nil {
+		t.Fatalf("expected build to fail on import go (FFI rejection), got success")
+	}
+	if !strings.Contains(err.Error(), "FFI") && !strings.Contains(err.Error(), "ffi") &&
+		!strings.Contains(err.Error(), "--target=go") {
+		t.Errorf("expected FFI-rejection error, got %v", err)
+	}
+}
+
 // TestBuildStaticFlag covers the Static=true case at the flag-shape
 // level (not at the cc-link level: a true `-static` build needs a
 // musl/glibc-static toolchain that not every host has). The test
