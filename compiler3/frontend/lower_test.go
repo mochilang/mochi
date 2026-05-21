@@ -235,6 +235,51 @@ print(fillFive())
 	}
 }
 
+// TestLowerListFloatLiteralAndIndex pins the Phase 4.3.3 list<float>
+// surface through the Go target: a non-empty literal lowers to
+// OpNewF64Array plus three OpF64ArrayPushF64 ops, and `xs[i]` lowers
+// to OpF64ArrayGetF64. The final print exercises the f64-to-string
+// path that print.h already supports.
+func TestLowerListFloatLiteralAndIndex(t *testing.T) {
+	src := `let xs: list<float> = [1.5, 2.5, 3.5]
+print(xs[1])
+`
+	got := runEnd2End(t, src)
+	if got != "2.5\n" {
+		t.Errorf("got %q, want %q", got, "2.5\n")
+	}
+}
+
+// TestLowerListFloatAppendAndIndex pins the empty-literal + append +
+// indexed read + indexed write + len cycle for list<float>, paralleling
+// the i64 list test from Phase 4.3.1. The body initialises three slots
+// to 0.0, sums them via len-bounded iteration, then writes back into
+// xs[0] and reads it again to confirm the set round-trips.
+func TestLowerListFloatAppendAndIndex(t *testing.T) {
+	src := `fun sumf(n: int): float {
+  var xs: list<float> = []
+  var i = 0
+  while i < n {
+    xs = append(xs, 0.5)
+    i = i + 1
+  }
+  var s = 0.0
+  var k = 0
+  while k < len(xs) {
+    s = s + xs[k]
+    k = k + 1
+  }
+  xs[0] = 100.5
+  return s + xs[0]
+}
+print(sumf(4))
+`
+	got := runEnd2End(t, src)
+	if got != "102.5\n" {
+		t.Errorf("got %q, want %q", got, "102.5\n")
+	}
+}
+
 // TestLowerNsieve is the load-bearing Phase 4.3.2 gate: a stripped
 // nsieve(100) returning the prime count (25). It exercises range-for
 // with nested while, indexed reads/writes, len(), and the synthetic

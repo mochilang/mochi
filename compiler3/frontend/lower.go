@@ -156,6 +156,16 @@ type builder struct {
 	// query/loop work needed for full phi insertion is part of the
 	// post-MVP widening.
 	values map[string]uint32
+	// expectedListElem optionally hints the element type of an
+	// upcoming list literal lowering, set by `let/var x: list<T> = ...`
+	// just before lowerExpr and cleared after. Only lowerListLiteral
+	// consults this field; the empty-literal case `[]` needs it to
+	// pick between TypeList (i64) and TypeF64Arr (f64). For non-empty
+	// literals the hint is still useful because Mochi int literals
+	// lower to TypeI64 but the user may want an f64 array (1.0 etc.
+	// would clear this, but 0/1 in a list<float> declaration is a real
+	// case in the benchmark-games kernels).
+	expectedListElem ir.Type
 }
 
 func newBuilder(fn *ir.Function, userFns map[string]funEntry, prog *gogen.Program, goImports map[string]*goImport) *builder {
@@ -226,19 +236,23 @@ func lowerType(t *parser.TypeRef) (ir.Type, error) {
 		return ir.TypeInvalid, fmt.Errorf("frontend: nil type ref")
 	}
 	if t.Generic != nil {
-		// Phase 4.3.1: `list<int>` (the typed-i64 array shape) is the
-		// only generic the MVP frontend lowers. ElemType inspection
-		// happens at the call site that constructs a TypeList value;
-		// here we only need to assert the surface form is supported.
+		// `list<int>` lowers to TypeList (mochi_list_i64); `list<float>`
+		// lowers to TypeF64Arr (mochi_f64_array). The two backings are
+		// distinct at the IR layer so the C target can drop the Cell-
+		// tag overhead and the Go target can use the proper Go slice
+		// element type.
 		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 			el, err := lowerType(t.Generic.Args[0])
 			if err != nil {
 				return ir.TypeInvalid, fmt.Errorf("frontend: list element: %w", err)
 			}
-			if el != ir.TypeI64 {
-				return ir.TypeInvalid, fmt.Errorf("frontend: list<%s> unsupported in MVP (only list<int>)", el)
+			switch el {
+			case ir.TypeI64:
+				return ir.TypeList, nil
+			case ir.TypeF64:
+				return ir.TypeF64Arr, nil
 			}
-			return ir.TypeList, nil
+			return ir.TypeInvalid, fmt.Errorf("frontend: list<%s> unsupported in MVP (only list<int> and list<float>)", el)
 		}
 		return ir.TypeInvalid, fmt.Errorf("frontend: generic %s<...> unsupported in MVP", t.Generic.Name)
 	}
@@ -285,9 +299,9 @@ func (b *builder) terminator(t ir.Terminator) {
 func (b *builder) lowerStmt(st *parser.Statement) error {
 	switch {
 	case st.Let != nil:
-		return b.lowerLet(st.Let.Name, st.Let.Value)
+		return b.lowerTypedLet(st.Let.Name, st.Let.Type, st.Let.Value)
 	case st.Var != nil:
-		return b.lowerLet(st.Var.Name, st.Var.Value)
+		return b.lowerTypedLet(st.Var.Name, st.Var.Type, st.Var.Value)
 	case st.Assign != nil:
 		if len(st.Assign.Field) != 0 {
 			return fmt.Errorf("frontend: field assignment unsupported in MVP")
@@ -326,8 +340,9 @@ func (b *builder) lowerIndexedAssign(a *parser.AssignStmt) error {
 	if !ok {
 		return fmt.Errorf("frontend: indexed assign to unbound identifier %q", a.Name)
 	}
-	if b.fn.Values[listID].Type != ir.TypeList {
-		return fmt.Errorf("frontend: indexed assign on non-list %s", b.fn.Values[listID].Type)
+	listType := b.fn.Values[listID].Type
+	if listType != ir.TypeList && listType != ir.TypeF64Arr {
+		return fmt.Errorf("frontend: indexed assign on non-list %s", listType)
 	}
 	idxID, err := b.lowerExpr(idxOp.Start)
 	if err != nil {
@@ -340,15 +355,28 @@ func (b *builder) lowerIndexedAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	if b.fn.Values[valID].Type != ir.TypeI64 {
-		return fmt.Errorf("frontend: list<int> store requires i64 value, got %s", b.fn.Values[valID].Type)
+	switch listType {
+	case ir.TypeList:
+		if b.fn.Values[valID].Type != ir.TypeI64 {
+			return fmt.Errorf("frontend: list<int> store requires i64 value, got %s", b.fn.Values[valID].Type)
+		}
+		b.addValue(ir.Value{
+			Type:     ir.TypeUnit,
+			ElemType: ir.TypeI64,
+			Op:       ir.OpListSetI64,
+			Args:     []uint32{listID, idxID, valID},
+		})
+	case ir.TypeF64Arr:
+		if b.fn.Values[valID].Type != ir.TypeF64 {
+			return fmt.Errorf("frontend: list<float> store requires f64 value, got %s", b.fn.Values[valID].Type)
+		}
+		b.addValue(ir.Value{
+			Type:     ir.TypeUnit,
+			ElemType: ir.TypeF64,
+			Op:       ir.OpF64ArraySetF64,
+			Args:     []uint32{listID, idxID, valID},
+		})
 	}
-	b.addValue(ir.Value{
-		Type:     ir.TypeUnit,
-		ElemType: ir.TypeI64,
-		Op:       ir.OpListSetI64,
-		Args:     []uint32{listID, idxID, valID},
-	})
 	return nil
 }
 
@@ -357,6 +385,38 @@ func (b *builder) lowerLet(name string, e *parser.Expr) error {
 		return fmt.Errorf("frontend: binding %q has no initializer", name)
 	}
 	vid, err := b.lowerExpr(e)
+	if err != nil {
+		return err
+	}
+	b.values[name] = vid
+	return nil
+}
+
+// lowerTypedLet is the let/var path that consults the declared type to
+// pick a list element type for the RHS expression. The only construct
+// that needs the hint today is `[]` / `[..]` (the empty and non-empty
+// list literals), which has no way to disambiguate `list<int>` vs
+// `list<float>` from the elements alone (empty has none; non-empty
+// integer literals would otherwise lower to TypeI64). For other RHS
+// shapes the hint is ignored.
+func (b *builder) lowerTypedLet(name string, tRef *parser.TypeRef, e *parser.Expr) error {
+	if e == nil {
+		return fmt.Errorf("frontend: binding %q has no initializer", name)
+	}
+	if tRef != nil {
+		t, err := lowerType(tRef)
+		if err != nil {
+			return fmt.Errorf("frontend: binding %q: %w", name, err)
+		}
+		switch t {
+		case ir.TypeList:
+			b.expectedListElem = ir.TypeI64
+		case ir.TypeF64Arr:
+			b.expectedListElem = ir.TypeF64
+		}
+	}
+	vid, err := b.lowerExpr(e)
+	b.expectedListElem = ir.TypeInvalid
 	if err != nil {
 		return err
 	}
@@ -983,8 +1043,9 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 		if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil || idx.Start == nil {
 			return 0, fmt.Errorf("frontend: slice indexing unsupported in MVP")
 		}
-		if b.fn.Values[cur].Type != ir.TypeList {
-			return 0, fmt.Errorf("frontend: index on non-list %s", b.fn.Values[cur].Type)
+		curType := b.fn.Values[cur].Type
+		if curType != ir.TypeList && curType != ir.TypeF64Arr {
+			return 0, fmt.Errorf("frontend: index on non-list %s", curType)
 		}
 		iID, err := b.lowerExpr(idx.Start)
 		if err != nil {
@@ -993,12 +1054,22 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 		if b.fn.Values[iID].Type != ir.TypeI64 {
 			return 0, fmt.Errorf("frontend: list index must be i64, got %s", b.fn.Values[iID].Type)
 		}
-		cur = b.addValue(ir.Value{
-			Type:     ir.TypeI64,
-			ElemType: ir.TypeI64,
-			Op:       ir.OpListGetI64,
-			Args:     []uint32{cur, iID},
-		})
+		switch curType {
+		case ir.TypeList:
+			cur = b.addValue(ir.Value{
+				Type:     ir.TypeI64,
+				ElemType: ir.TypeI64,
+				Op:       ir.OpListGetI64,
+				Args:     []uint32{cur, iID},
+			})
+		case ir.TypeF64Arr:
+			cur = b.addValue(ir.Value{
+				Type:     ir.TypeF64,
+				ElemType: ir.TypeF64,
+				Op:       ir.OpF64ArrayGetF64,
+				Args:     []uint32{cur, iID},
+			})
+		}
 	}
 	return cur, nil
 }
@@ -1031,35 +1102,65 @@ func (b *builder) lowerPrimary(p *parser.Primary) (uint32, error) {
 	return 0, fmt.Errorf("frontend: primary form unsupported in MVP")
 }
 
-// lowerListLiteral lowers `[e1, e2, ...]` to OpNewList plus a chain of
-// OpListPushI64 ops, one per element. The empty form `[]` produces an
-// OpNewList with ElemType=TypeI64; the type is inferred from the
-// context only when elements are present, otherwise it defaults to i64
-// (the MVP's sole supported element type). Non-i64 elements surface a
-// frontend error.
+// lowerListLiteral lowers `[e1, e2, ...]` to an empty-list constructor
+// (OpNewList for i64, OpNewF64Array for f64) plus a chain of push ops.
+// The element type is taken from b.expectedListElem when set (by a
+// `var xs: list<T> = ...` declaration), and falls back to i64 when
+// unset (matching the existing default for an untyped `[]`).
 func (b *builder) lowerListLiteral(lit *parser.ListLiteral) (uint32, error) {
-	listID := b.addValue(ir.Value{
-		Type:     ir.TypeList,
-		ElemType: ir.TypeI64,
-		Op:       ir.OpNewList,
-	})
-	for _, el := range lit.Elems {
-		vid, err := b.lowerExpr(el)
-		if err != nil {
-			return 0, err
-		}
-		if b.fn.Values[vid].Type != ir.TypeI64 {
-			return 0, fmt.Errorf("frontend: list literal element type %s unsupported (only i64 in MVP)",
-				b.fn.Values[vid].Type)
-		}
-		b.addValue(ir.Value{
-			Type:     ir.TypeUnit,
-			ElemType: ir.TypeI64,
-			Op:       ir.OpListPushI64,
-			Args:     []uint32{listID, vid},
-		})
+	elem := b.expectedListElem
+	if elem == ir.TypeInvalid {
+		elem = ir.TypeI64
 	}
-	return listID, nil
+	switch elem {
+	case ir.TypeI64:
+		listID := b.addValue(ir.Value{
+			Type:     ir.TypeList,
+			ElemType: ir.TypeI64,
+			Op:       ir.OpNewList,
+		})
+		for _, el := range lit.Elems {
+			vid, err := b.lowerExpr(el)
+			if err != nil {
+				return 0, err
+			}
+			if b.fn.Values[vid].Type != ir.TypeI64 {
+				return 0, fmt.Errorf("frontend: list<int> literal element type %s unsupported",
+					b.fn.Values[vid].Type)
+			}
+			b.addValue(ir.Value{
+				Type:     ir.TypeUnit,
+				ElemType: ir.TypeI64,
+				Op:       ir.OpListPushI64,
+				Args:     []uint32{listID, vid},
+			})
+		}
+		return listID, nil
+	case ir.TypeF64:
+		listID := b.addValue(ir.Value{
+			Type:     ir.TypeF64Arr,
+			ElemType: ir.TypeF64,
+			Op:       ir.OpNewF64Array,
+		})
+		for _, el := range lit.Elems {
+			vid, err := b.lowerExpr(el)
+			if err != nil {
+				return 0, err
+			}
+			if b.fn.Values[vid].Type != ir.TypeF64 {
+				return 0, fmt.Errorf("frontend: list<float> literal element type %s unsupported (write 1.0 not 1)",
+					b.fn.Values[vid].Type)
+			}
+			b.addValue(ir.Value{
+				Type:     ir.TypeUnit,
+				ElemType: ir.TypeF64,
+				Op:       ir.OpF64ArrayPushF64,
+				Args:     []uint32{listID, vid},
+			})
+		}
+		return listID, nil
+	}
+	return 0, fmt.Errorf("frontend: list literal with element type %s unsupported", elem)
 }
 
 func (b *builder) lowerLiteral(lit *parser.Literal) (uint32, error) {
@@ -1126,6 +1227,11 @@ func (b *builder) lowerBuiltinCall(c *parser.CallExpr) (uint32, bool, error) {
 				Type: ir.TypeI64, Op: ir.OpListLenI64, Args: []uint32{arg},
 			})
 			return id, true, nil
+		case ir.TypeF64Arr:
+			id := b.addValue(ir.Value{
+				Type: ir.TypeI64, Op: ir.OpF64ArrayLenI64, Args: []uint32{arg},
+			})
+			return id, true, nil
 		case ir.TypeStr:
 			id := b.addValue(ir.Value{
 				Type: ir.TypeI64, Op: ir.OpLenStr, Args: []uint32{arg},
@@ -1147,24 +1253,33 @@ func (b *builder) lowerBuiltinCall(c *parser.CallExpr) (uint32, bool, error) {
 		if err != nil {
 			return 0, true, err
 		}
-		if b.fn.Values[list].Type != ir.TypeList {
-			return 0, true, fmt.Errorf("frontend: append() target type %s unsupported (need list)",
-				b.fn.Values[list].Type)
+		listType := b.fn.Values[list].Type
+		valType := b.fn.Values[val].Type
+		switch listType {
+		case ir.TypeList:
+			if valType != ir.TypeI64 {
+				return 0, true, fmt.Errorf("frontend: append() to list<int> requires i64 value, got %s", valType)
+			}
+			b.addValue(ir.Value{
+				Type:     ir.TypeUnit,
+				ElemType: ir.TypeI64,
+				Op:       ir.OpListPushI64,
+				Args:     []uint32{list, val},
+			})
+			return list, true, nil
+		case ir.TypeF64Arr:
+			if valType != ir.TypeF64 {
+				return 0, true, fmt.Errorf("frontend: append() to list<float> requires f64 value, got %s", valType)
+			}
+			b.addValue(ir.Value{
+				Type:     ir.TypeUnit,
+				ElemType: ir.TypeF64,
+				Op:       ir.OpF64ArrayPushF64,
+				Args:     []uint32{list, val},
+			})
+			return list, true, nil
 		}
-		if b.fn.Values[val].Type != ir.TypeI64 {
-			return 0, true, fmt.Errorf("frontend: append() value type %s unsupported (need i64)",
-				b.fn.Values[val].Type)
-		}
-		// Push mutates the list in place; the SSA "result" of append
-		// is the same list value. The caller's `xs = append(xs, v)`
-		// rebinds the name to itself, which is correct.
-		b.addValue(ir.Value{
-			Type:     ir.TypeUnit,
-			ElemType: ir.TypeI64,
-			Op:       ir.OpListPushI64,
-			Args:     []uint32{list, val},
-		})
-		return list, true, nil
+		return 0, true, fmt.Errorf("frontend: append() target type %s unsupported (need list)", listType)
 	}
 	return 0, false, nil
 }

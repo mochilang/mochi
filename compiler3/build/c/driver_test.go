@@ -267,6 +267,47 @@ print(xs[2])
 	}
 }
 
+// TestBuildSourceListFloatLiteralAndIndex pins the Phase 4.3.3
+// list<float> surface through the C target: a non-empty literal lowers
+// to OpNewF64Array + three OpF64ArrayPushF64, and `xs[1]` reads back
+// 2.5. The print path routes through print.h's float branch (%.17g).
+func TestBuildSourceListFloatLiteralAndIndex(t *testing.T) {
+	src := `let xs: list<float> = [1.5, 2.5, 3.5]
+print(xs[1])
+`
+	if got, want := runMochiBuild(t, src), "2.5\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceListFloatAppendAndIndex pins the empty-literal +
+// append + indexed read + indexed write + len cycle for list<float>
+// through the C target, byte-matching the Go target's output (and the
+// matching TestLowerListFloatAppendAndIndex in compiler3/frontend).
+func TestBuildSourceListFloatAppendAndIndex(t *testing.T) {
+	src := `fun sumf(n: int): float {
+  var xs: list<float> = []
+  var i = 0
+  while i < n {
+    xs = append(xs, 0.5)
+    i = i + 1
+  }
+  var s = 0.0
+  var k = 0
+  while k < len(xs) {
+    s = s + xs[k]
+    k = k + 1
+  }
+  xs[0] = 100.5
+  return s + xs[0]
+}
+print(sumf(4))
+`
+	if got, want := runMochiBuild(t, src), "102.5\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceForRangeSum pins the Phase 4.3.2 range-for surface
 // through the C target: a `for i in 1..(n+1)` loop with a mutable
 // accumulator must compile and produce the same output as the Go
