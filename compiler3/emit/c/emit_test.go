@@ -322,6 +322,112 @@ func TestEmitOpCallGoPrintArgTypeUnsupported(t *testing.T) {
 	}
 }
 
+// TestEmitBitwiseI64 covers the Phase 4.1.1 bitwise/shift family.
+// Mochi's surface grammar does not yet expose `&`/`|`/`^`/`<<`/`>>`,
+// but the IR + emitter must support them so a future parser
+// extension or a frontend that constructs IR directly (the
+// optimizer) can lower these ops without re-touching the emitter.
+func TestEmitBitwiseI64(t *testing.T) {
+	for _, c := range []struct {
+		op   ir.OpCode
+		want string
+	}{
+		{ir.OpAndI64, "v0 & v1"},
+		{ir.OpOrI64, "v0 | v1"},
+		{ir.OpXorI64, "v0 ^ v1"},
+		{ir.OpShlI64, "v0 << v1"},
+		{ir.OpShrI64, "v0 >> v1"},
+	} {
+		fn := &ir.Function{Name: "bw", Result: ir.TypeI64}
+		a := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpParam})
+		b := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpParam})
+		fn.Params = []uint32{a, b}
+		bid := fn.AddBlock()
+		r := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: c.op, Args: []uint32{a, b}})
+		blk := fn.Block(bid)
+		blk.Values = []uint32{r}
+		blk.Term = ir.Terminator{Kind: ir.TermReturn, Value: r}
+		src, err := Emit(&Program{Funcs: []*ir.Function{fn}})
+		if err != nil {
+			t.Fatalf("%s: Emit: %v", c.op, err)
+		}
+		if !strings.Contains(string(src), c.want) {
+			t.Errorf("%s: missing %q in:\n%s", c.op, c.want, src)
+		}
+	}
+}
+
+// TestEmitNotI64 covers the bitwise-complement unary op.
+func TestEmitNotI64(t *testing.T) {
+	fn := &ir.Function{Name: "neg", Result: ir.TypeI64}
+	a := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpParam})
+	fn.Params = []uint32{a}
+	bid := fn.AddBlock()
+	r := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpNotI64, Args: []uint32{a}})
+	blk := fn.Block(bid)
+	blk.Values = []uint32{r}
+	blk.Term = ir.Terminator{Kind: ir.TermReturn, Value: r}
+	src, err := Emit(&Program{Funcs: []*ir.Function{fn}})
+	if err != nil {
+		t.Fatalf("Emit: %v", err)
+	}
+	mustContain(t, string(src), "= ~v0")
+}
+
+// TestEmitCompareF64 covers the six f64 comparison ops. The result
+// is canonical 0/1 just like the i64 cmp family; NaN behaviour
+// matches IEEE 754 ordered comparison (the C99 default for `==`,
+// `!=`, `<`, `<=`, `>`, `>=` on `double`).
+func TestEmitCompareF64(t *testing.T) {
+	for _, c := range []struct {
+		op   ir.OpCode
+		want string
+	}{
+		{ir.OpCmpEqF64, "v0 == v1"},
+		{ir.OpCmpNeF64, "v0 != v1"},
+		{ir.OpCmpLtF64, "v0 < v1"},
+		{ir.OpCmpLeF64, "v0 <= v1"},
+		{ir.OpCmpGtF64, "v0 > v1"},
+		{ir.OpCmpGeF64, "v0 >= v1"},
+	} {
+		fn := &ir.Function{Name: "fcmp", Result: ir.TypeBool}
+		a := fn.AddValue(ir.Value{Type: ir.TypeF64, Op: ir.OpParam})
+		b := fn.AddValue(ir.Value{Type: ir.TypeF64, Op: ir.OpParam})
+		fn.Params = []uint32{a, b}
+		bid := fn.AddBlock()
+		r := fn.AddValue(ir.Value{Type: ir.TypeBool, Op: c.op, Args: []uint32{a, b}})
+		blk := fn.Block(bid)
+		blk.Values = []uint32{r}
+		blk.Term = ir.Terminator{Kind: ir.TermReturn, Value: r}
+		src, err := Emit(&Program{Funcs: []*ir.Function{fn}})
+		if err != nil {
+			t.Fatalf("%s: Emit: %v", c.op, err)
+		}
+		if !strings.Contains(string(src), c.want) {
+			t.Errorf("%s: missing %q in:\n%s", c.op, c.want, src)
+		}
+	}
+}
+
+// TestEmitNotBool covers the logical-NOT unary op. The result is
+// canonical 0/1 so it composes with the existing bool ABI (cType
+// TypeBool == "int" with 0/1 contract).
+func TestEmitNotBool(t *testing.T) {
+	fn := &ir.Function{Name: "neg_bool", Result: ir.TypeBool}
+	a := fn.AddValue(ir.Value{Type: ir.TypeBool, Op: ir.OpParam})
+	fn.Params = []uint32{a}
+	bid := fn.AddBlock()
+	r := fn.AddValue(ir.Value{Type: ir.TypeBool, Op: ir.OpNotBool, Args: []uint32{a}})
+	blk := fn.Block(bid)
+	blk.Values = []uint32{r}
+	blk.Term = ir.Terminator{Kind: ir.TermReturn, Value: r}
+	src, err := Emit(&Program{Funcs: []*ir.Function{fn}})
+	if err != nil {
+		t.Fatalf("Emit: %v", err)
+	}
+	mustContain(t, string(src), "v1 = v0 ? 0 : 1;")
+}
+
 func mustContain(t *testing.T, s, sub string) {
 	t.Helper()
 	if !strings.Contains(s, sub) {

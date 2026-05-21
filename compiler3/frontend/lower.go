@@ -461,42 +461,85 @@ func (b *builder) applyBinOp(op string, l, r uint32) (uint32, error) {
 	if lt != rt {
 		return 0, fmt.Errorf("frontend: binop %q across types %s and %s unsupported in MVP", op, lt, rt)
 	}
-	if lt != ir.TypeI64 {
-		return 0, fmt.Errorf("frontend: binop %q on type %s unsupported in MVP", op, lt)
-	}
 	var code ir.OpCode
-	resType := ir.TypeI64
-	switch op {
-	case "+":
-		code = ir.OpAddI64
-	case "-":
-		code = ir.OpSubI64
-	case "*":
-		code = ir.OpMulI64
-	case "/":
-		code = ir.OpDivI64
-	case "%":
-		code = ir.OpModI64
-	case "==":
-		code = ir.OpCmpEqI64
-		resType = ir.TypeBool
-	case "!=":
-		code = ir.OpCmpNeI64
-		resType = ir.TypeBool
-	case "<":
-		code = ir.OpCmpLtI64
-		resType = ir.TypeBool
-	case "<=":
-		code = ir.OpCmpLeI64
-		resType = ir.TypeBool
-	case ">":
-		code = ir.OpCmpGtI64
-		resType = ir.TypeBool
-	case ">=":
-		code = ir.OpCmpGeI64
-		resType = ir.TypeBool
+	resType := lt
+	switch lt {
+	case ir.TypeI64:
+		switch op {
+		case "+":
+			code = ir.OpAddI64
+		case "-":
+			code = ir.OpSubI64
+		case "*":
+			code = ir.OpMulI64
+		case "/":
+			code = ir.OpDivI64
+		case "%":
+			code = ir.OpModI64
+		case "&":
+			code = ir.OpAndI64
+		case "|":
+			code = ir.OpOrI64
+		case "^":
+			code = ir.OpXorI64
+		case "<<":
+			code = ir.OpShlI64
+		case ">>":
+			code = ir.OpShrI64
+		case "==":
+			code = ir.OpCmpEqI64
+			resType = ir.TypeBool
+		case "!=":
+			code = ir.OpCmpNeI64
+			resType = ir.TypeBool
+		case "<":
+			code = ir.OpCmpLtI64
+			resType = ir.TypeBool
+		case "<=":
+			code = ir.OpCmpLeI64
+			resType = ir.TypeBool
+		case ">":
+			code = ir.OpCmpGtI64
+			resType = ir.TypeBool
+		case ">=":
+			code = ir.OpCmpGeI64
+			resType = ir.TypeBool
+		default:
+			return 0, fmt.Errorf("frontend: operator %q on i64 unsupported in MVP", op)
+		}
+	case ir.TypeF64:
+		switch op {
+		case "+":
+			code = ir.OpAddF64
+		case "-":
+			code = ir.OpSubF64
+		case "*":
+			code = ir.OpMulF64
+		case "/":
+			code = ir.OpDivF64
+		case "==":
+			code = ir.OpCmpEqF64
+			resType = ir.TypeBool
+		case "!=":
+			code = ir.OpCmpNeF64
+			resType = ir.TypeBool
+		case "<":
+			code = ir.OpCmpLtF64
+			resType = ir.TypeBool
+		case "<=":
+			code = ir.OpCmpLeF64
+			resType = ir.TypeBool
+		case ">":
+			code = ir.OpCmpGtF64
+			resType = ir.TypeBool
+		case ">=":
+			code = ir.OpCmpGeF64
+			resType = ir.TypeBool
+		default:
+			return 0, fmt.Errorf("frontend: operator %q on f64 unsupported in MVP", op)
+		}
 	default:
-		return 0, fmt.Errorf("frontend: operator %q unsupported in MVP", op)
+		return 0, fmt.Errorf("frontend: binop %q on type %s unsupported in MVP", op, lt)
 	}
 	return b.addValue(ir.Value{Type: resType, Op: code, Args: []uint32{l, r}}), nil
 }
@@ -511,10 +554,20 @@ func (b *builder) lowerUnary(u *parser.Unary) (uint32, error) {
 		switch op {
 		case "-":
 			vt := b.fn.Values[val].Type
-			if vt != ir.TypeI64 {
+			switch vt {
+			case ir.TypeI64:
+				val = b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpNegI64, Args: []uint32{val}})
+			case ir.TypeF64:
+				val = b.addValue(ir.Value{Type: ir.TypeF64, Op: ir.OpNegF64, Args: []uint32{val}})
+			default:
 				return 0, fmt.Errorf("frontend: unary `-` on %s unsupported in MVP", vt)
 			}
-			val = b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpNegI64, Args: []uint32{val}})
+		case "!":
+			vt := b.fn.Values[val].Type
+			if vt != ir.TypeBool {
+				return 0, fmt.Errorf("frontend: unary `!` on %s unsupported in MVP", vt)
+			}
+			val = b.addValue(ir.Value{Type: ir.TypeBool, Op: ir.OpNotBool, Args: []uint32{val}})
 		default:
 			return 0, fmt.Errorf("frontend: unary operator %q unsupported in MVP", op)
 		}

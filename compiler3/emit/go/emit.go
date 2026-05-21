@@ -246,6 +246,24 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 	case ir.OpCmpEqI64Imm, ir.OpCmpNeI64Imm, ir.OpCmpLtI64Imm, ir.OpCmpLeI64Imm, ir.OpCmpGtI64Imm, ir.OpCmpGeI64Imm:
 		op := i64ImmCmpOp(v.Op)
 		fmt.Fprintf(w, "\t%s = %s %s int64(%d)\n", name, valueName(v.Args[0]), op, v.Const)
+	case ir.OpAndI64, ir.OpOrI64, ir.OpXorI64, ir.OpShlI64, ir.OpShrI64:
+		op := i64BitwiseOp(v.Op)
+		// Go requires the shift-count operand to be unsigned (uint or
+		// untyped). Mochi's IR carries i64 throughout, so the shift
+		// variants cast the right operand at the use site. The bitwise
+		// AND/OR/XOR operands are both i64 and need no cast.
+		if v.Op == ir.OpShlI64 || v.Op == ir.OpShrI64 {
+			fmt.Fprintf(w, "\t%s = %s %s uint64(%s)\n", name, valueName(v.Args[0]), op, valueName(v.Args[1]))
+		} else {
+			fmt.Fprintf(w, "\t%s = %s %s %s\n", name, valueName(v.Args[0]), op, valueName(v.Args[1]))
+		}
+	case ir.OpNotI64:
+		fmt.Fprintf(w, "\t%s = ^%s\n", name, valueName(v.Args[0]))
+	case ir.OpCmpEqF64, ir.OpCmpNeF64, ir.OpCmpLtF64, ir.OpCmpLeF64, ir.OpCmpGtF64, ir.OpCmpGeF64:
+		op := f64CmpOp(v.Op)
+		fmt.Fprintf(w, "\t%s = %s %s %s\n", name, valueName(v.Args[0]), op, valueName(v.Args[1]))
+	case ir.OpNotBool:
+		fmt.Fprintf(w, "\t%s = !%s\n", name, valueName(v.Args[0]))
 	case ir.OpLenStr:
 		fmt.Fprintf(w, "\t%s = int64(len(%s))\n", name, valueName(v.Args[0]))
 	case ir.OpConcatStr:
@@ -639,6 +657,40 @@ func i64ImmCmpOp(op ir.OpCode) string {
 	case ir.OpCmpGtI64Imm:
 		return ">"
 	case ir.OpCmpGeI64Imm:
+		return ">="
+	}
+	return "?"
+}
+
+func i64BitwiseOp(op ir.OpCode) string {
+	switch op {
+	case ir.OpAndI64:
+		return "&"
+	case ir.OpOrI64:
+		return "|"
+	case ir.OpXorI64:
+		return "^"
+	case ir.OpShlI64:
+		return "<<"
+	case ir.OpShrI64:
+		return ">>"
+	}
+	return "?"
+}
+
+func f64CmpOp(op ir.OpCode) string {
+	switch op {
+	case ir.OpCmpEqF64:
+		return "=="
+	case ir.OpCmpNeF64:
+		return "!="
+	case ir.OpCmpLtF64:
+		return "<"
+	case ir.OpCmpLeF64:
+		return "<="
+	case ir.OpCmpGtF64:
+		return ">"
+	case ir.OpCmpGeF64:
 		return ">="
 	}
 	return "?"

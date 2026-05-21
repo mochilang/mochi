@@ -153,7 +153,10 @@ func kindOf(o ir.OpCode) ProducerKind {
 		ir.OpAddI64Imm, ir.OpSubI64Imm, ir.OpMulI64Imm, ir.OpDivI64Imm, ir.OpModI64Imm,
 		ir.OpAddF64, ir.OpSubF64, ir.OpMulF64, ir.OpDivF64, ir.OpNegF64,
 		ir.OpCmpEqI64, ir.OpCmpNeI64, ir.OpCmpLtI64, ir.OpCmpLeI64, ir.OpCmpGtI64, ir.OpCmpGeI64,
-		ir.OpCmpEqI64Imm, ir.OpCmpNeI64Imm, ir.OpCmpLtI64Imm, ir.OpCmpLeI64Imm, ir.OpCmpGtI64Imm, ir.OpCmpGeI64Imm:
+		ir.OpCmpEqI64Imm, ir.OpCmpNeI64Imm, ir.OpCmpLtI64Imm, ir.OpCmpLeI64Imm, ir.OpCmpGtI64Imm, ir.OpCmpGeI64Imm,
+		ir.OpAndI64, ir.OpOrI64, ir.OpXorI64, ir.OpShlI64, ir.OpShrI64, ir.OpNotI64,
+		ir.OpCmpEqF64, ir.OpCmpNeF64, ir.OpCmpLtF64, ir.OpCmpLeF64, ir.OpCmpGtF64, ir.OpCmpGeF64,
+		ir.OpNotBool:
 		return KindOperator
 
 	case ir.OpLenStr:
@@ -210,7 +213,7 @@ func init() {
 // the last OpCode known to ir/types.go at this MEP-41 Phase 1 commit;
 // adding a new op past it bumps this constant in the same PR.
 func mustClassifyAll() {
-	const lastOpCode = ir.OpCallGo
+	const lastOpCode = ir.OpNotBool
 	for o := ir.OpInvalid + 1; o <= lastOpCode; o++ {
 		if kindOf(o) == KindInvalid {
 			panic(fmt.Sprintf("verify: OpCode %s (=%d) is unclassified; extend kindOf in compiler3/verify/verify.go (MEP-41 §6.2 rule class C / coverage backstop)", o, o))

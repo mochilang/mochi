@@ -185,6 +185,34 @@ const (
 	// binding's import path so the generated file has a normal Go
 	// import. There is no Mochi-side reflection at the call site.
 	OpCallGo
+
+	// i64 bitwise / shift ops (Phase 4.1.1 scalar-operator parity).
+	// `OpShrI64` is the signed right shift (C99 `>>` on signed
+	// int64_t, which all modern compilers lower to an arithmetic
+	// shift); a future unsigned-shift variant would land as a
+	// separate OpcUshrI64 if Mochi ever exposes uint64 to the IR.
+	OpAndI64
+	OpOrI64
+	OpXorI64
+	OpShlI64
+	OpShrI64
+	OpNotI64
+
+	// f64 comparisons (result Type == TypeBool). NaN behavior matches
+	// IEEE 754 ordered comparison ("unordered yields false"), which is
+	// the C99 default for `==`/`!=`/`<`/`<=`/`>`/`>=` on `double`.
+	OpCmpEqF64
+	OpCmpNeF64
+	OpCmpLtF64
+	OpCmpLeF64
+	OpCmpGtF64
+	OpCmpGeF64
+
+	// Logical NOT on bool. `&&` and `||` lower in the frontend to
+	// short-circuiting TermBranch graphs (no IR op needed), but unary
+	// `!` is a single operator with no fall-through so it carries its
+	// own opcode.
+	OpNotBool
 )
 
 // String renders an OpCode's short name. Used by Validate and IR
@@ -319,6 +347,32 @@ func (o OpCode) String() string {
 		return "query.crossjoin"
 	case OpCallGo:
 		return "call.go"
+	case OpAndI64:
+		return "and.i64"
+	case OpOrI64:
+		return "or.i64"
+	case OpXorI64:
+		return "xor.i64"
+	case OpShlI64:
+		return "shl.i64"
+	case OpShrI64:
+		return "shr.i64"
+	case OpNotI64:
+		return "not.i64"
+	case OpCmpEqF64:
+		return "cmp.eq.f64"
+	case OpCmpNeF64:
+		return "cmp.ne.f64"
+	case OpCmpLtF64:
+		return "cmp.lt.f64"
+	case OpCmpLeF64:
+		return "cmp.le.f64"
+	case OpCmpGtF64:
+		return "cmp.gt.f64"
+	case OpCmpGeF64:
+		return "cmp.ge.f64"
+	case OpNotBool:
+		return "not.bool"
 	}
 	return "?"
 }
