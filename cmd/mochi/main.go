@@ -33,6 +33,7 @@ import (
 
 	"mochi/ast"
 	"mochi/archived/interpreter"
+	cbuild "mochi/compiler3/build/c"
 	gobuild "mochi/compiler3/build/go"
 	"mochi/mcp"
 	"mochi/parser"
@@ -65,17 +66,23 @@ type CLI struct {
 }
 
 // BuildCmd is the MEP-43 close-out CLI shell: `mochi build` drives the
-// Mochi-to-IR frontend + compiler3/emit/go emitter to produce Go from
-// a Mochi source. The flags map one-to-one to gobuild.Options fields.
+// Mochi-to-IR frontend + compiler3/emit/{go,c} emitter to produce a
+// target-language artifact from a Mochi source. The flags map one-to-
+// one to gobuild.Options / cbuild.Options fields. --target=c is the
+// MEP-42 Phase 4.0 single-binary path: it emits one .c file under
+// --out, shells to the system cc, and writes a native executable.
 type BuildCmd struct {
 	File           string `arg:"positional,required" help:"Path to .mochi source file"`
-	Target         string `arg:"--target" default:"go" help:"Target language (go)"`
+	Target         string `arg:"--target" default:"go" help:"Target language (go|c)"`
 	Emit           string `arg:"--emit" default:"executable" help:"Emit shape (executable|go-library)"`
 	Out            string `arg:"--out" help:"Output directory (default: a fresh temp dir)"`
-	KeepEmit       bool   `arg:"--keep-emit" help:"Retain the emitted .go file(s) after build"`
+	KeepEmit       bool   `arg:"--keep-emit" help:"Retain the emitted source file(s) after build"`
 	Module         string `arg:"--module" help:"Module path baked into go.mod (required for --emit=go-library)"`
 	PkgName        string `arg:"--package" help:"Package name override"`
 	RuntimeReplace string `arg:"--runtime-replace" help:"Local replace directive for mochi runtime (library mode)"`
+	CC             string `arg:"--cc" help:"C compiler to invoke (default: $MOCHI_CC or 'cc'); --target=c only"`
+	BinaryPath     string `arg:"--binary" help:"Output binary path; --target=c only"`
+	Static         bool   `arg:"--portable" help:"Statically link the binary (musl/glibc-static); --target=c only"`
 }
 
 type RunCmd struct {
@@ -186,13 +193,21 @@ func formatDuration(d time.Duration) string {
 }
 
 // runBuild dispatches the `mochi build` subcommand. It maps CLI flags
-// onto gobuild.Options and runs the Mochi-to-IR frontend + emit/go
-// pipeline. The MEP-43 close-out: this is the user-facing shell for
-// Phase 7's --keep-emit and Phase 8's --emit=go-library.
+// onto gobuild.Options / cbuild.Options and runs the Mochi-to-IR
+// frontend + the target's emitter + (for --target=c) the system cc.
+// MEP-43 close-out for --target=go; MEP-42 Phase 4.0 for --target=c.
 func runBuild(cmd *BuildCmd) error {
-	if cmd.Target != "go" {
-		return fmt.Errorf("build: only --target=go is supported in this release (got %q)", cmd.Target)
+	switch cmd.Target {
+	case "go":
+		return runBuildGo(cmd)
+	case "c":
+		return runBuildC(cmd)
+	default:
+		return fmt.Errorf("build: unsupported --target=%q (expected go|c)", cmd.Target)
 	}
+}
+
+func runBuildGo(cmd *BuildCmd) error {
 	var mode gobuild.Mode
 	switch cmd.Emit {
 	case "", "executable":
@@ -231,6 +246,36 @@ func runBuild(cmd *BuildCmd) error {
 		for _, f := range r.Files {
 			fmt.Printf("emitted %s\n", f)
 		}
+	}
+	return nil
+}
+
+func runBuildC(cmd *BuildCmd) error {
+	if cmd.Emit != "" && cmd.Emit != "executable" {
+		return fmt.Errorf("build: --target=c does not support --emit=%q (Phase 4.0 ships executable only)", cmd.Emit)
+	}
+	outDir := cmd.Out
+	if outDir == "" {
+		tmp, err := os.MkdirTemp("", "mochi-build-c-")
+		if err != nil {
+			return fmt.Errorf("build: temp dir: %w", err)
+		}
+		outDir = tmp
+	}
+	opts := cbuild.Options{
+		OutDir:     outDir,
+		BinaryPath: cmd.BinaryPath,
+		KeepEmit:   cmd.KeepEmit,
+		CC:         cmd.CC,
+		Static:     cmd.Static,
+	}
+	r, err := cbuild.BuildSource(cmd.File, opts)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("binary %s\n", r.BinaryPath)
+	if cmd.KeepEmit {
+		fmt.Printf("source %s\n", r.SourcePath)
 	}
 	return nil
 }
@@ -727,13 +772,16 @@ func newBuildCmd() *cobra.Command {
 			return runBuild(&bc)
 		},
 	}
-	c.Flags().StringVar(&bc.Target, "target", "go", "Target language (go)")
+	c.Flags().StringVar(&bc.Target, "target", "go", "Target language (go|c)")
 	c.Flags().StringVar(&bc.Emit, "emit", "executable", "Emit shape (executable|go-library)")
 	c.Flags().StringVar(&bc.Out, "out", "", "Output directory (default: a fresh temp dir)")
-	c.Flags().BoolVar(&bc.KeepEmit, "keep-emit", false, "Retain the emitted .go file(s) after build")
+	c.Flags().BoolVar(&bc.KeepEmit, "keep-emit", false, "Retain the emitted source file(s) after build")
 	c.Flags().StringVar(&bc.Module, "module", "", "Module path baked into go.mod (required for --emit=go-library)")
 	c.Flags().StringVar(&bc.PkgName, "package", "", "Package name override")
 	c.Flags().StringVar(&bc.RuntimeReplace, "runtime-replace", "", "Local replace directive for mochi runtime (library mode)")
+	c.Flags().StringVar(&bc.CC, "cc", "", "C compiler to invoke (default: $MOCHI_CC or 'cc'); --target=c only")
+	c.Flags().StringVar(&bc.BinaryPath, "binary", "", "Output binary path; --target=c only")
+	c.Flags().BoolVar(&bc.Static, "portable", false, "Statically link the binary (musl/glibc-static); --target=c only")
 	return c
 }
 
