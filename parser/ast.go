@@ -597,12 +597,16 @@ type ModelField struct {
 }
 
 // ImportStmt declares a foreign module import, eg. `import python "math" as math`.
+// The trailing `! effect { , effect }` (MEP-15 effect annotation) is honoured
+// for Go imports: an effect of `meta` sets SealHandles=true on every FFI
+// binding produced for this import (MEP-43 Phase 10).
 type ImportStmt struct {
-	Pos  lexer.Position `json:"pos,omitempty" parser:""`
-	Lang *string        `json:"lang,omitempty" parser:"'import' [ @Ident ]"`
-	Path string         `json:"path,omitempty" parser:"@String"`
-	As   string         `json:"as,omitempty" parser:"[ 'as' @Ident ]"`
-	Auto bool           `json:"auto,omitempty" parser:"@'auto'?"`
+	Pos     lexer.Position `json:"pos,omitempty" parser:""`
+	Lang    *string        `json:"lang,omitempty" parser:"'import' [ @Ident ]"`
+	Path    string         `json:"path,omitempty" parser:"@String"`
+	As      string         `json:"as,omitempty" parser:"[ 'as' @Ident ]"`
+	Auto    bool           `json:"auto,omitempty" parser:"@'auto'?"`
+	Effects []string       `json:"effects,omitempty" parser:"[ '!' @Ident { ',' @Ident } ]"`
 }
 
 type StreamField struct {

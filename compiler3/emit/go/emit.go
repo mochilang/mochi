@@ -346,27 +346,62 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 		if b.SealHandles {
 			imports["mochi/runtime/mochi/ffi"] = true
 		}
+		// resultCast is the IR-side Go type the SSA value was declared
+		// with. The Go call expression is wrapped in this cast so the
+		// emitter never assigns a width-mismatched result (e.g. Go
+		// `int` into an int64 SSA local). Empty means "no cast" because
+		// the SSA value is unit-typed or has no declared Go shape.
+		resultCast := ""
+		if b.Result != "" {
+			resultCast = goType(v.Type)
+		}
+		castBack := resultCast != "" && resultCast != b.Result && !b.SealHandles
+		// Value bindings (vars, consts) read the symbol directly; no
+		// parens, no args. SealHandles still wraps the read in Unseal
+		// when the value is a Mochi-handle-typed export.
+		if b.IsValue {
+			switch {
+			case b.SealHandles && b.Result != "":
+				fmt.Fprintf(w, "\t%s = ffi.Unseal[%s](%s.%s)\n", name, b.Result, alias, b.Name)
+			case castBack:
+				fmt.Fprintf(w, "\t%s = %s(%s.%s)\n", name, resultCast, alias, b.Name)
+			default:
+				fmt.Fprintf(w, "\t%s = %s.%s\n", name, alias, b.Name)
+			}
+			return nil
+		}
 		// Phase 10: when this binding seals handles, wrap the return
 		// value in `ffi.Unseal[T]` and each argument in `ffi.Seal[T]`
 		// where T is the declared Go arg/result type from the binding.
-		if b.Result == "" {
+		switch {
+		case b.Result == "":
 			fmt.Fprintf(w, "\t%s.%s(", alias, b.Name)
-		} else if b.SealHandles {
+		case b.SealHandles:
 			fmt.Fprintf(w, "\t%s = ffi.Unseal[%s](%s.%s(", name, b.Result, alias, b.Name)
-		} else {
+		case castBack:
+			fmt.Fprintf(w, "\t%s = %s(%s.%s(", name, resultCast, alias, b.Name)
+		default:
 			fmt.Fprintf(w, "\t%s = %s.%s(", name, alias, b.Name)
 		}
 		for i, aid := range v.Args {
 			if i > 0 {
 				w.WriteString(", ")
 			}
-			if b.SealHandles && i < len(b.ArgTypes) {
+			switch {
+			case b.SealHandles && i < len(b.ArgTypes):
 				fmt.Fprintf(w, "ffi.Seal[%s](%s)", b.ArgTypes[i], valueName(aid))
-			} else {
+			case i < len(b.ArgTypes) && needsCallSiteCast(b.ArgTypes[i]):
+				// Casts the SSA value to the callee's declared Go type at
+				// the FFI boundary. Identity casts (int64(int64)) are
+				// no-ops; cross-width casts (int(int64)) are how the
+				// resolver-driven binding bridges Mochi's i64 surface to
+				// Go's machine-int APIs.
+				fmt.Fprintf(w, "%s(%s)", b.ArgTypes[i], valueName(aid))
+			default:
 				w.WriteString(valueName(aid))
 			}
 		}
-		if b.Result != "" && b.SealHandles {
+		if b.Result != "" && (b.SealHandles || castBack) {
 			w.WriteString("))\n")
 		} else {
 			w.WriteString(")\n")
@@ -439,6 +474,26 @@ func defaultAlias(pkg string) string {
 		}
 	}
 	return last
+}
+
+// needsCallSiteCast reports whether arg type t should be wrapped in a
+// type conversion at the FFI call site. The cast is harmless for the
+// numeric and string scalar types (identity casts compile away in Go),
+// and necessary for Mochi-i64 to Go-int bridging. Interface or named
+// types are passed through untouched: they typically arrive at the
+// boundary already in the right shape, and a value-typed cast on an
+// interface receiver would not compile.
+func needsCallSiteCast(t string) bool {
+	switch t {
+	case "":
+		return false
+	case "any", "interface{}", "error":
+		return false
+	}
+	if strings.ContainsAny(t, ".*[]") {
+		return false
+	}
+	return true
 }
 
 // fnName returns the Go function name referenced by an OpFnRef value.

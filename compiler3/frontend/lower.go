@@ -2,7 +2,11 @@ package frontend
 
 import (
 	"fmt"
+	"math"
+	"strings"
 
+	"mochi/compiler3/ffi/resolve"
+	"mochi/compiler3/ffi/typebridge"
 	"mochi/compiler3/ir"
 	gogen "mochi/compiler3/emit/go"
 	"mochi/parser"
@@ -42,10 +46,40 @@ func Lower(prog *parser.Program) (*gogen.Program, error) {
 		}
 	}
 
+	// Second pass: resolve `import go "path"` statements via the
+	// MEP-43 Phase-2 resolver. Each binding is keyed by the import's
+	// alias (the segment after `as`, defaulting to the package name).
+	// `! meta` on the import flips SealHandles=true on every FFI call
+	// site routed through this package (MEP-43 Phase 10).
+	goImports := map[string]*goImport{}
+	for _, st := range prog.Statements {
+		if st.Import == nil || st.Import.Lang == nil || *st.Import.Lang != "go" {
+			continue
+		}
+		imp := st.Import
+		pb, err := resolve.New().Resolve(imp.Path)
+		if err != nil {
+			return nil, fmt.Errorf("lower import go %q: %w", imp.Path, err)
+		}
+		alias := imp.As
+		if alias == "" {
+			alias = pb.Name
+			if alias == "" {
+				alias = lastPathSegment(imp.Path)
+			}
+		}
+		goImports[alias] = &goImport{
+			pkg:         pb,
+			alias:       alias,
+			path:        imp.Path,
+			sealHandles: hasEffect(imp.Effects, "meta"),
+		}
+	}
+
 	// Lower each user fun. Each lowering must finish before the next
 	// because they share the program-level function table.
 	for name, e := range userFns {
-		if err := lowerFun(p, e.index, e.stmt, userFns); err != nil {
+		if err := lowerFun(p, e.index, e.stmt, userFns, goImports); err != nil {
 			return nil, fmt.Errorf("lower fun %s: %w", name, err)
 		}
 	}
@@ -54,7 +88,7 @@ func Lower(prog *parser.Program) (*gogen.Program, error) {
 	// there are no top-level statements, no main is emitted.
 	var topLevel []*parser.Statement
 	for _, st := range prog.Statements {
-		if st.Fun != nil {
+		if st.Fun != nil || st.Import != nil {
 			continue
 		}
 		topLevel = append(topLevel, st)
@@ -62,7 +96,7 @@ func Lower(prog *parser.Program) (*gogen.Program, error) {
 	if len(topLevel) > 0 {
 		mainFn := &ir.Function{Name: "main", Result: ir.TypeUnit}
 		p.Funcs = append(p.Funcs, mainFn)
-		b := newBuilder(mainFn, userFns, p)
+		b := newBuilder(mainFn, userFns, p, goImports)
 		entry := b.fn.AddBlock()
 		b.curBlock = entry
 		for _, st := range topLevel {
@@ -81,11 +115,38 @@ func Lower(prog *parser.Program) (*gogen.Program, error) {
 	return p, nil
 }
 
+// goImport carries one resolved `import go` binding through the
+// lowering pass. The resolver returned `pkg`; alias is the Mochi-side
+// name used at call sites; sealHandles is the MEP-43 Phase 10 effect.
+type goImport struct {
+	pkg         *resolve.PackageBinding
+	alias       string
+	path        string
+	sealHandles bool
+}
+
+func hasEffect(effects []string, want string) bool {
+	for _, e := range effects {
+		if e == want {
+			return true
+		}
+	}
+	return false
+}
+
+func lastPathSegment(p string) string {
+	if i := strings.LastIndex(p, "/"); i >= 0 {
+		return p[i+1:]
+	}
+	return p
+}
+
 // builder holds the per-function lowering state.
 type builder struct {
 	fn         *ir.Function
 	prog       *gogen.Program
 	userFns    map[string]funEntry
+	goImports  map[string]*goImport
 	curBlock   uint32
 	terminated bool
 	// values is the lexical scope: Mochi name -> SSA value ID. We do
@@ -96,16 +157,17 @@ type builder struct {
 	values map[string]uint32
 }
 
-func newBuilder(fn *ir.Function, userFns map[string]funEntry, prog *gogen.Program) *builder {
+func newBuilder(fn *ir.Function, userFns map[string]funEntry, prog *gogen.Program, goImports map[string]*goImport) *builder {
 	return &builder{
-		fn:      fn,
-		prog:    prog,
-		userFns: userFns,
-		values:  map[string]uint32{},
+		fn:        fn,
+		prog:      prog,
+		userFns:   userFns,
+		goImports: goImports,
+		values:    map[string]uint32{},
 	}
 }
 
-func lowerFun(p *gogen.Program, idx uint32, fs *parser.FunStmt, userFns map[string]funEntry) error {
+func lowerFun(p *gogen.Program, idx uint32, fs *parser.FunStmt, userFns map[string]funEntry, goImports map[string]*goImport) error {
 	fn := p.Funcs[idx]
 	// Single result type. MVP supports i64 returns only; the absence
 	// of a return type annotation is treated as i64 to keep the most
@@ -118,7 +180,7 @@ func lowerFun(p *gogen.Program, idx uint32, fs *parser.FunStmt, userFns map[stri
 		}
 		fn.Result = t
 	}
-	b := newBuilder(fn, userFns, p)
+	b := newBuilder(fn, userFns, p, goImports)
 	// Params: every param is an OpParam value of the declared type.
 	for _, param := range fs.Params {
 		pt := ir.TypeI64
@@ -464,6 +526,16 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 	if pe == nil || pe.Target == nil {
 		return 0, fmt.Errorf("frontend: empty postfix")
 	}
+	// `pkg.Func(args)`: a Selector targeting an imported Go package
+	// whose first postfix op is a call. The selector's Tail names the
+	// callee under the alias; remaining tail entries (e.g. method
+	// receivers) are out of MVP scope.
+	if len(pe.Ops) == 1 && pe.Ops[0].Call != nil && pe.Target.Selector != nil {
+		sel := pe.Target.Selector
+		if imp, ok := b.goImports[sel.Root]; ok && len(sel.Tail) == 1 {
+			return b.lowerGoCall(imp, sel.Tail[0], pe.Ops[0].Call.Args)
+		}
+	}
 	if len(pe.Ops) != 0 {
 		return 0, fmt.Errorf("frontend: postfix ops unsupported in MVP")
 	}
@@ -475,6 +547,11 @@ func (b *builder) lowerPrimary(p *parser.Primary) (uint32, error) {
 	case p.Lit != nil:
 		return b.lowerLiteral(p.Lit)
 	case p.Selector != nil:
+		if len(p.Selector.Tail) == 1 {
+			if imp, ok := b.goImports[p.Selector.Root]; ok {
+				return b.lowerGoValue(imp, p.Selector.Tail[0])
+			}
+		}
 		if len(p.Selector.Tail) != 0 {
 			return 0, fmt.Errorf("frontend: selector tail %v unsupported in MVP", p.Selector.Tail)
 		}
@@ -501,8 +578,10 @@ func (b *builder) lowerLiteral(lit *parser.Literal) (uint32, error) {
 			c = 1
 		}
 		return b.addValue(ir.Value{Type: ir.TypeBool, Op: ir.OpConst, Const: c}), nil
+	case lit.Float != nil:
+		return b.addValue(ir.Value{Type: ir.TypeF64, Op: ir.OpConst, Const: int64(math.Float64bits(*lit.Float))}), nil
 	}
-	return 0, fmt.Errorf("frontend: literal kind unsupported in MVP (str/float/none)")
+	return 0, fmt.Errorf("frontend: literal kind unsupported in MVP (str/none)")
 }
 
 func (b *builder) lowerCall(c *parser.CallExpr) (uint32, error) {
@@ -521,4 +600,165 @@ func (b *builder) lowerCall(c *parser.CallExpr) (uint32, error) {
 	callee := b.prog.Funcs[entry.index]
 	id := b.addValue(ir.Value{Type: callee.Result, Op: ir.OpCall, Args: args, Const: int64(entry.index)})
 	return id, nil
+}
+
+// lowerGoCall handles a `pkg.Func(args)` call against a resolved
+// `import go` binding. The function's typebridge signature drives the
+// arg-cast types at the emit boundary and the IR result type.
+func (b *builder) lowerGoCall(imp *goImport, name string, callArgs []*parser.Expr) (uint32, error) {
+	fb := imp.pkg.LookupFunc(name)
+	if fb == nil {
+		return 0, fmt.Errorf("frontend: %s.%s not found in resolved import %q", imp.alias, name, imp.path)
+	}
+	sig := fb.Signature
+	if sig.Kind != typebridge.KindFunc {
+		return 0, fmt.Errorf("frontend: %s.%s is not a function (kind=%s)", imp.alias, name, sig.Kind)
+	}
+	if sig.Variadic {
+		return 0, fmt.Errorf("frontend: %s.%s is variadic, unsupported in MVP", imp.alias, name)
+	}
+	if len(sig.Params) != len(callArgs) {
+		return 0, fmt.Errorf("frontend: %s.%s expects %d args, got %d", imp.alias, name, len(sig.Params), len(callArgs))
+	}
+	argTypes := make([]string, len(sig.Params))
+	for i, pt := range sig.Params {
+		argTypes[i] = goSourceTypeOf(pt)
+		if argTypes[i] == "" {
+			return 0, fmt.Errorf("frontend: %s.%s param %d has unsupported type %s", imp.alias, name, i, pt.Kind)
+		}
+	}
+	var resGoType string
+	resIRType := ir.TypeUnit
+	switch len(sig.Results) {
+	case 0:
+		// void return
+	case 1:
+		resGoType = goSourceTypeOf(sig.Results[0])
+		if resGoType == "" {
+			return 0, fmt.Errorf("frontend: %s.%s result %s unsupported in MVP", imp.alias, name, sig.Results[0].Kind)
+		}
+		t, ok := irTypeOf(sig.Results[0])
+		if !ok {
+			return 0, fmt.Errorf("frontend: %s.%s result %s has no IR mapping in MVP", imp.alias, name, sig.Results[0].Kind)
+		}
+		resIRType = t
+	default:
+		return 0, fmt.Errorf("frontend: %s.%s returns %d values, MVP supports 0 or 1", imp.alias, name, len(sig.Results))
+	}
+	args := make([]uint32, 0, len(callArgs))
+	for _, a := range callArgs {
+		vid, err := b.lowerExpr(a)
+		if err != nil {
+			return 0, err
+		}
+		args = append(args, vid)
+	}
+	bind := ir.GoBinding{
+		Pkg:         imp.path,
+		Alias:       imp.alias,
+		Name:        fb.Name,
+		ArgTypes:    argTypes,
+		Result:      resGoType,
+		SealHandles: imp.sealHandles,
+	}
+	idx := int64(len(b.fn.GoBindings))
+	b.fn.GoBindings = append(b.fn.GoBindings, bind)
+	return b.addValue(ir.Value{Type: resIRType, Op: ir.OpCallGo, Args: args, Const: idx}), nil
+}
+
+// lowerGoValue handles a `pkg.Name` read against a resolved import.
+// The symbol may be a package-level var or a const; both render as
+// `alias.Name` in the emitted Go source.
+func (b *builder) lowerGoValue(imp *goImport, name string) (uint32, error) {
+	var bridgeType typebridge.Type
+	switch {
+	case imp.pkg.LookupConst(name) != nil:
+		bridgeType = imp.pkg.LookupConst(name).Type
+	case imp.pkg.LookupVar(name) != nil:
+		bridgeType = imp.pkg.LookupVar(name).Type
+	default:
+		return 0, fmt.Errorf("frontend: %s.%s not found in resolved import %q (no var/const)", imp.alias, name, imp.path)
+	}
+	resGoType := goSourceTypeOf(bridgeType)
+	if resGoType == "" {
+		return 0, fmt.Errorf("frontend: %s.%s has unsupported type %s in MVP", imp.alias, name, bridgeType.Kind)
+	}
+	irType, ok := irTypeOf(bridgeType)
+	if !ok {
+		return 0, fmt.Errorf("frontend: %s.%s has no IR mapping in MVP", imp.alias, name)
+	}
+	bind := ir.GoBinding{
+		Pkg:         imp.path,
+		Alias:       imp.alias,
+		Name:        name,
+		Result:      resGoType,
+		IsValue:     true,
+		SealHandles: imp.sealHandles,
+	}
+	idx := int64(len(b.fn.GoBindings))
+	b.fn.GoBindings = append(b.fn.GoBindings, bind)
+	return b.addValue(ir.Value{Type: irType, Op: ir.OpCallGo, Const: idx}), nil
+}
+
+// goSourceTypeOf renders the Go-source form of t, suitable for an
+// emitter cast at the FFI boundary. Returns "" for shapes the MVP
+// frontend cannot lower (interfaces, channels, opaque-only types).
+func goSourceTypeOf(t typebridge.Type) string {
+	switch t.Kind {
+	case typebridge.KindBool:
+		return "bool"
+	case typebridge.KindInt:
+		switch t.Width {
+		case 0:
+			return "int"
+		case 8:
+			return "int8"
+		case 16:
+			return "int16"
+		case 32:
+			return "int32"
+		case 64:
+			return "int64"
+		}
+	case typebridge.KindUint:
+		switch t.Width {
+		case 0:
+			return "uint"
+		case 8:
+			return "uint8"
+		case 16:
+			return "uint16"
+		case 32:
+			return "uint32"
+		case 64:
+			return "uint64"
+		}
+	case typebridge.KindFloat:
+		switch t.Width {
+		case 32:
+			return "float32"
+		case 64:
+			return "float64"
+		}
+	case typebridge.KindString:
+		return "string"
+	}
+	return ""
+}
+
+// irTypeOf maps a typebridge.Type to the compiler3 IR type the MVP
+// frontend allocates SSA values in. Returns false for shapes that
+// have no IR-side representation yet (slices, structs, interfaces).
+func irTypeOf(t typebridge.Type) (ir.Type, bool) {
+	switch t.Kind {
+	case typebridge.KindBool:
+		return ir.TypeBool, true
+	case typebridge.KindInt, typebridge.KindUint:
+		return ir.TypeI64, true
+	case typebridge.KindFloat:
+		return ir.TypeF64, true
+	case typebridge.KindString:
+		return ir.TypeStr, true
+	}
+	return ir.TypeInvalid, false
 }
