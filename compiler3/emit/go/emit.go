@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"mochi/compiler3/ir"
+	"mochi/compiler3/verify"
 )
 
 // Program is the multi-function unit the emitter consumes. compiler3
@@ -37,6 +38,15 @@ type Program struct {
 func Emit(p *Program) ([]byte, error) {
 	if p.PkgName == "" {
 		p.PkgName = "main"
+	}
+	// MEP-41 §6.2 verifier (Phase 1). Every function must pass rule
+	// classes A through D before the emitter sees it. The verifier is
+	// the single point of memory-safety policy named in
+	// docs/security/threat-model.md.
+	for _, fn := range p.Funcs {
+		if err := verify.Function(fn); err != nil {
+			return nil, fmt.Errorf("verify %s: %w", fn.Name, err)
+		}
 	}
 	hasSourceMap := false
 	for _, fn := range p.Funcs {

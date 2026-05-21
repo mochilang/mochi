@@ -58,7 +58,7 @@ func TestEmitGofmtClean(t *testing.T) {
 func TestEmitListOps(t *testing.T) {
 	fn := &ir.Function{Name: "list_demo", Result: ir.TypeI64}
 	entry := fn.AddBlock()
-	lst := fn.AddValue(ir.Value{Type: ir.TypeI64Arr, Op: ir.OpNewList})
+	lst := fn.AddValue(ir.Value{Type: ir.TypeList, Op: ir.OpNewList})
 	v1 := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpConst, Const: 10})
 	v2 := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpConst, Const: 20})
 	v3 := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpConst, Const: 30})
