@@ -315,6 +315,30 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 	case ir.OpNow:
 		imports["time"] = true
 		fmt.Fprintf(w, "\t%s = time.Now().UnixMicro()\n", name)
+	case ir.OpJsonI64Object:
+		if int(v.Const) < 0 || int(v.Const) >= len(fn.JsonObjects) {
+			return fmt.Errorf("OpJsonI64Object v%d: Const %d out of range (have %d JsonObjects)", v.ID, v.Const, len(fn.JsonObjects))
+		}
+		obj := fn.JsonObjects[v.Const]
+		if len(obj.Keys) != len(v.Args) {
+			return fmt.Errorf("OpJsonI64Object v%d: %d keys but %d args", v.ID, len(obj.Keys), len(v.Args))
+		}
+		imports["fmt"] = true
+		var fb bytes.Buffer
+		fb.WriteString(`"{`)
+		for i, k := range obj.Keys {
+			if i > 0 {
+				fb.WriteString(",")
+			}
+			fmt.Fprintf(&fb, `\"%s\":%%d`, k)
+		}
+		fb.WriteString(`}\n"`)
+		fmt.Fprintf(w, "\tfmt.Printf(%s", fb.String())
+		for _, aid := range v.Args {
+			fmt.Fprintf(w, ", %s", valueName(aid))
+		}
+		w.WriteString(")\n")
+		_ = name
 	case ir.OpCall, ir.OpTailCall:
 		callee := all[v.Const]
 		fmt.Fprintf(w, "\t%s = %s(", name, callee.Name)

@@ -920,6 +920,44 @@ if duration >= 0 {
 	}
 }
 
+// TestBuildSourceJsonI64Object pins the Phase 4.3.14 `json({...})`
+// builtin on the C target: lowers to a single printf with `%lld` per
+// i64 value and a constant key list. This is the closing C-target
+// piece for `bench/template/bg/mandelbrot.mochi` running through
+// `mochi build --target=c` without source modification.
+func TestBuildSourceJsonI64Object(t *testing.T) {
+	src := `let duration = 42
+let total = 17
+json({
+  "duration_us": duration,
+  "output": total,
+})
+`
+	if got, want := runMochiBuild(t, src), "{\"duration_us\":42,\"output\":17}\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceJsonI64ObjectFromArith pins that the JSON values may
+// be arbitrary i64 expressions on the C target (sum reduction here),
+// matching the Go target's TestLowerJsonI64ObjectFromArith.
+func TestBuildSourceJsonI64ObjectFromArith(t *testing.T) {
+	src := `var sum = 0
+var i = 0
+while i < 10 {
+  sum = sum + i
+  i = i + 1
+}
+json({
+  "duration_us": sum * 2,
+  "output": sum,
+})
+`
+	if got, want := runMochiBuild(t, src), "{\"duration_us\":90,\"output\":45}\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceMathPiConst pins the Phase 4.3.9 math.pi constant
 // read on the C target: 4*pi*pi truncated = 39.
 func TestBuildSourceMathPiConst(t *testing.T) {

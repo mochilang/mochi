@@ -1005,7 +1005,80 @@ func (b *builder) lowerExprAsStmt(e *parser.Expr) (uint32, error) {
 		id := b.addValue(ir.Value{Type: ir.TypeUnit, Op: ir.OpCallGo, Args: []uint32{arg}, Const: bindIdx})
 		return id, nil
 	}
+	if call := exprAsCall(e); call != nil && call.Func == "json" && len(call.Args) == 1 {
+		if m := exprAsMapLit(call.Args[0]); m != nil {
+			return b.lowerJsonObject(m)
+		}
+		return 0, fmt.Errorf("frontend: json() requires a map literal argument in MVP")
+	}
 	return b.lowerExpr(e)
+}
+
+// lowerJsonObject lowers `json({"k1": e1, ..., "kN": eN})` as an
+// OpJsonI64Object statement. Phase 4.3.14 restricts the value type to
+// i64 (the `bench/template/bg/*.mochi` fixtures only need
+// `duration_us` and `output`, both i64). The keys are captured into
+// a fn.JsonObjects entry the emitter indexes via Value.Const; the
+// values lower to N i64 SSA IDs in Args.
+func (b *builder) lowerJsonObject(m *parser.MapLiteral) (uint32, error) {
+	if len(m.Items) == 0 {
+		return 0, fmt.Errorf("frontend: json({}) with no keys unsupported in MVP")
+	}
+	keys := make([]string, 0, len(m.Items))
+	args := make([]uint32, 0, len(m.Items))
+	for _, item := range m.Items {
+		k, ok := exprAsStrLit(item.Key)
+		if !ok {
+			return 0, fmt.Errorf("frontend: json() keys must be string literals in MVP")
+		}
+		valID, err := b.lowerExpr(item.Value)
+		if err != nil {
+			return 0, err
+		}
+		if got := b.fn.Values[valID].Type; got != ir.TypeI64 {
+			return 0, fmt.Errorf("frontend: json() value for key %q has type %s, MVP requires i64", k, got)
+		}
+		keys = append(keys, k)
+		args = append(args, valID)
+	}
+	idx := int64(len(b.fn.JsonObjects))
+	b.fn.JsonObjects = append(b.fn.JsonObjects, ir.JsonObject{Keys: keys})
+	id := b.addValue(ir.Value{Type: ir.TypeUnit, Op: ir.OpJsonI64Object, Args: args, Const: idx})
+	return id, nil
+}
+
+// exprAsMapLit returns the underlying MapLiteral if e is a bare
+// `{k:v, ...}` primary, else nil. Used by json({...}) recognition.
+func exprAsMapLit(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return nil
+	}
+	p := u.Value.Target
+	if p == nil {
+		return nil
+	}
+	return p.Map
+}
+
+// exprAsStrLit returns the string payload + true if e is a bare
+// string-literal primary, else "", false.
+func exprAsStrLit(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value.Target
+	if p == nil || p.Lit == nil || p.Lit.Str == nil {
+		return "", false
+	}
+	return *p.Lit.Str, true
 }
 
 func goTypeForIRType(t ir.Type) string {
