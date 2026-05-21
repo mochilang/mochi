@@ -59,6 +59,10 @@ int64_t mochi_list_i64_get(const mochi_list_i64 *l, int64_t i);
  * MVP, same rationale as get. */
 void mochi_list_i64_set(mochi_list_i64 *l, int64_t i, int64_t v);
 
+/* mochi_list_i64_concat returns a fresh list with a's elements followed
+ * by b's. Neither operand is mutated; the result owns its own buffer. */
+mochi_list_i64 *mochi_list_i64_concat(const mochi_list_i64 *a, const mochi_list_i64 *b);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1195,6 +1195,16 @@ func (b *builder) applyBinOp(op string, l, r uint32) (uint32, error) {
 		default:
 			return 0, fmt.Errorf("frontend: operator %q on f64 unsupported in MVP", op)
 		}
+	case ir.TypeList:
+		if op != "+" {
+			return 0, fmt.Errorf("frontend: operator %q on list<int> unsupported in MVP", op)
+		}
+		code = ir.OpListConcatI64
+	case ir.TypeF64Arr:
+		if op != "+" {
+			return 0, fmt.Errorf("frontend: operator %q on list<float> unsupported in MVP", op)
+		}
+		code = ir.OpF64ArrayConcat
 	default:
 		return 0, fmt.Errorf("frontend: binop %q on type %s unsupported in MVP", op, lt)
 	}

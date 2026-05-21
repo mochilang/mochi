@@ -166,7 +166,8 @@ func kindOf(o ir.OpCode) ProducerKind {
 	case ir.OpConcatStr:
 		return KindConstructor
 
-	case ir.OpNewList, ir.OpNewMap, ir.OpNewF64Array:
+	case ir.OpNewList, ir.OpNewMap, ir.OpNewF64Array,
+		ir.OpListConcatI64, ir.OpF64ArrayConcat:
 		return KindConstructor
 
 	case ir.OpListLenI64, ir.OpListPushI64, ir.OpListGetI64, ir.OpListSetI64,
@@ -215,7 +216,7 @@ func init() {
 // the last OpCode known to ir/types.go at this MEP-41 Phase 1 commit;
 // adding a new op past it bumps this constant in the same PR.
 func mustClassifyAll() {
-	const lastOpCode = ir.OpSqrtF64
+	const lastOpCode = ir.OpF64ArrayConcat
 	for o := ir.OpInvalid + 1; o <= lastOpCode; o++ {
 		if kindOf(o) == KindInvalid {
 			panic(fmt.Sprintf("verify: OpCode %s (=%d) is unclassified; extend kindOf in compiler3/verify/verify.go (MEP-41 §6.2 rule class C / coverage backstop)", o, o))
@@ -415,6 +416,10 @@ func contractResult(o ir.OpCode) ir.Type {
 		return ir.TypeUnit
 	case ir.OpF64ArrayGetF64:
 		return ir.TypeF64
+	case ir.OpListConcatI64:
+		return ir.TypeList
+	case ir.OpF64ArrayConcat:
+		return ir.TypeF64Arr
 	}
 	return ir.TypeInvalid
 }

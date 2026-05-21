@@ -219,6 +219,10 @@ func opContract(o OpCode) opSig {
 		return opSig{TypeI64, [3]Type{TypeF64}}
 	case OpSqrtF64:
 		return opSig{TypeF64, [3]Type{TypeF64}}
+	case OpListConcatI64:
+		return opSig{TypeList, [3]Type{TypeList, TypeList}}
+	case OpF64ArrayConcat:
+		return opSig{TypeF64Arr, [3]Type{TypeF64Arr, TypeF64Arr}}
 	}
 	// OpParam, OpConst, OpPhi, OpCall, OpTailCall: the validator
 	// can't pre-compute their signature without more context, so we

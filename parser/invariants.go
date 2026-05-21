@@ -230,10 +230,10 @@ func assertTypeRef(t *TypeRef, pos lexer.Position) error {
 		return invariant(pos, "type reference is nil")
 	}
 	arms := [...]bool{
-		t.Fun != nil, t.Generic != nil, t.Struct != nil, t.Simple != nil,
+		t.Fun != nil, t.Generic != nil, t.Struct != nil, t.ListElem != nil, t.Simple != nil,
 	}
 	if n := countTrue(arms[:]); n != 1 {
-		return invariant(pos, fmt.Sprintf("type reference has %d arms set, expected exactly 1 of {fun, generic, struct, simple}", n))
+		return invariant(pos, fmt.Sprintf("type reference has %d arms set, expected exactly 1 of {fun, generic, struct, list_elem, simple}", n))
 	}
 	return nil
 }

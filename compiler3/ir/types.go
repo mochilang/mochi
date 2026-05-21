@@ -227,6 +227,15 @@ const (
 	// target emits `math.Sqrt(v)` (auto-imports "math"); the C target
 	// emits `sqrt(v)` (auto-includes <math.h> and links with -lm).
 	OpSqrtF64
+
+	// List / array concatenation (Phase 4.3.12). Surface form `xs + ys`
+	// where both operands are the same list-shaped type. Returns a
+	// fresh list (no aliasing with the operands). OpListConcatI64 is
+	// the i64-cell list pair; OpF64ArrayConcat is the flat f64 array
+	// pair. Go emit copies via append + spread; C emit calls into a
+	// runtime concat helper.
+	OpListConcatI64
+	OpF64ArrayConcat
 )
 
 // String renders an OpCode's short name. Used by Validate and IR
@@ -331,6 +340,10 @@ func (o OpCode) String() string {
 		return "f64arr.get.f64"
 	case OpF64ArraySetF64:
 		return "f64arr.set.f64"
+	case OpListConcatI64:
+		return "list.concat.i64"
+	case OpF64ArrayConcat:
+		return "f64arr.concat"
 	case OpCall:
 		return "call"
 	case OpTailCall:

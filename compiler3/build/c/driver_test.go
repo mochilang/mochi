@@ -770,6 +770,115 @@ print(int(math.sqrt(uv / vv) * 1e9))
 	}
 }
 
+// TestBuildSourceListConcatI64 pins the Phase 4.3.12 i64 list
+// concatenation surface on the C target: `xs + ys` calls into
+// mochi_list_i64_concat.
+func TestBuildSourceListConcatI64(t *testing.T) {
+	src := `var a: list<int> = []
+a = append(a, 1)
+a = append(a, 2)
+var b: list<int> = []
+b = append(b, 10)
+b = append(b, 20)
+b = append(b, 30)
+let c = a + b
+print(c[0] + c[1] + c[2] + c[3] + c[4])
+`
+	if got, want := runMochiBuild(t, src), "63\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceF64ArrayConcat pins the Phase 4.3.12 f64 list
+// concatenation surface on the C target: `[float] + [float]` calls
+// into mochi_f64_array_concat.
+func TestBuildSourceF64ArrayConcat(t *testing.T) {
+	src := `var u: [float] = []
+u = u + [1.0]
+u = u + [2.0]
+u = u + [3.0]
+var v: [float] = []
+v = v + [4.0]
+v = v + [5.0]
+v = v + [6.0]
+let w = u + v
+print(int(w[0] + w[1] + w[2] + w[3] + w[4] + w[5]))
+`
+	if got, want := runMochiBuild(t, src), "21\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceSpectralNativeKernel pins the Phase 4.3.12 milestone:
+// the native `bench/template/bg/spectral_norm/spectral_norm.mochi`
+// fixture compiles unchanged via `mochi build --target=c` and produces
+// `1274219991` (N=100 full power-method), byte-matching the Go target.
+// This closes the compiler-internal kernel work for spectral_norm; the
+// only remaining gap to consuming the native fixture is the bench
+// harness shape (`now()`, `json({...})`, `{{ .N }}`), and the native
+// spectral_norm source happens to not use any of those (its outer
+// driver hardcodes N=100 and prints the integer directly).
+func TestBuildSourceSpectralNativeKernel(t *testing.T) {
+	src := `import python "math" as math
+extern fun math.sqrt(x: float): float
+
+let N = 100
+
+fun eval_a(i: int, j: int): float {
+  let s = i + j
+  return 1.0 / float(s * (s + 1) / 2 + i + 1)
+}
+
+fun mul_av(src: [float], dst: [float], n: int) {
+  for i in 0..n {
+    var s = 0.0
+    for j in 0..n {
+      s = s + eval_a(i, j) * src[j]
+    }
+    dst[i] = s
+  }
+}
+
+fun mul_atv(src: [float], dst: [float], n: int) {
+  for i in 0..n {
+    var s = 0.0
+    for j in 0..n {
+      s = s + eval_a(j, i) * src[j]
+    }
+    dst[i] = s
+  }
+}
+
+var u: [float] = []
+var v: [float] = []
+var tmp: [float] = []
+for _ in 0..N {
+  u = u + [1.0]
+  v = v + [0.0]
+  tmp = tmp + [0.0]
+}
+
+for _ in 0..5 {
+  mul_av(u, tmp, N)
+  mul_atv(tmp, v, N)
+  mul_av(v, tmp, N)
+  mul_atv(tmp, u, N)
+}
+
+var uv = 0.0
+var vv = 0.0
+for i in 0..N {
+  uv = uv + u[i] * v[i]
+  vv = vv + v[i] * v[i]
+}
+
+print(int(math.sqrt(uv / vv) * 1e9))
+`
+	if got, want := runMochiBuild(t, src), "1274219991\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceMathPiConst pins the Phase 4.3.9 math.pi constant
 // read on the C target: 4*pi*pi truncated = 39.
 func TestBuildSourceMathPiConst(t *testing.T) {

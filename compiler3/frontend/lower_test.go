@@ -645,6 +645,115 @@ print(int(math.sqrt(uv / vv) * 1e9))
 	}
 }
 
+// TestLowerListConcatI64 pins the Phase 4.3.12 i64 list concatenation
+// surface: `xs + ys` on two `list<int>` operands returns a fresh
+// list of i64 with the operands' elements in order.
+func TestLowerListConcatI64(t *testing.T) {
+	src := `var a: list<int> = []
+a = append(a, 1)
+a = append(a, 2)
+var b: list<int> = []
+b = append(b, 10)
+b = append(b, 20)
+b = append(b, 30)
+let c = a + b
+print(c[0] + c[1] + c[2] + c[3] + c[4])
+`
+	got := runEnd2End(t, src)
+	if got != "63\n" {
+		t.Errorf("got %q, want %q", got, "63\n")
+	}
+}
+
+// TestLowerF64ArrayConcat pins the Phase 4.3.12 f64 list concatenation
+// surface: `xs + ys` on two `[float]` operands. Output is the truncated
+// sum 1+2+3+4+5+6 = 21.
+func TestLowerF64ArrayConcat(t *testing.T) {
+	src := `var u: [float] = []
+u = u + [1.0]
+u = u + [2.0]
+u = u + [3.0]
+var v: [float] = []
+v = v + [4.0]
+v = v + [5.0]
+v = v + [6.0]
+let w = u + v
+print(int(w[0] + w[1] + w[2] + w[3] + w[4] + w[5]))
+`
+	got := runEnd2End(t, src)
+	if got != "21\n" {
+		t.Errorf("got %q, want %q", got, "21\n")
+	}
+}
+
+// TestLowerSpectralNativeKernel pins the Phase 4.3.12 milestone: the
+// native `bench/template/bg/spectral_norm/spectral_norm.mochi` shape
+// (N=100, `[float]` parameters, `u + [1.0]` list-concat initialisation,
+// final `int(sqrt(uv/vv) * 1e9) = 1274219991`) now lowers through
+// compiler3 and emits valid Go. The C-target mirror is
+// `TestBuildSourceSpectralNativeKernel`.
+func TestLowerSpectralNativeKernel(t *testing.T) {
+	src := `import python "math" as math
+extern fun math.sqrt(x: float): float
+
+let N = 100
+
+fun eval_a(i: int, j: int): float {
+  let s = i + j
+  return 1.0 / float(s * (s + 1) / 2 + i + 1)
+}
+
+fun mul_av(src: [float], dst: [float], n: int) {
+  for i in 0..n {
+    var s = 0.0
+    for j in 0..n {
+      s = s + eval_a(i, j) * src[j]
+    }
+    dst[i] = s
+  }
+}
+
+fun mul_atv(src: [float], dst: [float], n: int) {
+  for i in 0..n {
+    var s = 0.0
+    for j in 0..n {
+      s = s + eval_a(j, i) * src[j]
+    }
+    dst[i] = s
+  }
+}
+
+var u: [float] = []
+var v: [float] = []
+var tmp: [float] = []
+for _ in 0..N {
+  u = u + [1.0]
+  v = v + [0.0]
+  tmp = tmp + [0.0]
+}
+
+for _ in 0..5 {
+  mul_av(u, tmp, N)
+  mul_atv(tmp, v, N)
+  mul_av(v, tmp, N)
+  mul_atv(tmp, u, N)
+}
+
+var uv = 0.0
+var vv = 0.0
+for i in 0..N {
+  uv = uv + u[i] * v[i]
+  vv = vv + v[i] * v[i]
+}
+
+print(int(math.sqrt(uv / vv) * 1e9))
+`
+	got := runEnd2End(t, src)
+	if got != "1274219991\n" {
+		t.Errorf("got %q, want %q", got, "1274219991\n")
+	}
+}
+
 // TestLowerMathPiConst pins the Phase 4.3.9 `math.pi` constant read:
 // `extern let math.pi: float` is accepted as a no-op binding; the
 // selector read lowers to OpConst of TypeF64 with the math.Pi value.
