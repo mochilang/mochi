@@ -151,6 +151,31 @@ const (
 	// Value.Const (function index in the Function's owning Program).
 	OpCall
 	OpTailCall
+
+	// Function reference. Value.Const is the function index in the
+	// owning Program; Value.Type is TypeClosure. Produced for use as
+	// an argument to query ops; the emitter inlines the referenced
+	// function's name at the consumer site, so an OpFnRef value never
+	// lowers to a standalone Go expression.
+	OpFnRef
+
+	// Query algebra ops. These lower in the Go emitter to calls into
+	// runtime/mochi/query, never inlined as algebra. Closure-shaped
+	// arguments arrive as OpFnRef values whose Const names the
+	// callee. Phase 5 covers the i64-everywhere subset (list ElemType
+	// TypeI64, key TypeI64, output TypeI64); the Mochi frontend will
+	// widen the supported element types in Phase 6.
+	OpQueryFilter     // Args=[srcList, predFnRef]
+	OpQueryMap        // Args=[srcList, mapFnRef]
+	OpQuerySortBy     // Args=[srcList, keyFnRef]
+	OpQuerySortByDesc // Args=[srcList, keyFnRef]
+	OpQueryLimit      // Args=[srcList, nValue]
+	OpQueryDistinct   // Args=[srcList]
+	OpQueryGroupBy    // Args=[srcList, keyFnRef]; result Type is TypeAny (opaque to the IR until Phase 6 lands structured access)
+	OpQueryJoin       // Args=[leftList, rightList, lkeyFnRef, rkeyFnRef, combineFnRef]
+	OpQueryLeftJoin   // same shape as OpQueryJoin; combineFn signature is func(L, R, hasR bool) Out
+	OpQueryOuterJoin  // same shape; combineFn signature is func(L, R, hasL, hasR bool) Out
+	OpQueryCrossJoin  // Args=[leftList, rightList, combineFnRef]
 )
 
 // String renders an OpCode's short name. Used by Validate and IR
@@ -259,6 +284,30 @@ func (o OpCode) String() string {
 		return "call"
 	case OpTailCall:
 		return "tailcall"
+	case OpFnRef:
+		return "fnref"
+	case OpQueryFilter:
+		return "query.filter"
+	case OpQueryMap:
+		return "query.map"
+	case OpQuerySortBy:
+		return "query.sortby"
+	case OpQuerySortByDesc:
+		return "query.sortby.desc"
+	case OpQueryLimit:
+		return "query.limit"
+	case OpQueryDistinct:
+		return "query.distinct"
+	case OpQueryGroupBy:
+		return "query.groupby"
+	case OpQueryJoin:
+		return "query.join"
+	case OpQueryLeftJoin:
+		return "query.leftjoin"
+	case OpQueryOuterJoin:
+		return "query.outerjoin"
+	case OpQueryCrossJoin:
+		return "query.crossjoin"
 	}
 	return "?"
 }
