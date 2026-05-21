@@ -52,6 +52,10 @@ func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 		return StructType{Name: "", Fields: fields}
 	}
 
+	if t.ListElem != nil {
+		return ListType{Elem: resolveTypeRef(t.ListElem, env)}
+	}
+
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":

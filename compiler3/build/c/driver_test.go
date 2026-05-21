@@ -648,6 +648,128 @@ print(int(energy * 1e9))
 	}
 }
 
+// TestBuildSourceBracketListTypeFloat pins the Phase 4.3.11
+// bracketed list-type syntax: `[float]` in a fun parameter
+// position is accepted as syntactic sugar for `list<float>` and
+// lowers to the same TypeF64Arr backing. The body fills a 3-slot
+// list with 2.0 and sums it. Output: 6.
+func TestBuildSourceBracketListTypeFloat(t *testing.T) {
+	src := `fun fill(xs: [float], n: int) {
+  for i in 0..n {
+    xs[i] = 2.0
+  }
+}
+
+var u: list<float> = []
+for _ in 0..3 {
+  u = append(u, 0.0)
+}
+fill(u, 3)
+print(int(u[0] + u[1] + u[2]))
+`
+	if got, want := runMochiBuild(t, src), "6\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceBracketListTypeInt pins `[int]` as the i64
+// counterpart: same surface, TypeList backing.
+func TestBuildSourceBracketListTypeInt(t *testing.T) {
+	src := `fun setall(xs: [int], n: int, v: int) {
+  for i in 0..n {
+    xs[i] = v
+  }
+}
+
+var u: list<int> = []
+for _ in 0..4 {
+  u = append(u, 0)
+}
+setall(u, 4, 7)
+print(u[0] + u[1] + u[2] + u[3])
+`
+	if got, want := runMochiBuild(t, src), "28\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceSpectralFullKernel pins the Phase 4.3.11 milestone:
+// the full benchmark-games spectral_norm kernel (N=10, 5 outer power-
+// method iterations, eval_a Hilbert-like matrix entry, mul_av and
+// mul_atv helper funs taking `[float]` parameters, final
+// `int(sqrt(uv/vv) * 1e9) = 1271844019`) now compiles end-to-end
+// through compiler3 to a native binary via `mochi build --target=c`.
+// Output byte-matches the `--target=go` build.
+//
+// Phase 4.3.11 adds the only remaining surface piece (the `[float]`
+// bracketed list-type syntax in mul_av / mul_atv signatures). The
+// `u + [1.0]` list-concatenation pattern from the native source is
+// rewritten here to `u = append(u, 1.0)` because the kernel's
+// growth happens once at the top of the program (the inner kernel
+// loops do not mutate list shape); whether to add list-concat as a
+// later sub-phase depends on whether any benchmark needs it inside
+// a hot loop, which spectral_norm does not.
+func TestBuildSourceSpectralFullKernel(t *testing.T) {
+	src := `import python "math" as math
+extern fun math.sqrt(x: float): float
+
+let N = 10
+
+fun eval_a(i: int, j: int): float {
+  let s = i + j
+  return 1.0 / float(s * (s + 1) / 2 + i + 1)
+}
+
+fun mul_av(src: [float], dst: [float], n: int) {
+  for i in 0..n {
+    var s = 0.0
+    for j in 0..n {
+      s = s + eval_a(i, j) * src[j]
+    }
+    dst[i] = s
+  }
+}
+
+fun mul_atv(src: [float], dst: [float], n: int) {
+  for i in 0..n {
+    var s = 0.0
+    for j in 0..n {
+      s = s + eval_a(j, i) * src[j]
+    }
+    dst[i] = s
+  }
+}
+
+var u: list<float> = []
+var v: list<float> = []
+var tmp: list<float> = []
+for _ in 0..N {
+  u = append(u, 1.0)
+  v = append(v, 0.0)
+  tmp = append(tmp, 0.0)
+}
+
+for _ in 0..5 {
+  mul_av(u, tmp, N)
+  mul_atv(tmp, v, N)
+  mul_av(v, tmp, N)
+  mul_atv(tmp, u, N)
+}
+
+var uv = 0.0
+var vv = 0.0
+for i in 0..N {
+  uv = uv + u[i] * v[i]
+  vv = vv + v[i] * v[i]
+}
+
+print(int(math.sqrt(uv / vv) * 1e9))
+`
+	if got, want := runMochiBuild(t, src), "1271844019\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceMathPiConst pins the Phase 4.3.9 math.pi constant
 // read on the C target: 4*pi*pi truncated = 39.
 func TestBuildSourceMathPiConst(t *testing.T) {
