@@ -3,6 +3,7 @@ package frontend
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strings"
 
 	"mochi/compiler3/ffi/resolve"
@@ -277,6 +278,8 @@ func (b *builder) lowerStmt(st *parser.Statement) error {
 		return b.lowerReturn(st.Return)
 	case st.If != nil:
 		return b.lowerIf(st.If)
+	case st.While != nil:
+		return b.lowerWhile(st.While)
 	case st.Expr != nil:
 		_, err := b.lowerExprAsStmt(st.Expr.Expr)
 		return err
@@ -359,6 +362,101 @@ func (b *builder) lowerIf(s *parser.IfStmt) error {
 	// Continuation: empty block; caller continues lowering here.
 	b.curBlock = contID
 	b.terminated = false
+	return nil
+}
+
+// lowerWhile lowers `while cond { body }` into a three-block CFG
+// (pre-header jump, header with phis + cond branch, body, continuation).
+// For every binding in scope at loop entry we materialise a phi at the
+// header so the body sees a join of the pre-loop value and the value
+// flowing back from the previous iteration. The back-edge slot is
+// patched after the body lowers, matching the fixture convention in
+// compiler3/ir/fixture.go. Bindings introduced inside the body are
+// not phi-tracked and leak past the loop in the current env, which
+// matches lowerIf's scoping (a wider scope discipline is post-MVP).
+func (b *builder) lowerWhile(s *parser.WhileStmt) error {
+	preID := b.curBlock
+	headID := b.fn.AddBlock()
+	bodyID := b.fn.AddBlock()
+	contID := b.fn.AddBlock()
+
+	// Snapshot the bindings live at loop entry. Iteration order is
+	// stable so the IR (and therefore emitted C/Go) is deterministic
+	// across builds.
+	names := make([]string, 0, len(b.values))
+	for name := range b.values {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	preVals := make([]uint32, len(names))
+	for i, name := range names {
+		preVals[i] = b.values[name]
+	}
+
+	// Pre-header jumps unconditionally to the header.
+	b.terminator(ir.Terminator{Kind: ir.TermJump, Target: headID})
+
+	// Header: one phi per snapshotted binding, with the back-edge slot
+	// left at sentinel 0 to be patched after the body lowers.
+	b.curBlock = headID
+	b.terminated = false
+	phis := make([]uint32, len(names))
+	for i, name := range names {
+		preVid := preVals[i]
+		phiVid := b.addValue(ir.Value{
+			Type: b.fn.Values[preVid].Type,
+			Op:   ir.OpPhi,
+			Args: []uint32{preID, preVid, bodyID, 0},
+		})
+		phis[i] = phiVid
+		b.values[name] = phiVid
+	}
+	cond, err := b.lowerExpr(s.Cond)
+	if err != nil {
+		return err
+	}
+	if b.fn.Values[cond].Type != ir.TypeBool {
+		return fmt.Errorf("frontend: while-cond must be bool, got %s", b.fn.Values[cond].Type)
+	}
+	b.terminator(ir.Terminator{Kind: ir.TermBranch, Value: cond, IfTrue: bodyID, IfFalse: contID})
+
+	// Body: lower statements, then jump back to the header.
+	b.curBlock = bodyID
+	b.terminated = false
+	for _, st := range s.Body {
+		if err := b.lowerStmt(st); err != nil {
+			return err
+		}
+		if b.terminated {
+			break
+		}
+	}
+	if !b.terminated {
+		// Patch back-edge slots from the post-body env before jumping.
+		// terminator() appends bodyID to header.Preds for us.
+		for i, name := range names {
+			b.fn.Values[phis[i]].Args[3] = b.values[name]
+		}
+		b.terminator(ir.Terminator{Kind: ir.TermJump, Target: headID})
+	} else {
+		// Body terminated unconditionally (e.g., return). The header has
+		// only the pre-header as a predecessor; drop the back-edge slot
+		// from every phi so the validator's arity check is satisfied.
+		head := b.fn.Block(headID)
+		head.Preds = []uint32{preID}
+		for _, phiVid := range phis {
+			phi := &b.fn.Values[phiVid]
+			phi.Args = phi.Args[:2]
+		}
+	}
+
+	// Continuation: the live value for each snapshotted binding is the
+	// header phi (cont's only predecessor is the header).
+	b.curBlock = contID
+	b.terminated = false
+	for i, name := range names {
+		b.values[name] = phis[i]
+	}
 	return nil
 }
 
