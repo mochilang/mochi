@@ -220,6 +220,13 @@ const (
 	// Go target's `int64(f64)` semantics).
 	OpI64ToF64
 	OpF64ToI64
+
+	// Math builtins (Phase 4.3.5). OpSqrtF64 is the f64 square root,
+	// lowered from `math.sqrt(x)` after the python-import + extern
+	// declarations are accepted as no-op binding statements. The Go
+	// target emits `math.Sqrt(v)` (auto-imports "math"); the C target
+	// emits `sqrt(v)` (auto-includes <math.h> and links with -lm).
+	OpSqrtF64
 )
 
 // String renders an OpCode's short name. Used by Validate and IR
@@ -384,6 +391,8 @@ func (o OpCode) String() string {
 		return "i64.to.f64"
 	case OpF64ToI64:
 		return "f64.to.i64"
+	case OpSqrtF64:
+		return "sqrt.f64"
 	}
 	return "?"
 }

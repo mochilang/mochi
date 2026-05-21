@@ -343,6 +343,47 @@ print(total)
 	}
 }
 
+// TestLowerMathSqrtBuiltin pins the Phase 4.3.5 `math.sqrt(x)` builtin:
+// an `import python "math" as math` + `extern fun math.sqrt(x: float):
+// float` pair must be accepted as no-op declarations, and the call site
+// must lower to OpSqrtF64. The expression `math.sqrt(2.0) * math.sqrt(2.0)`
+// returns 2.0 (within FP rounding) cast to int 2.
+func TestLowerMathSqrtBuiltin(t *testing.T) {
+	src := `import python "math" as math
+extern fun math.sqrt(x: float): float
+
+let r = math.sqrt(2.0) * math.sqrt(2.0)
+print(r as int)
+`
+	got := runEnd2End(t, src)
+	if got != "2\n" {
+		t.Errorf("got %q, want %q", got, "2\n")
+	}
+}
+
+// TestLowerNbodyDistanceKernel pins a focused fragment of the n_body
+// inner loop: compute the gravitational softening factor `1 / (d2 *
+// sqrt(d2))` for a known 3-4-5 right triangle (d2 = 25, sqrt(25) = 5,
+// 1/(25*5) = 1/125 = 0.008). Scaled by 1e9 and cast to int, the
+// result is 8000000. This exercises the OpSqrtF64 op inside the same
+// expression shape n_body uses to compute its softened distance.
+func TestLowerNbodyDistanceKernel(t *testing.T) {
+	src := `import python "math" as math
+extern fun math.sqrt(x: float): float
+
+let dx = 3.0
+let dy = 4.0
+let dz = 0.0
+let d2 = dx * dx + dy * dy + dz * dz
+let factor = 1.0 / (d2 * math.sqrt(d2))
+print((factor * 1.0e9) as int)
+`
+	got := runEnd2End(t, src)
+	if got != "8000000\n" {
+		t.Errorf("got %q, want %q", got, "8000000\n")
+	}
+}
+
 // TestLowerNsieve is the load-bearing Phase 4.3.2 gate: a stripped
 // nsieve(100) returning the prime count (25). It exercises range-for
 // with nested while, indexed reads/writes, len(), and the synthetic
