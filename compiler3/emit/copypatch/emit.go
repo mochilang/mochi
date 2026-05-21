@@ -196,6 +196,10 @@ func (e *Emitter) emitTerm(blk *ir.Block) error {
 		return nil
 
 	case ir.TermJump:
+		if !archSupportsBranches() {
+			return fmt.Errorf("%w: inter-block jump (host GOARCH lacks Phase 2.x terminator encodings)",
+				ErrNoStencil)
+		}
 		// E9 cd  jmp rel32
 		base := uint32(len(e.out))
 		e.out = append(e.out, 0xE9, 0, 0, 0, 0)
@@ -206,6 +210,10 @@ func (e *Emitter) emitTerm(blk *ir.Block) error {
 		return nil
 
 	case ir.TermBranch:
+		if !archSupportsBranches() {
+			return fmt.Errorf("%w: inter-block branch (host GOARCH lacks Phase 2.x terminator encodings)",
+				ErrNoStencil)
+		}
 		// test rax, rax       (48 85 C0)
 		// jne IfTrue          (0F 85 cd)
 		// jmp IfFalse         (E9 cd)
