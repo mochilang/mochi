@@ -264,6 +264,10 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 		fmt.Fprintf(w, "\t%s = %s %s %s\n", name, valueName(v.Args[0]), op, valueName(v.Args[1]))
 	case ir.OpNotBool:
 		fmt.Fprintf(w, "\t%s = !%s\n", name, valueName(v.Args[0]))
+	case ir.OpI64ToF64:
+		fmt.Fprintf(w, "\t%s = float64(%s)\n", name, valueName(v.Args[0]))
+	case ir.OpF64ToI64:
+		fmt.Fprintf(w, "\t%s = int64(%s)\n", name, valueName(v.Args[0]))
 	case ir.OpLenStr:
 		fmt.Fprintf(w, "\t%s = int64(len(%s))\n", name, valueName(v.Args[0]))
 	case ir.OpConcatStr:

@@ -213,6 +213,13 @@ const (
 	// `!` is a single operator with no fall-through so it carries its
 	// own opcode.
 	OpNotBool
+
+	// Numeric type conversions (Phase 4.3.4). OpI64ToF64 is the Mochi
+	// `x as float` cast on an i64 value (lossless on the int64 range);
+	// OpF64ToI64 is `x as int` (C99 truncation toward zero, matching the
+	// Go target's `int64(f64)` semantics).
+	OpI64ToF64
+	OpF64ToI64
 )
 
 // String renders an OpCode's short name. Used by Validate and IR
@@ -373,6 +380,10 @@ func (o OpCode) String() string {
 		return "cmp.ge.f64"
 	case OpNotBool:
 		return "not.bool"
+	case OpI64ToF64:
+		return "i64.to.f64"
+	case OpF64ToI64:
+		return "f64.to.i64"
 	}
 	return "?"
 }
