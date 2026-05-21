@@ -798,6 +798,49 @@ if duration >= 0 {
 	}
 }
 
+// TestLowerJsonI64Object pins the Phase 4.3.14 `json({...})` builtin:
+// a string-keyed map literal with i64 values lowers to OpJsonI64Object
+// and prints a single-line JSON object. This is the closing piece for
+// `bench/template/bg/mandelbrot.mochi` running through the compiler3
+// frontend without source modification.
+func TestLowerJsonI64Object(t *testing.T) {
+	src := `let duration = 42
+let total = 17
+json({
+  "duration_us": duration,
+  "output": total,
+})
+`
+	got := runEnd2End(t, src)
+	want := "{\"duration_us\":42,\"output\":17}\n"
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestLowerJsonI64ObjectFromArith pins that the JSON values may be
+// arbitrary i64 expressions (not just identifiers): the map values are
+// SSA placeholders fed through OpJsonI64Object.Args, so `(now()-now())`
+// + arithmetic + cast composition all reach the printer.
+func TestLowerJsonI64ObjectFromArith(t *testing.T) {
+	src := `var sum = 0
+var i = 0
+while i < 10 {
+  sum = sum + i
+  i = i + 1
+}
+json({
+  "duration_us": sum * 2,
+  "output": sum,
+})
+`
+	got := runEnd2End(t, src)
+	want := "{\"duration_us\":90,\"output\":45}\n"
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestLowerMathPiConst pins the Phase 4.3.9 `math.pi` constant read:
 // `extern let math.pi: float` is accepted as a no-op binding; the
 // selector read lowers to OpConst of TypeF64 with the math.Pi value.

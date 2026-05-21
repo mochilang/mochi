@@ -225,6 +225,12 @@ func opContract(o OpCode) opSig {
 		return opSig{TypeF64Arr, [3]Type{TypeF64Arr, TypeF64Arr}}
 	case OpNow:
 		return opSig{TypeI64, [3]Type{}}
+	case OpJsonI64Object:
+		// Variadic in Args (N i64 values, N >= 1); per-arg shape is
+		// enforced by the frontend at lower time. opContract returns
+		// only the result Type; checkOperandTypes skips inTypes when
+		// they are TypeInvalid.
+		return opSig{TypeUnit, [3]Type{}}
 	}
 	// OpParam, OpConst, OpPhi, OpCall, OpTailCall: the validator
 	// can't pre-compute their signature without more context, so we

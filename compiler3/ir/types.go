@@ -243,6 +243,19 @@ const (
 	// which wraps POSIX `gettimeofday` to produce the same microsecond
 	// granularity. The op takes no SSA args.
 	OpNow
+
+	// Bench-harness JSON sink (Phase 4.3.14). OpJsonI64Object is the
+	// statement-level form `json({"k1": v1, ..., "kN": vN})` where every
+	// key is a string literal and every value is an i64 expression. It
+	// prints a single-line JSON object plus newline. Args carries the
+	// N value SSA IDs in declared order; Const indexes into
+	// fn.JsonObjects for the matching key list. Result is TypeUnit.
+	// Go emit: `fmt.Printf("{\"k1\":%d,...}\n", v1, ...)`. C emit:
+	// `printf("{\"k1\":%lld,...}\n", v1, ...);`. The whole-object form
+	// (not per-key) keeps the emit a single I/O call so the bench
+	// harness reads one atomic line per program run, matching the
+	// `bench/template/bg/*.mochi` fixture contract.
+	OpJsonI64Object
 )
 
 // String renders an OpCode's short name. Used by Validate and IR
@@ -353,6 +366,8 @@ func (o OpCode) String() string {
 		return "f64arr.concat"
 	case OpNow:
 		return "now"
+	case OpJsonI64Object:
+		return "json.i64.object"
 	case OpCall:
 		return "call"
 	case OpTailCall:
@@ -457,6 +472,15 @@ type GoBinding struct {
 	IsValue bool
 }
 
+// JsonObject names the key list for one OpJsonI64Object call site.
+// Keys is the declared-order list of JSON object keys; the matching
+// OpJsonI64Object Value carries the values via Args (one i64 SSA ID
+// per key). The frontend constructs one JsonObject per `json({...})`
+// expression-statement and indexes it from OpJsonI64Object.Const.
+type JsonObject struct {
+	Keys []string
+}
+
 // Value is one SSA-form IR node. Type is mandatory; the type checker
 // proves it before compiler3 sees the value. Const carries:
 //   - the literal payload for OpConst (sign-extended i64, bit-cast
@@ -531,8 +555,9 @@ type Function struct {
 	Result     Type
 	Blocks     []Block
 	Values     []Value
-	GoBindings []GoBinding
-	SourceFile string
+	GoBindings  []GoBinding
+	JsonObjects []JsonObject
+	SourceFile  string
 
 	// RefModes records the MEP-41 §6.9 reference-mode tag for the
 	// Values whose Mochi-surface binding carried one. Nil for any

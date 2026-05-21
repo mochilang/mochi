@@ -348,6 +348,28 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = mochi_f64_array_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpNow:
 		fmt.Fprintf(w, "    %s = mochi_now_us();\n", name)
+	case ir.OpJsonI64Object:
+		if int(v.Const) < 0 || int(v.Const) >= len(fn.JsonObjects) {
+			return fmt.Errorf("OpJsonI64Object v%d: Const %d out of range (have %d JsonObjects)",
+				v.ID, v.Const, len(fn.JsonObjects))
+		}
+		obj := fn.JsonObjects[v.Const]
+		if len(obj.Keys) != len(v.Args) {
+			return fmt.Errorf("OpJsonI64Object v%d: %d keys but %d args",
+				v.ID, len(obj.Keys), len(v.Args))
+		}
+		w.WriteString(`    printf("{`)
+		for i, k := range obj.Keys {
+			if i > 0 {
+				w.WriteString(",")
+			}
+			fmt.Fprintf(w, `\"%s\":%%lld`, k)
+		}
+		w.WriteString(`}\n"`)
+		for _, aid := range v.Args {
+			fmt.Fprintf(w, ", (long long)%s", valueName(aid))
+		}
+		w.WriteString(");\n")
 	case ir.OpCall, ir.OpTailCall:
 		// Intra-program call. v.Const indexes into Program.Funcs;
 		// args are SSA values in declared order. The emitter writes

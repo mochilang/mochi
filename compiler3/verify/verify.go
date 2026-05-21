@@ -159,7 +159,8 @@ func kindOf(o ir.OpCode) ProducerKind {
 		ir.OpNotBool,
 		ir.OpI64ToF64, ir.OpF64ToI64,
 		ir.OpSqrtF64,
-		ir.OpNow:
+		ir.OpNow,
+		ir.OpJsonI64Object:
 		return KindOperator
 
 	case ir.OpLenStr:
@@ -217,7 +218,7 @@ func init() {
 // the last OpCode known to ir/types.go at this MEP-41 Phase 1 commit;
 // adding a new op past it bumps this constant in the same PR.
 func mustClassifyAll() {
-	const lastOpCode = ir.OpNow
+	const lastOpCode = ir.OpJsonI64Object
 	for o := ir.OpInvalid + 1; o <= lastOpCode; o++ {
 		if kindOf(o) == KindInvalid {
 			panic(fmt.Sprintf("verify: OpCode %s (=%d) is unclassified; extend kindOf in compiler3/verify/verify.go (MEP-41 §6.2 rule class C / coverage backstop)", o, o))
@@ -423,6 +424,8 @@ func contractResult(o ir.OpCode) ir.Type {
 		return ir.TypeF64Arr
 	case ir.OpNow:
 		return ir.TypeI64
+	case ir.OpJsonI64Object:
+		return ir.TypeUnit
 	}
 	return ir.TypeInvalid
 }
