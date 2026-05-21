@@ -135,6 +135,63 @@ func FixtureSumLoop() *Function {
 	return fn
 }
 
+// FixtureIsEven builds a helper predicate: returns 1 (true) when its
+// i64 argument is even and 0 otherwise. The query fixtures consume
+// this via an OpFnRef. The function returns TypeBool so it matches
+// the runtime/mochi/query.Filter predicate signature.
+func FixtureIsEven() *Function {
+	fn := &Function{Name: "is_even", Result: TypeBool}
+	nID := fn.AddValue(Value{Type: TypeI64, Op: OpParam})
+	fn.Params = []uint32{nID}
+	entryID := fn.AddBlock()
+	mod := fn.AddValue(Value{Type: TypeI64, Op: OpModI64Imm, Args: []uint32{nID}, Const: 2})
+	cond := fn.AddValue(Value{Type: TypeBool, Op: OpCmpEqI64Imm, Args: []uint32{mod}, Const: 0})
+	entry := fn.Block(entryID)
+	entry.Values = []uint32{mod, cond}
+	entry.Term = Terminator{Kind: TermReturn, Value: cond}
+	return fn
+}
+
+// FixtureDouble builds a helper: n -> n * 2.
+func FixtureDouble() *Function {
+	fn := &Function{Name: "double", Result: TypeI64}
+	nID := fn.AddValue(Value{Type: TypeI64, Op: OpParam})
+	fn.Params = []uint32{nID}
+	entryID := fn.AddBlock()
+	out := fn.AddValue(Value{Type: TypeI64, Op: OpMulI64Imm, Args: []uint32{nID}, Const: 2})
+	entry := fn.Block(entryID)
+	entry.Values = []uint32{out}
+	entry.Term = Terminator{Kind: TermReturn, Value: out}
+	return fn
+}
+
+// FixtureIdent is the identity function on i64. Used as a key fn for
+// SortBy / GroupBy in tests where the element itself is the key.
+func FixtureIdent() *Function {
+	fn := &Function{Name: "ident", Result: TypeI64}
+	nID := fn.AddValue(Value{Type: TypeI64, Op: OpParam})
+	fn.Params = []uint32{nID}
+	entryID := fn.AddBlock()
+	entry := fn.Block(entryID)
+	entry.Term = Terminator{Kind: TermReturn, Value: nID}
+	return fn
+}
+
+// FixtureAddPair is a two-arg helper: (l, r) -> l + r. Used as the
+// combine function for joins so the join output is a simple i64 list.
+func FixtureAddPair() *Function {
+	fn := &Function{Name: "add_pair", Result: TypeI64}
+	lID := fn.AddValue(Value{Type: TypeI64, Op: OpParam})
+	rID := fn.AddValue(Value{Type: TypeI64, Op: OpParam})
+	fn.Params = []uint32{lID, rID}
+	entryID := fn.AddBlock()
+	out := fn.AddValue(Value{Type: TypeI64, Op: OpAddI64, Args: []uint32{lID, rID}})
+	entry := fn.Block(entryID)
+	entry.Values = []uint32{out}
+	entry.Term = Terminator{Kind: TermReturn, Value: out}
+	return fn
+}
+
 // FixtureFactRec builds the SSA IR for the recursive factorial
 // kernel. Source:
 //

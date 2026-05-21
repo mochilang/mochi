@@ -98,10 +98,19 @@ func emitFunc(w *bytes.Buffer, fn *ir.Function, all []*ir.Function, imports map[
 		if v.Op == ir.OpParam {
 			continue
 		}
-		if goType(v.Type) == "" {
+		if v.Op == ir.OpFnRef {
+			// OpFnRef is not materialised as a Go local; consumers
+			// inline the referenced function's name via fnName.
 			continue
 		}
-		fmt.Fprintf(w, "\tvar %s %s\n", valueName(v.ID), goType(v.Type))
+		gt := goTypeForValue(v)
+		if gt == "" {
+			continue
+		}
+		if v.Op == ir.OpQueryGroupBy {
+			imports["mochi/runtime/mochi/query"] = true
+		}
+		fmt.Fprintf(w, "\tvar %s %s\n", valueName(v.ID), gt)
 		// Suppress "declared but not used" for values that only feed
 		// terminators we don't reference (rare but possible after opt
 		// passes drop dead values).
@@ -223,6 +232,58 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 			w.WriteString(valueName(aid))
 		}
 		w.WriteString(")\n")
+	case ir.OpFnRef:
+		// No Go-side expression; the consumer query op inlines the
+		// referenced function name via fnName(fn, all, v.Args[i]).
+		return nil
+	case ir.OpQueryFilter:
+		imports["mochi/runtime/mochi/query"] = true
+		fmt.Fprintf(w, "\t%s = query.Filter[int64](%s, %s)\n",
+			name, valueName(v.Args[0]), fnName(fn, all, v.Args[1]))
+	case ir.OpQueryMap:
+		imports["mochi/runtime/mochi/query"] = true
+		fmt.Fprintf(w, "\t%s = query.Map[int64, int64](%s, %s)\n",
+			name, valueName(v.Args[0]), fnName(fn, all, v.Args[1]))
+	case ir.OpQuerySortBy:
+		imports["mochi/runtime/mochi/query"] = true
+		fmt.Fprintf(w, "\t%s = query.SortBy[int64, int64](%s, %s)\n",
+			name, valueName(v.Args[0]), fnName(fn, all, v.Args[1]))
+	case ir.OpQuerySortByDesc:
+		imports["mochi/runtime/mochi/query"] = true
+		fmt.Fprintf(w, "\t%s = query.SortByDesc[int64, int64](%s, %s)\n",
+			name, valueName(v.Args[0]), fnName(fn, all, v.Args[1]))
+	case ir.OpQueryLimit:
+		imports["mochi/runtime/mochi/query"] = true
+		fmt.Fprintf(w, "\t%s = query.Limit[int64](%s, int(%s))\n",
+			name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpQueryDistinct:
+		imports["mochi/runtime/mochi/query"] = true
+		fmt.Fprintf(w, "\t%s = query.Distinct[int64](%s)\n",
+			name, valueName(v.Args[0]))
+	case ir.OpQueryGroupBy:
+		imports["mochi/runtime/mochi/query"] = true
+		fmt.Fprintf(w, "\t%s = query.GroupBy[int64, int64](%s, %s)\n",
+			name, valueName(v.Args[0]), fnName(fn, all, v.Args[1]))
+	case ir.OpQueryJoin:
+		imports["mochi/runtime/mochi/query"] = true
+		fmt.Fprintf(w, "\t%s = query.Join[int64, int64, int64, int64](%s, %s, %s, %s, %s)\n",
+			name, valueName(v.Args[0]), valueName(v.Args[1]),
+			fnName(fn, all, v.Args[2]), fnName(fn, all, v.Args[3]), fnName(fn, all, v.Args[4]))
+	case ir.OpQueryLeftJoin:
+		imports["mochi/runtime/mochi/query"] = true
+		fmt.Fprintf(w, "\t%s = query.LeftJoin[int64, int64, int64, int64](%s, %s, %s, %s, %s)\n",
+			name, valueName(v.Args[0]), valueName(v.Args[1]),
+			fnName(fn, all, v.Args[2]), fnName(fn, all, v.Args[3]), fnName(fn, all, v.Args[4]))
+	case ir.OpQueryOuterJoin:
+		imports["mochi/runtime/mochi/query"] = true
+		fmt.Fprintf(w, "\t%s = query.OuterJoin[int64, int64, int64, int64](%s, %s, %s, %s, %s)\n",
+			name, valueName(v.Args[0]), valueName(v.Args[1]),
+			fnName(fn, all, v.Args[2]), fnName(fn, all, v.Args[3]), fnName(fn, all, v.Args[4]))
+	case ir.OpQueryCrossJoin:
+		imports["mochi/runtime/mochi/query"] = true
+		fmt.Fprintf(w, "\t%s = query.CrossJoin[int64, int64, int64](%s, %s, %s)\n",
+			name, valueName(v.Args[0]), valueName(v.Args[1]),
+			fnName(fn, all, v.Args[2]))
 	case ir.OpPhi:
 		// Declared in prelude; no body emit.
 		return nil
@@ -278,6 +339,35 @@ func emitTerminator(w *bytes.Buffer, fn *ir.Function, blk *ir.Block, all []*ir.F
 }
 
 func valueName(id uint32) string { return fmt.Sprintf("v%d", id) }
+
+// fnName returns the Go function name referenced by an OpFnRef value.
+// The argument is the SSA value ID of an OpFnRef; the helper looks
+// through the value table, asserts the op, and indexes the program's
+// function table by the embedded Const. Used by query op emission to
+// inline closure references as Go function values.
+func fnName(fn *ir.Function, all []*ir.Function, vid uint32) string {
+	v := fn.Values[vid]
+	if v.Op != ir.OpFnRef {
+		return fmt.Sprintf("/* not an OpFnRef: v%d */", vid)
+	}
+	if int(v.Const) >= len(all) {
+		return fmt.Sprintf("/* fnref out of range: %d */", v.Const)
+	}
+	return all[v.Const].Name
+}
+
+// goTypeForValue returns the Go type for an SSA value's variable
+// declaration. For most ops this is just goType(v.Type), but a few
+// ops (notably OpQueryGroupBy) produce values whose static Go type
+// can't be derived from ir.Type alone.
+func goTypeForValue(v ir.Value) string {
+	if v.Op == ir.OpQueryGroupBy {
+		// runtime/mochi/query.GroupBy returns []Group[K, T]; for the
+		// i64-everywhere Phase 5 subset that's []query.Group[int64, int64].
+		return "[]query.Group[int64, int64]"
+	}
+	return goType(v.Type)
+}
 
 func goType(t ir.Type) string {
 	switch t {
