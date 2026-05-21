@@ -118,7 +118,7 @@ The pledge is not the only relevant framework. Downstream organizations citing t
 |-------|--------|--------|----------|
 | Phase 0 | Week 1 | LANDED 2026-05-21 (GMT+7) | This skeleton + `docs/security/threat-model.md` |
 | Phase 1 | Weeks 2-4 | LANDED 2026-05-21 (GMT+7) | `compiler3/verify/` rule classes A-D + fuzz harness |
-| Phase 2 | Weeks 5-6 | Pending | Rule class C (gen opacity) + opcode audit |
+| Phase 2 | Weeks 5-6 | LANDED 2026-05-21 (GMT+7) | Gen opacity audit + AST-test backstop (`docs/security/gen-opacity-audit.md`) |
 | Phase 3 | Weeks 7-10 | Pending | Quarantine, guard slabs, sealed handles |
 | Phase 4 | Weeks 11-14 | Pending | Reference modes (consume/borrow/inout/weak) |
 | Phase 5 | Weeks 15-18 | Pending | vm3jit hardening (W^X, PAC, BTI, CET, masking) |
