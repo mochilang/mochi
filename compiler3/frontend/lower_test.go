@@ -429,6 +429,37 @@ print(int(eval_a(0, 0) * 1.0e9))
 	}
 }
 
+// TestLowerMathPiConst pins the Phase 4.3.9 `math.pi` constant read:
+// `extern let math.pi: float` is accepted as a no-op binding; the
+// selector read lowers to OpConst of TypeF64 with the math.Pi value.
+// 4*pi*pi truncated to int gives 39 (= 4 * 3.14159^2 = 39.478).
+func TestLowerMathPiConst(t *testing.T) {
+	src := `import python "math" as math
+extern let math.pi: float
+
+let solar_mass = 4.0 * math.pi * math.pi
+print(int(solar_mass))
+`
+	got := runEnd2End(t, src)
+	if got != "39\n" {
+		t.Errorf("got %q, want %q", got, "39\n")
+	}
+}
+
+// TestLowerMathEConst pins the secondary `math.e` constant: e^2
+// truncated to int gives 7 (= 2.71828^2 = 7.389).
+func TestLowerMathEConst(t *testing.T) {
+	src := `import python "math" as math
+extern let math.e: float
+
+print(int(math.e * math.e))
+`
+	got := runEnd2End(t, src)
+	if got != "7\n" {
+		t.Errorf("got %q, want %q", got, "7\n")
+	}
+}
+
 // TestLowerListInferFloatElem pins the Phase 4.3.8 element-type
 // inference: `var xs = [1.0, 2.0, 3.0]` (no type annotation) lowers
 // to OpNewF64Array, not the default OpNewList, because the first

@@ -540,6 +540,20 @@ print(int(eval_a(0, 0) * 1.0e9))
 	}
 }
 
+// TestBuildSourceMathPiConst pins the Phase 4.3.9 math.pi constant
+// read on the C target: 4*pi*pi truncated = 39.
+func TestBuildSourceMathPiConst(t *testing.T) {
+	src := `import python "math" as math
+extern let math.pi: float
+
+let solar_mass = 4.0 * math.pi * math.pi
+print(int(solar_mass))
+`
+	if got, want := runMochiBuild(t, src), "39\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceListInferFloatElem pins the Phase 4.3.8 element-type
 // inference on the C target: a float-element literal without a type
 // annotation lowers via mochi_f64_array, not mochi_list_i64.
