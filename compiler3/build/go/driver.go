@@ -22,6 +22,8 @@ import (
 	"sort"
 
 	gogen "mochi/compiler3/emit/go"
+	"mochi/compiler3/frontend"
+	"mochi/parser"
 )
 
 // Mode controls the shape of the emitter's output. ModeExecutable emits
@@ -164,4 +166,24 @@ func Cleanup(r Result, opts Options) error {
 		_ = os.Remove(f)
 	}
 	return os.Remove(opts.OutDir)
+}
+
+// BuildSource is the single-call frontend-plus-emitter pipeline used by
+// the `mochi build --target=go` CLI subcommand and the A/B harness.
+// It parses srcPath as Mochi, lowers it via compiler3/frontend, then
+// hands the resulting Program to Build with opts.
+//
+// Errors are returned verbatim so a callsite can distinguish parse
+// failures (parser package errors) from frontend MVP-unsupported
+// surfaces (frontend package errors) from emit / write errors.
+func BuildSource(srcPath string, opts Options) (Result, error) {
+	prog, err := parser.Parse(srcPath)
+	if err != nil {
+		return Result{}, fmt.Errorf("gobuild.BuildSource: parse %s: %w", srcPath, err)
+	}
+	p, err := frontend.Lower(prog)
+	if err != nil {
+		return Result{}, fmt.Errorf("gobuild.BuildSource: lower %s: %w", srcPath, err)
+	}
+	return Build(p, opts)
 }

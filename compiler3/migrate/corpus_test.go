@@ -7,13 +7,15 @@ import (
 	"testing"
 )
 
-// writeFixture writes a paired .mochi + .mochi.out to dir.
+// writeFixture writes a paired .mochi + .out to dir. The .out file is
+// the stdout golden the A/B harness compares against; the legacy
+// transpiler's IR-format `.mochi.out` is a different artifact.
 func writeFixture(t *testing.T, dir, name, out string) {
 	t.Helper()
 	if err := os.WriteFile(filepath.Join(dir, name+".mochi"), []byte("print(0)\n"), 0o644); err != nil {
 		t.Fatalf("write mochi: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(dir, name+".mochi.out"), []byte(out), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, name+".out"), []byte(out), 0o644); err != nil {
 		t.Fatalf("write golden: %v", err)
 	}
 }

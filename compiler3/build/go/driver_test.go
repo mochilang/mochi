@@ -2,6 +2,7 @@ package gobuild
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -137,5 +138,33 @@ func TestBuildRejectsMissingOutDir(t *testing.T) {
 	_, err := Build(p, Options{Mode: ModeExecutable})
 	if err == nil {
 		t.Fatal("Build without OutDir should fail")
+	}
+}
+
+// TestBuildSourceEndToEnd asserts the parse+lower+emit pipeline writes
+// a gen.go that `go run` can execute and produces the expected stdout.
+// This is the Phase 6 close-out: BuildSource is the single entry point
+// the `mochi build --target=go` shell will call.
+func TestBuildSourceEndToEnd(t *testing.T) {
+	srcDir := t.TempDir()
+	src := "let a = 10\nlet b: int = 20\nprint(a + b)\n"
+	srcPath := filepath.Join(srcDir, "demo.mochi")
+	if err := os.WriteFile(srcPath, []byte(src), 0o644); err != nil {
+		t.Fatalf("write source: %v", err)
+	}
+	outDir := t.TempDir()
+	r, err := BuildSource(srcPath, Options{Mode: ModeExecutable, OutDir: outDir})
+	if err != nil {
+		t.Fatalf("BuildSource: %v", err)
+	}
+	if r.EntryPoint == "" {
+		t.Fatalf("expected EntryPoint, got %+v", r)
+	}
+	out, err := exec.Command("go", "run", r.EntryPoint).CombinedOutput()
+	if err != nil {
+		t.Fatalf("go run gen.go: %v\n%s", err, out)
+	}
+	if string(out) != "30\n" {
+		t.Errorf("got %q, want %q", out, "30\n")
 	}
 }
