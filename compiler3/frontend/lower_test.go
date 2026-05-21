@@ -195,3 +195,77 @@ print(xs[2])
 		t.Errorf("got %q, want %q", got, "30\n")
 	}
 }
+
+// TestLowerForRangeSum pins the Phase 4.3.2 range-for surface: a
+// `for i in 1..(n+1)` loop with a mutable accumulator must lower to
+// the same phi-at-header CFG shape as while, with the loop variable
+// participating as one of the snapshotted bindings. Sum 1..10 = 55.
+func TestLowerForRangeSum(t *testing.T) {
+	src := `fun sumRange(n: int): int {
+  var s = 0
+  for i in 1..(n + 1) {
+    s = s + i
+  }
+  return s
+}
+print(sumRange(10))
+`
+	got := runEnd2End(t, src)
+	if got != "55\n" {
+		t.Errorf("got %q, want %q", got, "55\n")
+	}
+}
+
+// TestLowerForRangeUnderscore exercises the `_` loop variable: the
+// body does not reference the index, but the loop still iterates the
+// right number of times. After 5 iterations, len(xs) is 5.
+func TestLowerForRangeUnderscore(t *testing.T) {
+	src := `fun fillFive(): int {
+  var xs: list<int> = []
+  for _ in 0..5 {
+    xs = append(xs, 0)
+  }
+  return len(xs)
+}
+print(fillFive())
+`
+	got := runEnd2End(t, src)
+	if got != "5\n" {
+		t.Errorf("got %q, want %q", got, "5\n")
+	}
+}
+
+// TestLowerNsieve is the load-bearing Phase 4.3.2 gate: a stripped
+// nsieve(100) returning the prime count (25). It exercises range-for
+// with nested while, indexed reads/writes, len(), and the synthetic
+// loop-variable increment all in one program. This is the program the
+// benchmark games' nsieve fixture reduces to once the list element-
+// type widening is removed.
+func TestLowerNsieve(t *testing.T) {
+	src := `fun nsieve(m: int): int {
+  var flags: list<int> = []
+  var i = 0
+  while i < m {
+    flags = append(flags, 1)
+    i = i + 1
+  }
+  var count = 0
+  for k in 2..m {
+    if flags[k] == 1 {
+      count = count + 1
+      var j = k + k
+      while j < m {
+        flags[j] = 0
+        j = j + k
+      }
+    }
+  }
+  return count
+}
+print(nsieve(100))
+`
+	got := runEnd2End(t, src)
+	if got != "25\n" {
+		t.Errorf("got %q, want %q", got, "25\n")
+	}
+}
