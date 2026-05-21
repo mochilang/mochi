@@ -36,12 +36,26 @@ func Lower(prog *parser.Program) (*gogen.Program, error) {
 
 	// First pass: collect user fun declarations so call lookups can
 	// resolve before the fun body is lowered (allows mutual recursion
-	// and forward references).
+	// and forward references). The result type is resolved here, not
+	// inside lowerFun, so a call from one fun into another can read
+	// the callee's Result regardless of the (non-deterministic) order
+	// in which bodies are lowered. Without this pre-pass, Go's random
+	// map iteration order would cause flaky lowering errors of the
+	// shape "binop X across types invalid and Y" whenever a caller
+	// happened to be lowered before its callee.
 	userFns := map[string]funEntry{}
 	for _, st := range prog.Statements {
 		if st.Fun != nil {
 			idx := uint32(len(p.Funcs))
 			fn := &ir.Function{Name: st.Fun.Name}
+			fn.Result = ir.TypeI64
+			if st.Fun.Return != nil {
+				t, err := lowerType(st.Fun.Return)
+				if err != nil {
+					return nil, fmt.Errorf("lower fun %s result: %w", st.Fun.Name, err)
+				}
+				fn.Result = t
+			}
 			p.Funcs = append(p.Funcs, fn)
 			userFns[st.Fun.Name] = funEntry{index: idx, stmt: st.Fun}
 		}
@@ -185,17 +199,9 @@ func newBuilder(fn *ir.Function, userFns map[string]funEntry, prog *gogen.Progra
 
 func lowerFun(p *gogen.Program, idx uint32, fs *parser.FunStmt, userFns map[string]funEntry, goImports map[string]*goImport) error {
 	fn := p.Funcs[idx]
-	// Single result type. MVP supports i64 returns only; the absence
-	// of a return type annotation is treated as i64 to keep the most
-	// common fixture shape working without forcing the user to annotate.
-	fn.Result = ir.TypeI64
-	if fs.Return != nil {
-		t, err := lowerType(fs.Return)
-		if err != nil {
-			return err
-		}
-		fn.Result = t
-	}
+	// fn.Result is pre-populated by Lower's first pass so cross-fun
+	// calls can resolve their value type regardless of map iteration
+	// order. lowerFun only fills in Params and Blocks.
 	b := newBuilder(fn, userFns, p, goImports)
 	// Params: every param is an OpParam value of the declared type.
 	for _, param := range fs.Params {
@@ -260,6 +266,23 @@ func lowerType(t *parser.TypeRef) (ir.Type, error) {
 			return ir.TypeInvalid, fmt.Errorf("frontend: list<%s> unsupported in MVP (only list<int> and list<float>)", el)
 		}
 		return ir.TypeInvalid, fmt.Errorf("frontend: generic %s<...> unsupported in MVP", t.Generic.Name)
+	}
+	// `[T]` is syntactic sugar for `list<T>` (MEP-42 Phase 4.3.11).
+	// spectral_norm-style fun signatures (`mul_av(src: [float], dst:
+	// [float], n: int)`) use this surface; it dispatches to the same
+	// TypeList / TypeF64Arr lowering as the generic form.
+	if t.ListElem != nil {
+		el, err := lowerType(t.ListElem)
+		if err != nil {
+			return ir.TypeInvalid, fmt.Errorf("frontend: bracketed list element: %w", err)
+		}
+		switch el {
+		case ir.TypeI64:
+			return ir.TypeList, nil
+		case ir.TypeF64:
+			return ir.TypeF64Arr, nil
+		}
+		return ir.TypeInvalid, fmt.Errorf("frontend: [%s] unsupported in MVP (only [int] and [float])", el)
 	}
 	if t.Simple == nil {
 		return ir.TypeInvalid, fmt.Errorf("frontend: only simple and list<...> type names are supported in the MVP")

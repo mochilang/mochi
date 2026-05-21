@@ -151,11 +151,12 @@ type TypeField struct {
 // --- Type System ---
 
 type TypeRef struct {
-	Pos     lexer.Position    `json:"pos,omitempty" parser:""`
-	Fun     *FunType          `json:"fun,omitempty" parser:"( @@"`
-	Generic *GenericType      `json:"generic,omitempty" parser:"| @@"`
-	Struct  *InlineStructType `json:"struct,omitempty" parser:"| @@"`
-	Simple  *string           `json:"simple,omitempty" parser:"| @Ident )"`
+	Pos      lexer.Position    `json:"pos,omitempty" parser:""`
+	Fun      *FunType          `json:"fun,omitempty" parser:"( @@"`
+	Generic  *GenericType      `json:"generic,omitempty" parser:"| @@"`
+	Struct   *InlineStructType `json:"struct,omitempty" parser:"| @@"`
+	ListElem *TypeRef          `json:"list_elem,omitempty" parser:"| '[' @@ ']'"`
+	Simple   *string           `json:"simple,omitempty" parser:"| @Ident )"`
 	// MEP-10 C1: a trailing `?` denotes an optional (nullable) type.
 	// `int?` desugars to `option[int]` in resolveTypeRef.
 	Optional bool `json:"optional,omitempty" parser:"[ @'?' ]"`

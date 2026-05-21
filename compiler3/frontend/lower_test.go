@@ -15,7 +15,7 @@ import (
 // to a temp dir, and runs `go run`. Returns the program's stdout.
 func runEnd2End(t *testing.T, src string) string {
 	t.Helper()
-	prog, err := parser.Parser.ParseString("test.mochi", src)
+	prog, err := parser.ParseString(src)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
@@ -527,6 +527,121 @@ print(int(energy * 1e9))
 	got := runEnd2End(t, src)
 	if got != "-169073021\n" {
 		t.Errorf("got %q, want %q", got, "-169073021\n")
+	}
+}
+
+// TestLowerBracketListTypeFloat pins the Phase 4.3.11 bracketed
+// list-type syntax through the Go target: `[float]` in a fun
+// parameter is accepted as syntactic sugar for `list<float>` and
+// lowers to the same TypeF64Arr backing.
+func TestLowerBracketListTypeFloat(t *testing.T) {
+	src := `fun fill(xs: [float], n: int) {
+  for i in 0..n {
+    xs[i] = 2.0
+  }
+}
+
+var u: list<float> = []
+for _ in 0..3 {
+  u = append(u, 0.0)
+}
+fill(u, 3)
+print(int(u[0] + u[1] + u[2]))
+`
+	got := runEnd2End(t, src)
+	if got != "6\n" {
+		t.Errorf("got %q, want %q", got, "6\n")
+	}
+}
+
+// TestLowerBracketListTypeInt mirrors the bracketed surface for the
+// i64 backing: `[int]` lowers to TypeList.
+func TestLowerBracketListTypeInt(t *testing.T) {
+	src := `fun setall(xs: [int], n: int, v: int) {
+  for i in 0..n {
+    xs[i] = v
+  }
+}
+
+var u: list<int> = []
+for _ in 0..4 {
+  u = append(u, 0)
+}
+setall(u, 4, 7)
+print(u[0] + u[1] + u[2] + u[3])
+`
+	got := runEnd2End(t, src)
+	if got != "28\n" {
+		t.Errorf("got %q, want %q", got, "28\n")
+	}
+}
+
+// TestLowerSpectralFullKernel pins the Phase 4.3.11 milestone: the
+// full benchmark-games spectral_norm kernel (N=10, 5 outer power-
+// method iterations, eval_a Hilbert-like matrix entry, mul_av and
+// mul_atv helper funs taking `[float]` parameters, final
+// `int(sqrt(uv/vv) * 1e9) = 1271844019`) now lowers through
+// compiler3 and emits valid Go. The C-target mirror is
+// `TestBuildSourceSpectralFullKernel`.
+func TestLowerSpectralFullKernel(t *testing.T) {
+	src := `import python "math" as math
+extern fun math.sqrt(x: float): float
+
+let N = 10
+
+fun eval_a(i: int, j: int): float {
+  let s = i + j
+  return 1.0 / float(s * (s + 1) / 2 + i + 1)
+}
+
+fun mul_av(src: [float], dst: [float], n: int) {
+  for i in 0..n {
+    var s = 0.0
+    for j in 0..n {
+      s = s + eval_a(i, j) * src[j]
+    }
+    dst[i] = s
+  }
+}
+
+fun mul_atv(src: [float], dst: [float], n: int) {
+  for i in 0..n {
+    var s = 0.0
+    for j in 0..n {
+      s = s + eval_a(j, i) * src[j]
+    }
+    dst[i] = s
+  }
+}
+
+var u: list<float> = []
+var v: list<float> = []
+var tmp: list<float> = []
+for _ in 0..N {
+  u = append(u, 1.0)
+  v = append(v, 0.0)
+  tmp = append(tmp, 0.0)
+}
+
+for _ in 0..5 {
+  mul_av(u, tmp, N)
+  mul_atv(tmp, v, N)
+  mul_av(v, tmp, N)
+  mul_atv(tmp, u, N)
+}
+
+var uv = 0.0
+var vv = 0.0
+for i in 0..N {
+  uv = uv + u[i] * v[i]
+  vv = vv + v[i] * v[i]
+}
+
+print(int(math.sqrt(uv / vv) * 1e9))
+`
+	got := runEnd2End(t, src)
+	if got != "1271844019\n" {
+		t.Errorf("got %q, want %q", got, "1271844019\n")
 	}
 }
 
