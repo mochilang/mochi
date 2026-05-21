@@ -4,6 +4,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -1054,6 +1056,127 @@ print(fib(10))
 `
 	if got, want := runMochiBuild(t, src), "55\n"; got != want {
 		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// readBenchFixture loads bench/template/bg/<name>/<name>.mochi from
+// the repo on disk, substitutes the harness {{ .N }} placeholder with
+// the given concrete n, and returns the rendered source. Tests that
+// pin native bench-games fixtures use this helper so a regression in
+// the on-disk fixture (e.g., a stray edit to the kernel) is caught
+// next time the suite runs.
+func readBenchFixture(t *testing.T, name string, n int) string {
+	t.Helper()
+	_, here, _, _ := runtime.Caller(0)
+	root := filepath.Join(filepath.Dir(here), "..", "..", "..")
+	path := filepath.Join(root, "bench", "template", "bg", name, name+".mochi")
+	b, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read %s: %v", path, err)
+	}
+	return strings.ReplaceAll(string(b), "{{ .N }}", strconv.Itoa(n))
+}
+
+// TestBuildSourceMandelbrotBgFixture pins the Phase 4.3.15 milestone:
+// the unmodified bench/template/bg/mandelbrot fixture (with N=16)
+// compiles through compiler3 to a native binary via
+// `mochi build --target=c` and produces the JSON line
+// `{"duration_us":0,"output":4629}`. The output field byte-matches
+// `mochi run` on the same source (the duration field is wall-clock).
+func TestBuildSourceMandelbrotBgFixture(t *testing.T) {
+	src := readBenchFixture(t, "mandelbrot", 16)
+	got := runMochiBuild(t, src)
+	if want := "{\"duration_us\":0,\"output\":4629}\n"; got != want {
+		t.Errorf("mandelbrot fixture stdout = %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceNBodyBgFixture pins the unmodified
+// bench/template/bg/n_body fixture (steps=50) on the C target. The
+// output field byte-matches `mochi run` on the same source.
+func TestBuildSourceNBodyBgFixture(t *testing.T) {
+	src := readBenchFixture(t, "n_body", 50)
+	got := runMochiBuild(t, src)
+	if want := "{\"duration_us\":0,\"output\":-169063617}\n"; got != want {
+		t.Errorf("n_body fixture stdout = %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceFannkuchReduxBgFixture pins the unmodified
+// bench/template/bg/fannkuch_redux fixture (trials=100) on the C
+// target. The output field byte-matches `mochi run` on the same
+// source.
+func TestBuildSourceFannkuchReduxBgFixture(t *testing.T) {
+	src := readBenchFixture(t, "fannkuch_redux", 100)
+	got := runMochiBuild(t, src)
+	if want := "{\"duration_us\":0,\"output\":272}\n"; got != want {
+		t.Errorf("fannkuch_redux fixture stdout = %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceNsieveBgFixture pins the unmodified
+// bench/template/bg/nsieve fixture (n=100, repeat=50 inlined) on the
+// C target. The output field byte-matches `mochi run` on the same
+// source.
+func TestBuildSourceNsieveBgFixture(t *testing.T) {
+	src := readBenchFixture(t, "nsieve", 100)
+	got := runMochiBuild(t, src)
+	if want := "{\"duration_us\":0,\"output\":25}\n"; got != want {
+		t.Errorf("nsieve fixture stdout = %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceFastaBgFixture pins the unmodified
+// bench/template/bg/fasta fixture (N=10000) on the C target. The
+// fixture uses bare `print(h)` rather than `json({...})`; the output
+// is the deterministic LCG rolling-hash final value. The Mochi
+// interpreter currently rejects this source (lookup() returns int
+// but harness expects an implicit byte type), so the cross-check is
+// against the Go target which produces the identical hash.
+func TestBuildSourceFastaBgFixture(t *testing.T) {
+	src := readBenchFixture(t, "fasta", 0)
+	got := runMochiBuild(t, src)
+	if want := "1072663717\n"; got != want {
+		t.Errorf("fasta fixture stdout = %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceReverseComplementBgFixture pins the unmodified
+// bench/template/bg/reverse_complement fixture (N=4096) on the C
+// target. The output `293888` = (N/4)*287 confirms the
+// fill+reverse+complement+sum loop runs correctly.
+func TestBuildSourceReverseComplementBgFixture(t *testing.T) {
+	src := readBenchFixture(t, "reverse_complement", 0)
+	got := runMochiBuild(t, src)
+	if want := "293888\n"; got != want {
+		t.Errorf("reverse_complement fixture stdout = %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceRegexReduxBgFixture pins the unmodified
+// bench/template/bg/regex_redux fixture (N=10000) on the C target.
+// The output `69` is the deterministic count of the two 4-base
+// patterns over the LCG stream and byte-matches `mochi run` on the
+// same source.
+func TestBuildSourceRegexReduxBgFixture(t *testing.T) {
+	src := readBenchFixture(t, "regex_redux", 0)
+	got := runMochiBuild(t, src)
+	if want := "69\n"; got != want {
+		t.Errorf("regex_redux fixture stdout = %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceSpectralNormBgFixture pins the unmodified
+// bench/template/bg/spectral_norm fixture (N=100) on the C target.
+// This is the §10.7 closeout for spectral_norm at the fixture level
+// (Phase 4.3.12 pinned the same kernel inline as
+// TestBuildSourceSpectralNativeKernel; this test reads the on-disk
+// fixture verbatim so a regression in the fixture is caught too).
+func TestBuildSourceSpectralNormBgFixture(t *testing.T) {
+	src := readBenchFixture(t, "spectral_norm", 0)
+	got := runMochiBuild(t, src)
+	if want := "1274219991\n"; got != want {
+		t.Errorf("spectral_norm fixture stdout = %q, want %q", got, want)
 	}
 }
 
