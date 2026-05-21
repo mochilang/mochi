@@ -174,7 +174,7 @@ func main() {
 	outJSON := flag.String("json", "", "write per-result JSON array to this file")
 	outMD := flag.String("md", "", "write markdown summary to this file")
 	repeat := flag.Int("repeat", 1, "run each (program,n,lang) tuple this many times and report median (Benchmarks Game-style)")
-	langs := flag.String("langs", "vm2,py,pypy,lua,luajit,go", "comma-separated subset of languages to run")
+	langs := flag.String("langs", "vm3,vm2,py,pypy,lua,luajit,go", "comma-separated subset of languages to run")
 	progFilter := flag.String("programs", "", "optional comma-separated <cat>/<name> filter (e.g. bg/fannkuch_redux)")
 	flag.Parse()
 
@@ -219,6 +219,19 @@ func main() {
 		die("vm2runner build: %v", err)
 	}
 
+	// Pre-build vm3runner. Mirrors vm2runner but routes through
+	// compiler3 + runtime/vm3 + runtime/jit/vm3jit. Programs not in
+	// vm3runner's repeats map come back as "unknown program" errors,
+	// which the table renders as ERR; that is fine for any program
+	// that does not yet have a compiler3 corpus entry.
+	vm3Bin := filepath.Join(tmp, "vm3runner")
+	build3 := exec.Command("go", "build", "-o", vm3Bin, "./bench/vm3runner")
+	build3.Dir = repoRoot
+	build3.Stdout, build3.Stderr = os.Stdout, os.Stderr
+	if err := build3.Run(); err != nil {
+		die("vm3runner build: %v", err)
+	}
+
 	if *repeat < 1 {
 		*repeat = 1
 	}
@@ -229,6 +242,9 @@ func main() {
 			continue
 		}
 		for _, n := range p.ns {
+			if wantLang("vm3") {
+				aggs = append(aggs, measure(*repeat, func() result { return runVM3(vm3Bin, p.cat(), p.name, n) }))
+			}
 			if wantLang("vm2") {
 				aggs = append(aggs, measure(*repeat, func() result { return runVM2(vm2Bin, p.cat(), p.name, n) }))
 			}
@@ -297,6 +313,12 @@ func runVM2(bin, cat, prog string, n int) result {
 	progName := cat + "_" + prog
 	cmd := exec.Command(bin, "-program", progName, "-n", fmt.Sprintf("%d", n))
 	return runCmd(cat, prog, n, "vm2", cmd)
+}
+
+func runVM3(bin, cat, prog string, n int) result {
+	progName := cat + "_" + prog
+	cmd := exec.Command(bin, "-program", progName, "-n", fmt.Sprintf("%d", n))
+	return runCmd(cat, prog, n, "vm3", cmd)
 }
 
 // runGo compiles the Go peer once per (program,n) tuple and then runs
@@ -487,10 +509,11 @@ func renderMarkdown(aggs []aggregate) string {
 	})
 
 	var sb strings.Builder
-	sb.WriteString("| Program | N | vm2 (µs) | CPython (µs) | PyPy (µs) | Lua (µs) | LuaJIT (µs) | Go (µs) | vm2 / Go | vm2 / CPython | vm2 / PyPy | vm2 / Lua | vm2 / LuaJIT | match |\n")
-	sb.WriteString("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---:|\n")
+	sb.WriteString("| Program | N | vm3 (µs) | vm2 (µs) | CPython (µs) | PyPy (µs) | Lua (µs) | LuaJIT (µs) | Go (µs) | vm3 / Go | vm3 / CPython | vm3 / PyPy | vm3 / Lua | vm3 / LuaJIT | match |\n")
+	sb.WriteString("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:---:|\n")
 	for _, k := range orderedKeys {
 		row := groups[k]
+		vm3 := row["vm3"]
 		vm2 := row["vm2"]
 		py := row["py"]
 		pypy := row["pypy"]
@@ -512,29 +535,39 @@ func renderMarkdown(aggs []aggregate) string {
 			}
 			return fmt.Sprintf("%.2fx", num.MedianUs/den.MedianUs)
 		}
+		// Match check: we compare the JIT'd vm3 column against the
+		// language peers when vm3 was run, otherwise fall back to vm2.
+		// Mismatches are flagged with the lang label so the reader can
+		// see whose output drifted.
+		baseline := vm3
+		baselineLabel := "vm3"
+		if vm3.Err != "" || vm3.MedianUs == 0 {
+			baseline = vm2
+			baselineLabel = "vm2"
+		}
 		match := "✓"
 		out := func(a aggregate) string { return fmt.Sprintf("%v", a.Output) }
 		check := func(a aggregate) bool {
 			return a.Lang != "" && a.Err == "" && a.MedianUs > 0
 		}
-		if vm2.Err != "" {
+		if baseline.Err != "" {
 			match = "ERR"
 		} else {
-			peers := []aggregate{py, pypy, lua, luajit, goRow}
+			peers := []aggregate{vm2, py, pypy, lua, luajit, goRow}
 			for _, peer := range peers {
-				if !check(peer) {
+				if !check(peer) || peer.Lang == baselineLabel {
 					continue
 				}
-				if out(vm2) != out(peer) {
-					match = fmt.Sprintf("✗ (vm2=%v %s=%v)", vm2.Output, peer.Lang, peer.Output)
+				if out(baseline) != out(peer) {
+					match = fmt.Sprintf("✗ (%s=%v %s=%v)", baselineLabel, baseline.Output, peer.Lang, peer.Output)
 					break
 				}
 			}
 		}
-		fmt.Fprintf(&sb, "| `%s` | %d | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |\n",
+		fmt.Fprintf(&sb, "| `%s` | %d | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |\n",
 			k.prog, k.n,
-			cell(vm2), cell(py), cell(pypy), cell(lua), cell(luajit), cell(goRow),
-			ratio(vm2, goRow), ratio(vm2, py), ratio(vm2, pypy), ratio(vm2, lua), ratio(vm2, luajit),
+			cell(vm3), cell(vm2), cell(py), cell(pypy), cell(lua), cell(luajit), cell(goRow),
+			ratio(vm3, goRow), ratio(vm3, py), ratio(vm3, pypy), ratio(vm3, lua), ratio(vm3, luajit),
 			match,
 		)
 	}
