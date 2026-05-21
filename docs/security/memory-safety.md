@@ -120,7 +120,7 @@ The pledge is not the only relevant framework. Downstream organizations citing t
 | Phase 1 | LANDED 2026-05-21 17:30 (GMT+7) | `compiler3/verify/` rule classes A-D + fuzz harness |
 | Phase 2 | LANDED 2026-05-21 18:00 (GMT+7) | Gen opacity audit + AST-test backstop (`docs/security/gen-opacity-audit.md`) |
 | Phase 3 | LANDED 2026-05-21 19:30 (GMT+7) | `runtime/vm3/quarantine.go` + `sealing.go` + `docs/security/quarantine-design.md`; guard slabs (3.1) and OpSeal/OpUnseal (3.2) deferred |
-| Phase 4 | Pending | Reference modes (consume/borrow/inout/weak) |
+| Phase 4 | LANDED 2026-05-21 20:30 (GMT+7) | `compiler3/ir/refmode.go` + rule class E in `compiler3/verify/verify.go`; surface grammar (4.1), JIT elision (4.2), `gc.kill` (4.3) deferred |
 | Phase 5 | Pending | vm3jit hardening (W^X, PAC, BTI, CET, masking) |
 | Phase 6 | Pending | Audit + 24h fuzz + measured numbers in §5, §6 |
 | Phase 7 | Pending | Final wording + blog post + `SECURITY.md` |
