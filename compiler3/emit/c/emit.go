@@ -62,6 +62,7 @@ func Emit(p *Program) ([]byte, error) {
 	// gen.c.
 	usesPrint := false
 	usesListI64 := false
+	usesF64Array := false
 	for _, fn := range p.Funcs {
 		for _, v := range fn.Values {
 			switch v.Op {
@@ -79,6 +80,9 @@ func Emit(p *Program) ([]byte, error) {
 			case ir.OpNewList, ir.OpListLenI64, ir.OpListPushI64,
 				ir.OpListGetI64, ir.OpListSetI64:
 				usesListI64 = true
+			case ir.OpNewF64Array, ir.OpF64ArrayLenI64, ir.OpF64ArrayPushF64,
+				ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64:
+				usesF64Array = true
 			}
 		}
 	}
@@ -93,6 +97,9 @@ func Emit(p *Program) ([]byte, error) {
 	}
 	if usesListI64 {
 		buf.WriteString("#include \"mochi_list_i64.h\"\n")
+	}
+	if usesF64Array {
+		buf.WriteString("#include \"mochi_f64_array.h\"\n")
 	}
 	buf.WriteString("\n")
 
@@ -313,6 +320,16 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = mochi_list_i64_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpListSetI64:
 		fmt.Fprintf(w, "    mochi_list_i64_set(%s, %s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
+	case ir.OpNewF64Array:
+		fmt.Fprintf(w, "    %s = mochi_f64_array_new();\n", name)
+	case ir.OpF64ArrayLenI64:
+		fmt.Fprintf(w, "    %s = mochi_f64_array_len(%s);\n", name, valueName(v.Args[0]))
+	case ir.OpF64ArrayPushF64:
+		fmt.Fprintf(w, "    mochi_f64_array_push(%s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpF64ArrayGetF64:
+		fmt.Fprintf(w, "    %s = mochi_f64_array_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpF64ArraySetF64:
+		fmt.Fprintf(w, "    mochi_f64_array_set(%s, %s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
 	case ir.OpCall, ir.OpTailCall:
 		// Intra-program call. v.Const indexes into Program.Funcs;
 		// args are SSA values in declared order. The emitter writes
@@ -462,13 +479,17 @@ func cType(t ir.Type) string {
 	case ir.TypeBool:
 		return "int"
 	case ir.TypeList:
-		// Phase 4.3.1: list<int>. The MVP frontend only constructs
-		// TypeList values with ElemType=TypeI64, so the cgen pointer
-		// type can be fixed here without consulting ElemType. When
-		// Phase 4.3.2 widens to f64/bool elements, this switch will
-		// branch on Value.ElemType (which cgen would need to start
-		// threading through cType's caller).
+		// list<int>: heap-allocated header backed by mochi_list_i64.
+		// The MVP frontend constructs TypeList values with
+		// ElemType=TypeI64 only; the f64 element-type lives on
+		// TypeF64Arr (a separate flat-double backing) so this switch
+		// stays branchless.
 		return "mochi_list_i64*"
+	case ir.TypeF64Arr:
+		// list<float>: heap-allocated header backed by mochi_f64_array.
+		// Distinct from TypeList so cc -O2 can vectorise the flat
+		// double[] backing without a Cell-tag indirection.
+		return "mochi_f64_array*"
 	case ir.TypeUnit, ir.TypeInvalid:
 		return "void"
 	}
