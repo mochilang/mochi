@@ -441,7 +441,12 @@ const (
 
 // String renders an OpCode's short name. Used by Validate and IR
 // dumps. Names match the Op* constants minus the OpCode prefix.
+// Phase 4.2.30: ops registered in opTable read their Name from the
+// registry; the switch below covers ops not yet migrated.
 func (o OpCode) String() string {
+	if info, ok := OpInfoOf(o); ok {
+		return info.Name
+	}
 	switch o {
 	case OpInvalid:
 		return "invalid"
@@ -507,26 +512,9 @@ func (o OpCode) String() string {
 		return "cmp.gt.i64.imm"
 	case OpCmpGeI64Imm:
 		return "cmp.ge.i64.imm"
-	case OpLenStr:
-		return "len.str"
-	case OpConcatStr:
-		return "concat.str"
-	case OpCmpEqStr:
-		return "cmp.eq.str"
-	case OpCmpNeStr:
-		return "cmp.ne.str"
-	case OpI64ToStr:
-		return "i64.to.str"
-	case OpF64ToStr:
-		return "f64.to.str"
-	case OpBoolToStr:
-		return "bool.to.str"
-	case OpStrCharAt:
-		return "str.charat"
-	case OpStrIn:
-		return "str.in"
-	case OpStrRuneLen:
-		return "str.rune.len"
+	// Phase 4.2.30: OpLenStr, OpConcatStr, OpCmpEqStr, OpCmpNeStr,
+	// OpI64ToStr, OpF64ToStr, OpBoolToStr, OpStrCharAt, OpStrIn,
+	// OpStrRuneLen migrated to opTable; OpInfoOf returns their Name.
 	case OpCmpEqBool:
 		return "cmp.eq.bool"
 	case OpCmpNeBool:

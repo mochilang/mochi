@@ -351,8 +351,14 @@ func TestMustClassifyAllDispatchCoversAllDispatchOps(t *testing.T) {
 	for _, o := range readDispatchOps {
 		read[o] = true
 	}
+	for _, o := range ir.ReadDispatchOps() {
+		read[o] = true
+	}
 	write := make(map[ir.OpCode]bool)
 	for _, o := range writeDispatchOps {
+		write[o] = true
+	}
+	for _, o := range ir.WriteDispatchOps() {
 		write[o] = true
 	}
 	const lastOpCode = ir.OpCallGo

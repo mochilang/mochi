@@ -109,6 +109,32 @@ const (
 	KindReserved
 )
 
+// producerKindFromIR projects an ir.OpKind (the in-registry
+// classification carried by ir.OpInfo) onto the verify-public
+// ProducerKind constants. The two enumerations are kept aligned by
+// the init-time coverage check (mustClassifyAll); a new ir.OpKind
+// value that lands without a corresponding ProducerKind here will
+// fall through to KindInvalid and trip the check.
+func producerKindFromIR(k ir.OpKind) ProducerKind {
+	switch k {
+	case ir.KindMove:
+		return KindMove
+	case ir.KindInline:
+		return KindInline
+	case ir.KindConstructor:
+		return KindConstructor
+	case ir.KindOperator:
+		return KindOperator
+	case ir.KindDispatch:
+		return KindDispatch
+	case ir.KindCall:
+		return KindCall
+	case ir.KindReserved:
+		return KindReserved
+	}
+	return KindInvalid
+}
+
 // String renders a ProducerKind for error messages.
 func (k ProducerKind) String() string {
 	switch k {
@@ -138,7 +164,14 @@ func (k ProducerKind) String() string {
 // from OpInvalid+1 through the last known op and asserts each gets a
 // non-Invalid classification. The kindOf result for OpInvalid itself
 // is intentionally KindInvalid; the coverage check excludes it.
+//
+// Phase 4.2.30: registered ops read their Kind from ir.OpInfoOf;
+// unregistered ops fall through to the legacy switch. New ops
+// should always be registered, never added to the switch.
 func kindOf(o ir.OpCode) ProducerKind {
+	if info, ok := ir.OpInfoOf(o); ok {
+		return producerKindFromIR(info.Kind)
+	}
 	switch o {
 	case ir.OpInvalid:
 		return KindInvalid
@@ -156,7 +189,6 @@ func kindOf(o ir.OpCode) ProducerKind {
 		ir.OpCmpEqI64Imm, ir.OpCmpNeI64Imm, ir.OpCmpLtI64Imm, ir.OpCmpLeI64Imm, ir.OpCmpGtI64Imm, ir.OpCmpGeI64Imm,
 		ir.OpAndI64, ir.OpOrI64, ir.OpXorI64, ir.OpShlI64, ir.OpShrI64, ir.OpNotI64,
 		ir.OpCmpEqF64, ir.OpCmpNeF64, ir.OpCmpLtF64, ir.OpCmpLeF64, ir.OpCmpGtF64, ir.OpCmpGeF64,
-		ir.OpCmpEqStr, ir.OpCmpNeStr,
 		ir.OpCmpEqBool, ir.OpCmpNeBool,
 		ir.OpAndBool, ir.OpOrBool,
 		ir.OpNotBool,
@@ -166,9 +198,7 @@ func kindOf(o ir.OpCode) ProducerKind {
 		ir.OpJsonI64Object:
 		return KindOperator
 
-	case ir.OpLenStr, ir.OpStrIn, ir.OpStrRuneLen:
-		return KindDispatch
-	case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr, ir.OpListI64ToStr, ir.OpF64ArrayToStr, ir.OpStrArrToStr, ir.OpStrCharAt:
+	case ir.OpListI64ToStr, ir.OpF64ArrayToStr, ir.OpStrArrToStr:
 		return KindConstructor
 
 	case ir.OpNewList, ir.OpNewMap, ir.OpNewF64Array, ir.OpNewStrArr, ir.OpNewMapStrI64, ir.OpNewListAny,
@@ -400,10 +430,16 @@ func checkRuleD(fn *ir.Function) error {
 }
 
 // contractResult returns the OpCode's declared result Type, or
-// TypeInvalid if the op is not in the contract table. Mirrors the
-// table in ir/validate.go without taking a dependency on its private
-// opContract symbol.
+// TypeInvalid if the op is not in the contract table.
+//
+// Phase 4.2.30: registered ops read their Result from ir.OpInfoOf so
+// the registry is the single source of truth; unregistered ops fall
+// through to the legacy switch. The legacy switch will shrink to
+// zero as ops migrate into opTable.
 func contractResult(o ir.OpCode) ir.Type {
+	if info, ok := ir.OpInfoOf(o); ok {
+		return info.Result
+	}
 	switch o {
 	case ir.OpAddI64, ir.OpSubI64, ir.OpMulI64, ir.OpDivI64, ir.OpModI64, ir.OpNegI64,
 		ir.OpAddI64Imm, ir.OpSubI64Imm, ir.OpMulI64Imm, ir.OpDivI64Imm, ir.OpModI64Imm:
@@ -412,15 +448,9 @@ func contractResult(o ir.OpCode) ir.Type {
 		return ir.TypeF64
 	case ir.OpCmpEqI64, ir.OpCmpNeI64, ir.OpCmpLtI64, ir.OpCmpLeI64, ir.OpCmpGtI64, ir.OpCmpGeI64,
 		ir.OpCmpEqI64Imm, ir.OpCmpNeI64Imm, ir.OpCmpLtI64Imm, ir.OpCmpLeI64Imm, ir.OpCmpGtI64Imm, ir.OpCmpGeI64Imm,
-		ir.OpCmpEqStr, ir.OpCmpNeStr,
 		ir.OpCmpEqBool, ir.OpCmpNeBool,
-		ir.OpAndBool, ir.OpOrBool,
-		ir.OpStrIn:
+		ir.OpAndBool, ir.OpOrBool:
 		return ir.TypeBool
-	case ir.OpLenStr, ir.OpStrRuneLen:
-		return ir.TypeI64
-	case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr, ir.OpStrCharAt:
-		return ir.TypeStr
 	case ir.OpNewList:
 		return ir.TypeList
 	case ir.OpNewMap:
@@ -521,13 +551,14 @@ func opIsMutating(o ir.OpCode) bool {
 	return false
 }
 
-// readDispatchOps lists every KindDispatch op that does not mutate its
-// arena. Kept as data (rather than a switch) so the coverage check can
-// enumerate both halves of the dispatch op set.
+// readDispatchOps lists every unregistered KindDispatch op that does
+// not mutate its arena. Kept as data (rather than a switch) so the
+// coverage check can enumerate both halves of the dispatch op set.
+//
+// Phase 4.2.30: ops migrated into ir.opTable carry their Mutates flag
+// in the registry; mustClassifyAllDispatch unions ir.ReadDispatchOps()
+// into the coverage set so a registered op need not be listed here.
 var readDispatchOps = []ir.OpCode{
-	ir.OpLenStr,
-	ir.OpStrIn,
-	ir.OpStrRuneLen,
 	ir.OpListLenI64,
 	ir.OpListGetI64,
 	ir.OpListGetF64,
@@ -647,6 +678,21 @@ func mustClassifyAllDispatch() {
 		}
 		if seen[o] {
 			panic(fmt.Sprintf("verify: %s listed in both readDispatchOps and writeDispatchOps", o))
+		}
+		seen[o] = true
+	}
+	// Phase 4.2.30: registered Dispatch ops carry their Mutates flag in
+	// ir.opTable; union those into the coverage set so a registered op
+	// need not be repeated in the verify-local slices.
+	for _, o := range ir.ReadDispatchOps() {
+		if seen[o] {
+			panic(fmt.Sprintf("verify: %s listed in ir.ReadDispatchOps and the verify-local slices", o))
+		}
+		seen[o] = true
+	}
+	for _, o := range ir.WriteDispatchOps() {
+		if seen[o] {
+			panic(fmt.Sprintf("verify: %s listed in ir.WriteDispatchOps and the verify-local slices", o))
 		}
 		seen[o] = true
 	}
