@@ -404,6 +404,16 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = (strcmp(%s, %s) == 0);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpCmpNeStr:
 		fmt.Fprintf(w, "    %s = (strcmp(%s, %s) != 0);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpCmpEqBool:
+		// Bool carriers are int (cType returns "int" for TypeBool), so
+		// equality is plain `==`. The `!!` normalises both operands to
+		// 0 or 1 first; Phase 4.2.4 OpBoolToStr already routes through
+		// the same normalisation, and the C emit of OpConst writes 0/1
+		// for TypeBool, but defensively normalise so any future opaque
+		// bool source (e.g. a Go FFI bridge) still compares correctly.
+		fmt.Fprintf(w, "    %s = ((!!%s) == (!!%s));\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpCmpNeBool:
+		fmt.Fprintf(w, "    %s = ((!!%s) != (!!%s));\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpConcatStr:
 		// mochi_str_concat allocates a NUL-terminated byte sequence
 		// holding the bytes of v.Args[0] followed by v.Args[1] and

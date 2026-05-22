@@ -143,6 +143,13 @@ const (
 	OpF64ToStr
 	OpBoolToStr
 
+	// Bool comparisons (MEP-42 Phase 4.2.7). Result Type == TypeBool.
+	// Bool values are int-sized in both targets, so the C emit lowers
+	// to plain `==` / `!=` and the Go emit to the same. Distinct ops
+	// (rather than reusing OpCmpEqI64) keep the IR type-precise.
+	OpCmpEqBool
+	OpCmpNeBool
+
 	// List ops (Phase 3.2 vm3 surface).
 	OpNewList
 	OpListLenI64
@@ -371,6 +378,10 @@ func (o OpCode) String() string {
 		return "f64.to.str"
 	case OpBoolToStr:
 		return "bool.to.str"
+	case OpCmpEqBool:
+		return "cmp.eq.bool"
+	case OpCmpNeBool:
+		return "cmp.ne.bool"
 	case OpNewList:
 		return "newlist"
 	case OpListLenI64:

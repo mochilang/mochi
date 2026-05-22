@@ -1644,6 +1644,78 @@ func TestBuildSourceMultiArgPrintLoop(t *testing.T) {
 	}
 }
 
+// TestBuildSourceBoolEqTrue pins MEP-42 Phase 4.2.7: bool == bool.
+// Before this sub-phase, `let a = true; let b = true; print(a == b)`
+// errored at lower with `binop "==" on type bool unsupported in MVP`.
+// After it, the comparison routes through OpCmpEqBool and the
+// single-arg print path renders it through fmt.Println (Phase 4.2.0),
+// matching Go's "true" / "false" convention byte for byte.
+func TestBuildSourceBoolEqTrue(t *testing.T) {
+	src := `let a = true
+let b = true
+print(a == b)
+`
+	if got, want := runMochiBuild(t, src), "true\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceBoolNe pins `!=` on bool, the other half of v0.1's
+// examples/v0.1/binary.mochi block ("bool_neq").
+func TestBuildSourceBoolNe(t *testing.T) {
+	src := `let a = true
+let b = false
+print(a != b)
+`
+	if got, want := runMochiBuild(t, src), "true\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceBoolEqMixed pins the heterogeneous mixing of bool
+// comparisons through the multi-arg print path: a `bool == bool`
+// result lifts through OpBoolToStr (Phase 4.2.4) into the
+// space-joined string. This exercises the full Phase 4.2.x interplay.
+func TestBuildSourceBoolEqMixed(t *testing.T) {
+	src := `let ba = true
+let bb = false
+print("bool_eq:", ba == ba)
+print("bool_neq:", ba != bb)
+`
+	if got, want := runMochiBuild(t, src), "bool_eq: true\nbool_neq: true\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceBoolEqUnaryNested pins examples/v0.1/unary.mochi's
+// nested expression `!((2 < 3) == true)`. The inner `(2 < 3)`
+// produces a bool (OpCmpLtI64), the `== true` then triggers
+// OpCmpEqBool, and the outer `!` is OpNotBool. The final value is
+// false / 0.
+func TestBuildSourceBoolEqUnaryNested(t *testing.T) {
+	src := `let e = !((2 < 3) == true)
+print(e)
+`
+	if got, want := runMochiBuild(t, src), "false\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV01BinaryFixture pins examples/v0.1/binary.mochi
+// end-to-end, the v0.1 tutorial program that motivated Phase 4.2.7.
+// Reads the fixture verbatim so future tutorial edits surface as a
+// regression here.
+func TestBuildSourceV01BinaryFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.1/binary.mochi")
+	if err != nil {
+		t.Fatalf("read v0.1 binary fixture: %v", err)
+	}
+	want := "add: 5\nsub: 3\nmul: 10\ndiv: 4\neq: true\nneq: true\nlt: true\nlte: true\ngt: true\ngte: true\nstr_eq: true\nstr_neq: true\nstr_concat: hello world\nbool_eq: true\nbool_neq: true\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.1/binary stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceSpectralNormBgFixture pins the unmodified
 // bench/template/bg/spectral_norm fixture (N=100) on the C target.
 // This is the §10.7 closeout for spectral_norm at the fixture level
