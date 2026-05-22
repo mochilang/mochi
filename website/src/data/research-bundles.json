@@ -194,5 +194,103 @@
         "docId": "research/0046/risks-and-alternatives"
       }
     ]
+  },
+  {
+    "number": 47,
+    "title": "MEP-47 research notes",
+    "slug": "/docs/research/0047/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0047/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "MEP-47 research note 01, Mochi language surface (JVM target)",
+        "docId": "research/0047/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "MEP-47 research note 02, Design philosophy",
+        "docId": "research/0047/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "MEP-47 research note 03, Prior art: languages targeting JVM + AOT toolchains + Android (2014-2026)",
+        "docId": "research/0047/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "MEP-47 research note 04, JVM runtime building blocks for libmochi_jvm",
+        "docId": "research/0047/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "MEP-47 research note 05, Codegen design: choosing an IR layer for Mochi → JVM",
+        "docId": "research/0047/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "MEP-47 research note 06, Lowering Mochi's static type system onto JVM types",
+        "docId": "research/0047/type-lowering"
+      },
+      {
+        "stem": "07-jvm-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "MEP-47 research note 07, JVM target portability and version matrix",
+        "docId": "research/0047/jvm-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "MEP-47 research note 08, Mochi query DSL and dataset pipeline on JVM",
+        "docId": "research/0047/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "MEP-47 research note 09, Agents and streams on JVM via Project Loom virtual threads",
+        "docId": "research/0047/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "MEP-47 research note 10, Build system: Gradle, Maven, jlink, jpackage, native-image",
+        "docId": "research/0047/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "MEP-47 research note 11, Testing strategy and gates for MEP-47",
+        "docId": "research/0047/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "MEP-47 research note 12, Risks and alternatives for the JVM target",
+        "docId": "research/0047/risks-and-alternatives"
+      }
+    ]
   }
 ]
