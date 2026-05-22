@@ -53,6 +53,22 @@ const char *mochi_str_from_i64(long long v);
 const char *mochi_str_from_f64(double v);
 const char *mochi_str_from_bool(int v);
 
+/*
+ * mochi_f64_format writes the shortest decimal representation of v
+ * into buf (NUL-terminated) using the same rule as Go's
+ * strconv.FormatFloat(v, 'g', -1, 64): exponent form when the
+ * decimal exponent of the leading digit is < -4 or >= 6, fixed form
+ * otherwise. Returns the number of bytes written (excluding NUL).
+ * buf must have room for at least 32 bytes; the longest output a
+ * finite double can produce here is 24 bytes (the leak-budget
+ * comment in mochi_str.c quantifies the worst case).
+ *
+ * Shared by both mochi_print_f64 (Phase 4.1) and mochi_str_from_f64
+ * (Phase 4.2.4); centralising avoids drift between print() and
+ * str() output for the same double (MEP-42 Phase 4.2.8).
+ */
+int mochi_f64_format(char *buf, int bufsize, double v);
+
 #ifdef __cplusplus
 }
 #endif
