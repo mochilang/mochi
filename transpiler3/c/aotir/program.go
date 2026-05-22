@@ -17,14 +17,41 @@ type Program struct {
 	// Main is the index into Functions of the entry point. The
 	// entry function takes no arguments and returns TypeUnit.
 	Main int
+
+	// Records lists user-declared record types in source order.
+	// Phase 3.0 adds this; emit walks it to write `struct mochi_R`
+	// declarations and the per-record equality helper.
+	Records []*RecordDecl
+}
+
+// RecordDecl declares one record type. Field order is source
+// order; the emit pass preserves it into the C struct layout
+// (Phase 17 reproducibility relies on a stable layout per source
+// shape).
+type RecordDecl struct {
+	Name   string
+	Fields []RecordField
+}
+
+// RecordField is one (Name, Type) pair inside a RecordDecl.
+// RecordName carries the record's identity when Type==TypeRecord
+// (nested records). Phase 3.0 keeps RecordName empty and the
+// lowerer rejects nested records; future sub-phases will lift
+// that restriction.
+type RecordField struct {
+	Name       string
+	Type       Type
+	RecordName string
 }
 
 // Param is one formal parameter of a Function. Phase 2.2 introduces
 // user-defined multi-arg functions; before then the only callable
-// was main() which took none.
+// was main() which took none. Phase 3.0 adds RecordName, valid when
+// Type==TypeRecord.
 type Param struct {
-	Name string
-	Type Type
+	Name       string
+	Type       Type
+	RecordName string
 }
 
 // Function is one monomorphic, closure-converted callable.
@@ -41,6 +68,10 @@ type Function struct {
 
 	// ReturnType is the function's monomorphic return type.
 	ReturnType Type
+
+	// ReturnRecordName carries the record identity when
+	// ReturnType==TypeRecord. Empty otherwise.
+	ReturnRecordName string
 
 	// Body is a single Block. Phase 1 does not introduce control
 	// flow; Phase 2 introduces multi-block functions with a
@@ -86,9 +117,10 @@ func (*CallStmt) isStmt() {}
 // Program's function table at lower time and stamps Result with the
 // callee's ReturnType; the verifier re-checks both invariants.
 type CallExpr struct {
-	Func   string
-	Args   []Expr
-	Result Type
+	Func             string
+	Args             []Expr
+	Result           Type
+	ResultRecordName string // valid when Result==TypeRecord
 }
 
 func (c *CallExpr) Type() Type { return c.Result }
@@ -182,6 +214,18 @@ const (
 	// TypeBool.
 	BinEqBool
 	BinNeBool
+	// String comparison. Each operand is TypeString; the result
+	// is TypeBool. Lowered to strcmp(a,b)==0 / !=0 by the emit
+	// pass. Added in Phase 3.0 to support record-equality fixtures
+	// that include string fields.
+	BinEqStr
+	BinNeStr
+	// Record comparison. Each operand is TypeRecord with the
+	// same record name; the result is TypeBool. The emit pass
+	// dispatches to a generated per-record `mochi_eq_<Name>`
+	// helper that ANDs each field's comparison together.
+	BinEqRec
+	BinNeRec
 	// Short-circuit boolean. Each operand is TypeBool; the
 	// result is TypeBool. The emitter must lower these so the
 	// right-hand side is only evaluated when the left does not
@@ -229,21 +273,61 @@ func (u *UnaryExpr) Type() Type { return u.Result }
 // VarRef reads a previously-declared variable. Phase 2.1 emits the
 // variable's mangled C identifier; later phases that introduce
 // closure captures may rewrite Name into an env-relative access.
+// Phase 3.0 adds RecordName, valid when VarType==TypeRecord.
 type VarRef struct {
-	Name    string
-	VarType Type
+	Name       string
+	VarType    Type
+	RecordName string
 }
 
 func (v *VarRef) Type() Type { return v.VarType }
+
+// RecordLit constructs a record value with every field filled in.
+// The lowerer enforces that every field of the named record is
+// present, no duplicates, no unknowns, and that each Value's type
+// matches the declared field type.
+type RecordLit struct {
+	TypeName string         // record name (matches RecordDecl.Name)
+	Fields   []RecordLitArg // in record-decl source order, not Mochi-literal order
+}
+
+// RecordLitArg is one (FieldName, Value) pair in a RecordLit. The
+// lowerer reorders the user's source-literal arguments into the
+// record's declared order so the emit pass can render the C99
+// designated init in struct-field order without an extra sort.
+type RecordLitArg struct {
+	Name  string
+	Value Expr
+}
+
+func (*RecordLit) Type() Type { return TypeRecord }
+
+// FieldAccess reads one field from a record receiver. The lowerer
+// resolves FieldName against the record's declaration, stamps
+// Result with the field's type and (when the field is itself a
+// record) ResultRecordName with the nested record's name. Phase
+// 3.0 rejects nested records in the lowerer so ResultRecordName
+// is always empty for 3.0 fixtures; field of TypeRecord is wired
+// for the future.
+type FieldAccess struct {
+	Receiver         Expr   // must produce TypeRecord
+	RecordName       string // receiver's record name, captured by the lowerer
+	FieldName        string
+	Result           Type
+	ResultRecordName string
+}
+
+func (f *FieldAccess) Type() Type { return f.Result }
 
 // LetStmt declares a fresh, immutable binding and initialises it.
 // Mochi `let x = expr` lowers here; the verifier rejects rebinding
 // or assignment to a LetStmt name (mutability lives on VarStmt).
 type LetStmt struct {
-	Name     string
-	VarType  Type
-	Init     Expr
-	Mutable  bool // true for VarStmt-lowered bindings
+	Name       string
+	VarType    Type
+	RecordName string // valid when VarType==TypeRecord
+	Init       Expr
+	Mutable    bool // true for VarStmt-lowered bindings
 }
 
 func (*LetStmt) isStmt() {}

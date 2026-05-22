@@ -41,6 +41,40 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		return nil, fmt.Errorf("transpiler3/c/lower: nil program")
 	}
 
+	// Pass 0: collect every `type T { ... }` declaration. Record
+	// names are registered before sig-building so a fun signature
+	// or a record-field type can reference any record without
+	// regard to source order. Field types are resolved in this
+	// same pass; the records map is set membership only at the
+	// start, and decls are stamped onto the output program in
+	// source order.
+	records := map[string]*aotir.RecordDecl{}
+	var typeDecls []*parser.TypeDecl
+	for i, st := range prog.Statements {
+		if st == nil || st.Type == nil {
+			continue
+		}
+		td := st.Type
+		if td.Name == "" {
+			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: type decl with empty name", i)
+		}
+		if _, dup := records[td.Name]; dup {
+			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: redeclaration of type %q", i, td.Name)
+		}
+		// Reserve the name so later passes can resolve it.
+		records[td.Name] = nil
+		typeDecls = append(typeDecls, td)
+	}
+	out := &aotir.Program{}
+	for _, td := range typeDecls {
+		rd, err := buildRecordDecl(records, td)
+		if err != nil {
+			return nil, fmt.Errorf("transpiler3/c/lower: type %q: %w", td.Name, err)
+		}
+		records[td.Name] = rd
+		out.Records = append(out.Records, rd)
+	}
+
 	// Pass 1: collect every user-defined fun decl and record its
 	// signature so the body lowering can resolve forward and
 	// mutual references.
@@ -60,7 +94,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		if _, dup := funcs[fn.Name]; dup {
 			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: redeclaration of fun %q", i, fn.Name)
 		}
-		sig, err := buildFuncSig(fn)
+		sig, err := buildFuncSig(records, fn)
 		if err != nil {
 			return nil, fmt.Errorf("transpiler3/c/lower: fun %q: %w", fn.Name, err)
 		}
@@ -69,17 +103,18 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 	}
 
 	// Pass 2a: lower each fun body using the shared funcs table.
-	out := &aotir.Program{}
 	for _, fn := range funDecls {
 		sig := funcs[fn.Name]
 		l := &lowerer{
-			funcs:           funcs,
-			scope:           newLScope(nil),
-			currentFnReturn: sig.returnType,
+			funcs:                 funcs,
+			records:               records,
+			scope:                 newLScope(nil),
+			currentFnReturn:       sig.returnType,
+			currentFnReturnRecord: sig.returnRecordName,
 		}
 		// Seed parameters into the function scope as immutable.
 		for _, p := range sig.params {
-			l.scope.vars[p.Name] = lbinding{t: p.Type, mutable: false}
+			l.scope.vars[p.Name] = lbinding{t: p.Type, mutable: false, record: p.RecordName}
 		}
 		body := &aotir.Block{}
 		for i, st := range fn.Body {
@@ -91,18 +126,20 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 			}
 		}
 		out.Functions = append(out.Functions, &aotir.Function{
-			Name:       fn.Name,
-			Params:     sig.params,
-			ReturnType: sig.returnType,
-			Body:       body,
+			Name:             fn.Name,
+			Params:           sig.params,
+			ReturnType:       sig.returnType,
+			ReturnRecordName: sig.returnRecordName,
+			Body:             body,
 		})
 	}
 
 	// Pass 2b: lower the top-level script (everything that is not
-	// a fun decl) into main.
+	// a fun or type decl) into main.
 	mainBody := &aotir.Block{}
 	mainL := &lowerer{
 		funcs:           funcs,
+		records:         records,
 		scope:           newLScope(nil),
 		currentFnReturn: aotir.TypeUnit,
 	}
@@ -110,7 +147,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		if st == nil {
 			return nil, fmt.Errorf("transpiler3/c/lower: statement %d is nil", i)
 		}
-		if st.Fun != nil {
+		if st.Fun != nil || st.Type != nil {
 			continue
 		}
 		if err := mainL.lowerStatement(mainBody, st); err != nil {
@@ -131,24 +168,72 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 	return out, nil
 }
 
+// buildRecordDecl turns a parser.TypeDecl into an aotir.RecordDecl.
+// Phase 3.0 accepts only the `type T { field: Type, ... }` shape with
+// scalar field types; methods, variants, aliases, and nested-record
+// fields are rejected with phase-named diagnostics.
+func buildRecordDecl(records map[string]*aotir.RecordDecl, td *parser.TypeDecl) (*aotir.RecordDecl, error) {
+	if len(td.Variants) > 0 || td.SingleVariant != nil {
+		return nil, fmt.Errorf("sum-type variants land with Phase 4")
+	}
+	if td.Alias != nil {
+		return nil, fmt.Errorf("type aliases land in a later phase")
+	}
+	if len(td.Members) == 0 {
+		return nil, fmt.Errorf("record type must declare at least one field")
+	}
+	rd := &aotir.RecordDecl{Name: td.Name}
+	seen := map[string]bool{}
+	for j, m := range td.Members {
+		if m == nil {
+			return nil, fmt.Errorf("field %d is nil", j)
+		}
+		if m.Method != nil {
+			return nil, fmt.Errorf("methods land in a later phase")
+		}
+		if m.Field == nil {
+			return nil, fmt.Errorf("field %d has no Field or Method", j)
+		}
+		f := m.Field
+		if f.Name == "" {
+			return nil, fmt.Errorf("field %d: empty name", j)
+		}
+		if seen[f.Name] {
+			return nil, fmt.Errorf("duplicate field %q", f.Name)
+		}
+		seen[f.Name] = true
+		t, rec, err := typeFromRef(records, f.Type)
+		if err != nil {
+			return nil, fmt.Errorf("field %q: %w", f.Name, err)
+		}
+		if t == aotir.TypeRecord {
+			return nil, fmt.Errorf("field %q: nested record fields are not supported in Phase 3.0", f.Name)
+		}
+		rd.Fields = append(rd.Fields, aotir.RecordField{Name: f.Name, Type: t, RecordName: rec})
+	}
+	return rd, nil
+}
+
 // funcSig is the lower-time projection of an aotir.Function signature
 // (no body); the lowerer needs it to resolve user-fn calls during
 // expression lowering.
 type funcSig struct {
-	params     []aotir.Param
-	returnType aotir.Type
+	params           []aotir.Param
+	returnType       aotir.Type
+	returnRecordName string
 }
 
 // buildFuncSig turns a parser.FunStmt into its lower-time signature.
 // Both parameter types and return type are required; Mochi accepts
 // `fun f(x) { ... }` as inferring from caller context, but Phase 2.2
 // requires explicit annotations so the C-AOT monomorpher does not
-// have to do inference.
-func buildFuncSig(fn *parser.FunStmt) (*funcSig, error) {
+// have to do inference. Phase 3.0 widens param/return type lookup to
+// the records table so user fns can accept and return records.
+func buildFuncSig(records map[string]*aotir.RecordDecl, fn *parser.FunStmt) (*funcSig, error) {
 	if fn.Return == nil {
 		return nil, fmt.Errorf("fun %q requires an explicit `: T` return type in Phase 2.2", fn.Name)
 	}
-	ret, err := typeFromRef(fn.Return)
+	ret, retRec, err := typeFromRef(records, fn.Return)
 	if err != nil {
 		return nil, fmt.Errorf("fun %q return: %w", fn.Name, err)
 	}
@@ -171,23 +256,25 @@ func buildFuncSig(fn *parser.FunStmt) (*funcSig, error) {
 		if p.Type == nil {
 			return nil, fmt.Errorf("fun %q param %q requires an explicit `: T` type in Phase 2.2", fn.Name, p.Name)
 		}
-		t, err := typeFromRef(p.Type)
+		t, rec, err := typeFromRef(records, p.Type)
 		if err != nil {
 			return nil, fmt.Errorf("fun %q param %q: %w", fn.Name, p.Name, err)
 		}
-		params = append(params, aotir.Param{Name: p.Name, Type: t})
+		params = append(params, aotir.Param{Name: p.Name, Type: t, RecordName: rec})
 	}
-	return &funcSig{params: params, returnType: ret}, nil
+	return &funcSig{params: params, returnType: ret, returnRecordName: retRec}, nil
 }
 
 // lowerer carries the per-function scope stack, loop-depth counter,
 // and the enclosing function's return type. Mirrors the verifier's
 // verifyCtx so the same scoping / typing rules apply at lower time.
 type lowerer struct {
-	funcs           map[string]*funcSig
-	scope           *lscope
-	loopDepth       int
-	currentFnReturn aotir.Type
+	funcs                 map[string]*funcSig
+	records               map[string]*aotir.RecordDecl
+	scope                 *lscope
+	loopDepth             int
+	currentFnReturn       aotir.Type
+	currentFnReturnRecord string
 }
 
 // lscope mirrors aotir's scope: lexical frame with parent chain.
@@ -199,6 +286,7 @@ type lscope struct {
 type lbinding struct {
 	t       aotir.Type
 	mutable bool
+	record  string // record name when t==TypeRecord
 }
 
 func newLScope(parent *lscope) *lscope {
@@ -249,9 +337,9 @@ func (l *lowerer) lowerStatement(out *aotir.Block, st *parser.Statement) error {
 	case st.Fun != nil:
 		return fmt.Errorf("nested `fun` declarations are not supported in Phase 2.2")
 	case st.Type != nil:
-		return fmt.Errorf("`type` declarations land in Phase 3")
+		return fmt.Errorf("`type` declarations are only allowed at the top level")
 	}
-	return fmt.Errorf("unsupported statement in Phase 2.2")
+	return fmt.Errorf("unsupported statement in Phase 3.0")
 }
 
 // lowerExprStmt handles a top-level expression statement. Phase 2.2
@@ -319,9 +407,33 @@ func (l *lowerer) lowerCallArgs(call *parser.CallExpr, sig *funcSig) ([]aotir.Ex
 			return nil, fmt.Errorf("call %q arg %d: expected %s, got %s",
 				call.Func, i, sig.params[i].Type, expr.Type())
 		}
+		if sig.params[i].Type == aotir.TypeRecord {
+			if argRec := exprRecordName(expr); argRec != sig.params[i].RecordName {
+				return nil, fmt.Errorf("call %q arg %d: expected record %q, got %q",
+					call.Func, i, sig.params[i].RecordName, argRec)
+			}
+		}
 		out = append(out, expr)
 	}
 	return out, nil
+}
+
+// exprRecordName extracts the record-name identity of a record-typed
+// aotir expression. Mirrors the verifier's exprRecordName but lives
+// in lower so the lowerer can stamp the right name onto carrier
+// fields without round-tripping through Verify.
+func exprRecordName(e aotir.Expr) string {
+	switch v := e.(type) {
+	case *aotir.VarRef:
+		return v.RecordName
+	case *aotir.RecordLit:
+		return v.TypeName
+	case *aotir.FieldAccess:
+		return v.ResultRecordName
+	case *aotir.CallExpr:
+		return v.ResultRecordName
+	}
+	return ""
 }
 
 // lowerLet lowers an immutable binding. If the declared type is
@@ -353,31 +465,42 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		return fmt.Errorf("binding %q init: %w", name, err)
 	}
 	declType := value.Type()
+	declRec := exprRecordName(value)
 	if declared != nil {
-		t, err := typeFromRef(declared)
+		t, rec, err := typeFromRef(l.records, declared)
 		if err != nil {
 			return fmt.Errorf("binding %q type: %w", name, err)
 		}
 		if t != declType {
 			return fmt.Errorf("binding %q: declared %s, init produces %s", name, t, declType)
 		}
+		if t == aotir.TypeRecord && rec != declRec {
+			return fmt.Errorf("binding %q: declared record %q, init produces record %q", name, rec, declRec)
+		}
 		declType = t
+		declRec = rec
 	}
-	l.scope.vars[name] = lbinding{t: declType, mutable: mutable}
+	l.scope.vars[name] = lbinding{t: declType, mutable: mutable, record: declRec}
 	out.Statements = append(out.Statements, &aotir.LetStmt{
-		Name:    name,
-		VarType: declType,
-		Init:    value,
-		Mutable: mutable,
+		Name:       name,
+		VarType:    declType,
+		RecordName: declRec,
+		Init:       value,
+		Mutable:    mutable,
 	})
 	return nil
 }
 
-// lowerAssign handles `NAME = expr`. Field/index targets are
-// rejected for Phase 2.1 (records and lists land in Phase 3).
+// lowerAssign handles `NAME = expr`. Field/index targets remain
+// rejected in Phase 3.0: records are value-semantics so updating
+// `p.f` would semantically reassign `p` as a whole, which the
+// surface syntax does not express.
 func (l *lowerer) lowerAssign(out *aotir.Block, as *parser.AssignStmt) error {
-	if len(as.Index) != 0 || len(as.Field) != 0 {
-		return fmt.Errorf("assignment to a[i] or a.f targets land with records/lists in Phase 3")
+	if len(as.Index) != 0 {
+		return fmt.Errorf("assignment to a[i] targets land with lists in Phase 3.1")
+	}
+	if len(as.Field) != 0 {
+		return fmt.Errorf("assignment to a.f targets is not supported in Phase 3.0 (records are value-semantics; reassign the whole binding)")
 	}
 	b, ok := l.scope.lookup(as.Name)
 	if !ok {
@@ -392,6 +515,11 @@ func (l *lowerer) lowerAssign(out *aotir.Block, as *parser.AssignStmt) error {
 	}
 	if value.Type() != b.t {
 		return fmt.Errorf("assign %q: binding is %s, value is %s", as.Name, b.t, value.Type())
+	}
+	if b.t == aotir.TypeRecord {
+		if vrec := exprRecordName(value); vrec != b.record {
+			return fmt.Errorf("assign %q: binding holds record %q, value produces record %q", as.Name, b.record, vrec)
+		}
 	}
 	out.Statements = append(out.Statements, &aotir.AssignStmt{
 		Name:  as.Name,
@@ -551,6 +679,12 @@ func (l *lowerer) lowerReturn(out *aotir.Block, rs *parser.ReturnStmt) error {
 	if value.Type() != l.currentFnReturn {
 		return fmt.Errorf("return: function returns %s, value is %s", l.currentFnReturn, value.Type())
 	}
+	if l.currentFnReturn == aotir.TypeRecord {
+		if vrec := exprRecordName(value); vrec != l.currentFnReturnRecord {
+			return fmt.Errorf("return: function returns record %q, value produces record %q",
+				l.currentFnReturnRecord, vrec)
+		}
+	}
 	out.Statements = append(out.Statements, &aotir.ReturnStmt{Value: value})
 	return nil
 }
@@ -574,30 +708,33 @@ func (l *lowerer) lowerNestedBlock(stmts []*parser.Statement) (*aotir.Block, err
 	return b, nil
 }
 
-// typeFromRef maps a parser.TypeRef to an aotir.Type. Only the
-// primitive identifiers `int`, `float`, `bool`, `string` are
-// accepted; everything else is deferred to later phases.
-func typeFromRef(ref *parser.TypeRef) (aotir.Type, error) {
+// typeFromRef maps a parser.TypeRef to an aotir.Type plus an optional
+// record name (set when the type is a user record). Phase 3.0 accepts
+// the four primitives plus any user-declared record name.
+func typeFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (aotir.Type, string, error) {
 	if ref == nil {
-		return aotir.TypeInvalid, fmt.Errorf("nil type ref")
+		return aotir.TypeInvalid, "", fmt.Errorf("nil type ref")
 	}
 	if ref.Optional {
-		return aotir.TypeInvalid, fmt.Errorf("optional types land with Option in Phase 3")
+		return aotir.TypeInvalid, "", fmt.Errorf("optional types land with Option in Phase 3")
 	}
 	if ref.Simple == nil {
-		return aotir.TypeInvalid, fmt.Errorf("composite type annotations land in later phases")
+		return aotir.TypeInvalid, "", fmt.Errorf("composite type annotations land in later phases")
 	}
 	switch *ref.Simple {
 	case "int":
-		return aotir.TypeInt, nil
+		return aotir.TypeInt, "", nil
 	case "float":
-		return aotir.TypeFloat, nil
+		return aotir.TypeFloat, "", nil
 	case "bool":
-		return aotir.TypeBool, nil
+		return aotir.TypeBool, "", nil
 	case "string":
-		return aotir.TypeString, nil
+		return aotir.TypeString, "", nil
 	}
-	return aotir.TypeInvalid, fmt.Errorf("type %q not supported in Phase 2.1", *ref.Simple)
+	if _, ok := records[*ref.Simple]; ok {
+		return aotir.TypeRecord, *ref.Simple, nil
+	}
+	return aotir.TypeInvalid, "", fmt.Errorf("type %q not supported in Phase 3.0", *ref.Simple)
 }
 
 // printCalleeFor picks the runtime print entry for an argument
@@ -614,7 +751,10 @@ func printCalleeFor(t aotir.Type) (string, error) {
 	case aotir.TypeBool:
 		return "mochi_print_bool", nil
 	}
-	return "", fmt.Errorf("print() does not accept %s in Phase 2.1", t)
+	if t == aotir.TypeRecord {
+		return "", fmt.Errorf("print() does not accept a record value in Phase 3.0 (access scalar fields instead)")
+	}
+	return "", fmt.Errorf("print() does not accept %s in Phase 3.0", t)
 }
 
 // matchBareCall walks an Expr that is expected to be a single
@@ -742,8 +882,28 @@ func opForTypes(opStr string, lhs, rhs aotir.Type) (aotir.BinOp, aotir.Type, err
 			return aotir.BinInvalid, aotir.TypeInvalid,
 				fmt.Errorf("operator %q on bool operands not supported (only == / !=)", opStr)
 		}
+		if lhs == aotir.TypeString && rhs == aotir.TypeString {
+			switch opStr {
+			case "==":
+				return aotir.BinEqStr, aotir.TypeBool, nil
+			case "!=":
+				return aotir.BinNeStr, aotir.TypeBool, nil
+			}
+			return aotir.BinInvalid, aotir.TypeInvalid,
+				fmt.Errorf("operator %q on string operands not supported (only == / != in Phase 3.0)", opStr)
+		}
+		if lhs == aotir.TypeRecord && rhs == aotir.TypeRecord {
+			switch opStr {
+			case "==":
+				return aotir.BinEqRec, aotir.TypeBool, nil
+			case "!=":
+				return aotir.BinNeRec, aotir.TypeBool, nil
+			}
+			return aotir.BinInvalid, aotir.TypeInvalid,
+				fmt.Errorf("operator %q on record operands not supported (only == / !=)", opStr)
+		}
 		return aotir.BinInvalid, aotir.TypeInvalid,
-			fmt.Errorf("comparison %q wants matching int, float, or bool operands, got %s and %s", opStr, lhs, rhs)
+			fmt.Errorf("comparison %q wants matching int, float, bool, string, or record operands, got %s and %s", opStr, lhs, rhs)
 	case "&&", "||":
 		if lhs != aotir.TypeBool || rhs != aotir.TypeBool {
 			return aotir.BinInvalid, aotir.TypeInvalid,
@@ -828,21 +988,79 @@ func (l *lowerer) lowerUnary(u *parser.Unary) (aotir.Expr, error) {
 	return inner, nil
 }
 
-// lowerPostfix handles a PostfixExpr whose only legal Phase 2.1
-// shape is a bare Primary (no `.`, `[]`, `()`, or `as` postfixes).
+// lowerPostfix handles a PostfixExpr. Phase 3.0 accepts the `.Field`
+// postfix on record-typed receivers (so a call like `make_point().x`
+// works without going through a let-binding). All other postfix shapes
+// (Call/Index/Cast/SafeField/SafeIndex) are deferred to later phases.
 func (l *lowerer) lowerPostfix(p *parser.PostfixExpr) (aotir.Expr, error) {
 	if p == nil || p.Target == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
-	if len(p.Ops) != 0 {
-		return nil, fmt.Errorf("postfix operators not supported in Phase 2.1 (calls/indexes/casts land in later phases)")
+	expr, err := l.lowerPrimary(p.Target)
+	if err != nil {
+		return nil, err
 	}
-	return l.lowerPrimary(p.Target)
+	for _, op := range p.Ops {
+		if op == nil {
+			return nil, fmt.Errorf("nil postfix op")
+		}
+		switch {
+		case op.Field != nil:
+			expr, err = l.lowerFieldOp(expr, op.Field.Name)
+			if err != nil {
+				return nil, err
+			}
+		case op.Call != nil:
+			return nil, fmt.Errorf("postfix call on an expression is not supported in Phase 3.0 (use a bare callee name)")
+		case op.Index != nil, op.SafeIndex != nil:
+			return nil, fmt.Errorf("postfix index lands with lists in Phase 3.1")
+		case op.SafeField != nil:
+			return nil, fmt.Errorf("safe field access `?.` lands with Option in a later phase")
+		case op.Cast != nil:
+			return nil, fmt.Errorf("`as` casts land in a later phase")
+		default:
+			return nil, fmt.Errorf("unsupported postfix operator")
+		}
+	}
+	return expr, nil
+}
+
+// lowerFieldOp resolves a `.field` against a record-typed receiver and
+// returns a FieldAccess node typed by the field's declared type. The
+// receiver expression must already be typed as a record; the lowerer
+// then looks up the field on the record's declaration to stamp Result
+// (and ResultRecordName if the field is itself record-typed -- not
+// reachable in Phase 3.0 since nested records are rejected).
+func (l *lowerer) lowerFieldOp(receiver aotir.Expr, fieldName string) (aotir.Expr, error) {
+	if receiver.Type() != aotir.TypeRecord {
+		return nil, fmt.Errorf("field access .%s: receiver is %s, expected a record", fieldName, receiver.Type())
+	}
+	recName := exprRecordName(receiver)
+	if recName == "" {
+		return nil, fmt.Errorf("field access .%s: receiver has no record name", fieldName)
+	}
+	decl, ok := l.records[recName]
+	if !ok {
+		return nil, fmt.Errorf("field access .%s: record %q is not declared", fieldName, recName)
+	}
+	for _, f := range decl.Fields {
+		if f.Name == fieldName {
+			return &aotir.FieldAccess{
+				Receiver:         receiver,
+				RecordName:       recName,
+				FieldName:        fieldName,
+				Result:           f.Type,
+				ResultRecordName: f.RecordName,
+			}, nil
+		}
+	}
+	return nil, fmt.Errorf("field access .%s: record %q has no field %q", fieldName, recName, fieldName)
 }
 
 // lowerPrimary lowers a Primary into either a literal, a parenthesised
-// expression, or a variable reference. Phase 2.1 accepts a Selector
-// only when its Tail is empty (bare ident); records land in Phase 3.
+// expression, a variable reference, a record literal, a selector
+// chain (variable + zero or more `.field` reads), or a call to a user
+// function.
 func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	if pr == nil {
 		return nil, fmt.Errorf("nil primary")
@@ -853,21 +1071,84 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	if pr.Group != nil {
 		return l.lowerExpr(pr.Group)
 	}
+	if pr.Struct != nil {
+		return l.lowerStructLit(pr.Struct)
+	}
 	if pr.Selector != nil {
-		if len(pr.Selector.Tail) != 0 {
-			return nil, fmt.Errorf("field access %s.%s lands with records in Phase 3",
-				pr.Selector.Root, strings.Join(pr.Selector.Tail, "."))
-		}
 		b, ok := l.scope.lookup(pr.Selector.Root)
 		if !ok {
 			return nil, fmt.Errorf("undeclared variable %q", pr.Selector.Root)
 		}
-		return &aotir.VarRef{Name: pr.Selector.Root, VarType: b.t}, nil
+		var expr aotir.Expr = &aotir.VarRef{
+			Name:       pr.Selector.Root,
+			VarType:    b.t,
+			RecordName: b.record,
+		}
+		for _, field := range pr.Selector.Tail {
+			var err error
+			expr, err = l.lowerFieldOp(expr, field)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return expr, nil
 	}
 	if pr.Call != nil {
 		return l.lowerUserCallExpr(pr.Call)
 	}
-	return nil, fmt.Errorf("primary %s not supported in Phase 2.2", trimPrimary(pr))
+	return nil, fmt.Errorf("primary %s not supported in Phase 3.0%s", trimPrimary(pr), primaryPhaseHint(pr))
+}
+
+// lowerStructLit lowers a `R { f1: v1, ... }` literal into a typed
+// RecordLit. The lowerer enforces full field coverage, no extras, no
+// duplicates, and type-checks each field value against its declared
+// type; it also reorders fields from source-literal order to record-
+// declaration order so the emit pass can render the C99 designated
+// init in struct-field order.
+func (l *lowerer) lowerStructLit(sl *parser.StructLiteral) (aotir.Expr, error) {
+	if sl.Name == "" {
+		return nil, fmt.Errorf("record literal with empty type name")
+	}
+	decl, ok := l.records[sl.Name]
+	if !ok {
+		return nil, fmt.Errorf("record literal %q: record is not declared", sl.Name)
+	}
+	provided := make(map[string]aotir.Expr, len(sl.Fields))
+	for _, lf := range sl.Fields {
+		if lf == nil || lf.Name == "" {
+			return nil, fmt.Errorf("record literal %q: field with empty name", sl.Name)
+		}
+		if _, dup := provided[lf.Name]; dup {
+			return nil, fmt.Errorf("record literal %q: duplicate field %q", sl.Name, lf.Name)
+		}
+		value, err := l.lowerExpr(lf.Value)
+		if err != nil {
+			return nil, fmt.Errorf("record literal %q field %q: %w", sl.Name, lf.Name, err)
+		}
+		provided[lf.Name] = value
+	}
+	declared := make(map[string]bool, len(decl.Fields))
+	for _, df := range decl.Fields {
+		declared[df.Name] = true
+	}
+	for name := range provided {
+		if !declared[name] {
+			return nil, fmt.Errorf("record literal %q: unknown field %q", sl.Name, name)
+		}
+	}
+	args := make([]aotir.RecordLitArg, 0, len(decl.Fields))
+	for _, df := range decl.Fields {
+		v, ok := provided[df.Name]
+		if !ok {
+			return nil, fmt.Errorf("record literal %q: missing field %q", sl.Name, df.Name)
+		}
+		if v.Type() != df.Type {
+			return nil, fmt.Errorf("record literal %q field %q: declared %s, value is %s",
+				sl.Name, df.Name, df.Type, v.Type())
+		}
+		args = append(args, aotir.RecordLitArg{Name: df.Name, Value: v})
+	}
+	return &aotir.RecordLit{TypeName: sl.Name, Fields: args}, nil
 }
 
 // lowerUserCallExpr lowers a value-producing user-fn call. The print
@@ -889,9 +1170,10 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 		return nil, err
 	}
 	return &aotir.CallExpr{
-		Func:   call.Func,
-		Args:   args,
-		Result: sig.returnType,
+		Func:             call.Func,
+		Args:             args,
+		Result:           sig.returnType,
+		ResultRecordName: sig.returnRecordName,
 	}, nil
 }
 
@@ -913,6 +1195,22 @@ func lowerLiteral(lit *parser.Literal) (aotir.Expr, error) {
 		return nil, fmt.Errorf("none literal lands with Option in Phase 3")
 	}
 	return nil, fmt.Errorf("empty literal node")
+}
+
+// primaryPhaseHint names the phase that adds support for pr, when one
+// is known. Phase 3.1 adds list literals, 3.2 adds maps, 4.x adds
+// fun-expressions. The hint is appended to the rejection diagnostic
+// so users see both the current floor and the future ceiling.
+func primaryPhaseHint(pr *parser.Primary) string {
+	switch {
+	case pr.List != nil:
+		return " (list literals land with Phase 3.1)"
+	case pr.Map != nil:
+		return " (map literals land with Phase 3.2)"
+	case pr.FunExpr != nil:
+		return " (fun expressions land with Phase 4)"
+	}
+	return ""
 }
 
 // trimPrimary returns a short string describing pr for diagnostics;
