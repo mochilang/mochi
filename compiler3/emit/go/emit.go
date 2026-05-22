@@ -363,6 +363,19 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 	case ir.OpListConcatI64:
 		fmt.Fprintf(w, "\t%s = append(append([]int64{}, %s...), %s...)\n",
 			name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpListI64ToStr:
+		// Inline the format so we never pull in mochi/runtime/mochi/fmt
+		// (default alias "fmt", collides with stdlib). The lambda
+		// produces the same `[a, b, c]` shape as the C runtime's
+		// mochi_list_i64_to_str and the VM's valueToString.
+		imports["fmt"] = true
+		imports["strings"] = true
+		fmt.Fprintf(w, "\t%s = func(xs []int64) string {\n", name)
+		w.WriteString("\t\tif len(xs) == 0 { return \"[]\" }\n")
+		w.WriteString("\t\tparts := make([]string, len(xs))\n")
+		w.WriteString("\t\tfor i, x := range xs { parts[i] = fmt.Sprintf(\"%d\", x) }\n")
+		w.WriteString("\t\treturn \"[\" + strings.Join(parts, \", \") + \"]\"\n")
+		fmt.Fprintf(w, "\t}(%s)\n", valueName(v.Args[0]))
 	case ir.OpF64ArrayConcat:
 		fmt.Fprintf(w, "\t%s = append(append([]float64{}, %s...), %s...)\n",
 			name, valueName(v.Args[0]), valueName(v.Args[1]))

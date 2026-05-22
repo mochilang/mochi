@@ -3,7 +3,9 @@
  */
 #include "mochi_list_i64.h"
 
+#include <inttypes.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -41,6 +43,38 @@ int64_t mochi_list_i64_get(const mochi_list_i64 *l, int64_t i) {
 
 void mochi_list_i64_set(mochi_list_i64 *l, int64_t i, int64_t v) {
     l->data[i] = v;
+}
+
+const char *mochi_list_i64_to_str(const mochi_list_i64 *l) {
+    /* Empty list: return the static literal "[]" so callers do not have
+     * to special-case malloc(2). The carrier is `const char*`, so a
+     * literal is indistinguishable from a heap buffer downstream. */
+    if (l->len == 0) {
+        return "[]";
+    }
+    /* Worst-case per-element width: "-9223372036854775808" is 20 bytes
+     * plus the ", " separator (2 bytes); reserve 22. Plus "[" + "]" + NUL. */
+    size_t cap = (size_t)l->len * 22 + 3;
+    char *buf = (char *)malloc(cap);
+    if (buf == NULL) {
+        abort();
+    }
+    size_t off = 0;
+    buf[off++] = '[';
+    for (int64_t i = 0; i < l->len; i++) {
+        if (i > 0) {
+            buf[off++] = ',';
+            buf[off++] = ' ';
+        }
+        int n = snprintf(buf + off, cap - off, "%" PRId64, l->data[i]);
+        if (n < 0) {
+            abort();
+        }
+        off += (size_t)n;
+    }
+    buf[off++] = ']';
+    buf[off] = '\0';
+    return buf;
 }
 
 mochi_list_i64 *mochi_list_i64_concat(const mochi_list_i64 *a, const mochi_list_i64 *b) {

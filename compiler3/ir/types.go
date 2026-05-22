@@ -291,6 +291,14 @@ const (
 	OpListAnyPushAny
 	OpListAnyGetAny
 
+	// List display formatting (Phase 4.2.13). OpListI64ToStr converts a
+	// list<i64> to its Mochi reference display form: `[a, b, c]` with
+	// comma-space separators, square brackets, no trailing newline.
+	// Surface form `print(xs)` where `xs: list<int>` lowers to this op
+	// then OpCallGo(fmt.Println). Go emit calls a runtime formatter
+	// (runtime/mochi/fmt); C emit calls `mochi_list_i64_to_str`.
+	OpListI64ToStr
+
 	// Bench-harness JSON sink (Phase 4.3.14). OpJsonI64Object is the
 	// statement-level form `json({"k1": v1, ..., "kN": vN})` where every
 	// key is a string literal and every value is an i64 expression. It
@@ -439,6 +447,8 @@ func (o OpCode) String() string {
 		return "listany.push"
 	case OpListAnyGetAny:
 		return "listany.get"
+	case OpListI64ToStr:
+		return "list.i64.tostr"
 	case OpJsonI64Object:
 		return "json.i64.object"
 	case OpCall:

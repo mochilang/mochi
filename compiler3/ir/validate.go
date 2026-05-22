@@ -233,6 +233,8 @@ func opContract(o OpCode) opSig {
 		return opSig{TypeF64, [3]Type{TypeF64}}
 	case OpListConcatI64:
 		return opSig{TypeList, [3]Type{TypeList, TypeList}}
+	case OpListI64ToStr:
+		return opSig{TypeStr, [3]Type{TypeList}}
 	case OpF64ArrayConcat:
 		return opSig{TypeF64Arr, [3]Type{TypeF64Arr, TypeF64Arr}}
 	case OpNow:
