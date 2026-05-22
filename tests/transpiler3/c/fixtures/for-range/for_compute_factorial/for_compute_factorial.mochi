@@ -1,0 +1,7 @@
+var n = 6
+var result = 1
+for i in 1..7 {
+  result = result * i
+}
+print(n)
+print(result)

@@ -1,0 +1,5 @@
+for r in 0..3 {
+  for c in 0..3 {
+    print(r * 10 + c)
+  }
+}

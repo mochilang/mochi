@@ -8,31 +8,55 @@ import (
 	"mochi/types"
 )
 
-// TestLowerRejectsPhase22Plus pins the Phase 2.1 surface boundary:
-// shapes that belong in 2.2 (for-in, user functions) or later
-// (records, casts, none/Option, mixed-type arithmetic) must produce a
-// clear, phase-named diagnostic rather than silently being
+// TestLowerRejectsPhase23Plus pins the Phase 2.2 surface boundary:
+// shapes that belong in 2.3 (divide-by-zero panic semantics), 2.4
+// (NaN/Inf), or Phase 3 onward (lists, records, generics, casts,
+// none/Option, fun-expressions) must produce a clear, phase-named or
+// otherwise-explicit diagnostic rather than silently being
 // miscompiled.
-func TestLowerRejectsPhase22Plus(t *testing.T) {
+func TestLowerRejectsPhase23Plus(t *testing.T) {
 	cases := []struct {
 		name    string
 		program string
 		want    string
 	}{
 		{
-			name:    "user_function_decl",
-			program: "fun foo() { print(1) }\nfoo()\n",
+			name:    "list_literal",
+			program: "print([1, 2, 3])\n",
 			want:    "Phase 2.2",
 		},
 		{
-			name:    "for_loop",
-			program: "for i in 0..3 { print(i) }\n",
-			want:    "Phase 2.2",
+			name:    "type_decl",
+			program: "type T { x: int }\n",
+			want:    "Phase 3",
 		},
 		{
-			name:    "value_return",
-			program: "return 1\n",
-			want:    "Phase 2.2",
+			name:    "nested_fun",
+			program: "fun outer(): int {\n  fun inner(): int { return 1 }\n  return 1\n}\nprint(outer())\n",
+			want:    "nested",
+		},
+		{
+			name:    "fun_missing_return_type",
+			program: "fun foo(x: int) { print(x) }\nfoo(1)\n",
+			want:    "explicit `: T` return type",
+		},
+		{
+			name:    "fun_missing_param_type",
+			program: "fun foo(x): int { return x }\nprint(foo(1))\n",
+			want:    "explicit `: T` type",
+		},
+		{
+			name:    "for_list_iter",
+			program: "let xs = [1,2,3]\nfor x in xs { print(x) }\n",
+			// Reject is fired at the list literal first (Phase 2.2
+			// gate), not at the for-loop. Either diagnostic is fine
+			// so long as the source is rejected.
+			want: "Phase 2.2",
+		},
+		{
+			name:    "call_undefined",
+			program: "print(bogus(1))\n",
+			want:    "unresolved callee",
 		},
 		{
 			name:    "mixed_int_float_arith",
@@ -60,6 +84,11 @@ func TestLowerRejectsPhase22Plus(t *testing.T) {
 			want:    "immutable",
 		},
 		{
+			name:    "assign_to_for_var",
+			program: "for i in 0..3 {\n  i = i + 1\n}\n",
+			want:    "immutable",
+		},
+		{
 			name:    "assign_to_undeclared",
 			program: "x = 1\n",
 			want:    "undeclared",
@@ -73,6 +102,31 @@ func TestLowerRejectsPhase22Plus(t *testing.T) {
 			name:    "while_cond_not_bool",
 			program: "while 1 { print(1) }\n",
 			want:    "while cond must be bool",
+		},
+		{
+			name:    "for_range_start_not_int",
+			program: "for x in 1.0..3.0 { print(x) }\n",
+			want:    "must be int",
+		},
+		{
+			name:    "value_return_from_main",
+			program: "return 1\n",
+			want:    "bare `return` only",
+		},
+		{
+			name:    "missing_value_return",
+			program: "fun foo(): int {\n  return\n}\nprint(foo())\n",
+			want:    "return without a value",
+		},
+		{
+			name:    "return_wrong_type",
+			program: "fun foo(): int {\n  return 1.5\n}\nprint(foo())\n",
+			want:    "function returns",
+		},
+		{
+			name:    "print_in_expr_position",
+			program: "let x = print(1)\n",
+			want:    "unit",
 		},
 	}
 	for _, c := range cases {

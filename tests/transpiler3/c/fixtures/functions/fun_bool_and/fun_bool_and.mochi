@@ -1,0 +1,7 @@
+fun both(a: bool, b: bool): bool {
+  return a && b
+}
+
+print(both(true, true))
+print(both(true, false))
+print(both(false, true))

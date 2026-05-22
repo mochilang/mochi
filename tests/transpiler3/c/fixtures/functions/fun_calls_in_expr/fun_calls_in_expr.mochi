@@ -1,0 +1,11 @@
+fun dbl(x: int): int {
+  return x * 2
+}
+
+fun trp(x: int): int {
+  return x * 3
+}
+
+let total = dbl(5) + trp(4)
+print(total)
+print(dbl(trp(2)))

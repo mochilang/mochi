@@ -30,7 +30,7 @@ Primitives + control flow is the smallest set that gets a real (non-toy) Mochi p
 |-----|----------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 2.0 | `int` (`int64_t`), `float` (`double`), `bool`; arithmetic; comparisons; short-circuit `&&` / `||`  | IN PROGRESS | —      | — |
 | 2.1 | `let`/`var`, `if`/`else`, `while`, `return`, `break`, `continue`                                   | IN PROGRESS | —      | — |
-| 2.2 | `for x in start..end` (int range); user-defined multi-arg functions                                | NOT STARTED | —      | — |
+| 2.2 | `for x in start..end` (int range); user-defined multi-arg functions                                | IN PROGRESS | —      | — |
 | 2.3 | Integer divide-by-zero raises `MOCHI_ERR_DIVZERO` (checked profile); UB under `--fast-int`         | NOT STARTED | —      | — |
 | 2.4 | Float NaN propagation matches vm3 byte-for-byte (IEEE 754 round-trip on `%.17g`)                   | NOT STARTED | —      | — |
 
@@ -150,6 +150,121 @@ functions (2.2), no records/lists (Phase 3).
   end-to-end gate across every
   `tests/transpiler3/c/fixtures/control-flow/<name>` directory
   (26 fixtures at landing time).
+
+## Sub-phase 2.2 -- 2026-05-22 20:49 (GMT+7)
+
+### Goal-alignment audit (2.2)
+
+2.1 gets the C-AOT pipeline up to script-style programs (binding +
+conditional + loop). 2.2 is where Mochi becomes a *composable*
+language under C-AOT: user-defined functions split a program into
+reusable units, and `for x in start..end` covers the bounded-counter
+loop that vm3 specialises in. With 2.2 landed the fib / factorial /
+sum-of-squares benchmarks compile to native binaries that match vm3
+byte-for-byte. Strict slice: every user fn must have explicit
+parameter types and an explicit non-unit return type (no inference);
+nested funs deferred; closures deferred; first-class functions
+deferred; list iteration deferred to Phase 3 with lists.
+
+### Decisions made (2.2)
+
+- **Two-pass Lower.** Pass 1 walks every top-level statement, picks
+  out every `fun` decl, and records its signature into a shared
+  `map[string]*funcSig`. Pass 2 lowers the body of every fun (with
+  parameters seeded into the function-level scope as immutable
+  bindings) and then lowers the remaining top-level statements into
+  main(). Two passes mean a fun can call another fun declared later
+  in the source without a forward-declaration ceremony at the Mochi
+  level; the emit pass adds the C forward declarations.
+- **Explicit param + return types required.** `fun f(x): int` (param
+  type missing) or `fun f(x: int)` (return type missing) each
+  surface a phase-named diagnostic instead of inferring. Keeps the
+  C-AOT monomorpher trivial; full inference + generics land in Phase
+  3 alongside the type-parameter machinery.
+- **No nested fun decls.** A `fun` inside another fun's body is
+  rejected with "nested `fun` declarations are not supported in
+  Phase 2.2". Closures land later; until then nested funs would
+  silently capture the enclosing scope and surprise the user.
+- **`CallExpr` is a value-producing user-fn call.** Builtins
+  (`mochi_print_*`) are unit-return and so always go through
+  `CallStmt`; they cannot appear in an expression position. The
+  lowerer rejects `let x = print(1)` explicitly. Phase 3 will add
+  `Result = TypeUnit` to CallExpr when the parser starts surfacing
+  void user fns; for now `Result` is always one of the scalar types.
+- **Discard-result user calls reuse CallStmt.** A bare `foo()` at
+  statement position lowers to `CallStmt{Func, Args}` regardless of
+  the callee's return type. C silently discards the return value
+  with no warning under `-Wall -Wextra -pedantic`, which matches
+  Mochi semantics. The emit pass renders it as `foo(...);`.
+- **ForRangeStmt is half-open `[Start, End)`.** Mirrors vm3 and
+  matches the parser's `for x in start..end` shape. An empty range
+  (`5..2`) prints nothing and falls through, again byte-equal to
+  vm3.
+- **Induction variable is immutable inside the body.** Lower stamps
+  the var as `mutable: false` in a fresh scope; reassigning it
+  inside the loop body is a lower-time error. Matches Mochi
+  reference semantics; lets the emit pass declare the C induction
+  variable as a plain `int64_t` without bothering with `const` (the
+  variable still has to mutate across iterations).
+- **End expression is hoisted into a sentinel.** The emit pass
+  evaluates the End expression exactly once at loop entry and stores
+  it in `__mochi_end_<Var>`. Avoids re-evaluating a side-effecting
+  bound on every iteration; matches vm3, which evaluates `end` once
+  before the loop body runs.
+- **Forward declarations emitted before main.** Every non-entry
+  function gets a `static <ret> name(<params>);` prototype at file
+  scope, sorted alphabetically (Phase 17 reproducibility). Lets
+  mutual recursion compile clean even when emit picks an order that
+  doesn't happen to put the callee first. The entry function takes
+  the C `int main(void)` signature and is never forward-declared
+  (nothing calls it from inside the translation unit).
+- **`emitFunctionPrototype` shared between proto and definition.**
+  Single source of truth for `static <ret> name(<params>)` so the
+  prototype and the body header can never drift; defining a new
+  parameter type only requires one switch in `cType`.
+- **Bool return uses C `int`.** `cReturnType(TypeBool) = "int"`, in
+  step with `cType(TypeBool) = "int"`. The runtime ABI keeps everything
+  on the `int` lane, so a bool-returning fn flows into
+  `mochi_print_bool` without an explicit cast.
+- **Reserved Mochi keyword names are out.** A user fn named `fact`
+  or `from` or `select` would parse as the start of a fact statement
+  / query clause. The lowerer doesn't filter these; the parser
+  refuses the source. Phase 2.2 fixtures intentionally use
+  non-keyword identifiers (`factorial` not `fact`).
+- **C keyword collision is the user's problem.** `fun double(...)`
+  parses fine on the Mochi side but `double(arg)` reads as a C
+  cast in the emitted source. Phase 2.2 does not mangle user fn
+  names; it relies on Mochi sources avoiding C-keyword identifiers.
+  Phase 11 (build-system hardening) revisits this with a name
+  mangler if real-world code starts colliding.
+- **Lower rejects 2.3+ shapes loudly.** `let xs = [1,2,3]` (lists),
+  `for x in xs` (list iteration), `type T { ... }` (records), unit
+  return type on a user fn (only the entry function returns unit),
+  and a value-returning return from main each surface a phase-named
+  diagnostic. The reject test moves from `Phase22Plus` to
+  `Phase23Plus` to reflect the broader surface.
+
+### Test set (2.2)
+
+- `transpiler3/c/aotir/verifier_phase22_test.go::TestVerifyPhase22`
+  -- 17 cases covering CallExpr arity/arg/result invariants, mutual
+  recursion, ForRangeStmt scope + immutability, signature
+  invariants on main, and duplicate-name rejection.
+- `transpiler3/c/emit/emit_phase22_test.go::TestEmitPhase22Functions`
+  -- 7 cases pinning the forward-decl prologue, the prototype +
+  definition agreement, value-returning return emission, the
+  for-range sentinel layout, and sort-by-name reproducibility.
+- `transpiler3/c/lower/lower_reject_test.go::TestLowerRejectsPhase23Plus`
+  -- 22 negative cases pinning the new 2.2 surface boundary
+  (list/record/type/fun-missing-types/list-iter/etc.).
+- `transpiler3/c/build/phase02_2_test.go::TestPhase2Functions` --
+  end-to-end gate across every
+  `tests/transpiler3/c/fixtures/functions/<name>` directory (16
+  fixtures at landing time).
+- `transpiler3/c/build/phase02_2_test.go::TestPhase2ForRange` --
+  end-to-end gate across every
+  `tests/transpiler3/c/fixtures/for-range/<name>` directory (10
+  fixtures at landing time).
 
 ## Decisions made
 

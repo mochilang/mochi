@@ -1,0 +1,8 @@
+fun shout(n: int): int {
+  print(n)
+  return n
+}
+
+shout(1)
+shout(2)
+shout(3)

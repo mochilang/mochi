@@ -1,0 +1,6 @@
+fun neg(x: int): int {
+  return -x
+}
+
+print(neg(5))
+print(neg(-3))

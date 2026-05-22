@@ -1,0 +1,6 @@
+for i in 0..6 {
+  if i % 2 == 0 {
+    continue
+  }
+  print(i)
+}

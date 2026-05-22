@@ -19,6 +19,14 @@ type Program struct {
 	Main int
 }
 
+// Param is one formal parameter of a Function. Phase 2.2 introduces
+// user-defined multi-arg functions; before then the only callable
+// was main() which took none.
+type Param struct {
+	Name string
+	Type Type
+}
+
 // Function is one monomorphic, closure-converted callable.
 type Function struct {
 	// Name is the mangled, emit-stable identifier. The mangling
@@ -26,6 +34,10 @@ type Function struct {
 	// type arguments to a C identifier; the verifier checks
 	// uniqueness across the Program.
 	Name string
+
+	// Params lists the formal parameters in source order.
+	// The entry function (Main) has zero params.
+	Params []Param
 
 	// ReturnType is the function's monomorphic return type.
 	ReturnType Type
@@ -53,7 +65,9 @@ type Stmt interface {
 // CallStmt is a procedure call evaluated for its side effect.
 // The callee is a runtime builtin or a previously declared
 // function; the verifier resolves Func against the active
-// symbol set.
+// symbol set. When the callee returns a non-unit value, the
+// statement form discards it (Mochi `foo()` at top level for a
+// non-void foo).
 type CallStmt struct {
 	// Func is the mangled callee name.
 	Func string
@@ -65,6 +79,19 @@ type CallStmt struct {
 }
 
 func (*CallStmt) isStmt() {}
+
+// CallExpr is a value-producing call to a user-defined function
+// (Phase 2.2). Builtins like the print family always return unit
+// and so do not appear here. The lowerer resolves Func against the
+// Program's function table at lower time and stamps Result with the
+// callee's ReturnType; the verifier re-checks both invariants.
+type CallExpr struct {
+	Func   string
+	Args   []Expr
+	Result Type
+}
+
+func (c *CallExpr) Type() Type { return c.Result }
 
 // Expr is a value-producing aotir node. Phase 1 ships only
 // StringLit; Phase 2.0 adds the scalar literals plus binary
@@ -245,14 +272,31 @@ func (*IfStmt) isStmt() {}
 
 // WhileStmt is a pre-test loop. The body executes while Cond
 // evaluates true. BreakStmt and ContinueStmt inside Body refer
-// to the nearest enclosing WhileStmt; the verifier enforces that
-// they appear only in loop scope.
+// to the nearest enclosing loop; the verifier enforces that they
+// appear only in loop scope.
 type WhileStmt struct {
 	Cond Expr   // must be TypeBool
 	Body *Block
 }
 
 func (*WhileStmt) isStmt() {}
+
+// ForRangeStmt iterates Var over the half-open integer interval
+// [Start, End). Phase 2.2 only covers the int-range form of Mochi's
+// `for x in start..end`; list iteration lands with Phase 3.
+//
+// The induction variable is treated as immutable inside the body
+// (assignment to Var is rejected), matching Mochi reference
+// semantics. BreakStmt / ContinueStmt inside Body refer to this
+// loop; the verifier increments its loop-depth counter accordingly.
+type ForRangeStmt struct {
+	Var   string
+	Start Expr // must be TypeInt
+	End   Expr // must be TypeInt
+	Body  *Block
+}
+
+func (*ForRangeStmt) isStmt() {}
 
 // BreakStmt exits the nearest enclosing WhileStmt (Phase 2.2 will
 // extend to ForStmt). The verifier rejects BreakStmt outside a
@@ -267,9 +311,11 @@ type ContinueStmt struct{}
 
 func (*ContinueStmt) isStmt() {}
 
-// ReturnStmt exits the enclosing function. Phase 2.1 only supports
-// no-value returns from main (which compiles to `return 0;`);
-// Phase 2.2 widens this to value-returning user functions.
+// ReturnStmt exits the enclosing function. A nil Value is a bare
+// return; the verifier requires it iff the enclosing function
+// returns TypeUnit. A non-nil Value must produce the function's
+// declared ReturnType. Phase 2.2 widens this to value-returning
+// user functions.
 type ReturnStmt struct {
 	Value Expr // nil for void return
 }
