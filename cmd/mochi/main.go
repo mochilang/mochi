@@ -35,6 +35,7 @@ import (
 	"mochi/archived/interpreter"
 	cbuild "mochi/compiler3/build/c"
 	gobuild "mochi/compiler3/build/go"
+	aotcbuild "mochi/transpiler3/c/build"
 	"mochi/mcp"
 	"mochi/parser"
 	"mochi/repl"
@@ -73,9 +74,9 @@ type CLI struct {
 // --out, shells to the system cc, and writes a native executable.
 type BuildCmd struct {
 	File           string `arg:"positional,required" help:"Path to .mochi source file"`
-	Target         string `arg:"--target" default:"go" help:"Target language (go|c)"`
-	Emit           string `arg:"--emit" default:"executable" help:"Emit shape (executable|go-library)"`
-	Out            string `arg:"--out" help:"Output directory (default: a fresh temp dir)"`
+	Target         string `arg:"--target" default:"go" help:"Target language (go|c|c-aot)"`
+	Emit           string `arg:"--emit" default:"executable" help:"Emit shape (executable|go-library|c). --target=c-aot accepts executable|c."`
+	Out            string `arg:"--out" help:"Output path. --target=go|c: output directory; --target=c-aot: binary path"`
 	KeepEmit       bool   `arg:"--keep-emit" help:"Retain the emitted source file(s) after build"`
 	Module         string `arg:"--module" help:"Module path baked into go.mod (required for --emit=go-library)"`
 	PkgName        string `arg:"--package" help:"Package name override"`
@@ -203,8 +204,10 @@ func runBuild(cmd *BuildCmd) error {
 		return runBuildGo(cmd)
 	case "c":
 		return runBuildC(cmd)
+	case "c-aot":
+		return runBuildCAOT(cmd)
 	default:
-		return fmt.Errorf("build: unsupported --target=%q (expected go|c)", cmd.Target)
+		return fmt.Errorf("build: unsupported --target=%q (expected go|c|c-aot)", cmd.Target)
 	}
 }
 
@@ -247,6 +250,46 @@ func runBuildGo(cmd *BuildCmd) error {
 		for _, f := range r.Files {
 			fmt.Printf("emitted %s\n", f)
 		}
+	}
+	return nil
+}
+
+// runBuildCAOT is the MEP-45 entry. It maps --out PATH (binary path,
+// not directory) and --emit=c|executable onto transpiler3/c/build.Driver
+// and runs the parse -> type-check -> lower -> emit -> cc pipeline.
+//
+// --emit=c (Phase 1.1): keep the generated C source as <out>.c next to
+// the binary. Default --emit=executable produces the binary only.
+func runBuildCAOT(cmd *BuildCmd) error {
+	if cmd.File == "" {
+		return errors.New("build: --target=c-aot requires a source file argument")
+	}
+	if cmd.Out == "" {
+		return errors.New("build: --target=c-aot requires --out PATH (binary output path)")
+	}
+	var keepEmit bool
+	switch cmd.Emit {
+	case "", "executable":
+		keepEmit = false
+	case "c":
+		keepEmit = true
+	default:
+		return fmt.Errorf("build: --target=c-aot does not support --emit=%q (expected executable|c)", cmd.Emit)
+	}
+	d := &aotcbuild.Driver{
+		CC:       cmd.CC,
+		KeepEmit: keepEmit,
+	}
+	if err := d.Build(cmd.File, cmd.Out, cmd.Triple, ""); err != nil {
+		return err
+	}
+	if d.CacheHit {
+		fmt.Printf("cached %s\n", cmd.Out)
+	} else {
+		fmt.Printf("binary %s\n", cmd.Out)
+	}
+	if keepEmit && d.EmittedCPath != "" {
+		fmt.Printf("source %s\n", d.EmittedCPath)
 	}
 	return nil
 }
@@ -774,9 +817,9 @@ func newBuildCmd() *cobra.Command {
 			return runBuild(&bc)
 		},
 	}
-	c.Flags().StringVar(&bc.Target, "target", "go", "Target language (go|c)")
-	c.Flags().StringVar(&bc.Emit, "emit", "executable", "Emit shape (executable|go-library)")
-	c.Flags().StringVar(&bc.Out, "out", "", "Output directory (default: a fresh temp dir)")
+	c.Flags().StringVar(&bc.Target, "target", "go", "Target language (go|c|c-aot)")
+	c.Flags().StringVar(&bc.Emit, "emit", "executable", "Emit shape (executable|go-library|c). --target=c-aot accepts executable|c (c keeps generated source as <out>.c).")
+	c.Flags().StringVar(&bc.Out, "out", "", "Output path. --target=go: output directory; --target=c-aot: binary path; --target=c: output directory")
 	c.Flags().BoolVar(&bc.KeepEmit, "keep-emit", false, "Retain the emitted source file(s) after build")
 	c.Flags().StringVar(&bc.Module, "module", "", "Module path baked into go.mod (required for --emit=go-library)")
 	c.Flags().StringVar(&bc.PkgName, "package", "", "Package name override")
