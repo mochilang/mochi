@@ -2904,6 +2904,66 @@ func TestBuildSourceV07EmptyListFixture(t *testing.T) {
 	}
 }
 
+// TestBuildSourceV01StreamFixture pins examples/v0.1/stream.mochi
+// (entirely block-commented out) on the C target. Before Phase 4.2.26
+// the build failed at link time with `Undefined symbols: _main`
+// because the frontend lowered the empty program to a Program with
+// no main function and the emitter then skipped main entirely. The
+// fix emits a no-op `int main(void) { return 0; }` whenever
+// p.Main == "", so a declaration-only or commented-out source builds
+// to a binary that runs and exits 0 with empty stdout.
+func TestBuildSourceV01StreamFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.1/stream.mochi")
+	if err != nil {
+		t.Fatalf("read v0.1 stream fixture: %v", err)
+	}
+	if got := runMochiBuild(t, string(srcBytes)); got != "" {
+		t.Errorf("v0.1/stream stdout = %q, want empty", got)
+	}
+}
+
+// TestBuildSourceV01AgentFixture pins examples/v0.1/agent.mochi (same
+// commented-out shape as v0.1/stream.mochi). Both v0.1 sources serve
+// as syntax-only references in the tutorial; the build target should
+// still produce a runnable binary with empty stdout instead of
+// failing at link time.
+func TestBuildSourceV01AgentFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.1/agent.mochi")
+	if err != nil {
+		t.Fatalf("read v0.1 agent fixture: %v", err)
+	}
+	if got := runMochiBuild(t, string(srcBytes)); got != "" {
+		t.Errorf("v0.1/agent stdout = %q, want empty", got)
+	}
+}
+
+// TestBuildSourceV06ExternFixture pins examples/v0.6/extern.mochi, a
+// declaration-only script: `extern type ...`, `extern var ...`,
+// `extern fun ...`, `extern object ...`. None of those have call
+// sites in the body (the only call sites are inside a block
+// comment). Lower produces an empty Program; Phase 4.2.26's no-op
+// main keeps the cc link step from failing.
+func TestBuildSourceV06ExternFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.6/extern.mochi")
+	if err != nil {
+		t.Fatalf("read v0.6 extern fixture: %v", err)
+	}
+	if got := runMochiBuild(t, string(srcBytes)); got != "" {
+		t.Errorf("v0.6/extern stdout = %q, want empty", got)
+	}
+}
+
+// TestBuildSourceEmptyScriptLinks covers the empty-statement edge
+// case directly: a script with literally no statements (after parsing
+// strips comments) must link and run. Without Phase 4.2.26 the cc
+// step would fail with `Undefined symbols: _main`.
+func TestBuildSourceEmptyScriptLinks(t *testing.T) {
+	src := "// just a comment, no statements\n"
+	if got := runMochiBuild(t, src); got != "" {
+		t.Errorf("empty-script stdout = %q, want empty", got)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.
