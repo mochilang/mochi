@@ -74,6 +74,38 @@ const sidebars = {
       items: g.items,
     })),
   ],
+
+  implementationSidebar: [
+    'implementation/0045/index',
+    {
+      label: 'MEP-45 phases',
+      type: 'category',
+      className: 'sidebar-heading',
+      collapsed: false,
+      items: [
+        'implementation/0045/phase-00-skeleton',
+        'implementation/0045/phase-01-hello-world',
+        'implementation/0045/phase-02-primitives-control-flow',
+        'implementation/0045/phase-03-records-collections',
+        'implementation/0045/phase-04-sum-types-match',
+        'implementation/0045/phase-05-closures',
+        'implementation/0045/phase-06-strings-io',
+        'implementation/0045/phase-07-error-model',
+        'implementation/0045/phase-08-query-dsl',
+        'implementation/0045/phase-09-streams-agents',
+        'implementation/0045/phase-10-ffi',
+        'implementation/0045/phase-11-cross-tier1',
+        'implementation/0045/phase-12-wasm-wasi',
+        'implementation/0045/phase-13-ape',
+        'implementation/0045/phase-14-llm',
+        'implementation/0045/phase-15-datalog',
+        'implementation/0045/phase-16-sanitisers',
+        'implementation/0045/phase-17-reproducibility',
+        'implementation/0045/phase-18-perf',
+        'implementation/0045/phase-19-release',
+      ],
+    },
+  ],
 };
 
 module.exports = sidebars;

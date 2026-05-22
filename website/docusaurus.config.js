@@ -106,6 +106,12 @@ const config = {
             label: 'MEPs',
           },
           {
+            type: 'docSidebar',
+            sidebarId: 'implementationSidebar',
+            position: 'left',
+            label: 'Implementation',
+          },
+          {
             to: '/docs/roadmap',
             label: 'Roadmap',
             position: 'left',
