@@ -38,6 +38,21 @@ type Driver struct {
 	// EmittedCPath, set by Build on success when KeepEmit=true,
 	// is the absolute path the emitted C source was written to.
 	EmittedCPath string
+
+	// NoCache disables both cache lookup and cache store. Used by
+	// tests that want to exercise the full pipeline deterministically
+	// without depending on per-host cache state.
+	NoCache bool
+
+	// CacheDir overrides the default cache root (see CacheRoot()).
+	// Tests set this to a per-test tempdir to avoid leaking state.
+	CacheDir string
+
+	// CacheHit is set by Build on success and indicates whether
+	// the output binary came from the cache (true) or was freshly
+	// compiled (false). The CLI exposes this on the `cached <path>`
+	// output line.
+	CacheHit bool
 }
 
 // Build is the source-to-binary entry point. src is a Mochi
@@ -54,6 +69,48 @@ func (d *Driver) Build(src, out, target, profile string) error {
 	}
 	if out == "" {
 		return errors.New("transpiler3/c/build: output path is required")
+	}
+
+	d.CacheHit = false
+	d.EmittedCPath = ""
+
+	srcBytes, srcErr := os.ReadFile(src)
+	if srcErr != nil {
+		return fmt.Errorf("transpiler3/c/build: read %s: %w", src, srcErr)
+	}
+
+	absOut, err := filepath.Abs(out)
+	if err != nil {
+		return fmt.Errorf("transpiler3/c/build: abs %s: %w", out, err)
+	}
+	if err := os.MkdirAll(filepath.Dir(absOut), 0o755); err != nil {
+		return fmt.Errorf("transpiler3/c/build: mkdir out: %w", err)
+	}
+
+	var cacheRoot, key string
+	useCache := !d.NoCache && !d.KeepEmit
+	if useCache {
+		root := d.CacheDir
+		if root == "" {
+			root, err = CacheRoot()
+			if err != nil {
+				return fmt.Errorf("transpiler3/c/build: %w", err)
+			}
+		}
+		rtHash, err := runtimeFingerprint()
+		if err != nil {
+			return fmt.Errorf("transpiler3/c/build: runtime fingerprint: %w", err)
+		}
+		cacheRoot = root
+		key = cacheKey(src, srcBytes, profile, target, rtHash)
+		hit, err := cacheLookup(cacheRoot, key, absOut)
+		if err != nil {
+			return fmt.Errorf("transpiler3/c/build: cache lookup: %w", err)
+		}
+		if hit {
+			d.CacheHit = true
+			return nil
+		}
 	}
 
 	prog, err := parser.Parse(src)
@@ -101,14 +158,6 @@ func (d *Driver) Build(src, out, target, profile string) error {
 		return fmt.Errorf("transpiler3/c/build: %w", err)
 	}
 
-	absOut, err := filepath.Abs(out)
-	if err != nil {
-		return fmt.Errorf("transpiler3/c/build: abs %s: %w", out, err)
-	}
-	if err := os.MkdirAll(filepath.Dir(absOut), 0o755); err != nil {
-		return fmt.Errorf("transpiler3/c/build: mkdir out: %w", err)
-	}
-
 	args := []string{
 		"-std=c2x",
 		"-Wall", "-Wextra", "-pedantic",
@@ -132,6 +181,11 @@ func (d *Driver) Build(src, out, target, profile string) error {
 			}
 		}
 		d.EmittedCPath = final
+	}
+	if useCache {
+		if storeErr := cacheStore(cacheRoot, key, absOut); storeErr != nil {
+			return fmt.Errorf("transpiler3/c/build: cache store: %w", storeErr)
+		}
 	}
 	return nil
 }

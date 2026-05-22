@@ -283,7 +283,11 @@ func runBuildCAOT(cmd *BuildCmd) error {
 	if err := d.Build(cmd.File, cmd.Out, cmd.Triple, ""); err != nil {
 		return err
 	}
-	fmt.Printf("binary %s\n", cmd.Out)
+	if d.CacheHit {
+		fmt.Printf("cached %s\n", cmd.Out)
+	} else {
+		fmt.Printf("binary %s\n", cmd.Out)
+	}
 	if keepEmit && d.EmittedCPath != "" {
 		fmt.Printf("source %s\n", d.EmittedCPath)
 	}

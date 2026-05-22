@@ -48,7 +48,7 @@ func TestHello(t *testing.T) {
 	}
 
 	outBin := filepath.Join(t.TempDir(), "hello")
-	d := &Driver{}
+	d := &Driver{CacheDir: t.TempDir()}
 	if err := d.Build(src, outBin, "", ""); err != nil {
 		t.Fatalf("Driver.Build: %v", err)
 	}
