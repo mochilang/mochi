@@ -1,0 +1,11 @@
+type Pt {
+  x: int
+  y: int
+}
+
+fun first_x(ps: list<Pt>): int {
+  return ps[0].x
+}
+
+let qs = [Pt { x: 7, y: 8 }, Pt { x: 9, y: 10 }]
+print(first_x(qs))

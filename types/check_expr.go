@@ -405,6 +405,28 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 				return nil, errInvalidCast(op.Pos, typ, target)
 			}
 			typ = target
+		} else if f := op.Field; f != nil {
+			// `e.f` after an Index, Call, or Cast step. The bare
+			// selector path in checkPrimary already collapses prefix
+			// `Root.tail` field walks into the symbol resolution, so
+			// reaching this branch requires a non-selector receiver
+			// like `xs[0].x` or `mk().x`.
+			switch t := typ.(type) {
+			case StructType:
+				if ft, ok := t.FieldType(f.Name); ok {
+					typ = ft
+					continue
+				}
+				if m, ok := t.Methods[f.Name]; ok {
+					typ = m.Type
+					continue
+				}
+				return nil, errUnknownField(op.Pos, f.Name, t)
+			case AnyType:
+				typ = AnyType{}
+			default:
+				return nil, errNotStruct(op.Pos, typ)
+			}
 		} else if sf := op.SafeField; sf != nil {
 			// MEP-16 R5: `a?.f` requires `a : T?` and lifts `T.f : U`
 			// back into `U?`. If the receiver is already `U?` from an

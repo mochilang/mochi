@@ -53,14 +53,18 @@ type RecordField struct {
 // adds KeyType + ValueType, valid when Type==TypeMap; both are
 // scalar primitives drawn from the 3.2 per-(K,V) instantiation
 // set (K ∈ {TypeInt, TypeString}, V ∈ {TypeInt, TypeFloat,
-// TypeBool, TypeString}).
+// TypeBool, TypeString}). Phase 3.4 adds ElemRecordName, valid when
+// Type==TypeList and ElemType==TypeRecord, carrying the element
+// record's identity so the emit pass can pick the right per-record
+// list helper instantiation.
 type Param struct {
-	Name       string
-	Type       Type
-	RecordName string
-	ElemType   Type
-	KeyType    Type
-	ValueType  Type
+	Name           string
+	Type           Type
+	RecordName     string
+	ElemType       Type
+	ElemRecordName string
+	KeyType        Type
+	ValueType      Type
 }
 
 // Function is one monomorphic, closure-converted callable.
@@ -84,8 +88,10 @@ type Function struct {
 
 	// ReturnElemType carries the element type when
 	// ReturnType==TypeList. Phase 3.1 restricts it to the four
-	// scalar primitives.
-	ReturnElemType Type
+	// scalar primitives; Phase 3.4 widens it to TypeRecord with
+	// ReturnElemRecordName naming the element record.
+	ReturnElemType       Type
+	ReturnElemRecordName string
 
 	// ReturnKeyType and ReturnValueType carry the K/V identities
 	// when ReturnType==TypeMap. Phase 3.2 restricts the pair to
@@ -137,13 +143,14 @@ func (*CallStmt) isStmt() {}
 // Program's function table at lower time and stamps Result with the
 // callee's ReturnType; the verifier re-checks both invariants.
 type CallExpr struct {
-	Func             string
-	Args             []Expr
-	Result           Type
-	ResultRecordName string // valid when Result==TypeRecord
-	ResultElemType   Type   // valid when Result==TypeList
-	ResultKeyType    Type   // valid when Result==TypeMap
-	ResultValueType  Type   // valid when Result==TypeMap
+	Func                 string
+	Args                 []Expr
+	Result               Type
+	ResultRecordName     string // valid when Result==TypeRecord
+	ResultElemType       Type   // valid when Result==TypeList
+	ResultElemRecordName string // valid when Result==TypeList && ResultElemType==TypeRecord
+	ResultKeyType        Type   // valid when Result==TypeMap
+	ResultValueType      Type   // valid when Result==TypeMap
 }
 
 func (c *CallExpr) Type() Type { return c.Result }
@@ -299,12 +306,13 @@ func (u *UnaryExpr) Type() Type { return u.Result }
 // Phase 3.0 adds RecordName, valid when VarType==TypeRecord. Phase
 // 3.1 adds ElemType, valid when VarType==TypeList.
 type VarRef struct {
-	Name       string
-	VarType    Type
-	RecordName string
-	ElemType   Type
-	KeyType    Type // valid when VarType==TypeMap
-	ValueType  Type // valid when VarType==TypeMap
+	Name           string
+	VarType        Type
+	RecordName     string
+	ElemType       Type
+	ElemRecordName string // valid when VarType==TypeList && ElemType==TypeRecord
+	KeyType        Type   // valid when VarType==TypeMap
+	ValueType      Type   // valid when VarType==TypeMap
 }
 
 func (v *VarRef) Type() Type { return v.VarType }
@@ -350,14 +358,15 @@ func (f *FieldAccess) Type() Type { return f.Result }
 // Mochi `let x = expr` lowers here; the verifier rejects rebinding
 // or assignment to a LetStmt name (mutability lives on VarStmt).
 type LetStmt struct {
-	Name       string
-	VarType    Type
-	RecordName string // valid when VarType==TypeRecord
-	ElemType   Type   // valid when VarType==TypeList
-	KeyType    Type   // valid when VarType==TypeMap
-	ValueType  Type   // valid when VarType==TypeMap
-	Init       Expr
-	Mutable    bool // true for VarStmt-lowered bindings
+	Name           string
+	VarType        Type
+	RecordName     string // valid when VarType==TypeRecord
+	ElemType       Type   // valid when VarType==TypeList
+	ElemRecordName string // valid when VarType==TypeList && ElemType==TypeRecord
+	KeyType        Type   // valid when VarType==TypeMap
+	ValueType      Type   // valid when VarType==TypeMap
+	Init           Expr
+	Mutable        bool // true for VarStmt-lowered bindings
 }
 
 func (*LetStmt) isStmt() {}
@@ -438,11 +447,15 @@ func (*ReturnStmt) isStmt() {}
 
 // ListLit constructs a list value with a fresh backing buffer.
 // The lowerer requires every element to share ElemType (the four
-// scalar primitives, Phase 3.1) and stamps ElemType onto the node;
-// the emitter renders this as a `mochi_list_<T>_lit` call.
+// scalar primitives, Phase 3.1; Phase 3.4 widens to TypeRecord with
+// ElemRecordName naming the element record) and stamps ElemType /
+// ElemRecordName onto the node; the emitter renders this as a
+// `mochi_list_<T>_lit` call for scalar elements or
+// `mochi_list_<R>_lit` for record elements.
 type ListLit struct {
-	ElemType Type
-	Elems    []Expr
+	ElemType       Type
+	ElemRecordName string // valid when ElemType==TypeRecord
+	Elems          []Expr
 }
 
 func (*ListLit) Type() Type { return TypeList }
@@ -451,11 +464,14 @@ func (*ListLit) Type() Type { return TypeList }
 // verifier checks Receiver.Type()==TypeList, Index.Type()==TypeInt,
 // and stamps Result with the receiver's ElemType (carried as
 // ElemType here too for emit-time helper-suffix selection). Bounds
-// are checked at runtime inside the per-T `_index` helper.
+// are checked at runtime inside the per-T `_index` helper. Phase 3.4
+// adds ElemRecordName for list<R> receivers; the helper returns a
+// `struct mochi_<R>` by value.
 type IndexExpr struct {
-	Receiver Expr
-	Index    Expr
-	ElemType Type // receiver's element type; equals Result for scalar elems
+	Receiver       Expr
+	Index          Expr
+	ElemType       Type
+	ElemRecordName string // valid when ElemType==TypeRecord
 }
 
 func (i *IndexExpr) Type() Type { return i.ElemType }
@@ -463,10 +479,12 @@ func (i *IndexExpr) Type() Type { return i.ElemType }
 // LenExpr is the `len(xs)` builtin call when xs is a list. The
 // verifier checks Receiver.Type()==TypeList and stamps the result
 // as TypeInt. ElemType is carried so the emitter can pick the
-// `_len` helper suffix.
+// `_len` helper suffix; Phase 3.4 adds ElemRecordName for list<R>
+// receivers so the suffix can resolve to the per-record helper.
 type LenExpr struct {
-	Receiver Expr
-	ElemType Type
+	Receiver       Expr
+	ElemType       Type
+	ElemRecordName string // valid when ElemType==TypeRecord
 }
 
 func (*LenExpr) Type() Type { return TypeInt }
@@ -477,10 +495,12 @@ func (*LenExpr) Type() Type { return TypeInt }
 // emitter renders this as a `mochi_list_<T>_append` call; the
 // helper allocates a new buffer and returns a fresh list value,
 // so the input is never mutated (functional append semantics).
+// Phase 3.4 adds ElemRecordName for list<R> receivers.
 type AppendExpr struct {
-	Receiver Expr
-	Value    Expr
-	ElemType Type
+	Receiver       Expr
+	Value          Expr
+	ElemType       Type
+	ElemRecordName string // valid when ElemType==TypeRecord
 }
 
 func (a *AppendExpr) Type() Type { return TypeList }
@@ -491,12 +511,13 @@ func (a *AppendExpr) Type() Type { return TypeList }
 // Body's scope with type ElemType; BreakStmt / ContinueStmt inside
 // Body refer to this loop. The emitter compiles to a C `for` loop
 // over indices [0, List.len) reading `List.data[i]` once per
-// iteration.
+// iteration. Phase 3.4 adds ElemRecordName for list<R> iteration.
 type ForEachStmt struct {
-	Var      string
-	List     Expr
-	ElemType Type
-	Body     *Block
+	Var            string
+	List           Expr
+	ElemType       Type
+	ElemRecordName string // valid when ElemType==TypeRecord
+	Body           *Block
 }
 
 func (*ForEachStmt) isStmt() {}

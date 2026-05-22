@@ -12,7 +12,9 @@ import (
 // shapes that belong in Phase 3.2 onward (maps, sets, generics,
 // casts, none/Option, fun-expressions) must produce a clear,
 // phase-named or otherwise-explicit diagnostic rather than silently
-// being miscompiled. Records (3.0) and lists (3.1) are now accepted.
+// being miscompiled. Records (3.0), lists (3.1), and list<R>
+// (Phase 3.4a) are now accepted; nested lists remain rejected
+// pending Phase 3.4b.
 func TestLowerRejectsPhase31Plus(t *testing.T) {
 	cases := []struct {
 		name    string
@@ -40,14 +42,9 @@ func TestLowerRejectsPhase31Plus(t *testing.T) {
 			want:    "explicit `: T` type",
 		},
 		{
-			name:    "list_of_record",
-			program: "type Pt { x: int }\nlet pts = [Pt{x: 1}]\n",
-			want:    "Phase 3.1",
-		},
-		{
 			name:    "nested_list",
 			program: "let xs = [[1, 2], [3]]\n",
-			want:    "Phase 3.1",
+			want:    "Phase 3.4",
 		},
 		{
 			name:    "empty_list_literal",
