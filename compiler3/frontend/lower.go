@@ -1754,6 +1754,8 @@ func (b *builder) lowerPrimary(p *parser.Primary) (uint32, error) {
 		return b.lowerMapLiteralAsExpr(p.Map)
 	case p.Match != nil:
 		return b.lowerMatchExpr(p.Match)
+	case p.If != nil:
+		return b.lowerIfExpr(p.If)
 	case p.Group != nil:
 		return b.lowerExpr(p.Group)
 	}
@@ -1916,6 +1918,69 @@ func (b *builder) lowerMatchExpr(m *parser.MatchExpr) (uint32, error) {
 		Args: phiArgs,
 	})
 	return phiVid, nil
+}
+
+// lowerIfExpr lowers `if cond then T else E` (or its `else if ...` chain)
+// as an expression. The condition lowers in the current block, then two
+// fresh successor blocks evaluate each branch. Both branches must produce
+// the same value type; the merge block phi-joins (thenEnd, thenVal) and
+// (elseEnd, elseVal). Unlike lowerIf (the statement form), an if-expr
+// requires an else branch (an expression must always produce a value)
+// and does not snapshot/restore the variable env, since branch
+// expressions are pure subterms that introduce no bindings.
+func (b *builder) lowerIfExpr(e *parser.IfExpr) (uint32, error) {
+	cond, err := b.lowerExpr(e.Cond)
+	if err != nil {
+		return 0, err
+	}
+	if got := b.fn.Values[cond].Type; got != ir.TypeBool {
+		return 0, fmt.Errorf("frontend: if-expr cond has Type %s, want bool", got)
+	}
+	if e.ElseIf == nil && e.Else == nil {
+		return 0, fmt.Errorf("frontend: if-expr must have an else branch")
+	}
+
+	thenID := b.fn.AddBlock()
+	elseID := b.fn.AddBlock()
+	mergeID := b.fn.AddBlock()
+	b.terminator(ir.Terminator{Kind: ir.TermBranch, Value: cond, IfTrue: thenID, IfFalse: elseID})
+
+	b.curBlock = thenID
+	b.terminated = false
+	thenVal, err := b.lowerExpr(e.Then)
+	if err != nil {
+		return 0, err
+	}
+	thenEnd := b.curBlock
+	b.terminator(ir.Terminator{Kind: ir.TermJump, Target: mergeID})
+
+	b.curBlock = elseID
+	b.terminated = false
+	var elseVal uint32
+	if e.ElseIf != nil {
+		elseVal, err = b.lowerIfExpr(e.ElseIf)
+	} else {
+		elseVal, err = b.lowerExpr(e.Else)
+	}
+	if err != nil {
+		return 0, err
+	}
+	elseEnd := b.curBlock
+	b.terminator(ir.Terminator{Kind: ir.TermJump, Target: mergeID})
+
+	thenType := b.fn.Values[thenVal].Type
+	elseType := b.fn.Values[elseVal].Type
+	if thenType != elseType {
+		return 0, fmt.Errorf("frontend: if-expr branches differ in type: then %s vs else %s", thenType, elseType)
+	}
+
+	b.curBlock = mergeID
+	b.terminated = false
+	return b.addValue(ir.Value{
+		Type: thenType,
+		Op:   ir.OpPhi,
+		Args: []uint32{thenEnd, thenVal, elseEnd, elseVal},
+	}), nil
 }
 
 // lowerMapLiteralAsExpr lowers a bare `{...}` map literal used as an

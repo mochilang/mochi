@@ -2070,6 +2070,78 @@ print(classify(5))
 	}
 }
 
+// TestBuildSourceIfExprStr pins MEP-42 Phase 4.2.12: `if cond then T
+// else E` as an expression in a binding position. Before this phase
+// the frontend rejected `let r = if ...` with `primary form
+// unsupported in MVP`; after it, the expression lowers to a 2-way
+// branch + phi at the merge block, with both arms required to share
+// a value type.
+func TestBuildSourceIfExprStr(t *testing.T) {
+	src := `let x = 12
+let result = if x > 10 then "yes" else "no"
+print(result)
+`
+	if got, want := runMochiBuild(t, src), "yes\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceIfExprInt pins the i64 result path: both branches
+// produce TypeI64, the merge phi infers TypeI64, and the bound name
+// flows into print as i64.
+func TestBuildSourceIfExprInt(t *testing.T) {
+	src := `let n = 3
+let abs = if n < 0 then 0 - n else n
+print(abs)
+`
+	if got, want := runMochiBuild(t, src), "3\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceIfExprElseIfChain pins the `else if` recursion
+// inside lowerIfExpr: the else branch becomes a nested if-expr that
+// itself produces a merge phi flowed into the outer phi.
+func TestBuildSourceIfExprElseIfChain(t *testing.T) {
+	src := `let n = 2
+let label = if n == 1 then "one" else if n == 2 then "two" else if n == 3 then "three" else "other"
+print(label)
+`
+	if got, want := runMochiBuild(t, src), "two\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceIfExprInReturn pins `return if ...` inside a fun:
+// the if-expr lowers in the return statement's expression slot, and
+// the merge phi flows into TermReturn.
+func TestBuildSourceIfExprInReturn(t *testing.T) {
+	src := `fun classify(n: int): string {
+  return if n < 0 then "negative" else if n == 0 then "zero" else "positive"
+}
+print(classify(-5))
+print(classify(0))
+print(classify(7))
+`
+	if got, want := runMochiBuild(t, src), "negative\nzero\npositive\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV010IfThenElseFixture pins the on-disk fixture
+// verbatim so the v0.10/if_then_else.mochi tutorial example
+// regression-tests if-expr lowering at the fixture level.
+func TestBuildSourceV010IfThenElseFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.10/if_then_else.mochi")
+	if err != nil {
+		t.Fatalf("read v0.10 if_then_else fixture: %v", err)
+	}
+	want := "yes\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.10/if_then_else stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.
