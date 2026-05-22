@@ -1,0 +1,7 @@
+let m: map<string, int> = {"a": 1, "b": 2}
+for k1 in m {
+  for k2 in m {
+    print(k1)
+    print(k2)
+  }
+}

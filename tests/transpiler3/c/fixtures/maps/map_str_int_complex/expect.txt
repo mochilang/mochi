@@ -1,0 +1,7 @@
+15
+apple
+5
+bread
+3
+cheese
+7

@@ -1,0 +1,7 @@
+let m: map<int, int> = {1: 10, 2: 20, 3: 30, 4: 40}
+let vs = values(m)
+var total: int = 0
+for v in vs {
+  total = total + v
+}
+print(total)

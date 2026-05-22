@@ -1,0 +1,5 @@
+let m: map<string, string> = {"k1": "v1", "k2": "v2"}
+print("k1" in m)
+print("k2" in m)
+print("missing" in m)
+print("" in m)

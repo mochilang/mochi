@@ -1,0 +1,9 @@
+fun mk(): map<int, string> {
+  return {1: "one", 2: "two", 3: "three"}
+}
+
+let m = mk()
+print(m[1])
+print(m[2])
+print(m[3])
+print(len(m))

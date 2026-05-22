@@ -1,0 +1,6 @@
+let m: map<string, int> = {"gamma": 3, "alpha": 1, "beta": 2}
+let ks = keys(m)
+print(len(ks))
+for k in ks {
+  print(k)
+}

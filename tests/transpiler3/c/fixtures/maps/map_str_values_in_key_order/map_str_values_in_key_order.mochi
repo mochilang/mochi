@@ -1,0 +1,6 @@
+let m: map<string, int> = {"gamma": 3, "alpha": 1, "beta": 2}
+let vs = values(m)
+print(len(vs))
+for v in vs {
+  print(v)
+}

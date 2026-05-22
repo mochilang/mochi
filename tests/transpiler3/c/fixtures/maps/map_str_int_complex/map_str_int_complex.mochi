@@ -1,0 +1,16 @@
+fun sumValues(m: map<string, int>): int {
+  var total: int = 0
+  let vs = values(m)
+  for v in vs {
+    total = total + v
+  }
+  return total
+}
+
+let prices: map<string, int> = {"apple": 5, "bread": 3, "cheese": 7}
+print(sumValues(prices))
+let ks = keys(prices)
+for k in ks {
+  print(k)
+  print(prices[k])
+}

@@ -1,0 +1,5 @@
+let m: map<int, float> = {1: 1.5, 2: 2.5, 3: 3.25}
+print(m[1])
+print(m[2])
+print(m[3])
+print(len(m))
