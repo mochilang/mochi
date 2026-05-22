@@ -453,6 +453,10 @@ func lowerType(t *parser.TypeRef) (ir.Type, error) {
 				return ir.TypeList, nil
 			case ir.TypeF64:
 				return ir.TypeF64Arr, nil
+			case ir.TypeStr:
+				// list<str> (Phase 4.2.17) backs onto mochi_str_array
+				// on the C target and []string on the Go target.
+				return ir.TypeStrArr, nil
 			case ir.TypeListAny:
 				// list<any> and list<list<any>> collapse to the same
 				// self-referential tree type (Phase 4.3.15.1). Every
@@ -460,7 +464,7 @@ func lowerType(t *parser.TypeRef) (ir.Type, error) {
 				// binary_trees kernel, so the IR carries one tag.
 				return ir.TypeListAny, nil
 			}
-			return ir.TypeInvalid, fmt.Errorf("frontend: list<%s> unsupported in MVP (only list<int>, list<float>, list<any>)", el)
+			return ir.TypeInvalid, fmt.Errorf("frontend: list<%s> unsupported in MVP (only list<int>, list<float>, list<str>, list<any>)", el)
 		}
 		// Phase 4.3.15.2: `map<int, int>` lowers to TypeMap, backed by
 		// runtime/c/src/mochi_map_i64_i64.{h,c} on the C target and
@@ -499,8 +503,10 @@ func lowerType(t *parser.TypeRef) (ir.Type, error) {
 			return ir.TypeList, nil
 		case ir.TypeF64:
 			return ir.TypeF64Arr, nil
+		case ir.TypeStr:
+			return ir.TypeStrArr, nil
 		}
-		return ir.TypeInvalid, fmt.Errorf("frontend: [%s] unsupported in MVP (only [int] and [float])", el)
+		return ir.TypeInvalid, fmt.Errorf("frontend: [%s] unsupported in MVP (only [int], [float], [str])", el)
 	}
 	if t.Simple == nil {
 		return ir.TypeInvalid, fmt.Errorf("frontend: only simple and list<...> type names are supported in the MVP")
@@ -599,7 +605,7 @@ func (b *builder) lowerIndexedAssign(a *parser.AssignStmt) error {
 		return fmt.Errorf("frontend: indexed assign to unbound identifier %q", a.Name)
 	}
 	listType := b.fn.Values[listID].Type
-	if listType != ir.TypeList && listType != ir.TypeF64Arr && listType != ir.TypeMap {
+	if listType != ir.TypeList && listType != ir.TypeF64Arr && listType != ir.TypeStrArr && listType != ir.TypeMap {
 		return fmt.Errorf("frontend: indexed assign on non-list %s", listType)
 	}
 	idxID, err := b.lowerExpr(idxOp.Start)
@@ -614,13 +620,16 @@ func (b *builder) lowerIndexedAssign(a *parser.AssignStmt) error {
 	// `xs[len + -1] = v` so the C target's mochi_list_i64_set does
 	// not write past the start of the buffer. TypeMap excluded
 	// (keys, not offsets).
-	if listType == ir.TypeList || listType == ir.TypeF64Arr {
+	if listType == ir.TypeList || listType == ir.TypeF64Arr || listType == ir.TypeStrArr {
 		if cv, ok := b.constI64(idxID); ok && cv < 0 {
 			var lenOp ir.OpCode
-			if listType == ir.TypeList {
+			switch listType {
+			case ir.TypeList:
 				lenOp = ir.OpListLenI64
-			} else {
+			case ir.TypeF64Arr:
 				lenOp = ir.OpF64ArrayLenI64
+			case ir.TypeStrArr:
+				lenOp = ir.OpStrArrLen
 			}
 			lenID := b.addValue(ir.Value{Type: ir.TypeI64, Op: lenOp, Args: []uint32{listID}})
 			idxID = b.addValue(ir.Value{
@@ -654,6 +663,16 @@ func (b *builder) lowerIndexedAssign(a *parser.AssignStmt) error {
 			Type:     ir.TypeUnit,
 			ElemType: ir.TypeF64,
 			Op:       ir.OpF64ArraySetF64,
+			Args:     []uint32{listID, idxID, valID},
+		})
+	case ir.TypeStrArr:
+		if b.fn.Values[valID].Type != ir.TypeStr {
+			return fmt.Errorf("frontend: list<str> store requires str value, got %s", b.fn.Values[valID].Type)
+		}
+		b.addValue(ir.Value{
+			Type:     ir.TypeUnit,
+			ElemType: ir.TypeStr,
+			Op:       ir.OpStrArrSetStr,
 			Args:     []uint32{listID, idxID, valID},
 		})
 	case ir.TypeMap:
@@ -702,6 +721,8 @@ func (b *builder) lowerTypedLet(name string, tRef *parser.TypeRef, e *parser.Exp
 			b.expectedListElem = ir.TypeI64
 		case ir.TypeF64Arr:
 			b.expectedListElem = ir.TypeF64
+		case ir.TypeStrArr:
+			b.expectedListElem = ir.TypeStr
 		case ir.TypeMap:
 			b.expectedMap = true
 		case ir.TypeListAny:
@@ -732,6 +753,8 @@ func (b *builder) lowerReturn(rs *parser.ReturnStmt) error {
 		b.expectedListElem = ir.TypeI64
 	case ir.TypeF64Arr:
 		b.expectedListElem = ir.TypeF64
+	case ir.TypeStrArr:
+		b.expectedListElem = ir.TypeStr
 	case ir.TypeListAny:
 		b.expectedListElem = ir.TypeListAny
 	}
@@ -1110,6 +1133,8 @@ func (b *builder) lowerForCollection(s *parser.ForStmt) error {
 		lenOp, getOp, elemType = ir.OpListLenI64, ir.OpListGetI64, ir.TypeI64
 	case ir.TypeF64Arr:
 		lenOp, getOp, elemType = ir.OpF64ArrayLenI64, ir.OpF64ArrayGetF64, ir.TypeF64
+	case ir.TypeStrArr:
+		lenOp, getOp, elemType = ir.OpStrArrLen, ir.OpStrArrGetStr, ir.TypeStr
 	default:
 		return fmt.Errorf("frontend: for-in over %s unsupported (need list)", listType)
 	}
@@ -1264,6 +1289,13 @@ func (b *builder) lowerExprAsStmt(e *parser.Expr) (uint32, error) {
 			arg = b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpF64ArrayToStr, Args: []uint32{arg}})
 			argType = ir.TypeStr
 		}
+		// list<str>: lift through OpStrArrToStr (Phase 4.2.17). The
+		// runtime helper renders the `["a", "b"]` form with each
+		// element double-quoted (strconv.Quote-equivalent escapes).
+		if argType == ir.TypeStrArr {
+			arg = b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpStrArrToStr, Args: []uint32{arg}})
+			argType = ir.TypeStr
+		}
 		goArgType := goTypeForIRType(argType)
 		if goArgType == "" {
 			return 0, fmt.Errorf("frontend: print() argument type %s unsupported in MVP", argType)
@@ -1350,6 +1382,8 @@ func (b *builder) liftToStr(argID uint32) (uint32, error) {
 		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpListI64ToStr, Args: []uint32{argID}}), nil
 	case ir.TypeF64Arr:
 		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpF64ArrayToStr, Args: []uint32{argID}}), nil
+	case ir.TypeStrArr:
+		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpStrArrToStr, Args: []uint32{argID}}), nil
 	}
 	return 0, fmt.Errorf("frontend: print() argument type %s unsupported in MVP", b.fn.Values[argID].Type)
 }
@@ -1749,7 +1783,7 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 				return 0, fmt.Errorf("frontend: slice indexing unsupported in MVP")
 			}
 			curType := b.fn.Values[cur].Type
-			if curType != ir.TypeList && curType != ir.TypeF64Arr && curType != ir.TypeMap && curType != ir.TypeListAny {
+			if curType != ir.TypeList && curType != ir.TypeF64Arr && curType != ir.TypeStrArr && curType != ir.TypeMap && curType != ir.TypeListAny {
 				return 0, fmt.Errorf("frontend: index on non-list %s", curType)
 			}
 			iID, err := b.lowerExpr(idx.Start)
@@ -1770,13 +1804,16 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 			// helper). TypeMap is excluded because map indexing
 			// uses a key, not an offset, and negative keys are
 			// valid lookups.
-			if curType == ir.TypeList || curType == ir.TypeF64Arr {
+			if curType == ir.TypeList || curType == ir.TypeF64Arr || curType == ir.TypeStrArr {
 				if cv, ok := b.constI64(iID); ok && cv < 0 {
 					var lenOp ir.OpCode
-					if curType == ir.TypeList {
+					switch curType {
+					case ir.TypeList:
 						lenOp = ir.OpListLenI64
-					} else {
+					case ir.TypeF64Arr:
 						lenOp = ir.OpF64ArrayLenI64
+					case ir.TypeStrArr:
+						lenOp = ir.OpStrArrLen
 					}
 					lenID := b.addValue(ir.Value{Type: ir.TypeI64, Op: lenOp, Args: []uint32{cur}})
 					iID = b.addValue(ir.Value{
@@ -1800,6 +1837,13 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 					Type:     ir.TypeF64,
 					ElemType: ir.TypeF64,
 					Op:       ir.OpF64ArrayGetF64,
+					Args:     []uint32{cur, iID},
+				})
+			case ir.TypeStrArr:
+				cur = b.addValue(ir.Value{
+					Type:     ir.TypeStr,
+					ElemType: ir.TypeStr,
+					Op:       ir.OpStrArrGetStr,
 					Args:     []uint32{cur, iID},
 				})
 			case ir.TypeMap:
@@ -2158,6 +2202,8 @@ func (b *builder) lowerListLiteral(lit *parser.ListLiteral) (uint32, error) {
 				elem = ir.TypeI64
 			case ir.TypeF64:
 				elem = ir.TypeF64
+			case ir.TypeStr:
+				elem = ir.TypeStr
 			case ir.TypeListAny:
 				elem = ir.TypeListAny
 			default:
@@ -2176,6 +2222,9 @@ func (b *builder) lowerListLiteral(lit *parser.ListLiteral) (uint32, error) {
 	case ir.TypeF64:
 		listType, elemType = ir.TypeF64Arr, ir.TypeF64
 		newOp, pushOp = ir.OpNewF64Array, ir.OpF64ArrayPushF64
+	case ir.TypeStr:
+		listType, elemType = ir.TypeStrArr, ir.TypeStr
+		newOp, pushOp = ir.OpNewStrArr, ir.OpStrArrPushStr
 	case ir.TypeListAny:
 		listType, elemType = ir.TypeListAny, ir.TypeListAny
 		newOp, pushOp = ir.OpNewListAny, ir.OpListAnyPushAny
@@ -2347,6 +2396,11 @@ func (b *builder) lowerBuiltinCall(c *parser.CallExpr) (uint32, bool, error) {
 				Type: ir.TypeI64, Op: ir.OpF64ArrayLenI64, Args: []uint32{arg},
 			})
 			return id, true, nil
+		case ir.TypeStrArr:
+			id := b.addValue(ir.Value{
+				Type: ir.TypeI64, Op: ir.OpStrArrLen, Args: []uint32{arg},
+			})
+			return id, true, nil
 		case ir.TypeStr:
 			id := b.addValue(ir.Value{
 				Type: ir.TypeI64, Op: ir.OpLenStr, Args: []uint32{arg},
@@ -2395,6 +2449,17 @@ func (b *builder) lowerBuiltinCall(c *parser.CallExpr) (uint32, bool, error) {
 				Type:     ir.TypeUnit,
 				ElemType: ir.TypeF64,
 				Op:       ir.OpF64ArrayPushF64,
+				Args:     []uint32{list, val},
+			})
+			return list, true, nil
+		case ir.TypeStrArr:
+			if valType != ir.TypeStr {
+				return 0, true, fmt.Errorf("frontend: append() to list<str> requires str value, got %s", valType)
+			}
+			b.addValue(ir.Value{
+				Type:     ir.TypeUnit,
+				ElemType: ir.TypeStr,
+				Op:       ir.OpStrArrPushStr,
 				Args:     []uint32{list, val},
 			})
 			return list, true, nil

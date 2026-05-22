@@ -217,6 +217,16 @@ func opContract(o OpCode) opSig {
 		return opSig{TypeF64, [3]Type{TypeF64Arr, TypeI64}}
 	case OpF64ArraySetF64:
 		return opSig{TypeUnit, [3]Type{TypeF64Arr, TypeI64, TypeF64}}
+	case OpNewStrArr:
+		return opSig{TypeStrArr, [3]Type{}}
+	case OpStrArrLen:
+		return opSig{TypeI64, [3]Type{TypeStrArr}}
+	case OpStrArrPushStr:
+		return opSig{TypeUnit, [3]Type{TypeStrArr, TypeStr}}
+	case OpStrArrGetStr:
+		return opSig{TypeStr, [3]Type{TypeStrArr, TypeI64}}
+	case OpStrArrSetStr:
+		return opSig{TypeUnit, [3]Type{TypeStrArr, TypeI64, TypeStr}}
 	case OpAndI64, OpOrI64, OpXorI64, OpShlI64, OpShrI64:
 		return opSig{TypeI64, [3]Type{TypeI64, TypeI64}}
 	case OpNotI64:
@@ -237,6 +247,8 @@ func opContract(o OpCode) opSig {
 		return opSig{TypeStr, [3]Type{TypeList}}
 	case OpF64ArrayToStr:
 		return opSig{TypeStr, [3]Type{TypeF64Arr}}
+	case OpStrArrToStr:
+		return opSig{TypeStr, [3]Type{TypeStrArr}}
 	case OpF64ArrayConcat:
 		return opSig{TypeF64Arr, [3]Type{TypeF64Arr, TypeF64Arr}}
 	case OpNow:
