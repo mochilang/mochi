@@ -32,7 +32,7 @@ Primitives + control flow is the smallest set that gets a real (non-toy) Mochi p
 | 2.1 | `let`/`var`, `if`/`else`, `while`, `return`, `break`, `continue`                                   | IN PROGRESS | —      | — |
 | 2.2 | `for x in start..end` (int range); user-defined multi-arg functions                                | IN PROGRESS | —      | — |
 | 2.3 | Integer divide-by-zero raises `MOCHI_ERR_DIVZERO` (checked profile); UB under `--fast-int`         | IN PROGRESS | —      | — |
-| 2.4 | Float NaN propagation matches vm3 byte-for-byte (IEEE 754 round-trip on `%.17g`)                   | NOT STARTED | —      | — |
+| 2.4 | Float NaN propagation matches vm3 byte-for-byte (IEEE 754 round-trip on `%.17g`)                   | IN PROGRESS | —      | — |
 
 ## Sub-phase 2.0 -- 2026-05-22 (GMT+7)
 
@@ -366,6 +366,83 @@ gate the moment a fuzzer or human writes a one-line `print(1 / 0)`.
   `tests/transpiler3/c/fixtures/divzero-trip/<name>` directory. Each
   fixture must exit with code 5 and stderr must match `stderr.txt`
   byte-for-byte.
+
+## Sub-phase 2.4 -- 2026-05-22 21:30 (GMT+7)
+
+Float NaN/Inf print parity with vm3. Phase 2.0 left the float-print
+path at C `printf("%.17g\n", x)`, which on every tier-1 libc
+disagrees with Go's `strconv.FormatFloat 'g' -1 64` on three exact
+inputs: `NaN`, `+Inf`, `-Inf`. vm3 prints those as `NaN`, `+Inf`,
+`-Inf` (Go's `fmt.Println` convention via `%v`); C's `%g` prints
+`nan`, `inf`, `-inf` (case + sign-prefix divergence). This breaks
+byte-equality the moment any fixture's float arithmetic crosses the
+IEEE 754 special-value plane (`1.0 / 0.0`, `0.0 / 0.0`, `inf - inf`,
+NaN propagated through `+ - * /`).
+
+### Goal-alignment audit (2.4)
+
+This sub-phase moves the byte-equal stdout gate forward directly:
+every Phase 2.4 fixture is a program whose vm3 oracle prints a
+special IEEE 754 value to stdout, and the C-AOT binary's stdout must
+match that oracle byte-for-byte. Without 2.4, any benchmark that
+divides by zero in floats (numerical-analysis kernels, NaN-as-missing
+data idioms) silently diverges. Scope is intentionally narrow: NaN
+and Inf only, with finite values still routed through `%.17g`.
+Shortest-round-trip (Ryu) for finite values is a separate Phase 2.X
+follow-up.
+
+### Decisions made (2.4)
+
+- **Runtime-only change.** The fix lives in
+  `mochi_print_f64`. Emit, lower, aotir, and the build driver are
+  untouched. Pre-flight gives us the entire BinDivF64 path already
+  (Phase 2.0); the only thing that was wrong was how the *result*
+  prints.
+- **Special-case detection via `<math.h>` macros.** `isnan(x)` and
+  `isinf(x)` are C99 macros (not function calls), so the runtime
+  picks them up without `-lm`. Tested in the gate via cc's default
+  link line (host `cc`, vendored Zig fallback both supply them).
+- **Spellings copied from Go.** `NaN`, `+Inf`, `-Inf` -- exactly the
+  strings `fmt.Println(math.NaN())` etc. emit. Capitalisation and
+  the leading `+` on positive infinity are oracle-driven, not
+  invented.
+- **Sign-of-NaN ignored.** Go's `%v` always prints `NaN` regardless
+  of the sign bit on the NaN payload (`-NaN` -> `NaN`). The C
+  runtime does the same: one `isnan` branch, no signbit check. vm3
+  parity holds.
+- **Finite values keep `%.17g`.** Existing Phase 2.0 float fixtures
+  (`0.5`, `1.0`, `2.5`, `4.0`) round-trip identically through
+  `%.17g` and Go `%v` because `%g` strips trailing zeros and these
+  values are exactly representable. Values like `0.1` would diverge
+  (`%.17g` -> `0.10000000000000001`, Go -> `0.1`) and the gate
+  deliberately stays away from them until Ryu lands.
+- **No NaN comparison fixture in 2.4.** IEEE 754 says
+  `nan == nan -> false` and both C and Go follow IEEE 754, so
+  comparison parity falls out of Phase 2.0's BinEqF64 lowering
+  without runtime work. Adding a fixture is cheap so we add a couple
+  anyway as confidence checks, but the work to make them green
+  isn't in 2.4 -- it was already in 2.0.
+- **Fixtures live under `nan-inf/`.** Splitting them out from
+  `primitives/` keeps the Phase 2.4 gate readable and lets the gate
+  test fail loudly on regressions instead of being buried in a
+  ~50-fixture rollup.
+- **Production via `0.0 / 0.0` etc., not builtins.** Phase 2.4
+  doesn't add `nan()` or `inf()` builtins (those belong with the
+  `math` standard library in a later phase). NaN and Inf are
+  produced by float-divzero arithmetic, which is well-defined in
+  IEEE 754 and already emits the right bit pattern under Phase 2.0
+  BinDivF64.
+
+### Test set (2.4)
+
+- `transpiler3/c/build/phase02_4_test.go::TestPhase2NanInf` --
+  end-to-end gate across every
+  `tests/transpiler3/c/fixtures/nan-inf/<name>` directory. Stdout
+  must match `expect.txt` byte-for-byte. Covers: bare NaN
+  production, +Inf production, -Inf production, NaN propagation
+  through each arithmetic op, Inf + Inf, Inf - Inf, Inf * 0, NaN
+  equality (== returns false, != returns true), NaN ordering
+  (< returns false), NaN passed through a user function.
 
 ## Decisions made
 
