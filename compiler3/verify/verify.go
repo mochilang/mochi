@@ -185,37 +185,18 @@ func kindOf(o ir.OpCode) ProducerKind {
 	case ir.OpJsonI64Object:
 		return KindOperator
 
-	case ir.OpListI64ToStr, ir.OpF64ArrayToStr, ir.OpStrArrToStr:
-		return KindConstructor
-
-	case ir.OpNewList, ir.OpNewMap, ir.OpNewF64Array, ir.OpNewStrArr, ir.OpNewMapStrI64, ir.OpNewListAny,
-		ir.OpNewListList,
-		ir.OpListConcatI64, ir.OpF64ArrayConcat,
-		ir.OpListAnyGetAny,
-		ir.OpStrArrGetStr,
-		ir.OpStrArrSlice,
-		ir.OpListListGet,
-		ir.OpListListToStr,
-		ir.OpMapStrI64SortedKeys:
-		// OpListAnyGetAny returns a handle (TypeListAny) borrowed from
-		// an existing tree node. OpStrArrGetStr returns a handle
-		// (TypeStr) borrowed from a `const char**` slot. Rule A
-		// requires handle-typed Values to originate from a
-		// Constructor / Move / Inline / Call kind, so the get-ops are
-		// classified Constructor (same rationale as OpFnRef: produces
-		// a fresh-looking handle whose payload is a derived pointer,
-		// not arbitrary bits).
-		return KindConstructor
-
-	case ir.OpListLenI64, ir.OpListPushI64, ir.OpListGetI64, ir.OpListSetI64,
-		ir.OpListGetF64, ir.OpListSetF64,
-		ir.OpMapSetI64I64, ir.OpMapGetI64I64,
-		ir.OpMapSetStrI64, ir.OpMapGetStrI64, ir.OpMapLenStrI64,
-		ir.OpF64ArrayLenI64, ir.OpF64ArrayPushF64, ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64,
-		ir.OpStrArrLen, ir.OpStrArrPushStr, ir.OpStrArrSetStr,
-		ir.OpListAnyLen, ir.OpListAnyPushAny,
-		ir.OpListListPush, ir.OpListListLen:
-		return KindDispatch
+	// Phase 4.2.32: heap-allocating families migrated to opTable.
+	// Constructor kind: OpNewList, OpNewMap, OpNewF64Array, OpNewStrArr,
+	// OpNewMapStrI64, OpNewListAny, OpNewListList, OpListConcatI64,
+	// OpF64ArrayConcat, OpListAnyGetAny, OpStrArrGetStr, OpStrArrSlice,
+	// OpListListGet, OpListListToStr, OpMapStrI64SortedKeys,
+	// OpListI64ToStr, OpF64ArrayToStr, OpStrArrToStr.
+	// Dispatch kind: OpListLenI64, OpListPushI64, OpListGetI64,
+	// OpListSetI64, OpListGetF64, OpListSetF64, OpMapSetI64I64,
+	// OpMapGetI64I64, OpMapSetStrI64, OpMapGetStrI64, OpMapLenStrI64,
+	// OpF64ArrayLenI64, OpF64ArrayPushF64, OpF64ArrayGetF64,
+	// OpF64ArraySetF64, OpStrArrLen, OpStrArrPushStr, OpStrArrSetStr,
+	// OpListAnyLen, OpListAnyPushAny, OpListListPush, OpListListLen.
 
 	case ir.OpCall, ir.OpTailCall, ir.OpCallGo:
 		return KindCall
@@ -428,70 +409,10 @@ func contractResult(o ir.OpCode) ir.Type {
 		return info.Result
 	}
 	switch o {
-	case ir.OpNewList:
-		return ir.TypeList
-	case ir.OpNewMap:
-		return ir.TypeMap
-	case ir.OpNewF64Array:
-		return ir.TypeF64Arr
-	case ir.OpNewStrArr:
-		return ir.TypeStrArr
-	case ir.OpStrArrLen:
-		return ir.TypeI64
-	case ir.OpStrArrPushStr, ir.OpStrArrSetStr:
-		return ir.TypeUnit
-	case ir.OpStrArrGetStr:
-		return ir.TypeStr
-	case ir.OpStrArrSlice:
-		return ir.TypeStrArr
-	case ir.OpListLenI64:
-		return ir.TypeI64
-	case ir.OpListPushI64, ir.OpListSetI64, ir.OpListSetF64:
-		return ir.TypeUnit
-	case ir.OpListGetI64:
-		return ir.TypeI64
-	case ir.OpListGetF64:
-		return ir.TypeF64
-	case ir.OpMapSetI64I64:
-		return ir.TypeUnit
-	case ir.OpMapGetI64I64:
-		return ir.TypeI64
-	case ir.OpNewMapStrI64:
-		return ir.TypeMapStrI64
-	case ir.OpMapSetStrI64:
-		return ir.TypeUnit
-	case ir.OpMapGetStrI64, ir.OpMapLenStrI64:
-		return ir.TypeI64
-	case ir.OpF64ArrayLenI64:
-		return ir.TypeI64
-	case ir.OpF64ArrayPushF64, ir.OpF64ArraySetF64:
-		return ir.TypeUnit
-	case ir.OpF64ArrayGetF64:
-		return ir.TypeF64
-	case ir.OpListConcatI64:
-		return ir.TypeList
-	case ir.OpF64ArrayConcat:
-		return ir.TypeF64Arr
-	case ir.OpNewListAny:
-		return ir.TypeListAny
-	case ir.OpListAnyLen:
-		return ir.TypeI64
-	case ir.OpListAnyPushAny:
-		return ir.TypeUnit
-	case ir.OpListAnyGetAny:
-		return ir.TypeListAny
-	case ir.OpNewListList:
-		return ir.TypeListList
-	case ir.OpListListPush:
-		return ir.TypeUnit
-	case ir.OpListListGet:
-		return ir.TypeList
-	case ir.OpListListLen:
-		return ir.TypeI64
-	case ir.OpListListToStr:
-		return ir.TypeStr
-	case ir.OpMapStrI64SortedKeys:
-		return ir.TypeStrArr
+	// Phase 4.2.32: heap-allocating families and *.tostr constructors
+	// migrated to opTable; the registry prologue above returns the
+	// Result. The only entry left here is OpJsonI64Object, which is
+	// variadic in Args and hasn't been modeled in OpInfo yet.
 	case ir.OpJsonI64Object:
 		return ir.TypeUnit
 	}
@@ -502,65 +423,28 @@ func contractResult(o ir.OpCode) ir.Type {
 // arena it dispatches into. Rule E uses this classification to refuse
 // mutating ops on borrow-tagged values.
 //
-// Read Dispatch ops: OpLenStr, OpListLenI64, OpListGetI64, OpListGetF64,
-// OpMapGetI64I64, OpF64ArrayLenI64, OpF64ArrayGetF64.
-//
-// Write Dispatch ops: OpListPushI64, OpListSetI64, OpListSetF64,
-// OpMapSetI64I64, OpF64ArrayPushF64, OpF64ArraySetF64.
-//
-// Adding a new Dispatch op to ir/types.go without classifying it here
-// would silently default to "non-mutating" for rule E purposes. The
-// init() coverage check below catches this by asserting every
-// KindDispatch op appears in either readDispatchOps or writeDispatchOps.
+// Phase 4.2.32: every Dispatch op now lives in ir.opTable; the
+// Mutates flag on the registered OpInfo is the single source of
+// truth. opIsMutating consults the registry and falls back to false
+// for ops the registry doesn't know about (which would be a kindOf
+// classification error caught by mustClassifyAllDispatch at init).
 func opIsMutating(o ir.OpCode) bool {
-	switch o {
-	case ir.OpListPushI64, ir.OpListSetI64, ir.OpListSetF64,
-		ir.OpMapSetI64I64,
-		ir.OpMapSetStrI64,
-		ir.OpF64ArrayPushF64, ir.OpF64ArraySetF64,
-		ir.OpStrArrPushStr, ir.OpStrArrSetStr,
-		ir.OpListAnyPushAny,
-		ir.OpListListPush:
-		return true
+	if info, ok := ir.OpInfoOf(o); ok {
+		return info.Mutates
 	}
 	return false
 }
 
-// readDispatchOps lists every unregistered KindDispatch op that does
-// not mutate its arena. Kept as data (rather than a switch) so the
-// coverage check can enumerate both halves of the dispatch op set.
-//
-// Phase 4.2.30: ops migrated into ir.opTable carry their Mutates flag
-// in the registry; mustClassifyAllDispatch unions ir.ReadDispatchOps()
-// into the coverage set so a registered op need not be listed here.
-var readDispatchOps = []ir.OpCode{
-	ir.OpListLenI64,
-	ir.OpListGetI64,
-	ir.OpListGetF64,
-	ir.OpMapGetI64I64,
-	ir.OpMapGetStrI64,
-	ir.OpMapLenStrI64,
-	ir.OpF64ArrayLenI64,
-	ir.OpF64ArrayGetF64,
-	ir.OpStrArrLen,
-	ir.OpListAnyLen,
-	ir.OpListListLen,
-}
+// readDispatchOps and writeDispatchOps formerly listed every
+// KindDispatch op for the rule-E coverage check. After Phase 4.2.32
+// migrated every heap-allocating Dispatch op to ir.opTable, both
+// slices became empty; mustClassifyAllDispatch reads ir.ReadDispatchOps()
+// and ir.WriteDispatchOps() directly. The variables are retained as
+// the canonical fall-back slot for any future Dispatch op that
+// cannot be registered (none today).
+var readDispatchOps = []ir.OpCode{}
 
-// writeDispatchOps lists every KindDispatch op that mutates its arena.
-var writeDispatchOps = []ir.OpCode{
-	ir.OpListPushI64,
-	ir.OpListSetI64,
-	ir.OpListSetF64,
-	ir.OpMapSetI64I64,
-	ir.OpMapSetStrI64,
-	ir.OpF64ArrayPushF64,
-	ir.OpF64ArraySetF64,
-	ir.OpStrArrPushStr,
-	ir.OpStrArrSetStr,
-	ir.OpListAnyPushAny,
-	ir.OpListListPush,
-}
+var writeDispatchOps = []ir.OpCode{}
 
 // checkRuleE verifies the §6.9 reference-mode obligations. Default-mode
 // functions (nil RefModes) pass trivially; the rest of the checker only
@@ -684,25 +568,15 @@ func mustClassifyAllDispatch() {
 
 // dispatchArena returns the arena Type a KindDispatch op reads from.
 // Used by rule D.
+//
+// Phase 4.2.32: every Dispatch op now lives in ir.opTable. The arena
+// Type is always the first operand by rule D's contract, so we read
+// it directly from info.Args[0]. Unregistered or non-Dispatch ops
+// return TypeInvalid and rule D skips them.
 func dispatchArena(o ir.OpCode) ir.Type {
-	switch o {
-	case ir.OpLenStr:
-		return ir.TypeStr
-	case ir.OpListLenI64, ir.OpListPushI64, ir.OpListGetI64, ir.OpListSetI64,
-		ir.OpListGetF64, ir.OpListSetF64:
-		return ir.TypeList
-	case ir.OpMapSetI64I64, ir.OpMapGetI64I64:
-		return ir.TypeMap
-	case ir.OpMapSetStrI64, ir.OpMapGetStrI64, ir.OpMapLenStrI64:
-		return ir.TypeMapStrI64
-	case ir.OpF64ArrayLenI64, ir.OpF64ArrayPushF64, ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64:
-		return ir.TypeF64Arr
-	case ir.OpStrArrLen, ir.OpStrArrPushStr, ir.OpStrArrGetStr, ir.OpStrArrSetStr:
-		return ir.TypeStrArr
-	case ir.OpListAnyLen, ir.OpListAnyPushAny:
-		return ir.TypeListAny
-	case ir.OpListListPush, ir.OpListListLen:
-		return ir.TypeListList
+	info, ok := ir.OpInfoOf(o)
+	if !ok || info.Kind != ir.KindDispatch {
+		return ir.TypeInvalid
 	}
-	return ir.TypeInvalid
+	return info.Args[0]
 }
