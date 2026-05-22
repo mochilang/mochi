@@ -38,12 +38,19 @@ void mochi_print_str(const char *s);
 void mochi_print_i64(int64_t x);
 
 /*
- * mochi_print_f64 writes x using Go's strconv.FormatFloat
- * 'g' -1 64 convention, followed by '\n'. Phase 2.4 will
- * extend the implementation to cover NaN / +Inf / -Inf with
- * vm3-equivalent spellings; Phase 2.0 emits whatever the host
- * %.17g format produces for finite values, which is sufficient
- * for the fixtures in this sub-phase.
+ * mochi_print_f64 writes x followed by '\n'. The encoding
+ * matches Go's `fmt.Println` (which renders double via %v ->
+ * strconv.FormatFloat 'g' -1 64) for NaN / +Inf / -Inf:
+ *
+ *   NaN  -> "NaN"
+ *   +Inf -> "+Inf"
+ *   -Inf -> "-Inf"
+ *
+ * (Capitalisation and the leading '+' on positive infinity are
+ * oracle-driven; Phase 2.4.) Finite values use `%.17g`, which
+ * is exact for the Phase 2.0/2.2 fixture set. Shortest
+ * round-trip rendering for arbitrary finite doubles (Ryu-style)
+ * lands in a later sub-phase.
  */
 void mochi_print_f64(double x);
 
