@@ -137,7 +137,7 @@ func TestTransform_Golden(t *testing.T) {
 	}
 
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests/transpiler/x/cpp", "*.cpp")
+	pattern := filepath.Join(root, "archived/tests/transpiler/x/cpp", "*.cpp")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -159,7 +159,7 @@ func TestTransform_Golden(t *testing.T) {
 
 func updateReadme() {
 	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "cpp")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "cpp")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "cpp")
 	pattern := filepath.Join(srcDir, "*.cpp")
 	files, _ := filepath.Glob(pattern)
@@ -182,7 +182,7 @@ func updateReadme() {
 	now := time.Now().In(tz).Format("2006-01-02 15:04:05 MST")
 	var buf bytes.Buffer
 	buf.WriteString("# a2mochi C++ Converter\n\n")
-	buf.WriteString("This directory contains helpers and golden files for converting C++ programs under\n`tests/transpiler/x/cpp` back into Mochi AST form using `clang++`.\n\n")
+	buf.WriteString("This directory contains helpers and golden files for converting C++ programs under\n`archived/tests/transpiler/x/cpp` back into Mochi AST form using `clang++`.\n\n")
 	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
 	fmt.Fprintf(&buf, "Date: %s\n\n", now)
 	buf.WriteString("## Checklist\n")

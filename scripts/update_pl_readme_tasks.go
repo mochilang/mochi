@@ -2,7 +2,7 @@
 
 package main
 
-import pl "mochi/transpiler/x/pl"
+import pl "mochi/archived/transpiler/x/pl"
 
 func main() {
 	pl.UpdateReadmeForTests()

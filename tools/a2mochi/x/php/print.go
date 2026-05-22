@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"mochi/ast"
-	transpmeta "mochi/transpiler/meta"
+	transpmeta "mochi/archived/transpiler/meta"
 )
 
 // Print returns Mochi source code for the given AST node.

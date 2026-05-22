@@ -51,7 +51,7 @@ func ensureScala(t *testing.T) {
 func TestPrint_Golden(t *testing.T) {
 	ensureScala(t)
 	root := repoRootPrint(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "scala")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "scala")
 	outDir := filepath.Join(root, "tests", "aster", "x", "scala")
 	os.MkdirAll(outDir, 0o755)
 

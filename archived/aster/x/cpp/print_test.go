@@ -48,7 +48,7 @@ func repoRootPrint(t *testing.T) string {
 func TestPrint_Golden(t *testing.T) {
 	ensureGPP(t)
 	root := repoRootPrint(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "cpp")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "cpp")
 	outDir := filepath.Join(root, "tests", "aster", "x", "cpp")
 	os.MkdirAll(outDir, 0o755)
 

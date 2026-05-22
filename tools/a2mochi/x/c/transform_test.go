@@ -66,7 +66,7 @@ func TestTransform_Golden(t *testing.T) {
 	os.Setenv("A2MOCHI_NO_CLANG", "1")
 
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests/transpiler/x/c", "*.c")
+	pattern := filepath.Join(root, "archived/tests/transpiler/x/c", "*.c")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -153,7 +153,7 @@ func TestTransform_Golden(t *testing.T) {
 
 func updateReadme() {
 	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "c")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "c")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "c")
 	pattern := filepath.Join(srcDir, "*.c")
 	files, _ := filepath.Glob(pattern)
@@ -178,7 +178,7 @@ func updateReadme() {
 	ts := time.Now().In(loc).Format("2006-01-02 15:04:05 GMT+07")
 	var buf bytes.Buffer
 	buf.WriteString("# a2mochi C Converter\n\n")
-	buf.WriteString("This directory holds golden outputs for converting C source files located in `tests/transpiler/x/c` into Mochi AST form. Each `.c` source has a matching `.mochi` and `.ast` file in this directory.\n\n")
+	buf.WriteString("This directory holds golden outputs for converting C source files located in `archived/tests/transpiler/x/c` into Mochi AST form. Each `.c` source has a matching `.mochi` and `.ast` file in this directory.\n\n")
 	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
 	fmt.Fprintf(&buf, "Date: %s\n\n", ts)
 	buf.WriteString("## Checklist\n\n")

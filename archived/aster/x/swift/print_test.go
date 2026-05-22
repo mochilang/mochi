@@ -78,7 +78,7 @@ func compileAndRunSwiftSrc(t *testing.T, swiftExe string, code []byte) ([]byte, 
 func TestPrint_Golden(t *testing.T) {
 	swiftExe := ensureSwift(t)
 	root := repoRootPrint(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "swift")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "swift")
 	outDir := filepath.Join(root, "tests", "aster", "x", "swift")
 	os.MkdirAll(outDir, 0o755)
 

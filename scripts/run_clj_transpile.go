@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"mochi/parser"
-	cljt "mochi/transpiler/x/clj"
+	cljt "mochi/archived/transpiler/x/clj"
 	"mochi/types"
 )
 

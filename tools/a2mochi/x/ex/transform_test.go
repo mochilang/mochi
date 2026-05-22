@@ -155,7 +155,7 @@ func TestTransformGolden(t *testing.T) {
 		t.Skip("elixir not installed")
 	}
 	root := findRepoRoot(t)
-	pattern := filepath.Join(root, "tests", "transpiler", "x", "ex", "*.exs")
+	pattern := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "ex", "*.exs")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -315,7 +315,7 @@ func TestTransformGolden(t *testing.T) {
 
 func updateReadme() {
 	root := findRepoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "ex")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "ex")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ex")
 	pattern := filepath.Join(srcDir, "*.exs")
 	files, _ := filepath.Glob(pattern)

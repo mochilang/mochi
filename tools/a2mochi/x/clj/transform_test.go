@@ -72,7 +72,7 @@ func run(src string) ([]byte, error) {
 
 func TestTransformGolden(t *testing.T) {
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests", "transpiler", "x", "clj", "*.clj")
+	pattern := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "clj", "*.clj")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)

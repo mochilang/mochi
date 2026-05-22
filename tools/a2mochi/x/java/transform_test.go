@@ -72,7 +72,7 @@ func runFile(path string) ([]byte, error) {
 
 func TestTransform_Golden(t *testing.T) {
 	rootDir := repoRoot(t)
-	pattern := filepath.Join(rootDir, "tests/transpiler/x/java", "*.java")
+	pattern := filepath.Join(rootDir, "archived/tests/transpiler/x/java", "*.java")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -163,7 +163,7 @@ func TestTransform_Golden(t *testing.T) {
 
 func updateReadme() {
 	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests/transpiler/x/java")
+	srcDir := filepath.Join(root, "archived/tests/transpiler/x/java")
 	outDir := filepath.Join(root, "tests/a2mochi/x/java")
 	pattern := filepath.Join(srcDir, "*.java")
 	files, _ := filepath.Glob(pattern)
@@ -194,7 +194,7 @@ func updateReadme() {
 	ts := time.Now().In(loc).Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
 	buf.WriteString("# a2mochi Java Converter\n\n")
-	buf.WriteString("This directory contains helpers and golden files for converting Java programs under `tests/transpiler/x/java` back into Mochi AST form.\n\n")
+	buf.WriteString("This directory contains helpers and golden files for converting Java programs under `archived/tests/transpiler/x/java` back into Mochi AST form.\n\n")
 	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
 	fmt.Fprintf(&buf, "Date: %s GMT+7\n\n", ts)
 	buf.WriteString("## Checklist\n")

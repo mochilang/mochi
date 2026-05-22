@@ -29,8 +29,8 @@ func repoRoot() string {
 func updateReadme() error {
 	root := repoRoot()
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "rkt")
-	readmePath := filepath.Join(root, "transpiler", "x", "rkt", "README.md")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "rkt")
+	readmePath := filepath.Join(root, "archived", "transpiler", "x", "rkt", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
 	compiled := 0
@@ -46,7 +46,7 @@ func updateReadme() error {
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Mochi Racket Transpiler\n")
-	buf.WriteString("This directory contains the experimental Racket transpiler. Golden tests under `tests/transpiler/x/rkt` check the generated code and its runtime output.\n")
+	buf.WriteString("This directory contains the experimental Racket transpiler. Golden tests under `archived/tests/transpiler/x/rkt` check the generated code and its runtime output.\n")
 	fmt.Fprintf(&buf, "\n## Golden Test Checklist (%d/%d)\n\n", compiled, total)
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n")
@@ -55,7 +55,7 @@ func updateReadme() error {
 
 func updateTasks() error {
 	root := repoRoot()
-	taskPath := filepath.Join(root, "transpiler", "x", "rkt", "TASKS.md")
+	taskPath := filepath.Join(root, "archived", "transpiler", "x", "rkt", "TASKS.md")
 	out, err := exec.Command("git", "log", "-1", "--format=%cd", "--date=format:%Y-%m-%d %H:%M:%S %Z").Output()
 	ts := strings.TrimSpace(string(out))
 	if err != nil {

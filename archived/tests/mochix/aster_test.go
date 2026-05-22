@@ -233,7 +233,7 @@ func TestInspectGolden(t *testing.T) {
 				t.Fatalf("invalid golden filename: %s", base)
 			}
 			name := nameExt[:i]
-			src := filepath.Join(root, "tests/transpiler/x", cfg.dir, name+"."+cfg.ext)
+			src := filepath.Join(root, "archived/tests/transpiler/x", cfg.dir, name+"."+cfg.ext)
 			if _, err := os.Stat(src); os.IsNotExist(err) {
 				t.Skipf("source %s not found", src)
 				continue

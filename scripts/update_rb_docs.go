@@ -15,8 +15,8 @@ import (
 func main() {
 	root, _ := os.Getwd()
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "rb")
-	readmePath := filepath.Join(root, "transpiler", "x", "rb", "README.md")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "rb")
+	readmePath := filepath.Join(root, "archived", "transpiler", "x", "rb", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
 	compiled := 0
@@ -39,7 +39,7 @@ func main() {
 	buf.WriteString("\n")
 	os.WriteFile(readmePath, buf.Bytes(), 0o644)
 
-	taskFile := filepath.Join(root, "transpiler", "x", "rb", "TASKS.md")
+	taskFile := filepath.Join(root, "archived", "transpiler", "x", "rb", "TASKS.md")
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	msgRaw, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
 	ts := strings.TrimSpace(string(tsRaw))

@@ -48,7 +48,7 @@ func ensurePHP(t *testing.T) {
 func TestInspect_Golden(t *testing.T) {
 	ensurePHP(t)
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "php")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "php")
 	// Golden files now live under tests/aster/x/php rather than tests/json-ast.
 	outDir := filepath.Join(root, "tests", "aster", "x", "php")
 	os.MkdirAll(outDir, 0o755)

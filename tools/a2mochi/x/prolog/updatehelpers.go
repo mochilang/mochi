@@ -15,7 +15,7 @@ import (
 // UpdateReadmeForTests regenerates README checklist from golden files.
 func UpdateReadmeForTests() {
 	root := repoRootDir()
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "pl")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "pl")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "prolog")
 	readme := filepath.Join(root, "tools", "a2mochi", "x", "prolog", "README.md")
 
@@ -40,7 +40,7 @@ func UpdateReadmeForTests() {
 	ts := time.Now().In(loc).Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
 	buf.WriteString("# a2mochi Prolog Converter\n\n")
-	buf.WriteString("This directory contains golden outputs for converting Prolog programs under `tests/transpiler/x/pl` into Mochi AST form.\n\n")
+	buf.WriteString("This directory contains golden outputs for converting Prolog programs under `archived/tests/transpiler/x/pl` into Mochi AST form.\n\n")
 	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", converted, total)
 	if ts != "" {
 		fmt.Fprintf(&buf, "Last updated: %s\n", ts)

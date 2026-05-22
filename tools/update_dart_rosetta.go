@@ -64,7 +64,7 @@ func main() {
 	root := repoRoot()
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
 	outDir := filepath.Join(root, "tests", "rosetta", "transpiler", "Dart")
-	readmePath := filepath.Join(root, "transpiler", "x", "dart", "ROSETTA.md")
+	readmePath := filepath.Join(root, "archived", "transpiler", "x", "dart", "ROSETTA.md")
 
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := ""

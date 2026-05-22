@@ -31,8 +31,8 @@ func repoRoot() string {
 func updateReadme() error {
     root := repoRoot()
     srcDir := filepath.Join(root, "tests", "vm", "valid")
-    outDir := filepath.Join(root, "tests", "transpiler", "x", "pas")
-    readmePath := filepath.Join(root, "transpiler", "x", "pas", "README.md")
+    outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "pas")
+    readmePath := filepath.Join(root, "archived", "transpiler", "x", "pas", "README.md")
 
     files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
     sort.Strings(files)
@@ -57,7 +57,7 @@ func updateReadme() error {
     var buf bytes.Buffer
     buf.WriteString("# Pascal Transpiler\n\n")
     buf.WriteString("This folder contains the experimental Pascal transpiler.\n")
-    buf.WriteString("Generated sources for the golden tests live under `tests/transpiler/x/pas`.\n\n")
+    buf.WriteString("Generated sources for the golden tests live under `archived/tests/transpiler/x/pas`.\n\n")
     fmt.Fprintf(&buf, "## VM Golden Test Checklist (%d/%d)\n", compiled, total)
     for _, l := range lines {
         buf.WriteString(l + "\n")
@@ -68,7 +68,7 @@ func updateReadme() error {
 
 func updateTasks() error {
     root := repoRoot()
-    taskPath := filepath.Join(root, "transpiler", "x", "pas", "TASKS.md")
+    taskPath := filepath.Join(root, "archived", "transpiler", "x", "pas", "TASKS.md")
     tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
     msgRaw, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
     tsStr := strings.TrimSpace(string(tsRaw))
@@ -81,11 +81,11 @@ func updateTasks() error {
     compiled := 0
     for _, f := range files {
         name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-        pasPath := filepath.Join(root, "tests", "transpiler", "x", "pas", name+".pas")
-        outPath := filepath.Join(root, "tests", "transpiler", "x", "pas", name+".out")
+        pasPath := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "pas", name+".pas")
+        outPath := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "pas", name+".out")
         if _, err := os.Stat(pasPath); err == nil {
             if _, err := os.Stat(outPath); err == nil {
-                if _, err := os.Stat(filepath.Join(root, "tests", "transpiler", "x", "pas", name+".error")); os.IsNotExist(err) {
+                if _, err := os.Stat(filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "pas", name+".error")); os.IsNotExist(err) {
                     compiled++
                 }
             }

@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"mochi/ast"
-	"mochi/transpiler/meta"
+	"mochi/archived/transpiler/meta"
 )
 
 // Print renders the given AST node to Mochi source code with a standard header.

@@ -81,7 +81,7 @@ func runMochi(src string) ([]byte, error) {
 
 func TestTransform_Golden(t *testing.T) {
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests", "transpiler", "x", "scheme", "*.scm")
+	pattern := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "scheme", "*.scm")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -177,7 +177,7 @@ func TestTransform_Golden(t *testing.T) {
 
 func updateReadme() {
 	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "scheme")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "scheme")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "scheme")
 	pattern := filepath.Join(srcDir, "*.scm")
 	files, _ := filepath.Glob(pattern)
@@ -205,7 +205,7 @@ func updateReadme() {
 	buf.WriteString("# a2mochi Scheme Converter\n\n")
 	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
 	fmt.Fprintf(&buf, "Date: %s\n\n", time.Now().In(tz).Format("2006-01-02 15:04:05 MST"))
-	buf.WriteString("This directory holds golden outputs for converting Scheme source files under `tests/transpiler/x/scheme` back into Mochi form.\n\n")
+	buf.WriteString("This directory holds golden outputs for converting Scheme source files under `archived/tests/transpiler/x/scheme` back into Mochi form.\n\n")
 	buf.WriteString("## Checklist\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteByte('\n')

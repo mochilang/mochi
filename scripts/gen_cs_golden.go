@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"mochi/parser"
-	cstrans "mochi/transpiler/x/cs"
+	cstrans "mochi/archived/transpiler/x/cs"
 	"mochi/types"
 )
 
@@ -44,7 +44,7 @@ func runCase(name string) error {
 		return fmt.Errorf("transpile: %v", err)
 	}
 	code := cstrans.Emit(ast)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "cs")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "cs")
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func main() {
 	}
 	for _, name := range os.Args[1:] {
 		if err := runCase(name); err != nil {
-			errPath := filepath.Join(repoRoot(), "tests", "transpiler", "x", "cs", name+".error")
+			errPath := filepath.Join(repoRoot(), "archived", "tests", "archived", "transpiler", "x", "cs", name+".error")
 			os.WriteFile(errPath, []byte(err.Error()), 0o644)
 			fmt.Fprintf(os.Stderr, "%s: %v\n", name, err)
 		}

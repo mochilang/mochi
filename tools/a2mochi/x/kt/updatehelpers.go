@@ -13,7 +13,7 @@ import (
 // UpdateReadmeForTests regenerates README checklist from golden outputs.
 func UpdateReadmeForTests() {
 	root := repoRoot()
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "kt")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "kt")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "kt")
 	validDir := filepath.Join(root, "tests", "vm", "valid")
 	readme := filepath.Join(root, "tools", "a2mochi", "x", "kt", "README.md")

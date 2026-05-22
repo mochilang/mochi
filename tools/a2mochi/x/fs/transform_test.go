@@ -85,7 +85,7 @@ func transformSrc(p *fs.Program) (string, error) {
 
 func TestTransformGolden(t *testing.T) {
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests", "transpiler", "x", "fs", "*.fs")
+	pattern := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "fs", "*.fs")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)

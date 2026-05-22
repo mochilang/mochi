@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	cmd := exec.Command("git", "log", "--date=format:%Y-%m-%d %H:%M %Z", "--pretty=format:- %ad - %s", "transpiler/x/fortran")
+	cmd := exec.Command("git", "log", "--date=format:%Y-%m-%d %H:%M %Z", "--pretty=format:- %ad - %s", "archived/transpiler/x/fortran")
 	out, err := cmd.Output()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -21,5 +21,5 @@ func main() {
 	buf.WriteString("## Recent Enhancements\n")
 	buf.Write(out)
 	buf.WriteByte('\n')
-	os.WriteFile("transpiler/x/fortran/TASKS.md", buf.Bytes(), 0644)
+	os.WriteFile("archived/transpiler/x/fortran/TASKS.md", buf.Bytes(), 0644)
 }

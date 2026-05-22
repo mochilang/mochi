@@ -35,7 +35,7 @@ func repoRootPrint(t *testing.T) string {
 
 func TestPrint_Golden(t *testing.T) {
 	root := repoRootPrint(t)
-	srcPattern := filepath.Join(root, "tests", "transpiler", "x", "mochi", "*.mochi")
+	srcPattern := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "mochi", "*.mochi")
 	files, err := filepath.Glob(srcPattern)
 	if err != nil {
 		t.Fatal(err)

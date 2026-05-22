@@ -97,7 +97,7 @@ func run(t *testing.T, src string) []byte {
 
 func TestTransformGolden(t *testing.T) {
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests/transpiler/x/lua", "*.lua")
+	pattern := filepath.Join(root, "archived/tests/transpiler/x/lua", "*.lua")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -213,7 +213,7 @@ func TestTransformGolden(t *testing.T) {
 
 func updateReadme() {
 	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests/transpiler/x/lua")
+	srcDir := filepath.Join(root, "archived/tests/transpiler/x/lua")
 	outDir := filepath.Join(root, "tests/a2mochi/x/lua")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.lua"))
 	sort.Strings(files)
@@ -235,7 +235,7 @@ func updateReadme() {
 	buf.WriteString("# a2mochi Lua Converter\n\n")
 	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
 	fmt.Fprintf(&buf, "Date: %s\n\n", ts)
-	buf.WriteString("This directory contains helpers and golden files for converting Lua programs\nunder `tests/transpiler/x/lua` back into Mochi code.\n\n")
+	buf.WriteString("This directory contains helpers and golden files for converting Lua programs\nunder `archived/tests/transpiler/x/lua` back into Mochi code.\n\n")
 	buf.WriteString("Supported examples:\n")
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteByte('\n')

@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"mochi/ast"
-	"mochi/transpiler/meta"
+	"mochi/archived/transpiler/meta"
 )
 
 // Print returns Mochi source code for the given AST node.

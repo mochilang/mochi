@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 
 	"mochi/parser"
-	pl "mochi/transpiler/x/pl"
+	pl "mochi/archived/transpiler/x/pl"
 	"mochi/types"
 )
 
@@ -48,7 +48,7 @@ func runCase(name string) error {
 	if err := pl.Emit(&buf, ast); err != nil {
 		return fmt.Errorf("emit: %v", err)
 	}
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "pl")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "pl")
 	os.MkdirAll(outDir, 0o755)
 	plPath := filepath.Join(outDir, name+".pl")
 	if err := os.WriteFile(plPath, buf.Bytes(), 0o644); err != nil {

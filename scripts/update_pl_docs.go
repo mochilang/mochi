@@ -31,8 +31,8 @@ func repoRoot() string {
 func updateReadme() error {
 	root := repoRoot()
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "pl")
-	readmePath := filepath.Join(root, "transpiler", "x", "pl", "README.md")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "pl")
+	readmePath := filepath.Join(root, "archived", "transpiler", "x", "pl", "README.md")
 
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	sort.Strings(files)
@@ -65,7 +65,7 @@ func updateReadme() error {
 
 func updateTasks() error {
 	root := repoRoot()
-	taskPath := filepath.Join(root, "transpiler", "x", "pl", "TASKS.md")
+	taskPath := filepath.Join(root, "archived", "transpiler", "x", "pl", "TASKS.md")
 
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	msgRaw, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
@@ -80,11 +80,11 @@ func updateTasks() error {
 	compiled := 0
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		plPath := filepath.Join(root, "tests", "transpiler", "x", "pl", name+".pl")
-		outPath := filepath.Join(root, "tests", "transpiler", "x", "pl", name+".out")
+		plPath := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "pl", name+".pl")
+		outPath := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "pl", name+".out")
 		if _, err := os.Stat(plPath); err == nil {
 			if _, err := os.Stat(outPath); err == nil {
-				if _, err := os.Stat(filepath.Join(root, "tests", "transpiler", "x", "pl", name+".error")); os.IsNotExist(err) {
+				if _, err := os.Stat(filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "pl", name+".error")); os.IsNotExist(err) {
 					compiled++
 				}
 			}

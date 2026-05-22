@@ -144,7 +144,7 @@ func TestTransform_Golden(t *testing.T) {
 	}
 
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests", "transpiler", "x", "ocaml", "*.ml")
+	pattern := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "ocaml", "*.ml")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -209,7 +209,7 @@ func TestTransform_Golden(t *testing.T) {
 
 func updateReadme() {
 	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "ocaml")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "ocaml")
 	pattern := filepath.Join(srcDir, "*.ml")
 	files, _ := filepath.Glob(pattern)
@@ -237,7 +237,7 @@ func updateReadme() {
 	ts := time.Now().In(loc).Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
 	buf.WriteString("# a2mochi OCaml Converter\n\n")
-	buf.WriteString("This directory holds helpers and golden files for converting OCaml programs in `tests/transpiler/x/ocaml` into Mochi AST form.\n\n")
+	buf.WriteString("This directory holds helpers and golden files for converting OCaml programs in `archived/tests/transpiler/x/ocaml` into Mochi AST form.\n\n")
 	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", compiled, total)
 	buf.WriteString("Date: " + ts + "\n\n")
 	buf.WriteString("Currently " + strconv.Itoa(compiled) + " examples are exercised by the tests.\n\n")

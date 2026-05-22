@@ -15,7 +15,7 @@ import (
 // UpdateReadme regenerates README checklist from golden tests.
 func UpdateReadme() {
 	root := repoRootDir()
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "zig")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "zig")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "zig")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.zig"))
 	sort.Strings(files)
@@ -40,7 +40,7 @@ func UpdateReadme() {
 	var buf bytes.Buffer
 	buf.WriteString("# a2mochi Zig Converter\n\n")
 	buf.WriteString("This directory stores helpers and golden files for converting Zig programs\n")
-	buf.WriteString("in `tests/transpiler/x/zig` into Mochi AST form.\n\n")
+	buf.WriteString("in `archived/tests/transpiler/x/zig` into Mochi AST form.\n\n")
 	fmt.Fprintf(&buf, "Completed programs: %d/%d\n\n", done, total)
 	buf.WriteString("Last updated: " + ts + "\n\n")
 	buf.WriteString("## Checklist\n")

@@ -167,7 +167,7 @@ func processFile(t *testing.T, root, outDir, srcPath string) {
 
 func TestTransform_Golden(t *testing.T) {
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests", "transpiler", "x", "hs", "*.hs")
+	pattern := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "hs", "*.hs")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -218,7 +218,7 @@ func TestTransform_Golden(t *testing.T) {
 
 func updateReadme() {
 	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "hs")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "hs")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "hs")
 	pattern := filepath.Join(srcDir, "*.hs")
 	files, _ := filepath.Glob(pattern)

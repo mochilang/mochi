@@ -123,7 +123,7 @@ func TestTransform_Golden(t *testing.T) {
 	t.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
 
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests/transpiler/x/kt", "*.kt")
+	pattern := filepath.Join(root, "archived/tests/transpiler/x/kt", "*.kt")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)

@@ -15,7 +15,7 @@ import (
 func main() {
 	root := "."
 	outDir := filepath.Join(root, "tests", "aster", "x", "php")
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "php")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "php")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.php"))
 	sort.Strings(files)
 	var names []string

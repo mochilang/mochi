@@ -38,7 +38,7 @@ func repoRoot(t *testing.T) string {
 func TestInspect_Golden(t *testing.T) {
 
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests", "transpiler", "x", "cpp", "*.cpp")
+	pattern := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "cpp", "*.cpp")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)

@@ -92,7 +92,7 @@ func convert(src []byte) (string, []byte, error) {
 
 func TestTransformGolden(t *testing.T) {
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests/transpiler/x/cs", "*.cs")
+	pattern := filepath.Join(root, "archived/tests/transpiler/x/cs", "*.cs")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -157,7 +157,7 @@ func TestTransformGolden(t *testing.T) {
 
 func updateReadme() {
 	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "cs")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "cs")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "cs")
 	pattern := filepath.Join(srcDir, "*.cs")
 	files, _ := filepath.Glob(pattern)

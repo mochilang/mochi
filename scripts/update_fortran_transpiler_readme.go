@@ -28,8 +28,8 @@ func repoRoot() string {
 func main() {
 	root := repoRoot()
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "fortran")
-	readme := filepath.Join(root, "transpiler", "x", "fortran", "README.md")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "fortran")
+	readme := filepath.Join(root, "archived", "transpiler", "x", "fortran", "README.md")
 
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)

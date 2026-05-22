@@ -12,7 +12,7 @@ import (
 
 	mochias "mochi/ast"
 	"mochi/parser"
-	transpmeta "mochi/transpiler/meta"
+	transpmeta "mochi/archived/transpiler/meta"
 )
 
 // Node represents a parsed Fortran program. Only the source lines are kept.

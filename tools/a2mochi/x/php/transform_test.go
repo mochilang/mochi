@@ -83,7 +83,7 @@ func transformProg(p *php.Program) (*ast.Node, error) {
 
 func TestTransform_Golden(t *testing.T) {
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests", "transpiler", "x", "php", "*.php")
+	pattern := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "php", "*.php")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)

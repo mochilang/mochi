@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 
 	"mochi/parser"
-	pas "mochi/transpiler/x/pas"
+	pas "mochi/archived/transpiler/x/pas"
 	"mochi/types"
 )
 

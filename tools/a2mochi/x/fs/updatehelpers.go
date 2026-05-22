@@ -15,7 +15,7 @@ import (
 // UpdateReadme regenerates README checklist from golden outputs.
 func UpdateReadme() {
 	root := repoRootDir()
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "fs")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "fs")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "fs")
 	vmDir := filepath.Join(root, "tests", "vm", "valid")
 	readme := filepath.Join(root, "tools", "a2mochi", "x", "fs", "README.md")
@@ -43,7 +43,7 @@ func UpdateReadme() {
 	ts := time.Now().In(time.FixedZone("GMT+7", 7*3600)).Format("2006-01-02 15:04 MST")
 	var buf bytes.Buffer
 	buf.WriteString("# F# AST Conversion\n\n")
-	buf.WriteString("This directory contains test helpers and golden files for converting F# programs under `tests/transpiler/x/fs` into Mochi AST form.\n\n")
+	buf.WriteString("This directory contains test helpers and golden files for converting F# programs under `archived/tests/transpiler/x/fs` into Mochi AST form.\n\n")
 	fmt.Fprintf(&buf, "Completed programs: %d/%d\n", done, total)
 	fmt.Fprintf(&buf, "Date: %s\n\n", ts)
 	buf.WriteString("## Checklist\n")

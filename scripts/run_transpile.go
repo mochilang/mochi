@@ -5,7 +5,7 @@ package main
 import (
 	"fmt"
 	"mochi/parser"
-	hs "mochi/transpiler/x/hs"
+	hs "mochi/archived/transpiler/x/hs"
 	"mochi/types"
 	"os"
 )

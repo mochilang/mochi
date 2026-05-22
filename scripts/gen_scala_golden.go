@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"mochi/parser"
-	scalat "mochi/transpiler/x/scala"
+	scalat "mochi/archived/transpiler/x/scala"
 	"mochi/types"
 )
 
@@ -35,8 +35,8 @@ func repoRoot() string {
 func updateReadme() {
 	root := repoRoot()
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "scala")
-	readmeDir := filepath.Join(root, "transpiler", "x", "scala")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "scala")
+	readmeDir := filepath.Join(root, "archived", "transpiler", "x", "scala")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	sort.Strings(files)
 	total := len(files)
@@ -67,7 +67,7 @@ func updateReadme() {
 
 func updateTasks() {
 	root := repoRoot()
-	taskFile := filepath.Join(root, "transpiler", "x", "scala", "TASKS.md")
+	taskFile := filepath.Join(root, "archived", "transpiler", "x", "scala", "TASKS.md")
 	tsRaw, _ := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	msgRaw, _ := exec.Command("git", "log", "-1", "--format=%s").Output()
 	ts := strings.TrimSpace(string(tsRaw))
@@ -84,7 +84,7 @@ func updateTasks() {
 	compiled := 0
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
-		if _, err := os.Stat(filepath.Join(root, "tests", "transpiler", "x", "scala", name+".out")); err == nil {
+		if _, err := os.Stat(filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "scala", name+".out")); err == nil {
 			compiled++
 		}
 	}
@@ -111,7 +111,7 @@ func runCase(name string) error {
 		return fmt.Errorf("transpile: %v", err)
 	}
 	code := scalat.Emit(ast)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "scala")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "scala")
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return err
 	}

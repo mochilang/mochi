@@ -49,7 +49,7 @@ func ensureSWIPL(t *testing.T) {
 func TestInspect_Golden(t *testing.T) {
 	ensureSWIPL(t)
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "prolog")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "prolog")
 	outDir := filepath.Join(root, "tests", "aster", "x", "prolog")
 	os.MkdirAll(outDir, 0o755)
 

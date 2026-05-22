@@ -45,7 +45,7 @@ func ensurePython(t *testing.T) {
 func TestInspect_Golden(t *testing.T) {
 	ensurePython(t)
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "py")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "py")
 	outDir := filepath.Join(root, "tests", "aster", "x", "py")
 	os.MkdirAll(outDir, 0o755)
 

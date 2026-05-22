@@ -81,7 +81,7 @@ func parseAndTransform(src []byte) (*ast.Node, error) {
 
 func TestTransform_Golden(t *testing.T) {
 	root := findRepoRoot(t)
-	pattern := filepath.Join(root, "tests", "transpiler", "x", "pas", "*.pas")
+	pattern := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "pas", "*.pas")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)

@@ -31,7 +31,7 @@ func repoRoot() string {
 func countCompiled() (int, int) {
 	root := repoRoot()
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "pl")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "pl")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)
 	compiled := 0
@@ -47,8 +47,8 @@ func countCompiled() (int, int) {
 func updateReadme() {
 	root := repoRoot()
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "pl")
-	readme := filepath.Join(root, "transpiler", "x", "pl", "README.md")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "pl")
+	readme := filepath.Join(root, "archived", "transpiler", "x", "pl", "README.md")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	sort.Strings(files)
 	total := len(files)
@@ -74,7 +74,7 @@ func updateReadme() {
 
 func updateTasks() {
 	root := repoRoot()
-	taskFile := filepath.Join(root, "transpiler", "x", "pl", "TASKS.md")
+	taskFile := filepath.Join(root, "archived", "transpiler", "x", "pl", "TASKS.md")
 	compiled, total := countCompiled()
 	out, err := exec.Command("git", "log", "-1", "--format=%cI").Output()
 	ts := ""

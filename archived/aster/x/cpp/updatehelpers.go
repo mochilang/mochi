@@ -15,7 +15,7 @@ import (
 // UpdateReadme regenerates README checklist from golden outputs.
 func UpdateReadme() {
 	root := repoRootDir()
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "cpp")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "cpp")
 	outDir := filepath.Join(root, "tests", "aster", "x", "cpp")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.cpp"))
 	sort.Strings(files)

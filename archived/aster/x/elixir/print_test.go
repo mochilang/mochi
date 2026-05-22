@@ -48,7 +48,7 @@ func ensureElixir(t *testing.T) {
 func TestPrint_Golden(t *testing.T) {
 	ensureElixir(t)
 	root := repoRootPrint(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "elixir")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "elixir")
 	outDir := filepath.Join(root, "tests", "aster", "x", "elixir")
 	os.MkdirAll(outDir, 0o755)
 

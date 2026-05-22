@@ -11,7 +11,7 @@ import (
 
 	"mochi/ast"
 	"mochi/parser"
-	meta "mochi/transpiler/meta"
+	meta "mochi/archived/transpiler/meta"
 )
 
 // Node represents a top level TypeScript declaration parsed from parse_ts_ast.ts.

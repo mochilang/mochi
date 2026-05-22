@@ -35,7 +35,7 @@ func ensureLua(t *testing.T) {
 func TestPrint_Golden(t *testing.T) {
 	ensureLua(t)
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "lua")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "lua")
 	outDir := filepath.Join(root, "tests", "aster", "x", "lua")
 	os.MkdirAll(outDir, 0o755)
 

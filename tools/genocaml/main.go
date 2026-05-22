@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"mochi/parser"
-	ocaml "mochi/transpiler/x/ocaml"
+	ocaml "mochi/archived/transpiler/x/ocaml"
 	"mochi/types"
 )
 
