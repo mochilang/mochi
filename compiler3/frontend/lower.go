@@ -469,8 +469,15 @@ func lowerType(t *parser.TypeRef) (ir.Type, error) {
 				// element of a list<any> is itself a list<any> in the
 				// binary_trees kernel, so the IR carries one tag.
 				return ir.TypeListAny, nil
+			case ir.TypeList:
+				// Phase 4.2.21: list<list<int>> backs onto mochi_list_list
+				// on the C target and [][]int64 on the Go target. The
+				// inner element type is locked to TypeI64 in the MVP
+				// (matching the v0.2/matrix.mochi shape); a list<list<float>>
+				// or list<list<str>> would need its own carrier.
+				return ir.TypeListList, nil
 			}
-			return ir.TypeInvalid, fmt.Errorf("frontend: list<%s> unsupported in MVP (only list<int>, list<float>, list<str>, list<any>)", el)
+			return ir.TypeInvalid, fmt.Errorf("frontend: list<%s> unsupported in MVP (only list<int>, list<float>, list<str>, list<any>, list<list<int>>)", el)
 		}
 		// Phase 4.3.15.2: `map<int, int>` lowers to TypeMap, backed by
 		// runtime/c/src/mochi_map_i64_i64.{h,c} on the C target and
@@ -1323,6 +1330,14 @@ func (b *builder) lowerExprAsStmt(e *parser.Expr) (uint32, error) {
 			arg = b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpStrArrToStr, Args: []uint32{arg}})
 			argType = ir.TypeStr
 		}
+		// list<list<int>>: lift through OpListListToStr (Phase 4.2.21).
+		// Renders the nested `[[1, 2], [3, 4]]` form via per-row
+		// mochi_list_i64_to_str on the C target and the equivalent
+		// strings.Join helper on the Go target.
+		if argType == ir.TypeListList {
+			arg = b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpListListToStr, Args: []uint32{arg}})
+			argType = ir.TypeStr
+		}
 		goArgType := goTypeForIRType(argType)
 		if goArgType == "" {
 			return 0, fmt.Errorf("frontend: print() argument type %s unsupported in MVP", argType)
@@ -1411,6 +1426,8 @@ func (b *builder) liftToStr(argID uint32) (uint32, error) {
 		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpF64ArrayToStr, Args: []uint32{argID}}), nil
 	case ir.TypeStrArr:
 		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpStrArrToStr, Args: []uint32{argID}}), nil
+	case ir.TypeListList:
+		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpListListToStr, Args: []uint32{argID}}), nil
 	}
 	return 0, fmt.Errorf("frontend: print() argument type %s unsupported in MVP", b.fn.Values[argID].Type)
 }
@@ -1845,7 +1862,7 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 				return 0, fmt.Errorf("frontend: slice indexing unsupported in MVP")
 			}
 			curType := b.fn.Values[cur].Type
-			if curType != ir.TypeList && curType != ir.TypeF64Arr && curType != ir.TypeStrArr && curType != ir.TypeMap && curType != ir.TypeMapStrI64 && curType != ir.TypeListAny {
+			if curType != ir.TypeList && curType != ir.TypeF64Arr && curType != ir.TypeStrArr && curType != ir.TypeMap && curType != ir.TypeMapStrI64 && curType != ir.TypeListAny && curType != ir.TypeListList {
 				return 0, fmt.Errorf("frontend: index on non-list %s", curType)
 			}
 			iID, err := b.lowerExpr(idx.Start)
@@ -1870,7 +1887,7 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 			// helper). TypeMap is excluded because map indexing
 			// uses a key, not an offset, and negative keys are
 			// valid lookups.
-			if curType == ir.TypeList || curType == ir.TypeF64Arr || curType == ir.TypeStrArr {
+			if curType == ir.TypeList || curType == ir.TypeF64Arr || curType == ir.TypeStrArr || curType == ir.TypeListList {
 				if cv, ok := b.constI64(iID); ok && cv < 0 {
 					var lenOp ir.OpCode
 					switch curType {
@@ -1880,6 +1897,8 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 						lenOp = ir.OpF64ArrayLenI64
 					case ir.TypeStrArr:
 						lenOp = ir.OpStrArrLen
+					case ir.TypeListList:
+						lenOp = ir.OpListListLen
 					}
 					lenID := b.addValue(ir.Value{Type: ir.TypeI64, Op: lenOp, Args: []uint32{cur}})
 					iID = b.addValue(ir.Value{
@@ -1929,6 +1948,13 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 					Type: ir.TypeListAny,
 					Op:   ir.OpListAnyGetAny,
 					Args: []uint32{cur, iID},
+				})
+			case ir.TypeListList:
+				cur = b.addValue(ir.Value{
+					Type:     ir.TypeList,
+					ElemType: ir.TypeI64,
+					Op:       ir.OpListListGet,
+					Args:     []uint32{cur, iID},
 				})
 			}
 		case op.Cast != nil:
@@ -2309,6 +2335,12 @@ func (b *builder) lowerListLiteral(lit *parser.ListLiteral) (uint32, error) {
 				elem = ir.TypeStr
 			case ir.TypeListAny:
 				elem = ir.TypeListAny
+			case ir.TypeList:
+				// Phase 4.2.21: an untyped outer literal whose first
+				// element lowers to a TypeList (list<int>) infers
+				// list<list<int>>. The v0.2/matrix.mochi `let matrix =
+				// [[1,2,3], [4,5,6], ...]` is the gating fixture.
+				elem = ir.TypeList
 			default:
 				return 0, fmt.Errorf("frontend: list literal element type %s unsupported in MVP", b.fn.Values[id].Type)
 			}
@@ -2331,6 +2363,10 @@ func (b *builder) lowerListLiteral(lit *parser.ListLiteral) (uint32, error) {
 	case ir.TypeListAny:
 		listType, elemType = ir.TypeListAny, ir.TypeListAny
 		newOp, pushOp = ir.OpNewListAny, ir.OpListAnyPushAny
+	case ir.TypeList:
+		// Phase 4.2.21: list<list<int>>.
+		listType, elemType = ir.TypeListList, ir.TypeList
+		newOp, pushOp = ir.OpNewListList, ir.OpListListPush
 	default:
 		return 0, fmt.Errorf("frontend: list literal with element type %s unsupported", elem)
 	}
@@ -2517,6 +2553,11 @@ func (b *builder) lowerBuiltinCall(c *parser.CallExpr) (uint32, bool, error) {
 		case ir.TypeMapStrI64:
 			id := b.addValue(ir.Value{
 				Type: ir.TypeI64, Op: ir.OpMapLenStrI64, Args: []uint32{arg},
+			})
+			return id, true, nil
+		case ir.TypeListList:
+			id := b.addValue(ir.Value{
+				Type: ir.TypeI64, Op: ir.OpListListLen, Args: []uint32{arg},
 			})
 			return id, true, nil
 		default:

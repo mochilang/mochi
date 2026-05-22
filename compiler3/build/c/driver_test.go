@@ -2650,6 +2650,87 @@ func TestBuildSourceV02ListFixture(t *testing.T) {
 	}
 }
 
+// TestBuildSourceListListBasic exercises the Phase 4.2.21 nested
+// integer list shape: an untyped `[[1,2,3], [4,5,6]]` literal binds
+// to TypeListList, print(matrix) emits the nested `[[...], [...]]`
+// display form, and chained indexing `matrix[i][j]` returns int64.
+func TestBuildSourceListListBasic(t *testing.T) {
+	src := `let matrix = [
+  [1, 2, 3],
+  [4, 5, 6],
+]
+print(matrix)
+print(matrix[0])
+print(matrix[1][2])
+`
+	want := "[[1, 2, 3], [4, 5, 6]]\n" +
+		"[1, 2, 3]\n" +
+		"6\n"
+	if got := runMochiBuild(t, src); got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceListListNegIndex pins the negative-index fold for
+// TypeListList. `matrix[-1]` lowers to `matrix[len + -1]` at lower
+// time, matching the Mochi VM's wrap rule and the existing fold for
+// TypeList/TypeF64Arr/TypeStrArr.
+func TestBuildSourceListListNegIndex(t *testing.T) {
+	src := `let matrix = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+]
+print(matrix[-1])
+print(matrix[-1][0])
+`
+	want := "[7, 8, 9]\n7\n"
+	if got := runMochiBuild(t, src); got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceListListLen exercises len() on a list<list<i64>>
+// outer and on a row that was bound through OpListListGet. Both
+// dispatch sites need to recognise the new TypeListList carrier.
+func TestBuildSourceListListLen(t *testing.T) {
+	src := `let matrix = [
+  [1, 2, 3],
+  [4, 5, 6],
+]
+print(len(matrix))
+let row = matrix[0]
+print(len(row))
+`
+	want := "2\n3\n"
+	if got := runMochiBuild(t, src); got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV02MatrixFixture pins the on-disk v0.2/matrix.mochi
+// fixture end-to-end. Phase 4.2.21 closed the list<list<i64>> gate;
+// combined with Phase 4.2.19's test-block skip, the fixture now
+// compiles top to bottom on the C target. With shadow, π, map,
+// list, and matrix all green, the v0.2 user-facing matrix stands at
+// 5 of 6 (for-in.mochi is the remaining gate).
+func TestBuildSourceV02MatrixFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.2/matrix.mochi")
+	if err != nil {
+		t.Fatalf("read v0.2/matrix.mochi fixture: %v", err)
+	}
+	want := "matrix:  [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\n" +
+		"first row:  [1, 2, 3]\n" +
+		"last row:  [7, 8, 9]\n" +
+		"top-left:  1\n" +
+		"center:  5\n" +
+		"bottom-right:  9\n" +
+		"row 1 length:  3\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.2/matrix stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.

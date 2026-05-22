@@ -433,6 +433,31 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 	case ir.OpStrArrSlice:
 		fmt.Fprintf(w, "\t%s = append([]string{}, %s[%s:%s]...)\n",
 			name, valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
+	case ir.OpNewListList:
+		fmt.Fprintf(w, "\t%s = [][]int64{}\n", name)
+	case ir.OpListListPush:
+		fmt.Fprintf(w, "\t%s = append(%s, %s)\n", valueName(v.Args[0]), valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpListListGet:
+		fmt.Fprintf(w, "\t%s = %s[%s]\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpListListLen:
+		fmt.Fprintf(w, "\t%s = int64(len(%s))\n", name, valueName(v.Args[0]))
+	case ir.OpListListToStr:
+		// list<list<int>> -> `[[1, 2, 3], [4, 5, 6]]` form. Each row
+		// uses the same int-join shape as the OpListI64ToStr emit
+		// site, joined with ", " under outer brackets.
+		imports["strconv"] = true
+		imports["strings"] = true
+		fmt.Fprintf(w, "\t%s = func(xs [][]int64) string {\n", name)
+		w.WriteString("\t\tif len(xs) == 0 { return \"[]\" }\n")
+		w.WriteString("\t\trows := make([]string, len(xs))\n")
+		w.WriteString("\t\tfor i, row := range xs {\n")
+		w.WriteString("\t\t\tif len(row) == 0 { rows[i] = \"[]\"; continue }\n")
+		w.WriteString("\t\t\tparts := make([]string, len(row))\n")
+		w.WriteString("\t\t\tfor j, x := range row { parts[j] = strconv.FormatInt(x, 10) }\n")
+		w.WriteString("\t\t\trows[i] = \"[\" + strings.Join(parts, \", \") + \"]\"\n")
+		w.WriteString("\t\t}\n")
+		w.WriteString("\t\treturn \"[\" + strings.Join(rows, \", \") + \"]\"\n")
+		fmt.Fprintf(w, "\t}(%s)\n", valueName(v.Args[0]))
 	case ir.OpNow:
 		imports["time"] = true
 		fmt.Fprintf(w, "\t%s = time.Now().UnixMicro()\n", name)
@@ -736,6 +761,8 @@ func goType(t ir.Type) string {
 		return "[]float64"
 	case ir.TypeStrArr:
 		return "[]string"
+	case ir.TypeListList:
+		return "[][]int64"
 	case ir.TypeI64Arr:
 		return "[]int64"
 	case ir.TypeU8Arr:

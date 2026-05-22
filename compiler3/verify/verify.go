@@ -172,10 +172,13 @@ func kindOf(o ir.OpCode) ProducerKind {
 		return KindConstructor
 
 	case ir.OpNewList, ir.OpNewMap, ir.OpNewF64Array, ir.OpNewStrArr, ir.OpNewMapStrI64, ir.OpNewListAny,
+		ir.OpNewListList,
 		ir.OpListConcatI64, ir.OpF64ArrayConcat,
 		ir.OpListAnyGetAny,
 		ir.OpStrArrGetStr,
-		ir.OpStrArrSlice:
+		ir.OpStrArrSlice,
+		ir.OpListListGet,
+		ir.OpListListToStr:
 		// OpListAnyGetAny returns a handle (TypeListAny) borrowed from
 		// an existing tree node. OpStrArrGetStr returns a handle
 		// (TypeStr) borrowed from a `const char**` slot. Rule A
@@ -192,7 +195,8 @@ func kindOf(o ir.OpCode) ProducerKind {
 		ir.OpMapSetStrI64, ir.OpMapGetStrI64, ir.OpMapLenStrI64,
 		ir.OpF64ArrayLenI64, ir.OpF64ArrayPushF64, ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64,
 		ir.OpStrArrLen, ir.OpStrArrPushStr, ir.OpStrArrSetStr,
-		ir.OpListAnyLen, ir.OpListAnyPushAny:
+		ir.OpListAnyLen, ir.OpListAnyPushAny,
+		ir.OpListListPush, ir.OpListListLen:
 		return KindDispatch
 
 	case ir.OpCall, ir.OpTailCall, ir.OpCallGo:
@@ -251,7 +255,7 @@ func HandleType(t ir.Type) bool {
 	case ir.TypeStr, ir.TypeList, ir.TypeMap, ir.TypeSet, ir.TypeStruct,
 		ir.TypeClosure, ir.TypeBignum, ir.TypeBytes, ir.TypePair,
 		ir.TypeF64Arr, ir.TypeI64Arr, ir.TypeU8Arr, ir.TypeListAny,
-		ir.TypeMapStrI64:
+		ir.TypeMapStrI64, ir.TypeListList:
 		return true
 	}
 	return false
@@ -469,6 +473,16 @@ func contractResult(o ir.OpCode) ir.Type {
 		return ir.TypeUnit
 	case ir.OpListAnyGetAny:
 		return ir.TypeListAny
+	case ir.OpNewListList:
+		return ir.TypeListList
+	case ir.OpListListPush:
+		return ir.TypeUnit
+	case ir.OpListListGet:
+		return ir.TypeList
+	case ir.OpListListLen:
+		return ir.TypeI64
+	case ir.OpListListToStr:
+		return ir.TypeStr
 	case ir.OpJsonI64Object:
 		return ir.TypeUnit
 	}
@@ -496,7 +510,8 @@ func opIsMutating(o ir.OpCode) bool {
 		ir.OpMapSetStrI64,
 		ir.OpF64ArrayPushF64, ir.OpF64ArraySetF64,
 		ir.OpStrArrPushStr, ir.OpStrArrSetStr,
-		ir.OpListAnyPushAny:
+		ir.OpListAnyPushAny,
+		ir.OpListListPush:
 		return true
 	}
 	return false
@@ -517,6 +532,7 @@ var readDispatchOps = []ir.OpCode{
 	ir.OpF64ArrayGetF64,
 	ir.OpStrArrLen,
 	ir.OpListAnyLen,
+	ir.OpListListLen,
 }
 
 // writeDispatchOps lists every KindDispatch op that mutates its arena.
@@ -531,6 +547,7 @@ var writeDispatchOps = []ir.OpCode{
 	ir.OpStrArrPushStr,
 	ir.OpStrArrSetStr,
 	ir.OpListAnyPushAny,
+	ir.OpListListPush,
 }
 
 // checkRuleE verifies the §6.9 reference-mode obligations. Default-mode
@@ -657,6 +674,8 @@ func dispatchArena(o ir.OpCode) ir.Type {
 		return ir.TypeStrArr
 	case ir.OpListAnyLen, ir.OpListAnyPushAny:
 		return ir.TypeListAny
+	case ir.OpListListPush, ir.OpListListLen:
+		return ir.TypeListList
 	}
 	return ir.TypeInvalid
 }
