@@ -67,6 +67,7 @@ func Emit(p *Program) ([]byte, error) {
 	usesNow := false
 	usesMapI64I64 := false
 	usesMapStrI64 := false
+	usesListList := false
 	usesTree := false
 	usesStrH := false
 	usesStrRuntime := false
@@ -99,6 +100,10 @@ func Emit(p *Program) ([]byte, error) {
 				usesMapI64I64 = true
 			case ir.OpNewMapStrI64, ir.OpMapSetStrI64, ir.OpMapGetStrI64, ir.OpMapLenStrI64:
 				usesMapStrI64 = true
+			case ir.OpNewListList, ir.OpListListPush, ir.OpListListGet,
+				ir.OpListListLen, ir.OpListListToStr:
+				usesListList = true
+				usesListI64 = true
 			case ir.OpNewListAny, ir.OpListAnyLen, ir.OpListAnyPushAny, ir.OpListAnyGetAny:
 				usesTree = true
 			case ir.OpLenStr, ir.OpCmpEqStr, ir.OpCmpNeStr:
@@ -133,6 +138,9 @@ func Emit(p *Program) ([]byte, error) {
 	}
 	if usesMapStrI64 {
 		buf.WriteString("#include \"mochi_map_str_i64.h\"\n")
+	}
+	if usesListList {
+		buf.WriteString("#include \"mochi_list_list.h\"\n")
 	}
 	if usesTree {
 		buf.WriteString("#include \"mochi_tree.h\"\n")
@@ -423,6 +431,16 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = mochi_map_str_i64_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpMapLenStrI64:
 		fmt.Fprintf(w, "    %s = mochi_map_str_i64_len(%s);\n", name, valueName(v.Args[0]))
+	case ir.OpNewListList:
+		fmt.Fprintf(w, "    %s = mochi_list_list_new();\n", name)
+	case ir.OpListListPush:
+		fmt.Fprintf(w, "    mochi_list_list_push(%s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpListListGet:
+		fmt.Fprintf(w, "    %s = mochi_list_list_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpListListLen:
+		fmt.Fprintf(w, "    %s = mochi_list_list_len(%s);\n", name, valueName(v.Args[0]))
+	case ir.OpListListToStr:
+		fmt.Fprintf(w, "    %s = mochi_list_list_to_str(%s);\n", name, valueName(v.Args[0]))
 	case ir.OpNewListAny:
 		fmt.Fprintf(w, "    %s = mochi_tree_new();\n", name)
 	case ir.OpListAnyLen:
@@ -701,6 +719,12 @@ func cType(t ir.Type) string {
 		// `mochi_tree*`, matching binary_trees-style kernels where
 		// every payload is recursively the same shape.
 		return "mochi_tree*"
+	case ir.TypeListList:
+		// list<list<int>>: heap-allocated outer array of mochi_list_i64
+		// pointers. Backed by runtime/c/src/mochi_list_list.{h,c}.
+		// Distinct from TypeListAny so the get-op can return a typed
+		// mochi_list_i64* directly without a tag check.
+		return "mochi_list_list*"
 	case ir.TypeUnit, ir.TypeInvalid:
 		return "void"
 	}

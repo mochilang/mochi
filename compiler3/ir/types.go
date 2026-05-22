@@ -32,6 +32,15 @@ const (
 	// pick the right runtime struct and the verifier can route the
 	// right Set/Get ops.
 	TypeMapStrI64
+	// TypeListList is the typed `list<list<i64>>` carrier on the C
+	// target (Phase 4.2.21). Backing is mochi_list_list, a small
+	// struct holding a mochi_list_i64** data array + len + cap. The
+	// nested elements remain TypeList (not TypeListAny), so chained
+	// indexing `m[i][j]` stays in the typed-i64 path. Distinct from
+	// TypeListAny so emit/lower can pick the right runtime struct
+	// and produce typed-i64 element access without a runtime type
+	// tag check.
+	TypeListList
 	TypeAny
 	// TypeListAny is the heterogeneous self-referential list backing
 	// for `list<any>` (Phase 4.3.15.1). In the binary_trees kernel every
@@ -84,6 +93,8 @@ func (t Type) String() string {
 		return "strarr"
 	case TypeMapStrI64:
 		return "mapstri64"
+	case TypeListList:
+		return "listlist"
 	case TypeAny:
 		return "any"
 	case TypeListAny:
@@ -228,6 +239,20 @@ const (
 	OpMapSetStrI64
 	OpMapGetStrI64
 	OpMapLenStrI64
+
+	// Typed list<list<i64>> ops (Phase 4.2.21). Backs nested integer
+	// matrices like `[[1,2,3],[4,5,6]]` on the C target with
+	// mochi_list_list (a mochi_list_i64** data array + len + cap).
+	// OpListListGet returns TypeList (a borrowed handle into the
+	// outer array; element pointer carriers are not duplicated).
+	// OpListListToStr renders the nested list in Mochi reference
+	// display form: `[[1, 2, 3], [4, 5, 6]]` (no outer trailing
+	// comma; element separator is `, ` matching mochi_list_i64_to_str).
+	OpNewListList
+	OpListListPush
+	OpListListGet
+	OpListListLen
+	OpListListToStr
 
 	// Calls. Args[0..] are the argument values; the callee is named by
 	// Value.Const (function index in the Function's owning Program).
@@ -520,6 +545,16 @@ func (o OpCode) String() string {
 		return "map.get.str.i64"
 	case OpMapLenStrI64:
 		return "map.len.str.i64"
+	case OpNewListList:
+		return "newlistlist"
+	case OpListListPush:
+		return "listlist.push"
+	case OpListListGet:
+		return "listlist.get"
+	case OpListListLen:
+		return "listlist.len"
+	case OpListListToStr:
+		return "listlist.tostr"
 	case OpListConcatI64:
 		return "list.concat.i64"
 	case OpF64ArrayConcat:
