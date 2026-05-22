@@ -1347,6 +1347,39 @@ print(a)
 	}
 }
 
+// TestBuildSourceLenStrLiteral pins the Phase 4.2.1 surface: `len`
+// applied to a string literal lowers to OpLenStr and the C emitter
+// emits `(int64_t)strlen(...)`. The runtime <string.h> include is
+// added by the pre-pass when OpLenStr is present in the program.
+func TestBuildSourceLenStrLiteral(t *testing.T) {
+	src := `print(len("hello"))` + "\n"
+	if got, want := runMochiBuild(t, src), "5\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceLenStrEmpty pins the empty-string edge: strlen of
+// "" is 0, which matches Mochi's `len("")` returning int(0).
+func TestBuildSourceLenStrEmpty(t *testing.T) {
+	src := `print(len(""))` + "\n"
+	if got, want := runMochiBuild(t, src), "0\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceLenStrViaLet pins len on a string-typed let binding,
+// exercising the side-table indirection (the literal lives in
+// fn.Strings, OpLenStr reads the carrier variable rather than a
+// freshly emitted literal).
+func TestBuildSourceLenStrViaLet(t *testing.T) {
+	src := `let s = "hello, world!"
+print(len(s))
+`
+	if got, want := runMochiBuild(t, src), "13\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceSpectralNormBgFixture pins the unmodified
 // bench/template/bg/spectral_norm fixture (N=100) on the C target.
 // This is the §10.7 closeout for spectral_norm at the fixture level
