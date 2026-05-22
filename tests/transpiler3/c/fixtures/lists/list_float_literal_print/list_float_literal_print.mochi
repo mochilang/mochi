@@ -1,0 +1,5 @@
+let xs = [1.5, 2.5, 3.25]
+print(xs[0])
+print(xs[1])
+print(xs[2])
+print(len(xs))

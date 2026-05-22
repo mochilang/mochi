@@ -1,0 +1,8 @@
+let xs = [5, 10, 15]
+if len(xs) == 3 {
+  print(xs[1])
+}
+if xs[0] < xs[2] {
+  print(xs[0])
+  print(xs[2])
+}

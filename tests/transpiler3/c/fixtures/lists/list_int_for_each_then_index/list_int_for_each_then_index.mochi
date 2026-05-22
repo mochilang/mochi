@@ -1,0 +1,6 @@
+let xs = [100, 200, 300]
+for x in xs {
+  print(x)
+}
+print(xs[0])
+print(xs[2])

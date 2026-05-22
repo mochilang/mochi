@@ -1,0 +1,9 @@
+let a = [10]
+let b = append(a, 20)
+let c = append(b, 30)
+let d = append(c, 40)
+print(len(a))
+print(len(b))
+print(len(c))
+print(len(d))
+print(d[3])

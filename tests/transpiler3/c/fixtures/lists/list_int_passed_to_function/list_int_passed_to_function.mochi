@@ -1,0 +1,6 @@
+fun first(xs: list<int>): int {
+  return xs[0]
+}
+
+let nums = [7, 8, 9]
+print(first(nums))

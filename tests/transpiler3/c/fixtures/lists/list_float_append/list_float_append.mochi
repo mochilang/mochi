@@ -1,0 +1,6 @@
+let xs = [0.5, 1.5]
+let ys = append(xs, 2.5)
+print(ys[0])
+print(ys[1])
+print(ys[2])
+print(len(ys))
