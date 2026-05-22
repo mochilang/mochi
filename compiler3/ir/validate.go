@@ -163,28 +163,14 @@ func opContract(o OpCode) opSig {
 		return opSig{outType: info.Result, inTypes: info.Args}
 	}
 	switch o {
-	case OpAddI64, OpSubI64, OpMulI64, OpDivI64, OpModI64:
-		return opSig{TypeI64, [3]Type{TypeI64, TypeI64}}
-	case OpAddI64Imm, OpSubI64Imm, OpMulI64Imm, OpDivI64Imm, OpModI64Imm:
-		return opSig{TypeI64, [3]Type{TypeI64}}
-	case OpNegI64:
-		return opSig{TypeI64, [3]Type{TypeI64}}
-	case OpAddF64, OpSubF64, OpMulF64, OpDivF64:
-		return opSig{TypeF64, [3]Type{TypeF64, TypeF64}}
-	case OpNegF64:
-		return opSig{TypeF64, [3]Type{TypeF64}}
-	case OpCmpEqI64, OpCmpNeI64, OpCmpLtI64, OpCmpLeI64, OpCmpGtI64, OpCmpGeI64:
-		return opSig{TypeBool, [3]Type{TypeI64, TypeI64}}
-	case OpCmpEqI64Imm, OpCmpNeI64Imm, OpCmpLtI64Imm, OpCmpLeI64Imm, OpCmpGtI64Imm, OpCmpGeI64Imm:
-		return opSig{TypeBool, [3]Type{TypeI64}}
 	// Phase 4.2.30: string ops (OpLenStr, OpConcatStr, OpCmpEqStr,
 	// OpCmpNeStr, OpI64ToStr, OpF64ToStr, OpBoolToStr, OpStrCharAt,
 	// OpStrIn, OpStrRuneLen) migrated to opTable; opContract reads
 	// them from the registry via OpInfoOf at the top of this function.
-	case OpCmpEqBool, OpCmpNeBool:
-		return opSig{TypeBool, [3]Type{TypeBool, TypeBool}}
-	case OpAndBool, OpOrBool:
-		return opSig{TypeBool, [3]Type{TypeBool, TypeBool}}
+	//
+	// Phase 4.2.31: scalar arithmetic, comparison, bitwise, conversion,
+	// and math ops (OpAddI64, ..., OpNow) migrated to opTable; the
+	// registry prologue above handles them.
 	case OpNewList:
 		return opSig{TypeList, [3]Type{}}
 	case OpListLenI64:
@@ -247,20 +233,6 @@ func opContract(o OpCode) opSig {
 		return opSig{TypeI64, [3]Type{TypeListList}}
 	case OpListListToStr:
 		return opSig{TypeStr, [3]Type{TypeListList}}
-	case OpAndI64, OpOrI64, OpXorI64, OpShlI64, OpShrI64:
-		return opSig{TypeI64, [3]Type{TypeI64, TypeI64}}
-	case OpNotI64:
-		return opSig{TypeI64, [3]Type{TypeI64}}
-	case OpCmpEqF64, OpCmpNeF64, OpCmpLtF64, OpCmpLeF64, OpCmpGtF64, OpCmpGeF64:
-		return opSig{TypeBool, [3]Type{TypeF64, TypeF64}}
-	case OpNotBool:
-		return opSig{TypeBool, [3]Type{TypeBool}}
-	case OpI64ToF64:
-		return opSig{TypeF64, [3]Type{TypeI64}}
-	case OpF64ToI64:
-		return opSig{TypeI64, [3]Type{TypeF64}}
-	case OpSqrtF64:
-		return opSig{TypeF64, [3]Type{TypeF64}}
 	case OpListConcatI64:
 		return opSig{TypeList, [3]Type{TypeList, TypeList}}
 	case OpListI64ToStr:
@@ -271,8 +243,6 @@ func opContract(o OpCode) opSig {
 		return opSig{TypeStr, [3]Type{TypeStrArr}}
 	case OpF64ArrayConcat:
 		return opSig{TypeF64Arr, [3]Type{TypeF64Arr, TypeF64Arr}}
-	case OpNow:
-		return opSig{TypeI64, [3]Type{}}
 	case OpNewListAny:
 		return opSig{TypeListAny, [3]Type{}}
 	case OpListAnyLen:
