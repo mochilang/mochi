@@ -13,6 +13,7 @@ import (
 	"mochi/transpiler3/c/emit"
 	"mochi/transpiler3/c/lower"
 	"mochi/transpiler3/c/runtime"
+	"mochi/transpiler3/c/toolchain/zig"
 	"mochi/types"
 )
 
@@ -53,6 +54,12 @@ type Driver struct {
 	// compiled (false). The CLI exposes this on the `cached <path>`
 	// output line.
 	CacheHit bool
+
+	// NoZigFallback, when true, makes resolveCC fail rather than
+	// downloading the vendored Zig if no host cc is found. Used by
+	// tests that want to assert host-cc-only behaviour without
+	// triggering a network fetch.
+	NoZigFallback bool
 }
 
 // Build is the source-to-binary entry point. src is a Mochi
@@ -153,19 +160,21 @@ func (d *Driver) Build(src, out, target, profile string) error {
 		return fmt.Errorf("transpiler3/c/build: write gen: %w", err)
 	}
 
-	cc, err := d.resolveCC()
+	cc, ccPrefix, err := d.resolveCC()
 	if err != nil {
 		return fmt.Errorf("transpiler3/c/build: %w", err)
 	}
 
-	args := []string{
+	ccArgs := append([]string{}, ccPrefix...)
+	ccArgs = append(ccArgs,
 		"-std=c2x",
 		"-Wall", "-Wextra", "-pedantic",
 		"-I", filepath.Join(workDir, "include"),
 		"-o", absOut,
 		genPath,
 		filepath.Join(workDir, "src", "print.c"),
-	}
+	)
+	args := ccArgs
 	cmd := exec.Command(cc, args...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -207,20 +216,58 @@ func writeRuntimeFiles(workDir string) error {
 	})
 }
 
-// resolveCC looks up the C compiler to invoke. Phase 1.0 walks
-// the standard candidates ($CC, then cc, clang, gcc on PATH).
-// Phase 1.3 appends the vendored zig fallback.
-func (d *Driver) resolveCC() (string, error) {
+// resolveCC looks up the C compiler to invoke and returns its
+// executable path plus any argv prefix that must precede the
+// compile arguments (e.g. {"cc"} for "zig", since "zig cc ..." is
+// the invocation form).
+//
+// Discovery order:
+//  1. Driver.CC (caller override). Whitespace-split: first token is
+//     the executable, the rest is the prefix. Lets callers pass
+//     CC="zig cc" or CC="ccache clang" without special casing.
+//  2. $CC env var. Same whitespace-split semantics.
+//  3. "cc", "clang", "gcc" on PATH (in that order).
+//  4. Vendored Zig (downloaded on first use, SHA-256-verified
+//     against the pinned manifest). Returned as `<path>/zig` with
+//     prefix `["cc"]`.
+//
+// If discovery exhausts every step the function returns the
+// combined error chain so the caller can see why each candidate
+// was rejected.
+func (d *Driver) resolveCC() (string, []string, error) {
 	if d.CC != "" {
-		return d.CC, nil
+		exe, prefix := splitCC(d.CC)
+		return exe, prefix, nil
 	}
 	if env := strings.TrimSpace(os.Getenv("CC")); env != "" {
-		return env, nil
+		exe, prefix := splitCC(env)
+		return exe, prefix, nil
 	}
 	for _, name := range []string{"cc", "clang", "gcc"} {
 		if path, err := exec.LookPath(name); err == nil {
-			return path, nil
+			return path, nil, nil
 		}
 	}
-	return "", errors.New("no C compiler found: set $CC or install cc/clang/gcc on PATH (Phase 1.3 will add a vendored zig fallback)")
+	if d.NoZigFallback {
+		return "", nil, errors.New("no C compiler found and --no-zig-fallback set: install cc/clang/gcc on PATH or unset NoZigFallback")
+	}
+	zigExe, err := zig.Install()
+	if err != nil {
+		return "", nil, fmt.Errorf("no C compiler found on PATH and vendored zig install failed: %w", err)
+	}
+	return zigExe, []string{"cc"}, nil
+}
+
+// splitCC accepts either a bare executable ("cc", "/usr/bin/clang")
+// or a wrapper-form string with whitespace ("zig cc", "ccache cc")
+// and returns the executable plus any leading argv tokens.
+func splitCC(s string) (string, []string) {
+	fields := strings.Fields(s)
+	if len(fields) == 0 {
+		return "cc", nil
+	}
+	if len(fields) == 1 {
+		return fields[0], nil
+	}
+	return fields[0], fields[1:]
 }
