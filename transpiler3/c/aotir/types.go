@@ -13,6 +13,14 @@ package aotir
 // IR node that can carry a list value (mirrors the RecordName
 // plumbing). Lists of records and nested lists are deferred to
 // later sub-phases.
+// Phase 3.2 adds TypeMap with key + value carried as parallel
+// KeyType + ValueType fields. Eight (K,V) instantiations are
+// reachable in 3.2 (K ∈ {int, string}, V ∈ {int, float, bool,
+// string}); the runtime ships per-(K,V) helpers under
+// mochi_map_<K>_<V>_* names. Map keys cannot themselves be lists
+// or records in 3.2; values cannot either (same parallel-field
+// rationale as 3.1: keeps the verifier's compare sites tractable
+// until Phase 3.4 monomorphisation widens the predicate).
 type Type int
 
 const (
@@ -24,6 +32,7 @@ const (
 	TypeBool   // int storing 0 or 1 (matches C runtime ABI)
 	TypeRecord // struct mochi_<Name>; identity carried as RecordName beside the Type
 	TypeList   // mochi_list_<T>; element type carried as ElemType beside the Type
+	TypeMap    // mochi_map_<K>_<V>; key + value types carried as KeyType + ValueType beside the Type
 )
 
 // String returns a stable identifier for the type, used in
@@ -46,6 +55,8 @@ func (t Type) String() string {
 		return "record"
 	case TypeList:
 		return "list"
+	case TypeMap:
+		return "map"
 	default:
 		return "invalid"
 	}

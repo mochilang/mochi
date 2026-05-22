@@ -1,0 +1,9 @@
+let m: map<int, string> = {30: "c", 10: "a", 20: "b"}
+let ks = keys(m)
+let vs = values(m)
+for k in ks {
+  print(k)
+}
+for v in vs {
+  print(v)
+}

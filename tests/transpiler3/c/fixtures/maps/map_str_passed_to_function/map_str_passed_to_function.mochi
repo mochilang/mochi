@@ -1,0 +1,9 @@
+fun mapLen(m: map<string, int>): int {
+  return len(m)
+}
+
+let m: map<string, int> = {"a": 1, "b": 2, "c": 3}
+print(mapLen(m))
+print(m["a"])
+print(m["b"])
+print(m["c"])

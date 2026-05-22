@@ -1,0 +1,5 @@
+let m: map<string, string> = {"a": "x", "b": "y", "c": "z"}
+print(m["a"])
+print(m["b"])
+print(m["c"])
+print(len(m))

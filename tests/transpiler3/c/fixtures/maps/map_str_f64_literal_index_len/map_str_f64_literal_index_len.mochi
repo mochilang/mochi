@@ -1,0 +1,5 @@
+let m: map<string, float> = {"a": 1.5, "b": 2.5, "c": 3.25}
+print(m["a"])
+print(m["b"])
+print(m["c"])
+print(len(m))

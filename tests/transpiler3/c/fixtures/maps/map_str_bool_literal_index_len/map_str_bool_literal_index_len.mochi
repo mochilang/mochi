@@ -1,0 +1,5 @@
+let m: map<string, bool> = {"a": true, "b": false, "c": true}
+print(m["a"])
+print(m["b"])
+print(m["c"])
+print(len(m))

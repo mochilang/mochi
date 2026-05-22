@@ -93,7 +93,7 @@ typedef struct mochi_list_str {
     int64_t      cap;
 } mochi_list_str;
 
-mochi_list_str mochi_list_str_lit(const char *const *xs, int64_t n);
+mochi_list_str mochi_list_str_lit(const char **xs, int64_t n);
 mochi_list_str mochi_list_str_append(mochi_list_str xs, const char *v);
 const char    *mochi_list_str_index(mochi_list_str xs, int64_t i);
 int64_t        mochi_list_str_len(mochi_list_str xs);

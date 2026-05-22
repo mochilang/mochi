@@ -1,0 +1,11 @@
+let m: map<int, int> = {1: 100, 2: 200}
+if 1 in m {
+  print(m[1])
+} else {
+  print(-1)
+}
+if 5 in m {
+  print(m[5])
+} else {
+  print(-1)
+}

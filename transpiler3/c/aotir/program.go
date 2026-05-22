@@ -49,12 +49,18 @@ type RecordField struct {
 // was main() which took none. Phase 3.0 adds RecordName, valid when
 // Type==TypeRecord. Phase 3.1 adds ElemType, valid when
 // Type==TypeList; the element is always a scalar primitive
-// (TypeInt / TypeFloat / TypeBool / TypeString) in 3.1.
+// (TypeInt / TypeFloat / TypeBool / TypeString) in 3.1. Phase 3.2
+// adds KeyType + ValueType, valid when Type==TypeMap; both are
+// scalar primitives drawn from the 3.2 per-(K,V) instantiation
+// set (K ∈ {TypeInt, TypeString}, V ∈ {TypeInt, TypeFloat,
+// TypeBool, TypeString}).
 type Param struct {
 	Name       string
 	Type       Type
 	RecordName string
 	ElemType   Type
+	KeyType    Type
+	ValueType  Type
 }
 
 // Function is one monomorphic, closure-converted callable.
@@ -80,6 +86,12 @@ type Function struct {
 	// ReturnType==TypeList. Phase 3.1 restricts it to the four
 	// scalar primitives.
 	ReturnElemType Type
+
+	// ReturnKeyType and ReturnValueType carry the K/V identities
+	// when ReturnType==TypeMap. Phase 3.2 restricts the pair to
+	// one of the eight per-(K,V) runtime instantiations.
+	ReturnKeyType   Type
+	ReturnValueType Type
 
 	// Body is a single Block. Phase 1 does not introduce control
 	// flow; Phase 2 introduces multi-block functions with a
@@ -130,6 +142,8 @@ type CallExpr struct {
 	Result           Type
 	ResultRecordName string // valid when Result==TypeRecord
 	ResultElemType   Type   // valid when Result==TypeList
+	ResultKeyType    Type   // valid when Result==TypeMap
+	ResultValueType  Type   // valid when Result==TypeMap
 }
 
 func (c *CallExpr) Type() Type { return c.Result }
@@ -289,6 +303,8 @@ type VarRef struct {
 	VarType    Type
 	RecordName string
 	ElemType   Type
+	KeyType    Type // valid when VarType==TypeMap
+	ValueType  Type // valid when VarType==TypeMap
 }
 
 func (v *VarRef) Type() Type { return v.VarType }
@@ -338,6 +354,8 @@ type LetStmt struct {
 	VarType    Type
 	RecordName string // valid when VarType==TypeRecord
 	ElemType   Type   // valid when VarType==TypeList
+	KeyType    Type   // valid when VarType==TypeMap
+	ValueType  Type   // valid when VarType==TypeMap
 	Init       Expr
 	Mutable    bool // true for VarStmt-lowered bindings
 }
@@ -482,3 +500,74 @@ type ForEachStmt struct {
 }
 
 func (*ForEachStmt) isStmt() {}
+
+// MapLit constructs a map value from parallel Keys + Values slices.
+// The lowerer requires len(Keys)==len(Values) and all keys to share
+// KeyType, all values to share ValueType (both drawn from the
+// Phase 3.2 instantiation set). The emitter renders this as a
+// `mochi_map_<K>_<V>_lit` call with two C99 compound-literal
+// arrays carrying the key and value sequences.
+type MapLit struct {
+	KeyType   Type
+	ValueType Type
+	Keys      []Expr
+	Values    []Expr
+}
+
+func (*MapLit) Type() Type { return TypeMap }
+
+// MapGetExpr reads `Receiver[Key]` for a map-typed receiver. The
+// verifier checks Receiver.Type()==TypeMap, Key.Type()==KeyType,
+// and stamps the result type as ValueType. The runtime helper
+// panics with mochi_panic_index() when Key is absent; programs that
+// must probe should use MapHasExpr first.
+type MapGetExpr struct {
+	Receiver  Expr
+	Key       Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (m *MapGetExpr) Type() Type { return m.ValueType }
+
+// MapHasExpr is the `has(m, k)` builtin call. Result is TypeBool;
+// the runtime helper returns 1 if k is in m and 0 otherwise.
+type MapHasExpr struct {
+	Receiver  Expr
+	Key       Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (*MapHasExpr) Type() Type { return TypeBool }
+
+// MapLenExpr is the `len(m)` builtin call when m is a map. Result
+// is TypeInt; the helper returns the live-entry count.
+type MapLenExpr struct {
+	Receiver  Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (*MapLenExpr) Type() Type { return TypeInt }
+
+// MapKeysExpr is the `keys(m)` builtin call. Result is list<K>
+// sorted ascending by key (matches the vm's sort-on-iteration
+// behavior so AOT-C output stays byte-equal to the oracle).
+type MapKeysExpr struct {
+	Receiver  Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (k *MapKeysExpr) Type() Type { return TypeList }
+
+// MapValuesExpr is the `values(m)` builtin call. Result is list<V>
+// in the same key-sorted order as MapKeysExpr.
+type MapValuesExpr struct {
+	Receiver  Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (v *MapValuesExpr) Type() Type { return TypeList }

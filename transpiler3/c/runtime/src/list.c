@@ -139,7 +139,7 @@ int64_t mochi_list_bool_len(mochi_list_bool xs) { return xs.len; }
 
 /* --- string (const char *) ----------------------------------------- */
 
-mochi_list_str mochi_list_str_lit(const char *const *xs, int64_t n) {
+mochi_list_str mochi_list_str_lit(const char **xs, int64_t n) {
     mochi_list_str out = {NULL, n, n};
     if (n > 0) {
         out.data = (const char **)malloc((size_t)n * sizeof(const char *));

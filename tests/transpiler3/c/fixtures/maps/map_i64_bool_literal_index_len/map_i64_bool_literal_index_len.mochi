@@ -1,0 +1,5 @@
+let m: map<int, bool> = {1: true, 2: false, 3: true}
+print(m[1])
+print(m[2])
+print(m[3])
+print(len(m))
