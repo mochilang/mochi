@@ -154,3 +154,23 @@ const char *mochi_str_array_to_str(const mochi_str_array *a) {
     buf[off] = '\0';
     return buf;
 }
+
+mochi_str_array *mochi_str_array_slice(const mochi_str_array *src, int64_t start, int64_t end) {
+    int64_t srclen = src->len;
+    if (start < 0) start = 0;
+    if (end > srclen) end = srclen;
+    if (end < start) end = start;
+    int64_t n = end - start;
+    mochi_str_array *out = (mochi_str_array *)malloc(sizeof(mochi_str_array));
+    if (out == NULL) abort();
+    out->len = n;
+    out->cap = n;
+    if (n == 0) {
+        out->data = NULL;
+        return out;
+    }
+    out->data = (const char **)malloc((size_t)n * sizeof(const char *));
+    if (out->data == NULL) abort();
+    memcpy((void *)out->data, (const void *)(src->data + start), (size_t)n * sizeof(const char *));
+    return out;
+}

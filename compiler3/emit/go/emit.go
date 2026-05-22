@@ -430,6 +430,9 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 		w.WriteString("\t\tfor i, x := range xs { parts[i] = strconv.Quote(x) }\n")
 		w.WriteString("\t\treturn \"[\" + strings.Join(parts, \", \") + \"]\"\n")
 		fmt.Fprintf(w, "\t}(%s)\n", valueName(v.Args[0]))
+	case ir.OpStrArrSlice:
+		fmt.Fprintf(w, "\t%s = append([]string{}, %s[%s:%s]...)\n",
+			name, valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
 	case ir.OpNow:
 		imports["time"] = true
 		fmt.Fprintf(w, "\t%s = time.Now().UnixMicro()\n", name)

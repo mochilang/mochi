@@ -1806,6 +1806,41 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 		switch {
 		case op.Index != nil:
 			idx := op.Index
+			// Phase 4.2.20: `xs[a:b]` on TypeStrArr lowers to
+			// OpStrArrSlice. Mochi requires both bounds (the surface
+			// allows `xs[:b]` and `xs[a:]` too, but the v0.2 fixture
+			// corpus only exercises the bound case, so a half-open
+			// shorthand stays out of the MVP). Colon2 (`[a:b:c]`) and
+			// Step remain rejected. Other element types still fall
+			// through to the MVP rejection until their slice runtime
+			// helper is in place.
+			if idx.Colon != nil && idx.Colon2 == nil && idx.Step == nil && idx.Start != nil && idx.End != nil {
+				curType := b.fn.Values[cur].Type
+				if curType != ir.TypeStrArr {
+					return 0, fmt.Errorf("frontend: slice unsupported on %s", curType)
+				}
+				startID, err := b.lowerExpr(idx.Start)
+				if err != nil {
+					return 0, err
+				}
+				if b.fn.Values[startID].Type != ir.TypeI64 {
+					return 0, fmt.Errorf("frontend: slice start must be i64, got %s", b.fn.Values[startID].Type)
+				}
+				endID, err := b.lowerExpr(idx.End)
+				if err != nil {
+					return 0, err
+				}
+				if b.fn.Values[endID].Type != ir.TypeI64 {
+					return 0, fmt.Errorf("frontend: slice end must be i64, got %s", b.fn.Values[endID].Type)
+				}
+				cur = b.addValue(ir.Value{
+					Type:     ir.TypeStrArr,
+					ElemType: ir.TypeStr,
+					Op:       ir.OpStrArrSlice,
+					Args:     []uint32{cur, startID, endID},
+				})
+				continue
+			}
 			if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil || idx.Start == nil {
 				return 0, fmt.Errorf("frontend: slice indexing unsupported in MVP")
 			}

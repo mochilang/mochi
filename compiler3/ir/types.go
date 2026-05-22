@@ -209,6 +209,14 @@ const (
 	OpStrArrGetStr
 	OpStrArrSetStr
 
+	// list<str> slicing (Phase 4.2.20). OpStrArrSlice produces a new
+	// TypeStrArr containing the elements in the half-open interval
+	// [start, end) of the source array. Backs the Mochi surface
+	// `xs[a:b]` on TypeStrArr. The runtime copies the element
+	// pointer carriers, not the underlying string bytes; element
+	// lifetimes are unchanged.
+	OpStrArrSlice
+
 	// Typed map<str, i64> ops (Phase 4.2.18). Backs `map<string, int>`
 	// on the C target with mochi_map_str_i64 (open-addressing hash
 	// keyed by `const char*`, int64 values). Get on an absent key
@@ -502,6 +510,8 @@ func (o OpCode) String() string {
 		return "strarr.get.str"
 	case OpStrArrSetStr:
 		return "strarr.set.str"
+	case OpStrArrSlice:
+		return "strarr.slice"
 	case OpNewMapStrI64:
 		return "newmapstri64"
 	case OpMapSetStrI64:
