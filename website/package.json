@@ -5,8 +5,9 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "gen:meps": "node scripts/gen-meps.js",
-    "prestart": "node scripts/gen-meps.js",
-    "prebuild": "node scripts/gen-meps.js",
+    "gen:research": "node scripts/gen-research.js",
+    "prestart": "node scripts/gen-meps.js && node scripts/gen-research.js",
+    "prebuild": "node scripts/gen-meps.js && node scripts/gen-research.js",
     "start": "docusaurus start",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",

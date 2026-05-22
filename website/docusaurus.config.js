@@ -107,6 +107,12 @@ const config = {
           },
           {
             type: 'docSidebar',
+            sidebarId: 'researchSidebar',
+            position: 'left',
+            label: 'Research',
+          },
+          {
+            type: 'docSidebar',
             sidebarId: 'implementationSidebar',
             position: 'left',
             label: 'Implementation',
