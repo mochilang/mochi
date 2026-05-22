@@ -1,0 +1,6 @@
+let xs = [[1, 2], [3, 4]]
+if len(xs) > 1 {
+  print(xs[1][0])
+} else {
+  print(0)
+}

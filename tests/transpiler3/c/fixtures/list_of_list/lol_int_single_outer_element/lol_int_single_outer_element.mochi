@@ -1,0 +1,5 @@
+let xs = [[42, 43, 44]]
+print(len(xs))
+print(xs[0][0])
+print(xs[0][1])
+print(xs[0][2])

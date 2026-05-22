@@ -43,10 +43,12 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include \"mochi/list.h\"\n")
 	b.WriteString("#include \"mochi/map.h\"\n")
 	listRecNames := collectListRecordElems(prog)
-	if len(listRecNames) > 0 {
+	listListInners := collectListListInners(prog)
+	if len(listRecNames) > 0 || len(listListInners) > 0 {
 		// malloc lives in <stdlib.h>; only pull it in when we actually
-		// emit list<R> helpers so user-defined functions whose names
-		// would collide with stdlib (e.g. `abs`) keep working.
+		// emit list<R> or list<list<T>> helpers so user-defined
+		// functions whose names would collide with stdlib (e.g.
+		// `abs`) keep working.
 		b.WriteString("#include <stdlib.h>\n")
 	}
 	b.WriteString("\n")
@@ -56,6 +58,10 @@ func Emit(prog *aotir.Program) (string, error) {
 	}
 
 	if err := emitListRecordHelpers(&b, listRecNames); err != nil {
+		return "", err
+	}
+
+	if err := emitListOfListHelpers(&b, listListInners); err != nil {
 		return "", err
 	}
 
@@ -105,7 +111,7 @@ func Emit(prog *aotir.Program) (string, error) {
 // definitions. Keeping the two in lockstep avoids drift between
 // prototype and definition.
 func emitFunctionPrototype(fn *aotir.Function) (string, error) {
-	ret, err := cReturnType(fn.ReturnType, fn.ReturnRecordName, fn.ReturnElemType, fn.ReturnElemRecordName, fn.ReturnKeyType, fn.ReturnValueType)
+	ret, err := cReturnType(fn.ReturnType, fn.ReturnRecordName, fn.ReturnElemType, fn.ReturnElemRecordName, fn.ReturnInnerElemType, fn.ReturnKeyType, fn.ReturnValueType)
 	if err != nil {
 		return "", fmt.Errorf("function %q return: %w", fn.Name, err)
 	}
@@ -118,7 +124,7 @@ func emitFunctionPrototype(fn *aotir.Function) (string, error) {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			pt, err := cTypeFull(p.Type, p.RecordName, p.ElemType, p.ElemRecordName, p.KeyType, p.ValueType)
+			pt, err := cTypeFull(p.Type, p.RecordName, p.ElemType, p.ElemRecordName, p.InnerElemType, p.KeyType, p.ValueType)
 			if err != nil {
 				return "", fmt.Errorf("function %q param %q: %w", fn.Name, p.Name, err)
 			}
@@ -134,12 +140,14 @@ func emitFunctionPrototype(fn *aotir.Function) (string, error) {
 // render as `struct mochi_<Name>` value (returned by value); list and
 // map types render as `mochi_list_<T>` / `mochi_map_<K>_<V>` values.
 // For list<R>, elemRecName carries the element record identity so
-// the per-record helper instantiation suffix can be resolved.
-func cReturnType(t aotir.Type, recName string, elemType aotir.Type, elemRecName string, keyType aotir.Type, valueType aotir.Type) (string, error) {
+// the per-record helper instantiation suffix can be resolved. For
+// list<list<T>> (Phase 3.4b), innerElem carries the inner T so the
+// suffix resolves to `list_<innerSuf>`.
+func cReturnType(t aotir.Type, recName string, elemType aotir.Type, elemRecName string, innerElem aotir.Type, keyType aotir.Type, valueType aotir.Type) (string, error) {
 	if t == aotir.TypeUnit {
 		return "void", nil
 	}
-	return cTypeFull(t, recName, elemType, elemRecName, keyType, valueType)
+	return cTypeFull(t, recName, elemType, elemRecName, innerElem, keyType, valueType)
 }
 
 func emitFunction(b *strings.Builder, fn *aotir.Function, entry bool) error {
@@ -198,7 +206,7 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		b.WriteString(");\n")
 		return nil
 	case *aotir.LetStmt:
-		ts, err := cTypeFull(s.VarType, s.RecordName, s.ElemType, s.ElemRecordName, s.KeyType, s.ValueType)
+		ts, err := cTypeFull(s.VarType, s.RecordName, s.ElemType, s.ElemRecordName, s.InnerElemType, s.KeyType, s.ValueType)
 		if err != nil {
 			return fmt.Errorf("let %q: %w", s.Name, err)
 		}
@@ -277,11 +285,26 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		if err != nil {
 			return err
 		}
-		elemC, err := cTypeFull(s.ElemType, s.ElemRecordName, aotir.TypeInvalid, "", aotir.TypeInvalid, aotir.TypeInvalid)
-		if err != nil {
-			return fmt.Errorf("foreach %q: %w", s.Var, err)
+		// For list<list<T>>, the induction variable's C type is the
+		// inner list struct `mochi_list_<inner>`. The outer list's
+		// runtime suffix is `list_<inner>`, so the runtime family
+		// is `mochi_list_list_<inner>` and the per-step index returns
+		// a `mochi_list_<inner>` value (i.e., the induction var).
+		var elemC string
+		if s.ElemType == aotir.TypeList {
+			innerSuf, err := scalarListInnerSuffix(s.InnerElemType)
+			if err != nil {
+				return fmt.Errorf("foreach %q: %w", s.Var, err)
+			}
+			elemC = "mochi_list_" + innerSuf
+		} else {
+			ec, err := cTypeFull(s.ElemType, s.ElemRecordName, aotir.TypeInvalid, "", aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid)
+			if err != nil {
+				return fmt.Errorf("foreach %q: %w", s.Var, err)
+			}
+			elemC = ec
 		}
-		listSuf, err := listSuffix(s.ElemType, s.ElemRecordName)
+		listSuf, err := listSuffix(s.ElemType, s.ElemRecordName, s.InnerElemType)
 		if err != nil {
 			return fmt.Errorf("foreach %q: %w", s.Var, err)
 		}
@@ -385,10 +408,11 @@ func cTypeWithRec(t aotir.Type, recName string) (string, error) {
 // types ride on parallel fields for maps. The caller passes them
 // through so emit can render the correct `mochi_list_<T>` /
 // `mochi_map_<K>_<V>` spelling. For list<R> (Phase 3.4a), the
-// elemRecName parameter carries the element record's identity.
-func cTypeFull(t aotir.Type, recName string, elemType aotir.Type, elemRecName string, keyType aotir.Type, valueType aotir.Type) (string, error) {
+// elemRecName parameter carries the element record's identity. For
+// list<list<T>> (Phase 3.4b), innerElem carries the inner T.
+func cTypeFull(t aotir.Type, recName string, elemType aotir.Type, elemRecName string, innerElem aotir.Type, keyType aotir.Type, valueType aotir.Type) (string, error) {
 	if t == aotir.TypeList {
-		suf, err := listSuffix(elemType, elemRecName)
+		suf, err := listSuffix(elemType, elemRecName, innerElem)
 		if err != nil {
 			return "", err
 		}
@@ -405,12 +429,14 @@ func cTypeFull(t aotir.Type, recName string, elemType aotir.Type, elemRecName st
 }
 
 // listSuffix returns the per-T runtime suffix for a list element
-// type: i64 / f64 / bool / str for the four scalar primitives, or
-// the record's own name for list<R> (Phase 3.4a). The suffix selects
-// the matching `mochi_list_<T>_*` helper family. Scalar suffixes
-// resolve to libmochi exports; record suffixes resolve to per-record
-// helpers emitted into the same translation unit's prologue.
-func listSuffix(elem aotir.Type, elemRecName string) (string, error) {
+// type: i64 / f64 / bool / str for the four scalar primitives, the
+// record's own name for list<R> (Phase 3.4a), or "list_<innerSuf>"
+// for list<list<T>> (Phase 3.4b). The suffix selects the matching
+// `mochi_list_<T>_*` helper family. Scalar suffixes resolve to
+// libmochi exports; record and list-of-list suffixes resolve to
+// per-(outer,inner) helpers emitted into the same translation unit's
+// prologue.
+func listSuffix(elem aotir.Type, elemRecName string, innerElem aotir.Type) (string, error) {
 	switch elem {
 	case aotir.TypeInt:
 		return "i64", nil
@@ -425,8 +451,31 @@ func listSuffix(elem aotir.Type, elemRecName string) (string, error) {
 			return "", fmt.Errorf("list of record requires non-empty record name")
 		}
 		return elemRecName, nil
+	case aotir.TypeList:
+		inner, err := scalarListInnerSuffix(innerElem)
+		if err != nil {
+			return "", err
+		}
+		return "list_" + inner, nil
 	}
 	return "", fmt.Errorf("no list runtime for element type %s", elem)
+}
+
+// scalarListInnerSuffix returns the libmochi suffix for the inner T
+// of a list<list<T>>. Phase 3.4b restricts T to the four scalar
+// primitives, so anything else is a phase-bounded error.
+func scalarListInnerSuffix(inner aotir.Type) (string, error) {
+	switch inner {
+	case aotir.TypeInt:
+		return "i64", nil
+	case aotir.TypeFloat:
+		return "f64", nil
+	case aotir.TypeBool:
+		return "bool", nil
+	case aotir.TypeString:
+		return "str", nil
+	}
+	return "", fmt.Errorf("list<list<T>> inner type %s is not supported in Phase 3.4b", inner)
 }
 
 // mapSuffix returns the per-(K,V) runtime suffix used to select the
@@ -464,6 +513,197 @@ func mapSuffix(key aotir.Type, value aotir.Type) (string, error) {
 // doesn't need yet).
 func cRecordTypeName(name string) string {
 	return "struct mochi_" + name
+}
+
+// emitListOfListHelpers walks the Program for every list<list<T>>
+// usage and emits a TU-local `mochi_list_list_<innerSuf>` struct plus
+// the four canonical helpers (_lit, _append, _index, _len) per unique
+// inner suffix. The outer list's data buffer is a heap array of
+// `mochi_list_<inner>` structs (each carrying its own data pointer +
+// len/cap); the helper memcpys the struct headers, so the inner
+// lists' data buffers are aliased rather than deep-copied. Phase
+// 3.4b's read-only fixtures never reach into a shared inner via two
+// outer-list paths concurrently, so the aliasing is safe for the
+// surface that lands here.
+func emitListOfListHelpers(b *strings.Builder, inners []string) error {
+	if len(inners) == 0 {
+		return nil
+	}
+	sort.Strings(inners)
+	for _, inner := range inners {
+		innerC := "mochi_list_" + inner
+		outer := "mochi_list_list_" + inner
+		fmt.Fprintf(b, "typedef struct %s {\n", outer)
+		fmt.Fprintf(b, "    %s *data;\n", innerC)
+		b.WriteString("    int64_t  len;\n")
+		b.WriteString("    int64_t  cap;\n")
+		fmt.Fprintf(b, "} %s;\n\n", outer)
+
+		fmt.Fprintf(b, "static %s %s_lit(const %s *xs, int64_t n) {\n", outer, outer, innerC)
+		fmt.Fprintf(b, "    %s out = {NULL, n, n};\n", outer)
+		b.WriteString("    if (n > 0) {\n")
+		fmt.Fprintf(b, "        out.data = (%s *)malloc((size_t)n * sizeof(%s));\n", innerC, innerC)
+		b.WriteString("        if (out.data == NULL) { mochi_panic_index(); }\n")
+		fmt.Fprintf(b, "        memcpy(out.data, xs, (size_t)n * sizeof(%s));\n", innerC)
+		b.WriteString("    }\n")
+		b.WriteString("    return out;\n")
+		b.WriteString("}\n\n")
+
+		fmt.Fprintf(b, "static %s %s_append(%s xs, %s v) {\n", outer, outer, outer, innerC)
+		fmt.Fprintf(b, "    %s out = {NULL, xs.len + 1, xs.len + 1};\n", outer)
+		fmt.Fprintf(b, "    out.data = (%s *)malloc((size_t)out.cap * sizeof(%s));\n", innerC, innerC)
+		b.WriteString("    if (out.data == NULL) { mochi_panic_index(); }\n")
+		b.WriteString("    if (xs.len > 0) {\n")
+		fmt.Fprintf(b, "        memcpy(out.data, xs.data, (size_t)xs.len * sizeof(%s));\n", innerC)
+		b.WriteString("    }\n")
+		b.WriteString("    out.data[xs.len] = v;\n")
+		b.WriteString("    return out;\n")
+		b.WriteString("}\n\n")
+
+		fmt.Fprintf(b, "static %s %s_index(%s xs, int64_t i) {\n", innerC, outer, outer)
+		b.WriteString("    if (i < 0 || i >= xs.len) { mochi_panic_index(); }\n")
+		b.WriteString("    return xs.data[i];\n")
+		b.WriteString("}\n\n")
+
+		fmt.Fprintf(b, "static int64_t %s_len(%s xs) { return xs.len; }\n\n", outer, outer)
+	}
+	return nil
+}
+
+// collectListListInners walks the program collecting every distinct
+// inner scalar suffix (i64/f64/bool/str) used as the inner T of a
+// list<list<T>>. Covers function signatures and every statement /
+// expression carrier that can hold a list<list<T>> value.
+func collectListListInners(prog *aotir.Program) []string {
+	set := map[string]struct{}{}
+	visit := func(elem aotir.Type, inner aotir.Type) {
+		if elem != aotir.TypeList {
+			return
+		}
+		suf, err := scalarListInnerSuffix(inner)
+		if err != nil {
+			return
+		}
+		set[suf] = struct{}{}
+	}
+	for _, fn := range prog.Functions {
+		if fn == nil {
+			continue
+		}
+		visit(fn.ReturnElemType, fn.ReturnInnerElemType)
+		for _, p := range fn.Params {
+			visit(p.ElemType, p.InnerElemType)
+		}
+		walkBlockInner(fn.Body, visit)
+	}
+	out := make([]string, 0, len(set))
+	for k := range set {
+		out = append(out, k)
+	}
+	return out
+}
+
+func walkBlockInner(blk *aotir.Block, visit func(aotir.Type, aotir.Type)) {
+	if blk == nil {
+		return
+	}
+	for _, st := range blk.Statements {
+		walkStmtInner(st, visit)
+	}
+}
+
+func walkStmtInner(st aotir.Stmt, visit func(aotir.Type, aotir.Type)) {
+	switch s := st.(type) {
+	case *aotir.LetStmt:
+		visit(s.ElemType, s.InnerElemType)
+		walkExprInner(s.Init, visit)
+	case *aotir.AssignStmt:
+		walkExprInner(s.Value, visit)
+	case *aotir.CallStmt:
+		for _, a := range s.Args {
+			walkExprInner(a, visit)
+		}
+	case *aotir.IfStmt:
+		walkExprInner(s.Cond, visit)
+		walkBlockInner(s.Then, visit)
+		walkBlockInner(s.Else, visit)
+	case *aotir.WhileStmt:
+		walkExprInner(s.Cond, visit)
+		walkBlockInner(s.Body, visit)
+	case *aotir.ForRangeStmt:
+		walkExprInner(s.Start, visit)
+		walkExprInner(s.End, visit)
+		walkBlockInner(s.Body, visit)
+	case *aotir.ForEachStmt:
+		visit(s.ElemType, s.InnerElemType)
+		walkExprInner(s.List, visit)
+		walkBlockInner(s.Body, visit)
+	case *aotir.ReturnStmt:
+		if s.Value != nil {
+			walkExprInner(s.Value, visit)
+		}
+	}
+}
+
+func walkExprInner(e aotir.Expr, visit func(aotir.Type, aotir.Type)) {
+	if e == nil {
+		return
+	}
+	switch v := e.(type) {
+	case *aotir.ListLit:
+		visit(v.ElemType, v.InnerElemType)
+		for _, el := range v.Elems {
+			walkExprInner(el, visit)
+		}
+	case *aotir.IndexExpr:
+		visit(v.ElemType, v.InnerElemType)
+		walkExprInner(v.Receiver, visit)
+		walkExprInner(v.Index, visit)
+	case *aotir.LenExpr:
+		visit(v.ElemType, v.InnerElemType)
+		walkExprInner(v.Receiver, visit)
+	case *aotir.AppendExpr:
+		visit(v.ElemType, v.InnerElemType)
+		walkExprInner(v.Receiver, visit)
+		walkExprInner(v.Value, visit)
+	case *aotir.VarRef:
+		visit(v.ElemType, v.InnerElemType)
+	case *aotir.CallExpr:
+		visit(v.ResultElemType, v.ResultInnerElemType)
+		for _, a := range v.Args {
+			walkExprInner(a, visit)
+		}
+	case *aotir.BinaryExpr:
+		walkExprInner(v.Left, visit)
+		walkExprInner(v.Right, visit)
+	case *aotir.UnaryExpr:
+		walkExprInner(v.Operand, visit)
+	case *aotir.FieldAccess:
+		walkExprInner(v.Receiver, visit)
+	case *aotir.RecordLit:
+		for _, f := range v.Fields {
+			walkExprInner(f.Value, visit)
+		}
+	case *aotir.MapLit:
+		for _, k := range v.Keys {
+			walkExprInner(k, visit)
+		}
+		for _, val := range v.Values {
+			walkExprInner(val, visit)
+		}
+	case *aotir.MapGetExpr:
+		walkExprInner(v.Receiver, visit)
+		walkExprInner(v.Key, visit)
+	case *aotir.MapHasExpr:
+		walkExprInner(v.Receiver, visit)
+		walkExprInner(v.Key, visit)
+	case *aotir.MapLenExpr:
+		walkExprInner(v.Receiver, visit)
+	case *aotir.MapKeysExpr:
+		walkExprInner(v.Receiver, visit)
+	case *aotir.MapValuesExpr:
+		walkExprInner(v.Receiver, visit)
+	}
 }
 
 // emitListRecordHelpers walks the Program for every list<R> usage and
@@ -703,11 +943,11 @@ func emitExpr(e aotir.Expr) (string, error) {
 // runtime helper makes a heap-allocated copy, so the temporary's
 // lifetime (the enclosing full-expression) is enough.
 func emitListLit(v *aotir.ListLit) (string, error) {
-	suf, err := listSuffix(v.ElemType, v.ElemRecordName)
+	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType)
 	if err != nil {
 		return "", fmt.Errorf("list literal: %w", err)
 	}
-	elemC, err := cListBufferElemC(v.ElemType, v.ElemRecordName)
+	elemC, err := cListBufferElemC(v.ElemType, v.ElemRecordName, v.InnerElemType)
 	if err != nil {
 		return "", fmt.Errorf("list literal: %w", err)
 	}
@@ -732,8 +972,11 @@ func emitListLit(v *aotir.ListLit) (string, error) {
 
 // cListBufferElemC returns the C element-type spelling used inside
 // a list literal's compound-literal array temporary. This mirrors
-// the `mochi_list_<T>_lit` first-parameter type from list.h.
-func cListBufferElemC(elem aotir.Type, elemRecName string) (string, error) {
+// the `mochi_list_<T>_lit` first-parameter type from list.h. For
+// list<list<T>> (Phase 3.4b), the buffer element is the nested list
+// struct `mochi_list_<inner>` so the helper memcpys the nested-list
+// headers (data pointer + len + cap) into the outer list.
+func cListBufferElemC(elem aotir.Type, elemRecName string, innerElem aotir.Type) (string, error) {
 	switch elem {
 	case aotir.TypeInt:
 		return "int64_t", nil
@@ -748,6 +991,12 @@ func cListBufferElemC(elem aotir.Type, elemRecName string) (string, error) {
 			return "", fmt.Errorf("list of record requires non-empty record name")
 		}
 		return cRecordTypeName(elemRecName), nil
+	case aotir.TypeList:
+		inner, err := scalarListInnerSuffix(innerElem)
+		if err != nil {
+			return "", err
+		}
+		return "mochi_list_" + inner, nil
 	}
 	return "", fmt.Errorf("no list-literal buffer type for element %s", elem)
 }
@@ -755,7 +1004,7 @@ func cListBufferElemC(elem aotir.Type, elemRecName string) (string, error) {
 // emitIndexExpr renders an IndexExpr as a `mochi_list_<T>_index`
 // call. The bounds check is in the runtime helper.
 func emitIndexExpr(v *aotir.IndexExpr) (string, error) {
-	suf, err := listSuffix(v.ElemType, v.ElemRecordName)
+	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType)
 	if err != nil {
 		return "", fmt.Errorf("index: %w", err)
 	}
@@ -772,7 +1021,7 @@ func emitIndexExpr(v *aotir.IndexExpr) (string, error) {
 
 // emitLenExpr renders a LenExpr as a `mochi_list_<T>_len` call.
 func emitLenExpr(v *aotir.LenExpr) (string, error) {
-	suf, err := listSuffix(v.ElemType, v.ElemRecordName)
+	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType)
 	if err != nil {
 		return "", fmt.Errorf("len: %w", err)
 	}
@@ -786,7 +1035,7 @@ func emitLenExpr(v *aotir.LenExpr) (string, error) {
 // emitAppendExpr renders an AppendExpr as a `mochi_list_<T>_append`
 // call; the helper allocates a fresh buffer and returns a new list.
 func emitAppendExpr(v *aotir.AppendExpr) (string, error) {
-	suf, err := listSuffix(v.ElemType, v.ElemRecordName)
+	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType)
 	if err != nil {
 		return "", fmt.Errorf("append: %w", err)
 	}

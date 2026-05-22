@@ -1,0 +1,6 @@
+let mat = [[1, 2], [3, 4], [5, 6]]
+for row in mat {
+  for v in row {
+    print(v)
+  }
+}

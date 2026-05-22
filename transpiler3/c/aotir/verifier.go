@@ -113,12 +113,22 @@ func Verify(p *Program) error {
 			} else if fn.ReturnElemRecordName != "" {
 				return fmt.Errorf("aotir.Verify: function %q has ReturnElemRecordName set on list<%s> (only valid when element is record)", fn.Name, fn.ReturnElemType)
 			}
+			if fn.ReturnElemType == TypeList {
+				if !isScalarElemType(fn.ReturnInnerElemType) {
+					return fmt.Errorf("aotir.Verify: function %q returns list<list<T>> but ReturnInnerElemType is %s (Phase 3.4b requires scalar inner)", fn.Name, fn.ReturnInnerElemType)
+				}
+			} else if fn.ReturnInnerElemType != TypeInvalid {
+				return fmt.Errorf("aotir.Verify: function %q has ReturnInnerElemType set on list<%s> (only valid when element is list)", fn.Name, fn.ReturnElemType)
+			}
 		} else {
 			if fn.ReturnElemType != TypeInvalid {
 				return fmt.Errorf("aotir.Verify: function %q has ReturnElemType set on non-list return type %s", fn.Name, fn.ReturnType)
 			}
 			if fn.ReturnElemRecordName != "" {
 				return fmt.Errorf("aotir.Verify: function %q has ReturnElemRecordName set on non-list return type %s", fn.Name, fn.ReturnType)
+			}
+			if fn.ReturnInnerElemType != TypeInvalid {
+				return fmt.Errorf("aotir.Verify: function %q has ReturnInnerElemType set on non-list return type %s", fn.Name, fn.ReturnType)
 			}
 		}
 		if fn.ReturnType == TypeMap {
@@ -161,12 +171,22 @@ func Verify(p *Program) error {
 				} else if pr.ElemRecordName != "" {
 					return fmt.Errorf("aotir.Verify: function %q param %d: ElemRecordName set on list<%s> (only valid when element is record)", fn.Name, k, pr.ElemType)
 				}
+				if pr.ElemType == TypeList {
+					if !isScalarElemType(pr.InnerElemType) {
+						return fmt.Errorf("aotir.Verify: function %q param %d: list<list<T>> param has InnerElemType %s (Phase 3.4b requires scalar inner)", fn.Name, k, pr.InnerElemType)
+					}
+				} else if pr.InnerElemType != TypeInvalid {
+					return fmt.Errorf("aotir.Verify: function %q param %d: InnerElemType set on list<%s> (only valid when element is list)", fn.Name, k, pr.ElemType)
+				}
 			} else {
 				if pr.ElemType != TypeInvalid {
 					return fmt.Errorf("aotir.Verify: function %q param %d: ElemType set on non-list type %s", fn.Name, k, pr.Type)
 				}
 				if pr.ElemRecordName != "" {
 					return fmt.Errorf("aotir.Verify: function %q param %d: ElemRecordName set on non-list type %s", fn.Name, k, pr.Type)
+				}
+				if pr.InnerElemType != TypeInvalid {
+					return fmt.Errorf("aotir.Verify: function %q param %d: InnerElemType set on non-list type %s", fn.Name, k, pr.Type)
 				}
 			}
 			if pr.Type == TypeMap {
@@ -198,16 +218,17 @@ func Verify(p *Program) error {
 			return fmt.Errorf("aotir.Verify: function %q (index %d) has nil Body", fn.Name, i)
 		}
 		ctx := &verifyCtx{
-			fns:           names,
-			records:       records,
-			scope:         newScope(nil),
-			loopDepth:     0,
-			returnType:    fn.ReturnType,
-			returnRec:     fn.ReturnRecordName,
-			returnElem:    fn.ReturnElemType,
-			returnElemRec: fn.ReturnElemRecordName,
-			returnKey:     fn.ReturnKeyType,
-			returnValue:   fn.ReturnValueType,
+			fns:             names,
+			records:         records,
+			scope:           newScope(nil),
+			loopDepth:       0,
+			returnType:      fn.ReturnType,
+			returnRec:       fn.ReturnRecordName,
+			returnElem:      fn.ReturnElemType,
+			returnElemRec:   fn.ReturnElemRecordName,
+			returnInnerElem: fn.ReturnInnerElemType,
+			returnKey:       fn.ReturnKeyType,
+			returnValue:     fn.ReturnValueType,
 		}
 		// Seed the function's parameter list as immutable
 		// bindings in the root scope so the body can reference
@@ -237,16 +258,17 @@ func Verify(p *Program) error {
 // enclosing function's return type. The verifier never mutates
 // fns; scope is pushed and popped per Block.
 type verifyCtx struct {
-	fns           map[string]*Function
-	records       map[string]*RecordDecl
-	scope         *scope
-	loopDepth     int
-	returnType    Type
-	returnRec     string
-	returnElem    Type
-	returnElemRec string // record name when returnElem==TypeRecord
-	returnKey     Type
-	returnValue   Type
+	fns             map[string]*Function
+	records         map[string]*RecordDecl
+	scope           *scope
+	loopDepth       int
+	returnType      Type
+	returnRec       string
+	returnElem      Type
+	returnElemRec   string // record name when returnElem==TypeRecord
+	returnInnerElem Type   // inner elem type when returnElem==TypeList (Phase 3.4b)
+	returnKey       Type
+	returnValue     Type
 }
 
 // scope is a single lexical frame. parent==nil marks the function
@@ -404,6 +426,13 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 			}
 		} else if s.ElemRecordName != "" {
 			return fmt.Errorf("let %q: ElemRecordName set on list<%s> (only valid when ElemType==record)", s.Name, s.ElemType)
+		}
+		if s.ElemType == TypeList {
+			if !isScalarElemType(s.InnerElemType) {
+				return fmt.Errorf("let %q: list<list<T>> binding has InnerElemType %s (Phase 3.4b requires scalar inner)", s.Name, s.InnerElemType)
+			}
+		} else if s.InnerElemType != TypeInvalid {
+			return fmt.Errorf("let %q: InnerElemType set on list<%s> (only valid when ElemType==list)", s.Name, s.ElemType)
 		}
 	} else if s.ElemType != TypeInvalid {
 		return fmt.Errorf("let %q: ElemType set on non-list type %s", s.Name, s.VarType)
@@ -599,12 +628,25 @@ func verifyForEachStmt(ctx *verifyCtx, s *ForEachStmt) error {
 	} else if s.ElemRecordName != "" {
 		return fmt.Errorf("foreach: ElemRecordName set on list<%s> (only valid when ElemType==record)", s.ElemType)
 	}
+	if s.ElemType == TypeList {
+		if !isScalarElemType(s.InnerElemType) {
+			return fmt.Errorf("foreach: list<list<T>> body requires scalar inner, got InnerElemType %s", s.InnerElemType)
+		}
+	} else if s.InnerElemType != TypeInvalid {
+		return fmt.Errorf("foreach: InnerElemType set on list<%s> (only valid when ElemType==list)", s.ElemType)
+	}
 	if s.Body == nil {
 		return errors.New("foreach with nil Body block")
 	}
 	prev := ctx.scope
 	ctx.scope = newScope(prev)
-	ctx.scope.vars[s.Var] = binding{t: s.ElemType, mutable: false, record: s.ElemRecordName}
+	// When ElemType==TypeList, the induction variable is bound to a
+	// list<innerT> value, so the binding's elem is the InnerElemType.
+	bindElem := TypeInvalid
+	if s.ElemType == TypeList {
+		bindElem = s.InnerElemType
+	}
+	ctx.scope.vars[s.Var] = binding{t: s.ElemType, mutable: false, record: s.ElemRecordName, elem: bindElem}
 	ctx.loopDepth++
 	defer func() {
 		ctx.loopDepth--
@@ -644,6 +686,11 @@ func verifyReturnStmt(ctx *verifyCtx, s *ReturnStmt) error {
 		if ctx.returnElem == TypeRecord {
 			if ver := exprElemRecordName(s.Value); ver != ctx.returnElemRec {
 				return fmt.Errorf("return list<%s> does not match function return list<%s>", ver, ctx.returnElemRec)
+			}
+		}
+		if ctx.returnElem == TypeList {
+			if vi := exprInnerElemType(s.Value); vi != ctx.returnInnerElem {
+				return fmt.Errorf("return list<list<%s>> does not match function return list<list<%s>>", vi, ctx.returnInnerElem)
 			}
 		}
 	}
@@ -703,7 +750,9 @@ func exprElemRecordName(e Expr) string {
 // covers VarRef, ListLit, CallExpr, AppendExpr. Lists never appear
 // as field reads in 3.1 because record fields cannot hold lists.
 // Phase 3.2 adds MapKeysExpr / MapValuesExpr because both produce
-// list-typed values (list<K> and list<V> respectively).
+// list-typed values (list<K> and list<V> respectively). Phase 3.4b
+// adds IndexExpr: indexing a list<list<T>> produces a list<T> value,
+// whose element type T is carried on IndexExpr.InnerElemType.
 func exprElemType(e Expr) Type {
 	switch v := e.(type) {
 	case *VarRef:
@@ -714,10 +763,38 @@ func exprElemType(e Expr) Type {
 		return v.ResultElemType
 	case *AppendExpr:
 		return v.ElemType
+	case *IndexExpr:
+		// When the IndexExpr itself produces a list value (i.e.,
+		// receiver was list<list<T>>), its own element type is T,
+		// recorded on InnerElemType.
+		if v.ElemType == TypeList {
+			return v.InnerElemType
+		}
+		return TypeInvalid
 	case *MapKeysExpr:
 		return v.KeyType
 	case *MapValuesExpr:
 		return v.ValueType
+	}
+	return TypeInvalid
+}
+
+// exprInnerElemType returns the inner element type of a
+// list<list<T>>-typed expression, or TypeInvalid otherwise.
+// Phase 3.4b node coverage: VarRef, ListLit, CallExpr, AppendExpr,
+// IndexExpr.
+func exprInnerElemType(e Expr) Type {
+	switch v := e.(type) {
+	case *VarRef:
+		return v.InnerElemType
+	case *ListLit:
+		return v.InnerElemType
+	case *CallExpr:
+		return v.ResultInnerElemType
+	case *AppendExpr:
+		return v.InnerElemType
+	case *IndexExpr:
+		return v.InnerElemType
 	}
 	return TypeInvalid
 }
@@ -768,11 +845,13 @@ func isScalarElemType(t Type) bool {
 
 // isListElemType reports whether t is a valid list element type.
 // Phase 3.1 accepted the four scalar primitives; Phase 3.4a widens
-// this to TypeRecord (records as list elements). Nested list and
-// map elements remain rejected pending Phase 3.4b/c.
+// this to TypeRecord (records as list elements); Phase 3.4b widens
+// it again to TypeList (one-level nested list<list<T>> where T is a
+// scalar primitive carried on InnerElemType). Map elements remain
+// rejected pending later sub-phases.
 func isListElemType(t Type) bool {
 	switch t {
-	case TypeInt, TypeFloat, TypeBool, TypeString, TypeRecord:
+	case TypeInt, TypeFloat, TypeBool, TypeString, TypeRecord, TypeList:
 		return true
 	}
 	return false
@@ -901,6 +980,10 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("call %q result list<%s> does not match callee return list<%s>",
 				v.Func, v.ResultElemRecordName, fn.ReturnElemRecordName)
 		}
+		if fn.ReturnType == TypeList && fn.ReturnElemType == TypeList && v.ResultInnerElemType != fn.ReturnInnerElemType {
+			return fmt.Errorf("call %q result list<list<%s>> does not match callee return list<list<%s>>",
+				v.Func, v.ResultInnerElemType, fn.ReturnInnerElemType)
+		}
 		if fn.ReturnType == TypeMap {
 			if v.ResultKeyType != fn.ReturnKeyType {
 				return fmt.Errorf("call %q result map<%s,_> does not match callee return map<%s,_>",
@@ -940,6 +1023,12 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 					if argElemRec := exprElemRecordName(a); argElemRec != fn.Params[i].ElemRecordName {
 						return fmt.Errorf("call %q arg %d: expected list<%s>, got list<%s>",
 							v.Func, i, fn.Params[i].ElemRecordName, argElemRec)
+					}
+				}
+				if fn.Params[i].ElemType == TypeList {
+					if argInner := exprInnerElemType(a); argInner != fn.Params[i].InnerElemType {
+						return fmt.Errorf("call %q arg %d: expected list<list<%s>>, got list<list<%s>>",
+							v.Func, i, fn.Params[i].InnerElemType, argInner)
 					}
 				}
 			}
@@ -1133,6 +1222,13 @@ func verifyListLit(ctx *verifyCtx, v *ListLit) error {
 	} else if v.ElemRecordName != "" {
 		return fmt.Errorf("list literal: ElemRecordName set on list<%s> (only valid when ElemType==record)", v.ElemType)
 	}
+	if v.ElemType == TypeList {
+		if !isScalarElemType(v.InnerElemType) {
+			return fmt.Errorf("list literal: list<list<T>> requires scalar inner, got InnerElemType %s", v.InnerElemType)
+		}
+	} else if v.InnerElemType != TypeInvalid {
+		return fmt.Errorf("list literal: InnerElemType set on list<%s> (only valid when ElemType==list)", v.ElemType)
+	}
 	for i, e := range v.Elems {
 		if e == nil {
 			return fmt.Errorf("list literal element %d is nil", i)
@@ -1146,6 +1242,11 @@ func verifyListLit(ctx *verifyCtx, v *ListLit) error {
 		if v.ElemType == TypeRecord {
 			if rec := exprRecordName(e); rec != v.ElemRecordName {
 				return fmt.Errorf("list literal element %d: declared record %q, got %q", i, v.ElemRecordName, rec)
+			}
+		}
+		if v.ElemType == TypeList {
+			if inner := exprElemType(e); inner != v.InnerElemType {
+				return fmt.Errorf("list literal element %d: declared list<%s>, got list<%s>", i, v.InnerElemType, inner)
 			}
 		}
 	}
@@ -1181,6 +1282,16 @@ func verifyIndexExpr(ctx *verifyCtx, v *IndexExpr) error {
 		}
 	} else if v.ElemRecordName != "" {
 		return fmt.Errorf("index: ElemRecordName set on list<%s> (only valid when ElemType==record)", v.ElemType)
+	}
+	if v.ElemType == TypeList {
+		if !isScalarElemType(v.InnerElemType) {
+			return fmt.Errorf("index over list<list<T>> requires scalar inner, got InnerElemType %s", v.InnerElemType)
+		}
+		if ri := exprInnerElemType(v.Receiver); ri != v.InnerElemType {
+			return fmt.Errorf("index: receiver is list<list<%s>>, InnerElemType stamped is %s", ri, v.InnerElemType)
+		}
+	} else if v.InnerElemType != TypeInvalid {
+		return fmt.Errorf("index: InnerElemType set on list<%s> (only valid when ElemType==list)", v.ElemType)
 	}
 	if err := verifyExprCtx(ctx, v.Index); err != nil {
 		return fmt.Errorf("index value: %w", err)
@@ -1219,6 +1330,16 @@ func verifyLenExpr(ctx *verifyCtx, v *LenExpr) error {
 		}
 	} else if v.ElemRecordName != "" {
 		return fmt.Errorf("len: ElemRecordName set on list<%s> (only valid when ElemType==record)", v.ElemType)
+	}
+	if v.ElemType == TypeList {
+		if !isScalarElemType(v.InnerElemType) {
+			return fmt.Errorf("len over list<list<T>> requires scalar inner, got InnerElemType %s", v.InnerElemType)
+		}
+		if ri := exprInnerElemType(v.Receiver); ri != v.InnerElemType {
+			return fmt.Errorf("len: receiver is list<list<%s>>, InnerElemType stamped is %s", ri, v.InnerElemType)
+		}
+	} else if v.InnerElemType != TypeInvalid {
+		return fmt.Errorf("len: InnerElemType set on list<%s> (only valid when ElemType==list)", v.ElemType)
 	}
 	return nil
 }
@@ -1263,6 +1384,19 @@ func verifyAppendExpr(ctx *verifyCtx, v *AppendExpr) error {
 		if vr := exprRecordName(v.Value); vr != v.ElemRecordName {
 			return fmt.Errorf("append value: expected record %q, got %q", v.ElemRecordName, vr)
 		}
+	}
+	if v.ElemType == TypeList {
+		if !isScalarElemType(v.InnerElemType) {
+			return fmt.Errorf("append over list<list<T>> requires scalar inner, got InnerElemType %s", v.InnerElemType)
+		}
+		if ri := exprInnerElemType(v.Receiver); ri != v.InnerElemType {
+			return fmt.Errorf("append: receiver is list<list<%s>>, InnerElemType stamped is %s", ri, v.InnerElemType)
+		}
+		if vi := exprElemType(v.Value); vi != v.InnerElemType {
+			return fmt.Errorf("append value: expected list<%s>, got list<%s>", v.InnerElemType, vi)
+		}
+	} else if v.InnerElemType != TypeInvalid {
+		return fmt.Errorf("append: InnerElemType set on list<%s> (only valid when ElemType==list)", v.ElemType)
 	}
 	return nil
 }
