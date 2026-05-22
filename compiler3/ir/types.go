@@ -132,6 +132,8 @@ const (
 	// String ops (Phase 3.1 vm3 surface).
 	OpLenStr
 	OpConcatStr
+	OpCmpEqStr
+	OpCmpNeStr
 
 	// List ops (Phase 3.2 vm3 surface).
 	OpNewList
@@ -351,6 +353,10 @@ func (o OpCode) String() string {
 		return "len.str"
 	case OpConcatStr:
 		return "concat.str"
+	case OpCmpEqStr:
+		return "cmp.eq.str"
+	case OpCmpNeStr:
+		return "cmp.ne.str"
 	case OpNewList:
 		return "newlist"
 	case OpListLenI64:

@@ -91,7 +91,7 @@ func Emit(p *Program) ([]byte, error) {
 				usesMapI64I64 = true
 			case ir.OpNewListAny, ir.OpListAnyLen, ir.OpListAnyPushAny, ir.OpListAnyGetAny:
 				usesTree = true
-			case ir.OpLenStr:
+			case ir.OpLenStr, ir.OpCmpEqStr, ir.OpCmpNeStr:
 				usesStrH = true
 			case ir.OpNow:
 				usesNow = true
@@ -390,6 +390,14 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		// including the terminator. Cast to int64_t because Mochi
 		// `len(s)` returns int.
 		fmt.Fprintf(w, "    %s = (int64_t)strlen(%s);\n", name, valueName(v.Args[0]))
+	case ir.OpCmpEqStr:
+		// Byte equality on the NUL-terminated `const char*` carriers.
+		// strcmp returns 0 iff the byte sequences match; the boolean
+		// result is `(strcmp(a, b) == 0)`. Mochi `==` matches Go's
+		// string `==` (byte equality) for Phase 4.2.x literals.
+		fmt.Fprintf(w, "    %s = (strcmp(%s, %s) == 0);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpCmpNeStr:
+		fmt.Fprintf(w, "    %s = (strcmp(%s, %s) != 0);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpNow:
 		fmt.Fprintf(w, "    %s = mochi_now_us();\n", name)
 	case ir.OpJsonI64Object:

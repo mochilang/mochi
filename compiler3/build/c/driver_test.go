@@ -1380,6 +1380,62 @@ print(len(s))
 	}
 }
 
+// TestBuildSourceStrEqLiteralTrue pins the Phase 4.2.2 surface for
+// the equal-literals case: `"hi" == "hi"` lowers to OpCmpEqStr,
+// strcmp returns 0, the boolean is true, and the if-branch fires.
+func TestBuildSourceStrEqLiteralTrue(t *testing.T) {
+	src := `if "hi" == "hi" {
+  print("yes")
+} else {
+  print("no")
+}
+`
+	if got, want := runMochiBuild(t, src), "yes\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrEqLiteralFalse pins the unequal-literals case:
+// strcmp returns non-zero so the boolean is false and the else
+// branch fires.
+func TestBuildSourceStrEqLiteralFalse(t *testing.T) {
+	src := `if "hi" == "bye" {
+  print("yes")
+} else {
+  print("no")
+}
+`
+	if got, want := runMochiBuild(t, src), "no\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrEqViaLet pins string equality on a let-bound
+// carrier: the side-table holds the literal, OpCmpEqStr reads the
+// `const char*` variable on both sides.
+func TestBuildSourceStrEqViaLet(t *testing.T) {
+	src := `let answer = "yes"
+if answer == "yes" {
+  print("matched")
+}
+`
+	if got, want := runMochiBuild(t, src), "matched\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrNeLiteral pins the `!=` arm: same surface, with
+// the result inverted by OpCmpNeStr's `!= 0` test.
+func TestBuildSourceStrNeLiteral(t *testing.T) {
+	src := `if "a" != "b" {
+  print("differ")
+}
+`
+	if got, want := runMochiBuild(t, src), "differ\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceSpectralNormBgFixture pins the unmodified
 // bench/template/bg/spectral_norm fixture (N=100) on the C target.
 // This is the §10.7 closeout for spectral_norm at the fixture level
