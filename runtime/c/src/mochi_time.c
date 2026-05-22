@@ -3,6 +3,7 @@
  */
 #include "mochi_time.h"
 
+#include <stddef.h>
 #include <stdint.h>
 #include <sys/time.h>
 

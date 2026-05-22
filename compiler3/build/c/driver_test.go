@@ -33,7 +33,7 @@ func helloProgram() *cgen.Program {
 // assert its stdout matches the expected single line. This is the
 // load-bearing gate of MEP-42 §Phased-plan row 4.
 func TestBuildHelloEndToEnd(t *testing.T) {
-	cc := resolveCC("")
+	cc, _ := resolveCC("", "")
 	if _, err := exec.LookPath(cc); err != nil {
 		t.Skipf("cc %q not available: %v", cc, err)
 	}
@@ -68,7 +68,8 @@ func TestBuildHelloEndToEnd(t *testing.T) {
 // TestBuildCleanupEmit covers the KeepEmit=false default: the .c
 // file is removed on successful build, leaving only the binary.
 func TestBuildCleanupEmit(t *testing.T) {
-	if _, err := exec.LookPath(resolveCC("")); err != nil {
+	cc, _ := resolveCC("", "")
+	if _, err := exec.LookPath(cc); err != nil {
 		t.Skipf("cc not available")
 	}
 	dir := t.TempDir()
@@ -105,19 +106,27 @@ func TestBuildMissingOutDir(t *testing.T) {
 	}
 }
 
-// TestResolveCC covers the env/explicit/default precedence.
+// TestResolveCC covers the env/explicit/default precedence and the
+// Phase 5.0 triple-aware default (zig cc when a target triple is set
+// and no explicit compiler is configured).
 func TestResolveCC(t *testing.T) {
 	t.Setenv("MOCHI_CC", "")
-	if got := resolveCC("explicit"); got != "explicit" {
-		t.Errorf("explicit precedence: got %q", got)
+	if got, prefix := resolveCC("explicit", ""); got != "explicit" || len(prefix) != 0 {
+		t.Errorf("explicit precedence: got (%q, %v)", got, prefix)
 	}
 	t.Setenv("MOCHI_CC", "from-env")
-	if got := resolveCC(""); got != "from-env" {
-		t.Errorf("env fallback: got %q", got)
+	if got, prefix := resolveCC("", ""); got != "from-env" || len(prefix) != 0 {
+		t.Errorf("env fallback: got (%q, %v)", got, prefix)
 	}
 	t.Setenv("MOCHI_CC", "")
-	if got := resolveCC(""); got != "cc" {
-		t.Errorf("default cc: got %q", got)
+	if got, prefix := resolveCC("", ""); got != "cc" || len(prefix) != 0 {
+		t.Errorf("default cc: got (%q, %v)", got, prefix)
+	}
+	if got, prefix := resolveCC("", "wasm32-wasi"); got != "zig" || len(prefix) != 1 || prefix[0] != "cc" {
+		t.Errorf("triple-aware default: got (%q, %v), want (\"zig\", [\"cc\"])", got, prefix)
+	}
+	if got, prefix := resolveCC("zig cc", "x86_64-linux-musl"); got != "zig" || len(prefix) != 1 || prefix[0] != "cc" {
+		t.Errorf("wrapper-form explicit: got (%q, %v), want (\"zig\", [\"cc\"])", got, prefix)
 	}
 }
 
@@ -128,7 +137,7 @@ func TestResolveCC(t *testing.T) {
 // same source. Skip when cc is unavailable.
 func runMochiBuild(t *testing.T, src string) string {
 	t.Helper()
-	cc := resolveCC("")
+	cc, _ := resolveCC("", "")
 	if _, err := exec.LookPath(cc); err != nil {
 		t.Skipf("cc %q not available: %v", cc, err)
 	}
@@ -3160,7 +3169,7 @@ func TestBuildSourceRejectsImportGo(t *testing.T) {
 	src := `import go "mochi/runtime/ffi/go/testpkg" as testpkg auto
 print(testpkg.Add(2, 3))
 `
-	cc := resolveCC("")
+	cc, _ := resolveCC("", "")
 	if _, err := exec.LookPath(cc); err != nil {
 		t.Skipf("cc %q not available: %v", cc, err)
 	}
@@ -3186,7 +3195,8 @@ print(testpkg.Add(2, 3))
 // libc cannot satisfy `-static` so this case doesn't block the gate
 // on non-musl Linux developer machines.
 func TestBuildStaticFlag(t *testing.T) {
-	if _, err := exec.LookPath(resolveCC("")); err != nil {
+	cc, _ := resolveCC("", "")
+	if _, err := exec.LookPath(cc); err != nil {
 		t.Skipf("cc not available")
 	}
 	dir := t.TempDir()
