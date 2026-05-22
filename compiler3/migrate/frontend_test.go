@@ -38,10 +38,12 @@ func TestFrontendRunnerEndToEnd(t *testing.T) {
 
 // TestFrontendRunnerPendingForUnsupportedSurface asserts FrontendRunner
 // surfaces MVP-unsupported sources as ErrNewPathPending so the A/B
-// harness records a skip rather than a regression.
+// harness records a skip rather than a regression. Phase 4.2.0 lifted
+// the string-literal restriction, so the durable unsupported surface
+// is now the `none` literal.
 func TestFrontendRunnerPendingForUnsupportedSurface(t *testing.T) {
 	dir := t.TempDir()
-	src := `let s = "hello"` + "\n"
+	src := `let s = none` + "\n"
 	mochiPath := filepath.Join(dir, "demo.mochi")
 	if err := os.WriteFile(mochiPath, []byte(src), 0o644); err != nil {
 		t.Fatalf("write mochi: %v", err)

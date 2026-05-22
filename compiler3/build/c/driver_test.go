@@ -1306,6 +1306,47 @@ print(len(big))
 	}
 }
 
+// TestBuildSourceStringLiteralHello pins the Phase 4.2.0 surface:
+// a top-level `print("hello, world!")` builds via `mochi build
+// --target=c` and writes the expected line to stdout. This is the
+// smallest user-facing program against the §Top-line objective ("a
+// single native binary that runs on a clean machine").
+func TestBuildSourceStringLiteralHello(t *testing.T) {
+	src := `print("hello, world!")` + "\n"
+	if got, want := runMochiBuild(t, src), "hello, world!\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStringLiteralEscape covers escape coverage in the
+// emitter's cStringLiteral helper: backslash, double-quote, newline,
+// and a non-ASCII byte (0xc3 = first byte of UTF-8 "é"). The runtime
+// just writes bytes through, so the output must match the input
+// byte-for-byte plus the trailing print newline.
+func TestBuildSourceStringLiteralEscape(t *testing.T) {
+	src := `print("a\"b\\c\nd")` + "\n"
+	if got, want := runMochiBuild(t, src), "a\"b\\c\nd\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStringLiteralLet pins string-typed let bindings: the
+// frontend stores the literal in fn.Strings, OpConst{TypeStr} reads
+// from that side-table, and the emitter declares `const char* v3 = 0;`
+// at function head followed by `v3 = "..."` in the body. Two prints
+// share the same constant pool, exercising the index path.
+func TestBuildSourceStringLiteralLet(t *testing.T) {
+	src := `let a = "first"
+let b = "second"
+print(a)
+print(b)
+print(a)
+`
+	if got, want := runMochiBuild(t, src), "first\nsecond\nfirst\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceSpectralNormBgFixture pins the unmodified
 // bench/template/bg/spectral_norm fixture (N=100) on the C target.
 // This is the §10.7 closeout for spectral_norm at the fixture level

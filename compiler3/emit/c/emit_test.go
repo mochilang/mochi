@@ -299,18 +299,19 @@ func TestEmitOpCallGoFFIRejected(t *testing.T) {
 }
 
 // TestEmitOpCallGoPrintArgTypeUnsupported covers the path where the
-// print sentinel is invoked with an argument outside the Phase 4.1
-// scalar set (Phase 4.2 lands TypeStr). The emitter must surface
+// print sentinel is invoked with an argument outside the supported
+// scalar+string set. Phase 4.2.0 added TypeStr; composite types like
+// TypeList stay outside the print dispatch until a future phase wires
+// fmt-equivalent formatting. The emitter must surface
 // ErrUnsupportedType, not silently emit garbled C.
 func TestEmitOpCallGoPrintArgTypeUnsupported(t *testing.T) {
 	fn := &ir.Function{Name: "say", Result: ir.TypeUnit}
-	arg := fn.AddValue(ir.Value{Type: ir.TypeStr, Op: ir.OpParam})
-	fn.Params = []uint32{arg}
+	arg := fn.AddValue(ir.Value{Type: ir.TypeList, Op: ir.OpNewList})
 	fn.GoBindings = []ir.GoBinding{{Pkg: "fmt", Alias: "fmt", Name: "Println"}}
 	bid := fn.AddBlock()
 	call := fn.AddValue(ir.Value{Type: ir.TypeUnit, Op: ir.OpCallGo, Args: []uint32{arg}, Const: 0})
 	blk := fn.Block(bid)
-	blk.Values = []uint32{call}
+	blk.Values = []uint32{arg, call}
 	blk.Term = ir.Terminator{Kind: ir.TermReturn}
 
 	_, err := Emit(&Program{Funcs: []*ir.Function{fn}})

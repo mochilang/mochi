@@ -291,6 +291,12 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 				val = 1
 			}
 			fmt.Fprintf(w, "    %s = %d;\n", name, val)
+		case ir.TypeStr:
+			if int(v.Const) < 0 || int(v.Const) >= len(fn.Strings) {
+				return fmt.Errorf("OpConst str v%d: Const %d out of range (have %d strings)",
+					v.ID, v.Const, len(fn.Strings))
+			}
+			fmt.Fprintf(w, "    %s = %s;\n", name, cStringLiteral(fn.Strings[v.Const]))
 		default:
 			return fmt.Errorf("%w: OpConst type %s", ErrUnsupportedType, v.Type)
 		}
@@ -444,8 +450,10 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 			fmt.Fprintf(w, "    mochi_print_f64(%s);\n", valueName(v.Args[0]))
 		case ir.TypeBool:
 			fmt.Fprintf(w, "    mochi_print_bool(%s);\n", valueName(v.Args[0]))
+		case ir.TypeStr:
+			fmt.Fprintf(w, "    mochi_print_str(%s);\n", valueName(v.Args[0]))
 		default:
-			return fmt.Errorf("%w: print arg type %s (Phase 4.1 covers i64/f64/bool only)",
+			return fmt.Errorf("%w: print arg type %s",
 				ErrUnsupportedType, argType)
 		}
 	case ir.OpPhi:
@@ -544,6 +552,13 @@ func cType(t ir.Type) string {
 		return "double"
 	case ir.TypeBool:
 		return "int"
+	case ir.TypeStr:
+		// String literals are read-only static-storage objects per
+		// C99 §6.4.5; const char* matches their type and prevents the
+		// generated body from accidentally mutating them. Phase 4.2.0
+		// covers literal + print only, so no owning mochi_str runtime
+		// is needed yet (a future 4.2.x adds concat/slice).
+		return "const char*"
 	case ir.TypeList:
 		// list<int>: heap-allocated header backed by mochi_list_i64.
 		// The MVP frontend constructs TypeList values with
@@ -574,6 +589,41 @@ func cType(t ir.Type) string {
 }
 
 func valueName(id uint32) string { return fmt.Sprintf("v%d", id) }
+
+// cStringLiteral formats s as a C99 string literal, including the
+// surrounding quotes. Printable ASCII bytes pass through; `"` and `\`
+// are escaped; common whitespace gets the short forms (`\n`, `\t`,
+// `\r`); other bytes use 3-digit octal so an immediately-following
+// digit cannot be misparsed as part of the escape (which would be the
+// case with `\x` hex escapes since cc consumes as many hex digits as
+// possible).
+func cStringLiteral(s string) string {
+	var buf bytes.Buffer
+	buf.WriteByte('"')
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		switch c {
+		case '"':
+			buf.WriteString(`\"`)
+		case '\\':
+			buf.WriteString(`\\`)
+		case '\n':
+			buf.WriteString(`\n`)
+		case '\t':
+			buf.WriteString(`\t`)
+		case '\r':
+			buf.WriteString(`\r`)
+		default:
+			if c >= 0x20 && c <= 0x7e {
+				buf.WriteByte(c)
+			} else {
+				fmt.Fprintf(&buf, "\\%03o", c)
+			}
+		}
+	}
+	buf.WriteByte('"')
+	return buf.String()
+}
 
 func i64BinaryOp(op ir.OpCode) string {
 	switch op {

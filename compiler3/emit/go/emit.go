@@ -244,6 +244,11 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 				val = "true"
 			}
 			fmt.Fprintf(w, "\t%s = %s\n", name, val)
+		case ir.TypeStr:
+			if int(v.Const) < 0 || int(v.Const) >= len(fn.Strings) {
+				return fmt.Errorf("OpConst str v%d: Const %d out of range (have %d strings)", v.ID, v.Const, len(fn.Strings))
+			}
+			fmt.Fprintf(w, "\t%s = %q\n", name, fn.Strings[v.Const])
 		default:
 			return fmt.Errorf("OpConst unsupported type %s", v.Type)
 		}

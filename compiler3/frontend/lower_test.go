@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	gogen "mochi/compiler3/emit/go"
+	"mochi/compiler3/ir"
 	"mochi/parser"
 )
 
@@ -137,18 +138,59 @@ print(42)
 	}
 }
 
-// TestLowerUnsupportedSurfacesError asserts that an unsupported form
-// produces a frontend error rather than a silent miscompile. The A/B
-// harness relies on this to mark the fixture skipped.
-func TestLowerUnsupportedSurfacesError(t *testing.T) {
+// TestLowerStringLiteral pins the Phase 4.2.0 surface: a string
+// literal lowers to OpConst{TypeStr} with the payload captured in
+// fn.Strings, and print(s) wires through to an OpCallGo with a
+// `fmt.Println(string)` GoBinding.
+func TestLowerStringLiteral(t *testing.T) {
 	src := `let s = "hi"
+print(s)
+`
+	prog, err := parser.Parser.ParseString("t.mochi", src)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	out, err := Lower(prog)
+	if err != nil {
+		t.Fatalf("lower: %v", err)
+	}
+	if len(out.Funcs) != 1 {
+		t.Fatalf("expected 1 function, got %d", len(out.Funcs))
+	}
+	fn := out.Funcs[0]
+	if len(fn.Strings) != 1 || fn.Strings[0] != "hi" {
+		t.Fatalf("Strings table: got %v, want [\"hi\"]", fn.Strings)
+	}
+	var sawConst, sawCall bool
+	for _, v := range fn.Values {
+		if v.Op == ir.OpConst && v.Type == ir.TypeStr {
+			sawConst = true
+		}
+		if v.Op == ir.OpCallGo {
+			sawCall = true
+		}
+	}
+	if !sawConst {
+		t.Errorf("expected an OpConst{TypeStr} value, none found")
+	}
+	if !sawCall {
+		t.Errorf("expected an OpCallGo value for print, none found")
+	}
+}
+
+// TestLowerNoneLiteralError asserts that the `none` literal, which
+// has no MVP type lowering yet, still produces a frontend error rather
+// than a silent miscompile. Phase 4.2.0 lifted the string-literal
+// restriction but `none` remains unsupported.
+func TestLowerNoneLiteralError(t *testing.T) {
+	src := `let s = none
 `
 	prog, err := parser.Parser.ParseString("t.mochi", src)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
 	if _, err := Lower(prog); err == nil {
-		t.Fatal("expected error for unsupported string literal in MVP, got nil")
+		t.Fatal("expected error for unsupported none literal in MVP, got nil")
 	}
 }
 
