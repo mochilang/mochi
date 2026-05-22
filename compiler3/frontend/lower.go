@@ -1177,13 +1177,26 @@ func (b *builder) lowerForCollection(s *parser.ForStmt) error {
 	var lenOp ir.OpCode
 	var getOp ir.OpCode
 	var elemType ir.Type
+	// elemElemType is the ElemType field set on the loop-body bind.
+	// For scalar element types (i64, f64, str) it is the same as
+	// elemType; for nested-list element types it names the inner
+	// row's element type so a follow-on for-in or indexed read sees
+	// the right ElemType hint.
+	var elemElemType ir.Type
 	switch listType {
 	case ir.TypeList:
-		lenOp, getOp, elemType = ir.OpListLenI64, ir.OpListGetI64, ir.TypeI64
+		lenOp, getOp, elemType, elemElemType = ir.OpListLenI64, ir.OpListGetI64, ir.TypeI64, ir.TypeI64
 	case ir.TypeF64Arr:
-		lenOp, getOp, elemType = ir.OpF64ArrayLenI64, ir.OpF64ArrayGetF64, ir.TypeF64
+		lenOp, getOp, elemType, elemElemType = ir.OpF64ArrayLenI64, ir.OpF64ArrayGetF64, ir.TypeF64, ir.TypeF64
 	case ir.TypeStrArr:
-		lenOp, getOp, elemType = ir.OpStrArrLen, ir.OpStrArrGetStr, ir.TypeStr
+		lenOp, getOp, elemType, elemElemType = ir.OpStrArrLen, ir.OpStrArrGetStr, ir.TypeStr, ir.TypeStr
+	case ir.TypeListList:
+		// Phase 4.2.24: `for row in matrix` over list<list<i64>>.
+		// The loop variable binds to TypeList (the inner row); a
+		// nested `for col in row` then dispatches through the
+		// TypeList arm. ElemType on the row carries the inner i64
+		// hint so the body's indexed reads/writes find it.
+		lenOp, getOp, elemType, elemElemType = ir.OpListListLen, ir.OpListListGet, ir.TypeList, ir.TypeI64
 	default:
 		return fmt.Errorf("frontend: for-in over %s unsupported (need list)", listType)
 	}
@@ -1265,7 +1278,7 @@ func (b *builder) lowerForCollection(s *parser.ForStmt) error {
 	// Bind the loop variable to xs[idx] for the duration of the body.
 	elemID := b.addValue(ir.Value{
 		Type:     elemType,
-		ElemType: elemType,
+		ElemType: elemElemType,
 		Op:       getOp,
 		Args:     []uint32{xs, idxPhi},
 	})
