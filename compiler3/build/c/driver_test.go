@@ -1503,6 +1503,80 @@ if a + b == "hello" {
 	}
 }
 
+// TestBuildSourceStrIntLiteral pins MEP-42 Phase 4.2.4: `str(42)`
+// on an int literal lowers to OpI64ToStr, the C emitter calls
+// mochi_str_from_i64, the runtime allocates a decimal carrier and
+// mochi_print_str writes it to stdout. The numeric value matches
+// PRId64 byte-for-byte.
+func TestBuildSourceStrIntLiteral(t *testing.T) {
+	src := `print(str(42))` + "\n"
+	if got, want := runMochiBuild(t, src), "42\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrIntNegative pins the sign-preserving shape of
+// mochi_str_from_i64: PRId64 prints a leading '-' for negative
+// values, so the carrier round-trips through Mochi's i64 range.
+func TestBuildSourceStrIntNegative(t *testing.T) {
+	src := `print(str(-7))` + "\n"
+	if got, want := runMochiBuild(t, src), "-7\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrFloatLiteral pins `str(3.5)` on an f64 literal:
+// mochi_str_from_f64 runs the shortest-round-trip search shared
+// with print.c, so str(x) and print(x) agree on the digits printed.
+func TestBuildSourceStrFloatLiteral(t *testing.T) {
+	src := `print(str(3.5))` + "\n"
+	if got, want := runMochiBuild(t, src), "3.5\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrBoolTrue / False pin the static-literal return
+// of mochi_str_from_bool: no heap allocation, just one of two C99
+// literals. The bool carrier is interchangeable with a literal at
+// every downstream string op (concat, print, len, strcmp).
+func TestBuildSourceStrBoolTrue(t *testing.T) {
+	src := `print(str(true))` + "\n"
+	if got, want := runMochiBuild(t, src), "true\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func TestBuildSourceStrBoolFalse(t *testing.T) {
+	src := `print(str(false))` + "\n"
+	if got, want := runMochiBuild(t, src), "false\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrConcatWithInt pins composition with OpConcatStr:
+// `"answer: " + str(x)` lowers to mochi_str_from_i64 followed by
+// mochi_str_concat. This is the user-facing motivation for Phase
+// 4.2.4 (formatted print without multi-line value-only print calls).
+func TestBuildSourceStrConcatWithInt(t *testing.T) {
+	src := `let x = 42
+print("answer: " + str(x))
+`
+	if got, want := runMochiBuild(t, src), "answer: 42\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrConcatWithBool pins composition of the static
+// "true"/"false" literal with mochi_str_concat: the static buffer is
+// a valid `const char*` carrier, so strcmp/strlen/concat treat it
+// identically to a heap-allocated carrier.
+func TestBuildSourceStrConcatWithBool(t *testing.T) {
+	src := `print("ok=" + str(true))` + "\n"
+	if got, want := runMochiBuild(t, src), "ok=true\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceSpectralNormBgFixture pins the unmodified
 // bench/template/bg/spectral_norm fixture (N=100) on the C target.
 // This is the §10.7 closeout for spectral_norm at the fixture level

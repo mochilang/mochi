@@ -36,6 +36,23 @@ extern "C" {
  */
 const char *mochi_str_concat(const char *a, const char *b);
 
+/*
+ * mochi_str_from_i64 / mochi_str_from_f64 return freshly allocated
+ * NUL-terminated decimal representations (the int form is %lld via
+ * PRId64; the float form is a shortest round-trip representation
+ * matching the Go target's strconv.FormatFloat('g', -1, 64)). The
+ * result is owned by the runtime (currently leaked); callers must
+ * not free() it.
+ *
+ * mochi_str_from_bool returns one of two static C99 string literals,
+ * "true" or "false". The result is not heap-allocated, but callers
+ * treat all three the same way (as `const char*` carriers) because
+ * no Mochi operation distinguishes a literal from an allocation.
+ */
+const char *mochi_str_from_i64(long long v);
+const char *mochi_str_from_f64(double v);
+const char *mochi_str_from_bool(int v);
+
 #ifdef __cplusplus
 }
 #endif

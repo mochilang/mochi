@@ -94,7 +94,7 @@ func Emit(p *Program) ([]byte, error) {
 				usesTree = true
 			case ir.OpLenStr, ir.OpCmpEqStr, ir.OpCmpNeStr:
 				usesStrH = true
-			case ir.OpConcatStr:
+			case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr:
 				usesStrRuntime = true
 			case ir.OpNow:
 				usesNow = true
@@ -412,6 +412,19 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		// The buffer leaks; see runtime/c/src/mochi_str.h for the
 		// ownership note.
 		fmt.Fprintf(w, "    %s = mochi_str_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpI64ToStr:
+		// Decimal i64 via snprintf("%lld"). The runtime returns a
+		// freshly allocated `const char*` carrier (see mochi_str.h).
+		fmt.Fprintf(w, "    %s = mochi_str_from_i64((long long)%s);\n", name, valueName(v.Args[0]))
+	case ir.OpF64ToStr:
+		// Shortest round-trip f64 via the same search used by
+		// runtime/c/src/print.c mochi_print_f64.
+		fmt.Fprintf(w, "    %s = mochi_str_from_f64(%s);\n", name, valueName(v.Args[0]))
+	case ir.OpBoolToStr:
+		// Returns one of two static literals "true"/"false"; no
+		// allocation. The literal type matches every other Phase 4.2.x
+		// string carrier so downstream concat/print/len/strcmp work.
+		fmt.Fprintf(w, "    %s = mochi_str_from_bool(%s);\n", name, valueName(v.Args[0]))
 	case ir.OpNow:
 		fmt.Fprintf(w, "    %s = mochi_now_us();\n", name)
 	case ir.OpJsonI64Object:

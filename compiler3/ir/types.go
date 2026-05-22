@@ -134,6 +134,14 @@ const (
 	OpConcatStr
 	OpCmpEqStr
 	OpCmpNeStr
+	// Scalar→str conversions (MEP-42 Phase 4.2.4). Surface form
+	// `str(x)` where x is i64/f64/bool. Result owns a freshly
+	// allocated string; the bool form returns a static "true"/"false"
+	// literal so it does not allocate. Go emit calls strconv.FormatInt
+	// / FormatFloat / FormatBool; C emit calls into mochi_str.h.
+	OpI64ToStr
+	OpF64ToStr
+	OpBoolToStr
 
 	// List ops (Phase 3.2 vm3 surface).
 	OpNewList
@@ -357,6 +365,12 @@ func (o OpCode) String() string {
 		return "cmp.eq.str"
 	case OpCmpNeStr:
 		return "cmp.ne.str"
+	case OpI64ToStr:
+		return "i64.to.str"
+	case OpF64ToStr:
+		return "f64.to.str"
+	case OpBoolToStr:
+		return "bool.to.str"
 	case OpNewList:
 		return "newlist"
 	case OpListLenI64:

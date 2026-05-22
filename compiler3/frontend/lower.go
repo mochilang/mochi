@@ -1727,6 +1727,29 @@ func (b *builder) lowerBuiltinCall(c *parser.CallExpr) (uint32, bool, error) {
 		}
 		id := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpNow})
 		return id, true, nil
+	case "str":
+		if len(c.Args) != 1 {
+			return 0, true, fmt.Errorf("frontend: str() takes 1 argument, got %d", len(c.Args))
+		}
+		arg, err := b.lowerExpr(c.Args[0])
+		if err != nil {
+			return 0, true, err
+		}
+		switch b.fn.Values[arg].Type {
+		case ir.TypeStr:
+			return arg, true, nil
+		case ir.TypeI64:
+			id := b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpI64ToStr, Args: []uint32{arg}})
+			return id, true, nil
+		case ir.TypeF64:
+			id := b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpF64ToStr, Args: []uint32{arg}})
+			return id, true, nil
+		case ir.TypeBool:
+			id := b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpBoolToStr, Args: []uint32{arg}})
+			return id, true, nil
+		default:
+			return 0, true, fmt.Errorf("frontend: str(%s) unsupported in MVP", b.fn.Values[arg].Type)
+		}
 	}
 	switch c.Func {
 	case "len":
