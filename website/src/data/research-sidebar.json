@@ -1,0 +1,56 @@
+[
+  {
+    "label": "MEP-0045",
+    "items": [
+      "research/0045/index",
+      "research/0045/language-surface",
+      "research/0045/design-philosophy",
+      "research/0045/prior-art-transpilers",
+      "research/0045/runtime",
+      "research/0045/codegen-design",
+      "research/0045/type-lowering",
+      "research/0045/c-target-portability",
+      "research/0045/dataset-pipeline",
+      "research/0045/agent-streams",
+      "research/0045/build-system",
+      "research/0045/testing-gates",
+      "research/0045/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0046",
+    "items": [
+      "research/0046/index",
+      "research/0046/language-surface",
+      "research/0046/design-philosophy",
+      "research/0046/prior-art-transpilers",
+      "research/0046/runtime",
+      "research/0046/codegen-design",
+      "research/0046/type-lowering",
+      "research/0046/erlang-target-portability",
+      "research/0046/dataset-pipeline",
+      "research/0046/agent-streams",
+      "research/0046/build-system",
+      "research/0046/testing-gates",
+      "research/0046/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0047",
+    "items": [
+      "research/0047/index",
+      "research/0047/language-surface",
+      "research/0047/design-philosophy",
+      "research/0047/prior-art-transpilers",
+      "research/0047/runtime",
+      "research/0047/codegen-design",
+      "research/0047/type-lowering",
+      "research/0047/jvm-target-portability",
+      "research/0047/dataset-pipeline",
+      "research/0047/agent-streams",
+      "research/0047/build-system",
+      "research/0047/testing-gates",
+      "research/0047/risks-and-alternatives"
+    ]
+  }
+]
