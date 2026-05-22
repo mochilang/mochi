@@ -47,11 +47,14 @@ type RecordField struct {
 // Param is one formal parameter of a Function. Phase 2.2 introduces
 // user-defined multi-arg functions; before then the only callable
 // was main() which took none. Phase 3.0 adds RecordName, valid when
-// Type==TypeRecord.
+// Type==TypeRecord. Phase 3.1 adds ElemType, valid when
+// Type==TypeList; the element is always a scalar primitive
+// (TypeInt / TypeFloat / TypeBool / TypeString) in 3.1.
 type Param struct {
 	Name       string
 	Type       Type
 	RecordName string
+	ElemType   Type
 }
 
 // Function is one monomorphic, closure-converted callable.
@@ -72,6 +75,11 @@ type Function struct {
 	// ReturnRecordName carries the record identity when
 	// ReturnType==TypeRecord. Empty otherwise.
 	ReturnRecordName string
+
+	// ReturnElemType carries the element type when
+	// ReturnType==TypeList. Phase 3.1 restricts it to the four
+	// scalar primitives.
+	ReturnElemType Type
 
 	// Body is a single Block. Phase 1 does not introduce control
 	// flow; Phase 2 introduces multi-block functions with a
@@ -121,6 +129,7 @@ type CallExpr struct {
 	Args             []Expr
 	Result           Type
 	ResultRecordName string // valid when Result==TypeRecord
+	ResultElemType   Type   // valid when Result==TypeList
 }
 
 func (c *CallExpr) Type() Type { return c.Result }
@@ -273,11 +282,13 @@ func (u *UnaryExpr) Type() Type { return u.Result }
 // VarRef reads a previously-declared variable. Phase 2.1 emits the
 // variable's mangled C identifier; later phases that introduce
 // closure captures may rewrite Name into an env-relative access.
-// Phase 3.0 adds RecordName, valid when VarType==TypeRecord.
+// Phase 3.0 adds RecordName, valid when VarType==TypeRecord. Phase
+// 3.1 adds ElemType, valid when VarType==TypeList.
 type VarRef struct {
 	Name       string
 	VarType    Type
 	RecordName string
+	ElemType   Type
 }
 
 func (v *VarRef) Type() Type { return v.VarType }
@@ -326,6 +337,7 @@ type LetStmt struct {
 	Name       string
 	VarType    Type
 	RecordName string // valid when VarType==TypeRecord
+	ElemType   Type   // valid when VarType==TypeList
 	Init       Expr
 	Mutable    bool // true for VarStmt-lowered bindings
 }
@@ -405,3 +417,68 @@ type ReturnStmt struct {
 }
 
 func (*ReturnStmt) isStmt() {}
+
+// ListLit constructs a list value with a fresh backing buffer.
+// The lowerer requires every element to share ElemType (the four
+// scalar primitives, Phase 3.1) and stamps ElemType onto the node;
+// the emitter renders this as a `mochi_list_<T>_lit` call.
+type ListLit struct {
+	ElemType Type
+	Elems    []Expr
+}
+
+func (*ListLit) Type() Type { return TypeList }
+
+// IndexExpr reads `Receiver[Index]` for a list-typed receiver. The
+// verifier checks Receiver.Type()==TypeList, Index.Type()==TypeInt,
+// and stamps Result with the receiver's ElemType (carried as
+// ElemType here too for emit-time helper-suffix selection). Bounds
+// are checked at runtime inside the per-T `_index` helper.
+type IndexExpr struct {
+	Receiver Expr
+	Index    Expr
+	ElemType Type // receiver's element type; equals Result for scalar elems
+}
+
+func (i *IndexExpr) Type() Type { return i.ElemType }
+
+// LenExpr is the `len(xs)` builtin call when xs is a list. The
+// verifier checks Receiver.Type()==TypeList and stamps the result
+// as TypeInt. ElemType is carried so the emitter can pick the
+// `_len` helper suffix.
+type LenExpr struct {
+	Receiver Expr
+	ElemType Type
+}
+
+func (*LenExpr) Type() Type { return TypeInt }
+
+// AppendExpr is the `append(xs, v)` builtin call. The verifier
+// checks Receiver.Type()==TypeList, Value.Type()==ElemType, and
+// stamps the result as TypeList with the same ElemType. The
+// emitter renders this as a `mochi_list_<T>_append` call; the
+// helper allocates a new buffer and returns a fresh list value,
+// so the input is never mutated (functional append semantics).
+type AppendExpr struct {
+	Receiver Expr
+	Value    Expr
+	ElemType Type
+}
+
+func (a *AppendExpr) Type() Type { return TypeList }
+
+// ForEachStmt iterates Var over the elements of a list-typed List
+// expression. Phase 3.1's Mochi surface `for x in xs { ... }` lowers
+// here. The induction variable is registered as immutable inside
+// Body's scope with type ElemType; BreakStmt / ContinueStmt inside
+// Body refer to this loop. The emitter compiles to a C `for` loop
+// over indices [0, List.len) reading `List.data[i]` once per
+// iteration.
+type ForEachStmt struct {
+	Var      string
+	List     Expr
+	ElemType Type
+	Body     *Block
+}
+
+func (*ForEachStmt) isStmt() {}

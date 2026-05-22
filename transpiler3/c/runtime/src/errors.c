@@ -19,3 +19,8 @@ _Noreturn void mochi_panic_div_zero(void) {
     fputs("mochi: integer divide by zero\n", stderr);
     exit(MOCHI_ERR_DIVZERO);
 }
+
+_Noreturn void mochi_panic_index(void) {
+    fputs("mochi: index out of range\n", stderr);
+    exit(MOCHI_ERR_INDEX);
+}

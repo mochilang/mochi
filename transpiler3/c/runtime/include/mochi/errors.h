@@ -49,6 +49,14 @@ extern "C" {
 _Noreturn void mochi_panic_div_zero(void);
 
 /*
+ * mochi_panic_index writes a fixed diagnostic
+ * ("mochi: index out of range\n") to stderr and exits with
+ * MOCHI_ERR_INDEX. Used by the list / string index helpers when
+ * a bounds check fails.
+ */
+_Noreturn void mochi_panic_index(void);
+
+/*
  * mochi_div_i64 returns lhs / rhs after checking rhs against zero.
  * On rhs == 0 it tail-calls mochi_panic_div_zero (which never
  * returns); otherwise it returns the truncated C-semantics quotient.

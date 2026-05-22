@@ -1,0 +1,7 @@
+var xs = [1, 2]
+print(len(xs))
+xs = append(xs, 3)
+print(len(xs))
+xs = append(xs, 4)
+print(len(xs))
+print(xs[3])

@@ -1,0 +1,8 @@
+fun greetings(): list<string> {
+  return ["hello", "hi"]
+}
+
+let g = greetings()
+for s in g {
+  print(s)
+}

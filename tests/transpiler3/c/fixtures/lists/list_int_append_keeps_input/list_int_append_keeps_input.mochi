@@ -1,0 +1,7 @@
+let a = [1, 2]
+let b = append(a, 3)
+print(len(a))
+print(len(b))
+print(a[0])
+print(a[1])
+print(b[2])
