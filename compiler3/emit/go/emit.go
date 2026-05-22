@@ -342,6 +342,14 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 		fmt.Fprintf(w, "\t%s[%s] = %s\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
 	case ir.OpMapGetI64I64:
 		fmt.Fprintf(w, "\t%s = %s[%s]\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpNewMapStrI64:
+		fmt.Fprintf(w, "\t%s = map[string]int64{}\n", name)
+	case ir.OpMapSetStrI64:
+		fmt.Fprintf(w, "\t%s[%s] = %s\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
+	case ir.OpMapGetStrI64:
+		fmt.Fprintf(w, "\t%s = %s[%s]\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpMapLenStrI64:
+		fmt.Fprintf(w, "\t%s = int64(len(%s))\n", name, valueName(v.Args[0]))
 	case ir.OpNewListAny:
 		fmt.Fprintf(w, "\t%s = _MochiAny{}\n", name)
 	case ir.OpListAnyLen:
@@ -717,6 +725,8 @@ func goType(t ir.Type) string {
 		return "[]int64"
 	case ir.TypeMap:
 		return "map[int64]int64"
+	case ir.TypeMapStrI64:
+		return "map[string]int64"
 	case ir.TypeListAny:
 		return "_MochiAny"
 	case ir.TypeF64Arr:

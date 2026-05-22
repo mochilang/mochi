@@ -66,6 +66,7 @@ func Emit(p *Program) ([]byte, error) {
 	usesStrArray := false
 	usesNow := false
 	usesMapI64I64 := false
+	usesMapStrI64 := false
 	usesTree := false
 	usesStrH := false
 	usesStrRuntime := false
@@ -95,6 +96,8 @@ func Emit(p *Program) ([]byte, error) {
 				usesStrArray = true
 			case ir.OpNewMap, ir.OpMapSetI64I64, ir.OpMapGetI64I64:
 				usesMapI64I64 = true
+			case ir.OpNewMapStrI64, ir.OpMapSetStrI64, ir.OpMapGetStrI64, ir.OpMapLenStrI64:
+				usesMapStrI64 = true
 			case ir.OpNewListAny, ir.OpListAnyLen, ir.OpListAnyPushAny, ir.OpListAnyGetAny:
 				usesTree = true
 			case ir.OpLenStr, ir.OpCmpEqStr, ir.OpCmpNeStr:
@@ -126,6 +129,9 @@ func Emit(p *Program) ([]byte, error) {
 	}
 	if usesMapI64I64 {
 		buf.WriteString("#include \"mochi_map_i64_i64.h\"\n")
+	}
+	if usesMapStrI64 {
+		buf.WriteString("#include \"mochi_map_str_i64.h\"\n")
 	}
 	if usesTree {
 		buf.WriteString("#include \"mochi_tree.h\"\n")
@@ -406,6 +412,14 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    mochi_map_i64_i64_set(%s, %s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
 	case ir.OpMapGetI64I64:
 		fmt.Fprintf(w, "    %s = mochi_map_i64_i64_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpNewMapStrI64:
+		fmt.Fprintf(w, "    %s = mochi_map_str_i64_new();\n", name)
+	case ir.OpMapSetStrI64:
+		fmt.Fprintf(w, "    mochi_map_str_i64_set(%s, %s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
+	case ir.OpMapGetStrI64:
+		fmt.Fprintf(w, "    %s = mochi_map_str_i64_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpMapLenStrI64:
+		fmt.Fprintf(w, "    %s = mochi_map_str_i64_len(%s);\n", name, valueName(v.Args[0]))
 	case ir.OpNewListAny:
 		fmt.Fprintf(w, "    %s = mochi_tree_new();\n", name)
 	case ir.OpListAnyLen:
@@ -672,6 +686,12 @@ func cType(t ir.Type) string {
 		// Backed by runtime/c/src/mochi_map_i64_i64.{h,c}; sized for
 		// k_nucleotide's 20-key worst case but grows on demand.
 		return "mochi_map_i64_i64*"
+	case ir.TypeMapStrI64:
+		// map<str, i64>: heap-allocated open-addressing hashtable
+		// keyed by `const char*`. Backed by
+		// runtime/c/src/mochi_map_str_i64.{h,c}. Get on an absent key
+		// returns 0 (Go's `map[string]int64{}` zero-default).
+		return "mochi_map_str_i64*"
 	case ir.TypeListAny:
 		// list<any>: heap-allocated recursive tree node. Backed by
 		// runtime/c/src/mochi_tree.{h,c}; every child is itself a

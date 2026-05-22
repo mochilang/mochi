@@ -2500,6 +2500,53 @@ func TestBuildSourceListStrQuoteEscapes(t *testing.T) {
 	}
 }
 
+// TestBuildSourceMapStrI64Literal pins the v0.2 map.mochi shape: a
+// `map<string, int>` literal with several entries, an indexed read,
+// and `len(m)`. Before Phase 4.2.18 the binding hit "map<str, i64>
+// unsupported in MVP"; the phase adds TypeMapStrI64 + new/get/set/len
+// ops backed by runtime/c/src/mochi_map_str_i64.{h,c} on the C
+// target and map[string]int64 on the Go target.
+func TestBuildSourceMapStrI64Literal(t *testing.T) {
+	src := `let scores: map<string, int> = {
+  "Alice": 10,
+  "Bob": 15
+}
+let aliceScore = scores["Alice"]
+print("Alice's score:", aliceScore)
+print("Total players:", len(scores))
+`
+	if got, want := runMochiBuild(t, src), "Alice's score: 10\nTotal players: 2\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceMapStrI64Default pins the Go-shaped zero-default:
+// `m[k]` on an absent key returns 0. Mochi sources rely on this for
+// counter-style accumulation; the C runtime probe returns 0 from
+// the unoccupied bucket the same way Go's map[string]int64 does.
+func TestBuildSourceMapStrI64Default(t *testing.T) {
+	src := `let scores: map<string, int> = {"Alice": 10}
+print(scores["Alice"])
+print(scores["Unknown"])
+`
+	if got, want := runMochiBuild(t, src), "10\n0\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceMapStrI64Empty exercises the empty-literal form
+// (which already worked for map<int, int>) under the new carrier.
+// `len(m) == 0` confirms the new len op routes through
+// mochi_map_str_i64_len rather than a stale TypeMap dispatch.
+func TestBuildSourceMapStrI64Empty(t *testing.T) {
+	src := `let m: map<string, int> = {}
+print(len(m))
+`
+	if got, want := runMochiBuild(t, src), "0\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.
