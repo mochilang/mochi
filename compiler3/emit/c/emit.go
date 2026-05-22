@@ -111,7 +111,7 @@ func Emit(p *Program) ([]byte, error) {
 				usesTree = true
 			case ir.OpLenStr, ir.OpCmpEqStr, ir.OpCmpNeStr:
 				usesStrH = true
-			case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr:
+			case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr, ir.OpStrCharAt:
 				usesStrRuntime = true
 			case ir.OpNow:
 				usesNow = true
@@ -517,6 +517,12 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		// allocation. The literal type matches every other Phase 4.2.x
 		// string carrier so downstream concat/print/len/strcmp work.
 		fmt.Fprintf(w, "    %s = mochi_str_from_bool(%s);\n", name, valueName(v.Args[0]))
+	case ir.OpStrCharAt:
+		// `s[i]` on TypeStr. The runtime helper walks the UTF-8 byte
+		// sequence to the i-th rune and returns a freshly-allocated
+		// NUL-terminated single-rune string. Matches the VM's
+		// `string([]rune(s)[i])` semantics on the v0.5 fixture corpus.
+		fmt.Fprintf(w, "    %s = mochi_str_char_at(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpNow:
 		fmt.Fprintf(w, "    %s = mochi_now_us();\n", name)
 	case ir.OpJsonI64Object:

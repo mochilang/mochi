@@ -1890,7 +1890,7 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 				return 0, fmt.Errorf("frontend: slice indexing unsupported in MVP")
 			}
 			curType := b.fn.Values[cur].Type
-			if curType != ir.TypeList && curType != ir.TypeF64Arr && curType != ir.TypeStrArr && curType != ir.TypeMap && curType != ir.TypeMapStrI64 && curType != ir.TypeListAny && curType != ir.TypeListList {
+			if curType != ir.TypeList && curType != ir.TypeF64Arr && curType != ir.TypeStrArr && curType != ir.TypeMap && curType != ir.TypeMapStrI64 && curType != ir.TypeListAny && curType != ir.TypeListList && curType != ir.TypeStr {
 				return 0, fmt.Errorf("frontend: index on non-list %s", curType)
 			}
 			iID, err := b.lowerExpr(idx.Start)
@@ -1900,6 +1900,10 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 			if curType == ir.TypeMapStrI64 {
 				if b.fn.Values[iID].Type != ir.TypeStr {
 					return 0, fmt.Errorf("frontend: map<str, i64> key must be str, got %s", b.fn.Values[iID].Type)
+				}
+			} else if curType == ir.TypeStr {
+				if b.fn.Values[iID].Type != ir.TypeI64 {
+					return 0, fmt.Errorf("frontend: string index must be i64, got %s", b.fn.Values[iID].Type)
 				}
 			} else if b.fn.Values[iID].Type != ir.TypeI64 {
 				return 0, fmt.Errorf("frontend: list index must be i64, got %s", b.fn.Values[iID].Type)
@@ -1983,6 +1987,18 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 					ElemType: ir.TypeI64,
 					Op:       ir.OpListListGet,
 					Args:     []uint32{cur, iID},
+				})
+			case ir.TypeStr:
+				// Phase 4.2.27: `s[i]` on TypeStr returns a single-rune
+				// string. Result Type is TypeStr (HandleType,
+				// Constructor under rule A; the runtime helper
+				// mochi_str_char_at allocates a fresh NUL-terminated
+				// buffer). Mochi has no char type; `s[i]` and
+				// `for ch in s` both produce TypeStr scalars.
+				cur = b.addValue(ir.Value{
+					Type: ir.TypeStr,
+					Op:   ir.OpStrCharAt,
+					Args: []uint32{cur, iID},
 				})
 			}
 		case op.Cast != nil:

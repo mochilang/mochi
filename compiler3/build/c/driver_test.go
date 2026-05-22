@@ -2992,6 +2992,55 @@ func TestBuildSourceSpectralNormBgFixture(t *testing.T) {
 	}
 }
 
+// TestBuildSourceStrCharAtBasic pins the Phase 4.2.27 string-index
+// surface on the C target: `s[i]` on TypeStr lowers to the
+// OpStrCharAt op which delegates to mochi_str_char_at; for ASCII
+// input the i-th byte and i-th rune coincide so `"hello"[0]` is "h"
+// and `"hello"[4]` is "o", byte-matching `mochi run` on the same
+// source.
+func TestBuildSourceStrCharAtBasic(t *testing.T) {
+	src := `let s = "hello"
+print(s[0])
+print(s[4])
+`
+	if got, want := runMochiBuild(t, src), "h\no\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrCharAtConcat pins the interaction between
+// indexing and concat: the i-th rune is a TypeStr value that can be
+// the operand of `+` (which routes through mochi_str_concat). This
+// also exercises HandleType liveness: the OpStrCharAt allocation
+// must outlive the surrounding OpConcatStr that reads it.
+func TestBuildSourceStrCharAtConcat(t *testing.T) {
+	src := `let s = "abc"
+print(s[0] + s[2])
+`
+	if got, want := runMochiBuild(t, src), "ac\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrCharAtLoopIndex pins indexing inside a while
+// loop. The induction variable is an i64 and the printed value is
+// the corresponding single-rune string; this verifies the V's
+// OpStrCharAt argument typing through the lowering's TypeStr arm
+// guard. Walks the full "hello" string one rune per iteration so
+// the runtime helper's UTF-8 walk loop is exercised five times.
+func TestBuildSourceStrCharAtLoopIndex(t *testing.T) {
+	src := `let s = "hello"
+var i = 0
+while i < len(s) {
+  print(s[i])
+  i = i + 1
+}
+`
+	if got, want := runMochiBuild(t, src), "h\ne\nl\nl\no\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceRejectsImportGo pins the by-design rejection of
 // general Go FFI in the C target. The script `import go "testpkg"`
 // must surface ErrUnsupportedFFI (wrapped) at build time, not

@@ -170,6 +170,16 @@ const (
 	OpF64ToStr
 	OpBoolToStr
 
+	// OpStrCharAt returns a freshly-allocated single-rune string from
+	// the i-th rune of a UTF-8 source. Backs `s[i]` on TypeStr (MEP-42
+	// Phase 4.2.27). Result Type is TypeStr; classified Constructor
+	// under rule A because TypeStr is HandleType and the returned
+	// pointer is a fresh allocation owned by the runtime (currently
+	// leaked). Index is rune-based, matching the Mochi VM's
+	// `[]rune(s)[i]` lowering. OOB is unchecked, matching the
+	// existing C-target list-get pattern.
+	OpStrCharAt
+
 	// Bool comparisons (MEP-42 Phase 4.2.7). Result Type == TypeBool.
 	// Bool values are int-sized in both targets, so the C emit lowers
 	// to plain `==` / `!=` and the Go emit to the same. Distinct ops
@@ -493,6 +503,8 @@ func (o OpCode) String() string {
 		return "f64.to.str"
 	case OpBoolToStr:
 		return "bool.to.str"
+	case OpStrCharAt:
+		return "str.charat"
 	case OpCmpEqBool:
 		return "cmp.eq.bool"
 	case OpCmpNeBool:
