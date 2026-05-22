@@ -350,6 +350,18 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 		fmt.Fprintf(w, "\t%s = %s[%s]\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpMapLenStrI64:
 		fmt.Fprintf(w, "\t%s = int64(len(%s))\n", name, valueName(v.Args[0]))
+	case ir.OpMapStrI64SortedKeys:
+		// Mochi VM iterates maps in sorted-key order; the C runtime
+		// (mochi_map_str_i64_sorted_keys) does the same with strcmp.
+		// Mirror it here so `for k in m` on the Go target produces
+		// byte-identical output to the C target and to `mochi run`.
+		imports["sort"] = true
+		fmt.Fprintf(w, "\t%s = func(m map[string]int64) []string {\n", name)
+		w.WriteString("\t\tks := make([]string, 0, len(m))\n")
+		w.WriteString("\t\tfor k := range m { ks = append(ks, k) }\n")
+		w.WriteString("\t\tsort.Strings(ks)\n")
+		w.WriteString("\t\treturn ks\n")
+		fmt.Fprintf(w, "\t}(%s)\n", valueName(v.Args[0]))
 	case ir.OpNewListAny:
 		fmt.Fprintf(w, "\t%s = _MochiAny{}\n", name)
 	case ir.OpListAnyLen:

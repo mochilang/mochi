@@ -237,6 +237,8 @@ func opContract(o OpCode) opSig {
 		return opSig{TypeI64, [3]Type{TypeMapStrI64, TypeStr}}
 	case OpMapLenStrI64:
 		return opSig{TypeI64, [3]Type{TypeMapStrI64}}
+	case OpMapStrI64SortedKeys:
+		return opSig{TypeStrArr, [3]Type{TypeMapStrI64}}
 	case OpNewListList:
 		return opSig{TypeListList, [3]Type{}}
 	case OpListListPush:

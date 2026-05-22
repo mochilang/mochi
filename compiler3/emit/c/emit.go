@@ -100,6 +100,9 @@ func Emit(p *Program) ([]byte, error) {
 				usesMapI64I64 = true
 			case ir.OpNewMapStrI64, ir.OpMapSetStrI64, ir.OpMapGetStrI64, ir.OpMapLenStrI64:
 				usesMapStrI64 = true
+			case ir.OpMapStrI64SortedKeys:
+				usesMapStrI64 = true
+				usesStrArray = true
 			case ir.OpNewListList, ir.OpListListPush, ir.OpListListGet,
 				ir.OpListListLen, ir.OpListListToStr:
 				usesListList = true
@@ -431,6 +434,8 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = mochi_map_str_i64_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpMapLenStrI64:
 		fmt.Fprintf(w, "    %s = mochi_map_str_i64_len(%s);\n", name, valueName(v.Args[0]))
+	case ir.OpMapStrI64SortedKeys:
+		fmt.Fprintf(w, "    %s = mochi_map_str_i64_sorted_keys(%s);\n", name, valueName(v.Args[0]))
 	case ir.OpNewListList:
 		fmt.Fprintf(w, "    %s = mochi_list_list_new();\n", name)
 	case ir.OpListListPush:
