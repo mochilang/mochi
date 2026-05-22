@@ -2196,6 +2196,76 @@ print(xs)
 	}
 }
 
+// TestBuildSourcePrintListF64 pins MEP-42 Phase 4.2.14: print(xs)
+// where xs is a list<float>. Lifted via OpF64ArrayToStr to TypeStr
+// then fed through the single-arg print path. The runtime helper
+// mochi_f64_array_to_str renders integral floats with the ".0"
+// suffix (matching FormatFloat 'f' -1 64 + ".0"), so the C target
+// byte-matches `mochi run`.
+func TestBuildSourcePrintListF64(t *testing.T) {
+	src := `let xs: list<float> = [1.0, 2.5, 3.14]
+print(xs)
+`
+	if got, want := runMochiBuild(t, src), "[1.0, 2.5, 3.14]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourcePrintListF64Empty covers the empty-list edge case
+// on the f64 array runtime. mochi_f64_array_to_str returns the
+// static "[]" literal, no malloc.
+func TestBuildSourcePrintListF64Empty(t *testing.T) {
+	src := `let xs: list<float> = []
+print(xs)
+`
+	if got, want := runMochiBuild(t, src), "[]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourcePrintListF64Integral pins the ".0" suffix behavior
+// that distinguishes list-context float formatting from scalar
+// formatting: `print(1.0)` prints "1" (uses 'g'), but `print([1.0])`
+// prints "[1.0]" (uses 'f' -1 + ".0"). Without the suffix this test
+// would see "[1, 2, 3]" matching the i64 path.
+func TestBuildSourcePrintListF64Integral(t *testing.T) {
+	src := `let xs: list<float> = [1.0, 2.0, 3.0]
+print(xs)
+`
+	if got, want := runMochiBuild(t, src), "[1.0, 2.0, 3.0]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourcePrintListF64MultiArg covers list<float> as one of
+// several print() args. liftToStr's new TypeF64Arr case threads the
+// list through the same display formatter, then the multi-arg path
+// joins it into the space-separated form `label: [1.0, 2.0]`.
+func TestBuildSourcePrintListF64MultiArg(t *testing.T) {
+	src := `let xs: list<float> = [1.0, 2.5]
+print("data:", xs)
+`
+	if got, want := runMochiBuild(t, src), "data: [1.0, 2.5]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourcePrintListF64ScientificRange exercises the value
+// range that distinguishes 'f' format from 'g': 1e-5 prints as
+// "0.00001" (not "1e-05") and 1.5e10 prints as "15000000000.0"
+// (not "1.5e+10"). The shortest-round-trip search in
+// format_f64_decimal must pick the minimal precision that recovers
+// the original double; 1.5e10 with p=0 is the integral case (no
+// decimal in snprintf, append ".0").
+func TestBuildSourcePrintListF64ScientificRange(t *testing.T) {
+	src := `let xs: list<float> = [1.0e-5, 1.5e10]
+print(xs)
+`
+	if got, want := runMochiBuild(t, src), "[0.00001, 15000000000.0]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.

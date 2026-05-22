@@ -41,6 +41,18 @@ double mochi_f64_array_get(const mochi_f64_array *a, int64_t i);
 void mochi_f64_array_set(mochi_f64_array *a, int64_t i, double v);
 mochi_f64_array *mochi_f64_array_concat(const mochi_f64_array *a, const mochi_f64_array *b);
 
+/*
+ * mochi_f64_array_to_str renders a as the Mochi reference display
+ * form `[a, b, c]` with comma-space separators and square brackets,
+ * matching the VM's valueToString rule for list<float>. Each element
+ * uses the shortest 'f' decimal that round-trips through strtod, plus
+ * a ".0" suffix when the value is integral (so `1.0` prints as "1.0",
+ * not "1"). Empty arrays return a static "[]" literal (no malloc);
+ * non-empty results are heap-allocated and leak at process exit
+ * (Phase 4 MVP, parity with mochi_list_i64_to_str).
+ */
+const char *mochi_f64_array_to_str(const mochi_f64_array *a);
+
 #ifdef __cplusplus
 }
 #endif

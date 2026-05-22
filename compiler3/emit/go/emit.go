@@ -376,6 +376,26 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 		w.WriteString("\t\tfor i, x := range xs { parts[i] = fmt.Sprintf(\"%d\", x) }\n")
 		w.WriteString("\t\treturn \"[\" + strings.Join(parts, \", \") + \"]\"\n")
 		fmt.Fprintf(w, "\t}(%s)\n", valueName(v.Args[0]))
+	case ir.OpF64ArrayToStr:
+		// Same alias-collision rationale as OpListI64ToStr: inline the
+		// formatter so we keep using stdlib "strconv"/"strings" without
+		// importing the mochi/fmt runtime. strconv.FormatFloat 'f' -1
+		// 64 is the form that matches the VM's valueToString rule for
+		// list<float>; the ".0" suffix is appended when the formatter
+		// would have produced an integral (no-decimal) result so 1.0
+		// prints as "1.0" not "1".
+		imports["strconv"] = true
+		imports["strings"] = true
+		fmt.Fprintf(w, "\t%s = func(xs []float64) string {\n", name)
+		w.WriteString("\t\tif len(xs) == 0 { return \"[]\" }\n")
+		w.WriteString("\t\tparts := make([]string, len(xs))\n")
+		w.WriteString("\t\tfor i, x := range xs {\n")
+		w.WriteString("\t\t\ts := strconv.FormatFloat(x, 'f', -1, 64)\n")
+		w.WriteString("\t\t\tif !strings.ContainsRune(s, '.') { s += \".0\" }\n")
+		w.WriteString("\t\t\tparts[i] = s\n")
+		w.WriteString("\t\t}\n")
+		w.WriteString("\t\treturn \"[\" + strings.Join(parts, \", \") + \"]\"\n")
+		fmt.Fprintf(w, "\t}(%s)\n", valueName(v.Args[0]))
 	case ir.OpF64ArrayConcat:
 		fmt.Fprintf(w, "\t%s = append(append([]float64{}, %s...), %s...)\n",
 			name, valueName(v.Args[0]), valueName(v.Args[1]))
