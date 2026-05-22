@@ -151,16 +151,18 @@ func TestEmitMainF64(t *testing.T) {
 // driver downstream treats this as a clean "AOT cannot lower this
 // program" signal.
 func TestEmitUnsupportedOp(t *testing.T) {
-	fn := &ir.Function{Name: "bad", Result: ir.TypeI64}
+	fn := &ir.Function{Name: "bad", Result: ir.TypeStr}
 	bid := fn.AddBlock()
-	c := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpConst, Const: 0})
-	// OpLenStr is out of Phase 4.0 scope.
-	s := fn.AddValue(ir.Value{Type: ir.TypeStr, Op: ir.OpParam})
-	fn.Params = []uint32{s}
-	ln := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpLenStr, Args: []uint32{s}})
+	// OpConcatStr is out of Phase 4.2 scope (Phase 4.2.x widens to
+	// owning mochi_str when string concat lands; until then it is the
+	// canonical unsupported-op probe for the C emitter).
+	a := fn.AddValue(ir.Value{Type: ir.TypeStr, Op: ir.OpParam})
+	b := fn.AddValue(ir.Value{Type: ir.TypeStr, Op: ir.OpParam})
+	fn.Params = []uint32{a, b}
+	cc := fn.AddValue(ir.Value{Type: ir.TypeStr, Op: ir.OpConcatStr, Args: []uint32{a, b}})
 	blk := fn.Block(bid)
-	blk.Values = []uint32{c, ln}
-	blk.Term = ir.Terminator{Kind: ir.TermReturn, Value: ln}
+	blk.Values = []uint32{cc}
+	blk.Term = ir.Terminator{Kind: ir.TermReturn, Value: cc}
 	_, err := Emit(&Program{Funcs: []*ir.Function{fn}})
 	if err == nil {
 		t.Fatalf("expected ErrUnsupportedOp, got nil")

@@ -66,6 +66,7 @@ func Emit(p *Program) ([]byte, error) {
 	usesNow := false
 	usesMapI64I64 := false
 	usesTree := false
+	usesStrH := false
 	for _, fn := range p.Funcs {
 		for _, v := range fn.Values {
 			switch v.Op {
@@ -90,6 +91,8 @@ func Emit(p *Program) ([]byte, error) {
 				usesMapI64I64 = true
 			case ir.OpNewListAny, ir.OpListAnyLen, ir.OpListAnyPushAny, ir.OpListAnyGetAny:
 				usesTree = true
+			case ir.OpLenStr:
+				usesStrH = true
 			case ir.OpNow:
 				usesNow = true
 			}
@@ -118,6 +121,9 @@ func Emit(p *Program) ([]byte, error) {
 	}
 	if usesNow {
 		buf.WriteString("#include \"mochi_time.h\"\n")
+	}
+	if usesStrH {
+		buf.WriteString("#include <string.h>\n")
 	}
 	buf.WriteString("\n")
 
@@ -378,6 +384,12 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    mochi_tree_push(%s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpListAnyGetAny:
 		fmt.Fprintf(w, "    %s = mochi_tree_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpLenStr:
+		// `const char*` carriers are NUL-terminated string literals
+		// (Phase 4.2.0), so strlen reads byte length up to but not
+		// including the terminator. Cast to int64_t because Mochi
+		// `len(s)` returns int.
+		fmt.Fprintf(w, "    %s = (int64_t)strlen(%s);\n", name, valueName(v.Args[0]))
 	case ir.OpNow:
 		fmt.Fprintf(w, "    %s = mochi_now_us();\n", name)
 	case ir.OpJsonI64Object:
