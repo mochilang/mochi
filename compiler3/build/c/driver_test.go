@@ -1183,6 +1183,24 @@ func TestBuildSourceKNucleotideBgFixture(t *testing.T) {
 	}
 }
 
+// TestBuildSourceBinaryTreesBgFixture pins the unmodified
+// bench/template/bg/binary_trees fixture (N=4) on the C target. The
+// fixture exercises the Phase 4.3.15.1 surface end-to-end:
+// `make_tree(depth: int): list<any>` returns either `[]` (OpNewListAny)
+// or `[left, right]` (OpNewListAny + two OpListAnyPushAny), and
+// `check_tree(t: list<any>): int` reads `len(t)` (OpListAnyLen) plus
+// `t[0] as list<any>` / `t[1] as list<any>` (OpListAnyGetAny with a
+// no-op same-type cast). For N=4 the result is 16 iters * 31 nodes
+// per depth-4 tree = 496; byte-matches the --target=go build on the
+// same source (interpreter rejects the kernel for list<any> type).
+func TestBuildSourceBinaryTreesBgFixture(t *testing.T) {
+	src := readBenchFixture(t, "binary_trees", 4)
+	got := runMochiBuild(t, src)
+	if want := "{\"duration_us\":0,\"output\":496}\n"; got != want {
+		t.Errorf("binary_trees fixture stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceMapI64I64Basic pins the Phase 4.3.15.2 map<int,int>
 // surface on the C target: empty-literal initializer, an
 // indexed-assign store, a read of the same key, plus a read of an
@@ -1222,6 +1240,68 @@ while k < 32 {
 print(sum)
 `
 	if got, want := runMochiBuild(t, src), "49600\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceListAnyBasic pins the Phase 4.3.15.1 list<any>
+// surface on the C target: empty literal initializer in a function
+// returning list<any>, a 2-element literal with list<any> elements
+// (recursive shape), len() on both, and an indexed get returning a
+// list<any> child that flows back through `as list<any>` (no-op cast).
+func TestBuildSourceListAnyBasic(t *testing.T) {
+	src := `fun makeLeaf(): list<any> {
+  return []
+}
+
+fun makePair(a: list<any>, b: list<any>): list<any> {
+  return [a, b]
+}
+
+let leaf = makeLeaf()
+let pair = makePair(leaf, makeLeaf())
+print(len(leaf))
+print(len(pair))
+print(len(pair[0] as list<any>))
+print(len(pair[1] as list<any>))
+`
+	if got, want := runMochiBuild(t, src), "0\n2\n0\n0\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceListAnyGrow exercises the runtime growth path on a
+// list<any> tree: 32 pushes force at least three grows (initial cap=4,
+// doubling). After grow, the get-by-index path must still return the
+// right child pointer, so a regression in the realloc/copy step would
+// surface as a wrong child count downstream.
+func TestBuildSourceListAnyGrow(t *testing.T) {
+	src := `fun makeLeaf(): list<any> {
+  return []
+}
+
+fun makeMany(): list<any> {
+  var t: list<any> = []
+  var i = 0
+  while i < 32 {
+    t = [t, makeLeaf()]
+    i = i + 1
+  }
+  return t
+}
+
+fun depth(t: list<any>): int {
+  if len(t) == 0 {
+    return 0
+  }
+  return 1 + depth(t[0] as list<any>)
+}
+
+let big = makeMany()
+print(depth(big))
+print(len(big))
+`
+	if got, want := runMochiBuild(t, src), "32\n2\n"; got != want {
 		t.Errorf("got %q, want %q", got, want)
 	}
 }

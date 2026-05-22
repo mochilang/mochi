@@ -65,6 +65,7 @@ func Emit(p *Program) ([]byte, error) {
 	usesF64Array := false
 	usesNow := false
 	usesMapI64I64 := false
+	usesTree := false
 	for _, fn := range p.Funcs {
 		for _, v := range fn.Values {
 			switch v.Op {
@@ -87,6 +88,8 @@ func Emit(p *Program) ([]byte, error) {
 				usesF64Array = true
 			case ir.OpNewMap, ir.OpMapSetI64I64, ir.OpMapGetI64I64:
 				usesMapI64I64 = true
+			case ir.OpNewListAny, ir.OpListAnyLen, ir.OpListAnyPushAny, ir.OpListAnyGetAny:
+				usesTree = true
 			case ir.OpNow:
 				usesNow = true
 			}
@@ -109,6 +112,9 @@ func Emit(p *Program) ([]byte, error) {
 	}
 	if usesMapI64I64 {
 		buf.WriteString("#include \"mochi_map_i64_i64.h\"\n")
+	}
+	if usesTree {
+		buf.WriteString("#include \"mochi_tree.h\"\n")
 	}
 	if usesNow {
 		buf.WriteString("#include \"mochi_time.h\"\n")
@@ -358,6 +364,14 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    mochi_map_i64_i64_set(%s, %s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
 	case ir.OpMapGetI64I64:
 		fmt.Fprintf(w, "    %s = mochi_map_i64_i64_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpNewListAny:
+		fmt.Fprintf(w, "    %s = mochi_tree_new();\n", name)
+	case ir.OpListAnyLen:
+		fmt.Fprintf(w, "    %s = mochi_tree_len(%s);\n", name, valueName(v.Args[0]))
+	case ir.OpListAnyPushAny:
+		fmt.Fprintf(w, "    mochi_tree_push(%s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpListAnyGetAny:
+		fmt.Fprintf(w, "    %s = mochi_tree_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpNow:
 		fmt.Fprintf(w, "    %s = mochi_now_us();\n", name)
 	case ir.OpJsonI64Object:
@@ -547,6 +561,12 @@ func cType(t ir.Type) string {
 		// Backed by runtime/c/src/mochi_map_i64_i64.{h,c}; sized for
 		// k_nucleotide's 20-key worst case but grows on demand.
 		return "mochi_map_i64_i64*"
+	case ir.TypeListAny:
+		// list<any>: heap-allocated recursive tree node. Backed by
+		// runtime/c/src/mochi_tree.{h,c}; every child is itself a
+		// `mochi_tree*`, matching binary_trees-style kernels where
+		// every payload is recursively the same shape.
+		return "mochi_tree*"
 	case ir.TypeUnit, ir.TypeInvalid:
 		return "void"
 	}

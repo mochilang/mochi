@@ -998,6 +998,33 @@ print(m[999])
 	}
 }
 
+// TestLowerListAnyBasic pins the Phase 4.3.15.1 list<any> surface
+// through the frontend. Confirms that `list<any>` lowers to a
+// distinct IR type (TypeListAny), the `[]` and `[a, b]` literals
+// route through OpNewListAny / OpListAnyPushAny, `len(t)` dispatches
+// to OpListAnyLen, indexed read `t[i]` to OpListAnyGetAny, and the
+// `as list<any>` cast collapses to a same-type no-op.
+func TestLowerListAnyBasic(t *testing.T) {
+	src := `fun leaf(): list<any> {
+  return []
+}
+
+fun pair(a: list<any>, b: list<any>): list<any> {
+  return [a, b]
+}
+
+let lf = leaf()
+let pr = pair(lf, leaf())
+print(len(lf))
+print(len(pr))
+print(len(pr[0] as list<any>))
+`
+	got := runEnd2End(t, src)
+	if want := "0\n2\n0\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 func TestLowerNsieve(t *testing.T) {
 	src := `fun nsieve(m: int): int {
   var flags: list<int> = []

@@ -72,6 +72,7 @@ func TestHandleTypeCoverage(t *testing.T) {
 		ir.TypeF64Arr:  true,
 		ir.TypeI64Arr:  true,
 		ir.TypeU8Arr:   true,
+		ir.TypeListAny: true,
 		// Non-handle types stay false:
 		ir.TypeI64:     false,
 		ir.TypeF64:     false,

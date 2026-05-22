@@ -24,5 +24,5 @@ import "embed"
 // files when cgo is off (and the whole point of this package is to
 // stay no-cgo on the build host).
 //
-//go:embed src/print.h src/print.c src/mochi_list_i64.h src/mochi_list_i64.c src/mochi_f64_array.h src/mochi_f64_array.c src/mochi_time.h src/mochi_time.c src/mochi_map_i64_i64.h src/mochi_map_i64_i64.c
+//go:embed src/print.h src/print.c src/mochi_list_i64.h src/mochi_list_i64.c src/mochi_f64_array.h src/mochi_f64_array.c src/mochi_time.h src/mochi_time.c src/mochi_map_i64_i64.h src/mochi_map_i64_i64.c src/mochi_tree.h src/mochi_tree.c
 var Runtime embed.FS
