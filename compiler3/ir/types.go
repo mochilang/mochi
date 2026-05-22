@@ -20,6 +20,11 @@ const (
 	TypeF64Arr
 	TypeI64Arr
 	TypeU8Arr
+	// TypeStrArr is the typed `list<str>` carrier on the C target
+	// (Phase 4.2.17). Backing is mochi_str_array (`const char**` data
+	// + len + cap); element-level access threads the same const-char-
+	// star carrier the rest of the C runtime uses for TypeStr.
+	TypeStrArr
 	TypeAny
 	// TypeListAny is the heterogeneous self-referential list backing
 	// for `list<any>` (Phase 4.3.15.1). In the binary_trees kernel every
@@ -68,6 +73,8 @@ func (t Type) String() string {
 		return "i64arr"
 	case TypeU8Arr:
 		return "u8arr"
+	case TypeStrArr:
+		return "strarr"
 	case TypeAny:
 		return "any"
 	case TypeListAny:
@@ -182,6 +189,16 @@ const (
 	OpF64ArrayPushF64
 	OpF64ArrayGetF64
 	OpF64ArraySetF64
+
+	// Typed str array ops (Phase 4.2.17). Backs `list<str>` on the C
+	// target with mochi_str_array (`const char**` data, int64 len,
+	// int64 cap). Mirror of the F64Arr op set: empty constructor,
+	// length, push (for list-literal lowering), and indexed get/set.
+	OpNewStrArr
+	OpStrArrLen
+	OpStrArrPushStr
+	OpStrArrGetStr
+	OpStrArrSetStr
 
 	// Calls. Args[0..] are the argument values; the callee is named by
 	// Value.Const (function index in the Function's owning Program).
@@ -308,6 +325,17 @@ const (
 	// strconv.FormatFloat lambda; C emit calls
 	// `mochi_f64_array_to_str`.
 	OpF64ArrayToStr
+
+	// list<str> display formatting (Phase 4.2.17). OpStrArrToStr
+	// converts a TypeStrArr to its Mochi reference display form:
+	// `["apple", "banana"]` with comma-space separators, square
+	// brackets, and double-quoted elements (the VM's valueToString
+	// rule for list<string>: each element printed via %q-style with
+	// JSON-style backslash escapes; non-ASCII bytes pass through
+	// verbatim since Mochi strings are UTF-8 byte sequences). Empty
+	// arrays produce the static literal "[]". Go emit inlines a
+	// strconv.Quote lambda; C emit calls `mochi_str_array_to_str`.
+	OpStrArrToStr
 
 	// Bench-harness JSON sink (Phase 4.3.14). OpJsonI64Object is the
 	// statement-level form `json({"k1": v1, ..., "kN": vN})` where every
@@ -443,6 +471,16 @@ func (o OpCode) String() string {
 		return "f64arr.get.f64"
 	case OpF64ArraySetF64:
 		return "f64arr.set.f64"
+	case OpNewStrArr:
+		return "newstrarr"
+	case OpStrArrLen:
+		return "strarr.len"
+	case OpStrArrPushStr:
+		return "strarr.push.str"
+	case OpStrArrGetStr:
+		return "strarr.get.str"
+	case OpStrArrSetStr:
+		return "strarr.set.str"
 	case OpListConcatI64:
 		return "list.concat.i64"
 	case OpF64ArrayConcat:
@@ -461,6 +499,8 @@ func (o OpCode) String() string {
 		return "list.i64.tostr"
 	case OpF64ArrayToStr:
 		return "f64array.tostr"
+	case OpStrArrToStr:
+		return "strarr.tostr"
 	case OpJsonI64Object:
 		return "json.i64.object"
 	case OpCall:

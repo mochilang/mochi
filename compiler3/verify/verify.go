@@ -168,24 +168,28 @@ func kindOf(o ir.OpCode) ProducerKind {
 
 	case ir.OpLenStr:
 		return KindDispatch
-	case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr, ir.OpListI64ToStr, ir.OpF64ArrayToStr:
+	case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr, ir.OpListI64ToStr, ir.OpF64ArrayToStr, ir.OpStrArrToStr:
 		return KindConstructor
 
-	case ir.OpNewList, ir.OpNewMap, ir.OpNewF64Array, ir.OpNewListAny,
+	case ir.OpNewList, ir.OpNewMap, ir.OpNewF64Array, ir.OpNewStrArr, ir.OpNewListAny,
 		ir.OpListConcatI64, ir.OpF64ArrayConcat,
-		ir.OpListAnyGetAny:
+		ir.OpListAnyGetAny,
+		ir.OpStrArrGetStr:
 		// OpListAnyGetAny returns a handle (TypeListAny) borrowed from
-		// an existing tree node. Rule A requires handle-typed Values to
-		// originate from a Constructor / Move / Inline / Call kind, so
-		// the get-op is classified Constructor (same rationale as
-		// OpFnRef: produces a fresh-looking handle whose payload is a
-		// derived pointer, not arbitrary bits).
+		// an existing tree node. OpStrArrGetStr returns a handle
+		// (TypeStr) borrowed from a `const char**` slot. Rule A
+		// requires handle-typed Values to originate from a
+		// Constructor / Move / Inline / Call kind, so the get-ops are
+		// classified Constructor (same rationale as OpFnRef: produces
+		// a fresh-looking handle whose payload is a derived pointer,
+		// not arbitrary bits).
 		return KindConstructor
 
 	case ir.OpListLenI64, ir.OpListPushI64, ir.OpListGetI64, ir.OpListSetI64,
 		ir.OpListGetF64, ir.OpListSetF64,
 		ir.OpMapSetI64I64, ir.OpMapGetI64I64,
 		ir.OpF64ArrayLenI64, ir.OpF64ArrayPushF64, ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64,
+		ir.OpStrArrLen, ir.OpStrArrPushStr, ir.OpStrArrSetStr,
 		ir.OpListAnyLen, ir.OpListAnyPushAny:
 		return KindDispatch
 
@@ -414,6 +418,14 @@ func contractResult(o ir.OpCode) ir.Type {
 		return ir.TypeMap
 	case ir.OpNewF64Array:
 		return ir.TypeF64Arr
+	case ir.OpNewStrArr:
+		return ir.TypeStrArr
+	case ir.OpStrArrLen:
+		return ir.TypeI64
+	case ir.OpStrArrPushStr, ir.OpStrArrSetStr:
+		return ir.TypeUnit
+	case ir.OpStrArrGetStr:
+		return ir.TypeStr
 	case ir.OpListLenI64:
 		return ir.TypeI64
 	case ir.OpListPushI64, ir.OpListSetI64, ir.OpListSetF64:
@@ -471,6 +483,7 @@ func opIsMutating(o ir.OpCode) bool {
 	case ir.OpListPushI64, ir.OpListSetI64, ir.OpListSetF64,
 		ir.OpMapSetI64I64,
 		ir.OpF64ArrayPushF64, ir.OpF64ArraySetF64,
+		ir.OpStrArrPushStr, ir.OpStrArrSetStr,
 		ir.OpListAnyPushAny:
 		return true
 	}
@@ -488,6 +501,7 @@ var readDispatchOps = []ir.OpCode{
 	ir.OpMapGetI64I64,
 	ir.OpF64ArrayLenI64,
 	ir.OpF64ArrayGetF64,
+	ir.OpStrArrLen,
 	ir.OpListAnyLen,
 }
 
@@ -499,6 +513,8 @@ var writeDispatchOps = []ir.OpCode{
 	ir.OpMapSetI64I64,
 	ir.OpF64ArrayPushF64,
 	ir.OpF64ArraySetF64,
+	ir.OpStrArrPushStr,
+	ir.OpStrArrSetStr,
 	ir.OpListAnyPushAny,
 }
 
@@ -620,6 +636,8 @@ func dispatchArena(o ir.OpCode) ir.Type {
 		return ir.TypeMap
 	case ir.OpF64ArrayLenI64, ir.OpF64ArrayPushF64, ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64:
 		return ir.TypeF64Arr
+	case ir.OpStrArrLen, ir.OpStrArrPushStr, ir.OpStrArrGetStr, ir.OpStrArrSetStr:
+		return ir.TypeStrArr
 	case ir.OpListAnyLen, ir.OpListAnyPushAny:
 		return ir.TypeListAny
 	}

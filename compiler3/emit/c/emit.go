@@ -63,6 +63,7 @@ func Emit(p *Program) ([]byte, error) {
 	usesPrint := false
 	usesListI64 := false
 	usesF64Array := false
+	usesStrArray := false
 	usesNow := false
 	usesMapI64I64 := false
 	usesTree := false
@@ -89,6 +90,9 @@ func Emit(p *Program) ([]byte, error) {
 				ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64, ir.OpF64ArrayConcat,
 				ir.OpF64ArrayToStr:
 				usesF64Array = true
+			case ir.OpNewStrArr, ir.OpStrArrLen, ir.OpStrArrPushStr,
+				ir.OpStrArrGetStr, ir.OpStrArrSetStr, ir.OpStrArrToStr:
+				usesStrArray = true
 			case ir.OpNewMap, ir.OpMapSetI64I64, ir.OpMapGetI64I64:
 				usesMapI64I64 = true
 			case ir.OpNewListAny, ir.OpListAnyLen, ir.OpListAnyPushAny, ir.OpListAnyGetAny:
@@ -116,6 +120,9 @@ func Emit(p *Program) ([]byte, error) {
 	}
 	if usesF64Array {
 		buf.WriteString("#include \"mochi_f64_array.h\"\n")
+	}
+	if usesStrArray {
+		buf.WriteString("#include \"mochi_str_array.h\"\n")
 	}
 	if usesMapI64I64 {
 		buf.WriteString("#include \"mochi_map_i64_i64.h\"\n")
@@ -381,6 +388,18 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = mochi_f64_array_to_str(%s);\n", name, valueName(v.Args[0]))
 	case ir.OpF64ArrayConcat:
 		fmt.Fprintf(w, "    %s = mochi_f64_array_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpNewStrArr:
+		fmt.Fprintf(w, "    %s = mochi_str_array_new();\n", name)
+	case ir.OpStrArrLen:
+		fmt.Fprintf(w, "    %s = mochi_str_array_len(%s);\n", name, valueName(v.Args[0]))
+	case ir.OpStrArrPushStr:
+		fmt.Fprintf(w, "    mochi_str_array_push(%s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpStrArrGetStr:
+		fmt.Fprintf(w, "    %s = mochi_str_array_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpStrArrSetStr:
+		fmt.Fprintf(w, "    mochi_str_array_set(%s, %s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
+	case ir.OpStrArrToStr:
+		fmt.Fprintf(w, "    %s = mochi_str_array_to_str(%s);\n", name, valueName(v.Args[0]))
 	case ir.OpNewMap:
 		fmt.Fprintf(w, "    %s = mochi_map_i64_i64_new();\n", name)
 	case ir.OpMapSetI64I64:
@@ -642,6 +661,12 @@ func cType(t ir.Type) string {
 		// Distinct from TypeList so cc -O2 can vectorise the flat
 		// double[] backing without a Cell-tag indirection.
 		return "mochi_f64_array*"
+	case ir.TypeStrArr:
+		// list<str>: heap-allocated header backed by mochi_str_array.
+		// The flat `const char**` backing aliases the same string
+		// carriers the rest of the C target uses, so a push of a
+		// literal element is a single pointer store (no copy).
+		return "mochi_str_array*"
 	case ir.TypeMap:
 		// map<int, int>: heap-allocated open-addressing hashtable.
 		// Backed by runtime/c/src/mochi_map_i64_i64.{h,c}; sized for

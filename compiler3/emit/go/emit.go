@@ -399,6 +399,29 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 	case ir.OpF64ArrayConcat:
 		fmt.Fprintf(w, "\t%s = append(append([]float64{}, %s...), %s...)\n",
 			name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpNewStrArr:
+		fmt.Fprintf(w, "\t%s = []string{}\n", name)
+	case ir.OpStrArrLen:
+		fmt.Fprintf(w, "\t%s = int64(len(%s))\n", name, valueName(v.Args[0]))
+	case ir.OpStrArrPushStr:
+		fmt.Fprintf(w, "\t%s = append(%s, %s)\n", valueName(v.Args[0]), valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpStrArrGetStr:
+		fmt.Fprintf(w, "\t%s = %s[%s]\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpStrArrSetStr:
+		fmt.Fprintf(w, "\t%s[%s] = %s\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
+	case ir.OpStrArrToStr:
+		// list<str> -> `["a", "b"]` form via strconv.Quote per element,
+		// joined with ", " and bracketed. Matches the C runtime's
+		// mochi_str_array_to_str and the VM's valueToString rule for
+		// list<string>.
+		imports["strconv"] = true
+		imports["strings"] = true
+		fmt.Fprintf(w, "\t%s = func(xs []string) string {\n", name)
+		w.WriteString("\t\tif len(xs) == 0 { return \"[]\" }\n")
+		w.WriteString("\t\tparts := make([]string, len(xs))\n")
+		w.WriteString("\t\tfor i, x := range xs { parts[i] = strconv.Quote(x) }\n")
+		w.WriteString("\t\treturn \"[\" + strings.Join(parts, \", \") + \"]\"\n")
+		fmt.Fprintf(w, "\t}(%s)\n", valueName(v.Args[0]))
 	case ir.OpNow:
 		imports["time"] = true
 		fmt.Fprintf(w, "\t%s = time.Now().UnixMicro()\n", name)
@@ -698,6 +721,8 @@ func goType(t ir.Type) string {
 		return "_MochiAny"
 	case ir.TypeF64Arr:
 		return "[]float64"
+	case ir.TypeStrArr:
+		return "[]string"
 	case ir.TypeI64Arr:
 		return "[]int64"
 	case ir.TypeU8Arr:

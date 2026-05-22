@@ -2420,6 +2420,86 @@ print(x)
 	}
 }
 
+// Phase 4.2.17: list<str> literals on the C target. Before this
+// phase the frontend rejected `let xs = ["a", "b"]` with
+// `frontend: list literal element type str unsupported in MVP`.
+// The phase adds TypeStrArr (backed by mochi_str_array on the C
+// side and []string on the Go side) and wires the five core ops
+// (new, len, push, get, set) plus the print formatter
+// OpStrArrToStr that renders `["a", "b"]` with strconv.Quote-
+// equivalent element escaping.
+func TestBuildSourcePrintListStr(t *testing.T) {
+	src := `let fruits = ["apple", "banana", "cherry"]
+print(fruits)
+`
+	if got, want := runMochiBuild(t, src), "[\"apple\", \"banana\", \"cherry\"]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func TestBuildSourcePrintListStrEmpty(t *testing.T) {
+	src := `var xs: list<str> = []
+print(xs)
+`
+	if got, want := runMochiBuild(t, src), "[]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func TestBuildSourceListStrIndex(t *testing.T) {
+	src := `let xs = ["a", "bc", "def"]
+print(xs[0])
+print(xs[1])
+print(xs[2])
+print(len(xs))
+`
+	if got, want := runMochiBuild(t, src), "a\nbc\ndef\n3\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceListStrNegIndex pins the Phase 4.2.15 negative-
+// index fold for the new TypeStrArr carrier. Without the extra
+// TypeStrArr case in the fold, `xs[-1]` would read past the start
+// of the const char** buffer on the C target (undefined).
+func TestBuildSourceListStrNegIndex(t *testing.T) {
+	src := `let xs = ["first", "middle", "last"]
+print(xs[-1])
+print(xs[-3])
+`
+	if got, want := runMochiBuild(t, src), "last\nfirst\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceListStrForIn exercises the for-in lowering for
+// TypeStrArr. The body sees each element as TypeStr; the loop
+// uses OpStrArrLen + OpStrArrGetStr inside the header check and
+// body bind.
+func TestBuildSourceListStrForIn(t *testing.T) {
+	src := `let xs = ["one", "two", "three"]
+for x in xs {
+  print(x)
+}
+`
+	if got, want := runMochiBuild(t, src), "one\ntwo\nthree\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceListStrQuoteEscapes confirms that the C runtime's
+// strconv.Quote-equivalent escape rule produces the same display
+// form as the Go target (and the VM). Backslash, double-quote, and
+// newline all need explicit escapes in the rendered list; non-ASCII
+// UTF-8 passes through verbatim.
+func TestBuildSourceListStrQuoteEscapes(t *testing.T) {
+	src := "let xs = [\"a\\nb\", \"c\\\"d\", \"e\\\\f\", \"\xe4\xb8\xad\"]\nprint(xs)\n"
+	want := "[\"a\\nb\", \"c\\\"d\", \"e\\\\f\", \"\xe4\xb8\xad\"]\n"
+	if got := runMochiBuild(t, src); got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.
