@@ -64,6 +64,7 @@ func Emit(p *Program) ([]byte, error) {
 	usesListI64 := false
 	usesF64Array := false
 	usesNow := false
+	usesMapI64I64 := false
 	for _, fn := range p.Funcs {
 		for _, v := range fn.Values {
 			switch v.Op {
@@ -84,6 +85,8 @@ func Emit(p *Program) ([]byte, error) {
 			case ir.OpNewF64Array, ir.OpF64ArrayLenI64, ir.OpF64ArrayPushF64,
 				ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64, ir.OpF64ArrayConcat:
 				usesF64Array = true
+			case ir.OpNewMap, ir.OpMapSetI64I64, ir.OpMapGetI64I64:
+				usesMapI64I64 = true
 			case ir.OpNow:
 				usesNow = true
 			}
@@ -103,6 +106,9 @@ func Emit(p *Program) ([]byte, error) {
 	}
 	if usesF64Array {
 		buf.WriteString("#include \"mochi_f64_array.h\"\n")
+	}
+	if usesMapI64I64 {
+		buf.WriteString("#include \"mochi_map_i64_i64.h\"\n")
 	}
 	if usesNow {
 		buf.WriteString("#include \"mochi_time.h\"\n")
@@ -346,6 +352,12 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = mochi_list_i64_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpF64ArrayConcat:
 		fmt.Fprintf(w, "    %s = mochi_f64_array_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpNewMap:
+		fmt.Fprintf(w, "    %s = mochi_map_i64_i64_new();\n", name)
+	case ir.OpMapSetI64I64:
+		fmt.Fprintf(w, "    mochi_map_i64_i64_set(%s, %s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
+	case ir.OpMapGetI64I64:
+		fmt.Fprintf(w, "    %s = mochi_map_i64_i64_get(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpNow:
 		fmt.Fprintf(w, "    %s = mochi_now_us();\n", name)
 	case ir.OpJsonI64Object:
@@ -530,6 +542,11 @@ func cType(t ir.Type) string {
 		// Distinct from TypeList so cc -O2 can vectorise the flat
 		// double[] backing without a Cell-tag indirection.
 		return "mochi_f64_array*"
+	case ir.TypeMap:
+		// map<int, int>: heap-allocated open-addressing hashtable.
+		// Backed by runtime/c/src/mochi_map_i64_i64.{h,c}; sized for
+		// k_nucleotide's 20-key worst case but grows on demand.
+		return "mochi_map_i64_i64*"
 	case ir.TypeUnit, ir.TypeInvalid:
 		return "void"
 	}

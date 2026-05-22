@@ -1166,6 +1166,66 @@ func TestBuildSourceRegexReduxBgFixture(t *testing.T) {
 	}
 }
 
+// TestBuildSourceKNucleotideBgFixture pins the unmodified
+// bench/template/bg/k_nucleotide fixture (N=10000) on the C target.
+// The fixture exercises the Phase 4.3.15.2 surface end-to-end:
+// `var counts: map<int, int> = {}` initializer lowers via OpNewMap,
+// `counts[k] = v` via OpMapSetI64I64, and `counts[k]` (in read
+// position) via OpMapGetI64I64. Output is the LCG-driven rolling
+// i64 hash of 20 counts; byte-matches the --target=go build on the
+// same source (the interpreter rejects the source with a type
+// error, so the cross-check is C target vs Go target).
+func TestBuildSourceKNucleotideBgFixture(t *testing.T) {
+	src := readBenchFixture(t, "k_nucleotide", 0)
+	got := runMochiBuild(t, src)
+	if want := "723253870\n"; got != want {
+		t.Errorf("k_nucleotide fixture stdout = %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceMapI64I64Basic pins the Phase 4.3.15.2 map<int,int>
+// surface on the C target: empty-literal initializer, an
+// indexed-assign store, a read of the same key, plus a read of an
+// absent key that must return 0 (matching Go's zero-default semantic
+// for `map[int64]int64`).
+func TestBuildSourceMapI64I64Basic(t *testing.T) {
+	src := `var m: map<int, int> = {}
+m[7] = 11
+m[8] = 22
+print(m[7])
+print(m[8])
+print(m[999])
+`
+	if got, want := runMochiBuild(t, src), "11\n22\n0\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceMapI64I64Grow exercises the runtime's grow path: 32
+// inserts force at least two grows (initial cap=8, threshold 0.75
+// triggers grow at len=7, again at len=13, again at len=25). Reads
+// after grow must still return the right values; this catches a
+// rehash bug where the new probe order doesn't match the new mask.
+func TestBuildSourceMapI64I64Grow(t *testing.T) {
+	src := `var m: map<int, int> = {}
+var i = 0
+while i < 32 {
+  m[i] = i * 100
+  i = i + 1
+}
+var k = 0
+var sum = 0
+while k < 32 {
+  sum = sum + m[k]
+  k = k + 1
+}
+print(sum)
+`
+	if got, want := runMochiBuild(t, src), "49600\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceSpectralNormBgFixture pins the unmodified
 // bench/template/bg/spectral_norm fixture (N=100) on the C target.
 // This is the §10.7 closeout for spectral_norm at the fixture level

@@ -978,6 +978,26 @@ print(s)
 // loop-variable increment all in one program. This is the program the
 // benchmark games' nsieve fixture reduces to once the list element-
 // type widening is removed.
+// TestLowerMapI64I64Basic pins the Phase 4.3.15.2 map<int,int>
+// surface end-to-end through the frontend. Confirms empty-literal
+// `{}` lowers to OpNewMap under the type-annotated `var m: map<int,
+// int> = {}`, that `m[k] = v` and `m[k]` lower to OpMapSetI64I64 /
+// OpMapGetI64I64, and that a read of an absent key returns 0
+// (matching Go's zero-default semantic).
+func TestLowerMapI64I64Basic(t *testing.T) {
+	src := `var m: map<int, int> = {}
+m[7] = 11
+m[8] = 22
+print(m[7])
+print(m[8])
+print(m[999])
+`
+	got := runEnd2End(t, src)
+	if want := "11\n22\n0\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 func TestLowerNsieve(t *testing.T) {
 	src := `fun nsieve(m: int): int {
   var flags: list<int> = []
