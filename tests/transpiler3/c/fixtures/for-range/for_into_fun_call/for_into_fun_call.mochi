@@ -1,0 +1,7 @@
+fun square(x: int): int {
+  return x * x
+}
+
+for i in 1..6 {
+  print(square(i))
+}

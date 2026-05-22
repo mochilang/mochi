@@ -1,0 +1,7 @@
+fun square_plus_one(x: int): int {
+  let sq = x * x
+  return sq + 1
+}
+
+print(square_plus_one(4))
+print(square_plus_one(10))

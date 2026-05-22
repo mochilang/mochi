@@ -1,0 +1,10 @@
+fun abs(x: int): int {
+  if x < 0 {
+    return -x
+  }
+  return x
+}
+
+print(abs(-7))
+print(abs(7))
+print(abs(0))

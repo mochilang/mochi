@@ -1,0 +1,4 @@
+let base = 100
+for i in 0..4 {
+  print(base + i)
+}
