@@ -1994,6 +1994,96 @@ func TestBuildSourceV03BreakContinuousFixture(t *testing.T) {
 	}
 }
 
+// TestBuildSourceMatchExprInt pins MEP-42 Phase 4.2.11: a match
+// expression over an i64 discriminant with literal patterns and a
+// `_` wildcard. Before this sub-phase, the frontend errored at
+// lowerPrimary with `primary form unsupported in MVP`. After it,
+// the expression lowers to a chained branch + phi at the merge.
+func TestBuildSourceMatchExprInt(t *testing.T) {
+	src := `let x = 2
+let label = match x {
+  1 => "one"
+  2 => "two"
+  3 => "three"
+  _ => "unknown"
+}
+print(label)
+`
+	if got, want := runMochiBuild(t, src), "two\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceMatchExprStr pins the str discriminant path
+// through `OpCmpEqStr`, the same op the bool equality tutorial
+// uses. The result is again a string drawn from the matching arm.
+func TestBuildSourceMatchExprStr(t *testing.T) {
+	src := `let day = "sun"
+let mood = match day {
+  "mon" => "tired"
+  "fri" => "excited"
+  "sun" => "relaxed"
+  _     => "normal"
+}
+print(mood)
+`
+	if got, want := runMochiBuild(t, src), "relaxed\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceMatchExprBoolExhaustive pins the bool discriminant
+// without `_` wildcard: since bool has exactly two values, the user
+// can omit `_` and rely on the last arm catching the remaining
+// value. The frontend treats the last arm as unconditional under
+// the same rule that handles `_`, so this lowers as expected.
+func TestBuildSourceMatchExprBoolExhaustive(t *testing.T) {
+	src := `let ok = true
+let status = match ok {
+  true => "confirmed"
+  false => "denied"
+}
+print(status)
+`
+	if got, want := runMochiBuild(t, src), "confirmed\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceMatchInReturn pins `return match ...` inside a
+// fun: the match expression lowers in the return statement's
+// expression slot, and the result phi flows into TermReturn. The
+// fixture mirrors v0.3/match.mochi's `classify` example.
+func TestBuildSourceMatchInReturn(t *testing.T) {
+	src := `fun classify(n: int): string {
+  return match n {
+    0 => "zero"
+    1 => "one"
+    _ => "many"
+  }
+}
+print(classify(0))
+print(classify(5))
+`
+	if got, want := runMochiBuild(t, src), "zero\nmany\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
+// so a regression in either the example or the lowering surfaces
+// here. This is the user-facing motivation for Phase 4.2.11.
+func TestBuildSourceV03MatchFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.3/match.mochi")
+	if err != nil {
+		t.Fatalf("read v0.3 match fixture: %v", err)
+	}
+	want := "two\nrelaxed\nconfirmed\nzero\nmany\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.3/match stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceSpectralNormBgFixture pins the unmodified
 // bench/template/bg/spectral_norm fixture (N=100) on the C target.
 // This is the §10.7 closeout for spectral_norm at the fixture level

@@ -1752,10 +1752,170 @@ func (b *builder) lowerPrimary(p *parser.Primary) (uint32, error) {
 		return b.lowerListLiteral(p.List)
 	case p.Map != nil:
 		return b.lowerMapLiteralAsExpr(p.Map)
+	case p.Match != nil:
+		return b.lowerMatchExpr(p.Match)
 	case p.Group != nil:
 		return b.lowerExpr(p.Group)
 	}
 	return 0, fmt.Errorf("frontend: primary form unsupported in MVP")
+}
+
+// isWildcardPattern reports whether a match-case pattern is the bare
+// `_` identifier. Mochi parses the underscore as a Selector{Root:"_"},
+// not a dedicated AST node, so the recogniser walks the standard
+// Expr.Binary.Left.Value.Target.Selector chain and rejects anything
+// with a tail (e.g. `_.foo`) or an enclosing operator.
+func isWildcardPattern(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil {
+		return false
+	}
+	if len(u.Ops) != 0 || u.Value.Target == nil {
+		return false
+	}
+	if len(u.Value.Ops) != 0 {
+		return false
+	}
+	sel := u.Value.Target.Selector
+	if sel == nil {
+		return false
+	}
+	return sel.Root == "_" && len(sel.Tail) == 0
+}
+
+// lowerMatchExpr lowers a `match target { p1 => r1; ...; pN => rN }`
+// expression. The discriminant is evaluated once, then each case
+// before the last becomes a branch comparing the discriminant
+// against the pattern literal (`OpCmpEqI64` / `OpCmpEqStr` /
+// `OpCmpEqBool`). On match, the arm's result expression lowers in a
+// then-block that jumps to a shared merge block; on no-match,
+// control falls through to the next case. The last arm is always
+// unconditional: it captures the `_` wildcard form (`_ => ...`) and
+// the bool-exhaustive form (`true => ..., false => ...`) under one
+// rule, matching Mochi's checker-driven exhaustiveness model where
+// the last arm is responsible for any uncovered values. The merge
+// block emits one phi per match expression whose Args are
+// (armEndBlock, armValue) pairs.
+//
+// MVP scope:
+//   - Discriminant must be TypeI64, TypeStr, or TypeBool.
+//   - Patterns must be literal (or pre-lowered) values of the same
+//     type as the discriminant.
+//   - A `_` wildcard, if present, must be the last case (any earlier
+//     wildcard would render the remaining arms dead and is rejected).
+//   - All arms must produce the same value type.
+//   - Block-arm form (`pat => { ...stmts }`) is rejected; arms must
+//     be a single expression.
+func (b *builder) lowerMatchExpr(m *parser.MatchExpr) (uint32, error) {
+	if len(m.Cases) == 0 {
+		return 0, fmt.Errorf("frontend: match with no cases unsupported")
+	}
+	target, err := b.lowerExpr(m.Target)
+	if err != nil {
+		return 0, err
+	}
+	targetType := b.fn.Values[target].Type
+	var cmpOp ir.OpCode
+	switch targetType {
+	case ir.TypeI64:
+		cmpOp = ir.OpCmpEqI64
+	case ir.TypeStr:
+		cmpOp = ir.OpCmpEqStr
+	case ir.TypeBool:
+		cmpOp = ir.OpCmpEqBool
+	default:
+		return 0, fmt.Errorf("frontend: match on type %s unsupported in MVP", targetType)
+	}
+
+	lastIdx := len(m.Cases) - 1
+	for i := 0; i < lastIdx; i++ {
+		if isWildcardPattern(m.Cases[i].Pattern) {
+			return 0, fmt.Errorf("frontend: `_` wildcard at case %d makes later arms unreachable", i)
+		}
+	}
+
+	mergeID := b.fn.AddBlock()
+	var phiArgs []uint32
+	resultType := ir.TypeInvalid
+
+	checkResultType := func(armResult uint32) error {
+		t := b.fn.Values[armResult].Type
+		if resultType == ir.TypeInvalid {
+			resultType = t
+			return nil
+		}
+		if t != resultType {
+			return fmt.Errorf("frontend: match arm type %s differs from earlier %s", t, resultType)
+		}
+		return nil
+	}
+
+	for i, c := range m.Cases {
+		if c.Result == nil {
+			return 0, fmt.Errorf("frontend: match case must have a result expression in MVP")
+		}
+		if len(c.Block) != 0 {
+			return 0, fmt.Errorf("frontend: match block-arm `pat => { ... }` unsupported in MVP")
+		}
+		if i == lastIdx {
+			armResult, err := b.lowerExpr(c.Result)
+			if err != nil {
+				return 0, err
+			}
+			if err := checkResultType(armResult); err != nil {
+				return 0, err
+			}
+			phiArgs = append(phiArgs, b.curBlock, armResult)
+			b.terminator(ir.Terminator{Kind: ir.TermJump, Target: mergeID})
+			break
+		}
+
+		patVid, err := b.lowerExpr(c.Pattern)
+		if err != nil {
+			return 0, err
+		}
+		if got := b.fn.Values[patVid].Type; got != targetType {
+			return 0, fmt.Errorf("frontend: match pattern type %s != target type %s", got, targetType)
+		}
+		cond := b.addValue(ir.Value{
+			Type: ir.TypeBool,
+			Op:   cmpOp,
+			Args: []uint32{target, patVid},
+		})
+		thenID := b.fn.AddBlock()
+		elseID := b.fn.AddBlock()
+		b.terminator(ir.Terminator{Kind: ir.TermBranch, Value: cond, IfTrue: thenID, IfFalse: elseID})
+
+		b.curBlock = thenID
+		b.terminated = false
+		armResult, err := b.lowerExpr(c.Result)
+		if err != nil {
+			return 0, err
+		}
+		if err := checkResultType(armResult); err != nil {
+			return 0, err
+		}
+		phiArgs = append(phiArgs, b.curBlock, armResult)
+		b.terminator(ir.Terminator{Kind: ir.TermJump, Target: mergeID})
+
+		b.curBlock = elseID
+		b.terminated = false
+	}
+
+	b.curBlock = mergeID
+	b.terminated = false
+	phiVid := b.addValue(ir.Value{
+		Type: resultType,
+		Op:   ir.OpPhi,
+		Args: phiArgs,
+	})
+	return phiVid, nil
 }
 
 // lowerMapLiteralAsExpr lowers a bare `{...}` map literal used as an
