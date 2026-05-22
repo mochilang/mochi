@@ -2598,6 +2598,58 @@ func TestBuildSourceV02MapFixture(t *testing.T) {
 	}
 }
 
+// TestBuildSourceListStrSlice pins the Phase 4.2.20 list<str>
+// slice lowering. `xs[1:3]` on a 4-element TypeStrArr lowers to
+// OpStrArrSlice, which the C target backs with
+// mochi_str_array_slice and the Go target with `append([]string{},
+// xs[a:b]...)`. The display form matches the VM's list<string>
+// rendering used by TestBuildSourceListStrQuoteEscapes.
+func TestBuildSourceListStrSlice(t *testing.T) {
+	src := `let fruits = ["a", "b", "c", "d"]
+let some = fruits[1:3]
+print(some)
+`
+	if got, want := runMochiBuild(t, src), "[\"b\", \"c\"]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceListStrSliceClamp checks the runtime's clamp
+// rule: an end past the source length returns up to the source
+// length; start past end returns an empty array. This mirrors the
+// half-open semantics documented in mochi_str_array_slice.
+func TestBuildSourceListStrSliceClamp(t *testing.T) {
+	src := `let fruits = ["a", "b", "c"]
+print(fruits[1:10])
+print(fruits[2:2])
+`
+	if got, want := runMochiBuild(t, src), "[\"b\", \"c\"]\n[]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV02ListFixture pins the on-disk v0.2/list.mochi
+// fixture end-to-end. Phase 4.2.20 closed the list<str> slice
+// gate; combined with Phase 4.2.19's test-block skip, the fixture
+// now compiles top to bottom on the C target.
+func TestBuildSourceV02ListFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.2/list.mochi")
+	if err != nil {
+		t.Fatalf("read v0.2/list.mochi fixture: %v", err)
+	}
+	want := "[1, 2, 3, 4, 5]\n" +
+		"first:  1\n" +
+		"last:  5\n" +
+		"second to last:  4\n" +
+		"len:  5\n" +
+		"fruits:  [\"🍎\", \"🍌\", \"🍇\", \"🍓\"]\n" +
+		"favorite:  🍇\n" +
+		"some fruits:  [\"🍌\", \"🍇\"]\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.2/list stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.

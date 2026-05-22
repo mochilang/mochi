@@ -54,6 +54,18 @@ void mochi_str_array_set(mochi_str_array *a, int64_t i, const char *v);
  */
 const char *mochi_str_array_to_str(const mochi_str_array *a);
 
+/*
+ * mochi_str_array_slice returns a freshly-allocated mochi_str_array
+ * containing the elements of src in the half-open interval
+ * [start, end). Element pointer carriers are copied verbatim; the
+ * underlying string bytes are not duplicated, so the returned array
+ * borrows the same C-string pointers (whose storage already outlives
+ * the array per the carrier contract above). Behaviour mirrors Go's
+ * xs[start:end] for the bound subset; start and end are clamped to
+ * [0, src->len] and end < start yields an empty array. Phase 4.2.20.
+ */
+mochi_str_array *mochi_str_array_slice(const mochi_str_array *src, int64_t start, int64_t end);
+
 #ifdef __cplusplus
 }
 #endif

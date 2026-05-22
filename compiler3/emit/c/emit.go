@@ -92,7 +92,8 @@ func Emit(p *Program) ([]byte, error) {
 				ir.OpF64ArrayToStr:
 				usesF64Array = true
 			case ir.OpNewStrArr, ir.OpStrArrLen, ir.OpStrArrPushStr,
-				ir.OpStrArrGetStr, ir.OpStrArrSetStr, ir.OpStrArrToStr:
+				ir.OpStrArrGetStr, ir.OpStrArrSetStr, ir.OpStrArrToStr,
+				ir.OpStrArrSlice:
 				usesStrArray = true
 			case ir.OpNewMap, ir.OpMapSetI64I64, ir.OpMapGetI64I64:
 				usesMapI64I64 = true
@@ -406,6 +407,8 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    mochi_str_array_set(%s, %s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
 	case ir.OpStrArrToStr:
 		fmt.Fprintf(w, "    %s = mochi_str_array_to_str(%s);\n", name, valueName(v.Args[0]))
+	case ir.OpStrArrSlice:
+		fmt.Fprintf(w, "    %s = mochi_str_array_slice(%s, %s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
 	case ir.OpNewMap:
 		fmt.Fprintf(w, "    %s = mochi_map_i64_i64_new();\n", name)
 	case ir.OpMapSetI64I64:
