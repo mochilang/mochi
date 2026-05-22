@@ -198,3 +198,80 @@ type UnaryExpr struct {
 }
 
 func (u *UnaryExpr) Type() Type { return u.Result }
+
+// VarRef reads a previously-declared variable. Phase 2.1 emits the
+// variable's mangled C identifier; later phases that introduce
+// closure captures may rewrite Name into an env-relative access.
+type VarRef struct {
+	Name    string
+	VarType Type
+}
+
+func (v *VarRef) Type() Type { return v.VarType }
+
+// LetStmt declares a fresh, immutable binding and initialises it.
+// Mochi `let x = expr` lowers here; the verifier rejects rebinding
+// or assignment to a LetStmt name (mutability lives on VarStmt).
+type LetStmt struct {
+	Name     string
+	VarType  Type
+	Init     Expr
+	Mutable  bool // true for VarStmt-lowered bindings
+}
+
+func (*LetStmt) isStmt() {}
+
+// AssignStmt updates a previously-declared mutable binding. The
+// verifier ensures Name is in scope, was introduced by a VarStmt
+// (Mutable=true), and the Value type matches the binding type.
+type AssignStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (*AssignStmt) isStmt() {}
+
+// IfStmt is a two-armed conditional. else-if chains lower to a
+// single Else block whose head is another IfStmt; the verifier
+// does not flatten them so the emit pass preserves the source
+// shape, which matters for debugger line tables (Phase 16).
+type IfStmt struct {
+	Cond Expr   // must be TypeBool
+	Then *Block // executed when Cond is true
+	Else *Block // optional; nil means no else arm
+}
+
+func (*IfStmt) isStmt() {}
+
+// WhileStmt is a pre-test loop. The body executes while Cond
+// evaluates true. BreakStmt and ContinueStmt inside Body refer
+// to the nearest enclosing WhileStmt; the verifier enforces that
+// they appear only in loop scope.
+type WhileStmt struct {
+	Cond Expr   // must be TypeBool
+	Body *Block
+}
+
+func (*WhileStmt) isStmt() {}
+
+// BreakStmt exits the nearest enclosing WhileStmt (Phase 2.2 will
+// extend to ForStmt). The verifier rejects BreakStmt outside a
+// loop scope.
+type BreakStmt struct{}
+
+func (*BreakStmt) isStmt() {}
+
+// ContinueStmt restarts the nearest enclosing loop at the
+// condition test. Same scope rules as BreakStmt.
+type ContinueStmt struct{}
+
+func (*ContinueStmt) isStmt() {}
+
+// ReturnStmt exits the enclosing function. Phase 2.1 only supports
+// no-value returns from main (which compiles to `return 0;`);
+// Phase 2.2 widens this to value-returning user functions.
+type ReturnStmt struct {
+	Value Expr // nil for void return
+}
+
+func (*ReturnStmt) isStmt() {}
