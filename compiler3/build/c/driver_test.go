@@ -2814,6 +2814,46 @@ print("after")
 	}
 }
 
+// TestBuildSourceForInListList pins Phase 4.2.24: `for row in
+// matrix` over a list<list<i64>> binds row to the inner TypeList,
+// and a nested `for col in row` then dispatches through the
+// TypeList arm. The output mirrors block 4 of v0.2/for-in.mochi.
+func TestBuildSourceForInListList(t *testing.T) {
+	src := `let matrix = [
+  [1, 2],
+  [3, 4],
+]
+for row in matrix {
+  for col in row {
+    print("cell: ", col)
+  }
+}
+`
+	want := "cell:  1\ncell:  2\ncell:  3\ncell:  4\n"
+	if got := runMochiBuild(t, src); got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV02ForInFixture closes the v0.2 user-facing corpus
+// gate. All four blocks (list<str> iteration, map iteration with
+// sorted keys, range iteration, nested list<list<i64>> iteration)
+// compile and print the same bytes as `mochi run`. With this phase
+// the v0.2 binary-build matrix is 6 of 6 green.
+func TestBuildSourceV02ForInFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.2/for-in.mochi")
+	if err != nil {
+		t.Fatalf("read v0.2/for-in.mochi fixture: %v", err)
+	}
+	want := "fruit:  apple\nfruit:  banana\nfruit:  cherry\n" +
+		"Alice  scored  90\nBob  scored  82\nCharlie  scored  88\n" +
+		"number:  1\nnumber:  2\nnumber:  3\nnumber:  4\n" +
+		"cell:  1\ncell:  2\ncell:  3\ncell:  4\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.2/for-in stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.
