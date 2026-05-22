@@ -1,0 +1,3 @@
+let z = 0.0
+let inf = 1.0 / z
+print(inf + inf)

@@ -1,0 +1,4 @@
+let z = 0.0
+let n = 0.0 / z
+let m = n
+print(m)

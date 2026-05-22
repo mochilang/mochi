@@ -1,0 +1,6 @@
+fun make_nan(): float {
+  let z = 0.0
+  return 0.0 / z
+}
+
+print(make_nan())
