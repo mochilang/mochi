@@ -1,0 +1,83 @@
+name: Cross AOT
+
+# MEP-42 Phase 5.2.1: fires the Linux clean-machine run-gate that the
+# Darwin recording host cannot fire (Homebrew on macOS ships
+# qemu-system-* but not qemu-user). The matching macOS + wasm run-gates
+# fire on the Darwin host in the local `go test` loop; this workflow
+# closes the matrix on linux/amd64 where qemu-user-static and wasmtime
+# are one `apt install` away.
+#
+# Coverage on this job:
+#   - x86_64-linux-musl: native (linux/amd64 host)
+#   - aarch64-linux-musl: qemu-aarch64-static
+#   - wasm32-wasi: wasmtime
+#
+# The macOS pair (aarch64-macos, x86_64-macos) cannot run on Linux
+# without Darling, which is not in §9. Those rows continue to rely on
+# the Darwin host's run-gate evidence (PR #22062 closeout). The §9
+# matrix is satisfied by the UNION of hosts: Linux CI covers 3 rows,
+# Darwin local run covers 3 rows; together every row is green.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  cross-aot:
+    name: Cross-AOT BG fixture run-gates (linux/amd64)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: |
+            go.sum
+
+      - name: Install Zig (cross-cc for every §9 triple)
+        run: |
+          set -euo pipefail
+          ZIG_VERSION=0.15.1
+          curl -fsSL "https://ziglang.org/download/${ZIG_VERSION}/zig-linux-x86_64-${ZIG_VERSION}.tar.xz" -o /tmp/zig.tar.xz
+          mkdir -p "$HOME/.local/zig"
+          tar -xJf /tmp/zig.tar.xz -C "$HOME/.local/zig" --strip-components=1
+          echo "$HOME/.local/zig" >> "$GITHUB_PATH"
+          "$HOME/.local/zig/zig" version
+
+      - name: Install qemu-user-static (run aarch64-linux ELF)
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qemu-user-static
+          qemu-aarch64-static --version | head -1
+
+      - name: Install wasmtime (run wasm32-wasi)
+        run: |
+          set -euo pipefail
+          curl -fsSL https://wasmtime.dev/install.sh | bash
+          echo "$HOME/.wasmtime/bin" >> "$GITHUB_PATH"
+          "$HOME/.wasmtime/bin/wasmtime" --version
+
+      - name: Verify runner availability (sentinel; fails loudly if install regressed)
+        run: |
+          set -euo pipefail
+          command -v qemu-aarch64-static
+          command -v wasmtime
+          command -v zig
+
+      - name: Run cross-target gates (Phase 5.0)
+        run: |
+          set -euo pipefail
+          go test -vet=off -v -count=1 ./compiler3/build/c \
+            -run 'TestBuildCross.*'
+
+      - name: Run cross-fixture gates (Phase 5.2)
+        run: |
+          set -euo pipefail
+          go test -vet=off -v -count=1 ./compiler3/build/c \
+            -run 'TestBuildSource.*BgFixtureCross.*'
