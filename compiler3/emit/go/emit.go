@@ -321,6 +321,14 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 	case ir.OpBoolToStr:
 		imports["strconv"] = true
 		fmt.Fprintf(w, "\t%s = strconv.FormatBool(%s)\n", name, valueName(v.Args[0]))
+	case ir.OpStrCharAt:
+		// `s[i]` returns the i-th rune as a single-rune string, matching
+		// the VM's `string([]rune(s)[i])` lowering. Plain byte-indexing
+		// `string(s[i])` would diverge from the VM on non-ASCII input
+		// (it produces a single byte, not a rune). The runes slice is
+		// computed per call; the IR pre-evaluates the index so no extra
+		// SSA shape is needed.
+		fmt.Fprintf(w, "\t%s = string([]rune(%s)[%s])\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpNewList:
 		fmt.Fprintf(w, "\t%s = []int64{}\n", name)
 	case ir.OpListLenI64:

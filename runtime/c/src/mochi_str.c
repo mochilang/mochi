@@ -177,3 +177,45 @@ const char *mochi_str_from_bool(int v) {
      */
     return v ? "true" : "false";
 }
+
+static int mochi_str_utf8_width(unsigned char c) {
+    /*
+     * UTF-8 leading-byte rules. Continuation bytes (10xxxxxx) and
+     * malformed leaders fall through to width 1 so a malformed
+     * sequence does not loop forever; it advances byte-by-byte
+     * instead. The v0.5 fixture corpus is ASCII so this branch
+     * runs the 1-byte arm exclusively in practice.
+     */
+    if ((c & 0x80) == 0x00) return 1;
+    if ((c & 0xE0) == 0xC0) return 2;
+    if ((c & 0xF0) == 0xE0) return 3;
+    if ((c & 0xF8) == 0xF0) return 4;
+    return 1;
+}
+
+const char *mochi_str_char_at(const char *s, int64_t i) {
+    /*
+     * Walk the UTF-8 byte sequence to the i-th rune, then copy the
+     * leader plus its continuation bytes into a freshly allocated
+     * NUL-terminated buffer. Matches the VM's `string([]rune(s)[i])`.
+     * Bounds are not checked (matches the C-target list-get
+     * convention); past-end indices land on the NUL terminator and
+     * return an allocation holding "".
+     */
+    const char *p = s;
+    int64_t cur = 0;
+    while (*p != '\0' && cur < i) {
+        p += mochi_str_utf8_width((unsigned char)*p);
+        cur++;
+    }
+    int n = (*p == '\0') ? 0 : mochi_str_utf8_width((unsigned char)*p);
+    char *out = (char *)malloc((size_t)n + 1);
+    if (out == NULL) {
+        abort();
+    }
+    if (n > 0) {
+        memcpy(out, p, (size_t)n);
+    }
+    out[n] = '\0';
+    return out;
+}

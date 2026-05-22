@@ -23,6 +23,8 @@
 #ifndef MOCHI_RUNTIME_C_STR_H
 #define MOCHI_RUNTIME_C_STR_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -52,6 +54,25 @@ const char *mochi_str_concat(const char *a, const char *b);
 const char *mochi_str_from_i64(long long v);
 const char *mochi_str_from_f64(double v);
 const char *mochi_str_from_bool(int v);
+
+/*
+ * mochi_str_char_at returns a freshly allocated NUL-terminated
+ * single-rune string holding the i-th rune of s. UTF-8 decoded: a
+ * byte 0xxxxxxx is 1 byte, 110xxxxx + 1 continuation is 2 bytes,
+ * 1110xxxx + 2 continuations is 3 bytes, 11110xxx + 3 continuations
+ * is 4 bytes. This matches the Mochi VM's `string([]rune(s)[i])`
+ * lowering so the C target byte-matches `mochi run` for non-ASCII
+ * inputs too.
+ *
+ * Bounds are not checked: `i` past the end of the string walks to
+ * the NUL terminator and returns a copy of the empty string. The
+ * caller is responsible for staying in range (matches the existing
+ * mochi_list_i64_get convention on the C target).
+ *
+ * The returned buffer is owned by the runtime (leaked at process
+ * exit; see the ownership note above).
+ */
+const char *mochi_str_char_at(const char *s, int64_t i);
 
 /*
  * mochi_f64_format writes the shortest decimal representation of v
