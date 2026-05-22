@@ -464,86 +464,11 @@ func (o OpCode) String() string {
 	// conversion + math ops (OpAddI64, ..., OpNow) migrated to opTable;
 	// see compiler3/ir/optable.go for the full list. OpInfoOf returns
 	// their Name in the registry prologue above.
-	case OpNewList:
-		return "newlist"
-	case OpListLenI64:
-		return "list.len.i64"
-	case OpListPushI64:
-		return "list.push.i64"
-	case OpListGetI64:
-		return "list.get.i64"
-	case OpListSetI64:
-		return "list.set.i64"
-	case OpListGetF64:
-		return "list.get.f64"
-	case OpListSetF64:
-		return "list.set.f64"
-	case OpNewMap:
-		return "newmap"
-	case OpMapSetI64I64:
-		return "map.set.i64.i64"
-	case OpMapGetI64I64:
-		return "map.get.i64.i64"
-	case OpNewF64Array:
-		return "newf64array"
-	case OpF64ArrayLenI64:
-		return "f64arr.len.i64"
-	case OpF64ArrayPushF64:
-		return "f64arr.push.f64"
-	case OpF64ArrayGetF64:
-		return "f64arr.get.f64"
-	case OpF64ArraySetF64:
-		return "f64arr.set.f64"
-	case OpNewStrArr:
-		return "newstrarr"
-	case OpStrArrLen:
-		return "strarr.len"
-	case OpStrArrPushStr:
-		return "strarr.push.str"
-	case OpStrArrGetStr:
-		return "strarr.get.str"
-	case OpStrArrSetStr:
-		return "strarr.set.str"
-	case OpStrArrSlice:
-		return "strarr.slice"
-	case OpNewMapStrI64:
-		return "newmapstri64"
-	case OpMapSetStrI64:
-		return "map.set.str.i64"
-	case OpMapGetStrI64:
-		return "map.get.str.i64"
-	case OpMapLenStrI64:
-		return "map.len.str.i64"
-	case OpMapStrI64SortedKeys:
-		return "map.str.i64.sortedkeys"
-	case OpNewListList:
-		return "newlistlist"
-	case OpListListPush:
-		return "listlist.push"
-	case OpListListGet:
-		return "listlist.get"
-	case OpListListLen:
-		return "listlist.len"
-	case OpListListToStr:
-		return "listlist.tostr"
-	case OpListConcatI64:
-		return "list.concat.i64"
-	case OpF64ArrayConcat:
-		return "f64arr.concat"
-	case OpNewListAny:
-		return "newlistany"
-	case OpListAnyLen:
-		return "listany.len"
-	case OpListAnyPushAny:
-		return "listany.push"
-	case OpListAnyGetAny:
-		return "listany.get"
-	case OpListI64ToStr:
-		return "list.i64.tostr"
-	case OpF64ArrayToStr:
-		return "f64array.tostr"
-	case OpStrArrToStr:
-		return "strarr.tostr"
+	//
+	// Phase 4.2.32: heap-allocating families (list / map / f64arr /
+	// strarr / mapstri64 / listlist / listany) and their *.tostr
+	// constructors migrated to opTable. The registry prologue above
+	// returns the Name.
 	case OpJsonI64Object:
 		return "json.i64.object"
 	case OpCall:

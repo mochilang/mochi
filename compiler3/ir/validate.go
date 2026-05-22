@@ -171,86 +171,11 @@ func opContract(o OpCode) opSig {
 	// Phase 4.2.31: scalar arithmetic, comparison, bitwise, conversion,
 	// and math ops (OpAddI64, ..., OpNow) migrated to opTable; the
 	// registry prologue above handles them.
-	case OpNewList:
-		return opSig{TypeList, [3]Type{}}
-	case OpListLenI64:
-		return opSig{TypeI64, [3]Type{TypeList}}
-	case OpListPushI64:
-		return opSig{TypeUnit, [3]Type{TypeList, TypeI64}}
-	case OpListGetI64:
-		return opSig{TypeI64, [3]Type{TypeList, TypeI64}}
-	case OpListSetI64:
-		return opSig{TypeUnit, [3]Type{TypeList, TypeI64, TypeI64}}
-	case OpListGetF64:
-		return opSig{TypeF64, [3]Type{TypeList, TypeI64}}
-	case OpListSetF64:
-		return opSig{TypeUnit, [3]Type{TypeList, TypeI64, TypeF64}}
-	case OpNewMap:
-		return opSig{TypeMap, [3]Type{}}
-	case OpMapSetI64I64:
-		return opSig{TypeUnit, [3]Type{TypeMap, TypeI64, TypeI64}}
-	case OpMapGetI64I64:
-		return opSig{TypeI64, [3]Type{TypeMap, TypeI64}}
-	case OpNewF64Array:
-		return opSig{TypeF64Arr, [3]Type{}}
-	case OpF64ArrayLenI64:
-		return opSig{TypeI64, [3]Type{TypeF64Arr}}
-	case OpF64ArrayPushF64:
-		return opSig{TypeUnit, [3]Type{TypeF64Arr, TypeF64}}
-	case OpF64ArrayGetF64:
-		return opSig{TypeF64, [3]Type{TypeF64Arr, TypeI64}}
-	case OpF64ArraySetF64:
-		return opSig{TypeUnit, [3]Type{TypeF64Arr, TypeI64, TypeF64}}
-	case OpNewStrArr:
-		return opSig{TypeStrArr, [3]Type{}}
-	case OpStrArrLen:
-		return opSig{TypeI64, [3]Type{TypeStrArr}}
-	case OpStrArrPushStr:
-		return opSig{TypeUnit, [3]Type{TypeStrArr, TypeStr}}
-	case OpStrArrGetStr:
-		return opSig{TypeStr, [3]Type{TypeStrArr, TypeI64}}
-	case OpStrArrSetStr:
-		return opSig{TypeUnit, [3]Type{TypeStrArr, TypeI64, TypeStr}}
-	case OpStrArrSlice:
-		return opSig{TypeStrArr, [3]Type{TypeStrArr, TypeI64, TypeI64}}
-	case OpNewMapStrI64:
-		return opSig{TypeMapStrI64, [3]Type{}}
-	case OpMapSetStrI64:
-		return opSig{TypeUnit, [3]Type{TypeMapStrI64, TypeStr, TypeI64}}
-	case OpMapGetStrI64:
-		return opSig{TypeI64, [3]Type{TypeMapStrI64, TypeStr}}
-	case OpMapLenStrI64:
-		return opSig{TypeI64, [3]Type{TypeMapStrI64}}
-	case OpMapStrI64SortedKeys:
-		return opSig{TypeStrArr, [3]Type{TypeMapStrI64}}
-	case OpNewListList:
-		return opSig{TypeListList, [3]Type{}}
-	case OpListListPush:
-		return opSig{TypeUnit, [3]Type{TypeListList, TypeList}}
-	case OpListListGet:
-		return opSig{TypeList, [3]Type{TypeListList, TypeI64}}
-	case OpListListLen:
-		return opSig{TypeI64, [3]Type{TypeListList}}
-	case OpListListToStr:
-		return opSig{TypeStr, [3]Type{TypeListList}}
-	case OpListConcatI64:
-		return opSig{TypeList, [3]Type{TypeList, TypeList}}
-	case OpListI64ToStr:
-		return opSig{TypeStr, [3]Type{TypeList}}
-	case OpF64ArrayToStr:
-		return opSig{TypeStr, [3]Type{TypeF64Arr}}
-	case OpStrArrToStr:
-		return opSig{TypeStr, [3]Type{TypeStrArr}}
-	case OpF64ArrayConcat:
-		return opSig{TypeF64Arr, [3]Type{TypeF64Arr, TypeF64Arr}}
-	case OpNewListAny:
-		return opSig{TypeListAny, [3]Type{}}
-	case OpListAnyLen:
-		return opSig{TypeI64, [3]Type{TypeListAny}}
-	case OpListAnyPushAny:
-		return opSig{TypeUnit, [3]Type{TypeListAny, TypeListAny}}
-	case OpListAnyGetAny:
-		return opSig{TypeListAny, [3]Type{TypeListAny, TypeI64}}
+	//
+	// Phase 4.2.32: heap-allocating families (list / map / f64arr /
+	// strarr / mapstri64 / listlist / listany) and their *.tostr
+	// constructors migrated to opTable; the registry prologue above
+	// returns the contract.
 	case OpJsonI64Object:
 		// Variadic in Args (N i64 values, N >= 1); per-arg shape is
 		// enforced by the frontend at lower time. opContract returns

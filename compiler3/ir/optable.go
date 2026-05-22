@@ -194,6 +194,71 @@ var opTable = []OpInfo{
 	{Code: OpF64ToI64, Name: "f64.to.i64", Result: TypeI64, Args: [3]Type{TypeF64}, NumArgs: 1, Kind: KindOperator},
 	{Code: OpSqrtF64, Name: "sqrt.f64", Result: TypeF64, Args: [3]Type{TypeF64}, NumArgs: 1, Kind: KindOperator},
 	{Code: OpNow, Name: "now", Result: TypeI64, Args: [3]Type{}, NumArgs: 0, Kind: KindOperator},
+
+	// Heap-allocating surface (MEP-42 Phase 4.2.32). Every op here
+	// either produces a handle Type (Constructor) or operates on an
+	// existing handle (Dispatch). The Dispatch reads / writes split
+	// drives rule E classification (Mutates flag).
+	//
+	// List(I64) family.
+	{Code: OpNewList, Name: "newlist", Result: TypeList, Args: [3]Type{}, NumArgs: 0, Kind: KindConstructor},
+	{Code: OpListLenI64, Name: "list.len.i64", Result: TypeI64, Args: [3]Type{TypeList}, NumArgs: 1, Kind: KindDispatch, Mutates: false},
+	{Code: OpListPushI64, Name: "list.push.i64", Result: TypeUnit, Args: [3]Type{TypeList, TypeI64}, NumArgs: 2, Kind: KindDispatch, Mutates: true},
+	{Code: OpListGetI64, Name: "list.get.i64", Result: TypeI64, Args: [3]Type{TypeList, TypeI64}, NumArgs: 2, Kind: KindDispatch, Mutates: false},
+	{Code: OpListSetI64, Name: "list.set.i64", Result: TypeUnit, Args: [3]Type{TypeList, TypeI64, TypeI64}, NumArgs: 3, Kind: KindDispatch, Mutates: true},
+	{Code: OpListGetF64, Name: "list.get.f64", Result: TypeF64, Args: [3]Type{TypeList, TypeI64}, NumArgs: 2, Kind: KindDispatch, Mutates: false},
+	{Code: OpListSetF64, Name: "list.set.f64", Result: TypeUnit, Args: [3]Type{TypeList, TypeI64, TypeF64}, NumArgs: 3, Kind: KindDispatch, Mutates: true},
+	{Code: OpListConcatI64, Name: "list.concat.i64", Result: TypeList, Args: [3]Type{TypeList, TypeList}, NumArgs: 2, Kind: KindConstructor},
+	{Code: OpListI64ToStr, Name: "list.i64.tostr", Result: TypeStr, Args: [3]Type{TypeList}, NumArgs: 1, Kind: KindConstructor},
+
+	// Map(I64,I64) family.
+	{Code: OpNewMap, Name: "newmap", Result: TypeMap, Args: [3]Type{}, NumArgs: 0, Kind: KindConstructor},
+	{Code: OpMapSetI64I64, Name: "map.set.i64.i64", Result: TypeUnit, Args: [3]Type{TypeMap, TypeI64, TypeI64}, NumArgs: 3, Kind: KindDispatch, Mutates: true},
+	{Code: OpMapGetI64I64, Name: "map.get.i64.i64", Result: TypeI64, Args: [3]Type{TypeMap, TypeI64}, NumArgs: 2, Kind: KindDispatch, Mutates: false},
+
+	// F64 array family.
+	{Code: OpNewF64Array, Name: "newf64array", Result: TypeF64Arr, Args: [3]Type{}, NumArgs: 0, Kind: KindConstructor},
+	{Code: OpF64ArrayLenI64, Name: "f64arr.len.i64", Result: TypeI64, Args: [3]Type{TypeF64Arr}, NumArgs: 1, Kind: KindDispatch, Mutates: false},
+	{Code: OpF64ArrayPushF64, Name: "f64arr.push.f64", Result: TypeUnit, Args: [3]Type{TypeF64Arr, TypeF64}, NumArgs: 2, Kind: KindDispatch, Mutates: true},
+	{Code: OpF64ArrayGetF64, Name: "f64arr.get.f64", Result: TypeF64, Args: [3]Type{TypeF64Arr, TypeI64}, NumArgs: 2, Kind: KindDispatch, Mutates: false},
+	{Code: OpF64ArraySetF64, Name: "f64arr.set.f64", Result: TypeUnit, Args: [3]Type{TypeF64Arr, TypeI64, TypeF64}, NumArgs: 3, Kind: KindDispatch, Mutates: true},
+	{Code: OpF64ArrayConcat, Name: "f64arr.concat", Result: TypeF64Arr, Args: [3]Type{TypeF64Arr, TypeF64Arr}, NumArgs: 2, Kind: KindConstructor},
+	{Code: OpF64ArrayToStr, Name: "f64array.tostr", Result: TypeStr, Args: [3]Type{TypeF64Arr}, NumArgs: 1, Kind: KindConstructor},
+
+	// String array family. OpStrArrGetStr is Constructor: it returns a
+	// handle (TypeStr) borrowed from a const char** slot; rule A requires
+	// handle-typed Values to originate from a Constructor / Move /
+	// Inline / Call kind.
+	{Code: OpNewStrArr, Name: "newstrarr", Result: TypeStrArr, Args: [3]Type{}, NumArgs: 0, Kind: KindConstructor},
+	{Code: OpStrArrLen, Name: "strarr.len", Result: TypeI64, Args: [3]Type{TypeStrArr}, NumArgs: 1, Kind: KindDispatch, Mutates: false},
+	{Code: OpStrArrPushStr, Name: "strarr.push.str", Result: TypeUnit, Args: [3]Type{TypeStrArr, TypeStr}, NumArgs: 2, Kind: KindDispatch, Mutates: true},
+	{Code: OpStrArrGetStr, Name: "strarr.get.str", Result: TypeStr, Args: [3]Type{TypeStrArr, TypeI64}, NumArgs: 2, Kind: KindConstructor},
+	{Code: OpStrArrSetStr, Name: "strarr.set.str", Result: TypeUnit, Args: [3]Type{TypeStrArr, TypeI64, TypeStr}, NumArgs: 3, Kind: KindDispatch, Mutates: true},
+	{Code: OpStrArrSlice, Name: "strarr.slice", Result: TypeStrArr, Args: [3]Type{TypeStrArr, TypeI64, TypeI64}, NumArgs: 3, Kind: KindConstructor},
+	{Code: OpStrArrToStr, Name: "strarr.tostr", Result: TypeStr, Args: [3]Type{TypeStrArr}, NumArgs: 1, Kind: KindConstructor},
+
+	// Map(Str,I64) family. OpMapStrI64SortedKeys is Constructor: it
+	// allocates a TypeStrArr handle.
+	{Code: OpNewMapStrI64, Name: "newmapstri64", Result: TypeMapStrI64, Args: [3]Type{}, NumArgs: 0, Kind: KindConstructor},
+	{Code: OpMapSetStrI64, Name: "map.set.str.i64", Result: TypeUnit, Args: [3]Type{TypeMapStrI64, TypeStr, TypeI64}, NumArgs: 3, Kind: KindDispatch, Mutates: true},
+	{Code: OpMapGetStrI64, Name: "map.get.str.i64", Result: TypeI64, Args: [3]Type{TypeMapStrI64, TypeStr}, NumArgs: 2, Kind: KindDispatch, Mutates: false},
+	{Code: OpMapLenStrI64, Name: "map.len.str.i64", Result: TypeI64, Args: [3]Type{TypeMapStrI64}, NumArgs: 1, Kind: KindDispatch, Mutates: false},
+	{Code: OpMapStrI64SortedKeys, Name: "map.str.i64.sortedkeys", Result: TypeStrArr, Args: [3]Type{TypeMapStrI64}, NumArgs: 1, Kind: KindConstructor},
+
+	// ListList family. OpListListGet returns a TypeList handle; it is a
+	// Constructor for rule A purposes (same rationale as OpStrArrGetStr).
+	{Code: OpNewListList, Name: "newlistlist", Result: TypeListList, Args: [3]Type{}, NumArgs: 0, Kind: KindConstructor},
+	{Code: OpListListPush, Name: "listlist.push", Result: TypeUnit, Args: [3]Type{TypeListList, TypeList}, NumArgs: 2, Kind: KindDispatch, Mutates: true},
+	{Code: OpListListGet, Name: "listlist.get", Result: TypeList, Args: [3]Type{TypeListList, TypeI64}, NumArgs: 2, Kind: KindConstructor},
+	{Code: OpListListLen, Name: "listlist.len", Result: TypeI64, Args: [3]Type{TypeListList}, NumArgs: 1, Kind: KindDispatch, Mutates: false},
+	{Code: OpListListToStr, Name: "listlist.tostr", Result: TypeStr, Args: [3]Type{TypeListList}, NumArgs: 1, Kind: KindConstructor},
+
+	// ListAny family. OpListAnyGetAny returns a TypeListAny handle;
+	// Constructor for the same handle-origin reason.
+	{Code: OpNewListAny, Name: "newlistany", Result: TypeListAny, Args: [3]Type{}, NumArgs: 0, Kind: KindConstructor},
+	{Code: OpListAnyLen, Name: "listany.len", Result: TypeI64, Args: [3]Type{TypeListAny}, NumArgs: 1, Kind: KindDispatch, Mutates: false},
+	{Code: OpListAnyPushAny, Name: "listany.push", Result: TypeUnit, Args: [3]Type{TypeListAny, TypeListAny}, NumArgs: 2, Kind: KindDispatch, Mutates: true},
+	{Code: OpListAnyGetAny, Name: "listany.get", Result: TypeListAny, Args: [3]Type{TypeListAny, TypeI64}, NumArgs: 2, Kind: KindConstructor},
 }
 
 // opTableIndex maps OpCode to its index in opTable, or -1 if the op
