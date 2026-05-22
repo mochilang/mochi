@@ -156,6 +156,12 @@ type opSig struct {
 }
 
 func opContract(o OpCode) opSig {
+	// Phase 4.2.30: registered ops read their contract from opTable.
+	// Unregistered ops fall through to the legacy switch below; new
+	// ops should always be registered, never added to the switch.
+	if info, ok := OpInfoOf(o); ok {
+		return opSig{outType: info.Result, inTypes: info.Args}
+	}
 	switch o {
 	case OpAddI64, OpSubI64, OpMulI64, OpDivI64, OpModI64:
 		return opSig{TypeI64, [3]Type{TypeI64, TypeI64}}
@@ -171,24 +177,10 @@ func opContract(o OpCode) opSig {
 		return opSig{TypeBool, [3]Type{TypeI64, TypeI64}}
 	case OpCmpEqI64Imm, OpCmpNeI64Imm, OpCmpLtI64Imm, OpCmpLeI64Imm, OpCmpGtI64Imm, OpCmpGeI64Imm:
 		return opSig{TypeBool, [3]Type{TypeI64}}
-	case OpLenStr:
-		return opSig{TypeI64, [3]Type{TypeStr}}
-	case OpConcatStr:
-		return opSig{TypeStr, [3]Type{TypeStr, TypeStr}}
-	case OpCmpEqStr, OpCmpNeStr:
-		return opSig{TypeBool, [3]Type{TypeStr, TypeStr}}
-	case OpI64ToStr:
-		return opSig{TypeStr, [3]Type{TypeI64}}
-	case OpF64ToStr:
-		return opSig{TypeStr, [3]Type{TypeF64}}
-	case OpBoolToStr:
-		return opSig{TypeStr, [3]Type{TypeBool}}
-	case OpStrCharAt:
-		return opSig{TypeStr, [3]Type{TypeStr, TypeI64}}
-	case OpStrIn:
-		return opSig{TypeBool, [3]Type{TypeStr, TypeStr}}
-	case OpStrRuneLen:
-		return opSig{TypeI64, [3]Type{TypeStr}}
+	// Phase 4.2.30: string ops (OpLenStr, OpConcatStr, OpCmpEqStr,
+	// OpCmpNeStr, OpI64ToStr, OpF64ToStr, OpBoolToStr, OpStrCharAt,
+	// OpStrIn, OpStrRuneLen) migrated to opTable; opContract reads
+	// them from the registry via OpInfoOf at the top of this function.
 	case OpCmpEqBool, OpCmpNeBool:
 		return opSig{TypeBool, [3]Type{TypeBool, TypeBool}}
 	case OpAndBool, OpOrBool:
