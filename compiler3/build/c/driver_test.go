@@ -1577,6 +1577,25 @@ func TestBuildSourceStrConcatWithBool(t *testing.T) {
 	}
 }
 
+// TestBuildSourceWebsiteHomepageHello pins MEP-42 Phase 4.2.5: the
+// canonical hello program from `examples/website/hello.mochi`, the
+// homepage demo on mochi-lang.dev. It is the smallest end-to-end
+// user-facing program that exercises the full Phase 4.2.x string
+// stack (let-bound string, concat with `+`, `str(int)` lift, two
+// `print` calls back-to-back). Reads the file verbatim so a future
+// rewrite of the homepage demo is caught as a regression here.
+func TestBuildSourceWebsiteHomepageHello(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/website/hello.mochi")
+	if err != nil {
+		t.Fatalf("read homepage hello fixture: %v", err)
+	}
+	src := string(srcBytes)
+	want := "Hello, Mochi!\nthe answer is 42\n"
+	if got := runMochiBuild(t, src); got != want {
+		t.Errorf("homepage hello stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceSpectralNormBgFixture pins the unmodified
 // bench/template/bg/spectral_norm fixture (N=100) on the C target.
 // This is the §10.7 closeout for spectral_norm at the fixture level
