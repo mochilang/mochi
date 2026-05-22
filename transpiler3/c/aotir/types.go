@@ -8,6 +8,11 @@ package aotir
 // rides on a parallel RecordName field on the carrying IR node
 // rather than inflating Type into a struct (avoids touching
 // every Type compare site in the verifier / emit / lower).
+// Phase 3.1 adds TypeList for the four scalar element types;
+// the element type rides on a parallel ElemType field on every
+// IR node that can carry a list value (mirrors the RecordName
+// plumbing). Lists of records and nested lists are deferred to
+// later sub-phases.
 type Type int
 
 const (
@@ -18,6 +23,7 @@ const (
 	TypeFloat  // double (IEEE 754 binary64)
 	TypeBool   // int storing 0 or 1 (matches C runtime ABI)
 	TypeRecord // struct mochi_<Name>; identity carried as RecordName beside the Type
+	TypeList   // mochi_list_<T>; element type carried as ElemType beside the Type
 )
 
 // String returns a stable identifier for the type, used in
@@ -38,6 +44,8 @@ func (t Type) String() string {
 		return "bool"
 	case TypeRecord:
 		return "record"
+	case TypeList:
+		return "list"
 	default:
 		return "invalid"
 	}
