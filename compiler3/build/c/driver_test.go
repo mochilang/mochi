@@ -2731,6 +2731,49 @@ func TestBuildSourceV02MatrixFixture(t *testing.T) {
 	}
 }
 
+// TestBuildSourceMapStrI64Inferred exercises the Phase 4.2.22
+// untyped-map-literal inference. The binding has no type annotation,
+// so the literal infers map<str, i64> from its first key (a str
+// literal). The probe-on-an-absent-key 0 default still applies and
+// `len(m)` still routes through OpMapLenStrI64.
+func TestBuildSourceMapStrI64Inferred(t *testing.T) {
+	src := `let scores = {
+  "Alice": 10,
+  "Bob": 15,
+}
+print(scores["Alice"])
+print(scores["Bob"])
+print(scores["Missing"])
+print(len(scores))
+`
+	if got, want := runMochiBuild(t, src), "10\n15\n0\n2\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceMapStrI64InferredNonStrKey pins the rejection
+// path: an untyped map literal whose first key is an int falls
+// outside the only map carrier the inference path accepts. The
+// error mentions the offending shape so the user can either
+// annotate the binding or fix the key.
+func TestBuildSourceMapStrI64InferredNonStrKey(t *testing.T) {
+	dir := t.TempDir()
+	srcPath := filepath.Join(dir, "test.mochi")
+	src := `let m = {1: 2}
+print(len(m))
+`
+	if err := os.WriteFile(srcPath, []byte(src), 0o644); err != nil {
+		t.Fatalf("write src: %v", err)
+	}
+	_, err := BuildSource(srcPath, Options{OutDir: dir, BinaryPath: filepath.Join(dir, "bin")})
+	if err == nil {
+		t.Fatalf("expected lower error for non-str inferred map key")
+	}
+	if got, want := err.Error(), "first key must be str"; !strings.Contains(got, want) {
+		t.Errorf("error %q does not mention %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.

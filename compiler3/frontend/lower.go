@@ -2268,43 +2268,75 @@ func (b *builder) lowerIfExpr(e *parser.IfExpr) (uint32, error) {
 //     lower to OpNewMapStrI64 followed by a chain of OpMapSetStrI64,
 //     one per declared key/value pair. Keys must lower to TypeStr,
 //     values to TypeI64.
+//
+// Phase 4.2.22: when neither expectation is set (untyped `let m =
+// {...}` binding), the literal infers map<str, i64> by lowering the
+// first key and checking it is TypeStr. This unblocks the
+// v0.2/for-in.mochi `let scores = {"Alice": 90, ...}` binding.
+// Inference into map<int, int> stays unsupported because the IR
+// backing only handles empty initializers there, and an empty literal
+// without a hint can't disambiguate the two map families anyway.
 func (b *builder) lowerMapLiteralAsExpr(m *parser.MapLiteral) (uint32, error) {
 	if b.expectedMapStrI64 {
 		// Reset the expectation while lowering element exprs so a
 		// nested map literal does not inherit it.
 		b.expectedMapStrI64 = false
 		defer func() { b.expectedMapStrI64 = true }()
-		mapID := b.addValue(ir.Value{Type: ir.TypeMapStrI64, Op: ir.OpNewMapStrI64})
-		for i, item := range m.Items {
-			kid, err := b.lowerExpr(item.Key)
-			if err != nil {
-				return 0, fmt.Errorf("frontend: map<str, i64> entry %d key: %w", i, err)
-			}
-			if b.fn.Values[kid].Type != ir.TypeStr {
-				return 0, fmt.Errorf("frontend: map<str, i64> entry %d key must be str, got %s", i, b.fn.Values[kid].Type)
-			}
-			vid, err := b.lowerExpr(item.Value)
-			if err != nil {
-				return 0, fmt.Errorf("frontend: map<str, i64> entry %d value: %w", i, err)
-			}
-			if b.fn.Values[vid].Type != ir.TypeI64 {
-				return 0, fmt.Errorf("frontend: map<str, i64> entry %d value must be i64, got %s", i, b.fn.Values[vid].Type)
-			}
-			b.addValue(ir.Value{
-				Type: ir.TypeUnit,
-				Op:   ir.OpMapSetStrI64,
-				Args: []uint32{mapID, kid, vid},
-			})
-		}
-		return mapID, nil
+		return b.lowerMapStrI64Body(m, 0, false)
 	}
 	if !b.expectedMap {
-		return 0, fmt.Errorf("frontend: map literal requires `map<int, int>` or `map<str, i64>` type annotation on the binding")
+		if len(m.Items) == 0 {
+			return 0, fmt.Errorf("frontend: map literal requires `map<int, int>` or `map<str, i64>` type annotation on the binding")
+		}
+		firstKey, err := b.lowerExpr(m.Items[0].Key)
+		if err != nil {
+			return 0, fmt.Errorf("frontend: map literal entry 0 key: %w", err)
+		}
+		if b.fn.Values[firstKey].Type != ir.TypeStr {
+			return 0, fmt.Errorf("frontend: untyped map literal first key must be str (inferred map<str, i64>), got %s", b.fn.Values[firstKey].Type)
+		}
+		return b.lowerMapStrI64Body(m, firstKey, true)
 	}
 	if len(m.Items) != 0 {
 		return 0, fmt.Errorf("frontend: non-empty map<int, int> literal unsupported in MVP (only `{}` initializer)")
 	}
 	return b.addValue(ir.Value{Type: ir.TypeMap, Op: ir.OpNewMap}), nil
+}
+
+// lowerMapStrI64Body emits OpNewMapStrI64 plus the OpMapSetStrI64
+// chain for a map<str, i64> literal. When firstKeyLowered is true,
+// firstKeyID is reused as the entry-0 key so an inference caller does
+// not re-lower a possibly side-effecting key expression.
+func (b *builder) lowerMapStrI64Body(m *parser.MapLiteral, firstKeyID uint32, firstKeyLowered bool) (uint32, error) {
+	mapID := b.addValue(ir.Value{Type: ir.TypeMapStrI64, Op: ir.OpNewMapStrI64})
+	for i, item := range m.Items {
+		var kid uint32
+		if i == 0 && firstKeyLowered {
+			kid = firstKeyID
+		} else {
+			id, err := b.lowerExpr(item.Key)
+			if err != nil {
+				return 0, fmt.Errorf("frontend: map<str, i64> entry %d key: %w", i, err)
+			}
+			kid = id
+		}
+		if b.fn.Values[kid].Type != ir.TypeStr {
+			return 0, fmt.Errorf("frontend: map<str, i64> entry %d key must be str, got %s", i, b.fn.Values[kid].Type)
+		}
+		vid, err := b.lowerExpr(item.Value)
+		if err != nil {
+			return 0, fmt.Errorf("frontend: map<str, i64> entry %d value: %w", i, err)
+		}
+		if b.fn.Values[vid].Type != ir.TypeI64 {
+			return 0, fmt.Errorf("frontend: map<str, i64> entry %d value must be i64, got %s", i, b.fn.Values[vid].Type)
+		}
+		b.addValue(ir.Value{
+			Type: ir.TypeUnit,
+			Op:   ir.OpMapSetStrI64,
+			Args: []uint32{mapID, kid, vid},
+		})
+	}
+	return mapID, nil
 }
 
 // lowerListLiteral lowers `[e1, e2, ...]` to an empty-list constructor
