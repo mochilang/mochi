@@ -5,6 +5,7 @@
  * with the generated source in one cc invocation.
  */
 #include "print.h"
+#include "mochi_str.h"
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -26,26 +27,15 @@ void mochi_print_str(const char *s) {
 
 void mochi_print_f64(double x) {
     /*
-     * Shortest round-trip: try precision 1..17 and pick the first
-     * that strtod() reads back to the exact double. Go's
-     * strconv.FormatFloat with prec=-1 uses Ryu under the hood; the
-     * digits produced by %.*g with precision-search and Ryu agree
-     * for the typical finite case. Edge cases where Go switches
-     * fixed vs scientific differently from C %g remain divergent
-     * and are tracked for Phase 4.2.
+     * Delegate to mochi_f64_format so print(x) and str(x) produce
+     * the same digits for the same double, both matching Go's
+     * strconv.FormatFloat(x, 'g', -1, 64). The pre-Phase-4.2.8 body
+     * lived here (shortest-round-trip search via %.*g); the divergence
+     * with Go on values like 10.0 (C produced "1e+01", Go "10") is
+     * fixed in the shared helper.
      */
     char buf[64];
-    int p;
-    for (p = 1; p <= 17; p++) {
-        snprintf(buf, sizeof buf, "%.*g", p, x);
-        double back = strtod(buf, NULL);
-        if (back == x) {
-            break;
-        }
-    }
-    if (p > 17) {
-        snprintf(buf, sizeof buf, "%.17g", x);
-    }
-    fputs(buf, stdout);
+    int n = mochi_f64_format(buf, (int)sizeof buf, x);
+    fwrite(buf, 1, (size_t)n, stdout);
     fputc('\n', stdout);
 }

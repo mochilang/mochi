@@ -1716,6 +1716,82 @@ func TestBuildSourceV01BinaryFixture(t *testing.T) {
 	}
 }
 
+// TestBuildSourceF64GoParityTen pins MEP-42 Phase 4.2.8: a finite
+// float value whose magnitude lies in Go's fixed-form window must
+// print without C99's "%g" exponent escape. Before this sub-phase,
+// `print(10.0)` produced "1e+01\n" on the C target because C99 "%g"
+// at precision 1 chose exponent form (1 >= 1); Go's
+// strconv.FormatFloat(10.0, 'g', -1, 64) returns "10". The shared
+// mochi_f64_format helper now reformats those cases.
+func TestBuildSourceF64GoParityTen(t *testing.T) {
+	src := `print(10.0)` + "\n"
+	if got, want := runMochiBuild(t, src), "10\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceF64GoParityHundredK pins the upper edge of Go's
+// fixed-form window. 1e5 (= 100000) sits at exp=5 which is < 6, so
+// Go prints "100000"; C99 "%g" at precision 1 would print "1e+05".
+func TestBuildSourceF64GoParityHundredK(t *testing.T) {
+	src := `print(1e5)` + "\n"
+	if got, want := runMochiBuild(t, src), "100000\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceF64GoParityMillion pins the lower edge of Go's
+// exponent-form window. 1e6 sits at exp=6 which is >= 6, so Go
+// prints "1e+06". Both C99 "%g" at precision 1 and the new helper
+// must agree on this case.
+func TestBuildSourceF64GoParityMillion(t *testing.T) {
+	src := `print(1e6)` + "\n"
+	if got, want := runMochiBuild(t, src), "1e+06\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceF64GoParityFractionalEdge pins the lower fixed-form
+// edge. 1e-4 (= 0.0001) is the smallest magnitude Go prints in fixed
+// form (exp = -4); 1e-5 flips to exp form. C99 "%g" agrees on the
+// boundary; the test guards the new code path against regressing.
+func TestBuildSourceF64GoParityFractionalEdge(t *testing.T) {
+	src := `print(0.0001)` + "\n"
+	if got, want := runMochiBuild(t, src), "0.0001\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+	src = `print(0.00001)` + "\n"
+	if got, want := runMochiBuild(t, src), "1e-05\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceF64GoParityStr pins str(f64) on the same divergent
+// values: str(10.0) must produce "10" (not "1e+01"), matching the
+// Go target's strconv.FormatFloat. The single-arg print() path and
+// the multi-arg / str() path now share mochi_f64_format, so this
+// test guards against drift between them.
+func TestBuildSourceF64GoParityStr(t *testing.T) {
+	src := `print("e =", 10.0)` + "\n"
+	if got, want := runMochiBuild(t, src), "e = 10\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV01ExprFixture pins examples/v0.1/expr.mochi
+// end-to-end. Before Phase 4.2.8, "e = 1e+01" leaked into the
+// binary's stdout; after, the program byte-matches mochi run.
+func TestBuildSourceV01ExprFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.1/expr.mochi")
+	if err != nil {
+		t.Fatalf("read v0.1 expr fixture: %v", err)
+	}
+	want := "a = 11\nb = 14\nc = 8\nd = 56\ne = 10\nf = 3\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.1/expr stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceSpectralNormBgFixture pins the unmodified
 // bench/template/bg/spectral_norm fixture (N=100) on the C target.
 // This is the §10.7 closeout for spectral_norm at the fixture level
