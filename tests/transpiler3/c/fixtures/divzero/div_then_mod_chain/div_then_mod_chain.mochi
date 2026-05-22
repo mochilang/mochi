@@ -1,0 +1,6 @@
+let a = 100
+let b = a / 7
+let c = a % 7
+print(b)
+print(c)
+print(b * 7 + c)
