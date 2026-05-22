@@ -165,6 +165,10 @@ func (d *Driver) Build(src, out, target, profile string) error {
 		return fmt.Errorf("transpiler3/c/build: %w", err)
 	}
 
+	rtSrcs, err := collectRuntimeSources(filepath.Join(workDir, "src"))
+	if err != nil {
+		return fmt.Errorf("transpiler3/c/build: collect runtime sources: %w", err)
+	}
 	ccArgs := append([]string{}, ccPrefix...)
 	ccArgs = append(ccArgs,
 		"-std=c2x",
@@ -172,8 +176,8 @@ func (d *Driver) Build(src, out, target, profile string) error {
 		"-I", filepath.Join(workDir, "include"),
 		"-o", absOut,
 		genPath,
-		filepath.Join(workDir, "src", "print.c"),
 	)
+	ccArgs = append(ccArgs, rtSrcs...)
 	args := ccArgs
 	cmd := exec.Command(cc, args...)
 	output, err := cmd.CombinedOutput()
@@ -197,6 +201,29 @@ func (d *Driver) Build(src, out, target, profile string) error {
 		}
 	}
 	return nil
+}
+
+// collectRuntimeSources lists every *.c file under srcDir in
+// lexicographic order. The build driver passes the result to cc
+// alongside the generated translation unit; each new runtime
+// module added to the embed FS rides in automatically once its
+// file lands on disk.
+func collectRuntimeSources(srcDir string) ([]string, error) {
+	entries, err := os.ReadDir(srcDir)
+	if err != nil {
+		return nil, err
+	}
+	var srcs []string
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		if !strings.HasSuffix(e.Name(), ".c") {
+			continue
+		}
+		srcs = append(srcs, filepath.Join(srcDir, e.Name()))
+	}
+	return srcs, nil
 }
 
 func writeRuntimeFiles(workDir string) error {
