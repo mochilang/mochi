@@ -12,9 +12,9 @@ import (
 // shapes that belong in Phase 3.2 onward (maps, sets, generics,
 // casts, none/Option, fun-expressions) must produce a clear,
 // phase-named or otherwise-explicit diagnostic rather than silently
-// being miscompiled. Records (3.0), lists (3.1), and list<R>
-// (Phase 3.4a) are now accepted; nested lists remain rejected
-// pending Phase 3.4b.
+// being miscompiled. Records (3.0), lists (3.1), list<R>
+// (Phase 3.4a), and list<list<scalar>> (Phase 3.4b) are now
+// accepted.
 func TestLowerRejectsPhase31Plus(t *testing.T) {
 	cases := []struct {
 		name    string
@@ -40,11 +40,6 @@ func TestLowerRejectsPhase31Plus(t *testing.T) {
 			name:    "fun_missing_param_type",
 			program: "fun foo(x): int { return x }\nprint(foo(1))\n",
 			want:    "explicit `: T` type",
-		},
-		{
-			name:    "nested_list",
-			program: "let xs = [[1, 2], [3]]\n",
-			want:    "Phase 3.4",
 		},
 		{
 			name:    "empty_list_literal",

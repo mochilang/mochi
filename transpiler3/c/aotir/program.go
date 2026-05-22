@@ -63,8 +63,13 @@ type Param struct {
 	RecordName     string
 	ElemType       Type
 	ElemRecordName string
-	KeyType        Type
-	ValueType      Type
+	// InnerElemType carries the inner element type when
+	// Type==TypeList && ElemType==TypeList (one-level nested
+	// list<list<T>>; Phase 3.4b restricts the inner to a scalar
+	// primitive). Empty (TypeInvalid) otherwise.
+	InnerElemType Type
+	KeyType       Type
+	ValueType     Type
 }
 
 // Function is one monomorphic, closure-converted callable.
@@ -92,6 +97,11 @@ type Function struct {
 	// ReturnElemRecordName naming the element record.
 	ReturnElemType       Type
 	ReturnElemRecordName string
+
+	// ReturnInnerElemType carries the inner element type when
+	// ReturnType==TypeList && ReturnElemType==TypeList (Phase 3.4b
+	// list<list<T>>). The inner is a scalar primitive in 3.4b.
+	ReturnInnerElemType Type
 
 	// ReturnKeyType and ReturnValueType carry the K/V identities
 	// when ReturnType==TypeMap. Phase 3.2 restricts the pair to
@@ -149,6 +159,7 @@ type CallExpr struct {
 	ResultRecordName     string // valid when Result==TypeRecord
 	ResultElemType       Type   // valid when Result==TypeList
 	ResultElemRecordName string // valid when Result==TypeList && ResultElemType==TypeRecord
+	ResultInnerElemType  Type   // valid when Result==TypeList && ResultElemType==TypeList (Phase 3.4b)
 	ResultKeyType        Type   // valid when Result==TypeMap
 	ResultValueType      Type   // valid when Result==TypeMap
 }
@@ -311,6 +322,7 @@ type VarRef struct {
 	RecordName     string
 	ElemType       Type
 	ElemRecordName string // valid when VarType==TypeList && ElemType==TypeRecord
+	InnerElemType  Type   // valid when VarType==TypeList && ElemType==TypeList (Phase 3.4b)
 	KeyType        Type   // valid when VarType==TypeMap
 	ValueType      Type   // valid when VarType==TypeMap
 }
@@ -363,6 +375,7 @@ type LetStmt struct {
 	RecordName     string // valid when VarType==TypeRecord
 	ElemType       Type   // valid when VarType==TypeList
 	ElemRecordName string // valid when VarType==TypeList && ElemType==TypeRecord
+	InnerElemType  Type   // valid when VarType==TypeList && ElemType==TypeList (Phase 3.4b)
 	KeyType        Type   // valid when VarType==TypeMap
 	ValueType      Type   // valid when VarType==TypeMap
 	Init           Expr
@@ -455,6 +468,7 @@ func (*ReturnStmt) isStmt() {}
 type ListLit struct {
 	ElemType       Type
 	ElemRecordName string // valid when ElemType==TypeRecord
+	InnerElemType  Type   // valid when ElemType==TypeList (Phase 3.4b list<list<T>>)
 	Elems          []Expr
 }
 
@@ -472,6 +486,11 @@ type IndexExpr struct {
 	Index          Expr
 	ElemType       Type
 	ElemRecordName string // valid when ElemType==TypeRecord
+	// InnerElemType is set when this IndexExpr produces a
+	// list value (i.e., the receiver was list<list<T>>); it
+	// carries the inner T so downstream IR can resolve helper
+	// suffixes for further operations on the produced list.
+	InnerElemType Type
 }
 
 func (i *IndexExpr) Type() Type { return i.ElemType }
@@ -485,6 +504,7 @@ type LenExpr struct {
 	Receiver       Expr
 	ElemType       Type
 	ElemRecordName string // valid when ElemType==TypeRecord
+	InnerElemType  Type   // valid when ElemType==TypeList (Phase 3.4b)
 }
 
 func (*LenExpr) Type() Type { return TypeInt }
@@ -501,6 +521,7 @@ type AppendExpr struct {
 	Value          Expr
 	ElemType       Type
 	ElemRecordName string // valid when ElemType==TypeRecord
+	InnerElemType  Type   // valid when ElemType==TypeList (Phase 3.4b)
 }
 
 func (a *AppendExpr) Type() Type { return TypeList }
@@ -517,6 +538,7 @@ type ForEachStmt struct {
 	List           Expr
 	ElemType       Type
 	ElemRecordName string // valid when ElemType==TypeRecord
+	InnerElemType  Type   // valid when ElemType==TypeList (Phase 3.4b)
 	Body           *Block
 }
 

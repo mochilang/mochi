@@ -106,26 +106,28 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 	for _, fn := range funDecls {
 		sig := funcs[fn.Name]
 		l := &lowerer{
-			funcs:                  funcs,
-			records:                records,
-			scope:                  newLScope(nil),
-			currentFnReturn:        sig.returnType,
-			currentFnReturnRecord:  sig.returnRecordName,
-			currentFnReturnElem:    sig.returnElemType,
-			currentFnReturnElemRec: sig.returnElemRecord,
-			currentFnReturnKey:     sig.returnKeyType,
-			currentFnReturnValue:   sig.returnValueType,
+			funcs:                    funcs,
+			records:                  records,
+			scope:                    newLScope(nil),
+			currentFnReturn:          sig.returnType,
+			currentFnReturnRecord:    sig.returnRecordName,
+			currentFnReturnElem:      sig.returnElemType,
+			currentFnReturnElemRec:   sig.returnElemRecord,
+			currentFnReturnInnerElem: sig.returnInnerElem,
+			currentFnReturnKey:       sig.returnKeyType,
+			currentFnReturnValue:     sig.returnValueType,
 		}
 		// Seed parameters into the function scope as immutable.
 		for _, p := range sig.params {
 			l.scope.vars[p.Name] = lbinding{
-				t:       p.Type,
-				mutable: false,
-				record:  p.RecordName,
-				elem:    p.ElemType,
-				elemRec: p.ElemRecordName,
-				key:     p.KeyType,
-				value:   p.ValueType,
+				t:         p.Type,
+				mutable:   false,
+				record:    p.RecordName,
+				elem:      p.ElemType,
+				elemRec:   p.ElemRecordName,
+				innerElem: p.InnerElemType,
+				key:       p.KeyType,
+				value:     p.ValueType,
 			}
 		}
 		body := &aotir.Block{}
@@ -144,6 +146,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 			ReturnRecordName:     sig.returnRecordName,
 			ReturnElemType:       sig.returnElemType,
 			ReturnElemRecordName: sig.returnElemRecord,
+			ReturnInnerElemType:  sig.returnInnerElem,
 			ReturnKeyType:        sig.returnKeyType,
 			ReturnValueType:      sig.returnValueType,
 			Body:                 body,
@@ -244,7 +247,8 @@ type funcSig struct {
 	returnType       aotir.Type
 	returnRecordName string
 	returnElemType   aotir.Type
-	returnElemRecord string // record name when returnElemType==TypeRecord
+	returnElemRecord string     // record name when returnElemType==TypeRecord
+	returnInnerElem  aotir.Type // inner elem type when returnElemType==TypeList (Phase 3.4b)
 	returnKeyType    aotir.Type
 	returnValueType  aotir.Type
 }
@@ -292,6 +296,7 @@ func buildFuncSig(records map[string]*aotir.RecordDecl, fn *parser.FunStmt) (*fu
 			RecordName:     pTR.rec,
 			ElemType:       pTR.elem,
 			ElemRecordName: pTR.elemRec,
+			InnerElemType:  pTR.innerElem,
 			KeyType:        pTR.key,
 			ValueType:      pTR.value,
 		})
@@ -302,6 +307,7 @@ func buildFuncSig(records map[string]*aotir.RecordDecl, fn *parser.FunStmt) (*fu
 		returnRecordName: retTR.rec,
 		returnElemType:   retTR.elem,
 		returnElemRecord: retTR.elemRec,
+		returnInnerElem:  retTR.innerElem,
 		returnKeyType:    retTR.key,
 		returnValueType:  retTR.value,
 	}, nil
@@ -311,16 +317,17 @@ func buildFuncSig(records map[string]*aotir.RecordDecl, fn *parser.FunStmt) (*fu
 // and the enclosing function's return type. Mirrors the verifier's
 // verifyCtx so the same scoping / typing rules apply at lower time.
 type lowerer struct {
-	funcs                  map[string]*funcSig
-	records                map[string]*aotir.RecordDecl
-	scope                  *lscope
-	loopDepth              int
-	currentFnReturn        aotir.Type
-	currentFnReturnRecord  string
-	currentFnReturnElem    aotir.Type
-	currentFnReturnElemRec string // record name when currentFnReturnElem==TypeRecord
-	currentFnReturnKey     aotir.Type
-	currentFnReturnValue   aotir.Type
+	funcs                    map[string]*funcSig
+	records                  map[string]*aotir.RecordDecl
+	scope                    *lscope
+	loopDepth                int
+	currentFnReturn          aotir.Type
+	currentFnReturnRecord    string
+	currentFnReturnElem      aotir.Type
+	currentFnReturnElemRec   string     // record name when currentFnReturnElem==TypeRecord
+	currentFnReturnInnerElem aotir.Type // inner elem when currentFnReturnElem==TypeList (Phase 3.4b)
+	currentFnReturnKey       aotir.Type
+	currentFnReturnValue     aotir.Type
 }
 
 // lscope mirrors aotir's scope: lexical frame with parent chain.
@@ -330,13 +337,14 @@ type lscope struct {
 }
 
 type lbinding struct {
-	t       aotir.Type
-	mutable bool
-	record  string     // record name when t==TypeRecord
-	elem    aotir.Type // element type when t==TypeList
-	elemRec string     // element record name when t==TypeList && elem==TypeRecord
-	key     aotir.Type // key type when t==TypeMap
-	value   aotir.Type // value type when t==TypeMap
+	t         aotir.Type
+	mutable   bool
+	record    string     // record name when t==TypeRecord
+	elem      aotir.Type // element type when t==TypeList
+	elemRec   string     // element record name when t==TypeList && elem==TypeRecord
+	innerElem aotir.Type // inner element type when t==TypeList && elem==TypeList (Phase 3.4b)
+	key       aotir.Type // key type when t==TypeMap
+	value     aotir.Type // value type when t==TypeMap
 }
 
 func newLScope(parent *lscope) *lscope {
@@ -474,6 +482,12 @@ func (l *lowerer) lowerCallArgs(call *parser.CallExpr, sig *funcSig) ([]aotir.Ex
 						call.Func, i, sig.params[i].ElemRecordName, argElemRec)
 				}
 			}
+			if sig.params[i].ElemType == aotir.TypeList {
+				if argInner := exprInnerElemType(expr); argInner != sig.params[i].InnerElemType {
+					return nil, fmt.Errorf("call %q arg %d: expected list<list<%s>>, got list<list<%s>>",
+						call.Func, i, sig.params[i].InnerElemType, argInner)
+				}
+			}
 		}
 		if sig.params[i].Type == aotir.TypeMap {
 			if argKey := exprKeyType(expr); argKey != sig.params[i].KeyType {
@@ -537,7 +551,9 @@ func exprElemRecordName(e aotir.Expr) string {
 // exprElemType extracts the element type of a list-typed aotir
 // expression. Mirrors the verifier helper of the same name; Phase
 // 3.2 widens the coverage to include MapKeysExpr and MapValuesExpr
-// (both produce list-typed values).
+// (both produce list-typed values). Phase 3.4b widens to IndexExpr
+// when the index produces a list value (receiver was list<list<T>>):
+// the IndexExpr's own element type is T, recorded on InnerElemType.
 func exprElemType(e aotir.Expr) aotir.Type {
 	switch v := e.(type) {
 	case *aotir.VarRef:
@@ -548,10 +564,35 @@ func exprElemType(e aotir.Expr) aotir.Type {
 		return v.ResultElemType
 	case *aotir.AppendExpr:
 		return v.ElemType
+	case *aotir.IndexExpr:
+		if v.ElemType == aotir.TypeList {
+			return v.InnerElemType
+		}
+		return aotir.TypeInvalid
 	case *aotir.MapKeysExpr:
 		return v.KeyType
 	case *aotir.MapValuesExpr:
 		return v.ValueType
+	}
+	return aotir.TypeInvalid
+}
+
+// exprInnerElemType extracts the inner element type of a
+// list<list<T>>-typed aotir expression, mirroring the verifier's
+// helper of the same name. Phase 3.4b node coverage: VarRef,
+// ListLit, CallExpr, AppendExpr, IndexExpr.
+func exprInnerElemType(e aotir.Expr) aotir.Type {
+	switch v := e.(type) {
+	case *aotir.VarRef:
+		return v.InnerElemType
+	case *aotir.ListLit:
+		return v.InnerElemType
+	case *aotir.CallExpr:
+		return v.ResultInnerElemType
+	case *aotir.AppendExpr:
+		return v.InnerElemType
+	case *aotir.IndexExpr:
+		return v.InnerElemType
 	}
 	return aotir.TypeInvalid
 }
@@ -616,6 +657,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	declRec := exprRecordName(value)
 	declElem := exprElemType(value)
 	declElemRec := exprElemRecordName(value)
+	declInnerElem := exprInnerElemType(value)
 	declKey := exprKeyType(value)
 	declValue := exprValueType(value)
 	if declared != nil {
@@ -635,6 +677,9 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		if tr.t == aotir.TypeList && tr.elem == aotir.TypeRecord && tr.elemRec != declElemRec {
 			return fmt.Errorf("binding %q: declared list<%s>, init produces list<%s>", name, tr.elemRec, declElemRec)
 		}
+		if tr.t == aotir.TypeList && tr.elem == aotir.TypeList && tr.innerElem != declInnerElem {
+			return fmt.Errorf("binding %q: declared list<list<%s>>, init produces list<list<%s>>", name, tr.innerElem, declInnerElem)
+		}
 		if tr.t == aotir.TypeMap {
 			if tr.key != declKey {
 				return fmt.Errorf("binding %q: declared map<%s,_>, init produces map<%s,_>", name, tr.key, declKey)
@@ -647,17 +692,19 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		declRec = tr.rec
 		declElem = tr.elem
 		declElemRec = tr.elemRec
+		declInnerElem = tr.innerElem
 		declKey = tr.key
 		declValue = tr.value
 	}
 	l.scope.vars[name] = lbinding{
-		t:       declType,
-		mutable: mutable,
-		record:  declRec,
-		elem:    declElem,
-		elemRec: declElemRec,
-		key:     declKey,
-		value:   declValue,
+		t:         declType,
+		mutable:   mutable,
+		record:    declRec,
+		elem:      declElem,
+		elemRec:   declElemRec,
+		innerElem: declInnerElem,
+		key:       declKey,
+		value:     declValue,
 	}
 	out.Statements = append(out.Statements, &aotir.LetStmt{
 		Name:           name,
@@ -665,6 +712,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		RecordName:     declRec,
 		ElemType:       declElem,
 		ElemRecordName: declElemRec,
+		InnerElemType:  declInnerElem,
 		KeyType:        declKey,
 		ValueType:      declValue,
 		Init:           value,
@@ -710,6 +758,11 @@ func (l *lowerer) lowerAssign(out *aotir.Block, as *parser.AssignStmt) error {
 		if b.elem == aotir.TypeRecord {
 			if velemRec := exprElemRecordName(value); velemRec != b.elemRec {
 				return fmt.Errorf("assign %q: binding holds list<%s>, value produces list<%s>", as.Name, b.elemRec, velemRec)
+			}
+		}
+		if b.elem == aotir.TypeList {
+			if vinner := exprInnerElemType(value); vinner != b.innerElem {
+				return fmt.Errorf("assign %q: binding holds list<list<%s>>, value produces list<list<%s>>", as.Name, b.innerElem, vinner)
 			}
 		}
 	}
@@ -851,11 +904,15 @@ func (l *lowerer) lowerForEach(out *aotir.Block, fs *parser.ForStmt) error {
 	var listExpr aotir.Expr
 	var elem aotir.Type
 	var elemRec string
+	var innerElem aotir.Type
 	switch source.Type() {
 	case aotir.TypeList:
 		listExpr = source
 		elem = exprElemType(source)
 		elemRec = exprElemRecordName(source)
+		if elem == aotir.TypeList {
+			innerElem = exprInnerElemType(source)
+		}
 	case aotir.TypeMap:
 		key := exprKeyType(source)
 		val := exprValueType(source)
@@ -870,7 +927,17 @@ func (l *lowerer) lowerForEach(out *aotir.Block, fs *parser.ForStmt) error {
 	}
 	prev := l.scope
 	l.scope = newLScope(prev)
-	l.scope.vars[fs.Name] = lbinding{t: elem, mutable: false, record: elemRec}
+	// When iterating list<list<T>>, the induction variable is itself a
+	// list<T>; its element type (T) lives in lbinding.elem so further
+	// indexing/append/len resolves correctly.
+	bindElem := elem
+	bindElemRec := elemRec
+	bindInnerElem := aotir.TypeInvalid
+	if elem == aotir.TypeList {
+		bindElem = innerElem
+		bindElemRec = ""
+	}
+	l.scope.vars[fs.Name] = lbinding{t: elem, mutable: false, record: elemRec, elem: bindElem, elemRec: bindElemRec, innerElem: bindInnerElem}
 	l.loopDepth++
 	body := &aotir.Block{}
 	for i, st := range fs.Body {
@@ -893,6 +960,7 @@ func (l *lowerer) lowerForEach(out *aotir.Block, fs *parser.ForStmt) error {
 		List:           listExpr,
 		ElemType:       elem,
 		ElemRecordName: elemRec,
+		InnerElemType:  innerElem,
 		Body:           body,
 	})
 	return nil
@@ -960,6 +1028,12 @@ func (l *lowerer) lowerReturn(out *aotir.Block, rs *parser.ReturnStmt) error {
 					l.currentFnReturnElemRec, velemRec)
 			}
 		}
+		if l.currentFnReturnElem == aotir.TypeList {
+			if vinner := exprInnerElemType(value); vinner != l.currentFnReturnInnerElem {
+				return fmt.Errorf("return: function returns list<list<%s>>, value produces list<list<%s>>",
+					l.currentFnReturnInnerElem, vinner)
+			}
+		}
 	}
 	if l.currentFnReturn == aotir.TypeMap {
 		if vkey := exprKeyType(value); vkey != l.currentFnReturnKey {
@@ -1001,12 +1075,13 @@ func (l *lowerer) lowerNestedBlock(stmts []*parser.Statement) (*aotir.Block, err
 // t==TypeMap). Phase 3.2 returns this struct from typeFromRef to
 // keep callsite arity manageable as more parallel fields land.
 type typeResolution struct {
-	t       aotir.Type
-	rec     string
-	elem    aotir.Type
-	elemRec string // valid when elem==TypeRecord (Phase 3.4)
-	key     aotir.Type
-	value   aotir.Type
+	t         aotir.Type
+	rec       string
+	elem      aotir.Type
+	elemRec   string     // valid when elem==TypeRecord (Phase 3.4a)
+	innerElem aotir.Type // valid when elem==TypeList (Phase 3.4b)
+	key       aotir.Type
+	value     aotir.Type
 }
 
 // typeFromRef maps a parser.TypeRef to a typeResolution. Phase 3.2
@@ -1025,11 +1100,11 @@ func typeFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (typ
 		return typeResolution{}, fmt.Errorf("optional types land with Option in a later phase")
 	}
 	if ref.ListElem != nil {
-		elem, elemRec, err := listElemFromRef(records, ref.ListElem)
+		elem, elemRec, innerElem, err := listElemFromRef(records, ref.ListElem)
 		if err != nil {
 			return typeResolution{}, err
 		}
-		return typeResolution{t: aotir.TypeList, elem: elem, elemRec: elemRec}, nil
+		return typeResolution{t: aotir.TypeList, elem: elem, elemRec: elemRec, innerElem: innerElem}, nil
 	}
 	if ref.Generic != nil {
 		switch ref.Generic.Name {
@@ -1037,11 +1112,11 @@ func typeFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (typ
 			if len(ref.Generic.Args) != 1 {
 				return typeResolution{}, fmt.Errorf("list<T> takes exactly one type argument, got %d", len(ref.Generic.Args))
 			}
-			elem, elemRec, err := listElemFromRef(records, ref.Generic.Args[0])
+			elem, elemRec, innerElem, err := listElemFromRef(records, ref.Generic.Args[0])
 			if err != nil {
 				return typeResolution{}, err
 			}
-			return typeResolution{t: aotir.TypeList, elem: elem, elemRec: elemRec}, nil
+			return typeResolution{t: aotir.TypeList, elem: elem, elemRec: elemRec, innerElem: innerElem}, nil
 		case "map":
 			if len(ref.Generic.Args) != 2 {
 				return typeResolution{}, fmt.Errorf("map<K,V> takes exactly two type arguments, got %d", len(ref.Generic.Args))
@@ -1079,26 +1154,37 @@ func typeFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (typ
 
 // listElemFromRef resolves a list's element TypeRef. Phase 3.1
 // accepts the four scalar primitives. Phase 3.4a widens this to
-// accept TypeRecord (user-declared records), returning the record
-// name in the second result so callers can stamp ElemRecordName onto
-// the IR carrier. Nested list and map elements remain rejected here
-// pending Phase 3.4b/c.
-func listElemFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (aotir.Type, string, error) {
+// accept TypeRecord (user-declared records). Phase 3.4b widens it
+// once more to accept TypeList where the inner element is a scalar
+// primitive, returning the inner element type in the third result so
+// callers can stamp InnerElemType onto the IR carrier. Map elements
+// remain rejected pending later sub-phases. Three-level nesting
+// (list<list<list<T>>>) is still rejected here.
+func listElemFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (aotir.Type, string, aotir.Type, error) {
 	tr, err := typeFromRef(records, ref)
 	if err != nil {
-		return aotir.TypeInvalid, "", fmt.Errorf("list element: %w", err)
+		return aotir.TypeInvalid, "", aotir.TypeInvalid, fmt.Errorf("list element: %w", err)
 	}
 	switch tr.t {
 	case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
-		return tr.t, "", nil
+		return tr.t, "", aotir.TypeInvalid, nil
 	case aotir.TypeRecord:
-		return aotir.TypeRecord, tr.rec, nil
+		return aotir.TypeRecord, tr.rec, aotir.TypeInvalid, nil
 	case aotir.TypeList:
-		return aotir.TypeInvalid, "", fmt.Errorf("nested list types are not supported in Phase 3.4a (lands with Phase 3.4b)")
+		// Inner must be a scalar primitive in Phase 3.4b.
+		switch tr.elem {
+		case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+			return aotir.TypeList, "", tr.elem, nil
+		case aotir.TypeRecord:
+			return aotir.TypeInvalid, "", aotir.TypeInvalid, fmt.Errorf("list<list<record>> is not supported in Phase 3.4b (lands with a later sub-phase)")
+		case aotir.TypeList:
+			return aotir.TypeInvalid, "", aotir.TypeInvalid, fmt.Errorf("3-level nested lists (list<list<list<T>>>) are not supported in Phase 3.4b")
+		}
+		return aotir.TypeInvalid, "", aotir.TypeInvalid, fmt.Errorf("list<list<%s>> not supported in Phase 3.4b", tr.elem)
 	case aotir.TypeMap:
-		return aotir.TypeInvalid, "", fmt.Errorf("list of map is not supported in Phase 3.4a (lands with Phase 3.4b)")
+		return aotir.TypeInvalid, "", aotir.TypeInvalid, fmt.Errorf("list of map is not supported in Phase 3.4b (lands with a later sub-phase)")
 	}
-	return aotir.TypeInvalid, "", fmt.Errorf("list element type %s not supported in Phase 3.4a", tr.t)
+	return aotir.TypeInvalid, "", aotir.TypeInvalid, fmt.Errorf("list element type %s not supported in Phase 3.4b", tr.t)
 }
 
 // mapKeyFromRef resolves a map's key TypeRef. Phase 3.2 accepts only
@@ -1461,11 +1547,24 @@ func (l *lowerer) lowerIndexOp(receiver aotir.Expr, idx *parser.IndexOp) (aotir.
 		if index.Type() != aotir.TypeInt {
 			return nil, fmt.Errorf("list index must be int, got %s", index.Type())
 		}
+		// For list<list<T>>: receiver's ElemType is TypeList and its
+		// InnerElemType is T. The produced IndexExpr is itself a
+		// list<T> value; its own InnerElemType is therefore T. For
+		// scalar-element lists (Phase 3.1), or for the inner index
+		// of a list<list<T>> chain that produces a scalar, the
+		// produced value has no inner element, so InnerElemType is
+		// left TypeInvalid.
+		producedElem := exprElemType(receiver)
+		var producedInner aotir.Type
+		if producedElem == aotir.TypeList {
+			producedInner = exprInnerElemType(receiver)
+		}
 		return &aotir.IndexExpr{
 			Receiver:       receiver,
 			Index:          index,
-			ElemType:       exprElemType(receiver),
+			ElemType:       producedElem,
 			ElemRecordName: exprElemRecordName(receiver),
+			InnerElemType:  producedInner,
 		}, nil
 	case aotir.TypeMap:
 		key, err := l.lowerExpr(idx.Start)
@@ -1547,6 +1646,7 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 			RecordName:     b.record,
 			ElemType:       b.elem,
 			ElemRecordName: b.elemRec,
+			InnerElemType:  b.innerElem,
 			KeyType:        b.key,
 			ValueType:      b.value,
 		}
@@ -1586,6 +1686,7 @@ func (l *lowerer) lowerListLit(ll *parser.ListLiteral) (aotir.Expr, error) {
 	elems := make([]aotir.Expr, 0, len(ll.Elems))
 	var elemType aotir.Type
 	var elemRec string
+	var innerElem aotir.Type
 	for i, e := range ll.Elems {
 		v, err := l.lowerExpr(e)
 		if err != nil {
@@ -1602,7 +1703,21 @@ func (l *lowerer) lowerListLit(ll *parser.ListLiteral) (aotir.Expr, error) {
 					return nil, fmt.Errorf("list literal element %d: record element has no record name", i)
 				}
 			case aotir.TypeList:
-				return nil, fmt.Errorf("nested list values are not supported in Phase 3.4a (lands with Phase 3.4b)")
+				// Phase 3.4b: list<list<T>> where T is a scalar
+				// primitive. The element's inner type (T) is captured
+				// on InnerElemType so downstream operations on the
+				// nested list can resolve helpers.
+				innerElem = exprElemType(v)
+				switch innerElem {
+				case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+					// ok
+				case aotir.TypeRecord:
+					return nil, fmt.Errorf("list literal element %d: list<list<record>> is not supported in Phase 3.4b (record nesting lands in a later sub-phase)", i)
+				case aotir.TypeList:
+					return nil, fmt.Errorf("list literal element %d: 3-level nested lists are not supported in Phase 3.4b", i)
+				default:
+					return nil, fmt.Errorf("list literal element %d: list<list<%s>> is not supported", i, innerElem)
+				}
 			default:
 				return nil, fmt.Errorf("list literal element %d: unsupported type %s", i, elemType)
 			}
@@ -1615,10 +1730,15 @@ func (l *lowerer) lowerListLit(ll *parser.ListLiteral) (aotir.Expr, error) {
 					return nil, fmt.Errorf("list literal element %d: first element is record %q, this is record %q", i, elemRec, rec)
 				}
 			}
+			if elemType == aotir.TypeList {
+				if inner := exprElemType(v); inner != innerElem {
+					return nil, fmt.Errorf("list literal element %d: first element is list<%s>, this is list<%s>", i, innerElem, inner)
+				}
+			}
 		}
 		elems = append(elems, v)
 	}
-	return &aotir.ListLit{ElemType: elemType, ElemRecordName: elemRec, Elems: elems}, nil
+	return &aotir.ListLit{ElemType: elemType, ElemRecordName: elemRec, InnerElemType: innerElem, Elems: elems}, nil
 }
 
 // lowerMapLit lowers a `{ k1: v1, k2: v2, ... }` literal into a typed
@@ -1778,6 +1898,7 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 		ResultRecordName:     sig.returnRecordName,
 		ResultElemType:       sig.returnElemType,
 		ResultElemRecordName: sig.returnElemRecord,
+		ResultInnerElemType:  sig.returnInnerElem,
 		ResultKeyType:        sig.returnKeyType,
 		ResultValueType:      sig.returnValueType,
 	}, nil
@@ -1796,10 +1917,16 @@ func (l *lowerer) lowerLenCall(call *parser.CallExpr) (aotir.Expr, error) {
 	}
 	switch receiver.Type() {
 	case aotir.TypeList:
+		elem := exprElemType(receiver)
+		var inner aotir.Type
+		if elem == aotir.TypeList {
+			inner = exprInnerElemType(receiver)
+		}
 		return &aotir.LenExpr{
 			Receiver:       receiver,
-			ElemType:       exprElemType(receiver),
+			ElemType:       elem,
 			ElemRecordName: exprElemRecordName(receiver),
+			InnerElemType:  inner,
 		}, nil
 	case aotir.TypeMap:
 		return &aotir.MapLenExpr{
@@ -1900,6 +2027,10 @@ func (l *lowerer) lowerAppendCall(call *parser.CallExpr) (aotir.Expr, error) {
 	}
 	elem := exprElemType(receiver)
 	elemRec := exprElemRecordName(receiver)
+	var innerElem aotir.Type
+	if elem == aotir.TypeList {
+		innerElem = exprInnerElemType(receiver)
+	}
 	value, err := l.lowerExpr(call.Args[1])
 	if err != nil {
 		return nil, fmt.Errorf("append value: %w", err)
@@ -1912,11 +2043,17 @@ func (l *lowerer) lowerAppendCall(call *parser.CallExpr) (aotir.Expr, error) {
 			return nil, fmt.Errorf("append: list element is record %q, value is record %q", elemRec, vrec)
 		}
 	}
+	if elem == aotir.TypeList {
+		if vinner := exprElemType(value); vinner != innerElem {
+			return nil, fmt.Errorf("append: list element is list<%s>, value is list<%s>", innerElem, vinner)
+		}
+	}
 	return &aotir.AppendExpr{
 		Receiver:       receiver,
 		Value:          value,
 		ElemType:       elem,
 		ElemRecordName: elemRec,
+		InnerElemType:  innerElem,
 	}, nil
 }
 
