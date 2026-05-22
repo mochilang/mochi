@@ -31,7 +31,7 @@ Primitives + control flow is the smallest set that gets a real (non-toy) Mochi p
 | 2.0 | `int` (`int64_t`), `float` (`double`), `bool`; arithmetic; comparisons; short-circuit `&&` / `||`  | IN PROGRESS | —      | — |
 | 2.1 | `let`/`var`, `if`/`else`, `while`, `return`, `break`, `continue`                                   | IN PROGRESS | —      | — |
 | 2.2 | `for x in start..end` (int range); user-defined multi-arg functions                                | IN PROGRESS | —      | — |
-| 2.3 | Integer divide-by-zero raises `MOCHI_ERR_DIVZERO` (checked profile); UB under `--fast-int`         | NOT STARTED | —      | — |
+| 2.3 | Integer divide-by-zero raises `MOCHI_ERR_DIVZERO` (checked profile); UB under `--fast-int`         | IN PROGRESS | —      | — |
 | 2.4 | Float NaN propagation matches vm3 byte-for-byte (IEEE 754 round-trip on `%.17g`)                   | NOT STARTED | —      | — |
 
 ## Sub-phase 2.0 -- 2026-05-22 (GMT+7)
@@ -265,6 +265,107 @@ deferred; list iteration deferred to Phase 3 with lists.
   end-to-end gate across every
   `tests/transpiler3/c/fixtures/for-range/<name>` directory (10
   fixtures at landing time).
+
+## Sub-phase 2.3 -- 2026-05-22 20:56 (GMT+7)
+
+Integer divide-by-zero in the checked profile must produce a defined
+failure: a stable diagnostic on stderr and a fixed exit code, rather
+than the C undefined behaviour that `x / 0` gives at the hardware
+level (SIGFPE on most ISAs, silent nondeterminism on others). Float
+NaN/Inf is Phase 2.4; this phase scopes only `int / 0` and `int % 0`.
+
+### Goal-alignment audit (2.3)
+
+Phase 2.3 does not move the byte-equal stdout gate forward by itself,
+because vm3 returns `ErrDivByZero` (a Go-error) for divzero rather
+than printing to stdout. The user-facing win is the *runtime safety
+contract*: every binary produced by the C-AOT target must either
+finish cleanly with stdout matching vm3, or exit with a stable
+diagnostic. Without 2.3 the only outcome on a divzero trip is a
+host-dependent crash, which makes the target unfit for production
+embedding (CI runners, customer machines) and bricks the fixture
+gate the moment a fuzzer or human writes a one-line `print(1 / 0)`.
+
+### Decisions made (2.3)
+
+- **Runtime profile is "checked" by default.** Every `int / int` and
+  `int % int` site goes through a runtime helper that branches on
+  `rhs == 0`. The `--fast-int` profile, which inlines raw C `/` and
+  `%`, lands later (Phase 2.X follow-up); only the checked path is
+  wired in 2.3.
+- **Exit code is 5.** `abs(MOCHI_ERR_DIVZERO)`. The spec assigns
+  signed codes (`-5`) to keep the C-AOT internal numbering aligned
+  with the Mochi error-model namespace, but Unix exit codes are 8-bit
+  unsigned and we want a short, memorable number rather than the wrap
+  value 251. Documented in §9 of the MEP doc.
+- **Diagnostic text matches the runtime namespace.** The trip prints
+  `mochi: integer divide by zero\n` to stderr. We deliberately do not
+  copy the vm3 oracle text `vm3: integer division by zero`: vm3's
+  text is an *internal Go-side error string*, never seen by Mochi
+  end-users, so byte-equality on the divzero diagnostic is not part
+  of the gate. Using the `mochi:` prefix keeps the C-AOT binary's
+  user-facing diagnostics consistent with the rest of the runtime
+  (the MEP-45 §9 error model is the same surface for every code).
+- **Helper lives in `mochi/errors.h` + `errors.c`.** New runtime
+  files. `mochi_panic_div_zero` is `_Noreturn` and written into
+  `errors.c` so that exact one symbol per trip is needed. The two
+  per-op helpers `mochi_div_i64` and `mochi_mod_i64` are `static
+  inline` in the header, so the divzero branch sits next to the
+  arithmetic at the call site (no function-call cost on the hot
+  path), but the panic body is out-of-line and `_Noreturn` so the
+  optimiser can drop the post-call dead block.
+- **Both div and mod share the same panic.** The spec lumps both
+  under `MOCHI_ERR_DIVZERO`. vm3 raises the same `ErrDivByZero` for
+  `OpDivI64` and `OpModI64`. No separate "mod by zero" code.
+- **No INT64_MIN / -1 trap in 2.3.** That case is C UB but distinct
+  from divzero (it's overflow, code `MOCHI_ERR_OVERFLOW = -6`, debug
+  only). vm3 currently wraps for it. Leaving it as a Phase 2.X
+  follow-up rather than conflating it with 2.3.
+- **Emit changes are local to `emitBinary`.** When `op` is
+  `BinDivI64` we emit `mochi_div_i64(L, R)`; when `BinModI64` we emit
+  `mochi_mod_i64(L, R)`. Every other op keeps the infix form. The
+  prologue gains `#include "mochi/errors.h"`. No new aotir node, no
+  lowerer change: the IR still says "divide", and emit owns the
+  policy of *how* to make it safe.
+- **Argument evaluation order matches vm3 by convention.** In C the
+  argument-evaluation order for `mochi_div_i64(L, R)` is technically
+  unspecified, but every tier-1 toolchain (gcc, clang, MSVC) evaluates
+  left-to-right in practice and our Phase 2.3 fixtures do not rely on
+  side-effecting subexpressions. Tightening to a sequence-pointed
+  temp-pair lands only if a fixture forces it.
+- **Driver picks up the new runtime files automatically.** The embed
+  FS is extended; the `cc` invocation is changed to walk every
+  `runtime/src/*.c` rather than hard-coding `print.c`. Future runtime
+  files (`str.c`, `list.c`, ...) now ride for free.
+- **Negative fixtures get their own subdir.** Positive cases (which
+  do NOT trip divzero) go under
+  `tests/transpiler3/c/fixtures/divzero/`. Trip cases (which exit 5)
+  go under `tests/transpiler3/c/fixtures/divzero-trip/` with an
+  `exit.txt` and `stderr.txt` instead of `expect.txt`. Splitting the
+  fixture *shape* by directory keeps the gate test simple: each
+  directory has exactly one positive/negative convention.
+- **One Phase 2.3 gate test, two subtests.** `phase02_3_test.go`
+  hosts `TestPhase2Divzero` (positive fixtures, stdout match) and
+  `TestPhase2DivzeroTrip` (negative fixtures, exit code + stderr
+  match). Reuses `runFixtureSuite` for the positive set; the
+  negative set gets a dedicated walker.
+
+### Test set (2.3)
+
+- `transpiler3/c/emit/emit_phase23_test.go::TestEmitPhase23Divzero`
+  -- 4 cases pinning that `BinDivI64` and `BinModI64` emit
+  `mochi_div_i64(L,R)` and `mochi_mod_i64(L,R)` (not infix), that the
+  prologue gains the errors.h include, and that other binary ops
+  stay infix.
+- `transpiler3/c/build/phase02_3_test.go::TestPhase2Divzero`
+  -- positive fixtures: end-to-end gate across every
+  `tests/transpiler3/c/fixtures/divzero/<name>` directory; stdout
+  must match `expect.txt` byte-for-byte.
+- `transpiler3/c/build/phase02_3_test.go::TestPhase2DivzeroTrip`
+  -- negative fixtures: end-to-end gate across every
+  `tests/transpiler3/c/fixtures/divzero-trip/<name>` directory. Each
+  fixture must exit with code 5 and stderr must match `stderr.txt`
+  byte-for-byte.
 
 ## Decisions made
 
