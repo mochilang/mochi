@@ -158,6 +158,7 @@ func kindOf(o ir.OpCode) ProducerKind {
 		ir.OpCmpEqF64, ir.OpCmpNeF64, ir.OpCmpLtF64, ir.OpCmpLeF64, ir.OpCmpGtF64, ir.OpCmpGeF64,
 		ir.OpCmpEqStr, ir.OpCmpNeStr,
 		ir.OpCmpEqBool, ir.OpCmpNeBool,
+		ir.OpAndBool, ir.OpOrBool,
 		ir.OpNotBool,
 		ir.OpI64ToF64, ir.OpF64ToI64,
 		ir.OpSqrtF64,
@@ -400,7 +401,8 @@ func contractResult(o ir.OpCode) ir.Type {
 	case ir.OpCmpEqI64, ir.OpCmpNeI64, ir.OpCmpLtI64, ir.OpCmpLeI64, ir.OpCmpGtI64, ir.OpCmpGeI64,
 		ir.OpCmpEqI64Imm, ir.OpCmpNeI64Imm, ir.OpCmpLtI64Imm, ir.OpCmpLeI64Imm, ir.OpCmpGtI64Imm, ir.OpCmpGeI64Imm,
 		ir.OpCmpEqStr, ir.OpCmpNeStr,
-		ir.OpCmpEqBool, ir.OpCmpNeBool:
+		ir.OpCmpEqBool, ir.OpCmpNeBool,
+		ir.OpAndBool, ir.OpOrBool:
 		return ir.TypeBool
 	case ir.OpLenStr:
 		return ir.TypeI64

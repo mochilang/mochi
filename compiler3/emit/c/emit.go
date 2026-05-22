@@ -414,6 +414,15 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = ((!!%s) == (!!%s));\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpCmpNeBool:
 		fmt.Fprintf(w, "    %s = ((!!%s) != (!!%s));\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpAndBool:
+		// Both args are already-evaluated bool carriers. C99 `&&` is
+		// short-circuit at the AST level, but the IR pre-lowered the
+		// right operand into a separate SSA value, so the emitted op
+		// only performs the logical reduction (no actual short-
+		// circuit, which would require control-flow lowering).
+		fmt.Fprintf(w, "    %s = (%s && %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpOrBool:
+		fmt.Fprintf(w, "    %s = (%s || %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpConcatStr:
 		// mochi_str_concat allocates a NUL-terminated byte sequence
 		// holding the bytes of v.Args[0] followed by v.Args[1] and

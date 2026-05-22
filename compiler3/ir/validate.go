@@ -185,6 +185,8 @@ func opContract(o OpCode) opSig {
 		return opSig{TypeStr, [3]Type{TypeBool}}
 	case OpCmpEqBool, OpCmpNeBool:
 		return opSig{TypeBool, [3]Type{TypeBool, TypeBool}}
+	case OpAndBool, OpOrBool:
+		return opSig{TypeBool, [3]Type{TypeBool, TypeBool}}
 	case OpNewList:
 		return opSig{TypeList, [3]Type{}}
 	case OpListLenI64:
