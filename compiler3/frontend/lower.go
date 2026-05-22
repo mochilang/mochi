@@ -1198,6 +1198,14 @@ func (b *builder) lowerExprAsStmt(e *parser.Expr) (uint32, error) {
 			return 0, err
 		}
 		argType := b.fn.Values[arg].Type
+		// list<int>: lift through OpListI64ToStr so the single-arg
+		// print path can reuse the TypeStr fmt.Println binding. The
+		// runtime formatter (mochi_list_i64_to_str / Go-side helper)
+		// produces the Mochi reference `[a, b, c]` form.
+		if argType == ir.TypeList {
+			arg = b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpListI64ToStr, Args: []uint32{arg}})
+			argType = ir.TypeStr
+		}
 		goArgType := goTypeForIRType(argType)
 		if goArgType == "" {
 			return 0, fmt.Errorf("frontend: print() argument type %s unsupported in MVP", argType)
@@ -1280,6 +1288,8 @@ func (b *builder) liftToStr(argID uint32) (uint32, error) {
 		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpF64ToStr, Args: []uint32{argID}}), nil
 	case ir.TypeBool:
 		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpBoolToStr, Args: []uint32{argID}}), nil
+	case ir.TypeList:
+		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpListI64ToStr, Args: []uint32{argID}}), nil
 	}
 	return 0, fmt.Errorf("frontend: print() argument type %s unsupported in MVP", b.fn.Values[argID].Type)
 }

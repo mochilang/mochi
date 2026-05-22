@@ -374,6 +374,8 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    mochi_f64_array_set(%s, %s, %s);\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
 	case ir.OpListConcatI64:
 		fmt.Fprintf(w, "    %s = mochi_list_i64_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpListI64ToStr:
+		fmt.Fprintf(w, "    %s = mochi_list_i64_to_str(%s);\n", name, valueName(v.Args[0]))
 	case ir.OpF64ArrayConcat:
 		fmt.Fprintf(w, "    %s = mochi_f64_array_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpNewMap:

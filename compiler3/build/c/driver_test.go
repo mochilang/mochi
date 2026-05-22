@@ -2142,6 +2142,60 @@ func TestBuildSourceV010IfThenElseFixture(t *testing.T) {
 	}
 }
 
+// TestBuildSourcePrintListI64 pins MEP-42 Phase 4.2.13: print(xs)
+// where xs is a list<int>. Before this phase the frontend rejected
+// `print(list)` with `print() argument type list unsupported in MVP`.
+// After it, the value is lifted via OpListI64ToStr (-> TypeStr) then
+// fed into the existing single-arg print path. The runtime helper
+// mochi_list_i64_to_str produces the Mochi reference `[a, b, c]`
+// form (comma-space separators, square brackets, no newline) so the
+// C target byte-matches `mochi run`.
+func TestBuildSourcePrintListI64(t *testing.T) {
+	src := `let xs = [1, 2, 3, 4, 5]
+print(xs)
+`
+	if got, want := runMochiBuild(t, src), "[1, 2, 3, 4, 5]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourcePrintListI64Empty covers the empty-list edge case.
+// mochi_list_i64_to_str returns the static "[]" literal, no malloc.
+func TestBuildSourcePrintListI64Empty(t *testing.T) {
+	src := `let xs: list<int> = []
+print(xs)
+`
+	if got, want := runMochiBuild(t, src), "[]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourcePrintListI64MultiArg covers list<int> as one of
+// several print() args. liftToStr's new TypeList case converts the
+// list value to its display string, then the concat-with-separator
+// path joins it into the space-separated multi-arg form.
+func TestBuildSourcePrintListI64MultiArg(t *testing.T) {
+	src := `let xs = [10, 20, 30]
+print("values:", xs)
+`
+	if got, want := runMochiBuild(t, src), "values: [10, 20, 30]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourcePrintListI64AfterConcat covers a list grown via
+// concat: mochi_list_i64_to_str walks len, not cap, so a concat
+// producing a 3-element list prints `[1, 2, 3]` regardless of any
+// over-allocation in the concat helper.
+func TestBuildSourcePrintListI64AfterConcat(t *testing.T) {
+	src := `let xs = [1, 2] + [3]
+print(xs)
+`
+	if got, want := runMochiBuild(t, src), "[1, 2, 3]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.

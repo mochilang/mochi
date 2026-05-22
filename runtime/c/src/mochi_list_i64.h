@@ -63,6 +63,19 @@ void mochi_list_i64_set(mochi_list_i64 *l, int64_t i, int64_t v);
  * by b's. Neither operand is mutated; the result owns its own buffer. */
 mochi_list_i64 *mochi_list_i64_concat(const mochi_list_i64 *a, const mochi_list_i64 *b);
 
+/*
+ * mochi_list_i64_to_str returns a freshly malloc'd NUL-terminated string
+ * holding the Mochi reference display form of l: `[a, b, c]` with comma-
+ * space separators, square brackets, no trailing newline. Empty list
+ * returns "[]"; single-element returns "[x]". The result is owned by the
+ * runtime (currently leaked); callers must not free() it.
+ *
+ * Format matches `mochi run`'s list-printing rule so a program compiled
+ * with `mochi build --target=c` byte-matches the same source run under
+ * `mochi run` for any `print(xs)` where `xs: list<int>`.
+ */
+const char *mochi_list_i64_to_str(const mochi_list_i64 *l);
+
 #ifdef __cplusplus
 }
 #endif
