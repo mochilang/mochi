@@ -83,6 +83,7 @@ type BuildCmd struct {
 	CC             string `arg:"--cc" help:"C compiler to invoke (default: $MOCHI_CC or 'cc'); --target=c only"`
 	BinaryPath     string `arg:"--binary" help:"Output binary path; --target=c only"`
 	Static         bool   `arg:"--portable" help:"Statically link the binary (musl/glibc-static); --target=c only"`
+	Triple         string `arg:"--triple" help:"Target triple (e.g. x86_64-linux-musl, aarch64-macos, wasm32-wasi); --target=c only. When set, the driver defaults to 'zig cc' and passes -target=<triple>"`
 }
 
 type RunCmd struct {
@@ -268,6 +269,7 @@ func runBuildC(cmd *BuildCmd) error {
 		KeepEmit:   cmd.KeepEmit,
 		CC:         cmd.CC,
 		Static:     cmd.Static,
+		Triple:     cmd.Triple,
 	}
 	r, err := cbuild.BuildSource(cmd.File, opts)
 	if err != nil {
@@ -782,6 +784,7 @@ func newBuildCmd() *cobra.Command {
 	c.Flags().StringVar(&bc.CC, "cc", "", "C compiler to invoke (default: $MOCHI_CC or 'cc'); --target=c only")
 	c.Flags().StringVar(&bc.BinaryPath, "binary", "", "Output binary path; --target=c only")
 	c.Flags().BoolVar(&bc.Static, "portable", false, "Statically link the binary (musl/glibc-static); --target=c only")
+	c.Flags().StringVar(&bc.Triple, "triple", "", "Target triple (e.g. x86_64-linux-musl, aarch64-macos, wasm32-wasi); --target=c only. When set, the driver defaults to 'zig cc' and passes -target=<triple>")
 	return c
 }
 

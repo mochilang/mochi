@@ -44,6 +44,15 @@ type Options struct {
 	// main and the produced object cannot link as a standalone
 	// executable (suitable for the future --emit=c-library mode).
 	Main string
+	// Triple, when non-empty, requests a cross-compile to the given
+	// target triple (e.g. "x86_64-linux-musl", "aarch64-linux-musl",
+	// "wasm32-wasi"). The driver passes `-target=<triple>` to cc and,
+	// when CC and $MOCHI_CC are both empty, prefers `zig cc` as the
+	// default cross-compiler because Zig ships every musl + wasi-libc
+	// sysroot in-process, satisfying the §Top-line objective (single
+	// foreign-arch binary from any §9 host with no extra toolchain
+	// install). MEP-42 Phase 5.0.
+	Triple string
 }
 
 // Result is what the driver returns on success.
@@ -97,8 +106,12 @@ func Build(p *cgen.Program, opts Options) (Result, error) {
 		binPath = filepath.Join(opts.OutDir, "a.out")
 	}
 
-	cc := resolveCC(opts.CC)
-	args := []string{"-std=c99", "-O2", "-I", opts.OutDir}
+	ccExe, ccPrefix := resolveCC(opts.CC, opts.Triple)
+	args := append([]string{}, ccPrefix...)
+	args = append(args, "-std=c99", "-O2", "-I", opts.OutDir)
+	if opts.Triple != "" {
+		args = append(args, "-target", opts.Triple)
+	}
 	if opts.Static {
 		args = append(args, "-static")
 	}
@@ -109,14 +122,16 @@ func Build(p *cgen.Program, opts Options) (Result, error) {
 	// includes <math.h>, and Phase 4.3.5 onward emits real math
 	// builtins (sqrt and friends). On glibc/musl Linux libm is a
 	// separate archive; on macOS / *BSD the symbols live in libSystem
-	// so -lm is a no-op there. Either way it is harmless.
+	// so -lm is a no-op there. Either way it is harmless. On wasm32-wasi
+	// the wasi-libc archive already carries the math symbols, so -lm
+	// resolves to a vacuous archive and is still safe.
 	args = append(args, "-lm")
 
-	cmd := exec.Command(cc, args...)
+	cmd := exec.Command(ccExe, args...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return Result{SourcePath: srcPath}, fmt.Errorf("cbuild.Build: %s %s: %w\n%s",
-			cc, strings.Join(args, " "), err, out)
+			ccExe, strings.Join(args, " "), err, out)
 	}
 
 	if !opts.KeepEmit {
@@ -218,14 +233,43 @@ func BuildSource(srcPath string, opts Options) (Result, error) {
 	return Build(cp, opts)
 }
 
-// resolveCC returns the C compiler to invoke. Priority: explicit
-// Options.CC, then $MOCHI_CC, then "cc".
-func resolveCC(explicit string) string {
+// resolveCC returns the C compiler executable plus any leading
+// argument prefix the caller needs to splice in before the compiler's
+// own flags. Priority: explicit Options.CC, then $MOCHI_CC, then a
+// triple-aware default. When triple is non-empty and no explicit CC
+// is configured, the driver prefers `zig cc` (Zig ships every musl
+// and wasi-libc sysroot in-process, so cross-compiling needs no extra
+// install). When triple is empty the driver falls back to the host
+// `cc`. The argument prefix is the second return value: callers that
+// invoke `zig cc` need "cc" as the first argv element after the zig
+// binary path; host `cc` needs no prefix.
+func resolveCC(explicit, triple string) (string, []string) {
 	if explicit != "" {
-		return explicit
+		exe, prefix := splitCC(explicit)
+		return exe, prefix
 	}
 	if env := os.Getenv("MOCHI_CC"); env != "" {
-		return env
+		exe, prefix := splitCC(env)
+		return exe, prefix
 	}
-	return "cc"
+	if triple != "" {
+		return "zig", []string{"cc"}
+	}
+	return "cc", nil
+}
+
+// splitCC accepts either a bare executable ("cc", "/usr/bin/clang") or
+// a wrapper-form string with whitespace ("zig cc", "ccache clang") and
+// returns the executable plus any leading argv tokens. This lets users
+// pass `--cc="zig cc"` or `MOCHI_CC="ccache cc"` without the driver
+// having to special-case wrapper compilers.
+func splitCC(s string) (string, []string) {
+	fields := strings.Fields(s)
+	if len(fields) == 0 {
+		return "cc", nil
+	}
+	if len(fields) == 1 {
+		return fields[0], nil
+	}
+	return fields[0], fields[1:]
 }
