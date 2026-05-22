@@ -1,0 +1,8 @@
+let x = 5
+if x == 1 {
+  print(10)
+} else if x == 2 {
+  print(20)
+} else {
+  print(99)
+}
