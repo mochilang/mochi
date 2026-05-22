@@ -24,6 +24,8 @@
 
 #include <stdint.h>
 
+#include "mochi_str_array.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -68,6 +70,17 @@ int64_t mochi_map_str_i64_get(const mochi_map_str_i64 *m, const char *k);
  * stays with the caller.
  */
 void mochi_map_str_i64_set(mochi_map_str_i64 *m, const char *k, int64_t v);
+
+/*
+ * mochi_map_str_i64_sorted_keys returns a freshly-allocated
+ * mochi_str_array whose entries are m's keys in strcmp ascending
+ * order. Backs `for k in m` on the C target (Phase 4.2.23) by
+ * lowering map iteration to iteration over the sorted-keys carrier,
+ * matching the Mochi reference VM which sort.Strings the keys before
+ * iterating. Key pointers are borrowed from the map; the returned
+ * array shares the same `const char *` storage as the map.
+ */
+mochi_str_array *mochi_map_str_i64_sorted_keys(const mochi_map_str_i64 *m);
 
 #ifdef __cplusplus
 }

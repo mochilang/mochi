@@ -1159,6 +1159,21 @@ func (b *builder) lowerForCollection(s *parser.ForStmt) error {
 		return err
 	}
 	listType := b.fn.Values[xs].Type
+	// Phase 4.2.23: `for k in m` on map<str, i64> desugars to iteration
+	// over the sorted-keys list. The Mochi reference VM sorts map keys
+	// before iterating; mochi_map_str_i64_sorted_keys mirrors that on
+	// the C target so the produced output matches `mochi run` byte for
+	// byte. After this rewrite the loop continues through the existing
+	// TypeStrArr arm.
+	if listType == ir.TypeMapStrI64 {
+		xs = b.addValue(ir.Value{
+			Type:     ir.TypeStrArr,
+			ElemType: ir.TypeStr,
+			Op:       ir.OpMapStrI64SortedKeys,
+			Args:     []uint32{xs},
+		})
+		listType = ir.TypeStrArr
+	}
 	var lenOp ir.OpCode
 	var getOp ir.OpCode
 	var elemType ir.Type

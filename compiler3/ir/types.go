@@ -239,6 +239,12 @@ const (
 	OpMapSetStrI64
 	OpMapGetStrI64
 	OpMapLenStrI64
+	// OpMapStrI64SortedKeys returns the map's keys as a TypeStrArr
+	// sorted ascending by strcmp. Backs `for k in m` on the C target
+	// (Phase 4.2.23) by lowering map iteration to iteration over the
+	// sorted-keys carrier. Sorted order is required to match the
+	// Mochi reference VM which sorts keys before iterating maps.
+	OpMapStrI64SortedKeys
 
 	// Typed list<list<i64>> ops (Phase 4.2.21). Backs nested integer
 	// matrices like `[[1,2,3],[4,5,6]]` on the C target with
@@ -545,6 +551,8 @@ func (o OpCode) String() string {
 		return "map.get.str.i64"
 	case OpMapLenStrI64:
 		return "map.len.str.i64"
+	case OpMapStrI64SortedKeys:
+		return "map.str.i64.sortedkeys"
 	case OpNewListList:
 		return "newlistlist"
 	case OpListListPush:

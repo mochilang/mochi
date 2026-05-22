@@ -2774,6 +2774,46 @@ print(len(m))
 	}
 }
 
+// TestBuildSourceForInMapStrI64 pins the Phase 4.2.23 iteration:
+// `for k in m` over a map<str, i64> walks the keys in strcmp
+// ascending order, matching the Mochi reference VM which sorts map
+// keys before iterating. The keys "Charlie" / "Alice" / "Bob" are
+// deliberately inserted out of order to make the sort observable;
+// the output must come back Alice / Bob / Charlie.
+func TestBuildSourceForInMapStrI64(t *testing.T) {
+	src := `let scores = {
+  "Charlie": 88,
+  "Alice": 90,
+  "Bob": 82,
+}
+for name in scores {
+  let score = scores[name]
+  print(name, " scored ", score)
+}
+`
+	want := "Alice  scored  90\nBob  scored  82\nCharlie  scored  88\n"
+	if got := runMochiBuild(t, src); got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceForInMapStrI64Empty exercises the empty-map iteration
+// path: zero passes through the loop, prefix and suffix prints still
+// fire. Pins that the sorted-keys runtime helper returns a usable
+// empty mochi_str_array (cap=0, len=0) rather than crashing.
+func TestBuildSourceForInMapStrI64Empty(t *testing.T) {
+	src := `let m: map<string, int> = {}
+print("before")
+for k in m {
+  print("never:", k)
+}
+print("after")
+`
+	if got, want := runMochiBuild(t, src), "before\nafter\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.

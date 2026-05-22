@@ -110,3 +110,38 @@ void mochi_map_str_i64_set(mochi_map_str_i64 *m, const char *k, int64_t v) {
     }
     m->vals[i] = v;
 }
+
+static int mochi_map_str_keycmp(const void *a, const void *b) {
+    const char *const *pa = (const char *const *)a;
+    const char *const *pb = (const char *const *)b;
+    return strcmp(*pa, *pb);
+}
+
+mochi_str_array *mochi_map_str_i64_sorted_keys(const mochi_map_str_i64 *m) {
+    mochi_str_array *out = mochi_str_array_new();
+    if (m->len == 0) {
+        return out;
+    }
+    /* Collect every occupied key into a fresh contiguous buffer, qsort
+     * it by strcmp, then push each key into the returned array. The
+     * push path doubles cap from 4 on first push and again as needed,
+     * which is fine: m->len is the upper bound on capacity here. The
+     * intermediate buffer is freed before return; the array's own
+     * data backing is owned by the returned mochi_str_array. */
+    const char **keys = (const char **)malloc((size_t)m->len * sizeof(const char *));
+    if (keys == NULL) {
+        abort();
+    }
+    int64_t n = 0;
+    for (int64_t b = 0; b < m->cap; b++) {
+        if (m->occ[b] != 0) {
+            keys[n++] = m->keys[b];
+        }
+    }
+    qsort(keys, (size_t)n, sizeof(const char *), mochi_map_str_keycmp);
+    for (int64_t i = 0; i < n; i++) {
+        mochi_str_array_push(out, keys[i]);
+    }
+    free(keys);
+    return out;
+}

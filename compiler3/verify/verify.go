@@ -178,7 +178,8 @@ func kindOf(o ir.OpCode) ProducerKind {
 		ir.OpStrArrGetStr,
 		ir.OpStrArrSlice,
 		ir.OpListListGet,
-		ir.OpListListToStr:
+		ir.OpListListToStr,
+		ir.OpMapStrI64SortedKeys:
 		// OpListAnyGetAny returns a handle (TypeListAny) borrowed from
 		// an existing tree node. OpStrArrGetStr returns a handle
 		// (TypeStr) borrowed from a `const char**` slot. Rule A
@@ -483,6 +484,8 @@ func contractResult(o ir.OpCode) ir.Type {
 		return ir.TypeI64
 	case ir.OpListListToStr:
 		return ir.TypeStr
+	case ir.OpMapStrI64SortedKeys:
+		return ir.TypeStrArr
 	case ir.OpJsonI64Object:
 		return ir.TypeUnit
 	}
