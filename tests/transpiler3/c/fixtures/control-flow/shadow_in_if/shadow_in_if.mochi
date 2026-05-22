@@ -1,0 +1,6 @@
+let x = 1
+if true {
+  let x = 100
+  print(x)
+}
+print(x)

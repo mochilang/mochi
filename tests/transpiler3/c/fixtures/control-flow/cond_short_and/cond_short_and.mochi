@@ -1,0 +1,7 @@
+let a = true
+let b = false
+if a && b {
+  print(1)
+} else {
+  print(0)
+}

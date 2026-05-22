@@ -1,0 +1,6 @@
+var i = 0
+while i < 3 {
+  let doubled = i * 2
+  print(doubled)
+  i = i + 1
+}

@@ -8,30 +8,31 @@ import (
 	"mochi/types"
 )
 
-// TestLowerRejectsPhase21Plus pins the Phase 2.0 surface boundary:
-// shapes that belong in 2.1 (let/var, if, while, for, return) or
-// later must produce a clear "unsupported" diagnostic rather than
-// silently being miscompiled.
-func TestLowerRejectsPhase21Plus(t *testing.T) {
+// TestLowerRejectsPhase22Plus pins the Phase 2.1 surface boundary:
+// shapes that belong in 2.2 (for-in, user functions) or later
+// (records, casts, none/Option, mixed-type arithmetic) must produce a
+// clear, phase-named diagnostic rather than silently being
+// miscompiled.
+func TestLowerRejectsPhase22Plus(t *testing.T) {
 	cases := []struct {
 		name    string
 		program string
 		want    string
 	}{
 		{
-			name:    "let_binding",
-			program: "let x = 1\nprint(x)\n",
-			want:    "Phase 2.0",
-		},
-		{
-			name:    "if_expression",
-			program: "if true { print(1) } else { print(2) }\n",
-			want:    "Phase 2.0",
-		},
-		{
-			name:    "user_function_call",
+			name:    "user_function_decl",
 			program: "fun foo() { print(1) }\nfoo()\n",
-			want:    "Phase 2.0",
+			want:    "Phase 2.2",
+		},
+		{
+			name:    "for_loop",
+			program: "for i in 0..3 { print(i) }\n",
+			want:    "Phase 2.2",
+		},
+		{
+			name:    "value_return",
+			program: "return 1\n",
+			want:    "Phase 2.2",
 		},
 		{
 			name:    "mixed_int_float_arith",
@@ -42,6 +43,36 @@ func TestLowerRejectsPhase21Plus(t *testing.T) {
 			name:    "none_literal",
 			program: "print(none)\n",
 			want:    "Option",
+		},
+		{
+			name:    "break_outside_loop",
+			program: "break\n",
+			want:    "break outside",
+		},
+		{
+			name:    "continue_outside_loop",
+			program: "continue\n",
+			want:    "continue outside",
+		},
+		{
+			name:    "assign_to_let",
+			program: "let x = 1\nx = 2\n",
+			want:    "immutable",
+		},
+		{
+			name:    "assign_to_undeclared",
+			program: "x = 1\n",
+			want:    "undeclared",
+		},
+		{
+			name:    "if_cond_not_bool",
+			program: "if 1 { print(1) }\n",
+			want:    "if cond must be bool",
+		},
+		{
+			name:    "while_cond_not_bool",
+			program: "while 1 { print(1) }\n",
+			want:    "while cond must be bool",
 		},
 	}
 	for _, c := range cases {

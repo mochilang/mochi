@@ -1,0 +1,6 @@
+let x = 10
+if x > 5 {
+  let y = x + 1
+  print(y)
+}
+print(x)
