@@ -192,6 +192,162 @@ type builder struct {
 	// non-empty literals are out of scope until a sub-phase widens the
 	// IR's map family.
 	expectedMap bool
+	// loops is the lexical stack of enclosing loops, deepest last. Each
+	// entry knows where `break` and `continue` should jump to and which
+	// SSA bindings are phi-tracked at the header so an exit edge can
+	// snapshot the live values. Pushed by lowerWhile/lowerFor/
+	// lowerForCollection and popped after their body finishes lowering.
+	loops []loopCtx
+}
+
+// loopEdge captures one out-edge from a loop body: the block the edge
+// leaves from and the SSA snapshot of every phi-tracked binding at
+// that point. Used to extend header phis with continue edges and to
+// build cont-block phis when at least one `break` fires.
+type loopEdge struct {
+	block uint32
+	vals  []uint32
+}
+
+// loopCtx is the per-loop state pushed by lowerWhile/lowerFor/
+// lowerForCollection. It is the lookup target for `break` and
+// `continue` so they can find their jump targets, run the per-iter
+// step (for-range, for-collection), and record the SSA snapshot for
+// later phi reconstruction.
+type loopCtx struct {
+	headID uint32   // continue jumps here (after step, if any)
+	contID uint32   // break jumps here
+	names  []string // phi-tracked binding names, sorted
+	phis   []uint32 // header phi value IDs, indexed by names
+	// step is the synthetic iteration-end mutation (e.g. `x = x + 1`
+	// in for-range, `idx = idx + 1` in for-collection). nil for while.
+	// Runs on every continue path AND on natural body fall-through so
+	// the loop always advances.
+	step func()
+	// breaks records every `break` edge so the cont block can phi-
+	// merge them with the natural cond-false flow once the body has
+	// finished lowering. continues are extended into header phis
+	// eagerly inside endIteration, so no separate list is needed.
+	breaks []loopEdge
+}
+
+// snapshotEnv returns the keys of b.values in sorted order alongside
+// the matching value IDs. Used by every loop lowerer to capture the
+// pre-loop env for header phi construction and to snapshot the live
+// values at each break/continue edge.
+func (b *builder) snapshotEnv() ([]string, []uint32) {
+	names := make([]string, 0, len(b.values))
+	for name := range b.values {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	vals := make([]uint32, len(names))
+	for i, name := range names {
+		vals[i] = b.values[name]
+	}
+	return names, vals
+}
+
+// snapshotLoop returns the current SSA values for each name tracked
+// by the innermost loop. Names not present in b.values (which can
+// only happen if the user-visible env shrank between loop entry and
+// the break/continue site, currently impossible) fall back to the
+// header phi so the snapshot is always well-formed.
+func (b *builder) snapshotLoop(idx int) []uint32 {
+	loop := &b.loops[idx]
+	out := make([]uint32, len(loop.names))
+	for i, name := range loop.names {
+		if v, ok := b.values[name]; ok {
+			out[i] = v
+		} else {
+			out[i] = loop.phis[i]
+		}
+	}
+	return out
+}
+
+// endIteration finishes the current body iteration: runs the step
+// (if any), extends each header phi with a (curBlock, currentValue)
+// back-edge entry, and jumps to the header. Called from natural
+// body fall-through and from `continue`. Both share the step + phi-
+// extend + jump sequence so the loop always advances and every back-
+// edge participates in the header phi.
+func (b *builder) endIteration() {
+	idx := len(b.loops) - 1
+	loop := &b.loops[idx]
+	if loop.step != nil {
+		loop.step()
+	}
+	vals := b.snapshotLoop(idx)
+	endBlock := b.curBlock
+	for i, phi := range loop.phis {
+		b.fn.Values[phi].Args = append(b.fn.Values[phi].Args, endBlock, vals[i])
+	}
+	b.terminator(ir.Terminator{Kind: ir.TermJump, Target: loop.headID})
+}
+
+// lowerBreak lowers a `break` statement: snapshot the live env into
+// the loop's break list, jump to the loop's cont block, mark
+// b.terminated. The cont block's phi reconstruction (or single-pred
+// passthrough) happens after the body finishes lowering.
+func (b *builder) lowerBreak() error {
+	if len(b.loops) == 0 {
+		return fmt.Errorf("frontend: break outside of loop")
+	}
+	idx := len(b.loops) - 1
+	vals := b.snapshotLoop(idx)
+	b.loops[idx].breaks = append(b.loops[idx].breaks, loopEdge{
+		block: b.curBlock,
+		vals:  vals,
+	})
+	b.terminator(ir.Terminator{Kind: ir.TermJump, Target: b.loops[idx].contID})
+	return nil
+}
+
+// lowerContinue lowers a `continue` statement: run the loop's step
+// (so the loop advances on the continue path too), snapshot the
+// resulting env, extend each header phi, jump to the header, mark
+// b.terminated. Shares the entire sequence with endIteration so
+// natural fall-through and `continue` behave identically.
+func (b *builder) lowerContinue() error {
+	if len(b.loops) == 0 {
+		return fmt.Errorf("frontend: continue outside of loop")
+	}
+	b.endIteration()
+	return nil
+}
+
+// finishCont sets up the cont block of a just-lowered loop. With no
+// `break` edges the cont has only the head as a predecessor (the
+// cond-false flow), so the post-loop binding for each phi-tracked
+// name is the header phi itself. With one or more breaks the cont
+// has multiple preds and needs its own phi per name, joining the
+// cond-false head phi with each break snapshot. Returns the new env
+// to install at the cont block.
+func (b *builder) finishCont(loop loopCtx, headID, contID uint32) map[string]uint32 {
+	env := make(map[string]uint32, len(loop.names))
+	if len(loop.breaks) == 0 {
+		for i, name := range loop.names {
+			env[name] = loop.phis[i]
+		}
+		return env
+	}
+	saved := b.curBlock
+	b.curBlock = contID
+	for i, name := range loop.names {
+		args := []uint32{headID, loop.phis[i]}
+		for _, brk := range loop.breaks {
+			args = append(args, brk.block, brk.vals[i])
+		}
+		phiVid := b.addValue(ir.Value{
+			Type: b.fn.Values[loop.phis[i]].Type,
+			Op:   ir.OpPhi,
+			Args: args,
+		})
+		env[name] = phiVid
+	}
+	b.curBlock = saved
+	return env
 }
 
 func newBuilder(fn *ir.Function, userFns map[string]funEntry, prog *gogen.Program, goImports map[string]*goImport) *builder {
@@ -388,6 +544,10 @@ func (b *builder) lowerStmt(st *parser.Statement) error {
 		return b.lowerWhile(st.While)
 	case st.For != nil:
 		return b.lowerFor(st.For)
+	case st.Break != nil:
+		return b.lowerBreak()
+	case st.Continue != nil:
+		return b.lowerContinue()
 	case st.Expr != nil:
 		_, err := b.lowerExprAsStmt(st.Expr.Expr)
 		return err
@@ -673,24 +833,15 @@ func (b *builder) lowerWhile(s *parser.WhileStmt) error {
 	bodyID := b.fn.AddBlock()
 	contID := b.fn.AddBlock()
 
-	// Snapshot the bindings live at loop entry. Iteration order is
-	// stable so the IR (and therefore emitted C/Go) is deterministic
-	// across builds.
-	names := make([]string, 0, len(b.values))
-	for name := range b.values {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-	preVals := make([]uint32, len(names))
-	for i, name := range names {
-		preVals[i] = b.values[name]
-	}
+	names, preVals := b.snapshotEnv()
 
 	// Pre-header jumps unconditionally to the header.
 	b.terminator(ir.Terminator{Kind: ir.TermJump, Target: headID})
 
-	// Header: one phi per snapshotted binding, with the back-edge slot
-	// left at sentinel 0 to be patched after the body lowers.
+	// Header: one phi per snapshotted binding. Each phi starts with
+	// only the pre-header pair (preID, preVid); endIteration and
+	// lowerContinue extend the Args list with one (block, val) pair
+	// per back-edge once the body finishes lowering.
 	b.curBlock = headID
 	b.terminated = false
 	phis := make([]uint32, len(names))
@@ -699,7 +850,7 @@ func (b *builder) lowerWhile(s *parser.WhileStmt) error {
 		phiVid := b.addValue(ir.Value{
 			Type: b.fn.Values[preVid].Type,
 			Op:   ir.OpPhi,
-			Args: []uint32{preID, preVid, bodyID, 0},
+			Args: []uint32{preID, preVid},
 		})
 		phis[i] = phiVid
 		b.values[name] = phiVid
@@ -713,7 +864,13 @@ func (b *builder) lowerWhile(s *parser.WhileStmt) error {
 	}
 	b.terminator(ir.Terminator{Kind: ir.TermBranch, Value: cond, IfTrue: bodyID, IfFalse: contID})
 
-	// Body: lower statements, then jump back to the header.
+	b.loops = append(b.loops, loopCtx{
+		headID: headID,
+		contID: contID,
+		names:  names,
+		phis:   phis,
+	})
+
 	b.curBlock = bodyID
 	b.terminated = false
 	for _, st := range s.Body {
@@ -725,34 +882,16 @@ func (b *builder) lowerWhile(s *parser.WhileStmt) error {
 		}
 	}
 	if !b.terminated {
-		// Patch back-edge slots from the post-body env before jumping.
-		// The predecessor block is b.curBlock (the actual end of the
-		// body), which differs from bodyID when the body contains
-		// nested control flow that ends in a merge block.
-		endBlock := b.curBlock
-		for i, name := range names {
-			b.fn.Values[phis[i]].Args[2] = endBlock
-			b.fn.Values[phis[i]].Args[3] = b.values[name]
-		}
-		b.terminator(ir.Terminator{Kind: ir.TermJump, Target: headID})
-	} else {
-		// Body terminated unconditionally (e.g., return). The header has
-		// only the pre-header as a predecessor; drop the back-edge slot
-		// from every phi so the validator's arity check is satisfied.
-		head := b.fn.Block(headID)
-		head.Preds = []uint32{preID}
-		for _, phiVid := range phis {
-			phi := &b.fn.Values[phiVid]
-			phi.Args = phi.Args[:2]
-		}
+		b.endIteration()
 	}
 
-	// Continuation: the live value for each snapshotted binding is the
-	// header phi (cont's only predecessor is the header).
+	loop := b.loops[len(b.loops)-1]
+	b.loops = b.loops[:len(b.loops)-1]
+
 	b.curBlock = contID
 	b.terminated = false
-	for i, name := range names {
-		b.values[name] = phis[i]
+	for k, v := range b.finishCont(loop, headID, contID) {
+		b.values[k] = v
 	}
 	return nil
 }
@@ -803,15 +942,7 @@ func (b *builder) lowerFor(s *parser.ForStmt) error {
 	bodyID := b.fn.AddBlock()
 	contID := b.fn.AddBlock()
 
-	names := make([]string, 0, len(b.values))
-	for name := range b.values {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-	preVals := make([]uint32, len(names))
-	for i, name := range names {
-		preVals[i] = b.values[name]
-	}
+	names, preVals := b.snapshotEnv()
 
 	b.terminator(ir.Terminator{Kind: ir.TermJump, Target: headID})
 
@@ -824,7 +955,7 @@ func (b *builder) lowerFor(s *parser.ForStmt) error {
 		phiVid := b.addValue(ir.Value{
 			Type: b.fn.Values[preVid].Type,
 			Op:   ir.OpPhi,
-			Args: []uint32{preID, preVid, bodyID, 0},
+			Args: []uint32{preID, preVid},
 		})
 		phis[i] = phiVid
 		b.values[name] = phiVid
@@ -839,6 +970,25 @@ func (b *builder) lowerFor(s *parser.ForStmt) error {
 	})
 	b.terminator(ir.Terminator{Kind: ir.TermBranch, Value: cond, IfTrue: bodyID, IfFalse: contID})
 
+	// The step closure performs the synthetic `x = x + 1` against the
+	// current SSA binding for `x` (normally the header phi, but a body
+	// rebind takes precedence). Captured by reference into the loop
+	// ctx so endIteration and lowerContinue both run the same step.
+	step := func() {
+		cur := b.values[loopName]
+		one := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpConst, Const: 1})
+		next := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpAddI64, Args: []uint32{cur, one}})
+		b.values[loopName] = next
+	}
+
+	b.loops = append(b.loops, loopCtx{
+		headID: headID,
+		contID: contID,
+		names:  names,
+		phis:   phis,
+		step:   step,
+	})
+
 	b.curBlock = bodyID
 	b.terminated = false
 	for _, st := range s.Body {
@@ -850,37 +1000,16 @@ func (b *builder) lowerFor(s *parser.ForStmt) error {
 		}
 	}
 	if !b.terminated {
-		// Synthetic `x = x + 1` step at the end of the body. The
-		// increment runs against the current SSA binding for `x`,
-		// which is normally the header phi but would be a rebind if
-		// the user shadowed the loop variable inside the body.
-		cur := b.values[loopName]
-		one := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpConst, Const: 1})
-		next := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpAddI64, Args: []uint32{cur, one}})
-		b.values[loopName] = next
-		// Patch back-edge slots. The predecessor block is b.curBlock
-		// (the actual end of the body), which differs from bodyID when
-		// the body contains nested control flow that ends in a merge
-		// block (e.g., an inner if-statement).
-		endBlock := b.curBlock
-		for i, name := range names {
-			b.fn.Values[phis[i]].Args[2] = endBlock
-			b.fn.Values[phis[i]].Args[3] = b.values[name]
-		}
-		b.terminator(ir.Terminator{Kind: ir.TermJump, Target: headID})
-	} else {
-		head := b.fn.Block(headID)
-		head.Preds = []uint32{preID}
-		for _, phiVid := range phis {
-			phi := &b.fn.Values[phiVid]
-			phi.Args = phi.Args[:2]
-		}
+		b.endIteration()
 	}
+
+	loop := b.loops[len(b.loops)-1]
+	b.loops = b.loops[:len(b.loops)-1]
 
 	b.curBlock = contID
 	b.terminated = false
-	for i, name := range names {
-		b.values[name] = phis[i]
+	for k, v := range b.finishCont(loop, headID, contID) {
+		b.values[k] = v
 	}
 	// Restore the shadowed binding; the loop variable is dead after the
 	// loop. Without this, a subsequent reference to `loopName` in the
@@ -952,17 +1081,18 @@ func (b *builder) lowerForCollection(s *parser.ForStmt) error {
 	bodyID := b.fn.AddBlock()
 	contID := b.fn.AddBlock()
 
-	names := make([]string, 0, len(b.values))
-	for name := range b.values {
+	// loopName is reset every iteration to xs[idxPhi], so it is not
+	// phi-tracked at the header. Exclude it from the snapshot so a
+	// nested break/continue doesn't try to carry it across the edge.
+	allNames, allVals := b.snapshotEnv()
+	names := make([]string, 0, len(allNames))
+	preVals := make([]uint32, 0, len(allNames))
+	for i, name := range allNames {
 		if name == loopName {
 			continue
 		}
 		names = append(names, name)
-	}
-	sort.Strings(names)
-	preVals := make([]uint32, len(names))
-	for i, name := range names {
-		preVals[i] = b.values[name]
+		preVals = append(preVals, allVals[i])
 	}
 
 	b.terminator(ir.Terminator{Kind: ir.TermJump, Target: headID})
@@ -976,7 +1106,7 @@ func (b *builder) lowerForCollection(s *parser.ForStmt) error {
 		phiVid := b.addValue(ir.Value{
 			Type: b.fn.Values[preVid].Type,
 			Op:   ir.OpPhi,
-			Args: []uint32{preID, preVid, bodyID, 0},
+			Args: []uint32{preID, preVid},
 		})
 		phis[i] = phiVid
 		b.values[name] = phiVid
@@ -990,6 +1120,21 @@ func (b *builder) lowerForCollection(s *parser.ForStmt) error {
 		Args: []uint32{idxPhi, lenID},
 	})
 	b.terminator(ir.Terminator{Kind: ir.TermBranch, Value: cond, IfTrue: bodyID, IfFalse: contID})
+
+	step := func() {
+		cur := b.values[idxName]
+		one := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpConst, Const: 1})
+		next := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpAddI64, Args: []uint32{cur, one}})
+		b.values[idxName] = next
+	}
+
+	b.loops = append(b.loops, loopCtx{
+		headID: headID,
+		contID: contID,
+		names:  names,
+		phis:   phis,
+		step:   step,
+	})
 
 	b.curBlock = bodyID
 	b.terminated = false
@@ -1010,31 +1155,16 @@ func (b *builder) lowerForCollection(s *parser.ForStmt) error {
 		}
 	}
 	if !b.terminated {
-		// Synthetic `i = i + 1` step. Use the current idx binding from
-		// the env (normally the header phi).
-		cur := b.values[idxName]
-		one := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpConst, Const: 1})
-		next := b.addValue(ir.Value{Type: ir.TypeI64, Op: ir.OpAddI64, Args: []uint32{cur, one}})
-		b.values[idxName] = next
-		endBlock := b.curBlock
-		for i, name := range names {
-			b.fn.Values[phis[i]].Args[2] = endBlock
-			b.fn.Values[phis[i]].Args[3] = b.values[name]
-		}
-		b.terminator(ir.Terminator{Kind: ir.TermJump, Target: headID})
-	} else {
-		head := b.fn.Block(headID)
-		head.Preds = []uint32{preID}
-		for _, phiVid := range phis {
-			phi := &b.fn.Values[phiVid]
-			phi.Args = phi.Args[:2]
-		}
+		b.endIteration()
 	}
+
+	loop := b.loops[len(b.loops)-1]
+	b.loops = b.loops[:len(b.loops)-1]
 
 	b.curBlock = contID
 	b.terminated = false
-	for i, name := range names {
-		b.values[name] = phis[i]
+	for k, v := range b.finishCont(loop, headID, contID) {
+		b.values[k] = v
 	}
 	// The idx counter is dead after the loop. Drop the synthetic binding
 	// so a later for-in over the same name does not collide.

@@ -1865,6 +1865,135 @@ func TestBuildSourceV03LogicFixture(t *testing.T) {
 	}
 }
 
+// TestBuildSourceBreakInForRange pins MEP-42 Phase 4.2.10: a bare
+// `break` inside a `for x in lo..hi` loop exits the loop at the
+// first iteration where the condition fires. Before this sub-phase,
+// the frontend lower path errored with `statement kind unsupported
+// in MVP` for any `break` or `continue`. After it, `break` lowers
+// to a jump to the loop's cont block.
+func TestBuildSourceBreakInForRange(t *testing.T) {
+	src := `for i in 0..10 {
+  if i == 3 {
+    break
+  }
+  print(i)
+}
+print("done")
+`
+	if got, want := runMochiBuild(t, src), "0\n1\n2\ndone\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceContinueInForRange pins `continue` inside a for-
+// range loop: every iteration where the predicate fires skips to
+// the iteration step. The loop variable still advances so the loop
+// terminates.
+func TestBuildSourceContinueInForRange(t *testing.T) {
+	src := `for i in 0..5 {
+  if i == 2 {
+    continue
+  }
+  print(i)
+}
+`
+	if got, want := runMochiBuild(t, src), "0\n1\n3\n4\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceBreakInWhile pins `break` inside a `while cond`
+// loop: the body's exit edge bypasses the cond test on the next
+// iteration. Cont block has [head, breakBlock] as predecessors.
+func TestBuildSourceBreakInWhile(t *testing.T) {
+	src := `var i = 0
+while i < 100 {
+  if i == 4 {
+    break
+  }
+  print(i)
+  i = i + 1
+}
+print("after")
+`
+	if got, want := runMochiBuild(t, src), "0\n1\n2\n3\nafter\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceContinueInWhile pins `continue` inside `while`:
+// since while has no synthetic step, the continue path must include
+// the user's own counter increment for the loop to terminate.
+func TestBuildSourceContinueInWhile(t *testing.T) {
+	src := `var i = 0
+while i < 5 {
+  i = i + 1
+  if i == 3 {
+    continue
+  }
+  print(i)
+}
+`
+	if got, want := runMochiBuild(t, src), "1\n2\n4\n5\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceBreakContinueCombined pins the v0.3/break-continuous
+// pattern: a for-collection loop with both `continue` (skip evens)
+// and `break` (exit on threshold), exercising both edges from the
+// same loop's body. Cont's phi machinery joins the cond-false head
+// flow with the break snapshot; the head's phi list grows by one
+// pair per continue.
+func TestBuildSourceBreakContinueCombined(t *testing.T) {
+	src := `let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+for n in numbers {
+  if n % 2 == 0 {
+    continue
+  }
+  if n > 7 {
+    break
+  }
+  print("odd:", n)
+}
+`
+	if got, want := runMochiBuild(t, src), "odd: 1\nodd: 3\nodd: 5\nodd: 7\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceBreakInNestedLoop pins that `break` is innermost-
+// loop-scoped: an inner break exits only the inner loop, the outer
+// loop keeps iterating.
+func TestBuildSourceBreakInNestedLoop(t *testing.T) {
+	src := `for i in 0..3 {
+  for j in 0..5 {
+    if j == 2 {
+      break
+    }
+    print(i, j)
+  }
+}
+`
+	if got, want := runMochiBuild(t, src), "0 0\n0 1\n1 0\n1 1\n2 0\n2 1\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV03BreakContinuousFixture pins the actual on-disk
+// fixture so a regression in either the example or the lowering is
+// caught here. This is the user-facing motivation for Phase 4.2.10.
+func TestBuildSourceV03BreakContinuousFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.3/break-continuous.mochi")
+	if err != nil {
+		t.Fatalf("read v0.3 break-continuous fixture: %v", err)
+	}
+	want := "odd number: 1\nodd number: 3\nodd number: 5\nodd number: 7\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.3/break-continuous stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceSpectralNormBgFixture pins the unmodified
 // bench/template/bg/spectral_norm fixture (N=100) on the C target.
 // This is the §10.7 closeout for spectral_norm at the fixture level
