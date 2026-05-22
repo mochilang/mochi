@@ -11,5 +11,5 @@ import "embed"
 // phase that lands a new runtime module appends its files to
 // the directive list below.
 //
-//go:embed include/mochi/print.h include/mochi/errors.h src/print.c src/errors.c
+//go:embed include/mochi/print.h include/mochi/errors.h include/mochi/list.h src/print.c src/errors.c src/list.c
 var Files embed.FS
