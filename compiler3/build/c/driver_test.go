@@ -2330,6 +2330,96 @@ print(xs[-3])
 	}
 }
 
+// Phase 4.2.16: top-level `let` is in scope inside user functions.
+// Before this phase, a fun body that referenced a module-level let
+// failed with `frontend: unbound identifier`. The frontend now
+// pre-scans top-level lets and inlines the RHS at each use site
+// inside fun bodies, caching the lowered value per builder so the
+// constant is materialised once per function body.
+func TestBuildSourceGlobalLetIntFromFn(t *testing.T) {
+	src := `let n = 21
+
+fun twice(): int {
+  return n * 2
+}
+
+print(twice())
+`
+	if got, want := runMochiBuild(t, src), "42\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func TestBuildSourceGlobalLetFloatFromFn(t *testing.T) {
+	src := `let pi = 3.14
+
+fun area(r: float): float {
+  return pi * r * r
+}
+
+print(area(10.0))
+`
+	if got, want := runMochiBuild(t, src), "314\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceGlobalLetMultipleRefs pins the per-builder cache:
+// referencing the same global twice in one fun body must lower the
+// RHS once (re-using the same SSA value), not twice. Result-wise
+// either still prints "44", so this test is a behavioural smoke
+// check; cache correctness is observed via the test suite staying
+// fast and the emitted code having a single OpConst for the global.
+func TestBuildSourceGlobalLetMultipleRefs(t *testing.T) {
+	src := `let n = 22
+
+fun add(): int {
+  return n + n
+}
+
+print(add())
+`
+	if got, want := runMochiBuild(t, src), "44\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func TestBuildSourceGlobalLetMixedScopes(t *testing.T) {
+	src := `let a = 10
+let b = 5
+
+fun diff(): int {
+  return a - b
+}
+
+print(a)
+print(b)
+print(diff())
+`
+	if got, want := runMochiBuild(t, src), "10\n5\n5\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceGlobalLetShadowedByParam confirms that a function
+// parameter still shadows a same-named module global. The fallback
+// only fires when the name is not in b.values, so the param binding
+// (which writes b.values) wins.
+func TestBuildSourceGlobalLetShadowedByParam(t *testing.T) {
+	src := `let x = 100
+
+fun id(x: int): int {
+  return x
+}
+
+print(id(7))
+print(x)
+`
+	if got, want := runMochiBuild(t, src), "7\n100\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.

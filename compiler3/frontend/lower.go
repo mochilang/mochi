@@ -91,10 +91,27 @@ func Lower(prog *parser.Program) (*gogen.Program, error) {
 		}
 	}
 
+	// Collect top-level (module-scope) `let NAME = EXPR` bindings.
+	// User functions can read these as if they were lexically in
+	// scope, mirroring the reference VM. Phase 4.2.16 inlines the
+	// RHS expression at each use site in a user function; the cache
+	// in builder.globalCache ensures each function materialises one
+	// SSA value per global it reads. `var` is excluded because
+	// mutable globals would need a shared storage cell; only `let`
+	// bindings (immutable) are advertised. The map is built before
+	// user funs are lowered so any forward reference (a function
+	// defined before the global it uses) resolves correctly.
+	globals := map[string]*parser.Expr{}
+	for _, st := range prog.Statements {
+		if st.Let != nil && st.Let.Value != nil {
+			globals[st.Let.Name] = st.Let.Value
+		}
+	}
+
 	// Lower each user fun. Each lowering must finish before the next
 	// because they share the program-level function table.
 	for name, e := range userFns {
-		if err := lowerFun(p, e.index, e.stmt, userFns, goImports); err != nil {
+		if err := lowerFun(p, e.index, e.stmt, userFns, goImports, globals); err != nil {
 			return nil, fmt.Errorf("lower fun %s: %w", name, err)
 		}
 	}
@@ -116,7 +133,7 @@ func Lower(prog *parser.Program) (*gogen.Program, error) {
 	if len(topLevel) > 0 {
 		mainFn := &ir.Function{Name: "main", Result: ir.TypeUnit}
 		p.Funcs = append(p.Funcs, mainFn)
-		b := newBuilder(mainFn, userFns, p, goImports)
+		b := newBuilder(mainFn, userFns, p, goImports, globals)
 		entry := b.fn.AddBlock()
 		b.curBlock = entry
 		for _, st := range topLevel {
@@ -175,6 +192,15 @@ type builder struct {
 	// query/loop work needed for full phi insertion is part of the
 	// post-MVP widening.
 	values map[string]uint32
+	// globals is the module-scope `let NAME = EXPR` table (Phase
+	// 4.2.16). When identifier lookup misses `values`, the builder
+	// inlines the global's RHS expression at the use site so a user
+	// function can read top-level constants. The map is shared across
+	// every builder in the program; the per-function `globalCache`
+	// below memoises so each function materialises one SSA value per
+	// global it actually reads.
+	globals     map[string]*parser.Expr
+	globalCache map[string]uint32
 	// expectedListElem optionally hints the element type of an
 	// upcoming list literal lowering, set by `let/var x: list<T> = ...`
 	// just before lowerExpr and cleared after. Only lowerListLiteral
@@ -350,22 +376,24 @@ func (b *builder) finishCont(loop loopCtx, headID, contID uint32) map[string]uin
 	return env
 }
 
-func newBuilder(fn *ir.Function, userFns map[string]funEntry, prog *gogen.Program, goImports map[string]*goImport) *builder {
+func newBuilder(fn *ir.Function, userFns map[string]funEntry, prog *gogen.Program, goImports map[string]*goImport, globals map[string]*parser.Expr) *builder {
 	return &builder{
-		fn:        fn,
-		prog:      prog,
-		userFns:   userFns,
-		goImports: goImports,
-		values:    map[string]uint32{},
+		fn:          fn,
+		prog:        prog,
+		userFns:     userFns,
+		goImports:   goImports,
+		values:      map[string]uint32{},
+		globals:     globals,
+		globalCache: map[string]uint32{},
 	}
 }
 
-func lowerFun(p *gogen.Program, idx uint32, fs *parser.FunStmt, userFns map[string]funEntry, goImports map[string]*goImport) error {
+func lowerFun(p *gogen.Program, idx uint32, fs *parser.FunStmt, userFns map[string]funEntry, goImports map[string]*goImport, globals map[string]*parser.Expr) error {
 	fn := p.Funcs[idx]
 	// fn.Result is pre-populated by Lower's first pass so cross-fun
 	// calls can resolve their value type regardless of map iteration
 	// order. lowerFun only fills in Params and Blocks.
-	b := newBuilder(fn, userFns, p, goImports)
+	b := newBuilder(fn, userFns, p, goImports, globals)
 	// Params: every param is an OpParam value of the declared type.
 	for _, param := range fs.Params {
 		pt := ir.TypeI64
@@ -1832,6 +1860,22 @@ func (b *builder) lowerPrimary(p *parser.Primary) (uint32, error) {
 		}
 		id, ok := b.values[p.Selector.Root]
 		if !ok {
+			// Phase 4.2.16: module-scope `let NAME = EXPR` falls
+			// through to the program-level globals table. The first
+			// use materialises a fresh SSA value by lowering the RHS
+			// expression in the current builder; subsequent uses
+			// return the cached id so each function has one copy.
+			if cached, ok := b.globalCache[p.Selector.Root]; ok {
+				return cached, nil
+			}
+			if gexpr, ok := b.globals[p.Selector.Root]; ok {
+				gid, err := b.lowerExpr(gexpr)
+				if err != nil {
+					return 0, fmt.Errorf("frontend: lower global %q: %w", p.Selector.Root, err)
+				}
+				b.globalCache[p.Selector.Root] = gid
+				return gid, nil
+			}
 			return 0, fmt.Errorf("frontend: unbound identifier %q", p.Selector.Root)
 		}
 		return id, nil
