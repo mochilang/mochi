@@ -35,7 +35,10 @@ const sidebarGroups = [
   { label: 'VM & Runtime',    min: 17, max: 29 },
   { label: 'JIT',             min: 30, max: 34 },
   { label: 'Memory',          min: 35, max: 41 },
-  { label: 'Codegen',         min: 42, max: 9999 },
+  { label: 'Native Codegen',  min: 42, max: 42 },
+  { label: 'Go Interop',      min: 43, max: 44 },
+  { label: 'C Target',        min: 45, max: 45 },
+  { label: 'Future',          min: 46, max: 9999 },
 ];
 
 const entries = [];

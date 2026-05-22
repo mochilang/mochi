@@ -18,6 +18,14 @@ const config = {
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
+  // Treat .md files as CommonMark and .mdx files as MDX. This keeps
+  // MEP prose (lots of `list<T>` / `map<K,V>` and other ASCII art)
+  // from tripping the MDX-JSX strict parser, while index.mdx-style
+  // files keep their JSX powers.
+  markdown: {
+    format: 'detect',
+  },
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],

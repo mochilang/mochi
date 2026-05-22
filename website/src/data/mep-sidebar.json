@@ -71,10 +71,22 @@
     ]
   },
   {
-    "label": "Codegen",
+    "label": "Native Codegen",
     "items": [
-      "mep/mep-0042",
-      "mep/mep-0043"
+      "mep/mep-0042"
+    ]
+  },
+  {
+    "label": "Go Interop",
+    "items": [
+      "mep/mep-0043",
+      "mep/mep-0044"
+    ]
+  },
+  {
+    "label": "C Target",
+    "items": [
+      "mep/mep-0045"
     ]
   }
 ]
