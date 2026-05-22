@@ -1596,6 +1596,54 @@ func TestBuildSourceWebsiteHomepageHello(t *testing.T) {
 	}
 }
 
+// TestBuildSourceMultiArgPrintLabel pins MEP-42 Phase 4.2.6: the
+// common `print("label", value)` idiom from v0.1 tutorial examples
+// lowers to a single mochi_print_str of the space-joined form. The
+// space separator matches Go's fmt.Println default; the value's
+// string form matches strconv (Phase 4.2.4).
+func TestBuildSourceMultiArgPrintLabel(t *testing.T) {
+	src := `let i = 3
+print("i =", i)
+`
+	if got, want := runMochiBuild(t, src), "i = 3\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceMultiArgPrintThree pins the >2 arg case: each
+// successive arg adds a leading " " separator before its string
+// form (Go's fmt.Println behaviour for space-joined Sprint of args).
+func TestBuildSourceMultiArgPrintThree(t *testing.T) {
+	src := `print("Sum", "=", 55)` + "\n"
+	if got, want := runMochiBuild(t, src), "Sum = 55\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceMultiArgPrintMixed pins the heterogeneous-types
+// case: int, float, bool, and string each lifts through the matching
+// scalar->str op (Phase 4.2.4) before joining.
+func TestBuildSourceMultiArgPrintMixed(t *testing.T) {
+	src := `print("answer", 42, 3.5, true)` + "\n"
+	if got, want := runMochiBuild(t, src), "answer 42 3.5 true\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceMultiArgPrintLoop pins the v0.1/for.mochi tutorial
+// surface: `for i in lo..hi { print("i =", i) }` produces one
+// labeled line per iteration. This is the exact user-facing motivation
+// for Phase 4.2.6.
+func TestBuildSourceMultiArgPrintLoop(t *testing.T) {
+	src := `for i in 0..3 {
+  print("i =", i)
+}
+`
+	if got, want := runMochiBuild(t, src), "i = 0\ni = 1\ni = 2\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceSpectralNormBgFixture pins the unmodified
 // bench/template/bg/spectral_norm fixture (N=100) on the C target.
 // This is the §10.7 closeout for spectral_norm at the fixture level

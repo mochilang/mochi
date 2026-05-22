@@ -1052,7 +1052,17 @@ func (b *builder) lowerForCollection(s *parser.ForStmt) error {
 // expressions are lowered as regular expressions and their value is
 // discarded.
 func (b *builder) lowerExprAsStmt(e *parser.Expr) (uint32, error) {
-	if call := exprAsCall(e); call != nil && call.Func == "print" && len(call.Args) == 1 {
+	if call := exprAsCall(e); call != nil && call.Func == "print" && len(call.Args) >= 1 {
+		// Multi-arg print (`print(a, b, c)`) lowers to single-arg
+		// print of the space-joined string form, matching Go's
+		// fmt.Println default. Each non-string arg is lifted via
+		// the matching OpI64ToStr / OpF64ToStr / OpBoolToStr, then
+		// the parts are joined left-to-right with " " separators
+		// through OpConcatStr. This reuses Phase 4.2.3/4.2.4 ops
+		// without inventing a new variadic call.
+		if len(call.Args) > 1 {
+			return b.lowerMultiArgPrint(call.Args)
+		}
 		arg, err := b.lowerExpr(call.Args[0])
 		if err != nil {
 			return 0, err
@@ -1081,6 +1091,67 @@ func (b *builder) lowerExprAsStmt(e *parser.Expr) (uint32, error) {
 		return 0, fmt.Errorf("frontend: json() requires a map literal argument in MVP")
 	}
 	return b.lowerExpr(e)
+}
+
+// lowerMultiArgPrint lowers `print(a, b, ..., z)` (N >= 2) by lifting
+// each non-string arg through the matching scalar→str op, then
+// left-fold-joining the parts with " " separators via OpConcatStr,
+// and finally calling the single-arg print path on the result. The
+// space-separator + final newline matches Go's `fmt.Println(a, b, ..)`
+// default for the scalar arg set Mochi supports (TypeStr, TypeI64,
+// TypeF64, TypeBool); each scalar's string form matches strconv's
+// FormatInt/FormatFloat/FormatBool, which Go's fmt %v defaults to
+// for these types.
+func (b *builder) lowerMultiArgPrint(args []*parser.Expr) (uint32, error) {
+	sepIdx := int64(len(b.fn.Strings))
+	b.fn.Strings = append(b.fn.Strings, " ")
+	sepID := b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpConst, Const: sepIdx})
+	var acc uint32
+	for i, raw := range args {
+		argID, err := b.lowerExpr(raw)
+		if err != nil {
+			return 0, err
+		}
+		strID, err := b.liftToStr(argID)
+		if err != nil {
+			return 0, err
+		}
+		if i == 0 {
+			acc = strID
+			continue
+		}
+		withSep := b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpConcatStr, Args: []uint32{acc, sepID}})
+		acc = b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpConcatStr, Args: []uint32{withSep, strID}})
+	}
+	bind := ir.GoBinding{
+		Pkg:      "fmt",
+		Alias:    "fmt",
+		Name:     "Println",
+		ArgTypes: []string{"string"},
+		Result:   "",
+	}
+	bindIdx := int64(len(b.fn.GoBindings))
+	b.fn.GoBindings = append(b.fn.GoBindings, bind)
+	id := b.addValue(ir.Value{Type: ir.TypeUnit, Op: ir.OpCallGo, Args: []uint32{acc}, Const: bindIdx})
+	return id, nil
+}
+
+// liftToStr returns argID unchanged when its IR type is TypeStr, or
+// inserts the matching scalar→str op (OpI64ToStr / OpF64ToStr /
+// OpBoolToStr) and returns the new SSA id. Used by lowerMultiArgPrint
+// so each arg can be concatenated into the space-joined output.
+func (b *builder) liftToStr(argID uint32) (uint32, error) {
+	switch b.fn.Values[argID].Type {
+	case ir.TypeStr:
+		return argID, nil
+	case ir.TypeI64:
+		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpI64ToStr, Args: []uint32{argID}}), nil
+	case ir.TypeF64:
+		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpF64ToStr, Args: []uint32{argID}}), nil
+	case ir.TypeBool:
+		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpBoolToStr, Args: []uint32{argID}}), nil
+	}
+	return 0, fmt.Errorf("frontend: print() argument type %s unsupported in MVP", b.fn.Values[argID].Type)
 }
 
 // lowerJsonObject lowers `json({"k1": e1, ..., "kN": eN})` as an
