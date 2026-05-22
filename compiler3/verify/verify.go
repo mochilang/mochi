@@ -166,7 +166,7 @@ func kindOf(o ir.OpCode) ProducerKind {
 
 	case ir.OpLenStr:
 		return KindDispatch
-	case ir.OpConcatStr:
+	case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr:
 		return KindConstructor
 
 	case ir.OpNewList, ir.OpNewMap, ir.OpNewF64Array, ir.OpNewListAny,
@@ -402,7 +402,7 @@ func contractResult(o ir.OpCode) ir.Type {
 		return ir.TypeBool
 	case ir.OpLenStr:
 		return ir.TypeI64
-	case ir.OpConcatStr:
+	case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr:
 		return ir.TypeStr
 	case ir.OpNewList:
 		return ir.TypeList
