@@ -1197,6 +1197,18 @@ func (b *builder) lowerForCollection(s *parser.ForStmt) error {
 		// TypeList arm. ElemType on the row carries the inner i64
 		// hint so the body's indexed reads/writes find it.
 		lenOp, getOp, elemType, elemElemType = ir.OpListListLen, ir.OpListListGet, ir.TypeList, ir.TypeI64
+	case ir.TypeStr:
+		// Phase 4.2.29: `for ch in s` iterates UTF-8 runes. The loop
+		// bound is the rune count (not byte length) and the per-
+		// iteration read goes through OpStrCharAt, which walks the
+		// byte sequence to the i-th rune leader. This matches the
+		// VM's `for _, ch := range []rune(s)` on non-ASCII input.
+		// Cost: O(n^2) in the rune count because OpStrCharAt walks
+		// from the start each call. Acceptable for the v0.5 fixture
+		// corpus (max string length under 20); a future phase can
+		// hoist `[]rune(s)` to a TypeStrArr pre-header value if a
+		// longer-string fixture surfaces.
+		lenOp, getOp, elemType, elemElemType = ir.OpStrRuneLen, ir.OpStrCharAt, ir.TypeStr, ir.TypeStr
 	default:
 		return fmt.Errorf("frontend: for-in over %s unsupported (need list)", listType)
 	}

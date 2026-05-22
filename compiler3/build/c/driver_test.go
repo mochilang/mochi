@@ -3080,6 +3080,78 @@ if "lle" in s {
 	}
 }
 
+// TestBuildSourceStrForChIn pins the Phase 4.2.29 `for ch in s` rune
+// iteration: the loop body runs once per rune, with the binding
+// holding a TypeStr value that is the i-th single-rune string.
+// For the ASCII fixture the rune count equals strlen so the result
+// is "h\ne\nl\nl\no\n".
+func TestBuildSourceStrForChIn(t *testing.T) {
+	src := `for ch in "hello" {
+  print(ch)
+}
+`
+	if got, want := runMochiBuild(t, src), "h\ne\nl\nl\no\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrForChInVowelCount pins the v0.5/string.mochi
+// kernel directly: count vowels by `for ch in s { if ch in vowels`.
+// Exercises rune iteration + Phase 4.2.28 `in` together so the
+// SSA-level interaction (HandleType ch is read inside an OpStrIn
+// arg, the haystack is a captured pre-loop TypeStr) is locked down.
+func TestBuildSourceStrForChInVowelCount(t *testing.T) {
+	src := `let s = "hello world"
+let vowels = "aeiou"
+var count = 0
+for ch in s {
+  if ch in vowels {
+    count = count + 1
+  }
+}
+print(count)
+`
+	if got, want := runMochiBuild(t, src), "3\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV05StringFixture is the load-bearing v0.5 fixture
+// pin enabled by Phases 4.2.27 + 4.2.28 + 4.2.29 together. The on-
+// disk script reads s[i] (Phase 4.2.27), iterates runes (Phase
+// 4.2.29), and does substring containment (Phase 4.2.28); failing
+// any of those rolls the pin back. Output byte-matches `mochi run`.
+func TestBuildSourceV05StringFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.5/string.mochi")
+	if err != nil {
+		t.Fatalf("read v0.5 string fixture: %v", err)
+	}
+	want := "s[0] = h\ns[4] = o\nlength = 11\n" +
+		"char: h\nchar: e\nchar: l\nchar: l\nchar: o\nchar:  \n" +
+		"char: w\nchar: o\nchar: r\nchar: l\nchar: d\n" +
+		"'w' is in the string\nvowel count: 3\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.5/string stdout = %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV05StringIndexIteratorFixture pins the sibling
+// v0.5/string-index-iterator fixture, which exercises the same
+// gates as v0.5/string.mochi minus the substring containment.
+func TestBuildSourceV05StringIndexIteratorFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.5/string-index-iterator.mochi")
+	if err != nil {
+		t.Fatalf("read v0.5 string-index-iterator fixture: %v", err)
+	}
+	want := "first character: h\nfifth character: o\n" +
+		"char: h\nchar: e\nchar: l\nchar: l\nchar: o\nchar:  \n" +
+		"char: w\nchar: o\nchar: r\nchar: l\nchar: d\n" +
+		"number of vowels: 3\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.5/string-index-iterator stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceRejectsImportGo pins the by-design rejection of
 // general Go FFI in the C target. The script `import go "testpkg"`
 // must surface ErrUnsupportedFFI (wrapped) at build time, not

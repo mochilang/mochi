@@ -75,6 +75,18 @@ const char *mochi_str_from_bool(int v);
 const char *mochi_str_char_at(const char *s, int64_t i);
 
 /*
+ * mochi_str_rune_len returns the number of UTF-8 runes in s (not
+ * the byte length; see strlen for that). Walks the byte sequence
+ * counting leader bytes; continuation bytes (10xxxxxx) and malformed
+ * leaders are skipped so a malformed sequence advances byte-by-byte
+ * (matches the leader-width fallback in mochi_str_char_at). Used as
+ * the loop bound for `for ch in s` (Phase 4.2.29). Returns an
+ * int64_t to align with the IR's TypeI64 result; the value is
+ * non-negative.
+ */
+int64_t mochi_str_rune_len(const char *s);
+
+/*
  * mochi_f64_format writes the shortest decimal representation of v
  * into buf (NUL-terminated) using the same rule as Go's
  * strconv.FormatFloat(v, 'g', -1, 64): exponent form when the

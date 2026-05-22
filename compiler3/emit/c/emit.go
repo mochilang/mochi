@@ -111,7 +111,7 @@ func Emit(p *Program) ([]byte, error) {
 				usesTree = true
 			case ir.OpLenStr, ir.OpCmpEqStr, ir.OpCmpNeStr, ir.OpStrIn:
 				usesStrH = true
-			case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr, ir.OpStrCharAt:
+			case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr, ir.OpStrCharAt, ir.OpStrRuneLen:
 				usesStrRuntime = true
 			case ir.OpNow:
 				usesNow = true
@@ -530,6 +530,11 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		// every haystack (strstr returns the haystack itself); this
 		// matches Go's strings.Contains so the VM and C target agree.
 		fmt.Fprintf(w, "    %s = (strstr(%s, %s) != NULL);\n", name, valueName(v.Args[1]), valueName(v.Args[0]))
+	case ir.OpStrRuneLen:
+		// Rune count for the `for ch in s` loop bound. Walks the byte
+		// sequence once; O(bytes), no allocation. Cf. OpLenStr above
+		// which returns byte length via strlen.
+		fmt.Fprintf(w, "    %s = mochi_str_rune_len(%s);\n", name, valueName(v.Args[0]))
 	case ir.OpNow:
 		fmt.Fprintf(w, "    %s = mochi_now_us();\n", name)
 	case ir.OpJsonI64Object:
