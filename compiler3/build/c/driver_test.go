@@ -2547,6 +2547,57 @@ print(len(m))
 	}
 }
 
+// TestBuildSourceTestBlockSkipped pins the Phase 4.2.19 rule: a
+// `test "name" { ... }` block in source is a no-op at lower time
+// (mirrors `mochi run`, which does not execute test bodies). The
+// rest of the program lowers and runs normally. The body of the
+// test block here uses a comparison that would type-error if it
+// were lowered (Mochi's reference VM rejects it during type-check),
+// confirming the body is not visited.
+func TestBuildSourceTestBlockSkipped(t *testing.T) {
+	src := `let x = 7
+print(x)
+test "skipped" {
+  expect undefined_name_that_would_break == 42
+}
+print(x + 1)
+`
+	if got, want := runMochiBuild(t, src), "7\n8\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV02PiFixture pins the on-disk v0.2/π.mochi fixture
+// end-to-end. With Phase 4.2.19 dropping the trailing `test "π"`
+// block, the C target now produces the same two-line stdout as
+// `mochi run` on the fixture. UTF-8 identifiers (π, 🍡) and the
+// UTF-8 string literal pass through the C string carrier verbatim.
+func TestBuildSourceV02PiFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.2/π.mochi")
+	if err != nil {
+		t.Fatalf("read v0.2/π.mochi fixture: %v", err)
+	}
+	want := "314\n🍡૮₍ ˃ ⤙ ˂ ₎ა\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.2/π stdout = %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV02MapFixture pins the on-disk v0.2/map.mochi
+// fixture end-to-end. Phase 4.2.18 closed the map<str, i64>
+// literal+get+len gate; Phase 4.2.19 drops the trailing test block
+// so the fixture compiles top to bottom on the C target.
+func TestBuildSourceV02MapFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.2/map.mochi")
+	if err != nil {
+		t.Fatalf("read v0.2/map.mochi fixture: %v", err)
+	}
+	want := "Alice's score: 10\nTotal players: 2\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.2/map stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.

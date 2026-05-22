@@ -597,6 +597,18 @@ func (b *builder) lowerStmt(st *parser.Statement) error {
 	case st.Expr != nil:
 		_, err := b.lowerExprAsStmt(st.Expr.Expr)
 		return err
+	case st.Test != nil:
+		// Phase 4.2.19: skip `test "..." { ... }` blocks at lower
+		// time. `mochi build` produces an executable, not a test
+		// runner; the VM equivalent of `mochi run` likewise does not
+		// execute test bodies (those run via `mochi test`). The
+		// frontend silently drops the block so the surrounding
+		// fixture compiles. The block's body is not lowered, so any
+		// type errors inside it (e.g., the Option<int> map indexing
+		// shape used in v0.2/map.mochi's `expect`) do not surface
+		// here; matching VM behaviour, those errors would only fire
+		// under `mochi test`.
+		return nil
 	}
 	return fmt.Errorf("frontend: statement kind unsupported in MVP")
 }
