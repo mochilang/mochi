@@ -21,6 +21,14 @@ const (
 	TypeI64Arr
 	TypeU8Arr
 	TypeAny
+	// TypeListAny is the heterogeneous self-referential list backing
+	// for `list<any>` (Phase 4.3.15.1). In the binary_trees kernel every
+	// `any` element is itself a `list<any>` (a tree node), so the IR
+	// unifies the two surface types to one tag. C target backs it with
+	// runtime/c/src/mochi_tree.{h,c}; Go target emits a recursive named
+	// slice `type _MochiAny []_MochiAny`. The `t[i] as list<any>` cast
+	// reduces to a same-type no-op.
+	TypeListAny
 	TypeUnit
 )
 
@@ -62,6 +70,8 @@ func (t Type) String() string {
 		return "u8arr"
 	case TypeAny:
 		return "any"
+	case TypeListAny:
+		return "listany"
 	case TypeUnit:
 		return "unit"
 	}
@@ -244,6 +254,17 @@ const (
 	// granularity. The op takes no SSA args.
 	OpNow
 
+	// list<any> ops (Phase 4.3.15.1). The arena is the recursive
+	// `mochi_tree` struct holding a growable array of child pointers,
+	// every child being itself a `mochi_tree`. The ops shadow the
+	// list<i64> set but operate on tree pointers instead of scalars;
+	// because every payload is itself a tree pointer, the surface
+	// `t[i] as list<any>` cast is an SSA-level no-op (same IR type).
+	OpNewListAny
+	OpListAnyLen
+	OpListAnyPushAny
+	OpListAnyGetAny
+
 	// Bench-harness JSON sink (Phase 4.3.14). OpJsonI64Object is the
 	// statement-level form `json({"k1": v1, ..., "kN": vN})` where every
 	// key is a string literal and every value is an i64 expression. It
@@ -366,6 +387,14 @@ func (o OpCode) String() string {
 		return "f64arr.concat"
 	case OpNow:
 		return "now"
+	case OpNewListAny:
+		return "newlistany"
+	case OpListAnyLen:
+		return "listany.len"
+	case OpListAnyPushAny:
+		return "listany.push"
+	case OpListAnyGetAny:
+		return "listany.get"
 	case OpJsonI64Object:
 		return "json.i64.object"
 	case OpCall:

@@ -55,6 +55,23 @@ func Emit(p *Program) ([]byte, error) {
 			break
 		}
 	}
+	usesListAny := false
+	for _, fn := range p.Funcs {
+		if fn.Result == ir.TypeListAny {
+			usesListAny = true
+		}
+		for _, v := range fn.Values {
+			if v.Type == ir.TypeListAny ||
+				v.Op == ir.OpNewListAny || v.Op == ir.OpListAnyLen ||
+				v.Op == ir.OpListAnyPushAny || v.Op == ir.OpListAnyGetAny {
+				usesListAny = true
+				break
+			}
+		}
+		if usesListAny {
+			break
+		}
+	}
 	var body bytes.Buffer
 	imports := map[string]bool{}
 	importAlias := map[string]string{}
@@ -95,6 +112,9 @@ func Emit(p *Program) ([]byte, error) {
 			}
 		}
 		fmt.Fprintf(&src, ")\n\n")
+	}
+	if usesListAny {
+		fmt.Fprintf(&src, "type _MochiAny []_MochiAny\n\n")
 	}
 	src.Write(body.Bytes())
 
@@ -295,6 +315,14 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 	case ir.OpMapSetI64I64:
 		fmt.Fprintf(w, "\t%s[%s] = %s\n", valueName(v.Args[0]), valueName(v.Args[1]), valueName(v.Args[2]))
 	case ir.OpMapGetI64I64:
+		fmt.Fprintf(w, "\t%s = %s[%s]\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpNewListAny:
+		fmt.Fprintf(w, "\t%s = _MochiAny{}\n", name)
+	case ir.OpListAnyLen:
+		fmt.Fprintf(w, "\t%s = int64(len(%s))\n", name, valueName(v.Args[0]))
+	case ir.OpListAnyPushAny:
+		fmt.Fprintf(w, "\t%s = append(%s, %s)\n", valueName(v.Args[0]), valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpListAnyGetAny:
 		fmt.Fprintf(w, "\t%s = %s[%s]\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpNewF64Array:
 		fmt.Fprintf(w, "\t%s = []float64{}\n", name)
@@ -607,6 +635,8 @@ func goType(t ir.Type) string {
 		return "[]int64"
 	case ir.TypeMap:
 		return "map[int64]int64"
+	case ir.TypeListAny:
+		return "_MochiAny"
 	case ir.TypeF64Arr:
 		return "[]float64"
 	case ir.TypeI64Arr:

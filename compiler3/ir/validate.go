@@ -225,6 +225,14 @@ func opContract(o OpCode) opSig {
 		return opSig{TypeF64Arr, [3]Type{TypeF64Arr, TypeF64Arr}}
 	case OpNow:
 		return opSig{TypeI64, [3]Type{}}
+	case OpNewListAny:
+		return opSig{TypeListAny, [3]Type{}}
+	case OpListAnyLen:
+		return opSig{TypeI64, [3]Type{TypeListAny}}
+	case OpListAnyPushAny:
+		return opSig{TypeUnit, [3]Type{TypeListAny, TypeListAny}}
+	case OpListAnyGetAny:
+		return opSig{TypeListAny, [3]Type{TypeListAny, TypeI64}}
 	case OpJsonI64Object:
 		// Variadic in Args (N i64 values, N >= 1); per-arg shape is
 		// enforced by the frontend at lower time. opContract returns

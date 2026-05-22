@@ -269,8 +269,14 @@ func lowerType(t *parser.TypeRef) (ir.Type, error) {
 				return ir.TypeList, nil
 			case ir.TypeF64:
 				return ir.TypeF64Arr, nil
+			case ir.TypeListAny:
+				// list<any> and list<list<any>> collapse to the same
+				// self-referential tree type (Phase 4.3.15.1). Every
+				// element of a list<any> is itself a list<any> in the
+				// binary_trees kernel, so the IR carries one tag.
+				return ir.TypeListAny, nil
 			}
-			return ir.TypeInvalid, fmt.Errorf("frontend: list<%s> unsupported in MVP (only list<int> and list<float>)", el)
+			return ir.TypeInvalid, fmt.Errorf("frontend: list<%s> unsupported in MVP (only list<int>, list<float>, list<any>)", el)
 		}
 		// Phase 4.3.15.2: `map<int, int>` lowers to TypeMap, backed by
 		// runtime/c/src/mochi_map_i64_i64.{h,c} on the C target and
@@ -326,6 +332,14 @@ func lowerType(t *parser.TypeRef) (ir.Type, error) {
 		return ir.TypeStr, nil
 	case "unit", "void":
 		return ir.TypeUnit, nil
+	case "any":
+		// `any` only appears as the type-arg of `list<any>` in the
+		// binary_trees kernel (Phase 4.3.15.1). The IR unifies `any`
+		// with `list<any>` to TypeListAny because every payload is
+		// recursively the same tree-shaped value; standalone `any`
+		// outside that idiom stays unimplemented until a richer
+		// variant lowering lands.
+		return ir.TypeListAny, nil
 	}
 	return ir.TypeInvalid, fmt.Errorf("frontend: type %q unsupported in MVP", *t.Simple)
 }
@@ -480,6 +494,8 @@ func (b *builder) lowerTypedLet(name string, tRef *parser.TypeRef, e *parser.Exp
 			b.expectedListElem = ir.TypeF64
 		case ir.TypeMap:
 			b.expectedMap = true
+		case ir.TypeListAny:
+			b.expectedListElem = ir.TypeListAny
 		}
 	}
 	vid, err := b.lowerExpr(e)
@@ -497,7 +513,20 @@ func (b *builder) lowerReturn(rs *parser.ReturnStmt) error {
 		b.terminator(ir.Terminator{Kind: ir.TermReturn})
 		return nil
 	}
+	// Pass the function's result Type as the list-literal element hint,
+	// so `return []` and `return [a, b]` pick the right constructor /
+	// push op when the function returns a list-shaped type.
+	saved := b.expectedListElem
+	switch b.fn.Result {
+	case ir.TypeList:
+		b.expectedListElem = ir.TypeI64
+	case ir.TypeF64Arr:
+		b.expectedListElem = ir.TypeF64
+	case ir.TypeListAny:
+		b.expectedListElem = ir.TypeListAny
+	}
 	vid, err := b.lowerExpr(rs.Value)
+	b.expectedListElem = saved
 	if err != nil {
 		return err
 	}
@@ -1400,7 +1429,7 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 				return 0, fmt.Errorf("frontend: slice indexing unsupported in MVP")
 			}
 			curType := b.fn.Values[cur].Type
-			if curType != ir.TypeList && curType != ir.TypeF64Arr && curType != ir.TypeMap {
+			if curType != ir.TypeList && curType != ir.TypeF64Arr && curType != ir.TypeMap && curType != ir.TypeListAny {
 				return 0, fmt.Errorf("frontend: index on non-list %s", curType)
 			}
 			iID, err := b.lowerExpr(idx.Start)
@@ -1429,6 +1458,12 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 				cur = b.addValue(ir.Value{
 					Type: ir.TypeI64,
 					Op:   ir.OpMapGetI64I64,
+					Args: []uint32{cur, iID},
+				})
+			case ir.TypeListAny:
+				cur = b.addValue(ir.Value{
+					Type: ir.TypeListAny,
+					Op:   ir.OpListAnyGetAny,
 					Args: []uint32{cur, iID},
 				})
 			}
@@ -1534,6 +1569,8 @@ func (b *builder) lowerListLiteral(lit *parser.ListLiteral) (uint32, error) {
 				elem = ir.TypeI64
 			case ir.TypeF64:
 				elem = ir.TypeF64
+			case ir.TypeListAny:
+				elem = ir.TypeListAny
 			default:
 				return 0, fmt.Errorf("frontend: list literal element type %s unsupported in MVP", b.fn.Values[id].Type)
 			}
@@ -1550,6 +1587,9 @@ func (b *builder) lowerListLiteral(lit *parser.ListLiteral) (uint32, error) {
 	case ir.TypeF64:
 		listType, elemType = ir.TypeF64Arr, ir.TypeF64
 		newOp, pushOp = ir.OpNewF64Array, ir.OpF64ArrayPushF64
+	case ir.TypeListAny:
+		listType, elemType = ir.TypeListAny, ir.TypeListAny
+		newOp, pushOp = ir.OpNewListAny, ir.OpListAnyPushAny
 	default:
 		return 0, fmt.Errorf("frontend: list literal with element type %s unsupported", elem)
 	}
@@ -1694,6 +1734,11 @@ func (b *builder) lowerBuiltinCall(c *parser.CallExpr) (uint32, bool, error) {
 		case ir.TypeStr:
 			id := b.addValue(ir.Value{
 				Type: ir.TypeI64, Op: ir.OpLenStr, Args: []uint32{arg},
+			})
+			return id, true, nil
+		case ir.TypeListAny:
+			id := b.addValue(ir.Value{
+				Type: ir.TypeI64, Op: ir.OpListAnyLen, Args: []uint32{arg},
 			})
 			return id, true, nil
 		default:
