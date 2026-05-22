@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"mochi/parser"
-	rkt "mochi/transpiler/x/rkt"
+	rkt "mochi/archived/transpiler/x/rkt"
 	"mochi/types"
 )
 
@@ -47,7 +47,7 @@ func runCase(name string) error {
 	if err := rkt.Emit(&buf, ast); err != nil {
 		return fmt.Errorf("emit: %v", err)
 	}
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "rkt")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "rkt")
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func main() {
 	}
 	for _, name := range os.Args[1:] {
 		if err := runCase(name); err != nil {
-			errPath := filepath.Join(repoRoot(), "tests", "transpiler", "x", "rkt", name+".error")
+			errPath := filepath.Join(repoRoot(), "archived", "tests", "archived", "transpiler", "x", "rkt", name+".error")
 			os.WriteFile(errPath, []byte(err.Error()), 0o644)
 			fmt.Fprintf(os.Stderr, "%s: %v\n", name, err)
 		}

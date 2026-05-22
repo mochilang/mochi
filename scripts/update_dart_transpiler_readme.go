@@ -13,8 +13,8 @@ import (
 func main() {
 	root := "."
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "dart")
-	readmePath := filepath.Join(root, "transpiler", "x", "dart", "README.md")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "dart")
+	readmePath := filepath.Join(root, "archived", "transpiler", "x", "dart", "README.md")
 
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	total := len(files)

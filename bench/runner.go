@@ -23,10 +23,10 @@ import (
 	tstools "mochi/compiler/x/ts"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	ccode "mochi/transpiler/x/c"
-	gocode "mochi/transpiler/x/go"
-	pycode "mochi/transpiler/x/py"
-	tscode "mochi/transpiler/x/ts"
+	ccode "mochi/archived/transpiler/x/c"
+	gocode "mochi/archived/transpiler/x/go"
+	pycode "mochi/archived/transpiler/x/py"
+	tscode "mochi/archived/transpiler/x/ts"
 	"mochi/types"
 )
 

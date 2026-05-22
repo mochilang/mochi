@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"mochi/transpiler/meta"
+	"mochi/archived/transpiler/meta"
 
 	"mochi/ast"
 	"mochi/parser"

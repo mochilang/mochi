@@ -29,7 +29,7 @@ func ensureKotlinc(t *testing.T) {
 func TestPrint_Golden(t *testing.T) {
 	ensureKotlinc(t)
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "kt")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "kt")
 	outDir := filepath.Join(root, "tests", "aster", "x", "kotlin")
 	os.MkdirAll(outDir, 0o755)
 

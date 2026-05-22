@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"mochi/parser"
-	ftn "mochi/transpiler/x/fortran"
+	ftn "mochi/archived/transpiler/x/fortran"
 	"mochi/types"
 )
 
@@ -34,7 +34,7 @@ func main() {
 		panic("usage: compile_fortran <file.mochi> ...")
 	}
 	root := repoRoot()
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "fortran")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "fortran")
 	os.MkdirAll(outDir, 0o755)
 	for _, src := range os.Args[1:] {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")

@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"mochi/ast"
-	"mochi/transpiler/meta"
+	"mochi/archived/transpiler/meta"
 )
 
 func nodeSource(n *ast.Node) string {

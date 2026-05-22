@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"mochi/parser"
-	rb "mochi/transpiler/x/rb"
+	rb "mochi/archived/transpiler/x/rb"
 	"mochi/types"
 )
 

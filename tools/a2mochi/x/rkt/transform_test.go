@@ -76,7 +76,7 @@ func TestTransformGolden(t *testing.T) {
 		t.Skip("racket not installed")
 	}
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests", "transpiler", "x", "rkt", "*.rkt")
+	pattern := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "rkt", "*.rkt")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -167,7 +167,7 @@ func TestTransformGolden(t *testing.T) {
 
 func updateReadme() {
 	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "rkt")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "rkt")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "rkt")
 	pattern := filepath.Join(srcDir, "*.rkt")
 	files, _ := filepath.Glob(pattern)

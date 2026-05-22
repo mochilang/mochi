@@ -5,7 +5,7 @@ package main
 import (
 	"bytes"
 	"mochi/parser"
-	pl "mochi/transpiler/x/pl"
+	pl "mochi/archived/transpiler/x/pl"
 	"mochi/types"
 	"os"
 	"os/exec"

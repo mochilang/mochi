@@ -44,7 +44,7 @@ func ensureBabashka(t *testing.T) {
 func TestInspect_Golden(t *testing.T) {
 	ensureBabashka(t)
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "clj")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "clj")
 	outDir := filepath.Join(root, "tests", "aster", "x", "clj")
 	os.MkdirAll(outDir, 0o755)
 

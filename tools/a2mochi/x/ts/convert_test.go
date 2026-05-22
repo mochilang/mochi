@@ -35,7 +35,7 @@ func findRepoRoot(t *testing.T) string {
 
 func TestConvert_Golden(t *testing.T) {
 	root := findRepoRoot(t)
-	pattern := filepath.Join(root, "tests/transpiler/x/ts", "*.ts")
+	pattern := filepath.Join(root, "archived/tests/transpiler/x/ts", "*.ts")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)

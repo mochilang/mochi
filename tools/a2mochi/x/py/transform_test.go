@@ -71,7 +71,7 @@ func TestTransform_Golden(t *testing.T) {
 		t.Skip("python3 not installed")
 	}
 	root := findRepoRoot(t)
-	pattern := filepath.Join(root, "tests", "transpiler", "x", "py", "*.py")
+	pattern := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "py", "*.py")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -181,7 +181,7 @@ func TestTransform_Golden(t *testing.T) {
 
 func updateReadme() {
 	root := findRepoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "py")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "py")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "py")
 	pattern := filepath.Join(srcDir, "*.py")
 	files, _ := filepath.Glob(pattern)
@@ -223,7 +223,7 @@ func updateReadme() {
 	buf.WriteString("# Python AST Conversion\n\n")
 	buf.WriteString("Created: " + created + "\n")
 	buf.WriteString("Date: " + now + "\n\n")
-	buf.WriteString("This directory contains the test helpers and golden files for converting Python programs under `tests/transpiler/x/py` into Mochi AST form.\n\n")
+	buf.WriteString("This directory contains the test helpers and golden files for converting Python programs under `archived/tests/transpiler/x/py` into Mochi AST form.\n\n")
 	fmt.Fprintf(&buf, "Completed programs: %d/%d\n\n", compiled, total)
 	buf.WriteString("## Checklist\n")
 	buf.WriteString(strings.Join(lines, "\n"))

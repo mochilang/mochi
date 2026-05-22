@@ -23,7 +23,7 @@ func shouldUpdate() bool {
 
 func TestPrint_Golden(t *testing.T) {
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "ts")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "ts")
 	outDir := filepath.Join(root, "tests", "aster", "x", "ts")
 	os.MkdirAll(outDir, 0o755)
 

@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"mochi/parser"
-	rb "mochi/transpiler/x/rb"
+	rb "mochi/archived/transpiler/x/rb"
 	"mochi/types"
 )
 
@@ -19,7 +19,7 @@ func main() {
 		panic("usage: transpile_rb <files>")
 	}
 	root, _ := os.Getwd()
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "rb")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "rb")
 	os.MkdirAll(outDir, 0o755)
 	for _, src := range os.Args[1:] {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")

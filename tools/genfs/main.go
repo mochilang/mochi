@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 
 	"mochi/parser"
-	fstrans "mochi/transpiler/x/fs"
+	fstrans "mochi/archived/transpiler/x/fs"
 	"mochi/types"
 )
 
@@ -41,7 +41,7 @@ func main() {
 		code := fstrans.Emit(ast)
 		base := filepath.Base(src)
 		name := base[:len(base)-len(filepath.Ext(base))]
-		outDir := filepath.Join("tests", "transpiler", "x", "fs")
+		outDir := filepath.Join("archived", "tests", "archived", "transpiler", "x", "fs")
 		if err := os.MkdirAll(outDir, 0755); err != nil {
 			fmt.Fprintf(os.Stderr, "mkdir: %v\n", err)
 			continue

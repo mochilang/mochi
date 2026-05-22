@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"mochi/parser"
-	dart "mochi/transpiler/x/dart"
+	dart "mochi/archived/transpiler/x/dart"
 	"mochi/types"
 )
 

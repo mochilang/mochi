@@ -83,7 +83,7 @@ func transformFromFile(t *testing.T, path string) (string, *ast.Node) {
 
 func TestTransform(t *testing.T) {
 	root := findRepoRoot(t)
-	pattern := filepath.Join(root, "tests/transpiler/x/pl", "*.pl")
+	pattern := filepath.Join(root, "archived/tests/transpiler/x/pl", "*.pl")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)

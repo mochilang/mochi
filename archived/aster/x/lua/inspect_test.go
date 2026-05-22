@@ -37,7 +37,7 @@ func repoRoot(t *testing.T) string {
 
 func TestInspect_Golden(t *testing.T) {
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "lua")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "lua")
 	// Golden files now live under tests/aster/x/lua rather than
 	// tests/json-ast/x/lua.
 	outDir := filepath.Join(root, "tests", "aster", "x", "lua")

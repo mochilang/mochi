@@ -45,7 +45,7 @@ func ensureZig(t *testing.T) {
 func TestInspect_Golden(t *testing.T) {
 	ensureZig(t)
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "zig")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "zig")
 	outDir := filepath.Join(root, "tests", "aster", "x", "zig")
 	os.MkdirAll(outDir, 0o755)
 

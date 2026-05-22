@@ -153,7 +153,7 @@ func runTransform(srcPath, root, outDir string) error {
 
 func TestTransform_Golden(t *testing.T) {
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests/transpiler/x/zig", "*.zig")
+	pattern := filepath.Join(root, "archived/tests/transpiler/x/zig", "*.zig")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)

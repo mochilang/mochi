@@ -2,7 +2,7 @@
 
 package main
 
-import kt "mochi/transpiler/x/kt"
+import kt "mochi/archived/transpiler/x/kt"
 
 func main() {
 	kt.UpdateReadmeForTests()

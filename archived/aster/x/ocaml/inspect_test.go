@@ -45,7 +45,7 @@ func ensureNode(t *testing.T) {
 func TestInspect_Golden(t *testing.T) {
 	ensureNode(t)
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "ocaml")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "ocaml")
 	outDir := filepath.Join(root, "tests", "aster", "x", "ocaml")
 	os.MkdirAll(outDir, 0o755)
 

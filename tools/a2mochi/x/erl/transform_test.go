@@ -128,7 +128,7 @@ func TestTransform_Golden(t *testing.T) {
 		t.Skipf("escript not installed: %v", err)
 	}
 	root := repoRoot(t)
-	pattern := filepath.Join(root, "tests", "transpiler", "x", "erl", "*.erl")
+	pattern := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "erl", "*.erl")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -208,7 +208,7 @@ func TestTransform_Golden(t *testing.T) {
 
 func updateReadme() {
 	root := repoRoot(&testing.T{})
-	srcDir := filepath.Join(root, "tests", "transpiler", "x", "erl")
+	srcDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "erl")
 	outDir := filepath.Join(root, "tests", "a2mochi", "x", "erl")
 	pattern := filepath.Join(srcDir, "*.erl")
 	files, _ := filepath.Glob(pattern)

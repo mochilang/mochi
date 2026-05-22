@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 
 	"mochi/parser"
-	kt "mochi/transpiler/x/kt"
+	kt "mochi/archived/transpiler/x/kt"
 	"mochi/types"
 )
 
@@ -43,7 +43,7 @@ func runCase(name string) error {
 		return fmt.Errorf("transpile: %v", err)
 	}
 	code := kt.Emit(ast)
-	outDir := filepath.Join(root, "tests", "transpiler", "x", "kt")
+	outDir := filepath.Join(root, "archived", "tests", "archived", "transpiler", "x", "kt")
 	os.MkdirAll(outDir, 0o755)
 	if err := os.WriteFile(filepath.Join(outDir, name+".kt"), code, 0o644); err != nil {
 		return err
