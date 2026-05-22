@@ -308,6 +308,10 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 		fmt.Fprintf(w, "\t%s = %s == %s\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpCmpNeBool:
 		fmt.Fprintf(w, "\t%s = %s != %s\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpAndBool:
+		fmt.Fprintf(w, "\t%s = %s && %s\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpOrBool:
+		fmt.Fprintf(w, "\t%s = %s || %s\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpI64ToStr:
 		imports["strconv"] = true
 		fmt.Fprintf(w, "\t%s = strconv.FormatInt(%s, 10)\n", name, valueName(v.Args[0]))

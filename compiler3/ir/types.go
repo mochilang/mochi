@@ -150,6 +150,15 @@ const (
 	OpCmpEqBool
 	OpCmpNeBool
 
+	// Bool logical AND / OR (MEP-42 Phase 4.2.9). Result == TypeBool.
+	// Both targets emit C99 `&&` / `||` (and Go's `&&` / `||`); these
+	// ARE short-circuit operators in both languages, but the IR
+	// already pre-evaluates both args, so the emitted operator only
+	// performs the logical reduction. Side-effect-bearing operands
+	// would observe eager evaluation; tracked as a known limitation.
+	OpAndBool
+	OpOrBool
+
 	// List ops (Phase 3.2 vm3 surface).
 	OpNewList
 	OpListLenI64
@@ -382,6 +391,10 @@ func (o OpCode) String() string {
 		return "cmp.eq.bool"
 	case OpCmpNeBool:
 		return "cmp.ne.bool"
+	case OpAndBool:
+		return "and.bool"
+	case OpOrBool:
+		return "or.bool"
 	case OpNewList:
 		return "newlist"
 	case OpListLenI64:

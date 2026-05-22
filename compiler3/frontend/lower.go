@@ -1429,6 +1429,12 @@ func (b *builder) applyBinOp(op string, l, r uint32) (uint32, error) {
 		case "!=":
 			code = ir.OpCmpNeBool
 			resType = ir.TypeBool
+		case "&&":
+			code = ir.OpAndBool
+			resType = ir.TypeBool
+		case "||":
+			code = ir.OpOrBool
+			resType = ir.TypeBool
 		default:
 			return 0, fmt.Errorf("frontend: operator %q on bool unsupported in MVP", op)
 		}

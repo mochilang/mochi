@@ -1792,6 +1792,79 @@ func TestBuildSourceV01ExprFixture(t *testing.T) {
 	}
 }
 
+// TestBuildSourceBoolAndBasic pins MEP-42 Phase 4.2.9: bool && bool.
+// Before this sub-phase, the v0.3/logic.mochi tutorial errored at
+// lower with `operator "||" on bool unsupported in MVP`. After it,
+// the elementary `let a = true && false; print(a)` lowers through
+// OpAndBool, emits C99 `&&`, and prints "false" (matching Go's
+// fmt.Println).
+func TestBuildSourceBoolAndBasic(t *testing.T) {
+	src := `let r = true && false
+print(r)
+`
+	if got, want := runMochiBuild(t, src), "false\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceBoolOrBasic pins the OR symmetric case.
+func TestBuildSourceBoolOrBasic(t *testing.T) {
+	src := `let r = false || true
+print(r)
+`
+	if got, want := runMochiBuild(t, src), "true\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceBoolAndOrChain pins v0.3/logic.mochi's mixed
+// expression `x > 0 && y > 2 || x == 0`, which threads
+// OpCmpGtI64 -> OpAndBool -> OpCmpEqI64 -> OpOrBool. Precedence
+// follows Mochi parser; the result is the if-condition's truth.
+func TestBuildSourceBoolAndOrChain(t *testing.T) {
+	src := `let x = 3
+let y = 5
+if x > 0 && y > 2 || x == 0 {
+  print("yes")
+} else {
+  print("no")
+}
+`
+	if got, want := runMochiBuild(t, src), "yes\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceBoolAndOrLeftRightPure pins the eager-evaluation
+// limitation: both operands are evaluated regardless of the
+// left-hand result, matching Go's `a && b` behaviour for
+// side-effect-free operands. This is a deliberate scope of Phase
+// 4.2.9 (true short-circuit at the IR level is a separate gate).
+func TestBuildSourceBoolAndOrLeftRightPure(t *testing.T) {
+	src := `let a = true
+let b = false
+print("and:", a && b)
+print("or:", a || b)
+`
+	if got, want := runMochiBuild(t, src), "and: false\nor: true\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV03LogicFixture pins examples/v0.3/logic.mochi
+// end-to-end, the user-facing motivation for Phase 4.2.9. Reads the
+// fixture verbatim so future edits surface as a regression here.
+func TestBuildSourceV03LogicFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.3/logic.mochi")
+	if err != nil {
+		t.Fatalf("read v0.3 logic fixture: %v", err)
+	}
+	want := "true || false = true\nfalse || false = false\nx > 0 || y < 0 = true\ntrue && false = false\ntrue && true = true\nx < 10 && y > 2 = true\nCondition matched!\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.3/logic stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceSpectralNormBgFixture pins the unmodified
 // bench/template/bg/spectral_norm fixture (N=100) on the C target.
 // This is the §10.7 closeout for spectral_norm at the fixture level
