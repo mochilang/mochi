@@ -2266,6 +2266,70 @@ print(xs)
 	}
 }
 
+// TestBuildSourceNegIndexI64 pins MEP-42 Phase 4.2.15: literal-negative
+// list indexing on the C target. `xs[-1]` is folded at lower time to
+// `xs[len + -1]` so the v0.2/list.mochi `values[-1]` line returns the
+// last element instead of reading past the start of the buffer. Before
+// this phase the C target returned 0 (or some other garbage from
+// stack-adjacent memory) instead of 50.
+func TestBuildSourceNegIndexI64(t *testing.T) {
+	src := `let xs = [10, 20, 30, 40, 50]
+print(xs[-1])
+print(xs[-2])
+print(xs[0])
+`
+	if got, want := runMochiBuild(t, src), "50\n40\n10\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceNegIndexF64 pins the same fold for list<float>: the
+// f64-array path picks OpF64ArrayLenI64 + OpAddI64Imm and feeds the
+// wrapped index to OpF64ArrayGetF64. Verifies the curType switch in
+// the fold picks the right LenOp for the element type.
+func TestBuildSourceNegIndexF64(t *testing.T) {
+	src := `let xs: list<float> = [1.0, 2.5, 3.14]
+print(xs[-1])
+print(xs[-2])
+`
+	if got, want := runMochiBuild(t, src), "3.14\n2.5\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceNegIndexAssign pins the indexed-assign mirror of the
+// fold: `xs[-1] = v` rewrites to `xs[len + -1] = v` so the store
+// targets the actual last element. Reads the slot back after the
+// store to confirm the write landed in the right place.
+func TestBuildSourceNegIndexAssign(t *testing.T) {
+	src := `var xs = [1, 2, 3, 4, 5]
+xs[-1] = 99
+print(xs[-1])
+print(xs[0])
+print(xs[3])
+`
+	if got, want := runMochiBuild(t, src), "99\n1\n4\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceNegIndexUnaryNeg pins that the fold sees through the
+// unary-minus lowering of `-N`. The surface form `xs[-1]` parses as
+// unary `-` applied to literal `1`, which lowers to OpNegI64 of
+// OpConst(1), not directly to OpConst(-1). Without constI64's
+// negation-case the fold misses literal-negative indices entirely.
+// Dynamic-`i` negative indexing is a separate future phase and not
+// exercised here.
+func TestBuildSourceNegIndexUnaryNeg(t *testing.T) {
+	src := `let xs = [100, 200, 300]
+print(xs[-1])
+print(xs[-3])
+`
+	if got, want := runMochiBuild(t, src), "300\n100\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.

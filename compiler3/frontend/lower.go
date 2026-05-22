@@ -581,6 +581,28 @@ func (b *builder) lowerIndexedAssign(a *parser.AssignStmt) error {
 	if b.fn.Values[idxID].Type != ir.TypeI64 {
 		return fmt.Errorf("frontend: list index must be i64, got %s", b.fn.Values[idxID].Type)
 	}
+	// Phase 4.2.15: literal-negative index fold for indexed
+	// assignment, mirroring the read path. `xs[-1] = v` becomes
+	// `xs[len + -1] = v` so the C target's mochi_list_i64_set does
+	// not write past the start of the buffer. TypeMap excluded
+	// (keys, not offsets).
+	if listType == ir.TypeList || listType == ir.TypeF64Arr {
+		if cv, ok := b.constI64(idxID); ok && cv < 0 {
+			var lenOp ir.OpCode
+			if listType == ir.TypeList {
+				lenOp = ir.OpListLenI64
+			} else {
+				lenOp = ir.OpF64ArrayLenI64
+			}
+			lenID := b.addValue(ir.Value{Type: ir.TypeI64, Op: lenOp, Args: []uint32{listID}})
+			idxID = b.addValue(ir.Value{
+				Type:  ir.TypeI64,
+				Op:    ir.OpAddI64Imm,
+				Args:  []uint32{lenID},
+				Const: cv,
+			})
+		}
+	}
 	valID, err := b.lowerExpr(a.Value)
 	if err != nil {
 		return err
@@ -1402,6 +1424,25 @@ func exprAsCall(e *parser.Expr) *parser.CallExpr {
 
 // lowerExpr returns the SSA value ID for e. MVP handles BinaryExpr
 // with the i64-compatible operators and a handful of Primary forms.
+// constI64 returns the static integer carried by an SSA value if the
+// value is a constant or the unary negation of a constant (the surface
+// form `-1` lowers to `OpNegI64(OpConst(1))`, so the negation case is
+// needed for things like literal-negative list indexing).
+// Returns (value, true) on success.
+func (b *builder) constI64(id uint32) (int64, bool) {
+	v := &b.fn.Values[id]
+	if v.Op == ir.OpConst && v.Type == ir.TypeI64 {
+		return v.Const, true
+	}
+	if v.Op == ir.OpNegI64 && len(v.Args) == 1 {
+		inner := &b.fn.Values[v.Args[0]]
+		if inner.Op == ir.OpConst && inner.Type == ir.TypeI64 {
+			return -inner.Const, true
+		}
+	}
+	return 0, false
+}
+
 func (b *builder) lowerExpr(e *parser.Expr) (uint32, error) {
 	if e == nil || e.Binary == nil {
 		return 0, fmt.Errorf("frontend: empty expression")
@@ -1689,6 +1730,34 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 			}
 			if b.fn.Values[iID].Type != ir.TypeI64 {
 				return 0, fmt.Errorf("frontend: list index must be i64, got %s", b.fn.Values[iID].Type)
+			}
+			// Phase 4.2.15: literal-negative indices (`xs[-1]`,
+			// `xs[-2]`) fold at lower time to `xs[len + idx]`. Mochi's
+			// reference VM wraps negative indices against the list
+			// length; without this fold the C target reads
+			// `data[-1]` (undefined) and typically returns 0. Only
+			// constant-negative indices are folded; dynamic
+			// `xs[i]` for potentially-negative i is a separate
+			// future phase (needs a select/branch or a runtime
+			// helper). TypeMap is excluded because map indexing
+			// uses a key, not an offset, and negative keys are
+			// valid lookups.
+			if curType == ir.TypeList || curType == ir.TypeF64Arr {
+				if cv, ok := b.constI64(iID); ok && cv < 0 {
+					var lenOp ir.OpCode
+					if curType == ir.TypeList {
+						lenOp = ir.OpListLenI64
+					} else {
+						lenOp = ir.OpF64ArrayLenI64
+					}
+					lenID := b.addValue(ir.Value{Type: ir.TypeI64, Op: lenOp, Args: []uint32{cur}})
+					iID = b.addValue(ir.Value{
+						Type:  ir.TypeI64,
+						Op:    ir.OpAddI64Imm,
+						Args:  []uint32{lenID},
+						Const: cv,
+					})
+				}
 			}
 			switch curType {
 			case ir.TypeList:
