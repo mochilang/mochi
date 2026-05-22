@@ -182,20 +182,7 @@ func kindOf(o ir.OpCode) ProducerKind {
 	case ir.OpConst:
 		return KindInline
 
-	case ir.OpAddI64, ir.OpSubI64, ir.OpMulI64, ir.OpDivI64, ir.OpModI64, ir.OpNegI64,
-		ir.OpAddI64Imm, ir.OpSubI64Imm, ir.OpMulI64Imm, ir.OpDivI64Imm, ir.OpModI64Imm,
-		ir.OpAddF64, ir.OpSubF64, ir.OpMulF64, ir.OpDivF64, ir.OpNegF64,
-		ir.OpCmpEqI64, ir.OpCmpNeI64, ir.OpCmpLtI64, ir.OpCmpLeI64, ir.OpCmpGtI64, ir.OpCmpGeI64,
-		ir.OpCmpEqI64Imm, ir.OpCmpNeI64Imm, ir.OpCmpLtI64Imm, ir.OpCmpLeI64Imm, ir.OpCmpGtI64Imm, ir.OpCmpGeI64Imm,
-		ir.OpAndI64, ir.OpOrI64, ir.OpXorI64, ir.OpShlI64, ir.OpShrI64, ir.OpNotI64,
-		ir.OpCmpEqF64, ir.OpCmpNeF64, ir.OpCmpLtF64, ir.OpCmpLeF64, ir.OpCmpGtF64, ir.OpCmpGeF64,
-		ir.OpCmpEqBool, ir.OpCmpNeBool,
-		ir.OpAndBool, ir.OpOrBool,
-		ir.OpNotBool,
-		ir.OpI64ToF64, ir.OpF64ToI64,
-		ir.OpSqrtF64,
-		ir.OpNow,
-		ir.OpJsonI64Object:
+	case ir.OpJsonI64Object:
 		return KindOperator
 
 	case ir.OpListI64ToStr, ir.OpF64ArrayToStr, ir.OpStrArrToStr:
@@ -441,16 +428,6 @@ func contractResult(o ir.OpCode) ir.Type {
 		return info.Result
 	}
 	switch o {
-	case ir.OpAddI64, ir.OpSubI64, ir.OpMulI64, ir.OpDivI64, ir.OpModI64, ir.OpNegI64,
-		ir.OpAddI64Imm, ir.OpSubI64Imm, ir.OpMulI64Imm, ir.OpDivI64Imm, ir.OpModI64Imm:
-		return ir.TypeI64
-	case ir.OpAddF64, ir.OpSubF64, ir.OpMulF64, ir.OpDivF64, ir.OpNegF64:
-		return ir.TypeF64
-	case ir.OpCmpEqI64, ir.OpCmpNeI64, ir.OpCmpLtI64, ir.OpCmpLeI64, ir.OpCmpGtI64, ir.OpCmpGeI64,
-		ir.OpCmpEqI64Imm, ir.OpCmpNeI64Imm, ir.OpCmpLtI64Imm, ir.OpCmpLeI64Imm, ir.OpCmpGtI64Imm, ir.OpCmpGeI64Imm,
-		ir.OpCmpEqBool, ir.OpCmpNeBool,
-		ir.OpAndBool, ir.OpOrBool:
-		return ir.TypeBool
 	case ir.OpNewList:
 		return ir.TypeList
 	case ir.OpNewMap:
@@ -495,8 +472,6 @@ func contractResult(o ir.OpCode) ir.Type {
 		return ir.TypeList
 	case ir.OpF64ArrayConcat:
 		return ir.TypeF64Arr
-	case ir.OpNow:
-		return ir.TypeI64
 	case ir.OpNewListAny:
 		return ir.TypeListAny
 	case ir.OpListAnyLen:

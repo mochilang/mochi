@@ -456,73 +456,14 @@ func (o OpCode) String() string {
 		return "const"
 	case OpPhi:
 		return "phi"
-	case OpAddI64:
-		return "add.i64"
-	case OpSubI64:
-		return "sub.i64"
-	case OpMulI64:
-		return "mul.i64"
-	case OpDivI64:
-		return "div.i64"
-	case OpModI64:
-		return "mod.i64"
-	case OpNegI64:
-		return "neg.i64"
-	case OpAddI64Imm:
-		return "addk.i64"
-	case OpSubI64Imm:
-		return "subk.i64"
-	case OpMulI64Imm:
-		return "mulk.i64"
-	case OpDivI64Imm:
-		return "divk.i64"
-	case OpModI64Imm:
-		return "modk.i64"
-	case OpAddF64:
-		return "add.f64"
-	case OpSubF64:
-		return "sub.f64"
-	case OpMulF64:
-		return "mul.f64"
-	case OpDivF64:
-		return "div.f64"
-	case OpNegF64:
-		return "neg.f64"
-	case OpCmpEqI64:
-		return "cmp.eq.i64"
-	case OpCmpNeI64:
-		return "cmp.ne.i64"
-	case OpCmpLtI64:
-		return "cmp.lt.i64"
-	case OpCmpLeI64:
-		return "cmp.le.i64"
-	case OpCmpGtI64:
-		return "cmp.gt.i64"
-	case OpCmpGeI64:
-		return "cmp.ge.i64"
-	case OpCmpEqI64Imm:
-		return "cmp.eq.i64.imm"
-	case OpCmpNeI64Imm:
-		return "cmp.ne.i64.imm"
-	case OpCmpLtI64Imm:
-		return "cmp.lt.i64.imm"
-	case OpCmpLeI64Imm:
-		return "cmp.le.i64.imm"
-	case OpCmpGtI64Imm:
-		return "cmp.gt.i64.imm"
-	case OpCmpGeI64Imm:
-		return "cmp.ge.i64.imm"
 	// Phase 4.2.30: OpLenStr, OpConcatStr, OpCmpEqStr, OpCmpNeStr,
 	// OpI64ToStr, OpF64ToStr, OpBoolToStr, OpStrCharAt, OpStrIn,
 	// OpStrRuneLen migrated to opTable; OpInfoOf returns their Name.
-	case OpCmpEqBool:
-		return "cmp.eq.bool"
-	case OpCmpNeBool:
-		return "cmp.ne.bool"
-	case OpAndBool:
-		return "and.bool"
-	case OpOrBool:
-		return "or.bool"
+	//
+	// Phase 4.2.31: I64/F64/Bool arithmetic + comparison + bitwise +
+	// conversion + math ops (OpAddI64, ..., OpNow) migrated to opTable;
+	// see compiler3/ir/optable.go for the full list. OpInfoOf returns
+	// their Name in the registry prologue above.
 	case OpNewList:
 		return "newlist"
 	case OpListLenI64:
@@ -589,8 +530,6 @@ func (o OpCode) String() string {
 		return "list.concat.i64"
 	case OpF64ArrayConcat:
 		return "f64arr.concat"
-	case OpNow:
-		return "now"
 	case OpNewListAny:
 		return "newlistany"
 	case OpListAnyLen:
@@ -637,38 +576,6 @@ func (o OpCode) String() string {
 		return "query.crossjoin"
 	case OpCallGo:
 		return "call.go"
-	case OpAndI64:
-		return "and.i64"
-	case OpOrI64:
-		return "or.i64"
-	case OpXorI64:
-		return "xor.i64"
-	case OpShlI64:
-		return "shl.i64"
-	case OpShrI64:
-		return "shr.i64"
-	case OpNotI64:
-		return "not.i64"
-	case OpCmpEqF64:
-		return "cmp.eq.f64"
-	case OpCmpNeF64:
-		return "cmp.ne.f64"
-	case OpCmpLtF64:
-		return "cmp.lt.f64"
-	case OpCmpLeF64:
-		return "cmp.le.f64"
-	case OpCmpGtF64:
-		return "cmp.gt.f64"
-	case OpCmpGeF64:
-		return "cmp.ge.f64"
-	case OpNotBool:
-		return "not.bool"
-	case OpI64ToF64:
-		return "i64.to.f64"
-	case OpF64ToI64:
-		return "f64.to.i64"
-	case OpSqrtF64:
-		return "sqrt.f64"
 	}
 	return "?"
 }
