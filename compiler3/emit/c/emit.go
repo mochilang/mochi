@@ -109,7 +109,7 @@ func Emit(p *Program) ([]byte, error) {
 				usesListI64 = true
 			case ir.OpNewListAny, ir.OpListAnyLen, ir.OpListAnyPushAny, ir.OpListAnyGetAny:
 				usesTree = true
-			case ir.OpLenStr, ir.OpCmpEqStr, ir.OpCmpNeStr:
+			case ir.OpLenStr, ir.OpCmpEqStr, ir.OpCmpNeStr, ir.OpStrIn:
 				usesStrH = true
 			case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr, ir.OpStrCharAt:
 				usesStrRuntime = true
@@ -523,6 +523,13 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		// NUL-terminated single-rune string. Matches the VM's
 		// `string([]rune(s)[i])` semantics on the v0.5 fixture corpus.
 		fmt.Fprintf(w, "    %s = mochi_str_char_at(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpStrIn:
+		// `needle in haystack`. strstr returns the first occurrence of
+		// the needle's byte sequence inside the haystack, or NULL when
+		// the needle is absent. The empty needle is a substring of
+		// every haystack (strstr returns the haystack itself); this
+		// matches Go's strings.Contains so the VM and C target agree.
+		fmt.Fprintf(w, "    %s = (strstr(%s, %s) != NULL);\n", name, valueName(v.Args[1]), valueName(v.Args[0]))
 	case ir.OpNow:
 		fmt.Fprintf(w, "    %s = mochi_now_us();\n", name)
 	case ir.OpJsonI64Object:
