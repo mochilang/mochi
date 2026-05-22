@@ -8,20 +8,20 @@ import (
 	"mochi/types"
 )
 
-// TestLowerRejectsPhase30Plus pins the Phase 3.0 surface boundary:
-// shapes that belong in Phase 3.1 onward (lists, maps, sets,
-// generics, casts, none/Option, fun-expressions) must produce a
-// clear, phase-named or otherwise-explicit diagnostic rather than
-// silently being miscompiled. Records (3.0) are now accepted.
-func TestLowerRejectsPhase30Plus(t *testing.T) {
+// TestLowerRejectsPhase31Plus pins the Phase 3.1 surface boundary:
+// shapes that belong in Phase 3.2 onward (maps, sets, generics,
+// casts, none/Option, fun-expressions) must produce a clear,
+// phase-named or otherwise-explicit diagnostic rather than silently
+// being miscompiled. Records (3.0) and lists (3.1) are now accepted.
+func TestLowerRejectsPhase31Plus(t *testing.T) {
 	cases := []struct {
 		name    string
 		program string
 		want    string
 	}{
 		{
-			name:    "list_literal",
-			program: "print([1, 2, 3])\n",
+			name:    "print_list",
+			program: "let xs = [1, 2, 3]\nprint(xs)\n",
 			want:    "Phase 3.1",
 		},
 		{
@@ -40,12 +40,24 @@ func TestLowerRejectsPhase30Plus(t *testing.T) {
 			want:    "explicit `: T` type",
 		},
 		{
-			name:    "for_list_iter",
-			program: "let xs = [1,2,3]\nfor x in xs { print(x) }\n",
-			// Reject is fired at the list literal first (Phase 3.1
-			// gate), not at the for-loop. Either diagnostic is fine
-			// so long as the source is rejected.
-			want: "Phase 3.1",
+			name:    "list_of_record",
+			program: "type Pt { x: int }\nlet pts = [Pt{x: 1}]\n",
+			want:    "Phase 3.1",
+		},
+		{
+			name:    "nested_list",
+			program: "let xs = [[1, 2], [3]]\n",
+			want:    "Phase 3.1",
+		},
+		{
+			name:    "empty_list_literal",
+			program: "let xs = []\n",
+			want:    "empty list literal",
+		},
+		{
+			name:    "append_type_mismatch",
+			program: "let xs = [1, 2]\nlet ys = append(xs, \"oops\")\n",
+			want:    "list element type",
 		},
 		{
 			name:    "call_undefined",

@@ -111,10 +111,11 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 			scope:                 newLScope(nil),
 			currentFnReturn:       sig.returnType,
 			currentFnReturnRecord: sig.returnRecordName,
+			currentFnReturnElem:   sig.returnElemType,
 		}
 		// Seed parameters into the function scope as immutable.
 		for _, p := range sig.params {
-			l.scope.vars[p.Name] = lbinding{t: p.Type, mutable: false, record: p.RecordName}
+			l.scope.vars[p.Name] = lbinding{t: p.Type, mutable: false, record: p.RecordName, elem: p.ElemType}
 		}
 		body := &aotir.Block{}
 		for i, st := range fn.Body {
@@ -130,6 +131,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 			Params:           sig.params,
 			ReturnType:       sig.returnType,
 			ReturnRecordName: sig.returnRecordName,
+			ReturnElemType:   sig.returnElemType,
 			Body:             body,
 		})
 	}
@@ -202,12 +204,15 @@ func buildRecordDecl(records map[string]*aotir.RecordDecl, td *parser.TypeDecl) 
 			return nil, fmt.Errorf("duplicate field %q", f.Name)
 		}
 		seen[f.Name] = true
-		t, rec, err := typeFromRef(records, f.Type)
+		t, rec, _, err := typeFromRef(records, f.Type)
 		if err != nil {
 			return nil, fmt.Errorf("field %q: %w", f.Name, err)
 		}
 		if t == aotir.TypeRecord {
 			return nil, fmt.Errorf("field %q: nested record fields are not supported in Phase 3.0", f.Name)
+		}
+		if t == aotir.TypeList {
+			return nil, fmt.Errorf("field %q: list-typed record fields are not supported in Phase 3.1", f.Name)
 		}
 		rd.Fields = append(rd.Fields, aotir.RecordField{Name: f.Name, Type: t, RecordName: rec})
 	}
@@ -221,6 +226,7 @@ type funcSig struct {
 	params           []aotir.Param
 	returnType       aotir.Type
 	returnRecordName string
+	returnElemType   aotir.Type
 }
 
 // buildFuncSig turns a parser.FunStmt into its lower-time signature.
@@ -233,7 +239,7 @@ func buildFuncSig(records map[string]*aotir.RecordDecl, fn *parser.FunStmt) (*fu
 	if fn.Return == nil {
 		return nil, fmt.Errorf("fun %q requires an explicit `: T` return type in Phase 2.2", fn.Name)
 	}
-	ret, retRec, err := typeFromRef(records, fn.Return)
+	ret, retRec, retElem, err := typeFromRef(records, fn.Return)
 	if err != nil {
 		return nil, fmt.Errorf("fun %q return: %w", fn.Name, err)
 	}
@@ -256,13 +262,13 @@ func buildFuncSig(records map[string]*aotir.RecordDecl, fn *parser.FunStmt) (*fu
 		if p.Type == nil {
 			return nil, fmt.Errorf("fun %q param %q requires an explicit `: T` type in Phase 2.2", fn.Name, p.Name)
 		}
-		t, rec, err := typeFromRef(records, p.Type)
+		t, rec, elem, err := typeFromRef(records, p.Type)
 		if err != nil {
 			return nil, fmt.Errorf("fun %q param %q: %w", fn.Name, p.Name, err)
 		}
-		params = append(params, aotir.Param{Name: p.Name, Type: t, RecordName: rec})
+		params = append(params, aotir.Param{Name: p.Name, Type: t, RecordName: rec, ElemType: elem})
 	}
-	return &funcSig{params: params, returnType: ret, returnRecordName: retRec}, nil
+	return &funcSig{params: params, returnType: ret, returnRecordName: retRec, returnElemType: retElem}, nil
 }
 
 // lowerer carries the per-function scope stack, loop-depth counter,
@@ -275,6 +281,7 @@ type lowerer struct {
 	loopDepth             int
 	currentFnReturn       aotir.Type
 	currentFnReturnRecord string
+	currentFnReturnElem   aotir.Type
 }
 
 // lscope mirrors aotir's scope: lexical frame with parent chain.
@@ -286,7 +293,8 @@ type lscope struct {
 type lbinding struct {
 	t       aotir.Type
 	mutable bool
-	record  string // record name when t==TypeRecord
+	record  string     // record name when t==TypeRecord
+	elem    aotir.Type // element type when t==TypeList
 }
 
 func newLScope(parent *lscope) *lscope {
@@ -339,7 +347,7 @@ func (l *lowerer) lowerStatement(out *aotir.Block, st *parser.Statement) error {
 	case st.Type != nil:
 		return fmt.Errorf("`type` declarations are only allowed at the top level")
 	}
-	return fmt.Errorf("unsupported statement in Phase 3.0")
+	return fmt.Errorf("unsupported statement in Phase 3.1")
 }
 
 // lowerExprStmt handles a top-level expression statement. Phase 2.2
@@ -413,6 +421,12 @@ func (l *lowerer) lowerCallArgs(call *parser.CallExpr, sig *funcSig) ([]aotir.Ex
 					call.Func, i, sig.params[i].RecordName, argRec)
 			}
 		}
+		if sig.params[i].Type == aotir.TypeList {
+			if argElem := exprElemType(expr); argElem != sig.params[i].ElemType {
+				return nil, fmt.Errorf("call %q arg %d: expected list<%s>, got list<%s>",
+					call.Func, i, sig.params[i].ElemType, argElem)
+			}
+		}
 		out = append(out, expr)
 	}
 	return out, nil
@@ -434,6 +448,22 @@ func exprRecordName(e aotir.Expr) string {
 		return v.ResultRecordName
 	}
 	return ""
+}
+
+// exprElemType extracts the element type of a list-typed aotir
+// expression. Mirrors the verifier helper of the same name.
+func exprElemType(e aotir.Expr) aotir.Type {
+	switch v := e.(type) {
+	case *aotir.VarRef:
+		return v.ElemType
+	case *aotir.ListLit:
+		return v.ElemType
+	case *aotir.CallExpr:
+		return v.ResultElemType
+	case *aotir.AppendExpr:
+		return v.ElemType
+	}
+	return aotir.TypeInvalid
 }
 
 // lowerLet lowers an immutable binding. If the declared type is
@@ -466,8 +496,9 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	}
 	declType := value.Type()
 	declRec := exprRecordName(value)
+	declElem := exprElemType(value)
 	if declared != nil {
-		t, rec, err := typeFromRef(l.records, declared)
+		t, rec, elem, err := typeFromRef(l.records, declared)
 		if err != nil {
 			return fmt.Errorf("binding %q type: %w", name, err)
 		}
@@ -477,14 +508,19 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		if t == aotir.TypeRecord && rec != declRec {
 			return fmt.Errorf("binding %q: declared record %q, init produces record %q", name, rec, declRec)
 		}
+		if t == aotir.TypeList && elem != declElem {
+			return fmt.Errorf("binding %q: declared list<%s>, init produces list<%s>", name, elem, declElem)
+		}
 		declType = t
 		declRec = rec
+		declElem = elem
 	}
-	l.scope.vars[name] = lbinding{t: declType, mutable: mutable, record: declRec}
+	l.scope.vars[name] = lbinding{t: declType, mutable: mutable, record: declRec, elem: declElem}
 	out.Statements = append(out.Statements, &aotir.LetStmt{
 		Name:       name,
 		VarType:    declType,
 		RecordName: declRec,
+		ElemType:   declElem,
 		Init:       value,
 		Mutable:    mutable,
 	})
@@ -519,6 +555,11 @@ func (l *lowerer) lowerAssign(out *aotir.Block, as *parser.AssignStmt) error {
 	if b.t == aotir.TypeRecord {
 		if vrec := exprRecordName(value); vrec != b.record {
 			return fmt.Errorf("assign %q: binding holds record %q, value produces record %q", as.Name, b.record, vrec)
+		}
+	}
+	if b.t == aotir.TypeList {
+		if velem := exprElemType(value); velem != b.elem {
+			return fmt.Errorf("assign %q: binding holds list<%s>, value produces list<%s>", as.Name, b.elem, velem)
 		}
 	}
 	out.Statements = append(out.Statements, &aotir.AssignStmt{
@@ -588,7 +629,7 @@ func (l *lowerer) lowerFor(out *aotir.Block, fs *parser.ForStmt) error {
 		return fmt.Errorf("for loop induction variable is empty")
 	}
 	if fs.RangeEnd == nil {
-		return fmt.Errorf("for-in over a list lands with Phase 3; only `for x in start..end` is supported in Phase 2.2")
+		return l.lowerForEach(out, fs)
 	}
 	start, err := l.lowerExpr(fs.Source)
 	if err != nil {
@@ -630,6 +671,47 @@ func (l *lowerer) lowerFor(out *aotir.Block, fs *parser.ForStmt) error {
 		Start: start,
 		End:   end,
 		Body:  body,
+	})
+	return nil
+}
+
+// lowerForEach lowers `for x in xs { body }` where xs is a
+// list-typed expression. The induction variable is registered as
+// immutable inside the body scope with the list's element type.
+func (l *lowerer) lowerForEach(out *aotir.Block, fs *parser.ForStmt) error {
+	list, err := l.lowerExpr(fs.Source)
+	if err != nil {
+		return fmt.Errorf("for %s in: %w", fs.Name, err)
+	}
+	if list.Type() != aotir.TypeList {
+		return fmt.Errorf("for %s in: source must be a list, got %s", fs.Name, list.Type())
+	}
+	elem := exprElemType(list)
+	prev := l.scope
+	l.scope = newLScope(prev)
+	l.scope.vars[fs.Name] = lbinding{t: elem, mutable: false}
+	l.loopDepth++
+	body := &aotir.Block{}
+	for i, st := range fs.Body {
+		if st == nil {
+			l.loopDepth--
+			l.scope = prev
+			return fmt.Errorf("for %s body stmt %d is nil", fs.Name, i)
+		}
+		if err := l.lowerStatement(body, st); err != nil {
+			l.loopDepth--
+			l.scope = prev
+			return fmt.Errorf("for %s body stmt %d: %w", fs.Name, i, err)
+		}
+	}
+	l.loopDepth--
+	l.scope = prev
+
+	out.Statements = append(out.Statements, &aotir.ForEachStmt{
+		Var:      fs.Name,
+		List:     list,
+		ElemType: elem,
+		Body:     body,
 	})
 	return nil
 }
@@ -685,6 +767,12 @@ func (l *lowerer) lowerReturn(out *aotir.Block, rs *parser.ReturnStmt) error {
 				l.currentFnReturnRecord, vrec)
 		}
 	}
+	if l.currentFnReturn == aotir.TypeList {
+		if velem := exprElemType(value); velem != l.currentFnReturnElem {
+			return fmt.Errorf("return: function returns list<%s>, value produces list<%s>",
+				l.currentFnReturnElem, velem)
+		}
+	}
 	out.Statements = append(out.Statements, &aotir.ReturnStmt{Value: value})
 	return nil
 }
@@ -709,32 +797,75 @@ func (l *lowerer) lowerNestedBlock(stmts []*parser.Statement) (*aotir.Block, err
 }
 
 // typeFromRef maps a parser.TypeRef to an aotir.Type plus an optional
-// record name (set when the type is a user record). Phase 3.0 accepts
-// the four primitives plus any user-declared record name.
-func typeFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (aotir.Type, string, error) {
+// record name (set when the type is a user record) and an optional
+// element type (set when the type is a list). Phase 3.1 accepts:
+//
+//   - the four scalar primitives,
+//   - any user-declared record name,
+//   - `[T]` or `list<T>` where T is one of the four scalar primitives.
+func typeFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (aotir.Type, string, aotir.Type, error) {
 	if ref == nil {
-		return aotir.TypeInvalid, "", fmt.Errorf("nil type ref")
+		return aotir.TypeInvalid, "", aotir.TypeInvalid, fmt.Errorf("nil type ref")
 	}
 	if ref.Optional {
-		return aotir.TypeInvalid, "", fmt.Errorf("optional types land with Option in Phase 3")
+		return aotir.TypeInvalid, "", aotir.TypeInvalid, fmt.Errorf("optional types land with Option in a later phase")
+	}
+	if ref.ListElem != nil {
+		elem, err := listElemFromRef(records, ref.ListElem)
+		if err != nil {
+			return aotir.TypeInvalid, "", aotir.TypeInvalid, err
+		}
+		return aotir.TypeList, "", elem, nil
+	}
+	if ref.Generic != nil {
+		if ref.Generic.Name == "list" {
+			if len(ref.Generic.Args) != 1 {
+				return aotir.TypeInvalid, "", aotir.TypeInvalid, fmt.Errorf("list<T> takes exactly one type argument, got %d", len(ref.Generic.Args))
+			}
+			elem, err := listElemFromRef(records, ref.Generic.Args[0])
+			if err != nil {
+				return aotir.TypeInvalid, "", aotir.TypeInvalid, err
+			}
+			return aotir.TypeList, "", elem, nil
+		}
+		return aotir.TypeInvalid, "", aotir.TypeInvalid, fmt.Errorf("generic type %q not supported in Phase 3.1", ref.Generic.Name)
 	}
 	if ref.Simple == nil {
-		return aotir.TypeInvalid, "", fmt.Errorf("composite type annotations land in later phases")
+		return aotir.TypeInvalid, "", aotir.TypeInvalid, fmt.Errorf("composite type annotations land in later phases")
 	}
 	switch *ref.Simple {
 	case "int":
-		return aotir.TypeInt, "", nil
+		return aotir.TypeInt, "", aotir.TypeInvalid, nil
 	case "float":
-		return aotir.TypeFloat, "", nil
+		return aotir.TypeFloat, "", aotir.TypeInvalid, nil
 	case "bool":
-		return aotir.TypeBool, "", nil
+		return aotir.TypeBool, "", aotir.TypeInvalid, nil
 	case "string":
-		return aotir.TypeString, "", nil
+		return aotir.TypeString, "", aotir.TypeInvalid, nil
 	}
 	if _, ok := records[*ref.Simple]; ok {
-		return aotir.TypeRecord, *ref.Simple, nil
+		return aotir.TypeRecord, *ref.Simple, aotir.TypeInvalid, nil
 	}
-	return aotir.TypeInvalid, "", fmt.Errorf("type %q not supported in Phase 3.0", *ref.Simple)
+	return aotir.TypeInvalid, "", aotir.TypeInvalid, fmt.Errorf("type %q not supported in Phase 3.1", *ref.Simple)
+}
+
+// listElemFromRef resolves a list's element TypeRef. Phase 3.1
+// rejects record / list / option element types so the per-T runtime
+// surface stays bounded; later sub-phases relax this.
+func listElemFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (aotir.Type, error) {
+	t, rec, _, err := typeFromRef(records, ref)
+	if err != nil {
+		return aotir.TypeInvalid, fmt.Errorf("list element: %w", err)
+	}
+	switch t {
+	case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+		return t, nil
+	case aotir.TypeRecord:
+		return aotir.TypeInvalid, fmt.Errorf("list of record %q is not supported in Phase 3.1", rec)
+	case aotir.TypeList:
+		return aotir.TypeInvalid, fmt.Errorf("nested list types are not supported in Phase 3.1")
+	}
+	return aotir.TypeInvalid, fmt.Errorf("list element type %s not supported in Phase 3.1", t)
 }
 
 // printCalleeFor picks the runtime print entry for an argument
@@ -752,9 +883,12 @@ func printCalleeFor(t aotir.Type) (string, error) {
 		return "mochi_print_bool", nil
 	}
 	if t == aotir.TypeRecord {
-		return "", fmt.Errorf("print() does not accept a record value in Phase 3.0 (access scalar fields instead)")
+		return "", fmt.Errorf("print() does not accept a record value in Phase 3.1 (access scalar fields instead)")
 	}
-	return "", fmt.Errorf("print() does not accept %s in Phase 3.0", t)
+	if t == aotir.TypeList {
+		return "", fmt.Errorf("print() does not accept a list value in Phase 3.1 (iterate and print elements instead)")
+	}
+	return "", fmt.Errorf("print() does not accept %s in Phase 3.1", t)
 }
 
 // matchBareCall walks an Expr that is expected to be a single
@@ -1011,9 +1145,14 @@ func (l *lowerer) lowerPostfix(p *parser.PostfixExpr) (aotir.Expr, error) {
 				return nil, err
 			}
 		case op.Call != nil:
-			return nil, fmt.Errorf("postfix call on an expression is not supported in Phase 3.0 (use a bare callee name)")
-		case op.Index != nil, op.SafeIndex != nil:
-			return nil, fmt.Errorf("postfix index lands with lists in Phase 3.1")
+			return nil, fmt.Errorf("postfix call on an expression is not supported in Phase 3.1 (use a bare callee name)")
+		case op.Index != nil:
+			expr, err = l.lowerIndexOp(expr, op.Index)
+			if err != nil {
+				return nil, err
+			}
+		case op.SafeIndex != nil:
+			return nil, fmt.Errorf("safe index `?[k]` lands with Option in a later phase")
 		case op.SafeField != nil:
 			return nil, fmt.Errorf("safe field access `?.` lands with Option in a later phase")
 		case op.Cast != nil:
@@ -1023,6 +1162,34 @@ func (l *lowerer) lowerPostfix(p *parser.PostfixExpr) (aotir.Expr, error) {
 		}
 	}
 	return expr, nil
+}
+
+// lowerIndexOp resolves an `[i]` postfix against a list-typed receiver.
+// Phase 3.1 supports only single-index access (no slice / step) and
+// only on list values; map indexing lands with 3.2. The index must be
+// TypeInt and the result is the receiver's element type.
+func (l *lowerer) lowerIndexOp(receiver aotir.Expr, idx *parser.IndexOp) (aotir.Expr, error) {
+	if receiver.Type() != aotir.TypeList {
+		return nil, fmt.Errorf("index access [i]: receiver is %s, expected a list (Phase 3.1 supports only list indexing)", receiver.Type())
+	}
+	if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
+		return nil, fmt.Errorf("slice / step indexing on a list lands in a later phase")
+	}
+	if idx.Start == nil {
+		return nil, fmt.Errorf("index access [i]: missing index expression")
+	}
+	index, err := l.lowerExpr(idx.Start)
+	if err != nil {
+		return nil, fmt.Errorf("index expression: %w", err)
+	}
+	if index.Type() != aotir.TypeInt {
+		return nil, fmt.Errorf("list index must be int, got %s", index.Type())
+	}
+	return &aotir.IndexExpr{
+		Receiver: receiver,
+		Index:    index,
+		ElemType: exprElemType(receiver),
+	}, nil
 }
 
 // lowerFieldOp resolves a `.field` against a record-typed receiver and
@@ -1083,6 +1250,7 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 			Name:       pr.Selector.Root,
 			VarType:    b.t,
 			RecordName: b.record,
+			ElemType:   b.elem,
 		}
 		for _, field := range pr.Selector.Tail {
 			var err error
@@ -1096,7 +1264,47 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	if pr.Call != nil {
 		return l.lowerUserCallExpr(pr.Call)
 	}
-	return nil, fmt.Errorf("primary %s not supported in Phase 3.0%s", trimPrimary(pr), primaryPhaseHint(pr))
+	if pr.List != nil {
+		return l.lowerListLit(pr.List)
+	}
+	return nil, fmt.Errorf("primary %s not supported in Phase 3.1%s", trimPrimary(pr), primaryPhaseHint(pr))
+}
+
+// lowerListLit lowers a `[e1, e2, ...]` literal. Every element must
+// lower to the same scalar primitive type; the resulting ListLit's
+// ElemType is taken from the first element. Phase 3.1 rejects empty
+// list literals because there is no surface form to supply the
+// element type (e.g. `let xs: [int] = []`); future sub-phases can
+// thread the binding's annotated type into this path.
+func (l *lowerer) lowerListLit(ll *parser.ListLiteral) (aotir.Expr, error) {
+	if len(ll.Elems) == 0 {
+		return nil, fmt.Errorf("empty list literal: Phase 3.1 requires at least one element so the element type can be inferred")
+	}
+	elems := make([]aotir.Expr, 0, len(ll.Elems))
+	var elemType aotir.Type
+	for i, e := range ll.Elems {
+		v, err := l.lowerExpr(e)
+		if err != nil {
+			return nil, fmt.Errorf("list literal element %d: %w", i, err)
+		}
+		if i == 0 {
+			elemType = v.Type()
+			switch elemType {
+			case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+				// ok
+			case aotir.TypeRecord:
+				return nil, fmt.Errorf("list of record values is not supported in Phase 3.1")
+			case aotir.TypeList:
+				return nil, fmt.Errorf("nested list values are not supported in Phase 3.1")
+			default:
+				return nil, fmt.Errorf("list literal element %d: unsupported type %s", i, elemType)
+			}
+		} else if v.Type() != elemType {
+			return nil, fmt.Errorf("list literal element %d: first element is %s, this is %s", i, elemType, v.Type())
+		}
+		elems = append(elems, v)
+	}
+	return &aotir.ListLit{ElemType: elemType, Elems: elems}, nil
 }
 
 // lowerStructLit lowers a `R { f1: v1, ... }` literal into a typed
@@ -1153,10 +1361,18 @@ func (l *lowerer) lowerStructLit(sl *parser.StructLiteral) (aotir.Expr, error) {
 
 // lowerUserCallExpr lowers a value-producing user-fn call. The print
 // builtins are unit-return and so cannot appear in expression
-// position; the lowerer rejects them explicitly.
+// position; the lowerer rejects them explicitly. Phase 3.1 routes
+// the list builtins `len` and `append` here as well; they are
+// recognised by name and lowered to their dedicated IR nodes.
 func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	if call.Func == "print" {
 		return nil, fmt.Errorf("print() returns unit and cannot appear in an expression")
+	}
+	if call.Func == "len" {
+		return l.lowerLenCall(call)
+	}
+	if call.Func == "append" {
+		return l.lowerAppendCall(call)
 	}
 	sig, ok := l.funcs[call.Func]
 	if !ok {
@@ -1174,6 +1390,56 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 		Args:             args,
 		Result:           sig.returnType,
 		ResultRecordName: sig.returnRecordName,
+		ResultElemType:   sig.returnElemType,
+	}, nil
+}
+
+// lowerLenCall lowers the `len(xs)` builtin to a LenExpr. Phase 3.1
+// only accepts a single list-typed argument; string `len` and map
+// `len` land in later phases (3.5, 3.2 respectively).
+func (l *lowerer) lowerLenCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("len() takes exactly one argument, got %d", len(call.Args))
+	}
+	receiver, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("len argument: %w", err)
+	}
+	if receiver.Type() != aotir.TypeList {
+		return nil, fmt.Errorf("len() argument must be a list in Phase 3.1, got %s", receiver.Type())
+	}
+	return &aotir.LenExpr{
+		Receiver: receiver,
+		ElemType: exprElemType(receiver),
+	}, nil
+}
+
+// lowerAppendCall lowers the `append(xs, v)` builtin to an
+// AppendExpr. The value's type must match the list's element type;
+// the lowerer rejects a mismatch with a phase-named diagnostic.
+func (l *lowerer) lowerAppendCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 2 {
+		return nil, fmt.Errorf("append() takes exactly two arguments (list, value), got %d", len(call.Args))
+	}
+	receiver, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("append list: %w", err)
+	}
+	if receiver.Type() != aotir.TypeList {
+		return nil, fmt.Errorf("append() first argument must be a list, got %s", receiver.Type())
+	}
+	elem := exprElemType(receiver)
+	value, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("append value: %w", err)
+	}
+	if value.Type() != elem {
+		return nil, fmt.Errorf("append: list element type is %s, value is %s", elem, value.Type())
+	}
+	return &aotir.AppendExpr{
+		Receiver: receiver,
+		Value:    value,
+		ElemType: elem,
 	}, nil
 }
 
@@ -1198,13 +1464,11 @@ func lowerLiteral(lit *parser.Literal) (aotir.Expr, error) {
 }
 
 // primaryPhaseHint names the phase that adds support for pr, when one
-// is known. Phase 3.1 adds list literals, 3.2 adds maps, 4.x adds
-// fun-expressions. The hint is appended to the rejection diagnostic
-// so users see both the current floor and the future ceiling.
+// is known. Phase 3.2 adds maps, 4.x adds fun-expressions. The hint is
+// appended to the rejection diagnostic so users see both the current
+// floor and the future ceiling.
 func primaryPhaseHint(pr *parser.Primary) string {
 	switch {
-	case pr.List != nil:
-		return " (list literals land with Phase 3.1)"
 	case pr.Map != nil:
 		return " (map literals land with Phase 3.2)"
 	case pr.FunExpr != nil:
