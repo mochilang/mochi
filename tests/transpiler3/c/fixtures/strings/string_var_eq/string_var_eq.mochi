@@ -1,0 +1,6 @@
+let a = "foo"
+let b = "foo"
+let c = "bar"
+print(a == b)
+print(a == c)
+print(a != c)
