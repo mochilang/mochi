@@ -3041,6 +3041,45 @@ while i < len(s) {
 	}
 }
 
+// TestBuildSourceStrInBasic pins the Phase 4.2.28 `in` operator on
+// TypeStr: `needle in haystack` lowers to OpStrIn which the C target
+// emits as strstr(haystack, needle) != NULL. The fixture covers both
+// arms: "w" is in "hello world", "z" is not.
+func TestBuildSourceStrInBasic(t *testing.T) {
+	src := `let s = "hello world"
+if "w" in s {
+  print("yes")
+}
+if "z" in s {
+  print("nope")
+} else {
+  print("no")
+}
+`
+	if got, want := runMochiBuild(t, src), "yes\nno\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrInSubstring pins multi-byte needle matches. The
+// strstr probe must match an arbitrary contiguous substring, not
+// just single characters; "ell" appears at offset 1 of "hello".
+func TestBuildSourceStrInSubstring(t *testing.T) {
+	src := `let s = "hello"
+if "ell" in s {
+  print("ok")
+}
+if "lle" in s {
+  print("ordered")
+} else {
+  print("unordered match would be wrong")
+}
+`
+	if got, want := runMochiBuild(t, src), "ok\nunordered match would be wrong\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceRejectsImportGo pins the by-design rejection of
 // general Go FFI in the C target. The script `import go "testpkg"`
 // must surface ErrUnsupportedFFI (wrapped) at build time, not

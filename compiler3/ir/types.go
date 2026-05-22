@@ -180,6 +180,16 @@ const (
 	// existing C-target list-get pattern.
 	OpStrCharAt
 
+	// OpStrIn backs `needle in haystack` on TypeStr (MEP-42 Phase
+	// 4.2.28): true when the needle's byte sequence appears as a
+	// contiguous substring of the haystack. Args[0] is the needle,
+	// Args[1] the haystack -- the surface-order convention from
+	// `lower.go applyBinOp(op, l, r)`, where l is the LHS of `in`
+	// (the needle) and r is the RHS (the haystack). Result Type is
+	// TypeBool; classified Dispatch under the verifier (no
+	// allocation, just a strstr probe).
+	OpStrIn
+
 	// Bool comparisons (MEP-42 Phase 4.2.7). Result Type == TypeBool.
 	// Bool values are int-sized in both targets, so the C emit lowers
 	// to plain `==` / `!=` and the Go emit to the same. Distinct ops
@@ -505,6 +515,8 @@ func (o OpCode) String() string {
 		return "bool.to.str"
 	case OpStrCharAt:
 		return "str.charat"
+	case OpStrIn:
+		return "str.in"
 	case OpCmpEqBool:
 		return "cmp.eq.bool"
 	case OpCmpNeBool:

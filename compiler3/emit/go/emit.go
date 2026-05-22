@@ -329,6 +329,13 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 		// computed per call; the IR pre-evaluates the index so no extra
 		// SSA shape is needed.
 		fmt.Fprintf(w, "\t%s = string([]rune(%s)[%s])\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpStrIn:
+		// `needle in haystack`. Args[0] is the needle, Args[1] the
+		// haystack (surface order). strings.Contains is byte-wise
+		// (substring search on the underlying byte slice), matching
+		// strstr on the C side so the two targets agree.
+		imports["strings"] = true
+		fmt.Fprintf(w, "\t%s = strings.Contains(%s, %s)\n", name, valueName(v.Args[1]), valueName(v.Args[0]))
 	case ir.OpNewList:
 		fmt.Fprintf(w, "\t%s = []int64{}\n", name)
 	case ir.OpListLenI64:

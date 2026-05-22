@@ -1743,6 +1743,12 @@ func (b *builder) applyBinOp(op string, l, r uint32) (uint32, error) {
 		case "!=":
 			code = ir.OpCmpNeStr
 			resType = ir.TypeBool
+		case "in":
+			// Phase 4.2.28: `needle in haystack` substring search. l is
+			// the needle, r the haystack (Args[0]=l, Args[1]=r is the
+			// shape applyBinOp passes to addValue below).
+			code = ir.OpStrIn
+			resType = ir.TypeBool
 		default:
 			return 0, fmt.Errorf("frontend: operator %q on str unsupported in MVP", op)
 		}
