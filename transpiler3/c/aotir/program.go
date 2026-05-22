@@ -67,8 +67,8 @@ type CallStmt struct {
 func (*CallStmt) isStmt() {}
 
 // Expr is a value-producing aotir node. Phase 1 ships only
-// StringLit; Phase 2 introduces IntLit, BoolLit, FloatLit and
-// the arithmetic / comparison operations.
+// StringLit; Phase 2.0 adds the scalar literals plus binary
+// and unary expressions over them.
 type Expr interface {
 	// Type reports the monomorphic type of this expression's
 	// produced value. The verifier uses it to type-check call
@@ -82,5 +82,119 @@ type StringLit struct {
 	Value string
 }
 
-// Type implements Expr.
 func (*StringLit) Type() Type { return TypeString }
+
+// IntLit is a 64-bit signed integer literal. Phase 2.0 emits
+// it as an `INT64_C(N)` C constant so the value carries its
+// type explicitly into integer-typed expression contexts.
+type IntLit struct {
+	Value int64
+}
+
+func (*IntLit) Type() Type { return TypeInt }
+
+// FloatLit is an IEEE 754 binary64 literal. The emit pass
+// renders it via Go's strconv.FormatFloat 'g' -1 64 so the
+// generated C source round-trips exactly through the host's
+// strtod. Phase 2.4 hardens this for NaN/Inf bit-equal
+// reproduction.
+type FloatLit struct {
+	Value float64
+}
+
+func (*FloatLit) Type() Type { return TypeFloat }
+
+// BoolLit is a true/false literal. Phase 2.0 emits it as a C
+// `0` / `1` int constant; the runtime print path uses the
+// `int` ABI for mochi_print_bool.
+type BoolLit struct {
+	Value bool
+}
+
+func (*BoolLit) Type() Type { return TypeBool }
+
+// BinOp is the operator of a BinaryExpr. The set covers every
+// operator the parser surfaces for scalar primitives. The
+// verifier rejects type combinations the lowerer should have
+// already monomorphised away (e.g. mixed int + float operands
+// without an explicit cast lowering step).
+type BinOp int
+
+const (
+	BinInvalid BinOp = iota
+	// Integer arithmetic. Each operand is TypeInt; the result
+	// is TypeInt.
+	BinAddI64
+	BinSubI64
+	BinMulI64
+	BinDivI64
+	BinModI64
+	// Float arithmetic. Each operand is TypeFloat; the result
+	// is TypeFloat.
+	BinAddF64
+	BinSubF64
+	BinMulF64
+	BinDivF64
+	// Integer comparison. Each operand is TypeInt; the result
+	// is TypeBool.
+	BinEqI64
+	BinNeI64
+	BinLtI64
+	BinLeI64
+	BinGtI64
+	BinGeI64
+	// Float comparison. Each operand is TypeFloat; the result
+	// is TypeBool.
+	BinEqF64
+	BinNeF64
+	BinLtF64
+	BinLeF64
+	BinGtF64
+	BinGeF64
+	// Bool comparison. Each operand is TypeBool; the result is
+	// TypeBool.
+	BinEqBool
+	BinNeBool
+	// Short-circuit boolean. Each operand is TypeBool; the
+	// result is TypeBool. The emitter must lower these so the
+	// right-hand side is only evaluated when the left does not
+	// already determine the answer.
+	BinAndBool
+	BinOrBool
+)
+
+// BinaryExpr applies a typed binary operator to two operands.
+// The lowerer is responsible for inserting any monomorphisation
+// (e.g. picking BinAddI64 vs BinAddF64 based on operand types)
+// so the emit pass can pick the C operator from Op alone.
+type BinaryExpr struct {
+	Op    BinOp
+	Left  Expr
+	Right Expr
+	// Result carries the operator's result type. Stored
+	// explicitly so Type() never has to switch on Op, which
+	// keeps the verifier and emitter independent of the BinOp
+	// enum's value ordering.
+	Result Type
+}
+
+func (b *BinaryExpr) Type() Type { return b.Result }
+
+// UnOp is the operator of a UnaryExpr.
+type UnOp int
+
+const (
+	UnInvalid UnOp = iota
+	UnNegI64  // -x where x is TypeInt
+	UnNegF64  // -x where x is TypeFloat
+	UnNotBool // !x where x is TypeBool
+)
+
+// UnaryExpr applies a typed unary operator to one operand.
+type UnaryExpr struct {
+	Op      UnOp
+	Operand Expr
+	Result  Type
+}
+
+func (u *UnaryExpr) Type() Type { return u.Result }
