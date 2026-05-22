@@ -30,14 +30,14 @@ _To be written before sub-phase 3.0 starts. Records + collections unlock realist
 |-----|--------------------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 3.0 | Record types: `struct mochi_R` in source field order; field access; record literals; equality                                  | LANDED      | —      | — |
 | 3.1 | `list<T>`: per-T `mochi_list_<T>` (i64 / f64 / bool / str); literals `[e, ...]`; `xs[i]`; `len(xs)`; `append`; `for x in xs`   | LANDED      | —      | — |
-| 3.2 | `map<K,V>`: per-(K,V) open-addressing hash table; literals `{k: v, ...}`; `m[k]`; `len`; `keys`; `values`; `k in m`; `for k in m` | IN PROGRESS | —      | — |
-| 3.3 | `set<T>`: Swiss table with elided value slot; `+`, `-`, `contains`, `len`                                                      | NOT STARTED | —      | — |
+| 3.2 | `map<K,V>`: per-(K,V) open-addressing hash table; literals `{k: v, ...}`; `m[k]`; `len`; `keys`; `values`; `k in m`; `for k in m` | LANDED      | —      | — |
+| 3.3 | `set<T>`: per-T open-addressing hash set; `+`, `-`, `contains`, `len`, `for`                                                   | DEFERRED    | —      | — |
 | 3.4 | Monomorphisation pass + nested collection types: per-record list / map runtimes, nested collections, empty-literal-with-annotation, list / map equality | IN PROGRESS | —      | — |
 | 3.4a | `list<R>` (records as list elements): per-record `mochi_list_<R>` struct + 4 helpers emitted into the TU prologue              | LANDED      | —      | — |
 | 3.4b | `list<list<T>>`, `map<K,list<V>>`, `list<map<K,V>>` (nested collections)                                                       | NOT STARTED | —      | — |
 | 3.4c | Empty literal with type annotation (`let xs: list<int> = []`, `let m: map<int,int> = {}`)                                      | NOT STARTED | —      | — |
 | 3.4d | `list` / `map` equality (`==`, `!=`)                                                                                           | NOT STARTED | —      | — |
-| 3.5 | `omap<K,V>` (insertion-order map): Swiss table + parallel insertion-order list (needed by Phase 8)                             | NOT STARTED | —      | — |
+| 3.5 | `omap<K,V>` (insertion-order map): hash table + parallel insertion-order list (needed by Phase 8)                              | DEFERRED    | —      | — |
 
 ## Decisions made
 
@@ -86,6 +86,13 @@ _To be written before sub-phase 3.0 starts. Records + collections unlock realist
 - **Empty map literal `{}` is rejected (mirrors list rule).** A bare `{}` has no `(K, V)` for the lowerer to pick an instantiation, and the surface has no annotated-empty form yet. A future typed-empty path lands with Phase 3.4 once the lowerer threads annotated-binding types into literal-time resolution. Rejection message: `"empty map literal: Phase 3.2 requires at least one entry so the key and value types can be inferred"`.
 - **Lifetime: leak on program exit, same as 3.1.** No `free()` for table buffers or the per-call snapshot allocations under `keys()` / `values()`. Phase 7 (panic unwinding) adds a real reclamation path. The per-call snapshot allocations are a known leak proportional to call count, accepted for fixture-scale programs.
 
+### Phase 3.3 (sets): DEFERRED
+
+- **Audit date:** 2026-05-22 23:55 (GMT+7)
+- **Goal-alignment audit verdict: DEFERRED.** Mochi has no `set<T>` surface syntax. `parser/ast.go` has no `SetLit` or `SetType` node; `types/kinds.go` has no `SetType` (only `ListType`, `MapType`, `GroupType`); the type-checker recognises a `distinct(list)` builtin that dedupes a list into another list, not a set value. Implementing `set<T>` in transpiler3 alone would produce a runtime + IR + emit chain that no Mochi program can reach: the parser would reject `let s: set<int> = {1, 2}` before the lowerer ever ran. The user-facing goal moves by zero, every Phase 3.3 LOC would be unreachable scaffolding. Per the goal-alignment-audit rule we defer.
+- **Unblock condition.** Adding `set<T>` to MEP-45's user-facing surface requires Mochi parser + type-checker work that belongs in a different MEP (likely the Mochi language MEP track, not the AOT-backend MEP-45). Once Mochi gains `set<T>` parsing + a `SetType` kind, Phase 3.3 reactivates: per-T open-addressing hash set (4 instantiations: i64 / f64 / bool / str), `+` (union), `-` (difference), `contains(s, e)`, `len(s)`, `for e in s` key-sorted iteration. The runtime drops into `transpiler3/c/runtime/{include/mochi/set.h, src/set.c}` as a value-slot-elided cousin of `mochi_map_<K>_<V>_*`; the IR + lower + emit chain mirrors Phase 3.2 exactly, swapping the (K,V) pair for a single (T) element.
+- **No fixture corpus today.** Without a parsable Mochi surface there is nothing to fixture against the vm3 oracle. `TestPhase3Sets` is not authored; the gate row in the table reads DEFERRED and will not block downstream phases.
+
 ### Phase 3.4a (list<R>: records as list elements)
 
 - **Started:** 2026-05-22 23:55 (GMT+7)
@@ -100,6 +107,13 @@ _To be written before sub-phase 3.0 starts. Records + collections unlock realist
 - **`exprElemRecordName` plumbed through every list-flowing site.** A new lowerer helper that mirrors `exprElemType`: it pulls the elem record name out of whichever Expr variant carries one (`VarRef`, `ListLit`, `CallExpr`, `AppendExpr`, `IndexExpr`). The lowerer threads it through assign / return / call-args / for-each / append, and the verifier rechecks the invariant on every carrier. The IndexExpr case is new in 3.4a because `list<R>` indexing returns a record (the receiver's `ElemRecordName` becomes the result's `RecordName`); scalar list indexing returns a primitive so no record name flows through that path.
 - **Typechecker gap closure: `op.Field` in `checkPostfix`.** `ps[0].x` parses as `Selector(ps)` + `IndexOp(0)` + `FieldOp(x)`. The selector-tail fast path in `checkPrimary` collapses `Root.tail` field walks into the symbol lookup, but it only fires when the entire chain is selector-prefix. As soon as an Index or Call step lands between the root and the field, the loop in `checkPostfix` takes over, and that loop had branches for Index / Call / Cast / SafeField / SafeIndex but not for the bare `op.Field`. The result: the typechecker left `typ` as the record-typed receiver and the caller saw a type mismatch ("expected int, got Pt"). The fix adds a Field branch that mirrors `checkPrimary`'s StructType / Methods / unknown-field paths plus an AnyType passthrough. The bug went undetected because every prior list-of-record fixture passed `ps[0].x` to `print` (which accepts any type and asks the lowerer, not the typechecker, for the C type); only a function with an explicit non-record return type surfaced the gap.
 - **Lifetime: leak on program exit, same as 3.1.** No `free()` for the per-record buffers. Phase 7 (panic unwinding) adds reclamation. The per-record helpers are direct copies of the scalar list helpers' ownership model.
+
+### Phase 3.5 (omap): DEFERRED
+
+- **Audit date:** 2026-05-22 23:55 (GMT+7)
+- **Goal-alignment audit verdict: DEFERRED.** Same blocker as 3.3: Mochi has no `omap<K, V>` surface. There is no `OmapLit`, no `OmapType`, no insertion-order-map literal syntax that distinguishes from the existing `map<K, V>` (which is key-sorted in the vm3 oracle). Implementing `omap<K, V>` in transpiler3 alone would be unreachable scaffolding for the same reason.
+- **Unblock condition.** When Mochi gains `omap<K, V>` parsing + an `OMapType` kind (likely driven by Phase 8 query DSL's group-by row shape), Phase 3.5 reactivates: open-addressing hash table for O(1) lookup + a parallel insertion-order list for iteration (the only difference vs Phase 3.2's `map<K, V>`). Eight (K,V) instantiations matching Phase 3.2.
+- **Phase 8 ripple effect.** If the Phase 8 query DSL's group-by row needs insertion-order iteration, Phase 3.5 must reactivate before Phase 8 ships. The Phase 8 spec doc should call this out when it begins. Until then 3.5 stays DEFERRED with no fixture corpus.
 
 ## Deferred work
 
