@@ -1337,6 +1337,17 @@ func (b *builder) applyBinOp(op string, l, r uint32) (uint32, error) {
 		default:
 			return 0, fmt.Errorf("frontend: operator %q on f64 unsupported in MVP", op)
 		}
+	case ir.TypeStr:
+		switch op {
+		case "==":
+			code = ir.OpCmpEqStr
+			resType = ir.TypeBool
+		case "!=":
+			code = ir.OpCmpNeStr
+			resType = ir.TypeBool
+		default:
+			return 0, fmt.Errorf("frontend: operator %q on str unsupported in MVP", op)
+		}
 	case ir.TypeList:
 		if op != "+" {
 			return 0, fmt.Errorf("frontend: operator %q on list<int> unsupported in MVP", op)

@@ -156,6 +156,7 @@ func kindOf(o ir.OpCode) ProducerKind {
 		ir.OpCmpEqI64Imm, ir.OpCmpNeI64Imm, ir.OpCmpLtI64Imm, ir.OpCmpLeI64Imm, ir.OpCmpGtI64Imm, ir.OpCmpGeI64Imm,
 		ir.OpAndI64, ir.OpOrI64, ir.OpXorI64, ir.OpShlI64, ir.OpShrI64, ir.OpNotI64,
 		ir.OpCmpEqF64, ir.OpCmpNeF64, ir.OpCmpLtF64, ir.OpCmpLeF64, ir.OpCmpGtF64, ir.OpCmpGeF64,
+		ir.OpCmpEqStr, ir.OpCmpNeStr,
 		ir.OpNotBool,
 		ir.OpI64ToF64, ir.OpF64ToI64,
 		ir.OpSqrtF64,
@@ -396,7 +397,8 @@ func contractResult(o ir.OpCode) ir.Type {
 	case ir.OpAddF64, ir.OpSubF64, ir.OpMulF64, ir.OpDivF64, ir.OpNegF64:
 		return ir.TypeF64
 	case ir.OpCmpEqI64, ir.OpCmpNeI64, ir.OpCmpLtI64, ir.OpCmpLeI64, ir.OpCmpGtI64, ir.OpCmpGeI64,
-		ir.OpCmpEqI64Imm, ir.OpCmpNeI64Imm, ir.OpCmpLtI64Imm, ir.OpCmpLeI64Imm, ir.OpCmpGtI64Imm, ir.OpCmpGeI64Imm:
+		ir.OpCmpEqI64Imm, ir.OpCmpNeI64Imm, ir.OpCmpLtI64Imm, ir.OpCmpLeI64Imm, ir.OpCmpGtI64Imm, ir.OpCmpGeI64Imm,
+		ir.OpCmpEqStr, ir.OpCmpNeStr:
 		return ir.TypeBool
 	case ir.OpLenStr:
 		return ir.TypeI64
