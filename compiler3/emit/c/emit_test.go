@@ -151,18 +151,21 @@ func TestEmitMainF64(t *testing.T) {
 // driver downstream treats this as a clean "AOT cannot lower this
 // program" signal.
 func TestEmitUnsupportedOp(t *testing.T) {
-	fn := &ir.Function{Name: "bad", Result: ir.TypeStr}
+	fn := &ir.Function{Name: "bad", Result: ir.TypeF64}
 	bid := fn.AddBlock()
-	// OpConcatStr is out of Phase 4.2 scope (Phase 4.2.x widens to
-	// owning mochi_str when string concat lands; until then it is the
-	// canonical unsupported-op probe for the C emitter).
-	a := fn.AddValue(ir.Value{Type: ir.TypeStr, Op: ir.OpParam})
-	b := fn.AddValue(ir.Value{Type: ir.TypeStr, Op: ir.OpParam})
-	fn.Params = []uint32{a, b}
-	cc := fn.AddValue(ir.Value{Type: ir.TypeStr, Op: ir.OpConcatStr, Args: []uint32{a, b}})
+	// OpListGetF64 is the C-target's canonical unsupported-op probe:
+	// the C emitter routes `list<float>` through OpNewF64Array (a
+	// flat double[] backing) rather than the vm3 Cell-tagged list,
+	// so OpListGetF64 never appears in code the frontend produces.
+	// A hand-crafted IR value with this op is the cleanest way to
+	// exercise the default unsupported-op error.
+	xs := fn.AddValue(ir.Value{Type: ir.TypeList, Op: ir.OpParam})
+	i := fn.AddValue(ir.Value{Type: ir.TypeI64, Op: ir.OpParam})
+	fn.Params = []uint32{xs, i}
+	g := fn.AddValue(ir.Value{Type: ir.TypeF64, Op: ir.OpListGetF64, Args: []uint32{xs, i}})
 	blk := fn.Block(bid)
-	blk.Values = []uint32{cc}
-	blk.Term = ir.Terminator{Kind: ir.TermReturn, Value: cc}
+	blk.Values = []uint32{g}
+	blk.Term = ir.Terminator{Kind: ir.TermReturn, Value: g}
 	_, err := Emit(&Program{Funcs: []*ir.Function{fn}})
 	if err == nil {
 		t.Fatalf("expected ErrUnsupportedOp, got nil")

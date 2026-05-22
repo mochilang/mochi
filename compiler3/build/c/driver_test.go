@@ -1436,6 +1436,73 @@ func TestBuildSourceStrNeLiteral(t *testing.T) {
 	}
 }
 
+// TestBuildSourceStrConcatLiteral pins the Phase 4.2.3 surface: `+`
+// on two string literals lowers to OpConcatStr, the C emitter calls
+// mochi_str_concat (auto-included via mochi_str.h), and the runtime
+// allocates a NUL-terminated heap buffer that the existing
+// mochi_print_str writes to stdout.
+func TestBuildSourceStrConcatLiteral(t *testing.T) {
+	src := `print("hello, " + "world")` + "\n"
+	if got, want := runMochiBuild(t, src), "hello, world\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrConcatLet pins concat over let-bound carriers:
+// the side-table holds each literal; OpConcatStr reads the carrier
+// variables and the heap result re-binds to a fresh carrier.
+func TestBuildSourceStrConcatLet(t *testing.T) {
+	src := `let a = "foo"
+let b = "bar"
+print(a + b)
+`
+	if got, want := runMochiBuild(t, src), "foobar\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrConcatChain pins left-associative chaining: the
+// frontend's Shunting-Yard lowering produces a left-leaning tree, so
+// "[" + a + "-" + b + "]" lowers to four nested OpConcatStr calls
+// each receiving the previous heap pointer as left arg.
+func TestBuildSourceStrConcatChain(t *testing.T) {
+	src := `let a = "foo"
+let b = "bar"
+print("[" + a + "-" + b + "]")
+`
+	if got, want := runMochiBuild(t, src), "[foo-bar]\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrConcatLenComposes pins len applied to a concat
+// result, exercising that the heap carrier is NUL-terminated so
+// strlen reads the joined byte length.
+func TestBuildSourceStrConcatLenComposes(t *testing.T) {
+	src := `let a = "abc"
+let b = "defgh"
+print(len(a + b))
+`
+	if got, want := runMochiBuild(t, src), "8\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceStrConcatEqComposes pins equality on a concat
+// result: strcmp reads through the heap carrier as it would through
+// a literal. Mochi's `==` is byte equality on the joined sequence.
+func TestBuildSourceStrConcatEqComposes(t *testing.T) {
+	src := `let a = "hel"
+let b = "lo"
+if a + b == "hello" {
+  print("matched")
+}
+`
+	if got, want := runMochiBuild(t, src), "matched\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceSpectralNormBgFixture pins the unmodified
 // bench/template/bg/spectral_norm fixture (N=100) on the C target.
 // This is the §10.7 closeout for spectral_norm at the fixture level
