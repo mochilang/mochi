@@ -100,11 +100,26 @@ func Verify(p *Program) error {
 			return fmt.Errorf("aotir.Verify: function %q has ReturnRecordName set on non-record return type %s", fn.Name, fn.ReturnType)
 		}
 		if fn.ReturnType == TypeList {
-			if !isScalarElemType(fn.ReturnElemType) {
-				return fmt.Errorf("aotir.Verify: function %q returns list but ReturnElemType is %s (Phase 3.1 supports scalar element types only)", fn.Name, fn.ReturnElemType)
+			if !isListElemType(fn.ReturnElemType) {
+				return fmt.Errorf("aotir.Verify: function %q returns list but ReturnElemType is %s (Phase 3.4a supports scalar or record element types)", fn.Name, fn.ReturnElemType)
 			}
-		} else if fn.ReturnElemType != TypeInvalid {
-			return fmt.Errorf("aotir.Verify: function %q has ReturnElemType set on non-list return type %s", fn.Name, fn.ReturnType)
+			if fn.ReturnElemType == TypeRecord {
+				if fn.ReturnElemRecordName == "" {
+					return fmt.Errorf("aotir.Verify: function %q returns list<record> but ReturnElemRecordName is empty", fn.Name)
+				}
+				if _, ok := records[fn.ReturnElemRecordName]; !ok {
+					return fmt.Errorf("aotir.Verify: function %q return list element record %q is not declared", fn.Name, fn.ReturnElemRecordName)
+				}
+			} else if fn.ReturnElemRecordName != "" {
+				return fmt.Errorf("aotir.Verify: function %q has ReturnElemRecordName set on list<%s> (only valid when element is record)", fn.Name, fn.ReturnElemType)
+			}
+		} else {
+			if fn.ReturnElemType != TypeInvalid {
+				return fmt.Errorf("aotir.Verify: function %q has ReturnElemType set on non-list return type %s", fn.Name, fn.ReturnType)
+			}
+			if fn.ReturnElemRecordName != "" {
+				return fmt.Errorf("aotir.Verify: function %q has ReturnElemRecordName set on non-list return type %s", fn.Name, fn.ReturnType)
+			}
 		}
 		if fn.ReturnType == TypeMap {
 			if !isScalarKeyType(fn.ReturnKeyType) {
@@ -133,11 +148,26 @@ func Verify(p *Program) error {
 				return fmt.Errorf("aotir.Verify: function %q param %d: RecordName set on non-record type %s", fn.Name, k, pr.Type)
 			}
 			if pr.Type == TypeList {
-				if !isScalarElemType(pr.ElemType) {
-					return fmt.Errorf("aotir.Verify: function %q param %d: list-typed param has ElemType %s (Phase 3.1 supports scalar element types only)", fn.Name, k, pr.ElemType)
+				if !isListElemType(pr.ElemType) {
+					return fmt.Errorf("aotir.Verify: function %q param %d: list-typed param has ElemType %s (Phase 3.4a supports scalar or record element types)", fn.Name, k, pr.ElemType)
 				}
-			} else if pr.ElemType != TypeInvalid {
-				return fmt.Errorf("aotir.Verify: function %q param %d: ElemType set on non-list type %s", fn.Name, k, pr.Type)
+				if pr.ElemType == TypeRecord {
+					if pr.ElemRecordName == "" {
+						return fmt.Errorf("aotir.Verify: function %q param %d: list<record> param missing ElemRecordName", fn.Name, k)
+					}
+					if _, ok := records[pr.ElemRecordName]; !ok {
+						return fmt.Errorf("aotir.Verify: function %q param %d: list element record %q is not declared", fn.Name, k, pr.ElemRecordName)
+					}
+				} else if pr.ElemRecordName != "" {
+					return fmt.Errorf("aotir.Verify: function %q param %d: ElemRecordName set on list<%s> (only valid when element is record)", fn.Name, k, pr.ElemType)
+				}
+			} else {
+				if pr.ElemType != TypeInvalid {
+					return fmt.Errorf("aotir.Verify: function %q param %d: ElemType set on non-list type %s", fn.Name, k, pr.Type)
+				}
+				if pr.ElemRecordName != "" {
+					return fmt.Errorf("aotir.Verify: function %q param %d: ElemRecordName set on non-list type %s", fn.Name, k, pr.Type)
+				}
 			}
 			if pr.Type == TypeMap {
 				if !isScalarKeyType(pr.KeyType) {
@@ -168,15 +198,16 @@ func Verify(p *Program) error {
 			return fmt.Errorf("aotir.Verify: function %q (index %d) has nil Body", fn.Name, i)
 		}
 		ctx := &verifyCtx{
-			fns:         names,
-			records:     records,
-			scope:       newScope(nil),
-			loopDepth:   0,
-			returnType:  fn.ReturnType,
-			returnRec:   fn.ReturnRecordName,
-			returnElem:  fn.ReturnElemType,
-			returnKey:   fn.ReturnKeyType,
-			returnValue: fn.ReturnValueType,
+			fns:           names,
+			records:       records,
+			scope:         newScope(nil),
+			loopDepth:     0,
+			returnType:    fn.ReturnType,
+			returnRec:     fn.ReturnRecordName,
+			returnElem:    fn.ReturnElemType,
+			returnElemRec: fn.ReturnElemRecordName,
+			returnKey:     fn.ReturnKeyType,
+			returnValue:   fn.ReturnValueType,
 		}
 		// Seed the function's parameter list as immutable
 		// bindings in the root scope so the body can reference
@@ -188,7 +219,7 @@ func Verify(p *Program) error {
 			if _, dup := ctx.scope.vars[pr.Name]; dup {
 				return fmt.Errorf("aotir.Verify: %s: duplicate parameter %q", fn.Name, pr.Name)
 			}
-			ctx.scope.vars[pr.Name] = binding{t: pr.Type, mutable: false, record: pr.RecordName, elem: pr.ElemType, key: pr.KeyType, value: pr.ValueType}
+			ctx.scope.vars[pr.Name] = binding{t: pr.Type, mutable: false, record: pr.RecordName, elem: pr.ElemType, elemRec: pr.ElemRecordName, key: pr.KeyType, value: pr.ValueType}
 		}
 		for j, st := range fn.Body.Statements {
 			if err := verifyStmt(ctx, st); err != nil {
@@ -206,15 +237,16 @@ func Verify(p *Program) error {
 // enclosing function's return type. The verifier never mutates
 // fns; scope is pushed and popped per Block.
 type verifyCtx struct {
-	fns         map[string]*Function
-	records     map[string]*RecordDecl
-	scope       *scope
-	loopDepth   int
-	returnType  Type
-	returnRec   string
-	returnElem  Type
-	returnKey   Type
-	returnValue Type
+	fns           map[string]*Function
+	records       map[string]*RecordDecl
+	scope         *scope
+	loopDepth     int
+	returnType    Type
+	returnRec     string
+	returnElem    Type
+	returnElemRec string // record name when returnElem==TypeRecord
+	returnKey     Type
+	returnValue   Type
 }
 
 // scope is a single lexical frame. parent==nil marks the function
@@ -230,6 +262,7 @@ type binding struct {
 	mutable bool
 	record  string // record name when t==TypeRecord
 	elem    Type   // element type when t==TypeList
+	elemRec string // element record name when t==TypeList && elem==TypeRecord
 	key     Type   // key type when t==TypeMap
 	value   Type   // value type when t==TypeMap
 }
@@ -353,11 +386,24 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 		return fmt.Errorf("let %q: RecordName set on non-record type %s", s.Name, s.VarType)
 	}
 	if s.VarType == TypeList {
-		if !isScalarElemType(s.ElemType) {
-			return fmt.Errorf("let %q: list binding has ElemType %s (Phase 3.1 supports scalar element types only)", s.Name, s.ElemType)
+		if !isListElemType(s.ElemType) {
+			return fmt.Errorf("let %q: list binding has ElemType %s (Phase 3.4a supports scalar or record element types)", s.Name, s.ElemType)
 		}
 		if ie := exprElemType(s.Init); ie != s.ElemType {
 			return fmt.Errorf("let %q: declared list<%s>, init produces list<%s>", s.Name, s.ElemType, ie)
+		}
+		if s.ElemType == TypeRecord {
+			if s.ElemRecordName == "" {
+				return fmt.Errorf("let %q: list<record> binding missing ElemRecordName", s.Name)
+			}
+			if _, ok := ctx.records[s.ElemRecordName]; !ok {
+				return fmt.Errorf("let %q: list element record %q is not declared", s.Name, s.ElemRecordName)
+			}
+			if ier := exprElemRecordName(s.Init); ier != s.ElemRecordName {
+				return fmt.Errorf("let %q: declared list<%s>, init produces list<%s>", s.Name, s.ElemRecordName, ier)
+			}
+		} else if s.ElemRecordName != "" {
+			return fmt.Errorf("let %q: ElemRecordName set on list<%s> (only valid when ElemType==record)", s.Name, s.ElemType)
 		}
 	} else if s.ElemType != TypeInvalid {
 		return fmt.Errorf("let %q: ElemType set on non-list type %s", s.Name, s.VarType)
@@ -383,7 +429,7 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 			return fmt.Errorf("let %q: ValueType set on non-map type %s", s.Name, s.VarType)
 		}
 	}
-	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, elem: s.ElemType, key: s.KeyType, value: s.ValueType}
+	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, elem: s.ElemType, elemRec: s.ElemRecordName, key: s.KeyType, value: s.ValueType}
 	return nil
 }
 
@@ -412,6 +458,11 @@ func verifyAssignStmt(ctx *verifyCtx, s *AssignStmt) error {
 	if b.t == TypeList {
 		if ve := exprElemType(s.Value); ve != b.elem {
 			return fmt.Errorf("assign %q: binding holds list<%s>, value produces list<%s>", s.Name, b.elem, ve)
+		}
+		if b.elem == TypeRecord {
+			if ver := exprElemRecordName(s.Value); ver != b.elemRec {
+				return fmt.Errorf("assign %q: binding holds list<%s>, value produces list<%s>", s.Name, b.elemRec, ver)
+			}
 		}
 	}
 	if b.t == TypeMap {
@@ -532,15 +583,28 @@ func verifyForEachStmt(ctx *verifyCtx, s *ForEachStmt) error {
 	if le := exprElemType(s.List); le != s.ElemType {
 		return fmt.Errorf("foreach: stamped ElemType %s does not match list's ElemType %s", s.ElemType, le)
 	}
-	if !isScalarElemType(s.ElemType) {
-		return fmt.Errorf("foreach: ElemType %s not supported (Phase 3.1 supports scalar element types only)", s.ElemType)
+	if !isListElemType(s.ElemType) {
+		return fmt.Errorf("foreach: ElemType %s not supported (Phase 3.4a supports scalar or record element types)", s.ElemType)
+	}
+	if s.ElemType == TypeRecord {
+		if s.ElemRecordName == "" {
+			return errors.New("foreach over list<record> missing ElemRecordName")
+		}
+		if _, ok := ctx.records[s.ElemRecordName]; !ok {
+			return fmt.Errorf("foreach: element record %q is not declared", s.ElemRecordName)
+		}
+		if ler := exprElemRecordName(s.List); ler != s.ElemRecordName {
+			return fmt.Errorf("foreach: stamped ElemRecordName %q does not match list's ElemRecordName %q", s.ElemRecordName, ler)
+		}
+	} else if s.ElemRecordName != "" {
+		return fmt.Errorf("foreach: ElemRecordName set on list<%s> (only valid when ElemType==record)", s.ElemType)
 	}
 	if s.Body == nil {
 		return errors.New("foreach with nil Body block")
 	}
 	prev := ctx.scope
 	ctx.scope = newScope(prev)
-	ctx.scope.vars[s.Var] = binding{t: s.ElemType, mutable: false}
+	ctx.scope.vars[s.Var] = binding{t: s.ElemType, mutable: false, record: s.ElemRecordName}
 	ctx.loopDepth++
 	defer func() {
 		ctx.loopDepth--
@@ -577,6 +641,11 @@ func verifyReturnStmt(ctx *verifyCtx, s *ReturnStmt) error {
 		if ve := exprElemType(s.Value); ve != ctx.returnElem {
 			return fmt.Errorf("return list<%s> does not match function return list<%s>", ve, ctx.returnElem)
 		}
+		if ctx.returnElem == TypeRecord {
+			if ver := exprElemRecordName(s.Value); ver != ctx.returnElemRec {
+				return fmt.Errorf("return list<%s> does not match function return list<%s>", ver, ctx.returnElemRec)
+			}
+		}
 	}
 	if ctx.returnType == TypeMap {
 		if vk := exprKeyType(s.Value); vk != ctx.returnKey {
@@ -604,6 +673,27 @@ func exprRecordName(e Expr) string {
 		return v.ResultRecordName
 	case *CallExpr:
 		return v.ResultRecordName
+	case *IndexExpr:
+		// Phase 3.4a: list<R> indexing returns a record value.
+		return v.ElemRecordName
+	}
+	return ""
+}
+
+// exprElemRecordName returns the element-record identity of a
+// list-of-record-typed expression, or "" if the expression is not a
+// list of record. Phase 3.4a node coverage: VarRef, ListLit, CallExpr,
+// AppendExpr.
+func exprElemRecordName(e Expr) string {
+	switch v := e.(type) {
+	case *VarRef:
+		return v.ElemRecordName
+	case *ListLit:
+		return v.ElemRecordName
+	case *CallExpr:
+		return v.ResultElemRecordName
+	case *AppendExpr:
+		return v.ElemRecordName
 	}
 	return ""
 }
@@ -664,12 +754,25 @@ func exprValueType(e Expr) Type {
 	return TypeInvalid
 }
 
-// isScalarElemType reports whether t is a valid Phase 3.1 list
-// element type. The four scalar primitives only; record / list /
-// unit elements land in later sub-phases.
+// isScalarElemType reports whether t is a Phase 3.1 scalar list
+// element type. Kept for the carriers that still require a scalar
+// (e.g. map keys/values surfaces); the broader list-element gate
+// is isListElemType.
 func isScalarElemType(t Type) bool {
 	switch t {
 	case TypeInt, TypeFloat, TypeBool, TypeString:
+		return true
+	}
+	return false
+}
+
+// isListElemType reports whether t is a valid list element type.
+// Phase 3.1 accepted the four scalar primitives; Phase 3.4a widens
+// this to TypeRecord (records as list elements). Nested list and
+// map elements remain rejected pending Phase 3.4b/c.
+func isListElemType(t Type) bool {
+	switch t {
+	case TypeInt, TypeFloat, TypeBool, TypeString, TypeRecord:
 		return true
 	}
 	return false
@@ -738,6 +841,9 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		if b.t == TypeList && v.ElemType != b.elem {
 			return fmt.Errorf("variable %q has list<%s> in scope, ref says list<%s>", v.Name, b.elem, v.ElemType)
 		}
+		if b.t == TypeList && b.elem == TypeRecord && v.ElemRecordName != b.elemRec {
+			return fmt.Errorf("variable %q has list<%s> in scope, ref says list<%s>", v.Name, b.elemRec, v.ElemRecordName)
+		}
 		if b.t == TypeMap {
 			if v.KeyType != b.key {
 				return fmt.Errorf("variable %q has map<%s,_> in scope, ref says map<%s,_>", v.Name, b.key, v.KeyType)
@@ -791,6 +897,10 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("call %q result list<%s> does not match callee return list<%s>",
 				v.Func, v.ResultElemType, fn.ReturnElemType)
 		}
+		if fn.ReturnType == TypeList && fn.ReturnElemType == TypeRecord && v.ResultElemRecordName != fn.ReturnElemRecordName {
+			return fmt.Errorf("call %q result list<%s> does not match callee return list<%s>",
+				v.Func, v.ResultElemRecordName, fn.ReturnElemRecordName)
+		}
 		if fn.ReturnType == TypeMap {
 			if v.ResultKeyType != fn.ReturnKeyType {
 				return fmt.Errorf("call %q result map<%s,_> does not match callee return map<%s,_>",
@@ -825,6 +935,12 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 				if argElem := exprElemType(a); argElem != fn.Params[i].ElemType {
 					return fmt.Errorf("call %q arg %d: expected list<%s>, got list<%s>",
 						v.Func, i, fn.Params[i].ElemType, argElem)
+				}
+				if fn.Params[i].ElemType == TypeRecord {
+					if argElemRec := exprElemRecordName(a); argElemRec != fn.Params[i].ElemRecordName {
+						return fmt.Errorf("call %q arg %d: expected list<%s>, got list<%s>",
+							v.Func, i, fn.Params[i].ElemRecordName, argElemRec)
+					}
 				}
 			}
 			if fn.Params[i].Type == TypeMap {
@@ -999,15 +1115,23 @@ func verifyFieldAccess(ctx *verifyCtx, f *FieldAccess) error {
 	return fmt.Errorf("field access %q: record %q has no field %q", f.FieldName, f.RecordName, f.FieldName)
 }
 
-// verifyListLit checks a list-literal expression. Phase 3.1 accepts
-// the four scalar primitive element types; every element's Type
-// must equal ElemType. An empty list is legal so long as the
-// stamped ElemType is one of the four scalars (the lowerer
-// stamps it from a context-supplied type annotation or rejects
-// the literal when no context is available).
+// verifyListLit checks a list-literal expression. Phase 3.4a accepts
+// the four scalar primitive element types plus TypeRecord; every
+// element's Type must equal ElemType, and for record elements every
+// element's record name must match the stamped ElemRecordName.
 func verifyListLit(ctx *verifyCtx, v *ListLit) error {
-	if !isScalarElemType(v.ElemType) {
-		return fmt.Errorf("list literal: ElemType %s not supported (Phase 3.1 supports scalar element types only)", v.ElemType)
+	if !isListElemType(v.ElemType) {
+		return fmt.Errorf("list literal: ElemType %s not supported (Phase 3.4a supports scalar or record element types)", v.ElemType)
+	}
+	if v.ElemType == TypeRecord {
+		if v.ElemRecordName == "" {
+			return errors.New("list literal of records missing ElemRecordName")
+		}
+		if _, ok := ctx.records[v.ElemRecordName]; !ok {
+			return fmt.Errorf("list literal: element record %q is not declared", v.ElemRecordName)
+		}
+	} else if v.ElemRecordName != "" {
+		return fmt.Errorf("list literal: ElemRecordName set on list<%s> (only valid when ElemType==record)", v.ElemType)
 	}
 	for i, e := range v.Elems {
 		if e == nil {
@@ -1019,12 +1143,19 @@ func verifyListLit(ctx *verifyCtx, v *ListLit) error {
 		if e.Type() != v.ElemType {
 			return fmt.Errorf("list literal element %d: declared %s, got %s", i, v.ElemType, e.Type())
 		}
+		if v.ElemType == TypeRecord {
+			if rec := exprRecordName(e); rec != v.ElemRecordName {
+				return fmt.Errorf("list literal element %d: declared record %q, got %q", i, v.ElemRecordName, rec)
+			}
+		}
 	}
 	return nil
 }
 
 // verifyIndexExpr checks `xs[i]`. Receiver must be TypeList with
 // the same ElemType stamped on the IndexExpr; Index must be TypeInt.
+// Phase 3.4a widens to record element types (the result of the
+// indexing is a record value identified by ElemRecordName).
 func verifyIndexExpr(ctx *verifyCtx, v *IndexExpr) error {
 	if v.Receiver == nil || v.Index == nil {
 		return errors.New("index expression with nil Receiver or Index")
@@ -1038,8 +1169,18 @@ func verifyIndexExpr(ctx *verifyCtx, v *IndexExpr) error {
 	if re := exprElemType(v.Receiver); re != v.ElemType {
 		return fmt.Errorf("index: receiver is list<%s>, ElemType stamped is %s", re, v.ElemType)
 	}
-	if !isScalarElemType(v.ElemType) {
-		return fmt.Errorf("index: ElemType %s not supported (Phase 3.1 supports scalar element types only)", v.ElemType)
+	if !isListElemType(v.ElemType) {
+		return fmt.Errorf("index: ElemType %s not supported (Phase 3.4a supports scalar or record element types)", v.ElemType)
+	}
+	if v.ElemType == TypeRecord {
+		if v.ElemRecordName == "" {
+			return errors.New("index over list<record> missing ElemRecordName")
+		}
+		if rer := exprElemRecordName(v.Receiver); rer != v.ElemRecordName {
+			return fmt.Errorf("index: receiver is list<%s>, ElemRecordName stamped is %s", rer, v.ElemRecordName)
+		}
+	} else if v.ElemRecordName != "" {
+		return fmt.Errorf("index: ElemRecordName set on list<%s> (only valid when ElemType==record)", v.ElemType)
 	}
 	if err := verifyExprCtx(ctx, v.Index); err != nil {
 		return fmt.Errorf("index value: %w", err)
@@ -1050,7 +1191,9 @@ func verifyIndexExpr(ctx *verifyCtx, v *IndexExpr) error {
 	return nil
 }
 
-// verifyLenExpr checks `len(xs)` for a list-typed receiver.
+// verifyLenExpr checks `len(xs)` for a list-typed receiver. Phase
+// 3.4a widens to record element types so `len(list<R>)` resolves to
+// the per-record helper at emit time.
 func verifyLenExpr(ctx *verifyCtx, v *LenExpr) error {
 	if v.Receiver == nil {
 		return errors.New("len() with nil Receiver")
@@ -1064,8 +1207,18 @@ func verifyLenExpr(ctx *verifyCtx, v *LenExpr) error {
 	if re := exprElemType(v.Receiver); re != v.ElemType {
 		return fmt.Errorf("len: receiver is list<%s>, ElemType stamped is %s", re, v.ElemType)
 	}
-	if !isScalarElemType(v.ElemType) {
-		return fmt.Errorf("len: ElemType %s not supported (Phase 3.1 supports scalar element types only)", v.ElemType)
+	if !isListElemType(v.ElemType) {
+		return fmt.Errorf("len: ElemType %s not supported (Phase 3.4a supports scalar or record element types)", v.ElemType)
+	}
+	if v.ElemType == TypeRecord {
+		if v.ElemRecordName == "" {
+			return errors.New("len() over list<record> missing ElemRecordName")
+		}
+		if rer := exprElemRecordName(v.Receiver); rer != v.ElemRecordName {
+			return fmt.Errorf("len: receiver is list<%s>, ElemRecordName stamped is %s", rer, v.ElemRecordName)
+		}
+	} else if v.ElemRecordName != "" {
+		return fmt.Errorf("len: ElemRecordName set on list<%s> (only valid when ElemType==record)", v.ElemType)
 	}
 	return nil
 }
@@ -1073,6 +1226,7 @@ func verifyLenExpr(ctx *verifyCtx, v *LenExpr) error {
 // verifyAppendExpr checks `append(xs, v)`. Receiver must be a list,
 // Value's Type must match ElemType, and the produced list shares
 // ElemType (the lowerer stamps this; the verifier double-checks).
+// Phase 3.4a widens to record element types.
 func verifyAppendExpr(ctx *verifyCtx, v *AppendExpr) error {
 	if v.Receiver == nil || v.Value == nil {
 		return errors.New("append with nil Receiver or Value")
@@ -1086,14 +1240,29 @@ func verifyAppendExpr(ctx *verifyCtx, v *AppendExpr) error {
 	if re := exprElemType(v.Receiver); re != v.ElemType {
 		return fmt.Errorf("append: receiver is list<%s>, ElemType stamped is %s", re, v.ElemType)
 	}
-	if !isScalarElemType(v.ElemType) {
-		return fmt.Errorf("append: ElemType %s not supported (Phase 3.1 supports scalar element types only)", v.ElemType)
+	if !isListElemType(v.ElemType) {
+		return fmt.Errorf("append: ElemType %s not supported (Phase 3.4a supports scalar or record element types)", v.ElemType)
+	}
+	if v.ElemType == TypeRecord {
+		if v.ElemRecordName == "" {
+			return errors.New("append over list<record> missing ElemRecordName")
+		}
+		if rer := exprElemRecordName(v.Receiver); rer != v.ElemRecordName {
+			return fmt.Errorf("append: receiver is list<%s>, ElemRecordName stamped is %s", rer, v.ElemRecordName)
+		}
+	} else if v.ElemRecordName != "" {
+		return fmt.Errorf("append: ElemRecordName set on list<%s> (only valid when ElemType==record)", v.ElemType)
 	}
 	if err := verifyExprCtx(ctx, v.Value); err != nil {
 		return fmt.Errorf("append value: %w", err)
 	}
 	if v.Value.Type() != v.ElemType {
 		return fmt.Errorf("append value: expected %s, got %s", v.ElemType, v.Value.Type())
+	}
+	if v.ElemType == TypeRecord {
+		if vr := exprRecordName(v.Value); vr != v.ElemRecordName {
+			return fmt.Errorf("append value: expected record %q, got %q", v.ElemRecordName, vr)
+		}
 	}
 	return nil
 }
