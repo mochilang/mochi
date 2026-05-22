@@ -174,6 +174,15 @@ func Emit(p *Program) ([]byte, error) {
 		if err := emitMain(&buf, p); err != nil {
 			return nil, err
 		}
+	} else {
+		// Phase 4.2.26: a Mochi source with no executable top-level
+		// statements (commented-out scripts, declaration-only files
+		// like v0.6/extern.mochi) lowers to a Program with no main
+		// function. Without a `_main` symbol the cc link step fails.
+		// Emit a no-op `int main(void) { return 0; }` so the binary
+		// links and runs with empty stdout, matching `mochi run` on
+		// the same source.
+		buf.WriteString("int main(void) { return 0; }\n")
 	}
 	return buf.Bytes(), nil
 }
