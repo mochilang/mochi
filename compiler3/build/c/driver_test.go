@@ -2854,6 +2854,56 @@ func TestBuildSourceV02ForInFixture(t *testing.T) {
 	}
 }
 
+// TestBuildSourceV05WhileFixture pins examples/v0.5/while.mochi
+// verbatim on the C target. This program (var + while + print + i++)
+// has been green since the early while/var phases. Phase 4.2.25 just
+// pins the existing win so a regression on var-mutation-in-while
+// surfaces here instead of going silent.
+func TestBuildSourceV05WhileFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.5/while.mochi")
+	if err != nil {
+		t.Fatalf("read v0.5 while fixture: %v", err)
+	}
+	want := "0\n1\n2\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.5/while stdout = %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV07IfExprFixture pins examples/v0.7/if_expr.mochi
+// verbatim on the C target. The fixture uses the block-form
+// if-as-value (`let s = if cond { "a" } else { "b" }`) which is
+// distinct from the v0.10 `if then else` expression form already
+// pinned by TestBuildSourceV010IfThenElseFixture. Both forms now have
+// fixture-level regression coverage.
+func TestBuildSourceV07IfExprFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.7/if_expr.mochi")
+	if err != nil {
+		t.Fatalf("read v0.7 if_expr fixture: %v", err)
+	}
+	want := "Status: adult\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.7/if_expr stdout = %q, want %q", got, want)
+	}
+}
+
+// TestBuildSourceV07EmptyListFixture pins examples/v0.7/empty_list.mochi
+// verbatim on the C target. The fixture exercises both shapes of an
+// empty list<int>: a type-annotated binding (`let xs: list<int> = []`)
+// and an `as`-cast expression (`let xs = [] as list<int>`). Both lower
+// to TypeList carriers that print as `[]` via mochi_list_i64_to_str's
+// static empty-string fast path.
+func TestBuildSourceV07EmptyListFixture(t *testing.T) {
+	srcBytes, err := os.ReadFile("../../../examples/v0.7/empty_list.mochi")
+	if err != nil {
+		t.Fatalf("read v0.7 empty_list fixture: %v", err)
+	}
+	want := "[]\n[]\n"
+	if got := runMochiBuild(t, string(srcBytes)); got != want {
+		t.Errorf("v0.7/empty_list stdout = %q, want %q", got, want)
+	}
+}
+
 // TestBuildSourceV03MatchFixture pins the on-disk fixture verbatim
 // so a regression in either the example or the lowering surfaces
 // here. This is the user-facing motivation for Phase 4.2.11.
