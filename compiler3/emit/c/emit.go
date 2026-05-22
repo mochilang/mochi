@@ -86,7 +86,8 @@ func Emit(p *Program) ([]byte, error) {
 				ir.OpListGetI64, ir.OpListSetI64, ir.OpListConcatI64:
 				usesListI64 = true
 			case ir.OpNewF64Array, ir.OpF64ArrayLenI64, ir.OpF64ArrayPushF64,
-				ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64, ir.OpF64ArrayConcat:
+				ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64, ir.OpF64ArrayConcat,
+				ir.OpF64ArrayToStr:
 				usesF64Array = true
 			case ir.OpNewMap, ir.OpMapSetI64I64, ir.OpMapGetI64I64:
 				usesMapI64I64 = true
@@ -376,6 +377,8 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = mochi_list_i64_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpListI64ToStr:
 		fmt.Fprintf(w, "    %s = mochi_list_i64_to_str(%s);\n", name, valueName(v.Args[0]))
+	case ir.OpF64ArrayToStr:
+		fmt.Fprintf(w, "    %s = mochi_f64_array_to_str(%s);\n", name, valueName(v.Args[0]))
 	case ir.OpF64ArrayConcat:
 		fmt.Fprintf(w, "    %s = mochi_f64_array_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpNewMap:

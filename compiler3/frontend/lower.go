@@ -1206,6 +1206,14 @@ func (b *builder) lowerExprAsStmt(e *parser.Expr) (uint32, error) {
 			arg = b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpListI64ToStr, Args: []uint32{arg}})
 			argType = ir.TypeStr
 		}
+		// list<float>: lift through OpF64ArrayToStr (Phase 4.2.14).
+		// Parallels list<int> above. The runtime helper renders the
+		// `[1.0, 2.5, 3.14]` form with FormatFloat 'f' -1 64 + ".0"
+		// suffix on integral values.
+		if argType == ir.TypeF64Arr {
+			arg = b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpF64ArrayToStr, Args: []uint32{arg}})
+			argType = ir.TypeStr
+		}
 		goArgType := goTypeForIRType(argType)
 		if goArgType == "" {
 			return 0, fmt.Errorf("frontend: print() argument type %s unsupported in MVP", argType)
@@ -1290,6 +1298,8 @@ func (b *builder) liftToStr(argID uint32) (uint32, error) {
 		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpBoolToStr, Args: []uint32{argID}}), nil
 	case ir.TypeList:
 		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpListI64ToStr, Args: []uint32{argID}}), nil
+	case ir.TypeF64Arr:
+		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpF64ArrayToStr, Args: []uint32{argID}}), nil
 	}
 	return 0, fmt.Errorf("frontend: print() argument type %s unsupported in MVP", b.fn.Values[argID].Type)
 }

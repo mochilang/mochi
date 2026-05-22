@@ -299,6 +299,16 @@ const (
 	// (runtime/mochi/fmt); C emit calls `mochi_list_i64_to_str`.
 	OpListI64ToStr
 
+	// list<float> display formatting (Phase 4.2.14). OpF64ArrayToStr
+	// converts a TypeF64Arr to its Mochi reference display form:
+	// `[1.0, 2.5, 3.14]` with comma-space separators, square brackets,
+	// and the ".0" suffix on integral values (matching FormatFloat
+	// 'f' -1 64). Surface form `print(xs)` where `xs: list<float>`
+	// lowers to this op then OpCallGo(fmt.Println). Go emit inlines a
+	// strconv.FormatFloat lambda; C emit calls
+	// `mochi_f64_array_to_str`.
+	OpF64ArrayToStr
+
 	// Bench-harness JSON sink (Phase 4.3.14). OpJsonI64Object is the
 	// statement-level form `json({"k1": v1, ..., "kN": vN})` where every
 	// key is a string literal and every value is an i64 expression. It
@@ -449,6 +459,8 @@ func (o OpCode) String() string {
 		return "listany.get"
 	case OpListI64ToStr:
 		return "list.i64.tostr"
+	case OpF64ArrayToStr:
+		return "f64array.tostr"
 	case OpJsonI64Object:
 		return "json.i64.object"
 	case OpCall:
