@@ -190,6 +190,14 @@ const (
 	// allocation, just a strstr probe).
 	OpStrIn
 
+	// OpStrRuneLen returns the number of UTF-8 runes (not bytes) in
+	// the input. Backs the loop bound for `for ch in s` (MEP-42 Phase
+	// 4.2.29); paired with OpStrCharAt in lowerForCollection so a
+	// rune-iterating loop matches the VM's `for _, ch := range
+	// []rune(s)` shape on non-ASCII input. Result Type is TypeI64;
+	// classified Dispatch (read-only, no allocation).
+	OpStrRuneLen
+
 	// Bool comparisons (MEP-42 Phase 4.2.7). Result Type == TypeBool.
 	// Bool values are int-sized in both targets, so the C emit lowers
 	// to plain `==` / `!=` and the Go emit to the same. Distinct ops
@@ -517,6 +525,8 @@ func (o OpCode) String() string {
 		return "str.charat"
 	case OpStrIn:
 		return "str.in"
+	case OpStrRuneLen:
+		return "str.rune.len"
 	case OpCmpEqBool:
 		return "cmp.eq.bool"
 	case OpCmpNeBool:

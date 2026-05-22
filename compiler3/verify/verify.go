@@ -166,7 +166,7 @@ func kindOf(o ir.OpCode) ProducerKind {
 		ir.OpJsonI64Object:
 		return KindOperator
 
-	case ir.OpLenStr, ir.OpStrIn:
+	case ir.OpLenStr, ir.OpStrIn, ir.OpStrRuneLen:
 		return KindDispatch
 	case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr, ir.OpListI64ToStr, ir.OpF64ArrayToStr, ir.OpStrArrToStr, ir.OpStrCharAt:
 		return KindConstructor
@@ -417,7 +417,7 @@ func contractResult(o ir.OpCode) ir.Type {
 		ir.OpAndBool, ir.OpOrBool,
 		ir.OpStrIn:
 		return ir.TypeBool
-	case ir.OpLenStr:
+	case ir.OpLenStr, ir.OpStrRuneLen:
 		return ir.TypeI64
 	case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr, ir.OpStrCharAt:
 		return ir.TypeStr
@@ -527,6 +527,7 @@ func opIsMutating(o ir.OpCode) bool {
 var readDispatchOps = []ir.OpCode{
 	ir.OpLenStr,
 	ir.OpStrIn,
+	ir.OpStrRuneLen,
 	ir.OpListLenI64,
 	ir.OpListGetI64,
 	ir.OpListGetF64,

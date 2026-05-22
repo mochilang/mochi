@@ -336,6 +336,13 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, v ir.Value, all []*ir.Function,
 		// strstr on the C side so the two targets agree.
 		imports["strings"] = true
 		fmt.Fprintf(w, "\t%s = strings.Contains(%s, %s)\n", name, valueName(v.Args[1]), valueName(v.Args[0]))
+	case ir.OpStrRuneLen:
+		// Rune count, not byte count. The VM's `for ch in s` runs
+		// over `[]rune(s)`; using utf8.RuneCountInString gives the
+		// same answer without materialising the rune slice (the
+		// per-element extraction in OpStrCharAt does that).
+		imports["unicode/utf8"] = true
+		fmt.Fprintf(w, "\t%s = int64(utf8.RuneCountInString(%s))\n", name, valueName(v.Args[0]))
 	case ir.OpNewList:
 		fmt.Fprintf(w, "\t%s = []int64{}\n", name)
 	case ir.OpListLenI64:

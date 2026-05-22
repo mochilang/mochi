@@ -193,6 +193,23 @@ static int mochi_str_utf8_width(unsigned char c) {
     return 1;
 }
 
+int64_t mochi_str_rune_len(const char *s) {
+    /*
+     * Count UTF-8 runes by stepping over each leader plus its
+     * continuation bytes. Pure forward walk; O(bytes), no allocation.
+     * Mismatched continuations advance by 1, matching the
+     * mochi_str_char_at convention so a malformed sequence yields a
+     * consistent (if not Unicode-correct) count.
+     */
+    int64_t n = 0;
+    const unsigned char *p = (const unsigned char *)s;
+    while (*p != '\0') {
+        p += mochi_str_utf8_width(*p);
+        n++;
+    }
+    return n;
+}
+
 const char *mochi_str_char_at(const char *s, int64_t i) {
     /*
      * Walk the UTF-8 byte sequence to the i-th rune, then copy the
