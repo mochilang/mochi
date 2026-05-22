@@ -171,7 +171,7 @@ func kindOf(o ir.OpCode) ProducerKind {
 	case ir.OpConcatStr, ir.OpI64ToStr, ir.OpF64ToStr, ir.OpBoolToStr, ir.OpListI64ToStr, ir.OpF64ArrayToStr, ir.OpStrArrToStr:
 		return KindConstructor
 
-	case ir.OpNewList, ir.OpNewMap, ir.OpNewF64Array, ir.OpNewStrArr, ir.OpNewListAny,
+	case ir.OpNewList, ir.OpNewMap, ir.OpNewF64Array, ir.OpNewStrArr, ir.OpNewMapStrI64, ir.OpNewListAny,
 		ir.OpListConcatI64, ir.OpF64ArrayConcat,
 		ir.OpListAnyGetAny,
 		ir.OpStrArrGetStr:
@@ -188,6 +188,7 @@ func kindOf(o ir.OpCode) ProducerKind {
 	case ir.OpListLenI64, ir.OpListPushI64, ir.OpListGetI64, ir.OpListSetI64,
 		ir.OpListGetF64, ir.OpListSetF64,
 		ir.OpMapSetI64I64, ir.OpMapGetI64I64,
+		ir.OpMapSetStrI64, ir.OpMapGetStrI64, ir.OpMapLenStrI64,
 		ir.OpF64ArrayLenI64, ir.OpF64ArrayPushF64, ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64,
 		ir.OpStrArrLen, ir.OpStrArrPushStr, ir.OpStrArrSetStr,
 		ir.OpListAnyLen, ir.OpListAnyPushAny:
@@ -248,7 +249,8 @@ func HandleType(t ir.Type) bool {
 	switch t {
 	case ir.TypeStr, ir.TypeList, ir.TypeMap, ir.TypeSet, ir.TypeStruct,
 		ir.TypeClosure, ir.TypeBignum, ir.TypeBytes, ir.TypePair,
-		ir.TypeF64Arr, ir.TypeI64Arr, ir.TypeU8Arr, ir.TypeListAny:
+		ir.TypeF64Arr, ir.TypeI64Arr, ir.TypeU8Arr, ir.TypeListAny,
+		ir.TypeMapStrI64:
 		return true
 	}
 	return false
@@ -438,6 +440,12 @@ func contractResult(o ir.OpCode) ir.Type {
 		return ir.TypeUnit
 	case ir.OpMapGetI64I64:
 		return ir.TypeI64
+	case ir.OpNewMapStrI64:
+		return ir.TypeMapStrI64
+	case ir.OpMapSetStrI64:
+		return ir.TypeUnit
+	case ir.OpMapGetStrI64, ir.OpMapLenStrI64:
+		return ir.TypeI64
 	case ir.OpF64ArrayLenI64:
 		return ir.TypeI64
 	case ir.OpF64ArrayPushF64, ir.OpF64ArraySetF64:
@@ -482,6 +490,7 @@ func opIsMutating(o ir.OpCode) bool {
 	switch o {
 	case ir.OpListPushI64, ir.OpListSetI64, ir.OpListSetF64,
 		ir.OpMapSetI64I64,
+		ir.OpMapSetStrI64,
 		ir.OpF64ArrayPushF64, ir.OpF64ArraySetF64,
 		ir.OpStrArrPushStr, ir.OpStrArrSetStr,
 		ir.OpListAnyPushAny:
@@ -499,6 +508,8 @@ var readDispatchOps = []ir.OpCode{
 	ir.OpListGetI64,
 	ir.OpListGetF64,
 	ir.OpMapGetI64I64,
+	ir.OpMapGetStrI64,
+	ir.OpMapLenStrI64,
 	ir.OpF64ArrayLenI64,
 	ir.OpF64ArrayGetF64,
 	ir.OpStrArrLen,
@@ -511,6 +522,7 @@ var writeDispatchOps = []ir.OpCode{
 	ir.OpListSetI64,
 	ir.OpListSetF64,
 	ir.OpMapSetI64I64,
+	ir.OpMapSetStrI64,
 	ir.OpF64ArrayPushF64,
 	ir.OpF64ArraySetF64,
 	ir.OpStrArrPushStr,
@@ -634,6 +646,8 @@ func dispatchArena(o ir.OpCode) ir.Type {
 		return ir.TypeList
 	case ir.OpMapSetI64I64, ir.OpMapGetI64I64:
 		return ir.TypeMap
+	case ir.OpMapSetStrI64, ir.OpMapGetStrI64, ir.OpMapLenStrI64:
+		return ir.TypeMapStrI64
 	case ir.OpF64ArrayLenI64, ir.OpF64ArrayPushF64, ir.OpF64ArrayGetF64, ir.OpF64ArraySetF64:
 		return ir.TypeF64Arr
 	case ir.OpStrArrLen, ir.OpStrArrPushStr, ir.OpStrArrGetStr, ir.OpStrArrSetStr:

@@ -218,6 +218,12 @@ type builder struct {
 	// non-empty literals are out of scope until a sub-phase widens the
 	// IR's map family.
 	expectedMap bool
+	// expectedMapStrI64 is set by `let/var m: map<str, i64> = ...` just
+	// before lowerExpr and cleared after. lowerMapLiteralAsExpr
+	// consults it so a `{...}` literal with string keys and int values
+	// lowers to OpNewMapStrI64 + a chain of OpMapSetStrI64 (Phase
+	// 4.2.18).
+	expectedMapStrI64 bool
 	// loops is the lexical stack of enclosing loops, deepest last. Each
 	// entry knows where `break` and `continue` should jump to and which
 	// SSA bindings are phi-tracked at the header so an exit edge can
@@ -485,7 +491,13 @@ func lowerType(t *parser.TypeRef) (ir.Type, error) {
 			if k == ir.TypeI64 && v == ir.TypeI64 {
 				return ir.TypeMap, nil
 			}
-			return ir.TypeInvalid, fmt.Errorf("frontend: map<%s, %s> unsupported in MVP (only map<int, int>)", k, v)
+			// Phase 4.2.18: map<str, i64> for v0.2 user-facing fixtures
+			// (examples/v0.2/map.mochi). Backed by mochi_map_str_i64 on
+			// the C target and map[string]int64 on the Go target.
+			if k == ir.TypeStr && v == ir.TypeI64 {
+				return ir.TypeMapStrI64, nil
+			}
+			return ir.TypeInvalid, fmt.Errorf("frontend: map<%s, %s> unsupported in MVP (only map<int, int>, map<str, i64>)", k, v)
 		}
 		return ir.TypeInvalid, fmt.Errorf("frontend: generic %s<...> unsupported in MVP", t.Generic.Name)
 	}
@@ -725,6 +737,8 @@ func (b *builder) lowerTypedLet(name string, tRef *parser.TypeRef, e *parser.Exp
 			b.expectedListElem = ir.TypeStr
 		case ir.TypeMap:
 			b.expectedMap = true
+		case ir.TypeMapStrI64:
+			b.expectedMapStrI64 = true
 		case ir.TypeListAny:
 			b.expectedListElem = ir.TypeListAny
 		}
@@ -732,6 +746,7 @@ func (b *builder) lowerTypedLet(name string, tRef *parser.TypeRef, e *parser.Exp
 	vid, err := b.lowerExpr(e)
 	b.expectedListElem = ir.TypeInvalid
 	b.expectedMap = false
+	b.expectedMapStrI64 = false
 	if err != nil {
 		return err
 	}
@@ -1783,14 +1798,18 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 				return 0, fmt.Errorf("frontend: slice indexing unsupported in MVP")
 			}
 			curType := b.fn.Values[cur].Type
-			if curType != ir.TypeList && curType != ir.TypeF64Arr && curType != ir.TypeStrArr && curType != ir.TypeMap && curType != ir.TypeListAny {
+			if curType != ir.TypeList && curType != ir.TypeF64Arr && curType != ir.TypeStrArr && curType != ir.TypeMap && curType != ir.TypeMapStrI64 && curType != ir.TypeListAny {
 				return 0, fmt.Errorf("frontend: index on non-list %s", curType)
 			}
 			iID, err := b.lowerExpr(idx.Start)
 			if err != nil {
 				return 0, err
 			}
-			if b.fn.Values[iID].Type != ir.TypeI64 {
+			if curType == ir.TypeMapStrI64 {
+				if b.fn.Values[iID].Type != ir.TypeStr {
+					return 0, fmt.Errorf("frontend: map<str, i64> key must be str, got %s", b.fn.Values[iID].Type)
+				}
+			} else if b.fn.Values[iID].Type != ir.TypeI64 {
 				return 0, fmt.Errorf("frontend: list index must be i64, got %s", b.fn.Values[iID].Type)
 			}
 			// Phase 4.2.15: literal-negative indices (`xs[-1]`,
@@ -1850,6 +1869,12 @@ func (b *builder) lowerPostfix(pe *parser.PostfixExpr) (uint32, error) {
 				cur = b.addValue(ir.Value{
 					Type: ir.TypeI64,
 					Op:   ir.OpMapGetI64I64,
+					Args: []uint32{cur, iID},
+				})
+			case ir.TypeMapStrI64:
+				cur = b.addValue(ir.Value{
+					Type: ir.TypeI64,
+					Op:   ir.OpMapGetStrI64,
 					Args: []uint32{cur, iID},
 				})
 			case ir.TypeListAny:
@@ -2161,19 +2186,50 @@ func (b *builder) lowerIfExpr(e *parser.IfExpr) (uint32, error) {
 }
 
 // lowerMapLiteralAsExpr lowers a bare `{...}` map literal used as an
-// expression (not the statement-level json({...}) hook). Phase
-// 4.3.15.2 supports only empty literals under a `var m: map<int, int>
-// = {}` declaration; the empty case lowers to OpNewMap producing a
-// fresh empty heap-allocated table. Non-empty literals would need
-// every key+value to be a constant-folded int and the IR would need
-// either a chain of OpMapSetI64I64 ops or a new OpMapLit op; both
-// stay out of MVP scope until a fixture needs them.
+// expression (not the statement-level json({...}) hook). Two flavors
+// are supported today:
+//   - map<int, int> (Phase 4.3.15.2): only empty literals lower to
+//     OpNewMap; non-empty stays unsupported until a sub-phase widens
+//     the IR's i64->i64 map family.
+//   - map<str, i64> (Phase 4.2.18): empty and non-empty literals
+//     lower to OpNewMapStrI64 followed by a chain of OpMapSetStrI64,
+//     one per declared key/value pair. Keys must lower to TypeStr,
+//     values to TypeI64.
 func (b *builder) lowerMapLiteralAsExpr(m *parser.MapLiteral) (uint32, error) {
+	if b.expectedMapStrI64 {
+		// Reset the expectation while lowering element exprs so a
+		// nested map literal does not inherit it.
+		b.expectedMapStrI64 = false
+		defer func() { b.expectedMapStrI64 = true }()
+		mapID := b.addValue(ir.Value{Type: ir.TypeMapStrI64, Op: ir.OpNewMapStrI64})
+		for i, item := range m.Items {
+			kid, err := b.lowerExpr(item.Key)
+			if err != nil {
+				return 0, fmt.Errorf("frontend: map<str, i64> entry %d key: %w", i, err)
+			}
+			if b.fn.Values[kid].Type != ir.TypeStr {
+				return 0, fmt.Errorf("frontend: map<str, i64> entry %d key must be str, got %s", i, b.fn.Values[kid].Type)
+			}
+			vid, err := b.lowerExpr(item.Value)
+			if err != nil {
+				return 0, fmt.Errorf("frontend: map<str, i64> entry %d value: %w", i, err)
+			}
+			if b.fn.Values[vid].Type != ir.TypeI64 {
+				return 0, fmt.Errorf("frontend: map<str, i64> entry %d value must be i64, got %s", i, b.fn.Values[vid].Type)
+			}
+			b.addValue(ir.Value{
+				Type: ir.TypeUnit,
+				Op:   ir.OpMapSetStrI64,
+				Args: []uint32{mapID, kid, vid},
+			})
+		}
+		return mapID, nil
+	}
 	if !b.expectedMap {
-		return 0, fmt.Errorf("frontend: map literal requires `map<int, int>` type annotation on the binding")
+		return 0, fmt.Errorf("frontend: map literal requires `map<int, int>` or `map<str, i64>` type annotation on the binding")
 	}
 	if len(m.Items) != 0 {
-		return 0, fmt.Errorf("frontend: non-empty map literal unsupported in MVP (only `{}` initializer)")
+		return 0, fmt.Errorf("frontend: non-empty map<int, int> literal unsupported in MVP (only `{}` initializer)")
 	}
 	return b.addValue(ir.Value{Type: ir.TypeMap, Op: ir.OpNewMap}), nil
 }
@@ -2409,6 +2465,11 @@ func (b *builder) lowerBuiltinCall(c *parser.CallExpr) (uint32, bool, error) {
 		case ir.TypeListAny:
 			id := b.addValue(ir.Value{
 				Type: ir.TypeI64, Op: ir.OpListAnyLen, Args: []uint32{arg},
+			})
+			return id, true, nil
+		case ir.TypeMapStrI64:
+			id := b.addValue(ir.Value{
+				Type: ir.TypeI64, Op: ir.OpMapLenStrI64, Args: []uint32{arg},
 			})
 			return id, true, nil
 		default:

@@ -25,6 +25,13 @@ const (
 	// + len + cap); element-level access threads the same const-char-
 	// star carrier the rest of the C runtime uses for TypeStr.
 	TypeStrArr
+	// TypeMapStrI64 is the typed `map<str, i64>` carrier on the C
+	// target (Phase 4.2.18). Backing is mochi_map_str_i64, an open-
+	// addressing hashtable keyed by `const char*` with `int64_t`
+	// values. Distinct from TypeMap (which is i64->i64) so emit can
+	// pick the right runtime struct and the verifier can route the
+	// right Set/Get ops.
+	TypeMapStrI64
 	TypeAny
 	// TypeListAny is the heterogeneous self-referential list backing
 	// for `list<any>` (Phase 4.3.15.1). In the binary_trees kernel every
@@ -75,6 +82,8 @@ func (t Type) String() string {
 		return "u8arr"
 	case TypeStrArr:
 		return "strarr"
+	case TypeMapStrI64:
+		return "mapstri64"
 	case TypeAny:
 		return "any"
 	case TypeListAny:
@@ -199,6 +208,18 @@ const (
 	OpStrArrPushStr
 	OpStrArrGetStr
 	OpStrArrSetStr
+
+	// Typed map<str, i64> ops (Phase 4.2.18). Backs `map<string, int>`
+	// on the C target with mochi_map_str_i64 (open-addressing hash
+	// keyed by `const char*`, int64 values). Get on an absent key
+	// returns 0 (matches Go's zero-default for the int64 value type).
+	// Map literals (non-empty) lower to OpNewMapStrI64 followed by a
+	// chain of OpMapSetStrI64 ops, one per key/value pair. OpMapLenStrI64
+	// backs the `len(m)` builtin on this carrier.
+	OpNewMapStrI64
+	OpMapSetStrI64
+	OpMapGetStrI64
+	OpMapLenStrI64
 
 	// Calls. Args[0..] are the argument values; the callee is named by
 	// Value.Const (function index in the Function's owning Program).
@@ -481,6 +502,14 @@ func (o OpCode) String() string {
 		return "strarr.get.str"
 	case OpStrArrSetStr:
 		return "strarr.set.str"
+	case OpNewMapStrI64:
+		return "newmapstri64"
+	case OpMapSetStrI64:
+		return "map.set.str.i64"
+	case OpMapGetStrI64:
+		return "map.get.str.i64"
+	case OpMapLenStrI64:
+		return "map.len.str.i64"
 	case OpListConcatI64:
 		return "list.concat.i64"
 	case OpF64ArrayConcat:
