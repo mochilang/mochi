@@ -26,13 +26,15 @@ var Builtins = map[string][]Type{
 //
 //   - p.Main is a valid index into p.Functions.
 //   - Every function name is unique.
-//   - The entry function returns TypeUnit.
+//   - The entry function takes no parameters and returns TypeUnit.
 //   - Every statement is well-formed for the scope it sits in
 //     (variables declared before use, BreakStmt/ContinueStmt
-//     inside a loop, assignment only to a mutable binding).
+//     inside a loop, assignment only to a mutable binding,
+//     ReturnStmt value type matches the enclosing function).
 //   - Every expression is well-typed (binary/unary operand types
 //     match the operator and the recorded Result; VarRef
-//     resolves to a binding of the recorded VarType).
+//     resolves to a binding of the recorded VarType; CallExpr
+//     args match the resolved callee signature).
 //
 // Later phases extend this list as new IR shapes land.
 func Verify(p *Program) error {
@@ -42,7 +44,7 @@ func Verify(p *Program) error {
 	if p.Main < 0 || p.Main >= len(p.Functions) {
 		return fmt.Errorf("aotir.Verify: Main index %d out of range [0,%d)", p.Main, len(p.Functions))
 	}
-	names := make(map[string]int, len(p.Functions))
+	names := make(map[string]*Function, len(p.Functions))
 	for i, fn := range p.Functions {
 		if fn == nil {
 			return fmt.Errorf("aotir.Verify: Functions[%d] is nil", i)
@@ -50,13 +52,17 @@ func Verify(p *Program) error {
 		if fn.Name == "" {
 			return fmt.Errorf("aotir.Verify: Functions[%d] has empty Name", i)
 		}
-		if prev, dup := names[fn.Name]; dup {
-			return fmt.Errorf("aotir.Verify: duplicate function name %q at indices %d and %d", fn.Name, prev, i)
+		if _, dup := names[fn.Name]; dup {
+			return fmt.Errorf("aotir.Verify: duplicate function name %q at index %d", fn.Name, i)
 		}
-		names[fn.Name] = i
+		names[fn.Name] = fn
 	}
-	if entry := p.Functions[p.Main]; entry.ReturnType != TypeUnit {
+	entry := p.Functions[p.Main]
+	if entry.ReturnType != TypeUnit {
 		return fmt.Errorf("aotir.Verify: entry function %q must return unit, got %s", entry.Name, entry.ReturnType)
+	}
+	if len(entry.Params) != 0 {
+		return fmt.Errorf("aotir.Verify: entry function %q must take no parameters, got %d", entry.Name, len(entry.Params))
 	}
 	for i, fn := range p.Functions {
 		if fn.Body == nil {
@@ -68,6 +74,18 @@ func Verify(p *Program) error {
 			loopDepth:  0,
 			returnType: fn.ReturnType,
 		}
+		// Seed the function's parameter list as immutable
+		// bindings in the root scope so the body can reference
+		// them by name.
+		for _, pr := range fn.Params {
+			if pr.Name == "" {
+				return fmt.Errorf("aotir.Verify: %s: parameter with empty name", fn.Name)
+			}
+			if _, dup := ctx.scope.vars[pr.Name]; dup {
+				return fmt.Errorf("aotir.Verify: %s: duplicate parameter %q", fn.Name, pr.Name)
+			}
+			ctx.scope.vars[pr.Name] = binding{t: pr.Type, mutable: false}
+		}
 		for j, st := range fn.Body.Statements {
 			if err := verifyStmt(ctx, st); err != nil {
 				return fmt.Errorf("aotir.Verify: %s statement %d: %w", fn.Name, j, err)
@@ -78,12 +96,13 @@ func Verify(p *Program) error {
 }
 
 // verifyCtx carries the local state Verify needs to type-check a
-// statement: the program's function-name map, the active variable
-// scope, current loop nesting depth, and the enclosing function's
-// return type. The verifier never mutates fns; scope is pushed and
-// popped per Block.
+// statement: the program's function-name map (full callee
+// signatures, so CallExpr can look up params + return type), the
+// active variable scope, current loop nesting depth, and the
+// enclosing function's return type. The verifier never mutates
+// fns; scope is pushed and popped per Block.
 type verifyCtx struct {
-	fns        map[string]int
+	fns        map[string]*Function
 	scope      *scope
 	loopDepth  int
 	returnType Type
@@ -130,6 +149,8 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 		return verifyIfStmt(ctx, s)
 	case *WhileStmt:
 		return verifyWhileStmt(ctx, s)
+	case *ForRangeStmt:
+		return verifyForRangeStmt(ctx, s)
 	case *BreakStmt:
 		if ctx.loopDepth == 0 {
 			return errors.New("break outside a loop")
@@ -147,14 +168,9 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 }
 
 func verifyCallStmt(ctx *verifyCtx, s *CallStmt) error {
-	var params []Type
-	if p, ok := Builtins[s.Func]; ok {
-		params = p
-	} else if _, ok := ctx.fns[s.Func]; ok {
-		// User-defined callees take no arguments until Phase 2.2.
-		params = nil
-	} else {
-		return fmt.Errorf("unresolved callee %q", s.Func)
+	params, err := resolveCallSig(ctx, s.Func)
+	if err != nil {
+		return err
 	}
 	if len(params) != len(s.Args) {
 		return fmt.Errorf("callee %q expects %d args, got %d", s.Func, len(params), len(s.Args))
@@ -171,6 +187,24 @@ func verifyCallStmt(ctx *verifyCtx, s *CallStmt) error {
 		}
 	}
 	return nil
+}
+
+// resolveCallSig returns the parameter-type list for a call to
+// fnName. The lookup checks Builtins first (always wins over a
+// user fn of the same name, by construction Lower rejects that
+// shadow) then the program's function table.
+func resolveCallSig(ctx *verifyCtx, fnName string) ([]Type, error) {
+	if p, ok := Builtins[fnName]; ok {
+		return p, nil
+	}
+	if fn, ok := ctx.fns[fnName]; ok {
+		params := make([]Type, len(fn.Params))
+		for i, p := range fn.Params {
+			params[i] = p.Type
+		}
+		return params, nil
+	}
+	return nil, fmt.Errorf("unresolved callee %q", fnName)
 }
 
 func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
@@ -255,6 +289,48 @@ func verifyWhileStmt(ctx *verifyCtx, s *WhileStmt) error {
 	return verifyBlock(ctx, s.Body)
 }
 
+// verifyForRangeStmt checks `for VAR in START..END { BODY }`. Start
+// and End must be TypeInt; Var is introduced into the body scope as
+// an immutable TypeInt binding, so assigning to it inside the body
+// fails the mutability check.
+func verifyForRangeStmt(ctx *verifyCtx, s *ForRangeStmt) error {
+	if s.Var == "" {
+		return errors.New("for with empty Var name")
+	}
+	if s.Start == nil || s.End == nil {
+		return errors.New("for range with nil Start or End")
+	}
+	if err := verifyExprCtx(ctx, s.Start); err != nil {
+		return fmt.Errorf("for start: %w", err)
+	}
+	if s.Start.Type() != TypeInt {
+		return fmt.Errorf("for start must be int, got %s", s.Start.Type())
+	}
+	if err := verifyExprCtx(ctx, s.End); err != nil {
+		return fmt.Errorf("for end: %w", err)
+	}
+	if s.End.Type() != TypeInt {
+		return fmt.Errorf("for end must be int, got %s", s.End.Type())
+	}
+	if s.Body == nil {
+		return errors.New("for with nil Body block")
+	}
+	prev := ctx.scope
+	ctx.scope = newScope(prev)
+	ctx.scope.vars[s.Var] = binding{t: TypeInt, mutable: false}
+	ctx.loopDepth++
+	defer func() {
+		ctx.loopDepth--
+		ctx.scope = prev
+	}()
+	for i, st := range s.Body.Statements {
+		if err := verifyStmt(ctx, st); err != nil {
+			return fmt.Errorf("for body stmt %d: %w", i, err)
+		}
+	}
+	return nil
+}
+
 func verifyReturnStmt(ctx *verifyCtx, s *ReturnStmt) error {
 	if s.Value == nil {
 		if ctx.returnType != TypeUnit {
@@ -305,6 +381,34 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		}
 		if v.VarType != b.t {
 			return fmt.Errorf("variable %q has type %s in scope, ref says %s", v.Name, b.t, v.VarType)
+		}
+		return nil
+	case *CallExpr:
+		fn, ok := ctx.fns[v.Func]
+		if !ok {
+			return fmt.Errorf("unresolved callee %q in expression position", v.Func)
+		}
+		if fn.ReturnType == TypeUnit {
+			return fmt.Errorf("callee %q returns unit; use a statement form, not an expression", v.Func)
+		}
+		if v.Result != fn.ReturnType {
+			return fmt.Errorf("call %q result %s does not match callee return %s",
+				v.Func, v.Result, fn.ReturnType)
+		}
+		if len(fn.Params) != len(v.Args) {
+			return fmt.Errorf("call %q expects %d args, got %d", v.Func, len(fn.Params), len(v.Args))
+		}
+		for i, a := range v.Args {
+			if a == nil {
+				return fmt.Errorf("call %q arg %d is nil", v.Func, i)
+			}
+			if err := verifyExprCtx(ctx, a); err != nil {
+				return fmt.Errorf("call %q arg %d: %w", v.Func, i, err)
+			}
+			if a.Type() != fn.Params[i].Type {
+				return fmt.Errorf("call %q arg %d: expected %s, got %s",
+					v.Func, i, fn.Params[i].Type, a.Type())
+			}
 		}
 		return nil
 	case *BinaryExpr:
