@@ -67,6 +67,7 @@ func Emit(p *Program) ([]byte, error) {
 	usesMapI64I64 := false
 	usesTree := false
 	usesStrH := false
+	usesStrRuntime := false
 	for _, fn := range p.Funcs {
 		for _, v := range fn.Values {
 			switch v.Op {
@@ -93,6 +94,8 @@ func Emit(p *Program) ([]byte, error) {
 				usesTree = true
 			case ir.OpLenStr, ir.OpCmpEqStr, ir.OpCmpNeStr:
 				usesStrH = true
+			case ir.OpConcatStr:
+				usesStrRuntime = true
 			case ir.OpNow:
 				usesNow = true
 			}
@@ -124,6 +127,9 @@ func Emit(p *Program) ([]byte, error) {
 	}
 	if usesStrH {
 		buf.WriteString("#include <string.h>\n")
+	}
+	if usesStrRuntime {
+		buf.WriteString("#include \"mochi_str.h\"\n")
 	}
 	buf.WriteString("\n")
 
@@ -398,6 +404,14 @@ func emitValue(w *bytes.Buffer, fn *ir.Function, p *Program, v ir.Value) error {
 		fmt.Fprintf(w, "    %s = (strcmp(%s, %s) == 0);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpCmpNeStr:
 		fmt.Fprintf(w, "    %s = (strcmp(%s, %s) != 0);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
+	case ir.OpConcatStr:
+		// mochi_str_concat allocates a NUL-terminated byte sequence
+		// holding the bytes of v.Args[0] followed by v.Args[1] and
+		// returns a `const char*` carrier the rest of the Phase 4.2.x
+		// string ops accept without distinguishing literal from heap.
+		// The buffer leaks; see runtime/c/src/mochi_str.h for the
+		// ownership note.
+		fmt.Fprintf(w, "    %s = mochi_str_concat(%s, %s);\n", name, valueName(v.Args[0]), valueName(v.Args[1]))
 	case ir.OpNow:
 		fmt.Fprintf(w, "    %s = mochi_now_us();\n", name)
 	case ir.OpJsonI64Object:

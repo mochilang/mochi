@@ -1339,6 +1339,8 @@ func (b *builder) applyBinOp(op string, l, r uint32) (uint32, error) {
 		}
 	case ir.TypeStr:
 		switch op {
+		case "+":
+			code = ir.OpConcatStr
 		case "==":
 			code = ir.OpCmpEqStr
 			resType = ir.TypeBool
