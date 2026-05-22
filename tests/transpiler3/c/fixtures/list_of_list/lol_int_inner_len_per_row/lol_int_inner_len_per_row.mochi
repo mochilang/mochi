@@ -1,0 +1,4 @@
+let xs = [[10, 20, 30], [40, 50], [60]]
+print(len(xs[0]))
+print(len(xs[1]))
+print(len(xs[2]))

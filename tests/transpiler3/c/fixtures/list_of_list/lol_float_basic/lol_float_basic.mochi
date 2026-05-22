@@ -1,0 +1,5 @@
+let xs = [[1.5, 2.5], [3.25, 4.75]]
+print(xs[0][0])
+print(xs[0][1])
+print(xs[1][0])
+print(xs[1][1])

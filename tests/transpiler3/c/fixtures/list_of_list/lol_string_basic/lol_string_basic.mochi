@@ -1,0 +1,5 @@
+let xs = [["a", "b"], ["c", "d", "e"]]
+print(xs[0][0])
+print(xs[0][1])
+print(xs[1][0])
+print(xs[1][2])

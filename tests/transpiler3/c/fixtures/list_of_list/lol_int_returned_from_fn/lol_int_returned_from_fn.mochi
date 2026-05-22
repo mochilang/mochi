@@ -1,0 +1,9 @@
+fun build(): [[int]] {
+  return [[10, 20], [30, 40], [50, 60]]
+}
+
+let xs = build()
+print(len(xs))
+print(xs[0][0])
+print(xs[1][1])
+print(xs[2][0])

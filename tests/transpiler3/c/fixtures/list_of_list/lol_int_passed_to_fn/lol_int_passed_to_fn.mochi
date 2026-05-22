@@ -1,0 +1,12 @@
+fun total(mat: [[int]]): int {
+  var sum = 0
+  for row in mat {
+    for v in row {
+      sum = sum + v
+    }
+  }
+  return sum
+}
+
+let xs = [[1, 2], [3, 4], [5, 6]]
+print(total(xs))
