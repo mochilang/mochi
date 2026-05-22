@@ -1630,8 +1630,12 @@ func (b *builder) lowerLiteral(lit *parser.Literal) (uint32, error) {
 		return b.addValue(ir.Value{Type: ir.TypeBool, Op: ir.OpConst, Const: c}), nil
 	case lit.Float != nil:
 		return b.addValue(ir.Value{Type: ir.TypeF64, Op: ir.OpConst, Const: int64(math.Float64bits(*lit.Float))}), nil
+	case lit.Str != nil:
+		idx := int64(len(b.fn.Strings))
+		b.fn.Strings = append(b.fn.Strings, *lit.Str)
+		return b.addValue(ir.Value{Type: ir.TypeStr, Op: ir.OpConst, Const: idx}), nil
 	}
-	return 0, fmt.Errorf("frontend: literal kind unsupported in MVP (str/none)")
+	return 0, fmt.Errorf("frontend: literal kind unsupported in MVP (none)")
 }
 
 func (b *builder) lowerCall(c *parser.CallExpr) (uint32, error) {

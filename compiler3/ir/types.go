@@ -586,6 +586,11 @@ type Function struct {
 	Values     []Value
 	GoBindings  []GoBinding
 	JsonObjects []JsonObject
+	// Strings is the side-table of constant string payloads referenced
+	// by OpConst Values of Type TypeStr. The Value's Const field is the
+	// index into this slice. Side-table form mirrors GoBindings and
+	// JsonObjects so the Const field stays int64-shaped.
+	Strings    []string
 	SourceFile  string
 
 	// RefModes records the MEP-41 §6.9 reference-mode tag for the

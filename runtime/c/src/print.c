@@ -19,6 +19,11 @@ void mochi_print_bool(int x) {
     fputs(x ? "true\n" : "false\n", stdout);
 }
 
+void mochi_print_str(const char *s) {
+    fputs(s, stdout);
+    fputc('\n', stdout);
+}
+
 void mochi_print_f64(double x) {
     /*
      * Shortest round-trip: try precision 1..17 and pick the first

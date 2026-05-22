@@ -32,6 +32,14 @@ void mochi_print_i64(int64_t x);
 void mochi_print_bool(int x);
 
 /*
+ * mochi_print_str writes the bytes of s (NUL-terminated) followed by
+ * a single '\n', matching Go's `fmt.Println(s)` for plain-string args.
+ * Phase 4.2.0 covers literal strings only; later 4.2.x sub-phases
+ * widen to owning mochi_str values when concat/slice lands.
+ */
+void mochi_print_str(const char *s);
+
+/*
  * mochi_print_f64 writes x using the shortest representation that
  * round-trips through strtod, followed by '\n'. The output matches
  * Go's `fmt.Println(float64)` for normal finite values where Go's
