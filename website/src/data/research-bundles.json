@@ -684,5 +684,103 @@
         "docId": "research/0051/risks-and-alternatives"
       }
     ]
+  },
+  {
+    "number": 52,
+    "title": "MEP-52 research bundle: Mochi to TypeScript / JavaScript transpiler",
+    "slug": "/docs/research/0052/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "MEP-52",
+        "docId": "research/0052/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "Language surface: Mochi onto TypeScript 5.6 / ES2024",
+        "docId": "research/0052/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "Design philosophy: why TypeScript, why ES2024 floor, why tsc --strict + --noUncheckedIndexedAccess dual gates, why AsyncIterableQueue + AbortController, why npm canonical with four-runtime conditional exports",
+        "docId": "research/0052/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "MEP-52 research note 03, Prior art and source-to-TypeScript/JavaScript tooling",
+        "docId": "research/0052/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "MEP-52 research note 04, The mochi_runtime npm package",
+        "docId": "research/0052/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "Codegen design: aotir to TypeScript AST via Mochi-side syntax tree printer, monomorphisation, closure conversion, match-to-switch-tag, source maps",
+        "docId": "research/0052/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "Type lowering: per-Mochi-type details onto TypeScript 5.6",
+        "docId": "research/0052/type-lowering"
+      },
+      {
+        "stem": "07-runtime-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "MEP-52 research note 07, Runtime portability: Node x Deno x Bun x Browser",
+        "docId": "research/0052/runtime-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "MEP-52 research note 08, Dataset and query pipeline (TS / JS lowering)",
+        "docId": "research/0052/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "Agents and streams: AsyncIterableQueue + AbortController, AsyncIterable streams, cold/hot patterns, structured concurrency without TaskGroup",
+        "docId": "research/0052/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "Build system: package.json + tsc + npm publish, four-runtime conditional exports, JSR for Deno, esbuild for browser, npm Trusted Publishing (Sigstore + provenance)",
+        "docId": "research/0052/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "Testing gates: per-phase Go test gates, four-runtime matrix (Node 22 / Deno 2 / Bun 1.1 / browser via Playwright), tsc --strict + --noUncheckedIndexedAccess + --exactOptionalPropertyTypes, eslint + prettier fixed-point, npm pack + install + execute, ~400-fixture corpus by Phase 18",
+        "docId": "research/0052/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "Risks and alternatives: 15 risks + 6 rejected alternatives (Babel, esbuild-only, JSDoc-only, Webpack, Rollup, RxJS) + 4 future candidates (WASM via WASI, ts-blank-space for zero-build, Bun-native compile, Cloudflare Workers)",
+        "docId": "research/0052/risks-and-alternatives"
+      }
+    ]
   }
 ]
