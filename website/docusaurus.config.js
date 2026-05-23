@@ -48,6 +48,7 @@ const config = {
           editUrl: 'https://github.com/mochilang/mochi/tree/main/website/',
           breadcrumbs: true,
           showLastUpdateTime: false,
+          remarkPlugins: [require('./scripts/remark-mochi-links')],
         },
         blog: false,
         theme: {
