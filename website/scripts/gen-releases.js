@@ -6,7 +6,7 @@
 //
 //   website/docs/releases/vX.Y.Z.md       - one doc page per release
 //   website/src/data/releases.json        - release metadata for changelog.mdx
-//   website/src/data/release-sidebar.json - release page refs for sidebars.js
+//   website/src/data/release-sidebar.json - flat release page refs for sidebars.js
 
 const fs = require('fs');
 const path = require('path');
@@ -111,18 +111,11 @@ fs.writeFileSync(
   ) + '\n',
 );
 
-const groups = [];
-for (const release of releases) {
-  const label = `v${release.major}.${release.minor}`;
-  let group = groups.find(g => g.label === label);
-  if (!group) {
-    group = { label, items: [] };
-    groups.push(group);
-  }
-  group.items.push(release.docId);
-}
-fs.writeFileSync(sidebarOut, JSON.stringify(groups, null, 2) + '\n');
+fs.writeFileSync(
+  sidebarOut,
+  JSON.stringify(releases.map(release => release.docId), null, 2) + '\n',
+);
 
 console.log(`wrote ${releases.length} release docs to ${path.relative(root, docsOutDir)}`);
 console.log(`wrote release metadata to ${path.relative(root, dataOut)}`);
-console.log(`wrote ${groups.length} release sidebar group(s) to ${path.relative(root, sidebarOut)}`);
+console.log(`wrote ${releases.length} release sidebar entries to ${path.relative(root, sidebarOut)}`);
