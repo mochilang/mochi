@@ -784,7 +784,7 @@ Mochi user explicitly asks for it.
   `MetadataReference.CreateFromFile(...)` list.
 - [[06-type-lowering]]: details the Mochi → CLR type map; this note
   fixes the syntactic vehicle for that map (records + generics).
-- [[07-clr-target-portability]]: details the .NET 8 vs .NET 10
+- [[07-dotnet-target-portability]]: details the .NET 8 vs .NET 10
   matrix; this note's §7 fixes the `LangVersion` story.
 - [[08-dataset-pipeline]]: large-data emit reuses Span<T>; the hot
   path escape hatch in §11 is the IL emitter for those kernels.

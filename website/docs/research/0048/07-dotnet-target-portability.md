@@ -219,7 +219,7 @@ Timeline:
 
 In .NET 10, CoreCLR on Android is **experimental** and not for production; Mochi treats it as off by default.
 
-MAUI is not a primary Mochi target. The backend emits .NET class libraries that can be referenced from a MAUI project; the MAUI project itself is owned by the user. See [[10-interop-csharp]] for the binding story.
+MAUI is not a primary Mochi target. The backend emits .NET class libraries that can be referenced from a MAUI project; the MAUI project itself is owned by the user. See [[03-prior-art-transpilers]] for the .NET interop story.
 
 ## 11. Unity engine
 
@@ -237,7 +237,7 @@ Mochi plan for Unity:
 - No `init` accessors (C# 9 has them, but Unity's compiler bug history makes them risky in shipped versions; project-by-project).
 - No records on Unity 6.0 LTS (records are C# 9, but the Unity-shipped Mono mscorlib lacks `System.Runtime.CompilerServices.IsExternalInit` until Unity 6.3 LTS; we ship a polyfill).
 - No collection expressions (C# 12).
-- Document gotchas in [[11-runtime-mapping]].
+- Document gotchas in [[04-runtime]].
 
 When Unity 6.8 lands with CoreCLR, the Unity target slides over to `net10.0` (or whatever LTS Unity bundles) and the special case dissolves.
 
@@ -284,7 +284,7 @@ SourceLink: enabled via `Microsoft.SourceLink.GitHub` (or GitLab, Azure Repos) s
 
 `SOURCE_DATE_EPOCH`: `dotnet pack` honours `SOURCE_DATE_EPOCH` since SDK 9 for NuGet timestamp fields (this is verified in the dotnet/sdk changelog). For SDK 8, you can achieve reproducibility by passing `-p:PublishRepositoryUrl=true -p:RepositoryCommit=$SHA` and pinning the pack timestamp manually with `-p:Deterministic=true`.
 
-Reproducible NuGet packages: yes, but require a strict sandbox (same SDK version, same OS, same locale). The Mochi build documentation in [[14-cli-ergonomics]] suggests a Docker-based wrapper.
+Reproducible NuGet packages: yes, but require a strict sandbox (same SDK version, same OS, same locale). The Mochi build documentation in [[10-build-system]] suggests a Docker-based wrapper.
 
 Embedded PDBs (`DebugType=embedded`) keep the symbol mapping inside the assembly so the artifact is exactly one file. This is what the Mochi cli does for release builds; portable PDBs (`DebugType=portable`) are for "I want to ship a `.pdb` next to my dll" cases.
 
@@ -426,25 +426,23 @@ Blazor WASM bundle:
 
 Inside MEP-48:
 
-- [[01-overview]]: high-level goals and non-goals for the .NET backend.
-- [[02-design-rationale]]: why we picked .NET 8/10 as the dual floor/target.
-- [[03-ir-mapping]]: how Mochi IR maps to MSIL and to C# 12/14.
-- [[04-stdlib-shim]]: which BCL primitives Mochi.Runtime wraps.
-- [[05-codegen]]: csproj generation and assembly layout.
-- [[06-runtime-helpers]]: AOT-clean reflection patterns.
-- [[08-package-layout]]: NuGet packaging, multi-targeting, RID-specific runtime packs.
-- [[09-build-system]]: msbuild integration, `Mochi.Build.targets`.
-- [[10-interop-csharp]]: bidirectional Mochi <-> C# interop.
-- [[11-runtime-mapping]]: Unity/Godot/MAUI quirks per platform.
-- [[12-tooling-debug]]: portable PDB, SourceLink, dotnet-trace, dotnet-counters.
-- [[13-test-strategy]]: xUnit, NUnit, `dotnet test`.
-- [[14-cli-ergonomics]]: `mochi build --target dotnet`.
+- [[01-language-surface]]: Mochi features mapped onto .NET lowering obligations.
+- [[02-design-philosophy]]: why we picked .NET 8/10 as the dual floor/target.
+- [[03-prior-art-transpilers]]: C# / F# / VB.NET / Bridge.NET / IL2CPP / NativeAOT prior art.
+- [[04-runtime]]: BCL primitives, Channels, IAsyncEnumerable, ImmutableCollections.
+- [[05-codegen-design]]: Roslyn SyntaxFactory + Reflection.Emit fallback; csproj layout.
+- [[06-type-lowering]]: type-by-type mapping to CLR reified generics and value types.
+- [[08-dataset-pipeline]]: LINQ / PLINQ lowering, hash-join, value-type specialisation.
+- [[09-agent-streams]]: Channels for mailboxes, IAsyncEnumerable for streams.
+- [[10-build-system]]: dotnet CLI, NuGet, MSBuild, NativeAOT publish, single-file.
+- [[11-testing-gates]]: per-phase Go test gates, TFM matrix, Roslyn-clean gate.
+- [[12-risks-and-alternatives]]: risk register and rejected alternatives.
 
-Sibling research notes in other MEPs:
+Sibling research notes in other MEPs (informative; cross-bundle links are not auto-resolved):
 
-- [[../0045/07-c-target-portability]]: C target portability matrix.
-- [[../0046/07-beam-target-portability]]: BEAM target portability matrix.
-- [[../0047/07-jvm-target-portability]]: JVM target portability matrix (the structural model for this note).
+- `/docs/research/0045/c-target-portability`: C target portability matrix.
+- `/docs/research/0046/beam-target-portability`: BEAM target portability matrix.
+- `/docs/research/0047/jvm-target-portability`: JVM target portability matrix (the structural model for this note).
 
 ## Sources
 

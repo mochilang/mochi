@@ -713,8 +713,8 @@ illustrates the general shape for other generic sums.
 
 For `Result<T, E>` the backend emits the user enum (or maps to
 `Swift.Result` from the standard library when the `E` type satisfies
-the `Error` protocol). See [[12-errors]] section §12 for the typed-throw
-interaction.
+the `Error` protocol). See [[06-type-lowering]] §15 for the typed-throw
+interaction (SE-0413).
 
 The `Sendable` constraint on type parameters is added automatically
 when the enum will be sent across an actor boundary. Swift 6.0's

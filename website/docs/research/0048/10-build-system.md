@@ -444,7 +444,7 @@ Within MEP-48:
 - [[04-runtime]] for `Mochi.Runtime` content and how its NuGet packaging shapes section 6.
 - [[05-codegen-design]] for how the emitter writes the `src/` tree section 2 references.
 - [[06-type-lowering]] for the nullable / generic emit decisions that the AOT analyzer in section 10 will scrutinize.
-- [[07-clr-target-portability]] for AOT restrictions and trim-safety.
+- [[07-dotnet-target-portability]] for AOT restrictions and trim-safety.
 - [[08-dataset-pipeline]] for the data ingestion / parquet deps that some user projects pull in via section 5.
 - [[09-agent-streams]] for the channel-based runtime that section 6 reserves space for.
 - [[11-testing-gates]] for how Phase 12 to 17 gates wire into the per-PR CI.
