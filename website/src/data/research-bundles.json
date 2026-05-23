@@ -292,5 +292,103 @@
         "docId": "research/0047/risks-and-alternatives"
       }
     ]
+  },
+  {
+    "number": 48,
+    "title": "MEP-48 research notes",
+    "slug": "/docs/research/0048/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0048/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "MEP-48 research note 01, Mochi language surface (.NET target)",
+        "docId": "research/0048/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "MEP-48 research note 02, Design philosophy",
+        "docId": "research/0048/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "MEP-48 research note 03, Prior art on .NET languages and toolchains",
+        "docId": "research/0048/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "MEP-48 research note 04, .NET runtime building blocks",
+        "docId": "research/0048/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "MEP-48 research note 05, Codegen design and IR layer choice",
+        "docId": "research/0048/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "MEP-48 research note 06, Type-system lowering",
+        "docId": "research/0048/type-lowering"
+      },
+      {
+        "stem": "07-dotnet-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "MEP-48 research note 07, .NET target portability matrix",
+        "docId": "research/0048/dotnet-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "MEP-48 research note 08, Dataset pipeline lowering",
+        "docId": "research/0048/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "MEP-48 research note 09, Agents and streams on .NET",
+        "docId": "research/0048/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "MEP-48 research note 10, Build system",
+        "docId": "research/0048/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "MEP-48 research note 11, Testing strategy and gates for MEP-48",
+        "docId": "research/0048/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "MEP-48 research note 12, Risks and alternatives for the .NET target",
+        "docId": "research/0048/risks-and-alternatives"
+      }
+    ]
   }
 ]

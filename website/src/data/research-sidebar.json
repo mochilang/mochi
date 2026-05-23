@@ -52,5 +52,23 @@
       "research/0047/testing-gates",
       "research/0047/risks-and-alternatives"
     ]
+  },
+  {
+    "label": "MEP-0048",
+    "items": [
+      "research/0048/index",
+      "research/0048/language-surface",
+      "research/0048/design-philosophy",
+      "research/0048/prior-art-transpilers",
+      "research/0048/runtime",
+      "research/0048/codegen-design",
+      "research/0048/type-lowering",
+      "research/0048/dotnet-target-portability",
+      "research/0048/dataset-pipeline",
+      "research/0048/agent-streams",
+      "research/0048/build-system",
+      "research/0048/testing-gates",
+      "research/0048/risks-and-alternatives"
+    ]
   }
 ]
