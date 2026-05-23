@@ -7,7 +7,7 @@ const mepGroups = require('./src/data/mep-sidebar.json');
 // from website/docs/research/NNNN/*.md. Dropping a new file or
 // directory makes it appear in the nav on the next build.
 const researchGroups = require('./src/data/research-sidebar.json');
-const releaseGroups = require('./src/data/release-sidebar.json');
+const releaseItems = require('./src/data/release-sidebar.json');
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
@@ -93,13 +93,7 @@ const sidebars = {
 
   changelogSidebar: [
     'changelog',
-    ...releaseGroups.map(g => ({
-      label: g.label,
-      type: 'category',
-      className: 'sidebar-heading',
-      collapsed: g.label !== releaseGroups[0]?.label,
-      items: g.items,
-    })),
+    ...releaseItems,
   ],
 
   implementationSidebar: [
