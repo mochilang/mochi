@@ -106,5 +106,23 @@
       "research/0050/testing-gates",
       "research/0050/risks-and-alternatives"
     ]
+  },
+  {
+    "label": "MEP-0051",
+    "items": [
+      "research/0051/index",
+      "research/0051/language-surface",
+      "research/0051/design-philosophy",
+      "research/0051/prior-art-transpilers",
+      "research/0051/runtime",
+      "research/0051/codegen-design",
+      "research/0051/type-lowering",
+      "research/0051/python-target-portability",
+      "research/0051/dataset-pipeline",
+      "research/0051/agent-streams",
+      "research/0051/build-system",
+      "research/0051/testing-gates",
+      "research/0051/risks-and-alternatives"
+    ]
   }
 ]

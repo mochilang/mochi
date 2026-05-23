@@ -586,5 +586,103 @@
         "docId": "research/0050/risks-and-alternatives"
       }
     ]
+  },
+  {
+    "number": 51,
+    "title": "MEP-51 research bundle: Mochi to Python transpiler",
+    "slug": "/docs/research/0051/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "MEP-51",
+        "docId": "research/0051/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "MEP-51 research note 01, Mochi language surface (Python target)",
+        "docId": "research/0051/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "MEP-51 research note 02, Design philosophy",
+        "docId": "research/0051/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "MEP-51 research note 03, Prior art and source-to-Python transpilers",
+        "docId": "research/0051/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "MEP-51 research note 04, Python runtime building blocks for mochi_runtime",
+        "docId": "research/0051/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "MEP-51 research note 05, Codegen design from aotir IR to Python source",
+        "docId": "research/0051/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "MEP-51 research note 06, Per-type lowering for Mochi to Python 3.12",
+        "docId": "research/0051/type-lowering"
+      },
+      {
+        "stem": "07-python-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "MEP-51 research note 07, Python target portability matrix",
+        "docId": "research/0051/python-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "MEP-51 research note 08, Dataset and query pipeline (Python lowering)",
+        "docId": "research/0051/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "MEP-51 research note 09, Agents and streams (asyncio lowering)",
+        "docId": "research/0051/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "MEP-51 build system: pyproject.toml, hatchling, uv, PyPI Trusted Publishing",
+        "docId": "research/0051/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "MEP-51 testing gates: per-phase fixtures, vm3 byte-equal, mypy + pyright strict, reproducibility",
+        "docId": "research/0051/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "MEP-51 risks and rejected alternatives",
+        "docId": "research/0051/risks-and-alternatives"
+      }
+    ]
   }
 ]
