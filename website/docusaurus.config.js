@@ -124,7 +124,8 @@ const config = {
             position: 'left',
           },
           {
-            to: '/docs/changelog',
+            type: 'docSidebar',
+            sidebarId: 'changelogSidebar',
             label: 'Changelog',
             position: 'left',
           },

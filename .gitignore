@@ -351,3 +351,8 @@ zig-x86_64-linux-0.15.0-dev.1147+69cf40da6/
 !tests/rosetta/transpiler/OCaml/*.error
 # Local JDK for Clojure tests
 jdk-*/
+
+# Website release docs generated from /releases by website/scripts/gen-releases.js
+website/docs/releases/
+website/src/data/releases.json
+website/src/data/release-sidebar.json
