@@ -8,6 +8,7 @@
     "gen:research": "node scripts/gen-research.js",
     "prestart": "node scripts/gen-meps.js && node scripts/gen-research.js",
     "prebuild": "node scripts/gen-meps.js && node scripts/gen-research.js",
+    "postbuild": "node scripts/check-sitemap.js",
     "start": "docusaurus start",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
@@ -22,6 +23,7 @@
     "@docusaurus/preset-classic": "^3.10.1",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
+    "gray-matter": "^4.0.3",
     "prism-react-renderer": "^2.3.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
