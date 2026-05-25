@@ -30,7 +30,7 @@ Sanitiser clean is the strongest internal correctness signal short of formal ver
 |------|--------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 16.0 | ASan clean on full corpus (aarch64-darwin). `-fsanitize=address`, `detect_leaks=0` (GC-less runtime intentionally does not free at exit). `TestPhase16ASan` gate (33 suites). | LANDED 2026-05-25 21:46 (GMT+7) | — | — |
 | 16.1 | UBSan clean on full corpus. `-fsanitize=undefined -fno-sanitize-recover=all`. `TestPhase16UBSan` gate (33 suites). | LANDED 2026-05-25 21:46 (GMT+7) | — | — |
-| 16.2 | TSan clean on streams/agents corpus                                                                                | NOT STARTED | —      | — |
+| 16.2 | TSan clean on streams/agents corpus: `TestPhase16TSan` gate runs agent/chan/method_shim/scheduler/stream suites (28 fixtures) under `-fsanitize=thread`; all clean (cooperative single-OS-thread scheduling, no actual data races) | LANDED 2026-05-26 05:05 (GMT+7) | (this PR) | — |
 | 16.3 | MSan clean on Linux (Apple-silicon MSan unsupported upstream)                                                      | LANDED 2026-05-26 00:07 (GMT+7) | — | — |
 | 16.4 | Build profile `--debug` wires sanitisers; CI nightly job runs the matrix                                           | LANDED 2026-05-25 22:46 (GMT+7) | — | — |
 
@@ -78,10 +78,20 @@ Sanitiser clean is the strongest internal correctness signal short of formal ver
 ## Deferred work
 
 - Full LeakSan clean: requires explicit free() at every exit path or a global arena. Tracked as sub-phase 16.0.1.
-- TSan clean (16.2): blocked on Phase 9 (streams/agents) landing.
+- TSan clean (16.2): LANDED. 28 fixtures across agent/chan/method_shim/scheduler/stream all clean.
 - `file_io` + `csv_adapters` MSan: deferred; clang intercepts fopen/fgets but edge-cases need verification on CI.
 - FFI MSan: requires compiling the neighbour `.c` with MSan flags too; deferred to Phase 10.1 scope.
 
+## Phase 16.2 decisions
+
+**Single OS thread, no races.** All Phase 9 concurrency primitives (fibers via `ucontext`, `chan<T>` ring buffer, `stream<T>` MPMC ring, agents, method shims) run on a single OS thread using cooperative scheduling. There are no actual data races: only one fiber executes at a time, and `mochi_fiber_yield()` provides the voluntary yield point. TSan instruments the binary correctly and reports zero races.
+
+**`tsanAvailable` probe.** Mirrors `asanAvailable` from Phase 16.0: compiles a trivial C file with `-fsanitize=thread`. Returns false (and calls `t.Skip`) on hosts where TSan is not available, rather than failing the gate.
+
+**`TSAN_OPTIONS=halt_on_error=1`.** Makes the first race report abort the binary (non-zero exit), which the runner catches as a test failure.
+
+**`runFixtureSuiteTSan` helper.** Structurally identical to `runFixtureSuiteASan` with `tsanEnv` instead of `asanEnv`. Kept as a separate helper (not parameterised further) to keep the test code readable.
+
 ## Closeout notes
 
-Sub-phases 16.0, 16.1, 16.3, and 16.4 are LANDED. Sub-phase 16.2 (TSan) is deferred, pending Phase 9 (streams/agents).
+Sub-phases 16.0, 16.1, 16.2, 16.3, and 16.4 are LANDED.
