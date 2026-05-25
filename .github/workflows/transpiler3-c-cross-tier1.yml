@@ -83,6 +83,11 @@ jobs:
           go test -vet=off -v -count=1 -timeout=300s \
             ./transpiler3/c/build/ -run TestPhase12WasmWasi
 
+      - name: Phase 12.3 - wasm32-wasi full corpus (31 suites)
+        run: |
+          go test -vet=off -v -count=1 -timeout=600s \
+            ./transpiler3/c/build/ -run TestPhase12WasmCorpus
+
   cross-macos:
     name: Tier-1 cross (macos-latest arm64)
     runs-on: macos-latest
