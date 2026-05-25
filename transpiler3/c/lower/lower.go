@@ -521,6 +521,28 @@ func buildFuncSig(records map[string]*aotir.RecordDecl, unions map[string]*aotir
 // lowerer carries the per-function scope stack, loop-depth counter,
 // and the enclosing function's return type. Mirrors the verifier's
 // verifyCtx so the same scoping / typing rules apply at lower time.
+// logicFact holds one accumulated Datalog fact (Phase 15.0).
+type logicFact struct {
+	name string   // relation name
+	args []string // argument values (string literals, unquoted)
+}
+
+// logicRule holds one accumulated Datalog rule (Phase 15.0).
+type logicRule struct {
+	headName string      // head relation name
+	headArgs []string    // head argument names (variables or quoted constants)
+	body     []logicBody // body conditions
+}
+
+// logicBody is one condition in a rule body (Phase 15.0).
+type logicBody struct {
+	isNeq bool   // true for X != Y inequalities
+	name  string // relation name (when !isNeq)
+	args  []string // argument terms (when !isNeq); variable names or quoted string literals
+	neqA  string // left variable for != (when isNeq)
+	neqB  string // right variable for != (when isNeq)
+}
+
 type lowerer struct {
 	funcs                       map[string]*funcSig
 	externFuncs                 map[string]*funcSig            // Phase 10.0: extern C function signatures
@@ -552,6 +574,11 @@ type lowerer struct {
 	// (map key: shim name, e.g. "__shim_double"). Shared across nested lowerers
 	// so that each shim is emitted exactly once per translation unit.
 	shimFuncs *map[string]bool
+	// Phase 15.0: Datalog facts and rules accumulated per lowerer (function scope).
+	// Queries against these relations generate C evaluation loops inline.
+	logicFacts     []logicFact
+	logicRules     []logicRule
+	datalogCounter int // for unique __dl_* variable names across multiple queries
 }
 
 // lscope mirrors aotir's scope: lexical frame with parent chain.
@@ -639,6 +666,12 @@ func (l *lowerer) lowerStatement(out *aotir.Block, st *parser.Statement) error {
 	case st.ExternFun != nil:
 		// Phase 10.0: extern fun declarations are collected in the pre-pass; silently skip here.
 		return nil
+	case st.Fact != nil:
+		// Phase 15.0: Datalog fact -- collect for later query evaluation.
+		return l.collectFact(st.Fact)
+	case st.Rule != nil:
+		// Phase 15.0: Datalog rule -- collect for later query evaluation.
+		return l.collectRule(st.Rule)
 	}
 	return fmt.Errorf("unsupported statement in Phase 3.1")
 }
@@ -966,6 +999,12 @@ func exprElemType(e aotir.Expr) aotir.Type {
 		return aotir.TypeString // lines() always returns list<string>
 	case *aotir.LoadCSVExpr:
 		return aotir.TypeList // loadCSV() always returns list<list<string>>
+	case *aotir.RawCExpr:
+		// Phase 15.0: Datalog query result is list<string>.
+		if v.RawType == aotir.TypeList {
+			return aotir.TypeString
+		}
+		return aotir.TypeInvalid
 	}
 	return aotir.TypeInvalid
 }
@@ -3116,6 +3155,10 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	if pr.Query != nil {
 		return l.lowerQueryExpr(pr.Query)
 	}
+	if pr.LogicQuery != nil {
+		// Phase 15.0: Datalog query expression.
+		return l.lowerLogicQuery(pr.LogicQuery)
+	}
 	return nil, fmt.Errorf("primary %s not supported in Phase 3.2%s", trimPrimary(pr), primaryPhaseHint(pr))
 }
 
@@ -5095,4 +5138,485 @@ func trimPrimary(pr *parser.Primary) string {
 		b.WriteString("unknown primary")
 	}
 	return b.String()
+}
+
+// ---- Phase 15.0: Datalog evaluation via direct C emission ----
+
+// collectFact accumulates a Datalog fact statement.
+func (l *lowerer) collectFact(f *parser.FactStmt) error {
+	if f == nil || f.Pred == nil {
+		return fmt.Errorf("collectFact: nil fact or predicate")
+	}
+	args := make([]string, len(f.Pred.Args))
+	for i, a := range f.Pred.Args {
+		if a.Str != nil {
+			args[i] = *a.Str
+		} else if a.Var != nil {
+			return fmt.Errorf("collectFact: fact argument %d must be a constant, not a variable", i)
+		} else {
+			return fmt.Errorf("collectFact: fact argument %d has unsupported type (only strings supported in Phase 15.0)", i)
+		}
+	}
+	l.logicFacts = append(l.logicFacts, logicFact{name: f.Pred.Name, args: args})
+	return nil
+}
+
+// collectRule accumulates a Datalog rule statement.
+func (l *lowerer) collectRule(r *parser.RuleStmt) error {
+	if r == nil || r.Head == nil {
+		return fmt.Errorf("collectRule: nil rule or head")
+	}
+	headArgs := make([]string, len(r.Head.Args))
+	for i, a := range r.Head.Args {
+		if a.Var != nil {
+			headArgs[i] = *a.Var
+		} else if a.Str != nil {
+			headArgs[i] = `"` + *a.Str + `"`
+		} else {
+			return fmt.Errorf("collectRule: head argument %d has unsupported type", i)
+		}
+	}
+	body := make([]logicBody, len(r.Body))
+	for i, cond := range r.Body {
+		if cond.Neq != nil {
+			body[i] = logicBody{isNeq: true, neqA: cond.Neq.A, neqB: cond.Neq.B}
+			continue
+		}
+		if cond.Pred == nil {
+			return fmt.Errorf("collectRule: body condition %d has no predicate and no neq", i)
+		}
+		bArgs := make([]string, len(cond.Pred.Args))
+		for j, a := range cond.Pred.Args {
+			if a.Var != nil {
+				bArgs[j] = *a.Var
+			} else if a.Str != nil {
+				bArgs[j] = `"` + *a.Str + `"`
+			} else {
+				return fmt.Errorf("collectRule: body condition %d arg %d has unsupported type", i, j)
+			}
+		}
+		body[i] = logicBody{name: cond.Pred.Name, args: bArgs}
+	}
+	l.logicRules = append(l.logicRules, logicRule{
+		headName: r.Head.Name,
+		headArgs: headArgs,
+		body:     body,
+	})
+	return nil
+}
+
+// cEscapeStr escapes a Go string for use in a C string literal.
+func cEscapeStr(s string) string {
+	var b strings.Builder
+	for _, c := range s {
+		switch c {
+		case '"':
+			b.WriteString(`\"`)
+		case '\\':
+			b.WriteString(`\\`)
+		case '\n':
+			b.WriteString(`\n`)
+		case '\t':
+			b.WriteString(`\t`)
+		default:
+			b.WriteRune(c)
+		}
+	}
+	return b.String()
+}
+
+// lowerLogicQuery generates C code for `query Rel(args...)`.
+// It emits a RawCStmt containing the full fixed-point evaluation loop and
+// result collection, then returns a RawCExpr referencing the result variable.
+//
+// Phase 15.0 restrictions:
+//   - All fact arguments must be string constants.
+//   - All rule body conditions use string variables.
+//   - The query predicate has exactly one free variable.
+//   - The query result is mochi_list_str.
+func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) {
+	if q == nil || q.Pred == nil {
+		return nil, fmt.Errorf("lowerLogicQuery: nil query")
+	}
+	if l.currentBlock == nil {
+		return nil, fmt.Errorf("lowerLogicQuery: currentBlock is nil")
+	}
+
+	l.datalogCounter++
+	n := l.datalogCounter
+	prefix := fmt.Sprintf("__dl%d", n)
+
+	// Collect all relation names that appear (facts or rules).
+	relNames := map[string]bool{}
+	for _, f := range l.logicFacts {
+		relNames[f.name] = true
+	}
+	for _, r := range l.logicRules {
+		relNames[r.headName] = true
+		for _, b := range r.body {
+			if !b.isNeq && b.name != "" {
+				relNames[b.name] = true
+			}
+		}
+	}
+	relNames[q.Pred.Name] = true
+
+	// Infer arity of each relation from facts.
+	arities := map[string]int{}
+	for _, f := range l.logicFacts {
+		if _, ok := arities[f.name]; !ok {
+			arities[f.name] = len(f.args)
+		}
+	}
+	// Also infer from rules.
+	for _, r := range l.logicRules {
+		if _, ok := arities[r.headName]; !ok {
+			arities[r.headName] = len(r.headArgs)
+		}
+		for _, b := range r.body {
+			if !b.isNeq {
+				if _, ok := arities[b.name]; !ok {
+					arities[b.name] = len(b.args)
+				}
+			}
+		}
+	}
+	// Infer from query pred.
+	if _, ok := arities[q.Pred.Name]; !ok {
+		arities[q.Pred.Name] = len(q.Pred.Args)
+	}
+
+	// Determine which relations are base (have facts) vs derived (only from rules).
+	baseRels := map[string]bool{}
+	for _, f := range l.logicFacts {
+		baseRels[f.name] = true
+	}
+	// Derived = appears as head of some rule but may also have base facts.
+	derivedRels := map[string]bool{}
+	for _, r := range l.logicRules {
+		derivedRels[r.headName] = true
+	}
+
+	var b strings.Builder
+	ind := "    " // base indentation for inside the block
+
+	fmt.Fprintf(&b, "/* Phase 15.0 Datalog evaluation (query #%d: %s) */\n", n, q.Pred.Name)
+	b.WriteString("{\n")
+
+	maxFacts := 4096
+
+	// Emit base fact tables (const arrays, NULL-terminated).
+	// Group facts by relation.
+	factsByRel := map[string][]logicFact{}
+	for _, f := range l.logicFacts {
+		factsByRel[f.name] = append(factsByRel[f.name], f)
+	}
+
+	// Sort relation names for deterministic output.
+	sortedRels := make([]string, 0, len(relNames))
+	for r := range relNames {
+		sortedRels = append(sortedRels, r)
+	}
+	sort.Strings(sortedRels)
+
+	for _, rel := range sortedRels {
+		arity, ok := arities[rel]
+		if !ok {
+			arity = 0
+		}
+		facts := factsByRel[rel]
+		if len(facts) > 0 && !derivedRels[rel] {
+			// Pure base relation: emit as const array.
+			fmt.Fprintf(&b, "%s/* base relation %s (arity %d) */\n", ind, rel, arity)
+			varName := fmt.Sprintf("%s_%s", prefix, rel)
+			fmt.Fprintf(&b, "%sconst char *%s[] = {\n", ind, varName)
+			for _, f := range facts {
+				b.WriteString(ind + "    ")
+				for _, a := range f.args {
+					fmt.Fprintf(&b, `"%s", `, cEscapeStr(a))
+				}
+				b.WriteString("\n")
+			}
+			fmt.Fprintf(&b, "%s    NULL\n", ind)
+			fmt.Fprintf(&b, "%s};\n", ind)
+		} else if derivedRels[rel] {
+			// Derived relation: dynamic array.
+			fmt.Fprintf(&b, "%s/* derived relation %s (arity %d) */\n", ind, rel, arity)
+			varName := fmt.Sprintf("%s_%s", prefix, rel)
+			capName := fmt.Sprintf("%s_%s_cap", prefix, rel)
+			lenName := fmt.Sprintf("%s_%s_len", prefix, rel)
+			fmt.Fprintf(&b, "%sconst char **%s = (const char **)malloc(%d * %d * sizeof(const char *));\n", ind, varName, maxFacts, arity)
+			fmt.Fprintf(&b, "%sint %s = %d;\n", ind, capName, maxFacts)
+			fmt.Fprintf(&b, "%sint %s = 0;\n", ind, lenName)
+			// Seed with base facts for this relation (if any).
+			if len(facts) > 0 {
+				for _, f := range facts {
+					for ai, a := range f.args {
+						fmt.Fprintf(&b, "%s%s[%s * %d + %d] = \"%s\";\n",
+							ind, varName, lenName, arity, ai, cEscapeStr(a))
+					}
+					fmt.Fprintf(&b, "%s%s++;\n", ind, lenName)
+				}
+			}
+		}
+	}
+
+	// Emit fixed-point loop.
+	changedVar := fmt.Sprintf("%s_changed", prefix)
+	fmt.Fprintf(&b, "%sint %s;\n", ind, changedVar)
+	fmt.Fprintf(&b, "%sdo {\n", ind)
+	fmt.Fprintf(&b, "%s    %s = 0;\n", ind, changedVar)
+
+	for ri, rule := range l.logicRules {
+		headArity := arities[rule.headName]
+		headVar := fmt.Sprintf("%s_%s", prefix, rule.headName)
+		headLen := fmt.Sprintf("%s_%s_len", prefix, rule.headName)
+		headCap := fmt.Sprintf("%s_%s_cap", prefix, rule.headName)
+
+		fmt.Fprintf(&b, "%s    /* rule %s(...) :- */\n", ind, rule.headName)
+
+		// Build nested loops for each body condition.
+		// We track loop variables for each body predicate.
+		type bodyLoop struct {
+			loopVar  string // C loop variable name (e.g., "__i0")
+			relVar   string // C array variable for the relation
+			relLen   string // length variable (for derived) or sentinel (for base)
+			arity    int
+			isDerived bool
+		}
+		loops := make([]bodyLoop, 0)
+		// envVars maps logic variable names to C expressions.
+		envVars := map[string]string{}
+
+		innerIndent := ind + "    "
+		// Open loops for each body condition.
+		for bi, bc := range rule.body {
+			if bc.isNeq {
+				// Handled as an if-check inside the innermost loop.
+				continue
+			}
+			loopVarName := fmt.Sprintf("__i%d_%d_%d", n, ri, bi)
+			bArity := arities[bc.name]
+			relC := fmt.Sprintf("%s_%s", prefix, bc.name)
+			isDer := derivedRels[bc.name]
+			lenC := fmt.Sprintf("%s_%s_len", prefix, bc.name)
+
+			if isDer {
+				fmt.Fprintf(&b, "%sfor (int %s = 0; %s < %s; %s++) {\n",
+					innerIndent, loopVarName, loopVarName, lenC, loopVarName)
+			} else {
+				// Base relation: iterate until NULL sentinel.
+				fmt.Fprintf(&b, "%sfor (int %s = 0; %s_%s[%s] != NULL; %s += %d) {\n",
+					innerIndent, loopVarName, prefix, bc.name, loopVarName, loopVarName, bArity)
+			}
+			innerIndent += "    "
+
+			// Bind variables from this body predicate.
+			for ai, barg := range bc.args {
+				isConstant := len(barg) > 0 && barg[0] == '"'
+				if isConstant {
+					// Emit a guard check.
+					constVal := barg[1 : len(barg)-1] // strip quotes
+					var access string
+					if isDer {
+						access = fmt.Sprintf("%s[%s * %d + %d]", relC, loopVarName, bArity, ai)
+					} else {
+						access = fmt.Sprintf("%s[%s + %d]", relC, loopVarName, ai)
+					}
+					fmt.Fprintf(&b, "%sif (strcmp(%s, \"%s\") != 0) continue;\n",
+						innerIndent, access, cEscapeStr(constVal))
+				} else {
+					// Variable.
+					if _, bound := envVars[barg]; !bound {
+						// New variable -- bind it.
+						var access string
+						if isDer {
+							access = fmt.Sprintf("%s[%s * %d + %d]", relC, loopVarName, bArity, ai)
+						} else {
+							access = fmt.Sprintf("%s[%s + %d]", relC, loopVarName, ai)
+						}
+						cVarName := fmt.Sprintf("__v%d_%d_%s", n, bi, barg)
+						fmt.Fprintf(&b, "%sconst char *%s = %s;\n", innerIndent, cVarName, access)
+						envVars[barg] = cVarName
+					} else {
+						// Already bound -- emit a check.
+						var access string
+						if isDer {
+							access = fmt.Sprintf("%s[%s * %d + %d]", relC, loopVarName, bArity, ai)
+						} else {
+							access = fmt.Sprintf("%s[%s + %d]", relC, loopVarName, ai)
+						}
+						fmt.Fprintf(&b, "%sif (strcmp(%s, %s) != 0) continue;\n",
+							innerIndent, access, envVars[barg])
+					}
+				}
+			}
+			loops = append(loops, bodyLoop{
+				loopVar:   loopVarName,
+				relVar:    relC,
+				relLen:    lenC,
+				arity:     bArity,
+				isDerived: isDer,
+			})
+		}
+
+		// Emit neq checks.
+		for _, bc := range rule.body {
+			if !bc.isNeq {
+				continue
+			}
+			aExpr, aOk := envVars[bc.neqA]
+			bExpr, bOk := envVars[bc.neqB]
+			if !aOk {
+				aExpr = bc.neqA
+			}
+			if !bOk {
+				bExpr = bc.neqB
+			}
+			fmt.Fprintf(&b, "%sif (strcmp(%s, %s) == 0) continue;\n", innerIndent, aExpr, bExpr)
+		}
+
+		// Emit containment check + insertion for head.
+		checkIndent := innerIndent
+		foundVar := fmt.Sprintf("__found_%d", n)
+		fmt.Fprintf(&b, "%sint %s = 0;\n", checkIndent, foundVar)
+		fmt.Fprintf(&b, "%sfor (int __ci = 0; __ci < %s; __ci++) {\n", checkIndent, headLen)
+		checkInner := checkIndent + "    "
+		// Build head values from envVars or constants.
+		headValues := make([]string, len(rule.headArgs))
+		for hi, ha := range rule.headArgs {
+			if len(ha) > 0 && ha[0] == '"' {
+				headValues[hi] = ha
+			} else if cv, ok := envVars[ha]; ok {
+				headValues[hi] = cv
+			} else {
+				headValues[hi] = `""`
+			}
+		}
+		// Emit comparison for each head arg.
+		conditions := make([]string, headArity)
+		for hi := 0; hi < headArity; hi++ {
+			conditions[hi] = fmt.Sprintf("strcmp(%s[__ci * %d + %d], %s) == 0",
+				headVar, headArity, hi, headValues[hi])
+		}
+		allCond := strings.Join(conditions, " && ")
+		if allCond == "" {
+			allCond = "1"
+		}
+		fmt.Fprintf(&b, "%sif (%s) { %s = 1; break; }\n", checkInner, allCond, foundVar)
+		fmt.Fprintf(&b, "%s}\n", checkIndent)
+		fmt.Fprintf(&b, "%sif (!%s && %s < %s) {\n", checkIndent, foundVar, headLen, headCap)
+		insertIndent := checkIndent + "    "
+		for hi, hv := range headValues {
+			fmt.Fprintf(&b, "%s%s[%s * %d + %d] = %s;\n",
+				insertIndent, headVar, headLen, headArity, hi, hv)
+		}
+		fmt.Fprintf(&b, "%s%s++;\n", insertIndent, headLen)
+		fmt.Fprintf(&b, "%s%s = 1;\n", insertIndent, changedVar)
+		fmt.Fprintf(&b, "%s}\n", checkIndent)
+
+		// Close the nested loops.
+		for range loops {
+			innerIndent = innerIndent[:len(innerIndent)-4]
+			fmt.Fprintf(&b, "%s}\n", innerIndent)
+		}
+	}
+
+	fmt.Fprintf(&b, "%s} while (%s);\n", ind, changedVar)
+
+	// Emit query: collect matching tuples into resultVar, which is declared
+	// OUTSIDE the eval block so the caller (lowerBinding) can reference it
+	// after the block closes. The outer declaration is prepended in 'code' below.
+	resultVar := fmt.Sprintf("%s_result", prefix)
+	// Do NOT declare resultVar inside the block; it's declared outside.
+
+	queryRel := q.Pred.Name
+	queryArity := arities[queryRel]
+	queryRelC := fmt.Sprintf("%s_%s", prefix, queryRel)
+	queryIsDerived := derivedRels[queryRel]
+	queryLenC := fmt.Sprintf("%s_%s_len", prefix, queryRel)
+
+	queryLoopVar := fmt.Sprintf("%s_qi", prefix)
+	if queryIsDerived {
+		fmt.Fprintf(&b, "%sfor (int %s = 0; %s < %s; %s++) {\n",
+			ind, queryLoopVar, queryLoopVar, queryLenC, queryLoopVar)
+	} else {
+		fmt.Fprintf(&b, "%sfor (int %s = 0; %s_%s[%s] != NULL; %s += %d) {\n",
+			ind, queryLoopVar, prefix, queryRel, queryLoopVar, queryLoopVar, queryArity)
+	}
+	queryInd := ind + "    "
+
+	// Identify free variables in the query predicate.
+	type queryArg struct {
+		isConst bool
+		constVal string
+		varIdx   int    // which result column this free var maps to
+		varName  string // logic variable name
+	}
+	var freeVars []queryArg
+	freeVarIdx := 0
+	queryArgDescs := make([]queryArg, len(q.Pred.Args))
+	for qi, qa := range q.Pred.Args {
+		if qa.Str != nil {
+			queryArgDescs[qi] = queryArg{isConst: true, constVal: *qa.Str}
+		} else if qa.Var != nil {
+			queryArgDescs[qi] = queryArg{varIdx: freeVarIdx, varName: *qa.Var}
+			freeVars = append(freeVars, queryArgDescs[qi])
+			freeVarIdx++
+		}
+	}
+
+	// Emit guards for constant args.
+	for qi, qa := range queryArgDescs {
+		if !qa.isConst {
+			continue
+		}
+		var access string
+		if queryIsDerived {
+			access = fmt.Sprintf("%s[%s * %d + %d]", queryRelC, queryLoopVar, queryArity, qi)
+		} else {
+			access = fmt.Sprintf("%s[%s + %d]", queryRelC, queryLoopVar, qi)
+		}
+		fmt.Fprintf(&b, "%sif (strcmp(%s, \"%s\") != 0) continue;\n",
+			queryInd, access, cEscapeStr(qa.constVal))
+	}
+
+	// Append free variable values to result.
+	for qi, qa := range queryArgDescs {
+		if qa.isConst {
+			continue
+		}
+		var access string
+		if queryIsDerived {
+			access = fmt.Sprintf("%s[%s * %d + %d]", queryRelC, queryLoopVar, queryArity, qi)
+		} else {
+			access = fmt.Sprintf("%s[%s + %d]", queryRelC, queryLoopVar, qi)
+		}
+		fmt.Fprintf(&b, "%s%s = mochi_list_str_append(%s, %s);\n",
+			queryInd, resultVar, resultVar, access)
+	}
+
+	fmt.Fprintf(&b, "%s}\n", ind)
+	b.WriteString("}\n")
+
+	// Emit the setup block as a RawCStmt.
+	if l.currentBlock == nil {
+		return nil, fmt.Errorf("lowerLogicQuery: no current block to emit into")
+	}
+
+	// We need the result variable to be declared OUTSIDE the block so the
+	// let binding can reference it. Restructure: declare result before the
+	// block, then fill it inside.
+	// Rebuild code: declare outside, fill inside.
+	var code strings.Builder
+	code.WriteString(fmt.Sprintf("mochi_list_str %s = mochi_list_str_lit(NULL, 0);\n", resultVar))
+	code.WriteString(b.String())
+
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.RawCStmt{Code: code.String()})
+
+	// Return a RawCExpr that references the result variable.
+	return &aotir.RawCExpr{
+		Code:    resultVar,
+		RawType: aotir.TypeList,
+	}, nil
 }
