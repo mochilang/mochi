@@ -2746,13 +2746,19 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 		return l.lowerStrConvertCall(call)
 	}
 	if call.Func == "int" {
-		return l.lowerIntCastCall(call)
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerIntCastCall(call)
+		}
 	}
 	if call.Func == "min" {
-		return l.lowerListMinCall(call)
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerListMinCall(call)
+		}
 	}
 	if call.Func == "max" {
-		return l.lowerListMaxCall(call)
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerListMaxCall(call)
+		}
 	}
 	// Phase 5.0: check if this is a call to a fun-typed variable in scope.
 	if b, ok := l.scope.lookup(call.Func); ok && b.t == aotir.TypeFun {
