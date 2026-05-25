@@ -61,6 +61,25 @@ func unify(a, b Type, subst Subst) bool {
 			return false
 		}
 
+	case ChanType:
+		switch bt := b.(type) {
+		case ChanType:
+			return unify(at.Elem, bt.Elem, subst)
+		case AnyType:
+			return true
+		case *TypeVar:
+			if subst != nil {
+				if val, ok := subst[bt.Name]; ok {
+					return unify(at, val, subst)
+				}
+				subst[bt.Name] = at
+				return true
+			}
+			return false
+		default:
+			return false
+		}
+
 	case OptionType:
 		switch bt := b.(type) {
 		case OptionType:

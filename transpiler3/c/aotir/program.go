@@ -423,6 +423,7 @@ type VarRef struct {
 	ValueType         Type    // valid when VarType==TypeMap
 	ListValueElemType Type    // valid when VarType==TypeMap && ValueType==TypeList (Phase 3.4e)
 	FunSig            *FunSig // valid when VarType==TypeFun (Phase 5.0)
+	ChanElemType      Type    // valid when VarType==TypeChan (Phase 9.1)
 }
 
 func (v *VarRef) Type() Type { return v.VarType }
@@ -485,6 +486,7 @@ type LetStmt struct {
 	ValueType         Type   // valid when VarType==TypeMap
 	ListValueElemType Type    // valid when VarType==TypeMap && ValueType==TypeList (Phase 3.4e)
 	FunSig            *FunSig // valid when VarType==TypeFun (Phase 5.0)
+	ChanElemType      Type    // valid when VarType==TypeChan (Phase 9.1)
 	Init              Expr
 	Mutable           bool // true for VarStmt-lowered bindings
 }
@@ -1314,3 +1316,31 @@ type RawCExpr struct {
 }
 
 func (e *RawCExpr) Type() Type { return e.RawType }
+
+// ChanMakeExpr creates a bounded ring channel with capacity Cap.
+// Type() returns TypeChan; ElemType carries the element type (Phase 9.1).
+type ChanMakeExpr struct {
+	Cap      Expr // must be TypeInt
+	ElemType Type
+}
+
+func (e *ChanMakeExpr) Type() Type { return TypeChan }
+
+// ChanSendStmt sends Val into Chan. Blocks (yields) when the channel is full.
+// ElemType carries the element type for emit-time typed-wrapper selection (Phase 9.1).
+type ChanSendStmt struct {
+	Chan     Expr // must be TypeChan
+	Val      Expr // must match ElemType
+	ElemType Type
+}
+
+func (*ChanSendStmt) isStmt() {}
+
+// ChanRecvExpr receives one value from Chan. Blocks (yields) when the channel is empty.
+// Type() returns ElemType (Phase 9.1).
+type ChanRecvExpr struct {
+	Chan     Expr // must be TypeChan
+	ElemType Type
+}
+
+func (e *ChanRecvExpr) Type() Type { return e.ElemType }

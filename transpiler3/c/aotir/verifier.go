@@ -395,6 +395,7 @@ type binding struct {
 	value        Type     // value type when t==TypeMap
 	listValElem  Type     // inner list elem when t==TypeMap && value==TypeList (Phase 3.4e)
 	funSig       *FunSig  // function signature when t==TypeFun (Phase 5.0)
+	chanElem     Type     // element type when t==TypeChan (Phase 9.1)
 }
 
 func newScope(parent *scope) *scope {
@@ -555,6 +556,23 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 			return errors.New("RawCStmt: empty Code")
 		}
 		return nil
+	case *ChanSendStmt:
+		if s.Chan == nil {
+			return errors.New("ChanSendStmt: nil Chan")
+		}
+		if s.Chan.Type() != TypeChan {
+			return fmt.Errorf("ChanSendStmt: Chan must be TypeChan, got %s", s.Chan.Type())
+		}
+		if s.Val == nil {
+			return errors.New("ChanSendStmt: nil Val")
+		}
+		if s.Val.Type() != s.ElemType {
+			return fmt.Errorf("ChanSendStmt: Val type %s != ElemType %s", s.Val.Type(), s.ElemType)
+		}
+		if err := verifyExprCtx(ctx, s.Chan); err != nil {
+			return fmt.Errorf("ChanSendStmt Chan: %w", err)
+		}
+		return verifyExprCtx(ctx, s.Val)
 	}
 	return fmt.Errorf("unhandled Stmt %T", st)
 }
@@ -742,7 +760,14 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 			return fmt.Errorf("let %q: ListValueElemType set on non-map type %s", s.Name, s.VarType)
 		}
 	}
-	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, union: s.UnionName, elem: s.ElemType, elemRec: s.ElemRecordName, mapElemKey: s.MapElemKeyType, mapElemValue: s.MapElemValueType, key: s.KeyType, value: s.ValueType, listValElem: s.ListValueElemType, funSig: s.FunSig}
+	if s.VarType == TypeChan {
+		if s.ChanElemType == TypeInvalid {
+			return fmt.Errorf("let %q: chan binding missing ChanElemType", s.Name)
+		}
+	} else if s.ChanElemType != TypeInvalid {
+		return fmt.Errorf("let %q: ChanElemType set on non-chan type %s", s.Name, s.VarType)
+	}
+	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, union: s.UnionName, elem: s.ElemType, elemRec: s.ElemRecordName, mapElemKey: s.MapElemKeyType, mapElemValue: s.MapElemValueType, key: s.KeyType, value: s.ValueType, listValElem: s.ListValueElemType, funSig: s.FunSig, chanElem: s.ChanElemType}
 	return nil
 }
 
@@ -1501,6 +1526,9 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 				return fmt.Errorf("variable %q has map<_,list<%s>> in scope, ref says map<_,list<%s>>", v.Name, b.listValElem, v.ListValueElemType)
 			}
 		}
+		if b.t == TypeChan && v.ChanElemType != b.chanElem {
+			return fmt.Errorf("variable %q has chan<%s> in scope, ref says chan<%s>", v.Name, b.chanElem, v.ChanElemType)
+		}
 		return nil
 	case *RecordLit:
 		return verifyRecordLit(ctx, v)
@@ -2018,6 +2046,28 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("unary %v result %s does not match expected %s", v.Op, v.Result, res)
 		}
 		return nil
+	case *ChanMakeExpr:
+		if v.Cap == nil {
+			return errors.New("ChanMakeExpr: nil Cap")
+		}
+		if v.Cap.Type() != TypeInt {
+			return fmt.Errorf("ChanMakeExpr: Cap must be TypeInt, got %s", v.Cap.Type())
+		}
+		if v.ElemType == TypeInvalid {
+			return errors.New("ChanMakeExpr: ElemType is TypeInvalid")
+		}
+		return verifyExprCtx(ctx, v.Cap)
+	case *ChanRecvExpr:
+		if v.Chan == nil {
+			return errors.New("ChanRecvExpr: nil Chan")
+		}
+		if v.Chan.Type() != TypeChan {
+			return fmt.Errorf("ChanRecvExpr: Chan must be TypeChan, got %s", v.Chan.Type())
+		}
+		if v.ElemType == TypeInvalid {
+			return errors.New("ChanRecvExpr: ElemType is TypeInvalid")
+		}
+		return verifyExprCtx(ctx, v.Chan)
 	default:
 		return fmt.Errorf("unhandled Expr %T", e)
 	}

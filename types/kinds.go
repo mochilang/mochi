@@ -68,6 +68,14 @@ type OptionType struct {
 
 func (t OptionType) String() string { return fmt.Sprintf("option[%s]", t.Elem.String()) }
 
+// ChanType is a bounded point-to-point channel carrying elements of Elem.
+// Phase 9.1: chan<T> lowered to mochi_chan_t* with typed send/recv helpers.
+type ChanType struct {
+	Elem Type
+}
+
+func (t ChanType) String() string { return fmt.Sprintf("chan<%s>", t.Elem.String()) }
+
 type GroupType struct {
 	Key  Type
 	Elem Type

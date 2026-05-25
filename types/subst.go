@@ -42,6 +42,8 @@ func (sub Subst) Apply(t Type) Type {
 		return ListType{Elem: sub.Apply(v.Elem)}
 	case MapType:
 		return MapType{Key: sub.Apply(v.Key), Value: sub.Apply(v.Value)}
+	case ChanType:
+		return ChanType{Elem: sub.Apply(v.Elem)}
 	case OptionType:
 		return OptionType{Elem: sub.Apply(v.Elem)}
 	case GroupType:
@@ -231,6 +233,12 @@ func unifyInto(a, b Type, sub Subst) error {
 			return err
 		}
 		return unifyInto(av.Value, bv.Value, sub)
+	case ChanType:
+		bv, ok := b.(ChanType)
+		if !ok {
+			return mismatch(a, b)
+		}
+		return unifyInto(av.Elem, bv.Elem, sub)
 	case OptionType:
 		bv, ok := b.(OptionType)
 		if !ok {

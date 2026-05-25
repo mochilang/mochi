@@ -601,6 +601,7 @@ type lbinding struct {
 	value        aotir.Type    // value type when t==TypeMap
 	listValElem  aotir.Type    // inner list elem when t==TypeMap && value==TypeList (Phase 3.4e)
 	funSig       *aotir.FunSig // function signature when t==TypeFun (Phase 5.0)
+	chanElem     aotir.Type    // element type when t==TypeChan (Phase 9.1)
 	// emitName overrides the C identifier emitted for this variable when
 	// non-empty. Used by Phase 5.1 capturing closures to make captured
 	// variables emit as `__e->fieldname` instead of the original name.
@@ -697,6 +698,10 @@ func (l *lowerer) lowerExprStmt(out *aotir.Block, es *parser.ExprStmt) error {
 	// Phase 7.3: panic(code, msg) lowers to mochi_raise.
 	if call.Func == "panic" {
 		return l.lowerPanicCall(out, call)
+	}
+	// Phase 9.1: send(ch, val) lowers to a ChanSendStmt.
+	if call.Func == "send" {
+		return l.lowerSendCall(out, call)
 	}
 	// Phase 6.5: file I/O void calls.
 	if call.Func == "writeFile" {
@@ -901,6 +906,27 @@ func isEmptyMapLit(e *parser.Expr) bool {
 	}
 	ml := u.Value.Target.Map
 	return ml != nil && len(ml.Items) == 0
+}
+
+// isMakeChanCall reports whether e is a bare `make_chan(N)` call with
+// exactly one argument. Used by lowerBinding for the Phase 9.1 typed-chan
+// fast path (`let ch: chan<T> = make_chan(N)`).
+func isMakeChanCall(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return false
+	}
+	c := u.Value.Target.Call
+	return c != nil && c.Func == "make_chan" && len(c.Args) == 1
+}
+
+// makeChanCallArg extracts the single capacity argument from a make_chan call.
+// Callers must call isMakeChanCall first.
+func makeChanCallArg(e *parser.Expr) *parser.Expr {
+	return e.Binary.Left.Value.Target.Call.Args[0]
 }
 
 // exprRecordName extracts the record-name identity of a record-typed
@@ -1204,6 +1230,35 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 			})
 			return nil
 		}
+		// Phase 9.1: `let ch: chan<T> = make_chan(N)` fast path.
+		// The declared annotation supplies the element type; the init call
+		// must be exactly make_chan with a single integer argument.
+		if isMakeChanCall(init) {
+			tr, err := typeFromRef(l.records, l.unions, declared)
+			if err != nil {
+				return fmt.Errorf("binding %q type: %w", name, err)
+			}
+			if tr.t != aotir.TypeChan {
+				return fmt.Errorf("binding %q: make_chan() requires chan<T> annotation, got %s", name, tr.t)
+			}
+			capExpr, err := l.lowerExpr(makeChanCallArg(init))
+			if err != nil {
+				return fmt.Errorf("binding %q make_chan cap: %w", name, err)
+			}
+			if capExpr.Type() != aotir.TypeInt {
+				return fmt.Errorf("binding %q make_chan: capacity must be int, got %s", name, capExpr.Type())
+			}
+			chanExpr := &aotir.ChanMakeExpr{Cap: capExpr, ElemType: tr.chanElem}
+			l.scope.vars[name] = lbinding{t: aotir.TypeChan, mutable: mutable, chanElem: tr.chanElem}
+			out.Statements = append(out.Statements, &aotir.LetStmt{
+				Name:         name,
+				VarType:      aotir.TypeChan,
+				ChanElemType: tr.chanElem,
+				Init:         chanExpr,
+				Mutable:      mutable,
+			})
+			return nil
+		}
 	}
 
 	value, err := l.lowerExpr(init)
@@ -1238,6 +1293,8 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	declUnion := exprUnionName(value)
 	// Phase 5.0: declFunSig carries the fun signature when declType==TypeFun.
 	declFunSig := exprFunSig(value)
+	// Phase 9.1: declChanElem carries the element type when declType==TypeChan.
+	declChanElem := exprChanElemType(value)
 	if declared != nil {
 		tr, err := typeFromRef(l.records, l.unions, declared)
 		if err != nil {
@@ -1294,6 +1351,9 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		if tr.funSig != nil {
 			declFunSig = tr.funSig
 		}
+		if tr.chanElem != aotir.TypeInvalid {
+			declChanElem = tr.chanElem
+		}
 	}
 	l.scope.vars[name] = lbinding{
 		t:            declType,
@@ -1309,6 +1369,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		value:        declValue,
 		listValElem:  declListValElem,
 		funSig:       declFunSig,
+		chanElem:     declChanElem,
 	}
 	out.Statements = append(out.Statements, &aotir.LetStmt{
 		Name:              name,
@@ -1324,6 +1385,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		ValueType:         declValue,
 		ListValueElemType: declListValElem,
 		FunSig:            declFunSig,
+		ChanElemType:      declChanElem,
 		Init:              value,
 		Mutable:           mutable,
 	})
@@ -1749,6 +1811,52 @@ func (l *lowerer) lowerPanicCall(out *aotir.Block, call *parser.CallExpr) error 
 	return nil
 }
 
+// lowerSendCall lowers `send(ch, val)` to a ChanSendStmt. Phase 9.1.
+func (l *lowerer) lowerSendCall(out *aotir.Block, call *parser.CallExpr) error {
+	if len(call.Args) != 2 {
+		return fmt.Errorf("send() takes exactly 2 arguments (chan, value), got %d", len(call.Args))
+	}
+	chanExpr, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return fmt.Errorf("send chan: %w", err)
+	}
+	if chanExpr.Type() != aotir.TypeChan {
+		return fmt.Errorf("send: first argument must be chan<T>, got %s", chanExpr.Type())
+	}
+	elem := exprChanElemType(chanExpr)
+	if elem == aotir.TypeInvalid {
+		return fmt.Errorf("send: cannot determine element type of channel")
+	}
+	valExpr, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return fmt.Errorf("send value: %w", err)
+	}
+	if valExpr.Type() != elem {
+		return fmt.Errorf("send: channel element type is %s, value is %s", elem, valExpr.Type())
+	}
+	out.Statements = append(out.Statements, &aotir.ChanSendStmt{Chan: chanExpr, Val: valExpr, ElemType: elem})
+	return nil
+}
+
+// lowerRecvCall lowers `recv(ch)` to a ChanRecvExpr. Phase 9.1.
+func (l *lowerer) lowerRecvCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("recv() takes exactly 1 argument (chan), got %d", len(call.Args))
+	}
+	chanExpr, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("recv chan: %w", err)
+	}
+	if chanExpr.Type() != aotir.TypeChan {
+		return nil, fmt.Errorf("recv: argument must be chan<T>, got %s", chanExpr.Type())
+	}
+	elem := exprChanElemType(chanExpr)
+	if elem == aotir.TypeInvalid {
+		return nil, fmt.Errorf("recv: cannot determine element type of channel")
+	}
+	return &aotir.ChanRecvExpr{Chan: chanExpr, ElemType: elem}, nil
+}
+
 // lowerReturn lowers a `return` statement. From main (unit return)
 // only a bare `return` is legal; from a user fn with non-unit return
 // the value expression is required and type-checked against the
@@ -1861,6 +1969,7 @@ type typeResolution struct {
 	value        aotir.Type
 	listValElem  aotir.Type    // valid when t==TypeMap && value==TypeList (Phase 3.4e)
 	funSig       *aotir.FunSig // valid when t==TypeFun (Phase 5.0)
+	chanElem     aotir.Type    // valid when t==TypeChan (Phase 9.1)
 }
 
 // typeFromRef maps a parser.TypeRef to a typeResolution. Phase 3.2
@@ -1944,6 +2053,20 @@ func typeFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.
 				return typeResolution{}, err
 			}
 			return typeResolution{t: aotir.TypeMap, key: key, value: value, listValElem: listValElem}, nil
+		case "chan":
+			if len(ref.Generic.Args) != 1 {
+				return typeResolution{}, fmt.Errorf("chan<T> takes exactly one type argument, got %d", len(ref.Generic.Args))
+			}
+			inner, err := typeFromRef(records, unions, ref.Generic.Args[0])
+			if err != nil {
+				return typeResolution{}, fmt.Errorf("chan element: %w", err)
+			}
+			switch inner.t {
+			case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+			default:
+				return typeResolution{}, fmt.Errorf("chan<T>: element type %s not supported in Phase 9.1 (scalar types only)", inner.t)
+			}
+			return typeResolution{t: aotir.TypeChan, chanElem: inner.t}, nil
 		}
 		return typeResolution{}, fmt.Errorf("generic type %q not supported in Phase 3.2", ref.Generic.Name)
 	}
@@ -2078,6 +2201,20 @@ func exprFunSig(e aotir.Expr) *aotir.FunSig {
 		}
 	}
 	return nil
+}
+
+// exprChanElemType extracts the element type of a chan-typed aotir expression.
+// Phase 9.1 node coverage: ChanMakeExpr, VarRef{TypeChan}.
+func exprChanElemType(e aotir.Expr) aotir.Type {
+	switch v := e.(type) {
+	case *aotir.ChanMakeExpr:
+		return v.ElemType
+	case *aotir.VarRef:
+		if v.VarType == aotir.TypeChan {
+			return v.ChanElemType
+		}
+	}
+	return aotir.TypeInvalid
 }
 
 // printCalleeFor picks the runtime print entry for an argument
@@ -3124,6 +3261,7 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 				KeyType:           b.key,
 				ValueType:         b.value,
 				ListValueElemType: b.listValElem,
+				ChanElemType:      b.chanElem,
 			}
 		}
 		for _, field := range pr.Selector.Tail {
@@ -3531,6 +3669,12 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	if call.Func == "ceil" {
 		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
 			return l.lowerCeilCall(call)
+		}
+	}
+	// Phase 9.1: recv(ch) lowers to a ChanRecvExpr.
+	if call.Func == "recv" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerRecvCall(call)
 		}
 	}
 	// Phase 5.0: check if this is a call to a fun-typed variable in scope.
