@@ -1881,6 +1881,34 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 				fc.emit(p.Pos, Instr{Op: OpCallV, A: dst, B: reg, C: len(regs), D: start})
 				return dst
 			}
+			// Union variant constructor with fields: Foo(x, y) → {"__name": "Foo", field0: x, ...}
+			if _, ok := fc.comp.env.FindUnionByVariant(p.Call.Func); ok {
+				if st, ok2 := fc.comp.env.GetStruct(p.Call.Func); ok2 && len(p.Call.Args) > 0 {
+					argVals := make([]int, len(p.Call.Args))
+					for i, arg := range p.Call.Args {
+						argVals[i] = fc.compileExpr(arg)
+					}
+					nPairs := 1 + len(p.Call.Args)
+					mapRegs := make([]int, nPairs*2)
+					nameKey := fc.freshConst(p.Pos, Value{Tag: ValueStr, Str: "__name"})
+					nameVal := fc.freshConst(p.Pos, Value{Tag: ValueStr, Str: p.Call.Func})
+					mapRegs[0] = nameKey
+					mapRegs[1] = nameVal
+					for i, name := range st.FieldNames() {
+						if i >= len(p.Call.Args) {
+							break
+						}
+						kreg := fc.freshConst(p.Pos, Value{Tag: ValueStr, Str: name})
+						vreg := fc.newReg()
+						fc.emit(p.Pos, Instr{Op: OpMove, A: vreg, B: argVals[i]})
+						mapRegs[i*2+2] = kreg
+						mapRegs[i*2+3] = vreg
+					}
+					dst := fc.newReg()
+					fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: nPairs, C: mapRegs[0]})
+					return dst
+				}
+			}
 		}
 	}
 

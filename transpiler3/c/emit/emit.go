@@ -79,6 +79,10 @@ func Emit(prog *aotir.Program) (string, error) {
 		return "", err
 	}
 
+	if err := emitUnionDecls(&b, prog.Unions); err != nil {
+		return "", err
+	}
+
 	if err := emitListRecordHelpers(&b, listRecNames); err != nil {
 		return "", err
 	}
@@ -162,7 +166,11 @@ func Emit(prog *aotir.Program) (string, error) {
 // definitions. Keeping the two in lockstep avoids drift between
 // prototype and definition.
 func emitFunctionPrototype(fn *aotir.Function) (string, error) {
-	ret, err := cReturnType(fn.ReturnType, fn.ReturnRecordName, fn.ReturnElemType, fn.ReturnElemRecordName, fn.ReturnInnerElemType, fn.ReturnMapElemKeyType, fn.ReturnMapElemValueType, fn.ReturnKeyType, fn.ReturnValueType, fn.ReturnListValueElemType)
+	retRecOrUnion := fn.ReturnRecordName
+	if fn.ReturnType == aotir.TypeUnion {
+		retRecOrUnion = fn.ReturnUnionName
+	}
+	ret, err := cReturnType(fn.ReturnType, retRecOrUnion, fn.ReturnElemType, fn.ReturnElemRecordName, fn.ReturnInnerElemType, fn.ReturnMapElemKeyType, fn.ReturnMapElemValueType, fn.ReturnKeyType, fn.ReturnValueType, fn.ReturnListValueElemType)
 	if err != nil {
 		return "", fmt.Errorf("function %q return: %w", fn.Name, err)
 	}
@@ -175,7 +183,11 @@ func emitFunctionPrototype(fn *aotir.Function) (string, error) {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			pt, err := cTypeFull(p.Type, p.RecordName, p.ElemType, p.ElemRecordName, p.InnerElemType, p.MapElemKeyType, p.MapElemValueType, p.KeyType, p.ValueType, p.ListValueElemType)
+			recOrUnion := p.RecordName
+			if p.Type == aotir.TypeUnion {
+				recOrUnion = p.UnionName
+			}
+			pt, err := cTypeFull(p.Type, recOrUnion, p.ElemType, p.ElemRecordName, p.InnerElemType, p.MapElemKeyType, p.MapElemValueType, p.KeyType, p.ValueType, p.ListValueElemType)
 			if err != nil {
 				return "", fmt.Errorf("function %q param %q: %w", fn.Name, p.Name, err)
 			}
@@ -259,9 +271,23 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		b.WriteString(");\n")
 		return nil
 	case *aotir.LetStmt:
-		ts, err := cTypeFull(s.VarType, s.RecordName, s.ElemType, s.ElemRecordName, s.InnerElemType, s.MapElemKeyType, s.MapElemValueType, s.KeyType, s.ValueType, s.ListValueElemType)
+		// For TypeUnion, recName carries the union name (not a record name).
+		recOrUnion := s.RecordName
+		if s.VarType == aotir.TypeUnion {
+			recOrUnion = s.UnionName
+		}
+		ts, err := cTypeFull(s.VarType, recOrUnion, s.ElemType, s.ElemRecordName, s.InnerElemType, s.MapElemKeyType, s.MapElemValueType, s.KeyType, s.ValueType, s.ListValueElemType)
 		if err != nil {
 			return fmt.Errorf("let %q: %w", s.Name, err)
+		}
+		if s.Init == nil {
+			// Result-var pre-declaration from match expression lowering.
+			b.WriteString(indent)
+			if !s.Mutable {
+				b.WriteString("const ")
+			}
+			fmt.Fprintf(b, "%s %s;\n", ts, s.Name)
+			return nil
 		}
 		init, err := emitExpr(s.Init)
 		if err != nil {
@@ -273,6 +299,8 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		}
 		fmt.Fprintf(b, "%s %s = %s;\n", ts, s.Name, init)
 		return nil
+	case *aotir.MatchStmt:
+		return emitMatchStmt(b, s, indent)
 	case *aotir.AssignStmt:
 		val, err := emitExpr(s.Value)
 		if err != nil {
@@ -459,7 +487,22 @@ func cTypeWithRec(t aotir.Type, recName string) (string, error) {
 		}
 		return cRecordTypeName(recName), nil
 	}
+	if t == aotir.TypeUnion {
+		if recName == "" {
+			return "", fmt.Errorf("TypeUnion without UnionName")
+		}
+		return cUnionTypeName(recName), nil
+	}
 	return cType(t)
+}
+
+// cUnionTypeName returns the C struct typedef name for a Mochi union.
+// Convention: `pkg_<Name>` (matches MEP-45 §4 emit spec).
+func cUnionTypeName(name string) string { return "pkg_" + name }
+
+// cUnionCtorName returns the inline constructor name for one variant.
+func cUnionCtorName(unionName, variantName string) string {
+	return "pkg_" + unionName + "_" + variantName
 }
 
 // cTypeFull extends cTypeWithRec with TypeList and TypeMap support.
@@ -1834,6 +1877,12 @@ func emitExpr(e aotir.Expr) (string, error) {
 		return emitMapKeysExpr(v)
 	case *aotir.MapValuesExpr:
 		return emitMapValuesExpr(v)
+	case *aotir.VariantLit:
+		return emitVariantLit(v)
+	case *aotir.UnionVarRef:
+		return v.Name, nil
+	case *aotir.VariantFieldAccess:
+		return emitVariantFieldAccess(v)
 	default:
 		return "", fmt.Errorf("transpiler3/c/emit: unhandled Expr %T", e)
 	}
@@ -2236,6 +2285,192 @@ func fieldEqExpr(f aotir.RecordField, a, b string) (string, error) {
 		return "mochi_eq_" + f.RecordName + "(" + la + ", " + lb + ")", nil
 	}
 	return "", fmt.Errorf("no eq for field type %s", f.Type)
+}
+
+// ---- Phase 4: sum-type + match emit ----
+
+// emitUnionDecls renders a typedef struct for each union in source
+// order, followed by per-variant inline constructor functions.
+//
+// C layout (MEP-45 §4):
+//
+//	typedef struct pkg_Shape {
+//	    uint8_t tag;
+//	    union { struct { int64_t r; } Circle; ... } u;
+//	} pkg_Shape;
+//	static inline pkg_Shape pkg_Shape_Circle(int64_t r) { ... }
+func emitUnionDecls(b *strings.Builder, unions []*aotir.UnionDecl) error {
+	if len(unions) == 0 {
+		return nil
+	}
+	for _, u := range unions {
+		cName := cUnionTypeName(u.Name)
+		fmt.Fprintf(b, "typedef struct %s {\n    uint8_t tag;\n    union {\n", cName)
+		for _, v := range u.Variants {
+			if len(v.Fields) == 0 {
+				fmt.Fprintf(b, "        struct { char __pad; } %s;\n", v.Name)
+			} else {
+				fmt.Fprintf(b, "        struct {\n")
+				for _, f := range v.Fields {
+					ct, err := variantFieldCType(f)
+					if err != nil {
+						return fmt.Errorf("union %q variant %q field %q: %w", u.Name, v.Name, f.Name, err)
+					}
+					fmt.Fprintf(b, "            %s %s;\n", ct, f.Name)
+				}
+				fmt.Fprintf(b, "        } %s;\n", v.Name)
+			}
+		}
+		fmt.Fprintf(b, "    } u;\n} %s;\n\n", cName)
+
+		// Per-variant inline constructors.
+		for _, v := range u.Variants {
+			ctorName := cUnionCtorName(u.Name, v.Name)
+			if len(v.Fields) == 0 {
+				fmt.Fprintf(b, "static inline %s %s(void) { %s __v; __v.tag = %d; return __v; }\n",
+					cName, ctorName, cName, v.Tag)
+			} else {
+				// Build param list.
+				var params strings.Builder
+				for i, f := range v.Fields {
+					if i > 0 {
+						params.WriteString(", ")
+					}
+					ct, err := variantFieldCType(f)
+					if err != nil {
+						return fmt.Errorf("union %q ctor %q param %q: %w", u.Name, v.Name, f.Name, err)
+					}
+					fmt.Fprintf(&params, "%s %s", ct, f.Name)
+				}
+				fmt.Fprintf(b, "static inline %s %s(%s) {\n    %s __v;\n    __v.tag = %d;\n",
+					cName, ctorName, params.String(), cName, v.Tag)
+				for _, f := range v.Fields {
+					fmt.Fprintf(b, "    __v.u.%s.%s = %s;\n", v.Name, f.Name, f.Name)
+				}
+				fmt.Fprintf(b, "    return __v;\n}\n")
+			}
+		}
+		b.WriteString("\n")
+	}
+	return nil
+}
+
+// variantFieldCType returns the C type for one variant field.
+// Phase 4.0 restricts to scalar primitives.
+func variantFieldCType(f aotir.VariantField) (string, error) {
+	switch f.FieldType {
+	case aotir.TypeInt:
+		return "int64_t", nil
+	case aotir.TypeFloat:
+		return "double", nil
+	case aotir.TypeBool:
+		return "int", nil
+	case aotir.TypeString:
+		return "const char *", nil
+	case aotir.TypeRecord:
+		if f.RecordName == "" {
+			return "", fmt.Errorf("record-typed field missing RecordName")
+		}
+		return cRecordTypeName(f.RecordName), nil
+	}
+	return "", fmt.Errorf("unsupported variant field type %s in Phase 4.0", f.FieldType)
+}
+
+// emitVariantLit renders `pkg_U_Ctor(arg0, arg1, ...)` for a VariantLit
+// with fields, or `pkg_U_Ctor()` for a unit variant.
+func emitVariantLit(v *aotir.VariantLit) (string, error) {
+	var b strings.Builder
+	fmt.Fprintf(&b, "%s(", cUnionCtorName(v.UnionName, v.VariantName))
+	for i, f := range v.Fields {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		es, err := emitExpr(f.Value)
+		if err != nil {
+			return "", fmt.Errorf("variant %q field %q: %w", v.VariantName, f.Name, err)
+		}
+		b.WriteString(es)
+	}
+	b.WriteString(")")
+	return b.String(), nil
+}
+
+// emitVariantFieldAccess renders `val.u.VariantName.FieldName`.
+func emitVariantFieldAccess(v *aotir.VariantFieldAccess) (string, error) {
+	recv, err := emitExpr(v.Receiver)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("(%s).u.%s.%s", recv, v.VariantName, v.FieldName), nil
+}
+
+// emitMatchStmt renders a Mochi `match` as a C `switch` on the tag.
+// When s.ResultVar is non-empty the caller has already pre-declared
+// a mutable variable; each arm assigns into it.
+// Each match is wrapped in its own {} block so that multiple matches
+// on the same union type in the same scope don't collide on the
+// __mochi_match_<Union> local name.
+func emitMatchStmt(b *strings.Builder, s *aotir.MatchStmt, indent string) error {
+	targetC, err := emitExpr(s.Target)
+	if err != nil {
+		return fmt.Errorf("match target: %w", err)
+	}
+	innerIndent := indent + "    "
+	armBodyIndent := indent + "        "
+
+	// Wrap in a block so the target local doesn't leak or collide.
+	fmt.Fprintf(b, "%s{\n", indent)
+
+	// Bind the target to a const local so it's evaluated once.
+	cName := cUnionTypeName(s.UnionName)
+	targetVar := "__mochi_match_" + s.UnionName
+	fmt.Fprintf(b, "%s    const %s %s = %s;\n", indent, cName, targetVar, targetC)
+	fmt.Fprintf(b, "%s    switch (%s.tag) {\n", indent, targetVar)
+
+	emitArm := func(arm *aotir.MatchArm, isDefault bool) error {
+		if isDefault {
+			fmt.Fprintf(b, "%sdefault: {\n", innerIndent)
+		} else {
+			fmt.Fprintf(b, "%scase %d: {\n", innerIndent, arm.Tag)
+		}
+		// Emit field bindings.
+		for _, bind := range arm.Bindings {
+			ct, err := variantFieldCType(aotir.VariantField{Name: bind.FieldName, FieldType: bind.FieldType, RecordName: bind.RecordName})
+			if err != nil {
+				return fmt.Errorf("arm %q binding %q: %w", arm.VariantName, bind.VarName, err)
+			}
+			// Avoid emitting "const const char *": only prefix const when the
+			// type string does not already start with "const " (e.g. TypeString).
+			if strings.HasPrefix(ct, "const ") {
+				fmt.Fprintf(b, "%s%s %s = %s.u.%s.%s;\n",
+					armBodyIndent, ct, bind.VarName, targetVar, arm.VariantName, bind.FieldName)
+			} else {
+				fmt.Fprintf(b, "%sconst %s %s = %s.u.%s.%s;\n",
+					armBodyIndent, ct, bind.VarName, targetVar, arm.VariantName, bind.FieldName)
+			}
+		}
+		// Emit arm body.
+		if err := emitBlock(b, arm.Body, armBodyIndent); err != nil {
+			return err
+		}
+		fmt.Fprintf(b, "%sbreak;\n", armBodyIndent)
+		fmt.Fprintf(b, "%s}\n", innerIndent)
+		return nil
+	}
+
+	for i := range s.Arms {
+		if err := emitArm(&s.Arms[i], false); err != nil {
+			return fmt.Errorf("match arm %d: %w", i, err)
+		}
+	}
+	if s.Default != nil {
+		if err := emitArm(s.Default, true); err != nil {
+			return fmt.Errorf("match default arm: %w", err)
+		}
+	}
+	fmt.Fprintf(b, "%s    }\n", indent) // close switch
+	fmt.Fprintf(b, "%s}\n", indent)     // close outer block
+	return nil
 }
 
 // emitCallExpr renders a value-producing call to a user-defined
