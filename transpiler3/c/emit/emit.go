@@ -81,6 +81,11 @@ func Emit(prog *aotir.Program) (string, error) {
 	}
 	b.WriteString("\n")
 
+	// Phase 10.0: emit extern C function declarations.
+	if err := emitExternFuncDecls(&b, prog); err != nil {
+		return "", err
+	}
+
 	if err := emitRecordDecls(&b, prog.Records); err != nil {
 		return "", err
 	}
@@ -607,6 +612,42 @@ func emitBlock(b *strings.Builder, blk *aotir.Block, indent string) error {
 			return err
 		}
 	}
+	return nil
+}
+
+// emitExternFuncDecls writes `extern <ctype> <name>(<params>);` for each
+// ExternFuncDecl in prog. Phase 10.0.
+func emitExternFuncDecls(b *strings.Builder, prog *aotir.Program) error {
+	if len(prog.ExternFuncs) == 0 {
+		return nil
+	}
+	for _, ef := range prog.ExternFuncs {
+		retC, err := cType(ef.ReturnType)
+		if err != nil {
+			// TypeUnit returns void.
+			if ef.ReturnType == aotir.TypeUnit {
+				retC = "void"
+			} else {
+				return fmt.Errorf("emitExternFuncDecls: %q return type: %w", ef.Name, err)
+			}
+		}
+		var params []string
+		for _, p := range ef.Params {
+			pc, err := cType(p.Type)
+			if err != nil {
+				return fmt.Errorf("emitExternFuncDecls: %q param %q: %w", ef.Name, p.Name, err)
+			}
+			params = append(params, pc+" "+p.Name)
+		}
+		b.WriteString("extern ")
+		b.WriteString(retC)
+		b.WriteString(" ")
+		b.WriteString(ef.Name)
+		b.WriteString("(")
+		b.WriteString(strings.Join(params, ", "))
+		b.WriteString(");\n")
+	}
+	b.WriteString("\n")
 	return nil
 }
 

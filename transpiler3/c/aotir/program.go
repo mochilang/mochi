@@ -29,6 +29,22 @@ type Program struct {
 	// Phase 4.0 adds this; emit walks it to write the tagged-union
 	// C struct and per-variant constructor inlines.
 	Unions []*UnionDecl
+
+	// ExternFuncs lists C extern function declarations in source order.
+	// Phase 10.0 adds this; emit walks it to write `extern <ctype> <name>(...);`
+	// declarations in the generated C prologue.
+	ExternFuncs []*ExternFuncDecl
+}
+
+// ExternFuncDecl describes a C extern function declaration. Phase 10.0.
+// The lowerer populates this from `extern fun` declarations in the source;
+// the emitter renders each entry as `extern <ReturnType> <Name>(<params>);`.
+type ExternFuncDecl struct {
+	Name       string
+	Params     []Param
+	ReturnType Type
+	// ReturnRecord carries the record identity when ReturnType==TypeRecord.
+	ReturnRecord string
 }
 
 // RecordDecl declares one record type. Field order is source

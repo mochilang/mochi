@@ -100,6 +100,66 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		}
 	}
 
+	// Phase 10.0 pre-pass: collect every `extern fun` declaration and build
+	// its funcSig so that body lowering can resolve calls to extern functions.
+	// The C name uses dots replaced by underscores (e.g. "math.sin" -> "math_sin").
+	externFuncs := map[string]*funcSig{}
+	for i, st := range prog.Statements {
+		if st == nil || st.ExternFun == nil {
+			continue
+		}
+		ef := st.ExternFun
+		mochiName := ef.Name() // may contain dots for dotted names
+		cName := strings.ReplaceAll(mochiName, ".", "_")
+		if _, dup := externFuncs[cName]; dup {
+			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: redeclaration of extern fun %q", i, cName)
+		}
+		// Resolve param types.
+		params := make([]aotir.Param, 0, len(ef.Params))
+		seen := map[string]bool{}
+		for j, p := range ef.Params {
+			if p.Name == "" {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern fun %q param %d has empty name", cName, j)
+			}
+			if seen[p.Name] {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern fun %q duplicate parameter %q", cName, p.Name)
+			}
+			seen[p.Name] = true
+			if p.Type == nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern fun %q param %q requires an explicit `: T` type", cName, p.Name)
+			}
+			pTR, err := typeFromRef(records, unions, p.Type)
+			if err != nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern fun %q param %q: %w", cName, p.Name, err)
+			}
+			params = append(params, aotir.Param{
+				Name:       p.Name,
+				Type:       pTR.t,
+				RecordName: pTR.rec,
+			})
+		}
+		// Resolve return type.
+		var retTR typeResolution
+		if ef.Return != nil {
+			var err error
+			retTR, err = typeFromRef(records, unions, ef.Return)
+			if err != nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern fun %q return: %w", cName, err)
+			}
+		}
+		externFuncs[cName] = &funcSig{
+			params:     params,
+			returnType: retTR.t,
+		}
+		// Also populate out.ExternFuncs.
+		out.ExternFuncs = append(out.ExternFuncs, &aotir.ExternFuncDecl{
+			Name:         cName,
+			Params:       params,
+			ReturnType:   retTR.t,
+			ReturnRecord: retTR.rec,
+		})
+	}
+
 	// Pass 1: collect every user-defined fun decl and record its
 	// signature so the body lowering can resolve forward and
 	// mutual references.
@@ -141,6 +201,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		sig := funcs[fn.Name]
 		l := &lowerer{
 			funcs:                      funcs,
+			externFuncs:                externFuncs,
 			records:                    records,
 			unions:                     unions,
 			variantToUnion:             variantToUnion,
@@ -209,6 +270,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 	mainBody := &aotir.Block{}
 	mainL := &lowerer{
 		funcs:           funcs,
+		externFuncs:     externFuncs,
 		records:         records,
 		unions:          unions,
 		variantToUnion:  variantToUnion,
@@ -461,6 +523,7 @@ func buildFuncSig(records map[string]*aotir.RecordDecl, unions map[string]*aotir
 // verifyCtx so the same scoping / typing rules apply at lower time.
 type lowerer struct {
 	funcs                       map[string]*funcSig
+	externFuncs                 map[string]*funcSig            // Phase 10.0: extern C function signatures
 	records                     map[string]*aotir.RecordDecl
 	unions                      map[string]*aotir.UnionDecl   // Phase 4: union name -> decl
 	variantToUnion              map[string]*aotir.UnionDecl   // Phase 4: variant name -> enclosing union
@@ -570,6 +633,9 @@ func (l *lowerer) lowerStatement(out *aotir.Block, st *parser.Statement) error {
 		return fmt.Errorf("nested `fun` declarations are not supported in Phase 2.2")
 	case st.Type != nil:
 		return fmt.Errorf("`type` declarations are only allowed at the top level")
+	case st.ExternFun != nil:
+		// Phase 10.0: extern fun declarations are collected in the pre-pass; silently skip here.
+		return nil
 	}
 	return fmt.Errorf("unsupported statement in Phase 3.1")
 }
@@ -624,6 +690,18 @@ func (l *lowerer) lowerExprStmt(out *aotir.Block, es *parser.ExprStmt) error {
 		// Actually: use a mutable temp binding marked as discard.
 		_ = funCallExpr
 		return fmt.Errorf("calling a fun-typed variable at statement position (discarding result) is not yet supported in Phase 5.0; call it in expression position (e.g. `let _ = f(x)`)")
+	}
+	// Phase 10.0: check if this is a call to an extern C function.
+	if sig, ok := l.externFuncs[call.Func]; ok {
+		args, err := l.lowerCallArgs(call, sig)
+		if err != nil {
+			return err
+		}
+		out.Statements = append(out.Statements, &aotir.CallStmt{
+			Func: call.Func,
+			Args: args,
+		})
+		return nil
 	}
 	sig, ok := l.funcs[call.Func]
 	if !ok {
@@ -3344,6 +3422,21 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 			return nil, fmt.Errorf("fun-typed variable %q has nil FunSig in scope", call.Func)
 		}
 		return l.lowerFunVarCall(call, b.funSig)
+	}
+	// Phase 10.0: check if this is a call to an extern C function.
+	if sig, ok := l.externFuncs[call.Func]; ok {
+		if sig.returnType == aotir.TypeUnit {
+			return nil, fmt.Errorf("extern call to %q returns unit and cannot appear in an expression", call.Func)
+		}
+		args, err := l.lowerCallArgs(call, sig)
+		if err != nil {
+			return nil, err
+		}
+		return &aotir.CallExpr{
+			Func:   call.Func,
+			Args:   args,
+			Result: sig.returnType,
+		}, nil
 	}
 	sig, ok := l.funcs[call.Func]
 	if !ok {
