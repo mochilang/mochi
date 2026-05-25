@@ -1,0 +1,117 @@
+name: transpiler3/c – per-release bench report
+
+# MEP-45 Phase 18.2: runs the extended bench suite and generates a
+# self-contained HTML report. On tag pushes the report is attached to
+# the GitHub release. On workflow_dispatch it is uploaded as a run
+# artifact so contributors can inspect it without a release.
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  bench-report:
+    name: Bench report (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Run extended bench suite
+        run: |
+          go test -vet=off -v -count=1 -timeout=300s \
+            ./transpiler3/c/build/ \
+            -run TestPhase18ExtendedMetrics \
+            2>&1 | tee bench-${{ matrix.os }}.txt
+
+      - name: Generate HTML report
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const os = '${{ matrix.os }}';
+            const tag = '${{ github.ref_name }}';
+            const logText = fs.readFileSync(`bench-${os}.txt`, 'utf8');
+
+            // Extract table rows: lines with the data pattern from t.Logf.
+            // Test log lines look like:
+            //   "    phase18_1_test.go:56: kernel  compile_ms ..."
+            //   "    phase18_1_test.go:134: hello_world  391ms ..."
+            const rows = [];
+            let header = [];
+            for (const line of logText.split('\n')) {
+              const m = line.match(/\s+phase18_1_test\.go:\d+:\s+(.+)/);
+              if (!m) continue;
+              const cols = m[1].trim().split(/\s{2,}/);
+              if (cols[0] === 'kernel') { header = cols; continue; }
+              if (cols[0].startsWith('---')) continue;
+              if (cols.length >= 2) rows.push(cols);
+            }
+
+            if (header.length === 0) {
+              core.warning('No bench table found in test output');
+              return;
+            }
+
+            const th = header.map(h => `<th>${h}</th>`).join('');
+            const trs = rows.map(r => {
+              const tds = r.map((c, i) => {
+                const cls = i === 0 ? ' class="name"' : '';
+                return `<td${cls}>${c}</td>`;
+              }).join('');
+              return `<tr>${tds}</tr>`;
+            }).join('\n');
+
+            const html = `<!DOCTYPE html>
+            <html lang="en">
+            <head>
+            <meta charset="utf-8">
+            <title>transpiler3/c bench report – ${tag} – ${os}</title>
+            <style>
+              body { font-family: monospace; margin: 2rem; }
+              h1 { font-size: 1.2rem; }
+              table { border-collapse: collapse; }
+              th, td { padding: 0.3rem 1rem; text-align: right; border: 1px solid #ccc; }
+              th { background: #f0f0f0; }
+              td.name { text-align: left; }
+            </style>
+            </head>
+            <body>
+            <h1>transpiler3/c bench report</h1>
+            <p>Tag: <code>${tag}</code> &nbsp; Runner: <code>${os}</code></p>
+            <table>
+              <thead><tr>${th}</tr></thead>
+              <tbody>${trs}</tbody>
+            </table>
+            </body>
+            </html>`;
+
+            const outPath = `bench-report-${os}.html`;
+            fs.writeFileSync(outPath, html);
+            core.info(`Wrote ${outPath}`);
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-report-${{ matrix.os }}
+          path: bench-report-${{ matrix.os }}.html
+
+      - name: Attach report to release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.ref_name }}" \
+            "bench-report-${{ matrix.os }}.html" \
+            --repo "${{ github.repository }}" \
+            --clobber
