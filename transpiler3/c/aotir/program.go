@@ -34,6 +34,11 @@ type Program struct {
 	// Phase 10.0 adds this; emit walks it to write `extern <ctype> <name>(...);`
 	// declarations in the generated C prologue.
 	ExternFuncs []*ExternFuncDecl
+
+	// Agents lists user-declared agent types in source order.
+	// Phase 9.3 adds this; emit walks it to write a C struct typedef
+	// and per-intent static functions for synchronous dispatch.
+	Agents []*AgentDecl
 }
 
 // ExternFuncDecl describes a C extern function declaration. Phase 10.0.
@@ -426,6 +431,7 @@ type VarRef struct {
 	ChanElemType      Type    // valid when VarType==TypeChan (Phase 9.1)
 	StreamElemType    Type    // valid when VarType==TypeStream (Phase 9.2)
 	SubElemType       Type    // valid when VarType==TypeSub (Phase 9.2)
+	AgentName         string  // valid when VarType==TypeAgent (Phase 9.3)
 }
 
 func (v *VarRef) Type() Type { return v.VarType }
@@ -491,6 +497,7 @@ type LetStmt struct {
 	ChanElemType      Type    // valid when VarType==TypeChan (Phase 9.1)
 	StreamElemType    Type    // valid when VarType==TypeStream (Phase 9.2)
 	SubElemType       Type    // valid when VarType==TypeSub (Phase 9.2)
+	AgentName         string  // valid when VarType==TypeAgent (Phase 9.3)
 	Init              Expr
 	Mutable           bool // true for VarStmt-lowered bindings
 }
@@ -1387,3 +1394,76 @@ type SubRecvExpr struct {
 }
 
 func (e *SubRecvExpr) Type() Type { return e.ElemType }
+
+// --- Phase 9.3: agent (synchronous dispatch, struct + functions) ---
+
+// AgentIntentParam is one formal parameter of an intent method.
+type AgentIntentParam struct {
+	Name string
+	Type Type
+}
+
+// AgentIntentDecl describes one intent method inside an AgentDecl.
+// The Body is the lowered statement block of the intent; the emit pass
+// renders it as a static C function `mochi_agent_NAME__INTENT`.
+type AgentIntentDecl struct {
+	Name       string
+	Params     []AgentIntentParam
+	ReturnType Type   // TypeUnit for void intents; scalar primitives for value-returning intents
+	Body       *Block
+}
+
+// AgentDecl declares one agent type. Fields are the mutable state
+// (scalar-typed only in Phase 9.3). Intents are the synchronous
+// method bodies.
+type AgentDecl struct {
+	Name    string
+	Fields  []RecordField    // same layout as RecordDecl; scalar types only in Phase 9.3
+	Intents []AgentIntentDecl
+}
+
+// AgentLit constructs an agent value with every field filled in.
+// Emitted identically to RecordLit but using the agent struct type.
+type AgentLit struct {
+	AgentName string
+	Fields    []RecordLitArg // in agent-decl source order
+}
+
+func (a *AgentLit) Type() Type { return TypeAgent }
+
+// AgentMethodRef is a transient IR node produced during lowering when
+// the lower pass processes a field access like `c.increment` on an
+// agent-typed receiver. It is never emitted; lowerPostfix replaces it
+// with AgentIntentCallExpr/AgentIntentCallStmt when the following CallOp arrives.
+type AgentMethodRef struct {
+	AgentName  string
+	IntentName string
+	Receiver   Expr   // TypeAgent variable reference
+	ReturnType Type   // return type of the intent
+}
+
+func (*AgentMethodRef) Type() Type { return TypeInvalid } // transient
+
+// AgentIntentCallExpr is a synchronous intent call that returns a value.
+// Emitted as `mochi_agent_NAME__INTENT(&receiver, args...)`.
+type AgentIntentCallExpr struct {
+	AgentName  string
+	IntentName string
+	Receiver   Expr // TypeAgent
+	Args       []Expr
+	Result     Type // return type of the intent
+}
+
+func (e *AgentIntentCallExpr) Type() Type { return e.Result }
+
+// AgentIntentCallStmt is a synchronous intent call that discards the
+// return value (or returns TypeUnit). Emitted as
+// `mochi_agent_NAME__INTENT(&receiver, args...);`.
+type AgentIntentCallStmt struct {
+	AgentName  string
+	IntentName string
+	Receiver   Expr // TypeAgent
+	Args       []Expr
+}
+
+func (*AgentIntentCallStmt) isStmt() {}

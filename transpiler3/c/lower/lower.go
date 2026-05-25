@@ -100,6 +100,101 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		}
 	}
 
+	// Phase 5.0: shared anonymous function counter and lifted-function accumulator.
+	// Both Pass 2a and Pass 2b lowerers write into the same counter/slice so that
+	// __anon_N names are globally unique across the whole translation unit.
+	anonCounter := 0
+	var liftedFuncs []*aotir.Function
+	// Phase 5.2: shared shim-function dedup map so each __shim_<name> is
+	// emitted exactly once across the whole translation unit.
+	shimFuncs := map[string]bool{}
+
+	// Phase 9.3 pre-pass: collect every `agent NAME { ... }` declaration.
+	// Agent names are registered before function-sig building so that
+	// struct-literal syntax `Counter { count: 0 }` and method calls
+	// `c.increment()` can be resolved at body-lowering time.
+	agents := map[string]*aotir.AgentDecl{}
+	for i, st := range prog.Statements {
+		if st == nil || st.Agent == nil {
+			continue
+		}
+		ag := st.Agent
+		if ag.Name == "" {
+			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: agent decl with empty name", i)
+		}
+		if _, dup := agents[ag.Name]; dup {
+			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: redeclaration of agent %q", i, ag.Name)
+		}
+		if _, dup := records[ag.Name]; dup {
+			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: agent %q conflicts with a record type", i, ag.Name)
+		}
+		// Collect fields from var/let blocks.
+		agDecl := &aotir.AgentDecl{Name: ag.Name}
+		seenField := map[string]bool{}
+		for _, blk := range ag.Body {
+			if blk == nil {
+				continue
+			}
+			switch {
+			case blk.Var != nil:
+				fieldName := blk.Var.Name
+				var ft aotir.Type
+				if blk.Var.Type != nil {
+					tr, err := typeFromRef(records, unions, blk.Var.Type)
+					if err != nil {
+						return nil, fmt.Errorf("transpiler3/c/lower: agent %q field %q: %w", ag.Name, fieldName, err)
+					}
+					if !isAgentFieldType(tr.t) {
+						return nil, fmt.Errorf("transpiler3/c/lower: agent %q field %q: type %s not supported in Phase 9.3 (scalar types only)", ag.Name, fieldName, tr.t)
+					}
+					ft = tr.t
+				} else {
+					var err error
+					ft, err = inferAgentFieldType(blk.Var.Value)
+					if err != nil {
+						return nil, fmt.Errorf("transpiler3/c/lower: agent %q field %q: %w", ag.Name, fieldName, err)
+					}
+				}
+				if seenField[fieldName] {
+					return nil, fmt.Errorf("transpiler3/c/lower: agent %q: duplicate field %q", ag.Name, fieldName)
+				}
+				seenField[fieldName] = true
+				agDecl.Fields = append(agDecl.Fields, aotir.RecordField{Name: fieldName, Type: ft})
+			case blk.Let != nil:
+				fieldName := blk.Let.Name
+				var ft aotir.Type
+				if blk.Let.Type != nil {
+					tr, err := typeFromRef(records, unions, blk.Let.Type)
+					if err != nil {
+						return nil, fmt.Errorf("transpiler3/c/lower: agent %q field %q: %w", ag.Name, fieldName, err)
+					}
+					if !isAgentFieldType(tr.t) {
+						return nil, fmt.Errorf("transpiler3/c/lower: agent %q field %q: type %s not supported in Phase 9.3 (scalar types only)", ag.Name, fieldName, tr.t)
+					}
+					ft = tr.t
+				} else {
+					var err error
+					ft, err = inferAgentFieldType(blk.Let.Value)
+					if err != nil {
+						return nil, fmt.Errorf("transpiler3/c/lower: agent %q field %q: %w", ag.Name, fieldName, err)
+					}
+				}
+				if seenField[fieldName] {
+					return nil, fmt.Errorf("transpiler3/c/lower: agent %q: duplicate field %q", ag.Name, fieldName)
+				}
+				seenField[fieldName] = true
+				agDecl.Fields = append(agDecl.Fields, aotir.RecordField{Name: fieldName, Type: ft})
+			case blk.Intent != nil:
+				// Intent bodies are lowered in the second pass below.
+			case blk.Assign != nil:
+				// Assignments in agent body are not supported in Phase 9.3.
+			case blk.On != nil:
+				// On-handlers in agent body are not supported in Phase 9.3.
+			}
+		}
+		agents[ag.Name] = agDecl
+		out.Agents = append(out.Agents, agDecl)
+	}
 	// Phase 10.0 pre-pass: collect every `extern fun` declaration and build
 	// its funcSig so that body lowering can resolve calls to extern functions.
 	// The C name uses dots replaced by underscores (e.g. "math.sin" -> "math_sin").
@@ -187,14 +282,26 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		funDecls = append(funDecls, fn)
 	}
 
-	// Phase 5.0: shared anonymous function counter and lifted-function accumulator.
-	// Both Pass 2a and Pass 2b lowerers write into the same counter/slice so that
-	// __anon_N names are globally unique across the whole translation unit.
-	anonCounter := 0
-	var liftedFuncs []*aotir.Function
-	// Phase 5.2: shared shim-function dedup map so each __shim_<name> is
-	// emitted exactly once across the whole translation unit.
-	shimFuncs := map[string]bool{}
+	// Phase 9.3: lower intent bodies now that all function signatures and
+	// extern functions are known (so intent bodies can call user funs).
+	for _, st := range prog.Statements {
+		if st == nil || st.Agent == nil {
+			continue
+		}
+		ag := st.Agent
+		agDecl := agents[ag.Name]
+		for _, blk := range ag.Body {
+			if blk == nil || blk.Intent == nil {
+				continue
+			}
+			intent := blk.Intent
+			intentDecl, err := lowerAgentIntentBody(records, unions, agents, funcs, externFuncs, ag.Name, agDecl, intent, &anonCounter, &liftedFuncs, &shimFuncs)
+			if err != nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: agent %q intent %q: %w", ag.Name, intent.Name, err)
+			}
+			agDecl.Intents = append(agDecl.Intents, *intentDecl)
+		}
+	}
 
 	// Pass 2a: lower each fun body using the shared funcs table.
 	for _, fn := range funDecls {
@@ -204,6 +311,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 			externFuncs:                externFuncs,
 			records:                    records,
 			unions:                     unions,
+			agents:                     agents,
 			variantToUnion:             variantToUnion,
 			scope:                      newLScope(nil),
 			currentFnReturn:            sig.returnType,
@@ -273,6 +381,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		externFuncs:     externFuncs,
 		records:         records,
 		unions:          unions,
+		agents:          agents,
 		variantToUnion:  variantToUnion,
 		scope:           newLScope(nil),
 		currentFnReturn: aotir.TypeUnit,
@@ -284,7 +393,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		if st == nil {
 			return nil, fmt.Errorf("transpiler3/c/lower: statement %d is nil", i)
 		}
-		if st.Fun != nil || st.Type != nil {
+		if st.Fun != nil || st.Type != nil || st.Agent != nil {
 			continue
 		}
 		if err := mainL.lowerStatement(mainBody, st); err != nil {
@@ -548,6 +657,7 @@ type lowerer struct {
 	externFuncs                 map[string]*funcSig            // Phase 10.0: extern C function signatures
 	records                     map[string]*aotir.RecordDecl
 	unions                      map[string]*aotir.UnionDecl   // Phase 4: union name -> decl
+	agents                      map[string]*aotir.AgentDecl   // Phase 9.3: agent name -> decl
 	variantToUnion              map[string]*aotir.UnionDecl   // Phase 4: variant name -> enclosing union
 	scope                       *lscope
 	loopDepth                   int
@@ -604,6 +714,7 @@ type lbinding struct {
 	chanElem     aotir.Type    // element type when t==TypeChan (Phase 9.1)
 	streamElem   aotir.Type    // element type when t==TypeStream (Phase 9.2)
 	subElem      aotir.Type    // element type when t==TypeSub (Phase 9.2)
+	agentName    string        // agent name when t==TypeAgent (Phase 9.3)
 	// emitName overrides the C identifier emitted for this variable when
 	// non-empty. Used by Phase 5.1 capturing closures to make captured
 	// variables emit as `__e->fieldname` instead of the original name.
@@ -692,6 +803,15 @@ func (l *lowerer) lowerExprStmt(out *aotir.Block, es *parser.ExprStmt) error {
 	// ExprStmt when the parser surfaces it as a Primary in the ExprStmt.
 	if m := exprStmtMatch(es.Expr); m != nil {
 		return l.lowerMatch(out, m, "", aotir.TypeInvalid)
+	}
+	// Phase 9.3: agent intent call at statement position.
+	// Pattern: `c.increment()` → ExprStmt with a PostfixExpr that has
+	// FieldOp + CallOp on an agent-typed receiver.
+	if agStmt := l.matchAgentIntentCallStmt(es.Expr); agStmt != nil {
+		if err := l.lowerAgentIntentCallStmt(out, agStmt); err != nil {
+			return err
+		}
+		return nil
 	}
 	call, err := matchBareCall(es.Expr)
 	if err != nil {
@@ -1351,6 +1471,8 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	// Phase 9.2: declStreamElem and declSubElem carry element types for stream/sub.
 	declStreamElem := exprStreamElemType(value)
 	declSubElem := exprSubElemType(value)
+	// Phase 9.3: declAgentName carries the agent name when declType==TypeAgent.
+	declAgentName := exprAgentName(value)
 	if declared != nil {
 		tr, err := typeFromRef(l.records, l.unions, declared)
 		if err != nil {
@@ -1434,6 +1556,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		chanElem:     declChanElem,
 		streamElem:   declStreamElem,
 		subElem:      declSubElem,
+		agentName:    declAgentName,
 	}
 	out.Statements = append(out.Statements, &aotir.LetStmt{
 		Name:              name,
@@ -1452,6 +1575,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		ChanElemType:      declChanElem,
 		StreamElemType:    declStreamElem,
 		SubElemType:       declSubElem,
+		AgentName:         declAgentName,
 		Init:              value,
 		Mutable:           mutable,
 	})
@@ -1517,8 +1641,14 @@ func (l *lowerer) lowerAssign(out *aotir.Block, as *parser.AssignStmt) error {
 			return fmt.Errorf("assign %q: binding holds map<_,%s>, value produces map<_,%s>", as.Name, b.value, vval)
 		}
 	}
+	// Phase 9.3: agent field bindings use emitName ("__self->field") as
+	// the C-level target name so that intent body field mutations compile.
+	assignName := as.Name
+	if b.emitName != "" {
+		assignName = b.emitName
+	}
 	out.Statements = append(out.Statements, &aotir.AssignStmt{
-		Name:  as.Name,
+		Name:  assignName,
 		Value: value,
 	})
 	return nil
@@ -2755,6 +2885,14 @@ func (l *lowerer) lowerPostfix(p *parser.PostfixExpr) (aotir.Expr, error) {
 				return nil, err
 			}
 		case op.Call != nil:
+			// Phase 9.3: complete an agent intent call (e.g. c.increment()).
+			if amr, ok := expr.(*aotir.AgentMethodRef); ok {
+				expr, err = l.lowerAgentMethodCallOp(amr, op.Call)
+				if err != nil {
+					return nil, err
+				}
+				break
+			}
 			// Phase 6.1: complete a string method call (e.g. s.contains("x")).
 			sm, ok := expr.(*aotir.StrMethodRef)
 			if !ok {
@@ -2922,6 +3060,28 @@ func (l *lowerer) lowerFieldOp(receiver aotir.Expr, fieldName string) (aotir.Exp
 		default:
 			return nil, fmt.Errorf("string has no field %q (Phase 6.1 supports: contains)", fieldName)
 		}
+	}
+	// Phase 9.3: agent method reference.
+	if receiver.Type() == aotir.TypeAgent {
+		agName := exprAgentName(receiver)
+		if agName == "" {
+			return nil, fmt.Errorf("field access .%s: agent-typed receiver has no agent name", fieldName)
+		}
+		agDecl, ok := l.agents[agName]
+		if !ok {
+			return nil, fmt.Errorf("field access .%s: agent %q is not declared", fieldName, agName)
+		}
+		for i := range agDecl.Intents {
+			if agDecl.Intents[i].Name == fieldName {
+				return &aotir.AgentMethodRef{
+					AgentName:  agName,
+					IntentName: fieldName,
+					Receiver:   receiver,
+					ReturnType: agDecl.Intents[i].ReturnType,
+				}, nil
+			}
+		}
+		return nil, fmt.Errorf("field access .%s: agent %q has no intent %q", fieldName, agName, fieldName)
 	}
 	if receiver.Type() != aotir.TypeRecord {
 		return nil, fmt.Errorf("field access .%s: receiver is %s, expected a record", fieldName, receiver.Type())
@@ -3468,6 +3628,7 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 				ChanElemType:      b.chanElem,
 				StreamElemType:    b.streamElem,
 				SubElemType:       b.subElem,
+				AgentName:         b.agentName,
 			}
 		}
 		for _, field := range pr.Selector.Tail {
@@ -3728,6 +3889,10 @@ func (l *lowerer) lowerMapLit(ml *parser.MapLiteral) (aotir.Expr, error) {
 func (l *lowerer) lowerStructLit(sl *parser.StructLiteral) (aotir.Expr, error) {
 	if sl.Name == "" {
 		return nil, fmt.Errorf("record literal with empty type name")
+	}
+	// Phase 9.3: if the name refers to an agent, lower to AgentLit.
+	if agDecl, ok := l.agents[sl.Name]; ok {
+		return l.lowerAgentLit(sl, agDecl)
 	}
 	decl, ok := l.records[sl.Name]
 	if !ok {
@@ -5982,5 +6147,374 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 	return &aotir.RawCExpr{
 		Code:    resultVar,
 		RawType: aotir.TypeList,
+	}, nil
+}
+
+// agentIntentCallMatch is a scratch struct used by matchAgentIntentCallStmt
+// to communicate what was detected.
+type agentIntentCallMatch struct {
+	receiverName string // the agent variable name (e.g. "c")
+	intentName   string // the intent name (e.g. "increment")
+	callArgs     []*parser.Expr
+}
+
+// matchAgentIntentCallStmt checks if the Expr is an agent method call at
+// statement position: `c.increment()` or `c.method(arg1, arg2)`.
+// Returns nil if the expression does not match the pattern.
+//
+// The parser surfaces `c.increment()` as a PostfixExpr whose Target selector
+// has Root="c" and Tail=["increment"], plus a single CallOp in Ops.
+// (FieldOp is not produced here because the parser folds the dotted name into
+// the selector tail rather than a postfix FieldOp when followed by a call.)
+func (l *lowerer) matchAgentIntentCallStmt(expr *parser.Expr) *agentIntentCallMatch {
+	if expr == nil || expr.Binary == nil {
+		return nil
+	}
+	bin := expr.Binary
+	if bin.Left == nil || len(bin.Right) != 0 {
+		return nil
+	}
+	unary := bin.Left
+	if len(unary.Ops) != 0 || unary.Value == nil {
+		return nil
+	}
+	post := unary.Value
+	if post.Target == nil {
+		return nil
+	}
+	sel := post.Target.Selector
+	if sel == nil {
+		return nil
+	}
+
+	// Pattern A: selector.Root="c", selector.Tail=["increment"], ops=[CallOp].
+	// This is what the parser produces for `c.increment()`.
+	if len(sel.Tail) == 1 && len(post.Ops) == 1 {
+		callOp := post.Ops[0]
+		if callOp == nil || callOp.Call == nil {
+			return nil
+		}
+		receiverName := sel.Root
+		b, ok := l.scope.lookup(receiverName)
+		if !ok || b.t != aotir.TypeAgent {
+			return nil
+		}
+		return &agentIntentCallMatch{
+			receiverName: receiverName,
+			intentName:   sel.Tail[0],
+			callArgs:     callOp.Call.Args,
+		}
+	}
+
+	// Pattern B: selector.Root="c", selector.Tail=[], ops=[FieldOp, CallOp].
+	// Defensive fallback in case the parser ever emits FieldOp for agent calls.
+	if len(sel.Tail) == 0 && len(post.Ops) == 2 {
+		fieldOp := post.Ops[0]
+		callOp := post.Ops[1]
+		if fieldOp == nil || fieldOp.Field == nil {
+			return nil
+		}
+		if callOp == nil || callOp.Call == nil {
+			return nil
+		}
+		receiverName := sel.Root
+		b, ok := l.scope.lookup(receiverName)
+		if !ok || b.t != aotir.TypeAgent {
+			return nil
+		}
+		return &agentIntentCallMatch{
+			receiverName: receiverName,
+			intentName:   fieldOp.Field.Name,
+			callArgs:     callOp.Call.Args,
+		}
+	}
+
+	return nil
+}
+
+// lowerAgentIntentCallStmt lowers an agent intent call at statement position.
+func (l *lowerer) lowerAgentIntentCallStmt(out *aotir.Block, match *agentIntentCallMatch) error {
+	b, ok := l.scope.lookup(match.receiverName)
+	if !ok || b.t != aotir.TypeAgent {
+		return fmt.Errorf("agent intent call: %q is not an agent", match.receiverName)
+	}
+	agDecl, ok := l.agents[b.agentName]
+	if !ok {
+		return fmt.Errorf("agent intent call: agent %q is not declared", b.agentName)
+	}
+	var intentDecl *aotir.AgentIntentDecl
+	for i := range agDecl.Intents {
+		if agDecl.Intents[i].Name == match.intentName {
+			intentDecl = &agDecl.Intents[i]
+			break
+		}
+	}
+	if intentDecl == nil {
+		return fmt.Errorf("agent %q has no intent %q", b.agentName, match.intentName)
+	}
+	if len(match.callArgs) != len(intentDecl.Params) {
+		return fmt.Errorf("agent %q intent %q expects %d args, got %d", b.agentName, match.intentName, len(intentDecl.Params), len(match.callArgs))
+	}
+	args := make([]aotir.Expr, 0, len(match.callArgs))
+	for i, a := range match.callArgs {
+		v, err := l.lowerExpr(a)
+		if err != nil {
+			return fmt.Errorf("agent %q intent %q arg %d: %w", b.agentName, match.intentName, i, err)
+		}
+		if v.Type() != intentDecl.Params[i].Type {
+			return fmt.Errorf("agent %q intent %q arg %d: expected %s, got %s", b.agentName, match.intentName, i, intentDecl.Params[i].Type, v.Type())
+		}
+		args = append(args, v)
+	}
+	// Build the receiver VarRef.
+	receiverExpr := &aotir.VarRef{
+		Name:      match.receiverName,
+		VarType:   aotir.TypeAgent,
+		AgentName: b.agentName,
+	}
+	out.Statements = append(out.Statements, &aotir.AgentIntentCallStmt{
+		AgentName:  b.agentName,
+		IntentName: match.intentName,
+		Receiver:   receiverExpr,
+		Args:       args,
+	})
+	return nil
+}
+
+// lowerAgentMethodCallOp completes an agent intent call after lowerFieldOp
+// has produced an AgentMethodRef. Returns an AgentIntentCallExpr (for
+// value-returning intents) or a RawCExpr wrapping an AgentIntentCallStmt
+// (for unit intents, which shouldn't appear in expression position).
+// At statement position, lowerExprStmt detects AgentMethodRef and calls
+// lowerAgentIntentCallStmt instead.
+func (l *lowerer) lowerAgentMethodCallOp(amr *aotir.AgentMethodRef, callOp *parser.CallOp) (aotir.Expr, error) {
+	ag, ok := l.agents[amr.AgentName]
+	if !ok {
+		return nil, fmt.Errorf("agent %q not declared", amr.AgentName)
+	}
+	var intentDecl *aotir.AgentIntentDecl
+	for i := range ag.Intents {
+		if ag.Intents[i].Name == amr.IntentName {
+			intentDecl = &ag.Intents[i]
+			break
+		}
+	}
+	if intentDecl == nil {
+		return nil, fmt.Errorf("agent %q has no intent %q", amr.AgentName, amr.IntentName)
+	}
+	if len(callOp.Args) != len(intentDecl.Params) {
+		return nil, fmt.Errorf("agent %q intent %q expects %d args, got %d", amr.AgentName, amr.IntentName, len(intentDecl.Params), len(callOp.Args))
+	}
+	args := make([]aotir.Expr, 0, len(callOp.Args))
+	for i, a := range callOp.Args {
+		v, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, fmt.Errorf("agent %q intent %q arg %d: %w", amr.AgentName, amr.IntentName, i, err)
+		}
+		if v.Type() != intentDecl.Params[i].Type {
+			return nil, fmt.Errorf("agent %q intent %q arg %d: expected %s, got %s", amr.AgentName, amr.IntentName, i, intentDecl.Params[i].Type, v.Type())
+		}
+		args = append(args, v)
+	}
+	if intentDecl.ReturnType == aotir.TypeUnit {
+		return nil, fmt.Errorf("intent %q returns unit; call it as a statement, not in expression position", amr.IntentName)
+	}
+	return &aotir.AgentIntentCallExpr{
+		AgentName:  amr.AgentName,
+		IntentName: amr.IntentName,
+		Receiver:   amr.Receiver,
+		Args:       args,
+		Result:     intentDecl.ReturnType,
+	}, nil
+}
+
+// lowerAgentLit lowers a `Counter { count: 0 }` literal when Counter
+// is a known agent name. Returns an AgentLit with fields in agent-decl order.
+func (l *lowerer) lowerAgentLit(sl *parser.StructLiteral, agDecl *aotir.AgentDecl) (aotir.Expr, error) {
+	provided := make(map[string]aotir.Expr, len(sl.Fields))
+	for _, lf := range sl.Fields {
+		if lf == nil || lf.Name == "" {
+			return nil, fmt.Errorf("agent literal %q: field with empty name", sl.Name)
+		}
+		if _, dup := provided[lf.Name]; dup {
+			return nil, fmt.Errorf("agent literal %q: duplicate field %q", sl.Name, lf.Name)
+		}
+		value, err := l.lowerExpr(lf.Value)
+		if err != nil {
+			return nil, fmt.Errorf("agent literal %q field %q: %w", sl.Name, lf.Name, err)
+		}
+		provided[lf.Name] = value
+	}
+	declaredFields := make(map[string]bool, len(agDecl.Fields))
+	for _, f := range agDecl.Fields {
+		declaredFields[f.Name] = true
+	}
+	for name := range provided {
+		if !declaredFields[name] {
+			return nil, fmt.Errorf("agent literal %q: unknown field %q", sl.Name, name)
+		}
+	}
+	args := make([]aotir.RecordLitArg, 0, len(agDecl.Fields))
+	for _, f := range agDecl.Fields {
+		v, ok := provided[f.Name]
+		if !ok {
+			return nil, fmt.Errorf("agent literal %q: missing field %q", sl.Name, f.Name)
+		}
+		if v.Type() != f.Type {
+			return nil, fmt.Errorf("agent literal %q field %q: declared %s, value is %s", sl.Name, f.Name, f.Type, v.Type())
+		}
+		args = append(args, aotir.RecordLitArg{Name: f.Name, Value: v})
+	}
+	return &aotir.AgentLit{AgentName: sl.Name, Fields: args}, nil
+}
+
+// --- Phase 9.3: agent helpers ---
+
+// isAgentFieldType returns true for scalar types supported as agent
+// fields in Phase 9.3. Only the four scalar primitives are allowed.
+func isAgentFieldType(t aotir.Type) bool {
+	switch t {
+	case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+		return true
+	}
+	return false
+}
+
+// inferAgentFieldType infers the type of an agent field from its
+// initializer expression when no type annotation is present. Only
+// supports literal initializers in Phase 9.3.
+func inferAgentFieldType(init *parser.Expr) (aotir.Type, error) {
+	if init == nil || init.Binary == nil {
+		return aotir.TypeInvalid, fmt.Errorf("cannot infer field type from nil init")
+	}
+	u := init.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return aotir.TypeInvalid, fmt.Errorf("cannot infer field type from complex expression; add an explicit `: T` annotation")
+	}
+	pf := u.Value
+	if pf.Target == nil || pf.Target.Lit == nil || len(pf.Ops) != 0 {
+		return aotir.TypeInvalid, fmt.Errorf("cannot infer field type from non-literal init; add an explicit `: T` annotation")
+	}
+	lit := pf.Target.Lit
+	switch {
+	case lit.Int != nil:
+		return aotir.TypeInt, nil
+	case lit.Float != nil:
+		return aotir.TypeFloat, nil
+	case lit.Bool != nil:
+		return aotir.TypeBool, nil
+	case lit.Str != nil:
+		return aotir.TypeString, nil
+	}
+	return aotir.TypeInvalid, fmt.Errorf("cannot infer field type from literal; add an explicit `: T` annotation")
+}
+
+// exprAgentName extracts the agent name from an agent-typed expression.
+func exprAgentName(e aotir.Expr) string {
+	switch v := e.(type) {
+	case *aotir.VarRef:
+		if v.VarType == aotir.TypeAgent {
+			return v.AgentName
+		}
+	case *aotir.AgentLit:
+		return v.AgentName
+	}
+	return ""
+}
+
+// lowerAgentIntentBody creates a lowerer scoped to one intent's body,
+// with the agent's fields seeded as mutable bindings (accessible
+// as __self->field in C, but in Mochi source the intent body refers
+// to them by bare name and the emitter rewrites to __self->field).
+// The intent body is lowered into an aotir.Block and returned as an
+// AgentIntentDecl.
+func lowerAgentIntentBody(
+	records map[string]*aotir.RecordDecl,
+	unions map[string]*aotir.UnionDecl,
+	agents map[string]*aotir.AgentDecl,
+	funcs map[string]*funcSig,
+	externFuncs map[string]*funcSig,
+	agentName string,
+	agDecl *aotir.AgentDecl,
+	intent *parser.IntentDecl,
+	anonCounter *int,
+	liftedFuncs *[]*aotir.Function,
+	shimFuncs *map[string]bool,
+) (*aotir.AgentIntentDecl, error) {
+	// Resolve intent parameters.
+	var params []aotir.AgentIntentParam
+	for _, p := range intent.Params {
+		if p.Type == nil {
+			return nil, fmt.Errorf("param %q requires an explicit type annotation", p.Name)
+		}
+		tr, err := typeFromRef(records, unions, p.Type)
+		if err != nil {
+			return nil, fmt.Errorf("param %q: %w", p.Name, err)
+		}
+		if !isAgentFieldType(tr.t) {
+			return nil, fmt.Errorf("param %q: type %s not supported in Phase 9.3 (scalar types only)", p.Name, tr.t)
+		}
+		params = append(params, aotir.AgentIntentParam{Name: p.Name, Type: tr.t})
+	}
+	// Resolve return type.
+	retType := aotir.TypeUnit
+	if intent.Return != nil {
+		tr, err := typeFromRef(records, unions, intent.Return)
+		if err != nil {
+			return nil, fmt.Errorf("return type: %w", err)
+		}
+		if !isAgentFieldType(tr.t) && tr.t != aotir.TypeUnit {
+			return nil, fmt.Errorf("return type %s not supported in Phase 9.3 (scalar types or unit only)", tr.t)
+		}
+		retType = tr.t
+	}
+
+	// Build a lowerer for this intent body. Agent fields are seeded as
+	// mutable bindings so that bare `count` in the body resolves. The
+	// emitter will rewrite field access to `__self->field`.
+	variantToUnion := map[string]*aotir.UnionDecl{} // agents don't use variants
+	l := &lowerer{
+		funcs:           funcs,
+		externFuncs:     externFuncs,
+		records:         records,
+		unions:          unions,
+		agents:          agents,
+		variantToUnion:  variantToUnion,
+		scope:           newLScope(nil),
+		currentFnReturn: retType,
+		anonCounter:     anonCounter,
+		liftedFuncs:     liftedFuncs,
+		shimFuncs:       shimFuncs,
+	}
+	// Seed agent fields as mutable bindings with a special emitName
+	// that maps to `__self->fieldname` in C.
+	for _, f := range agDecl.Fields {
+		l.scope.vars[f.Name] = lbinding{
+			t:        f.Type,
+			mutable:  true,
+			emitName: "__self->" + f.Name,
+		}
+	}
+	// Seed intent parameters as immutable bindings.
+	for _, p := range params {
+		l.scope.vars[p.Name] = lbinding{
+			t:       p.Type,
+			mutable: false,
+		}
+	}
+	body := &aotir.Block{}
+	for i, st := range intent.Body {
+		if st == nil {
+			return nil, fmt.Errorf("intent %q stmt %d is nil", intent.Name, i)
+		}
+		if err := l.lowerStatement(body, st); err != nil {
+			return nil, fmt.Errorf("intent %q stmt %d: %w", intent.Name, i, err)
+		}
+	}
+	return &aotir.AgentIntentDecl{
+		Name:       intent.Name,
+		Params:     params,
+		ReturnType: retType,
+		Body:       body,
 	}, nil
 }
