@@ -1,0 +1,9 @@
+agent Greeter {
+    var name: string = "world"
+    intent set_name(n: string) { name = n }
+    intent get_name(): string { return name }
+}
+let g = Greeter { name: "world" }
+print(g.get_name())
+g.set_name("mochi")
+print(g.get_name())

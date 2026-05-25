@@ -96,6 +96,11 @@ func Emit(prog *aotir.Program) (string, error) {
 		return "", err
 	}
 
+	// Phase 9.3: agent struct typedefs + static intent functions.
+	if err := emitAgentDecls(&b, prog.Agents); err != nil {
+		return "", err
+	}
+
 	// Phase 5.0: function pointer typedefs for fun types.
 	funSigs := collectFunSigs(prog)
 	if err := emitFunTypedefs(&b, funSigs); err != nil {
@@ -382,9 +387,12 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 			ts = s.FunSig.FunTypeName()
 		} else {
 			// For TypeUnion, recName carries the union name (not a record name).
+			// For TypeAgent, recName carries the agent name.
 			recOrUnion := s.RecordName
 			if s.VarType == aotir.TypeUnion {
 				recOrUnion = s.UnionName
+			} else if s.VarType == aotir.TypeAgent {
+				recOrUnion = s.AgentName
 			}
 			var err error
 			ts, err = cTypeFull(s.VarType, recOrUnion, s.ElemType, s.ElemRecordName, s.InnerElemType, s.MapElemKeyType, s.MapElemValueType, s.KeyType, s.ValueType, s.ListValueElemType)
@@ -395,7 +403,9 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		if s.Init == nil {
 			// Result-var pre-declaration from match expression lowering.
 			b.WriteString(indent)
-			if !s.Mutable {
+			// Phase 9.3: agent bindings must not be const; intent calls
+			// receive &receiver as a mutable pointer.
+			if !s.Mutable && s.VarType != aotir.TypeAgent {
 				b.WriteString("const ")
 			}
 			fmt.Fprintf(b, "%s %s;\n", ts, s.Name)
@@ -406,7 +416,7 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 			return err
 		}
 		b.WriteString(indent)
-		if !s.Mutable {
+		if !s.Mutable && s.VarType != aotir.TypeAgent {
 			b.WriteString("const ")
 		}
 		fmt.Fprintf(b, "%s %s = %s;\n", ts, s.Name, init)
@@ -664,6 +674,28 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		}
 		fmt.Fprintf(b, "%smochi_stream_emit_%s(%s, %s);\n", indent, suffix, stream, val)
 		return nil
+	case *aotir.AgentIntentCallStmt:
+		// Phase 9.3: synchronous intent call at statement position.
+		// mochi_agent_NAME__INTENT(&receiver, args...);
+		recv, err := emitExpr(s.Receiver)
+		if err != nil {
+			return fmt.Errorf("AgentIntentCallStmt receiver: %w", err)
+		}
+		intentFn := "mochi_agent_" + s.AgentName + "__" + s.IntentName
+		b.WriteString(indent)
+		b.WriteString(intentFn)
+		b.WriteString("(&")
+		b.WriteString(recv)
+		for _, arg := range s.Args {
+			as, err := emitExpr(arg)
+			if err != nil {
+				return fmt.Errorf("AgentIntentCallStmt arg: %w", err)
+			}
+			b.WriteString(", ")
+			b.WriteString(as)
+		}
+		b.WriteString(");\n")
+		return nil
 	}
 	return fmt.Errorf("transpiler3/c/emit: unhandled Stmt %T", st)
 }
@@ -798,6 +830,12 @@ func cTypeFull(t aotir.Type, recName string, elemType aotir.Type, elemRecName st
 	}
 	if t == aotir.TypeSub {
 		return "mochi_sub_t *", nil
+	}
+	if t == aotir.TypeAgent {
+		if recName == "" {
+			return "", fmt.Errorf("TypeAgent without AgentName")
+		}
+		return "mochi_agent_" + recName + "_t", nil
 	}
 	return cTypeWithRec(t, recName)
 }
@@ -2623,6 +2661,47 @@ func emitExpr(e aotir.Expr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("mochi_sub_recv_%s(%s)", suffix, sub), nil
+	case *aotir.AgentLit:
+		// Phase 9.3: agent literal, same layout as RecordLit.
+		// (mochi_agent_NAME_t){.field1 = val1, ...}
+		var ab strings.Builder
+		ab.WriteString("(mochi_agent_")
+		ab.WriteString(v.AgentName)
+		ab.WriteString("_t){")
+		for i, f := range v.Fields {
+			if i > 0 {
+				ab.WriteString(", ")
+			}
+			val, err := emitExpr(f.Value)
+			if err != nil {
+				return "", fmt.Errorf("agent %q field %q: %w", v.AgentName, f.Name, err)
+			}
+			fmt.Fprintf(&ab, ".%s = %s", f.Name, val)
+		}
+		ab.WriteString("}")
+		return ab.String(), nil
+	case *aotir.AgentIntentCallExpr:
+		// Phase 9.3: synchronous intent call that yields a value.
+		// mochi_agent_NAME__INTENT(&receiver, args...)
+		recv, err := emitExpr(v.Receiver)
+		if err != nil {
+			return "", fmt.Errorf("AgentIntentCallExpr receiver: %w", err)
+		}
+		intentFn := "mochi_agent_" + v.AgentName + "__" + v.IntentName
+		var ab strings.Builder
+		ab.WriteString(intentFn)
+		ab.WriteString("(&")
+		ab.WriteString(recv)
+		for _, arg := range v.Args {
+			as, err := emitExpr(arg)
+			if err != nil {
+				return "", fmt.Errorf("AgentIntentCallExpr arg: %w", err)
+			}
+			ab.WriteString(", ")
+			ab.WriteString(as)
+		}
+		ab.WriteString(")")
+		return ab.String(), nil
 	default:
 		return "", fmt.Errorf("transpiler3/c/emit: unhandled Expr %T", e)
 	}
@@ -3259,6 +3338,97 @@ func emitUnionDecls(b *strings.Builder, unions []*aotir.UnionDecl) error {
 		b.WriteString("\n")
 	}
 	return nil
+}
+
+// ---- Phase 9.3: agent emit ----
+
+// emitAgentDecls renders, for each AgentDecl:
+//  1. A typedef struct mochi_agent_NAME_t { <fields> };
+//  2. A static intent function for each intent:
+//     static <RetType> mochi_agent_NAME__INTENT(mochi_agent_NAME_t *__self, <params>) { <body> }
+//
+// Intent functions receive a pointer to the agent struct so field
+// mutations persist on the caller's binding.
+func emitAgentDecls(b *strings.Builder, agents []*aotir.AgentDecl) error {
+	if len(agents) == 0 {
+		return nil
+	}
+	// Sort by name for deterministic output.
+	sorted := make([]*aotir.AgentDecl, len(agents))
+	copy(sorted, agents)
+	sort.SliceStable(sorted, func(i, j int) bool {
+		return sorted[i].Name < sorted[j].Name
+	})
+	for _, ag := range sorted {
+		typeName := "mochi_agent_" + ag.Name + "_t"
+		// Struct typedef.
+		fmt.Fprintf(b, "typedef struct %s {\n", typeName)
+		for _, f := range ag.Fields {
+			ct, err := cType(f.Type)
+			if err != nil {
+				return fmt.Errorf("agent %q field %q: %w", ag.Name, f.Name, err)
+			}
+			fmt.Fprintf(b, "    %s %s;\n", ct, f.Name)
+		}
+		fmt.Fprintf(b, "} %s;\n\n", typeName)
+
+		// Intent function forward declarations (so intents can call each other).
+		for _, intent := range ag.Intents {
+			proto, err := agentIntentPrototype(ag.Name, typeName, intent)
+			if err != nil {
+				return fmt.Errorf("agent %q intent %q prototype: %w", ag.Name, intent.Name, err)
+			}
+			b.WriteString(proto)
+			b.WriteString(";\n")
+		}
+		if len(ag.Intents) > 0 {
+			b.WriteString("\n")
+		}
+
+		// Intent function definitions.
+		for _, intent := range ag.Intents {
+			proto, err := agentIntentPrototype(ag.Name, typeName, intent)
+			if err != nil {
+				return fmt.Errorf("agent %q intent %q def: %w", ag.Name, intent.Name, err)
+			}
+			b.WriteString(proto)
+			b.WriteString(" {\n")
+			if intent.Body != nil {
+				if err := emitBlock(b, intent.Body, "    "); err != nil {
+					return fmt.Errorf("agent %q intent %q body: %w", ag.Name, intent.Name, err)
+				}
+			}
+			b.WriteString("}\n\n")
+		}
+	}
+	return nil
+}
+
+// agentIntentPrototype returns the C declarator for one intent function:
+// "static <RetType> mochi_agent_NAME__INTENT(mochi_agent_NAME_t *__self, <params>)".
+func agentIntentPrototype(agentName, typeName string, intent aotir.AgentIntentDecl) (string, error) {
+	var ret string
+	var err error
+	if intent.ReturnType == aotir.TypeUnit {
+		ret = "void"
+	} else {
+		ret, err = cType(intent.ReturnType)
+		if err != nil {
+			return "", fmt.Errorf("return type: %w", err)
+		}
+	}
+	fnName := "mochi_agent_" + agentName + "__" + intent.Name
+	var b strings.Builder
+	fmt.Fprintf(&b, "static %s %s(%s *__self", ret, fnName, typeName)
+	for _, p := range intent.Params {
+		pt, err := cType(p.Type)
+		if err != nil {
+			return "", fmt.Errorf("param %q: %w", p.Name, err)
+		}
+		fmt.Fprintf(&b, ", %s %s", pt, p.Name)
+	}
+	b.WriteString(")")
+	return b.String(), nil
 }
 
 // variantFieldCType returns the C type for one variant field.

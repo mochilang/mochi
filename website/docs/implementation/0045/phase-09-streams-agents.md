@@ -31,7 +31,7 @@ Phase 9 builds the concurrency primitives that let Mochi programs express async 
 | 9.0 | M:N work-stealing scheduler over minicoro; one OS thread per hardware core; blocking syscalls on overflow pool     | LANDED 2026-05-26 01:00 (GMT+7) | aa503933f4 | — |
 | 9.1 | `chan<T>`: bounded ring, point-to-point, send blocks when full                                                     | LANDED 2026-05-26 03:11 (GMT+7) | — | — |
 | 9.2 | `stream<T>` MPMC broadcast ring; `subscribe(s)` returns sub handle; `recv_sub(sub)` yields when empty; `emit(s, v)` lossy-overwrites when full | LANDED 2026-05-26 03:46 (GMT+7) | (this PR) | — |
-| 9.3 | Agent: record with embedded mailbox; intent calls enqueue typed messages; run loop on dedicated fiber              | NOT STARTED | —      | — |
+| 9.3 | Agent: record + static intent functions (synchronous dispatch, Phase 9.3); async mailbox deferred to later        | LANDED 2026-05-26 04:35 (GMT+7) | (this PR) | — |
 | 9.4 | Shutdown protocol: graceful drain on SIGINT/SIGTERM; bounded-time hard kill after timeout                          | NOT STARTED | —      | — |
 
 ## Decisions made
@@ -82,11 +82,23 @@ Phase 9 builds the concurrency primitives that let Mochi programs express async 
 
 **Gate:** `TestPhase9Stream` (5 fixtures: stream_basic, stream_float, stream_bool, stream_string, stream_multi_sub).
 
+### Phase 9.3 (2026-05-26 04:35 GMT+7)
+
+**Agent as a C struct + static intent functions.** Phase 9.3 compiles an agent declaration into a `typedef struct mochi_agent_NAME_t { <fields> }` plus one `static <ret> mochi_agent_NAME__INTENT(mochi_agent_NAME_t *__self, <params>)` per intent. Dispatch is synchronous: `c.increment()` becomes `mochi_agent_Counter__increment(&c)`. No mailbox, no fiber, no run loop in this phase.
+
+**TypeAgent in the IR.** `TypeAgent` added to `transpiler3/c/aotir/types.go`. `AgentDecl`, `AgentIntentDecl`, `AgentIntentParam`, `AgentLit`, `AgentMethodRef`, `AgentIntentCallExpr`, `AgentIntentCallStmt` added to `program.go`. `AgentName` parallel field on `VarRef` and `LetStmt` carries identity (mirrors the `RecordName` / `UnionName` pattern).
+
+**Lower pass.** `transpiler3/c/lower/lower.go` adds a Phase 9.3 pre-pass that collects `AgentDecl` skeletons from `agent` statements, then a second pass (after all function signatures are known) that lowers each intent body via `lowerAgentIntentBody`. Agent fields are seeded as mutable bindings with `emitName: "__self->field"` so that bare field reads in intent bodies map to pointer-receiver access in C. Field assignments use `emitName` as the C-level target name via `lowerAssign`. Intent calls at statement position are detected by `matchAgentIntentCallStmt` (handles the selector-tail + single-CallOp AST pattern produced by the parser for `c.method()`) before `matchBareCall`.
+
+**Emit pass.** `transpiler3/c/emit/emit.go` adds `emitAgentDecls` (typedef struct + intent prototypes + definitions) called from `Emit()` after union decls. `cTypeFull` returns `"mochi_agent_NAME_t"` for `TypeAgent`. Agent bindings suppress `const` in LetStmt emit because intent calls take `&receiver` as a mutable pointer. `AgentLit` emits as `(mochi_agent_NAME_t){.field = val, ...}`. `AgentIntentCallExpr` and `AgentIntentCallStmt` emit as `mochi_agent_NAME__INTENT(&receiver, args...)`.
+
+**Gate:** `TestPhase9Agent` (5 fixtures: agent_basic, agent_bool, agent_float, agent_multi_intent, agent_string).
+
 ## Deferred work
 
 - CPU preemption (Go-style signal preemption): v2.
-- Phase 9.3 agent records.
 - Phase 9.4 graceful shutdown.
+- Async agent mailbox + run loop on dedicated fiber: later sub-phase.
 
 ## Closeout notes
 

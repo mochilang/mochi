@@ -38,6 +38,7 @@ const (
 	TypeChan   // mochi_chan_t *; element type carried as ChanElemType beside the Type (Phase 9.1)
 	TypeStream // mochi_stream_t *; element type carried as StreamElemType beside the Type (Phase 9.2)
 	TypeSub    // mochi_sub_t *; element type carried as SubElemType beside the Type (Phase 9.2)
+	TypeAgent  // mochi_agent_NAME_t; identity carried as AgentName beside the Type (Phase 9.3)
 )
 
 // String returns a stable identifier for the type, used in
@@ -72,6 +73,8 @@ func (t Type) String() string {
 		return "stream"
 	case TypeSub:
 		return "sub"
+	case TypeAgent:
+		return "agent"
 	default:
 		return "invalid"
 	}

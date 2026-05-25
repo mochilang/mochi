@@ -109,6 +109,20 @@ func Verify(p *Program) error {
 		}
 		externFns[ef.Name] = ef
 	}
+	// Phase 9.3: build agent map for intent-call resolution.
+	agents := make(map[string]*AgentDecl, len(p.Agents))
+	for i, ag := range p.Agents {
+		if ag == nil {
+			return fmt.Errorf("aotir.Verify: Agents[%d] is nil", i)
+		}
+		if ag.Name == "" {
+			return fmt.Errorf("aotir.Verify: Agents[%d] has empty Name", i)
+		}
+		if _, dup := agents[ag.Name]; dup {
+			return fmt.Errorf("aotir.Verify: duplicate agent name %q at index %d", ag.Name, i)
+		}
+		agents[ag.Name] = ag
+	}
 	names := make(map[string]*Function, len(p.Functions))
 	for i, fn := range p.Functions {
 		if fn == nil {
@@ -310,6 +324,7 @@ func Verify(p *Program) error {
 			externFns:         externFns,
 			records:           records,
 			unions:            unions,
+			agents:            agents,
 			scope:             newScope(nil),
 			loopDepth:         0,
 			returnType:        fn.ReturnType,
@@ -362,6 +377,7 @@ type verifyCtx struct {
 	externFns           map[string]*ExternFuncDecl // Phase 10.0: extern C function declarations
 	records             map[string]*RecordDecl
 	unions              map[string]*UnionDecl
+	agents              map[string]*AgentDecl // Phase 9.3: agent declarations
 	scope               *scope
 	loopDepth           int
 	returnType          Type
@@ -398,6 +414,7 @@ type binding struct {
 	chanElem     Type     // element type when t==TypeChan (Phase 9.1)
 	streamElem   Type     // element type when t==TypeStream (Phase 9.2)
 	subElem      Type     // element type when t==TypeSub (Phase 9.2)
+	agentName    string   // agent name when t==TypeAgent (Phase 9.3)
 }
 
 func newScope(parent *scope) *scope {
@@ -592,6 +609,52 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 			return fmt.Errorf("StreamEmitStmt Stream: %w", err)
 		}
 		return verifyExprCtx(ctx, s.Val)
+	case *AgentIntentCallStmt:
+		// Phase 9.3: synchronous intent call at statement position.
+		if s.AgentName == "" {
+			return errors.New("AgentIntentCallStmt: empty AgentName")
+		}
+		if s.IntentName == "" {
+			return errors.New("AgentIntentCallStmt: empty IntentName")
+		}
+		if s.Receiver == nil {
+			return errors.New("AgentIntentCallStmt: nil Receiver")
+		}
+		if s.Receiver.Type() != TypeAgent {
+			return fmt.Errorf("AgentIntentCallStmt: Receiver must be TypeAgent, got %s", s.Receiver.Type())
+		}
+		if err := verifyExprCtx(ctx, s.Receiver); err != nil {
+			return fmt.Errorf("AgentIntentCallStmt receiver: %w", err)
+		}
+		ag, ok := ctx.agents[s.AgentName]
+		if !ok {
+			return fmt.Errorf("AgentIntentCallStmt: agent %q is not declared", s.AgentName)
+		}
+		var intent *AgentIntentDecl
+		for i := range ag.Intents {
+			if ag.Intents[i].Name == s.IntentName {
+				intent = &ag.Intents[i]
+				break
+			}
+		}
+		if intent == nil {
+			return fmt.Errorf("AgentIntentCallStmt: agent %q has no intent %q", s.AgentName, s.IntentName)
+		}
+		if len(s.Args) != len(intent.Params) {
+			return fmt.Errorf("AgentIntentCallStmt: agent %q intent %q expects %d args, got %d", s.AgentName, s.IntentName, len(intent.Params), len(s.Args))
+		}
+		for i, arg := range s.Args {
+			if arg == nil {
+				return fmt.Errorf("AgentIntentCallStmt: agent %q intent %q arg %d is nil", s.AgentName, s.IntentName, i)
+			}
+			if err := verifyExprCtx(ctx, arg); err != nil {
+				return fmt.Errorf("AgentIntentCallStmt %q.%q arg %d: %w", s.AgentName, s.IntentName, i, err)
+			}
+			if arg.Type() != intent.Params[i].Type {
+				return fmt.Errorf("AgentIntentCallStmt %q.%q arg %d: expected %s, got %s", s.AgentName, s.IntentName, i, intent.Params[i].Type, arg.Type())
+			}
+		}
+		return nil
 	}
 	return fmt.Errorf("unhandled Stmt %T", st)
 }
@@ -800,7 +863,17 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 	} else if s.SubElemType != TypeInvalid {
 		return fmt.Errorf("let %q: SubElemType set on non-sub type %s", s.Name, s.VarType)
 	}
-	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, union: s.UnionName, elem: s.ElemType, elemRec: s.ElemRecordName, mapElemKey: s.MapElemKeyType, mapElemValue: s.MapElemValueType, key: s.KeyType, value: s.ValueType, listValElem: s.ListValueElemType, funSig: s.FunSig, chanElem: s.ChanElemType, streamElem: s.StreamElemType, subElem: s.SubElemType}
+	if s.VarType == TypeAgent {
+		if s.AgentName == "" {
+			return fmt.Errorf("let %q: agent binding missing AgentName", s.Name)
+		}
+		if _, ok := ctx.agents[s.AgentName]; !ok {
+			return fmt.Errorf("let %q: agent %q is not declared", s.Name, s.AgentName)
+		}
+	} else if s.AgentName != "" {
+		return fmt.Errorf("let %q: AgentName set on non-agent type %s", s.Name, s.VarType)
+	}
+	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, union: s.UnionName, elem: s.ElemType, elemRec: s.ElemRecordName, mapElemKey: s.MapElemKeyType, mapElemValue: s.MapElemValueType, key: s.KeyType, value: s.ValueType, listValElem: s.ListValueElemType, funSig: s.FunSig, chanElem: s.ChanElemType, streamElem: s.StreamElemType, subElem: s.SubElemType, agentName: s.AgentName}
 	return nil
 }
 
@@ -1567,6 +1640,73 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		}
 		if b.t == TypeSub && v.SubElemType != b.subElem {
 			return fmt.Errorf("variable %q has sub<%s> in scope, ref says sub<%s>", v.Name, b.subElem, v.SubElemType)
+		}
+		if b.t == TypeAgent && v.AgentName != b.agentName {
+			return fmt.Errorf("variable %q has agent %q in scope, ref says %q", v.Name, b.agentName, v.AgentName)
+		}
+		return nil
+	case *AgentLit:
+		if v.AgentName == "" {
+			return errors.New("AgentLit with empty AgentName")
+		}
+		if _, ok := ctx.agents[v.AgentName]; !ok {
+			return fmt.Errorf("AgentLit: agent %q is not declared", v.AgentName)
+		}
+		for i, f := range v.Fields {
+			if f.Value == nil {
+				return fmt.Errorf("AgentLit %q field %d has nil Value", v.AgentName, i)
+			}
+			if err := verifyExprCtx(ctx, f.Value); err != nil {
+				return fmt.Errorf("AgentLit %q field %q: %w", v.AgentName, f.Name, err)
+			}
+		}
+		return nil
+	case *AgentIntentCallExpr:
+		if v.AgentName == "" {
+			return errors.New("AgentIntentCallExpr: empty AgentName")
+		}
+		if v.IntentName == "" {
+			return errors.New("AgentIntentCallExpr: empty IntentName")
+		}
+		if v.Receiver == nil {
+			return errors.New("AgentIntentCallExpr: nil Receiver")
+		}
+		if v.Receiver.Type() != TypeAgent {
+			return fmt.Errorf("AgentIntentCallExpr: Receiver must be TypeAgent, got %s", v.Receiver.Type())
+		}
+		if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+			return fmt.Errorf("AgentIntentCallExpr receiver: %w", err)
+		}
+		ag, ok := ctx.agents[v.AgentName]
+		if !ok {
+			return fmt.Errorf("AgentIntentCallExpr: agent %q is not declared", v.AgentName)
+		}
+		var intent *AgentIntentDecl
+		for i := range ag.Intents {
+			if ag.Intents[i].Name == v.IntentName {
+				intent = &ag.Intents[i]
+				break
+			}
+		}
+		if intent == nil {
+			return fmt.Errorf("AgentIntentCallExpr: agent %q has no intent %q", v.AgentName, v.IntentName)
+		}
+		if v.Result != intent.ReturnType {
+			return fmt.Errorf("AgentIntentCallExpr %q.%q: Result %s != intent ReturnType %s", v.AgentName, v.IntentName, v.Result, intent.ReturnType)
+		}
+		if len(v.Args) != len(intent.Params) {
+			return fmt.Errorf("AgentIntentCallExpr: agent %q intent %q expects %d args, got %d", v.AgentName, v.IntentName, len(intent.Params), len(v.Args))
+		}
+		for i, arg := range v.Args {
+			if arg == nil {
+				return fmt.Errorf("AgentIntentCallExpr %q.%q arg %d is nil", v.AgentName, v.IntentName, i)
+			}
+			if err := verifyExprCtx(ctx, arg); err != nil {
+				return fmt.Errorf("AgentIntentCallExpr %q.%q arg %d: %w", v.AgentName, v.IntentName, i, err)
+			}
+			if arg.Type() != intent.Params[i].Type {
+				return fmt.Errorf("AgentIntentCallExpr %q.%q arg %d: expected %s, got %s", v.AgentName, v.IntentName, i, intent.Params[i].Type, arg.Type())
+			}
 		}
 		return nil
 	case *RecordLit:
