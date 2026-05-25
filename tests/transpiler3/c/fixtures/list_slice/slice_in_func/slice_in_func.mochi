@@ -1,0 +1,8 @@
+fun first3(xs: list<int>): list<int> {
+  return xs[:3]
+}
+let nums = [10, 20, 30, 40, 50]
+let top = first3(nums)
+for x in top {
+  print(x)
+}

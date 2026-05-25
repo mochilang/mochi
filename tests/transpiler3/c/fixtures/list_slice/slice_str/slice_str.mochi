@@ -1,0 +1,5 @@
+let xs = ["apple", "banana", "cherry", "date", "elderberry"]
+let ys = xs[1:3]
+for y in ys {
+  print(y)
+}
