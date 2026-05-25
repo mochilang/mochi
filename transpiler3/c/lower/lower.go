@@ -259,6 +259,14 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 	if err := aotir.Verify(out); err != nil {
 		return nil, fmt.Errorf("transpiler3/c/lower: verify: %w", err)
 	}
+
+	// Phase 4.1: Maranget decision-tree pass. Validates and canonicalizes
+	// every MatchStmt so arms are sorted by ascending tag, giving deterministic
+	// C output regardless of source arm order.
+	if err := lowerMatchPass(out); err != nil {
+		return nil, fmt.Errorf("transpiler3/c/lower: match pass: %w", err)
+	}
+
 	return out, nil
 }
 
