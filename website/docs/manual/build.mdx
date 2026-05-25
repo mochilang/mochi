@@ -1,0 +1,178 @@
+---
+title: Build native binaries
+sidebar_label: Build
+sidebar_position: 3
+description: "Compile Mochi programs to native binaries with mochi build --target=c-aot. Cross-compile to any tier-1 triple with --triple."
+---
+
+`mochi build --target=c-aot` compiles a Mochi source file to a statically
+linked native binary via an intermediate ISO C23 source and a bundled
+cross-compiler. No C toolchain installation is required; the first `build`
+invocation downloads a pinned `zig cc` binary and caches it under
+`~/.cache/mochi/`.
+
+## Quick start
+
+```bash
+# Compile hello.mochi to ./hello
+mochi build --target=c-aot --out=hello hello.mochi
+./hello
+```
+
+The binary has no shared library dependencies beyond the system libc (or
+none at all when you add `--portable`).
+
+## Flags
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--target=c-aot` | required | Select the native AOT pipeline |
+| `--out PATH` | required | Output binary path |
+| `--triple TRIPLE` | host | Target triple (cross-compile) |
+| `--profile PROFILE` | `release` | `release` or `debug` |
+| `--portable` | off | Statically link with musl; no shared-library deps |
+| `--emit=c` | off | Keep the generated `.c` source next to the binary |
+| `--cc PATH` | auto | Override the C compiler (`$CC` env also accepted) |
+
+## Cross-compilation
+
+Pass any tier-1 triple with `--triple`. The driver routes through `zig cc`
+automatically and downloads zig on first use.
+
+```bash
+# Build for a Linux x86_64 server from any host
+mochi build --target=c-aot --triple=x86_64-linux-musl --out=app-linux app.mochi
+
+# Build a WASM module runnable under wasmtime
+mochi build --target=c-aot --triple=wasm32-wasi --out=app.wasm app.mochi
+wasmtime run app.wasm
+```
+
+### Tier-1 triples
+
+| Triple | Description |
+|--------|-------------|
+| `x86_64-linux-gnu` | Linux x86_64, glibc |
+| `x86_64-linux-musl` | Linux x86_64, musl (fully static) |
+| `aarch64-linux-gnu` | Linux arm64, glibc |
+| `aarch64-linux-musl` | Linux arm64, musl |
+| `aarch64-macos-none` | macOS Apple Silicon |
+| `x86_64-macos-none` | macOS Intel |
+| `x86_64-windows-gnu` | Windows x86_64, MinGW ABI |
+| `x86_64-windows-msvc` | Windows x86_64, MSVC ABI |
+| `wasm32-wasi` | WebAssembly (wasmtime / wasmer) |
+
+When `--triple` is omitted, the driver compiles for the host triple using
+the host C compiler.
+
+## Build profiles
+
+```bash
+# Debug build: adds -g and ASan + UBSan instrumentation
+mochi build --target=c-aot --profile=debug --out=app-debug app.mochi
+
+# Release build (default): no debug info, no sanitisers
+mochi build --target=c-aot --out=app app.mochi
+```
+
+The `debug` profile adds `-g -fsanitize=address,undefined -fno-sanitize-recover=all`.
+Debug builds abort on the first memory or undefined-behaviour error, making
+it easy to catch bugs before shipping the release binary.
+
+## Portable (static) binaries
+
+On Linux, `--portable` links against musl via zig cc so the binary has
+zero shared-library dependencies:
+
+```bash
+mochi build --target=c-aot --portable --out=app-static app.mochi
+file app-static
+# app-static: ELF 64-bit LSB executable, statically linked
+```
+
+On macOS, static binaries require a musl cross-compile (use `--triple`).
+The `--portable` flag is silently ignored for wasm32-wasi targets (WASM
+is always fully self-contained).
+
+## Inspecting the generated C source
+
+```bash
+mochi build --target=c-aot --emit=c --out=app app.mochi
+# Produces: app (binary) and app.c (generated source)
+cat app.c
+```
+
+Use `--emit=c` to audit what the compiler produces, to vendor the output
+for a custom build system, or to share with a C tool that consumes ISO C23.
+
+## Reproducible builds
+
+Two builds of the same source on the same host triple and with the same
+profile produce bit-identical binaries. The driver:
+
+- Strips absolute temp-dir paths from DWARF sections (`-ffile-prefix-map`).
+- Suppresses the random UUID in Mach-O binaries on macOS (`-Wl,-no_uuid`).
+- Uses a content-addressed binary cache under `~/.cache/mochi/` keyed on
+  source hash + profile + triple + runtime fingerprint.
+
+## Caching
+
+The driver caches compiled binaries under `~/.cache/mochi/`. On a cache hit
+the output binary is restored in milliseconds:
+
+```
+$ time mochi build --target=c-aot --out=app app.mochi
+cached app
+mochi build  0.01s
+```
+
+The cache is keyed on the source file content, the profile, the target
+triple, and a fingerprint of the libmochi runtime. Changing any of these
+produces a fresh build.
+
+## Compiler override
+
+Set `$CC` or `--cc` to use a specific compiler:
+
+```bash
+# Use a specific clang
+mochi build --target=c-aot --cc=clang-18 --out=app app.mochi
+
+# Use ccache for faster repeated builds
+mochi build --target=c-aot --cc="ccache cc" --out=app app.mochi
+```
+
+When `--triple` is set and `$CC` is unset, the driver uses the bundled
+`zig cc` automatically.
+
+## C-direct FFI
+
+Mochi programs can call C functions defined in a neighbour `.c` file:
+
+```mochi
+// hello.mochi
+extern fun c_add(a: int, b: int): int
+print(c_add(3, 4))
+```
+
+```c
+// hello.c (same directory as hello.mochi)
+#include <stdint.h>
+int64_t c_add(int64_t a, int64_t b) { return a + b; }
+```
+
+```bash
+mochi build --target=c-aot --out=hello hello.mochi
+./hello
+# 7
+```
+
+The driver detects `hello.c` alongside `hello.mochi` and compiles both in
+the same `cc` invocation. The `extern fun` declaration generates the
+matching C `extern` prototype automatically.
+
+## See also
+
+- [Quickstart](/docs/manual/quickstart) — run programs interactively with `mochi run`
+- [Get started](/docs/manual/get-started) — build a complete CLI app
+- [MEP-45](/docs/mep/mep-0045) — technical spec for the AOT pipeline
