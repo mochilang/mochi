@@ -172,3 +172,82 @@ const char *mochi_list_str_index(mochi_list_str xs, int64_t i) {
 }
 
 int64_t mochi_list_str_len(mochi_list_str xs) { return xs.len; }
+
+/* ---- Phase 8.1: sort_asc and slice --------------------------------- */
+
+#include <stdlib.h>
+#include <string.h>
+
+static int mochi_cmp_i64(const void *a, const void *b) {
+    int64_t x = *(const int64_t *)a;
+    int64_t y = *(const int64_t *)b;
+    return (x > y) - (x < y);
+}
+
+mochi_list_i64 mochi_list_i64_sort_asc(mochi_list_i64 xs) {
+    mochi_list_i64 out = mochi_list_i64_lit(xs.data, xs.len);
+    qsort(out.data, (size_t)out.len, sizeof(int64_t), mochi_cmp_i64);
+    return out;
+}
+
+mochi_list_i64 mochi_list_i64_slice(mochi_list_i64 xs, int64_t start, int64_t end) {
+    if (start < 0) start = 0;
+    if (end > xs.len) end = xs.len;
+    if (start >= end) return mochi_list_i64_lit(NULL, 0);
+    return mochi_list_i64_lit(xs.data + start, end - start);
+}
+
+static int mochi_cmp_f64(const void *a, const void *b) {
+    double x = *(const double *)a;
+    double y = *(const double *)b;
+    return (x > y) - (x < y);
+}
+
+mochi_list_f64 mochi_list_f64_sort_asc(mochi_list_f64 xs) {
+    mochi_list_f64 out = mochi_list_f64_lit(xs.data, xs.len);
+    qsort(out.data, (size_t)out.len, sizeof(double), mochi_cmp_f64);
+    return out;
+}
+
+mochi_list_f64 mochi_list_f64_slice(mochi_list_f64 xs, int64_t start, int64_t end) {
+    if (start < 0) start = 0;
+    if (end > xs.len) end = xs.len;
+    if (start >= end) return mochi_list_f64_lit(NULL, 0);
+    return mochi_list_f64_lit(xs.data + start, end - start);
+}
+
+static int mochi_cmp_bool(const void *a, const void *b) {
+    int x = *(const int *)a;
+    int y = *(const int *)b;
+    return (x > y) - (x < y);
+}
+
+mochi_list_bool mochi_list_bool_sort_asc(mochi_list_bool xs) {
+    mochi_list_bool out = mochi_list_bool_lit(xs.data, xs.len);
+    qsort(out.data, (size_t)out.len, sizeof(int), mochi_cmp_bool);
+    return out;
+}
+
+mochi_list_bool mochi_list_bool_slice(mochi_list_bool xs, int64_t start, int64_t end) {
+    if (start < 0) start = 0;
+    if (end > xs.len) end = xs.len;
+    if (start >= end) return mochi_list_bool_lit(NULL, 0);
+    return mochi_list_bool_lit(xs.data + start, end - start);
+}
+
+static int mochi_cmp_str(const void *a, const void *b) {
+    return strcmp(*(const char *const *)a, *(const char *const *)b);
+}
+
+mochi_list_str mochi_list_str_sort_asc(mochi_list_str xs) {
+    mochi_list_str out = mochi_list_str_lit(xs.data, xs.len);
+    qsort(out.data, (size_t)out.len, sizeof(const char *), mochi_cmp_str);
+    return out;
+}
+
+mochi_list_str mochi_list_str_slice(mochi_list_str xs, int64_t start, int64_t end) {
+    if (start < 0) start = 0;
+    if (end > xs.len) end = xs.len;
+    if (start >= end) return mochi_list_str_lit(NULL, 0);
+    return mochi_list_str_lit(xs.data + start, end - start);
+}

@@ -798,9 +798,11 @@ func exprElemRecordName(e aotir.Expr) string {
 		return v.ResultElemRecordName
 	case *aotir.AppendExpr:
 		return v.ElemRecordName
+	case *aotir.ListSortAscExpr:
+		return v.ElemRecordName
+	case *aotir.ListSliceExpr:
+		return v.ElemRecordName
 	case *aotir.IndexExpr:
-		// IndexExpr returns a scalar/record, not a list; included for
-		// completeness but always returns "" here.
 		return v.ElemRecordName
 	}
 	return ""
@@ -821,6 +823,10 @@ func exprElemType(e aotir.Expr) aotir.Type {
 	case *aotir.CallExpr:
 		return v.ResultElemType
 	case *aotir.AppendExpr:
+		return v.ElemType
+	case *aotir.ListSortAscExpr:
+		return v.ElemType
+	case *aotir.ListSliceExpr:
 		return v.ElemType
 	case *aotir.IndexExpr:
 		if v.ElemType == aotir.TypeList {
@@ -851,10 +857,13 @@ func exprInnerElemType(e aotir.Expr) aotir.Type {
 		return v.ResultInnerElemType
 	case *aotir.AppendExpr:
 		return v.InnerElemType
+	case *aotir.ListSortAscExpr:
+		return v.InnerElemType
+	case *aotir.ListSliceExpr:
+		return v.InnerElemType
 	case *aotir.IndexExpr:
 		return v.InnerElemType
 	case *aotir.MapValuesExpr:
-		// values(m) on map<K,list<V>> produces list<list<V>>.
 		return v.ListValueElemType
 	}
 	return aotir.TypeInvalid
@@ -930,6 +939,10 @@ func exprMapElemKeyType(e aotir.Expr) aotir.Type {
 		return v.ResultMapElemKeyType
 	case *aotir.AppendExpr:
 		return v.MapElemKeyType
+	case *aotir.ListSortAscExpr:
+		return v.MapElemKeyType
+	case *aotir.ListSliceExpr:
+		return v.MapElemKeyType
 	}
 	return aotir.TypeInvalid
 }
@@ -946,6 +959,10 @@ func exprMapElemValueType(e aotir.Expr) aotir.Type {
 	case *aotir.CallExpr:
 		return v.ResultMapElemValueType
 	case *aotir.AppendExpr:
+		return v.MapElemValueType
+	case *aotir.ListSortAscExpr:
+		return v.MapElemValueType
+	case *aotir.ListSliceExpr:
 		return v.MapElemValueType
 	}
 	return aotir.TypeInvalid
@@ -3145,12 +3162,7 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 	if q.Group != nil {
 		return nil, fmt.Errorf("group-by queries land in Phase 8.1")
 	}
-	if q.Sort != nil {
-		return nil, fmt.Errorf("order-by queries land in Phase 8.1")
-	}
-	if q.Skip != nil || q.Take != nil {
-		return nil, fmt.Errorf("skip/take queries land in Phase 8.1")
-	}
+	// Phase 8.1: Sort, Skip, Take are handled after the main loop below.
 	if q.Distinct {
 		return nil, fmt.Errorf("distinct queries land in Phase 8.1")
 	}
@@ -3251,6 +3263,65 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 		MapElemValueType: sourceMapValue,
 		Body:             body,
 	})
+
+	// Phase 8.1: order by -- sort the accumulated result list.
+	if q.Sort != nil {
+		sortRef := &aotir.VarRef{Name: tempName, VarType: aotir.TypeList, ElemType: selectElemType}
+		sortExpr := &aotir.ListSortAscExpr{
+			Receiver: sortRef,
+			ElemType: selectElemType,
+		}
+		l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.AssignStmt{
+			Name:  tempName,
+			Value: sortExpr,
+		})
+	}
+
+	// Phase 8.1: skip / take -- slice the (possibly sorted) result list.
+	if q.Skip != nil || q.Take != nil {
+		var startExpr aotir.Expr = &aotir.IntLit{Value: 0}
+		if q.Skip != nil {
+			s, err := l.lowerExpr(q.Skip)
+			if err != nil {
+				return nil, fmt.Errorf("query skip: %w", err)
+			}
+			if s.Type() != aotir.TypeInt {
+				return nil, fmt.Errorf("query skip must be int, got %s", s.Type())
+			}
+			startExpr = s
+		}
+		var endExpr aotir.Expr
+		if q.Take != nil {
+			t, err := l.lowerExpr(q.Take)
+			if err != nil {
+				return nil, fmt.Errorf("query take: %w", err)
+			}
+			if t.Type() != aotir.TypeInt {
+				return nil, fmt.Errorf("query take must be int, got %s", t.Type())
+			}
+			// end = skip + take
+			endExpr = &aotir.BinaryExpr{
+				Op:     aotir.BinAddI64,
+				Left:   startExpr,
+				Right:  t,
+				Result: aotir.TypeInt,
+			}
+		} else {
+			// no take: end = len of result (use a very large sentinel)
+			endExpr = &aotir.IntLit{Value: 1<<62 - 1}
+		}
+		sliceRef := &aotir.VarRef{Name: tempName, VarType: aotir.TypeList, ElemType: selectElemType}
+		sliceExpr := &aotir.ListSliceExpr{
+			Receiver: sliceRef,
+			Start:    startExpr,
+			End:      endExpr,
+			ElemType: selectElemType,
+		}
+		l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.AssignStmt{
+			Name:  tempName,
+			Value: sliceExpr,
+		})
+	}
 
 	return &aotir.VarRef{Name: tempName, VarType: aotir.TypeList, ElemType: selectElemType}, nil
 }

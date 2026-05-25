@@ -669,6 +669,36 @@ type AppendExpr struct {
 
 func (a *AppendExpr) Type() Type { return TypeList }
 
+// ListSortAscExpr sorts a list in ascending order and returns a new
+// list. Phase 8.1 lowers `order by x` in a query expression.
+// The emitter renders this as `mochi_list_<T>_sort_asc(xs)`.
+type ListSortAscExpr struct {
+	Receiver         Expr
+	ElemType         Type
+	ElemRecordName   string
+	InnerElemType    Type
+	MapElemKeyType   Type
+	MapElemValueType Type
+}
+
+func (e *ListSortAscExpr) Type() Type { return TypeList }
+
+// ListSliceExpr slices a list from Start to End (exclusive, clamped).
+// Phase 8.1 lowers `skip N` / `take N` in a query expression.
+// The emitter renders this as `mochi_list_<T>_slice(xs, start, end)`.
+type ListSliceExpr struct {
+	Receiver         Expr
+	Start            Expr // int64 expression
+	End              Expr // int64 expression
+	ElemType         Type
+	ElemRecordName   string
+	InnerElemType    Type
+	MapElemKeyType   Type
+	MapElemValueType Type
+}
+
+func (e *ListSliceExpr) Type() Type { return TypeList }
+
 // ForEachStmt iterates Var over the elements of a list-typed List
 // expression. Phase 3.1's Mochi surface `for x in xs { ... }` lowers
 // here. The induction variable is registered as immutable inside

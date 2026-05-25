@@ -944,6 +944,10 @@ func exprElemRecordName(e Expr) string {
 		return v.ResultElemRecordName
 	case *AppendExpr:
 		return v.ElemRecordName
+	case *ListSortAscExpr:
+		return v.ElemRecordName
+	case *ListSliceExpr:
+		return v.ElemRecordName
 	}
 	return ""
 }
@@ -965,6 +969,10 @@ func exprElemType(e Expr) Type {
 	case *CallExpr:
 		return v.ResultElemType
 	case *AppendExpr:
+		return v.ElemType
+	case *ListSortAscExpr:
+		return v.ElemType
+	case *ListSliceExpr:
 		return v.ElemType
 	case *IndexExpr:
 		// When the IndexExpr itself produces a list value (i.e.,
@@ -997,6 +1005,10 @@ func exprInnerElemType(e Expr) Type {
 	case *CallExpr:
 		return v.ResultInnerElemType
 	case *AppendExpr:
+		return v.InnerElemType
+	case *ListSortAscExpr:
+		return v.InnerElemType
+	case *ListSliceExpr:
 		return v.InnerElemType
 	case *IndexExpr:
 		return v.InnerElemType
@@ -1082,6 +1094,10 @@ func exprMapElemKeyType(e Expr) Type {
 		return v.ResultMapElemKeyType
 	case *AppendExpr:
 		return v.MapElemKeyType
+	case *ListSortAscExpr:
+		return v.MapElemKeyType
+	case *ListSliceExpr:
+		return v.MapElemKeyType
 	case *IndexExpr:
 		// IndexExpr over list<map<K,V>> produces a map<K,V>; no further unwrap here.
 		return TypeInvalid
@@ -1100,6 +1116,10 @@ func exprMapElemValueType(e Expr) Type {
 	case *CallExpr:
 		return v.ResultMapElemValueType
 	case *AppendExpr:
+		return v.MapElemValueType
+	case *ListSortAscExpr:
+		return v.MapElemValueType
+	case *ListSliceExpr:
 		return v.MapElemValueType
 	case *IndexExpr:
 		return TypeInvalid
@@ -1292,6 +1312,34 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		return verifyExprCtx(ctx, v.Receiver)
 	case *AppendExpr:
 		return verifyAppendExpr(ctx, v)
+	case *ListSortAscExpr:
+		if v.Receiver == nil {
+			return fmt.Errorf("ListSortAscExpr: nil receiver")
+		}
+		if v.Receiver.Type() != TypeList {
+			return fmt.Errorf("ListSortAscExpr: receiver must be TypeList, got %s", v.Receiver.Type())
+		}
+		return verifyExprCtx(ctx, v.Receiver)
+	case *ListSliceExpr:
+		if v.Receiver == nil {
+			return fmt.Errorf("ListSliceExpr: nil receiver")
+		}
+		if v.Receiver.Type() != TypeList {
+			return fmt.Errorf("ListSliceExpr: receiver must be TypeList, got %s", v.Receiver.Type())
+		}
+		if v.Start == nil || v.End == nil {
+			return fmt.Errorf("ListSliceExpr: nil start or end")
+		}
+		if v.Start.Type() != TypeInt || v.End.Type() != TypeInt {
+			return fmt.Errorf("ListSliceExpr: start/end must be TypeInt")
+		}
+		if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+			return fmt.Errorf("ListSliceExpr receiver: %w", err)
+		}
+		if err := verifyExprCtx(ctx, v.Start); err != nil {
+			return fmt.Errorf("ListSliceExpr start: %w", err)
+		}
+		return verifyExprCtx(ctx, v.End)
 	case *MapLit:
 		return verifyMapLit(ctx, v)
 	case *MapGetExpr:

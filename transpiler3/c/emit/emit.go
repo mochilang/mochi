@@ -932,6 +932,12 @@ func walkExprListOfMap(e aotir.Expr, add func(aotir.Type, aotir.Type, aotir.Type
 		add(v.ElemType, v.MapElemKeyType, v.MapElemValueType)
 		walkExprListOfMap(v.Receiver, add)
 		walkExprListOfMap(v.Value, add)
+	case *aotir.ListSortAscExpr:
+		add(v.ElemType, v.MapElemKeyType, v.MapElemValueType)
+		walkExprListOfMap(v.Receiver, add)
+	case *aotir.ListSliceExpr:
+		add(v.ElemType, v.MapElemKeyType, v.MapElemValueType)
+		walkExprListOfMap(v.Receiver, add)
 	case *aotir.VarRef:
 		add(v.ElemType, v.MapElemKeyType, v.MapElemValueType)
 	case *aotir.CallExpr:
@@ -1195,6 +1201,12 @@ func walkExprNodeVisit(e aotir.Expr, visit func(aotir.Expr)) {
 	case *aotir.AppendExpr:
 		walkExprNodeVisit(v.Receiver, visit)
 		walkExprNodeVisit(v.Value, visit)
+	case *aotir.ListSortAscExpr:
+		walkExprNodeVisit(v.Receiver, visit)
+	case *aotir.ListSliceExpr:
+		walkExprNodeVisit(v.Receiver, visit)
+		walkExprNodeVisit(v.Start, visit)
+		walkExprNodeVisit(v.End, visit)
 	case *aotir.FieldAccess:
 		walkExprNodeVisit(v.Receiver, visit)
 	case *aotir.RecordLit:
@@ -1384,6 +1396,10 @@ func walkExprMapOfList(e aotir.Expr, add func(aotir.Type, aotir.Type, aotir.Type
 	case *aotir.AppendExpr:
 		walkExprMapOfList(v.Receiver, add)
 		walkExprMapOfList(v.Value, add)
+	case *aotir.ListSortAscExpr:
+		walkExprMapOfList(v.Receiver, add)
+	case *aotir.ListSliceExpr:
+		walkExprMapOfList(v.Receiver, add)
 	case *aotir.FieldAccess:
 		walkExprMapOfList(v.Receiver, add)
 	case *aotir.RecordLit:
@@ -1641,6 +1657,12 @@ func walkExprInner(e aotir.Expr, visit func(aotir.Type, aotir.Type)) {
 		visit(v.ElemType, v.InnerElemType)
 		walkExprInner(v.Receiver, visit)
 		walkExprInner(v.Value, visit)
+	case *aotir.ListSortAscExpr:
+		visit(v.ElemType, v.InnerElemType)
+		walkExprInner(v.Receiver, visit)
+	case *aotir.ListSliceExpr:
+		visit(v.ElemType, v.InnerElemType)
+		walkExprInner(v.Receiver, visit)
 	case *aotir.VarRef:
 		visit(v.ElemType, v.InnerElemType)
 	case *aotir.CallExpr:
@@ -1827,6 +1849,12 @@ func walkExpr(e aotir.Expr, visit func(aotir.Type, string)) {
 		visit(v.ElemType, v.ElemRecordName)
 		walkExpr(v.Receiver, visit)
 		walkExpr(v.Value, visit)
+	case *aotir.ListSortAscExpr:
+		visit(v.ElemType, v.ElemRecordName)
+		walkExpr(v.Receiver, visit)
+	case *aotir.ListSliceExpr:
+		visit(v.ElemType, v.ElemRecordName)
+		walkExpr(v.Receiver, visit)
 	case *aotir.VarRef:
 		visit(v.ElemType, v.ElemRecordName)
 	case *aotir.CallExpr:
@@ -1946,6 +1974,10 @@ func emitExpr(e aotir.Expr) (string, error) {
 		return "mochi_str_reverse(" + recv + ")", nil
 	case *aotir.AppendExpr:
 		return emitAppendExpr(v)
+	case *aotir.ListSortAscExpr:
+		return emitListSortAscExpr(v)
+	case *aotir.ListSliceExpr:
+		return emitListSliceExpr(v)
 	case *aotir.MapLit:
 		return emitMapLit(v)
 	case *aotir.MapGetExpr:
@@ -2094,6 +2126,38 @@ func emitAppendExpr(v *aotir.AppendExpr) (string, error) {
 		return "", fmt.Errorf("append value: %w", err)
 	}
 	return fmt.Sprintf("mochi_list_%s_append(%s, %s)", suf, recv, val), nil
+}
+
+func emitListSortAscExpr(v *aotir.ListSortAscExpr) (string, error) {
+	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType, v.MapElemKeyType, v.MapElemValueType)
+	if err != nil {
+		return "", fmt.Errorf("sort_asc: %w", err)
+	}
+	recv, err := emitExpr(v.Receiver)
+	if err != nil {
+		return "", fmt.Errorf("sort_asc receiver: %w", err)
+	}
+	return fmt.Sprintf("mochi_list_%s_sort_asc(%s)", suf, recv), nil
+}
+
+func emitListSliceExpr(v *aotir.ListSliceExpr) (string, error) {
+	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType, v.MapElemKeyType, v.MapElemValueType)
+	if err != nil {
+		return "", fmt.Errorf("slice: %w", err)
+	}
+	recv, err := emitExpr(v.Receiver)
+	if err != nil {
+		return "", fmt.Errorf("slice receiver: %w", err)
+	}
+	start, err := emitExpr(v.Start)
+	if err != nil {
+		return "", fmt.Errorf("slice start: %w", err)
+	}
+	end, err := emitExpr(v.End)
+	if err != nil {
+		return "", fmt.Errorf("slice end: %w", err)
+	}
+	return fmt.Sprintf("mochi_list_%s_slice(%s, %s, %s)", suf, recv, start, end), nil
 }
 
 // emitMapLit renders a MapLit as a `mochi_map_<K>_<V>_lit` call.

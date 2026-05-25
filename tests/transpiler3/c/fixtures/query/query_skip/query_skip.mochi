@@ -1,0 +1,5 @@
+let nums: list<int> = [10, 20, 30, 40, 50]
+let rest = from n in nums skip 2 select n
+for x in rest {
+    print(x)
+}

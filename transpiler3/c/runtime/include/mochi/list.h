@@ -58,6 +58,10 @@ mochi_list_i64 mochi_list_i64_lit(const int64_t *xs, int64_t n);
 mochi_list_i64 mochi_list_i64_append(mochi_list_i64 xs, int64_t v);
 int64_t        mochi_list_i64_index(mochi_list_i64 xs, int64_t i);
 int64_t        mochi_list_i64_len(mochi_list_i64 xs);
+/* Phase 8.1: sort_asc returns a copy sorted ascending. */
+mochi_list_i64 mochi_list_i64_sort_asc(mochi_list_i64 xs);
+/* Phase 8.1: slice(xs, start, end) returns xs[start:end] (clamped). */
+mochi_list_i64 mochi_list_i64_slice(mochi_list_i64 xs, int64_t start, int64_t end);
 
 /* --- float (double) ------------------------------------------------- */
 
@@ -71,6 +75,9 @@ mochi_list_f64 mochi_list_f64_lit(const double *xs, int64_t n);
 mochi_list_f64 mochi_list_f64_append(mochi_list_f64 xs, double v);
 double         mochi_list_f64_index(mochi_list_f64 xs, int64_t i);
 int64_t        mochi_list_f64_len(mochi_list_f64 xs);
+/* Phase 8.1 */
+mochi_list_f64 mochi_list_f64_sort_asc(mochi_list_f64 xs);
+mochi_list_f64 mochi_list_f64_slice(mochi_list_f64 xs, int64_t start, int64_t end);
 
 /* --- bool (int 0/1) ------------------------------------------------- */
 
@@ -84,6 +91,9 @@ mochi_list_bool mochi_list_bool_lit(const int *xs, int64_t n);
 mochi_list_bool mochi_list_bool_append(mochi_list_bool xs, int v);
 int             mochi_list_bool_index(mochi_list_bool xs, int64_t i);
 int64_t         mochi_list_bool_len(mochi_list_bool xs);
+/* Phase 8.1 */
+mochi_list_bool mochi_list_bool_sort_asc(mochi_list_bool xs);
+mochi_list_bool mochi_list_bool_slice(mochi_list_bool xs, int64_t start, int64_t end);
 
 /* --- string (const char *) ----------------------------------------- */
 
@@ -97,6 +107,9 @@ mochi_list_str mochi_list_str_lit(const char **xs, int64_t n);
 mochi_list_str mochi_list_str_append(mochi_list_str xs, const char *v);
 const char    *mochi_list_str_index(mochi_list_str xs, int64_t i);
 int64_t        mochi_list_str_len(mochi_list_str xs);
+/* Phase 8.1 */
+mochi_list_str mochi_list_str_sort_asc(mochi_list_str xs);
+mochi_list_str mochi_list_str_slice(mochi_list_str xs, int64_t start, int64_t end);
 
 #ifdef __cplusplus
 }
