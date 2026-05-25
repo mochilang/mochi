@@ -1,5 +1,7 @@
 package aotir
 
+import "strings"
+
 // Program is a complete unit of lowered Mochi. Phase 1 ships a
 // minimum shape sufficient for "one function calling one string
 // print"; later phases extend the type set, the statement set,
@@ -90,6 +92,9 @@ type Param struct {
 	// Type==TypeMap && ValueType==TypeList (Phase 3.4e map<K,list<V>>).
 	// Empty (TypeInvalid) otherwise.
 	ListValueElemType Type
+	// FunSig carries the function type's signature when Type==TypeFun
+	// (Phase 5.0). Nil otherwise.
+	FunSig *FunSig
 }
 
 // Function is one monomorphic, closure-converted callable.
@@ -141,6 +146,10 @@ type Function struct {
 	// ReturnType==TypeMap && ReturnValueType==TypeList (Phase 3.4e
 	// map<K,list<V>>). Empty (TypeInvalid) otherwise.
 	ReturnListValueElemType Type
+
+	// ReturnFunSig carries the function signature when ReturnType==TypeFun
+	// (Phase 5.0). Nil otherwise.
+	ReturnFunSig *FunSig
 
 	// Body is a single Block. Phase 1 does not introduce control
 	// flow; Phase 2 introduces multi-block functions with a
@@ -373,9 +382,10 @@ type VarRef struct {
 	InnerElemType     Type   // valid when VarType==TypeList && ElemType==TypeList (Phase 3.4b)
 	MapElemKeyType    Type   // valid when VarType==TypeList && ElemType==TypeMap (Phase 3.4f)
 	MapElemValueType  Type   // valid when VarType==TypeList && ElemType==TypeMap (Phase 3.4f)
-	KeyType           Type   // valid when VarType==TypeMap
-	ValueType         Type   // valid when VarType==TypeMap
-	ListValueElemType Type   // valid when VarType==TypeMap && ValueType==TypeList (Phase 3.4e)
+	KeyType           Type    // valid when VarType==TypeMap
+	ValueType         Type    // valid when VarType==TypeMap
+	ListValueElemType Type    // valid when VarType==TypeMap && ValueType==TypeList (Phase 3.4e)
+	FunSig            *FunSig // valid when VarType==TypeFun (Phase 5.0)
 }
 
 func (v *VarRef) Type() Type { return v.VarType }
@@ -436,7 +446,8 @@ type LetStmt struct {
 	MapElemValueType  Type   // valid when VarType==TypeList && ElemType==TypeMap (Phase 3.4f)
 	KeyType           Type   // valid when VarType==TypeMap
 	ValueType         Type   // valid when VarType==TypeMap
-	ListValueElemType Type   // valid when VarType==TypeMap && ValueType==TypeList (Phase 3.4e)
+	ListValueElemType Type    // valid when VarType==TypeMap && ValueType==TypeList (Phase 3.4e)
+	FunSig            *FunSig // valid when VarType==TypeFun (Phase 5.0)
 	Init              Expr
 	Mutable           bool // true for VarStmt-lowered bindings
 }
@@ -713,6 +724,52 @@ type UnionDecl struct {
 	Variants []VariantDecl
 }
 
+// FunSig describes a function type's parameter and return types.
+// Phase 5.0 restricts to scalar primitives (int, float, bool, string)
+// and unit returns. Complex types (record, union, list, map) are deferred.
+type FunSig struct {
+	ParamTypes []Type // each must be a scalar primitive in Phase 5.0
+	ReturnType Type   // scalar primitive or TypeUnit
+}
+
+// FunTypeName returns the C typedef name for this function signature.
+// Format: mochi_fnptr_<p0>_<p1>_..._to_<ret> with no params: mochi_fnptr_to_<ret>.
+func (sig *FunSig) FunTypeName() string {
+	parts := make([]string, 0, len(sig.ParamTypes)+1)
+	for _, pt := range sig.ParamTypes {
+		parts = append(parts, funTypeAbbrev(pt))
+	}
+	parts = append(parts, funTypeAbbrev(sig.ReturnType))
+	if len(sig.ParamTypes) == 0 {
+		return "mochi_fnptr_to_" + funTypeAbbrev(sig.ReturnType)
+	}
+	paramParts := make([]string, len(sig.ParamTypes))
+	for i, pt := range sig.ParamTypes {
+		paramParts[i] = funTypeAbbrev(pt)
+	}
+	return "mochi_fnptr_" + strings.Join(paramParts, "_") + "_to_" + funTypeAbbrev(sig.ReturnType)
+}
+
+// funTypeAbbrev returns the abbreviated C type suffix used in function
+// pointer typedef names. Only scalar primitives and unit are supported
+// in Phase 5.0.
+func funTypeAbbrev(t Type) string {
+	switch t {
+	case TypeInt:
+		return "i64"
+	case TypeFloat:
+		return "f64"
+	case TypeBool:
+		return "bool"
+	case TypeString:
+		return "str"
+	case TypeUnit:
+		return "void"
+	default:
+		return "unknown"
+	}
+}
+
 // VariantDecl is one named variant inside a UnionDecl.
 type VariantDecl struct {
 	// Name is the Mochi variant name; the emitter mangles it into
@@ -813,3 +870,26 @@ type MatchStmt struct {
 }
 
 func (*MatchStmt) isStmt() {}
+
+// ---- Phase 5.0: non-capturing closures ----
+
+// FunLit represents a non-capturing closure literal. During lowering,
+// the closure body is lifted to a top-level aotir.Function. FunLit
+// holds the lifted function's name and its type signature.
+type FunLit struct {
+	FuncName string  // name of the lifted function (e.g. __anon_1)
+	Sig      *FunSig // type signature of the anonymous function
+}
+
+func (f *FunLit) Type() Type { return TypeFun }
+
+// FunCallExpr calls a function-typed value (a variable or literal of
+// TypeFun). Callee is a TypeFun expression (VarRef, FunLit, etc.).
+// Args are the arguments. Result is the return type of the call.
+type FunCallExpr struct {
+	Callee Expr   // TypeFun expression
+	Args   []Expr // call arguments
+	Result Type   // return type of the call (from Sig.ReturnType)
+}
+
+func (f *FunCallExpr) Type() Type { return f.Result }

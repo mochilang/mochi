@@ -107,6 +107,11 @@ func Verify(p *Program) error {
 			return fmt.Errorf("aotir.Verify: duplicate function name %q at index %d", fn.Name, i)
 		}
 		names[fn.Name] = fn
+		if fn.ReturnType == TypeFun {
+			if fn.ReturnFunSig == nil {
+				return fmt.Errorf("aotir.Verify: function %q returns fun but ReturnFunSig is nil", fn.Name)
+			}
+		}
 		if fn.ReturnType == TypeRecord {
 			if fn.ReturnRecordName == "" {
 				return fmt.Errorf("aotir.Verify: function %q returns record but ReturnRecordName is empty", fn.Name)
@@ -268,6 +273,11 @@ func Verify(p *Program) error {
 					return fmt.Errorf("aotir.Verify: function %q param %d: ListValueElemType set on non-map type %s", fn.Name, k, pr.Type)
 				}
 			}
+			if pr.Type == TypeFun {
+				if pr.FunSig == nil {
+					return fmt.Errorf("aotir.Verify: function %q param %d: fun-typed param missing FunSig", fn.Name, k)
+				}
+			}
 		}
 	}
 	entry := p.Functions[p.Main]
@@ -306,7 +316,7 @@ func Verify(p *Program) error {
 			if _, dup := ctx.scope.vars[pr.Name]; dup {
 				return fmt.Errorf("aotir.Verify: %s: duplicate parameter %q", fn.Name, pr.Name)
 			}
-			ctx.scope.vars[pr.Name] = binding{t: pr.Type, mutable: false, record: pr.RecordName, union: pr.UnionName, elem: pr.ElemType, elemRec: pr.ElemRecordName, mapElemKey: pr.MapElemKeyType, mapElemValue: pr.MapElemValueType, key: pr.KeyType, value: pr.ValueType, listValElem: pr.ListValueElemType}
+			ctx.scope.vars[pr.Name] = binding{t: pr.Type, mutable: false, record: pr.RecordName, union: pr.UnionName, elem: pr.ElemType, elemRec: pr.ElemRecordName, mapElemKey: pr.MapElemKeyType, mapElemValue: pr.MapElemValueType, key: pr.KeyType, value: pr.ValueType, listValElem: pr.ListValueElemType, funSig: pr.FunSig}
 		}
 		for j, st := range fn.Body.Statements {
 			if err := verifyStmt(ctx, st); err != nil {
@@ -350,15 +360,16 @@ type scope struct {
 type binding struct {
 	t            Type
 	mutable      bool
-	record       string // record name when t==TypeRecord
-	union        string // union name when t==TypeUnion (Phase 4)
-	elem         Type   // element type when t==TypeList
-	elemRec      string // element record name when t==TypeList && elem==TypeRecord
-	mapElemKey   Type   // map key type when t==TypeList && elem==TypeMap (Phase 3.4f)
-	mapElemValue Type   // map value type when t==TypeList && elem==TypeMap (Phase 3.4f)
-	key          Type   // key type when t==TypeMap
-	value        Type   // value type when t==TypeMap
-	listValElem  Type   // inner list elem when t==TypeMap && value==TypeList (Phase 3.4e)
+	record       string   // record name when t==TypeRecord
+	union        string   // union name when t==TypeUnion (Phase 4)
+	elem         Type     // element type when t==TypeList
+	elemRec      string   // element record name when t==TypeList && elem==TypeRecord
+	mapElemKey   Type     // map key type when t==TypeList && elem==TypeMap (Phase 3.4f)
+	mapElemValue Type     // map value type when t==TypeList && elem==TypeMap (Phase 3.4f)
+	key          Type     // key type when t==TypeMap
+	value        Type     // value type when t==TypeMap
+	listValElem  Type     // inner list elem when t==TypeMap && value==TypeList (Phase 3.4e)
+	funSig       *FunSig  // function signature when t==TypeFun (Phase 5.0)
 }
 
 func newScope(parent *scope) *scope {
@@ -470,6 +481,13 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 			return fmt.Errorf("let %q: declared %s, init produces %s", s.Name, s.VarType, s.Init.Type())
 		}
 	}
+	if s.VarType == TypeFun {
+		if s.FunSig == nil {
+			return fmt.Errorf("let %q: fun-typed binding missing FunSig", s.Name)
+		}
+		ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, funSig: s.FunSig}
+		return nil
+	}
 	if s.VarType == TypeRecord {
 		if s.RecordName == "" {
 			return fmt.Errorf("let %q: record-typed binding missing RecordName", s.Name)
@@ -578,7 +596,7 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 			return fmt.Errorf("let %q: ListValueElemType set on non-map type %s", s.Name, s.VarType)
 		}
 	}
-	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, union: s.UnionName, elem: s.ElemType, elemRec: s.ElemRecordName, mapElemKey: s.MapElemKeyType, mapElemValue: s.MapElemValueType, key: s.KeyType, value: s.ValueType, listValElem: s.ListValueElemType}
+	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, union: s.UnionName, elem: s.ElemType, elemRec: s.ElemRecordName, mapElemKey: s.MapElemKeyType, mapElemValue: s.MapElemValueType, key: s.KeyType, value: s.ValueType, listValElem: s.ListValueElemType, funSig: s.FunSig}
 	return nil
 }
 
@@ -1265,6 +1283,30 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		}
 		if v.Receiver.Type() != TypeUnion {
 			return fmt.Errorf("VariantFieldAccess: receiver must be TypeUnion, got %s", v.Receiver.Type())
+		}
+		return nil
+	case *FunLit:
+		if v.Sig == nil {
+			return fmt.Errorf("FunLit %q has nil Sig", v.FuncName)
+		}
+		if v.FuncName == "" {
+			return fmt.Errorf("FunLit has empty FuncName")
+		}
+		return nil
+	case *FunCallExpr:
+		if v.Callee == nil {
+			return fmt.Errorf("FunCallExpr has nil Callee")
+		}
+		if err := verifyExprCtx(ctx, v.Callee); err != nil {
+			return fmt.Errorf("FunCallExpr callee: %w", err)
+		}
+		if v.Callee.Type() != TypeFun {
+			return fmt.Errorf("FunCallExpr: callee must be TypeFun, got %s", v.Callee.Type())
+		}
+		for i, arg := range v.Args {
+			if err := verifyExprCtx(ctx, arg); err != nil {
+				return fmt.Errorf("FunCallExpr arg %d: %w", i, err)
+			}
 		}
 		return nil
 	case *CallExpr:
