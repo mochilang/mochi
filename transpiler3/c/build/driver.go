@@ -73,6 +73,14 @@ type Driver struct {
 	// Requires zig cc or a host toolchain that supports -static.
 	// Phase 17.3 gates this on Linux.
 	Static bool
+
+	// Apex, when true, builds an Actually Portable Executable via
+	// cosmocc. The produced binary runs natively on Linux, macOS,
+	// Windows, FreeBSD, NetBSD, and OpenBSD without separate toolchain
+	// installs. Phase 13.0 wires this from --apex on the CLI.
+	// cosmocc is resolved via MOCHI_COSMOCC_PATH env var, then
+	// exec.LookPath("cosmocc").
+	Apex bool
 }
 
 // Build is the source-to-binary entry point. src is a Mochi
@@ -202,17 +210,25 @@ func (d *Driver) Build(src, out, target, profile string) error {
 	ccArgs := append([]string{}, ccPrefix...)
 	// Phase 11: pass -target=<triple> when cross-compiling. zig cc accepts
 	// this flag; host clang/gcc accept it only for supported targets.
-	if target != "" {
+	// Apex (Phase 13.0) and wasm targets do not use -target.
+	if target != "" && !d.Apex {
 		ccArgs = append(ccArgs, "-target", target)
 	}
+	// Phase 12.0: wasm32-wasi targets skip macOS/Linux-specific linker flags.
+	isWasm := strings.HasPrefix(target, "wasm32") || strings.HasPrefix(target, "wasm64")
 	ccArgs = append(ccArgs,
 		"-std=c2x",
 		"-Wall", "-Wextra", "-pedantic",
-		// Phase 17.1: strip absolute paths from debug info so binaries
-		// built in different tempdirs produce identical DWARF sections.
-		"-ffile-prefix-map="+workDir+"=.",
-		"-fdebug-prefix-map="+workDir+"=.",
-
+	)
+	// Phase 17.1: strip absolute paths from debug info. Apex builds omit these
+	// because cosmocc uses its own path-remapping internally.
+	if !d.Apex {
+		ccArgs = append(ccArgs,
+			"-ffile-prefix-map="+workDir+"=.",
+			"-fdebug-prefix-map="+workDir+"=.",
+		)
+	}
+	ccArgs = append(ccArgs,
 		"-I", filepath.Join(workDir, "include"),
 		"-o", absOut,
 		genPath,
@@ -222,13 +238,11 @@ func (d *Driver) Build(src, out, target, profile string) error {
 	if extraCSrc != "" {
 		ccArgs = append(ccArgs, extraCSrc)
 	}
-	// Phase 12.0: wasm32-wasi targets skip macOS/Linux-specific linker flags.
-	isWasm := strings.HasPrefix(target, "wasm32") || strings.HasPrefix(target, "wasm64")
 	// Phase 17.1 (macOS): suppress the random UUID that Apple's linker
 	// embeds in Mach-O binaries. Without this, two identical builds
 	// produce different LC_UUID values, breaking binary reproducibility.
-	// Skip for wasm targets: wasm-ld does not understand this flag.
-	isDarwinTarget := !isWasm && (target == "" && gort.GOOS == "darwin" ||
+	// Skip for wasm targets and Apex (cosmocc handles reproducibility internally).
+	isDarwinTarget := !isWasm && !d.Apex && (target == "" && gort.GOOS == "darwin" ||
 		strings.Contains(target, "macos") || strings.Contains(target, "darwin"))
 	if isDarwinTarget {
 		ccArgs = append(ccArgs, "-Wl,-no_uuid")
@@ -237,15 +251,16 @@ func (d *Driver) Build(src, out, target, profile string) error {
 	// symbol references from archive (.a) libraries rather than shared
 	// objects. zig cc satisfies this with its bundled musl; host gcc on
 	// Linux also supports it when glibc-static is installed.
-	// Not applicable for wasm (wasm-ld links statically by default).
-	if d.Static && !isWasm {
+	// Not applicable for wasm (wasm-ld links statically by default) or
+	// Apex (cosmocc statically links everything by design).
+	if d.Static && !isWasm && !d.Apex {
 		ccArgs = append(ccArgs, "-static")
 	}
 	// Phase 16.4: debug profile adds ASan+UBSan so `mochi build --profile=debug`
 	// produces a sanitiser-instrumented binary without requiring the caller to
 	// know the flags. ExtraFlags is applied after so tests can still override.
-	// Sanitisers are not supported for wasm32-wasi targets.
-	if profile == "debug" && !isWasm {
+	// Sanitisers are not supported for wasm32-wasi targets or Apex builds.
+	if profile == "debug" && !isWasm && !d.Apex {
 		ccArgs = append(ccArgs,
 			"-g",
 			"-fsanitize=address,undefined",
@@ -326,7 +341,12 @@ func writeRuntimeFiles(workDir string) error {
 // Phase 11 wires cross-compilation through this path: any non-empty
 // target triple means "cross-compile via zig cc unless the caller
 // explicitly set Driver.CC".
+//
+// Phase 13.0: when d.Apex is true, delegate to resolveCosmoCC.
 func (d *Driver) resolveCCForTarget(target string) (string, []string, error) {
+	if d.Apex {
+		return d.resolveCosmoCC()
+	}
 	if d.CC != "" {
 		exe, prefix := splitCC(d.CC)
 		return exe, prefix, nil
@@ -343,6 +363,24 @@ func (d *Driver) resolveCCForTarget(target string) (string, []string, error) {
 		return zigExe, []string{"cc"}, nil
 	}
 	return d.resolveCC()
+}
+
+// resolveCosmoCC finds the cosmocc binary for Phase 13.0 APE builds.
+// Resolution order:
+//  1. MOCHI_COSMOCC_PATH env var (absolute path to the cosmocc binary).
+//  2. "cosmocc" on PATH via exec.LookPath.
+//
+// cosmocc is not vendored (unlike zig); callers must install it manually
+// or set MOCHI_COSMOCC_PATH. The Phase 13.0 gate test skips when neither
+// is found so that CI environments without cosmocc are unaffected.
+func (d *Driver) resolveCosmoCC() (string, []string, error) {
+	if v := strings.TrimSpace(os.Getenv("MOCHI_COSMOCC_PATH")); v != "" {
+		return v, nil, nil
+	}
+	if path, err := exec.LookPath("cosmocc"); err == nil {
+		return path, nil, nil
+	}
+	return "", nil, errors.New("cosmocc not found: set MOCHI_COSMOCC_PATH env var or install cosmocc on PATH (see https://cosmo.zip)")
 }
 
 // resolveCC looks up the C compiler to invoke and returns its

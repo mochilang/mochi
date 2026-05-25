@@ -86,6 +86,7 @@ type BuildCmd struct {
 	Static         bool   `arg:"--portable" help:"Statically link the binary (musl/glibc-static); --target=c and --target=c-aot"`
 	Triple         string `arg:"--triple" help:"Target triple (e.g. x86_64-linux-musl, aarch64-macos, wasm32-wasi); --target=c only. When set, the driver defaults to 'zig cc' and passes -target=<triple>"`
 	Profile        string `arg:"--profile" default:"release" help:"Build profile for --target=c-aot: 'release' (default) or 'debug' (adds -fsanitize=address,undefined)"`
+	Apex           bool   `arg:"--apex" help:"Build an Actually Portable Executable via cosmocc (runs on Linux/macOS/Windows/BSD without separate install); --target=c-aot only"`
 }
 
 type RunCmd struct {
@@ -281,6 +282,7 @@ func runBuildCAOT(cmd *BuildCmd) error {
 		CC:       cmd.CC,
 		KeepEmit: keepEmit,
 		Static:   cmd.Static,
+		Apex:     cmd.Apex,
 	}
 	if err := d.Build(cmd.File, cmd.Out, cmd.Triple, cmd.Profile); err != nil {
 		return err
