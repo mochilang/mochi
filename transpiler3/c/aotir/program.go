@@ -56,7 +56,9 @@ type RecordField struct {
 // TypeBool, TypeString}). Phase 3.4 adds ElemRecordName, valid when
 // Type==TypeList and ElemType==TypeRecord, carrying the element
 // record's identity so the emit pass can pick the right per-record
-// list helper instantiation.
+// list helper instantiation. Phase 3.4e adds ListValueElemType,
+// valid when Type==TypeMap && ValueType==TypeList, carrying the
+// inner scalar element type of the list value.
 type Param struct {
 	Name           string
 	Type           Type
@@ -70,6 +72,10 @@ type Param struct {
 	InnerElemType Type
 	KeyType       Type
 	ValueType     Type
+	// ListValueElemType carries the inner scalar element type when
+	// Type==TypeMap && ValueType==TypeList (Phase 3.4e map<K,list<V>>).
+	// Empty (TypeInvalid) otherwise.
+	ListValueElemType Type
 }
 
 // Function is one monomorphic, closure-converted callable.
@@ -108,6 +114,10 @@ type Function struct {
 	// one of the eight per-(K,V) runtime instantiations.
 	ReturnKeyType   Type
 	ReturnValueType Type
+	// ReturnListValueElemType carries the inner scalar element type when
+	// ReturnType==TypeMap && ReturnValueType==TypeList (Phase 3.4e
+	// map<K,list<V>>). Empty (TypeInvalid) otherwise.
+	ReturnListValueElemType Type
 
 	// Body is a single Block. Phase 1 does not introduce control
 	// flow; Phase 2 introduces multi-block functions with a
@@ -153,15 +163,16 @@ func (*CallStmt) isStmt() {}
 // Program's function table at lower time and stamps Result with the
 // callee's ReturnType; the verifier re-checks both invariants.
 type CallExpr struct {
-	Func                 string
-	Args                 []Expr
-	Result               Type
-	ResultRecordName     string // valid when Result==TypeRecord
-	ResultElemType       Type   // valid when Result==TypeList
-	ResultElemRecordName string // valid when Result==TypeList && ResultElemType==TypeRecord
-	ResultInnerElemType  Type   // valid when Result==TypeList && ResultElemType==TypeList (Phase 3.4b)
-	ResultKeyType        Type   // valid when Result==TypeMap
-	ResultValueType      Type   // valid when Result==TypeMap
+	Func                    string
+	Args                    []Expr
+	Result                  Type
+	ResultRecordName        string // valid when Result==TypeRecord
+	ResultElemType          Type   // valid when Result==TypeList
+	ResultElemRecordName    string // valid when Result==TypeList && ResultElemType==TypeRecord
+	ResultInnerElemType     Type   // valid when Result==TypeList && ResultElemType==TypeList (Phase 3.4b)
+	ResultKeyType           Type   // valid when Result==TypeMap
+	ResultValueType         Type   // valid when Result==TypeMap
+	ResultListValueElemType Type   // valid when Result==TypeMap && ResultValueType==TypeList (Phase 3.4e)
 }
 
 func (c *CallExpr) Type() Type { return c.Result }
@@ -315,16 +326,18 @@ func (u *UnaryExpr) Type() Type { return u.Result }
 // variable's mangled C identifier; later phases that introduce
 // closure captures may rewrite Name into an env-relative access.
 // Phase 3.0 adds RecordName, valid when VarType==TypeRecord. Phase
-// 3.1 adds ElemType, valid when VarType==TypeList.
+// 3.1 adds ElemType, valid when VarType==TypeList. Phase 3.4e adds
+// ListValueElemType, valid when VarType==TypeMap && ValueType==TypeList.
 type VarRef struct {
-	Name           string
-	VarType        Type
-	RecordName     string
-	ElemType       Type
-	ElemRecordName string // valid when VarType==TypeList && ElemType==TypeRecord
-	InnerElemType  Type   // valid when VarType==TypeList && ElemType==TypeList (Phase 3.4b)
-	KeyType        Type   // valid when VarType==TypeMap
-	ValueType      Type   // valid when VarType==TypeMap
+	Name              string
+	VarType           Type
+	RecordName        string
+	ElemType          Type
+	ElemRecordName    string // valid when VarType==TypeList && ElemType==TypeRecord
+	InnerElemType     Type   // valid when VarType==TypeList && ElemType==TypeList (Phase 3.4b)
+	KeyType           Type   // valid when VarType==TypeMap
+	ValueType         Type   // valid when VarType==TypeMap
+	ListValueElemType Type   // valid when VarType==TypeMap && ValueType==TypeList (Phase 3.4e)
 }
 
 func (v *VarRef) Type() Type { return v.VarType }
@@ -369,17 +382,20 @@ func (f *FieldAccess) Type() Type { return f.Result }
 // LetStmt declares a fresh, immutable binding and initialises it.
 // Mochi `let x = expr` lowers here; the verifier rejects rebinding
 // or assignment to a LetStmt name (mutability lives on VarStmt).
+// Phase 3.4e adds ListValueElemType, valid when VarType==TypeMap &&
+// ValueType==TypeList, carrying the inner scalar list element type.
 type LetStmt struct {
-	Name           string
-	VarType        Type
-	RecordName     string // valid when VarType==TypeRecord
-	ElemType       Type   // valid when VarType==TypeList
-	ElemRecordName string // valid when VarType==TypeList && ElemType==TypeRecord
-	InnerElemType  Type   // valid when VarType==TypeList && ElemType==TypeList (Phase 3.4b)
-	KeyType        Type   // valid when VarType==TypeMap
-	ValueType      Type   // valid when VarType==TypeMap
-	Init           Expr
-	Mutable        bool // true for VarStmt-lowered bindings
+	Name              string
+	VarType           Type
+	RecordName        string // valid when VarType==TypeRecord
+	ElemType          Type   // valid when VarType==TypeList
+	ElemRecordName    string // valid when VarType==TypeList && ElemType==TypeRecord
+	InnerElemType     Type   // valid when VarType==TypeList && ElemType==TypeList (Phase 3.4b)
+	KeyType           Type   // valid when VarType==TypeMap
+	ValueType         Type   // valid when VarType==TypeMap
+	ListValueElemType Type   // valid when VarType==TypeMap && ValueType==TypeList (Phase 3.4e)
+	Init              Expr
+	Mutable           bool // true for VarStmt-lowered bindings
 }
 
 func (*LetStmt) isStmt() {}
@@ -550,11 +566,13 @@ func (*ForEachStmt) isStmt() {}
 // Phase 3.2 instantiation set). The emitter renders this as a
 // `mochi_map_<K>_<V>_lit` call with two C99 compound-literal
 // arrays carrying the key and value sequences.
+// Phase 3.4e adds ListValueElemType, valid when ValueType==TypeList.
 type MapLit struct {
-	KeyType   Type
-	ValueType Type
-	Keys      []Expr
-	Values    []Expr
+	KeyType           Type
+	ValueType         Type
+	ListValueElemType Type // valid when ValueType==TypeList (Phase 3.4e)
+	Keys              []Expr
+	Values            []Expr
 }
 
 func (*MapLit) Type() Type { return TypeMap }
@@ -564,32 +582,38 @@ func (*MapLit) Type() Type { return TypeMap }
 // and stamps the result type as ValueType. The runtime helper
 // panics with mochi_panic_index() when Key is absent; programs that
 // must probe should use MapHasExpr first.
+// Phase 3.4e adds ListValueElemType, valid when ValueType==TypeList.
 type MapGetExpr struct {
-	Receiver  Expr
-	Key       Expr
-	KeyType   Type
-	ValueType Type
+	Receiver          Expr
+	Key               Expr
+	KeyType           Type
+	ValueType         Type
+	ListValueElemType Type // valid when ValueType==TypeList (Phase 3.4e)
 }
 
 func (m *MapGetExpr) Type() Type { return m.ValueType }
 
 // MapHasExpr is the `has(m, k)` builtin call. Result is TypeBool;
 // the runtime helper returns 1 if k is in m and 0 otherwise.
+// Phase 3.4e adds ListValueElemType, valid when ValueType==TypeList.
 type MapHasExpr struct {
-	Receiver  Expr
-	Key       Expr
-	KeyType   Type
-	ValueType Type
+	Receiver          Expr
+	Key               Expr
+	KeyType           Type
+	ValueType         Type
+	ListValueElemType Type // valid when ValueType==TypeList (Phase 3.4e)
 }
 
 func (*MapHasExpr) Type() Type { return TypeBool }
 
 // MapLenExpr is the `len(m)` builtin call when m is a map. Result
 // is TypeInt; the helper returns the live-entry count.
+// Phase 3.4e adds ListValueElemType, valid when ValueType==TypeList.
 type MapLenExpr struct {
-	Receiver  Expr
-	KeyType   Type
-	ValueType Type
+	Receiver          Expr
+	KeyType           Type
+	ValueType         Type
+	ListValueElemType Type // valid when ValueType==TypeList (Phase 3.4e)
 }
 
 func (*MapLenExpr) Type() Type { return TypeInt }
@@ -597,20 +621,24 @@ func (*MapLenExpr) Type() Type { return TypeInt }
 // MapKeysExpr is the `keys(m)` builtin call. Result is list<K>
 // sorted ascending by key (matches the vm's sort-on-iteration
 // behavior so AOT-C output stays byte-equal to the oracle).
+// Phase 3.4e adds ListValueElemType, valid when ValueType==TypeList.
 type MapKeysExpr struct {
-	Receiver  Expr
-	KeyType   Type
-	ValueType Type
+	Receiver          Expr
+	KeyType           Type
+	ValueType         Type
+	ListValueElemType Type // valid when ValueType==TypeList (Phase 3.4e)
 }
 
 func (k *MapKeysExpr) Type() Type { return TypeList }
 
 // MapValuesExpr is the `values(m)` builtin call. Result is list<V>
 // in the same key-sorted order as MapKeysExpr.
+// Phase 3.4e adds ListValueElemType, valid when ValueType==TypeList.
 type MapValuesExpr struct {
-	Receiver  Expr
-	KeyType   Type
-	ValueType Type
+	Receiver          Expr
+	KeyType           Type
+	ValueType         Type
+	ListValueElemType Type // valid when ValueType==TypeList (Phase 3.4e)
 }
 
 func (v *MapValuesExpr) Type() Type { return TypeList }

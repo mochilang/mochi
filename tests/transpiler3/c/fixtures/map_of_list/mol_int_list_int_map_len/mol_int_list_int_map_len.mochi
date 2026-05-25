@@ -1,0 +1,2 @@
+let m: map<int, list<int>> = {1: [10, 20], 2: [30], 3: [40, 50, 60]}
+print(len(m))

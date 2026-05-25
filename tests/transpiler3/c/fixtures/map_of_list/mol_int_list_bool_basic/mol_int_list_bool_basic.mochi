@@ -1,0 +1,8 @@
+let m: map<int, list<bool>> = {1: [true, false, true], 2: [false]}
+print(len(m))
+let vs = values(m)
+for row in vs {
+  for x in row {
+    print(x)
+  }
+}

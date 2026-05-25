@@ -1,0 +1,8 @@
+let m: map<int, list<float>> = {1: [1.5, 2.5], 2: [3.5]}
+print(len(m))
+let vs = values(m)
+for row in vs {
+  for x in row {
+    print(x)
+  }
+}

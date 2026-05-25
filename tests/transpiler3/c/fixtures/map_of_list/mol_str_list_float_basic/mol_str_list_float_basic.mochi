@@ -1,0 +1,8 @@
+let m: map<string, list<float>> = {"x": [1.1, 2.2], "y": [3.3]}
+print(len(m))
+let vs = values(m)
+for row in vs {
+  for f in row {
+    print(f)
+  }
+}

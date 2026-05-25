@@ -135,8 +135,15 @@ func Verify(p *Program) error {
 			if !isScalarKeyType(fn.ReturnKeyType) {
 				return fmt.Errorf("aotir.Verify: function %q returns map but ReturnKeyType is %s (Phase 3.2 supports int or string keys only)", fn.Name, fn.ReturnKeyType)
 			}
-			if !isScalarValueType(fn.ReturnValueType) {
-				return fmt.Errorf("aotir.Verify: function %q returns map but ReturnValueType is %s (Phase 3.2 supports scalar values only)", fn.Name, fn.ReturnValueType)
+			if !isMapValueType(fn.ReturnValueType) {
+				return fmt.Errorf("aotir.Verify: function %q returns map but ReturnValueType is %s (Phase 3.2/3.4e supports scalar or list values)", fn.Name, fn.ReturnValueType)
+			}
+			if fn.ReturnValueType == TypeList {
+				if !isScalarElemType(fn.ReturnListValueElemType) {
+					return fmt.Errorf("aotir.Verify: function %q returns map<_,list<T>> but ReturnListValueElemType is %s (Phase 3.4e requires scalar inner)", fn.Name, fn.ReturnListValueElemType)
+				}
+			} else if fn.ReturnListValueElemType != TypeInvalid {
+				return fmt.Errorf("aotir.Verify: function %q has ReturnListValueElemType set on map<_,%s> (only valid when value is list)", fn.Name, fn.ReturnValueType)
 			}
 		} else {
 			if fn.ReturnKeyType != TypeInvalid {
@@ -144,6 +151,9 @@ func Verify(p *Program) error {
 			}
 			if fn.ReturnValueType != TypeInvalid {
 				return fmt.Errorf("aotir.Verify: function %q has ReturnValueType set on non-map return type %s", fn.Name, fn.ReturnType)
+			}
+			if fn.ReturnListValueElemType != TypeInvalid {
+				return fmt.Errorf("aotir.Verify: function %q has ReturnListValueElemType set on non-map return type %s", fn.Name, fn.ReturnType)
 			}
 		}
 		for k, pr := range fn.Params {
@@ -193,8 +203,15 @@ func Verify(p *Program) error {
 				if !isScalarKeyType(pr.KeyType) {
 					return fmt.Errorf("aotir.Verify: function %q param %d: map-typed param has KeyType %s (Phase 3.2 supports int or string keys only)", fn.Name, k, pr.KeyType)
 				}
-				if !isScalarValueType(pr.ValueType) {
-					return fmt.Errorf("aotir.Verify: function %q param %d: map-typed param has ValueType %s (Phase 3.2 supports scalar values only)", fn.Name, k, pr.ValueType)
+				if !isMapValueType(pr.ValueType) {
+					return fmt.Errorf("aotir.Verify: function %q param %d: map-typed param has ValueType %s (Phase 3.2/3.4e supports scalar or list values)", fn.Name, k, pr.ValueType)
+				}
+				if pr.ValueType == TypeList {
+					if !isScalarElemType(pr.ListValueElemType) {
+						return fmt.Errorf("aotir.Verify: function %q param %d: map<_,list<T>> param has ListValueElemType %s (Phase 3.4e requires scalar inner)", fn.Name, k, pr.ListValueElemType)
+					}
+				} else if pr.ListValueElemType != TypeInvalid {
+					return fmt.Errorf("aotir.Verify: function %q param %d: ListValueElemType set on map<_,%s> (only valid when value is list)", fn.Name, k, pr.ValueType)
 				}
 			} else {
 				if pr.KeyType != TypeInvalid {
@@ -202,6 +219,9 @@ func Verify(p *Program) error {
 				}
 				if pr.ValueType != TypeInvalid {
 					return fmt.Errorf("aotir.Verify: function %q param %d: ValueType set on non-map type %s", fn.Name, k, pr.Type)
+				}
+				if pr.ListValueElemType != TypeInvalid {
+					return fmt.Errorf("aotir.Verify: function %q param %d: ListValueElemType set on non-map type %s", fn.Name, k, pr.Type)
 				}
 			}
 		}
@@ -218,17 +238,18 @@ func Verify(p *Program) error {
 			return fmt.Errorf("aotir.Verify: function %q (index %d) has nil Body", fn.Name, i)
 		}
 		ctx := &verifyCtx{
-			fns:             names,
-			records:         records,
-			scope:           newScope(nil),
-			loopDepth:       0,
-			returnType:      fn.ReturnType,
-			returnRec:       fn.ReturnRecordName,
-			returnElem:      fn.ReturnElemType,
-			returnElemRec:   fn.ReturnElemRecordName,
-			returnInnerElem: fn.ReturnInnerElemType,
-			returnKey:       fn.ReturnKeyType,
-			returnValue:     fn.ReturnValueType,
+			fns:               names,
+			records:           records,
+			scope:             newScope(nil),
+			loopDepth:         0,
+			returnType:        fn.ReturnType,
+			returnRec:         fn.ReturnRecordName,
+			returnElem:        fn.ReturnElemType,
+			returnElemRec:     fn.ReturnElemRecordName,
+			returnInnerElem:   fn.ReturnInnerElemType,
+			returnKey:         fn.ReturnKeyType,
+			returnValue:       fn.ReturnValueType,
+			returnListValElem: fn.ReturnListValueElemType,
 		}
 		// Seed the function's parameter list as immutable
 		// bindings in the root scope so the body can reference
@@ -240,7 +261,7 @@ func Verify(p *Program) error {
 			if _, dup := ctx.scope.vars[pr.Name]; dup {
 				return fmt.Errorf("aotir.Verify: %s: duplicate parameter %q", fn.Name, pr.Name)
 			}
-			ctx.scope.vars[pr.Name] = binding{t: pr.Type, mutable: false, record: pr.RecordName, elem: pr.ElemType, elemRec: pr.ElemRecordName, key: pr.KeyType, value: pr.ValueType}
+			ctx.scope.vars[pr.Name] = binding{t: pr.Type, mutable: false, record: pr.RecordName, elem: pr.ElemType, elemRec: pr.ElemRecordName, key: pr.KeyType, value: pr.ValueType, listValElem: pr.ListValueElemType}
 		}
 		for j, st := range fn.Body.Statements {
 			if err := verifyStmt(ctx, st); err != nil {
@@ -258,17 +279,18 @@ func Verify(p *Program) error {
 // enclosing function's return type. The verifier never mutates
 // fns; scope is pushed and popped per Block.
 type verifyCtx struct {
-	fns             map[string]*Function
-	records         map[string]*RecordDecl
-	scope           *scope
-	loopDepth       int
-	returnType      Type
-	returnRec       string
-	returnElem      Type
-	returnElemRec   string // record name when returnElem==TypeRecord
-	returnInnerElem Type   // inner elem type when returnElem==TypeList (Phase 3.4b)
-	returnKey       Type
-	returnValue     Type
+	fns                 map[string]*Function
+	records             map[string]*RecordDecl
+	scope               *scope
+	loopDepth           int
+	returnType          Type
+	returnRec           string
+	returnElem          Type
+	returnElemRec       string // record name when returnElem==TypeRecord
+	returnInnerElem     Type   // inner elem type when returnElem==TypeList (Phase 3.4b)
+	returnKey           Type
+	returnValue         Type
+	returnListValElem   Type   // inner list elem when returnType==TypeMap && returnValue==TypeList (Phase 3.4e)
 }
 
 // scope is a single lexical frame. parent==nil marks the function
@@ -280,13 +302,14 @@ type scope struct {
 }
 
 type binding struct {
-	t       Type
-	mutable bool
-	record  string // record name when t==TypeRecord
-	elem    Type   // element type when t==TypeList
-	elemRec string // element record name when t==TypeList && elem==TypeRecord
-	key     Type   // key type when t==TypeMap
-	value   Type   // value type when t==TypeMap
+	t            Type
+	mutable      bool
+	record       string // record name when t==TypeRecord
+	elem         Type   // element type when t==TypeList
+	elemRec      string // element record name when t==TypeList && elem==TypeRecord
+	key          Type   // key type when t==TypeMap
+	value        Type   // value type when t==TypeMap
+	listValElem  Type   // inner list elem when t==TypeMap && value==TypeList (Phase 3.4e)
 }
 
 func newScope(parent *scope) *scope {
@@ -441,14 +464,24 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 		if !isScalarKeyType(s.KeyType) {
 			return fmt.Errorf("let %q: map binding has KeyType %s (Phase 3.2 supports int or string keys only)", s.Name, s.KeyType)
 		}
-		if !isScalarValueType(s.ValueType) {
-			return fmt.Errorf("let %q: map binding has ValueType %s (Phase 3.2 supports scalar values only)", s.Name, s.ValueType)
+		if !isMapValueType(s.ValueType) {
+			return fmt.Errorf("let %q: map binding has ValueType %s (Phase 3.2/3.4e supports scalar or list values)", s.Name, s.ValueType)
 		}
 		if ik := exprKeyType(s.Init); ik != s.KeyType {
 			return fmt.Errorf("let %q: declared map<%s,...>, init produces map<%s,...>", s.Name, s.KeyType, ik)
 		}
 		if iv := exprValueType(s.Init); iv != s.ValueType {
 			return fmt.Errorf("let %q: declared map<%s,%s>, init produces map<%s,%s>", s.Name, s.KeyType, s.ValueType, s.KeyType, iv)
+		}
+		if s.ValueType == TypeList {
+			if !isScalarElemType(s.ListValueElemType) {
+				return fmt.Errorf("let %q: map<_,list<T>> binding has ListValueElemType %s (Phase 3.4e requires scalar inner)", s.Name, s.ListValueElemType)
+			}
+			if ilv := exprListValueElemType(s.Init); ilv != s.ListValueElemType {
+				return fmt.Errorf("let %q: declared map<_,list<%s>>, init produces map<_,list<%s>>", s.Name, s.ListValueElemType, ilv)
+			}
+		} else if s.ListValueElemType != TypeInvalid {
+			return fmt.Errorf("let %q: ListValueElemType set on map<_,%s> (only valid when value is list)", s.Name, s.ValueType)
 		}
 	} else {
 		if s.KeyType != TypeInvalid {
@@ -457,8 +490,11 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 		if s.ValueType != TypeInvalid {
 			return fmt.Errorf("let %q: ValueType set on non-map type %s", s.Name, s.VarType)
 		}
+		if s.ListValueElemType != TypeInvalid {
+			return fmt.Errorf("let %q: ListValueElemType set on non-map type %s", s.Name, s.VarType)
+		}
 	}
-	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, elem: s.ElemType, elemRec: s.ElemRecordName, key: s.KeyType, value: s.ValueType}
+	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, elem: s.ElemType, elemRec: s.ElemRecordName, key: s.KeyType, value: s.ValueType, listValElem: s.ListValueElemType}
 	return nil
 }
 
@@ -701,6 +737,11 @@ func verifyReturnStmt(ctx *verifyCtx, s *ReturnStmt) error {
 		if vv := exprValueType(s.Value); vv != ctx.returnValue {
 			return fmt.Errorf("return map<%s,%s> does not match function return map<%s,%s>", ctx.returnKey, vv, ctx.returnKey, ctx.returnValue)
 		}
+		if ctx.returnValue == TypeList {
+			if vlv := exprListValueElemType(s.Value); vlv != ctx.returnListValElem {
+				return fmt.Errorf("return map<_,list<%s>> does not match function return map<_,list<%s>>", vlv, ctx.returnListValElem)
+			}
+		}
 	}
 	return nil
 }
@@ -782,7 +823,9 @@ func exprElemType(e Expr) Type {
 // exprInnerElemType returns the inner element type of a
 // list<list<T>>-typed expression, or TypeInvalid otherwise.
 // Phase 3.4b node coverage: VarRef, ListLit, CallExpr, AppendExpr,
-// IndexExpr.
+// IndexExpr. Phase 3.4e adds MapValuesExpr: when values(m) is called
+// on a map<K,list<V>>, the result is list<list<V>> and the inner V
+// is the map's ListValueElemType.
 func exprInnerElemType(e Expr) Type {
 	switch v := e.(type) {
 	case *VarRef:
@@ -795,6 +838,10 @@ func exprInnerElemType(e Expr) Type {
 		return v.InnerElemType
 	case *IndexExpr:
 		return v.InnerElemType
+	case *MapValuesExpr:
+		// values(m) on map<K,list<V>> produces list<list<V>>.
+		// The inner V is carried on MapValuesExpr.ListValueElemType.
+		return v.ListValueElemType
 	}
 	return TypeInvalid
 }
@@ -827,6 +874,23 @@ func exprValueType(e Expr) Type {
 		return v.ValueType
 	case *CallExpr:
 		return v.ResultValueType
+	}
+	return TypeInvalid
+}
+
+// exprListValueElemType returns the inner scalar element type of the
+// list value in a map<K,list<V>>-typed expression, or TypeInvalid
+// if the expression is not such a map. Only meaningful on expressions
+// whose Type() is TypeMap. MapValuesExpr is excluded: values(m) returns
+// a list, not a map, so the binding's inner type is InnerElemType.
+func exprListValueElemType(e Expr) Type {
+	switch v := e.(type) {
+	case *VarRef:
+		return v.ListValueElemType
+	case *MapLit:
+		return v.ListValueElemType
+	case *CallExpr:
+		return v.ResultListValueElemType
 	}
 	return TypeInvalid
 }
@@ -875,6 +939,18 @@ func isScalarKeyType(t Type) bool {
 func isScalarValueType(t Type) bool {
 	switch t {
 	case TypeInt, TypeFloat, TypeBool, TypeString:
+		return true
+	}
+	return false
+}
+
+// isMapValueType reports whether t is a valid map value type.
+// Phase 3.2 accepted the four scalar primitives; Phase 3.4e widens
+// this to TypeList (map<K, list<V>> where V is a scalar primitive
+// carried on ListValueElemType). Nested maps remain rejected.
+func isMapValueType(t Type) bool {
+	switch t {
+	case TypeInt, TypeFloat, TypeBool, TypeString, TypeList:
 		return true
 	}
 	return false
@@ -929,6 +1005,9 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			}
 			if v.ValueType != b.value {
 				return fmt.Errorf("variable %q has map<_,%s> in scope, ref says map<_,%s>", v.Name, b.value, v.ValueType)
+			}
+			if b.value == TypeList && v.ListValueElemType != b.listValElem {
+				return fmt.Errorf("variable %q has map<_,list<%s>> in scope, ref says map<_,list<%s>>", v.Name, b.listValElem, v.ListValueElemType)
 			}
 		}
 		return nil
@@ -993,6 +1072,10 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 				return fmt.Errorf("call %q result map<_,%s> does not match callee return map<_,%s>",
 					v.Func, v.ResultValueType, fn.ReturnValueType)
 			}
+			if fn.ReturnValueType == TypeList && v.ResultListValueElemType != fn.ReturnListValueElemType {
+				return fmt.Errorf("call %q result map<_,list<%s>> does not match callee return map<_,list<%s>>",
+					v.Func, v.ResultListValueElemType, fn.ReturnListValueElemType)
+			}
 		}
 		if len(fn.Params) != len(v.Args) {
 			return fmt.Errorf("call %q expects %d args, got %d", v.Func, len(fn.Params), len(v.Args))
@@ -1040,6 +1123,12 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 				if argVal := exprValueType(a); argVal != fn.Params[i].ValueType {
 					return fmt.Errorf("call %q arg %d: expected map<_,%s>, got map<_,%s>",
 						v.Func, i, fn.Params[i].ValueType, argVal)
+				}
+				if fn.Params[i].ValueType == TypeList {
+					if argLV := exprListValueElemType(a); argLV != fn.Params[i].ListValueElemType {
+						return fmt.Errorf("call %q arg %d: expected map<_,list<%s>>, got map<_,list<%s>>",
+							v.Func, i, fn.Params[i].ListValueElemType, argLV)
+					}
 				}
 			}
 		}
@@ -1412,8 +1501,15 @@ func verifyMapLit(ctx *verifyCtx, v *MapLit) error {
 	if !isScalarKeyType(v.KeyType) {
 		return fmt.Errorf("map literal: KeyType %s not supported (Phase 3.2 supports int or string keys only)", v.KeyType)
 	}
-	if !isScalarValueType(v.ValueType) {
-		return fmt.Errorf("map literal: ValueType %s not supported (Phase 3.2 supports scalar values only)", v.ValueType)
+	if !isMapValueType(v.ValueType) {
+		return fmt.Errorf("map literal: ValueType %s not supported (Phase 3.2/3.4e supports scalar or list values)", v.ValueType)
+	}
+	if v.ValueType == TypeList {
+		if !isScalarElemType(v.ListValueElemType) {
+			return fmt.Errorf("map literal: map<_,list<T>> requires scalar inner, got ListValueElemType %s", v.ListValueElemType)
+		}
+	} else if v.ListValueElemType != TypeInvalid {
+		return fmt.Errorf("map literal: ListValueElemType set on map<_,%s> (only valid when value is list)", v.ValueType)
 	}
 	if len(v.Keys) != len(v.Values) {
 		return fmt.Errorf("map literal: %d keys but %d values", len(v.Keys), len(v.Values))
@@ -1438,6 +1534,11 @@ func verifyMapLit(ctx *verifyCtx, v *MapLit) error {
 		}
 		if val.Type() != v.ValueType {
 			return fmt.Errorf("map literal value %d: declared %s, got %s", i, v.ValueType, val.Type())
+		}
+		if v.ValueType == TypeList {
+			if ie := exprElemType(val); ie != v.ListValueElemType {
+				return fmt.Errorf("map literal value %d: declared list<%s>, got list<%s>", i, v.ListValueElemType, ie)
+			}
 		}
 	}
 	return nil
@@ -1467,8 +1568,18 @@ func verifyMapGetExpr(ctx *verifyCtx, v *MapGetExpr) error {
 	if !isScalarKeyType(v.KeyType) {
 		return fmt.Errorf("map get: KeyType %s not supported (Phase 3.2 supports int or string keys only)", v.KeyType)
 	}
-	if !isScalarValueType(v.ValueType) {
-		return fmt.Errorf("map get: ValueType %s not supported (Phase 3.2 supports scalar values only)", v.ValueType)
+	if !isMapValueType(v.ValueType) {
+		return fmt.Errorf("map get: ValueType %s not supported (Phase 3.2/3.4e supports scalar or list values)", v.ValueType)
+	}
+	if v.ValueType == TypeList {
+		if rlv := exprListValueElemType(v.Receiver); rlv != v.ListValueElemType {
+			return fmt.Errorf("map get: receiver is map<_,list<%s>>, ListValueElemType stamped is %s", rlv, v.ListValueElemType)
+		}
+		if !isScalarElemType(v.ListValueElemType) {
+			return fmt.Errorf("map get: map<_,list<T>> requires scalar inner, got ListValueElemType %s", v.ListValueElemType)
+		}
+	} else if v.ListValueElemType != TypeInvalid {
+		return fmt.Errorf("map get: ListValueElemType set on map<_,%s> (only valid when value is list)", v.ValueType)
 	}
 	if err := verifyExprCtx(ctx, v.Key); err != nil {
 		return fmt.Errorf("map get key: %w", err)
@@ -1502,8 +1613,8 @@ func verifyMapHasExpr(ctx *verifyCtx, v *MapHasExpr) error {
 	if !isScalarKeyType(v.KeyType) {
 		return fmt.Errorf("map has: KeyType %s not supported (Phase 3.2 supports int or string keys only)", v.KeyType)
 	}
-	if !isScalarValueType(v.ValueType) {
-		return fmt.Errorf("map has: ValueType %s not supported (Phase 3.2 supports scalar values only)", v.ValueType)
+	if !isMapValueType(v.ValueType) {
+		return fmt.Errorf("map has: ValueType %s not supported (Phase 3.2/3.4e supports scalar or list values)", v.ValueType)
 	}
 	if err := verifyExprCtx(ctx, v.Key); err != nil {
 		return fmt.Errorf("map has key: %w", err)
@@ -1534,8 +1645,8 @@ func verifyMapLenExpr(ctx *verifyCtx, v *MapLenExpr) error {
 	if !isScalarKeyType(v.KeyType) {
 		return fmt.Errorf("map len: KeyType %s not supported (Phase 3.2 supports int or string keys only)", v.KeyType)
 	}
-	if !isScalarValueType(v.ValueType) {
-		return fmt.Errorf("map len: ValueType %s not supported (Phase 3.2 supports scalar values only)", v.ValueType)
+	if !isMapValueType(v.ValueType) {
+		return fmt.Errorf("map len: ValueType %s not supported (Phase 3.2/3.4e supports scalar or list values)", v.ValueType)
 	}
 	return nil
 }
@@ -1562,14 +1673,15 @@ func verifyMapKeysExpr(ctx *verifyCtx, v *MapKeysExpr) error {
 	if !isScalarKeyType(v.KeyType) {
 		return fmt.Errorf("map keys: KeyType %s not supported (Phase 3.2 supports int or string keys only)", v.KeyType)
 	}
-	if !isScalarValueType(v.ValueType) {
-		return fmt.Errorf("map keys: ValueType %s not supported (Phase 3.2 supports scalar values only)", v.ValueType)
+	if !isMapValueType(v.ValueType) {
+		return fmt.Errorf("map keys: ValueType %s not supported (Phase 3.2/3.4e supports scalar or list values)", v.ValueType)
 	}
 	return nil
 }
 
 // verifyMapValuesExpr checks `values(m)`. Result is TypeList; the
-// list's element type is ValueType.
+// list's element type is ValueType. For map<K,list<V>>, the result is
+// list<list<V>> and ListValueElemType carries the inner V.
 func verifyMapValuesExpr(ctx *verifyCtx, v *MapValuesExpr) error {
 	if v.Receiver == nil {
 		return errors.New("map values with nil Receiver")
@@ -1589,8 +1701,18 @@ func verifyMapValuesExpr(ctx *verifyCtx, v *MapValuesExpr) error {
 	if !isScalarKeyType(v.KeyType) {
 		return fmt.Errorf("map values: KeyType %s not supported (Phase 3.2 supports int or string keys only)", v.KeyType)
 	}
-	if !isScalarValueType(v.ValueType) {
-		return fmt.Errorf("map values: ValueType %s not supported (Phase 3.2 supports scalar values only)", v.ValueType)
+	if !isMapValueType(v.ValueType) {
+		return fmt.Errorf("map values: ValueType %s not supported (Phase 3.2/3.4e supports scalar or list values)", v.ValueType)
+	}
+	if v.ValueType == TypeList {
+		if rlv := exprListValueElemType(v.Receiver); rlv != v.ListValueElemType {
+			return fmt.Errorf("map values: receiver is map<_,list<%s>>, ListValueElemType stamped is %s", rlv, v.ListValueElemType)
+		}
+		if !isScalarElemType(v.ListValueElemType) {
+			return fmt.Errorf("map values: map<_,list<T>> requires scalar inner, got ListValueElemType %s", v.ListValueElemType)
+		}
+	} else if v.ListValueElemType != TypeInvalid {
+		return fmt.Errorf("map values: ListValueElemType set on map<_,%s> (only valid when value is list)", v.ValueType)
 	}
 	return nil
 }

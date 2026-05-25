@@ -1,0 +1,6 @@
+let m: map<int, list<int>> = {1: [10, 20, 30], 2: [40, 50]}
+let vs = values(m)
+for row in vs {
+  print(len(row))
+  print(row[0])
+}
