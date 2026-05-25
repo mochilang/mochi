@@ -30,7 +30,7 @@ Reproducibility is the user-facing supply-chain story: without byte-identical bu
 |------|--------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 17.0 | `SOURCE_DATE_EPOCH` honoured; `__DATE__` / `__TIME__` never embedded. `TestPhase17Repro` gate: build same fixture twice with fixed SOURCE_DATE_EPOCH, assert SHA-256 equality. | LANDED 2026-05-25 21:46 (GMT+7) | — | — |
 | 17.1 | `-ffile-prefix-map=<workDir>=.` and `-fdebug-prefix-map=<workDir>=.` strip absolute tempdir paths from debug info; `-Wl,-no_uuid` (macOS) suppresses random LC_UUID load command. Both wired into `Driver.Build` unconditionally. | LANDED 2026-05-25 21:46 (GMT+7) | — | — |
-| 17.2 | Function/global ordering by sorted IR identifier (never hash-map iteration order)                                  | NOT STARTED | —      | — |
+| 17.2 | Function/global ordering audit: `collect*` functions use `map[string]struct{}` internally but all `emit*` callers sort the result before iteration; `prog.Records` and `prog.Functions` are append-ordered in source declaration order. `TestPhase17IROrdering` gate (4 fixtures: list_of_list, list_of_map, map_of_list, sum_types). | LANDED 2026-05-25 22:01 (GMT+7) | — | — |
 | 17.3 | All non-libc deps static-linked; bundled toolchain pinned by SHA-256                                               | NOT STARTED | —      | — |
 | 17.4 | Sample artefact SHA-256 published per release tag                                                                  | NOT STARTED | —      | — |
 | 17.5 | `.github/workflows/transpiler3-c-repro.yml` rebuilds the corpus twice and diffs SHA-256                            | NOT STARTED | —      | — |
