@@ -166,7 +166,7 @@ func (d *Driver) Build(src, out, target, profile string) error {
 		return fmt.Errorf("transpiler3/c/build: write gen: %w", err)
 	}
 
-	cc, ccPrefix, err := d.resolveCC()
+	cc, ccPrefix, err := d.resolveCCForTarget(target)
 	if err != nil {
 		return fmt.Errorf("transpiler3/c/build: %w", err)
 	}
@@ -176,6 +176,11 @@ func (d *Driver) Build(src, out, target, profile string) error {
 		return fmt.Errorf("transpiler3/c/build: collect runtime sources: %w", err)
 	}
 	ccArgs := append([]string{}, ccPrefix...)
+	// Phase 11: pass -target=<triple> when cross-compiling. zig cc accepts
+	// this flag; host clang/gcc accept it only for supported targets.
+	if target != "" {
+		ccArgs = append(ccArgs, "-target", target)
+	}
 	ccArgs = append(ccArgs,
 		"-std=c2x",
 		"-Wall", "-Wextra", "-pedantic",
@@ -269,6 +274,33 @@ func writeRuntimeFiles(workDir string) error {
 		}
 		return os.WriteFile(dst, data, 0o644)
 	})
+}
+
+// resolveCCForTarget is like resolveCC but, when target is non-empty,
+// prefers zig cc (which ships every musl and wasi-libc sysroot in-process)
+// over the host compiler. The -target=<triple> flag added by the caller
+// then tells zig cc which sysroot to use.
+//
+// Phase 11 wires cross-compilation through this path: any non-empty
+// target triple means "cross-compile via zig cc unless the caller
+// explicitly set Driver.CC".
+func (d *Driver) resolveCCForTarget(target string) (string, []string, error) {
+	if d.CC != "" {
+		exe, prefix := splitCC(d.CC)
+		return exe, prefix, nil
+	}
+	if env := strings.TrimSpace(os.Getenv("CC")); env != "" {
+		exe, prefix := splitCC(env)
+		return exe, prefix, nil
+	}
+	if target != "" && !d.NoZigFallback {
+		zigExe, err := zig.Install()
+		if err != nil {
+			return "", nil, fmt.Errorf("cross-compile requires zig cc (target=%q) but zig install failed: %w", target, err)
+		}
+		return zigExe, []string{"cc"}, nil
+	}
+	return d.resolveCC()
 }
 
 // resolveCC looks up the C compiler to invoke and returns its

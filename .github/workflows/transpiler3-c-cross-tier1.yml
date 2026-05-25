@@ -1,0 +1,88 @@
+name: Transpiler3-C Cross Tier-1 Matrix
+
+# MEP-45 Phase 11: cross-compile the fixture corpus for all 8 tier-1 triples
+# and run the produced binaries where possible.
+#
+# Coverage per runner:
+#
+#   ubuntu-latest (linux/amd64):
+#     - 11.0 x86_64-linux-gnu  : native build + run
+#     - 11.1 x86_64-linux-musl : zig cc cross + native run
+#     - 11.2 aarch64-linux-gnu : zig cc cross + qemu-aarch64-static run
+#     - 11.3 aarch64-linux-musl: zig cc cross + qemu-aarch64-static run
+#
+#   macos-latest (darwin/arm64):
+#     - 11.4 aarch64-darwin    : native build + run
+#
+# Triples 11.5 (x86_64-darwin cross), 11.6 (windows-msvc), 11.7
+# (windows-gnu) are not gated here due to runner limitations.
+# They are tracked as separate CI expansions.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  cross-linux:
+    name: Tier-1 cross (ubuntu-latest)
+    runs-on: ubuntu-latest
+
+    env:
+      MOCHI_TEST_ZIG_DOWNLOAD: '1'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Install qemu-aarch64-static
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qemu-user-static
+          qemu-aarch64-static --version | head -1
+
+      - name: Phase 11.0 - x86_64-linux-gnu native
+        run: |
+          go test -vet=off -v -count=1 -timeout=120s \
+            ./transpiler3/c/build/ -run TestPhase11NativeLinux
+
+      - name: Phase 11.1 - x86_64-linux-musl (zig cc)
+        run: |
+          go test -vet=off -v -count=1 -timeout=300s \
+            ./transpiler3/c/build/ -run TestPhase11MuslX86
+
+      - name: Phase 11.3 - aarch64-linux-musl (zig cc + qemu)
+        run: |
+          go test -vet=off -v -count=1 -timeout=300s \
+            ./transpiler3/c/build/ -run TestPhase11AArch64LinuxMusl
+
+      - name: Phase 11.2 - aarch64-linux-gnu (zig cc + qemu)
+        run: |
+          go test -vet=off -v -count=1 -timeout=300s \
+            ./transpiler3/c/build/ -run TestPhase11AArch64LinuxGnu
+
+  cross-macos:
+    name: Tier-1 cross (macos-latest)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Phase 11.4 - aarch64-darwin native
+        run: |
+          go test -vet=off -v -count=1 -timeout=120s \
+            ./transpiler3/c/build/ -run TestPhase11NativeDarwin
