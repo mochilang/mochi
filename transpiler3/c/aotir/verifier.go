@@ -1319,6 +1319,36 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("StrConvertExpr: operand must be int/float/bool/string, got %s", t)
 		}
 		return verifyExprCtx(ctx, v.Operand)
+	case *NumCastExpr:
+		if v.Operand == nil {
+			return fmt.Errorf("NumCastExpr: nil operand")
+		}
+		if v.Operand.Type() != TypeFloat {
+			return fmt.Errorf("NumCastExpr: operand must be TypeFloat, got %s", v.Operand.Type())
+		}
+		return verifyExprCtx(ctx, v.Operand)
+	case *ListMinExpr:
+		if v.Receiver == nil {
+			return fmt.Errorf("ListMinExpr: nil receiver")
+		}
+		if v.Receiver.Type() != TypeList {
+			return fmt.Errorf("ListMinExpr: receiver must be TypeList, got %s", v.Receiver.Type())
+		}
+		if !isScalarElemType(v.ElemType) {
+			return fmt.Errorf("ListMinExpr: element type must be scalar, got %s", v.ElemType)
+		}
+		return verifyExprCtx(ctx, v.Receiver)
+	case *ListMaxExpr:
+		if v.Receiver == nil {
+			return fmt.Errorf("ListMaxExpr: nil receiver")
+		}
+		if v.Receiver.Type() != TypeList {
+			return fmt.Errorf("ListMaxExpr: receiver must be TypeList, got %s", v.Receiver.Type())
+		}
+		if !isScalarElemType(v.ElemType) {
+			return fmt.Errorf("ListMaxExpr: element type must be scalar, got %s", v.ElemType)
+		}
+		return verifyExprCtx(ctx, v.Receiver)
 	case *AppendExpr:
 		return verifyAppendExpr(ctx, v)
 	case *ListSortAscExpr:

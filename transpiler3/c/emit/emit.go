@@ -938,6 +938,12 @@ func walkExprListOfMap(e aotir.Expr, add func(aotir.Type, aotir.Type, aotir.Type
 	case *aotir.ListSliceExpr:
 		add(v.ElemType, v.MapElemKeyType, v.MapElemValueType)
 		walkExprListOfMap(v.Receiver, add)
+	case *aotir.NumCastExpr:
+		walkExprListOfMap(v.Operand, add)
+	case *aotir.ListMinExpr:
+		walkExprListOfMap(v.Receiver, add)
+	case *aotir.ListMaxExpr:
+		walkExprListOfMap(v.Receiver, add)
 	case *aotir.VarRef:
 		add(v.ElemType, v.MapElemKeyType, v.MapElemValueType)
 	case *aotir.CallExpr:
@@ -1207,6 +1213,12 @@ func walkExprNodeVisit(e aotir.Expr, visit func(aotir.Expr)) {
 		walkExprNodeVisit(v.Receiver, visit)
 		walkExprNodeVisit(v.Start, visit)
 		walkExprNodeVisit(v.End, visit)
+	case *aotir.NumCastExpr:
+		walkExprNodeVisit(v.Operand, visit)
+	case *aotir.ListMinExpr:
+		walkExprNodeVisit(v.Receiver, visit)
+	case *aotir.ListMaxExpr:
+		walkExprNodeVisit(v.Receiver, visit)
 	case *aotir.FieldAccess:
 		walkExprNodeVisit(v.Receiver, visit)
 	case *aotir.RecordLit:
@@ -1399,6 +1411,12 @@ func walkExprMapOfList(e aotir.Expr, add func(aotir.Type, aotir.Type, aotir.Type
 	case *aotir.ListSortAscExpr:
 		walkExprMapOfList(v.Receiver, add)
 	case *aotir.ListSliceExpr:
+		walkExprMapOfList(v.Receiver, add)
+	case *aotir.NumCastExpr:
+		walkExprMapOfList(v.Operand, add)
+	case *aotir.ListMinExpr:
+		walkExprMapOfList(v.Receiver, add)
+	case *aotir.ListMaxExpr:
 		walkExprMapOfList(v.Receiver, add)
 	case *aotir.FieldAccess:
 		walkExprMapOfList(v.Receiver, add)
@@ -1663,6 +1681,12 @@ func walkExprInner(e aotir.Expr, visit func(aotir.Type, aotir.Type)) {
 	case *aotir.ListSliceExpr:
 		visit(v.ElemType, v.InnerElemType)
 		walkExprInner(v.Receiver, visit)
+	case *aotir.NumCastExpr:
+		walkExprInner(v.Operand, visit)
+	case *aotir.ListMinExpr:
+		walkExprInner(v.Receiver, visit)
+	case *aotir.ListMaxExpr:
+		walkExprInner(v.Receiver, visit)
 	case *aotir.VarRef:
 		visit(v.ElemType, v.InnerElemType)
 	case *aotir.CallExpr:
@@ -1855,6 +1879,12 @@ func walkExpr(e aotir.Expr, visit func(aotir.Type, string)) {
 	case *aotir.ListSliceExpr:
 		visit(v.ElemType, v.ElemRecordName)
 		walkExpr(v.Receiver, visit)
+	case *aotir.NumCastExpr:
+		walkExpr(v.Operand, visit)
+	case *aotir.ListMinExpr:
+		walkExpr(v.Receiver, visit)
+	case *aotir.ListMaxExpr:
+		walkExpr(v.Receiver, visit)
 	case *aotir.VarRef:
 		visit(v.ElemType, v.ElemRecordName)
 	case *aotir.CallExpr:
@@ -1987,6 +2017,16 @@ func emitExpr(e aotir.Expr) (string, error) {
 		default: // TypeString: identity
 			return operand, nil
 		}
+	case *aotir.NumCastExpr:
+		operand, err := emitExpr(v.Operand)
+		if err != nil {
+			return "", fmt.Errorf("NumCastExpr operand: %w", err)
+		}
+		return "(int64_t)(" + operand + ")", nil
+	case *aotir.ListMinExpr:
+		return emitListMinExpr(v)
+	case *aotir.ListMaxExpr:
+		return emitListMaxExpr(v)
 	case *aotir.AppendExpr:
 		return emitAppendExpr(v)
 	case *aotir.ListSortAscExpr:
@@ -2173,6 +2213,30 @@ func emitListSliceExpr(v *aotir.ListSliceExpr) (string, error) {
 		return "", fmt.Errorf("slice end: %w", err)
 	}
 	return fmt.Sprintf("mochi_list_%s_slice(%s, %s, %s)", suf, recv, start, end), nil
+}
+
+func emitListMinExpr(v *aotir.ListMinExpr) (string, error) {
+	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType, v.MapElemKeyType, v.MapElemValueType)
+	if err != nil {
+		return "", fmt.Errorf("min: %w", err)
+	}
+	recv, err := emitExpr(v.Receiver)
+	if err != nil {
+		return "", fmt.Errorf("min receiver: %w", err)
+	}
+	return fmt.Sprintf("mochi_list_%s_min(%s)", suf, recv), nil
+}
+
+func emitListMaxExpr(v *aotir.ListMaxExpr) (string, error) {
+	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType, v.MapElemKeyType, v.MapElemValueType)
+	if err != nil {
+		return "", fmt.Errorf("max: %w", err)
+	}
+	recv, err := emitExpr(v.Receiver)
+	if err != nil {
+		return "", fmt.Errorf("max receiver: %w", err)
+	}
+	return fmt.Sprintf("mochi_list_%s_max(%s)", suf, recv), nil
 }
 
 // emitMapLit renders a MapLit as a `mochi_map_<K>_<V>_lit` call.

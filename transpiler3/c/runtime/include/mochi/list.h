@@ -62,6 +62,9 @@ int64_t        mochi_list_i64_len(mochi_list_i64 xs);
 mochi_list_i64 mochi_list_i64_sort_asc(mochi_list_i64 xs);
 /* Phase 8.1: slice(xs, start, end) returns xs[start:end] (clamped). */
 mochi_list_i64 mochi_list_i64_slice(mochi_list_i64 xs, int64_t start, int64_t end);
+/* Phase 2.5: min/max return the minimum/maximum element; panic if empty. */
+int64_t mochi_list_i64_min(mochi_list_i64 xs);
+int64_t mochi_list_i64_max(mochi_list_i64 xs);
 
 /* --- float (double) ------------------------------------------------- */
 
@@ -78,6 +81,9 @@ int64_t        mochi_list_f64_len(mochi_list_f64 xs);
 /* Phase 8.1 */
 mochi_list_f64 mochi_list_f64_sort_asc(mochi_list_f64 xs);
 mochi_list_f64 mochi_list_f64_slice(mochi_list_f64 xs, int64_t start, int64_t end);
+/* Phase 2.5 */
+double mochi_list_f64_min(mochi_list_f64 xs);
+double mochi_list_f64_max(mochi_list_f64 xs);
 
 /* --- bool (int 0/1) ------------------------------------------------- */
 
@@ -110,6 +116,9 @@ int64_t        mochi_list_str_len(mochi_list_str xs);
 /* Phase 8.1 */
 mochi_list_str mochi_list_str_sort_asc(mochi_list_str xs);
 mochi_list_str mochi_list_str_slice(mochi_list_str xs, int64_t start, int64_t end);
+/* Phase 2.5 */
+const char *mochi_list_str_min(mochi_list_str xs);
+const char *mochi_list_str_max(mochi_list_str xs);
 
 #ifdef __cplusplus
 }
