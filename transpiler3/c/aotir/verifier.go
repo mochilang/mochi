@@ -1411,6 +1411,67 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("ListMaxExpr: element type must be scalar, got %s", v.ElemType)
 		}
 		return verifyExprCtx(ctx, v.Receiver)
+	case *ListContainsExpr:
+		if v.List == nil {
+			return fmt.Errorf("ListContainsExpr: nil List")
+		}
+		if v.List.Type() != TypeList {
+			return fmt.Errorf("ListContainsExpr: List must be TypeList, got %s", v.List.Type())
+		}
+		if v.Value == nil {
+			return fmt.Errorf("ListContainsExpr: nil Value")
+		}
+		if !isScalarElemType(v.ElemType) {
+			return fmt.Errorf("ListContainsExpr: ElemType must be scalar, got %s", v.ElemType)
+		}
+		if v.Value.Type() != v.ElemType {
+			return fmt.Errorf("ListContainsExpr: Value type %s does not match ElemType %s", v.Value.Type(), v.ElemType)
+		}
+		if err := verifyExprCtx(ctx, v.List); err != nil {
+			return fmt.Errorf("ListContainsExpr list: %w", err)
+		}
+		return verifyExprCtx(ctx, v.Value)
+	case *ListSumExpr:
+		if v.Receiver == nil {
+			return fmt.Errorf("ListSumExpr: nil receiver")
+		}
+		if v.Receiver.Type() != TypeList {
+			return fmt.Errorf("ListSumExpr: receiver must be TypeList, got %s", v.Receiver.Type())
+		}
+		if v.ElemType != TypeInt && v.ElemType != TypeFloat {
+			return fmt.Errorf("ListSumExpr: ElemType must be int or float, got %s", v.ElemType)
+		}
+		return verifyExprCtx(ctx, v.Receiver)
+	case *MathCallExpr:
+		if v.Arg == nil {
+			return fmt.Errorf("MathCallExpr: nil Arg")
+		}
+		switch v.Func {
+		case "abs_i64":
+			if v.Arg.Type() != TypeInt {
+				return fmt.Errorf("MathCallExpr abs_i64: arg must be int, got %s", v.Arg.Type())
+			}
+			if v.Result != TypeInt {
+				return fmt.Errorf("MathCallExpr abs_i64: result must be int, got %s", v.Result)
+			}
+		case "abs_f64":
+			if v.Arg.Type() != TypeFloat {
+				return fmt.Errorf("MathCallExpr abs_f64: arg must be float, got %s", v.Arg.Type())
+			}
+			if v.Result != TypeFloat {
+				return fmt.Errorf("MathCallExpr abs_f64: result must be float, got %s", v.Result)
+			}
+		case "floor", "ceil":
+			if v.Arg.Type() != TypeFloat {
+				return fmt.Errorf("MathCallExpr %s: arg must be float, got %s", v.Func, v.Arg.Type())
+			}
+			if v.Result != TypeFloat {
+				return fmt.Errorf("MathCallExpr %s: result must be float, got %s", v.Func, v.Result)
+			}
+		default:
+			return fmt.Errorf("MathCallExpr: unknown Func %q", v.Func)
+		}
+		return verifyExprCtx(ctx, v.Arg)
 	case *AppendExpr:
 		return verifyAppendExpr(ctx, v)
 	case *ListSortAscExpr:

@@ -1,0 +1,3 @@
+let xs: list<string> = ["hello", "world"]
+print("hello" in xs)
+print("foo" in xs)

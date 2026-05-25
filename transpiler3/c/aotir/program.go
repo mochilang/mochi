@@ -652,6 +652,39 @@ type ListMaxExpr struct {
 
 func (e *ListMaxExpr) Type() Type { return e.ElemType }
 
+// ListContainsExpr is the `val in list<T>` membership test. The emitter
+// calls `mochi_list_<T>_contains(xs, val)` which returns 1 if val is in
+// xs and 0 otherwise. Phase 2.6.
+type ListContainsExpr struct {
+	List     Expr
+	Value    Expr
+	ElemType Type // element type of the list (int, float, bool, string)
+}
+
+func (*ListContainsExpr) Type() Type { return TypeBool }
+
+// ListSumExpr is the `sum(xs)` builtin that returns the sum of list
+// elements. The emitter calls `mochi_list_<T>_sum(xs)`. Phase 2.6.
+// ElemType determines int vs float return type.
+type ListSumExpr struct {
+	Receiver Expr
+	ElemType Type // TypeInt or TypeFloat
+}
+
+func (e *ListSumExpr) Type() Type { return e.ElemType }
+
+// MathCallExpr is an inline math builtin (abs, floor, ceil) that maps
+// 1:1 to a C math.h function. The emitter renders it as
+// `<Func>(operand)` with an appropriate cast. Phase 2.6.
+// Func is one of: "abs_i64", "abs_f64", "floor", "ceil".
+type MathCallExpr struct {
+	Func   string // "abs_i64", "abs_f64", "floor", "ceil"
+	Arg    Expr
+	Result Type // TypeInt or TypeFloat
+}
+
+func (e *MathCallExpr) Type() Type { return e.Result }
+
 // StrIndexExpr is the `s[i]` operation on a string. The emitter calls
 // mochi_str_index(s, i), which returns a freshly allocated one-codepoint
 // string (or "" on out-of-bounds). Phase 6.1.

@@ -1890,6 +1890,23 @@ func (l *lowerer) lowerBinary(bin *parser.BinaryExpr) (aotir.Expr, error) {
 			}
 			continue
 		}
+		if op.Op == "in" && right.Type() == aotir.TypeList {
+			elem := exprElemType(right)
+			switch elem {
+			case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+			default:
+				return nil, fmt.Errorf("`in` list: element type must be scalar, got %s", elem)
+			}
+			if left.Type() != elem {
+				return nil, fmt.Errorf("`in` list: value type is %s, list element type is %s", left.Type(), elem)
+			}
+			left = &aotir.ListContainsExpr{
+				List:     right,
+				Value:    left,
+				ElemType: elem,
+			}
+			continue
+		}
 		bop, res, err := opForTypes(op.Op, left.Type(), right.Type())
 		if err != nil {
 			return nil, err
@@ -3133,6 +3150,26 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 			return l.lowerListMaxCall(call)
 		}
 	}
+	if call.Func == "sum" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerListSumCall(call)
+		}
+	}
+	if call.Func == "abs" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerAbsCall(call)
+		}
+	}
+	if call.Func == "floor" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerFloorCall(call)
+		}
+	}
+	if call.Func == "ceil" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerCeilCall(call)
+		}
+	}
 	// Phase 5.0: check if this is a call to a fun-typed variable in scope.
 	if b, ok := l.scope.lookup(call.Func); ok && b.t == aotir.TypeFun {
 		if b.funSig == nil {
@@ -3541,6 +3578,77 @@ func (l *lowerer) lowerListMaxCall(call *parser.CallExpr) (aotir.Expr, error) {
 		Receiver: recv,
 		ElemType: elem,
 	}, nil
+}
+
+// lowerListSumCall lowers `sum(xs)` to a ListSumExpr.
+func (l *lowerer) lowerListSumCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("sum() takes exactly one argument, got %d", len(call.Args))
+	}
+	recv, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("sum() arg: %w", err)
+	}
+	if recv.Type() != aotir.TypeList {
+		return nil, fmt.Errorf("sum() argument must be a list, got %s", recv.Type())
+	}
+	elem := exprElemType(recv)
+	if elem != aotir.TypeInt && elem != aotir.TypeFloat {
+		return nil, fmt.Errorf("sum() list element type must be int or float, got %s", elem)
+	}
+	return &aotir.ListSumExpr{
+		Receiver: recv,
+		ElemType: elem,
+	}, nil
+}
+
+// lowerAbsCall lowers `abs(x)` to a MathCallExpr.
+func (l *lowerer) lowerAbsCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("abs() takes exactly one argument, got %d", len(call.Args))
+	}
+	arg, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("abs() arg: %w", err)
+	}
+	switch arg.Type() {
+	case aotir.TypeInt:
+		return &aotir.MathCallExpr{Func: "abs_i64", Arg: arg, Result: aotir.TypeInt}, nil
+	case aotir.TypeFloat:
+		return &aotir.MathCallExpr{Func: "abs_f64", Arg: arg, Result: aotir.TypeFloat}, nil
+	default:
+		return nil, fmt.Errorf("abs() argument must be int or float, got %s", arg.Type())
+	}
+}
+
+// lowerFloorCall lowers `floor(x)` to a MathCallExpr.
+func (l *lowerer) lowerFloorCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("floor() takes exactly one argument, got %d", len(call.Args))
+	}
+	arg, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("floor() arg: %w", err)
+	}
+	if arg.Type() != aotir.TypeFloat {
+		return nil, fmt.Errorf("floor() argument must be float, got %s", arg.Type())
+	}
+	return &aotir.MathCallExpr{Func: "floor", Arg: arg, Result: aotir.TypeFloat}, nil
+}
+
+// lowerCeilCall lowers `ceil(x)` to a MathCallExpr.
+func (l *lowerer) lowerCeilCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("ceil() takes exactly one argument, got %d", len(call.Args))
+	}
+	arg, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("ceil() arg: %w", err)
+	}
+	if arg.Type() != aotir.TypeFloat {
+		return nil, fmt.Errorf("ceil() argument must be float, got %s", arg.Type())
+	}
+	return &aotir.MathCallExpr{Func: "ceil", Arg: arg, Result: aotir.TypeFloat}, nil
 }
 
 // lowerAppendCall lowers the `append(xs, v)` builtin to an

@@ -34,6 +34,7 @@ Primitives + control flow is the smallest set that gets a real (non-toy) Mochi p
 | 2.3 | Integer divide-by-zero raises `MOCHI_ERR_DIVZERO` (checked profile); UB under `--fast-int`         | IN PROGRESS | —      | — |
 | 2.4 | Float NaN propagation matches vm3 byte-for-byte (IEEE 754 round-trip on `%.17g`)                   | IN PROGRESS | —      | — |
 | 2.5 | `int(x)` float-to-int truncation; `min(xs)` and `max(xs)` on list&lt;int&gt;, list&lt;float&gt;, list&lt;string&gt; | LANDED 2026-05-25 18:08 (GMT+7) | — | — |
+| 2.6 | `val in list<T>` containment; `sum(list<int/float>)`; `abs(int/float)`; `floor(float)`; `ceil(float)` | LANDED 2026-05-25 20:10 (GMT+7) | — | — |
 
 ## Sub-phase 2.0 -- 2026-05-22 (GMT+7)
 
@@ -465,6 +466,26 @@ follow-up.
 ### Test set (2.5)
 
 - `transpiler3/c/build/phase02_5_test.go::TestPhase2TypeCasts` -- end-to-end gate across every `tests/transpiler3/c/fixtures/type_cast/<name>` directory (8 fixtures): `int_cast_basic`, `int_cast_negative`, `int_cast_large`, `list_min_int`, `list_max_int`, `list_min_float`, `list_max_string`, `min_max_combined`.
+
+## Sub-phase 2.6 -- 2026-05-25 20:10 (GMT+7)
+
+`val in list<T>` containment check; `sum(xs)` for int and float lists; `abs(x)` for int and float; `floor(x)` and `ceil(x)` for float. These are the remaining common builtins that vm3 supports (or that are in the type checker) and that were missing from the transpiler.
+
+### Goal-alignment audit (2.6)
+
+`val in list<T>` is used in every filter query that tests membership in a small set; without it programs have to write explicit for-loops. `sum(xs)` is used in every aggregation fixture. `abs` / `floor` / `ceil` appear in numeric programs that mix integer and floating-point computation. All four unlock real programs that currently fail with "not supported" errors in the transpiler.
+
+### Decisions made (2.6)
+
+- **`val in list<T>` produces `ListContainsExpr`.** Same pattern as `MapHasExpr` for maps; the expr returns TypeBool. Runtime functions `mochi_list_i64_contains`, `mochi_list_f64_contains`, `mochi_list_bool_contains`, `mochi_list_str_contains` added to `list.c`/`list.h`.
+- **`sum` dispatch by elem type.** `lowerListSumCall` inspects the list's element type to produce `ListSumExpr{ElemType: TypeInt}` or `ListSumExpr{ElemType: TypeFloat}`. The `ListSumExpr.Type()` returns the elem type so the caller gets the right C type without an explicit cast.
+- **`abs`/`floor`/`ceil` use `MathCallExpr`.** A single IR node with a `Func` string field (`"abs_i64"`, `"abs_f64"`, `"floor"`, `"ceil"`) covers all four variants. The emit pass maps each to inline C: `abs_i64` emits `(x < 0 ? -x : x)` (avoids `llabs` / `<stdlib.h>` interaction with user-defined `abs` shadows), `abs_f64` calls `fabs`, `floor`/`ceil` call the math.h functions.
+- **`#include <math.h>` added to the C prologue.** Required for `fabs`, `floor`, `ceil`. Added unconditionally alongside the other runtime headers.
+- **`sum` on float lists prints with `%.17g`.** `sum([1.1, 2.2, 3.3])` accumulates IEEE 754 rounding and prints as `6.5999999999999996`, not `6.6`. The fixture `expect.txt` captures the actual C output. vm3 prints `6.6` (shortest decimal via Go); this is a known divergence for float accumulation, consistent with how all other float operations are handled in the transpiler.
+
+### Test set (2.6)
+
+- `transpiler3/c/build/phase02_6_test.go::TestPhase2MathBuiltins` -- end-to-end gate across `tests/transpiler3/c/fixtures/math_builtins/` (8 fixtures): `list_contains_int`, `list_contains_str`, `list_contains_bool`, `sum_int`, `sum_float`, `abs_values`, `floor_ceil`, `math_combined`.
 
 ## Decisions made
 
