@@ -602,6 +602,8 @@ type lbinding struct {
 	listValElem  aotir.Type    // inner list elem when t==TypeMap && value==TypeList (Phase 3.4e)
 	funSig       *aotir.FunSig // function signature when t==TypeFun (Phase 5.0)
 	chanElem     aotir.Type    // element type when t==TypeChan (Phase 9.1)
+	streamElem   aotir.Type    // element type when t==TypeStream (Phase 9.2)
+	subElem      aotir.Type    // element type when t==TypeSub (Phase 9.2)
 	// emitName overrides the C identifier emitted for this variable when
 	// non-empty. Used by Phase 5.1 capturing closures to make captured
 	// variables emit as `__e->fieldname` instead of the original name.
@@ -673,6 +675,9 @@ func (l *lowerer) lowerStatement(out *aotir.Block, st *parser.Statement) error {
 	case st.Rule != nil:
 		// Phase 15.0: Datalog rule -- collect for later query evaluation.
 		return l.collectRule(st.Rule)
+	case st.EmitCall != nil:
+		// Phase 9.2: emit(stream, val) parsed as EmitCallStmt (keyword form).
+		return l.lowerEmitCallStmt(out, st.EmitCall)
 	}
 	return fmt.Errorf("unsupported statement in Phase 3.1")
 }
@@ -703,6 +708,8 @@ func (l *lowerer) lowerExprStmt(out *aotir.Block, es *parser.ExprStmt) error {
 	if call.Func == "send" {
 		return l.lowerSendCall(out, call)
 	}
+	// Phase 9.2: emit(stream, val) is dispatched from lowerStatement via
+	// st.EmitCall (keyword-based EmitCallStmt) and never reaches lowerExprStmt.
 	// Phase 6.5: file I/O void calls.
 	if call.Func == "writeFile" {
 		return l.lowerWriteFileCall(out, call)
@@ -926,6 +933,27 @@ func isMakeChanCall(e *parser.Expr) bool {
 // makeChanCallArg extracts the single capacity argument from a make_chan call.
 // Callers must call isMakeChanCall first.
 func makeChanCallArg(e *parser.Expr) *parser.Expr {
+	return e.Binary.Left.Value.Target.Call.Args[0]
+}
+
+// isMakeStreamCall reports whether e is a bare `make_stream(N)` call with
+// exactly one argument. Used by lowerBinding for the Phase 9.2 typed-stream
+// fast path (`let s: stream<T> = make_stream(N)`).
+func isMakeStreamCall(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return false
+	}
+	c := u.Value.Target.Call
+	return c != nil && c.Func == "make_stream" && len(c.Args) == 1
+}
+
+// makeStreamCallArg extracts the single capacity argument from a make_stream call.
+// Callers must call isMakeStreamCall first.
+func makeStreamCallArg(e *parser.Expr) *parser.Expr {
 	return e.Binary.Left.Value.Target.Call.Args[0]
 }
 
@@ -1231,8 +1259,6 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 			return nil
 		}
 		// Phase 9.1: `let ch: chan<T> = make_chan(N)` fast path.
-		// The declared annotation supplies the element type; the init call
-		// must be exactly make_chan with a single integer argument.
 		if isMakeChanCall(init) {
 			tr, err := typeFromRef(l.records, l.unions, declared)
 			if err != nil {
@@ -1256,6 +1282,33 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 				ChanElemType: tr.chanElem,
 				Init:         chanExpr,
 				Mutable:      mutable,
+			})
+			return nil
+		}
+		// Phase 9.2: `let s: stream<T> = make_stream(N)` fast path.
+		if isMakeStreamCall(init) {
+			tr, err := typeFromRef(l.records, l.unions, declared)
+			if err != nil {
+				return fmt.Errorf("binding %q type: %w", name, err)
+			}
+			if tr.t != aotir.TypeStream {
+				return fmt.Errorf("binding %q: make_stream() requires stream<T> annotation, got %s", name, tr.t)
+			}
+			capExpr, err := l.lowerExpr(makeStreamCallArg(init))
+			if err != nil {
+				return fmt.Errorf("binding %q make_stream cap: %w", name, err)
+			}
+			if capExpr.Type() != aotir.TypeInt {
+				return fmt.Errorf("binding %q make_stream: capacity must be int, got %s", name, capExpr.Type())
+			}
+			streamExpr := &aotir.StreamMakeExpr{Cap: capExpr, ElemType: tr.streamElem}
+			l.scope.vars[name] = lbinding{t: aotir.TypeStream, mutable: mutable, streamElem: tr.streamElem}
+			out.Statements = append(out.Statements, &aotir.LetStmt{
+				Name:           name,
+				VarType:        aotir.TypeStream,
+				StreamElemType: tr.streamElem,
+				Init:           streamExpr,
+				Mutable:        mutable,
 			})
 			return nil
 		}
@@ -1295,6 +1348,9 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	declFunSig := exprFunSig(value)
 	// Phase 9.1: declChanElem carries the element type when declType==TypeChan.
 	declChanElem := exprChanElemType(value)
+	// Phase 9.2: declStreamElem and declSubElem carry element types for stream/sub.
+	declStreamElem := exprStreamElemType(value)
+	declSubElem := exprSubElemType(value)
 	if declared != nil {
 		tr, err := typeFromRef(l.records, l.unions, declared)
 		if err != nil {
@@ -1354,6 +1410,12 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		if tr.chanElem != aotir.TypeInvalid {
 			declChanElem = tr.chanElem
 		}
+		if tr.streamElem != aotir.TypeInvalid {
+			declStreamElem = tr.streamElem
+		}
+		if tr.subElem != aotir.TypeInvalid {
+			declSubElem = tr.subElem
+		}
 	}
 	l.scope.vars[name] = lbinding{
 		t:            declType,
@@ -1370,6 +1432,8 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		listValElem:  declListValElem,
 		funSig:       declFunSig,
 		chanElem:     declChanElem,
+		streamElem:   declStreamElem,
+		subElem:      declSubElem,
 	}
 	out.Statements = append(out.Statements, &aotir.LetStmt{
 		Name:              name,
@@ -1386,6 +1450,8 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		ListValueElemType: declListValElem,
 		FunSig:            declFunSig,
 		ChanElemType:      declChanElem,
+		StreamElemType:    declStreamElem,
+		SubElemType:       declSubElem,
 		Init:              value,
 		Mutable:           mutable,
 	})
@@ -1857,6 +1923,71 @@ func (l *lowerer) lowerRecvCall(call *parser.CallExpr) (aotir.Expr, error) {
 	return &aotir.ChanRecvExpr{Chan: chanExpr, ElemType: elem}, nil
 }
 
+// lowerEmitCallStmt lowers the parser's EmitCallStmt (`emit(stream, val)`) to
+// a StreamEmitStmt. Phase 9.2. The `emit` keyword is reserved in the Mochi
+// lexer, so the parser surfaces this as a dedicated AST node rather than a
+// regular CallExpr.
+func (l *lowerer) lowerEmitCallStmt(out *aotir.Block, ec *parser.EmitCallStmt) error {
+	streamExpr, err := l.lowerExpr(ec.Stream)
+	if err != nil {
+		return fmt.Errorf("emit stream: %w", err)
+	}
+	if streamExpr.Type() != aotir.TypeStream {
+		return fmt.Errorf("emit: first argument must be stream<T>, got %s", streamExpr.Type())
+	}
+	elem := exprStreamElemType(streamExpr)
+	if elem == aotir.TypeInvalid {
+		return fmt.Errorf("emit: cannot determine element type of stream")
+	}
+	valExpr, err := l.lowerExpr(ec.Val)
+	if err != nil {
+		return fmt.Errorf("emit value: %w", err)
+	}
+	if valExpr.Type() != elem {
+		return fmt.Errorf("emit: stream element type is %s, value is %s", elem, valExpr.Type())
+	}
+	out.Statements = append(out.Statements, &aotir.StreamEmitStmt{Stream: streamExpr, Val: valExpr, ElemType: elem})
+	return nil
+}
+
+// lowerSubscribeCall lowers `subscribe(stream)` to a SubMakeExpr. Phase 9.2.
+func (l *lowerer) lowerSubscribeCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("subscribe() takes exactly 1 argument (stream), got %d", len(call.Args))
+	}
+	streamExpr, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("subscribe stream: %w", err)
+	}
+	if streamExpr.Type() != aotir.TypeStream {
+		return nil, fmt.Errorf("subscribe: argument must be stream<T>, got %s", streamExpr.Type())
+	}
+	elem := exprStreamElemType(streamExpr)
+	if elem == aotir.TypeInvalid {
+		return nil, fmt.Errorf("subscribe: cannot determine element type of stream")
+	}
+	return &aotir.SubMakeExpr{Stream: streamExpr, ElemType: elem}, nil
+}
+
+// lowerRecvSubCall lowers `recv_sub(sub)` to a SubRecvExpr. Phase 9.2.
+func (l *lowerer) lowerRecvSubCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("recv_sub() takes exactly 1 argument (sub), got %d", len(call.Args))
+	}
+	subExpr, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("recv_sub sub: %w", err)
+	}
+	if subExpr.Type() != aotir.TypeSub {
+		return nil, fmt.Errorf("recv_sub: argument must be sub<T>, got %s", subExpr.Type())
+	}
+	elem := exprSubElemType(subExpr)
+	if elem == aotir.TypeInvalid {
+		return nil, fmt.Errorf("recv_sub: cannot determine element type of subscriber")
+	}
+	return &aotir.SubRecvExpr{Sub: subExpr, ElemType: elem}, nil
+}
+
 // lowerReturn lowers a `return` statement. From main (unit return)
 // only a bare `return` is legal; from a user fn with non-unit return
 // the value expression is required and type-checked against the
@@ -1970,6 +2101,8 @@ type typeResolution struct {
 	listValElem  aotir.Type    // valid when t==TypeMap && value==TypeList (Phase 3.4e)
 	funSig       *aotir.FunSig // valid when t==TypeFun (Phase 5.0)
 	chanElem     aotir.Type    // valid when t==TypeChan (Phase 9.1)
+	streamElem   aotir.Type    // valid when t==TypeStream (Phase 9.2)
+	subElem      aotir.Type    // valid when t==TypeSub (Phase 9.2)
 }
 
 // typeFromRef maps a parser.TypeRef to a typeResolution. Phase 3.2
@@ -1990,6 +2123,19 @@ func typeFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.
 	}
 	if ref.Optional {
 		return typeResolution{}, fmt.Errorf("optional types land with Option in a later phase")
+	}
+	// Phase 9.2: stream<T> type annotation parsed via keyword branch.
+	if ref.StreamElem != nil {
+		inner, err := typeFromRef(records, unions, ref.StreamElem)
+		if err != nil {
+			return typeResolution{}, fmt.Errorf("stream element: %w", err)
+		}
+		switch inner.t {
+		case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+		default:
+			return typeResolution{}, fmt.Errorf("stream<T>: element type %s not supported in Phase 9.2 (scalar types only)", inner.t)
+		}
+		return typeResolution{t: aotir.TypeStream, streamElem: inner.t}, nil
 	}
 	// Phase 5.0: fun(T1, T2, ...): R type annotation.
 	if ref.Fun != nil {
@@ -2067,6 +2213,34 @@ func typeFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.
 				return typeResolution{}, fmt.Errorf("chan<T>: element type %s not supported in Phase 9.1 (scalar types only)", inner.t)
 			}
 			return typeResolution{t: aotir.TypeChan, chanElem: inner.t}, nil
+		case "stream":
+			if len(ref.Generic.Args) != 1 {
+				return typeResolution{}, fmt.Errorf("stream<T> takes exactly one type argument, got %d", len(ref.Generic.Args))
+			}
+			inner, err := typeFromRef(records, unions, ref.Generic.Args[0])
+			if err != nil {
+				return typeResolution{}, fmt.Errorf("stream element: %w", err)
+			}
+			switch inner.t {
+			case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+			default:
+				return typeResolution{}, fmt.Errorf("stream<T>: element type %s not supported in Phase 9.2 (scalar types only)", inner.t)
+			}
+			return typeResolution{t: aotir.TypeStream, streamElem: inner.t}, nil
+		case "sub":
+			if len(ref.Generic.Args) != 1 {
+				return typeResolution{}, fmt.Errorf("sub<T> takes exactly one type argument, got %d", len(ref.Generic.Args))
+			}
+			inner, err := typeFromRef(records, unions, ref.Generic.Args[0])
+			if err != nil {
+				return typeResolution{}, fmt.Errorf("sub element: %w", err)
+			}
+			switch inner.t {
+			case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+			default:
+				return typeResolution{}, fmt.Errorf("sub<T>: element type %s not supported in Phase 9.2 (scalar types only)", inner.t)
+			}
+			return typeResolution{t: aotir.TypeSub, subElem: inner.t}, nil
 		}
 		return typeResolution{}, fmt.Errorf("generic type %q not supported in Phase 3.2", ref.Generic.Name)
 	}
@@ -2212,6 +2386,36 @@ func exprChanElemType(e aotir.Expr) aotir.Type {
 	case *aotir.VarRef:
 		if v.VarType == aotir.TypeChan {
 			return v.ChanElemType
+		}
+	}
+	return aotir.TypeInvalid
+}
+
+// exprStreamElemType extracts the element type of a stream-typed aotir expression.
+// Phase 9.2 node coverage: StreamMakeExpr, VarRef{TypeStream}.
+func exprStreamElemType(e aotir.Expr) aotir.Type {
+	switch v := e.(type) {
+	case *aotir.StreamMakeExpr:
+		return v.ElemType
+	case *aotir.VarRef:
+		if v.VarType == aotir.TypeStream {
+			return v.StreamElemType
+		}
+	}
+	return aotir.TypeInvalid
+}
+
+// exprSubElemType extracts the element type of a sub-typed aotir expression.
+// Phase 9.2 node coverage: SubMakeExpr, VarRef{TypeSub}. SubRecvExpr is
+// intentionally excluded: it produces an element value (int, float, etc.),
+// not a sub handle, so its ElemType must not propagate here.
+func exprSubElemType(e aotir.Expr) aotir.Type {
+	switch v := e.(type) {
+	case *aotir.SubMakeExpr:
+		return v.ElemType
+	case *aotir.VarRef:
+		if v.VarType == aotir.TypeSub {
+			return v.SubElemType
 		}
 	}
 	return aotir.TypeInvalid
@@ -3262,6 +3466,8 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 				ValueType:         b.value,
 				ListValueElemType: b.listValElem,
 				ChanElemType:      b.chanElem,
+				StreamElemType:    b.streamElem,
+				SubElemType:       b.subElem,
 			}
 		}
 		for _, field := range pr.Selector.Tail {
@@ -3675,6 +3881,18 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	if call.Func == "recv" {
 		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
 			return l.lowerRecvCall(call)
+		}
+	}
+	// Phase 9.2: subscribe(stream) lowers to a SubMakeExpr.
+	if call.Func == "subscribe" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerSubscribeCall(call)
+		}
+	}
+	// Phase 9.2: recv_sub(sub) lowers to a SubRecvExpr.
+	if call.Func == "recv_sub" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerRecvSubCall(call)
 		}
 	}
 	// Phase 5.0: check if this is a call to a fun-typed variable in scope.

@@ -49,6 +49,7 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include \"mochi/fileio.h\"\n")
 	b.WriteString("#include \"mochi/csv.h\"\n")
 	b.WriteString("#include \"mochi/chan.h\"\n")
+	b.WriteString("#include \"mochi/stream.h\"\n")
 	listRecNames := collectListRecordElems(prog)
 	listListInners := collectListListInners(prog)
 	listMapPairs := collectListOfMapPairs(prog)
@@ -648,6 +649,21 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		}
 		fmt.Fprintf(b, "%smochi_chan_send_%s(%s, %s);\n", indent, suffix, ch, val)
 		return nil
+	case *aotir.StreamEmitStmt:
+		stream, err := emitExpr(s.Stream)
+		if err != nil {
+			return fmt.Errorf("StreamEmitStmt stream: %w", err)
+		}
+		val, err := emitExpr(s.Val)
+		if err != nil {
+			return fmt.Errorf("StreamEmitStmt val: %w", err)
+		}
+		suffix, err := chanTypeSuffix(s.ElemType)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(b, "%smochi_stream_emit_%s(%s, %s);\n", indent, suffix, stream, val)
+		return nil
 	}
 	return fmt.Errorf("transpiler3/c/emit: unhandled Stmt %T", st)
 }
@@ -776,6 +792,12 @@ func cTypeFull(t aotir.Type, recName string, elemType aotir.Type, elemRecName st
 	}
 	if t == aotir.TypeChan {
 		return "mochi_chan_t *", nil
+	}
+	if t == aotir.TypeStream {
+		return "mochi_stream_t *", nil
+	}
+	if t == aotir.TypeSub {
+		return "mochi_sub_t *", nil
 	}
 	return cTypeWithRec(t, recName)
 }
@@ -1152,6 +1174,9 @@ func walkStmtListOfMap(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 	case *aotir.ChanSendStmt:
 		walkExprListOfMap(s.Chan, add)
 		walkExprListOfMap(s.Val, add)
+	case *aotir.StreamEmitStmt:
+		walkExprListOfMap(s.Stream, add)
+		walkExprListOfMap(s.Val, add)
 	}
 }
 
@@ -1466,6 +1491,9 @@ func walkStmtExprVisit(st aotir.Stmt, visit func(aotir.Expr)) {
 	case *aotir.ChanSendStmt:
 		walkExprNodeVisit(s.Chan, visit)
 		walkExprNodeVisit(s.Val, visit)
+	case *aotir.StreamEmitStmt:
+		walkExprNodeVisit(s.Stream, visit)
+		walkExprNodeVisit(s.Val, visit)
 	}
 }
 
@@ -1686,6 +1714,9 @@ func walkStmtMapOfList(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 		// Phase 15.0: raw C; no sub-expressions to walk.
 	case *aotir.ChanSendStmt:
 		walkExprMapOfList(s.Chan, add)
+		walkExprMapOfList(s.Val, add)
+	case *aotir.StreamEmitStmt:
+		walkExprMapOfList(s.Stream, add)
 		walkExprMapOfList(s.Val, add)
 	}
 }
@@ -2013,6 +2044,9 @@ func walkStmtInner(st aotir.Stmt, visit func(aotir.Type, aotir.Type)) {
 	case *aotir.ChanSendStmt:
 		walkExprInner(s.Chan, visit)
 		walkExprInner(s.Val, visit)
+	case *aotir.StreamEmitStmt:
+		walkExprInner(s.Stream, visit)
+		walkExprInner(s.Val, visit)
 	}
 }
 
@@ -2260,6 +2294,9 @@ func walkStmt(st aotir.Stmt, visit func(aotir.Type, string)) {
 		// Phase 15.0: raw C; no sub-expressions to walk.
 	case *aotir.ChanSendStmt:
 		walkExpr(s.Chan, visit)
+		walkExpr(s.Val, visit)
+	case *aotir.StreamEmitStmt:
+		walkExpr(s.Stream, visit)
 		walkExpr(s.Val, visit)
 	}
 }
@@ -2564,6 +2601,28 @@ func emitExpr(e aotir.Expr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("mochi_chan_recv_%s(%s)", suffix, ch), nil
+	case *aotir.StreamMakeExpr:
+		cap, err := emitExpr(v.Cap)
+		if err != nil {
+			return "", fmt.Errorf("StreamMakeExpr cap: %w", err)
+		}
+		return fmt.Sprintf("mochi_stream_make((int)(%s))", cap), nil
+	case *aotir.SubMakeExpr:
+		stream, err := emitExpr(v.Stream)
+		if err != nil {
+			return "", fmt.Errorf("SubMakeExpr stream: %w", err)
+		}
+		return fmt.Sprintf("mochi_sub_make(%s)", stream), nil
+	case *aotir.SubRecvExpr:
+		sub, err := emitExpr(v.Sub)
+		if err != nil {
+			return "", fmt.Errorf("SubRecvExpr sub: %w", err)
+		}
+		suffix, err := chanTypeSuffix(v.ElemType)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("mochi_sub_recv_%s(%s)", suffix, sub), nil
 	default:
 		return "", fmt.Errorf("transpiler3/c/emit: unhandled Expr %T", e)
 	}

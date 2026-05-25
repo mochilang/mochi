@@ -321,6 +321,31 @@ func Check(prog *parser.Program, env *Env) []error {
 		TypeParams: []string{"T"},
 	}, false)
 
+	// Phase 9.2: stream<T> builtins.
+	// make_stream(cap) returns stream<any>; annotation narrows elem type.
+	env.SetVar("make_stream", FuncType{
+		Params: []Type{IntType{}},
+		Return: StreamType{Elem: AnyType{}},
+	}, false)
+	streamEmitT := &TypeVar{Name: "T"}
+	env.SetVar("emit", FuncType{
+		Params:     []Type{StreamType{Elem: streamEmitT}, streamEmitT},
+		Return:     UnitType{},
+		TypeParams: []string{"T"},
+	}, false)
+	streamSubT := &TypeVar{Name: "T"}
+	env.SetVar("subscribe", FuncType{
+		Params:     []Type{StreamType{Elem: streamSubT}},
+		Return:     SubType{Elem: streamSubT},
+		TypeParams: []string{"T"},
+	}, false)
+	streamRecvSubT := &TypeVar{Name: "T"}
+	env.SetVar("recv_sub", FuncType{
+		Params:     []Type{SubType{Elem: streamRecvSubT}},
+		Return:     streamRecvSubT,
+		TypeParams: []string{"T"},
+	}, false)
+
 	var errs []error
 
 	// Pre-pass: register struct and union name stubs so the function pass
@@ -562,6 +587,21 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 			if _, err := checkExprWithExpected(f.Value, env, ft); err != nil {
 				return err
 			}
+		}
+		return nil
+
+	case s.EmitCall != nil:
+		// Phase 9.2: `emit(stream, val)` — type-check stream and val.
+		streamType, err := checkExprWithExpected(s.EmitCall.Stream, env, AnyType{})
+		if err != nil {
+			return err
+		}
+		var elemType Type = AnyType{}
+		if st, ok := streamType.(StreamType); ok {
+			elemType = st.Elem
+		}
+		if _, err := checkExprWithExpected(s.EmitCall.Val, env, elemType); err != nil {
+			return err
 		}
 		return nil
 

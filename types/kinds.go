@@ -76,6 +76,22 @@ type ChanType struct {
 
 func (t ChanType) String() string { return fmt.Sprintf("chan<%s>", t.Elem.String()) }
 
+// StreamType is a bounded MPMC broadcast channel; each subscriber gets every
+// value. Phase 9.2: stream<T> lowered to mochi_stream_t*.
+type StreamType struct {
+	Elem Type
+}
+
+func (t StreamType) String() string { return fmt.Sprintf("stream<%s>", t.Elem.String()) }
+
+// SubType is a subscriber handle returned by subscribe(stream<T>).
+// Phase 9.2: sub<T> lowered to mochi_sub_t*.
+type SubType struct {
+	Elem Type
+}
+
+func (t SubType) String() string { return fmt.Sprintf("sub<%s>", t.Elem.String()) }
+
 type GroupType struct {
 	Key  Type
 	Elem Type

@@ -396,6 +396,8 @@ type binding struct {
 	listValElem  Type     // inner list elem when t==TypeMap && value==TypeList (Phase 3.4e)
 	funSig       *FunSig  // function signature when t==TypeFun (Phase 5.0)
 	chanElem     Type     // element type when t==TypeChan (Phase 9.1)
+	streamElem   Type     // element type when t==TypeStream (Phase 9.2)
+	subElem      Type     // element type when t==TypeSub (Phase 9.2)
 }
 
 func newScope(parent *scope) *scope {
@@ -571,6 +573,23 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 		}
 		if err := verifyExprCtx(ctx, s.Chan); err != nil {
 			return fmt.Errorf("ChanSendStmt Chan: %w", err)
+		}
+		return verifyExprCtx(ctx, s.Val)
+	case *StreamEmitStmt:
+		if s.Stream == nil {
+			return errors.New("StreamEmitStmt: nil Stream")
+		}
+		if s.Stream.Type() != TypeStream {
+			return fmt.Errorf("StreamEmitStmt: Stream must be TypeStream, got %s", s.Stream.Type())
+		}
+		if s.Val == nil {
+			return errors.New("StreamEmitStmt: nil Val")
+		}
+		if s.Val.Type() != s.ElemType {
+			return fmt.Errorf("StreamEmitStmt: Val type %s != ElemType %s", s.Val.Type(), s.ElemType)
+		}
+		if err := verifyExprCtx(ctx, s.Stream); err != nil {
+			return fmt.Errorf("StreamEmitStmt Stream: %w", err)
 		}
 		return verifyExprCtx(ctx, s.Val)
 	}
@@ -767,7 +786,21 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 	} else if s.ChanElemType != TypeInvalid {
 		return fmt.Errorf("let %q: ChanElemType set on non-chan type %s", s.Name, s.VarType)
 	}
-	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, union: s.UnionName, elem: s.ElemType, elemRec: s.ElemRecordName, mapElemKey: s.MapElemKeyType, mapElemValue: s.MapElemValueType, key: s.KeyType, value: s.ValueType, listValElem: s.ListValueElemType, funSig: s.FunSig, chanElem: s.ChanElemType}
+	if s.VarType == TypeStream {
+		if s.StreamElemType == TypeInvalid {
+			return fmt.Errorf("let %q: stream binding missing StreamElemType", s.Name)
+		}
+	} else if s.StreamElemType != TypeInvalid {
+		return fmt.Errorf("let %q: StreamElemType set on non-stream type %s", s.Name, s.VarType)
+	}
+	if s.VarType == TypeSub {
+		if s.SubElemType == TypeInvalid {
+			return fmt.Errorf("let %q: sub binding missing SubElemType", s.Name)
+		}
+	} else if s.SubElemType != TypeInvalid {
+		return fmt.Errorf("let %q: SubElemType set on non-sub type %s", s.Name, s.VarType)
+	}
+	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, union: s.UnionName, elem: s.ElemType, elemRec: s.ElemRecordName, mapElemKey: s.MapElemKeyType, mapElemValue: s.MapElemValueType, key: s.KeyType, value: s.ValueType, listValElem: s.ListValueElemType, funSig: s.FunSig, chanElem: s.ChanElemType, streamElem: s.StreamElemType, subElem: s.SubElemType}
 	return nil
 }
 
@@ -1529,6 +1562,12 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		if b.t == TypeChan && v.ChanElemType != b.chanElem {
 			return fmt.Errorf("variable %q has chan<%s> in scope, ref says chan<%s>", v.Name, b.chanElem, v.ChanElemType)
 		}
+		if b.t == TypeStream && v.StreamElemType != b.streamElem {
+			return fmt.Errorf("variable %q has stream<%s> in scope, ref says stream<%s>", v.Name, b.streamElem, v.StreamElemType)
+		}
+		if b.t == TypeSub && v.SubElemType != b.subElem {
+			return fmt.Errorf("variable %q has sub<%s> in scope, ref says sub<%s>", v.Name, b.subElem, v.SubElemType)
+		}
 		return nil
 	case *RecordLit:
 		return verifyRecordLit(ctx, v)
@@ -2068,6 +2107,39 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return errors.New("ChanRecvExpr: ElemType is TypeInvalid")
 		}
 		return verifyExprCtx(ctx, v.Chan)
+	case *StreamMakeExpr:
+		if v.Cap == nil {
+			return errors.New("StreamMakeExpr: nil Cap")
+		}
+		if v.Cap.Type() != TypeInt {
+			return fmt.Errorf("StreamMakeExpr: Cap must be TypeInt, got %s", v.Cap.Type())
+		}
+		if v.ElemType == TypeInvalid {
+			return errors.New("StreamMakeExpr: ElemType is TypeInvalid")
+		}
+		return verifyExprCtx(ctx, v.Cap)
+	case *SubMakeExpr:
+		if v.Stream == nil {
+			return errors.New("SubMakeExpr: nil Stream")
+		}
+		if v.Stream.Type() != TypeStream {
+			return fmt.Errorf("SubMakeExpr: Stream must be TypeStream, got %s", v.Stream.Type())
+		}
+		if v.ElemType == TypeInvalid {
+			return errors.New("SubMakeExpr: ElemType is TypeInvalid")
+		}
+		return verifyExprCtx(ctx, v.Stream)
+	case *SubRecvExpr:
+		if v.Sub == nil {
+			return errors.New("SubRecvExpr: nil Sub")
+		}
+		if v.Sub.Type() != TypeSub {
+			return fmt.Errorf("SubRecvExpr: Sub must be TypeSub, got %s", v.Sub.Type())
+		}
+		if v.ElemType == TypeInvalid {
+			return errors.New("SubRecvExpr: ElemType is TypeInvalid")
+		}
+		return verifyExprCtx(ctx, v.Sub)
 	default:
 		return fmt.Errorf("unhandled Expr %T", e)
 	}

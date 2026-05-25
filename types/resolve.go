@@ -12,6 +12,11 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 }
 
 func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
+	// Phase 9.2: stream<T> uses a keyword-based parser branch.
+	if t.StreamElem != nil {
+		return StreamType{Elem: resolveTypeRef(t.StreamElem, env)}
+	}
+
 	if t.Fun != nil {
 		params := make([]Type, len(t.Fun.Params))
 		for i, p := range t.Fun.Params {
@@ -42,6 +47,14 @@ func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 		case "chan":
 			if len(args) == 1 {
 				return ChanType{Elem: resolveTypeRef(args[0], env)}
+			}
+		case "stream":
+			if len(args) == 1 {
+				return StreamType{Elem: resolveTypeRef(args[0], env)}
+			}
+		case "sub":
+			if len(args) == 1 {
+				return SubType{Elem: resolveTypeRef(args[0], env)}
 			}
 		}
 		// Fallback: unknown generic type
