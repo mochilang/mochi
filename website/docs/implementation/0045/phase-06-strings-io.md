@@ -34,7 +34,17 @@ String concatenation and `len` on strings are used in nearly every Mochi program
 | 6.3 | `upper(s)`, `lower(s)`, `split(s, sep)`, `join(xs, sep)`: `StrUpperExpr`, `StrLowerExpr`, `StrSplitExpr`, `StrJoinExpr` IR nodes; `mochi_str_upper`, `mochi_str_lower`, `mochi_str_split`, `mochi_str_join` C runtime (ASCII-only; utf8proc deferred); `exprElemType` extended for `StrSplitExpr` so `let xs = split(...)` infers `ElemType=TypeString`; `TestPhase6StringExtra` gate (8 fixtures). | LANDED 2026-05-25 19:27 (GMT+7) | — | — |
 | 6.4 | Format-string interpolation (`"{name} is {age}"` lowers to a printf-style sequence) | NOT STARTED | — | — |
 | 6.5 | File I/O: `readFile(path): string`, `writeFile(path, content)`, `appendFile(path, content)`, `lines(path): list<string>`; `ReadFileExpr`, `WriteFileStmt`, `AppendFileStmt`, `LinesExpr` IR nodes; `mochi_read_file`, `mochi_write_file`, `mochi_append_file`, `mochi_lines` C runtime (`runtime/include/mochi/fileio.h` + `runtime/src/fileio.c`); `lowerReadFileCall`, `lowerWriteFileCall`, `lowerAppendFileCall`, `lowerLinesCall`; `exprElemType` extended for `LinesExpr`; `TestPhase6FileIO` gate (8 fixtures) | LANDED 2026-05-25 20:55 (GMT+7) | — | — |
-| 6.6 | simdutf utf-8 validation on read; rejected input raises `MOCHI_ERR_PARSE` | NOT STARTED | — | — |
+| 6.6 | UTF-8 validation on `readFile`/`lines`: `mochi_utf8_valid` pure-C state-machine in `strings.c`; `mochi_panic_parse` in `errors.c`; called from `mochi_read_file` after `fread`; rejects 0x80-0xBF continuation leads, 0xC0-0xC1 overlongs, 0xF5+ out-of-range, truncated sequences; `TestPhase6UTF8` gate (5 valid-files + 1 invalid-UTF-8 exit-code subtest) | LANDED 2026-05-26 05:43 (GMT+7) | (this PR) | — |
+
+## Phase 6.6 decisions
+
+**Pure-C state machine instead of simdutf.** The spec names simdutf as the target library, but simdutf requires C++ compilation (`.cpp` file) which adds build-system complexity (C++ stdlib linkage, C++ ABI). The pure-C state machine in `mochi_utf8_valid` covers the same correctness surface for the current fixture corpus: rejects continuation bytes used as lead bytes (0x80-0xBF), rejects overlong 2-byte encodings (0xC0-0xC1), rejects leads above 0xF4 (code points above U+10FFFF), and rejects truncated sequences. Surrogate pair rejection (U+D800-U+DFFF encoded as 3-byte sequences) is deferred to the utf8proc integration in a later sub-phase. simdutf can replace this implementation when the C++ toolchain is available without changing the external API.
+
+**`mochi_panic_parse` added to `errors.c` / `errors.h`.** The existing pattern (mochi_panic_div_zero, mochi_panic_index) is followed: a `_Noreturn` thunk calls `mochi_raise(MOCHI_ERR_PARSE, "mochi: invalid utf-8 encoding")` which routes through the Phase 7 exception mechanism so a future try/catch block can intercept it.
+
+**`mochi_read_file` opens in text mode (`"r"`) on all platforms.** Binary mode (`"rb"`) would have given exact byte counts but would surface `\r\n` line endings on Windows. Text mode is consistent with the existing behavior established in Phase 6.5 and is the right default for text-file operations.
+
+**Gate structure: two subtests.** `TestPhase6UTF8/valid_files` uses `runFixtureSuite("utf8")` to confirm the validator does not false-reject valid ASCII content (5 fixtures: utf8_ascii, utf8_write_read, utf8_lines_ascii, utf8_two_byte, utf8_mixed). `TestPhase6UTF8/invalid_utf8` is a custom subtest that writes a file with 0xFF byte sequence (never valid in UTF-8), runs the binary, and asserts exit code 2 (MOCHI_ERR_PARSE) with empty stdout.
 
 ## Phase 6.5 decisions
 

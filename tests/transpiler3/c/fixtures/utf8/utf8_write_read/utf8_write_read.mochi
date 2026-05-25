@@ -1,0 +1,6 @@
+writeFile("/tmp/mochi_utf8_wr.txt", "line1\nline2\nline3\n")
+let s = readFile("/tmp/mochi_utf8_wr.txt")
+let parts = split(s, "\n")
+print(parts[0])
+print(parts[1])
+print(parts[2])

@@ -1,0 +1,6 @@
+writeFile("/tmp/mochi_utf8_lines.txt", "alpha\nbeta\ngamma\n")
+let xs = lines("/tmp/mochi_utf8_lines.txt")
+print(len(xs))
+for x in xs {
+    print(x)
+}

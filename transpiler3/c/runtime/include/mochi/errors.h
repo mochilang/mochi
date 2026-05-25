@@ -57,6 +57,14 @@ _Noreturn void mochi_panic_div_zero(void);
 _Noreturn void mochi_panic_index(void);
 
 /*
+ * mochi_panic_parse writes a fixed diagnostic
+ * ("mochi: invalid utf-8 encoding\n") to stderr and exits with
+ * MOCHI_ERR_PARSE (2). Called by mochi_read_file when the file
+ * content is not valid UTF-8 (Phase 6.6).
+ */
+_Noreturn void mochi_panic_parse(void);
+
+/*
  * mochi_div_i64 returns lhs / rhs after checking rhs against zero.
  * On rhs == 0 it tail-calls mochi_panic_div_zero (which never
  * returns); otherwise it returns the truncated C-semantics quotient.
