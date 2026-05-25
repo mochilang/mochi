@@ -1295,3 +1295,22 @@ type PanicStmt struct {
 }
 
 func (*PanicStmt) isStmt() {}
+
+// RawCStmt carries a pre-rendered C statement block. Used by phases that
+// generate complex C structures (Datalog eval, Phase 15) without threading
+// a full IR sub-language through verify and emit.
+// The emitter writes Code verbatim at the correct indentation level.
+type RawCStmt struct {
+	Code string // one or more C statements; caller is responsible for correctness
+}
+
+func (*RawCStmt) isStmt() {}
+
+// RawCExpr carries a pre-rendered C expression. Used by phases that
+// generate complex C structures without a full IR sub-language.
+type RawCExpr struct {
+	Code    string // a C expression; caller is responsible for correctness
+	RawType Type   // type of the expression for the verifier and emit pass
+}
+
+func (e *RawCExpr) Type() Type { return e.RawType }

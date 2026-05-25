@@ -549,6 +549,12 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 			return fmt.Errorf("PanicStmt Code: %w", err)
 		}
 		return verifyExprCtx(ctx, s.Msg)
+	case *RawCStmt:
+		// Phase 15.0: raw C block; the lowerer is responsible for correctness.
+		if s.Code == "" {
+			return errors.New("RawCStmt: empty Code")
+		}
+		return nil
 	}
 	return fmt.Errorf("unhandled Stmt %T", st)
 }
@@ -1196,6 +1202,12 @@ func exprElemType(e Expr) Type {
 		return TypeString // lines() always returns list<string>
 	case *LoadCSVExpr:
 		return TypeList // loadCSV() always returns list<list<string>>; inner is TypeString
+	case *RawCExpr:
+		// Phase 15.0: Datalog query results are list<string>; elem is TypeString.
+		if v.RawType == TypeList {
+			return TypeString
+		}
+		return TypeInvalid
 	}
 	return TypeInvalid
 }
@@ -1802,6 +1814,12 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("LoadCSVExpr: Path must be TypeString, got %s", v.Path.Type())
 		}
 		return verifyExprCtx(ctx, v.Path)
+	case *RawCExpr:
+		// Phase 15.0: raw C expression; the lowerer is responsible for correctness.
+		if v.Code == "" {
+			return errors.New("RawCExpr: empty Code")
+		}
+		return nil
 	case *CallExpr:
 		// Phase 10.0: extern C functions can appear in expression position.
 		if ef, isExtern := ctx.externFns[v.Func]; isExtern {

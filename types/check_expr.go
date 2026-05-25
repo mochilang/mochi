@@ -923,7 +923,10 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		return checkQueryExpr(p.Query, env, expected)
 
 	case p.LogicQuery != nil:
-		return ListType{Elem: MapType{Key: StringType{}, Value: AnyType{}}}, nil
+		// Phase 15.0 AOT: query returns list<string> (single free-variable case).
+		// The interpreter returned list<map<string,any>> but the AOT C backend
+		// generates mochi_list_str for single-variable queries.
+		return ListType{Elem: StringType{}}, nil
 
 	case p.Fetch != nil:
 		urlT, err := checkExpr(p.Fetch.URL, env)

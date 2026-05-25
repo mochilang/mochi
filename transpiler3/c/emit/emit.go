@@ -627,6 +627,11 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		}
 		fmt.Fprintf(b, "%smochi_raise((int)(%s), (const char*)(%s));\n", indent, code, msg)
 		return nil
+	case *aotir.RawCStmt:
+		// Phase 15.0: raw C block; pass through verbatim with leading indent.
+		// Each line of Code is already indented by the lowerer; we just write it.
+		b.WriteString(s.Code)
+		return nil
 	}
 	return fmt.Errorf("transpiler3/c/emit: unhandled Stmt %T", st)
 }
@@ -1123,6 +1128,8 @@ func walkStmtListOfMap(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 	case *aotir.PanicStmt:
 		walkExprListOfMap(s.Code, add)
 		walkExprListOfMap(s.Msg, add)
+	case *aotir.RawCStmt:
+		// Phase 15.0: raw C; no sub-expressions to walk.
 	}
 }
 
@@ -1432,6 +1439,8 @@ func walkStmtExprVisit(st aotir.Stmt, visit func(aotir.Expr)) {
 	case *aotir.PanicStmt:
 		walkExprNodeVisit(s.Code, visit)
 		walkExprNodeVisit(s.Msg, visit)
+	case *aotir.RawCStmt:
+		// Phase 15.0: raw C; no sub-expressions to walk.
 	}
 }
 
@@ -1648,6 +1657,8 @@ func walkStmtMapOfList(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 	case *aotir.PanicStmt:
 		walkExprMapOfList(s.Code, add)
 		walkExprMapOfList(s.Msg, add)
+	case *aotir.RawCStmt:
+		// Phase 15.0: raw C; no sub-expressions to walk.
 	}
 }
 
@@ -1969,6 +1980,8 @@ func walkStmtInner(st aotir.Stmt, visit func(aotir.Type, aotir.Type)) {
 	case *aotir.PanicStmt:
 		walkExprInner(s.Code, visit)
 		walkExprInner(s.Msg, visit)
+	case *aotir.RawCStmt:
+		// Phase 15.0: raw C; no sub-expressions to walk.
 	}
 }
 
@@ -2212,6 +2225,8 @@ func walkStmt(st aotir.Stmt, visit func(aotir.Type, string)) {
 	case *aotir.PanicStmt:
 		walkExpr(s.Code, visit)
 		walkExpr(s.Msg, visit)
+	case *aotir.RawCStmt:
+		// Phase 15.0: raw C; no sub-expressions to walk.
 	}
 }
 
@@ -2496,6 +2511,9 @@ func emitExpr(e aotir.Expr) (string, error) {
 			return "", fmt.Errorf("LoadCSVExpr path: %w", err)
 		}
 		return "__mochi_load_csv(" + path + ")", nil
+	case *aotir.RawCExpr:
+		// Phase 15.0: raw C expression; pass through verbatim.
+		return v.Code, nil
 	default:
 		return "", fmt.Errorf("transpiler3/c/emit: unhandled Expr %T", e)
 	}
