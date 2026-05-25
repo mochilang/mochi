@@ -44,6 +44,7 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include \"mochi/map.h\"\n")
 	listRecNames := collectListRecordElems(prog)
 	listListInners := collectListListInners(prog)
+	listMapPairs := collectListOfMapPairs(prog)
 	mapOfListPairs := collectMapOfListInners(prog)
 	// The _values() helper for every map<K,list<V>> returns list<list<V>>,
 	// so the mochi_list_list_<inner> struct must be present. Ensure the
@@ -65,11 +66,11 @@ func Emit(prog *aotir.Program) (string, error) {
 			}
 		}
 	}
-	if len(listRecNames) > 0 || len(listListInners) > 0 || len(mapOfListPairs) > 0 {
+	if len(listRecNames) > 0 || len(listListInners) > 0 || len(listMapPairs) > 0 || len(mapOfListPairs) > 0 {
 		// malloc lives in <stdlib.h>; only pull it in when we actually
-		// emit list<R>, list<list<T>>, or map<K,list<V>> helpers so
-		// user-defined functions whose names would collide with stdlib
-		// (e.g. `abs`) keep working.
+		// emit list<R>, list<list<T>>, list<map<K,V>>, or map<K,list<V>>
+		// helpers so user-defined functions whose names would collide with
+		// stdlib (e.g. `abs`) keep working.
 		b.WriteString("#include <stdlib.h>\n")
 	}
 	b.WriteString("\n")
@@ -83,6 +84,13 @@ func Emit(prog *aotir.Program) (string, error) {
 	}
 
 	if err := emitListOfListHelpers(&b, listListInners); err != nil {
+		return "", err
+	}
+
+	// list<map<K,V>> TU-local helpers (Phase 3.4f): must come after any
+	// mochi_map_<K>_<V> struct is available (libmochi exports it), and
+	// before any function that uses a list<map<K,V>> value.
+	if err := emitListOfMapHelpers(&b, listMapPairs); err != nil {
 		return "", err
 	}
 
@@ -154,7 +162,7 @@ func Emit(prog *aotir.Program) (string, error) {
 // definitions. Keeping the two in lockstep avoids drift between
 // prototype and definition.
 func emitFunctionPrototype(fn *aotir.Function) (string, error) {
-	ret, err := cReturnType(fn.ReturnType, fn.ReturnRecordName, fn.ReturnElemType, fn.ReturnElemRecordName, fn.ReturnInnerElemType, fn.ReturnKeyType, fn.ReturnValueType, fn.ReturnListValueElemType)
+	ret, err := cReturnType(fn.ReturnType, fn.ReturnRecordName, fn.ReturnElemType, fn.ReturnElemRecordName, fn.ReturnInnerElemType, fn.ReturnMapElemKeyType, fn.ReturnMapElemValueType, fn.ReturnKeyType, fn.ReturnValueType, fn.ReturnListValueElemType)
 	if err != nil {
 		return "", fmt.Errorf("function %q return: %w", fn.Name, err)
 	}
@@ -167,7 +175,7 @@ func emitFunctionPrototype(fn *aotir.Function) (string, error) {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			pt, err := cTypeFull(p.Type, p.RecordName, p.ElemType, p.ElemRecordName, p.InnerElemType, p.KeyType, p.ValueType, p.ListValueElemType)
+			pt, err := cTypeFull(p.Type, p.RecordName, p.ElemType, p.ElemRecordName, p.InnerElemType, p.MapElemKeyType, p.MapElemValueType, p.KeyType, p.ValueType, p.ListValueElemType)
 			if err != nil {
 				return "", fmt.Errorf("function %q param %q: %w", fn.Name, p.Name, err)
 			}
@@ -187,11 +195,12 @@ func emitFunctionPrototype(fn *aotir.Function) (string, error) {
 // list<list<T>> (Phase 3.4b), innerElem carries the inner T so the
 // suffix resolves to `list_<innerSuf>`. For map<K,list<V>> (Phase
 // 3.4e), listValueElemType carries the inner scalar of the list value.
-func cReturnType(t aotir.Type, recName string, elemType aotir.Type, elemRecName string, innerElem aotir.Type, keyType aotir.Type, valueType aotir.Type, listValueElemType aotir.Type) (string, error) {
+// For list<map<K,V>> (Phase 3.4f), mapElemKey/mapElemValue carry K/V.
+func cReturnType(t aotir.Type, recName string, elemType aotir.Type, elemRecName string, innerElem aotir.Type, mapElemKey aotir.Type, mapElemValue aotir.Type, keyType aotir.Type, valueType aotir.Type, listValueElemType aotir.Type) (string, error) {
 	if t == aotir.TypeUnit {
 		return "void", nil
 	}
-	return cTypeFull(t, recName, elemType, elemRecName, innerElem, keyType, valueType, listValueElemType)
+	return cTypeFull(t, recName, elemType, elemRecName, innerElem, mapElemKey, mapElemValue, keyType, valueType, listValueElemType)
 }
 
 func emitFunction(b *strings.Builder, fn *aotir.Function, entry bool) error {
@@ -250,7 +259,7 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		b.WriteString(");\n")
 		return nil
 	case *aotir.LetStmt:
-		ts, err := cTypeFull(s.VarType, s.RecordName, s.ElemType, s.ElemRecordName, s.InnerElemType, s.KeyType, s.ValueType, s.ListValueElemType)
+		ts, err := cTypeFull(s.VarType, s.RecordName, s.ElemType, s.ElemRecordName, s.InnerElemType, s.MapElemKeyType, s.MapElemValueType, s.KeyType, s.ValueType, s.ListValueElemType)
 		if err != nil {
 			return fmt.Errorf("let %q: %w", s.Name, err)
 		}
@@ -330,10 +339,9 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 			return err
 		}
 		// For list<list<T>>, the induction variable's C type is the
-		// inner list struct `mochi_list_<inner>`. The outer list's
-		// runtime suffix is `list_<inner>`, so the runtime family
-		// is `mochi_list_list_<inner>` and the per-step index returns
-		// a `mochi_list_<inner>` value (i.e., the induction var).
+		// inner list struct `mochi_list_<inner>`. For list<map<K,V>>,
+		// it is `mochi_map_<K>_<V>`. The outer list's runtime suffix
+		// is `list_<inner>` or `map_<K>_<V>` accordingly.
 		var elemC string
 		if s.ElemType == aotir.TypeList {
 			innerSuf, err := scalarListInnerSuffix(s.InnerElemType)
@@ -341,14 +349,20 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 				return fmt.Errorf("foreach %q: %w", s.Var, err)
 			}
 			elemC = "mochi_list_" + innerSuf
+		} else if s.ElemType == aotir.TypeMap {
+			mapSuf, err := mapSuffix(s.MapElemKeyType, s.MapElemValueType, aotir.TypeInvalid)
+			if err != nil {
+				return fmt.Errorf("foreach %q: %w", s.Var, err)
+			}
+			elemC = "mochi_map_" + mapSuf
 		} else {
-			ec, err := cTypeFull(s.ElemType, s.ElemRecordName, aotir.TypeInvalid, "", aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid)
+			ec, err := cTypeFull(s.ElemType, s.ElemRecordName, aotir.TypeInvalid, "", aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid)
 			if err != nil {
 				return fmt.Errorf("foreach %q: %w", s.Var, err)
 			}
 			elemC = ec
 		}
-		listSuf, err := listSuffix(s.ElemType, s.ElemRecordName, s.InnerElemType)
+		listSuf, err := listSuffix(s.ElemType, s.ElemRecordName, s.InnerElemType, s.MapElemKeyType, s.MapElemValueType)
 		if err != nil {
 			return fmt.Errorf("foreach %q: %w", s.Var, err)
 		}
@@ -455,10 +469,11 @@ func cTypeWithRec(t aotir.Type, recName string) (string, error) {
 // elemRecName parameter carries the element record's identity. For
 // list<list<T>> (Phase 3.4b), innerElem carries the inner T. For
 // map<K,list<V>> (Phase 3.4e), listValueElemType carries the inner
-// scalar of the list value type.
-func cTypeFull(t aotir.Type, recName string, elemType aotir.Type, elemRecName string, innerElem aotir.Type, keyType aotir.Type, valueType aotir.Type, listValueElemType aotir.Type) (string, error) {
+// scalar of the list value type. For list<map<K,V>> (Phase 3.4f),
+// mapElemKey and mapElemValue carry the map's K and V.
+func cTypeFull(t aotir.Type, recName string, elemType aotir.Type, elemRecName string, innerElem aotir.Type, mapElemKey aotir.Type, mapElemValue aotir.Type, keyType aotir.Type, valueType aotir.Type, listValueElemType aotir.Type) (string, error) {
 	if t == aotir.TypeList {
-		suf, err := listSuffix(elemType, elemRecName, innerElem)
+		suf, err := listSuffix(elemType, elemRecName, innerElem, mapElemKey, mapElemValue)
 		if err != nil {
 			return "", err
 		}
@@ -476,13 +491,14 @@ func cTypeFull(t aotir.Type, recName string, elemType aotir.Type, elemRecName st
 
 // listSuffix returns the per-T runtime suffix for a list element
 // type: i64 / f64 / bool / str for the four scalar primitives, the
-// record's own name for list<R> (Phase 3.4a), or "list_<innerSuf>"
-// for list<list<T>> (Phase 3.4b). The suffix selects the matching
+// record's own name for list<R> (Phase 3.4a), "list_<innerSuf>"
+// for list<list<T>> (Phase 3.4b), or "map_<K>_<V>" for
+// list<map<K,V>> (Phase 3.4f). The suffix selects the matching
 // `mochi_list_<T>_*` helper family. Scalar suffixes resolve to
-// libmochi exports; record and list-of-list suffixes resolve to
-// per-(outer,inner) helpers emitted into the same translation unit's
-// prologue.
-func listSuffix(elem aotir.Type, elemRecName string, innerElem aotir.Type) (string, error) {
+// libmochi exports; record and list-of-list/list-of-map suffixes
+// resolve to per-(outer,inner) helpers emitted into the same
+// translation unit's prologue.
+func listSuffix(elem aotir.Type, elemRecName string, innerElem aotir.Type, mapElemKey aotir.Type, mapElemValue aotir.Type) (string, error) {
 	switch elem {
 	case aotir.TypeInt:
 		return "i64", nil
@@ -503,6 +519,13 @@ func listSuffix(elem aotir.Type, elemRecName string, innerElem aotir.Type) (stri
 			return "", err
 		}
 		return "list_" + inner, nil
+	case aotir.TypeMap:
+		// Phase 3.4f: list<map<K,V>>
+		suf, err := mapSuffix(mapElemKey, mapElemValue, aotir.TypeInvalid)
+		if err != nil {
+			return "", fmt.Errorf("list<map<K,V>> suffix: %w", err)
+		}
+		return "map_" + suf, nil
 	}
 	return "", fmt.Errorf("no list runtime for element type %s", elem)
 }
@@ -655,6 +678,219 @@ func collectListListInners(prog *aotir.Program) []string {
 		out = append(out, k)
 	}
 	return out
+}
+
+// listOfMapPair identifies a unique (map key type, map value type) pair
+// for a list<map<K,V>> instantiation in this TU (Phase 3.4f).
+type listOfMapPair struct {
+	key   aotir.Type // map key: TypeInt or TypeString
+	value aotir.Type // map value: scalar (TypeInt/TypeFloat/TypeBool/TypeString)
+}
+
+// collectListOfMapPairs walks the program collecting every distinct
+// (MapElemKeyType, MapElemValueType) pair where ElemType==TypeMap. These
+// pairs drive the TU-local mochi_list_map_<K>_<V>_* helper emission in
+// emitListOfMapHelpers.
+func collectListOfMapPairs(prog *aotir.Program) []listOfMapPair {
+	type pairKey struct{ k, v aotir.Type }
+	set := map[pairKey]listOfMapPair{}
+	add := func(elem aotir.Type, mapKey aotir.Type, mapValue aotir.Type) {
+		if elem != aotir.TypeMap {
+			return
+		}
+		switch mapKey {
+		case aotir.TypeInt, aotir.TypeString:
+		default:
+			return
+		}
+		switch mapValue {
+		case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+		default:
+			return
+		}
+		set[pairKey{mapKey, mapValue}] = listOfMapPair{key: mapKey, value: mapValue}
+	}
+	for _, fn := range prog.Functions {
+		if fn == nil {
+			continue
+		}
+		add(fn.ReturnElemType, fn.ReturnMapElemKeyType, fn.ReturnMapElemValueType)
+		for _, p := range fn.Params {
+			add(p.ElemType, p.MapElemKeyType, p.MapElemValueType)
+		}
+		walkBlockListOfMap(fn.Body, add)
+	}
+	out := make([]listOfMapPair, 0, len(set))
+	for _, p := range set {
+		out = append(out, p)
+	}
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].key != out[j].key {
+			return out[i].key < out[j].key
+		}
+		return out[i].value < out[j].value
+	})
+	return out
+}
+
+// emitListOfMapHelpers emits a TU-local static helper set for each
+// distinct list<map<K,V>> instantiation (Phase 3.4f): struct typedef,
+// _lit, _append, _index, _len. The outer list's data buffer is a heap
+// array of mochi_map_<K>_<V> structs; helpers memcpy the struct headers
+// so inner map data pointers are aliased (safe under read-only Phase 3.4f
+// semantics).
+func emitListOfMapHelpers(b *strings.Builder, pairs []listOfMapPair) error {
+	if len(pairs) == 0 {
+		return nil
+	}
+	for _, p := range pairs {
+		mapSuf, err := mapSuffix(p.key, p.value, aotir.TypeInvalid)
+		if err != nil {
+			return fmt.Errorf("list of map helper: %w", err)
+		}
+		elemC := "mochi_map_" + mapSuf
+		outer := "mochi_list_map_" + mapSuf
+
+		fmt.Fprintf(b, "typedef struct %s {\n", outer)
+		fmt.Fprintf(b, "    %s *data;\n", elemC)
+		b.WriteString("    int64_t  len;\n")
+		b.WriteString("    int64_t  cap;\n")
+		fmt.Fprintf(b, "} %s;\n\n", outer)
+
+		fmt.Fprintf(b, "static %s %s_lit(const %s *xs, int64_t n) {\n", outer, outer, elemC)
+		fmt.Fprintf(b, "    %s out = {NULL, n, n};\n", outer)
+		b.WriteString("    if (n > 0) {\n")
+		fmt.Fprintf(b, "        out.data = (%s *)malloc((size_t)n * sizeof(%s));\n", elemC, elemC)
+		b.WriteString("        if (out.data == NULL) { mochi_panic_index(); }\n")
+		fmt.Fprintf(b, "        memcpy(out.data, xs, (size_t)n * sizeof(%s));\n", elemC)
+		b.WriteString("    }\n")
+		b.WriteString("    return out;\n")
+		b.WriteString("}\n\n")
+
+		fmt.Fprintf(b, "static %s %s_append(%s xs, %s v) {\n", outer, outer, outer, elemC)
+		fmt.Fprintf(b, "    %s out = {NULL, xs.len + 1, xs.len + 1};\n", outer)
+		fmt.Fprintf(b, "    out.data = (%s *)malloc((size_t)out.cap * sizeof(%s));\n", elemC, elemC)
+		b.WriteString("    if (out.data == NULL) { mochi_panic_index(); }\n")
+		b.WriteString("    if (xs.len > 0) {\n")
+		fmt.Fprintf(b, "        memcpy(out.data, xs.data, (size_t)xs.len * sizeof(%s));\n", elemC)
+		b.WriteString("    }\n")
+		b.WriteString("    out.data[xs.len] = v;\n")
+		b.WriteString("    return out;\n")
+		b.WriteString("}\n\n")
+
+		fmt.Fprintf(b, "static %s %s_index(%s xs, int64_t i) {\n", elemC, outer, outer)
+		b.WriteString("    if (i < 0 || i >= xs.len) { mochi_panic_index(); }\n")
+		b.WriteString("    return xs.data[i];\n")
+		b.WriteString("}\n\n")
+
+		fmt.Fprintf(b, "static int64_t %s_len(%s xs) { return xs.len; }\n\n", outer, outer)
+	}
+	return nil
+}
+
+// walkBlockListOfMap walks statements in blk and calls add(elemType, mapKey, mapValue)
+// for every list-typed node where ElemType==TypeMap.
+func walkBlockListOfMap(blk *aotir.Block, add func(aotir.Type, aotir.Type, aotir.Type)) {
+	if blk == nil {
+		return
+	}
+	for _, st := range blk.Statements {
+		walkStmtListOfMap(st, add)
+	}
+}
+
+func walkStmtListOfMap(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Type)) {
+	switch s := st.(type) {
+	case *aotir.LetStmt:
+		add(s.ElemType, s.MapElemKeyType, s.MapElemValueType)
+		walkExprListOfMap(s.Init, add)
+	case *aotir.AssignStmt:
+		walkExprListOfMap(s.Value, add)
+	case *aotir.CallStmt:
+		for _, a := range s.Args {
+			walkExprListOfMap(a, add)
+		}
+	case *aotir.IfStmt:
+		walkExprListOfMap(s.Cond, add)
+		walkBlockListOfMap(s.Then, add)
+		walkBlockListOfMap(s.Else, add)
+	case *aotir.WhileStmt:
+		walkExprListOfMap(s.Cond, add)
+		walkBlockListOfMap(s.Body, add)
+	case *aotir.ForRangeStmt:
+		walkExprListOfMap(s.Start, add)
+		walkExprListOfMap(s.End, add)
+		walkBlockListOfMap(s.Body, add)
+	case *aotir.ForEachStmt:
+		add(s.ElemType, s.MapElemKeyType, s.MapElemValueType)
+		walkExprListOfMap(s.List, add)
+		walkBlockListOfMap(s.Body, add)
+	case *aotir.ReturnStmt:
+		if s.Value != nil {
+			walkExprListOfMap(s.Value, add)
+		}
+	}
+}
+
+func walkExprListOfMap(e aotir.Expr, add func(aotir.Type, aotir.Type, aotir.Type)) {
+	if e == nil {
+		return
+	}
+	switch v := e.(type) {
+	case *aotir.ListLit:
+		add(v.ElemType, v.MapElemKeyType, v.MapElemValueType)
+		for _, el := range v.Elems {
+			walkExprListOfMap(el, add)
+		}
+	case *aotir.IndexExpr:
+		add(v.ElemType, v.MapElemKeyType, v.MapElemValueType)
+		walkExprListOfMap(v.Receiver, add)
+		walkExprListOfMap(v.Index, add)
+	case *aotir.LenExpr:
+		add(v.ElemType, v.MapElemKeyType, v.MapElemValueType)
+		walkExprListOfMap(v.Receiver, add)
+	case *aotir.AppendExpr:
+		add(v.ElemType, v.MapElemKeyType, v.MapElemValueType)
+		walkExprListOfMap(v.Receiver, add)
+		walkExprListOfMap(v.Value, add)
+	case *aotir.VarRef:
+		add(v.ElemType, v.MapElemKeyType, v.MapElemValueType)
+	case *aotir.CallExpr:
+		add(v.ResultElemType, v.ResultMapElemKeyType, v.ResultMapElemValueType)
+		for _, a := range v.Args {
+			walkExprListOfMap(a, add)
+		}
+	case *aotir.BinaryExpr:
+		walkExprListOfMap(v.Left, add)
+		walkExprListOfMap(v.Right, add)
+	case *aotir.UnaryExpr:
+		walkExprListOfMap(v.Operand, add)
+	case *aotir.FieldAccess:
+		walkExprListOfMap(v.Receiver, add)
+	case *aotir.RecordLit:
+		for _, f := range v.Fields {
+			walkExprListOfMap(f.Value, add)
+		}
+	case *aotir.MapLit:
+		for _, k := range v.Keys {
+			walkExprListOfMap(k, add)
+		}
+		for _, val := range v.Values {
+			walkExprListOfMap(val, add)
+		}
+	case *aotir.MapGetExpr:
+		walkExprListOfMap(v.Receiver, add)
+		walkExprListOfMap(v.Key, add)
+	case *aotir.MapHasExpr:
+		walkExprListOfMap(v.Receiver, add)
+		walkExprListOfMap(v.Key, add)
+	case *aotir.MapLenExpr:
+		walkExprListOfMap(v.Receiver, add)
+	case *aotir.MapKeysExpr:
+		walkExprListOfMap(v.Receiver, add)
+	case *aotir.MapValuesExpr:
+		walkExprListOfMap(v.Receiver, add)
+	}
 }
 
 // mapOfListPair identifies a unique (key type, list-value inner scalar)
@@ -1607,11 +1843,11 @@ func emitExpr(e aotir.Expr) (string, error) {
 // runtime helper makes a heap-allocated copy, so the temporary's
 // lifetime (the enclosing full-expression) is enough.
 func emitListLit(v *aotir.ListLit) (string, error) {
-	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType)
+	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType, v.MapElemKeyType, v.MapElemValueType)
 	if err != nil {
 		return "", fmt.Errorf("list literal: %w", err)
 	}
-	elemC, err := cListBufferElemC(v.ElemType, v.ElemRecordName, v.InnerElemType)
+	elemC, err := cListBufferElemC(v.ElemType, v.ElemRecordName, v.InnerElemType, v.MapElemKeyType, v.MapElemValueType)
 	if err != nil {
 		return "", fmt.Errorf("list literal: %w", err)
 	}
@@ -1639,8 +1875,9 @@ func emitListLit(v *aotir.ListLit) (string, error) {
 // the `mochi_list_<T>_lit` first-parameter type from list.h. For
 // list<list<T>> (Phase 3.4b), the buffer element is the nested list
 // struct `mochi_list_<inner>` so the helper memcpys the nested-list
-// headers (data pointer + len + cap) into the outer list.
-func cListBufferElemC(elem aotir.Type, elemRecName string, innerElem aotir.Type) (string, error) {
+// headers (data pointer + len + cap) into the outer list. For
+// list<map<K,V>> (Phase 3.4f), the buffer element is `mochi_map_<K>_<V>`.
+func cListBufferElemC(elem aotir.Type, elemRecName string, innerElem aotir.Type, mapElemKey aotir.Type, mapElemValue aotir.Type) (string, error) {
 	switch elem {
 	case aotir.TypeInt:
 		return "int64_t", nil
@@ -1661,6 +1898,13 @@ func cListBufferElemC(elem aotir.Type, elemRecName string, innerElem aotir.Type)
 			return "", err
 		}
 		return "mochi_list_" + inner, nil
+	case aotir.TypeMap:
+		// Phase 3.4f: list<map<K,V>> buffer element is the map struct.
+		suf, err := mapSuffix(mapElemKey, mapElemValue, aotir.TypeInvalid)
+		if err != nil {
+			return "", fmt.Errorf("list<map<K,V>> buffer elem: %w", err)
+		}
+		return "mochi_map_" + suf, nil
 	}
 	return "", fmt.Errorf("no list-literal buffer type for element %s", elem)
 }
@@ -1668,7 +1912,7 @@ func cListBufferElemC(elem aotir.Type, elemRecName string, innerElem aotir.Type)
 // emitIndexExpr renders an IndexExpr as a `mochi_list_<T>_index`
 // call. The bounds check is in the runtime helper.
 func emitIndexExpr(v *aotir.IndexExpr) (string, error) {
-	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType)
+	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType, v.MapElemKeyType, v.MapElemValueType)
 	if err != nil {
 		return "", fmt.Errorf("index: %w", err)
 	}
@@ -1685,7 +1929,7 @@ func emitIndexExpr(v *aotir.IndexExpr) (string, error) {
 
 // emitLenExpr renders a LenExpr as a `mochi_list_<T>_len` call.
 func emitLenExpr(v *aotir.LenExpr) (string, error) {
-	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType)
+	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType, v.MapElemKeyType, v.MapElemValueType)
 	if err != nil {
 		return "", fmt.Errorf("len: %w", err)
 	}
@@ -1699,7 +1943,7 @@ func emitLenExpr(v *aotir.LenExpr) (string, error) {
 // emitAppendExpr renders an AppendExpr as a `mochi_list_<T>_append`
 // call; the helper allocates a fresh buffer and returns a new list.
 func emitAppendExpr(v *aotir.AppendExpr) (string, error) {
-	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType)
+	suf, err := listSuffix(v.ElemType, v.ElemRecordName, v.InnerElemType, v.MapElemKeyType, v.MapElemValueType)
 	if err != nil {
 		return "", fmt.Errorf("append: %w", err)
 	}

@@ -1,0 +1,5 @@
+let xs: [map<int, float>] = [{1: 1.5, 2: 2.5}, {3: 3.5}]
+print(len(xs))
+print(xs[0][1])
+print(xs[0][2])
+print(xs[1][3])

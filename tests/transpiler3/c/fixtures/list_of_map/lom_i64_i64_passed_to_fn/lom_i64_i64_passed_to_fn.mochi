@@ -1,0 +1,12 @@
+fun print_maps(ms: [map<int, int>]): int {
+  for m in ms {
+    print(len(m))
+    print(m[1])
+    print(m[2])
+  }
+  return len(ms)
+}
+
+let xs: [map<int, int>] = [{1: 10, 2: 20}, {1: 30, 2: 40}]
+let n = print_maps(xs)
+print(n)

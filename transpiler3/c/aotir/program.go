@@ -58,7 +58,10 @@ type RecordField struct {
 // record's identity so the emit pass can pick the right per-record
 // list helper instantiation. Phase 3.4e adds ListValueElemType,
 // valid when Type==TypeMap && ValueType==TypeList, carrying the
-// inner scalar element type of the list value.
+// inner scalar element type of the list value. Phase 3.4f adds
+// MapElemKeyType and MapElemValueType, valid when Type==TypeList &&
+// ElemType==TypeMap, carrying the map's K and V so helpers can be
+// resolved.
 type Param struct {
 	Name           string
 	Type           Type
@@ -70,8 +73,13 @@ type Param struct {
 	// list<list<T>>; Phase 3.4b restricts the inner to a scalar
 	// primitive). Empty (TypeInvalid) otherwise.
 	InnerElemType Type
-	KeyType       Type
-	ValueType     Type
+	// MapElemKeyType and MapElemValueType carry the map's K and V
+	// when Type==TypeList && ElemType==TypeMap (Phase 3.4f
+	// list<map<K,V>>). Both are TypeInvalid otherwise.
+	MapElemKeyType   Type
+	MapElemValueType Type
+	KeyType          Type
+	ValueType        Type
 	// ListValueElemType carries the inner scalar element type when
 	// Type==TypeMap && ValueType==TypeList (Phase 3.4e map<K,list<V>>).
 	// Empty (TypeInvalid) otherwise.
@@ -108,6 +116,11 @@ type Function struct {
 	// ReturnType==TypeList && ReturnElemType==TypeList (Phase 3.4b
 	// list<list<T>>). The inner is a scalar primitive in 3.4b.
 	ReturnInnerElemType Type
+	// ReturnMapElemKeyType and ReturnMapElemValueType carry the map's
+	// K and V when ReturnType==TypeList && ReturnElemType==TypeMap
+	// (Phase 3.4f list<map<K,V>>). Both are TypeInvalid otherwise.
+	ReturnMapElemKeyType   Type
+	ReturnMapElemValueType Type
 
 	// ReturnKeyType and ReturnValueType carry the K/V identities
 	// when ReturnType==TypeMap. Phase 3.2 restricts the pair to
@@ -170,6 +183,8 @@ type CallExpr struct {
 	ResultElemType          Type   // valid when Result==TypeList
 	ResultElemRecordName    string // valid when Result==TypeList && ResultElemType==TypeRecord
 	ResultInnerElemType     Type   // valid when Result==TypeList && ResultElemType==TypeList (Phase 3.4b)
+	ResultMapElemKeyType    Type   // valid when Result==TypeList && ResultElemType==TypeMap (Phase 3.4f)
+	ResultMapElemValueType  Type   // valid when Result==TypeList && ResultElemType==TypeMap (Phase 3.4f)
 	ResultKeyType           Type   // valid when Result==TypeMap
 	ResultValueType         Type   // valid when Result==TypeMap
 	ResultListValueElemType Type   // valid when Result==TypeMap && ResultValueType==TypeList (Phase 3.4e)
@@ -336,6 +351,8 @@ func (u *UnaryExpr) Type() Type { return u.Result }
 // Phase 3.0 adds RecordName, valid when VarType==TypeRecord. Phase
 // 3.1 adds ElemType, valid when VarType==TypeList. Phase 3.4e adds
 // ListValueElemType, valid when VarType==TypeMap && ValueType==TypeList.
+// Phase 3.4f adds MapElemKeyType and MapElemValueType, valid when
+// VarType==TypeList && ElemType==TypeMap.
 type VarRef struct {
 	Name              string
 	VarType           Type
@@ -343,6 +360,8 @@ type VarRef struct {
 	ElemType          Type
 	ElemRecordName    string // valid when VarType==TypeList && ElemType==TypeRecord
 	InnerElemType     Type   // valid when VarType==TypeList && ElemType==TypeList (Phase 3.4b)
+	MapElemKeyType    Type   // valid when VarType==TypeList && ElemType==TypeMap (Phase 3.4f)
+	MapElemValueType  Type   // valid when VarType==TypeList && ElemType==TypeMap (Phase 3.4f)
 	KeyType           Type   // valid when VarType==TypeMap
 	ValueType         Type   // valid when VarType==TypeMap
 	ListValueElemType Type   // valid when VarType==TypeMap && ValueType==TypeList (Phase 3.4e)
@@ -392,6 +411,8 @@ func (f *FieldAccess) Type() Type { return f.Result }
 // or assignment to a LetStmt name (mutability lives on VarStmt).
 // Phase 3.4e adds ListValueElemType, valid when VarType==TypeMap &&
 // ValueType==TypeList, carrying the inner scalar list element type.
+// Phase 3.4f adds MapElemKeyType and MapElemValueType, valid when
+// VarType==TypeList && ElemType==TypeMap.
 type LetStmt struct {
 	Name              string
 	VarType           Type
@@ -399,6 +420,8 @@ type LetStmt struct {
 	ElemType          Type   // valid when VarType==TypeList
 	ElemRecordName    string // valid when VarType==TypeList && ElemType==TypeRecord
 	InnerElemType     Type   // valid when VarType==TypeList && ElemType==TypeList (Phase 3.4b)
+	MapElemKeyType    Type   // valid when VarType==TypeList && ElemType==TypeMap (Phase 3.4f)
+	MapElemValueType  Type   // valid when VarType==TypeList && ElemType==TypeMap (Phase 3.4f)
 	KeyType           Type   // valid when VarType==TypeMap
 	ValueType         Type   // valid when VarType==TypeMap
 	ListValueElemType Type   // valid when VarType==TypeMap && ValueType==TypeList (Phase 3.4e)
@@ -488,12 +511,15 @@ func (*ReturnStmt) isStmt() {}
 // ElemRecordName naming the element record) and stamps ElemType /
 // ElemRecordName onto the node; the emitter renders this as a
 // `mochi_list_<T>_lit` call for scalar elements or
-// `mochi_list_<R>_lit` for record elements.
+// `mochi_list_<R>_lit` for record elements. Phase 3.4f adds
+// MapElemKeyType and MapElemValueType for list<map<K,V>>.
 type ListLit struct {
-	ElemType       Type
-	ElemRecordName string // valid when ElemType==TypeRecord
-	InnerElemType  Type   // valid when ElemType==TypeList (Phase 3.4b list<list<T>>)
-	Elems          []Expr
+	ElemType         Type
+	ElemRecordName   string // valid when ElemType==TypeRecord
+	InnerElemType    Type   // valid when ElemType==TypeList (Phase 3.4b list<list<T>>)
+	MapElemKeyType   Type   // valid when ElemType==TypeMap (Phase 3.4f list<map<K,V>>)
+	MapElemValueType Type   // valid when ElemType==TypeMap (Phase 3.4f list<map<K,V>>)
+	Elems            []Expr
 }
 
 func (*ListLit) Type() Type { return TypeList }
@@ -504,7 +530,8 @@ func (*ListLit) Type() Type { return TypeList }
 // ElemType here too for emit-time helper-suffix selection). Bounds
 // are checked at runtime inside the per-T `_index` helper. Phase 3.4
 // adds ElemRecordName for list<R> receivers; the helper returns a
-// `struct mochi_<R>` by value.
+// `struct mochi_<R>` by value. Phase 3.4f adds MapElemKeyType and
+// MapElemValueType for list<map<K,V>> receivers.
 type IndexExpr struct {
 	Receiver       Expr
 	Index          Expr
@@ -514,7 +541,9 @@ type IndexExpr struct {
 	// list value (i.e., the receiver was list<list<T>>); it
 	// carries the inner T so downstream IR can resolve helper
 	// suffixes for further operations on the produced list.
-	InnerElemType Type
+	InnerElemType    Type
+	MapElemKeyType   Type // valid when ElemType==TypeMap (Phase 3.4f)
+	MapElemValueType Type // valid when ElemType==TypeMap (Phase 3.4f)
 }
 
 func (i *IndexExpr) Type() Type { return i.ElemType }
@@ -524,11 +553,14 @@ func (i *IndexExpr) Type() Type { return i.ElemType }
 // as TypeInt. ElemType is carried so the emitter can pick the
 // `_len` helper suffix; Phase 3.4 adds ElemRecordName for list<R>
 // receivers so the suffix can resolve to the per-record helper.
+// Phase 3.4f adds MapElemKeyType and MapElemValueType for list<map<K,V>>.
 type LenExpr struct {
-	Receiver       Expr
-	ElemType       Type
-	ElemRecordName string // valid when ElemType==TypeRecord
-	InnerElemType  Type   // valid when ElemType==TypeList (Phase 3.4b)
+	Receiver         Expr
+	ElemType         Type
+	ElemRecordName   string // valid when ElemType==TypeRecord
+	InnerElemType    Type   // valid when ElemType==TypeList (Phase 3.4b)
+	MapElemKeyType   Type   // valid when ElemType==TypeMap (Phase 3.4f)
+	MapElemValueType Type   // valid when ElemType==TypeMap (Phase 3.4f)
 }
 
 func (*LenExpr) Type() Type { return TypeInt }
@@ -539,13 +571,16 @@ func (*LenExpr) Type() Type { return TypeInt }
 // emitter renders this as a `mochi_list_<T>_append` call; the
 // helper allocates a new buffer and returns a fresh list value,
 // so the input is never mutated (functional append semantics).
-// Phase 3.4 adds ElemRecordName for list<R> receivers.
+// Phase 3.4 adds ElemRecordName for list<R> receivers. Phase 3.4f
+// adds MapElemKeyType and MapElemValueType for list<map<K,V>>.
 type AppendExpr struct {
-	Receiver       Expr
-	Value          Expr
-	ElemType       Type
-	ElemRecordName string // valid when ElemType==TypeRecord
-	InnerElemType  Type   // valid when ElemType==TypeList (Phase 3.4b)
+	Receiver         Expr
+	Value            Expr
+	ElemType         Type
+	ElemRecordName   string // valid when ElemType==TypeRecord
+	InnerElemType    Type   // valid when ElemType==TypeList (Phase 3.4b)
+	MapElemKeyType   Type   // valid when ElemType==TypeMap (Phase 3.4f)
+	MapElemValueType Type   // valid when ElemType==TypeMap (Phase 3.4f)
 }
 
 func (a *AppendExpr) Type() Type { return TypeList }
@@ -557,13 +592,17 @@ func (a *AppendExpr) Type() Type { return TypeList }
 // Body refer to this loop. The emitter compiles to a C `for` loop
 // over indices [0, List.len) reading `List.data[i]` once per
 // iteration. Phase 3.4 adds ElemRecordName for list<R> iteration.
+// Phase 3.4f adds MapElemKeyType and MapElemValueType for
+// list<map<K,V>> iteration.
 type ForEachStmt struct {
-	Var            string
-	List           Expr
-	ElemType       Type
-	ElemRecordName string // valid when ElemType==TypeRecord
-	InnerElemType  Type   // valid when ElemType==TypeList (Phase 3.4b)
-	Body           *Block
+	Var              string
+	List             Expr
+	ElemType         Type
+	ElemRecordName   string // valid when ElemType==TypeRecord
+	InnerElemType    Type   // valid when ElemType==TypeList (Phase 3.4b)
+	MapElemKeyType   Type   // valid when ElemType==TypeMap (Phase 3.4f)
+	MapElemValueType Type   // valid when ElemType==TypeMap (Phase 3.4f)
+	Body             *Block
 }
 
 func (*ForEachStmt) isStmt() {}
