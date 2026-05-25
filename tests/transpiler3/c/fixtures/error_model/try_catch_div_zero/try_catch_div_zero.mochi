@@ -1,0 +1,9 @@
+let x: int = 10
+let y: int = 0
+try {
+  let z: int = x / y
+  print(z)
+} catch e {
+  print("caught")
+  print(e)
+}

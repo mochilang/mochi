@@ -599,6 +599,34 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		return nil
 	case *aotir.QueryScopeStmt:
 		return emitQueryScopeStmt(b, s, indent)
+	case *aotir.TryCatchStmt:
+		fmt.Fprintf(b, "%s{\n", indent)
+		fmt.Fprintf(b, "%s    jmp_buf %s;\n", indent, s.BufName)
+		fmt.Fprintf(b, "%s    mochi_try_push(&%s);\n", indent, s.BufName)
+		fmt.Fprintf(b, "%s    if (setjmp(%s) == 0) {\n", indent, s.BufName)
+		if err := emitBlock(b, s.TryBody, indent+"        "); err != nil {
+			return err
+		}
+		fmt.Fprintf(b, "%s        mochi_try_pop();\n", indent)
+		fmt.Fprintf(b, "%s    } else {\n", indent)
+		fmt.Fprintf(b, "%s        int64_t %s = (int64_t)mochi_except_code;\n", indent, s.CatchVar)
+		if err := emitBlock(b, s.CatchBody, indent+"        "); err != nil {
+			return err
+		}
+		fmt.Fprintf(b, "%s    }\n", indent)
+		fmt.Fprintf(b, "%s}\n", indent)
+		return nil
+	case *aotir.PanicStmt:
+		code, err := emitExpr(s.Code)
+		if err != nil {
+			return fmt.Errorf("PanicStmt code: %w", err)
+		}
+		msg, err := emitExpr(s.Msg)
+		if err != nil {
+			return fmt.Errorf("PanicStmt msg: %w", err)
+		}
+		fmt.Fprintf(b, "%smochi_raise((int)(%s), (const char*)(%s));\n", indent, code, msg)
+		return nil
 	}
 	return fmt.Errorf("transpiler3/c/emit: unhandled Stmt %T", st)
 }
@@ -1089,6 +1117,12 @@ func walkStmtListOfMap(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 				walkStmtListOfMap(inner, add)
 			}
 		}
+	case *aotir.TryCatchStmt:
+		walkBlockListOfMap(s.TryBody, add)
+		walkBlockListOfMap(s.CatchBody, add)
+	case *aotir.PanicStmt:
+		walkExprListOfMap(s.Code, add)
+		walkExprListOfMap(s.Msg, add)
 	}
 }
 
@@ -1392,6 +1426,12 @@ func walkStmtExprVisit(st aotir.Stmt, visit func(aotir.Expr)) {
 				walkStmtExprVisit(inner, visit)
 			}
 		}
+	case *aotir.TryCatchStmt:
+		walkExprVisit(s.TryBody, visit)
+		walkExprVisit(s.CatchBody, visit)
+	case *aotir.PanicStmt:
+		walkExprNodeVisit(s.Code, visit)
+		walkExprNodeVisit(s.Msg, visit)
 	}
 }
 
@@ -1602,6 +1642,12 @@ func walkStmtMapOfList(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 				walkStmtMapOfList(inner, add)
 			}
 		}
+	case *aotir.TryCatchStmt:
+		walkBlockMapOfList(s.TryBody, add)
+		walkBlockMapOfList(s.CatchBody, add)
+	case *aotir.PanicStmt:
+		walkExprMapOfList(s.Code, add)
+		walkExprMapOfList(s.Msg, add)
 	}
 }
 
@@ -1917,6 +1963,12 @@ func walkStmtInner(st aotir.Stmt, visit func(aotir.Type, aotir.Type)) {
 				walkStmtInner(inner, visit)
 			}
 		}
+	case *aotir.TryCatchStmt:
+		walkBlockInner(s.TryBody, visit)
+		walkBlockInner(s.CatchBody, visit)
+	case *aotir.PanicStmt:
+		walkExprInner(s.Code, visit)
+		walkExprInner(s.Msg, visit)
 	}
 }
 
@@ -2154,6 +2206,12 @@ func walkStmt(st aotir.Stmt, visit func(aotir.Type, string)) {
 				walkStmt(inner, visit)
 			}
 		}
+	case *aotir.TryCatchStmt:
+		walkBlock(s.TryBody, visit)
+		walkBlock(s.CatchBody, visit)
+	case *aotir.PanicStmt:
+		walkExpr(s.Code, visit)
+		walkExpr(s.Msg, visit)
 	}
 }
 
@@ -3776,6 +3834,9 @@ func collectFunSigsStmt(st aotir.Stmt, seen map[string]*aotir.FunSig) {
 		if s.Default != nil {
 			collectFunSigsBlock(s.Default.Body, seen)
 		}
+	case *aotir.TryCatchStmt:
+		collectFunSigsBlock(s.TryBody, seen)
+		collectFunSigsBlock(s.CatchBody, seen)
 	}
 }
 
@@ -3964,6 +4025,8 @@ func stmtUsesCSV(st aotir.Stmt) bool {
 		}
 	case *aotir.QueryScopeStmt:
 		return blockUsesCSV(s.Body)
+	case *aotir.TryCatchStmt:
+		return blockUsesCSV(s.TryBody) || blockUsesCSV(s.CatchBody)
 	}
 	return false
 }
