@@ -31,7 +31,7 @@ Higher-order combinators are how Mochi expresses data transformation; the query 
 | 5.0 | Non-capturing closure support: `FunLit` IR node (lifted to top-level aotir.Function); `FunCallExpr` for calling fun-typed variables; `FunSig` type + `FunTypeName()` C typedef names; `TypeFun` type enum entry; `collectFunSigs` + `emitFunTypedefs` emit passes; verifier updated to carry `FunSig` on TypeFun bindings; lower pass: `lowerFunExpr` lifts anonymous functions, `lowerFunVarCall` for indirect calls; `TestPhase5Closures` gate (8 fixtures). Scalar primitive param/return types only (int, float, bool, string). Unit return supported. | LANDED 2026-05-25 16:30 (GMT+7) | — | — |
 | 5.1 | Capturing closures (free-variable capture by value): env struct heap-allocated, fat pointer `{fn, env}` struct representation. All closures (capturing and non-capturing) use `mochi_closure_*` struct typedef; non-capturing ones set `env=NULL`. Free-variable scanner (`scanFreeVarNames`) pre-scans parser AST; `ClosureEnvStmt` IR node for env alloc; `emitName` field on `lbinding` rewrites captured VarRef to `__e->fieldname`; lifted functions add `void *__mochi_env` first param. `TestPhase5CapturingClosures` gate (8 fixtures). | LANDED 2026-05-25 18:55 (GMT+7) | — | — |
 | 5.2 | Free function as closure shim: `env == NULL` path for top-level functions passed as fun-typed args; `lowerFunRef` lifts a named function reference into a `__shim_<name>` wrapper (IsLifted=true, no captures); shim dedup via `shimFuncs *map[string]bool` shared across all lowerers; `TestPhase5FreeFunctionShim` gate (8 fixtures). | LANDED 2026-05-25 19:12 (GMT+7) | — | — |
-| 5.3 | Method as closure shim: `env == self` path for method references | NOT STARTED | — | — |
+| 5.3 | Method as closure shim: `env == &receiver` path for agent intent references; `lowerAgentMethodRefAsValue` converts bare `AgentMethodRef` to a `FunLit` backed by `__methodshim_AGENT_INTENT`; shim casts `__mochi_env` to `mochi_agent_AGENT_t *` and forwards; dedup via `shimFuncs`; `TestPhase5MethodShim` gate (5 fixtures). | LANDED 2026-05-26 04:59 (GMT+7) | (this PR) | — |
 
 ## Decisions made
 
@@ -89,6 +89,18 @@ __anon_2_env->base = base;
 **Scalar primitives only in Phase 5.2.** Params and return types are validated to be `int`, `float`, `bool`, `string`, or `unit`. Complex types (records, unions, lists, maps) as shim param/return are deferred to Phase 5.x after the full closure type-widening pass.
 
 **No verifier changes required.** The shim IR is structurally identical to an anonymous non-capturing lifted function: `IsLifted=true`, `EnvTypeName=""`, `Captures=nil`. The verifier already handles this shape from Phase 5.0.
+
+## Phase 5.3 decisions
+
+**`env == &receiver` shim for agent intents.** Phase 5.3 extends the shim machinery to agent method references. When `c.increment` appears as a value (not immediately called), `lowerPostfix` detects the unresolved `AgentMethodRef` at the end of the op chain and calls `lowerAgentMethodRefAsValue`. This emits a static shim function `__methodshim_AGENT_INTENT(void *__mochi_env, params...)` that casts `__mochi_env` to `mochi_agent_AGENT_t *__self` and forwards to `mochi_agent_AGENT__INTENT(__self, params...)`. The returned `FunLit` carries `EnvVarName: "&receiver_name"` so the closure struct is `{.fn=__methodshim_..., .env=(void *)&c}`.
+
+**Receiver constraint (Phase 5.3).** The agent receiver in the `AgentMethodRef` must be a `*aotir.VarRef` so we can take `&name` for the env. Non-VarRef receivers (e.g., field access chains or calls that return agents) are rejected with a diagnostic; support for those is deferred to a later sub-phase.
+
+**Shim deduplication.** `lowerAgentMethodRefAsValue` reuses the existing `shimFuncs *map[string]bool` shared across all lowerers in a TU. A second reference to the same `agent.intent` pair skips re-emitting the shim but still returns a fresh `FunLit` pointing to the same `__methodshim_*` function.
+
+**Scalar primitives only.** Param and return types of the intent are validated to be `int`, `float`, `bool`, `string`, or `unit`. Complex types (records, unions, lists, maps) as method closure param/return are deferred.
+
+**`lowerPostfix` hook.** The `AgentMethodRef`-to-`FunLit` conversion is at the very end of `lowerPostfix`, after all ops have been processed. This covers both the `Primary.Selector.Tail` path (field access inside a selector chain) and the `PostfixOp.Field` path (explicit postfix field op). Both paths pass through the same exit point in `lowerPostfix`.
 
 ## Bug fixes in this phase
 

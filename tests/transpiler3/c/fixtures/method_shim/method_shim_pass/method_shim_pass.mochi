@@ -1,0 +1,7 @@
+agent Counter {
+    var count: int = 0
+    intent value(): int { return count }
+}
+fun run(getter: fun(): int): int { return getter() }
+let c = Counter { count: 42 }
+print(run(c.value))

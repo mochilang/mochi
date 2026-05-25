@@ -2917,6 +2917,10 @@ func (l *lowerer) lowerPostfix(p *parser.PostfixExpr) (aotir.Expr, error) {
 			return nil, fmt.Errorf("unsupported postfix operator")
 		}
 	}
+	// Phase 5.3: bare agent method reference used as a closure value.
+	if amr, ok := expr.(*aotir.AgentMethodRef); ok {
+		return l.lowerAgentMethodRefAsValue(amr)
+	}
 	return expr, nil
 }
 
@@ -6325,6 +6329,95 @@ func (l *lowerer) lowerAgentMethodCallOp(amr *aotir.AgentMethodRef, callOp *pars
 		Receiver:   amr.Receiver,
 		Args:       args,
 		Result:     intentDecl.ReturnType,
+	}, nil
+}
+
+// lowerAgentMethodRefAsValue converts a bare AgentMethodRef (method used as a
+// closure value, not immediately called) into a FunLit that captures the agent
+// receiver via the env pointer. Phase 5.3.
+//
+// The shim function __methodshim_AGENT_INTENT(void *__mochi_env, params...)
+// casts __mochi_env to mochi_agent_AGENT_t * and forwards to
+// mochi_agent_AGENT__INTENT(__self, params...). The receiver must be a VarRef
+// so we can take &name as the env. Each shim is emitted at most once per TU.
+func (l *lowerer) lowerAgentMethodRefAsValue(amr *aotir.AgentMethodRef) (aotir.Expr, error) {
+	ag, ok := l.agents[amr.AgentName]
+	if !ok {
+		return nil, fmt.Errorf("agent %q not declared", amr.AgentName)
+	}
+	var intentDecl *aotir.AgentIntentDecl
+	for i := range ag.Intents {
+		if ag.Intents[i].Name == amr.IntentName {
+			intentDecl = &ag.Intents[i]
+			break
+		}
+	}
+	if intentDecl == nil {
+		return nil, fmt.Errorf("agent %q has no intent %q", amr.AgentName, amr.IntentName)
+	}
+	recv, ok := amr.Receiver.(*aotir.VarRef)
+	if !ok {
+		return nil, fmt.Errorf("agent method ref %s.%s: receiver must be a local variable in Phase 5.3", amr.AgentName, amr.IntentName)
+	}
+	funSig := &aotir.FunSig{ReturnType: intentDecl.ReturnType}
+	for _, p := range intentDecl.Params {
+		switch p.Type {
+		case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+		default:
+			return nil, fmt.Errorf("agent %q intent %q param %q: type %s not supported in Phase 5.3", amr.AgentName, amr.IntentName, p.Name, p.Type)
+		}
+		funSig.ParamTypes = append(funSig.ParamTypes, p.Type)
+	}
+	switch intentDecl.ReturnType {
+	case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString, aotir.TypeUnit:
+	default:
+		return nil, fmt.Errorf("agent %q intent %q: return type %s not supported in Phase 5.3", amr.AgentName, amr.IntentName, intentDecl.ReturnType)
+	}
+
+	shimName := "__methodshim_" + amr.AgentName + "_" + amr.IntentName
+	agentTypeName := "mochi_agent_" + amr.AgentName + "_t"
+	intentFnName := "mochi_agent_" + amr.AgentName + "__" + amr.IntentName
+
+	if l.shimFuncs != nil && !(*l.shimFuncs)[shimName] {
+		(*l.shimFuncs)[shimName] = true
+
+		// Build call string: intentFnName(__self, p0, p1, ...)
+		var callStr strings.Builder
+		callStr.WriteString(intentFnName)
+		callStr.WriteString("(__self")
+		for _, p := range intentDecl.Params {
+			callStr.WriteString(", ")
+			callStr.WriteString(p.Name)
+		}
+		callStr.WriteString(")")
+
+		bodyStmts := []aotir.Stmt{
+			&aotir.RawCStmt{Code: agentTypeName + " *__self = (" + agentTypeName + " *)__mochi_env;"},
+		}
+		if intentDecl.ReturnType == aotir.TypeUnit {
+			bodyStmts = append(bodyStmts, &aotir.RawCStmt{Code: callStr.String() + ";"})
+		} else {
+			bodyStmts = append(bodyStmts, &aotir.RawCStmt{Code: "return " + callStr.String() + ";"})
+		}
+
+		irParams := make([]aotir.Param, len(intentDecl.Params))
+		for i, p := range intentDecl.Params {
+			irParams[i] = aotir.Param{Name: p.Name, Type: p.Type}
+		}
+		shim := &aotir.Function{
+			Name:       shimName,
+			Params:     irParams,
+			ReturnType: intentDecl.ReturnType,
+			Body:       &aotir.Block{Statements: bodyStmts},
+			IsLifted:   true,
+		}
+		*l.liftedFuncs = append(*l.liftedFuncs, shim)
+	}
+
+	return &aotir.FunLit{
+		FuncName:   shimName,
+		Sig:        funSig,
+		EnvVarName: "&" + recv.Name,
 	}, nil
 }
 

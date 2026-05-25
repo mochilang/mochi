@@ -1,0 +1,7 @@
+agent Box {
+    var val: float = 0.0
+    intent get(): float { return val }
+}
+let b = Box { val: 2.5 }
+let f = b.get
+print(f())

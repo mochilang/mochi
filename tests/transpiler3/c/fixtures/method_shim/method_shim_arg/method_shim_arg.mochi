@@ -1,0 +1,8 @@
+agent Mul {
+    var factor: int = 0
+    intent multiply(x: int): int { return factor * x }
+}
+let m = Mul { factor: 3 }
+let f = m.multiply
+print(f(4))
+print(f(5))
