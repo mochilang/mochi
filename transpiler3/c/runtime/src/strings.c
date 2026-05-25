@@ -4,16 +4,20 @@
  * MEP-45 Phase 6.0: mochi_str_cat.
  * MEP-45 Phase 6.1: mochi_str_index, mochi_str_contains,
  *                   mochi_str_substring, mochi_str_reverse.
+ * MEP-45 Phase 6.2: mochi_str_from_i64, mochi_str_from_f64,
+ *                   mochi_str_from_bool.
  *
  * All functions that return strings return freshly malloc'd buffers.
  * Memory is never freed in Phase 6.x (deferred to Phase 17 GC).
  *
  * Phase 6.1 operates on bytes (ASCII). Full UTF-8 codepoint support
- * via utf8proc is Phase 6.2.
+ * via utf8proc is Phase 6.3.
  */
 #include "mochi/strings.h"
 
 #include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -70,4 +74,34 @@ const char *mochi_str_reverse(const char *s) {
     }
     out[n] = '\0';
     return out;
+}
+
+/* ---- Phase 6.2: str(x) type-to-string conversion ------------------- */
+
+const char *mochi_str_from_i64(int64_t v) {
+    /* PRId64 on most platforms is "ld" or "lld"; snprintf handles it. */
+    char buf[32];
+    int n = snprintf(buf, sizeof(buf), "%lld", (long long)v);
+    if (n < 0 || (size_t)n >= sizeof(buf)) return "";
+    char *out = malloc((size_t)n + 1);
+    if (out == NULL) return "";
+    memcpy(out, buf, (size_t)n + 1);
+    return out;
+}
+
+const char *mochi_str_from_f64(double v) {
+    /* Use %g to match Go's fmt.Sprint(float64) shortest-decimal style.
+     * %g removes trailing zeros and the decimal point when not needed,
+     * so str(1.0) == "1", str(3.14) == "3.14", str(0.1) == "0.1". */
+    char buf[64];
+    int n = snprintf(buf, sizeof(buf), "%g", v);
+    if (n < 0 || (size_t)n >= sizeof(buf)) return "";
+    char *out = malloc((size_t)n + 1);
+    if (out == NULL) return "";
+    memcpy(out, buf, (size_t)n + 1);
+    return out;
+}
+
+const char *mochi_str_from_bool(int v) {
+    return v ? "true" : "false";
 }

@@ -1,0 +1,5 @@
+print(str(true))
+print(str(false))
+let x = 5
+print(str(x > 3))
+print(str(x == 10))

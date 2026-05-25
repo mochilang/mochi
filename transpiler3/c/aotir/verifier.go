@@ -1310,6 +1310,15 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("StrReverseExpr: receiver must be TypeString, got %s", v.Receiver.Type())
 		}
 		return verifyExprCtx(ctx, v.Receiver)
+	case *StrConvertExpr:
+		if v.Operand == nil {
+			return fmt.Errorf("StrConvertExpr: nil operand")
+		}
+		t := v.Operand.Type()
+		if t != TypeInt && t != TypeFloat && t != TypeBool && t != TypeString {
+			return fmt.Errorf("StrConvertExpr: operand must be int/float/bool/string, got %s", t)
+		}
+		return verifyExprCtx(ctx, v.Operand)
 	case *AppendExpr:
 		return verifyAppendExpr(ctx, v)
 	case *ListSortAscExpr:

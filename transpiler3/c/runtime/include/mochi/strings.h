@@ -24,3 +24,11 @@ int mochi_str_contains(const char *s, const char *sub);
 const char *mochi_str_substring(const char *s, int64_t start, int64_t end);
 /* mochi_str_reverse(s) -- reversed copy of s. */
 const char *mochi_str_reverse(const char *s);
+
+/* Phase 6.2: str(x) type-to-string conversion. */
+/* mochi_str_from_i64(v) -- decimal string for a signed 64-bit integer. */
+const char *mochi_str_from_i64(int64_t v);
+/* mochi_str_from_f64(v) -- shortest decimal representation matching vm3. */
+const char *mochi_str_from_f64(double v);
+/* mochi_str_from_bool(v) -- "true" or "false". */
+const char *mochi_str_from_bool(int v);

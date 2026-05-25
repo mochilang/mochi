@@ -638,6 +638,17 @@ type StrReverseExpr struct {
 
 func (*StrReverseExpr) Type() Type { return TypeString }
 
+// StrConvertExpr is the `str(x)` builtin that converts an int, float,
+// bool, or string to its string representation. The verifier accepts any
+// scalar operand type. The emitter dispatches to mochi_str_from_i64,
+// mochi_str_from_f64, mochi_str_from_bool, or identity for string.
+// Phase 6.2.
+type StrConvertExpr struct {
+	Operand Expr // TypeInt | TypeFloat | TypeBool | TypeString
+}
+
+func (*StrConvertExpr) Type() Type { return TypeString }
+
 // StrMethodRef is a transient IR node produced during lowering when
 // the lower pass processes a field access like `s.contains` on a
 // string-typed receiver. It is never emitted; lowerPostfix replaces it
