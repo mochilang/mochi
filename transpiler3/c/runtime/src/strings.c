@@ -6,15 +6,16 @@
  *                   mochi_str_substring, mochi_str_reverse.
  * MEP-45 Phase 6.2: mochi_str_from_i64, mochi_str_from_f64,
  *                   mochi_str_from_bool.
+ * MEP-45 Phase 6.3: mochi_str_upper, mochi_str_lower, mochi_str_split,
+ *                   mochi_str_join. ASCII-only; full UTF-8 codepoint support
+ *                   via utf8proc is deferred.
  *
  * All functions that return strings return freshly malloc'd buffers.
  * Memory is never freed in Phase 6.x (deferred to Phase 17 GC).
- *
- * Phase 6.1 operates on bytes (ASCII). Full UTF-8 codepoint support
- * via utf8proc is Phase 6.3.
  */
 #include "mochi/strings.h"
 
+#include <ctype.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -104,4 +105,100 @@ const char *mochi_str_from_f64(double v) {
 
 const char *mochi_str_from_bool(int v) {
     return v ? "true" : "false";
+}
+
+/* ---- Phase 6.3: case-conversion and split/join --------------------- */
+
+const char *mochi_str_upper(const char *s) {
+    if (s == NULL) return "";
+    size_t n = strlen(s);
+    char *out = malloc(n + 1);
+    if (out == NULL) return "";
+    for (size_t i = 0; i < n; i++) {
+        out[i] = (char)toupper((unsigned char)s[i]);
+    }
+    out[n] = '\0';
+    return out;
+}
+
+const char *mochi_str_lower(const char *s) {
+    if (s == NULL) return "";
+    size_t n = strlen(s);
+    char *out = malloc(n + 1);
+    if (out == NULL) return "";
+    for (size_t i = 0; i < n; i++) {
+        out[i] = (char)tolower((unsigned char)s[i]);
+    }
+    out[n] = '\0';
+    return out;
+}
+
+mochi_list_str mochi_str_split(const char *s, const char *sep) {
+    mochi_list_str result = mochi_list_str_lit(NULL, 0);
+    if (s == NULL || sep == NULL) return result;
+    size_t seplen = strlen(sep);
+    if (seplen == 0) {
+        /* Empty separator: split into individual characters. */
+        size_t n = strlen(s);
+        for (size_t i = 0; i < n; i++) {
+            char *ch = malloc(2);
+            if (ch == NULL) return result;
+            ch[0] = s[i];
+            ch[1] = '\0';
+            result = mochi_list_str_append(result, ch);
+        }
+        return result;
+    }
+    const char *p = s;
+    while (1) {
+        const char *found = strstr(p, sep);
+        if (found == NULL) {
+            result = mochi_list_str_append(result, p);
+            break;
+        }
+        size_t len = (size_t)(found - p);
+        char *tok = malloc(len + 1);
+        if (tok == NULL) return result;
+        memcpy(tok, p, len);
+        tok[len] = '\0';
+        result = mochi_list_str_append(result, tok);
+        p = found + seplen;
+    }
+    return result;
+}
+
+const char *mochi_str_join(mochi_list_str xs, const char *sep) {
+    if (sep == NULL) sep = "";
+    int64_t n = mochi_list_str_len(xs);
+    if (n == 0) {
+        char *out = malloc(1);
+        if (out == NULL) return "";
+        out[0] = '\0';
+        return out;
+    }
+    size_t seplen = strlen(sep);
+    /* First pass: compute total length. */
+    size_t total = 0;
+    for (int64_t i = 0; i < n; i++) {
+        const char *elem = mochi_list_str_index(xs, i);
+        if (elem == NULL) elem = "";
+        total += strlen(elem);
+    }
+    total += (size_t)(n - 1) * seplen;
+    char *out = malloc(total + 1);
+    if (out == NULL) return "";
+    char *p = out;
+    for (int64_t i = 0; i < n; i++) {
+        if (i > 0) {
+            memcpy(p, sep, seplen);
+            p += seplen;
+        }
+        const char *elem = mochi_list_str_index(xs, i);
+        if (elem == NULL) elem = "";
+        size_t elen = strlen(elem);
+        memcpy(p, elem, elen);
+        p += elen;
+    }
+    *p = '\0';
+    return out;
 }

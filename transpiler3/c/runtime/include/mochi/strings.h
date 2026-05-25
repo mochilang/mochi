@@ -32,3 +32,15 @@ const char *mochi_str_from_i64(int64_t v);
 const char *mochi_str_from_f64(double v);
 /* mochi_str_from_bool(v) -- "true" or "false". */
 const char *mochi_str_from_bool(int v);
+
+/* Phase 6.3: case-conversion and split/join (ASCII only; full UTF-8 via
+ * utf8proc deferred to a later sub-phase). */
+#include "mochi/list.h"
+/* mochi_str_upper(s) -- uppercase copy of s (ASCII). */
+const char *mochi_str_upper(const char *s);
+/* mochi_str_lower(s) -- lowercase copy of s (ASCII). */
+const char *mochi_str_lower(const char *s);
+/* mochi_str_split(s, sep) -- split s by sep, return list<string>. */
+mochi_list_str mochi_str_split(const char *s, const char *sep);
+/* mochi_str_join(xs, sep) -- join list<string> with sep between elements. */
+const char *mochi_str_join(mochi_list_str xs, const char *sep);

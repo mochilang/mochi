@@ -701,6 +701,40 @@ type StrConvertExpr struct {
 
 func (*StrConvertExpr) Type() Type { return TypeString }
 
+// StrUpperExpr is the `upper(s)` builtin. The emitter calls
+// mochi_str_upper(s). ASCII-only in Phase 6.3.
+type StrUpperExpr struct {
+	Receiver Expr
+}
+
+func (*StrUpperExpr) Type() Type { return TypeString }
+
+// StrLowerExpr is the `lower(s)` builtin. The emitter calls
+// mochi_str_lower(s). ASCII-only in Phase 6.3.
+type StrLowerExpr struct {
+	Receiver Expr
+}
+
+func (*StrLowerExpr) Type() Type { return TypeString }
+
+// StrSplitExpr is the `split(s, sep)` builtin. Returns list<string>.
+// The emitter calls mochi_str_split(s, sep). Phase 6.3.
+type StrSplitExpr struct {
+	Str Expr // TypeString
+	Sep Expr // TypeString
+}
+
+func (*StrSplitExpr) Type() Type { return TypeList }
+
+// StrJoinExpr is the `join(xs, sep)` builtin. Returns a string.
+// The emitter calls mochi_str_join(xs, sep). Phase 6.3.
+type StrJoinExpr struct {
+	List Expr // TypeList (ElemType==TypeString)
+	Sep  Expr // TypeString
+}
+
+func (*StrJoinExpr) Type() Type { return TypeString }
+
 // StrMethodRef is a transient IR node produced during lowering when
 // the lower pass processes a field access like `s.contains` on a
 // string-typed receiver. It is never emitted; lowerPostfix replaces it

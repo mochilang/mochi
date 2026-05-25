@@ -2079,6 +2079,39 @@ func emitExpr(e aotir.Expr) (string, error) {
 			return "", fmt.Errorf("StrReverseExpr receiver: %w", err)
 		}
 		return "mochi_str_reverse(" + recv + ")", nil
+	// Phase 6.3: string case-conversion and split/join.
+	case *aotir.StrUpperExpr:
+		recv, err := emitExpr(v.Receiver)
+		if err != nil {
+			return "", fmt.Errorf("StrUpperExpr receiver: %w", err)
+		}
+		return "mochi_str_upper(" + recv + ")", nil
+	case *aotir.StrLowerExpr:
+		recv, err := emitExpr(v.Receiver)
+		if err != nil {
+			return "", fmt.Errorf("StrLowerExpr receiver: %w", err)
+		}
+		return "mochi_str_lower(" + recv + ")", nil
+	case *aotir.StrSplitExpr:
+		str, err := emitExpr(v.Str)
+		if err != nil {
+			return "", fmt.Errorf("StrSplitExpr str: %w", err)
+		}
+		sep, err := emitExpr(v.Sep)
+		if err != nil {
+			return "", fmt.Errorf("StrSplitExpr sep: %w", err)
+		}
+		return "mochi_str_split(" + str + ", " + sep + ")", nil
+	case *aotir.StrJoinExpr:
+		list, err := emitExpr(v.List)
+		if err != nil {
+			return "", fmt.Errorf("StrJoinExpr list: %w", err)
+		}
+		sep, err := emitExpr(v.Sep)
+		if err != nil {
+			return "", fmt.Errorf("StrJoinExpr sep: %w", err)
+		}
+		return "mochi_str_join(" + list + ", " + sep + ")", nil
 	case *aotir.StrConvertExpr:
 		operand, err := emitExpr(v.Operand)
 		if err != nil {

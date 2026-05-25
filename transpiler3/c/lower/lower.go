@@ -854,6 +854,8 @@ func exprElemType(e aotir.Expr) aotir.Type {
 		return v.KeyType
 	case *aotir.MapValuesExpr:
 		return v.ValueType
+	case *aotir.StrSplitExpr:
+		return aotir.TypeString // split() always returns list<string>
 	}
 	return aotir.TypeInvalid
 }
@@ -3092,6 +3094,27 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	if call.Func == "reverse" {
 		return l.lowerReverseCall(call)
 	}
+	// Phase 6.3: string case-conversion and split/join.
+	if call.Func == "upper" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerStrUpperCall(call)
+		}
+	}
+	if call.Func == "lower" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerStrLowerCall(call)
+		}
+	}
+	if call.Func == "split" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerStrSplitCall(call)
+		}
+	}
+	if call.Func == "join" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerStrJoinCall(call)
+		}
+	}
 	if call.Func == "str" {
 		return l.lowerStrConvertCall(call)
 	}
@@ -3360,6 +3383,82 @@ func (l *lowerer) lowerReverseCall(call *parser.CallExpr) (aotir.Expr, error) {
 		return nil, fmt.Errorf("reverse() argument must be string in Phase 6.1, got %s", s.Type())
 	}
 	return &aotir.StrReverseExpr{Receiver: s}, nil
+}
+
+// lowerStrUpperCall lowers `upper(s)` to StrUpperExpr. Phase 6.3.
+func (l *lowerer) lowerStrUpperCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("upper() takes exactly one argument, got %d", len(call.Args))
+	}
+	s, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("upper() arg: %w", err)
+	}
+	if s.Type() != aotir.TypeString {
+		return nil, fmt.Errorf("upper() argument must be string, got %s", s.Type())
+	}
+	return &aotir.StrUpperExpr{Receiver: s}, nil
+}
+
+// lowerStrLowerCall lowers `lower(s)` to StrLowerExpr. Phase 6.3.
+func (l *lowerer) lowerStrLowerCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("lower() takes exactly one argument, got %d", len(call.Args))
+	}
+	s, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("lower() arg: %w", err)
+	}
+	if s.Type() != aotir.TypeString {
+		return nil, fmt.Errorf("lower() argument must be string, got %s", s.Type())
+	}
+	return &aotir.StrLowerExpr{Receiver: s}, nil
+}
+
+// lowerStrSplitCall lowers `split(s, sep)` to StrSplitExpr. Returns list<string>.
+// Phase 6.3.
+func (l *lowerer) lowerStrSplitCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 2 {
+		return nil, fmt.Errorf("split() takes exactly two arguments, got %d", len(call.Args))
+	}
+	s, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("split() string arg: %w", err)
+	}
+	if s.Type() != aotir.TypeString {
+		return nil, fmt.Errorf("split() first argument must be string, got %s", s.Type())
+	}
+	sep, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("split() sep arg: %w", err)
+	}
+	if sep.Type() != aotir.TypeString {
+		return nil, fmt.Errorf("split() second argument must be string, got %s", sep.Type())
+	}
+	return &aotir.StrSplitExpr{Str: s, Sep: sep}, nil
+}
+
+// lowerStrJoinCall lowers `join(xs, sep)` to StrJoinExpr. Expects a
+// list<string> as first arg. Phase 6.3.
+func (l *lowerer) lowerStrJoinCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 2 {
+		return nil, fmt.Errorf("join() takes exactly two arguments, got %d", len(call.Args))
+	}
+	xs, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("join() list arg: %w", err)
+	}
+	if xs.Type() != aotir.TypeList {
+		return nil, fmt.Errorf("join() first argument must be list<string>, got %s", xs.Type())
+	}
+	sep, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("join() sep arg: %w", err)
+	}
+	if sep.Type() != aotir.TypeString {
+		return nil, fmt.Errorf("join() second argument must be string, got %s", sep.Type())
+	}
+	return &aotir.StrJoinExpr{List: xs, Sep: sep}, nil
 }
 
 // lowerStrConvertCall lowers `str(x)` to StrConvertExpr. Accepts

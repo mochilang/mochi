@@ -1,0 +1,4 @@
+let a = upper("mochi")
+let b = lower("MOCHI")
+print(a)
+print(b)
