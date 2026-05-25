@@ -3042,6 +3042,12 @@ func emitMatchStmt(b *strings.Builder, s *aotir.MatchStmt, indent string) error 
 		if err := emitArm(s.Default, true); err != nil {
 			return fmt.Errorf("match default arm: %w", err)
 		}
+	} else {
+		// Defense-in-depth: the type checker rejects non-exhaustive matches
+		// (error T050) before the lowerer runs, so this default branch is
+		// unreachable in correct programs. It guards against future lowerer
+		// bugs and satisfies C compilers that warn on implicit fall-through.
+		fmt.Fprintf(b, "%sdefault: mochi_panic_index();\n", innerIndent)
 	}
 	fmt.Fprintf(b, "%s    }\n", indent) // close switch
 	fmt.Fprintf(b, "%s}\n", indent)     // close outer block
