@@ -1890,6 +1890,9 @@ func opForTypes(opStr string, lhs, rhs aotir.Type) (aotir.BinOp, aotir.Type, err
 					fmt.Errorf("operator %q on float operands not supported", opStr)
 			}
 		}
+		if lhs == aotir.TypeString && rhs == aotir.TypeString && opStr == "+" {
+			return aotir.BinStrCat, aotir.TypeString, nil
+		}
 		return aotir.BinInvalid, aotir.TypeInvalid,
 			fmt.Errorf("operator %q wants both int or both float, got %s and %s", opStr, lhs, rhs)
 	case "==", "!=", "<", "<=", ">", ">=":
@@ -2764,6 +2767,8 @@ func (l *lowerer) lowerLenCall(call *parser.CallExpr) (aotir.Expr, error) {
 		return nil, fmt.Errorf("len argument: %w", err)
 	}
 	switch receiver.Type() {
+	case aotir.TypeString:
+		return &aotir.StrLenExpr{Receiver: receiver}, nil
 	case aotir.TypeList:
 		elem := exprElemType(receiver)
 		var inner aotir.Type
@@ -2791,7 +2796,7 @@ func (l *lowerer) lowerLenCall(call *parser.CallExpr) (aotir.Expr, error) {
 			ListValueElemType: exprListValueElemType(receiver),
 		}, nil
 	}
-	return nil, fmt.Errorf("len() argument must be a list or map in Phase 3.2, got %s", receiver.Type())
+	return nil, fmt.Errorf("len() argument must be a list, map, or string, got %s", receiver.Type())
 }
 
 // lowerKeysCall lowers the `keys(m)` builtin to a MapKeysExpr. The

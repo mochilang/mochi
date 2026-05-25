@@ -1,0 +1,3 @@
+let s = "mochi"
+let n = len(s)
+print(n)
