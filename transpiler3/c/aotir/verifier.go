@@ -95,6 +95,20 @@ func Verify(p *Program) error {
 		}
 		unions[u.Name] = u
 	}
+	// Phase 10.0: build extern function map for call resolution.
+	externFns := make(map[string]*ExternFuncDecl, len(p.ExternFuncs))
+	for i, ef := range p.ExternFuncs {
+		if ef == nil {
+			return fmt.Errorf("aotir.Verify: ExternFuncs[%d] is nil", i)
+		}
+		if ef.Name == "" {
+			return fmt.Errorf("aotir.Verify: ExternFuncs[%d] has empty Name", i)
+		}
+		if _, dup := externFns[ef.Name]; dup {
+			return fmt.Errorf("aotir.Verify: duplicate extern func name %q at index %d", ef.Name, i)
+		}
+		externFns[ef.Name] = ef
+	}
 	names := make(map[string]*Function, len(p.Functions))
 	for i, fn := range p.Functions {
 		if fn == nil {
@@ -293,6 +307,7 @@ func Verify(p *Program) error {
 		}
 		ctx := &verifyCtx{
 			fns:               names,
+			externFns:         externFns,
 			records:           records,
 			unions:            unions,
 			scope:             newScope(nil),
@@ -344,6 +359,7 @@ func Verify(p *Program) error {
 // fns; scope is pushed and popped per Block.
 type verifyCtx struct {
 	fns                 map[string]*Function
+	externFns           map[string]*ExternFuncDecl // Phase 10.0: extern C function declarations
 	records             map[string]*RecordDecl
 	unions              map[string]*UnionDecl
 	scope               *scope
@@ -543,7 +559,8 @@ func verifyCallStmt(ctx *verifyCtx, s *CallStmt) error {
 // resolveCallSig returns the parameter-type list for a call to
 // fnName. The lookup checks Builtins first (always wins over a
 // user fn of the same name, by construction Lower rejects that
-// shadow) then the program's function table.
+// shadow) then the program's function table, then the extern
+// function table (Phase 10.0).
 func resolveCallSig(ctx *verifyCtx, fnName string) ([]Type, error) {
 	if p, ok := Builtins[fnName]; ok {
 		return p, nil
@@ -551,6 +568,14 @@ func resolveCallSig(ctx *verifyCtx, fnName string) ([]Type, error) {
 	if fn, ok := ctx.fns[fnName]; ok {
 		params := make([]Type, len(fn.Params))
 		for i, p := range fn.Params {
+			params[i] = p.Type
+		}
+		return params, nil
+	}
+	// Phase 10.0: extern C function declarations.
+	if ef, ok := ctx.externFns[fnName]; ok {
+		params := make([]Type, len(ef.Params))
+		for i, p := range ef.Params {
 			params[i] = p.Type
 		}
 		return params, nil
@@ -1732,6 +1757,32 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		}
 		return verifyExprCtx(ctx, v.Path)
 	case *CallExpr:
+		// Phase 10.0: extern C functions can appear in expression position.
+		if ef, isExtern := ctx.externFns[v.Func]; isExtern {
+			if ef.ReturnType == TypeUnit {
+				return fmt.Errorf("extern callee %q returns unit; use a statement form, not an expression", v.Func)
+			}
+			if v.Result != ef.ReturnType {
+				return fmt.Errorf("extern call %q result %s does not match declared return %s",
+					v.Func, v.Result, ef.ReturnType)
+			}
+			if len(ef.Params) != len(v.Args) {
+				return fmt.Errorf("extern call %q expects %d args, got %d", v.Func, len(ef.Params), len(v.Args))
+			}
+			for i, a := range v.Args {
+				if a == nil {
+					return fmt.Errorf("extern call %q arg %d is nil", v.Func, i)
+				}
+				if err := verifyExprCtx(ctx, a); err != nil {
+					return fmt.Errorf("extern call %q arg %d: %w", v.Func, i, err)
+				}
+				if a.Type() != ef.Params[i].Type {
+					return fmt.Errorf("extern call %q arg %d: expected %s, got %s",
+						v.Func, i, ef.Params[i].Type, a.Type())
+				}
+			}
+			return nil
+		}
 		fn, ok := ctx.fns[v.Func]
 		if !ok {
 			return fmt.Errorf("unresolved callee %q in expression position", v.Func)

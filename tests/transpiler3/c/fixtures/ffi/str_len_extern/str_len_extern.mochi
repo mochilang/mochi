@@ -1,0 +1,2 @@
+extern fun c_str_len(s: string): int
+print(c_str_len("hello"))

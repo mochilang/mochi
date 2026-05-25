@@ -173,6 +173,23 @@ func (d *Driver) Build(src, out, target, profile string) error {
 		return fmt.Errorf("transpiler3/c/build: write gen: %w", err)
 	}
 
+	// Phase 10.0: if a .c file with the same stem exists alongside the source,
+	// copy it into the work dir and compile it as an extra source file.
+	var extraCSrc string
+	srcBase := strings.TrimSuffix(filepath.Base(src), ".mochi")
+	neighborC := filepath.Join(filepath.Dir(src), srcBase+".c")
+	if fi, err2 := os.Stat(neighborC); err2 == nil && !fi.IsDir() {
+		data, err2 := os.ReadFile(neighborC)
+		if err2 != nil {
+			return fmt.Errorf("transpiler3/c/build: read neighbor %s: %w", neighborC, err2)
+		}
+		dst := filepath.Join(workDir, "extern_"+srcBase+".c")
+		if err2 := os.WriteFile(dst, data, 0o644); err2 != nil {
+			return fmt.Errorf("transpiler3/c/build: write neighbor: %w", err2)
+		}
+		extraCSrc = dst
+	}
+
 	cc, ccPrefix, err := d.resolveCCForTarget(target)
 	if err != nil {
 		return fmt.Errorf("transpiler3/c/build: %w", err)
@@ -201,6 +218,10 @@ func (d *Driver) Build(src, out, target, profile string) error {
 		genPath,
 	)
 	ccArgs = append(ccArgs, rtSrcs...)
+	// Phase 10.0: compile the neighbour C file alongside the generated source.
+	if extraCSrc != "" {
+		ccArgs = append(ccArgs, extraCSrc)
+	}
 	// Phase 17.1 (macOS): suppress the random UUID that Apple's linker
 	// embeds in Mach-O binaries. Without this, two identical builds
 	// produce different LC_UUID values, breaking binary reproducibility.
