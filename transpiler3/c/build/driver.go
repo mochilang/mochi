@@ -222,23 +222,30 @@ func (d *Driver) Build(src, out, target, profile string) error {
 	if extraCSrc != "" {
 		ccArgs = append(ccArgs, extraCSrc)
 	}
+	// Phase 12.0: wasm32-wasi targets skip macOS/Linux-specific linker flags.
+	isWasm := strings.HasPrefix(target, "wasm32") || strings.HasPrefix(target, "wasm64")
 	// Phase 17.1 (macOS): suppress the random UUID that Apple's linker
 	// embeds in Mach-O binaries. Without this, two identical builds
 	// produce different LC_UUID values, breaking binary reproducibility.
-	if gort.GOOS == "darwin" {
+	// Skip for wasm targets: wasm-ld does not understand this flag.
+	isDarwinTarget := !isWasm && (target == "" && gort.GOOS == "darwin" ||
+		strings.Contains(target, "macos") || strings.Contains(target, "darwin"))
+	if isDarwinTarget {
 		ccArgs = append(ccArgs, "-Wl,-no_uuid")
 	}
 	// Phase 17.3: static linking. -static asks the linker to resolve all
 	// symbol references from archive (.a) libraries rather than shared
 	// objects. zig cc satisfies this with its bundled musl; host gcc on
 	// Linux also supports it when glibc-static is installed.
-	if d.Static {
+	// Not applicable for wasm (wasm-ld links statically by default).
+	if d.Static && !isWasm {
 		ccArgs = append(ccArgs, "-static")
 	}
 	// Phase 16.4: debug profile adds ASan+UBSan so `mochi build --profile=debug`
 	// produces a sanitiser-instrumented binary without requiring the caller to
 	// know the flags. ExtraFlags is applied after so tests can still override.
-	if profile == "debug" {
+	// Sanitisers are not supported for wasm32-wasi targets.
+	if profile == "debug" && !isWasm {
 		ccArgs = append(ccArgs,
 			"-g",
 			"-fsanitize=address,undefined",
