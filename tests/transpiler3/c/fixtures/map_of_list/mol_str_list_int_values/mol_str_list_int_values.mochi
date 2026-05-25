@@ -1,0 +1,7 @@
+let m: map<string, list<int>> = {"b": [2, 3], "a": [0, 1]}
+let vs = values(m)
+for row in vs {
+  for x in row {
+    print(x)
+  }
+}

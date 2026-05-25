@@ -1,0 +1,10 @@
+let m: map<string, list<int>> = {"a": [1, 2, 3], "b": [4, 5]}
+print("a" in m)
+print("c" in m)
+print(len(m))
+let vs = values(m)
+for row in vs {
+  for x in row {
+    print(x)
+  }
+}

@@ -1,0 +1,17 @@
+fun sum_row(row: list<int>): int {
+  var s = 0
+  for x in row {
+    s = s + x
+  }
+  return s
+}
+fun total_vals(m: map<int, list<int>>): int {
+  var t = 0
+  let vs = values(m)
+  for row in vs {
+    t = t + sum_row(row)
+  }
+  return t
+}
+let m: map<int, list<int>> = {1: [1, 2, 3], 2: [4, 5, 6]}
+print(total_vals(m))

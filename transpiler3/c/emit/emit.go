@@ -44,11 +44,32 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include \"mochi/map.h\"\n")
 	listRecNames := collectListRecordElems(prog)
 	listListInners := collectListListInners(prog)
-	if len(listRecNames) > 0 || len(listListInners) > 0 {
+	mapOfListPairs := collectMapOfListInners(prog)
+	// The _values() helper for every map<K,list<V>> returns list<list<V>>,
+	// so the mochi_list_list_<inner> struct must be present. Ensure the
+	// inner suffix from each map-of-list pair is included in the
+	// list-of-list emission pass (which runs first).
+	{
+		innerSet := map[string]struct{}{}
+		for _, s := range listListInners {
+			innerSet[s] = struct{}{}
+		}
+		for _, p := range mapOfListPairs {
+			suf, err := scalarListInnerSuffix(p.inner)
+			if err != nil {
+				continue
+			}
+			if _, ok := innerSet[suf]; !ok {
+				innerSet[suf] = struct{}{}
+				listListInners = append(listListInners, suf)
+			}
+		}
+	}
+	if len(listRecNames) > 0 || len(listListInners) > 0 || len(mapOfListPairs) > 0 {
 		// malloc lives in <stdlib.h>; only pull it in when we actually
-		// emit list<R> or list<list<T>> helpers so user-defined
-		// functions whose names would collide with stdlib (e.g.
-		// `abs`) keep working.
+		// emit list<R>, list<list<T>>, or map<K,list<V>> helpers so
+		// user-defined functions whose names would collide with stdlib
+		// (e.g. `abs`) keep working.
 		b.WriteString("#include <stdlib.h>\n")
 	}
 	b.WriteString("\n")
@@ -62,6 +83,12 @@ func Emit(prog *aotir.Program) (string, error) {
 	}
 
 	if err := emitListOfListHelpers(&b, listListInners); err != nil {
+		return "", err
+	}
+
+	// map<K,list<V>> TU-local helpers must come after list-of-list
+	// helpers because the values() function returns list<list<V>>.
+	if err := emitMapOfListHelpers(&b, mapOfListPairs); err != nil {
 		return "", err
 	}
 
@@ -111,7 +138,7 @@ func Emit(prog *aotir.Program) (string, error) {
 // definitions. Keeping the two in lockstep avoids drift between
 // prototype and definition.
 func emitFunctionPrototype(fn *aotir.Function) (string, error) {
-	ret, err := cReturnType(fn.ReturnType, fn.ReturnRecordName, fn.ReturnElemType, fn.ReturnElemRecordName, fn.ReturnInnerElemType, fn.ReturnKeyType, fn.ReturnValueType)
+	ret, err := cReturnType(fn.ReturnType, fn.ReturnRecordName, fn.ReturnElemType, fn.ReturnElemRecordName, fn.ReturnInnerElemType, fn.ReturnKeyType, fn.ReturnValueType, fn.ReturnListValueElemType)
 	if err != nil {
 		return "", fmt.Errorf("function %q return: %w", fn.Name, err)
 	}
@@ -124,7 +151,7 @@ func emitFunctionPrototype(fn *aotir.Function) (string, error) {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			pt, err := cTypeFull(p.Type, p.RecordName, p.ElemType, p.ElemRecordName, p.InnerElemType, p.KeyType, p.ValueType)
+			pt, err := cTypeFull(p.Type, p.RecordName, p.ElemType, p.ElemRecordName, p.InnerElemType, p.KeyType, p.ValueType, p.ListValueElemType)
 			if err != nil {
 				return "", fmt.Errorf("function %q param %q: %w", fn.Name, p.Name, err)
 			}
@@ -142,12 +169,13 @@ func emitFunctionPrototype(fn *aotir.Function) (string, error) {
 // For list<R>, elemRecName carries the element record identity so
 // the per-record helper instantiation suffix can be resolved. For
 // list<list<T>> (Phase 3.4b), innerElem carries the inner T so the
-// suffix resolves to `list_<innerSuf>`.
-func cReturnType(t aotir.Type, recName string, elemType aotir.Type, elemRecName string, innerElem aotir.Type, keyType aotir.Type, valueType aotir.Type) (string, error) {
+// suffix resolves to `list_<innerSuf>`. For map<K,list<V>> (Phase
+// 3.4e), listValueElemType carries the inner scalar of the list value.
+func cReturnType(t aotir.Type, recName string, elemType aotir.Type, elemRecName string, innerElem aotir.Type, keyType aotir.Type, valueType aotir.Type, listValueElemType aotir.Type) (string, error) {
 	if t == aotir.TypeUnit {
 		return "void", nil
 	}
-	return cTypeFull(t, recName, elemType, elemRecName, innerElem, keyType, valueType)
+	return cTypeFull(t, recName, elemType, elemRecName, innerElem, keyType, valueType, listValueElemType)
 }
 
 func emitFunction(b *strings.Builder, fn *aotir.Function, entry bool) error {
@@ -206,7 +234,7 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		b.WriteString(");\n")
 		return nil
 	case *aotir.LetStmt:
-		ts, err := cTypeFull(s.VarType, s.RecordName, s.ElemType, s.ElemRecordName, s.InnerElemType, s.KeyType, s.ValueType)
+		ts, err := cTypeFull(s.VarType, s.RecordName, s.ElemType, s.ElemRecordName, s.InnerElemType, s.KeyType, s.ValueType, s.ListValueElemType)
 		if err != nil {
 			return fmt.Errorf("let %q: %w", s.Name, err)
 		}
@@ -298,7 +326,7 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 			}
 			elemC = "mochi_list_" + innerSuf
 		} else {
-			ec, err := cTypeFull(s.ElemType, s.ElemRecordName, aotir.TypeInvalid, "", aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid)
+			ec, err := cTypeFull(s.ElemType, s.ElemRecordName, aotir.TypeInvalid, "", aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid)
 			if err != nil {
 				return fmt.Errorf("foreach %q: %w", s.Var, err)
 			}
@@ -409,8 +437,10 @@ func cTypeWithRec(t aotir.Type, recName string) (string, error) {
 // through so emit can render the correct `mochi_list_<T>` /
 // `mochi_map_<K>_<V>` spelling. For list<R> (Phase 3.4a), the
 // elemRecName parameter carries the element record's identity. For
-// list<list<T>> (Phase 3.4b), innerElem carries the inner T.
-func cTypeFull(t aotir.Type, recName string, elemType aotir.Type, elemRecName string, innerElem aotir.Type, keyType aotir.Type, valueType aotir.Type) (string, error) {
+// list<list<T>> (Phase 3.4b), innerElem carries the inner T. For
+// map<K,list<V>> (Phase 3.4e), listValueElemType carries the inner
+// scalar of the list value type.
+func cTypeFull(t aotir.Type, recName string, elemType aotir.Type, elemRecName string, innerElem aotir.Type, keyType aotir.Type, valueType aotir.Type, listValueElemType aotir.Type) (string, error) {
 	if t == aotir.TypeList {
 		suf, err := listSuffix(elemType, elemRecName, innerElem)
 		if err != nil {
@@ -419,7 +449,7 @@ func cTypeFull(t aotir.Type, recName string, elemType aotir.Type, elemRecName st
 		return "mochi_list_" + suf, nil
 	}
 	if t == aotir.TypeMap {
-		suf, err := mapSuffix(keyType, valueType)
+		suf, err := mapSuffix(keyType, valueType, listValueElemType)
 		if err != nil {
 			return "", err
 		}
@@ -479,9 +509,11 @@ func scalarListInnerSuffix(inner aotir.Type) (string, error) {
 }
 
 // mapSuffix returns the per-(K,V) runtime suffix used to select the
-// `mochi_map_<K>_<V>_*` helper family in libmochi. Phase 3.2 ships
-// eight combinations: K ∈ {i64, str}, V ∈ {i64, f64, bool, str}.
-func mapSuffix(key aotir.Type, value aotir.Type) (string, error) {
+// `mochi_map_<K>_<V>_*` helper family. Phase 3.2 ships eight libmochi
+// combinations (K ∈ {i64, str}, V ∈ {i64, f64, bool, str}). Phase 3.4e
+// extends V to list<scalar>, producing TU-local helpers with suffix
+// "<K>_list_<inner>" (e.g. "i64_list_i64").
+func mapSuffix(key aotir.Type, value aotir.Type, listValueElemType aotir.Type) (string, error) {
 	var ks, vs string
 	switch key {
 	case aotir.TypeInt:
@@ -500,6 +532,12 @@ func mapSuffix(key aotir.Type, value aotir.Type) (string, error) {
 		vs = "bool"
 	case aotir.TypeString:
 		vs = "str"
+	case aotir.TypeList:
+		inner, err := scalarListInnerSuffix(listValueElemType)
+		if err != nil {
+			return "", fmt.Errorf("map<K,list<V>> inner: %w", err)
+		}
+		vs = "list_" + inner
 	default:
 		return "", fmt.Errorf("no map runtime for value type %s", value)
 	}
@@ -603,6 +641,343 @@ func collectListListInners(prog *aotir.Program) []string {
 	return out
 }
 
+// mapOfListPair identifies a unique (key type, list-value inner scalar)
+// pair for a map<K,list<V>> instantiation in this TU.
+type mapOfListPair struct {
+	key   aotir.Type
+	inner aotir.Type
+}
+
+// collectMapOfListInners walks the program collecting every distinct
+// (keyType, listValueElemType) pair where value is TypeList. These
+// pairs drive the TU-local mochi_map_<K>_list_<inner>_* helper
+// emission in emitMapOfListHelpers.
+func collectMapOfListInners(prog *aotir.Program) []mapOfListPair {
+	type pairKey struct{ k, v string }
+	set := map[pairKey]mapOfListPair{}
+	add := func(key aotir.Type, value aotir.Type, inner aotir.Type) {
+		if value != aotir.TypeList {
+			return
+		}
+		var keySuf string
+		switch key {
+		case aotir.TypeInt:
+			keySuf = "i64"
+		case aotir.TypeString:
+			keySuf = "str"
+		default:
+			return
+		}
+		is, err := scalarListInnerSuffix(inner)
+		if err != nil {
+			return
+		}
+		set[pairKey{keySuf, is}] = mapOfListPair{key: key, inner: inner}
+	}
+	for _, fn := range prog.Functions {
+		if fn == nil {
+			continue
+		}
+		add(fn.ReturnKeyType, fn.ReturnValueType, fn.ReturnListValueElemType)
+		for _, p := range fn.Params {
+			add(p.KeyType, p.ValueType, p.ListValueElemType)
+		}
+		walkBlockMapOfList(fn.Body, add)
+	}
+	out := make([]mapOfListPair, 0, len(set))
+	for _, p := range set {
+		out = append(out, p)
+	}
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].key != out[j].key {
+			return out[i].key < out[j].key
+		}
+		return out[i].inner < out[j].inner
+	})
+	return out
+}
+
+func walkBlockMapOfList(blk *aotir.Block, add func(aotir.Type, aotir.Type, aotir.Type)) {
+	if blk == nil {
+		return
+	}
+	for _, st := range blk.Statements {
+		walkStmtMapOfList(st, add)
+	}
+}
+
+func walkStmtMapOfList(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Type)) {
+	switch s := st.(type) {
+	case *aotir.LetStmt:
+		add(s.KeyType, s.ValueType, s.ListValueElemType)
+		walkExprMapOfList(s.Init, add)
+	case *aotir.AssignStmt:
+		walkExprMapOfList(s.Value, add)
+	case *aotir.CallStmt:
+		for _, a := range s.Args {
+			walkExprMapOfList(a, add)
+		}
+	case *aotir.IfStmt:
+		walkExprMapOfList(s.Cond, add)
+		walkBlockMapOfList(s.Then, add)
+		walkBlockMapOfList(s.Else, add)
+	case *aotir.WhileStmt:
+		walkExprMapOfList(s.Cond, add)
+		walkBlockMapOfList(s.Body, add)
+	case *aotir.ForRangeStmt:
+		walkExprMapOfList(s.Start, add)
+		walkExprMapOfList(s.End, add)
+		walkBlockMapOfList(s.Body, add)
+	case *aotir.ForEachStmt:
+		walkExprMapOfList(s.List, add)
+		walkBlockMapOfList(s.Body, add)
+	case *aotir.ReturnStmt:
+		if s.Value != nil {
+			walkExprMapOfList(s.Value, add)
+		}
+	}
+}
+
+func walkExprMapOfList(e aotir.Expr, add func(aotir.Type, aotir.Type, aotir.Type)) {
+	if e == nil {
+		return
+	}
+	switch v := e.(type) {
+	case *aotir.VarRef:
+		add(v.KeyType, v.ValueType, v.ListValueElemType)
+	case *aotir.CallExpr:
+		add(v.ResultKeyType, v.ResultValueType, v.ResultListValueElemType)
+		for _, a := range v.Args {
+			walkExprMapOfList(a, add)
+		}
+	case *aotir.MapLit:
+		add(v.KeyType, v.ValueType, v.ListValueElemType)
+		for _, val := range v.Values {
+			walkExprMapOfList(val, add)
+		}
+	case *aotir.MapGetExpr:
+		add(v.KeyType, v.ValueType, v.ListValueElemType)
+		walkExprMapOfList(v.Receiver, add)
+	case *aotir.MapHasExpr:
+		add(v.KeyType, v.ValueType, v.ListValueElemType)
+		walkExprMapOfList(v.Receiver, add)
+	case *aotir.MapLenExpr:
+		add(v.KeyType, v.ValueType, v.ListValueElemType)
+		walkExprMapOfList(v.Receiver, add)
+	case *aotir.MapKeysExpr:
+		add(v.KeyType, v.ValueType, v.ListValueElemType)
+		walkExprMapOfList(v.Receiver, add)
+	case *aotir.MapValuesExpr:
+		add(v.KeyType, v.ValueType, v.ListValueElemType)
+		walkExprMapOfList(v.Receiver, add)
+	case *aotir.BinaryExpr:
+		walkExprMapOfList(v.Left, add)
+		walkExprMapOfList(v.Right, add)
+	case *aotir.UnaryExpr:
+		walkExprMapOfList(v.Operand, add)
+	case *aotir.ListLit:
+		for _, el := range v.Elems {
+			walkExprMapOfList(el, add)
+		}
+	case *aotir.IndexExpr:
+		walkExprMapOfList(v.Receiver, add)
+	case *aotir.AppendExpr:
+		walkExprMapOfList(v.Receiver, add)
+		walkExprMapOfList(v.Value, add)
+	case *aotir.FieldAccess:
+		walkExprMapOfList(v.Receiver, add)
+	case *aotir.RecordLit:
+		for _, f := range v.Fields {
+			walkExprMapOfList(f.Value, add)
+		}
+	}
+}
+
+// emitMapOfListHelpers emits a TU-local static helper set for each
+// distinct map<K,list<V>> instantiation: struct typedef, _lit, _get,
+// _has, _len, _keys, _values. Because the hash functions in map.c are
+// static inline (not exported by libmochi), this emitter re-emits
+// them as static inline helpers inside the same `static` block so
+// the linker never sees a duplicate symbol.
+//
+// The _values() helper returns mochi_list_list_<inner>, which must
+// already have been emitted by emitListOfListHelpers (called first in
+// Emit()).
+func emitMapOfListHelpers(b *strings.Builder, pairs []mapOfListPair) error {
+	if len(pairs) == 0 {
+		return nil
+	}
+
+	// Emit the hash helpers once (guarded by a macro so a TU that uses
+	// multiple instantiations doesn't double-define them).
+	b.WriteString("#ifndef MOCHI_MAP_LIST_HASH_HELPERS\n")
+	b.WriteString("#define MOCHI_MAP_LIST_HASH_HELPERS\n")
+	b.WriteString("static inline uint64_t mochi_map_list_hash_i64_(int64_t k) {\n")
+	b.WriteString("    uint64_t x = (uint64_t)k;\n")
+	b.WriteString("    x ^= x >> 30; x *= 0xbf58476d1ce4e5b9ULL;\n")
+	b.WriteString("    x ^= x >> 27; x *= 0x94d049bb133111ebULL;\n")
+	b.WriteString("    x ^= x >> 31; return x | 1ULL;\n")
+	b.WriteString("}\n")
+	b.WriteString("static inline uint64_t mochi_map_list_hash_str_(const char *s) {\n")
+	b.WriteString("    uint64_t h = 0xcbf29ce484222325ULL;\n")
+	b.WriteString("    while (*s) { h ^= (uint64_t)(unsigned char)*s++; h *= 0x100000001b3ULL; }\n")
+	b.WriteString("    return h | 1ULL;\n")
+	b.WriteString("}\n")
+	b.WriteString("#endif /* MOCHI_MAP_LIST_HASH_HELPERS */\n\n")
+
+	for _, p := range pairs {
+		innerSuf, err := scalarListInnerSuffix(p.inner)
+		if err != nil {
+			return fmt.Errorf("map of list helper: %w", err)
+		}
+
+		var keySuf, keyC, hashFn string
+		// eqFn(x, y) returns the equality expression for two key values x and y.
+		var eqFn func(x, y string) string
+		switch p.key {
+		case aotir.TypeInt:
+			keySuf = "i64"
+			keyC = "int64_t"
+			hashFn = "mochi_map_list_hash_i64_"
+			eqFn = func(x, y string) string { return fmt.Sprintf("(%s) == (%s)", x, y) }
+		case aotir.TypeString:
+			keySuf = "str"
+			keyC = "const char *"
+			hashFn = "mochi_map_list_hash_str_"
+			eqFn = func(x, y string) string { return fmt.Sprintf("strcmp((%s), (%s)) == 0", x, y) }
+		default:
+			return fmt.Errorf("map of list: unsupported key type %s", p.key)
+		}
+
+		valC := "mochi_list_" + innerSuf
+		name := "mochi_map_" + keySuf + "_list_" + innerSuf
+		entryName := name + "_entry"
+		listKName := "mochi_list_" + keySuf
+		listVName := "mochi_list_list_" + innerSuf
+
+		// struct typedef
+		fmt.Fprintf(b, "typedef struct %s {\n", entryName)
+		fmt.Fprintf(b, "    uint64_t hash;\n")
+		fmt.Fprintf(b, "    %s key;\n", keyC)
+		fmt.Fprintf(b, "    %s value;\n", valC)
+		fmt.Fprintf(b, "} %s;\n\n", entryName)
+
+		fmt.Fprintf(b, "typedef struct %s {\n", name)
+		fmt.Fprintf(b, "    %s *table;\n", entryName)
+		fmt.Fprintf(b, "    int64_t cap;\n")
+		fmt.Fprintf(b, "    int64_t nLive;\n")
+		fmt.Fprintf(b, "} %s;\n\n", name)
+
+		// _lit
+		var keyArrC string
+		if p.key == aotir.TypeString {
+			keyArrC = "const char **"
+		} else {
+			keyArrC = "const int64_t *"
+		}
+		valArrC := "const " + valC + " *"
+
+		fmt.Fprintf(b, "static %s %s_lit(%s keys, %s values, int64_t n) {\n", name, name, keyArrC, valArrC)
+		fmt.Fprintf(b, "    %s out;\n", name)
+		b.WriteString("    int64_t cap = 8;\n")
+		b.WriteString("    while (cap < 2 * (n + 1)) cap <<= 1;\n")
+		fmt.Fprintf(b, "    out.table = (%s *)calloc((size_t)cap, sizeof(%s));\n", entryName, entryName)
+		b.WriteString("    out.cap = cap; out.nLive = 0;\n")
+		b.WriteString("    if (out.table == NULL) mochi_panic_index();\n")
+		b.WriteString("    for (int64_t i = 0; i < n; i++) {\n")
+		fmt.Fprintf(b, "        uint64_t h = %s(keys[i]);\n", hashFn)
+		b.WriteString("        uint64_t mask = (uint64_t)(cap - 1);\n")
+		b.WriteString("        uint64_t pos = h & mask;\n")
+		b.WriteString("        while (1) {\n")
+		fmt.Fprintf(b, "            %s *e = &out.table[pos];\n", entryName)
+		b.WriteString("            if (e->hash == 0) {\n")
+		b.WriteString("                e->hash = h; e->key = keys[i]; e->value = values[i]; out.nLive++; break;\n")
+		b.WriteString("            }\n")
+		fmt.Fprintf(b, "            if (e->hash == h && %s) { e->value = values[i]; break; }\n", eqFn("e->key", "keys[i]"))
+		b.WriteString("            pos = (pos + 1) & mask;\n")
+		b.WriteString("        }\n")
+		b.WriteString("    }\n")
+		b.WriteString("    return out;\n")
+		b.WriteString("}\n\n")
+
+		// _get
+		fmt.Fprintf(b, "static %s %s_get(%s m, %s k) {\n", valC, name, name, keyC)
+		b.WriteString("    if (m.cap == 0) mochi_panic_index();\n")
+		fmt.Fprintf(b, "    uint64_t h = %s(k);\n", hashFn)
+		b.WriteString("    uint64_t mask = (uint64_t)(m.cap - 1);\n")
+		b.WriteString("    uint64_t pos = h & mask;\n")
+		b.WriteString("    while (1) {\n")
+		fmt.Fprintf(b, "        %s *e = &m.table[pos];\n", entryName)
+		b.WriteString("        if (e->hash == 0) mochi_panic_index();\n")
+		fmt.Fprintf(b, "        if (e->hash == h && %s) return e->value;\n", eqFn("e->key", "k"))
+		b.WriteString("        pos = (pos + 1) & mask;\n")
+		b.WriteString("    }\n")
+		b.WriteString("}\n\n")
+
+		// _has
+		fmt.Fprintf(b, "static int %s_has(%s m, %s k) {\n", name, name, keyC)
+		b.WriteString("    if (m.cap == 0) return 0;\n")
+		fmt.Fprintf(b, "    uint64_t h = %s(k);\n", hashFn)
+		b.WriteString("    uint64_t mask = (uint64_t)(m.cap - 1);\n")
+		b.WriteString("    uint64_t pos = h & mask;\n")
+		b.WriteString("    while (1) {\n")
+		fmt.Fprintf(b, "        %s *e = &m.table[pos];\n", entryName)
+		b.WriteString("        if (e->hash == 0) return 0;\n")
+		fmt.Fprintf(b, "        if (e->hash == h && %s) return 1;\n", eqFn("e->key", "k"))
+		b.WriteString("        pos = (pos + 1) & mask;\n")
+		b.WriteString("    }\n")
+		b.WriteString("}\n\n")
+
+		// _len
+		fmt.Fprintf(b, "static int64_t %s_len(%s m) { return m.nLive; }\n\n", name, name)
+
+		// _snapshot (internal, for keys/values)
+		fmt.Fprintf(b, "static void %s_snapshot_(%s m, %s *out_keys, %s *out_vals) {\n", name, name, keyC, valC)
+		b.WriteString("    int64_t ki = 0;\n")
+		b.WriteString("    for (int64_t i = 0; i < m.cap; i++) {\n")
+		fmt.Fprintf(b, "        %s *e = &m.table[i];\n", entryName)
+		b.WriteString("        if (e->hash == 0) continue;\n")
+		b.WriteString("        out_keys[ki] = e->key; out_vals[ki] = e->value; ki++;\n")
+		b.WriteString("    }\n")
+		// insertion sort by key
+		b.WriteString("    for (int64_t i = 1; i < m.nLive; i++) {\n")
+		fmt.Fprintf(b, "        %s key = out_keys[i]; %s val = out_vals[i]; int64_t j = i - 1;\n", keyC, valC)
+		if p.key == aotir.TypeString {
+			b.WriteString("        while (j >= 0 && strcmp(key, out_keys[j]) < 0) {\n")
+		} else {
+			b.WriteString("        while (j >= 0 && key < out_keys[j]) {\n")
+		}
+		b.WriteString("            out_keys[j+1] = out_keys[j]; out_vals[j+1] = out_vals[j]; j--;\n")
+		b.WriteString("        }\n")
+		b.WriteString("        out_keys[j+1] = key; out_vals[j+1] = val;\n")
+		b.WriteString("    }\n")
+		b.WriteString("}\n\n")
+
+		// _keys -- returns list<K>
+		fmt.Fprintf(b, "static %s %s_keys(%s m) {\n", listKName, name, name)
+		fmt.Fprintf(b, "    size_t kbytes = (size_t)(m.nLive > 0 ? m.nLive : 1) * sizeof(%s);\n", keyC)
+		fmt.Fprintf(b, "    size_t vbytes = (size_t)(m.nLive > 0 ? m.nLive : 1) * sizeof(%s);\n", valC)
+		fmt.Fprintf(b, "    %s *ks = (%s *)malloc(kbytes);\n", keyC, keyC)
+		fmt.Fprintf(b, "    %s *vs = (%s *)malloc(vbytes);\n", valC, valC)
+		b.WriteString("    if (ks == NULL || vs == NULL) mochi_panic_index();\n")
+		fmt.Fprintf(b, "    %s_snapshot_(m, ks, vs);\n", name)
+		fmt.Fprintf(b, "    %s out = %s_lit(ks, m.nLive); free(ks); free(vs); return out;\n", listKName, listKName)
+		b.WriteString("}\n\n")
+
+		// _values -- returns list<list<V>>
+		fmt.Fprintf(b, "static %s %s_values(%s m) {\n", listVName, name, name)
+		fmt.Fprintf(b, "    size_t kbytes = (size_t)(m.nLive > 0 ? m.nLive : 1) * sizeof(%s);\n", keyC)
+		fmt.Fprintf(b, "    size_t vbytes = (size_t)(m.nLive > 0 ? m.nLive : 1) * sizeof(%s);\n", valC)
+		fmt.Fprintf(b, "    %s *ks = (%s *)malloc(kbytes);\n", keyC, keyC)
+		fmt.Fprintf(b, "    %s *vs = (%s *)malloc(vbytes);\n", valC, valC)
+		b.WriteString("    if (ks == NULL || vs == NULL) mochi_panic_index();\n")
+		fmt.Fprintf(b, "    %s_snapshot_(m, ks, vs);\n", name)
+		fmt.Fprintf(b, "    %s out = %s_lit(vs, m.nLive); free(ks); free(vs); return out;\n", listVName, listVName)
+		b.WriteString("}\n\n")
+	}
+	return nil
+}
+
 func walkBlockInner(blk *aotir.Block, visit func(aotir.Type, aotir.Type)) {
 	if blk == nil {
 		return
@@ -702,6 +1077,10 @@ func walkExprInner(e aotir.Expr, visit func(aotir.Type, aotir.Type)) {
 	case *aotir.MapKeysExpr:
 		walkExprInner(v.Receiver, visit)
 	case *aotir.MapValuesExpr:
+		// values(m) on map<K,list<V>> produces list<list<V>>; visit
+		// with (TypeList, ListValueElemType) so collectListListInners
+		// emits the mochi_list_list_<inner> helper needed by _values.
+		visit(v.ValueType, v.ListValueElemType)
 		walkExprInner(v.Receiver, visit)
 	}
 }
@@ -1058,7 +1437,7 @@ func emitAppendExpr(v *aotir.AppendExpr) (string, error) {
 // dummy element with a length of zero -- the helper's loop never
 // touches it.
 func emitMapLit(v *aotir.MapLit) (string, error) {
-	suf, err := mapSuffix(v.KeyType, v.ValueType)
+	suf, err := mapSuffix(v.KeyType, v.ValueType, v.ListValueElemType)
 	if err != nil {
 		return "", fmt.Errorf("map literal: %w", err)
 	}
@@ -1066,7 +1445,7 @@ func emitMapLit(v *aotir.MapLit) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("map literal: %w", err)
 	}
-	valC, err := cMapValueBufferC(v.ValueType)
+	valC, err := cMapValueBufferC(v.ValueType, v.ListValueElemType)
 	if err != nil {
 		return "", fmt.Errorf("map literal: %w", err)
 	}
@@ -1119,8 +1498,9 @@ func cMapKeyBufferC(key aotir.Type) (string, error) {
 // cMapValueBufferC returns the C element spelling for the values
 // array passed to `mochi_map_<K>_<V>_lit`. Same rationale as the
 // key buffer: drop outer const so the temporary array stays
-// assignable.
-func cMapValueBufferC(value aotir.Type) (string, error) {
+// assignable. For map<K,list<V>> (Phase 3.4e) the buffer element is
+// the list struct `mochi_list_<inner>`.
+func cMapValueBufferC(value aotir.Type, listValueElemType aotir.Type) (string, error) {
 	switch value {
 	case aotir.TypeInt:
 		return "int64_t", nil
@@ -1130,6 +1510,12 @@ func cMapValueBufferC(value aotir.Type) (string, error) {
 		return "int", nil
 	case aotir.TypeString:
 		return "const char *", nil
+	case aotir.TypeList:
+		inner, err := scalarListInnerSuffix(listValueElemType)
+		if err != nil {
+			return "", fmt.Errorf("map<K,list<V>> value buffer: %w", err)
+		}
+		return "mochi_list_" + inner, nil
 	}
 	return "", fmt.Errorf("no map-literal value buffer for value type %s", value)
 }
@@ -1139,7 +1525,7 @@ func cMapValueBufferC(value aotir.Type) (string, error) {
 // k is missing (no Option type until Phase 4); callers that want
 // to probe first use has() / MapHasExpr.
 func emitMapGetExpr(v *aotir.MapGetExpr) (string, error) {
-	suf, err := mapSuffix(v.KeyType, v.ValueType)
+	suf, err := mapSuffix(v.KeyType, v.ValueType, v.ListValueElemType)
 	if err != nil {
 		return "", fmt.Errorf("map get: %w", err)
 	}
@@ -1157,7 +1543,7 @@ func emitMapGetExpr(v *aotir.MapGetExpr) (string, error) {
 // emitMapHasExpr renders `has(m, k)` as `mochi_map_<K>_<V>_has(m, k)`.
 // Returns int (0/1) which the C ABI for bool already uses.
 func emitMapHasExpr(v *aotir.MapHasExpr) (string, error) {
-	suf, err := mapSuffix(v.KeyType, v.ValueType)
+	suf, err := mapSuffix(v.KeyType, v.ValueType, v.ListValueElemType)
 	if err != nil {
 		return "", fmt.Errorf("map has: %w", err)
 	}
@@ -1174,7 +1560,7 @@ func emitMapHasExpr(v *aotir.MapHasExpr) (string, error) {
 
 // emitMapLenExpr renders `len(m)` as `mochi_map_<K>_<V>_len(m)`.
 func emitMapLenExpr(v *aotir.MapLenExpr) (string, error) {
-	suf, err := mapSuffix(v.KeyType, v.ValueType)
+	suf, err := mapSuffix(v.KeyType, v.ValueType, v.ListValueElemType)
 	if err != nil {
 		return "", fmt.Errorf("map len: %w", err)
 	}
@@ -1189,7 +1575,7 @@ func emitMapLenExpr(v *aotir.MapLenExpr) (string, error) {
 // The result is a list<K> in sorted-by-key order (the runtime helper
 // sorts on snapshot).
 func emitMapKeysExpr(v *aotir.MapKeysExpr) (string, error) {
-	suf, err := mapSuffix(v.KeyType, v.ValueType)
+	suf, err := mapSuffix(v.KeyType, v.ValueType, v.ListValueElemType)
 	if err != nil {
 		return "", fmt.Errorf("map keys: %w", err)
 	}
@@ -1204,7 +1590,7 @@ func emitMapKeysExpr(v *aotir.MapKeysExpr) (string, error) {
 // `mochi_map_<K>_<V>_values(m)`. The result is a list<V> in the same
 // sorted-by-key order as the matching keys() call.
 func emitMapValuesExpr(v *aotir.MapValuesExpr) (string, error) {
-	suf, err := mapSuffix(v.KeyType, v.ValueType)
+	suf, err := mapSuffix(v.KeyType, v.ValueType, v.ListValueElemType)
 	if err != nil {
 		return "", fmt.Errorf("map values: %w", err)
 	}

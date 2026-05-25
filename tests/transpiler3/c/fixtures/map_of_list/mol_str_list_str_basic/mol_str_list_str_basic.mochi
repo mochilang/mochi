@@ -1,0 +1,9 @@
+let m: map<string, list<string>> = {"fruits": ["apple", "banana"], "vegs": ["carrot"]}
+print("fruits" in m)
+print("meats" in m)
+let vs = values(m)
+for row in vs {
+  for s in row {
+    print(s)
+  }
+}
