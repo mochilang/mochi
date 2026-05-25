@@ -280,6 +280,17 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return:  ListType{Elem: StringType{}},
 		Effects: NewEffectSet(EffectIO),
 	}, false)
+	// Phase 8.4: CSV load/save builtins.
+	env.SetVar("loadCSV", FuncType{
+		Params:  []Type{StringType{}},
+		Return:  ListType{Elem: ListType{Elem: StringType{}}},
+		Effects: NewEffectSet(EffectIO),
+	}, false)
+	env.SetVar("saveCSV", FuncType{
+		Params:  []Type{StringType{}, ListType{Elem: ListType{Elem: StringType{}}}},
+		Return:  UnitType{},
+		Effects: NewEffectSet(EffectIO),
+	}, false)
 
 	var errs []error
 

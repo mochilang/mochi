@@ -1,0 +1,10 @@
+writeFile("/tmp/mochi_test_csv_roundtrip_in.csv", "x,y,z\n1,2,3\n4,5,6\n")
+let rows = loadCSV("/tmp/mochi_test_csv_roundtrip_in.csv")
+saveCSV("/tmp/mochi_test_csv_roundtrip_out.csv", rows)
+let rows2 = loadCSV("/tmp/mochi_test_csv_roundtrip_out.csv")
+print(len(rows2))
+for row in rows2 {
+    print(row[0])
+    print(row[1])
+    print(row[2])
+}

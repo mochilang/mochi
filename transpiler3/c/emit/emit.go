@@ -46,6 +46,7 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include \"mochi/map.h\"\n")
 	b.WriteString("#include \"mochi/strings.h\"\n")
 	b.WriteString("#include \"mochi/fileio.h\"\n")
+	b.WriteString("#include \"mochi/csv.h\"\n")
 	listRecNames := collectListRecordElems(prog)
 	listListInners := collectListListInners(prog)
 	listMapPairs := collectListOfMapPairs(prog)
@@ -99,6 +100,15 @@ func Emit(prog *aotir.Program) (string, error) {
 
 	if err := emitListOfListHelpers(&b, listListInners); err != nil {
 		return "", err
+	}
+
+	// Phase 8.4: emit CSV helpers when loadCSV or saveCSV is used. These
+	// static functions reference mochi_list_list_str which is emitted by
+	// emitListOfListHelpers (called above). Must come after list-of-list.
+	if programUsesCSV(prog) {
+		if err := emitCSVHelpers(&b); err != nil {
+			return "", err
+		}
 	}
 
 	// list<map<K,V>> TU-local helpers (Phase 3.4f): must come after any
@@ -570,6 +580,17 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		}
 		fmt.Fprintf(b, "%smochi_append_file(%s, %s);\n", indent, path, content)
 		return nil
+	case *aotir.SaveCSVStmt:
+		path, err := emitExpr(s.Path)
+		if err != nil {
+			return fmt.Errorf("SaveCSVStmt path: %w", err)
+		}
+		data, err := emitExpr(s.Data)
+		if err != nil {
+			return fmt.Errorf("SaveCSVStmt data: %w", err)
+		}
+		fmt.Fprintf(b, "%s__mochi_save_csv(%s, %s);\n", indent, path, data)
+		return nil
 	case *aotir.QueryScopeStmt:
 		return emitQueryScopeStmt(b, s, indent)
 	}
@@ -1017,6 +1038,9 @@ func walkStmtListOfMap(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 	case *aotir.AppendFileStmt:
 		walkExprListOfMap(s.Path, add)
 		walkExprListOfMap(s.Content, add)
+	case *aotir.SaveCSVStmt:
+		walkExprListOfMap(s.Path, add)
+		walkExprListOfMap(s.Data, add)
 	case *aotir.QueryScopeStmt:
 		if s.Body != nil {
 			for _, inner := range s.Body.Statements {
@@ -1106,6 +1130,8 @@ func walkExprListOfMap(e aotir.Expr, add func(aotir.Type, aotir.Type, aotir.Type
 	case *aotir.ReadFileExpr:
 		walkExprListOfMap(v.Path, add)
 	case *aotir.LinesExpr:
+		walkExprListOfMap(v.Path, add)
+	case *aotir.LoadCSVExpr:
 		walkExprListOfMap(v.Path, add)
 	}
 }
@@ -1315,6 +1341,9 @@ func walkStmtExprVisit(st aotir.Stmt, visit func(aotir.Expr)) {
 	case *aotir.AppendFileStmt:
 		walkExprNodeVisit(s.Path, visit)
 		walkExprNodeVisit(s.Content, visit)
+	case *aotir.SaveCSVStmt:
+		walkExprNodeVisit(s.Path, visit)
+		walkExprNodeVisit(s.Data, visit)
 	case *aotir.QueryScopeStmt:
 		if s.Body != nil {
 			for _, inner := range s.Body.Statements {
@@ -1398,6 +1427,8 @@ func walkExprNodeVisit(e aotir.Expr, visit func(aotir.Expr)) {
 	case *aotir.ReadFileExpr:
 		walkExprNodeVisit(v.Path, visit)
 	case *aotir.LinesExpr:
+		walkExprNodeVisit(v.Path, visit)
+	case *aotir.LoadCSVExpr:
 		walkExprNodeVisit(v.Path, visit)
 	}
 }
@@ -1520,6 +1551,9 @@ func walkStmtMapOfList(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 	case *aotir.AppendFileStmt:
 		walkExprMapOfList(s.Path, add)
 		walkExprMapOfList(s.Content, add)
+	case *aotir.SaveCSVStmt:
+		walkExprMapOfList(s.Path, add)
+		walkExprMapOfList(s.Data, add)
 	case *aotir.QueryScopeStmt:
 		if s.Body != nil {
 			for _, inner := range s.Body.Statements {
@@ -1831,6 +1865,9 @@ func walkStmtInner(st aotir.Stmt, visit func(aotir.Type, aotir.Type)) {
 	case *aotir.AppendFileStmt:
 		walkExprInner(s.Path, visit)
 		walkExprInner(s.Content, visit)
+	case *aotir.SaveCSVStmt:
+		walkExprInner(s.Path, visit)
+		walkExprInner(s.Data, visit)
 	case *aotir.QueryScopeStmt:
 		visit(s.ElemType, s.InnerElemType)
 		if s.Body != nil {
@@ -1922,6 +1959,11 @@ func walkExprInner(e aotir.Expr, visit func(aotir.Type, aotir.Type)) {
 		// emits the mochi_list_list_<inner> helper needed by _values.
 		visit(v.ValueType, v.ListValueElemType)
 		walkExprInner(v.Receiver, visit)
+	case *aotir.LoadCSVExpr:
+		// loadCSV() returns list<list<string>>; ensure mochi_list_list_str
+		// is emitted by visiting (TypeList, TypeString).
+		visit(aotir.TypeList, aotir.TypeString)
+		walkExprInner(v.Path, visit)
 	}
 }
 
@@ -2060,6 +2102,9 @@ func walkStmt(st aotir.Stmt, visit func(aotir.Type, string)) {
 	case *aotir.AppendFileStmt:
 		walkExpr(s.Path, visit)
 		walkExpr(s.Content, visit)
+	case *aotir.SaveCSVStmt:
+		walkExpr(s.Path, visit)
+		walkExpr(s.Data, visit)
 	case *aotir.QueryScopeStmt:
 		visit(s.ElemType, s.ElemRecordName)
 		if s.Body != nil {
@@ -2150,6 +2195,8 @@ func walkExpr(e aotir.Expr, visit func(aotir.Type, string)) {
 	case *aotir.ReadFileExpr:
 		walkExpr(v.Path, visit)
 	case *aotir.LinesExpr:
+		walkExpr(v.Path, visit)
+	case *aotir.LoadCSVExpr:
 		walkExpr(v.Path, visit)
 	}
 }
@@ -2343,6 +2390,12 @@ func emitExpr(e aotir.Expr) (string, error) {
 			return "", fmt.Errorf("LinesExpr path: %w", err)
 		}
 		return "mochi_lines(" + path + ")", nil
+	case *aotir.LoadCSVExpr:
+		path, err := emitExpr(v.Path)
+		if err != nil {
+			return "", fmt.Errorf("LoadCSVExpr path: %w", err)
+		}
+		return "__mochi_load_csv(" + path + ")", nil
 	default:
 		return "", fmt.Errorf("transpiler3/c/emit: unhandled Expr %T", e)
 	}
@@ -3818,4 +3871,118 @@ func cStringLiteral(s string) string {
 	}
 	b.WriteByte('"')
 	return b.String()
+}
+
+// programUsesCSV reports whether any LoadCSVExpr or SaveCSVStmt
+// appears in prog. Used to decide whether to emit the TU-local
+// __mochi_load_csv / __mochi_save_csv static helpers.
+func programUsesCSV(prog *aotir.Program) bool {
+	for _, fn := range prog.Functions {
+		if fn == nil {
+			continue
+		}
+		if blockUsesCSV(fn.Body) {
+			return true
+		}
+	}
+	return false
+}
+
+func blockUsesCSV(blk *aotir.Block) bool {
+	if blk == nil {
+		return false
+	}
+	for _, st := range blk.Statements {
+		if stmtUsesCSV(st) {
+			return true
+		}
+	}
+	return false
+}
+
+func stmtUsesCSV(st aotir.Stmt) bool {
+	switch s := st.(type) {
+	case *aotir.SaveCSVStmt:
+		return true
+	case *aotir.LetStmt:
+		return exprUsesCSV(s.Init)
+	case *aotir.AssignStmt:
+		return exprUsesCSV(s.Value)
+	case *aotir.IfStmt:
+		return exprUsesCSV(s.Cond) || blockUsesCSV(s.Then) || blockUsesCSV(s.Else)
+	case *aotir.WhileStmt:
+		return exprUsesCSV(s.Cond) || blockUsesCSV(s.Body)
+	case *aotir.ForEachStmt:
+		return exprUsesCSV(s.List) || blockUsesCSV(s.Body)
+	case *aotir.ForRangeStmt:
+		return blockUsesCSV(s.Body)
+	case *aotir.ReturnStmt:
+		if s.Value != nil {
+			return exprUsesCSV(s.Value)
+		}
+	case *aotir.QueryScopeStmt:
+		return blockUsesCSV(s.Body)
+	}
+	return false
+}
+
+func exprUsesCSV(e aotir.Expr) bool {
+	if e == nil {
+		return false
+	}
+	switch v := e.(type) {
+	case *aotir.LoadCSVExpr:
+		return true
+	case *aotir.BinaryExpr:
+		return exprUsesCSV(v.Left) || exprUsesCSV(v.Right)
+	case *aotir.UnaryExpr:
+		return exprUsesCSV(v.Operand)
+	case *aotir.AppendExpr:
+		return exprUsesCSV(v.Receiver) || exprUsesCSV(v.Value)
+	case *aotir.IndexExpr:
+		return exprUsesCSV(v.Receiver) || exprUsesCSV(v.Index)
+	case *aotir.LenExpr:
+		return exprUsesCSV(v.Receiver)
+	case *aotir.CallExpr:
+		for _, a := range v.Args {
+			if exprUsesCSV(a) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// emitCSVHelpers emits the TU-local static helper functions
+// __mochi_load_csv and __mochi_save_csv into b. These depend on:
+//   - mochi_list_list_str (emitted by emitListOfListHelpers above)
+//   - mochi_list_str_append / mochi_list_str_append (from list.h)
+//   - mochi_lines (from fileio.h)
+//   - mochi_csv_parse_line / mochi_csv_format_row (from csv.h)
+func emitCSVHelpers(b *strings.Builder) error {
+	b.WriteString(`/* Phase 8.4: CSV load/save TU-local helpers. */
+static mochi_list_list_str __mochi_load_csv(const char *path) {
+    mochi_list_str lines = mochi_lines(path);
+    mochi_list_list_str result = {NULL, 0, 0};
+    for (int64_t i = 0; i < lines.len; i++) {
+        mochi_list_str row = mochi_csv_parse_line(lines.data[i]);
+        result = mochi_list_list_str_append(result, row);
+    }
+    return result;
+}
+
+static void __mochi_save_csv(const char *path, mochi_list_list_str data) {
+    FILE *f = fopen(path, "w");
+    if (f == NULL) { mochi_panic_index(); }
+    for (int64_t i = 0; i < data.len; i++) {
+        char *row = mochi_csv_format_row(data.data[i]);
+        fputs(row, f);
+        fputc('\n', f);
+        free(row);
+    }
+    fclose(f);
+}
+
+`)
+	return nil
 }

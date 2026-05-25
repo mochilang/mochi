@@ -32,7 +32,7 @@ Query DSL (`from x in xs where cond select expr`) is the highest-value language 
 | 8.1 | `order by` (sort_asc), `skip N` (list_slice start), `take N` (list_slice end): `ListSortAscExpr` + `ListSliceExpr` IR nodes; emit as `mochi_list_<T>_sort_asc` and `mochi_list_<T>_slice`; 8 fixtures; `TestPhase8QueryDSL` gate extended. | LANDED 2026-05-25 17:40 (GMT+7) | — | — |
 | 8.2 | Joins: inner join (`join y in ys on cond`), left join (`left join y in ys on cond`), cross join (`from y in ys`): all three desugar to nested `ForEachStmt` nodes in `lowerQueryExpr`; no new IR nodes needed; 8 fixtures; `TestPhase8QueryJoins` gate green. | LANDED 2026-05-25 19:41 (GMT+7) | — | — |
 | 8.3 | Arena allocation: `mochi_arena_t` bump allocator in `runtime/arena.{h,c}`; `mochi_list_<T>_append_arena` + `mochi_list_<T>_copy_heap` per scalar type; `QueryScopeStmt` aotir node; lowerer wraps query loop in `QueryScopeStmt`; emitter rewrites appends to arena variant + copies result to heap on scope exit; `TestPhase8Arena` gate (8 fixtures) | LANDED 2026-05-25 21:31 (GMT+7) | — | — |
-| 8.4 | `load`/`save` adapters: JSON (yyjson), YAML (libfyaml), CSV (home-grown) | NOT STARTED | — | — |
+| 8.4 | `loadCSV`/`saveCSV` adapters (home-grown RFC 4180 CSV, no external deps): `mochi_csv_parse_line` + `mochi_csv_format_row` in `runtime/{csv.h,csv.c}`; TU-local `__mochi_load_csv`/`__mochi_save_csv` emitted when program uses `loadCSV`/`saveCSV`; `LoadCSVExpr` + `SaveCSVStmt` IR nodes; type-checker registration; `TestPhase8CSVAdapters` gate (8 fixtures: load basic, multirow, empty file, single row, colcount, quoted fields, save basic, roundtrip). JSON (yyjson) and YAML (libfyaml) deferred (require external library vendoring). | LANDED 2026-05-25 22:33 (GMT+7) | — | — |
 
 ## Decisions made
 
@@ -75,6 +75,28 @@ Query DSL (`from x in xs where cond select expr`) is the highest-value language 
 **String result lists.** For `list<string>` results the `const char*` pointer array is arena-backed; the string values themselves stay on heap (produced by `mochi_str_*` functions that always `malloc`). The `copy_heap` step copies only the pointer array, not the strings. This is correct and safe.
 
 **Gate.** `TestPhase8Arena` in `build/phase08_3_test.go` runs `runFixtureSuite(t, "arena_query")` with 8 fixtures: int filter, float select, string select, bool filter, 20-element list (exercises multi-chunk growth), inner join, order+take, nested query. All 8 compile and produce correct output.
+
+## Phase 8.4: CSV adapter decisions
+
+**Goal alignment.** The user-facing goal includes reading and writing structured data. `loadCSV(path)` and `saveCSV(path, data)` give programs first-class CSV I/O without any external library: a critical property for the AOT transpiler's zero-dependency target. JSON and YAML require vendoring yyjson and libfyaml respectively; those are deferred to a later sub-phase.
+
+**Type signature.** `loadCSV(path)` returns `list<list<string>>`: each outer element is a row, each inner element is a cell string. `saveCSV(path, data)` takes `(string, list<list<string>>)`. Using `string` cells avoids requiring schema knowledge and matches the RFC 4180 model.
+
+**Two-layer implementation.** The runtime C module (`csv.h` / `csv.c`) provides two stable ABI functions that operate on `mochi_list_str` (the stable list-of-string type from `list.h`):
+- `mochi_csv_parse_line(line)`: parses one CSV line into a `mochi_list_str` of cells (RFC 4180 quoting).
+- `mochi_csv_format_row(row)`: joins a `mochi_list_str` of cells into a malloc'd CSV line string.
+
+The emitter generates TU-local static wrapper functions `__mochi_load_csv` and `__mochi_save_csv` when the program uses `loadCSV` or `saveCSV`. These wrappers reference `mochi_list_list_str` (a TU-local typedef emitted by `emitListOfListHelpers`). Separating stable ABI (csv.c) from TU-local glue (emitter-generated) keeps the runtime free of TU-local types.
+
+**`LoadCSVExpr` IR node.** Returns `TypeList` with `ElemType=TypeList, InnerElemType=TypeString`. The emitter walker visits `(TypeList, TypeString)` so `collectListListInners` always emits `mochi_list_list_str` helpers when CSV is present. `SaveCSVStmt` follows the `WriteFileStmt` pattern (void statement node).
+
+**CSV dialect.** RFC 4180 subset: comma-separated fields, fields containing commas or double-quotes enclosed in double-quotes, `""` inside quoted fields escapes a single double-quote. Trailing `\r\n` or `\n` is stripped by `mochi_lines()` before parsing.
+
+**`programUsesCSV` detection.** The emitter calls `programUsesCSV(prog)` before emitting the static helpers; if no `LoadCSVExpr` or `SaveCSVStmt` appears in the program, the helpers are omitted. This preserves the zero-overhead property for programs that do not use CSV.
+
+**Lower pass fix: `declInnerElem` normalization.** Discovered that `let r0 = rows[0]` where `rows: list<list<string>>` produced an incorrect `InnerElemType=TypeString` on the `LetStmt` for `r0` (which is `list<string>`, not `list<list<...>>`). Fixed by normalizing `declInnerElem = TypeInvalid` whenever `declElem != TypeList` in `lowerLet`. The for-each loop already did this normalization explicitly (`bindInnerElem := TypeInvalid`).
+
+**`mochi/csv.h` include.** Added unconditionally to the generated TU prologue. When the program does not use CSV the runtime functions are never referenced, so the linker discards them from the final binary at optimization level `-O2`.
 
 ## Bug fixes in this phase
 
