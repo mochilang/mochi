@@ -599,6 +599,12 @@ func (l *lowerer) lowerExprStmt(out *aotir.Block, es *parser.ExprStmt) error {
 	if call.Func == "appendFile" {
 		return l.lowerAppendFileCall(out, call)
 	}
+	// Phase 8.4: CSV save call.
+	if call.Func == "saveCSV" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerSaveCSVCall(out, call)
+		}
+	}
 	// Phase 5.0: check if this is a call to a fun-typed variable in scope.
 	if b, ok2 := l.scope.lookup(call.Func); ok2 && b.t == aotir.TypeFun {
 		if b.funSig == nil {
@@ -873,6 +879,8 @@ func exprElemType(e aotir.Expr) aotir.Type {
 		return aotir.TypeString // split() always returns list<string>
 	case *aotir.LinesExpr:
 		return aotir.TypeString // lines() always returns list<string>
+	case *aotir.LoadCSVExpr:
+		return aotir.TypeList // loadCSV() always returns list<list<string>>
 	}
 	return aotir.TypeInvalid
 }
@@ -901,6 +909,8 @@ func exprInnerElemType(e aotir.Expr) aotir.Type {
 		return v.InnerElemType
 	case *aotir.MapValuesExpr:
 		return v.ListValueElemType
+	case *aotir.LoadCSVExpr:
+		return aotir.TypeString // loadCSV() returns list<list<string>>; inner is TypeString
 	}
 	return aotir.TypeInvalid
 }
@@ -1090,6 +1100,11 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	declElem := exprElemType(value)
 	declElemRec := exprElemRecordName(value)
 	declInnerElem := exprInnerElemType(value)
+	if declElem != aotir.TypeList {
+		// InnerElemType is only valid when ElemType==TypeList (list<list<T>>).
+		// Normalize to TypeInvalid for list<scalar> or non-list bindings.
+		declInnerElem = aotir.TypeInvalid
+	}
 	declMapElemKey := exprMapElemKeyType(value)
 	declMapElemValue := exprMapElemValueType(value)
 	declKey := exprKeyType(value)
@@ -3308,6 +3323,11 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 			return l.lowerLinesCall(call)
 		}
 	}
+	if call.Func == "loadCSV" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerLoadCSVCall(call)
+		}
+	}
 	if call.Func == "floor" {
 		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
 			return l.lowerFloorCall(call)
@@ -4709,6 +4729,49 @@ func (l *lowerer) lowerLinesCall(call *parser.CallExpr) (aotir.Expr, error) {
 		return nil, fmt.Errorf("lines() path must be a string, got %s", path.Type())
 	}
 	return &aotir.LinesExpr{Path: path}, nil
+}
+
+// lowerLoadCSVCall lowers `loadCSV(path)` to a LoadCSVExpr.
+// The result type is list<list<string>>.
+func (l *lowerer) lowerLoadCSVCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("loadCSV() takes exactly one argument, got %d", len(call.Args))
+	}
+	path, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("loadCSV() path arg: %w", err)
+	}
+	if path.Type() != aotir.TypeString {
+		return nil, fmt.Errorf("loadCSV() path must be a string, got %s", path.Type())
+	}
+	return &aotir.LoadCSVExpr{Path: path}, nil
+}
+
+// lowerSaveCSVCall lowers `saveCSV(path, data)` to a SaveCSVStmt.
+// data must be a list<list<string>>.
+func (l *lowerer) lowerSaveCSVCall(out *aotir.Block, call *parser.CallExpr) error {
+	if len(call.Args) != 2 {
+		return fmt.Errorf("saveCSV() takes exactly two arguments, got %d", len(call.Args))
+	}
+	path, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return fmt.Errorf("saveCSV() path arg: %w", err)
+	}
+	if path.Type() != aotir.TypeString {
+		return fmt.Errorf("saveCSV() path must be a string, got %s", path.Type())
+	}
+	data, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return fmt.Errorf("saveCSV() data arg: %w", err)
+	}
+	if data.Type() != aotir.TypeList {
+		return fmt.Errorf("saveCSV() data must be list<list<string>>, got %s", data.Type())
+	}
+	if exprElemType(data) != aotir.TypeList {
+		return fmt.Errorf("saveCSV() data must be list<list<string>>, inner elem must be TypeList")
+	}
+	out.Statements = append(out.Statements, &aotir.SaveCSVStmt{Path: path, Data: data})
+	return nil
 }
 
 // trimPrimary returns a short string describing pr for diagnostics;

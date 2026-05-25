@@ -1,0 +1,8 @@
+writeFile("/tmp/mochi_test_csv_multirow.csv", "1,2,3\n4,5,6\n7,8,9\n")
+let rows = loadCSV("/tmp/mochi_test_csv_multirow.csv")
+let nrows = len(rows)
+print(nrows)
+for row in rows {
+    let ncols = len(row)
+    print(ncols)
+}

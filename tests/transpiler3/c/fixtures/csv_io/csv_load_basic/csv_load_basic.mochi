@@ -1,0 +1,8 @@
+writeFile("/tmp/mochi_test_csv_load_basic.csv", "alice,30,engineer\nbob,25,designer\n")
+let rows = loadCSV("/tmp/mochi_test_csv_load_basic.csv")
+print(rows[0][0])
+print(rows[0][1])
+print(rows[0][2])
+print(rows[1][0])
+print(rows[1][1])
+print(rows[1][2])

@@ -1209,6 +1209,27 @@ type LinesExpr struct{ Path Expr }
 
 func (*LinesExpr) Type() Type { return TypeList }
 
+// LoadCSVExpr reads a CSV file and returns a list<list<string>> where
+// each outer element is a row and each inner element is a cell value.
+// The emitter calls the TU-local static helper __mochi_load_csv(path)
+// which is emitted when any LoadCSVExpr is present in the program.
+// Phase 8.4.
+type LoadCSVExpr struct{ Path Expr }
+
+func (*LoadCSVExpr) Type() Type { return TypeList }
+
+// SaveCSVStmt writes a list<list<string>> to a CSV file, one row per
+// line with cells separated by commas (RFC 4180 quoting applied when
+// a cell contains a comma, double-quote, or newline). The emitter
+// calls the TU-local static helper __mochi_save_csv(path, data).
+// Phase 8.4.
+type SaveCSVStmt struct {
+	Path Expr // TypeString
+	Data Expr // TypeList, ElemType==TypeList, InnerElemType==TypeString
+}
+
+func (*SaveCSVStmt) isStmt() {}
+
 // QueryScopeStmt wraps the desugared query pipeline in an arena scope.
 // Phase 8.3.
 //

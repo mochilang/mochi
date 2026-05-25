@@ -1,0 +1,3 @@
+writeFile("/tmp/mochi_test_csv_empty.csv", "")
+let rows = loadCSV("/tmp/mochi_test_csv_empty.csv")
+print(len(rows))

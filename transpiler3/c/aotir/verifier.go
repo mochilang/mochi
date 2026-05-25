@@ -483,6 +483,23 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 			return fmt.Errorf("AppendFileStmt Path: %w", err)
 		}
 		return verifyExprCtx(ctx, s.Content)
+	case *SaveCSVStmt:
+		if s.Path == nil {
+			return errors.New("SaveCSVStmt: nil Path")
+		}
+		if s.Path.Type() != TypeString {
+			return fmt.Errorf("SaveCSVStmt: Path must be TypeString, got %s", s.Path.Type())
+		}
+		if s.Data == nil {
+			return errors.New("SaveCSVStmt: nil Data")
+		}
+		if s.Data.Type() != TypeList {
+			return fmt.Errorf("SaveCSVStmt: Data must be TypeList, got %s", s.Data.Type())
+		}
+		if err := verifyExprCtx(ctx, s.Path); err != nil {
+			return fmt.Errorf("SaveCSVStmt Path: %w", err)
+		}
+		return verifyExprCtx(ctx, s.Data)
 	case *QueryScopeStmt:
 		if s.ResultVar == "" {
 			return errors.New("QueryScopeStmt: empty ResultVar")
@@ -1133,6 +1150,8 @@ func exprElemType(e Expr) Type {
 		return TypeString
 	case *LinesExpr:
 		return TypeString // lines() always returns list<string>
+	case *LoadCSVExpr:
+		return TypeList // loadCSV() always returns list<list<string>>; inner is TypeString
 	}
 	return TypeInvalid
 }
@@ -1163,6 +1182,8 @@ func exprInnerElemType(e Expr) Type {
 		// values(m) on map<K,list<V>> produces list<list<V>>.
 		// The inner V is carried on MapValuesExpr.ListValueElemType.
 		return v.ListValueElemType
+	case *LoadCSVExpr:
+		return TypeString // loadCSV() returns list<list<string>>; inner is TypeString
 	}
 	return TypeInvalid
 }
@@ -1700,6 +1721,14 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		}
 		if v.Path.Type() != TypeString {
 			return fmt.Errorf("LinesExpr: Path must be TypeString, got %s", v.Path.Type())
+		}
+		return verifyExprCtx(ctx, v.Path)
+	case *LoadCSVExpr:
+		if v.Path == nil {
+			return errors.New("LoadCSVExpr: nil Path")
+		}
+		if v.Path.Type() != TypeString {
+			return fmt.Errorf("LoadCSVExpr: Path must be TypeString, got %s", v.Path.Type())
 		}
 		return verifyExprCtx(ctx, v.Path)
 	case *CallExpr:
