@@ -2061,7 +2061,15 @@ func (l *lowerer) lowerPostfix(p *parser.PostfixExpr) (aotir.Expr, error) {
 				return nil, err
 			}
 		case op.Call != nil:
-			return nil, fmt.Errorf("postfix call on an expression is not supported in Phase 3.1 (use a bare callee name)")
+			// Phase 6.1: complete a string method call (e.g. s.contains("x")).
+			sm, ok := expr.(*aotir.StrMethodRef)
+			if !ok {
+				return nil, fmt.Errorf("postfix call on a non-string-method expression is not supported (Phase 3.1)")
+			}
+			expr, err = l.lowerStrMethodCallOp(sm, op.Call)
+			if err != nil {
+				return nil, err
+			}
 		case op.Index != nil:
 			expr, err = l.lowerIndexOp(expr, op.Index)
 			if err != nil {
@@ -2147,17 +2155,32 @@ func (l *lowerer) lowerIndexOp(receiver aotir.Expr, idx *parser.IndexOp) (aotir.
 			ValueType:         recvVal,
 			ListValueElemType: exprListValueElemType(receiver),
 		}, nil
+	case aotir.TypeString:
+		index, err := l.lowerExpr(idx.Start)
+		if err != nil {
+			return nil, fmt.Errorf("string index expression: %w", err)
+		}
+		if index.Type() != aotir.TypeInt {
+			return nil, fmt.Errorf("string index must be int, got %s", index.Type())
+		}
+		return &aotir.StrIndexExpr{Receiver: receiver, Index: index}, nil
 	}
-	return nil, fmt.Errorf("index access [k]: receiver is %s, expected a list or map", receiver.Type())
+	return nil, fmt.Errorf("index access [k]: receiver is %s, expected a list, map, or string", receiver.Type())
 }
 
 // lowerFieldOp resolves a `.field` against a record-typed receiver and
-// returns a FieldAccess node typed by the field's declared type. The
-// receiver expression must already be typed as a record; the lowerer
-// then looks up the field on the record's declaration to stamp Result
-// (and ResultRecordName if the field is itself record-typed -- not
-// reachable in Phase 3.0 since nested records are rejected).
+// returns a FieldAccess node typed by the field's declared type. Phase 6.1
+// extends it to TypeString receivers: .contains produces a StrMethodRef
+// (resolved to StrContainsExpr by lowerPostfix when the CallOp arrives).
 func (l *lowerer) lowerFieldOp(receiver aotir.Expr, fieldName string) (aotir.Expr, error) {
+	if receiver.Type() == aotir.TypeString {
+		switch fieldName {
+		case "contains":
+			return &aotir.StrMethodRef{Receiver: receiver, MethodName: fieldName}, nil
+		default:
+			return nil, fmt.Errorf("string has no field %q (Phase 6.1 supports: contains)", fieldName)
+		}
+	}
 	if receiver.Type() != aotir.TypeRecord {
 		return nil, fmt.Errorf("field access .%s: receiver is %s, expected a record", fieldName, receiver.Type())
 	}
@@ -2693,6 +2716,12 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	if call.Func == "has" {
 		return l.lowerHasCall(call)
 	}
+	if call.Func == "substring" {
+		return l.lowerSubstringCall(call)
+	}
+	if call.Func == "reverse" {
+		return l.lowerReverseCall(call)
+	}
 	// Phase 5.0: check if this is a call to a fun-typed variable in scope.
 	if b, ok := l.scope.lookup(call.Func); ok && b.t == aotir.TypeFun {
 		if b.funSig == nil {
@@ -2875,6 +2904,73 @@ func (l *lowerer) lowerHasCall(call *parser.CallExpr) (aotir.Expr, error) {
 		ValueType:         exprValueType(receiver),
 		ListValueElemType: exprListValueElemType(receiver),
 	}, nil
+}
+
+// lowerStrMethodCallOp completes a string method call after the
+// lowerFieldOp has produced a StrMethodRef. Phase 6.1 supports
+// "contains" which lowers to StrContainsExpr.
+func (l *lowerer) lowerStrMethodCallOp(sm *aotir.StrMethodRef, callOp *parser.CallOp) (aotir.Expr, error) {
+	switch sm.MethodName {
+	case "contains":
+		if len(callOp.Args) != 1 {
+			return nil, fmt.Errorf("string.contains() takes exactly one argument, got %d", len(callOp.Args))
+		}
+		sub, err := l.lowerExpr(callOp.Args[0])
+		if err != nil {
+			return nil, fmt.Errorf("contains arg: %w", err)
+		}
+		if sub.Type() != aotir.TypeString {
+			return nil, fmt.Errorf("string.contains() argument must be string, got %s", sub.Type())
+		}
+		return &aotir.StrContainsExpr{Receiver: sm.Receiver, Sub: sub}, nil
+	default:
+		return nil, fmt.Errorf("unknown string method %q", sm.MethodName)
+	}
+}
+
+// lowerSubstringCall lowers `substring(s, start, end)` to StrSubstringExpr.
+func (l *lowerer) lowerSubstringCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 3 {
+		return nil, fmt.Errorf("substring() takes exactly three arguments (s, start, end), got %d", len(call.Args))
+	}
+	s, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("substring string: %w", err)
+	}
+	if s.Type() != aotir.TypeString {
+		return nil, fmt.Errorf("substring() first argument must be string, got %s", s.Type())
+	}
+	start, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("substring start: %w", err)
+	}
+	if start.Type() != aotir.TypeInt {
+		return nil, fmt.Errorf("substring() start must be int, got %s", start.Type())
+	}
+	end, err := l.lowerExpr(call.Args[2])
+	if err != nil {
+		return nil, fmt.Errorf("substring end: %w", err)
+	}
+	if end.Type() != aotir.TypeInt {
+		return nil, fmt.Errorf("substring() end must be int, got %s", end.Type())
+	}
+	return &aotir.StrSubstringExpr{Receiver: s, Start: start, End: end}, nil
+}
+
+// lowerReverseCall lowers `reverse(s)` to StrReverseExpr when the
+// argument is a string. (reverse(list) is handled by the user-fn path.)
+func (l *lowerer) lowerReverseCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("reverse() takes exactly one argument, got %d", len(call.Args))
+	}
+	s, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("reverse arg: %w", err)
+	}
+	if s.Type() != aotir.TypeString {
+		return nil, fmt.Errorf("reverse() argument must be string in Phase 6.1, got %s", s.Type())
+	}
+	return &aotir.StrReverseExpr{Receiver: s}, nil
 }
 
 // lowerAppendCall lowers the `append(xs, v)` builtin to an

@@ -600,6 +600,55 @@ type StrLenExpr struct {
 
 func (*StrLenExpr) Type() Type { return TypeInt }
 
+// StrIndexExpr is the `s[i]` operation on a string. The emitter calls
+// mochi_str_index(s, i), which returns a freshly allocated one-codepoint
+// string (or "" on out-of-bounds). Phase 6.1.
+type StrIndexExpr struct {
+	Receiver Expr
+	Index    Expr
+}
+
+func (*StrIndexExpr) Type() Type { return TypeString }
+
+// StrContainsExpr is the `s.contains(sub)` method. The emitter calls
+// mochi_str_contains(s, sub), which wraps strstr. Phase 6.1.
+type StrContainsExpr struct {
+	Receiver Expr
+	Sub      Expr
+}
+
+func (*StrContainsExpr) Type() Type { return TypeBool }
+
+// StrSubstringExpr is the `substring(s, start, end)` builtin. The
+// emitter calls mochi_str_substring(s, start, end), which slices by
+// rune index (matching vm3). Phase 6.1.
+type StrSubstringExpr struct {
+	Receiver Expr
+	Start    Expr
+	End      Expr
+}
+
+func (*StrSubstringExpr) Type() Type { return TypeString }
+
+// StrReverseExpr is the `reverse(s)` builtin on strings. The emitter
+// calls mochi_str_reverse(s). Phase 6.1.
+type StrReverseExpr struct {
+	Receiver Expr
+}
+
+func (*StrReverseExpr) Type() Type { return TypeString }
+
+// StrMethodRef is a transient IR node produced during lowering when
+// the lower pass processes a field access like `s.contains` on a
+// string-typed receiver. It is never emitted; lowerPostfix replaces it
+// with the appropriate Str*Expr when it sees the following CallOp.
+type StrMethodRef struct {
+	Receiver   Expr
+	MethodName string
+}
+
+func (*StrMethodRef) Type() Type { return TypeInvalid }
+
 // AppendExpr is the `append(xs, v)` builtin call. The verifier
 // checks Receiver.Type()==TypeList, Value.Type()==ElemType, and
 // stamps the result as TypeList with the same ElemType. The

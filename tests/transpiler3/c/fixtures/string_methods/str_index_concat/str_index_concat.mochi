@@ -1,0 +1,5 @@
+let s = "hello"
+let first = s[0]
+let second = s[1]
+print(first + second)
+print(s[0] + s[4])

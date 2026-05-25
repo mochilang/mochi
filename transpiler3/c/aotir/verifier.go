@@ -1246,6 +1246,50 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("StrLenExpr: receiver must be TypeString, got %s", v.Receiver.Type())
 		}
 		return verifyExprCtx(ctx, v.Receiver)
+	case *StrIndexExpr:
+		if v.Receiver.Type() != TypeString {
+			return fmt.Errorf("StrIndexExpr: receiver must be TypeString, got %s", v.Receiver.Type())
+		}
+		if v.Index.Type() != TypeInt {
+			return fmt.Errorf("StrIndexExpr: index must be TypeInt, got %s", v.Index.Type())
+		}
+		if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+			return err
+		}
+		return verifyExprCtx(ctx, v.Index)
+	case *StrContainsExpr:
+		if v.Receiver.Type() != TypeString {
+			return fmt.Errorf("StrContainsExpr: receiver must be TypeString, got %s", v.Receiver.Type())
+		}
+		if v.Sub.Type() != TypeString {
+			return fmt.Errorf("StrContainsExpr: sub must be TypeString, got %s", v.Sub.Type())
+		}
+		if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+			return err
+		}
+		return verifyExprCtx(ctx, v.Sub)
+	case *StrSubstringExpr:
+		if v.Receiver.Type() != TypeString {
+			return fmt.Errorf("StrSubstringExpr: receiver must be TypeString, got %s", v.Receiver.Type())
+		}
+		if v.Start.Type() != TypeInt {
+			return fmt.Errorf("StrSubstringExpr: start must be TypeInt, got %s", v.Start.Type())
+		}
+		if v.End.Type() != TypeInt {
+			return fmt.Errorf("StrSubstringExpr: end must be TypeInt, got %s", v.End.Type())
+		}
+		if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+			return err
+		}
+		if err := verifyExprCtx(ctx, v.Start); err != nil {
+			return err
+		}
+		return verifyExprCtx(ctx, v.End)
+	case *StrReverseExpr:
+		if v.Receiver.Type() != TypeString {
+			return fmt.Errorf("StrReverseExpr: receiver must be TypeString, got %s", v.Receiver.Type())
+		}
+		return verifyExprCtx(ctx, v.Receiver)
 	case *AppendExpr:
 		return verifyAppendExpr(ctx, v)
 	case *MapLit:
