@@ -504,6 +504,37 @@ func (l *lowerer) lowerCallArgs(call *parser.CallExpr, sig *funcSig) ([]aotir.Ex
 	return out, nil
 }
 
+// isEmptyListLit reports whether e is a bare `[]` with no elements.
+// Used by lowerBinding to detect the typed-empty-list pattern
+// (`let xs: list<int> = []`) before entering lowerExpr, so that
+// lowerListLit never sees a zero-element slice.
+func isEmptyListLit(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return false
+	}
+	ll := u.Value.Target.List
+	return ll != nil && len(ll.Elems) == 0
+}
+
+// isEmptyMapLit reports whether e is a bare `{}` with no entries.
+// Used by lowerBinding to detect the typed-empty-map pattern
+// (`let m: map<K,V> = {}`) before entering lowerExpr.
+func isEmptyMapLit(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return false
+	}
+	ml := u.Value.Target.Map
+	return ml != nil && len(ml.Items) == 0
+}
+
 // exprRecordName extracts the record-name identity of a record-typed
 // aotir expression. Mirrors the verifier's exprRecordName but lives
 // in lower so the lowerer can stamp the right name onto carrier
@@ -649,6 +680,48 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	if _, dup := l.scope.vars[name]; dup {
 		return fmt.Errorf("redeclaration of %q in same scope", name)
 	}
+
+	// Phase 3.4c: typed-empty-literal fast path.
+	// `let xs: list<int> = []` and `let m: map<K,V> = {}` must bypass
+	// lowerExpr so that lowerListLit / lowerMapLit never see len==0.
+	// The declared annotation supplies the type; the IR node is built
+	// directly from typeFromRef and registered without entering lowerExpr.
+	if declared != nil {
+		if isEmptyListLit(init) {
+			tr, err := typeFromRef(l.records, declared)
+			if err != nil {
+				return fmt.Errorf("binding %q type: %w", name, err)
+			}
+			if tr.t != aotir.TypeList {
+				return fmt.Errorf("binding %q: declared type is %s but init is an empty list literal", name, tr.t)
+			}
+			lit := &aotir.ListLit{ElemType: tr.elem, ElemRecordName: tr.elemRec, InnerElemType: tr.innerElem}
+			l.scope.vars[name] = lbinding{t: aotir.TypeList, mutable: mutable, elem: tr.elem, elemRec: tr.elemRec, innerElem: tr.innerElem}
+			out.Statements = append(out.Statements, &aotir.LetStmt{
+				Name: name, VarType: aotir.TypeList, ElemType: tr.elem,
+				ElemRecordName: tr.elemRec, InnerElemType: tr.innerElem,
+				Init: lit, Mutable: mutable,
+			})
+			return nil
+		}
+		if isEmptyMapLit(init) {
+			tr, err := typeFromRef(l.records, declared)
+			if err != nil {
+				return fmt.Errorf("binding %q type: %w", name, err)
+			}
+			if tr.t != aotir.TypeMap {
+				return fmt.Errorf("binding %q: declared type is %s but init is an empty map literal", name, tr.t)
+			}
+			lit := &aotir.MapLit{KeyType: tr.key, ValueType: tr.value}
+			l.scope.vars[name] = lbinding{t: aotir.TypeMap, mutable: mutable, key: tr.key, value: tr.value}
+			out.Statements = append(out.Statements, &aotir.LetStmt{
+				Name: name, VarType: aotir.TypeMap, KeyType: tr.key, ValueType: tr.value,
+				Init: lit, Mutable: mutable,
+			})
+			return nil
+		}
+	}
+
 	value, err := l.lowerExpr(init)
 	if err != nil {
 		return fmt.Errorf("binding %q init: %w", name, err)
@@ -1675,10 +1748,11 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 // lower to the same type; the resulting ListLit's ElemType is taken
 // from the first element. Phase 3.1 accepted the four scalar
 // primitives; Phase 3.4a widens to TypeRecord with all elements
-// agreeing on record identity (ElemRecordName). Phase 3.1 rejects
-// empty list literals because there is no surface form to supply the
-// element type (e.g. `let xs: [int] = []`); future sub-phases can
-// thread the binding's annotated type into this path.
+// agreeing on record identity (ElemRecordName). Empty list literals
+// are rejected here; the `let xs: list<int> = []` typed-empty form
+// is handled upstream in lowerBinding (Phase 3.4c) before lowerExpr
+// is called, so this function never sees a zero-element slice from
+// an annotated binding.
 func (l *lowerer) lowerListLit(ll *parser.ListLiteral) (aotir.Expr, error) {
 	if len(ll.Elems) == 0 {
 		return nil, fmt.Errorf("empty list literal: Phase 3.1 requires at least one element so the element type can be inferred")
@@ -1743,13 +1817,12 @@ func (l *lowerer) lowerListLit(ll *parser.ListLiteral) (aotir.Expr, error) {
 
 // lowerMapLit lowers a `{ k1: v1, k2: v2, ... }` literal into a typed
 // MapLit. The key type is taken from the first key, the value type
-// from the first value; subsequent entries must match. Phase 3.2
-// rejects empty map literals for the same reason 3.1 rejects empty
-// lists: the surface has no way to thread an annotation in here
-// (a fix lands when annotated-binding empty literal threading is
-// added). Phase 3.2 also rejects struct-literal-shaped maps (a
-// trailing-shorthand `{ name: x }` that the parser also accepts as
-// a struct literal); fixtures must use the `{ "name": x }` form.
+// from the first value; subsequent entries must match. Empty map
+// literals are rejected here; the `let m: map<K,V> = {}` typed-empty
+// form is handled upstream in lowerBinding (Phase 3.4c) before
+// lowerExpr is called. Phase 3.2 also rejects struct-literal-shaped
+// maps (the shorthand `{ name: x }` the parser accepts as a struct
+// literal); fixtures must use the `{ "name": x }` form.
 func (l *lowerer) lowerMapLit(ml *parser.MapLiteral) (aotir.Expr, error) {
 	if len(ml.Items) == 0 {
 		return nil, fmt.Errorf("empty map literal: Phase 3.2 requires at least one entry so the key + value types can be inferred")
