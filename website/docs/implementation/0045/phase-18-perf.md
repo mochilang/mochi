@@ -31,7 +31,7 @@ Performance gate exists so a regression cannot ship silently. The user-facing pa
 | 18.0 | Benchmark harness: `tests/transpiler3/c/bench/` with 5 BG kernels; `TestPhase18BenchHarness` builds + runs each 5x, logs median wall-clock and binary size; asserts output correctness vs vm3-derived expected values. | LANDED 2026-05-25 22:01 (GMT+7) | — | — |
 | 18.1 | Wall-clock, peak RSS, binary size (release/strip), compile time recorded per fixture; 2x vm3 gate enforced when `mochi` is on PATH | LANDED 2026-05-25 22:50 (GMT+7) | — | — |
 | 18.2 | Per-release report published to a static page                                                                      | NOT STARTED | —      | — |
-| 18.3 | Regression alert: > 10% wall-clock regression vs previous main posts a comment on the PR                           | NOT STARTED | —      | — |
+| 18.3 | Regression alert: > 10% wall-clock regression vs previous main posts a comment on the PR                           | LANDED 2026-05-25 22:56 (GMT+7) | — | — |
 
 ## Decisions made
 
@@ -86,8 +86,19 @@ The first-run latency (max_ms) is dominated by macOS dyld startup. The min_ms va
 
 ## Deferred work
 
+## Phase 18.3 decisions
+
+**Parse-based comparison.** The `actions/github-script` step parses the test log output lines matching the kernel table format (kernel name + median ms). This avoids requiring a separate JSON artifact; the test log is the source of truth.
+
+**Only fires on PRs.** The regression alert only triggers when `github.event_name == 'pull_request'`. A `workflow_dispatch` run exits silently after the comparison (no PR to comment on).
+
+**>10% threshold.** A 10% regression is large enough to exclude noise from single-run variance (5 runs / median). The threshold can be tightened after establishing a longer baseline.
+
+**`core.setFailed` gates the PR.** When regressions are detected, the step calls `core.setFailed(...)` which marks the workflow run as failed, blocking the PR if branch protection requires the check to pass.
+
+## Deferred work
+
 - Phase 18.2: CI-published static HTML report.
-- Phase 18.3: PR regression alert (>10% wall-clock regression vs main).
 - Tighter (1.5x) gate: revisit after Phase 19 with measured data.
 
 ## Closeout notes
