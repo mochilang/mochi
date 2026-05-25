@@ -83,6 +83,22 @@ func Subtype(s, t Type) bool {
 		}
 		return equalKinds(sv.Elem, tv.Elem)
 
+	case StreamType:
+		// stream<T> is invariant: emit and recv_sub both require exact element match.
+		tv, ok := t.(StreamType)
+		if !ok {
+			return false
+		}
+		return equalKinds(sv.Elem, tv.Elem)
+
+	case SubType:
+		// sub<T> is invariant.
+		tv, ok := t.(SubType)
+		if !ok {
+			return false
+		}
+		return equalKinds(sv.Elem, tv.Elem)
+
 	case OptionType:
 		// MEP-11 §T-Option-Cov. option[S] <: option[T] when S <: T.
 		tv, ok := t.(OptionType)
@@ -197,6 +213,14 @@ func assignableAt(src, dst Type, elementContext bool) bool {
 		if dv, ok := dst.(ChanType); ok {
 			return assignableAt(sv.Elem, dv.Elem, true)
 		}
+	case StreamType:
+		if dv, ok := dst.(StreamType); ok {
+			return assignableAt(sv.Elem, dv.Elem, true)
+		}
+	case SubType:
+		if dv, ok := dst.(SubType); ok {
+			return assignableAt(sv.Elem, dv.Elem, true)
+		}
 	case OptionType:
 		if dv, ok := dst.(OptionType); ok {
 			return assignableAt(sv.Elem, dv.Elem, true)
@@ -257,6 +281,12 @@ func equalKinds(a, b Type) bool {
 		return ok && equalKinds(av.Key, bv.Key) && equalKinds(av.Value, bv.Value)
 	case ChanType:
 		bv, ok := b.(ChanType)
+		return ok && equalKinds(av.Elem, bv.Elem)
+	case StreamType:
+		bv, ok := b.(StreamType)
+		return ok && equalKinds(av.Elem, bv.Elem)
+	case SubType:
+		bv, ok := b.(SubType)
 		return ok && equalKinds(av.Elem, bv.Elem)
 	case OptionType:
 		bv, ok := b.(OptionType)

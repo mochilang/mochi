@@ -424,6 +424,8 @@ type VarRef struct {
 	ListValueElemType Type    // valid when VarType==TypeMap && ValueType==TypeList (Phase 3.4e)
 	FunSig            *FunSig // valid when VarType==TypeFun (Phase 5.0)
 	ChanElemType      Type    // valid when VarType==TypeChan (Phase 9.1)
+	StreamElemType    Type    // valid when VarType==TypeStream (Phase 9.2)
+	SubElemType       Type    // valid when VarType==TypeSub (Phase 9.2)
 }
 
 func (v *VarRef) Type() Type { return v.VarType }
@@ -487,6 +489,8 @@ type LetStmt struct {
 	ListValueElemType Type    // valid when VarType==TypeMap && ValueType==TypeList (Phase 3.4e)
 	FunSig            *FunSig // valid when VarType==TypeFun (Phase 5.0)
 	ChanElemType      Type    // valid when VarType==TypeChan (Phase 9.1)
+	StreamElemType    Type    // valid when VarType==TypeStream (Phase 9.2)
+	SubElemType       Type    // valid when VarType==TypeSub (Phase 9.2)
 	Init              Expr
 	Mutable           bool // true for VarStmt-lowered bindings
 }
@@ -1344,3 +1348,42 @@ type ChanRecvExpr struct {
 }
 
 func (e *ChanRecvExpr) Type() Type { return e.ElemType }
+
+// --- Phase 9.2: stream<T> IR nodes ---
+
+// StreamMakeExpr creates a bounded MPMC broadcast stream with capacity Cap.
+// Type() returns TypeStream (Phase 9.2).
+type StreamMakeExpr struct {
+	Cap      Expr // must be TypeInt
+	ElemType Type
+}
+
+func (e *StreamMakeExpr) Type() Type { return TypeStream }
+
+// StreamEmitStmt sends Val to all subscribers of Stream. Blocks (yields) when
+// the slowest subscriber has not yet drained its slot. Phase 9.2.
+type StreamEmitStmt struct {
+	Stream   Expr // must be TypeStream
+	Val      Expr
+	ElemType Type
+}
+
+func (*StreamEmitStmt) isStmt() {}
+
+// SubMakeExpr creates a subscriber handle for Stream starting at the current
+// write position. Type() returns TypeSub (Phase 9.2).
+type SubMakeExpr struct {
+	Stream   Expr // must be TypeStream
+	ElemType Type
+}
+
+func (e *SubMakeExpr) Type() Type { return TypeSub }
+
+// SubRecvExpr receives the next value from subscriber Sub, blocking (yielding)
+// when no new data is available. Type() returns ElemType (Phase 9.2).
+type SubRecvExpr struct {
+	Sub      Expr // must be TypeSub
+	ElemType Type
+}
+
+func (e *SubRecvExpr) Type() Type { return e.ElemType }

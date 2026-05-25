@@ -52,7 +52,7 @@ func assertStatement(s *Statement) error {
 		s.Import != nil, s.Type != nil,
 		s.ExternType != nil, s.ExternVar != nil,
 		s.ExternFun != nil, s.ExternObject != nil,
-		s.Fact != nil, s.Rule != nil, s.On != nil, s.Emit != nil,
+		s.Fact != nil, s.Rule != nil, s.On != nil, s.Emit != nil, s.EmitCall != nil,
 		s.Let != nil, s.Var != nil, s.Assign != nil, s.Fun != nil,
 		s.Return != nil, s.If != nil, s.While != nil, s.TryCatch != nil, s.For != nil,
 		s.Break != nil, s.Continue != nil,
@@ -235,10 +235,10 @@ func assertTypeRef(t *TypeRef, pos lexer.Position) error {
 		return invariant(pos, "type reference is nil")
 	}
 	arms := [...]bool{
-		t.Fun != nil, t.Generic != nil, t.Struct != nil, t.ListElem != nil, t.Simple != nil,
+		t.Fun != nil, t.StreamElem != nil, t.Generic != nil, t.Struct != nil, t.ListElem != nil, t.Simple != nil,
 	}
 	if n := countTrue(arms[:]); n != 1 {
-		return invariant(pos, fmt.Sprintf("type reference has %d arms set, expected exactly 1 of {fun, generic, struct, list_elem, simple}", n))
+		return invariant(pos, fmt.Sprintf("type reference has %d arms set, expected exactly 1 of {fun, stream_elem, generic, struct, list_elem, simple}", n))
 	}
 	return nil
 }

@@ -29,8 +29,8 @@ Phase 9 builds the concurrency primitives that let Mochi programs express async 
 | #   | Scope                                                                                                              | Status      | Commit | PR |
 |-----|--------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 9.0 | M:N work-stealing scheduler over minicoro; one OS thread per hardware core; blocking syscalls on overflow pool     | LANDED 2026-05-26 01:00 (GMT+7) | aa503933f4 | — |
-| 9.1 | `chan<T>`: bounded ring, point-to-point, send blocks when full                                                     | LANDED 2026-05-26 03:11 (GMT+7) | (this PR) | — |
-| 9.2 | `stream<T>`: bounded ring + subscriber list (MPMC broadcast); `emit` blocks when any subscriber full               | NOT STARTED | —      | — |
+| 9.1 | `chan<T>`: bounded ring, point-to-point, send blocks when full                                                     | LANDED 2026-05-26 03:11 (GMT+7) | — | — |
+| 9.2 | `stream<T>` MPMC broadcast ring; `subscribe(s)` returns sub handle; `recv_sub(sub)` yields when empty; `emit(s, v)` lossy-overwrites when full | LANDED 2026-05-26 03:46 (GMT+7) | (this PR) | — |
 | 9.3 | Agent: record with embedded mailbox; intent calls enqueue typed messages; run loop on dedicated fiber              | NOT STARTED | —      | — |
 | 9.4 | Shutdown protocol: graceful drain on SIGINT/SIGTERM; bounded-time hard kill after timeout                          | NOT STARTED | —      | — |
 
@@ -62,10 +62,29 @@ Phase 9 builds the concurrency primitives that let Mochi programs express async 
 
 **Gate:** `TestPhase9Chan` (5 fixtures: chan_basic, chan_bool, chan_buffered, chan_fifo_order, chan_string).
 
+### Phase 9.2 (2026-05-26 03:46 GMT+7)
+
+**stream<T> and sub<T> as first-class types.** `StreamType{Elem Type}` and `SubType{Elem Type}` added to `types/kinds.go`. Unified through `unify.go`, `subtype.go`, `subst.go`, `poly.go`, and `resolve.go` following the same pattern as `ChanType`.
+
+**Parser keyword fix.** `stream` and `emit` are hard keywords in the Mochi lexer (used by the agent DSL). To support `stream<T>` as a type annotation, a `StreamElem *TypeRef` field was added to `TypeRef` with parser rule `'stream' '<' @@ '>'`, parsed before the generic `@Ident '<'` branch. For the `emit(s, v)` builtin, an `EmitCallStmt` AST node was added to `Statement` with rule `'emit' '(' @@ ',' @@ ')'`, dispatched from `lowerStatement` and `checkStmt`.
+
+**make_stream / subscribe / recv_sub builtins.** Declared in `types/check.go`:
+- `make_stream(cap: int): stream<any>` with `StreamType{Elem: AnyType{}}` return.
+- `emit(stream<T>, T): unit` (keyword form, dispatched via EmitCallStmt).
+- `subscribe: <T>(stream<T>) -> sub<T>` returns a subscriber handle.
+- `recv_sub: <T>(sub<T>) -> T` reads next value; yields if none available.
+
+**IR nodes.** `StreamMakeExpr`, `StreamEmitStmt`, `SubMakeExpr`, `SubRecvExpr` added to `transpiler3/c/aotir/program.go`. `StreamElemType` and `SubElemType` fields on `VarRef` and `LetStmt` carry element types.
+
+**Cooperative blocking.** `mochi__sub_pop` in `stream.h` spins calling `mochi_fiber_yield()` when `sub->seen >= s->count`. `mochi__stream_push` never blocks (lossy overwrite when ring is full).
+
+**C runtime.** `transpiler3/c/runtime/include/mochi/stream.h` (new) and `src/stream.c` (new). `mochi_stream_t` holds a void* ring with `cap`, `tail`, `count`. `mochi_sub_t` holds a pointer to the stream and a `seen` cursor. Typed wrappers follow the same int/float/bool/string encoding as chan.h.
+
+**Gate:** `TestPhase9Stream` (5 fixtures: stream_basic, stream_float, stream_bool, stream_string, stream_multi_sub).
+
 ## Deferred work
 
 - CPU preemption (Go-style signal preemption): v2.
-- Phase 9.2 stream<T> MPMC broadcast.
 - Phase 9.3 agent records.
 - Phase 9.4 graceful shutdown.
 

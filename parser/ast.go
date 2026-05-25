@@ -33,6 +33,7 @@ type Statement struct {
 	Rule         *RuleStmt         `json:"rule,omitempty" parser:"| @@"`
 	On           *OnHandler        `json:"on,omitempty" parser:"| @@"`
 	Emit         *EmitStmt         `json:"emit,omitempty" parser:"| @@"`
+	EmitCall     *EmitCallStmt     `json:"emit_call,omitempty" parser:"| @@"`
 	Let          *LetStmt          `json:"let,omitempty" parser:"| @@"`
 	Var          *VarStmt          `json:"var,omitempty" parser:"| @@"`
 	Assign       *AssignStmt       `json:"assign,omitempty" parser:"| @@"`
@@ -163,12 +164,13 @@ type TypeField struct {
 // --- Type System ---
 
 type TypeRef struct {
-	Pos      lexer.Position    `json:"pos,omitempty" parser:""`
-	Fun      *FunType          `json:"fun,omitempty" parser:"( @@"`
-	Generic  *GenericType      `json:"generic,omitempty" parser:"| @@"`
-	Struct   *InlineStructType `json:"struct,omitempty" parser:"| @@"`
-	ListElem *TypeRef          `json:"list_elem,omitempty" parser:"| '[' @@ ']'"`
-	Simple   *string           `json:"simple,omitempty" parser:"| @Ident )"`
+	Pos        lexer.Position    `json:"pos,omitempty" parser:""`
+	Fun        *FunType          `json:"fun,omitempty" parser:"( @@"`
+	StreamElem *TypeRef          `json:"stream_elem,omitempty" parser:"| 'stream' '<' @@ '>'"`
+	Generic    *GenericType      `json:"generic,omitempty" parser:"| @@"`
+	Struct     *InlineStructType `json:"struct,omitempty" parser:"| @@"`
+	ListElem   *TypeRef          `json:"list_elem,omitempty" parser:"| '[' @@ ']'"`
+	Simple     *string           `json:"simple,omitempty" parser:"| @Ident )"`
 	// MEP-10 C1: a trailing `?` denotes an optional (nullable) type.
 	// `int?` desugars to `option[int]` in resolveTypeRef.
 	Optional bool `json:"optional,omitempty" parser:"[ @'?' ]"`
@@ -642,6 +644,15 @@ type EmitStmt struct {
 	Pos    lexer.Position    `json:"pos,omitempty" parser:""`
 	Stream string            `json:"stream,omitempty" parser:"'emit' @Ident"`
 	Fields []*StructLitField `json:"fields,omitempty" parser:"'{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
+}
+
+// EmitCallStmt is the Phase 9.2 builtin form `emit(stream, value)`.
+// It uses the 'emit' keyword followed by parenthesised arguments to
+// distinguish it from the agent-DSL EmitStmt which uses a struct literal.
+type EmitCallStmt struct {
+	Pos    lexer.Position `json:"pos,omitempty" parser:""`
+	Stream *Expr          `json:"stream,omitempty" parser:"'emit' '(' @@"`
+	Val    *Expr          `json:"val,omitempty" parser:"',' @@ ')'"`
 }
 
 // --- Agent DSL ---

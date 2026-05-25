@@ -36,6 +36,8 @@ const (
 	TypeUnion  // struct pkg_<S> with uint8_t tag + union; identity carried as UnionName beside the Type
 	TypeFun    // function pointer; signature carried as FunSig beside the Type (Phase 5.0)
 	TypeChan   // mochi_chan_t *; element type carried as ChanElemType beside the Type (Phase 9.1)
+	TypeStream // mochi_stream_t *; element type carried as StreamElemType beside the Type (Phase 9.2)
+	TypeSub    // mochi_sub_t *; element type carried as SubElemType beside the Type (Phase 9.2)
 )
 
 // String returns a stable identifier for the type, used in
@@ -66,6 +68,10 @@ func (t Type) String() string {
 		return "fun"
 	case TypeChan:
 		return "chan"
+	case TypeStream:
+		return "stream"
+	case TypeSub:
+		return "sub"
 	default:
 		return "invalid"
 	}
