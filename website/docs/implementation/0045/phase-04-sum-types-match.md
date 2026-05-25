@@ -29,8 +29,8 @@ Sum types and pattern matching are core to idiomatic Mochi. Without them the tra
 | #   | Scope | Status | Commit | PR |
 |-----|-------|--------|--------|----|
 | 4.0 | Sum-type lowering: `TypeUnion` aotir type; `struct pkg_S { uint8_t tag; union { ... } u; }` C representation with inline variant constructors; `VariantLit`, `UnionVarRef`, `VariantFieldAccess`, `MatchStmt` IR nodes in `aotir/program.go`; verifier, lower, emit passes updated; match-as-expression (result-var pre-declaration with nil Init, assignment in arms) + match-as-statement (unit-returning print/call in arms); `CallExpr.ResultUnionName` added to propagate union identity through function return bindings; `TestPhase4SumTypes` gate (14 fixtures). Scalar primitive variant fields only (int, float, bool, string). Unit variants supported. | LANDED 2026-05-25 15:48 (GMT+7) | — | — |
-| 4.1 | Maranget decision-tree pass: `transpiler3/c/lower/match.go` lowers `match e { ... }` to chained `switch`/`if` tree | NOT STARTED | — | — |
-| 4.2 | Exhaustiveness check at type-check time (already in MEP-13); panic on non-exhaustive in `--debug`, UB in `--fast` | NOT STARTED | — | — |
+| 4.1 | Maranget decision-tree pass: `transpiler3/c/lower/match.go` canonicalizes `MatchStmt` arms (unique-tag validation, ascending-tag sort); for single-column patterns the pass confirms the already-optimal `switch(tag)` structure; `TestPhase4Maranget` gate reuses the 14 Phase 4.0 sum-type fixtures | LANDED 2026-05-25 21:08 (GMT+7) | — | — |
+| 4.2 | Exhaustiveness check at type-check time: enforced by shared type checker (error T050) before lower; defense-in-depth `default: mochi_panic_index()` in emitted C switch | LANDED 2026-05-25 20:59 (GMT+7) | — | — |
 | 4.3 | Property test: `theft`-generated random pattern set decides identically to reference naive matcher (10000 cases per CI run) | NOT STARTED | — | — |
 
 ## Decisions made
@@ -79,6 +79,18 @@ static inline pkg_S pkg_S_B(const char * y) {
 - `exprUnionName(CallExpr)`: previously returned `""` for all `CallExpr` nodes. Added `ResultUnionName` field to `CallExpr` so functions returning union types propagate identity into `let` bindings.
 - `emitMatchStmt`: previously used a flat `const pkg_S __mochi_match_S = ...` declaration, which collides when two `match` statements on the same union appear in the same C scope. Fixed by wrapping each match in `{}`.
 - `lowerMatchBodyWithScope` (statement-position arms): previously tried to lower `print(v)` as an expression via `lowerExpr`, which rejected it (`print() returns unit`). Fixed by routing through `lowerExprStmt` when `resultVar == ""`.
+
+## Phase 4.1: Maranget pass decisions
+
+**Goal alignment.** The user-facing goal is correct, deterministic code generation for `match` expressions. For Mochi's current single-column pattern language (one tag per `match`), the Maranget (2008) optimal decision tree is trivially `switch(tag)` — already produced by `emitMatchStmt`. Phase 4.1 adds the validation and canonicalization layer so arm ordering is deterministic regardless of source order.
+
+**Why sort by ascending tag.** The variant tag is the `uint8_t` field emitted as `case N:` in C. Sorting arms ascending puts lower tags first, matching source-declaration order (tags are assigned by the lowerer in declaration order). This makes the emitted switch easier to read and gives the C compiler + branch predictor a clean, predictable sequence.
+
+**Duplicate-tag detection.** `canonicalizeMatchStmt` validates that no two arms share the same tag. This catches lowerer bugs early (a duplicate tag would produce unreachable `case N:` code in C). The type checker already rejects duplicate variants at the source level, so this is defense-in-depth for the IR layer.
+
+**No new IR nodes.** Phase 4.1 keeps `MatchStmt` as the representation after the pass. The emitter continues to handle `MatchStmt` directly. A future multi-column pattern extension would introduce `SwitchOnTagStmt` / `CaseStmt` IR nodes if the emitter became too complex; for now the single-pass approach is simpler.
+
+**Gate.** `TestPhase4Maranget` in `build/phase04_1_test.go` runs `runFixtureSuite(t, "sum_types")` — the same 14 fixtures as Phase 4.0. All 14 pass byte-equal after the Maranget pass is wired in, confirming the pass is a correct no-op for well-formed programs.
 
 ## Deferred work
 
