@@ -48,6 +48,7 @@ const config = {
           editUrl: 'https://github.com/mochilang/mochi/tree/main/website/',
           breadcrumbs: true,
           showLastUpdateTime: false,
+          remarkPlugins: [require('./scripts/remark-mochi-links')],
         },
         blog: false,
         theme: {
@@ -107,6 +108,12 @@ const config = {
           },
           {
             type: 'docSidebar',
+            sidebarId: 'researchSidebar',
+            position: 'left',
+            label: 'Research',
+          },
+          {
+            type: 'docSidebar',
             sidebarId: 'implementationSidebar',
             position: 'left',
             label: 'Implementation',
@@ -117,7 +124,8 @@ const config = {
             position: 'left',
           },
           {
-            to: '/docs/changelog',
+            type: 'docSidebar',
+            sidebarId: 'changelogSidebar',
             label: 'Changelog',
             position: 'left',
           },

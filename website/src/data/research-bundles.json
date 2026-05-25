@@ -1,0 +1,786 @@
+[
+  {
+    "number": 45,
+    "title": "MEP-45 research notes",
+    "slug": "/docs/research/0045/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0045/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "MEP-45 research note 01, Mochi language surface",
+        "docId": "research/0045/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "MEP-45 research note 02, Design philosophy",
+        "docId": "research/0045/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "MEP-45 research note 03, Prior art: language → C compilation (2024–2026)",
+        "docId": "research/0045/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "MEP-45 research note 04, Runtime building blocks",
+        "docId": "research/0045/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "MEP-45 research note 05, Codegen design",
+        "docId": "research/0045/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "MEP-45 research note 06, Type-system lowering details",
+        "docId": "research/0045/type-lowering"
+      },
+      {
+        "stem": "07-c-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "MEP-45 research note 07, The C target and portability",
+        "docId": "research/0045/c-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "MEP-45 research note 08, Dataset pipeline lowering",
+        "docId": "research/0045/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "MEP-45 research note 09, Streams and agents",
+        "docId": "research/0045/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "MEP-45 research note 10, Build system",
+        "docId": "research/0045/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "MEP-45 research note 11, Testing and CI gates",
+        "docId": "research/0045/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "MEP-45 research note 12, Risks and alternatives",
+        "docId": "research/0045/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 46,
+    "title": "MEP-46 research notes",
+    "slug": "/docs/research/0046/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0046/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "MEP-46 research note 01, Mochi language surface (Erlang/BEAM target)",
+        "docId": "research/0046/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "MEP-46 research note 02, Design philosophy",
+        "docId": "research/0046/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "MEP-46 research note 03, Prior art: languages targeting BEAM (2014-2026)",
+        "docId": "research/0046/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "MEP-46 research note 04, Erlang/OTP runtime services for libmochi_erl",
+        "docId": "research/0046/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "MEP-46 research note 05, Codegen design: choosing an IR layer for Mochi → BEAM",
+        "docId": "research/0046/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "MEP-46 research note 06, Lowering Mochi's static type system onto BEAM terms",
+        "docId": "research/0046/type-lowering"
+      },
+      {
+        "stem": "07-erlang-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "MEP-46 research note 07, BEAM target portability and OTP version matrix",
+        "docId": "research/0046/erlang-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "MEP-46 research note 08, Mochi query DSL and dataset pipeline on BEAM",
+        "docId": "research/0046/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "MEP-46 research note 09, Agents and streams on OTP",
+        "docId": "research/0046/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "MEP-46 research note 10, Build system: rebar3, mix, escript, releases",
+        "docId": "research/0046/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "MEP-46 research note 11, Testing strategy and gates for MEP-46",
+        "docId": "research/0046/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "MEP-46 research note 12, Risks and alternatives",
+        "docId": "research/0046/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 47,
+    "title": "MEP-47 research notes",
+    "slug": "/docs/research/0047/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0047/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "MEP-47 research note 01, Mochi language surface (JVM target)",
+        "docId": "research/0047/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "MEP-47 research note 02, Design philosophy",
+        "docId": "research/0047/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "MEP-47 research note 03, Prior art: languages targeting JVM + AOT toolchains + Android (2014-2026)",
+        "docId": "research/0047/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "MEP-47 research note 04, JVM runtime building blocks for libmochi_jvm",
+        "docId": "research/0047/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "MEP-47 research note 05, Codegen design: choosing an IR layer for Mochi → JVM",
+        "docId": "research/0047/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "MEP-47 research note 06, Lowering Mochi's static type system onto JVM types",
+        "docId": "research/0047/type-lowering"
+      },
+      {
+        "stem": "07-jvm-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "MEP-47 research note 07, JVM target portability and version matrix",
+        "docId": "research/0047/jvm-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "MEP-47 research note 08, Mochi query DSL and dataset pipeline on JVM",
+        "docId": "research/0047/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "MEP-47 research note 09, Agents and streams on JVM via Project Loom virtual threads",
+        "docId": "research/0047/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "MEP-47 research note 10, Build system: Gradle, Maven, jlink, jpackage, native-image",
+        "docId": "research/0047/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "MEP-47 research note 11, Testing strategy and gates for MEP-47",
+        "docId": "research/0047/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "MEP-47 research note 12, Risks and alternatives for the JVM target",
+        "docId": "research/0047/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 48,
+    "title": "MEP-48 research notes",
+    "slug": "/docs/research/0048/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0048/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "MEP-48 research note 01, Mochi language surface (.NET target)",
+        "docId": "research/0048/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "MEP-48 research note 02, Design philosophy",
+        "docId": "research/0048/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "MEP-48 research note 03, Prior art on .NET languages and toolchains",
+        "docId": "research/0048/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "MEP-48 research note 04, .NET runtime building blocks",
+        "docId": "research/0048/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "MEP-48 research note 05, Codegen design and IR layer choice",
+        "docId": "research/0048/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "MEP-48 research note 06, Type-system lowering",
+        "docId": "research/0048/type-lowering"
+      },
+      {
+        "stem": "07-dotnet-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "MEP-48 research note 07, .NET target portability matrix",
+        "docId": "research/0048/dotnet-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "MEP-48 research note 08, Dataset pipeline lowering",
+        "docId": "research/0048/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "MEP-48 research note 09, Agents and streams on .NET",
+        "docId": "research/0048/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "MEP-48 research note 10, Build system",
+        "docId": "research/0048/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "MEP-48 research note 11, Testing strategy and gates for MEP-48",
+        "docId": "research/0048/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "MEP-48 research note 12, Risks and alternatives for the .NET target",
+        "docId": "research/0048/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 49,
+    "title": "MEP-49 research notes",
+    "slug": "/docs/research/0049/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0049/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "MEP-49 research note 01, Mochi language surface (Swift target)",
+        "docId": "research/0049/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "MEP-49 research note 02, Design philosophy",
+        "docId": "research/0049/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "MEP-49 research note 03, Prior art: transpiling to Swift, compiling to Apple platforms, source-to-source on Swift (2014-2026)",
+        "docId": "research/0049/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "MEP-49 research note 04, Swift runtime building blocks for MochiRuntime",
+        "docId": "research/0049/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "MEP-49 research note 05, Codegen design: choosing an IR layer for Mochi to Swift",
+        "docId": "research/0049/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "MEP-49 research note 06, Type-system lowering for MEP-49",
+        "docId": "research/0049/type-lowering"
+      },
+      {
+        "stem": "07-swift-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "MEP-49 research note 07, Swift target portability and version matrix",
+        "docId": "research/0049/swift-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "MEP-49 research note 08, Mochi query DSL and dataset pipeline on Swift",
+        "docId": "research/0049/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "MEP-49 research note 09, Agents and streams on Swift 6.0 via actors and AsyncStream",
+        "docId": "research/0049/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "MEP-49 research note 10, Build system: SwiftPM, Xcode, xcodebuild, notarization",
+        "docId": "research/0049/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "MEP-49 research note 11, Testing strategy and gates for MEP-49",
+        "docId": "research/0049/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "MEP-49 research note 12, Risks and alternatives for MEP-49",
+        "docId": "research/0049/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 50,
+    "title": "MEP-50 research bundle: Mochi to Kotlin transpiler",
+    "slug": "/docs/research/0050/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "MEP-50",
+        "docId": "research/0050/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "MEP-50 research note 01, Mochi language surface (Kotlin target)",
+        "docId": "research/0050/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "MEP-50 research note 02, Design philosophy",
+        "docId": "research/0050/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "MEP-50 research note 03, Prior art and source-to-Kotlin transpilers",
+        "docId": "research/0050/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "MEP-50 research note 04, Kotlin runtime building blocks for MochiRuntime",
+        "docId": "research/0050/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "MEP-50 research note 05, Codegen design: choosing an IR layer for Mochi to Kotlin",
+        "docId": "research/0050/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "MEP-50 research note 06, Per-type Kotlin lowering",
+        "docId": "research/0050/type-lowering"
+      },
+      {
+        "stem": "07-kotlin-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "MEP-50 research note 07, Kotlin target portability and KMP matrix",
+        "docId": "research/0050/kotlin-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "MEP-50 research note 08, Mochi query DSL and dataset pipeline on Kotlin",
+        "docId": "research/0050/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "MEP-50 research note 09, Agents and streams (Kotlin coroutines)",
+        "docId": "research/0050/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "MEP-50 research note 10, Build system: Gradle, KGP, AGP, KMP",
+        "docId": "research/0050/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "MEP-50 research note 11, Testing strategy and gates for MEP-50",
+        "docId": "research/0050/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "MEP-50 research note 12, Risks and alternatives for MEP-50",
+        "docId": "research/0050/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 51,
+    "title": "MEP-51 research bundle: Mochi to Python transpiler",
+    "slug": "/docs/research/0051/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "MEP-51",
+        "docId": "research/0051/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "MEP-51 research note 01, Mochi language surface (Python target)",
+        "docId": "research/0051/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "MEP-51 research note 02, Design philosophy",
+        "docId": "research/0051/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "MEP-51 research note 03, Prior art and source-to-Python transpilers",
+        "docId": "research/0051/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "MEP-51 research note 04, Python runtime building blocks for mochi_runtime",
+        "docId": "research/0051/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "MEP-51 research note 05, Codegen design from aotir IR to Python source",
+        "docId": "research/0051/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "MEP-51 research note 06, Per-type lowering for Mochi to Python 3.12",
+        "docId": "research/0051/type-lowering"
+      },
+      {
+        "stem": "07-python-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "MEP-51 research note 07, Python target portability matrix",
+        "docId": "research/0051/python-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "MEP-51 research note 08, Dataset and query pipeline (Python lowering)",
+        "docId": "research/0051/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "MEP-51 research note 09, Agents and streams (asyncio lowering)",
+        "docId": "research/0051/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "MEP-51 build system: pyproject.toml, hatchling, uv, PyPI Trusted Publishing",
+        "docId": "research/0051/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "MEP-51 testing gates: per-phase fixtures, vm3 byte-equal, mypy + pyright strict, reproducibility",
+        "docId": "research/0051/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "MEP-51 risks and rejected alternatives",
+        "docId": "research/0051/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 52,
+    "title": "MEP-52 research bundle: Mochi to TypeScript / JavaScript transpiler",
+    "slug": "/docs/research/0052/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "MEP-52",
+        "docId": "research/0052/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "Language surface: Mochi onto TypeScript 5.6 / ES2024",
+        "docId": "research/0052/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "Design philosophy: why TypeScript, why ES2024 floor, why tsc --strict + --noUncheckedIndexedAccess dual gates, why AsyncIterableQueue + AbortController, why npm canonical with four-runtime conditional exports",
+        "docId": "research/0052/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "MEP-52 research note 03, Prior art and source-to-TypeScript/JavaScript tooling",
+        "docId": "research/0052/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "MEP-52 research note 04, The mochi_runtime npm package",
+        "docId": "research/0052/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "Codegen design: aotir to TypeScript AST via Mochi-side syntax tree printer, monomorphisation, closure conversion, match-to-switch-tag, source maps",
+        "docId": "research/0052/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "Type lowering: per-Mochi-type details onto TypeScript 5.6",
+        "docId": "research/0052/type-lowering"
+      },
+      {
+        "stem": "07-runtime-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "MEP-52 research note 07, Runtime portability: Node x Deno x Bun x Browser",
+        "docId": "research/0052/runtime-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "MEP-52 research note 08, Dataset and query pipeline (TS / JS lowering)",
+        "docId": "research/0052/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "Agents and streams: AsyncIterableQueue + AbortController, AsyncIterable streams, cold/hot patterns, structured concurrency without TaskGroup",
+        "docId": "research/0052/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "Build system: package.json + tsc + npm publish, four-runtime conditional exports, JSR for Deno, esbuild for browser, npm Trusted Publishing (Sigstore + provenance)",
+        "docId": "research/0052/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "Testing gates: per-phase Go test gates, four-runtime matrix (Node 22 / Deno 2 / Bun 1.1 / browser via Playwright), tsc --strict + --noUncheckedIndexedAccess + --exactOptionalPropertyTypes, eslint + prettier fixed-point, npm pack + install + execute, ~400-fixture corpus by Phase 18",
+        "docId": "research/0052/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "Risks and alternatives: 15 risks + 6 rejected alternatives (Babel, esbuild-only, JSDoc-only, Webpack, Rollup, RxJS) + 4 future candidates (WASM via WASI, ts-blank-space for zero-build, Bun-native compile, Cloudflare Workers)",
+        "docId": "research/0052/risks-and-alternatives"
+      }
+    ]
+  }
+]
