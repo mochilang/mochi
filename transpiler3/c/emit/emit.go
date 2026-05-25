@@ -41,6 +41,7 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include <string.h>\n")
 	b.WriteString("#include \"mochi/print.h\"\n")
 	b.WriteString("#include \"mochi/errors.h\"\n")
+	b.WriteString("#include \"mochi/arena.h\"\n")
 	b.WriteString("#include \"mochi/list.h\"\n")
 	b.WriteString("#include \"mochi/map.h\"\n")
 	b.WriteString("#include \"mochi/strings.h\"\n")
@@ -569,6 +570,8 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		}
 		fmt.Fprintf(b, "%smochi_append_file(%s, %s);\n", indent, path, content)
 		return nil
+	case *aotir.QueryScopeStmt:
+		return emitQueryScopeStmt(b, s, indent)
 	}
 	return fmt.Errorf("transpiler3/c/emit: unhandled Stmt %T", st)
 }
@@ -1014,6 +1017,12 @@ func walkStmtListOfMap(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 	case *aotir.AppendFileStmt:
 		walkExprListOfMap(s.Path, add)
 		walkExprListOfMap(s.Content, add)
+	case *aotir.QueryScopeStmt:
+		if s.Body != nil {
+			for _, inner := range s.Body.Statements {
+				walkStmtListOfMap(inner, add)
+			}
+		}
 	}
 }
 
@@ -1306,6 +1315,12 @@ func walkStmtExprVisit(st aotir.Stmt, visit func(aotir.Expr)) {
 	case *aotir.AppendFileStmt:
 		walkExprNodeVisit(s.Path, visit)
 		walkExprNodeVisit(s.Content, visit)
+	case *aotir.QueryScopeStmt:
+		if s.Body != nil {
+			for _, inner := range s.Body.Statements {
+				walkStmtExprVisit(inner, visit)
+			}
+		}
 	}
 }
 
@@ -1505,6 +1520,12 @@ func walkStmtMapOfList(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 	case *aotir.AppendFileStmt:
 		walkExprMapOfList(s.Path, add)
 		walkExprMapOfList(s.Content, add)
+	case *aotir.QueryScopeStmt:
+		if s.Body != nil {
+			for _, inner := range s.Body.Statements {
+				walkStmtMapOfList(inner, add)
+			}
+		}
 	}
 }
 
@@ -1810,6 +1831,13 @@ func walkStmtInner(st aotir.Stmt, visit func(aotir.Type, aotir.Type)) {
 	case *aotir.AppendFileStmt:
 		walkExprInner(s.Path, visit)
 		walkExprInner(s.Content, visit)
+	case *aotir.QueryScopeStmt:
+		visit(s.ElemType, s.InnerElemType)
+		if s.Body != nil {
+			for _, inner := range s.Body.Statements {
+				walkStmtInner(inner, visit)
+			}
+		}
 	}
 }
 
@@ -2032,6 +2060,13 @@ func walkStmt(st aotir.Stmt, visit func(aotir.Type, string)) {
 	case *aotir.AppendFileStmt:
 		walkExpr(s.Path, visit)
 		walkExpr(s.Content, visit)
+	case *aotir.QueryScopeStmt:
+		visit(s.ElemType, s.ElemRecordName)
+		if s.Body != nil {
+			for _, inner := range s.Body.Statements {
+				walkStmt(inner, visit)
+			}
+		}
 	}
 }
 
@@ -2977,6 +3012,144 @@ func emitVariantFieldAccess(v *aotir.VariantFieldAccess) (string, error) {
 		return "", err
 	}
 	return fmt.Sprintf("(%s).u.%s.%s", recv, v.VariantName, v.FieldName), nil
+}
+
+// emitQueryScopeStmt emits the Phase 8.3 arena-scoped query pipeline.
+//
+// The result variable (s.ResultVar) is declared OUTSIDE this scope (by the
+// LetStmt the lowerer emits before the QueryScopeStmt). The emitter:
+//  1. Opens a {} block and declares a mochi_arena_t on the C stack.
+//  2. Emits s.Body with arena-append rewriting: AssignStmt{Name==ResultVar,
+//     Value==AppendExpr} becomes mochi_list_<T>_append_arena(..., &arena).
+//  3. Copies the surviving result list to the heap via mochi_list_<T>_copy_heap.
+//  4. Frees the arena.
+func emitQueryScopeStmt(b *strings.Builder, s *aotir.QueryScopeStmt, indent string) error {
+	suf, err := listSuffix(s.ElemType, s.ElemRecordName, s.InnerElemType, s.MapElemKeyType, s.MapElemValueType)
+	if err != nil {
+		return fmt.Errorf("query scope: %w", err)
+	}
+	inner := indent + "    "
+
+	fmt.Fprintf(b, "%s{\n", indent)
+	fmt.Fprintf(b, "%smochi_arena_t %s;\n", inner, s.ArenaVar)
+	fmt.Fprintf(b, "%smochi_arena_init(&%s, MOCHI_ARENA_DEFAULT_CHUNK);\n", inner, s.ArenaVar)
+
+	// Emit the body with arena-append rewriting.
+	if err := emitQueryScopeBlock(b, s.Body, inner, s.ResultVar, suf, s.ArenaVar); err != nil {
+		return fmt.Errorf("query scope body: %w", err)
+	}
+
+	// Copy surviving result to heap and free the arena.
+	fmt.Fprintf(b, "%s%s = mochi_list_%s_copy_heap(%s);\n", inner, s.ResultVar, suf, s.ResultVar)
+	fmt.Fprintf(b, "%smochi_arena_free(&%s);\n", inner, s.ArenaVar)
+	fmt.Fprintf(b, "%s}\n", indent)
+	return nil
+}
+
+// emitQueryScopeBlock emits a block inside an arena scope. AssignStmt nodes
+// whose value is an AppendExpr targeting resultVar are rewritten to use the
+// arena-backed append variant. All other statements are emitted normally.
+func emitQueryScopeBlock(b *strings.Builder, blk *aotir.Block, indent, resultVar, listSuf, arenaVar string) error {
+	if blk == nil {
+		return nil
+	}
+	for _, st := range blk.Statements {
+		if err := emitQueryScopeStmtNode(b, st, indent, resultVar, listSuf, arenaVar); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// emitQueryScopeStmtNode handles a single statement inside the arena scope.
+func emitQueryScopeStmtNode(b *strings.Builder, st aotir.Stmt, indent, resultVar, listSuf, arenaVar string) error {
+	// Rewrite: RESULT = mochi_list_<T>_append(RESULT, val)
+	//       -> RESULT = mochi_list_<T>_append_arena(RESULT, val, &ARENA)
+	if as, ok := st.(*aotir.AssignStmt); ok && as.Name == resultVar {
+		if ap, ok2 := as.Value.(*aotir.AppendExpr); ok2 {
+			val, err := emitExpr(ap.Value)
+			if err != nil {
+				return fmt.Errorf("arena append value: %w", err)
+			}
+			fmt.Fprintf(b, "%s%s = mochi_list_%s_append_arena(%s, %s, &%s);\n",
+				indent, resultVar, listSuf, resultVar, val, arenaVar)
+			return nil
+		}
+	}
+	// For all other stmts, recurse into nested blocks with arena rewriting,
+	// or fall through to normal emit for leaf stmts.
+	switch s := st.(type) {
+	case *aotir.IfStmt:
+		cond, err := emitExpr(s.Cond)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(b, "%sif (%s) {\n", indent, cond)
+		if err := emitQueryScopeBlock(b, s.Then, indent+"    ", resultVar, listSuf, arenaVar); err != nil {
+			return err
+		}
+		if s.Else != nil {
+			fmt.Fprintf(b, "%s} else {\n", indent)
+			if err := emitQueryScopeBlock(b, s.Else, indent+"    ", resultVar, listSuf, arenaVar); err != nil {
+				return err
+			}
+		}
+		fmt.Fprintf(b, "%s}\n", indent)
+		return nil
+	case *aotir.ForEachStmt:
+		// Re-use the normal foreach emitter but with arena-scoped inner body.
+		listExpr, err := emitExpr(s.List)
+		if err != nil {
+			return err
+		}
+		var elemC string
+		switch s.ElemType {
+		case aotir.TypeList:
+			innerSuf, err := scalarListInnerSuffix(s.InnerElemType)
+			if err != nil {
+				return fmt.Errorf("arena foreach %q: %w", s.Var, err)
+			}
+			elemC = "mochi_list_" + innerSuf
+		case aotir.TypeMap:
+			mapSuf2, err := mapSuffix(s.MapElemKeyType, s.MapElemValueType, aotir.TypeInvalid)
+			if err != nil {
+				return fmt.Errorf("arena foreach %q: %w", s.Var, err)
+			}
+			elemC = "mochi_map_" + mapSuf2
+		default:
+			ec, err := cTypeFull(s.ElemType, s.ElemRecordName, aotir.TypeInvalid, "", aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid)
+			if err != nil {
+				return fmt.Errorf("arena foreach %q: %w", s.Var, err)
+			}
+			elemC = ec
+		}
+		outerSuf, err := listSuffix(s.ElemType, s.ElemRecordName, s.InnerElemType, s.MapElemKeyType, s.MapElemValueType)
+		if err != nil {
+			return fmt.Errorf("arena foreach %q: %w", s.Var, err)
+		}
+		sentinel := "__mochi_list_" + s.Var
+		fmt.Fprintf(b, "%s{\n", indent)
+		fmt.Fprintf(b, "%s    const mochi_list_%s %s = %s;\n", indent, outerSuf, sentinel, listExpr)
+		fmt.Fprintf(b, "%s    const int64_t __mochi_len_%s = mochi_list_%s_len(%s);\n", indent, s.Var, outerSuf, sentinel)
+		fmt.Fprintf(b, "%s    for (int64_t __mochi_i_%s = 0; __mochi_i_%s < __mochi_len_%s; __mochi_i_%s++) {\n",
+			indent, s.Var, s.Var, s.Var, s.Var)
+		fmt.Fprintf(b, "%s        const %s %s = mochi_list_%s_index(%s, __mochi_i_%s);\n",
+			indent, elemC, s.Var, outerSuf, sentinel, s.Var)
+		if err := emitQueryScopeBlock(b, s.Body, indent+"        ", resultVar, listSuf, arenaVar); err != nil {
+			return err
+		}
+		fmt.Fprintf(b, "%s    }\n", indent)
+		fmt.Fprintf(b, "%s}\n", indent)
+		return nil
+	case *aotir.LetStmt:
+		// Sentinel-variable declarations (e.g., __anyN for left-join) inside the query scope.
+		return emitStmt(b, s, indent)
+	case *aotir.AssignStmt:
+		// Non-append assigns (sort, slice, __anyN = true, etc.)
+		return emitStmt(b, s, indent)
+	}
+	// Fall through to normal emit for all other statements.
+	return emitStmt(b, st, indent)
 }
 
 // emitMatchStmt renders a Mochi `match` as a C `switch` on the tag.

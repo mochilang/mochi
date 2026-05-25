@@ -31,7 +31,7 @@ Query DSL (`from x in xs where cond select expr`) is the highest-value language 
 | 8.0 | Query algebra lowering: `from x in src [where cond] select expr` desugars to a for-loop + append inside the lower pass. `lowerQueryExpr` mirrors `lowerMatchExpr` (emits into `l.currentBlock`, returns a `VarRef` to a fresh temp list). No new IR node needed. 8 fixtures under `tests/transpiler3/c/fixtures/query/`. `TestPhase8QueryDSL` gate green. | LANDED 2026-05-25 17:16 (GMT+7) | — | — |
 | 8.1 | `order by` (sort_asc), `skip N` (list_slice start), `take N` (list_slice end): `ListSortAscExpr` + `ListSliceExpr` IR nodes; emit as `mochi_list_<T>_sort_asc` and `mochi_list_<T>_slice`; 8 fixtures; `TestPhase8QueryDSL` gate extended. | LANDED 2026-05-25 17:40 (GMT+7) | — | — |
 | 8.2 | Joins: inner join (`join y in ys on cond`), left join (`left join y in ys on cond`), cross join (`from y in ys`): all three desugar to nested `ForEachStmt` nodes in `lowerQueryExpr`; no new IR nodes needed; 8 fixtures; `TestPhase8QueryJoins` gate green. | LANDED 2026-05-25 19:41 (GMT+7) | — | — |
-| 8.3 | Arena allocation: intermediates live in `mochi_arena` released at query boundary; surviving result copied to GC | NOT STARTED | — | — |
+| 8.3 | Arena allocation: `mochi_arena_t` bump allocator in `runtime/arena.{h,c}`; `mochi_list_<T>_append_arena` + `mochi_list_<T>_copy_heap` per scalar type; `QueryScopeStmt` aotir node; lowerer wraps query loop in `QueryScopeStmt`; emitter rewrites appends to arena variant + copies result to heap on scope exit; `TestPhase8Arena` gate (8 fixtures) | LANDED 2026-05-25 21:31 (GMT+7) | — | — |
 | 8.4 | `load`/`save` adapters: JSON (yyjson), YAML (libfyaml), CSV (home-grown) | NOT STARTED | — | — |
 
 ## Decisions made
@@ -60,6 +60,22 @@ Query DSL (`from x in xs where cond select expr`) is the highest-value language 
 
 **Phase 8.0 restricts to single-source, scalar-element queries.** Multiple `from` clauses (cross-join), `join`, `group by`, `order by`, `distinct`, `skip`, `take` all return a clear "lands in Phase 8.N" error. The select expression can produce int, float, bool, or string elements; record or list elements are Phase 8.1+.
 
+## Phase 8.3: Arena allocation decisions
+
+**Goal alignment.** The user-facing goal is a fast, memory-safe query DSL. Phase 8.3 eliminates per-element `malloc` calls during query iteration by redirecting list growth through a bump allocator. Each query invocation stack-allocates a `mochi_arena_t`; `append_arena` calls use the bump allocator instead of `malloc`; at the end the result is copied to heap and the arena is freed in bulk. This reduces allocation overhead from O(N) separate `malloc`/`free` pairs to O(log N) chunk allocations.
+
+**`mochi_arena_t` design.** Linked list of fixed-size chunks (default 64 KB). `mochi_arena_alloc(a, size)` bumps a cursor inside the current chunk; overflow allocates a new chunk and prepends it to the list. `mochi_arena_free(a)` walks the list and frees all chunks. Alignment is 8 bytes (MOCHI_ARENA_ALIGN). Thread safety: not needed since each query uses a stack-local arena and queries are not concurrent in Phase 8.
+
+**`append_arena` vs heap `append`.** The existing `mochi_list_<T>_append` always allocates a fresh buffer with `malloc`. The arena variant `mochi_list_<T>_append_arena(xs, v, arena)` instead doubles the capacity from the arena when growth is needed, leaving the old arena allocation as dead space (the arena will free it in bulk). This is safe because old dead space is inside a chunk that will be freed at `mochi_arena_free` time.
+
+**`QueryScopeStmt` IR node.** The lowerer emits `QueryScopeStmt` instead of appending the `ForEachStmt` directly to `l.currentBlock`. The `QueryScopeStmt.Body` holds the `ForEachStmt` and any sort/slice steps. The `LetStmt` for the temp list stays in `l.currentBlock` (outside `QueryScopeStmt`) so the variable is accessible after the scope.
+
+**Emitter rewriting.** `emitQueryScopeStmt` calls `emitQueryScopeBlock` which recursively walks the body. When it encounters `AssignStmt{Name==ResultVar, Value==AppendExpr}`, it emits the `_append_arena` variant; all other statements are handled normally (including nested `IfStmt` and `ForEachStmt` for join conditions). After the body, the emitter copies the result to heap and frees the arena.
+
+**String result lists.** For `list<string>` results the `const char*` pointer array is arena-backed; the string values themselves stay on heap (produced by `mochi_str_*` functions that always `malloc`). The `copy_heap` step copies only the pointer array, not the strings. This is correct and safe.
+
+**Gate.** `TestPhase8Arena` in `build/phase08_3_test.go` runs `runFixtureSuite(t, "arena_query")` with 8 fixtures: int filter, float select, string select, bool filter, 20-element list (exercises multi-chunk growth), inner join, order+take, nested query. All 8 compile and produce correct output.
+
 ## Bug fixes in this phase
 
 - Queries in print-expression position: `print(from n in nums select n)` fails because the lower pass rejects printing list values. Fixture design avoids this by iterating with `for x in result { print(x) }`.
@@ -70,7 +86,6 @@ Query DSL (`from x in xs where cond select expr`) is the highest-value language 
 - `distinct`: Phase 8.1+ (requires set dedup).
 - `union`, `intersect`, `except` set operators: Phase 8.1+.
 - Non-identity sort keys (`order by n.field`): Phase 8.1+ (Schwartzian transform).
-- Arena allocation for intermediates: Phase 8.3.
 - `load`/`save` adapters (JSON, YAML, CSV): Phase 8.4.
 - Cost-based join reordering: v2.
 - Select expressions producing list or record values: Phase 8.1+.

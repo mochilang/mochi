@@ -1,0 +1,6 @@
+let xs = [1, 2, 3, 4, 5]
+let evens = from x in xs where x % 2 == 0 select x
+let doubled = from e in evens select e * 2
+for d in doubled {
+  print(d)
+}

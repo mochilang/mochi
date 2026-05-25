@@ -4102,7 +4102,13 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 	}
 	l.scope = prev
 
-	// Emit: let __queryN: list<T> = []
+	// Phase 8.3: arena scope. The LetStmt is emitted into currentBlock so that
+	// tempName is accessible after the QueryScopeStmt. The QueryScopeStmt body
+	// holds the ForEachStmt and sort/slice steps; the emitter wraps those in
+	// arena init/free and rewrites append calls to use mochi_list_<T>_append_arena.
+	arenaVar := fmt.Sprintf("__qa%d", l.tempCounter)
+
+	// Emit: let __queryN: list<T> = []  (into outer scope so VarRef works after scope)
 	prev.vars[tempName] = lbinding{t: aotir.TypeList, mutable: true, elem: selectElemType}
 	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.LetStmt{
 		Name:     tempName,
@@ -4231,8 +4237,12 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 		}}
 	}
 
+	// Phase 8.3: build the arena-scoped body block (ForEachStmt + sort/slice).
+	// This block is NOT the same as l.currentBlock; it becomes QueryScopeStmt.Body.
+	queryBody := &aotir.Block{}
+
 	// Emit: for q.Var in source { innerBody }
-	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.ForEachStmt{
+	queryBody.Statements = append(queryBody.Statements, &aotir.ForEachStmt{
 		Var:              q.Var,
 		List:             source,
 		ElemType:         sourceElemType,
@@ -4250,7 +4260,7 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 			Receiver: sortRef,
 			ElemType: selectElemType,
 		}
-		l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.AssignStmt{
+		queryBody.Statements = append(queryBody.Statements, &aotir.AssignStmt{
 			Name:  tempName,
 			Value: sortExpr,
 		})
@@ -4296,11 +4306,19 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 			End:      endExpr,
 			ElemType: selectElemType,
 		}
-		l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.AssignStmt{
+		queryBody.Statements = append(queryBody.Statements, &aotir.AssignStmt{
 			Name:  tempName,
 			Value: sliceExpr,
 		})
 	}
+
+	// Wrap in QueryScopeStmt (Phase 8.3).
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.QueryScopeStmt{
+		ResultVar: tempName,
+		ArenaVar:  arenaVar,
+		ElemType:  selectElemType,
+		Body:      queryBody,
+	})
 
 	return &aotir.VarRef{Name: tempName, VarType: aotir.TypeList, ElemType: selectElemType}, nil
 }

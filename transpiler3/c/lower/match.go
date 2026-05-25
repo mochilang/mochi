@@ -65,6 +65,8 @@ func matchPassStmt(stmt aotir.Stmt) error {
 		return matchPassBlock(s.Body)
 	case *aotir.ForEachStmt:
 		return matchPassBlock(s.Body)
+	case *aotir.QueryScopeStmt:
+		return matchPassBlock(s.Body)
 	}
 	return nil
 }
