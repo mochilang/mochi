@@ -33,7 +33,7 @@ Reproducibility is the user-facing supply-chain story: without byte-identical bu
 | 17.2 | Function/global ordering audit: `collect*` functions use `map[string]struct{}` internally but all `emit*` callers sort the result before iteration; `prog.Records` and `prog.Functions` are append-ordered in source declaration order. `TestPhase17IROrdering` gate (4 fixtures: list_of_list, list_of_map, map_of_list, sum_types). | LANDED 2026-05-25 22:01 (GMT+7) | — | — |
 | 17.3 | All non-libc deps static-linked; bundled toolchain pinned by SHA-256                                               | NOT STARTED | —      | — |
 | 17.4 | Sample artefact SHA-256 published per release tag                                                                  | NOT STARTED | —      | — |
-| 17.5 | `.github/workflows/transpiler3-c-repro.yml` rebuilds the corpus twice and diffs SHA-256                            | NOT STARTED | —      | — |
+| 17.5 | `.github/workflows/transpiler3-c-repro.yml` rebuilds the corpus twice and diffs SHA-256                            | LANDED 2026-05-25 22:56 (GMT+7) | — | — |
 
 ## Decisions made
 
@@ -47,13 +47,21 @@ Reproducibility is the user-facing supply-chain story: without byte-identical bu
 
 **Code-signature identifier is basename-stable.** On macOS, Apple's linker embeds the output binary's basename as the code-signature `Identifier` field. Using the same output basename across two builds (e.g. both emit `add_ints`) keeps this field stable. Tests use the fixture name as the binary name (e.g. `filepath.Join(t.TempDir(), "add_ints")`), so the identifier is always the fixture name, not a random path component.
 
+## Phase 17.5 decisions
+
+**Workflow fires on every PR.** The repro gate is cheap (~30 s per runner) and correctness-critical. Running it on every PR means reproducibility regressions surface on the same commit that introduced them, not days later.
+
+**Weekly schedule.** A weekly Sunday 03:00 UTC run detects toolchain drift: if the system `cc` or linker receives an update that embeds a random field, the gate catches it before any source change.
+
+**SOURCE_DATE_EPOCH set in workflow env.** The env block on the `Run reproducibility gate` step sets `SOURCE_DATE_EPOCH=1748000000` for the entire step. The driver inherits it via the subprocess environment (no explicit override needed in the driver).
+
+**IR ordering gate included.** `TestPhase17IROrdering` runs in the same workflow because it is lightweight and validates the same reproducibility property from the IR side.
+
 ## Deferred work
 
-- Phase 17.2: Function/global ordering audit. The lower pass adds functions in source-declaration order (via `append`), so the order is already deterministic for well-formed programs. A map-iteration audit is needed to confirm no intermediate map produces non-deterministic output. Tracked for the next sub-phase.
-- Phase 17.3: Static linking requires the Phase 1.3 vendored zig toolchain (which already produces static binaries by default). Wiring the release profile to request static-only is the main step.
+- Phase 17.3: Static linking requires the Phase 1.3 vendored zig toolchain. Wiring the release profile to request static-only is the main step.
 - Phase 17.4: CI publish script.
-- Phase 17.5: GitHub Actions workflow.
 
 ## Closeout notes
 
-_Fill in after all 6 sub-phases green._
+Sub-phases 17.0, 17.1, 17.2, and 17.5 are LANDED. Sub-phases 17.3 and 17.4 (static linking + SHA-256 publish) require the Phase 1.3 zig toolchain integration.

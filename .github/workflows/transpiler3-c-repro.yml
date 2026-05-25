@@ -1,0 +1,45 @@
+name: Transpiler3-C Reproducibility Gate
+
+# MEP-45 Phase 17.5: builds the repro fixture corpus twice on each CI runner
+# and asserts SHA-256 equality. Fires on every push/PR to catch any change
+# that breaks binary reproducibility, plus weekly to catch tool-chain drift.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  schedule:
+    # 03:00 UTC Sunday (10:00 GMT+7)
+    - cron: '0 3 * * 0'
+  workflow_dispatch:
+
+jobs:
+  repro:
+    name: Reproducibility gate (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Run reproducibility gate (Phase 17.0/17.1)
+        env:
+          SOURCE_DATE_EPOCH: '1748000000'
+        run: |
+          go test -vet=off -v -count=1 -timeout=120s \
+            ./transpiler3/c/build/ -run TestPhase17Repro
+
+      - name: Run IR ordering gate (Phase 17.2)
+        run: |
+          go test -vet=off -v -count=1 -timeout=120s \
+            ./transpiler3/c/build/ -run TestPhase17IROrdering
