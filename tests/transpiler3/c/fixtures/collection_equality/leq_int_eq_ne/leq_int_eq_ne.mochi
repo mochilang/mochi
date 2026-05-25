@@ -1,0 +1,7 @@
+let xs = [1, 2, 3]
+let ys = [1, 2, 3]
+let zs = [1, 2, 4]
+print(xs == ys)
+print(xs == zs)
+print(xs != zs)
+print(xs != ys)

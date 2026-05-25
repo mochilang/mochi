@@ -1,0 +1,6 @@
+let m1: map<int, float> = {1: 1.5, 2: 2.5}
+let m2: map<int, float> = {1: 1.5, 2: 2.5}
+let m3: map<int, float> = {1: 1.5, 2: 9.9}
+print(m1 == m2)
+print(m1 == m3)
+print(m1 != m3)

@@ -1,0 +1,6 @@
+let xs = [true, false, true]
+let ys = [true, false, true]
+let zs = [true, true, true]
+print(xs == ys)
+print(xs == zs)
+print(xs != zs)

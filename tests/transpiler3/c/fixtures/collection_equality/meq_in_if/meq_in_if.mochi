@@ -1,0 +1,9 @@
+let m1: map<string, int> = {"x": 1}
+let m2: map<string, int> = {"x": 1}
+let m3: map<string, int> = {"x": 9}
+if m1 == m2 {
+  print("equal")
+}
+if m1 != m3 {
+  print("not equal")
+}

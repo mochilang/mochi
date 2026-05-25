@@ -1,0 +1,7 @@
+let m1: map<int, int> = {1: 10, 2: 20}
+let m2: map<int, int> = {1: 10, 2: 20}
+let m3: map<int, int> = {1: 10, 2: 99}
+print(m1 == m2)
+print(m1 == m3)
+print(m1 != m3)
+print(m1 != m2)

@@ -1211,6 +1211,10 @@ func binOpSignature(op BinOp) (Type, Type, Type, bool) {
 		return TypeString, TypeString, TypeBool, true
 	case BinEqRec, BinNeRec:
 		return TypeRecord, TypeRecord, TypeBool, true
+	case BinEqList, BinNeList:
+		return TypeList, TypeList, TypeBool, true
+	case BinEqMap, BinNeMap:
+		return TypeMap, TypeMap, TypeBool, true
 	}
 	return TypeInvalid, TypeInvalid, TypeInvalid, false
 }

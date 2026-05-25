@@ -278,6 +278,14 @@ const (
 	// helper that ANDs each field's comparison together.
 	BinEqRec
 	BinNeRec
+	// List equality. Each operand is TypeList; the result is TypeBool.
+	// The emit pass dispatches to a TU-local mochi_eq_list_<elem> helper.
+	BinEqList
+	BinNeList
+	// Map equality. Each operand is TypeMap; the result is TypeBool.
+	// The emit pass dispatches to a TU-local mochi_eq_map_<K>_<V> helper.
+	BinEqMap
+	BinNeMap
 	// Short-circuit boolean. Each operand is TypeBool; the
 	// result is TypeBool. The emitter must lower these so the
 	// right-hand side is only evaluated when the left does not
