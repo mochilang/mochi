@@ -41,14 +41,16 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		return nil, fmt.Errorf("transpiler3/c/lower: nil program")
 	}
 
-	// Pass 0: collect every `type T { ... }` declaration. Record
+	// Pass 0: collect every `type T { ... }` declaration. Record and union
 	// names are registered before sig-building so a fun signature
-	// or a record-field type can reference any record without
+	// or a record/variant-field type can reference any declared type without
 	// regard to source order. Field types are resolved in this
-	// same pass; the records map is set membership only at the
+	// same pass; the records/unions maps are set membership only at the
 	// start, and decls are stamped onto the output program in
 	// source order.
 	records := map[string]*aotir.RecordDecl{}
+	unions := map[string]*aotir.UnionDecl{}
+	variantToUnion := map[string]*aotir.UnionDecl{} // populated after union decls are built
 	var typeDecls []*parser.TypeDecl
 	for i, st := range prog.Statements {
 		if st == nil || st.Type == nil {
@@ -61,18 +63,40 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		if _, dup := records[td.Name]; dup {
 			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: redeclaration of type %q", i, td.Name)
 		}
+		if _, dup := unions[td.Name]; dup {
+			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: redeclaration of type %q", i, td.Name)
+		}
 		// Reserve the name so later passes can resolve it.
-		records[td.Name] = nil
+		if len(td.Variants) > 0 || td.SingleVariant != nil {
+			unions[td.Name] = nil
+		} else {
+			records[td.Name] = nil
+		}
 		typeDecls = append(typeDecls, td)
 	}
 	out := &aotir.Program{}
 	for _, td := range typeDecls {
-		rd, err := buildRecordDecl(records, td)
-		if err != nil {
-			return nil, fmt.Errorf("transpiler3/c/lower: type %q: %w", td.Name, err)
+		if len(td.Variants) > 0 || td.SingleVariant != nil {
+			// Phase 4.0: sum type (union).
+			ud, err := buildUnionDecl(records, td)
+			if err != nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: type %q: %w", td.Name, err)
+			}
+			unions[td.Name] = ud
+			out.Unions = append(out.Unions, ud)
+			// Build variant -> union mapping.
+			for i := range ud.Variants {
+				vd := &ud.Variants[i]
+				variantToUnion[vd.Name] = ud
+			}
+		} else {
+			rd, err := buildRecordDecl(records, td)
+			if err != nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: type %q: %w", td.Name, err)
+			}
+			records[td.Name] = rd
+			out.Records = append(out.Records, rd)
 		}
-		records[td.Name] = rd
-		out.Records = append(out.Records, rd)
 	}
 
 	// Pass 1: collect every user-defined fun decl and record its
@@ -94,7 +118,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		if _, dup := funcs[fn.Name]; dup {
 			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: redeclaration of fun %q", i, fn.Name)
 		}
-		sig, err := buildFuncSig(records, fn)
+		sig, err := buildFuncSig(records, unions, fn)
 		if err != nil {
 			return nil, fmt.Errorf("transpiler3/c/lower: fun %q: %w", fn.Name, err)
 		}
@@ -108,9 +132,12 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		l := &lowerer{
 			funcs:                      funcs,
 			records:                    records,
+			unions:                     unions,
+			variantToUnion:             variantToUnion,
 			scope:                      newLScope(nil),
 			currentFnReturn:            sig.returnType,
 			currentFnReturnRecord:      sig.returnRecordName,
+			currentFnReturnUnion:       sig.returnUnionName,
 			currentFnReturnElem:        sig.returnElemType,
 			currentFnReturnElemRec:     sig.returnElemRecord,
 			currentFnReturnInnerElem:   sig.returnInnerElem,
@@ -124,6 +151,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 				t:            p.Type,
 				mutable:      false,
 				record:       p.RecordName,
+				union:        p.UnionName,
 				elem:         p.ElemType,
 				elemRec:      p.ElemRecordName,
 				innerElem:    p.InnerElemType,
@@ -148,6 +176,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 			Params:                  sig.params,
 			ReturnType:              sig.returnType,
 			ReturnRecordName:        sig.returnRecordName,
+			ReturnUnionName:         sig.returnUnionName,
 			ReturnElemType:          sig.returnElemType,
 			ReturnElemRecordName:    sig.returnElemRecord,
 			ReturnInnerElemType:     sig.returnInnerElem,
@@ -166,6 +195,8 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 	mainL := &lowerer{
 		funcs:           funcs,
 		records:         records,
+		unions:          unions,
+		variantToUnion:  variantToUnion,
 		scope:           newLScope(nil),
 		currentFnReturn: aotir.TypeUnit,
 	}
@@ -192,6 +223,50 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		return nil, fmt.Errorf("transpiler3/c/lower: verify: %w", err)
 	}
 	return out, nil
+}
+
+// buildUnionDecl turns a parser.TypeDecl with Variants into an aotir.UnionDecl.
+// Phase 4.0 restricts variant fields to scalar primitives (int, float, bool,
+// string); nested records and collections land in later sub-phases.
+func buildUnionDecl(records map[string]*aotir.RecordDecl, td *parser.TypeDecl) (*aotir.UnionDecl, error) {
+	if len(td.Variants) == 0 {
+		return nil, fmt.Errorf("buildUnionDecl called on non-union type")
+	}
+	u := &aotir.UnionDecl{Name: td.Name}
+	for tag, v := range td.Variants {
+		vd := aotir.VariantDecl{Name: v.Name, Tag: uint8(tag)}
+		for _, f := range v.Fields {
+			ft, err := scalarVariantFieldType(f.Type)
+			if err != nil {
+				return nil, fmt.Errorf("variant %q field %q: %w", v.Name, f.Name, err)
+			}
+			vd.Fields = append(vd.Fields, aotir.VariantField{Name: f.Name, FieldType: ft})
+		}
+		u.Variants = append(u.Variants, vd)
+	}
+	return u, nil
+}
+
+// scalarVariantFieldType resolves a variant field's TypeRef. Phase 4.0 accepts
+// only the four scalar primitives; nested records and collections land later.
+func scalarVariantFieldType(ref *parser.TypeRef) (aotir.Type, error) {
+	if ref == nil {
+		return aotir.TypeInvalid, fmt.Errorf("nil type ref")
+	}
+	if ref.Simple == nil {
+		return aotir.TypeInvalid, fmt.Errorf("variant field type must be a scalar primitive in Phase 4.0 (int, float, bool, string)")
+	}
+	switch *ref.Simple {
+	case "int":
+		return aotir.TypeInt, nil
+	case "float":
+		return aotir.TypeFloat, nil
+	case "bool":
+		return aotir.TypeBool, nil
+	case "string":
+		return aotir.TypeString, nil
+	}
+	return aotir.TypeInvalid, fmt.Errorf("variant field type %q not supported in Phase 4.0 (scalar primitives only)", *ref.Simple)
 }
 
 // buildRecordDecl turns a parser.TypeDecl into an aotir.RecordDecl.
@@ -228,7 +303,7 @@ func buildRecordDecl(records map[string]*aotir.RecordDecl, td *parser.TypeDecl) 
 			return nil, fmt.Errorf("duplicate field %q", f.Name)
 		}
 		seen[f.Name] = true
-		tr, err := typeFromRef(records, f.Type)
+		tr, err := typeFromRef(records, nil, f.Type)
 		if err != nil {
 			return nil, fmt.Errorf("field %q: %w", f.Name, err)
 		}
@@ -253,6 +328,7 @@ type funcSig struct {
 	params               []aotir.Param
 	returnType           aotir.Type
 	returnRecordName     string
+	returnUnionName      string     // union name when returnType==TypeUnion (Phase 4)
 	returnElemType       aotir.Type
 	returnElemRecord     string     // record name when returnElemType==TypeRecord
 	returnInnerElem      aotir.Type // inner elem type when returnElemType==TypeList (Phase 3.4b)
@@ -268,12 +344,13 @@ type funcSig struct {
 // `fun f(x) { ... }` as inferring from caller context, but Phase 2.2
 // requires explicit annotations so the C-AOT monomorpher does not
 // have to do inference. Phase 3.0 widens param/return type lookup to
-// the records table so user fns can accept and return records.
-func buildFuncSig(records map[string]*aotir.RecordDecl, fn *parser.FunStmt) (*funcSig, error) {
+// the records table so user fns can accept and return records. Phase 4.0
+// further widens to unions.
+func buildFuncSig(records map[string]*aotir.RecordDecl, unions map[string]*aotir.UnionDecl, fn *parser.FunStmt) (*funcSig, error) {
 	if fn.Return == nil {
 		return nil, fmt.Errorf("fun %q requires an explicit `: T` return type in Phase 2.2", fn.Name)
 	}
-	retTR, err := typeFromRef(records, fn.Return)
+	retTR, err := typeFromRef(records, unions, fn.Return)
 	if err != nil {
 		return nil, fmt.Errorf("fun %q return: %w", fn.Name, err)
 	}
@@ -296,7 +373,7 @@ func buildFuncSig(records map[string]*aotir.RecordDecl, fn *parser.FunStmt) (*fu
 		if p.Type == nil {
 			return nil, fmt.Errorf("fun %q param %q requires an explicit `: T` type in Phase 2.2", fn.Name, p.Name)
 		}
-		pTR, err := typeFromRef(records, p.Type)
+		pTR, err := typeFromRef(records, unions, p.Type)
 		if err != nil {
 			return nil, fmt.Errorf("fun %q param %q: %w", fn.Name, p.Name, err)
 		}
@@ -304,6 +381,7 @@ func buildFuncSig(records map[string]*aotir.RecordDecl, fn *parser.FunStmt) (*fu
 			Name:              p.Name,
 			Type:              pTR.t,
 			RecordName:        pTR.rec,
+			UnionName:         pTR.union,
 			ElemType:          pTR.elem,
 			ElemRecordName:    pTR.elemRec,
 			InnerElemType:     pTR.innerElem,
@@ -318,6 +396,7 @@ func buildFuncSig(records map[string]*aotir.RecordDecl, fn *parser.FunStmt) (*fu
 		params:              params,
 		returnType:          retTR.t,
 		returnRecordName:    retTR.rec,
+		returnUnionName:     retTR.union,
 		returnElemType:      retTR.elem,
 		returnElemRecord:    retTR.elemRec,
 		returnInnerElem:     retTR.innerElem,
@@ -335,10 +414,15 @@ func buildFuncSig(records map[string]*aotir.RecordDecl, fn *parser.FunStmt) (*fu
 type lowerer struct {
 	funcs                       map[string]*funcSig
 	records                     map[string]*aotir.RecordDecl
+	unions                      map[string]*aotir.UnionDecl   // Phase 4: union name -> decl
+	variantToUnion              map[string]*aotir.UnionDecl   // Phase 4: variant name -> enclosing union
 	scope                       *lscope
 	loopDepth                   int
+	tempCounter                 int          // for fresh temp variable names in match lowering
+	currentBlock                *aotir.Block // block currently being built; used by lowerMatchExpr
 	currentFnReturn             aotir.Type
 	currentFnReturnRecord       string
+	currentFnReturnUnion        string     // union name when currentFnReturn==TypeUnion (Phase 4)
 	currentFnReturnElem         aotir.Type
 	currentFnReturnElemRec      string     // record name when currentFnReturnElem==TypeRecord
 	currentFnReturnInnerElem    aotir.Type // inner elem when currentFnReturnElem==TypeList (Phase 3.4b)
@@ -357,6 +441,7 @@ type lbinding struct {
 	t            aotir.Type
 	mutable      bool
 	record       string     // record name when t==TypeRecord
+	union        string     // union name when t==TypeUnion (Phase 4)
 	elem         aotir.Type // element type when t==TypeList
 	elemRec      string     // element record name when t==TypeList && elem==TypeRecord
 	innerElem    aotir.Type // inner element type when t==TypeList && elem==TypeList (Phase 3.4b)
@@ -383,6 +468,11 @@ func (s *lscope) lookup(name string) (lbinding, bool) {
 
 // lowerStatement dispatches on the parser Statement variant.
 func (l *lowerer) lowerStatement(out *aotir.Block, st *parser.Statement) error {
+	// Track the current output block so lowerMatchExpr (called from expression
+	// lowering) can emit LetStmt/MatchStmt into the enclosing block.
+	prevBlock := l.currentBlock
+	l.currentBlock = out
+	defer func() { l.currentBlock = prevBlock }()
 	switch {
 	case st.Expr != nil:
 		return l.lowerExprStmt(out, st.Expr)
@@ -422,9 +512,15 @@ func (l *lowerer) lowerStatement(out *aotir.Block, st *parser.Statement) error {
 
 // lowerExprStmt handles a top-level expression statement. Phase 2.2
 // accepts `print(<expr>)` and a discard-result call to a user fn.
-// Anything else (a bare arithmetic expression, a bare variable
-// reference) is rejected -- the result has nowhere to go.
+// Phase 4.0 adds match-as-statement (match with unit arms). Anything
+// else (a bare arithmetic expression, a bare variable reference) is
+// rejected -- the result has nowhere to go.
 func (l *lowerer) lowerExprStmt(out *aotir.Block, es *parser.ExprStmt) error {
+	// Phase 4.0: match-as-statement. The match expr lives inside the
+	// ExprStmt when the parser surfaces it as a Primary in the ExprStmt.
+	if m := exprStmtMatch(es.Expr); m != nil {
+		return l.lowerMatch(out, m, "", aotir.TypeInvalid)
+	}
 	call, err := matchBareCall(es.Expr)
 	if err != nil {
 		return err
@@ -446,6 +542,20 @@ func (l *lowerer) lowerExprStmt(out *aotir.Block, es *parser.ExprStmt) error {
 		Args: args,
 	})
 	return nil
+}
+
+// exprStmtMatch checks if an ExprStmt wraps a bare match expression.
+// The parser surfaces `match x { ... }` as a Primary.Match inside the
+// expression tree.
+func exprStmtMatch(expr *parser.Expr) *parser.MatchExpr {
+	if expr == nil || expr.Binary == nil || len(expr.Binary.Right) != 0 {
+		return nil
+	}
+	u := expr.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return nil
+	}
+	return u.Value.Target.Match
 }
 
 // lowerPrintCall handles `print(<expr>)`. The single-arg restriction
@@ -589,6 +699,21 @@ func exprRecordName(e aotir.Expr) string {
 		// Phase 3.4a: list<R> indexing returns a record-typed value;
 		// the record name rides along on ElemRecordName.
 		return v.ElemRecordName
+	}
+	return ""
+}
+
+// exprUnionName extracts the union-name identity of a union-typed
+// aotir expression. Used to propagate the union identity through
+// let/assign/return type-checks and LetStmt.UnionName stamping.
+func exprUnionName(e aotir.Expr) string {
+	switch v := e.(type) {
+	case *aotir.UnionVarRef:
+		return v.UnionName
+	case *aotir.VariantLit:
+		return v.UnionName
+	case *aotir.CallExpr:
+		return v.ResultUnionName
 	}
 	return ""
 }
@@ -792,7 +917,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	// directly from typeFromRef and registered without entering lowerExpr.
 	if declared != nil {
 		if isEmptyListLit(init) {
-			tr, err := typeFromRef(l.records, declared)
+			tr, err := typeFromRef(l.records, l.unions, declared)
 			if err != nil {
 				return fmt.Errorf("binding %q type: %w", name, err)
 			}
@@ -810,7 +935,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 			return nil
 		}
 		if isEmptyMapLit(init) {
-			tr, err := typeFromRef(l.records, declared)
+			tr, err := typeFromRef(l.records, l.unions, declared)
 			if err != nil {
 				return fmt.Errorf("binding %q type: %w", name, err)
 			}
@@ -842,8 +967,10 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	declKey := exprKeyType(value)
 	declValue := exprValueType(value)
 	declListValElem := exprListValueElemType(value)
+	// declUnion carries the union name when declType==TypeUnion.
+	declUnion := exprUnionName(value)
 	if declared != nil {
-		tr, err := typeFromRef(l.records, declared)
+		tr, err := typeFromRef(l.records, l.unions, declared)
 		if err != nil {
 			return fmt.Errorf("binding %q type: %w", name, err)
 		}
@@ -852,6 +979,9 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		}
 		if tr.t == aotir.TypeRecord && tr.rec != declRec {
 			return fmt.Errorf("binding %q: declared record %q, init produces record %q", name, tr.rec, declRec)
+		}
+		if tr.t == aotir.TypeUnion && tr.union != declUnion {
+			return fmt.Errorf("binding %q: declared union %q, init produces union %q", name, tr.union, declUnion)
 		}
 		if tr.t == aotir.TypeList && tr.elem != declElem {
 			return fmt.Errorf("binding %q: declared list<%s>, init produces list<%s>", name, tr.elem, declElem)
@@ -883,6 +1013,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		}
 		declType = tr.t
 		declRec = tr.rec
+		declUnion = tr.union
 		declElem = tr.elem
 		declElemRec = tr.elemRec
 		declInnerElem = tr.innerElem
@@ -896,6 +1027,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		t:            declType,
 		mutable:      mutable,
 		record:       declRec,
+		union:        declUnion,
 		elem:         declElem,
 		elemRec:      declElemRec,
 		innerElem:    declInnerElem,
@@ -909,6 +1041,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		Name:              name,
 		VarType:           declType,
 		RecordName:        declRec,
+		UnionName:         declUnion,
 		ElemType:          declElem,
 		ElemRecordName:    declElemRec,
 		InnerElemType:     declInnerElem,
@@ -1242,6 +1375,12 @@ func (l *lowerer) lowerReturn(out *aotir.Block, rs *parser.ReturnStmt) error {
 				l.currentFnReturnRecord, vrec)
 		}
 	}
+	if l.currentFnReturn == aotir.TypeUnion {
+		if vunion := exprUnionName(value); vunion != l.currentFnReturnUnion {
+			return fmt.Errorf("return: function returns union %q, value produces union %q",
+				l.currentFnReturnUnion, vunion)
+		}
+	}
 	if l.currentFnReturn == aotir.TypeList {
 		if velem := exprElemType(value); velem != l.currentFnReturnElem {
 			return fmt.Errorf("return: function returns list<%s>, value produces list<%s>",
@@ -1310,6 +1449,7 @@ func (l *lowerer) lowerNestedBlock(stmts []*parser.Statement) (*aotir.Block, err
 type typeResolution struct {
 	t            aotir.Type
 	rec          string
+	union        string     // valid when t==TypeUnion (Phase 4)
 	elem         aotir.Type
 	elemRec      string     // valid when elem==TypeRecord (Phase 3.4a)
 	innerElem    aotir.Type // valid when elem==TypeList (Phase 3.4b)
@@ -1328,7 +1468,11 @@ type typeResolution struct {
 //   - `[T]` or `list<T>` where T is one of the four scalar primitives,
 //   - `map<K,V>` where K is int or string and V is one of the four
 //     scalar primitives.
-func typeFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (typeResolution, error) {
+//
+// Phase 4.0 additionally accepts any user-declared union name (a sum type
+// declared with variants). The unions map may be nil when called from
+// contexts that predate Phase 4 (e.g. buildRecordDecl field types).
+func typeFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.UnionDecl, ref *parser.TypeRef) (typeResolution, error) {
 	if ref == nil {
 		return typeResolution{}, fmt.Errorf("nil type ref")
 	}
@@ -1336,7 +1480,7 @@ func typeFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (typ
 		return typeResolution{}, fmt.Errorf("optional types land with Option in a later phase")
 	}
 	if ref.ListElem != nil {
-		elem, elemRec, innerElem, mapKey, mapVal, err := listElemFromRef(records, ref.ListElem)
+		elem, elemRec, innerElem, mapKey, mapVal, err := listElemFromRef(records, unions, ref.ListElem)
 		if err != nil {
 			return typeResolution{}, err
 		}
@@ -1348,7 +1492,7 @@ func typeFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (typ
 			if len(ref.Generic.Args) != 1 {
 				return typeResolution{}, fmt.Errorf("list<T> takes exactly one type argument, got %d", len(ref.Generic.Args))
 			}
-			elem, elemRec, innerElem, mapKey, mapVal, err := listElemFromRef(records, ref.Generic.Args[0])
+			elem, elemRec, innerElem, mapKey, mapVal, err := listElemFromRef(records, unions, ref.Generic.Args[0])
 			if err != nil {
 				return typeResolution{}, err
 			}
@@ -1357,11 +1501,11 @@ func typeFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (typ
 			if len(ref.Generic.Args) != 2 {
 				return typeResolution{}, fmt.Errorf("map<K,V> takes exactly two type arguments, got %d", len(ref.Generic.Args))
 			}
-			key, err := mapKeyFromRef(records, ref.Generic.Args[0])
+			key, err := mapKeyFromRef(records, unions, ref.Generic.Args[0])
 			if err != nil {
 				return typeResolution{}, err
 			}
-			value, listValElem, err := mapValueFromRef(records, ref.Generic.Args[1])
+			value, listValElem, err := mapValueFromRef(records, unions, ref.Generic.Args[1])
 			if err != nil {
 				return typeResolution{}, err
 			}
@@ -1385,7 +1529,12 @@ func typeFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (typ
 	if _, ok := records[*ref.Simple]; ok {
 		return typeResolution{t: aotir.TypeRecord, rec: *ref.Simple}, nil
 	}
-	return typeResolution{}, fmt.Errorf("type %q not supported in Phase 3.2", *ref.Simple)
+	if unions != nil {
+		if _, ok := unions[*ref.Simple]; ok {
+			return typeResolution{t: aotir.TypeUnion, union: *ref.Simple}, nil
+		}
+	}
+	return typeResolution{}, fmt.Errorf("type %q not supported in Phase 4.0", *ref.Simple)
 }
 
 // listElemFromRef resolves a list's element TypeRef. Phase 3.1
@@ -1398,8 +1547,8 @@ func typeFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (typ
 // the key and value types are returned in the 4th and 5th result.
 // Three-level nesting (list<list<list<T>>>) is still rejected here.
 // Returns (elemType, elemRecName, innerElem, mapElemKey, mapElemValue, error).
-func listElemFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (aotir.Type, string, aotir.Type, aotir.Type, aotir.Type, error) {
-	tr, err := typeFromRef(records, ref)
+func listElemFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.UnionDecl, ref *parser.TypeRef) (aotir.Type, string, aotir.Type, aotir.Type, aotir.Type, error) {
+	tr, err := typeFromRef(records, unions, ref)
 	if err != nil {
 		return aotir.TypeInvalid, "", aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid, fmt.Errorf("list element: %w", err)
 	}
@@ -1441,8 +1590,8 @@ func listElemFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) 
 // mapKeyFromRef resolves a map's key TypeRef. Phase 3.2 accepts only
 // int and string keys (the two key types the runtime ships helpers
 // for); other element types fail with a phase-named diagnostic.
-func mapKeyFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (aotir.Type, error) {
-	tr, err := typeFromRef(records, ref)
+func mapKeyFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.UnionDecl, ref *parser.TypeRef) (aotir.Type, error) {
+	tr, err := typeFromRef(records, unions, ref)
 	if err != nil {
 		return aotir.TypeInvalid, fmt.Errorf("map key: %w", err)
 	}
@@ -1457,8 +1606,8 @@ func mapKeyFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (a
 // the four scalar primitives; Phase 3.4e widens to list<V> where V
 // is a scalar primitive. Record / nested-map values land in later
 // sub-phases. Returns (valueType, listElemType, error).
-func mapValueFromRef(records map[string]*aotir.RecordDecl, ref *parser.TypeRef) (aotir.Type, aotir.Type, error) {
-	tr, err := typeFromRef(records, ref)
+func mapValueFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.UnionDecl, ref *parser.TypeRef) (aotir.Type, aotir.Type, error) {
+	tr, err := typeFromRef(records, unions, ref)
 	if err != nil {
 		return aotir.TypeInvalid, aotir.TypeInvalid, fmt.Errorf("map value: %w", err)
 	}
@@ -1912,7 +2061,7 @@ func (l *lowerer) lowerFieldOp(receiver aotir.Expr, fieldName string) (aotir.Exp
 // lowerPrimary lowers a Primary into either a literal, a parenthesised
 // expression, a variable reference, a record literal, a selector
 // chain (variable + zero or more `.field` reads), or a call to a user
-// function.
+// function. Phase 4.0 adds variant constructors and match expressions.
 func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	if pr == nil {
 		return nil, fmt.Errorf("nil primary")
@@ -1926,26 +2075,55 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	if pr.Struct != nil {
 		return l.lowerStructLit(pr.Struct)
 	}
+	if pr.Match != nil {
+		return l.lowerMatchExpr(pr.Match)
+	}
 	if pr.Selector != nil {
+		// Phase 4.0: check if this is a unit variant (no fields) used as a value.
+		if len(pr.Selector.Tail) == 0 {
+			if ud, ok := l.variantToUnion[pr.Selector.Root]; ok {
+				for i := range ud.Variants {
+					vd := &ud.Variants[i]
+					if vd.Name == pr.Selector.Root && len(vd.Fields) == 0 {
+						return &aotir.VariantLit{
+							UnionName:   ud.Name,
+							VariantName: vd.Name,
+							Tag:         vd.Tag,
+						}, nil
+					}
+				}
+			}
+		}
 		b, ok := l.scope.lookup(pr.Selector.Root)
 		if !ok {
 			return nil, fmt.Errorf("undeclared variable %q", pr.Selector.Root)
 		}
-		var expr aotir.Expr = &aotir.VarRef{
-			Name:              pr.Selector.Root,
-			VarType:           b.t,
-			RecordName:        b.record,
-			ElemType:          b.elem,
-			ElemRecordName:    b.elemRec,
-			InnerElemType:     b.innerElem,
-			MapElemKeyType:    b.mapElemKey,
-			MapElemValueType:  b.mapElemValue,
-			KeyType:           b.key,
-			ValueType:         b.value,
-			ListValueElemType: b.listValElem,
+		var expr aotir.Expr
+		if b.t == aotir.TypeUnion {
+			expr = &aotir.UnionVarRef{
+				Name:      pr.Selector.Root,
+				UnionName: b.union,
+			}
+		} else {
+			expr = &aotir.VarRef{
+				Name:              pr.Selector.Root,
+				VarType:           b.t,
+				RecordName:        b.record,
+				ElemType:          b.elem,
+				ElemRecordName:    b.elemRec,
+				InnerElemType:     b.innerElem,
+				MapElemKeyType:    b.mapElemKey,
+				MapElemValueType:  b.mapElemValue,
+				KeyType:           b.key,
+				ValueType:         b.value,
+				ListValueElemType: b.listValElem,
+			}
 		}
 		for _, field := range pr.Selector.Tail {
 			var err error
+			if expr.Type() == aotir.TypeUnion {
+				return nil, fmt.Errorf("field access on union-typed value requires a match expression (field .%s on union)", field)
+			}
 			expr, err = l.lowerFieldOp(expr, field)
 			if err != nil {
 				return nil, err
@@ -1954,6 +2132,10 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 		return expr, nil
 	}
 	if pr.Call != nil {
+		// Phase 4.0: check if this is a field-bearing variant constructor.
+		if ud, ok := l.variantToUnion[pr.Call.Func]; ok {
+			return l.lowerVariantConstructor(pr.Call, ud)
+		}
 		return l.lowerUserCallExpr(pr.Call)
 	}
 	if pr.List != nil {
@@ -1963,6 +2145,43 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 		return l.lowerMapLit(pr.Map)
 	}
 	return nil, fmt.Errorf("primary %s not supported in Phase 3.2%s", trimPrimary(pr), primaryPhaseHint(pr))
+}
+
+// lowerVariantConstructor lowers a call-expression that names a known
+// variant, e.g. `Circle(5.0)`, into a VariantLit node.
+func (l *lowerer) lowerVariantConstructor(call *parser.CallExpr, ud *aotir.UnionDecl) (aotir.Expr, error) {
+	// Find the variant declaration.
+	var vd *aotir.VariantDecl
+	for i := range ud.Variants {
+		if ud.Variants[i].Name == call.Func {
+			vd = &ud.Variants[i]
+			break
+		}
+	}
+	if vd == nil {
+		return nil, fmt.Errorf("variant %q not found in union %q", call.Func, ud.Name)
+	}
+	if len(call.Args) != len(vd.Fields) {
+		return nil, fmt.Errorf("variant %q expects %d fields, got %d", call.Func, len(vd.Fields), len(call.Args))
+	}
+	fields := make([]aotir.VariantLitArg, 0, len(call.Args))
+	for i, arg := range call.Args {
+		v, err := l.lowerExpr(arg)
+		if err != nil {
+			return nil, fmt.Errorf("variant %q field %d: %w", call.Func, i, err)
+		}
+		if v.Type() != vd.Fields[i].FieldType {
+			return nil, fmt.Errorf("variant %q field %q: expected %s, got %s",
+				call.Func, vd.Fields[i].Name, vd.Fields[i].FieldType, v.Type())
+		}
+		fields = append(fields, aotir.VariantLitArg{Name: vd.Fields[i].Name, Value: v})
+	}
+	return &aotir.VariantLit{
+		UnionName:   ud.Name,
+		VariantName: vd.Name,
+		Tag:         vd.Tag,
+		Fields:      fields,
+	}, nil
 }
 
 // lowerListLit lowers a `[e1, e2, ...]` literal. Every element must
@@ -2228,17 +2447,18 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 		return nil, err
 	}
 	return &aotir.CallExpr{
-		Func:                   call.Func,
-		Args:                   args,
-		Result:                 sig.returnType,
-		ResultRecordName:       sig.returnRecordName,
-		ResultElemType:         sig.returnElemType,
-		ResultElemRecordName:   sig.returnElemRecord,
-		ResultInnerElemType:    sig.returnInnerElem,
-		ResultMapElemKeyType:   sig.returnMapElemKey,
-		ResultMapElemValueType: sig.returnMapElemValue,
-		ResultKeyType:          sig.returnKeyType,
-		ResultValueType:        sig.returnValueType,
+		Func:                    call.Func,
+		Args:                    args,
+		Result:                  sig.returnType,
+		ResultRecordName:        sig.returnRecordName,
+		ResultUnionName:         sig.returnUnionName,
+		ResultElemType:          sig.returnElemType,
+		ResultElemRecordName:    sig.returnElemRecord,
+		ResultInnerElemType:     sig.returnInnerElem,
+		ResultMapElemKeyType:    sig.returnMapElemKey,
+		ResultMapElemValueType:  sig.returnMapElemValue,
+		ResultKeyType:           sig.returnKeyType,
+		ResultValueType:         sig.returnValueType,
 		ResultListValueElemType: sig.returnListValElem,
 	}, nil
 }
@@ -2454,6 +2674,368 @@ func primaryPhaseHint(pr *parser.Primary) string {
 		return " (fun expressions land with Phase 4)"
 	}
 	return ""
+}
+
+// ---- Phase 4.0: match expression / statement lowering ----
+
+// freshTemp returns a unique variable name for use in match-expression
+// result temporaries. The counter is per-lowerer (per-function) so
+// names are stable across function boundaries.
+func (l *lowerer) freshTemp() string {
+	l.tempCounter++
+	return fmt.Sprintf("__match%d", l.tempCounter)
+}
+
+// callPattern checks if expr is a simple call like `Circle(r)`.
+// Used during match arm lowering to detect field-bearing variant patterns.
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+// identName checks if expr is a simple identifier and returns its name.
+// Used during match arm lowering to detect unit variant patterns and wildcards.
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
+// isUnderscoreExpr reports whether e is the wildcard pattern `_`.
+func isUnderscoreExpr(e *parser.Expr) bool {
+	n, ok := identName(e)
+	return ok && n == "_"
+}
+
+// lowerMatchExpr lowers a `match x { ... }` used as an expression.
+// It allocates a fresh temp variable, emits a LetStmt + MatchStmt into
+// the current block (tracked via l.currentBlock), and returns a
+// VarRef/UnionVarRef for the temp.
+func (l *lowerer) lowerMatchExpr(m *parser.MatchExpr) (aotir.Expr, error) {
+	if l.currentBlock == nil {
+		return nil, fmt.Errorf("match expression outside a statement block (internal error)")
+	}
+	// Infer result type from the first non-wildcard arm's result expression.
+	resultType, resultUnion, err := l.inferMatchResultType(m)
+	if err != nil {
+		return nil, fmt.Errorf("match expr: %w", err)
+	}
+	tempName := l.freshTemp()
+	// Register temp as mutable so the match arms can assign to it.
+	l.scope.vars[tempName] = lbinding{t: resultType, mutable: true, union: resultUnion}
+	if err := l.lowerMatch(l.currentBlock, m, tempName, resultType); err != nil {
+		return nil, fmt.Errorf("match expr: %w", err)
+	}
+	if resultType == aotir.TypeUnion {
+		return &aotir.UnionVarRef{Name: tempName, UnionName: resultUnion}, nil
+	}
+	return &aotir.VarRef{Name: tempName, VarType: resultType}, nil
+}
+
+// inferMatchResultType inspects the first non-wildcard arm's result expression
+// to determine the match expression's result type.
+func (l *lowerer) inferMatchResultType(m *parser.MatchExpr) (aotir.Type, string, error) {
+	// Speculatively lower the match target to obtain the union declaration,
+	// so we can inject pattern-variable bindings when peeking at arm results.
+	var ud *aotir.UnionDecl
+	{
+		prev := l.scope
+		l.scope = newLScope(prev)
+		if tgt, err := l.lowerExpr(m.Target); err == nil && tgt.Type() == aotir.TypeUnion {
+			if uName := exprUnionName(tgt); uName != "" {
+				ud = l.unions[uName]
+			}
+		}
+		l.scope = prev
+	}
+
+	for _, c := range m.Cases {
+		if c == nil || isUnderscoreExpr(c.Pattern) {
+			continue
+		}
+		if c.Result == nil {
+			// Block-arm with no result expr -- result type is unit.
+			return aotir.TypeUnit, "", nil
+		}
+		// Speculatively lower the result in a child scope. When the arm is a
+		// call pattern like `Circle(r) => r * r`, inject bindings for each
+		// pattern variable using the variant's field types so that `r` resolves.
+		prev := l.scope
+		l.scope = newLScope(prev)
+		if ud != nil {
+			if call, ok := callPattern(c.Pattern); ok {
+				for i := range ud.Variants {
+					vd := &ud.Variants[i]
+					if vd.Name == call.Func && len(call.Args) == len(vd.Fields) {
+						for j, arg := range call.Args {
+							if varName, ok2 := identName(arg); ok2 && varName != "_" {
+								l.scope.vars[varName] = lbinding{t: vd.Fields[j].FieldType, mutable: false}
+							}
+						}
+						break
+					}
+				}
+			}
+		}
+		expr, err := l.lowerExpr(c.Result)
+		l.scope = prev
+		if err != nil {
+			// Could not infer; fall back to TypeUnion derived from target.
+			return l.inferMatchTargetType(m)
+		}
+		unionName := exprUnionName(expr)
+		return expr.Type(), unionName, nil
+	}
+	return aotir.TypeUnit, "", nil
+}
+
+// inferMatchTargetType peeks at the match target's type to determine
+// the union being matched, used as a fallback for result type inference.
+func (l *lowerer) inferMatchTargetType(m *parser.MatchExpr) (aotir.Type, string, error) {
+	target, err := l.lowerExpr(m.Target)
+	if err != nil {
+		return aotir.TypeInvalid, "", fmt.Errorf("match target: %w", err)
+	}
+	return target.Type(), exprUnionName(target), nil
+}
+
+// lowerMatch lowers a `match` expression/statement into the output block.
+// When resultVar is non-empty, each arm's body ends with an assignment to
+// resultVar and the MatchStmt carries ResultVar/ResultType. When resultVar
+// is empty, the match is a statement (arms must produce unit). The function
+// emits a LetStmt for the temp (when resultVar is non-empty) followed by the
+// MatchStmt into out. Callers from expression context pass l.currentBlock as out.
+func (l *lowerer) lowerMatch(out *aotir.Block, m *parser.MatchExpr, resultVar string, resultType aotir.Type) error {
+	if out == nil {
+		return fmt.Errorf("lowerMatch: nil output block (internal error)")
+	}
+
+	// Lower the match target.
+	target, err := l.lowerExpr(m.Target)
+	if err != nil {
+		return fmt.Errorf("match target: %w", err)
+	}
+	if target.Type() != aotir.TypeUnion {
+		return fmt.Errorf("match target must be a union type, got %s", target.Type())
+	}
+	unionName := exprUnionName(target)
+	if unionName == "" {
+		return fmt.Errorf("match target has no union name")
+	}
+	ud, ok := l.unions[unionName]
+	if !ok {
+		return fmt.Errorf("match: union %q not declared", unionName)
+	}
+
+	// If used as expression, emit the LetStmt for the result temp variable.
+	if resultVar != "" {
+		var letUnionName string
+		if resultType == aotir.TypeUnion {
+			letUnionName = l.scope.vars[resultVar].union
+		}
+		out.Statements = append(out.Statements, &aotir.LetStmt{
+			Name:      resultVar,
+			VarType:   resultType,
+			UnionName: letUnionName,
+			Mutable:   true,
+		})
+	}
+
+	// Lower each case arm.
+	var arms []aotir.MatchArm
+	var defaultArm *aotir.MatchArm
+	for caseIdx, c := range m.Cases {
+		if c == nil {
+			return fmt.Errorf("match case %d is nil", caseIdx)
+		}
+		arm, isDefault, err := l.lowerMatchArm(c, ud, resultVar, resultType)
+		if err != nil {
+			return fmt.Errorf("match case %d: %w", caseIdx, err)
+		}
+		if isDefault {
+			if defaultArm != nil {
+				return fmt.Errorf("match: multiple wildcard (_) arms")
+			}
+			defaultArm = arm
+		} else {
+			arms = append(arms, *arm)
+		}
+	}
+
+	// Determine ResultUnionName for the MatchStmt.
+	var resultUnionName string
+	if resultType == aotir.TypeUnion {
+		resultUnionName = l.scope.vars[resultVar].union
+	}
+
+	out.Statements = append(out.Statements, &aotir.MatchStmt{
+		Target:          target,
+		UnionName:       unionName,
+		Arms:            arms,
+		Default:         defaultArm,
+		ResultVar:       resultVar,
+		ResultType:      resultType,
+		ResultUnionName: resultUnionName,
+	})
+	return nil
+}
+
+// lowerMatchArm lowers one case arm. It returns the arm and a bool
+// indicating whether this is the wildcard (default) arm.
+func (l *lowerer) lowerMatchArm(c *parser.MatchCase, ud *aotir.UnionDecl, resultVar string, resultType aotir.Type) (*aotir.MatchArm, bool, error) {
+	// Wildcard arm.
+	if isUnderscoreExpr(c.Pattern) {
+		body, err := l.lowerMatchBody(c, nil, resultVar, resultType)
+		if err != nil {
+			return nil, true, err
+		}
+		return &aotir.MatchArm{VariantName: "", Body: body}, true, nil
+	}
+
+	// Field-bearing variant: `Circle(r) => ...`
+	if call, ok := callPattern(c.Pattern); ok {
+		variantName := call.Func
+		var vd *aotir.VariantDecl
+		for i := range ud.Variants {
+			if ud.Variants[i].Name == variantName {
+				vd = &ud.Variants[i]
+				break
+			}
+		}
+		if vd == nil {
+			return nil, false, fmt.Errorf("pattern variant %q not found in union %q", variantName, ud.Name)
+		}
+		if len(call.Args) != len(vd.Fields) {
+			return nil, false, fmt.Errorf("pattern %q expects %d fields, got %d", variantName, len(vd.Fields), len(call.Args))
+		}
+		// Build bindings: each arg must be a simple identifier (the pattern variable name).
+		bindings := make([]aotir.MatchBinding, 0, len(call.Args))
+		bindingScope := make(map[string]lbinding)
+		for i, arg := range call.Args {
+			varName, ok := identName(arg)
+			if !ok {
+				return nil, false, fmt.Errorf("pattern %q field %d: pattern variable must be a simple identifier", variantName, i)
+			}
+			if varName == "_" {
+				continue // wildcard binding: skip
+			}
+			bindings = append(bindings, aotir.MatchBinding{
+				VarName:   varName,
+				FieldName: vd.Fields[i].Name,
+				FieldType: vd.Fields[i].FieldType,
+			})
+			bindingScope[varName] = lbinding{t: vd.Fields[i].FieldType, mutable: false}
+		}
+		body, err := l.lowerMatchBodyWithScope(c, bindingScope, resultVar, resultType)
+		if err != nil {
+			return nil, false, err
+		}
+		return &aotir.MatchArm{VariantName: variantName, Tag: vd.Tag, Bindings: bindings, Body: body}, false, nil
+	}
+
+	// Unit variant: `None => ...` or `MyVariant => ...`
+	if variantName, ok := identName(c.Pattern); ok {
+		var vd *aotir.VariantDecl
+		for i := range ud.Variants {
+			if ud.Variants[i].Name == variantName {
+				vd = &ud.Variants[i]
+				break
+			}
+		}
+		if vd == nil {
+			return nil, false, fmt.Errorf("pattern variant %q not found in union %q", variantName, ud.Name)
+		}
+		body, err := l.lowerMatchBody(c, nil, resultVar, resultType)
+		if err != nil {
+			return nil, false, err
+		}
+		return &aotir.MatchArm{VariantName: variantName, Tag: vd.Tag, Body: body}, false, nil
+	}
+
+	return nil, false, fmt.Errorf("unsupported pattern shape in Phase 4.0 (expected identifier or call pattern)")
+}
+
+// lowerMatchBody lowers the arm's body (either a block or a result expression).
+// Any result is assigned to resultVar (when non-empty).
+func (l *lowerer) lowerMatchBody(c *parser.MatchCase, extraScope map[string]lbinding, resultVar string, resultType aotir.Type) (*aotir.Block, error) {
+	return l.lowerMatchBodyWithScope(c, extraScope, resultVar, resultType)
+}
+
+// lowerMatchBodyWithScope lowers an arm body with extra pattern-variable bindings
+// injected into the scope.
+func (l *lowerer) lowerMatchBodyWithScope(c *parser.MatchCase, extraScope map[string]lbinding, resultVar string, resultType aotir.Type) (*aotir.Block, error) {
+	prev := l.scope
+	l.scope = newLScope(prev)
+	for name, b := range extraScope {
+		l.scope.vars[name] = b
+	}
+	defer func() { l.scope = prev }()
+
+	body := &aotir.Block{}
+
+	if len(c.Block) > 0 {
+		// Block-style arm: `Pattern => { stmts }`
+		for i, st := range c.Block {
+			if st == nil {
+				return nil, fmt.Errorf("arm block stmt %d is nil", i)
+			}
+			if err := l.lowerStatement(body, st); err != nil {
+				return nil, fmt.Errorf("arm block stmt %d: %w", i, err)
+			}
+		}
+		if resultVar != "" {
+			// If the block ends with an expression statement that is the result,
+			// we don't auto-assign; the fixtures must use explicit assignment or
+			// have the last stmt be a return.
+			// For now: block arms in expression-position match emit the block
+			// stmts only (they must assign resultVar themselves via `resultVar = expr`).
+		}
+		return body, nil
+	}
+
+	if c.Result != nil {
+		if resultVar == "" {
+			// Statement-position match: arm result must be a unit-returning statement.
+			// Route through ExprStmt lowering so print() and void calls work.
+			dummyStmt := &parser.ExprStmt{Expr: c.Result}
+			if err := l.lowerExprStmt(body, dummyStmt); err != nil {
+				return nil, fmt.Errorf("arm result: %w", err)
+			}
+			return body, nil
+		}
+		// Expression-style arm: `Pattern => expr`
+		expr, err := l.lowerExpr(c.Result)
+		if err != nil {
+			return nil, fmt.Errorf("arm result: %w", err)
+		}
+		// Assign the result to the temp variable.
+		body.Statements = append(body.Statements, &aotir.AssignStmt{
+			Name:  resultVar,
+			Value: expr,
+		})
+		return body, nil
+	}
+
+	return body, nil
 }
 
 // trimPrimary returns a short string describing pr for diagnostics;

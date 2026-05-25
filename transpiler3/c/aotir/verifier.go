@@ -77,6 +77,24 @@ func Verify(p *Program) error {
 		}
 		records[r.Name] = r
 	}
+	unions := make(map[string]*UnionDecl, len(p.Unions))
+	for i, u := range p.Unions {
+		if u == nil {
+			return fmt.Errorf("aotir.Verify: Unions[%d] is nil", i)
+		}
+		if u.Name == "" {
+			return fmt.Errorf("aotir.Verify: Unions[%d] has empty Name", i)
+		}
+		if _, dup := unions[u.Name]; dup {
+			return fmt.Errorf("aotir.Verify: duplicate union name %q at index %d", u.Name, i)
+		}
+		for j, v := range u.Variants {
+			if v.Name == "" {
+				return fmt.Errorf("aotir.Verify: union %q variant %d: empty name", u.Name, j)
+			}
+		}
+		unions[u.Name] = u
+	}
 	names := make(map[string]*Function, len(p.Functions))
 	for i, fn := range p.Functions {
 		if fn == nil {
@@ -266,6 +284,7 @@ func Verify(p *Program) error {
 		ctx := &verifyCtx{
 			fns:               names,
 			records:           records,
+			unions:            unions,
 			scope:             newScope(nil),
 			loopDepth:         0,
 			returnType:        fn.ReturnType,
@@ -287,7 +306,7 @@ func Verify(p *Program) error {
 			if _, dup := ctx.scope.vars[pr.Name]; dup {
 				return fmt.Errorf("aotir.Verify: %s: duplicate parameter %q", fn.Name, pr.Name)
 			}
-			ctx.scope.vars[pr.Name] = binding{t: pr.Type, mutable: false, record: pr.RecordName, elem: pr.ElemType, elemRec: pr.ElemRecordName, mapElemKey: pr.MapElemKeyType, mapElemValue: pr.MapElemValueType, key: pr.KeyType, value: pr.ValueType, listValElem: pr.ListValueElemType}
+			ctx.scope.vars[pr.Name] = binding{t: pr.Type, mutable: false, record: pr.RecordName, union: pr.UnionName, elem: pr.ElemType, elemRec: pr.ElemRecordName, mapElemKey: pr.MapElemKeyType, mapElemValue: pr.MapElemValueType, key: pr.KeyType, value: pr.ValueType, listValElem: pr.ListValueElemType}
 		}
 		for j, st := range fn.Body.Statements {
 			if err := verifyStmt(ctx, st); err != nil {
@@ -307,6 +326,7 @@ func Verify(p *Program) error {
 type verifyCtx struct {
 	fns                 map[string]*Function
 	records             map[string]*RecordDecl
+	unions              map[string]*UnionDecl
 	scope               *scope
 	loopDepth           int
 	returnType          Type
@@ -331,6 +351,7 @@ type binding struct {
 	t            Type
 	mutable      bool
 	record       string // record name when t==TypeRecord
+	union        string // union name when t==TypeUnion (Phase 4)
 	elem         Type   // element type when t==TypeList
 	elemRec      string // element record name when t==TypeList && elem==TypeRecord
 	mapElemKey   Type   // map key type when t==TypeList && elem==TypeMap (Phase 3.4f)
@@ -384,6 +405,8 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 		return nil
 	case *ReturnStmt:
 		return verifyReturnStmt(ctx, s)
+	case *MatchStmt:
+		return verifyMatchStmt(ctx, s)
 	}
 	return fmt.Errorf("unhandled Stmt %T", st)
 }
@@ -435,14 +458,17 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 	if _, already := ctx.scope.vars[s.Name]; already {
 		return fmt.Errorf("rebinding %q in same scope", s.Name)
 	}
-	if s.Init == nil {
+	// nil Init is allowed only for mutable pre-declarations (match result-var).
+	if s.Init == nil && !s.Mutable {
 		return fmt.Errorf("let %q has nil Init", s.Name)
 	}
-	if err := verifyExprCtx(ctx, s.Init); err != nil {
-		return fmt.Errorf("let %q init: %w", s.Name, err)
-	}
-	if s.Init.Type() != s.VarType {
-		return fmt.Errorf("let %q: declared %s, init produces %s", s.Name, s.VarType, s.Init.Type())
+	if s.Init != nil {
+		if err := verifyExprCtx(ctx, s.Init); err != nil {
+			return fmt.Errorf("let %q init: %w", s.Name, err)
+		}
+		if s.Init.Type() != s.VarType {
+			return fmt.Errorf("let %q: declared %s, init produces %s", s.Name, s.VarType, s.Init.Type())
+		}
 	}
 	if s.VarType == TypeRecord {
 		if s.RecordName == "" {
@@ -451,19 +477,33 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 		if _, ok := ctx.records[s.RecordName]; !ok {
 			return fmt.Errorf("let %q: record %q is not declared", s.Name, s.RecordName)
 		}
-		initRec := exprRecordName(s.Init)
-		if initRec != s.RecordName {
-			return fmt.Errorf("let %q: declared record %q, init produces record %q", s.Name, s.RecordName, initRec)
+		if s.Init != nil {
+			initRec := exprRecordName(s.Init)
+			if initRec != s.RecordName {
+				return fmt.Errorf("let %q: declared record %q, init produces record %q", s.Name, s.RecordName, initRec)
+			}
 		}
 	} else if s.RecordName != "" {
 		return fmt.Errorf("let %q: RecordName set on non-record type %s", s.Name, s.VarType)
+	}
+	if s.VarType == TypeUnion {
+		if s.UnionName == "" {
+			return fmt.Errorf("let %q: union-typed binding missing UnionName", s.Name)
+		}
+		if _, ok := ctx.unions[s.UnionName]; !ok {
+			return fmt.Errorf("let %q: union %q is not declared", s.Name, s.UnionName)
+		}
+	} else if s.UnionName != "" {
+		return fmt.Errorf("let %q: UnionName set on non-union type %s", s.Name, s.VarType)
 	}
 	if s.VarType == TypeList {
 		if !isListElemType(s.ElemType) {
 			return fmt.Errorf("let %q: list binding has ElemType %s (Phase 3.4a supports scalar or record element types)", s.Name, s.ElemType)
 		}
-		if ie := exprElemType(s.Init); ie != s.ElemType {
-			return fmt.Errorf("let %q: declared list<%s>, init produces list<%s>", s.Name, s.ElemType, ie)
+		if s.Init != nil {
+			if ie := exprElemType(s.Init); ie != s.ElemType {
+				return fmt.Errorf("let %q: declared list<%s>, init produces list<%s>", s.Name, s.ElemType, ie)
+			}
 		}
 		if s.ElemType == TypeRecord {
 			if s.ElemRecordName == "" {
@@ -472,8 +512,10 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 			if _, ok := ctx.records[s.ElemRecordName]; !ok {
 				return fmt.Errorf("let %q: list element record %q is not declared", s.Name, s.ElemRecordName)
 			}
-			if ier := exprElemRecordName(s.Init); ier != s.ElemRecordName {
-				return fmt.Errorf("let %q: declared list<%s>, init produces list<%s>", s.Name, s.ElemRecordName, ier)
+			if s.Init != nil {
+				if ier := exprElemRecordName(s.Init); ier != s.ElemRecordName {
+					return fmt.Errorf("let %q: declared list<%s>, init produces list<%s>", s.Name, s.ElemRecordName, ier)
+				}
 			}
 		} else if s.ElemRecordName != "" {
 			return fmt.Errorf("let %q: ElemRecordName set on list<%s> (only valid when ElemType==record)", s.Name, s.ElemType)
@@ -505,18 +547,22 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 		if !isMapValueType(s.ValueType) {
 			return fmt.Errorf("let %q: map binding has ValueType %s (Phase 3.2/3.4e supports scalar or list values)", s.Name, s.ValueType)
 		}
-		if ik := exprKeyType(s.Init); ik != s.KeyType {
-			return fmt.Errorf("let %q: declared map<%s,...>, init produces map<%s,...>", s.Name, s.KeyType, ik)
-		}
-		if iv := exprValueType(s.Init); iv != s.ValueType {
-			return fmt.Errorf("let %q: declared map<%s,%s>, init produces map<%s,%s>", s.Name, s.KeyType, s.ValueType, s.KeyType, iv)
-		}
-		if s.ValueType == TypeList {
-			if !isScalarElemType(s.ListValueElemType) {
-				return fmt.Errorf("let %q: map<_,list<T>> binding has ListValueElemType %s (Phase 3.4e requires scalar inner)", s.Name, s.ListValueElemType)
+		if s.Init != nil {
+			if ik := exprKeyType(s.Init); ik != s.KeyType {
+				return fmt.Errorf("let %q: declared map<%s,...>, init produces map<%s,...>", s.Name, s.KeyType, ik)
 			}
-			if ilv := exprListValueElemType(s.Init); ilv != s.ListValueElemType {
-				return fmt.Errorf("let %q: declared map<_,list<%s>>, init produces map<_,list<%s>>", s.Name, s.ListValueElemType, ilv)
+			if iv := exprValueType(s.Init); iv != s.ValueType {
+				return fmt.Errorf("let %q: declared map<%s,%s>, init produces map<%s,%s>", s.Name, s.KeyType, s.ValueType, s.KeyType, iv)
+			}
+			if s.ValueType == TypeList {
+				if !isScalarElemType(s.ListValueElemType) {
+					return fmt.Errorf("let %q: map<_,list<T>> binding has ListValueElemType %s (Phase 3.4e requires scalar inner)", s.Name, s.ListValueElemType)
+				}
+				if ilv := exprListValueElemType(s.Init); ilv != s.ListValueElemType {
+					return fmt.Errorf("let %q: declared map<_,list<%s>>, init produces map<_,list<%s>>", s.Name, s.ListValueElemType, ilv)
+				}
+			} else if s.ListValueElemType != TypeInvalid {
+				return fmt.Errorf("let %q: ListValueElemType set on map<_,%s> (only valid when value is list)", s.Name, s.ValueType)
 			}
 		} else if s.ListValueElemType != TypeInvalid {
 			return fmt.Errorf("let %q: ListValueElemType set on map<_,%s> (only valid when value is list)", s.Name, s.ValueType)
@@ -532,7 +578,7 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 			return fmt.Errorf("let %q: ListValueElemType set on non-map type %s", s.Name, s.VarType)
 		}
 	}
-	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, elem: s.ElemType, elemRec: s.ElemRecordName, mapElemKey: s.MapElemKeyType, mapElemValue: s.MapElemValueType, key: s.KeyType, value: s.ValueType, listValElem: s.ListValueElemType}
+	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, union: s.UnionName, elem: s.ElemType, elemRec: s.ElemRecordName, mapElemKey: s.MapElemKeyType, mapElemValue: s.MapElemValueType, key: s.KeyType, value: s.ValueType, listValElem: s.ListValueElemType}
 	return nil
 }
 
@@ -741,6 +787,54 @@ func verifyForEachStmt(ctx *verifyCtx, s *ForEachStmt) error {
 	for i, st := range s.Body.Statements {
 		if err := verifyStmt(ctx, st); err != nil {
 			return fmt.Errorf("foreach body stmt %d: %w", i, err)
+		}
+	}
+	return nil
+}
+
+func verifyMatchStmt(ctx *verifyCtx, s *MatchStmt) error {
+	if s.Target == nil {
+		return errors.New("MatchStmt: nil Target")
+	}
+	if err := verifyExprCtx(ctx, s.Target); err != nil {
+		return fmt.Errorf("MatchStmt target: %w", err)
+	}
+	if s.Target.Type() != TypeUnion {
+		return fmt.Errorf("MatchStmt: target must be TypeUnion, got %s", s.Target.Type())
+	}
+	u, ok := ctx.unions[s.UnionName]
+	if !ok {
+		return fmt.Errorf("MatchStmt: union %q not declared", s.UnionName)
+	}
+	variantByName := make(map[string]VariantDecl, len(u.Variants))
+	for _, v := range u.Variants {
+		variantByName[v.Name] = v
+	}
+	verifyArm := func(arm *MatchArm) error {
+		prev := ctx.scope
+		ctx.scope = newScope(prev)
+		defer func() { ctx.scope = prev }()
+		for _, b := range arm.Bindings {
+			ctx.scope.vars[b.VarName] = binding{t: b.FieldType, mutable: false, record: b.RecordName}
+		}
+		for i, st := range arm.Body.Statements {
+			if err := verifyStmt(ctx, st); err != nil {
+				return fmt.Errorf("arm %q stmt %d: %w", arm.VariantName, i, err)
+			}
+		}
+		return nil
+	}
+	for i := range s.Arms {
+		if _, ok := variantByName[s.Arms[i].VariantName]; !ok {
+			return fmt.Errorf("MatchStmt: arm %d: unknown variant %q in union %q", i, s.Arms[i].VariantName, s.UnionName)
+		}
+		if err := verifyArm(&s.Arms[i]); err != nil {
+			return fmt.Errorf("MatchStmt arm %d: %w", i, err)
+		}
+	}
+	if s.Default != nil {
+		if err := verifyArm(s.Default); err != nil {
+			return fmt.Errorf("MatchStmt default arm: %w", err)
 		}
 	}
 	return nil
@@ -1143,6 +1237,36 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		return verifyMapKeysExpr(ctx, v)
 	case *MapValuesExpr:
 		return verifyMapValuesExpr(ctx, v)
+	case *VariantLit:
+		if _, ok := ctx.unions[v.UnionName]; !ok {
+			return fmt.Errorf("VariantLit: union %q not declared", v.UnionName)
+		}
+		for i, f := range v.Fields {
+			if err := verifyExprCtx(ctx, f.Value); err != nil {
+				return fmt.Errorf("VariantLit %q.%s field %d: %w", v.VariantName, f.Name, i, err)
+			}
+		}
+		return nil
+	case *UnionVarRef:
+		b, ok := ctx.scope.lookup(v.Name)
+		if !ok {
+			return fmt.Errorf("unresolved variable %q", v.Name)
+		}
+		if b.t != TypeUnion {
+			return fmt.Errorf("variable %q is not union-typed (got %s)", v.Name, b.t)
+		}
+		if b.union != v.UnionName {
+			return fmt.Errorf("variable %q has union %q in scope, ref says %q", v.Name, b.union, v.UnionName)
+		}
+		return nil
+	case *VariantFieldAccess:
+		if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+			return fmt.Errorf("VariantFieldAccess receiver: %w", err)
+		}
+		if v.Receiver.Type() != TypeUnion {
+			return fmt.Errorf("VariantFieldAccess: receiver must be TypeUnion, got %s", v.Receiver.Type())
+		}
+		return nil
 	case *CallExpr:
 		fn, ok := ctx.fns[v.Func]
 		if !ok {
