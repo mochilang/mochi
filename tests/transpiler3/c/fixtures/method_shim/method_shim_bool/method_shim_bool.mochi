@@ -1,0 +1,7 @@
+agent Flag {
+    var active: bool = false
+    intent read(): bool { return active }
+}
+let g = Flag { active: true }
+let f = g.read
+print(f())

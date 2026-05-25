@@ -1,0 +1,7 @@
+agent Counter {
+    var count: int = 0
+    intent value(): int { return count }
+}
+let c = Counter { count: 7 }
+let f = c.value
+print(f())
