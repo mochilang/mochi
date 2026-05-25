@@ -1,0 +1,2 @@
+let xs: list<string> = []
+print(len(xs))

@@ -1,0 +1,7 @@
+var xs: list<string> = []
+xs = append(xs, "alpha")
+xs = append(xs, "beta")
+xs = append(xs, "gamma")
+for x in xs {
+  print(x)
+}

@@ -1,0 +1,8 @@
+fun make_empty(): map<int, bool> {
+  let m: map<int, bool> = {}
+  return m
+}
+
+let result = make_empty()
+print(len(result))
+print(1 in result)

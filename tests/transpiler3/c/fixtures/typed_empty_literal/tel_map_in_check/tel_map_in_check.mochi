@@ -1,0 +1,3 @@
+let m: map<string, bool> = {}
+print("x" in m)
+print("y" in m)

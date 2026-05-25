@@ -1,0 +1,7 @@
+fun make_empty(): list<int> {
+  let xs: list<int> = []
+  return xs
+}
+
+let result = make_empty()
+print(len(result))

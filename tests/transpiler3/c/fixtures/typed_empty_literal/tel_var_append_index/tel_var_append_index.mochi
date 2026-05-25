@@ -1,0 +1,3 @@
+var xs: list<int> = []
+xs = append(xs, 99)
+print(xs[0])

@@ -1,0 +1,5 @@
+let xs: list<int> = []
+for x in xs {
+  print(x)
+}
+print("done")

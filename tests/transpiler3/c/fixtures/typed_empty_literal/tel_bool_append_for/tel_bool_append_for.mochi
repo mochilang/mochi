@@ -1,0 +1,7 @@
+var xs: list<bool> = []
+xs = append(xs, true)
+xs = append(xs, false)
+xs = append(xs, true)
+for x in xs {
+  print(x)
+}

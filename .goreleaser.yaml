@@ -3,10 +3,6 @@ version: 2
 
 project_name: mochi
 
-before:
-  hooks:
-    - go mod tidy
-
 builds:
   - id: mochi
     main: ./cmd/mochi/main.go
@@ -47,9 +43,7 @@ checksum:
   name_template: "checksums.txt"
 
 release:
-  github:
-    owner: mochilang
-    name: mochi
+  draft: false
 
 changelog:
   sort: asc

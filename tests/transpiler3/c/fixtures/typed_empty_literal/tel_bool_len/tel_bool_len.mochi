@@ -1,0 +1,2 @@
+let xs: list<bool> = []
+print(len(xs))

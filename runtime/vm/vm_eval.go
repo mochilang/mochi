@@ -428,7 +428,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				if cVal.Int == 0 {
 					return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 				}
-				if !(bVal.Int == -1<<63 && cVal.Int == -1) {
+				if !(int64(bVal.Int) == math.MinInt64 && cVal.Int == -1) {
 					fr.regs[ins.A] = Value{Tag: ValueInt, Int: bVal.Int / cVal.Int}
 					break
 				}
@@ -488,7 +488,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				if cVal.Int == 0 {
 					return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 				}
-				if !(bVal.Int == -1<<63 && cVal.Int == -1) {
+				if !(int64(bVal.Int) == math.MinInt64 && cVal.Int == -1) {
 					fr.regs[ins.A] = Value{Tag: ValueInt, Int: bVal.Int % cVal.Int}
 					break
 				}

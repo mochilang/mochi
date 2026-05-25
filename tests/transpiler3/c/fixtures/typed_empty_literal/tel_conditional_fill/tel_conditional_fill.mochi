@@ -1,0 +1,8 @@
+var xs: list<int> = []
+if true {
+  xs = append(xs, 7)
+  xs = append(xs, 14)
+}
+for x in xs {
+  print(x)
+}
