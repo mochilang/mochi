@@ -1013,6 +1013,8 @@ func exprElemType(e Expr) Type {
 		return v.KeyType
 	case *MapValuesExpr:
 		return v.ValueType
+	case *StrSplitExpr:
+		return TypeString
 	}
 	return TypeInvalid
 }
@@ -1337,6 +1339,39 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("StrReverseExpr: receiver must be TypeString, got %s", v.Receiver.Type())
 		}
 		return verifyExprCtx(ctx, v.Receiver)
+	// Phase 6.3: string case-conversion and split/join.
+	case *StrUpperExpr:
+		if v.Receiver.Type() != TypeString {
+			return fmt.Errorf("StrUpperExpr: receiver must be TypeString, got %s", v.Receiver.Type())
+		}
+		return verifyExprCtx(ctx, v.Receiver)
+	case *StrLowerExpr:
+		if v.Receiver.Type() != TypeString {
+			return fmt.Errorf("StrLowerExpr: receiver must be TypeString, got %s", v.Receiver.Type())
+		}
+		return verifyExprCtx(ctx, v.Receiver)
+	case *StrSplitExpr:
+		if v.Str.Type() != TypeString {
+			return fmt.Errorf("StrSplitExpr: str must be TypeString, got %s", v.Str.Type())
+		}
+		if v.Sep.Type() != TypeString {
+			return fmt.Errorf("StrSplitExpr: sep must be TypeString, got %s", v.Sep.Type())
+		}
+		if err := verifyExprCtx(ctx, v.Str); err != nil {
+			return err
+		}
+		return verifyExprCtx(ctx, v.Sep)
+	case *StrJoinExpr:
+		if v.List.Type() != TypeList {
+			return fmt.Errorf("StrJoinExpr: list must be TypeList, got %s", v.List.Type())
+		}
+		if v.Sep.Type() != TypeString {
+			return fmt.Errorf("StrJoinExpr: sep must be TypeString, got %s", v.Sep.Type())
+		}
+		if err := verifyExprCtx(ctx, v.List); err != nil {
+			return err
+		}
+		return verifyExprCtx(ctx, v.Sep)
 	case *StrConvertExpr:
 		if v.Operand == nil {
 			return fmt.Errorf("StrConvertExpr: nil operand")

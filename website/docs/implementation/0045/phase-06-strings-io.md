@@ -31,7 +31,7 @@ String concatenation and `len` on strings are used in nearly every Mochi program
 | 6.0 | String concatenation (`+`) and `len(s)` on strings: `BinStrCat` IR op; `StrLenExpr` IR node; `mochi_str_cat` C runtime (`runtime/src/strings.c` + `runtime/include/mochi/strings.h`); lower pass: `opForTypes` returns `BinStrCat` for `+` on TypeString, `lowerLenCall` returns `StrLenExpr` for TypeString; emit: `mochi_str_cat(a,b)` and `(int64_t)strlen(s)`; verifier: `BinStrCat` validated + `StrLenExpr` validated; `TestPhase6StringOps` gate (8 fixtures) | LANDED 2026-05-25 16:43 (GMT+7) | — | — |
 | 6.1 | `s[i]` (string indexing, returns one-byte-char string), `s.contains(sub)`, `substring(s, start, end)`, `reverse(s)`; `StrIndexExpr`, `StrContainsExpr`, `StrSubstringExpr`, `StrReverseExpr` IR nodes; `StrMethodRef` transient node for postfix call dispatch; `mochi_str_index`, `mochi_str_contains`, `mochi_str_substring`, `mochi_str_reverse` runtime functions; `TestPhase6StringMethods` gate (8 fixtures) | LANDED 2026-05-25 17:04 (GMT+7) | — | — |
 | 6.2 | `str(x)` type-to-string conversion for int, float, bool, string: `StrConvertExpr` IR node; `mochi_str_from_i64` (snprintf `%lld`), `mochi_str_from_f64` (snprintf `%g`), `mochi_str_from_bool` ("true"/"false"); string is identity; `lowerStrConvertCall`; `TestPhase6StrConvert` gate (8 fixtures) | LANDED 2026-05-25 17:49 (GMT+7) | — | — |
-| 6.3 | `split`, `join`, `toUpper`, `toLower` via utf8proc | NOT STARTED | — | — |
+| 6.3 | `upper(s)`, `lower(s)`, `split(s, sep)`, `join(xs, sep)`: `StrUpperExpr`, `StrLowerExpr`, `StrSplitExpr`, `StrJoinExpr` IR nodes; `mochi_str_upper`, `mochi_str_lower`, `mochi_str_split`, `mochi_str_join` C runtime (ASCII-only; utf8proc deferred); `exprElemType` extended for `StrSplitExpr` so `let xs = split(...)` infers `ElemType=TypeString`; `TestPhase6StringExtra` gate (8 fixtures). | LANDED 2026-05-25 19:27 (GMT+7) | — | — |
 | 6.4 | Format-string interpolation (`"{name} is {age}"` lowers to a printf-style sequence) | NOT STARTED | — | — |
 | 6.5 | File I/O: `readFile`, `writeFile`, `lines`, `appendFile`; `stdin`, `stdout`, `stderr` handles | NOT STARTED | — | — |
 | 6.6 | simdutf utf-8 validation on read; rejected input raises `MOCHI_ERR_PARSE` | NOT STARTED | — | — |
@@ -68,8 +68,7 @@ String concatenation and `len` on strings are used in nearly every Mochi program
 - `len(s)` counts bytes, not Unicode codepoints. utf8proc-based codepoint count deferred to Phase 6.2.
 - `mochi_str_index`, `mochi_str_substring`, `mochi_str_reverse` operate on bytes (ASCII). Full UTF-8 codepoint support via utf8proc: Phase 6.2.
 - `startsWith`, `endsWith`: not in vm3 either; deferred to a later sub-phase when vm3 grows these methods.
-- `split`, `join`: vm3 builtins return nil (no implementation) so no oracle; deferred.
-- `toUpper`, `toLower` via utf8proc: Phase 6.2.
+- `split`, `join`, `upper`, `lower`: implemented in Phase 6.3 with hand-written `expect.txt` (vm3 oracle limitation bypassed).
 - Format-string interpolation: Phase 6.3.
 - File I/O: Phase 6.4.
 - simdutf validation: Phase 6.5.

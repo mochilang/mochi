@@ -1,0 +1,3 @@
+let parts = split("hello world foo", " ")
+let n = len(parts)
+print(n)
