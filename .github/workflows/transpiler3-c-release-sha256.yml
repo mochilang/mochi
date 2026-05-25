@@ -1,0 +1,93 @@
+name: transpiler3/c – release SHA-256 checksums
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to attach checksums to (e.g. v0.12.0)'
+        required: true
+
+jobs:
+  sha256:
+    name: Build + checksum (${{ matrix.triple }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - triple: x86_64-linux-gnu
+            runner: ubuntu-latest
+          - triple: x86_64-linux-musl
+            runner: ubuntu-latest
+          - triple: aarch64-linux-musl
+            runner: ubuntu-latest
+          - triple: aarch64-macos-none
+            runner: macos-latest
+          - triple: x86_64-macos-none
+            runner: macos-13
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build mochi CLI
+        run: go build -o mochi-bin ./cmd/mochi
+
+      - name: Build hello fixture for ${{ matrix.triple }}
+        env:
+          MOCHI_TEST_ZIG_DOWNLOAD: '1'
+        run: |
+          ./mochi-bin build \
+            --target=c-aot \
+            --triple=${{ matrix.triple }} \
+            --out=hello-${{ matrix.triple }} \
+            tests/transpiler3/c/fixtures/hello/hello.mochi
+
+      - name: Compute SHA-256
+        run: |
+          sha256sum hello-${{ matrix.triple }} > hello-${{ matrix.triple }}.sha256 || \
+          shasum -a 256 hello-${{ matrix.triple }} > hello-${{ matrix.triple }}.sha256
+
+      - name: Upload checksum artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sha256-${{ matrix.triple }}
+          path: hello-${{ matrix.triple }}.sha256
+
+  publish:
+    name: Publish checksums to release
+    needs: sha256
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all checksum artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: sha256-*
+          merge-multiple: true
+          path: checksums/
+
+      - name: Combine into single checksums file
+        run: |
+          cat checksums/*.sha256 | sort > transpiler3-c-sha256sums.txt
+          echo "=== transpiler3/c release SHA-256 checksums ==="
+          cat transpiler3-c-sha256sums.txt
+
+      - name: Attach checksums to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          gh release upload "${TAG}" transpiler3-c-sha256sums.txt \
+            --repo "${{ github.repository }}" \
+            --clobber

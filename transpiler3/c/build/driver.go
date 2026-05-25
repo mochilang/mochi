@@ -66,6 +66,13 @@ type Driver struct {
 	// compile arguments. Phase 16 uses this to inject sanitiser
 	// flags (e.g. []string{"-fsanitize=address"}).
 	ExtraFlags []string
+
+	// Static, when true, passes -static to the linker so the output
+	// binary carries no shared-library dependencies beyond libc (and
+	// even libc is omitted when zig cc targets a musl triple).
+	// Requires zig cc or a host toolchain that supports -static.
+	// Phase 17.3 gates this on Linux.
+	Static bool
 }
 
 // Build is the source-to-binary entry point. src is a Mochi
@@ -199,6 +206,13 @@ func (d *Driver) Build(src, out, target, profile string) error {
 	// produce different LC_UUID values, breaking binary reproducibility.
 	if gort.GOOS == "darwin" {
 		ccArgs = append(ccArgs, "-Wl,-no_uuid")
+	}
+	// Phase 17.3: static linking. -static asks the linker to resolve all
+	// symbol references from archive (.a) libraries rather than shared
+	// objects. zig cc satisfies this with its bundled musl; host gcc on
+	// Linux also supports it when glibc-static is installed.
+	if d.Static {
+		ccArgs = append(ccArgs, "-static")
 	}
 	// Phase 16.4: debug profile adds ASan+UBSan so `mochi build --profile=debug`
 	// produces a sanitiser-instrumented binary without requiring the caller to

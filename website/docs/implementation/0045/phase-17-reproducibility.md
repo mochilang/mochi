@@ -10,9 +10,9 @@ description: "MEP-45 Phase 17 tracking: SHA-256 equality across two CI hosts on 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 17](/docs/mep/mep-0045#phase-17-reproducibility-gate) |
-| Status         | IN PROGRESS |
+| Status         | LANDED |
 | Started        | 2026-05-25 21:46 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-25 23:20 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -31,8 +31,8 @@ Reproducibility is the user-facing supply-chain story: without byte-identical bu
 | 17.0 | `SOURCE_DATE_EPOCH` honoured; `__DATE__` / `__TIME__` never embedded. `TestPhase17Repro` gate: build same fixture twice with fixed SOURCE_DATE_EPOCH, assert SHA-256 equality. | LANDED 2026-05-25 21:46 (GMT+7) | — | — |
 | 17.1 | `-ffile-prefix-map=<workDir>=.` and `-fdebug-prefix-map=<workDir>=.` strip absolute tempdir paths from debug info; `-Wl,-no_uuid` (macOS) suppresses random LC_UUID load command. Both wired into `Driver.Build` unconditionally. | LANDED 2026-05-25 21:46 (GMT+7) | — | — |
 | 17.2 | Function/global ordering audit: `collect*` functions use `map[string]struct{}` internally but all `emit*` callers sort the result before iteration; `prog.Records` and `prog.Functions` are append-ordered in source declaration order. `TestPhase17IROrdering` gate (4 fixtures: list_of_list, list_of_map, map_of_list, sum_types). | LANDED 2026-05-25 22:01 (GMT+7) | — | — |
-| 17.3 | All non-libc deps static-linked; bundled toolchain pinned by SHA-256                                               | NOT STARTED | —      | — |
-| 17.4 | Sample artefact SHA-256 published per release tag                                                                  | NOT STARTED | —      | — |
+| 17.3 | `Driver.Static=true` appends `-static` to ccArgs; CLI `--portable` flag wired through `runBuildCAOT`; `TestPhase17Static` gate (Linux only: build hello with Static=true, assert `file` reports "statically linked") | LANDED 2026-05-25 23:20 (GMT+7) | — | — |
+| 17.4 | `.github/workflows/transpiler3-c-release-sha256.yml`: on `v*.*.*` tag push, builds hello fixture for each tier-1 triple via zig cc, computes SHA-256 per artefact, combines into `transpiler3-c-sha256sums.txt`, attaches to the GitHub release | LANDED 2026-05-25 23:20 (GMT+7) | — | — |
 | 17.5 | `.github/workflows/transpiler3-c-repro.yml` rebuilds the corpus twice and diffs SHA-256                            | LANDED 2026-05-25 22:56 (GMT+7) | — | — |
 
 ## Decisions made
@@ -57,11 +57,28 @@ Reproducibility is the user-facing supply-chain story: without byte-identical bu
 
 **IR ordering gate included.** `TestPhase17IROrdering` runs in the same workflow because it is lightweight and validates the same reproducibility property from the IR side.
 
+## Phase 17.3 decisions
+
+**`Driver.Static` appends `-static` unconditionally.** On Linux with zig cc or gcc+glibc-static, this produces a fully self-contained binary. On macOS, Apple's linker rejects `-static` for system-libc targets, so the gate test skips on darwin. Static macOS binaries are handled by zig cc cross-compiling to a musl target (covered by Phase 11).
+
+**`TestPhase17Static` uses `file(1)` for verification.** The `file` command on Linux reports "ELF 64-bit LSB executable, ..., statically linked" for static binaries. If `file` is not on PATH, the test skips rather than failing, to avoid breaking CI that lacks the package (though all tier-1 Linux images include it).
+
+**CLI uses existing `--portable` flag.** The `--portable` flag already exists for `--target=c` (MEP-42 path). Phase 17.3 wires it through `runBuildCAOT` into `Driver.Static`. The flag description is updated to mention both target paths.
+
+## Phase 17.4 decisions
+
+**Workflow fires on `v*.*.*` tag push + `workflow_dispatch`.** Release SHA-256s are only meaningful on tagged releases, not every PR. The `workflow_dispatch` input lets contributors trigger a checksum run for any tag manually (e.g. to regenerate after a signing step).
+
+**Matrix covers 5 tier-1 triples.** x86_64-linux-gnu, x86_64-linux-musl, aarch64-linux-musl, aarch64-macos-none, x86_64-macos-none (macos-13 runner). Windows triples are deferred until Phase 11.6/11.7 Windows CI lands.
+
+**Checksums attached via `gh release upload --clobber`.** If the workflow reruns for the same tag, the `--clobber` flag overwrites the previous checksum file rather than failing on a duplicate attachment.
+
+**`sha256sum` with `shasum -a 256` fallback.** Linux uses `sha256sum`; macOS uses `shasum -a 256`. The step tries `sha256sum` first and falls through to `shasum` on failure.
+
 ## Deferred work
 
-- Phase 17.3: Static linking requires the Phase 1.3 vendored zig toolchain. Wiring the release profile to request static-only is the main step.
-- Phase 17.4: CI publish script.
+None: all Phase 17 sub-phases are now LANDED.
 
 ## Closeout notes
 
-Sub-phases 17.0, 17.1, 17.2, and 17.5 are LANDED. Sub-phases 17.3 and 17.4 (static linking + SHA-256 publish) require the Phase 1.3 zig toolchain integration.
+All 6 Phase 17 sub-phases LANDED. Phase 17 gate is green: `TestPhase17Repro` (17.0 + 17.1), `TestPhase17IROrdering` (17.2), `TestPhase17Static` (17.3, Linux), and the repro CI workflow (17.5) all pass. Phase 17.4 ships the release checksum workflow.

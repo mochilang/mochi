@@ -83,7 +83,7 @@ type BuildCmd struct {
 	RuntimeReplace string `arg:"--runtime-replace" help:"Local replace directive for mochi runtime (library mode)"`
 	CC             string `arg:"--cc" help:"C compiler to invoke (default: $MOCHI_CC or 'cc'); --target=c only"`
 	BinaryPath     string `arg:"--binary" help:"Output binary path; --target=c only"`
-	Static         bool   `arg:"--portable" help:"Statically link the binary (musl/glibc-static); --target=c only"`
+	Static         bool   `arg:"--portable" help:"Statically link the binary (musl/glibc-static); --target=c and --target=c-aot"`
 	Triple         string `arg:"--triple" help:"Target triple (e.g. x86_64-linux-musl, aarch64-macos, wasm32-wasi); --target=c only. When set, the driver defaults to 'zig cc' and passes -target=<triple>"`
 	Profile        string `arg:"--profile" default:"release" help:"Build profile for --target=c-aot: 'release' (default) or 'debug' (adds -fsanitize=address,undefined)"`
 }
@@ -280,6 +280,7 @@ func runBuildCAOT(cmd *BuildCmd) error {
 	d := &aotcbuild.Driver{
 		CC:       cmd.CC,
 		KeepEmit: keepEmit,
+		Static:   cmd.Static,
 	}
 	if err := d.Build(cmd.File, cmd.Out, cmd.Triple, cmd.Profile); err != nil {
 		return err
@@ -827,7 +828,7 @@ func newBuildCmd() *cobra.Command {
 	c.Flags().StringVar(&bc.RuntimeReplace, "runtime-replace", "", "Local replace directive for mochi runtime (library mode)")
 	c.Flags().StringVar(&bc.CC, "cc", "", "C compiler to invoke (default: $MOCHI_CC or 'cc'); --target=c only")
 	c.Flags().StringVar(&bc.BinaryPath, "binary", "", "Output binary path; --target=c only")
-	c.Flags().BoolVar(&bc.Static, "portable", false, "Statically link the binary (musl/glibc-static); --target=c only")
+	c.Flags().BoolVar(&bc.Static, "portable", false, "Statically link the binary (musl/glibc-static); --target=c and --target=c-aot (Phase 17.3)")
 	c.Flags().StringVar(&bc.Triple, "triple", "", "Target triple (e.g. x86_64-linux-musl, aarch64-macos, wasm32-wasi); --target=c only. When set, the driver defaults to 'zig cc' and passes -target=<triple>")
 	return c
 }
