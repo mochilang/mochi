@@ -295,3 +295,38 @@ const char *mochi_list_str_max(mochi_list_str xs) {
     for (int64_t i = 1; i < xs.len; i++) if (strcmp(xs.data[i], v) > 0) v = xs.data[i];
     return v;
 }
+
+/* ---- Phase 2.6: contains / sum ------------------------------------- */
+
+int mochi_list_i64_contains(mochi_list_i64 xs, int64_t val) {
+    for (int64_t i = 0; i < xs.len; i++) if (xs.data[i] == val) return 1;
+    return 0;
+}
+
+int64_t mochi_list_i64_sum(mochi_list_i64 xs) {
+    int64_t s = 0;
+    for (int64_t i = 0; i < xs.len; i++) s += xs.data[i];
+    return s;
+}
+
+int mochi_list_f64_contains(mochi_list_f64 xs, double val) {
+    for (int64_t i = 0; i < xs.len; i++) if (xs.data[i] == val) return 1;
+    return 0;
+}
+
+double mochi_list_f64_sum(mochi_list_f64 xs) {
+    double s = 0.0;
+    for (int64_t i = 0; i < xs.len; i++) s += xs.data[i];
+    return s;
+}
+
+int mochi_list_bool_contains(mochi_list_bool xs, int val) {
+    int norm = val ? 1 : 0;
+    for (int64_t i = 0; i < xs.len; i++) if (xs.data[i] == norm) return 1;
+    return 0;
+}
+
+int mochi_list_str_contains(mochi_list_str xs, const char *val) {
+    for (int64_t i = 0; i < xs.len; i++) if (strcmp(xs.data[i], val) == 0) return 1;
+    return 0;
+}

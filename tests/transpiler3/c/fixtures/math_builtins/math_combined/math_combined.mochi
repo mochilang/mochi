@@ -1,0 +1,7 @@
+let nums: list<int> = [10, 20, 30, 40, 50]
+print(15 in nums)
+print(20 in nums)
+print(sum(nums))
+print(abs(-42))
+print(floor(7.8))
+print(ceil(7.2))
