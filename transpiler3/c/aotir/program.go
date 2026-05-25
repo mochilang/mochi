@@ -109,6 +109,23 @@ type Function struct {
 	// The entry function (Main) has zero params.
 	Params []Param
 
+	// IsLifted marks a function that was lifted from an anonymous
+	// closure literal (Phase 5.0+). Lifted functions receive
+	// `void *__mochi_env` as their first parameter so they conform
+	// to the mochi_closure_* function-pointer ABI.
+	IsLifted bool
+
+	// EnvTypeName is the C typedef name of the environment struct
+	// this lifted function expects (e.g. "__anon_2_env_t"). Empty
+	// for non-capturing lifted functions.
+	EnvTypeName string
+
+	// Captures lists the variables this lifted function captures from
+	// the enclosing scope (Phase 5.1). Empty for non-capturing closures.
+	// The emitter uses this to emit the env struct typedef before the
+	// function definition.
+	Captures []FunCapture
+
 	// ReturnType is the function's monomorphic return type.
 	ReturnType Type
 
@@ -205,9 +222,10 @@ type CallExpr struct {
 	ResultInnerElemType     Type   // valid when Result==TypeList && ResultElemType==TypeList (Phase 3.4b)
 	ResultMapElemKeyType    Type   // valid when Result==TypeList && ResultElemType==TypeMap (Phase 3.4f)
 	ResultMapElemValueType  Type   // valid when Result==TypeList && ResultElemType==TypeMap (Phase 3.4f)
-	ResultKeyType           Type   // valid when Result==TypeMap
-	ResultValueType         Type   // valid when Result==TypeMap
-	ResultListValueElemType Type   // valid when Result==TypeMap && ResultValueType==TypeList (Phase 3.4e)
+	ResultKeyType           Type    // valid when Result==TypeMap
+	ResultValueType         Type    // valid when Result==TypeMap
+	ResultListValueElemType Type    // valid when Result==TypeMap && ResultValueType==TypeList (Phase 3.4e)
+	ResultFunSig            *FunSig // valid when Result==TypeFun (Phase 5.0/5.1)
 }
 
 func (c *CallExpr) Type() Type { return c.Result }
@@ -869,21 +887,18 @@ type FunSig struct {
 }
 
 // FunTypeName returns the C typedef name for this function signature.
-// Format: mochi_fnptr_<p0>_<p1>_..._to_<ret> with no params: mochi_fnptr_to_<ret>.
+// Phase 5.1 changed the prefix from mochi_fnptr_ to mochi_closure_ to
+// reflect the fat-pointer struct (fn + env) that every closure value uses.
+// Format: mochi_closure_<p0>_<p1>_..._to_<ret>; no params: mochi_closure_to_<ret>.
 func (sig *FunSig) FunTypeName() string {
-	parts := make([]string, 0, len(sig.ParamTypes)+1)
-	for _, pt := range sig.ParamTypes {
-		parts = append(parts, funTypeAbbrev(pt))
-	}
-	parts = append(parts, funTypeAbbrev(sig.ReturnType))
 	if len(sig.ParamTypes) == 0 {
-		return "mochi_fnptr_to_" + funTypeAbbrev(sig.ReturnType)
+		return "mochi_closure_to_" + funTypeAbbrev(sig.ReturnType)
 	}
 	paramParts := make([]string, len(sig.ParamTypes))
 	for i, pt := range sig.ParamTypes {
 		paramParts[i] = funTypeAbbrev(pt)
 	}
-	return "mochi_fnptr_" + strings.Join(paramParts, "_") + "_to_" + funTypeAbbrev(sig.ReturnType)
+	return "mochi_closure_" + strings.Join(paramParts, "_") + "_to_" + funTypeAbbrev(sig.ReturnType)
 }
 
 // funTypeAbbrev returns the abbreviated C type suffix used in function
@@ -1008,13 +1023,51 @@ type MatchStmt struct {
 func (*MatchStmt) isStmt() {}
 
 // ---- Phase 5.0: non-capturing closures ----
+// ---- Phase 5.1: capturing closures ----
 
-// FunLit represents a non-capturing closure literal. During lowering,
-// the closure body is lifted to a top-level aotir.Function. FunLit
-// holds the lifted function's name and its type signature.
+// FunCapture describes one variable captured from the enclosing scope.
+// The lowerer populates this when it detects a free variable reference
+// inside a closure body. The emitter uses it to fill in the env struct
+// typedef and the malloc+fill sequence before the closure value.
+type FunCapture struct {
+	// FieldName is the C struct member name (same as the Mochi variable
+	// name with no mangling, since captured names are already valid C
+	// identifiers after the parser).
+	FieldName string
+	// VarType is the aotir type of the captured variable.
+	VarType Type
+	// SrcName is the Mochi variable name in the enclosing scope, used to
+	// emit the initializer `__env->FieldName = SrcName;`.
+	SrcName string
+}
+
+// ClosureEnvStmt allocates and fills a closure environment struct before
+// the FunLit that captures it. The lowerer emits this immediately before
+// the LetStmt that binds the closure value.
+//
+// The emitter renders:
+//
+//	<EnvTypeName> *<EnvVarName> = malloc(sizeof(<EnvTypeName>));
+//	<EnvVarName>-><field0> = <src0>;
+//	...
+type ClosureEnvStmt struct {
+	EnvTypeName string       // e.g. "__anon_2_env_t"
+	EnvVarName  string       // e.g. "__anon_2_env"
+	Captures    []FunCapture // captured variables in order
+}
+
+func (*ClosureEnvStmt) isStmt() {}
+
+// FunLit represents a closure literal. During lowering, the closure body
+// is lifted to a top-level aotir.Function. FunLit holds the lifted
+// function's name, its type signature, and (for capturing closures) the
+// environment variable to thread through.
 type FunLit struct {
-	FuncName string  // name of the lifted function (e.g. __anon_1)
-	Sig      *FunSig // type signature of the anonymous function
+	FuncName    string       // name of the lifted function (e.g. __anon_1)
+	Sig         *FunSig      // type signature of the anonymous function
+	Captures    []FunCapture // non-empty for capturing closures (Phase 5.1)
+	EnvTypeName string       // C typedef name for the env struct; empty if non-capturing
+	EnvVarName  string       // C variable holding the env pointer; empty if non-capturing
 }
 
 func (f *FunLit) Type() Type { return TypeFun }
