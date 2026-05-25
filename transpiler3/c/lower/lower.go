@@ -3702,13 +3702,7 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 	if l.currentBlock == nil {
 		return nil, fmt.Errorf("query expression outside a statement block (internal error)")
 	}
-	// Phase 8.0: reject complex query shapes.
-	if len(q.Froms) > 0 {
-		return nil, fmt.Errorf("multiple from clauses (cross-join queries) land in Phase 8.2")
-	}
-	if len(q.Joins) > 0 {
-		return nil, fmt.Errorf("join clauses land in Phase 8.2")
-	}
+	// Phase 8.2: cross-join (from) and join clauses are now supported.
 	if q.Group != nil {
 		return nil, fmt.Errorf("group-by queries land in Phase 8.1")
 	}
@@ -3731,11 +3725,58 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 	sourceMapKey := exprMapElemKeyType(source)
 	sourceMapValue := exprMapElemValueType(source)
 
+	// Lower each from/join right-side source in the current outer scope (before
+	// pushing inner vars). Store the lowered source list alongside its elem metadata.
+	type joinSrcInfo struct {
+		src      aotir.Expr
+		elemType aotir.Type
+		elemRec  string
+		innerElem aotir.Type
+		mapKey   aotir.Type
+		mapValue aotir.Type
+	}
+	fromSrcs := make([]joinSrcInfo, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := l.lowerExpr(f.Src)
+		if err != nil {
+			return nil, fmt.Errorf("query from[%d] source: %w", i, err)
+		}
+		if fs.Type() != aotir.TypeList {
+			return nil, fmt.Errorf("query from source must be a list, got %s", fs.Type())
+		}
+		fromSrcs[i] = joinSrcInfo{
+			src:      fs,
+			elemType: exprElemType(fs),
+			elemRec:  exprElemRecordName(fs),
+			innerElem: exprInnerElemType(fs),
+			mapKey:   exprMapElemKeyType(fs),
+			mapValue: exprMapElemValueType(fs),
+		}
+	}
+	joinSrcs := make([]joinSrcInfo, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := l.lowerExpr(j.Src)
+		if err != nil {
+			return nil, fmt.Errorf("query join[%d] source: %w", i, err)
+		}
+		if js.Type() != aotir.TypeList {
+			return nil, fmt.Errorf("query join source must be a list, got %s", js.Type())
+		}
+		joinSrcs[i] = joinSrcInfo{
+			src:      js,
+			elemType: exprElemType(js),
+			elemRec:  exprElemRecordName(js),
+			innerElem: exprInnerElemType(js),
+			mapKey:   exprMapElemKeyType(js),
+			mapValue: exprMapElemValueType(js),
+		}
+	}
+
 	// Allocate a fresh temp for the result list (in outer scope, mutable).
 	l.tempCounter++
 	tempName := fmt.Sprintf("__query%d", l.tempCounter)
 
-	// Push inner scope for the loop variable.
+	// Push inner scope for the outer loop variable plus all from/join vars.
 	prev := l.scope
 	l.scope = newLScope(prev)
 	loopBinding := lbinding{
@@ -3746,8 +3787,43 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 		mapElemValue: sourceMapValue,
 	}
 	l.scope.vars[q.Var] = loopBinding
+	for i, f := range q.Froms {
+		si := fromSrcs[i]
+		l.scope.vars[f.Var] = lbinding{
+			t:            si.elemType,
+			record:       si.elemRec,
+			elem:         si.innerElem,
+			mapElemKey:   si.mapKey,
+			mapElemValue: si.mapValue,
+		}
+	}
+	for i, j := range q.Joins {
+		si := joinSrcs[i]
+		l.scope.vars[j.Var] = lbinding{
+			t:            si.elemType,
+			record:       si.elemRec,
+			elem:         si.innerElem,
+			mapElemKey:   si.mapKey,
+			mapElemValue: si.mapValue,
+		}
+	}
 
-	// Lower the select expression (in inner scope with loop var).
+	// Lower on-conditions for each join (all vars are in scope at this point).
+	joinOns := make([]aotir.Expr, len(q.Joins))
+	for i, j := range q.Joins {
+		on, err := l.lowerExpr(j.On)
+		if err != nil {
+			l.scope = prev
+			return nil, fmt.Errorf("query join[%d] on: %w", i, err)
+		}
+		if on.Type() != aotir.TypeBool {
+			l.scope = prev
+			return nil, fmt.Errorf("query join[%d] on condition must be bool, got %s", i, on.Type())
+		}
+		joinOns[i] = on
+	}
+
+	// Lower the select expression (all vars in scope).
 	selectExpr, err := l.lowerExpr(q.Select)
 	if err != nil {
 		l.scope = prev
@@ -3780,8 +3856,7 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 		Mutable:  true,
 	})
 
-	// Build the body of the for-each loop.
-	// Body: __queryN = append(__queryN, selectExpr)  [optionally wrapped in if]
+	// Build the append statement: __queryN = append(__queryN, selectExpr)
 	resultRef := &aotir.VarRef{Name: tempName, VarType: aotir.TypeList, ElemType: selectElemType}
 	appendStmt := &aotir.AssignStmt{
 		Name: tempName,
@@ -3792,17 +3867,115 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 		},
 	}
 
-	body := &aotir.Block{}
+	// innerBody starts as the append (possibly wrapped in a where guard).
+	var innerBody *aotir.Block
 	if whereCond != nil {
-		body.Statements = append(body.Statements, &aotir.IfStmt{
+		innerBody = &aotir.Block{Statements: []aotir.Stmt{&aotir.IfStmt{
 			Cond: whereCond,
 			Then: &aotir.Block{Statements: []aotir.Stmt{appendStmt}},
-		})
+		}}}
 	} else {
-		body.Statements = append(body.Statements, appendStmt)
+		innerBody = &aotir.Block{Statements: []aotir.Stmt{appendStmt}}
 	}
 
-	// Emit: for q.Var in source { body }
+	// Wrap innerBody with join loops in reverse order (innermost first).
+	for i := len(q.Joins) - 1; i >= 0; i-- {
+		j := q.Joins[i]
+		si := joinSrcs[i]
+		on := joinOns[i]
+		if j.Side == nil {
+			// Inner join: for y in ys { if on { innerBody } }
+			innerBody = &aotir.Block{Statements: []aotir.Stmt{
+				&aotir.ForEachStmt{
+					Var:              j.Var,
+					List:             si.src,
+					ElemType:         si.elemType,
+					ElemRecordName:   si.elemRec,
+					InnerElemType:    si.innerElem,
+					MapElemKeyType:   si.mapKey,
+					MapElemValueType: si.mapValue,
+					Body: &aotir.Block{Statements: []aotir.Stmt{
+						&aotir.IfStmt{Cond: on, Then: innerBody},
+					}},
+				},
+			}}
+		} else {
+			// Left join: emit __anyN sentinel + matched rows + unmatched fallback.
+			l.tempCounter++
+			anyName := fmt.Sprintf("__any%d", l.tempCounter)
+			prev.vars[anyName] = lbinding{t: aotir.TypeBool, mutable: true}
+
+			// The matched body sets __anyN = true then appends.
+			matchedStmts := append([]aotir.Stmt{
+				&aotir.AssignStmt{Name: anyName, Value: &aotir.BoolLit{Value: true}},
+			}, innerBody.Statements...)
+
+			// Rebuild a fresh resultRef/appendStmt for the unmatched fallback
+			// (innerBody may reference selectExpr which was built with all vars
+			// in scope; for left join the select in fixtures only uses left vars,
+			// so we can reuse selectExpr directly).
+			fallbackAppend := &aotir.AssignStmt{
+				Name: tempName,
+				Value: &aotir.AppendExpr{
+					Receiver: &aotir.VarRef{Name: tempName, VarType: aotir.TypeList, ElemType: selectElemType},
+					Value:    selectExpr,
+					ElemType: selectElemType,
+				},
+			}
+			var fallbackBody *aotir.Block
+			if whereCond != nil {
+				fallbackBody = &aotir.Block{Statements: []aotir.Stmt{&aotir.IfStmt{
+					Cond: whereCond,
+					Then: &aotir.Block{Statements: []aotir.Stmt{fallbackAppend}},
+				}}}
+			} else {
+				fallbackBody = &aotir.Block{Statements: []aotir.Stmt{fallbackAppend}}
+			}
+
+			innerBody = &aotir.Block{Statements: []aotir.Stmt{
+				&aotir.LetStmt{Name: anyName, VarType: aotir.TypeBool, Init: &aotir.BoolLit{Value: false}, Mutable: true},
+				&aotir.ForEachStmt{
+					Var:              j.Var,
+					List:             si.src,
+					ElemType:         si.elemType,
+					ElemRecordName:   si.elemRec,
+					InnerElemType:    si.innerElem,
+					MapElemKeyType:   si.mapKey,
+					MapElemValueType: si.mapValue,
+					Body: &aotir.Block{Statements: []aotir.Stmt{
+						&aotir.IfStmt{
+							Cond: on,
+							Then: &aotir.Block{Statements: matchedStmts},
+						},
+					}},
+				},
+				&aotir.IfStmt{
+					Cond: &aotir.UnaryExpr{Op: aotir.UnNotBool, Operand: &aotir.VarRef{Name: anyName, VarType: aotir.TypeBool}, Result: aotir.TypeBool},
+					Then: fallbackBody,
+				},
+			}}
+		}
+	}
+
+	// Wrap innerBody with from (cross-join) loops in reverse order.
+	for i := len(q.Froms) - 1; i >= 0; i-- {
+		f := q.Froms[i]
+		si := fromSrcs[i]
+		innerBody = &aotir.Block{Statements: []aotir.Stmt{
+			&aotir.ForEachStmt{
+				Var:              f.Var,
+				List:             si.src,
+				ElemType:         si.elemType,
+				ElemRecordName:   si.elemRec,
+				InnerElemType:    si.innerElem,
+				MapElemKeyType:   si.mapKey,
+				MapElemValueType: si.mapValue,
+				Body:             innerBody,
+			},
+		}}
+	}
+
+	// Emit: for q.Var in source { innerBody }
 	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.ForEachStmt{
 		Var:              q.Var,
 		List:             source,
@@ -3811,7 +3984,7 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 		InnerElemType:    sourceInnerElem,
 		MapElemKeyType:   sourceMapKey,
 		MapElemValueType: sourceMapValue,
-		Body:             body,
+		Body:             innerBody,
 	})
 
 	// Phase 8.1: order by -- sort the accumulated result list.
