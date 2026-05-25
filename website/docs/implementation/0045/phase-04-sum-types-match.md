@@ -31,7 +31,7 @@ Sum types and pattern matching are core to idiomatic Mochi. Without them the tra
 | 4.0 | Sum-type lowering: `TypeUnion` aotir type; `struct pkg_S { uint8_t tag; union { ... } u; }` C representation with inline variant constructors; `VariantLit`, `UnionVarRef`, `VariantFieldAccess`, `MatchStmt` IR nodes in `aotir/program.go`; verifier, lower, emit passes updated; match-as-expression (result-var pre-declaration with nil Init, assignment in arms) + match-as-statement (unit-returning print/call in arms); `CallExpr.ResultUnionName` added to propagate union identity through function return bindings; `TestPhase4SumTypes` gate (14 fixtures). Scalar primitive variant fields only (int, float, bool, string). Unit variants supported. | LANDED 2026-05-25 15:48 (GMT+7) | — | — |
 | 4.1 | Maranget decision-tree pass: `transpiler3/c/lower/match.go` canonicalizes `MatchStmt` arms (unique-tag validation, ascending-tag sort); for single-column patterns the pass confirms the already-optimal `switch(tag)` structure; `TestPhase4Maranget` gate reuses the 14 Phase 4.0 sum-type fixtures | LANDED 2026-05-25 21:08 (GMT+7) | — | — |
 | 4.2 | Exhaustiveness check at type-check time: enforced by shared type checker (error T050) before lower; defense-in-depth `default: mochi_panic_index()` in emitted C switch | LANDED 2026-05-25 20:59 (GMT+7) | — | — |
-| 4.3 | Property test: `theft`-generated random pattern set decides identically to reference naive matcher (10000 cases per CI run) | NOT STARTED | — | — |
+| 4.3 | Property test: 10 000 random arm-order trials verify that `canonicalizeMatchStmt` (sort + dup-check) is semantically neutral; plus 1000 trials confirm duplicate-tag rejection. No external `theft` dependency: uses `math/rand` + Go table-driven approach in `transpiler3/c/lower/match_property_test.go`. `TestPhase4MatchProperty` + `TestPhase4MatchDuplicateRejection`. | LANDED 2026-05-25 22:39 (GMT+7) | — | — |
 
 ## Decisions made
 
@@ -92,13 +92,29 @@ static inline pkg_S pkg_S_B(const char * y) {
 
 **Gate.** `TestPhase4Maranget` in `build/phase04_1_test.go` runs `runFixtureSuite(t, "sum_types")` — the same 14 fixtures as Phase 4.0. All 14 pass byte-equal after the Maranget pass is wired in, confirming the pass is a correct no-op for well-formed programs.
 
+## Phase 4.3: property test decisions
+
+**No external `theft` dependency.** The MEP referenced the C library `theft` as a property-testing framework. Rather than adding an external dependency, Phase 4.3 is implemented using Go's standard `math/rand` package to generate 10 000 random arm-order trials. The property under test is identical to what `theft` would verify: that `canonicalizeMatchStmt` is semantically neutral.
+
+**Test structure.** `TestPhase4MatchProperty` generates random MatchStmt instances:
+- Random union width N (2..8 variants).
+- Random subset of N distinct tags (1..N arms present in the match).
+- Arms shuffled randomly.
+- Naive oracle: for each tag, the name of the first arm whose tag matches.
+- After `canonicalizeMatchStmt`: sorted arms are checked against the oracle.
+- Invariants verified: (1) correct arm selected per tag, (2) arms are in strictly ascending tag order.
+
+**Duplicate rejection test.** `TestPhase4MatchDuplicateRejection` runs 1000 trials where arm tags are drawn from a pool smaller than the arm count, guaranteeing at least one duplicate. Verified that `canonicalizeMatchStmt` returns an error in all duplicate cases.
+
+**Why the property is trivial but useful.** For single-column tag dispatch, sorting arms is provably correct (each tag appears at most once, so sort is a bijection on the arm set). The property test documents this invariant and will catch regressions if the sort logic is changed incorrectly (e.g., accidentally reversing the comparator or allowing partial sorts).
+
 ## Deferred work
 
 - Recursive variant fields (variants whose field type references the same union) are rejected in Phase 4.0 by `scalarVariantFieldType`. Phase 4.1+ will add boxing for recursive variants.
 - Niche optimisation for `?T` (null = None) deferred.
-- Maranget decision-tree optimisation (Phase 4.1): current lowering uses a simple `switch` on tag, which is already optimal for non-nested patterns.
+- Maranget decision-tree optimisation for multi-column patterns: current lowering uses a simple `switch` on tag, which is already optimal for non-nested patterns.
 - GADT support: not in v1.
 
 ## Closeout notes
 
-_Fill in after gate fully green (all 4 sub-phases)._
+All 4 sub-phases (4.0 through 4.3) are LANDED. Phase 4 is complete.
