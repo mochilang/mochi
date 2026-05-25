@@ -37,6 +37,7 @@
 #endif
 
 #include "mochi/sched.h"
+#include "mochi/shutdown.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -229,6 +230,11 @@ void mochi_sched_spawn(mochi_fiber_fn fn, void *userdata) {
 
 void mochi_sched_run(void) {
     while (sched_queue_size() > 0) {
+#ifndef _WIN32
+        /* Phase 9.4: abort the run loop when shutdown is requested so
+         * the program can exit gracefully after the current fiber round. */
+        if (mochi_shutdown_requested) break;
+#endif
         mochi_fiber_t *f = sched_dequeue();
 
         /* Skip any fibers that somehow ended up dead in the queue. */

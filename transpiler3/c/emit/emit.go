@@ -50,6 +50,7 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include \"mochi/csv.h\"\n")
 	b.WriteString("#include \"mochi/chan.h\"\n")
 	b.WriteString("#include \"mochi/stream.h\"\n")
+	b.WriteString("#include \"mochi/shutdown.h\"\n")
 	listRecNames := collectListRecordElems(prog)
 	listListInners := collectListListInners(prog)
 	listMapPairs := collectListOfMapPairs(prog)
@@ -295,6 +296,8 @@ func cReturnType(t aotir.Type, recName string, elemType aotir.Type, elemRecName 
 func emitFunction(b *strings.Builder, fn *aotir.Function, entry bool) error {
 	if entry {
 		b.WriteString("int main(void) {\n")
+		// Phase 9.4: install SIGINT/SIGTERM graceful-shutdown handlers.
+		b.WriteString("    mochi_shutdown_init();\n")
 	} else {
 		// Phase 5.1: emit the env struct typedef before the function body
 		// when this is a capturing lifted function. The typedef is local to
