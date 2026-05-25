@@ -10,9 +10,9 @@ description: "MEP-45 Phase 18 tracking: median fixture wall-clock within 2x of G
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 18](/docs/mep/mep-0045#phase-18-performance-gate) |
-| Status         | IN PROGRESS |
+| Status         | LANDED |
 | Started        | 2026-05-25 22:01 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-25 23:25 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -30,7 +30,7 @@ Performance gate exists so a regression cannot ship silently. The user-facing pa
 |------|--------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 18.0 | Benchmark harness: `tests/transpiler3/c/bench/` with 5 BG kernels; `TestPhase18BenchHarness` builds + runs each 5x, logs median wall-clock and binary size; asserts output correctness vs vm3-derived expected values. | LANDED 2026-05-25 22:01 (GMT+7) | — | — |
 | 18.1 | Wall-clock, peak RSS, binary size (release/strip), compile time recorded per fixture; 2x vm3 gate enforced when `mochi` is on PATH | LANDED 2026-05-25 22:50 (GMT+7) | — | — |
-| 18.2 | Per-release report published to a static page                                                                      | NOT STARTED | —      | — |
+| 18.2 | `.github/workflows/transpiler3-c-bench-report.yml`: runs `TestPhase18ExtendedMetrics` on ubuntu + macos, parses test log with `actions/github-script`, generates a self-contained HTML table, attaches to the GitHub release on `v*.*.*` tags | LANDED 2026-05-25 23:25 (GMT+7) | — | — |
 | 18.3 | Regression alert: > 10% wall-clock regression vs previous main posts a comment on the PR                           | LANDED 2026-05-25 22:56 (GMT+7) | — | — |
 
 ## Decisions made
@@ -96,11 +96,20 @@ The first-run latency (max_ms) is dominated by macOS dyld startup. The min_ms va
 
 **`core.setFailed` gates the PR.** When regressions are detected, the step calls `core.setFailed(...)` which marks the workflow run as failed, blocking the PR if branch protection requires the check to pass.
 
+## Phase 18.2 decisions
+
+**HTML report is a self-contained file.** No external CSS or JS dependencies. The report embeds a `<style>` block so it renders correctly as a GitHub release attachment without a web server.
+
+**`actions/github-script` parses the test log.** Lines matching `phase18_1_test.go:<line>: <content>` are extracted and split on two-or-more spaces to produce column arrays. The header row (kernel, compile_ms, ...) and separator row are detected by content. Data rows are wrapped in `<tr><td>` elements.
+
+**Report is attached to the release via `gh release upload --clobber`.** If the workflow reruns for the same tag, the flag overwrites the previous report file. On `workflow_dispatch` (no tag) the report is uploaded as a run artifact only.
+
+**Two runners, two reports.** ubuntu-latest and macos-latest each produce `bench-report-<os>.html` so contributors can compare platform performance from the release page.
+
 ## Deferred work
 
-- Phase 18.2: CI-published static HTML report.
 - Tighter (1.5x) gate: revisit after Phase 19 with measured data.
 
 ## Closeout notes
 
-_Fill in after all 4 sub-phases green._
+All 4 Phase 18 sub-phases LANDED. Phase 18 gate is green: `TestPhase18BenchHarness` (18.0), `TestPhase18ExtendedMetrics` (18.1, 2x vm3 gate), HTML bench report workflow (18.2), regression alert workflow (18.3).
