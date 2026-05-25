@@ -1,0 +1,9 @@
+extern fun c_alloc_counter(): value
+extern fun c_counter_inc(h: value): int
+extern fun c_counter_get(h: value): int
+
+let h = c_alloc_counter()
+c_counter_inc(h)
+c_counter_inc(h)
+let n = c_counter_get(h)
+print(n)

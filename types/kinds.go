@@ -206,6 +206,15 @@ type AnyType struct{}
 
 func (AnyType) String() string { return "any" }
 
+// ValueType represents the mochi_value_t boxed type used at C FFI
+// boundaries (Phase 10.1). It is opaque at the Mochi type-checker
+// level: the only operations allowed are passing it between extern fun
+// calls. It never appears in user-defined function signatures or Mochi
+// arithmetic.
+type ValueType struct{}
+
+func (ValueType) String() string { return "value" }
+
 // TypeVar is the polymorphism kind used to represent a generic type
 // parameter. Its methods take a pointer receiver because identity, not
 // value, is what distinguishes two type variables: a fresh `*TypeVar`

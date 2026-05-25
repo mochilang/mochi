@@ -47,6 +47,7 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include \"mochi/map.h\"\n")
 	b.WriteString("#include \"mochi/strings.h\"\n")
 	b.WriteString("#include \"mochi/fileio.h\"\n")
+	b.WriteString("#include \"mochi/value.h\"\n")
 	b.WriteString("#include \"mochi/csv.h\"\n")
 	b.WriteString("#include \"mochi/chan.h\"\n")
 	b.WriteString("#include \"mochi/stream.h\"\n")
@@ -766,6 +767,8 @@ func cType(t aotir.Type) (string, error) {
 		return "int", nil
 	case aotir.TypeString:
 		return "const char *", nil
+	case aotir.TypeValue:
+		return "mochi_value_t", nil
 	}
 	return "", fmt.Errorf("no C declaration for %s", t)
 }

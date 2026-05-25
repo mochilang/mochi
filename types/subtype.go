@@ -249,6 +249,9 @@ func equalKinds(a, b Type) bool {
 	case AnyType:
 		_, ok := b.(AnyType)
 		return ok
+	case ValueType:
+		_, ok := b.(ValueType)
+		return ok
 	case IntType:
 		_, ok := b.(IntType)
 		return ok

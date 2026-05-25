@@ -1,0 +1,6 @@
+extern fun c_box_str(s: string): value
+extern fun c_unbox_str(v: value): string
+
+let v = c_box_str("hello")
+let s = c_unbox_str(v)
+print(s)

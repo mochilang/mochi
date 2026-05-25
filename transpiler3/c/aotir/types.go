@@ -39,6 +39,7 @@ const (
 	TypeStream // mochi_stream_t *; element type carried as StreamElemType beside the Type (Phase 9.2)
 	TypeSub    // mochi_sub_t *; element type carried as SubElemType beside the Type (Phase 9.2)
 	TypeAgent  // mochi_agent_NAME_t; identity carried as AgentName beside the Type (Phase 9.3)
+	TypeValue  // mochi_value_t; tagged union for FFI-crossing values (Phase 10.1)
 )
 
 // String returns a stable identifier for the type, used in
@@ -75,6 +76,8 @@ func (t Type) String() string {
 		return "sub"
 	case TypeAgent:
 		return "agent"
+	case TypeValue:
+		return "value"
 	default:
 		return "invalid"
 	}

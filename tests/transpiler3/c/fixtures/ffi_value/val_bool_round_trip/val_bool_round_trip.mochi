@@ -1,0 +1,6 @@
+extern fun c_box_bool(b: bool): value
+extern fun c_unbox_bool(v: value): bool
+
+let v = c_box_bool(true)
+let b = c_unbox_bool(v)
+print(b)
