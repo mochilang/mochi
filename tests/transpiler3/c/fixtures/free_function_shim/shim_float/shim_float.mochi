@@ -1,0 +1,4 @@
+fun scale(x: float): float { return x * 3.0 }
+fun apply_f(f: fun(float): float, v: float): float { return f(v) }
+let result = apply_f(scale, 2.0)
+print(result)

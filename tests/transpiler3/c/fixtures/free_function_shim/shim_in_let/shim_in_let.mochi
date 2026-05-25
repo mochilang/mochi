@@ -1,0 +1,4 @@
+fun triple(x: int): int { return x * 3 }
+let f = triple
+let result = f(4)
+print(result)

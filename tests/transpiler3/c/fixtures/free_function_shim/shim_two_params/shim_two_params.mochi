@@ -1,0 +1,4 @@
+fun add(x: int, y: int): int { return x + y }
+fun apply2(f: fun(int, int): int, a: int, b: int): int { return f(a, b) }
+let result = apply2(add, 3, 4)
+print(result)
