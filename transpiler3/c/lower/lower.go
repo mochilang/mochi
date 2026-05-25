@@ -126,6 +126,12 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		funDecls = append(funDecls, fn)
 	}
 
+	// Phase 5.0: shared anonymous function counter and lifted-function accumulator.
+	// Both Pass 2a and Pass 2b lowerers write into the same counter/slice so that
+	// __anon_N names are globally unique across the whole translation unit.
+	anonCounter := 0
+	var liftedFuncs []*aotir.Function
+
 	// Pass 2a: lower each fun body using the shared funcs table.
 	for _, fn := range funDecls {
 		sig := funcs[fn.Name]
@@ -144,6 +150,8 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 			currentFnReturnKey:         sig.returnKeyType,
 			currentFnReturnValue:       sig.returnValueType,
 			currentFnReturnListValElem: sig.returnListValElem,
+			anonCounter:                &anonCounter,
+			liftedFuncs:                &liftedFuncs,
 		}
 		// Seed parameters into the function scope as immutable.
 		for _, p := range sig.params {
@@ -160,6 +168,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 				key:          p.KeyType,
 				value:        p.ValueType,
 				listValElem:  p.ListValueElemType,
+				funSig:       p.FunSig,
 			}
 		}
 		body := &aotir.Block{}
@@ -199,6 +208,8 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		variantToUnion:  variantToUnion,
 		scope:           newLScope(nil),
 		currentFnReturn: aotir.TypeUnit,
+		anonCounter:     &anonCounter,
+		liftedFuncs:     &liftedFuncs,
 	}
 	for i, st := range prog.Statements {
 		if st == nil {
@@ -218,6 +229,25 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 	}
 	out.Functions = append(out.Functions, mainFn)
 	out.Main = len(out.Functions) - 1
+
+	// Prepend lifted anonymous functions so they appear before any named function
+	// that references them. The sort in emit.go will reorder them alphabetically
+	// but forward declarations ensure the C compiler accepts any order.
+	if len(liftedFuncs) > 0 {
+		combined := make([]*aotir.Function, 0, len(liftedFuncs)+len(out.Functions))
+		combined = append(combined, liftedFuncs...)
+		combined = append(combined, out.Functions...)
+		// Re-find main index.
+		mainIdx := 0
+		for i, fn := range combined {
+			if fn.Name == "main" {
+				mainIdx = i
+				break
+			}
+		}
+		out.Functions = combined
+		out.Main = mainIdx
+	}
 
 	if err := aotir.Verify(out); err != nil {
 		return nil, fmt.Errorf("transpiler3/c/lower: verify: %w", err)
@@ -390,6 +420,7 @@ func buildFuncSig(records map[string]*aotir.RecordDecl, unions map[string]*aotir
 			KeyType:           pTR.key,
 			ValueType:         pTR.value,
 			ListValueElemType: pTR.listValElem,
+			FunSig:            pTR.funSig,
 		})
 	}
 	return &funcSig{
@@ -429,6 +460,13 @@ type lowerer struct {
 	currentFnReturnKey          aotir.Type
 	currentFnReturnValue        aotir.Type
 	currentFnReturnListValElem  aotir.Type // inner list elem when returnValue==TypeList (Phase 3.4e)
+	// Phase 5.0: anonymous function lifting.
+	// anonCounter counts the anonymous functions lifted from this lowerer's
+	// context; combined with an outer-level counter it gives globally unique
+	// __anon_N names. liftedFuncs accumulates lifted aotir.Functions that
+	// are appended to the Program after the parent function is lowered.
+	anonCounter *int                  // pointer to shared counter across nested lowerers
+	liftedFuncs *[]*aotir.Function    // pointer to shared slice across nested lowerers
 }
 
 // lscope mirrors aotir's scope: lexical frame with parent chain.
@@ -447,9 +485,10 @@ type lbinding struct {
 	innerElem    aotir.Type // inner element type when t==TypeList && elem==TypeList (Phase 3.4b)
 	mapElemKey   aotir.Type // map key type when t==TypeList && elem==TypeMap (Phase 3.4f)
 	mapElemValue aotir.Type // map value type when t==TypeList && elem==TypeMap (Phase 3.4f)
-	key          aotir.Type // key type when t==TypeMap
-	value        aotir.Type // value type when t==TypeMap
-	listValElem  aotir.Type // inner list elem when t==TypeMap && value==TypeList (Phase 3.4e)
+	key          aotir.Type    // key type when t==TypeMap
+	value        aotir.Type    // value type when t==TypeMap
+	listValElem  aotir.Type    // inner list elem when t==TypeMap && value==TypeList (Phase 3.4e)
+	funSig       *aotir.FunSig // function signature when t==TypeFun (Phase 5.0)
 }
 
 func newLScope(parent *lscope) *lscope {
@@ -527,6 +566,26 @@ func (l *lowerer) lowerExprStmt(out *aotir.Block, es *parser.ExprStmt) error {
 	}
 	if call.Func == "print" {
 		return l.lowerPrintCall(out, call)
+	}
+	// Phase 5.0: check if this is a call to a fun-typed variable in scope.
+	if b, ok2 := l.scope.lookup(call.Func); ok2 && b.t == aotir.TypeFun {
+		if b.funSig == nil {
+			return fmt.Errorf("fun-typed variable %q has nil FunSig in scope", call.Func)
+		}
+		funCallExpr, err := l.lowerFunVarCall(call, b.funSig)
+		if err != nil {
+			return err
+		}
+		// Wrap in a CallStmt-equivalent; since FunCallExpr is an Expr not a Stmt,
+		// we use a synthetic ReturnStmt... actually we need a way to discard the
+		// result. Use a LetStmt with a fresh temp if result is non-unit, or
+		// simply emit nothing if unit. For now, reject unit-return fun calls at
+		// statement position since we just returned an error above in lowerFunVarCall
+		// when returnType==TypeUnit. Non-unit results are discarded via AssignStmt to _
+		// but aotir has no discard. We'll add a LetStmt with a mutable temp var.
+		// Actually: use a mutable temp binding marked as discard.
+		_ = funCallExpr
+		return fmt.Errorf("calling a fun-typed variable at statement position (discarding result) is not yet supported in Phase 5.0; call it in expression position (e.g. `let _ = f(x)`)")
 	}
 	sig, ok := l.funcs[call.Func]
 	if !ok {
@@ -644,6 +703,13 @@ func (l *lowerer) lowerCallArgs(call *parser.CallExpr, sig *funcSig) ([]aotir.Ex
 						call.Func, i, sig.params[i].ListValueElemType, argLV)
 				}
 			}
+		}
+		// Phase 5.0: TypeFun parameter check.
+		if sig.params[i].Type == aotir.TypeFun {
+			// expr must be TypeFun (a FunLit or a VarRef{TypeFun}).
+			// The type equality check above (expr.Type() != sig.params[i].Type)
+			// already ensures expr.Type()==TypeFun. Additional sig compatibility
+			// is deferred; Phase 5.0 uses structural typing for FunSig.
 		}
 		out = append(out, expr)
 	}
@@ -969,6 +1035,8 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	declListValElem := exprListValueElemType(value)
 	// declUnion carries the union name when declType==TypeUnion.
 	declUnion := exprUnionName(value)
+	// Phase 5.0: declFunSig carries the fun signature when declType==TypeFun.
+	declFunSig := exprFunSig(value)
 	if declared != nil {
 		tr, err := typeFromRef(l.records, l.unions, declared)
 		if err != nil {
@@ -1022,6 +1090,9 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		declKey = tr.key
 		declValue = tr.value
 		declListValElem = tr.listValElem
+		if tr.funSig != nil {
+			declFunSig = tr.funSig
+		}
 	}
 	l.scope.vars[name] = lbinding{
 		t:            declType,
@@ -1036,6 +1107,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		key:          declKey,
 		value:        declValue,
 		listValElem:  declListValElem,
+		funSig:       declFunSig,
 	}
 	out.Statements = append(out.Statements, &aotir.LetStmt{
 		Name:              name,
@@ -1050,6 +1122,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		KeyType:           declKey,
 		ValueType:         declValue,
 		ListValueElemType: declListValElem,
+		FunSig:            declFunSig,
 		Init:              value,
 		Mutable:           mutable,
 	})
@@ -1449,15 +1522,16 @@ func (l *lowerer) lowerNestedBlock(stmts []*parser.Statement) (*aotir.Block, err
 type typeResolution struct {
 	t            aotir.Type
 	rec          string
-	union        string     // valid when t==TypeUnion (Phase 4)
+	union        string        // valid when t==TypeUnion (Phase 4)
 	elem         aotir.Type
-	elemRec      string     // valid when elem==TypeRecord (Phase 3.4a)
-	innerElem    aotir.Type // valid when elem==TypeList (Phase 3.4b)
-	mapElemKey   aotir.Type // valid when t==TypeList && elem==TypeMap (Phase 3.4f)
-	mapElemValue aotir.Type // valid when t==TypeList && elem==TypeMap (Phase 3.4f)
+	elemRec      string        // valid when elem==TypeRecord (Phase 3.4a)
+	innerElem    aotir.Type    // valid when elem==TypeList (Phase 3.4b)
+	mapElemKey   aotir.Type    // valid when t==TypeList && elem==TypeMap (Phase 3.4f)
+	mapElemValue aotir.Type    // valid when t==TypeList && elem==TypeMap (Phase 3.4f)
 	key          aotir.Type
 	value        aotir.Type
-	listValElem  aotir.Type // valid when t==TypeMap && value==TypeList (Phase 3.4e)
+	listValElem  aotir.Type    // valid when t==TypeMap && value==TypeList (Phase 3.4e)
+	funSig       *aotir.FunSig // valid when t==TypeFun (Phase 5.0)
 }
 
 // typeFromRef maps a parser.TypeRef to a typeResolution. Phase 3.2
@@ -1478,6 +1552,37 @@ func typeFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.
 	}
 	if ref.Optional {
 		return typeResolution{}, fmt.Errorf("optional types land with Option in a later phase")
+	}
+	// Phase 5.0: fun(T1, T2, ...): R type annotation.
+	if ref.Fun != nil {
+		sig := &aotir.FunSig{}
+		for i, pt := range ref.Fun.Params {
+			tr, err := typeFromRef(records, unions, pt)
+			if err != nil {
+				return typeResolution{}, fmt.Errorf("fun param %d: %w", i, err)
+			}
+			switch tr.t {
+			case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+				sig.ParamTypes = append(sig.ParamTypes, tr.t)
+			default:
+				return typeResolution{}, fmt.Errorf("fun param type %s not supported in Phase 5.0 (scalar primitives only: int, float, bool, string)", tr.t)
+			}
+		}
+		if ref.Fun.Return != nil {
+			rtr, err := typeFromRef(records, unions, ref.Fun.Return)
+			if err != nil {
+				return typeResolution{}, fmt.Errorf("fun return: %w", err)
+			}
+			switch rtr.t {
+			case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString, aotir.TypeUnit:
+				sig.ReturnType = rtr.t
+			default:
+				return typeResolution{}, fmt.Errorf("fun return type %s not supported in Phase 5.0 (scalar primitives or unit only)", rtr.t)
+			}
+		} else {
+			sig.ReturnType = aotir.TypeUnit
+		}
+		return typeResolution{t: aotir.TypeFun, funSig: sig}, nil
 	}
 	if ref.ListElem != nil {
 		elem, elemRec, innerElem, mapKey, mapVal, err := listElemFromRef(records, unions, ref.ListElem)
@@ -1625,6 +1730,20 @@ func mapValueFromRef(records map[string]*aotir.RecordDecl, unions map[string]*ao
 	return aotir.TypeInvalid, aotir.TypeInvalid, fmt.Errorf("map value type %s not supported in Phase 3.4e (scalar or list<scalar> only)", tr.t)
 }
 
+// exprFunSig extracts the FunSig from a fun-typed aotir expression.
+// Phase 5.0 covers FunLit and VarRef{TypeFun}.
+func exprFunSig(e aotir.Expr) *aotir.FunSig {
+	switch v := e.(type) {
+	case *aotir.FunLit:
+		return v.Sig
+	case *aotir.VarRef:
+		if v.VarType == aotir.TypeFun {
+			return v.FunSig
+		}
+	}
+	return nil
+}
+
 // printCalleeFor picks the runtime print entry for an argument
 // type. The verifier already mirrors this mapping; keeping the
 // switch in one place avoids the two drifting apart.
@@ -1644,6 +1763,9 @@ func printCalleeFor(t aotir.Type) (string, error) {
 	}
 	if t == aotir.TypeList {
 		return "", fmt.Errorf("print() does not accept a list value in Phase 3.1 (iterate and print elements instead)")
+	}
+	if t == aotir.TypeFun {
+		return "", fmt.Errorf("print() does not accept a fun value in Phase 5.0")
 	}
 	return "", fmt.Errorf("print() does not accept %s in Phase 3.1", t)
 }
@@ -2058,6 +2180,136 @@ func (l *lowerer) lowerFieldOp(receiver aotir.Expr, fieldName string) (aotir.Exp
 	return nil, fmt.Errorf("field access .%s: record %q has no field %q", fieldName, recName, fieldName)
 }
 
+// lowerFunExpr lifts a FunExpr (anonymous function literal) into a
+// top-level aotir.Function and returns a FunLit pointing to it.
+// Phase 5.0 restricts to non-capturing closures: the fun body must
+// not reference any variables from the enclosing scope (only its own
+// parameters). Capturing closures are rejected with a clear diagnostic.
+func (l *lowerer) lowerFunExpr(fe *parser.FunExpr) (aotir.Expr, error) {
+	if fe == nil {
+		return nil, fmt.Errorf("nil FunExpr")
+	}
+	if len(fe.Effects) != 0 {
+		return nil, fmt.Errorf("fun expressions with effects are not supported in Phase 5.0")
+	}
+	if len(fe.TypeParams) != 0 {
+		return nil, fmt.Errorf("generic fun expressions are not supported in Phase 5.0")
+	}
+	if fe.Return == nil {
+		return nil, fmt.Errorf("fun expression requires an explicit ': T' return type annotation in Phase 5.0")
+	}
+	// Build the FunSig from the param and return type annotations.
+	sig := &aotir.FunSig{}
+	type paramInfo struct {
+		name string
+		t    aotir.Type
+	}
+	params := make([]paramInfo, 0, len(fe.Params))
+	seen := map[string]bool{}
+	for i, p := range fe.Params {
+		if p.Name == "" {
+			return nil, fmt.Errorf("fun expression param %d has empty name", i)
+		}
+		if seen[p.Name] {
+			return nil, fmt.Errorf("fun expression duplicate parameter %q", p.Name)
+		}
+		seen[p.Name] = true
+		if p.Type == nil {
+			return nil, fmt.Errorf("fun expression param %q requires an explicit ': T' type annotation in Phase 5.0", p.Name)
+		}
+		tr, err := typeFromRef(l.records, l.unions, p.Type)
+		if err != nil {
+			return nil, fmt.Errorf("fun expression param %q type: %w", p.Name, err)
+		}
+		switch tr.t {
+		case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+			// ok
+		default:
+			return nil, fmt.Errorf("fun expression param %q type %s not supported in Phase 5.0 (scalar primitives only)", p.Name, tr.t)
+		}
+		sig.ParamTypes = append(sig.ParamTypes, tr.t)
+		params = append(params, paramInfo{name: p.Name, t: tr.t})
+	}
+	rtr, err := typeFromRef(l.records, l.unions, fe.Return)
+	if err != nil {
+		return nil, fmt.Errorf("fun expression return type: %w", err)
+	}
+	switch rtr.t {
+	case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString, aotir.TypeUnit:
+		// ok
+	default:
+		return nil, fmt.Errorf("fun expression return type %s not supported in Phase 5.0 (scalar primitives or unit only)", rtr.t)
+	}
+	sig.ReturnType = rtr.t
+
+	// Assign a fresh __anon_N name.
+	if l.anonCounter == nil {
+		return nil, fmt.Errorf("fun expression encountered outside a properly initialized lowerer (anonCounter is nil)")
+	}
+	*l.anonCounter++
+	name := fmt.Sprintf("__anon_%d", *l.anonCounter)
+
+	// Build a fresh inner lowerer for the fun body. The scope is empty
+	// (only the fun's own params are in scope) so any reference to an
+	// outer-scope variable will produce "undeclared variable" during
+	// lowerExpr, which is our Phase 5.0 rejection for capturing closures.
+	inner := &lowerer{
+		funcs:           l.funcs,
+		records:         l.records,
+		unions:          l.unions,
+		variantToUnion:  l.variantToUnion,
+		scope:           newLScope(nil), // fresh scope, no parent chain
+		currentFnReturn: sig.ReturnType,
+		anonCounter:     l.anonCounter,
+		liftedFuncs:     l.liftedFuncs,
+	}
+	// Seed the fun's own parameters.
+	for _, p := range params {
+		inner.scope.vars[p.name] = lbinding{t: p.t, mutable: false}
+	}
+
+	// Build aotir.Params.
+	irParams := make([]aotir.Param, len(params))
+	for i, p := range params {
+		irParams[i] = aotir.Param{Name: p.name, Type: p.t}
+	}
+
+	// Lower the body.
+	body := &aotir.Block{}
+	if fe.ExprBody != nil {
+		// `fun(x): T => expr` lowers as a single return statement.
+		val, err := inner.lowerExpr(fe.ExprBody)
+		if err != nil {
+			return nil, fmt.Errorf("fun expression body: %w", err)
+		}
+		if val.Type() != sig.ReturnType {
+			return nil, fmt.Errorf("fun expression body produces %s, but return type is %s", val.Type(), sig.ReturnType)
+		}
+		body.Statements = append(body.Statements, &aotir.ReturnStmt{Value: val})
+	} else {
+		// Block body.
+		for i, st := range fe.BlockBody {
+			if st == nil {
+				return nil, fmt.Errorf("fun expression body stmt %d is nil", i)
+			}
+			if err := inner.lowerStatement(body, st); err != nil {
+				return nil, fmt.Errorf("fun expression body stmt %d: %w", i, err)
+			}
+		}
+	}
+
+	// Build the lifted function.
+	lifted := &aotir.Function{
+		Name:       name,
+		Params:     irParams,
+		ReturnType: sig.ReturnType,
+		Body:       body,
+	}
+	*l.liftedFuncs = append(*l.liftedFuncs, lifted)
+
+	return &aotir.FunLit{FuncName: name, Sig: sig}, nil
+}
+
 // lowerPrimary lowers a Primary into either a literal, a parenthesised
 // expression, a variable reference, a record literal, a selector
 // chain (variable + zero or more `.field` reads), or a call to a user
@@ -2143,6 +2395,9 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	}
 	if pr.Map != nil {
 		return l.lowerMapLit(pr.Map)
+	}
+	if pr.FunExpr != nil {
+		return l.lowerFunExpr(pr.FunExpr)
 	}
 	return nil, fmt.Errorf("primary %s not supported in Phase 3.2%s", trimPrimary(pr), primaryPhaseHint(pr))
 }
@@ -2435,6 +2690,13 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	if call.Func == "has" {
 		return l.lowerHasCall(call)
 	}
+	// Phase 5.0: check if this is a call to a fun-typed variable in scope.
+	if b, ok := l.scope.lookup(call.Func); ok && b.t == aotir.TypeFun {
+		if b.funSig == nil {
+			return nil, fmt.Errorf("fun-typed variable %q has nil FunSig in scope", call.Func)
+		}
+		return l.lowerFunVarCall(call, b.funSig)
+	}
 	sig, ok := l.funcs[call.Func]
 	if !ok {
 		return nil, fmt.Errorf("unresolved callee %q", call.Func)
@@ -2461,6 +2723,33 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 		ResultValueType:         sig.returnValueType,
 		ResultListValueElemType: sig.returnListValElem,
 	}, nil
+}
+
+// lowerFunVarCall lowers a call to a fun-typed variable. The callee is
+// referenced as a VarRef{TypeFun}; args are lowered and type-checked
+// against the FunSig's ParamTypes. The result is a FunCallExpr whose
+// Result type is sig.ReturnType.
+func (l *lowerer) lowerFunVarCall(call *parser.CallExpr, sig *aotir.FunSig) (aotir.Expr, error) {
+	if sig.ReturnType == aotir.TypeUnit {
+		return nil, fmt.Errorf("call to fun-typed variable %q returns unit and cannot appear in an expression", call.Func)
+	}
+	if len(call.Args) != len(sig.ParamTypes) {
+		return nil, fmt.Errorf("call to %q expects %d args, got %d", call.Func, len(sig.ParamTypes), len(call.Args))
+	}
+	b, _ := l.scope.lookup(call.Func)
+	callee := &aotir.VarRef{Name: call.Func, VarType: aotir.TypeFun, FunSig: b.funSig}
+	args := make([]aotir.Expr, 0, len(call.Args))
+	for i, a := range call.Args {
+		expr, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, fmt.Errorf("call %q arg %d: %w", call.Func, i, err)
+		}
+		if expr.Type() != sig.ParamTypes[i] {
+			return nil, fmt.Errorf("call %q arg %d: expected %s, got %s", call.Func, i, sig.ParamTypes[i], expr.Type())
+		}
+		args = append(args, expr)
+	}
+	return &aotir.FunCallExpr{Callee: callee, Args: args, Result: sig.ReturnType}, nil
 }
 
 // lowerLenCall lowers the `len(xs)` builtin. Phase 3.1 covered list

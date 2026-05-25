@@ -1,0 +1,3 @@
+let double_it = fun(x: int): int => x * 2
+let r = double_it(21)
+print(r)

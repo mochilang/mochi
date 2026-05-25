@@ -34,6 +34,7 @@ const (
 	TypeList   // mochi_list_<T>; element type carried as ElemType beside the Type
 	TypeMap    // mochi_map_<K>_<V>; key + value types carried as KeyType + ValueType beside the Type
 	TypeUnion  // struct pkg_<S> with uint8_t tag + union; identity carried as UnionName beside the Type
+	TypeFun    // function pointer; signature carried as FunSig beside the Type (Phase 5.0)
 )
 
 // String returns a stable identifier for the type, used in
@@ -60,6 +61,8 @@ func (t Type) String() string {
 		return "map"
 	case TypeUnion:
 		return "union"
+	case TypeFun:
+		return "fun"
 	default:
 		return "invalid"
 	}
