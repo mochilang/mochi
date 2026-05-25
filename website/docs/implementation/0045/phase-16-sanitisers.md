@@ -32,7 +32,7 @@ Sanitiser clean is the strongest internal correctness signal short of formal ver
 | 16.1 | UBSan clean on full corpus. `-fsanitize=undefined -fno-sanitize-recover=all`. `TestPhase16UBSan` gate (33 suites). | LANDED 2026-05-25 21:46 (GMT+7) | — | — |
 | 16.2 | TSan clean on streams/agents corpus                                                                                | NOT STARTED | —      | — |
 | 16.3 | MSan clean on Linux (Apple-silicon MSan unsupported upstream)                                                      | NOT STARTED | —      | — |
-| 16.4 | Build profile `--debug` wires sanitisers; CI nightly job runs the matrix                                           | NOT STARTED | —      | — |
+| 16.4 | Build profile `--debug` wires sanitisers; CI nightly job runs the matrix                                           | LANDED 2026-05-25 22:46 (GMT+7) | — | — |
 
 ## Decisions made
 
@@ -51,13 +51,22 @@ Sanitiser clean is the strongest internal correctness signal short of formal ver
 
 **runFixtureSuiteASan helper.** A new function in `phase16_0_test.go` wraps the standard fixture runner pattern. It accepts `extraFlags []string` (added to `Driver.ExtraFlags`) and `asanEnv string` (appended to the subprocess environment). Reused by both Phase 16.0 (ASan) and Phase 16.1 (UBSan) tests.
 
+## Phase 16.4 decisions
+
+**`--profile=debug` in CLI.** A new `Profile string` field (with `--profile` arg tag, default `"release"`) was added to `BuildCmd`. `runBuildCAOT` passes `cmd.Profile` as the `profile` parameter to `Driver.Build`. This gives users `mochi build --target=c-aot --profile=debug --out=<bin> <src>` to get a sanitiser-instrumented binary without knowing the flags.
+
+**Profile handling in Driver.Build.** When `profile == "debug"`, the driver appends `-g -fsanitize=address,undefined -fno-sanitize-recover=all` to `ccArgs` before `ExtraFlags`. This ensures tests that set `ExtraFlags` can still override or append, while the CLI path is zero-config. The production `""` and `"release"` profiles are unchanged.
+
+**Nightly CI workflow.** `.github/workflows/transpiler3-c-sanitise-nightly.yml` runs `TestPhase16ASan`, `TestPhase16UBSan`, and `TestPhase16DebugProfile` on `ubuntu-latest` and `macos-latest` at 02:00 UTC daily. Runs on `workflow_dispatch` for on-demand use. Ubuntu step installs `clang` so ASan is available even on minimal images.
+
+**Gate.** `TestPhase16DebugProfile` builds `primitives/add_ints` with `profile="debug"` and asserts the binary produces correct output under `ASAN_OPTIONS=detect_leaks=0:halt_on_error=1`. Skips on Windows and on hosts where `asanAvailable` returns false.
+
 ## Deferred work
 
 - Full LeakSan clean: requires explicit free() at every exit path or a global arena. Tracked as sub-phase 16.0.1.
 - TSan clean: blocked on Phase 9 (streams/agents) landing.
 - MSan clean: Linux-only; current CI is aarch64-darwin only.
-- Build profile `--debug` wires sanitisers: Phase 16.4.
 
 ## Closeout notes
 
-_Fill in after all 5 sub-phases green._
+Sub-phases 16.0, 16.1, and 16.4 are LANDED. Sub-phases 16.2 (TSan) and 16.3 (MSan) are blocked on Phase 9 (streams/agents) and Linux CI respectively.

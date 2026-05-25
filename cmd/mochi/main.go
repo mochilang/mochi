@@ -85,6 +85,7 @@ type BuildCmd struct {
 	BinaryPath     string `arg:"--binary" help:"Output binary path; --target=c only"`
 	Static         bool   `arg:"--portable" help:"Statically link the binary (musl/glibc-static); --target=c only"`
 	Triple         string `arg:"--triple" help:"Target triple (e.g. x86_64-linux-musl, aarch64-macos, wasm32-wasi); --target=c only. When set, the driver defaults to 'zig cc' and passes -target=<triple>"`
+	Profile        string `arg:"--profile" default:"release" help:"Build profile for --target=c-aot: 'release' (default) or 'debug' (adds -fsanitize=address,undefined)"`
 }
 
 type RunCmd struct {
@@ -280,7 +281,7 @@ func runBuildCAOT(cmd *BuildCmd) error {
 		CC:       cmd.CC,
 		KeepEmit: keepEmit,
 	}
-	if err := d.Build(cmd.File, cmd.Out, cmd.Triple, ""); err != nil {
+	if err := d.Build(cmd.File, cmd.Out, cmd.Triple, cmd.Profile); err != nil {
 		return err
 	}
 	if d.CacheHit {
