@@ -32,7 +32,7 @@ Phase 9 builds the concurrency primitives that let Mochi programs express async 
 | 9.1 | `chan<T>`: bounded ring, point-to-point, send blocks when full                                                     | LANDED 2026-05-26 03:11 (GMT+7) | — | — |
 | 9.2 | `stream<T>` MPMC broadcast ring; `subscribe(s)` returns sub handle; `recv_sub(sub)` yields when empty; `emit(s, v)` lossy-overwrites when full | LANDED 2026-05-26 03:46 (GMT+7) | (this PR) | — |
 | 9.3 | Agent: record + static intent functions (synchronous dispatch, Phase 9.3); async mailbox deferred to later        | LANDED 2026-05-26 04:35 (GMT+7) | (this PR) | — |
-| 9.4 | Shutdown protocol: graceful drain on SIGINT/SIGTERM; bounded-time hard kill after timeout                          | NOT STARTED | —      | — |
+| 9.4 | Shutdown protocol: graceful drain on SIGINT/SIGTERM; bounded-time hard kill after timeout; `shutdown.h`/`shutdown.c` runtime; `mochi_sched_run()` checks flag; `mochi_shutdown_init()` emitted at top of generated `main()`; `TestPhase9Shutdown` gate (5 normal-exit fixtures + SIGTERM subprocess test) | LANDED 2026-05-26 05:14 (GMT+7) | (this PR) | — |
 
 ## Decisions made
 
@@ -93,6 +93,18 @@ Phase 9 builds the concurrency primitives that let Mochi programs express async 
 **Emit pass.** `transpiler3/c/emit/emit.go` adds `emitAgentDecls` (typedef struct + intent prototypes + definitions) called from `Emit()` after union decls. `cTypeFull` returns `"mochi_agent_NAME_t"` for `TypeAgent`. Agent bindings suppress `const` in LetStmt emit because intent calls take `&receiver` as a mutable pointer. `AgentLit` emits as `(mochi_agent_NAME_t){.field = val, ...}`. `AgentIntentCallExpr` and `AgentIntentCallStmt` emit as `mochi_agent_NAME__INTENT(&receiver, args...)`.
 
 **Gate:** `TestPhase9Agent` (5 fixtures: agent_basic, agent_bool, agent_float, agent_multi_intent, agent_string).
+
+### Phase 9.4 (2026-05-26 05:14 GMT+7)
+
+**Shutdown runtime (`shutdown.h`/`shutdown.c`).** `mochi_shutdown_init()` installs SIGINT and SIGTERM handlers via `signal()`. The handler sets `volatile sig_atomic_t mochi_shutdown_requested = 1` and calls `alarm(5)` to arm a bounded-time hard kill: if the fiber drain stalls, SIGALRM fires after 5 seconds and terminates the process via its default action. No-op on Windows (`_WIN32` guard).
+
+**Scheduler integration.** `mochi_sched_run()` in `sched.c` checks `mochi_shutdown_requested` at the top of each scheduler loop iteration (inside a `#ifndef _WIN32` guard). When the flag is set, the loop exits immediately after the current fiber finishes. This provides cooperative drain: the in-flight fiber completes its current slice, then the scheduler returns to main, which exits 0.
+
+**Emitter hook.** `emit.go` adds `mochi_shutdown_init();` as the first statement of every generated `main()` function. This ensures the handler is always installed, even for programs that do not use fibers. The `#include "mochi/shutdown.h"` is added to the fixed prologue.
+
+**Gate: normal-exit suite (5 fixtures).** `TestPhase9Shutdown/normal_exit` runs `shutdown_basic`, `shutdown_agent`, `shutdown_chan`, `shutdown_stream`, and `shutdown_sched` as standard fixtures. These verify that the shutdown handler does not affect programs that exit normally (no signal received).
+
+**Gate: SIGTERM subprocess test.** `TestPhase9Shutdown/sigterm_graceful` builds `shutdown_sched`, starts it as a subprocess, waits 50 ms for the handler to install, sends SIGTERM, and asserts the process exits within 10 seconds. Accepts exit code 0 (graceful shutdown) or SIGTERM-signalled exit (default action, also acceptable if the process terminates cleanly). Skipped on Windows.
 
 ## Deferred work
 
