@@ -44,6 +44,7 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include \"mochi/list.h\"\n")
 	b.WriteString("#include \"mochi/map.h\"\n")
 	b.WriteString("#include \"mochi/strings.h\"\n")
+	b.WriteString("#include \"mochi/fileio.h\"\n")
 	listRecNames := collectListRecordElems(prog)
 	listListInners := collectListListInners(prog)
 	listMapPairs := collectListOfMapPairs(prog)
@@ -546,6 +547,28 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 			fmt.Fprintf(b, "%s%s->%s = %s;\n", indent, s.EnvVarName, c.FieldName, c.SrcName)
 		}
 		return nil
+	case *aotir.WriteFileStmt:
+		path, err := emitExpr(s.Path)
+		if err != nil {
+			return fmt.Errorf("WriteFileStmt path: %w", err)
+		}
+		content, err := emitExpr(s.Content)
+		if err != nil {
+			return fmt.Errorf("WriteFileStmt content: %w", err)
+		}
+		fmt.Fprintf(b, "%smochi_write_file(%s, %s);\n", indent, path, content)
+		return nil
+	case *aotir.AppendFileStmt:
+		path, err := emitExpr(s.Path)
+		if err != nil {
+			return fmt.Errorf("AppendFileStmt path: %w", err)
+		}
+		content, err := emitExpr(s.Content)
+		if err != nil {
+			return fmt.Errorf("AppendFileStmt content: %w", err)
+		}
+		fmt.Fprintf(b, "%smochi_append_file(%s, %s);\n", indent, path, content)
+		return nil
 	}
 	return fmt.Errorf("transpiler3/c/emit: unhandled Stmt %T", st)
 }
@@ -985,6 +1008,12 @@ func walkStmtListOfMap(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 		if s.Value != nil {
 			walkExprListOfMap(s.Value, add)
 		}
+	case *aotir.WriteFileStmt:
+		walkExprListOfMap(s.Path, add)
+		walkExprListOfMap(s.Content, add)
+	case *aotir.AppendFileStmt:
+		walkExprListOfMap(s.Path, add)
+		walkExprListOfMap(s.Content, add)
 	}
 }
 
@@ -1065,6 +1094,10 @@ func walkExprListOfMap(e aotir.Expr, add func(aotir.Type, aotir.Type, aotir.Type
 		walkExprListOfMap(v.Receiver, add)
 	case *aotir.MapValuesExpr:
 		walkExprListOfMap(v.Receiver, add)
+	case *aotir.ReadFileExpr:
+		walkExprListOfMap(v.Path, add)
+	case *aotir.LinesExpr:
+		walkExprListOfMap(v.Path, add)
 	}
 }
 
@@ -1267,6 +1300,12 @@ func walkStmtExprVisit(st aotir.Stmt, visit func(aotir.Expr)) {
 		if s.Value != nil {
 			walkExprNodeVisit(s.Value, visit)
 		}
+	case *aotir.WriteFileStmt:
+		walkExprNodeVisit(s.Path, visit)
+		walkExprNodeVisit(s.Content, visit)
+	case *aotir.AppendFileStmt:
+		walkExprNodeVisit(s.Path, visit)
+		walkExprNodeVisit(s.Content, visit)
 	}
 }
 
@@ -1341,6 +1380,10 @@ func walkExprNodeVisit(e aotir.Expr, visit func(aotir.Expr)) {
 		walkExprNodeVisit(v.Receiver, visit)
 	case *aotir.MapValuesExpr:
 		walkExprNodeVisit(v.Receiver, visit)
+	case *aotir.ReadFileExpr:
+		walkExprNodeVisit(v.Path, visit)
+	case *aotir.LinesExpr:
+		walkExprNodeVisit(v.Path, visit)
 	}
 }
 
@@ -1456,6 +1499,12 @@ func walkStmtMapOfList(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 		if s.Value != nil {
 			walkExprMapOfList(s.Value, add)
 		}
+	case *aotir.WriteFileStmt:
+		walkExprMapOfList(s.Path, add)
+		walkExprMapOfList(s.Content, add)
+	case *aotir.AppendFileStmt:
+		walkExprMapOfList(s.Path, add)
+		walkExprMapOfList(s.Content, add)
 	}
 }
 
@@ -1755,6 +1804,12 @@ func walkStmtInner(st aotir.Stmt, visit func(aotir.Type, aotir.Type)) {
 		if s.Value != nil {
 			walkExprInner(s.Value, visit)
 		}
+	case *aotir.WriteFileStmt:
+		walkExprInner(s.Path, visit)
+		walkExprInner(s.Content, visit)
+	case *aotir.AppendFileStmt:
+		walkExprInner(s.Path, visit)
+		walkExprInner(s.Content, visit)
 	}
 }
 
@@ -1971,6 +2026,12 @@ func walkStmt(st aotir.Stmt, visit func(aotir.Type, string)) {
 		if s.Value != nil {
 			walkExpr(s.Value, visit)
 		}
+	case *aotir.WriteFileStmt:
+		walkExpr(s.Path, visit)
+		walkExpr(s.Content, visit)
+	case *aotir.AppendFileStmt:
+		walkExpr(s.Path, visit)
+		walkExpr(s.Content, visit)
 	}
 }
 
@@ -2051,6 +2112,10 @@ func walkExpr(e aotir.Expr, visit func(aotir.Type, string)) {
 		walkExpr(v.Receiver, visit)
 	case *aotir.MapValuesExpr:
 		walkExpr(v.Receiver, visit)
+	case *aotir.ReadFileExpr:
+		walkExpr(v.Path, visit)
+	case *aotir.LinesExpr:
+		walkExpr(v.Path, visit)
 	}
 }
 
@@ -2231,6 +2296,18 @@ func emitExpr(e aotir.Expr) (string, error) {
 		return fmt.Sprintf("(%s){.fn=%s, .env=%s}", typeName, v.FuncName, envArg), nil
 	case *aotir.FunCallExpr:
 		return emitFunCallExpr(v)
+	case *aotir.ReadFileExpr:
+		path, err := emitExpr(v.Path)
+		if err != nil {
+			return "", fmt.Errorf("ReadFileExpr path: %w", err)
+		}
+		return "mochi_read_file(" + path + ")", nil
+	case *aotir.LinesExpr:
+		path, err := emitExpr(v.Path)
+		if err != nil {
+			return "", fmt.Errorf("LinesExpr path: %w", err)
+		}
+		return "mochi_lines(" + path + ")", nil
 	default:
 		return "", fmt.Errorf("transpiler3/c/emit: unhandled Expr %T", e)
 	}

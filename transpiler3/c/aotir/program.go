@@ -1177,3 +1177,34 @@ type FunCallExpr struct {
 }
 
 func (f *FunCallExpr) Type() Type { return f.Result }
+
+// ReadFileExpr reads the entire content of a file and returns it as a
+// string. The emitter calls mochi_read_file(path). Phase 6.5.
+type ReadFileExpr struct{ Path Expr }
+
+func (*ReadFileExpr) Type() Type { return TypeString }
+
+// WriteFileStmt writes content to a file (creating or truncating it).
+// The emitter calls mochi_write_file(path, content). Phase 6.5.
+type WriteFileStmt struct {
+	Path    Expr // TypeString
+	Content Expr // TypeString
+}
+
+func (*WriteFileStmt) isStmt() {}
+
+// AppendFileStmt appends content to a file.
+// The emitter calls mochi_append_file(path, content). Phase 6.5.
+type AppendFileStmt struct {
+	Path    Expr // TypeString
+	Content Expr // TypeString
+}
+
+func (*AppendFileStmt) isStmt() {}
+
+// LinesExpr reads a file and returns each line as list<string>, stripping
+// the trailing newline delimiter. The emitter calls mochi_lines(path).
+// Phase 6.5.
+type LinesExpr struct{ Path Expr }
+
+func (*LinesExpr) Type() Type { return TypeList }

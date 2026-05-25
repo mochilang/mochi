@@ -259,6 +259,27 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return:  AnyType{},
 		Effects: NewEffectSet(EffectMeta),
 	}, false)
+	// Phase 6.5: file I/O builtins.
+	env.SetVar("readFile", FuncType{
+		Params:  []Type{StringType{}},
+		Return:  StringType{},
+		Effects: NewEffectSet(EffectIO),
+	}, false)
+	env.SetVar("writeFile", FuncType{
+		Params:  []Type{StringType{}, StringType{}},
+		Return:  UnitType{},
+		Effects: NewEffectSet(EffectIO),
+	}, false)
+	env.SetVar("appendFile", FuncType{
+		Params:  []Type{StringType{}, StringType{}},
+		Return:  UnitType{},
+		Effects: NewEffectSet(EffectIO),
+	}, false)
+	env.SetVar("lines", FuncType{
+		Params:  []Type{StringType{}},
+		Return:  ListType{Elem: StringType{}},
+		Effects: NewEffectSet(EffectIO),
+	}, false)
 
 	var errs []error
 

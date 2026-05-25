@@ -33,8 +33,20 @@ String concatenation and `len` on strings are used in nearly every Mochi program
 | 6.2 | `str(x)` type-to-string conversion for int, float, bool, string: `StrConvertExpr` IR node; `mochi_str_from_i64` (snprintf `%lld`), `mochi_str_from_f64` (snprintf `%g`), `mochi_str_from_bool` ("true"/"false"); string is identity; `lowerStrConvertCall`; `TestPhase6StrConvert` gate (8 fixtures) | LANDED 2026-05-25 17:49 (GMT+7) | — | — |
 | 6.3 | `upper(s)`, `lower(s)`, `split(s, sep)`, `join(xs, sep)`: `StrUpperExpr`, `StrLowerExpr`, `StrSplitExpr`, `StrJoinExpr` IR nodes; `mochi_str_upper`, `mochi_str_lower`, `mochi_str_split`, `mochi_str_join` C runtime (ASCII-only; utf8proc deferred); `exprElemType` extended for `StrSplitExpr` so `let xs = split(...)` infers `ElemType=TypeString`; `TestPhase6StringExtra` gate (8 fixtures). | LANDED 2026-05-25 19:27 (GMT+7) | — | — |
 | 6.4 | Format-string interpolation (`"{name} is {age}"` lowers to a printf-style sequence) | NOT STARTED | — | — |
-| 6.5 | File I/O: `readFile`, `writeFile`, `lines`, `appendFile`; `stdin`, `stdout`, `stderr` handles | NOT STARTED | — | — |
+| 6.5 | File I/O: `readFile(path): string`, `writeFile(path, content)`, `appendFile(path, content)`, `lines(path): list<string>`; `ReadFileExpr`, `WriteFileStmt`, `AppendFileStmt`, `LinesExpr` IR nodes; `mochi_read_file`, `mochi_write_file`, `mochi_append_file`, `mochi_lines` C runtime (`runtime/include/mochi/fileio.h` + `runtime/src/fileio.c`); `lowerReadFileCall`, `lowerWriteFileCall`, `lowerAppendFileCall`, `lowerLinesCall`; `exprElemType` extended for `LinesExpr`; `TestPhase6FileIO` gate (8 fixtures) | LANDED 2026-05-25 20:55 (GMT+7) | — | — |
 | 6.6 | simdutf utf-8 validation on read; rejected input raises `MOCHI_ERR_PARSE` | NOT STARTED | — | — |
+
+## Phase 6.5 decisions
+
+**`mochi_read_file` memory model.** `mochi_read_file` calls `fopen("r")`, `fseek(SEEK_END)`, `ftell`, `rewind`, then `malloc(size+1)` and `fread`. The returned buffer is NUL-terminated and owned by the caller. No free (leak-on-exit like the rest of Phase 6.x; GC deferred to Phase 17).
+
+**`mochi_lines` line splitting.** Lines are split on `'\n'`. If the file ends with `'\n'`, no empty trailing element is produced (matching Python's `str.splitlines()` behavior and the spec requirement). If the file does not end with `'\n'`, the last fragment is still returned as a line element. The empty-file case returns an empty list.
+
+**`LinesExpr` returns `TypeList` with elem `TypeString`.** `LinesExpr.Type()` returns `TypeList` (the existing IR convention for all list-valued nodes). `exprElemType` is extended to return `TypeString` for `LinesExpr`, matching the pattern established by `StrSplitExpr`. This lets the downstream `LetStmt`/`ForEachStmt` lowering correctly infer `ElemType=TypeString` without any additional metadata fields on the node itself.
+
+**`WriteFileStmt` and `AppendFileStmt` as dedicated IR nodes rather than `CallStmt`.** Having dedicated nodes for the two void file-write operations makes the verifier and emitter explicit about what is being checked and emitted, rather than relying on the string-name convention of `CallStmt`. This is consistent with how `MapPutStmt` and `ListSetStmt` were introduced for mutation operations. The walk functions (`walkStmt*`) are extended for both nodes so they participate in helper-collection passes.
+
+**`#include "mochi/fileio.h"` is unconditional.** The prologue always includes `fileio.h`, matching the pattern of `strings.h`, `list.h`, and `map.h`. The linker strips unused symbols.
 
 ## Decisions made
 

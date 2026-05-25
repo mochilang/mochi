@@ -449,6 +449,40 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 			}
 		}
 		return nil
+	case *WriteFileStmt:
+		if s.Path == nil {
+			return errors.New("WriteFileStmt: nil Path")
+		}
+		if s.Path.Type() != TypeString {
+			return fmt.Errorf("WriteFileStmt: Path must be TypeString, got %s", s.Path.Type())
+		}
+		if s.Content == nil {
+			return errors.New("WriteFileStmt: nil Content")
+		}
+		if s.Content.Type() != TypeString {
+			return fmt.Errorf("WriteFileStmt: Content must be TypeString, got %s", s.Content.Type())
+		}
+		if err := verifyExprCtx(ctx, s.Path); err != nil {
+			return fmt.Errorf("WriteFileStmt Path: %w", err)
+		}
+		return verifyExprCtx(ctx, s.Content)
+	case *AppendFileStmt:
+		if s.Path == nil {
+			return errors.New("AppendFileStmt: nil Path")
+		}
+		if s.Path.Type() != TypeString {
+			return fmt.Errorf("AppendFileStmt: Path must be TypeString, got %s", s.Path.Type())
+		}
+		if s.Content == nil {
+			return errors.New("AppendFileStmt: nil Content")
+		}
+		if s.Content.Type() != TypeString {
+			return fmt.Errorf("AppendFileStmt: Content must be TypeString, got %s", s.Content.Type())
+		}
+		if err := verifyExprCtx(ctx, s.Path); err != nil {
+			return fmt.Errorf("AppendFileStmt Path: %w", err)
+		}
+		return verifyExprCtx(ctx, s.Content)
 	}
 	return fmt.Errorf("unhandled Stmt %T", st)
 }
@@ -1083,6 +1117,8 @@ func exprElemType(e Expr) Type {
 		return v.ValueType
 	case *StrSplitExpr:
 		return TypeString
+	case *LinesExpr:
+		return TypeString // lines() always returns list<string>
 	}
 	return TypeInvalid
 }
@@ -1636,6 +1672,22 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			}
 		}
 		return nil
+	case *ReadFileExpr:
+		if v.Path == nil {
+			return errors.New("ReadFileExpr: nil Path")
+		}
+		if v.Path.Type() != TypeString {
+			return fmt.Errorf("ReadFileExpr: Path must be TypeString, got %s", v.Path.Type())
+		}
+		return verifyExprCtx(ctx, v.Path)
+	case *LinesExpr:
+		if v.Path == nil {
+			return errors.New("LinesExpr: nil Path")
+		}
+		if v.Path.Type() != TypeString {
+			return fmt.Errorf("LinesExpr: Path must be TypeString, got %s", v.Path.Type())
+		}
+		return verifyExprCtx(ctx, v.Path)
 	case *CallExpr:
 		fn, ok := ctx.fns[v.Func]
 		if !ok {

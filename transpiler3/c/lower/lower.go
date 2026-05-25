@@ -584,6 +584,13 @@ func (l *lowerer) lowerExprStmt(out *aotir.Block, es *parser.ExprStmt) error {
 	if call.Func == "print" {
 		return l.lowerPrintCall(out, call)
 	}
+	// Phase 6.5: file I/O void calls.
+	if call.Func == "writeFile" {
+		return l.lowerWriteFileCall(out, call)
+	}
+	if call.Func == "appendFile" {
+		return l.lowerAppendFileCall(out, call)
+	}
 	// Phase 5.0: check if this is a call to a fun-typed variable in scope.
 	if b, ok2 := l.scope.lookup(call.Func); ok2 && b.t == aotir.TypeFun {
 		if b.funSig == nil {
@@ -856,6 +863,8 @@ func exprElemType(e aotir.Expr) aotir.Type {
 		return v.ValueType
 	case *aotir.StrSplitExpr:
 		return aotir.TypeString // split() always returns list<string>
+	case *aotir.LinesExpr:
+		return aotir.TypeString // lines() always returns list<string>
 	}
 	return aotir.TypeInvalid
 }
@@ -3280,6 +3289,17 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 			return l.lowerAbsCall(call)
 		}
 	}
+	// Phase 6.5: file I/O expr-returning calls.
+	if call.Func == "readFile" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerReadFileCall(call)
+		}
+	}
+	if call.Func == "lines" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerLinesCall(call)
+		}
+	}
 	if call.Func == "floor" {
 		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
 			return l.lowerFloorCall(call)
@@ -4587,6 +4607,82 @@ func (l *lowerer) lowerMatchBodyWithScope(c *parser.MatchCase, extraScope map[st
 	}
 
 	return body, nil
+}
+
+// lowerReadFileCall lowers `readFile(path)` to a ReadFileExpr.
+func (l *lowerer) lowerReadFileCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("readFile() takes exactly one argument, got %d", len(call.Args))
+	}
+	path, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("readFile() path arg: %w", err)
+	}
+	if path.Type() != aotir.TypeString {
+		return nil, fmt.Errorf("readFile() path must be a string, got %s", path.Type())
+	}
+	return &aotir.ReadFileExpr{Path: path}, nil
+}
+
+// lowerWriteFileCall lowers `writeFile(path, content)` to a WriteFileStmt.
+func (l *lowerer) lowerWriteFileCall(out *aotir.Block, call *parser.CallExpr) error {
+	if len(call.Args) != 2 {
+		return fmt.Errorf("writeFile() takes exactly two arguments, got %d", len(call.Args))
+	}
+	path, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return fmt.Errorf("writeFile() path arg: %w", err)
+	}
+	if path.Type() != aotir.TypeString {
+		return fmt.Errorf("writeFile() path must be a string, got %s", path.Type())
+	}
+	content, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return fmt.Errorf("writeFile() content arg: %w", err)
+	}
+	if content.Type() != aotir.TypeString {
+		return fmt.Errorf("writeFile() content must be a string, got %s", content.Type())
+	}
+	out.Statements = append(out.Statements, &aotir.WriteFileStmt{Path: path, Content: content})
+	return nil
+}
+
+// lowerAppendFileCall lowers `appendFile(path, content)` to an AppendFileStmt.
+func (l *lowerer) lowerAppendFileCall(out *aotir.Block, call *parser.CallExpr) error {
+	if len(call.Args) != 2 {
+		return fmt.Errorf("appendFile() takes exactly two arguments, got %d", len(call.Args))
+	}
+	path, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return fmt.Errorf("appendFile() path arg: %w", err)
+	}
+	if path.Type() != aotir.TypeString {
+		return fmt.Errorf("appendFile() path must be a string, got %s", path.Type())
+	}
+	content, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return fmt.Errorf("appendFile() content arg: %w", err)
+	}
+	if content.Type() != aotir.TypeString {
+		return fmt.Errorf("appendFile() content must be a string, got %s", content.Type())
+	}
+	out.Statements = append(out.Statements, &aotir.AppendFileStmt{Path: path, Content: content})
+	return nil
+}
+
+// lowerLinesCall lowers `lines(path)` to a LinesExpr.
+func (l *lowerer) lowerLinesCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("lines() takes exactly one argument, got %d", len(call.Args))
+	}
+	path, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("lines() path arg: %w", err)
+	}
+	if path.Type() != aotir.TypeString {
+		return nil, fmt.Errorf("lines() path must be a string, got %s", path.Type())
+	}
+	return &aotir.LinesExpr{Path: path}, nil
 }
 
 // trimPrimary returns a short string describing pr for diagnostics;
