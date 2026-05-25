@@ -1,0 +1,3 @@
+let msg = "no interpolation here"
+print(msg)
+print("also plain")

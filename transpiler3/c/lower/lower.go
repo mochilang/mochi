@@ -3020,7 +3020,7 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 		return nil, fmt.Errorf("nil primary")
 	}
 	if pr.Lit != nil {
-		return lowerLiteral(pr.Lit)
+		return l.lowerLiteral(pr.Lit)
 	}
 	if pr.Group != nil {
 		return l.lowerExpr(pr.Group)
@@ -4045,7 +4045,7 @@ func (l *lowerer) lowerAppendCall(call *parser.CallExpr) (aotir.Expr, error) {
 	}, nil
 }
 
-func lowerLiteral(lit *parser.Literal) (aotir.Expr, error) {
+func (l *lowerer) lowerLiteral(lit *parser.Literal) (aotir.Expr, error) {
 	switch {
 	case lit.Int != nil:
 		return &aotir.IntLit{Value: int64(*lit.Int)}, nil
@@ -4058,11 +4058,148 @@ func lowerLiteral(lit *parser.Literal) (aotir.Expr, error) {
 	case lit.Bool != nil:
 		return &aotir.BoolLit{Value: bool(*lit.Bool)}, nil
 	case lit.Str != nil:
-		return &aotir.StringLit{Value: *lit.Str}, nil
+		s := *lit.Str
+		if strings.Contains(s, "{") {
+			return l.lowerFmtString(s)
+		}
+		return &aotir.StringLit{Value: s}, nil
 	case lit.None:
 		return nil, fmt.Errorf("none literal lands with Option in Phase 3")
 	}
 	return nil, fmt.Errorf("empty literal node")
+}
+
+// fmtPart is a single segment of a format string. Either Lit or Ident is set.
+type fmtPart struct {
+	Lit   string // literal text (empty string is allowed)
+	Ident string // interpolated identifier (non-empty means it's a hole)
+}
+
+// parseFmtString splits a raw (unquoted) format-string value into alternating
+// literal and identifier parts. Only simple identifier holes {name} are
+// supported in Phase 6.4; anything else (e.g. {a+b}, {}) is rejected.
+func parseFmtString(s string) ([]fmtPart, error) {
+	var parts []fmtPart
+	rest := s
+	for {
+		open := strings.Index(rest, "{")
+		if open < 0 {
+			// No more holes: append final literal and stop.
+			parts = append(parts, fmtPart{Lit: rest})
+			break
+		}
+		// Append the literal text before the '{'.
+		parts = append(parts, fmtPart{Lit: rest[:open]})
+		rest = rest[open+1:] // skip '{'
+		close := strings.Index(rest, "}")
+		if close < 0 {
+			return nil, fmt.Errorf("format string: unclosed '{' in %q", s)
+		}
+		ident := rest[:close]
+		rest = rest[close+1:] // skip '}'
+		if ident == "" {
+			return nil, fmt.Errorf("format string: empty interpolation '{}' in %q", s)
+		}
+		// Validate that ident is a valid Mochi identifier (ASCII letter/underscore
+		// followed by alphanumeric/_; Unicode extended identifiers are not
+		// parsed here for simplicity, but production code could widen this).
+		for i, r := range ident {
+			if i == 0 {
+				if !((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || r == '_') {
+					return nil, fmt.Errorf("format string: interpolation %q is not a simple identifier (Phase 6.4 only supports plain variable names)", ident)
+				}
+			} else {
+				if !((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_') {
+					return nil, fmt.Errorf("format string: interpolation %q is not a simple identifier (Phase 6.4 only supports plain variable names)", ident)
+				}
+			}
+		}
+		parts = append(parts, fmtPart{Ident: ident})
+	}
+	return parts, nil
+}
+
+// lowerFmtString lowers a format string (e.g. "Hello {name}!") into a tree
+// of BinStrCat / StrConvertExpr / StringLit nodes. Phase 6.4 only supports
+// simple variable-name holes ({identifier}).
+func (l *lowerer) lowerFmtString(s string) (aotir.Expr, error) {
+	parts, err := parseFmtString(s)
+	if err != nil {
+		return nil, err
+	}
+	// Build the expression left-to-right: start with the first part and
+	// keep folding with BinStrCat.
+	var result aotir.Expr
+	for _, p := range parts {
+		var partExpr aotir.Expr
+		if p.Ident != "" {
+			b, ok := l.scope.lookup(p.Ident)
+			if !ok {
+				return nil, fmt.Errorf("format string: undeclared variable %q", p.Ident)
+			}
+			// Build a VarRef (or UnionVarRef) for the identifier.
+			var ref aotir.Expr
+			if b.t == aotir.TypeUnion {
+				name := p.Ident
+				if b.emitName != "" {
+					name = b.emitName
+				}
+				ref = &aotir.UnionVarRef{Name: name, UnionName: b.union}
+			} else {
+				name := p.Ident
+				if b.emitName != "" {
+					name = b.emitName
+				}
+				ref = &aotir.VarRef{
+					Name:              name,
+					VarType:           b.t,
+					RecordName:        b.record,
+					ElemType:          b.elem,
+					ElemRecordName:    b.elemRec,
+					InnerElemType:     b.innerElem,
+					MapElemKeyType:    b.mapElemKey,
+					MapElemValueType:  b.mapElemValue,
+					KeyType:           b.key,
+					ValueType:         b.value,
+					ListValueElemType: b.listValElem,
+				}
+			}
+			// Wrap in StrConvertExpr when the variable is not already a string.
+			if b.t == aotir.TypeString {
+				partExpr = ref
+			} else {
+				switch b.t {
+				case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool:
+					partExpr = &aotir.StrConvertExpr{Operand: ref}
+				default:
+					return nil, fmt.Errorf("format string: variable %q has type %s which cannot be interpolated (only int, float, bool, string supported in Phase 6.4)", p.Ident, b.t)
+				}
+			}
+		} else {
+			// Literal part - even empty strings are emitted as StringLit so the
+			// BinStrCat tree is well-typed. We drop empty literals only when they
+			// are the sole part (handled below via result==nil shortcut).
+			if p.Lit == "" && result != nil {
+				continue // skip empty literal parts mid-string
+			}
+			partExpr = &aotir.StringLit{Value: p.Lit}
+		}
+		if result == nil {
+			result = partExpr
+		} else {
+			result = &aotir.BinaryExpr{
+				Op:     aotir.BinStrCat,
+				Left:   result,
+				Right:  partExpr,
+				Result: aotir.TypeString,
+			}
+		}
+	}
+	if result == nil {
+		// Edge case: format string was completely empty "".
+		return &aotir.StringLit{Value: ""}, nil
+	}
+	return result, nil
 }
 
 // primaryPhaseHint names the phase that adds support for pr, when one

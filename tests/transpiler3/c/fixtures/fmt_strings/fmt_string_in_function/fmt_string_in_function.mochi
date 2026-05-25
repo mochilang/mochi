@@ -1,0 +1,4 @@
+fun greet(name: string, age: int): string {
+    return "Hi, {name}! You are {age}."
+}
+print(greet("Carol", 40))

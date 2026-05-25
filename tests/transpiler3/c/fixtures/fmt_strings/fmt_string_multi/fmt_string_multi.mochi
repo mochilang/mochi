@@ -1,0 +1,4 @@
+let name = "Bob"
+let age = 25
+let score = 9.5
+print("{name} is {age} years old and scored {score}.")
