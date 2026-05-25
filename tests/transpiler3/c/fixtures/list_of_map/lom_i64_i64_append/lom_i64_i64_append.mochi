@@ -1,0 +1,8 @@
+let m1: map<int, int> = {1: 10, 2: 20}
+let m2: map<int, int> = {3: 30, 4: 40}
+let xs: [map<int, int>] = [m1]
+let xs2 = append(xs, m2)
+print(len(xs))
+print(len(xs2))
+print(xs2[0][1])
+print(xs2[1][3])

@@ -120,6 +120,16 @@ func Verify(p *Program) error {
 			} else if fn.ReturnInnerElemType != TypeInvalid {
 				return fmt.Errorf("aotir.Verify: function %q has ReturnInnerElemType set on list<%s> (only valid when element is list)", fn.Name, fn.ReturnElemType)
 			}
+			if fn.ReturnElemType == TypeMap {
+				if !isScalarKeyType(fn.ReturnMapElemKeyType) {
+					return fmt.Errorf("aotir.Verify: function %q returns list<map<K,V>> but ReturnMapElemKeyType is %s (Phase 3.4f requires int or string key)", fn.Name, fn.ReturnMapElemKeyType)
+				}
+				if !isScalarValueType(fn.ReturnMapElemValueType) {
+					return fmt.Errorf("aotir.Verify: function %q returns list<map<K,V>> but ReturnMapElemValueType is %s (Phase 3.4f requires scalar value)", fn.Name, fn.ReturnMapElemValueType)
+				}
+			} else if fn.ReturnMapElemKeyType != TypeInvalid || fn.ReturnMapElemValueType != TypeInvalid {
+				return fmt.Errorf("aotir.Verify: function %q has ReturnMapElemKeyType/ReturnMapElemValueType set on list<%s> (only valid when element is map)", fn.Name, fn.ReturnElemType)
+			}
 		} else {
 			if fn.ReturnElemType != TypeInvalid {
 				return fmt.Errorf("aotir.Verify: function %q has ReturnElemType set on non-list return type %s", fn.Name, fn.ReturnType)
@@ -129,6 +139,9 @@ func Verify(p *Program) error {
 			}
 			if fn.ReturnInnerElemType != TypeInvalid {
 				return fmt.Errorf("aotir.Verify: function %q has ReturnInnerElemType set on non-list return type %s", fn.Name, fn.ReturnType)
+			}
+			if fn.ReturnMapElemKeyType != TypeInvalid || fn.ReturnMapElemValueType != TypeInvalid {
+				return fmt.Errorf("aotir.Verify: function %q has ReturnMapElemKeyType/ReturnMapElemValueType set on non-list return type %s", fn.Name, fn.ReturnType)
 			}
 		}
 		if fn.ReturnType == TypeMap {
@@ -188,6 +201,16 @@ func Verify(p *Program) error {
 				} else if pr.InnerElemType != TypeInvalid {
 					return fmt.Errorf("aotir.Verify: function %q param %d: InnerElemType set on list<%s> (only valid when element is list)", fn.Name, k, pr.ElemType)
 				}
+				if pr.ElemType == TypeMap {
+					if !isScalarKeyType(pr.MapElemKeyType) {
+						return fmt.Errorf("aotir.Verify: function %q param %d: list<map<K,V>> param has MapElemKeyType %s (Phase 3.4f requires int or string key)", fn.Name, k, pr.MapElemKeyType)
+					}
+					if !isScalarValueType(pr.MapElemValueType) {
+						return fmt.Errorf("aotir.Verify: function %q param %d: list<map<K,V>> param has MapElemValueType %s (Phase 3.4f requires scalar value)", fn.Name, k, pr.MapElemValueType)
+					}
+				} else if pr.MapElemKeyType != TypeInvalid || pr.MapElemValueType != TypeInvalid {
+					return fmt.Errorf("aotir.Verify: function %q param %d: MapElemKeyType/MapElemValueType set on list<%s> (only valid when element is map)", fn.Name, k, pr.ElemType)
+				}
 			} else {
 				if pr.ElemType != TypeInvalid {
 					return fmt.Errorf("aotir.Verify: function %q param %d: ElemType set on non-list type %s", fn.Name, k, pr.Type)
@@ -197,6 +220,9 @@ func Verify(p *Program) error {
 				}
 				if pr.InnerElemType != TypeInvalid {
 					return fmt.Errorf("aotir.Verify: function %q param %d: InnerElemType set on non-list type %s", fn.Name, k, pr.Type)
+				}
+				if pr.MapElemKeyType != TypeInvalid || pr.MapElemValueType != TypeInvalid {
+					return fmt.Errorf("aotir.Verify: function %q param %d: MapElemKeyType/MapElemValueType set on non-list type %s", fn.Name, k, pr.Type)
 				}
 			}
 			if pr.Type == TypeMap {
@@ -261,7 +287,7 @@ func Verify(p *Program) error {
 			if _, dup := ctx.scope.vars[pr.Name]; dup {
 				return fmt.Errorf("aotir.Verify: %s: duplicate parameter %q", fn.Name, pr.Name)
 			}
-			ctx.scope.vars[pr.Name] = binding{t: pr.Type, mutable: false, record: pr.RecordName, elem: pr.ElemType, elemRec: pr.ElemRecordName, key: pr.KeyType, value: pr.ValueType, listValElem: pr.ListValueElemType}
+			ctx.scope.vars[pr.Name] = binding{t: pr.Type, mutable: false, record: pr.RecordName, elem: pr.ElemType, elemRec: pr.ElemRecordName, mapElemKey: pr.MapElemKeyType, mapElemValue: pr.MapElemValueType, key: pr.KeyType, value: pr.ValueType, listValElem: pr.ListValueElemType}
 		}
 		for j, st := range fn.Body.Statements {
 			if err := verifyStmt(ctx, st); err != nil {
@@ -307,6 +333,8 @@ type binding struct {
 	record       string // record name when t==TypeRecord
 	elem         Type   // element type when t==TypeList
 	elemRec      string // element record name when t==TypeList && elem==TypeRecord
+	mapElemKey   Type   // map key type when t==TypeList && elem==TypeMap (Phase 3.4f)
+	mapElemValue Type   // map value type when t==TypeList && elem==TypeMap (Phase 3.4f)
 	key          Type   // key type when t==TypeMap
 	value        Type   // value type when t==TypeMap
 	listValElem  Type   // inner list elem when t==TypeMap && value==TypeList (Phase 3.4e)
@@ -457,6 +485,16 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 		} else if s.InnerElemType != TypeInvalid {
 			return fmt.Errorf("let %q: InnerElemType set on list<%s> (only valid when ElemType==list)", s.Name, s.ElemType)
 		}
+		if s.ElemType == TypeMap {
+			if !isScalarKeyType(s.MapElemKeyType) {
+				return fmt.Errorf("let %q: list<map<K,V>> binding has MapElemKeyType %s (Phase 3.4f requires int or string key)", s.Name, s.MapElemKeyType)
+			}
+			if !isScalarValueType(s.MapElemValueType) {
+				return fmt.Errorf("let %q: list<map<K,V>> binding has MapElemValueType %s (Phase 3.4f requires scalar value)", s.Name, s.MapElemValueType)
+			}
+		} else if s.MapElemKeyType != TypeInvalid || s.MapElemValueType != TypeInvalid {
+			return fmt.Errorf("let %q: MapElemKeyType/MapElemValueType set on list<%s> (only valid when ElemType==map)", s.Name, s.ElemType)
+		}
 	} else if s.ElemType != TypeInvalid {
 		return fmt.Errorf("let %q: ElemType set on non-list type %s", s.Name, s.VarType)
 	}
@@ -494,7 +532,7 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 			return fmt.Errorf("let %q: ListValueElemType set on non-map type %s", s.Name, s.VarType)
 		}
 	}
-	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, elem: s.ElemType, elemRec: s.ElemRecordName, key: s.KeyType, value: s.ValueType, listValElem: s.ListValueElemType}
+	ctx.scope.vars[s.Name] = binding{t: s.VarType, mutable: s.Mutable, record: s.RecordName, elem: s.ElemType, elemRec: s.ElemRecordName, mapElemKey: s.MapElemKeyType, mapElemValue: s.MapElemValueType, key: s.KeyType, value: s.ValueType, listValElem: s.ListValueElemType}
 	return nil
 }
 
@@ -671,6 +709,16 @@ func verifyForEachStmt(ctx *verifyCtx, s *ForEachStmt) error {
 	} else if s.InnerElemType != TypeInvalid {
 		return fmt.Errorf("foreach: InnerElemType set on list<%s> (only valid when ElemType==list)", s.ElemType)
 	}
+	if s.ElemType == TypeMap {
+		if !isScalarKeyType(s.MapElemKeyType) {
+			return fmt.Errorf("foreach: list<map<K,V>> requires int or string key, got MapElemKeyType %s", s.MapElemKeyType)
+		}
+		if !isScalarValueType(s.MapElemValueType) {
+			return fmt.Errorf("foreach: list<map<K,V>> requires scalar value, got MapElemValueType %s", s.MapElemValueType)
+		}
+	} else if s.MapElemKeyType != TypeInvalid || s.MapElemValueType != TypeInvalid {
+		return fmt.Errorf("foreach: MapElemKeyType/MapElemValueType set on list<%s> (only valid when ElemType==map)", s.ElemType)
+	}
 	if s.Body == nil {
 		return errors.New("foreach with nil Body block")
 	}
@@ -678,11 +726,13 @@ func verifyForEachStmt(ctx *verifyCtx, s *ForEachStmt) error {
 	ctx.scope = newScope(prev)
 	// When ElemType==TypeList, the induction variable is bound to a
 	// list<innerT> value, so the binding's elem is the InnerElemType.
+	// When ElemType==TypeMap, the induction variable is a map<K,V>;
+	// the binding's key and value carry K and V.
 	bindElem := TypeInvalid
 	if s.ElemType == TypeList {
 		bindElem = s.InnerElemType
 	}
-	ctx.scope.vars[s.Var] = binding{t: s.ElemType, mutable: false, record: s.ElemRecordName, elem: bindElem}
+	ctx.scope.vars[s.Var] = binding{t: s.ElemType, mutable: false, record: s.ElemRecordName, elem: bindElem, key: s.MapElemKeyType, value: s.MapElemValueType}
 	ctx.loopDepth++
 	defer func() {
 		ctx.loopDepth--
@@ -850,7 +900,9 @@ func exprInnerElemType(e Expr) Type {
 // TypeInvalid if the expression is not map-typed. Phase 3.2 covers
 // VarRef, MapLit, CallExpr. Maps never appear as field reads in
 // 3.2 because record fields cannot hold maps and (until Phase 3.4)
-// map values cannot themselves be maps.
+// map values cannot themselves be maps. Phase 3.4f adds IndexExpr:
+// indexing a list<map<K,V>> produces a map<K,V> value whose key type
+// is carried on IndexExpr.MapElemKeyType.
 func exprKeyType(e Expr) Type {
 	switch v := e.(type) {
 	case *VarRef:
@@ -859,13 +911,18 @@ func exprKeyType(e Expr) Type {
 		return v.KeyType
 	case *CallExpr:
 		return v.ResultKeyType
+	case *IndexExpr:
+		// list<map<K,V>> indexing produces a map<K,V>.
+		if v.ElemType == TypeMap {
+			return v.MapElemKeyType
+		}
 	}
 	return TypeInvalid
 }
 
 // exprValueType returns the value type of a map-typed expression,
 // or TypeInvalid if the expression is not map-typed. See exprKeyType
-// for the node coverage rationale.
+// for the node coverage rationale. Phase 3.4f adds IndexExpr.
 func exprValueType(e Expr) Type {
 	switch v := e.(type) {
 	case *VarRef:
@@ -874,6 +931,11 @@ func exprValueType(e Expr) Type {
 		return v.ValueType
 	case *CallExpr:
 		return v.ResultValueType
+	case *IndexExpr:
+		// list<map<K,V>> indexing produces a map<K,V>.
+		if v.ElemType == TypeMap {
+			return v.MapElemValueType
+		}
 	}
 	return TypeInvalid
 }
@@ -895,6 +957,44 @@ func exprListValueElemType(e Expr) Type {
 	return TypeInvalid
 }
 
+// exprMapElemKeyType returns the key type of the map element in a
+// list<map<K,V>>-typed expression, or TypeInvalid otherwise. Only
+// meaningful on expressions whose Type() is TypeList with ElemType==TypeMap.
+func exprMapElemKeyType(e Expr) Type {
+	switch v := e.(type) {
+	case *VarRef:
+		return v.MapElemKeyType
+	case *ListLit:
+		return v.MapElemKeyType
+	case *CallExpr:
+		return v.ResultMapElemKeyType
+	case *AppendExpr:
+		return v.MapElemKeyType
+	case *IndexExpr:
+		// IndexExpr over list<map<K,V>> produces a map<K,V>; no further unwrap here.
+		return TypeInvalid
+	}
+	return TypeInvalid
+}
+
+// exprMapElemValueType returns the value type of the map element in a
+// list<map<K,V>>-typed expression, or TypeInvalid otherwise.
+func exprMapElemValueType(e Expr) Type {
+	switch v := e.(type) {
+	case *VarRef:
+		return v.MapElemValueType
+	case *ListLit:
+		return v.MapElemValueType
+	case *CallExpr:
+		return v.ResultMapElemValueType
+	case *AppendExpr:
+		return v.MapElemValueType
+	case *IndexExpr:
+		return TypeInvalid
+	}
+	return TypeInvalid
+}
+
 // isScalarElemType reports whether t is a Phase 3.1 scalar list
 // element type. Kept for the carriers that still require a scalar
 // (e.g. map keys/values surfaces); the broader list-element gate
@@ -911,11 +1011,11 @@ func isScalarElemType(t Type) bool {
 // Phase 3.1 accepted the four scalar primitives; Phase 3.4a widens
 // this to TypeRecord (records as list elements); Phase 3.4b widens
 // it again to TypeList (one-level nested list<list<T>> where T is a
-// scalar primitive carried on InnerElemType). Map elements remain
-// rejected pending later sub-phases.
+// scalar primitive carried on InnerElemType). Phase 3.4f widens it
+// to TypeMap (list<map<K,V>> where K and V are scalars).
 func isListElemType(t Type) bool {
 	switch t {
-	case TypeInt, TypeFloat, TypeBool, TypeString, TypeRecord, TypeList:
+	case TypeInt, TypeFloat, TypeBool, TypeString, TypeRecord, TypeList, TypeMap:
 		return true
 	}
 	return false
@@ -999,6 +1099,14 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		if b.t == TypeList && b.elem == TypeRecord && v.ElemRecordName != b.elemRec {
 			return fmt.Errorf("variable %q has list<%s> in scope, ref says list<%s>", v.Name, b.elemRec, v.ElemRecordName)
 		}
+		if b.t == TypeList && b.elem == TypeMap {
+			if v.MapElemKeyType != b.mapElemKey {
+				return fmt.Errorf("variable %q has list<map<%s,_>> in scope, ref says list<map<%s,_>>", v.Name, b.mapElemKey, v.MapElemKeyType)
+			}
+			if v.MapElemValueType != b.mapElemValue {
+				return fmt.Errorf("variable %q has list<map<_,%s>> in scope, ref says list<map<_,%s>>", v.Name, b.mapElemValue, v.MapElemValueType)
+			}
+		}
 		if b.t == TypeMap {
 			if v.KeyType != b.key {
 				return fmt.Errorf("variable %q has map<%s,_> in scope, ref says map<%s,_>", v.Name, b.key, v.KeyType)
@@ -1063,6 +1171,16 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("call %q result list<list<%s>> does not match callee return list<list<%s>>",
 				v.Func, v.ResultInnerElemType, fn.ReturnInnerElemType)
 		}
+		if fn.ReturnType == TypeList && fn.ReturnElemType == TypeMap {
+			if v.ResultMapElemKeyType != fn.ReturnMapElemKeyType {
+				return fmt.Errorf("call %q result list<map<%s,_>> does not match callee return list<map<%s,_>>",
+					v.Func, v.ResultMapElemKeyType, fn.ReturnMapElemKeyType)
+			}
+			if v.ResultMapElemValueType != fn.ReturnMapElemValueType {
+				return fmt.Errorf("call %q result list<map<_,%s>> does not match callee return list<map<_,%s>>",
+					v.Func, v.ResultMapElemValueType, fn.ReturnMapElemValueType)
+			}
+		}
 		if fn.ReturnType == TypeMap {
 			if v.ResultKeyType != fn.ReturnKeyType {
 				return fmt.Errorf("call %q result map<%s,_> does not match callee return map<%s,_>",
@@ -1112,6 +1230,16 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 					if argInner := exprInnerElemType(a); argInner != fn.Params[i].InnerElemType {
 						return fmt.Errorf("call %q arg %d: expected list<list<%s>>, got list<list<%s>>",
 							v.Func, i, fn.Params[i].InnerElemType, argInner)
+					}
+				}
+				if fn.Params[i].ElemType == TypeMap {
+					if argMK := exprMapElemKeyType(a); argMK != fn.Params[i].MapElemKeyType {
+						return fmt.Errorf("call %q arg %d: expected list<map<%s,_>>, got list<map<%s,_>>",
+							v.Func, i, fn.Params[i].MapElemKeyType, argMK)
+					}
+					if argMV := exprMapElemValueType(a); argMV != fn.Params[i].MapElemValueType {
+						return fmt.Errorf("call %q arg %d: expected list<map<_,%s>>, got list<map<_,%s>>",
+							v.Func, i, fn.Params[i].MapElemValueType, argMV)
 					}
 				}
 			}
@@ -1322,6 +1450,16 @@ func verifyListLit(ctx *verifyCtx, v *ListLit) error {
 	} else if v.InnerElemType != TypeInvalid {
 		return fmt.Errorf("list literal: InnerElemType set on list<%s> (only valid when ElemType==list)", v.ElemType)
 	}
+	if v.ElemType == TypeMap {
+		if !isScalarKeyType(v.MapElemKeyType) {
+			return fmt.Errorf("list literal: list<map<K,V>> requires int or string key, got MapElemKeyType %s", v.MapElemKeyType)
+		}
+		if !isScalarValueType(v.MapElemValueType) {
+			return fmt.Errorf("list literal: list<map<K,V>> requires scalar value, got MapElemValueType %s", v.MapElemValueType)
+		}
+	} else if v.MapElemKeyType != TypeInvalid || v.MapElemValueType != TypeInvalid {
+		return fmt.Errorf("list literal: MapElemKeyType/MapElemValueType set on list<%s> (only valid when ElemType==map)", v.ElemType)
+	}
 	for i, e := range v.Elems {
 		if e == nil {
 			return fmt.Errorf("list literal element %d is nil", i)
@@ -1340,6 +1478,14 @@ func verifyListLit(ctx *verifyCtx, v *ListLit) error {
 		if v.ElemType == TypeList {
 			if inner := exprElemType(e); inner != v.InnerElemType {
 				return fmt.Errorf("list literal element %d: declared list<%s>, got list<%s>", i, v.InnerElemType, inner)
+			}
+		}
+		if v.ElemType == TypeMap {
+			if k := exprKeyType(e); k != v.MapElemKeyType {
+				return fmt.Errorf("list literal element %d: declared map<%s,_>, got map<%s,_>", i, v.MapElemKeyType, k)
+			}
+			if val := exprValueType(e); val != v.MapElemValueType {
+				return fmt.Errorf("list literal element %d: declared map<_,%s>, got map<_,%s>", i, v.MapElemValueType, val)
 			}
 		}
 	}
@@ -1385,6 +1531,16 @@ func verifyIndexExpr(ctx *verifyCtx, v *IndexExpr) error {
 		}
 	} else if v.InnerElemType != TypeInvalid {
 		return fmt.Errorf("index: InnerElemType set on list<%s> (only valid when ElemType==list)", v.ElemType)
+	}
+	if v.ElemType == TypeMap {
+		if !isScalarKeyType(v.MapElemKeyType) {
+			return fmt.Errorf("index over list<map<K,V>> requires int or string key, got MapElemKeyType %s", v.MapElemKeyType)
+		}
+		if !isScalarValueType(v.MapElemValueType) {
+			return fmt.Errorf("index over list<map<K,V>> requires scalar value, got MapElemValueType %s", v.MapElemValueType)
+		}
+	} else if v.MapElemKeyType != TypeInvalid || v.MapElemValueType != TypeInvalid {
+		return fmt.Errorf("index: MapElemKeyType/MapElemValueType set on list<%s> (only valid when ElemType==map)", v.ElemType)
 	}
 	if err := verifyExprCtx(ctx, v.Index); err != nil {
 		return fmt.Errorf("index value: %w", err)
@@ -1433,6 +1589,16 @@ func verifyLenExpr(ctx *verifyCtx, v *LenExpr) error {
 		}
 	} else if v.InnerElemType != TypeInvalid {
 		return fmt.Errorf("len: InnerElemType set on list<%s> (only valid when ElemType==list)", v.ElemType)
+	}
+	if v.ElemType == TypeMap {
+		if !isScalarKeyType(v.MapElemKeyType) {
+			return fmt.Errorf("len over list<map<K,V>> requires int or string key, got MapElemKeyType %s", v.MapElemKeyType)
+		}
+		if !isScalarValueType(v.MapElemValueType) {
+			return fmt.Errorf("len over list<map<K,V>> requires scalar value, got MapElemValueType %s", v.MapElemValueType)
+		}
+	} else if v.MapElemKeyType != TypeInvalid || v.MapElemValueType != TypeInvalid {
+		return fmt.Errorf("len: MapElemKeyType/MapElemValueType set on list<%s> (only valid when ElemType==map)", v.ElemType)
 	}
 	return nil
 }
@@ -1490,6 +1656,22 @@ func verifyAppendExpr(ctx *verifyCtx, v *AppendExpr) error {
 		}
 	} else if v.InnerElemType != TypeInvalid {
 		return fmt.Errorf("append: InnerElemType set on list<%s> (only valid when ElemType==list)", v.ElemType)
+	}
+	if v.ElemType == TypeMap {
+		if !isScalarKeyType(v.MapElemKeyType) {
+			return fmt.Errorf("append over list<map<K,V>> requires int or string key, got MapElemKeyType %s", v.MapElemKeyType)
+		}
+		if !isScalarValueType(v.MapElemValueType) {
+			return fmt.Errorf("append over list<map<K,V>> requires scalar value, got MapElemValueType %s", v.MapElemValueType)
+		}
+		if vk := exprKeyType(v.Value); vk != v.MapElemKeyType {
+			return fmt.Errorf("append value: expected map<%s,_>, got map<%s,_>", v.MapElemKeyType, vk)
+		}
+		if vval := exprValueType(v.Value); vval != v.MapElemValueType {
+			return fmt.Errorf("append value: expected map<_,%s>, got map<_,%s>", v.MapElemValueType, vval)
+		}
+	} else if v.MapElemKeyType != TypeInvalid || v.MapElemValueType != TypeInvalid {
+		return fmt.Errorf("append: MapElemKeyType/MapElemValueType set on list<%s> (only valid when ElemType==map)", v.ElemType)
 	}
 	return nil
 }

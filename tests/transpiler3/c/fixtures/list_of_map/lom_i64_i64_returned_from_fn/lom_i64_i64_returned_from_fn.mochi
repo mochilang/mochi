@@ -1,0 +1,10 @@
+fun build(): [map<int, int>] {
+  return [{1: 100, 2: 200}, {1: 300, 2: 400}]
+}
+
+let xs = build()
+print(len(xs))
+print(xs[0][1])
+print(xs[0][2])
+print(xs[1][1])
+print(xs[1][2])

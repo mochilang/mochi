@@ -36,9 +36,9 @@ _To be written before sub-phase 3.0 starts. Records + collections unlock realist
 | 3.4a | `list<R>` (records as list elements): per-record `mochi_list_<R>` struct + 4 helpers emitted into the TU prologue              | LANDED      | —      | — |
 | 3.4b | `list<list<T>>` (T scalar primitive: `int` / `float` / `bool` / `string`): per-inner `mochi_list_list_<inner>` struct + 4 helpers in the TU prologue; outer literal / indexing / outer + inner `len` / outer `append` / nested `for-in` / pass + return across function boundary | LANDED      | —      | — |
 | 3.4c | Empty literal with type annotation (`let xs: list<int> = []`, `let m: map<K,V> = {}`): `lowerBinding` annotation-thread for zero-element list / map; verifier + emit already correct | LANDED      | —      | — |
-| 3.4d | `list` / `map` equality (`==`, `!=`)                                                                                           | DEFERRED    | —      | — |
+| 3.4d | `list<T> == list<T>` and `map<K,V> == map<K,V>` for all scalar T / K / V: `BinEqList`/`BinNeList`/`BinEqMap`/`BinNeMap` in aotir; TU-local eq helpers; 19 fixtures + `TestPhase3CollectionEquality` gate | LANDED      | —      | — |
 | 3.4e | `map<K, list<V>>` where K in `{int, string}`, V in `{int, float, bool, string}` (8 combos): parallel-field `ListValueElemType` in IR / lower / verifier / emitter; TU-local map-of-list C helpers; 17 fixtures + `TestPhase3MapOfList` gate | LANDED      | —      | — |
-| 3.4f | `list<map<K,V>>` (maps as list elements)                                                                                       | NOT STARTED | —      | — |
+| 3.4f | `list<map<K,V>>` where K in `{int, string}`, V in `{int, float, bool, string}` (8 combos): parallel-field `MapElemKeyType` / `MapElemValueType` on list-bearing IR nodes; TU-local `mochi_list_map_<K>_<V>` helpers; 10 fixtures + `TestPhase3ListOfMap` gate | LANDED      | —      | — |
 | 3.5 | `omap<K,V>` (insertion-order map): hash table + parallel insertion-order list (needed by Phase 8)                              | DEFERRED    | —      | — |
 
 ## Decisions made
@@ -171,6 +171,21 @@ _To be written before sub-phase 3.0 starts. Records + collections unlock realist
   - List: `leq_int_eq_ne`, `leq_int_empty`, `leq_int_len_mismatch`, `leq_float_basic`, `leq_bool_basic`, `leq_str_basic`, `leq_in_if`, `leq_fn_param`, `leq_append_then_compare`.
   - Map: `meq_i64_i64_basic`, `meq_i64_str_basic`, `meq_i64_bool_basic`, `meq_i64_float_basic`, `meq_str_i64_basic`, `meq_str_str_basic`, `meq_empty_eq`, `meq_diff_keys`, `meq_in_if`, `meq_fn_param`.
 - **Gate.** `TestPhase3CollectionEquality` — all 19 fixtures pass.
+
+### Phase 3.4f (list<map<K,V>>): LANDED 2026-05-25 14:30 (GMT+7)
+
+- **Audit date:** 2026-05-25 14:10 (GMT+7)
+- **Goal-alignment audit:** `list<map<K,V>>` is the dual of Phase 3.4e (`map<K,list<V>>`). Programs that need "a sequence of associative rows" — e.g., a list of configuration objects, a batch of query results before they are keyed, or an event log where each event is a property bag — all reach for `list<map<K,V>>`. Without it, representing a variable-length sequence of maps requires awkward workarounds (parallel arrays indexed by position). This is the last nested-collection shape needed before Phase 4 (sum types). Aligns.
+
+#### Decisions Made
+
+- **IR.** Added `MapElemKeyType Type` and `MapElemValueType Type` parallel fields to all list-bearing nodes (ListLit, LetStmt, VarRef, Param, CallExpr, AppendExpr, IndexExpr, LenExpr, ForEachStmt, Function return type). Mirrors the `InnerElemType` pattern from Phase 3.4b.
+- **Verifier.** `isListElemType` widened to include `TypeMap`. Map-element nodes check that `MapElemKeyType` is `TypeInt` or `TypeString` and `MapElemValueType` is a scalar.
+- **Lowerer.** `listElemFromRef` now accepts `TypeMap` when K/V are supported scalars. `lowerListLit`, `lowerIndexOp`, `lowerLenCall`, `lowerAppendCall`, `lowerForEach` all propagate `MapElemKeyType`/`MapElemValueType`. New helpers `exprMapElemKeyType` / `exprMapElemValueType` mirror the existing `exprKeyType`/`exprValueType` pattern. The ForEach induction-variable binding carries `key: K, value: V` so the map can be used inside the loop body.
+- **Emitter.** `listSuffix` returns `"map_<K>_<V>"` when `ElemType==TypeMap`. `cListBufferElemC` returns `mochi_map_<K>_<V>`. New functions `collectListOfMapPairs` (AST walk), `emitListOfMapHelpers` (typedef struct + `_lit/_append/_index/_len`). `Emit()` calls the helper emitter between list-of-list and map-of-list helpers. ForEachStmt emission uses a tagged switch on `s.ElemType` for the induction-variable C type selection.
+- **Scope.** `list<map<K,list<V>>>` (map with list values as list elements) is deferred; it requires a three-level parallel-field chain. Phase 3.4f only supports maps with scalar values as list elements.
+- **Fixtures.** 10 fixtures under `tests/transpiler3/c/fixtures/list_of_map/`: 8 (K,V) combos with basic literal+len, plus for-in, append, passed-to-fn, returned-from-fn for the int-key/int-value case.
+- **Gate.** `TestPhase3ListOfMap` — all 10 fixtures pass.
 
 ### Phase 3.5 (omap): DEFERRED
 

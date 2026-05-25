@@ -1,0 +1,5 @@
+let xs: [map<string, int>] = [{"a": 1, "b": 2}, {"c": 3}]
+print(len(xs))
+print(xs[0]["a"])
+print(xs[0]["b"])
+print(xs[1]["c"])

@@ -1,0 +1,6 @@
+let xs: [map<int, int>] = [{1: 10, 2: 20}, {1: 30, 2: 40}]
+for m in xs {
+  print(len(m))
+  print(m[1])
+  print(m[2])
+}
