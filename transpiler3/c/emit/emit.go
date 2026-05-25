@@ -92,6 +92,22 @@ func Emit(prog *aotir.Program) (string, error) {
 		return "", err
 	}
 
+	// List equality helpers (mochi_eq_mochi_list_<elem>) must come before
+	// any function that uses list == / !=.
+	listEqElems := collectListEqElems(prog)
+	if err := emitListEqHelpers(&b, listEqElems); err != nil {
+		return "", err
+	}
+
+	// Map equality helpers (mochi_eq_mochi_map_<K>_<V>) must come before
+	// any function that uses map == / !=. When the value type is TypeList
+	// the helper references a mochi_eq_mochi_list_<inner> helper, so list
+	// equality helpers are emitted first (above).
+	mapEqPairs := collectMapEqPairs(prog)
+	if err := emitMapEqHelpers(&b, mapEqPairs); err != nil {
+		return "", err
+	}
+
 	indices := make([]int, len(prog.Functions))
 	for i := range prog.Functions {
 		indices[i] = i
@@ -695,6 +711,275 @@ func collectMapOfListInners(prog *aotir.Program) []mapOfListPair {
 		return out[i].inner < out[j].inner
 	})
 	return out
+}
+
+// listEqElem identifies a unique scalar element type for list equality helpers.
+type listEqElem struct{ elem aotir.Type }
+
+// mapEqPair identifies a unique (key, value, listValueElem) triple for map equality helpers.
+type mapEqPair struct {
+	key, value  aotir.Type
+	listValElem aotir.Type // valid when value==TypeList
+}
+
+// collectListEqElems walks the program collecting every distinct list element
+// type used in a BinEqList / BinNeList expression. These drive TU-local
+// mochi_eq_mochi_list_<elem> helper emission.
+func collectListEqElems(prog *aotir.Program) []listEqElem {
+	seen := map[aotir.Type]bool{}
+	var result []listEqElem
+	visit := func(e aotir.Expr) {
+		b, ok := e.(*aotir.BinaryExpr)
+		if !ok {
+			return
+		}
+		if b.Op != aotir.BinEqList && b.Op != aotir.BinNeList {
+			return
+		}
+		elem := exprListElemType(b.Left)
+		if elem == aotir.TypeInvalid {
+			elem = exprListElemType(b.Right)
+		}
+		if elem != aotir.TypeInvalid && !seen[elem] {
+			seen[elem] = true
+			result = append(result, listEqElem{elem})
+		}
+	}
+	for _, fn := range prog.Functions {
+		if fn == nil {
+			continue
+		}
+		walkExprVisit(fn.Body, visit)
+	}
+	sort.Slice(result, func(i, j int) bool { return result[i].elem < result[j].elem })
+	return result
+}
+
+// collectMapEqPairs walks the program collecting every distinct (key, value,
+// listValElem) triple used in a BinEqMap / BinNeMap expression. These drive
+// TU-local mochi_eq_mochi_map_<K>_<V> helper emission.
+func collectMapEqPairs(prog *aotir.Program) []mapEqPair {
+	type kv struct {
+		k, v aotir.Type
+		lve  aotir.Type
+	}
+	seen := map[kv]bool{}
+	var result []mapEqPair
+	visit := func(e aotir.Expr) {
+		b, ok := e.(*aotir.BinaryExpr)
+		if !ok {
+			return
+		}
+		if b.Op != aotir.BinEqMap && b.Op != aotir.BinNeMap {
+			return
+		}
+		key := exprMapKeyType(b.Left)
+		val := exprMapValueType(b.Left)
+		lve := exprMapListValueElemType(b.Left)
+		if key == aotir.TypeInvalid {
+			key = exprMapKeyType(b.Right)
+		}
+		if val == aotir.TypeInvalid {
+			val = exprMapValueType(b.Right)
+		}
+		if lve == aotir.TypeInvalid {
+			lve = exprMapListValueElemType(b.Right)
+		}
+		if key != aotir.TypeInvalid && val != aotir.TypeInvalid {
+			p := kv{key, val, lve}
+			if !seen[p] {
+				seen[p] = true
+				result = append(result, mapEqPair{key, val, lve})
+			}
+		}
+	}
+	for _, fn := range prog.Functions {
+		if fn == nil {
+			continue
+		}
+		walkExprVisit(fn.Body, visit)
+	}
+	sort.Slice(result, func(i, j int) bool {
+		if result[i].key != result[j].key {
+			return result[i].key < result[j].key
+		}
+		if result[i].value != result[j].value {
+			return result[i].value < result[j].value
+		}
+		return result[i].listValElem < result[j].listValElem
+	})
+	return result
+}
+
+// walkExprVisit walks all expressions reachable from blk and calls visit on
+// each. Used by collectListEqElems and collectMapEqPairs.
+func walkExprVisit(blk *aotir.Block, visit func(aotir.Expr)) {
+	if blk == nil {
+		return
+	}
+	for _, st := range blk.Statements {
+		walkStmtExprVisit(st, visit)
+	}
+}
+
+func walkStmtExprVisit(st aotir.Stmt, visit func(aotir.Expr)) {
+	switch s := st.(type) {
+	case *aotir.LetStmt:
+		walkExprNodeVisit(s.Init, visit)
+	case *aotir.AssignStmt:
+		walkExprNodeVisit(s.Value, visit)
+	case *aotir.CallStmt:
+		for _, a := range s.Args {
+			walkExprNodeVisit(a, visit)
+		}
+	case *aotir.IfStmt:
+		walkExprNodeVisit(s.Cond, visit)
+		walkExprVisit(s.Then, visit)
+		walkExprVisit(s.Else, visit)
+	case *aotir.WhileStmt:
+		walkExprNodeVisit(s.Cond, visit)
+		walkExprVisit(s.Body, visit)
+	case *aotir.ForRangeStmt:
+		walkExprNodeVisit(s.Start, visit)
+		walkExprNodeVisit(s.End, visit)
+		walkExprVisit(s.Body, visit)
+	case *aotir.ForEachStmt:
+		walkExprNodeVisit(s.List, visit)
+		walkExprVisit(s.Body, visit)
+	case *aotir.ReturnStmt:
+		if s.Value != nil {
+			walkExprNodeVisit(s.Value, visit)
+		}
+	}
+}
+
+func walkExprNodeVisit(e aotir.Expr, visit func(aotir.Expr)) {
+	if e == nil {
+		return
+	}
+	visit(e)
+	switch v := e.(type) {
+	case *aotir.CallExpr:
+		for _, a := range v.Args {
+			walkExprNodeVisit(a, visit)
+		}
+	case *aotir.BinaryExpr:
+		walkExprNodeVisit(v.Left, visit)
+		walkExprNodeVisit(v.Right, visit)
+	case *aotir.UnaryExpr:
+		walkExprNodeVisit(v.Operand, visit)
+	case *aotir.ListLit:
+		for _, el := range v.Elems {
+			walkExprNodeVisit(el, visit)
+		}
+	case *aotir.IndexExpr:
+		walkExprNodeVisit(v.Receiver, visit)
+		walkExprNodeVisit(v.Index, visit)
+	case *aotir.LenExpr:
+		walkExprNodeVisit(v.Receiver, visit)
+	case *aotir.AppendExpr:
+		walkExprNodeVisit(v.Receiver, visit)
+		walkExprNodeVisit(v.Value, visit)
+	case *aotir.FieldAccess:
+		walkExprNodeVisit(v.Receiver, visit)
+	case *aotir.RecordLit:
+		for _, f := range v.Fields {
+			walkExprNodeVisit(f.Value, visit)
+		}
+	case *aotir.MapLit:
+		for _, k := range v.Keys {
+			walkExprNodeVisit(k, visit)
+		}
+		for _, val := range v.Values {
+			walkExprNodeVisit(val, visit)
+		}
+	case *aotir.MapGetExpr:
+		walkExprNodeVisit(v.Receiver, visit)
+		walkExprNodeVisit(v.Key, visit)
+	case *aotir.MapHasExpr:
+		walkExprNodeVisit(v.Receiver, visit)
+		walkExprNodeVisit(v.Key, visit)
+	case *aotir.MapLenExpr:
+		walkExprNodeVisit(v.Receiver, visit)
+	case *aotir.MapKeysExpr:
+		walkExprNodeVisit(v.Receiver, visit)
+	case *aotir.MapValuesExpr:
+		walkExprNodeVisit(v.Receiver, visit)
+	}
+}
+
+// emitListEqHelpers emits a TU-local static equality helper for each scalar
+// list element type used in list == / != comparisons.
+func emitListEqHelpers(b *strings.Builder, elems []listEqElem) error {
+	for _, le := range elems {
+		suf, err := scalarListInnerSuffix(le.elem)
+		if err != nil {
+			return fmt.Errorf("list eq: %w", err)
+		}
+		name := "mochi_list_" + suf
+		var cmpExpr string
+		if le.elem == aotir.TypeString {
+			cmpExpr = "strcmp(a.data[_i], b.data[_i]) != 0"
+		} else {
+			cmpExpr = "a.data[_i] != b.data[_i]"
+		}
+		fmt.Fprintf(b, "static int mochi_eq_%s(%s a, %s b) {\n", name, name, name)
+		b.WriteString("    if (a.len != b.len) return 0;\n")
+		b.WriteString("    for (int64_t _i = 0; _i < a.len; _i++) {\n")
+		fmt.Fprintf(b, "        if (%s) return 0;\n", cmpExpr)
+		b.WriteString("    }\n    return 1;\n}\n\n")
+	}
+	return nil
+}
+
+// emitMapEqHelpers emits a TU-local static equality helper for each (K,V)
+// pair used in map == / != comparisons. For scalar value types the helper
+// iterates one map's live entries, checks the other has the same key, and
+// compares values. For map<K,list<V>> value types, value comparison uses
+// the corresponding mochi_eq_mochi_list_<inner> helper.
+func emitMapEqHelpers(b *strings.Builder, pairs []mapEqPair) error {
+	for _, p := range pairs {
+		suf, err := mapSuffix(p.key, p.value, p.listValElem)
+		if err != nil {
+			return fmt.Errorf("map eq: %w", err)
+		}
+		name := "mochi_map_" + suf
+
+		var keyDecl string
+		switch p.key {
+		case aotir.TypeInt:
+			keyDecl = "int64_t _k = a.table[_i].key;"
+		case aotir.TypeString:
+			keyDecl = "const char *_k = a.table[_i].key;"
+		default:
+			return fmt.Errorf("map eq: unsupported key type %s", p.key)
+		}
+
+		var valCmpExpr string
+		switch p.value {
+		case aotir.TypeString:
+			valCmpExpr = fmt.Sprintf("strcmp(%s_get(b, _k), a.table[_i].value) != 0", name)
+		case aotir.TypeList:
+			innerSuf, err2 := scalarListInnerSuffix(p.listValElem)
+			if err2 != nil {
+				return fmt.Errorf("map eq list value: %w", err2)
+			}
+			listName := "mochi_list_" + innerSuf
+			valCmpExpr = fmt.Sprintf("!mochi_eq_%s(%s_get(b, _k), a.table[_i].value)", listName, name)
+		default:
+			valCmpExpr = fmt.Sprintf("%s_get(b, _k) != a.table[_i].value", name)
+		}
+
+		fmt.Fprintf(b, "static int mochi_eq_%s(%s a, %s b) {\n", name, name, name)
+		b.WriteString("    if (a.nLive != b.nLive) return 0;\n")
+		b.WriteString("    for (int64_t _i = 0; _i < a.cap; _i++) {\n")
+		b.WriteString("        if (a.table[_i].hash == 0) continue;\n")
+		fmt.Fprintf(b, "        %s\n", keyDecl)
+		fmt.Fprintf(b, "        if (!%s_has(b, _k)) return 0;\n", name)
+		fmt.Fprintf(b, "        if (%s) return 0;\n", valCmpExpr)
+		b.WriteString("    }\n    return 1;\n}\n\n")
+	}
+	return nil
 }
 
 func walkBlockMapOfList(blk *aotir.Block, add func(aotir.Type, aotir.Type, aotir.Type)) {
@@ -1801,6 +2086,62 @@ func emitBinary(v *aotir.BinaryExpr) (string, error) {
 			return "", err
 		}
 		return "(!mochi_eq_" + recName + "(" + left + ", " + right + "))", nil
+	case aotir.BinEqList:
+		elem := exprListElemType(v.Left)
+		if elem == aotir.TypeInvalid {
+			elem = exprListElemType(v.Right)
+		}
+		suf, err := scalarListInnerSuffix(elem)
+		if err != nil {
+			return "", fmt.Errorf("list eq elem: %w", err)
+		}
+		return "mochi_eq_mochi_list_" + suf + "(" + left + ", " + right + ")", nil
+	case aotir.BinNeList:
+		elem := exprListElemType(v.Left)
+		if elem == aotir.TypeInvalid {
+			elem = exprListElemType(v.Right)
+		}
+		suf, err := scalarListInnerSuffix(elem)
+		if err != nil {
+			return "", fmt.Errorf("list ne elem: %w", err)
+		}
+		return "(!mochi_eq_mochi_list_" + suf + "(" + left + ", " + right + "))", nil
+	case aotir.BinEqMap:
+		key := exprMapKeyType(v.Left)
+		val := exprMapValueType(v.Left)
+		lve := exprMapListValueElemType(v.Left)
+		if key == aotir.TypeInvalid {
+			key = exprMapKeyType(v.Right)
+		}
+		if val == aotir.TypeInvalid {
+			val = exprMapValueType(v.Right)
+		}
+		if lve == aotir.TypeInvalid {
+			lve = exprMapListValueElemType(v.Right)
+		}
+		suf, err := mapSuffix(key, val, lve)
+		if err != nil {
+			return "", fmt.Errorf("map eq: %w", err)
+		}
+		return "mochi_eq_mochi_map_" + suf + "(" + left + ", " + right + ")", nil
+	case aotir.BinNeMap:
+		key := exprMapKeyType(v.Left)
+		val := exprMapValueType(v.Left)
+		lve := exprMapListValueElemType(v.Left)
+		if key == aotir.TypeInvalid {
+			key = exprMapKeyType(v.Right)
+		}
+		if val == aotir.TypeInvalid {
+			val = exprMapValueType(v.Right)
+		}
+		if lve == aotir.TypeInvalid {
+			lve = exprMapListValueElemType(v.Right)
+		}
+		suf, err := mapSuffix(key, val, lve)
+		if err != nil {
+			return "", fmt.Errorf("map ne: %w", err)
+		}
+		return "(!mochi_eq_mochi_map_" + suf + "(" + left + ", " + right + "))", nil
 	}
 	op, err := cBinOp(v.Op)
 	if err != nil {
@@ -1839,6 +2180,59 @@ func exprRecordName(e aotir.Expr) string {
 		return x.ResultRecordName
 	}
 	return ""
+}
+
+// exprListElemType extracts the element type from a list-typed Expr.
+func exprListElemType(e aotir.Expr) aotir.Type {
+	switch v := e.(type) {
+	case *aotir.VarRef:
+		return v.ElemType
+	case *aotir.ListLit:
+		return v.ElemType
+	case *aotir.CallExpr:
+		return v.ResultElemType
+	}
+	return aotir.TypeInvalid
+}
+
+// exprMapKeyType extracts the key type from a map-typed Expr.
+func exprMapKeyType(e aotir.Expr) aotir.Type {
+	switch v := e.(type) {
+	case *aotir.VarRef:
+		return v.KeyType
+	case *aotir.MapLit:
+		return v.KeyType
+	case *aotir.CallExpr:
+		return v.ResultKeyType
+	}
+	return aotir.TypeInvalid
+}
+
+// exprMapValueType extracts the value type from a map-typed Expr.
+func exprMapValueType(e aotir.Expr) aotir.Type {
+	switch v := e.(type) {
+	case *aotir.VarRef:
+		return v.ValueType
+	case *aotir.MapLit:
+		return v.ValueType
+	case *aotir.CallExpr:
+		return v.ResultValueType
+	}
+	return aotir.TypeInvalid
+}
+
+// exprMapListValueElemType extracts the list-value inner element type from
+// a map-typed Expr whose value type is TypeList (used for map<K,list<V>>).
+func exprMapListValueElemType(e aotir.Expr) aotir.Type {
+	switch v := e.(type) {
+	case *aotir.VarRef:
+		return v.ListValueElemType
+	case *aotir.MapLit:
+		return v.ListValueElemType
+	case *aotir.CallExpr:
+		return v.ResultListValueElemType
+	}
+	return aotir.TypeInvalid
 }
 
 func cBinOp(op aotir.BinOp) (string, error) {

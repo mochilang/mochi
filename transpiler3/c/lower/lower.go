@@ -1534,6 +1534,26 @@ func opForTypes(opStr string, lhs, rhs aotir.Type) (aotir.BinOp, aotir.Type, err
 			return aotir.BinInvalid, aotir.TypeInvalid,
 				fmt.Errorf("operator %q on record operands not supported (only == / !=)", opStr)
 		}
+		if lhs == aotir.TypeList && rhs == aotir.TypeList {
+			switch opStr {
+			case "==":
+				return aotir.BinEqList, aotir.TypeBool, nil
+			case "!=":
+				return aotir.BinNeList, aotir.TypeBool, nil
+			}
+			return aotir.BinInvalid, aotir.TypeInvalid,
+				fmt.Errorf("operator %q on list operands not supported (only == / !=)", opStr)
+		}
+		if lhs == aotir.TypeMap && rhs == aotir.TypeMap {
+			switch opStr {
+			case "==":
+				return aotir.BinEqMap, aotir.TypeBool, nil
+			case "!=":
+				return aotir.BinNeMap, aotir.TypeBool, nil
+			}
+			return aotir.BinInvalid, aotir.TypeInvalid,
+				fmt.Errorf("operator %q on map operands not supported (only == / !=)", opStr)
+		}
 		return aotir.BinInvalid, aotir.TypeInvalid,
 			fmt.Errorf("comparison %q wants matching int, float, bool, string, or record operands, got %s and %s", opStr, lhs, rhs)
 	case "&&", "||":

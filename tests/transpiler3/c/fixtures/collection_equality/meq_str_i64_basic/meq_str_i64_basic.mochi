@@ -1,0 +1,6 @@
+let m1: map<string, int> = {"x": 1, "y": 2}
+let m2: map<string, int> = {"x": 1, "y": 2}
+let m3: map<string, int> = {"x": 1, "y": 9}
+print(m1 == m2)
+print(m1 == m3)
+print(m1 != m3)

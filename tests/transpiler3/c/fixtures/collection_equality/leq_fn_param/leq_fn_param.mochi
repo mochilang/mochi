@@ -1,0 +1,5 @@
+fun same(a: list<int>, b: list<int>): bool {
+  return a == b
+}
+print(same([1, 2], [1, 2]))
+print(same([1, 2], [1, 9]))

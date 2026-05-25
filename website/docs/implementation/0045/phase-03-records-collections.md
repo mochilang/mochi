@@ -153,12 +153,24 @@ _To be written before sub-phase 3.0 starts. Records + collections unlock realist
 - **`m[k]` still unavailable for list-valued maps.** The VM3 type-checker wraps `m[k]` in `OptionType{Elem: V}`. When V is a list, `m[k]` becomes `option<list<V>>` which cannot be indexed with `[i]` or have `len` called. All fixtures use `values(m)` and nested `for` loops instead. Direct key access will unblock with Phase 4 option types.
 - **17 fixtures, 4 operations x 2 key types x 4 scalar value types.** Fixture matrix: `mol_{int,str}_list_{int,float,bool,str}_basic` (literal + `len` + `in`-check + `values()` + nested `for`), plus `mol_int_list_int_{values,for_keys,for_key_index_val,has,map_len,literal_get_len,passed_to_fn,returned_from_fn}` and `mol_str_list_int_{values,for_keys}`. All 17 pass `TestPhase3MapOfList`.
 
-### Phase 3.4d (list / map equality): DEFERRED
+### Phase 3.4d (list / map equality): LANDED 2026-05-25 13:53 (GMT+7)
 
-- **Audit date:** 2026-05-25 12:17 (GMT+7)
-- **Goal-alignment audit verdict: DEFERRED.** The Mochi type-checker rejects `list<T> == list<T>` and `map<K,V> == map<K,V>` at type-check time (the `applyBinaryType` function's `==` / `!=` arm falls through to `errIncompatibleComparison` for collection operands). More critically, vm3 has no comparison opcodes for list or map values; the instruction set has `OpCmpEqI64Br`, `OpCmpEqF64Br`, etc. but no `OpCmpEqList` or `OpCmpEqMap`. Without vm3 support, fixture expected outputs cannot be recorded from the oracle, which makes the fixture-driven gate impossible. Every gate since Phase 2.0 has required byte-equal output vs the vm3 oracle; deviating from that pattern would make the gate untrustworthy.
-- **What would be needed to unblock.** (1) vm3 gains `OpCmpEqList` + `OpCmpEqMap` opcodes and the type-checker's `applyBinaryType` accepts collection `==` / `!=`. (2) The AOT IR gains `BinEqList`, `BinNeList`, `BinEqMap`, `BinNeMap` operators. (3) The lowerer's `opForTypes` adds cases for `TypeList` and `TypeMap`. (4) The runtime gains `mochi_eq_list_<T>` (length + element-wise comparison; string elements use `strcmp`) and `mochi_eq_map_<K>_<V>` (extract sorted keys + values, compare pairwise) helpers. (5) The emitter dispatches the new ops to the corresponding helpers. Steps 2-5 are each small; step 1 is the hard blocker.
-- **Unblock condition.** When Mochi's type-checker and vm3 both support collection equality (likely with Phase 6 string/slice unification or a dedicated collection-ops MEP), Phase 3.4d reactivates. No fixture corpus today; `TestPhase3Equality` is not authored.
+- **Audit date:** 2026-05-25 12:17 (GMT+7) (initial deferral); 2026-05-25 13:40 (GMT+7) (reactivated)
+- **Reactivation note.** The earlier deferral incorrectly assumed the oracle (`mochi run`) required vm3 list/map comparison opcodes. In fact `mochi run` uses the archived tree-walking interpreter (`archived/interpreter/runtime_utils.go`), which already handled `==` / `!=` on lists and maps via `applyBinaryValue`. The type-checker also already allowed collection equality (the `unify(left, right, nil)` branch in `check_expr.go` returns `BoolType{}` for two `ListType` values with unifying element types). The only missing piece was the AOT transpiler itself.
+
+#### Decisions Made
+
+- **IR.** Added `BinEqList`, `BinNeList`, `BinEqMap`, `BinNeMap` to the `BinOp` enum in `aotir/program.go`. No new fields: the element / key / value types are recoverable from the operand expressions via `exprListElemType` / `exprMapKeyType` / `exprMapValueType` (mirroring the existing `exprRecordName` pattern from Phase 3.0).
+- **Verifier.** Added the four new ops to `binOpSignature` with signatures `(TypeList, TypeList, TypeBool)` and `(TypeMap, TypeMap, TypeBool)`. The generic binary-expr verifier path (line 1146) handles the rest.
+- **Lowerer.** Added two new cases in `lowerBinaryOp`'s `"==", "!="` arm: one for `TypeList` x `TypeList` and one for `TypeMap` x `TypeMap`. Only `==` and `!=` are accepted; ordering operators on collections return an error.
+- **Emitter.** TU-local static helpers rather than adding to `libmochi`:
+  - `mochi_eq_mochi_list_<suf>`: length check then element-wise `!=` (scalars) or `strcmp(...)!=0` (strings).
+  - `mochi_eq_mochi_map_<K>_<V>`: `nLive` parity check then iterate live entries in `a.table`, for each entry look up the same key in `b` via `_has` + `_get`, compare values.
+  - `collectListEqElems` / `collectMapEqPairs` walk the program's AST for `BinEqList`/`BinNeList`/`BinEqMap`/`BinNeMap` nodes and deduplicate the needed helper signatures. Helpers are emitted after the map-of-list helpers so all list types they reference are already declared.
+- **Fixtures.** 19 fixtures under `tests/transpiler3/c/fixtures/collection_equality/`:
+  - List: `leq_int_eq_ne`, `leq_int_empty`, `leq_int_len_mismatch`, `leq_float_basic`, `leq_bool_basic`, `leq_str_basic`, `leq_in_if`, `leq_fn_param`, `leq_append_then_compare`.
+  - Map: `meq_i64_i64_basic`, `meq_i64_str_basic`, `meq_i64_bool_basic`, `meq_i64_float_basic`, `meq_str_i64_basic`, `meq_str_str_basic`, `meq_empty_eq`, `meq_diff_keys`, `meq_in_if`, `meq_fn_param`.
+- **Gate.** `TestPhase3CollectionEquality` — all 19 fixtures pass.
 
 ### Phase 3.5 (omap): DEFERRED
 

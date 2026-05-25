@@ -1,0 +1,4 @@
+let m1: map<int, int> = {1: 10, 2: 20}
+let m2: map<int, int> = {1: 10, 3: 20}
+print(m1 == m2)
+print(m1 != m2)

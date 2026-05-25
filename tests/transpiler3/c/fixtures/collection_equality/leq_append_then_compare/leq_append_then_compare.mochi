@@ -1,0 +1,11 @@
+var xs: list<int> = []
+xs = append(xs, 1)
+xs = append(xs, 2)
+var ys: list<int> = []
+ys = append(ys, 1)
+ys = append(ys, 2)
+var zs: list<int> = []
+zs = append(zs, 1)
+zs = append(zs, 9)
+print(xs == ys)
+print(xs == zs)

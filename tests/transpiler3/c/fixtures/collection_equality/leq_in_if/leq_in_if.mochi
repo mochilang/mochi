@@ -1,0 +1,9 @@
+let xs = [1, 2, 3]
+let ys = [1, 2, 3]
+let zs = [9, 9, 9]
+if xs == ys {
+  print("equal")
+}
+if xs != zs {
+  print("not equal")
+}

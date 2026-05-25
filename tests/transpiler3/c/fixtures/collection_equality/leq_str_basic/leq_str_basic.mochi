@@ -1,0 +1,6 @@
+let xs = ["hello", "world"]
+let ys = ["hello", "world"]
+let zs = ["hello", "mochi"]
+print(xs == ys)
+print(xs == zs)
+print(xs != zs)

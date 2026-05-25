@@ -1,0 +1,5 @@
+fun same_map(a: map<int, int>, b: map<int, int>): bool {
+  return a == b
+}
+print(same_map({1: 10}, {1: 10}))
+print(same_map({1: 10}, {1: 99}))

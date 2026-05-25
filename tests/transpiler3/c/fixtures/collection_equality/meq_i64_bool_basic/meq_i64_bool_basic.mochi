@@ -1,0 +1,6 @@
+let m1: map<int, bool> = {1: true, 2: false}
+let m2: map<int, bool> = {1: true, 2: false}
+let m3: map<int, bool> = {1: true, 2: true}
+print(m1 == m2)
+print(m1 == m3)
+print(m1 != m3)

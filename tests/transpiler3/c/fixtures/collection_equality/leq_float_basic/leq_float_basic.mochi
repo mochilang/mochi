@@ -1,0 +1,6 @@
+let xs = [1.0, 2.5, 3.0]
+let ys = [1.0, 2.5, 3.0]
+let zs = [1.0, 2.5, 9.9]
+print(xs == ys)
+print(xs == zs)
+print(xs != zs)

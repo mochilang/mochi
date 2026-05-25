@@ -1,0 +1,4 @@
+let xs: list<int> = []
+let ys: list<int> = []
+print(xs == ys)
+print(xs != ys)
