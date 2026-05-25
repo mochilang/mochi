@@ -343,19 +343,20 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		// it is `mochi_map_<K>_<V>`. The outer list's runtime suffix
 		// is `list_<inner>` or `map_<K>_<V>` accordingly.
 		var elemC string
-		if s.ElemType == aotir.TypeList {
+		switch s.ElemType {
+		case aotir.TypeList:
 			innerSuf, err := scalarListInnerSuffix(s.InnerElemType)
 			if err != nil {
 				return fmt.Errorf("foreach %q: %w", s.Var, err)
 			}
 			elemC = "mochi_list_" + innerSuf
-		} else if s.ElemType == aotir.TypeMap {
+		case aotir.TypeMap:
 			mapSuf, err := mapSuffix(s.MapElemKeyType, s.MapElemValueType, aotir.TypeInvalid)
 			if err != nil {
 				return fmt.Errorf("foreach %q: %w", s.Var, err)
 			}
 			elemC = "mochi_map_" + mapSuf
-		} else {
+		default:
 			ec, err := cTypeFull(s.ElemType, s.ElemRecordName, aotir.TypeInvalid, "", aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid)
 			if err != nil {
 				return fmt.Errorf("foreach %q: %w", s.Var, err)
