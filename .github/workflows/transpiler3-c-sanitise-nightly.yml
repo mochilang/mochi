@@ -1,0 +1,53 @@
+name: Transpiler3-C Sanitiser Matrix (nightly)
+
+# MEP-45 Phase 16.4: nightly CI job that runs the full ASan and UBSan
+# fixture suites. Runs on a schedule so sanitiser regressions surface
+# quickly without blocking every PR with the ~60-second suite overhead.
+# Also fires on workflow_dispatch for on-demand runs.
+
+on:
+  schedule:
+    # 02:00 UTC daily (09:00 GMT+7)
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  sanitise:
+    name: Sanitiser matrix (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Install clang (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang
+          clang --version | head -1
+
+      - name: Run ASan gate (Phase 16.0)
+        run: |
+          go test -vet=off -v -count=1 -timeout=300s \
+            ./transpiler3/c/build/ -run TestPhase16ASan
+
+      - name: Run UBSan gate (Phase 16.1)
+        run: |
+          go test -vet=off -v -count=1 -timeout=300s \
+            ./transpiler3/c/build/ -run TestPhase16UBSan
+
+      - name: Run debug-profile gate (Phase 16.4)
+        run: |
+          go test -vet=off -v -count=1 -timeout=60s \
+            ./transpiler3/c/build/ -run TestPhase16DebugProfile

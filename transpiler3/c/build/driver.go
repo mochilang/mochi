@@ -195,6 +195,16 @@ func (d *Driver) Build(src, out, target, profile string) error {
 	if gort.GOOS == "darwin" {
 		ccArgs = append(ccArgs, "-Wl,-no_uuid")
 	}
+	// Phase 16.4: debug profile adds ASan+UBSan so `mochi build --profile=debug`
+	// produces a sanitiser-instrumented binary without requiring the caller to
+	// know the flags. ExtraFlags is applied after so tests can still override.
+	if profile == "debug" {
+		ccArgs = append(ccArgs,
+			"-g",
+			"-fsanitize=address,undefined",
+			"-fno-sanitize-recover=all",
+		)
+	}
 	ccArgs = append(ccArgs, d.ExtraFlags...)
 	args := ccArgs
 	cmd := exec.Command(cc, args...)
