@@ -41,6 +41,7 @@
 #define MOCHI_LIST_H
 
 #include <stdint.h>
+#include "mochi/arena.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,6 +72,10 @@ int mochi_list_i64_contains(mochi_list_i64 xs, int64_t val);
 int64_t mochi_list_i64_sum(mochi_list_i64 xs);
 /* Phase 3.4h: set xs[i] = v in-place (panics if i out of bounds). */
 void mochi_list_i64_set(mochi_list_i64 xs, int64_t i, int64_t v);
+/* Phase 8.3: arena-backed append (backing array from arena, not heap). */
+mochi_list_i64 mochi_list_i64_append_arena(mochi_list_i64 xs, int64_t v, mochi_arena_t *a);
+/* Phase 8.3: copy backing array from arena to heap; surviving result. */
+mochi_list_i64 mochi_list_i64_copy_heap(mochi_list_i64 xs);
 
 /* --- float (double) ------------------------------------------------- */
 
@@ -95,6 +100,9 @@ int    mochi_list_f64_contains(mochi_list_f64 xs, double val);
 double mochi_list_f64_sum(mochi_list_f64 xs);
 /* Phase 3.4h */
 void mochi_list_f64_set(mochi_list_f64 xs, int64_t i, double v);
+/* Phase 8.3 */
+mochi_list_f64 mochi_list_f64_append_arena(mochi_list_f64 xs, double v, mochi_arena_t *a);
+mochi_list_f64 mochi_list_f64_copy_heap(mochi_list_f64 xs);
 
 /* --- bool (int 0/1) ------------------------------------------------- */
 
@@ -115,6 +123,9 @@ mochi_list_bool mochi_list_bool_slice(mochi_list_bool xs, int64_t start, int64_t
 int mochi_list_bool_contains(mochi_list_bool xs, int val);
 /* Phase 3.4h */
 void mochi_list_bool_set(mochi_list_bool xs, int64_t i, int v);
+/* Phase 8.3 */
+mochi_list_bool mochi_list_bool_append_arena(mochi_list_bool xs, int v, mochi_arena_t *a);
+mochi_list_bool mochi_list_bool_copy_heap(mochi_list_bool xs);
 
 /* --- string (const char *) ----------------------------------------- */
 
@@ -138,6 +149,9 @@ const char *mochi_list_str_max(mochi_list_str xs);
 int mochi_list_str_contains(mochi_list_str xs, const char *val);
 /* Phase 3.4h */
 void mochi_list_str_set(mochi_list_str xs, int64_t i, const char *v);
+/* Phase 8.3: arena-backed append for const char* pointer array (strings stay on heap). */
+mochi_list_str mochi_list_str_append_arena(mochi_list_str xs, const char *v, mochi_arena_t *a);
+mochi_list_str mochi_list_str_copy_heap(mochi_list_str xs);
 
 #ifdef __cplusplus
 }

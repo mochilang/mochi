@@ -1208,3 +1208,32 @@ func (*AppendFileStmt) isStmt() {}
 type LinesExpr struct{ Path Expr }
 
 func (*LinesExpr) Type() Type { return TypeList }
+
+// QueryScopeStmt wraps the desugared query pipeline in an arena scope.
+// Phase 8.3.
+//
+// The lowerer emits this node instead of emitting the LetStmt + ForEachStmt
+// directly into the current block. The emitter:
+//  1. Stack-allocates a mochi_arena_t and calls mochi_arena_init.
+//  2. Declares the result list with zero capacity.
+//  3. Emits Body (the ForEachStmt + optional sort/slice steps); any
+//     AssignStmt whose value is AppendExpr targeting ResultVar uses
+//     mochi_list_<T>_append_arena instead of the heap version.
+//  4. Copies the result list to the heap via mochi_list_<T>_copy_heap.
+//  5. Calls mochi_arena_free.
+//
+// ElemType, ElemRecordName, InnerElemType, MapElemKeyType, MapElemValueType
+// mirror the corresponding fields on ListLit / AppendExpr and are needed so
+// the emitter can build the correct mochi_list_* suffix.
+type QueryScopeStmt struct {
+	ResultVar        string // the __queryN temp variable (declared OUTSIDE this scope)
+	ArenaVar         string // C variable name for the mochi_arena_t (__qaN)
+	ElemType         Type
+	ElemRecordName   string
+	InnerElemType    Type
+	MapElemKeyType   Type
+	MapElemValueType Type
+	Body             *Block // ForEachStmt(s) + optional sort/slice (no LetStmt for ResultVar)
+}
+
+func (*QueryScopeStmt) isStmt() {}

@@ -350,3 +350,101 @@ void mochi_list_str_set(mochi_list_str xs, int64_t i, const char *v) {
     if (i < 0 || i >= xs.len) mochi_panic_index();
     xs.data[i] = v;
 }
+
+/* Phase 8.3: arena-backed append and copy-to-heap helpers.
+ *
+ * append_arena: grows the backing array from the arena (bump allocator) using
+ * double-capacity expansion. Old arena buffers are left as dead space (the
+ * whole arena is freed after the query); no realloc needed.
+ *
+ * copy_heap: copies the live portion of the list to a fresh heap allocation
+ * so the result survives after the arena is freed.
+ *
+ * For list<str>: the const char* pointer array is arena-backed; the string
+ * values themselves remain on the heap (they come from literals or from
+ * string-op helpers that always malloc).
+ */
+
+mochi_list_i64 mochi_list_i64_append_arena(mochi_list_i64 xs, int64_t v, mochi_arena_t *a) {
+    if (xs.len >= xs.cap) {
+        int64_t new_cap = xs.cap == 0 ? 8 : xs.cap * 2;
+        int64_t *nd = (int64_t *)mochi_arena_alloc(a, (size_t)new_cap * sizeof(int64_t));
+        if (xs.len > 0) memcpy(nd, xs.data, (size_t)xs.len * sizeof(int64_t));
+        xs.data = nd;
+        xs.cap  = new_cap;
+    }
+    xs.data[xs.len++] = v;
+    return xs;
+}
+mochi_list_i64 mochi_list_i64_copy_heap(mochi_list_i64 xs) {
+    mochi_list_i64 out = {NULL, xs.len, xs.len};
+    if (xs.len > 0) {
+        out.data = (int64_t *)malloc((size_t)xs.len * sizeof(int64_t));
+        if (out.data == NULL) mochi_panic_index();
+        memcpy(out.data, xs.data, (size_t)xs.len * sizeof(int64_t));
+    }
+    return out;
+}
+
+mochi_list_f64 mochi_list_f64_append_arena(mochi_list_f64 xs, double v, mochi_arena_t *a) {
+    if (xs.len >= xs.cap) {
+        int64_t new_cap = xs.cap == 0 ? 8 : xs.cap * 2;
+        double *nd = (double *)mochi_arena_alloc(a, (size_t)new_cap * sizeof(double));
+        if (xs.len > 0) memcpy(nd, xs.data, (size_t)xs.len * sizeof(double));
+        xs.data = nd;
+        xs.cap  = new_cap;
+    }
+    xs.data[xs.len++] = v;
+    return xs;
+}
+mochi_list_f64 mochi_list_f64_copy_heap(mochi_list_f64 xs) {
+    mochi_list_f64 out = {NULL, xs.len, xs.len};
+    if (xs.len > 0) {
+        out.data = (double *)malloc((size_t)xs.len * sizeof(double));
+        if (out.data == NULL) mochi_panic_index();
+        memcpy(out.data, xs.data, (size_t)xs.len * sizeof(double));
+    }
+    return out;
+}
+
+mochi_list_bool mochi_list_bool_append_arena(mochi_list_bool xs, int v, mochi_arena_t *a) {
+    if (xs.len >= xs.cap) {
+        int64_t new_cap = xs.cap == 0 ? 8 : xs.cap * 2;
+        int *nd = (int *)mochi_arena_alloc(a, (size_t)new_cap * sizeof(int));
+        if (xs.len > 0) memcpy(nd, xs.data, (size_t)xs.len * sizeof(int));
+        xs.data = nd;
+        xs.cap  = new_cap;
+    }
+    xs.data[xs.len++] = v;
+    return xs;
+}
+mochi_list_bool mochi_list_bool_copy_heap(mochi_list_bool xs) {
+    mochi_list_bool out = {NULL, xs.len, xs.len};
+    if (xs.len > 0) {
+        out.data = (int *)malloc((size_t)xs.len * sizeof(int));
+        if (out.data == NULL) mochi_panic_index();
+        memcpy(out.data, xs.data, (size_t)xs.len * sizeof(int));
+    }
+    return out;
+}
+
+mochi_list_str mochi_list_str_append_arena(mochi_list_str xs, const char *v, mochi_arena_t *a) {
+    if (xs.len >= xs.cap) {
+        int64_t new_cap = xs.cap == 0 ? 8 : xs.cap * 2;
+        const char **nd = (const char **)mochi_arena_alloc(a, (size_t)new_cap * sizeof(const char *));
+        if (xs.len > 0) memcpy(nd, xs.data, (size_t)xs.len * sizeof(const char *));
+        xs.data = nd;
+        xs.cap  = new_cap;
+    }
+    xs.data[xs.len++] = v;
+    return xs;
+}
+mochi_list_str mochi_list_str_copy_heap(mochi_list_str xs) {
+    mochi_list_str out = {NULL, xs.len, xs.len};
+    if (xs.len > 0) {
+        out.data = (const char **)malloc((size_t)xs.len * sizeof(const char *));
+        if (out.data == NULL) mochi_panic_index();
+        memcpy(out.data, xs.data, (size_t)xs.len * sizeof(const char *));
+    }
+    return out;
+}

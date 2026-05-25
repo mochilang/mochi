@@ -483,6 +483,20 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 			return fmt.Errorf("AppendFileStmt Path: %w", err)
 		}
 		return verifyExprCtx(ctx, s.Content)
+	case *QueryScopeStmt:
+		if s.ResultVar == "" {
+			return errors.New("QueryScopeStmt: empty ResultVar")
+		}
+		if s.ArenaVar == "" {
+			return errors.New("QueryScopeStmt: empty ArenaVar")
+		}
+		if s.ElemType == TypeInvalid {
+			return errors.New("QueryScopeStmt: TypeInvalid ElemType")
+		}
+		if s.Body == nil {
+			return errors.New("QueryScopeStmt: nil Body")
+		}
+		return verifyBlock(ctx, s.Body)
 	}
 	return fmt.Errorf("unhandled Stmt %T", st)
 }
