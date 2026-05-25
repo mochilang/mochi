@@ -34,6 +34,13 @@ extern "C" {
 #ifndef MOCHI_CHAN_H
 _Noreturn void abort(void);
 #endif
+/* On WASM32 (4-byte pointer), sizeof(double) > sizeof(void*); float stream
+ * slots require heap allocation. Forward-declare malloc/free if chan.h
+ * (which already does this) has not been included first. */
+#if defined(__wasm__) && !defined(MOCHI_CHAN_H)
+extern void *malloc(size_t);
+extern void  free(void *);
+#endif
 
 /* MPMC broadcast stream ring. */
 typedef struct {
@@ -105,9 +112,16 @@ static inline void mochi_stream_emit_int(mochi_stream_t *s, int64_t val) {
 }
 
 static inline void mochi_stream_emit_float(mochi_stream_t *s, double val) {
+#if defined(__wasm__)
+    double *p = (double *)malloc(sizeof(double));
+    if (!p) abort();
+    *p = val;
+    mochi__stream_push(s, (void *)p);
+#else
     void *slot = NULL;
     memcpy(&slot, &val, sizeof(double));
     mochi__stream_push(s, slot);
+#endif
 }
 
 static inline void mochi_stream_emit_bool(mochi_stream_t *s, int val) {
@@ -125,10 +139,17 @@ static inline int64_t mochi_sub_recv_int(mochi_sub_t *sub) {
 }
 
 static inline double mochi_sub_recv_float(mochi_sub_t *sub) {
+#if defined(__wasm__)
+    double *p = (double *)mochi__sub_pop(sub);
+    double val = *p;
+    free(p);
+    return val;
+#else
     void *slot = mochi__sub_pop(sub);
     double val;
     memcpy(&val, &slot, sizeof(double));
     return val;
+#endif
 }
 
 static inline int mochi_sub_recv_bool(mochi_sub_t *sub) {

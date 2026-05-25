@@ -18,7 +18,11 @@
  *     canonical portable way to pass a 64-bit pointer through the
  *     int-sized makecontext variadic arguments on both ILP32 and LP64
  *     ABIs (POSIX explicitly endorses this pattern).
+ *   - __wasm__ (Phase 12.2): ucontext is unavailable under wasm32-wasi;
+ *     a single-fibre synchronous stub is compiled instead.
  */
+
+#ifndef __wasm__
 
 /* Must be defined before any system header on macOS to unlock ucontext. */
 #ifndef _XOPEN_SOURCE
@@ -257,3 +261,106 @@ void mochi_sched_run(void) {
 #ifdef __APPLE__
 #pragma clang diagnostic pop
 #endif
+
+#else /* __wasm__: single-fibre synchronous execution stub (Phase 12.2) */
+
+/*
+ * WASM/WASI does not provide ucontext_t or any stackful-coroutine primitive.
+ * This stub maps the scheduler API onto a simple synchronous call model:
+ *   - mochi_fiber_resume calls fn(userdata) immediately and blocks until it returns.
+ *   - mochi_fiber_yield is a no-op (fibers run to completion without preemption).
+ *   - mochi_fiber_current always returns NULL (no active fiber context).
+ *   - mochi_sched_run drains the spawn queue by calling each fn in FIFO order.
+ *
+ * This is correct for the Phase 12.2 narrowed surface: chan<T>/stream<T>/agent
+ * operations that would block (empty recv, full send) abort rather than yield,
+ * which is the right behaviour for a single-threaded WASM environment where
+ * there is no other fiber to unblock the channel.
+ */
+
+#include "mochi/sched.h"
+#include <stdlib.h>
+
+#define MOCHI_WASM_MAX_FIBERS 256
+
+typedef enum {
+    FIBER_READY,
+    FIBER_RUNNING,
+    FIBER_DEAD
+} wasm_fiber_state;
+
+struct mochi_fiber_s {
+    mochi_fiber_fn   fn;
+    void            *userdata;
+    wasm_fiber_state state;
+};
+
+static mochi_fiber_t *__wasm_queue[MOCHI_WASM_MAX_FIBERS];
+static int __wasm_head = 0;
+static int __wasm_tail = 0;
+
+static int wasm_queue_size(void) {
+    return (__wasm_tail - __wasm_head + MOCHI_WASM_MAX_FIBERS)
+           % MOCHI_WASM_MAX_FIBERS;
+}
+
+static void wasm_enqueue(mochi_fiber_t *f) {
+    __wasm_queue[__wasm_tail] = f;
+    __wasm_tail = (__wasm_tail + 1) % MOCHI_WASM_MAX_FIBERS;
+}
+
+static mochi_fiber_t *wasm_dequeue(void) {
+    mochi_fiber_t *f = __wasm_queue[__wasm_head];
+    __wasm_head = (__wasm_head + 1) % MOCHI_WASM_MAX_FIBERS;
+    return f;
+}
+
+mochi_fiber_t *mochi_fiber_create(mochi_fiber_fn fn, void *userdata,
+                                  size_t stack_size) {
+    (void)stack_size;
+    mochi_fiber_t *f = (mochi_fiber_t *)malloc(sizeof(mochi_fiber_t));
+    if (!f) abort();
+    f->fn       = fn;
+    f->userdata = userdata;
+    f->state    = FIBER_READY;
+    return f;
+}
+
+void mochi_fiber_destroy(mochi_fiber_t *f) {
+    free(f);
+}
+
+void mochi_fiber_resume(mochi_fiber_t *f) {
+    f->state = FIBER_RUNNING;
+    f->fn(f->userdata);
+    f->state = FIBER_DEAD;
+}
+
+/* No-op: single synchronous fibre; yield has no peer to schedule. */
+void mochi_fiber_yield(void) {}
+
+/* Always NULL: no active fibre context under the synchronous stub. */
+mochi_fiber_t *mochi_fiber_current(void) { return NULL; }
+
+void mochi_sched_spawn(mochi_fiber_fn fn, void *userdata) {
+    mochi_fiber_t *f = mochi_fiber_create(fn, userdata, 0);
+    wasm_enqueue(f);
+}
+
+void mochi_sched_run(void) {
+    while (wasm_queue_size() > 0) {
+        mochi_fiber_t *f = wasm_dequeue();
+        if (f->state == FIBER_DEAD) {
+            mochi_fiber_destroy(f);
+            continue;
+        }
+        mochi_fiber_resume(f);
+        if (f->state == FIBER_DEAD) {
+            mochi_fiber_destroy(f);
+        } else {
+            wasm_enqueue(f);
+        }
+    }
+}
+
+#endif /* __wasm__ */

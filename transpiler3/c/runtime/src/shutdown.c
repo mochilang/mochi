@@ -9,7 +9,7 @@
  */
 #include "mochi/shutdown.h"
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__wasm__)
 
 #include <signal.h>
 #include <unistd.h>
@@ -29,8 +29,8 @@ void mochi_shutdown_init(void) {
     signal(SIGTERM, shutdown_handler);
 }
 
-#else /* _WIN32 */
+#else /* _WIN32 or __wasm__: POSIX signals unavailable */
 
-void mochi_shutdown_init(void) { /* no-op on Windows */ }
+void mochi_shutdown_init(void) { /* no-op */ }
 
-#endif /* _WIN32 */
+#endif /* !_WIN32 && !__wasm__ */

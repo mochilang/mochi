@@ -86,17 +86,41 @@ static inline int64_t mochi_chan_recv_int(mochi_chan_t *ch) {
     return (int64_t)(intptr_t)mochi__chan_pop(ch);
 }
 
-/* float (double stored by copying bits into a pointer-sized slot) */
+/* float (double stored by copying bits into a pointer-sized slot).
+ * On LP64 (8-byte pointer) the double bits fit in a void* slot directly.
+ * On WASM32 (4-byte pointer) sizeof(double) > sizeof(void*), so we
+ * heap-allocate the double and store the pointer. The allocation leaks
+ * on exit, consistent with the GC-less Phase 12.2 runtime model. */
+#if defined(__wasm__)
+/* Forward-declare malloc/free without pulling in <stdlib.h> (which would
+ * conflict with user-defined Mochi functions named abs). */
+extern void *malloc(size_t);
+extern void  free(void *);
+#endif
 static inline void mochi_chan_send_float(mochi_chan_t *ch, double val) {
+#if defined(__wasm__)
+    double *p = (double *)malloc(sizeof(double));
+    if (!p) abort();
+    *p = val;
+    mochi__chan_push(ch, (void *)p);
+#else
     void *slot = NULL;
     memcpy(&slot, &val, sizeof(double));
     mochi__chan_push(ch, slot);
+#endif
 }
 static inline double mochi_chan_recv_float(mochi_chan_t *ch) {
+#if defined(__wasm__)
+    double *p = (double *)mochi__chan_pop(ch);
+    double val = *p;
+    free(p);
+    return val;
+#else
     void *slot = mochi__chan_pop(ch);
     double val;
     memcpy(&val, &slot, sizeof(double));
     return val;
+#endif
 }
 
 /* bool (stored as int64_t 0 or 1, same as mochi runtime convention) */
