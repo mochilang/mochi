@@ -2425,6 +2425,9 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	if pr.FunExpr != nil {
 		return l.lowerFunExpr(pr.FunExpr)
 	}
+	if pr.Query != nil {
+		return l.lowerQueryExpr(pr.Query)
+	}
 	return nil, fmt.Errorf("primary %s not supported in Phase 3.2%s", trimPrimary(pr), primaryPhaseHint(pr))
 }
 
@@ -3114,6 +3117,142 @@ func identName(e *parser.Expr) (string, bool) {
 func isUnderscoreExpr(e *parser.Expr) bool {
 	n, ok := identName(e)
 	return ok && n == "_"
+}
+
+// lowerQueryExpr lowers a `from x in src [where cond] select expr`
+// query expression. Phase 8.0 supports filter+map queries over scalar
+// list sources. The approach mirrors lowerMatchExpr: statements are
+// emitted into l.currentBlock and a VarRef to a fresh temp list is
+// returned as the expression value.
+//
+// Desugaring:
+//   from x in src where cond select expr
+// becomes:
+//   let __queryN: list<T> = []     (T = type of select expr)
+//   for x in src { if cond { __queryN = append(__queryN, expr) } }
+// and the expression evaluates to __queryN.
+func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
+	if l.currentBlock == nil {
+		return nil, fmt.Errorf("query expression outside a statement block (internal error)")
+	}
+	// Phase 8.0: reject complex query shapes.
+	if len(q.Froms) > 0 {
+		return nil, fmt.Errorf("multiple from clauses (cross-join queries) land in Phase 8.2")
+	}
+	if len(q.Joins) > 0 {
+		return nil, fmt.Errorf("join clauses land in Phase 8.2")
+	}
+	if q.Group != nil {
+		return nil, fmt.Errorf("group-by queries land in Phase 8.1")
+	}
+	if q.Sort != nil {
+		return nil, fmt.Errorf("order-by queries land in Phase 8.1")
+	}
+	if q.Skip != nil || q.Take != nil {
+		return nil, fmt.Errorf("skip/take queries land in Phase 8.1")
+	}
+	if q.Distinct {
+		return nil, fmt.Errorf("distinct queries land in Phase 8.1")
+	}
+
+	// Lower the source expression in the current outer scope.
+	source, err := l.lowerExpr(q.Source)
+	if err != nil {
+		return nil, fmt.Errorf("query source: %w", err)
+	}
+	if source.Type() != aotir.TypeList {
+		return nil, fmt.Errorf("query source must be a list, got %s", source.Type())
+	}
+	sourceElemType := exprElemType(source)
+	sourceElemRecord := exprElemRecordName(source)
+	sourceInnerElem := exprInnerElemType(source)
+	sourceMapKey := exprMapElemKeyType(source)
+	sourceMapValue := exprMapElemValueType(source)
+
+	// Allocate a fresh temp for the result list (in outer scope, mutable).
+	l.tempCounter++
+	tempName := fmt.Sprintf("__query%d", l.tempCounter)
+
+	// Push inner scope for the loop variable.
+	prev := l.scope
+	l.scope = newLScope(prev)
+	loopBinding := lbinding{
+		t:            sourceElemType,
+		record:       sourceElemRecord,
+		elem:         sourceInnerElem,
+		mapElemKey:   sourceMapKey,
+		mapElemValue: sourceMapValue,
+	}
+	l.scope.vars[q.Var] = loopBinding
+
+	// Lower the select expression (in inner scope with loop var).
+	selectExpr, err := l.lowerExpr(q.Select)
+	if err != nil {
+		l.scope = prev
+		return nil, fmt.Errorf("query select: %w", err)
+	}
+	selectElemType := selectExpr.Type()
+
+	// Lower the where condition (if any).
+	var whereCond aotir.Expr
+	if q.Where != nil {
+		whereCond, err = l.lowerExpr(q.Where)
+		if err != nil {
+			l.scope = prev
+			return nil, fmt.Errorf("query where: %w", err)
+		}
+		if whereCond.Type() != aotir.TypeBool {
+			l.scope = prev
+			return nil, fmt.Errorf("query where condition must be bool, got %s", whereCond.Type())
+		}
+	}
+	l.scope = prev
+
+	// Emit: let __queryN: list<T> = []
+	prev.vars[tempName] = lbinding{t: aotir.TypeList, mutable: true, elem: selectElemType}
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.LetStmt{
+		Name:     tempName,
+		VarType:  aotir.TypeList,
+		ElemType: selectElemType,
+		Init:     &aotir.ListLit{ElemType: selectElemType},
+		Mutable:  true,
+	})
+
+	// Build the body of the for-each loop.
+	// Body: __queryN = append(__queryN, selectExpr)  [optionally wrapped in if]
+	resultRef := &aotir.VarRef{Name: tempName, VarType: aotir.TypeList, ElemType: selectElemType}
+	appendStmt := &aotir.AssignStmt{
+		Name: tempName,
+		Value: &aotir.AppendExpr{
+			Receiver: resultRef,
+			Value:    selectExpr,
+			ElemType: selectElemType,
+		},
+	}
+
+	body := &aotir.Block{}
+	if whereCond != nil {
+		body.Statements = append(body.Statements, &aotir.IfStmt{
+			Cond: whereCond,
+			Then: &aotir.Block{Statements: []aotir.Stmt{appendStmt}},
+		})
+	} else {
+		body.Statements = append(body.Statements, appendStmt)
+	}
+
+	// Emit: for q.Var in source { body }
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.ForEachStmt{
+		Var:              q.Var,
+		List:             source,
+		ElemType:         sourceElemType,
+		ElemRecordName:   sourceElemRecord,
+		InnerElemType:    sourceInnerElem,
+		MapElemKeyType:   sourceMapKey,
+		MapElemValueType: sourceMapValue,
+		Body:             body,
+	})
+
+	return &aotir.VarRef{Name: tempName, VarType: aotir.TypeList, ElemType: selectElemType}, nil
 }
 
 // lowerMatchExpr lowers a `match x { ... }` used as an expression.
