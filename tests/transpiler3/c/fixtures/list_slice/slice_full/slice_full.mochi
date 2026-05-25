@@ -1,0 +1,7 @@
+let xs = [1, 2, 3, 4, 5]
+let n = len(xs)
+let ys = xs[0:n]
+print(len(ys))
+for y in ys {
+  print(y)
+}

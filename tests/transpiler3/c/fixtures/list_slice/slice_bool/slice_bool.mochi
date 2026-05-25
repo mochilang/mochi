@@ -1,0 +1,5 @@
+let xs = [true, false, true, false, true]
+let ys = xs[1:4]
+for y in ys {
+  print(y)
+}

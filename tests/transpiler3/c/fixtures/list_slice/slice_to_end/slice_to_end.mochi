@@ -1,0 +1,5 @@
+let xs = [10, 20, 30, 40, 50]
+let ys = xs[2:]
+for y in ys {
+  print(y)
+}

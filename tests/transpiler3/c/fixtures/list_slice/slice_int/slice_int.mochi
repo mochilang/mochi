@@ -1,0 +1,5 @@
+let xs = [1, 2, 3, 4, 5, 6, 7, 8]
+let middle = xs[2:6]
+print(len(middle))
+let s = sum(middle)
+print(s)

@@ -2161,8 +2161,12 @@ func (l *lowerer) lowerPostfix(p *parser.PostfixExpr) (aotir.Expr, error) {
 // KeyType-typed key. Slice/step postfixes remain rejected (deferred
 // to a later phase that adds list slicing).
 func (l *lowerer) lowerIndexOp(receiver aotir.Expr, idx *parser.IndexOp) (aotir.Expr, error) {
+	// Phase 3.4g: xs[start:end] slice notation on list receivers.
+	if idx.Colon != nil && idx.Step == nil && receiver.Type() == aotir.TypeList {
+		return l.lowerListSliceOp(receiver, idx)
+	}
 	if idx.Colon != nil || idx.Colon2 != nil || idx.End != nil || idx.Step != nil {
-		return nil, fmt.Errorf("slice / step indexing lands in a later phase")
+		return nil, fmt.Errorf("slice / step indexing on non-list or with step lands in a later phase")
 	}
 	if idx.Start == nil {
 		return nil, fmt.Errorf("index access [k]: missing index expression")
@@ -2233,6 +2237,50 @@ func (l *lowerer) lowerIndexOp(receiver aotir.Expr, idx *parser.IndexOp) (aotir.
 		return &aotir.StrIndexExpr{Receiver: receiver, Index: index}, nil
 	}
 	return nil, fmt.Errorf("index access [k]: receiver is %s, expected a list, map, or string", receiver.Type())
+}
+
+// lowerListSliceOp lowers `xs[start:end]` to a ListSliceExpr.
+// start defaults to 0 when absent; end defaults to a large sentinel
+// (INT62) when absent (the runtime clamps to the actual list length).
+func (l *lowerer) lowerListSliceOp(receiver aotir.Expr, idx *parser.IndexOp) (aotir.Expr, error) {
+	elemType := exprElemType(receiver)
+	elemRecord := exprElemRecordName(receiver)
+	innerElem := exprInnerElemType(receiver)
+	mapKey := exprMapElemKeyType(receiver)
+	mapVal := exprMapElemValueType(receiver)
+
+	var startExpr aotir.Expr = &aotir.IntLit{Value: 0}
+	if idx.Start != nil {
+		s, err := l.lowerExpr(idx.Start)
+		if err != nil {
+			return nil, fmt.Errorf("slice start: %w", err)
+		}
+		if s.Type() != aotir.TypeInt {
+			return nil, fmt.Errorf("slice start must be int, got %s", s.Type())
+		}
+		startExpr = s
+	}
+	var endExpr aotir.Expr = &aotir.IntLit{Value: 1<<62 - 1}
+	if idx.End != nil {
+		e, err := l.lowerExpr(idx.End)
+		if err != nil {
+			return nil, fmt.Errorf("slice end: %w", err)
+		}
+		if e.Type() != aotir.TypeInt {
+			return nil, fmt.Errorf("slice end must be int, got %s", e.Type())
+		}
+		endExpr = e
+	}
+	return &aotir.ListSliceExpr{
+		Receiver:         receiver,
+		Start:            startExpr,
+		End:              endExpr,
+		ElemType:         elemType,
+		ElemRecordName:   elemRecord,
+		InnerElemType:    innerElem,
+		MapElemKeyType:   mapKey,
+		MapElemValueType: mapVal,
+	}, nil
 }
 
 // lowerFieldOp resolves a `.field` against a record-typed receiver and
