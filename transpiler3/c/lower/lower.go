@@ -5367,7 +5367,7 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 	fmt.Fprintf(&b, "%sdo {\n", ind)
 	fmt.Fprintf(&b, "%s    %s = 0;\n", ind, changedVar)
 
-	for _, rule := range l.logicRules {
+	for ri, rule := range l.logicRules {
 		headArity := arities[rule.headName]
 		headVar := fmt.Sprintf("%s_%s", prefix, rule.headName)
 		headLen := fmt.Sprintf("%s_%s_len", prefix, rule.headName)
@@ -5395,7 +5395,7 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 				// Handled as an if-check inside the innermost loop.
 				continue
 			}
-			loopVarName := fmt.Sprintf("__i%d_%d_%d", n, len(l.logicRules)-len(l.logicRules)+bi, bi)
+			loopVarName := fmt.Sprintf("__i%d_%d_%d", n, ri, bi)
 			bArity := arities[bc.name]
 			relC := fmt.Sprintf("%s_%s", prefix, bc.name)
 			isDer := derivedRels[bc.name]
