@@ -1,0 +1,8 @@
+let xs: list<int> = [7, 2, 9, 1, 5]
+let lo: int = min(xs)
+let hi: int = max(xs)
+print(lo)
+print(hi)
+let y: float = 2.5
+let n: int = int(y)
+print(n)

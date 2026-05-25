@@ -2745,6 +2745,15 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	if call.Func == "str" {
 		return l.lowerStrConvertCall(call)
 	}
+	if call.Func == "int" {
+		return l.lowerIntCastCall(call)
+	}
+	if call.Func == "min" {
+		return l.lowerListMinCall(call)
+	}
+	if call.Func == "max" {
+		return l.lowerListMaxCall(call)
+	}
 	// Phase 5.0: check if this is a call to a fun-typed variable in scope.
 	if b, ok := l.scope.lookup(call.Func); ok && b.t == aotir.TypeFun {
 		if b.funSig == nil {
@@ -3012,6 +3021,70 @@ func (l *lowerer) lowerStrConvertCall(call *parser.CallExpr) (aotir.Expr, error)
 		return nil, fmt.Errorf("str() argument must be int/float/bool/string, got %s", t)
 	}
 	return &aotir.StrConvertExpr{Operand: operand}, nil
+}
+
+// lowerIntCastCall lowers `int(x)` to a NumCastExpr (float→int truncation)
+// or returns the operand directly when it is already an int.
+func (l *lowerer) lowerIntCastCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("int() takes exactly one argument, got %d", len(call.Args))
+	}
+	operand, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("int() arg: %w", err)
+	}
+	switch operand.Type() {
+	case aotir.TypeInt:
+		return operand, nil
+	case aotir.TypeFloat:
+		return &aotir.NumCastExpr{Operand: operand}, nil
+	default:
+		return nil, fmt.Errorf("int() argument must be int or float, got %s", operand.Type())
+	}
+}
+
+// lowerListMinCall lowers `min(xs)` to a ListMinExpr.
+func (l *lowerer) lowerListMinCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("min() takes exactly one argument, got %d", len(call.Args))
+	}
+	recv, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("min() arg: %w", err)
+	}
+	if recv.Type() != aotir.TypeList {
+		return nil, fmt.Errorf("min() argument must be a list, got %s", recv.Type())
+	}
+	elem := exprElemType(recv)
+	if elem != aotir.TypeInt && elem != aotir.TypeFloat && elem != aotir.TypeString {
+		return nil, fmt.Errorf("min() list element type must be int/float/string, got %s", elem)
+	}
+	return &aotir.ListMinExpr{
+		Receiver: recv,
+		ElemType: elem,
+	}, nil
+}
+
+// lowerListMaxCall lowers `max(xs)` to a ListMaxExpr.
+func (l *lowerer) lowerListMaxCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("max() takes exactly one argument, got %d", len(call.Args))
+	}
+	recv, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("max() arg: %w", err)
+	}
+	if recv.Type() != aotir.TypeList {
+		return nil, fmt.Errorf("max() argument must be a list, got %s", recv.Type())
+	}
+	elem := exprElemType(recv)
+	if elem != aotir.TypeInt && elem != aotir.TypeFloat && elem != aotir.TypeString {
+		return nil, fmt.Errorf("max() list element type must be int/float/string, got %s", elem)
+	}
+	return &aotir.ListMaxExpr{
+		Receiver: recv,
+		ElemType: elem,
+	}, nil
 }
 
 // lowerAppendCall lowers the `append(xs, v)` builtin to an

@@ -600,6 +600,40 @@ type StrLenExpr struct {
 
 func (*StrLenExpr) Type() Type { return TypeInt }
 
+// NumCastExpr is the `int(x)` builtin that truncates a float to int.
+// The emitter renders this as `(int64_t)(operand)`. Phase 2.5.
+type NumCastExpr struct {
+	Operand Expr // TypeFloat
+}
+
+func (*NumCastExpr) Type() Type { return TypeInt }
+
+// ListMinExpr is the `min(xs)` builtin that returns the minimum element
+// of a list. The emitter calls `mochi_list_<T>_min(xs)`. Phase 2.5.
+type ListMinExpr struct {
+	Receiver         Expr
+	ElemType         Type
+	ElemRecordName   string
+	InnerElemType    Type
+	MapElemKeyType   Type
+	MapElemValueType Type
+}
+
+func (e *ListMinExpr) Type() Type { return e.ElemType }
+
+// ListMaxExpr is the `max(xs)` builtin that returns the maximum element
+// of a list. The emitter calls `mochi_list_<T>_max(xs)`. Phase 2.5.
+type ListMaxExpr struct {
+	Receiver         Expr
+	ElemType         Type
+	ElemRecordName   string
+	InnerElemType    Type
+	MapElemKeyType   Type
+	MapElemValueType Type
+}
+
+func (e *ListMaxExpr) Type() Type { return e.ElemType }
+
 // StrIndexExpr is the `s[i]` operation on a string. The emitter calls
 // mochi_str_index(s, i), which returns a freshly allocated one-codepoint
 // string (or "" on out-of-bounds). Phase 6.1.

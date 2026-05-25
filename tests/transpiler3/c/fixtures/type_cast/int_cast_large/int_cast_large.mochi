@@ -1,0 +1,3 @@
+let x: float = 100.999
+let n: int = int(x)
+print(n)

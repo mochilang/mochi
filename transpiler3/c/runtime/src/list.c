@@ -251,3 +251,47 @@ mochi_list_str mochi_list_str_slice(mochi_list_str xs, int64_t start, int64_t en
     if (start >= end) return mochi_list_str_lit(NULL, 0);
     return mochi_list_str_lit(xs.data + start, end - start);
 }
+
+/* ---- Phase 2.5: min / max ------------------------------------------ */
+
+int64_t mochi_list_i64_min(mochi_list_i64 xs) {
+    if (xs.len == 0) mochi_panic_index();
+    int64_t v = xs.data[0];
+    for (int64_t i = 1; i < xs.len; i++) if (xs.data[i] < v) v = xs.data[i];
+    return v;
+}
+
+int64_t mochi_list_i64_max(mochi_list_i64 xs) {
+    if (xs.len == 0) mochi_panic_index();
+    int64_t v = xs.data[0];
+    for (int64_t i = 1; i < xs.len; i++) if (xs.data[i] > v) v = xs.data[i];
+    return v;
+}
+
+double mochi_list_f64_min(mochi_list_f64 xs) {
+    if (xs.len == 0) mochi_panic_index();
+    double v = xs.data[0];
+    for (int64_t i = 1; i < xs.len; i++) if (xs.data[i] < v) v = xs.data[i];
+    return v;
+}
+
+double mochi_list_f64_max(mochi_list_f64 xs) {
+    if (xs.len == 0) mochi_panic_index();
+    double v = xs.data[0];
+    for (int64_t i = 1; i < xs.len; i++) if (xs.data[i] > v) v = xs.data[i];
+    return v;
+}
+
+const char *mochi_list_str_min(mochi_list_str xs) {
+    if (xs.len == 0) mochi_panic_index();
+    const char *v = xs.data[0];
+    for (int64_t i = 1; i < xs.len; i++) if (strcmp(xs.data[i], v) < 0) v = xs.data[i];
+    return v;
+}
+
+const char *mochi_list_str_max(mochi_list_str xs) {
+    if (xs.len == 0) mochi_panic_index();
+    const char *v = xs.data[0];
+    for (int64_t i = 1; i < xs.len; i++) if (strcmp(xs.data[i], v) > 0) v = xs.data[i];
+    return v;
+}

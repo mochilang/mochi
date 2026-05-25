@@ -33,6 +33,7 @@ Primitives + control flow is the smallest set that gets a real (non-toy) Mochi p
 | 2.2 | `for x in start..end` (int range); user-defined multi-arg functions                                | IN PROGRESS | —      | — |
 | 2.3 | Integer divide-by-zero raises `MOCHI_ERR_DIVZERO` (checked profile); UB under `--fast-int`         | IN PROGRESS | —      | — |
 | 2.4 | Float NaN propagation matches vm3 byte-for-byte (IEEE 754 round-trip on `%.17g`)                   | IN PROGRESS | —      | — |
+| 2.5 | `int(x)` float-to-int truncation; `min(xs)` and `max(xs)` on list&lt;int&gt;, list&lt;float&gt;, list&lt;string&gt; | LANDED 2026-05-25 18:08 (GMT+7) | — | — |
 
 ## Sub-phase 2.0 -- 2026-05-22 (GMT+7)
 
@@ -443,6 +444,27 @@ follow-up.
   through each arithmetic op, Inf + Inf, Inf - Inf, Inf * 0, NaN
   equality (== returns false, != returns true), NaN ordering
   (< returns false), NaN passed through a user function.
+
+## Sub-phase 2.5 -- 2026-05-25 18:08 (GMT+7)
+
+`int(x)` float-to-int truncation toward zero and `min(xs)` / `max(xs)` on scalar lists. These are the most-used numeric type helpers in the fixture corpus: query results often need truncation, and list aggregation tests depend on min/max.
+
+### Goal-alignment audit (2.5)
+
+`int(x)` appears in every fixture that mixes float arithmetic with integer indexing or count arithmetic. `min()` and `max()` appear in filter + aggregation fixtures and in the query DSL test suite (Phase 8). Both are blocking real programs from compiling today. Adding them now unblocks the majority of the remaining Phase 2 fixtures and closes the gap between the transpiler and vm3 builtins.
+
+### Decisions made (2.5)
+
+- **`int(x)` is identity for TypeInt.** If the lower pass sees `int(x)` where x is already TypeInt, it returns x directly (no NumCastExpr). This avoids a pointless `(int64_t)(int64_t)(...)` in the emitted C and matches vm3 semantics.
+- **`NumCastExpr` emits `(int64_t)(operand)`.** C truncates toward zero for positive and negative floats, which matches vm3's `int(x)` semantics. IEEE 754 truncation toward zero is the standard behavior.
+- **`min`/`max` on bool lists not supported.** vm3 does not implement `min([true, false])` and the fixture corpus does not include it. Support for bool lists deferred.
+- **`min`/`max` panic on empty list.** Calling `mochi_list_i64_min` on a zero-length list calls `mochi_panic_index()`. This matches vm3's runtime-error behavior for empty aggregate operations.
+- **String min/max uses `strcmp`.** Lexicographic byte ordering via `strcmp` matches vm3's string comparison semantics for the ASCII fixture corpus. Full UTF-8 codepoint ordering via utf8proc is Phase 6.3.
+- **Runtime functions live in `list.c`.** No new runtime file; the min/max functions are grouped with the other list operations since they share the same struct types and panic helper.
+
+### Test set (2.5)
+
+- `transpiler3/c/build/phase02_5_test.go::TestPhase2TypeCasts` -- end-to-end gate across every `tests/transpiler3/c/fixtures/type_cast/<name>` directory (8 fixtures): `int_cast_basic`, `int_cast_negative`, `int_cast_large`, `list_min_int`, `list_max_int`, `list_min_float`, `list_max_string`, `min_max_combined`.
 
 ## Decisions made
 

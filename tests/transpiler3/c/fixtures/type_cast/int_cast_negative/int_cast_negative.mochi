@@ -1,0 +1,3 @@
+let x: float = -3.9
+let n: int = int(x)
+print(n)

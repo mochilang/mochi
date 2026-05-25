@@ -1,0 +1,3 @@
+let xs: list<string> = ["banana", "apple", "cherry", "date"]
+let m: string = max(xs)
+print(m)
