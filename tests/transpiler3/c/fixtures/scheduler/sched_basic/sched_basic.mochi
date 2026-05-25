@@ -1,0 +1,2 @@
+extern fun run_scheduler(): unit
+run_scheduler()

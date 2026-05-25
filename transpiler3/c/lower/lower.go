@@ -1959,6 +1959,8 @@ func typeFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.
 		return typeResolution{t: aotir.TypeBool}, nil
 	case "string":
 		return typeResolution{t: aotir.TypeString}, nil
+	case "unit":
+		return typeResolution{t: aotir.TypeUnit}, nil
 	}
 	if _, ok := records[*ref.Simple]; ok {
 		return typeResolution{t: aotir.TypeRecord, rec: *ref.Simple}, nil
