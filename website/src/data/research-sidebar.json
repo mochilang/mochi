@@ -1,0 +1,146 @@
+[
+  {
+    "label": "MEP-0045",
+    "items": [
+      "research/0045/index",
+      "research/0045/language-surface",
+      "research/0045/design-philosophy",
+      "research/0045/prior-art-transpilers",
+      "research/0045/runtime",
+      "research/0045/codegen-design",
+      "research/0045/type-lowering",
+      "research/0045/c-target-portability",
+      "research/0045/dataset-pipeline",
+      "research/0045/agent-streams",
+      "research/0045/build-system",
+      "research/0045/testing-gates",
+      "research/0045/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0046",
+    "items": [
+      "research/0046/index",
+      "research/0046/language-surface",
+      "research/0046/design-philosophy",
+      "research/0046/prior-art-transpilers",
+      "research/0046/runtime",
+      "research/0046/codegen-design",
+      "research/0046/type-lowering",
+      "research/0046/erlang-target-portability",
+      "research/0046/dataset-pipeline",
+      "research/0046/agent-streams",
+      "research/0046/build-system",
+      "research/0046/testing-gates",
+      "research/0046/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0047",
+    "items": [
+      "research/0047/index",
+      "research/0047/language-surface",
+      "research/0047/design-philosophy",
+      "research/0047/prior-art-transpilers",
+      "research/0047/runtime",
+      "research/0047/codegen-design",
+      "research/0047/type-lowering",
+      "research/0047/jvm-target-portability",
+      "research/0047/dataset-pipeline",
+      "research/0047/agent-streams",
+      "research/0047/build-system",
+      "research/0047/testing-gates",
+      "research/0047/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0048",
+    "items": [
+      "research/0048/index",
+      "research/0048/language-surface",
+      "research/0048/design-philosophy",
+      "research/0048/prior-art-transpilers",
+      "research/0048/runtime",
+      "research/0048/codegen-design",
+      "research/0048/type-lowering",
+      "research/0048/dotnet-target-portability",
+      "research/0048/dataset-pipeline",
+      "research/0048/agent-streams",
+      "research/0048/build-system",
+      "research/0048/testing-gates",
+      "research/0048/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0049",
+    "items": [
+      "research/0049/index",
+      "research/0049/language-surface",
+      "research/0049/design-philosophy",
+      "research/0049/prior-art-transpilers",
+      "research/0049/runtime",
+      "research/0049/codegen-design",
+      "research/0049/type-lowering",
+      "research/0049/swift-target-portability",
+      "research/0049/dataset-pipeline",
+      "research/0049/agent-streams",
+      "research/0049/build-system",
+      "research/0049/testing-gates",
+      "research/0049/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0050",
+    "items": [
+      "research/0050/index",
+      "research/0050/language-surface",
+      "research/0050/design-philosophy",
+      "research/0050/prior-art-transpilers",
+      "research/0050/runtime",
+      "research/0050/codegen-design",
+      "research/0050/type-lowering",
+      "research/0050/kotlin-target-portability",
+      "research/0050/dataset-pipeline",
+      "research/0050/agent-streams",
+      "research/0050/build-system",
+      "research/0050/testing-gates",
+      "research/0050/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0051",
+    "items": [
+      "research/0051/index",
+      "research/0051/language-surface",
+      "research/0051/design-philosophy",
+      "research/0051/prior-art-transpilers",
+      "research/0051/runtime",
+      "research/0051/codegen-design",
+      "research/0051/type-lowering",
+      "research/0051/python-target-portability",
+      "research/0051/dataset-pipeline",
+      "research/0051/agent-streams",
+      "research/0051/build-system",
+      "research/0051/testing-gates",
+      "research/0051/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0052",
+    "items": [
+      "research/0052/index",
+      "research/0052/language-surface",
+      "research/0052/design-philosophy",
+      "research/0052/prior-art-transpilers",
+      "research/0052/runtime",
+      "research/0052/codegen-design",
+      "research/0052/type-lowering",
+      "research/0052/runtime-portability",
+      "research/0052/dataset-pipeline",
+      "research/0052/agent-streams",
+      "research/0052/build-system",
+      "research/0052/testing-gates",
+      "research/0052/risks-and-alternatives"
+    ]
+  }
+]
