@@ -1,0 +1,3 @@
+print("before")
+panic(1, "bye")
+print("after")

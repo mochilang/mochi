@@ -545,6 +545,7 @@ type lowerer struct {
 	// context; combined with an outer-level counter it gives globally unique
 	// __anon_N names. liftedFuncs accumulates lifted aotir.Functions that
 	// are appended to the Program after the parent function is lowered.
+	tryCounter  int                    // per-function counter for unique __mochi_buf_N names (Phase 7.1)
 	anonCounter *int                  // pointer to shared counter across nested lowerers
 	liftedFuncs *[]*aotir.Function    // pointer to shared slice across nested lowerers
 	// Phase 5.2: tracks which named-function shims have already been emitted
@@ -613,6 +614,8 @@ func (l *lowerer) lowerStatement(out *aotir.Block, st *parser.Statement) error {
 		return l.lowerIf(out, st.If)
 	case st.While != nil:
 		return l.lowerWhile(out, st.While)
+	case st.TryCatch != nil:
+		return l.lowerTryCatch(out, st.TryCatch)
 	case st.For != nil:
 		return l.lowerFor(out, st.For)
 	case st.Break != nil:
@@ -657,6 +660,10 @@ func (l *lowerer) lowerExprStmt(out *aotir.Block, es *parser.ExprStmt) error {
 	}
 	if call.Func == "print" {
 		return l.lowerPrintCall(out, call)
+	}
+	// Phase 7.3: panic(code, msg) lowers to mochi_raise.
+	if call.Func == "panic" {
+		return l.lowerPanicCall(out, call)
 	}
 	// Phase 6.5: file I/O void calls.
 	if call.Func == "writeFile" {
@@ -1644,6 +1651,62 @@ func (l *lowerer) lowerWhile(out *aotir.Block, ws *parser.WhileStmt) error {
 		Cond: cond,
 		Body: body,
 	})
+	return nil
+}
+
+// lowerTryCatch lowers `try { ... } catch e { ... }` to a setjmp/longjmp
+// frame using the Phase 7.0 runtime (mochi_try_push / mochi_try_pop /
+// mochi_raise). The unique buffer name avoids variable-name collisions when
+// multiple try blocks appear in the same function.
+func (l *lowerer) lowerTryCatch(out *aotir.Block, tc *parser.TryCatchStmt) error {
+	bufName := fmt.Sprintf("__mochi_buf_%d", l.tryCounter)
+	l.tryCounter++
+
+	tryBlock, err := l.lowerNestedBlock(tc.Try)
+	if err != nil {
+		return fmt.Errorf("try body: %w", err)
+	}
+
+	// Lower the catch body with the catch variable bound as int.
+	prev := l.scope
+	l.scope = newLScope(prev)
+	l.scope.vars[tc.CatchVar] = lbinding{t: aotir.TypeInt, mutable: false}
+	catchBlock, err := l.lowerNestedBlock(tc.Catch)
+	l.scope = prev
+	if err != nil {
+		return fmt.Errorf("catch body: %w", err)
+	}
+
+	out.Statements = append(out.Statements, &aotir.TryCatchStmt{
+		BufName:   bufName,
+		TryBody:   tryBlock,
+		CatchVar:  tc.CatchVar,
+		CatchBody: catchBlock,
+	})
+	return nil
+}
+
+// lowerPanicCall lowers `panic(code, msg)` to a PanicCallExpr wrapped in an
+// ExprStmt. panic never returns; Phase 7.3.
+func (l *lowerer) lowerPanicCall(out *aotir.Block, call *parser.CallExpr) error {
+	if len(call.Args) != 2 {
+		return fmt.Errorf("panic() requires 2 arguments (code int, msg string), got %d", len(call.Args))
+	}
+	codeExpr, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return fmt.Errorf("panic code: %w", err)
+	}
+	if codeExpr.Type() != aotir.TypeInt {
+		return fmt.Errorf("panic code must be int, got %s", codeExpr.Type())
+	}
+	msgExpr, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return fmt.Errorf("panic msg: %w", err)
+	}
+	if msgExpr.Type() != aotir.TypeString {
+		return fmt.Errorf("panic msg must be string, got %s", msgExpr.Type())
+	}
+	out.Statements = append(out.Statements, &aotir.PanicStmt{Code: codeExpr, Msg: msgExpr})
 	return nil
 }
 
@@ -2658,6 +2721,15 @@ func freeVarCollectStmt(st *parser.Statement, refs map[string]bool, locals map[s
 			freeVarCollectExpr(st.For.RangeEnd, refs)
 		}
 		for _, s := range st.For.Body {
+			freeVarCollectStmt(s, refs, locals)
+		}
+	}
+	if st.TryCatch != nil {
+		for _, s := range st.TryCatch.Try {
+			freeVarCollectStmt(s, refs, locals)
+		}
+		locals[st.TryCatch.CatchVar] = true
+		for _, s := range st.TryCatch.Catch {
 			freeVarCollectStmt(s, refs, locals)
 		}
 	}

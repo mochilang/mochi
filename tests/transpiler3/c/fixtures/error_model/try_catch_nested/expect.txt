@@ -1,0 +1,3 @@
+inner caught
+5
+after inner try

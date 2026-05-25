@@ -13,6 +13,12 @@ func Check(prog *parser.Program, env *Env) []error {
 		Effects:  NewEffectSet(EffectIO),
 		Variadic: AnyType{},
 	}, false)
+	// panic(code: int, msg: string): unit -- Phase 7.3.
+	// Raises a runtime exception via mochi_raise; never returns.
+	env.SetVar("panic", FuncType{
+		Params: []Type{IntType{}, StringType{}},
+		Return: UnitType{},
+	}, false)
 	env.SetVar("len", FuncType{
 		Params: []Type{AnyType{}}, // loosely typed
 		Return: IntType{},
@@ -1164,6 +1170,26 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 		child := NewEnv(env)
 		for _, stmt := range s.While.Body {
 			if err := checkStmt(stmt, child, expectedReturn, true); err != nil {
+				return err
+			}
+		}
+		return nil
+
+	case s.TryCatch != nil:
+		tc := s.TryCatch
+		// Type-check the try body in a fresh child scope.
+		tryChild := NewEnv(env)
+		for _, stmt := range tc.Try {
+			if err := checkStmt(stmt, tryChild, expectedReturn, inLoop); err != nil {
+				return err
+			}
+		}
+		// Type-check the catch body in a fresh child scope with the catch
+		// variable bound as int (holds mochi_except_code).
+		catchChild := NewEnv(env)
+		catchChild.SetVar(tc.CatchVar, IntType{}, false)
+		for _, stmt := range tc.Catch {
+			if err := checkStmt(stmt, catchChild, expectedReturn, inLoop); err != nil {
 				return err
 			}
 		}

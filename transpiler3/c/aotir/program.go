@@ -552,6 +552,18 @@ type WhileStmt struct {
 
 func (*WhileStmt) isStmt() {}
 
+// TryCatchStmt lowers Mochi's `try { ... } catch e { ... }` to a
+// setjmp/longjmp frame via the Phase 7.0 runtime.
+// BufName is the unique C variable name for the jmp_buf (e.g. "__mochi_buf_0").
+type TryCatchStmt struct {
+	BufName   string // unique jmp_buf variable name
+	TryBody   *Block
+	CatchVar  string // variable bound to mochi_except_code in catch scope
+	CatchBody *Block
+}
+
+func (*TryCatchStmt) isStmt() {}
+
 // ForRangeStmt iterates Var over the half-open integer interval
 // [Start, End). Phase 2.2 only covers the int-range form of Mochi's
 // `for x in start..end`; list iteration lands with Phase 3.
@@ -1274,3 +1286,12 @@ type QueryScopeStmt struct {
 }
 
 func (*QueryScopeStmt) isStmt() {}
+
+// PanicStmt lowers `panic(code, msg)` to `mochi_raise(code, msg);`.
+// It never returns; Phase 7.3.
+type PanicStmt struct {
+	Code Expr // TypeInt
+	Msg  Expr // TypeString
+}
+
+func (*PanicStmt) isStmt() {}

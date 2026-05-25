@@ -54,7 +54,7 @@ func assertStatement(s *Statement) error {
 		s.ExternFun != nil, s.ExternObject != nil,
 		s.Fact != nil, s.Rule != nil, s.On != nil, s.Emit != nil,
 		s.Let != nil, s.Var != nil, s.Assign != nil, s.Fun != nil,
-		s.Return != nil, s.If != nil, s.While != nil, s.For != nil,
+		s.Return != nil, s.If != nil, s.While != nil, s.TryCatch != nil, s.For != nil,
 		s.Break != nil, s.Continue != nil,
 		s.Fetch != nil, s.Update != nil, s.Expr != nil,
 	}
@@ -104,6 +104,11 @@ func assertStatement(s *Statement) error {
 			}
 		}
 		return assertBlock(s.While.Body)
+	case s.TryCatch != nil:
+		if err := assertBlock(s.TryCatch.Try); err != nil {
+			return err
+		}
+		return assertBlock(s.TryCatch.Catch)
 	case s.For != nil:
 		if s.For.Source != nil {
 			if err := assertExpr(s.For.Source); err != nil {

@@ -40,6 +40,7 @@ type Statement struct {
 	Return       *ReturnStmt       `json:"return,omitempty" parser:"| @@"`
 	If           *IfStmt           `json:"if,omitempty" parser:"| @@"`
 	While        *WhileStmt        `json:"while,omitempty" parser:"| @@"`
+	TryCatch     *TryCatchStmt     `json:"try_catch,omitempty" parser:"| @@"`
 	For          *ForStmt          `json:"for,omitempty" parser:"| @@"`
 	Break        *BreakStmt        `json:"break,omitempty" parser:"| @@"`
 	Continue     *ContinueStmt     `json:"continue,omitempty" parser:"| @@"`
@@ -83,6 +84,17 @@ type WhileStmt struct {
 	Pos  lexer.Position `json:"pos,omitempty" parser:""`
 	Cond *Expr          `json:"cond,omitempty" parser:"'while' @@"`
 	Body []*Statement   `json:"body,omitempty" parser:"'{' @@* '}'"`
+}
+
+// --- TryCatch Statement ---
+
+// TryCatchStmt is `try { ... } catch <var> { ... }`.
+// The catch variable is bound to mochi_except_code (int).
+type TryCatchStmt struct {
+	Pos      lexer.Position `json:"pos,omitempty" parser:""`
+	Try      []*Statement   `json:"try,omitempty" parser:"'try' '{' @@* '}'"`
+	CatchVar string         `json:"catchvar,omitempty" parser:"'catch' @Ident"`
+	Catch    []*Statement   `json:"catch,omitempty" parser:"'{' @@* '}'"`
 }
 
 // --- For Statement ---

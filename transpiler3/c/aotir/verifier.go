@@ -530,6 +530,25 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 			return errors.New("QueryScopeStmt: nil Body")
 		}
 		return verifyBlock(ctx, s.Body)
+	case *TryCatchStmt:
+		return verifyTryCatchStmt(ctx, s)
+	case *PanicStmt:
+		if s.Code == nil {
+			return errors.New("PanicStmt: nil Code")
+		}
+		if s.Code.Type() != TypeInt {
+			return fmt.Errorf("PanicStmt: Code must be TypeInt, got %s", s.Code.Type())
+		}
+		if s.Msg == nil {
+			return errors.New("PanicStmt: nil Msg")
+		}
+		if s.Msg.Type() != TypeString {
+			return fmt.Errorf("PanicStmt: Msg must be TypeString, got %s", s.Msg.Type())
+		}
+		if err := verifyExprCtx(ctx, s.Code); err != nil {
+			return fmt.Errorf("PanicStmt Code: %w", err)
+		}
+		return verifyExprCtx(ctx, s.Msg)
 	}
 	return fmt.Errorf("unhandled Stmt %T", st)
 }
@@ -1379,6 +1398,33 @@ func isMapValueType(t Type) bool {
 		return true
 	}
 	return false
+}
+
+// verifyTryCatchStmt verifies a TryCatchStmt. The try body runs in a fresh
+// scope. The catch body runs in a fresh scope with CatchVar bound as TypeInt
+// (holds mochi_except_code).
+func verifyTryCatchStmt(ctx *verifyCtx, s *TryCatchStmt) error {
+	if s.BufName == "" {
+		return errors.New("TryCatchStmt: empty BufName")
+	}
+	if s.CatchVar == "" {
+		return errors.New("TryCatchStmt: empty CatchVar")
+	}
+	if s.TryBody == nil {
+		return errors.New("TryCatchStmt: nil TryBody")
+	}
+	if s.CatchBody == nil {
+		return errors.New("TryCatchStmt: nil CatchBody")
+	}
+	if err := verifyBlock(ctx, s.TryBody); err != nil {
+		return fmt.Errorf("TryCatchStmt try: %w", err)
+	}
+	// Verify catch body with CatchVar in scope.
+	prev := ctx.scope
+	ctx.scope = newScope(prev)
+	ctx.scope.vars[s.CatchVar] = binding{t: TypeInt, mutable: false}
+	defer func() { ctx.scope = prev }()
+	return verifyBlock(ctx, s.CatchBody)
 }
 
 func verifyBlock(ctx *verifyCtx, b *Block) error {
