@@ -1,0 +1,8 @@
+extern fun c_box_int(n: int): value
+extern fun c_relay(v: value): value
+extern fun c_unbox_int(v: value): int
+
+let v = c_box_int(99)
+let v2 = c_relay(v)
+let n = c_unbox_int(v2)
+print(n)

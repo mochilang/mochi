@@ -1,0 +1,6 @@
+extern fun c_box_int(n: int): value
+extern fun c_unbox_int(v: value): int
+
+let v = c_box_int(42)
+let n = c_unbox_int(v)
+print(n)

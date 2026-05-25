@@ -274,6 +274,10 @@ func unify(a, b Type, subst Subst) bool {
 		_, ok := b.(UnitType)
 		return ok
 
+	case ValueType:
+		_, ok := b.(ValueType)
+		return ok
+
 	default:
 		// If a didn't match, maybe b is AnyType or a TypeVar
 		switch bt := b.(type) {

@@ -93,6 +93,8 @@ func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 			return UnitType{}
 		case "any":
 			return AnyType{}
+		case "value":
+			return ValueType{}
 		default:
 			if tv, ok := env.LookupTypeParam(*t.Simple); ok {
 				return tv

@@ -29,10 +29,24 @@ C-direct FFI is the natural FFI for a C-AOT target: the generated C and the user
 | #    | Scope                                                                                                                       | Status      | Commit | PR |
 |------|-----------------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 10.0 | `extern fun` declarations lower to `extern <ctype> <name>(<params>);` in the C prologue; calls to extern funcs use `CallExpr` (direct C call, no closure ABI); driver compiles `<stem>.c` neighbour alongside `main.c`; verifier extended to accept extern calls; `TestPhase10FFIDirect` gate (2 fixtures: `add_extern`, `str_len_extern`) | LANDED 2026-05-25 23:52 (GMT+7) | — | — |
-| 10.1 | Boxed `mochi_value` type for FFI-crossing values (sum of scalar + string + handle); marshalling helpers                     | NOT STARTED | —      | — |
+| 10.1 | Boxed `mochi_value_t` tagged union (`nil`, `bool`, `int`, `float`, `str`, `handle`); `ValueType` in aotir + type-checker; `"value"` type alias in `extern fun` declarations; `mochi/value.h` + `src/value.c` in runtime; six constructor + six predicate + five accessor + one tag helper; `TestPhase10BoxedValue` gate (8 fixtures) | LANDED 2026-05-26 06:04 (GMT+7) | — | — |
 | 10.2 | Go FFI via Unix-domain RPC (deferred sub-phase; ships after C-direct is green)                                              | NOT STARTED | —      | — |
 | 10.3 | Python FFI via embedded libpython3 (deferred sub-phase)                                                                     | NOT STARTED | —      | — |
 | 10.4 | TypeScript FFI via QuickJS-NG (deferred sub-phase)                                                                          | NOT STARTED | —      | — |
+
+## Phase 10.1 decisions
+
+**`mochi_value_t` is a tagged union, not a void pointer.** A void pointer would be smaller (8 bytes) but would require the C side to know the layout of every Mochi type. A tagged union (16 bytes on LP64: 4-byte tag + 4-byte padding + 8-byte payload) is self-describing: any C function that receives a `mochi_value_t` can check the tag and route to the correct payload field without extra type information.
+
+**Six tags: nil, bool, int, float, str, handle.** Covers all five Mochi scalar kinds plus an opaque C pointer. Records and collections are not yet supported at the FFI boundary (they would require deep marshalling); that is deferred to a later sub-phase. `nil` is a first-class tag so that C functions can return "no result" without using a sentinel value.
+
+**`value` is a reserved type keyword in `extern fun` declarations only.** The type-checker (`types/resolve.go`, `types/unify.go`, `types/infer.go`, `types/subtype.go`) recognises `ValueType` as a concrete type. At the Mochi language level, `value` cannot be used in user function signatures or arithmetic expressions; it is only legal in `extern fun` parameter and return type positions (the type-checker does not enforce this restriction in Phase 10.1, but the lower pass will reject `value` in positions that don't map to a scalar C type).
+
+**Pass `mochi_value_t` by value (16 bytes).** All architectures in the tier-1 matrix support passing 16-byte structs in registers (two 64-bit registers on x86_64 via System V AMD64 ABI; Q register pair on AArch64). No pointer indirection required.
+
+**`mochi/value.h` included unconditionally in the prologue.** Matches the pattern of `mochi/strings.h`, `mochi/fileio.h`, etc. The linker strips unused symbols; including the header unconditionally avoids conditional logic in the emitter.
+
+**`value.c` added to embed.FS.** `runtime/embed.go` lists the new files so `writeRuntimeFiles` stages them into every build's work directory automatically.
 
 ## Decisions made
 

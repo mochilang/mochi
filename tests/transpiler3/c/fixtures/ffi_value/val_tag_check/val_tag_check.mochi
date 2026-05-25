@@ -1,0 +1,8 @@
+extern fun c_box_int(n: int): value
+extern fun c_box_str(s: string): value
+extern fun c_tag_of(v: value): int
+
+let vi = c_box_int(10)
+let vs = c_box_str("hi")
+print(c_tag_of(vi))
+print(c_tag_of(vs))

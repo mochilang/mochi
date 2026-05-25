@@ -1,0 +1,6 @@
+extern fun c_box_float(x: float): value
+extern fun c_unbox_float(v: value): float
+
+let v = c_box_float(2.5)
+let x = c_unbox_float(v)
+print(x)

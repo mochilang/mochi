@@ -1,0 +1,6 @@
+extern fun c_make_nil(): value
+extern fun c_is_nil(v: value): bool
+
+let v = c_make_nil()
+let ok = c_is_nil(v)
+print(ok)
