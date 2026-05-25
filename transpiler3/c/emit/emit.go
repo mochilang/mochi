@@ -48,6 +48,7 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include \"mochi/strings.h\"\n")
 	b.WriteString("#include \"mochi/fileio.h\"\n")
 	b.WriteString("#include \"mochi/csv.h\"\n")
+	b.WriteString("#include \"mochi/chan.h\"\n")
 	listRecNames := collectListRecordElems(prog)
 	listListInners := collectListListInners(prog)
 	listMapPairs := collectListOfMapPairs(prog)
@@ -632,6 +633,21 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		// Each line of Code is already indented by the lowerer; we just write it.
 		b.WriteString(s.Code)
 		return nil
+	case *aotir.ChanSendStmt:
+		ch, err := emitExpr(s.Chan)
+		if err != nil {
+			return fmt.Errorf("ChanSendStmt chan: %w", err)
+		}
+		val, err := emitExpr(s.Val)
+		if err != nil {
+			return fmt.Errorf("ChanSendStmt val: %w", err)
+		}
+		suffix, err := chanTypeSuffix(s.ElemType)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(b, "%smochi_chan_send_%s(%s, %s);\n", indent, suffix, ch, val)
+		return nil
 	}
 	return fmt.Errorf("transpiler3/c/emit: unhandled Stmt %T", st)
 }
@@ -757,6 +773,9 @@ func cTypeFull(t aotir.Type, recName string, elemType aotir.Type, elemRecName st
 			return "", err
 		}
 		return "mochi_map_" + suf, nil
+	}
+	if t == aotir.TypeChan {
+		return "mochi_chan_t *", nil
 	}
 	return cTypeWithRec(t, recName)
 }
@@ -1130,6 +1149,9 @@ func walkStmtListOfMap(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 		walkExprListOfMap(s.Msg, add)
 	case *aotir.RawCStmt:
 		// Phase 15.0: raw C; no sub-expressions to walk.
+	case *aotir.ChanSendStmt:
+		walkExprListOfMap(s.Chan, add)
+		walkExprListOfMap(s.Val, add)
 	}
 }
 
@@ -1441,6 +1463,9 @@ func walkStmtExprVisit(st aotir.Stmt, visit func(aotir.Expr)) {
 		walkExprNodeVisit(s.Msg, visit)
 	case *aotir.RawCStmt:
 		// Phase 15.0: raw C; no sub-expressions to walk.
+	case *aotir.ChanSendStmt:
+		walkExprNodeVisit(s.Chan, visit)
+		walkExprNodeVisit(s.Val, visit)
 	}
 }
 
@@ -1659,6 +1684,9 @@ func walkStmtMapOfList(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 		walkExprMapOfList(s.Msg, add)
 	case *aotir.RawCStmt:
 		// Phase 15.0: raw C; no sub-expressions to walk.
+	case *aotir.ChanSendStmt:
+		walkExprMapOfList(s.Chan, add)
+		walkExprMapOfList(s.Val, add)
 	}
 }
 
@@ -1982,6 +2010,9 @@ func walkStmtInner(st aotir.Stmt, visit func(aotir.Type, aotir.Type)) {
 		walkExprInner(s.Msg, visit)
 	case *aotir.RawCStmt:
 		// Phase 15.0: raw C; no sub-expressions to walk.
+	case *aotir.ChanSendStmt:
+		walkExprInner(s.Chan, visit)
+		walkExprInner(s.Val, visit)
 	}
 }
 
@@ -2227,6 +2258,9 @@ func walkStmt(st aotir.Stmt, visit func(aotir.Type, string)) {
 		walkExpr(s.Msg, visit)
 	case *aotir.RawCStmt:
 		// Phase 15.0: raw C; no sub-expressions to walk.
+	case *aotir.ChanSendStmt:
+		walkExpr(s.Chan, visit)
+		walkExpr(s.Val, visit)
 	}
 }
 
@@ -2514,9 +2548,41 @@ func emitExpr(e aotir.Expr) (string, error) {
 	case *aotir.RawCExpr:
 		// Phase 15.0: raw C expression; pass through verbatim.
 		return v.Code, nil
+	case *aotir.ChanMakeExpr:
+		cap, err := emitExpr(v.Cap)
+		if err != nil {
+			return "", fmt.Errorf("ChanMakeExpr cap: %w", err)
+		}
+		return fmt.Sprintf("mochi_chan_make((int)(%s))", cap), nil
+	case *aotir.ChanRecvExpr:
+		ch, err := emitExpr(v.Chan)
+		if err != nil {
+			return "", fmt.Errorf("ChanRecvExpr chan: %w", err)
+		}
+		suffix, err := chanTypeSuffix(v.ElemType)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("mochi_chan_recv_%s(%s)", suffix, ch), nil
 	default:
 		return "", fmt.Errorf("transpiler3/c/emit: unhandled Expr %T", e)
 	}
+}
+
+// chanTypeSuffix returns the per-T runtime suffix for channel typed helpers.
+// Matches the naming convention in mochi/chan.h: int, float, bool, string.
+func chanTypeSuffix(t aotir.Type) (string, error) {
+	switch t {
+	case aotir.TypeInt:
+		return "int", nil
+	case aotir.TypeFloat:
+		return "float", nil
+	case aotir.TypeBool:
+		return "bool", nil
+	case aotir.TypeString:
+		return "string", nil
+	}
+	return "", fmt.Errorf("chan element type %s not supported in Phase 9.1", t)
 }
 
 // emitListLit renders a ListLit as a `mochi_list_<T>_lit` call with

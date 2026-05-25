@@ -75,6 +75,14 @@ func Subtype(s, t Type) bool {
 		}
 		return equalKinds(sv.Key, tv.Key) && equalKinds(sv.Value, tv.Value)
 
+	case ChanType:
+		// chan<T> is invariant: send and recv both require exact element match.
+		tv, ok := t.(ChanType)
+		if !ok {
+			return false
+		}
+		return equalKinds(sv.Elem, tv.Elem)
+
 	case OptionType:
 		// MEP-11 §T-Option-Cov. option[S] <: option[T] when S <: T.
 		tv, ok := t.(OptionType)
@@ -185,6 +193,10 @@ func assignableAt(src, dst Type, elementContext bool) bool {
 		if dv, ok := dst.(MapType); ok {
 			return assignableAt(sv.Key, dv.Key, true) && assignableAt(sv.Value, dv.Value, true)
 		}
+	case ChanType:
+		if dv, ok := dst.(ChanType); ok {
+			return assignableAt(sv.Elem, dv.Elem, true)
+		}
 	case OptionType:
 		if dv, ok := dst.(OptionType); ok {
 			return assignableAt(sv.Elem, dv.Elem, true)
@@ -243,6 +255,9 @@ func equalKinds(a, b Type) bool {
 	case MapType:
 		bv, ok := b.(MapType)
 		return ok && equalKinds(av.Key, bv.Key) && equalKinds(av.Value, bv.Value)
+	case ChanType:
+		bv, ok := b.(ChanType)
+		return ok && equalKinds(av.Elem, bv.Elem)
 	case OptionType:
 		bv, ok := b.(OptionType)
 		return ok && equalKinds(av.Elem, bv.Elem)

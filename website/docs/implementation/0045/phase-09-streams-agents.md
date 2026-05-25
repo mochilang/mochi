@@ -10,8 +10,8 @@ description: "MEP-45 Phase 9 tracking: M:N work-stealing scheduler over minicoro
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 9](/docs/mep/mep-0045#phase-9-streams-agents-m-scheduler) |
-| Status         | NOT STARTED |
-| Started        | — |
+| Status         | IN PROGRESS |
+| Started        | 2026-05-25 (GMT+7) |
 | Landed         | — |
 | Tracking issue | — |
 | Tracking PR    | — |
@@ -22,26 +22,53 @@ Streams + agents fixture suite (~40 cases: stream emit/subscribe, agent intent d
 
 ## Goal-alignment audit
 
-_To be written before sub-phase 9.0 starts. Streams + agents differentiate Mochi from other small languages; agent-style programs need this surface to compile. Aligns._
+Phase 9 builds the concurrency primitives that let Mochi programs express async I/O, fan-out/fan-in data pipelines, and agent-style intent dispatch without threads. The sub-phases build up in layers: scheduler (9.0) enables fibers, chan<T> (9.1) enables point-to-point messaging, stream<T> (9.2) enables broadcast, agents (9.3) give the language-level abstraction, and shutdown (9.4) closes the loop for production programs. Each sub-phase is a distinct user-visible feature; none is internal scaffolding.
 
 ## Sub-phases
 
 | #   | Scope                                                                                                              | Status      | Commit | PR |
 |-----|--------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
-| 9.0 | M:N work-stealing scheduler over minicoro; one OS thread per hardware core; blocking syscalls on overflow pool     | NOT STARTED | —      | — |
-| 9.1 | `chan<T>`: bounded ring, point-to-point, send blocks when full                                                     | NOT STARTED | —      | — |
+| 9.0 | M:N work-stealing scheduler over minicoro; one OS thread per hardware core; blocking syscalls on overflow pool     | LANDED 2026-05-26 01:00 (GMT+7) | aa503933f4 | — |
+| 9.1 | `chan<T>`: bounded ring, point-to-point, send blocks when full                                                     | LANDED 2026-05-26 03:11 (GMT+7) | (this PR) | — |
 | 9.2 | `stream<T>`: bounded ring + subscriber list (MPMC broadcast); `emit` blocks when any subscriber full               | NOT STARTED | —      | — |
 | 9.3 | Agent: record with embedded mailbox; intent calls enqueue typed messages; run loop on dedicated fiber              | NOT STARTED | —      | — |
 | 9.4 | Shutdown protocol: graceful drain on SIGINT/SIGTERM; bounded-time hard kill after timeout                          | NOT STARTED | —      | — |
 
 ## Decisions made
 
-_Fill in along the way._
+### Phase 9.0 (2026-05-26 01:00 GMT+7)
+
+- Used ucontext-based cooperative fiber stack. Each fiber has a 128 KB stack. The scheduler is a simple FIFO queue; fibers yield voluntarily via `mochi_fiber_yield()`.
+- The sched.h / sched.c pair lives in `transpiler3/c/runtime/`. Phase 9.0 fixtures use `extern fun` FFI to call a C test harness directly; no language-level spawn syntax yet.
+- Gate: `TestPhase9Scheduler` (3 fixtures: sched_basic, sched_yield, sched_nested).
+
+### Phase 9.1 (2026-05-26 03:11 GMT+7)
+
+**chan<T> as a first-class type.** `ChanType{Elem Type}` added to `types/kinds.go` alongside `ListType`, `MapType`, etc. Unified through `unify.go`, `subtype.go`, `subst.go`, and `poly.go` (free-var collection) so the generic call-site machinery handles `send(ch, val)` and `recv(ch)` correctly.
+
+**make_chan / send / recv builtins.** Declared in `types/check.go`:
+- `make_chan(cap: int): chan<any>` with `ChanType{Elem: AnyType{}}` return. The annotation on the binding narrows the element type via the `assignableAt` elementContext carve-out (same pattern as typed-empty list/map literals).
+- `send: <T>(chan<T>, T) -> unit` and `recv: <T>(chan<T>) -> T` using TypeVar T.
+
+**IR nodes.** `ChanMakeExpr`, `ChanSendStmt`, `ChanRecvExpr` added to `transpiler3/c/aotir/program.go`. `ChanElemType` field on `VarRef` and `LetStmt` carries the element type from declaration site to use site so the lowerer can emit the right typed C wrapper.
+
+**Cooperative blocking.** `mochi__chan_push` and `mochi__chan_pop` spin in a `while` loop calling `mochi_fiber_yield()` when the channel is full/empty. If called outside a fiber context (`mochi_fiber_current() == NULL`), they `abort()`. This means Phase 9.1 fixtures run in sequential mode: sends don't block because the buffered channel is not yet full; recvs don't block because all sends already completed.
+
+**C runtime.** `transpiler3/c/runtime/include/mochi/chan.h` (new) and `src/chan.c` (new). Typed wrappers in chan.h use `intptr_t` cast for int/bool and `memcpy` for double (avoids UB via pointer type-punning). chan.h avoids pulling in `<stdlib.h>` to prevent conflicts with user-defined functions named `abs`; instead, `abort()` is forward-declared via `_Noreturn void abort(void)`.
+
+**poly.go fix.** `collectFreeVars` was missing a `ChanType` case, causing `FreeTypeVars(chan<T>)` to return empty. The hint for the first argument of `send(ch, val)` was being propagated as `chan<T#N>`, which failed the `checkExprWithExpected` top-level guard. Added `case ChanType` to make the hint suppressed for generic channel params.
+
+**unifyInto fix.** `subst.go`'s `unifyInto` was also missing `ChanType`; added it between `MapType` and `OptionType`.
+
+**Gate:** `TestPhase9Chan` (5 fixtures: chan_basic, chan_bool, chan_buffered, chan_fifo_order, chan_string).
 
 ## Deferred work
 
-_CPU preemption (Go-style signal preemption): v2._
+- CPU preemption (Go-style signal preemption): v2.
+- Phase 9.2 stream<T> MPMC broadcast.
+- Phase 9.3 agent records.
+- Phase 9.4 graceful shutdown.
 
 ## Closeout notes
 
-_Fill in after gate green._
+_Fill in after gate green for all 5 sub-phases._

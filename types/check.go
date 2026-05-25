@@ -297,6 +297,29 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return:  UnitType{},
 		Effects: NewEffectSet(EffectIO),
 	}, false)
+	// Phase 9.1: chan<T> builtins.
+	// make_chan(cap) requires a type annotation on the binding; the
+	// type checker treats the return as AnyType so the lowerer can
+	// resolve elem from the declared annotation.
+	// make_chan(cap: int): chan<any> -- the declared annotation narrows the elem
+	// type; assignableAt allows ChanType{Elem: AnyType{}} to flow into
+	// ChanType{Elem: T} for any T (same carve-out as empty list/map literals).
+	env.SetVar("make_chan", FuncType{
+		Params: []Type{IntType{}},
+		Return: ChanType{Elem: AnyType{}},
+	}, false)
+	chanSendT := &TypeVar{Name: "T"}
+	env.SetVar("send", FuncType{
+		Params:     []Type{ChanType{Elem: chanSendT}, chanSendT},
+		Return:     UnitType{},
+		TypeParams: []string{"T"},
+	}, false)
+	chanRecvT := &TypeVar{Name: "T"}
+	env.SetVar("recv", FuncType{
+		Params:     []Type{ChanType{Elem: chanRecvT}},
+		Return:     chanRecvT,
+		TypeParams: []string{"T"},
+	}, false)
 
 	var errs []error
 

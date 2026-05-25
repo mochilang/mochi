@@ -39,6 +39,10 @@ func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 					Value: resolveTypeRef(args[1], env),
 				}
 			}
+		case "chan":
+			if len(args) == 1 {
+				return ChanType{Elem: resolveTypeRef(args[0], env)}
+			}
 		}
 		// Fallback: unknown generic type
 		return AnyType{}
