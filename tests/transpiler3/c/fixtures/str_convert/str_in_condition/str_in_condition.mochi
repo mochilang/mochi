@@ -1,0 +1,11 @@
+let x = 7
+let label = str(x)
+if label == "7" {
+    print("match")
+} else {
+    print("no match")
+}
+let y = 0
+if str(y) == "0" {
+    print("zero")
+}

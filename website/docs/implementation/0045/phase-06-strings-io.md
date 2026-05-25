@@ -30,10 +30,11 @@ String concatenation and `len` on strings are used in nearly every Mochi program
 |-----|-------|--------|--------|----|
 | 6.0 | String concatenation (`+`) and `len(s)` on strings: `BinStrCat` IR op; `StrLenExpr` IR node; `mochi_str_cat` C runtime (`runtime/src/strings.c` + `runtime/include/mochi/strings.h`); lower pass: `opForTypes` returns `BinStrCat` for `+` on TypeString, `lowerLenCall` returns `StrLenExpr` for TypeString; emit: `mochi_str_cat(a,b)` and `(int64_t)strlen(s)`; verifier: `BinStrCat` validated + `StrLenExpr` validated; `TestPhase6StringOps` gate (8 fixtures) | LANDED 2026-05-25 16:43 (GMT+7) | — | — |
 | 6.1 | `s[i]` (string indexing, returns one-byte-char string), `s.contains(sub)`, `substring(s, start, end)`, `reverse(s)`; `StrIndexExpr`, `StrContainsExpr`, `StrSubstringExpr`, `StrReverseExpr` IR nodes; `StrMethodRef` transient node for postfix call dispatch; `mochi_str_index`, `mochi_str_contains`, `mochi_str_substring`, `mochi_str_reverse` runtime functions; `TestPhase6StringMethods` gate (8 fixtures) | LANDED 2026-05-25 17:04 (GMT+7) | — | — |
-| 6.2 | `split`, `join`, `toUpper`, `toLower` via utf8proc | NOT STARTED | — | — |
-| 6.3 | Format-string interpolation (`"{name} is {age}"` lowers to a printf-style sequence) | NOT STARTED | — | — |
-| 6.4 | File I/O: `readFile`, `writeFile`, `lines`, `appendFile`; `stdin`, `stdout`, `stderr` handles | NOT STARTED | — | — |
-| 6.5 | simdutf utf-8 validation on read; rejected input raises `MOCHI_ERR_PARSE` | NOT STARTED | — | — |
+| 6.2 | `str(x)` type-to-string conversion for int, float, bool, string: `StrConvertExpr` IR node; `mochi_str_from_i64` (snprintf `%lld`), `mochi_str_from_f64` (snprintf `%g`), `mochi_str_from_bool` ("true"/"false"); string is identity; `lowerStrConvertCall`; `TestPhase6StrConvert` gate (8 fixtures) | LANDED 2026-05-25 17:49 (GMT+7) | — | — |
+| 6.3 | `split`, `join`, `toUpper`, `toLower` via utf8proc | NOT STARTED | — | — |
+| 6.4 | Format-string interpolation (`"{name} is {age}"` lowers to a printf-style sequence) | NOT STARTED | — | — |
+| 6.5 | File I/O: `readFile`, `writeFile`, `lines`, `appendFile`; `stdin`, `stdout`, `stderr` handles | NOT STARTED | — | — |
+| 6.6 | simdutf utf-8 validation on read; rejected input raises `MOCHI_ERR_PARSE` | NOT STARTED | — | — |
 
 ## Decisions made
 
@@ -42,6 +43,8 @@ String concatenation and `len` on strings are used in nearly every Mochi program
 **`StrMethodRef` transient IR node.** Phase 6.1 needs to handle `s.contains("sub")` which in the parser AST becomes `PostfixExpr { Target: Selector{Root:"s", Tail:["contains"]}, Ops: [CallOp{Args:["sub"]}] }`. The `lowerPrimary` step processes `s.contains` as a field access on a string; rather than failing, `lowerFieldOp` returns a `StrMethodRef{Receiver, MethodName}`. Then `lowerPostfix` sees the following `CallOp` and converts the `StrMethodRef` into the concrete `StrContainsExpr`. `StrMethodRef` is never emitted; the verifier rejects it if it reaches the output.
 
 **Phase 6.1 is byte-based, not rune-based.** `mochi_str_index`, `mochi_str_substring`, and `mochi_str_reverse` operate on bytes (treating the string as ASCII). This matches vm3 behavior for the ASCII fixture corpus. Full UTF-8 codepoint support via utf8proc is Phase 6.2.
+
+**Phase 6.2: `str(x)` uses `%g` for floats to match vm3.** Go's `fmt.Sprint(float64)` uses a shortest-decimal representation that removes trailing zeros: `str(1.0)` → "1", `str(3.14)` → "3.14". C's `snprintf` with `%g` matches this behavior for the ASCII fixture corpus. For int, `%lld` with a `(long long)` cast works on all tier-1 platforms without `<inttypes.h>` dance. For string, the identity case returns the operand directly (no allocation).
 
 **`reverse` is a builtin function in Phase 6.1.** vm3 implements `reverse(s)` as a global builtin. In the AOT lower pass, `lowerUserCallExpr` detects `"reverse"` and routes to `lowerReverseCall`, which requires a string argument. If list reverse is needed in a future phase, it will be dispatched based on the argument type.
 

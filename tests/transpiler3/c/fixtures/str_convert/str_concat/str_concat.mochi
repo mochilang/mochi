@@ -1,0 +1,6 @@
+let n = 42
+let s = "Value: " + str(n)
+print(s)
+let f = 3.14
+let s2 = "Pi is " + str(f)
+print(s2)

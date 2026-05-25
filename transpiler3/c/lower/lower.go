@@ -2742,6 +2742,9 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	if call.Func == "reverse" {
 		return l.lowerReverseCall(call)
 	}
+	if call.Func == "str" {
+		return l.lowerStrConvertCall(call)
+	}
 	// Phase 5.0: check if this is a call to a fun-typed variable in scope.
 	if b, ok := l.scope.lookup(call.Func); ok && b.t == aotir.TypeFun {
 		if b.funSig == nil {
@@ -2991,6 +2994,24 @@ func (l *lowerer) lowerReverseCall(call *parser.CallExpr) (aotir.Expr, error) {
 		return nil, fmt.Errorf("reverse() argument must be string in Phase 6.1, got %s", s.Type())
 	}
 	return &aotir.StrReverseExpr{Receiver: s}, nil
+}
+
+// lowerStrConvertCall lowers `str(x)` to StrConvertExpr. Accepts
+// int, float, bool, and string operands; string is an identity conversion.
+// Phase 6.2.
+func (l *lowerer) lowerStrConvertCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("str() takes exactly one argument, got %d", len(call.Args))
+	}
+	operand, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("str() arg: %w", err)
+	}
+	t := operand.Type()
+	if t != aotir.TypeInt && t != aotir.TypeFloat && t != aotir.TypeBool && t != aotir.TypeString {
+		return nil, fmt.Errorf("str() argument must be int/float/bool/string, got %s", t)
+	}
+	return &aotir.StrConvertExpr{Operand: operand}, nil
 }
 
 // lowerAppendCall lowers the `append(xs, v)` builtin to an

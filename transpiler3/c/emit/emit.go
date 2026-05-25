@@ -1972,6 +1972,21 @@ func emitExpr(e aotir.Expr) (string, error) {
 			return "", fmt.Errorf("StrReverseExpr receiver: %w", err)
 		}
 		return "mochi_str_reverse(" + recv + ")", nil
+	case *aotir.StrConvertExpr:
+		operand, err := emitExpr(v.Operand)
+		if err != nil {
+			return "", fmt.Errorf("StrConvertExpr operand: %w", err)
+		}
+		switch v.Operand.Type() {
+		case aotir.TypeInt:
+			return "mochi_str_from_i64(" + operand + ")", nil
+		case aotir.TypeFloat:
+			return "mochi_str_from_f64(" + operand + ")", nil
+		case aotir.TypeBool:
+			return "mochi_str_from_bool(" + operand + ")", nil
+		default: // TypeString: identity
+			return operand, nil
+		}
 	case *aotir.AppendExpr:
 		return emitAppendExpr(v)
 	case *aotir.ListSortAscExpr:
