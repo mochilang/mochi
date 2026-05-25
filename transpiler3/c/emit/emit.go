@@ -1904,6 +1904,46 @@ func emitExpr(e aotir.Expr) (string, error) {
 			return "", fmt.Errorf("StrLenExpr receiver: %w", err)
 		}
 		return "(int64_t)strlen(" + recv + ")", nil
+	case *aotir.StrIndexExpr:
+		recv, err := emitExpr(v.Receiver)
+		if err != nil {
+			return "", fmt.Errorf("StrIndexExpr receiver: %w", err)
+		}
+		idx, err := emitExpr(v.Index)
+		if err != nil {
+			return "", fmt.Errorf("StrIndexExpr index: %w", err)
+		}
+		return "mochi_str_index(" + recv + ", " + idx + ")", nil
+	case *aotir.StrContainsExpr:
+		recv, err := emitExpr(v.Receiver)
+		if err != nil {
+			return "", fmt.Errorf("StrContainsExpr receiver: %w", err)
+		}
+		sub, err := emitExpr(v.Sub)
+		if err != nil {
+			return "", fmt.Errorf("StrContainsExpr sub: %w", err)
+		}
+		return "mochi_str_contains(" + recv + ", " + sub + ")", nil
+	case *aotir.StrSubstringExpr:
+		recv, err := emitExpr(v.Receiver)
+		if err != nil {
+			return "", fmt.Errorf("StrSubstringExpr receiver: %w", err)
+		}
+		start, err := emitExpr(v.Start)
+		if err != nil {
+			return "", fmt.Errorf("StrSubstringExpr start: %w", err)
+		}
+		end, err := emitExpr(v.End)
+		if err != nil {
+			return "", fmt.Errorf("StrSubstringExpr end: %w", err)
+		}
+		return "mochi_str_substring(" + recv + ", " + start + ", " + end + ")", nil
+	case *aotir.StrReverseExpr:
+		recv, err := emitExpr(v.Receiver)
+		if err != nil {
+			return "", fmt.Errorf("StrReverseExpr receiver: %w", err)
+		}
+		return "mochi_str_reverse(" + recv + ")", nil
 	case *aotir.AppendExpr:
 		return emitAppendExpr(v)
 	case *aotir.MapLit:
