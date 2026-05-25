@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	gort "runtime"
 	"strings"
 
 	"mochi/parser"
@@ -60,6 +61,11 @@ type Driver struct {
 	// tests that want to assert host-cc-only behaviour without
 	// triggering a network fetch.
 	NoZigFallback bool
+
+	// ExtraFlags appends additional cc flags after the standard
+	// compile arguments. Phase 16 uses this to inject sanitiser
+	// flags (e.g. []string{"-fsanitize=address"}).
+	ExtraFlags []string
 }
 
 // Build is the source-to-binary entry point. src is a Mochi
@@ -173,11 +179,23 @@ func (d *Driver) Build(src, out, target, profile string) error {
 	ccArgs = append(ccArgs,
 		"-std=c2x",
 		"-Wall", "-Wextra", "-pedantic",
+		// Phase 17.1: strip absolute paths from debug info so binaries
+		// built in different tempdirs produce identical DWARF sections.
+		"-ffile-prefix-map="+workDir+"=.",
+		"-fdebug-prefix-map="+workDir+"=.",
+
 		"-I", filepath.Join(workDir, "include"),
 		"-o", absOut,
 		genPath,
 	)
 	ccArgs = append(ccArgs, rtSrcs...)
+	// Phase 17.1 (macOS): suppress the random UUID that Apple's linker
+	// embeds in Mach-O binaries. Without this, two identical builds
+	// produce different LC_UUID values, breaking binary reproducibility.
+	if gort.GOOS == "darwin" {
+		ccArgs = append(ccArgs, "-Wl,-no_uuid")
+	}
+	ccArgs = append(ccArgs, d.ExtraFlags...)
 	args := ccArgs
 	cmd := exec.Command(cc, args...)
 	output, err := cmd.CombinedOutput()
