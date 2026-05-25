@@ -1,0 +1,5 @@
+let nums: list<int> = [5, 3, 1, 4, 2]
+let sorted = from n in nums order by n select n
+for x in sorted {
+    print(x)
+}
