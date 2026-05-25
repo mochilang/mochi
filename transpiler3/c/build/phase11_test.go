@@ -184,3 +184,68 @@ func TestPhase11AArch64LinuxGnu(t *testing.T) {
 	}
 	runPhase11Cross(t, "aarch64-linux-gnu", runFn)
 }
+
+// TestPhase11X86DarwinCross is the Phase 11.5 gate. Cross-builds add_ints
+// for x86_64-macos-none using zig cc on an arm64 macOS host and runs the
+// produced binary (Rosetta 2 executes it transparently on Apple Silicon).
+// On an x86_64 macOS host the native run gate is already covered by
+// TestPhase11NativeDarwin, so this test skips on non-arm64 macOS.
+func TestPhase11X86DarwinCross(t *testing.T) {
+	if runtime.GOOS != "darwin" || runtime.GOARCH != "arm64" {
+		t.Skip("Phase 11.5 cross gate runs only on darwin/arm64 (arm64 host cross-compiling for x86_64)")
+	}
+	runFn := func(bin string) ([]byte, error) {
+		cmd := exec.Command(bin)
+		var stdout bytes.Buffer
+		cmd.Stdout = &stdout
+		if err := cmd.Run(); err != nil {
+			return nil, err
+		}
+		return stdout.Bytes(), nil
+	}
+	runPhase11Cross(t, "x86_64-macos-none", runFn)
+}
+
+// TestPhase11WindowsGnu is the Phase 11.7 gate. Cross-builds add_ints for
+// x86_64-windows-gnu using zig cc; on a Windows host the binary is run
+// natively. On non-Windows hosts only the compile step is verified.
+func TestPhase11WindowsGnu(t *testing.T) {
+	var runFn func(bin string) ([]byte, error)
+	if runtime.GOOS == "windows" {
+		runFn = func(bin string) ([]byte, error) {
+			cmd := exec.Command(bin)
+			var stdout bytes.Buffer
+			cmd.Stdout = &stdout
+			if err := cmd.Run(); err != nil {
+				return nil, err
+			}
+			return stdout.Bytes(), nil
+		}
+	}
+	runPhase11Cross(t, "x86_64-windows-gnu", runFn)
+}
+
+// TestPhase11NativeWindows is the Phase 11.6 gate. Builds add_ints natively
+// on a Windows host (host cc, no cross) and runs it.
+func TestPhase11NativeWindows(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("Phase 11.6 native gate runs only on Windows")
+	}
+	root := repoRoot(t)
+	src := filepath.Join(root, "tests", "transpiler3", "c", "fixtures", phase11Fixture, "add_ints.mochi")
+	outBin := filepath.Join(t.TempDir(), "add_ints_windows_native.exe")
+	d := &Driver{CacheDir: t.TempDir(), NoCache: true}
+	if err := d.Build(src, outBin, "", ""); err != nil {
+		t.Fatalf("Driver.Build (native windows): %v", err)
+	}
+	cmd := exec.Command(outBin)
+	var stdout bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		t.Fatalf("run native windows binary: %v", err)
+	}
+	if got := stdout.String(); got != phase11Expect {
+		t.Fatalf("want %q got %q", phase11Expect, got)
+	}
+}

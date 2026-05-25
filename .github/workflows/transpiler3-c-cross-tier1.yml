@@ -13,10 +13,14 @@ name: Transpiler3-C Cross Tier-1 Matrix
 #
 #   macos-latest (darwin/arm64):
 #     - 11.4 aarch64-darwin    : native build + run
+#     - 11.5 x86_64-darwin     : zig cc cross + Rosetta 2 run-gate
 #
-# Triples 11.5 (x86_64-darwin cross), 11.6 (windows-msvc), 11.7
-# (windows-gnu) are not gated here due to runner limitations.
-# They are tracked as separate CI expansions.
+#   macos-13 (darwin/amd64):
+#     - 11.5 x86_64-darwin     : native build + run
+#
+#   windows-latest:
+#     - 11.6 x86_64-windows-msvc: native build + run (host cc / clang-cl)
+#     - 11.7 x86_64-windows-gnu : zig cc cross + native run
 
 on:
   push:
@@ -69,7 +73,7 @@ jobs:
             ./transpiler3/c/build/ -run TestPhase11AArch64LinuxGnu
 
   cross-macos:
-    name: Tier-1 cross (macos-latest)
+    name: Tier-1 cross (macos-latest arm64)
     runs-on: macos-latest
 
     steps:
@@ -86,3 +90,56 @@ jobs:
         run: |
           go test -vet=off -v -count=1 -timeout=120s \
             ./transpiler3/c/build/ -run TestPhase11NativeDarwin
+
+      - name: Phase 11.5 - x86_64-darwin (zig cc cross + Rosetta 2 run)
+        env:
+          MOCHI_TEST_ZIG_DOWNLOAD: '1'
+        run: |
+          go test -vet=off -v -count=1 -timeout=300s \
+            ./transpiler3/c/build/ -run TestPhase11X86DarwinCross
+
+  cross-macos-x86:
+    name: Tier-1 cross (macos-13 x86_64 native)
+    runs-on: macos-13
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Phase 11.5 - x86_64-darwin native
+        run: |
+          go test -vet=off -v -count=1 -timeout=120s \
+            ./transpiler3/c/build/ -run TestPhase11NativeDarwin
+
+  cross-windows:
+    name: Tier-1 cross (windows-latest)
+    runs-on: windows-latest
+
+    env:
+      MOCHI_TEST_ZIG_DOWNLOAD: '1'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Phase 11.6 - x86_64-windows-msvc native
+        run: |
+          go test -vet=off -v -count=1 -timeout=120s `
+            ./transpiler3/c/build/ -run TestPhase11NativeWindows
+
+      - name: Phase 11.7 - x86_64-windows-gnu (zig cc + native run)
+        run: |
+          go test -vet=off -v -count=1 -timeout=300s `
+            ./transpiler3/c/build/ -run TestPhase11WindowsGnu
