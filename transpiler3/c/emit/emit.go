@@ -41,6 +41,7 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include <string.h>\n")
 	b.WriteString("#include \"mochi/print.h\"\n")
 	b.WriteString("#include \"mochi/errors.h\"\n")
+	b.WriteString("#include \"mochi/except.h\"\n")
 	b.WriteString("#include \"mochi/arena.h\"\n")
 	b.WriteString("#include \"mochi/list.h\"\n")
 	b.WriteString("#include \"mochi/map.h\"\n")

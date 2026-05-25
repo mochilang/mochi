@@ -1,26 +1,19 @@
 /*
  * libmochi: error model implementation.
  *
- * MEP-45 Phase 2.3. See website/docs/mep/mep-0045.md §9 and
- * website/docs/implementation/0045/phase-02-primitives-control-flow.md
- * sub-phase 2.3.
+ * MEP-45 Phase 2.3 + Phase 7.2. See website/docs/mep/mep-0045.md §9.
  *
- * Identity: portable C; only <stdio.h>, <stdlib.h> required. The
- * per-trip thunks are placed out-of-line so the corresponding
- * inline helpers in errors.h stay one branch + one call wide at
- * the caller's instruction stream.
+ * Phase 7.2 routes panic thunks through mochi_raise() so that a future
+ * try/catch block (Phase 7.1) can intercept them. When no try block is
+ * active the behaviour is identical to the pre-7.2 direct exit() calls.
  */
 #include "mochi/errors.h"
-
-#include <stdio.h>
-#include <stdlib.h>
+#include "mochi/except.h"
 
 _Noreturn void mochi_panic_div_zero(void) {
-    fputs("mochi: integer divide by zero\n", stderr);
-    exit(MOCHI_ERR_DIVZERO);
+    mochi_raise(MOCHI_ERR_DIVZERO, "mochi: integer divide by zero");
 }
 
 _Noreturn void mochi_panic_index(void) {
-    fputs("mochi: index out of range\n", stderr);
-    exit(MOCHI_ERR_INDEX);
+    mochi_raise(MOCHI_ERR_INDEX, "mochi: index out of range");
 }
