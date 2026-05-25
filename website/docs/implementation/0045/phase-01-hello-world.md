@@ -10,9 +10,9 @@ description: "MEP-45 Phase 1 tracking: source-to-binary minimum viable pipeline 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 1](/docs/mep/mep-0045#phase-1-hello-world) |
-| Status         | IN PROGRESS |
+| Status         | LANDED |
 | Started        | 2026-05-22 19:26 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-22 19:50 (GMT+7) |
 | Tracking issue | [#22072](https://github.com/mochilang/mochi/issues/22072) |
 | Tracking PR    | — |
 
@@ -28,10 +28,10 @@ The user-facing goal of MEP-45 is "ship a Mochi program as a single native binar
 
 | #   | Scope                                                                                                                                     | Status      | Commit | PR |
 |-----|-------------------------------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
-| 1.0 | Source-to-binary minimum: parser reused; lower; emit; build via host `cc` discovery; single integration test passes                       | IN PROGRESS | —      | — |
-| 1.1 | `--target=c-aot`, `--out PATH`, `--emit=c\|executable` CLI flags wired through `cmd/mochi/main.go`                                        | IN PROGRESS | —      | — |
-| 1.2 | `.mochi/cache/` BLAKE3 content-addressed cache; rebuild on unchanged source is copyFile no-op; `--emit=c` bypasses cache                  | IN PROGRESS | —      | — |
-| 1.3 | Vendored `zig cc` fallback under `transpiler3/c/toolchain/zig/install.go`; pinned zig 0.16.0 SHA-256 manifest; six tier-1 hosts            | IN PROGRESS | —      | — |
+| 1.0 | Source-to-binary minimum: parser reused; lower; emit; build via host `cc` discovery; single integration test passes                       | LANDED 2026-05-22 19:50 (GMT+7) | —      | [#22073](https://github.com/mochilang/mochi/pull/22073) |
+| 1.1 | `--target=c-aot`, `--out PATH`, `--emit=c\|executable` CLI flags wired through `cmd/mochi/main.go`                                        | LANDED 2026-05-22 19:50 (GMT+7) | —      | [#22073](https://github.com/mochilang/mochi/pull/22073) |
+| 1.2 | `.mochi/cache/` BLAKE3 content-addressed cache; rebuild on unchanged source is copyFile no-op; `--emit=c` bypasses cache                  | LANDED 2026-05-22 19:50 (GMT+7) | —      | [#22073](https://github.com/mochilang/mochi/pull/22073) |
+| 1.3 | Vendored `zig cc` fallback under `transpiler3/c/toolchain/zig/install.go`; pinned zig 0.16.0 SHA-256 manifest; six tier-1 hosts            | LANDED 2026-05-22 19:50 (GMT+7) | —      | [#22073](https://github.com/mochilang/mochi/pull/22073) |
 
 ## Decisions made
 
@@ -67,4 +67,4 @@ _Cross matrix is Phase 11. Reproducibility of the hello binary across hosts is P
 
 ## Closeout notes
 
-_Fill in after gate green._
+All 4 sub-phases landed in a single PR (#22073). Phase 1 gate is green: `mochi build --target=c-aot --out=/tmp/hello tests/transpiler3/c/fixtures/hello/hello.mochi && /tmp/hello | diff - tests/transpiler3/c/fixtures/hello/expect.txt` exits 0 on host triple. The full CLI, cache, and zig-fallback story is complete.
