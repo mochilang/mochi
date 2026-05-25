@@ -1,0 +1,6 @@
+fun count(xs: list<int>): int {
+  return len(xs)
+}
+
+let empty: list<int> = []
+print(count(empty))

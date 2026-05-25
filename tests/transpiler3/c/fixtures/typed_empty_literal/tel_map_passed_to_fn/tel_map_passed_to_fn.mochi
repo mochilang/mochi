@@ -1,0 +1,6 @@
+fun is_empty(m: map<string, int>): bool {
+  return len(m) == 0
+}
+
+let m: map<string, int> = {}
+print(is_empty(m))

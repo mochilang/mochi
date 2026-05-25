@@ -1,0 +1,7 @@
+var xs: list<float> = []
+xs = append(xs, 1.5)
+xs = append(xs, 2.5)
+xs = append(xs, 3.5)
+for x in xs {
+  print(x)
+}
