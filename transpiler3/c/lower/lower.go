@@ -5758,6 +5758,134 @@ func cEscapeStr(s string) string {
 	return b.String()
 }
 
+// applyMagicSet applies the magic-set transform (Bancilhon et al., PODS 1986)
+// for goal-directed Datalog evaluation (Phase 15.1).
+//
+// When the query goal q has constant (bound) arguments, this function:
+//  1. Creates a magic predicate magic_REL whose arity equals the number of
+//     bound positions in the query.
+//  2. Seeds magic_REL from the query constants.
+//  3. For each rule whose head is REL, prepends magic_REL(bound-head-vars) to
+//     the rule body (guard), preventing derivation of tuples not reachable from
+//     the query goal.
+//  4. For each recursive body call to REL within those rules, generates a magic
+//     propagation rule so the magic predicate spreads to new bound values through
+//     non-recursive body conditions that precede the recursive call.
+//     Trivial propagations (propagated args == guard args) are omitted.
+//
+// If the query has no bound constants, or no rules derive the query predicate,
+// the inputs are returned unchanged.
+func (l *lowerer) applyMagicSet(
+	q *parser.LogicQueryExpr,
+	facts []logicFact,
+	rules []logicRule,
+) ([]logicFact, []logicRule) {
+	// Identify bound positions (constant args) in the query predicate.
+	boundPos := []int{}
+	boundVals := []string{}
+	for i, arg := range q.Pred.Args {
+		if arg.Str != nil {
+			boundPos = append(boundPos, i)
+			boundVals = append(boundVals, *arg.Str)
+		}
+	}
+	if len(boundPos) == 0 {
+		return facts, rules
+	}
+
+	// Only transform when at least one rule derives the query predicate.
+	queryPred := q.Pred.Name
+	hasRules := false
+	for _, r := range rules {
+		if r.headName == queryPred {
+			hasRules = true
+			break
+		}
+	}
+	if !hasRules {
+		return facts, rules
+	}
+
+	magicName := "magic_" + queryPred
+
+	// Seed the magic predicate from query constants.
+	newFacts := make([]logicFact, len(facts)+1)
+	copy(newFacts, facts)
+	newFacts[len(facts)] = logicFact{name: magicName, args: boundVals}
+
+	// Transform rules: add magic guard to rules for queryPred and generate
+	// propagation rules for recursive body calls.
+	newRules := make([]logicRule, 0, len(rules)+4)
+	for _, rule := range rules {
+		if rule.headName != queryPred {
+			newRules = append(newRules, rule)
+			continue
+		}
+
+		// Collect head args at bound positions for the magic guard.
+		guardArgs := make([]string, 0, len(boundPos))
+		for _, pos := range boundPos {
+			if pos < len(rule.headArgs) {
+				guardArgs = append(guardArgs, rule.headArgs[pos])
+			}
+		}
+		guard := logicBody{name: magicName, args: guardArgs}
+
+		// Prepend magic guard to rule body.
+		newBody := make([]logicBody, 0, 1+len(rule.body))
+		newBody = append(newBody, guard)
+		newBody = append(newBody, rule.body...)
+		newRules = append(newRules, logicRule{
+			headName: rule.headName,
+			headArgs: rule.headArgs,
+			body:     newBody,
+		})
+
+		// Generate magic propagation rules for recursive body calls.
+		for bi, bc := range rule.body {
+			if bc.isNeq || bc.name != queryPred {
+				continue
+			}
+			// Determine the magic head args for this recursive body call.
+			propHeadArgs := make([]string, 0, len(boundPos))
+			for _, pos := range boundPos {
+				if pos < len(bc.args) {
+					propHeadArgs = append(propHeadArgs, bc.args[pos])
+				}
+			}
+			// Skip trivial propagations where head args == guard args
+			// (magic value doesn't change through the recursion).
+			trivial := len(propHeadArgs) == len(guardArgs)
+			if trivial {
+				for i, a := range propHeadArgs {
+					if a != guardArgs[i] {
+						trivial = false
+						break
+					}
+				}
+			}
+			if trivial {
+				continue
+			}
+			// Propagation body: magic guard + non-recursive body conds before bi.
+			propBody := make([]logicBody, 0, 1+bi)
+			propBody = append(propBody, guard)
+			for j := 0; j < bi; j++ {
+				if !rule.body[j].isNeq && rule.body[j].name != queryPred {
+					propBody = append(propBody, rule.body[j])
+				}
+			}
+			newRules = append(newRules, logicRule{
+				headName: magicName,
+				headArgs: propHeadArgs,
+				body:     propBody,
+			})
+		}
+	}
+
+	return newFacts, newRules
+}
+
 // lowerLogicQuery generates C code for `query Rel(args...)`.
 // It emits a RawCStmt containing the full fixed-point evaluation loop and
 // result collection, then returns a RawCExpr referencing the result variable.
@@ -5767,6 +5895,9 @@ func cEscapeStr(s string) string {
 //   - All rule body conditions use string variables.
 //   - The query predicate has exactly one free variable.
 //   - The query result is mochi_list_str.
+//
+// Phase 15.1: Magic-set transform is applied automatically when the query has
+// bound (constant) arguments and at least one rule derives the query predicate.
 func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) {
 	if q == nil || q.Pred == nil {
 		return nil, fmt.Errorf("lowerLogicQuery: nil query")
@@ -5779,12 +5910,15 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 	n := l.datalogCounter
 	prefix := fmt.Sprintf("__dl%d", n)
 
+	// Phase 15.1: Apply magic-set transform for goal-directed evaluation.
+	facts, rules := l.applyMagicSet(q, l.logicFacts, l.logicRules)
+
 	// Collect all relation names that appear (facts or rules).
 	relNames := map[string]bool{}
-	for _, f := range l.logicFacts {
+	for _, f := range facts {
 		relNames[f.name] = true
 	}
-	for _, r := range l.logicRules {
+	for _, r := range rules {
 		relNames[r.headName] = true
 		for _, b := range r.body {
 			if !b.isNeq && b.name != "" {
@@ -5796,13 +5930,13 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 
 	// Infer arity of each relation from facts.
 	arities := map[string]int{}
-	for _, f := range l.logicFacts {
+	for _, f := range facts {
 		if _, ok := arities[f.name]; !ok {
 			arities[f.name] = len(f.args)
 		}
 	}
 	// Also infer from rules.
-	for _, r := range l.logicRules {
+	for _, r := range rules {
 		if _, ok := arities[r.headName]; !ok {
 			arities[r.headName] = len(r.headArgs)
 		}
@@ -5821,19 +5955,19 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 
 	// Determine which relations are base (have facts) vs derived (only from rules).
 	baseRels := map[string]bool{}
-	for _, f := range l.logicFacts {
+	for _, f := range facts {
 		baseRels[f.name] = true
 	}
 	// Derived = appears as head of some rule but may also have base facts.
 	derivedRels := map[string]bool{}
-	for _, r := range l.logicRules {
+	for _, r := range rules {
 		derivedRels[r.headName] = true
 	}
 
 	var b strings.Builder
 	ind := "    " // base indentation for inside the block
 
-	fmt.Fprintf(&b, "/* Phase 15.0 Datalog evaluation (query #%d: %s) */\n", n, q.Pred.Name)
+	fmt.Fprintf(&b, "/* Phase 15.1 Datalog evaluation (query #%d: %s) */\n", n, q.Pred.Name)
 	b.WriteString("{\n")
 
 	maxFacts := 4096
@@ -5841,7 +5975,7 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 	// Emit base fact tables (const arrays, NULL-terminated).
 	// Group facts by relation.
 	factsByRel := map[string][]logicFact{}
-	for _, f := range l.logicFacts {
+	for _, f := range facts {
 		factsByRel[f.name] = append(factsByRel[f.name], f)
 	}
 
@@ -5857,13 +5991,13 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 		if !ok {
 			arity = 0
 		}
-		facts := factsByRel[rel]
-		if len(facts) > 0 && !derivedRels[rel] {
+		relFacts := factsByRel[rel]
+		if len(relFacts) > 0 && !derivedRels[rel] {
 			// Pure base relation: emit as const array.
 			fmt.Fprintf(&b, "%s/* base relation %s (arity %d) */\n", ind, rel, arity)
 			varName := fmt.Sprintf("%s_%s", prefix, rel)
 			fmt.Fprintf(&b, "%sconst char *%s[] = {\n", ind, varName)
-			for _, f := range facts {
+			for _, f := range relFacts {
 				b.WriteString(ind + "    ")
 				for _, a := range f.args {
 					fmt.Fprintf(&b, `"%s", `, cEscapeStr(a))
@@ -5882,8 +6016,8 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 			fmt.Fprintf(&b, "%sint %s = %d;\n", ind, capName, maxFacts)
 			fmt.Fprintf(&b, "%sint %s = 0;\n", ind, lenName)
 			// Seed with base facts for this relation (if any).
-			if len(facts) > 0 {
-				for _, f := range facts {
+			if len(relFacts) > 0 {
+				for _, f := range relFacts {
 					for ai, a := range f.args {
 						fmt.Fprintf(&b, "%s%s[%s * %d + %d] = \"%s\";\n",
 							ind, varName, lenName, arity, ai, cEscapeStr(a))
@@ -5900,7 +6034,7 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 	fmt.Fprintf(&b, "%sdo {\n", ind)
 	fmt.Fprintf(&b, "%s    %s = 0;\n", ind, changedVar)
 
-	for ri, rule := range l.logicRules {
+	for ri, rule := range rules {
 		headArity := arities[rule.headName]
 		headVar := fmt.Sprintf("%s_%s", prefix, rule.headName)
 		headLen := fmt.Sprintf("%s_%s_len", prefix, rule.headName)
