@@ -31,7 +31,7 @@ WASM/WASI is the user-facing payoff for sandboxed and serverless deployment: the
 | 12.0 | `wasm32-wasi` triple routes through `zig cc -target wasm32-wasi` (zig ships wasi-libc, no separate wasi-sdk needed); driver skips darwin-only `-Wl,-no_uuid` and sanitiser flags for wasm targets; `TestPhase12WasmWasi` gate (add_ints compile + wasmtime run); CI: wasmtime install + gate step in `cross-linux` job | LANDED 2026-05-26 00:12 (GMT+7) | — | — |
 | 12.1 | Precise allocator + shadow-stack root scanning (currently GC-less; wasi-libc malloc is used directly) | DEFERRED | —      | — |
 | 12.2 | Stream/agent surface narrowed: no threading; M:N scheduler collapses to single-fibre cooperative loop              | NOT STARTED | —      | — |
-| 12.3 | Full fixture corpus subset under wasmtime in CI (all Phase 1-10 fixtures excluding file_io)                        | NOT STARTED | —      | — |
+| 12.3 | Full fixture corpus subset under wasmtime in CI (31 suites, all Phase 1-10 excluding file_io/csv_adapters/ffi); `TestPhase12WasmCorpus` gate; `runFixtureSuiteWasm` helper; CI: 600 s timeout step in cross-linux job | LANDED 2026-05-26 00:18 (GMT+7) | — | — |
 
 ## Decisions made
 
@@ -50,13 +50,23 @@ An `isWasm` boolean derived from `strings.HasPrefix(target, "wasm32")` guards al
 
 **Phase 12.0: file_io excluded from WASM gate.** WASI file I/O requires preopened directories (the `--dir` flag to wasmtime). Phase 12.0 limits the gate to the `primitives/add_ints` fixture; Phase 12.3 will extend to the full corpus with appropriate WASI dir flags.
 
+## Phase 12.3 decisions
+
+**31-suite corpus (same set as ASan/UBSan).** The WASM corpus uses the identical suite list as `TestPhase16ASan`, which excludes `divzero-trip`, `hello`, `file_io`, `csv_adapters`. Phase 12.3 additionally excludes `ffi` (the FFI neighbour `.c` is compiled without a wasm target; the cross-TU boundary breaks the instrumentation). The 31 remaining suites cover Phases 1-10 (primitives, closures, records, collections, strings, queries, sum types, error model, index assign, arena, etc.).
+
+**`runFixtureSuiteWasm` helper.** A new helper in `phase12_3_test.go` wraps `Driver.Build` with `triple="wasm32-wasi"` and runs each binary via `exec.Command(wasmtime, "run", outBin)`. Parallel structure to `runFixtureSuiteASan`.
+
+**600 s CI timeout.** The WASM corpus compiles 31+ suites, each requiring a zig cc invocation (~200-400 ms). The full suite takes ~3-5 minutes; 600 s provides 2x headroom.
+
+**Compile-only vs run-gate duality preserved.** Like `TestPhase12WasmWasi`, the corpus test skips if wasmtime is not on PATH rather than failing. CI always has wasmtime installed; the dev-host path is compile-only.
+
 ## Deferred work
 
 - Phase 12.1: precise GC (currently GC-less; malloc/free leaks on exit; deferred until GC design is locked in).
 - Phase 12.2: streams/agents narrowed surface (deferred; Phase 9 not yet landed).
-- Phase 12.3: full corpus gate (file_io needs `--dir` preopens; csv_adapters similar; query fixtures rely on the arena allocator which should be WASM-clean).
+- `file_io` + `csv_adapters` WASM gate: requires `wasmtime run --dir=. <bin>` to preopen the filesystem; straightforward addition once Phase 12.3 baseline is stable.
 - WasmGC: still drafting on common runtimes in 2026; revisit when WasmGC stabilises in wasmtime + wasmer.
 
 ## Closeout notes
 
-Sub-phase 12.0 LANDED. Sub-phases 12.1-12.3 are deferred.
+Sub-phases 12.0 and 12.3 are LANDED. Sub-phases 12.1 (GC) and 12.2 (streams) are deferred. Phase 12 is substantially operational: the full computation corpus runs on wasm32-wasi.
