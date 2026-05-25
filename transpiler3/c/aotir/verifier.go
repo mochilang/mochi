@@ -1241,6 +1241,11 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		return verifyIndexExpr(ctx, v)
 	case *LenExpr:
 		return verifyLenExpr(ctx, v)
+	case *StrLenExpr:
+		if v.Receiver.Type() != TypeString {
+			return fmt.Errorf("StrLenExpr: receiver must be TypeString, got %s", v.Receiver.Type())
+		}
+		return verifyExprCtx(ctx, v.Receiver)
 	case *AppendExpr:
 		return verifyAppendExpr(ctx, v)
 	case *MapLit:
@@ -1503,6 +1508,8 @@ func binOpSignature(op BinOp) (Type, Type, Type, bool) {
 		return TypeBool, TypeBool, TypeBool, true
 	case BinEqStr, BinNeStr:
 		return TypeString, TypeString, TypeBool, true
+	case BinStrCat:
+		return TypeString, TypeString, TypeString, true
 	case BinEqRec, BinNeRec:
 		return TypeRecord, TypeRecord, TypeBool, true
 	case BinEqList, BinNeList:

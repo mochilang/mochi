@@ -327,6 +327,9 @@ const (
 	// already determine the answer.
 	BinAndBool
 	BinOrBool
+	// String concatenation. Each operand is TypeString; the result
+	// is TypeString. The emit pass calls mochi_str_cat(a, b).
+	BinStrCat
 )
 
 // BinaryExpr applies a typed binary operator to two operands.
@@ -587,6 +590,15 @@ type LenExpr struct {
 }
 
 func (*LenExpr) Type() Type { return TypeInt }
+
+// StrLenExpr is the `len(s)` builtin call when s is a string.
+// The verifier checks Receiver.Type()==TypeString; the emitter
+// renders this as (int64_t)strlen(s). Phase 6.0.
+type StrLenExpr struct {
+	Receiver Expr
+}
+
+func (*StrLenExpr) Type() Type { return TypeInt }
 
 // AppendExpr is the `append(xs, v)` builtin call. The verifier
 // checks Receiver.Type()==TypeList, Value.Type()==ElemType, and

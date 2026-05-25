@@ -1,0 +1,4 @@
+let first = "foo"
+let second = "bar"
+let result = first + second
+print(result)

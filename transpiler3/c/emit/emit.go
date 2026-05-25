@@ -42,6 +42,7 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include \"mochi/errors.h\"\n")
 	b.WriteString("#include \"mochi/list.h\"\n")
 	b.WriteString("#include \"mochi/map.h\"\n")
+	b.WriteString("#include \"mochi/strings.h\"\n")
 	listRecNames := collectListRecordElems(prog)
 	listListInners := collectListListInners(prog)
 	listMapPairs := collectListOfMapPairs(prog)
@@ -1897,6 +1898,12 @@ func emitExpr(e aotir.Expr) (string, error) {
 		return emitIndexExpr(v)
 	case *aotir.LenExpr:
 		return emitLenExpr(v)
+	case *aotir.StrLenExpr:
+		recv, err := emitExpr(v.Receiver)
+		if err != nil {
+			return "", fmt.Errorf("StrLenExpr receiver: %w", err)
+		}
+		return "(int64_t)strlen(" + recv + ")", nil
 	case *aotir.AppendExpr:
 		return emitAppendExpr(v)
 	case *aotir.MapLit:
@@ -2595,6 +2602,8 @@ func emitBinary(v *aotir.BinaryExpr) (string, error) {
 		return "(strcmp(" + left + ", " + right + ") == 0)", nil
 	case aotir.BinNeStr:
 		return "(strcmp(" + left + ", " + right + ") != 0)", nil
+	case aotir.BinStrCat:
+		return "mochi_str_cat(" + left + ", " + right + ")", nil
 	case aotir.BinEqRec:
 		recName, err := binaryRecordName(v)
 		if err != nil {
