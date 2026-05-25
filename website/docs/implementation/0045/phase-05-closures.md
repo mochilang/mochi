@@ -29,7 +29,7 @@ Higher-order combinators are how Mochi expresses data transformation; the query 
 | #   | Scope | Status | Commit | PR |
 |-----|-------|--------|--------|----|
 | 5.0 | Non-capturing closure support: `FunLit` IR node (lifted to top-level aotir.Function); `FunCallExpr` for calling fun-typed variables; `FunSig` type + `FunTypeName()` C typedef names; `TypeFun` type enum entry; `collectFunSigs` + `emitFunTypedefs` emit passes; verifier updated to carry `FunSig` on TypeFun bindings; lower pass: `lowerFunExpr` lifts anonymous functions, `lowerFunVarCall` for indirect calls; `TestPhase5Closures` gate (8 fixtures). Scalar primitive param/return types only (int, float, bool, string). Unit return supported. | LANDED 2026-05-25 16:30 (GMT+7) | — | — |
-| 5.1 | Capturing closures (free-variable capture by value): env struct heap-allocated, fat pointer `(code*, env*)` representation | NOT STARTED | — | — |
+| 5.1 | Capturing closures (free-variable capture by value): env struct heap-allocated, fat pointer `{fn, env}` struct representation. All closures (capturing and non-capturing) use `mochi_closure_*` struct typedef; non-capturing ones set `env=NULL`. Free-variable scanner (`scanFreeVarNames`) pre-scans parser AST; `ClosureEnvStmt` IR node for env alloc; `emitName` field on `lbinding` rewrites captured VarRef to `__e->fieldname`; lifted functions add `void *__mochi_env` first param. `TestPhase5CapturingClosures` gate (8 fixtures). | LANDED 2026-05-25 18:55 (GMT+7) | — | — |
 | 5.2 | Free function as closure shim: `env == NULL` path for top-level functions passed as fun-typed args | NOT STARTED | — | — |
 | 5.3 | Method as closure shim: `env == self` path for method references | NOT STARTED | — | — |
 
@@ -50,6 +50,33 @@ The collector (`collectFunSigs`) walks all program nodes to find unique signatur
 **Fun-typed let bindings.** `LetStmt.FunSig` carries the signature when `VarType==TypeFun`. The emitter handles TypeFun specially: it emits `mochi_fnptr_<sig> <name> = <funlit-name>;` rather than going through the generic `cTypeFull` path (which does not handle TypeFun).
 
 **Fun-typed parameters.** Functions can accept `fun(T): R` parameters. The lower pass stores the `FunSig` on `Param.FunSig` and the verifier propagates it into the scope binding for the parameter name. Call-site arguments are type-checked to be `TypeFun` expressions.
+
+## Phase 5.1 decisions
+
+**Fat-pointer struct for all closures.** Phase 5.1 changes the C representation of all closure values from a bare function pointer (`mochi_fnptr_*`) to a struct (`mochi_closure_*`):
+```c
+typedef struct { int64_t (*fn)(void *, int64_t); void *env; } mochi_closure_i64_to_i64;
+```
+This uniform representation means the calling convention is identical for capturing and non-capturing closures. Non-capturing closures pass `env=NULL`; capturing closures pass a pointer to a malloc'ed struct.
+
+**Env struct typedef naming.** Each capturing lifted function `__anon_N` gets a `typedef struct { ... } __anon_N_env_t;` emitted immediately before the function definition. The struct fields are the captured variables in sorted order (deterministic across runs). The variable holding the env pointer is named `__anon_N_env` in the caller.
+
+**Free-variable scanner.** `scanFreeVarNames(fe *parser.FunExpr, paramNames map[string]bool) []string` walks the closure body (both ExprBody and BlockBody forms) and collects all `SelectorExpr.Root` identifiers not in the parameter set and not declared locally (by a let/var/for statement in the body). The result is sorted for determinism. The scanner does NOT recurse into nested `FunExpr` nodes (nested closures form their own capture chain).
+
+**ClosureEnvStmt IR node.** When a capturing FunLit is lowered, `lowerBinding` emits a `ClosureEnvStmt` immediately before the `LetStmt` that binds the closure. The emitter renders it as:
+```c
+__anon_2_env_t *__anon_2_env = (__anon_2_env_t *)malloc(sizeof(__anon_2_env_t));
+__anon_2_env->x = x;
+__anon_2_env->base = base;
+```
+
+**`emitName` on `lbinding`.** Captured variables in the inner closure scope are seeded with `emitName: "__e->fieldname"`. When `lowerPrimary` constructs a `VarRef` for such a binding, it uses `emitName` as the `VarRef.Name`. The C emitter then generates `__e->x` directly without needing a special IR node.
+
+**`void *__mochi_env` first parameter.** All lifted functions (IsLifted=true) receive `void *__mochi_env` as their first C parameter. Non-capturing lifted functions ignore it. Capturing lifted functions cast it to their env type: `__anon_2_env_t *__e = (__anon_2_env_t *)__mochi_env;`.
+
+**Verifier scope seeding.** When verifying a capturing lifted function, the verifier scope is pre-seeded with `"__e->fieldname" -> type` bindings so VarRef nodes with env-relative names pass the unresolved-variable check.
+
+**`ResultFunSig` on `CallExpr`.** Phase 5.1 needed to propagate the function signature through user function calls that return `TypeFun`. Added `ResultFunSig *FunSig` to `CallExpr`, `returnFunSig *aotir.FunSig` to `funcSig`, and `ReturnFunSig *FunSig` to `aotir.Function`. This enables `let f = make_adder(5); f(3)` where `make_adder` returns a closure.
 
 ## Bug fixes in this phase
 

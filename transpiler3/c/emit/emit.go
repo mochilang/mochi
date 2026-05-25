@@ -67,11 +67,11 @@ func Emit(prog *aotir.Program) (string, error) {
 			}
 		}
 	}
-	if len(listRecNames) > 0 || len(listListInners) > 0 || len(listMapPairs) > 0 || len(mapOfListPairs) > 0 {
+	hasCapturingClosures := programHasCapturingClosures(prog)
+	if len(listRecNames) > 0 || len(listListInners) > 0 || len(listMapPairs) > 0 || len(mapOfListPairs) > 0 || hasCapturingClosures {
 		// malloc lives in <stdlib.h>; only pull it in when we actually
-		// emit list<R>, list<list<T>>, list<map<K,V>>, or map<K,list<V>>
-		// helpers so user-defined functions whose names would collide with
-		// stdlib (e.g. `abs`) keep working.
+		// emit list<R>, list<list<T>>, list<map<K,V>>, map<K,list<V>>,
+		// or capturing closure env allocs.
 		b.WriteString("#include <stdlib.h>\n")
 	}
 	b.WriteString("\n")
@@ -192,7 +192,33 @@ func emitFunctionPrototype(fn *aotir.Function) (string, error) {
 	}
 	var b strings.Builder
 	fmt.Fprintf(&b, "static %s %s(", ret, fn.Name)
-	if len(fn.Params) == 0 {
+	// Phase 5.1: lifted functions always receive void *__mochi_env as first param
+	// so their address matches the `fn` field of the mochi_closure_* struct.
+	if fn.IsLifted {
+		b.WriteString("void *__mochi_env")
+		for i, p := range fn.Params {
+			_ = i
+			b.WriteString(", ")
+			var pt string
+			if p.Type == aotir.TypeFun {
+				if p.FunSig == nil {
+					return "", fmt.Errorf("function %q param %q: TypeFun with nil FunSig", fn.Name, p.Name)
+				}
+				pt = p.FunSig.FunTypeName()
+			} else {
+				recOrUnion := p.RecordName
+				if p.Type == aotir.TypeUnion {
+					recOrUnion = p.UnionName
+				}
+				var err error
+				pt, err = cTypeFull(p.Type, recOrUnion, p.ElemType, p.ElemRecordName, p.InnerElemType, p.MapElemKeyType, p.MapElemValueType, p.KeyType, p.ValueType, p.ListValueElemType)
+				if err != nil {
+					return "", fmt.Errorf("function %q param %q: %w", fn.Name, p.Name, err)
+				}
+			}
+			fmt.Fprintf(&b, "%s %s", pt, p.Name)
+		}
+	} else if len(fn.Params) == 0 {
 		b.WriteString("void")
 	} else {
 		for i, p := range fn.Params {
@@ -244,12 +270,24 @@ func emitFunction(b *strings.Builder, fn *aotir.Function, entry bool) error {
 	if entry {
 		b.WriteString("int main(void) {\n")
 	} else {
+		// Phase 5.1: emit the env struct typedef before the function body
+		// when this is a capturing lifted function. The typedef is local to
+		// the TU but must appear before the function definition.
+		if fn.IsLifted && fn.EnvTypeName != "" {
+			if err := emitClosureEnvTypedef(b, fn); err != nil {
+				return err
+			}
+		}
 		proto, err := emitFunctionPrototype(fn)
 		if err != nil {
 			return err
 		}
 		b.WriteString(proto)
 		b.WriteString(" {\n")
+		// For capturing lifted functions, cast the opaque env pointer.
+		if fn.IsLifted && fn.EnvTypeName != "" {
+			fmt.Fprintf(b, "    %s *__e = (%s *)__mochi_env;\n", fn.EnvTypeName, fn.EnvTypeName)
+		}
 	}
 	for _, st := range fn.Body.Statements {
 		if err := emitStmt(b, st, "    "); err != nil {
@@ -260,6 +298,24 @@ func emitFunction(b *strings.Builder, fn *aotir.Function, entry bool) error {
 		b.WriteString("    return 0;\n")
 	}
 	b.WriteString("}\n")
+	return nil
+}
+
+// emitClosureEnvTypedef emits the C struct typedef for a capturing lifted
+// function's environment. The struct fields mirror the captured variables.
+// Example output:
+//
+//	typedef struct { int64_t x; double y; } __anon_2_env_t;
+func emitClosureEnvTypedef(b *strings.Builder, fn *aotir.Function) error {
+	b.WriteString("typedef struct {")
+	for _, c := range fn.Captures {
+		ct, err := funSigCParamType(c.VarType)
+		if err != nil {
+			return fmt.Errorf("closure env typedef field %q: %w", c.FieldName, err)
+		}
+		fmt.Fprintf(b, " %s %s;", ct, c.FieldName)
+	}
+	fmt.Fprintf(b, " } %s;\n", fn.EnvTypeName)
 	return nil
 }
 
@@ -474,6 +530,16 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 			return err
 		}
 		fmt.Fprintf(b, "%sreturn %s;\n", indent, val)
+		return nil
+	case *aotir.ClosureEnvStmt:
+		// Phase 5.1: allocate and fill the closure environment struct.
+		// typedef struct { ... } __anon_N_env_t;  is emitted before the
+		// lifted function; here we only malloc and fill the fields.
+		fmt.Fprintf(b, "%s%s *%s = (%s *)malloc(sizeof(%s));\n",
+			indent, s.EnvTypeName, s.EnvVarName, s.EnvTypeName, s.EnvTypeName)
+		for _, c := range s.Captures {
+			fmt.Fprintf(b, "%s%s->%s = %s;\n", indent, s.EnvVarName, c.FieldName, c.SrcName)
+		}
 		return nil
 	}
 	return fmt.Errorf("transpiler3/c/emit: unhandled Stmt %T", st)
@@ -1784,6 +1850,17 @@ func emitListRecordHelpers(b *strings.Builder, names []string) error {
 
 // collectListRecordElems walks the program collecting every distinct
 // record name used as a list<R> element type. The walk covers
+// programHasCapturingClosures returns true if any lifted function in the
+// program has captured variables (i.e. allocates a heap env struct).
+func programHasCapturingClosures(prog *aotir.Program) bool {
+	for _, fn := range prog.Functions {
+		if fn.IsLifted && len(fn.Captures) > 0 {
+			return true
+		}
+	}
+	return false
+}
+
 // function signatures (params + return) and every statement/expression
 // node so that no list<R> usage escapes the helper-emission pass.
 func collectListRecordElems(prog *aotir.Program) []string {
@@ -2052,10 +2129,15 @@ func emitExpr(e aotir.Expr) (string, error) {
 	case *aotir.VariantFieldAccess:
 		return emitVariantFieldAccess(v)
 	case *aotir.FunLit:
-		// A non-capturing closure literal is already lifted to a top-level
-		// function; the literal's value is the function's name (a function
-		// pointer in C).
-		return v.FuncName, nil
+		// Phase 5.1: all closures are represented as fat-pointer structs.
+		// Non-capturing closures use NULL for env; capturing closures thread
+		// the pre-allocated env pointer.
+		envArg := "NULL"
+		if v.EnvVarName != "" {
+			envArg = "(void *)" + v.EnvVarName
+		}
+		typeName := v.Sig.FunTypeName()
+		return fmt.Sprintf("(%s){.fn=%s, .env=%s}", typeName, v.FuncName, envArg), nil
 	case *aotir.FunCallExpr:
 		return emitFunCallExpr(v)
 	default:
@@ -2996,26 +3078,69 @@ func emitUnary(v *aotir.UnaryExpr) (string, error) {
 
 // ---- Phase 5.0: non-capturing closures ----
 
-// emitFunCallExpr renders a FunCallExpr as `callee(arg0, arg1, ...)`.
+// emitFunCallExpr renders a FunCallExpr via the fat-pointer ABI.
+// Phase 5.1: all closures are mochi_closure_* structs; the call is
+// `callee.fn(callee.env, arg0, arg1, ...)`. For VarRef callees the struct
+// name is used directly; for FunLit callees the lifted function and env
+// pointer are extracted to avoid evaluating the compound literal twice.
 func emitFunCallExpr(v *aotir.FunCallExpr) (string, error) {
-	callee, err := emitExpr(v.Callee)
-	if err != nil {
-		return "", fmt.Errorf("FunCallExpr callee: %w", err)
-	}
 	var b strings.Builder
-	b.WriteString(callee)
-	b.WriteString("(")
-	for i, arg := range v.Args {
-		if i > 0 {
+	switch callee := v.Callee.(type) {
+	case *aotir.FunLit:
+		// Direct call: invoke the lifted function with env directly.
+		envArg := "NULL"
+		if callee.EnvVarName != "" {
+			envArg = "(void *)" + callee.EnvVarName
+		}
+		b.WriteString(callee.FuncName)
+		b.WriteString("(")
+		b.WriteString(envArg)
+		for _, arg := range v.Args {
 			b.WriteString(", ")
+			as, err := emitExpr(arg)
+			if err != nil {
+				return "", fmt.Errorf("FunCallExpr arg: %w", err)
+			}
+			b.WriteString(as)
 		}
-		as, err := emitExpr(arg)
+		b.WriteString(")")
+	case *aotir.VarRef:
+		// Indirect call through a closure struct stored in a variable.
+		b.WriteString(callee.Name)
+		b.WriteString(".fn(")
+		b.WriteString(callee.Name)
+		b.WriteString(".env")
+		for _, arg := range v.Args {
+			b.WriteString(", ")
+			as, err := emitExpr(arg)
+			if err != nil {
+				return "", fmt.Errorf("FunCallExpr arg: %w", err)
+			}
+			b.WriteString(as)
+		}
+		b.WriteString(")")
+	default:
+		// Generic path: emit the callee expression and access .fn / .env.
+		// The callee expression is evaluated twice; this is only reached
+		// for callee shapes not yet encountered in practice (Phase 5.1).
+		calleeStr, err := emitExpr(v.Callee)
 		if err != nil {
-			return "", fmt.Errorf("FunCallExpr arg %d: %w", i, err)
+			return "", fmt.Errorf("FunCallExpr callee: %w", err)
 		}
-		b.WriteString(as)
+		b.WriteString(calleeStr)
+		b.WriteString(".fn(")
+		b.WriteString(calleeStr)
+		b.WriteString(".env")
+		for _, arg := range v.Args {
+			b.WriteString(", ")
+			as, err := emitExpr(arg)
+			if err != nil {
+				return "", fmt.Errorf("FunCallExpr arg: %w", err)
+			}
+			b.WriteString(as)
+		}
+		b.WriteString(")")
 	}
-	b.WriteString(")")
 	return b.String(), nil
 }
 
@@ -3145,8 +3270,15 @@ func collectFunSigsExpr(e aotir.Expr, seen map[string]*aotir.FunSig) {
 	}
 }
 
-// emitFunTypedefs emits a C function-pointer typedef for each unique FunSig.
-// Format: typedef <ret> (*<name>)(<params>);
+// emitFunTypedefs emits a C closure struct typedef for each unique FunSig.
+// Phase 5.1 changed from bare function-pointer typedefs to fat-pointer structs:
+//
+//	typedef struct {
+//	    <ret> (*fn)(void *, <params>);
+//	    void *env;
+//	} mochi_closure_<...>;
+//
+// All closure values carry an env pointer (NULL for non-capturing closures).
 func emitFunTypedefs(b *strings.Builder, sigs []*aotir.FunSig) error {
 	if len(sigs) == 0 {
 		return nil
@@ -3156,21 +3288,24 @@ func emitFunTypedefs(b *strings.Builder, sigs []*aotir.FunSig) error {
 		if err != nil {
 			return fmt.Errorf("emitFunTypedefs: %w", err)
 		}
-		var params string
+		// The fn field always takes void *__mochi_env as its first argument.
+		var fnParams string
 		if len(sig.ParamTypes) == 0 {
-			params = "void"
+			fnParams = "void *"
 		} else {
-			parts := make([]string, len(sig.ParamTypes))
+			parts := make([]string, 0, len(sig.ParamTypes)+1)
+			parts = append(parts, "void *")
 			for i, pt := range sig.ParamTypes {
 				cp, err := funSigCParamType(pt)
 				if err != nil {
 					return fmt.Errorf("emitFunTypedefs param %d: %w", i, err)
 				}
-				parts[i] = cp
+				parts = append(parts, cp)
 			}
-			params = strings.Join(parts, ", ")
+			fnParams = strings.Join(parts, ", ")
 		}
-		fmt.Fprintf(b, "typedef %s (*%s)(%s);\n", cRet, sig.FunTypeName(), params)
+		name := sig.FunTypeName()
+		fmt.Fprintf(b, "typedef struct { %s (*fn)(%s); void *env; } %s;\n", cRet, fnParams, name)
 	}
 	b.WriteString("\n")
 	return nil

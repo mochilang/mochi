@@ -1,0 +1,7 @@
+let start = 0
+let step = 2
+let gen = fun(n: int): int => start + n * step
+print(gen(0))
+print(gen(1))
+print(gen(2))
+print(gen(3))

@@ -1,0 +1,6 @@
+let base = 100
+let offset = 42
+let compute = fun(x: int): int => base + offset + x
+print(compute(1))
+print(compute(2))
+print(compute(3))

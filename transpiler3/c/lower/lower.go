@@ -3,6 +3,7 @@ package lower
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strings"
 
 	"mochi/parser"
@@ -194,6 +195,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 			ReturnKeyType:           sig.returnKeyType,
 			ReturnValueType:         sig.returnValueType,
 			ReturnListValueElemType: sig.returnListValElem,
+			ReturnFunSig:            sig.returnFunSig,
 			Body:                    body,
 		})
 	}
@@ -366,7 +368,8 @@ type funcSig struct {
 	returnMapElemValue   aotir.Type // map value type when returnElemType==TypeMap (Phase 3.4f)
 	returnKeyType        aotir.Type
 	returnValueType      aotir.Type
-	returnListValElem    aotir.Type // inner list elem when returnValueType==TypeList (Phase 3.4e)
+	returnListValElem    aotir.Type    // inner list elem when returnValueType==TypeList (Phase 3.4e)
+	returnFunSig         *aotir.FunSig // function signature when returnType==TypeFun (Phase 5.0/5.1)
 }
 
 // buildFuncSig turns a parser.FunStmt into its lower-time signature.
@@ -436,6 +439,7 @@ func buildFuncSig(records map[string]*aotir.RecordDecl, unions map[string]*aotir
 		returnKeyType:       retTR.key,
 		returnValueType:     retTR.value,
 		returnListValElem:   retTR.listValElem,
+		returnFunSig:        retTR.funSig,
 	}, nil
 }
 
@@ -489,6 +493,10 @@ type lbinding struct {
 	value        aotir.Type    // value type when t==TypeMap
 	listValElem  aotir.Type    // inner list elem when t==TypeMap && value==TypeList (Phase 3.4e)
 	funSig       *aotir.FunSig // function signature when t==TypeFun (Phase 5.0)
+	// emitName overrides the C identifier emitted for this variable when
+	// non-empty. Used by Phase 5.1 capturing closures to make captured
+	// variables emit as `__e->fieldname` instead of the original name.
+	emitName string
 }
 
 func newLScope(parent *lscope) *lscope {
@@ -1039,6 +1047,15 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	value, err := l.lowerExpr(init)
 	if err != nil {
 		return fmt.Errorf("binding %q init: %w", name, err)
+	}
+	// Phase 5.1: if the init is a capturing FunLit, emit the env allocation
+	// statement immediately before the LetStmt that binds the closure value.
+	if fl, ok := value.(*aotir.FunLit); ok && len(fl.Captures) > 0 {
+		out.Statements = append(out.Statements, &aotir.ClosureEnvStmt{
+			EnvTypeName: fl.EnvTypeName,
+			EnvVarName:  fl.EnvVarName,
+			Captures:    fl.Captures,
+		})
 	}
 	declType := value.Type()
 	declRec := exprRecordName(value)
@@ -1749,6 +1766,7 @@ func mapValueFromRef(records map[string]*aotir.RecordDecl, unions map[string]*ao
 
 // exprFunSig extracts the FunSig from a fun-typed aotir expression.
 // Phase 5.0 covers FunLit and VarRef{TypeFun}.
+// Phase 5.1 adds CallExpr{Result=TypeFun} for functions that return closures.
 func exprFunSig(e aotir.Expr) *aotir.FunSig {
 	switch v := e.(type) {
 	case *aotir.FunLit:
@@ -1756,6 +1774,10 @@ func exprFunSig(e aotir.Expr) *aotir.FunSig {
 	case *aotir.VarRef:
 		if v.VarType == aotir.TypeFun {
 			return v.FunSig
+		}
+	case *aotir.CallExpr:
+		if v.Result == aotir.TypeFun {
+			return v.ResultFunSig
 		}
 	}
 	return nil
@@ -2223,11 +2245,187 @@ func (l *lowerer) lowerFieldOp(receiver aotir.Expr, fieldName string) (aotir.Exp
 	return nil, fmt.Errorf("field access .%s: record %q has no field %q", fieldName, recName, fieldName)
 }
 
+// scanFreeVarNames walks the parser FunExpr body and returns, in sorted
+// order, the names of all identifiers that are referenced in the body
+// but not defined inside it (parameters or let/var declarations). These
+// are the candidates for capture from the enclosing scope.
+//
+// The scanner does NOT recurse into nested FunExpr nodes: a nested
+// closure creates its own capture chain at lowering time.
+func scanFreeVarNames(fe *parser.FunExpr, paramNames map[string]bool) []string {
+	refs := map[string]bool{}
+	locals := map[string]bool{}
+	for n := range paramNames {
+		locals[n] = true
+	}
+	if fe.ExprBody != nil {
+		freeVarCollectExpr(fe.ExprBody, refs)
+	}
+	for _, st := range fe.BlockBody {
+		freeVarCollectStmt(st, refs, locals)
+	}
+	var free []string
+	for n := range refs {
+		if !locals[n] {
+			free = append(free, n)
+		}
+	}
+	sort.Strings(free)
+	return free
+}
+
+func freeVarCollectExpr(e *parser.Expr, refs map[string]bool) {
+	if e == nil || e.Binary == nil {
+		return
+	}
+	freeVarCollectUnary(e.Binary.Left, refs)
+	for _, op := range e.Binary.Right {
+		freeVarCollectUnary(op.Right, refs)
+	}
+}
+
+func freeVarCollectUnary(u *parser.Unary, refs map[string]bool) {
+	if u == nil || u.Value == nil {
+		return
+	}
+	freeVarCollectPostfix(u.Value, refs)
+}
+
+func freeVarCollectPostfix(pf *parser.PostfixExpr, refs map[string]bool) {
+	if pf == nil {
+		return
+	}
+	freeVarCollectPrimary(pf.Target, refs)
+	for _, op := range pf.Ops {
+		if op.Call != nil {
+			for _, arg := range op.Call.Args {
+				freeVarCollectExpr(arg, refs)
+			}
+		}
+		if op.Index != nil && op.Index.Start != nil {
+			freeVarCollectExpr(op.Index.Start, refs)
+		}
+	}
+}
+
+func freeVarCollectPrimary(pr *parser.Primary, refs map[string]bool) {
+	if pr == nil {
+		return
+	}
+	if pr.Selector != nil {
+		refs[pr.Selector.Root] = true
+		// Don't recurse into Tail -- .field accesses aren't variable refs.
+	}
+	if pr.Group != nil {
+		freeVarCollectExpr(pr.Group, refs)
+	}
+	if pr.Call != nil {
+		for _, arg := range pr.Call.Args {
+			freeVarCollectExpr(arg, refs)
+		}
+	}
+	if pr.List != nil {
+		for _, el := range pr.List.Elems {
+			freeVarCollectExpr(el, refs)
+		}
+	}
+	// Do NOT recurse into pr.FunExpr: nested closures form their own capture chain.
+	if pr.If != nil {
+		freeVarCollectIfExpr(pr.If, refs)
+	}
+}
+
+func freeVarCollectIfExpr(ie *parser.IfExpr, refs map[string]bool) {
+	if ie == nil {
+		return
+	}
+	freeVarCollectExpr(ie.Cond, refs)
+	freeVarCollectExpr(ie.Then, refs)
+	freeVarCollectExpr(ie.Else, refs)
+}
+
+func freeVarCollectStmt(st *parser.Statement, refs map[string]bool, locals map[string]bool) {
+	if st == nil {
+		return
+	}
+	if st.Let != nil {
+		if st.Let.Value != nil {
+			freeVarCollectExpr(st.Let.Value, refs)
+		}
+		locals[st.Let.Name] = true
+	}
+	if st.Var != nil {
+		if st.Var.Value != nil {
+			freeVarCollectExpr(st.Var.Value, refs)
+		}
+		locals[st.Var.Name] = true
+	}
+	if st.Assign != nil {
+		refs[st.Assign.Name] = true
+		for _, ix := range st.Assign.Index {
+			if ix.Start != nil {
+				freeVarCollectExpr(ix.Start, refs)
+			}
+		}
+		freeVarCollectExpr(st.Assign.Value, refs)
+	}
+	if st.Return != nil {
+		freeVarCollectExpr(st.Return.Value, refs)
+	}
+	if st.Expr != nil {
+		freeVarCollectExpr(st.Expr.Expr, refs)
+	}
+	if st.If != nil {
+		freeVarCollectExpr(st.If.Cond, refs)
+		for _, s := range st.If.Then {
+			freeVarCollectStmt(s, refs, locals)
+		}
+		for _, s := range st.If.Else {
+			freeVarCollectStmt(s, refs, locals)
+		}
+		if st.If.ElseIf != nil {
+			freeVarCollectStmtIfChain(st.If.ElseIf, refs, locals)
+		}
+	}
+	if st.While != nil {
+		freeVarCollectExpr(st.While.Cond, refs)
+		for _, s := range st.While.Body {
+			freeVarCollectStmt(s, refs, locals)
+		}
+	}
+	if st.For != nil {
+		locals[st.For.Name] = true
+		freeVarCollectExpr(st.For.Source, refs)
+		if st.For.RangeEnd != nil {
+			freeVarCollectExpr(st.For.RangeEnd, refs)
+		}
+		for _, s := range st.For.Body {
+			freeVarCollectStmt(s, refs, locals)
+		}
+	}
+}
+
+func freeVarCollectStmtIfChain(ie *parser.IfStmt, refs map[string]bool, locals map[string]bool) {
+	if ie == nil {
+		return
+	}
+	freeVarCollectExpr(ie.Cond, refs)
+	for _, s := range ie.Then {
+		freeVarCollectStmt(s, refs, locals)
+	}
+	for _, s := range ie.Else {
+		freeVarCollectStmt(s, refs, locals)
+	}
+	if ie.ElseIf != nil {
+		freeVarCollectStmtIfChain(ie.ElseIf, refs, locals)
+	}
+}
+
 // lowerFunExpr lifts a FunExpr (anonymous function literal) into a
 // top-level aotir.Function and returns a FunLit pointing to it.
-// Phase 5.0 restricts to non-capturing closures: the fun body must
-// not reference any variables from the enclosing scope (only its own
-// parameters). Capturing closures are rejected with a clear diagnostic.
+// Phase 5.0 supports non-capturing closures; Phase 5.1 extends to
+// capturing closures by detecting free variables and emitting an env
+// struct that the lifted function receives as void *__mochi_env.
 func (l *lowerer) lowerFunExpr(fe *parser.FunExpr) (aotir.Expr, error) {
 	if fe == nil {
 		return nil, fmt.Errorf("nil FunExpr")
@@ -2290,18 +2488,62 @@ func (l *lowerer) lowerFunExpr(fe *parser.FunExpr) (aotir.Expr, error) {
 		return nil, fmt.Errorf("fun expression encountered outside a properly initialized lowerer (anonCounter is nil)")
 	}
 	*l.anonCounter++
-	name := fmt.Sprintf("__anon_%d", *l.anonCounter)
+	n := *l.anonCounter
+	name := fmt.Sprintf("__anon_%d", n)
 
-	// Build a fresh inner lowerer for the fun body. The scope is empty
-	// (only the fun's own params are in scope) so any reference to an
-	// outer-scope variable will produce "undeclared variable" during
-	// lowerExpr, which is our Phase 5.0 rejection for capturing closures.
+	// Phase 5.1: detect free variables (variables referenced in the body
+	// but not in the closure's own parameter list). Each free var that
+	// resolves in the enclosing scope becomes a captured variable.
+	paramNameSet := make(map[string]bool, len(params))
+	for _, p := range params {
+		paramNameSet[p.name] = true
+	}
+	freeNames := scanFreeVarNames(fe, paramNameSet)
+
+	// Resolve each free name against the enclosing scope. Names that are
+	// not in the enclosing scope are ignored (they may be builtins, type
+	// names, etc.); names that resolve are captures.
+	var captures []aotir.FunCapture
+	captureBindings := map[string]lbinding{} // emitName-keyed for the inner scope
+	for _, freeName := range freeNames {
+		b, ok := l.scope.lookup(freeName)
+		if !ok {
+			// Not a free variable from the enclosing scope (builtin, etc.).
+			continue
+		}
+		// Only scalar primitive captures in Phase 5.1.
+		switch b.t {
+		case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+			// ok
+		default:
+			return nil, fmt.Errorf("capturing closure: captured variable %q has type %s; only scalar primitives (int, float, bool, string) are supported in Phase 5.1", freeName, b.t)
+		}
+		captures = append(captures, aotir.FunCapture{
+			FieldName: freeName,
+			VarType:   b.t,
+			SrcName:   freeName,
+		})
+		// In the inner scope, the captured var emits as __e->fieldname.
+		captureBindings[freeName] = lbinding{
+			t:        b.t,
+			emitName: "__e->" + freeName,
+		}
+	}
+
+	// Derive env type name (only relevant for capturing closures).
+	var envTypeName, envVarName string
+	if len(captures) > 0 {
+		envTypeName = fmt.Sprintf("__anon_%d_env_t", n)
+		envVarName = fmt.Sprintf("__anon_%d_env", n)
+	}
+
+	// Build a fresh inner lowerer for the fun body.
 	inner := &lowerer{
 		funcs:           l.funcs,
 		records:         l.records,
 		unions:          l.unions,
 		variantToUnion:  l.variantToUnion,
-		scope:           newLScope(nil), // fresh scope, no parent chain
+		scope:           newLScope(nil), // fresh scope, no outer chain
 		currentFnReturn: sig.ReturnType,
 		anonCounter:     l.anonCounter,
 		liftedFuncs:     l.liftedFuncs,
@@ -2309,6 +2551,10 @@ func (l *lowerer) lowerFunExpr(fe *parser.FunExpr) (aotir.Expr, error) {
 	// Seed the fun's own parameters.
 	for _, p := range params {
 		inner.scope.vars[p.name] = lbinding{t: p.t, mutable: false}
+	}
+	// Seed captured variables with env-relative emit names.
+	for name, b := range captureBindings {
+		inner.scope.vars[name] = b
 	}
 
 	// Build aotir.Params.
@@ -2343,14 +2589,24 @@ func (l *lowerer) lowerFunExpr(fe *parser.FunExpr) (aotir.Expr, error) {
 
 	// Build the lifted function.
 	lifted := &aotir.Function{
-		Name:       name,
-		Params:     irParams,
-		ReturnType: sig.ReturnType,
-		Body:       body,
+		Name:        name,
+		Params:      irParams,
+		ReturnType:  sig.ReturnType,
+		Body:        body,
+		IsLifted:    true,
+		EnvTypeName: envTypeName,
+		Captures:    captures,
 	}
 	*l.liftedFuncs = append(*l.liftedFuncs, lifted)
 
-	return &aotir.FunLit{FuncName: name, Sig: sig}, nil
+	lit := &aotir.FunLit{
+		FuncName:    name,
+		Sig:         sig,
+		Captures:    captures,
+		EnvTypeName: envTypeName,
+		EnvVarName:  envVarName,
+	}
+	return lit, nil
 }
 
 // lowerPrimary lowers a Primary into either a literal, a parenthesised
@@ -2395,13 +2651,21 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 		}
 		var expr aotir.Expr
 		if b.t == aotir.TypeUnion {
+			name := pr.Selector.Root
+			if b.emitName != "" {
+				name = b.emitName
+			}
 			expr = &aotir.UnionVarRef{
-				Name:      pr.Selector.Root,
+				Name:      name,
 				UnionName: b.union,
 			}
 		} else {
+			name := pr.Selector.Root
+			if b.emitName != "" {
+				name = b.emitName
+			}
 			expr = &aotir.VarRef{
-				Name:              pr.Selector.Root,
+				Name:              name,
 				VarType:           b.t,
 				RecordName:        b.record,
 				ElemType:          b.elem,
@@ -2792,6 +3056,7 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 		ResultKeyType:           sig.returnKeyType,
 		ResultValueType:         sig.returnValueType,
 		ResultListValueElemType: sig.returnListValElem,
+		ResultFunSig:            sig.returnFunSig,
 	}, nil
 }
 

@@ -318,6 +318,15 @@ func Verify(p *Program) error {
 			}
 			ctx.scope.vars[pr.Name] = binding{t: pr.Type, mutable: false, record: pr.RecordName, union: pr.UnionName, elem: pr.ElemType, elemRec: pr.ElemRecordName, mapElemKey: pr.MapElemKeyType, mapElemValue: pr.MapElemValueType, key: pr.KeyType, value: pr.ValueType, listValElem: pr.ListValueElemType, funSig: pr.FunSig}
 		}
+		// Phase 5.1: for capturing lifted functions, seed the scope with
+		// env-relative bindings (e.g. "__e->x") so the verifier can resolve
+		// VarRef nodes whose Name was rewritten to the env-relative form.
+		if fn.IsLifted && fn.EnvTypeName != "" {
+			for _, c := range fn.Captures {
+				envKey := "__e->" + c.FieldName
+				ctx.scope.vars[envKey] = binding{t: c.VarType, mutable: false}
+			}
+		}
 		for j, st := range fn.Body.Statements {
 			if err := verifyStmt(ctx, st); err != nil {
 				return fmt.Errorf("aotir.Verify: %s statement %d: %w", fn.Name, j, err)
@@ -418,6 +427,24 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 		return verifyReturnStmt(ctx, s)
 	case *MatchStmt:
 		return verifyMatchStmt(ctx, s)
+	case *ClosureEnvStmt:
+		// Phase 5.1: env allocation for capturing closures. Verify that
+		// each capture has a non-empty field name and a valid scalar type.
+		if s.EnvTypeName == "" {
+			return errors.New("ClosureEnvStmt: empty EnvTypeName")
+		}
+		if s.EnvVarName == "" {
+			return errors.New("ClosureEnvStmt: empty EnvVarName")
+		}
+		for i, c := range s.Captures {
+			if c.FieldName == "" {
+				return fmt.Errorf("ClosureEnvStmt: capture %d has empty FieldName", i)
+			}
+			if c.SrcName == "" {
+				return fmt.Errorf("ClosureEnvStmt: capture %d has empty SrcName", i)
+			}
+		}
+		return nil
 	}
 	return fmt.Errorf("unhandled Stmt %T", st)
 }
