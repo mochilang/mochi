@@ -31,7 +31,7 @@ Sanitiser clean is the strongest internal correctness signal short of formal ver
 | 16.0 | ASan clean on full corpus (aarch64-darwin). `-fsanitize=address`, `detect_leaks=0` (GC-less runtime intentionally does not free at exit). `TestPhase16ASan` gate (33 suites). | LANDED 2026-05-25 21:46 (GMT+7) | — | — |
 | 16.1 | UBSan clean on full corpus. `-fsanitize=undefined -fno-sanitize-recover=all`. `TestPhase16UBSan` gate (33 suites). | LANDED 2026-05-25 21:46 (GMT+7) | — | — |
 | 16.2 | TSan clean on streams/agents corpus                                                                                | NOT STARTED | —      | — |
-| 16.3 | MSan clean on Linux (Apple-silicon MSan unsupported upstream)                                                      | NOT STARTED | —      | — |
+| 16.3 | MSan clean on Linux (Apple-silicon MSan unsupported upstream)                                                      | LANDED 2026-05-26 00:07 (GMT+7) | — | — |
 | 16.4 | Build profile `--debug` wires sanitisers; CI nightly job runs the matrix                                           | LANDED 2026-05-25 22:46 (GMT+7) | — | — |
 
 ## Decisions made
@@ -61,12 +61,27 @@ Sanitiser clean is the strongest internal correctness signal short of formal ver
 
 **Gate.** `TestPhase16DebugProfile` builds `primitives/add_ints` with `profile="debug"` and asserts the binary produces correct output under `ASAN_OPTIONS=detect_leaks=0:halt_on_error=1`. Skips on Windows and on hosts where `asanAvailable` returns false.
 
+## Phase 16.3 decisions
+
+**clang required for MSan.** `gcc` does not implement MemorySanitizer; the test uses `exec.LookPath("clang")` and sets `Driver.CC = clangPath`. The nightly CI workflow already installs `clang` on `ubuntu-latest` for the ASan step.
+
+**`runFixtureSuiteMSan` variant.** A new helper in `phase16_3_test.go` differs from `runFixtureSuiteASan` only in the CC override. This avoids touching the existing helpers and keeps the MSan CC selection explicit.
+
+**Suite exclusions for MSan.** In addition to the ASan exclusions (`divzero-trip`, `hello`, `file_io`), the MSan gate also excludes:
+- `csv_adapters`: uses `fopen`/`fgets`; deferred alongside `file_io`.
+- `ffi`: the neighbour `.c` file is compiled without MSan flags, creating an incompletely instrumented binary. Deferred.
+
+**`MSAN_OPTIONS=halt_on_error=1:poison_in_dtor=0`.** `halt_on_error=1` makes the first MSan error abort the binary (non-zero exit, caught by the runner). `poison_in_dtor=0` suppresses synthetic destructor poisoning which can fire on some libc++ builds and is irrelevant for the Mochi C runtime.
+
+**Nightly CI step.** The `transpiler3-c-sanitise-nightly.yml` workflow adds a `Phase 16.3 MSan` step gated on `runner.os == 'Linux'`. macOS runners skip it (Apple-silicon MSan unsupported upstream).
+
 ## Deferred work
 
 - Full LeakSan clean: requires explicit free() at every exit path or a global arena. Tracked as sub-phase 16.0.1.
-- TSan clean: blocked on Phase 9 (streams/agents) landing.
-- MSan clean: Linux-only; current CI is aarch64-darwin only.
+- TSan clean (16.2): blocked on Phase 9 (streams/agents) landing.
+- `file_io` + `csv_adapters` MSan: deferred; clang intercepts fopen/fgets but edge-cases need verification on CI.
+- FFI MSan: requires compiling the neighbour `.c` with MSan flags too; deferred to Phase 10.1 scope.
 
 ## Closeout notes
 
-Sub-phases 16.0, 16.1, and 16.4 are LANDED. Sub-phases 16.2 (TSan) and 16.3 (MSan) are blocked on Phase 9 (streams/agents) and Linux CI respectively.
+Sub-phases 16.0, 16.1, 16.3, and 16.4 are LANDED. Sub-phase 16.2 (TSan) is deferred, pending Phase 9 (streams/agents).

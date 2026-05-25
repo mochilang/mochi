@@ -1,9 +1,10 @@
 name: Transpiler3-C Sanitiser Matrix (nightly)
 
-# MEP-45 Phase 16.4: nightly CI job that runs the full ASan and UBSan
-# fixture suites. Runs on a schedule so sanitiser regressions surface
+# MEP-45 Phase 16.4: nightly CI job that runs the full ASan, UBSan, and
+# MSan fixture suites. Runs on a schedule so sanitiser regressions surface
 # quickly without blocking every PR with the ~60-second suite overhead.
 # Also fires on workflow_dispatch for on-demand runs.
+# Phase 16.3: MSan runs on ubuntu-latest only (Linux clang requirement).
 
 on:
   schedule:
@@ -51,3 +52,9 @@ jobs:
         run: |
           go test -vet=off -v -count=1 -timeout=60s \
             ./transpiler3/c/build/ -run TestPhase16DebugProfile
+
+      - name: Run MSan gate (Phase 16.3, Linux only)
+        if: runner.os == 'Linux'
+        run: |
+          go test -vet=off -v -count=1 -timeout=300s \
+            ./transpiler3/c/build/ -run TestPhase16MSan
