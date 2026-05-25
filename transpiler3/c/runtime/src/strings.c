@@ -9,6 +9,7 @@
  * MEP-45 Phase 6.3: mochi_str_upper, mochi_str_lower, mochi_str_split,
  *                   mochi_str_join. ASCII-only; full UTF-8 codepoint support
  *                   via utf8proc is deferred.
+ * MEP-45 Phase 6.6: mochi_utf8_valid -- pure-C UTF-8 byte-sequence validator.
  *
  * All functions that return strings return freshly malloc'd buffers.
  * Memory is never freed in Phase 6.x (deferred to Phase 17 GC).
@@ -201,4 +202,36 @@ const char *mochi_str_join(mochi_list_str xs, const char *sep) {
     }
     *p = '\0';
     return out;
+}
+
+/* Phase 6.6: UTF-8 validation (Bancilhon-style state machine).
+ *
+ * Accepts code points U+0000-U+10FFFF, rejects:
+ *   - Continuation bytes (0x80-0xBF) without a lead byte.
+ *   - Overlong 2-byte sequences (lead 0xC0-0xC1).
+ *   - Code points above U+10FFFF (lead >= 0xF5).
+ *   - Truncated multi-byte sequences (missing continuation bytes).
+ *
+ * Does NOT reject UTF-16 surrogates (U+D800-U+DFFF); surrogate filtering
+ * is deferred to the utf8proc integration in a later phase.
+ */
+int mochi_utf8_valid(const char *s, size_t n) {
+    const unsigned char *u = (const unsigned char *)s;
+    size_t i = 0;
+    while (i < n) {
+        unsigned char c = u[i];
+        size_t extra;
+        if      (c < 0x80u)                    { extra = 0; }
+        else if (c < 0xC2u || c > 0xF4u)       { return 0; }
+        else if (c < 0xE0u)                    { extra = 1; }
+        else if (c < 0xF0u)                    { extra = 2; }
+        else                                   { extra = 3; }
+        i++;
+        for (size_t j = 0; j < extra; j++, i++) {
+            if (i >= n || (u[i] & 0xC0u) != 0x80u) {
+                return 0;
+            }
+        }
+    }
+    return 1;
 }

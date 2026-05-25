@@ -1,0 +1,5 @@
+writeFile("/tmp/mochi_utf8_mixed.txt", "a\nb\nc\n")
+let xs = lines("/tmp/mochi_utf8_mixed.txt")
+for x in xs {
+    print(upper(x))
+}

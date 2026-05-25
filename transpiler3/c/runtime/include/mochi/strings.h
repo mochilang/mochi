@@ -44,3 +44,9 @@ const char *mochi_str_lower(const char *s);
 mochi_list_str mochi_str_split(const char *s, const char *sep);
 /* mochi_str_join(xs, sep) -- join list<string> with sep between elements. */
 const char *mochi_str_join(mochi_list_str xs, const char *sep);
+
+/* Phase 6.6: UTF-8 validation. Returns 1 if s[0..n-1] is valid UTF-8,
+ * 0 if any byte sequence is ill-formed (overlong encoding, surrogate,
+ * continuation byte without lead, or code point above U+10FFFF). */
+#include <stddef.h>
+int mochi_utf8_valid(const char *s, size_t n);

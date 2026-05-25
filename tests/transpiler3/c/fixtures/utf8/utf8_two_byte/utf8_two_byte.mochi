@@ -1,0 +1,4 @@
+writeFile("/tmp/mochi_utf8_2b.txt", "abc")
+let s = readFile("/tmp/mochi_utf8_2b.txt")
+print(len(s))
+print(s)

@@ -17,3 +17,7 @@ _Noreturn void mochi_panic_div_zero(void) {
 _Noreturn void mochi_panic_index(void) {
     mochi_raise(MOCHI_ERR_INDEX, "mochi: index out of range");
 }
+
+_Noreturn void mochi_panic_parse(void) {
+    mochi_raise(MOCHI_ERR_PARSE, "mochi: invalid utf-8 encoding");
+}
