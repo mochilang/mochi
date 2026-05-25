@@ -24,12 +24,23 @@
 #ifndef MOCHI_EXCEPT_H
 #define MOCHI_EXCEPT_H
 
+/*
+ * WASM/WASI (Phase 12.2): setjmp/longjmp requires the Exception handling
+ * proposal which is not yet standardised across wasm runtimes. Under WASM,
+ * mochi_raise always exits directly; mochi_try_push/pop are not declared
+ * (no try/catch blocks in Phase 12.2 WASM fixtures). mochi_except_code and
+ * mochi_except_msg are still declared so the prologue compiles cleanly.
+ */
+#ifndef __wasm__
 #include <setjmp.h>
+#endif
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#ifndef __wasm__
 
 /* Maximum nesting depth of try blocks. Enough for deeply recursive programs. */
 #define MOCHI_TRY_MAX_DEPTH 64
@@ -47,10 +58,12 @@ void mochi_try_push(jmp_buf *buf);
  */
 void mochi_try_pop(void);
 
+#endif /* !__wasm__ */
+
 /*
  * mochi_raise raises an exception with the given error code and message.
- * If a jump buffer is on the stack, longjmps to it with code. Otherwise
- * writes msg to stderr and exits with code.
+ * If a jump buffer is on the stack (non-WASM), longjmps to it with code.
+ * Otherwise writes msg to stderr and exits with code.
  */
 _Noreturn void mochi_raise(int code, const char *msg);
 
