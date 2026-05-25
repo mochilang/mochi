@@ -29,7 +29,7 @@ Performance gate exists so a regression cannot ship silently. The user-facing pa
 | #    | Scope                                                                                                              | Status      | Commit | PR |
 |------|--------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 18.0 | Benchmark harness: `tests/transpiler3/c/bench/` with 5 BG kernels; `TestPhase18BenchHarness` builds + runs each 5x, logs median wall-clock and binary size; asserts output correctness vs vm3-derived expected values. | LANDED 2026-05-25 22:01 (GMT+7) | — | — |
-| 18.1 | Wall-clock, peak RSS, binary size (release/strip), compile time recorded per fixture                               | NOT STARTED | —      | — |
+| 18.1 | Wall-clock, peak RSS, binary size (release/strip), compile time recorded per fixture; 2x vm3 gate enforced when `mochi` is on PATH | LANDED 2026-05-25 22:50 (GMT+7) | — | — |
 | 18.2 | Per-release report published to a static page                                                                      | NOT STARTED | —      | — |
 | 18.3 | Regression alert: > 10% wall-clock regression vs previous main posts a comment on the PR                           | NOT STARTED | —      | — |
 
@@ -62,9 +62,30 @@ All five use only features present in the current AOT transpiler (integer arithm
 
 The first-run latency (max_ms) is dominated by macOS dyld startup. The min_ms values (cold-start excluded from sorted tail) show the actual execution time: fib_rec(35) takes ~86 ms (expected for O(2^35) recursive calls) and list_sum takes ~66 ms.
 
+## Phase 18.1 decisions
+
+**Extended metrics per kernel.** `TestPhase18ExtendedMetrics` adds four new columns to the harness log table:
+- `compile_ms`: wall-clock for `Driver.Build` (parse + lower + emit + cc).
+- `rss_kb`: peak RSS from `cmd.ProcessState.SysUsage().(*syscall.Rusage).Maxrss`. On macOS `Maxrss` is bytes; on Linux it is KiB. Returns 0 on platforms that don't expose it.
+- `stripped_kb`: binary size after `strip` (the release shipping size). Copies the binary, runs `strip` on the copy, stats the result. Returns 0 if `strip` is not on PATH.
+- `vm3_med_ms`: median of 5 `mochi run <src>` invocations. Skipped if `mochi` is not on PATH.
+
+**2x vm3 gate.** When `mochi` is on PATH and all 5 vm3 runs succeed, the test asserts `aot_med_ms <= 2 * vm3_med_ms`. In practice AOT is ~400-500x faster than the interpreter for compute-bound kernels; the gate is satisfied by a wide margin.
+
+**Measured results (aarch64-darwin, Apple clang 17, 2026-05-25, mochi on PATH):**
+
+| kernel      | compile_ms | aot_med_ms | vm3_med_ms   | ratio  | rss_kb    | stripped_kb |
+|-------------|------------|------------|--------------|--------|-----------|-------------|
+| hello_world | 391ms      | 2.45ms     | 651.66ms     | 0.00x  | 1216 KiB  | 68 KiB      |
+| sum_loop    | 208ms      | 3.06ms     | 847.79ms     | 0.00x  | 1264 KiB  | 68 KiB      |
+| fib_iter    | 199ms      | 2.16ms     | 551.44ms     | 0.00x  | 1216 KiB  | 68 KiB      |
+| fib_rec     | 206ms      | 36.17ms    | 14588.44ms   | 0.00x  | 1248 KiB  | 68 KiB      |
+| list_sum    | 244ms      | 43.14ms    | 2419.99ms    | 0.02x  | 442512 KiB| 68 KiB      |
+
+`list_sum` RSS (430 MB) reflects 10,000 append calls on a GC-less runtime: each growth doubles the allocation and the old buffer is leaked. The 68 KiB stripped size is the AOT runtime (no Go garbage collector, no JIT).
+
 ## Deferred work
 
-- Phase 18.1: Add vm3 baseline timing and enforce the 2x gate.
 - Phase 18.2: CI-published static HTML report.
 - Phase 18.3: PR regression alert (>10% wall-clock regression vs main).
 - Tighter (1.5x) gate: revisit after Phase 19 with measured data.
