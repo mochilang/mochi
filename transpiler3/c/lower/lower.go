@@ -1174,13 +1174,11 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	return nil
 }
 
-// lowerAssign handles `NAME = expr`. Field/index targets remain
-// rejected in Phase 3.0: records are value-semantics so updating
-// `p.f` would semantically reassign `p` as a whole, which the
-// surface syntax does not express.
+// lowerAssign handles `NAME = expr` and `NAME[i] = expr`.
+// Field targets remain unsupported (records are value-semantics).
 func (l *lowerer) lowerAssign(out *aotir.Block, as *parser.AssignStmt) error {
 	if len(as.Index) != 0 {
-		return fmt.Errorf("assignment to a[i] targets land with lists in Phase 3.1")
+		return l.lowerIndexAssign(out, as)
 	}
 	if len(as.Field) != 0 {
 		return fmt.Errorf("assignment to a.f targets is not supported in Phase 3.0 (records are value-semantics; reassign the whole binding)")
@@ -1240,6 +1238,80 @@ func (l *lowerer) lowerAssign(out *aotir.Block, as *parser.AssignStmt) error {
 		Value: value,
 	})
 	return nil
+}
+
+// lowerIndexAssign handles `NAME[i] = expr` for list and map receivers.
+func (l *lowerer) lowerIndexAssign(out *aotir.Block, as *parser.AssignStmt) error {
+	if len(as.Index) != 1 {
+		return fmt.Errorf("chained index assignment (xs[i][j] = v) not supported")
+	}
+	idx := as.Index[0]
+	if idx.Colon != nil {
+		return fmt.Errorf("slice assignment (xs[a:b] = ...) not supported")
+	}
+	if idx.Start == nil {
+		return fmt.Errorf("index assignment requires an index expression")
+	}
+	b, ok := l.scope.lookup(as.Name)
+	if !ok {
+		return fmt.Errorf("assignment to undeclared %q", as.Name)
+	}
+	if !b.mutable {
+		return fmt.Errorf("assignment to immutable %q", as.Name)
+	}
+	switch b.t {
+	case aotir.TypeList:
+		idxExpr, err := l.lowerExpr(idx.Start)
+		if err != nil {
+			return fmt.Errorf("list-set %q index: %w", as.Name, err)
+		}
+		if idxExpr.Type() != aotir.TypeInt {
+			return fmt.Errorf("list index must be int, got %s", idxExpr.Type())
+		}
+		valExpr, err := l.lowerExpr(as.Value)
+		if err != nil {
+			return fmt.Errorf("list-set %q value: %w", as.Name, err)
+		}
+		if valExpr.Type() != b.elem {
+			return fmt.Errorf("list-set %q: binding elem %s, value %s", as.Name, b.elem, valExpr.Type())
+		}
+		out.Statements = append(out.Statements, &aotir.ListSetStmt{
+			Name:             as.Name,
+			Index:            idxExpr,
+			Value:            valExpr,
+			ElemType:         b.elem,
+			ElemRecordName:   b.elemRec,
+			InnerElemType:    b.innerElem,
+			MapElemKeyType:   b.mapElemKey,
+			MapElemValueType: b.mapElemValue,
+		})
+		return nil
+	case aotir.TypeMap:
+		keyExpr, err := l.lowerExpr(idx.Start)
+		if err != nil {
+			return fmt.Errorf("map-put %q key: %w", as.Name, err)
+		}
+		if keyExpr.Type() != b.key {
+			return fmt.Errorf("map-put %q: binding key %s, got %s", as.Name, b.key, keyExpr.Type())
+		}
+		valExpr, err := l.lowerExpr(as.Value)
+		if err != nil {
+			return fmt.Errorf("map-put %q value: %w", as.Name, err)
+		}
+		if valExpr.Type() != b.value {
+			return fmt.Errorf("map-put %q: binding value %s, got %s", as.Name, b.value, valExpr.Type())
+		}
+		out.Statements = append(out.Statements, &aotir.MapPutStmt{
+			Name:      as.Name,
+			Key:       keyExpr,
+			Value:     valExpr,
+			KeyType:   b.key,
+			ValueType: b.value,
+		})
+		return nil
+	default:
+		return fmt.Errorf("index assignment to %s %q not supported", b.t, as.Name)
+	}
 }
 
 // lowerIf lowers an if/else-if/else chain. else-if is preserved as a

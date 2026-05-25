@@ -1,0 +1,7 @@
+var m = {"a": 0}
+m["b"] = 5
+m["c"] = 10
+m["a"] = 99
+print(m["a"])
+print(m["b"])
+print(m["c"])

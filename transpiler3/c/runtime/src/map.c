@@ -188,6 +188,39 @@ LIST_V NAME##_values(NAME m) {                                                 \
     free(ks);                                                                  \
     free(vs);                                                                  \
     return out;                                                                \
+}                                                                              \
+                                                                               \
+static void NAME##_grow(NAME *m) {                                             \
+    int64_t new_cap = m->cap * 2;                                              \
+    NAME##_entry *nt = (NAME##_entry *)calloc((size_t)new_cap,                 \
+                                              sizeof(NAME##_entry));           \
+    if (nt == NULL) mochi_panic_index();                                       \
+    uint64_t mask = (uint64_t)(new_cap - 1);                                   \
+    for (int64_t i = 0; i < m->cap; i++) {                                     \
+        NAME##_entry *e = &m->table[i];                                        \
+        if (e->hash == 0) continue;                                            \
+        uint64_t pos = e->hash & mask;                                         \
+        while (nt[pos].hash != 0) pos = (pos + 1) & mask;                     \
+        nt[pos] = *e;                                                          \
+    }                                                                          \
+    free(m->table);                                                            \
+    m->table = nt;                                                             \
+    m->cap = new_cap;                                                          \
+}                                                                              \
+                                                                               \
+void NAME##_put(NAME *m, KT k, VT v) {                                        \
+    if (m->nLive * 2 >= m->cap) NAME##_grow(m);                               \
+    uint64_t h = HASH(k);                                                      \
+    uint64_t mask = (uint64_t)(m->cap - 1);                                    \
+    uint64_t pos = h & mask;                                                   \
+    while (1) {                                                                \
+        NAME##_entry *e = &m->table[pos];                                      \
+        if (e->hash == 0) {                                                    \
+            e->hash = h; e->key = k; e->value = v; m->nLive++; return;        \
+        }                                                                      \
+        if (e->hash == h && EQ(e->key, k)) { e->value = v; return; }          \
+        pos = (pos + 1) & mask;                                                \
+    }                                                                          \
 }
 
 MOCHI_MAP_DEFINE(mochi_map_i64_i64,  int64_t,      int64_t,

@@ -1,0 +1,6 @@
+var m = {1: "one", 2: "two"}
+m[3] = "three"
+m[1] = "ONE"
+print(m[1])
+print(m[2])
+print(m[3])

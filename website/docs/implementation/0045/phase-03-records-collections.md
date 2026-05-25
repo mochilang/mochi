@@ -39,6 +39,8 @@ _To be written before sub-phase 3.0 starts. Records + collections unlock realist
 | 3.4d | `list<T> == list<T>` and `map<K,V> == map<K,V>` for all scalar T / K / V: `BinEqList`/`BinNeList`/`BinEqMap`/`BinNeMap` in aotir; TU-local eq helpers; 19 fixtures + `TestPhase3CollectionEquality` gate | LANDED      | —      | — |
 | 3.4e | `map<K, list<V>>` where K in `{int, string}`, V in `{int, float, bool, string}` (8 combos): parallel-field `ListValueElemType` in IR / lower / verifier / emitter; TU-local map-of-list C helpers; 17 fixtures + `TestPhase3MapOfList` gate | LANDED      | —      | — |
 | 3.4f | `list<map<K,V>>` where K in `{int, string}`, V in `{int, float, bool, string}` (8 combos): parallel-field `MapElemKeyType` / `MapElemValueType` on list-bearing IR nodes; TU-local `mochi_list_map_<K>_<V>` helpers; 10 fixtures + `TestPhase3ListOfMap` gate | LANDED      | —      | — |
+| 3.4g | `xs[start:end]` list slice syntax: `lowerListSliceOp` dispatched from `lowerIndexOp`; reuses existing `mochi_list_<T>_slice` + `ListSliceExpr` IR from Phase 8.1; `TestPhase3ListSlice` gate (8 fixtures) | LANDED      | —      | — |
+| 3.4h | `xs[i] = val` for `list<T>` (4 scalar types) and `m[k] = val` for `map<K,V>` (insert/update): `ListSetStmt` + `MapPutStmt` IR nodes; `lowerIndexAssign` in lower; `mochi_list_<T>_set` + `mochi_map_<K>_<V>_put` runtime; `TestPhase3IndexAssign` gate (8 fixtures) | LANDED      | —      | — |
 | 3.5 | `omap<K,V>` (insertion-order map): hash table + parallel insertion-order list (needed by Phase 8)                              | DEFERRED    | —      | — |
 
 ## Decisions made
@@ -187,6 +189,22 @@ _To be written before sub-phase 3.0 starts. Records + collections unlock realist
 - **Fixtures.** 10 fixtures under `tests/transpiler3/c/fixtures/list_of_map/`: 8 (K,V) combos with basic literal+len, plus for-in, append, passed-to-fn, returned-from-fn for the int-key/int-value case.
 - **Gate.** `TestPhase3ListOfMap` — all 10 fixtures pass.
 
+### Phase 3.4h (index assignment xs[i]=val, m[k]=val): LANDED 2026-05-25 20:34 (GMT+7)
+
+- **Audit date:** 2026-05-25 20:20 (GMT+7)
+- **Goal-alignment audit:** Mutable collections are essential for any program that accumulates or updates state in a loop. Without `xs[i] = val` and `m[k] = val`, the only way to "update" a list is to build a new one via filter/map in a query expression (Phase 8), and the only way to "update" a map is to rebuild it from scratch. This is not idiomatic and blocks real algorithms (e.g., sieve of Eratosthenes, frequency counting, in-place sorting). Phase 3.4h closes the mutation gap for the two most common collection shapes. Aligns.
+
+#### Decisions Made
+
+- **Two new IR stmt nodes.** `ListSetStmt{Name, Index, Value, ElemType, ...}` and `MapPutStmt{Name, Key, Value, KeyType, ValueType}`. Stmts (not exprs) because index assignment has no return value in Mochi.
+- **`lowerIndexAssign` dispatched from `lowerAssign`.** When `len(as.Index)==1 && idx.Colon==nil`, `lowerAssign` calls `lowerIndexAssign` which branches on the binding's type (`TypeList` or `TypeMap`). Chained index (`xs[i][j] = v`) and slice assignment (`xs[a:b] = ...`) are rejected with a clear error (deferred).
+- **List set: pass by value, mutate through heap pointer.** `mochi_list_<T>_set(xs, i, v)` takes the list struct by value. The `data` field is a heap pointer, so `xs.data[i] = v` reaches the original backing array. No pointer-to-struct needed. Bounds check panics via `mochi_panic_index()`.
+- **Map put: pass by pointer for resize.** `mochi_map_<K>_<V>_put(mochi_map_<K>_<V> *m, K k, V v)` passes the map struct by pointer so it can update `m->table`, `m->cap`, and `m->nLive` when a new key is inserted and the table needs to grow. Load factor threshold: `nLive * 2 >= cap` (same 0.5 as the existing `_lit` code). A static `NAME##_grow` helper rehashes into a doubled `calloc`'d table.
+- **Macro extension.** Added `NAME##_grow` + `NAME##_put` arms to the existing `MOCHI_MAP_DEFINE` macro in `map.c`. All 8 (K,V) instantiations get `_put` for free.
+- **Walker updates.** `walkStmtListOfMap` and `walkStmtExprVisit` in emit.go updated to visit both new stmt types so TU-local helpers and list-of-map helpers are collected correctly.
+- **Fixtures.** 8 fixtures under `tests/transpiler3/c/fixtures/index_assign/`: `list_set_int`, `list_set_float`, `list_set_bool`, `list_set_str`, `list_set_loop` (fill via while-loop), `map_put_str_int` (update + insert), `map_put_int_str`, `map_put_update` (sequential inserts + overwrite).
+- **Gate.** `TestPhase3IndexAssign` — all 8 fixtures pass.
+
 ### Phase 3.5 (omap): DEFERRED
 
 - **Audit date:** 2026-05-22 23:55 (GMT+7)
@@ -200,7 +218,7 @@ _Concurrent-safe maps: not in v1 (use a stream/agent boundary)._
 
 - Phase 3.0: `print(record)`, field assignment (`r.f = v`), nested-record fields, generic record decls, methods on records. All have unblocked paths in the IR (no struct shape changes needed) and will land as 3.0.x sub-phases or with Phase 4.
 - Phase 3.1: `list<R>` (landed with Phase 3.4a); `list<list<T>>` for T scalar (landed with Phase 3.4b); `list<list<R>>` and 3-level nesting (deferred to 3.4b.1 once a fixture pulls on it); `print(list)` (deferred until a per-T list formatter lands); list slice `xs[a..b]` (deferred to Phase 6); list equality `xs == ys` (deferred to 3.4d); in-place mutation aliasing model (deferred to Phase 18 perf); typed-empty literal `let xs: list<int> = []` (landed with Phase 3.4c); `xs = []` as assignment reset (deferred — 3.4c only handles the binding form).
-- Phase 3.2: `map<K, R>` / `map<R, V>` (deferred to later 3.4 sub-phases); `map<K, list<V>>` (landed with Phase 3.4e); `m[k] = v` and `delete(m, k)` mutation (deferred along with list mutation); `print(map)` (deferred until a per-(K,V) map formatter lands); map equality `m == n` (deferred to 3.4); option-aware unwrap of `m[k]` for arithmetic (deferred to Phase 4 option types); empty-map literal with type annotation (deferred to 3.4); per-call snapshot allocations under `keys()` / `values()` accepted as a known leak until Phase 7 reclamation.
+- Phase 3.2: `map<K, R>` / `map<R, V>` (deferred to later 3.4 sub-phases); `map<K, list<V>>` (landed with Phase 3.4e); `m[k] = v` (landed with Phase 3.4h); `delete(m, k)` mutation (deferred); `print(map)` (deferred until a per-(K,V) map formatter lands); map equality `m == n` (deferred to 3.4); option-aware unwrap of `m[k]` for arithmetic (deferred to Phase 4 option types); empty-map literal with type annotation (deferred to 3.4); per-call snapshot allocations under `keys()` / `values()` accepted as a known leak until Phase 7 reclamation.
 
 ## Closeout notes
 

@@ -1,0 +1,5 @@
+var xs = ["hello", "world", "foo"]
+xs[1] = "mochi"
+for x in xs {
+    print(x)
+}

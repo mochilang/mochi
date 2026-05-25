@@ -485,6 +485,34 @@ type AssignStmt struct {
 
 func (*AssignStmt) isStmt() {}
 
+// ListSetStmt sets xs[i] = val in-place. The runtime helper
+// bounds-checks `i` and mutates through the heap pointer.
+type ListSetStmt struct {
+	Name             string
+	Index            Expr // must be TypeInt
+	Value            Expr // must match ElemType
+	ElemType         Type
+	ElemRecordName   string
+	InnerElemType    Type
+	MapElemKeyType   Type
+	MapElemValueType Type
+}
+
+func (*ListSetStmt) isStmt() {}
+
+// MapPutStmt inserts or updates m[k] = v in-place. The runtime
+// helper receives a pointer to the local struct so it can
+// resize the table when a new key is inserted.
+type MapPutStmt struct {
+	Name      string
+	Key       Expr
+	Value     Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (*MapPutStmt) isStmt() {}
+
 // IfStmt is a two-armed conditional. else-if chains lower to a
 // single Else block whose head is another IfStmt; the verifier
 // does not flatten them so the emit pass preserves the source

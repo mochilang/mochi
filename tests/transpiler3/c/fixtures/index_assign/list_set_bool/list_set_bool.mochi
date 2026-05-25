@@ -1,0 +1,6 @@
+var xs = [true, false, true]
+xs[0] = false
+xs[2] = false
+for x in xs {
+    print(x)
+}

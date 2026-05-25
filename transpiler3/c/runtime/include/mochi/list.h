@@ -69,6 +69,8 @@ int64_t mochi_list_i64_max(mochi_list_i64 xs);
 int mochi_list_i64_contains(mochi_list_i64 xs, int64_t val);
 /* Phase 2.6: sum returns the sum of all elements; 0 for empty. */
 int64_t mochi_list_i64_sum(mochi_list_i64 xs);
+/* Phase 3.4h: set xs[i] = v in-place (panics if i out of bounds). */
+void mochi_list_i64_set(mochi_list_i64 xs, int64_t i, int64_t v);
 
 /* --- float (double) ------------------------------------------------- */
 
@@ -91,6 +93,8 @@ double mochi_list_f64_max(mochi_list_f64 xs);
 /* Phase 2.6 */
 int    mochi_list_f64_contains(mochi_list_f64 xs, double val);
 double mochi_list_f64_sum(mochi_list_f64 xs);
+/* Phase 3.4h */
+void mochi_list_f64_set(mochi_list_f64 xs, int64_t i, double v);
 
 /* --- bool (int 0/1) ------------------------------------------------- */
 
@@ -109,6 +113,8 @@ mochi_list_bool mochi_list_bool_sort_asc(mochi_list_bool xs);
 mochi_list_bool mochi_list_bool_slice(mochi_list_bool xs, int64_t start, int64_t end);
 /* Phase 2.6 */
 int mochi_list_bool_contains(mochi_list_bool xs, int val);
+/* Phase 3.4h */
+void mochi_list_bool_set(mochi_list_bool xs, int64_t i, int v);
 
 /* --- string (const char *) ----------------------------------------- */
 
@@ -130,6 +136,8 @@ const char *mochi_list_str_min(mochi_list_str xs);
 const char *mochi_list_str_max(mochi_list_str xs);
 /* Phase 2.6 */
 int mochi_list_str_contains(mochi_list_str xs, const char *val);
+/* Phase 3.4h */
+void mochi_list_str_set(mochi_list_str xs, int64_t i, const char *v);
 
 #ifdef __cplusplus
 }

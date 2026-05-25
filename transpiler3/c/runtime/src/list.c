@@ -330,3 +330,23 @@ int mochi_list_str_contains(mochi_list_str xs, const char *val) {
     for (int64_t i = 0; i < xs.len; i++) if (strcmp(xs.data[i], val) == 0) return 1;
     return 0;
 }
+
+/* Phase 3.4h: in-place element mutation. The list struct is passed by
+ * value but data is a heap pointer, so the write reaches the original
+ * backing array without needing to pass the struct by pointer. */
+void mochi_list_i64_set(mochi_list_i64 xs, int64_t i, int64_t v) {
+    if (i < 0 || i >= xs.len) mochi_panic_index();
+    xs.data[i] = v;
+}
+void mochi_list_f64_set(mochi_list_f64 xs, int64_t i, double v) {
+    if (i < 0 || i >= xs.len) mochi_panic_index();
+    xs.data[i] = v;
+}
+void mochi_list_bool_set(mochi_list_bool xs, int64_t i, int v) {
+    if (i < 0 || i >= xs.len) mochi_panic_index();
+    xs.data[i] = v;
+}
+void mochi_list_str_set(mochi_list_str xs, int64_t i, const char *v) {
+    if (i < 0 || i >= xs.len) mochi_panic_index();
+    xs.data[i] = v;
+}

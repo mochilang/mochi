@@ -405,6 +405,10 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 		return verifyLetStmt(ctx, s)
 	case *AssignStmt:
 		return verifyAssignStmt(ctx, s)
+	case *ListSetStmt:
+		return verifyListSetStmt(ctx, s)
+	case *MapPutStmt:
+		return verifyMapPutStmt(ctx, s)
 	case *IfStmt:
 		return verifyIfStmt(ctx, s)
 	case *WhileStmt:
@@ -666,6 +670,70 @@ func verifyAssignStmt(ctx *verifyCtx, s *AssignStmt) error {
 		if vv := exprValueType(s.Value); vv != b.value {
 			return fmt.Errorf("assign %q: binding holds map<%s,%s>, value produces map<%s,%s>", s.Name, b.key, b.value, b.key, vv)
 		}
+	}
+	return nil
+}
+
+func verifyListSetStmt(ctx *verifyCtx, s *ListSetStmt) error {
+	b, ok := ctx.scope.lookup(s.Name)
+	if !ok {
+		return fmt.Errorf("list-set: undeclared %q", s.Name)
+	}
+	if !b.mutable {
+		return fmt.Errorf("list-set: %q is immutable", s.Name)
+	}
+	if b.t != TypeList {
+		return fmt.Errorf("list-set: %q is %s, not a list", s.Name, b.t)
+	}
+	if s.Index == nil {
+		return fmt.Errorf("list-set %q: nil Index", s.Name)
+	}
+	if err := verifyExprCtx(ctx, s.Index); err != nil {
+		return fmt.Errorf("list-set %q index: %w", s.Name, err)
+	}
+	if s.Index.Type() != TypeInt {
+		return fmt.Errorf("list-set %q: index must be int, got %s", s.Name, s.Index.Type())
+	}
+	if s.Value == nil {
+		return fmt.Errorf("list-set %q: nil Value", s.Name)
+	}
+	if err := verifyExprCtx(ctx, s.Value); err != nil {
+		return fmt.Errorf("list-set %q value: %w", s.Name, err)
+	}
+	if s.Value.Type() != b.elem {
+		return fmt.Errorf("list-set %q: binding elem is %s, value is %s", s.Name, b.elem, s.Value.Type())
+	}
+	return nil
+}
+
+func verifyMapPutStmt(ctx *verifyCtx, s *MapPutStmt) error {
+	b, ok := ctx.scope.lookup(s.Name)
+	if !ok {
+		return fmt.Errorf("map-put: undeclared %q", s.Name)
+	}
+	if !b.mutable {
+		return fmt.Errorf("map-put: %q is immutable", s.Name)
+	}
+	if b.t != TypeMap {
+		return fmt.Errorf("map-put: %q is %s, not a map", s.Name, b.t)
+	}
+	if s.Key == nil {
+		return fmt.Errorf("map-put %q: nil Key", s.Name)
+	}
+	if err := verifyExprCtx(ctx, s.Key); err != nil {
+		return fmt.Errorf("map-put %q key: %w", s.Name, err)
+	}
+	if s.Key.Type() != b.key {
+		return fmt.Errorf("map-put %q: binding key is %s, got %s", s.Name, b.key, s.Key.Type())
+	}
+	if s.Value == nil {
+		return fmt.Errorf("map-put %q: nil Value", s.Name)
+	}
+	if err := verifyExprCtx(ctx, s.Value); err != nil {
+		return fmt.Errorf("map-put %q value: %w", s.Name, err)
+	}
+	if s.Value.Type() != b.value {
+		return fmt.Errorf("map-put %q: binding value is %s, got %s", s.Name, b.value, s.Value.Type())
 	}
 	return nil
 }

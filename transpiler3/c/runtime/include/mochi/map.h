@@ -73,6 +73,8 @@ int               mochi_map_i64_i64_has(mochi_map_i64_i64 m, int64_t k);
 int64_t           mochi_map_i64_i64_len(mochi_map_i64_i64 m);
 mochi_list_i64    mochi_map_i64_i64_keys(mochi_map_i64_i64 m);
 mochi_list_i64    mochi_map_i64_i64_values(mochi_map_i64_i64 m);
+/* Phase 3.4h: insert or update m[k]=v in-place. */
+void              mochi_map_i64_i64_put(mochi_map_i64_i64 *m, int64_t k, int64_t v);
 
 /* ----- mochi_map_i64_f64 -------------------------------------------- */
 
@@ -94,6 +96,7 @@ int               mochi_map_i64_f64_has(mochi_map_i64_f64 m, int64_t k);
 int64_t           mochi_map_i64_f64_len(mochi_map_i64_f64 m);
 mochi_list_i64    mochi_map_i64_f64_keys(mochi_map_i64_f64 m);
 mochi_list_f64    mochi_map_i64_f64_values(mochi_map_i64_f64 m);
+void              mochi_map_i64_f64_put(mochi_map_i64_f64 *m, int64_t k, double v);
 
 /* ----- mochi_map_i64_bool ------------------------------------------- */
 
@@ -115,6 +118,7 @@ int                mochi_map_i64_bool_has(mochi_map_i64_bool m, int64_t k);
 int64_t            mochi_map_i64_bool_len(mochi_map_i64_bool m);
 mochi_list_i64     mochi_map_i64_bool_keys(mochi_map_i64_bool m);
 mochi_list_bool    mochi_map_i64_bool_values(mochi_map_i64_bool m);
+void               mochi_map_i64_bool_put(mochi_map_i64_bool *m, int64_t k, int v);
 
 /* ----- mochi_map_i64_str -------------------------------------------- */
 
@@ -136,6 +140,7 @@ int               mochi_map_i64_str_has(mochi_map_i64_str m, int64_t k);
 int64_t           mochi_map_i64_str_len(mochi_map_i64_str m);
 mochi_list_i64    mochi_map_i64_str_keys(mochi_map_i64_str m);
 mochi_list_str    mochi_map_i64_str_values(mochi_map_i64_str m);
+void              mochi_map_i64_str_put(mochi_map_i64_str *m, int64_t k, const char *v);
 
 /* ----- mochi_map_str_i64 -------------------------------------------- */
 
@@ -157,6 +162,7 @@ int               mochi_map_str_i64_has(mochi_map_str_i64 m, const char *k);
 int64_t           mochi_map_str_i64_len(mochi_map_str_i64 m);
 mochi_list_str    mochi_map_str_i64_keys(mochi_map_str_i64 m);
 mochi_list_i64    mochi_map_str_i64_values(mochi_map_str_i64 m);
+void              mochi_map_str_i64_put(mochi_map_str_i64 *m, const char *k, int64_t v);
 
 /* ----- mochi_map_str_f64 -------------------------------------------- */
 
@@ -178,6 +184,7 @@ int               mochi_map_str_f64_has(mochi_map_str_f64 m, const char *k);
 int64_t           mochi_map_str_f64_len(mochi_map_str_f64 m);
 mochi_list_str    mochi_map_str_f64_keys(mochi_map_str_f64 m);
 mochi_list_f64    mochi_map_str_f64_values(mochi_map_str_f64 m);
+void              mochi_map_str_f64_put(mochi_map_str_f64 *m, const char *k, double v);
 
 /* ----- mochi_map_str_bool ------------------------------------------- */
 
@@ -199,6 +206,7 @@ int                mochi_map_str_bool_has(mochi_map_str_bool m, const char *k);
 int64_t            mochi_map_str_bool_len(mochi_map_str_bool m);
 mochi_list_str     mochi_map_str_bool_keys(mochi_map_str_bool m);
 mochi_list_bool    mochi_map_str_bool_values(mochi_map_str_bool m);
+void               mochi_map_str_bool_put(mochi_map_str_bool *m, const char *k, int v);
 
 /* ----- mochi_map_str_str -------------------------------------------- */
 
@@ -220,6 +228,7 @@ int               mochi_map_str_str_has(mochi_map_str_str m, const char *k);
 int64_t           mochi_map_str_str_len(mochi_map_str_str m);
 mochi_list_str    mochi_map_str_str_keys(mochi_map_str_str m);
 mochi_list_str    mochi_map_str_str_values(mochi_map_str_str m);
+void              mochi_map_str_str_put(mochi_map_str_str *m, const char *k, const char *v);
 
 #ifdef __cplusplus
 }

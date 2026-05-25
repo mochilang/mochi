@@ -1,0 +1,6 @@
+var xs = [1, 2, 3, 4, 5]
+xs[0] = 10
+xs[4] = 50
+for x in xs {
+    print(x)
+}

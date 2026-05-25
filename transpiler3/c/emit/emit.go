@@ -400,6 +400,10 @@ func emitStmt(b *strings.Builder, st aotir.Stmt, indent string) error {
 		}
 		fmt.Fprintf(b, "%s%s = %s;\n", indent, s.Name, val)
 		return nil
+	case *aotir.ListSetStmt:
+		return emitListSetStmt(b, s, indent)
+	case *aotir.MapPutStmt:
+		return emitMapPutStmt(b, s, indent)
 	case *aotir.IfStmt:
 		cond, err := emitExpr(s.Cond)
 		if err != nil {
@@ -952,6 +956,12 @@ func walkStmtListOfMap(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 		walkExprListOfMap(s.Init, add)
 	case *aotir.AssignStmt:
 		walkExprListOfMap(s.Value, add)
+	case *aotir.ListSetStmt:
+		walkExprListOfMap(s.Index, add)
+		walkExprListOfMap(s.Value, add)
+	case *aotir.MapPutStmt:
+		walkExprListOfMap(s.Key, add)
+		walkExprListOfMap(s.Value, add)
 	case *aotir.CallStmt:
 		for _, a := range s.Args {
 			walkExprListOfMap(a, add)
@@ -1228,6 +1238,12 @@ func walkStmtExprVisit(st aotir.Stmt, visit func(aotir.Expr)) {
 	case *aotir.LetStmt:
 		walkExprNodeVisit(s.Init, visit)
 	case *aotir.AssignStmt:
+		walkExprNodeVisit(s.Value, visit)
+	case *aotir.ListSetStmt:
+		walkExprNodeVisit(s.Index, visit)
+		walkExprNodeVisit(s.Value, visit)
+	case *aotir.MapPutStmt:
+		walkExprNodeVisit(s.Key, visit)
 		walkExprNodeVisit(s.Value, visit)
 	case *aotir.CallStmt:
 		for _, a := range s.Args {
@@ -2338,6 +2354,40 @@ func emitAppendExpr(v *aotir.AppendExpr) (string, error) {
 		return "", fmt.Errorf("append value: %w", err)
 	}
 	return fmt.Sprintf("mochi_list_%s_append(%s, %s)", suf, recv, val), nil
+}
+
+func emitListSetStmt(b *strings.Builder, s *aotir.ListSetStmt, indent string) error {
+	suf, err := listSuffix(s.ElemType, s.ElemRecordName, s.InnerElemType, s.MapElemKeyType, s.MapElemValueType)
+	if err != nil {
+		return fmt.Errorf("list-set: %w", err)
+	}
+	idx, err := emitExpr(s.Index)
+	if err != nil {
+		return fmt.Errorf("list-set index: %w", err)
+	}
+	val, err := emitExpr(s.Value)
+	if err != nil {
+		return fmt.Errorf("list-set value: %w", err)
+	}
+	fmt.Fprintf(b, "%smochi_list_%s_set(%s, %s, %s);\n", indent, suf, s.Name, idx, val)
+	return nil
+}
+
+func emitMapPutStmt(b *strings.Builder, s *aotir.MapPutStmt, indent string) error {
+	suf, err := mapSuffix(s.KeyType, s.ValueType, aotir.TypeInvalid)
+	if err != nil {
+		return fmt.Errorf("map-put: %w", err)
+	}
+	key, err := emitExpr(s.Key)
+	if err != nil {
+		return fmt.Errorf("map-put key: %w", err)
+	}
+	val, err := emitExpr(s.Value)
+	if err != nil {
+		return fmt.Errorf("map-put value: %w", err)
+	}
+	fmt.Fprintf(b, "%smochi_map_%s_put(&%s, %s, %s);\n", indent, suf, s.Name, key, val)
+	return nil
 }
 
 func emitListSortAscExpr(v *aotir.ListSortAscExpr) (string, error) {
