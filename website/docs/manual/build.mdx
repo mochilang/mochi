@@ -33,6 +33,7 @@ none at all when you add `--portable`).
 | `--portable` | off | Statically link with musl; no shared-library deps |
 | `--emit=c` | off | Keep the generated `.c` source next to the binary |
 | `--cc PATH` | auto | Override the C compiler (`$CC` env also accepted) |
+| `--apex` | off | Build an Actually Portable Executable via cosmocc |
 
 ## Cross-compilation
 
@@ -93,6 +94,24 @@ file app-static
 On macOS, static binaries require a musl cross-compile (use `--triple`).
 The `--portable` flag is silently ignored for wasm32-wasi targets (WASM
 is always fully self-contained).
+
+## Actually Portable Executables
+
+`--apex` builds a single binary via [cosmocc](https://cosmo.zip) that runs
+natively on Linux, macOS, Windows, FreeBSD, NetBSD, and OpenBSD without any
+toolchain install on the target machine:
+
+```bash
+# Requires cosmocc on PATH or MOCHI_COSMOCC_PATH set
+mochi build --target=c-aot --apex --out=app app.mochi
+./app          # runs on macOS
+scp app remote:~ && ssh remote ./app   # runs on Linux
+```
+
+Install cosmocc from [cosmo.zip](https://cosmo.zip) or set `MOCHI_COSMOCC_PATH`
+to point to an existing install. Unlike `--triple` (which requires zig cc),
+`--apex` needs no cross-compiler and no sysroot downloads; cosmocc carries
+everything internally.
 
 ## Inspecting the generated C source
 
