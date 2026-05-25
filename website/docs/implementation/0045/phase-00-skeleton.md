@@ -10,9 +10,9 @@ description: "MEP-45 Phase 0 tracking: spec freeze, transpiler3/c/ skeleton tree
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 0](/docs/mep/mep-0045#phase-0-spec-freeze-and-skeleton-trees) |
-| Status         | IN PROGRESS |
+| Status         | LANDED |
 | Started        | 2026-05-22 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-22 19:01 (GMT+7) |
 | Tracking issue | [#22066](https://github.com/mochilang/mochi/issues/22066) |
 | Tracking PR    | [#22067](https://github.com/mochilang/mochi/pull/22067) |
 
@@ -28,9 +28,9 @@ The user-facing goal of MEP-45 is "ship a Mochi program as a single native binar
 
 | #   | Scope                                                                                                     | Status      | Commit | PR |
 |-----|-----------------------------------------------------------------------------------------------------------|-------------|--------|----|
-| 0.0 | MEP-45 merged with refactored framing, §Phases section, implementation tracking docs, sidebar wiring      | IN PROGRESS | —      | [#22067](https://github.com/mochilang/mochi/pull/22067) |
-| 0.1 | `transpiler3/c/{aotir,lower,emit,build,toolchain/zig,runtime/{include,src}}/doc.go` compile clean         | IN PROGRESS | —      | [#22067](https://github.com/mochilang/mochi/pull/22067) |
-| 0.2 | `tests/transpiler3/c/README.md` documents fixture layout and naming convention                            | IN PROGRESS | —      | [#22067](https://github.com/mochilang/mochi/pull/22067) |
+| 0.0 | MEP-45 merged with refactored framing, §Phases section, implementation tracking docs, sidebar wiring      | LANDED 2026-05-22 17:42 (GMT+7) | —      | [#22067](https://github.com/mochilang/mochi/pull/22067) |
+| 0.1 | `transpiler3/c/{aotir,lower,emit,build,toolchain/zig,runtime/{include,src}}/doc.go` compile clean         | LANDED 2026-05-22 19:01 (GMT+7) | —      | [#22069](https://github.com/mochilang/mochi/pull/22069) |
+| 0.2 | `tests/transpiler3/c/README.md` documents fixture layout and naming convention                            | LANDED 2026-05-22 19:01 (GMT+7) | —      | [#22069](https://github.com/mochilang/mochi/pull/22069) |
 
 ## Decisions made
 
@@ -46,4 +46,4 @@ The user-facing goal of MEP-45 is "ship a Mochi program as a single native binar
 
 ## Closeout notes
 
-_Fill in after gate goes green._
+All 3 sub-phases landed. Phase 0 gate is green. PR #22069 delivered the complete skeleton; PR #22067 delivered the MEP framing.
