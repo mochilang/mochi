@@ -1,0 +1,5 @@
+fun double_it(x: int): int { return x * 2 }
+fun add_ten(x: int): int { return x + 10 }
+fun compose(f: fun(int): int, g: fun(int): int, v: int): int { return f(g(v)) }
+let result = compose(add_ten, double_it, 5)
+print(result)

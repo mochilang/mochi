@@ -132,6 +132,9 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 	// __anon_N names are globally unique across the whole translation unit.
 	anonCounter := 0
 	var liftedFuncs []*aotir.Function
+	// Phase 5.2: shared shim-function dedup map so each __shim_<name> is
+	// emitted exactly once across the whole translation unit.
+	shimFuncs := map[string]bool{}
 
 	// Pass 2a: lower each fun body using the shared funcs table.
 	for _, fn := range funDecls {
@@ -153,6 +156,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 			currentFnReturnListValElem: sig.returnListValElem,
 			anonCounter:                &anonCounter,
 			liftedFuncs:                &liftedFuncs,
+			shimFuncs:                  &shimFuncs,
 		}
 		// Seed parameters into the function scope as immutable.
 		for _, p := range sig.params {
@@ -212,6 +216,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		currentFnReturn: aotir.TypeUnit,
 		anonCounter:     &anonCounter,
 		liftedFuncs:     &liftedFuncs,
+		shimFuncs:       &shimFuncs,
 	}
 	for i, st := range prog.Statements {
 		if st == nil {
@@ -471,6 +476,10 @@ type lowerer struct {
 	// are appended to the Program after the parent function is lowered.
 	anonCounter *int                  // pointer to shared counter across nested lowerers
 	liftedFuncs *[]*aotir.Function    // pointer to shared slice across nested lowerers
+	// Phase 5.2: tracks which named-function shims have already been emitted
+	// (map key: shim name, e.g. "__shim_double"). Shared across nested lowerers
+	// so that each shim is emitted exactly once per translation unit.
+	shimFuncs *map[string]bool
 }
 
 // lscope mirrors aotir's scope: lexical frame with parent chain.
@@ -2547,6 +2556,7 @@ func (l *lowerer) lowerFunExpr(fe *parser.FunExpr) (aotir.Expr, error) {
 		currentFnReturn: sig.ReturnType,
 		anonCounter:     l.anonCounter,
 		liftedFuncs:     l.liftedFuncs,
+		shimFuncs:       l.shimFuncs,
 	}
 	// Seed the fun's own parameters.
 	for _, p := range params {
@@ -2609,6 +2619,77 @@ func (l *lowerer) lowerFunExpr(fe *parser.FunExpr) (aotir.Expr, error) {
 	return lit, nil
 }
 
+// lowerFunRef lifts a bare reference to a named top-level function into a
+// non-capturing closure shim (Phase 5.2). It emits a thin __shim_<name>
+// function that accepts void *__mochi_env (ignored) and forwards to the
+// real named function. The returned FunLit has EnvVarName="" so the
+// compound literal carries env=NULL.
+//
+// Each shim is emitted at most once per translation unit (shimFuncs dedup).
+func (l *lowerer) lowerFunRef(funcName string, sig *funcSig) (aotir.Expr, error) {
+	shimName := "__shim_" + funcName
+
+	// Build FunSig (scalar primitives only in Phase 5.2).
+	funSig := &aotir.FunSig{ReturnType: sig.returnType}
+	for _, p := range sig.params {
+		switch p.Type {
+		case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+		default:
+			return nil, fmt.Errorf("free function ref %q: param type %s not supported in Phase 5.2 (scalar primitives only)", funcName, p.Type)
+		}
+		funSig.ParamTypes = append(funSig.ParamTypes, p.Type)
+	}
+	switch sig.returnType {
+	case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString, aotir.TypeUnit:
+	default:
+		return nil, fmt.Errorf("free function ref %q: return type %s not supported in Phase 5.2 (scalar primitives or unit only)", funcName, sig.returnType)
+	}
+
+	// Emit the shim function exactly once (dedup via shimFuncs).
+	if l.shimFuncs != nil && !(*l.shimFuncs)[shimName] {
+		(*l.shimFuncs)[shimName] = true
+
+		// Build shim params and forwarding call args.
+		irParams := make([]aotir.Param, len(sig.params))
+		args := make([]aotir.Expr, len(sig.params))
+		for i, p := range sig.params {
+			irParams[i] = aotir.Param{Name: p.Name, Type: p.Type}
+			args[i] = &aotir.VarRef{Name: p.Name, VarType: p.Type}
+		}
+
+		// Build shim body: forward the call to the real function.
+		body := &aotir.Block{}
+		if sig.returnType == aotir.TypeUnit {
+			body.Statements = append(body.Statements, &aotir.CallStmt{
+				Func: funcName,
+				Args: args,
+			})
+		} else {
+			body.Statements = append(body.Statements, &aotir.ReturnStmt{
+				Value: &aotir.CallExpr{
+					Func:   funcName,
+					Args:   args,
+					Result: sig.returnType,
+				},
+			})
+		}
+
+		shim := &aotir.Function{
+			Name:       shimName,
+			Params:     irParams,
+			ReturnType: sig.returnType,
+			Body:       body,
+			IsLifted:   true,
+		}
+		*l.liftedFuncs = append(*l.liftedFuncs, shim)
+	}
+
+	return &aotir.FunLit{
+		FuncName: shimName,
+		Sig:      funSig,
+	}, nil
+}
+
 // lowerPrimary lowers a Primary into either a literal, a parenthesised
 // expression, a variable reference, a record literal, a selector
 // chain (variable + zero or more `.field` reads), or a call to a user
@@ -2647,6 +2728,11 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 		}
 		b, ok := l.scope.lookup(pr.Selector.Root)
 		if !ok {
+			// Phase 5.2: bare reference to a named top-level function used as
+			// a fun-typed value. Generate (or reuse) a __shim_<name> wrapper.
+			if fnSig, isFn := l.funcs[pr.Selector.Root]; isFn && len(pr.Selector.Tail) == 0 {
+				return l.lowerFunRef(pr.Selector.Root, fnSig)
+			}
 			return nil, fmt.Errorf("undeclared variable %q", pr.Selector.Root)
 		}
 		var expr aotir.Expr

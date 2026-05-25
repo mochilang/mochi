@@ -1,0 +1,4 @@
+fun double_it(x: int): int { return x * 2 }
+fun apply(f: fun(int): int, v: int): int { return f(v) }
+let result = apply(double_it, 5)
+print(result)

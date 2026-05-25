@@ -1,0 +1,4 @@
+fun greet(name: string): string { return "hello " + name }
+fun transform(f: fun(string): string, s: string): string { return f(s) }
+let result = transform(greet, "world")
+print(result)

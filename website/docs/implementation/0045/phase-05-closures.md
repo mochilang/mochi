@@ -30,7 +30,7 @@ Higher-order combinators are how Mochi expresses data transformation; the query 
 |-----|-------|--------|--------|----|
 | 5.0 | Non-capturing closure support: `FunLit` IR node (lifted to top-level aotir.Function); `FunCallExpr` for calling fun-typed variables; `FunSig` type + `FunTypeName()` C typedef names; `TypeFun` type enum entry; `collectFunSigs` + `emitFunTypedefs` emit passes; verifier updated to carry `FunSig` on TypeFun bindings; lower pass: `lowerFunExpr` lifts anonymous functions, `lowerFunVarCall` for indirect calls; `TestPhase5Closures` gate (8 fixtures). Scalar primitive param/return types only (int, float, bool, string). Unit return supported. | LANDED 2026-05-25 16:30 (GMT+7) | — | — |
 | 5.1 | Capturing closures (free-variable capture by value): env struct heap-allocated, fat pointer `{fn, env}` struct representation. All closures (capturing and non-capturing) use `mochi_closure_*` struct typedef; non-capturing ones set `env=NULL`. Free-variable scanner (`scanFreeVarNames`) pre-scans parser AST; `ClosureEnvStmt` IR node for env alloc; `emitName` field on `lbinding` rewrites captured VarRef to `__e->fieldname`; lifted functions add `void *__mochi_env` first param. `TestPhase5CapturingClosures` gate (8 fixtures). | LANDED 2026-05-25 18:55 (GMT+7) | — | — |
-| 5.2 | Free function as closure shim: `env == NULL` path for top-level functions passed as fun-typed args | NOT STARTED | — | — |
+| 5.2 | Free function as closure shim: `env == NULL` path for top-level functions passed as fun-typed args; `lowerFunRef` lifts a named function reference into a `__shim_<name>` wrapper (IsLifted=true, no captures); shim dedup via `shimFuncs *map[string]bool` shared across all lowerers; `TestPhase5FreeFunctionShim` gate (8 fixtures). | LANDED 2026-05-25 19:12 (GMT+7) | — | — |
 | 5.3 | Method as closure shim: `env == self` path for method references | NOT STARTED | — | — |
 
 ## Decisions made
@@ -78,6 +78,18 @@ __anon_2_env->base = base;
 
 **`ResultFunSig` on `CallExpr`.** Phase 5.1 needed to propagate the function signature through user function calls that return `TypeFun`. Added `ResultFunSig *FunSig` to `CallExpr`, `returnFunSig *aotir.FunSig` to `funcSig`, and `ReturnFunSig *FunSig` to `aotir.Function`. This enables `let f = make_adder(5); f(3)` where `make_adder` returns a closure.
 
+## Phase 5.2 decisions
+
+**Shim function ABI.** Each named function `foo` referenced as a `fun`-typed value gets a thin `__shim_foo` wrapper with `IsLifted=true`. The emitter prepends `void *__mochi_env` as the first C parameter (matching the `fn` field ABI of `mochi_closure_*` structs). Non-capturing shims silently ignore `__mochi_env`. The shim body is a single `ReturnStmt{Value: CallExpr{Func: "foo", ...}}` (or `CallStmt` if the return type is unit).
+
+**Deduplication via `shimFuncs`.** A `*map[string]bool` pointer (`shimFuncs`) is shared across all lowerers in a translation unit, mirroring the existing `liftedFuncs` sharing pattern. When `lowerFunRef` is called for the same function name a second time, it skips re-emitting the shim but still returns a fresh `FunLit` pointing to the already-emitted `__shim_name`.
+
+**`lowerPrimary` hook.** The check is inserted immediately after the scope lookup fails: if `pr.Selector.Root` resolves in `l.funcs` (the named-function table) and `pr.Selector.Tail` is empty (no field access), `lowerFunRef` is called. A function name with a field tail (e.g., `foo.bar`) is not a valid shim reference and falls through to the existing "undeclared variable" error.
+
+**Scalar primitives only in Phase 5.2.** Params and return types are validated to be `int`, `float`, `bool`, `string`, or `unit`. Complex types (records, unions, lists, maps) as shim param/return are deferred to Phase 5.x after the full closure type-widening pass.
+
+**No verifier changes required.** The shim IR is structurally identical to an anonymous non-capturing lifted function: `IsLifted=true`, `EnvTypeName=""`, `Captures=nil`. The verifier already handles this shape from Phase 5.0.
+
 ## Bug fixes in this phase
 
 - `verifyLetStmt` was missing `funSig: s.FunSig` when registering a TypeFun binding in scope. Without it, verifier lookups for fun-typed variables would lose the FunSig, causing indirect calls to fail signature checking.
@@ -88,7 +100,7 @@ __anon_2_env->base = base;
 ## Deferred work
 
 - Capturing closures (Phase 5.1): free variables need an env struct heap-allocated and a fat pointer representation.
-- Top-level named functions passed as `fun`-typed arguments: the vm3 runtime does not handle this correctly (returns nil), so this pattern is deferred until the vm3 oracle is fixed or an alternative comparison method is available.
+- Top-level named functions passed as `fun`-typed arguments: implemented in Phase 5.2 using hand-written `expect.txt` files (vm3 oracle limitation bypassed).
 - Closures over complex types (record/union/list/map) as parameters or return: deferred to Phase 5.x after fat-pointer support lands.
 - Escape analysis for stack-allocated env: deferred to v2.
 
