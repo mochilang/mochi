@@ -1,0 +1,17 @@
+// Phase 9.4: supervised agent infrastructure.
+// mochi_agent_sup (dynamic supervisor with transient restart policy) is compiled
+// and linked as part of the runtime. The supervisor registers with
+// mochi_sup so every Mochi application starts it automatically.
+// This fixture verifies the runtime compiles with the supervisor module
+// present and that normal agent operations continue to work correctly.
+agent Counter {
+    var count: int = 0
+    intent increment() { count = count + 1 }
+    intent value(): int { return count }
+}
+let c = spawn Counter()
+c.increment()
+c.increment()
+let v = c.value()
+print(v)
+print("supervised")

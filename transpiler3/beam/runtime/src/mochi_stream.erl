@@ -1,5 +1,5 @@
 -module(mochi_stream).
--export([make_stream/1, emit/2, subscribe/1, recv_sub/1]).
+-export([make_stream/1, emit/2, subscribe/1, subscribe_limit/2, recv_sub/1]).
 
 %% make_stream/1 — spawn a stream broker process and return its PID.
 %% Cap is ignored (BEAM mailboxes are unbounded).
@@ -13,7 +13,14 @@ emit(Stream, Val) ->
 
 %% subscribe/1 — spawn a subscriber process registered with Stream.
 subscribe(Stream) ->
-    Sub = spawn(fun() -> sub_loop([]) end),
+    Sub = spawn(fun() -> sub_loop([], infinity) end),
+    Stream ! {subscribe, Sub},
+    Sub.
+
+%% subscribe_limit/2 — spawn a subscriber with backpressure: messages are
+%% dropped when the buffer already holds Limit items (Phase 10.2).
+subscribe_limit(Stream, Limit) ->
+    Sub = spawn(fun() -> sub_loop([], Limit) end),
     Stream ! {subscribe, Sub},
     Sub.
 
@@ -35,20 +42,31 @@ stream_loop(Subs) ->
     end.
 
 %% Internal: subscriber buffer loop.
-sub_loop(Buffer) ->
+%% Limit is either `infinity` (no cap) or a positive integer (Phase 10.2).
+sub_loop(Buffer, Limit) ->
     receive
         {stream_event, Val} ->
-            sub_loop(Buffer ++ [Val]);
+            case should_drop(Buffer, Limit) of
+                true ->
+                    %% Buffer full: drop incoming message (backpressure).
+                    sub_loop(Buffer, Limit);
+                false ->
+                    sub_loop(Buffer ++ [Val], Limit)
+            end;
         {recv, Caller} ->
             case Buffer of
                 [H | T] ->
                     Caller ! {sub_value, H},
-                    sub_loop(T);
+                    sub_loop(T, Limit);
                 [] ->
                     receive
                         {stream_event, Val} ->
                             Caller ! {sub_value, Val},
-                            sub_loop([])
+                            sub_loop([], Limit)
                     end
             end
     end.
+
+%% should_drop/2 — true when the buffer is at or beyond the limit.
+should_drop(_Buffer, infinity) -> false;
+should_drop(Buffer, Limit) -> length(Buffer) >= Limit.

@@ -1478,6 +1478,18 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		}
 		return cerl.CCall(cerl.CAtom("mochi_stream"), cerl.CAtom("subscribe"),
 			[]cerl.Expr{stream}), nil
+	case *aotir.SubMakeLimitExpr:
+		// Phase 10.2: subscribe_limit(stream, N) → mochi_stream:subscribe_limit/2
+		stream, err := lowerExpr(l, e.Stream)
+		if err != nil {
+			return nil, err
+		}
+		limit, err := lowerExpr(l, e.Limit)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_stream"), cerl.CAtom("subscribe_limit"),
+			[]cerl.Expr{stream, limit}), nil
 	case *aotir.SubRecvExpr:
 		sub, err := lowerExpr(l, e.Sub)
 		if err != nil {
@@ -2359,10 +2371,17 @@ func agentIntentFuncName(agentName, intentName string) string {
 
 // lowerAgentIntentFunctions generates helper functions for all intents of one agent.
 // Phase 9.1 also emits a dispatch/3 function for the spawned-agent message loop.
+// Phase 9.3 optionally emits a terminate/1 function when on_close is present.
 func (l *lowerer) lowerAgentIntentFunctions(ag *aotir.AgentDecl) error {
 	for i := range ag.Intents {
 		if err := l.lowerAgentIntentFunc(ag, &ag.Intents[i]); err != nil {
 			return fmt.Errorf("intent %s: %w", ag.Intents[i].Name, err)
+		}
+	}
+	// Phase 9.3: emit the terminate function when on_close is present.
+	if ag.OnClose != nil {
+		if err := l.lowerAgentTerminateFunction(ag); err != nil {
+			return fmt.Errorf("terminate function: %w", err)
 		}
 	}
 	// Phase 9.1: emit the dispatch function for spawned agents.
@@ -2507,6 +2526,41 @@ func (l *lowerer) lowerAgentDispatchFunction(ag *aotir.AgentDecl) error {
 	return nil
 }
 
+// agentTerminateFuncName returns the name of the terminate helper for an agent.
+func agentTerminateFuncName(agentName string) string {
+	return "mochi_agent_" + strings.ToLower(agentName) + "_terminate"
+}
+
+// lowerAgentTerminateFunction emits the terminate/1 helper for Phase 9.3 on_close.
+// The generated function signature is:
+//   mochi_agent_<name>_terminate(State) -> ok
+// It executes the on_close body with the final state and returns ok.
+func (l *lowerer) lowerAgentTerminateFunction(ag *aotir.AgentDecl) error {
+	termName := agentTerminateFuncName(ag.Name)
+
+	// Lower the on_close body statements.
+	outer := l.scope
+	l.scope = make(map[string]bool)
+	// Seed state fields as readable vars.
+	for _, f := range ag.Fields {
+		l.scope[f.Name] = true
+	}
+
+	body, err := l.lowerFunctionBody(ag.OnClose.Statements, cerl.CAtom("ok"))
+	l.scope = outer
+	if err != nil {
+		return err
+	}
+
+	l.mod.Defs = append(l.mod.Defs, cerl.FuncDef{
+		Name:  termName,
+		Arity: 1,
+		Vars:  []string{"V___self"},
+		Body:  body,
+	})
+	return nil
+}
+
 // agentFieldZeroValue returns the BEAM zero-value for a given aotir scalar type.
 func agentFieldZeroValue(t aotir.Type) cerl.Expr {
 	switch t {
@@ -2524,6 +2578,8 @@ func agentFieldZeroValue(t aotir.Type) cerl.Expr {
 
 // lowerAgentSpawnExpr lowers `spawn Counter()` to:
 //   mochi_agent_server:start(fun mochi_agent_counter_dispatch/3, #{count => 0})
+// Phase 9.3: if the agent has an on_close block, lowers to start/3 with a terminate fun:
+//   mochi_agent_server:start(DispatchFun, InitState, TerminateFun)
 // The initial state map is built from the agent's field zero-values.
 func (l *lowerer) lowerAgentSpawnExpr(e *aotir.AgentSpawnExpr) (cerl.Expr, error) {
 	ag, ok := l.agents[e.AgentName]
@@ -2548,6 +2604,21 @@ func (l *lowerer) lowerAgentSpawnExpr(e *aotir.AgentSpawnExpr) (cerl.Expr, error
 		[]cerl.Expr{iVar, aVar, sVar},
 		cerl.CApply(cerl.CVarFunc(dispatchName, 3), []cerl.Expr{iVar, aVar, sVar}),
 	)
+
+	// Phase 9.3: if on_close is present, pass a terminate fun as the third arg.
+	if ag.OnClose != nil {
+		termName := agentTerminateFuncName(e.AgentName)
+		tsVar := cerl.CVar("V___ts")
+		terminateFun := cerl.CFun(
+			[]cerl.Expr{tsVar},
+			cerl.CApply(cerl.CVarFunc(termName, 1), []cerl.Expr{tsVar}),
+		)
+		return cerl.CCall(
+			cerl.CAtom("mochi_agent_server"),
+			cerl.CAtom("start"),
+			[]cerl.Expr{dispatchFun, initState, terminateFun},
+		), nil
+	}
 
 	return cerl.CCall(
 		cerl.CAtom("mochi_agent_server"),

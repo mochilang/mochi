@@ -186,6 +186,8 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 				agDecl.Fields = append(agDecl.Fields, aotir.RecordField{Name: fieldName, Type: ft})
 			case blk.Intent != nil:
 				// Intent bodies are lowered in the second pass below.
+			case blk.OnClose != nil:
+				// on_close body is lowered in the second pass below.
 			case blk.Assign != nil:
 				// Assignments in agent body are not supported in Phase 9.3.
 			case blk.On != nil:
@@ -442,15 +444,25 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		ag := st.Agent
 		agDecl := agents[ag.Name]
 		for _, blk := range ag.Body {
-			if blk == nil || blk.Intent == nil {
+			if blk == nil {
 				continue
 			}
-			intent := blk.Intent
-			intentDecl, err := lowerAgentIntentBody(records, unions, agents, funcs, externFuncs, goFuncNames, pythonFuncNames, jsFuncNames, ag.Name, agDecl, intent, &anonCounter, &liftedFuncs, &shimFuncs)
-			if err != nil {
-				return nil, fmt.Errorf("transpiler3/c/lower: agent %q intent %q: %w", ag.Name, intent.Name, err)
+			if blk.Intent != nil {
+				intent := blk.Intent
+				intentDecl, err := lowerAgentIntentBody(records, unions, agents, funcs, externFuncs, goFuncNames, pythonFuncNames, jsFuncNames, ag.Name, agDecl, intent, &anonCounter, &liftedFuncs, &shimFuncs)
+				if err != nil {
+					return nil, fmt.Errorf("transpiler3/c/lower: agent %q intent %q: %w", ag.Name, intent.Name, err)
+				}
+				agDecl.Intents = append(agDecl.Intents, *intentDecl)
 			}
-			agDecl.Intents = append(agDecl.Intents, *intentDecl)
+			// Phase 9.3: lower the on_close body into the AgentDecl.
+			if blk.OnClose != nil {
+				closeBody, err := lowerAgentOnCloseBody(records, unions, agents, funcs, externFuncs, goFuncNames, pythonFuncNames, jsFuncNames, ag.Name, agDecl, blk.OnClose, &anonCounter, &liftedFuncs, &shimFuncs)
+				if err != nil {
+					return nil, fmt.Errorf("transpiler3/c/lower: agent %q on_close: %w", ag.Name, err)
+				}
+				agDecl.OnClose = closeBody
+			}
 		}
 	}
 
@@ -2393,6 +2405,33 @@ func (l *lowerer) lowerSubscribeCall(call *parser.CallExpr) (aotir.Expr, error) 
 	return &aotir.SubMakeExpr{Stream: streamExpr, ElemType: elem}, nil
 }
 
+// lowerSubscribeLimitCall lowers `subscribe_limit(stream, N)` to a SubMakeLimitExpr.
+// Phase 10.2: the subscriber drops incoming messages when its buffer holds N items.
+func (l *lowerer) lowerSubscribeLimitCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 2 {
+		return nil, fmt.Errorf("subscribe_limit() takes exactly 2 arguments (stream, limit), got %d", len(call.Args))
+	}
+	streamExpr, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("subscribe_limit stream: %w", err)
+	}
+	if streamExpr.Type() != aotir.TypeStream {
+		return nil, fmt.Errorf("subscribe_limit: first argument must be stream<T>, got %s", streamExpr.Type())
+	}
+	limitExpr, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("subscribe_limit limit: %w", err)
+	}
+	if limitExpr.Type() != aotir.TypeInt {
+		return nil, fmt.Errorf("subscribe_limit: second argument must be int, got %s", limitExpr.Type())
+	}
+	elem := exprStreamElemType(streamExpr)
+	if elem == aotir.TypeInvalid {
+		return nil, fmt.Errorf("subscribe_limit: cannot determine element type of stream")
+	}
+	return &aotir.SubMakeLimitExpr{Stream: streamExpr, Limit: limitExpr, ElemType: elem}, nil
+}
+
 // lowerRecvSubCall lowers `recv_sub(sub)` to a SubRecvExpr. Phase 9.2.
 func (l *lowerer) lowerRecvSubCall(call *parser.CallExpr) (aotir.Expr, error) {
 	if len(call.Args) != 1 {
@@ -2920,6 +2959,9 @@ func exprStreamElemType(e aotir.Expr) aotir.Type {
 func exprSubElemType(e aotir.Expr) aotir.Type {
 	switch v := e.(type) {
 	case *aotir.SubMakeExpr:
+		return v.ElemType
+	case *aotir.SubMakeLimitExpr:
+		// Phase 10.2: subscribe_limit also produces a TypeSub handle.
 		return v.ElemType
 	case *aotir.VarRef:
 		if v.VarType == aotir.TypeSub {
@@ -4726,6 +4768,12 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	if call.Func == "subscribe" {
 		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
 			return l.lowerSubscribeCall(call)
+		}
+	}
+	// Phase 10.2: subscribe_limit(stream, N) lowers to a SubMakeLimitExpr.
+	if call.Func == "subscribe_limit" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerSubscribeLimitCall(call)
 		}
 	}
 	// Phase 9.2: recv_sub(sub) lowers to a SubRecvExpr.
@@ -8469,4 +8517,60 @@ func lowerAgentIntentBody(
 		ReturnType: retType,
 		Body:       body,
 	}, nil
+}
+
+// lowerAgentOnCloseBody creates a lowerer scoped to the on_close body of an agent.
+// The body has access to agent fields (read-only in terminate context).
+// Returns a *aotir.Block that becomes AgentDecl.OnClose.
+func lowerAgentOnCloseBody(
+	records map[string]*aotir.RecordDecl,
+	unions map[string]*aotir.UnionDecl,
+	agents map[string]*aotir.AgentDecl,
+	funcs map[string]*funcSig,
+	externFuncs map[string]*funcSig,
+	goFuncNames map[string]bool,
+	pythonFuncNames map[string]bool,
+	jsFuncNames map[string]bool,
+	agentName string,
+	agDecl *aotir.AgentDecl,
+	onClose *parser.OnCloseDecl,
+	anonCounter *int,
+	liftedFuncs *[]*aotir.Function,
+	shimFuncs *map[string]bool,
+) (*aotir.Block, error) {
+	variantToUnion := map[string]*aotir.UnionDecl{}
+	l := &lowerer{
+		funcs:           funcs,
+		externFuncs:     externFuncs,
+		goFuncNames:     goFuncNames,
+		pythonFuncNames: pythonFuncNames,
+		jsFuncNames:     jsFuncNames,
+		records:         records,
+		unions:          unions,
+		agents:          agents,
+		variantToUnion:  variantToUnion,
+		scope:           newLScope(nil),
+		currentFnReturn: aotir.TypeUnit,
+		anonCounter:     anonCounter,
+		liftedFuncs:     liftedFuncs,
+		shimFuncs:       shimFuncs,
+	}
+	// Seed agent fields as read-only bindings (terminate receives final state).
+	for _, f := range agDecl.Fields {
+		l.scope.vars[f.Name] = lbinding{
+			t:        f.Type,
+			mutable:  false,
+			emitName: "__self->" + f.Name,
+		}
+	}
+	body := &aotir.Block{}
+	for i, st := range onClose.Body {
+		if st == nil {
+			return nil, fmt.Errorf("on_close stmt %d is nil", i)
+		}
+		if err := l.lowerStatement(body, st); err != nil {
+			return nil, fmt.Errorf("on_close stmt %d: %w", i, err)
+		}
+	}
+	return body, nil
 }

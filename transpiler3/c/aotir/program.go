@@ -1641,6 +1641,16 @@ type SubMakeExpr struct {
 
 func (e *SubMakeExpr) Type() Type { return TypeSub }
 
+// SubMakeLimitExpr creates a subscriber handle with backpressure: incoming
+// messages are dropped when the buffer holds Limit items. Phase 10.2.
+type SubMakeLimitExpr struct {
+	Stream   Expr // must be TypeStream
+	Limit    Expr // must be TypeInt; drop threshold
+	ElemType Type
+}
+
+func (e *SubMakeLimitExpr) Type() Type { return TypeSub }
+
 // SubRecvExpr receives the next value from subscriber Sub, blocking (yielding)
 // when no new data is available. Type() returns ElemType (Phase 9.2).
 type SubRecvExpr struct {
@@ -1670,11 +1680,12 @@ type AgentIntentDecl struct {
 
 // AgentDecl declares one agent type. Fields are the mutable state
 // (scalar-typed only in Phase 9.3). Intents are the synchronous
-// method bodies.
+// method bodies. OnClose holds the optional terminate body (Phase 9.3).
 type AgentDecl struct {
-	Name    string
-	Fields  []RecordField    // same layout as RecordDecl; scalar types only in Phase 9.3
-	Intents []AgentIntentDecl
+	Name     string
+	Fields   []RecordField    // same layout as RecordDecl; scalar types only in Phase 9.3
+	Intents  []AgentIntentDecl
+	OnClose  *Block           // Phase 9.3: body of the on_close { ... } block; nil if absent
 }
 
 // AgentLit constructs an agent value with every field filled in.

@@ -2519,6 +2519,27 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return errors.New("SubMakeExpr: ElemType is TypeInvalid")
 		}
 		return verifyExprCtx(ctx, v.Stream)
+	case *SubMakeLimitExpr:
+		// Phase 10.2: subscribe_limit(stream, N)
+		if v.Stream == nil {
+			return errors.New("SubMakeLimitExpr: nil Stream")
+		}
+		if v.Stream.Type() != TypeStream {
+			return fmt.Errorf("SubMakeLimitExpr: Stream must be TypeStream, got %s", v.Stream.Type())
+		}
+		if v.Limit == nil {
+			return errors.New("SubMakeLimitExpr: nil Limit")
+		}
+		if v.Limit.Type() != TypeInt {
+			return fmt.Errorf("SubMakeLimitExpr: Limit must be TypeInt, got %s", v.Limit.Type())
+		}
+		if v.ElemType == TypeInvalid {
+			return errors.New("SubMakeLimitExpr: ElemType is TypeInvalid")
+		}
+		if err := verifyExprCtx(ctx, v.Stream); err != nil {
+			return err
+		}
+		return verifyExprCtx(ctx, v.Limit)
 	case *SubRecvExpr:
 		if v.Sub == nil {
 			return errors.New("SubRecvExpr: nil Sub")

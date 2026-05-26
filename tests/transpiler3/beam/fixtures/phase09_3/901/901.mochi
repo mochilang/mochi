@@ -1,0 +1,12 @@
+// Phase 9.3: agent with on close block and string field.
+// Verifies on_close compiles correctly with string field access in the body.
+agent Greeter {
+    var name: string = "world"
+    intent set_name(n: string) { name = n }
+    intent greet(): string { return name }
+    on close { print("goodbye") }
+}
+let g = spawn Greeter()
+g.set_name("alice")
+let v = g.greet()
+print(v)

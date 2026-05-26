@@ -761,13 +761,21 @@ type AgentDecl struct {
 	Body []*AgentBlock  `json:"body,omitempty" parser:"'{' @@* '}'"`
 }
 
+// OnCloseDecl is the Phase 9.3 `on close { ... }` block inside an agent body.
+// It maps to the terminate/2 callback in the BEAM gen_server lifecycle.
+type OnCloseDecl struct {
+	Pos  lexer.Position `json:"pos,omitempty" parser:""`
+	Body []*Statement   `json:"body,omitempty" parser:"'on' 'close' '{' @@* '}'"`
+}
+
 type AgentBlock struct {
-	Pos    lexer.Position `json:"pos,omitempty" parser:""`
-	Let    *LetStmt       `json:"let,omitempty" parser:"@@"`
-	Var    *VarStmt       `json:"var,omitempty" parser:"| @@"`
-	Assign *AssignStmt    `json:"assign,omitempty" parser:"| @@"`
-	On     *OnHandler     `json:"on,omitempty" parser:"| @@"`
-	Intent *IntentDecl    `json:"intent,omitempty" parser:"| @@"`
+	Pos      lexer.Position `json:"pos,omitempty" parser:""`
+	OnClose  *OnCloseDecl   `json:"on_close,omitempty" parser:"@@"`
+	Let      *LetStmt       `json:"let,omitempty" parser:"| @@"`
+	Var      *VarStmt       `json:"var,omitempty" parser:"| @@"`
+	Assign   *AssignStmt    `json:"assign,omitempty" parser:"| @@"`
+	On       *OnHandler     `json:"on,omitempty" parser:"| @@"`
+	Intent   *IntentDecl    `json:"intent,omitempty" parser:"| @@"`
 }
 
 type IntentDecl struct {

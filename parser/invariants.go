@@ -162,9 +162,9 @@ func assertAgentBlock(b *AgentBlock) error {
 	if b == nil {
 		return invariant(lexer.Position{}, "agent block entry is nil")
 	}
-	arms := [...]bool{b.Let != nil, b.Var != nil, b.Assign != nil, b.On != nil, b.Intent != nil}
+	arms := [...]bool{b.OnClose != nil, b.Let != nil, b.Var != nil, b.Assign != nil, b.On != nil, b.Intent != nil}
 	if n := countTrue(arms[:]); n != 1 {
-		return invariant(b.Pos, fmt.Sprintf("agent block has %d arms set, expected exactly 1 of {let, var, assign, on, intent}", n))
+		return invariant(b.Pos, fmt.Sprintf("agent block has %d arms set, expected exactly 1 of {on_close, let, var, assign, on, intent}", n))
 	}
 	switch {
 	case b.Let != nil && b.Let.Value != nil:

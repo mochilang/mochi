@@ -390,6 +390,13 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return:     streamRecvSubT,
 		TypeParams: []string{"T"},
 	}, false)
+	// Phase 10.2: subscribe_limit(stream<T>, int): sub<T>
+	streamSubLimitT := &TypeVar{Name: "T"}
+	env.SetVar("subscribe_limit", FuncType{
+		Params:     []Type{StreamType{Elem: streamSubLimitT}, IntType{}},
+		Return:     SubType{Elem: streamSubLimitT},
+		TypeParams: []string{"T"},
+	}, false)
 
 	// Phase 11.2: await_all(list<future<T>>): list<T>
 	awaitAllT := &TypeVar{Name: "T"}
