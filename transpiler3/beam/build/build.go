@@ -180,6 +180,8 @@ func (d *Driver) Build(src, out string, target Target) error {
 		return d.buildRebar3Project(src, out)
 	case TargetMixProject:
 		return d.buildMixProject(src, out)
+	case TargetRelease:
+		return d.buildRelease(src, out)
 	case TargetEscript:
 		// handled below
 	default:
@@ -566,4 +568,40 @@ func loadDeps(src string) []depEntry {
 		return nil
 	}
 	return deps
+}
+
+// buildRelease emits a standalone rebar3 project (same as buildRebar3Project)
+// and then runs `rebar3 release` inside it to produce an OTP release. The
+// release tarball is left at out/_build/default/rel/mochi_app/. rebar3 must
+// be on PATH; callers should check with exec.LookPath("rebar3") first.
+//
+// Phase 15.0.
+func (d *Driver) buildRelease(src, out string) error {
+	// Emit the rebar3 project first.
+	if err := d.buildRebar3Project(src, out); err != nil {
+		return err
+	}
+
+	// Add a minimal relx configuration to rebar.config.
+	rebarPath := filepath.Join(out, "rebar.config")
+	existing, err := os.ReadFile(rebarPath)
+	if err != nil {
+		return fmt.Errorf("beam/build: read rebar.config for relx: %w", err)
+	}
+	relxEntry := `
+{relx, [{release, {mochi_app, "0.1.0"}, [mochi_app, kernel, stdlib, inets, ssl]},
+         {dev_mode, false},
+         {include_erts, true}]}.
+`
+	if err := os.WriteFile(rebarPath, append(existing, []byte(relxEntry)...), 0o644); err != nil {
+		return fmt.Errorf("beam/build: write relx config: %w", err)
+	}
+
+	// Run rebar3 release.
+	cmd := exec.Command("rebar3", "release")
+	cmd.Dir = out
+	if result, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("beam/build: rebar3 release: %w\n%s", err, result)
+	}
+	return nil
 }
