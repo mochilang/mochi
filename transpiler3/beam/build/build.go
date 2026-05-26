@@ -1,5 +1,17 @@
 package build
 
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+
+	"mochi/parser"
+	beamlower "mochi/transpiler3/beam/lower"
+	"mochi/transpiler3/beam/emit"
+	clower "mochi/transpiler3/c/lower"
+	"mochi/types"
+)
+
 // Target selects the output artifact produced by Driver.Build.
 type Target int
 
@@ -28,23 +40,74 @@ type Driver struct {
 	CacheDir string
 }
 
+// escriptShebang is the two-line header that makes a .beam file
+// directly executable as an escript. The escript VM reads the
+// module name from the .beam binary metadata and calls ModName:main/1.
+const escriptShebang = "#!/usr/bin/env escript\n%%!\n"
+
 // Build compiles the Mochi source at src, writes the output artifact
 // to out, and returns any error. The pipeline is:
 //
 //  1. Parse + type-check (compiler3 frontend, shared with MEP-45).
-//  2. Monomorphise + lower to aotir (transpiler3/c passes, reused).
+//  2. Lower to aotir (transpiler3/c/lower, reused from MEP-45).
 //  3. beam/lower: aotir -> cerl.Module.
-//  4. beam/emit: cerl.Module -> .beam files via compile:forms/2.
-//  5. Pack as escript (TargetEscript) or release (TargetRelease).
+//  4. beam/emit: cerl.Module -> .beam file via compile:forms/2.
+//  5. Pack as escript (TargetEscript) or return error for other targets.
 //
-// Phase 0 ships the stub. Each later phase implements the stages
-// required by its gate test.
+// Phase 1 supports TargetEscript only. TargetRelease and TargetAtomVM
+// return an error until their respective phases land.
 func (d *Driver) Build(src, out string, target Target) error {
-	// Stub: implemented in Phase 1.
-	return errNotImplemented("Driver.Build not yet implemented (Phase 1)")
+	if target != TargetEscript {
+		return fmt.Errorf("beam/build: only TargetEscript is supported in Phase 1 (got %d)", target)
+	}
+
+	prog, err := parser.Parse(src)
+	if err != nil {
+		return fmt.Errorf("beam/build: parse %s: %w", src, err)
+	}
+	if errs := types.Check(prog, types.NewEnv(nil)); len(errs) > 0 {
+		return fmt.Errorf("beam/build: type-check %s: %w", src, errs[0])
+	}
+	ir, err := clower.Lower(prog)
+	if err != nil {
+		return fmt.Errorf("beam/build: lower %s: %w", src, err)
+	}
+
+	// Phase 1 uses a fixed module name. Phase N will derive the name
+	// from the source file's package path.
+	const modName = "mochi_main"
+
+	mod, err := beamlower.Lower(ir, modName)
+	if err != nil {
+		return fmt.Errorf("beam/build: beam lower %s: %w", src, err)
+	}
+
+	workDir, err := os.MkdirTemp("", "mochi-beam-")
+	if err != nil {
+		return fmt.Errorf("beam/build: mkdtemp: %w", err)
+	}
+	defer os.RemoveAll(workDir)
+
+	beamFiles, err := emit.Emit(mod, workDir)
+	if err != nil {
+		return fmt.Errorf("beam/build: emit %s: %w", src, err)
+	}
+	if len(beamFiles) == 0 {
+		return fmt.Errorf("beam/build: emit produced no .beam files")
+	}
+
+	beamBytes, err := os.ReadFile(beamFiles[0].Path)
+	if err != nil {
+		return fmt.Errorf("beam/build: read %s: %w", beamFiles[0].Path, err)
+	}
+
+	// Write escript: shebang header + raw .beam bytes.
+	// escript reads the module name from the .beam binary and calls main/1.
+	content := append([]byte(escriptShebang), beamBytes...)
+	if err := os.WriteFile(out, content, 0o755); err != nil {
+		return fmt.Errorf("beam/build: write escript %s: %w", out, err)
+	}
+
+	_ = filepath.Dir(out) // ensure import used
+	return nil
 }
-
-type notImplementedError string
-
-func errNotImplemented(msg string) error { return notImplementedError(msg) }
-func (e notImplementedError) Error() string { return string(e) }

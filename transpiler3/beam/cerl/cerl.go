@@ -397,10 +397,11 @@ func (m *Module) MarshalBinary() ([]byte, error) {
 }
 
 // toTerm builds the {c_module, Anno, Name, Exports, Attrs, Defs} tuple.
+// Exports must be c_var nodes with {Name, Arity} tuples, not plain tuples.
 func (m *Module) toTerm() Term {
 	exports := make(EList, len(m.Exports))
 	for i, e := range m.Exports {
-		exports[i] = ETuple{EAtom(e.Name), EInt(int64(e.Arity))}
+		exports[i] = CVarFunc(e.Name, e.Arity)
 	}
 
 	attrs := make(EList, len(m.Attrs))

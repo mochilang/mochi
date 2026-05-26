@@ -10,9 +10,9 @@ description: "MEP-46 Phase 1 tracking: end-to-end pipeline from print(\"hello, m
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 1](/docs/mep/mep-0046#phase-1-hello-world) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED 2026-05-26 13:01 (GMT+7) |
+| Started        | 2026-05-26 12:47 (GMT+7) |
+| Landed         | 2026-05-26 13:01 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,7 +28,7 @@ Phase 1 is the first point where the BEAM transpiler produces a *real* runnable 
 
 | #   | Scope | Status | Commit | PR |
 |-----|-------|--------|--------|----|
-| 1.0 | End-to-end pipeline: `lower.go`, `emit.go`, `driver.go`, `mochi_str.erl` stub; `001_hello.mochi` fixture green | NOT STARTED | — | — |
+| 1.0 | End-to-end pipeline: `lower.go`, `emit.go`, `build.go`, fixture green | LANDED 2026-05-26 13:01 (GMT+7) | — | — |
 | 1.1 | CLI flags `--target=beam-escript`, `--out`, `--emit=core\|erl\|beam` wired in `cmd/mochi/main.go` | NOT STARTED | — | — |
 | 1.2 | `.mochi/cache/beam/` BLAKE3 cache; hit/miss paths | NOT STARTED | — | — |
 | 1.3 | `mochi_str.erl` fully implemented: binary, integer, float, bool, atom, list | NOT STARTED | — | — |
@@ -227,4 +227,16 @@ The `float_to_binary/1` helper is defined in `mochi_str` rather than calling `io
 
 ## Closeout notes
 
-_Fill in after gate green._
+Phase 1.0 COMPLETE 2026-05-26 13:01 (GMT+7). Sub-phase 1.0 gate green.
+
+`TestPhase1Hello/001_hello` passes: `print("hello, mochi!")` compiles end-to-end to a runnable escript whose stdout is `hello, mochi!\n`, matching `expect.txt` byte-for-byte.
+
+Three deviations from the spec that are worth noting:
+
+1. The escript is a simple shebang-prefixed raw .beam file rather than an archive escript created with `escript:create/2`. This works because escript recognizes the `FOR1` BEAM magic bytes after reading the shebang and flags lines. The archive format (for bundling multiple .beam files) is needed in a later phase when mochi_str.erl runtime functions are required at runtime.
+
+2. `print("str")` lowers to `io:put_chars([<<bin>>, 10])` directly rather than `mochi_str:print(<<bin>>)`. The aotir lowerer renames `print` to `mochi_print_str` (for string args); the beam lower pass handles `mochi_print_str` and inlines the io call. mochi_str runtime module is deferred to Phase 1.3.
+
+3. The Core Erlang export list uses `c_var` nodes `{c_var,[],{Name,Arity}}` as required by `core_lint`, not plain `{Name,Arity}` tuples as initially coded. This was caught by the compile:forms error and fixed.
+
+Sub-phases 1.1, 1.2, 1.3 are pending (CLI flags, BLAKE3 cache, full mochi_str).
