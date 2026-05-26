@@ -1,12 +1,16 @@
 package build
 
 import (
+	"encoding/hex"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"lukechampine.com/blake3"
 
 	"mochi/parser"
 	beamlower "mochi/transpiler3/beam/lower"
@@ -92,6 +96,53 @@ func compileRuntime(outDir string) ([]string, error) {
 	return beamFiles, nil
 }
 
+// cacheKey returns the BLAKE3 hex digest of the source file content combined
+// with the current compiler version string. This uniquely identifies a build
+// artifact so that unchanged source files skip recompilation (Phase 1.2).
+func (d *Driver) cacheKey(src string) (string, error) {
+	content, err := os.ReadFile(src)
+	if err != nil {
+		return "", err
+	}
+	h := blake3.New(32, nil)
+	h.Write(content)
+	h.Write([]byte(compilerVersion))
+	return hex.EncodeToString(h.Sum(nil)), nil
+}
+
+// compilerVersion is a sentinel that changes whenever the compiler pipeline
+// changes in a way that affects generated output. Bump this string whenever a
+// new phase changes code-gen semantics.
+const compilerVersion = "mep46-v1"
+
+// cacheDir returns the effective cache directory for this driver, defaulting
+// to `.mochi/cache/beam/` adjacent to the source file when CacheDir is empty.
+func (d *Driver) cacheDir(src string) string {
+	if d.CacheDir != "" {
+		return d.CacheDir
+	}
+	return filepath.Join(filepath.Dir(src), ".mochi", "cache", "beam")
+}
+
+// copyFile copies src to dst, creating dst's parent directories as needed.
+func copyFile(dst, src string) error {
+	if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+		return err
+	}
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	out, err := os.OpenFile(dst, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o755)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	_, err = io.Copy(out, in)
+	return err
+}
+
 // Build compiles the Mochi source at src, writes the output artifact
 // to out, and returns any error. The pipeline is:
 //
@@ -102,10 +153,21 @@ func compileRuntime(outDir string) ([]string, error) {
 //  5. Compile runtime .erl files to .beam.
 //  6. Pack as archive escript (TargetEscript).
 //
-// Phase 2 supports TargetEscript only.
+// If CacheDir is set (or the default .mochi/cache/beam/ directory exists),
+// Build checks a BLAKE3 content-addressed cache before recompiling.
+// Phase 1.2: rebuild on unchanged source is a file-copy no-op.
 func (d *Driver) Build(src, out string, target Target) error {
 	if target != TargetEscript {
 		return fmt.Errorf("beam/build: only TargetEscript is supported in Phase 2 (got %d)", target)
+	}
+
+	// Phase 1.2: check cache before doing any compilation work.
+	cacheKey, err := d.cacheKey(src)
+	if err == nil {
+		cacheFile := filepath.Join(d.cacheDir(src), cacheKey+".escript")
+		if _, err := os.Stat(cacheFile); err == nil {
+			return copyFile(out, cacheFile)
+		}
 	}
 
 	prog, err := parser.Parse(src)
@@ -148,7 +210,17 @@ func (d *Driver) Build(src, out string, target Target) error {
 	}
 
 	// Pack as archive escript.
-	return packArchiveEscript(out, beamFiles[0].Path, runtimeBeams)
+	if err := packArchiveEscript(out, beamFiles[0].Path, runtimeBeams); err != nil {
+		return err
+	}
+
+	// Phase 1.2: store in cache so the next identical build is a copy.
+	if cacheKey != "" {
+		cacheFile := filepath.Join(d.cacheDir(src), cacheKey+".escript")
+		// Best-effort: ignore errors so a read-only cache dir doesn't break builds.
+		_ = copyFile(cacheFile, out)
+	}
+	return nil
 }
 
 // packArchiveEscript creates a zip-archive escript using escript:create/2
