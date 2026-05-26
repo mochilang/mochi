@@ -1,0 +1,15 @@
+type Sign = Pos(value: int) | Neg(value: int) | Zero
+
+fun describe(s: Sign): int {
+    return match s {
+        Pos(v) when v > 10 => 2
+        Pos(v) => 1
+        Neg(v) => -1
+        Zero => 0
+    }
+}
+
+print(describe(Pos { value: 20 }))
+print(describe(Pos { value: 5 }))
+print(describe(Neg { value: 3 }))
+print(describe(Zero {}))

@@ -1539,10 +1539,15 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 				if !unify(targetType, st, nil) {
 					return nil, errTypeMismatch(c.Pos, targetType, st)
 				}
-				if matchedVariants[call.Func] {
+				// Phase 5.1: guard clauses allow the same variant to appear in
+				// multiple arms with different guards, so skip the redundancy
+				// check when a `when` guard is present.
+				if matchedVariants[call.Func] && c.Guard == nil {
 					return nil, errMatchArmRedundant(c.Pos, "duplicate variant `"+call.Func+"`")
 				}
-				matchedVariants[call.Func] = true
+				if c.Guard == nil {
+					matchedVariants[call.Func] = true
+				}
 				child := NewEnv(env)
 				for idx, arg := range call.Args {
 					if name, ok := identName(arg); ok {

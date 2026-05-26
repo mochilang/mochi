@@ -6452,7 +6452,15 @@ func (l *lowerer) lowerMatchArm(c *parser.MatchCase, ud *aotir.UnionDecl, result
 		if err != nil {
 			return nil, true, err
 		}
-		return &aotir.MatchArm{VariantName: "", Body: body}, true, nil
+		var guard aotir.Expr
+		if c.Guard != nil {
+			g, err := l.lowerExpr(c.Guard)
+			if err != nil {
+				return nil, true, fmt.Errorf("arm guard: %w", err)
+			}
+			guard = g
+		}
+		return &aotir.MatchArm{VariantName: "", Guard: guard, Body: body}, true, nil
 	}
 
 	// Field-bearing variant: `Circle(r) => ...`
@@ -6489,11 +6497,26 @@ func (l *lowerer) lowerMatchArm(c *parser.MatchCase, ud *aotir.UnionDecl, result
 			})
 			bindingScope[varName] = lbinding{t: vd.Fields[i].FieldType, mutable: false}
 		}
+		// Lower guard with binding scope injected so pattern variables are in scope.
+		var guard aotir.Expr
+		if c.Guard != nil {
+			prev := l.scope
+			l.scope = newLScope(prev)
+			for name, b := range bindingScope {
+				l.scope.vars[name] = b
+			}
+			g, err := l.lowerExpr(c.Guard)
+			l.scope = prev
+			if err != nil {
+				return nil, false, fmt.Errorf("arm guard: %w", err)
+			}
+			guard = g
+		}
 		body, err := l.lowerMatchBodyWithScope(c, bindingScope, resultVar, resultType)
 		if err != nil {
 			return nil, false, err
 		}
-		return &aotir.MatchArm{VariantName: variantName, Tag: vd.Tag, Bindings: bindings, Body: body}, false, nil
+		return &aotir.MatchArm{VariantName: variantName, Tag: vd.Tag, Bindings: bindings, Guard: guard, Body: body}, false, nil
 	}
 
 	// Unit variant: `None => ...` or `MyVariant => ...`
@@ -6508,11 +6531,19 @@ func (l *lowerer) lowerMatchArm(c *parser.MatchCase, ud *aotir.UnionDecl, result
 		if vd == nil {
 			return nil, false, fmt.Errorf("pattern variant %q not found in union %q", variantName, ud.Name)
 		}
+		var guard aotir.Expr
+		if c.Guard != nil {
+			g, err := l.lowerExpr(c.Guard)
+			if err != nil {
+				return nil, false, fmt.Errorf("arm guard: %w", err)
+			}
+			guard = g
+		}
 		body, err := l.lowerMatchBody(c, nil, resultVar, resultType)
 		if err != nil {
 			return nil, false, err
 		}
-		return &aotir.MatchArm{VariantName: variantName, Tag: vd.Tag, Body: body}, false, nil
+		return &aotir.MatchArm{VariantName: variantName, Tag: vd.Tag, Guard: guard, Body: body}, false, nil
 	}
 
 	return nil, false, fmt.Errorf("unsupported pattern shape in Phase 4.0 (expected identifier or call pattern)")

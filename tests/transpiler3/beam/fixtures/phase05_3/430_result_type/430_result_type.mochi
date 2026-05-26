@@ -1,0 +1,21 @@
+type Result = Ok(value: int) | Err(code: int)
+
+fun divide(a: int, b: int): Result {
+    if b == 0 {
+        return Err { code: 1 }
+    }
+    return Ok { value: a / b }
+}
+
+var r1: Result = divide(10, 2)
+var r2: Result = divide(5, 0)
+
+match r1 {
+    Ok(v) => print(v)
+    Err(c) => print(0 - c)
+}
+
+match r2 {
+    Ok(v) => print(v)
+    Err(c) => print(0 - c)
+}

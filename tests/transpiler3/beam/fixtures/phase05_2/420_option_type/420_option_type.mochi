@@ -1,0 +1,19 @@
+type MaybeInt = Some(value: int) | None
+
+fun get_or_default(opt: MaybeInt, default_val: int): int {
+    return match opt {
+        Some(v) => v
+        None => default_val
+    }
+}
+
+var present: MaybeInt = Some { value: 42 }
+var absent: MaybeInt = None {}
+
+print(get_or_default(present, 0))
+print(get_or_default(absent, 0))
+
+match present {
+    Some(v) => print(v)
+    None => print(-1)
+}

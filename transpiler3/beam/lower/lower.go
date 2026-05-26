@@ -2148,6 +2148,16 @@ func (l *lowerer) lowerMatchArm(arm *aotir.MatchArm, s *aotir.MatchStmt, cont ce
 		}
 	}
 
+	// Lower guard expression (Phase 5.1). When absent, use literal true.
+	guardExpr := cerl.Expr(cerl.CAtom("true"))
+	if arm.Guard != nil {
+		g, err := lowerExpr(l, arm.Guard)
+		if err != nil {
+			return nil, fmt.Errorf("beam/lower: match arm guard: %w", err)
+		}
+		guardExpr = g
+	}
+
 	// Lower body.
 	var bodyExpr cerl.Expr
 	var err error
@@ -2167,7 +2177,7 @@ func (l *lowerer) lowerMatchArm(arm *aotir.MatchArm, s *aotir.MatchStmt, cont ce
 		return nil, err
 	}
 
-	return cerl.CClause([]cerl.Expr{pat}, cerl.CAtom("true"), bodyExpr), nil
+	return cerl.CClause([]cerl.Expr{pat}, guardExpr, bodyExpr), nil
 }
 
 // lowerMatchArmAsExpr lowers a match arm body used as an expression value.
