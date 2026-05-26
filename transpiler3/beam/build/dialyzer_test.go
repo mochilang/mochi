@@ -32,7 +32,7 @@ func TestDialyzer(t *testing.T) {
 	// which is harmless and expected for a subset build.
 	pltPath := filepath.Join(t.TempDir(), "mochi_runtime.plt")
 	buildPlt := exec.Command(dialyzer, "--build_plt",
-		"--apps", "erts", "kernel", "stdlib",
+		"--apps", "erts", "kernel", "stdlib", "inets", "public_key", "ssl",
 		"--output_plt", pltPath)
 	buildOut, buildErr := buildPlt.CombinedOutput()
 	if buildErr != nil && buildPlt.ProcessState.ExitCode() == 1 {

@@ -1033,6 +1033,10 @@ func collectExprVarRefs(expr aotir.Expr) []string {
 		names = append(names, collectExprVarRefs(e.Value)...)
 	case *aotir.FieldAccess:
 		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.StrConvertExpr:
+		names = append(names, collectExprVarRefs(e.Operand)...)
+	case *aotir.HttpGetExpr:
+		names = append(names, collectExprVarRefs(e.URL)...)
 	}
 	return names
 }
@@ -1498,6 +1502,14 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 	// Phase 13.0: LLM generate → mochi_llm:generate/3
 	case *aotir.LLMGenerateExpr:
 		return lowerLLMGenerateExpr(l, e)
+
+	// Phase 14.0: HTTP GET → mochi_fetch:get/1
+	case *aotir.HttpGetExpr:
+		url, err := lowerExpr(l, e.URL)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_fetch"), cerl.CAtom("get"), []cerl.Expr{url}), nil
 
 	// Phase 8.0: Datalog compile-time evaluation.
 	case *aotir.DatalogQueryExpr:

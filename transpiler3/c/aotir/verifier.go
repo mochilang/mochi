@@ -2060,6 +2060,14 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("LinesExpr: Path must be TypeString, got %s", v.Path.Type())
 		}
 		return verifyExprCtx(ctx, v.Path)
+	case *HttpGetExpr:
+		if v.URL == nil {
+			return errors.New("HttpGetExpr: nil URL")
+		}
+		if v.URL.Type() != TypeString {
+			return fmt.Errorf("HttpGetExpr: URL must be TypeString, got %s", v.URL.Type())
+		}
+		return verifyExprCtx(ctx, v.URL)
 	case *LoadCSVExpr:
 		if v.Path == nil {
 			return errors.New("LoadCSVExpr: nil Path")

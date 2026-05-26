@@ -952,6 +952,9 @@ func (l *lowerer) lowerStatement(out *aotir.Block, st *parser.Statement) error {
 	case st.EmitCall != nil:
 		// Phase 9.2: emit(stream, val) parsed as EmitCallStmt (keyword form).
 		return l.lowerEmitCallStmt(out, st.EmitCall)
+	case st.Fetch != nil:
+		// Phase 14.0: fetch <url> into <var>
+		return l.lowerFetchStmt(out, st.Fetch)
 	}
 	return fmt.Errorf("unsupported statement in Phase 3.1")
 }
@@ -2251,6 +2254,23 @@ func (l *lowerer) lowerEmitCallStmt(out *aotir.Block, ec *parser.EmitCallStmt) e
 		return fmt.Errorf("emit: stream element type is %s, value is %s", elem, valExpr.Type())
 	}
 	out.Statements = append(out.Statements, &aotir.StreamEmitStmt{Stream: streamExpr, Val: valExpr, ElemType: elem})
+	return nil
+}
+
+// lowerFetchStmt lowers `fetch <url> into <var>` to a LetStmt binding an
+// HttpGetExpr to the target variable. Phase 14.0.
+func (l *lowerer) lowerFetchStmt(out *aotir.Block, fs *parser.FetchStmt) error {
+	urlExpr, err := l.lowerExpr(fs.URL)
+	if err != nil {
+		return fmt.Errorf("fetch url: %w", err)
+	}
+	httpGet := &aotir.HttpGetExpr{URL: urlExpr}
+	out.Statements = append(out.Statements, &aotir.LetStmt{
+		Name:    fs.Target,
+		VarType: aotir.TypeString,
+		Init:    httpGet,
+	})
+	l.scope.vars[fs.Target] = lbinding{t: aotir.TypeString}
 	return nil
 }
 

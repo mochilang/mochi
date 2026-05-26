@@ -1296,6 +1296,12 @@ type LinesExpr struct{ Path Expr }
 
 func (*LinesExpr) Type() Type { return TypeList }
 
+// HttpGetExpr performs an HTTP GET and returns the response body as a string.
+// On BEAM it calls mochi_fetch:get/1 (httpc-backed). Phase 14.0.
+type HttpGetExpr struct{ URL Expr }
+
+func (*HttpGetExpr) Type() Type { return TypeString }
+
 // LoadCSVExpr reads a CSV file and returns a list<list<string>> where
 // each outer element is a row and each inner element is a cell value.
 // The emitter calls the TU-local static helper __mochi_load_csv(path)
