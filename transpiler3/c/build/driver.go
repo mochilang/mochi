@@ -14,6 +14,7 @@ import (
 	"mochi/transpiler3/c/emit"
 	"mochi/transpiler3/c/lower"
 	"mochi/transpiler3/c/runtime"
+	"mochi/transpiler3/c/toolchain/cosmocc"
 	"mochi/transpiler3/c/toolchain/zig"
 	"mochi/types"
 )
@@ -365,22 +366,23 @@ func (d *Driver) resolveCCForTarget(target string) (string, []string, error) {
 	return d.resolveCC()
 }
 
-// resolveCosmoCC finds the cosmocc binary for Phase 13.0 APE builds.
+// resolveCosmoCC finds the cosmocc binary for APE builds.
+//
 // Resolution order:
 //  1. MOCHI_COSMOCC_PATH env var (absolute path to the cosmocc binary).
-//  2. "cosmocc" on PATH via exec.LookPath.
-//
-// cosmocc is not vendored (unlike zig); callers must install it manually
-// or set MOCHI_COSMOCC_PATH. The Phase 13.0 gate test skips when neither
-// is found so that CI environments without cosmocc are unaffected.
+//  2. Vendored download under the Mochi cache (cosmocc.Find, Phase 13.1).
+//  3. "cosmocc" on PATH via exec.LookPath.
 func (d *Driver) resolveCosmoCC() (string, []string, error) {
 	if v := strings.TrimSpace(os.Getenv("MOCHI_COSMOCC_PATH")); v != "" {
 		return v, nil, nil
 	}
+	if bin, err := cosmocc.Find(); err == nil && bin != "" {
+		return bin, nil, nil
+	}
 	if path, err := exec.LookPath("cosmocc"); err == nil {
 		return path, nil, nil
 	}
-	return "", nil, errors.New("cosmocc not found: set MOCHI_COSMOCC_PATH env var or install cosmocc on PATH (see https://cosmo.zip)")
+	return "", nil, errors.New("cosmocc not found: set MOCHI_COSMOCC_PATH, run 'mochi cosmocc install', or install cosmocc on PATH (see https://cosmo.zip)")
 }
 
 // resolveCC looks up the C compiler to invoke and returns its
