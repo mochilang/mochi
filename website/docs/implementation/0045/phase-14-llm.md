@@ -32,10 +32,16 @@ LLM generation is the user-facing AI-augmented workflow that Mochi positions its
 | 14.1 | OpenAI live provider via libcurl (`-DMOCHI_LLM_HAVE_CURL -lcurl`); simple JSON extraction for `choices[0].message.content`; `TestPhase14OpenAI` gate (cassette + live-no-api-key sub-tests; no real API call) | LANDED 2026-05-26 07:24 (GMT+7) | — | — |
 | 14.2 | Anthropic live provider via libcurl (`ANTHROPIC_API_KEY`); `llm_anthropic_live()` with `x-api-key` + `anthropic-version` headers; extracts `content[0].text` via strstr; `TestPhase14Anthropic` gate (cassette + live-no-api-key sub-tests) | LANDED 2026-05-26 07:30 (GMT+7) | — | — |
 | 14.3 | Google live provider (`GOOGLE_API_KEY`; API key in URL query param; `gemini-1.5-flash` default; extracts `candidates[0].content.parts[0].text` via strstr); `TestPhase14Google` gate | LANDED 2026-05-26 07:32 (GMT+7) | — | — |
-| 14.4 | llama.cpp local provider (linked only with `--with-llama`)                                                         | NOT STARTED | —      | — |
+| 14.4 | llama.cpp local provider (`-DMOCHI_LLM_HAVE_LLAMA -lllama`; greedy sampling via `llm_llama_greedy`; `LLAMA_MODEL_PATH` env var; stub in default build); `TestPhase14Llama` gate (cassette + stub-no-model-path sub-tests) | LANDED 2026-05-26 07:36 (GMT+7) | — | — |
 | 14.5 | Live HTTP providers via libcurl + yyjson; cassette recording mode                                                  | NOT STARTED | —      | — |
 
 ## Decisions made
+
+**Phase 14.4: llama.cpp opt-in via compile flag.** The llama.cpp provider is implemented under `#if defined(MOCHI_LLM_HAVE_LLAMA)`. Default builds (without this flag) use a stub that prints a diagnostic mentioning `LLAMA_MODEL_PATH` and `--with-llama`. Users with a GGUF model file compile with `-DMOCHI_LLM_HAVE_LLAMA -lllama` and set `LLAMA_MODEL_PATH` at runtime.
+
+**Phase 14.4: greedy sampling.** `llm_llama_local()` uses greedy argmax token selection (no temperature/top-p sampling), which is deterministic and sufficient for the use cases Mochi targets. Advanced sampling can be wired via llama.cpp's sampler chain in a future sub-phase.
+
+**Phase 14.4: gate uses stub mode only.** `TestPhase14Llama` builds without `-DMOCHI_LLM_HAVE_LLAMA` (no llama.cpp dependency in CI). The gate verifies cassette mode works and that the stub prints a diagnostic when `LLAMA_MODEL_PATH` is unset.
 
 **Phase 14.3: Google API key in URL.** The Google Generative Language API authenticates via a `?key=<GOOGLE_API_KEY>` query parameter appended to the URL (`https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}`), not a header. The URL is built with `snprintf` in `llm_google_live()`. Default model is `gemini-1.5-flash`.
 
@@ -71,4 +77,4 @@ _Provider-specific tool-use / function-calling integration tests: a follow-up ph
 
 ## Closeout notes
 
-Sub-phases 14.0 through 14.3 are LANDED. The `generate <provider> { ... }` expression compiles and runs in cassette replay mode with 10 fixtures; OpenAI, Anthropic, and Google live providers are available when compiled with `-DMOCHI_LLM_HAVE_CURL -lcurl`. Provider 14.4 (llama.cpp) and cassette recording (14.5) remain NOT STARTED.
+Sub-phases 14.0 through 14.4 are LANDED. The `generate <provider> { ... }` expression compiles and runs in cassette replay mode; OpenAI, Anthropic, and Google live providers are available with `-DMOCHI_LLM_HAVE_CURL -lcurl`; llama.cpp local inference is available with `-DMOCHI_LLM_HAVE_LLAMA -lllama` and `LLAMA_MODEL_PATH`. Cassette recording (14.5) remains NOT STARTED.
