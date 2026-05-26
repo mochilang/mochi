@@ -4582,6 +4582,11 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	if !ok {
 		return nil, fmt.Errorf("unresolved callee %q", call.Func)
 	}
+	// Phase 6.2: partial application. When any argument is `_`, synthesize
+	// a FunLit that captures the fixed args and accepts the free positions.
+	if hasUnderscoreArgs(call) {
+		return l.lowerPartialApply(call, sig)
+	}
 	if sig.returnType == aotir.TypeUnit {
 		return nil, fmt.Errorf("call to %q returns unit and cannot appear in an expression", call.Func)
 	}
@@ -5465,6 +5470,204 @@ func identName(e *parser.Expr) (string, bool) {
 func isUnderscoreExpr(e *parser.Expr) bool {
 	n, ok := identName(e)
 	return ok && n == "_"
+}
+
+// hasUnderscoreArgs reports whether any argument of call is a bare `_`.
+// Used by lowerUserCallExpr to detect partial application (Phase 6.2).
+func hasUnderscoreArgs(call *parser.CallExpr) bool {
+	for _, a := range call.Args {
+		if isUnderscoreExpr(a) {
+			return true
+		}
+	}
+	return false
+}
+
+// lowerPartialApply handles a call expression where some arguments are `_`
+// (Phase 6.2 partial application). It synthesizes a capturing FunLit that:
+//   - fixes the non-`_` arguments by capturing their lowered values, and
+//   - accepts one new parameter for each `_` position.
+//
+// For example, `add(5, _)` with signature (int, int)->int becomes:
+//
+//	fun(__p1: int): int => add(5, __p1)
+//
+// Only scalar-primitive (int, float, bool, string) parameter types are
+// supported in Phase 6.2; non-scalar `_` positions return an error.
+func (l *lowerer) lowerPartialApply(call *parser.CallExpr, sig *funcSig) (aotir.Expr, error) {
+	if l.anonCounter == nil || l.liftedFuncs == nil {
+		return nil, fmt.Errorf("partial application for %q: lowerer not initialized for closure lifting (anonCounter/liftedFuncs nil)", call.Func)
+	}
+	if len(call.Args) != len(sig.params) {
+		return nil, fmt.Errorf("partial application for %q: expects %d args, got %d", call.Func, len(sig.params), len(call.Args))
+	}
+
+	// Separate fixed args (lowered now) from free positions.
+	type fixedArg struct {
+		captName string // capture variable name (e.g. "__pa_0")
+		expr     aotir.Expr
+		paramIdx int
+	}
+	type freeParam struct {
+		paramName string // e.g. "__p0"
+		paramIdx  int
+		paramType aotir.Type
+	}
+
+	var fixed []fixedArg
+	var free []freeParam
+
+	for i, a := range call.Args {
+		if isUnderscoreExpr(a) {
+			pt := sig.params[i].Type
+			switch pt {
+			case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+			default:
+				return nil, fmt.Errorf("partial application for %q: arg %d is `_` with non-scalar type %s; only scalar primitives are supported in Phase 6.2", call.Func, i, pt)
+			}
+			free = append(free, freeParam{
+				paramName: fmt.Sprintf("__p%d", i),
+				paramIdx:  i,
+				paramType: pt,
+			})
+		} else {
+			expr, err := l.lowerExpr(a)
+			if err != nil {
+				return nil, fmt.Errorf("partial application for %q arg %d: %w", call.Func, i, err)
+			}
+			fixed = append(fixed, fixedArg{
+				captName: fmt.Sprintf("__pa_%d", i),
+				expr:     expr,
+				paramIdx: i,
+			})
+		}
+	}
+
+	if len(free) == 0 {
+		return nil, fmt.Errorf("partial application for %q: hasUnderscoreArgs was true but no free positions found", call.Func)
+	}
+
+	// Validate return type is scalar or unit.
+	switch sig.returnType {
+	case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString, aotir.TypeUnit:
+	default:
+		return nil, fmt.Errorf("partial application for %q: return type %s not supported in Phase 6.2 (scalar primitives or unit only)", call.Func, sig.returnType)
+	}
+
+	// Assign a fresh __anon_N name for the lifted function.
+	*l.anonCounter++
+	n := *l.anonCounter
+	liftedName := fmt.Sprintf("__anon_%d", n)
+
+	// Build the FunSig for the partial closure (only free params).
+	funSig := &aotir.FunSig{ReturnType: sig.returnType}
+	for _, fp := range free {
+		funSig.ParamTypes = append(funSig.ParamTypes, fp.paramType)
+	}
+
+	// Build captures (one per fixed arg).
+	var captures []aotir.FunCapture
+	for _, fa := range fixed {
+		captures = append(captures, aotir.FunCapture{
+			FieldName: fa.captName,
+			VarType:   fa.expr.Type(),
+			SrcName:   fa.captName, // will be introduced via LetStmt in enclosing scope... see below
+		})
+	}
+
+	// Build the lifted function's parameter list (only free params).
+	irParams := make([]aotir.Param, len(free))
+	for i, fp := range free {
+		irParams[i] = aotir.Param{Name: fp.paramName, Type: fp.paramType}
+	}
+
+	// Build the call args inside the closure body: mix fixed captures + free params.
+	bodyCallArgs := make([]aotir.Expr, len(sig.params))
+	freeIdx := 0
+	fixedIdx := 0
+	for i := range sig.params {
+		if freeIdx < len(free) && free[freeIdx].paramIdx == i {
+			bodyCallArgs[i] = &aotir.VarRef{Name: free[freeIdx].paramName, VarType: free[freeIdx].paramType}
+			freeIdx++
+		} else {
+			// Fixed arg: read from capture. In the closure body, the capture is
+			// accessed via VarRef with the capture's field name (the BEAM lowerer
+			// knows captures are naturally in scope via c_fun; for C, the emitter
+			// uses __e->fieldname, which we encode as the emitName prefix).
+			fa := fixed[fixedIdx]
+			bodyCallArgs[i] = &aotir.VarRef{
+				Name:    "__e->" + fa.captName,
+				VarType: fa.expr.Type(),
+			}
+			fixedIdx++
+		}
+	}
+
+	// Build the closure body: a single return statement calling the original function.
+	bodyCallExpr := &aotir.CallExpr{
+		Func:   call.Func,
+		Args:   bodyCallArgs,
+		Result: sig.returnType,
+	}
+	var bodyStmt aotir.Stmt
+	if sig.returnType == aotir.TypeUnit {
+		bodyStmt = &aotir.CallStmt{Func: call.Func, Args: bodyCallArgs}
+	} else {
+		bodyStmt = &aotir.ReturnStmt{Value: bodyCallExpr}
+	}
+	body := &aotir.Block{Statements: []aotir.Stmt{bodyStmt}}
+
+	// Env type name (for C backend).
+	envTypeName := fmt.Sprintf("__anon_%d_env_t", n)
+	envVarName := fmt.Sprintf("__anon_%d_env", n)
+
+	// Emit the lifted function. The captures list on the Function node is used
+	// by the C emitter to build the env struct typedef; BEAM ignores it.
+	lifted := &aotir.Function{
+		Name:        liftedName,
+		Params:      irParams,
+		ReturnType:  sig.returnType,
+		Body:        body,
+		IsLifted:    true,
+		EnvTypeName: envTypeName,
+		Captures:    captures,
+	}
+	*l.liftedFuncs = append(*l.liftedFuncs, lifted)
+
+	// We need to bind the fixed-arg expressions into the enclosing scope so
+	// the env initializer can reference them. We do this by emitting LetStmts
+	// into the enclosing block (via l.currentBlock). This is how Phase 5.1
+	// capturing closures work: the ClosureEnvStmt is emitted before the
+	// FunLit binding. Here we use named temp bindings so the fixed exprs are
+	// available when ClosureEnvStmt fills in the env struct.
+	//
+	// We pre-register each capture temp in the enclosing scope so that
+	// sub-expressions that read them can resolve. If l.currentBlock is nil
+	// (expression-only context without a surrounding statement), fall back
+	// to embedding the captures inline via a fresh inner scope.
+
+	// Register fixed-arg temps in the scope and (if we have a currentBlock)
+	// emit LetStmts for them so the env alloc can reference them.
+	for _, fa := range fixed {
+		if l.currentBlock != nil {
+			l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.LetStmt{
+				Name:    fa.captName,
+				VarType: fa.expr.Type(),
+				Init:    fa.expr,
+			})
+		}
+		l.scope.vars[fa.captName] = lbinding{t: fa.expr.Type()}
+	}
+
+	// Build the FunLit node (the value produced by this expression).
+	lit := &aotir.FunLit{
+		FuncName:    liftedName,
+		Sig:         funSig,
+		Captures:    captures,
+		EnvTypeName: envTypeName,
+		EnvVarName:  envVarName,
+	}
+	return lit, nil
 }
 
 // ----- Phase 7.3: hash join helpers -----

@@ -716,6 +716,39 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			return nil, errTooManyArgs(p.Pos, paramCount, argCount)
 		}
 
+		// Phase 6.2: partial application via `_` placeholders.
+		// When any argument is a bare `_`, validate the non-placeholder
+		// arguments and return a FuncType whose params are the types of
+		// the `_` positions and whose return is the callee's return type.
+		if ft.Variadic == nil && argCount == paramCount {
+			hasUnderscore := false
+			for _, a := range p.Call.Args {
+				if isUnderscoreExpr(a) {
+					hasUnderscore = true
+					break
+				}
+			}
+			if hasUnderscore {
+				var freeParams []Type
+				for i, a := range p.Call.Args {
+					if isUnderscoreExpr(a) {
+						freeParams = append(freeParams, callSubst.Apply(ft.Params[i]))
+					} else {
+						expected := callSubst.Apply(ft.Params[i])
+						at, err := checkExprWithExpected(a, env, expected)
+						if err != nil {
+							return nil, err
+						}
+						if !unify(at, expected, nil) {
+							return nil, errArgTypeMismatch(p.Pos, i, expected, at)
+						}
+					}
+				}
+				ret := callSubst.Apply(ft.Return)
+				return FuncType{Params: freeParams, Return: ret}, nil
+			}
+		}
+
 		// Params is the fixed prefix; ft.Variadic (if non-nil) types the
 		// trailing varargs sequence (MEP 4 P13).
 		fixed := paramCount
