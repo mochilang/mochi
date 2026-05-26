@@ -1,0 +1,6 @@
+let empty: map<string, int> = {}
+let small: map<string, int> = {"a": 1}
+let big: map<int, int> = {1: 10, 2: 20, 3: 30, 4: 40}
+print(len(empty))
+print(len(small))
+print(len(big))
