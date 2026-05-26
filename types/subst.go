@@ -52,6 +52,8 @@ func (sub Subst) Apply(t Type) Type {
 		return StreamType{Elem: sub.Apply(v.Elem)}
 	case SubType:
 		return SubType{Elem: sub.Apply(v.Elem)}
+	case FutureType:
+		return FutureType{Elem: sub.Apply(v.Elem)}
 	case OptionType:
 		return OptionType{Elem: sub.Apply(v.Elem)}
 	case GroupType:
@@ -274,6 +276,12 @@ func unifyInto(a, b Type, sub Subst) error {
 		return unifyInto(av.Elem, bv.Elem, sub)
 	case SubType:
 		bv, ok := b.(SubType)
+		if !ok {
+			return mismatch(a, b)
+		}
+		return unifyInto(av.Elem, bv.Elem, sub)
+	case FutureType:
+		bv, ok := b.(FutureType)
 		if !ok {
 			return mismatch(a, b)
 		}

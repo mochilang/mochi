@@ -109,6 +109,15 @@ type SubType struct {
 
 func (t SubType) String() string { return fmt.Sprintf("sub<%s>", t.Elem.String()) }
 
+// FutureType is the type of a value returned by `async expr`.
+// On BEAM it is an Erlang reference (make_ref/0) used to receive
+// the result via selective receive. Phase 11.0.
+type FutureType struct {
+	Elem Type
+}
+
+func (t FutureType) String() string { return fmt.Sprintf("future<%s>", t.Elem.String()) }
+
 type GroupType struct {
 	Key  Type
 	Elem Type

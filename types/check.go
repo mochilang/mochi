@@ -391,6 +391,14 @@ func Check(prog *parser.Program, env *Env) []error {
 		TypeParams: []string{"T"},
 	}, false)
 
+	// Phase 11.2: await_all(list<future<T>>): list<T>
+	awaitAllT := &TypeVar{Name: "T"}
+	env.SetVar("await_all", FuncType{
+		Params:     []Type{ListType{Elem: FutureType{Elem: awaitAllT}}},
+		Return:     ListType{Elem: awaitAllT},
+		TypeParams: []string{"T"},
+	}, false)
+
 	var errs []error
 
 	// Pre-pass: register struct and union name stubs so the function pass

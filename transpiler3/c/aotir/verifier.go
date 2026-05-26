@@ -1612,7 +1612,7 @@ func isScalarElemType(t Type) bool {
 // to TypeMap (list<map<K,V>> where K and V are scalars).
 func isListElemType(t Type) bool {
 	switch t {
-	case TypeInt, TypeFloat, TypeBool, TypeString, TypeRecord, TypeList, TypeMap:
+	case TypeInt, TypeFloat, TypeBool, TypeString, TypeRecord, TypeList, TypeMap, TypeFuture:
 		return true
 	}
 	return false
@@ -2251,6 +2251,16 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		}
 		return nil
 	case *CallExpr:
+		// Phase 11.2: await_all pseudo-builtin lowered to mochi_async:await_all/1.
+		if v.Func == "__await_all__" {
+			if len(v.Args) != 1 {
+				return fmt.Errorf("__await_all__: expected 1 arg, got %d", len(v.Args))
+			}
+			if err := verifyExprCtx(ctx, v.Args[0]); err != nil {
+				return fmt.Errorf("__await_all__ arg: %w", err)
+			}
+			return nil
+		}
 		// Phase 10.0: extern C functions can appear in expression position.
 		if ef, isExtern := ctx.externFns[v.Func]; isExtern {
 			if ef.ReturnType == TypeUnit {
@@ -2503,6 +2513,27 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return errors.New("SubRecvExpr: ElemType is TypeInvalid")
 		}
 		return verifyExprCtx(ctx, v.Sub)
+	// Phase 11.0: async expr → TypeFuture
+	case *AsyncExpr:
+		if v.Body == nil {
+			return errors.New("AsyncExpr: nil Body")
+		}
+		if v.ElemType == TypeInvalid {
+			return errors.New("AsyncExpr: ElemType is TypeInvalid")
+		}
+		return verifyExprCtx(ctx, v.Body)
+	// Phase 11.1: await fut → ElemType
+	case *AwaitExpr:
+		if v.Future == nil {
+			return errors.New("AwaitExpr: nil Future")
+		}
+		if v.Future.Type() != TypeFuture {
+			return fmt.Errorf("AwaitExpr: Future must be TypeFuture, got %s", v.Future.Type())
+		}
+		if v.ElemType == TypeInvalid {
+			return errors.New("AwaitExpr: ElemType is TypeInvalid")
+		}
+		return verifyExprCtx(ctx, v.Future)
 	default:
 		return fmt.Errorf("unhandled Expr %T", e)
 	}

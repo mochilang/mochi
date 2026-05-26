@@ -106,6 +106,8 @@ func collectFreeVars(t Type, sub Subst, seen map[string]struct{}) {
 		collectFreeVars(v.Elem, sub, seen)
 	case SubType:
 		collectFreeVars(v.Elem, sub, seen)
+	case FutureType:
+		collectFreeVars(v.Elem, sub, seen)
 	case OptionType:
 		collectFreeVars(v.Elem, sub, seen)
 	case GroupType:

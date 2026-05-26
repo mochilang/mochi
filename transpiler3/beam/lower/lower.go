@@ -1100,6 +1100,10 @@ func collectExprVarRefs(expr aotir.Expr) []string {
 		names = append(names, collectExprVarRefs(e.Key)...)
 	case *aotir.OMapLenExpr:
 		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.AsyncExpr:
+		names = append(names, collectExprVarRefs(e.Body)...)
+	case *aotir.AwaitExpr:
+		names = append(names, collectExprVarRefs(e.Future)...)
 	}
 	return names
 }
@@ -1620,9 +1624,38 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 	case *aotir.StrConvertExpr:
 		return lowerStrConvertExpr(l, e)
 
+	// Phase 11.0: async expr → mochi_async:async(fun() -> Body end)
+	case *aotir.AsyncExpr:
+		return lowerAsyncExpr(l, e)
+
+	// Phase 11.1: await fut → mochi_async:await(Fut)
+	case *aotir.AwaitExpr:
+		return lowerAwaitExpr(l, e)
+
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported expression %T", expr)
 	}
+}
+
+// lowerAsyncExpr lowers `async body` to
+// mochi_async:async(fun() -> Body end). Phase 11.0.
+func lowerAsyncExpr(l *lowerer, e *aotir.AsyncExpr) (cerl.Expr, error) {
+	body, err := lowerExpr(l, e.Body)
+	if err != nil {
+		return nil, fmt.Errorf("beam/lower: async body: %w", err)
+	}
+	// Wrap body in a zero-argument fun.
+	funExpr := cerl.CFun([]cerl.Expr{}, body)
+	return cerl.CCall(cerl.CAtom("mochi_async"), cerl.CAtom("async"), []cerl.Expr{funExpr}), nil
+}
+
+// lowerAwaitExpr lowers `await fut` to mochi_async:await(Fut). Phase 11.1.
+func lowerAwaitExpr(l *lowerer, e *aotir.AwaitExpr) (cerl.Expr, error) {
+	fut, err := lowerExpr(l, e.Future)
+	if err != nil {
+		return nil, fmt.Errorf("beam/lower: await future: %w", err)
+	}
+	return cerl.CCall(cerl.CAtom("mochi_async"), cerl.CAtom("await"), []cerl.Expr{fut}), nil
 }
 
 // lowerStrConvertExpr lowers str(x) to erlang:integer_to_binary/1,
@@ -2344,6 +2377,10 @@ func lowerCallExpr(l *lowerer, e *aotir.CallExpr) (cerl.Expr, error) {
 			return nil, err
 		}
 		args[i] = arg
+	}
+	// Phase 11.2: await_all is a special builtin call lowered to mochi_async:await_all/1.
+	if e.Func == "__await_all__" {
+		return cerl.CCall(cerl.CAtom("mochi_async"), cerl.CAtom("await_all"), args), nil
 	}
 	return cerl.CApply(cerl.CVarFunc(e.Func, len(e.Args)), args), nil
 }

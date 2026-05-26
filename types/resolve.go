@@ -67,6 +67,10 @@ func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 			if len(args) == 1 {
 				return SubType{Elem: resolveTypeRef(args[0], env)}
 			}
+		case "future":
+			if len(args) == 1 {
+				return FutureType{Elem: resolveTypeRef(args[0], env)}
+			}
 		}
 		// Fallback: unknown generic type
 		return AnyType{}

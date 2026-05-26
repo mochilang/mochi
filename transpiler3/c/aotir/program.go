@@ -477,6 +477,7 @@ type VarRef struct {
 	ChanElemType      Type    // valid when VarType==TypeChan (Phase 9.1)
 	StreamElemType    Type    // valid when VarType==TypeStream (Phase 9.2)
 	SubElemType       Type    // valid when VarType==TypeSub (Phase 9.2)
+	FutureElemType    Type    // valid when VarType==TypeFuture (Phase 11.0)
 	AgentName         string  // valid when VarType==TypeAgent (Phase 9.3)
 }
 
@@ -543,6 +544,7 @@ type LetStmt struct {
 	ChanElemType      Type    // valid when VarType==TypeChan (Phase 9.1)
 	StreamElemType    Type    // valid when VarType==TypeStream (Phase 9.2)
 	SubElemType       Type    // valid when VarType==TypeSub (Phase 9.2)
+	FutureElemType    Type    // valid when VarType==TypeFuture (Phase 11.0)
 	AgentName         string  // valid when VarType==TypeAgent (Phase 9.3)
 	Init              Expr
 	Mutable           bool // true for VarStmt-lowered bindings
@@ -1462,6 +1464,25 @@ func (*LinesExpr) Type() Type { return TypeList }
 type HttpGetExpr struct{ URL Expr }
 
 func (*HttpGetExpr) Type() Type { return TypeString }
+
+// AsyncExpr wraps a body expression in a spawned process via
+// mochi_async:async/1. The result is a future reference (TypeFuture).
+// Phase 11.0.
+type AsyncExpr struct {
+	Body     Expr // the expression to evaluate asynchronously
+	ElemType Type // the element type T of the resulting future<T>
+}
+
+func (*AsyncExpr) Type() Type { return TypeFuture }
+
+// AwaitExpr blocks until a future resolves and returns the result.
+// On BEAM it calls mochi_async:await/1. Phase 11.1.
+type AwaitExpr struct {
+	Future   Expr // TypeFuture expression
+	ElemType Type // the element type T; this is the Type() of AwaitExpr
+}
+
+func (e *AwaitExpr) Type() Type { return e.ElemType }
 
 // LoadCSVExpr reads a CSV file and returns a list<list<string>> where
 // each outer element is a row and each inner element is a cell value.

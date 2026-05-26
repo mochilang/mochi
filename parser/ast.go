@@ -530,6 +530,20 @@ type FetchExpr struct {
 	With *Expr          `json:"with,omitempty" parser:"[ 'with' @@ ]"`
 }
 
+// AsyncExpr is `async <expr>` — evaluates expr in a spawned process
+// and returns a future reference. Phase 11.0.
+type AsyncExpr struct {
+	Pos  lexer.Position `json:"pos,omitempty" parser:""`
+	Expr *Expr          `json:"expr,omitempty" parser:"'async' @@"`
+}
+
+// AwaitExpr is `await <expr>` — blocks until the future resolves
+// and returns the result. Phase 11.1.
+type AwaitExpr struct {
+	Pos    lexer.Position `json:"pos,omitempty" parser:""`
+	Future *Expr          `json:"future,omitempty" parser:"'await' @@"`
+}
+
 type LoadExpr struct {
 	Pos  lexer.Position `json:"pos,omitempty" parser:""`
 	Path *string        `json:"path,omitempty" parser:"'load' [ @String ] 'as'"`
@@ -623,6 +637,8 @@ type Primary struct {
 	Match      *MatchExpr      `json:"match,omitempty" parser:"| @@"`
 	Generate   *GenerateExpr   `json:"generate,omitempty" parser:"| @@"`
 	Fetch      *FetchExpr      `json:"fetch,omitempty" parser:"| @@"`
+	Async      *AsyncExpr      `json:"async,omitempty" parser:"| @@"`
+	Await      *AwaitExpr      `json:"await,omitempty" parser:"| @@"`
 	Load       *LoadExpr       `json:"load,omitempty" parser:"| @@"`
 	Save       *SaveExpr       `json:"save,omitempty" parser:"| @@"`
 	Lit        *Literal        `json:"lit,omitempty" parser:"| @@"`

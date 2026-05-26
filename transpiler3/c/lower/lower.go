@@ -868,6 +868,7 @@ type lbinding struct {
 	chanElem     aotir.Type    // element type when t==TypeChan (Phase 9.1)
 	streamElem   aotir.Type    // element type when t==TypeStream (Phase 9.2)
 	subElem      aotir.Type    // element type when t==TypeSub (Phase 9.2)
+	futureElem   aotir.Type    // element type when t==TypeFuture (Phase 11.0)
 	agentName    string        // agent name when t==TypeAgent (Phase 9.3)
 	// emitName overrides the C identifier emitted for this variable when
 	// non-empty. Used by Phase 5.1 capturing closures to make captured
@@ -1685,6 +1686,8 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	// Phase 9.2: declStreamElem and declSubElem carry element types for stream/sub.
 	declStreamElem := exprStreamElemType(value)
 	declSubElem := exprSubElemType(value)
+	// Phase 11.0: declFutureElem carries the element type when declType==TypeFuture.
+	declFutureElem := exprFutureElemType(value)
 	// Phase 9.3: declAgentName carries the agent name when declType==TypeAgent.
 	declAgentName := exprAgentName(value)
 	if declared != nil {
@@ -1752,6 +1755,9 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		if tr.subElem != aotir.TypeInvalid {
 			declSubElem = tr.subElem
 		}
+		if tr.futureElem != aotir.TypeInvalid {
+			declFutureElem = tr.futureElem
+		}
 	}
 	l.scope.vars[name] = lbinding{
 		t:            declType,
@@ -1770,6 +1776,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		chanElem:     declChanElem,
 		streamElem:   declStreamElem,
 		subElem:      declSubElem,
+		futureElem:   declFutureElem,
 		agentName:    declAgentName,
 	}
 	out.Statements = append(out.Statements, &aotir.LetStmt{
@@ -1789,6 +1796,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		ChanElemType:      declChanElem,
 		StreamElemType:    declStreamElem,
 		SubElemType:       declSubElem,
+		FutureElemType:    declFutureElem,
 		AgentName:         declAgentName,
 		Init:              value,
 		Mutable:           mutable,
@@ -2390,6 +2398,52 @@ func (l *lowerer) lowerRecvSubCall(call *parser.CallExpr) (aotir.Expr, error) {
 	return &aotir.SubRecvExpr{Sub: subExpr, ElemType: elem}, nil
 }
 
+// lowerAwaitAllCall lowers `await_all(futures)` to a CallExpr node
+// that the BEAM lowerer maps to mochi_async:await_all/1. Phase 11.2.
+func (l *lowerer) lowerAwaitAllCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("await_all() takes exactly 1 argument (list of futures), got %d", len(call.Args))
+	}
+	arg, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("await_all arg: %w", err)
+	}
+	if arg.Type() != aotir.TypeList {
+		return nil, fmt.Errorf("await_all: argument must be a list of futures, got %s", arg.Type())
+	}
+	// Determine the result element type from the future element type.
+	// The argument is list<future<T>>; the result is list<T>.
+	// We derive T by looking at the first element's AsyncExpr.ElemType
+	// or by inspecting the ListLit elements.
+	resultElemType := extractFutureListElemType(arg)
+	return &aotir.CallExpr{
+		Func:           "__await_all__",
+		Args:           []aotir.Expr{arg},
+		Result:         aotir.TypeList,
+		ResultElemType: resultElemType,
+	}, nil
+}
+
+// extractFutureListElemType extracts T from a list<future<T>> expression.
+// Returns TypeInvalid if it cannot be determined.
+func extractFutureListElemType(e aotir.Expr) aotir.Type {
+	ll, ok := e.(*aotir.ListLit)
+	if !ok || len(ll.Elems) == 0 {
+		return aotir.TypeInvalid
+	}
+	// Each element of the list should be a future<T> expression.
+	first := ll.Elems[0]
+	switch v := first.(type) {
+	case *aotir.AsyncExpr:
+		return v.ElemType
+	case *aotir.VarRef:
+		if v.VarType == aotir.TypeFuture {
+			return v.FutureElemType
+		}
+	}
+	return aotir.TypeInvalid
+}
+
 // lowerReturn lowers a `return` statement. From main (unit return)
 // only a bare `return` is legal; from a user fn with non-unit return
 // the value expression is required and type-checked against the
@@ -2505,6 +2559,7 @@ type typeResolution struct {
 	chanElem     aotir.Type    // valid when t==TypeChan (Phase 9.1)
 	streamElem   aotir.Type    // valid when t==TypeStream (Phase 9.2)
 	subElem      aotir.Type    // valid when t==TypeSub (Phase 9.2)
+	futureElem   aotir.Type    // valid when t==TypeFuture (Phase 11.0)
 }
 
 // typeFromRef maps a parser.TypeRef to a typeResolution. Phase 3.2
@@ -2668,6 +2723,16 @@ func typeFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.
 				return typeResolution{}, fmt.Errorf("sub<T>: element type %s not supported in Phase 9.2 (scalar types only)", inner.t)
 			}
 			return typeResolution{t: aotir.TypeSub, subElem: inner.t}, nil
+		case "future":
+			// Phase 11.0: future<T> type annotation for async/await.
+			if len(ref.Generic.Args) != 1 {
+				return typeResolution{}, fmt.Errorf("future<T> takes exactly one type argument, got %d", len(ref.Generic.Args))
+			}
+			inner, err := typeFromRef(records, unions, ref.Generic.Args[0])
+			if err != nil {
+				return typeResolution{}, fmt.Errorf("future element: %w", err)
+			}
+			return typeResolution{t: aotir.TypeFuture, futureElem: inner.t}, nil
 		}
 		return typeResolution{}, fmt.Errorf("generic type %q not supported in Phase 3.2", ref.Generic.Name)
 	}
@@ -2845,6 +2910,20 @@ func exprSubElemType(e aotir.Expr) aotir.Type {
 	case *aotir.VarRef:
 		if v.VarType == aotir.TypeSub {
 			return v.SubElemType
+		}
+	}
+	return aotir.TypeInvalid
+}
+
+// exprFutureElemType extracts the element type T from a future<T> expression.
+// Phase 11.0.
+func exprFutureElemType(e aotir.Expr) aotir.Type {
+	switch v := e.(type) {
+	case *aotir.AsyncExpr:
+		return v.ElemType
+	case *aotir.VarRef:
+		if v.VarType == aotir.TypeFuture {
+			return v.FutureElemType
 		}
 	}
 	return aotir.TypeInvalid
@@ -3959,6 +4038,7 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 				ChanElemType:      b.chanElem,
 				StreamElemType:    b.streamElem,
 				SubElemType:       b.subElem,
+				FutureElemType:    b.futureElem,
 				AgentName:         b.agentName,
 			}
 		}
@@ -4006,7 +4086,37 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	if pr.Generate != nil {
 		return l.lowerGenerateExpr(pr.Generate)
 	}
+	// Phase 11.0: async expr → AsyncExpr(body, elemType)
+	if pr.Async != nil {
+		return l.lowerAsyncExpr(pr.Async)
+	}
+	// Phase 11.1: await fut → AwaitExpr(future, elemType)
+	if pr.Await != nil {
+		return l.lowerAwaitExpr(pr.Await)
+	}
 	return nil, fmt.Errorf("primary %s not supported in Phase 3.2%s", trimPrimary(pr), primaryPhaseHint(pr))
+}
+
+// lowerAsyncExpr lowers `async expr` to an AsyncExpr IR node. Phase 11.0.
+func (l *lowerer) lowerAsyncExpr(ae *parser.AsyncExpr) (aotir.Expr, error) {
+	body, err := l.lowerExpr(ae.Expr)
+	if err != nil {
+		return nil, fmt.Errorf("async body: %w", err)
+	}
+	return &aotir.AsyncExpr{Body: body, ElemType: body.Type()}, nil
+}
+
+// lowerAwaitExpr lowers `await fut` to an AwaitExpr IR node. Phase 11.1.
+func (l *lowerer) lowerAwaitExpr(aw *parser.AwaitExpr) (aotir.Expr, error) {
+	fut, err := l.lowerExpr(aw.Future)
+	if err != nil {
+		return nil, fmt.Errorf("await future: %w", err)
+	}
+	elemType := exprFutureElemType(fut)
+	if elemType == aotir.TypeInvalid {
+		return nil, fmt.Errorf("await: expression does not produce a future (got %s)", fut.Type())
+	}
+	return &aotir.AwaitExpr{Future: fut, ElemType: elemType}, nil
 }
 
 // lowerVariantConstructor lowers a call-expression that names a known
@@ -4153,6 +4263,10 @@ func (l *lowerer) lowerListLit(ll *parser.ListLiteral) (aotir.Expr, error) {
 				default:
 					return nil, fmt.Errorf("list literal element %d: list<map<K,V>> requires scalar value type, got %s", i, mapElemValue)
 				}
+			case aotir.TypeFuture:
+				// Phase 11.0: list<future<T>> for await_all.
+				// Future element types are opaque to the C backend;
+				// the BEAM backend handles them natively.
 			default:
 				return nil, fmt.Errorf("list literal element %d: unsupported type %s", i, elemType)
 			}
@@ -4546,6 +4660,12 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	if call.Func == "recv_sub" {
 		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
 			return l.lowerRecvSubCall(call)
+		}
+	}
+	// Phase 11.2: await_all(futures) lowers to a CallExpr targeting the BEAM runtime.
+	if call.Func == "await_all" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerAwaitAllCall(call)
 		}
 	}
 	// Phase 5.0: check if this is a call to a fun-typed variable in scope.

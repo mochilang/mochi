@@ -1,0 +1,11 @@
+fun double(x: int): int {
+  return x * 2
+}
+
+let f1 = async double(1)
+let f2 = async double(2)
+let f3 = async double(3)
+let results = await_all([f1, f2, f3])
+for r in results {
+  print(r)
+}

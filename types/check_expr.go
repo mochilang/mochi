@@ -1144,6 +1144,26 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 		return AnyType{}, nil
 
+	// Phase 11.0: async expr → future<T>
+	case p.Async != nil:
+		elemType, err := checkExpr(p.Async.Expr, env)
+		if err != nil {
+			return nil, err
+		}
+		return FutureType{Elem: elemType}, nil
+
+	// Phase 11.1: await fut → T (where fut: future<T>)
+	case p.Await != nil:
+		futType, err := checkExpr(p.Await.Future, env)
+		if err != nil {
+			return nil, err
+		}
+		ft, ok := futType.(FutureType)
+		if !ok {
+			return nil, fmt.Errorf("%s: await expects a future, got %s", p.Pos, futType)
+		}
+		return ft.Elem, nil
+
 	case p.Load != nil:
 		var elem Type = AnyType{}
 		if p.Load.Type != nil {
