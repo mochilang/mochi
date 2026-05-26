@@ -36,6 +36,7 @@ import (
 	cbuild "mochi/compiler3/build/c"
 	gobuild "mochi/compiler3/build/go"
 	aotcbuild "mochi/transpiler3/c/build"
+	beambuild "mochi/transpiler3/beam/build"
 	"mochi/mcp"
 	"mochi/parser"
 	"mochi/repl"
@@ -74,9 +75,9 @@ type CLI struct {
 // --out, shells to the system cc, and writes a native executable.
 type BuildCmd struct {
 	File           string `arg:"positional,required" help:"Path to .mochi source file"`
-	Target         string `arg:"--target" default:"go" help:"Target language (go|c|c-aot)"`
+	Target         string `arg:"--target" default:"go" help:"Target language (go|c|c-aot|beam-escript)"`
 	Emit           string `arg:"--emit" default:"executable" help:"Emit shape (executable|go-library|c). --target=c-aot accepts executable|c."`
-	Out            string `arg:"--out" help:"Output path. --target=go|c: output directory; --target=c-aot: binary path"`
+	Out            string `arg:"--out" help:"Output path. --target=go|c: output directory; --target=c-aot: binary path; --target=beam-escript: escript output path"`
 	KeepEmit       bool   `arg:"--keep-emit" help:"Retain the emitted source file(s) after build"`
 	Module         string `arg:"--module" help:"Module path baked into go.mod (required for --emit=go-library)"`
 	PkgName        string `arg:"--package" help:"Package name override"`
@@ -208,8 +209,10 @@ func runBuild(cmd *BuildCmd) error {
 		return runBuildC(cmd)
 	case "c-aot":
 		return runBuildCAOT(cmd)
+	case "beam-escript":
+		return runBuildBeamEscript(cmd)
 	default:
-		return fmt.Errorf("build: unsupported --target=%q (expected go|c|c-aot)", cmd.Target)
+		return fmt.Errorf("build: unsupported --target=%q (expected go|c|c-aot|beam-escript)", cmd.Target)
 	}
 }
 
@@ -295,6 +298,27 @@ func runBuildCAOT(cmd *BuildCmd) error {
 	if keepEmit && d.EmittedCPath != "" {
 		fmt.Printf("source %s\n", d.EmittedCPath)
 	}
+	return nil
+}
+
+// runBuildBeamEscript implements `mochi build --target=beam-escript`.
+// MEP-46 Phase 1.1: compiles a Mochi source file to a single-file escript
+// executable via the BEAM pipeline (aotir → cerl → compile:forms → escript).
+// Requires `erl` on PATH. Cold-start ~50ms; size ~2-10MB.
+func runBuildBeamEscript(cmd *BuildCmd) error {
+	if cmd.File == "" {
+		return errors.New("build: --target=beam-escript requires a source file argument")
+	}
+	out := cmd.Out
+	if out == "" {
+		base := strings.TrimSuffix(filepath.Base(cmd.File), ".mochi")
+		out = filepath.Join(filepath.Dir(cmd.File), base)
+	}
+	d := &beambuild.Driver{}
+	if err := d.Build(cmd.File, out, beambuild.TargetEscript); err != nil {
+		return err
+	}
+	fmt.Printf("escript %s\n", out)
 	return nil
 }
 
