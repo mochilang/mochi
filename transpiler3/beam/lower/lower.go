@@ -1049,6 +1049,20 @@ func collectExprVarRefs(expr aotir.Expr) []string {
 		names = append(names, collectExprVarRefs(e.List)...)
 		names = append(names, collectExprVarRefs(e.Fn)...)
 		names = append(names, collectExprVarRefs(e.Init)...)
+	case *aotir.SetLiteralExpr:
+		for _, elem := range e.Elems {
+			names = append(names, collectExprVarRefs(elem)...)
+		}
+	case *aotir.SetAddExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Elem)...)
+	case *aotir.SetHasExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Elem)...)
+	case *aotir.SetLenExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.SetToListExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
 	}
 	return names
 }
@@ -1269,6 +1283,18 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		return lowerMapHasExpr(l, e)
 	case *aotir.MapLenExpr:
 		return lowerMapLenExpr(l, e)
+
+	// Phase 3.3: set expressions
+	case *aotir.SetLiteralExpr:
+		return lowerSetLiteralExpr(l, e)
+	case *aotir.SetAddExpr:
+		return lowerSetAddExpr(l, e)
+	case *aotir.SetHasExpr:
+		return lowerSetHasExpr(l, e)
+	case *aotir.SetLenExpr:
+		return lowerSetLenExpr(l, e)
+	case *aotir.SetToListExpr:
+		return lowerSetToListExpr(l, e)
 	case *aotir.MapKeysExpr:
 		recv, err := lowerExpr(l, e.Receiver)
 		if err != nil {
@@ -1674,6 +1700,66 @@ func lowerMapLenExpr(l *lowerer, e *aotir.MapLenExpr) (cerl.Expr, error) {
 		return nil, err
 	}
 	return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("map_size"), []cerl.Expr{recv}), nil
+}
+
+// --- Phase 3.3: set expressions ---
+
+// lowerSetLiteralExpr lowers set{e1, e2, ...} to sets:from_list([E1, E2, ...]).
+func lowerSetLiteralExpr(l *lowerer, e *aotir.SetLiteralExpr) (cerl.Expr, error) {
+	list := cerl.Expr(cerl.CNil())
+	for i := len(e.Elems) - 1; i >= 0; i-- {
+		elem, err := lowerExpr(l, e.Elems[i])
+		if err != nil {
+			return nil, err
+		}
+		list = cerl.CCons(elem, list)
+	}
+	return cerl.CCall(cerl.CAtom("sets"), cerl.CAtom("from_list"), []cerl.Expr{list}), nil
+}
+
+// lowerSetAddExpr lowers add(s, x) to sets:add_element(X, S).
+func lowerSetAddExpr(l *lowerer, e *aotir.SetAddExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	elem, err := lowerExpr(l, e.Elem)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("sets"), cerl.CAtom("add_element"), []cerl.Expr{elem, recv}), nil
+}
+
+// lowerSetHasExpr lowers has(s, x) or x in s to sets:is_element(X, S).
+func lowerSetHasExpr(l *lowerer, e *aotir.SetHasExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	elem, err := lowerExpr(l, e.Elem)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("sets"), cerl.CAtom("is_element"), []cerl.Expr{elem, recv}), nil
+}
+
+// lowerSetLenExpr lowers len(s) for sets to sets:size(S).
+func lowerSetLenExpr(l *lowerer, e *aotir.SetLenExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("sets"), cerl.CAtom("size"), []cerl.Expr{recv}), nil
+}
+
+// lowerSetToListExpr lowers a set-to-list conversion to sets:to_list(S).
+// Used for `for x in set` iteration.
+func lowerSetToListExpr(l *lowerer, e *aotir.SetToListExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("sets"), cerl.CAtom("to_list"), []cerl.Expr{recv}), nil
 }
 
 // lowerListContainsExpr lowers `val in xs` to lists:member(Val, Xs).

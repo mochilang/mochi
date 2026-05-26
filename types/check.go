@@ -98,6 +98,15 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return:     BoolType{},
 		TypeParams: []string{"K", "V"},
 	}, false)
+	// add<A>(s set[A], x A): set[A] - Phase 3.3 set builtin.
+	// The check_expr.go pre-flight intercepts the set case before the generic
+	// unifier; this registration just prevents "unknown function" errors.
+	addA := &TypeVar{Name: "A"}
+	env.SetVar("add", FuncType{
+		Params:     []Type{SetType{Elem: addA}, addA},
+		Return:     SetType{Elem: addA},
+		TypeParams: []string{"A"},
+	}, false)
 	// collect<T>(xs: list<T>): list<T> - MEP-12.4. The legacy any
 	// signature also accepted GroupType; that overload is preserved by
 	// checkBuiltinCall's "list or group" arity check, which runs after
@@ -1075,6 +1084,8 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				elemType = t.Elem
 			case MapType:
 				elemType = t.Key // loop iterates over keys
+			case SetType:
+				elemType = t.Elem // loop iterates over set elements
 			case StringType:
 				elemType = StringType{}
 			default:

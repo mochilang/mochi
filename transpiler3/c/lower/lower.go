@@ -1360,6 +1360,11 @@ func exprElemType(e aotir.Expr) aotir.Type {
 		return v.ElemType
 	case *aotir.ListFilterExpr:
 		return v.ElemType
+	case *aotir.SetLiteralExpr:
+		// Phase 3.3: exprElemType also covers set element types via ElemType field.
+		return v.ElemType
+	case *aotir.SetAddExpr:
+		return v.ElemType
 	}
 	return aotir.TypeInvalid
 }
@@ -1451,6 +1456,22 @@ func exprListValueElemType(e aotir.Expr) aotir.Type {
 		return v.ListValueElemType
 	case *aotir.CallExpr:
 		return v.ResultListValueElemType
+	}
+	return aotir.TypeInvalid
+}
+
+// exprSetElemType extracts the element type of a set-typed expression.
+// Phase 3.3.
+func exprSetElemType(e aotir.Expr) aotir.Type {
+	switch v := e.(type) {
+	case *aotir.VarRef:
+		if v.VarType == aotir.TypeSet {
+			return v.ElemType
+		}
+	case *aotir.SetLiteralExpr:
+		return v.ElemType
+	case *aotir.SetAddExpr:
+		return v.ElemType
 	}
 	return aotir.TypeInvalid
 }
@@ -1826,6 +1847,11 @@ func (l *lowerer) lowerAssign(out *aotir.Block, as *parser.AssignStmt) error {
 			return fmt.Errorf("assign %q: binding holds map<_,%s>, value produces map<_,%s>", as.Name, b.value, vval)
 		}
 	}
+	if b.t == aotir.TypeSet {
+		if velem := exprSetElemType(value); velem != b.elem {
+			return fmt.Errorf("assign %q: binding holds set<%s>, value produces set<%s>", as.Name, b.elem, velem)
+		}
+	}
 	// Phase 9.3: agent field bindings use emitName ("__self->field") as
 	// the C-level target name so that intent body field mutations compile.
 	assignName := as.Name
@@ -2060,8 +2086,13 @@ func (l *lowerer) lowerForEach(out *aotir.Block, fs *parser.ForStmt) error {
 			ListValueElemType: exprListValueElemType(source),
 		}
 		elem = key
+	case aotir.TypeSet:
+		// Phase 3.3: for x in set iterates the set's elements via SetToListExpr.
+		setElem := exprSetElemType(source)
+		listExpr = &aotir.SetToListExpr{Receiver: source, ElemType: setElem}
+		elem = setElem
 	default:
-		return fmt.Errorf("for %s in: source must be a list or a map, got %s", fs.Name, source.Type())
+		return fmt.Errorf("for %s in: source must be a list, map, or set, got %s", fs.Name, source.Type())
 	}
 	prev := l.scope
 	l.scope = newLScope(prev)
@@ -2518,6 +2549,18 @@ func typeFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.
 				return typeResolution{}, err
 			}
 			return typeResolution{t: aotir.TypeList, elem: elem, elemRec: elemRec, innerElem: innerElem, mapElemKey: mapKey, mapElemValue: mapVal}, nil
+		case "set":
+			if len(ref.Generic.Args) != 1 {
+				return typeResolution{}, fmt.Errorf("set<T> takes exactly one type argument, got %d", len(ref.Generic.Args))
+			}
+			inner, err := typeFromRef(records, unions, ref.Generic.Args[0])
+			if err != nil {
+				return typeResolution{}, fmt.Errorf("set element: %w", err)
+			}
+			if !isScalarSetElemType(inner.t) {
+				return typeResolution{}, fmt.Errorf("set<T>: element type %s not supported in Phase 3.3 (scalar types only)", inner.t)
+			}
+			return typeResolution{t: aotir.TypeSet, elem: inner.t}, nil
 		case "map":
 			if len(ref.Generic.Args) != 2 {
 				return typeResolution{}, fmt.Errorf("map<K,V> takes exactly two type arguments, got %d", len(ref.Generic.Args))
@@ -2848,6 +2891,18 @@ func (l *lowerer) lowerBinary(bin *parser.BinaryExpr) (aotir.Expr, error) {
 				KeyType:           recvKey,
 				ValueType:         exprValueType(right),
 				ListValueElemType: exprListValueElemType(right),
+			}
+			continue
+		}
+		if op.Op == "in" && right.Type() == aotir.TypeSet {
+			elemType := exprSetElemType(right)
+			if left.Type() != elemType {
+				return nil, fmt.Errorf("`in` set: value type is %s, set element type is %s", left.Type(), elemType)
+			}
+			left = &aotir.SetHasExpr{
+				Receiver: right,
+				Elem:     left,
+				ElemType: elemType,
 			}
 			continue
 		}
@@ -3861,6 +3916,9 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	if pr.List != nil {
 		return l.lowerListLit(pr.List)
 	}
+	if pr.Set != nil {
+		return l.lowerSetLit(pr.Set)
+	}
 	if pr.Map != nil {
 		return l.lowerMapLit(pr.Map)
 	}
@@ -4133,6 +4191,42 @@ func (l *lowerer) lowerMapLit(ml *parser.MapLiteral) (aotir.Expr, error) {
 	}, nil
 }
 
+// lowerSetLit lowers a `set{e1, e2, ...}` literal into a SetLiteralExpr.
+// Phase 3.3: all elements must be the same scalar type.
+func (l *lowerer) lowerSetLit(sl *parser.SetLiteral) (aotir.Expr, error) {
+	if len(sl.Elems) == 0 {
+		return nil, fmt.Errorf("empty set literal: Phase 3.3 requires at least one element for type inference")
+	}
+	var elems []aotir.Expr
+	var elemType aotir.Type
+	for i, e := range sl.Elems {
+		v, err := l.lowerExpr(e)
+		if err != nil {
+			return nil, fmt.Errorf("set literal elem %d: %w", i, err)
+		}
+		if i == 0 {
+			elemType = v.Type()
+			if !isScalarSetElemType(elemType) {
+				return nil, fmt.Errorf("set literal elem 0: unsupported element type %s (Phase 3.3 supports scalar types)", elemType)
+			}
+		} else if v.Type() != elemType {
+			return nil, fmt.Errorf("set literal elem %d: first element is %s, this is %s", i, elemType, v.Type())
+		}
+		elems = append(elems, v)
+	}
+	return &aotir.SetLiteralExpr{Elems: elems, ElemType: elemType}, nil
+}
+
+// isScalarSetElemType reports whether t is a valid set element type.
+// Phase 3.3 supports scalar primitives (int, float, bool, string).
+func isScalarSetElemType(t aotir.Type) bool {
+	switch t {
+	case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+		return true
+	}
+	return false
+}
+
 // lowerStructLit lowers a `R { f1: v1, ... }` literal into a typed
 // RecordLit. The lowerer enforces full field coverage, no extras, no
 // duplicates, and type-checks each field value against its declared
@@ -4217,6 +4311,11 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	}
 	if call.Func == "has" {
 		return l.lowerHasCall(call)
+	}
+	if call.Func == "add" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerAddCall(call)
+		}
 	}
 	if call.Func == "substring" {
 		return l.lowerSubstringCall(call)
@@ -4465,8 +4564,13 @@ func (l *lowerer) lowerLenCall(call *parser.CallExpr) (aotir.Expr, error) {
 			ValueType:         exprValueType(receiver),
 			ListValueElemType: exprListValueElemType(receiver),
 		}, nil
+	case aotir.TypeSet:
+		return &aotir.SetLenExpr{
+			Receiver: receiver,
+			ElemType: exprSetElemType(receiver),
+		}, nil
 	}
-	return nil, fmt.Errorf("len() argument must be a list, map, or string, got %s", receiver.Type())
+	return nil, fmt.Errorf("len() argument must be a list, map, set, or string, got %s", receiver.Type())
 }
 
 // lowerKeysCall lowers the `keys(m)` builtin to a MapKeysExpr. The
@@ -4514,21 +4618,31 @@ func (l *lowerer) lowerValuesCall(call *parser.CallExpr) (aotir.Expr, error) {
 	}, nil
 }
 
-// lowerHasCall lowers `has(m, k)` to a MapHasExpr. Result is bool.
-// Phase 3.2 reuses Mochi's `in` operator with arguments-flipped (m
-// holds k); a real `in` operator lands in a later phase, this is the
-// minimum surface to let fixtures probe a key before unwrapping a
-// MapGetExpr.
+// lowerHasCall lowers `has(m, k)` to a MapHasExpr (for maps) or
+// SetHasExpr (for sets). Phase 3.3 adds set support.
 func (l *lowerer) lowerHasCall(call *parser.CallExpr) (aotir.Expr, error) {
 	if len(call.Args) != 2 {
-		return nil, fmt.Errorf("has() takes exactly two arguments (map, key), got %d", len(call.Args))
+		return nil, fmt.Errorf("has() takes exactly two arguments, got %d", len(call.Args))
 	}
 	receiver, err := l.lowerExpr(call.Args[0])
 	if err != nil {
-		return nil, fmt.Errorf("has map: %w", err)
+		return nil, fmt.Errorf("has receiver: %w", err)
+	}
+	// Phase 3.3: set case.
+	if receiver.Type() == aotir.TypeSet {
+		elem, err := l.lowerExpr(call.Args[1])
+		if err != nil {
+			return nil, fmt.Errorf("has set elem: %w", err)
+		}
+		elemType := exprSetElemType(receiver)
+		return &aotir.SetHasExpr{
+			Receiver: receiver,
+			Elem:     elem,
+			ElemType: elemType,
+		}, nil
 	}
 	if receiver.Type() != aotir.TypeMap {
-		return nil, fmt.Errorf("has() first argument must be a map, got %s", receiver.Type())
+		return nil, fmt.Errorf("has() first argument must be a map or set, got %s", receiver.Type())
 	}
 	key, err := l.lowerExpr(call.Args[1])
 	if err != nil {
@@ -4544,6 +4658,29 @@ func (l *lowerer) lowerHasCall(call *parser.CallExpr) (aotir.Expr, error) {
 		KeyType:           recvKey,
 		ValueType:         exprValueType(receiver),
 		ListValueElemType: exprListValueElemType(receiver),
+	}, nil
+}
+
+// lowerAddCall lowers `add(s, x)` to a SetAddExpr. Phase 3.3.
+func (l *lowerer) lowerAddCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 2 {
+		return nil, fmt.Errorf("add() takes exactly two arguments (set, elem), got %d", len(call.Args))
+	}
+	receiver, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("add set: %w", err)
+	}
+	if receiver.Type() != aotir.TypeSet {
+		return nil, fmt.Errorf("add() first argument must be a set, got %s", receiver.Type())
+	}
+	elem, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("add elem: %w", err)
+	}
+	return &aotir.SetAddExpr{
+		Receiver: receiver,
+		Elem:     elem,
+		ElemType: exprSetElemType(receiver),
 	}, nil
 }
 

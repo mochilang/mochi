@@ -33,6 +33,10 @@ func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 		name := t.Generic.Name
 		args := t.Generic.Args
 		switch name {
+		case "set":
+			if len(args) == 1 {
+				return SetType{Elem: resolveTypeRef(args[0], env)}
+			}
 		case "list":
 			if len(args) == 1 {
 				return ListType{Elem: resolveTypeRef(args[0], env)}

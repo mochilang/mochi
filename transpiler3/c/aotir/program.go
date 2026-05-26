@@ -1088,6 +1088,56 @@ type MapValuesExpr struct {
 
 func (v *MapValuesExpr) Type() Type { return TypeList }
 
+// ---- Phase 3.3: set type (OTP sets module v2) ----
+
+// SetLiteralExpr constructs a set value from a list of elements.
+// The BEAM lowerer renders this as sets:from_list([Elem1, Elem2, ...]).
+type SetLiteralExpr struct {
+	Elems    []Expr
+	ElemType Type
+}
+
+func (*SetLiteralExpr) Type() Type { return TypeSet }
+
+// SetAddExpr is the `add(s, x)` builtin call. Result is TypeSet;
+// the BEAM lowerer renders this as sets:add_element(X, S).
+type SetAddExpr struct {
+	Receiver Expr
+	Elem     Expr
+	ElemType Type
+}
+
+func (*SetAddExpr) Type() Type { return TypeSet }
+
+// SetHasExpr is the `has(s, x)` or `x in s` builtin call for sets.
+// Result is TypeBool; the BEAM lowerer renders this as sets:is_element(X, S).
+type SetHasExpr struct {
+	Receiver Expr
+	Elem     Expr
+	ElemType Type
+}
+
+func (*SetHasExpr) Type() Type { return TypeBool }
+
+// SetLenExpr is the `len(s)` builtin call for sets.
+// Result is TypeInt; the BEAM lowerer renders this as sets:size(S).
+type SetLenExpr struct {
+	Receiver Expr
+	ElemType Type
+}
+
+func (*SetLenExpr) Type() Type { return TypeInt }
+
+// SetToListExpr converts a set to a list for iteration.
+// The BEAM lowerer renders this as sets:to_list(S).
+// Result is TypeList with the same ElemType as the set.
+type SetToListExpr struct {
+	Receiver Expr
+	ElemType Type
+}
+
+func (*SetToListExpr) Type() Type { return TypeList }
+
 // ---- Phase 4: sum types and Maranget pattern matching ----
 
 // UnionDecl declares one sum type (tagged union). Each variant maps to

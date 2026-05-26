@@ -53,6 +53,14 @@ func Subtype(s, t Type) bool {
 		_, ok := t.(BigRatType)
 		return ok
 
+	case SetType:
+		// Set elements are covariant in read position (same rationale as ListType).
+		tv, ok := t.(SetType)
+		if !ok {
+			return false
+		}
+		return Subtype(sv.Elem, tv.Elem)
+
 	case ListType:
 		// MEP-11 §T-List-Read. List elements are covariant in read
 		// position only. Routing through Subtype is read position by
@@ -276,6 +284,9 @@ func equalKinds(a, b Type) bool {
 	case UnitType:
 		_, ok := b.(UnitType)
 		return ok
+	case SetType:
+		bv, ok := b.(SetType)
+		return ok && equalKinds(av.Elem, bv.Elem)
 	case ListType:
 		bv, ok := b.(ListType)
 		return ok && equalKinds(av.Elem, bv.Elem)

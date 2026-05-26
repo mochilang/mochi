@@ -441,7 +441,7 @@ type binding struct {
 	mutable      bool
 	record       string   // record name when t==TypeRecord
 	union        string   // union name when t==TypeUnion (Phase 4)
-	elem         Type     // element type when t==TypeList
+	elem         Type     // element type when t==TypeList or t==TypeSet (Phase 3.3)
 	elemRec      string   // element record name when t==TypeList && elem==TypeRecord
 	mapElemKey   Type     // map key type when t==TypeList && elem==TypeMap (Phase 3.4f)
 	mapElemValue Type     // map value type when t==TypeList && elem==TypeMap (Phase 3.4f)
@@ -839,6 +839,19 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 		} else if s.MapElemKeyType != TypeInvalid || s.MapElemValueType != TypeInvalid {
 			return fmt.Errorf("let %q: MapElemKeyType/MapElemValueType set on list<%s> (only valid when ElemType==map)", s.Name, s.ElemType)
 		}
+	} else if s.VarType == TypeSet {
+		// Phase 3.3: set<T> bindings carry ElemType for the set's element type.
+		if s.ElemType == TypeInvalid {
+			return fmt.Errorf("let %q: set binding missing ElemType", s.Name)
+		}
+		if !isScalarElemType(s.ElemType) {
+			return fmt.Errorf("let %q: set binding has ElemType %s (Phase 3.3 supports scalar element types)", s.Name, s.ElemType)
+		}
+		if s.Init != nil {
+			if ie := exprSetElemType(s.Init); ie != s.ElemType {
+				return fmt.Errorf("let %q: declared set<%s>, init produces set<%s>", s.Name, s.ElemType, ie)
+			}
+		}
 	} else if s.ElemType != TypeInvalid {
 		return fmt.Errorf("let %q: ElemType set on non-list type %s", s.Name, s.VarType)
 	}
@@ -953,6 +966,11 @@ func verifyAssignStmt(ctx *verifyCtx, s *AssignStmt) error {
 		}
 		if vv := exprValueType(s.Value); vv != b.value {
 			return fmt.Errorf("assign %q: binding holds map<%s,%s>, value produces map<%s,%s>", s.Name, b.key, b.value, b.key, vv)
+		}
+	}
+	if b.t == TypeSet {
+		if ve := exprSetElemType(s.Value); ve != b.elem {
+			return fmt.Errorf("assign %q: binding holds set<%s>, value produces set<%s>", s.Name, b.elem, ve)
 		}
 	}
 	return nil
@@ -1389,6 +1407,9 @@ func exprElemType(e Expr) Type {
 	case *ListMapExpr:
 		return v.ElemType
 	case *ListFilterExpr:
+		return v.ElemType
+	case *SetToListExpr:
+		// Phase 3.3: sets:to_list(S) produces a list<T> where T is the set's elem.
 		return v.ElemType
 	}
 	return TypeInvalid
@@ -2045,6 +2066,25 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		return verifyMapKeysExpr(ctx, v)
 	case *MapValuesExpr:
 		return verifyMapValuesExpr(ctx, v)
+	case *SetLiteralExpr:
+		return verifySetLiteralExpr(ctx, v)
+	case *SetAddExpr:
+		return verifySetAddExpr(ctx, v)
+	case *SetHasExpr:
+		return verifySetHasExpr(ctx, v)
+	case *SetLenExpr:
+		return verifySetLenExpr(ctx, v)
+	case *SetToListExpr:
+		if v.Receiver == nil {
+			return errors.New("SetToListExpr: nil Receiver")
+		}
+		if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+			return fmt.Errorf("SetToListExpr receiver: %w", err)
+		}
+		if v.Receiver.Type() != TypeSet {
+			return fmt.Errorf("SetToListExpr: receiver must be TypeSet, got %s", v.Receiver.Type())
+		}
+		return nil
 	case *VariantLit:
 		if _, ok := ctx.unions[v.UnionName]; !ok {
 			return fmt.Errorf("VariantLit: union %q not declared", v.UnionName)
@@ -3005,6 +3045,96 @@ func verifyMapValuesExpr(ctx *verifyCtx, v *MapValuesExpr) error {
 		}
 	} else if v.ListValueElemType != TypeInvalid {
 		return fmt.Errorf("map values: ListValueElemType set on map<_,%s> (only valid when value is list)", v.ValueType)
+	}
+	return nil
+}
+
+// --- Phase 3.3: set verifier helpers ---
+
+// exprSetElemType returns the element type of a set-typed expression,
+// or TypeInvalid if the expression is not set-typed.
+func exprSetElemType(e Expr) Type {
+	switch v := e.(type) {
+	case *VarRef:
+		if v.VarType == TypeSet {
+			return v.ElemType
+		}
+	case *SetLiteralExpr:
+		return v.ElemType
+	case *SetAddExpr:
+		return v.ElemType
+	}
+	return TypeInvalid
+}
+
+func verifySetLiteralExpr(ctx *verifyCtx, v *SetLiteralExpr) error {
+	if !isScalarElemType(v.ElemType) {
+		return fmt.Errorf("SetLiteralExpr: ElemType %s not supported (Phase 3.3 supports scalar element types)", v.ElemType)
+	}
+	for i, e := range v.Elems {
+		if err := verifyExprCtx(ctx, e); err != nil {
+			return fmt.Errorf("SetLiteralExpr elem %d: %w", i, err)
+		}
+		if e.Type() != v.ElemType {
+			return fmt.Errorf("SetLiteralExpr elem %d: expected %s, got %s", i, v.ElemType, e.Type())
+		}
+	}
+	return nil
+}
+
+func verifySetAddExpr(ctx *verifyCtx, v *SetAddExpr) error {
+	if v.Receiver == nil {
+		return errors.New("SetAddExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("SetAddExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeSet {
+		return fmt.Errorf("SetAddExpr: receiver must be TypeSet, got %s", v.Receiver.Type())
+	}
+	if v.Elem == nil {
+		return errors.New("SetAddExpr: nil Elem")
+	}
+	if err := verifyExprCtx(ctx, v.Elem); err != nil {
+		return fmt.Errorf("SetAddExpr elem: %w", err)
+	}
+	if v.Elem.Type() != v.ElemType {
+		return fmt.Errorf("SetAddExpr: elem type %s does not match ElemType %s", v.Elem.Type(), v.ElemType)
+	}
+	return nil
+}
+
+func verifySetHasExpr(ctx *verifyCtx, v *SetHasExpr) error {
+	if v.Receiver == nil {
+		return errors.New("SetHasExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("SetHasExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeSet {
+		return fmt.Errorf("SetHasExpr: receiver must be TypeSet, got %s", v.Receiver.Type())
+	}
+	if v.Elem == nil {
+		return errors.New("SetHasExpr: nil Elem")
+	}
+	if err := verifyExprCtx(ctx, v.Elem); err != nil {
+		return fmt.Errorf("SetHasExpr elem: %w", err)
+	}
+	if v.Elem.Type() != v.ElemType {
+		return fmt.Errorf("SetHasExpr: elem type %s does not match ElemType %s", v.Elem.Type(), v.ElemType)
+	}
+	return nil
+}
+
+func verifySetLenExpr(ctx *verifyCtx, v *SetLenExpr) error {
+	if v.Receiver == nil {
+		return errors.New("SetLenExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("SetLenExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeSet {
+		return fmt.Errorf("SetLenExpr: receiver must be TypeSet, got %s", v.Receiver.Type())
 	}
 	return nil
 }

@@ -184,7 +184,7 @@ type InlineStructType struct {
 }
 
 type GenericType struct {
-	Name string     `json:"name,omitempty" parser:"@Ident '<'"`
+	Name string     `json:"name,omitempty" parser:"@(Ident | Keyword) '<'"`
 	Args []*TypeRef `json:"args,omitempty" parser:"@@ { ',' @@ } '>'"`
 }
 
@@ -482,6 +482,10 @@ type ListLiteral struct {
 	Elems []*Expr `json:"elems,omitempty" parser:"'[' [ @@ { ',' @@ } ] [ ',' ]? ']'"`
 }
 
+type SetLiteral struct {
+	Elems []*Expr `json:"elems,omitempty" parser:"'set' '{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
+}
+
 type MapLiteral struct {
 	Items []*MapEntry `json:"items,omitempty" parser:"'{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
 }
@@ -605,6 +609,7 @@ type Primary struct {
 	If         *IfExpr         `json:"if,omitempty" parser:"| @@"`
 	Selector   *SelectorExpr   `json:"selector,omitempty" parser:"| @@"`
 	List       *ListLiteral    `json:"list,omitempty" parser:"| @@"`
+	Set        *SetLiteral     `json:"set,omitempty" parser:"| @@"`
 	Map        *MapLiteral     `json:"map,omitempty" parser:"| @@"`
 	FunExpr    *FunExpr        `json:"funexpr,omitempty" parser:"| @@"`
 	Match      *MatchExpr      `json:"match,omitempty" parser:"| @@"`

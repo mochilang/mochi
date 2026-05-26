@@ -53,6 +53,12 @@ type ListType struct {
 
 func (t ListType) String() string { return "[" + t.Elem.String() + "]" }
 
+type SetType struct {
+	Elem Type
+}
+
+func (t SetType) String() string { return "set[" + t.Elem.String() + "]" }
+
 type MapType struct {
 	Key   Type
 	Value Type

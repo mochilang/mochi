@@ -207,6 +207,11 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 				return nil, errOperatorMismatch(pos, op, left, right)
 			}
 			return BoolType{}, nil
+		case SetType:
+			if !unify(left, rt.Elem, nil) {
+				return nil, errOperatorMismatch(pos, op, left, right)
+			}
+			return BoolType{}, nil
 		case ListType:
 			if !unify(left, rt.Elem, nil) {
 				return nil, errOperatorMismatch(pos, op, left, right)
@@ -622,6 +627,29 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		return typ, nil
 
 	case p.Call != nil:
+		// Phase 3.3: set builtins resolved before the generic map-based `has`.
+		// has(s set[T], x T): bool
+		// add(s set[T], x T): set[T]
+		// len(s set[T]): int  -- handled by the generic len path below (AnyType).
+		if (p.Call.Func == "has" || p.Call.Func == "add") && len(p.Call.Args) == 2 {
+			firstArgType, ferr := checkExpr(p.Call.Args[0], env)
+			if ferr == nil {
+				if st, isSet := firstArgType.(SetType); isSet {
+					elemT, eerr := checkExpr(p.Call.Args[1], env)
+					if eerr != nil {
+						return nil, eerr
+					}
+					if !unify(st.Elem, elemT, nil) {
+						return nil, errTypeMismatch(p.Call.Args[1].Pos, st.Elem, elemT)
+					}
+					if p.Call.Func == "has" {
+						return BoolType{}, nil
+					}
+					return SetType{Elem: st.Elem}, nil
+				}
+			}
+		}
+
 		fnType, err := env.GetVar(p.Call.Func)
 		if err != nil {
 			return nil, errUnknownFunction(p.Pos, p.Call.Func)
@@ -882,6 +910,27 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			elemType = AnyType{}
 		}
 		return ListType{Elem: elemType}, nil
+
+	case p.Set != nil:
+		// set{e1, e2, ...}: every element must unify with the inferred element type.
+		var elemType Type
+		for _, elem := range p.Set.Elems {
+			t, err := checkExpr(elem, env)
+			if err != nil {
+				return nil, err
+			}
+			if elemType == nil {
+				elemType = t
+				continue
+			}
+			if !unify(elemType, t, nil) {
+				return nil, errTypeMismatch(elem.Pos, elemType, t)
+			}
+		}
+		if elemType == nil {
+			elemType = AnyType{}
+		}
+		return SetType{Elem: elemType}, nil
 
 	case p.Map != nil:
 		var keyT, valT Type
@@ -2096,7 +2145,7 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return errArgCount(pos, name, 1, len(args))
 		}
 		switch args[0].(type) {
-		case ListType, MapType, StringType, AnyType, GroupType:
+		case ListType, MapType, SetType, StringType, AnyType, GroupType:
 			return nil
 		default:
 			return errLenOperand(pos, args[0])

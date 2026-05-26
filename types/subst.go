@@ -38,6 +38,8 @@ func (sub Subst) Apply(t Type) Type {
 			return sub.Apply(u)
 		}
 		return t
+	case SetType:
+		return SetType{Elem: sub.Apply(v.Elem)}
 	case ListType:
 		return ListType{Elem: sub.Apply(v.Elem)}
 	case MapType:
@@ -132,6 +134,8 @@ func occurs(name string, t Type, sub Subst) bool {
 			return occurs(name, u, sub)
 		}
 		return false
+	case SetType:
+		return occurs(name, v.Elem, sub)
 	case ListType:
 		return occurs(name, v.Elem, sub)
 	case MapType:
@@ -222,6 +226,12 @@ func unifyInto(a, b Type, sub Subst) error {
 	}
 
 	switch av := a.(type) {
+	case SetType:
+		bv, ok := b.(SetType)
+		if !ok {
+			return mismatch(a, b)
+		}
+		return unifyInto(av.Elem, bv.Elem, sub)
 	case ListType:
 		bv, ok := b.(ListType)
 		if !ok {
