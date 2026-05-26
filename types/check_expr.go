@@ -335,6 +335,22 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 				}
 				typ = OptionType{Elem: t.Value}
 
+			case OMapType:
+				if idx.Colon != nil {
+					return nil, errInvalidMapSlice(idx.Pos)
+				}
+				if idx.Start == nil {
+					return nil, errMissingIndex(idx.Pos)
+				}
+				keyType, err := checkExpr(idx.Start, env)
+				if err != nil {
+					return nil, err
+				}
+				if !unify(keyType, t.Key, nil) {
+					return nil, errIndexTypeMismatch(idx.Pos, t.Key, keyType)
+				}
+				typ = t.Value
+
 			case StringType:
 				if idx.Start == nil && idx.Colon == nil {
 					return nil, errMissingIndex(idx.Pos)
@@ -647,6 +663,19 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 					}
 					return SetType{Elem: st.Elem}, nil
 				}
+				// Phase 3.4 (omap): has(m omap[K,V], k K): bool
+				if p.Call.Func == "has" {
+					if om, isOMap := firstArgType.(OMapType); isOMap {
+						keyT, kerr := checkExpr(p.Call.Args[1], env)
+						if kerr != nil {
+							return nil, kerr
+						}
+						if !unify(om.Key, keyT, nil) {
+							return nil, errTypeMismatch(p.Call.Args[1].Pos, om.Key, keyT)
+						}
+						return BoolType{}, nil
+					}
+				}
 			}
 		}
 
@@ -784,11 +813,15 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			if p.Call.Func == "keys" && len(argTypes) == 1 {
 				if mt, ok := argTypes[0].(MapType); ok {
 					ret = ListType{Elem: mt.Key}
+				} else if om, ok := argTypes[0].(OMapType); ok {
+					ret = ListType{Elem: om.Key}
 				}
 			}
 			if p.Call.Func == "values" && len(argTypes) == 1 {
 				if mt, ok := argTypes[0].(MapType); ok {
 					ret = ListType{Elem: mt.Value}
+				} else if om, ok := argTypes[0].(OMapType); ok {
+					ret = ListType{Elem: om.Value}
 				}
 			}
 			// MEP-12.4: reverse mirrors its argument's static shape.
@@ -816,11 +849,15 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		if p.Call.Func == "keys" && len(argTypes) == 1 {
 			if mt, ok := argTypes[0].(MapType); ok {
 				ret = ListType{Elem: mt.Key}
+			} else if om, ok := argTypes[0].(OMapType); ok {
+				ret = ListType{Elem: om.Key}
 			}
 		}
 		if p.Call.Func == "values" && len(argTypes) == 1 {
 			if mt, ok := argTypes[0].(MapType); ok {
 				ret = ListType{Elem: mt.Value}
+			} else if om, ok := argTypes[0].(OMapType); ok {
+				ret = ListType{Elem: om.Value}
 			}
 		}
 		// MEP-12.4: reverse mirrors its argument's static shape.
@@ -931,6 +968,42 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			elemType = AnyType{}
 		}
 		return SetType{Elem: elemType}, nil
+
+	case p.OMap != nil:
+		var keyT, valT Type
+		for _, item := range p.OMap.Items {
+			var kt Type
+			if _, ok := stringKey(item.Key); ok {
+				kt = StringType{}
+			} else {
+				var err error
+				kt, err = checkExpr(item.Key, env)
+				if err != nil {
+					return nil, err
+				}
+			}
+			vt, err := checkExpr(item.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			if keyT == nil {
+				keyT = kt
+			} else if !unify(keyT, kt, nil) {
+				keyT = AnyType{}
+			}
+			if valT == nil {
+				valT = vt
+			} else if !unify(valT, vt, nil) {
+				valT = AnyType{}
+			}
+		}
+		if keyT == nil {
+			keyT = AnyType{}
+		}
+		if valT == nil {
+			valT = AnyType{}
+		}
+		return OMapType{Key: keyT, Value: valT}, nil
 
 	case p.Map != nil:
 		var keyT, valT Type
@@ -2145,7 +2218,7 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return errArgCount(pos, name, 1, len(args))
 		}
 		switch args[0].(type) {
-		case ListType, MapType, SetType, StringType, AnyType, GroupType:
+		case ListType, MapType, OMapType, SetType, StringType, AnyType, GroupType:
 			return nil
 		default:
 			return errLenOperand(pos, args[0])
@@ -2279,10 +2352,10 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return errArgCount(pos, name, 1, len(args))
 		}
 		switch args[0].(type) {
-		case MapType, AnyType:
+		case MapType, OMapType, AnyType:
 			return nil
 		default:
-			return fmt.Errorf("%s() expects map", name)
+			return fmt.Errorf("%s() expects map or omap", name)
 		}
 	case "collect":
 		if len(args) != 1 {

@@ -490,6 +490,12 @@ type MapLiteral struct {
 	Items []*MapEntry `json:"items,omitempty" parser:"'{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
 }
 
+// OMapLiteral is an ordered-map literal: omap{k1: v1, k2: v2, ...}.
+// The body is identical to MapLiteral; the 'omap' prefix distinguishes it.
+type OMapLiteral struct {
+	Items []*MapEntry `json:"items,omitempty" parser:"'omap' '{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
+}
+
 type MapEntry struct {
 	Pos   lexer.Position `json:"pos,omitempty" parser:""`
 	Key   *Expr          `json:"key,omitempty" parser:"@@ ':'"`
@@ -610,6 +616,7 @@ type Primary struct {
 	Selector   *SelectorExpr   `json:"selector,omitempty" parser:"| @@"`
 	List       *ListLiteral    `json:"list,omitempty" parser:"| @@"`
 	Set        *SetLiteral     `json:"set,omitempty" parser:"| @@"`
+	OMap       *OMapLiteral    `json:"omap,omitempty" parser:"| @@"`
 	Map        *MapLiteral     `json:"map,omitempty" parser:"| @@"`
 	FunExpr    *FunExpr        `json:"funexpr,omitempty" parser:"| @@"`
 	Match      *MatchExpr      `json:"match,omitempty" parser:"| @@"`

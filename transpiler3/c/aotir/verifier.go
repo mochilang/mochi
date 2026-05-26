@@ -483,6 +483,8 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 		return verifyListSetStmt(ctx, s)
 	case *MapPutStmt:
 		return verifyMapPutStmt(ctx, s)
+	case *OMapPutStmt:
+		return verifyOMapPutStmt(ctx, s)
 	case *IfStmt:
 		return verifyIfStmt(ctx, s)
 	case *WhileStmt:
@@ -882,6 +884,22 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 		} else if s.ListValueElemType != TypeInvalid {
 			return fmt.Errorf("let %q: ListValueElemType set on map<_,%s> (only valid when value is list)", s.Name, s.ValueType)
 		}
+	} else if s.VarType == TypeOMap {
+		// Phase 3.4 omap: scalar key + scalar value only in initial implementation.
+		if !isScalarKeyType(s.KeyType) {
+			return fmt.Errorf("let %q: omap binding has KeyType %s (requires int or string)", s.Name, s.KeyType)
+		}
+		if !isScalarElemType(s.ValueType) {
+			return fmt.Errorf("let %q: omap binding has ValueType %s (requires scalar)", s.Name, s.ValueType)
+		}
+		if s.Init != nil {
+			if ik := exprKeyType(s.Init); ik != s.KeyType {
+				return fmt.Errorf("let %q: declared omap<%s,...>, init produces omap<%s,...>", s.Name, s.KeyType, ik)
+			}
+			if iv := exprValueType(s.Init); iv != s.ValueType {
+				return fmt.Errorf("let %q: declared omap<%s,%s>, init produces omap<%s,%s>", s.Name, s.KeyType, s.ValueType, s.KeyType, iv)
+			}
+		}
 	} else {
 		if s.KeyType != TypeInvalid {
 			return fmt.Errorf("let %q: KeyType set on non-map type %s", s.Name, s.VarType)
@@ -971,6 +989,14 @@ func verifyAssignStmt(ctx *verifyCtx, s *AssignStmt) error {
 	if b.t == TypeSet {
 		if ve := exprSetElemType(s.Value); ve != b.elem {
 			return fmt.Errorf("assign %q: binding holds set<%s>, value produces set<%s>", s.Name, b.elem, ve)
+		}
+	}
+	if b.t == TypeOMap {
+		if vk := exprKeyType(s.Value); vk != b.key {
+			return fmt.Errorf("assign %q: binding holds omap<%s,...>, value produces omap<%s,...>", s.Name, b.key, vk)
+		}
+		if vv := exprValueType(s.Value); vv != b.value {
+			return fmt.Errorf("assign %q: binding holds omap<%s,%s>, value produces omap<%s,%s>", s.Name, b.key, b.value, b.key, vv)
 		}
 	}
 	return nil
@@ -1469,6 +1495,10 @@ func exprKeyType(e Expr) Type {
 		}
 	case *JsonDecodeExpr:
 		return TypeString
+	case *OMapLiteralExpr:
+		return v.KeyType
+	case *OMapSetExpr:
+		return v.KeyType
 	}
 	return TypeInvalid
 }
@@ -1491,6 +1521,10 @@ func exprValueType(e Expr) Type {
 		}
 	case *JsonDecodeExpr:
 		return TypeString
+	case *OMapLiteralExpr:
+		return v.ValueType
+	case *OMapSetExpr:
+		return v.ValueType
 	}
 	return TypeInvalid
 }
@@ -2074,6 +2108,16 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		return verifySetHasExpr(ctx, v)
 	case *SetLenExpr:
 		return verifySetLenExpr(ctx, v)
+	case *OMapLiteralExpr:
+		return verifyOMapLiteralExpr(ctx, v)
+	case *OMapGetExpr:
+		return verifyOMapGetExpr(ctx, v)
+	case *OMapSetExpr:
+		return verifyOMapSetExpr(ctx, v)
+	case *OMapHasExpr:
+		return verifyOMapHasExpr(ctx, v)
+	case *OMapLenExpr:
+		return verifyOMapLenExpr(ctx, v)
 	case *SetToListExpr:
 		if v.Receiver == nil {
 			return errors.New("SetToListExpr: nil Receiver")
@@ -3135,6 +3179,155 @@ func verifySetLenExpr(ctx *verifyCtx, v *SetLenExpr) error {
 	}
 	if v.Receiver.Type() != TypeSet {
 		return fmt.Errorf("SetLenExpr: receiver must be TypeSet, got %s", v.Receiver.Type())
+	}
+	return nil
+}
+
+// --- Phase 3.4 (omap) verifiers ---
+
+func verifyOMapLiteralExpr(ctx *verifyCtx, v *OMapLiteralExpr) error {
+	if !isScalarKeyType(v.KeyType) {
+		return fmt.Errorf("OMapLiteralExpr: KeyType %s not supported (requires int or string)", v.KeyType)
+	}
+	if !isScalarElemType(v.ValueType) {
+		return fmt.Errorf("OMapLiteralExpr: ValueType %s not supported (requires scalar)", v.ValueType)
+	}
+	if len(v.Keys) != len(v.Values) {
+		return fmt.Errorf("OMapLiteralExpr: keys/values length mismatch (%d vs %d)", len(v.Keys), len(v.Values))
+	}
+	for i, k := range v.Keys {
+		if err := verifyExprCtx(ctx, k); err != nil {
+			return fmt.Errorf("OMapLiteralExpr key %d: %w", i, err)
+		}
+		if k.Type() != v.KeyType {
+			return fmt.Errorf("OMapLiteralExpr key %d: expected %s, got %s", i, v.KeyType, k.Type())
+		}
+		if err := verifyExprCtx(ctx, v.Values[i]); err != nil {
+			return fmt.Errorf("OMapLiteralExpr value %d: %w", i, err)
+		}
+		if v.Values[i].Type() != v.ValueType {
+			return fmt.Errorf("OMapLiteralExpr value %d: expected %s, got %s", i, v.ValueType, v.Values[i].Type())
+		}
+	}
+	return nil
+}
+
+func verifyOMapGetExpr(ctx *verifyCtx, v *OMapGetExpr) error {
+	if v.Receiver == nil {
+		return errors.New("OMapGetExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("OMapGetExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeOMap {
+		return fmt.Errorf("OMapGetExpr: receiver must be TypeOMap, got %s", v.Receiver.Type())
+	}
+	if v.Key == nil {
+		return errors.New("OMapGetExpr: nil Key")
+	}
+	if err := verifyExprCtx(ctx, v.Key); err != nil {
+		return fmt.Errorf("OMapGetExpr key: %w", err)
+	}
+	if v.Key.Type() != v.KeyType {
+		return fmt.Errorf("OMapGetExpr: key type %s does not match KeyType %s", v.Key.Type(), v.KeyType)
+	}
+	return nil
+}
+
+func verifyOMapSetExpr(ctx *verifyCtx, v *OMapSetExpr) error {
+	if v.Receiver == nil {
+		return errors.New("OMapSetExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("OMapSetExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeOMap {
+		return fmt.Errorf("OMapSetExpr: receiver must be TypeOMap, got %s", v.Receiver.Type())
+	}
+	if v.Key == nil {
+		return errors.New("OMapSetExpr: nil Key")
+	}
+	if err := verifyExprCtx(ctx, v.Key); err != nil {
+		return fmt.Errorf("OMapSetExpr key: %w", err)
+	}
+	if v.Key.Type() != v.KeyType {
+		return fmt.Errorf("OMapSetExpr: key type %s does not match KeyType %s", v.Key.Type(), v.KeyType)
+	}
+	if v.Value == nil {
+		return errors.New("OMapSetExpr: nil Value")
+	}
+	if err := verifyExprCtx(ctx, v.Value); err != nil {
+		return fmt.Errorf("OMapSetExpr value: %w", err)
+	}
+	if v.Value.Type() != v.ValueType {
+		return fmt.Errorf("OMapSetExpr: value type %s does not match ValueType %s", v.Value.Type(), v.ValueType)
+	}
+	return nil
+}
+
+func verifyOMapHasExpr(ctx *verifyCtx, v *OMapHasExpr) error {
+	if v.Receiver == nil {
+		return errors.New("OMapHasExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("OMapHasExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeOMap {
+		return fmt.Errorf("OMapHasExpr: receiver must be TypeOMap, got %s", v.Receiver.Type())
+	}
+	if v.Key == nil {
+		return errors.New("OMapHasExpr: nil Key")
+	}
+	if err := verifyExprCtx(ctx, v.Key); err != nil {
+		return fmt.Errorf("OMapHasExpr key: %w", err)
+	}
+	if v.Key.Type() != v.KeyType {
+		return fmt.Errorf("OMapHasExpr: key type %s does not match KeyType %s", v.Key.Type(), v.KeyType)
+	}
+	return nil
+}
+
+func verifyOMapLenExpr(ctx *verifyCtx, v *OMapLenExpr) error {
+	if v.Receiver == nil {
+		return errors.New("OMapLenExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("OMapLenExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeOMap {
+		return fmt.Errorf("OMapLenExpr: receiver must be TypeOMap, got %s", v.Receiver.Type())
+	}
+	return nil
+}
+
+func verifyOMapPutStmt(ctx *verifyCtx, s *OMapPutStmt) error {
+	b, ok := ctx.scope.lookup(s.Name)
+	if !ok {
+		return fmt.Errorf("omap-put: undeclared %q", s.Name)
+	}
+	if !b.mutable {
+		return fmt.Errorf("omap-put: %q is immutable", s.Name)
+	}
+	if b.t != TypeOMap {
+		return fmt.Errorf("omap-put: %q is %s, not an omap", s.Name, b.t)
+	}
+	if s.Key == nil {
+		return fmt.Errorf("omap-put %q: nil Key", s.Name)
+	}
+	if err := verifyExprCtx(ctx, s.Key); err != nil {
+		return fmt.Errorf("omap-put %q key: %w", s.Name, err)
+	}
+	if s.Key.Type() != b.key {
+		return fmt.Errorf("omap-put %q: binding key is %s, got %s", s.Name, b.key, s.Key.Type())
+	}
+	if s.Value == nil {
+		return fmt.Errorf("omap-put %q: nil Value", s.Name)
+	}
+	if err := verifyExprCtx(ctx, s.Value); err != nil {
+		return fmt.Errorf("omap-put %q value: %w", s.Name, err)
+	}
+	if s.Value.Type() != b.value {
+		return fmt.Errorf("omap-put %q: binding value is %s, got %s", s.Name, b.value, s.Value.Type())
 	}
 	return nil
 }

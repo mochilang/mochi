@@ -48,6 +48,13 @@ func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 					Value: resolveTypeRef(args[1], env),
 				}
 			}
+		case "omap":
+			if len(args) == 2 {
+				return OMapType{
+					Key:   resolveTypeRef(args[0], env),
+					Value: resolveTypeRef(args[1], env),
+				}
+			}
 		case "chan":
 			if len(args) == 1 {
 				return ChanType{Elem: resolveTypeRef(args[0], env)}

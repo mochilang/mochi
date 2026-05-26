@@ -68,6 +68,17 @@ func (t MapType) String() string {
 	return fmt.Sprintf("{%s: %s}", t.Key.String(), t.Value.String())
 }
 
+// OMapType is an ordered map keyed by Key with values of type Value.
+// On BEAM it is represented as an OTP orddict (sorted list of {K,V} tuples).
+type OMapType struct {
+	Key   Type
+	Value Type
+}
+
+func (t OMapType) String() string {
+	return fmt.Sprintf("omap[%s,%s]", t.Key.String(), t.Value.String())
+}
+
 type OptionType struct {
 	Elem Type
 }

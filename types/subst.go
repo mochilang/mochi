@@ -44,6 +44,8 @@ func (sub Subst) Apply(t Type) Type {
 		return ListType{Elem: sub.Apply(v.Elem)}
 	case MapType:
 		return MapType{Key: sub.Apply(v.Key), Value: sub.Apply(v.Value)}
+	case OMapType:
+		return OMapType{Key: sub.Apply(v.Key), Value: sub.Apply(v.Value)}
 	case ChanType:
 		return ChanType{Elem: sub.Apply(v.Elem)}
 	case StreamType:
@@ -139,6 +141,8 @@ func occurs(name string, t Type, sub Subst) bool {
 	case ListType:
 		return occurs(name, v.Elem, sub)
 	case MapType:
+		return occurs(name, v.Key, sub) || occurs(name, v.Value, sub)
+	case OMapType:
 		return occurs(name, v.Key, sub) || occurs(name, v.Value, sub)
 	case OptionType:
 		return occurs(name, v.Elem, sub)
@@ -240,6 +244,15 @@ func unifyInto(a, b Type, sub Subst) error {
 		return unifyInto(av.Elem, bv.Elem, sub)
 	case MapType:
 		bv, ok := b.(MapType)
+		if !ok {
+			return mismatch(a, b)
+		}
+		if err := unifyInto(av.Key, bv.Key, sub); err != nil {
+			return err
+		}
+		return unifyInto(av.Value, bv.Value, sub)
+	case OMapType:
+		bv, ok := b.(OMapType)
 		if !ok {
 			return mismatch(a, b)
 		}

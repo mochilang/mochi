@@ -370,6 +370,24 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 		}
 		return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + s.Name)}, updateMap, rest), nil
 
+	case *aotir.OMapPutStmt:
+		// m[k] = v  →  let [V_m] = orddict:store(K, V, V_m) in ...
+		keyExpr, err := lowerExpr(l, s.Key)
+		if err != nil {
+			return nil, err
+		}
+		valExpr, err := lowerExpr(l, s.Value)
+		if err != nil {
+			return nil, err
+		}
+		storeCall := cerl.CCall(cerl.CAtom("orddict"), cerl.CAtom("store"),
+			[]cerl.Expr{keyExpr, valExpr, cerl.CVar("V_" + s.Name)})
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + s.Name)}, storeCall, rest), nil
+
 	case *aotir.ForEachStmt:
 		rest, err := l.lowerBlock(tail, cont)
 		if err != nil {
@@ -1063,6 +1081,25 @@ func collectExprVarRefs(expr aotir.Expr) []string {
 		names = append(names, collectExprVarRefs(e.Receiver)...)
 	case *aotir.SetToListExpr:
 		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.OMapLiteralExpr:
+		for _, k := range e.Keys {
+			names = append(names, collectExprVarRefs(k)...)
+		}
+		for _, v := range e.Values {
+			names = append(names, collectExprVarRefs(v)...)
+		}
+	case *aotir.OMapGetExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Key)...)
+	case *aotir.OMapSetExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Key)...)
+		names = append(names, collectExprVarRefs(e.Value)...)
+	case *aotir.OMapHasExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Key)...)
+	case *aotir.OMapLenExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
 	}
 	return names
 }
@@ -1103,6 +1140,10 @@ func collectStmtVarRefs(stmts []aotir.Stmt) []string {
 			names = append(names, s.Name)
 			names = append(names, collectExprVarRefs(s.Key)...)
 			names = append(names, collectExprVarRefs(s.Value)...)
+		case *aotir.OMapPutStmt:
+			names = append(names, s.Name)
+			names = append(names, collectExprVarRefs(s.Key)...)
+			names = append(names, collectExprVarRefs(s.Value)...)
 		case *aotir.ForEachStmt:
 			names = append(names, collectExprVarRefs(s.List)...)
 			names = append(names, collectStmtVarRefs(s.Body.Statements)...)
@@ -1120,6 +1161,8 @@ func collectAssignedVars(stmts []aotir.Stmt) []string {
 		case *aotir.AssignStmt:
 			names = append(names, s.Name)
 		case *aotir.MapPutStmt:
+			names = append(names, s.Name)
+		case *aotir.OMapPutStmt:
 			names = append(names, s.Name)
 		case *aotir.IfStmt:
 			if s.Then != nil {
@@ -1295,6 +1338,18 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		return lowerSetLenExpr(l, e)
 	case *aotir.SetToListExpr:
 		return lowerSetToListExpr(l, e)
+
+	// Phase 3.4: omap expressions (orddict)
+	case *aotir.OMapLiteralExpr:
+		return lowerOMapLiteralExpr(l, e)
+	case *aotir.OMapGetExpr:
+		return lowerOMapGetExpr(l, e)
+	case *aotir.OMapSetExpr:
+		return lowerOMapSetExpr(l, e)
+	case *aotir.OMapHasExpr:
+		return lowerOMapHasExpr(l, e)
+	case *aotir.OMapLenExpr:
+		return lowerOMapLenExpr(l, e)
 	case *aotir.MapKeysExpr:
 		recv, err := lowerExpr(l, e.Receiver)
 		if err != nil {
@@ -1760,6 +1815,80 @@ func lowerSetToListExpr(l *lowerer, e *aotir.SetToListExpr) (cerl.Expr, error) {
 		return nil, err
 	}
 	return cerl.CCall(cerl.CAtom("sets"), cerl.CAtom("to_list"), []cerl.Expr{recv}), nil
+}
+
+// --- Phase 3.4 (omap): ordered-map expressions lowered to OTP orddict ---
+
+// lowerOMapLiteralExpr lowers omap{k1: v1, k2: v2, ...} to orddict:from_list([{K1,V1},...]).
+func lowerOMapLiteralExpr(l *lowerer, e *aotir.OMapLiteralExpr) (cerl.Expr, error) {
+	list := cerl.Expr(cerl.CNil())
+	for i := len(e.Keys) - 1; i >= 0; i-- {
+		k, err := lowerExpr(l, e.Keys[i])
+		if err != nil {
+			return nil, err
+		}
+		v, err := lowerExpr(l, e.Values[i])
+		if err != nil {
+			return nil, err
+		}
+		pair := cerl.CTuple([]cerl.Expr{k, v})
+		list = cerl.CCons(pair, list)
+	}
+	return cerl.CCall(cerl.CAtom("orddict"), cerl.CAtom("from_list"), []cerl.Expr{list}), nil
+}
+
+// lowerOMapGetExpr lowers m[k] for an omap receiver to orddict:fetch(K, M).
+func lowerOMapGetExpr(l *lowerer, e *aotir.OMapGetExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	key, err := lowerExpr(l, e.Key)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("orddict"), cerl.CAtom("fetch"), []cerl.Expr{key, recv}), nil
+}
+
+// lowerOMapSetExpr lowers orddict:store(K, V, M) as an expression returning the new omap.
+// This is used when the store result is needed as a value (not as an OMapPutStmt).
+func lowerOMapSetExpr(l *lowerer, e *aotir.OMapSetExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	key, err := lowerExpr(l, e.Key)
+	if err != nil {
+		return nil, err
+	}
+	val, err := lowerExpr(l, e.Value)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("orddict"), cerl.CAtom("store"), []cerl.Expr{key, val, recv}), nil
+}
+
+// lowerOMapHasExpr lowers has(m, k) for an omap receiver to orddict:is_key(K, M).
+func lowerOMapHasExpr(l *lowerer, e *aotir.OMapHasExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	key, err := lowerExpr(l, e.Key)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("orddict"), cerl.CAtom("is_key"), []cerl.Expr{key, recv}), nil
+}
+
+// lowerOMapLenExpr lowers len(m) for an omap receiver to erlang:length(M).
+// orddict is a sorted list of {K,V} pairs, so length/1 gives the entry count.
+func lowerOMapLenExpr(l *lowerer, e *aotir.OMapLenExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("length"), []cerl.Expr{recv}), nil
 }
 
 // lowerListContainsExpr lowers `val in xs` to lists:member(Val, Xs).

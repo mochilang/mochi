@@ -83,6 +83,14 @@ func Subtype(s, t Type) bool {
 		}
 		return equalKinds(sv.Key, tv.Key) && equalKinds(sv.Value, tv.Value)
 
+	case OMapType:
+		// OMapType is invariant in both key and value (same rationale as MapType).
+		tv, ok := t.(OMapType)
+		if !ok {
+			return false
+		}
+		return equalKinds(sv.Key, tv.Key) && equalKinds(sv.Value, tv.Value)
+
 	case ChanType:
 		// chan<T> is invariant: send and recv both require exact element match.
 		tv, ok := t.(ChanType)
@@ -217,6 +225,10 @@ func assignableAt(src, dst Type, elementContext bool) bool {
 		if dv, ok := dst.(MapType); ok {
 			return assignableAt(sv.Key, dv.Key, true) && assignableAt(sv.Value, dv.Value, true)
 		}
+	case OMapType:
+		if dv, ok := dst.(OMapType); ok {
+			return assignableAt(sv.Key, dv.Key, true) && assignableAt(sv.Value, dv.Value, true)
+		}
 	case ChanType:
 		if dv, ok := dst.(ChanType); ok {
 			return assignableAt(sv.Elem, dv.Elem, true)
@@ -292,6 +304,9 @@ func equalKinds(a, b Type) bool {
 		return ok && equalKinds(av.Elem, bv.Elem)
 	case MapType:
 		bv, ok := b.(MapType)
+		return ok && equalKinds(av.Key, bv.Key) && equalKinds(av.Value, bv.Value)
+	case OMapType:
+		bv, ok := b.(OMapType)
 		return ok && equalKinds(av.Key, bv.Key) && equalKinds(av.Value, bv.Value)
 	case ChanType:
 		bv, ok := b.(ChanType)

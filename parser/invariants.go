@@ -335,7 +335,7 @@ func assertPrimary(p *Primary) error {
 	}
 	arms := [...]bool{
 		p.Struct != nil, p.Call != nil, p.Query != nil, p.LogicQuery != nil,
-		p.If != nil, p.Selector != nil, p.List != nil, p.Set != nil, p.Map != nil,
+		p.If != nil, p.Selector != nil, p.List != nil, p.Set != nil, p.OMap != nil, p.Map != nil,
 		p.FunExpr != nil, p.Match != nil, p.Generate != nil, p.Fetch != nil,
 		p.Load != nil, p.Save != nil, p.Lit != nil, p.Group != nil,
 	}

@@ -1417,6 +1417,10 @@ func exprKeyType(e aotir.Expr) aotir.Type {
 		}
 	case *aotir.JsonDecodeExpr:
 		return aotir.TypeString
+	case *aotir.OMapLiteralExpr:
+		return v.KeyType
+	case *aotir.OMapSetExpr:
+		return v.KeyType
 	}
 	return aotir.TypeInvalid
 }
@@ -1438,6 +1442,10 @@ func exprValueType(e aotir.Expr) aotir.Type {
 		}
 	case *aotir.JsonDecodeExpr:
 		return aotir.TypeString
+	case *aotir.OMapLiteralExpr:
+		return v.ValueType
+	case *aotir.OMapSetExpr:
+		return v.ValueType
 	}
 	return aotir.TypeInvalid
 }
@@ -1852,6 +1860,14 @@ func (l *lowerer) lowerAssign(out *aotir.Block, as *parser.AssignStmt) error {
 			return fmt.Errorf("assign %q: binding holds set<%s>, value produces set<%s>", as.Name, b.elem, velem)
 		}
 	}
+	if b.t == aotir.TypeOMap {
+		if vkey := exprKeyType(value); vkey != b.key {
+			return fmt.Errorf("assign %q: binding holds omap<%s,_>, value produces omap<%s,_>", as.Name, b.key, vkey)
+		}
+		if vval := exprValueType(value); vval != b.value {
+			return fmt.Errorf("assign %q: binding holds omap<_,%s>, value produces omap<_,%s>", as.Name, b.value, vval)
+		}
+	}
 	// Phase 9.3: agent field bindings use emitName ("__self->field") as
 	// the C-level target name so that intent body field mutations compile.
 	assignName := as.Name
@@ -1927,6 +1943,29 @@ func (l *lowerer) lowerIndexAssign(out *aotir.Block, as *parser.AssignStmt) erro
 			return fmt.Errorf("map-put %q: binding value %s, got %s", as.Name, b.value, valExpr.Type())
 		}
 		out.Statements = append(out.Statements, &aotir.MapPutStmt{
+			Name:      as.Name,
+			Key:       keyExpr,
+			Value:     valExpr,
+			KeyType:   b.key,
+			ValueType: b.value,
+		})
+		return nil
+	case aotir.TypeOMap:
+		keyExpr, err := l.lowerExpr(idx.Start)
+		if err != nil {
+			return fmt.Errorf("omap-put %q key: %w", as.Name, err)
+		}
+		if keyExpr.Type() != b.key {
+			return fmt.Errorf("omap-put %q: binding key %s, got %s", as.Name, b.key, keyExpr.Type())
+		}
+		valExpr, err := l.lowerExpr(as.Value)
+		if err != nil {
+			return fmt.Errorf("omap-put %q value: %w", as.Name, err)
+		}
+		if valExpr.Type() != b.value {
+			return fmt.Errorf("omap-put %q: binding value %s, got %s", as.Name, b.value, valExpr.Type())
+		}
+		out.Statements = append(out.Statements, &aotir.OMapPutStmt{
 			Name:      as.Name,
 			Key:       keyExpr,
 			Value:     valExpr,
@@ -2561,6 +2600,19 @@ func typeFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.
 				return typeResolution{}, fmt.Errorf("set<T>: element type %s not supported in Phase 3.3 (scalar types only)", inner.t)
 			}
 			return typeResolution{t: aotir.TypeSet, elem: inner.t}, nil
+		case "omap":
+			if len(ref.Generic.Args) != 2 {
+				return typeResolution{}, fmt.Errorf("omap[K,V] takes exactly two type arguments, got %d", len(ref.Generic.Args))
+			}
+			key, err := mapKeyFromRef(records, unions, ref.Generic.Args[0])
+			if err != nil {
+				return typeResolution{}, err
+			}
+			value, _, err := mapValueFromRef(records, unions, ref.Generic.Args[1])
+			if err != nil {
+				return typeResolution{}, err
+			}
+			return typeResolution{t: aotir.TypeOMap, key: key, value: value}, nil
 		case "map":
 			if len(ref.Generic.Args) != 2 {
 				return typeResolution{}, fmt.Errorf("map<K,V> takes exactly two type arguments, got %d", len(ref.Generic.Args))
@@ -3254,6 +3306,22 @@ func (l *lowerer) lowerIndexOp(receiver aotir.Expr, idx *parser.IndexOp) (aotir.
 			ValueType:         recvVal,
 			ListValueElemType: exprListValueElemType(receiver),
 		}, nil
+	case aotir.TypeOMap:
+		key, err := l.lowerExpr(idx.Start)
+		if err != nil {
+			return nil, fmt.Errorf("omap index key: %w", err)
+		}
+		recvKey := exprKeyType(receiver)
+		recvVal := exprValueType(receiver)
+		if key.Type() != recvKey {
+			return nil, fmt.Errorf("omap key must be %s, got %s", recvKey, key.Type())
+		}
+		return &aotir.OMapGetExpr{
+			Receiver:  receiver,
+			Key:       key,
+			KeyType:   recvKey,
+			ValueType: recvVal,
+		}, nil
 	case aotir.TypeString:
 		index, err := l.lowerExpr(idx.Start)
 		if err != nil {
@@ -3919,6 +3987,9 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	if pr.Set != nil {
 		return l.lowerSetLit(pr.Set)
 	}
+	if pr.OMap != nil {
+		return l.lowerOMapLit(pr.OMap)
+	}
 	if pr.Map != nil {
 		return l.lowerMapLit(pr.Map)
 	}
@@ -4215,6 +4286,45 @@ func (l *lowerer) lowerSetLit(sl *parser.SetLiteral) (aotir.Expr, error) {
 		elems = append(elems, v)
 	}
 	return &aotir.SetLiteralExpr{Elems: elems, ElemType: elemType}, nil
+}
+
+// lowerOMapLit lowers an `omap{k1: v1, k2: v2, ...}` literal into a typed
+// OMapLiteralExpr. Phase 3.4: key must be int or string, value must be scalar.
+func (l *lowerer) lowerOMapLit(ml *parser.OMapLiteral) (aotir.Expr, error) {
+	if len(ml.Items) == 0 {
+		return nil, fmt.Errorf("empty omap literal: Phase 3.4 requires at least one entry for type inference")
+	}
+	var keys []aotir.Expr
+	var values []aotir.Expr
+	var keyType aotir.Type
+	var valType aotir.Type
+	for i, item := range ml.Items {
+		k, err := l.lowerExpr(item.Key)
+		if err != nil {
+			return nil, fmt.Errorf("omap literal key %d: %w", i, err)
+		}
+		v, err := l.lowerExpr(item.Value)
+		if err != nil {
+			return nil, fmt.Errorf("omap literal value %d: %w", i, err)
+		}
+		if i == 0 {
+			keyType = k.Type()
+			valType = v.Type()
+			if !isScalarSetElemType(keyType) && keyType != aotir.TypeInt && keyType != aotir.TypeString {
+				return nil, fmt.Errorf("omap literal key 0: unsupported key type %s", keyType)
+			}
+		} else {
+			if k.Type() != keyType {
+				return nil, fmt.Errorf("omap literal key %d: first key is %s, this is %s", i, keyType, k.Type())
+			}
+			if v.Type() != valType {
+				return nil, fmt.Errorf("omap literal value %d: first value is %s, this is %s", i, valType, v.Type())
+			}
+		}
+		keys = append(keys, k)
+		values = append(values, v)
+	}
+	return &aotir.OMapLiteralExpr{Keys: keys, Values: values, KeyType: keyType, ValueType: valType}, nil
 }
 
 // isScalarSetElemType reports whether t is a valid set element type.
@@ -4569,8 +4679,14 @@ func (l *lowerer) lowerLenCall(call *parser.CallExpr) (aotir.Expr, error) {
 			Receiver: receiver,
 			ElemType: exprSetElemType(receiver),
 		}, nil
+	case aotir.TypeOMap:
+		return &aotir.OMapLenExpr{
+			Receiver:  receiver,
+			KeyType:   exprKeyType(receiver),
+			ValueType: exprValueType(receiver),
+		}, nil
 	}
-	return nil, fmt.Errorf("len() argument must be a list, map, set, or string, got %s", receiver.Type())
+	return nil, fmt.Errorf("len() argument must be a list, map, set, omap, or string, got %s", receiver.Type())
 }
 
 // lowerKeysCall lowers the `keys(m)` builtin to a MapKeysExpr. The
@@ -4641,8 +4757,25 @@ func (l *lowerer) lowerHasCall(call *parser.CallExpr) (aotir.Expr, error) {
 			ElemType: elemType,
 		}, nil
 	}
+	// Phase 3.4: omap case.
+	if receiver.Type() == aotir.TypeOMap {
+		key, err := l.lowerExpr(call.Args[1])
+		if err != nil {
+			return nil, fmt.Errorf("has omap key: %w", err)
+		}
+		recvKey := exprKeyType(receiver)
+		if key.Type() != recvKey {
+			return nil, fmt.Errorf("has() omap key must be %s, got %s", recvKey, key.Type())
+		}
+		return &aotir.OMapHasExpr{
+			Receiver:  receiver,
+			Key:       key,
+			KeyType:   recvKey,
+			ValueType: exprValueType(receiver),
+		}, nil
+	}
 	if receiver.Type() != aotir.TypeMap {
-		return nil, fmt.Errorf("has() first argument must be a map or set, got %s", receiver.Type())
+		return nil, fmt.Errorf("has() first argument must be a map, set, or omap, got %s", receiver.Type())
 	}
 	key, err := l.lowerExpr(call.Args[1])
 	if err != nil {

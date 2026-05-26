@@ -1138,6 +1138,76 @@ type SetToListExpr struct {
 
 func (*SetToListExpr) Type() Type { return TypeList }
 
+// ---- Phase 3.4 (omap): ordered-map type backed by OTP orddict ----
+
+// OMapLiteralExpr constructs an ordered-map value from a list of key-value pairs.
+// The BEAM lowerer renders this as orddict:from_list([{K1,V1},{K2,V2},...]).
+type OMapLiteralExpr struct {
+	Keys      []Expr
+	Values    []Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (*OMapLiteralExpr) Type() Type { return TypeOMap }
+
+// OMapGetExpr reads `Receiver[Key]` for an omap-typed receiver.
+// The BEAM lowerer renders this as orddict:fetch(Key, Receiver).
+type OMapGetExpr struct {
+	Receiver  Expr
+	Key       Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (e *OMapGetExpr) Type() Type { return e.ValueType }
+
+// OMapSetExpr stores a key-value pair into an omap: `Receiver[Key] = Value`.
+// The BEAM lowerer renders this as orddict:store(Key, Value, Receiver).
+// The result (new omap) is bound back to the variable via OMapPutStmt.
+type OMapSetExpr struct {
+	Receiver  Expr
+	Key       Expr
+	Value     Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (*OMapSetExpr) Type() Type { return TypeOMap }
+
+// OMapHasExpr is the `has(m, k)` builtin call for an omap receiver.
+// The BEAM lowerer renders this as orddict:is_key(Key, Receiver).
+type OMapHasExpr struct {
+	Receiver  Expr
+	Key       Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (*OMapHasExpr) Type() Type { return TypeBool }
+
+// OMapLenExpr is the `len(m)` builtin call when m is an omap.
+// orddict is a list, so the BEAM lowerer renders this as erlang:length(M).
+type OMapLenExpr struct {
+	Receiver  Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (*OMapLenExpr) Type() Type { return TypeInt }
+
+// OMapPutStmt is the statement form of `m[k] = v` for omap receivers.
+// The BEAM lowerer rebinds M to orddict:store(K, V, M).
+type OMapPutStmt struct {
+	Name      string // variable name of the omap
+	Key       Expr
+	Value     Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (*OMapPutStmt) isStmt() {}
+
 // ---- Phase 4: sum types and Maranget pattern matching ----
 
 // UnionDecl declares one sum type (tagged union). Each variant maps to

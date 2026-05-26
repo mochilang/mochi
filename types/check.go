@@ -857,6 +857,18 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 						return errIndexTypeMismatch(idx.Pos, lt.Key, keyType)
 					}
 					lhsType = lt.Value
+				case OMapType:
+					if idx.Colon != nil {
+						return errInvalidMapSlice(idx.Pos)
+					}
+					keyType, err := checkExpr(idx.Start, env)
+					if err != nil {
+						return err
+					}
+					if !unify(keyType, lt.Key, nil) {
+						return errIndexTypeMismatch(idx.Pos, lt.Key, keyType)
+					}
+					lhsType = lt.Value
 				case ListType:
 					if idx.Colon != nil {
 						if idx.Start != nil {
@@ -1084,6 +1096,8 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				elemType = t.Elem
 			case MapType:
 				elemType = t.Key // loop iterates over keys
+			case OMapType:
+				elemType = t.Key // loop iterates over keys in order
 			case SetType:
 				elemType = t.Elem // loop iterates over set elements
 			case StringType:
