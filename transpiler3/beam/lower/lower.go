@@ -374,6 +374,24 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 		// Phase 9.0: unit intent call → call helper function, rebind receiver with new state.
 		return l.lowerAgentIntentCallStmt(s, tail, cont)
 
+	case *aotir.StreamEmitStmt:
+		// Phase 10.0: emit(stream, val) → mochi_stream:emit(Stream, Val) then continue.
+		stream, err := lowerExpr(l, s.Stream)
+		if err != nil {
+			return nil, err
+		}
+		val, err := lowerExpr(l, s.Val)
+		if err != nil {
+			return nil, err
+		}
+		emitCall := cerl.CCall(cerl.CAtom("mochi_stream"), cerl.CAtom("emit"),
+			[]cerl.Expr{stream, val})
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CLet([]cerl.Expr{cerl.CVar("V___")}, emitCall, rest), nil
+
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported statement %T", head)
 	}
@@ -1069,6 +1087,29 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		return lowerAgentLit(l, e)
 	case *aotir.AgentIntentCallExpr:
 		return l.lowerAgentIntentCallExpr(e)
+
+	// Phase 10.0: streams via mochi_stream runtime
+	case *aotir.StreamMakeExpr:
+		cap, err := lowerExpr(l, e.Cap)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_stream"), cerl.CAtom("make_stream"),
+			[]cerl.Expr{cap}), nil
+	case *aotir.SubMakeExpr:
+		stream, err := lowerExpr(l, e.Stream)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_stream"), cerl.CAtom("subscribe"),
+			[]cerl.Expr{stream}), nil
+	case *aotir.SubRecvExpr:
+		sub, err := lowerExpr(l, e.Sub)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_stream"), cerl.CAtom("recv_sub"),
+			[]cerl.Expr{sub}), nil
 
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported expression %T", expr)
