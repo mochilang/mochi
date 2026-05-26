@@ -6,6 +6,10 @@
  * the function replays pre-recorded responses from files named by a
  * DJB2 hash of the (provider, model, prompt) triple. In live mode,
  * the function requires a concrete provider implementation (Phase 14.1+).
+ *
+ * MEP-45 Phase 14.5: cassette recording mode. When MOCHI_LLM_CASSETTE_RECORD
+ * is set (and MOCHI_LLM_CASSETTE_DIR is not), the live response is written
+ * to MOCHI_LLM_CASSETTE_RECORD/<hash>.txt for future replay.
  */
 #pragma once
 

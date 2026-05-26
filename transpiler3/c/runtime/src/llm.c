@@ -3,11 +3,16 @@
  *
  * MEP-45 Phase 14.0: cassette-backed mochi_llm_generate().
  * MEP-45 Phase 14.1: OpenAI live provider via libcurl (opt-in).
+ * MEP-45 Phase 14.2: Anthropic live provider via libcurl.
+ * MEP-45 Phase 14.3: Google live provider via libcurl.
+ * MEP-45 Phase 14.4: llama.cpp local provider (opt-in).
+ * MEP-45 Phase 14.5: cassette recording mode.
  *
- * Cassette mode (MOCHI_LLM_CASSETTE_DIR is set):
+ * Cassette playback mode (MOCHI_LLM_CASSETTE_DIR is set):
  *   Looks up a pre-recorded response file named by the DJB2 hash of the
  *   concatenated key "<provider>\0<model>\0<prompt>" in the cassette
- *   directory. File name format: "<hash_decimal>.txt".
+ *   directory. File name format: "<hash_decimal>.txt". Takes priority
+ *   over live dispatch and recording.
  *
  * Live mode (no cassette dir):
  *   Routes to a provider-specific HTTP implementation when compiled with
@@ -15,6 +20,12 @@
  *   returns "" with a diagnostic. Enable by compiling with:
  *     -DMOCHI_LLM_HAVE_CURL -lcurl
  *   and setting OPENAI_API_KEY (or provider-specific key) at runtime.
+ *
+ * Cassette recording mode (MOCHI_LLM_CASSETTE_RECORD is set):
+ *   After a successful (or stub) live call, writes the response to a file
+ *   in the MOCHI_LLM_CASSETTE_RECORD directory using the same hash-keyed
+ *   naming as playback. Playback (MOCHI_LLM_CASSETTE_DIR) takes priority;
+ *   recording only fires when no cassette dir is set.
  */
 #include "mochi/llm.h"
 
@@ -594,12 +605,42 @@ static const char *llm_live_dispatch(const char *provider, const char *model, co
     return "";
 }
 
+/* ---- cassette write (Phase 14.5) ---- */
+
+static void llm_cassette_record(const char *record_dir,
+                                const char *provider,
+                                const char *model,
+                                const char *prompt,
+                                const char *response) {
+    uint64_t key = llm_hash_key(provider, model, prompt);
+    char path[4096];
+    snprintf(path, sizeof(path), "%s/%llu.txt", record_dir, (unsigned long long)key);
+    FILE *f = fopen(path, "wb");
+    if (!f) {
+        fprintf(stderr, "mochi_llm_generate: cassette record: could not write %s\n", path);
+        return;
+    }
+    fputs(response, f);
+    fputc('\n', f); /* trailing newline stripped on playback */
+    fclose(f);
+}
+
 /* ---- public API ---- */
 
 const char *mochi_llm_generate(const char *provider, const char *model, const char *prompt) {
     const char *cassette_dir = getenv("MOCHI_LLM_CASSETTE_DIR");
     if (cassette_dir && *cassette_dir) {
+        /* Playback takes priority over live dispatch and recording. */
         return llm_cassette_lookup(cassette_dir, provider, model, prompt);
     }
-    return llm_live_dispatch(provider, model, prompt);
+
+    const char *result = llm_live_dispatch(provider, model, prompt);
+
+    /* Recording mode: persist the live response for future replay. */
+    const char *record_dir = getenv("MOCHI_LLM_CASSETTE_RECORD");
+    if (record_dir && *record_dir) {
+        llm_cassette_record(record_dir, provider, model, prompt, result);
+    }
+
+    return result;
 }

@@ -10,9 +10,9 @@ description: "MEP-45 Phase 14 tracking: provider abstraction (OpenAI, Anthropic,
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 14](/docs/mep/mep-0045#phase-14-llm-bindings) |
-| Status         | IN PROGRESS |
+| Status         | COMPLETE |
 | Started        | 2026-05-26 07:14 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-26 07:41 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -33,9 +33,13 @@ LLM generation is the user-facing AI-augmented workflow that Mochi positions its
 | 14.2 | Anthropic live provider via libcurl (`ANTHROPIC_API_KEY`); `llm_anthropic_live()` with `x-api-key` + `anthropic-version` headers; extracts `content[0].text` via strstr; `TestPhase14Anthropic` gate (cassette + live-no-api-key sub-tests) | LANDED 2026-05-26 07:30 (GMT+7) | — | — |
 | 14.3 | Google live provider (`GOOGLE_API_KEY`; API key in URL query param; `gemini-1.5-flash` default; extracts `candidates[0].content.parts[0].text` via strstr); `TestPhase14Google` gate | LANDED 2026-05-26 07:32 (GMT+7) | — | — |
 | 14.4 | llama.cpp local provider (`-DMOCHI_LLM_HAVE_LLAMA -lllama`; greedy sampling via `llm_llama_greedy`; `LLAMA_MODEL_PATH` env var; stub in default build); `TestPhase14Llama` gate (cassette + stub-no-model-path sub-tests) | LANDED 2026-05-26 07:36 (GMT+7) | — | — |
-| 14.5 | Live HTTP providers via libcurl + yyjson; cassette recording mode                                                  | NOT STARTED | —      | — |
+| 14.5 | Cassette recording mode (`MOCHI_LLM_CASSETTE_RECORD`); `llm_cassette_record()` writes live response to `<hash>.txt`; playback (`CASSETTE_DIR`) takes priority; `TestPhase14CassetteRecord` gate (playback_priority + record_write sub-tests) | LANDED 2026-05-26 07:41 (GMT+7) | — | — |
 
 ## Decisions made
+
+**Phase 14.5: cassette recording via MOCHI_LLM_CASSETTE_RECORD.** Setting this env var causes `mochi_llm_generate()` to write the live response to `<CASSETTE_RECORD>/<hash>.txt` after the live call. The file uses the same DJB2 hash key and trailing-newline convention as playback files, so the same cassette dir can be used for both record and replay. Playback (`MOCHI_LLM_CASSETTE_DIR`) takes priority: if a cassette dir is set, the live path and recording path are both skipped.
+
+**Phase 14.5: gate uses stub live mode.** `TestPhase14CassetteRecord` tests recording without a live API by relying on the stub's "" response being written to the record dir. This verifies the file write path without network access. The `record_write` sub-test checks that a `.txt` file appears in the record dir; the `playback_priority` sub-test verifies no file is written when playback fires.
 
 **Phase 14.4: llama.cpp opt-in via compile flag.** The llama.cpp provider is implemented under `#if defined(MOCHI_LLM_HAVE_LLAMA)`. Default builds (without this flag) use a stub that prints a diagnostic mentioning `LLAMA_MODEL_PATH` and `--with-llama`. Users with a GGUF model file compile with `-DMOCHI_LLM_HAVE_LLAMA -lllama` and set `LLAMA_MODEL_PATH` at runtime.
 
@@ -77,4 +81,4 @@ _Provider-specific tool-use / function-calling integration tests: a follow-up ph
 
 ## Closeout notes
 
-Sub-phases 14.0 through 14.4 are LANDED. The `generate <provider> { ... }` expression compiles and runs in cassette replay mode; OpenAI, Anthropic, and Google live providers are available with `-DMOCHI_LLM_HAVE_CURL -lcurl`; llama.cpp local inference is available with `-DMOCHI_LLM_HAVE_LLAMA -lllama` and `LLAMA_MODEL_PATH`. Cassette recording (14.5) remains NOT STARTED.
+All sub-phases 14.0 through 14.5 are LANDED. The `generate <provider> { ... }` expression compiles and runs in cassette replay mode; OpenAI, Anthropic, and Google live providers are available with `-DMOCHI_LLM_HAVE_CURL -lcurl`; llama.cpp local inference is available with `-DMOCHI_LLM_HAVE_LLAMA -lllama` and `LLAMA_MODEL_PATH`; cassette recording is available via `MOCHI_LLM_CASSETTE_RECORD`. Phase 14 is COMPLETE.
