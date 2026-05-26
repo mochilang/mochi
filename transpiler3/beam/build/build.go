@@ -182,6 +182,8 @@ func (d *Driver) Build(src, out string, target Target) error {
 		return d.buildMixProject(src, out)
 	case TargetRelease:
 		return d.buildRelease(src, out)
+	case TargetAtomVM:
+		return d.buildAtomVM(src, out)
 	case TargetEscript:
 		// handled below
 	default:
@@ -602,6 +604,29 @@ func (d *Driver) buildRelease(src, out string) error {
 	cmd.Dir = out
 	if result, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("beam/build: rebar3 release: %w\n%s", err, result)
+	}
+	return nil
+}
+
+// buildAtomVM compiles the Mochi source to .beam files and packs them into a
+// .avm bundle using AtomVM's `packbeam` tool. packbeam must be on PATH;
+// callers should check with exec.LookPath("packbeam") first.
+//
+// The output file out should have a .avm extension.
+//
+// Phase 15.3.
+func (d *Driver) buildAtomVM(src, out string) error {
+	_, beams, cleanup, err := d.compileToBeams(src)
+	if err != nil {
+		return err
+	}
+	defer cleanup()
+
+	// packbeam create <output.avm> <beam1> <beam2> ...
+	args := append([]string{"create", out}, beams...)
+	cmd := exec.Command("packbeam", args...)
+	if result, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("beam/build: packbeam create: %w\n%s", err, result)
 	}
 	return nil
 }
