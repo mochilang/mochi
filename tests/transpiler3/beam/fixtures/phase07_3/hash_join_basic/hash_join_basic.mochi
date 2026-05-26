@@ -1,0 +1,6 @@
+let xs = [1, 2, 3, 4, 5]
+let ys = [2, 4, 6]
+let result = from x in xs join y in ys on x == y select x
+for v in result {
+  print(str(v))
+}

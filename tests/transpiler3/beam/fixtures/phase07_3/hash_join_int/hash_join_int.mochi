@@ -1,0 +1,6 @@
+let students = [1, 2, 3, 4, 5]
+let enrolled = [3, 4, 5, 6]
+let result = from s in students join e in enrolled on s == e select s
+for v in result {
+  print(str(v))
+}

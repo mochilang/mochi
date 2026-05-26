@@ -1501,8 +1501,42 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 	case *aotir.DatalogQueryExpr:
 		return lowerDatalogQueryExpr(e)
 
+	// str(x) builtin: convert scalar to binary string.
+	case *aotir.StrConvertExpr:
+		return lowerStrConvertExpr(l, e)
+
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported expression %T", expr)
+	}
+}
+
+// lowerStrConvertExpr lowers str(x) to erlang:integer_to_binary/1,
+// erlang:float_to_binary/2, or identity for bool/string.
+func lowerStrConvertExpr(l *lowerer, e *aotir.StrConvertExpr) (cerl.Expr, error) {
+	operand, err := lowerExpr(l, e.Operand)
+	if err != nil {
+		return nil, err
+	}
+	switch e.Operand.Type() {
+	case aotir.TypeInt:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("integer_to_binary"),
+			[]cerl.Expr{operand}), nil
+	case aotir.TypeFloat:
+		// float_to_binary(X, [{decimals, 10}, compact]) mirrors mochi_str_from_f64 behaviour.
+		opts := cerl.CCons(
+			cerl.CTuple([]cerl.Expr{cerl.CAtom("decimals"), cerl.CInt(10)}),
+			cerl.CCons(cerl.CAtom("compact"), cerl.CNil()),
+		)
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("float_to_binary"),
+			[]cerl.Expr{operand, opts}), nil
+	case aotir.TypeBool:
+		// true → <<"true">>, false → <<"false">>
+		return cerl.CCase(operand, []cerl.Expr{
+			cerl.CClause([]cerl.Expr{cerl.CAtom("true")}, cerl.CAtom("true"), cerl.CBin([]byte("true"))),
+			cerl.CClause([]cerl.Expr{cerl.CAtom("false")}, cerl.CAtom("true"), cerl.CBin([]byte("false"))),
+		}), nil
+	default: // TypeString: identity
+		return operand, nil
 	}
 }
 

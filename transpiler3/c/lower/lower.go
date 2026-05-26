@@ -5073,6 +5073,178 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 	return ok && n == "_"
 }
 
+// ----- Phase 7.3: hash join helpers -----
+
+// hashJoinKeys describes an equality join condition of the form
+// innerKey(innerVar) == outerKey(...) (or reversed).
+type hashJoinKeys struct {
+	innerKey aotir.Expr // key expression referencing the right-side (join) variable
+	outerKey aotir.Expr // key expression referencing outer-side variables
+	keyType  aotir.Type
+}
+
+// aotirExprVarNames collects variable names referenced by an aotir expression.
+func aotirExprVarNames(e aotir.Expr) []string {
+	if e == nil {
+		return nil
+	}
+	var names []string
+	switch v := e.(type) {
+	case *aotir.VarRef:
+		names = append(names, v.Name)
+	case *aotir.BinaryExpr:
+		names = append(names, aotirExprVarNames(v.Left)...)
+		names = append(names, aotirExprVarNames(v.Right)...)
+	case *aotir.UnaryExpr:
+		names = append(names, aotirExprVarNames(v.Operand)...)
+	case *aotir.FieldAccess:
+		names = append(names, aotirExprVarNames(v.Receiver)...)
+	case *aotir.CallExpr:
+		for _, a := range v.Args {
+			names = append(names, aotirExprVarNames(a)...)
+		}
+	}
+	return names
+}
+
+// onlyRefSet returns true when all variable references in e are in allowed.
+func onlyRefSet(e aotir.Expr, allowed map[string]bool) bool {
+	for _, n := range aotirExprVarNames(e) {
+		if !allowed[n] {
+			return false
+		}
+	}
+	return true
+}
+
+// isEqualityOp returns true for any of the typed equality binary operators.
+func isEqualityOp(op aotir.BinOp) bool {
+	switch op {
+	case aotir.BinEqI64, aotir.BinEqF64, aotir.BinEqBool, aotir.BinEqStr,
+		aotir.BinEqRec, aotir.BinEqList, aotir.BinEqMap:
+		return true
+	}
+	return false
+}
+
+// collectOuterJoinVars returns all variable names that are "outer" to join[i]:
+// the main query variable plus any earlier from/join variables.
+func collectOuterJoinVars(q *parser.QueryExpr, joinIdx int) map[string]bool {
+	outer := map[string]bool{q.Var: true}
+	for _, f := range q.Froms {
+		outer[f.Var] = true
+	}
+	for k := 0; k < joinIdx; k++ {
+		outer[q.Joins[k].Var] = true
+	}
+	return outer
+}
+
+// extractHashJoinKeys tries to decompose an equality join condition into a
+// (innerKey, outerKey) pair. Returns nil when the pattern is not detected.
+func extractHashJoinKeys(on aotir.Expr, innerVar string, outerVars map[string]bool) *hashJoinKeys {
+	bin, ok := on.(*aotir.BinaryExpr)
+	if !ok || !isEqualityOp(bin.Op) {
+		return nil
+	}
+	innerOnly := map[string]bool{innerVar: true}
+	leftIsInner := onlyRefSet(bin.Left, innerOnly) && onlyRefSet(bin.Right, outerVars)
+	rightIsInner := onlyRefSet(bin.Right, innerOnly) && onlyRefSet(bin.Left, outerVars)
+	if leftIsInner {
+		return &hashJoinKeys{innerKey: bin.Left, outerKey: bin.Right, keyType: bin.Left.Type()}
+	}
+	if rightIsInner {
+		return &hashJoinKeys{innerKey: bin.Right, outerKey: bin.Left, keyType: bin.Right.Type()}
+	}
+	return nil
+}
+
+// buildHashJoin emits the hash-join desugaring for an inner join (Phase 7.3).
+// It builds a hash index from the right side and replaces the nested loop
+// with a single map lookup, giving O(n + m) instead of O(n*m).
+func (l *lowerer) buildHashJoin(
+	innerVar string,
+	srcExpr aotir.Expr, srcElemType aotir.Type, srcElemRec string,
+	hj *hashJoinKeys,
+	innerBody *aotir.Block,
+	scope *lscope,
+) *aotir.Block {
+	l.tempCounter++
+	n := l.tempCounter
+	idxName := fmt.Sprintf("__hidx_%d", n)
+	hkName := fmt.Sprintf("__hk_%d", n)
+	hvName := fmt.Sprintf("__hv_%d", n)
+	hlistName := fmt.Sprintf("__hlist_%d", n)
+
+	scope.vars[idxName] = lbinding{t: aotir.TypeMap, mutable: true, key: hj.keyType, value: aotir.TypeList, listValElem: srcElemType}
+	scope.vars[hkName] = lbinding{t: hj.keyType, mutable: true}
+	scope.vars[hvName] = lbinding{t: aotir.TypeList, mutable: true, elem: srcElemType}
+	scope.vars[hlistName] = lbinding{t: aotir.TypeList, elem: srcElemType}
+
+	idxRef := func() *aotir.VarRef {
+		return &aotir.VarRef{Name: idxName, VarType: aotir.TypeMap, KeyType: hj.keyType, ValueType: aotir.TypeList, ListValueElemType: srcElemType}
+	}
+	hkRef := func() *aotir.VarRef { return &aotir.VarRef{Name: hkName, VarType: hj.keyType} }
+	hvRef := func() *aotir.VarRef {
+		return &aotir.VarRef{Name: hvName, VarType: aotir.TypeList, ElemType: srcElemType}
+	}
+	innerVarRef := &aotir.VarRef{Name: innerVar, VarType: srcElemType}
+
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.LetStmt{
+		Name: idxName, VarType: aotir.TypeMap, KeyType: hj.keyType,
+		ValueType: aotir.TypeList, ListValueElemType: srcElemType,
+		Init:    &aotir.MapLit{KeyType: hj.keyType, ValueType: aotir.TypeList, ListValueElemType: srcElemType},
+		Mutable: true,
+	})
+
+	buildBody := &aotir.Block{Statements: []aotir.Stmt{
+		&aotir.LetStmt{Name: hkName, VarType: hj.keyType, Init: hj.innerKey, Mutable: true},
+		&aotir.LetStmt{Name: hvName, VarType: aotir.TypeList, ElemType: srcElemType,
+			Init: &aotir.ListLit{ElemType: srcElemType}, Mutable: true},
+		&aotir.IfStmt{
+			Cond: &aotir.MapHasExpr{Receiver: idxRef(), Key: hkRef(),
+				KeyType: hj.keyType, ValueType: aotir.TypeList, ListValueElemType: srcElemType},
+			Then: &aotir.Block{Statements: []aotir.Stmt{
+				&aotir.AssignStmt{Name: hvName, Value: &aotir.MapGetExpr{
+					Receiver: idxRef(), Key: hkRef(),
+					KeyType: hj.keyType, ValueType: aotir.TypeList, ListValueElemType: srcElemType,
+				}},
+			}},
+		},
+		&aotir.MapPutStmt{
+			Name: idxName, Key: hkRef(),
+			Value:     &aotir.AppendExpr{Receiver: hvRef(), Value: innerVarRef, ElemType: srcElemType},
+			KeyType:   hj.keyType,
+			ValueType: aotir.TypeList,
+		},
+	}}
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.ForEachStmt{
+		Var: innerVar, List: srcExpr, ElemType: srcElemType, ElemRecordName: srcElemRec,
+		Body: buildBody,
+	})
+
+	lookupBody := &aotir.Block{Statements: []aotir.Stmt{
+		&aotir.LetStmt{
+			Name: hlistName, VarType: aotir.TypeList, ElemType: srcElemType,
+			Init: &aotir.MapGetExpr{Receiver: idxRef(), Key: hj.outerKey,
+				KeyType: hj.keyType, ValueType: aotir.TypeList, ListValueElemType: srcElemType},
+		},
+		&aotir.ForEachStmt{
+			Var: innerVar, List: &aotir.VarRef{Name: hlistName, VarType: aotir.TypeList, ElemType: srcElemType},
+			ElemType: srcElemType, ElemRecordName: srcElemRec,
+			Body: innerBody,
+		},
+	}}
+
+	return &aotir.Block{Statements: []aotir.Stmt{
+		&aotir.IfStmt{
+			Cond: &aotir.MapHasExpr{Receiver: idxRef(), Key: hj.outerKey,
+				KeyType: hj.keyType, ValueType: aotir.TypeList, ListValueElemType: srcElemType},
+			Then: lookupBody,
+		},
+	}}
+}
+
 // lowerGroupByQueryExpr desugars a group-by query expression (Phase 7.2).
 //
 // The query:
@@ -5520,21 +5692,28 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 		si := joinSrcs[i]
 		on := joinOns[i]
 		if j.Side == nil {
-			// Inner join: for y in ys { if on { innerBody } }
-			innerBody = &aotir.Block{Statements: []aotir.Stmt{
-				&aotir.ForEachStmt{
-					Var:              j.Var,
-					List:             si.src,
-					ElemType:         si.elemType,
-					ElemRecordName:   si.elemRec,
-					InnerElemType:    si.innerElem,
-					MapElemKeyType:   si.mapKey,
-					MapElemValueType: si.mapValue,
-					Body: &aotir.Block{Statements: []aotir.Stmt{
-						&aotir.IfStmt{Cond: on, Then: innerBody},
-					}},
-				},
-			}}
+			// Phase 7.3: attempt hash join when the On condition is a simple
+			// equality between expressions that each reference only one side.
+			outerVars := collectOuterJoinVars(q, i)
+			if hj := extractHashJoinKeys(on, j.Var, outerVars); hj != nil {
+				innerBody = l.buildHashJoin(j.Var, si.src, si.elemType, si.elemRec, hj, innerBody, prev)
+			} else {
+				// Inner join: nested-loop fallback: for y in ys { if on { innerBody } }
+				innerBody = &aotir.Block{Statements: []aotir.Stmt{
+					&aotir.ForEachStmt{
+						Var:              j.Var,
+						List:             si.src,
+						ElemType:         si.elemType,
+						ElemRecordName:   si.elemRec,
+						InnerElemType:    si.innerElem,
+						MapElemKeyType:   si.mapKey,
+						MapElemValueType: si.mapValue,
+						Body: &aotir.Block{Statements: []aotir.Stmt{
+							&aotir.IfStmt{Cond: on, Then: innerBody},
+						}},
+					},
+				}}
+			}
 		} else {
 			// Left join: emit __anyN sentinel + matched rows + unmatched fallback.
 			l.tempCounter++
