@@ -1,0 +1,5 @@
+var xs: list<int> = [1, 2, 3, 4, 5, 6]
+var ys: list<int> = from x in xs where x > 3 select x
+print(len(ys))
+print(ys[0])
+print(ys[2])

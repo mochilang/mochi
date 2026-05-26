@@ -1,0 +1,7 @@
+var xs: list<int> = [1, 2, 3, 4, 5]
+var doubled: list<int> = from x in xs select x * 2
+var total: int = 0
+for d in doubled {
+    total = total + d
+}
+print(total)
