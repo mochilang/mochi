@@ -1037,6 +1037,8 @@ func collectExprVarRefs(expr aotir.Expr) []string {
 		names = append(names, collectExprVarRefs(e.Operand)...)
 	case *aotir.HttpGetExpr:
 		names = append(names, collectExprVarRefs(e.URL)...)
+	case *aotir.JsonDecodeExpr:
+		names = append(names, collectExprVarRefs(e.Input)...)
 	case *aotir.ListMapExpr:
 		names = append(names, collectExprVarRefs(e.List)...)
 		names = append(names, collectExprVarRefs(e.Fn)...)
@@ -1249,6 +1251,8 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		return lowerListMinExpr(l, e)
 	case *aotir.ListMaxExpr:
 		return lowerListMaxExpr(l, e)
+	case *aotir.JsonDecodeExpr:
+		return lowerJsonDecodeExpr(l, e)
 	case *aotir.ListMapExpr:
 		return lowerListMapExpr(l, e)
 	case *aotir.ListFilterExpr:
@@ -1721,6 +1725,17 @@ func lowerListMaxExpr(l *lowerer, e *aotir.ListMaxExpr) (cerl.Expr, error) {
 		return nil, err
 	}
 	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("max"), []cerl.Expr{xs}), nil
+}
+
+// lowerJsonDecodeExpr lowers `json_decode(s)` to mochi_json:decode(S) (Phase 14.2).
+// mochi_json:decode/1 wraps OTP 27 json:decode/1 and returns a map<binary, binary>
+// with all values coerced to binary string representation.
+func lowerJsonDecodeExpr(l *lowerer, e *aotir.JsonDecodeExpr) (cerl.Expr, error) {
+	input, err := lowerExpr(l, e.Input)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("mochi_json"), cerl.CAtom("decode"), []cerl.Expr{input}), nil
 }
 
 // lowerListMapExpr lowers `map(xs, fn)` to lists:map(Fn, Xs) (Phase 6.1).

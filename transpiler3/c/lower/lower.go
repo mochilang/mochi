@@ -1410,6 +1410,8 @@ func exprKeyType(e aotir.Expr) aotir.Type {
 		if v.ElemType == aotir.TypeMap {
 			return v.MapElemKeyType
 		}
+	case *aotir.JsonDecodeExpr:
+		return aotir.TypeString
 	}
 	return aotir.TypeInvalid
 }
@@ -1429,6 +1431,8 @@ func exprValueType(e aotir.Expr) aotir.Type {
 		if v.ElemType == aotir.TypeMap {
 			return v.MapElemValueType
 		}
+	case *aotir.JsonDecodeExpr:
+		return aotir.TypeString
 	}
 	return aotir.TypeInvalid
 }
@@ -4264,6 +4268,12 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 			return l.lowerListSumCall(call)
 		}
 	}
+	// Phase 14.2: JSON decode.
+	if call.Func == "json_decode" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerJsonDecodeCall(call)
+		}
+	}
 	// Phase 6.1: HOF builtins.
 	if call.Func == "map" {
 		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
@@ -4841,6 +4851,21 @@ func (l *lowerer) lowerListReduceCall(call *parser.CallExpr) (aotir.Expr, error)
 		return nil, fmt.Errorf("reduce() init arg: %w", err)
 	}
 	return &aotir.ListFoldlExpr{List: listExpr, Fn: fnExpr, Init: initExpr, AccType: initExpr.Type()}, nil
+}
+
+// lowerJsonDecodeCall lowers `json_decode(s)` to a JsonDecodeExpr (Phase 14.2).
+func (l *lowerer) lowerJsonDecodeCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("json_decode() takes exactly one argument, got %d", len(call.Args))
+	}
+	input, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("json_decode() arg: %w", err)
+	}
+	if input.Type() != aotir.TypeString {
+		return nil, fmt.Errorf("json_decode() argument must be string, got %s", input.Type())
+	}
+	return &aotir.JsonDecodeExpr{Input: input}, nil
 }
 
 // lowerAbsCall lowers `abs(x)` to a MathCallExpr.

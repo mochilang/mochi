@@ -788,6 +788,14 @@ type ListSumExpr struct {
 
 func (e *ListSumExpr) Type() Type { return e.ElemType }
 
+// JsonDecodeExpr is the `json_decode(s)` builtin — Phase 14.2.
+// On BEAM it lowers to mochi_json:decode/1 which uses OTP 27 json:decode/1.
+// The result is typed as map<string, string>: top-level JSON object fields
+// with non-string values are coerced to their string representations.
+type JsonDecodeExpr struct{ Input Expr }
+
+func (*JsonDecodeExpr) Type() Type { return TypeMap }
+
 // ListMapExpr is the `map(xs, fn)` builtin — Phase 6.1.
 // On BEAM it lowers to lists:map/2; on C it lowers to a manual loop.
 type ListMapExpr struct {

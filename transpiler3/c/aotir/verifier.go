@@ -1446,6 +1446,8 @@ func exprKeyType(e Expr) Type {
 		if v.ElemType == TypeMap {
 			return v.MapElemKeyType
 		}
+	case *JsonDecodeExpr:
+		return TypeString
 	}
 	return TypeInvalid
 }
@@ -1466,6 +1468,8 @@ func exprValueType(e Expr) Type {
 		if v.ElemType == TypeMap {
 			return v.MapElemValueType
 		}
+	case *JsonDecodeExpr:
+		return TypeString
 	}
 	return TypeInvalid
 }
@@ -1922,6 +1926,14 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("ListSumExpr: ElemType must be int or float, got %s", v.ElemType)
 		}
 		return verifyExprCtx(ctx, v.Receiver)
+	case *JsonDecodeExpr:
+		if v.Input == nil {
+			return fmt.Errorf("JsonDecodeExpr: nil Input")
+		}
+		if v.Input.Type() != TypeString {
+			return fmt.Errorf("JsonDecodeExpr: input must be string, got %s", v.Input.Type())
+		}
+		return verifyExprCtx(ctx, v.Input)
 	case *ListMapExpr:
 		if v.List == nil {
 			return fmt.Errorf("ListMapExpr: nil List")

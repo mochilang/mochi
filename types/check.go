@@ -267,6 +267,14 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return:     reduceB,
 		TypeParams: []string{"A", "B"},
 	}, false)
+	// Phase 14.2: json_decode(s: string) -> map<string, string>
+	// Decodes a JSON object string. Non-string field values are coerced to
+	// their string representations. Uses OTP 27 stdlib json module on BEAM.
+	env.SetVar("json_decode", FuncType{
+		Params: []Type{StringType{}},
+		Return: MapType{Key: StringType{}, Value: StringType{}},
+	}, false)
+
 	// Phase 6.1: map<A, B>(xs: list<A>, fn: fun(A): B): list<B>
 	mapA := &TypeVar{Name: "A"}
 	mapB := &TypeVar{Name: "B"}

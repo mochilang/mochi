@@ -60,6 +60,22 @@ func TestPhase14Fetch(t *testing.T) {
 	}
 }
 
+// TestPhase14_2JSONParse tests json_decode(s) via mochi_json:decode/1 (Phase 14.2).
+func TestPhase14_2JSONParse(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"name":"alice","age":"30","city":"paris"}`)
+	}))
+	t.Cleanup(srv.Close)
+
+	script := fmt.Sprintf(`fetch "%s/user" into body`+"\n"+
+		`let m = json_decode(body)`+"\n"+
+		`print(m["name"])`+"\n"+
+		`print(m["city"])`+"\n", srv.URL)
+
+	runFetchFixture(t, script, "alice\nparis\n")
+}
+
 // runFetchFixture writes script to a temp .mochi file, compiles it through
 // the BEAM pipeline, runs the resulting escript, and checks stdout.
 func runFetchFixture(t *testing.T, script, want string) {
