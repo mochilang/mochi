@@ -29,13 +29,21 @@ LLM generation is the user-facing AI-augmented workflow that Mochi positions its
 | #    | Scope                                                                                                              | Status      | Commit | PR |
 |------|--------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 14.0 | `mochi/llm.h` + `llm.c` cassette runtime; `LLMGenerateExpr` IR; lower + emit for `generate <provider> { prompt, model }`; type-checker recognises openai/anthropic/google/llama providers; 10 fixtures; `TestPhase14LLM` gate | LANDED 2026-05-26 07:14 (GMT+7) | — | — |
-| 14.1 | OpenAI provider (libcurl + yyjson)                                                                                 | NOT STARTED | —      | — |
+| 14.1 | OpenAI live provider via libcurl (`-DMOCHI_LLM_HAVE_CURL -lcurl`); simple JSON extraction for `choices[0].message.content`; `TestPhase14OpenAI` gate (cassette + live-no-api-key sub-tests; no real API call) | LANDED 2026-05-26 07:24 (GMT+7) | — | — |
 | 14.2 | Anthropic provider                                                                                                 | NOT STARTED | —      | — |
 | 14.3 | Google provider                                                                                                    | NOT STARTED | —      | — |
 | 14.4 | llama.cpp local provider (linked only with `--with-llama`)                                                         | NOT STARTED | —      | — |
 | 14.5 | Live HTTP providers via libcurl + yyjson; cassette recording mode                                                  | NOT STARTED | —      | — |
 
 ## Decisions made
+
+**Phase 14.1: libcurl opt-in via compile flag.** The OpenAI live provider is implemented in `llm.c` behind `#if defined(MOCHI_LLM_HAVE_CURL)`. Default compilation (without this flag) links no external library; live mode returns "" with a diagnostic. Users who want live API calls compile with `-DMOCHI_LLM_HAVE_CURL -lcurl`. This keeps the gate dependency-free while enabling production use.
+
+**Phase 14.1: `probeLibcurl` in gate test.** `TestPhase14OpenAI` probes libcurl availability by compiling a minimal C program with `-lcurl` before running the gate. The test skips gracefully when libcurl is absent. CI and macOS dev hosts with system libcurl pass; minimal containers without libcurl skip rather than fail.
+
+**Phase 14.1: simple strstr-based JSON extraction.** The OpenAI response is parsed by finding `"message"` then `"content"` in the JSON body. This handles the standard `choices[0].message.content` path without requiring a full JSON library. Edge cases (escaped quotes, Unicode) are handled by the `llm_json_str` helper. yyjson (full JSON library) is deferred to a later sub-phase.
+
+**Phase 14.1: no yyjson.** The MEP spec mentioned yyjson for JSON parsing. Phase 14.1 uses a minimal strstr-based extractor instead, which is sufficient for extracting `choices[0].message.content` from well-formed OpenAI API responses. yyjson would be needed for tool-use parsing (structured responses), which is a deferred Phase 14.3+ concern.
 
 **Phase 14.0: cassette-first, no libcurl dependency.** The MEP spec called for a cassette layer that intercepts libcurl. Phase 14.0 instead uses a simpler approach: the C runtime reads `MOCHI_LLM_CASSETTE_DIR` and looks up pre-recorded response files by DJB2 hash of the (provider, model, prompt) triple. This avoids any HTTP dependency for the gate. Live-mode HTTP providers land in Phase 14.1-14.4.
 
@@ -55,4 +63,4 @@ _Provider-specific tool-use / function-calling integration tests: a follow-up ph
 
 ## Closeout notes
 
-Sub-phase 14.0 is LANDED. The `generate <provider> { ... }` expression now compiles and runs in cassette replay mode with 10 fixtures covering openai, anthropic, and google providers, model fields, variable results, string concatenation, multiple calls, and function-scoped generation. Live HTTP providers (14.1-14.5) remain NOT STARTED.
+Sub-phases 14.0 and 14.1 are LANDED. The `generate <provider> { ... }` expression compiles and runs in cassette replay mode with 10 fixtures; the OpenAI live provider is available when compiled with `-DMOCHI_LLM_HAVE_CURL -lcurl`. Providers 14.2-14.4 (Anthropic, Google, llama.cpp) and cassette recording (14.5) remain NOT STARTED.
