@@ -1,0 +1,5 @@
+var nums: list<int> = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+var groups: list<int> = from x in nums group by x % 3 into grp select len(grp)
+for n in groups {
+  print(n)
+}

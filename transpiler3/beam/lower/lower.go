@@ -1000,6 +1000,37 @@ func collectExprVarRefs(expr aotir.Expr) []string {
 		for _, a := range e.Args {
 			names = append(names, collectExprVarRefs(a)...)
 		}
+	case *aotir.AppendExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Value)...)
+	case *aotir.IndexExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Index)...)
+	case *aotir.LenExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.MapGetExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Key)...)
+	case *aotir.MapHasExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Key)...)
+	case *aotir.MapLenExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.MapKeysExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.MapValuesExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.ListSumExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.ListMinExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.ListMaxExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.ListContainsExpr:
+		names = append(names, collectExprVarRefs(e.List)...)
+		names = append(names, collectExprVarRefs(e.Value)...)
+	case *aotir.FieldAccess:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
 	}
 	return names
 }
@@ -1036,6 +1067,13 @@ func collectStmtVarRefs(stmts []aotir.Stmt) []string {
 			if s.Value != nil {
 				names = append(names, collectExprVarRefs(s.Value)...)
 			}
+		case *aotir.MapPutStmt:
+			names = append(names, s.Name)
+			names = append(names, collectExprVarRefs(s.Key)...)
+			names = append(names, collectExprVarRefs(s.Value)...)
+		case *aotir.ForEachStmt:
+			names = append(names, collectExprVarRefs(s.List)...)
+			names = append(names, collectStmtVarRefs(s.Body.Statements)...)
 		}
 	}
 	return names
@@ -1048,6 +1086,8 @@ func collectAssignedVars(stmts []aotir.Stmt) []string {
 	for _, stmt := range stmts {
 		switch s := stmt.(type) {
 		case *aotir.AssignStmt:
+			names = append(names, s.Name)
+		case *aotir.MapPutStmt:
 			names = append(names, s.Name)
 		case *aotir.IfStmt:
 			if s.Then != nil {

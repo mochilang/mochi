@@ -1361,6 +1361,12 @@ func exprElemType(e Expr) Type {
 			return v.InnerElemType
 		}
 		return TypeInvalid
+	case *MapGetExpr:
+		// When a map<K,list<T>> is indexed, the result is list<T>; return T.
+		if v.ValueType == TypeList {
+			return v.ListValueElemType
+		}
+		return TypeInvalid
 	case *MapKeysExpr:
 		return v.KeyType
 	case *MapValuesExpr:

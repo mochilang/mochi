@@ -5073,6 +5073,249 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 	return ok && n == "_"
 }
 
+// lowerGroupByQueryExpr desugars a group-by query expression (Phase 7.2).
+//
+// The query:
+//
+//	from x in src where cond group by keyExpr into grp select selectExpr
+//
+// is desugared into:
+//
+//	let __grp_map_N: map<keyType, list<elemType>> = {}
+//	for x in src {
+//	  if cond {
+//	    let __gk_N = keyExpr
+//	    let __gv_N: list<elemType> = []
+//	    if has(__grp_map_N, __gk_N) { __gv_N = __grp_map_N[__gk_N] }
+//	    __grp_map_N[__gk_N] = append(__gv_N, x)
+//	  }
+//	}
+//	let __grpkeys_N: list<keyType> = keys(__grp_map_N)
+//	let __result_N: list<selectType> = []
+//	for __gk_N in __grpkeys_N {
+//	  let grp: list<elemType> = __grp_map_N[__gk_N]
+//	  __result_N = append(__result_N, selectExpr)
+//	}
+//
+// and returns a VarRef to __result_N.
+func (l *lowerer) lowerGroupByQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
+	if q.Group.Having != nil {
+		return nil, fmt.Errorf("group-by having clause not yet supported (Phase 7.2)")
+	}
+	if len(q.Group.Exprs) != 1 {
+		return nil, fmt.Errorf("group-by with multiple keys not yet supported (Phase 7.2); got %d keys", len(q.Group.Exprs))
+	}
+
+	source, err := l.lowerExpr(q.Source)
+	if err != nil {
+		return nil, fmt.Errorf("group-by source: %w", err)
+	}
+	if source.Type() != aotir.TypeList {
+		return nil, fmt.Errorf("group-by source must be a list, got %s", source.Type())
+	}
+	sourceElemType := exprElemType(source)
+	sourceElemRecord := exprElemRecordName(source)
+	sourceInnerElem := exprInnerElemType(source)
+	sourceMapKey := exprMapElemKeyType(source)
+	sourceMapValue := exprMapElemValueType(source)
+
+	prev := l.scope
+	l.scope = newLScope(prev)
+	l.scope.vars[q.Var] = lbinding{
+		t:            sourceElemType,
+		record:       sourceElemRecord,
+		elem:         sourceInnerElem,
+		mapElemKey:   sourceMapKey,
+		mapElemValue: sourceMapValue,
+	}
+
+	keyExpr, err := l.lowerExpr(q.Group.Exprs[0])
+	if err != nil {
+		l.scope = prev
+		return nil, fmt.Errorf("group-by key expr: %w", err)
+	}
+	keyType := keyExpr.Type()
+
+	var whereCond aotir.Expr
+	if q.Where != nil {
+		whereCond, err = l.lowerExpr(q.Where)
+		if err != nil {
+			l.scope = prev
+			return nil, fmt.Errorf("group-by where: %w", err)
+		}
+		if whereCond.Type() != aotir.TypeBool {
+			l.scope = prev
+			return nil, fmt.Errorf("group-by where condition must be bool, got %s", whereCond.Type())
+		}
+	}
+	l.scope = prev
+
+	l.tempCounter++
+	n := l.tempCounter
+	grpMapName := fmt.Sprintf("__grp_map_%d", n)
+	gkName := fmt.Sprintf("__gk_%d", n)
+	gvName := fmt.Sprintf("__gv_%d", n)
+	grpKeysName := fmt.Sprintf("__grpkeys_%d", n)
+	resultName := fmt.Sprintf("__result_%d", n)
+
+	prev.vars[grpMapName] = lbinding{
+		t:           aotir.TypeMap,
+		mutable:     true,
+		key:         keyType,
+		value:       aotir.TypeList,
+		listValElem: sourceElemType,
+	}
+
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.LetStmt{
+		Name:              grpMapName,
+		VarType:           aotir.TypeMap,
+		KeyType:           keyType,
+		ValueType:         aotir.TypeList,
+		ListValueElemType: sourceElemType,
+		Init:              &aotir.MapLit{KeyType: keyType, ValueType: aotir.TypeList, ListValueElemType: sourceElemType},
+		Mutable:           true,
+	})
+
+	grpMapRef := func() *aotir.VarRef {
+		return &aotir.VarRef{
+			Name:              grpMapName,
+			VarType:           aotir.TypeMap,
+			KeyType:           keyType,
+			ValueType:         aotir.TypeList,
+			ListValueElemType: sourceElemType,
+		}
+	}
+	gkRef := func() *aotir.VarRef { return &aotir.VarRef{Name: gkName, VarType: keyType} }
+	gvRef := func() *aotir.VarRef {
+		return &aotir.VarRef{Name: gvName, VarType: aotir.TypeList, ElemType: sourceElemType}
+	}
+	sourceVarRef := &aotir.VarRef{Name: q.Var, VarType: sourceElemType}
+
+	prev.vars[gkName] = lbinding{t: keyType, mutable: true}
+	prev.vars[gvName] = lbinding{t: aotir.TypeList, mutable: true, elem: sourceElemType}
+
+	accStmts := []aotir.Stmt{
+		&aotir.LetStmt{Name: gkName, VarType: keyType, Init: keyExpr, Mutable: true},
+		&aotir.LetStmt{
+			Name: gvName, VarType: aotir.TypeList, ElemType: sourceElemType,
+			Init: &aotir.ListLit{ElemType: sourceElemType}, Mutable: true,
+		},
+		&aotir.IfStmt{
+			Cond: &aotir.MapHasExpr{
+				Receiver: grpMapRef(), Key: gkRef(),
+				KeyType: keyType, ValueType: aotir.TypeList, ListValueElemType: sourceElemType,
+			},
+			Then: &aotir.Block{Statements: []aotir.Stmt{
+				&aotir.AssignStmt{Name: gvName, Value: &aotir.MapGetExpr{
+					Receiver: grpMapRef(), Key: gkRef(),
+					KeyType: keyType, ValueType: aotir.TypeList, ListValueElemType: sourceElemType,
+				}},
+			}},
+		},
+		&aotir.MapPutStmt{
+			Name: grpMapName, Key: gkRef(),
+			Value:     &aotir.AppendExpr{Receiver: gvRef(), Value: sourceVarRef, ElemType: sourceElemType},
+			KeyType:   keyType,
+			ValueType: aotir.TypeList,
+		},
+	}
+
+	var accBlock *aotir.Block
+	if whereCond != nil {
+		accBlock = &aotir.Block{Statements: []aotir.Stmt{&aotir.IfStmt{
+			Cond: whereCond,
+			Then: &aotir.Block{Statements: accStmts},
+		}}}
+	} else {
+		accBlock = &aotir.Block{Statements: accStmts}
+	}
+
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.ForEachStmt{
+		Var:              q.Var,
+		List:             source,
+		ElemType:         sourceElemType,
+		ElemRecordName:   sourceElemRecord,
+		InnerElemType:    sourceInnerElem,
+		MapElemKeyType:   sourceMapKey,
+		MapElemValueType: sourceMapValue,
+		Body:             accBlock,
+	})
+
+	// Lower select expression with grp in scope.
+	l.scope = newLScope(prev)
+	l.scope.vars[gkName] = lbinding{t: keyType}
+	l.scope.vars[q.Group.Name] = lbinding{t: aotir.TypeList, elem: sourceElemType}
+	selectExpr, err := l.lowerExpr(q.Select)
+	if err != nil {
+		l.scope = prev
+		return nil, fmt.Errorf("group-by select: %w", err)
+	}
+	selectElemType := selectExpr.Type()
+	l.scope = prev
+
+	l.tempCounter++
+	arenaVar := fmt.Sprintf("__qa%d", l.tempCounter)
+
+	prev.vars[resultName] = lbinding{t: aotir.TypeList, mutable: true, elem: selectElemType}
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.LetStmt{
+		Name:     resultName,
+		VarType:  aotir.TypeList,
+		ElemType: selectElemType,
+		Init:     &aotir.ListLit{ElemType: selectElemType},
+		Mutable:  true,
+	})
+
+	grpKeysExpr := &aotir.MapKeysExpr{
+		Receiver:          grpMapRef(),
+		KeyType:           keyType,
+		ValueType:         aotir.TypeList,
+		ListValueElemType: sourceElemType,
+	}
+	prev.vars[grpKeysName] = lbinding{t: aotir.TypeList, elem: keyType}
+
+	resultRef := &aotir.VarRef{Name: resultName, VarType: aotir.TypeList, ElemType: selectElemType}
+	appendStmt := &aotir.AssignStmt{
+		Name: resultName,
+		Value: &aotir.AppendExpr{
+			Receiver: resultRef, Value: selectExpr, ElemType: selectElemType,
+		},
+	}
+
+	projBody := &aotir.Block{Statements: []aotir.Stmt{
+		&aotir.LetStmt{
+			Name:    q.Group.Name,
+			VarType: aotir.TypeList, ElemType: sourceElemType,
+			Init: &aotir.MapGetExpr{
+				Receiver: grpMapRef(), Key: &aotir.VarRef{Name: gkName, VarType: keyType},
+				KeyType: keyType, ValueType: aotir.TypeList, ListValueElemType: sourceElemType,
+			},
+		},
+		appendStmt,
+	}}
+
+	queryBody := &aotir.Block{Statements: []aotir.Stmt{
+		&aotir.LetStmt{
+			Name: grpKeysName, VarType: aotir.TypeList, ElemType: keyType,
+			Init: grpKeysExpr,
+		},
+		&aotir.ForEachStmt{
+			Var:      gkName,
+			List:     &aotir.VarRef{Name: grpKeysName, VarType: aotir.TypeList, ElemType: keyType},
+			ElemType: keyType,
+			Body:     projBody,
+		},
+	}}
+
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.QueryScopeStmt{
+		ResultVar: resultName,
+		ArenaVar:  arenaVar,
+		ElemType:  selectElemType,
+		Body:      queryBody,
+	})
+
+	return &aotir.VarRef{Name: resultName, VarType: aotir.TypeList, ElemType: selectElemType}, nil
+}
+
 // lowerQueryExpr lowers a `from x in src [where cond] select expr`
 // query expression. Phase 8.0 supports filter+map queries over scalar
 // list sources. The approach mirrors lowerMatchExpr: statements are
@@ -5089,9 +5332,9 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 	if l.currentBlock == nil {
 		return nil, fmt.Errorf("query expression outside a statement block (internal error)")
 	}
-	// Phase 8.2: cross-join (from) and join clauses are now supported.
+	// Phase 7.2: group-by queries delegate to lowerGroupByQueryExpr.
 	if q.Group != nil {
-		return nil, fmt.Errorf("group-by queries land in Phase 8.1")
+		return l.lowerGroupByQueryExpr(q)
 	}
 	// Phase 8.1: Sort, Skip, Take are handled after the main loop below.
 	if q.Distinct {

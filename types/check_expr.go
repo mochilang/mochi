@@ -2096,7 +2096,7 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return errArgCount(pos, name, 1, len(args))
 		}
 		switch args[0].(type) {
-		case ListType, MapType, StringType, AnyType:
+		case ListType, MapType, StringType, AnyType, GroupType:
 			return nil
 		default:
 			return errLenOperand(pos, args[0])

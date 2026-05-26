@@ -1,0 +1,5 @@
+var nums: list<int> = [1, 2, 3, 4, 5, 6]
+var groups: list<int> = from x in nums group by x % 2 into grp select sum(grp)
+for s in groups {
+  print(s)
+}
