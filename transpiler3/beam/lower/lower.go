@@ -77,6 +77,9 @@ func Lower(prog *aotir.Program, modName string) (*cerl.Module, error) {
 		Body:  body,
 	})
 
+	// Phase 17.0: emit -spec attributes for all functions + main.
+	addSpecAttrs(mod, prog.Functions)
+
 	return mod, nil
 }
 
@@ -1437,6 +1440,10 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		return cerl.CCall(cerl.CAtom("mochi_stream"), cerl.CAtom("recv_sub"),
 			[]cerl.Expr{sub}), nil
 
+	// Phase 13.0: LLM generate → mochi_llm:generate/3
+	case *aotir.LLMGenerateExpr:
+		return lowerLLMGenerateExpr(l, e)
+
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported expression %T", expr)
 	}
@@ -2133,4 +2140,21 @@ func (l *lowerer) lowerAgentIntentCallStmt(s *aotir.AgentIntentCallStmt, tail []
 		return nil, err
 	}
 	return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + varName)}, callExpr, rest), nil
+}
+
+// lowerLLMGenerateExpr lowers LLMGenerateExpr to mochi_llm:generate/3.
+// Phase 13.0: in cassette mode (MOCHI_LLM_CASSETTE_DIR env set) mochi_llm
+// replays pre-recorded responses; in live mode it calls the provider HTTP API.
+func lowerLLMGenerateExpr(l *lowerer, e *aotir.LLMGenerateExpr) (cerl.Expr, error) {
+	provider := cerl.CBin([]byte(e.Provider))
+	model, err := lowerExpr(l, e.Model)
+	if err != nil {
+		return nil, err
+	}
+	prompt, err := lowerExpr(l, e.Prompt)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("mochi_llm"), cerl.CAtom("generate"),
+		[]cerl.Expr{provider, model, prompt}), nil
 }
