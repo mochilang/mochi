@@ -1350,6 +1350,9 @@ func exprElemType(e aotir.Expr) aotir.Type {
 			return aotir.TypeString
 		}
 		return aotir.TypeInvalid
+	case *aotir.DatalogQueryExpr:
+		// Phase 8.0: Datalog query result is list<string>.
+		return aotir.TypeString
 	}
 	return aotir.TypeInvalid
 }
@@ -6710,10 +6713,50 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 
 	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.RawCStmt{Code: code.String()})
 
-	// Return a RawCExpr that references the result variable.
-	return &aotir.RawCExpr{
-		Code:    resultVar,
-		RawType: aotir.TypeList,
+	// Build a DatalogProgram snapshot at query time (for BEAM compile-time eval).
+	dpFacts := make([]aotir.DatalogFact, len(l.logicFacts))
+	for i, f := range l.logicFacts {
+		argsCopy := make([]string, len(f.args))
+		copy(argsCopy, f.args)
+		dpFacts[i] = aotir.DatalogFact{Name: f.name, Args: argsCopy}
+	}
+	dpRules := make([]aotir.DatalogRule, len(l.logicRules))
+	for i, r := range l.logicRules {
+		haCopy := make([]string, len(r.headArgs))
+		copy(haCopy, r.headArgs)
+		rbBody := make([]aotir.DatalogRuleBody, len(r.body))
+		for j, rb := range r.body {
+			argsCopy := make([]string, len(rb.args))
+			copy(argsCopy, rb.args)
+			rbBody[j] = aotir.DatalogRuleBody{
+				Name:  rb.name,
+				Args:  argsCopy,
+				IsNot: rb.isNot,
+				IsNeq: rb.isNeq,
+				NeqA:  rb.neqA,
+				NeqB:  rb.neqB,
+			}
+		}
+		dpRules[i] = aotir.DatalogRule{
+			HeadName: r.headName,
+			HeadArgs: haCopy,
+			Body:     rbBody,
+		}
+	}
+
+	// Build queryArgs from the query predicate.
+	queryArgs := make([]string, len(q.Pred.Args))
+	for i, qa := range q.Pred.Args {
+		if qa.Str != nil {
+			queryArgs[i] = `"` + *qa.Str + `"`
+		} // else "" = free variable
+	}
+
+	return &aotir.DatalogQueryExpr{
+		QueryName:  q.Pred.Name,
+		QueryArgs:  queryArgs,
+		Prog:       &aotir.DatalogProgram{Facts: dpFacts, Rules: dpRules},
+		CResultVar: resultVar,
 	}, nil
 }
 

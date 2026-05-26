@@ -2791,6 +2791,9 @@ func emitExpr(e aotir.Expr) (string, error) {
 	case *aotir.RawCExpr:
 		// Phase 15.0: raw C expression; pass through verbatim.
 		return v.Code, nil
+	case *aotir.DatalogQueryExpr:
+		// Phase 8.0: the setup RawCStmt is already in the block; just reference the result var.
+		return v.CResultVar, nil
 	case *aotir.ChanMakeExpr:
 		cap, err := emitExpr(v.Cap)
 		if err != nil {

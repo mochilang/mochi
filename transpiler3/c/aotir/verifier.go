@@ -1377,6 +1377,9 @@ func exprElemType(e Expr) Type {
 			return TypeString
 		}
 		return TypeInvalid
+	case *DatalogQueryExpr:
+		// Phase 8.0: Datalog query results are list<string>; elem is TypeString.
+		return TypeString
 	}
 	return TypeInvalid
 }
@@ -2084,6 +2087,14 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		// Phase 15.0: raw C expression; the lowerer is responsible for correctness.
 		if v.Code == "" {
 			return errors.New("RawCExpr: empty Code")
+		}
+		return nil
+	case *DatalogQueryExpr:
+		if v.QueryName == "" {
+			return errors.New("DatalogQueryExpr: empty QueryName")
+		}
+		if v.Prog == nil {
+			return errors.New("DatalogQueryExpr: nil Prog")
 		}
 		return nil
 	case *CallExpr:

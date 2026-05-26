@@ -54,6 +54,10 @@ type Program struct {
 	// Phase 10.4 adds this; emit walks it to write inline C wrapper
 	// functions that forward calls to the JS companion via mochi_js_rpc_*.
 	JSFuncs []*JSFuncDecl
+
+	// Datalog holds facts and rules accumulated from `fact`/`rule` declarations.
+	// Phase 8.0 adds this so the BEAM lowerer can implement compile-time evaluation.
+	Datalog *DatalogProgram
 }
 
 // GoFuncDecl describes a Go FFI function. Phase 10.2.
@@ -1524,3 +1528,51 @@ type AgentIntentCallStmt struct {
 }
 
 func (*AgentIntentCallStmt) isStmt() {}
+
+// ---- Phase 8 (BEAM): Datalog IR nodes ----
+
+// DatalogFact is one ground tuple from `fact Name(arg1, ...)`.
+// Args are raw string values (unquoted). Phase 8.0.
+type DatalogFact struct {
+	Name string
+	Args []string
+}
+
+// DatalogRuleBody is one literal in a Datalog rule body.
+type DatalogRuleBody struct {
+	Name  string   // relation name (empty when IsNeq)
+	Args  []string // var names or "\"literal\""-quoted constants
+	IsNot bool     // negation-as-failure (not Pred(...))
+	IsNeq bool     // X != Y inequality
+	NeqA  string   // left variable when IsNeq
+	NeqB  string   // right variable when IsNeq
+}
+
+// DatalogRule is one Datalog rule from `rule HeadName(headArgs) :- body`.
+type DatalogRule struct {
+	HeadName string
+	HeadArgs []string // variable names or "\"const\"" constants
+	Body     []DatalogRuleBody
+}
+
+// DatalogProgram holds all facts and rules at the point of a query.
+type DatalogProgram struct {
+	Facts []DatalogFact
+	Rules []DatalogRule
+}
+
+// DatalogQueryExpr evaluates `query Name(args)` and returns list<string>
+// (flat: free-variable values from all matching tuples concatenated).
+// The C backend uses CResultVar (the variable reference) plus the RawCStmt
+// already added to the block; the BEAM backend runs a compile-time Go
+// semi-naive evaluator over Prog.
+type DatalogQueryExpr struct {
+	QueryName string
+	QueryArgs []string        // "" = free variable; "\"foo\"" = bound constant
+	Prog      *DatalogProgram
+	// CResultVar is the C variable name (e.g. "__dl1_result") used by the
+	// C backend; the corresponding setup RawCStmt is already in the block.
+	CResultVar string
+}
+
+func (*DatalogQueryExpr) Type() Type { return TypeList }

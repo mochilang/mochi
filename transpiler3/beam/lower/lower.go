@@ -531,6 +531,11 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 			handler,
 		), nil
 
+	case *aotir.RawCStmt:
+		// Phase 8.0: Datalog C setup code — the BEAM backend evaluates at compile time via
+		// DatalogQueryExpr; skip the raw C statement.
+		return l.lowerBlock(tail, cont)
+
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported statement %T", head)
 	}
@@ -1444,6 +1449,10 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 	case *aotir.LLMGenerateExpr:
 		return lowerLLMGenerateExpr(l, e)
 
+	// Phase 8.0: Datalog compile-time evaluation.
+	case *aotir.DatalogQueryExpr:
+		return lowerDatalogQueryExpr(e)
+
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported expression %T", expr)
 	}
@@ -2157,4 +2166,230 @@ func lowerLLMGenerateExpr(l *lowerer, e *aotir.LLMGenerateExpr) (cerl.Expr, erro
 	}
 	return cerl.CCall(cerl.CAtom("mochi_llm"), cerl.CAtom("generate"),
 		[]cerl.Expr{provider, model, prompt}), nil
+}
+
+// lowerDatalogQueryExpr runs a compile-time semi-naive bottom-up Datalog
+// evaluator and returns a static Erlang list literal of binary strings.
+// The result is a flat list: for each matching tuple the free-variable values
+// are appended in order (same layout as the C backend's mochi_list_str).
+func lowerDatalogQueryExpr(e *aotir.DatalogQueryExpr) (cerl.Expr, error) {
+	if e.Prog == nil {
+		return cerl.CNil(), nil
+	}
+	results := datalogEval(e)
+	// Build Erlang list from results (right-to-left CCons chain).
+	list := cerl.Expr(cerl.CNil())
+	for i := len(results) - 1; i >= 0; i-- {
+		list = cerl.CCons(cerl.CBin([]byte(results[i])), list)
+	}
+	return list, nil
+}
+
+// datalogEval performs semi-naive bottom-up evaluation of e.Prog and
+// returns the flat list of free-variable values from matching tuples.
+func datalogEval(e *aotir.DatalogQueryExpr) []string {
+	// Relation name -> set of tuples (each tuple is []string).
+	state := map[string][][]string{}
+
+	// Seed with base facts.
+	for _, f := range e.Prog.Facts {
+		args := make([]string, len(f.Args))
+		copy(args, f.Args)
+		state[f.Name] = append(state[f.Name], args)
+	}
+
+	// Semi-naive fixpoint: iterate until no new tuples are derived.
+	for {
+		changed := false
+		for _, rule := range e.Prog.Rules {
+			newTuples := deriveRule(rule, state)
+			for _, t := range newTuples {
+				if !tupleInRelation(state[rule.HeadName], t) {
+					state[rule.HeadName] = append(state[rule.HeadName], t)
+					changed = true
+				}
+			}
+		}
+		if !changed {
+			break
+		}
+	}
+
+	// Collect matching tuples for the query.
+	rel := state[e.QueryName]
+	var out []string
+	for _, tuple := range rel {
+		if len(tuple) != len(e.QueryArgs) {
+			continue
+		}
+		match := true
+		for i, qa := range e.QueryArgs {
+			if qa != "" {
+				// Bound argument: qa is "\"value\"" -- strip quotes.
+				expected := qa
+				if len(expected) >= 2 && expected[0] == '"' && expected[len(expected)-1] == '"' {
+					expected = expected[1 : len(expected)-1]
+				}
+				if tuple[i] != expected {
+					match = false
+					break
+				}
+			}
+		}
+		if match {
+			for i, qa := range e.QueryArgs {
+				if qa == "" {
+					out = append(out, tuple[i])
+				}
+			}
+		}
+	}
+	return out
+}
+
+// deriveRule computes new head tuples by evaluating one rule body against state.
+func deriveRule(rule aotir.DatalogRule, state map[string][][]string) [][]string {
+	// Simple nested-loop join over body literals.
+	// env maps variable names to bound values.
+	results := []map[string]string{{}}
+	for _, lit := range rule.Body {
+		if lit.IsNeq {
+			// Filter: env[NeqA] != env[NeqB].
+			var next []map[string]string
+			for _, env := range results {
+				a, aok := env[lit.NeqA]
+				b, bok := env[lit.NeqB]
+				if !aok || !bok || a != b {
+					next = append(next, env)
+				}
+			}
+			results = next
+			continue
+		}
+		if lit.IsNot {
+			// Negation-as-failure: keep env only if no tuple in lit.Name matches.
+			var next []map[string]string
+			for _, env := range results {
+				matched := false
+				for _, t := range state[lit.Name] {
+					if len(t) != len(lit.Args) {
+						continue
+					}
+					ok := true
+					for i, arg := range lit.Args {
+						val := resolveArg(arg, env)
+						if val != t[i] {
+							ok = false
+							break
+						}
+					}
+					if ok {
+						matched = true
+						break
+					}
+				}
+				if !matched {
+					next = append(next, env)
+				}
+			}
+			results = next
+			continue
+		}
+		// Positive literal: join with relation tuples.
+		var next []map[string]string
+		for _, env := range results {
+			for _, t := range state[lit.Name] {
+				if len(t) != len(lit.Args) {
+					continue
+				}
+				newEnv := copyEnv(env)
+				ok := true
+				for i, arg := range lit.Args {
+					if isVariable(arg) {
+						if existing, bound := newEnv[arg]; bound {
+							if existing != t[i] {
+								ok = false
+								break
+							}
+						} else {
+							newEnv[arg] = t[i]
+						}
+					} else {
+						// Constant: arg is "\"value\"" -- strip quotes.
+						expected := unquoteStr(arg)
+						if t[i] != expected {
+							ok = false
+							break
+						}
+					}
+				}
+				if ok {
+					next = append(next, newEnv)
+				}
+			}
+		}
+		results = next
+	}
+
+	// Build head tuples from the final environments.
+	var out [][]string
+	for _, env := range results {
+		head := make([]string, len(rule.HeadArgs))
+		for i, ha := range rule.HeadArgs {
+			if isVariable(ha) {
+				head[i] = env[ha]
+			} else {
+				head[i] = unquoteStr(ha)
+			}
+		}
+		out = append(out, head)
+	}
+	return out
+}
+
+func tupleInRelation(rel [][]string, t []string) bool {
+	for _, r := range rel {
+		if len(r) != len(t) {
+			continue
+		}
+		eq := true
+		for i := range r {
+			if r[i] != t[i] {
+				eq = false
+				break
+			}
+		}
+		if eq {
+			return true
+		}
+	}
+	return false
+}
+
+func resolveArg(arg string, env map[string]string) string {
+	if isVariable(arg) {
+		return env[arg]
+	}
+	return unquoteStr(arg)
+}
+
+func isVariable(s string) bool {
+	// Variables are uppercase letters (standard Datalog convention) or lowercase
+	// identifiers that don't start with a quote.
+	return len(s) > 0 && s[0] != '"'
+}
+
+func unquoteStr(s string) string {
+	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
+		return s[1 : len(s)-1]
+	}
+	return s
+}
+
+func copyEnv(env map[string]string) map[string]string {
+	out := make(map[string]string, len(env))
+	for k, v := range env {
+		out[k] = v
+	}
+	return out
 }
