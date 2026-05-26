@@ -1,0 +1,22 @@
+type Product {
+  name: string
+  price: int
+}
+
+let products = [
+  Product{name: "apple", price: 1},
+  Product{name: "banana", price: 3},
+  Product{name: "cherry", price: 2},
+  Product{name: "date", price: 5}
+]
+
+var cheap: list<Product> = []
+for p in products {
+  if p.price <= 2 {
+    cheap = append(cheap, p)
+  }
+}
+print(len(cheap))
+for p in cheap {
+  print(p.name)
+}

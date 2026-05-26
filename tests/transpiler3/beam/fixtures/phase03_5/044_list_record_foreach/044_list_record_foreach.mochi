@@ -1,0 +1,14 @@
+type Person {
+  name: string
+  age: int
+}
+
+let people = [Person{name: "Alice", age: 30}, Person{name: "Bob", age: 25}, Person{name: "Charlie", age: 35}]
+var total = 0
+for p in people {
+  total = total + p.age
+}
+print(total)
+for p in people {
+  print(p.name)
+}
