@@ -643,13 +643,14 @@ type logicRule struct {
 	body     []logicBody // body conditions
 }
 
-// logicBody is one condition in a rule body (Phase 15.0).
+// logicBody is one condition in a rule body (Phase 15.0/15.2).
 type logicBody struct {
-	isNeq bool   // true for X != Y inequalities
-	name  string // relation name (when !isNeq)
+	isNeq bool     // true for X != Y inequalities
+	isNot bool     // Phase 15.2: true for "not pred(X,...)" negated conditions
+	name  string   // relation name (when !isNeq)
 	args  []string // argument terms (when !isNeq); variable names or quoted string literals
-	neqA  string // left variable for != (when isNeq)
-	neqB  string // right variable for != (when isNeq)
+	neqA  string   // left variable for != (when isNeq)
+	neqB  string   // right variable for != (when isNeq)
 }
 
 type lowerer struct {
@@ -5771,8 +5772,23 @@ func (l *lowerer) collectRule(r *parser.RuleStmt) error {
 			body[i] = logicBody{isNeq: true, neqA: cond.Neq.A, neqB: cond.Neq.B}
 			continue
 		}
+		// Phase 15.2: negated body condition.
+		if cond.Not != nil {
+			bArgs := make([]string, len(cond.Not.Args))
+			for j, a := range cond.Not.Args {
+				if a.Var != nil {
+					bArgs[j] = *a.Var
+				} else if a.Str != nil {
+					bArgs[j] = `"` + *a.Str + `"`
+				} else {
+					return fmt.Errorf("collectRule: not-body condition %d arg %d has unsupported type", i, j)
+				}
+			}
+			body[i] = logicBody{isNot: true, name: cond.Not.Name, args: bArgs}
+			continue
+		}
 		if cond.Pred == nil {
-			return fmt.Errorf("collectRule: body condition %d has no predicate and no neq", i)
+			return fmt.Errorf("collectRule: body condition %d has no predicate, neq, or not", i)
 		}
 		bArgs := make([]string, len(cond.Pred.Args))
 		for j, a := range cond.Pred.Args {
@@ -5812,6 +5828,68 @@ func cEscapeStr(s string) string {
 		}
 	}
 	return b.String()
+}
+
+// computeDatalogStrata assigns a stratum number to each relation for Phase 15.2
+// stratified negation. Stratum 0 contains base facts and all-positive rules.
+// A rule that uses "not rel(...)" in its body is placed one stratum above rel's
+// stratum, ensuring rel is fully evaluated before the negation is checked.
+// Returns an error if a cycle through negation is detected.
+func computeDatalogStrata(facts []logicFact, rules []logicRule) (map[string]int, error) {
+	strata := map[string]int{}
+	// Base facts start at stratum 0.
+	for _, f := range facts {
+		if _, ok := strata[f.name]; !ok {
+			strata[f.name] = 0
+		}
+	}
+
+	// Iteratively assign strata until stable. Limit iterations to detect cycles.
+	maxIter := len(rules)*len(rules) + 10
+	for iter := 0; iter < maxIter; iter++ {
+		changed := false
+		for _, r := range rules {
+			s := strata[r.headName]
+			for _, bc := range r.body {
+				if bc.isNeq || bc.isNot {
+					continue
+				}
+				if bs := strata[bc.name]; bs > s {
+					s = bs
+				}
+			}
+			for _, bc := range r.body {
+				if !bc.isNot {
+					continue
+				}
+				if bs := strata[bc.name] + 1; bs > s {
+					s = bs
+				}
+			}
+			if s != strata[r.headName] {
+				strata[r.headName] = s
+				changed = true
+			}
+		}
+		if !changed {
+			break
+		}
+	}
+
+	// Detect cycles through negation: if a negated relation's stratum equals
+	// the head stratum after fixpoint, there is a cycle.
+	for _, r := range rules {
+		for _, bc := range r.body {
+			if !bc.isNot {
+				continue
+			}
+			if strata[bc.name] >= strata[r.headName] {
+				return nil, fmt.Errorf("stratified negation: cycle through negation involving relation %q", bc.name)
+			}
+		}
+	}
+
+	return strata, nil
 }
 
 // applyMagicSet applies the magic-set transform (Bancilhon et al., PODS 1986)
@@ -5899,7 +5977,7 @@ func (l *lowerer) applyMagicSet(
 
 		// Generate magic propagation rules for recursive body calls.
 		for bi, bc := range rule.body {
-			if bc.isNeq || bc.name != queryPred {
+			if bc.isNeq || bc.isNot || bc.name != queryPred {
 				continue
 			}
 			// Determine the magic head args for this recursive body call.
@@ -5927,7 +6005,7 @@ func (l *lowerer) applyMagicSet(
 			propBody := make([]logicBody, 0, 1+bi)
 			propBody = append(propBody, guard)
 			for j := 0; j < bi; j++ {
-				if !rule.body[j].isNeq && rule.body[j].name != queryPred {
+				if !rule.body[j].isNeq && !rule.body[j].isNot && rule.body[j].name != queryPred {
 					propBody = append(propBody, rule.body[j])
 				}
 			}
@@ -5998,6 +6076,12 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 		}
 		for _, b := range r.body {
 			if !b.isNeq {
+				if _, ok := arities[b.name]; !ok {
+					arities[b.name] = len(b.args)
+				}
+			}
+			if b.isNot {
+				relNames[b.name] = true
 				if _, ok := arities[b.name]; !ok {
 					arities[b.name] = len(b.args)
 				}
@@ -6084,13 +6168,30 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 		}
 	}
 
-	// Emit fixed-point loop.
-	changedVar := fmt.Sprintf("%s_changed", prefix)
-	fmt.Fprintf(&b, "%sint %s;\n", ind, changedVar)
-	fmt.Fprintf(&b, "%sdo {\n", ind)
-	fmt.Fprintf(&b, "%s    %s = 0;\n", ind, changedVar)
+	// Phase 15.2: compute strata for stratified negation. If any rule uses "not",
+	// we group rules by stratum and emit one fixed-point loop per stratum.
+	// For programs without negation the strata map is all-zero and behaviour is
+	// unchanged (single loop, same as Phase 15.1).
+	strata, strataErr := computeDatalogStrata(facts, rules)
+	if strataErr != nil {
+		return nil, strataErr
+	}
+	maxStratum := 0
+	for _, s := range strata {
+		if s > maxStratum {
+			maxStratum = s
+		}
+	}
 
-	for ri, rule := range rules {
+	// Helper: emit one rule inside the innermost context.
+	type bodyLoop struct {
+		loopVar   string
+		relVar    string
+		relLen    string
+		arity     int
+		isDerived bool
+	}
+	emitRule := func(ri int, rule logicRule, changedVar string) {
 		headArity := arities[rule.headName]
 		headVar := fmt.Sprintf("%s_%s", prefix, rule.headName)
 		headLen := fmt.Sprintf("%s_%s_len", prefix, rule.headName)
@@ -6098,24 +6199,13 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 
 		fmt.Fprintf(&b, "%s    /* rule %s(...) :- */\n", ind, rule.headName)
 
-		// Build nested loops for each body condition.
-		// We track loop variables for each body predicate.
-		type bodyLoop struct {
-			loopVar  string // C loop variable name (e.g., "__i0")
-			relVar   string // C array variable for the relation
-			relLen   string // length variable (for derived) or sentinel (for base)
-			arity    int
-			isDerived bool
-		}
 		loops := make([]bodyLoop, 0)
-		// envVars maps logic variable names to C expressions.
 		envVars := map[string]string{}
-
 		innerIndent := ind + "    "
-		// Open loops for each body condition.
+
+		// Open loops for each positive body condition.
 		for bi, bc := range rule.body {
-			if bc.isNeq {
-				// Handled as an if-check inside the innermost loop.
+			if bc.isNeq || bc.isNot {
 				continue
 			}
 			loopVarName := fmt.Sprintf("__i%d_%d_%d", n, ri, bi)
@@ -6128,18 +6218,15 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 				fmt.Fprintf(&b, "%sfor (int %s = 0; %s < %s; %s++) {\n",
 					innerIndent, loopVarName, loopVarName, lenC, loopVarName)
 			} else {
-				// Base relation: iterate until NULL sentinel.
 				fmt.Fprintf(&b, "%sfor (int %s = 0; %s_%s[%s] != NULL; %s += %d) {\n",
 					innerIndent, loopVarName, prefix, bc.name, loopVarName, loopVarName, bArity)
 			}
 			innerIndent += "    "
 
-			// Bind variables from this body predicate.
 			for ai, barg := range bc.args {
 				isConstant := len(barg) > 0 && barg[0] == '"'
 				if isConstant {
-					// Emit a guard check.
-					constVal := barg[1 : len(barg)-1] // strip quotes
+					constVal := barg[1 : len(barg)-1]
 					var access string
 					if isDer {
 						access = fmt.Sprintf("%s[%s * %d + %d]", relC, loopVarName, bArity, ai)
@@ -6149,9 +6236,7 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 					fmt.Fprintf(&b, "%sif (strcmp(%s, \"%s\") != 0) continue;\n",
 						innerIndent, access, cEscapeStr(constVal))
 				} else {
-					// Variable.
 					if _, bound := envVars[barg]; !bound {
-						// New variable -- bind it.
 						var access string
 						if isDer {
 							access = fmt.Sprintf("%s[%s * %d + %d]", relC, loopVarName, bArity, ai)
@@ -6162,7 +6247,6 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 						fmt.Fprintf(&b, "%sconst char *%s = %s;\n", innerIndent, cVarName, access)
 						envVars[barg] = cVarName
 					} else {
-						// Already bound -- emit a check.
 						var access string
 						if isDer {
 							access = fmt.Sprintf("%s[%s * %d + %d]", relC, loopVarName, bArity, ai)
@@ -6188,24 +6272,76 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 			if !bc.isNeq {
 				continue
 			}
-			aExpr, aOk := envVars[bc.neqA]
-			bExpr, bOk := envVars[bc.neqB]
-			if !aOk {
-				aExpr = bc.neqA
+			aExpr := bc.neqA
+			if cv, ok := envVars[bc.neqA]; ok {
+				aExpr = cv
 			}
-			if !bOk {
-				bExpr = bc.neqB
+			bExpr := bc.neqB
+			if cv, ok := envVars[bc.neqB]; ok {
+				bExpr = cv
 			}
 			fmt.Fprintf(&b, "%sif (strcmp(%s, %s) == 0) continue;\n", innerIndent, aExpr, bExpr)
 		}
 
+		// Phase 15.2: emit not-existence checks (stratified negation).
+		// The negated relation is already fully evaluated (lower stratum).
+		for ni, bc := range rule.body {
+			if !bc.isNot {
+				continue
+			}
+			bArity := arities[bc.name]
+			relC := fmt.Sprintf("%s_%s", prefix, bc.name)
+			isDer := derivedRels[bc.name]
+			lenC := fmt.Sprintf("%s_%s_len", prefix, bc.name)
+			notFoundVar := fmt.Sprintf("__notfound_%d_%d", n, ni)
+			notIdxVar := fmt.Sprintf("__nidx_%d_%d", n, ni)
+
+			if isDer {
+				fmt.Fprintf(&b, "%sint %s = 0; for (int %s = 0; %s < %s && !%s; %s++) {\n",
+					innerIndent, notFoundVar, notIdxVar, notIdxVar, lenC, notFoundVar, notIdxVar)
+			} else {
+				fmt.Fprintf(&b, "%sint %s = 0; for (int %s = 0; %s_%s[%s] != NULL && !%s; %s += %d) {\n",
+					innerIndent, notFoundVar, notIdxVar, prefix, bc.name, notIdxVar, notFoundVar, notIdxVar, bArity)
+			}
+			innerIndent2 := innerIndent + "    "
+			allMatch := true
+			for ai, barg := range bc.args {
+				isConstant := len(barg) > 0 && barg[0] == '"'
+				var access string
+				if isDer {
+					access = fmt.Sprintf("%s[%s * %d + %d]", relC, notIdxVar, bArity, ai)
+				} else {
+					access = fmt.Sprintf("%s[%s + %d]", relC, notIdxVar, ai)
+				}
+				if isConstant {
+					constVal := barg[1 : len(barg)-1]
+					fmt.Fprintf(&b, "%sif (strcmp(%s, \"%s\") == 0", innerIndent2, access, cEscapeStr(constVal))
+				} else if cv, ok := envVars[barg]; ok {
+					fmt.Fprintf(&b, "%sif (strcmp(%s, %s) == 0", innerIndent2, access, cv)
+				} else {
+					allMatch = false
+					break
+				}
+				if ai < len(bc.args)-1 {
+					fmt.Fprintf(&b, " &&\n%s    ", innerIndent2)
+				} else {
+					fmt.Fprintf(&b, ") { %s = 1; }\n", notFoundVar)
+				}
+			}
+			if allMatch && len(bc.args) == 0 {
+				// Zero-arity: any tuple means "exists"
+				fmt.Fprintf(&b, "%s%s = 1;\n", innerIndent2, notFoundVar)
+			}
+			fmt.Fprintf(&b, "%s}\n", innerIndent)
+			fmt.Fprintf(&b, "%sif (%s) continue;\n", innerIndent, notFoundVar)
+		}
+
 		// Emit containment check + insertion for head.
 		checkIndent := innerIndent
-		foundVar := fmt.Sprintf("__found_%d", n)
+		foundVar := fmt.Sprintf("__found_%d_%d", n, ri)
 		fmt.Fprintf(&b, "%sint %s = 0;\n", checkIndent, foundVar)
 		fmt.Fprintf(&b, "%sfor (int __ci = 0; __ci < %s; __ci++) {\n", checkIndent, headLen)
 		checkInner := checkIndent + "    "
-		// Build head values from envVars or constants.
 		headValues := make([]string, len(rule.headArgs))
 		for hi, ha := range rule.headArgs {
 			if len(ha) > 0 && ha[0] == '"' {
@@ -6216,7 +6352,6 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 				headValues[hi] = `""`
 			}
 		}
-		// Emit comparison for each head arg.
 		conditions := make([]string, headArity)
 		for hi := 0; hi < headArity; hi++ {
 			conditions[hi] = fmt.Sprintf("strcmp(%s[__ci * %d + %d], %s) == 0",
@@ -6245,7 +6380,21 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 		}
 	}
 
-	fmt.Fprintf(&b, "%s} while (%s);\n", ind, changedVar)
+	// Emit one fixed-point loop per stratum.
+	changedVar := fmt.Sprintf("%s_changed", prefix)
+	fmt.Fprintf(&b, "%sint %s;\n", ind, changedVar)
+	for stratum := 0; stratum <= maxStratum; stratum++ {
+		fmt.Fprintf(&b, "%s/* stratum %d */\n", ind, stratum)
+		fmt.Fprintf(&b, "%sdo {\n", ind)
+		fmt.Fprintf(&b, "%s    %s = 0;\n", ind, changedVar)
+		for ri, rule := range rules {
+			if strata[rule.headName] != stratum {
+				continue
+			}
+			emitRule(ri, rule, changedVar)
+		}
+		fmt.Fprintf(&b, "%s} while (%s);\n", ind, changedVar)
+	}
 
 	// Emit query: collect matching tuples into resultVar, which is declared
 	// OUTSIDE the eval block so the caller (lowerBinding) can reference it

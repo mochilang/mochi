@@ -310,6 +310,7 @@ type LogicCond struct {
 	Pos  lexer.Position  `json:"pos,omitempty" parser:""`
 	Pred *LogicPredicate `json:"pred,omitempty" parser:"@@"`
 	Neq  *LogicNeq       `json:"neq,omitempty" parser:"| @@"`
+	Not  *LogicPredicate `json:"not,omitempty" parser:"| 'not' @@"`
 }
 
 type LogicNeq struct {

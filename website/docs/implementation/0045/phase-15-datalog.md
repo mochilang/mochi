@@ -10,9 +10,9 @@ description: "MEP-45 Phase 15 tracking: datalog lowering with semi-naive evaluat
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 15](/docs/mep/mep-0045#phase-15-datalog--logic) |
-| Status         | IN PROGRESS |
+| Status         | COMPLETE |
 | Started        | 2026-05-26 01:57 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-26 07:57 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -30,7 +30,7 @@ Datalog is a first-class language feature in Mochi. The AOT path must support ev
 |------|--------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 15.0 | Fixed-point Datalog evaluation via direct C emission: `RawCStmt`/`RawCExpr` passthrough IR nodes; `lowerLogicQuery` generates fact tables as `const char*[]` arrays + do-while derivation loop + query collection into `mochi_list_str`; `fact`/`rule` statements collected into lowerer; `query` expr returns `list<string>`; 8 fixtures + `TestPhase15Datalog` gate; string-only terms | LANDED 2026-05-26 01:57 (GMT+7) | — | — |
 | 15.1 | Magic-set transform for goal-directed evaluation (Bancilhon et al., PODS 1986)                                    | LANDED 2026-05-26 05:31 (GMT+7) | (this PR) | — |
-| 15.2 | Stratified negation (deferred sub-phase if test corpus demands)                                                    | NOT STARTED | —      | — |
+| 15.2 | Stratified negation: `not` keyword added; `LogicCond.Not` AST field; `computeDatalogStrata()` fixpoint; `isNot` in `logicBody`; not-existence check emitted before head insertion; one do-while loop per stratum; 3 fixtures + `TestPhase15StratifiedNeg` gate | LANDED 2026-05-26 07:57 (GMT+7) | — | — |
 
 ## Decisions made
 
@@ -60,11 +60,23 @@ Datalog is a first-class language feature in Mochi. The AOT path must support ev
 
 **Gate:** `TestPhase15MagicSet` (5 fixtures: ms_sibling, ms_transitive, ms_left_linear, ms_two_step, ms_ancestor_dag).
 
+### Phase 15.2 (2026-05-26 07:57 GMT+7)
+
+**`not` keyword and `LogicCond.Not` AST field.** `"not"` was added to the Mochi keyword list in `parser/parser.go`. `LogicCond` gained a `Not *LogicPredicate` field parsed as `'not' @@`, alongside the existing `Pred` and `Neq` fields. `assertLogicCond` in `parser/invariants.go` updated to accept the third arm. `collectRule` in `lower.go` constructs `logicBody{isNot: true, name: ..., args: ...}` for `not` conditions.
+
+**`computeDatalogStrata` fixpoint algorithm.** Assigns each relation a stratum number via iterative fixpoint: positive body conditions propagate the maximum of their strata to the head; `not bc` propagates `stratum(bc.name) + 1`. Cycles through negation are detected as a post-fixpoint check (error if `stratum(bc.name) >= stratum(head)` for any `isNot` body).
+
+**Stratified multi-loop emission.** `lowerLogicQuery` now emits one `do { ... } while (changed);` loop per stratum (stratum 0 first, stratum N last). Rules in each stratum are only emitted in that stratum's loop, so negated relations are fully evaluated in their lower-stratum loop before the higher-stratum loop reads them.
+
+**Not-existence check.** For each `isNot` body condition inside the innermost positive-body loops, an existence scan over the negated relation is emitted. If any tuple matches all bound arguments, a `__notfound_i_j = 1` flag is set and a `continue` skips the head insertion. This is O(n) per not-condition per candidate tuple, which is acceptable for the relation sizes Mochi Datalog targets.
+
+**Gate:** `TestPhase15StratifiedNeg` (11 fixtures: all 8 Phase 15.0 fixtures + neg_orphan, neg_complement, neg_indirect).
+
 ## Deferred work
 
 - Aggregates over recursive rules: v2.
-- Phase 15.2 stratified negation: deferred until corpus demonstrates the need.
+- Semi-naive (incremental) evaluation: future optimisation phase.
 
 ## Closeout notes
 
-_Fill in after gate green for Phase 15.2 (or after decision to close without 15.2)._
+All sub-phases 15.0, 15.1, and 15.2 are LANDED. The full Datalog surface (base facts, recursive rules, goal-directed magic-set, stratified negation) compiles and runs correctly via the C transpiler path.
