@@ -330,6 +330,15 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 		// Captured variables are handled natively by Core Erlang c_fun.
 		return l.lowerBlock(tail, cont)
 
+	case *aotir.QueryScopeStmt:
+		// Arena scoping is a C-specific concern. For BEAM, just lower the body
+		// inline and thread the tail continuation through.
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return l.lowerBlock(s.Body.Statements, rest)
+
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported statement %T", head)
 	}
@@ -1008,6 +1017,12 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 	case *aotir.FunCallExpr:
 		return l.lowerFunCallExpr(e)
 
+	// Phase 7.0: query DSL helpers
+	case *aotir.ListSortAscExpr:
+		return lowerListSortAscExpr(l, e)
+	case *aotir.ListSliceExpr:
+		return lowerListSliceExpr(l, e)
+
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported expression %T", expr)
 	}
@@ -1494,4 +1509,34 @@ func (l *lowerer) lowerFunCallExpr(e *aotir.FunCallExpr) (cerl.Expr, error) {
 		args[i] = arg
 	}
 	return cerl.CApply(callee, args), nil
+}
+
+// lowerListSortAscExpr lowers a ListSortAscExpr to lists:sort/1.
+func lowerListSortAscExpr(l *lowerer, e *aotir.ListSortAscExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("sort"), []cerl.Expr{recv}), nil
+}
+
+// lowerListSliceExpr lowers a ListSliceExpr to lists:sublist/2 + lists:nthtail/2.
+// Mochi semantics: slice(xs, start, end) returns xs[start..end).
+func lowerListSliceExpr(l *lowerer, e *aotir.ListSliceExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	start, err := lowerExpr(l, e.Start)
+	if err != nil {
+		return nil, err
+	}
+	end, err := lowerExpr(l, e.End)
+	if err != nil {
+		return nil, err
+	}
+	// lists:sublist(lists:nthtail(Start, Xs), End - Start)
+	tail := cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("nthtail"), []cerl.Expr{start, recv})
+	length := cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("-"), []cerl.Expr{end, start})
+	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("sublist"), []cerl.Expr{tail, length}), nil
 }

@@ -1,0 +1,6 @@
+var xs: list<int> = [10, 20, 30]
+var ys: list<int> = from x in xs select x + 1
+var zs: list<int> = from y in ys select y * 2
+print(len(zs))
+print(zs[0])
+print(zs[2])
