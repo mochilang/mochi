@@ -39,6 +39,20 @@ type Program struct {
 	// Phase 9.3 adds this; emit walks it to write a C struct typedef
 	// and per-intent static functions for synchronous dispatch.
 	Agents []*AgentDecl
+
+	// GoFuncs lists Go FFI function declarations in source order.
+	// Phase 10.2 adds this; emit walks it to write inline C wrapper
+	// functions that forward calls to the Go companion via mochi_go_rpc_*.
+	GoFuncs []*GoFuncDecl
+}
+
+// GoFuncDecl describes a Go FFI function. Phase 10.2.
+// The lowerer populates this from `extern go fun` declarations;
+// the emitter writes a static inline C wrapper per entry.
+type GoFuncDecl struct {
+	Name       string
+	Params     []Param
+	ReturnType Type
 }
 
 // ExternFuncDecl describes a C extern function declaration. Phase 10.0.

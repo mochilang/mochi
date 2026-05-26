@@ -109,6 +109,20 @@ func Verify(p *Program) error {
 		}
 		externFns[ef.Name] = ef
 	}
+	// Phase 10.2: treat Go FFI functions as callable extern functions in the verifier.
+	// Register under both the original name and the mochi_go_ prefixed name since
+	// the lowerer emits mochi_go_<name> as the CallExpr.Func.
+	for i, gf := range p.GoFuncs {
+		if gf == nil {
+			return fmt.Errorf("aotir.Verify: GoFuncs[%d] is nil", i)
+		}
+		if gf.Name == "" {
+			return fmt.Errorf("aotir.Verify: GoFuncs[%d] has empty Name", i)
+		}
+		decl := &ExternFuncDecl{Name: gf.Name, Params: gf.Params, ReturnType: gf.ReturnType}
+		externFns[gf.Name] = decl
+		externFns["mochi_go_"+gf.Name] = decl
+	}
 	// Phase 9.3: build agent map for intent-call resolution.
 	agents := make(map[string]*AgentDecl, len(p.Agents))
 	for i, ag := range p.Agents {

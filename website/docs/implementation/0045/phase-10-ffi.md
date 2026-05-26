@@ -30,7 +30,7 @@ C-direct FFI is the natural FFI for a C-AOT target: the generated C and the user
 |------|-----------------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 10.0 | `extern fun` declarations lower to `extern <ctype> <name>(<params>);` in the C prologue; calls to extern funcs use `CallExpr` (direct C call, no closure ABI); driver compiles `<stem>.c` neighbour alongside `main.c`; verifier extended to accept extern calls; `TestPhase10FFIDirect` gate (2 fixtures: `add_extern`, `str_len_extern`) | LANDED 2026-05-25 23:52 (GMT+7) | — | — |
 | 10.1 | Boxed `mochi_value_t` tagged union (`nil`, `bool`, `int`, `float`, `str`, `handle`); `ValueType` in aotir + type-checker; `"value"` type alias in `extern fun` declarations; `mochi/value.h` + `src/value.c` in runtime; six constructor + six predicate + five accessor + one tag helper; `TestPhase10BoxedValue` gate (8 fixtures) | LANDED 2026-05-26 06:04 (GMT+7) | — | — |
-| 10.2 | Go FFI via Unix-domain RPC (deferred sub-phase; ships after C-direct is green)                                              | NOT STARTED | —      | — |
+| 10.2 | Go FFI via subprocess RPC: `extern go fun` syntax; JSON newline protocol over `pipe()+fork()+exec()` to a Go companion binary; `go_rpc.h` + `go_rpc.c` runtime; driver detects `<stem>.go` neighbour, compiles it with `go build`, bakes path via `-DMOCHI_GO_RPC_PATH_DEFAULT`; emitter generates `static mochi_go_<name>()` C wrappers; `TestPhase10GoFFI` gate (2 fixtures: `go_add_ints`, `go_str_upper`) | LANDED 2026-05-26 08:42 (GMT+7) | — | — |
 | 10.3 | Python FFI via embedded libpython3 (deferred sub-phase)                                                                     | NOT STARTED | —      | — |
 | 10.4 | TypeScript FFI via QuickJS-NG (deferred sub-phase)                                                                          | NOT STARTED | —      | — |
 
@@ -47,6 +47,20 @@ C-direct FFI is the natural FFI for a C-AOT target: the generated C and the user
 **`mochi/value.h` included unconditionally in the prologue.** Matches the pattern of `mochi/strings.h`, `mochi/fileio.h`, etc. The linker strips unused symbols; including the header unconditionally avoids conditional logic in the emitter.
 
 **`value.c` added to embed.FS.** `runtime/embed.go` lists the new files so `writeRuntimeFiles` stages them into every build's work directory automatically.
+
+## Phase 10.2 decisions
+
+**`extern go fun` is a distinct AST node, not a modifier on `extern fun`.** The Go FFI has fundamentally different semantics (subprocess RPC, JSON marshalling, companion binary) from C-direct FFI. Overloading `extern fun` with a `go` modifier would require threading language-kind metadata through the lowerer, verifier, and emitter. A separate `ExternGoFunDecl` in `parser/ast.go` keeps each path clean; the parser checks it before `ExternFun` to avoid ambiguity.
+
+**Subprocess RPC over pipe, not cgo or c-archive.** cgo requires CGO_ENABLED and a C toolchain that supports cgo, plus the generated binary depends on libgo. A subprocess communicating via stdin/stdout pipes is entirely self-contained: the companion is a plain `go build` output and the C side only needs POSIX `pipe()+fork()+exec()`. The protocol is newline-delimited JSON (one request line, one response line) for simplicity; binary protocols would be faster but not needed at this scale.
+
+**Companion binary placed alongside the output binary (`absOut + "_gorpc"`), not in workDir.** workDir is a temp directory removed after compilation. Baking its path into the C binary via `-DMOCHI_GO_RPC_PATH_DEFAULT` would produce a dangling reference at runtime. Placing the companion at `<out>_gorpc` (next to the final binary) guarantees the path remains valid after the build.
+
+**String args JSON-encoded as `\"%s\"` in the C format string (single-level quoting).** The snprintf format string for a string argument is `\"%s\"` (C escapes: literal-quote + %s + literal-quote), producing `"hello"` in the JSON array. Earlier code used `\\\"%s\\\"` which produced `\"hello\"` (with literal backslashes), making the JSON invalid and causing `json.Unmarshal` to return a parse error.
+
+**`mochi_go_<name>()` wrappers use `char *` return type for strings, not `const char *`.** `cType(TypeString)` returns `"const char *"`, but the let-emitter prefixes `const` at each call site. Using `const char *` in the wrapper signature would produce `const const char *` at the call site, which is a C error. The wrapper returns `char *` (non-const) to absorb that extra const.
+
+**Verifier registers GoFuncs under both `<name>` and `mochi_go_<name>`.** The lowerer emits `mochi_go_<name>` as the `CallExpr.Func` for Go FFI calls. The verifier must recognize this prefixed name as valid; registering both entries means the verifier passes regardless of which name appears in the IR.
 
 ## Decisions made
 

@@ -27,6 +27,7 @@ type Statement struct {
 	Type         *TypeDecl         `json:"type,omitempty" parser:"| @@"`
 	ExternType   *ExternTypeDecl   `json:"externtype,omitempty" parser:"| @@"`
 	ExternVar    *ExternVarDecl    `json:"externvar,omitempty" parser:"| @@"`
+	ExternGoFun  *ExternGoFunDecl  `json:"extern_go_fun,omitempty" parser:"| @@"`
 	ExternFun    *ExternFunDecl    `json:"externfun,omitempty" parser:"| @@"`
 	ExternObject *ExternObjectDecl `json:"externobject,omitempty" parser:"| @@"`
 	Fact         *FactStmt         `json:"fact,omitempty" parser:"| @@"`
@@ -288,6 +289,24 @@ func (e *ExternFunDecl) Name() string {
 		return e.Root
 	}
 	return e.Root + "." + strings.Join(e.Tail, ".")
+}
+
+// ExternGoFunDecl is a `extern go fun` declaration (Phase 10.2).
+// The companion Go executable must implement the function and read
+// JSON requests from stdin, writing JSON responses to stdout.
+type ExternGoFunDecl struct {
+	Pos    lexer.Position `json:"pos,omitempty" parser:""`
+	Root   string         `json:"root,omitempty" parser:"'extern' 'go' 'fun' @Ident"`
+	Tail   []string       `json:"tail,omitempty" parser:"{ '.' @Ident }"`
+	Params []*Param       `json:"params,omitempty" parser:"'(' [ @@ { ',' @@ } ] ')'"`
+	Return *TypeRef       `json:"return,omitempty" parser:"[ ':' @@ ]"`
+}
+
+func (e *ExternGoFunDecl) Name() string {
+	if len(e.Tail) == 0 {
+		return e.Root
+	}
+	return e.Root + "_" + strings.Join(e.Tail, "_")
 }
 
 type ExternObjectDecl struct {
