@@ -11,11 +11,11 @@ import (
 // repoRoot walks up from the test binary's working directory until
 // it finds go.mod, then returns that directory. Failing to find
 // go.mod is fatal: the build cannot proceed without the repo root.
-func repoRoot(t *testing.T) string {
-	t.Helper()
+func repoRoot(tb testing.TB) string {
+	tb.Helper()
 	dir, err := os.Getwd()
 	if err != nil {
-		t.Fatalf("getwd: %v", err)
+		tb.Fatalf("getwd: %v", err)
 	}
 	for {
 		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
@@ -23,7 +23,7 @@ func repoRoot(t *testing.T) string {
 		}
 		parent := filepath.Dir(dir)
 		if parent == dir {
-			t.Fatalf("no go.mod found above %s", dir)
+			tb.Fatalf("no go.mod found above %s", dir)
 		}
 		dir = parent
 	}
