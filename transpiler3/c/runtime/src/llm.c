@@ -428,6 +428,113 @@ static const char *llm_google_live(const char *model, const char *prompt,
 }
 #endif /* MOCHI_LLM_HAVE_CURL */
 
+/* ---- llama.cpp local provider (Phase 14.4) ---- */
+
+#if defined(MOCHI_LLM_HAVE_LLAMA)
+#include <llama.h>
+
+/* Greedy argmax over the logit vector. */
+static llama_token llm_llama_greedy(struct llama_context *ctx) {
+    float *logits = llama_get_logits(ctx);
+    int n_vocab = llama_n_vocab(llama_get_model(ctx));
+    llama_token best = 0;
+    float best_val = logits[0];
+    for (int i = 1; i < n_vocab; i++) {
+        if (logits[i] > best_val) { best_val = logits[i]; best = i; }
+    }
+    return best;
+}
+
+/* Run local llama.cpp inference from a GGUF model file.
+ * Loads the model once per call (no persistent state across calls).
+ * CPU-only (n_gpu_layers=0) for portability; users can override via
+ * llama.cpp environment variables. */
+static const char *llm_llama_local(const char *model_path, const char *prompt) {
+    llama_backend_init();
+
+    llama_model_params mparams = llama_model_default_params();
+    mparams.n_gpu_layers = 0;
+
+    struct llama_model *model = llama_load_model_from_file(model_path, mparams);
+    if (!model) {
+        fprintf(stderr, "mochi_llm_generate: failed to load llama model: %s\n", model_path);
+        return "";
+    }
+
+    llama_context_params cparams = llama_context_default_params();
+    cparams.n_ctx = 2048;
+
+    struct llama_context *ctx = llama_new_context_with_model(model, cparams);
+    if (!ctx) {
+        fprintf(stderr, "mochi_llm_generate: failed to create llama context\n");
+        llama_free_model(model);
+        return "";
+    }
+
+    /* Tokenize the prompt. */
+    int prompt_len = (int)strlen(prompt);
+    int n_tokens_max = prompt_len + 32;
+    llama_token *tokens = (llama_token *)malloc(n_tokens_max * sizeof(llama_token));
+    if (!tokens) {
+        llama_free(ctx); llama_free_model(model);
+        return "";
+    }
+    int n_tokens = llama_tokenize(model, prompt, prompt_len, tokens, n_tokens_max,
+                                  /*add_special=*/true, /*parse_special=*/false);
+    if (n_tokens < 0) {
+        fprintf(stderr, "mochi_llm_generate: llama_tokenize failed (buffer too small?)\n");
+        free(tokens); llama_free(ctx); llama_free_model(model);
+        return "";
+    }
+
+    /* Decode the prompt batch. */
+    llama_batch batch = llama_batch_get_one(tokens, n_tokens);
+    if (llama_decode(ctx, batch) != 0) {
+        fprintf(stderr, "mochi_llm_generate: llama_decode (prompt) failed\n");
+        free(tokens); llama_free(ctx); llama_free_model(model);
+        return "";
+    }
+    free(tokens);
+
+    /* Greedy token generation loop. */
+    size_t out_cap = 4096, out_len = 0;
+    char *out = (char *)malloc(out_cap);
+    if (!out) { llama_free(ctx); llama_free_model(model); return ""; }
+    out[0] = '\0';
+
+    char piece[256];
+    llama_token eos = llama_token_eos(model);
+    int max_new = 512;
+    for (int i = 0; i < max_new; i++) {
+        llama_token tok = llm_llama_greedy(ctx);
+        if (tok == eos) break;
+
+        int piece_len = llama_token_to_piece(model, tok, piece, (int)sizeof(piece) - 1, 0, false);
+        if (piece_len <= 0) break;
+        piece[piece_len] = '\0';
+
+        if (out_len + (size_t)piece_len + 1 > out_cap) {
+            out_cap *= 2;
+            char *tmp = (char *)realloc(out, out_cap);
+            if (!tmp) break;
+            out = tmp;
+        }
+        memcpy(out + out_len, piece, (size_t)piece_len);
+        out_len += (size_t)piece_len;
+        out[out_len] = '\0';
+
+        /* Feed the generated token back. */
+        batch = llama_batch_get_one(&tok, 1);
+        if (llama_decode(ctx, batch) != 0) break;
+    }
+
+    llama_free(ctx);
+    llama_free_model(model);
+    llama_backend_free();
+    return out;
+}
+#endif /* MOCHI_LLM_HAVE_LLAMA */
+
 /* ---- provider dispatch ---- */
 
 static const char *llm_live_dispatch(const char *provider, const char *model, const char *prompt) {
@@ -464,11 +571,25 @@ static const char *llm_live_dispatch(const char *provider, const char *model, co
     }
 #endif /* MOCHI_LLM_HAVE_CURL */
 
+#if defined(MOCHI_LLM_HAVE_LLAMA)
+    if (strcmp(provider, "llama") == 0) {
+        const char *model_path = getenv("LLAMA_MODEL_PATH");
+        if (!model_path || !*model_path) {
+            fprintf(stderr,
+                    "mochi_llm_generate: LLAMA_MODEL_PATH not set "
+                    "(provider=llama, live mode requires a local GGUF model path)\n");
+            return "";
+        }
+        return llm_llama_local(model_path, prompt);
+    }
+#endif /* MOCHI_LLM_HAVE_LLAMA */
+
     (void)provider; (void)model; (void)prompt;
     fprintf(stderr,
             "mochi_llm_generate: live mode for provider=%s not implemented; "
             "set MOCHI_LLM_CASSETTE_DIR for cassette replay, or compile with "
-            "-DMOCHI_LLM_HAVE_CURL -lcurl and set GOOGLE_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY\n",
+            "-DMOCHI_LLM_HAVE_CURL -lcurl and GOOGLE_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY, "
+            "or --with-llama and LLAMA_MODEL_PATH for local inference\n",
             provider);
     return "";
 }
