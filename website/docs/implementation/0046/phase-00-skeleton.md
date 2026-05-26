@@ -10,9 +10,9 @@ description: "MEP-46 Phase 0 tracking: spec freeze, transpiler3/beam/ skeleton t
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 0](/docs/mep/mep-0046#phase-0-spec-freeze-and-skeleton-trees) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED 2026-05-26 12:47 (GMT+7) |
+| Started        | 2026-05-26 12:38 (GMT+7) |
+| Landed         | 2026-05-26 12:47 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,10 +28,10 @@ The user-facing goal of MEP-46 is "ship a Mochi program as an OTP application or
 
 | #   | Scope | Status | Commit | PR |
 |-----|-------|--------|--------|----|
-| 0.0 | MEP-46 merged with §Phases section; implementation tracking pages created under `/docs/implementation/0046/`; Docusaurus sidebar wired | NOT STARTED | — | — |
-| 0.1 | `transpiler3/beam/{lower,emit,build}/doc.go` created; `go vet ./transpiler3/beam/...` clean | NOT STARTED | — | — |
-| 0.2 | `tests/transpiler3/beam/README.md` documents fixture layout and naming convention; `runVm3` test helper defined in `transpiler3/beam/build/build_test.go` | NOT STARTED | — | — |
-| 0.3 | OTP app skeleton: `mochi.app.src`, `mochi_app.erl`, `mochi_sup.erl`, `mochi_atoms.erl`; `rebar3 compile` exits 0 | NOT STARTED | — | — |
+| 0.0 | MEP-46 merged with §Phases section; implementation tracking pages created under `/docs/implementation/0046/`; Docusaurus sidebar wired | LANDED 2026-05-26 12:47 (GMT+7) | — | — |
+| 0.1 | `transpiler3/beam/{lower,emit,build}/doc.go` created; `go vet ./transpiler3/beam/...` clean | LANDED 2026-05-26 12:47 (GMT+7) | — | — |
+| 0.2 | `tests/transpiler3/beam/README.md` documents fixture layout and naming convention; `runVm3` test helper defined in `transpiler3/beam/build/build_test.go` | LANDED 2026-05-26 12:47 (GMT+7) | — | — |
+| 0.3 | OTP app skeleton: `mochi.app.src`, `mochi_app.erl`, `mochi_sup.erl`, `mochi_atoms.erl`; `rebar3 compile` exits 0 | LANDED 2026-05-26 12:47 (GMT+7) | — | — |
 
 ## Sub-phase 0.0
 
@@ -172,4 +172,13 @@ The `rebar3 compile` gate runs on `transpiler3/beam/runtime/` using the project'
 
 ## Closeout notes
 
-_Fill in after gate green._
+Phase 0 COMPLETE 2026-05-26 12:47 (GMT+7). All four sub-phases landed in one PR.
+
+Sub-phases 0.0-0.3 green:
+
+- `go vet ./transpiler3/beam/...` exits 0 with no diagnostics.
+- `TestCerlETFRoundTrip` (6 cases) passes; all six module trees serialise to valid ETF and binary_to_term/1 decodes them without error under OTP 28.
+- `rebar3 compile` on `transpiler3/beam/runtime/` exits 0; three modules compile (mochi_app, mochi_sup, mochi_atoms).
+- `tests/transpiler3/beam/README.md` and `build_test.go` helpers are in place for Phase 1.
+
+One deviation from the spec: the `rebar.config` removes the `{parse_transform, lager_transform}` opt because lager is not a listed dependency. The erl_opts entry is now just `[debug_info]`, which is correct for an OTP 27+ project.
