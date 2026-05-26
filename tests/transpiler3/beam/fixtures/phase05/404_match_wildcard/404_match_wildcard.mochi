@@ -1,0 +1,13 @@
+type Color = Red | Green | Blue
+
+fun is_red(c: Color): bool {
+    return match c {
+        Red => true
+        _ => false
+    }
+}
+
+var c: Color = Red {}
+print(is_red(c))
+var d: Color = Blue {}
+print(is_red(d))

@@ -3886,6 +3886,48 @@ func (l *lowerer) lowerVariantConstructor(call *parser.CallExpr, ud *aotir.Union
 	}, nil
 }
 
+// lowerVariantStructLit lowers a struct-literal variant construction, e.g.
+// `Green {}` or `Circle { r: 3.14 }`, to a VariantLit node.
+func (l *lowerer) lowerVariantStructLit(sl *parser.StructLiteral, ud *aotir.UnionDecl) (aotir.Expr, error) {
+	var vd *aotir.VariantDecl
+	for i := range ud.Variants {
+		if ud.Variants[i].Name == sl.Name {
+			vd = &ud.Variants[i]
+			break
+		}
+	}
+	if vd == nil {
+		return nil, fmt.Errorf("variant %q not found in union %q", sl.Name, ud.Name)
+	}
+	// Unit variant: no fields expected.
+	if len(vd.Fields) == 0 {
+		return &aotir.VariantLit{UnionName: ud.Name, VariantName: vd.Name, Tag: vd.Tag}, nil
+	}
+	// Build a map of provided field values by name.
+	provided := make(map[string]aotir.Expr, len(sl.Fields))
+	for _, lf := range sl.Fields {
+		v, err := l.lowerExpr(lf.Value)
+		if err != nil {
+			return nil, fmt.Errorf("variant %q field %q: %w", sl.Name, lf.Name, err)
+		}
+		provided[lf.Name] = v
+	}
+	fields := make([]aotir.VariantLitArg, len(vd.Fields))
+	for i, fd := range vd.Fields {
+		val, ok := provided[fd.Name]
+		if !ok {
+			return nil, fmt.Errorf("variant %q: missing field %q", sl.Name, fd.Name)
+		}
+		fields[i] = aotir.VariantLitArg{Name: fd.Name, Value: val}
+	}
+	return &aotir.VariantLit{
+		UnionName:   ud.Name,
+		VariantName: vd.Name,
+		Tag:         vd.Tag,
+		Fields:      fields,
+	}, nil
+}
+
 // lowerListLit lowers a `[e1, e2, ...]` literal. Every element must
 // lower to the same type; the resulting ListLit's ElemType is taken
 // from the first element. Phase 3.1 accepted the four scalar
@@ -4073,6 +4115,10 @@ func (l *lowerer) lowerStructLit(sl *parser.StructLiteral) (aotir.Expr, error) {
 	// Phase 9.3: if the name refers to an agent, lower to AgentLit.
 	if agDecl, ok := l.agents[sl.Name]; ok {
 		return l.lowerAgentLit(sl, agDecl)
+	}
+	// Phase 4.0+: if the name refers to a union variant, lower to VariantLit.
+	if ud, ok := l.variantToUnion[sl.Name]; ok {
+		return l.lowerVariantStructLit(sl, ud)
 	}
 	decl, ok := l.records[sl.Name]
 	if !ok {

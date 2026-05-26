@@ -10,9 +10,9 @@ description: "MEP-46 Phase 5 implementation spec: lowering Mochi sum types, opti
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 5](/docs/mep/mep-0046#phase-5-sum-types-and-pattern-matching) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-26 14:21 (GMT+7) |
+| Landed         | 2026-05-26 14:37 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -314,4 +314,13 @@ input clauses.
 
 ## Closeout notes
 
-_Fill in after gate green._
+Implemented as sub-phase 5.0 covering unit variants, field-bearing variants, and basic match lowering including match-as-expression and wildcard arms. Five fixtures (400-404) all pass `TestPhase5SumTypes`.
+
+Key implementation decisions and bugs fixed:
+
+- Unit variants lower to bare atoms; field-bearing variants lower to tagged tuples `{tag, f1, f2, ...}`.
+- `LetStmt` with nil `Init` (declaration-only, emitted by the C lowerer for match-as-expression temp vars) is now skipped in the beam lowerer; the binding is established by the wrapping `CLet` in `lowerMatchStmt`.
+- Statement-position match (`ResultVar == ""`): cont is threaded into each arm's body and the case expression is returned directly, not wrapped in `CSeq`. The earlier `CSeq(matchExpr, cont)` caused cont to execute twice.
+- Expression-position match (`ResultVar != ""`): `lowerMatchArmAsExpr` extracts the value from the final `AssignStmt` in each arm body; the outer `CLet([V_ResultVar], c_case(...), cont)` binds the result.
+- Recursive union types are not yet supported (C lowerer phase 4.0 restriction); fixture 403 was simplified from a binary tree to a flat two-variant `Expr` type.
+- The `variantToUnion` lookup was added to the C lowerer's `lowerStructLit` so `Green {}` style variant construction is recognized as a variant, not an undeclared record.

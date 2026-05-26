@@ -167,6 +167,13 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 		}
 		l.scope[s.Name] = true
 
+		// LetStmt with nil Init is a declaration-only statement emitted for
+		// match-as-expression temp vars. The binding is established by the
+		// subsequent MatchStmt, so skip the CLet here.
+		if s.Init == nil {
+			return l.lowerBlock(tail, cont)
+		}
+
 		init, err := lowerExpr(s.Init)
 		if err != nil {
 			return nil, err
@@ -300,6 +307,13 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 			return nil, err
 		}
 		return l.lowerForEachStmt(s, rest)
+
+	case *aotir.MatchStmt:
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return l.lowerMatchStmt(s, rest)
 
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported statement %T", head)
@@ -962,6 +976,14 @@ func lowerExpr(expr aotir.Expr) (cerl.Expr, error) {
 	case *aotir.FieldAccess:
 		return lowerFieldAccess(e)
 
+	// Phase 5.0: sum type construction and field access
+	case *aotir.VariantLit:
+		return lowerVariantLit(e)
+	case *aotir.VariantFieldAccess:
+		return lowerVariantFieldAccess(e)
+	case *aotir.UnionVarRef:
+		return cerl.CVar("V_" + e.Name), nil
+
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported expression %T", expr)
 	}
@@ -1096,6 +1118,173 @@ func lowerFieldAccess(e *aotir.FieldAccess) (cerl.Expr, error) {
 	}
 	return cerl.CCall(cerl.CAtom("maps"), cerl.CAtom("get"),
 		[]cerl.Expr{cerl.CAtom(e.FieldName), recv}), nil
+}
+
+// lowerVariantLit lowers a variant constructor to a tagged atom or tuple.
+// Unit variants (no fields) → atom; variants with fields → {tag, f1, f2, ...}.
+func lowerVariantLit(e *aotir.VariantLit) (cerl.Expr, error) {
+	tag := cerl.CAtom(strings.ToLower(e.VariantName))
+	if len(e.Fields) == 0 {
+		return tag, nil
+	}
+	elems := make([]cerl.Expr, 1+len(e.Fields))
+	elems[0] = tag
+	for i, f := range e.Fields {
+		val, err := lowerExpr(f.Value)
+		if err != nil {
+			return nil, fmt.Errorf("beam/lower: variant field %s: %w", f.Name, err)
+		}
+		elems[1+i] = val
+	}
+	return cerl.CTuple(elems), nil
+}
+
+// lowerVariantFieldAccess lowers a field access on a known variant.
+// After pattern matching, the field is bound to a variable by the match arm,
+// so we just reference the variable V_<VarName> (set up by the bindings).
+// If the receiver is a VarRef, the match arm body already has the binding in scope.
+func lowerVariantFieldAccess(e *aotir.VariantFieldAccess) (cerl.Expr, error) {
+	recv, err := lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	// Receiver is a bound variable holding the tuple; extract by index.
+	// FieldName is the field name; the variant has fields in declaration order.
+	// We use element/2 (1-indexed, +1 for the tag element).
+	// For a single-field variant: element(2, V_x).
+	// For multi-field: element(fieldIndex+2, V_x).
+	// Since MatchArm.Bindings already sets up V_fieldname = element(i, tuple),
+	// this is called only when the variant is not destructured via match.
+	// Fall back to a tuple element extraction; but for BEAM we need the field index.
+	// Because we don't have the decl here, use a generic approach:
+	// field access outside match is not typical in Phase 5.0 fixtures.
+	// For now, return an error noting this should be accessed via match.
+	_ = recv
+	return nil, fmt.Errorf("beam/lower: VariantFieldAccess outside match not yet supported for field %s.%s", e.VariantName, e.FieldName)
+}
+
+// lowerMatchStmt lowers a MatchStmt to a Core Erlang c_case expression.
+func (l *lowerer) lowerMatchStmt(s *aotir.MatchStmt, cont cerl.Expr) (cerl.Expr, error) {
+	target, err := lowerExpr(s.Target)
+	if err != nil {
+		return nil, fmt.Errorf("beam/lower: match target: %w", err)
+	}
+
+	var clauses []cerl.Expr
+
+	// Process each arm.
+	for i := range s.Arms {
+		arm := &s.Arms[i]
+		clause, err := l.lowerMatchArm(arm, s, cont)
+		if err != nil {
+			return nil, fmt.Errorf("beam/lower: match arm %d: %w", i, err)
+		}
+		clauses = append(clauses, clause)
+	}
+
+	// Wildcard/default arm.
+	if s.Default != nil {
+		clause, err := l.lowerMatchArm(s.Default, s, cont)
+		if err != nil {
+			return nil, fmt.Errorf("beam/lower: match default arm: %w", err)
+		}
+		clauses = append(clauses, clause)
+	}
+
+	matchExpr := cerl.CCase(target, clauses)
+
+	// If the match has a ResultVar, bind it and thread cont.
+	if s.ResultVar != "" {
+		if cont == nil {
+			return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + s.ResultVar)}, matchExpr, cerl.CAtom("ok")), nil
+		}
+		return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + s.ResultVar)}, matchExpr, cont), nil
+	}
+
+	// No result var: cont was already threaded into each arm's body by lowerMatchArm.
+	// Returning matchExpr alone is correct — don't CSeq cont again.
+	return matchExpr, nil
+}
+
+// lowerMatchArm lowers one match arm to a c_clause.
+func (l *lowerer) lowerMatchArm(arm *aotir.MatchArm, s *aotir.MatchStmt, cont cerl.Expr) (cerl.Expr, error) {
+	var pat cerl.Expr
+	if arm.VariantName == "" {
+		// Wildcard arm: fresh variable.
+		pat = cerl.CVar("V___wild")
+	} else {
+		tag := cerl.CAtom(strings.ToLower(arm.VariantName))
+		if len(arm.Bindings) == 0 {
+			// Unit variant.
+			pat = tag
+		} else {
+			// Tuple variant: {tag, V_field1, V_field2, ...}.
+			elems := make([]cerl.Expr, 1+len(arm.Bindings))
+			elems[0] = tag
+			for i, b := range arm.Bindings {
+				if b.VarName == "_" {
+					elems[1+i] = cerl.CVar(fmt.Sprintf("V___w%d", i))
+				} else {
+					elems[1+i] = cerl.CVar("V_" + b.VarName)
+				}
+			}
+			pat = cerl.CTuple(elems)
+		}
+	}
+
+	// Add bound variables to scope for the body.
+	if l.scope == nil {
+		l.scope = make(map[string]bool)
+	}
+	for _, b := range arm.Bindings {
+		if b.VarName != "_" {
+			l.scope[b.VarName] = true
+		}
+	}
+
+	// Lower body.
+	var bodyExpr cerl.Expr
+	var err error
+	if s.ResultVar != "" {
+		// Match used as expression: the arm's body value becomes the match result.
+		bodyExpr, err = l.lowerMatchArmAsExpr(arm)
+	} else {
+		bodyExpr, err = l.lowerBlock(arm.Body.Statements, cont)
+	}
+
+	for _, b := range arm.Bindings {
+		if b.VarName != "_" {
+			delete(l.scope, b.VarName)
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return cerl.CClause([]cerl.Expr{pat}, cerl.CAtom("true"), bodyExpr), nil
+}
+
+// lowerMatchArmAsExpr lowers a match arm body used as an expression value.
+// Expression-style arms have a body of [AssignStmt{ResultVar, value}]; extract
+// just the value so the enclosing CLet in lowerMatchStmt binds it correctly.
+func (l *lowerer) lowerMatchArmAsExpr(arm *aotir.MatchArm) (cerl.Expr, error) {
+	stmts := arm.Body.Statements
+	if len(stmts) == 0 {
+		return cerl.CAtom("ok"), nil
+	}
+	last := stmts[len(stmts)-1]
+	if assign, ok := last.(*aotir.AssignStmt); ok {
+		val, err := lowerExpr(assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		if len(stmts) == 1 {
+			return val, nil
+		}
+		// Multi-stmt body: lower preceding stmts with the value as continuation.
+		return l.lowerBlock(stmts[:len(stmts)-1], val)
+	}
+	return l.lowerBlock(stmts, nil)
 }
 
 func lowerBinaryExpr(e *aotir.BinaryExpr) (cerl.Expr, error) {

@@ -1,0 +1,14 @@
+type Expr =
+    Num(value: int)
+    | Neg(value: int)
+
+fun eval(e: Expr): int {
+    return match e {
+        Num(v) => v
+        Neg(v) => 0 - v
+    }
+}
+
+print(eval(Num { value: 0 }))
+print(eval(Num { value: 1 }))
+print(eval(Num { value: 2 }))

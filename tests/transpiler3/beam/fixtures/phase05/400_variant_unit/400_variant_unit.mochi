@@ -1,0 +1,8 @@
+type Color = Red | Green | Blue
+
+var c: Color = Green {}
+match c {
+    Red => print(1)
+    Green => print(2)
+    Blue => print(3)
+}
