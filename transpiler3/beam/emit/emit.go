@@ -48,7 +48,9 @@ func Emit(mod *cerl.Module, outDir string) ([]BeamFile, error) {
 	erlExpr := fmt.Sprintf(
 		`{ok,B}=file:read_file("%s"),`+
 			`Form=binary_to_term(B),`+
-			`case compile:forms(Form,[from_core,debug_info,return_errors,return_warnings]) of `+
+			// deterministic strips the compile timestamp from CInf, producing
+		// bit-identical .beam files across builds (Phase 18.0).
+		`case compile:forms(Form,[from_core,debug_info,deterministic,return_errors,return_warnings]) of `+
 			`{ok,_,BeamBin,_}->file:write_file("%s",BeamBin),halt(0);`+
 			`{error,Es,_}->io:format(standard_error,"compile error: ~p~n",[Es]),halt(1)`+
 			`end.`,
