@@ -1,0 +1,7 @@
+fun apply_twice(f: fun(int): int, x: int): int {
+    return f(f(x))
+}
+
+let inc: fun(int): int = fun(x: int): int => x + 1
+print(apply_twice(inc, 5))
+print(apply_twice(inc, 10))

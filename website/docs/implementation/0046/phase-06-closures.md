@@ -10,9 +10,9 @@ description: "MEP-46 Phase 6 implementation spec: lowering Mochi closures and HO
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 6](/docs/mep/mep-0046#phase-6-closures-and-higherorder-functions) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-26 14:38 (GMT+7) |
+| Landed         | 2026-05-26 14:54 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -255,3 +255,18 @@ is a statically-known top-level Mochi function or OTP BIF, and `c_apply`
 otherwise. This distinction is important for performance: inner loops that call
 HOF arguments benefit from `c_apply` being as fast as possible, but top-level
 calls should use `c_call` for direct dispatch.
+
+---
+
+## Closeout notes
+
+Implemented as sub-phase 6.0 covering anonymous functions, capturing closures, and higher-order function calls. Five fixtures (500-504) all pass `TestPhase6Closures`.
+
+Key implementation decisions and bugs fixed:
+
+- Lifted functions (marked `IsLifted = true`) are skipped when emitting top-level module functions; they are inlined as `c_fun` nodes at their use sites.
+- `FunLit` lowers to `c_fun(params, body)` where the body is lowered from the lifted function. Captured variables are naturally in scope in the enclosing BEAM function; Core Erlang handles the closure packing automatically.
+- `FunCallExpr` lowers to `c_apply(callee, args)` for dynamic dispatch through a fun value.
+- `ClosureEnvStmt` is a no-op for BEAM (C-specific env struct setup).
+- Bug fix: The C lowerer encodes captured variable accesses as `VarRef{Name: "__e->fieldname"}` (the C env-struct emitName). The BEAM lowerer now strips the `"__e->"` prefix via `strings.TrimPrefix` so captured vars emit as `CVar("V_fieldname")` instead of the invalid `CVar("V___e->fieldname")`.
+- `lowerExpr` was refactored from a standalone function to accept `*lowerer` as its first parameter, threading it through all helper functions so `FunLit` and `FunCallExpr` cases can reach `liftedFuncs` and the lowerer's method receivers.
