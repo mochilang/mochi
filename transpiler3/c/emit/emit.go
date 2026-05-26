@@ -52,6 +52,7 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include \"mochi/chan.h\"\n")
 	b.WriteString("#include \"mochi/stream.h\"\n")
 	b.WriteString("#include \"mochi/shutdown.h\"\n")
+	b.WriteString("#include \"mochi/llm.h\"\n")
 	listRecNames := collectListRecordElems(prog)
 	listListInners := collectListListInners(prog)
 	listMapPairs := collectListOfMapPairs(prog)
@@ -2626,6 +2627,17 @@ func emitExpr(e aotir.Expr) (string, error) {
 			return "", fmt.Errorf("LoadCSVExpr path: %w", err)
 		}
 		return "__mochi_load_csv(" + path + ")", nil
+	case *aotir.LLMGenerateExpr:
+		// Phase 14.0: emit mochi_llm_generate(provider_literal, model, prompt).
+		model, err := emitExpr(v.Model)
+		if err != nil {
+			return "", fmt.Errorf("LLMGenerateExpr model: %w", err)
+		}
+		prompt, err := emitExpr(v.Prompt)
+		if err != nil {
+			return "", fmt.Errorf("LLMGenerateExpr prompt: %w", err)
+		}
+		return fmt.Sprintf("mochi_llm_generate(%q, %s, %s)", v.Provider, model, prompt), nil
 	case *aotir.RawCExpr:
 		// Phase 15.0: raw C expression; pass through verbatim.
 		return v.Code, nil

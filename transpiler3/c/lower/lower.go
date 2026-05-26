@@ -3672,6 +3672,9 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 		// Phase 15.0: Datalog query expression.
 		return l.lowerLogicQuery(pr.LogicQuery)
 	}
+	if pr.Generate != nil {
+		return l.lowerGenerateExpr(pr.Generate)
+	}
 	return nil, fmt.Errorf("primary %s not supported in Phase 3.2%s", trimPrimary(pr), primaryPhaseHint(pr))
 }
 
@@ -5673,6 +5676,57 @@ func trimPrimary(pr *parser.Primary) string {
 		b.WriteString("unknown primary")
 	}
 	return b.String()
+}
+
+// ---- Phase 14.0: LLM generation expression lowering ----
+
+// lowerGenerateExpr lowers `generate <provider> { prompt: ..., model: ... }`
+// to an LLMGenerateExpr IR node. Phase 14.0 supports text generation only;
+// the target must name a known LLM provider (not a struct type).
+func (l *lowerer) lowerGenerateExpr(g *parser.GenerateExpr) (aotir.Expr, error) {
+	if g == nil {
+		return nil, fmt.Errorf("lowerGenerateExpr: nil GenerateExpr")
+	}
+
+	provider := g.Target
+
+	// Collect prompt and model from the field list.
+	var promptExpr aotir.Expr
+	var modelExpr aotir.Expr
+
+	for _, f := range g.Fields {
+		lowered, err := l.lowerExpr(f.Value)
+		if err != nil {
+			return nil, fmt.Errorf("generate %s field %q: %w", provider, f.Name, err)
+		}
+		switch f.Name {
+		case "prompt":
+			if lowered.Type() != aotir.TypeString {
+				return nil, fmt.Errorf("generate %s: prompt must be a string, got %s", provider, lowered.Type())
+			}
+			promptExpr = lowered
+		case "model":
+			if lowered.Type() != aotir.TypeString {
+				return nil, fmt.Errorf("generate %s: model must be a string, got %s", provider, lowered.Type())
+			}
+			modelExpr = lowered
+		default:
+			return nil, fmt.Errorf("generate %s: unsupported field %q in Phase 14.0 (only prompt and model)", provider, f.Name)
+		}
+	}
+
+	if promptExpr == nil {
+		promptExpr = &aotir.StringLit{Value: ""}
+	}
+	if modelExpr == nil {
+		modelExpr = &aotir.StringLit{Value: ""}
+	}
+
+	return &aotir.LLMGenerateExpr{
+		Provider: provider,
+		Model:    modelExpr,
+		Prompt:   promptExpr,
+	}, nil
 }
 
 // ---- Phase 15.0: Datalog evaluation via direct C emission ----
