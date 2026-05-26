@@ -1,12 +1,14 @@
 package build
 
 import (
+	"archive/zip"
 	"crypto/sha256"
 	"encoding/hex"
 	"io"
-	"os"
-	"path/filepath"
+	"strings"
 	"testing"
+	"path/filepath"
+	"os"
 )
 
 // TestReproducibility builds every Phase 1 fixture twice and asserts that the
@@ -52,6 +54,11 @@ func checkReproducible(t *testing.T, mochiPath string) {
 	}
 }
 
+// buildAndHash builds a Mochi file to an escript, then extracts and hashes the
+// .beam content from inside the ZIP container. We hash .beam bytes rather than
+// the escript file itself because escript is a ZIP archive whose per-entry
+// timestamps are set to the current wall-clock time, making the container
+// non-bit-identical across builds even when the .beam content is identical.
 func buildAndHash(t *testing.T, mochiPath string) string {
 	t.Helper()
 	out := filepath.Join(t.TempDir(), "fixture.escript")
@@ -59,14 +66,32 @@ func buildAndHash(t *testing.T, mochiPath string) string {
 	if err := d.Build(mochiPath, out, TargetEscript); err != nil {
 		t.Fatalf("Build(%s): %v", mochiPath, err)
 	}
-	f, err := os.Open(out)
+
+	zr, err := zip.OpenReader(out)
 	if err != nil {
-		t.Fatalf("open escript: %v", err)
+		t.Fatalf("open escript as zip: %v", err)
 	}
-	defer f.Close()
+	defer zr.Close()
+
 	h := sha256.New()
-	if _, err := io.Copy(h, f); err != nil {
-		t.Fatalf("hash escript: %v", err)
+	found := false
+	for _, f := range zr.File {
+		if !strings.HasSuffix(f.Name, ".beam") {
+			continue
+		}
+		rc, err := f.Open()
+		if err != nil {
+			t.Fatalf("open zip entry %s: %v", f.Name, err)
+		}
+		if _, err := io.Copy(h, rc); err != nil {
+			rc.Close()
+			t.Fatalf("hash zip entry %s: %v", f.Name, err)
+		}
+		rc.Close()
+		found = true
+	}
+	if !found {
+		t.Fatalf("no .beam files found in escript %s", out)
 	}
 	return hex.EncodeToString(h.Sum(nil))
 }
