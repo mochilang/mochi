@@ -1,0 +1,6 @@
+// Phase 10.2: Go FFI via subprocess RPC.
+// Calls a Go function that adds two integers.
+extern go fun add_ints(a: int, b: int): int
+
+let result = add_ints(7, 35)
+print(result)

@@ -255,6 +255,56 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		})
 	}
 
+	// Phase 10.2 pre-pass: collect `extern go fun` declarations.
+	goFuncNames := map[string]bool{}
+	goFuncs := map[string]*funcSig{}
+	for i, st := range prog.Statements {
+		if st == nil || st.ExternGoFun == nil {
+			continue
+		}
+		ef := st.ExternGoFun
+		name := ef.Name()
+		if _, dup := goFuncs[name]; dup {
+			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: redeclaration of extern go fun %q", i, name)
+		}
+		params := make([]aotir.Param, 0, len(ef.Params))
+		seen := map[string]bool{}
+		for j, p := range ef.Params {
+			if p.Name == "" {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern go fun %q param %d has empty name", name, j)
+			}
+			if seen[p.Name] {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern go fun %q duplicate param %q", name, p.Name)
+			}
+			seen[p.Name] = true
+			if p.Type == nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern go fun %q param %q requires explicit type", name, p.Name)
+			}
+			pTR, err := typeFromRef(records, unions, p.Type)
+			if err != nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern go fun %q param %q: %w", name, p.Name, err)
+			}
+			params = append(params, aotir.Param{Name: p.Name, Type: pTR.t, RecordName: pTR.rec})
+		}
+		var retTR typeResolution
+		if ef.Return != nil {
+			var err error
+			retTR, err = typeFromRef(records, unions, ef.Return)
+			if err != nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern go fun %q return: %w", name, err)
+			}
+		}
+		goFuncs[name] = &funcSig{params: params, returnType: retTR.t}
+		// Register as callable so body lowering can emit CallExpr for it.
+		externFuncs[name] = &funcSig{params: params, returnType: retTR.t}
+		goFuncNames[name] = true
+		out.GoFuncs = append(out.GoFuncs, &aotir.GoFuncDecl{
+			Name:       name,
+			Params:     params,
+			ReturnType: retTR.t,
+		})
+	}
+
 	// Pass 1: collect every user-defined fun decl and record its
 	// signature so the body lowering can resolve forward and
 	// mutual references.
@@ -295,7 +345,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 				continue
 			}
 			intent := blk.Intent
-			intentDecl, err := lowerAgentIntentBody(records, unions, agents, funcs, externFuncs, ag.Name, agDecl, intent, &anonCounter, &liftedFuncs, &shimFuncs)
+			intentDecl, err := lowerAgentIntentBody(records, unions, agents, funcs, externFuncs, goFuncNames, ag.Name, agDecl, intent, &anonCounter, &liftedFuncs, &shimFuncs)
 			if err != nil {
 				return nil, fmt.Errorf("transpiler3/c/lower: agent %q intent %q: %w", ag.Name, intent.Name, err)
 			}
@@ -309,6 +359,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		l := &lowerer{
 			funcs:                      funcs,
 			externFuncs:                externFuncs,
+			goFuncNames:                goFuncNames,
 			records:                    records,
 			unions:                     unions,
 			agents:                     agents,
@@ -379,6 +430,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 	mainL := &lowerer{
 		funcs:           funcs,
 		externFuncs:     externFuncs,
+		goFuncNames:     goFuncNames,
 		records:         records,
 		unions:          unions,
 		agents:          agents,
@@ -656,6 +708,7 @@ type logicBody struct {
 type lowerer struct {
 	funcs                       map[string]*funcSig
 	externFuncs                 map[string]*funcSig            // Phase 10.0: extern C function signatures
+	goFuncNames                 map[string]bool                // Phase 10.2: Go FFI function names (call via mochi_go_ prefix)
 	records                     map[string]*aotir.RecordDecl
 	unions                      map[string]*aotir.UnionDecl   // Phase 4: union name -> decl
 	agents                      map[string]*aotir.AgentDecl   // Phase 9.3: agent name -> decl
@@ -781,6 +834,9 @@ func (l *lowerer) lowerStatement(out *aotir.Block, st *parser.Statement) error {
 	case st.ExternFun != nil:
 		// Phase 10.0: extern fun declarations are collected in the pre-pass; silently skip here.
 		return nil
+	case st.ExternGoFun != nil:
+		// Phase 10.2: extern go fun declarations are collected in the pre-pass; silently skip here.
+		return nil
 	case st.Fact != nil:
 		// Phase 15.0: Datalog fact -- collect for later query evaluation.
 		return l.collectFact(st.Fact)
@@ -864,14 +920,18 @@ func (l *lowerer) lowerExprStmt(out *aotir.Block, es *parser.ExprStmt) error {
 		_ = funCallExpr
 		return fmt.Errorf("calling a fun-typed variable at statement position (discarding result) is not yet supported in Phase 5.0; call it in expression position (e.g. `let _ = f(x)`)")
 	}
-	// Phase 10.0: check if this is a call to an extern C function.
+	// Phase 10.0: check if this is a call to an extern C function (or Go FFI).
 	if sig, ok := l.externFuncs[call.Func]; ok {
 		args, err := l.lowerCallArgs(call, sig)
 		if err != nil {
 			return err
 		}
+		emitName := call.Func
+		if l.goFuncNames[call.Func] {
+			emitName = "mochi_go_" + call.Func
+		}
 		out.Statements = append(out.Statements, &aotir.CallStmt{
-			Func: call.Func,
+			Func: emitName,
 			Args: args,
 		})
 		return nil
@@ -4077,7 +4137,7 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 		}
 		return l.lowerFunVarCall(call, b.funSig)
 	}
-	// Phase 10.0: check if this is a call to an extern C function.
+	// Phase 10.0: check if this is a call to an extern C function (or Go FFI).
 	if sig, ok := l.externFuncs[call.Func]; ok {
 		if sig.returnType == aotir.TypeUnit {
 			return nil, fmt.Errorf("extern call to %q returns unit and cannot appear in an expression", call.Func)
@@ -4086,8 +4146,12 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		emitName := call.Func
+		if l.goFuncNames[call.Func] {
+			emitName = "mochi_go_" + call.Func
+		}
 		return &aotir.CallExpr{
-			Func:   call.Func,
+			Func:   emitName,
 			Args:   args,
 			Result: sig.returnType,
 		}, nil
@@ -6866,6 +6930,7 @@ func lowerAgentIntentBody(
 	agents map[string]*aotir.AgentDecl,
 	funcs map[string]*funcSig,
 	externFuncs map[string]*funcSig,
+	goFuncNames map[string]bool,
 	agentName string,
 	agDecl *aotir.AgentDecl,
 	intent *parser.IntentDecl,
@@ -6908,6 +6973,7 @@ func lowerAgentIntentBody(
 	l := &lowerer{
 		funcs:           funcs,
 		externFuncs:     externFuncs,
+		goFuncNames:     goFuncNames,
 		records:         records,
 		unions:          unions,
 		agents:          agents,

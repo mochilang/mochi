@@ -1,0 +1,5 @@
+// Phase 10.2: Go FFI — call a Go function that upper-cases a string.
+extern go fun go_toupper(s: string): string
+
+let result = go_toupper("hello")
+print(result)

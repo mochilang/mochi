@@ -53,6 +53,9 @@ func Emit(prog *aotir.Program) (string, error) {
 	b.WriteString("#include \"mochi/stream.h\"\n")
 	b.WriteString("#include \"mochi/shutdown.h\"\n")
 	b.WriteString("#include \"mochi/llm.h\"\n")
+	if len(prog.GoFuncs) > 0 {
+		b.WriteString("#include \"mochi/go_rpc.h\"\n")
+	}
 	listRecNames := collectListRecordElems(prog)
 	listListInners := collectListListInners(prog)
 	listMapPairs := collectListOfMapPairs(prog)
@@ -88,6 +91,10 @@ func Emit(prog *aotir.Program) (string, error) {
 
 	// Phase 10.0: emit extern C function declarations.
 	if err := emitExternFuncDecls(&b, prog); err != nil {
+		return "", err
+	}
+	// Phase 10.2: emit Go FFI inline wrapper functions.
+	if err := emitGoFuncWrappers(&b, prog); err != nil {
 		return "", err
 	}
 
@@ -750,6 +757,111 @@ func emitExternFuncDecls(b *strings.Builder, prog *aotir.Program) error {
 		b.WriteString(");\n")
 	}
 	b.WriteString("\n")
+	return nil
+}
+
+// emitGoFuncWrappers writes a static inline C wrapper for each GoFuncDecl.
+// The wrapper builds a JSON request string, calls mochi_go_rpc_call(), and
+// extracts the result via the appropriate mochi_go_rpc_<type>() accessor.
+// Phase 10.2.
+func emitGoFuncWrappers(b *strings.Builder, prog *aotir.Program) error {
+	if len(prog.GoFuncs) == 0 {
+		return nil
+	}
+	for _, gf := range prog.GoFuncs {
+		retC, err := cType(gf.ReturnType)
+		if err != nil {
+			if gf.ReturnType == aotir.TypeUnit {
+				retC = "void"
+			} else {
+				return fmt.Errorf("emitGoFuncWrappers: %q return type: %w", gf.Name, err)
+			}
+		}
+		// Strings are emitted as "const char *" by cType, but the let-emitter
+		// adds "const" at the call site. Use "char *" here to avoid "const const char *".
+		if gf.ReturnType == aotir.TypeString {
+			retC = "char *"
+		}
+
+		// Build parameter list.
+		var paramDecls []string
+		for _, p := range gf.Params {
+			pc, err := cType(p.Type)
+			if err != nil {
+				return fmt.Errorf("emitGoFuncWrappers: %q param %q: %w", gf.Name, p.Name, err)
+			}
+			paramDecls = append(paramDecls, pc+" "+p.Name)
+		}
+
+		// Function signature.
+		b.WriteString("static ")
+		b.WriteString(retC)
+		b.WriteString(" mochi_go_")
+		b.WriteString(gf.Name)
+		b.WriteString("(")
+		b.WriteString(strings.Join(paramDecls, ", "))
+		b.WriteString(") {\n")
+
+		// Build JSON request: {"fn":"name","args":[...]}
+		// Use snprintf for safety; max 4096 bytes.
+		b.WriteString("    char __go_req[4096];\n")
+		if len(gf.Params) == 0 {
+			fmt.Fprintf(b, "    snprintf(__go_req, sizeof(__go_req), \"{\\\"fn\\\":\\\"%s\\\",\\\"args\\\":[]}\");\n", gf.Name)
+		} else {
+			// Build format string and args.
+			// Integers use %lld (long long = int64_t on all tier-1 targets).
+			// Strings use \"%s\" so the JSON value is a quoted string.
+			fmtParts := make([]string, len(gf.Params))
+			argParts := make([]string, len(gf.Params))
+			for i, p := range gf.Params {
+				switch p.Type {
+				case aotir.TypeInt:
+					fmtParts[i] = "%lld"
+					argParts[i] = "(long long)" + p.Name
+				case aotir.TypeFloat:
+					fmtParts[i] = "%g"
+					argParts[i] = p.Name
+				case aotir.TypeBool:
+					fmtParts[i] = "%s"
+					argParts[i] = "(" + p.Name + " ? \"true\" : \"false\")"
+				case aotir.TypeString:
+					fmtParts[i] = `\"%s\"`
+					argParts[i] = p.Name
+				default:
+					fmtParts[i] = "null"
+					argParts[i] = ""
+				}
+			}
+			fmtStr := fmt.Sprintf("{\\\"fn\\\":\\\"%s\\\",\\\"args\\\":[%s]}", gf.Name, strings.Join(fmtParts, ","))
+			argList := ""
+			for _, a := range argParts {
+				if a != "" {
+					argList += ", " + a
+				}
+			}
+			fmt.Fprintf(b, "    snprintf(__go_req, sizeof(__go_req), \"%s\"%s);\n", fmtStr, argList)
+		}
+		b.WriteString("    const char *__go_resp = mochi_go_rpc_call(__go_req);\n")
+
+		// Extract result.
+		if gf.ReturnType == aotir.TypeUnit {
+			b.WriteString("    (void)__go_resp;\n")
+		} else {
+			switch gf.ReturnType {
+			case aotir.TypeInt:
+				b.WriteString("    return mochi_go_rpc_int(__go_resp);\n")
+			case aotir.TypeFloat:
+				b.WriteString("    return mochi_go_rpc_float(__go_resp);\n")
+			case aotir.TypeBool:
+				b.WriteString("    return mochi_go_rpc_bool(__go_resp);\n")
+			case aotir.TypeString:
+				b.WriteString("    return mochi_go_rpc_str(__go_resp);\n")
+			default:
+				b.WriteString("    return mochi_go_rpc_int(__go_resp);\n")
+			}
+		}
+		b.WriteString("}\n\n")
+	}
 	return nil
 }
 

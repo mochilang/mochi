@@ -199,6 +199,22 @@ func (d *Driver) Build(src, out, target, profile string) error {
 		extraCSrc = dst
 	}
 
+	// Phase 10.2: if a .go file with the same stem exists alongside the source,
+	// compile it as a standalone Go executable (the Go RPC companion). The
+	// output path is passed to the C binary via MOCHI_GO_RPC_PATH at runtime.
+	// The companion is compiled once here and the path is baked into a generated
+	// C header so the built binary finds it without additional env configuration.
+	goRPCPath := ""
+	neighborGo := filepath.Join(filepath.Dir(src), srcBase+".go")
+	if fi, err2 := os.Stat(neighborGo); err2 == nil && !fi.IsDir() {
+		companionBin := absOut + "_gorpc"
+		cmd := exec.Command("go", "build", "-o", companionBin, neighborGo)
+		if out2, err2 := cmd.CombinedOutput(); err2 != nil {
+			return fmt.Errorf("transpiler3/c/build: compile Go companion %s: %v\n%s", neighborGo, err2, out2)
+		}
+		goRPCPath = companionBin
+	}
+
 	cc, ccPrefix, err := d.resolveCCForTarget(target)
 	if err != nil {
 		return fmt.Errorf("transpiler3/c/build: %w", err)
@@ -276,6 +292,11 @@ func (d *Driver) Build(src, out, target, profile string) error {
 			"-fsanitize=address,undefined",
 			"-fno-sanitize-recover=all",
 		)
+	}
+	// Phase 10.2: bake the Go companion binary path into the C binary so
+	// MOCHI_GO_RPC_PATH does not need to be set at runtime.
+	if goRPCPath != "" {
+		ccArgs = append(ccArgs, fmt.Sprintf("-DMOCHI_GO_RPC_PATH_DEFAULT=%q", goRPCPath))
 	}
 	ccArgs = append(ccArgs, d.ExtraFlags...)
 	args := ccArgs
