@@ -3,6 +3,7 @@ package lower
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"mochi/transpiler3/beam/cerl"
 	"mochi/transpiler3/c/aotir"
@@ -27,7 +28,11 @@ func Lower(prog *aotir.Program, modName string) (*cerl.Module, error) {
 		return nil, fmt.Errorf("beam/lower: invalid main index %d (len=%d)", prog.Main, len(prog.Functions))
 	}
 
-	l := &lowerer{mod: mod}
+	records := make(map[string]*aotir.RecordDecl, len(prog.Records))
+	for _, r := range prog.Records {
+		records[r.Name] = r
+	}
+	l := &lowerer{mod: mod, records: records}
 
 	for i, fn := range prog.Functions {
 		if i == prog.Main {
@@ -57,9 +62,10 @@ func Lower(prog *aotir.Program, modName string) (*cerl.Module, error) {
 // lowerer holds mutable state for one Lower() call.
 type lowerer struct {
 	mod          *cerl.Module
-	loopNum      int       // monotonic counter for while/for helpers
-	loopStack    []loopCtx // stack of active loop contexts (innermost last)
+	loopNum      int             // monotonic counter for while/for helpers
+	loopStack    []loopCtx       // stack of active loop contexts (innermost last)
 	scope        map[string]bool // outer variables currently in scope
+	records      map[string]*aotir.RecordDecl // record name -> declaration
 }
 
 // loopCtx holds context about one active loop.
@@ -950,6 +956,12 @@ func lowerExpr(expr aotir.Expr) (cerl.Expr, error) {
 		}
 		return cerl.CCall(cerl.CAtom("maps"), cerl.CAtom("values"), []cerl.Expr{recv}), nil
 
+	// Phase 4.0: record construction and field access
+	case *aotir.RecordLit:
+		return lowerRecordLit(e)
+	case *aotir.FieldAccess:
+		return lowerFieldAccess(e)
+
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported expression %T", expr)
 	}
@@ -1019,7 +1031,7 @@ func lowerMapLit(e *aotir.MapLit) (cerl.Expr, error) {
 		}
 		pairs[i] = cerl.CMapPairAssoc(keyExpr, valExpr)
 	}
-	return cerl.CMap(cerl.CNil(), pairs, false), nil
+	return cerl.CMap(cerl.CEmptyMap(), pairs, false), nil
 }
 
 // lowerMapGetExpr lowers m[k] to erlang:map_get(K, M).
@@ -1057,6 +1069,35 @@ func lowerMapLenExpr(e *aotir.MapLenExpr) (cerl.Expr, error) {
 	return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("map_size"), []cerl.Expr{recv}), nil
 }
 
+// lowerRecordLit lowers Person{name: "alice", age: 30} to a tagged BEAM map:
+// #{mochi_record_tag => person, name => <<"alice">>, age => 30}
+// Fields are already in record-decl source order (aotir enforces this).
+func lowerRecordLit(e *aotir.RecordLit) (cerl.Expr, error) {
+	pairs := make([]cerl.Expr, 0, 1+len(e.Fields))
+	// First pair: mochi_record_tag => <lowercased record name atom>
+	tagAtom := cerl.CAtom(strings.ToLower(e.TypeName))
+	pairs = append(pairs, cerl.CMapPairAssoc(cerl.CAtom("mochi_record_tag"), tagAtom))
+	// Remaining pairs: field name atom => lowered value
+	for _, f := range e.Fields {
+		val, err := lowerExpr(f.Value)
+		if err != nil {
+			return nil, fmt.Errorf("beam/lower: record field %s: %w", f.Name, err)
+		}
+		pairs = append(pairs, cerl.CMapPairAssoc(cerl.CAtom(f.Name), val))
+	}
+	return cerl.CMap(cerl.CEmptyMap(), pairs, false), nil
+}
+
+// lowerFieldAccess lowers p.name to maps:get(name, V_p).
+func lowerFieldAccess(e *aotir.FieldAccess) (cerl.Expr, error) {
+	recv, err := lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("maps"), cerl.CAtom("get"),
+		[]cerl.Expr{cerl.CAtom(e.FieldName), recv}), nil
+}
+
 func lowerBinaryExpr(e *aotir.BinaryExpr) (cerl.Expr, error) {
 	left, err := lowerExpr(e.Left)
 	if err != nil {
@@ -1086,9 +1127,9 @@ func lowerBinaryExpr(e *aotir.BinaryExpr) (cerl.Expr, error) {
 		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("*"), []cerl.Expr{left, right}), nil
 	case aotir.BinDivF64:
 		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("/"), []cerl.Expr{left, right}), nil
-	case aotir.BinEqI64, aotir.BinEqBool, aotir.BinEqStr:
+	case aotir.BinEqI64, aotir.BinEqBool, aotir.BinEqStr, aotir.BinEqRec, aotir.BinEqList, aotir.BinEqMap:
 		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("=:="), []cerl.Expr{left, right}), nil
-	case aotir.BinNeI64, aotir.BinNeBool, aotir.BinNeStr:
+	case aotir.BinNeI64, aotir.BinNeBool, aotir.BinNeStr, aotir.BinNeRec, aotir.BinNeList, aotir.BinNeMap:
 		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("=/="), []cerl.Expr{left, right}), nil
 	case aotir.BinLtI64:
 		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("<"), []cerl.Expr{left, right}), nil

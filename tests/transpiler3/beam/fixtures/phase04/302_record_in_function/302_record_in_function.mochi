@@ -1,0 +1,9 @@
+type Person { name: string, age: int }
+
+fun make_person(n: string, a: int): Person {
+    return Person{name: n, age: a}
+}
+
+var p = make_person("charlie", 35)
+print(p.name)
+print(p.age)

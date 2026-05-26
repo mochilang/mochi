@@ -1,0 +1,7 @@
+type Point { x: int, y: int }
+var points = [Point{x: 1, y: 2}, Point{x: 3, y: 4}, Point{x: 5, y: 6}]
+var sum_x = 0
+for pt in points {
+    sum_x = sum_x + pt.x
+}
+print(sum_x)

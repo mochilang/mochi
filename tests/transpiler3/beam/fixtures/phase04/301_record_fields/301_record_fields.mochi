@@ -1,0 +1,7 @@
+type Person { name: string, age: int }
+var p = Person{name: "alice", age: 30}
+print(p.name)
+print(p.age)
+var q = Person{name: "bob", age: 25}
+print(q.name)
+print(q.age)

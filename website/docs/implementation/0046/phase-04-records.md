@@ -10,9 +10,9 @@ description: "MEP-46 Phase 4 tracking: record literal, field access, field updat
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 4](/docs/mep/mep-0046#phase-4-records) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-26 14:09 (GMT+7) |
+| Landed         | 2026-05-26 14:21 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -259,4 +259,16 @@ Additional unit tests:
 
 ## Closeout notes
 
-_Fill in after gate green._
+Landed as Phase 4.0+4.1+4.3 combined (literal construction, field access, equality).
+
+Deviations from spec design:
+
+1. **Scope narrowed.** Methods (Phase 4.2) and record patterns (Phase 4.1 pattern matching) are deferred; aotir has no method decl type yet, and match expressions are not in the current fixture set. The 7 fixtures cover literal construction, field access, equality, and field access in loops/conditions.
+
+2. **`c_map` ETF format bug fixed.** The existing `CMap()` function in cerl.go was emitting a 4-element tuple `{c_map, [{is_pat,false}], Arg, Pairs}` with `is_pat` stuffed in the annotation. OTP's `core_lint` expects a 5-element tuple `{c_map, [], Arg, Pairs, false}` and the op field in `c_map_pair` must be `{c_literal, [], assoc}` not a bare atom. Fixed both.
+
+3. **`CEmptyMap()` added to cerl.** New `EMap` type added for ETF encoding of Erlang map values (`MAP_EXT`, tag 116). `CEmptyMap()` produces `{c_literal, [], #{}}` which is the correct base argument for new map literals.
+
+4. **Record equality (`BinEqRec`/`BinNeRec`) added.** Op codes for record equality were missing from `lowerBinaryExpr`. Also added `BinEqList`/`BinNeList` and `BinEqMap`/`BinNeMap` which all map to `=:=`/`=/=`.
+
+5. **Nested records deferred.** Fixture 304 was simplified from `Line{a: Point, b: Point}` to two sequential Point records because the aotir C-backend lowerer rejects nested record field types in Phase 3.0.
