@@ -6,6 +6,8 @@
  * so a stalled fiber drain does not block indefinitely.
  *
  * Windows: all signal machinery is omitted; mochi_shutdown_init is a no-op.
+ * Cosmopolitan (MOCHI_COSMO): POSIX signals and alarm() are provided by
+ * Cosmopolitan's NT layer, so the full signal path compiles unchanged.
  */
 #include "mochi/shutdown.h"
 

@@ -219,8 +219,17 @@ func (d *Driver) Build(src, out, target, profile string) error {
 	isWasm := strings.HasPrefix(target, "wasm32") || strings.HasPrefix(target, "wasm64")
 	ccArgs = append(ccArgs,
 		"-std=c2x",
-		"-Wall", "-Wextra", "-pedantic",
+		"-Wall", "-Wextra",
 	)
+	// Phase 13.2: cosmocc uses GCC extensions in cosmopolitan.h that are
+	// rejected by -pedantic. Drop -pedantic for Apex builds only.
+	if !d.Apex {
+		ccArgs = append(ccArgs, "-pedantic")
+	}
+	// Phase 13.2: let the runtime detect Cosmopolitan builds at compile time.
+	if d.Apex {
+		ccArgs = append(ccArgs, "-DMOCHI_COSMO=1")
+	}
 	// Phase 17.1: strip absolute paths from debug info. Apex builds omit these
 	// because cosmocc uses its own path-remapping internally.
 	if !d.Apex {

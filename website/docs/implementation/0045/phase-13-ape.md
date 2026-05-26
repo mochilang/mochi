@@ -30,7 +30,7 @@ APE is the most striking distribution story Mochi can tell: one file, every desk
 |------|--------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 13.0 | `Driver.Apex bool` + `resolveCosmoCC()` (MOCHI_COSMOCC_PATH then PATH); driver skips `-target`, `-ffile-prefix-map`, `-fdebug-prefix-map`, `-Wl,-no_uuid`, `-static`, sanitiser flags for Apex builds; `--apex` CLI flag wired to `Driver.Apex`; `TestPhase13APE` gate (add_ints compile + run, skips when cosmocc absent) | LANDED 2026-05-26 00:30 (GMT+7) | — | — |
 | 13.1 | cosmocc vendored under `transpiler3/c/toolchain/cosmocc/`; `cosmocc.Find()`/`Ensure()` APIs; `resolveCosmoCC()` updated to check vendor cache before PATH; `TestPhase13CosmoVendor` gate (install_root, find_env_override, find_vendor_dir_override, ensure_cached[network-gated]) | LANDED 2026-05-26 08:04 (GMT+7) | — | — |
-| 13.2 | Runtime under Cosmopolitan: BDWGC compatibility, stream/agent surface preserved                                    | NOT STARTED | —      | — |
+| 13.2 | Runtime under Cosmopolitan: drop `-pedantic` for Apex builds; inject `-DMOCHI_COSMO=1`; guard `_XOPEN_SOURCE` and Apple pragma in `sched.c`; note Cosmo signal compatibility in `shutdown.c`; `TestPhase13CosmoRuntime` gate (runtime_flags + apex_compile[cosmocc-gated]) | LANDED 2026-05-26 08:09 (GMT+7) | — | — |
 | 13.3 | Cross-OS CI runners: Linux + macOS + Windows + FreeBSD (cirrus-ci)                                                 | NOT STARTED | —      | — |
 
 ## Decisions made
@@ -49,6 +49,18 @@ All five are suppressed by the existing `d.Apex` guards added to `build/driver.g
 **Phase 13.0: MOCHI_COSMOCC_PATH takes priority over PATH.** This mirrors the pattern used by other mochi toolchain overrides (`MOCHI_CC`, `CC`). Users who install cosmocc to a non-standard path (e.g. a local build or CI cache) can set `MOCHI_COSMOCC_PATH` without polluting their `PATH`.
 
 **Phase 13.0: gate test skips rather than fails when cosmocc absent.** `TestPhase13APE` checks `MOCHI_COSMOCC_PATH` and then `exec.LookPath("cosmocc")`. If neither is found, the test calls `t.Skip(...)` with a hint message. This mirrors the wasmtime pattern in Phase 12.0. CI runners that have cosmocc will exercise the full compile + run gate; all other environments pass without installing anything.
+
+### Phase 13.2 (2026-05-26 08:09 GMT+7)
+
+**Drop `-pedantic` for Apex builds.** cosmocc (GCC-based) embeds Cosmopolitan-specific extensions in `cosmopolitan.h` that are rejected by `-pedantic`. The flag is now guarded by `!d.Apex` in `driver.go`. All non-Apex builds continue to use `-pedantic` as before.
+
+**`-DMOCHI_COSMO=1` define for Apex builds.** Injected alongside the other compile flags when `d.Apex`. Allows runtime C sources to detect Cosmopolitan builds at compile time without depending on cosmocc-internal macros (which are not always available before the first include).
+
+**`sched.c` Cosmopolitan guard.** `_XOPEN_SOURCE 600` is only defined when `MOCHI_COSMO` is not set (Cosmopolitan provides `ucontext_t` natively without the XSI unlock). The Apple clang deprecation pragma pair is similarly guarded by `defined(__APPLE__) && !defined(MOCHI_COSMO)`.
+
+**`shutdown.c` note.** POSIX signals (`SIGINT`, `SIGTERM`) and `alarm()` are provided by Cosmopolitan's NT layer on Windows, so no code change is required beyond the compile-time note.
+
+**Gate.** `TestPhase13CosmoRuntime` with two sub-tests: `runtime_flags` (offline: compile a C stub that errors without `-DMOCHI_COSMO=1`) and `apex_compile` (skips if cosmocc not available; full compile + run of `add_ints` via `Driver.Apex=true` with the new flags).
 
 ### Phase 13.1 (2026-05-26 08:04 GMT+7)
 
