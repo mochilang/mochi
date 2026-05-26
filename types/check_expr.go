@@ -1043,6 +1043,11 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		if p.Generate.Target == "embedding" {
 			return ListType{Elem: FloatType{}}, nil
 		}
+		// Phase 14.0: known LLM providers return string (text generation).
+		switch p.Generate.Target {
+		case "openai", "anthropic", "google", "llama":
+			return StringType{}, nil
+		}
 		st, ok := env.GetStruct(p.Generate.Target)
 		if !ok {
 			return nil, errUnknownType(p.Pos, p.Generate.Target)

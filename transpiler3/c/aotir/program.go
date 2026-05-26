@@ -1271,6 +1271,21 @@ type SaveCSVStmt struct {
 
 func (*SaveCSVStmt) isStmt() {}
 
+// LLMGenerateExpr calls mochi_llm_generate(provider, model, prompt) and
+// returns the text response as a string. Phase 14.0.
+//
+// Provider is the provider name literal ("openai", "anthropic", etc.).
+// Model and Prompt are string-typed sub-expressions.
+// In cassette mode (MOCHI_LLM_CASSETTE_DIR env var), the runtime
+// replays a pre-recorded response; in live mode it requires Phase 14.1+.
+type LLMGenerateExpr struct {
+	Provider string // e.g. "openai", "anthropic", "google", "llama"
+	Model    Expr   // TypeString; "" means provider default
+	Prompt   Expr   // TypeString
+}
+
+func (*LLMGenerateExpr) Type() Type { return TypeString }
+
 // QueryScopeStmt wraps the desugared query pipeline in an arena scope.
 // Phase 8.3.
 //

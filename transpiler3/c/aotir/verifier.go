@@ -2021,6 +2021,27 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("LoadCSVExpr: Path must be TypeString, got %s", v.Path.Type())
 		}
 		return verifyExprCtx(ctx, v.Path)
+	case *LLMGenerateExpr:
+		// Phase 14.0: LLM text generation.
+		if v.Provider == "" {
+			return errors.New("LLMGenerateExpr: empty Provider")
+		}
+		if v.Model == nil {
+			return errors.New("LLMGenerateExpr: nil Model")
+		}
+		if v.Model.Type() != TypeString {
+			return fmt.Errorf("LLMGenerateExpr: Model must be TypeString, got %s", v.Model.Type())
+		}
+		if v.Prompt == nil {
+			return errors.New("LLMGenerateExpr: nil Prompt")
+		}
+		if v.Prompt.Type() != TypeString {
+			return fmt.Errorf("LLMGenerateExpr: Prompt must be TypeString, got %s", v.Prompt.Type())
+		}
+		if err := verifyExprCtx(ctx, v.Model); err != nil {
+			return fmt.Errorf("LLMGenerateExpr model: %w", err)
+		}
+		return verifyExprCtx(ctx, v.Prompt)
 	case *RawCExpr:
 		// Phase 15.0: raw C expression; the lowerer is responsible for correctness.
 		if v.Code == "" {
