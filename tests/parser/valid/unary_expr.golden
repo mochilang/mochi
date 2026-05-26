@@ -2,7 +2,7 @@
   (let neg
     (unary - (int 1))
   )
-  (let not
+  (let inv
     (unary ! (bool true))
   )
 )
