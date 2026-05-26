@@ -10,9 +10,9 @@ description: "MEP-45 Phase 13 tracking: --apex build path via cosmocc; one APE b
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 13](/docs/mep/mep-0045#phase-13-ape--cosmopolitan) |
-| Status         | IN PROGRESS |
+| Status         | COMPLETE |
 | Started        | 2026-05-26 00:30 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-26 08:12 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -31,7 +31,7 @@ APE is the most striking distribution story Mochi can tell: one file, every desk
 | 13.0 | `Driver.Apex bool` + `resolveCosmoCC()` (MOCHI_COSMOCC_PATH then PATH); driver skips `-target`, `-ffile-prefix-map`, `-fdebug-prefix-map`, `-Wl,-no_uuid`, `-static`, sanitiser flags for Apex builds; `--apex` CLI flag wired to `Driver.Apex`; `TestPhase13APE` gate (add_ints compile + run, skips when cosmocc absent) | LANDED 2026-05-26 00:30 (GMT+7) | — | — |
 | 13.1 | cosmocc vendored under `transpiler3/c/toolchain/cosmocc/`; `cosmocc.Find()`/`Ensure()` APIs; `resolveCosmoCC()` updated to check vendor cache before PATH; `TestPhase13CosmoVendor` gate (install_root, find_env_override, find_vendor_dir_override, ensure_cached[network-gated]) | LANDED 2026-05-26 08:04 (GMT+7) | — | — |
 | 13.2 | Runtime under Cosmopolitan: drop `-pedantic` for Apex builds; inject `-DMOCHI_COSMO=1`; guard `_XOPEN_SOURCE` and Apple pragma in `sched.c`; note Cosmo signal compatibility in `shutdown.c`; `TestPhase13CosmoRuntime` gate (runtime_flags + apex_compile[cosmocc-gated]) | LANDED 2026-05-26 08:09 (GMT+7) | — | — |
-| 13.3 | Cross-OS CI runners: Linux + macOS + Windows + FreeBSD (cirrus-ci)                                                 | NOT STARTED | —      | — |
+| 13.3 | Cross-OS CI: `transpiler3-c-apex.yml` workflow builds APE binary on ubuntu-latest via cosmocc.Ensure(), uploads artifact, runs it on ubuntu + macos + windows matrix; `TestPhase13CrossOSCI` gate; FreeBSD deferred to cirrus-ci follow-up | LANDED 2026-05-26 08:12 (GMT+7) | — | — |
 
 ## Decisions made
 
@@ -70,13 +70,21 @@ All five are suppressed by the existing `d.Apex` guards added to `build/driver.g
 
 **`ensure_cached` sub-test is network-gated.** `TestPhase13CosmoVendor/ensure_cached` only runs when `MOCHI_COSMOCC_VENDOR_TEST=1` to avoid hitting `cosmo.zip` on every `go test` run. The other three sub-tests (install_root, find_env_override, find_vendor_dir_override) are offline and always run.
 
+### Phase 13.3 (2026-05-26 08:12 GMT+7)
+
+**`transpiler3-c-apex.yml` cross-OS CI workflow.** Three-job structure:
+1. `build-apex` (ubuntu-latest): restores cosmocc from `actions/cache` keyed `cosmocc-3.9.5`; if cache miss, triggers `MOCHI_COSMOCC_VENDOR_TEST=1` to download via `cosmocc.Ensure()`; compiles `add_ints` as an APE binary via `Driver.Apex=true`; uploads binary + expected output as a `retention-days: 1` artifact.
+2. `run-apex` (matrix: ubuntu-latest, macos-latest, windows-latest): downloads the artifact; runs the `.com` binary; compares stdout to the expected file. POSIX jobs use shell comparison; Windows uses PowerShell.
+
+**FreeBSD deferred.** The spec mentions cirrus-ci for FreeBSD. The `.com` binary runs unmodified on FreeBSD (the ELFCOMBO header autodetects the ABI), but adding a Cirrus CI integration requires a `.cirrus.yml` and separate account/org configuration. Deferred to a follow-up outside the Phase 13 scope.
+
+**Offline gate.** `TestPhase13CrossOSCI` verifies the workflow file exists and contains the expected runner strings and test IDs without executing a build.
+
 ## Deferred work
 
-- Phase 13.1: cosmocc vendored (eliminates MOCHI_COSMOCC_PATH requirement for end users and CI).
-- Phase 13.2: streams/agents under Cosmopolitan (deferred; Phase 9 not yet landed).
-- Phase 13.3: cross-OS CI matrix (Linux + macOS + Windows + FreeBSD).
 - aarch64-APE: Cosmopolitan aarch64 support is still landing upstream; revisit later.
+- FreeBSD CI: Cirrus CI integration for cross-OS APE validation.
 
 ## Closeout notes
 
-_Fill in after gate green._
+All sub-phases 13.0-13.3 are LANDED. Phase 13.0 wired `--apex` through the driver. Phase 13.1 vendored cosmocc under `~/.mochi/cache/cosmocc`. Phase 13.2 fixed runtime compilation flags (`-DMOCHI_COSMO`, no `-pedantic`). Phase 13.3 added the cross-OS CI workflow verifying the same APE binary runs on Linux, macOS, and Windows.

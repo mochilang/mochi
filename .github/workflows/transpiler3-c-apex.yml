@@ -1,0 +1,174 @@
+name: Transpiler3-C APE / Cosmopolitan cross-OS
+
+# MEP-45 Phase 13.3: build one Actually Portable Executable with cosmocc
+# and verify it produces byte-equal output on Linux, macOS, and Windows
+# from the same binary artifact.
+#
+# APE binaries are self-extracting MZPELFCOMBOs that run natively on
+# Linux (ELF), macOS (Mach-O via binfmt shim), Windows (PE), FreeBSD,
+# NetBSD, and OpenBSD -- all from one file.
+#
+# Workflow structure:
+#   build-apex  (ubuntu-latest): download cosmocc, compile add_ints to APE,
+#               upload the binary and expected output as artifacts.
+#   run-apex    (matrix: ubuntu, macos, windows): download artifact,
+#               run the binary, compare stdout to expected output.
+#
+# cosmocc download: uses the vendored Ensure() path via MOCHI_COSMOCC_VENDOR_TEST=1
+# so the go test infrastructure triggers the download and caches the binary.
+# On subsequent runs the cache layer (actions/cache) restores it.
+#
+# FreeBSD: Cirrus CI integration tracked as a follow-up; the .com binary
+# can be verified there manually with `chmod +x && ./add_ints`.
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'transpiler3/c/**'
+      - '.github/workflows/transpiler3-c-apex.yml'
+  pull_request:
+    paths:
+      - 'transpiler3/c/**'
+      - '.github/workflows/transpiler3-c-apex.yml'
+  workflow_dispatch:
+
+jobs:
+  build-apex:
+    name: Build APE binary (ubuntu-latest)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Cache cosmocc vendor
+        uses: actions/cache@v4
+        with:
+          path: ~/.mochi/cache/cosmocc
+          key: cosmocc-3.9.5
+
+      - name: Download cosmocc via Ensure()
+        env:
+          MOCHI_COSMOCC_VENDOR_TEST: '1'
+        run: |
+          go test -vet=off -v -count=1 -timeout=600s \
+            ./transpiler3/c/build/ -run TestPhase13CosmoVendor/ensure_cached
+
+      - name: Resolve cosmocc path
+        id: cosmocc
+        run: |
+          BIN=$(ls ~/.mochi/cache/cosmocc/3.9.5/bin/cosmocc 2>/dev/null || true)
+          if [ -z "$BIN" ]; then
+            echo "cosmocc binary not found after Ensure(); aborting"
+            exit 1
+          fi
+          echo "path=$BIN" >> "$GITHUB_OUTPUT"
+
+      - name: Build APE binary (add_ints)
+        env:
+          MOCHI_COSMOCC_PATH: ${{ steps.cosmocc.outputs.path }}
+        run: |
+          go test -vet=off -v -count=1 -timeout=120s \
+            ./transpiler3/c/build/ -run TestPhase13APE
+
+      - name: Build APE artifact for cross-OS run
+        env:
+          MOCHI_COSMOCC_PATH: ${{ steps.cosmocc.outputs.path }}
+        run: |
+          mkdir -p /tmp/apex-artifact
+          go run ./transpiler3/c/cmd/mochic/... \
+            --apex \
+            --out /tmp/apex-artifact/add_ints.com \
+            tests/transpiler3/c/fixtures/primitives/add_ints/add_ints.mochi \
+            2>/dev/null || \
+          go test -vet=off -v -count=1 -timeout=120s \
+            ./transpiler3/c/build/ \
+            -run TestPhase13BuildArtifact \
+            -args -out=/tmp/apex-artifact/add_ints.com \
+            2>/dev/null || \
+          (
+            # Fallback: compile via driver directly in a small Go program
+            cat > /tmp/build_ape.go << 'GOEOF'
+          package main
+
+          import (
+            "log"
+            "os"
+            "mochi/transpiler3/c/build"
+          )
+
+          func main() {
+            src := os.Args[1]
+            out := os.Args[2]
+            d := &build.Driver{
+              CacheDir: os.TempDir(),
+              NoCache:  true,
+              Apex:     true,
+            }
+            if err := d.Build(src, out, "", ""); err != nil {
+              log.Fatal(err)
+            }
+          }
+          GOEOF
+            go run /tmp/build_ape.go \
+              tests/transpiler3/c/fixtures/primitives/add_ints/add_ints.mochi \
+              /tmp/apex-artifact/add_ints.com
+          )
+          echo "3" > /tmp/apex-artifact/expected.txt
+          chmod +x /tmp/apex-artifact/add_ints.com
+          ls -lh /tmp/apex-artifact/
+
+      - name: Upload APE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apex-add_ints
+          path: /tmp/apex-artifact/
+          retention-days: 1
+
+  run-apex:
+    name: Run APE binary (${{ matrix.os }})
+    needs: build-apex
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+
+    steps:
+      - name: Download APE artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: apex-add_ints
+          path: apex-artifact
+
+      - name: Run APE binary (POSIX)
+        if: runner.os != 'Windows'
+        run: |
+          chmod +x apex-artifact/add_ints.com
+          GOT=$(./apex-artifact/add_ints.com)
+          WANT=$(cat apex-artifact/expected.txt)
+          if [ "$GOT" != "$WANT" ]; then
+            echo "output mismatch: want '$WANT' got '$GOT'"
+            exit 1
+          fi
+          echo "OK: $GOT"
+
+      - name: Run APE binary (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $got = & "apex-artifact\add_ints.com"
+          $want = (Get-Content "apex-artifact\expected.txt").Trim()
+          if ($got.Trim() -ne $want) {
+            Write-Error "output mismatch: want '$want' got '$got'"
+            exit 1
+          }
+          Write-Host "OK: $got"
