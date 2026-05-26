@@ -25,7 +25,8 @@
 #ifndef __wasm__
 
 /* Must be defined before any system header on macOS to unlock ucontext. */
-#ifndef _XOPEN_SOURCE
+/* Cosmopolitan provides ucontext_t natively; skip the macOS XSI guard. */
+#if !defined(MOCHI_COSMO) && !defined(_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
 #endif
 
@@ -34,8 +35,9 @@
  * deprecated macOS 10.6). We suppress the warning so that -Wall does
  * not produce noise: the API still works and is the only portable
  * stackful-coroutine primitive available without an external library.
+ * Cosmopolitan provides ucontext_t without deprecation warnings.
  */
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(MOCHI_COSMO)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #endif
@@ -258,7 +260,7 @@ void mochi_sched_run(void) {
     }
 }
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(MOCHI_COSMO)
 #pragma clang diagnostic pop
 #endif
 
