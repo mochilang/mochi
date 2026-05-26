@@ -1,0 +1,6 @@
+var xs: list<int> = [5, 2, 8, 1, 9, 3, 7, 4, 6]
+var mid = from x in xs sort by x skip 3 take 3 select x
+print(len(mid))
+print(mid[0])
+print(mid[1])
+print(mid[2])

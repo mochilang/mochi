@@ -1,0 +1,6 @@
+var xs: list<int> = [5, 2, 8, 1, 9, 3, 7, 4, 6]
+var sorted = from x in xs sort by x select x
+print(len(sorted))
+print(sorted[0])
+print(sorted[4])
+print(sorted[8])
