@@ -2,6 +2,7 @@
  * libmochi: LLM generation implementation.
  *
  * MEP-45 Phase 14.0: cassette-backed mochi_llm_generate().
+ * MEP-45 Phase 14.1: OpenAI live provider via libcurl (opt-in).
  *
  * Cassette mode (MOCHI_LLM_CASSETTE_DIR is set):
  *   Looks up a pre-recorded response file named by the DJB2 hash of the
@@ -9,8 +10,11 @@
  *   directory. File name format: "<hash_decimal>.txt".
  *
  * Live mode (no cassette dir):
- *   Returns "" and prints a diagnostic. Concrete HTTP providers land in
- *   Phase 14.1 (OpenAI), 14.2 (Anthropic), 14.3 (Google), 14.4 (llama.cpp).
+ *   Routes to a provider-specific HTTP implementation when compiled with
+ *   MOCHI_LLM_HAVE_CURL (adds libcurl dependency). Without that flag,
+ *   returns "" with a diagnostic. Enable by compiling with:
+ *     -DMOCHI_LLM_HAVE_CURL -lcurl
+ *   and setting OPENAI_API_KEY (or provider-specific key) at runtime.
  */
 #include "mochi/llm.h"
 
@@ -31,47 +35,242 @@ static uint64_t llm_hash_key(const char *provider, const char *model, const char
     return h;
 }
 
+/* ---- cassette lookup ---- */
+
+static const char *llm_cassette_lookup(const char *cassette_dir,
+                                        const char *provider,
+                                        const char *model,
+                                        const char *prompt) {
+    uint64_t key = llm_hash_key(provider, model, prompt);
+    char path[4096];
+    snprintf(path, sizeof(path), "%s/%llu.txt", cassette_dir, (unsigned long long)key);
+
+    FILE *f = fopen(path, "rb");
+    if (!f) {
+        fprintf(stderr, "mochi_llm_generate: cassette not found: %s\n", path);
+        return "";
+    }
+    fseek(f, 0, SEEK_END);
+    long sz = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    if (sz < 0) {
+        fclose(f);
+        fprintf(stderr, "mochi_llm_generate: ftell failed for %s\n", path);
+        return "";
+    }
+    char *buf = (char *)malloc((size_t)sz + 1);
+    if (!buf) {
+        fclose(f);
+        fprintf(stderr, "mochi_llm_generate: out of memory\n");
+        return "";
+    }
+    size_t nread = fread(buf, 1, (size_t)sz, f);
+    fclose(f);
+    buf[nread] = '\0';
+    /* Strip a single trailing newline so cassette files can be written
+     * with a trailing newline (normal for text editors) without changing
+     * the effective response. */
+    if (nread > 0 && buf[nread - 1] == '\n') {
+        buf[nread - 1] = '\0';
+    }
+    return buf;
+}
+
+/* ---- OpenAI live provider (Phase 14.1) ---- */
+
+#if defined(MOCHI_LLM_HAVE_CURL)
+#include <curl/curl.h>
+
+/* Growable response buffer for curl write callback. */
+typedef struct {
+    char  *data;
+    size_t len;
+    size_t cap;
+} llm_buf_t;
+
+static size_t llm_curl_write(char *ptr, size_t size, size_t nmemb, void *userdata) {
+    llm_buf_t *b = (llm_buf_t *)userdata;
+    size_t n = size * nmemb;
+    if (b->len + n + 1 > b->cap) {
+        size_t newcap = b->cap == 0 ? 4096 : b->cap * 2;
+        while (newcap < b->len + n + 1) newcap *= 2;
+        char *newdata = (char *)realloc(b->data, newcap);
+        if (!newdata) return 0; /* signal write error */
+        b->data = newdata;
+        b->cap = newcap;
+    }
+    memcpy(b->data + b->len, ptr, n);
+    b->len += n;
+    b->data[b->len] = '\0';
+    return n;
+}
+
+/* Minimal JSON string extractor: finds the value of the first occurrence of
+ * "key": "VALUE" in json and returns a malloc'd copy of VALUE. Returns NULL
+ * on failure. Does not handle nested objects beyond one level of depth. */
+static char *llm_json_str(const char *json, const char *key) {
+    char needle[256];
+    snprintf(needle, sizeof(needle), "\"%s\":", key);
+    const char *p = strstr(json, needle);
+    if (!p) return NULL;
+    p += strlen(needle);
+    while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++;
+    if (*p != '"') return NULL;
+    p++; /* skip opening quote */
+    /* collect characters, handling \" escapes */
+    size_t cap = 256, len = 0;
+    char *result = (char *)malloc(cap);
+    if (!result) return NULL;
+    while (*p && *p != '"') {
+        if (*p == '\\' && *(p + 1)) {
+            p++;
+            char c;
+            switch (*p) {
+            case '"':  c = '"';  break;
+            case '\\': c = '\\'; break;
+            case '/':  c = '/';  break;
+            case 'n':  c = '\n'; break;
+            case 'r':  c = '\r'; break;
+            case 't':  c = '\t'; break;
+            default:   c = *p;   break;
+            }
+            if (len + 2 > cap) { cap *= 2; result = (char *)realloc(result, cap); if (!result) return NULL; }
+            result[len++] = c;
+            p++;
+        } else {
+            if (len + 2 > cap) { cap *= 2; result = (char *)realloc(result, cap); if (!result) return NULL; }
+            result[len++] = *p++;
+        }
+    }
+    result[len] = '\0';
+    return result;
+}
+
+/* Build the OpenAI chat completions JSON body. */
+static char *llm_openai_build_body(const char *model_or_default, const char *prompt) {
+    const char *model = (model_or_default && *model_or_default) ? model_or_default : "gpt-4o-mini";
+    /* Escape the prompt for JSON embedding (handles \, ", newlines). */
+    size_t prompt_len = strlen(prompt);
+    char *escaped = (char *)malloc(prompt_len * 6 + 1);
+    if (!escaped) return NULL;
+    size_t j = 0;
+    for (size_t i = 0; i < prompt_len; i++) {
+        unsigned char c = (unsigned char)prompt[i];
+        if (c == '"')       { escaped[j++] = '\\'; escaped[j++] = '"'; }
+        else if (c == '\\') { escaped[j++] = '\\'; escaped[j++] = '\\'; }
+        else if (c == '\n') { escaped[j++] = '\\'; escaped[j++] = 'n'; }
+        else if (c == '\r') { escaped[j++] = '\\'; escaped[j++] = 'r'; }
+        else if (c == '\t') { escaped[j++] = '\\'; escaped[j++] = 't'; }
+        else { escaped[j++] = (char)c; }
+    }
+    escaped[j] = '\0';
+
+    /* Estimate body size: model + escaped prompt + template. */
+    size_t body_cap = strlen(model) + j + 256;
+    char *body = (char *)malloc(body_cap);
+    if (!body) { free(escaped); return NULL; }
+    snprintf(body, body_cap,
+             "{\"model\":\"%s\","
+             "\"messages\":[{\"role\":\"user\",\"content\":\"%s\"}]}",
+             model, escaped);
+    free(escaped);
+    return body;
+}
+
+/* Call OpenAI chat completions API and return the assistant text. */
+static const char *llm_openai_live(const char *model, const char *prompt,
+                                    const char *api_key) {
+    CURL *curl = curl_easy_init();
+    if (!curl) {
+        fprintf(stderr, "mochi_llm_generate: curl_easy_init failed\n");
+        return "";
+    }
+
+    char *body = llm_openai_build_body(model, prompt);
+    if (!body) {
+        curl_easy_cleanup(curl);
+        return "";
+    }
+
+    /* Authorization header. */
+    char auth_header[1024];
+    snprintf(auth_header, sizeof(auth_header), "Authorization: Bearer %s", api_key);
+
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    headers = curl_slist_append(headers, auth_header);
+
+    llm_buf_t resp = {NULL, 0, 0};
+
+    curl_easy_setopt(curl, CURLOPT_URL, "https://api.openai.com/v1/chat/completions");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, llm_curl_write);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
+
+    CURLcode rc = curl_easy_perform(curl);
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+    free(body);
+
+    if (rc != CURLE_OK) {
+        fprintf(stderr, "mochi_llm_generate: curl error: %s\n", curl_easy_strerror(rc));
+        if (resp.data) free(resp.data);
+        return "";
+    }
+
+    if (!resp.data) return "";
+
+    /* Extract choices[0].message.content.
+     * Strategy: find "content" after "message" in the response JSON. */
+    const char *msg_pos = strstr(resp.data, "\"message\"");
+    if (!msg_pos) {
+        fprintf(stderr, "mochi_llm_generate: no 'message' key in OpenAI response: %.200s\n", resp.data);
+        free(resp.data);
+        return "";
+    }
+    char *content = llm_json_str(msg_pos, "content");
+    free(resp.data);
+    if (!content) {
+        fprintf(stderr, "mochi_llm_generate: failed to extract content from OpenAI response\n");
+        return "";
+    }
+    return content; /* caller does not free (GC-less model) */
+}
+#endif /* MOCHI_LLM_HAVE_CURL */
+
+/* ---- provider dispatch ---- */
+
+static const char *llm_live_dispatch(const char *provider, const char *model, const char *prompt) {
+#if defined(MOCHI_LLM_HAVE_CURL)
+    if (strcmp(provider, "openai") == 0) {
+        const char *api_key = getenv("OPENAI_API_KEY");
+        if (!api_key || !*api_key) {
+            fprintf(stderr,
+                    "mochi_llm_generate: OPENAI_API_KEY not set "
+                    "(provider=openai, live mode requires an API key)\n");
+            return "";
+        }
+        return llm_openai_live(model, prompt, api_key);
+    }
+#endif /* MOCHI_LLM_HAVE_CURL */
+
+    (void)provider; (void)model; (void)prompt;
+    fprintf(stderr,
+            "mochi_llm_generate: live mode for provider=%s not implemented; "
+            "set MOCHI_LLM_CASSETTE_DIR for cassette replay, or compile with "
+            "-DMOCHI_LLM_HAVE_CURL -lcurl and set OPENAI_API_KEY\n",
+            provider);
+    return "";
+}
+
+/* ---- public API ---- */
+
 const char *mochi_llm_generate(const char *provider, const char *model, const char *prompt) {
     const char *cassette_dir = getenv("MOCHI_LLM_CASSETTE_DIR");
     if (cassette_dir && *cassette_dir) {
-        uint64_t key = llm_hash_key(provider, model, prompt);
-        char path[4096];
-        snprintf(path, sizeof(path), "%s/%llu.txt", cassette_dir, (unsigned long long)key);
-
-        FILE *f = fopen(path, "rb");
-        if (!f) {
-            fprintf(stderr, "mochi_llm_generate: cassette not found: %s\n", path);
-            return "";
-        }
-        fseek(f, 0, SEEK_END);
-        long sz = ftell(f);
-        fseek(f, 0, SEEK_SET);
-        if (sz < 0) {
-            fclose(f);
-            fprintf(stderr, "mochi_llm_generate: ftell failed for %s\n", path);
-            return "";
-        }
-        char *buf = (char *)malloc((size_t)sz + 1);
-        if (!buf) {
-            fclose(f);
-            fprintf(stderr, "mochi_llm_generate: out of memory\n");
-            return "";
-        }
-        size_t nread = fread(buf, 1, (size_t)sz, f);
-        fclose(f);
-        buf[nread] = '\0';
-        /* Strip a single trailing newline so cassette files can be written
-         * with a trailing newline (normal for text editors) without changing
-         * the effective response. */
-        if (nread > 0 && buf[nread - 1] == '\n') {
-            buf[nread - 1] = '\0';
-        }
-        return buf;
+        return llm_cassette_lookup(cassette_dir, provider, model, prompt);
     }
-
-    /* Live mode: concrete provider not implemented in Phase 14.0. */
-    fprintf(stderr,
-            "mochi_llm_generate: live mode not implemented; "
-            "set MOCHI_LLM_CASSETTE_DIR for cassette replay\n");
-    return "";
+    return llm_live_dispatch(provider, model, prompt);
 }
