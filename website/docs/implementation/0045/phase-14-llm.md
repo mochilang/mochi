@@ -31,11 +31,15 @@ LLM generation is the user-facing AI-augmented workflow that Mochi positions its
 | 14.0 | `mochi/llm.h` + `llm.c` cassette runtime; `LLMGenerateExpr` IR; lower + emit for `generate <provider> { prompt, model }`; type-checker recognises openai/anthropic/google/llama providers; 10 fixtures; `TestPhase14LLM` gate | LANDED 2026-05-26 07:14 (GMT+7) | — | — |
 | 14.1 | OpenAI live provider via libcurl (`-DMOCHI_LLM_HAVE_CURL -lcurl`); simple JSON extraction for `choices[0].message.content`; `TestPhase14OpenAI` gate (cassette + live-no-api-key sub-tests; no real API call) | LANDED 2026-05-26 07:24 (GMT+7) | — | — |
 | 14.2 | Anthropic live provider via libcurl (`ANTHROPIC_API_KEY`); `llm_anthropic_live()` with `x-api-key` + `anthropic-version` headers; extracts `content[0].text` via strstr; `TestPhase14Anthropic` gate (cassette + live-no-api-key sub-tests) | LANDED 2026-05-26 07:30 (GMT+7) | — | — |
-| 14.3 | Google provider                                                                                                    | NOT STARTED | —      | — |
+| 14.3 | Google live provider (`GOOGLE_API_KEY`; API key in URL query param; `gemini-1.5-flash` default; extracts `candidates[0].content.parts[0].text` via strstr); `TestPhase14Google` gate | LANDED 2026-05-26 07:32 (GMT+7) | — | — |
 | 14.4 | llama.cpp local provider (linked only with `--with-llama`)                                                         | NOT STARTED | —      | — |
 | 14.5 | Live HTTP providers via libcurl + yyjson; cassette recording mode                                                  | NOT STARTED | —      | — |
 
 ## Decisions made
+
+**Phase 14.3: Google API key in URL.** The Google Generative Language API authenticates via a `?key=<GOOGLE_API_KEY>` query parameter appended to the URL (`https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}`), not a header. The URL is built with `snprintf` in `llm_google_live()`. Default model is `gemini-1.5-flash`.
+
+**Phase 14.3: candidates[0].text extraction.** The Google response nests the output under `candidates[0].content.parts[0].text`. The existing `llm_json_str` helper is reused: find `"candidates"` in the response, then find `"text"` from that position. This is sufficient for single-candidate responses (the common case).
 
 **Phase 14.2: Anthropic request format.** The Anthropic messages API uses `POST https://api.anthropic.com/v1/messages` with headers `x-api-key: <key>` and `anthropic-version: 2023-06-01`. The request body includes `"max_tokens": 1024` (required by Anthropic). Default model is `claude-3-haiku-20240307` when none is specified.
 
@@ -67,4 +71,4 @@ _Provider-specific tool-use / function-calling integration tests: a follow-up ph
 
 ## Closeout notes
 
-Sub-phases 14.0, 14.1, and 14.2 are LANDED. The `generate <provider> { ... }` expression compiles and runs in cassette replay mode with 10 fixtures; OpenAI and Anthropic live providers are available when compiled with `-DMOCHI_LLM_HAVE_CURL -lcurl`. Providers 14.3-14.4 (Google, llama.cpp) and cassette recording (14.5) remain NOT STARTED.
+Sub-phases 14.0 through 14.3 are LANDED. The `generate <provider> { ... }` expression compiles and runs in cassette replay mode with 10 fixtures; OpenAI, Anthropic, and Google live providers are available when compiled with `-DMOCHI_LLM_HAVE_CURL -lcurl`. Provider 14.4 (llama.cpp) and cassette recording (14.5) remain NOT STARTED.
