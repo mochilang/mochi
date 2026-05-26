@@ -1,0 +1,9 @@
+var result: int = 0
+try {
+  result = 1
+  panic(99, "fail")
+  result = 2
+} catch e {
+  result = e
+}
+print(result)
