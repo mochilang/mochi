@@ -1,0 +1,5 @@
+let nums = [1, 2, 3, 4, 5, 6]
+let evens = filter(nums, fun(x: int): bool => x % 2 == 0)
+for v in evens {
+    print(str(v))
+}

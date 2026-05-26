@@ -267,6 +267,27 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return:     reduceB,
 		TypeParams: []string{"A", "B"},
 	}, false)
+	// Phase 6.1: map<A, B>(xs: list<A>, fn: fun(A): B): list<B>
+	mapA := &TypeVar{Name: "A"}
+	mapB := &TypeVar{Name: "B"}
+	env.SetVar("map", FuncType{
+		Params: []Type{
+			ListType{Elem: mapA},
+			FuncType{Params: []Type{mapA}, Return: mapB},
+		},
+		Return:     ListType{Elem: mapB},
+		TypeParams: []string{"A", "B"},
+	}, false)
+	// Phase 6.1: filter<A>(xs: list<A>, fn: fun(A): bool): list<A>
+	filterA := &TypeVar{Name: "A"}
+	env.SetVar("filter", FuncType{
+		Params: []Type{
+			ListType{Elem: filterA},
+			FuncType{Params: []Type{filterA}, Return: BoolType{}},
+		},
+		Return:     ListType{Elem: filterA},
+		TypeParams: []string{"A"},
+	}, false)
 	env.SetVar("eval", FuncType{
 		Params:  []Type{StringType{}},
 		Return:  AnyType{},

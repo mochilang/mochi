@@ -788,6 +788,37 @@ type ListSumExpr struct {
 
 func (e *ListSumExpr) Type() Type { return e.ElemType }
 
+// ListMapExpr is the `map(xs, fn)` builtin — Phase 6.1.
+// On BEAM it lowers to lists:map/2; on C it lowers to a manual loop.
+type ListMapExpr struct {
+	List     Expr
+	Fn       Expr
+	ElemType Type // element type of the result list
+}
+
+func (e *ListMapExpr) Type() Type { return TypeList }
+
+// ListFilterExpr is the `filter(xs, fn)` builtin — Phase 6.1.
+// On BEAM it lowers to lists:filter/2; on C it lowers to a manual loop.
+type ListFilterExpr struct {
+	List     Expr
+	Fn       Expr
+	ElemType Type // element type preserved from the input list
+}
+
+func (e *ListFilterExpr) Type() Type { return TypeList }
+
+// ListFoldlExpr is the `reduce(xs, fn, init)` builtin — Phase 6.1.
+// On BEAM it lowers to lists:foldl/3; on C it lowers to a manual loop.
+type ListFoldlExpr struct {
+	List    Expr
+	Fn      Expr
+	Init    Expr
+	AccType Type // type of the accumulator / return value
+}
+
+func (e *ListFoldlExpr) Type() Type { return e.AccType }
+
 // MathCallExpr is an inline math builtin (abs, floor, ceil) that maps
 // 1:1 to a C math.h function. The emitter renders it as
 // `<Func>(operand)` with an appropriate cast. Phase 2.6.

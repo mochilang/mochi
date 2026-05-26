@@ -1037,6 +1037,16 @@ func collectExprVarRefs(expr aotir.Expr) []string {
 		names = append(names, collectExprVarRefs(e.Operand)...)
 	case *aotir.HttpGetExpr:
 		names = append(names, collectExprVarRefs(e.URL)...)
+	case *aotir.ListMapExpr:
+		names = append(names, collectExprVarRefs(e.List)...)
+		names = append(names, collectExprVarRefs(e.Fn)...)
+	case *aotir.ListFilterExpr:
+		names = append(names, collectExprVarRefs(e.List)...)
+		names = append(names, collectExprVarRefs(e.Fn)...)
+	case *aotir.ListFoldlExpr:
+		names = append(names, collectExprVarRefs(e.List)...)
+		names = append(names, collectExprVarRefs(e.Fn)...)
+		names = append(names, collectExprVarRefs(e.Init)...)
 	}
 	return names
 }
@@ -1239,6 +1249,12 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		return lowerListMinExpr(l, e)
 	case *aotir.ListMaxExpr:
 		return lowerListMaxExpr(l, e)
+	case *aotir.ListMapExpr:
+		return lowerListMapExpr(l, e)
+	case *aotir.ListFilterExpr:
+		return lowerListFilterExpr(l, e)
+	case *aotir.ListFoldlExpr:
+		return lowerListFoldlExpr(l, e)
 
 	// Phase 3.2: map expressions
 	case *aotir.MapLit:
@@ -1705,6 +1721,50 @@ func lowerListMaxExpr(l *lowerer, e *aotir.ListMaxExpr) (cerl.Expr, error) {
 		return nil, err
 	}
 	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("max"), []cerl.Expr{xs}), nil
+}
+
+// lowerListMapExpr lowers `map(xs, fn)` to lists:map(Fn, Xs) (Phase 6.1).
+func lowerListMapExpr(l *lowerer, e *aotir.ListMapExpr) (cerl.Expr, error) {
+	xs, err := lowerExpr(l, e.List)
+	if err != nil {
+		return nil, err
+	}
+	fn, err := lowerExpr(l, e.Fn)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("map"), []cerl.Expr{fn, xs}), nil
+}
+
+// lowerListFilterExpr lowers `filter(xs, fn)` to lists:filter(Fn, Xs) (Phase 6.1).
+func lowerListFilterExpr(l *lowerer, e *aotir.ListFilterExpr) (cerl.Expr, error) {
+	xs, err := lowerExpr(l, e.List)
+	if err != nil {
+		return nil, err
+	}
+	fn, err := lowerExpr(l, e.Fn)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("filter"), []cerl.Expr{fn, xs}), nil
+}
+
+// lowerListFoldlExpr lowers `reduce(xs, fn, init)` to lists:foldl(Fn, Init, Xs) (Phase 6.1).
+// Note: lists:foldl/3 takes (Fun, Acc0, List), so argument order is fn, init, xs.
+func lowerListFoldlExpr(l *lowerer, e *aotir.ListFoldlExpr) (cerl.Expr, error) {
+	xs, err := lowerExpr(l, e.List)
+	if err != nil {
+		return nil, err
+	}
+	fn, err := lowerExpr(l, e.Fn)
+	if err != nil {
+		return nil, err
+	}
+	init, err := lowerExpr(l, e.Init)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("foldl"), []cerl.Expr{fn, init, xs}), nil
 }
 
 // lowerRecordLit lowers Person{name: "alice", age: 30} to a tagged BEAM map:

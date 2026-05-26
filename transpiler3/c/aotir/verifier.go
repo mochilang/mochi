@@ -1386,6 +1386,10 @@ func exprElemType(e Expr) Type {
 	case *DatalogQueryExpr:
 		// Phase 8.0: Datalog query results are list<string>; elem is TypeString.
 		return TypeString
+	case *ListMapExpr:
+		return v.ElemType
+	case *ListFilterExpr:
+		return v.ElemType
 	}
 	return TypeInvalid
 }
@@ -1918,6 +1922,45 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("ListSumExpr: ElemType must be int or float, got %s", v.ElemType)
 		}
 		return verifyExprCtx(ctx, v.Receiver)
+	case *ListMapExpr:
+		if v.List == nil {
+			return fmt.Errorf("ListMapExpr: nil List")
+		}
+		if v.Fn == nil {
+			return fmt.Errorf("ListMapExpr: nil Fn")
+		}
+		if err := verifyExprCtx(ctx, v.List); err != nil {
+			return fmt.Errorf("ListMapExpr list: %w", err)
+		}
+		return verifyExprCtx(ctx, v.Fn)
+	case *ListFilterExpr:
+		if v.List == nil {
+			return fmt.Errorf("ListFilterExpr: nil List")
+		}
+		if v.Fn == nil {
+			return fmt.Errorf("ListFilterExpr: nil Fn")
+		}
+		if err := verifyExprCtx(ctx, v.List); err != nil {
+			return fmt.Errorf("ListFilterExpr list: %w", err)
+		}
+		return verifyExprCtx(ctx, v.Fn)
+	case *ListFoldlExpr:
+		if v.List == nil {
+			return fmt.Errorf("ListFoldlExpr: nil List")
+		}
+		if v.Fn == nil {
+			return fmt.Errorf("ListFoldlExpr: nil Fn")
+		}
+		if v.Init == nil {
+			return fmt.Errorf("ListFoldlExpr: nil Init")
+		}
+		if err := verifyExprCtx(ctx, v.List); err != nil {
+			return fmt.Errorf("ListFoldlExpr list: %w", err)
+		}
+		if err := verifyExprCtx(ctx, v.Fn); err != nil {
+			return fmt.Errorf("ListFoldlExpr fn: %w", err)
+		}
+		return verifyExprCtx(ctx, v.Init)
 	case *MathCallExpr:
 		if v.Arg == nil {
 			return fmt.Errorf("MathCallExpr: nil Arg")

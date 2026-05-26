@@ -1,0 +1,5 @@
+let nums = [1, 2, 3, 4, 5]
+let doubled = map(nums, fun(x: int): int => x * 2)
+for v in doubled {
+    print(str(v))
+}

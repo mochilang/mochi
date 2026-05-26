@@ -1356,6 +1356,10 @@ func exprElemType(e aotir.Expr) aotir.Type {
 	case *aotir.DatalogQueryExpr:
 		// Phase 8.0: Datalog query result is list<string>.
 		return aotir.TypeString
+	case *aotir.ListMapExpr:
+		return v.ElemType
+	case *aotir.ListFilterExpr:
+		return v.ElemType
 	}
 	return aotir.TypeInvalid
 }
@@ -4260,6 +4264,22 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 			return l.lowerListSumCall(call)
 		}
 	}
+	// Phase 6.1: HOF builtins.
+	if call.Func == "map" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerListMapCall(call)
+		}
+	}
+	if call.Func == "filter" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerListFilterCall(call)
+		}
+	}
+	if call.Func == "reduce" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerListReduceCall(call)
+		}
+	}
 	if call.Func == "abs" {
 		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
 			return l.lowerAbsCall(call)
@@ -4762,6 +4782,65 @@ func (l *lowerer) lowerListSumCall(call *parser.CallExpr) (aotir.Expr, error) {
 		Receiver: recv,
 		ElemType: elem,
 	}, nil
+}
+
+// lowerListMapCall lowers `map(xs, fn)` to a ListMapExpr (Phase 6.1).
+func (l *lowerer) lowerListMapCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 2 {
+		return nil, fmt.Errorf("map() takes exactly two arguments, got %d", len(call.Args))
+	}
+	listExpr, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("map() list arg: %w", err)
+	}
+	fnExpr, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("map() fn arg: %w", err)
+	}
+	// result element type comes from the fn return type; use TypeString as a
+	// safe default when we can't determine it statically.
+	elemType := aotir.TypeString
+	if fl, ok := fnExpr.(*aotir.FunLit); ok && fl.Sig != nil {
+		elemType = fl.Sig.ReturnType
+	}
+	return &aotir.ListMapExpr{List: listExpr, Fn: fnExpr, ElemType: elemType}, nil
+}
+
+// lowerListFilterCall lowers `filter(xs, fn)` to a ListFilterExpr (Phase 6.1).
+func (l *lowerer) lowerListFilterCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 2 {
+		return nil, fmt.Errorf("filter() takes exactly two arguments, got %d", len(call.Args))
+	}
+	listExpr, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("filter() list arg: %w", err)
+	}
+	fnExpr, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("filter() fn arg: %w", err)
+	}
+	elemType := exprElemType(listExpr)
+	return &aotir.ListFilterExpr{List: listExpr, Fn: fnExpr, ElemType: elemType}, nil
+}
+
+// lowerListReduceCall lowers `reduce(xs, fn, init)` to a ListFoldlExpr (Phase 6.1).
+func (l *lowerer) lowerListReduceCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 3 {
+		return nil, fmt.Errorf("reduce() takes exactly three arguments, got %d", len(call.Args))
+	}
+	listExpr, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("reduce() list arg: %w", err)
+	}
+	fnExpr, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("reduce() fn arg: %w", err)
+	}
+	initExpr, err := l.lowerExpr(call.Args[2])
+	if err != nil {
+		return nil, fmt.Errorf("reduce() init arg: %w", err)
+	}
+	return &aotir.ListFoldlExpr{List: listExpr, Fn: fnExpr, Init: initExpr, AccType: initExpr.Type()}, nil
 }
 
 // lowerAbsCall lowers `abs(x)` to a MathCallExpr.
