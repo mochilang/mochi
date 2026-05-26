@@ -1,0 +1,5 @@
+// Phase 10.4: JavaScript FFI — call a JS function that multiplies two ints.
+extern js fun js_mul(a: int, b: int): int
+
+let result = js_mul(6, 7)
+print(result)

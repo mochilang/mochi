@@ -56,6 +56,12 @@ func Emit(prog *aotir.Program) (string, error) {
 	if len(prog.GoFuncs) > 0 {
 		b.WriteString("#include \"mochi/go_rpc.h\"\n")
 	}
+	if len(prog.PythonFuncs) > 0 {
+		b.WriteString("#include \"mochi/python_rpc.h\"\n")
+	}
+	if len(prog.JSFuncs) > 0 {
+		b.WriteString("#include \"mochi/js_rpc.h\"\n")
+	}
 	listRecNames := collectListRecordElems(prog)
 	listListInners := collectListListInners(prog)
 	listMapPairs := collectListOfMapPairs(prog)
@@ -95,6 +101,14 @@ func Emit(prog *aotir.Program) (string, error) {
 	}
 	// Phase 10.2: emit Go FFI inline wrapper functions.
 	if err := emitGoFuncWrappers(&b, prog); err != nil {
+		return "", err
+	}
+	// Phase 10.3: emit Python FFI inline wrapper functions.
+	if err := emitPythonFuncWrappers(&b, prog); err != nil {
+		return "", err
+	}
+	// Phase 10.4: emit JavaScript FFI inline wrapper functions.
+	if err := emitJSFuncWrappers(&b, prog); err != nil {
 		return "", err
 	}
 
@@ -765,102 +779,126 @@ func emitExternFuncDecls(b *strings.Builder, prog *aotir.Program) error {
 // extracts the result via the appropriate mochi_go_rpc_<type>() accessor.
 // Phase 10.2.
 func emitGoFuncWrappers(b *strings.Builder, prog *aotir.Program) error {
-	if len(prog.GoFuncs) == 0 {
-		return nil
-	}
 	for _, gf := range prog.GoFuncs {
-		retC, err := cType(gf.ReturnType)
+		if err := emitRPCFuncWrappers(b, gf.Name, gf.Params, gf.ReturnType, "mochi_go_", "mochi_go_rpc_"); err != nil {
+			return fmt.Errorf("emitGoFuncWrappers: %w", err)
+		}
+	}
+	return nil
+}
+
+// emitRPCFuncWrappers is the generic helper used by emitGoFuncWrappers,
+// emitPythonFuncWrappers, and emitJSFuncWrappers. It generates one static
+// inline C function per entry in the list using the given prefix (e.g.
+// "mochi_go_", "mochi_py_", "mochi_js_") and RPC accessor prefix (e.g.
+// "mochi_go_rpc_", "mochi_py_rpc_", "mochi_js_rpc_"). Phase 10.3/10.4.
+func emitRPCFuncWrappers(b *strings.Builder, name string, params []aotir.Param, returnType aotir.Type, fnPrefix, rpcPrefix string) error {
+	retC, err := cType(returnType)
+	if err != nil {
+		if returnType == aotir.TypeUnit {
+			retC = "void"
+		} else {
+			return fmt.Errorf("emitRPCFuncWrappers: %q return type: %w", name, err)
+		}
+	}
+	if returnType == aotir.TypeString {
+		retC = "char *"
+	}
+
+	var paramDecls []string
+	for _, p := range params {
+		pc, err := cType(p.Type)
 		if err != nil {
-			if gf.ReturnType == aotir.TypeUnit {
-				retC = "void"
-			} else {
-				return fmt.Errorf("emitGoFuncWrappers: %q return type: %w", gf.Name, err)
-			}
+			return fmt.Errorf("emitRPCFuncWrappers: %q param %q: %w", name, p.Name, err)
 		}
-		// Strings are emitted as "const char *" by cType, but the let-emitter
-		// adds "const" at the call site. Use "char *" here to avoid "const const char *".
-		if gf.ReturnType == aotir.TypeString {
-			retC = "char *"
-		}
+		paramDecls = append(paramDecls, pc+" "+p.Name)
+	}
 
-		// Build parameter list.
-		var paramDecls []string
-		for _, p := range gf.Params {
-			pc, err := cType(p.Type)
-			if err != nil {
-				return fmt.Errorf("emitGoFuncWrappers: %q param %q: %w", gf.Name, p.Name, err)
-			}
-			paramDecls = append(paramDecls, pc+" "+p.Name)
-		}
+	b.WriteString("static ")
+	b.WriteString(retC)
+	b.WriteString(" ")
+	b.WriteString(fnPrefix)
+	b.WriteString(name)
+	b.WriteString("(")
+	b.WriteString(strings.Join(paramDecls, ", "))
+	b.WriteString(") {\n")
 
-		// Function signature.
-		b.WriteString("static ")
-		b.WriteString(retC)
-		b.WriteString(" mochi_go_")
-		b.WriteString(gf.Name)
-		b.WriteString("(")
-		b.WriteString(strings.Join(paramDecls, ", "))
-		b.WriteString(") {\n")
-
-		// Build JSON request: {"fn":"name","args":[...]}
-		// Use snprintf for safety; max 4096 bytes.
-		b.WriteString("    char __go_req[4096];\n")
-		if len(gf.Params) == 0 {
-			fmt.Fprintf(b, "    snprintf(__go_req, sizeof(__go_req), \"{\\\"fn\\\":\\\"%s\\\",\\\"args\\\":[]}\");\n", gf.Name)
-		} else {
-			// Build format string and args.
-			// Integers use %lld (long long = int64_t on all tier-1 targets).
-			// Strings use \"%s\" so the JSON value is a quoted string.
-			fmtParts := make([]string, len(gf.Params))
-			argParts := make([]string, len(gf.Params))
-			for i, p := range gf.Params {
-				switch p.Type {
-				case aotir.TypeInt:
-					fmtParts[i] = "%lld"
-					argParts[i] = "(long long)" + p.Name
-				case aotir.TypeFloat:
-					fmtParts[i] = "%g"
-					argParts[i] = p.Name
-				case aotir.TypeBool:
-					fmtParts[i] = "%s"
-					argParts[i] = "(" + p.Name + " ? \"true\" : \"false\")"
-				case aotir.TypeString:
-					fmtParts[i] = `\"%s\"`
-					argParts[i] = p.Name
-				default:
-					fmtParts[i] = "null"
-					argParts[i] = ""
-				}
-			}
-			fmtStr := fmt.Sprintf("{\\\"fn\\\":\\\"%s\\\",\\\"args\\\":[%s]}", gf.Name, strings.Join(fmtParts, ","))
-			argList := ""
-			for _, a := range argParts {
-				if a != "" {
-					argList += ", " + a
-				}
-			}
-			fmt.Fprintf(b, "    snprintf(__go_req, sizeof(__go_req), \"%s\"%s);\n", fmtStr, argList)
-		}
-		b.WriteString("    const char *__go_resp = mochi_go_rpc_call(__go_req);\n")
-
-		// Extract result.
-		if gf.ReturnType == aotir.TypeUnit {
-			b.WriteString("    (void)__go_resp;\n")
-		} else {
-			switch gf.ReturnType {
+	b.WriteString("    char __rpc_req[4096];\n")
+	if len(params) == 0 {
+		fmt.Fprintf(b, "    snprintf(__rpc_req, sizeof(__rpc_req), \"{\\\"fn\\\":\\\"%s\\\",\\\"args\\\":[]}\");\n", name)
+	} else {
+		fmtParts := make([]string, len(params))
+		argParts := make([]string, len(params))
+		for i, p := range params {
+			switch p.Type {
 			case aotir.TypeInt:
-				b.WriteString("    return mochi_go_rpc_int(__go_resp);\n")
+				fmtParts[i] = "%lld"
+				argParts[i] = "(long long)" + p.Name
 			case aotir.TypeFloat:
-				b.WriteString("    return mochi_go_rpc_float(__go_resp);\n")
+				fmtParts[i] = "%g"
+				argParts[i] = p.Name
 			case aotir.TypeBool:
-				b.WriteString("    return mochi_go_rpc_bool(__go_resp);\n")
+				fmtParts[i] = "%s"
+				argParts[i] = "(" + p.Name + " ? \"true\" : \"false\")"
 			case aotir.TypeString:
-				b.WriteString("    return mochi_go_rpc_str(__go_resp);\n")
+				fmtParts[i] = `\"%s\"`
+				argParts[i] = p.Name
 			default:
-				b.WriteString("    return mochi_go_rpc_int(__go_resp);\n")
+				fmtParts[i] = "null"
+				argParts[i] = ""
 			}
 		}
-		b.WriteString("}\n\n")
+		fmtStr := fmt.Sprintf("{\\\"fn\\\":\\\"%s\\\",\\\"args\\\":[%s]}", name, strings.Join(fmtParts, ","))
+		argList := ""
+		for _, a := range argParts {
+			if a != "" {
+				argList += ", " + a
+			}
+		}
+		fmt.Fprintf(b, "    snprintf(__rpc_req, sizeof(__rpc_req), \"%s\"%s);\n", fmtStr, argList)
+	}
+	b.WriteString("    const char *__rpc_resp = ")
+	b.WriteString(rpcPrefix)
+	b.WriteString("call(__rpc_req);\n")
+
+	if returnType == aotir.TypeUnit {
+		b.WriteString("    (void)__rpc_resp;\n")
+	} else {
+		switch returnType {
+		case aotir.TypeInt:
+			fmt.Fprintf(b, "    return %sint(__rpc_resp);\n", rpcPrefix)
+		case aotir.TypeFloat:
+			fmt.Fprintf(b, "    return %sfloat(__rpc_resp);\n", rpcPrefix)
+		case aotir.TypeBool:
+			fmt.Fprintf(b, "    return %sbool(__rpc_resp);\n", rpcPrefix)
+		case aotir.TypeString:
+			fmt.Fprintf(b, "    return %sstr(__rpc_resp);\n", rpcPrefix)
+		default:
+			fmt.Fprintf(b, "    return %sint(__rpc_resp);\n", rpcPrefix)
+		}
+	}
+	b.WriteString("}\n\n")
+	return nil
+}
+
+// emitPythonFuncWrappers writes a static C wrapper for each PythonFuncDecl.
+// Phase 10.3.
+func emitPythonFuncWrappers(b *strings.Builder, prog *aotir.Program) error {
+	for _, pf := range prog.PythonFuncs {
+		if err := emitRPCFuncWrappers(b, pf.Name, pf.Params, pf.ReturnType, "mochi_py_", "mochi_py_rpc_"); err != nil {
+			return fmt.Errorf("emitPythonFuncWrappers: %w", err)
+		}
+	}
+	return nil
+}
+
+// emitJSFuncWrappers writes a static C wrapper for each JSFuncDecl.
+// Phase 10.4.
+func emitJSFuncWrappers(b *strings.Builder, prog *aotir.Program) error {
+	for _, jf := range prog.JSFuncs {
+		if err := emitRPCFuncWrappers(b, jf.Name, jf.Params, jf.ReturnType, "mochi_js_", "mochi_js_rpc_"); err != nil {
+			return fmt.Errorf("emitJSFuncWrappers: %w", err)
+		}
 	}
 	return nil
 }

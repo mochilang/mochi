@@ -44,12 +44,40 @@ type Program struct {
 	// Phase 10.2 adds this; emit walks it to write inline C wrapper
 	// functions that forward calls to the Go companion via mochi_go_rpc_*.
 	GoFuncs []*GoFuncDecl
+
+	// PythonFuncs lists Python FFI function declarations in source order.
+	// Phase 10.3 adds this; emit walks it to write inline C wrapper
+	// functions that forward calls to the Python companion via mochi_py_rpc_*.
+	PythonFuncs []*PythonFuncDecl
+
+	// JSFuncs lists JavaScript FFI function declarations in source order.
+	// Phase 10.4 adds this; emit walks it to write inline C wrapper
+	// functions that forward calls to the JS companion via mochi_js_rpc_*.
+	JSFuncs []*JSFuncDecl
 }
 
 // GoFuncDecl describes a Go FFI function. Phase 10.2.
 // The lowerer populates this from `extern go fun` declarations;
 // the emitter writes a static inline C wrapper per entry.
 type GoFuncDecl struct {
+	Name       string
+	Params     []Param
+	ReturnType Type
+}
+
+// PythonFuncDecl describes a Python FFI function. Phase 10.3.
+// The lowerer populates this from `extern python fun` declarations;
+// the emitter writes a static inline C wrapper per entry.
+type PythonFuncDecl struct {
+	Name       string
+	Params     []Param
+	ReturnType Type
+}
+
+// JSFuncDecl describes a JavaScript FFI function. Phase 10.4.
+// The lowerer populates this from `extern js fun` declarations;
+// the emitter writes a static inline C wrapper per entry.
+type JSFuncDecl struct {
 	Name       string
 	Params     []Param
 	ReturnType Type

@@ -201,9 +201,8 @@ func (d *Driver) Build(src, out, target, profile string) error {
 
 	// Phase 10.2: if a .go file with the same stem exists alongside the source,
 	// compile it as a standalone Go executable (the Go RPC companion). The
-	// output path is passed to the C binary via MOCHI_GO_RPC_PATH at runtime.
-	// The companion is compiled once here and the path is baked into a generated
-	// C header so the built binary finds it without additional env configuration.
+	// companion binary is placed alongside the output binary so it persists
+	// after the temp workDir is cleaned up.
 	goRPCPath := ""
 	neighborGo := filepath.Join(filepath.Dir(src), srcBase+".go")
 	if fi, err2 := os.Stat(neighborGo); err2 == nil && !fi.IsDir() {
@@ -213,6 +212,30 @@ func (d *Driver) Build(src, out, target, profile string) error {
 			return fmt.Errorf("transpiler3/c/build: compile Go companion %s: %v\n%s", neighborGo, err2, out2)
 		}
 		goRPCPath = companionBin
+	}
+
+	// Phase 10.3: if a .py file with the same stem exists alongside the source,
+	// record its absolute path so the binary can launch it as the Python companion.
+	pythonRPCPath := ""
+	neighborPy := filepath.Join(filepath.Dir(src), srcBase+".py")
+	if fi, err2 := os.Stat(neighborPy); err2 == nil && !fi.IsDir() {
+		abs, err2 := filepath.Abs(neighborPy)
+		if err2 != nil {
+			return fmt.Errorf("transpiler3/c/build: abs py companion %s: %w", neighborPy, err2)
+		}
+		pythonRPCPath = abs
+	}
+
+	// Phase 10.4: if a .js file with the same stem exists alongside the source,
+	// record its absolute path so the binary can launch it via node.
+	jsRPCPath := ""
+	neighborJS := filepath.Join(filepath.Dir(src), srcBase+".js")
+	if fi, err2 := os.Stat(neighborJS); err2 == nil && !fi.IsDir() {
+		abs, err2 := filepath.Abs(neighborJS)
+		if err2 != nil {
+			return fmt.Errorf("transpiler3/c/build: abs js companion %s: %w", neighborJS, err2)
+		}
+		jsRPCPath = abs
 	}
 
 	cc, ccPrefix, err := d.resolveCCForTarget(target)
@@ -297,6 +320,14 @@ func (d *Driver) Build(src, out, target, profile string) error {
 	// MOCHI_GO_RPC_PATH does not need to be set at runtime.
 	if goRPCPath != "" {
 		ccArgs = append(ccArgs, fmt.Sprintf("-DMOCHI_GO_RPC_PATH_DEFAULT=%q", goRPCPath))
+	}
+	// Phase 10.3: bake the Python companion script path into the C binary.
+	if pythonRPCPath != "" {
+		ccArgs = append(ccArgs, fmt.Sprintf("-DMOCHI_PYTHON_RPC_PATH_DEFAULT=%q", pythonRPCPath))
+	}
+	// Phase 10.4: bake the JS companion script path into the C binary.
+	if jsRPCPath != "" {
+		ccArgs = append(ccArgs, fmt.Sprintf("-DMOCHI_JS_RPC_PATH_DEFAULT=%q", jsRPCPath))
 	}
 	ccArgs = append(ccArgs, d.ExtraFlags...)
 	args := ccArgs

@@ -743,6 +743,38 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 		env.SetVar(s.ExternGoFun.Name(), FuncType{Params: params, Return: ret}, false)
 		return nil
 
+	case s.ExternPythonFun != nil:
+		params := make([]Type, len(s.ExternPythonFun.Params))
+		for i, p := range s.ExternPythonFun.Params {
+			if p.Type != nil {
+				params[i] = resolveTypeRef(p.Type, env)
+			} else {
+				params[i] = AnyType{}
+			}
+		}
+		var ret Type = AnyType{}
+		if s.ExternPythonFun.Return != nil {
+			ret = resolveTypeRef(s.ExternPythonFun.Return, env)
+		}
+		env.SetVar(s.ExternPythonFun.Name(), FuncType{Params: params, Return: ret}, false)
+		return nil
+
+	case s.ExternJSFun != nil:
+		params := make([]Type, len(s.ExternJSFun.Params))
+		for i, p := range s.ExternJSFun.Params {
+			if p.Type != nil {
+				params[i] = resolveTypeRef(p.Type, env)
+			} else {
+				params[i] = AnyType{}
+			}
+		}
+		var ret Type = AnyType{}
+		if s.ExternJSFun.Return != nil {
+			ret = resolveTypeRef(s.ExternJSFun.Return, env)
+		}
+		env.SetVar(s.ExternJSFun.Name(), FuncType{Params: params, Return: ret}, false)
+		return nil
+
 	case s.Fact != nil:
 		return nil
 

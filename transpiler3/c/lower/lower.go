@@ -305,6 +305,100 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		})
 	}
 
+	// Phase 10.3 pre-pass: collect `extern python fun` declarations.
+	pythonFuncNames := map[string]bool{}
+	for i, st := range prog.Statements {
+		if st == nil || st.ExternPythonFun == nil {
+			continue
+		}
+		ef := st.ExternPythonFun
+		name := ef.Name()
+		if pythonFuncNames[name] {
+			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: redeclaration of extern python fun %q", i, name)
+		}
+		params := make([]aotir.Param, 0, len(ef.Params))
+		seen := map[string]bool{}
+		for j, p := range ef.Params {
+			if p.Name == "" {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern python fun %q param %d has empty name", name, j)
+			}
+			if seen[p.Name] {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern python fun %q duplicate param %q", name, p.Name)
+			}
+			seen[p.Name] = true
+			if p.Type == nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern python fun %q param %q requires explicit type", name, p.Name)
+			}
+			pTR, err := typeFromRef(records, unions, p.Type)
+			if err != nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern python fun %q param %q: %w", name, p.Name, err)
+			}
+			params = append(params, aotir.Param{Name: p.Name, Type: pTR.t, RecordName: pTR.rec})
+		}
+		var retTR typeResolution
+		if ef.Return != nil {
+			var err error
+			retTR, err = typeFromRef(records, unions, ef.Return)
+			if err != nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern python fun %q return: %w", name, err)
+			}
+		}
+		externFuncs[name] = &funcSig{params: params, returnType: retTR.t}
+		pythonFuncNames[name] = true
+		out.PythonFuncs = append(out.PythonFuncs, &aotir.PythonFuncDecl{
+			Name:       name,
+			Params:     params,
+			ReturnType: retTR.t,
+		})
+	}
+
+	// Phase 10.4 pre-pass: collect `extern js fun` declarations.
+	jsFuncNames := map[string]bool{}
+	for i, st := range prog.Statements {
+		if st == nil || st.ExternJSFun == nil {
+			continue
+		}
+		ef := st.ExternJSFun
+		name := ef.Name()
+		if jsFuncNames[name] {
+			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: redeclaration of extern js fun %q", i, name)
+		}
+		params := make([]aotir.Param, 0, len(ef.Params))
+		seen := map[string]bool{}
+		for j, p := range ef.Params {
+			if p.Name == "" {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern js fun %q param %d has empty name", name, j)
+			}
+			if seen[p.Name] {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern js fun %q duplicate param %q", name, p.Name)
+			}
+			seen[p.Name] = true
+			if p.Type == nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern js fun %q param %q requires explicit type", name, p.Name)
+			}
+			pTR, err := typeFromRef(records, unions, p.Type)
+			if err != nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern js fun %q param %q: %w", name, p.Name, err)
+			}
+			params = append(params, aotir.Param{Name: p.Name, Type: pTR.t, RecordName: pTR.rec})
+		}
+		var retTR typeResolution
+		if ef.Return != nil {
+			var err error
+			retTR, err = typeFromRef(records, unions, ef.Return)
+			if err != nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern js fun %q return: %w", name, err)
+			}
+		}
+		externFuncs[name] = &funcSig{params: params, returnType: retTR.t}
+		jsFuncNames[name] = true
+		out.JSFuncs = append(out.JSFuncs, &aotir.JSFuncDecl{
+			Name:       name,
+			Params:     params,
+			ReturnType: retTR.t,
+		})
+	}
+
 	// Pass 1: collect every user-defined fun decl and record its
 	// signature so the body lowering can resolve forward and
 	// mutual references.
@@ -345,7 +439,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 				continue
 			}
 			intent := blk.Intent
-			intentDecl, err := lowerAgentIntentBody(records, unions, agents, funcs, externFuncs, goFuncNames, ag.Name, agDecl, intent, &anonCounter, &liftedFuncs, &shimFuncs)
+			intentDecl, err := lowerAgentIntentBody(records, unions, agents, funcs, externFuncs, goFuncNames, pythonFuncNames, jsFuncNames, ag.Name, agDecl, intent, &anonCounter, &liftedFuncs, &shimFuncs)
 			if err != nil {
 				return nil, fmt.Errorf("transpiler3/c/lower: agent %q intent %q: %w", ag.Name, intent.Name, err)
 			}
@@ -360,6 +454,8 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 			funcs:                      funcs,
 			externFuncs:                externFuncs,
 			goFuncNames:                goFuncNames,
+			pythonFuncNames:            pythonFuncNames,
+			jsFuncNames:                jsFuncNames,
 			records:                    records,
 			unions:                     unions,
 			agents:                     agents,
@@ -431,6 +527,8 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		funcs:           funcs,
 		externFuncs:     externFuncs,
 		goFuncNames:     goFuncNames,
+		pythonFuncNames: pythonFuncNames,
+		jsFuncNames:     jsFuncNames,
 		records:         records,
 		unions:          unions,
 		agents:          agents,
@@ -709,6 +807,8 @@ type lowerer struct {
 	funcs                       map[string]*funcSig
 	externFuncs                 map[string]*funcSig            // Phase 10.0: extern C function signatures
 	goFuncNames                 map[string]bool                // Phase 10.2: Go FFI function names (call via mochi_go_ prefix)
+	pythonFuncNames             map[string]bool                // Phase 10.3: Python FFI function names (call via mochi_py_ prefix)
+	jsFuncNames                 map[string]bool                // Phase 10.4: JS FFI function names (call via mochi_js_ prefix)
 	records                     map[string]*aotir.RecordDecl
 	unions                      map[string]*aotir.UnionDecl   // Phase 4: union name -> decl
 	agents                      map[string]*aotir.AgentDecl   // Phase 9.3: agent name -> decl
@@ -837,6 +937,12 @@ func (l *lowerer) lowerStatement(out *aotir.Block, st *parser.Statement) error {
 	case st.ExternGoFun != nil:
 		// Phase 10.2: extern go fun declarations are collected in the pre-pass; silently skip here.
 		return nil
+	case st.ExternPythonFun != nil:
+		// Phase 10.3: extern python fun declarations are collected in the pre-pass; silently skip here.
+		return nil
+	case st.ExternJSFun != nil:
+		// Phase 10.4: extern js fun declarations are collected in the pre-pass; silently skip here.
+		return nil
 	case st.Fact != nil:
 		// Phase 15.0: Datalog fact -- collect for later query evaluation.
 		return l.collectFact(st.Fact)
@@ -929,6 +1035,10 @@ func (l *lowerer) lowerExprStmt(out *aotir.Block, es *parser.ExprStmt) error {
 		emitName := call.Func
 		if l.goFuncNames[call.Func] {
 			emitName = "mochi_go_" + call.Func
+		} else if l.pythonFuncNames[call.Func] {
+			emitName = "mochi_py_" + call.Func
+		} else if l.jsFuncNames[call.Func] {
+			emitName = "mochi_js_" + call.Func
 		}
 		out.Statements = append(out.Statements, &aotir.CallStmt{
 			Func: emitName,
@@ -4149,6 +4259,10 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 		emitName := call.Func
 		if l.goFuncNames[call.Func] {
 			emitName = "mochi_go_" + call.Func
+		} else if l.pythonFuncNames[call.Func] {
+			emitName = "mochi_py_" + call.Func
+		} else if l.jsFuncNames[call.Func] {
+			emitName = "mochi_js_" + call.Func
 		}
 		return &aotir.CallExpr{
 			Func:   emitName,
@@ -6931,6 +7045,8 @@ func lowerAgentIntentBody(
 	funcs map[string]*funcSig,
 	externFuncs map[string]*funcSig,
 	goFuncNames map[string]bool,
+	pythonFuncNames map[string]bool,
+	jsFuncNames map[string]bool,
 	agentName string,
 	agDecl *aotir.AgentDecl,
 	intent *parser.IntentDecl,
@@ -6974,6 +7090,8 @@ func lowerAgentIntentBody(
 		funcs:           funcs,
 		externFuncs:     externFuncs,
 		goFuncNames:     goFuncNames,
+		pythonFuncNames: pythonFuncNames,
+		jsFuncNames:     jsFuncNames,
 		records:         records,
 		unions:          unions,
 		agents:          agents,
