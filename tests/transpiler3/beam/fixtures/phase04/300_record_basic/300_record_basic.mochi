@@ -1,0 +1,4 @@
+type Point { x: int, y: int }
+var p = Point{x: 3, y: 4}
+print(p.x)
+print(p.y)

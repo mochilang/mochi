@@ -1,0 +1,6 @@
+type Person { name: string, age: int }
+var p1 = Person{name: "alice", age: 30}
+var p2 = Person{name: "alice", age: 30}
+var p3 = Person{name: "bob", age: 25}
+print(p1 == p2)
+print(p1 == p3)

@@ -41,6 +41,7 @@ const (
 	etfList          = 108
 	etfBinary        = 109
 	etfSmallBig      = 110
+	etfMap           = 116
 )
 
 // Term is a raw Erlang term. It is used for the small number of
@@ -126,6 +127,14 @@ func CBool(b bool) Expr {
 //	{c_literal, [], []}
 func CNil() Expr {
 	return ETuple{EAtom("c_literal"), anno, EList(nil)}
+}
+
+// CEmptyMap builds a c_literal node for an empty Erlang map #{}.
+// Used as the base argument to CMap() when constructing a new map literal.
+//
+//	{c_literal, [], #{}}
+func CEmptyMap() Expr {
+	return ETuple{EAtom("c_literal"), anno, EMap(nil)}
 }
 
 // CBin builds a c_literal node for an Erlang binary (used for
@@ -271,36 +280,38 @@ func CValues(es []Expr) Expr {
 }
 
 // CMap builds a c_map node (BEAM map expression or pattern).
-// isPat should be the atom "false" for expressions, "true" for patterns.
-// arg is the base map (use CNil() for a new map literal).
+// arg is the base map expression; use CEmptyMap() for a new map literal.
+// isPat should be false for expressions, true for patterns.
 //
-//	{c_map, [{is_pat,false}], Arg, [Pairs...]}
+//	{c_map, [], Arg, [Pairs...], false}
 func CMap(arg Expr, pairs []Expr, isPat bool) Expr {
 	isPatAtom := EAtom("false")
 	if isPat {
 		isPatAtom = EAtom("true")
 	}
-	isPairAnno := EList{ETuple{EAtom("is_pat"), isPatAtom}}
 	pairList := make(EList, len(pairs))
 	for i, p := range pairs {
 		pairList[i] = p
 	}
-	return ETuple{EAtom("c_map"), isPairAnno, arg, pairList}
+	return ETuple{EAtom("c_map"), anno, arg, pairList, isPatAtom}
 }
 
 // CMapPairAssoc builds a c_map_pair with op=assoc (#{K => V}).
+// The op field must be a c_literal wrapping the atom.
 //
-//	{c_map_pair, [], assoc, Key, Val}
+//	{c_map_pair, [], {c_literal, [], assoc}, Key, Val}
 func CMapPairAssoc(key, val Expr) Expr {
-	return ETuple{EAtom("c_map_pair"), anno, EAtom("assoc"), key, val}
+	opLit := ETuple{EAtom("c_literal"), anno, EAtom("assoc")}
+	return ETuple{EAtom("c_map_pair"), anno, opLit, key, val}
 }
 
 // CMapPairExact builds a c_map_pair with op=exact (for pattern matching
 // on a specific key, equivalent to #{K := V} in Erlang patterns).
 //
-//	{c_map_pair, [], exact, Key, Val}
+//	{c_map_pair, [], {c_literal, [], exact}, Key, Val}
 func CMapPairExact(key, val Expr) Expr {
-	return ETuple{EAtom("c_map_pair"), anno, EAtom("exact"), key, val}
+	opLit := ETuple{EAtom("c_literal"), anno, EAtom("exact")}
+	return ETuple{EAtom("c_map_pair"), anno, opLit, key, val}
 }
 
 // CTry builds a c_try node.
@@ -534,6 +545,23 @@ func appendBinary(buf *bytes.Buffer, data []byte) {
 	buf.Write(b[:])
 	buf.Write(data)
 }
+
+func appendMap(buf *bytes.Buffer, pairs [][2]Term) {
+	buf.WriteByte(etfMap)
+	var b [4]byte
+	binary.BigEndian.PutUint32(b[:], uint32(len(pairs)))
+	buf.Write(b[:])
+	for _, kv := range pairs {
+		kv[0].appendETF(buf)
+		kv[1].appendETF(buf)
+	}
+}
+
+// EMap is an Erlang map value (for use inside c_literal nodes).
+// Keys must be sorted for reproducibility; use NewEMap.
+type EMap [][2]Term
+
+func (m EMap) appendETF(buf *bytes.Buffer) { appendMap(buf, m) }
 
 // Verify that our Term implementations satisfy the interface.
 var _ Term = EAtom("")
