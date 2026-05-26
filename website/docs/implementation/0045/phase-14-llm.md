@@ -30,12 +30,16 @@ LLM generation is the user-facing AI-augmented workflow that Mochi positions its
 |------|--------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 14.0 | `mochi/llm.h` + `llm.c` cassette runtime; `LLMGenerateExpr` IR; lower + emit for `generate <provider> { prompt, model }`; type-checker recognises openai/anthropic/google/llama providers; 10 fixtures; `TestPhase14LLM` gate | LANDED 2026-05-26 07:14 (GMT+7) | — | — |
 | 14.1 | OpenAI live provider via libcurl (`-DMOCHI_LLM_HAVE_CURL -lcurl`); simple JSON extraction for `choices[0].message.content`; `TestPhase14OpenAI` gate (cassette + live-no-api-key sub-tests; no real API call) | LANDED 2026-05-26 07:24 (GMT+7) | — | — |
-| 14.2 | Anthropic provider                                                                                                 | NOT STARTED | —      | — |
+| 14.2 | Anthropic live provider via libcurl (`ANTHROPIC_API_KEY`); `llm_anthropic_live()` with `x-api-key` + `anthropic-version` headers; extracts `content[0].text` via strstr; `TestPhase14Anthropic` gate (cassette + live-no-api-key sub-tests) | LANDED 2026-05-26 07:30 (GMT+7) | — | — |
 | 14.3 | Google provider                                                                                                    | NOT STARTED | —      | — |
 | 14.4 | llama.cpp local provider (linked only with `--with-llama`)                                                         | NOT STARTED | —      | — |
 | 14.5 | Live HTTP providers via libcurl + yyjson; cassette recording mode                                                  | NOT STARTED | —      | — |
 
 ## Decisions made
+
+**Phase 14.2: Anthropic request format.** The Anthropic messages API uses `POST https://api.anthropic.com/v1/messages` with headers `x-api-key: <key>` and `anthropic-version: 2023-06-01`. The request body includes `"max_tokens": 1024` (required by Anthropic). Default model is `claude-3-haiku-20240307` when none is specified.
+
+**Phase 14.2: content[0].text extraction.** The Anthropic response nests the assistant text under `content[0].text` (an array of content blocks). The existing `llm_json_str` helper is reused: find `"content"` in the response, then find `"text"` from that position. This avoids needing array-aware JSON parsing for the common case (single text block).
 
 **Phase 14.1: libcurl opt-in via compile flag.** The OpenAI live provider is implemented in `llm.c` behind `#if defined(MOCHI_LLM_HAVE_CURL)`. Default compilation (without this flag) links no external library; live mode returns "" with a diagnostic. Users who want live API calls compile with `-DMOCHI_LLM_HAVE_CURL -lcurl`. This keeps the gate dependency-free while enabling production use.
 
@@ -63,4 +67,4 @@ _Provider-specific tool-use / function-calling integration tests: a follow-up ph
 
 ## Closeout notes
 
-Sub-phases 14.0 and 14.1 are LANDED. The `generate <provider> { ... }` expression compiles and runs in cassette replay mode with 10 fixtures; the OpenAI live provider is available when compiled with `-DMOCHI_LLM_HAVE_CURL -lcurl`. Providers 14.2-14.4 (Anthropic, Google, llama.cpp) and cassette recording (14.5) remain NOT STARTED.
+Sub-phases 14.0, 14.1, and 14.2 are LANDED. The `generate <provider> { ... }` expression compiles and runs in cassette replay mode with 10 fixtures; OpenAI and Anthropic live providers are available when compiled with `-DMOCHI_LLM_HAVE_CURL -lcurl`. Providers 14.3-14.4 (Google, llama.cpp) and cassette recording (14.5) remain NOT STARTED.

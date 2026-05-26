@@ -238,6 +238,100 @@ static const char *llm_openai_live(const char *model, const char *prompt,
     }
     return content; /* caller does not free (GC-less model) */
 }
+
+/* ---- Anthropic live provider (Phase 14.2) ---- */
+
+/* Build the Anthropic messages API JSON body. */
+static char *llm_anthropic_build_body(const char *model, const char *prompt) {
+    size_t prompt_len = strlen(prompt);
+    char *escaped = (char *)malloc(prompt_len * 6 + 1);
+    if (!escaped) return NULL;
+    size_t j = 0;
+    for (size_t i = 0; i < prompt_len; i++) {
+        unsigned char c = (unsigned char)prompt[i];
+        if (c == '"')       { escaped[j++] = '\\'; escaped[j++] = '"'; }
+        else if (c == '\\') { escaped[j++] = '\\'; escaped[j++] = '\\'; }
+        else if (c == '\n') { escaped[j++] = '\\'; escaped[j++] = 'n'; }
+        else if (c == '\r') { escaped[j++] = '\\'; escaped[j++] = 'r'; }
+        else if (c == '\t') { escaped[j++] = '\\'; escaped[j++] = 't'; }
+        else { escaped[j++] = (char)c; }
+    }
+    escaped[j] = '\0';
+
+    size_t body_cap = strlen(model) + j + 256;
+    char *body = (char *)malloc(body_cap);
+    if (!body) { free(escaped); return NULL; }
+    snprintf(body, body_cap,
+             "{\"model\":\"%s\","
+             "\"max_tokens\":1024,"
+             "\"messages\":[{\"role\":\"user\",\"content\":\"%s\"}]}",
+             model, escaped);
+    free(escaped);
+    return body;
+}
+
+/* Call Anthropic messages API and return the assistant text. */
+static const char *llm_anthropic_live(const char *model, const char *prompt,
+                                       const char *api_key) {
+    CURL *curl = curl_easy_init();
+    if (!curl) {
+        fprintf(stderr, "mochi_llm_generate: curl_easy_init failed\n");
+        return "";
+    }
+
+    const char *m = (model && *model) ? model : "claude-3-haiku-20240307";
+    char *body = llm_anthropic_build_body(m, prompt);
+    if (!body) {
+        curl_easy_cleanup(curl);
+        return "";
+    }
+
+    char auth_header[1024];
+    snprintf(auth_header, sizeof(auth_header), "x-api-key: %s", api_key);
+
+    struct curl_slist *headers = NULL;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    headers = curl_slist_append(headers, auth_header);
+    headers = curl_slist_append(headers, "anthropic-version: 2023-06-01");
+
+    llm_buf_t resp = {NULL, 0, 0};
+
+    curl_easy_setopt(curl, CURLOPT_URL, "https://api.anthropic.com/v1/messages");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, llm_curl_write);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resp);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
+
+    CURLcode rc = curl_easy_perform(curl);
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+    free(body);
+
+    if (rc != CURLE_OK) {
+        fprintf(stderr, "mochi_llm_generate: curl error: %s\n", curl_easy_strerror(rc));
+        if (resp.data) free(resp.data);
+        return "";
+    }
+
+    if (!resp.data) return "";
+
+    /* Extract content[0].text from Anthropic response JSON.
+     * Strategy: find "content" array then "text" field within it. */
+    const char *content_pos = strstr(resp.data, "\"content\"");
+    if (!content_pos) {
+        fprintf(stderr, "mochi_llm_generate: no 'content' key in Anthropic response: %.200s\n", resp.data);
+        free(resp.data);
+        return "";
+    }
+    char *text = llm_json_str(content_pos, "text");
+    free(resp.data);
+    if (!text) {
+        fprintf(stderr, "mochi_llm_generate: failed to extract text from Anthropic response\n");
+        return "";
+    }
+    return text;
+}
 #endif /* MOCHI_LLM_HAVE_CURL */
 
 /* ---- provider dispatch ---- */
@@ -254,13 +348,23 @@ static const char *llm_live_dispatch(const char *provider, const char *model, co
         }
         return llm_openai_live(model, prompt, api_key);
     }
+    if (strcmp(provider, "anthropic") == 0) {
+        const char *api_key = getenv("ANTHROPIC_API_KEY");
+        if (!api_key || !*api_key) {
+            fprintf(stderr,
+                    "mochi_llm_generate: ANTHROPIC_API_KEY not set "
+                    "(provider=anthropic, live mode requires an API key)\n");
+            return "";
+        }
+        return llm_anthropic_live(model, prompt, api_key);
+    }
 #endif /* MOCHI_LLM_HAVE_CURL */
 
     (void)provider; (void)model; (void)prompt;
     fprintf(stderr,
             "mochi_llm_generate: live mode for provider=%s not implemented; "
             "set MOCHI_LLM_CASSETTE_DIR for cassette replay, or compile with "
-            "-DMOCHI_LLM_HAVE_CURL -lcurl and set OPENAI_API_KEY\n",
+            "-DMOCHI_LLM_HAVE_CURL -lcurl and set ANTHROPIC_API_KEY / OPENAI_API_KEY\n",
             provider);
     return "";
 }
