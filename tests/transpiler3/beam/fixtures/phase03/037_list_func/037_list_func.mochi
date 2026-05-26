@@ -1,0 +1,13 @@
+var xs = [1, 2, 3, 4, 5]
+var total1 = 0
+for x in xs {
+    total1 = total1 + x
+}
+print(total1)
+
+var ys = [10, 20]
+var total2 = 0
+for y in ys {
+    total2 = total2 + y
+}
+print(total2)

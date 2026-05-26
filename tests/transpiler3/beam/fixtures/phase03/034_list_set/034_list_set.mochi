@@ -1,0 +1,4 @@
+var xs = [1, 2, 3, 4, 5]
+xs[2] = 99
+print(xs[2])
+print(len(xs))
