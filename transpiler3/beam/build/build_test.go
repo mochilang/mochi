@@ -1,0 +1,86 @@
+package build
+
+import (
+	"bytes"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"testing"
+)
+
+// repoRoot walks up from the test binary's working directory until
+// it finds go.mod, then returns that directory. Failing to find
+// go.mod is fatal: the build cannot proceed without the repo root.
+func repoRoot(t *testing.T) string {
+	t.Helper()
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("getwd: %v", err)
+	}
+	for {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			t.Fatalf("no go.mod found above %s", dir)
+		}
+		dir = parent
+	}
+}
+
+// runVm3 runs the given Mochi source file through vm3 and returns
+// the captured stdout. Used only during fixture authoring to
+// regenerate .out files; in CI the .out files are committed and
+// runVm3 is not called.
+//
+// The function is skipped (not failed) if the mochi binary is not
+// on PATH, so CI without vm3 still passes the gate tests.
+func runVm3(t *testing.T, src string) []byte {
+	t.Helper()
+	mochi, err := exec.LookPath("mochi")
+	if err != nil {
+		t.Skip("mochi not on PATH; skipping vm3 oracle run")
+	}
+	cmd := exec.Command(mochi, "run", src)
+	out, err := cmd.Output()
+	if err != nil {
+		t.Fatalf("mochi run %s: %v", src, err)
+	}
+	return out
+}
+
+// runBeamFixture compiles mochiPath through the BEAM pipeline,
+// runs the resulting escript, and diffs stdout against the content
+// of outPath. Any mismatch is a fatal test failure.
+//
+// This is the shared helper used by all phase gate tests. It is
+// defined here in Phase 0 so later phases can call it without
+// reimplementing the driver invocation and diff.
+func runBeamFixture(t *testing.T, mochiPath, outPath string) {
+	t.Helper()
+
+	want, err := os.ReadFile(outPath)
+	if err != nil {
+		t.Fatalf("read %s: %v", outPath, err)
+	}
+
+	escriptPath := filepath.Join(t.TempDir(), "fixture.escript")
+	d := &Driver{CacheDir: t.TempDir()}
+	if err := d.Build(mochiPath, escriptPath, TargetEscript); err != nil {
+		t.Fatalf("Driver.Build(%s): %v", mochiPath, err)
+	}
+
+	cmd := exec.Command(escriptPath)
+	var stdout bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		t.Fatalf("run escript %s: %v", escriptPath, err)
+	}
+
+	got := stdout.Bytes()
+	if !bytes.Equal(got, want) {
+		t.Errorf("stdout mismatch for %s\ngot:  %q\nwant: %q", mochiPath, got, want)
+	}
+}
