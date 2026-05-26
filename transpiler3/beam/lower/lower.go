@@ -79,6 +79,8 @@ func Lower(prog *aotir.Program, modName string) (*cerl.Module, error) {
 
 	// Phase 17.0: emit -spec attributes for all functions + main.
 	addSpecAttrs(mod, prog.Functions)
+	// Phase 17.1: emit -opaque attributes for each agent type.
+	addOpaqueAttrs(mod, prog.Agents)
 
 	// Phase 18.1: sort Defs by (name, arity) for canonical, reproducible output.
 	sort.Slice(mod.Defs, func(i, j int) bool {

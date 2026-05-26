@@ -1,6 +1,8 @@
 package lower
 
 import (
+	"strings"
+
 	"mochi/transpiler3/beam/cerl"
 	"mochi/transpiler3/c/aotir"
 )
@@ -67,6 +69,23 @@ func erlType(name string, args ...cerl.Term) cerl.Term {
 	argList := make(cerl.EList, len(args))
 	copy(argList, args)
 	return cerl.ETuple{cerl.EAtom("type"), cerl.EInt(0), cerl.EAtom(name), argList}
+}
+
+// addOpaqueAttrs emits a -opaque module attribute for each agent type declared
+// in the program. Agent state is a map on BEAM, so the opaque type is `map()`.
+// Phase 17.1: Dialyzer sees each agent ref as a distinct opaque type.
+func addOpaqueAttrs(mod *cerl.Module, agents []*aotir.AgentDecl) {
+	for _, ag := range agents {
+		typeName := strings.ToLower(ag.Name) + "_ref"
+		entry := cerl.ETuple{
+			cerl.EAtom(typeName), cerl.EInt(0),
+			cerl.EList{erlType("map")},
+		}
+		mod.Attrs = append(mod.Attrs, cerl.Attr{
+			Key: "opaque",
+			Val: cerl.CLit(cerl.EList{entry}),
+		})
+	}
 }
 
 // mochTypeToErlType converts an aotir.Type to its nearest Erlang type term.
