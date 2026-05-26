@@ -1,0 +1,4 @@
+print(abs(-5))
+print(abs(3))
+print(int(3.7))
+print(int(2.1))

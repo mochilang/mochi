@@ -1,5 +1,5 @@
 -module(mochi_str).
--export([print_float/1, concat/2]).
+-export([print_float/1, concat/2, index/2, substring/3, reverse/1, convert/1, split/2, join/2]).
 
 %% print_float/1 prints a float using Go-compatible shortest-round-trip
 %% formatting, matching vm3's fmt.Println(f) output exactly.
@@ -119,3 +119,38 @@ strip_trailing_zeros_after_dot(S) ->
 %% concat/2 concatenates two binaries.
 concat(A, B) when is_binary(A), is_binary(B) ->
     <<A/binary, B/binary>>.
+
+%% index/2 — return the single-codepoint binary at position I (0-based).
+index(S, I) ->
+    Cps = string:to_graphemes(S),
+    Cp = lists:nth(I + 1, Cps),
+    unicode:characters_to_binary([Cp]).
+
+%% substring/3 — return codepoints [Start, End).
+substring(S, Start, End) ->
+    Cps = string:to_graphemes(S),
+    Slice = lists:sublist(Cps, Start + 1, End - Start),
+    unicode:characters_to_binary(Slice).
+
+%% reverse/1 — reverse string by codepoints.
+reverse(S) ->
+    Cps = string:to_graphemes(S),
+    unicode:characters_to_binary(lists:reverse(Cps)).
+
+%% convert/1 — convert integer or float to binary string.
+convert(X) when is_integer(X) ->
+    integer_to_binary(X);
+convert(X) when is_float(X) ->
+    float_to_binary(X);
+convert(true) -> <<"true">>;
+convert(false) -> <<"false">>.
+
+%% split/2 — split S on Sep, return list of binaries (empty parts excluded).
+split(S, Sep) ->
+    Parts = binary:split(S, Sep, [global]),
+    [P || P <- Parts, P =/= <<>>].
+
+%% join/2 — join a list of binaries with Sep.
+join([], _Sep) -> <<>>;
+join([H | T], Sep) ->
+    lists:foldl(fun(X, Acc) -> <<Acc/binary, Sep/binary, X/binary>> end, H, T).

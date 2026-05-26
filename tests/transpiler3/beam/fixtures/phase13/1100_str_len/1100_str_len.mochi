@@ -1,0 +1,4 @@
+let s = "hello"
+print(len(s))
+print(len(""))
+print(len("mochi"))

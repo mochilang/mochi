@@ -1,0 +1,5 @@
+let s = "hello world"
+print(s.contains("world"))
+print(s.contains("xyz"))
+let t = "mochi"
+print(t.contains("och"))
