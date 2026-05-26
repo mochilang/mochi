@@ -4,6 +4,7 @@ name: BEAM transpiler tests
 # Phase 16.0: OTP 28 on Linux + macOS (blocking).
 # Phase 16.1: OTP 27 added to blocking matrix.
 # Phase 16.2: OTP 29 RC added as non-blocking nightly.
+# Phase 16.3: Windows x86-64 best-effort (non-blocking).
 
 on:
   push:
@@ -44,6 +45,12 @@ jobs:
             blocking: false
           - os: macos-latest
             otp: '29'
+            blocking: false
+          - os: windows-latest
+            otp: '27'
+            blocking: false
+          - os: windows-latest
+            otp: '28'
             blocking: false
 
     continue-on-error: ${{ !matrix.blocking }}

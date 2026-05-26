@@ -80,6 +80,14 @@ func Lower(prog *aotir.Program, modName string) (*cerl.Module, error) {
 	// Phase 17.0: emit -spec attributes for all functions + main.
 	addSpecAttrs(mod, prog.Functions)
 
+	// Phase 18.1: sort Defs by (name, arity) for canonical, reproducible output.
+	sort.Slice(mod.Defs, func(i, j int) bool {
+		if mod.Defs[i].Name != mod.Defs[j].Name {
+			return mod.Defs[i].Name < mod.Defs[j].Name
+		}
+		return mod.Defs[i].Arity < mod.Defs[j].Arity
+	})
+
 	return mod, nil
 }
 
