@@ -59,7 +59,7 @@ func TestLexer_HardKeywords(t *testing.T) {
 		"type", "fun", "extern", "import", "return", "break", "continue",
 		"let", "var", "if", "else", "then", "for", "while", "in",
 		"generate", "match", "fetch", "load", "save", "package",
-		"export", "fact", "rule", "all", "none",
+		"export", "fact", "rule", "all", "none", "spawn",
 	}
 	for _, kw := range keywords {
 		got := tokenize(t, kw)

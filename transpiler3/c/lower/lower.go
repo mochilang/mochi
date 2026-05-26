@@ -247,11 +247,18 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 			returnType: retTR.t,
 		}
 		// Also populate out.ExternFuncs.
+		// OrigName preserves the Mochi dotted name (e.g. "lists.reverse") so
+		// that the BEAM lowerer can split it into module + function. Phase 12.1.
+		origName := ""
+		if len(ef.Tail) > 0 {
+			origName = mochiName
+		}
 		out.ExternFuncs = append(out.ExternFuncs, &aotir.ExternFuncDecl{
 			Name:         cName,
 			Params:       params,
 			ReturnType:   retTR.t,
 			ReturnRecord: retTR.rec,
+			OrigName:     origName,
 		})
 	}
 
@@ -870,6 +877,7 @@ type lbinding struct {
 	subElem      aotir.Type    // element type when t==TypeSub (Phase 9.2)
 	futureElem   aotir.Type    // element type when t==TypeFuture (Phase 11.0)
 	agentName    string        // agent name when t==TypeAgent (Phase 9.3)
+	isSpawned    bool          // true when TypeAgent binding came from `spawn` (Phase 9.1)
 	// emitName overrides the C identifier emitted for this variable when
 	// non-empty. Used by Phase 5.1 capturing closures to make captured
 	// variables emit as `__e->fieldname` instead of the original name.
@@ -1690,6 +1698,11 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	declFutureElem := exprFutureElemType(value)
 	// Phase 9.3: declAgentName carries the agent name when declType==TypeAgent.
 	declAgentName := exprAgentName(value)
+	// Phase 9.1: track whether this binding came from `spawn` (AgentSpawnExpr).
+	declIsSpawned := false
+	if _, ok := value.(*aotir.AgentSpawnExpr); ok {
+		declIsSpawned = true
+	}
 	if declared != nil {
 		tr, err := typeFromRef(l.records, l.unions, declared)
 		if err != nil {
@@ -1778,6 +1791,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		subElem:      declSubElem,
 		futureElem:   declFutureElem,
 		agentName:    declAgentName,
+		isSpawned:    declIsSpawned,
 	}
 	out.Statements = append(out.Statements, &aotir.LetStmt{
 		Name:              name,
@@ -3260,6 +3274,36 @@ func (l *lowerer) lowerPostfix(p *parser.PostfixExpr) (aotir.Expr, error) {
 	if p == nil || p.Target == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
+
+	// Phase 12.1: dotted extern fun call in expression position.
+	// Pattern: SelectorExpr{Root:"erlang", Tail:["abs"]} + CallOp{Args:[...]}
+	// The selector Root is NOT in scope as a variable; the full dotted name IS in externFuncs.
+	if sel := p.Target.Selector; sel != nil && len(sel.Tail) >= 1 && len(p.Ops) == 1 {
+		if callOp := p.Ops[0].Call; callOp != nil {
+			// Build the full dotted name from Root + Tail.
+			dotted := sel.Root
+			for _, t := range sel.Tail {
+				dotted += "." + t
+			}
+			cName := strings.ReplaceAll(dotted, ".", "_")
+			_, rootInScope := l.scope.lookup(sel.Root)
+			if sig, ok := l.externFuncs[cName]; ok && !rootInScope {
+				// Resolve call args and emit a CallExpr directly.
+				syntheticCall := &parser.CallExpr{Func: cName, Args: callOp.Args}
+				args, err := l.lowerCallArgs(syntheticCall, sig)
+				if err != nil {
+					return nil, fmt.Errorf("extern fun %q: %w", dotted, err)
+				}
+				emitName := cName
+				return &aotir.CallExpr{
+					Func:   emitName,
+					Args:   args,
+					Result: sig.returnType,
+				}, nil
+			}
+		}
+	}
+
 	expr, err := l.lowerPrimary(p.Target)
 	if err != nil {
 		return nil, err
@@ -3481,6 +3525,11 @@ func (l *lowerer) lowerFieldOp(receiver aotir.Expr, fieldName string) (aotir.Exp
 		if !ok {
 			return nil, fmt.Errorf("field access .%s: agent %q is not declared", fieldName, agName)
 		}
+		// Determine if receiver came from a spawn (Phase 9.1).
+		isSpawned := false
+		if vr, ok := receiver.(*aotir.VarRef); ok {
+			isSpawned = vr.IsSpawnedRef
+		}
 		for i := range agDecl.Intents {
 			if agDecl.Intents[i].Name == fieldName {
 				return &aotir.AgentMethodRef{
@@ -3488,6 +3537,7 @@ func (l *lowerer) lowerFieldOp(receiver aotir.Expr, fieldName string) (aotir.Exp
 					IntentName: fieldName,
 					Receiver:   receiver,
 					ReturnType: agDecl.Intents[i].ReturnType,
+					SpawnedRef: isSpawned,
 				}, nil
 			}
 		}
@@ -4040,6 +4090,7 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 				SubElemType:       b.subElem,
 				FutureElemType:    b.futureElem,
 				AgentName:         b.agentName,
+				IsSpawnedRef:      b.isSpawned,
 			}
 		}
 		for _, field := range pr.Selector.Tail {
@@ -4086,6 +4137,10 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	if pr.Generate != nil {
 		return l.lowerGenerateExpr(pr.Generate)
 	}
+	// Phase 9.1: spawn AgentType() → AgentSpawnExpr (BEAM gen_server process)
+	if pr.Spawn != nil {
+		return l.lowerSpawnExpr(pr.Spawn)
+	}
 	// Phase 11.0: async expr → AsyncExpr(body, elemType)
 	if pr.Async != nil {
 		return l.lowerAsyncExpr(pr.Async)
@@ -4095,6 +4150,23 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 		return l.lowerAwaitExpr(pr.Await)
 	}
 	return nil, fmt.Errorf("primary %s not supported in Phase 3.2%s", trimPrimary(pr), primaryPhaseHint(pr))
+}
+
+// lowerSpawnExpr lowers `spawn AgentType()` to an AgentSpawnExpr IR node.
+// Phase 9.1: only BEAM backend supports this; the C backend will emit an error
+// at emit time since there is no process model in the C target.
+func (l *lowerer) lowerSpawnExpr(se *parser.SpawnExpr) (aotir.Expr, error) {
+	agDecl, ok := l.agents[se.AgentType]
+	if !ok {
+		return nil, fmt.Errorf("spawn: unknown agent type %q", se.AgentType)
+	}
+	_ = agDecl
+	// Phase 9.1: no constructor args; use zero values from the agent fields.
+	// Future phases can allow passing initial field values.
+	return &aotir.AgentSpawnExpr{
+		AgentName: se.AgentType,
+		InitArgs:  nil,
+	}, nil
 }
 
 // lowerAsyncExpr lowers `async expr` to an AsyncExpr IR node. Phase 11.0.
@@ -8048,15 +8120,17 @@ func (l *lowerer) lowerAgentIntentCallStmt(out *aotir.Block, match *agentIntentC
 	}
 	// Build the receiver VarRef.
 	receiverExpr := &aotir.VarRef{
-		Name:      match.receiverName,
-		VarType:   aotir.TypeAgent,
-		AgentName: b.agentName,
+		Name:         match.receiverName,
+		VarType:      aotir.TypeAgent,
+		AgentName:    b.agentName,
+		IsSpawnedRef: b.isSpawned,
 	}
 	out.Statements = append(out.Statements, &aotir.AgentIntentCallStmt{
 		AgentName:  b.agentName,
 		IntentName: match.intentName,
 		Receiver:   receiverExpr,
 		Args:       args,
+		SpawnedRef: b.isSpawned,
 	})
 	return nil
 }
@@ -8105,6 +8179,7 @@ func (l *lowerer) lowerAgentMethodCallOp(amr *aotir.AgentMethodRef, callOp *pars
 		Receiver:   amr.Receiver,
 		Args:       args,
 		Result:     intentDecl.ReturnType,
+		SpawnedRef: amr.SpawnedRef,
 	}, nil
 }
 
@@ -8286,6 +8361,8 @@ func exprAgentName(e aotir.Expr) string {
 			return v.AgentName
 		}
 	case *aotir.AgentLit:
+		return v.AgentName
+	case *aotir.AgentSpawnExpr:
 		return v.AgentName
 	}
 	return ""

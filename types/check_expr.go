@@ -1144,6 +1144,19 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 		return AnyType{}, nil
 
+	// Phase 9.1: spawn AgentType() → agent ref (typed as StructType of the agent).
+	case p.Spawn != nil:
+		st, ok := env.GetStruct(p.Spawn.AgentType)
+		if !ok {
+			return nil, fmt.Errorf("%s: spawn: unknown agent type %q", p.Pos, p.Spawn.AgentType)
+		}
+		// Validate that it's actually an agent declaration.
+		if _, isAgent := env.GetAgent(p.Spawn.AgentType); !isAgent {
+			return nil, fmt.Errorf("%s: spawn: %q is not an agent type", p.Pos, p.Spawn.AgentType)
+		}
+		// No constructor args in Phase 9.1 — agents are initialized with zero values.
+		return st, nil
+
 	// Phase 11.0: async expr → future<T>
 	case p.Async != nil:
 		elemType, err := checkExpr(p.Async.Expr, env)

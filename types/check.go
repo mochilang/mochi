@@ -778,6 +778,14 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 			ret = resolveTypeRef(s.ExternFun.Return, env)
 		}
 		env.SetVar(s.ExternFun.Name(), FuncType{Params: params, Return: ret}, false)
+		// Phase 12.1: for dotted extern fun declarations (e.g. `extern fun erlang.abs`),
+		// also register the root identifier as AnyType so that the type checker
+		// can walk the dotted selector chain starting from the root.
+		if len(s.ExternFun.Tail) > 0 {
+			if _, err := env.GetVar(s.ExternFun.Root); err != nil {
+				env.SetVar(s.ExternFun.Root, AnyType{}, false)
+			}
+		}
 		return nil
 
 	case s.ExternGoFun != nil:

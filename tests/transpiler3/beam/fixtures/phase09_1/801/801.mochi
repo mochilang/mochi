@@ -1,0 +1,10 @@
+agent Accumulator {
+    var total: int = 0
+    intent add(n: int) { total = total + n }
+    intent get(): int { return total }
+}
+let a = spawn Accumulator()
+a.add(10)
+a.add(20)
+a.add(5)
+print(a.get())

@@ -530,6 +530,15 @@ type FetchExpr struct {
 	With *Expr          `json:"with,omitempty" parser:"[ 'with' @@ ]"`
 }
 
+// SpawnExpr is `spawn AgentType(args...)` — starts a supervised gen_server
+// process for the named agent type and returns an opaque agent ref (PID).
+// Phase 9.1.
+type SpawnExpr struct {
+	Pos       lexer.Position `json:"pos,omitempty" parser:""`
+	AgentType string         `json:"agent_type,omitempty" parser:"'spawn' @Ident"`
+	Args      []*Expr        `json:"args,omitempty" parser:"'(' [ @@ { ',' @@ } ] ')'"`
+}
+
 // AsyncExpr is `async <expr>` — evaluates expr in a spawned process
 // and returns a future reference. Phase 11.0.
 type AsyncExpr struct {
@@ -637,6 +646,7 @@ type Primary struct {
 	Match      *MatchExpr      `json:"match,omitempty" parser:"| @@"`
 	Generate   *GenerateExpr   `json:"generate,omitempty" parser:"| @@"`
 	Fetch      *FetchExpr      `json:"fetch,omitempty" parser:"| @@"`
+	Spawn      *SpawnExpr      `json:"spawn,omitempty" parser:"| @@"`
 	Async      *AsyncExpr      `json:"async,omitempty" parser:"| @@"`
 	Await      *AwaitExpr      `json:"await,omitempty" parser:"| @@"`
 	Load       *LoadExpr       `json:"load,omitempty" parser:"| @@"`

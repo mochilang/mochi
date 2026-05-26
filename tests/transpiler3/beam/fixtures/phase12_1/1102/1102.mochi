@@ -1,0 +1,6 @@
+extern fun erlang.abs(x: int): int
+extern fun erlang.max(a: int, b: int): int
+let a = erlang.abs(-10)
+let b = erlang.abs(-3)
+let m = erlang.max(a, b)
+print(m)

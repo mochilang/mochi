@@ -1755,6 +1755,23 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("variable %q has agent %q in scope, ref says %q", v.Name, b.agentName, v.AgentName)
 		}
 		return nil
+	case *AgentSpawnExpr:
+		// Phase 9.1: spawn AgentType() is valid when the agent is declared.
+		if v.AgentName == "" {
+			return errors.New("AgentSpawnExpr with empty AgentName")
+		}
+		if _, ok := ctx.agents[v.AgentName]; !ok {
+			return fmt.Errorf("AgentSpawnExpr: agent %q is not declared", v.AgentName)
+		}
+		for i, a := range v.InitArgs {
+			if a == nil {
+				return fmt.Errorf("AgentSpawnExpr %q init arg %d is nil", v.AgentName, i)
+			}
+			if err := verifyExprCtx(ctx, a); err != nil {
+				return fmt.Errorf("AgentSpawnExpr %q init arg %d: %w", v.AgentName, i, err)
+			}
+		}
+		return nil
 	case *AgentLit:
 		if v.AgentName == "" {
 			return errors.New("AgentLit with empty AgentName")

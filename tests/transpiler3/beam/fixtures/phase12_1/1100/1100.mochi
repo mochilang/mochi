@@ -1,0 +1,3 @@
+extern fun erlang.abs(x: int): int
+let n = erlang.abs(-42)
+print(n)

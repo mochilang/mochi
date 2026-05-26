@@ -96,6 +96,11 @@ type ExternFuncDecl struct {
 	ReturnType Type
 	// ReturnRecord carries the record identity when ReturnType==TypeRecord.
 	ReturnRecord string
+	// OrigName is the original Mochi-source name (may contain dots for
+	// dotted calls like "lists.reverse"). Phase 12.1: the BEAM lowerer uses
+	// this to emit the correct module:function/arity call instead of a local
+	// apply. Empty for plain (non-dotted) extern declarations.
+	OrigName string
 }
 
 // RecordDecl declares one record type. Field order is source
@@ -479,6 +484,7 @@ type VarRef struct {
 	SubElemType       Type    // valid when VarType==TypeSub (Phase 9.2)
 	FutureElemType    Type    // valid when VarType==TypeFuture (Phase 11.0)
 	AgentName         string  // valid when VarType==TypeAgent (Phase 9.3)
+	IsSpawnedRef      bool    // valid when VarType==TypeAgent: true when binding came from `spawn` (Phase 9.1)
 }
 
 func (v *VarRef) Type() Type { return v.VarType }
@@ -1689,18 +1695,32 @@ type AgentMethodRef struct {
 	IntentName string
 	Receiver   Expr   // TypeAgent variable reference
 	ReturnType Type   // return type of the intent
+	SpawnedRef bool   // Phase 9.1: true when receiver came from `spawn`
 }
 
 func (*AgentMethodRef) Type() Type { return TypeInvalid } // transient
 
+// AgentSpawnExpr creates a supervised gen_server process for the named agent
+// type and returns an opaque agent ref (Erlang PID). Phase 9.1.
+// The Erlang runtime spawns a message-loop process seeded with InitState.
+type AgentSpawnExpr struct {
+	AgentName string // e.g. "Counter"
+	InitArgs  []Expr // field-value arguments for the initial state map
+}
+
+func (*AgentSpawnExpr) Type() Type { return TypeAgent }
+
 // AgentIntentCallExpr is a synchronous intent call that returns a value.
 // Emitted as `mochi_agent_NAME__INTENT(&receiver, args...)`.
+// When SpawnedRef is true, the receiver is a PID from AgentSpawnExpr and
+// the call must use a message-passing protocol instead of functional threading.
 type AgentIntentCallExpr struct {
 	AgentName  string
 	IntentName string
 	Receiver   Expr // TypeAgent
 	Args       []Expr
 	Result     Type // return type of the intent
+	SpawnedRef bool // Phase 9.1: true when receiver is a PID from spawn
 }
 
 func (e *AgentIntentCallExpr) Type() Type { return e.Result }
@@ -1708,11 +1728,13 @@ func (e *AgentIntentCallExpr) Type() Type { return e.Result }
 // AgentIntentCallStmt is a synchronous intent call that discards the
 // return value (or returns TypeUnit). Emitted as
 // `mochi_agent_NAME__INTENT(&receiver, args...);`.
+// When SpawnedRef is true, the receiver is a PID from AgentSpawnExpr.
 type AgentIntentCallStmt struct {
 	AgentName  string
 	IntentName string
 	Receiver   Expr // TypeAgent
 	Args       []Expr
+	SpawnedRef bool // Phase 9.1: true when receiver is a PID from spawn
 }
 
 func (*AgentIntentCallStmt) isStmt() {}

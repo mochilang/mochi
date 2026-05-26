@@ -337,7 +337,7 @@ func assertPrimary(p *Primary) error {
 		p.Struct != nil, p.Call != nil, p.Query != nil, p.LogicQuery != nil,
 		p.If != nil, p.Selector != nil, p.List != nil, p.Set != nil, p.OMap != nil, p.Map != nil,
 		p.FunExpr != nil, p.Match != nil, p.Generate != nil, p.Fetch != nil,
-		p.Async != nil, p.Await != nil,
+		p.Spawn != nil, p.Async != nil, p.Await != nil,
 		p.Load != nil, p.Save != nil, p.Lit != nil, p.Group != nil,
 	}
 	if n := countTrue(arms[:]); n != 1 {
@@ -353,6 +353,12 @@ func assertPrimary(p *Primary) error {
 	case p.Load != nil:
 		if p.Load.Type != nil {
 			return assertTypeRef(p.Load.Type, p.Load.Pos)
+		}
+	case p.Spawn != nil:
+		for _, arg := range p.Spawn.Args {
+			if err := assertExpr(arg); err != nil {
+				return err
+			}
 		}
 	case p.Async != nil:
 		if p.Async.Expr != nil {
