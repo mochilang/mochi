@@ -29,7 +29,7 @@ APE is the most striking distribution story Mochi can tell: one file, every desk
 | #    | Scope                                                                                                              | Status      | Commit | PR |
 |------|--------------------------------------------------------------------------------------------------------------------|-------------|--------|----|
 | 13.0 | `Driver.Apex bool` + `resolveCosmoCC()` (MOCHI_COSMOCC_PATH then PATH); driver skips `-target`, `-ffile-prefix-map`, `-fdebug-prefix-map`, `-Wl,-no_uuid`, `-static`, sanitiser flags for Apex builds; `--apex` CLI flag wired to `Driver.Apex`; `TestPhase13APE` gate (add_ints compile + run, skips when cosmocc absent) | LANDED 2026-05-26 00:30 (GMT+7) | — | — |
-| 13.1 | cosmocc vendored under `transpiler3/c/toolchain/cosmocc/` (eliminates MOCHI_COSMOCC_PATH requirement)             | NOT STARTED | —      | — |
+| 13.1 | cosmocc vendored under `transpiler3/c/toolchain/cosmocc/`; `cosmocc.Find()`/`Ensure()` APIs; `resolveCosmoCC()` updated to check vendor cache before PATH; `TestPhase13CosmoVendor` gate (install_root, find_env_override, find_vendor_dir_override, ensure_cached[network-gated]) | LANDED 2026-05-26 08:04 (GMT+7) | — | — |
 | 13.2 | Runtime under Cosmopolitan: BDWGC compatibility, stream/agent surface preserved                                    | NOT STARTED | —      | — |
 | 13.3 | Cross-OS CI runners: Linux + macOS + Windows + FreeBSD (cirrus-ci)                                                 | NOT STARTED | —      | — |
 
@@ -49,6 +49,14 @@ All five are suppressed by the existing `d.Apex` guards added to `build/driver.g
 **Phase 13.0: MOCHI_COSMOCC_PATH takes priority over PATH.** This mirrors the pattern used by other mochi toolchain overrides (`MOCHI_CC`, `CC`). Users who install cosmocc to a non-standard path (e.g. a local build or CI cache) can set `MOCHI_COSMOCC_PATH` without polluting their `PATH`.
 
 **Phase 13.0: gate test skips rather than fails when cosmocc absent.** `TestPhase13APE` checks `MOCHI_COSMOCC_PATH` and then `exec.LookPath("cosmocc")`. If neither is found, the test calls `t.Skip(...)` with a hint message. This mirrors the wasmtime pattern in Phase 12.0. CI runners that have cosmocc will exercise the full compile + run gate; all other environments pass without installing anything.
+
+### Phase 13.1 (2026-05-26 08:04 GMT+7)
+
+**`cosmocc` package under `transpiler3/c/toolchain/cosmocc/`.** Mirrors the pattern from `toolchain/zig`. Exports: `Version` (pinned to 3.9.5), `InstallRoot()` (checks `MOCHI_COSMOCC_DIR`, `MOCHI_CACHE_DIR`, `~/.mochi/cache/cosmocc`, OS cache dir in that order), `Executable(vdir)` (returns `bin/cosmocc` or `bin/cosmocc.exe` on Windows), `Find()` (MOCHI_COSMOCC_PATH then vendored cache; returns `""` gracefully if absent), `Ensure()` (Find + download + unzip if missing). Download URL is `https://cosmo.zip/pub/cosmocc/cosmocc-{Version}.zip`. Extraction uses stdlib `archive/zip`.
+
+**`resolveCosmoCC()` updated to three-step resolution.** Phase 13.0 only checked env var and PATH. Phase 13.1 inserts `cosmocc.Find()` between the env check and PATH fallback, so users who have never set `MOCHI_COSMOCC_PATH` but have run `cosmocc.Ensure()` (or `mochi cosmocc install` in a future CLI command) get automatic discovery.
+
+**`ensure_cached` sub-test is network-gated.** `TestPhase13CosmoVendor/ensure_cached` only runs when `MOCHI_COSMOCC_VENDOR_TEST=1` to avoid hitting `cosmo.zip` on every `go test` run. The other three sub-tests (install_root, find_env_override, find_vendor_dir_override) are offline and always run.
 
 ## Deferred work
 
