@@ -1,0 +1,116 @@
+---
+title: Build BEAM/Erlang escripts
+sidebar_label: Build (BEAM)
+sidebar_position: 4
+description: "Compile Mochi programs to Erlang/OTP escripts with mochi build --target=beam-escript. Runs on any OTP 27+ installation."
+---
+
+`mochi build --target=beam-escript` compiles a Mochi source file to a
+self-contained [escript](https://www.erlang.org/doc/man/escript.html) that
+runs on any OTP 27+ installation. The pipeline is:
+
+```
+Mochi source
+  → parser.Parse
+  → types.Check
+  → aotir (shared IR)
+  → beam/lower (Core Erlang module)
+  → beam/emit (compile:forms/2 → .beam bytes)
+  → escript:create/2 (ZIP archive + shebang)
+```
+
+The resulting `.escript` file is executable on any host where `erl` is on
+`PATH`. No build tools such as rebar3 or mix are required.
+
+## Quick start
+
+```bash
+# Requires OTP 27 or later on PATH.
+mochi build --target=beam-escript --out=hello hello.mochi
+./hello
+```
+
+## Requirements
+
+| Requirement | Version |
+|-------------|---------|
+| OTP | 27 or later (28 recommended) |
+| `erl` on `PATH` | required at compile time and run time |
+
+## Flags
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--target=beam-escript` | required | Select the BEAM escript pipeline |
+| `--out PATH` | required | Output escript path (gets `chmod +x`) |
+
+## What is generated
+
+Each compiled Mochi program produces:
+
+- `mochi_main.beam` — the user program compiled from Core Erlang
+- Runtime support modules (`mochi_str.beam`, `mochi_file.beam`,
+  `mochi_llm.beam`, etc.) bundled from `transpiler3/beam/runtime/src/`
+- A ZIP-archive escript with shebang `#!/usr/bin/env escript` and
+  `-escript main mochi_main` emulator flag
+
+All `.beam` files inside the archive are deterministic: two builds of the
+same Mochi source produce bit-identical output (verified by
+`TestReproducibility`).
+
+## Supported language features
+
+All phases 1-13 are supported on the BEAM target:
+
+| Phase | Feature |
+|-------|---------|
+| 1 | Compiler pipeline, deterministic output |
+| 2 | Primitives: int, float, bool, string; control flow |
+| 3 | Records, lists, maps |
+| 4 | Sum types and pattern matching |
+| 5 | Variants and union types |
+| 6 | Anonymous functions and closures |
+| 7 | Query DSL: from/where/select, group_by, hash join, sort |
+| 8 | Datalog: facts, rules, recursion, negation-as-failure |
+| 9 | Agents (functional state-threaded BEAM maps) |
+| 10 | Streams and channels (pubsub via `mochi_stream`, buffered channels via `mochi_chan`) |
+| 12 | File I/O via `mochi_file` |
+| 13 | LLM generation via `mochi_llm` (cassette replay in CI) |
+
+## OTP version matrix
+
+| OTP | Status |
+|-----|--------|
+| 27  | Blocking CI (all tests must pass) |
+| 28  | Blocking CI (all tests must pass) |
+| 29  | Non-blocking nightly |
+
+## Dialyzer
+
+All exported Mochi functions receive `-spec` attributes in the generated
+`.beam` file. Agent types receive `-opaque` attributes so Dialyzer can
+flag invalid cross-agent assignments. To run Dialyzer on the generated
+beams, extract them from the escript archive and run:
+
+```bash
+dialyzer --check_plt --plt ~/.dialyzer_plt mochi_main.beam mochi_str.beam ...
+```
+
+## Reproducibility
+
+The BEAM target produces bit-identical `.beam` bytes across builds:
+
+- The `deterministic` compile flag strips all timestamps from `.beam` files
+- `beam/lower` sorts function definitions by `(name, arity)` for canonical
+  output
+- The escript ZIP container uses `escript:create/2` for standard format
+
+Run `go test -run TestReproducibility ./transpiler3/beam/build/` to verify.
+
+## Benchmarks
+
+Compilation and execution benchmarks are in `transpiler3/beam/build/bench_test.go`:
+
+```bash
+go test -bench=. ./transpiler3/beam/build/
+```
