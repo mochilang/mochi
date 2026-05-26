@@ -7198,9 +7198,10 @@ func trimPrimary(pr *parser.Primary) string {
 
 // ---- Phase 14.0: LLM generation expression lowering ----
 
-// lowerGenerateExpr lowers `generate <provider> { prompt: ..., model: ... }`
-// to an LLMGenerateExpr IR node. Phase 14.0 supports text generation only;
-// the target must name a known LLM provider (not a struct type).
+// lowerGenerateExpr lowers `generate <provider> { prompt: ..., model: ..., schema: ... }`
+// to an LLMGenerateExpr IR node. Phase 14.0 supports text generation;
+// Phase 13.1 adds the optional schema field for structured output: the schema
+// string is appended to the prompt as a JSON schema hint.
 func (l *lowerer) lowerGenerateExpr(g *parser.GenerateExpr) (aotir.Expr, error) {
 	if g == nil {
 		return nil, fmt.Errorf("lowerGenerateExpr: nil GenerateExpr")
@@ -7208,9 +7209,10 @@ func (l *lowerer) lowerGenerateExpr(g *parser.GenerateExpr) (aotir.Expr, error) 
 
 	provider := g.Target
 
-	// Collect prompt and model from the field list.
+	// Collect prompt, model, and schema from the field list.
 	var promptExpr aotir.Expr
 	var modelExpr aotir.Expr
+	var schemaExpr aotir.Expr
 
 	for _, f := range g.Fields {
 		lowered, err := l.lowerExpr(f.Value)
@@ -7228,8 +7230,14 @@ func (l *lowerer) lowerGenerateExpr(g *parser.GenerateExpr) (aotir.Expr, error) 
 				return nil, fmt.Errorf("generate %s: model must be a string, got %s", provider, lowered.Type())
 			}
 			modelExpr = lowered
+		case "schema":
+			// Phase 13.1: schema is a JSON schema string appended to the prompt.
+			if lowered.Type() != aotir.TypeString {
+				return nil, fmt.Errorf("generate %s: schema must be a string, got %s", provider, lowered.Type())
+			}
+			schemaExpr = lowered
 		default:
-			return nil, fmt.Errorf("generate %s: unsupported field %q in Phase 14.0 (only prompt and model)", provider, f.Name)
+			return nil, fmt.Errorf("generate %s: unsupported field %q (supported: prompt, model, schema)", provider, f.Name)
 		}
 	}
 
@@ -7238,6 +7246,23 @@ func (l *lowerer) lowerGenerateExpr(g *parser.GenerateExpr) (aotir.Expr, error) 
 	}
 	if modelExpr == nil {
 		modelExpr = &aotir.StringLit{Value: ""}
+	}
+
+	// Phase 13.1: if a schema field was provided, append it to the prompt so
+	// the cassette key incorporates the schema and the LLM sees the constraint.
+	if schemaExpr != nil {
+		separator := &aotir.StringLit{Value: "\nRespond with JSON matching this schema: "}
+		promptExpr = &aotir.BinaryExpr{
+			Op: aotir.BinStrCat,
+			Left: &aotir.BinaryExpr{
+				Op:     aotir.BinStrCat,
+				Left:   promptExpr,
+				Right:  separator,
+				Result: aotir.TypeString,
+			},
+			Right:  schemaExpr,
+			Result: aotir.TypeString,
+		}
 	}
 
 	return &aotir.LLMGenerateExpr{

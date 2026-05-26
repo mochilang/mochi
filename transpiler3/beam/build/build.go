@@ -1,12 +1,14 @@
 package build
 
 import (
+	"bufio"
 	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 
@@ -214,6 +216,11 @@ func (d *Driver) Build(src, out string, target Target) error {
 		return err
 	}
 
+	// Phase 12.2: if mochi.toml exists next to src, emit rebar.config.
+	if err := maybeEmitRebarConfig(src, out); err != nil {
+		return err
+	}
+
 	// Phase 1.2: store in cache so the next identical build is a copy.
 	if cacheKey != "" {
 		cacheFile := filepath.Join(d.cacheDir(src), cacheKey+".escript")
@@ -256,4 +263,90 @@ func packArchiveEscript(out, userBeam string, runtimeBeams []string) error {
 		return fmt.Errorf("escript:create for %s: %w\n%s", out, err, result)
 	}
 	return nil
+}
+
+// depEntry holds a single Hex.pm dependency parsed from mochi.toml.
+type depEntry struct {
+	Name    string
+	Version string
+}
+
+// parseMochiToml reads a mochi.toml file and extracts the [dependencies]
+// section. It only parses key = "value" lines under [dependencies]; a full
+// TOML library is not needed for this minimal format.
+//
+// Phase 12.2.
+func parseMochiToml(path string) ([]depEntry, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	// Pattern for a dep line: identifier = "version"
+	depLine := regexp.MustCompile(`^\s*([A-Za-z][A-Za-z0-9_]*)\s*=\s*"([^"]+)"\s*$`)
+
+	var deps []depEntry
+	inDeps := false
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := scanner.Text()
+		trimmed := strings.TrimSpace(line)
+
+		// Section header.
+		if strings.HasPrefix(trimmed, "[") {
+			inDeps = strings.TrimSpace(strings.Trim(trimmed, "[]")) == "dependencies"
+			continue
+		}
+		if !inDeps {
+			continue
+		}
+		// Skip blank lines and comments.
+		if trimmed == "" || strings.HasPrefix(trimmed, "#") {
+			continue
+		}
+		if m := depLine.FindStringSubmatch(line); m != nil {
+			deps = append(deps, depEntry{Name: m[1], Version: m[2]})
+		}
+	}
+	return deps, scanner.Err()
+}
+
+// emitRebarConfig writes a rebar.config file to outPath containing
+// {erl_opts, [debug_info]} and {deps, [...]} entries for the given deps.
+//
+// Phase 12.2.
+func emitRebarConfig(outPath string, deps []depEntry) error {
+	var sb strings.Builder
+	sb.WriteString("{erl_opts, [debug_info]}.\n")
+	sb.WriteString("{deps, [\n")
+	for i, d := range deps {
+		sb.WriteString(fmt.Sprintf("    {%s, %q}", d.Name, d.Version))
+		if i < len(deps)-1 {
+			sb.WriteString(",")
+		}
+		sb.WriteString("\n")
+	}
+	sb.WriteString("]}.\n")
+	return os.WriteFile(outPath, []byte(sb.String()), 0o644)
+}
+
+// maybeEmitRebarConfig checks whether a mochi.toml exists in the same
+// directory as src. If it does, it parses the [dependencies] section and
+// writes a rebar.config next to out. This is a best-effort step: failures
+// are returned so tests can catch them.
+//
+// Phase 12.2.
+func maybeEmitRebarConfig(src, out string) error {
+	tomlPath := filepath.Join(filepath.Dir(src), "mochi.toml")
+	if _, err := os.Stat(tomlPath); err != nil {
+		// No mochi.toml — nothing to do.
+		return nil
+	}
+	deps, err := parseMochiToml(tomlPath)
+	if err != nil {
+		return fmt.Errorf("beam/build: parse mochi.toml: %w", err)
+	}
+	rebarPath := filepath.Join(filepath.Dir(out), "rebar.config")
+	return emitRebarConfig(rebarPath, deps)
 }
