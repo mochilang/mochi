@@ -10,9 +10,9 @@ description: "MEP-46 Phase 10. Streams and pubsub — detailed implementation sp
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 10. Streams and pubsub](/docs/mep/mep-0046#phase-10-streams-and-pubsub) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-26 15:18 (GMT+7) |
+| Landed         | 2026-05-26 15:21 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -252,4 +252,14 @@ Blocking a publisher process on a slow subscriber violates BEAM's M:N process in
 
 ## Closeout notes
 
-_Fill in after gate green._
+Implemented as sub-phase 10.0: streams and subscribers as BEAM processes backed by the `mochi_stream` runtime module. Five fixtures (800-804) all pass `TestPhase10Streams`.
+
+Key implementation decisions:
+
+- `make_stream(N)` spawns a broker process (`stream_loop/1`) and returns its PID. Cap is ignored on BEAM (mailboxes are unbounded).
+- `emit(stream_pid, val)` sends `{emit, val}` to the broker; the broker forwards to all subscriber PIDs. Since the PID is immutable, `emit` does not require rebinding the stream variable.
+- `subscribe(stream_pid)` spawns a subscriber process (`sub_loop/1`) and registers it with the broker. Returns the subscriber PID, which is also immutable.
+- `recv_sub(sub_pid)` sends `{recv, self()}` to the subscriber process and does a selective receive for `{sub_value, Val}`. The subscriber process buffers events in a list and replies when one is available (or blocks until the next `{stream_event, ...}` arrives).
+- Multi-subscriber broadcast (fixture 804) works because the broker keeps a list of all subscriber PIDs and forwards each emit to all of them.
+- The runtime module is `transpiler3/beam/runtime/src/mochi_stream.erl`.
+- Sub-phases 10.1 (gen_statem subscribers), 10.2 (backpressure), 10.3 (cross-node), and 10.4 (interop with async) are deferred pending demand.
