@@ -151,9 +151,9 @@ func assertLogicCond(c *LogicCond) error {
 	if c == nil {
 		return invariant(lexer.Position{}, "logic condition is nil")
 	}
-	arms := [...]bool{c.Pred != nil, c.Neq != nil}
+	arms := [...]bool{c.Pred != nil, c.Neq != nil, c.Not != nil}
 	if n := countTrue(arms[:]); n != 1 {
-		return invariant(c.Pos, fmt.Sprintf("logic condition has %d arms set, expected exactly 1 of {pred, neq}", n))
+		return invariant(c.Pos, fmt.Sprintf("logic condition has %d arms set, expected exactly 1 of {pred, neq, not}", n))
 	}
 	return nil
 }
