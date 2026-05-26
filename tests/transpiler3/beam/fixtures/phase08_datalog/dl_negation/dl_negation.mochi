@@ -1,0 +1,10 @@
+fact person("alice")
+fact person("bob")
+fact person("carol")
+fact alive("alice")
+fact alive("bob")
+rule dead(X) :- person(X), not alive(X)
+let xs = query dead(X)
+for x in xs {
+  print(x)
+}
