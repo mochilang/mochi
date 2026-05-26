@@ -1,0 +1,19 @@
+type Shape =
+    Circle(r: float)
+    | Rectangle(w: float, h: float)
+    | Point
+
+var s1: Shape = Circle { r: 3.14 }
+var s2: Shape = Point {}
+
+match s1 {
+    Circle(r) => print(r)
+    Rectangle(w, h) => print(w)
+    Point => print(0)
+}
+
+match s2 {
+    Circle(r) => print(r)
+    Rectangle(w, h) => print(w)
+    Point => print(0)
+}
