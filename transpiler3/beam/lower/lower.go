@@ -1169,6 +1169,14 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		return lowerLenExpr(l, e)
 	case *aotir.AppendExpr:
 		return lowerAppendExpr(l, e)
+	case *aotir.ListContainsExpr:
+		return lowerListContainsExpr(l, e)
+	case *aotir.ListSumExpr:
+		return lowerListSumExpr(l, e)
+	case *aotir.ListMinExpr:
+		return lowerListMinExpr(l, e)
+	case *aotir.ListMaxExpr:
+		return lowerListMaxExpr(l, e)
 
 	// Phase 3.2: map expressions
 	case *aotir.MapLit:
@@ -1534,6 +1542,57 @@ func lowerMapLenExpr(l *lowerer, e *aotir.MapLenExpr) (cerl.Expr, error) {
 		return nil, err
 	}
 	return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("map_size"), []cerl.Expr{recv}), nil
+}
+
+// lowerListContainsExpr lowers `val in xs` to lists:member(Val, Xs).
+func lowerListContainsExpr(l *lowerer, e *aotir.ListContainsExpr) (cerl.Expr, error) {
+	xs, err := lowerExpr(l, e.List)
+	if err != nil {
+		return nil, err
+	}
+	val, err := lowerExpr(l, e.Value)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("member"), []cerl.Expr{val, xs}), nil
+}
+
+// lowerListSumExpr lowers `sum(xs)` to lists:foldl(fun(X,A)->X+A end, 0, Xs).
+func lowerListSumExpr(l *lowerer, e *aotir.ListSumExpr) (cerl.Expr, error) {
+	xs, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	var zero cerl.Expr
+	if e.ElemType == aotir.TypeFloat {
+		zero = cerl.CFloat(0.0)
+	} else {
+		zero = cerl.CInt(0)
+	}
+	addFun := cerl.CFun(
+		[]cerl.Expr{cerl.CVar("V___x"), cerl.CVar("V___acc")},
+		cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("+"),
+			[]cerl.Expr{cerl.CVar("V___x"), cerl.CVar("V___acc")}))
+	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("foldl"),
+		[]cerl.Expr{addFun, zero, xs}), nil
+}
+
+// lowerListMinExpr lowers `min(xs)` to lists:min(Xs).
+func lowerListMinExpr(l *lowerer, e *aotir.ListMinExpr) (cerl.Expr, error) {
+	xs, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("min"), []cerl.Expr{xs}), nil
+}
+
+// lowerListMaxExpr lowers `max(xs)` to lists:max(Xs).
+func lowerListMaxExpr(l *lowerer, e *aotir.ListMaxExpr) (cerl.Expr, error) {
+	xs, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("max"), []cerl.Expr{xs}), nil
 }
 
 // lowerRecordLit lowers Person{name: "alice", age: 30} to a tagged BEAM map:

@@ -1,0 +1,5 @@
+let xs: list<int> = [3, 1, 4, 1, 5, 9, 2, 6]
+let max_sq = max(from x in xs select x * x)
+print(max_sq)
+let min_filtered = min(from x in xs where x > 3 select x)
+print(min_filtered)

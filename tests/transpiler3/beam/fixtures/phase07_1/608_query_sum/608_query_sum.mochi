@@ -1,0 +1,7 @@
+let xs: list<int> = [1, 2, 3, 4, 5]
+let total = sum(from x in xs select x)
+print(total)
+let doubled_sum = sum(from x in xs select x * 2)
+print(doubled_sum)
+let filtered_sum = sum(from x in xs where x > 2 select x)
+print(filtered_sum)

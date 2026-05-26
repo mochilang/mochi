@@ -1,0 +1,6 @@
+let xs: list<int> = [3, 1, 4, 1, 5, 9, 2, 6]
+print(min(xs))
+print(max(xs))
+let ys: list<int> = [100]
+print(min(ys))
+print(max(ys))
