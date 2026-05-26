@@ -374,6 +374,24 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 		// Phase 9.0: unit intent call → call helper function, rebind receiver with new state.
 		return l.lowerAgentIntentCallStmt(s, tail, cont)
 
+	case *aotir.ChanSendStmt:
+		// Phase 10.1: send(chan, val) → mochi_chan:send(Chan, Val) then continue.
+		ch, err := lowerExpr(l, s.Chan)
+		if err != nil {
+			return nil, err
+		}
+		val, err := lowerExpr(l, s.Val)
+		if err != nil {
+			return nil, err
+		}
+		sendCall := cerl.CCall(cerl.CAtom("mochi_chan"), cerl.CAtom("send"),
+			[]cerl.Expr{ch, val})
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CLet([]cerl.Expr{cerl.CVar("V___")}, sendCall, rest), nil
+
 	case *aotir.StreamEmitStmt:
 		// Phase 10.0: emit(stream, val) → mochi_stream:emit(Stream, Val) then continue.
 		stream, err := lowerExpr(l, s.Stream)
@@ -1087,6 +1105,22 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		return lowerAgentLit(l, e)
 	case *aotir.AgentIntentCallExpr:
 		return l.lowerAgentIntentCallExpr(e)
+
+	// Phase 10.1: channels via mochi_chan runtime
+	case *aotir.ChanMakeExpr:
+		cap, err := lowerExpr(l, e.Cap)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_chan"), cerl.CAtom("make_chan"),
+			[]cerl.Expr{cap}), nil
+	case *aotir.ChanRecvExpr:
+		ch, err := lowerExpr(l, e.Chan)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_chan"), cerl.CAtom("recv"),
+			[]cerl.Expr{ch}), nil
 
 	// Phase 10.0: streams via mochi_stream runtime
 	case *aotir.StreamMakeExpr:
