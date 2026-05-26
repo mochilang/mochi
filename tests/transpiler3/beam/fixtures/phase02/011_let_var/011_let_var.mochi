@@ -1,0 +1,6 @@
+let a = 42
+print(a)
+var b = 10
+print(b)
+b = b + 1
+print(b)

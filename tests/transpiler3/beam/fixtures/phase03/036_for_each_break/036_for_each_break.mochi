@@ -1,0 +1,9 @@
+var xs = [10, 20, 30, 40, 50]
+var sum = 0
+for x in xs {
+    sum = sum + x
+    if sum >= 30 {
+        break
+    }
+}
+print(sum)

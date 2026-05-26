@@ -1,0 +1,9 @@
+fun sum_to(n: int): int {
+    var total = 0
+    for i in 0..n {
+        total = total + i
+    }
+    return total
+}
+print(sum_to(5))
+print(sum_to(10))

@@ -3,7 +3,10 @@ package build
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
+	"strings"
 
 	"mochi/parser"
 	beamlower "mochi/transpiler3/beam/lower"
@@ -40,10 +43,54 @@ type Driver struct {
 	CacheDir string
 }
 
-// escriptShebang is the two-line header that makes a .beam file
-// directly executable as an escript. The escript VM reads the
-// module name from the .beam binary metadata and calls ModName:main/1.
-const escriptShebang = "#!/usr/bin/env escript\n%%!\n"
+// runtimeSrcDir returns the absolute path to transpiler3/beam/runtime/src/
+// by walking up from this Go source file using runtime.Caller.
+func runtimeSrcDir() (string, error) {
+	_, thisFile, _, ok := runtime.Caller(0)
+	if !ok {
+		return "", fmt.Errorf("runtime.Caller failed")
+	}
+	// thisFile is .../transpiler3/beam/build/build.go
+	// runtime src is  .../transpiler3/beam/runtime/src/
+	repoRoot := filepath.Dir(filepath.Dir(filepath.Dir(filepath.Dir(thisFile))))
+	dir := filepath.Join(repoRoot, "transpiler3", "beam", "runtime", "src")
+	if _, err := os.Stat(dir); err != nil {
+		return "", fmt.Errorf("runtime src dir not found at %s: %w", dir, err)
+	}
+	return dir, nil
+}
+
+// compileRuntime compiles all .erl files in the runtime src/ directory
+// to .beam files in outDir, returning the list of .beam file paths.
+func compileRuntime(outDir string) ([]string, error) {
+	srcDir, err := runtimeSrcDir()
+	if err != nil {
+		return nil, err
+	}
+
+	erlFiles, err := filepath.Glob(filepath.Join(srcDir, "*.erl"))
+	if err != nil {
+		return nil, fmt.Errorf("glob runtime erl: %w", err)
+	}
+
+	if len(erlFiles) == 0 {
+		return nil, nil
+	}
+
+	// Compile with erlc.
+	args := append([]string{"-o", outDir}, erlFiles...)
+	cmd := exec.Command("erlc", args...)
+	if out, err := cmd.CombinedOutput(); err != nil {
+		return nil, fmt.Errorf("erlc runtime: %w\n%s", err, out)
+	}
+
+	var beamFiles []string
+	for _, erl := range erlFiles {
+		name := strings.TrimSuffix(filepath.Base(erl), ".erl")
+		beamFiles = append(beamFiles, filepath.Join(outDir, name+".beam"))
+	}
+	return beamFiles, nil
+}
 
 // Build compiles the Mochi source at src, writes the output artifact
 // to out, and returns any error. The pipeline is:
@@ -52,13 +99,13 @@ const escriptShebang = "#!/usr/bin/env escript\n%%!\n"
 //  2. Lower to aotir (transpiler3/c/lower, reused from MEP-45).
 //  3. beam/lower: aotir -> cerl.Module.
 //  4. beam/emit: cerl.Module -> .beam file via compile:forms/2.
-//  5. Pack as escript (TargetEscript) or return error for other targets.
+//  5. Compile runtime .erl files to .beam.
+//  6. Pack as archive escript (TargetEscript).
 //
-// Phase 1 supports TargetEscript only. TargetRelease and TargetAtomVM
-// return an error until their respective phases land.
+// Phase 2 supports TargetEscript only.
 func (d *Driver) Build(src, out string, target Target) error {
 	if target != TargetEscript {
-		return fmt.Errorf("beam/build: only TargetEscript is supported in Phase 1 (got %d)", target)
+		return fmt.Errorf("beam/build: only TargetEscript is supported in Phase 2 (got %d)", target)
 	}
 
 	prog, err := parser.Parse(src)
@@ -73,8 +120,6 @@ func (d *Driver) Build(src, out string, target Target) error {
 		return fmt.Errorf("beam/build: lower %s: %w", src, err)
 	}
 
-	// Phase 1 uses a fixed module name. Phase N will derive the name
-	// from the source file's package path.
 	const modName = "mochi_main"
 
 	mod, err := beamlower.Lower(ir, modName)
@@ -96,18 +141,47 @@ func (d *Driver) Build(src, out string, target Target) error {
 		return fmt.Errorf("beam/build: emit produced no .beam files")
 	}
 
-	beamBytes, err := os.ReadFile(beamFiles[0].Path)
+	// Compile the runtime .erl files.
+	runtimeBeams, err := compileRuntime(workDir)
 	if err != nil {
-		return fmt.Errorf("beam/build: read %s: %w", beamFiles[0].Path, err)
+		return fmt.Errorf("beam/build: compile runtime: %w", err)
 	}
 
-	// Write escript: shebang header + raw .beam bytes.
-	// escript reads the module name from the .beam binary and calls main/1.
-	content := append([]byte(escriptShebang), beamBytes...)
-	if err := os.WriteFile(out, content, 0o755); err != nil {
-		return fmt.Errorf("beam/build: write escript %s: %w", out, err)
-	}
+	// Pack as archive escript.
+	return packArchiveEscript(out, beamFiles[0].Path, runtimeBeams)
+}
 
-	_ = filepath.Dir(out) // ensure import used
+// packArchiveEscript creates a zip-archive escript using escript:create/2
+// via an erl -noshell subprocess. This ensures the zip format is compatible
+// with OTP's escript module.
+func packArchiveEscript(out, userBeam string, runtimeBeams []string) error {
+	allBeams := append([]string{userBeam}, runtimeBeams...)
+
+	// Build the Erlang expression to pass all beam file paths and the output
+	// path to escript:create/2.
+	binariesExpr := "["
+	for i, bp := range allBeams {
+		if i > 0 {
+			binariesExpr += ","
+		}
+		name := filepath.Base(bp)
+		binariesExpr += fmt.Sprintf("{%q,element(2,file:read_file(%q))}", name, bp)
+	}
+	binariesExpr += "]"
+
+	erlExpr := fmt.Sprintf(
+		`Bins = %s,`+
+			`Sections = [shebang, {emu_args, "-escript main mochi_main"}, {archive, Bins, []}],`+
+			`case escript:create(%q, Sections) of`+
+			`  ok -> file:change_mode(%q, 8#755), halt(0);`+
+			`  {error, E} -> io:format(standard_error, "escript:create error: ~p~n", [E]), halt(1)`+
+			`end.`,
+		binariesExpr, out, out,
+	)
+
+	cmd := exec.Command("erl", "-noshell", "-eval", erlExpr)
+	if result, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("escript:create for %s: %w\n%s", out, err, result)
+	}
 	return nil
 }

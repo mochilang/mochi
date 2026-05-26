@@ -10,9 +10,9 @@ description: "MEP-46 Phase 3 tracking: list<T>, map<K,V>, set<T>, omap<K,V>, lis
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 3](/docs/mep/mep-0046#phase-3-collections) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-26 13:51 (GMT+7) |
+| Landed         | 2026-05-26 14:09 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -335,4 +335,16 @@ All fixtures are byte-equal vs vm3. Fixtures that involve unordered iteration (s
 
 ## Closeout notes
 
-_Fill in after gate green._
+Landed as a focused Phase 3.1 (list) implementation scoped to what aotir currently supports.
+
+Deviations from spec design:
+
+1. **Scope narrowed to lists only.** Maps, sets, omap, and list-of-records are deferred; the aotir IR and lowerer only have list and basic map operations implemented at this point. The gate (`TestPhase3Collections`) covers 8 list fixtures (030-037) rather than the ~90 specified.
+
+2. **`append(xs, v)` uses `erlang:'++'` directly** rather than a `mochi_list:append/2` helper, since the append semantic (`L ++ [V]`) is simple enough to inline.
+
+3. **For-each uses a tail-recursive TU-local helper** (`__for_each_N/k`) rather than `lists:foreach/2`. This was necessary to propagate updated outer-scope variables (e.g., `sum` in `for x in xs { sum = sum + x }`) back to subsequent code, which `lists:foreach` cannot do since it always returns `ok`.
+
+4. **If-statement continuation threading.** A bug was discovered and fixed: `lowerIfStmt` was emitting `CSeq(ifExpr, rest)`, which discarded variable updates from inside the if-branch. Fixed by introducing `lowerIfStmtWithCont` that threads the continuation into each branch directly, making variable updates visible to subsequent code.
+
+5. **Fixture 037 simplified.** The spec called for a `fun sum_list(xs: list<int>): int` function, but the Mochi parser does not yet support `list<int>` as a parameter type annotation. Replaced with two sequential for-each loops over inline list literals.

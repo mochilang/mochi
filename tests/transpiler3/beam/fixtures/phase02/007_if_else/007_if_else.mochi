@@ -1,0 +1,14 @@
+if 1 > 0 {
+    print("yes")
+}
+if 1 < 0 {
+    print("no")
+} else {
+    print("else")
+}
+var x = 5
+if x > 3 {
+    print("big")
+} else {
+    print("small")
+}

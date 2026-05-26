@@ -1,0 +1,8 @@
+fun add(x: int, y: int): int {
+    return x + y
+}
+fun multiply(x: int, y: int): int {
+    return x * y
+}
+print(add(3, 4))
+print(multiply(3, 4))
