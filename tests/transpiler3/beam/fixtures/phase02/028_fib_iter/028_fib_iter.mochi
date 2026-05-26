@@ -1,0 +1,13 @@
+fun fib(n: int): int {
+    var a = 0
+    var b = 1
+    for i in 0..n {
+        var tmp = b
+        b = a + b
+        a = tmp
+    }
+    return a
+}
+print(fib(0))
+print(fib(1))
+print(fib(10))

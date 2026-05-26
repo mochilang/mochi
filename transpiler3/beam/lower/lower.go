@@ -2,6 +2,7 @@ package lower
 
 import (
 	"fmt"
+	"sort"
 
 	"mochi/transpiler3/beam/cerl"
 	"mochi/transpiler3/c/aotir"
@@ -9,14 +10,6 @@ import (
 
 // Lower converts an aotir.Program to a cerl.Module ready for
 // compile:forms/2 [from_core].
-//
-// modName is the Erlang module name for the produced module (e.g.
-// "mochi_main"). The module exports main/1 which escript invokes
-// as the entry point.
-//
-// Phase 1 supports: print(<string>) at the top level (via
-// io:put_chars). Each later phase extends lowerStmt/lowerExpr
-// with the surface its gate requires.
 func Lower(prog *aotir.Program, modName string) (*cerl.Module, error) {
 	if prog == nil {
 		return nil, fmt.Errorf("beam/lower: nil program")
@@ -34,8 +27,19 @@ func Lower(prog *aotir.Program, modName string) (*cerl.Module, error) {
 		return nil, fmt.Errorf("beam/lower: invalid main index %d (len=%d)", prog.Main, len(prog.Functions))
 	}
 
+	l := &lowerer{mod: mod}
+
+	for i, fn := range prog.Functions {
+		if i == prog.Main {
+			continue
+		}
+		if err := l.lowerFunction(fn); err != nil {
+			return nil, fmt.Errorf("beam/lower: lower %s: %w", fn.Name, err)
+		}
+	}
+
 	mainFn := prog.Functions[prog.Main]
-	body, err := lowerBlock(mainFn.Body)
+	body, err := l.lowerFunctionBody(mainFn.Body.Statements, nil)
 	if err != nil {
 		return nil, fmt.Errorf("beam/lower: lower main: %w", err)
 	}
@@ -50,65 +54,698 @@ func Lower(prog *aotir.Program, modName string) (*cerl.Module, error) {
 	return mod, nil
 }
 
-// lowerBlock lowers a straight-line block to a cerl expression.
-// Multiple statements are chained with c_seq; an empty block
-// returns the atom ok.
-func lowerBlock(block *aotir.Block) (cerl.Expr, error) {
-	if block == nil || len(block.Statements) == 0 {
+// lowerer holds mutable state for one Lower() call.
+type lowerer struct {
+	mod          *cerl.Module
+	loopNum      int       // monotonic counter for while/for helpers
+	loopStack    []loopCtx // stack of active loop contexts (innermost last)
+	scope        map[string]bool // outer variables currently in scope
+}
+
+// loopCtx holds context about one active loop.
+type loopCtx struct {
+	num    int
+	params []string // outer vars threaded through this loop
+}
+
+func (l *lowerer) nextLoopNum() int {
+	l.loopNum++
+	return l.loopNum
+}
+
+func (l *lowerer) currentLoop() *loopCtx {
+	if len(l.loopStack) == 0 {
+		return nil
+	}
+	return &l.loopStack[len(l.loopStack)-1]
+}
+
+// lowerFunction lowers a non-main user function and appends it to mod.Defs.
+func (l *lowerer) lowerFunction(fn *aotir.Function) error {
+	vars := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		vars[i] = "V_" + p.Name
+	}
+
+	// Seed scope with parameters.
+	outer := l.scope
+	l.scope = make(map[string]bool)
+	for _, p := range fn.Params {
+		l.scope[p.Name] = true
+	}
+
+	body, err := l.lowerFunctionBody(fn.Body.Statements, nil)
+	l.scope = outer
+	if err != nil {
+		return err
+	}
+
+	l.mod.Defs = append(l.mod.Defs, cerl.FuncDef{
+		Name:  fn.Name,
+		Arity: len(fn.Params),
+		Vars:  vars,
+		Body:  body,
+	})
+	return nil
+}
+
+// lowerFunctionBody lowers a function body, wrapping it in a c_try
+// that catches {mochi_return, V} thrown by return statements.
+func (l *lowerer) lowerFunctionBody(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, error) {
+	body, err := l.lowerBlock(stmts, cont)
+	if err != nil {
+		return nil, err
+	}
+	// Wrap with return-exception handler.
+	return cerl.CTry(
+		body,
+		[]cerl.Expr{cerl.CVar("V___ret")},
+		cerl.CVar("V___ret"),
+		[]cerl.Expr{cerl.CVar("V___cls"), cerl.CVar("V___rsn"), cerl.CVar("V___stk")},
+		cerl.CCase(cerl.CVar("V___rsn"), []cerl.Expr{
+			cerl.CClause(
+				[]cerl.Expr{cerl.CTuple([]cerl.Expr{cerl.CAtom("mochi_return"), cerl.CVar("V___retval")})},
+				cerl.CAtom("true"),
+				cerl.CVar("V___retval"),
+			),
+			cerl.CClause(
+				[]cerl.Expr{cerl.CVar("V___")},
+				cerl.CAtom("true"),
+				cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("raise"), []cerl.Expr{
+					cerl.CVar("V___cls"), cerl.CVar("V___rsn"), cerl.CVar("V___stk"),
+				}),
+			),
+		}),
+	), nil
+}
+
+// lowerBlock lowers a slice of statements to a cerl expression.
+// cont is the continuation expression used when the block is empty
+// (nil means c_atom("ok")).
+func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, error) {
+	if len(stmts) == 0 {
+		if cont != nil {
+			return cont, nil
+		}
 		return cerl.CAtom("ok"), nil
 	}
 
-	exprs := make([]cerl.Expr, 0, len(block.Statements))
-	for _, stmt := range block.Statements {
-		e, err := lowerStmt(stmt)
+	head := stmts[0]
+	tail := stmts[1:]
+
+	switch s := head.(type) {
+	case *aotir.LetStmt:
+		// Track variable in scope.
+		if l.scope == nil {
+			l.scope = make(map[string]bool)
+		}
+		l.scope[s.Name] = true
+
+		init, err := lowerExpr(s.Init)
 		if err != nil {
 			return nil, err
 		}
-		exprs = append(exprs, e)
-	}
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + s.Name)}, init, rest), nil
 
-	if len(exprs) == 1 {
-		return exprs[0], nil
-	}
-	// Right-fold into c_seq so that later statements use the result
-	// of earlier ones: seq(s1, seq(s2, s3)).
-	result := exprs[len(exprs)-1]
-	for i := len(exprs) - 2; i >= 0; i-- {
-		result = cerl.CSeq(exprs[i], result)
-	}
-	return result, nil
-}
+	case *aotir.AssignStmt:
+		val, err := lowerExpr(s.Value)
+		if err != nil {
+			return nil, err
+		}
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + s.Name)}, val, rest), nil
 
-// lowerStmt lowers one aotir statement to a cerl expression.
-func lowerStmt(stmt aotir.Stmt) (cerl.Expr, error) {
-	switch s := stmt.(type) {
+	case *aotir.ReturnStmt:
+		// Use erlang:throw/1 for new exceptions (primop 'raise' is only for re-raising).
+		if s.Value == nil {
+			return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("throw"),
+				[]cerl.Expr{cerl.CTuple([]cerl.Expr{cerl.CAtom("mochi_return"), cerl.CAtom("ok")})}), nil
+		}
+		val, err := lowerExpr(s.Value)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("throw"),
+			[]cerl.Expr{cerl.CTuple([]cerl.Expr{cerl.CAtom("mochi_return"), val})}), nil
+
+	case *aotir.BreakStmt:
+		lc := l.currentLoop()
+		if lc == nil {
+			return nil, fmt.Errorf("beam/lower: break outside loop")
+		}
+		state := l.loopStateExpr(lc.params)
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("throw"),
+			[]cerl.Expr{cerl.CTuple([]cerl.Expr{cerl.CAtom("mochi_break"), cerl.CInt(int64(lc.num)), state})}), nil
+
+	case *aotir.ContinueStmt:
+		lc := l.currentLoop()
+		if lc == nil {
+			return nil, fmt.Errorf("beam/lower: continue outside loop")
+		}
+		state := l.loopStateExpr(lc.params)
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("throw"),
+			[]cerl.Expr{cerl.CTuple([]cerl.Expr{cerl.CAtom("mochi_continue"), cerl.CInt(int64(lc.num)), state})}), nil
+
+	case *aotir.IfStmt:
+		expr, err := l.lowerIfStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		if len(tail) == 0 && cont == nil {
+			return expr, nil
+		}
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CSeq(expr, rest), nil
+
+	case *aotir.WhileStmt:
+		// Compute rest first so loop var updates scope into subsequent code.
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return l.lowerWhileStmt(s, rest)
+
+	case *aotir.ForRangeStmt:
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return l.lowerForRangeStmt(s, rest)
+
 	case *aotir.CallStmt:
-		return lowerCallStmt(s)
+		expr, err := lowerCallStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		if len(tail) == 0 && cont == nil {
+			return expr, nil
+		}
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CSeq(expr, rest), nil
+
 	default:
-		return nil, fmt.Errorf("beam/lower: unsupported statement %T (Phase 1 only)", stmt)
+		return nil, fmt.Errorf("beam/lower: unsupported statement %T", head)
 	}
 }
 
-// lowerCallStmt lowers a CallStmt. Phase 1 handles the mochi_print_*
-// builtins (produced by the aotir lowerer for Mochi's print() builtin)
-// by emitting direct io:put_chars calls.
+// loopStateExpr builds a c_tuple of the current values of loop params.
+func (l *lowerer) loopStateExpr(params []string) cerl.Expr {
+	elems := make([]cerl.Expr, len(params))
+	for i, p := range params {
+		elems[i] = cerl.CVar("V_" + p)
+	}
+	return cerl.CTuple(elems)
+}
+
+// loopStateVars builds pattern variables for destructuring the state tuple.
+func loopStateVars(params []string, suffix string) []cerl.Expr {
+	elems := make([]cerl.Expr, len(params))
+	for i, p := range params {
+		elems[i] = cerl.CVar("V_" + p + suffix)
+	}
+	return elems
+}
+
+// lowerIfStmt lowers an IfStmt to a c_case on the boolean condition.
+func (l *lowerer) lowerIfStmt(s *aotir.IfStmt) (cerl.Expr, error) {
+	cond, err := lowerExpr(s.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenExpr, err := l.lowerBlock(s.Then.Statements, nil)
+	if err != nil {
+		return nil, err
+	}
+	var elseExpr cerl.Expr
+	if s.Else != nil {
+		elseExpr, err = l.lowerBlock(s.Else.Statements, nil)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		elseExpr = cerl.CAtom("ok")
+	}
+	return cerl.CCase(cond, []cerl.Expr{
+		cerl.CClause([]cerl.Expr{cerl.CAtom("true")}, cerl.CAtom("true"), thenExpr),
+		cerl.CClause([]cerl.Expr{cerl.CAtom("false")}, cerl.CAtom("true"), elseExpr),
+	}), nil
+}
+
+// lowerWhileStmt emits a tail-recursive helper '__while_N/k' into the module
+// and returns a call to it. Updated loop variable values are scoped into cont.
+func (l *lowerer) lowerWhileStmt(s *aotir.WhileStmt, cont cerl.Expr) (cerl.Expr, error) {
+	n := l.nextLoopNum()
+
+	// Compute loop params: outer vars referenced or assigned in the loop.
+	params := l.loopParams(s.Cond, s.Body.Statements)
+	helperName := fmt.Sprintf("__while_%d", n)
+	helperArity := len(params)
+
+	// Push loop context.
+	l.loopStack = append(l.loopStack, loopCtx{num: n, params: params})
+
+	cond, err := lowerExpr(s.Cond)
+	if err != nil {
+		l.loopStack = l.loopStack[:len(l.loopStack)-1]
+		return nil, err
+	}
+
+	// The body's continuation is a recursive call to the helper with current param values.
+	recurseCall := cerl.CApply(cerl.CVarFunc(helperName, helperArity), l.loopParamVarExprs(params))
+	bodyExpr, err := l.lowerBlock(s.Body.Statements, recurseCall)
+	l.loopStack = l.loopStack[:len(l.loopStack)-1]
+	if err != nil {
+		return nil, err
+	}
+
+	// Wrap body with continue handler.
+	contPatVars := loopStateVars(params, "__c")
+	contPat := cerl.CTuple([]cerl.Expr{cerl.CAtom("mochi_continue"), cerl.CInt(int64(n)), cerl.CTuple(contPatVars)})
+	contRecurse := cerl.CApply(cerl.CVarFunc(helperName, helperArity), contPatVarExprs(contPatVars))
+
+	breakPatVars := loopStateVars(params, "__b")
+	breakPat := cerl.CTuple([]cerl.Expr{cerl.CAtom("mochi_break"), cerl.CInt(int64(n)), cerl.CTuple(breakPatVars)})
+	breakResult := l.loopParamTupleOrOk(breakPatVars)
+
+	excHandler := cerl.CCase(cerl.CVar("V___rsn"), []cerl.Expr{
+		cerl.CClause([]cerl.Expr{contPat}, cerl.CAtom("true"), contRecurse),
+		cerl.CClause([]cerl.Expr{breakPat}, cerl.CAtom("true"), breakResult),
+		cerl.CClause([]cerl.Expr{cerl.CVar("V___")}, cerl.CAtom("true"),
+			cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("raise"), []cerl.Expr{
+				cerl.CVar("V___cls"), cerl.CVar("V___rsn"), cerl.CVar("V___stk"),
+			})),
+	})
+
+	bodyWithHandlers := cerl.CTry(
+		bodyExpr,
+		[]cerl.Expr{cerl.CVar("V___r")}, cerl.CVar("V___r"),
+		[]cerl.Expr{cerl.CVar("V___cls"), cerl.CVar("V___rsn"), cerl.CVar("V___stk")},
+		excHandler,
+	)
+
+	// The 'false' branch returns the final values of loop params.
+	falseResult := l.loopParamTupleOrOk(l.loopParamVarExprs(params))
+
+	helperBody := cerl.CCase(cond, []cerl.Expr{
+		cerl.CClause([]cerl.Expr{cerl.CAtom("true")}, cerl.CAtom("true"), bodyWithHandlers),
+		cerl.CClause([]cerl.Expr{cerl.CAtom("false")}, cerl.CAtom("true"), falseResult),
+	})
+
+	helperVars := make([]string, len(params))
+	for i, p := range params {
+		helperVars[i] = "V_" + p
+	}
+	l.mod.Defs = append(l.mod.Defs, cerl.FuncDef{
+		Name:  helperName,
+		Arity: helperArity,
+		Vars:  helperVars,
+		Body:  helperBody,
+	})
+
+	// Call site: call helper and scope updated loop var values into cont.
+	initCall := cerl.CApply(cerl.CVarFunc(helperName, helperArity), l.loopParamVarExprs(params))
+	return l.bindLoopResultWithCont(params, initCall, cont), nil
+}
+
+// lowerForRangeStmt emits '__for_range_N/k+2' and returns a call to it.
+// k = number of loop params; the +2 are V_x (induction var) and V_end.
+// Updated loop variable values are scoped into cont.
+func (l *lowerer) lowerForRangeStmt(s *aotir.ForRangeStmt, cont cerl.Expr) (cerl.Expr, error) {
+	n := l.nextLoopNum()
+
+	// The for-range induction variable is the loop var plus outer mutated vars.
+	params := l.loopParams(nil, s.Body.Statements)
+	// Remove the induction variable from params (it's a separate parameter).
+	params = removeFrom(params, s.Var)
+
+	helperName := fmt.Sprintf("__for_range_%d", n)
+	varX := "V_" + s.Var
+	varEnd := fmt.Sprintf("V___end_%d", n)
+	// Helper arity: induction var + end var + outer params
+	helperArity := 2 + len(params)
+
+	l.loopStack = append(l.loopStack, loopCtx{num: n, params: append([]string{s.Var}, params...)})
+
+	// Add induction var to scope for the body.
+	if l.scope == nil {
+		l.scope = make(map[string]bool)
+	}
+	l.scope[s.Var] = true
+
+	// The body's continuation: increment V_x and recurse.
+	nextX := cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("+"),
+		[]cerl.Expr{cerl.CVar(varX), cerl.CInt(1)})
+	allParamExprs := append([]cerl.Expr{nextX, cerl.CVar(varEnd)}, l.loopParamVarExprs(params)...)
+	recurseCall := cerl.CApply(cerl.CVarFunc(helperName, helperArity), allParamExprs)
+
+	bodyExpr, err := l.lowerBlock(s.Body.Statements, recurseCall)
+
+	delete(l.scope, s.Var)
+	l.loopStack = l.loopStack[:len(l.loopStack)-1]
+	if err != nil {
+		return nil, err
+	}
+
+	// All loop params for this loop (induction var + outer params).
+	allParams := append([]string{s.Var}, params...)
+
+	// Continue handler: increment induction var and recurse.
+	contPatVars := loopStateVars(allParams, "__c")
+	contPat := cerl.CTuple([]cerl.Expr{cerl.CAtom("mochi_continue"), cerl.CInt(int64(n)), cerl.CTuple(contPatVars)})
+	// On continue: V_x_cont is the NEXT value (the one that was being processed).
+	// We increment it before recursing.
+	nextXCont := cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("+"),
+		[]cerl.Expr{contPatVars[0], cerl.CInt(1)})
+	contAllArgs := append([]cerl.Expr{nextXCont, cerl.CVar(varEnd)}, contPatVarExprs(contPatVars[1:])...)
+	contRecurse := cerl.CApply(cerl.CVarFunc(helperName, helperArity), contAllArgs)
+
+	// Break handler: extract state and return outer params.
+	breakPatVars := loopStateVars(allParams, "__b")
+	breakPat := cerl.CTuple([]cerl.Expr{cerl.CAtom("mochi_break"), cerl.CInt(int64(n)), cerl.CTuple(breakPatVars)})
+	breakResult := l.loopParamTupleOrOk(breakPatVars[1:]) // skip induction var
+
+	excHandler := cerl.CCase(cerl.CVar("V___rsn"), []cerl.Expr{
+		cerl.CClause([]cerl.Expr{contPat}, cerl.CAtom("true"), contRecurse),
+		cerl.CClause([]cerl.Expr{breakPat}, cerl.CAtom("true"), breakResult),
+		cerl.CClause([]cerl.Expr{cerl.CVar("V___")}, cerl.CAtom("true"),
+			cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("raise"), []cerl.Expr{
+				cerl.CVar("V___cls"), cerl.CVar("V___rsn"), cerl.CVar("V___stk"),
+			})),
+	})
+
+	bodyWithHandlers := cerl.CTry(
+		bodyExpr,
+		[]cerl.Expr{cerl.CVar("V___r")}, cerl.CVar("V___r"),
+		[]cerl.Expr{cerl.CVar("V___cls"), cerl.CVar("V___rsn"), cerl.CVar("V___stk")},
+		excHandler,
+	)
+
+	// cond: V_x >= V_end
+	geExpr := cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom(">="),
+		[]cerl.Expr{cerl.CVar(varX), cerl.CVar(varEnd)})
+
+	// false branch returns outer params (not induction var).
+	falseResult := l.loopParamTupleOrOk(l.loopParamVarExprs(params))
+
+	helperBody := cerl.CCase(geExpr, []cerl.Expr{
+		cerl.CClause([]cerl.Expr{cerl.CAtom("true")}, cerl.CAtom("true"), falseResult),
+		cerl.CClause([]cerl.Expr{cerl.CAtom("false")}, cerl.CAtom("true"), bodyWithHandlers),
+	})
+
+	helperVars := make([]string, 2+len(params))
+	helperVars[0] = varX
+	helperVars[1] = varEnd
+	for i, p := range params {
+		helperVars[2+i] = "V_" + p
+	}
+	l.mod.Defs = append(l.mod.Defs, cerl.FuncDef{
+		Name:  helperName,
+		Arity: helperArity,
+		Vars:  helperVars,
+		Body:  helperBody,
+	})
+
+	startExpr, err := lowerExpr(s.Start)
+	if err != nil {
+		return nil, err
+	}
+	endExpr, err := lowerExpr(s.End)
+	if err != nil {
+		return nil, err
+	}
+
+	initArgs := append([]cerl.Expr{startExpr, endExpr}, l.loopParamVarExprs(params)...)
+	initCall := cerl.CApply(cerl.CVarFunc(helperName, helperArity), initArgs)
+	return l.bindLoopResultWithCont(params, initCall, cont), nil
+}
+
+// loopParams computes the set of outer-scope variables referenced or
+// assigned in the loop cond (may be nil) and body.
+func (l *lowerer) loopParams(cond aotir.Expr, body []aotir.Stmt) []string {
+	if l.scope == nil {
+		return nil
+	}
+	seen := make(map[string]bool)
+
+	if cond != nil {
+		for _, v := range collectExprVarRefs(cond) {
+			if l.scope[v] {
+				seen[v] = true
+			}
+		}
+	}
+	for _, v := range collectStmtVarRefs(body) {
+		if l.scope[v] {
+			seen[v] = true
+		}
+	}
+	for _, v := range collectAssignedVars(body) {
+		if l.scope[v] {
+			seen[v] = true
+		}
+	}
+
+	params := make([]string, 0, len(seen))
+	for v := range seen {
+		params = append(params, v)
+	}
+	sort.Strings(params)
+	return params
+}
+
+// loopParamVarExprs returns c_var expressions for each loop param.
+func (l *lowerer) loopParamVarExprs(params []string) []cerl.Expr {
+	exprs := make([]cerl.Expr, len(params))
+	for i, p := range params {
+		exprs[i] = cerl.CVar("V_" + p)
+	}
+	return exprs
+}
+
+// loopParamTupleOrOk returns a c_tuple of exprs if len>0, else c_atom("ok").
+func (l *lowerer) loopParamTupleOrOk(exprs []cerl.Expr) cerl.Expr {
+	if len(exprs) == 0 {
+		return cerl.CAtom("ok")
+	}
+	if len(exprs) == 1 {
+		return exprs[0]
+	}
+	return cerl.CTuple(exprs)
+}
+
+// bindLoopResultWithCont binds the returned loop state into cont so that
+// updated loop variable values are in scope for subsequent code.
+//
+// For 0 params: seq(call, cont) if cont is non-trivial, else just call.
+// For 1 param: let [V_p] = call in cont.
+// For N params: helper returns {p1,...,pN} tuple; destructure via case.
+func (l *lowerer) bindLoopResultWithCont(params []string, call cerl.Expr, cont cerl.Expr) cerl.Expr {
+	if cont == nil {
+		cont = cerl.CAtom("ok")
+	}
+	if len(params) == 0 {
+		return cerl.CSeq(call, cont)
+	}
+	if len(params) == 1 {
+		return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + params[0])}, call, cont)
+	}
+	// For N>1 params: the helper returns a tuple {p1,...,pN}.
+	// c_let with multiple vars expects c_values, not a tuple,
+	// so destructure with c_case instead.
+	patVars := make([]cerl.Expr, len(params))
+	for i, p := range params {
+		patVars[i] = cerl.CVar("V_" + p)
+	}
+	return cerl.CLet(
+		[]cerl.Expr{cerl.CVar("V___loopres")},
+		call,
+		cerl.CCase(cerl.CVar("V___loopres"), []cerl.Expr{
+			cerl.CClause([]cerl.Expr{cerl.CTuple(patVars)}, cerl.CAtom("true"), cont),
+		}),
+	)
+}
+
+// contPatVarExprs returns just the expr form of pattern vars.
+func contPatVarExprs(pvs []cerl.Expr) []cerl.Expr {
+	return pvs
+}
+
+// collectExprVarRefs returns all variable names referenced in an expression.
+func collectExprVarRefs(expr aotir.Expr) []string {
+	if expr == nil {
+		return nil
+	}
+	var names []string
+	switch e := expr.(type) {
+	case *aotir.VarRef:
+		names = append(names, e.Name)
+	case *aotir.BinaryExpr:
+		names = append(names, collectExprVarRefs(e.Left)...)
+		names = append(names, collectExprVarRefs(e.Right)...)
+	case *aotir.UnaryExpr:
+		names = append(names, collectExprVarRefs(e.Operand)...)
+	case *aotir.CallExpr:
+		for _, a := range e.Args {
+			names = append(names, collectExprVarRefs(a)...)
+		}
+	}
+	return names
+}
+
+// collectStmtVarRefs returns all variable names READ in statements.
+func collectStmtVarRefs(stmts []aotir.Stmt) []string {
+	var names []string
+	for _, stmt := range stmts {
+		switch s := stmt.(type) {
+		case *aotir.LetStmt:
+			names = append(names, collectExprVarRefs(s.Init)...)
+		case *aotir.AssignStmt:
+			names = append(names, collectExprVarRefs(s.Value)...)
+		case *aotir.CallStmt:
+			for _, a := range s.Args {
+				names = append(names, collectExprVarRefs(a)...)
+			}
+		case *aotir.IfStmt:
+			names = append(names, collectExprVarRefs(s.Cond)...)
+			if s.Then != nil {
+				names = append(names, collectStmtVarRefs(s.Then.Statements)...)
+			}
+			if s.Else != nil {
+				names = append(names, collectStmtVarRefs(s.Else.Statements)...)
+			}
+		case *aotir.WhileStmt:
+			names = append(names, collectExprVarRefs(s.Cond)...)
+			names = append(names, collectStmtVarRefs(s.Body.Statements)...)
+		case *aotir.ForRangeStmt:
+			names = append(names, collectExprVarRefs(s.Start)...)
+			names = append(names, collectExprVarRefs(s.End)...)
+			names = append(names, collectStmtVarRefs(s.Body.Statements)...)
+		case *aotir.ReturnStmt:
+			if s.Value != nil {
+				names = append(names, collectExprVarRefs(s.Value)...)
+			}
+		}
+	}
+	return names
+}
+
+// collectAssignedVars returns all variable names that are assigned (AssignStmt)
+// in the given statements (shallowly - does not recurse into nested loops).
+func collectAssignedVars(stmts []aotir.Stmt) []string {
+	var names []string
+	for _, stmt := range stmts {
+		switch s := stmt.(type) {
+		case *aotir.AssignStmt:
+			names = append(names, s.Name)
+		case *aotir.IfStmt:
+			if s.Then != nil {
+				names = append(names, collectAssignedVars(s.Then.Statements)...)
+			}
+			if s.Else != nil {
+				names = append(names, collectAssignedVars(s.Else.Statements)...)
+			}
+		}
+	}
+	return names
+}
+
+func removeFrom(ss []string, s string) []string {
+	result := ss[:0:0]
+	for _, v := range ss {
+		if v != s {
+			result = append(result, v)
+		}
+	}
+	return result
+}
+
+// lowerCallStmt lowers a CallStmt.
 func lowerCallStmt(s *aotir.CallStmt) (cerl.Expr, error) {
 	switch s.Func {
 	case "mochi_print_str":
-		if len(s.Args) != 1 {
-			return nil, fmt.Errorf("beam/lower: mochi_print_str wants 1 arg, got %d", len(s.Args))
-		}
-		arg, err := lowerExpr(s.Args[0])
-		if err != nil {
-			return nil, err
-		}
-		// io:put_chars([Bin, $\n]) to match vm3's print output.
-		// The newline is appended as the integer 10 in a cons cell.
-		argWithNewline := cerl.CCons(arg, cerl.CCons(cerl.CInt(10), cerl.CNil()))
-		return cerl.CCall(cerl.CAtom("io"), cerl.CAtom("put_chars"), []cerl.Expr{argWithNewline}), nil
+		return lowerPrintStr(s.Args)
+	case "mochi_print_i64":
+		return lowerPrintInt(s.Args)
+	case "mochi_print_f64":
+		return lowerPrintFloat(s.Args)
+	case "mochi_print_bool":
+		return lowerPrintBool(s.Args)
 	default:
-		return nil, fmt.Errorf("beam/lower: unsupported call %q (Phase 1 only supports print)", s.Func)
+		args := make([]cerl.Expr, len(s.Args))
+		for i, a := range s.Args {
+			e, err := lowerExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args[i] = e
+		}
+		return cerl.CApply(cerl.CVarFunc(s.Func, len(s.Args)), args), nil
 	}
+}
+
+func lowerPrintStr(args []aotir.Expr) (cerl.Expr, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("beam/lower: mochi_print_str wants 1 arg, got %d", len(args))
+	}
+	arg, err := lowerExpr(args[0])
+	if err != nil {
+		return nil, err
+	}
+	argWithNewline := cerl.CCons(arg, cerl.CCons(cerl.CInt(10), cerl.CNil()))
+	return cerl.CCall(cerl.CAtom("io"), cerl.CAtom("put_chars"), []cerl.Expr{argWithNewline}), nil
+}
+
+func lowerPrintInt(args []aotir.Expr) (cerl.Expr, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("beam/lower: mochi_print_i64 wants 1 arg, got %d", len(args))
+	}
+	arg, err := lowerExpr(args[0])
+	if err != nil {
+		return nil, err
+	}
+	bin := cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("integer_to_binary"), []cerl.Expr{arg})
+	argWithNewline := cerl.CCons(bin, cerl.CCons(cerl.CInt(10), cerl.CNil()))
+	return cerl.CCall(cerl.CAtom("io"), cerl.CAtom("put_chars"), []cerl.Expr{argWithNewline}), nil
+}
+
+func lowerPrintFloat(args []aotir.Expr) (cerl.Expr, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("beam/lower: mochi_print_f64 wants 1 arg, got %d", len(args))
+	}
+	arg, err := lowerExpr(args[0])
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("print_float"), []cerl.Expr{arg}), nil
+}
+
+func lowerPrintBool(args []aotir.Expr) (cerl.Expr, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("beam/lower: mochi_print_bool wants 1 arg, got %d", len(args))
+	}
+	arg, err := lowerExpr(args[0])
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCase(arg, []cerl.Expr{
+		cerl.CClause([]cerl.Expr{cerl.CAtom("true")}, cerl.CAtom("true"),
+			cerl.CCall(cerl.CAtom("io"), cerl.CAtom("put_chars"), []cerl.Expr{cerl.CBin([]byte("true\n"))})),
+		cerl.CClause([]cerl.Expr{cerl.CAtom("false")}, cerl.CAtom("true"),
+			cerl.CCall(cerl.CAtom("io"), cerl.CAtom("put_chars"), []cerl.Expr{cerl.CBin([]byte("false\n"))})),
+	}), nil
 }
 
 // lowerExpr lowers one aotir expression to a cerl expression.
@@ -116,7 +753,158 @@ func lowerExpr(expr aotir.Expr) (cerl.Expr, error) {
 	switch e := expr.(type) {
 	case *aotir.StringLit:
 		return cerl.CBin([]byte(e.Value)), nil
+	case *aotir.IntLit:
+		return cerl.CInt(e.Value), nil
+	case *aotir.FloatLit:
+		return cerl.CFloat(e.Value), nil
+	case *aotir.BoolLit:
+		return cerl.CBool(e.Value), nil
+	case *aotir.VarRef:
+		return cerl.CVar("V_" + e.Name), nil
+	case *aotir.BinaryExpr:
+		return lowerBinaryExpr(e)
+	case *aotir.UnaryExpr:
+		return lowerUnaryExpr(e)
+	case *aotir.CallExpr:
+		return lowerCallExpr(e)
 	default:
-		return nil, fmt.Errorf("beam/lower: unsupported expression %T (Phase 1 only)", expr)
+		return nil, fmt.Errorf("beam/lower: unsupported expression %T", expr)
 	}
+}
+
+func lowerBinaryExpr(e *aotir.BinaryExpr) (cerl.Expr, error) {
+	left, err := lowerExpr(e.Left)
+	if err != nil {
+		return nil, err
+	}
+	right, err := lowerExpr(e.Right)
+	if err != nil {
+		return nil, err
+	}
+
+	switch e.Op {
+	case aotir.BinAddI64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("+"), []cerl.Expr{left, right}), nil
+	case aotir.BinSubI64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("-"), []cerl.Expr{left, right}), nil
+	case aotir.BinMulI64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("*"), []cerl.Expr{left, right}), nil
+	case aotir.BinDivI64:
+		return lowerIntDiv(left, right)
+	case aotir.BinModI64:
+		return lowerIntMod(left, right)
+	case aotir.BinAddF64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("+"), []cerl.Expr{left, right}), nil
+	case aotir.BinSubF64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("-"), []cerl.Expr{left, right}), nil
+	case aotir.BinMulF64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("*"), []cerl.Expr{left, right}), nil
+	case aotir.BinDivF64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("/"), []cerl.Expr{left, right}), nil
+	case aotir.BinEqI64, aotir.BinEqBool, aotir.BinEqStr:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("=:="), []cerl.Expr{left, right}), nil
+	case aotir.BinNeI64, aotir.BinNeBool, aotir.BinNeStr:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("=/="), []cerl.Expr{left, right}), nil
+	case aotir.BinLtI64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("<"), []cerl.Expr{left, right}), nil
+	case aotir.BinLeI64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("=<"), []cerl.Expr{left, right}), nil
+	case aotir.BinGtI64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom(">"), []cerl.Expr{left, right}), nil
+	case aotir.BinGeI64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom(">="), []cerl.Expr{left, right}), nil
+	case aotir.BinEqF64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("=:="), []cerl.Expr{left, right}), nil
+	case aotir.BinNeF64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("=/="), []cerl.Expr{left, right}), nil
+	case aotir.BinLtF64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("<"), []cerl.Expr{left, right}), nil
+	case aotir.BinLeF64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("=<"), []cerl.Expr{left, right}), nil
+	case aotir.BinGtF64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom(">"), []cerl.Expr{left, right}), nil
+	case aotir.BinGeF64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom(">="), []cerl.Expr{left, right}), nil
+	case aotir.BinAndBool:
+		return cerl.CCase(left, []cerl.Expr{
+			cerl.CClause([]cerl.Expr{cerl.CAtom("false")}, cerl.CAtom("true"), cerl.CAtom("false")),
+			cerl.CClause([]cerl.Expr{cerl.CVar("V___")}, cerl.CAtom("true"), right),
+		}), nil
+	case aotir.BinOrBool:
+		return cerl.CCase(left, []cerl.Expr{
+			cerl.CClause([]cerl.Expr{cerl.CAtom("true")}, cerl.CAtom("true"), cerl.CAtom("true")),
+			cerl.CClause([]cerl.Expr{cerl.CVar("V___")}, cerl.CAtom("true"), right),
+		}), nil
+	case aotir.BinStrCat:
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("concat"), []cerl.Expr{left, right}), nil
+	default:
+		return nil, fmt.Errorf("beam/lower: unsupported binary op %v", e.Op)
+	}
+}
+
+func lowerIntDiv(left, right cerl.Expr) (cerl.Expr, error) {
+	divExpr := cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("div"), []cerl.Expr{left, right})
+	return wrapArithErr(divExpr, "V___divres"), nil
+}
+
+func lowerIntMod(left, right cerl.Expr) (cerl.Expr, error) {
+	modExpr := cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("rem"), []cerl.Expr{left, right})
+	return wrapArithErr(modExpr, "V___modres"), nil
+}
+
+func wrapArithErr(op cerl.Expr, resVar string) cerl.Expr {
+	errHandler := cerl.CCase(cerl.CVar("V___rsn"), []cerl.Expr{
+		cerl.CClause(
+			[]cerl.Expr{cerl.CTuple([]cerl.Expr{cerl.CAtom("badarith"), cerl.CVar("V___")})},
+			cerl.CAtom("true"),
+			cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("error"),
+				[]cerl.Expr{cerl.CTuple([]cerl.Expr{
+					cerl.CAtom("mochi_error"),
+					cerl.CAtom("mochi_err_divzero"),
+					cerl.CBin([]byte("integer divide by zero")),
+				})}),
+		),
+		cerl.CClause(
+			[]cerl.Expr{cerl.CVar("V___")},
+			cerl.CAtom("true"),
+			cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("raise"), []cerl.Expr{
+				cerl.CVar("V___cls"), cerl.CVar("V___rsn"), cerl.CVar("V___stk"),
+			}),
+		),
+	})
+	return cerl.CTry(op,
+		[]cerl.Expr{cerl.CVar(resVar)}, cerl.CVar(resVar),
+		[]cerl.Expr{cerl.CVar("V___cls"), cerl.CVar("V___rsn"), cerl.CVar("V___stk")},
+		errHandler,
+	)
+}
+
+func lowerUnaryExpr(e *aotir.UnaryExpr) (cerl.Expr, error) {
+	operand, err := lowerExpr(e.Operand)
+	if err != nil {
+		return nil, err
+	}
+	switch e.Op {
+	case aotir.UnNegI64, aotir.UnNegF64:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("-"), []cerl.Expr{operand}), nil
+	case aotir.UnNotBool:
+		return cerl.CCase(operand, []cerl.Expr{
+			cerl.CClause([]cerl.Expr{cerl.CAtom("true")}, cerl.CAtom("true"), cerl.CAtom("false")),
+			cerl.CClause([]cerl.Expr{cerl.CAtom("false")}, cerl.CAtom("true"), cerl.CAtom("true")),
+		}), nil
+	default:
+		return nil, fmt.Errorf("beam/lower: unsupported unary op %v", e.Op)
+	}
+}
+
+func lowerCallExpr(e *aotir.CallExpr) (cerl.Expr, error) {
+	args := make([]cerl.Expr, len(e.Args))
+	for i, a := range e.Args {
+		arg, err := lowerExpr(a)
+		if err != nil {
+			return nil, err
+		}
+		args[i] = arg
+	}
+	return cerl.CApply(cerl.CVarFunc(e.Func, len(e.Args)), args), nil
 }

@@ -1,0 +1,4 @@
+var n = 5
+print(n > 0)
+print(n < 10)
+print(n == 5)

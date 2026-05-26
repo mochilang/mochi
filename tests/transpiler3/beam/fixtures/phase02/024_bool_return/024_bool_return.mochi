@@ -1,0 +1,5 @@
+fun is_positive(n: int): bool {
+    return n > 0
+}
+print(is_positive(5))
+print(is_positive(-1))

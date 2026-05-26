@@ -10,11 +10,11 @@ description: "MEP-46 Phase 2 tracking: int/float/bool arithmetic, comparisons, s
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 2](/docs/mep/mep-0046#phase-2-primitives-and-control-flow) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
-| Tracking issue | — |
-| Tracking PR    | — |
+| Status         | LANDED 2026-05-26 13:51 (GMT+7) |
+| Started        | 2026-05-26 |
+| Landed         | 2026-05-26 |
+| Tracking issue | TBD |
+| Tracking PR    | TBD |
 
 ## Gate
 
@@ -290,4 +290,16 @@ Gate tests:
 
 ## Closeout notes
 
-_Fill in after gate green._
+Gate `TestPhase2Primitives` is green: all 28 fixtures (002-029) pass.
+
+**Deviations from spec design**
+
+1. `return` uses `erlang:throw/1` (not `primop 'raise'`) for the mochi_return exception. `primop 'raise'` is an OTP-internal re-raise primop; using it to initiate a new throw generates invalid `resume` SSA instructions in OTP 28. All new exception initiations use `erlang:throw/1`; re-raises of caught exceptions use `erlang:raise/3`.
+
+2. Loop variable threading uses function parameters and tuple returns, not a global state map. The `__while_N/k` and `__for_range_N/k+2` helpers take all outer mutable variables as parameters and return the updated values as a `{v1,...,vN}` tuple (or a single value for 1 param). The call site uses `c_let` + `c_case` destructuring to scope updated values into the continuation.
+
+3. `bindLoopResultWithCont(params, call, cont)` passes the continuation into the binding so updated loop variable values are in scope for all subsequent code. The old `bindLoopResult` ended with `ok`, which broke code after a while/for loop that read the updated loop variables.
+
+4. Float whole-number detection: `mochi_str:format_float/1` checks `float(trunc(F)) =:= F` and uses `integer_to_binary(trunc(F))` for whole-number floats. This matches Go's `%g` output for values like `4.0` (prints `4`) and `7.0` (prints `7`). Non-integer floats use `float_to_binary(F, [{decimals, Prec}, compact])` with the shortest round-tripping precision.
+
+5. `mochi_core:raise_err/2` was not implemented. Divide-by-zero wraps in `c_try` that catches `badarith` and calls `erlang:error/1` with a `{mochi_error, mochi_err_divzero, Msg}` tuple.
