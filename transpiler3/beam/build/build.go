@@ -34,6 +34,19 @@ const (
 	// Size ~30-80MB. Supports hot reload and supervision.
 	TargetRelease
 
+	// TargetRebar3Project emits a standalone rebar3 project directory
+	// containing rebar.config, src/ with runtime .erl files, and
+	// ebin/ with pre-compiled .beam files. The user can run
+	// `rebar3 compile` and `rebar3 dialyzer` against the output.
+	// Phase 15.1.
+	TargetRebar3Project
+
+	// TargetMixProject emits a standalone Mix (Elixir) project directory
+	// containing mix.exs and ebin/ with pre-compiled .beam files.
+	// The user can run `mix compile` against the output.
+	// Phase 15.2.
+	TargetMixProject
+
 	// TargetAtomVM produces a .avm bundle for embedded targets
 	// (ESP32, STM32). Only Phases 1-5 are supported; pg, gun, and
 	// crypto are not available on AtomVM.
@@ -153,14 +166,24 @@ func copyFile(dst, src string) error {
 //  3. beam/lower: aotir -> cerl.Module.
 //  4. beam/emit: cerl.Module -> .beam file via compile:forms/2.
 //  5. Compile runtime .erl files to .beam.
-//  6. Pack as archive escript (TargetEscript).
+//  6. Pack as archive escript (TargetEscript) or emit project dir.
+//
+// For TargetEscript, out is a file path.
+// For TargetRebar3Project and TargetMixProject, out is a directory path.
 //
 // If CacheDir is set (or the default .mochi/cache/beam/ directory exists),
 // Build checks a BLAKE3 content-addressed cache before recompiling.
 // Phase 1.2: rebuild on unchanged source is a file-copy no-op.
 func (d *Driver) Build(src, out string, target Target) error {
-	if target != TargetEscript {
-		return fmt.Errorf("beam/build: only TargetEscript is supported in Phase 2 (got %d)", target)
+	switch target {
+	case TargetRebar3Project:
+		return d.buildRebar3Project(src, out)
+	case TargetMixProject:
+		return d.buildMixProject(src, out)
+	case TargetEscript:
+		// handled below
+	default:
+		return fmt.Errorf("beam/build: unsupported target %d", target)
 	}
 
 	// Phase 1.2: check cache before doing any compilation work.
@@ -349,4 +372,198 @@ func maybeEmitRebarConfig(src, out string) error {
 	}
 	rebarPath := filepath.Join(filepath.Dir(out), "rebar.config")
 	return emitRebarConfig(rebarPath, deps)
+}
+
+// compileToBeams is a shared helper that compiles src through the full
+// Mochi pipeline and returns the workDir (caller must clean up) plus
+// all .beam file paths (user module first, then runtime).
+func (d *Driver) compileToBeams(src string) (workDir string, beams []string, cleanup func(), err error) {
+	prog, err := parser.Parse(src)
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("beam/build: parse %s: %w", src, err)
+	}
+	if errs := types.Check(prog, types.NewEnv(nil)); len(errs) > 0 {
+		return "", nil, nil, fmt.Errorf("beam/build: type-check %s: %w", src, errs[0])
+	}
+	ir, err := clower.Lower(prog)
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("beam/build: lower %s: %w", src, err)
+	}
+
+	const modName = "mochi_main"
+	mod, err := beamlower.Lower(ir, modName)
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("beam/build: beam lower %s: %w", src, err)
+	}
+
+	wd, err := os.MkdirTemp("", "mochi-beam-")
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("beam/build: mkdtemp: %w", err)
+	}
+	cl := func() { os.RemoveAll(wd) }
+
+	emitted, err := emit.Emit(mod, wd)
+	if err != nil {
+		cl()
+		return "", nil, nil, fmt.Errorf("beam/build: emit %s: %w", src, err)
+	}
+	if len(emitted) == 0 {
+		cl()
+		return "", nil, nil, fmt.Errorf("beam/build: emit produced no .beam files")
+	}
+
+	runtimeBeams, err := compileRuntime(wd)
+	if err != nil {
+		cl()
+		return "", nil, nil, fmt.Errorf("beam/build: compile runtime: %w", err)
+	}
+
+	var all []string
+	for _, ef := range emitted {
+		all = append(all, ef.Path)
+	}
+	all = append(all, runtimeBeams...)
+	return wd, all, cl, nil
+}
+
+// buildRebar3Project emits a standalone rebar3 project into the directory out.
+// The layout is:
+//
+//	out/
+//	  rebar.config
+//	  src/
+//	    mochi_app.app.src
+//	    *.erl  (runtime sources)
+//	  ebin/
+//	    *.beam  (pre-compiled user + runtime modules)
+//
+// Phase 15.1.
+func (d *Driver) buildRebar3Project(src, out string) error {
+	_, beams, cleanup, err := d.compileToBeams(src)
+	if err != nil {
+		return err
+	}
+	defer cleanup()
+
+	ebinDir := filepath.Join(out, "ebin")
+	srcDir := filepath.Join(out, "src")
+	if err := os.MkdirAll(ebinDir, 0o755); err != nil {
+		return err
+	}
+	if err := os.MkdirAll(srcDir, 0o755); err != nil {
+		return err
+	}
+
+	// Copy .beam files into ebin/.
+	for _, bp := range beams {
+		dst := filepath.Join(ebinDir, filepath.Base(bp))
+		if err := copyFile(dst, bp); err != nil {
+			return err
+		}
+	}
+
+	// Copy runtime .erl sources into src/.
+	rtSrcDir, err := runtimeSrcDir()
+	if err == nil {
+		erlFiles, _ := filepath.Glob(filepath.Join(rtSrcDir, "*.erl"))
+		for _, ef := range erlFiles {
+			dst := filepath.Join(srcDir, filepath.Base(ef))
+			if err := copyFile(dst, ef); err != nil {
+				return err
+			}
+		}
+	}
+
+	// Write src/mochi_app.app.src.
+	appSrc := `{application, mochi_app,
+  [{description, "Generated by Mochi"},
+   {vsn, "0.1.0"},
+   {modules, []},
+   {registered, []},
+   {applications, [kernel, stdlib, inets, ssl]}]}.
+`
+	if err := os.WriteFile(filepath.Join(srcDir, "mochi_app.app.src"), []byte(appSrc), 0o644); err != nil {
+		return err
+	}
+
+	// Determine deps from mochi.toml (if present).
+	deps := loadDeps(src)
+
+	// Write rebar.config.
+	return emitRebarConfig(filepath.Join(out, "rebar.config"), deps)
+}
+
+// buildMixProject emits a standalone Mix project into the directory out.
+// The layout is:
+//
+//	out/
+//	  mix.exs
+//	  ebin/
+//	    *.beam  (pre-compiled user + runtime modules)
+//
+// Phase 15.2.
+func (d *Driver) buildMixProject(src, out string) error {
+	_, beams, cleanup, err := d.compileToBeams(src)
+	if err != nil {
+		return err
+	}
+	defer cleanup()
+
+	ebinDir := filepath.Join(out, "ebin")
+	if err := os.MkdirAll(ebinDir, 0o755); err != nil {
+		return err
+	}
+
+	// Copy .beam files into ebin/.
+	for _, bp := range beams {
+		dst := filepath.Join(ebinDir, filepath.Base(bp))
+		if err := copyFile(dst, bp); err != nil {
+			return err
+		}
+	}
+
+	// Determine deps from mochi.toml (if present).
+	deps := loadDeps(src)
+
+	// Render mix.exs deps list.
+	var mixDeps strings.Builder
+	for i, d := range deps {
+		if i > 0 {
+			mixDeps.WriteString(",\n      ")
+		}
+		mixDeps.WriteString(fmt.Sprintf("{:%s, %q}", d.Name, d.Version))
+	}
+
+	mixExs := fmt.Sprintf(`defmodule MochiApp.MixProject do
+  use Mix.Project
+
+  def project do
+    [
+      app: :mochi_app,
+      version: "0.1.0",
+      elixir: "~> 1.14",
+      deps: deps()
+    ]
+  end
+
+  defp deps do
+    [
+      %s
+    ]
+  end
+end
+`, mixDeps.String())
+
+	return os.WriteFile(filepath.Join(out, "mix.exs"), []byte(mixExs), 0o644)
+}
+
+// loadDeps reads mochi.toml next to src and returns its [dependencies] entries.
+// Returns nil if no mochi.toml exists or it cannot be parsed.
+func loadDeps(src string) []depEntry {
+	tomlPath := filepath.Join(filepath.Dir(src), "mochi.toml")
+	deps, err := parseMochiToml(tomlPath)
+	if err != nil {
+		return nil
+	}
+	return deps
 }
