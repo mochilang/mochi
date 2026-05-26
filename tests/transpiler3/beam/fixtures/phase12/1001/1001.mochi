@@ -1,0 +1,4 @@
+writeFile("/tmp/mochi_test_append.txt", "hello")
+appendFile("/tmp/mochi_test_append.txt", " world")
+let content = readFile("/tmp/mochi_test_append.txt")
+print(content)

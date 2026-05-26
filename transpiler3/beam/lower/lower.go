@@ -374,6 +374,42 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 		// Phase 9.0: unit intent call → call helper function, rebind receiver with new state.
 		return l.lowerAgentIntentCallStmt(s, tail, cont)
 
+	case *aotir.WriteFileStmt:
+		// Phase 12.0: writeFile(path, content) → mochi_file:write_file(Path, Content).
+		path, err := lowerExpr(l, s.Path)
+		if err != nil {
+			return nil, err
+		}
+		content, err := lowerExpr(l, s.Content)
+		if err != nil {
+			return nil, err
+		}
+		call := cerl.CCall(cerl.CAtom("mochi_file"), cerl.CAtom("write_file"),
+			[]cerl.Expr{path, content})
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CLet([]cerl.Expr{cerl.CVar("V___")}, call, rest), nil
+
+	case *aotir.AppendFileStmt:
+		// Phase 12.0: appendFile(path, content) → mochi_file:append_file(Path, Content).
+		path, err := lowerExpr(l, s.Path)
+		if err != nil {
+			return nil, err
+		}
+		content, err := lowerExpr(l, s.Content)
+		if err != nil {
+			return nil, err
+		}
+		call := cerl.CCall(cerl.CAtom("mochi_file"), cerl.CAtom("append_file"),
+			[]cerl.Expr{path, content})
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CLet([]cerl.Expr{cerl.CVar("V___")}, call, rest), nil
+
 	case *aotir.ChanSendStmt:
 		// Phase 10.1: send(chan, val) → mochi_chan:send(Chan, Val) then continue.
 		ch, err := lowerExpr(l, s.Chan)
@@ -1105,6 +1141,22 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		return lowerAgentLit(l, e)
 	case *aotir.AgentIntentCallExpr:
 		return l.lowerAgentIntentCallExpr(e)
+
+	// Phase 12.0: file I/O via mochi_file runtime
+	case *aotir.ReadFileExpr:
+		path, err := lowerExpr(l, e.Path)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_file"), cerl.CAtom("read_file"),
+			[]cerl.Expr{path}), nil
+	case *aotir.LinesExpr:
+		path, err := lowerExpr(l, e.Path)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_file"), cerl.CAtom("lines"),
+			[]cerl.Expr{path}), nil
 
 	// Phase 10.1: channels via mochi_chan runtime
 	case *aotir.ChanMakeExpr:

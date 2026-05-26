@@ -1,0 +1,4 @@
+writeFile("/tmp/mochi_test_write_overwrite.txt", "first")
+writeFile("/tmp/mochi_test_write_overwrite.txt", "second")
+let content = readFile("/tmp/mochi_test_write_overwrite.txt")
+print(content)
