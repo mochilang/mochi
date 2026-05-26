@@ -1,0 +1,5 @@
+// Phase 10.3: Python FFI — call a Python function that lower-cases a string.
+extern python fun py_lower(s: string): string
+
+let result = py_lower("HELLO")
+print(result)

@@ -1,0 +1,5 @@
+// Phase 10.4: JavaScript FFI — call a JS function that trims whitespace.
+extern js fun js_trim(s: string): string
+
+let result = js_trim("  hello  ")
+print(result)

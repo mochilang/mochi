@@ -10,9 +10,9 @@ description: "MEP-45 Phase 10 tracking: C-direct FFI in v1, boxed mochi_value at
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 10](/docs/mep/mep-0045#phase-10-ffi-shells) |
-| Status         | IN PROGRESS |
+| Status         | COMPLETE |
 | Started        | 2026-05-25 23:52 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-26 08:58 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -31,8 +31,8 @@ C-direct FFI is the natural FFI for a C-AOT target: the generated C and the user
 | 10.0 | `extern fun` declarations lower to `extern <ctype> <name>(<params>);` in the C prologue; calls to extern funcs use `CallExpr` (direct C call, no closure ABI); driver compiles `<stem>.c` neighbour alongside `main.c`; verifier extended to accept extern calls; `TestPhase10FFIDirect` gate (2 fixtures: `add_extern`, `str_len_extern`) | LANDED 2026-05-25 23:52 (GMT+7) | — | — |
 | 10.1 | Boxed `mochi_value_t` tagged union (`nil`, `bool`, `int`, `float`, `str`, `handle`); `ValueType` in aotir + type-checker; `"value"` type alias in `extern fun` declarations; `mochi/value.h` + `src/value.c` in runtime; six constructor + six predicate + five accessor + one tag helper; `TestPhase10BoxedValue` gate (8 fixtures) | LANDED 2026-05-26 06:04 (GMT+7) | — | — |
 | 10.2 | Go FFI via subprocess RPC: `extern go fun` syntax; JSON newline protocol over `pipe()+fork()+exec()` to a Go companion binary; `go_rpc.h` + `go_rpc.c` runtime; driver detects `<stem>.go` neighbour, compiles it with `go build`, bakes path via `-DMOCHI_GO_RPC_PATH_DEFAULT`; emitter generates `static mochi_go_<name>()` C wrappers; `TestPhase10GoFFI` gate (2 fixtures: `go_add_ints`, `go_str_upper`) | LANDED 2026-05-26 08:42 (GMT+7) | — | — |
-| 10.3 | Python FFI via embedded libpython3 (deferred sub-phase)                                                                     | NOT STARTED | —      | — |
-| 10.4 | TypeScript FFI via QuickJS-NG (deferred sub-phase)                                                                          | NOT STARTED | —      | — |
+| 10.3 | `extern python fun` syntax + subprocess RPC via `python3 <stem>.py`; `python_rpc.h` + `python_rpc.c` runtime; shared `emitRPCFuncWrappers` helper; `TestPhase10PythonFFI` gate (2 fixtures: `py_add_floats`, `py_str_lower`) | LANDED 2026-05-26 08:58 (GMT+7) | — | — |
+| 10.4 | `extern js fun` syntax + subprocess RPC via `node <stem>.js`; `js_rpc.h` + `js_rpc.c` runtime; `TestPhase10JSFFI` gate (2 fixtures: `js_mul_ints`, `js_str_trim`) | LANDED 2026-05-26 08:58 (GMT+7) | — | — |
 
 ## Phase 10.1 decisions
 
@@ -72,6 +72,20 @@ C-direct FFI is the natural FFI for a C-AOT target: the generated C and the user
 
 **Phase 10.0: verifier extended to accept extern calls.** The aotir verifier builds `externFns` from `prog.ExternFuncs` and makes it available via `verifyCtx`. `resolveCallSig` checks `ctx.externFns` as a third fallback (after builtins and user functions). The `verifyExprCtx` switch for `*CallExpr` accepts extern calls in both statement and expression positions.
 
+## Phase 10.3 decisions
+
+**Python FFI uses subprocess RPC (not embedded libpython3).** The spec noted "embedded libpython3 (heavy, fast) vs. out-of-process RPC (light, slow)." The subprocess RPC approach is consistent with Phase 10.2 (Go FFI) and requires zero vendored C libraries. A `.py` companion script is already a runnable Python program, so the driver just bakes its absolute path; no compilation step needed.
+
+**Companion path baked as absolute path, not copied.** Unlike Go companions (which are compiled to `<out>_gorpc` alongside the output binary), Python companions are already source files that persist in place. The driver records their absolute path via `filepath.Abs` and bakes it into `-DMOCHI_PYTHON_RPC_PATH_DEFAULT`. The `MOCHI_PYTHON_RPC_PATH` env var can override at runtime.
+
+**`emitRPCFuncWrappers` shared between Go, Python, and JS emitters.** All three FFI backends produce the same C wrapper shape: snprintf a JSON request, call `<prefix>rpc_call`, extract result via `<prefix>rpc_<type>`. Extracting this to a generic helper eliminates duplication and makes adding a fourth backend trivial.
+
+## Phase 10.4 decisions
+
+**JavaScript FFI uses `node` as the companion runtime.** `node` is broadly installed and understands CommonJS modules. The companion is a plain `.js` file (no transpilation needed). The driver bakes the file's absolute path; node handles the rest.
+
+**`readline` interface for stdin line parsing in JS companion.** Node's `readline` module handles line buffering from stdin correctly, including the case where the process receives multiple requests before flushing. Without `readline`, naive `process.stdin.on('data', ...)` may split lines at buffer boundaries.
+
 ## Deferred work
 
 - Phase 10.1: boxed `mochi_value` (deferred; Phase 10.0 covers scalar + string which covers the main use cases)
@@ -80,4 +94,4 @@ C-direct FFI is the natural FFI for a C-AOT target: the generated C and the user
 
 ## Closeout notes
 
-Phase 10.0 LANDED. The remaining sub-phases (10.1-10.4) are deferred until the gate test corpus is expanded to cover records and the boxed `mochi_value` type.
+Phase 10 COMPLETE. All sub-phases landed: 10.0 (C-direct FFI), 10.1 (boxed mochi_value), 10.2 (Go FFI), 10.3 (Python FFI), 10.4 (JavaScript FFI). The `extern python fun` and `extern js fun` keywords both use the same subprocess JSON RPC protocol established in 10.2, sharing runtime infrastructure and the `emitRPCFuncWrappers` generic emitter helper.

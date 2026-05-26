@@ -123,6 +123,30 @@ func Verify(p *Program) error {
 		externFns[gf.Name] = decl
 		externFns["mochi_go_"+gf.Name] = decl
 	}
+	// Phase 10.3: Python FFI functions registered under both original and mochi_py_ prefixed name.
+	for i, pf := range p.PythonFuncs {
+		if pf == nil {
+			return fmt.Errorf("aotir.Verify: PythonFuncs[%d] is nil", i)
+		}
+		if pf.Name == "" {
+			return fmt.Errorf("aotir.Verify: PythonFuncs[%d] has empty Name", i)
+		}
+		decl := &ExternFuncDecl{Name: pf.Name, Params: pf.Params, ReturnType: pf.ReturnType}
+		externFns[pf.Name] = decl
+		externFns["mochi_py_"+pf.Name] = decl
+	}
+	// Phase 10.4: JavaScript FFI functions registered under both original and mochi_js_ prefixed name.
+	for i, jf := range p.JSFuncs {
+		if jf == nil {
+			return fmt.Errorf("aotir.Verify: JSFuncs[%d] is nil", i)
+		}
+		if jf.Name == "" {
+			return fmt.Errorf("aotir.Verify: JSFuncs[%d] has empty Name", i)
+		}
+		decl := &ExternFuncDecl{Name: jf.Name, Params: jf.Params, ReturnType: jf.ReturnType}
+		externFns[jf.Name] = decl
+		externFns["mochi_js_"+jf.Name] = decl
+	}
 	// Phase 9.3: build agent map for intent-call resolution.
 	agents := make(map[string]*AgentDecl, len(p.Agents))
 	for i, ag := range p.Agents {

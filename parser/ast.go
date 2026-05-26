@@ -27,8 +27,10 @@ type Statement struct {
 	Type         *TypeDecl         `json:"type,omitempty" parser:"| @@"`
 	ExternType   *ExternTypeDecl   `json:"externtype,omitempty" parser:"| @@"`
 	ExternVar    *ExternVarDecl    `json:"externvar,omitempty" parser:"| @@"`
-	ExternGoFun  *ExternGoFunDecl  `json:"extern_go_fun,omitempty" parser:"| @@"`
-	ExternFun    *ExternFunDecl    `json:"externfun,omitempty" parser:"| @@"`
+	ExternGoFun     *ExternGoFunDecl     `json:"extern_go_fun,omitempty" parser:"| @@"`
+	ExternPythonFun *ExternPythonFunDecl `json:"extern_python_fun,omitempty" parser:"| @@"`
+	ExternJSFun     *ExternJSFunDecl     `json:"extern_js_fun,omitempty" parser:"| @@"`
+	ExternFun       *ExternFunDecl       `json:"externfun,omitempty" parser:"| @@"`
 	ExternObject *ExternObjectDecl `json:"externobject,omitempty" parser:"| @@"`
 	Fact         *FactStmt         `json:"fact,omitempty" parser:"| @@"`
 	Rule         *RuleStmt         `json:"rule,omitempty" parser:"| @@"`
@@ -303,6 +305,42 @@ type ExternGoFunDecl struct {
 }
 
 func (e *ExternGoFunDecl) Name() string {
+	if len(e.Tail) == 0 {
+		return e.Root
+	}
+	return e.Root + "_" + strings.Join(e.Tail, "_")
+}
+
+// ExternPythonFunDecl is a `extern python fun` declaration (Phase 10.3).
+// The companion Python script must implement the function and read JSON
+// requests from stdin, writing JSON responses to stdout.
+type ExternPythonFunDecl struct {
+	Pos    lexer.Position `json:"pos,omitempty" parser:""`
+	Root   string         `json:"root,omitempty" parser:"'extern' 'python' 'fun' @Ident"`
+	Tail   []string       `json:"tail,omitempty" parser:"{ '.' @Ident }"`
+	Params []*Param       `json:"params,omitempty" parser:"'(' [ @@ { ',' @@ } ] ')'"`
+	Return *TypeRef       `json:"return,omitempty" parser:"[ ':' @@ ]"`
+}
+
+func (e *ExternPythonFunDecl) Name() string {
+	if len(e.Tail) == 0 {
+		return e.Root
+	}
+	return e.Root + "_" + strings.Join(e.Tail, "_")
+}
+
+// ExternJSFunDecl is a `extern js fun` declaration (Phase 10.4).
+// The companion JavaScript file must implement the function and read JSON
+// requests from stdin, writing JSON responses to stdout.
+type ExternJSFunDecl struct {
+	Pos    lexer.Position `json:"pos,omitempty" parser:""`
+	Root   string         `json:"root,omitempty" parser:"'extern' 'js' 'fun' @Ident"`
+	Tail   []string       `json:"tail,omitempty" parser:"{ '.' @Ident }"`
+	Params []*Param       `json:"params,omitempty" parser:"'(' [ @@ { ',' @@ } ] ')'"`
+	Return *TypeRef       `json:"return,omitempty" parser:"[ ':' @@ ]"`
+}
+
+func (e *ExternJSFunDecl) Name() string {
 	if len(e.Tail) == 0 {
 		return e.Root
 	}

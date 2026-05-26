@@ -51,7 +51,7 @@ func assertStatement(s *Statement) error {
 		s.Agent != nil, s.Stream != nil, s.Model != nil,
 		s.Import != nil, s.Type != nil,
 		s.ExternType != nil, s.ExternVar != nil,
-		s.ExternFun != nil, s.ExternGoFun != nil, s.ExternObject != nil,
+		s.ExternFun != nil, s.ExternGoFun != nil, s.ExternPythonFun != nil, s.ExternJSFun != nil, s.ExternObject != nil,
 		s.Fact != nil, s.Rule != nil, s.On != nil, s.Emit != nil, s.EmitCall != nil,
 		s.Let != nil, s.Var != nil, s.Assign != nil, s.Fun != nil,
 		s.Return != nil, s.If != nil, s.While != nil, s.TryCatch != nil, s.For != nil,
