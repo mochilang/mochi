@@ -41,7 +41,19 @@ func Lower(prog *aotir.Program, modName string) (*cerl.Module, error) {
 		}
 	}
 
-	l := &lowerer{mod: mod, records: records, liftedFuncs: liftedFuncs}
+	agents := make(map[string]*aotir.AgentDecl, len(prog.Agents))
+	for _, ag := range prog.Agents {
+		agents[ag.Name] = ag
+	}
+
+	l := &lowerer{mod: mod, records: records, liftedFuncs: liftedFuncs, agents: agents}
+
+	// Phase 9.0: emit helper functions for each agent intent before user functions.
+	for _, ag := range prog.Agents {
+		if err := l.lowerAgentIntentFunctions(ag); err != nil {
+			return nil, fmt.Errorf("beam/lower: agent %s: %w", ag.Name, err)
+		}
+	}
 
 	for i, fn := range prog.Functions {
 		if i == prog.Main || fn.IsLifted {
@@ -76,6 +88,7 @@ type lowerer struct {
 	scope        map[string]bool // outer variables currently in scope
 	records      map[string]*aotir.RecordDecl   // record name -> declaration
 	liftedFuncs  map[string]*aotir.Function     // lifted closure bodies (skipped as top-level)
+	agents       map[string]*aotir.AgentDecl    // agent name -> declaration (Phase 9.0)
 }
 
 // loopCtx holds context about one active loop.
@@ -195,6 +208,24 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 		return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + s.Name)}, init, rest), nil
 
 	case *aotir.AssignStmt:
+		// Phase 9.0: agent field mutation uses "__self->" prefix.
+		// Use maps:put/3 (a runtime call) instead of Core Erlang map-update
+		// syntax to avoid BEAM validator "bad_type: actual=any" errors when the
+		// validator cannot statically prove V___self is a map.
+		if strings.HasPrefix(s.Name, "__self->") {
+			field := strings.TrimPrefix(s.Name, "__self->")
+			val, err := lowerExpr(l, s.Value)
+			if err != nil {
+				return nil, err
+			}
+			mapUpdate := cerl.CCall(cerl.CAtom("maps"), cerl.CAtom("put"),
+				[]cerl.Expr{cerl.CAtom(field), val, cerl.CVar("V___self")})
+			rest, err := l.lowerBlock(tail, cont)
+			if err != nil {
+				return nil, err
+			}
+			return cerl.CLet([]cerl.Expr{cerl.CVar("V___self")}, mapUpdate, rest), nil
+		}
 		val, err := lowerExpr(l, s.Value)
 		if err != nil {
 			return nil, err
@@ -338,6 +369,10 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 			return nil, err
 		}
 		return l.lowerBlock(s.Body.Statements, rest)
+
+	case *aotir.AgentIntentCallStmt:
+		// Phase 9.0: unit intent call → call helper function, rebind receiver with new state.
+		return l.lowerAgentIntentCallStmt(s, tail, cont)
 
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported statement %T", head)
@@ -954,6 +989,12 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 	case *aotir.BoolLit:
 		return cerl.CBool(e.Value), nil
 	case *aotir.VarRef:
+		// Phase 9.0: agent field reads use "__self->field" emitName encoding.
+		if strings.HasPrefix(e.Name, "__self->") {
+			field := strings.TrimPrefix(e.Name, "__self->")
+			return cerl.CCall(cerl.CAtom("maps"), cerl.CAtom("get"),
+				[]cerl.Expr{cerl.CAtom(field), cerl.CVar("V___self")}), nil
+		}
 		// Captured closure variables use "__e->fieldname" as VarRef.Name
 		// in the C backend (emitName encoding). Strip the env-struct prefix
 		// for BEAM; captured vars are naturally in scope via c_fun.
@@ -1022,6 +1063,12 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		return lowerListSortAscExpr(l, e)
 	case *aotir.ListSliceExpr:
 		return lowerListSliceExpr(l, e)
+
+	// Phase 9.0: agents as functional state-threaded maps
+	case *aotir.AgentLit:
+		return lowerAgentLit(l, e)
+	case *aotir.AgentIntentCallExpr:
+		return l.lowerAgentIntentCallExpr(e)
 
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported expression %T", expr)
@@ -1539,4 +1586,125 @@ func lowerListSliceExpr(l *lowerer, e *aotir.ListSliceExpr) (cerl.Expr, error) {
 	tail := cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("nthtail"), []cerl.Expr{start, recv})
 	length := cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("-"), []cerl.Expr{end, start})
 	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("sublist"), []cerl.Expr{tail, length}), nil
+}
+
+// ---- Phase 9.0: agents as functional state-threaded maps ----
+
+// agentIntentFuncName returns the helper function name for an agent intent.
+// Format: mochi_agent_<lowercase_agentname>_<intentname>
+func agentIntentFuncName(agentName, intentName string) string {
+	return "mochi_agent_" + strings.ToLower(agentName) + "_" + intentName
+}
+
+// lowerAgentIntentFunctions generates helper functions for all intents of one agent.
+func (l *lowerer) lowerAgentIntentFunctions(ag *aotir.AgentDecl) error {
+	for i := range ag.Intents {
+		if err := l.lowerAgentIntentFunc(ag, &ag.Intents[i]); err != nil {
+			return fmt.Errorf("intent %s: %w", ag.Intents[i].Name, err)
+		}
+	}
+	return nil
+}
+
+// lowerAgentIntentFunc emits one helper function for an agent intent.
+//
+// Unit intents take (State, params...) and return NewState.
+// Value intents take (State, params...) and return Value (state is read-only).
+func (l *lowerer) lowerAgentIntentFunc(ag *aotir.AgentDecl, intent *aotir.AgentIntentDecl) error {
+	fnName := agentIntentFuncName(ag.Name, intent.Name)
+
+	// Build parameter list: V___self is always first.
+	vars := []string{"V___self"}
+	for _, p := range intent.Params {
+		vars = append(vars, "V_"+p.Name)
+	}
+
+	// Seed scope with parameters.
+	outer := l.scope
+	l.scope = make(map[string]bool)
+	for _, p := range intent.Params {
+		l.scope[p.Name] = true
+	}
+
+	var body cerl.Expr
+	var err error
+	if intent.ReturnType == aotir.TypeUnit {
+		// Unit intent: return the (possibly updated) state at the end.
+		body, err = l.lowerFunctionBody(intent.Body.Statements, cerl.CVar("V___self"))
+	} else {
+		// Value intent: return value via mochi_return throw.
+		body, err = l.lowerFunctionBody(intent.Body.Statements, nil)
+	}
+	l.scope = outer
+	if err != nil {
+		return err
+	}
+
+	l.mod.Defs = append(l.mod.Defs, cerl.FuncDef{
+		Name:  fnName,
+		Arity: len(vars),
+		Vars:  vars,
+		Body:  body,
+	})
+	return nil
+}
+
+// lowerAgentLit lowers Counter{count: 0} to a BEAM map #{count => 0}.
+func lowerAgentLit(l *lowerer, e *aotir.AgentLit) (cerl.Expr, error) {
+	pairs := make([]cerl.Expr, len(e.Fields))
+	for i, f := range e.Fields {
+		val, err := lowerExpr(l, f.Value)
+		if err != nil {
+			return nil, fmt.Errorf("agent %s field %s: %w", e.AgentName, f.Name, err)
+		}
+		pairs[i] = cerl.CMapPairAssoc(cerl.CAtom(f.Name), val)
+	}
+	return cerl.CMap(cerl.CEmptyMap(), pairs, false), nil
+}
+
+// lowerAgentIntentCallExpr lowers a value-returning intent call c.get() to
+// mochi_agent_<name>_<intent>(V_c).
+func (l *lowerer) lowerAgentIntentCallExpr(e *aotir.AgentIntentCallExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	args := []cerl.Expr{recv}
+	for _, a := range e.Args {
+		ae, err := lowerExpr(l, a)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, ae)
+	}
+	fnName := agentIntentFuncName(e.AgentName, e.IntentName)
+	return cerl.CApply(cerl.CVarFunc(fnName, len(args)), args), nil
+}
+
+// lowerAgentIntentCallStmt lowers a unit intent call c.increment() to
+// let V_c = mochi_agent_<name>_<intent>(V_c) in rest.
+func (l *lowerer) lowerAgentIntentCallStmt(s *aotir.AgentIntentCallStmt, tail []aotir.Stmt, cont cerl.Expr) (cerl.Expr, error) {
+	// Receiver must be a VarRef so we can rebind it with the new state.
+	receiverVar, ok := s.Receiver.(*aotir.VarRef)
+	if !ok {
+		return nil, fmt.Errorf("beam/lower: AgentIntentCallStmt: receiver must be a variable, got %T", s.Receiver)
+	}
+	varName := receiverVar.Name
+
+	args := []cerl.Expr{cerl.CVar("V_" + varName)}
+	for _, a := range s.Args {
+		ae, err := lowerExpr(l, a)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, ae)
+	}
+	fnName := agentIntentFuncName(s.AgentName, s.IntentName)
+	callExpr := cerl.CApply(cerl.CVarFunc(fnName, len(args)), args)
+
+	rest, err := l.lowerBlock(tail, cont)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + varName)}, callExpr, rest), nil
 }

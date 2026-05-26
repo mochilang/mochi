@@ -10,9 +10,9 @@ description: "MEP-46 Phase 9 implementation spec: lowering Mochi agent declarati
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 9](/docs/mep/mep-0046#phase-9-agents-and-genserver) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-26 15:10 (GMT+7) |
+| Landed         | 2026-05-26 15:17 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -437,3 +437,20 @@ gen_server process, bypassing Mochi's type-checked method dispatch. The opaque
 wrapper enforces that all interaction goes through the generated API functions.
 It also provides a clear hook for future features (persistent refs, monitored
 refs, named agent refs) without changing the call-site syntax.
+
+---
+
+## Closeout notes
+
+Implemented as sub-phase 9.0: agents as functional state-threaded BEAM maps (not gen_server).
+Five fixtures (700-704) all pass `TestPhase9Agents`.
+
+Key implementation decisions:
+
+- Rather than the gen_server architecture in the spec, Phase 9.0 uses a simpler functional approach: each agent is represented as a BEAM map `#{field => val}` and each intent is a helper function that takes the state map and returns a new state map (unit intents) or a value (value intents). This avoids multi-module emission complexity and the need for `mochi_agent_sup`.
+- `AgentLit { count: 0 }` lowers to `#{count => 0}` (a plain BEAM map without the `mochi_record_tag` key used by record types).
+- `AgentIntentCallStmt` (unit intent call) lowers to `let V_receiver = mochi_agent_<name>_<intent>(V_receiver, args...)`, rebinding the receiver variable with the new state after each call.
+- `AgentIntentCallExpr` (value-returning intent) lowers to `mochi_agent_<name>_<intent>(V_receiver, args...)` directly.
+- Agent field reads (`VarRef{Name: "__self->field"}`) lower to `maps:get(field, V___self)`.
+- Agent field mutations (`AssignStmt{Name: "__self->field", Value: ...}`) lower to `let V___self = maps:put(field, val, V___self)`. The `maps:put/3` call is used instead of Core Erlang map-update syntax (`#{}` on the left) to avoid a BEAM validator `bad_type: actual=any` error that occurs when the validator cannot statically prove `V___self` is a map (e.g., in zero-argument intents like `reset()` that immediately write a constant without first reading from the state).
+- Sub-phases 9.1 (gen_server spawn), 9.2 (method calls via gen_server:call/cast), 9.3 (on_close), and 9.4 (supervised crash/restart) are deferred pending demand from higher-level phases.
