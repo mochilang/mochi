@@ -32,10 +32,19 @@ func Lower(prog *aotir.Program, modName string) (*cerl.Module, error) {
 	for _, r := range prog.Records {
 		records[r.Name] = r
 	}
-	l := &lowerer{mod: mod, records: records}
+
+	// Build a map of lifted functions so FunLit nodes can inline them as c_fun.
+	liftedFuncs := make(map[string]*aotir.Function)
+	for _, fn := range prog.Functions {
+		if fn.IsLifted {
+			liftedFuncs[fn.Name] = fn
+		}
+	}
+
+	l := &lowerer{mod: mod, records: records, liftedFuncs: liftedFuncs}
 
 	for i, fn := range prog.Functions {
-		if i == prog.Main {
+		if i == prog.Main || fn.IsLifted {
 			continue
 		}
 		if err := l.lowerFunction(fn); err != nil {
@@ -65,7 +74,8 @@ type lowerer struct {
 	loopNum      int             // monotonic counter for while/for helpers
 	loopStack    []loopCtx       // stack of active loop contexts (innermost last)
 	scope        map[string]bool // outer variables currently in scope
-	records      map[string]*aotir.RecordDecl // record name -> declaration
+	records      map[string]*aotir.RecordDecl   // record name -> declaration
+	liftedFuncs  map[string]*aotir.Function     // lifted closure bodies (skipped as top-level)
 }
 
 // loopCtx holds context about one active loop.
@@ -174,7 +184,7 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 			return l.lowerBlock(tail, cont)
 		}
 
-		init, err := lowerExpr(s.Init)
+		init, err := lowerExpr(l, s.Init)
 		if err != nil {
 			return nil, err
 		}
@@ -185,7 +195,7 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 		return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + s.Name)}, init, rest), nil
 
 	case *aotir.AssignStmt:
-		val, err := lowerExpr(s.Value)
+		val, err := lowerExpr(l, s.Value)
 		if err != nil {
 			return nil, err
 		}
@@ -201,7 +211,7 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 			return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("throw"),
 				[]cerl.Expr{cerl.CTuple([]cerl.Expr{cerl.CAtom("mochi_return"), cerl.CAtom("ok")})}), nil
 		}
-		val, err := lowerExpr(s.Value)
+		val, err := lowerExpr(l, s.Value)
 		if err != nil {
 			return nil, err
 		}
@@ -252,7 +262,7 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 		return l.lowerForRangeStmt(s, rest)
 
 	case *aotir.CallStmt:
-		expr, err := lowerCallStmt(s)
+		expr, err := lowerCallStmt(l, s)
 		if err != nil {
 			return nil, err
 		}
@@ -267,11 +277,11 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 
 	case *aotir.ListSetStmt:
 		// xs[i] = v  →  let [V_xs] = mochi_list:set(V_xs, I, V) in ...
-		idxExpr, err := lowerExpr(s.Index)
+		idxExpr, err := lowerExpr(l, s.Index)
 		if err != nil {
 			return nil, err
 		}
-		valExpr, err := lowerExpr(s.Value)
+		valExpr, err := lowerExpr(l, s.Value)
 		if err != nil {
 			return nil, err
 		}
@@ -285,11 +295,11 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 
 	case *aotir.MapPutStmt:
 		// m[k] = v  →  let [V_m] = V_m#{K => V} in ...
-		keyExpr, err := lowerExpr(s.Key)
+		keyExpr, err := lowerExpr(l, s.Key)
 		if err != nil {
 			return nil, err
 		}
-		valExpr, err := lowerExpr(s.Value)
+		valExpr, err := lowerExpr(l, s.Value)
 		if err != nil {
 			return nil, err
 		}
@@ -314,6 +324,11 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 			return nil, err
 		}
 		return l.lowerMatchStmt(s, rest)
+
+	case *aotir.ClosureEnvStmt:
+		// No-op for BEAM: env structs are a C-specific concern.
+		// Captured variables are handled natively by Core Erlang c_fun.
+		return l.lowerBlock(tail, cont)
 
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported statement %T", head)
@@ -346,7 +361,7 @@ func (l *lowerer) lowerIfStmt(s *aotir.IfStmt) (cerl.Expr, error) {
 // lowerIfStmtWithCont lowers an IfStmt threading cont into each branch so that
 // variable updates inside a branch are in scope for cont.
 func (l *lowerer) lowerIfStmtWithCont(s *aotir.IfStmt, cont cerl.Expr) (cerl.Expr, error) {
-	cond, err := lowerExpr(s.Cond)
+	cond, err := lowerExpr(l, s.Cond)
 	if err != nil {
 		return nil, err
 	}
@@ -386,7 +401,7 @@ func (l *lowerer) lowerWhileStmt(s *aotir.WhileStmt, cont cerl.Expr) (cerl.Expr,
 	// Push loop context.
 	l.loopStack = append(l.loopStack, loopCtx{num: n, params: params})
 
-	cond, err := lowerExpr(s.Cond)
+	cond, err := lowerExpr(l, s.Cond)
 	if err != nil {
 		l.loopStack = l.loopStack[:len(l.loopStack)-1]
 		return nil, err
@@ -547,11 +562,11 @@ func (l *lowerer) lowerForRangeStmt(s *aotir.ForRangeStmt, cont cerl.Expr) (cerl
 		Body:  helperBody,
 	})
 
-	startExpr, err := lowerExpr(s.Start)
+	startExpr, err := lowerExpr(l, s.Start)
 	if err != nil {
 		return nil, err
 	}
-	endExpr, err := lowerExpr(s.End)
+	endExpr, err := lowerExpr(l, s.End)
 	if err != nil {
 		return nil, err
 	}
@@ -653,7 +668,7 @@ func (l *lowerer) lowerForEachStmt(s *aotir.ForEachStmt, cont cerl.Expr) (cerl.E
 	})
 
 	// Evaluate the list expression once, then call the helper.
-	listExpr, err := lowerExpr(s.List)
+	listExpr, err := lowerExpr(l, s.List)
 	if err != nil {
 		return nil, err
 	}
@@ -843,20 +858,20 @@ func removeFrom(ss []string, s string) []string {
 }
 
 // lowerCallStmt lowers a CallStmt.
-func lowerCallStmt(s *aotir.CallStmt) (cerl.Expr, error) {
+func lowerCallStmt(l *lowerer, s *aotir.CallStmt) (cerl.Expr, error) {
 	switch s.Func {
 	case "mochi_print_str":
-		return lowerPrintStr(s.Args)
+		return lowerPrintStr(l, s.Args)
 	case "mochi_print_i64":
-		return lowerPrintInt(s.Args)
+		return lowerPrintInt(l, s.Args)
 	case "mochi_print_f64":
-		return lowerPrintFloat(s.Args)
+		return lowerPrintFloat(l, s.Args)
 	case "mochi_print_bool":
-		return lowerPrintBool(s.Args)
+		return lowerPrintBool(l, s.Args)
 	default:
 		args := make([]cerl.Expr, len(s.Args))
 		for i, a := range s.Args {
-			e, err := lowerExpr(a)
+			e, err := lowerExpr(l, a)
 			if err != nil {
 				return nil, err
 			}
@@ -866,11 +881,11 @@ func lowerCallStmt(s *aotir.CallStmt) (cerl.Expr, error) {
 	}
 }
 
-func lowerPrintStr(args []aotir.Expr) (cerl.Expr, error) {
+func lowerPrintStr(l *lowerer, args []aotir.Expr) (cerl.Expr, error) {
 	if len(args) != 1 {
 		return nil, fmt.Errorf("beam/lower: mochi_print_str wants 1 arg, got %d", len(args))
 	}
-	arg, err := lowerExpr(args[0])
+	arg, err := lowerExpr(l, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -878,11 +893,11 @@ func lowerPrintStr(args []aotir.Expr) (cerl.Expr, error) {
 	return cerl.CCall(cerl.CAtom("io"), cerl.CAtom("put_chars"), []cerl.Expr{argWithNewline}), nil
 }
 
-func lowerPrintInt(args []aotir.Expr) (cerl.Expr, error) {
+func lowerPrintInt(l *lowerer, args []aotir.Expr) (cerl.Expr, error) {
 	if len(args) != 1 {
 		return nil, fmt.Errorf("beam/lower: mochi_print_i64 wants 1 arg, got %d", len(args))
 	}
-	arg, err := lowerExpr(args[0])
+	arg, err := lowerExpr(l, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -891,22 +906,22 @@ func lowerPrintInt(args []aotir.Expr) (cerl.Expr, error) {
 	return cerl.CCall(cerl.CAtom("io"), cerl.CAtom("put_chars"), []cerl.Expr{argWithNewline}), nil
 }
 
-func lowerPrintFloat(args []aotir.Expr) (cerl.Expr, error) {
+func lowerPrintFloat(l *lowerer, args []aotir.Expr) (cerl.Expr, error) {
 	if len(args) != 1 {
 		return nil, fmt.Errorf("beam/lower: mochi_print_f64 wants 1 arg, got %d", len(args))
 	}
-	arg, err := lowerExpr(args[0])
+	arg, err := lowerExpr(l, args[0])
 	if err != nil {
 		return nil, err
 	}
 	return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("print_float"), []cerl.Expr{arg}), nil
 }
 
-func lowerPrintBool(args []aotir.Expr) (cerl.Expr, error) {
+func lowerPrintBool(l *lowerer, args []aotir.Expr) (cerl.Expr, error) {
 	if len(args) != 1 {
 		return nil, fmt.Errorf("beam/lower: mochi_print_bool wants 1 arg, got %d", len(args))
 	}
-	arg, err := lowerExpr(args[0])
+	arg, err := lowerExpr(l, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -919,7 +934,7 @@ func lowerPrintBool(args []aotir.Expr) (cerl.Expr, error) {
 }
 
 // lowerExpr lowers one aotir expression to a cerl expression.
-func lowerExpr(expr aotir.Expr) (cerl.Expr, error) {
+func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 	switch e := expr.(type) {
 	case *aotir.StringLit:
 		return cerl.CBin([]byte(e.Value)), nil
@@ -930,41 +945,44 @@ func lowerExpr(expr aotir.Expr) (cerl.Expr, error) {
 	case *aotir.BoolLit:
 		return cerl.CBool(e.Value), nil
 	case *aotir.VarRef:
-		return cerl.CVar("V_" + e.Name), nil
+		// Captured closure variables use "__e->fieldname" as VarRef.Name
+		// in the C backend (emitName encoding). Strip the env-struct prefix
+		// for BEAM; captured vars are naturally in scope via c_fun.
+		return cerl.CVar("V_" + strings.TrimPrefix(e.Name, "__e->")), nil
 	case *aotir.BinaryExpr:
-		return lowerBinaryExpr(e)
+		return lowerBinaryExpr(l, e)
 	case *aotir.UnaryExpr:
-		return lowerUnaryExpr(e)
+		return lowerUnaryExpr(l, e)
 	case *aotir.CallExpr:
-		return lowerCallExpr(e)
+		return lowerCallExpr(l, e)
 
 	// Phase 3.1: list expressions
 	case *aotir.ListLit:
-		return lowerListLit(e)
+		return lowerListLit(l, e)
 	case *aotir.IndexExpr:
-		return lowerIndexExpr(e)
+		return lowerIndexExpr(l, e)
 	case *aotir.LenExpr:
-		return lowerLenExpr(e)
+		return lowerLenExpr(l, e)
 	case *aotir.AppendExpr:
-		return lowerAppendExpr(e)
+		return lowerAppendExpr(l, e)
 
 	// Phase 3.2: map expressions
 	case *aotir.MapLit:
-		return lowerMapLit(e)
+		return lowerMapLit(l, e)
 	case *aotir.MapGetExpr:
-		return lowerMapGetExpr(e)
+		return lowerMapGetExpr(l, e)
 	case *aotir.MapHasExpr:
-		return lowerMapHasExpr(e)
+		return lowerMapHasExpr(l, e)
 	case *aotir.MapLenExpr:
-		return lowerMapLenExpr(e)
+		return lowerMapLenExpr(l, e)
 	case *aotir.MapKeysExpr:
-		recv, err := lowerExpr(e.Receiver)
+		recv, err := lowerExpr(l, e.Receiver)
 		if err != nil {
 			return nil, err
 		}
 		return cerl.CCall(cerl.CAtom("maps"), cerl.CAtom("keys"), []cerl.Expr{recv}), nil
 	case *aotir.MapValuesExpr:
-		recv, err := lowerExpr(e.Receiver)
+		recv, err := lowerExpr(l, e.Receiver)
 		if err != nil {
 			return nil, err
 		}
@@ -972,17 +990,23 @@ func lowerExpr(expr aotir.Expr) (cerl.Expr, error) {
 
 	// Phase 4.0: record construction and field access
 	case *aotir.RecordLit:
-		return lowerRecordLit(e)
+		return lowerRecordLit(l, e)
 	case *aotir.FieldAccess:
-		return lowerFieldAccess(e)
+		return lowerFieldAccess(l, e)
 
 	// Phase 5.0: sum type construction and field access
 	case *aotir.VariantLit:
-		return lowerVariantLit(e)
+		return lowerVariantLit(l, e)
 	case *aotir.VariantFieldAccess:
-		return lowerVariantFieldAccess(e)
+		return lowerVariantFieldAccess(l, e)
 	case *aotir.UnionVarRef:
 		return cerl.CVar("V_" + e.Name), nil
+
+	// Phase 6.0: closures and higher-order function calls
+	case *aotir.FunLit:
+		return l.lowerFunLit(e)
+	case *aotir.FunCallExpr:
+		return l.lowerFunCallExpr(e)
 
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported expression %T", expr)
@@ -990,10 +1014,10 @@ func lowerExpr(expr aotir.Expr) (cerl.Expr, error) {
 }
 
 // lowerListLit lowers [e1, e2, ...] to a CCons chain.
-func lowerListLit(e *aotir.ListLit) (cerl.Expr, error) {
+func lowerListLit(l *lowerer, e *aotir.ListLit) (cerl.Expr, error) {
 	result := cerl.Expr(cerl.CNil())
 	for i := len(e.Elems) - 1; i >= 0; i-- {
-		elem, err := lowerExpr(e.Elems[i])
+		elem, err := lowerExpr(l, e.Elems[i])
 		if err != nil {
 			return nil, err
 		}
@@ -1003,12 +1027,12 @@ func lowerListLit(e *aotir.ListLit) (cerl.Expr, error) {
 }
 
 // lowerIndexExpr lowers xs[i] to lists:nth(I+1, L) (0-indexed Mochi to 1-indexed Erlang).
-func lowerIndexExpr(e *aotir.IndexExpr) (cerl.Expr, error) {
-	recv, err := lowerExpr(e.Receiver)
+func lowerIndexExpr(l *lowerer, e *aotir.IndexExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
 	if err != nil {
 		return nil, err
 	}
-	idx, err := lowerExpr(e.Index)
+	idx, err := lowerExpr(l, e.Index)
 	if err != nil {
 		return nil, err
 	}
@@ -1017,8 +1041,8 @@ func lowerIndexExpr(e *aotir.IndexExpr) (cerl.Expr, error) {
 }
 
 // lowerLenExpr lowers len(xs) to erlang:length(L).
-func lowerLenExpr(e *aotir.LenExpr) (cerl.Expr, error) {
-	recv, err := lowerExpr(e.Receiver)
+func lowerLenExpr(l *lowerer, e *aotir.LenExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
 	if err != nil {
 		return nil, err
 	}
@@ -1026,12 +1050,12 @@ func lowerLenExpr(e *aotir.LenExpr) (cerl.Expr, error) {
 }
 
 // lowerAppendExpr lowers append(xs, v) to erlang:'++'(L, [V]).
-func lowerAppendExpr(e *aotir.AppendExpr) (cerl.Expr, error) {
-	recv, err := lowerExpr(e.Receiver)
+func lowerAppendExpr(l *lowerer, e *aotir.AppendExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
 	if err != nil {
 		return nil, err
 	}
-	val, err := lowerExpr(e.Value)
+	val, err := lowerExpr(l, e.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -1040,14 +1064,14 @@ func lowerAppendExpr(e *aotir.AppendExpr) (cerl.Expr, error) {
 }
 
 // lowerMapLit lowers {k1: v1, k2: v2} to a Core Erlang map literal.
-func lowerMapLit(e *aotir.MapLit) (cerl.Expr, error) {
+func lowerMapLit(l *lowerer, e *aotir.MapLit) (cerl.Expr, error) {
 	pairs := make([]cerl.Expr, len(e.Keys))
 	for i, k := range e.Keys {
-		keyExpr, err := lowerExpr(k)
+		keyExpr, err := lowerExpr(l, k)
 		if err != nil {
 			return nil, err
 		}
-		valExpr, err := lowerExpr(e.Values[i])
+		valExpr, err := lowerExpr(l, e.Values[i])
 		if err != nil {
 			return nil, err
 		}
@@ -1057,12 +1081,12 @@ func lowerMapLit(e *aotir.MapLit) (cerl.Expr, error) {
 }
 
 // lowerMapGetExpr lowers m[k] to erlang:map_get(K, M).
-func lowerMapGetExpr(e *aotir.MapGetExpr) (cerl.Expr, error) {
-	recv, err := lowerExpr(e.Receiver)
+func lowerMapGetExpr(l *lowerer, e *aotir.MapGetExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
 	if err != nil {
 		return nil, err
 	}
-	key, err := lowerExpr(e.Key)
+	key, err := lowerExpr(l, e.Key)
 	if err != nil {
 		return nil, err
 	}
@@ -1070,12 +1094,12 @@ func lowerMapGetExpr(e *aotir.MapGetExpr) (cerl.Expr, error) {
 }
 
 // lowerMapHasExpr lowers has(m, k) to maps:is_key(K, M).
-func lowerMapHasExpr(e *aotir.MapHasExpr) (cerl.Expr, error) {
-	recv, err := lowerExpr(e.Receiver)
+func lowerMapHasExpr(l *lowerer, e *aotir.MapHasExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
 	if err != nil {
 		return nil, err
 	}
-	key, err := lowerExpr(e.Key)
+	key, err := lowerExpr(l, e.Key)
 	if err != nil {
 		return nil, err
 	}
@@ -1083,8 +1107,8 @@ func lowerMapHasExpr(e *aotir.MapHasExpr) (cerl.Expr, error) {
 }
 
 // lowerMapLenExpr lowers len(m) for maps to erlang:map_size(M).
-func lowerMapLenExpr(e *aotir.MapLenExpr) (cerl.Expr, error) {
-	recv, err := lowerExpr(e.Receiver)
+func lowerMapLenExpr(l *lowerer, e *aotir.MapLenExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
 	if err != nil {
 		return nil, err
 	}
@@ -1094,14 +1118,14 @@ func lowerMapLenExpr(e *aotir.MapLenExpr) (cerl.Expr, error) {
 // lowerRecordLit lowers Person{name: "alice", age: 30} to a tagged BEAM map:
 // #{mochi_record_tag => person, name => <<"alice">>, age => 30}
 // Fields are already in record-decl source order (aotir enforces this).
-func lowerRecordLit(e *aotir.RecordLit) (cerl.Expr, error) {
+func lowerRecordLit(l *lowerer, e *aotir.RecordLit) (cerl.Expr, error) {
 	pairs := make([]cerl.Expr, 0, 1+len(e.Fields))
 	// First pair: mochi_record_tag => <lowercased record name atom>
 	tagAtom := cerl.CAtom(strings.ToLower(e.TypeName))
 	pairs = append(pairs, cerl.CMapPairAssoc(cerl.CAtom("mochi_record_tag"), tagAtom))
 	// Remaining pairs: field name atom => lowered value
 	for _, f := range e.Fields {
-		val, err := lowerExpr(f.Value)
+		val, err := lowerExpr(l, f.Value)
 		if err != nil {
 			return nil, fmt.Errorf("beam/lower: record field %s: %w", f.Name, err)
 		}
@@ -1111,8 +1135,8 @@ func lowerRecordLit(e *aotir.RecordLit) (cerl.Expr, error) {
 }
 
 // lowerFieldAccess lowers p.name to maps:get(name, V_p).
-func lowerFieldAccess(e *aotir.FieldAccess) (cerl.Expr, error) {
-	recv, err := lowerExpr(e.Receiver)
+func lowerFieldAccess(l *lowerer, e *aotir.FieldAccess) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
 	if err != nil {
 		return nil, err
 	}
@@ -1122,7 +1146,7 @@ func lowerFieldAccess(e *aotir.FieldAccess) (cerl.Expr, error) {
 
 // lowerVariantLit lowers a variant constructor to a tagged atom or tuple.
 // Unit variants (no fields) → atom; variants with fields → {tag, f1, f2, ...}.
-func lowerVariantLit(e *aotir.VariantLit) (cerl.Expr, error) {
+func lowerVariantLit(l *lowerer, e *aotir.VariantLit) (cerl.Expr, error) {
 	tag := cerl.CAtom(strings.ToLower(e.VariantName))
 	if len(e.Fields) == 0 {
 		return tag, nil
@@ -1130,7 +1154,7 @@ func lowerVariantLit(e *aotir.VariantLit) (cerl.Expr, error) {
 	elems := make([]cerl.Expr, 1+len(e.Fields))
 	elems[0] = tag
 	for i, f := range e.Fields {
-		val, err := lowerExpr(f.Value)
+		val, err := lowerExpr(l, f.Value)
 		if err != nil {
 			return nil, fmt.Errorf("beam/lower: variant field %s: %w", f.Name, err)
 		}
@@ -1143,8 +1167,8 @@ func lowerVariantLit(e *aotir.VariantLit) (cerl.Expr, error) {
 // After pattern matching, the field is bound to a variable by the match arm,
 // so we just reference the variable V_<VarName> (set up by the bindings).
 // If the receiver is a VarRef, the match arm body already has the binding in scope.
-func lowerVariantFieldAccess(e *aotir.VariantFieldAccess) (cerl.Expr, error) {
-	recv, err := lowerExpr(e.Receiver)
+func lowerVariantFieldAccess(l *lowerer, e *aotir.VariantFieldAccess) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
 	if err != nil {
 		return nil, err
 	}
@@ -1165,7 +1189,7 @@ func lowerVariantFieldAccess(e *aotir.VariantFieldAccess) (cerl.Expr, error) {
 
 // lowerMatchStmt lowers a MatchStmt to a Core Erlang c_case expression.
 func (l *lowerer) lowerMatchStmt(s *aotir.MatchStmt, cont cerl.Expr) (cerl.Expr, error) {
-	target, err := lowerExpr(s.Target)
+	target, err := lowerExpr(l, s.Target)
 	if err != nil {
 		return nil, fmt.Errorf("beam/lower: match target: %w", err)
 	}
@@ -1274,7 +1298,7 @@ func (l *lowerer) lowerMatchArmAsExpr(arm *aotir.MatchArm) (cerl.Expr, error) {
 	}
 	last := stmts[len(stmts)-1]
 	if assign, ok := last.(*aotir.AssignStmt); ok {
-		val, err := lowerExpr(assign.Value)
+		val, err := lowerExpr(l, assign.Value)
 		if err != nil {
 			return nil, err
 		}
@@ -1287,12 +1311,12 @@ func (l *lowerer) lowerMatchArmAsExpr(arm *aotir.MatchArm) (cerl.Expr, error) {
 	return l.lowerBlock(stmts, nil)
 }
 
-func lowerBinaryExpr(e *aotir.BinaryExpr) (cerl.Expr, error) {
-	left, err := lowerExpr(e.Left)
+func lowerBinaryExpr(l *lowerer, e *aotir.BinaryExpr) (cerl.Expr, error) {
+	left, err := lowerExpr(l, e.Left)
 	if err != nil {
 		return nil, err
 	}
-	right, err := lowerExpr(e.Right)
+	right, err := lowerExpr(l, e.Right)
 	if err != nil {
 		return nil, err
 	}
@@ -1394,8 +1418,8 @@ func wrapArithErr(op cerl.Expr, resVar string) cerl.Expr {
 	)
 }
 
-func lowerUnaryExpr(e *aotir.UnaryExpr) (cerl.Expr, error) {
-	operand, err := lowerExpr(e.Operand)
+func lowerUnaryExpr(l *lowerer, e *aotir.UnaryExpr) (cerl.Expr, error) {
+	operand, err := lowerExpr(l, e.Operand)
 	if err != nil {
 		return nil, err
 	}
@@ -1412,14 +1436,62 @@ func lowerUnaryExpr(e *aotir.UnaryExpr) (cerl.Expr, error) {
 	}
 }
 
-func lowerCallExpr(e *aotir.CallExpr) (cerl.Expr, error) {
+func lowerCallExpr(l *lowerer, e *aotir.CallExpr) (cerl.Expr, error) {
 	args := make([]cerl.Expr, len(e.Args))
 	for i, a := range e.Args {
-		arg, err := lowerExpr(a)
+		arg, err := lowerExpr(l, a)
 		if err != nil {
 			return nil, err
 		}
 		args[i] = arg
 	}
 	return cerl.CApply(cerl.CVarFunc(e.Func, len(e.Args)), args), nil
+}
+
+// lowerFunLit lowers a closure literal to a Core Erlang c_fun.
+// The lifted function body is inlined as a c_fun value so that the BEAM
+// lambda is a first-class value.
+func (l *lowerer) lowerFunLit(e *aotir.FunLit) (cerl.Expr, error) {
+	fn, ok := l.liftedFuncs[e.FuncName]
+	if !ok {
+		return nil, fmt.Errorf("beam/lower: FunLit references unknown lifted function %q", e.FuncName)
+	}
+
+	// Build parameter variable expressions.
+	vars := make([]cerl.Expr, len(fn.Params))
+	for i, p := range fn.Params {
+		vars[i] = cerl.CVar("V_" + p.Name)
+	}
+
+	// Save and reset scope for the closure body.
+	outer := l.scope
+	l.scope = make(map[string]bool)
+	for _, p := range fn.Params {
+		l.scope[p.Name] = true
+	}
+
+	body, err := l.lowerFunctionBody(fn.Body.Statements, nil)
+	l.scope = outer
+	if err != nil {
+		return nil, fmt.Errorf("beam/lower: FunLit %s: %w", e.FuncName, err)
+	}
+
+	return cerl.CFun(vars, body), nil
+}
+
+// lowerFunCallExpr lowers a higher-order function call (callee is a fun value).
+func (l *lowerer) lowerFunCallExpr(e *aotir.FunCallExpr) (cerl.Expr, error) {
+	callee, err := lowerExpr(l, e.Callee)
+	if err != nil {
+		return nil, err
+	}
+	args := make([]cerl.Expr, len(e.Args))
+	for i, a := range e.Args {
+		arg, err := lowerExpr(l, a)
+		if err != nil {
+			return nil, err
+		}
+		args[i] = arg
+	}
+	return cerl.CApply(callee, args), nil
 }

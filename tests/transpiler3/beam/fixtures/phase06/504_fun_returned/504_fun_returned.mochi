@@ -1,0 +1,8 @@
+fun multiplier(n: int): fun(int): int {
+    return fun(x: int): int => x * n
+}
+
+var triple: fun(int): int = multiplier(3)
+var quad: fun(int): int = multiplier(4)
+print(triple(7))
+print(quad(5))
