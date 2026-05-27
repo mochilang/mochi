@@ -1,0 +1,9 @@
+type Rect {
+  w: int
+  h: int
+}
+
+let r = Rect { w: 5, h: 3 }
+let area = r.w * r.h
+print(area)
+print(r.w + r.h)

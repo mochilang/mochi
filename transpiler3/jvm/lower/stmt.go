@@ -114,6 +114,9 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (javasrc.Stmt, error) {
 		javaType = lowerMapType(s.KeyType, s.ValueType)
 	case aotir.TypeSet:
 		javaType = lowerSetType(s.ElemType)
+	case aotir.TypeRecord:
+		// The record type is named exactly as in Mochi source.
+		javaType = javasrc.TypeRef{Name: s.RecordName}
 	default:
 		javaType, err = lowerType(s.VarType)
 		if err != nil {

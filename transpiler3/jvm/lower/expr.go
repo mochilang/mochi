@@ -98,6 +98,14 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (javasrc.Expr, error) {
 	case *aotir.SetLenExpr:
 		return l.lowerSetLenExpr(e)
 
+	// --- Record expressions ---
+
+	case *aotir.RecordLit:
+		return l.lowerRecordLit(e)
+
+	case *aotir.FieldAccess:
+		return l.lowerFieldAccess(e)
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported expr %T", e)
 	}
@@ -204,6 +212,21 @@ func (l *lowerer) lowerBinaryExpr(e *aotir.BinaryExpr) (javasrc.Expr, error) {
 	case aotir.BinOrBool:
 		return &javasrc.BinaryExpr{Left: left, Op: "||", Right: right}, nil
 
+	// Record equality: Java records auto-generate equals(); use Objects.equals for null safety.
+	case aotir.BinEqRec:
+		return &javasrc.StaticCallExpr{
+			Class:  "Objects",
+			Method: "equals",
+			Args:   []javasrc.Expr{left, right},
+		}, nil
+	case aotir.BinNeRec:
+		eq := &javasrc.StaticCallExpr{
+			Class:  "Objects",
+			Method: "equals",
+			Args:   []javasrc.Expr{left, right},
+		}
+		return &javasrc.UnaryExpr{Op: "!", Operand: eq}, nil
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported binary op %v", e.Op)
 	}
@@ -287,6 +310,13 @@ func (l *lowerer) lowerIndexExpr(e *aotir.IndexExpr) (javasrc.Expr, error) {
 		Receiver: recv,
 		Method:   "get",
 		Args:     []javasrc.Expr{intIdx},
+	}
+	// For record elements, an explicit cast is needed because the list is List<Object>.
+	if e.ElemType == aotir.TypeRecord && e.ElemRecordName != "" {
+		return &javasrc.CastExpr{
+			Type: javasrc.TypeRef{Name: e.ElemRecordName},
+			X:    get,
+		}, nil
 	}
 	// The result of List.get() is Object; cast to the unboxed primitive where needed.
 	// Java auto-unboxes when assigning to a primitive variable, so we don't need
@@ -504,4 +534,39 @@ func (l *lowerer) lowerSetLenExpr(e *aotir.SetLenExpr) (javasrc.Expr, error) {
 		Args:     nil,
 	}
 	return &javasrc.CastExpr{Type: javasrc.TypeLong, X: sizeCall}, nil
+}
+
+// --- Record lowering ---
+
+// lowerRecordLit lowers a RecordLit to `new RecordName(arg1, arg2, ...)`.
+// The fields in RecordLit are already in record-decl source order (the C lowerer
+// enforces this), so we emit them in order to match the canonical constructor.
+func (l *lowerer) lowerRecordLit(e *aotir.RecordLit) (javasrc.Expr, error) {
+	args := make([]javasrc.Expr, len(e.Fields))
+	for i, f := range e.Fields {
+		v, err := l.lowerExpr(f.Value)
+		if err != nil {
+			return nil, fmt.Errorf("record %q field %q: %w", e.TypeName, f.Name, err)
+		}
+		args[i] = v
+	}
+	return &javasrc.NewExpr{
+		Type: javasrc.TypeRef{Name: e.TypeName},
+		Args: args,
+	}, nil
+}
+
+// lowerFieldAccess lowers `p.fieldName` to `p.fieldName()`.
+// Java records expose fields via accessor methods with the same name as the field,
+// not as public fields. So `p.x` in Mochi becomes `p.x()` in Java.
+func (l *lowerer) lowerFieldAccess(e *aotir.FieldAccess) (javasrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return &javasrc.CallExpr{
+		Receiver: recv,
+		Method:   e.FieldName,
+		Args:     nil,
+	}, nil
 }
