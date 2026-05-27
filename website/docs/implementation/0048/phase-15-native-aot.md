@@ -10,9 +10,9 @@ description: "MEP-48 Phase 15 — --target=dotnet-aot; NativeAOT publish; trim w
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 15](/docs/mep/mep-0048#phase-15-nativeaot-packaging) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 05:52 (GMT+7) |
+| Landed         | 2026-05-28 06:06 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 

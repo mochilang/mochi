@@ -22,6 +22,8 @@ func generateCsproj(className, tfm, runtimeCsproj string) string {
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Deterministic>true</Deterministic>
+    <PathMap>$(MSBuildProjectDirectory)=/_/</PathMap>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
   </PropertyGroup>%s
 </Project>

@@ -10,9 +10,9 @@ description: "MEP-48 Phase 16 — Roslyn /deterministic; Deterministic=true; Sou
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 16](/docs/mep/mep-0048#phase-16-reproducibility) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 05:52 (GMT+7) |
+| Landed         | 2026-05-28 06:06 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
