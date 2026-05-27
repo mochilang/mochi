@@ -2,6 +2,7 @@ package lower
 
 import (
 	"fmt"
+	"strings"
 
 	"mochi/transpiler3/c/aotir"
 	"mochi/transpiler3/jvm/javasrc"
@@ -9,42 +10,38 @@ import (
 
 // lowerStmt translates an aotir.Stmt to a javasrc.Stmt.
 // Returns (nil, nil) for statements that produce no output (e.g. no-ops).
-func lowerStmt(s aotir.Stmt) (javasrc.Stmt, error) {
+func (l *lowerer) lowerStmt(s aotir.Stmt) (javasrc.Stmt, error) {
 	switch s := s.(type) {
 	case *aotir.CallStmt:
-		return lowerCallStmt(s)
+		return l.lowerCallStmt(s)
 
 	case *aotir.ReturnStmt:
 		if s.Value == nil {
 			return &javasrc.ReturnStmt{}, nil
 		}
-		v, err := lowerExpr(s.Value)
+		v, err := l.lowerExpr(s.Value)
 		if err != nil {
 			return nil, err
 		}
 		return &javasrc.ReturnStmt{Value: v}, nil
 
 	case *aotir.LetStmt:
-		return lowerLetStmt(s)
+		return l.lowerLetStmt(s)
 
 	case *aotir.AssignStmt:
-		val, err := lowerExpr(s.Value)
-		if err != nil {
-			return nil, err
-		}
-		return &javasrc.AssignStmt{
-			Target: &javasrc.NameExpr{Name: s.Name},
-			Value:  val,
-		}, nil
+		return l.lowerAssignStmt(s)
 
 	case *aotir.IfStmt:
-		return lowerIfStmt(s)
+		return l.lowerIfStmt(s)
 
 	case *aotir.WhileStmt:
-		return lowerWhileStmt(s)
+		return l.lowerWhileStmt(s)
 
 	case *aotir.ForRangeStmt:
-		return lowerForRangeStmt(s)
+		return l.lowerForRangeStmt(s)
+
+	case *aotir.ForEachStmt:
+		return l.lowerForEachStmt(s)
 
 	case *aotir.BreakStmt:
 		return &javasrc.BreakStmt{}, nil
@@ -53,20 +50,26 @@ func lowerStmt(s aotir.Stmt) (javasrc.Stmt, error) {
 		return &javasrc.ContinueStmt{}, nil
 
 	case *aotir.TryCatchStmt:
-		return lowerTryCatchStmt(s)
+		return l.lowerTryCatchStmt(s)
+
+	case *aotir.ListSetStmt:
+		return l.lowerListSetStmt(s)
+
+	case *aotir.MapPutStmt:
+		return l.lowerMapPutStmt(s)
 
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported stmt %T", s)
 	}
 }
 
-func lowerCallStmt(s *aotir.CallStmt) (javasrc.Stmt, error) {
+func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (javasrc.Stmt, error) {
 	switch s.Func {
 	case "mochi_print_str", "mochi_print_i64", "mochi_print_f64", "mochi_print_bool":
 		if len(s.Args) != 1 {
 			return nil, fmt.Errorf("jvm/lower: %s wants 1 arg, got %d", s.Func, len(s.Args))
 		}
-		arg, err := lowerExpr(s.Args[0])
+		arg, err := l.lowerExpr(s.Args[0])
 		if err != nil {
 			return nil, err
 		}
@@ -76,43 +79,119 @@ func lowerCallStmt(s *aotir.CallStmt) (javasrc.Stmt, error) {
 			Args:   []javasrc.Expr{arg},
 		}
 		return &javasrc.ExprStmt{X: call}, nil
+
 	default:
+		// User-defined function called as a statement (discarding the return value).
+		if !strings.HasPrefix(s.Func, "mochi_") {
+			args, err := l.lowerExprs(s.Args)
+			if err != nil {
+				return nil, err
+			}
+			call := &javasrc.StaticCallExpr{
+				Class:  l.className,
+				Method: s.Func,
+				Args:   args,
+			}
+			return &javasrc.ExprStmt{X: call}, nil
+		}
 		return nil, fmt.Errorf("jvm/lower: unsupported builtin %q", s.Func)
 	}
 }
 
-func lowerLetStmt(s *aotir.LetStmt) (javasrc.Stmt, error) {
-	t, err := lowerType(s.VarType)
-	if err != nil {
-		return nil, err
-	}
-	var init javasrc.Expr
-	if s.Init != nil {
-		init, err = lowerExpr(s.Init)
+func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (javasrc.Stmt, error) {
+	var javaType javasrc.TypeRef
+	var err error
+
+	// Choose parameterised collection types for let/var collection bindings.
+	switch s.VarType {
+	case aotir.TypeList:
+		if s.Mutable {
+			javaType = lowerMutableListType(s.ElemType)
+		} else {
+			javaType = lowerListType(s.ElemType)
+		}
+	case aotir.TypeMap:
+		javaType = lowerMapType(s.KeyType, s.ValueType)
+	case aotir.TypeSet:
+		javaType = lowerSetType(s.ElemType)
+	default:
+		javaType, err = lowerType(s.VarType)
 		if err != nil {
 			return nil, err
 		}
 	}
+
+	var init javasrc.Expr
+	if s.Init != nil {
+		init, err = l.lowerExpr(s.Init)
+		if err != nil {
+			return nil, err
+		}
+		// For immutable (let) list bindings backed by a mutable ArrayList, wrap
+		// in java.util.Collections.unmodifiableList so Phase 3 let semantics hold.
+		// Actually we keep ArrayList for simplicity -- Mochi let just means no
+		// rebinding, not that the container is structurally immutable at runtime.
+	}
 	return &javasrc.VarDeclStmt{
 		Final: !s.Mutable,
-		Type:  &t,
+		Type:  &javaType,
 		Name:  s.Name,
 		Init:  init,
 	}, nil
 }
 
-func lowerIfStmt(s *aotir.IfStmt) (javasrc.Stmt, error) {
-	cond, err := lowerExpr(s.Cond)
+func (l *lowerer) lowerAssignStmt(s *aotir.AssignStmt) (javasrc.Stmt, error) {
+	// Pattern: xs = append(xs, v) -- lower to xs.add(v) for in-place mutation.
+	if ap, ok := s.Value.(*aotir.AppendExpr); ok {
+		recv := &javasrc.NameExpr{Name: s.Name}
+		val, err := l.lowerExpr(ap.Value)
+		if err != nil {
+			return nil, err
+		}
+		call := &javasrc.CallExpr{
+			Receiver: recv,
+			Method:   "add",
+			Args:     []javasrc.Expr{val},
+		}
+		return &javasrc.ExprStmt{X: call}, nil
+	}
+	// Pattern: s = add(s, x) (set add) -- lower to s.add(x) for in-place mutation.
+	if sa, ok := s.Value.(*aotir.SetAddExpr); ok {
+		recv := &javasrc.NameExpr{Name: s.Name}
+		elem, err := l.lowerExpr(sa.Elem)
+		if err != nil {
+			return nil, err
+		}
+		call := &javasrc.CallExpr{
+			Receiver: recv,
+			Method:   "add",
+			Args:     []javasrc.Expr{elem},
+		}
+		return &javasrc.ExprStmt{X: call}, nil
+	}
+	// General assignment.
+	val, err := l.lowerExpr(s.Value)
 	if err != nil {
 		return nil, err
 	}
-	then, err := lowerBlock(s.Then)
+	return &javasrc.AssignStmt{
+		Target: &javasrc.NameExpr{Name: s.Name},
+		Value:  val,
+	}, nil
+}
+
+func (l *lowerer) lowerIfStmt(s *aotir.IfStmt) (javasrc.Stmt, error) {
+	cond, err := l.lowerExpr(s.Cond)
+	if err != nil {
+		return nil, err
+	}
+	then, err := l.lowerBlock(s.Then)
 	if err != nil {
 		return nil, err
 	}
 	var elseBlock *javasrc.Block
 	if s.Else != nil {
-		eb, err := lowerBlock(s.Else)
+		eb, err := l.lowerBlock(s.Else)
 		if err != nil {
 			return nil, err
 		}
@@ -125,12 +204,12 @@ func lowerIfStmt(s *aotir.IfStmt) (javasrc.Stmt, error) {
 	}, nil
 }
 
-func lowerWhileStmt(s *aotir.WhileStmt) (javasrc.Stmt, error) {
-	cond, err := lowerExpr(s.Cond)
+func (l *lowerer) lowerWhileStmt(s *aotir.WhileStmt) (javasrc.Stmt, error) {
+	cond, err := l.lowerExpr(s.Cond)
 	if err != nil {
 		return nil, err
 	}
-	body, err := lowerBlock(s.Body)
+	body, err := l.lowerBlock(s.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -140,16 +219,16 @@ func lowerWhileStmt(s *aotir.WhileStmt) (javasrc.Stmt, error) {
 	}, nil
 }
 
-func lowerForRangeStmt(s *aotir.ForRangeStmt) (javasrc.Stmt, error) {
-	start, err := lowerExpr(s.Start)
+func (l *lowerer) lowerForRangeStmt(s *aotir.ForRangeStmt) (javasrc.Stmt, error) {
+	start, err := l.lowerExpr(s.Start)
 	if err != nil {
 		return nil, err
 	}
-	end, err := lowerExpr(s.End)
+	end, err := l.lowerExpr(s.End)
 	if err != nil {
 		return nil, err
 	}
-	body, err := lowerBlock(s.Body)
+	body, err := l.lowerBlock(s.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -180,12 +259,32 @@ func lowerForRangeStmt(s *aotir.ForRangeStmt) (javasrc.Stmt, error) {
 	}, nil
 }
 
-func lowerTryCatchStmt(s *aotir.TryCatchStmt) (javasrc.Stmt, error) {
-	tryBody, err := lowerBlock(s.TryBody)
+// lowerForEachStmt lowers `for x in xs { ... }` to a Java enhanced for loop.
+func (l *lowerer) lowerForEachStmt(s *aotir.ForEachStmt) (javasrc.Stmt, error) {
+	list, err := l.lowerExpr(s.List)
 	if err != nil {
 		return nil, err
 	}
-	catchBody, err := lowerBlock(s.CatchBody)
+	body, err := l.lowerBlock(s.Body)
+	if err != nil {
+		return nil, err
+	}
+	// Use the boxed element type so Java can iterate over List<Long> etc.
+	elemType := boxedType(s.ElemType)
+	return &javasrc.ForEachStmt{
+		ElemType: elemType,
+		ElemName: s.Var,
+		Iter:     list,
+		Body:     body,
+	}, nil
+}
+
+func (l *lowerer) lowerTryCatchStmt(s *aotir.TryCatchStmt) (javasrc.Stmt, error) {
+	tryBody, err := l.lowerBlock(s.TryBody)
+	if err != nil {
+		return nil, err
+	}
+	catchBody, err := l.lowerBlock(s.CatchBody)
 	if err != nil {
 		return nil, err
 	}
@@ -197,14 +296,53 @@ func lowerTryCatchStmt(s *aotir.TryCatchStmt) (javasrc.Stmt, error) {
 	}, nil
 }
 
+// lowerListSetStmt lowers xs[i] = v to xs.set((int) i, v).
+func (l *lowerer) lowerListSetStmt(s *aotir.ListSetStmt) (javasrc.Stmt, error) {
+	recv := &javasrc.NameExpr{Name: s.Name}
+	idx, err := l.lowerExpr(s.Index)
+	if err != nil {
+		return nil, err
+	}
+	val, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, err
+	}
+	intIdx := &javasrc.CastExpr{Type: javasrc.TypeRef{Name: "int"}, X: idx}
+	call := &javasrc.CallExpr{
+		Receiver: recv,
+		Method:   "set",
+		Args:     []javasrc.Expr{intIdx, val},
+	}
+	return &javasrc.ExprStmt{X: call}, nil
+}
+
+// lowerMapPutStmt lowers m[k] = v to m.put(k, v).
+func (l *lowerer) lowerMapPutStmt(s *aotir.MapPutStmt) (javasrc.Stmt, error) {
+	recv := &javasrc.NameExpr{Name: s.Name}
+	key, err := l.lowerExpr(s.Key)
+	if err != nil {
+		return nil, err
+	}
+	val, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, err
+	}
+	call := &javasrc.CallExpr{
+		Receiver: recv,
+		Method:   "put",
+		Args:     []javasrc.Expr{key, val},
+	}
+	return &javasrc.ExprStmt{X: call}, nil
+}
+
 // lowerBlock converts an aotir.Block to a javasrc.Block.
-func lowerBlock(b *aotir.Block) (javasrc.Block, error) {
+func (l *lowerer) lowerBlock(b *aotir.Block) (javasrc.Block, error) {
 	if b == nil {
 		return javasrc.Block{}, nil
 	}
 	var stmts []javasrc.Stmt
 	for _, s := range b.Statements {
-		js, err := lowerStmt(s)
+		js, err := l.lowerStmt(s)
 		if err != nil {
 			return javasrc.Block{}, err
 		}

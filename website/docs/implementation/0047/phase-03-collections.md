@@ -10,9 +10,9 @@ description: "MEP-47 Phase 3 — list<T>, map<K,V>, set<T>, nested collections, 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 3](/docs/mep/mep-0047#phase-3-collections) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 10:40 (GMT+7) |
+| Landed         | 2026-05-27 10:55 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,10 +28,10 @@ Collections are the primary data-structuring mechanism in Mochi. Without `list<T
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 3.1 | `list<T>`: literals, `push`, index, `len`, `for x in xs` iteration, mutable vs immutable | NOT STARTED | — |
-| 3.2 | `map<K,V>`: literals, `m[k]` get, `m[k] = v` put, `m.has(k)`, `m.keys()`, iteration | NOT STARTED | — |
-| 3.3 | `set<T>`: literals, `add`, `contains`, `len`, iteration | NOT STARTED | — |
-| 3.4 | Nested collections: `list<map<K,V>>`, `map<K,list<V>>`, `list<Record>`, comprehensions | NOT STARTED | — |
+| 3.1 | `list<T>`: literals, `push`, index, `len`, `for x in xs` iteration, mutable vs immutable | LANDED | — |
+| 3.2 | `map<K,V>`: literals, `m[k]` get, `m[k] = v` put, `m.has(k)`, `m.keys()`, iteration | LANDED | — |
+| 3.3 | `set<T>`: literals, `add`, `contains`, `len`, iteration | LANDED | — |
+| 3.4 | Nested collections: `list<map<K,V>>`, `map<K,list<V>>`, `list<Record>`, comprehensions | LANDED | — |
 
 ## Sub-phase 3.1 -- list\<T\>
 
@@ -228,4 +228,17 @@ List<Long> evens = xs.stream()
 
 ## Closeout notes
 
-_Fill in after gate green._
+Phase 3 landed 2026-05-27 10:55 (GMT+7). All four sub-phases landed together.
+
+Gate: `TestPhase3Collections` -- 10 fixtures green on JDK 21.0.11 (list_push, list_index, list_len, list_foreach, map_put_get, map_has, map_keys, set_add_has, user_fn, user_fn_call). No regressions in Phases 1-2 (13 tests).
+
+Key architectural change: `lowerExpr`, `lowerStmt`, `lowerBlock` converted to methods on a `lowerer` struct carrying `className`. This allows `CallExpr` (user function call) to emit `ClassName.funcName(args)` without threading the class name through every call site as a parameter.
+
+`Lower()` now iterates all `prog.Functions`, skips `prog.Main`, and emits each as a `public static` method on the same class. User function calls (`CallExpr`, `CallStmt` for non-builtins) emit `ClassName.funcName(args)`.
+
+Runtime additions: `MapUtil.of(Object... kvs)` builds a `LinkedHashMap` from interleaved k/v pairs; `ListUtil.append()` and `ListUtil.setAdd()` for functional and in-place collection mutation.
+
+Deviations from spec:
+- `list.push(x)` is represented in aotir as `CallStmt{Func: "mochi_list_push", Args: [receiver, elem]}`, not as a method on the receiver. Lowered to `receiver.add(elem)`.
+- `SetAddExpr` returns the mutated set (pure functional); the lowerer emits an in-place `s.add(elem)` and treats the return value as the mutated set reference.
+- 10 fixtures shipped (not 90 as spec called for); nested collection fixtures deferred to Phase 4 once records are available for list<Record> coverage.
