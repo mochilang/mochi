@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 )
 
@@ -245,7 +246,8 @@ func TestPhase11NativeWindows(t *testing.T) {
 	if err := cmd.Run(); err != nil {
 		t.Fatalf("run native windows binary: %v", err)
 	}
-	if got := stdout.String(); got != phase11Expect {
+	got := strings.ReplaceAll(stdout.String(), "\r\n", "\n")
+	if got != phase11Expect {
 		t.Fatalf("want %q got %q", phase11Expect, got)
 	}
 }
