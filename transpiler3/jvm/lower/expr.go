@@ -191,6 +191,12 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (javasrc.Expr, error) {
 	case *aotir.LLMGenerateExpr:
 		return l.lowerLLMGenerateExpr(e)
 
+	case *aotir.HttpGetExpr:
+		return l.lowerHttpGetExpr(e)
+
+	case *aotir.JsonDecodeExpr:
+		return l.lowerJsonDecodeExpr(e)
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported expr %T", e)
 	}

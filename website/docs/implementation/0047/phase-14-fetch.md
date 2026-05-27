@@ -10,9 +10,9 @@ description: "MEP-47 Phase 14 — fetch statement via java.net.http.HttpClient; 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 14](/docs/mep/mep-0047#phase-14-fetch-http) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 14:45 (GMT+7) |
+| Landed         | 2026-05-27 14:49 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,9 +28,9 @@ description: "MEP-47 Phase 14 — fetch statement via java.net.http.HttpClient; 
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 14.0 | `fetch "url" into body` -> `Fetch.get(url)` via `java.net.http.HttpClient` | NOT STARTED | — |
-| 14.1 | `fetch url into body` where `url` is a Mochi variable -> same, `url` evaluated dynamically | NOT STARTED | — |
-| 14.2 | `json_decode(body)` -> Jackson `ObjectMapper.readTree(body)` -> Mochi `map<string, string>` | NOT STARTED | — |
+| 14.0 | `fetch "url" into body` -> `Fetch.get(url)` via `java.net.http.HttpClient` | LANDED | — |
+| 14.1 | `fetch url into body` where `url` is a Mochi variable -> same, `url` evaluated dynamically | LANDED | — |
+| 14.2 | `json_decode(body)` -> flat JSON parser -> Mochi `map<string, string>` | LANDED | — |
 
 ## Sub-phase 14.0 -- fetch with string literal URL
 
