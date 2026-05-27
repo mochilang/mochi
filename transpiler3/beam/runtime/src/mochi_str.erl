@@ -1,5 +1,6 @@
 -module(mochi_str).
--export([print_float/1, concat/2, index/2, substring/3, reverse/1, convert/1, split/2, join/2]).
+-export([print_float/1, concat/2, index/2, substring/3, reverse/1, convert/1, split/2, join/2,
+         len/1, upper/1, lower/1, contains/2]).
 
 %% print_float/1 prints a float using Go-compatible shortest-round-trip
 %% formatting, matching vm3's fmt.Println(f) output exactly.
@@ -100,3 +101,18 @@ split(S, Sep) ->
 join([], _Sep) -> <<>>;
 join([H | T], Sep) ->
     lists:foldl(fun(X, Acc) -> <<Acc/binary, Sep/binary, X/binary>> end, H, T).
+
+%% len/1 — byte length of a binary string (matches C strlen semantics).
+len(S) when is_binary(S) -> byte_size(S).
+
+%% upper/1 — convert binary string to uppercase.
+upper(S) when is_binary(S) ->
+    unicode:characters_to_binary(string:uppercase(unicode:characters_to_list(S))).
+
+%% lower/1 — convert binary string to lowercase.
+lower(S) when is_binary(S) ->
+    unicode:characters_to_binary(string:lowercase(unicode:characters_to_list(S))).
+
+%% contains/2 — true if binary S contains substring Sub.
+contains(S, Sub) when is_binary(S), is_binary(Sub) ->
+    binary:match(S, Sub) =/= nomatch.

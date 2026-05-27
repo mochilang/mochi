@@ -1518,6 +1518,100 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 	case *aotir.StrConvertExpr:
 		return lowerStrConvertExpr(l, e)
 
+	// String operations backed by mochi_str runtime.
+	case *aotir.StrIndexExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		idx, err := lowerExpr(l, e.Index)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("index"), []cerl.Expr{recv, idx}), nil
+	case *aotir.StrSubstringExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		start, err := lowerExpr(l, e.Start)
+		if err != nil {
+			return nil, err
+		}
+		end, err := lowerExpr(l, e.End)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("substring"), []cerl.Expr{recv, start, end}), nil
+	case *aotir.StrReverseExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("reverse"), []cerl.Expr{recv}), nil
+	case *aotir.StrSplitExpr:
+		str, err := lowerExpr(l, e.Str)
+		if err != nil {
+			return nil, err
+		}
+		sep, err := lowerExpr(l, e.Sep)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("split"), []cerl.Expr{str, sep}), nil
+	case *aotir.StrJoinExpr:
+		list, err := lowerExpr(l, e.List)
+		if err != nil {
+			return nil, err
+		}
+		sep, err := lowerExpr(l, e.Sep)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("join"), []cerl.Expr{list, sep}), nil
+
+	// Phase 13.0 builtins: string length, case, contains.
+	case *aotir.StrLenExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("len"), []cerl.Expr{recv}), nil
+	case *aotir.StrUpperExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("upper"), []cerl.Expr{recv}), nil
+	case *aotir.StrLowerExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("lower"), []cerl.Expr{recv}), nil
+	case *aotir.StrContainsExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		sub, err := lowerExpr(l, e.Sub)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("contains"), []cerl.Expr{recv, sub}), nil
+
+	// Phase 13.0 builtins: abs, floor, ceil via MathCallExpr.
+	case *aotir.MathCallExpr:
+		return lowerMathCallExpr(l, e)
+
+	// int(x) cast: float → integer truncation toward zero.
+	case *aotir.NumCastExpr:
+		operand, err := lowerExpr(l, e.Operand)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("trunc"), []cerl.Expr{operand}), nil
+
 	// Phase 11.0: async expr → mochi_async:async(fun() -> Body end)
 	case *aotir.AsyncExpr:
 		return lowerAsyncExpr(l, e)
@@ -1550,6 +1644,28 @@ func lowerAwaitExpr(l *lowerer, e *aotir.AwaitExpr) (cerl.Expr, error) {
 		return nil, fmt.Errorf("beam/lower: await future: %w", err)
 	}
 	return cerl.CCall(cerl.CAtom("mochi_async"), cerl.CAtom("await"), []cerl.Expr{fut}), nil
+}
+
+// lowerMathCallExpr lowers abs/floor/ceil to Erlang built-ins.
+//   abs_i64  → erlang:abs(X)         (integer)
+//   abs_f64  → erlang:abs(X)         (float)
+//   floor    → math:floor(X)         (float → float)
+//   ceil     → math:ceil(X)          (float → float)
+func lowerMathCallExpr(l *lowerer, e *aotir.MathCallExpr) (cerl.Expr, error) {
+	arg, err := lowerExpr(l, e.Arg)
+	if err != nil {
+		return nil, fmt.Errorf("beam/lower: math call %s arg: %w", e.Func, err)
+	}
+	switch e.Func {
+	case "abs_i64", "abs_f64":
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("abs"), []cerl.Expr{arg}), nil
+	case "floor":
+		return cerl.CCall(cerl.CAtom("math"), cerl.CAtom("floor"), []cerl.Expr{arg}), nil
+	case "ceil":
+		return cerl.CCall(cerl.CAtom("math"), cerl.CAtom("ceil"), []cerl.Expr{arg}), nil
+	default:
+		return nil, fmt.Errorf("beam/lower: unknown MathCallExpr func %q", e.Func)
+	}
 }
 
 // lowerStrConvertExpr lowers str(x) to erlang:integer_to_binary/1,
