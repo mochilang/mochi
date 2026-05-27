@@ -575,6 +575,47 @@ func (s *ThrowStmt) stmtString(indent int) string {
 	return strings.Repeat("    ", indent) + "throw " + s.Value.ExprString() + ";"
 }
 
+// SwitchCaseClause is one arm of a SwitchStmt.
+// For a type-pattern case, Label is the C# pattern (e.g. "Circle __mc_Circle").
+// For the default arm, IsDefault is true and Label is ignored.
+type SwitchCaseClause struct {
+	IsDefault bool
+	NoBreak   bool   // suppress trailing break when body always throws
+	Label     string // C# pattern label, e.g. "Circle __mc" or "" for default
+	Body      []Stmt
+}
+
+// SwitchStmt is a C# switch statement with type-pattern cases.
+type SwitchStmt struct {
+	Tag   Expr
+	Cases []SwitchCaseClause
+}
+
+func (s *SwitchStmt) stmtString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	inner := strings.Repeat("    ", indent+1)
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%sswitch (%s)\n%s{\n", pad, s.Tag.ExprString(), pad)
+	for _, c := range s.Cases {
+		if c.IsDefault {
+			fmt.Fprintf(&sb, "%sdefault:\n", inner)
+		} else {
+			fmt.Fprintf(&sb, "%scase %s:\n", inner, c.Label)
+		}
+		fmt.Fprintf(&sb, "%s{\n", inner)
+		for _, st := range c.Body {
+			sb.WriteString(st.stmtString(indent + 2))
+			sb.WriteString("\n")
+		}
+		if !c.NoBreak {
+			fmt.Fprintf(&sb, "%sbreak;\n", strings.Repeat("    ", indent+2))
+		}
+		fmt.Fprintf(&sb, "%s}\n", inner)
+	}
+	sb.WriteString(pad + "}")
+	return sb.String()
+}
+
 // --- Expression nodes ---
 
 // Expr is the common interface for all expressions.

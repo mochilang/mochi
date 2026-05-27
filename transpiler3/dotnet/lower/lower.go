@@ -16,8 +16,9 @@ import (
 )
 
 type lowerer struct {
-	className string
-	colours   colour.ColourMap
+	className    string
+	colours      colour.ColourMap
+	matchCaseVar string // name of the case-bound variable in the current match arm
 }
 
 // Lower translates an aotir.Program into one CompilationUnit per type plus one
@@ -62,8 +63,11 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, className string) ([]*
 		Members:   members,
 	}
 
-	// Record declarations come first so the class can reference them.
-	types := make([]csharpsrc.TypeDecl, 0, len(prog.Records)+1)
+	// Union and record declarations come first so the class can reference them.
+	types := make([]csharpsrc.TypeDecl, 0, len(prog.Records)+len(prog.Unions)+1)
+	for _, ud := range prog.Unions {
+		types = append(types, lowerUnionDecl(ud)...)
+	}
 	for _, rd := range prog.Records {
 		types = append(types, lowerRecordDecl(rd))
 	}
@@ -153,6 +157,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (csharpsrc.Stmt, error) {
 		return l.lowerListSetStmt(s)
 	case *aotir.MapPutStmt:
 		return l.lowerMapPutStmt(s)
+	case *aotir.MatchStmt:
+		return l.lowerMatchStmt(s)
 	default:
 		return nil, fmt.Errorf("dotnet/lower: unsupported statement %T", s)
 	}
@@ -200,7 +206,15 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (csharpsrc.Stmt, error) {
 			return nil, err
 		}
 	}
-	return &csharpsrc.LocalDeclStmt{Name: s.Name, Init: init}, nil
+	var typ *csharpsrc.TypeRef
+	// Use explicit type when:
+	// - no initializer (C# forbids 'var x;')
+	// - union type binding (var would infer the variant, breaking switch pattern matching)
+	if init == nil || s.VarType == aotir.TypeUnion {
+		t := lowerLetStmtType(s)
+		typ = &t
+	}
+	return &csharpsrc.LocalDeclStmt{Type: typ, Name: s.Name, Init: init}, nil
 }
 
 func (l *lowerer) lowerIfStmt(s *aotir.IfStmt) (csharpsrc.Stmt, error) {
@@ -351,6 +365,13 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (csharpsrc.Expr, error) {
 		return l.lowerRecordLit(e)
 	case *aotir.FieldAccess:
 		return l.lowerFieldAccess(e)
+	// --- sum types (Phase 5) ---
+	case *aotir.VariantLit:
+		return l.lowerVariantLit(e)
+	case *aotir.VariantFieldAccess:
+		return l.lowerVariantFieldAccess(e)
+	case *aotir.UnionVarRef:
+		return &csharpsrc.NameExpr{Name: e.Name}, nil
 	// --- collections (Phase 3) ---
 	case *aotir.ListLit:
 		return l.lowerListLit(e)
@@ -896,6 +917,194 @@ func (l *lowerer) lowerMapPutStmt(s *aotir.MapPutStmt) (csharpsrc.Stmt, error) {
 		},
 		Value: val,
 	}, nil
+}
+
+// --- Phase 5 sum-type lowering helpers ---
+
+// lowerUnionDecl converts an aotir.UnionDecl to an abstract base record +
+// one sealed record per variant. All are emitted as top-level CompilationUnit types.
+func lowerUnionDecl(ud *aotir.UnionDecl) []csharpsrc.TypeDecl {
+	base := &csharpsrc.AbstractRecordDecl{
+		Modifiers: []string{"public", "abstract"},
+		Name:      ud.Name,
+	}
+	result := []csharpsrc.TypeDecl{base}
+	for _, v := range ud.Variants {
+		components := make([]csharpsrc.RecordComponent, len(v.Fields))
+		for i, f := range v.Fields {
+			var t csharpsrc.TypeRef
+			if f.FieldType == aotir.TypeRecord && f.RecordName != "" {
+				t = csharpsrc.TypeRef{Name: f.RecordName}
+			} else {
+				t = lowerType(f.FieldType)
+			}
+			components[i] = csharpsrc.RecordComponent{
+				Type: t,
+				Name: snakeToPascal(f.Name),
+			}
+		}
+		variant := &csharpsrc.RecordDecl{
+			Modifiers:  []string{"public", "sealed"},
+			Name:       v.Name,
+			Components: components,
+			Interfaces: []csharpsrc.TypeRef{{Name: ud.Name}},
+		}
+		result = append(result, variant)
+	}
+	return result
+}
+
+func (l *lowerer) lowerVariantLit(e *aotir.VariantLit) (csharpsrc.Expr, error) {
+	args := make([]csharpsrc.Expr, len(e.Fields))
+	for i, f := range e.Fields {
+		v, err := l.lowerExpr(f.Value)
+		if err != nil {
+			return nil, err
+		}
+		args[i] = v
+	}
+	return &csharpsrc.NewExpr{
+		Type: csharpsrc.TypeRef{Name: e.VariantName},
+		Args: args,
+	}, nil
+}
+
+func (l *lowerer) lowerVariantFieldAccess(e *aotir.VariantFieldAccess) (csharpsrc.Expr, error) {
+	// Inside a match arm, fields are accessed via the case-bound variable.
+	if l.matchCaseVar != "" {
+		return &csharpsrc.FieldAccessExpr{
+			Receiver: &csharpsrc.NameExpr{Name: l.matchCaseVar},
+			Field:    snakeToPascal(e.FieldName),
+		}, nil
+	}
+	// Outside a match arm (rare), lower the receiver and access the field.
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.FieldAccessExpr{
+		Receiver: recv,
+		Field:    snakeToPascal(e.FieldName),
+	}, nil
+}
+
+// lowerMatchStmt lowers an aotir.MatchStmt to a C# switch statement.
+// If ResultVar is non-empty, declares the result variable before the switch.
+func (l *lowerer) lowerMatchStmt(s *aotir.MatchStmt) (csharpsrc.Stmt, error) {
+	target, err := l.lowerExpr(s.Target)
+	if err != nil {
+		return nil, err
+	}
+
+	var cases []csharpsrc.SwitchCaseClause
+	for i, arm := range s.Arms {
+		c, err := l.lowerMatchArm(&arm, i)
+		if err != nil {
+			return nil, fmt.Errorf("match arm %q: %w", arm.VariantName, err)
+		}
+		cases = append(cases, c)
+	}
+	if s.Default != nil {
+		dc, err := l.lowerMatchArm(s.Default, -1)
+		if err != nil {
+			return nil, fmt.Errorf("match default arm: %w", err)
+		}
+		dc.IsDefault = true
+		dc.Label = ""
+		cases = append(cases, dc)
+	} else {
+		// Synthetic default so C# definite-assignment analysis is satisfied.
+		cases = append(cases, csharpsrc.SwitchCaseClause{
+			IsDefault: true,
+			NoBreak:   true,
+			Body: []csharpsrc.Stmt{
+				&csharpsrc.ThrowStmt{
+					Value: &csharpsrc.NewExpr{
+						Type: csharpsrc.TypeRef{Name: "InvalidOperationException"},
+						Args: []csharpsrc.Expr{csharpsrc.StringLit("unreachable match")},
+					},
+				},
+			},
+		})
+	}
+
+	return &csharpsrc.SwitchStmt{Tag: target, Cases: cases}, nil
+}
+
+// lowerMatchArm lowers one arm of a MatchStmt.
+func (l *lowerer) lowerMatchArm(arm *aotir.MatchArm, idx int) (csharpsrc.SwitchCaseClause, error) {
+	var caseVar string
+	var label string
+
+	if arm.VariantName != "" {
+		if idx >= 0 {
+			caseVar = fmt.Sprintf("__mc_%s_%d", arm.VariantName, idx)
+		} else {
+			caseVar = fmt.Sprintf("__mc_%s", arm.VariantName)
+		}
+		label = arm.VariantName + " " + caseVar
+	}
+
+	// Set case variable context for VariantFieldAccess.
+	saved := l.matchCaseVar
+	l.matchCaseVar = caseVar
+	defer func() { l.matchCaseVar = saved }()
+
+	var body []csharpsrc.Stmt
+
+	// Materialize bindings: var r = __mc_Circle.R;
+	for _, binding := range arm.Bindings {
+		var t csharpsrc.TypeRef
+		if binding.FieldType == aotir.TypeRecord && binding.RecordName != "" {
+			t = csharpsrc.TypeRef{Name: binding.RecordName}
+		} else {
+			t = lowerType(binding.FieldType)
+		}
+		body = append(body, &csharpsrc.LocalDeclStmt{
+			Type: &t,
+			Name: binding.VarName,
+			Init: &csharpsrc.FieldAccessExpr{
+				Receiver: &csharpsrc.NameExpr{Name: caseVar},
+				Field:    snakeToPascal(binding.FieldName),
+			},
+		})
+	}
+
+	blk, err := l.lowerBlock(arm.Body)
+	if err != nil {
+		return csharpsrc.SwitchCaseClause{}, err
+	}
+	body = append(body, blk.Stmts...)
+
+	return csharpsrc.SwitchCaseClause{
+		Label: label,
+		Body:  body,
+	}, nil
+}
+
+// lowerLetStmtType returns the explicit C# TypeRef for a LetStmt variable.
+// Used when an explicit type annotation is required (no init, or union type).
+func lowerLetStmtType(s *aotir.LetStmt) csharpsrc.TypeRef {
+	switch s.VarType {
+	case aotir.TypeRecord:
+		if s.RecordName != "" {
+			return csharpsrc.TypeRef{Name: s.RecordName}
+		}
+	case aotir.TypeUnion:
+		if s.UnionName != "" {
+			return csharpsrc.TypeRef{Name: s.UnionName}
+		}
+	case aotir.TypeList:
+		if s.ElemType == aotir.TypeRecord && s.ElemRecordName != "" {
+			return csharpsrc.ListTypeRef(csharpsrc.TypeRef{Name: s.ElemRecordName})
+		}
+		return csharpsrc.ListTypeRef(lowerElemType(s.ElemType))
+	case aotir.TypeMap:
+		return csharpsrc.DictTypeRef(lowerType(s.KeyType), lowerType(s.ValueType))
+	case aotir.TypeSet:
+		return csharpsrc.HashSetTypeRef(lowerElemType(s.ElemType))
+	}
+	return lowerType(s.VarType)
 }
 
 // lowerElemType converts an aotir element type to a csharpsrc TypeRef.
