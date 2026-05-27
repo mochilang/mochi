@@ -76,7 +76,10 @@ func runBeamFixture(t *testing.T, mochiPath, outPath string) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, escriptPath)
+	// On Windows the OS does not support shebang lines, so we cannot exec
+	// the escript file directly. Use `escript <path>` on all platforms for
+	// consistency; OTP's escript binary handles the archive format correctly.
+	cmd := exec.CommandContext(ctx, "escript", escriptPath)
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = os.Stderr
