@@ -342,6 +342,8 @@ func findRepoRoot(t *testing.T) string {
 // normalizeOutput strips paths for clean diffing.
 func normalizeOutput(root string, b []byte) []byte {
 	out := string(b)
+	// Normalize Windows line endings so golden files check out identically on all platforms.
+	out = strings.ReplaceAll(out, "\r\n", "\n")
 	// Strip absolute paths for stable diffs.
 	out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
 	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
