@@ -254,6 +254,20 @@ func (d *Driver) Build(src, out string, target Target) error {
 		javaFiles = append(javaFiles, files...)
 	}
 
+	// jvm-source target: emit .java files only, no compilation.
+	if target == TargetJvmSource {
+		if err := os.MkdirAll(out, 0o755); err != nil {
+			return err
+		}
+		for _, f := range javaFiles {
+			dst := filepath.Join(out, filepath.Base(f))
+			if err := copyFile(dst, f); err != nil {
+				return fmt.Errorf("jvm build: copy source: %w", err)
+			}
+		}
+		return nil
+	}
+
 	// Compile with javac. Pass the runtime jar on the classpath so
 	// dev.mochi.runtime.io.IO is visible at compile time.
 	flags := []string{"--release", "21", "-Xlint:all"}
