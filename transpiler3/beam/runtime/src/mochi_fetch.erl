@@ -1,5 +1,6 @@
 -module(mochi_fetch).
 -export([get/1]).
+-compile({no_auto_import,[get/1]}).
 
 %% get/1 performs an HTTP GET on URL and returns the response body as a binary.
 %% Uses OTP's built-in httpc client (part of the inets application).

@@ -17,12 +17,6 @@ func BuildNativeImage(outJar, outExe string) error {
 		return fmt.Errorf("native-image not found (install GraalVM or Liberica NIK): %w", err)
 	}
 
-	// Determine main class from jar manifest (we know the pattern: dev.mochi.user.XxxMochi).
-	mainClass, err := jarMainClass(outJar)
-	if err != nil {
-		return fmt.Errorf("native-image: %w", err)
-	}
-
 	args := []string{
 		"-jar", outJar,
 		"-H:Name=" + filepath.Base(outExe),
@@ -30,7 +24,6 @@ func BuildNativeImage(outJar, outExe string) error {
 		"--no-fallback",
 		"--initialize-at-build-time",
 		"-H:+ReportExceptionStackTraces",
-		"--main-class", mainClass,
 	}
 	cmd := exec.Command(niPath, args...)
 	cmd.Stdout = os.Stdout
@@ -51,18 +44,3 @@ func MeasureStartup(exe string) (time.Duration, error) {
 	return time.Since(start), err
 }
 
-// jarMainClass reads the Main-Class from a jar's manifest.
-func jarMainClass(jarPath string) (string, error) {
-	out, err := exec.Command("unzip", "-p", jarPath, "META-INF/MANIFEST.MF").Output()
-	if err != nil {
-		return "", fmt.Errorf("read manifest: %w", err)
-	}
-	for _, line := range splitLines(string(out)) {
-		line = trimSpace(line)
-		const prefix = "Main-Class:"
-		if len(line) > len(prefix) && line[:len(prefix)] == prefix {
-			return trimSpace(line[len(prefix):]), nil
-		}
-	}
-	return "", fmt.Errorf("Main-Class not found in manifest of %s", jarPath)
-}
