@@ -10,9 +10,9 @@ description: "MEP-47 Phase 7 — from/where/select/group_by/order_by/limit/join 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 7](/docs/mep/mep-0047#phase-7-query-dsl) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 12:00 (GMT+7) |
+| Landed         | 2026-05-27 12:10 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,11 +28,11 @@ The query DSL is one of Mochi's most distinctive features. It allows SQL-like da
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 7.0 | `from x in xs where p select s` -> `xs.stream().filter(p).map(s).toList()` | NOT STARTED | — |
-| 7.1 | `order_by f` -> `.sorted(Comparator.comparingLong(f))` | NOT STARTED | — |
-| 7.2 | `group_by f` -> `Collectors.groupingBy(f)` returning `Map<K, List<V>>` | NOT STARTED | — |
-| 7.3 | `join xs ys on x.id == y.id` -> `dev.mochi.runtime.query.HashJoin` | NOT STARTED | — |
-| 7.4 | `limit N`, `skip N` -> `.limit(N)`, `.skip(N)` | NOT STARTED | — |
+| 7.0 | `from x in xs where p select s` -> loop + append into mutable list | LANDED | — |
+| 7.1 | `sort by f` -> `stream().sorted().collect(toList())` | LANDED | — |
+| 7.2 | `skip N / take N` -> `ListUtil.slice(xs, start, end)` | LANDED | — |
+| 7.3 | `group_by` with map<K, list<V>> desugaring | DEFERRED | — |
+| 7.4 | `join` / HashJoin | DEFERRED | — |
 
 ## Sub-phase 7.0 -- from/where/select
 
@@ -237,4 +237,21 @@ public final class HashJoin {
 
 ## Closeout notes
 
-_Fill in after gate green._
+Gate green at 2026-05-27 12:10 (GMT+7) with 10 fixtures across `from/where/select`, `sort by`, `skip`, `take`, and `skip+take` combinations.
+
+**What shipped:**
+
+- `transpiler3/jvm/lower/query.go`: `lowerQueryScopeStmt` (arena no-op), `lowerListSortAscExpr` (stream sorted), `lowerListSliceExpr` (ListUtil.slice).
+- `transpiler3/jvm/lower/stmt.go`: `QueryScopeStmt` dispatch.
+- `transpiler3/jvm/lower/expr.go`: `ListSortAscExpr`, `ListSliceExpr` dispatch.
+- `transpiler3/jvm/runtime/src/main/java/dev/mochi/runtime/coll/ListUtil.java`: `slice(xs, start, end)` helper.
+- `transpiler3/jvm/build/phase07_test.go`: `TestPhase7Query` (10 fixtures).
+- `tests/transpiler3/jvm/phase07-query/`: 10 fixture pairs (.mochi + .out).
+
+**What was deferred:**
+
+- `group_by` with `map<K, list<V>>` result: the `MapGetExpr` lowering returns erased `Object` which cannot be cast to `List<V>` at the Java compile site. A typed-cast wrapper is needed; deferred to a sub-phase.
+- `join` / `HashJoin`: deferred per spec.
+- Stream-pipeline style lowering (`.filter().map().collect()`): the C aotir desugars `from/where/select` into imperative `ForEachStmt + IfStmt + AppendExpr` before reaching the JVM lowerer. The JVM lowerer therefore lowers it as a Java for-each loop rather than a Stream pipeline. The observable output is identical; the pipeline form would require a separate JVM-only lowering pass before aotir and is deferred.
+
+**Key design decision:** `QueryScopeStmt` on JVM is a no-op wrapper: its `Body` block is lowered directly as a flat sequence of statements. The C arena (alloc/copy/free) has no JVM equivalent; GC handles temporary allocation.

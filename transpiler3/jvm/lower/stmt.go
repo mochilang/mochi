@@ -70,6 +70,11 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (javasrc.Stmt, error) {
 	case *aotir.ClosureEnvStmt:
 		return nil, nil // no-op
 
+	// --- Query DSL statements (Phase 7) ---
+
+	case *aotir.QueryScopeStmt:
+		return l.lowerQueryScopeStmt(s)
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported stmt %T", s)
 	}

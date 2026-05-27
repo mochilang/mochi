@@ -135,6 +135,14 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (javasrc.Expr, error) {
 	case *aotir.ListFoldlExpr:
 		return l.lowerListFoldlExpr(e)
 
+	// --- Query DSL expressions (Phase 7) ---
+
+	case *aotir.ListSortAscExpr:
+		return l.lowerListSortAscExpr(e)
+
+	case *aotir.ListSliceExpr:
+		return l.lowerListSliceExpr(e)
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported expr %T", e)
 	}

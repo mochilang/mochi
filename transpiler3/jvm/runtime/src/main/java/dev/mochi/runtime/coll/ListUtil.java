@@ -25,4 +25,17 @@ public final class ListUtil {
         s.add(elem);
         return s;
     }
+
+    /**
+     * Slice: returns a new ArrayList containing elements xs[start..end).
+     * Indices are clamped to [0, xs.size()] so out-of-range values are safe.
+     * Used for Mochi query `skip N / take N` lowering.
+     */
+    public static <T> java.util.ArrayList<T> slice(java.util.List<T> xs, long start, long end) {
+        int size = xs.size();
+        int from = (int) Math.max(0L, Math.min(start, (long) size));
+        int to   = (int) Math.max(0L, Math.min(end,   (long) size));
+        if (from >= to) return new java.util.ArrayList<>();
+        return new java.util.ArrayList<>(xs.subList(from, to));
+    }
 }
