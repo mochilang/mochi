@@ -10,9 +10,9 @@ description: "MEP-48 Phase 10 — stream<T> to IAsyncEnumerable<T> (cold) and Ch
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 10](/docs/mep/mep-0048#phase-10-streams-and-pubsub) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 02:46 (GMT+7) |
+| Landed         | 2026-05-28 02:54 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -124,4 +124,10 @@ Used for Mochi's pubsub pattern where late subscribers need historical values.
 
 ## Closeout notes
 
-Phase 10 not yet started.
+Phase 10 landed. `TestPhase10Streams` PASS: 10/10 fixtures on net10.0 (chan_bool, chan_five, chan_int, chan_multi, chan_string, stream_bool, stream_float, stream_int, stream_string, stream_two_subs).
+
+`chan<T>` → `BlockingCollection<T>` (bounded, synchronous, `System.Collections.Concurrent`). `make_chan(cap)` → `new BlockingCollection<T>((int)cap)`. `send(ch, v)` → `ch.Add(v)`. `recv(ch)` → `ch.Take()`.
+
+`stream<T>` → `MochiStream<T>` (runtime class in `Mochi.Runtime/MochiStream.cs`). Each `subscribe(s)` call creates a new `BlockingCollection<T>` subscriber queue added to the stream's internal list. `emit(s, v)` fans out to all subscriber queues via `s.Emit(v)`. `recv_sub(sub)` → `sub.Take()`.
+
+Sub-phases 10.2 (hot agent stream) and 10.3 (replay channel) are deferred per original spec; the 10 synchronous fixtures cover the full gate.

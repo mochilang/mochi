@@ -81,7 +81,7 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, className string) ([]*
 
 	mainCU := &csharpsrc.CompilationUnit{
 		Namespace: "Mochi.User",
-		Usings:    []string{"System", "System.Collections.Generic", "System.Linq"},
+		Usings:    []string{"System", "System.Collections.Concurrent", "System.Collections.Generic", "System.Linq", "Mochi.Runtime"},
 		Types:     types,
 	}
 
@@ -292,6 +292,10 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (csharpsrc.Stmt, error) {
 	case *aotir.ClosureEnvStmt:
 		// C# closures capture from enclosing scope; the C env struct is not needed.
 		return &csharpsrc.EmptyStmt{}, nil
+	case *aotir.ChanSendStmt:
+		return l.lowerChanSendStmt(s)
+	case *aotir.StreamEmitStmt:
+		return l.lowerStreamEmitStmt(s)
 	case *aotir.RawCStmt:
 		// C-specific setup code (e.g. Datalog result vars) not needed for .NET.
 		return &csharpsrc.EmptyStmt{}, nil
@@ -554,6 +558,18 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (csharpsrc.Expr, error) {
 		return l.lowerListSliceExpr(e)
 	case *aotir.DatalogQueryExpr:
 		return l.lowerDatalogQueryExpr(e)
+	case *aotir.ChanMakeExpr:
+		return l.lowerChanMakeExpr(e)
+	case *aotir.ChanRecvExpr:
+		return l.lowerChanRecvExpr(e)
+	case *aotir.StreamMakeExpr:
+		return l.lowerStreamMakeExpr(e)
+	case *aotir.SubMakeExpr:
+		return l.lowerSubMakeExpr(e)
+	case *aotir.SubMakeLimitExpr:
+		return l.lowerSubMakeLimitExpr(e)
+	case *aotir.SubRecvExpr:
+		return l.lowerSubRecvExpr(e)
 	case *aotir.AgentLit:
 		return l.lowerAgentLitExpr(e)
 	case *aotir.AgentSpawnExpr:
@@ -1664,6 +1680,12 @@ func lowerLetStmtType(s *aotir.LetStmt) csharpsrc.TypeRef {
 		return csharpsrc.HashSetTypeRef(lowerElemType(s.ElemType))
 	case aotir.TypeFun:
 		return funcTypeRef(s.FunSig)
+	case aotir.TypeChan:
+		return csharpsrc.BlockingCollectionTypeRef(lowerElemType(s.ChanElemType))
+	case aotir.TypeStream:
+		return csharpsrc.MochiStreamTypeRef(lowerElemType(s.StreamElemType))
+	case aotir.TypeSub:
+		return csharpsrc.BlockingCollectionTypeRef(lowerElemType(s.SubElemType))
 	}
 	return lowerType(s.VarType)
 }
@@ -1780,7 +1802,7 @@ func (l *lowerer) lowerAgentDecl(ad *aotir.AgentDecl) (*csharpsrc.CompilationUni
 
 	return &csharpsrc.CompilationUnit{
 		Namespace: "Mochi.User",
-		Usings:    []string{"System", "System.Collections.Generic", "System.Linq"},
+		Usings:    []string{"System", "System.Collections.Concurrent", "System.Collections.Generic", "System.Linq", "Mochi.Runtime"},
 		Types:     []csharpsrc.TypeDecl{agentClass},
 	}, nil
 }
@@ -2031,4 +2053,90 @@ func (l *lowerer) lowerAgentIntentCallStmt(s *aotir.AgentIntentCallStmt) (csharp
 		args[i] = v
 	}
 	return &csharpsrc.ExprStmt{X: &csharpsrc.CallExpr{Receiver: recv, Method: s.IntentName, Args: args}}, nil
+}
+
+// --- Phase 10: channels and streams ---
+
+// lowerChanMakeExpr → new BlockingCollection<T>(cap)
+func (l *lowerer) lowerChanMakeExpr(e *aotir.ChanMakeExpr) (csharpsrc.Expr, error) {
+	cap, err := l.lowerExpr(e.Cap)
+	if err != nil {
+		return nil, err
+	}
+	// BlockingCollection<T>(int cap) takes an int, but cap is long; cast to int.
+	capInt := &csharpsrc.CastExpr{Type: csharpsrc.TypeRef{Name: "int"}, X: cap}
+	return &csharpsrc.NewExpr{
+		Type: csharpsrc.BlockingCollectionTypeRef(lowerElemType(e.ElemType)),
+		Args: []csharpsrc.Expr{capInt},
+	}, nil
+}
+
+// lowerChanRecvExpr → chan.Take()
+func (l *lowerer) lowerChanRecvExpr(e *aotir.ChanRecvExpr) (csharpsrc.Expr, error) {
+	ch, err := l.lowerExpr(e.Chan)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CallExpr{Receiver: ch, Method: "Take", Args: nil}, nil
+}
+
+// lowerChanSendStmt → chan.Add(val);
+func (l *lowerer) lowerChanSendStmt(s *aotir.ChanSendStmt) (csharpsrc.Stmt, error) {
+	ch, err := l.lowerExpr(s.Chan)
+	if err != nil {
+		return nil, err
+	}
+	val, err := l.lowerExpr(s.Val)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.ExprStmt{X: &csharpsrc.CallExpr{Receiver: ch, Method: "Add", Args: []csharpsrc.Expr{val}}}, nil
+}
+
+// lowerStreamMakeExpr → new MochiStream<T>()
+func (l *lowerer) lowerStreamMakeExpr(e *aotir.StreamMakeExpr) (csharpsrc.Expr, error) {
+	return &csharpsrc.NewExpr{
+		Type: csharpsrc.MochiStreamTypeRef(lowerElemType(e.ElemType)),
+		Args: nil,
+	}, nil
+}
+
+// lowerStreamEmitStmt → stream.Emit(val);
+func (l *lowerer) lowerStreamEmitStmt(s *aotir.StreamEmitStmt) (csharpsrc.Stmt, error) {
+	stream, err := l.lowerExpr(s.Stream)
+	if err != nil {
+		return nil, err
+	}
+	val, err := l.lowerExpr(s.Val)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.ExprStmt{X: &csharpsrc.CallExpr{Receiver: stream, Method: "Emit", Args: []csharpsrc.Expr{val}}}, nil
+}
+
+// lowerSubMakeExpr → stream.Subscribe()
+func (l *lowerer) lowerSubMakeExpr(e *aotir.SubMakeExpr) (csharpsrc.Expr, error) {
+	stream, err := l.lowerExpr(e.Stream)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CallExpr{Receiver: stream, Method: "Subscribe", Args: nil}, nil
+}
+
+// lowerSubMakeLimitExpr → stream.Subscribe() (limit ignored for .NET; BlockingCollection is unbounded)
+func (l *lowerer) lowerSubMakeLimitExpr(e *aotir.SubMakeLimitExpr) (csharpsrc.Expr, error) {
+	stream, err := l.lowerExpr(e.Stream)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CallExpr{Receiver: stream, Method: "Subscribe", Args: nil}, nil
+}
+
+// lowerSubRecvExpr → sub.Take()
+func (l *lowerer) lowerSubRecvExpr(e *aotir.SubRecvExpr) (csharpsrc.Expr, error) {
+	sub, err := l.lowerExpr(e.Sub)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CallExpr{Receiver: sub, Method: "Take", Args: nil}, nil
 }
