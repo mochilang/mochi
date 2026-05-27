@@ -1,7 +1,6 @@
 package lower
 
 import (
-	"fmt"
 	"strings"
 	"unicode"
 
@@ -13,15 +12,9 @@ import (
 func Lower(prog *aotir.Program, className string) (*javasrc.CompilationUnit, error) {
 	mainFn := prog.Functions[prog.Main]
 
-	var stmts []javasrc.Stmt
-	for _, s := range mainFn.Body.Statements {
-		js, err := lowerStmt(s)
-		if err != nil {
-			return nil, err
-		}
-		if js != nil {
-			stmts = append(stmts, js)
-		}
+	body, err := lowerBlock(mainFn.Body)
+	if err != nil {
+		return nil, err
 	}
 
 	mainMethod := &javasrc.MethodDecl{
@@ -29,7 +22,7 @@ func Lower(prog *aotir.Program, className string) (*javasrc.CompilationUnit, err
 		ReturnType: javasrc.TypeVoid,
 		Name:       "main",
 		Params:     []javasrc.Param{{Type: &javasrc.TypeRef{Name: "String", Array: true}, Name: "args"}},
-		Body:       &javasrc.Block{Stmts: stmts},
+		Body:       &body,
 	}
 
 	classDecl := &javasrc.ClassDecl{
@@ -43,60 +36,6 @@ func Lower(prog *aotir.Program, className string) (*javasrc.CompilationUnit, err
 		Types:   []javasrc.TypeDecl{classDecl},
 	}
 	return cu, nil
-}
-
-func lowerStmt(s aotir.Stmt) (javasrc.Stmt, error) {
-	switch s := s.(type) {
-	case *aotir.CallStmt:
-		return lowerCallStmt(s)
-	case *aotir.ReturnStmt:
-		if s.Value == nil {
-			return &javasrc.ReturnStmt{}, nil
-		}
-		v, err := lowerExpr(s.Value)
-		if err != nil {
-			return nil, err
-		}
-		return &javasrc.ReturnStmt{Value: v}, nil
-	default:
-		return nil, fmt.Errorf("jvm/lower: unsupported stmt %T", s)
-	}
-}
-
-func lowerCallStmt(s *aotir.CallStmt) (javasrc.Stmt, error) {
-	switch s.Func {
-	case "mochi_print_str", "mochi_print_i64", "mochi_print_f64", "mochi_print_bool":
-		if len(s.Args) != 1 {
-			return nil, fmt.Errorf("jvm/lower: %s wants 1 arg, got %d", s.Func, len(s.Args))
-		}
-		arg, err := lowerExpr(s.Args[0])
-		if err != nil {
-			return nil, err
-		}
-		call := &javasrc.StaticCallExpr{
-			Class:  "dev.mochi.runtime.io.IO",
-			Method: "println",
-			Args:   []javasrc.Expr{arg},
-		}
-		return &javasrc.ExprStmt{X: call}, nil
-	default:
-		return nil, fmt.Errorf("jvm/lower: unsupported builtin %q", s.Func)
-	}
-}
-
-func lowerExpr(e aotir.Expr) (javasrc.Expr, error) {
-	switch e := e.(type) {
-	case *aotir.StringLit:
-		return javasrc.StringLit(e.Value), nil
-	case *aotir.IntLit:
-		return javasrc.LongLit(e.Value), nil
-	case *aotir.BoolLit:
-		return javasrc.BoolLit(e.Value), nil
-	case *aotir.FloatLit:
-		return javasrc.DoubleLit(e.Value), nil
-	default:
-		return nil, fmt.Errorf("jvm/lower: unsupported expr %T", e)
-	}
 }
 
 // ClassName converts a Mochi source filename to a Java class name.

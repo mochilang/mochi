@@ -500,9 +500,10 @@ func (s *ExprStmt) stmtString(indent int) string {
 
 // VarDeclStmt is a local variable declaration.
 type VarDeclStmt struct {
-	Type *TypeRef // nil means use var (Java 10+)
-	Name string
-	Init Expr // nil if no initialiser
+	Final bool     // emit "final" keyword (for let bindings)
+	Type  *TypeRef // nil means use var (Java 10+)
+	Name  string
+	Init  Expr // nil if no initialiser
 }
 
 func (s *VarDeclStmt) stmtString(indent int) string {
@@ -511,10 +512,14 @@ func (s *VarDeclStmt) stmtString(indent int) string {
 	if s.Type != nil {
 		typeName = s.Type.JavaString()
 	}
-	if s.Init == nil {
-		return pad + typeName + " " + s.Name + ";"
+	prefix := ""
+	if s.Final {
+		prefix = "final "
 	}
-	return pad + typeName + " " + s.Name + " = " + s.Init.ExprString() + ";"
+	if s.Init == nil {
+		return pad + prefix + typeName + " " + s.Name + ";"
+	}
+	return pad + prefix + typeName + " " + s.Name + " = " + s.Init.ExprString() + ";"
 }
 
 // TryCatchStmt is a try/catch statement.
