@@ -13,8 +13,8 @@ description: "MEP-47 Phase 10 — publish/subscribe streams via SubmissionPublis
 | Status         | LANDED |
 | Started        | 2026-05-27 12:00 (GMT+7) |
 | Landed         | 2026-05-27 12:59 (GMT+7) |
-| Tracking issue | — |
-| Tracking PR    | — |
+| Tracking issue | [#22341](https://github.com/mochilang/mochi/issues/22341) |
+| Tracking PR    | [#22342](https://github.com/mochilang/mochi/pull/22342) |
 
 ## Gate
 
