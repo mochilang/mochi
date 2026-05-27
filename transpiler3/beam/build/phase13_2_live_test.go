@@ -52,7 +52,8 @@ func TestPhase13_2LiveProviderRouting(t *testing.T) {
 		t.Fatalf("Driver.Build: %v", err)
 	}
 
-	cmd := exec.Command(escriptPath)
+	// Use `escript <path>` for Windows compatibility (no shebang support).
+	cmd := exec.Command("escript", escriptPath)
 	// No MOCHI_LLM_CASSETTE_DIR; inject a fake key so live path is taken.
 	cmd.Env = append(os.Environ(), "OPENAI_API_KEY=fake-key-for-routing-test",
 		"MOCHI_LLM_CASSETTE_DIR=")

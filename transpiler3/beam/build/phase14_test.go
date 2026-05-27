@@ -93,7 +93,8 @@ func runFetchFixture(t *testing.T, script, want string) {
 		t.Fatalf("Driver.Build: %v", err)
 	}
 
-	cmd := exec.Command(escriptPath)
+	// Use `escript <path>` for Windows compatibility (no shebang support).
+	cmd := exec.Command("escript", escriptPath)
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = os.Stderr
