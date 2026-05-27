@@ -11,24 +11,31 @@ import (
 
 // lowerer carries compilation context shared across expression and statement
 // lowering, specifically the className needed to emit static calls to
-// user-defined functions in the same class, and a registry of record
-// declarations so FieldAccess and RecordLit can resolve field types.
+// user-defined functions in the same class, a registry of record declarations
+// so FieldAccess and RecordLit can resolve field types, and a registry of
+// union declarations so VariantLit and MatchStmt can resolve union info.
 type lowerer struct {
 	className string
 	records   map[string]*aotir.RecordDecl // name -> decl; populated by Lower
+	unions    map[string]*aotir.UnionDecl  // name -> decl; populated by Lower (Phase 5)
 }
 
-// Lower translates an aotir.Program into one CompilationUnit per record type
-// plus one CompilationUnit for the main class. The first element of the
+// Lower translates an aotir.Program into one CompilationUnit per record/union
+// type plus one CompilationUnit for the main class. The first element of the
 // returned slice is always the main class CU; subsequent elements are record
-// type CUs (one per RecordDecl in prog.Records, in source order).
+// type CUs (one per RecordDecl in prog.Records, in source order) followed by
+// sum type CUs (one per UnionDecl in prog.Unions, in source order).
 func Lower(prog *aotir.Program, className string) ([]*javasrc.CompilationUnit, error) {
 	l := &lowerer{
 		className: className,
 		records:   make(map[string]*aotir.RecordDecl, len(prog.Records)),
+		unions:    make(map[string]*aotir.UnionDecl, len(prog.Unions)),
 	}
 	for _, rd := range prog.Records {
 		l.records[rd.Name] = rd
+	}
+	for _, ud := range prog.Unions {
+		l.unions[ud.Name] = ud
 	}
 
 	mainFn := prog.Functions[prog.Main]
@@ -81,6 +88,15 @@ func Lower(prog *aotir.Program, className string) ([]*javasrc.CompilationUnit, e
 			return nil, fmt.Errorf("record %q: %w", rd.Name, err)
 		}
 		cus = append(cus, rcu)
+	}
+
+	// Emit each union/sum type as a separate CompilationUnit (separate .java file).
+	for _, ud := range prog.Unions {
+		ucu, err := l.lowerSumTypeDecl(ud)
+		if err != nil {
+			return nil, fmt.Errorf("union %q: %w", ud.Name, err)
+		}
+		cus = append(cus, ucu)
 	}
 
 	return cus, nil
@@ -150,6 +166,8 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*javasrc.MethodDecl, error)
 			pt = lowerSetType(p.ElemType)
 		case aotir.TypeRecord:
 			pt = javasrc.TypeRef{Name: p.RecordName}
+		case aotir.TypeUnion:
+			pt = javasrc.TypeRef{Name: p.UnionName}
 		default:
 			pt, err = lowerType(p.Type)
 			if err != nil {
@@ -173,11 +191,13 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*javasrc.MethodDecl, error)
 	}, nil
 }
 
-// lowerReturnType maps a Function's return type (with record support) to a TypeRef.
+// lowerReturnType maps a Function's return type (with record/union support) to a TypeRef.
 func (l *lowerer) lowerReturnType(fn *aotir.Function) (javasrc.TypeRef, error) {
 	switch fn.ReturnType {
 	case aotir.TypeRecord:
 		return javasrc.TypeRef{Name: fn.ReturnRecordName}, nil
+	case aotir.TypeUnion:
+		return javasrc.TypeRef{Name: fn.ReturnUnionName}, nil
 	case aotir.TypeList:
 		return lowerListType(fn.ReturnElemType), nil
 	case aotir.TypeMap:
