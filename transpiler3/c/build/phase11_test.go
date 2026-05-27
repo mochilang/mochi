@@ -214,13 +214,14 @@ func TestPhase11WindowsGnu(t *testing.T) {
 	var runFn func(bin string) ([]byte, error)
 	if runtime.GOOS == "windows" {
 		runFn = func(bin string) ([]byte, error) {
-			cmd := exec.Command(bin)
+			cmd := exec.Command(bin + ".exe")
 			var stdout bytes.Buffer
 			cmd.Stdout = &stdout
 			if err := cmd.Run(); err != nil {
 				return nil, err
 			}
-			return stdout.Bytes(), nil
+			out := strings.ReplaceAll(string(stdout.Bytes()), "\r\n", "\n")
+			return []byte(out), nil
 		}
 	}
 	runPhase11Cross(t, "x86_64-windows-gnu", runFn)

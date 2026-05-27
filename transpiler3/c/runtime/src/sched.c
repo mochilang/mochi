@@ -22,7 +22,11 @@
  *     a single-fibre synchronous stub is compiled instead.
  */
 
-#if !defined(__wasm__) && !defined(_WIN32)
+/* ucontext is available on glibc Linux and macOS (deprecated but present).
+ * zig's bundled musl does not ship getcontext/makecontext/swapcontext.
+ * Fall through to the single-fibre stub for musl, wasm, and Windows. */
+#if !defined(__wasm__) && !defined(_WIN32) && \
+    !(defined(__linux__) && !defined(__GLIBC__))
 
 /* Must be defined before any system header on macOS to unlock ucontext. */
 /* Cosmopolitan provides ucontext_t natively; skip the macOS XSI guard. */
