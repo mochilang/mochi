@@ -954,7 +954,9 @@ func Lit(v string) *LiteralExpr { return &LiteralExpr{Value: v} }
 func LongLit(v int64) *LiteralExpr { return &LiteralExpr{Value: fmt.Sprintf("%dL", v)} }
 
 // DoubleLit returns a double literal expression.
-func DoubleLit(v float64) *LiteralExpr { return &LiteralExpr{Value: fmt.Sprintf("%v", v)} }
+// Always appends "D" so Java treats whole-number values (e.g. "0", "1") as
+// double rather than int, avoiding ArithmeticException on 1/0 vs 1.0/0.0.
+func DoubleLit(v float64) *LiteralExpr { return &LiteralExpr{Value: fmt.Sprintf("%vD", v)} }
 
 // StringLit returns a Java string literal with proper escaping.
 func StringLit(v string) *LiteralExpr {

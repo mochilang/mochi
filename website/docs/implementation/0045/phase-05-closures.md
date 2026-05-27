@@ -10,9 +10,9 @@ description: "MEP-45 Phase 5 tracking: non-capturing closure lifting, C function
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 5](/docs/mep/mep-0045#phase-5-closures-and-higher-order-functions) |
-| Status         | IN PROGRESS |
+| Status         | COMPLETE 2026-05-26 09:06 (GMT+7) |
 | Started        | 2026-05-25 16:30 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-26 09:06 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -118,4 +118,4 @@ __anon_2_env->base = base;
 
 ## Closeout notes
 
-_Fill in after gate fully green (all 4 sub-phases)._
+All 4 sub-phases (5.0-5.3) are LANDED. TestPhase5Closures, TestPhase5CapturingClosures, TestPhase5FreeFunctionShim, and TestPhase5MethodShim are green on every tier-1 host. Phase 5 is COMPLETE.

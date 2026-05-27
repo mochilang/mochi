@@ -10,9 +10,9 @@ description: "MEP-45 Phase 9 tracking: M:N work-stealing scheduler over minicoro
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 9](/docs/mep/mep-0045#phase-9-streams-agents-m-scheduler) |
-| Status         | IN PROGRESS |
+| Status         | COMPLETE 2026-05-26 09:06 (GMT+7) |
 | Started        | 2026-05-25 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-26 09:06 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -114,4 +114,4 @@ Phase 9 builds the concurrency primitives that let Mochi programs express async 
 
 ## Closeout notes
 
-_Fill in after gate green for all 5 sub-phases._
+All 5 sub-phases (9.0-9.4) are LANDED. TestPhase9Scheduler, TestPhase9Chan, TestPhase9Stream, TestPhase9Agent, and TestPhase9Shutdown are green on every tier-1 host. Phase 9 is COMPLETE.

@@ -1,0 +1,6 @@
+let x = 3.7
+let n = int(x)
+print(n)
+let y = -2.9
+let m = int(y)
+print(m)

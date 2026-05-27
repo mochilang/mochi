@@ -22,7 +22,11 @@
  *     a single-fibre synchronous stub is compiled instead.
  */
 
-#ifndef __wasm__
+/* ucontext is available on glibc Linux and macOS (deprecated but present).
+ * zig's bundled musl does not ship getcontext/makecontext/swapcontext.
+ * Fall through to the single-fibre stub for musl, wasm, and Windows. */
+#if !defined(__wasm__) && !defined(_WIN32) && \
+    !(defined(__linux__) && !defined(__GLIBC__))
 
 /* Must be defined before any system header on macOS to unlock ucontext. */
 /* Cosmopolitan provides ucontext_t natively; skip the macOS XSI guard. */
@@ -264,7 +268,7 @@ void mochi_sched_run(void) {
 #pragma clang diagnostic pop
 #endif
 
-#else /* __wasm__: single-fibre synchronous execution stub (Phase 12.2) */
+#else /* __wasm__ / _WIN32: single-fibre synchronous execution stub */
 
 /*
  * WASM/WASI does not provide ucontext_t or any stackful-coroutine primitive.
@@ -365,4 +369,4 @@ void mochi_sched_run(void) {
     }
 }
 
-#endif /* __wasm__ */
+#endif /* !__wasm__ && !_WIN32 / else */

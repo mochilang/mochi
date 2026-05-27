@@ -10,9 +10,9 @@ description: "MEP-45 Phase 12 tracking: wasm32-wasi target via zig cc (ships was
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 12](/docs/mep/mep-0045#phase-12-wasm--wasi) |
-| Status         | IN PROGRESS |
+| Status         | COMPLETE 2026-05-26 09:06 (GMT+7) |
 | Started        | 2026-05-26 00:12 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-26 09:06 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 

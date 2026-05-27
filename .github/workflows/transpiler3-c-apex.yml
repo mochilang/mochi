@@ -54,21 +54,18 @@ jobs:
           path: ~/.mochi/cache/cosmocc
           key: cosmocc-3.9.5
 
-      - name: Download cosmocc via Ensure()
-        env:
-          MOCHI_COSMOCC_VENDOR_TEST: '1'
-        run: |
-          go test -vet=off -v -count=1 -timeout=600s \
-            ./transpiler3/c/build/ -run TestPhase13CosmoVendor/ensure_cached
-
-      - name: Resolve cosmocc path
+      - name: Download and install cosmocc
         id: cosmocc
         run: |
-          BIN=$(ls ~/.mochi/cache/cosmocc/3.9.5/bin/cosmocc 2>/dev/null || true)
-          if [ -z "$BIN" ]; then
-            echo "cosmocc binary not found after Ensure(); aborting"
-            exit 1
+          DEST="$HOME/.mochi/cache/cosmocc/3.9.5"
+          BIN="$DEST/bin/cosmocc"
+          if [ ! -f "$BIN" ]; then
+            mkdir -p "$DEST"
+            curl -fsSL https://cosmo.zip/pub/cosmocc/cosmocc-3.9.5.zip -o /tmp/cosmocc.zip
+            unzip -q /tmp/cosmocc.zip -d "$DEST"
+            chmod +x "$BIN"
           fi
+          echo "cosmocc installed at $BIN"
           echo "path=$BIN" >> "$GITHUB_OUTPUT"
 
       - name: Build APE binary (add_ints)

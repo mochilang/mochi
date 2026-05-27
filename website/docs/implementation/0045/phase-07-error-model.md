@@ -10,9 +10,9 @@ description: "MEP-45 Phase 7 tracking: setjmp/longjmp try/catch, per-thread exce
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 7](/docs/mep/mep-0045#phase-7-error-model) |
-| Status         | IN PROGRESS |
+| Status         | COMPLETE 2026-05-26 09:06 (GMT+7) |
 | Started        | 2026-05-25 23:07 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-26 09:06 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 

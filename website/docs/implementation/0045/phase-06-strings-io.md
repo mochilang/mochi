@@ -10,9 +10,9 @@ description: "MEP-45 Phase 6 tracking: string concatenation, len(s), mochi_str_c
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 6](/docs/mep/mep-0045#phase-6-strings-and-io) |
-| Status         | IN PROGRESS |
+| Status         | COMPLETE 2026-05-26 09:06 (GMT+7) |
 | Started        | 2026-05-25 16:43 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-26 09:06 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -32,7 +32,7 @@ String concatenation and `len` on strings are used in nearly every Mochi program
 | 6.1 | `s[i]` (string indexing, returns one-byte-char string), `s.contains(sub)`, `substring(s, start, end)`, `reverse(s)`; `StrIndexExpr`, `StrContainsExpr`, `StrSubstringExpr`, `StrReverseExpr` IR nodes; `StrMethodRef` transient node for postfix call dispatch; `mochi_str_index`, `mochi_str_contains`, `mochi_str_substring`, `mochi_str_reverse` runtime functions; `TestPhase6StringMethods` gate (8 fixtures) | LANDED 2026-05-25 17:04 (GMT+7) | — | — |
 | 6.2 | `str(x)` type-to-string conversion for int, float, bool, string: `StrConvertExpr` IR node; `mochi_str_from_i64` (snprintf `%lld`), `mochi_str_from_f64` (snprintf `%g`), `mochi_str_from_bool` ("true"/"false"); string is identity; `lowerStrConvertCall`; `TestPhase6StrConvert` gate (8 fixtures) | LANDED 2026-05-25 17:49 (GMT+7) | — | — |
 | 6.3 | `upper(s)`, `lower(s)`, `split(s, sep)`, `join(xs, sep)`: `StrUpperExpr`, `StrLowerExpr`, `StrSplitExpr`, `StrJoinExpr` IR nodes; `mochi_str_upper`, `mochi_str_lower`, `mochi_str_split`, `mochi_str_join` C runtime (ASCII-only; utf8proc deferred); `exprElemType` extended for `StrSplitExpr` so `let xs = split(...)` infers `ElemType=TypeString`; `TestPhase6StringExtra` gate (8 fixtures). | LANDED 2026-05-25 19:27 (GMT+7) | — | — |
-| 6.4 | Format-string interpolation (`"{name} is {age}"` lowers to a printf-style sequence) | NOT STARTED | — | — |
+| 6.4 | Format-string interpolation (`"{name} is {age}"` lowers to a printf-style sequence): `parseFmtString` splits literal + identifier segments; `lowerFmtString` builds left-to-right `BinStrCat` tree wrapping non-string vars in `StrConvertExpr`; `TestPhase6FmtStrings` gate (8 fixtures) | LANDED 2026-05-26 01:07 (GMT+7) | — | — |
 | 6.5 | File I/O: `readFile(path): string`, `writeFile(path, content)`, `appendFile(path, content)`, `lines(path): list<string>`; `ReadFileExpr`, `WriteFileStmt`, `AppendFileStmt`, `LinesExpr` IR nodes; `mochi_read_file`, `mochi_write_file`, `mochi_append_file`, `mochi_lines` C runtime (`runtime/include/mochi/fileio.h` + `runtime/src/fileio.c`); `lowerReadFileCall`, `lowerWriteFileCall`, `lowerAppendFileCall`, `lowerLinesCall`; `exprElemType` extended for `LinesExpr`; `TestPhase6FileIO` gate (8 fixtures) | LANDED 2026-05-25 20:55 (GMT+7) | — | — |
 | 6.6 | UTF-8 validation on `readFile`/`lines`: `mochi_utf8_valid` pure-C state-machine in `strings.c`; `mochi_panic_parse` in `errors.c`; called from `mochi_read_file` after `fread`; rejects 0x80-0xBF continuation leads, 0xC0-0xC1 overlongs, 0xF5+ out-of-range, truncated sequences; `TestPhase6UTF8` gate (5 valid-files + 1 invalid-UTF-8 exit-code subtest) | LANDED 2026-05-26 05:43 (GMT+7) | (this PR) | — |
 
@@ -99,4 +99,4 @@ String concatenation and `len` on strings are used in nearly every Mochi program
 
 ## Closeout notes
 
-_Fill in after gate fully green (all 6 sub-phases)._
+All 7 sub-phases (6.0-6.6) landed. `TestPhase6StringOps`, `TestPhase6StringMethods`, `TestPhase6StrConvert`, `TestPhase6StringExtra`, `TestPhase6FmtStrings`, `TestPhase6FileIO`, and `TestPhase6UTF8` are green on every tier-1 host. Phase 6 is COMPLETE.

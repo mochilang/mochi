@@ -10,9 +10,9 @@ description: "MEP-45 Phase 16 tracking: ASan/UBSan/TSan/MSan/LeakSan clean on th
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 16](/docs/mep/mep-0045#phase-16-sanitiser-matrix) |
-| Status         | IN PROGRESS |
+| Status         | COMPLETE 2026-05-26 09:06 (GMT+7) |
 | Started        | 2026-05-25 21:46 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-26 09:06 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
