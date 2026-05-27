@@ -27,6 +27,10 @@ jobs:
             otp: '28'
           - os: macos-latest
             otp: '28'
+          - os: ubuntu-latest
+            otp: '27'
+          - os: macos-latest
+            otp: '27'
 
     steps:
       - name: Checkout
