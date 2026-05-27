@@ -33,6 +33,15 @@ func lowerType(t aotir.Type) (javasrc.TypeRef, error) {
 	// the FunSig should use funcTypeRef() from closure.go.
 	case aotir.TypeFun:
 		return javasrc.TypeRef{Name: "Object"}, nil
+	// Channel type (Phase 10): LinkedBlockingQueue (raw, unparameterised here).
+	case aotir.TypeChan:
+		return lowerChanType(), nil
+	// Stream type (Phase 10): MochiStream (raw).
+	case aotir.TypeStream:
+		return lowerStreamType(), nil
+	// Subscriber handle type (Phase 10): MochiSub (raw).
+	case aotir.TypeSub:
+		return lowerSubType(), nil
 	default:
 		return javasrc.TypeRef{}, fmt.Errorf("jvm/lower: unsupported type %v", t)
 	}

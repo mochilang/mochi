@@ -87,6 +87,14 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (javasrc.Stmt, error) {
 	case *aotir.AgentIntentCallStmt:
 		return l.lowerAgentIntentCallStmt(s)
 
+	// --- Stream / channel statements (Phase 10) ---
+
+	case *aotir.ChanSendStmt:
+		return l.lowerChanSendStmt(s)
+
+	case *aotir.StreamEmitStmt:
+		return l.lowerStreamEmitStmt(s)
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported stmt %T", s)
 	}
@@ -155,6 +163,15 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (javasrc.Stmt, error) {
 	case aotir.TypeAgent:
 		// Agent-typed binding: MochiAgent_<Name>.Handle
 		javaType = javasrc.TypeRef{Name: "MochiAgent_" + s.AgentName + ".Handle"}
+	case aotir.TypeChan:
+		// Channel binding: raw LinkedBlockingQueue.
+		javaType = lowerChanType()
+	case aotir.TypeStream:
+		// Stream binding: raw MochiStream.
+		javaType = lowerStreamType()
+	case aotir.TypeSub:
+		// Subscriber binding: raw MochiSub.
+		javaType = lowerSubType()
 	default:
 		javaType, err = lowerType(s.VarType)
 		if err != nil {
