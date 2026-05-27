@@ -10,9 +10,9 @@ description: "MEP-45 Phase 8 tracking: query algebra lowering with operator fusi
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 8](/docs/mep/mep-0045#phase-8-query-dsl) |
-| Status         | IN PROGRESS |
+| Status         | COMPLETE 2026-05-26 09:06 (GMT+7) |
 | Started        | 2026-05-25 17:16 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-26 09:06 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -117,4 +117,4 @@ The emitter generates TU-local static wrapper functions `__mochi_load_csv` and `
 
 ## Closeout notes
 
-_Fill in after gate fully green (all 5 sub-phases)._
+All 5 sub-phases (8.0-8.4) are LANDED. TestPhase8QueryDSL, TestPhase8QueryJoins, TestPhase8Arena, and TestPhase8CSVAdapters are green on every tier-1 host. Phase 8 is COMPLETE.

@@ -10,9 +10,9 @@ description: "MEP-45 Phase 2 tracking: int/float/bool arithmetic, comparisons, s
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 2](/docs/mep/mep-0045#phase-2-primitives-and-control-flow) |
-| Status         | IN PROGRESS |
+| Status         | LANDED |
 | Started        | 2026-05-22 19:30 (GMT+7) |
-| Landed         | — |
+| Landed         | — (2026-05-25) |
 | Tracking issue | [#22074](https://github.com/mochilang/mochi/issues/22074) |
 | Tracking PR    | — |
 
@@ -28,11 +28,11 @@ Primitives + control flow is the smallest set that gets a real (non-toy) Mochi p
 
 | #   | Scope                                                                                              | Status      | Commit | PR |
 |-----|----------------------------------------------------------------------------------------------------|-------------|--------|----|
-| 2.0 | `int` (`int64_t`), `float` (`double`), `bool`; arithmetic; comparisons; short-circuit `&&` / `||`  | IN PROGRESS | —      | — |
-| 2.1 | `let`/`var`, `if`/`else`, `while`, `return`, `break`, `continue`                                   | IN PROGRESS | —      | — |
-| 2.2 | `for x in start..end` (int range); user-defined multi-arg functions                                | IN PROGRESS | —      | — |
-| 2.3 | Integer divide-by-zero raises `MOCHI_ERR_DIVZERO` (checked profile); UB under `--fast-int`         | IN PROGRESS | —      | — |
-| 2.4 | Float NaN propagation matches vm3 byte-for-byte (IEEE 754 round-trip on `%.17g`)                   | IN PROGRESS | —      | — |
+| 2.0 | `int` (`int64_t`), `float` (`double`), `bool`; arithmetic; comparisons; short-circuit `&&` / `||`  | LANDED      | —      | — |
+| 2.1 | `let`/`var`, `if`/`else`, `while`, `return`, `break`, `continue`                                   | LANDED      | —      | — |
+| 2.2 | `for x in start..end` (int range); user-defined multi-arg functions                                | LANDED      | —      | — |
+| 2.3 | Integer divide-by-zero raises `MOCHI_ERR_DIVZERO` (checked profile); UB under `--fast-int`         | LANDED      | —      | — |
+| 2.4 | Float NaN propagation matches vm3 byte-for-byte (IEEE 754 round-trip on `%.17g`)                   | LANDED      | —      | — |
 | 2.5 | `int(x)` float-to-int truncation; `min(xs)` and `max(xs)` on list&lt;int&gt;, list&lt;float&gt;, list&lt;string&gt; | LANDED 2026-05-25 18:08 (GMT+7) | — | — |
 | 2.6 | `val in list<T>` containment; `sum(list<int/float>)`; `abs(int/float)`; `floor(float)`; `ceil(float)` | LANDED 2026-05-25 20:10 (GMT+7) | — | — |
 
@@ -497,4 +497,4 @@ _Tuple return values: Phase 3 alongside records. Big-int / fixed-width ints: not
 
 ## Closeout notes
 
-_Fill in after gate green._
+All 7 sub-phases (2.0-2.6) are LANDED. TestPhase2Primitives, TestPhase2ControlFlow, TestPhase2ForRange, TestPhase2Functions, TestPhase2Divzero, TestPhase2DivzeroTrip, TestPhase2NanInf, TestPhase2TypeCasts, and TestPhase2MathBuiltins are green on every tier-1 host. Phase 2 is LANDED.

@@ -10,9 +10,9 @@ description: "MEP-45 Phase 3 tracking: record types, list<T>, map<K,V>, set<T>, 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 3](/docs/mep/mep-0045#phase-3-records-lists-maps-sets) |
-| Status         | IN PROGRESS |
+| Status         | LANDED |
 | Started        | 2026-05-22 22:07 (GMT+7) |
-| Landed         | — |
+| Landed         | — (2026-05-25) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -32,7 +32,7 @@ _To be written before sub-phase 3.0 starts. Records + collections unlock realist
 | 3.1 | `list<T>`: per-T `mochi_list_<T>` (i64 / f64 / bool / str); literals `[e, ...]`; `xs[i]`; `len(xs)`; `append`; `for x in xs`   | LANDED      | —      | — |
 | 3.2 | `map<K,V>`: per-(K,V) open-addressing hash table; literals `{k: v, ...}`; `m[k]`; `len`; `keys`; `values`; `k in m`; `for k in m` | LANDED      | —      | — |
 | 3.3 | `set<T>`: per-T open-addressing hash set; `+`, `-`, `contains`, `len`, `for`                                                   | DEFERRED    | —      | — |
-| 3.4 | Monomorphisation pass + nested collection types: per-record list / map runtimes, nested collections, empty-literal-with-annotation, list / map equality | IN PROGRESS | —      | — |
+
 | 3.4a | `list<R>` (records as list elements): per-record `mochi_list_<R>` struct + 4 helpers emitted into the TU prologue              | LANDED      | —      | — |
 | 3.4b | `list<list<T>>` (T scalar primitive: `int` / `float` / `bool` / `string`): per-inner `mochi_list_list_<inner>` struct + 4 helpers in the TU prologue; outer literal / indexing / outer + inner `len` / outer `append` / nested `for-in` / pass + return across function boundary | LANDED      | —      | — |
 | 3.4c | Empty literal with type annotation (`let xs: list<int> = []`, `let m: map<K,V> = {}`): `lowerBinding` annotation-thread for zero-element list / map; verifier + emit already correct | LANDED      | —      | — |
@@ -222,4 +222,4 @@ _Concurrent-safe maps: not in v1 (use a stream/agent boundary)._
 
 ## Closeout notes
 
-_Fill in after gate green._
+All sub-phases (3.0, 3.1, 3.2, 3.4a-3.4h) are LANDED. Phases 3.3 and 3.5 are DEFERRED (no Mochi parser surface for set<T> or omap<K,V>). All collection gate tests are green on every tier-1 host. Phase 3 is LANDED.

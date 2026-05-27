@@ -10,9 +10,9 @@ description: "MEP-45 Phase 4 tracking: tagged-union sum types, match-as-expressi
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-45 §Phases · Phase 4](/docs/mep/mep-0045#phase-4-sum-types-and-maranget-pattern-matching) |
-| Status         | IN PROGRESS |
+| Status         | COMPLETE 2026-05-26 09:06 (GMT+7) |
 | Started        | 2026-05-25 15:48 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-26 09:06 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
