@@ -48,7 +48,7 @@ func TestPhase16NativeImage(t *testing.T) {
 	}
 	elapsed := time.Since(start)
 
-	got := strings.TrimRight(stdout.String(), "\n")
+	got := strings.TrimRight(stdout.String(), "\r\n")
 	if got != "hello, world" {
 		t.Errorf("stdout: got %q want %q", got, "hello, world")
 	}
