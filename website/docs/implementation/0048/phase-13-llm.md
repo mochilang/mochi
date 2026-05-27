@@ -10,9 +10,9 @@ description: "MEP-48 Phase 13 — ai(...) to Mochi.Runtime.Llm.Ai.CallAsync; Ope
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 13](/docs/mep/mep-0048#phase-13-llm-generate) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 04:28 (GMT+7) |
+| Landed         | 2026-05-28 05:37 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -83,4 +83,6 @@ string result = await Mochi.Runtime.Llm.Ai.CallAsync(
 
 ## Closeout notes
 
-Phase 13 not yet started.
+Phase 13 landed. `TestPhase13LLM` PASS: 2/2 fixtures on net10.0 (generate_hello, generate_concat).
+
+`LLMGenerateExpr` → `Mochi.Runtime.Llm.Ai.Call(provider, prompt)`. The `Ai` class checks `MOCHI_LLM_CASSETTE_DIR` env var; if set, computes SHA-256 of `provider + ":" + prompt` and reads the pre-recorded response from `<dir>/<hash>.txt`. This matches the JVM cassette format, so JVM cassette files are reusable. The test driver sets the env var for each fixture that has a `cassette/` subdirectory.

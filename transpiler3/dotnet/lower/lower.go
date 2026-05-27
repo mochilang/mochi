@@ -566,6 +566,8 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (csharpsrc.Expr, error) {
 		return l.lowerDatalogQueryExpr(e)
 	case *aotir.JavaCallExpr:
 		return l.lowerJavaCallExpr(e)
+	case *aotir.LLMGenerateExpr:
+		return l.lowerLLMGenerateExpr(e)
 	case *aotir.AsyncExpr:
 		return l.lowerAsyncExpr(e)
 	case *aotir.AwaitExpr:
@@ -2124,6 +2126,21 @@ func (l *lowerer) lowerJavaCallExpr(e *aotir.JavaCallExpr) (csharpsrc.Expr, erro
 		return nil, err
 	}
 	return lowerJavaCallToDotnet(e.Decl, args)
+}
+
+// --- Phase 13: LLM generate ---
+
+// lowerLLMGenerateExpr → Mochi.Runtime.Llm.Ai.Call(provider, prompt)
+func (l *lowerer) lowerLLMGenerateExpr(e *aotir.LLMGenerateExpr) (csharpsrc.Expr, error) {
+	prompt, err := l.lowerExpr(e.Prompt)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.StaticCallExpr{
+		Class:  "Mochi.Runtime.Llm.Ai",
+		Method: "Call",
+		Args:   []csharpsrc.Expr{csharpsrc.StringLit(e.Provider), prompt},
+	}, nil
 }
 
 // --- Phase 11: async/await ---
