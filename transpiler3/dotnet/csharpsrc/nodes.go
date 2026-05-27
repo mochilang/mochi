@@ -491,6 +491,11 @@ func (s *WhileStmt) stmtString(indent int) string {
 	return pad + "while (" + s.Cond.ExprString() + ") " + s.Body.blockString(indent)
 }
 
+// EmptyStmt is a no-op statement (renders as nothing).
+type EmptyStmt struct{}
+
+func (*EmptyStmt) stmtString(int) string { return "" }
+
 // BreakStmt is a break statement.
 type BreakStmt struct{}
 
@@ -732,6 +737,26 @@ func (e *LambdaExpr) ExprString() string {
 	} else {
 		sb.WriteString(e.Body.ExprString())
 	}
+	return sb.String()
+}
+
+// DelegateCallExpr invokes a delegate/Func value: callee(arg1, arg2, ...).
+type DelegateCallExpr struct {
+	Callee Expr
+	Args   []Expr
+}
+
+func (e *DelegateCallExpr) ExprString() string {
+	var sb strings.Builder
+	sb.WriteString(e.Callee.ExprString())
+	sb.WriteByte('(')
+	for i, a := range e.Args {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(a.ExprString())
+	}
+	sb.WriteByte(')')
 	return sb.String()
 }
 
