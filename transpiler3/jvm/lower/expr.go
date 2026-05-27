@@ -159,6 +159,26 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (javasrc.Expr, error) {
 	case *aotir.AgentIntentCallExpr:
 		return l.lowerAgentIntentCallExpr(e)
 
+	// --- Stream / channel expressions (Phase 10) ---
+
+	case *aotir.ChanMakeExpr:
+		return l.lowerChanMakeExpr(e)
+
+	case *aotir.ChanRecvExpr:
+		return l.lowerChanRecvExpr(e)
+
+	case *aotir.StreamMakeExpr:
+		return l.lowerStreamMakeExpr(e)
+
+	case *aotir.SubMakeExpr:
+		return l.lowerSubMakeExpr(e)
+
+	case *aotir.SubMakeLimitExpr:
+		return l.lowerSubMakeLimitExpr(e)
+
+	case *aotir.SubRecvExpr:
+		return l.lowerSubRecvExpr(e)
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported expr %T", e)
 	}
