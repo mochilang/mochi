@@ -85,6 +85,8 @@ func formatErrs(errs []error) string {
 var soundnessPathRE = regexp.MustCompile(`[^ \n\t]*tests/types/soundness/`)
 
 func normalizeSoundness(s string) string {
+	s = strings.ReplaceAll(s, "\r\n", "\n")
+	s = strings.ReplaceAll(s, `\`, "/")
 	s = soundnessPathRE.ReplaceAllString(s, "tests/types/soundness/")
 	s = strings.TrimRight(s, "\n") + "\n"
 	return s
