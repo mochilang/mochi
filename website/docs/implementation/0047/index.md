@@ -31,6 +31,6 @@ A phase is LANDED only when its gate is green on every target listed for it in M
 | 13 | LLM (generate) | LANDED | — | [phase-13](/docs/implementation/0047/phase-13-llm) |
 | 14 | fetch (HTTP) | LANDED | — | [phase-14](/docs/implementation/0047/phase-14-fetch) |
 | 15 | Release packaging | LANDED | — | [phase-15](/docs/implementation/0047/phase-15-packaging) |
-| 16 | Native image (GraalVM) | NOT STARTED | — | [phase-16](/docs/implementation/0047/phase-16-native-image) |
+| 16 | Native image (GraalVM) | LANDED | — | [phase-16](/docs/implementation/0047/phase-16-native-image) |
 | 17 | Matrix and reproducibility | NOT STARTED | — | [phase-17](/docs/implementation/0047/phase-17-matrix-repro) |
 | 18 | Maven Central + v0.14.0 release | NOT STARTED | — | [phase-18](/docs/implementation/0047/phase-18-maven-central) |
