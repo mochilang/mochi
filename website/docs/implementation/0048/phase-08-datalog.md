@@ -10,9 +10,9 @@ description: "MEP-48 Phase 8 — fact/rule/query lowering to Mochi.Runtime.Datal
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 8](/docs/mep/mep-0048#phase-8-datalog) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 02:38 (GMT+7) |
+| Landed         | 2026-05-28 02:40 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -102,4 +102,6 @@ The evaluator is single-threaded and in-memory (no RETE network in Phase 8). Suf
 
 ## Closeout notes
 
-Phase 8 not yet started.
+Phase 8 landed. `TestPhase8Datalog` PASS: 6 fixtures on net10.0 (dl_ancestor, dl_connected, dl_facts_grandparent, dl_negation, dl_parent_basic, dl_sibling).
+
+Compile-time semi-naive Datalog evaluation (same strategy as BEAM backend): `DatalogQueryExpr` is evaluated at lower time and emitted as a static `List<string>` literal. `RawCStmt` (C-specific setup) is a no-op for .NET.

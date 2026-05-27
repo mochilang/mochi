@@ -771,6 +771,32 @@ func (e *BinaryExpr) ExprString() string {
 	return "(" + e.Left.ExprString() + " " + e.Op + " " + e.Right.ExprString() + ")"
 }
 
+// AgentNewExpr creates a mutable object with an object-initializer: new T() { field = val, ... }.
+type AgentNewExpr struct {
+	Type  TypeRef
+	Inits []DictEntry // Key is a NameExpr for the field; Value is the initializer
+}
+
+func (e *AgentNewExpr) ExprString() string {
+	var sb strings.Builder
+	sb.WriteString("new ")
+	sb.WriteString(e.Type.CSString())
+	sb.WriteString("()")
+	if len(e.Inits) > 0 {
+		sb.WriteString(" { ")
+		for i, init := range e.Inits {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(init.Key.ExprString())
+			sb.WriteString(" = ")
+			sb.WriteString(init.Value.ExprString())
+		}
+		sb.WriteString(" }")
+	}
+	return sb.String()
+}
+
 // UnaryExpr is a unary expression.
 type UnaryExpr struct {
 	Op      string

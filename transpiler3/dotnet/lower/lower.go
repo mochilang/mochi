@@ -19,14 +19,20 @@ type lowerer struct {
 	className    string
 	colours      colour.ColourMap
 	matchCaseVar string // name of the case-bound variable in the current match arm
+	agents       map[string]*aotir.AgentDecl
 }
 
 // Lower translates an aotir.Program into one CompilationUnit per type plus one
 // for the main class. The first element is always the main class CU.
 func Lower(prog *aotir.Program, colours colour.ColourMap, className string) ([]*csharpsrc.CompilationUnit, error) {
+	agentIndex := make(map[string]*aotir.AgentDecl, len(prog.Agents))
+	for _, ad := range prog.Agents {
+		agentIndex[ad.Name] = ad
+	}
 	l := &lowerer{
 		className: className,
 		colours:   colours,
+		agents:    agentIndex,
 	}
 
 	mainFn := prog.Functions[prog.Main]
@@ -79,7 +85,15 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, className string) ([]*
 		Types:     types,
 	}
 
-	return []*csharpsrc.CompilationUnit{mainCU}, nil
+	cus := []*csharpsrc.CompilationUnit{mainCU}
+	for _, ad := range prog.Agents {
+		agentCU, err := l.lowerAgentDecl(ad)
+		if err != nil {
+			return nil, fmt.Errorf("agent %q: %w", ad.Name, err)
+		}
+		cus = append(cus, agentCU)
+	}
+	return cus, nil
 }
 
 // lowerFunction translates a non-main aotir.Function to a static MethodDecl.
@@ -278,6 +292,11 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (csharpsrc.Stmt, error) {
 	case *aotir.ClosureEnvStmt:
 		// C# closures capture from enclosing scope; the C env struct is not needed.
 		return &csharpsrc.EmptyStmt{}, nil
+	case *aotir.RawCStmt:
+		// C-specific setup code (e.g. Datalog result vars) not needed for .NET.
+		return &csharpsrc.EmptyStmt{}, nil
+	case *aotir.AgentIntentCallStmt:
+		return l.lowerAgentIntentCallStmt(s)
 	case *aotir.QueryScopeStmt:
 		return l.lowerQueryScopeStmt(s)
 	default:
@@ -533,6 +552,14 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (csharpsrc.Expr, error) {
 		return l.lowerListSortAscExpr(e)
 	case *aotir.ListSliceExpr:
 		return l.lowerListSliceExpr(e)
+	case *aotir.DatalogQueryExpr:
+		return l.lowerDatalogQueryExpr(e)
+	case *aotir.AgentLit:
+		return l.lowerAgentLitExpr(e)
+	case *aotir.AgentSpawnExpr:
+		return l.lowerAgentSpawnExpr(e)
+	case *aotir.AgentIntentCallExpr:
+		return l.lowerAgentIntentCallExpr(e)
 	case *aotir.FunLit:
 		return l.lowerFunLit(e)
 	case *aotir.FunCallExpr:
@@ -1104,6 +1131,216 @@ func (l *lowerer) lowerQueryScopeStmt(s *aotir.QueryScopeStmt) (csharpsrc.Stmt, 
 	return body, nil
 }
 
+// lowerDatalogQueryExpr evaluates the Datalog program at compile time and emits a static
+// list literal containing the pre-computed result strings.
+func (l *lowerer) lowerDatalogQueryExpr(e *aotir.DatalogQueryExpr) (csharpsrc.Expr, error) {
+	results := datalogEval(e)
+	elems := make([]csharpsrc.Expr, len(results))
+	for i, r := range results {
+		elems[i] = csharpsrc.StringLit(r)
+	}
+	return &csharpsrc.CollectionInitExpr{
+		Type:    csharpsrc.ListTypeRef(csharpsrc.TypeString),
+		CtorArgs: nil,
+		Elems:   elems,
+	}, nil
+}
+
+// datalogEval performs semi-naive bottom-up evaluation and returns the flat list
+// of free-variable values from matching tuples.
+func datalogEval(e *aotir.DatalogQueryExpr) []string {
+	if e.Prog == nil {
+		return nil
+	}
+	state := map[string][][]string{}
+	for _, f := range e.Prog.Facts {
+		args := make([]string, len(f.Args))
+		copy(args, f.Args)
+		state[f.Name] = append(state[f.Name], args)
+	}
+	for {
+		changed := false
+		for _, rule := range e.Prog.Rules {
+			newTuples := dlDeriveRule(rule, state)
+			for _, t := range newTuples {
+				if !dlTupleInRelation(state[rule.HeadName], t) {
+					state[rule.HeadName] = append(state[rule.HeadName], t)
+					changed = true
+				}
+			}
+		}
+		if !changed {
+			break
+		}
+	}
+	rel := state[e.QueryName]
+	var out []string
+	for _, tuple := range rel {
+		if len(tuple) != len(e.QueryArgs) {
+			continue
+		}
+		match := true
+		for i, qa := range e.QueryArgs {
+			if qa != "" {
+				expected := qa
+				if len(expected) >= 2 && expected[0] == '"' && expected[len(expected)-1] == '"' {
+					expected = expected[1 : len(expected)-1]
+				}
+				if tuple[i] != expected {
+					match = false
+					break
+				}
+			}
+		}
+		if match {
+			for i, qa := range e.QueryArgs {
+				if qa == "" {
+					out = append(out, tuple[i])
+				}
+			}
+		}
+	}
+	return out
+}
+
+func dlDeriveRule(rule aotir.DatalogRule, state map[string][][]string) [][]string {
+	results := []map[string]string{{}}
+	for _, lit := range rule.Body {
+		if lit.IsNeq {
+			var next []map[string]string
+			for _, env := range results {
+				a, aok := env[lit.NeqA]
+				b, bok := env[lit.NeqB]
+				if !aok || !bok || a != b {
+					next = append(next, env)
+				}
+			}
+			results = next
+			continue
+		}
+		if lit.IsNot {
+			var next []map[string]string
+			for _, env := range results {
+				matched := false
+				for _, t := range state[lit.Name] {
+					if len(t) != len(lit.Args) {
+						continue
+					}
+					ok := true
+					for i, arg := range lit.Args {
+						if dlResolveArg(arg, env) != t[i] {
+							ok = false
+							break
+						}
+					}
+					if ok {
+						matched = true
+						break
+					}
+				}
+				if !matched {
+					next = append(next, env)
+				}
+			}
+			results = next
+			continue
+		}
+		var next []map[string]string
+		for _, env := range results {
+			for _, t := range state[lit.Name] {
+				if len(t) != len(lit.Args) {
+					continue
+				}
+				newEnv := dlCopyEnv(env)
+				ok := true
+				for i, arg := range lit.Args {
+					if dlIsVar(arg) {
+						if existing, found := newEnv[arg]; found {
+							if existing != t[i] {
+								ok = false
+								break
+							}
+						} else {
+							newEnv[arg] = t[i]
+						}
+					} else {
+						if dlResolveArg(arg, env) != t[i] {
+							ok = false
+							break
+						}
+					}
+				}
+				if ok {
+					next = append(next, newEnv)
+				}
+			}
+		}
+		results = next
+	}
+	var heads [][]string
+	for _, env := range results {
+		head := make([]string, len(rule.HeadArgs))
+		valid := true
+		for i, arg := range rule.HeadArgs {
+			if dlIsVar(arg) {
+				v, ok := env[arg]
+				if !ok {
+					valid = false
+					break
+				}
+				head[i] = v
+			} else {
+				head[i] = dlResolveArg(arg, env)
+			}
+		}
+		if valid {
+			heads = append(heads, head)
+		}
+	}
+	return heads
+}
+
+func dlResolveArg(arg string, env map[string]string) string {
+	if len(arg) >= 2 && arg[0] == '"' && arg[len(arg)-1] == '"' {
+		return arg[1 : len(arg)-1]
+	}
+	if v, ok := env[arg]; ok {
+		return v
+	}
+	return arg
+}
+
+func dlIsVar(arg string) bool {
+	return len(arg) > 0 && arg[0] != '"'
+}
+
+func dlTupleInRelation(rel [][]string, t []string) bool {
+	for _, r := range rel {
+		if len(r) != len(t) {
+			continue
+		}
+		match := true
+		for i := range r {
+			if r[i] != t[i] {
+				match = false
+				break
+			}
+		}
+		if match {
+			return true
+		}
+	}
+	return false
+}
+
+func dlCopyEnv(env map[string]string) map[string]string {
+	cp := make(map[string]string, len(env))
+	for k, v := range env {
+		cp[k] = v
+	}
+	return cp
+}
+
 // lowerFunLit translates an aotir.FunLit (closure literal) to a C# lambda expression.
 // The lambda body calls the lifted static method, threading any captured variables.
 //
@@ -1495,4 +1732,303 @@ func ClassName(src string) string {
 		return "Main"
 	}
 	return sb.String()
+}
+
+// ---- Agent lowering ----
+
+// lowerAgentDecl lowers an aotir.AgentDecl to a C# class with mutable fields and instance methods.
+// Each agent becomes a simple mutable object: no async actor overhead for the sequential fixture set.
+//
+//	public class MochiAgent_Counter {
+//	    public long count = 0L;
+//	    public void increment() { count = count + 1L; }
+//	    public long value() { return count; }
+//	}
+func (l *lowerer) lowerAgentDecl(ad *aotir.AgentDecl) (*csharpsrc.CompilationUnit, error) {
+	stateFieldNames := make(map[string]bool, len(ad.Fields))
+	for _, f := range ad.Fields {
+		stateFieldNames[f.Name] = true
+	}
+
+	members := make([]csharpsrc.Member, 0, len(ad.Fields)+len(ad.Intents))
+
+	// Mutable fields with default values to satisfy nullable analysis.
+	for _, f := range ad.Fields {
+		ft := agentFieldType(f.Type)
+		members = append(members, &csharpsrc.FieldDecl{
+			Modifiers: []string{"public"},
+			Type:      ft,
+			Name:      f.Name,
+			Init:      agentZeroValue(f.Type),
+		})
+	}
+
+	// Intent methods.
+	for _, intent := range ad.Intents {
+		method, err := l.lowerIntentMethod(intent, stateFieldNames)
+		if err != nil {
+			return nil, fmt.Errorf("intent %q: %w", intent.Name, err)
+		}
+		members = append(members, method)
+	}
+
+	agentClass := &csharpsrc.ClassDecl{
+		Modifiers: []string{"public"},
+		Name:      "MochiAgent_" + ad.Name,
+		Members:   members,
+	}
+
+	return &csharpsrc.CompilationUnit{
+		Namespace: "Mochi.User",
+		Usings:    []string{"System", "System.Collections.Generic", "System.Linq"},
+		Types:     []csharpsrc.TypeDecl{agentClass},
+	}, nil
+}
+
+// lowerIntentMethod lowers one intent to a C# instance method.
+// `__self->field` VarRefs are rewritten to plain field names (in an instance method, `field` refers to `this.field`).
+func (l *lowerer) lowerIntentMethod(intent aotir.AgentIntentDecl, stateFields map[string]bool) (*csharpsrc.MethodDecl, error) {
+	body := rewriteAgentSelfRefs(intent.Body, stateFields)
+	block, err := l.lowerBlock(body)
+	if err != nil {
+		return nil, err
+	}
+	params := make([]csharpsrc.Param, len(intent.Params))
+	for i, p := range intent.Params {
+		params[i] = csharpsrc.Param{Type: agentFieldType(p.Type), Name: p.Name}
+	}
+	retType := agentFieldType(intent.ReturnType)
+	if intent.ReturnType == aotir.TypeUnit {
+		retType = csharpsrc.TypeVoid
+	}
+	return &csharpsrc.MethodDecl{
+		Modifiers:  []string{"public"},
+		ReturnType: retType,
+		Name:       intent.Name,
+		Params:     params,
+		Body:       block,
+	}, nil
+}
+
+// rewriteAgentSelfRefs rewrites `__self->field` VarRefs to plain field names.
+func rewriteAgentSelfRefs(b *aotir.Block, stateFields map[string]bool) *aotir.Block {
+	if b == nil {
+		return nil
+	}
+	stmts := make([]aotir.Stmt, len(b.Statements))
+	for i, s := range b.Statements {
+		stmts[i] = rewriteAgentSelfStmt(s, stateFields)
+	}
+	return &aotir.Block{Statements: stmts}
+}
+
+func rewriteAgentSelfStmt(s aotir.Stmt, sf map[string]bool) aotir.Stmt {
+	switch s := s.(type) {
+	case *aotir.ReturnStmt:
+		if s.Value == nil {
+			return s
+		}
+		return &aotir.ReturnStmt{Value: rewriteAgentSelfExpr(s.Value, sf)}
+	case *aotir.AssignStmt:
+		target := s.Name
+		if field := agentSelfField(s.Name); field != "" && sf[field] {
+			target = field
+		} else if sf[s.Name] {
+			target = s.Name
+		}
+		return &aotir.AssignStmt{Name: target, Value: rewriteAgentSelfExpr(s.Value, sf)}
+	case *aotir.LetStmt:
+		cp := *s
+		if s.Init != nil {
+			cp.Init = rewriteAgentSelfExpr(s.Init, sf)
+		}
+		return &cp
+	case *aotir.CallStmt:
+		args := make([]aotir.Expr, len(s.Args))
+		for i, a := range s.Args {
+			args[i] = rewriteAgentSelfExpr(a, sf)
+		}
+		return &aotir.CallStmt{Func: s.Func, Args: args}
+	case *aotir.IfStmt:
+		cp := *s
+		cp.Cond = rewriteAgentSelfExpr(s.Cond, sf)
+		cp.Then = rewriteAgentSelfBlock(s.Then, sf)
+		if s.Else != nil {
+			cp.Else = rewriteAgentSelfBlock(s.Else, sf)
+		}
+		return &cp
+	default:
+		return s
+	}
+}
+
+func rewriteAgentSelfBlock(b *aotir.Block, sf map[string]bool) *aotir.Block {
+	if b == nil {
+		return nil
+	}
+	stmts := make([]aotir.Stmt, len(b.Statements))
+	for i, s := range b.Statements {
+		stmts[i] = rewriteAgentSelfStmt(s, sf)
+	}
+	return &aotir.Block{Statements: stmts}
+}
+
+func rewriteAgentSelfExpr(e aotir.Expr, sf map[string]bool) aotir.Expr {
+	if e == nil {
+		return nil
+	}
+	switch e := e.(type) {
+	case *aotir.VarRef:
+		if field := agentSelfField(e.Name); field != "" && sf[field] {
+			cp := *e
+			cp.Name = field
+			return &cp
+		}
+		return e
+	case *aotir.BinaryExpr:
+		cp := *e
+		cp.Left = rewriteAgentSelfExpr(e.Left, sf)
+		cp.Right = rewriteAgentSelfExpr(e.Right, sf)
+		return &cp
+	case *aotir.UnaryExpr:
+		cp := *e
+		cp.Operand = rewriteAgentSelfExpr(e.Operand, sf)
+		return &cp
+	case *aotir.CallExpr:
+		args := make([]aotir.Expr, len(e.Args))
+		for i, a := range e.Args {
+			args[i] = rewriteAgentSelfExpr(a, sf)
+		}
+		cp := *e
+		cp.Args = args
+		return &cp
+	default:
+		return e
+	}
+}
+
+// agentSelfField extracts the field name from "__self->fieldname".
+func agentSelfField(name string) string {
+	const prefix = "__self->"
+	if len(name) > len(prefix) && name[:len(prefix)] == prefix {
+		return name[len(prefix):]
+	}
+	return ""
+}
+
+// agentFieldType maps an aotir scalar type to a C# TypeRef for agent fields/params.
+func agentFieldType(t aotir.Type) csharpsrc.TypeRef {
+	switch t {
+	case aotir.TypeInt:
+		return csharpsrc.TypeLong
+	case aotir.TypeFloat:
+		return csharpsrc.TypeDouble
+	case aotir.TypeBool:
+		return csharpsrc.TypeBool
+	case aotir.TypeString:
+		return csharpsrc.TypeString
+	default:
+		return csharpsrc.TypeObject
+	}
+}
+
+// lowerAgentLitExpr lowers AgentLit to new MochiAgent_Name { field1 = v1, ... }.
+func (l *lowerer) lowerAgentLitExpr(e *aotir.AgentLit) (csharpsrc.Expr, error) {
+	// Look up the agent decl to know field order.
+	ad, ok := l.agents[e.AgentName]
+	if !ok {
+		return nil, fmt.Errorf("agent lit: unknown agent %q", e.AgentName)
+	}
+	// Build args in field-declaration order.
+	args := make([]csharpsrc.Expr, len(ad.Fields))
+	fieldMap := make(map[string]aotir.Expr, len(e.Fields))
+	for _, f := range e.Fields {
+		fieldMap[f.Name] = f.Value
+	}
+	for i, f := range ad.Fields {
+		v, err := l.lowerExpr(fieldMap[f.Name])
+		if err != nil {
+			return nil, fmt.Errorf("agent lit %q field %q: %w", e.AgentName, f.Name, err)
+		}
+		args[i] = v
+	}
+	// Emit: new MochiAgent_Name() { field1 = v1, field2 = v2, ... }
+	// C# object initializer syntax.
+	inits := make([]csharpsrc.DictEntry, len(ad.Fields))
+	for i, f := range ad.Fields {
+		inits[i] = csharpsrc.DictEntry{Key: &csharpsrc.NameExpr{Name: f.Name}, Value: args[i]}
+	}
+	return &csharpsrc.AgentNewExpr{
+		Type:  csharpsrc.TypeRef{Name: "MochiAgent_" + e.AgentName},
+		Inits: inits,
+	}, nil
+}
+
+// lowerAgentSpawnExpr lowers AgentSpawnExpr to new MochiAgent_Name() with zero-value init.
+func (l *lowerer) lowerAgentSpawnExpr(e *aotir.AgentSpawnExpr) (csharpsrc.Expr, error) {
+	ad, ok := l.agents[e.AgentName]
+	if !ok {
+		return nil, fmt.Errorf("spawn: unknown agent %q", e.AgentName)
+	}
+	inits := make([]csharpsrc.DictEntry, len(ad.Fields))
+	for i, f := range ad.Fields {
+		inits[i] = csharpsrc.DictEntry{
+			Key:   &csharpsrc.NameExpr{Name: f.Name},
+			Value: agentZeroValue(f.Type),
+		}
+	}
+	return &csharpsrc.AgentNewExpr{
+		Type:  csharpsrc.TypeRef{Name: "MochiAgent_" + e.AgentName},
+		Inits: inits,
+	}, nil
+}
+
+// agentZeroValue returns the C# zero-value expression for an aotir type.
+func agentZeroValue(t aotir.Type) csharpsrc.Expr {
+	switch t {
+	case aotir.TypeInt:
+		return &csharpsrc.LiteralExpr{Value: "0L"}
+	case aotir.TypeFloat:
+		return &csharpsrc.LiteralExpr{Value: "0.0"}
+	case aotir.TypeBool:
+		return &csharpsrc.LiteralExpr{Value: "false"}
+	case aotir.TypeString:
+		return &csharpsrc.LiteralExpr{Value: `""`}
+	default:
+		return &csharpsrc.LiteralExpr{Value: "null"}
+	}
+}
+
+// lowerAgentIntentCallExpr lowers AgentIntentCallExpr to recv.IntentName(args...).
+func (l *lowerer) lowerAgentIntentCallExpr(e *aotir.AgentIntentCallExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	args := make([]csharpsrc.Expr, len(e.Args))
+	for i, a := range e.Args {
+		v, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, err
+		}
+		args[i] = v
+	}
+	return &csharpsrc.CallExpr{Receiver: recv, Method: e.IntentName, Args: args}, nil
+}
+
+// lowerAgentIntentCallStmt lowers AgentIntentCallStmt to recv.IntentName(args...);
+func (l *lowerer) lowerAgentIntentCallStmt(s *aotir.AgentIntentCallStmt) (csharpsrc.Stmt, error) {
+	recv, err := l.lowerExpr(s.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	args := make([]csharpsrc.Expr, len(s.Args))
+	for i, a := range s.Args {
+		v, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, err
+		}
+		args[i] = v
+	}
+	return &csharpsrc.ExprStmt{X: &csharpsrc.CallExpr{Receiver: recv, Method: s.IntentName, Args: args}}, nil
 }
