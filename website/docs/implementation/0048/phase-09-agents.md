@@ -10,9 +10,9 @@ description: "MEP-48 Phase 9 — agent declarations to Channel<TMessage> + async
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 9](/docs/mep/mep-0048#phase-9-agents-and-gen_server-equivalent) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 02:40 (GMT+7) |
+| Landed         | 2026-05-28 02:43 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -220,4 +220,6 @@ The generated dispatch loop calls `AgentDiagnostics.MessageDispatched(nameof(Cou
 
 ## Closeout notes
 
-Phase 9 not yet started.
+Phase 9 landed. `TestPhase9Agents` PASS: 6 fixtures on net10.0 (accumulator, balance, counter, greeter, spawn_counter, switch_agent).
+
+`AgentDecl` → C# mutable class `MochiAgent_Name` with public fields (default-initialized to avoid CS8618 nullable warning) and public instance methods for each intent. `AgentLit` / `AgentSpawnExpr` → `new MochiAgent_Name() { field = val, ... }` via `AgentNewExpr`. `AgentIntentCallExpr` / `AgentIntentCallStmt` → `recv.IntentName(args...)`. `__self->field` VarRefs in intent bodies are rewritten to plain `field` names (valid in instance methods). Agent classes are emitted as separate CompilationUnits alongside the main module class.
