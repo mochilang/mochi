@@ -18,6 +18,7 @@ type lowerer struct {
 	className string
 	records   map[string]*aotir.RecordDecl // name -> decl; populated by Lower
 	unions    map[string]*aotir.UnionDecl  // name -> decl; populated by Lower (Phase 5)
+	agents    map[string]*aotir.AgentDecl  // name -> decl; populated by Lower (Phase 9)
 }
 
 // Lower translates an aotir.Program into one CompilationUnit per record/union
@@ -30,12 +31,16 @@ func Lower(prog *aotir.Program, className string) ([]*javasrc.CompilationUnit, e
 		className: className,
 		records:   make(map[string]*aotir.RecordDecl, len(prog.Records)),
 		unions:    make(map[string]*aotir.UnionDecl, len(prog.Unions)),
+		agents:    make(map[string]*aotir.AgentDecl, len(prog.Agents)),
 	}
 	for _, rd := range prog.Records {
 		l.records[rd.Name] = rd
 	}
 	for _, ud := range prog.Unions {
 		l.unions[ud.Name] = ud
+	}
+	for _, ad := range prog.Agents {
+		l.agents[ad.Name] = ad
 	}
 
 	mainFn := prog.Functions[prog.Main]
@@ -97,6 +102,15 @@ func Lower(prog *aotir.Program, className string) ([]*javasrc.CompilationUnit, e
 			return nil, fmt.Errorf("union %q: %w", ud.Name, err)
 		}
 		cus = append(cus, ucu)
+	}
+
+	// Emit each agent as a separate CompilationUnit (MochiAgent_<Name>.java).
+	for _, ad := range prog.Agents {
+		acu, err := l.lowerAgentDecl(ad)
+		if err != nil {
+			return nil, fmt.Errorf("agent %q: %w", ad.Name, err)
+		}
+		cus = append(cus, acu)
 	}
 
 	return cus, nil

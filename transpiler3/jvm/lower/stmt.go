@@ -82,6 +82,11 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (javasrc.Stmt, error) {
 	case *aotir.RawCStmt:
 		return nil, nil
 
+	// --- Agent statements (Phase 9) ---
+
+	case *aotir.AgentIntentCallStmt:
+		return l.lowerAgentIntentCallStmt(s)
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported stmt %T", s)
 	}
@@ -147,6 +152,9 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (javasrc.Stmt, error) {
 	case aotir.TypeFun:
 		// Function-typed binding: choose the precise functional interface from the sig.
 		javaType = funcTypeRef(s.FunSig)
+	case aotir.TypeAgent:
+		// Agent-typed binding: MochiAgent_<Name>.Handle
+		javaType = javasrc.TypeRef{Name: "MochiAgent_" + s.AgentName + ".Handle"}
 	default:
 		javaType, err = lowerType(s.VarType)
 		if err != nil {
