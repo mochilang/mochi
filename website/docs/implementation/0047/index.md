@@ -19,13 +19,13 @@ A phase is LANDED only when its gate is green on every target listed for it in M
 | 1 | Hello world | LANDED | — | [phase-01](/docs/implementation/0047/phase-01-hello) |
 | 2 | Primitives and control flow | LANDED | — | [phase-02](/docs/implementation/0047/phase-02-scalars) |
 | 3 | Collections | LANDED | — | [phase-03](/docs/implementation/0047/phase-03-collections) |
-| 4 | Records | NOT STARTED | — | [phase-04](/docs/implementation/0047/phase-04-records) |
-| 5 | Sum types and pattern matching | NOT STARTED | — | [phase-05](/docs/implementation/0047/phase-05-sums) |
-| 6 | Closures and higher-order functions | NOT STARTED | — | [phase-06](/docs/implementation/0047/phase-06-closures) |
-| 7 | Query DSL | NOT STARTED | — | [phase-07](/docs/implementation/0047/phase-07-query) |
-| 8 | Datalog | NOT STARTED | — | [phase-08](/docs/implementation/0047/phase-08-datalog) |
-| 9 | Agents (virtual threads, Loom) | NOT STARTED | — | [phase-09](/docs/implementation/0047/phase-09-agents) |
-| 10 | Streams | NOT STARTED | — | [phase-10](/docs/implementation/0047/phase-10-streams) |
+| 4 | Records | LANDED | — | [phase-04](/docs/implementation/0047/phase-04-records) |
+| 5 | Sum types and pattern matching | LANDED | — | [phase-05](/docs/implementation/0047/phase-05-sums) |
+| 6 | Closures and higher-order functions | LANDED | — | [phase-06](/docs/implementation/0047/phase-06-closures) |
+| 7 | Query DSL | LANDED | — | [phase-07](/docs/implementation/0047/phase-07-query) |
+| 8 | Datalog | LANDED | — | [phase-08](/docs/implementation/0047/phase-08-datalog) |
+| 9 | Agents (virtual threads, Loom) | LANDED | — | [phase-09](/docs/implementation/0047/phase-09-agents) |
+| 10 | Streams | LANDED | — | [phase-10](/docs/implementation/0047/phase-10-streams) |
 | 11 | async (Loom-backed) | LANDED | — | [phase-11](/docs/implementation/0047/phase-11-async) |
 | 12 | FFI (JVM interop) | LANDED | — | [phase-12](/docs/implementation/0047/phase-12-ffi) |
 | 13 | LLM (generate) | LANDED | — | [phase-13](/docs/implementation/0047/phase-13-llm) |

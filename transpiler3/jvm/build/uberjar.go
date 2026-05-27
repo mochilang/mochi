@@ -54,7 +54,7 @@ func PackUberJar(classDir, runtimeJar, outJar, mainClass string) error {
 	defer w.Close()
 
 	// Write MANIFEST.MF with fixed timestamp.
-	manifest := "Manifest-Version: 1.0\nMain-Class: " + mainClass + "\nImplementation-Version: 0.10.0\nBuilt-By: Mochi Transpiler\n"
+	manifest := "Manifest-Version: 1.0\nMain-Class: " + mainClass + "\nImplementation-Version: 0.14.0\nBuilt-By: Mochi Transpiler\n"
 	mfHeader := &zip.FileHeader{
 		Name:     "META-INF/MANIFEST.MF",
 		Method:   zip.Deflate,
