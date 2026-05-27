@@ -64,7 +64,7 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, className string) ([]*
 
 	mainCU := &csharpsrc.CompilationUnit{
 		Namespace: "Mochi.User",
-		Usings:    []string{"System"},
+		Usings:    []string{"System", "System.Collections.Generic", "System.Linq"},
 		Types:     []csharpsrc.TypeDecl{classDecl},
 	}
 
@@ -142,6 +142,10 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (csharpsrc.Stmt, error) {
 		return &csharpsrc.BreakStmt{}, nil
 	case *aotir.ContinueStmt:
 		return &csharpsrc.ContinueStmt{}, nil
+	case *aotir.ListSetStmt:
+		return l.lowerListSetStmt(s)
+	case *aotir.MapPutStmt:
+		return l.lowerMapPutStmt(s)
 	default:
 		return nil, fmt.Errorf("dotnet/lower: unsupported statement %T", s)
 	}
@@ -335,6 +339,39 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (csharpsrc.Expr, error) {
 		return &csharpsrc.CallExpr{Receiver: recv, Method: "Contains", Args: []csharpsrc.Expr{sub}}, nil
 	case *aotir.MathCallExpr:
 		return l.lowerMathCallExpr(e)
+	// --- collections (Phase 3) ---
+	case *aotir.ListLit:
+		return l.lowerListLit(e)
+	case *aotir.IndexExpr:
+		return l.lowerIndexExpr(e)
+	case *aotir.LenExpr:
+		return l.lowerLenExpr(e)
+	case *aotir.AppendExpr:
+		return l.lowerAppendExpr(e)
+	case *aotir.MapLit:
+		return l.lowerMapLit(e)
+	case *aotir.MapGetExpr:
+		return l.lowerMapGetExpr(e)
+	case *aotir.MapHasExpr:
+		return l.lowerMapHasExpr(e)
+	case *aotir.MapLenExpr:
+		return l.lowerMapLenExpr(e)
+	case *aotir.MapKeysExpr:
+		return l.lowerMapKeysExpr(e)
+	case *aotir.MapValuesExpr:
+		return l.lowerMapValuesExpr(e)
+	case *aotir.SetLiteralExpr:
+		return l.lowerSetLiteralExpr(e)
+	case *aotir.SetAddExpr:
+		return l.lowerSetAddExpr(e)
+	case *aotir.SetHasExpr:
+		return l.lowerSetHasExpr(e)
+	case *aotir.SetLenExpr:
+		return l.lowerSetLenExpr(e)
+	case *aotir.ListFilterExpr:
+		return l.lowerListFilterExpr(e)
+	case *aotir.FunLit:
+		return &csharpsrc.NameExpr{Name: e.FuncName}, nil
 	default:
 		return nil, fmt.Errorf("dotnet/lower: unsupported expression %T", e)
 	}
@@ -354,6 +391,23 @@ func (l *lowerer) lowerBinaryExpr(e *aotir.BinaryExpr) (csharpsrc.Expr, error) {
 			Class:  "string",
 			Method: "Concat",
 			Args:   []csharpsrc.Expr{left, right},
+		}, nil
+	}
+	if e.Op == aotir.BinEqList {
+		return &csharpsrc.CallExpr{
+			Receiver: left,
+			Method:   "SequenceEqual",
+			Args:     []csharpsrc.Expr{right},
+		}, nil
+	}
+	if e.Op == aotir.BinNeList {
+		return &csharpsrc.UnaryExpr{
+			Op: "!",
+			Operand: &csharpsrc.CallExpr{
+				Receiver: left,
+				Method:   "SequenceEqual",
+				Args:     []csharpsrc.Expr{right},
+			},
 		}, nil
 	}
 	op := lowerBinOp(e.Op)
@@ -494,6 +548,251 @@ func (l *lowerer) lowerMathCallExpr(e *aotir.MathCallExpr) (csharpsrc.Expr, erro
 		return &csharpsrc.CastExpr{Type: csharpsrc.TypeLong, X: result}, nil
 	}
 	return result, nil
+}
+
+// --- Phase 3 collection lowering helpers ---
+
+func (l *lowerer) lowerListLit(e *aotir.ListLit) (csharpsrc.Expr, error) {
+	elems, err := l.lowerExprs(e.Elems)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CollectionInitExpr{
+		Type:  csharpsrc.ListTypeRef(lowerElemType(e.ElemType)),
+		Elems: elems,
+	}, nil
+}
+
+func (l *lowerer) lowerIndexExpr(e *aotir.IndexExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	idx, err := l.lowerExpr(e.Index)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.IndexAccessExpr{
+		Receiver: recv,
+		Index:    &csharpsrc.CastExpr{Type: csharpsrc.TypeInt, X: idx},
+	}, nil
+}
+
+func (l *lowerer) lowerLenExpr(e *aotir.LenExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CastExpr{
+		Type: csharpsrc.TypeLong,
+		X:    &csharpsrc.FieldAccessExpr{Receiver: recv, Field: "Count"},
+	}, nil
+}
+
+func (l *lowerer) lowerAppendExpr(e *aotir.AppendExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	val, err := l.lowerExpr(e.Value)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CollectionInitExpr{
+		Type:     csharpsrc.ListTypeRef(lowerElemType(e.ElemType)),
+		CtorArgs: []csharpsrc.Expr{recv},
+		Elems:    []csharpsrc.Expr{val},
+	}, nil
+}
+
+func (l *lowerer) lowerMapLit(e *aotir.MapLit) (csharpsrc.Expr, error) {
+	keys, err := l.lowerExprs(e.Keys)
+	if err != nil {
+		return nil, err
+	}
+	vals, err := l.lowerExprs(e.Values)
+	if err != nil {
+		return nil, err
+	}
+	entries := make([]csharpsrc.DictEntry, len(keys))
+	for i := range keys {
+		entries[i] = csharpsrc.DictEntry{Key: keys[i], Value: vals[i]}
+	}
+	return &csharpsrc.DictInitExpr{
+		Type:    csharpsrc.DictTypeRef(lowerType(e.KeyType), lowerType(e.ValueType)),
+		Entries: entries,
+	}, nil
+}
+
+func (l *lowerer) lowerMapGetExpr(e *aotir.MapGetExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	key, err := l.lowerExpr(e.Key)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.IndexAccessExpr{Receiver: recv, Index: key}, nil
+}
+
+func (l *lowerer) lowerMapHasExpr(e *aotir.MapHasExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	key, err := l.lowerExpr(e.Key)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CallExpr{Receiver: recv, Method: "ContainsKey", Args: []csharpsrc.Expr{key}}, nil
+}
+
+func (l *lowerer) lowerMapLenExpr(e *aotir.MapLenExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CastExpr{
+		Type: csharpsrc.TypeLong,
+		X:    &csharpsrc.FieldAccessExpr{Receiver: recv, Field: "Count"},
+	}, nil
+}
+
+func (l *lowerer) lowerMapKeysExpr(e *aotir.MapKeysExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	// recv.Keys.ToList() — Dictionary preserves insertion order in .NET Core
+	keys := &csharpsrc.FieldAccessExpr{Receiver: recv, Field: "Keys"}
+	return &csharpsrc.CallExpr{Receiver: keys, Method: "ToList", Args: nil}, nil
+}
+
+func (l *lowerer) lowerMapValuesExpr(e *aotir.MapValuesExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	vals := &csharpsrc.FieldAccessExpr{Receiver: recv, Field: "Values"}
+	return &csharpsrc.CallExpr{Receiver: vals, Method: "ToList", Args: nil}, nil
+}
+
+func (l *lowerer) lowerSetLiteralExpr(e *aotir.SetLiteralExpr) (csharpsrc.Expr, error) {
+	elems, err := l.lowerExprs(e.Elems)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CollectionInitExpr{
+		Type:  csharpsrc.HashSetTypeRef(lowerElemType(e.ElemType)),
+		Elems: elems,
+	}, nil
+}
+
+func (l *lowerer) lowerSetAddExpr(e *aotir.SetAddExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	elem, err := l.lowerExpr(e.Elem)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CollectionInitExpr{
+		Type:     csharpsrc.HashSetTypeRef(lowerElemType(e.ElemType)),
+		CtorArgs: []csharpsrc.Expr{recv},
+		Elems:    []csharpsrc.Expr{elem},
+	}, nil
+}
+
+func (l *lowerer) lowerSetHasExpr(e *aotir.SetHasExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	elem, err := l.lowerExpr(e.Elem)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CallExpr{Receiver: recv, Method: "Contains", Args: []csharpsrc.Expr{elem}}, nil
+}
+
+func (l *lowerer) lowerSetLenExpr(e *aotir.SetLenExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CastExpr{
+		Type: csharpsrc.TypeLong,
+		X:    &csharpsrc.FieldAccessExpr{Receiver: recv, Field: "Count"},
+	}, nil
+}
+
+func (l *lowerer) lowerListFilterExpr(e *aotir.ListFilterExpr) (csharpsrc.Expr, error) {
+	list, err := l.lowerExpr(e.List)
+	if err != nil {
+		return nil, err
+	}
+	fn, err := l.lowerExpr(e.Fn)
+	if err != nil {
+		return nil, err
+	}
+	filtered := &csharpsrc.CallExpr{Receiver: list, Method: "Where", Args: []csharpsrc.Expr{fn}}
+	return &csharpsrc.CallExpr{Receiver: filtered, Method: "ToList", Args: nil}, nil
+}
+
+func (l *lowerer) lowerListSetStmt(s *aotir.ListSetStmt) (csharpsrc.Stmt, error) {
+	idx, err := l.lowerExpr(s.Index)
+	if err != nil {
+		return nil, err
+	}
+	val, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.AssignStmt{
+		Target: &csharpsrc.IndexAccessExpr{
+			Receiver: &csharpsrc.NameExpr{Name: s.Name},
+			Index:    &csharpsrc.CastExpr{Type: csharpsrc.TypeInt, X: idx},
+		},
+		Value: val,
+	}, nil
+}
+
+func (l *lowerer) lowerMapPutStmt(s *aotir.MapPutStmt) (csharpsrc.Stmt, error) {
+	key, err := l.lowerExpr(s.Key)
+	if err != nil {
+		return nil, err
+	}
+	val, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.AssignStmt{
+		Target: &csharpsrc.IndexAccessExpr{
+			Receiver: &csharpsrc.NameExpr{Name: s.Name},
+			Index:    key,
+		},
+		Value: val,
+	}, nil
+}
+
+// lowerElemType converts an aotir element type to a csharpsrc TypeRef.
+// Unlike lowerType, this always returns a concrete scalar; TypeList/Map/Set
+// fall back to object (nested collections are Phase 3.4).
+func lowerElemType(t aotir.Type) csharpsrc.TypeRef {
+	switch t {
+	case aotir.TypeString:
+		return csharpsrc.TypeString
+	case aotir.TypeInt:
+		return csharpsrc.TypeLong
+	case aotir.TypeFloat:
+		return csharpsrc.TypeDouble
+	case aotir.TypeBool:
+		return csharpsrc.TypeBool
+	default:
+		return csharpsrc.TypeObject
+	}
 }
 
 // quoteCS converts a Go string to a C# double-quoted string literal.

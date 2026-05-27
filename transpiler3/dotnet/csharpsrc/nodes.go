@@ -778,6 +778,88 @@ func (e *CastExpr) ExprString() string {
 	return "((" + e.Type.CSString() + ")" + e.X.ExprString() + ")"
 }
 
+// IndexAccessExpr is a subscript access: receiver[index].
+type IndexAccessExpr struct {
+	Receiver Expr
+	Index    Expr
+}
+
+func (e *IndexAccessExpr) ExprString() string {
+	return e.Receiver.ExprString() + "[" + e.Index.ExprString() + "]"
+}
+
+// CollectionInitExpr is a collection object-creation expression:
+//
+//	new List<T>(ctorArgs) { elem1, elem2, ... }
+//
+// CtorArgs may be empty (no constructor args). Elems may be empty (empty initializer).
+type CollectionInitExpr struct {
+	Type     TypeRef
+	CtorArgs []Expr
+	Elems    []Expr
+}
+
+func (e *CollectionInitExpr) ExprString() string {
+	var sb strings.Builder
+	sb.WriteString("new ")
+	sb.WriteString(e.Type.CSString())
+	sb.WriteByte('(')
+	for i, a := range e.CtorArgs {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(a.ExprString())
+	}
+	sb.WriteByte(')')
+	if len(e.Elems) > 0 {
+		sb.WriteString(" { ")
+		for i, el := range e.Elems {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(el.ExprString())
+		}
+		sb.WriteString(" }")
+	}
+	return sb.String()
+}
+
+// DictEntry is a single key-value pair in a DictInitExpr.
+type DictEntry struct {
+	Key   Expr
+	Value Expr
+}
+
+// DictInitExpr is a dictionary object-creation expression:
+//
+//	new Dictionary<K,V> { { k1, v1 }, { k2, v2 } }
+type DictInitExpr struct {
+	Type    TypeRef
+	Entries []DictEntry
+}
+
+func (e *DictInitExpr) ExprString() string {
+	var sb strings.Builder
+	sb.WriteString("new ")
+	sb.WriteString(e.Type.CSString())
+	sb.WriteString("()")
+	if len(e.Entries) > 0 {
+		sb.WriteString(" { ")
+		for i, en := range e.Entries {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString("{ ")
+			sb.WriteString(en.Key.ExprString())
+			sb.WriteString(", ")
+			sb.WriteString(en.Value.ExprString())
+			sb.WriteString(" }")
+		}
+		sb.WriteString(" }")
+	}
+	return sb.String()
+}
+
 // NameExpr is a simple name reference.
 type NameExpr struct {
 	Name string

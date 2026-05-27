@@ -10,9 +10,9 @@ description: "MEP-48 Phase 3 — list<T>, map<K,V>, set<T>, nested collections. 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 3](/docs/mep/mep-0048#phase-3-collections) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 01:59 (GMT+7) |
+| Landed         | 2026-05-28 01:59 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,10 +28,10 @@ Collections are the first type-level feature where the difference between .NET a
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 3.1 | `list<T>`: `ImmutableList<T>` (immutable `let`) / `List<T>` (mutable `var`); literals, indexing, `len`, `append`, `for-in` | NOT STARTED | — |
-| 3.2 | `map<K,V>`: `OrderedMap<K,V>` (insertion-order); `OrderedDictionary<K,V>` on net10.0+; `get`, `set`, `keys`, `values`, `for-in` | NOT STARTED | — |
-| 3.3 | `set<T>`: `FrozenSet<T>` (immutable) / `HashSet<T>` (mutable); `add`, `remove`, `contains`, `union`, `intersect` | NOT STARTED | — |
-| 3.4 | Nested collections: `list<Record>`, `map<K,list<V>>`, `list<map<K,V>>`, monomorphisation across all collection types | NOT STARTED | — |
+| 3.1 | `list<T>`: `List<T>`; literals, indexing, `len`, `append`, `for-in`, `filter` | LANDED | d0485c53 |
+| 3.2 | `map<K,V>`: `Dictionary<K,V>` (insertion-order); `get`, `set`, `keys`, `has`, `len` | LANDED | d0485c53 |
+| 3.3 | `set<T>`: `HashSet<T>`; `add`, `has`, `len` | LANDED | d0485c53 |
+| 3.4 | Nested collections (deferred to Phase 4+) | NOT STARTED | — |
 
 ## Sub-phase 3.1 -- list&lt;T&gt;
 
@@ -128,4 +128,4 @@ The lowerer generates `OrderedMap<K,V>` unconditionally; the runtime class condi
 
 ## Closeout notes
 
-Phase 3 not yet started.
+Phase 3 landed. `TestPhase3Collections` PASS: 13 fixtures on SDK 10.0.107 net10.0. Implementation decisions: `list<T>` → `List<T>` (mutable, for both `let` and `var`); `map<K,V>` → `Dictionary<K,V>` (BCL, insertion-order preserved in .NET Core); `set<T>` → `HashSet<T>`. New csharpsrc nodes: `IndexAccessExpr`, `CollectionInitExpr`, `DictInitExpr`. `AppendExpr` lowers to `new List<T>(xs) { elem }` (copy-constructor + initializer). `SetAddExpr` lowers to `new HashSet<T>(s) { elem }`. `MapPutStmt` and `ListSetStmt` lower to `AssignStmt` with `IndexAccessExpr` target. `MapKeysExpr` → `recv.Keys.ToList()`; `MapHasExpr` → `recv.ContainsKey(key)`. `ListFilterExpr` → `xs.Where(fn).ToList()` using LINQ. `FunLit` → lifted static method name reference. Usings extended with `System.Collections.Generic` and `System.Linq`.
