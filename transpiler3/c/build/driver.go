@@ -290,10 +290,11 @@ func (d *Driver) Build(src, out, target, profile string) error {
 	// Phase 17.1 (macOS): suppress the random UUID that Apple's linker
 	// embeds in Mach-O binaries. Without this, two identical builds
 	// produce different LC_UUID values, breaking binary reproducibility.
-	// Skip for wasm targets and Apex (cosmocc handles reproducibility internally).
-	isDarwinTarget := !isWasm && !d.Apex && (target == "" && gort.GOOS == "darwin" ||
-		strings.Contains(target, "macos") || strings.Contains(target, "darwin"))
-	if isDarwinTarget {
+	// Only pass this when using Apple's native ld (target == "" on darwin).
+	// Cross-compilation to darwin targets uses zig cc / lld, which does
+	// not support -no_uuid and will error on it.
+	isDarwinNative := !isWasm && !d.Apex && target == "" && gort.GOOS == "darwin"
+	if isDarwinNative {
 		ccArgs = append(ccArgs, "-Wl,-no_uuid")
 	}
 	// Phase 17.3: static linking. -static asks the linker to resolve all

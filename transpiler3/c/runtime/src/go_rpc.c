@@ -6,6 +6,11 @@
  * On Windows/_WIN32 and __wasm__: stubs that abort on first call.
  */
 
+/* fdopen() is POSIX, not pure C; expose it under musl + -std=c2x. */
+#if !defined(_WIN32) && !defined(__wasm__) && !defined(_POSIX_C_SOURCE)
+#  define _POSIX_C_SOURCE 200809L
+#endif
+
 #include "mochi/go_rpc.h"
 
 #include <stdio.h>
