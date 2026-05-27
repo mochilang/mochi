@@ -10,9 +10,9 @@ description: "MEP-47 Phase 13 — generate expressions targeting OpenAI and Anth
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 13](/docs/mep/mep-0047#phase-13-llm-generate) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 14:30 (GMT+7) |
+| Landed         | 2026-05-27 14:44 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,10 +28,10 @@ description: "MEP-47 Phase 13 — generate expressions targeting OpenAI and Anth
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 13.0 | `generate openai { prompt: "..." }` -> `AI.call("openai", prompt, schema)` via `java.net.http.HttpClient` | NOT STARTED | — |
-| 13.1 | Schema lowering: Mochi type schema -> JSON Schema map -> OpenAI `response_format` / Anthropic tool schema | NOT STARTED | — |
-| 13.2 | Cassette replay (`MOCHI_LLM_CASSETTE_DIR` env var): pre-recorded JSON responses returned without live API call | NOT STARTED | — |
-| 13.3 | `generate anthropic { ... }` -> Anthropic Messages API (`api.anthropic.com/v1/messages`) | NOT STARTED | — |
+| 13.0 | `generate openai { prompt: "..." }` -> `AI.call("openai", prompt, schema)` via `java.net.http.HttpClient` | LANDED | — |
+| 13.1 | Schema lowering: Mochi type schema -> JSON Schema map -> OpenAI `response_format` / Anthropic tool schema | DEFERRED | — |
+| 13.2 | Cassette replay (`MOCHI_LLM_CASSETTE_DIR` env var): pre-recorded JSON responses returned without live API call | LANDED | — |
+| 13.3 | `generate anthropic { ... }` -> Anthropic Messages API (`api.anthropic.com/v1/messages`) | DEFERRED | — |
 
 ## Sub-phase 13.0 -- OpenAI generate expression
 
