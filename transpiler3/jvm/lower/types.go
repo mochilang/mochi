@@ -42,6 +42,9 @@ func lowerType(t aotir.Type) (javasrc.TypeRef, error) {
 	// Subscriber handle type (Phase 10): MochiSub (raw).
 	case aotir.TypeSub:
 		return lowerSubType(), nil
+	// Future type (Phase 11): dev.mochi.runtime.async.Async (raw).
+	case aotir.TypeFuture:
+		return lowerFutureType(aotir.TypeInvalid), nil
 	default:
 		return javasrc.TypeRef{}, fmt.Errorf("jvm/lower: unsupported type %v", t)
 	}
@@ -92,6 +95,18 @@ func lowerMapType(keyType, valueType aotir.Type) javasrc.TypeRef {
 func lowerSetType(elemType aotir.Type) javasrc.TypeRef {
 	return javasrc.TypeRef{
 		Name:     "java.util.LinkedHashSet",
+		TypeArgs: []javasrc.TypeRef{boxedType(elemType)},
+	}
+}
+
+// lowerFutureType returns dev.mochi.runtime.async.Async<BoxedElem>.
+// Pass TypeInvalid as elemType for the raw (unparameterised) form.
+func lowerFutureType(elemType aotir.Type) javasrc.TypeRef {
+	if elemType == aotir.TypeInvalid {
+		return javasrc.TypeRef{Name: "dev.mochi.runtime.async.Async"}
+	}
+	return javasrc.TypeRef{
+		Name:     "dev.mochi.runtime.async.Async",
 		TypeArgs: []javasrc.TypeRef{boxedType(elemType)},
 	}
 }

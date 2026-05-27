@@ -26,7 +26,7 @@ A phase is LANDED only when its gate is green on every target listed for it in M
 | 8 | Datalog | NOT STARTED | — | [phase-08](/docs/implementation/0047/phase-08-datalog) |
 | 9 | Agents (virtual threads, Loom) | NOT STARTED | — | [phase-09](/docs/implementation/0047/phase-09-agents) |
 | 10 | Streams | NOT STARTED | — | [phase-10](/docs/implementation/0047/phase-10-streams) |
-| 11 | async (Loom-backed) | NOT STARTED | — | [phase-11](/docs/implementation/0047/phase-11-async) |
+| 11 | async (Loom-backed) | LANDED | — | [phase-11](/docs/implementation/0047/phase-11-async) |
 | 12 | FFI (JVM interop) | NOT STARTED | — | [phase-12](/docs/implementation/0047/phase-12-ffi) |
 | 13 | LLM (generate) | NOT STARTED | — | [phase-13](/docs/implementation/0047/phase-13-llm) |
 | 14 | fetch (HTTP) | NOT STARTED | — | [phase-14](/docs/implementation/0047/phase-14-fetch) |

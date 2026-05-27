@@ -10,9 +10,9 @@ description: "MEP-47 Phase 11 — spawn/await structured concurrency with Loom v
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 11](/docs/mep/mep-0047#phase-11-async-loom-backed) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 14:00 (GMT+7) |
+| Landed         | 2026-05-27 14:23 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,11 +28,11 @@ description: "MEP-47 Phase 11 — spawn/await structured concurrency with Loom v
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 11.0 | `spawn f()` -> `Async.run(() -> f())` (virtual thread + `CompletableFuture`) | NOT STARTED | — |
-| 11.1 | `await fut` -> `fut.await()` (calls `cf.get()`, Loom unmounts carrier) | NOT STARTED | — |
-| 11.2 | `Async.runAll`, `Async.runAny`, `Async.runTimeout` combinators | NOT STARTED | — |
-| 11.3 | `scope { ... }` -> `Scope` wrapper over `StructuredTaskScope` (JDK version switch: JEP 453 on JDK 21, JEP 505 on JDK 25) | NOT STARTED | — |
-| 11.4 | Cancellation: `fut.cancel()` interrupts the virtual thread; runtime checks `Thread.interrupted()` at I/O sites | NOT STARTED | — |
+| 11.0 | `spawn f()` -> `Async.run(() -> f())` (virtual thread + `CompletableFuture`) | LANDED | — |
+| 11.1 | `await fut` -> `fut.await()` (calls `cf.get()`, Loom unmounts carrier) | LANDED | — |
+| 11.2 | `Async.runAll`, `Async.runAny`, `Async.runTimeout` combinators | LANDED | — |
+| 11.3 | `scope { ... }` -> `Scope` wrapper over `StructuredTaskScope` (JDK version switch: JEP 453 on JDK 21, JEP 505 on JDK 25) | DEFERRED | — |
+| 11.4 | Cancellation: `fut.cancel()` interrupts the virtual thread; runtime checks `Thread.interrupted()` at I/O sites | DEFERRED | — |
 
 ## Sub-phase 11.0 -- spawn
 
