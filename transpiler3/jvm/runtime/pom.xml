@@ -6,19 +6,32 @@
 
   <groupId>dev.mochi</groupId>
   <artifactId>mochi-runtime</artifactId>
-  <version>0.10.0-SNAPSHOT</version>
+  <version>0.14.0</version>
   <packaging>jar</packaging>
 
-  <name>Mochi Runtime</name>
-  <description>Mochi runtime library for JVM (dev.mochi.runtime.*)</description>
-  <url>https://github.com/mochilang/mochi</url>
+  <name>Mochi Runtime for JVM</name>
+  <description>Runtime library for Mochi programs compiled to the JVM via MEP-47.</description>
+  <url>https://mochi.dev</url>
 
   <licenses>
     <license>
-      <name>Apache-2.0</name>
+      <name>Apache License 2.0</name>
       <url>https://www.apache.org/licenses/LICENSE-2.0</url>
     </license>
   </licenses>
+
+  <developers>
+    <developer>
+      <id>tamnd</id>
+      <name>Tam Nguyen Dinh</name>
+      <email>tamnd87@gmail.com</email>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/mochilang/mochi.git</connection>
+    <url>https://github.com/mochilang/mochi</url>
+  </scm>
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
@@ -39,6 +52,61 @@
             </manifestEntries>
             <addMavenDescriptor>false</addMavenDescriptor>
           </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals><goal>jar-no-fork</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.7.0</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals><goal>jar</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <doclint>none</doclint>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals><goal>sign</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <gpgArguments>
+            <arg>--pinentry-mode</arg>
+            <arg>loopback</arg>
+          </gpgArguments>
+          <skip>${gpg.skip}</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.5.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <publishingServerId>central</publishingServerId>
+          <autoPublish>true</autoPublish>
+          <waitUntil>published</waitUntil>
         </configuration>
       </plugin>
     </plugins>

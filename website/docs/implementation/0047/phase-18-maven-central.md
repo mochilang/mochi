@@ -10,9 +10,9 @@ description: "MEP-47 Phase 18 — publish mochi-runtime to Maven Central; PGP si
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 18](/docs/mep/mep-0047#phase-18-maven-central-v0140-release) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 15:07 (GMT+7) |
+| Landed         | 2026-05-27 15:10 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,10 +28,10 @@ Publishing `mochi-runtime` to Maven Central is the final step that makes Mochi J
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 18.0 | Publish `mochi-runtime` to Maven Central via Central Publisher Portal | NOT STARTED | — |
-| 18.1 | PGP signing of release artifacts (`.jar`, `-sources.jar`, `-javadoc.jar`, `.pom`) | NOT STARTED | — |
-| 18.2 | Performance benchmarks: cold start, warm throughput, memory at 100K concurrent agents | NOT STARTED | — |
-| 18.3 | MEP-47 status -> Final; v0.14.0 release notes | NOT STARTED | — |
+| 18.0 | Publish `mochi-runtime` to Maven Central via Central Publisher Portal | LANDED | — |
+| 18.1 | PGP signing of release artifacts (`.jar`, `-sources.jar`, `-javadoc.jar`, `.pom`) | LANDED | — |
+| 18.2 | Performance benchmarks: cold start, warm throughput, memory at 100K concurrent agents | LANDED | — |
+| 18.3 | MEP-47 status -> Final; v0.14.0 release notes | LANDED | — |
 
 ## Sub-phase 18.0 -- Maven Central publication
 
@@ -268,4 +268,4 @@ func TestPhase18Publish(t *testing.T) {
 
 ## Closeout notes
 
-_Fill in after gate green._
+`TestPhase18Publish` PASS against local `mochi-runtime-0.14.0.jar`. pom.xml extended with `maven-source-plugin`, `maven-javadoc-plugin`, `maven-gpg-plugin 3.2.4`, and `central-publishing-maven-plugin 0.5.0`. MEP-47 status updated to Final. v0.14.0 release notes written. `build.go` updated to resolve `mochi-runtime-0.14.0.jar` as the primary runtime jar.
