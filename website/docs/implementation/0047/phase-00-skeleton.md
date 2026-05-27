@@ -10,9 +10,9 @@ description: "MEP-47 Phase 0 — directory layout, runtime jar stub, javac toolc
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 0](/docs/mep/mep-0047#phase-0-skeleton) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 10:00 (GMT+7) |
+| Landed         | 2026-05-27 10:20 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,10 +28,10 @@ The user-facing goal of MEP-47 is "compile a Mochi program to a runnable JVM art
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 0.0 | Directory layout + stub Go files (`doc.go` in each package); `go build ./transpiler3/jvm/...` clean | NOT STARTED | — |
-| 0.1 | Runtime jar stub: `dev.mochi.runtime` Maven module, `Runtime.java` version constant, `mvn package -DskipTests` exits 0 | NOT STARTED | — |
-| 0.2 | Javac toolchain detection at build time: `build.go` resolves `java`, `javac`, `jar` on `$PATH` or `$JAVA_HOME`; rejects JDK < 21 | NOT STARTED | — |
-| 0.3 | `javasrc` Go package: ~30 node types covering all Java constructs needed through Phase 6; each node implements `javaString() string` | NOT STARTED | — |
+| 0.0 | Directory layout + stub Go files (`doc.go` in each package); `go build ./transpiler3/jvm/...` clean | LANDED | — |
+| 0.1 | Runtime jar stub: `dev.mochi.runtime` Maven module, `Runtime.java` version constant, `mvn package -DskipTests` exits 0 | LANDED | — |
+| 0.2 | Javac toolchain detection at build time: `build.go` resolves `java`, `javac`, `jar` on `$PATH` or `$JAVA_HOME`; rejects JDK < 21 | LANDED | — |
+| 0.3 | `javasrc` Go package: ~30 node types covering all Java constructs needed through Phase 6; each node implements `javaString() string` | LANDED | — |
 
 ## Sub-phase 0.0 -- Directory layout
 
@@ -239,4 +239,12 @@ Each node implements `javaString() string`. Indentation is handled by passing an
 
 ## Closeout notes
 
-_Fill in after gate green._
+Phase 0 landed 2026-05-27 10:20 (GMT+7). All four sub-phases landed in one commit.
+
+`go build ./transpiler3/jvm/...` clean. `go test ./transpiler3/jvm/...` green: `TestPhase0Skeleton` (toolchain + go_build sub-tests pass; runtime_jar passes after `mvn package`) and `TestJavaSrcNodes` (7 sub-tests covering CompilationUnit, ClassDecl, RecordDecl, SealedInterfaceDecl, MethodDecl, SwitchExpr, and all literal helpers).
+
+One deviation from spec: `Param.Type` and `VarDeclStmt.Type` are `*TypeRef` (pointer) rather than `TypeRef` (value) to allow nil for inferred lambda parameters (`x -> expr`) and `var` declarations. The spec described these as value types; the pointer form is strictly more expressive.
+
+`resolveToolchain()` was tested against JDK 21.0.11 (Homebrew install at `/opt/homebrew/opt/openjdk@21`). EA-suffix stripping (`25-ea` -> `25`) and dot-splitting (`21.0.3` -> `21`) are both covered in the implementation. JDK < 21 rejection is implemented but not exercised in Phase 0 (CI will cover it when a JDK 17 runner is available).
+
+JVM install used: `brew install openjdk@21` (JDK 21.0.11, arm64). Maven install: `brew install maven` (3.9.16). Both are Homebrew installs on macOS arm64 (aarch64-darwin).
