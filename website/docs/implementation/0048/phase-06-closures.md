@@ -10,9 +10,9 @@ description: "MEP-48 Phase 6 — fun(...) => to Func<>/Action<> delegates; mutab
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 6](/docs/mep/mep-0048#phase-6-closures-and-higher-order-functions) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 02:25 (GMT+7) |
+| Landed         | 2026-05-28 02:30 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,10 +28,10 @@ Closures are the primary abstraction for higher-order programming, callbacks, an
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 6.0 | `fun(a: int, b: int): int => a + b` → C# lambda + `Func<long, long, long>` | NOT STARTED | — |
-| 6.1 | Closures over `let` bindings: capture by value (copy-on-capture) | NOT STARTED | — |
-| 6.2 | Closures over `var` bindings: mutable capture via `MutableCell<T>` | NOT STARTED | — |
-| 6.3 | Higher-arity functions: `Func17<...>` through `Func32<...>` in `Mochi.Runtime.Func` | NOT STARTED | — |
+| 6.0 | `fun(a: int, b: int): int => a + b` → C# lambda + `Func<long, long, long>` | LANDED | — |
+| 6.1 | Closures over `let` bindings: capture by value via lifted functions | LANDED | — |
+| 6.2 | Closures over `var` bindings: mutable capture via `MutableCell<T>` | DEFERRED | — |
+| 6.3 | Higher-arity functions: `Func17<...>` through `Func32<...>` in `Mochi.Runtime.Func` | DEFERRED | — |
 
 ## Sub-phase 6.0 -- Lambda and Func&lt;...&gt;
 
@@ -145,4 +145,6 @@ These are used in Phase 7 (query DSL generates partial applications of predicate
 
 ## Closeout notes
 
-Phase 6 not yet started.
+Phase 6 landed. `TestPhase6Closures` PASS: 6 fixtures on net10.0 (closure_capture, hof_filter, hof_map, hof_reduce, lambda_as_arg, lambda_basic).
+
+`FunLit` → C# lambda that calls the lifted static method, threading captures as extra leading arguments: `(__p0) => ClassName.__anon_1(captureVar, __p0)`. `FunCallExpr` → `DelegateCallExpr`: `callee(args...)`. `TypeFun` → `System.Func<T1,...,TResult>` / `System.Action<T1,...>` via `funcTypeRef`. `LetStmt` with `VarType == TypeFun` uses explicit type to avoid CS8917 delegate-type inference failure. Lifted functions rewrite `__e->field` VarRefs to plain field names and prepend capture params. `ListMapExpr` → `xs.Select(fn).ToList()`. `ListFoldlExpr` → `xs.Aggregate(init, fn)`. `ClosureEnvStmt` → no-op (C# does not need a C env struct).

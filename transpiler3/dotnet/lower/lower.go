@@ -83,8 +83,14 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, className string) ([]*
 }
 
 // lowerFunction translates a non-main aotir.Function to a static MethodDecl.
+// For lifted closure functions, captured variables are prepended as extra params
+// and env-ref VarRefs in the body are rewritten to plain field names.
 func (l *lowerer) lowerFunction(fn *aotir.Function) (*csharpsrc.MethodDecl, error) {
-	body, err := l.lowerBlock(fn.Body)
+	bodyToLower := fn.Body
+	if fn.IsLifted && len(fn.Captures) > 0 {
+		bodyToLower = rewriteEnvRefs(fn.Body, fn.Captures)
+	}
+	body, err := l.lowerBlock(bodyToLower)
 	if err != nil {
 		return nil, err
 	}
@@ -93,6 +99,14 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*csharpsrc.MethodDecl, erro
 	if err != nil {
 		return nil, err
 	}
+	// Prepend capture params for lifted functions.
+	if fn.IsLifted && len(fn.Captures) > 0 {
+		capParams := make([]csharpsrc.Param, len(fn.Captures))
+		for i, cap := range fn.Captures {
+			capParams[i] = csharpsrc.Param{Type: funcCaptureType(cap.VarType), Name: cap.FieldName}
+		}
+		params = append(capParams, params...)
+	}
 	return &csharpsrc.MethodDecl{
 		Modifiers:  []string{"public", "static"},
 		ReturnType: retType,
@@ -100,6 +114,108 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*csharpsrc.MethodDecl, erro
 		Params:     params,
 		Body:       body,
 	}, nil
+}
+
+// rewriteEnvRefs returns a copy of b where every VarRef whose Name starts with
+// "__e->" is replaced with a VarRef using just the field name after "->".
+func rewriteEnvRefs(b *aotir.Block, captures []aotir.FunCapture) *aotir.Block {
+	if b == nil {
+		return nil
+	}
+	renames := make(map[string]string, len(captures))
+	for _, cap := range captures {
+		renames["__e->"+cap.FieldName] = cap.FieldName
+	}
+	stmts := make([]aotir.Stmt, len(b.Statements))
+	for i, s := range b.Statements {
+		stmts[i] = rewriteStmtEnvRefs(s, renames)
+	}
+	return &aotir.Block{Statements: stmts}
+}
+
+func rewriteStmtEnvRefs(s aotir.Stmt, renames map[string]string) aotir.Stmt {
+	switch s := s.(type) {
+	case *aotir.ReturnStmt:
+		if s.Value == nil {
+			return s
+		}
+		return &aotir.ReturnStmt{Value: rewriteExprEnvRefs(s.Value, renames)}
+	case *aotir.LetStmt:
+		cp := *s
+		if s.Init != nil {
+			v := rewriteExprEnvRefs(s.Init, renames)
+			cp.Init = v
+		}
+		return &cp
+	case *aotir.AssignStmt:
+		cp := *s
+		cp.Value = rewriteExprEnvRefs(s.Value, renames)
+		return &cp
+	case *aotir.CallStmt:
+		args := make([]aotir.Expr, len(s.Args))
+		for i, a := range s.Args {
+			args[i] = rewriteExprEnvRefs(a, renames)
+		}
+		cp := *s
+		cp.Args = args
+		return &cp
+	default:
+		return s
+	}
+}
+
+func rewriteExprEnvRefs(e aotir.Expr, renames map[string]string) aotir.Expr {
+	switch e := e.(type) {
+	case *aotir.VarRef:
+		if newName, ok := renames[e.Name]; ok {
+			cp := *e
+			cp.Name = newName
+			return &cp
+		}
+		return e
+	case *aotir.BinaryExpr:
+		cp := *e
+		cp.Left = rewriteExprEnvRefs(e.Left, renames)
+		cp.Right = rewriteExprEnvRefs(e.Right, renames)
+		return &cp
+	case *aotir.UnaryExpr:
+		cp := *e
+		cp.Operand = rewriteExprEnvRefs(e.Operand, renames)
+		return &cp
+	case *aotir.CallExpr:
+		args := make([]aotir.Expr, len(e.Args))
+		for i, a := range e.Args {
+			args[i] = rewriteExprEnvRefs(a, renames)
+		}
+		cp := *e
+		cp.Args = args
+		return &cp
+	case *aotir.FunCallExpr:
+		callee := rewriteExprEnvRefs(e.Callee, renames)
+		args := make([]aotir.Expr, len(e.Args))
+		for i, a := range e.Args {
+			args[i] = rewriteExprEnvRefs(a, renames)
+		}
+		return &aotir.FunCallExpr{Callee: callee, Args: args, Result: e.Result}
+	default:
+		return e
+	}
+}
+
+// funcCaptureType returns the C# TypeRef for a captured variable's type.
+func funcCaptureType(t aotir.Type) csharpsrc.TypeRef {
+	switch t {
+	case aotir.TypeInt:
+		return csharpsrc.TypeLong
+	case aotir.TypeFloat:
+		return csharpsrc.TypeDouble
+	case aotir.TypeBool:
+		return csharpsrc.TypeBool
+	case aotir.TypeString:
+		return csharpsrc.TypeString
+	default:
+		return csharpsrc.TypeObject
+	}
 }
 
 func (l *lowerer) lowerBlock(b *aotir.Block) (*csharpsrc.Block, error) {
@@ -159,6 +275,9 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (csharpsrc.Stmt, error) {
 		return l.lowerMapPutStmt(s)
 	case *aotir.MatchStmt:
 		return l.lowerMatchStmt(s)
+	case *aotir.ClosureEnvStmt:
+		// C# closures capture from enclosing scope; the C env struct is not needed.
+		return &csharpsrc.EmptyStmt{}, nil
 	default:
 		return nil, fmt.Errorf("dotnet/lower: unsupported statement %T", s)
 	}
@@ -210,7 +329,8 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (csharpsrc.Stmt, error) {
 	// Use explicit type when:
 	// - no initializer (C# forbids 'var x;')
 	// - union type binding (var would infer the variant, breaking switch pattern matching)
-	if init == nil || s.VarType == aotir.TypeUnion {
+	// - function type binding (C# CS8917: delegate type cannot be inferred from lambda)
+	if init == nil || s.VarType == aotir.TypeUnion || s.VarType == aotir.TypeFun {
 		t := lowerLetStmtType(s)
 		typ = &t
 	}
@@ -403,8 +523,14 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (csharpsrc.Expr, error) {
 		return l.lowerSetLenExpr(e)
 	case *aotir.ListFilterExpr:
 		return l.lowerListFilterExpr(e)
+	case *aotir.ListMapExpr:
+		return l.lowerListMapExpr(e)
+	case *aotir.ListFoldlExpr:
+		return l.lowerListFoldlExpr(e)
 	case *aotir.FunLit:
-		return &csharpsrc.NameExpr{Name: e.FuncName}, nil
+		return l.lowerFunLit(e)
+	case *aotir.FunCallExpr:
+		return l.lowerFunCallExpr(e)
 	default:
 		return nil, fmt.Errorf("dotnet/lower: unsupported expression %T", e)
 	}
@@ -549,6 +675,8 @@ func lowerParamType(p aotir.Param) csharpsrc.TypeRef {
 		return csharpsrc.DictTypeRef(lowerType(p.KeyType), lowerType(p.ValueType))
 	case aotir.TypeSet:
 		return csharpsrc.HashSetTypeRef(lowerElemType(p.ElemType))
+	case aotir.TypeFun:
+		return funcTypeRef(p.FunSig)
 	default:
 		return lowerType(p.Type)
 	}
@@ -566,6 +694,8 @@ func lowerReturnType(fn *aotir.Function) csharpsrc.TypeRef {
 		return csharpsrc.ListTypeRef(lowerElemType(fn.ReturnElemType))
 	case aotir.TypeMap:
 		return csharpsrc.DictTypeRef(lowerType(fn.ReturnKeyType), lowerType(fn.ReturnValueType))
+	case aotir.TypeFun:
+		return funcTypeRef(fn.ReturnFunSig)
 	default:
 		return lowerType(fn.ReturnType)
 	}
@@ -883,6 +1013,138 @@ func (l *lowerer) lowerListFilterExpr(e *aotir.ListFilterExpr) (csharpsrc.Expr, 
 	return &csharpsrc.CallExpr{Receiver: filtered, Method: "ToList", Args: nil}, nil
 }
 
+// lowerListMapExpr lowers ListMapExpr (map(xs, fn)) to xs.Select(fn).ToList().
+func (l *lowerer) lowerListMapExpr(e *aotir.ListMapExpr) (csharpsrc.Expr, error) {
+	list, err := l.lowerExpr(e.List)
+	if err != nil {
+		return nil, err
+	}
+	fn, err := l.lowerExpr(e.Fn)
+	if err != nil {
+		return nil, err
+	}
+	sel := &csharpsrc.CallExpr{Receiver: list, Method: "Select", Args: []csharpsrc.Expr{fn}}
+	return &csharpsrc.CallExpr{Receiver: sel, Method: "ToList", Args: nil}, nil
+}
+
+// lowerListFoldlExpr lowers ListFoldlExpr (reduce(xs, fn, init)) to xs.Aggregate(init, fn).
+func (l *lowerer) lowerListFoldlExpr(e *aotir.ListFoldlExpr) (csharpsrc.Expr, error) {
+	list, err := l.lowerExpr(e.List)
+	if err != nil {
+		return nil, err
+	}
+	fn, err := l.lowerExpr(e.Fn)
+	if err != nil {
+		return nil, err
+	}
+	init, err := l.lowerExpr(e.Init)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.CallExpr{Receiver: list, Method: "Aggregate", Args: []csharpsrc.Expr{init, fn}}, nil
+}
+
+// lowerFunLit translates an aotir.FunLit (closure literal) to a C# lambda expression.
+// The lambda body calls the lifted static method, threading any captured variables.
+//
+// Non-capturing: (__p0, __p1) => ClassName.__anon_1(__p0, __p1)
+// Capturing:     (__p0, __p1) => ClassName.__anon_2(captureVar, __p0, __p1)
+// Void return:   (__p0) => { ClassName.__anon_3(__p0); }
+func (l *lowerer) lowerFunLit(e *aotir.FunLit) (csharpsrc.Expr, error) {
+	sig := e.Sig
+	if sig == nil {
+		return nil, fmt.Errorf("dotnet/lower: FunLit %q has nil Sig", e.FuncName)
+	}
+
+	params := make([]csharpsrc.Param, len(sig.ParamTypes))
+	paramNames := make([]string, len(sig.ParamTypes))
+	for i := range sig.ParamTypes {
+		name := fmt.Sprintf("__p%d", i)
+		paramNames[i] = name
+		params[i] = csharpsrc.Param{Name: name}
+	}
+
+	// Build call args: captures first, then sig params.
+	callArgs := make([]csharpsrc.Expr, 0, len(e.Captures)+len(paramNames))
+	for _, cap := range e.Captures {
+		callArgs = append(callArgs, &csharpsrc.NameExpr{Name: cap.SrcName})
+	}
+	for _, pn := range paramNames {
+		callArgs = append(callArgs, &csharpsrc.NameExpr{Name: pn})
+	}
+
+	callExpr := &csharpsrc.StaticCallExpr{
+		Class:  l.className,
+		Method: e.FuncName,
+		Args:   callArgs,
+	}
+
+	if sig.ReturnType == aotir.TypeUnit {
+		block := &csharpsrc.Block{
+			Stmts: []csharpsrc.Stmt{&csharpsrc.ExprStmt{X: callExpr}},
+		}
+		return &csharpsrc.LambdaExpr{Params: params, Block: block}, nil
+	}
+	return &csharpsrc.LambdaExpr{Params: params, Body: callExpr}, nil
+}
+
+// lowerFunCallExpr translates an aotir.FunCallExpr (indirect call through a
+// function-typed value) to a C# delegate invocation: callee(args...).
+func (l *lowerer) lowerFunCallExpr(e *aotir.FunCallExpr) (csharpsrc.Expr, error) {
+	callee, err := l.lowerExpr(e.Callee)
+	if err != nil {
+		return nil, err
+	}
+	args := make([]csharpsrc.Expr, len(e.Args))
+	for i, a := range e.Args {
+		a2, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, err
+		}
+		args[i] = a2
+	}
+	return &csharpsrc.DelegateCallExpr{Callee: callee, Args: args}, nil
+}
+
+// funcTypeRef returns the C# Func<>/Action<> TypeRef for a FunSig.
+func funcTypeRef(sig *aotir.FunSig) csharpsrc.TypeRef {
+	if sig == nil {
+		return csharpsrc.TypeRef{Name: "System.Func", TypeArgs: []csharpsrc.TypeRef{csharpsrc.TypeObject, csharpsrc.TypeObject}}
+	}
+	boxed := func(t aotir.Type) csharpsrc.TypeRef {
+		switch t {
+		case aotir.TypeInt:
+			return csharpsrc.TypeRef{Name: "long"}
+		case aotir.TypeFloat:
+			return csharpsrc.TypeRef{Name: "double"}
+		case aotir.TypeBool:
+			return csharpsrc.TypeRef{Name: "bool"}
+		case aotir.TypeString:
+			return csharpsrc.TypeString
+		default:
+			return csharpsrc.TypeObject
+		}
+	}
+	if sig.ReturnType == aotir.TypeUnit {
+		// Action<T1, T2, ...>
+		if len(sig.ParamTypes) == 0 {
+			return csharpsrc.TypeRef{Name: "System.Action"}
+		}
+		args := make([]csharpsrc.TypeRef, len(sig.ParamTypes))
+		for i, p := range sig.ParamTypes {
+			args[i] = boxed(p)
+		}
+		return csharpsrc.TypeRef{Name: "System.Action", TypeArgs: args}
+	}
+	// Func<T1, T2, ..., TResult>
+	args := make([]csharpsrc.TypeRef, 0, len(sig.ParamTypes)+1)
+	for _, p := range sig.ParamTypes {
+		args = append(args, boxed(p))
+	}
+	args = append(args, boxed(sig.ReturnType))
+	return csharpsrc.TypeRef{Name: "System.Func", TypeArgs: args}
+}
+
 func (l *lowerer) lowerListSetStmt(s *aotir.ListSetStmt) (csharpsrc.Stmt, error) {
 	idx, err := l.lowerExpr(s.Index)
 	if err != nil {
@@ -1103,6 +1365,8 @@ func lowerLetStmtType(s *aotir.LetStmt) csharpsrc.TypeRef {
 		return csharpsrc.DictTypeRef(lowerType(s.KeyType), lowerType(s.ValueType))
 	case aotir.TypeSet:
 		return csharpsrc.HashSetTypeRef(lowerElemType(s.ElemType))
+	case aotir.TypeFun:
+		return funcTypeRef(s.FunSig)
 	}
 	return lowerType(s.VarType)
 }
