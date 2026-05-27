@@ -1,0 +1,3 @@
+print(upper("hello"))
+print(lower("WORLD"))
+print(upper("mochi"))

@@ -1142,6 +1142,156 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 	case *aotir.AgentIntentCallExpr:
 		return l.lowerAgentIntentCallExpr(e)
 
+	// Phase 13.0: string operations
+	case *aotir.StrLenExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		// string:length/1 counts Unicode codepoints (same as Mochi len).
+		return cerl.CCall(cerl.CAtom("string"), cerl.CAtom("length"), []cerl.Expr{recv}), nil
+	case *aotir.StrIndexExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		idx, err := lowerExpr(l, e.Index)
+		if err != nil {
+			return nil, err
+		}
+		// mochi_str:index(S, I) — returns single-codepoint binary.
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("index"), []cerl.Expr{recv, idx}), nil
+	case *aotir.StrContainsExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		sub, err := lowerExpr(l, e.Sub)
+		if err != nil {
+			return nil, err
+		}
+		// binary:match/2 returns nomatch or {Start,Len}; convert to bool.
+		match := cerl.CCall(cerl.CAtom("binary"), cerl.CAtom("match"), []cerl.Expr{recv, sub})
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("=/="),
+			[]cerl.Expr{match, cerl.CAtom("nomatch")}), nil
+	case *aotir.StrSubstringExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		start, err := lowerExpr(l, e.Start)
+		if err != nil {
+			return nil, err
+		}
+		end, err := lowerExpr(l, e.End)
+		if err != nil {
+			return nil, err
+		}
+		// mochi_str:substring(S, Start, End) — codepoint-indexed slice.
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("substring"),
+			[]cerl.Expr{recv, start, end}), nil
+	case *aotir.StrReverseExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("reverse"), []cerl.Expr{recv}), nil
+	case *aotir.StrConvertExpr:
+		operand, err := lowerExpr(l, e.Operand)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("convert"), []cerl.Expr{operand}), nil
+	case *aotir.StrUpperExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("string"), cerl.CAtom("uppercase"), []cerl.Expr{recv}), nil
+	case *aotir.StrLowerExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("string"), cerl.CAtom("lowercase"), []cerl.Expr{recv}), nil
+	case *aotir.StrSplitExpr:
+		str, err := lowerExpr(l, e.Str)
+		if err != nil {
+			return nil, err
+		}
+		sep, err := lowerExpr(l, e.Sep)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("split"), []cerl.Expr{str, sep}), nil
+	case *aotir.StrJoinExpr:
+		list, err := lowerExpr(l, e.List)
+		if err != nil {
+			return nil, err
+		}
+		sep, err := lowerExpr(l, e.Sep)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("join"), []cerl.Expr{list, sep}), nil
+
+	// Phase 13.0: math builtins
+	case *aotir.MathCallExpr:
+		arg, err := lowerExpr(l, e.Arg)
+		if err != nil {
+			return nil, err
+		}
+		switch e.Func {
+		case "abs_i64":
+			return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("abs"), []cerl.Expr{arg}), nil
+		case "abs_f64":
+			return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("abs"), []cerl.Expr{arg}), nil
+		case "floor":
+			return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("floor"), []cerl.Expr{arg}), nil
+		case "ceil":
+			return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("ceil"), []cerl.Expr{arg}), nil
+		default:
+			return nil, fmt.Errorf("beam/lower: unsupported MathCallExpr func %q", e.Func)
+		}
+
+	// Phase 13.0: numeric type cast
+	case *aotir.NumCastExpr:
+		operand, err := lowerExpr(l, e.Operand)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("trunc"), []cerl.Expr{operand}), nil
+
+	// Phase 13.0: list aggregates
+	case *aotir.ListMinExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("min"), []cerl.Expr{recv}), nil
+	case *aotir.ListMaxExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("max"), []cerl.Expr{recv}), nil
+	case *aotir.ListContainsExpr:
+		list, err := lowerExpr(l, e.List)
+		if err != nil {
+			return nil, err
+		}
+		val, err := lowerExpr(l, e.Value)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("member"), []cerl.Expr{val, list}), nil
+	case *aotir.ListSumExpr:
+		recv, err := lowerExpr(l, e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("sum"), []cerl.Expr{recv}), nil
+
 	// Phase 12.0: file I/O via mochi_file runtime
 	case *aotir.ReadFileExpr:
 		path, err := lowerExpr(l, e.Path)
