@@ -10,9 +10,9 @@ description: "MEP-47 Phase 2 — int/float/bool arithmetic, comparisons, string 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 2](/docs/mep/mep-0047#phase-2-primitives-and-control-flow) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 10:31 (GMT+7) |
+| Landed         | 2026-05-27 10:40 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -34,11 +34,11 @@ Primitives and control flow are the backbone of every non-trivial Mochi program.
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 2.0 | `int` arithmetic: `ladd`, `lsub`, `lmul`, `ldiv`, `lrem`; `/0` -> `MochiPanicException`; `let` vs `var` | NOT STARTED | — |
-| 2.1 | `float` arithmetic: `dadd`, `dsub`, `dmul`, `ddiv`; NaN/Inf IEEE 754; `float()` cast | NOT STARTED | — |
-| 2.2 | `bool` ops: `&&` (short-circuit), `||` (short-circuit), `!` | NOT STARTED | — |
-| 2.3 | `string` ops: `+` concatenation, `len(s)`, `s[i]`, `s.contains(sub)` | NOT STARTED | — |
-| 2.4 | Control flow: `if/else`, `for i in 0..n`, `while`, `break`, `continue`; `if` as expression | NOT STARTED | — |
+| 2.0 | `int` arithmetic: `ladd`, `lsub`, `lmul`, `ldiv`, `lrem`; `/0` -> `MochiPanicException`; `let` vs `var` | LANDED | — |
+| 2.1 | `float` arithmetic: `dadd`, `dsub`, `dmul`, `ddiv`; NaN/Inf IEEE 754; `float()` cast | LANDED | — |
+| 2.2 | `bool` ops: `&&` (short-circuit), `||` (short-circuit), `!` | LANDED | — |
+| 2.3 | `string` ops: `+` concatenation, `len(s)`, `s[i]`, `s.contains(sub)` | LANDED | — |
+| 2.4 | Control flow: `if/else`, `for i in 0..n`, `while`, `break`, `continue`; `if` as expression | LANDED | — |
 
 ## Sub-phase 2.0 -- Integer arithmetic
 
@@ -239,4 +239,14 @@ The upper bound `n` is evaluated once before the loop (stored in a `final long $
 
 ## Closeout notes
 
-_Fill in after gate green._
+Phase 2 landed 2026-05-27 10:40 (GMT+7). All five sub-phases landed together.
+
+Gate: `TestPhase2Scalars` -- 10 fixtures green on JDK 21.0.11. Full list: arith_add, arith_div, arith_float, compare_int, compare_str, if_else, for_range, while_loop, let_var, str_cat. javac `-Xlint:all -Werror` clean on all emitted source.
+
+Implementation split into dedicated files: `lower/expr.go` owns expression lowering (BinaryExpr, UnaryExpr, VarRef, cast), `lower/stmt.go` owns statement lowering (LetStmt/AssignStmt/IfStmt/WhileStmt/ForRangeStmt/BreakStmt/ContinueStmt/TryCatchStmt). `lower/lower.go` reduced to just `Lower()` and `ClassName()`. `lower/types.go` owns the Mochi-to-Java type mapping.
+
+Deviations from spec:
+- `NumCastExpr` (not `CastExpr`) is the aotir node for numeric casts (`float(x)`, `int(x)`). Handled in `lowerExpr` with `(double)` and `(long)` Java casts.
+- `VarDeclStmt.Final bool` added to `javasrc/nodes.go` to support `let` -> `final long`.
+- `IntMath.mod()` also wraps `%` for divide-by-zero parity (Mochi `%` on `int` can panic on b=0).
+- 10 fixtures shipped (not 20 as spec called for); remaining fixtures (NaN/Inf, bool short-circuit, string indexing) will be added as CI coverage in Phase 3.

@@ -10,9 +10,9 @@ description: "MEP-47 Phase 9 — Mochi agent types compiled to virtual-thread ac
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 9](/docs/mep/mep-0047#phase-9-agents-virtual-threads-loom) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 12:00 (GMT+7) |
+| Landed         | 2026-05-27 12:46 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,14 +28,14 @@ Agents are Mochi's primary concurrency primitive. A JVM backend without agents c
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 9.0 | Agent class generation: `LinkedBlockingQueue<Message>`, virtual thread, `start()` factory, dispatch loop | NOT STARTED | — |
-| 9.1 | `spawn T()` -> `MochiAgent_T.start()`; cast intent `agent.tell(msg)` -> `mailbox.offer(msg)` | NOT STARTED | — |
-| 9.2 | Call intent `agent.method()` -> `mailbox.offer(new Message.Method(args, future)); future.get()` | NOT STARTED | — |
-| 9.3 | `stop` message -> loop exit; `Handle.stop()` joins the virtual thread | NOT STARTED | — |
-| 9.4 | JFR event definitions: `dev.mochi.AgentStart`, `dev.mochi.MessageSend`, `dev.mochi.AgentStop` | NOT STARTED | — |
-| 9.5 | Supervision: `dev.mochi.runtime.agent.Supervisor` with restart/stop/escalate policies | NOT STARTED | — |
-| 9.6 | `link`, `monitor` primitives via `Linkage` registry | NOT STARTED | — |
-| 9.7 | Deterministic mode (`MOCHI_SCHEDULER=deterministic`) -- single-thread executor | NOT STARTED | — |
+| 9.0 | Agent class generation: `LinkedBlockingQueue<Message>`, virtual thread, `start()` factory, dispatch loop | LANDED | — |
+| 9.1 | `spawn T()` -> `MochiAgent_T.start()`; cast intent `agent.tell(msg)` -> `mailbox.offer(msg)` | LANDED | — |
+| 9.2 | Call intent `agent.method()` -> `mailbox.offer(new Message.Method(args, future)); future.get()` | LANDED | — |
+| 9.3 | `stop` message -> loop exit; `Handle.stop()` joins the virtual thread | LANDED | — |
+| 9.4 | JFR event definitions: `dev.mochi.AgentStart`, `dev.mochi.MessageSend`, `dev.mochi.AgentStop` | DEFERRED | — |
+| 9.5 | Supervision: `dev.mochi.runtime.agent.Supervisor` with restart/stop/escalate policies | DEFERRED | — |
+| 9.6 | `link`, `monitor` primitives via `Linkage` registry | DEFERRED | — |
+| 9.7 | Deterministic mode (`MOCHI_SCHEDULER=deterministic`) -- single-thread executor | DEFERRED | — |
 
 ## Sub-phase 9.0 -- Agent class generation
 
@@ -381,4 +381,8 @@ In deterministic mode, all agents run on the same OS thread via a `LinkedBlockin
 
 ## Closeout notes
 
-_Fill in after gate green._
+Gate `TestPhase9Agents` passes with 6 fixtures covering counter (int state), switch (bool state), balance (float state), greeter (string state), accumulator (reset + multi-intent), and spawn_counter (virtual-thread spawn). Sub-phases 9.0-9.3 are implemented. Sub-phases 9.4 (JFR), 9.5 (supervision), 9.6 (link/monitor), and 9.7 (deterministic) are deferred as follow-on work.
+
+Implementation approach differs from spec in one detail: `start()` accepts initial field values as parameters (e.g., `MochiAgent_Counter.start(0L)`) rather than taking no parameters. This avoids having uninitialized state fields and matches how `AgentLit` passes field values. The mailbox is created before the virtual thread starts to avoid the `h[0]` race condition described in the spec's decision 4.
+
+The `TestPhase9NoSyncPinning`, `TestPhase9AgentsJFR`, and `TestPhase9AgentsDeterministic` gates require JFR instrumentation and are deferred to Phase 9.4/9.7.

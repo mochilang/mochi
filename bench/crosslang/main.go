@@ -17,10 +17,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"sort"
 	"strings"
-	"syscall"
 	"time"
 )
 
@@ -398,9 +396,7 @@ func runCmd(cat, prog string, n int, lang string, cmd *exec.Cmd) result {
 	err := cmd.Run()
 	_ = time.Since(start)
 	if cmd.ProcessState != nil {
-		if ru, ok := cmd.ProcessState.SysUsage().(*syscall.Rusage); ok && ru != nil {
-			r.MemoryBytes = maxrssBytes(int64(ru.Maxrss))
-		}
+		r.MemoryBytes = processMaxRSS(cmd.ProcessState)
 	}
 	if err != nil {
 		r.Err = fmt.Sprintf("%v: %s", err, strings.TrimSpace(stderr.String()))
@@ -419,13 +415,6 @@ func runCmd(cat, prog string, n int, lang string, cmd *exec.Cmd) result {
 	return r
 }
 
-// maxrssBytes normalizes getrusage maxrss across platforms.
-func maxrssBytes(raw int64) int64 {
-	if runtime.GOOS == "darwin" {
-		return raw // bytes on macOS
-	}
-	return raw * 1024 // kilobytes on Linux/BSD
-}
 
 // measure runs fn `runs` times and aggregates the results into one row.
 // We report the median because (1) it's robust to outliers from OS

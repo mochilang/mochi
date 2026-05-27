@@ -147,6 +147,16 @@ func Verify(p *Program) error {
 		externFns[jf.Name] = decl
 		externFns["mochi_js_"+jf.Name] = decl
 	}
+	// Phase 12.0: Java FFI functions registered under the Mochi alias name.
+	for i, jf := range p.JavaFuncs {
+		if jf == nil {
+			return fmt.Errorf("aotir.Verify: JavaFuncs[%d] is nil", i)
+		}
+		if jf.MochiName == "" {
+			return fmt.Errorf("aotir.Verify: JavaFuncs[%d] has empty MochiName", i)
+		}
+		externFns[jf.MochiName] = &ExternFuncDecl{Name: jf.MochiName, Params: jf.Params, ReturnType: jf.ReturnType}
+	}
 	// Phase 9.3: build agent map for intent-call resolution.
 	agents := make(map[string]*AgentDecl, len(p.Agents))
 	for i, ag := range p.Agents {

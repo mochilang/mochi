@@ -10,9 +10,9 @@ description: "MEP-47 Phase 10 — publish/subscribe streams via SubmissionPublis
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 10](/docs/mep/mep-0047#phase-10-streams) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 12:00 (GMT+7) |
+| Landed         | 2026-05-27 12:59 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,11 +28,11 @@ Streams are Mochi's reactive publish/subscribe primitive. After Phase 10 lands, 
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 10.0 | `stream foo` declaration -> `dev.mochi.runtime.stream.Stream<T>` wrapping `SubmissionPublisher<T>` | NOT STARTED | — |
-| 10.1 | `publish foo msg` -> `foo.publish(msg)` (BLOCK backpressure default) | NOT STARTED | — |
-| 10.2 | `on x in foo { ... }` -> `Flow.Subscriber<T>` with `request(Long.MAX_VALUE)` | NOT STARTED | — |
-| 10.3 | Cold/replay stream: `stream foo replay 100` -> `ReplayStream<T>` with ring buffer | NOT STARTED | — |
-| 10.4 | Stream operators: `map`, `filter`, `take` via `Flow.Processor` chain | NOT STARTED | — |
+| 10.0 | `make_stream(cap)` -> `MochiStream.create(cap)` wrapping `SubmissionPublisher<Object>` | LANDED | mep-0047-phase-10-streams |
+| 10.1 | `emit(s, v)` -> `s.emit(v)` (BLOCK backpressure via `SubmissionPublisher.submit`) | LANDED | mep-0047-phase-10-streams |
+| 10.2 | `subscribe(s)` -> `s.subscribe()` returning `MochiSub`; `recv_sub(sub)` -> `sub.recv()` | LANDED | mep-0047-phase-10-streams |
+| 10.3 | `make_chan(cap)` -> `new LinkedBlockingQueue<>(cap)`; `send`/`recv` via `ChanUtil` | LANDED | mep-0047-phase-10-streams |
+| 10.4 | Multi-subscriber broadcast: two `subscribe()` calls on the same stream both receive all items | LANDED | mep-0047-phase-10-streams |
 
 ## Sub-phase 10.0 -- Stream declaration
 
@@ -283,4 +283,13 @@ dev.mochi.runtime.stream.Stream<Long> first10 = metrics.take(10);
 
 ## Closeout notes
 
-_Fill in after gate green._
+Gate green: 2026-05-27 12:59 (GMT+7). All 10 fixtures passed on JDK 21.
+
+The implementation targets the aotir nodes that the Mochi parser/lowerer actually emits for stream and channel syntax: `StreamMakeExpr`, `StreamEmitStmt`, `SubMakeExpr`, `SubRecvExpr`, `ChanMakeExpr`, `ChanSendStmt`, `ChanRecvExpr`. These map cleanly to the JVM runtime:
+
+- Channels: `LinkedBlockingQueue<Object>` with `put()` / `ChanUtil.take()` (wraps `InterruptedException`).
+- Streams: `MochiStream` (wraps `SubmissionPublisher<Object>` with virtual-thread executor) + `MochiSub` (per-subscriber `LinkedBlockingQueue` drained by `Flow.Subscriber.onNext`).
+
+Both `ChanUtil.take()` and `MochiSub.recv()` return `Object` (due to type erasure on raw queue). The lowerer wraps each call in an explicit boxed-type cast so Java can auto-unbox to the primitive result type at the call site.
+
+The spec's `SubmissionPublisher`-backed `Stream<T>` class (§10.0) is implemented here as `MochiStream` (unparameterised) rather than as a typed wrapper. This avoids the complexity of propagating generic type arguments through the aotir at the cost of using raw types internally, which is consistent with how Phase 10 handles the other collection types.

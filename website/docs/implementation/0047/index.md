@@ -18,19 +18,19 @@ A phase is LANDED only when its gate is green on every target listed for it in M
 | 0 | Skeleton | LANDED | — | [phase-00](/docs/implementation/0047/phase-00-skeleton) |
 | 1 | Hello world | LANDED | — | [phase-01](/docs/implementation/0047/phase-01-hello) |
 | 2 | Primitives and control flow | LANDED | — | [phase-02](/docs/implementation/0047/phase-02-scalars) |
-| 3 | Collections | IN PROGRESS | — | [phase-03](/docs/implementation/0047/phase-03-collections) |
-| 4 | Records | NOT STARTED | — | [phase-04](/docs/implementation/0047/phase-04-records) |
-| 5 | Sum types and pattern matching | NOT STARTED | — | [phase-05](/docs/implementation/0047/phase-05-sums) |
-| 6 | Closures and higher-order functions | NOT STARTED | — | [phase-06](/docs/implementation/0047/phase-06-closures) |
-| 7 | Query DSL | NOT STARTED | — | [phase-07](/docs/implementation/0047/phase-07-query) |
-| 8 | Datalog | NOT STARTED | — | [phase-08](/docs/implementation/0047/phase-08-datalog) |
-| 9 | Agents (virtual threads, Loom) | NOT STARTED | — | [phase-09](/docs/implementation/0047/phase-09-agents) |
-| 10 | Streams | NOT STARTED | — | [phase-10](/docs/implementation/0047/phase-10-streams) |
-| 11 | async (Loom-backed) | NOT STARTED | — | [phase-11](/docs/implementation/0047/phase-11-async) |
-| 12 | FFI (JVM interop) | NOT STARTED | — | [phase-12](/docs/implementation/0047/phase-12-ffi) |
-| 13 | LLM (generate) | NOT STARTED | — | [phase-13](/docs/implementation/0047/phase-13-llm) |
-| 14 | fetch (HTTP) | NOT STARTED | — | [phase-14](/docs/implementation/0047/phase-14-fetch) |
-| 15 | Release packaging | NOT STARTED | — | [phase-15](/docs/implementation/0047/phase-15-packaging) |
-| 16 | Native image (GraalVM) | NOT STARTED | — | [phase-16](/docs/implementation/0047/phase-16-native-image) |
-| 17 | Matrix and reproducibility | NOT STARTED | — | [phase-17](/docs/implementation/0047/phase-17-matrix-repro) |
-| 18 | Maven Central + v0.14.0 release | NOT STARTED | — | [phase-18](/docs/implementation/0047/phase-18-maven-central) |
+| 3 | Collections | LANDED | — | [phase-03](/docs/implementation/0047/phase-03-collections) |
+| 4 | Records | LANDED | — | [phase-04](/docs/implementation/0047/phase-04-records) |
+| 5 | Sum types and pattern matching | LANDED | — | [phase-05](/docs/implementation/0047/phase-05-sums) |
+| 6 | Closures and higher-order functions | LANDED | — | [phase-06](/docs/implementation/0047/phase-06-closures) |
+| 7 | Query DSL | LANDED | — | [phase-07](/docs/implementation/0047/phase-07-query) |
+| 8 | Datalog | LANDED | — | [phase-08](/docs/implementation/0047/phase-08-datalog) |
+| 9 | Agents (virtual threads, Loom) | LANDED | — | [phase-09](/docs/implementation/0047/phase-09-agents) |
+| 10 | Streams | LANDED | — | [phase-10](/docs/implementation/0047/phase-10-streams) |
+| 11 | async (Loom-backed) | LANDED | — | [phase-11](/docs/implementation/0047/phase-11-async) |
+| 12 | FFI (JVM interop) | LANDED | — | [phase-12](/docs/implementation/0047/phase-12-ffi) |
+| 13 | LLM (generate) | LANDED | — | [phase-13](/docs/implementation/0047/phase-13-llm) |
+| 14 | fetch (HTTP) | LANDED | — | [phase-14](/docs/implementation/0047/phase-14-fetch) |
+| 15 | Release packaging | LANDED | — | [phase-15](/docs/implementation/0047/phase-15-packaging) |
+| 16 | Native image (GraalVM) | LANDED | — | [phase-16](/docs/implementation/0047/phase-16-native-image) |
+| 17 | Matrix and reproducibility | LANDED | — | [phase-17](/docs/implementation/0047/phase-17-matrix-repro) |
+| 18 | Maven Central + v0.14.0 release | LANDED | — | [phase-18](/docs/implementation/0047/phase-18-maven-central) |

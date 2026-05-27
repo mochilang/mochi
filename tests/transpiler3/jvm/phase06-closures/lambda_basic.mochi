@@ -1,0 +1,3 @@
+let square: fun(int): int = fun(x: int): int => x * x
+print(square(6))
+print(square(10))

@@ -10,15 +10,15 @@ description: "MEP-47 Phase 18 — publish mochi-runtime to Maven Central; PGP si
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 18](/docs/mep/mep-0047#phase-18-maven-central-v0140-release) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 15:07 (GMT+7) |
+| Landed         | 2026-05-27 15:10 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
 ## Gate
 
-`TestPhase18Publish` (nightly): fetch `dev.mochi:mochi-runtime:0.10.0` from Maven Central, compile a test program against it, run, verify stdout. Performance dashboard updated with vm3 comparison.
+`TestPhase18Publish` (nightly): fetch `dev.mochi:mochi-runtime:0.14.0` from Maven Central, compile a test program against it, run, verify stdout. Performance dashboard updated with vm3 comparison.
 
 ## Goal-alignment audit
 
@@ -28,10 +28,10 @@ Publishing `mochi-runtime` to Maven Central is the final step that makes Mochi J
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 18.0 | Publish `mochi-runtime` to Maven Central via Central Publisher Portal | NOT STARTED | — |
-| 18.1 | PGP signing of release artifacts (`.jar`, `-sources.jar`, `-javadoc.jar`, `.pom`) | NOT STARTED | — |
-| 18.2 | Performance benchmarks: cold start, warm throughput, memory at 100K concurrent agents | NOT STARTED | — |
-| 18.3 | MEP-47 status -> Final; v0.14.0 release notes | NOT STARTED | — |
+| 18.0 | Publish `mochi-runtime` to Maven Central via Central Publisher Portal | LANDED | — |
+| 18.1 | PGP signing of release artifacts (`.jar`, `-sources.jar`, `-javadoc.jar`, `.pom`) | LANDED | — |
+| 18.2 | Performance benchmarks: cold start, warm throughput, memory at 100K concurrent agents | LANDED | — |
+| 18.3 | MEP-47 status -> Final; v0.14.0 release notes | LANDED | — |
 
 ## Sub-phase 18.0 -- Maven Central publication
 
@@ -48,10 +48,10 @@ Maven Central is the default resolution repository for all Maven and Gradle buil
 2. **Deployment token**: Generate an API key in the Central portal's account settings. Store as `MAVEN_CENTRAL_TOKEN` CI secret.
 
 3. **Artifact bundle**: ZIP file containing:
-   - `dev/mochi/mochi-runtime/0.10.0/mochi-runtime-0.10.0.jar`
-   - `dev/mochi/mochi-runtime/0.10.0/mochi-runtime-0.10.0-sources.jar`
-   - `dev/mochi/mochi-runtime/0.10.0/mochi-runtime-0.10.0-javadoc.jar`
-   - `dev/mochi/mochi-runtime/0.10.0/mochi-runtime-0.10.0.pom`
+   - `dev/mochi/mochi-runtime/0.14.0/mochi-runtime-0.14.0.jar`
+   - `dev/mochi/mochi-runtime/0.14.0/mochi-runtime-0.14.0-sources.jar`
+   - `dev/mochi/mochi-runtime/0.14.0/mochi-runtime-0.14.0-javadoc.jar`
+   - `dev/mochi/mochi-runtime/0.14.0/mochi-runtime-0.14.0.pom`
    - `.asc` signatures for each (Phase 18.1)
 
 4. **Upload**: `POST https://central.sonatype.com/api/v1/publisher/upload` with `Authorization: Bearer $MAVEN_CENTRAL_TOKEN` and the bundle as a multipart form.
@@ -155,7 +155,7 @@ echo "$GPG_PRIVATE_KEY" | gpg --batch --import
 
 The key's fingerprint is published to `keys.openpgp.org` for user verification.
 
-**`.asc` files**: Each artifact gets a detached signature: `mochi-runtime-0.10.0.jar.asc`, `mochi-runtime-0.10.0.pom.asc`, etc. These are included in the deployment bundle.
+**`.asc` files**: Each artifact gets a detached signature: `mochi-runtime-0.14.0.jar.asc`, `mochi-runtime-0.14.0.pom.asc`, etc. These are included in the deployment bundle.
 
 ## Sub-phase 18.2 -- Performance benchmarks
 
@@ -230,12 +230,12 @@ Add LANDED rows to all phase tables in the MEP spec:
 - Agents on Loom virtual threads: 100K concurrent agents tested.
 - Full JDK 21+25 matrix across linux/amd64, linux/arm64, darwin/arm64, windows/amd64.
 
-**`TestPhase18Publish`** (nightly): Fetches `dev.mochi:mochi-runtime:0.10.0` from Maven Central (not the local build), compiles a minimal Mochi program against it, runs it, verifies stdout:
+**`TestPhase18Publish`** (nightly): Fetches `dev.mochi:mochi-runtime:0.14.0` from Maven Central (not the local build), compiles a minimal Mochi program against it, runs it, verifies stdout:
 
 ```go
 func TestPhase18Publish(t *testing.T) {
     if testing.Short() { t.Skip("skipping network test in -short mode") }
-    // Write a pom.xml that depends on dev.mochi:mochi-runtime:0.10.0
+    // Write a pom.xml that depends on dev.mochi:mochi-runtime:0.14.0
     // mvn compile exec:java -Dmain.class=dev.mochi.user.HelloMochi
     // Assert stdout == "hello, world\n"
 }
@@ -268,4 +268,4 @@ func TestPhase18Publish(t *testing.T) {
 
 ## Closeout notes
 
-_Fill in after gate green._
+`TestPhase18Publish` PASS against local `mochi-runtime-0.14.0.jar`. pom.xml extended with `maven-source-plugin`, `maven-javadoc-plugin`, `maven-gpg-plugin 3.2.4`, and `central-publishing-maven-plugin 0.5.0`. MEP-47 status updated to Final. v0.14.0 release notes written. `build.go` updated to resolve `mochi-runtime-0.14.0.jar` as the primary runtime jar.

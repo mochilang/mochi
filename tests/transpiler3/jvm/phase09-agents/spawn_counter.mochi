@@ -1,0 +1,11 @@
+agent Counter {
+    var count: int = 0
+    intent increment() { count = count + 1 }
+    intent value(): int { return count }
+}
+let c = spawn Counter()
+c.increment()
+c.increment()
+c.increment()
+let v = c.value()
+print(v)

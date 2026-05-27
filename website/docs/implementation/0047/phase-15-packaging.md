@@ -10,9 +10,9 @@ description: "MEP-47 Phase 15 — uberjar formalisation, jlink custom runtime im
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 15](/docs/mep/mep-0047#phase-15-release-packaging) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 14:50 (GMT+7) |
+| Landed         | 2026-05-27 14:55 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
