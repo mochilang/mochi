@@ -1,23 +1,32 @@
 package build
 
 import (
+	"crypto/sha256"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
+
+	"mochi/parser"
+	clower "mochi/transpiler3/c/lower"
+	"mochi/transpiler3/jvm/emit"
+	"mochi/transpiler3/jvm/lower"
+	"mochi/types"
 )
 
 // Target selects the JVM packaging format.
 type Target int
 
 const (
-	TargetUberJar Target = iota // fat jar runnable via java -jar
-	TargetJvmSource             // .java source files only (debug)
-	TargetJLink                 // jlink custom JRE image
-	TargetJPackage              // OS-native installer via jpackage
-	TargetNativeImage           // GraalVM native-image ahead-of-time binary
+	TargetUberJar     Target = iota // fat jar runnable via java -jar
+	TargetJvmSource                 // .java source files only (debug)
+	TargetJLink                     // jlink custom JRE image
+	TargetJPackage                  // OS-native installer via jpackage
+	TargetNativeImage               // GraalVM native-image ahead-of-time binary
 )
 
 // Toolchain holds resolved paths to JDK binaries and the detected JDK major version.
@@ -101,12 +110,84 @@ func javacMajor(javacPath string) (int, error) {
 // Driver is the JVM transpiler pipeline entry point.
 type Driver struct {
 	// CacheDir overrides the default ~/.cache/mochi/jvm/ location.
-	CacheDir string
-	tc       *Toolchain
+	CacheDir        string
+	tc              *Toolchain
+	runtimeJarSHA   string // memoised SHA-256 of runtime jar
+}
+
+// runtimeJarPath returns the path to the pre-built mochi-runtime jar.
+// It resolves the repo root from the location of this Go source file so the
+// path is correct regardless of the working directory at test time.
+func runtimeJarPath() string {
+	_, thisFile, _, ok := runtime.Caller(0)
+	if ok {
+		// thisFile is .../transpiler3/jvm/build/build.go
+		// repo root is three dirs up
+		repoRoot := filepath.Dir(filepath.Dir(filepath.Dir(filepath.Dir(thisFile))))
+		jarPath := filepath.Join(repoRoot, "transpiler3", "jvm", "runtime", "target", "mochi-runtime-0.10.0-SNAPSHOT.jar")
+		if _, err := os.Stat(jarPath); err == nil {
+			return jarPath
+		}
+	}
+	// Fallback: relative from CWD (e.g. running from repo root directly)
+	candidates := []string{
+		"transpiler3/jvm/runtime/target/mochi-runtime-0.10.0-SNAPSHOT.jar",
+	}
+	for _, c := range candidates {
+		if _, err := os.Stat(c); err == nil {
+			abs, _ := filepath.Abs(c)
+			return abs
+		}
+	}
+	return ""
+}
+
+func (d *Driver) runtimeJar() string {
+	return runtimeJarPath()
+}
+
+func (d *Driver) runtimeJarSHA256() string {
+	if d.runtimeJarSHA != "" {
+		return d.runtimeJarSHA
+	}
+	rj := d.runtimeJar()
+	if rj == "" {
+		return ""
+	}
+	f, err := os.Open(rj)
+	if err != nil {
+		return ""
+	}
+	defer f.Close()
+	h := sha256.New()
+	io.Copy(h, f) //nolint:errcheck
+	d.runtimeJarSHA = fmt.Sprintf("%x", h.Sum(nil))
+	return d.runtimeJarSHA
+}
+
+func (d *Driver) effectiveCacheDir() string {
+	if d.CacheDir != "" {
+		return d.CacheDir
+	}
+	home, _ := os.UserHomeDir()
+	return filepath.Join(home, ".cache", "mochi", "jvm")
+}
+
+// cacheKey computes a SHA-256-based cache key from source bytes + JDK version + runtime jar SHA.
+func (d *Driver) cacheKey(srcBytes []byte) string {
+	jdkVersion := fmt.Sprintf("jdk%d", d.tc.Major)
+	runtimeSHA := d.runtimeJarSHA256()
+
+	h := sha256.New()
+	h.Write(srcBytes)
+	h.Write([]byte(jdkVersion))
+	h.Write([]byte(runtimeSHA))
+	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
 // Build compiles src to the given target artefact at out.
 func (d *Driver) Build(src, out string, target Target) error {
+	// Resolve toolchain on first call.
 	if d.tc == nil {
 		tc, err := resolveToolchain()
 		if err != nil {
@@ -114,9 +195,109 @@ func (d *Driver) Build(src, out string, target Target) error {
 		}
 		d.tc = tc
 	}
-	// Pipeline: stub for Phase 0. Full pipeline added in Phase 1.
-	_ = src
-	_ = out
-	_ = target
-	return fmt.Errorf("JVM pipeline not yet implemented (Phase 0 skeleton only)")
+
+	// Read source.
+	srcBytes, err := os.ReadFile(src)
+	if err != nil {
+		return fmt.Errorf("jvm build: read %s: %w", src, err)
+	}
+
+	// Check cache.
+	cacheKey := d.cacheKey(srcBytes)
+	cacheEntry := filepath.Join(d.effectiveCacheDir(), cacheKey+".jar")
+	if _, err := os.Stat(cacheEntry); err == nil {
+		return copyFile(out, cacheEntry)
+	}
+
+	// Parse.
+	ast, err := parser.Parse(src)
+	if err != nil {
+		return fmt.Errorf("jvm build: parse: %w", err)
+	}
+
+	// Type-check.
+	if errs := types.Check(ast, types.NewEnv(nil)); len(errs) > 0 {
+		return fmt.Errorf("jvm build: typecheck: %w", errs[0])
+	}
+
+	// Lower to aotir.
+	prog, err := clower.Lower(ast)
+	if err != nil {
+		return fmt.Errorf("jvm build: aotir lower: %w", err)
+	}
+
+	// Lower to javasrc.
+	className := lower.ClassName(src)
+	cu, err := lower.Lower(prog, className)
+	if err != nil {
+		return fmt.Errorf("jvm build: jvm lower: %w", err)
+	}
+
+	// Emit Java source.
+	workDir, err := os.MkdirTemp("", "mochi-jvm-*")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(workDir)
+
+	srcDir := filepath.Join(workDir, "src")
+	classDir := filepath.Join(workDir, "classes")
+	os.MkdirAll(srcDir, 0o755)   //nolint:errcheck
+	os.MkdirAll(classDir, 0o755) //nolint:errcheck
+
+	javaFiles, err := emit.Emit(cu, srcDir)
+	if err != nil {
+		return fmt.Errorf("jvm build: emit: %w", err)
+	}
+
+	// Compile with javac. Pass the runtime jar on the classpath so
+	// dev.mochi.runtime.io.IO is visible at compile time.
+	flags := []string{"--release", "21", "-Xlint:all"}
+	if rj := d.runtimeJar(); rj != "" {
+		flags = append(flags, "-classpath", rj)
+	}
+	if err := emit.Compile(d.tc.Javac, javaFiles, classDir, flags); err != nil {
+		return fmt.Errorf("jvm build: javac: %w", err)
+	}
+
+	// Package.
+	mainClass := "dev.mochi.user." + className
+	tmpJar := filepath.Join(workDir, "out.jar")
+	if err := PackUberJar(classDir, d.runtimeJar(), tmpJar, mainClass); err != nil {
+		return fmt.Errorf("jvm build: uberjar: %w", err)
+	}
+
+	// Write to output.
+	if err := os.MkdirAll(filepath.Dir(out), 0o755); err != nil {
+		return err
+	}
+	if err := copyFile(out, tmpJar); err != nil {
+		return err
+	}
+
+	// Populate cache (best-effort): copy out -> cacheEntry.
+	cacheDir := d.effectiveCacheDir()
+	os.MkdirAll(cacheDir, 0o755)    //nolint:errcheck
+	copyFile(cacheEntry, out)        //nolint:errcheck
+
+	return nil
+}
+
+// copyFile copies src to dst, creating dst's parent directories as needed.
+func copyFile(dst, src string) error {
+	if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+		return err
+	}
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	_, err = io.Copy(out, in)
+	return err
 }
