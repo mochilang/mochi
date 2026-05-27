@@ -13,26 +13,24 @@ A phase is LANDED only when its gate is green on every target listed for it in M
 
 ## Phase status
 
-| Phase | Title                                        | Status      | Commit |
-|-------|----------------------------------------------|-------------|--------|
-| 0     | Spec freeze and skeleton trees               | NOT STARTED | n/a    |
-| 1     | Hello world                                  | NOT STARTED | n/a    |
-| 2     | Primitives and control flow                  | NOT STARTED | n/a    |
-| 3     | Collections                                  | NOT STARTED | n/a    |
-| 4     | Records                                      | NOT STARTED | n/a    |
-| 5     | Sum types and pattern matching               | NOT STARTED | n/a    |
-| 6     | Closures and higher-order functions          | NOT STARTED | n/a    |
-| 7     | Query DSL                                    | NOT STARTED | n/a    |
-| 8     | Datalog                                      | NOT STARTED | n/a    |
-| 9     | Agents (virtual threads, Loom)               | NOT STARTED | n/a    |
-| 10    | Streams                                      | NOT STARTED | n/a    |
-| 11    | async (Loom-backed)                          | NOT STARTED | n/a    |
-| 12    | FFI (JNI / Panama)                           | NOT STARTED | n/a    |
-| 13    | LLM (generate)                               | NOT STARTED | n/a    |
-| 14    | fetch (HTTP)                                 | NOT STARTED | n/a    |
-| 15    | Release packaging (Maven Central)            | NOT STARTED | n/a    |
-| 16    | Reproducibility and perf                     | NOT STARTED | n/a    |
-| 17    | Native-image / GraalVM                       | NOT STARTED | n/a    |
-| 18    | v1.0 release                                 | NOT STARTED | n/a    |
-
-Per-phase tracking pages will be added as phases open.
+| Phase | Title | Status | Commit | Tracking page |
+|-------|-------|--------|--------|---------------|
+| 0 | Skeleton | NOT STARTED | — | [phase-00](/docs/implementation/0047/phase-00-skeleton) |
+| 1 | Hello world | NOT STARTED | — | [phase-01](/docs/implementation/0047/phase-01-hello) |
+| 2 | Primitives and control flow | NOT STARTED | — | [phase-02](/docs/implementation/0047/phase-02-scalars) |
+| 3 | Collections | NOT STARTED | — | [phase-03](/docs/implementation/0047/phase-03-collections) |
+| 4 | Records | NOT STARTED | — | [phase-04](/docs/implementation/0047/phase-04-records) |
+| 5 | Sum types and pattern matching | NOT STARTED | — | [phase-05](/docs/implementation/0047/phase-05-sums) |
+| 6 | Closures and higher-order functions | NOT STARTED | — | [phase-06](/docs/implementation/0047/phase-06-closures) |
+| 7 | Query DSL | NOT STARTED | — | [phase-07](/docs/implementation/0047/phase-07-query) |
+| 8 | Datalog | NOT STARTED | — | [phase-08](/docs/implementation/0047/phase-08-datalog) |
+| 9 | Agents (virtual threads, Loom) | NOT STARTED | — | [phase-09](/docs/implementation/0047/phase-09-agents) |
+| 10 | Streams | NOT STARTED | — | [phase-10](/docs/implementation/0047/phase-10-streams) |
+| 11 | async (Loom-backed) | NOT STARTED | — | [phase-11](/docs/implementation/0047/phase-11-async) |
+| 12 | FFI (JVM interop) | NOT STARTED | — | [phase-12](/docs/implementation/0047/phase-12-ffi) |
+| 13 | LLM (generate) | NOT STARTED | — | [phase-13](/docs/implementation/0047/phase-13-llm) |
+| 14 | fetch (HTTP) | NOT STARTED | — | [phase-14](/docs/implementation/0047/phase-14-fetch) |
+| 15 | Release packaging | NOT STARTED | — | [phase-15](/docs/implementation/0047/phase-15-packaging) |
+| 16 | Native image (GraalVM) | NOT STARTED | — | [phase-16](/docs/implementation/0047/phase-16-native-image) |
+| 17 | Matrix and reproducibility | NOT STARTED | — | [phase-17](/docs/implementation/0047/phase-17-matrix-repro) |
+| 18 | Maven Central + v0.14.0 release | NOT STARTED | — | [phase-18](/docs/implementation/0047/phase-18-maven-central) |
