@@ -344,6 +344,9 @@ func normalizeOutput(root string, b []byte) []byte {
 	out := string(b)
 	// Normalize Windows line endings so golden files check out identically on all platforms.
 	out = strings.ReplaceAll(out, "\r\n", "\n")
+	// Normalize path separators: backslash → forward slash so path stripping
+	// works uniformly on Windows (where error messages embed native paths).
+	out = strings.ReplaceAll(out, `\`, "/")
 	// Strip absolute paths for stable diffs.
 	out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
 	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
