@@ -10,9 +10,9 @@ description: "MEP-46 Phase 18. Reproducible .beam output (CInf stripping, functi
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 18. Reproducibility and perf](/docs/mep/mep-0046#phase-18-reproducibility-and-perf) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-26 (GMT+7) |
+| Landed         | 2026-05-27 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -330,4 +330,4 @@ assembler that is well-tested because the BEAM format has been stable since OTP 
 
 ## Closeout notes
 
-_Fill in after gate green._
+All sub-phases landed. Sub-phase 18.0 (deterministic `compile` flag for reproducible `.beam` files) landed as `ec996b8cfc`. Sub-phases 18.1 (sorted `mod.Defs` by name+arity) and 18.2 (reproducibility workflow) landed as `22ac6cd980`. Sub-phase 18.3 (benchmark harness for BEAM pipeline compile times) landed as `9d88339dfe`. Two independent builds of the same Mochi source produce bit-for-bit identical `.beam` files, verified in CI. The benchmark harness measures compile-time performance, not runtime performance.

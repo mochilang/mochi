@@ -10,9 +10,9 @@ description: "MEP-46 Phase 8 implementation spec: lowering Mochi Datalog facts a
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 8](/docs/mep/mep-0046#phase-8-datalog) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 (GMT+7) |
+| Landed         | 2026-05-27 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -322,3 +322,7 @@ global table would require all match patterns to include the relation name as
 the first element, doubling the pattern complexity and halving the effective
 index selectivity. Per-relation tables also make `ets:tab2list` more efficient
 for full-table scans during fixpoint computation.
+
+## Closeout notes
+
+Phase 8 landed across three commits. Sub-phase 8.0 (Datalog compile-time evaluation on BEAM) landed as `86668b31bb`. Sub-phases 8.1 and 8.2 (Datalog negation and multi-freevar test coverage) landed as `d4da0ed2b0`. The implementation uses a fixed-point evaluator on the BEAM side with ETS-backed relation tables, matching the design in §Sub-phase 8.0. All fixtures produce byte-equal output against vm3.

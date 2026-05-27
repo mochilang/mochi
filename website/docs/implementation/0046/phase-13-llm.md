@@ -10,13 +10,13 @@ description: "MEP-46 Phase 13. LLM (generate) — detailed implementation spec."
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 13. LLM (generate)](/docs/mep/mep-0046#phase-13-llm-generate) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-26 (GMT+7) |
+| Landed         | 2026-05-27 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
-This phase implements Mochi's `generate` expression on the BEAM target. `generate` sends a prompt to a configured LLM provider and returns a structured response validated against a Mochi record schema. The runtime uses `gun` for HTTP/2 connections to provider APIs, a per-provider gen_server for connection pooling and request throttling, and a cassette-replay system for deterministic CI testing.
+This phase implements Mochi's `generate` expression on the BEAM target. The runtime uses OTP's built-in `httpc` (from the `inets` application) for HTTP requests — **not** `gun`. There are no per-provider gen_server supervisors; the implementation is a stateless dispatch module `mochi_llm.erl` that checks a cassette directory first, then dispatches live to OpenAI or Anthropic via `httpc:request/4`. See also [Phase 13.1: Panic and try-catch](/docs/implementation/0046/phase-13-1-panic-try-catch).
 
 ---
 
@@ -34,249 +34,44 @@ See [MEP-46 §Phases · Phase 13. LLM (generate)](/docs/mep/mep-0046) for the no
 
 ## Sub-phases
 
-### Sub-phase 13.0: mochi_llm provider supervisor
+### Sub-phase 13.0: mochi_llm.erl cassette dispatch (LANDED `78d817ae3b`)
 
-**Architecture overview**
+**Actual architecture**
 
-The LLM subsystem has three layers:
+The LLM subsystem is a single stateless module `mochi_llm.erl`. There are no gen_server supervisors and no `gun` HTTP client. The implementation uses OTP's built-in `httpc` from the `inets` application.
 
-1. **`mochi_llm.erl`** — Public API module. Stateless; delegates to per-provider gen_servers.
-2. **`mochi_llm_sup.erl`** — `one_for_one` supervisor. Starts one gen_server per configured provider.
-3. **`mochi_llm_<provider>.erl`** — Provider-specific gen_server (e.g., `mochi_llm_openai`, `mochi_llm_anthropic`). Manages HTTP connection pool to the provider's API endpoint.
+`generate/3` dispatch order:
 
-**Provider configuration**
+1. Check `MOCHI_LLM_CASSETTE_DIR` env var. If set, look for a matching cassette file (plain Erlang terms). If found, return its stored response.
+2. Check `OPENAI_API_KEY` env var. If set, call `live_generate/3` targeting `api.openai.com/v1/chat/completions`.
+3. Check `ANTHROPIC_API_KEY` env var. If set, call `live_generate/3` targeting `api.anthropic.com/v1/messages`.
+4. If none are set, return `{error, no_provider_configured}`.
 
-Providers are configured at application start via `application:get_env/2`:
+Default models: `gpt-4o-mini` (OpenAI), `claude-haiku-4-5-20251001` (Anthropic).
 
-```erlang
-%% In sys.config or application env:
-{mochi, [
-  {llm_providers, [
-    {openai,    #{api_key => <<"sk-...">>, model => <<"gpt-4o">>}},
-    {anthropic, #{api_key => <<"sk-ant-...">>, model => <<"claude-opus-4-5">>}}
-  ]}
-]}
-```
-
-If `llm_providers` is not set (or is `[]`), `mochi_llm_sup` starts no children. Calls to `mochi_llm:generate/2` with an unconfigured provider return `{error, provider_not_configured}`.
-
-**mochi_llm_sup.erl**
-
-```erlang
--module(mochi_llm_sup).
--behaviour(supervisor).
-
-start_link() ->
-  supervisor:start_link({local, ?MODULE}, ?MODULE, []).
-
-init([]) ->
-  Providers = application:get_env(mochi, llm_providers, []),
-  ChildSpecs = [provider_child_spec(Name, Opts) || {Name, Opts} <- Providers],
-  SupFlags = #{strategy => one_for_one, intensity => 5, period => 30},
-  {ok, {SupFlags, ChildSpecs}}.
-
-provider_child_spec(Name, Opts) ->
-  Module = provider_module(Name),
-  #{
-    id      => Name,
-    start   => {Module, start_link, [Name, Opts]},
-    restart => permanent,
-    type    => worker
-  }.
-
-provider_module(openai)    -> mochi_llm_openai;
-provider_module(anthropic) -> mochi_llm_anthropic;
-provider_module(Other)     -> error({unknown_llm_provider, Other}).
-```
-
-**mochi_llm_openai.erl gen_server state**
-
-```erlang
--record(state, {
-  api_key   :: binary(),
-  model     :: binary(),
-  conn_pid  :: pid() | undefined,
-  semaphore :: integer(),      %% remaining slots (max concurrent requests)
-  max_conc  :: integer(),      %% configured max concurrent (default 10)
-  pending   :: queue:queue()   %% queued requests waiting for a slot
-}).
-```
-
-The gen_server handles:
-
-- `handle_call({generate, Opts}, From, State)` — If a slot is available (semaphore > 0), fires the HTTP request via `gun` and stores `{From, StreamRef}` in the pending map. If the semaphore is 0, enqueues the request.
-- `handle_info({gun_response, ConnPid, StreamRef, fin, Status, Headers}, State)` — Response received; deserialises JSON body; validates against schema; replies to caller.
-- `handle_info({gun_down, ...}, State)` — Connection lost; reconnects with exponential backoff (initial 100ms, max 30s, factor 2.0).
-
-Maximum concurrent requests (default 10) is configurable per-provider via `#{max_concurrent => N}` in the provider opts map.
-
-**mochi_llm.erl public API**
-
-```erlang
--spec generate(atom(), map()) -> {ok, map()} | {error, term()}.
-generate(Provider, Opts) ->
-  case mochi_llm_cassette:lookup(Provider, Opts) of
-    {hit, Response} -> Response;
-    miss ->
-      Module = provider_module(Provider),
-      Result = gen_server:call(Module, {generate, Opts}, 30000),
-      mochi_llm_cassette:record(Provider, Opts, Result),
-      Result
-  end.
-```
+Cassette files are plain Erlang terms stored in `MOCHI_LLM_CASSETTE_DIR`. CI always runs with `MOCHI_LLM_CASSETTE_DIR` pointing to committed cassettes under `tests/transpiler3/beam/cassettes/`.
 
 ---
 
-### Sub-phase 13.1: generate block lowering
+### Sub-phase 13.1: Panic and try-catch (LANDED `924dfd9901`)
 
-**Syntax**
+This sub-phase implements `PanicStmt` and `TryCatchStmt` lowering — not "generate block lowering" as the original spec described.
 
-```mochi
-let result = generate openai {
-  prompt: "Summarize {text}",
-  model: "gpt-4o",
-  schema: { summary: string, word_count: int }
-}
-```
+- `panic(code, msg)` lowers to `erlang:error({mochi_panic, Code, Msg})`.
+- `try { B } catch e { C }` lowers to a `c_try` node that catches `{mochi_panic, E, _}` and binds `e` to the panic code. Non-mochi exceptions are re-thrown via `erlang:throw/1`.
 
-**Lowering steps**
-
-The lowerer processes a `GenerateExpr` AST node through the following steps:
-
-Step 1: **Prompt interpolation.** The prompt string `"Summarize {text}"` is lowered using the Phase 2.4 string interpolation pattern. If `text` is a Mochi variable holding a binary, the lowerer emits `Prompt = <<"Summarize ", Text/binary>>`. For complex interpolations with multiple variables, the lowerer emits `iolist_to_binary([...])`.
-
-Step 2: **Schema lowering.** The Mochi record schema `{ summary: string, word_count: int }` is lowered to a BEAM map literal that represents the JSON Schema types:
-
-```erlang
-Schema = #{summary => <<"string">>, word_count => <<"integer">>}
-```
-
-The lowerer maps Mochi types to JSON Schema type strings: `int` -> `"integer"`, `float` -> `"number"`, `string` -> `"string"`, `bool` -> `"boolean"`.
-
-Step 3: **generate call.** The lowerer emits:
-
-```erlang
-c_call(c_atom(mochi_llm), c_atom(generate), [
-  c_atom(openai),
-  c_map([
-    {c_atom(prompt),  V_prompt},
-    {c_atom(model),   c_binary(<<"gpt-4o">>)},
-    {c_atom(schema),  V_schema}
-  ])
-])
-```
-
-Step 4: **Result unwrapping.** The `generate/2` call returns `{ok, #{summary => <<"...">>, word_count => 42}}`. The lowerer emits a pattern match to unwrap the `{ok, _}` tuple and bind the schema fields into the Mochi scope:
-
-```erlang
-{ok, Result} = mochi_llm:generate(openai, Opts),
-Summary = maps:get(summary, Result),
-WordCount = maps:get(word_count, Result)
-```
-
-**JSON Schema construction in the provider**
-
-`mochi_llm_openai.erl` converts the Mochi schema map to an OpenAI-compatible JSON Schema:
-
-```erlang
-schema_to_json(Schema) ->
-  Properties = maps:map(fun(_Key, TypeStr) ->
-    #{<<"type">> => TypeStr}
-  end, Schema),
-  #{
-    <<"type">>                 => <<"object">>,
-    <<"properties">>           => Properties,
-    <<"required">>             => maps:keys(Schema),
-    <<"additionalProperties">> => false
-  }.
-```
-
-This map is serialised to JSON via OTP 27's `json:encode/1` and sent in the `response_format` field of the OpenAI API request body.
-
-**Response validation**
-
-`mochi_llm.erl`'s `validate_response/2` checks that the returned map contains all expected keys with the correct runtime types:
-
-```erlang
-validate_response(Response, Schema) ->
-  maps:foreach(fun(Key, TypeStr) ->
-    Value = maps:get(Key, Response, undefined),
-    case {Value, TypeStr} of
-      {undefined, _}     -> error({schema_mismatch, missing_key, Key});
-      {V, <<"string">>}  when not is_binary(V)  -> error({schema_mismatch, Key, expected_string});
-      {V, <<"integer">>} when not is_integer(V) -> error({schema_mismatch, Key, expected_integer});
-      {V, <<"number">>}  when not is_float(V), not is_integer(V) ->
-        error({schema_mismatch, Key, expected_number});
-      _ -> ok
-    end
-  end, Schema),
-  {ok, Response}.
-```
+See the dedicated [Phase 13.1 page](/docs/implementation/0046/phase-13-1-panic-try-catch) for full details.
 
 ---
 
-### Sub-phase 13.2: Replay-cassette test mode
+### Sub-phase 13.2: Live provider dispatch (LANDED `92d475a936`)
 
-**Cassette directory**
+`live_generate/3` in `mochi_llm.erl` POSTs to provider APIs using `httpc:request/4`:
 
-If the environment variable `MOCHI_LLM_CASSETTE_DIR` is set, `mochi_llm_cassette.erl` intercepts all `generate` calls. The cassette directory is read once at `mochi_app:start/2` and stored in application env.
+- **OpenAI:** `POST https://api.openai.com/v1/chat/completions` with `Authorization: Bearer $OPENAI_API_KEY`.
+- **Anthropic:** `POST https://api.anthropic.com/v1/messages` with `x-api-key: $ANTHROPIC_API_KEY` and `anthropic-version: 2023-06-01`.
 
-**Cassette keying**
-
-Each cassette file is named by the DJB2 hash of the tuple `{Provider, Prompt, Schema}` serialised to a canonical binary. DJB2 is chosen for its simplicity (no external dep) and low collision rate for short strings:
-
-```erlang
-djb2(Data) ->
-  lists:foldl(fun(Byte, Hash) ->
-    (Hash * 33 bxor Byte) band 16#FFFFFFFF
-  end, 5381, binary_to_list(Data)).
-```
-
-Cassette files are stored as Erlang terms (`.eterms` extension) for human readability and easy manual editing:
-
-```erlang
-%% cassettes/1234567890.eterms
-{cassette,
-  provider, openai,
-  prompt, <<"Summarize hello world">>,
-  schema, #{summary => <<"string">>},
-  response, {ok, #{summary => <<"Hello world is a greeting.">>}}
-}.
-```
-
-**Cassette modes**
-
-Two modes controlled by the `MOCHI_LLM_CASSETTE_MODE` env var:
-
-- **`replay`** (default in CI): If a cassette file exists for the key, return its recorded response. If no cassette exists, return `{error, cassette_not_found}` (never makes a live API call).
-- **`record`**: If a cassette file exists, return it (same as replay). If no cassette exists, make the live API call, save the response as a new cassette file, and return the result. Requires a live API key in the environment.
-
-**mochi_llm_cassette.erl**
-
-```erlang
-lookup(Provider, Opts) ->
-  case application:get_env(mochi, llm_cassette_dir) of
-    undefined -> miss;
-    {ok, Dir} ->
-      Key = cassette_key(Provider, Opts),
-      Path = filename:join(Dir, integer_to_list(Key) ++ ".eterms"),
-      case file:consult(Path) of
-        {ok, [{cassette, _, _, _, _, _, _, response, Response}]} -> {hit, Response};
-        _ -> miss
-      end
-  end.
-```
-
-**CI cassette management**
-
-All fixture cassettes are committed to the repository under `tests/transpiler3/beam/cassettes/`. CI always runs with:
-
-```
-MOCHI_LLM_CASSETTE_DIR=tests/transpiler3/beam/cassettes/
-MOCHI_LLM_CASSETTE_MODE=replay
-```
-
-New cassettes are recorded locally by a developer with API keys and committed. The cassette directory is tracked in `.gitattributes` as binary to prevent line-ending normalisation on Windows.
+The response body is decoded via OTP 27's `json:decode/1`. No connection pooling, no gen_server, no `gun`.
 
 ---
 
@@ -301,16 +96,20 @@ New cassettes are recorded locally by a developer with API keys and committed. T
 
 ## Decisions made
 
-**Why gun for HTTP in the LLM provider**
+**Why `httpc` instead of `gun` for LLM HTTP**
 
-OTP's built-in `httpc` (from the `inets` application) uses a single process per connection pool, making concurrent requests serialised per pool. For LLM use cases where a Mochi program may issue 10 or more concurrent `generate` calls, `httpc` becomes a bottleneck. `gun` supports HTTP/2 stream multiplexing: 50 concurrent requests share a single TCP connection, with BEAM receiving response frames asynchronously via `handle_info` callbacks. `gun` is also already a dependency for `mochi_fetch` (Phase 14), so using it here adds no new transitive deps.
+The original spec called for `gun` HTTP/2 gen_servers. The actual implementation uses OTP's built-in `httpc` because: (1) the cassette replay path means most CI calls never touch the network, (2) LLM calls are latency-bound by the model, not by connection overhead, and (3) adding `gun` as a dep for the LLM module would pull in a non-stdlib dependency. `httpc` is part of `inets` which is already in the OTP standard library. For production workloads that need concurrent LLM calls, users can wrap `mochi_llm` via FFI.
 
-**Why schema validation in the runtime rather than compile-time**
+**Why stateless dispatch rather than gen_server supervisors**
 
-LLM responses are dynamically generated by a remote model; the schema is a hint to the provider (via JSON Schema `response_format` in OpenAI's API) but not a hard guarantee. The model may hallucinate fields, omit required fields, or return a field with the wrong type. Mochi's type checker validates that the schema expression is syntactically correct and that call sites use the correct field names and types (compile-time safety). But the actual content of the response can only be validated at runtime. `mochi_llm.erl`'s `validate_response/2` performs this runtime check and returns `{error, {schema_mismatch, Key, Reason}}` on failure, allowing Mochi programs to handle validation errors gracefully rather than crashing on a bad pattern match.
+The original spec described a `mochi_llm_sup` + `mochi_llm_openai` + `mochi_llm_anthropic` gen_server architecture. The actual implementation is simpler: `mochi_llm.erl` is a pure stateless module that reads env vars on each call. This avoids process management complexity, is easier to test, and handles the cassette-first dispatch path with less ceremony. State (e.g., a connection pool) can be added later if profiling shows it is needed.
+
+**Why cassette files as plain Erlang terms**
+
+Plain Erlang terms (readable via `file:consult/1`) are human-editable without tooling, can be committed as text, and round-trip through `file:write_file/2` + `io_lib:format("~p.~n", [Term])` with no external dependencies. JSON would require a JSON library dependency or OTP 27's `json` module; `.eterms` avoids that coupling.
 
 ---
 
 ## Closeout notes
 
-_Fill in after gate green._
+Phase 13 landed across three commits. Sub-phase 13.0 (cassette dispatch + `mochi_llm.erl`) landed as `78d817ae3b` with 10 fixtures using pre-recorded cassettes. Sub-phase 13.1 (panic/try-catch lowering) landed as `924dfd9901` — this is a different scope than the original spec's "generate block lowering". Sub-phase 13.2 (live provider dispatch via `httpc`) landed as `92d475a936`. The implementation diverges significantly from the spec's gen_server architecture; see the Sub-phases section above for the actual design.

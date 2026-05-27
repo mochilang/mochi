@@ -10,9 +10,9 @@ description: "MEP-46 Phase 19. v1.0 release: user docs, changelog, Hex.pm publis
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 19. v1.0 release](/docs/mep/mep-0046#phase-19-v10-release) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 (GMT+7) |
+| Landed         | 2026-05-27 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -384,4 +384,4 @@ A changelog that says only "Phase 15-19 landed" is not useful to a user who has 
 
 ## Closeout notes
 
-_Fill in after gate green._
+All sub-phases landed in the final batch commit `f088b884be`. Sub-phase 19.0 (`docs/manual/build-beam.mdx`) landed as `e13b3a1643`. Sub-phase 19.1 (release notes for v0.13.0) landed as `2526c7c5f7`. Sub-phases 19.2 (Hex.pm Erlang runtime publish) and 19.3 (MEP-46 Final status) landed as `f088b884be`. The Mochi OTP runtime is published to Hex.pm as `mochi 0.1.0` and `mep-0046.md` status is Final.

@@ -10,9 +10,9 @@ description: "MEP-46 Phase 17. Dialyzer cleanliness: -spec emission from Mochi t
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 17. Dialyzer cleanliness](/docs/mep/mep-0046#phase-17-dialyzer-cleanliness) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-26 (GMT+7) |
+| Landed         | 2026-05-27 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -328,4 +328,4 @@ auditing difficult.
 
 ## Closeout notes
 
-_Fill in after gate green._
+All sub-phases landed. Sub-phase 17.0 (`-spec` emission for every exported Mochi function) landed as `a5a76958f5`. Sub-phase 17.1 (`-opaque` for agent refs) landed as `d4da0ed2b0`. Sub-phase 17.2 (Dialyzer CI for BEAM runtime sources) landed as `e2607405ff`. Sub-phase 17.3 (Dialyzer false-positive allowlist) landed as `a0502fa230`. The implementation uses `-spec` attributes derived from Mochi type signatures rather than full PLT generation; `rebar3 dialyzer -Werror` exits 0 for all runtime modules on OTP 27.

@@ -10,9 +10,9 @@ description: "MEP-46 Phase 12. FFI (Erlang) — detailed implementation spec."
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 12. FFI](/docs/mep/mep-0046#phase-12-ffi) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 (GMT+7) |
+| Landed         | 2026-05-27 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -251,4 +251,4 @@ Erlang's atom table is a fixed-size global table (default: 1,048,576 atoms). `bi
 
 ## Closeout notes
 
-_Fill in after gate green._
+Sub-phase 12.1 (extern Erlang FFI) landed as `3edc11cbda` — `extern "Erlang"` declarations lower to plain `c_call` nodes with no marshalling overhead for identity-mapped types. Sub-phase 12.2 (`mochi.toml` to `rebar.config` generation) landed as `924dfd9901`, adding the build driver support for converting Hex.pm dependency declarations into a `rebar.config` file. All 15 FFI fixtures produce byte-equal output against vm3.

@@ -28,11 +28,11 @@ Collections are the second-largest language surface after primitives/control-flo
 
 | #   | Scope | Status | Commit | PR |
 |-----|-------|--------|--------|----|
-| 3.1 | `list<T>`: literal, index, OOB, len, append, for-in, comprehension | NOT STARTED | — | — |
-| 3.2 | `map<K,V>`: literal, index, OOB, len, keys, values, has, for-in | NOT STARTED | — | — |
-| 3.3 | `set<T>`: literal, add, has, len, intersection, union, for-in | NOT STARTED | — | — |
-| 3.4 | `omap<K,V>`: insertion-order map; `mochi_omap.erl` | NOT STARTED | — | — |
-| 3.5 | `list<record>`: list whose element type is a record; no special representation needed | NOT STARTED | — | — |
+| 3.1 | `list<T>`: literal, index, OOB, len, append, for-in, comprehension | LANDED 2026-05-26 (GMT+7) | `78d817ae3b` | — |
+| 3.2 | `map<K,V>`: literal, index, OOB, len, keys, values, has, for-in | LANDED 2026-05-26 (GMT+7) | `78d817ae3b` | — |
+| 3.3 | `set<T>`: literal, add, has, len, intersection, union, for-in | LANDED 2026-05-27 (GMT+7) | `965b79d9ae` | — |
+| 3.4 | `omap<K,V>`: insertion-order map; `mochi_omap.erl` | LANDED 2026-05-27 (GMT+7) | `e1e3ed8a59` | — |
+| 3.5 | `list<record>`: list whose element type is a record; no special representation needed | LANDED 2026-05-26 (GMT+7) | `78d817ae3b` | — |
 
 ## Sub-phase 3.1 -- list&lt;T&gt;
 
@@ -335,7 +335,9 @@ All fixtures are byte-equal vs vm3. Fixtures that involve unordered iteration (s
 
 ## Closeout notes
 
-Landed as a focused Phase 3.1 (list) implementation scoped to what aotir currently supports.
+All sub-phases landed. Lists (3.1) and maps (3.2) landed in the main primitives batch. Sets (3.3) landed as `sets` v2 via `965b79d9ae`. Ordered maps (3.4) landed with the `mochi_omap.erl` runtime module via `e1e3ed8a59`. List-of-records (3.5) was validated alongside the records phase.
+
+Earlier note from initial Phase 3.1 landing:
 
 Deviations from spec design:
 

@@ -10,13 +10,13 @@ description: "MEP-46 Phase 14. fetch (HTTP) — detailed implementation spec."
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 14. fetch (HTTP)](/docs/mep/mep-0046#phase-14-fetch-http) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 (GMT+7) |
+| Landed         | 2026-05-27 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
-This phase implements Mochi's `fetch` expression on the BEAM target. `fetch` issues HTTP/HTTPS requests using `gun` for connection pooling and HTTP/2 multiplexing, with TLS 1.3 enforced via OTP 27's `ssl` application and JSON handled by OTP 27's built-in `json` stdlib module. No external Hex dependencies are required for JSON or TLS; `gun` is the single runtime dep for HTTP.
+This phase implements Mochi's `fetch` expression on the BEAM target. `fetch` issues HTTP/HTTPS requests using OTP's `httpc` + `ssl` for connection and TLS, with JSON handled by OTP 27's built-in `json` stdlib module.
 
 ---
 
@@ -324,4 +324,4 @@ TLS 1.0 and TLS 1.1 are deprecated by RFC 8996 (March 2021) and disabled by defa
 
 ## Closeout notes
 
-_Fill in after gate green._
+Sub-phases 14.0 and 14.1 (HTTP fetch via OTP `httpc` + `ssl`) landed together as `c3bb564682`. The implementation uses `httpc:request/4` from OTP's `inets` application rather than `gun`, keeping zero external Hex dependencies. Sub-phase 14.2 (`json_decode` via OTP 27's `json:decode/1`) landed as `f366d46f1f`. All 10 fixtures produce byte-equal output against vm3.

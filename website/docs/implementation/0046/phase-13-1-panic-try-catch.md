@@ -7,7 +7,12 @@ sidebar_label: "13.1 Panic / try-catch"
 
 **Status:** LANDED  
 **Gate:** `TestPhase13_1PanicTryCatch` green (5 fixtures)  
+<<<<<<< HEAD
 **Landed:** 2026-05-26 16:06 (GMT+7)
+=======
+**Landed:** 2026-05-26 16:06 (GMT+7)  
+**Commit:** `924dfd9901`
+>>>>>>> 5c9a10c53e (docs: audit MEP-46 implementation tracking pages — all phases LANDED)
 
 ## Goal alignment
 
