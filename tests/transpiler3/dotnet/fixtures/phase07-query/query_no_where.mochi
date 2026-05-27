@@ -1,0 +1,5 @@
+let words = ["hello", "world", "foo", "bar"]
+let upper_words = from w in words select w
+for w in upper_words {
+  print(w)
+}

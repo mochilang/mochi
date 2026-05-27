@@ -278,6 +278,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (csharpsrc.Stmt, error) {
 	case *aotir.ClosureEnvStmt:
 		// C# closures capture from enclosing scope; the C env struct is not needed.
 		return &csharpsrc.EmptyStmt{}, nil
+	case *aotir.QueryScopeStmt:
+		return l.lowerQueryScopeStmt(s)
 	default:
 		return nil, fmt.Errorf("dotnet/lower: unsupported statement %T", s)
 	}
@@ -527,6 +529,10 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (csharpsrc.Expr, error) {
 		return l.lowerListMapExpr(e)
 	case *aotir.ListFoldlExpr:
 		return l.lowerListFoldlExpr(e)
+	case *aotir.ListSortAscExpr:
+		return l.lowerListSortAscExpr(e)
+	case *aotir.ListSliceExpr:
+		return l.lowerListSliceExpr(e)
 	case *aotir.FunLit:
 		return l.lowerFunLit(e)
 	case *aotir.FunCallExpr:
@@ -1042,6 +1048,60 @@ func (l *lowerer) lowerListFoldlExpr(e *aotir.ListFoldlExpr) (csharpsrc.Expr, er
 		return nil, err
 	}
 	return &csharpsrc.CallExpr{Receiver: list, Method: "Aggregate", Args: []csharpsrc.Expr{init, fn}}, nil
+}
+
+// lowerListSortAscExpr lowers ListSortAscExpr to xs.OrderBy(x => x).ToList().
+func (l *lowerer) lowerListSortAscExpr(e *aotir.ListSortAscExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	// xs.OrderBy(x => x).ToList()
+	identity := &csharpsrc.LambdaExpr{
+		Params: []csharpsrc.Param{{Name: "__sx"}},
+		Body:   &csharpsrc.NameExpr{Name: "__sx"},
+	}
+	ordered := &csharpsrc.CallExpr{Receiver: recv, Method: "OrderBy", Args: []csharpsrc.Expr{identity}}
+	return &csharpsrc.CallExpr{Receiver: ordered, Method: "ToList", Args: nil}, nil
+}
+
+// lowerListSliceExpr lowers ListSliceExpr (skip/take) to xs.Skip(start).Take(count).ToList().
+// When End is the "no-take" sentinel (1<<62-1), emits xs.Skip(start).ToList() instead.
+func (l *lowerer) lowerListSliceExpr(e *aotir.ListSliceExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	start, err := l.lowerExpr(e.Start)
+	if err != nil {
+		return nil, err
+	}
+	startInt := &csharpsrc.CastExpr{Type: csharpsrc.TypeInt, X: start}
+	skipped := &csharpsrc.CallExpr{Receiver: recv, Method: "Skip", Args: []csharpsrc.Expr{startInt}}
+
+	// Detect skip-only sentinel: 1<<62 - 1 = 4611686018427387903
+	if lit, ok := e.End.(*aotir.IntLit); ok && lit.Value == 1<<62-1 {
+		return &csharpsrc.CallExpr{Receiver: skipped, Method: "ToList", Args: nil}, nil
+	}
+
+	end, err := l.lowerExpr(e.End)
+	if err != nil {
+		return nil, err
+	}
+	endInt := &csharpsrc.CastExpr{Type: csharpsrc.TypeInt, X: end}
+	lengthExpr := &csharpsrc.BinaryExpr{Left: endInt, Op: "-", Right: startInt}
+	taken := &csharpsrc.CallExpr{Receiver: skipped, Method: "Take", Args: []csharpsrc.Expr{lengthExpr}}
+	return &csharpsrc.CallExpr{Receiver: taken, Method: "ToList", Args: nil}, nil
+}
+
+// lowerQueryScopeStmt lowers a QueryScopeStmt by lowering its body block.
+// C# needs no arena; the GC handles allocation.
+func (l *lowerer) lowerQueryScopeStmt(s *aotir.QueryScopeStmt) (csharpsrc.Stmt, error) {
+	body, err := l.lowerBlock(s.Body)
+	if err != nil {
+		return nil, fmt.Errorf("dotnet/lower: QueryScopeStmt body: %w", err)
+	}
+	return body, nil
 }
 
 // lowerFunLit translates an aotir.FunLit (closure literal) to a C# lambda expression.

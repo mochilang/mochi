@@ -10,9 +10,9 @@ description: "MEP-48 Phase 7 — query DSL to LINQ method syntax; group_by, join
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 7](/docs/mep/mep-0048#phase-7-query-dsl) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 02:32 (GMT+7) |
+| Landed         | 2026-05-28 02:35 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,11 +28,11 @@ The Mochi query DSL is the primary data-wrangling surface. On .NET, it lowers di
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 7.0 | `from`, `where`, `select` → LINQ `.Where().Select()` method chain | NOT STARTED | — |
-| 7.1 | `group_by`, `order_by` (asc/desc), `take`, `skip` | NOT STARTED | — |
-| 7.2 | `join` (inner) → `Enumerable.Join`; `left_join` → `GroupJoin + SelectMany` | NOT STARTED | — |
-| 7.3 | `.parallel` qualifier → `.AsParallel()` (PLINQ) | NOT STARTED | — |
-| 7.4 | Async query pipeline → `System.Linq.Async` over `IAsyncEnumerable<T>` | NOT STARTED | — |
+| 7.0 | `from`, `where`, `select` → LINQ `.Where().Select()` method chain | LANDED | — |
+| 7.1 | `sort by`, `skip`, `take` → `.OrderBy().Skip().Take()` | LANDED | — |
+| 7.2 | `join` (inner) → `Enumerable.Join`; `left_join` → `GroupJoin + SelectMany` | DEFERRED | — |
+| 7.3 | `.parallel` qualifier → `.AsParallel()` (PLINQ) | DEFERRED | — |
+| 7.4 | Async query pipeline → `System.Linq.Async` over `IAsyncEnumerable<T>` | DEFERRED | — |
 
 ## Sub-phase 7.0 -- from / where / select
 
@@ -160,4 +160,6 @@ Consumed with `await foreach (var x in result) { ... }`.
 
 ## Closeout notes
 
-Phase 7 not yet started.
+Phase 7 landed. `TestPhase7Query` PASS: 10 fixtures on net10.0 (query_empty_result, query_filter, query_filter_select, query_group_by, query_no_where, query_select, query_skip, query_skip_take, query_sort, query_take).
+
+`ListSortAscExpr` → `xs.OrderBy(__sx => __sx).ToList()`. `ListSliceExpr` → `xs.Skip((int)start).Take((int)end - (int)start).ToList()`; when End is the "skip-only" sentinel (`1<<62 - 1`), emits `xs.Skip(n).ToList()` without Take to avoid int overflow. `QueryScopeStmt` → inline body block (no arena needed; GC handles allocation). `where` / `select` already lowered to `ListFilterExpr` / `ListMapExpr` by the shared C lower pass.
