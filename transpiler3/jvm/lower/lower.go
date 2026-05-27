@@ -16,9 +16,10 @@ import (
 // union declarations so VariantLit and MatchStmt can resolve union info.
 type lowerer struct {
 	className string
-	records   map[string]*aotir.RecordDecl // name -> decl; populated by Lower
-	unions    map[string]*aotir.UnionDecl  // name -> decl; populated by Lower (Phase 5)
-	agents    map[string]*aotir.AgentDecl  // name -> decl; populated by Lower (Phase 9)
+	records   map[string]*aotir.RecordDecl  // name -> decl; populated by Lower
+	unions    map[string]*aotir.UnionDecl   // name -> decl; populated by Lower (Phase 5)
+	agents    map[string]*aotir.AgentDecl   // name -> decl; populated by Lower (Phase 9)
+	javaFuncs map[string]*aotir.JavaFuncDecl // mochiName -> decl; populated by Lower (Phase 12)
 }
 
 // Lower translates an aotir.Program into one CompilationUnit per record/union
@@ -32,6 +33,7 @@ func Lower(prog *aotir.Program, className string) ([]*javasrc.CompilationUnit, e
 		records:   make(map[string]*aotir.RecordDecl, len(prog.Records)),
 		unions:    make(map[string]*aotir.UnionDecl, len(prog.Unions)),
 		agents:    make(map[string]*aotir.AgentDecl, len(prog.Agents)),
+		javaFuncs: make(map[string]*aotir.JavaFuncDecl, len(prog.JavaFuncs)),
 	}
 	for _, rd := range prog.Records {
 		l.records[rd.Name] = rd
@@ -41,6 +43,9 @@ func Lower(prog *aotir.Program, className string) ([]*javasrc.CompilationUnit, e
 	}
 	for _, ad := range prog.Agents {
 		l.agents[ad.Name] = ad
+	}
+	for _, jf := range prog.JavaFuncs {
+		l.javaFuncs[jf.MochiName] = jf
 	}
 
 	mainFn := prog.Functions[prog.Main]

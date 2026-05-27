@@ -408,6 +408,45 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		})
 	}
 
+	// Phase 12.0 pre-pass: collect `extern java fun` declarations.
+	javaFuncNames := map[string]bool{}
+	for i, st := range prog.Statements {
+		if st == nil || st.ExternJavaFun == nil {
+			continue
+		}
+		ef := st.ExternJavaFun
+		alias := ef.MochiName()
+		if javaFuncNames[alias] {
+			return nil, fmt.Errorf("transpiler3/c/lower: statement %d: redeclaration of extern java fun %q", i, alias)
+		}
+		params := make([]aotir.Param, 0, len(ef.ParamTypes))
+		for j, pt := range ef.ParamTypes {
+			pTR, err := typeFromRef(records, unions, pt)
+			if err != nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern java fun %q param %d: %w", alias, j, err)
+			}
+			params = append(params, aotir.Param{Name: fmt.Sprintf("p%d", j), Type: pTR.t, RecordName: pTR.rec})
+		}
+		var retTR typeResolution
+		if ef.Return != nil {
+			var err error
+			retTR, err = typeFromRef(records, unions, ef.Return)
+			if err != nil {
+				return nil, fmt.Errorf("transpiler3/c/lower: extern java fun %q return: %w", alias, err)
+			}
+		}
+		externFuncs[alias] = &funcSig{params: params, returnType: retTR.t}
+		javaFuncNames[alias] = true
+		out.JavaFuncs = append(out.JavaFuncs, &aotir.JavaFuncDecl{
+			ClassName:  ef.ClassName(),
+			MethodName: ef.MethodName(),
+			MochiName:  alias,
+			Params:     params,
+			ReturnType: retTR.t,
+			IsStatic:   true, // Phase 12.0: all extern java fun declarations are static
+		})
+	}
+
 	// Pass 1: collect every user-defined fun decl and record its
 	// signature so the body lowering can resolve forward and
 	// mutual references.
@@ -963,6 +1002,9 @@ func (l *lowerer) lowerStatement(out *aotir.Block, st *parser.Statement) error {
 		return nil
 	case st.ExternJSFun != nil:
 		// Phase 10.4: extern js fun declarations are collected in the pre-pass; silently skip here.
+		return nil
+	case st.ExternJavaFun != nil:
+		// Phase 12.0: extern java fun declarations are collected in the pre-pass; silently skip here.
 		return nil
 	case st.Fact != nil:
 		// Phase 15.0: Datalog fact -- collect for later query evaluation.

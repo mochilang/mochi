@@ -52,6 +52,9 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (javasrc.Expr, error) {
 	case *aotir.CallExpr:
 		return l.lowerCallExpr(e)
 
+	case *aotir.JavaCallExpr:
+		return l.lowerJavaCallExpr(e)
+
 	// --- List expressions ---
 
 	case *aotir.ListLit:
@@ -329,7 +332,31 @@ func (l *lowerer) lowerUnaryExpr(e *aotir.UnaryExpr) (javasrc.Expr, error) {
 }
 
 // lowerCallExpr handles value-producing calls to user-defined functions.
+// Phase 12.0: if the callee is a Java FFI function, emit the direct Java call.
 func (l *lowerer) lowerCallExpr(e *aotir.CallExpr) (javasrc.Expr, error) {
+	// Phase 12.0: Java FFI call.
+	if decl, ok := l.javaFuncs[e.Func]; ok {
+		args, err := l.lowerExprs(e.Args)
+		if err != nil {
+			return nil, err
+		}
+		if decl.IsStatic {
+			return &javasrc.StaticCallExpr{
+				Class:  decl.ClassName,
+				Method: decl.MethodName,
+				Args:   args,
+			}, nil
+		}
+		if len(args) == 0 {
+			return nil, fmt.Errorf("jvm/lower: instance Java call %s.%s needs at least one arg",
+				decl.ClassName, decl.MethodName)
+		}
+		return &javasrc.CallExpr{
+			Receiver: args[0],
+			Method:   decl.MethodName,
+			Args:     args[1:],
+		}, nil
+	}
 	args, err := l.lowerExprs(e.Args)
 	if err != nil {
 		return nil, err

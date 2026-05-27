@@ -55,6 +55,11 @@ type Program struct {
 	// functions that forward calls to the JS companion via mochi_js_rpc_*.
 	JSFuncs []*JSFuncDecl
 
+	// JavaFuncs lists Java FFI function declarations in source order.
+	// Phase 12.0 adds this; the JVM lowerer uses it to emit direct static or
+	// instance calls to the Java class method.
+	JavaFuncs []*JavaFuncDecl
+
 	// Datalog holds facts and rules accumulated from `fact`/`rule` declarations.
 	// Phase 8.0 adds this so the BEAM lowerer can implement compile-time evaluation.
 	Datalog *DatalogProgram
@@ -85,6 +90,17 @@ type JSFuncDecl struct {
 	Name       string
 	Params     []Param
 	ReturnType Type
+}
+
+// JavaFuncDecl describes a Java FFI function. Phase 12.0.
+// The JVM lowerer populates this from `extern java fun` declarations.
+type JavaFuncDecl struct {
+	ClassName  string // e.g. "java.util.UUID"
+	MethodName string // e.g. "randomUUID"
+	MochiName  string // the Mochi alias, e.g. "uuid_new"
+	Params     []Param
+	ReturnType Type
+	IsStatic   bool // true for static methods (Phase 12.0 only handles static)
 }
 
 // ExternFuncDecl describes a C extern function declaration. Phase 10.0.
@@ -1489,6 +1505,16 @@ type AwaitExpr struct {
 }
 
 func (e *AwaitExpr) Type() Type { return e.ElemType }
+
+// JavaCallExpr is a call to a Java FFI method. Phase 12.0.
+// The JVM lowerer emits this as a direct Java static or instance call.
+type JavaCallExpr struct {
+	Decl   *JavaFuncDecl
+	Args   []Expr
+	Result Type
+}
+
+func (e *JavaCallExpr) Type() Type { return e.Result }
 
 // LoadCSVExpr reads a CSV file and returns a list<list<string>> where
 // each outer element is a row and each inner element is a cell value.

@@ -10,9 +10,9 @@ description: "MEP-47 Phase 12 — import Java classes; null-safety bridge (Java 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 12](/docs/mep/mep-0047#phase-12-ffi-jvm-interop) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 14:37 (GMT+7) |
+| Landed         | 2026-05-27 14:37 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,7 +28,7 @@ The JVM ecosystem has tens of thousands of libraries. Without FFI, Mochi JVM pro
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 12.0 | `import "java/util/UUID" as UUID` -> `import java.util.UUID`; method calls via Mochi-typed signatures | NOT STARTED | — |
+| 12.0 | `extern java fun <Class>.<Method>(<types>): <return> as <alias>` static Java method calls | LANDED | mep-0047 phase 12 |
 | 12.1 | Null-safety bridge: Java `null` return -> `option<T>`; `option<T>` parameter -> unwrap to nullable | NOT STARTED | — |
 | 12.2 | `@maven("groupId:artifactId:version") import` -> coordinate resolution, SHA-256 lockfile, jar vendor | NOT STARTED | — |
 | 12.3 | JDK FFI: `java.time.*`, `java.util.UUID`, `java.net.http.HttpClient`, `java.nio.file.*`, `java.security.MessageDigest` | NOT STARTED | — |

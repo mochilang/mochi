@@ -1,0 +1,4 @@
+extern java fun java.lang.Math.max(int, int): int as math_max
+
+let x = math_max(3, 7)
+print(x)
