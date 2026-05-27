@@ -1,0 +1,5 @@
+let m: map<string, int> = {"a": 1, "b": 2, "c": 3}
+let ks = keys(m)
+let vs = values(m)
+print(len(ks))
+print(len(vs))

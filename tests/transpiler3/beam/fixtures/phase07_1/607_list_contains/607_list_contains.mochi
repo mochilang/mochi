@@ -1,0 +1,6 @@
+let xs: list<int> = [1, 2, 3, 4, 5]
+print(3 in xs)
+print(6 in xs)
+let words: list<string> = ["hello", "world", "foo"]
+print("world" in words)
+print("bar" in words)

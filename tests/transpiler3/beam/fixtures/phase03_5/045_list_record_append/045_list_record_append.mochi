@@ -1,0 +1,12 @@
+type Item {
+  id: int
+  val: string
+}
+
+var items: list<Item> = []
+items = append(items, Item{id: 1, val: "a"})
+items = append(items, Item{id: 2, val: "b"})
+items = append(items, Item{id: 3, val: "c"})
+print(len(items))
+print(items[0].val)
+print(items[2].id)

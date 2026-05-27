@@ -91,6 +91,13 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return:     ListType{Elem: valuesV},
 		TypeParams: []string{"K", "V"},
 	}, false)
+	hasK := &TypeVar{Name: "K"}
+	hasV := &TypeVar{Name: "V"}
+	env.SetVar("has", FuncType{
+		Params:     []Type{MapType{Key: hasK, Value: hasV}, hasK},
+		Return:     BoolType{},
+		TypeParams: []string{"K", "V"},
+	}, false)
 	// collect<T>(xs: list<T>): list<T> - MEP-12.4. The legacy any
 	// signature also accepted GroupType; that overload is preserved by
 	// checkBuiltinCall's "list or group" arity check, which runs after

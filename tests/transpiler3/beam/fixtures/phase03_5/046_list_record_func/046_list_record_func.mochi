@@ -1,0 +1,16 @@
+type Score {
+  name: string
+  points: int
+}
+
+fun sumPoints(scores: list<Score>): int {
+  var total = 0
+  for s in scores {
+    total = total + s.points
+  }
+  return total
+}
+
+let ss = [Score{name: "A", points: 10}, Score{name: "B", points: 20}, Score{name: "C", points: 30}]
+print(sumPoints(ss))
+print(len(ss))

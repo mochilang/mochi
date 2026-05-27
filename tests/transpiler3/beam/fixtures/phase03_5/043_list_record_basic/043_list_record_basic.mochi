@@ -1,0 +1,10 @@
+type Point {
+  x: int
+  y: int
+}
+
+let pts = [Point{x: 1, y: 2}, Point{x: 3, y: 4}, Point{x: 5, y: 6}]
+print(len(pts))
+print(pts[0].x)
+print(pts[1].y)
+print(pts[2].x)

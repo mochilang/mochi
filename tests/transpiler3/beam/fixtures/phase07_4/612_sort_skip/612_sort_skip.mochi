@@ -1,0 +1,5 @@
+var xs: list<int> = [5, 2, 8, 1, 9, 3, 7, 4, 6]
+var after3 = from x in xs sort by x skip 3 select x
+print(len(after3))
+print(after3[0])
+print(after3[1])

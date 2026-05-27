@@ -1,0 +1,4 @@
+let m: map<string, int> = {"x": 1, "y": 2}
+print(has(m, "x"))
+print(has(m, "z"))
+print(has(m, "y"))
