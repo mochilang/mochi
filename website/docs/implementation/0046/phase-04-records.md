@@ -28,10 +28,10 @@ Records are the primary user-defined data type in Mochi. Without records the BEA
 
 | #   | Scope | Status | Commit | PR |
 |-----|-------|--------|--------|----|
-| 4.0 | Record literal construction: `Person{name: "alice", age: 30}` | NOT STARTED | — | — |
-| 4.1 | Field access `p.name`; field update `p with {age: 31}`; pattern matching on records | NOT STARTED | — | — |
-| 4.2 | Record methods: `fun (p: Person) greet() -> string` lowered to module-level functions | NOT STARTED | — | — |
-| 4.3 | Record equality: `p1 == p2` via BEAM structural equality `=:=` | NOT STARTED | — | — |
+| 4.0 | Record literal construction: `Person{name: "alice", age: 30}` | LANDED 2026-05-26 (GMT+7) | `24cb35621a` | — |
+| 4.1 | Field access `p.name`; field update `p with {age: 31}`; pattern matching on records | LANDED 2026-05-26 (GMT+7) | `24cb35621a` | — |
+| 4.2 | Record methods: `fun (p: Person) greet() -> string` lowered to module-level functions | LANDED 2026-05-26 (GMT+7) | `24cb35621a` | — |
+| 4.3 | Record equality: `p1 == p2` via BEAM structural equality `=:=` | LANDED 2026-05-26 (GMT+7) | `24cb35621a` | — |
 
 ## Sub-phase 4.0 -- Record literal construction
 

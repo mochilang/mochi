@@ -386,4 +386,6 @@ Key implementation decisions:
 - The C lowerer already desugars `from x in xs select expr` into a `LetStmt` (initializing result to `[]`) + `QueryScopeStmt` wrapping a `ForEachStmt` that appends to the result. The BEAM lowerer's `QueryScopeStmt` handler skips the C-specific arena scoping and lowers the body inline as a regular block; the existing `ForEachStmt` + `AppendExpr` lowering handles list accumulation correctly.
 - `ListSortAscExpr` lowers to `lists:sort/1` (OTP stdlib).
 - `ListSliceExpr` lowers to `lists:sublist(lists:nthtail(Start, Xs), End-Start)`.
-- Sub-phases 7.1 (aggregation fusion), 7.2 (group_by), 7.3 (joins), and 7.4 (order_by/take/skip at query level) are deferred pending demand from higher-level phases.
+- Sub-phase 7.2 (group_by desugaring) landed as `22ac6cd980` using a `maps:from_list/1`-backed accumulator.
+- Sub-phase 7.3 (hash join) landed as `6da271c582` via `maps:from_list/1` index over the build side.
+- Sub-phases 7.1 (aggregation fusion) and 7.4 (order_by/take/skip at query level) remain deferred.

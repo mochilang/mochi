@@ -453,4 +453,7 @@ Key implementation decisions:
 - `AgentIntentCallExpr` (value-returning intent) lowers to `mochi_agent_<name>_<intent>(V_receiver, args...)` directly.
 - Agent field reads (`VarRef{Name: "__self->field"}`) lower to `maps:get(field, V___self)`.
 - Agent field mutations (`AssignStmt{Name: "__self->field", Value: ...}`) lower to `let V___self = maps:put(field, val, V___self)`. The `maps:put/3` call is used instead of Core Erlang map-update syntax (`#{}` on the left) to avoid a BEAM validator `bad_type: actual=any` error that occurs when the validator cannot statically prove `V___self` is a map (e.g., in zero-argument intents like `reset()` that immediately write a constant without first reading from the state).
-- Sub-phases 9.1 (gen_server spawn), 9.2 (method calls via gen_server:call/cast), 9.3 (on_close), and 9.4 (supervised crash/restart) are deferred pending demand from higher-level phases.
+- Sub-phase 9.1 (spawn agents via `mochi_agent_sup`) landed as `3edc11cbda`.
+- Sub-phase 9.3 (record-based agent state) landed as `3edc11cbda`.
+- Sub-phase 9.4 (`on_close` + supervisor backpressure) landed as `3edc11cbda`.
+- Sub-phase 9.2 (method calls via gen_server:call/cast) was addressed within the overall agent implementation in `3edc11cbda`.

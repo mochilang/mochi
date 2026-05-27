@@ -10,9 +10,9 @@ description: "MEP-46 Phase 15. Release packaging: relx OTP release, rebar3 proje
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 15. Release packaging](/docs/mep/mep-0046#phase-15-release-packaging) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 (GMT+7) |
+| Landed         | 2026-05-27 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -296,4 +296,4 @@ OTP + rebar3 + mochi), so they belong in Phase 15. Phase 16 only consumes them.
 
 ## Closeout notes
 
-_Fill in after gate green._
+All sub-phases landed. Sub-phases 15.1 (rebar3 project), 15.2 (mix project), and 15.4 (Dockerfile) landed as `ab75716131`. Sub-phase 15.3 (AtomVM) landed as `f088b884be`. Sub-phase 15.0 (rebar3 release via `relx`) landed as `92d475a936`. All targets use a shared `compileToBeams()` helper in the build driver. The Docker recipe is `Dockerfile.beam-otp27` in the project root. Gate tests pass on OTP 27 and OTP 28 on both Linux and macOS.

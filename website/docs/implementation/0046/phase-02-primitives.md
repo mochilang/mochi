@@ -28,11 +28,11 @@ Primitives + control flow is the smallest language surface that lets a real (non
 
 | #   | Scope | Status | Commit | PR |
 |-----|-------|--------|--------|----|
-| 2.0 | `int`, `float`, `bool`; arithmetic; comparisons; short-circuit `&&`/`\|\|` | NOT STARTED | — | — |
-| 2.1 | `let`/`var`; `if`/`else`; `while`; `return`; `break`; `continue` | NOT STARTED | — | — |
-| 2.2 | `for x in start..end` (int range); user-defined multi-arg functions | NOT STARTED | — | — |
-| 2.3 | Integer divide-by-zero raises `mochi_err_divzero`; wrapped try in lowerer | NOT STARTED | — | — |
-| 2.4 | Float print parity with vm3: `mochi_str:float_to_binary/1` shortest-round-trip | NOT STARTED | — | — |
+| 2.0 | `int`, `float`, `bool`; arithmetic; comparisons; short-circuit `&&`/`\|\|` | LANDED 2026-05-26 (GMT+7) | `78d817ae3b` | — |
+| 2.1 | `let`/`var`; `if`/`else`; `while`; `return`; `break`; `continue` | LANDED 2026-05-26 (GMT+7) | `78d817ae3b` | — |
+| 2.2 | `for x in start..end` (int range); user-defined multi-arg functions | LANDED 2026-05-26 (GMT+7) | `78d817ae3b` | — |
+| 2.3 | Integer divide-by-zero raises `mochi_err_divzero`; wrapped try in lowerer | LANDED 2026-05-26 (GMT+7) | `78d817ae3b` | — |
+| 2.4 | Float print parity with vm3: `mochi_str:float_to_binary/1` shortest-round-trip | LANDED 2026-05-26 (GMT+7) | `78d817ae3b` | — |
 
 ## Sub-phase 2.0 -- int/float/bool primitives
 

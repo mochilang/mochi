@@ -10,9 +10,9 @@ description: "MEP-46 Phase 11. async/await — detailed implementation spec."
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 11. async/await](/docs/mep/mep-0046#phase-11-asyncawait) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 (GMT+7) |
+| Landed         | 2026-05-27 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -262,4 +262,4 @@ Mochi's `async expr` / `await f` syntax maps directly to the BEAM spawned-proces
 
 ## Closeout notes
 
-_Fill in after gate green._
+Sub-phases 11.0, 11.1, and 11.2 landed together as `2a1344880d`. The implementation uses `mochi_async.erl` with `erlang:spawn_monitor` and selective receive. `async expr` lowers to `mochi_async:async(fun() -> Expr end)`; `await f` lowers to `mochi_async:await(F)`. The recv-marker optimization is included for O(1) mailbox scanning. `await_all` and `await_any` combinators were also implemented. All 15 fixtures produce byte-equal output against vm3.

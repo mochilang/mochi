@@ -29,9 +29,9 @@ Phase 1 is the first point where the BEAM transpiler produces a *real* runnable 
 | #   | Scope | Status | Commit | PR |
 |-----|-------|--------|--------|----|
 | 1.0 | End-to-end pipeline: `lower.go`, `emit.go`, `build.go`, fixture green | LANDED 2026-05-26 13:01 (GMT+7) | — | — |
-| 1.1 | CLI flags `--target=beam-escript`, `--out`, `--emit=core\|erl\|beam` wired in `cmd/mochi/main.go` | NOT STARTED | — | — |
-| 1.2 | `.mochi/cache/beam/` BLAKE3 cache; hit/miss paths | NOT STARTED | — | — |
-| 1.3 | `mochi_str.erl` fully implemented: binary, integer, float, bool, atom, list | NOT STARTED | — | — |
+| 1.1 | CLI flags `--target=beam-escript`, `--out`, `--emit=core\|erl\|beam` wired in `cmd/mochi/main.go` | LANDED 2026-05-26 (GMT+7) | `49ae468de3` | — |
+| 1.2 | `.mochi/cache/beam/` BLAKE3 cache; hit/miss paths | LANDED 2026-05-27 (GMT+7) | `630e463e10` | — |
+| 1.3 | `mochi_str.erl` fully implemented: binary, integer, float, bool, atom, list | LANDED within 1.0 (GMT+7) | `49ae468de3` | — |
 
 ## Sub-phase 1.0 -- End-to-end pipeline
 
@@ -239,4 +239,4 @@ Three deviations from the spec that are worth noting:
 
 3. The Core Erlang export list uses `c_var` nodes `{c_var,[],{Name,Arity}}` as required by `core_lint`, not plain `{Name,Arity}` tuples as initially coded. This was caught by the compile:forms error and fixed.
 
-Sub-phases 1.1, 1.2, 1.3 are pending (CLI flags, BLAKE3 cache, full mochi_str).
+All sub-phases landed. 1.1 (CLI flags) landed with the main hello-world PR. 1.2 (BLAKE3 cache) landed as a follow-on commit `630e463e10`. 1.3 (mochi_str) was addressed inline within the 1.0 pipeline work.

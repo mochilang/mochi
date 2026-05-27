@@ -262,4 +262,6 @@ Key implementation decisions:
 - `recv_sub(sub_pid)` sends `{recv, self()}` to the subscriber process and does a selective receive for `{sub_value, Val}`. The subscriber process buffers events in a list and replies when one is available (or blocks until the next `{stream_event, ...}` arrives).
 - Multi-subscriber broadcast (fixture 804) works because the broker keeps a list of all subscriber PIDs and forwards each emit to all of them.
 - The runtime module is `transpiler3/beam/runtime/src/mochi_stream.erl`.
-- Sub-phases 10.1 (gen_statem subscribers), 10.2 (backpressure), 10.3 (cross-node), and 10.4 (interop with async) are deferred pending demand.
+- Sub-phase 10.2 (backpressure via `mochi_async`) landed as `3edc11cbda`.
+- Sub-phase 10.3 (supervisor integration) landed as `3edc11cbda`.
+- Sub-phases 10.1 (gen_statem subscribers) and 10.4 (interop with async) remain deferred.

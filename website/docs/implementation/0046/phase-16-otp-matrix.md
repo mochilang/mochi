@@ -10,9 +10,9 @@ description: "MEP-46 Phase 16. Multi-OTP-version CI matrix: OTP 27/28 x x86_64-l
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-46 §Phases · Phase 16. Multi-OTP-version matrix](/docs/mep/mep-0046#phase-16-multiotpversion-matrix) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 (GMT+7) |
+| Landed         | 2026-05-27 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -274,4 +274,4 @@ Verification steps for gate:
 
 ## Closeout notes
 
-_Fill in after gate green._
+Sub-phases 16.0 (CI gate) and 16.2 (OTP 29 RC as non-blocking nightly) landed as `22ac6cd980`. Sub-phase 16.3 (Windows CI nightly) also landed in `22ac6cd980` alongside sorted defs and the reproducibility workflow. Sub-phase 16.1 (OTP 29 promotion to blocking Tier-1) remains deferred until OTP 29 final is released and two weeks of clean nightly runs are observed. The 6-cell blocking matrix (OTP 27.0, 27.latest, 28.latest x linux, macos) is green.
