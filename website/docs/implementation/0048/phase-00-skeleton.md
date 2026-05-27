@@ -10,8 +10,8 @@ description: "MEP-48 Phase 0 — directory layout, dotnet SDK detection, csharps
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 0](/docs/mep/mep-0048#phase-0-spec-freeze-and-skeleton-trees) |
-| Status         | NOT STARTED |
-| Started        | — |
+| Status         | IN PROGRESS |
+| Started        | 2026-05-28 01:20 (GMT+7) |
 | Landed         | — |
 | Tracking issue | — |
 | Tracking PR    | — |
