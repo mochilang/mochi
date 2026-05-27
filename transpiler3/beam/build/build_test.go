@@ -10,6 +10,12 @@ import (
 	"time"
 )
 
+// normalizeLF strips carriage returns so golden-file comparisons work on
+// Windows, where git checks out text files with CRLF line endings.
+func normalizeLF(b []byte) []byte {
+	return bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
+}
+
 // repoRoot walks up from the test binary's working directory until
 // it finds go.mod, then returns that directory. Failing to find
 // go.mod is fatal: the build cannot proceed without the repo root.
@@ -95,7 +101,8 @@ func runBeamFixture(t *testing.T, mochiPath, outPath string) {
 		t.Fatalf("run escript %s: %v", escriptPath, err)
 	}
 
-	got := stdout.Bytes()
+	got := normalizeLF(stdout.Bytes())
+	want = normalizeLF(want)
 	if !bytes.Equal(got, want) {
 		t.Errorf("stdout mismatch for %s\ngot:  %q\nwant: %q", mochiPath, got, want)
 	}
