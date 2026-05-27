@@ -172,6 +172,9 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (javasrc.Stmt, error) {
 	case aotir.TypeSub:
 		// Subscriber binding: raw MochiSub.
 		javaType = lowerSubType()
+	case aotir.TypeFuture:
+		// Future binding: Async<BoxedElem> (Phase 11).
+		javaType = lowerFutureType(s.FutureElemType)
 	default:
 		javaType, err = lowerType(s.VarType)
 		if err != nil {

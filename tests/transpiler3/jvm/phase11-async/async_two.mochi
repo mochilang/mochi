@@ -1,0 +1,10 @@
+fun times_two(x: int): int {
+  return x * 2
+}
+
+let f1 = async times_two(3)
+let f2 = async times_two(7)
+let r1 = await f1
+let r2 = await f2
+print(r1)
+print(r2)
