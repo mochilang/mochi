@@ -75,6 +75,13 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (javasrc.Stmt, error) {
 	case *aotir.QueryScopeStmt:
 		return l.lowerQueryScopeStmt(s)
 
+	// --- Datalog statements (Phase 8) ---
+	// RawCStmt is emitted by the C backend for datalog evaluation setup code.
+	// The JVM backend evaluates datalog at compile time (DatalogQueryExpr) so
+	// the raw C setup code is a no-op here.
+	case *aotir.RawCStmt:
+		return nil, nil
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported stmt %T", s)
 	}

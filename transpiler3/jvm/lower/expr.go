@@ -143,6 +143,11 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (javasrc.Expr, error) {
 	case *aotir.ListSliceExpr:
 		return l.lowerListSliceExpr(e)
 
+	// --- Datalog expressions (Phase 8) ---
+
+	case *aotir.DatalogQueryExpr:
+		return l.lowerDatalogQueryExpr(e)
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported expr %T", e)
 	}
