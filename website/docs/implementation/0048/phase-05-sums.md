@@ -10,9 +10,9 @@ description: "MEP-48 Phase 5 — sum types to abstract record + sealed record va
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 5](/docs/mep/mep-0048#phase-5-sum-types-and-pattern-matching) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 02:15 (GMT+7) |
+| Landed         | 2026-05-28 02:22 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,10 +28,10 @@ Sum types are Mochi's primary abstraction over `Option<T>`, `Result<T,E>`, and u
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 5.0 | `type Shape = Circle(r: float) \| Rect(w: float, h: float)` → `abstract record Shape` + sealed variants | NOT STARTED | — |
-| 5.1 | `match` → C# 8 switch expression with record-pattern deconstruction | NOT STARTED | — |
-| 5.2 | `Option<T>` and `Result<T,E>` built-in sum types in `Mochi.Runtime.Types` | NOT STARTED | — |
-| 5.3 | `MOCHI001` (non-exhaustive match) and `MOCHI002` (unreachable arm) analyzers activated | NOT STARTED | — |
+| 5.0 | `type Shape = Circle(r: float) \| Rect(w: float, h: float)` → `abstract record Shape` + sealed variants | LANDED | — |
+| 5.1 | `match` → C# switch statement with type-pattern cases | LANDED | — |
+| 5.2 | `Option<T>` and `Result<T,E>` built-in sum types in `Mochi.Runtime.Types` | DEFERRED | — |
+| 5.3 | `MOCHI001` (non-exhaustive match) and `MOCHI002` (unreachable arm) analyzers activated | DEFERRED | — |
 
 ## Sub-phase 5.0 -- Sealed record hierarchy
 
@@ -151,4 +151,6 @@ Both diagnostics are implemented as Roslyn `DiagnosticAnalyzer` in `Mochi.Analyz
 
 ## Closeout notes
 
-Phase 5 not yet started.
+Phase 5 landed. `TestPhase5Sums` PASS: 4 fixtures on SDK 10.0.107 net10.0 (`sum_basic`, `sum_function`, `sum_nullary`, `sum_string_result`).
+
+`UnionDecl` → `public abstract record Name;` + `public sealed record Variant(T1 F1, ...) : Name;`. Variant lowering: `VariantLit` → `new VariantName(args...)`. `MatchStmt` → C# `switch` statement with type-pattern cases: `case VariantName __mc_Variant_N: { var binding = __mc_Variant_N.Field; ... break; }`. Synthetic `default: { throw new InvalidOperationException("unreachable match"); }` (no `break`) satisfies C# definite-assignment analysis without triggering CS0162 unreachable-code. `LetStmt` with `VarType == TypeUnion` uses explicit base type so `var` binding gets the union type, not the narrower variant type, enabling exhaustive switch. Field names snake_case → PascalCase via `snakeToPascal`. Nullary variants (no fields) have `caseVar` only, no binding.
