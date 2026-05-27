@@ -126,12 +126,9 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (csharpsrc.Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &csharpsrc.ExprStmt{
-			X: &csharpsrc.BinaryExpr{
-				Left:  &csharpsrc.NameExpr{Name: s.Name},
-				Op:    "=",
-				Right: v,
-			},
+		return &csharpsrc.AssignStmt{
+			Target: &csharpsrc.NameExpr{Name: s.Name},
+			Value:  v,
 		}, nil
 	case *aotir.IfStmt:
 		return l.lowerIfStmt(s)
@@ -139,6 +136,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (csharpsrc.Stmt, error) {
 		return l.lowerWhileStmt(s)
 	case *aotir.ForEachStmt:
 		return l.lowerForEachStmt(s)
+	case *aotir.ForRangeStmt:
+		return l.lowerForRangeStmt(s)
 	case *aotir.BreakStmt:
 		return &csharpsrc.BreakStmt{}, nil
 	case *aotir.ContinueStmt:
@@ -225,6 +224,38 @@ func (l *lowerer) lowerWhileStmt(s *aotir.WhileStmt) (csharpsrc.Stmt, error) {
 	return &csharpsrc.WhileStmt{Cond: cond, Body: *body}, nil
 }
 
+func (l *lowerer) lowerForRangeStmt(s *aotir.ForRangeStmt) (csharpsrc.Stmt, error) {
+	start, err := l.lowerExpr(s.Start)
+	if err != nil {
+		return nil, err
+	}
+	end, err := l.lowerExpr(s.End)
+	if err != nil {
+		return nil, err
+	}
+	body, err := l.lowerBlock(s.Body)
+	if err != nil {
+		return nil, err
+	}
+	varName := s.Var
+	return &csharpsrc.ForStmt{
+		Init: &csharpsrc.LocalDeclStmt{
+			Type: &csharpsrc.TypeLong,
+			Name: varName,
+			Init: start,
+		},
+		Cond: &csharpsrc.BinaryExpr{
+			Left:  &csharpsrc.NameExpr{Name: varName},
+			Op:    "<",
+			Right: end,
+		},
+		Update: &csharpsrc.ExprStmt{
+			X: &csharpsrc.UnaryExpr{Op: "++", Operand: &csharpsrc.NameExpr{Name: varName}, Postfix: true},
+		},
+		Body: *body,
+	}, nil
+}
+
 func (l *lowerer) lowerForEachStmt(s *aotir.ForEachStmt) (csharpsrc.Stmt, error) {
 	iter, err := l.lowerExpr(s.List)
 	if err != nil {
@@ -275,6 +306,35 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (csharpsrc.Expr, error) {
 		return l.lowerUnaryExpr(e)
 	case *aotir.CallExpr:
 		return l.lowerCallExpr(e)
+	case *aotir.NumCastExpr:
+		operand, err := l.lowerExpr(e.Operand)
+		if err != nil {
+			return nil, err
+		}
+		return &csharpsrc.CastExpr{Type: csharpsrc.TypeLong, X: operand}, nil
+	case *aotir.StrLenExpr:
+		recv, err := l.lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &csharpsrc.CastExpr{
+			Type: csharpsrc.TypeLong,
+			X:    &csharpsrc.FieldAccessExpr{Receiver: recv, Field: "Length"},
+		}, nil
+	case *aotir.StrIndexExpr:
+		return l.lowerStrIndexExpr(e)
+	case *aotir.StrContainsExpr:
+		recv, err := l.lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		sub, err := l.lowerExpr(e.Sub)
+		if err != nil {
+			return nil, err
+		}
+		return &csharpsrc.CallExpr{Receiver: recv, Method: "Contains", Args: []csharpsrc.Expr{sub}}, nil
+	case *aotir.MathCallExpr:
+		return l.lowerMathCallExpr(e)
 	default:
 		return nil, fmt.Errorf("dotnet/lower: unsupported expression %T", e)
 	}
@@ -288,6 +348,13 @@ func (l *lowerer) lowerBinaryExpr(e *aotir.BinaryExpr) (csharpsrc.Expr, error) {
 	right, err := l.lowerExpr(e.Right)
 	if err != nil {
 		return nil, err
+	}
+	if e.Op == aotir.BinStrCat {
+		return &csharpsrc.StaticCallExpr{
+			Class:  "string",
+			Method: "Concat",
+			Args:   []csharpsrc.Expr{left, right},
+		}, nil
 	}
 	op := lowerBinOp(e.Op)
 	return &csharpsrc.BinaryExpr{Left: left, Op: op, Right: right}, nil
@@ -377,6 +444,54 @@ func lowerParams(params []aotir.Param) ([]csharpsrc.Param, error) {
 			Type: lowerType(p.Type),
 			Name: p.Name,
 		}
+	}
+	return result, nil
+}
+
+func (l *lowerer) lowerStrIndexExpr(e *aotir.StrIndexExpr) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	idx, err := l.lowerExpr(e.Index)
+	if err != nil {
+		return nil, err
+	}
+	// recv.Substring((int)idx, 1)
+	return &csharpsrc.CallExpr{
+		Receiver: recv,
+		Method:   "Substring",
+		Args: []csharpsrc.Expr{
+			&csharpsrc.CastExpr{Type: csharpsrc.TypeInt, X: idx},
+			csharpsrc.Lit("1"),
+		},
+	}, nil
+}
+
+func (l *lowerer) lowerMathCallExpr(e *aotir.MathCallExpr) (csharpsrc.Expr, error) {
+	arg, err := l.lowerExpr(e.Arg)
+	if err != nil {
+		return nil, err
+	}
+	var method string
+	switch e.Func {
+	case "abs_i64", "abs_f64":
+		method = "Abs"
+	case "floor":
+		method = "Floor"
+	case "ceil":
+		method = "Ceiling"
+	default:
+		return nil, fmt.Errorf("dotnet/lower: unknown MathCallExpr func %q", e.Func)
+	}
+	result := &csharpsrc.StaticCallExpr{
+		Class:  "Math",
+		Method: method,
+		Args:   []csharpsrc.Expr{arg},
+	}
+	// floor/ceil return double; cast to long for int result.
+	if e.Result == aotir.TypeInt && (e.Func == "floor" || e.Func == "ceil") {
+		return &csharpsrc.CastExpr{Type: csharpsrc.TypeLong, X: result}, nil
 	}
 	return result, nil
 }

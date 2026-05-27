@@ -10,9 +10,9 @@ description: "MEP-48 Phase 2 — int/float/bool/string arithmetic, comparisons, 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 2](/docs/mep/mep-0048#phase-2-primitives-and-control-flow) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 01:44 (GMT+7) |
+| Landed         | 2026-05-28 01:44 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -181,4 +181,4 @@ public static void Line(double v) {
 
 ## Closeout notes
 
-Phase 2 not yet started.
+Phase 2 landed. `TestPhase2Scalars` PASS: 20 fixtures on SDK 10.0.107 net10.0. Key additions: `CastExpr` + `AssignStmt` nodes; `lowerBinaryExpr` routes `BinStrCat` → `string.Concat`; `ForRangeStmt` → `for (long i = start; i < end; i++)`; `NumCastExpr` → `(long)expr`; `StrLenExpr/StrIndexExpr/StrContainsExpr`; `MathCallExpr` → `Math.Abs/Floor/Ceiling`. Runtime: `IO/Print.Line(double)` uses `+Inf`/`-Inf`/`NaN` format; `Errors/MochiDivideByZeroError`, `Math/MochiMath.IntDiv` added.

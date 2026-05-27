@@ -533,6 +533,16 @@ func (s *LocalDeclStmt) stmtString(indent int) string {
 	return pad + typeName + " " + s.Name + " = " + s.Init.ExprString() + ";"
 }
 
+// AssignStmt is an assignment statement: Target = Value;
+type AssignStmt struct {
+	Target Expr
+	Value  Expr
+}
+
+func (s *AssignStmt) stmtString(indent int) string {
+	return strings.Repeat("    ", indent) + s.Target.ExprString() + " = " + s.Value.ExprString() + ";"
+}
+
 // TryCatchStmt is a try/catch statement.
 type TryCatchStmt struct {
 	Body      Block
@@ -756,6 +766,16 @@ type ConditionalExpr struct {
 
 func (e *ConditionalExpr) ExprString() string {
 	return "(" + e.Cond.ExprString() + " ? " + e.Then.ExprString() + " : " + e.Else.ExprString() + ")"
+}
+
+// CastExpr is an explicit type cast: (T)expr.
+type CastExpr struct {
+	Type TypeRef
+	X    Expr
+}
+
+func (e *CastExpr) ExprString() string {
+	return "((" + e.Type.CSString() + ")" + e.X.ExprString() + ")"
 }
 
 // NameExpr is a simple name reference.
