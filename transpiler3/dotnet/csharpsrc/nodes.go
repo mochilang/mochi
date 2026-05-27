@@ -1047,6 +1047,16 @@ func HashSetTypeRef(elem TypeRef) TypeRef {
 	return TypeRef{Name: "HashSet", TypeArgs: []TypeRef{elem}}
 }
 
+// BlockingCollectionTypeRef returns a BlockingCollection<T> TypeRef.
+func BlockingCollectionTypeRef(elem TypeRef) TypeRef {
+	return TypeRef{Name: "BlockingCollection", TypeArgs: []TypeRef{elem}}
+}
+
+// MochiStreamTypeRef returns a MochiStream<T> TypeRef.
+func MochiStreamTypeRef(elem TypeRef) TypeRef {
+	return TypeRef{Name: "MochiStream", TypeArgs: []TypeRef{elem}}
+}
+
 // --- Literal helpers ---
 
 // Lit returns a LiteralExpr.
