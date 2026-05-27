@@ -10,9 +10,9 @@ description: "MEP-48 Phase 4 — record types to sealed record class / readonly 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 4](/docs/mep/mep-0048#phase-4-records) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 02:07 (GMT+7) |
+| Landed         | 2026-05-28 02:07 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -116,4 +116,4 @@ Methods on `readonly record struct` work the same way; they are `public` instanc
 
 ## Closeout notes
 
-Phase 4 not yet started.
+Phase 4 landed. `TestPhase4Records` PASS: 14 fixtures on SDK 10.0.107 net10.0. `aotir.RecordDecl` → `public sealed record Name(T1 Field1, T2 Field2)` (positional record class). Field names snake_case → PascalCase via `snakeToPascal`. `RecordLit` → `new TypeName(arg1, arg2, ...)` positional constructor. `FieldAccess` → `receiver.PascalCaseField`. `lowerReturnType` and `lowerParamType` handle `TypeRecord` by name. Record declarations prepended to CompilationUnit types (before class) so C# sees them at compile time. `BinEqRec`/`BinNeRec` use `==`/`!=` which C# positional records implement as structural equality.
