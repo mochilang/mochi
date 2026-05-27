@@ -568,6 +568,10 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (csharpsrc.Expr, error) {
 		return l.lowerJavaCallExpr(e)
 	case *aotir.LLMGenerateExpr:
 		return l.lowerLLMGenerateExpr(e)
+	case *aotir.HttpGetExpr:
+		return l.lowerHttpGetExpr(e)
+	case *aotir.JsonDecodeExpr:
+		return l.lowerJsonDecodeExpr(e)
 	case *aotir.AsyncExpr:
 		return l.lowerAsyncExpr(e)
 	case *aotir.AwaitExpr:
@@ -2126,6 +2130,34 @@ func (l *lowerer) lowerJavaCallExpr(e *aotir.JavaCallExpr) (csharpsrc.Expr, erro
 		return nil, err
 	}
 	return lowerJavaCallToDotnet(e.Decl, args)
+}
+
+// --- Phase 14: HTTP fetch and JSON decode ---
+
+// lowerHttpGetExpr → Mochi.Runtime.IO.Fetch.Get(url)
+func (l *lowerer) lowerHttpGetExpr(e *aotir.HttpGetExpr) (csharpsrc.Expr, error) {
+	url, err := l.lowerExpr(e.URL)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.StaticCallExpr{
+		Class:  "Mochi.Runtime.IO.Fetch",
+		Method: "Get",
+		Args:   []csharpsrc.Expr{url},
+	}, nil
+}
+
+// lowerJsonDecodeExpr → Mochi.Runtime.IO.JSON.Decode(input)
+func (l *lowerer) lowerJsonDecodeExpr(e *aotir.JsonDecodeExpr) (csharpsrc.Expr, error) {
+	input, err := l.lowerExpr(e.Input)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.StaticCallExpr{
+		Class:  "Mochi.Runtime.IO.JSON",
+		Method: "Decode",
+		Args:   []csharpsrc.Expr{input},
+	}, nil
 }
 
 // --- Phase 13: LLM generate ---

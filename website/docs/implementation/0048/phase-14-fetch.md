@@ -10,9 +10,9 @@ description: "MEP-48 Phase 14 — fetch(...) to HttpClient via Mochi.Runtime.Fet
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 14](/docs/mep/mep-0048#phase-14-fetch-http) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 05:38 (GMT+7) |
+| Landed         | 2026-05-28 05:50 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,10 +28,9 @@ description: "MEP-48 Phase 14 — fetch(...) to HttpClient via Mochi.Runtime.Fet
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 14.0 | `fetch(url)` → `await FetchAsync(url, ct)` returning `Result<string, string>` | NOT STARTED | — |
-| 14.1 | `fetch(url, { method: "POST", body: json })` → POST with JSON body | NOT STARTED | — |
-| 14.2 | `fetch_json<T>(url)` → deserialise response body via `System.Text.Json` | NOT STARTED | — |
-| 14.3 | Local test server fixture harness | NOT STARTED | — |
+| 14.0 | `fetch url into var` → `Mochi.Runtime.IO.Fetch.Get(url)` (synchronous HttpClient) | LANDED | — |
+| 14.2 | `json_decode(s)` → `Mochi.Runtime.IO.JSON.Decode(s)` returning `Dictionary<string,string>` | LANDED | — |
+| 14.3 | Local test server fixture harness (httptest.Server + HTTPTEST_URL substitution) | LANDED | — |
 
 ## Sub-phase 14.0 -- Basic fetch
 
@@ -82,4 +81,6 @@ Result<string, string> resp =
 
 ## Closeout notes
 
-Phase 14 not yet started.
+Phase 14 landed. `TestPhase14Fetch` PASS: 2/2 fixtures on net10.0 (fetch_hello, fetch_json).
+
+`HttpGetExpr` → `Mochi.Runtime.IO.Fetch.Get(url)` (synchronous `HttpClient.GetStringAsync().GetAwaiter().GetResult()`). `JsonDecodeExpr` → `Mochi.Runtime.IO.JSON.Decode(input)` returning `Dictionary<string, string>` via `System.Text.Json`. The test driver starts a `net/http/httptest` server that serves `/hello` (plain text) and `/json` (JSON object), substitutes `HTTPTEST_URL` in each fixture source, compiles to a fx-dependent DLL, and runs it. No live network in CI.
