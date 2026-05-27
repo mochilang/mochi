@@ -148,6 +148,17 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (javasrc.Expr, error) {
 	case *aotir.DatalogQueryExpr:
 		return l.lowerDatalogQueryExpr(e)
 
+	// --- Agent expressions (Phase 9) ---
+
+	case *aotir.AgentLit:
+		return l.lowerAgentLitExpr(e)
+
+	case *aotir.AgentSpawnExpr:
+		return l.lowerAgentSpawnExpr(e)
+
+	case *aotir.AgentIntentCallExpr:
+		return l.lowerAgentIntentCallExpr(e)
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported expr %T", e)
 	}
