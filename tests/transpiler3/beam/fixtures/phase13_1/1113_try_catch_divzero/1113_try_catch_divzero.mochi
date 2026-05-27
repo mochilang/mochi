@@ -1,0 +1,7 @@
+var result: int = 0
+try {
+  result = 10 / 0
+} catch e {
+  result = -1
+}
+print(result)

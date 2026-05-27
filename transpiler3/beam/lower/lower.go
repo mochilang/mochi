@@ -84,11 +84,19 @@ func Lower(prog *aotir.Program, modName string) (*cerl.Module, error) {
 type lowerer struct {
 	mod          *cerl.Module
 	loopNum      int             // monotonic counter for while/for helpers
+	tryNum       int             // monotonic counter for unique try/catch variable names
 	loopStack    []loopCtx       // stack of active loop contexts (innermost last)
 	scope        map[string]bool // outer variables currently in scope
 	records      map[string]*aotir.RecordDecl   // record name -> declaration
 	liftedFuncs  map[string]*aotir.Function     // lifted closure bodies (skipped as top-level)
 	agents       map[string]*aotir.AgentDecl    // agent name -> declaration (Phase 9.0)
+}
+
+// nextTryNum returns a unique suffix for CTry exception variable names.
+func (l *lowerer) nextTryNum() int {
+	n := l.tryNum
+	l.tryNum++
+	return n
 }
 
 // loopCtx holds context about one active loop.
@@ -145,23 +153,30 @@ func (l *lowerer) lowerFunctionBody(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Ex
 	if err != nil {
 		return nil, err
 	}
-	// Wrap with return-exception handler.
+	// Use unique variable names so nested CTry nodes (from wrapArithErr or
+	// TryCatchStmt) do not conflict with the function-body return wrapper.
+	n := l.nextTryNum()
+	cls := fmt.Sprintf("V___cls%d", n)
+	rsn := fmt.Sprintf("V___rsn%d", n)
+	stk := fmt.Sprintf("V___stk%d", n)
+	ret := fmt.Sprintf("V___ret%d", n)
+	retval := fmt.Sprintf("V___retval%d", n)
 	return cerl.CTry(
 		body,
-		[]cerl.Expr{cerl.CVar("V___ret")},
-		cerl.CVar("V___ret"),
-		[]cerl.Expr{cerl.CVar("V___cls"), cerl.CVar("V___rsn"), cerl.CVar("V___stk")},
-		cerl.CCase(cerl.CVar("V___rsn"), []cerl.Expr{
+		[]cerl.Expr{cerl.CVar(ret)},
+		cerl.CVar(ret),
+		[]cerl.Expr{cerl.CVar(cls), cerl.CVar(rsn), cerl.CVar(stk)},
+		cerl.CCase(cerl.CVar(rsn), []cerl.Expr{
 			cerl.CClause(
-				[]cerl.Expr{cerl.CTuple([]cerl.Expr{cerl.CAtom("mochi_return"), cerl.CVar("V___retval")})},
+				[]cerl.Expr{cerl.CTuple([]cerl.Expr{cerl.CAtom("mochi_return"), cerl.CVar(retval)})},
 				cerl.CAtom("true"),
-				cerl.CVar("V___retval"),
+				cerl.CVar(retval),
 			),
 			cerl.CClause(
 				[]cerl.Expr{cerl.CVar("V___")},
 				cerl.CAtom("true"),
 				cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("raise"), []cerl.Expr{
-					cerl.CVar("V___cls"), cerl.CVar("V___rsn"), cerl.CVar("V___stk"),
+					cerl.CVar(cls), cerl.CVar(rsn), cerl.CVar(stk),
 				}),
 			),
 		}),
@@ -445,6 +460,73 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 			return nil, err
 		}
 		return cerl.CLet([]cerl.Expr{cerl.CVar("V___")}, emitCall, rest), nil
+
+	case *aotir.PanicStmt:
+		// Phase 13.1: panic(code, msg) → erlang:error({mochi_panic, Code, Msg})
+		code, err := lowerExpr(l, s.Code)
+		if err != nil {
+			return nil, err
+		}
+		msg, err := lowerExpr(l, s.Msg)
+		if err != nil {
+			return nil, err
+		}
+		panicTuple := cerl.CTuple([]cerl.Expr{cerl.CAtom("mochi_panic"), code, msg})
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("error"), []cerl.Expr{panicTuple}), nil
+
+	case *aotir.TryCatchStmt:
+		// Phase 13.1: try { tryBody } catch e { catchBody }
+		// Continuation (statements after this try-catch) feeds into both branches.
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		tryExpr, err := l.lowerBlock(s.TryBody.Statements, rest)
+		if err != nil {
+			return nil, fmt.Errorf("beam/lower: TryCatchStmt try body: %w", err)
+		}
+		// Bind the catch variable, then lower the catch body.
+		if l.scope == nil {
+			l.scope = make(map[string]bool)
+		}
+		l.scope[s.CatchVar] = true
+		catchExpr, err := l.lowerBlock(s.CatchBody.Statements, rest)
+		delete(l.scope, s.CatchVar)
+		if err != nil {
+			return nil, fmt.Errorf("beam/lower: TryCatchStmt catch body: %w", err)
+		}
+		// Catch handler: match {mochi_panic, Code, _Msg} or re-raise.
+		// Use unique names to avoid duplicate-evar errors in nested c_try nodes.
+		tn := l.nextTryNum()
+		tcls := fmt.Sprintf("V___cls%d", tn)
+		texc := fmt.Sprintf("V___exc%d", tn)
+		tstk := fmt.Sprintf("V___stk%d", tn)
+		ttryval := fmt.Sprintf("V___tryval%d", tn)
+		tother := fmt.Sprintf("V___other%d", tn)
+		catchVar := "V_" + s.CatchVar
+		handler := cerl.CCase(cerl.CVar(texc), []cerl.Expr{
+			cerl.CClause(
+				[]cerl.Expr{cerl.CTuple([]cerl.Expr{
+					cerl.CAtom("mochi_panic"), cerl.CVar(catchVar), cerl.CVar("V___"),
+				})},
+				cerl.CAtom("true"),
+				catchExpr,
+			),
+			cerl.CClause(
+				[]cerl.Expr{cerl.CVar(tother)},
+				cerl.CAtom("true"),
+				cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("throw"), []cerl.Expr{
+					cerl.CVar(tother),
+				}),
+			),
+		})
+		return cerl.CTry(
+			tryExpr,
+			[]cerl.Expr{cerl.CVar(ttryval)},
+			cerl.CVar(ttryval),
+			[]cerl.Expr{cerl.CVar(tcls), cerl.CVar(texc), cerl.CVar(tstk)},
+			handler,
+		), nil
 
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported statement %T", head)
@@ -1668,9 +1750,9 @@ func lowerBinaryExpr(l *lowerer, e *aotir.BinaryExpr) (cerl.Expr, error) {
 	case aotir.BinMulI64:
 		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("*"), []cerl.Expr{left, right}), nil
 	case aotir.BinDivI64:
-		return lowerIntDiv(left, right)
+		return lowerIntDiv(l, left, right)
 	case aotir.BinModI64:
-		return lowerIntMod(left, right)
+		return lowerIntMod(l, left, right)
 	case aotir.BinAddF64:
 		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("+"), []cerl.Expr{left, right}), nil
 	case aotir.BinSubF64:
@@ -1720,25 +1802,33 @@ func lowerBinaryExpr(l *lowerer, e *aotir.BinaryExpr) (cerl.Expr, error) {
 	}
 }
 
-func lowerIntDiv(left, right cerl.Expr) (cerl.Expr, error) {
+func lowerIntDiv(l *lowerer, left, right cerl.Expr) (cerl.Expr, error) {
 	divExpr := cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("div"), []cerl.Expr{left, right})
-	return wrapArithErr(divExpr, "V___divres"), nil
+	return wrapArithErr(l, divExpr, "V___divres"), nil
 }
 
-func lowerIntMod(left, right cerl.Expr) (cerl.Expr, error) {
+func lowerIntMod(l *lowerer, left, right cerl.Expr) (cerl.Expr, error) {
 	modExpr := cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("rem"), []cerl.Expr{left, right})
-	return wrapArithErr(modExpr, "V___modres"), nil
+	return wrapArithErr(l, modExpr, "V___modres"), nil
 }
 
-func wrapArithErr(op cerl.Expr, resVar string) cerl.Expr {
-	errHandler := cerl.CCase(cerl.CVar("V___rsn"), []cerl.Expr{
+func wrapArithErr(l *lowerer, op cerl.Expr, resVar string) cerl.Expr {
+	// Re-throw badarith as {mochi_panic, 5, Msg} (MOCHI_ERR_DIVZERO = 5) so
+	// that TryCatchStmt's catch handler can intercept it uniformly.
+	// Use unique variable names to avoid conflicts with nested CTry nodes.
+	n := l.nextTryNum()
+	cls := fmt.Sprintf("V___cls%d", n)
+	rsn := fmt.Sprintf("V___rsn%d", n)
+	stk := fmt.Sprintf("V___stk%d", n)
+	res := fmt.Sprintf("%s%d", resVar, n)
+	errHandler := cerl.CCase(cerl.CVar(rsn), []cerl.Expr{
 		cerl.CClause(
-			[]cerl.Expr{cerl.CTuple([]cerl.Expr{cerl.CAtom("badarith"), cerl.CVar("V___")})},
+			[]cerl.Expr{cerl.CAtom("badarith")},
 			cerl.CAtom("true"),
 			cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("error"),
 				[]cerl.Expr{cerl.CTuple([]cerl.Expr{
-					cerl.CAtom("mochi_error"),
-					cerl.CAtom("mochi_err_divzero"),
+					cerl.CAtom("mochi_panic"),
+					cerl.CInt(5), // MOCHI_ERR_DIVZERO
 					cerl.CBin([]byte("integer divide by zero")),
 				})}),
 		),
@@ -1746,13 +1836,13 @@ func wrapArithErr(op cerl.Expr, resVar string) cerl.Expr {
 			[]cerl.Expr{cerl.CVar("V___")},
 			cerl.CAtom("true"),
 			cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("raise"), []cerl.Expr{
-				cerl.CVar("V___cls"), cerl.CVar("V___rsn"), cerl.CVar("V___stk"),
+				cerl.CVar(cls), cerl.CVar(rsn), cerl.CVar(stk),
 			}),
 		),
 	})
 	return cerl.CTry(op,
-		[]cerl.Expr{cerl.CVar(resVar)}, cerl.CVar(resVar),
-		[]cerl.Expr{cerl.CVar("V___cls"), cerl.CVar("V___rsn"), cerl.CVar("V___stk")},
+		[]cerl.Expr{cerl.CVar(res)}, cerl.CVar(res),
+		[]cerl.Expr{cerl.CVar(cls), cerl.CVar(rsn), cerl.CVar(stk)},
 		errHandler,
 	)
 }
