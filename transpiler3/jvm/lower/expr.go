@@ -197,6 +197,150 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (javasrc.Expr, error) {
 	case *aotir.JsonDecodeExpr:
 		return l.lowerJsonDecodeExpr(e)
 
+	// --- String builtins ---
+
+	case *aotir.StrLenExpr:
+		recv, err := l.lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &javasrc.CastExpr{
+			Type: javasrc.TypeLong,
+			X:    &javasrc.CallExpr{Receiver: recv, Method: "length"},
+		}, nil
+
+	case *aotir.StrUpperExpr:
+		recv, err := l.lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &javasrc.CallExpr{Receiver: recv, Method: "toUpperCase"}, nil
+
+	case *aotir.StrLowerExpr:
+		recv, err := l.lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &javasrc.CallExpr{Receiver: recv, Method: "toLowerCase"}, nil
+
+	case *aotir.StrContainsExpr:
+		recv, err := l.lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		sub, err := l.lowerExpr(e.Sub)
+		if err != nil {
+			return nil, err
+		}
+		return &javasrc.CallExpr{Receiver: recv, Method: "contains", Args: []javasrc.Expr{sub}}, nil
+
+	case *aotir.StrIndexExpr:
+		recv, err := l.lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		idx, err := l.lowerExpr(e.Index)
+		if err != nil {
+			return nil, err
+		}
+		// s.substring((int)i, (int)i + 1)
+		typeInt := javasrc.TypeRef{Name: "int"}
+		iIdx := &javasrc.CastExpr{Type: typeInt, X: idx}
+		iEnd := &javasrc.BinaryExpr{Left: iIdx, Op: "+", Right: &javasrc.LiteralExpr{Value: "1"}}
+		return &javasrc.CallExpr{Receiver: recv, Method: "substring", Args: []javasrc.Expr{iIdx, iEnd}}, nil
+
+	case *aotir.StrSubstringExpr:
+		recv, err := l.lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		start, err := l.lowerExpr(e.Start)
+		if err != nil {
+			return nil, err
+		}
+		end, err := l.lowerExpr(e.End)
+		if err != nil {
+			return nil, err
+		}
+		typeInt := javasrc.TypeRef{Name: "int"}
+		iStart := &javasrc.CastExpr{Type: typeInt, X: start}
+		iEnd := &javasrc.CastExpr{Type: typeInt, X: end}
+		return &javasrc.CallExpr{Receiver: recv, Method: "substring", Args: []javasrc.Expr{iStart, iEnd}}, nil
+
+	case *aotir.StrReverseExpr:
+		recv, err := l.lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		sb := &javasrc.NewExpr{Type: javasrc.TypeRef{Name: "StringBuilder"}, Args: []javasrc.Expr{recv}}
+		return &javasrc.CallExpr{Receiver: sb, Method: "reverse"}, nil
+
+	case *aotir.StrSplitExpr:
+		str, err := l.lowerExpr(e.Str)
+		if err != nil {
+			return nil, err
+		}
+		sep, err := l.lowerExpr(e.Sep)
+		if err != nil {
+			return nil, err
+		}
+		// Arrays.asList(str.split(Pattern.quote(sep)))
+		quotedSep := &javasrc.StaticCallExpr{
+			Class:  "java.util.regex.Pattern",
+			Method: "quote",
+			Args:   []javasrc.Expr{sep},
+		}
+		splitArr := &javasrc.CallExpr{Receiver: str, Method: "split", Args: []javasrc.Expr{quotedSep}}
+		return &javasrc.StaticCallExpr{
+			Class:  "java.util.Arrays",
+			Method: "asList",
+			Args:   []javasrc.Expr{splitArr},
+		}, nil
+
+	case *aotir.StrJoinExpr:
+		list, err := l.lowerExpr(e.List)
+		if err != nil {
+			return nil, err
+		}
+		sep, err := l.lowerExpr(e.Sep)
+		if err != nil {
+			return nil, err
+		}
+		return &javasrc.StaticCallExpr{
+			Class:  "String",
+			Method: "join",
+			Args:   []javasrc.Expr{sep, list},
+		}, nil
+
+	case *aotir.StrConvertExpr:
+		operand, err := l.lowerExpr(e.Operand)
+		if err != nil {
+			return nil, err
+		}
+		return &javasrc.StaticCallExpr{
+			Class:  "String",
+			Method: "valueOf",
+			Args:   []javasrc.Expr{operand},
+		}, nil
+
+	// --- Math builtins ---
+
+	case *aotir.MathCallExpr:
+		arg, err := l.lowerExpr(e.Arg)
+		if err != nil {
+			return nil, err
+		}
+		switch e.Func {
+		case "abs_i64", "abs_f64":
+			return &javasrc.StaticCallExpr{Class: "Math", Method: "abs", Args: []javasrc.Expr{arg}}, nil
+		case "floor":
+			return &javasrc.StaticCallExpr{Class: "Math", Method: "floor", Args: []javasrc.Expr{arg}}, nil
+		case "ceil":
+			return &javasrc.StaticCallExpr{Class: "Math", Method: "ceil", Args: []javasrc.Expr{arg}}, nil
+		default:
+			return nil, fmt.Errorf("jvm/lower: unknown MathCallExpr func %q", e.Func)
+		}
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported expr %T", e)
 	}
