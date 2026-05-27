@@ -200,7 +200,14 @@ func (d *Driver) Build(src, out string, target Target) error {
 
 	tfm := d.effectiveTFM()
 	runtimeProj := runtimeCsprojPath()
-	csprojContent := generateCsproj(className, tfm, runtimeProj)
+	rid := hostRID()
+
+	var csprojContent string
+	if target == TargetAot {
+		csprojContent = generateAotCsproj(className, tfm, rid, runtimeProj)
+	} else {
+		csprojContent = generateCsproj(className, tfm, runtimeProj)
+	}
 	csprojPath := filepath.Join(srcDir, className+".csproj")
 	if err := os.WriteFile(csprojPath, []byte(csprojContent), 0o644); err != nil {
 		return fmt.Errorf("dotnet build: write csproj: %w", err)
@@ -228,6 +235,9 @@ func (d *Driver) Build(src, out string, target Target) error {
 	case TargetSelfContained:
 		return packSelfContained(d.tc.Dotnet, srcDir, out, tfm)
 	case TargetAot:
+		if err := os.MkdirAll(out, 0o755); err != nil {
+			return err
+		}
 		return packAot(d.tc.Dotnet, srcDir, out, tfm)
 	default:
 		return fmt.Errorf("dotnet build: unsupported target %d in Phase 1", target)

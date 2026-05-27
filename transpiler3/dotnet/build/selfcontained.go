@@ -1,8 +1,27 @@
 package build
 
+import (
+	"fmt"
+	"os/exec"
+	"strings"
+)
+
 // packSelfContained publishes a self-contained .NET application to outDir.
-// This is a stub in Phase 0; the implementation lands in Phase 1.
-func packSelfContained(_, _, _, _ string) error {
-	// TODO(Phase 1): run `dotnet publish --self-contained true -r RID -o outDir`
+// Produces a self-contained publish directory for the host RID.
+func packSelfContained(dotnetPath, projDir, outDir, tfm string) error {
+	rid := hostRID()
+	args := []string{
+		"publish", projDir,
+		"--self-contained", "true",
+		"-r", rid,
+		"--framework", tfm,
+		"--output", outDir,
+		"--nologo",
+		"-v", "minimal",
+	}
+	out, err := exec.Command(dotnetPath, args...).CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("dotnet publish (self-contained): %w\n%s", err, strings.TrimSpace(string(out)))
+	}
 	return nil
 }

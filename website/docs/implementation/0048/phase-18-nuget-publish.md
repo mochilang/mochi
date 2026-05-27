@@ -10,9 +10,9 @@ description: "MEP-48 Phase 18 — Mochi.Runtime and Mochi.Analyzers 0.10.x to nu
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 18](/docs/mep/mep-0048#phase-18-trim-cleanliness-and-nuget-publication) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 05:52 (GMT+7) |
+| Landed         | 2026-05-28 06:06 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
