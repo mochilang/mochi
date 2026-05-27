@@ -35,8 +35,9 @@ func evalETF(t *testing.T, erl string, etfBytes []byte) error {
 	if err := os.WriteFile(etfPath, etfBytes, 0o644); err != nil {
 		return err
 	}
+	etfFwd := filepath.ToSlash(etfPath)
 	script := `
-{ok, B} = file:read_file("` + etfPath + `"),
+{ok, B} = file:read_file("` + etfFwd + `"),
 _ = binary_to_term(B),
 halt(0).`
 	cmd := exec.Command(erl, "-noshell", "-eval", script)
