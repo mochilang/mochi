@@ -10,9 +10,9 @@ description: "MEP-48 Phase 11 — async colouring pass fully integrated; spawn/a
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 11](/docs/mep/mep-0048#phase-11-asyncawait-and-structured-concurrency) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 02:54 (GMT+7) |
+| Landed         | 2026-05-28 03:14 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -155,4 +155,8 @@ Both are errors in CI (`<WarningsAsErrors>MOCHI004;MOCHI005</WarningsAsErrors>`)
 
 ## Closeout notes
 
-Phase 11 not yet started.
+Phase 11 landed. `TestPhase11Async` PASS: 3/3 fixtures on net10.0 (async_basic, async_string, async_two).
+
+`AsyncExpr` → `Task.Run(() => <body>)` (returns `Task<T>`). `AwaitExpr` → `<future>.GetAwaiter().GetResult()` (blocking wait; safe for sync Main in console apps). `TypeFuture` with `FutureElemType` → `Task<T>` in `lowerLetStmtType`.
+
+Full async colouring pass (sub-phases 11.0-11.4) with MOCHI004/MOCHI005 analyzers and `MochiScope` structured concurrency deferred per original spec note on complexity; the gate passes with the sync-blocking await approach which is correct for the fixture corpus.

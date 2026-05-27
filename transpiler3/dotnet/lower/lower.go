@@ -558,6 +558,10 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (csharpsrc.Expr, error) {
 		return l.lowerListSliceExpr(e)
 	case *aotir.DatalogQueryExpr:
 		return l.lowerDatalogQueryExpr(e)
+	case *aotir.AsyncExpr:
+		return l.lowerAsyncExpr(e)
+	case *aotir.AwaitExpr:
+		return l.lowerAwaitExpr(e)
 	case *aotir.ChanMakeExpr:
 		return l.lowerChanMakeExpr(e)
 	case *aotir.ChanRecvExpr:
@@ -1686,6 +1690,8 @@ func lowerLetStmtType(s *aotir.LetStmt) csharpsrc.TypeRef {
 		return csharpsrc.MochiStreamTypeRef(lowerElemType(s.StreamElemType))
 	case aotir.TypeSub:
 		return csharpsrc.BlockingCollectionTypeRef(lowerElemType(s.SubElemType))
+	case aotir.TypeFuture:
+		return taskTypeRef(s.FutureElemType)
 	}
 	return lowerType(s.VarType)
 }
@@ -2053,6 +2059,39 @@ func (l *lowerer) lowerAgentIntentCallStmt(s *aotir.AgentIntentCallStmt) (csharp
 		args[i] = v
 	}
 	return &csharpsrc.ExprStmt{X: &csharpsrc.CallExpr{Receiver: recv, Method: s.IntentName, Args: args}}, nil
+}
+
+// --- Phase 11: async/await ---
+
+// taskTypeRef returns Task<T> for the given element type.
+func taskTypeRef(elemType aotir.Type) csharpsrc.TypeRef {
+	return csharpsrc.TypeRef{Name: "Task", TypeArgs: []csharpsrc.TypeRef{lowerElemType(elemType)}}
+}
+
+// lowerAsyncExpr → Task.Run(() => <body>)
+func (l *lowerer) lowerAsyncExpr(e *aotir.AsyncExpr) (csharpsrc.Expr, error) {
+	body, err := l.lowerExpr(e.Body)
+	if err != nil {
+		return nil, err
+	}
+	// Task.Run(() => body)
+	lambda := &csharpsrc.LambdaExpr{Params: nil, Body: body}
+	return &csharpsrc.CallExpr{
+		Receiver: csharpsrc.Lit("Task"),
+		Method:   "Run",
+		Args:     []csharpsrc.Expr{lambda},
+	}, nil
+}
+
+// lowerAwaitExpr → future.GetAwaiter().GetResult()
+// Blocking wait: safe for sync Main in console apps.
+func (l *lowerer) lowerAwaitExpr(e *aotir.AwaitExpr) (csharpsrc.Expr, error) {
+	fut, err := l.lowerExpr(e.Future)
+	if err != nil {
+		return nil, err
+	}
+	getAwaiter := &csharpsrc.CallExpr{Receiver: fut, Method: "GetAwaiter", Args: nil}
+	return &csharpsrc.CallExpr{Receiver: getAwaiter, Method: "GetResult", Args: nil}, nil
 }
 
 // --- Phase 10: channels and streams ---
