@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -48,7 +49,16 @@ func TestPhase13APE(t *testing.T) {
 		t.Fatalf("Driver.Build(Apex=true): %v", err)
 	}
 
-	cmd := exec.Command(outBin)
+	// APE binaries need `sh` on Linux because Go's exec.Command calls execve()
+	// directly without bash's ENOEXEC fallback, and the MZPELF polyglot header
+	// is not recognized by the kernel without binfmt_misc APE support.
+	// On macOS and Windows the binary runs directly.
+	var cmd *exec.Cmd
+	if runtime.GOOS == "linux" {
+		cmd = exec.Command("sh", outBin)
+	} else {
+		cmd = exec.Command(outBin)
+	}
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = os.Stderr
