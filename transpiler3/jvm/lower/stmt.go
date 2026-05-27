@@ -58,6 +58,11 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (javasrc.Stmt, error) {
 	case *aotir.MapPutStmt:
 		return l.lowerMapPutStmt(s)
 
+	// --- Sum type statements (Phase 5) ---
+
+	case *aotir.MatchStmt:
+		return l.lowerMatchStmt(s)
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported stmt %T", s)
 	}
@@ -117,6 +122,9 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (javasrc.Stmt, error) {
 	case aotir.TypeRecord:
 		// The record type is named exactly as in Mochi source.
 		javaType = javasrc.TypeRef{Name: s.RecordName}
+	case aotir.TypeUnion:
+		// The union/sum type is named exactly as in Mochi source.
+		javaType = javasrc.TypeRef{Name: s.UnionName}
 	default:
 		javaType, err = lowerType(s.VarType)
 		if err != nil {

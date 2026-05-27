@@ -206,6 +206,16 @@ type Member interface {
 	memberString(indent int) string
 }
 
+// InnerTypeDecl wraps a TypeDecl so it can appear as a nested type member
+// inside a sealed interface or class body.
+type InnerTypeDecl struct {
+	Decl TypeDecl
+}
+
+func (i *InnerTypeDecl) memberString(indent int) string {
+	return i.Decl.javaString(indent)
+}
+
 // MethodDecl is an instance or static method declaration.
 type MethodDecl struct {
 	Modifiers  []string

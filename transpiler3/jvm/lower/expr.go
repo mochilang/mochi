@@ -106,6 +106,18 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (javasrc.Expr, error) {
 	case *aotir.FieldAccess:
 		return l.lowerFieldAccess(e)
 
+	// --- Sum type expressions (Phase 5) ---
+
+	case *aotir.VariantLit:
+		return l.lowerVariantLit(e)
+
+	case *aotir.UnionVarRef:
+		// A union-typed variable reference: just emit the variable name.
+		return &javasrc.NameExpr{Name: e.Name}, nil
+
+	case *aotir.VariantFieldAccess:
+		return l.lowerVariantFieldAccess(e)
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported expr %T", e)
 	}
@@ -560,6 +572,39 @@ func (l *lowerer) lowerRecordLit(e *aotir.RecordLit) (javasrc.Expr, error) {
 // Java records expose fields via accessor methods with the same name as the field,
 // not as public fields. So `p.x` in Mochi becomes `p.x()` in Java.
 func (l *lowerer) lowerFieldAccess(e *aotir.FieldAccess) (javasrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return &javasrc.CallExpr{
+		Receiver: recv,
+		Method:   e.FieldName,
+		Args:     nil,
+	}, nil
+}
+
+// lowerVariantLit lowers variant construction `Circle(1.5)` to
+// `new Shape.Circle(1.5)` (qualified with union name).
+func (l *lowerer) lowerVariantLit(e *aotir.VariantLit) (javasrc.Expr, error) {
+	args := make([]javasrc.Expr, len(e.Fields))
+	for i, f := range e.Fields {
+		v, err := l.lowerExpr(f.Value)
+		if err != nil {
+			return nil, fmt.Errorf("variant %q.%q field %q: %w", e.UnionName, e.VariantName, f.Name, err)
+		}
+		args[i] = v
+	}
+	return &javasrc.NewExpr{
+		Type: javasrc.TypeRef{Name: e.UnionName + "." + e.VariantName},
+		Args: args,
+	}, nil
+}
+
+// lowerVariantFieldAccess lowers a field read from a variant-typed value.
+// The aotir knows which variant we're in (VariantName), so the receiver is
+// already typed. Java record accessor methods use the field name directly,
+// same as for plain records.
+func (l *lowerer) lowerVariantFieldAccess(e *aotir.VariantFieldAccess) (javasrc.Expr, error) {
 	recv, err := l.lowerExpr(e.Receiver)
 	if err != nil {
 		return nil, err

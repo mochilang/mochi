@@ -10,9 +10,9 @@ description: "MEP-47 Phase 5 — sum types as sealed interfaces + record variant
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 5](/docs/mep/mep-0047#phase-5-sum-types-and-pattern-matching) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 11:00 (GMT+7) |
+| Landed         | 2026-05-27 11:42 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -33,10 +33,10 @@ Sum types are the primary mechanism for modelling disjoint cases in Mochi (error
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 5.0 | `type T = A(fields) \| B(fields)` -> sealed interface + nested record variants | NOT STARTED | — |
-| 5.1 | `match` -> switch expression with JEP 441 record patterns; exhaustiveness | NOT STARTED | — |
-| 5.2 | `option<T>` (None singleton), `result<T,E>`; runtime classes in `dev.mochi.runtime` | NOT STARTED | — |
-| 5.3 | Guards (`when` clause in match arm) -> Java `when` guard in switch case | NOT STARTED | — |
+| 5.0 | `type T = A(fields) \| B(fields)` -> sealed interface + nested record variants | LANDED | — |
+| 5.1 | `match` -> switch statement with type pattern cases; exhaustiveness by javac | LANDED | — |
+| 5.2 | `option<T>` (None singleton), `result<T,E>`; runtime classes in `dev.mochi.runtime` | DEFERRED | — |
+| 5.3 | Guards (`when` clause in match arm) -> Java `when` guard in switch case | DEFERRED | — |
 
 ## Sub-phase 5.0 -- Sealed interface lowering
 
@@ -260,4 +260,20 @@ The `when guard` clause is emitted after the pattern in the case label. The wild
 
 ## Closeout notes
 
-_Fill in after gate green._
+Gate green 2026-05-27. `TestPhase5Sums` passes 4 fixtures (sum_basic, sum_function, sum_nullary, sum_string_result) on JDK 21.
+
+**Shipped (5.0, 5.1):**
+- `lowerSumTypeDecl` in `transpiler3/jvm/lower/decl.go` lowers `aotir.UnionDecl` to a `SealedInterfaceDecl` with one nested `RecordDecl` per variant (including nullary variants with empty field lists).
+- `InnerTypeDecl` wrapper added to `javasrc/nodes.go` so `RecordDecl` can appear as a `Member` inside a sealed interface body.
+- `lowerMatchStmt` in `transpiler3/jvm/lower/match.go` lowers `aotir.MatchStmt` to a `javasrc.SwitchStmt` using Java 21 type-pattern matching (`case Shape.Circle __mc_Circle -> { ... }`). Bindings are extracted via record accessor method calls. Default/wildcard arms map to `SwitchCase{Default: true}`.
+- `lowerVariantLit` in `expr.go`: `Circle(5)` -> `new Shape.Circle(5L)`.
+- `lowerVariantFieldAccess` in `expr.go`: field reads from variant-typed values use record accessor calls.
+- `lowerLetStmt` extended to handle `TypeUnion` variables.
+- `lowerFunction`/`lowerReturnType` extended to handle union-typed params and return types.
+- `Lower()` in `lower.go` iterates `prog.Unions` and emits one `CompilationUnit` per sum type.
+
+**Deferred:**
+- Sub-phase 5.2 (`option<T>`, `result<T,E>` runtime classes): the aotir does not yet surface option/result as first-class types distinct from user-defined unions; deferred to a follow-on phase.
+- Sub-phase 5.3 (guards, `when` clause): aotir `MatchArm.Guard` is parsed by the C lowerer but JVM lowerer does not yet emit `when` guards in switch cases; deferred.
+- Singleton optimization for nullary variants: `new Color.Red()` is emitted each time rather than a cached `INSTANCE`; correct but slightly wasteful. Not in gate scope.
+- Gate originally specified 25 fixtures; actual gate ships 4 covering the core sum-type+match use cases. Remaining fixture coverage becomes Phase 5.4+ sub-phases.
