@@ -13,26 +13,24 @@ A phase is LANDED only when its gate is green on every target listed for it in M
 
 ## Phase status
 
-| Phase | Title                                            | Status      | Commit |
-|-------|--------------------------------------------------|-------------|--------|
-| 0     | Spec freeze and skeleton trees                   | NOT STARTED | n/a    |
-| 1     | Hello world                                      | NOT STARTED | n/a    |
-| 2     | Primitives and control flow                      | NOT STARTED | n/a    |
-| 3     | Collections                                      | NOT STARTED | n/a    |
-| 4     | Records                                          | NOT STARTED | n/a    |
-| 5     | Sum types and pattern matching                   | NOT STARTED | n/a    |
-| 6     | Closures and higher-order functions              | NOT STARTED | n/a    |
-| 7     | Query DSL (LINQ / PLINQ)                         | NOT STARTED | n/a    |
-| 8     | Datalog                                          | NOT STARTED | n/a    |
-| 9     | Agents (Channels-backed)                         | NOT STARTED | n/a    |
-| 10    | Streams (IAsyncEnumerable)                       | NOT STARTED | n/a    |
-| 11    | async (Task-based)                               | NOT STARTED | n/a    |
-| 12    | FFI (P/Invoke)                                   | NOT STARTED | n/a    |
-| 13    | LLM (generate)                                   | NOT STARTED | n/a    |
-| 14    | fetch (HTTP)                                     | NOT STARTED | n/a    |
-| 15    | Release packaging (NuGet)                        | NOT STARTED | n/a    |
-| 16    | Reproducibility and perf                         | NOT STARTED | n/a    |
-| 17    | NativeAOT                                        | NOT STARTED | n/a    |
-| 18    | v1.0 release                                     | NOT STARTED | n/a    |
-
-Per-phase tracking pages will be added as phases open.
+| Phase | Title | Status | Commit | Tracking page |
+|-------|-------|--------|--------|---------------|
+| 0 | Spec freeze and skeleton trees | NOT STARTED | n/a | [phase-00](/docs/implementation/0048/phase-00-skeleton) |
+| 1 | Hello world | NOT STARTED | n/a | [phase-01](/docs/implementation/0048/phase-01-hello) |
+| 2 | Primitives and control flow | NOT STARTED | n/a | [phase-02](/docs/implementation/0048/phase-02-scalars) |
+| 3 | Collections | NOT STARTED | n/a | [phase-03](/docs/implementation/0048/phase-03-collections) |
+| 4 | Records | NOT STARTED | n/a | [phase-04](/docs/implementation/0048/phase-04-records) |
+| 5 | Sum types and pattern matching | NOT STARTED | n/a | [phase-05](/docs/implementation/0048/phase-05-sums) |
+| 6 | Closures and higher-order functions | NOT STARTED | n/a | [phase-06](/docs/implementation/0048/phase-06-closures) |
+| 7 | Query DSL (LINQ / PLINQ) | NOT STARTED | n/a | [phase-07](/docs/implementation/0048/phase-07-query) |
+| 8 | Datalog | NOT STARTED | n/a | [phase-08](/docs/implementation/0048/phase-08-datalog) |
+| 9 | Agents (Channel-backed) | NOT STARTED | n/a | [phase-09](/docs/implementation/0048/phase-09-agents) |
+| 10 | Streams (IAsyncEnumerable) | NOT STARTED | n/a | [phase-10](/docs/implementation/0048/phase-10-streams) |
+| 11 | async/await and structured concurrency | NOT STARTED | n/a | [phase-11](/docs/implementation/0048/phase-11-async) |
+| 12 | .NET FFI and NuGet deps | NOT STARTED | n/a | [phase-12](/docs/implementation/0048/phase-12-ffi) |
+| 13 | LLM (generate) | NOT STARTED | n/a | [phase-13](/docs/implementation/0048/phase-13-llm) |
+| 14 | fetch (HTTP) | NOT STARTED | n/a | [phase-14](/docs/implementation/0048/phase-14-fetch) |
+| 15 | NativeAOT packaging | NOT STARTED | n/a | [phase-15](/docs/implementation/0048/phase-15-native-aot) |
+| 16 | Reproducibility | NOT STARTED | n/a | [phase-16](/docs/implementation/0048/phase-16-repro) |
+| 17 | Self-contained packaging across RIDs | NOT STARTED | n/a | [phase-17](/docs/implementation/0048/phase-17-self-contained) |
+| 18 | Trim cleanliness and NuGet publication | NOT STARTED | n/a | [phase-18](/docs/implementation/0048/phase-18-nuget-publish) |
