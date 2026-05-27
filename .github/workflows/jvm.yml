@@ -22,18 +22,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
-        if: runner.os != 'Windows'
-      - uses: actions/checkout@v6
-        if: runner.os == 'Windows'
-        with:
-          filter: tree:0
-          sparse-checkout: |
-            transpiler3/jvm
-            transpiler3/c
-            tests/transpiler3/jvm
-            parser
-            types
-          sparse-checkout-cone-mode: true
       - uses: actions/setup-go@v5
         with:
           go-version: '1.24'
