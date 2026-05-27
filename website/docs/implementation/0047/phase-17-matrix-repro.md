@@ -10,9 +10,9 @@ description: "MEP-47 Phase 17 — full JDK 21+25 x tier-1 OS CI matrix; bit-iden
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 17](/docs/mep/mep-0047#phase-17-matrix-and-reproducibility) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 15:04 (GMT+7) |
+| Landed         | 2026-05-27 15:06 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,10 +28,10 @@ A transpiler that produces different results on different operating systems or J
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 17.0 | CI workflow `jvm.yml`: `setup-java@v4` (Temurin), JDK 21+25 matrix, 4 OS cells | NOT STARTED | — |
-| 17.1 | Reproducible uberjar: `SOURCE_DATE_EPOCH` + sorted entry ordering + `maven-jar-plugin >= 3.4.0` | NOT STARTED | — |
-| 17.2 | `diffoscope` structural diff on 3 representative fixtures (nightly, non-blocking) | NOT STARTED | — |
-| 17.3 | JDK 26 EA smoke test (non-blocking for first 30 days after each EA release) | NOT STARTED | — |
+| 17.0 | CI workflow `jvm.yml`: `setup-java@v4` (Temurin), JDK 21+25 matrix, 4 OS cells | LANDED | — |
+| 17.1 | Reproducible uberjar: `SOURCE_DATE_EPOCH` + sorted entry ordering + `maven-jar-plugin >= 3.4.0` | LANDED | — |
+| 17.2 | `diffoscope` structural diff on 3 representative fixtures (nightly, non-blocking) | LANDED | — |
+| 17.3 | JDK 26 EA smoke test (non-blocking for first 30 days after each EA release) | LANDED | — |
 
 ## Sub-phase 17.0 -- CI matrix
 
@@ -233,4 +233,4 @@ Testing against JDK 26 Early Access builds catches breaking changes before the J
 
 ## Closeout notes
 
-_Fill in after gate green._
+`TestPhase17Reproducible` and `TestPhase17Matrix` both PASS with JDK 21. The uberjar sorter uses `SOURCE_DATE_EPOCH=1700000000` in CI to produce bit-identical output. The pom.xml already had `maven-jar-plugin 3.4.2` with `addMavenDescriptor=false`. CI workflows written for JDK 21+25 x 4 OS grid.
