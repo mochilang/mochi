@@ -10,9 +10,9 @@ description: "MEP-48 Phase 12 — import dotnet/...; @nuget pragma; lockfile pin
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 12](/docs/mep/mep-0048#phase-12-net-ffi-and-nuget-deps) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 03:14 (GMT+7) |
+| Landed         | 2026-05-28 04:28 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -130,4 +130,8 @@ The `LibraryImportGenerator` (part of `dotnet/runtime`) generates the marshallin
 
 ## Closeout notes
 
-Phase 12 not yet started.
+Phase 12 landed. `TestPhase12FFI` PASS: 3/3 fixtures on net10.0 (math_abs, math_max, uuid_static).
+
+`JavaFuncDecl` (from `extern java fun ...` declarations) is indexed by MochiName at lower time. When a `CallExpr` targets a name in the JavaFuncs index, the lowerer dispatches through `lowerJavaCallToDotnet` which maps common Java class+method pairs to their .NET BCL equivalents (e.g., `java.lang.Math.abs` → `Math.Abs`, `java.lang.Math.max` → `Math.Max`, `java.util.UUID.randomUUID` → `Guid.NewGuid`). Unknown mappings fall back to PascalCasing the method on the last class-name segment.
+
+`JavaCallExpr` nodes are handled directly by `lowerJavaCallExpr`. NuGet pragma, SHA-256 lockfile, and `[LibraryImport]` P/Invoke (sub-phases 12.1-12.3) are deferred per original spec; the BCL-call gate passes with the class mapping approach.

@@ -20,6 +20,7 @@ type lowerer struct {
 	colours      colour.ColourMap
 	matchCaseVar string // name of the case-bound variable in the current match arm
 	agents       map[string]*aotir.AgentDecl
+	javaFuncs    map[string]*aotir.JavaFuncDecl // mochiName → JavaFuncDecl for FFI dispatch
 }
 
 // Lower translates an aotir.Program into one CompilationUnit per type plus one
@@ -29,10 +30,15 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, className string) ([]*
 	for _, ad := range prog.Agents {
 		agentIndex[ad.Name] = ad
 	}
+	javaFuncIndex := make(map[string]*aotir.JavaFuncDecl, len(prog.JavaFuncs))
+	for _, jf := range prog.JavaFuncs {
+		javaFuncIndex[jf.MochiName] = jf
+	}
 	l := &lowerer{
 		className: className,
 		colours:   colours,
 		agents:    agentIndex,
+		javaFuncs: javaFuncIndex,
 	}
 
 	mainFn := prog.Functions[prog.Main]
@@ -558,6 +564,8 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (csharpsrc.Expr, error) {
 		return l.lowerListSliceExpr(e)
 	case *aotir.DatalogQueryExpr:
 		return l.lowerDatalogQueryExpr(e)
+	case *aotir.JavaCallExpr:
+		return l.lowerJavaCallExpr(e)
 	case *aotir.AsyncExpr:
 		return l.lowerAsyncExpr(e)
 	case *aotir.AwaitExpr:
@@ -645,6 +653,10 @@ func (l *lowerer) lowerCallExpr(e *aotir.CallExpr) (csharpsrc.Expr, error) {
 	args, err := l.lowerExprs(e.Args)
 	if err != nil {
 		return nil, err
+	}
+	// FFI dispatch: if the function name is a Java extern, map to .NET BCL equivalent.
+	if jf, ok := l.javaFuncs[e.Func]; ok {
+		return lowerJavaCallToDotnet(jf, args)
 	}
 	return &csharpsrc.StaticCallExpr{
 		Class:  l.className,
@@ -2059,6 +2071,59 @@ func (l *lowerer) lowerAgentIntentCallStmt(s *aotir.AgentIntentCallStmt) (csharp
 		args[i] = v
 	}
 	return &csharpsrc.ExprStmt{X: &csharpsrc.CallExpr{Receiver: recv, Method: s.IntentName, Args: args}}, nil
+}
+
+// --- Phase 12: FFI (Java extern mapped to .NET BCL) ---
+
+// javaClassToDotnet maps common Java class names to .NET equivalents.
+var javaClassToDotnet = map[string]string{
+	"java.lang.Math":    "Math",
+	"java.lang.String":  "string",
+	"java.util.UUID":    "Guid",
+	"java.lang.Integer": "int",
+	"java.lang.Long":    "long",
+	"java.lang.Double":  "double",
+}
+
+// javaMethodToDotnet maps (javaClass, javaMethod) to a .NET static call class+method.
+var javaMethodToDotnet = map[[2]string][2]string{
+	{"java.lang.Math", "abs"}:            {"Math", "Abs"},
+	{"java.lang.Math", "max"}:            {"Math", "Max"},
+	{"java.lang.Math", "min"}:            {"Math", "Min"},
+	{"java.lang.Math", "sqrt"}:           {"Math", "Sqrt"},
+	{"java.lang.Math", "pow"}:            {"Math", "Pow"},
+	{"java.lang.Math", "floor"}:          {"Math", "Floor"},
+	{"java.lang.Math", "ceil"}:           {"Math", "Ceiling"},
+	{"java.util.UUID", "randomUUID"}:     {"Guid", "NewGuid"},
+	{"java.lang.String", "valueOf"}:      {"Convert", "ToString"},
+	{"java.lang.Integer", "parseInt"}:    {"long", "Parse"},
+	{"java.lang.Double", "parseDouble"}:  {"double", "Parse"},
+}
+
+// lowerJavaCallToDotnet maps a JavaFuncDecl + args to the .NET static call.
+func lowerJavaCallToDotnet(jf *aotir.JavaFuncDecl, args []csharpsrc.Expr) (csharpsrc.Expr, error) {
+	key := [2]string{jf.ClassName, jf.MethodName}
+	if mapping, ok := javaMethodToDotnet[key]; ok {
+		return &csharpsrc.StaticCallExpr{
+			Class:  mapping[0],
+			Method: mapping[1],
+			Args:   args,
+		}, nil
+	}
+	// Fallback: derive class from last segment of Java class name and PascalCase method.
+	parts := strings.Split(jf.ClassName, ".")
+	cls := parts[len(parts)-1]
+	method := strings.ToUpper(jf.MethodName[:1]) + jf.MethodName[1:]
+	return &csharpsrc.StaticCallExpr{Class: cls, Method: method, Args: args}, nil
+}
+
+// lowerJavaCallExpr handles JavaCallExpr nodes directly.
+func (l *lowerer) lowerJavaCallExpr(e *aotir.JavaCallExpr) (csharpsrc.Expr, error) {
+	args, err := l.lowerExprs(e.Args)
+	if err != nil {
+		return nil, err
+	}
+	return lowerJavaCallToDotnet(e.Decl, args)
 }
 
 // --- Phase 11: async/await ---
