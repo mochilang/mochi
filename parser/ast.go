@@ -30,6 +30,7 @@ type Statement struct {
 	ExternGoFun     *ExternGoFunDecl     `json:"extern_go_fun,omitempty" parser:"| @@"`
 	ExternPythonFun *ExternPythonFunDecl `json:"extern_python_fun,omitempty" parser:"| @@"`
 	ExternJSFun     *ExternJSFunDecl     `json:"extern_js_fun,omitempty" parser:"| @@"`
+	ExternJavaFun   *ExternJavaFunDecl   `json:"extern_java_fun,omitempty" parser:"| @@"`
 	ExternFun       *ExternFunDecl       `json:"externfun,omitempty" parser:"| @@"`
 	ExternObject *ExternObjectDecl `json:"externobject,omitempty" parser:"| @@"`
 	Fact         *FactStmt         `json:"fact,omitempty" parser:"| @@"`
@@ -345,6 +346,41 @@ func (e *ExternJSFunDecl) Name() string {
 		return e.Root
 	}
 	return e.Root + "_" + strings.Join(e.Tail, "_")
+}
+
+// ExternJavaFunDecl is a `extern java fun` declaration (Phase 12.0).
+// Syntax: extern java fun <Class>.<Method>(<TypeList>): <ReturnType> as <Alias>
+// Example: extern java fun java.util.UUID.randomUUID(): string as uuid_new
+// The class name is everything except the last dot-separated component; the
+// last component is the method name. The Alias field gives the Mochi-side name.
+type ExternJavaFunDecl struct {
+	Pos        lexer.Position `json:"pos,omitempty" parser:""`
+	Root       string         `json:"root,omitempty" parser:"'extern' 'java' 'fun' @Ident"`
+	Tail       []string       `json:"tail,omitempty" parser:"{ '.' @Ident }"`
+	ParamTypes []*TypeRef     `json:"param_types,omitempty" parser:"'(' [ @@ { ',' @@ } ] ')'"`
+	Return     *TypeRef       `json:"return,omitempty" parser:"[ ':' @@ ]"`
+	Alias      string         `json:"alias,omitempty" parser:"'as' @Ident"`
+}
+
+// ClassName returns the fully qualified Java class name (all components except the last).
+func (e *ExternJavaFunDecl) ClassName() string {
+	if len(e.Tail) == 0 {
+		return e.Root
+	}
+	return e.Root + "." + strings.Join(e.Tail[:len(e.Tail)-1], ".")
+}
+
+// MethodName returns the Java method name (the last dot-separated component).
+func (e *ExternJavaFunDecl) MethodName() string {
+	if len(e.Tail) == 0 {
+		return ""
+	}
+	return e.Tail[len(e.Tail)-1]
+}
+
+// MochiName returns the Mochi alias for the function.
+func (e *ExternJavaFunDecl) MochiName() string {
+	return e.Alias
 }
 
 type ExternObjectDecl struct {

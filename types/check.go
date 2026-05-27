@@ -843,6 +843,19 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 		env.SetVar(s.ExternJSFun.Name(), FuncType{Params: params, Return: ret}, false)
 		return nil
 
+	case s.ExternJavaFun != nil:
+		// Phase 12.0: extern java fun — register under the Mochi alias.
+		params := make([]Type, len(s.ExternJavaFun.ParamTypes))
+		for i, pt := range s.ExternJavaFun.ParamTypes {
+			params[i] = resolveTypeRef(pt, env)
+		}
+		var ret Type = AnyType{}
+		if s.ExternJavaFun.Return != nil {
+			ret = resolveTypeRef(s.ExternJavaFun.Return, env)
+		}
+		env.SetVar(s.ExternJavaFun.MochiName(), FuncType{Params: params, Return: ret}, false)
+		return nil
+
 	case s.Fact != nil:
 		return nil
 

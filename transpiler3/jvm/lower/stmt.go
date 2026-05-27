@@ -118,6 +118,10 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (javasrc.Stmt, error) {
 		return &javasrc.ExprStmt{X: call}, nil
 
 	default:
+		// Phase 12.0: Java FFI call at statement position.
+		if decl, ok := l.javaFuncs[s.Func]; ok {
+			return l.lowerJavaCallStmt(decl, s)
+		}
 		// User-defined function called as a statement (discarding the return value).
 		if !strings.HasPrefix(s.Func, "mochi_") {
 			args, err := l.lowerExprs(s.Args)
@@ -193,9 +197,22 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (javasrc.Stmt, error) {
 		// Actually we keep ArrayList for simplicity -- Mochi let just means no
 		// rebinding, not that the container is structurally immutable at runtime.
 	}
+
+	// Phase 12.0: if the init is a Java FFI call, use Java type inference (var)
+	// so the declared variable type matches the actual Java return type, which may
+	// be an opaque Java class (e.g., UUID, Instant) rather than a Mochi primitive.
+	javaTypePtr := &javaType
+	if s.Init != nil {
+		if ce, ok := s.Init.(*aotir.CallExpr); ok {
+			if _, isJava := l.javaFuncs[ce.Func]; isJava {
+				javaTypePtr = nil // use Java 'var'
+			}
+		}
+	}
+
 	return &javasrc.VarDeclStmt{
 		Final: !s.Mutable,
-		Type:  &javaType,
+		Type:  javaTypePtr,
 		Name:  s.Name,
 		Init:  init,
 	}, nil
