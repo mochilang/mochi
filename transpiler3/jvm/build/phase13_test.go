@@ -61,8 +61,8 @@ func TestPhase13LLM(t *testing.T) {
 				t.Fatalf("java -jar: %v", err)
 			}
 
-			got := strings.TrimRight(stdout.String(), "\n")
-			wantStr := strings.TrimRight(string(want), "\n")
+			got := strings.TrimRight(stdout.String(), "\r\n")
+			wantStr := strings.TrimRight(string(want), "\r\n")
 			if got != wantStr {
 				t.Errorf("stdout mismatch\ngot:  %q\nwant: %q", got, wantStr)
 			}

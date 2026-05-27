@@ -83,7 +83,7 @@ func TestPhase17Matrix(t *testing.T) {
 		t.Fatalf("java -jar: %v", err)
 	}
 
-	got := strings.TrimRight(stdout.String(), "\n")
+	got := strings.TrimRight(stdout.String(), "\r\n")
 	if got != "hello, world" {
 		t.Errorf("stdout: got %q want %q", got, "hello, world")
 	}

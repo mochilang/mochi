@@ -40,7 +40,7 @@ func TestPhase15UberJar(t *testing.T) {
 	}
 	elapsed := time.Since(start)
 
-	got := strings.TrimRight(stdout.String(), "\n")
+	got := strings.TrimRight(stdout.String(), "\r\n")
 	if got != "hello, world" {
 		t.Errorf("stdout mismatch: got %q want %q", got, "hello, world")
 	}
@@ -119,7 +119,7 @@ func TestPhase15JLink(t *testing.T) {
 	if err := cmd.Run(); err != nil {
 		t.Fatalf("java (jlink image): %v", err)
 	}
-	if got := strings.TrimRight(stdout.String(), "\n"); got != "hello, world" {
+	if got := strings.TrimRight(stdout.String(), "\r\n"); got != "hello, world" {
 		t.Errorf("stdout: got %q want %q", got, "hello, world")
 	}
 }
