@@ -10,9 +10,9 @@ description: "MEP-47 Phase 16 — --target=jvm-native via GraalVM native-image (
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 16](/docs/mep/mep-0047#phase-16-native-image-graalvm) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 14:56 (GMT+7) |
+| Landed         | 2026-05-27 14:58 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
