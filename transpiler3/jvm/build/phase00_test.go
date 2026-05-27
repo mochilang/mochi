@@ -25,10 +25,16 @@ func TestPhase0Skeleton(t *testing.T) {
 		// The runtime jar is built by Maven. In CI it is pre-built.
 		// In a local dev checkout, run: mvn -f transpiler3/jvm/runtime/pom.xml package -DskipTests
 		repoRoot := repoRootForTest(t)
-		jarPath := filepath.Join(repoRoot, "transpiler3", "jvm", "runtime",
-			"target", "mochi-runtime-0.10.0-SNAPSHOT.jar")
-		if _, err := os.Stat(jarPath); err != nil {
-			t.Skipf("runtime jar not built yet (run mvn package): %v", err)
+		found := false
+		for _, name := range []string{"mochi-runtime-0.14.0.jar", "mochi-runtime-0.10.0-SNAPSHOT.jar"} {
+			jarPath := filepath.Join(repoRoot, "transpiler3", "jvm", "runtime", "target", name)
+			if _, err := os.Stat(jarPath); err == nil {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Skip("runtime jar not built yet (run: mvn -f transpiler3/jvm/runtime/pom.xml package -DskipTests -Dgpg.skip=true)")
 		}
 	})
 
