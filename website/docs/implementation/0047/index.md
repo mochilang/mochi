@@ -15,10 +15,10 @@ A phase is LANDED only when its gate is green on every target listed for it in M
 
 | Phase | Title | Status | Commit | Tracking page |
 |-------|-------|--------|--------|---------------|
-| 0 | Skeleton | NOT STARTED | — | [phase-00](/docs/implementation/0047/phase-00-skeleton) |
-| 1 | Hello world | NOT STARTED | — | [phase-01](/docs/implementation/0047/phase-01-hello) |
-| 2 | Primitives and control flow | NOT STARTED | — | [phase-02](/docs/implementation/0047/phase-02-scalars) |
-| 3 | Collections | NOT STARTED | — | [phase-03](/docs/implementation/0047/phase-03-collections) |
+| 0 | Skeleton | LANDED | — | [phase-00](/docs/implementation/0047/phase-00-skeleton) |
+| 1 | Hello world | LANDED | — | [phase-01](/docs/implementation/0047/phase-01-hello) |
+| 2 | Primitives and control flow | LANDED | — | [phase-02](/docs/implementation/0047/phase-02-scalars) |
+| 3 | Collections | IN PROGRESS | — | [phase-03](/docs/implementation/0047/phase-03-collections) |
 | 4 | Records | NOT STARTED | — | [phase-04](/docs/implementation/0047/phase-04-records) |
 | 5 | Sum types and pattern matching | NOT STARTED | — | [phase-05](/docs/implementation/0047/phase-05-sums) |
 | 6 | Closures and higher-order functions | NOT STARTED | — | [phase-06](/docs/implementation/0047/phase-06-closures) |

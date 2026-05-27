@@ -1,0 +1,58 @@
+name: JVM transpiler tests
+
+# MEP-47: CI gate for the Mochi-to-JVM transpiler test suite.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    paths:
+      - 'transpiler3/jvm/**'
+      - 'tests/transpiler3/jvm/**'
+      - '.github/workflows/transpiler3-jvm-test.yml'
+
+jobs:
+  jvm-test:
+    name: JVM test (JDK ${{ matrix.jdk }} / ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            jdk: '21'
+            blocking: true
+          - os: ubuntu-latest
+            jdk: '25'
+            blocking: true
+          - os: macos-latest
+            jdk: '21'
+            blocking: false
+
+    continue-on-error: ${{ !matrix.blocking }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Set up JDK ${{ matrix.jdk }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.jdk }}
+
+      - name: Build runtime jar
+        run: mvn -f transpiler3/jvm/runtime/pom.xml package -DskipTests -q
+
+      - name: Verify JDK
+        run: java --version
+
+      - name: Run JVM transpiler tests
+        run: go test -v -timeout 300s ./transpiler3/jvm/...
