@@ -1,0 +1,27 @@
+name: JVM reproducibility (nightly)
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  diffoscope:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Build runtime jar
+        run: mvn -f transpiler3/jvm/runtime/pom.xml package -DskipTests -q
+      - name: Install diffoscope
+        run: sudo apt-get install -y diffoscope
+      - name: Run reproducibility gate
+        run: go test ./transpiler3/jvm/build/ -run TestPhase17Reproducible -v
+        env:
+          SOURCE_DATE_EPOCH: '1700000000'

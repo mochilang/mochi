@@ -7,16 +7,43 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"sort"
+	"strconv"
 	"strings"
+	"time"
 )
+
+// sourceDateEpoch reads SOURCE_DATE_EPOCH from the environment and returns the
+// corresponding UTC time. If the variable is unset or invalid, returns the
+// zero time (causing zip entries to use the zero timestamp, which is still
+// deterministic across repeated builds on the same machine).
+func sourceDateEpoch() time.Time {
+	val := os.Getenv("SOURCE_DATE_EPOCH")
+	if val == "" {
+		return time.Time{}
+	}
+	sec, err := strconv.ParseInt(strings.TrimSpace(val), 10, 64)
+	if err != nil {
+		return time.Time{}
+	}
+	return time.Unix(sec, 0).UTC()
+}
+
+type jarEntry struct {
+	name string
+	data []byte
+}
 
 // PackUberJar creates a fat jar at outJar by merging:
 //   - all .class files under classDir
 //   - all .class files from runtimeJar (extracted)
 //
 // with the given mainClass as the Main-Class manifest entry.
+// Entries are written in sorted order with timestamps from SOURCE_DATE_EPOCH
+// to produce reproducible (bit-identical) output across repeated builds.
 func PackUberJar(classDir, runtimeJar, outJar, mainClass string) error {
-	// Create output jar
+	ts := sourceDateEpoch()
+
 	f, err := os.Create(outJar)
 	if err != nil {
 		return fmt.Errorf("uberjar: create %s: %w", outJar, err)
@@ -26,9 +53,14 @@ func PackUberJar(classDir, runtimeJar, outJar, mainClass string) error {
 	w := zip.NewWriter(f)
 	defer w.Close()
 
-	// Write MANIFEST.MF
+	// Write MANIFEST.MF with fixed timestamp.
 	manifest := "Manifest-Version: 1.0\nMain-Class: " + mainClass + "\nImplementation-Version: 0.10.0\nBuilt-By: Mochi Transpiler\n"
-	mf, err := w.Create("META-INF/MANIFEST.MF")
+	mfHeader := &zip.FileHeader{
+		Name:     "META-INF/MANIFEST.MF",
+		Method:   zip.Deflate,
+		Modified: ts,
+	}
+	mf, err := w.CreateHeader(mfHeader)
 	if err != nil {
 		return fmt.Errorf("uberjar: manifest: %w", err)
 	}
@@ -37,17 +69,18 @@ func PackUberJar(classDir, runtimeJar, outJar, mainClass string) error {
 	}
 
 	seen := map[string]bool{"META-INF/MANIFEST.MF": true}
+	var entries []jarEntry
 
-	// Extract runtime jar classes first
+	// Collect runtime jar classes.
 	if runtimeJar != "" {
 		if _, err := os.Stat(runtimeJar); err == nil {
-			if err := extractJarTo(w, runtimeJar, seen); err != nil {
+			if err := collectJarEntries(runtimeJar, seen, &entries); err != nil {
 				return fmt.Errorf("uberjar: extract runtime: %w", err)
 			}
 		}
 	}
 
-	// Add user class files
+	// Collect user class files.
 	if err := filepath.WalkDir(classDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() {
 			return err
@@ -62,20 +95,37 @@ func PackUberJar(classDir, runtimeJar, outJar, mainClass string) error {
 		if err != nil {
 			return err
 		}
-		entry, err := w.Create(rel)
-		if err != nil {
-			return err
-		}
-		_, err = entry.Write(data)
-		return err
+		entries = append(entries, jarEntry{name: rel, data: data})
+		return nil
 	}); err != nil {
 		return fmt.Errorf("uberjar: walk classDir: %w", err)
+	}
+
+	// Sort entries for deterministic ordering.
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].name < entries[j].name
+	})
+
+	// Write sorted entries with fixed timestamp.
+	for _, e := range entries {
+		hdr := &zip.FileHeader{
+			Name:     e.name,
+			Method:   zip.Deflate,
+			Modified: ts,
+		}
+		ew, err := w.CreateHeader(hdr)
+		if err != nil {
+			return fmt.Errorf("uberjar: create entry %s: %w", e.name, err)
+		}
+		if _, err := ew.Write(e.data); err != nil {
+			return fmt.Errorf("uberjar: write entry %s: %w", e.name, err)
+		}
 	}
 
 	return nil
 }
 
-func extractJarTo(w *zip.Writer, jarPath string, seen map[string]bool) error {
+func collectJarEntries(jarPath string, seen map[string]bool, entries *[]jarEntry) error {
 	r, err := zip.OpenReader(jarPath)
 	if err != nil {
 		return err
@@ -101,13 +151,7 @@ func extractJarTo(w *zip.Writer, jarPath string, seen map[string]bool) error {
 		if err != nil {
 			return err
 		}
-		entry, err := w.Create(name)
-		if err != nil {
-			return err
-		}
-		if _, err := entry.Write(data); err != nil {
-			return err
-		}
+		*entries = append(*entries, jarEntry{name: name, data: data})
 	}
 	return nil
 }
