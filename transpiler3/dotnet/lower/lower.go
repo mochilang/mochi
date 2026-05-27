@@ -62,10 +62,17 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, className string) ([]*
 		Members:   members,
 	}
 
+	// Record declarations come first so the class can reference them.
+	types := make([]csharpsrc.TypeDecl, 0, len(prog.Records)+1)
+	for _, rd := range prog.Records {
+		types = append(types, lowerRecordDecl(rd))
+	}
+	types = append(types, classDecl)
+
 	mainCU := &csharpsrc.CompilationUnit{
 		Namespace: "Mochi.User",
 		Usings:    []string{"System", "System.Collections.Generic", "System.Linq"},
-		Types:     []csharpsrc.TypeDecl{classDecl},
+		Types:     types,
 	}
 
 	return []*csharpsrc.CompilationUnit{mainCU}, nil
@@ -77,7 +84,7 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*csharpsrc.MethodDecl, erro
 	if err != nil {
 		return nil, err
 	}
-	retType := lowerType(fn.ReturnType)
+	retType := lowerReturnType(fn)
 	params, err := lowerParams(fn.Params)
 	if err != nil {
 		return nil, err
@@ -339,6 +346,11 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (csharpsrc.Expr, error) {
 		return &csharpsrc.CallExpr{Receiver: recv, Method: "Contains", Args: []csharpsrc.Expr{sub}}, nil
 	case *aotir.MathCallExpr:
 		return l.lowerMathCallExpr(e)
+	// --- records (Phase 4) ---
+	case *aotir.RecordLit:
+		return l.lowerRecordLit(e)
+	case *aotir.FieldAccess:
+		return l.lowerFieldAccess(e)
 	// --- collections (Phase 3) ---
 	case *aotir.ListLit:
 		return l.lowerListLit(e)
@@ -495,11 +507,88 @@ func lowerParams(params []aotir.Param) ([]csharpsrc.Param, error) {
 	result := make([]csharpsrc.Param, len(params))
 	for i, p := range params {
 		result[i] = csharpsrc.Param{
-			Type: lowerType(p.Type),
+			Type: lowerParamType(p),
 			Name: p.Name,
 		}
 	}
 	return result, nil
+}
+
+// lowerParamType returns the C# TypeRef for an aotir Param, including record names.
+func lowerParamType(p aotir.Param) csharpsrc.TypeRef {
+	switch p.Type {
+	case aotir.TypeRecord:
+		return csharpsrc.TypeRef{Name: p.RecordName}
+	case aotir.TypeList:
+		if p.ElemType == aotir.TypeRecord && p.ElemRecordName != "" {
+			return csharpsrc.ListTypeRef(csharpsrc.TypeRef{Name: p.ElemRecordName})
+		}
+		return csharpsrc.ListTypeRef(lowerElemType(p.ElemType))
+	case aotir.TypeMap:
+		return csharpsrc.DictTypeRef(lowerType(p.KeyType), lowerType(p.ValueType))
+	case aotir.TypeSet:
+		return csharpsrc.HashSetTypeRef(lowerElemType(p.ElemType))
+	default:
+		return lowerType(p.Type)
+	}
+}
+
+// lowerReturnType returns the C# TypeRef for a function's return type.
+func lowerReturnType(fn *aotir.Function) csharpsrc.TypeRef {
+	switch fn.ReturnType {
+	case aotir.TypeRecord:
+		return csharpsrc.TypeRef{Name: fn.ReturnRecordName}
+	case aotir.TypeList:
+		if fn.ReturnElemType == aotir.TypeRecord && fn.ReturnElemRecordName != "" {
+			return csharpsrc.ListTypeRef(csharpsrc.TypeRef{Name: fn.ReturnElemRecordName})
+		}
+		return csharpsrc.ListTypeRef(lowerElemType(fn.ReturnElemType))
+	case aotir.TypeMap:
+		return csharpsrc.DictTypeRef(lowerType(fn.ReturnKeyType), lowerType(fn.ReturnValueType))
+	default:
+		return lowerType(fn.ReturnType)
+	}
+}
+
+// lowerRecordDecl converts an aotir.RecordDecl into a C# sealed record declaration.
+func lowerRecordDecl(rd *aotir.RecordDecl) csharpsrc.TypeDecl {
+	components := make([]csharpsrc.RecordComponent, len(rd.Fields))
+	for i, f := range rd.Fields {
+		var t csharpsrc.TypeRef
+		if f.Type == aotir.TypeRecord && f.RecordName != "" {
+			t = csharpsrc.TypeRef{Name: f.RecordName}
+		} else {
+			t = lowerType(f.Type)
+		}
+		components[i] = csharpsrc.RecordComponent{
+			Type: t,
+			Name: snakeToPascal(f.Name),
+		}
+	}
+	return &csharpsrc.RecordDecl{
+		Modifiers:  []string{"public", "sealed"},
+		Name:       rd.Name,
+		Components: components,
+	}
+}
+
+// snakeToPascal converts a snake_case identifier to PascalCase.
+// "field_name" → "FieldName", "x" → "X".
+func snakeToPascal(name string) string {
+	parts := strings.Split(name, "_")
+	var sb strings.Builder
+	for _, p := range parts {
+		if len(p) == 0 {
+			continue
+		}
+		runes := []rune(p)
+		runes[0] = unicode.ToUpper(runes[0])
+		sb.WriteString(string(runes))
+	}
+	if sb.Len() == 0 {
+		return name
+	}
+	return sb.String()
 }
 
 func (l *lowerer) lowerStrIndexExpr(e *aotir.StrIndexExpr) (csharpsrc.Expr, error) {
@@ -550,6 +639,34 @@ func (l *lowerer) lowerMathCallExpr(e *aotir.MathCallExpr) (csharpsrc.Expr, erro
 	return result, nil
 }
 
+// --- Phase 4 record lowering helpers ---
+
+func (l *lowerer) lowerRecordLit(e *aotir.RecordLit) (csharpsrc.Expr, error) {
+	args := make([]csharpsrc.Expr, len(e.Fields))
+	for i, f := range e.Fields {
+		v, err := l.lowerExpr(f.Value)
+		if err != nil {
+			return nil, err
+		}
+		args[i] = v
+	}
+	return &csharpsrc.NewExpr{
+		Type: csharpsrc.TypeRef{Name: e.TypeName},
+		Args: args,
+	}, nil
+}
+
+func (l *lowerer) lowerFieldAccess(e *aotir.FieldAccess) (csharpsrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return &csharpsrc.FieldAccessExpr{
+		Receiver: recv,
+		Field:    snakeToPascal(e.FieldName),
+	}, nil
+}
+
 // --- Phase 3 collection lowering helpers ---
 
 func (l *lowerer) lowerListLit(e *aotir.ListLit) (csharpsrc.Expr, error) {
@@ -557,8 +674,12 @@ func (l *lowerer) lowerListLit(e *aotir.ListLit) (csharpsrc.Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	elemType := lowerElemType(e.ElemType)
+	if e.ElemType == aotir.TypeRecord && e.ElemRecordName != "" {
+		elemType = csharpsrc.TypeRef{Name: e.ElemRecordName}
+	}
 	return &csharpsrc.CollectionInitExpr{
-		Type:  csharpsrc.ListTypeRef(lowerElemType(e.ElemType)),
+		Type:  csharpsrc.ListTypeRef(elemType),
 		Elems: elems,
 	}, nil
 }

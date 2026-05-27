@@ -1,0 +1,16 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let p = Pt { x: 10, y: 20 }
+if p.x > 5 {
+  print(1)
+} else {
+  print(0)
+}
+if p.y < 10 {
+  print(1)
+} else {
+  print(0)
+}

@@ -1,0 +1,10 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let pts: list<Pt> = [Pt { x: 1, y: 2 }, Pt { x: 3, y: 4 }]
+let p0 = pts[0]
+let p1 = pts[1]
+print(p0.x)
+print(p1.y)
