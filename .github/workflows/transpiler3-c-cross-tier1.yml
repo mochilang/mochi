@@ -47,10 +47,11 @@ jobs:
           go-version: '^1.26'
           cache-dependency-path: go.sum
 
-      - name: Install qemu-aarch64-static
+      - name: Install qemu and aarch64 cross-libc
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends qemu-user-static
+          sudo apt-get install -y --no-install-recommends \
+            qemu-user-static libc6-arm64-cross
           qemu-aarch64-static --version | head -1
 
       - name: Phase 11.0 - x86_64-linux-gnu native

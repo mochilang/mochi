@@ -161,8 +161,8 @@ func TestPhase11AArch64LinuxMusl(t *testing.T) {
 }
 
 // TestPhase11AArch64LinuxGnu is the Phase 11.2 gate. Cross-builds add_ints
-// for aarch64-linux-gnu using zig cc and (when qemu-aarch64-static is
-// available) runs it via qemu.
+// for aarch64-linux-gnu using zig cc and (when qemu-aarch64-static and the
+// aarch64 glibc sysroot are available) runs it via qemu with QEMU_LD_PREFIX.
 func TestPhase11AArch64LinuxGnu(t *testing.T) {
 	qemu, qemuErr := exec.LookPath("qemu-aarch64-static")
 	if qemuErr != nil {
@@ -173,6 +173,10 @@ func TestPhase11AArch64LinuxGnu(t *testing.T) {
 			return nil, nil
 		}
 		cmd := exec.Command(qemu, bin)
+		// aarch64-linux-gnu binaries are glibc-linked; qemu-user-static
+		// needs QEMU_LD_PREFIX pointing at the cross sysroot so the
+		// dynamic linker can resolve libc.so.6 and ld-linux-aarch64.so.1.
+		cmd.Env = append(os.Environ(), "QEMU_LD_PREFIX=/usr/aarch64-linux-gnu")
 		var stdout bytes.Buffer
 		cmd.Stdout = &stdout
 		if err := cmd.Run(); err != nil {
