@@ -2,10 +2,12 @@ package build
 
 import (
 	"bytes"
+	"context"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 // repoRoot walks up from the test binary's working directory until
@@ -72,7 +74,9 @@ func runBeamFixture(t *testing.T, mochiPath, outPath string) {
 		t.Fatalf("Driver.Build(%s): %v", mochiPath, err)
 	}
 
-	cmd := exec.Command(escriptPath)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, escriptPath)
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = os.Stderr

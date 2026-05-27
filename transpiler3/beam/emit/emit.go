@@ -42,6 +42,14 @@ func Emit(mod *cerl.Module, outDir string) ([]BeamFile, error) {
 
 	beamPath := filepath.Join(outDir, mod.Name+".beam")
 
+	// Use forward slashes when embedding paths into Erlang string literals.
+	// On Windows, native paths use backslashes (e.g. C:\Users\runner\...)
+	// which contain sequences like \r, \n that Erlang interprets as escape
+	// codes inside double-quoted strings, corrupting the path.
+	// Erlang's file module accepts forward slashes on all platforms.
+	etfFwd := filepath.ToSlash(etfPath)
+	beamFwd := filepath.ToSlash(beamPath)
+
 	// compile:forms/2 with from_core compiles a Core Erlang form
 	// (as produced by MarshalBinary's c_module tuple) to a .beam binary.
 	// return_warnings ensures a 4-tuple {ok,Mod,Bin,Warnings} on success.
@@ -54,7 +62,7 @@ func Emit(mod *cerl.Module, outDir string) ([]BeamFile, error) {
 			`{ok,_,BeamBin,_}->file:write_file("%s",BeamBin),halt(0);`+
 			`{error,Es,_}->io:format(standard_error,"compile error: ~p~n",[Es]),halt(1)`+
 			`end.`,
-		etfPath, beamPath,
+		etfFwd, beamFwd,
 	)
 
 	cmd := exec.Command("erl", "-noshell", "-eval", erlExpr)
