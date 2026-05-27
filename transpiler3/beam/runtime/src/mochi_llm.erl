@@ -44,7 +44,7 @@ openai_or_anthropic(openai, Model, Prompt, Key) ->
         _    -> Model
     end,
     Body = json_encode_openai(EModel, Prompt),
-    Hdrs = [{"Authorization", "Bearer " ++ binary_to_list(Key)},
+    Hdrs = [{"Authorization", "Bearer " ++ Key},
             {"Content-Type", "application/json"}],
     case httpc:request(post,
             {"https://api.openai.com/v1/chat/completions", Hdrs,
@@ -70,7 +70,7 @@ openai_or_anthropic(anthropic, Model, Prompt, Key) ->
         _    -> Model
     end,
     Body = json_encode_anthropic(EModel, Prompt),
-    Hdrs = [{"x-api-key", binary_to_list(Key)},
+    Hdrs = [{"x-api-key", Key},
             {"anthropic-version", "2023-06-01"},
             {"Content-Type", "application/json"}],
     case httpc:request(post,

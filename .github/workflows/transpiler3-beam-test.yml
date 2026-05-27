@@ -58,19 +58,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        if: runner.os != 'Windows'
-      - name: Checkout (Windows sparse)
-        uses: actions/checkout@v6
-        if: runner.os == 'Windows'
-        with:
-          filter: tree:0
-          sparse-checkout: |
-            transpiler3/beam
-            transpiler3/c
-            tests/transpiler3/beam
-            parser
-            types
-          sparse-checkout-cone-mode: true
 
       - name: Set up Go
         uses: actions/setup-go@v6
