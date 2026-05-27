@@ -6,13 +6,12 @@ import (
 	"strings"
 )
 
-// Compile invokes `dotnet build` to compile csFiles into outDir.
-// tfm is the target framework moniker, e.g. "net8.0".
+// Compile invokes `dotnet build` on the project at projDir to compile into outDir.
+// tfm is the target framework moniker, e.g. "net10.0".
 // dotnetPath is the absolute path to the dotnet binary.
-func Compile(csFiles []string, outDir string, tfm string, dotnetPath string) error {
-	_ = csFiles // dotnet build discovers files via the .csproj; csFiles is informational.
+func Compile(projDir, outDir, tfm, dotnetPath string) error {
 	args := []string{
-		"build",
+		"build", projDir,
 		"--output", outDir,
 		"--framework", tfm,
 		"--nologo",

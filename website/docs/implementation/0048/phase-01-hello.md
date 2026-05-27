@@ -10,9 +10,9 @@ description: "MEP-48 Phase 1 — end-to-end pipeline from print(\"hello, world\"
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 1](/docs/mep/mep-0048#phase-1-hello-world) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 01:35 (GMT+7) |
+| Landed         | 2026-05-28 01:35 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -220,4 +220,4 @@ source_bytes || sdk_version_string || transpiler_version || runtime_dll_sha256
 
 ## Closeout notes
 
-Phase 1 not yet started.
+Phase 1 landed. Pipeline: `parser.Parse` → `types.Check` → `clower.Lower` → `colour.Analyse` (all Blue) → `lower.Lower` (PrintStmt → `Mochi.Runtime.IO.Print.Line`) → `emit.Emit` (writes `.cs`) → `packFxDependent` (`dotnet publish --self-contained false`). `TestPhase1Hello` PASS: 3 fixtures (hello, hello_int, hello_bool) on SDK 10.0.107 with `net10.0` TFM. `Mochi.Runtime.csproj` expanded to `net8.0;net9.0;net10.0`.

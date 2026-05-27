@@ -1,8 +1,26 @@
 package build
 
-// packFxDependent publishes a framework-dependent .NET application to outDir.
-// This is a stub in Phase 0; the implementation lands in Phase 1.
-func packFxDependent(_, _, _, _ string) error {
-	// TODO(Phase 1): run `dotnet publish --self-contained false -o outDir`
+import (
+	"fmt"
+	"os/exec"
+	"strings"
+)
+
+// packFxDependent publishes a framework-dependent .NET app to outDir.
+// Produces ClassName.dll + ClassName.runtimeconfig.json in outDir.
+// Requires the corresponding .NET runtime to be installed on the run host.
+func packFxDependent(dotnetPath, projDir, outDir, tfm string) error {
+	args := []string{
+		"publish", projDir,
+		"--self-contained", "false",
+		"--framework", tfm,
+		"--output", outDir,
+		"--nologo",
+		"-v", "minimal",
+	}
+	out, err := exec.Command(dotnetPath, args...).CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("dotnet publish: %w\n%s", err, strings.TrimSpace(string(out)))
+	}
 	return nil
 }

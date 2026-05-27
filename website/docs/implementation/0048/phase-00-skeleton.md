@@ -10,9 +10,9 @@ description: "MEP-48 Phase 0 — directory layout, dotnet SDK detection, csharps
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-48 §Phases · Phase 0](/docs/mep/mep-0048#phase-0-spec-freeze-and-skeleton-trees) |
-| Status         | IN PROGRESS |
+| Status         | LANDED |
 | Started        | 2026-05-28 01:20 (GMT+7) |
-| Landed         | — |
+| Landed         | 2026-05-28 01:20 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -270,4 +270,4 @@ Each node implements `csString(indent int) string`. The emitter in `emit/emit.go
 
 ## Closeout notes
 
-Phase 0 not yet started.
+Phase 0 landed. All stub packages created, `go build ./transpiler3/dotnet/...` clean, `TestPhase0Skeleton` PASS (dotnet 10.0.107, go build clean).
