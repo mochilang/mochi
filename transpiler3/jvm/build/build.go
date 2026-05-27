@@ -226,9 +226,9 @@ func (d *Driver) Build(src, out string, target Target) error {
 		return fmt.Errorf("jvm build: aotir lower: %w", err)
 	}
 
-	// Lower to javasrc.
+	// Lower to javasrc (returns one CU per record type + one for main class).
 	className := lower.ClassName(src)
-	cu, err := lower.Lower(prog, className)
+	cus, err := lower.Lower(prog, className)
 	if err != nil {
 		return fmt.Errorf("jvm build: jvm lower: %w", err)
 	}
@@ -245,9 +245,13 @@ func (d *Driver) Build(src, out string, target Target) error {
 	os.MkdirAll(srcDir, 0o755)   //nolint:errcheck
 	os.MkdirAll(classDir, 0o755) //nolint:errcheck
 
-	javaFiles, err := emit.Emit(cu, srcDir)
-	if err != nil {
-		return fmt.Errorf("jvm build: emit: %w", err)
+	var javaFiles []string
+	for _, cu := range cus {
+		files, err := emit.Emit(cu, srcDir)
+		if err != nil {
+			return fmt.Errorf("jvm build: emit: %w", err)
+		}
+		javaFiles = append(javaFiles, files...)
 	}
 
 	// Compile with javac. Pass the runtime jar on the classpath so

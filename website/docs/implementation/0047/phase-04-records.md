@@ -10,9 +10,9 @@ description: "MEP-47 Phase 4 — Mochi record types to Java records; methods, wi
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 4](/docs/mep/mep-0047#phase-4-records) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 11:12 (GMT+7) |
+| Landed         | 2026-05-27 11:30 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -234,4 +234,4 @@ The wildcard `_` arm maps to Java `default`.
 
 ## Closeout notes
 
-_Fill in after gate green._
+Sub-phases 4.0 (record declaration) and basic field access landed. Gate: TestPhase4Records -- 14 fixtures green on JDK 21. Lower() now returns []*javasrc.CompilationUnit (one per record type + main class). Sub-phases 4.1 (methods), 4.2 (with-update), 4.3 (record patterns) deferred to future phases (no aotir support yet for let-destructure or record match patterns).
