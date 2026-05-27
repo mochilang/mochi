@@ -28,7 +28,7 @@ A phase is LANDED only when its gate is green on every target listed for it in M
 | 10 | Streams | NOT STARTED | — | [phase-10](/docs/implementation/0047/phase-10-streams) |
 | 11 | async (Loom-backed) | LANDED | — | [phase-11](/docs/implementation/0047/phase-11-async) |
 | 12 | FFI (JVM interop) | LANDED | — | [phase-12](/docs/implementation/0047/phase-12-ffi) |
-| 13 | LLM (generate) | NOT STARTED | — | [phase-13](/docs/implementation/0047/phase-13-llm) |
+| 13 | LLM (generate) | LANDED | — | [phase-13](/docs/implementation/0047/phase-13-llm) |
 | 14 | fetch (HTTP) | NOT STARTED | — | [phase-14](/docs/implementation/0047/phase-14-fetch) |
 | 15 | Release packaging | NOT STARTED | — | [phase-15](/docs/implementation/0047/phase-15-packaging) |
 | 16 | Native image (GraalVM) | NOT STARTED | — | [phase-16](/docs/implementation/0047/phase-16-native-image) |

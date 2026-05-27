@@ -188,6 +188,9 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (javasrc.Expr, error) {
 	case *aotir.AwaitExpr:
 		return l.lowerAwaitExpr(e)
 
+	case *aotir.LLMGenerateExpr:
+		return l.lowerLLMGenerateExpr(e)
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported expr %T", e)
 	}
