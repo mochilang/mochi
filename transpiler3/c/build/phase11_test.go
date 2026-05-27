@@ -2,6 +2,7 @@ package build
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -218,13 +219,19 @@ func TestPhase11WindowsGnu(t *testing.T) {
 	var runFn func(bin string) ([]byte, error)
 	if runtime.GOOS == "windows" {
 		runFn = func(bin string) ([]byte, error) {
-			cmd := exec.Command(bin + ".exe")
+			// zig cc places the output at the exact -o path (no auto .exe).
+			// Windows exec requires an .exe extension; rename before running.
+			binExe := bin + ".exe"
+			if err := os.Rename(bin, binExe); err != nil {
+				return nil, fmt.Errorf("rename to .exe: %w", err)
+			}
+			cmd := exec.Command(binExe)
 			var stdout bytes.Buffer
 			cmd.Stdout = &stdout
 			if err := cmd.Run(); err != nil {
 				return nil, err
 			}
-			out := strings.ReplaceAll(string(stdout.Bytes()), "\r\n", "\n")
+			out := strings.ReplaceAll(stdout.String(), "\r\n", "\n")
 			return []byte(out), nil
 		}
 	}
