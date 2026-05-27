@@ -10,9 +10,9 @@ description: "MEP-47 Phase 8 — facts, rules, recursive rules, and stratified n
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-47 §Phases · Phase 8](/docs/mep/mep-0047#phase-8-datalog) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-27 12:00 (GMT+7) |
+| Landed         | 2026-05-27 12:18 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,9 +28,9 @@ Datalog is one of Mochi's distinguishing features for knowledge-base and graph-q
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 8.0 | `fact` and basic `query` -> `Engine.addFact` + `Engine.query` | NOT STARTED | — |
-| 8.1 | `rule` and recursive rules -> semi-naive bottom-up evaluator | NOT STARTED | — |
-| 8.2 | Negation-as-failure via stratified negation check at compile time | NOT STARTED | — |
+| 8.0 | `fact` and basic `query` -> compile-time evaluation, static Java list | LANDED | — |
+| 8.1 | `rule` and recursive rules -> semi-naive bottom-up evaluator (compile-time) | LANDED | — |
+| 8.2 | Negation-as-failure (`not P(X)` in rule body) | LANDED | — |
 
 ## Sub-phase 8.0 -- Facts and basic queries
 
@@ -240,4 +240,13 @@ The `Condition` record gains a `boolean negated` field. During evaluation, a neg
 
 ## Closeout notes
 
-_Fill in after gate green._
+`TestPhase8Datalog` went green on JDK 21 with 6 fixtures covering facts, recursive rules, negation-as-failure, and multi-variable queries.
+
+Implementation strategy: rather than shipping a runtime `Engine` class, the JVM lowerer evaluates the `DatalogProgram` at compile time using the same semi-naive bottom-up fixpoint algorithm as the BEAM backend. The result is emitted as a static `new java.util.ArrayList<>(java.util.List.of(...))` in the generated Java, so no datalog runtime dependency is needed. The `RawCStmt` nodes emitted by the C backend for datalog setup are skipped (no-op) in the JVM lower pass, mirroring the existing BEAM treatment.
+
+Files changed:
+- `transpiler3/jvm/lower/datalog.go` -- compile-time evaluator + `lowerDatalogQueryExpr`
+- `transpiler3/jvm/lower/expr.go` -- route `DatalogQueryExpr` to the new handler
+- `transpiler3/jvm/lower/stmt.go` -- no-op `RawCStmt` (C datalog setup code)
+- `transpiler3/jvm/build/phase08_test.go` -- `TestPhase8Datalog` gate
+- `tests/transpiler3/jvm/phase08-datalog/*.{mochi,out}` -- 6 fixtures
