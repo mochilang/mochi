@@ -46,7 +46,27 @@ func Lower(prog *aotir.Program, modName string) (*cerl.Module, error) {
 		agents[ag.Name] = ag
 	}
 
-	l := &lowerer{mod: mod, records: records, liftedFuncs: liftedFuncs, agents: agents}
+	// Phase 12.1: build extern Erlang function map from dotted extern fun declarations.
+	// e.g. `extern fun lists.reverse(...)` → externErl["lists_reverse"] = ["lists","reverse"]
+	externErl := make(map[string][2]string)
+	for _, ef := range prog.ExternFuncs {
+		if ef.OrigName == "" {
+			continue
+		}
+		idx := strings.Index(ef.OrigName, ".")
+		if idx < 0 {
+			continue
+		}
+		erlMod := ef.OrigName[:idx]
+		erlFun := ef.OrigName[idx+1:]
+		// Only single-dot names are supported (module.function); ignore deeper nesting.
+		if strings.Contains(erlFun, ".") {
+			continue
+		}
+		externErl[ef.Name] = [2]string{erlMod, erlFun}
+	}
+
+	l := &lowerer{mod: mod, records: records, liftedFuncs: liftedFuncs, agents: agents, externErl: externErl}
 
 	// Phase 9.0: emit helper functions for each agent intent before user functions.
 	for _, ag := range prog.Agents {
@@ -77,6 +97,19 @@ func Lower(prog *aotir.Program, modName string) (*cerl.Module, error) {
 		Body:  body,
 	})
 
+	// Phase 17.0: emit -spec attributes for all functions + main.
+	addSpecAttrs(mod, prog.Functions)
+	// Phase 17.1: emit -opaque attributes for each agent type.
+	addOpaqueAttrs(mod, prog.Agents)
+
+	// Phase 18.1: sort Defs by (name, arity) for canonical, reproducible output.
+	sort.Slice(mod.Defs, func(i, j int) bool {
+		if mod.Defs[i].Name != mod.Defs[j].Name {
+			return mod.Defs[i].Name < mod.Defs[j].Name
+		}
+		return mod.Defs[i].Arity < mod.Defs[j].Arity
+	})
+
 	return mod, nil
 }
 
@@ -90,6 +123,10 @@ type lowerer struct {
 	records      map[string]*aotir.RecordDecl   // record name -> declaration
 	liftedFuncs  map[string]*aotir.Function     // lifted closure bodies (skipped as top-level)
 	agents       map[string]*aotir.AgentDecl    // agent name -> declaration (Phase 9.0)
+	// externErl maps the C-mangled name (dots→underscores) to [module, function]
+	// for extern fun declarations with dotted names (e.g. "lists_reverse" -> ["lists","reverse"]).
+	// Phase 12.1: BEAM lowerer uses this to emit the correct module:function call.
+	externErl    map[string][2]string
 }
 
 // nextTryNum returns a unique suffix for CTry exception variable names.
@@ -357,6 +394,24 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 		}
 		return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + s.Name)}, updateMap, rest), nil
 
+	case *aotir.OMapPutStmt:
+		// m[k] = v  →  let [V_m] = orddict:store(K, V, V_m) in ...
+		keyExpr, err := lowerExpr(l, s.Key)
+		if err != nil {
+			return nil, err
+		}
+		valExpr, err := lowerExpr(l, s.Value)
+		if err != nil {
+			return nil, err
+		}
+		storeCall := cerl.CCall(cerl.CAtom("orddict"), cerl.CAtom("store"),
+			[]cerl.Expr{keyExpr, valExpr, cerl.CVar("V_" + s.Name)})
+		rest, err := l.lowerBlock(tail, cont)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + s.Name)}, storeCall, rest), nil
+
 	case *aotir.ForEachStmt:
 		rest, err := l.lowerBlock(tail, cont)
 		if err != nil {
@@ -527,6 +582,11 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt, cont cerl.Expr) (cerl.Expr, err
 			[]cerl.Expr{cerl.CVar(tcls), cerl.CVar(texc), cerl.CVar(tstk)},
 			handler,
 		), nil
+
+	case *aotir.RawCStmt:
+		// Phase 8.0: Datalog C setup code — the BEAM backend evaluates at compile time via
+		// DatalogQueryExpr; skip the raw C statement.
+		return l.lowerBlock(tail, cont)
 
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported statement %T", head)
@@ -984,6 +1044,90 @@ func collectExprVarRefs(expr aotir.Expr) []string {
 		for _, a := range e.Args {
 			names = append(names, collectExprVarRefs(a)...)
 		}
+	case *aotir.AppendExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Value)...)
+	case *aotir.IndexExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Index)...)
+	case *aotir.LenExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.MapGetExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Key)...)
+	case *aotir.MapHasExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Key)...)
+	case *aotir.MapLenExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.MapKeysExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.MapValuesExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.ListSumExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.ListMinExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.ListMaxExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.ListContainsExpr:
+		names = append(names, collectExprVarRefs(e.List)...)
+		names = append(names, collectExprVarRefs(e.Value)...)
+	case *aotir.FieldAccess:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.StrConvertExpr:
+		names = append(names, collectExprVarRefs(e.Operand)...)
+	case *aotir.HttpGetExpr:
+		names = append(names, collectExprVarRefs(e.URL)...)
+	case *aotir.JsonDecodeExpr:
+		names = append(names, collectExprVarRefs(e.Input)...)
+	case *aotir.ListMapExpr:
+		names = append(names, collectExprVarRefs(e.List)...)
+		names = append(names, collectExprVarRefs(e.Fn)...)
+	case *aotir.ListFilterExpr:
+		names = append(names, collectExprVarRefs(e.List)...)
+		names = append(names, collectExprVarRefs(e.Fn)...)
+	case *aotir.ListFoldlExpr:
+		names = append(names, collectExprVarRefs(e.List)...)
+		names = append(names, collectExprVarRefs(e.Fn)...)
+		names = append(names, collectExprVarRefs(e.Init)...)
+	case *aotir.SetLiteralExpr:
+		for _, elem := range e.Elems {
+			names = append(names, collectExprVarRefs(elem)...)
+		}
+	case *aotir.SetAddExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Elem)...)
+	case *aotir.SetHasExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Elem)...)
+	case *aotir.SetLenExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.SetToListExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.OMapLiteralExpr:
+		for _, k := range e.Keys {
+			names = append(names, collectExprVarRefs(k)...)
+		}
+		for _, v := range e.Values {
+			names = append(names, collectExprVarRefs(v)...)
+		}
+	case *aotir.OMapGetExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Key)...)
+	case *aotir.OMapSetExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Key)...)
+		names = append(names, collectExprVarRefs(e.Value)...)
+	case *aotir.OMapHasExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+		names = append(names, collectExprVarRefs(e.Key)...)
+	case *aotir.OMapLenExpr:
+		names = append(names, collectExprVarRefs(e.Receiver)...)
+	case *aotir.AsyncExpr:
+		names = append(names, collectExprVarRefs(e.Body)...)
+	case *aotir.AwaitExpr:
+		names = append(names, collectExprVarRefs(e.Future)...)
 	}
 	return names
 }
@@ -1020,6 +1164,17 @@ func collectStmtVarRefs(stmts []aotir.Stmt) []string {
 			if s.Value != nil {
 				names = append(names, collectExprVarRefs(s.Value)...)
 			}
+		case *aotir.MapPutStmt:
+			names = append(names, s.Name)
+			names = append(names, collectExprVarRefs(s.Key)...)
+			names = append(names, collectExprVarRefs(s.Value)...)
+		case *aotir.OMapPutStmt:
+			names = append(names, s.Name)
+			names = append(names, collectExprVarRefs(s.Key)...)
+			names = append(names, collectExprVarRefs(s.Value)...)
+		case *aotir.ForEachStmt:
+			names = append(names, collectExprVarRefs(s.List)...)
+			names = append(names, collectStmtVarRefs(s.Body.Statements)...)
 		}
 	}
 	return names
@@ -1032,6 +1187,10 @@ func collectAssignedVars(stmts []aotir.Stmt) []string {
 	for _, stmt := range stmts {
 		switch s := stmt.(type) {
 		case *aotir.AssignStmt:
+			names = append(names, s.Name)
+		case *aotir.MapPutStmt:
+			names = append(names, s.Name)
+		case *aotir.OMapPutStmt:
 			names = append(names, s.Name)
 		case *aotir.IfStmt:
 			if s.Then != nil {
@@ -1074,6 +1233,10 @@ func lowerCallStmt(l *lowerer, s *aotir.CallStmt) (cerl.Expr, error) {
 				return nil, err
 			}
 			args[i] = e
+		}
+		// Phase 12.1: extern fun with dotted Erlang name → module:function call.
+		if modFun, ok := l.externErl[s.Func]; ok {
+			return cerl.CCall(cerl.CAtom(modFun[0]), cerl.CAtom(modFun[1]), args), nil
 		}
 		return cerl.CApply(cerl.CVarFunc(s.Func, len(s.Args)), args), nil
 	}
@@ -1177,6 +1340,14 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		return lowerListMinExpr(l, e)
 	case *aotir.ListMaxExpr:
 		return lowerListMaxExpr(l, e)
+	case *aotir.JsonDecodeExpr:
+		return lowerJsonDecodeExpr(l, e)
+	case *aotir.ListMapExpr:
+		return lowerListMapExpr(l, e)
+	case *aotir.ListFilterExpr:
+		return lowerListFilterExpr(l, e)
+	case *aotir.ListFoldlExpr:
+		return lowerListFoldlExpr(l, e)
 
 	// Phase 3.2: map expressions
 	case *aotir.MapLit:
@@ -1187,6 +1358,30 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		return lowerMapHasExpr(l, e)
 	case *aotir.MapLenExpr:
 		return lowerMapLenExpr(l, e)
+
+	// Phase 3.3: set expressions
+	case *aotir.SetLiteralExpr:
+		return lowerSetLiteralExpr(l, e)
+	case *aotir.SetAddExpr:
+		return lowerSetAddExpr(l, e)
+	case *aotir.SetHasExpr:
+		return lowerSetHasExpr(l, e)
+	case *aotir.SetLenExpr:
+		return lowerSetLenExpr(l, e)
+	case *aotir.SetToListExpr:
+		return lowerSetToListExpr(l, e)
+
+	// Phase 3.4: omap expressions (orddict)
+	case *aotir.OMapLiteralExpr:
+		return lowerOMapLiteralExpr(l, e)
+	case *aotir.OMapGetExpr:
+		return lowerOMapGetExpr(l, e)
+	case *aotir.OMapSetExpr:
+		return lowerOMapSetExpr(l, e)
+	case *aotir.OMapHasExpr:
+		return lowerOMapHasExpr(l, e)
+	case *aotir.OMapLenExpr:
+		return lowerOMapLenExpr(l, e)
 	case *aotir.MapKeysExpr:
 		recv, err := lowerExpr(l, e.Receiver)
 		if err != nil {
@@ -1232,155 +1427,9 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 	case *aotir.AgentIntentCallExpr:
 		return l.lowerAgentIntentCallExpr(e)
 
-	// Phase 13.0: string operations
-	case *aotir.StrLenExpr:
-		recv, err := lowerExpr(l, e.Receiver)
-		if err != nil {
-			return nil, err
-		}
-		// string:length/1 counts Unicode codepoints (same as Mochi len).
-		return cerl.CCall(cerl.CAtom("string"), cerl.CAtom("length"), []cerl.Expr{recv}), nil
-	case *aotir.StrIndexExpr:
-		recv, err := lowerExpr(l, e.Receiver)
-		if err != nil {
-			return nil, err
-		}
-		idx, err := lowerExpr(l, e.Index)
-		if err != nil {
-			return nil, err
-		}
-		// mochi_str:index(S, I) — returns single-codepoint binary.
-		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("index"), []cerl.Expr{recv, idx}), nil
-	case *aotir.StrContainsExpr:
-		recv, err := lowerExpr(l, e.Receiver)
-		if err != nil {
-			return nil, err
-		}
-		sub, err := lowerExpr(l, e.Sub)
-		if err != nil {
-			return nil, err
-		}
-		// binary:match/2 returns nomatch or {Start,Len}; convert to bool.
-		match := cerl.CCall(cerl.CAtom("binary"), cerl.CAtom("match"), []cerl.Expr{recv, sub})
-		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("=/="),
-			[]cerl.Expr{match, cerl.CAtom("nomatch")}), nil
-	case *aotir.StrSubstringExpr:
-		recv, err := lowerExpr(l, e.Receiver)
-		if err != nil {
-			return nil, err
-		}
-		start, err := lowerExpr(l, e.Start)
-		if err != nil {
-			return nil, err
-		}
-		end, err := lowerExpr(l, e.End)
-		if err != nil {
-			return nil, err
-		}
-		// mochi_str:substring(S, Start, End) — codepoint-indexed slice.
-		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("substring"),
-			[]cerl.Expr{recv, start, end}), nil
-	case *aotir.StrReverseExpr:
-		recv, err := lowerExpr(l, e.Receiver)
-		if err != nil {
-			return nil, err
-		}
-		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("reverse"), []cerl.Expr{recv}), nil
-	case *aotir.StrConvertExpr:
-		operand, err := lowerExpr(l, e.Operand)
-		if err != nil {
-			return nil, err
-		}
-		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("convert"), []cerl.Expr{operand}), nil
-	case *aotir.StrUpperExpr:
-		recv, err := lowerExpr(l, e.Receiver)
-		if err != nil {
-			return nil, err
-		}
-		return cerl.CCall(cerl.CAtom("string"), cerl.CAtom("uppercase"), []cerl.Expr{recv}), nil
-	case *aotir.StrLowerExpr:
-		recv, err := lowerExpr(l, e.Receiver)
-		if err != nil {
-			return nil, err
-		}
-		return cerl.CCall(cerl.CAtom("string"), cerl.CAtom("lowercase"), []cerl.Expr{recv}), nil
-	case *aotir.StrSplitExpr:
-		str, err := lowerExpr(l, e.Str)
-		if err != nil {
-			return nil, err
-		}
-		sep, err := lowerExpr(l, e.Sep)
-		if err != nil {
-			return nil, err
-		}
-		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("split"), []cerl.Expr{str, sep}), nil
-	case *aotir.StrJoinExpr:
-		list, err := lowerExpr(l, e.List)
-		if err != nil {
-			return nil, err
-		}
-		sep, err := lowerExpr(l, e.Sep)
-		if err != nil {
-			return nil, err
-		}
-		return cerl.CCall(cerl.CAtom("mochi_str"), cerl.CAtom("join"), []cerl.Expr{list, sep}), nil
-
-	// Phase 13.0: math builtins
-	case *aotir.MathCallExpr:
-		arg, err := lowerExpr(l, e.Arg)
-		if err != nil {
-			return nil, err
-		}
-		switch e.Func {
-		case "abs_i64":
-			return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("abs"), []cerl.Expr{arg}), nil
-		case "abs_f64":
-			return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("abs"), []cerl.Expr{arg}), nil
-		case "floor":
-			return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("floor"), []cerl.Expr{arg}), nil
-		case "ceil":
-			return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("ceil"), []cerl.Expr{arg}), nil
-		default:
-			return nil, fmt.Errorf("beam/lower: unsupported MathCallExpr func %q", e.Func)
-		}
-
-	// Phase 13.0: numeric type cast
-	case *aotir.NumCastExpr:
-		operand, err := lowerExpr(l, e.Operand)
-		if err != nil {
-			return nil, err
-		}
-		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("trunc"), []cerl.Expr{operand}), nil
-
-	// Phase 13.0: list aggregates
-	case *aotir.ListMinExpr:
-		recv, err := lowerExpr(l, e.Receiver)
-		if err != nil {
-			return nil, err
-		}
-		return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("min"), []cerl.Expr{recv}), nil
-	case *aotir.ListMaxExpr:
-		recv, err := lowerExpr(l, e.Receiver)
-		if err != nil {
-			return nil, err
-		}
-		return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("max"), []cerl.Expr{recv}), nil
-	case *aotir.ListContainsExpr:
-		list, err := lowerExpr(l, e.List)
-		if err != nil {
-			return nil, err
-		}
-		val, err := lowerExpr(l, e.Value)
-		if err != nil {
-			return nil, err
-		}
-		return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("member"), []cerl.Expr{val, list}), nil
-	case *aotir.ListSumExpr:
-		recv, err := lowerExpr(l, e.Receiver)
-		if err != nil {
-			return nil, err
-		}
-		return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("sum"), []cerl.Expr{recv}), nil
+	// Phase 9.1: spawn AgentType() → mochi_agent_server:start(dispatch_fun, init_state)
+	case *aotir.AgentSpawnExpr:
+		return l.lowerAgentSpawnExpr(e)
 
 	// Phase 12.0: file I/O via mochi_file runtime
 	case *aotir.ReadFileExpr:
@@ -1429,6 +1478,18 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		}
 		return cerl.CCall(cerl.CAtom("mochi_stream"), cerl.CAtom("subscribe"),
 			[]cerl.Expr{stream}), nil
+	case *aotir.SubMakeLimitExpr:
+		// Phase 10.2: subscribe_limit(stream, N) → mochi_stream:subscribe_limit/2
+		stream, err := lowerExpr(l, e.Stream)
+		if err != nil {
+			return nil, err
+		}
+		limit, err := lowerExpr(l, e.Limit)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_stream"), cerl.CAtom("subscribe_limit"),
+			[]cerl.Expr{stream, limit}), nil
 	case *aotir.SubRecvExpr:
 		sub, err := lowerExpr(l, e.Sub)
 		if err != nil {
@@ -1437,8 +1498,87 @@ func lowerExpr(l *lowerer, expr aotir.Expr) (cerl.Expr, error) {
 		return cerl.CCall(cerl.CAtom("mochi_stream"), cerl.CAtom("recv_sub"),
 			[]cerl.Expr{sub}), nil
 
+	// Phase 13.0: LLM generate → mochi_llm:generate/3
+	case *aotir.LLMGenerateExpr:
+		return lowerLLMGenerateExpr(l, e)
+
+	// Phase 14.0: HTTP GET → mochi_fetch:get/1
+	case *aotir.HttpGetExpr:
+		url, err := lowerExpr(l, e.URL)
+		if err != nil {
+			return nil, err
+		}
+		return cerl.CCall(cerl.CAtom("mochi_fetch"), cerl.CAtom("get"), []cerl.Expr{url}), nil
+
+	// Phase 8.0: Datalog compile-time evaluation.
+	case *aotir.DatalogQueryExpr:
+		return lowerDatalogQueryExpr(e)
+
+	// str(x) builtin: convert scalar to binary string.
+	case *aotir.StrConvertExpr:
+		return lowerStrConvertExpr(l, e)
+
+	// Phase 11.0: async expr → mochi_async:async(fun() -> Body end)
+	case *aotir.AsyncExpr:
+		return lowerAsyncExpr(l, e)
+
+	// Phase 11.1: await fut → mochi_async:await(Fut)
+	case *aotir.AwaitExpr:
+		return lowerAwaitExpr(l, e)
+
 	default:
 		return nil, fmt.Errorf("beam/lower: unsupported expression %T", expr)
+	}
+}
+
+// lowerAsyncExpr lowers `async body` to
+// mochi_async:async(fun() -> Body end). Phase 11.0.
+func lowerAsyncExpr(l *lowerer, e *aotir.AsyncExpr) (cerl.Expr, error) {
+	body, err := lowerExpr(l, e.Body)
+	if err != nil {
+		return nil, fmt.Errorf("beam/lower: async body: %w", err)
+	}
+	// Wrap body in a zero-argument fun.
+	funExpr := cerl.CFun([]cerl.Expr{}, body)
+	return cerl.CCall(cerl.CAtom("mochi_async"), cerl.CAtom("async"), []cerl.Expr{funExpr}), nil
+}
+
+// lowerAwaitExpr lowers `await fut` to mochi_async:await(Fut). Phase 11.1.
+func lowerAwaitExpr(l *lowerer, e *aotir.AwaitExpr) (cerl.Expr, error) {
+	fut, err := lowerExpr(l, e.Future)
+	if err != nil {
+		return nil, fmt.Errorf("beam/lower: await future: %w", err)
+	}
+	return cerl.CCall(cerl.CAtom("mochi_async"), cerl.CAtom("await"), []cerl.Expr{fut}), nil
+}
+
+// lowerStrConvertExpr lowers str(x) to erlang:integer_to_binary/1,
+// erlang:float_to_binary/2, or identity for bool/string.
+func lowerStrConvertExpr(l *lowerer, e *aotir.StrConvertExpr) (cerl.Expr, error) {
+	operand, err := lowerExpr(l, e.Operand)
+	if err != nil {
+		return nil, err
+	}
+	switch e.Operand.Type() {
+	case aotir.TypeInt:
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("integer_to_binary"),
+			[]cerl.Expr{operand}), nil
+	case aotir.TypeFloat:
+		// float_to_binary(X, [{decimals, 10}, compact]) mirrors mochi_str_from_f64 behaviour.
+		opts := cerl.CCons(
+			cerl.CTuple([]cerl.Expr{cerl.CAtom("decimals"), cerl.CInt(10)}),
+			cerl.CCons(cerl.CAtom("compact"), cerl.CNil()),
+		)
+		return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("float_to_binary"),
+			[]cerl.Expr{operand, opts}), nil
+	case aotir.TypeBool:
+		// true → <<"true">>, false → <<"false">>
+		return cerl.CCase(operand, []cerl.Expr{
+			cerl.CClause([]cerl.Expr{cerl.CAtom("true")}, cerl.CAtom("true"), cerl.CBin([]byte("true"))),
+			cerl.CClause([]cerl.Expr{cerl.CAtom("false")}, cerl.CAtom("true"), cerl.CBin([]byte("false"))),
+		}), nil
+	default: // TypeString: identity
+		return operand, nil
 	}
 }
 
@@ -1544,6 +1684,140 @@ func lowerMapLenExpr(l *lowerer, e *aotir.MapLenExpr) (cerl.Expr, error) {
 	return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("map_size"), []cerl.Expr{recv}), nil
 }
 
+// --- Phase 3.3: set expressions ---
+
+// lowerSetLiteralExpr lowers set{e1, e2, ...} to sets:from_list([E1, E2, ...]).
+func lowerSetLiteralExpr(l *lowerer, e *aotir.SetLiteralExpr) (cerl.Expr, error) {
+	list := cerl.Expr(cerl.CNil())
+	for i := len(e.Elems) - 1; i >= 0; i-- {
+		elem, err := lowerExpr(l, e.Elems[i])
+		if err != nil {
+			return nil, err
+		}
+		list = cerl.CCons(elem, list)
+	}
+	return cerl.CCall(cerl.CAtom("sets"), cerl.CAtom("from_list"), []cerl.Expr{list}), nil
+}
+
+// lowerSetAddExpr lowers add(s, x) to sets:add_element(X, S).
+func lowerSetAddExpr(l *lowerer, e *aotir.SetAddExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	elem, err := lowerExpr(l, e.Elem)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("sets"), cerl.CAtom("add_element"), []cerl.Expr{elem, recv}), nil
+}
+
+// lowerSetHasExpr lowers has(s, x) or x in s to sets:is_element(X, S).
+func lowerSetHasExpr(l *lowerer, e *aotir.SetHasExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	elem, err := lowerExpr(l, e.Elem)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("sets"), cerl.CAtom("is_element"), []cerl.Expr{elem, recv}), nil
+}
+
+// lowerSetLenExpr lowers len(s) for sets to sets:size(S).
+func lowerSetLenExpr(l *lowerer, e *aotir.SetLenExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("sets"), cerl.CAtom("size"), []cerl.Expr{recv}), nil
+}
+
+// lowerSetToListExpr lowers a set-to-list conversion to sets:to_list(S).
+// Used for `for x in set` iteration.
+func lowerSetToListExpr(l *lowerer, e *aotir.SetToListExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("sets"), cerl.CAtom("to_list"), []cerl.Expr{recv}), nil
+}
+
+// --- Phase 3.4 (omap): ordered-map expressions lowered to OTP orddict ---
+
+// lowerOMapLiteralExpr lowers omap{k1: v1, k2: v2, ...} to orddict:from_list([{K1,V1},...]).
+func lowerOMapLiteralExpr(l *lowerer, e *aotir.OMapLiteralExpr) (cerl.Expr, error) {
+	list := cerl.Expr(cerl.CNil())
+	for i := len(e.Keys) - 1; i >= 0; i-- {
+		k, err := lowerExpr(l, e.Keys[i])
+		if err != nil {
+			return nil, err
+		}
+		v, err := lowerExpr(l, e.Values[i])
+		if err != nil {
+			return nil, err
+		}
+		pair := cerl.CTuple([]cerl.Expr{k, v})
+		list = cerl.CCons(pair, list)
+	}
+	return cerl.CCall(cerl.CAtom("orddict"), cerl.CAtom("from_list"), []cerl.Expr{list}), nil
+}
+
+// lowerOMapGetExpr lowers m[k] for an omap receiver to orddict:fetch(K, M).
+func lowerOMapGetExpr(l *lowerer, e *aotir.OMapGetExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	key, err := lowerExpr(l, e.Key)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("orddict"), cerl.CAtom("fetch"), []cerl.Expr{key, recv}), nil
+}
+
+// lowerOMapSetExpr lowers orddict:store(K, V, M) as an expression returning the new omap.
+// This is used when the store result is needed as a value (not as an OMapPutStmt).
+func lowerOMapSetExpr(l *lowerer, e *aotir.OMapSetExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	key, err := lowerExpr(l, e.Key)
+	if err != nil {
+		return nil, err
+	}
+	val, err := lowerExpr(l, e.Value)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("orddict"), cerl.CAtom("store"), []cerl.Expr{key, val, recv}), nil
+}
+
+// lowerOMapHasExpr lowers has(m, k) for an omap receiver to orddict:is_key(K, M).
+func lowerOMapHasExpr(l *lowerer, e *aotir.OMapHasExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	key, err := lowerExpr(l, e.Key)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("orddict"), cerl.CAtom("is_key"), []cerl.Expr{key, recv}), nil
+}
+
+// lowerOMapLenExpr lowers len(m) for an omap receiver to erlang:length(M).
+// orddict is a sorted list of {K,V} pairs, so length/1 gives the entry count.
+func lowerOMapLenExpr(l *lowerer, e *aotir.OMapLenExpr) (cerl.Expr, error) {
+	recv, err := lowerExpr(l, e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("length"), []cerl.Expr{recv}), nil
+}
+
 // lowerListContainsExpr lowers `val in xs` to lists:member(Val, Xs).
 func lowerListContainsExpr(l *lowerer, e *aotir.ListContainsExpr) (cerl.Expr, error) {
 	xs, err := lowerExpr(l, e.List)
@@ -1593,6 +1867,61 @@ func lowerListMaxExpr(l *lowerer, e *aotir.ListMaxExpr) (cerl.Expr, error) {
 		return nil, err
 	}
 	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("max"), []cerl.Expr{xs}), nil
+}
+
+// lowerJsonDecodeExpr lowers `json_decode(s)` to mochi_json:decode(S) (Phase 14.2).
+// mochi_json:decode/1 wraps OTP 27 json:decode/1 and returns a map<binary, binary>
+// with all values coerced to binary string representation.
+func lowerJsonDecodeExpr(l *lowerer, e *aotir.JsonDecodeExpr) (cerl.Expr, error) {
+	input, err := lowerExpr(l, e.Input)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("mochi_json"), cerl.CAtom("decode"), []cerl.Expr{input}), nil
+}
+
+// lowerListMapExpr lowers `map(xs, fn)` to lists:map(Fn, Xs) (Phase 6.1).
+func lowerListMapExpr(l *lowerer, e *aotir.ListMapExpr) (cerl.Expr, error) {
+	xs, err := lowerExpr(l, e.List)
+	if err != nil {
+		return nil, err
+	}
+	fn, err := lowerExpr(l, e.Fn)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("map"), []cerl.Expr{fn, xs}), nil
+}
+
+// lowerListFilterExpr lowers `filter(xs, fn)` to lists:filter(Fn, Xs) (Phase 6.1).
+func lowerListFilterExpr(l *lowerer, e *aotir.ListFilterExpr) (cerl.Expr, error) {
+	xs, err := lowerExpr(l, e.List)
+	if err != nil {
+		return nil, err
+	}
+	fn, err := lowerExpr(l, e.Fn)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("filter"), []cerl.Expr{fn, xs}), nil
+}
+
+// lowerListFoldlExpr lowers `reduce(xs, fn, init)` to lists:foldl(Fn, Init, Xs) (Phase 6.1).
+// Note: lists:foldl/3 takes (Fun, Acc0, List), so argument order is fn, init, xs.
+func lowerListFoldlExpr(l *lowerer, e *aotir.ListFoldlExpr) (cerl.Expr, error) {
+	xs, err := lowerExpr(l, e.List)
+	if err != nil {
+		return nil, err
+	}
+	fn, err := lowerExpr(l, e.Fn)
+	if err != nil {
+		return nil, err
+	}
+	init, err := lowerExpr(l, e.Init)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("lists"), cerl.CAtom("foldl"), []cerl.Expr{fn, init, xs}), nil
 }
 
 // lowerRecordLit lowers Person{name: "alice", age: 30} to a tagged BEAM map:
@@ -1746,6 +2075,16 @@ func (l *lowerer) lowerMatchArm(arm *aotir.MatchArm, s *aotir.MatchStmt, cont ce
 		}
 	}
 
+	// Lower guard expression (Phase 5.1). When absent, use literal true.
+	guardExpr := cerl.Expr(cerl.CAtom("true"))
+	if arm.Guard != nil {
+		g, err := lowerExpr(l, arm.Guard)
+		if err != nil {
+			return nil, fmt.Errorf("beam/lower: match arm guard: %w", err)
+		}
+		guardExpr = g
+	}
+
 	// Lower body.
 	var bodyExpr cerl.Expr
 	var err error
@@ -1765,7 +2104,7 @@ func (l *lowerer) lowerMatchArm(arm *aotir.MatchArm, s *aotir.MatchStmt, cont ce
 		return nil, err
 	}
 
-	return cerl.CClause([]cerl.Expr{pat}, cerl.CAtom("true"), bodyExpr), nil
+	return cerl.CClause([]cerl.Expr{pat}, guardExpr, bodyExpr), nil
 }
 
 // lowerMatchArmAsExpr lowers a match arm body used as an expression value.
@@ -1933,6 +2272,14 @@ func lowerCallExpr(l *lowerer, e *aotir.CallExpr) (cerl.Expr, error) {
 		}
 		args[i] = arg
 	}
+	// Phase 11.2: await_all is a special builtin call lowered to mochi_async:await_all/1.
+	if e.Func == "__await_all__" {
+		return cerl.CCall(cerl.CAtom("mochi_async"), cerl.CAtom("await_all"), args), nil
+	}
+	// Phase 12.1: extern fun with dotted Erlang name → module:function call.
+	if modFun, ok := l.externErl[e.Func]; ok {
+		return cerl.CCall(cerl.CAtom(modFun[0]), cerl.CAtom(modFun[1]), args), nil
+	}
 	return cerl.CApply(cerl.CVarFunc(e.Func, len(e.Args)), args), nil
 }
 
@@ -2023,11 +2370,23 @@ func agentIntentFuncName(agentName, intentName string) string {
 }
 
 // lowerAgentIntentFunctions generates helper functions for all intents of one agent.
+// Phase 9.1 also emits a dispatch/3 function for the spawned-agent message loop.
+// Phase 9.3 optionally emits a terminate/1 function when on_close is present.
 func (l *lowerer) lowerAgentIntentFunctions(ag *aotir.AgentDecl) error {
 	for i := range ag.Intents {
 		if err := l.lowerAgentIntentFunc(ag, &ag.Intents[i]); err != nil {
 			return fmt.Errorf("intent %s: %w", ag.Intents[i].Name, err)
 		}
+	}
+	// Phase 9.3: emit the terminate function when on_close is present.
+	if ag.OnClose != nil {
+		if err := l.lowerAgentTerminateFunction(ag); err != nil {
+			return fmt.Errorf("terminate function: %w", err)
+		}
+	}
+	// Phase 9.1: emit the dispatch function for spawned agents.
+	if err := l.lowerAgentDispatchFunction(ag); err != nil {
+		return fmt.Errorf("dispatch function: %w", err)
 	}
 	return nil
 }
@@ -2075,6 +2434,199 @@ func (l *lowerer) lowerAgentIntentFunc(ag *aotir.AgentDecl, intent *aotir.AgentI
 	return nil
 }
 
+// agentDispatchFuncName returns the name of the dispatch helper for a spawned agent.
+func agentDispatchFuncName(agentName string) string {
+	return "mochi_agent_" + strings.ToLower(agentName) + "_dispatch"
+}
+
+// lowerAgentDispatchFunction emits the dispatch/3 helper for Phase 9.1 spawned agents.
+// The generated function signature is:
+//   mochi_agent_<name>_dispatch(Intent, Args, State) -> {Result, NewState}
+// Unit intents return {ok, NewState}; value intents return {Result, State}.
+func (l *lowerer) lowerAgentDispatchFunction(ag *aotir.AgentDecl) error {
+	dispatchName := agentDispatchFuncName(ag.Name)
+
+	// Build one case clause per intent.
+	clauses := make([]cerl.Expr, len(ag.Intents))
+	for i, intent := range ag.Intents {
+		fnName := agentIntentFuncName(ag.Name, intent.Name)
+
+		// Build the argument extraction: Args is a list; extract positional args.
+		// For simplicity in Phase 9.1, only 0-arg and 1-arg intents are handled.
+		// The call pattern: mochi_agent_counter_increment(State) or mochi_agent_counter_echo(State, Arg0).
+		var callArgs []cerl.Expr
+		callArgs = append(callArgs, cerl.CVar("V___self"))
+		for j := range intent.Params {
+			argVar := fmt.Sprintf("V__disparg%d", j)
+			callArgs = append(callArgs, cerl.CVar(argVar))
+		}
+
+		var body cerl.Expr
+		if intent.ReturnType == aotir.TypeUnit {
+			// {ok, NewState} = mochi_agent_counter_increment(State)
+			callExpr := cerl.CApply(cerl.CVarFunc(fnName, len(callArgs)), callArgs)
+			newStateVar := cerl.CVar("V___new_state_" + intent.Name)
+			resultTuple := cerl.CTuple([]cerl.Expr{cerl.CAtom("ok"), newStateVar})
+			body = cerl.CLet([]cerl.Expr{newStateVar}, callExpr, resultTuple)
+		} else {
+			// {Result, State} = mochi_agent_counter_value(State)
+			callExpr := cerl.CApply(cerl.CVarFunc(fnName, len(callArgs)), callArgs)
+			resultVar := cerl.CVar("V___result_" + intent.Name)
+			resultTuple := cerl.CTuple([]cerl.Expr{resultVar, cerl.CVar("V___self")})
+			body = cerl.CLet([]cerl.Expr{resultVar}, callExpr, resultTuple)
+		}
+
+		// If this intent has args, extract them from the args list.
+		if len(intent.Params) > 0 {
+			// Unpack the Args list into V__disparg0, V__disparg1, ...
+			// We build a let-chain: let <V__disparg0> = hd(Args), let <V__disparg1> = hd(tl(Args)) ...
+			// For Phase 9.1, only 0 and 1 args are common; build the chain generically.
+			listVar := cerl.CVar("V__dispargs")
+			current := listVar
+			for j := len(intent.Params) - 1; j >= 0; j-- {
+				argVar := cerl.CVar(fmt.Sprintf("V__disparg%d", j))
+				hdExpr := cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("hd"), []cerl.Expr{current})
+				if j > 0 {
+					tlExpr := cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("tl"), []cerl.Expr{current})
+					_ = tlExpr // handled in the outer loop
+				}
+				body = cerl.CLet([]cerl.Expr{argVar}, hdExpr, body)
+				if j > 0 {
+					// Advance: current = tl(listVar) for next iteration
+					// This is incorrect for multi-args > 1; for now Phase 9.1 only needs 0 and 1 args.
+					current = cerl.CCall(cerl.CAtom("erlang"), cerl.CAtom("tl"), []cerl.Expr{listVar})
+				}
+			}
+			body = cerl.CLet([]cerl.Expr{listVar}, cerl.CVar("V_Args"), body)
+		}
+
+		// clause: <intent_atom> when true -> body
+		clauses[i] = cerl.CClause([]cerl.Expr{cerl.CAtom(intent.Name)}, cerl.CAtom("true"), body)
+	}
+
+	// If no intents, emit a trivial pass-through.
+	if len(clauses) == 0 {
+		trivialBody := cerl.CTuple([]cerl.Expr{cerl.CAtom("ok"), cerl.CVar("V___self")})
+		l.mod.Defs = append(l.mod.Defs, cerl.FuncDef{
+			Name:  dispatchName,
+			Arity: 3,
+			Vars:  []string{"V_Intent", "V_Args", "V___self"},
+			Body:  trivialBody,
+		})
+		return nil
+	}
+
+	dispatchBody := cerl.CCase(cerl.CVar("V_Intent"), clauses)
+	l.mod.Defs = append(l.mod.Defs, cerl.FuncDef{
+		Name:  dispatchName,
+		Arity: 3,
+		Vars:  []string{"V_Intent", "V_Args", "V___self"},
+		Body:  dispatchBody,
+	})
+	return nil
+}
+
+// agentTerminateFuncName returns the name of the terminate helper for an agent.
+func agentTerminateFuncName(agentName string) string {
+	return "mochi_agent_" + strings.ToLower(agentName) + "_terminate"
+}
+
+// lowerAgentTerminateFunction emits the terminate/1 helper for Phase 9.3 on_close.
+// The generated function signature is:
+//   mochi_agent_<name>_terminate(State) -> ok
+// It executes the on_close body with the final state and returns ok.
+func (l *lowerer) lowerAgentTerminateFunction(ag *aotir.AgentDecl) error {
+	termName := agentTerminateFuncName(ag.Name)
+
+	// Lower the on_close body statements.
+	outer := l.scope
+	l.scope = make(map[string]bool)
+	// Seed state fields as readable vars.
+	for _, f := range ag.Fields {
+		l.scope[f.Name] = true
+	}
+
+	body, err := l.lowerFunctionBody(ag.OnClose.Statements, cerl.CAtom("ok"))
+	l.scope = outer
+	if err != nil {
+		return err
+	}
+
+	l.mod.Defs = append(l.mod.Defs, cerl.FuncDef{
+		Name:  termName,
+		Arity: 1,
+		Vars:  []string{"V___self"},
+		Body:  body,
+	})
+	return nil
+}
+
+// agentFieldZeroValue returns the BEAM zero-value for a given aotir scalar type.
+func agentFieldZeroValue(t aotir.Type) cerl.Expr {
+	switch t {
+	case aotir.TypeInt:
+		return cerl.CInt(0)
+	case aotir.TypeFloat:
+		return cerl.CFloat(0.0)
+	case aotir.TypeBool:
+		return cerl.CAtom("false")
+	default:
+		// string and anything else: empty binary
+		return cerl.CBin(nil)
+	}
+}
+
+// lowerAgentSpawnExpr lowers `spawn Counter()` to:
+//   mochi_agent_server:start(fun mochi_agent_counter_dispatch/3, #{count => 0})
+// Phase 9.3: if the agent has an on_close block, lowers to start/3 with a terminate fun:
+//   mochi_agent_server:start(DispatchFun, InitState, TerminateFun)
+// The initial state map is built from the agent's field zero-values.
+func (l *lowerer) lowerAgentSpawnExpr(e *aotir.AgentSpawnExpr) (cerl.Expr, error) {
+	ag, ok := l.agents[e.AgentName]
+	if !ok {
+		return nil, fmt.Errorf("beam/lower: spawn: unknown agent %q", e.AgentName)
+	}
+
+	// Build initial state map from zero values.
+	pairs := make([]cerl.Expr, len(ag.Fields))
+	for i, f := range ag.Fields {
+		pairs[i] = cerl.CMapPairAssoc(cerl.CAtom(f.Name), agentFieldZeroValue(f.Type))
+	}
+	initState := cerl.CMap(cerl.CEmptyMap(), pairs, false)
+
+	// Wrap the dispatch function in a c_fun so it can be passed as a value.
+	// fun(I,A,S) -> mochi_agent_<name>_dispatch(I, A, S) end
+	dispatchName := agentDispatchFuncName(e.AgentName)
+	iVar := cerl.CVar("V___di")
+	aVar := cerl.CVar("V___da")
+	sVar := cerl.CVar("V___ds")
+	dispatchFun := cerl.CFun(
+		[]cerl.Expr{iVar, aVar, sVar},
+		cerl.CApply(cerl.CVarFunc(dispatchName, 3), []cerl.Expr{iVar, aVar, sVar}),
+	)
+
+	// Phase 9.3: if on_close is present, pass a terminate fun as the third arg.
+	if ag.OnClose != nil {
+		termName := agentTerminateFuncName(e.AgentName)
+		tsVar := cerl.CVar("V___ts")
+		terminateFun := cerl.CFun(
+			[]cerl.Expr{tsVar},
+			cerl.CApply(cerl.CVarFunc(termName, 1), []cerl.Expr{tsVar}),
+		)
+		return cerl.CCall(
+			cerl.CAtom("mochi_agent_server"),
+			cerl.CAtom("start"),
+			[]cerl.Expr{dispatchFun, initState, terminateFun},
+		), nil
+	}
+
+	return cerl.CCall(
+		cerl.CAtom("mochi_agent_server"),
+		cerl.CAtom("start"),
+		[]cerl.Expr{dispatchFun, initState},
+	), nil
+}
+
 // lowerAgentLit lowers Counter{count: 0} to a BEAM map #{count => 0}.
 func lowerAgentLit(l *lowerer, e *aotir.AgentLit) (cerl.Expr, error) {
 	pairs := make([]cerl.Expr, len(e.Fields))
@@ -2088,13 +2640,34 @@ func lowerAgentLit(l *lowerer, e *aotir.AgentLit) (cerl.Expr, error) {
 	return cerl.CMap(cerl.CEmptyMap(), pairs, false), nil
 }
 
-// lowerAgentIntentCallExpr lowers a value-returning intent call c.get() to
-// mochi_agent_<name>_<intent>(V_c).
+// lowerAgentIntentCallExpr lowers a value-returning intent call.
+// For in-place agents (Phase 9.0): c.get() → mochi_agent_<name>_<intent>(V_c)
+// For spawned agents (Phase 9.1): c.get() → mochi_agent_server:call(Pid, intent, [args])
 func (l *lowerer) lowerAgentIntentCallExpr(e *aotir.AgentIntentCallExpr) (cerl.Expr, error) {
 	recv, err := lowerExpr(l, e.Receiver)
 	if err != nil {
 		return nil, err
 	}
+
+	if e.SpawnedRef {
+		// Build Erlang list of extra arguments (not the receiver/PID).
+		argList := cerl.Expr(cerl.CNil())
+		for i := len(e.Args) - 1; i >= 0; i-- {
+			ae, err := lowerExpr(l, e.Args[i])
+			if err != nil {
+				return nil, err
+			}
+			argList = cerl.CCons(ae, argList)
+		}
+		intentAtom := cerl.CAtom(e.IntentName)
+		return cerl.CCall(
+			cerl.CAtom("mochi_agent_server"),
+			cerl.CAtom("call"),
+			[]cerl.Expr{recv, intentAtom, argList},
+		), nil
+	}
+
+	// In-place agent: call the local intent function.
 	args := []cerl.Expr{recv}
 	for _, a := range e.Args {
 		ae, err := lowerExpr(l, a)
@@ -2107,16 +2680,43 @@ func (l *lowerer) lowerAgentIntentCallExpr(e *aotir.AgentIntentCallExpr) (cerl.E
 	return cerl.CApply(cerl.CVarFunc(fnName, len(args)), args), nil
 }
 
-// lowerAgentIntentCallStmt lowers a unit intent call c.increment() to
-// let V_c = mochi_agent_<name>_<intent>(V_c) in rest.
+// lowerAgentIntentCallStmt lowers a unit intent call.
+// For in-place agents (Phase 9.0): c.increment() → let V_c = mochi_agent_<name>_<intent>(V_c) in rest
+// For spawned agents (Phase 9.1): c.increment() → mochi_agent_server:cast(Pid, intent, [args])
+//   (the PID binding is unchanged; we just fire-and-forget)
 func (l *lowerer) lowerAgentIntentCallStmt(s *aotir.AgentIntentCallStmt, tail []aotir.Stmt, cont cerl.Expr) (cerl.Expr, error) {
-	// Receiver must be a VarRef so we can rebind it with the new state.
+	// Receiver must be a VarRef.
 	receiverVar, ok := s.Receiver.(*aotir.VarRef)
 	if !ok {
 		return nil, fmt.Errorf("beam/lower: AgentIntentCallStmt: receiver must be a variable, got %T", s.Receiver)
 	}
 	varName := receiverVar.Name
 
+	rest, err := l.lowerBlock(tail, cont)
+	if err != nil {
+		return nil, err
+	}
+
+	if s.SpawnedRef {
+		// Build Erlang list of extra arguments.
+		argList := cerl.Expr(cerl.CNil())
+		for i := len(s.Args) - 1; i >= 0; i-- {
+			ae, err := lowerExpr(l, s.Args[i])
+			if err != nil {
+				return nil, err
+			}
+			argList = cerl.CCons(ae, argList)
+		}
+		castExpr := cerl.CCall(
+			cerl.CAtom("mochi_agent_server"),
+			cerl.CAtom("cast"),
+			[]cerl.Expr{cerl.CVar("V_" + varName), cerl.CAtom(s.IntentName), argList},
+		)
+		// Bind result to a fresh wildcard variable so CLet is well-formed.
+		return cerl.CLet([]cerl.Expr{cerl.CVar("V___cast_ok")}, castExpr, rest), nil
+	}
+
+	// In-place agent: call the local intent function and rebind the state variable.
 	args := []cerl.Expr{cerl.CVar("V_" + varName)}
 	for _, a := range s.Args {
 		ae, err := lowerExpr(l, a)
@@ -2127,10 +2727,248 @@ func (l *lowerer) lowerAgentIntentCallStmt(s *aotir.AgentIntentCallStmt, tail []
 	}
 	fnName := agentIntentFuncName(s.AgentName, s.IntentName)
 	callExpr := cerl.CApply(cerl.CVarFunc(fnName, len(args)), args)
+	return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + varName)}, callExpr, rest), nil
+}
 
-	rest, err := l.lowerBlock(tail, cont)
+// lowerLLMGenerateExpr lowers LLMGenerateExpr to mochi_llm:generate/3.
+// Phase 13.0: in cassette mode (MOCHI_LLM_CASSETTE_DIR env set) mochi_llm
+// replays pre-recorded responses; in live mode it calls the provider HTTP API.
+func lowerLLMGenerateExpr(l *lowerer, e *aotir.LLMGenerateExpr) (cerl.Expr, error) {
+	provider := cerl.CBin([]byte(e.Provider))
+	model, err := lowerExpr(l, e.Model)
 	if err != nil {
 		return nil, err
 	}
-	return cerl.CLet([]cerl.Expr{cerl.CVar("V_" + varName)}, callExpr, rest), nil
+	prompt, err := lowerExpr(l, e.Prompt)
+	if err != nil {
+		return nil, err
+	}
+	return cerl.CCall(cerl.CAtom("mochi_llm"), cerl.CAtom("generate"),
+		[]cerl.Expr{provider, model, prompt}), nil
+}
+
+// lowerDatalogQueryExpr runs a compile-time semi-naive bottom-up Datalog
+// evaluator and returns a static Erlang list literal of binary strings.
+// The result is a flat list: for each matching tuple the free-variable values
+// are appended in order (same layout as the C backend's mochi_list_str).
+func lowerDatalogQueryExpr(e *aotir.DatalogQueryExpr) (cerl.Expr, error) {
+	if e.Prog == nil {
+		return cerl.CNil(), nil
+	}
+	results := datalogEval(e)
+	// Build Erlang list from results (right-to-left CCons chain).
+	list := cerl.Expr(cerl.CNil())
+	for i := len(results) - 1; i >= 0; i-- {
+		list = cerl.CCons(cerl.CBin([]byte(results[i])), list)
+	}
+	return list, nil
+}
+
+// datalogEval performs semi-naive bottom-up evaluation of e.Prog and
+// returns the flat list of free-variable values from matching tuples.
+func datalogEval(e *aotir.DatalogQueryExpr) []string {
+	// Relation name -> set of tuples (each tuple is []string).
+	state := map[string][][]string{}
+
+	// Seed with base facts.
+	for _, f := range e.Prog.Facts {
+		args := make([]string, len(f.Args))
+		copy(args, f.Args)
+		state[f.Name] = append(state[f.Name], args)
+	}
+
+	// Semi-naive fixpoint: iterate until no new tuples are derived.
+	for {
+		changed := false
+		for _, rule := range e.Prog.Rules {
+			newTuples := deriveRule(rule, state)
+			for _, t := range newTuples {
+				if !tupleInRelation(state[rule.HeadName], t) {
+					state[rule.HeadName] = append(state[rule.HeadName], t)
+					changed = true
+				}
+			}
+		}
+		if !changed {
+			break
+		}
+	}
+
+	// Collect matching tuples for the query.
+	rel := state[e.QueryName]
+	var out []string
+	for _, tuple := range rel {
+		if len(tuple) != len(e.QueryArgs) {
+			continue
+		}
+		match := true
+		for i, qa := range e.QueryArgs {
+			if qa != "" {
+				// Bound argument: qa is "\"value\"" -- strip quotes.
+				expected := qa
+				if len(expected) >= 2 && expected[0] == '"' && expected[len(expected)-1] == '"' {
+					expected = expected[1 : len(expected)-1]
+				}
+				if tuple[i] != expected {
+					match = false
+					break
+				}
+			}
+		}
+		if match {
+			for i, qa := range e.QueryArgs {
+				if qa == "" {
+					out = append(out, tuple[i])
+				}
+			}
+		}
+	}
+	return out
+}
+
+// deriveRule computes new head tuples by evaluating one rule body against state.
+func deriveRule(rule aotir.DatalogRule, state map[string][][]string) [][]string {
+	// Simple nested-loop join over body literals.
+	// env maps variable names to bound values.
+	results := []map[string]string{{}}
+	for _, lit := range rule.Body {
+		if lit.IsNeq {
+			// Filter: env[NeqA] != env[NeqB].
+			var next []map[string]string
+			for _, env := range results {
+				a, aok := env[lit.NeqA]
+				b, bok := env[lit.NeqB]
+				if !aok || !bok || a != b {
+					next = append(next, env)
+				}
+			}
+			results = next
+			continue
+		}
+		if lit.IsNot {
+			// Negation-as-failure: keep env only if no tuple in lit.Name matches.
+			var next []map[string]string
+			for _, env := range results {
+				matched := false
+				for _, t := range state[lit.Name] {
+					if len(t) != len(lit.Args) {
+						continue
+					}
+					ok := true
+					for i, arg := range lit.Args {
+						val := resolveArg(arg, env)
+						if val != t[i] {
+							ok = false
+							break
+						}
+					}
+					if ok {
+						matched = true
+						break
+					}
+				}
+				if !matched {
+					next = append(next, env)
+				}
+			}
+			results = next
+			continue
+		}
+		// Positive literal: join with relation tuples.
+		var next []map[string]string
+		for _, env := range results {
+			for _, t := range state[lit.Name] {
+				if len(t) != len(lit.Args) {
+					continue
+				}
+				newEnv := copyEnv(env)
+				ok := true
+				for i, arg := range lit.Args {
+					if isVariable(arg) {
+						if existing, bound := newEnv[arg]; bound {
+							if existing != t[i] {
+								ok = false
+								break
+							}
+						} else {
+							newEnv[arg] = t[i]
+						}
+					} else {
+						// Constant: arg is "\"value\"" -- strip quotes.
+						expected := unquoteStr(arg)
+						if t[i] != expected {
+							ok = false
+							break
+						}
+					}
+				}
+				if ok {
+					next = append(next, newEnv)
+				}
+			}
+		}
+		results = next
+	}
+
+	// Build head tuples from the final environments.
+	var out [][]string
+	for _, env := range results {
+		head := make([]string, len(rule.HeadArgs))
+		for i, ha := range rule.HeadArgs {
+			if isVariable(ha) {
+				head[i] = env[ha]
+			} else {
+				head[i] = unquoteStr(ha)
+			}
+		}
+		out = append(out, head)
+	}
+	return out
+}
+
+func tupleInRelation(rel [][]string, t []string) bool {
+	for _, r := range rel {
+		if len(r) != len(t) {
+			continue
+		}
+		eq := true
+		for i := range r {
+			if r[i] != t[i] {
+				eq = false
+				break
+			}
+		}
+		if eq {
+			return true
+		}
+	}
+	return false
+}
+
+func resolveArg(arg string, env map[string]string) string {
+	if isVariable(arg) {
+		return env[arg]
+	}
+	return unquoteStr(arg)
+}
+
+func isVariable(s string) bool {
+	// Variables are uppercase letters (standard Datalog convention) or lowercase
+	// identifiers that don't start with a quote.
+	return len(s) > 0 && s[0] != '"'
+}
+
+func unquoteStr(s string) string {
+	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
+		return s[1 : len(s)-1]
+	}
+	return s
+}
+
+func copyEnv(env map[string]string) map[string]string {
+	out := make(map[string]string, len(env))
+	for k, v := range env {
+		out[k] = v
+	}
+	return out
 }

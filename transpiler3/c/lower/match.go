@@ -77,20 +77,33 @@ func matchPassStmt(stmt aotir.Stmt) error {
 //   - Sorts arms by ascending tag (deterministic case ordering for cc).
 //   - Recurses into every arm body and the default body.
 func canonicalizeMatchStmt(s *aotir.MatchStmt) error {
-	// Validate: every (non-default) arm must carry a distinct tag.
-	seen := make(map[uint8]struct{}, len(s.Arms))
+	// Validate: every (non-default) arm without a guard must carry a distinct
+	// tag. Arms with guards may share a tag with other arms (guarded or
+	// unguarded) because the guard acts as a secondary discriminant.
+	seenUnguarded := make(map[uint8]struct{}, len(s.Arms))
 	for _, arm := range s.Arms {
-		if _, dup := seen[arm.Tag]; dup {
+		if arm.Guard != nil {
+			continue // guarded arms may share a tag
+		}
+		if _, dup := seenUnguarded[arm.Tag]; dup {
 			return fmt.Errorf("match on %q: duplicate tag %d", s.UnionName, arm.Tag)
 		}
-		seen[arm.Tag] = struct{}{}
+		seenUnguarded[arm.Tag] = struct{}{}
 	}
 
 	// Sort arms by tag so the emitted switch cases are in ascending order
 	// regardless of source order. This gives deterministic C output and
 	// lets the C compiler and CPU branch predictor see a clean sequence.
-	sort.Slice(s.Arms, func(i, j int) bool {
-		return s.Arms[i].Tag < s.Arms[j].Tag
+	// For arms with the same tag, guarded arms sort before unguarded arms
+	// so guards are evaluated first (fail-fast).
+	sort.SliceStable(s.Arms, func(i, j int) bool {
+		if s.Arms[i].Tag != s.Arms[j].Tag {
+			return s.Arms[i].Tag < s.Arms[j].Tag
+		}
+		// Same tag: guarded arms first (guard == nil last).
+		iGuarded := s.Arms[i].Guard != nil
+		jGuarded := s.Arms[j].Guard != nil
+		return iGuarded && !jGuarded
 	})
 
 	// Recurse into arm bodies.

@@ -38,16 +38,22 @@ func (sub Subst) Apply(t Type) Type {
 			return sub.Apply(u)
 		}
 		return t
+	case SetType:
+		return SetType{Elem: sub.Apply(v.Elem)}
 	case ListType:
 		return ListType{Elem: sub.Apply(v.Elem)}
 	case MapType:
 		return MapType{Key: sub.Apply(v.Key), Value: sub.Apply(v.Value)}
+	case OMapType:
+		return OMapType{Key: sub.Apply(v.Key), Value: sub.Apply(v.Value)}
 	case ChanType:
 		return ChanType{Elem: sub.Apply(v.Elem)}
 	case StreamType:
 		return StreamType{Elem: sub.Apply(v.Elem)}
 	case SubType:
 		return SubType{Elem: sub.Apply(v.Elem)}
+	case FutureType:
+		return FutureType{Elem: sub.Apply(v.Elem)}
 	case OptionType:
 		return OptionType{Elem: sub.Apply(v.Elem)}
 	case GroupType:
@@ -132,9 +138,13 @@ func occurs(name string, t Type, sub Subst) bool {
 			return occurs(name, u, sub)
 		}
 		return false
+	case SetType:
+		return occurs(name, v.Elem, sub)
 	case ListType:
 		return occurs(name, v.Elem, sub)
 	case MapType:
+		return occurs(name, v.Key, sub) || occurs(name, v.Value, sub)
+	case OMapType:
 		return occurs(name, v.Key, sub) || occurs(name, v.Value, sub)
 	case OptionType:
 		return occurs(name, v.Elem, sub)
@@ -222,6 +232,12 @@ func unifyInto(a, b Type, sub Subst) error {
 	}
 
 	switch av := a.(type) {
+	case SetType:
+		bv, ok := b.(SetType)
+		if !ok {
+			return mismatch(a, b)
+		}
+		return unifyInto(av.Elem, bv.Elem, sub)
 	case ListType:
 		bv, ok := b.(ListType)
 		if !ok {
@@ -230,6 +246,15 @@ func unifyInto(a, b Type, sub Subst) error {
 		return unifyInto(av.Elem, bv.Elem, sub)
 	case MapType:
 		bv, ok := b.(MapType)
+		if !ok {
+			return mismatch(a, b)
+		}
+		if err := unifyInto(av.Key, bv.Key, sub); err != nil {
+			return err
+		}
+		return unifyInto(av.Value, bv.Value, sub)
+	case OMapType:
+		bv, ok := b.(OMapType)
 		if !ok {
 			return mismatch(a, b)
 		}
@@ -251,6 +276,12 @@ func unifyInto(a, b Type, sub Subst) error {
 		return unifyInto(av.Elem, bv.Elem, sub)
 	case SubType:
 		bv, ok := b.(SubType)
+		if !ok {
+			return mismatch(a, b)
+		}
+		return unifyInto(av.Elem, bv.Elem, sub)
+	case FutureType:
+		bv, ok := b.(FutureType)
 		if !ok {
 			return mismatch(a, b)
 		}

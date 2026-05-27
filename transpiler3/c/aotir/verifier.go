@@ -441,7 +441,7 @@ type binding struct {
 	mutable      bool
 	record       string   // record name when t==TypeRecord
 	union        string   // union name when t==TypeUnion (Phase 4)
-	elem         Type     // element type when t==TypeList
+	elem         Type     // element type when t==TypeList or t==TypeSet (Phase 3.3)
 	elemRec      string   // element record name when t==TypeList && elem==TypeRecord
 	mapElemKey   Type     // map key type when t==TypeList && elem==TypeMap (Phase 3.4f)
 	mapElemValue Type     // map value type when t==TypeList && elem==TypeMap (Phase 3.4f)
@@ -483,6 +483,8 @@ func verifyStmt(ctx *verifyCtx, st Stmt) error {
 		return verifyListSetStmt(ctx, s)
 	case *MapPutStmt:
 		return verifyMapPutStmt(ctx, s)
+	case *OMapPutStmt:
+		return verifyOMapPutStmt(ctx, s)
 	case *IfStmt:
 		return verifyIfStmt(ctx, s)
 	case *WhileStmt:
@@ -839,6 +841,19 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 		} else if s.MapElemKeyType != TypeInvalid || s.MapElemValueType != TypeInvalid {
 			return fmt.Errorf("let %q: MapElemKeyType/MapElemValueType set on list<%s> (only valid when ElemType==map)", s.Name, s.ElemType)
 		}
+	} else if s.VarType == TypeSet {
+		// Phase 3.3: set<T> bindings carry ElemType for the set's element type.
+		if s.ElemType == TypeInvalid {
+			return fmt.Errorf("let %q: set binding missing ElemType", s.Name)
+		}
+		if !isScalarElemType(s.ElemType) {
+			return fmt.Errorf("let %q: set binding has ElemType %s (Phase 3.3 supports scalar element types)", s.Name, s.ElemType)
+		}
+		if s.Init != nil {
+			if ie := exprSetElemType(s.Init); ie != s.ElemType {
+				return fmt.Errorf("let %q: declared set<%s>, init produces set<%s>", s.Name, s.ElemType, ie)
+			}
+		}
 	} else if s.ElemType != TypeInvalid {
 		return fmt.Errorf("let %q: ElemType set on non-list type %s", s.Name, s.VarType)
 	}
@@ -868,6 +883,22 @@ func verifyLetStmt(ctx *verifyCtx, s *LetStmt) error {
 			}
 		} else if s.ListValueElemType != TypeInvalid {
 			return fmt.Errorf("let %q: ListValueElemType set on map<_,%s> (only valid when value is list)", s.Name, s.ValueType)
+		}
+	} else if s.VarType == TypeOMap {
+		// Phase 3.4 omap: scalar key + scalar value only in initial implementation.
+		if !isScalarKeyType(s.KeyType) {
+			return fmt.Errorf("let %q: omap binding has KeyType %s (requires int or string)", s.Name, s.KeyType)
+		}
+		if !isScalarElemType(s.ValueType) {
+			return fmt.Errorf("let %q: omap binding has ValueType %s (requires scalar)", s.Name, s.ValueType)
+		}
+		if s.Init != nil {
+			if ik := exprKeyType(s.Init); ik != s.KeyType {
+				return fmt.Errorf("let %q: declared omap<%s,...>, init produces omap<%s,...>", s.Name, s.KeyType, ik)
+			}
+			if iv := exprValueType(s.Init); iv != s.ValueType {
+				return fmt.Errorf("let %q: declared omap<%s,%s>, init produces omap<%s,%s>", s.Name, s.KeyType, s.ValueType, s.KeyType, iv)
+			}
 		}
 	} else {
 		if s.KeyType != TypeInvalid {
@@ -953,6 +984,19 @@ func verifyAssignStmt(ctx *verifyCtx, s *AssignStmt) error {
 		}
 		if vv := exprValueType(s.Value); vv != b.value {
 			return fmt.Errorf("assign %q: binding holds map<%s,%s>, value produces map<%s,%s>", s.Name, b.key, b.value, b.key, vv)
+		}
+	}
+	if b.t == TypeSet {
+		if ve := exprSetElemType(s.Value); ve != b.elem {
+			return fmt.Errorf("assign %q: binding holds set<%s>, value produces set<%s>", s.Name, b.elem, ve)
+		}
+	}
+	if b.t == TypeOMap {
+		if vk := exprKeyType(s.Value); vk != b.key {
+			return fmt.Errorf("assign %q: binding holds omap<%s,...>, value produces omap<%s,...>", s.Name, b.key, vk)
+		}
+		if vv := exprValueType(s.Value); vv != b.value {
+			return fmt.Errorf("assign %q: binding holds omap<%s,%s>, value produces omap<%s,%s>", s.Name, b.key, b.value, b.key, vv)
 		}
 	}
 	return nil
@@ -1361,6 +1405,12 @@ func exprElemType(e Expr) Type {
 			return v.InnerElemType
 		}
 		return TypeInvalid
+	case *MapGetExpr:
+		// When a map<K,list<T>> is indexed, the result is list<T>; return T.
+		if v.ValueType == TypeList {
+			return v.ListValueElemType
+		}
+		return TypeInvalid
 	case *MapKeysExpr:
 		return v.KeyType
 	case *MapValuesExpr:
@@ -1377,6 +1427,16 @@ func exprElemType(e Expr) Type {
 			return TypeString
 		}
 		return TypeInvalid
+	case *DatalogQueryExpr:
+		// Phase 8.0: Datalog query results are list<string>; elem is TypeString.
+		return TypeString
+	case *ListMapExpr:
+		return v.ElemType
+	case *ListFilterExpr:
+		return v.ElemType
+	case *SetToListExpr:
+		// Phase 3.3: sets:to_list(S) produces a list<T> where T is the set's elem.
+		return v.ElemType
 	}
 	return TypeInvalid
 }
@@ -1433,6 +1493,12 @@ func exprKeyType(e Expr) Type {
 		if v.ElemType == TypeMap {
 			return v.MapElemKeyType
 		}
+	case *JsonDecodeExpr:
+		return TypeString
+	case *OMapLiteralExpr:
+		return v.KeyType
+	case *OMapSetExpr:
+		return v.KeyType
 	}
 	return TypeInvalid
 }
@@ -1453,6 +1519,12 @@ func exprValueType(e Expr) Type {
 		if v.ElemType == TypeMap {
 			return v.MapElemValueType
 		}
+	case *JsonDecodeExpr:
+		return TypeString
+	case *OMapLiteralExpr:
+		return v.ValueType
+	case *OMapSetExpr:
+		return v.ValueType
 	}
 	return TypeInvalid
 }
@@ -1540,7 +1612,7 @@ func isScalarElemType(t Type) bool {
 // to TypeMap (list<map<K,V>> where K and V are scalars).
 func isListElemType(t Type) bool {
 	switch t {
-	case TypeInt, TypeFloat, TypeBool, TypeString, TypeRecord, TypeList, TypeMap:
+	case TypeInt, TypeFloat, TypeBool, TypeString, TypeRecord, TypeList, TypeMap, TypeFuture:
 		return true
 	}
 	return false
@@ -1681,6 +1753,23 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		}
 		if b.t == TypeAgent && v.AgentName != b.agentName {
 			return fmt.Errorf("variable %q has agent %q in scope, ref says %q", v.Name, b.agentName, v.AgentName)
+		}
+		return nil
+	case *AgentSpawnExpr:
+		// Phase 9.1: spawn AgentType() is valid when the agent is declared.
+		if v.AgentName == "" {
+			return errors.New("AgentSpawnExpr with empty AgentName")
+		}
+		if _, ok := ctx.agents[v.AgentName]; !ok {
+			return fmt.Errorf("AgentSpawnExpr: agent %q is not declared", v.AgentName)
+		}
+		for i, a := range v.InitArgs {
+			if a == nil {
+				return fmt.Errorf("AgentSpawnExpr %q init arg %d is nil", v.AgentName, i)
+			}
+			if err := verifyExprCtx(ctx, a); err != nil {
+				return fmt.Errorf("AgentSpawnExpr %q init arg %d: %w", v.AgentName, i, err)
+			}
 		}
 		return nil
 	case *AgentLit:
@@ -1909,6 +1998,53 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("ListSumExpr: ElemType must be int or float, got %s", v.ElemType)
 		}
 		return verifyExprCtx(ctx, v.Receiver)
+	case *JsonDecodeExpr:
+		if v.Input == nil {
+			return fmt.Errorf("JsonDecodeExpr: nil Input")
+		}
+		if v.Input.Type() != TypeString {
+			return fmt.Errorf("JsonDecodeExpr: input must be string, got %s", v.Input.Type())
+		}
+		return verifyExprCtx(ctx, v.Input)
+	case *ListMapExpr:
+		if v.List == nil {
+			return fmt.Errorf("ListMapExpr: nil List")
+		}
+		if v.Fn == nil {
+			return fmt.Errorf("ListMapExpr: nil Fn")
+		}
+		if err := verifyExprCtx(ctx, v.List); err != nil {
+			return fmt.Errorf("ListMapExpr list: %w", err)
+		}
+		return verifyExprCtx(ctx, v.Fn)
+	case *ListFilterExpr:
+		if v.List == nil {
+			return fmt.Errorf("ListFilterExpr: nil List")
+		}
+		if v.Fn == nil {
+			return fmt.Errorf("ListFilterExpr: nil Fn")
+		}
+		if err := verifyExprCtx(ctx, v.List); err != nil {
+			return fmt.Errorf("ListFilterExpr list: %w", err)
+		}
+		return verifyExprCtx(ctx, v.Fn)
+	case *ListFoldlExpr:
+		if v.List == nil {
+			return fmt.Errorf("ListFoldlExpr: nil List")
+		}
+		if v.Fn == nil {
+			return fmt.Errorf("ListFoldlExpr: nil Fn")
+		}
+		if v.Init == nil {
+			return fmt.Errorf("ListFoldlExpr: nil Init")
+		}
+		if err := verifyExprCtx(ctx, v.List); err != nil {
+			return fmt.Errorf("ListFoldlExpr list: %w", err)
+		}
+		if err := verifyExprCtx(ctx, v.Fn); err != nil {
+			return fmt.Errorf("ListFoldlExpr fn: %w", err)
+		}
+		return verifyExprCtx(ctx, v.Init)
 	case *MathCallExpr:
 		if v.Arg == nil {
 			return fmt.Errorf("MathCallExpr: nil Arg")
@@ -1981,6 +2117,35 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 		return verifyMapKeysExpr(ctx, v)
 	case *MapValuesExpr:
 		return verifyMapValuesExpr(ctx, v)
+	case *SetLiteralExpr:
+		return verifySetLiteralExpr(ctx, v)
+	case *SetAddExpr:
+		return verifySetAddExpr(ctx, v)
+	case *SetHasExpr:
+		return verifySetHasExpr(ctx, v)
+	case *SetLenExpr:
+		return verifySetLenExpr(ctx, v)
+	case *OMapLiteralExpr:
+		return verifyOMapLiteralExpr(ctx, v)
+	case *OMapGetExpr:
+		return verifyOMapGetExpr(ctx, v)
+	case *OMapSetExpr:
+		return verifyOMapSetExpr(ctx, v)
+	case *OMapHasExpr:
+		return verifyOMapHasExpr(ctx, v)
+	case *OMapLenExpr:
+		return verifyOMapLenExpr(ctx, v)
+	case *SetToListExpr:
+		if v.Receiver == nil {
+			return errors.New("SetToListExpr: nil Receiver")
+		}
+		if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+			return fmt.Errorf("SetToListExpr receiver: %w", err)
+		}
+		if v.Receiver.Type() != TypeSet {
+			return fmt.Errorf("SetToListExpr: receiver must be TypeSet, got %s", v.Receiver.Type())
+		}
+		return nil
 	case *VariantLit:
 		if _, ok := ctx.unions[v.UnionName]; !ok {
 			return fmt.Errorf("VariantLit: union %q not declared", v.UnionName)
@@ -2051,6 +2216,14 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return fmt.Errorf("LinesExpr: Path must be TypeString, got %s", v.Path.Type())
 		}
 		return verifyExprCtx(ctx, v.Path)
+	case *HttpGetExpr:
+		if v.URL == nil {
+			return errors.New("HttpGetExpr: nil URL")
+		}
+		if v.URL.Type() != TypeString {
+			return fmt.Errorf("HttpGetExpr: URL must be TypeString, got %s", v.URL.Type())
+		}
+		return verifyExprCtx(ctx, v.URL)
 	case *LoadCSVExpr:
 		if v.Path == nil {
 			return errors.New("LoadCSVExpr: nil Path")
@@ -2086,7 +2259,25 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return errors.New("RawCExpr: empty Code")
 		}
 		return nil
+	case *DatalogQueryExpr:
+		if v.QueryName == "" {
+			return errors.New("DatalogQueryExpr: empty QueryName")
+		}
+		if v.Prog == nil {
+			return errors.New("DatalogQueryExpr: nil Prog")
+		}
+		return nil
 	case *CallExpr:
+		// Phase 11.2: await_all pseudo-builtin lowered to mochi_async:await_all/1.
+		if v.Func == "__await_all__" {
+			if len(v.Args) != 1 {
+				return fmt.Errorf("__await_all__: expected 1 arg, got %d", len(v.Args))
+			}
+			if err := verifyExprCtx(ctx, v.Args[0]); err != nil {
+				return fmt.Errorf("__await_all__ arg: %w", err)
+			}
+			return nil
+		}
 		// Phase 10.0: extern C functions can appear in expression position.
 		if ef, isExtern := ctx.externFns[v.Func]; isExtern {
 			if ef.ReturnType == TypeUnit {
@@ -2328,6 +2519,27 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return errors.New("SubMakeExpr: ElemType is TypeInvalid")
 		}
 		return verifyExprCtx(ctx, v.Stream)
+	case *SubMakeLimitExpr:
+		// Phase 10.2: subscribe_limit(stream, N)
+		if v.Stream == nil {
+			return errors.New("SubMakeLimitExpr: nil Stream")
+		}
+		if v.Stream.Type() != TypeStream {
+			return fmt.Errorf("SubMakeLimitExpr: Stream must be TypeStream, got %s", v.Stream.Type())
+		}
+		if v.Limit == nil {
+			return errors.New("SubMakeLimitExpr: nil Limit")
+		}
+		if v.Limit.Type() != TypeInt {
+			return fmt.Errorf("SubMakeLimitExpr: Limit must be TypeInt, got %s", v.Limit.Type())
+		}
+		if v.ElemType == TypeInvalid {
+			return errors.New("SubMakeLimitExpr: ElemType is TypeInvalid")
+		}
+		if err := verifyExprCtx(ctx, v.Stream); err != nil {
+			return err
+		}
+		return verifyExprCtx(ctx, v.Limit)
 	case *SubRecvExpr:
 		if v.Sub == nil {
 			return errors.New("SubRecvExpr: nil Sub")
@@ -2339,6 +2551,27 @@ func verifyExprCtx(ctx *verifyCtx, e Expr) error {
 			return errors.New("SubRecvExpr: ElemType is TypeInvalid")
 		}
 		return verifyExprCtx(ctx, v.Sub)
+	// Phase 11.0: async expr → TypeFuture
+	case *AsyncExpr:
+		if v.Body == nil {
+			return errors.New("AsyncExpr: nil Body")
+		}
+		if v.ElemType == TypeInvalid {
+			return errors.New("AsyncExpr: ElemType is TypeInvalid")
+		}
+		return verifyExprCtx(ctx, v.Body)
+	// Phase 11.1: await fut → ElemType
+	case *AwaitExpr:
+		if v.Future == nil {
+			return errors.New("AwaitExpr: nil Future")
+		}
+		if v.Future.Type() != TypeFuture {
+			return fmt.Errorf("AwaitExpr: Future must be TypeFuture, got %s", v.Future.Type())
+		}
+		if v.ElemType == TypeInvalid {
+			return errors.New("AwaitExpr: ElemType is TypeInvalid")
+		}
+		return verifyExprCtx(ctx, v.Future)
 	default:
 		return fmt.Errorf("unhandled Expr %T", e)
 	}
@@ -2925,6 +3158,245 @@ func verifyMapValuesExpr(ctx *verifyCtx, v *MapValuesExpr) error {
 		}
 	} else if v.ListValueElemType != TypeInvalid {
 		return fmt.Errorf("map values: ListValueElemType set on map<_,%s> (only valid when value is list)", v.ValueType)
+	}
+	return nil
+}
+
+// --- Phase 3.3: set verifier helpers ---
+
+// exprSetElemType returns the element type of a set-typed expression,
+// or TypeInvalid if the expression is not set-typed.
+func exprSetElemType(e Expr) Type {
+	switch v := e.(type) {
+	case *VarRef:
+		if v.VarType == TypeSet {
+			return v.ElemType
+		}
+	case *SetLiteralExpr:
+		return v.ElemType
+	case *SetAddExpr:
+		return v.ElemType
+	}
+	return TypeInvalid
+}
+
+func verifySetLiteralExpr(ctx *verifyCtx, v *SetLiteralExpr) error {
+	if !isScalarElemType(v.ElemType) {
+		return fmt.Errorf("SetLiteralExpr: ElemType %s not supported (Phase 3.3 supports scalar element types)", v.ElemType)
+	}
+	for i, e := range v.Elems {
+		if err := verifyExprCtx(ctx, e); err != nil {
+			return fmt.Errorf("SetLiteralExpr elem %d: %w", i, err)
+		}
+		if e.Type() != v.ElemType {
+			return fmt.Errorf("SetLiteralExpr elem %d: expected %s, got %s", i, v.ElemType, e.Type())
+		}
+	}
+	return nil
+}
+
+func verifySetAddExpr(ctx *verifyCtx, v *SetAddExpr) error {
+	if v.Receiver == nil {
+		return errors.New("SetAddExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("SetAddExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeSet {
+		return fmt.Errorf("SetAddExpr: receiver must be TypeSet, got %s", v.Receiver.Type())
+	}
+	if v.Elem == nil {
+		return errors.New("SetAddExpr: nil Elem")
+	}
+	if err := verifyExprCtx(ctx, v.Elem); err != nil {
+		return fmt.Errorf("SetAddExpr elem: %w", err)
+	}
+	if v.Elem.Type() != v.ElemType {
+		return fmt.Errorf("SetAddExpr: elem type %s does not match ElemType %s", v.Elem.Type(), v.ElemType)
+	}
+	return nil
+}
+
+func verifySetHasExpr(ctx *verifyCtx, v *SetHasExpr) error {
+	if v.Receiver == nil {
+		return errors.New("SetHasExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("SetHasExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeSet {
+		return fmt.Errorf("SetHasExpr: receiver must be TypeSet, got %s", v.Receiver.Type())
+	}
+	if v.Elem == nil {
+		return errors.New("SetHasExpr: nil Elem")
+	}
+	if err := verifyExprCtx(ctx, v.Elem); err != nil {
+		return fmt.Errorf("SetHasExpr elem: %w", err)
+	}
+	if v.Elem.Type() != v.ElemType {
+		return fmt.Errorf("SetHasExpr: elem type %s does not match ElemType %s", v.Elem.Type(), v.ElemType)
+	}
+	return nil
+}
+
+func verifySetLenExpr(ctx *verifyCtx, v *SetLenExpr) error {
+	if v.Receiver == nil {
+		return errors.New("SetLenExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("SetLenExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeSet {
+		return fmt.Errorf("SetLenExpr: receiver must be TypeSet, got %s", v.Receiver.Type())
+	}
+	return nil
+}
+
+// --- Phase 3.4 (omap) verifiers ---
+
+func verifyOMapLiteralExpr(ctx *verifyCtx, v *OMapLiteralExpr) error {
+	if !isScalarKeyType(v.KeyType) {
+		return fmt.Errorf("OMapLiteralExpr: KeyType %s not supported (requires int or string)", v.KeyType)
+	}
+	if !isScalarElemType(v.ValueType) {
+		return fmt.Errorf("OMapLiteralExpr: ValueType %s not supported (requires scalar)", v.ValueType)
+	}
+	if len(v.Keys) != len(v.Values) {
+		return fmt.Errorf("OMapLiteralExpr: keys/values length mismatch (%d vs %d)", len(v.Keys), len(v.Values))
+	}
+	for i, k := range v.Keys {
+		if err := verifyExprCtx(ctx, k); err != nil {
+			return fmt.Errorf("OMapLiteralExpr key %d: %w", i, err)
+		}
+		if k.Type() != v.KeyType {
+			return fmt.Errorf("OMapLiteralExpr key %d: expected %s, got %s", i, v.KeyType, k.Type())
+		}
+		if err := verifyExprCtx(ctx, v.Values[i]); err != nil {
+			return fmt.Errorf("OMapLiteralExpr value %d: %w", i, err)
+		}
+		if v.Values[i].Type() != v.ValueType {
+			return fmt.Errorf("OMapLiteralExpr value %d: expected %s, got %s", i, v.ValueType, v.Values[i].Type())
+		}
+	}
+	return nil
+}
+
+func verifyOMapGetExpr(ctx *verifyCtx, v *OMapGetExpr) error {
+	if v.Receiver == nil {
+		return errors.New("OMapGetExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("OMapGetExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeOMap {
+		return fmt.Errorf("OMapGetExpr: receiver must be TypeOMap, got %s", v.Receiver.Type())
+	}
+	if v.Key == nil {
+		return errors.New("OMapGetExpr: nil Key")
+	}
+	if err := verifyExprCtx(ctx, v.Key); err != nil {
+		return fmt.Errorf("OMapGetExpr key: %w", err)
+	}
+	if v.Key.Type() != v.KeyType {
+		return fmt.Errorf("OMapGetExpr: key type %s does not match KeyType %s", v.Key.Type(), v.KeyType)
+	}
+	return nil
+}
+
+func verifyOMapSetExpr(ctx *verifyCtx, v *OMapSetExpr) error {
+	if v.Receiver == nil {
+		return errors.New("OMapSetExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("OMapSetExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeOMap {
+		return fmt.Errorf("OMapSetExpr: receiver must be TypeOMap, got %s", v.Receiver.Type())
+	}
+	if v.Key == nil {
+		return errors.New("OMapSetExpr: nil Key")
+	}
+	if err := verifyExprCtx(ctx, v.Key); err != nil {
+		return fmt.Errorf("OMapSetExpr key: %w", err)
+	}
+	if v.Key.Type() != v.KeyType {
+		return fmt.Errorf("OMapSetExpr: key type %s does not match KeyType %s", v.Key.Type(), v.KeyType)
+	}
+	if v.Value == nil {
+		return errors.New("OMapSetExpr: nil Value")
+	}
+	if err := verifyExprCtx(ctx, v.Value); err != nil {
+		return fmt.Errorf("OMapSetExpr value: %w", err)
+	}
+	if v.Value.Type() != v.ValueType {
+		return fmt.Errorf("OMapSetExpr: value type %s does not match ValueType %s", v.Value.Type(), v.ValueType)
+	}
+	return nil
+}
+
+func verifyOMapHasExpr(ctx *verifyCtx, v *OMapHasExpr) error {
+	if v.Receiver == nil {
+		return errors.New("OMapHasExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("OMapHasExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeOMap {
+		return fmt.Errorf("OMapHasExpr: receiver must be TypeOMap, got %s", v.Receiver.Type())
+	}
+	if v.Key == nil {
+		return errors.New("OMapHasExpr: nil Key")
+	}
+	if err := verifyExprCtx(ctx, v.Key); err != nil {
+		return fmt.Errorf("OMapHasExpr key: %w", err)
+	}
+	if v.Key.Type() != v.KeyType {
+		return fmt.Errorf("OMapHasExpr: key type %s does not match KeyType %s", v.Key.Type(), v.KeyType)
+	}
+	return nil
+}
+
+func verifyOMapLenExpr(ctx *verifyCtx, v *OMapLenExpr) error {
+	if v.Receiver == nil {
+		return errors.New("OMapLenExpr: nil Receiver")
+	}
+	if err := verifyExprCtx(ctx, v.Receiver); err != nil {
+		return fmt.Errorf("OMapLenExpr receiver: %w", err)
+	}
+	if v.Receiver.Type() != TypeOMap {
+		return fmt.Errorf("OMapLenExpr: receiver must be TypeOMap, got %s", v.Receiver.Type())
+	}
+	return nil
+}
+
+func verifyOMapPutStmt(ctx *verifyCtx, s *OMapPutStmt) error {
+	b, ok := ctx.scope.lookup(s.Name)
+	if !ok {
+		return fmt.Errorf("omap-put: undeclared %q", s.Name)
+	}
+	if !b.mutable {
+		return fmt.Errorf("omap-put: %q is immutable", s.Name)
+	}
+	if b.t != TypeOMap {
+		return fmt.Errorf("omap-put: %q is %s, not an omap", s.Name, b.t)
+	}
+	if s.Key == nil {
+		return fmt.Errorf("omap-put %q: nil Key", s.Name)
+	}
+	if err := verifyExprCtx(ctx, s.Key); err != nil {
+		return fmt.Errorf("omap-put %q key: %w", s.Name, err)
+	}
+	if s.Key.Type() != b.key {
+		return fmt.Errorf("omap-put %q: binding key is %s, got %s", s.Name, b.key, s.Key.Type())
+	}
+	if s.Value == nil {
+		return fmt.Errorf("omap-put %q: nil Value", s.Name)
+	}
+	if err := verifyExprCtx(ctx, s.Value); err != nil {
+		return fmt.Errorf("omap-put %q value: %w", s.Name, err)
+	}
+	if s.Value.Type() != b.value {
+		return fmt.Errorf("omap-put %q: binding value is %s, got %s", s.Name, b.value, s.Value.Type())
 	}
 	return nil
 }

@@ -356,3 +356,4 @@ jdk-*/
 website/docs/releases/
 website/src/data/releases.json
 website/src/data/release-sidebar.json
+.claude/

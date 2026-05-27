@@ -90,9 +90,14 @@ func collectFreeVars(t Type, sub Subst, seen map[string]struct{}) {
 			return
 		}
 		seen[v.Name] = struct{}{}
+	case SetType:
+		collectFreeVars(v.Elem, sub, seen)
 	case ListType:
 		collectFreeVars(v.Elem, sub, seen)
 	case MapType:
+		collectFreeVars(v.Key, sub, seen)
+		collectFreeVars(v.Value, sub, seen)
+	case OMapType:
 		collectFreeVars(v.Key, sub, seen)
 		collectFreeVars(v.Value, sub, seen)
 	case ChanType:
@@ -100,6 +105,8 @@ func collectFreeVars(t Type, sub Subst, seen map[string]struct{}) {
 	case StreamType:
 		collectFreeVars(v.Elem, sub, seen)
 	case SubType:
+		collectFreeVars(v.Elem, sub, seen)
+	case FutureType:
 		collectFreeVars(v.Elem, sub, seen)
 	case OptionType:
 		collectFreeVars(v.Elem, sub, seen)

@@ -162,9 +162,9 @@ func assertAgentBlock(b *AgentBlock) error {
 	if b == nil {
 		return invariant(lexer.Position{}, "agent block entry is nil")
 	}
-	arms := [...]bool{b.Let != nil, b.Var != nil, b.Assign != nil, b.On != nil, b.Intent != nil}
+	arms := [...]bool{b.OnClose != nil, b.Let != nil, b.Var != nil, b.Assign != nil, b.On != nil, b.Intent != nil}
 	if n := countTrue(arms[:]); n != 1 {
-		return invariant(b.Pos, fmt.Sprintf("agent block has %d arms set, expected exactly 1 of {let, var, assign, on, intent}", n))
+		return invariant(b.Pos, fmt.Sprintf("agent block has %d arms set, expected exactly 1 of {on_close, let, var, assign, on, intent}", n))
 	}
 	switch {
 	case b.Let != nil && b.Let.Value != nil:
@@ -335,8 +335,9 @@ func assertPrimary(p *Primary) error {
 	}
 	arms := [...]bool{
 		p.Struct != nil, p.Call != nil, p.Query != nil, p.LogicQuery != nil,
-		p.If != nil, p.Selector != nil, p.List != nil, p.Map != nil,
+		p.If != nil, p.Selector != nil, p.List != nil, p.Set != nil, p.OMap != nil, p.Map != nil,
 		p.FunExpr != nil, p.Match != nil, p.Generate != nil, p.Fetch != nil,
+		p.Spawn != nil, p.Async != nil, p.Await != nil,
 		p.Load != nil, p.Save != nil, p.Lit != nil, p.Group != nil,
 	}
 	if n := countTrue(arms[:]); n != 1 {
@@ -352,6 +353,20 @@ func assertPrimary(p *Primary) error {
 	case p.Load != nil:
 		if p.Load.Type != nil {
 			return assertTypeRef(p.Load.Type, p.Load.Pos)
+		}
+	case p.Spawn != nil:
+		for _, arg := range p.Spawn.Args {
+			if err := assertExpr(arg); err != nil {
+				return err
+			}
+		}
+	case p.Async != nil:
+		if p.Async.Expr != nil {
+			return assertExpr(p.Async.Expr)
+		}
+	case p.Await != nil:
+		if p.Await.Future != nil {
+			return assertExpr(p.Await.Future)
 		}
 	}
 	return nil

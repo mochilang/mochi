@@ -98,6 +98,15 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return:     BoolType{},
 		TypeParams: []string{"K", "V"},
 	}, false)
+	// add<A>(s set[A], x A): set[A] - Phase 3.3 set builtin.
+	// The check_expr.go pre-flight intercepts the set case before the generic
+	// unifier; this registration just prevents "unknown function" errors.
+	addA := &TypeVar{Name: "A"}
+	env.SetVar("add", FuncType{
+		Params:     []Type{SetType{Elem: addA}, addA},
+		Return:     SetType{Elem: addA},
+		TypeParams: []string{"A"},
+	}, false)
 	// collect<T>(xs: list<T>): list<T> - MEP-12.4. The legacy any
 	// signature also accepted GroupType; that overload is preserved by
 	// checkBuiltinCall's "list or group" arity check, which runs after
@@ -267,6 +276,35 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return:     reduceB,
 		TypeParams: []string{"A", "B"},
 	}, false)
+	// Phase 14.2: json_decode(s: string) -> map<string, string>
+	// Decodes a JSON object string. Non-string field values are coerced to
+	// their string representations. Uses OTP 27 stdlib json module on BEAM.
+	env.SetVar("json_decode", FuncType{
+		Params: []Type{StringType{}},
+		Return: MapType{Key: StringType{}, Value: StringType{}},
+	}, false)
+
+	// Phase 6.1: map<A, B>(xs: list<A>, fn: fun(A): B): list<B>
+	mapA := &TypeVar{Name: "A"}
+	mapB := &TypeVar{Name: "B"}
+	env.SetVar("map", FuncType{
+		Params: []Type{
+			ListType{Elem: mapA},
+			FuncType{Params: []Type{mapA}, Return: mapB},
+		},
+		Return:     ListType{Elem: mapB},
+		TypeParams: []string{"A", "B"},
+	}, false)
+	// Phase 6.1: filter<A>(xs: list<A>, fn: fun(A): bool): list<A>
+	filterA := &TypeVar{Name: "A"}
+	env.SetVar("filter", FuncType{
+		Params: []Type{
+			ListType{Elem: filterA},
+			FuncType{Params: []Type{filterA}, Return: BoolType{}},
+		},
+		Return:     ListType{Elem: filterA},
+		TypeParams: []string{"A"},
+	}, false)
 	env.SetVar("eval", FuncType{
 		Params:  []Type{StringType{}},
 		Return:  AnyType{},
@@ -350,6 +388,21 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("recv_sub", FuncType{
 		Params:     []Type{SubType{Elem: streamRecvSubT}},
 		Return:     streamRecvSubT,
+		TypeParams: []string{"T"},
+	}, false)
+	// Phase 10.2: subscribe_limit(stream<T>, int): sub<T>
+	streamSubLimitT := &TypeVar{Name: "T"}
+	env.SetVar("subscribe_limit", FuncType{
+		Params:     []Type{StreamType{Elem: streamSubLimitT}, IntType{}},
+		Return:     SubType{Elem: streamSubLimitT},
+		TypeParams: []string{"T"},
+	}, false)
+
+	// Phase 11.2: await_all(list<future<T>>): list<T>
+	awaitAllT := &TypeVar{Name: "T"}
+	env.SetVar("await_all", FuncType{
+		Params:     []Type{ListType{Elem: FutureType{Elem: awaitAllT}}},
+		Return:     ListType{Elem: awaitAllT},
 		TypeParams: []string{"T"},
 	}, false)
 
@@ -732,6 +785,14 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 			ret = resolveTypeRef(s.ExternFun.Return, env)
 		}
 		env.SetVar(s.ExternFun.Name(), FuncType{Params: params, Return: ret}, false)
+		// Phase 12.1: for dotted extern fun declarations (e.g. `extern fun erlang.abs`),
+		// also register the root identifier as AnyType so that the type checker
+		// can walk the dotted selector chain starting from the root.
+		if len(s.ExternFun.Tail) > 0 {
+			if _, err := env.GetVar(s.ExternFun.Root); err != nil {
+				env.SetVar(s.ExternFun.Root, AnyType{}, false)
+			}
+		}
 		return nil
 
 	case s.ExternGoFun != nil:
@@ -808,6 +869,18 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 			for _, idx := range s.Assign.Index {
 				switch lt := lhsType.(type) {
 				case MapType:
+					if idx.Colon != nil {
+						return errInvalidMapSlice(idx.Pos)
+					}
+					keyType, err := checkExpr(idx.Start, env)
+					if err != nil {
+						return err
+					}
+					if !unify(keyType, lt.Key, nil) {
+						return errIndexTypeMismatch(idx.Pos, lt.Key, keyType)
+					}
+					lhsType = lt.Value
+				case OMapType:
 					if idx.Colon != nil {
 						return errInvalidMapSlice(idx.Pos)
 					}
@@ -1046,6 +1119,10 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type, inLoop bool) 
 				elemType = t.Elem
 			case MapType:
 				elemType = t.Key // loop iterates over keys
+			case OMapType:
+				elemType = t.Key // loop iterates over keys in order
+			case SetType:
+				elemType = t.Elem // loop iterates over set elements
 			case StringType:
 				elemType = StringType{}
 			default:

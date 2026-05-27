@@ -1,0 +1,13 @@
+// Phase 10.2: subscribe_limit — normal operation under the limit.
+// When the buffer is below the limit, all messages are received normally.
+let s: stream<int> = make_stream(8)
+let sub = subscribe_limit(s, 5)
+emit(s, 10)
+emit(s, 20)
+emit(s, 30)
+let a = recv_sub(sub)
+let b = recv_sub(sub)
+let c = recv_sub(sub)
+print(a)
+print(b)
+print(c)

@@ -207,6 +207,11 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 				return nil, errOperatorMismatch(pos, op, left, right)
 			}
 			return BoolType{}, nil
+		case SetType:
+			if !unify(left, rt.Elem, nil) {
+				return nil, errOperatorMismatch(pos, op, left, right)
+			}
+			return BoolType{}, nil
 		case ListType:
 			if !unify(left, rt.Elem, nil) {
 				return nil, errOperatorMismatch(pos, op, left, right)
@@ -329,6 +334,22 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 					return nil, errIndexTypeMismatch(idx.Pos, t.Key, keyType)
 				}
 				typ = OptionType{Elem: t.Value}
+
+			case OMapType:
+				if idx.Colon != nil {
+					return nil, errInvalidMapSlice(idx.Pos)
+				}
+				if idx.Start == nil {
+					return nil, errMissingIndex(idx.Pos)
+				}
+				keyType, err := checkExpr(idx.Start, env)
+				if err != nil {
+					return nil, err
+				}
+				if !unify(keyType, t.Key, nil) {
+					return nil, errIndexTypeMismatch(idx.Pos, t.Key, keyType)
+				}
+				typ = t.Value
 
 			case StringType:
 				if idx.Start == nil && idx.Colon == nil {
@@ -622,6 +643,42 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		return typ, nil
 
 	case p.Call != nil:
+		// Phase 3.3: set builtins resolved before the generic map-based `has`.
+		// has(s set[T], x T): bool
+		// add(s set[T], x T): set[T]
+		// len(s set[T]): int  -- handled by the generic len path below (AnyType).
+		if (p.Call.Func == "has" || p.Call.Func == "add") && len(p.Call.Args) == 2 {
+			firstArgType, ferr := checkExpr(p.Call.Args[0], env)
+			if ferr == nil {
+				if st, isSet := firstArgType.(SetType); isSet {
+					elemT, eerr := checkExpr(p.Call.Args[1], env)
+					if eerr != nil {
+						return nil, eerr
+					}
+					if !unify(st.Elem, elemT, nil) {
+						return nil, errTypeMismatch(p.Call.Args[1].Pos, st.Elem, elemT)
+					}
+					if p.Call.Func == "has" {
+						return BoolType{}, nil
+					}
+					return SetType{Elem: st.Elem}, nil
+				}
+				// Phase 3.4 (omap): has(m omap[K,V], k K): bool
+				if p.Call.Func == "has" {
+					if om, isOMap := firstArgType.(OMapType); isOMap {
+						keyT, kerr := checkExpr(p.Call.Args[1], env)
+						if kerr != nil {
+							return nil, kerr
+						}
+						if !unify(om.Key, keyT, nil) {
+							return nil, errTypeMismatch(p.Call.Args[1].Pos, om.Key, keyT)
+						}
+						return BoolType{}, nil
+					}
+				}
+			}
+		}
+
 		fnType, err := env.GetVar(p.Call.Func)
 		if err != nil {
 			return nil, errUnknownFunction(p.Pos, p.Call.Func)
@@ -657,6 +714,39 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 
 		if ft.Variadic == nil && argCount > paramCount {
 			return nil, errTooManyArgs(p.Pos, paramCount, argCount)
+		}
+
+		// Phase 6.2: partial application via `_` placeholders.
+		// When any argument is a bare `_`, validate the non-placeholder
+		// arguments and return a FuncType whose params are the types of
+		// the `_` positions and whose return is the callee's return type.
+		if ft.Variadic == nil && argCount == paramCount {
+			hasUnderscore := false
+			for _, a := range p.Call.Args {
+				if isUnderscoreExpr(a) {
+					hasUnderscore = true
+					break
+				}
+			}
+			if hasUnderscore {
+				var freeParams []Type
+				for i, a := range p.Call.Args {
+					if isUnderscoreExpr(a) {
+						freeParams = append(freeParams, callSubst.Apply(ft.Params[i]))
+					} else {
+						expected := callSubst.Apply(ft.Params[i])
+						at, err := checkExprWithExpected(a, env, expected)
+						if err != nil {
+							return nil, err
+						}
+						if !unify(at, expected, nil) {
+							return nil, errArgTypeMismatch(p.Pos, i, expected, at)
+						}
+					}
+				}
+				ret := callSubst.Apply(ft.Return)
+				return FuncType{Params: freeParams, Return: ret}, nil
+			}
 		}
 
 		// Params is the fixed prefix; ft.Variadic (if non-nil) types the
@@ -756,11 +846,15 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			if p.Call.Func == "keys" && len(argTypes) == 1 {
 				if mt, ok := argTypes[0].(MapType); ok {
 					ret = ListType{Elem: mt.Key}
+				} else if om, ok := argTypes[0].(OMapType); ok {
+					ret = ListType{Elem: om.Key}
 				}
 			}
 			if p.Call.Func == "values" && len(argTypes) == 1 {
 				if mt, ok := argTypes[0].(MapType); ok {
 					ret = ListType{Elem: mt.Value}
+				} else if om, ok := argTypes[0].(OMapType); ok {
+					ret = ListType{Elem: om.Value}
 				}
 			}
 			// MEP-12.4: reverse mirrors its argument's static shape.
@@ -788,11 +882,15 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		if p.Call.Func == "keys" && len(argTypes) == 1 {
 			if mt, ok := argTypes[0].(MapType); ok {
 				ret = ListType{Elem: mt.Key}
+			} else if om, ok := argTypes[0].(OMapType); ok {
+				ret = ListType{Elem: om.Key}
 			}
 		}
 		if p.Call.Func == "values" && len(argTypes) == 1 {
 			if mt, ok := argTypes[0].(MapType); ok {
 				ret = ListType{Elem: mt.Value}
+			} else if om, ok := argTypes[0].(OMapType); ok {
+				ret = ListType{Elem: om.Value}
 			}
 		}
 		// MEP-12.4: reverse mirrors its argument's static shape.
@@ -882,6 +980,63 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			elemType = AnyType{}
 		}
 		return ListType{Elem: elemType}, nil
+
+	case p.Set != nil:
+		// set{e1, e2, ...}: every element must unify with the inferred element type.
+		var elemType Type
+		for _, elem := range p.Set.Elems {
+			t, err := checkExpr(elem, env)
+			if err != nil {
+				return nil, err
+			}
+			if elemType == nil {
+				elemType = t
+				continue
+			}
+			if !unify(elemType, t, nil) {
+				return nil, errTypeMismatch(elem.Pos, elemType, t)
+			}
+		}
+		if elemType == nil {
+			elemType = AnyType{}
+		}
+		return SetType{Elem: elemType}, nil
+
+	case p.OMap != nil:
+		var keyT, valT Type
+		for _, item := range p.OMap.Items {
+			var kt Type
+			if _, ok := stringKey(item.Key); ok {
+				kt = StringType{}
+			} else {
+				var err error
+				kt, err = checkExpr(item.Key, env)
+				if err != nil {
+					return nil, err
+				}
+			}
+			vt, err := checkExpr(item.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			if keyT == nil {
+				keyT = kt
+			} else if !unify(keyT, kt, nil) {
+				keyT = AnyType{}
+			}
+			if valT == nil {
+				valT = vt
+			} else if !unify(valT, vt, nil) {
+				valT = AnyType{}
+			}
+		}
+		if keyT == nil {
+			keyT = AnyType{}
+		}
+		if valT == nil {
+			valT = AnyType{}
+		}
+		return OMapType{Key: keyT, Value: valT}, nil
 
 	case p.Map != nil:
 		var keyT, valT Type
@@ -988,6 +1143,39 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			return expected, nil
 		}
 		return AnyType{}, nil
+
+	// Phase 9.1: spawn AgentType() → agent ref (typed as StructType of the agent).
+	case p.Spawn != nil:
+		st, ok := env.GetStruct(p.Spawn.AgentType)
+		if !ok {
+			return nil, fmt.Errorf("%s: spawn: unknown agent type %q", p.Pos, p.Spawn.AgentType)
+		}
+		// Validate that it's actually an agent declaration.
+		if _, isAgent := env.GetAgent(p.Spawn.AgentType); !isAgent {
+			return nil, fmt.Errorf("%s: spawn: %q is not an agent type", p.Pos, p.Spawn.AgentType)
+		}
+		// No constructor args in Phase 9.1 — agents are initialized with zero values.
+		return st, nil
+
+	// Phase 11.0: async expr → future<T>
+	case p.Async != nil:
+		elemType, err := checkExpr(p.Async.Expr, env)
+		if err != nil {
+			return nil, err
+		}
+		return FutureType{Elem: elemType}, nil
+
+	// Phase 11.1: await fut → T (where fut: future<T>)
+	case p.Await != nil:
+		futType, err := checkExpr(p.Await.Future, env)
+		if err != nil {
+			return nil, err
+		}
+		ft, ok := futType.(FutureType)
+		if !ok {
+			return nil, fmt.Errorf("%s: await expects a future, got %s", p.Pos, futType)
+		}
+		return ft.Elem, nil
 
 	case p.Load != nil:
 		var elem Type = AnyType{}
@@ -1417,10 +1605,15 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 				if !unify(targetType, st, nil) {
 					return nil, errTypeMismatch(c.Pos, targetType, st)
 				}
-				if matchedVariants[call.Func] {
+				// Phase 5.1: guard clauses allow the same variant to appear in
+				// multiple arms with different guards, so skip the redundancy
+				// check when a `when` guard is present.
+				if matchedVariants[call.Func] && c.Guard == nil {
 					return nil, errMatchArmRedundant(c.Pos, "duplicate variant `"+call.Func+"`")
 				}
-				matchedVariants[call.Func] = true
+				if c.Guard == nil {
+					matchedVariants[call.Func] = true
+				}
 				child := NewEnv(env)
 				for idx, arg := range call.Args {
 					if name, ok := identName(arg); ok {
@@ -2096,7 +2289,7 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return errArgCount(pos, name, 1, len(args))
 		}
 		switch args[0].(type) {
-		case ListType, MapType, StringType, AnyType:
+		case ListType, MapType, OMapType, SetType, StringType, AnyType, GroupType:
 			return nil
 		default:
 			return errLenOperand(pos, args[0])
@@ -2230,10 +2423,10 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return errArgCount(pos, name, 1, len(args))
 		}
 		switch args[0].(type) {
-		case MapType, AnyType:
+		case MapType, OMapType, AnyType:
 			return nil
 		default:
-			return fmt.Errorf("%s() expects map", name)
+			return fmt.Errorf("%s() expects map or omap", name)
 		}
 	case "collect":
 		if len(args) != 1 {

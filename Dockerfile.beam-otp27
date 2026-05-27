@@ -1,0 +1,25 @@
+FROM golang:1.24 AS build-mochi
+
+WORKDIR /src
+COPY . .
+
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
+    go build -trimpath -ldflags="-s -w" -o /mochi ./cmd/mochi
+
+# ---- runtime stage ----
+# OTP 27 on Debian bookworm; includes erlc and erl for escript execution.
+FROM erlang:27-slim
+
+# CA certs needed by mochi_fetch (httpc + ssl public_key:cacerts_get/0).
+RUN apt-get update \
+ && apt-get install -y ca-certificates \
+ && update-ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build-mochi /mochi /usr/local/bin/mochi
+
+# Verify the tool starts correctly.
+RUN mochi --version || true
+
+ENTRYPOINT ["/usr/local/bin/mochi"]

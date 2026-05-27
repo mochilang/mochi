@@ -1,0 +1,47 @@
+name: BEAM reproducibility check
+
+# MEP-46 Phase 18.2: rebuild every BEAM fixture twice and compare SHA-256
+# of .beam files to verify bit-identical output (no timestamp leakage).
+# Non-blocking nightly job; also runs on changes to the BEAM pipeline.
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  push:
+    paths:
+      - 'transpiler3/beam/**'
+      - 'transpiler3/c/aotir/**'
+      - 'transpiler3/c/lower/**'
+      - '.github/workflows/transpiler3-beam-repro.yml'
+
+jobs:
+  beam-repro:
+    name: BEAM repro (OTP ${{ matrix.otp }})
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - otp: '27'
+          - otp: '28'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Set up Erlang/OTP ${{ matrix.otp }}
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ matrix.otp }}
+          version-type: loose
+
+      - name: Run reproducibility gate
+        run: go test -v -run TestReproducibility -timeout 120s ./transpiler3/beam/build/

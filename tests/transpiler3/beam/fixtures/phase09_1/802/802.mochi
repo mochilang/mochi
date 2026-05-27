@@ -1,0 +1,9 @@
+agent Flag {
+    var count: int = 0
+    intent tick() { count = count + 1 }
+    intent read(): int { return count }
+}
+let f = spawn Flag()
+f.tick()
+f.tick()
+print(f.read())

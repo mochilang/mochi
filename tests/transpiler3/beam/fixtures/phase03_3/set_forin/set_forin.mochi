@@ -1,0 +1,4 @@
+var s: set<int> = set{42}
+for x in s {
+  print(x)
+}

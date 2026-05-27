@@ -1,0 +1,23 @@
+// Phase 10.2: subscribe_limit — backpressure drops messages over the limit.
+// Emit 5 messages to a subscriber with limit=2. The first 2 fill the buffer;
+// messages 3, 4, 5 are dropped. We read the 2 buffered messages.
+// Then emit 1 more which passes through since the buffer is now empty.
+extern fun timer.sleep(ms: int): int
+let s: stream<int> = make_stream(8)
+let sub = subscribe_limit(s, 2)
+emit(s, 1)
+emit(s, 2)
+emit(s, 3)
+emit(s, 4)
+emit(s, 5)
+// Brief pause to let all events propagate to the subscriber buffer.
+let _ = timer.sleep(20)
+// Read two buffered messages (3, 4, 5 were dropped).
+let a = recv_sub(sub)
+let b = recv_sub(sub)
+print(a)
+print(b)
+// Now the buffer is empty; emit one more which should pass through.
+emit(s, 99)
+let c = recv_sub(sub)
+print(c)

@@ -54,6 +54,10 @@ type Program struct {
 	// Phase 10.4 adds this; emit walks it to write inline C wrapper
 	// functions that forward calls to the JS companion via mochi_js_rpc_*.
 	JSFuncs []*JSFuncDecl
+
+	// Datalog holds facts and rules accumulated from `fact`/`rule` declarations.
+	// Phase 8.0 adds this so the BEAM lowerer can implement compile-time evaluation.
+	Datalog *DatalogProgram
 }
 
 // GoFuncDecl describes a Go FFI function. Phase 10.2.
@@ -92,6 +96,11 @@ type ExternFuncDecl struct {
 	ReturnType Type
 	// ReturnRecord carries the record identity when ReturnType==TypeRecord.
 	ReturnRecord string
+	// OrigName is the original Mochi-source name (may contain dots for
+	// dotted calls like "lists.reverse"). Phase 12.1: the BEAM lowerer uses
+	// this to emit the correct module:function/arity call instead of a local
+	// apply. Empty for plain (non-dotted) extern declarations.
+	OrigName string
 }
 
 // RecordDecl declares one record type. Field order is source
@@ -473,7 +482,9 @@ type VarRef struct {
 	ChanElemType      Type    // valid when VarType==TypeChan (Phase 9.1)
 	StreamElemType    Type    // valid when VarType==TypeStream (Phase 9.2)
 	SubElemType       Type    // valid when VarType==TypeSub (Phase 9.2)
+	FutureElemType    Type    // valid when VarType==TypeFuture (Phase 11.0)
 	AgentName         string  // valid when VarType==TypeAgent (Phase 9.3)
+	IsSpawnedRef      bool    // valid when VarType==TypeAgent: true when binding came from `spawn` (Phase 9.1)
 }
 
 func (v *VarRef) Type() Type { return v.VarType }
@@ -539,6 +550,7 @@ type LetStmt struct {
 	ChanElemType      Type    // valid when VarType==TypeChan (Phase 9.1)
 	StreamElemType    Type    // valid when VarType==TypeStream (Phase 9.2)
 	SubElemType       Type    // valid when VarType==TypeSub (Phase 9.2)
+	FutureElemType    Type    // valid when VarType==TypeFuture (Phase 11.0)
 	AgentName         string  // valid when VarType==TypeAgent (Phase 9.3)
 	Init              Expr
 	Mutable           bool // true for VarStmt-lowered bindings
@@ -783,6 +795,45 @@ type ListSumExpr struct {
 }
 
 func (e *ListSumExpr) Type() Type { return e.ElemType }
+
+// JsonDecodeExpr is the `json_decode(s)` builtin — Phase 14.2.
+// On BEAM it lowers to mochi_json:decode/1 which uses OTP 27 json:decode/1.
+// The result is typed as map<string, string>: top-level JSON object fields
+// with non-string values are coerced to their string representations.
+type JsonDecodeExpr struct{ Input Expr }
+
+func (*JsonDecodeExpr) Type() Type { return TypeMap }
+
+// ListMapExpr is the `map(xs, fn)` builtin — Phase 6.1.
+// On BEAM it lowers to lists:map/2; on C it lowers to a manual loop.
+type ListMapExpr struct {
+	List     Expr
+	Fn       Expr
+	ElemType Type // element type of the result list
+}
+
+func (e *ListMapExpr) Type() Type { return TypeList }
+
+// ListFilterExpr is the `filter(xs, fn)` builtin — Phase 6.1.
+// On BEAM it lowers to lists:filter/2; on C it lowers to a manual loop.
+type ListFilterExpr struct {
+	List     Expr
+	Fn       Expr
+	ElemType Type // element type preserved from the input list
+}
+
+func (e *ListFilterExpr) Type() Type { return TypeList }
+
+// ListFoldlExpr is the `reduce(xs, fn, init)` builtin — Phase 6.1.
+// On BEAM it lowers to lists:foldl/3; on C it lowers to a manual loop.
+type ListFoldlExpr struct {
+	List    Expr
+	Fn      Expr
+	Init    Expr
+	AccType Type // type of the accumulator / return value
+}
+
+func (e *ListFoldlExpr) Type() Type { return e.AccType }
 
 // MathCallExpr is an inline math builtin (abs, floor, ceil) that maps
 // 1:1 to a C math.h function. The emitter renders it as
@@ -1045,6 +1096,126 @@ type MapValuesExpr struct {
 
 func (v *MapValuesExpr) Type() Type { return TypeList }
 
+// ---- Phase 3.3: set type (OTP sets module v2) ----
+
+// SetLiteralExpr constructs a set value from a list of elements.
+// The BEAM lowerer renders this as sets:from_list([Elem1, Elem2, ...]).
+type SetLiteralExpr struct {
+	Elems    []Expr
+	ElemType Type
+}
+
+func (*SetLiteralExpr) Type() Type { return TypeSet }
+
+// SetAddExpr is the `add(s, x)` builtin call. Result is TypeSet;
+// the BEAM lowerer renders this as sets:add_element(X, S).
+type SetAddExpr struct {
+	Receiver Expr
+	Elem     Expr
+	ElemType Type
+}
+
+func (*SetAddExpr) Type() Type { return TypeSet }
+
+// SetHasExpr is the `has(s, x)` or `x in s` builtin call for sets.
+// Result is TypeBool; the BEAM lowerer renders this as sets:is_element(X, S).
+type SetHasExpr struct {
+	Receiver Expr
+	Elem     Expr
+	ElemType Type
+}
+
+func (*SetHasExpr) Type() Type { return TypeBool }
+
+// SetLenExpr is the `len(s)` builtin call for sets.
+// Result is TypeInt; the BEAM lowerer renders this as sets:size(S).
+type SetLenExpr struct {
+	Receiver Expr
+	ElemType Type
+}
+
+func (*SetLenExpr) Type() Type { return TypeInt }
+
+// SetToListExpr converts a set to a list for iteration.
+// The BEAM lowerer renders this as sets:to_list(S).
+// Result is TypeList with the same ElemType as the set.
+type SetToListExpr struct {
+	Receiver Expr
+	ElemType Type
+}
+
+func (*SetToListExpr) Type() Type { return TypeList }
+
+// ---- Phase 3.4 (omap): ordered-map type backed by OTP orddict ----
+
+// OMapLiteralExpr constructs an ordered-map value from a list of key-value pairs.
+// The BEAM lowerer renders this as orddict:from_list([{K1,V1},{K2,V2},...]).
+type OMapLiteralExpr struct {
+	Keys      []Expr
+	Values    []Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (*OMapLiteralExpr) Type() Type { return TypeOMap }
+
+// OMapGetExpr reads `Receiver[Key]` for an omap-typed receiver.
+// The BEAM lowerer renders this as orddict:fetch(Key, Receiver).
+type OMapGetExpr struct {
+	Receiver  Expr
+	Key       Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (e *OMapGetExpr) Type() Type { return e.ValueType }
+
+// OMapSetExpr stores a key-value pair into an omap: `Receiver[Key] = Value`.
+// The BEAM lowerer renders this as orddict:store(Key, Value, Receiver).
+// The result (new omap) is bound back to the variable via OMapPutStmt.
+type OMapSetExpr struct {
+	Receiver  Expr
+	Key       Expr
+	Value     Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (*OMapSetExpr) Type() Type { return TypeOMap }
+
+// OMapHasExpr is the `has(m, k)` builtin call for an omap receiver.
+// The BEAM lowerer renders this as orddict:is_key(Key, Receiver).
+type OMapHasExpr struct {
+	Receiver  Expr
+	Key       Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (*OMapHasExpr) Type() Type { return TypeBool }
+
+// OMapLenExpr is the `len(m)` builtin call when m is an omap.
+// orddict is a list, so the BEAM lowerer renders this as erlang:length(M).
+type OMapLenExpr struct {
+	Receiver  Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (*OMapLenExpr) Type() Type { return TypeInt }
+
+// OMapPutStmt is the statement form of `m[k] = v` for omap receivers.
+// The BEAM lowerer rebinds M to orddict:store(K, V, M).
+type OMapPutStmt struct {
+	Name      string // variable name of the omap
+	Key       Expr
+	Value     Expr
+	KeyType   Type
+	ValueType Type
+}
+
+func (*OMapPutStmt) isStmt() {}
+
 // ---- Phase 4: sum types and Maranget pattern matching ----
 
 // UnionDecl declares one sum type (tagged union). Each variant maps to
@@ -1166,10 +1337,12 @@ func (v *VariantFieldAccess) Type() Type { return v.Result }
 // MatchArm is one case arm inside a MatchStmt. VariantName is empty
 // for the wildcard arm (_). Bindings are the field-name → C-variable
 // mappings generated by the lowerer for the pattern variables.
+// Guard is non-nil for arms with a `when <expr>` guard clause (Phase 5.1).
 type MatchArm struct {
 	VariantName string
 	Tag         uint8
 	Bindings    []MatchBinding
+	Guard       Expr // nil when no guard (always-match); bool-typed expression when present
 	Body        *Block
 }
 
@@ -1291,6 +1464,31 @@ func (*AppendFileStmt) isStmt() {}
 type LinesExpr struct{ Path Expr }
 
 func (*LinesExpr) Type() Type { return TypeList }
+
+// HttpGetExpr performs an HTTP GET and returns the response body as a string.
+// On BEAM it calls mochi_fetch:get/1 (httpc-backed). Phase 14.0.
+type HttpGetExpr struct{ URL Expr }
+
+func (*HttpGetExpr) Type() Type { return TypeString }
+
+// AsyncExpr wraps a body expression in a spawned process via
+// mochi_async:async/1. The result is a future reference (TypeFuture).
+// Phase 11.0.
+type AsyncExpr struct {
+	Body     Expr // the expression to evaluate asynchronously
+	ElemType Type // the element type T of the resulting future<T>
+}
+
+func (*AsyncExpr) Type() Type { return TypeFuture }
+
+// AwaitExpr blocks until a future resolves and returns the result.
+// On BEAM it calls mochi_async:await/1. Phase 11.1.
+type AwaitExpr struct {
+	Future   Expr // TypeFuture expression
+	ElemType Type // the element type T; this is the Type() of AwaitExpr
+}
+
+func (e *AwaitExpr) Type() Type { return e.ElemType }
 
 // LoadCSVExpr reads a CSV file and returns a list<list<string>> where
 // each outer element is a row and each inner element is a cell value.
@@ -1443,6 +1641,16 @@ type SubMakeExpr struct {
 
 func (e *SubMakeExpr) Type() Type { return TypeSub }
 
+// SubMakeLimitExpr creates a subscriber handle with backpressure: incoming
+// messages are dropped when the buffer holds Limit items. Phase 10.2.
+type SubMakeLimitExpr struct {
+	Stream   Expr // must be TypeStream
+	Limit    Expr // must be TypeInt; drop threshold
+	ElemType Type
+}
+
+func (e *SubMakeLimitExpr) Type() Type { return TypeSub }
+
 // SubRecvExpr receives the next value from subscriber Sub, blocking (yielding)
 // when no new data is available. Type() returns ElemType (Phase 9.2).
 type SubRecvExpr struct {
@@ -1472,11 +1680,12 @@ type AgentIntentDecl struct {
 
 // AgentDecl declares one agent type. Fields are the mutable state
 // (scalar-typed only in Phase 9.3). Intents are the synchronous
-// method bodies.
+// method bodies. OnClose holds the optional terminate body (Phase 9.3).
 type AgentDecl struct {
-	Name    string
-	Fields  []RecordField    // same layout as RecordDecl; scalar types only in Phase 9.3
-	Intents []AgentIntentDecl
+	Name     string
+	Fields   []RecordField    // same layout as RecordDecl; scalar types only in Phase 9.3
+	Intents  []AgentIntentDecl
+	OnClose  *Block           // Phase 9.3: body of the on_close { ... } block; nil if absent
 }
 
 // AgentLit constructs an agent value with every field filled in.
@@ -1497,18 +1706,32 @@ type AgentMethodRef struct {
 	IntentName string
 	Receiver   Expr   // TypeAgent variable reference
 	ReturnType Type   // return type of the intent
+	SpawnedRef bool   // Phase 9.1: true when receiver came from `spawn`
 }
 
 func (*AgentMethodRef) Type() Type { return TypeInvalid } // transient
 
+// AgentSpawnExpr creates a supervised gen_server process for the named agent
+// type and returns an opaque agent ref (Erlang PID). Phase 9.1.
+// The Erlang runtime spawns a message-loop process seeded with InitState.
+type AgentSpawnExpr struct {
+	AgentName string // e.g. "Counter"
+	InitArgs  []Expr // field-value arguments for the initial state map
+}
+
+func (*AgentSpawnExpr) Type() Type { return TypeAgent }
+
 // AgentIntentCallExpr is a synchronous intent call that returns a value.
 // Emitted as `mochi_agent_NAME__INTENT(&receiver, args...)`.
+// When SpawnedRef is true, the receiver is a PID from AgentSpawnExpr and
+// the call must use a message-passing protocol instead of functional threading.
 type AgentIntentCallExpr struct {
 	AgentName  string
 	IntentName string
 	Receiver   Expr // TypeAgent
 	Args       []Expr
 	Result     Type // return type of the intent
+	SpawnedRef bool // Phase 9.1: true when receiver is a PID from spawn
 }
 
 func (e *AgentIntentCallExpr) Type() Type { return e.Result }
@@ -1516,11 +1739,61 @@ func (e *AgentIntentCallExpr) Type() Type { return e.Result }
 // AgentIntentCallStmt is a synchronous intent call that discards the
 // return value (or returns TypeUnit). Emitted as
 // `mochi_agent_NAME__INTENT(&receiver, args...);`.
+// When SpawnedRef is true, the receiver is a PID from AgentSpawnExpr.
 type AgentIntentCallStmt struct {
 	AgentName  string
 	IntentName string
 	Receiver   Expr // TypeAgent
 	Args       []Expr
+	SpawnedRef bool // Phase 9.1: true when receiver is a PID from spawn
 }
 
 func (*AgentIntentCallStmt) isStmt() {}
+
+// ---- Phase 8 (BEAM): Datalog IR nodes ----
+
+// DatalogFact is one ground tuple from `fact Name(arg1, ...)`.
+// Args are raw string values (unquoted). Phase 8.0.
+type DatalogFact struct {
+	Name string
+	Args []string
+}
+
+// DatalogRuleBody is one literal in a Datalog rule body.
+type DatalogRuleBody struct {
+	Name  string   // relation name (empty when IsNeq)
+	Args  []string // var names or "\"literal\""-quoted constants
+	IsNot bool     // negation-as-failure (not Pred(...))
+	IsNeq bool     // X != Y inequality
+	NeqA  string   // left variable when IsNeq
+	NeqB  string   // right variable when IsNeq
+}
+
+// DatalogRule is one Datalog rule from `rule HeadName(headArgs) :- body`.
+type DatalogRule struct {
+	HeadName string
+	HeadArgs []string // variable names or "\"const\"" constants
+	Body     []DatalogRuleBody
+}
+
+// DatalogProgram holds all facts and rules at the point of a query.
+type DatalogProgram struct {
+	Facts []DatalogFact
+	Rules []DatalogRule
+}
+
+// DatalogQueryExpr evaluates `query Name(args)` and returns list<string>
+// (flat: free-variable values from all matching tuples concatenated).
+// The C backend uses CResultVar (the variable reference) plus the RawCStmt
+// already added to the block; the BEAM backend runs a compile-time Go
+// semi-naive evaluator over Prog.
+type DatalogQueryExpr struct {
+	QueryName string
+	QueryArgs []string        // "" = free variable; "\"foo\"" = bound constant
+	Prog      *DatalogProgram
+	// CResultVar is the C variable name (e.g. "__dl1_result") used by the
+	// C backend; the corresponding setup RawCStmt is already in the block.
+	CResultVar string
+}
+
+func (*DatalogQueryExpr) Type() Type { return TypeList }

@@ -1,0 +1,15 @@
+// Phase 9.3: on close block compiles and agent still works correctly.
+// The on close body runs when the agent is stopped; here we only
+// verify the normal intent calls work (close is not triggered explicitly).
+agent Counter {
+    var count: int = 0
+    intent increment() { count = count + 1 }
+    intent value(): int { return count }
+    on close { print("closing") }
+}
+let c = spawn Counter()
+c.increment()
+c.increment()
+c.increment()
+let v = c.value()
+print(v)

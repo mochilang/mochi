@@ -186,6 +186,8 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 				agDecl.Fields = append(agDecl.Fields, aotir.RecordField{Name: fieldName, Type: ft})
 			case blk.Intent != nil:
 				// Intent bodies are lowered in the second pass below.
+			case blk.OnClose != nil:
+				// on_close body is lowered in the second pass below.
 			case blk.Assign != nil:
 				// Assignments in agent body are not supported in Phase 9.3.
 			case blk.On != nil:
@@ -247,11 +249,18 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 			returnType: retTR.t,
 		}
 		// Also populate out.ExternFuncs.
+		// OrigName preserves the Mochi dotted name (e.g. "lists.reverse") so
+		// that the BEAM lowerer can split it into module + function. Phase 12.1.
+		origName := ""
+		if len(ef.Tail) > 0 {
+			origName = mochiName
+		}
 		out.ExternFuncs = append(out.ExternFuncs, &aotir.ExternFuncDecl{
 			Name:         cName,
 			Params:       params,
 			ReturnType:   retTR.t,
 			ReturnRecord: retTR.rec,
+			OrigName:     origName,
 		})
 	}
 
@@ -435,15 +444,25 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 		ag := st.Agent
 		agDecl := agents[ag.Name]
 		for _, blk := range ag.Body {
-			if blk == nil || blk.Intent == nil {
+			if blk == nil {
 				continue
 			}
-			intent := blk.Intent
-			intentDecl, err := lowerAgentIntentBody(records, unions, agents, funcs, externFuncs, goFuncNames, pythonFuncNames, jsFuncNames, ag.Name, agDecl, intent, &anonCounter, &liftedFuncs, &shimFuncs)
-			if err != nil {
-				return nil, fmt.Errorf("transpiler3/c/lower: agent %q intent %q: %w", ag.Name, intent.Name, err)
+			if blk.Intent != nil {
+				intent := blk.Intent
+				intentDecl, err := lowerAgentIntentBody(records, unions, agents, funcs, externFuncs, goFuncNames, pythonFuncNames, jsFuncNames, ag.Name, agDecl, intent, &anonCounter, &liftedFuncs, &shimFuncs)
+				if err != nil {
+					return nil, fmt.Errorf("transpiler3/c/lower: agent %q intent %q: %w", ag.Name, intent.Name, err)
+				}
+				agDecl.Intents = append(agDecl.Intents, *intentDecl)
 			}
-			agDecl.Intents = append(agDecl.Intents, *intentDecl)
+			// Phase 9.3: lower the on_close body into the AgentDecl.
+			if blk.OnClose != nil {
+				closeBody, err := lowerAgentOnCloseBody(records, unions, agents, funcs, externFuncs, goFuncNames, pythonFuncNames, jsFuncNames, ag.Name, agDecl, blk.OnClose, &anonCounter, &liftedFuncs, &shimFuncs)
+				if err != nil {
+					return nil, fmt.Errorf("transpiler3/c/lower: agent %q on_close: %w", ag.Name, err)
+				}
+				agDecl.OnClose = closeBody
+			}
 		}
 	}
 
@@ -868,7 +887,9 @@ type lbinding struct {
 	chanElem     aotir.Type    // element type when t==TypeChan (Phase 9.1)
 	streamElem   aotir.Type    // element type when t==TypeStream (Phase 9.2)
 	subElem      aotir.Type    // element type when t==TypeSub (Phase 9.2)
+	futureElem   aotir.Type    // element type when t==TypeFuture (Phase 11.0)
 	agentName    string        // agent name when t==TypeAgent (Phase 9.3)
+	isSpawned    bool          // true when TypeAgent binding came from `spawn` (Phase 9.1)
 	// emitName overrides the C identifier emitted for this variable when
 	// non-empty. Used by Phase 5.1 capturing closures to make captured
 	// variables emit as `__e->fieldname` instead of the original name.
@@ -952,6 +973,9 @@ func (l *lowerer) lowerStatement(out *aotir.Block, st *parser.Statement) error {
 	case st.EmitCall != nil:
 		// Phase 9.2: emit(stream, val) parsed as EmitCallStmt (keyword form).
 		return l.lowerEmitCallStmt(out, st.EmitCall)
+	case st.Fetch != nil:
+		// Phase 14.0: fetch <url> into <var>
+		return l.lowerFetchStmt(out, st.Fetch)
 	}
 	return fmt.Errorf("unsupported statement in Phase 3.1")
 }
@@ -1350,6 +1374,18 @@ func exprElemType(e aotir.Expr) aotir.Type {
 			return aotir.TypeString
 		}
 		return aotir.TypeInvalid
+	case *aotir.DatalogQueryExpr:
+		// Phase 8.0: Datalog query result is list<string>.
+		return aotir.TypeString
+	case *aotir.ListMapExpr:
+		return v.ElemType
+	case *aotir.ListFilterExpr:
+		return v.ElemType
+	case *aotir.SetLiteralExpr:
+		// Phase 3.3: exprElemType also covers set element types via ElemType field.
+		return v.ElemType
+	case *aotir.SetAddExpr:
+		return v.ElemType
 	}
 	return aotir.TypeInvalid
 }
@@ -1400,6 +1436,12 @@ func exprKeyType(e aotir.Expr) aotir.Type {
 		if v.ElemType == aotir.TypeMap {
 			return v.MapElemKeyType
 		}
+	case *aotir.JsonDecodeExpr:
+		return aotir.TypeString
+	case *aotir.OMapLiteralExpr:
+		return v.KeyType
+	case *aotir.OMapSetExpr:
+		return v.KeyType
 	}
 	return aotir.TypeInvalid
 }
@@ -1419,6 +1461,12 @@ func exprValueType(e aotir.Expr) aotir.Type {
 		if v.ElemType == aotir.TypeMap {
 			return v.MapElemValueType
 		}
+	case *aotir.JsonDecodeExpr:
+		return aotir.TypeString
+	case *aotir.OMapLiteralExpr:
+		return v.ValueType
+	case *aotir.OMapSetExpr:
+		return v.ValueType
 	}
 	return aotir.TypeInvalid
 }
@@ -1437,6 +1485,22 @@ func exprListValueElemType(e aotir.Expr) aotir.Type {
 		return v.ListValueElemType
 	case *aotir.CallExpr:
 		return v.ResultListValueElemType
+	}
+	return aotir.TypeInvalid
+}
+
+// exprSetElemType extracts the element type of a set-typed expression.
+// Phase 3.3.
+func exprSetElemType(e aotir.Expr) aotir.Type {
+	switch v := e.(type) {
+	case *aotir.VarRef:
+		if v.VarType == aotir.TypeSet {
+			return v.ElemType
+		}
+	case *aotir.SetLiteralExpr:
+		return v.ElemType
+	case *aotir.SetAddExpr:
+		return v.ElemType
 	}
 	return aotir.TypeInvalid
 }
@@ -1642,8 +1706,15 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 	// Phase 9.2: declStreamElem and declSubElem carry element types for stream/sub.
 	declStreamElem := exprStreamElemType(value)
 	declSubElem := exprSubElemType(value)
+	// Phase 11.0: declFutureElem carries the element type when declType==TypeFuture.
+	declFutureElem := exprFutureElemType(value)
 	// Phase 9.3: declAgentName carries the agent name when declType==TypeAgent.
 	declAgentName := exprAgentName(value)
+	// Phase 9.1: track whether this binding came from `spawn` (AgentSpawnExpr).
+	declIsSpawned := false
+	if _, ok := value.(*aotir.AgentSpawnExpr); ok {
+		declIsSpawned = true
+	}
 	if declared != nil {
 		tr, err := typeFromRef(l.records, l.unions, declared)
 		if err != nil {
@@ -1709,6 +1780,9 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		if tr.subElem != aotir.TypeInvalid {
 			declSubElem = tr.subElem
 		}
+		if tr.futureElem != aotir.TypeInvalid {
+			declFutureElem = tr.futureElem
+		}
 	}
 	l.scope.vars[name] = lbinding{
 		t:            declType,
@@ -1727,7 +1801,9 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		chanElem:     declChanElem,
 		streamElem:   declStreamElem,
 		subElem:      declSubElem,
+		futureElem:   declFutureElem,
 		agentName:    declAgentName,
+		isSpawned:    declIsSpawned,
 	}
 	out.Statements = append(out.Statements, &aotir.LetStmt{
 		Name:              name,
@@ -1746,6 +1822,7 @@ func (l *lowerer) lowerBinding(out *aotir.Block, name string, declared *parser.T
 		ChanElemType:      declChanElem,
 		StreamElemType:    declStreamElem,
 		SubElemType:       declSubElem,
+		FutureElemType:    declFutureElem,
 		AgentName:         declAgentName,
 		Init:              value,
 		Mutable:           mutable,
@@ -1810,6 +1887,19 @@ func (l *lowerer) lowerAssign(out *aotir.Block, as *parser.AssignStmt) error {
 		}
 		if vval := exprValueType(value); vval != b.value {
 			return fmt.Errorf("assign %q: binding holds map<_,%s>, value produces map<_,%s>", as.Name, b.value, vval)
+		}
+	}
+	if b.t == aotir.TypeSet {
+		if velem := exprSetElemType(value); velem != b.elem {
+			return fmt.Errorf("assign %q: binding holds set<%s>, value produces set<%s>", as.Name, b.elem, velem)
+		}
+	}
+	if b.t == aotir.TypeOMap {
+		if vkey := exprKeyType(value); vkey != b.key {
+			return fmt.Errorf("assign %q: binding holds omap<%s,_>, value produces omap<%s,_>", as.Name, b.key, vkey)
+		}
+		if vval := exprValueType(value); vval != b.value {
+			return fmt.Errorf("assign %q: binding holds omap<_,%s>, value produces omap<_,%s>", as.Name, b.value, vval)
 		}
 	}
 	// Phase 9.3: agent field bindings use emitName ("__self->field") as
@@ -1887,6 +1977,29 @@ func (l *lowerer) lowerIndexAssign(out *aotir.Block, as *parser.AssignStmt) erro
 			return fmt.Errorf("map-put %q: binding value %s, got %s", as.Name, b.value, valExpr.Type())
 		}
 		out.Statements = append(out.Statements, &aotir.MapPutStmt{
+			Name:      as.Name,
+			Key:       keyExpr,
+			Value:     valExpr,
+			KeyType:   b.key,
+			ValueType: b.value,
+		})
+		return nil
+	case aotir.TypeOMap:
+		keyExpr, err := l.lowerExpr(idx.Start)
+		if err != nil {
+			return fmt.Errorf("omap-put %q key: %w", as.Name, err)
+		}
+		if keyExpr.Type() != b.key {
+			return fmt.Errorf("omap-put %q: binding key %s, got %s", as.Name, b.key, keyExpr.Type())
+		}
+		valExpr, err := l.lowerExpr(as.Value)
+		if err != nil {
+			return fmt.Errorf("omap-put %q value: %w", as.Name, err)
+		}
+		if valExpr.Type() != b.value {
+			return fmt.Errorf("omap-put %q: binding value %s, got %s", as.Name, b.value, valExpr.Type())
+		}
+		out.Statements = append(out.Statements, &aotir.OMapPutStmt{
 			Name:      as.Name,
 			Key:       keyExpr,
 			Value:     valExpr,
@@ -2046,8 +2159,13 @@ func (l *lowerer) lowerForEach(out *aotir.Block, fs *parser.ForStmt) error {
 			ListValueElemType: exprListValueElemType(source),
 		}
 		elem = key
+	case aotir.TypeSet:
+		// Phase 3.3: for x in set iterates the set's elements via SetToListExpr.
+		setElem := exprSetElemType(source)
+		listExpr = &aotir.SetToListExpr{Receiver: source, ElemType: setElem}
+		elem = setElem
 	default:
-		return fmt.Errorf("for %s in: source must be a list or a map, got %s", fs.Name, source.Type())
+		return fmt.Errorf("for %s in: source must be a list, map, or set, got %s", fs.Name, source.Type())
 	}
 	prev := l.scope
 	l.scope = newLScope(prev)
@@ -2251,6 +2369,23 @@ func (l *lowerer) lowerEmitCallStmt(out *aotir.Block, ec *parser.EmitCallStmt) e
 	return nil
 }
 
+// lowerFetchStmt lowers `fetch <url> into <var>` to a LetStmt binding an
+// HttpGetExpr to the target variable. Phase 14.0.
+func (l *lowerer) lowerFetchStmt(out *aotir.Block, fs *parser.FetchStmt) error {
+	urlExpr, err := l.lowerExpr(fs.URL)
+	if err != nil {
+		return fmt.Errorf("fetch url: %w", err)
+	}
+	httpGet := &aotir.HttpGetExpr{URL: urlExpr}
+	out.Statements = append(out.Statements, &aotir.LetStmt{
+		Name:    fs.Target,
+		VarType: aotir.TypeString,
+		Init:    httpGet,
+	})
+	l.scope.vars[fs.Target] = lbinding{t: aotir.TypeString}
+	return nil
+}
+
 // lowerSubscribeCall lowers `subscribe(stream)` to a SubMakeExpr. Phase 9.2.
 func (l *lowerer) lowerSubscribeCall(call *parser.CallExpr) (aotir.Expr, error) {
 	if len(call.Args) != 1 {
@@ -2270,6 +2405,33 @@ func (l *lowerer) lowerSubscribeCall(call *parser.CallExpr) (aotir.Expr, error) 
 	return &aotir.SubMakeExpr{Stream: streamExpr, ElemType: elem}, nil
 }
 
+// lowerSubscribeLimitCall lowers `subscribe_limit(stream, N)` to a SubMakeLimitExpr.
+// Phase 10.2: the subscriber drops incoming messages when its buffer holds N items.
+func (l *lowerer) lowerSubscribeLimitCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 2 {
+		return nil, fmt.Errorf("subscribe_limit() takes exactly 2 arguments (stream, limit), got %d", len(call.Args))
+	}
+	streamExpr, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("subscribe_limit stream: %w", err)
+	}
+	if streamExpr.Type() != aotir.TypeStream {
+		return nil, fmt.Errorf("subscribe_limit: first argument must be stream<T>, got %s", streamExpr.Type())
+	}
+	limitExpr, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("subscribe_limit limit: %w", err)
+	}
+	if limitExpr.Type() != aotir.TypeInt {
+		return nil, fmt.Errorf("subscribe_limit: second argument must be int, got %s", limitExpr.Type())
+	}
+	elem := exprStreamElemType(streamExpr)
+	if elem == aotir.TypeInvalid {
+		return nil, fmt.Errorf("subscribe_limit: cannot determine element type of stream")
+	}
+	return &aotir.SubMakeLimitExpr{Stream: streamExpr, Limit: limitExpr, ElemType: elem}, nil
+}
+
 // lowerRecvSubCall lowers `recv_sub(sub)` to a SubRecvExpr. Phase 9.2.
 func (l *lowerer) lowerRecvSubCall(call *parser.CallExpr) (aotir.Expr, error) {
 	if len(call.Args) != 1 {
@@ -2287,6 +2449,52 @@ func (l *lowerer) lowerRecvSubCall(call *parser.CallExpr) (aotir.Expr, error) {
 		return nil, fmt.Errorf("recv_sub: cannot determine element type of subscriber")
 	}
 	return &aotir.SubRecvExpr{Sub: subExpr, ElemType: elem}, nil
+}
+
+// lowerAwaitAllCall lowers `await_all(futures)` to a CallExpr node
+// that the BEAM lowerer maps to mochi_async:await_all/1. Phase 11.2.
+func (l *lowerer) lowerAwaitAllCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("await_all() takes exactly 1 argument (list of futures), got %d", len(call.Args))
+	}
+	arg, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("await_all arg: %w", err)
+	}
+	if arg.Type() != aotir.TypeList {
+		return nil, fmt.Errorf("await_all: argument must be a list of futures, got %s", arg.Type())
+	}
+	// Determine the result element type from the future element type.
+	// The argument is list<future<T>>; the result is list<T>.
+	// We derive T by looking at the first element's AsyncExpr.ElemType
+	// or by inspecting the ListLit elements.
+	resultElemType := extractFutureListElemType(arg)
+	return &aotir.CallExpr{
+		Func:           "__await_all__",
+		Args:           []aotir.Expr{arg},
+		Result:         aotir.TypeList,
+		ResultElemType: resultElemType,
+	}, nil
+}
+
+// extractFutureListElemType extracts T from a list<future<T>> expression.
+// Returns TypeInvalid if it cannot be determined.
+func extractFutureListElemType(e aotir.Expr) aotir.Type {
+	ll, ok := e.(*aotir.ListLit)
+	if !ok || len(ll.Elems) == 0 {
+		return aotir.TypeInvalid
+	}
+	// Each element of the list should be a future<T> expression.
+	first := ll.Elems[0]
+	switch v := first.(type) {
+	case *aotir.AsyncExpr:
+		return v.ElemType
+	case *aotir.VarRef:
+		if v.VarType == aotir.TypeFuture {
+			return v.FutureElemType
+		}
+	}
+	return aotir.TypeInvalid
 }
 
 // lowerReturn lowers a `return` statement. From main (unit return)
@@ -2404,6 +2612,7 @@ type typeResolution struct {
 	chanElem     aotir.Type    // valid when t==TypeChan (Phase 9.1)
 	streamElem   aotir.Type    // valid when t==TypeStream (Phase 9.2)
 	subElem      aotir.Type    // valid when t==TypeSub (Phase 9.2)
+	futureElem   aotir.Type    // valid when t==TypeFuture (Phase 11.0)
 }
 
 // typeFromRef maps a parser.TypeRef to a typeResolution. Phase 3.2
@@ -2487,6 +2696,31 @@ func typeFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.
 				return typeResolution{}, err
 			}
 			return typeResolution{t: aotir.TypeList, elem: elem, elemRec: elemRec, innerElem: innerElem, mapElemKey: mapKey, mapElemValue: mapVal}, nil
+		case "set":
+			if len(ref.Generic.Args) != 1 {
+				return typeResolution{}, fmt.Errorf("set<T> takes exactly one type argument, got %d", len(ref.Generic.Args))
+			}
+			inner, err := typeFromRef(records, unions, ref.Generic.Args[0])
+			if err != nil {
+				return typeResolution{}, fmt.Errorf("set element: %w", err)
+			}
+			if !isScalarSetElemType(inner.t) {
+				return typeResolution{}, fmt.Errorf("set<T>: element type %s not supported in Phase 3.3 (scalar types only)", inner.t)
+			}
+			return typeResolution{t: aotir.TypeSet, elem: inner.t}, nil
+		case "omap":
+			if len(ref.Generic.Args) != 2 {
+				return typeResolution{}, fmt.Errorf("omap[K,V] takes exactly two type arguments, got %d", len(ref.Generic.Args))
+			}
+			key, err := mapKeyFromRef(records, unions, ref.Generic.Args[0])
+			if err != nil {
+				return typeResolution{}, err
+			}
+			value, _, err := mapValueFromRef(records, unions, ref.Generic.Args[1])
+			if err != nil {
+				return typeResolution{}, err
+			}
+			return typeResolution{t: aotir.TypeOMap, key: key, value: value}, nil
 		case "map":
 			if len(ref.Generic.Args) != 2 {
 				return typeResolution{}, fmt.Errorf("map<K,V> takes exactly two type arguments, got %d", len(ref.Generic.Args))
@@ -2542,6 +2776,16 @@ func typeFromRef(records map[string]*aotir.RecordDecl, unions map[string]*aotir.
 				return typeResolution{}, fmt.Errorf("sub<T>: element type %s not supported in Phase 9.2 (scalar types only)", inner.t)
 			}
 			return typeResolution{t: aotir.TypeSub, subElem: inner.t}, nil
+		case "future":
+			// Phase 11.0: future<T> type annotation for async/await.
+			if len(ref.Generic.Args) != 1 {
+				return typeResolution{}, fmt.Errorf("future<T> takes exactly one type argument, got %d", len(ref.Generic.Args))
+			}
+			inner, err := typeFromRef(records, unions, ref.Generic.Args[0])
+			if err != nil {
+				return typeResolution{}, fmt.Errorf("future element: %w", err)
+			}
+			return typeResolution{t: aotir.TypeFuture, futureElem: inner.t}, nil
 		}
 		return typeResolution{}, fmt.Errorf("generic type %q not supported in Phase 3.2", ref.Generic.Name)
 	}
@@ -2716,9 +2960,26 @@ func exprSubElemType(e aotir.Expr) aotir.Type {
 	switch v := e.(type) {
 	case *aotir.SubMakeExpr:
 		return v.ElemType
+	case *aotir.SubMakeLimitExpr:
+		// Phase 10.2: subscribe_limit also produces a TypeSub handle.
+		return v.ElemType
 	case *aotir.VarRef:
 		if v.VarType == aotir.TypeSub {
 			return v.SubElemType
+		}
+	}
+	return aotir.TypeInvalid
+}
+
+// exprFutureElemType extracts the element type T from a future<T> expression.
+// Phase 11.0.
+func exprFutureElemType(e aotir.Expr) aotir.Type {
+	switch v := e.(type) {
+	case *aotir.AsyncExpr:
+		return v.ElemType
+	case *aotir.VarRef:
+		if v.VarType == aotir.TypeFuture {
+			return v.FutureElemType
 		}
 	}
 	return aotir.TypeInvalid
@@ -2817,6 +3078,18 @@ func (l *lowerer) lowerBinary(bin *parser.BinaryExpr) (aotir.Expr, error) {
 				KeyType:           recvKey,
 				ValueType:         exprValueType(right),
 				ListValueElemType: exprListValueElemType(right),
+			}
+			continue
+		}
+		if op.Op == "in" && right.Type() == aotir.TypeSet {
+			elemType := exprSetElemType(right)
+			if left.Type() != elemType {
+				return nil, fmt.Errorf("`in` set: value type is %s, set element type is %s", left.Type(), elemType)
+			}
+			left = &aotir.SetHasExpr{
+				Receiver: right,
+				Elem:     left,
+				ElemType: elemType,
 			}
 			continue
 		}
@@ -3043,6 +3316,36 @@ func (l *lowerer) lowerPostfix(p *parser.PostfixExpr) (aotir.Expr, error) {
 	if p == nil || p.Target == nil {
 		return nil, fmt.Errorf("nil postfix")
 	}
+
+	// Phase 12.1: dotted extern fun call in expression position.
+	// Pattern: SelectorExpr{Root:"erlang", Tail:["abs"]} + CallOp{Args:[...]}
+	// The selector Root is NOT in scope as a variable; the full dotted name IS in externFuncs.
+	if sel := p.Target.Selector; sel != nil && len(sel.Tail) >= 1 && len(p.Ops) == 1 {
+		if callOp := p.Ops[0].Call; callOp != nil {
+			// Build the full dotted name from Root + Tail.
+			dotted := sel.Root
+			for _, t := range sel.Tail {
+				dotted += "." + t
+			}
+			cName := strings.ReplaceAll(dotted, ".", "_")
+			_, rootInScope := l.scope.lookup(sel.Root)
+			if sig, ok := l.externFuncs[cName]; ok && !rootInScope {
+				// Resolve call args and emit a CallExpr directly.
+				syntheticCall := &parser.CallExpr{Func: cName, Args: callOp.Args}
+				args, err := l.lowerCallArgs(syntheticCall, sig)
+				if err != nil {
+					return nil, fmt.Errorf("extern fun %q: %w", dotted, err)
+				}
+				emitName := cName
+				return &aotir.CallExpr{
+					Func:   emitName,
+					Args:   args,
+					Result: sig.returnType,
+				}, nil
+			}
+		}
+	}
+
 	expr, err := l.lowerPrimary(p.Target)
 	if err != nil {
 		return nil, err
@@ -3168,6 +3471,22 @@ func (l *lowerer) lowerIndexOp(receiver aotir.Expr, idx *parser.IndexOp) (aotir.
 			ValueType:         recvVal,
 			ListValueElemType: exprListValueElemType(receiver),
 		}, nil
+	case aotir.TypeOMap:
+		key, err := l.lowerExpr(idx.Start)
+		if err != nil {
+			return nil, fmt.Errorf("omap index key: %w", err)
+		}
+		recvKey := exprKeyType(receiver)
+		recvVal := exprValueType(receiver)
+		if key.Type() != recvKey {
+			return nil, fmt.Errorf("omap key must be %s, got %s", recvKey, key.Type())
+		}
+		return &aotir.OMapGetExpr{
+			Receiver:  receiver,
+			Key:       key,
+			KeyType:   recvKey,
+			ValueType: recvVal,
+		}, nil
 	case aotir.TypeString:
 		index, err := l.lowerExpr(idx.Start)
 		if err != nil {
@@ -3248,6 +3567,11 @@ func (l *lowerer) lowerFieldOp(receiver aotir.Expr, fieldName string) (aotir.Exp
 		if !ok {
 			return nil, fmt.Errorf("field access .%s: agent %q is not declared", fieldName, agName)
 		}
+		// Determine if receiver came from a spawn (Phase 9.1).
+		isSpawned := false
+		if vr, ok := receiver.(*aotir.VarRef); ok {
+			isSpawned = vr.IsSpawnedRef
+		}
 		for i := range agDecl.Intents {
 			if agDecl.Intents[i].Name == fieldName {
 				return &aotir.AgentMethodRef{
@@ -3255,6 +3579,7 @@ func (l *lowerer) lowerFieldOp(receiver aotir.Expr, fieldName string) (aotir.Exp
 					IntentName: fieldName,
 					Receiver:   receiver,
 					ReturnType: agDecl.Intents[i].ReturnType,
+					SpawnedRef: isSpawned,
 				}, nil
 			}
 		}
@@ -3805,7 +4130,9 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 				ChanElemType:      b.chanElem,
 				StreamElemType:    b.streamElem,
 				SubElemType:       b.subElem,
+				FutureElemType:    b.futureElem,
 				AgentName:         b.agentName,
+				IsSpawnedRef:      b.isSpawned,
 			}
 		}
 		for _, field := range pr.Selector.Tail {
@@ -3830,6 +4157,12 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	if pr.List != nil {
 		return l.lowerListLit(pr.List)
 	}
+	if pr.Set != nil {
+		return l.lowerSetLit(pr.Set)
+	}
+	if pr.OMap != nil {
+		return l.lowerOMapLit(pr.OMap)
+	}
 	if pr.Map != nil {
 		return l.lowerMapLit(pr.Map)
 	}
@@ -3846,7 +4179,58 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	if pr.Generate != nil {
 		return l.lowerGenerateExpr(pr.Generate)
 	}
+	// Phase 9.1: spawn AgentType() → AgentSpawnExpr (BEAM gen_server process)
+	if pr.Spawn != nil {
+		return l.lowerSpawnExpr(pr.Spawn)
+	}
+	// Phase 11.0: async expr → AsyncExpr(body, elemType)
+	if pr.Async != nil {
+		return l.lowerAsyncExpr(pr.Async)
+	}
+	// Phase 11.1: await fut → AwaitExpr(future, elemType)
+	if pr.Await != nil {
+		return l.lowerAwaitExpr(pr.Await)
+	}
 	return nil, fmt.Errorf("primary %s not supported in Phase 3.2%s", trimPrimary(pr), primaryPhaseHint(pr))
+}
+
+// lowerSpawnExpr lowers `spawn AgentType()` to an AgentSpawnExpr IR node.
+// Phase 9.1: only BEAM backend supports this; the C backend will emit an error
+// at emit time since there is no process model in the C target.
+func (l *lowerer) lowerSpawnExpr(se *parser.SpawnExpr) (aotir.Expr, error) {
+	agDecl, ok := l.agents[se.AgentType]
+	if !ok {
+		return nil, fmt.Errorf("spawn: unknown agent type %q", se.AgentType)
+	}
+	_ = agDecl
+	// Phase 9.1: no constructor args; use zero values from the agent fields.
+	// Future phases can allow passing initial field values.
+	return &aotir.AgentSpawnExpr{
+		AgentName: se.AgentType,
+		InitArgs:  nil,
+	}, nil
+}
+
+// lowerAsyncExpr lowers `async expr` to an AsyncExpr IR node. Phase 11.0.
+func (l *lowerer) lowerAsyncExpr(ae *parser.AsyncExpr) (aotir.Expr, error) {
+	body, err := l.lowerExpr(ae.Expr)
+	if err != nil {
+		return nil, fmt.Errorf("async body: %w", err)
+	}
+	return &aotir.AsyncExpr{Body: body, ElemType: body.Type()}, nil
+}
+
+// lowerAwaitExpr lowers `await fut` to an AwaitExpr IR node. Phase 11.1.
+func (l *lowerer) lowerAwaitExpr(aw *parser.AwaitExpr) (aotir.Expr, error) {
+	fut, err := l.lowerExpr(aw.Future)
+	if err != nil {
+		return nil, fmt.Errorf("await future: %w", err)
+	}
+	elemType := exprFutureElemType(fut)
+	if elemType == aotir.TypeInvalid {
+		return nil, fmt.Errorf("await: expression does not produce a future (got %s)", fut.Type())
+	}
+	return &aotir.AwaitExpr{Future: fut, ElemType: elemType}, nil
 }
 
 // lowerVariantConstructor lowers a call-expression that names a known
@@ -3993,6 +4377,10 @@ func (l *lowerer) lowerListLit(ll *parser.ListLiteral) (aotir.Expr, error) {
 				default:
 					return nil, fmt.Errorf("list literal element %d: list<map<K,V>> requires scalar value type, got %s", i, mapElemValue)
 				}
+			case aotir.TypeFuture:
+				// Phase 11.0: list<future<T>> for await_all.
+				// Future element types are opaque to the C backend;
+				// the BEAM backend handles them natively.
 			default:
 				return nil, fmt.Errorf("list literal element %d: unsupported type %s", i, elemType)
 			}
@@ -4102,6 +4490,81 @@ func (l *lowerer) lowerMapLit(ml *parser.MapLiteral) (aotir.Expr, error) {
 	}, nil
 }
 
+// lowerSetLit lowers a `set{e1, e2, ...}` literal into a SetLiteralExpr.
+// Phase 3.3: all elements must be the same scalar type.
+func (l *lowerer) lowerSetLit(sl *parser.SetLiteral) (aotir.Expr, error) {
+	if len(sl.Elems) == 0 {
+		return nil, fmt.Errorf("empty set literal: Phase 3.3 requires at least one element for type inference")
+	}
+	var elems []aotir.Expr
+	var elemType aotir.Type
+	for i, e := range sl.Elems {
+		v, err := l.lowerExpr(e)
+		if err != nil {
+			return nil, fmt.Errorf("set literal elem %d: %w", i, err)
+		}
+		if i == 0 {
+			elemType = v.Type()
+			if !isScalarSetElemType(elemType) {
+				return nil, fmt.Errorf("set literal elem 0: unsupported element type %s (Phase 3.3 supports scalar types)", elemType)
+			}
+		} else if v.Type() != elemType {
+			return nil, fmt.Errorf("set literal elem %d: first element is %s, this is %s", i, elemType, v.Type())
+		}
+		elems = append(elems, v)
+	}
+	return &aotir.SetLiteralExpr{Elems: elems, ElemType: elemType}, nil
+}
+
+// lowerOMapLit lowers an `omap{k1: v1, k2: v2, ...}` literal into a typed
+// OMapLiteralExpr. Phase 3.4: key must be int or string, value must be scalar.
+func (l *lowerer) lowerOMapLit(ml *parser.OMapLiteral) (aotir.Expr, error) {
+	if len(ml.Items) == 0 {
+		return nil, fmt.Errorf("empty omap literal: Phase 3.4 requires at least one entry for type inference")
+	}
+	var keys []aotir.Expr
+	var values []aotir.Expr
+	var keyType aotir.Type
+	var valType aotir.Type
+	for i, item := range ml.Items {
+		k, err := l.lowerExpr(item.Key)
+		if err != nil {
+			return nil, fmt.Errorf("omap literal key %d: %w", i, err)
+		}
+		v, err := l.lowerExpr(item.Value)
+		if err != nil {
+			return nil, fmt.Errorf("omap literal value %d: %w", i, err)
+		}
+		if i == 0 {
+			keyType = k.Type()
+			valType = v.Type()
+			if !isScalarSetElemType(keyType) && keyType != aotir.TypeInt && keyType != aotir.TypeString {
+				return nil, fmt.Errorf("omap literal key 0: unsupported key type %s", keyType)
+			}
+		} else {
+			if k.Type() != keyType {
+				return nil, fmt.Errorf("omap literal key %d: first key is %s, this is %s", i, keyType, k.Type())
+			}
+			if v.Type() != valType {
+				return nil, fmt.Errorf("omap literal value %d: first value is %s, this is %s", i, valType, v.Type())
+			}
+		}
+		keys = append(keys, k)
+		values = append(values, v)
+	}
+	return &aotir.OMapLiteralExpr{Keys: keys, Values: values, KeyType: keyType, ValueType: valType}, nil
+}
+
+// isScalarSetElemType reports whether t is a valid set element type.
+// Phase 3.3 supports scalar primitives (int, float, bool, string).
+func isScalarSetElemType(t aotir.Type) bool {
+	switch t {
+	case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+		return true
+	}
+	return false
+}
+
 // lowerStructLit lowers a `R { f1: v1, ... }` literal into a typed
 // RecordLit. The lowerer enforces full field coverage, no extras, no
 // duplicates, and type-checks each field value against its declared
@@ -4187,6 +4650,11 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	if call.Func == "has" {
 		return l.lowerHasCall(call)
 	}
+	if call.Func == "add" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerAddCall(call)
+		}
+	}
 	if call.Func == "substring" {
 		return l.lowerSubstringCall(call)
 	}
@@ -4237,6 +4705,28 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 			return l.lowerListSumCall(call)
 		}
 	}
+	// Phase 14.2: JSON decode.
+	if call.Func == "json_decode" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerJsonDecodeCall(call)
+		}
+	}
+	// Phase 6.1: HOF builtins.
+	if call.Func == "map" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerListMapCall(call)
+		}
+	}
+	if call.Func == "filter" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerListFilterCall(call)
+		}
+	}
+	if call.Func == "reduce" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerListReduceCall(call)
+		}
+	}
 	if call.Func == "abs" {
 		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
 			return l.lowerAbsCall(call)
@@ -4280,10 +4770,22 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 			return l.lowerSubscribeCall(call)
 		}
 	}
+	// Phase 10.2: subscribe_limit(stream, N) lowers to a SubMakeLimitExpr.
+	if call.Func == "subscribe_limit" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerSubscribeLimitCall(call)
+		}
+	}
 	// Phase 9.2: recv_sub(sub) lowers to a SubRecvExpr.
 	if call.Func == "recv_sub" {
 		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
 			return l.lowerRecvSubCall(call)
+		}
+	}
+	// Phase 11.2: await_all(futures) lowers to a CallExpr targeting the BEAM runtime.
+	if call.Func == "await_all" {
+		if _, isUserDef := l.funcs[call.Func]; !isUserDef {
+			return l.lowerAwaitAllCall(call)
 		}
 	}
 	// Phase 5.0: check if this is a call to a fun-typed variable in scope.
@@ -4319,6 +4821,11 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 	sig, ok := l.funcs[call.Func]
 	if !ok {
 		return nil, fmt.Errorf("unresolved callee %q", call.Func)
+	}
+	// Phase 6.2: partial application. When any argument is `_`, synthesize
+	// a FunLit that captures the fixed args and accepts the free positions.
+	if hasUnderscoreArgs(call) {
+		return l.lowerPartialApply(call, sig)
 	}
 	if sig.returnType == aotir.TypeUnit {
 		return nil, fmt.Errorf("call to %q returns unit and cannot appear in an expression", call.Func)
@@ -4412,8 +4919,19 @@ func (l *lowerer) lowerLenCall(call *parser.CallExpr) (aotir.Expr, error) {
 			ValueType:         exprValueType(receiver),
 			ListValueElemType: exprListValueElemType(receiver),
 		}, nil
+	case aotir.TypeSet:
+		return &aotir.SetLenExpr{
+			Receiver: receiver,
+			ElemType: exprSetElemType(receiver),
+		}, nil
+	case aotir.TypeOMap:
+		return &aotir.OMapLenExpr{
+			Receiver:  receiver,
+			KeyType:   exprKeyType(receiver),
+			ValueType: exprValueType(receiver),
+		}, nil
 	}
-	return nil, fmt.Errorf("len() argument must be a list, map, or string, got %s", receiver.Type())
+	return nil, fmt.Errorf("len() argument must be a list, map, set, omap, or string, got %s", receiver.Type())
 }
 
 // lowerKeysCall lowers the `keys(m)` builtin to a MapKeysExpr. The
@@ -4461,21 +4979,48 @@ func (l *lowerer) lowerValuesCall(call *parser.CallExpr) (aotir.Expr, error) {
 	}, nil
 }
 
-// lowerHasCall lowers `has(m, k)` to a MapHasExpr. Result is bool.
-// Phase 3.2 reuses Mochi's `in` operator with arguments-flipped (m
-// holds k); a real `in` operator lands in a later phase, this is the
-// minimum surface to let fixtures probe a key before unwrapping a
-// MapGetExpr.
+// lowerHasCall lowers `has(m, k)` to a MapHasExpr (for maps) or
+// SetHasExpr (for sets). Phase 3.3 adds set support.
 func (l *lowerer) lowerHasCall(call *parser.CallExpr) (aotir.Expr, error) {
 	if len(call.Args) != 2 {
-		return nil, fmt.Errorf("has() takes exactly two arguments (map, key), got %d", len(call.Args))
+		return nil, fmt.Errorf("has() takes exactly two arguments, got %d", len(call.Args))
 	}
 	receiver, err := l.lowerExpr(call.Args[0])
 	if err != nil {
-		return nil, fmt.Errorf("has map: %w", err)
+		return nil, fmt.Errorf("has receiver: %w", err)
+	}
+	// Phase 3.3: set case.
+	if receiver.Type() == aotir.TypeSet {
+		elem, err := l.lowerExpr(call.Args[1])
+		if err != nil {
+			return nil, fmt.Errorf("has set elem: %w", err)
+		}
+		elemType := exprSetElemType(receiver)
+		return &aotir.SetHasExpr{
+			Receiver: receiver,
+			Elem:     elem,
+			ElemType: elemType,
+		}, nil
+	}
+	// Phase 3.4: omap case.
+	if receiver.Type() == aotir.TypeOMap {
+		key, err := l.lowerExpr(call.Args[1])
+		if err != nil {
+			return nil, fmt.Errorf("has omap key: %w", err)
+		}
+		recvKey := exprKeyType(receiver)
+		if key.Type() != recvKey {
+			return nil, fmt.Errorf("has() omap key must be %s, got %s", recvKey, key.Type())
+		}
+		return &aotir.OMapHasExpr{
+			Receiver:  receiver,
+			Key:       key,
+			KeyType:   recvKey,
+			ValueType: exprValueType(receiver),
+		}, nil
 	}
 	if receiver.Type() != aotir.TypeMap {
-		return nil, fmt.Errorf("has() first argument must be a map, got %s", receiver.Type())
+		return nil, fmt.Errorf("has() first argument must be a map, set, or omap, got %s", receiver.Type())
 	}
 	key, err := l.lowerExpr(call.Args[1])
 	if err != nil {
@@ -4491,6 +5036,29 @@ func (l *lowerer) lowerHasCall(call *parser.CallExpr) (aotir.Expr, error) {
 		KeyType:           recvKey,
 		ValueType:         exprValueType(receiver),
 		ListValueElemType: exprListValueElemType(receiver),
+	}, nil
+}
+
+// lowerAddCall lowers `add(s, x)` to a SetAddExpr. Phase 3.3.
+func (l *lowerer) lowerAddCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 2 {
+		return nil, fmt.Errorf("add() takes exactly two arguments (set, elem), got %d", len(call.Args))
+	}
+	receiver, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("add set: %w", err)
+	}
+	if receiver.Type() != aotir.TypeSet {
+		return nil, fmt.Errorf("add() first argument must be a set, got %s", receiver.Type())
+	}
+	elem, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("add elem: %w", err)
+	}
+	return &aotir.SetAddExpr{
+		Receiver: receiver,
+		Elem:     elem,
+		ElemType: exprSetElemType(receiver),
 	}, nil
 }
 
@@ -4739,6 +5307,80 @@ func (l *lowerer) lowerListSumCall(call *parser.CallExpr) (aotir.Expr, error) {
 		Receiver: recv,
 		ElemType: elem,
 	}, nil
+}
+
+// lowerListMapCall lowers `map(xs, fn)` to a ListMapExpr (Phase 6.1).
+func (l *lowerer) lowerListMapCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 2 {
+		return nil, fmt.Errorf("map() takes exactly two arguments, got %d", len(call.Args))
+	}
+	listExpr, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("map() list arg: %w", err)
+	}
+	fnExpr, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("map() fn arg: %w", err)
+	}
+	// result element type comes from the fn return type; use TypeString as a
+	// safe default when we can't determine it statically.
+	elemType := aotir.TypeString
+	if fl, ok := fnExpr.(*aotir.FunLit); ok && fl.Sig != nil {
+		elemType = fl.Sig.ReturnType
+	}
+	return &aotir.ListMapExpr{List: listExpr, Fn: fnExpr, ElemType: elemType}, nil
+}
+
+// lowerListFilterCall lowers `filter(xs, fn)` to a ListFilterExpr (Phase 6.1).
+func (l *lowerer) lowerListFilterCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 2 {
+		return nil, fmt.Errorf("filter() takes exactly two arguments, got %d", len(call.Args))
+	}
+	listExpr, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("filter() list arg: %w", err)
+	}
+	fnExpr, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("filter() fn arg: %w", err)
+	}
+	elemType := exprElemType(listExpr)
+	return &aotir.ListFilterExpr{List: listExpr, Fn: fnExpr, ElemType: elemType}, nil
+}
+
+// lowerListReduceCall lowers `reduce(xs, fn, init)` to a ListFoldlExpr (Phase 6.1).
+func (l *lowerer) lowerListReduceCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 3 {
+		return nil, fmt.Errorf("reduce() takes exactly three arguments, got %d", len(call.Args))
+	}
+	listExpr, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("reduce() list arg: %w", err)
+	}
+	fnExpr, err := l.lowerExpr(call.Args[1])
+	if err != nil {
+		return nil, fmt.Errorf("reduce() fn arg: %w", err)
+	}
+	initExpr, err := l.lowerExpr(call.Args[2])
+	if err != nil {
+		return nil, fmt.Errorf("reduce() init arg: %w", err)
+	}
+	return &aotir.ListFoldlExpr{List: listExpr, Fn: fnExpr, Init: initExpr, AccType: initExpr.Type()}, nil
+}
+
+// lowerJsonDecodeCall lowers `json_decode(s)` to a JsonDecodeExpr (Phase 14.2).
+func (l *lowerer) lowerJsonDecodeCall(call *parser.CallExpr) (aotir.Expr, error) {
+	if len(call.Args) != 1 {
+		return nil, fmt.Errorf("json_decode() takes exactly one argument, got %d", len(call.Args))
+	}
+	input, err := l.lowerExpr(call.Args[0])
+	if err != nil {
+		return nil, fmt.Errorf("json_decode() arg: %w", err)
+	}
+	if input.Type() != aotir.TypeString {
+		return nil, fmt.Errorf("json_decode() argument must be string, got %s", input.Type())
+	}
+	return &aotir.JsonDecodeExpr{Input: input}, nil
 }
 
 // lowerAbsCall lowers `abs(x)` to a MathCallExpr.
@@ -5070,6 +5712,619 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 	return ok && n == "_"
 }
 
+// hasUnderscoreArgs reports whether any argument of call is a bare `_`.
+// Used by lowerUserCallExpr to detect partial application (Phase 6.2).
+func hasUnderscoreArgs(call *parser.CallExpr) bool {
+	for _, a := range call.Args {
+		if isUnderscoreExpr(a) {
+			return true
+		}
+	}
+	return false
+}
+
+// lowerPartialApply handles a call expression where some arguments are `_`
+// (Phase 6.2 partial application). It synthesizes a capturing FunLit that:
+//   - fixes the non-`_` arguments by capturing their lowered values, and
+//   - accepts one new parameter for each `_` position.
+//
+// For example, `add(5, _)` with signature (int, int)->int becomes:
+//
+//	fun(__p1: int): int => add(5, __p1)
+//
+// Only scalar-primitive (int, float, bool, string) parameter types are
+// supported in Phase 6.2; non-scalar `_` positions return an error.
+func (l *lowerer) lowerPartialApply(call *parser.CallExpr, sig *funcSig) (aotir.Expr, error) {
+	if l.anonCounter == nil || l.liftedFuncs == nil {
+		return nil, fmt.Errorf("partial application for %q: lowerer not initialized for closure lifting (anonCounter/liftedFuncs nil)", call.Func)
+	}
+	if len(call.Args) != len(sig.params) {
+		return nil, fmt.Errorf("partial application for %q: expects %d args, got %d", call.Func, len(sig.params), len(call.Args))
+	}
+
+	// Separate fixed args (lowered now) from free positions.
+	type fixedArg struct {
+		captName string // capture variable name (e.g. "__pa_0")
+		expr     aotir.Expr
+		paramIdx int
+	}
+	type freeParam struct {
+		paramName string // e.g. "__p0"
+		paramIdx  int
+		paramType aotir.Type
+	}
+
+	var fixed []fixedArg
+	var free []freeParam
+
+	for i, a := range call.Args {
+		if isUnderscoreExpr(a) {
+			pt := sig.params[i].Type
+			switch pt {
+			case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+			default:
+				return nil, fmt.Errorf("partial application for %q: arg %d is `_` with non-scalar type %s; only scalar primitives are supported in Phase 6.2", call.Func, i, pt)
+			}
+			free = append(free, freeParam{
+				paramName: fmt.Sprintf("__p%d", i),
+				paramIdx:  i,
+				paramType: pt,
+			})
+		} else {
+			expr, err := l.lowerExpr(a)
+			if err != nil {
+				return nil, fmt.Errorf("partial application for %q arg %d: %w", call.Func, i, err)
+			}
+			fixed = append(fixed, fixedArg{
+				captName: fmt.Sprintf("__pa_%d", i),
+				expr:     expr,
+				paramIdx: i,
+			})
+		}
+	}
+
+	if len(free) == 0 {
+		return nil, fmt.Errorf("partial application for %q: hasUnderscoreArgs was true but no free positions found", call.Func)
+	}
+
+	// Validate return type is scalar or unit.
+	switch sig.returnType {
+	case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString, aotir.TypeUnit:
+	default:
+		return nil, fmt.Errorf("partial application for %q: return type %s not supported in Phase 6.2 (scalar primitives or unit only)", call.Func, sig.returnType)
+	}
+
+	// Assign a fresh __anon_N name for the lifted function.
+	*l.anonCounter++
+	n := *l.anonCounter
+	liftedName := fmt.Sprintf("__anon_%d", n)
+
+	// Build the FunSig for the partial closure (only free params).
+	funSig := &aotir.FunSig{ReturnType: sig.returnType}
+	for _, fp := range free {
+		funSig.ParamTypes = append(funSig.ParamTypes, fp.paramType)
+	}
+
+	// Build captures (one per fixed arg).
+	var captures []aotir.FunCapture
+	for _, fa := range fixed {
+		captures = append(captures, aotir.FunCapture{
+			FieldName: fa.captName,
+			VarType:   fa.expr.Type(),
+			SrcName:   fa.captName, // will be introduced via LetStmt in enclosing scope... see below
+		})
+	}
+
+	// Build the lifted function's parameter list (only free params).
+	irParams := make([]aotir.Param, len(free))
+	for i, fp := range free {
+		irParams[i] = aotir.Param{Name: fp.paramName, Type: fp.paramType}
+	}
+
+	// Build the call args inside the closure body: mix fixed captures + free params.
+	bodyCallArgs := make([]aotir.Expr, len(sig.params))
+	freeIdx := 0
+	fixedIdx := 0
+	for i := range sig.params {
+		if freeIdx < len(free) && free[freeIdx].paramIdx == i {
+			bodyCallArgs[i] = &aotir.VarRef{Name: free[freeIdx].paramName, VarType: free[freeIdx].paramType}
+			freeIdx++
+		} else {
+			// Fixed arg: read from capture. In the closure body, the capture is
+			// accessed via VarRef with the capture's field name (the BEAM lowerer
+			// knows captures are naturally in scope via c_fun; for C, the emitter
+			// uses __e->fieldname, which we encode as the emitName prefix).
+			fa := fixed[fixedIdx]
+			bodyCallArgs[i] = &aotir.VarRef{
+				Name:    "__e->" + fa.captName,
+				VarType: fa.expr.Type(),
+			}
+			fixedIdx++
+		}
+	}
+
+	// Build the closure body: a single return statement calling the original function.
+	bodyCallExpr := &aotir.CallExpr{
+		Func:   call.Func,
+		Args:   bodyCallArgs,
+		Result: sig.returnType,
+	}
+	var bodyStmt aotir.Stmt
+	if sig.returnType == aotir.TypeUnit {
+		bodyStmt = &aotir.CallStmt{Func: call.Func, Args: bodyCallArgs}
+	} else {
+		bodyStmt = &aotir.ReturnStmt{Value: bodyCallExpr}
+	}
+	body := &aotir.Block{Statements: []aotir.Stmt{bodyStmt}}
+
+	// Env type name (for C backend).
+	envTypeName := fmt.Sprintf("__anon_%d_env_t", n)
+	envVarName := fmt.Sprintf("__anon_%d_env", n)
+
+	// Emit the lifted function. The captures list on the Function node is used
+	// by the C emitter to build the env struct typedef; BEAM ignores it.
+	lifted := &aotir.Function{
+		Name:        liftedName,
+		Params:      irParams,
+		ReturnType:  sig.returnType,
+		Body:        body,
+		IsLifted:    true,
+		EnvTypeName: envTypeName,
+		Captures:    captures,
+	}
+	*l.liftedFuncs = append(*l.liftedFuncs, lifted)
+
+	// We need to bind the fixed-arg expressions into the enclosing scope so
+	// the env initializer can reference them. We do this by emitting LetStmts
+	// into the enclosing block (via l.currentBlock). This is how Phase 5.1
+	// capturing closures work: the ClosureEnvStmt is emitted before the
+	// FunLit binding. Here we use named temp bindings so the fixed exprs are
+	// available when ClosureEnvStmt fills in the env struct.
+	//
+	// We pre-register each capture temp in the enclosing scope so that
+	// sub-expressions that read them can resolve. If l.currentBlock is nil
+	// (expression-only context without a surrounding statement), fall back
+	// to embedding the captures inline via a fresh inner scope.
+
+	// Register fixed-arg temps in the scope and (if we have a currentBlock)
+	// emit LetStmts for them so the env alloc can reference them.
+	for _, fa := range fixed {
+		if l.currentBlock != nil {
+			l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.LetStmt{
+				Name:    fa.captName,
+				VarType: fa.expr.Type(),
+				Init:    fa.expr,
+			})
+		}
+		l.scope.vars[fa.captName] = lbinding{t: fa.expr.Type()}
+	}
+
+	// Build the FunLit node (the value produced by this expression).
+	lit := &aotir.FunLit{
+		FuncName:    liftedName,
+		Sig:         funSig,
+		Captures:    captures,
+		EnvTypeName: envTypeName,
+		EnvVarName:  envVarName,
+	}
+	return lit, nil
+}
+
+// ----- Phase 7.3: hash join helpers -----
+
+// hashJoinKeys describes an equality join condition of the form
+// innerKey(innerVar) == outerKey(...) (or reversed).
+type hashJoinKeys struct {
+	innerKey aotir.Expr // key expression referencing the right-side (join) variable
+	outerKey aotir.Expr // key expression referencing outer-side variables
+	keyType  aotir.Type
+}
+
+// aotirExprVarNames collects variable names referenced by an aotir expression.
+func aotirExprVarNames(e aotir.Expr) []string {
+	if e == nil {
+		return nil
+	}
+	var names []string
+	switch v := e.(type) {
+	case *aotir.VarRef:
+		names = append(names, v.Name)
+	case *aotir.BinaryExpr:
+		names = append(names, aotirExprVarNames(v.Left)...)
+		names = append(names, aotirExprVarNames(v.Right)...)
+	case *aotir.UnaryExpr:
+		names = append(names, aotirExprVarNames(v.Operand)...)
+	case *aotir.FieldAccess:
+		names = append(names, aotirExprVarNames(v.Receiver)...)
+	case *aotir.CallExpr:
+		for _, a := range v.Args {
+			names = append(names, aotirExprVarNames(a)...)
+		}
+	}
+	return names
+}
+
+// onlyRefSet returns true when all variable references in e are in allowed.
+func onlyRefSet(e aotir.Expr, allowed map[string]bool) bool {
+	for _, n := range aotirExprVarNames(e) {
+		if !allowed[n] {
+			return false
+		}
+	}
+	return true
+}
+
+// isEqualityOp returns true for any of the typed equality binary operators.
+func isEqualityOp(op aotir.BinOp) bool {
+	switch op {
+	case aotir.BinEqI64, aotir.BinEqF64, aotir.BinEqBool, aotir.BinEqStr,
+		aotir.BinEqRec, aotir.BinEqList, aotir.BinEqMap:
+		return true
+	}
+	return false
+}
+
+// collectOuterJoinVars returns all variable names that are "outer" to join[i]:
+// the main query variable plus any earlier from/join variables.
+func collectOuterJoinVars(q *parser.QueryExpr, joinIdx int) map[string]bool {
+	outer := map[string]bool{q.Var: true}
+	for _, f := range q.Froms {
+		outer[f.Var] = true
+	}
+	for k := 0; k < joinIdx; k++ {
+		outer[q.Joins[k].Var] = true
+	}
+	return outer
+}
+
+// extractHashJoinKeys tries to decompose an equality join condition into a
+// (innerKey, outerKey) pair. Returns nil when the pattern is not detected.
+func extractHashJoinKeys(on aotir.Expr, innerVar string, outerVars map[string]bool) *hashJoinKeys {
+	bin, ok := on.(*aotir.BinaryExpr)
+	if !ok || !isEqualityOp(bin.Op) {
+		return nil
+	}
+	innerOnly := map[string]bool{innerVar: true}
+	leftIsInner := onlyRefSet(bin.Left, innerOnly) && onlyRefSet(bin.Right, outerVars)
+	rightIsInner := onlyRefSet(bin.Right, innerOnly) && onlyRefSet(bin.Left, outerVars)
+	if leftIsInner {
+		return &hashJoinKeys{innerKey: bin.Left, outerKey: bin.Right, keyType: bin.Left.Type()}
+	}
+	if rightIsInner {
+		return &hashJoinKeys{innerKey: bin.Right, outerKey: bin.Left, keyType: bin.Right.Type()}
+	}
+	return nil
+}
+
+// buildHashJoin emits the hash-join desugaring for an inner join (Phase 7.3).
+// It builds a hash index from the right side and replaces the nested loop
+// with a single map lookup, giving O(n + m) instead of O(n*m).
+func (l *lowerer) buildHashJoin(
+	innerVar string,
+	srcExpr aotir.Expr, srcElemType aotir.Type, srcElemRec string,
+	hj *hashJoinKeys,
+	innerBody *aotir.Block,
+	scope *lscope,
+) *aotir.Block {
+	l.tempCounter++
+	n := l.tempCounter
+	idxName := fmt.Sprintf("__hidx_%d", n)
+	hkName := fmt.Sprintf("__hk_%d", n)
+	hvName := fmt.Sprintf("__hv_%d", n)
+	hlistName := fmt.Sprintf("__hlist_%d", n)
+
+	scope.vars[idxName] = lbinding{t: aotir.TypeMap, mutable: true, key: hj.keyType, value: aotir.TypeList, listValElem: srcElemType}
+	scope.vars[hkName] = lbinding{t: hj.keyType, mutable: true}
+	scope.vars[hvName] = lbinding{t: aotir.TypeList, mutable: true, elem: srcElemType}
+	scope.vars[hlistName] = lbinding{t: aotir.TypeList, elem: srcElemType}
+
+	idxRef := func() *aotir.VarRef {
+		return &aotir.VarRef{Name: idxName, VarType: aotir.TypeMap, KeyType: hj.keyType, ValueType: aotir.TypeList, ListValueElemType: srcElemType}
+	}
+	hkRef := func() *aotir.VarRef { return &aotir.VarRef{Name: hkName, VarType: hj.keyType} }
+	hvRef := func() *aotir.VarRef {
+		return &aotir.VarRef{Name: hvName, VarType: aotir.TypeList, ElemType: srcElemType}
+	}
+	innerVarRef := &aotir.VarRef{Name: innerVar, VarType: srcElemType}
+
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.LetStmt{
+		Name: idxName, VarType: aotir.TypeMap, KeyType: hj.keyType,
+		ValueType: aotir.TypeList, ListValueElemType: srcElemType,
+		Init:    &aotir.MapLit{KeyType: hj.keyType, ValueType: aotir.TypeList, ListValueElemType: srcElemType},
+		Mutable: true,
+	})
+
+	buildBody := &aotir.Block{Statements: []aotir.Stmt{
+		&aotir.LetStmt{Name: hkName, VarType: hj.keyType, Init: hj.innerKey, Mutable: true},
+		&aotir.LetStmt{Name: hvName, VarType: aotir.TypeList, ElemType: srcElemType,
+			Init: &aotir.ListLit{ElemType: srcElemType}, Mutable: true},
+		&aotir.IfStmt{
+			Cond: &aotir.MapHasExpr{Receiver: idxRef(), Key: hkRef(),
+				KeyType: hj.keyType, ValueType: aotir.TypeList, ListValueElemType: srcElemType},
+			Then: &aotir.Block{Statements: []aotir.Stmt{
+				&aotir.AssignStmt{Name: hvName, Value: &aotir.MapGetExpr{
+					Receiver: idxRef(), Key: hkRef(),
+					KeyType: hj.keyType, ValueType: aotir.TypeList, ListValueElemType: srcElemType,
+				}},
+			}},
+		},
+		&aotir.MapPutStmt{
+			Name: idxName, Key: hkRef(),
+			Value:     &aotir.AppendExpr{Receiver: hvRef(), Value: innerVarRef, ElemType: srcElemType},
+			KeyType:   hj.keyType,
+			ValueType: aotir.TypeList,
+		},
+	}}
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.ForEachStmt{
+		Var: innerVar, List: srcExpr, ElemType: srcElemType, ElemRecordName: srcElemRec,
+		Body: buildBody,
+	})
+
+	lookupBody := &aotir.Block{Statements: []aotir.Stmt{
+		&aotir.LetStmt{
+			Name: hlistName, VarType: aotir.TypeList, ElemType: srcElemType,
+			Init: &aotir.MapGetExpr{Receiver: idxRef(), Key: hj.outerKey,
+				KeyType: hj.keyType, ValueType: aotir.TypeList, ListValueElemType: srcElemType},
+		},
+		&aotir.ForEachStmt{
+			Var: innerVar, List: &aotir.VarRef{Name: hlistName, VarType: aotir.TypeList, ElemType: srcElemType},
+			ElemType: srcElemType, ElemRecordName: srcElemRec,
+			Body: innerBody,
+		},
+	}}
+
+	return &aotir.Block{Statements: []aotir.Stmt{
+		&aotir.IfStmt{
+			Cond: &aotir.MapHasExpr{Receiver: idxRef(), Key: hj.outerKey,
+				KeyType: hj.keyType, ValueType: aotir.TypeList, ListValueElemType: srcElemType},
+			Then: lookupBody,
+		},
+	}}
+}
+
+// lowerGroupByQueryExpr desugars a group-by query expression (Phase 7.2).
+//
+// The query:
+//
+//	from x in src where cond group by keyExpr into grp select selectExpr
+//
+// is desugared into:
+//
+//	let __grp_map_N: map<keyType, list<elemType>> = {}
+//	for x in src {
+//	  if cond {
+//	    let __gk_N = keyExpr
+//	    let __gv_N: list<elemType> = []
+//	    if has(__grp_map_N, __gk_N) { __gv_N = __grp_map_N[__gk_N] }
+//	    __grp_map_N[__gk_N] = append(__gv_N, x)
+//	  }
+//	}
+//	let __grpkeys_N: list<keyType> = keys(__grp_map_N)
+//	let __result_N: list<selectType> = []
+//	for __gk_N in __grpkeys_N {
+//	  let grp: list<elemType> = __grp_map_N[__gk_N]
+//	  __result_N = append(__result_N, selectExpr)
+//	}
+//
+// and returns a VarRef to __result_N.
+func (l *lowerer) lowerGroupByQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
+	if q.Group.Having != nil {
+		return nil, fmt.Errorf("group-by having clause not yet supported (Phase 7.2)")
+	}
+	if len(q.Group.Exprs) != 1 {
+		return nil, fmt.Errorf("group-by with multiple keys not yet supported (Phase 7.2); got %d keys", len(q.Group.Exprs))
+	}
+
+	source, err := l.lowerExpr(q.Source)
+	if err != nil {
+		return nil, fmt.Errorf("group-by source: %w", err)
+	}
+	if source.Type() != aotir.TypeList {
+		return nil, fmt.Errorf("group-by source must be a list, got %s", source.Type())
+	}
+	sourceElemType := exprElemType(source)
+	sourceElemRecord := exprElemRecordName(source)
+	sourceInnerElem := exprInnerElemType(source)
+	sourceMapKey := exprMapElemKeyType(source)
+	sourceMapValue := exprMapElemValueType(source)
+
+	prev := l.scope
+	l.scope = newLScope(prev)
+	l.scope.vars[q.Var] = lbinding{
+		t:            sourceElemType,
+		record:       sourceElemRecord,
+		elem:         sourceInnerElem,
+		mapElemKey:   sourceMapKey,
+		mapElemValue: sourceMapValue,
+	}
+
+	keyExpr, err := l.lowerExpr(q.Group.Exprs[0])
+	if err != nil {
+		l.scope = prev
+		return nil, fmt.Errorf("group-by key expr: %w", err)
+	}
+	keyType := keyExpr.Type()
+
+	var whereCond aotir.Expr
+	if q.Where != nil {
+		whereCond, err = l.lowerExpr(q.Where)
+		if err != nil {
+			l.scope = prev
+			return nil, fmt.Errorf("group-by where: %w", err)
+		}
+		if whereCond.Type() != aotir.TypeBool {
+			l.scope = prev
+			return nil, fmt.Errorf("group-by where condition must be bool, got %s", whereCond.Type())
+		}
+	}
+	l.scope = prev
+
+	l.tempCounter++
+	n := l.tempCounter
+	grpMapName := fmt.Sprintf("__grp_map_%d", n)
+	gkName := fmt.Sprintf("__gk_%d", n)
+	gvName := fmt.Sprintf("__gv_%d", n)
+	grpKeysName := fmt.Sprintf("__grpkeys_%d", n)
+	resultName := fmt.Sprintf("__result_%d", n)
+
+	prev.vars[grpMapName] = lbinding{
+		t:           aotir.TypeMap,
+		mutable:     true,
+		key:         keyType,
+		value:       aotir.TypeList,
+		listValElem: sourceElemType,
+	}
+
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.LetStmt{
+		Name:              grpMapName,
+		VarType:           aotir.TypeMap,
+		KeyType:           keyType,
+		ValueType:         aotir.TypeList,
+		ListValueElemType: sourceElemType,
+		Init:              &aotir.MapLit{KeyType: keyType, ValueType: aotir.TypeList, ListValueElemType: sourceElemType},
+		Mutable:           true,
+	})
+
+	grpMapRef := func() *aotir.VarRef {
+		return &aotir.VarRef{
+			Name:              grpMapName,
+			VarType:           aotir.TypeMap,
+			KeyType:           keyType,
+			ValueType:         aotir.TypeList,
+			ListValueElemType: sourceElemType,
+		}
+	}
+	gkRef := func() *aotir.VarRef { return &aotir.VarRef{Name: gkName, VarType: keyType} }
+	gvRef := func() *aotir.VarRef {
+		return &aotir.VarRef{Name: gvName, VarType: aotir.TypeList, ElemType: sourceElemType}
+	}
+	sourceVarRef := &aotir.VarRef{Name: q.Var, VarType: sourceElemType}
+
+	prev.vars[gkName] = lbinding{t: keyType, mutable: true}
+	prev.vars[gvName] = lbinding{t: aotir.TypeList, mutable: true, elem: sourceElemType}
+
+	accStmts := []aotir.Stmt{
+		&aotir.LetStmt{Name: gkName, VarType: keyType, Init: keyExpr, Mutable: true},
+		&aotir.LetStmt{
+			Name: gvName, VarType: aotir.TypeList, ElemType: sourceElemType,
+			Init: &aotir.ListLit{ElemType: sourceElemType}, Mutable: true,
+		},
+		&aotir.IfStmt{
+			Cond: &aotir.MapHasExpr{
+				Receiver: grpMapRef(), Key: gkRef(),
+				KeyType: keyType, ValueType: aotir.TypeList, ListValueElemType: sourceElemType,
+			},
+			Then: &aotir.Block{Statements: []aotir.Stmt{
+				&aotir.AssignStmt{Name: gvName, Value: &aotir.MapGetExpr{
+					Receiver: grpMapRef(), Key: gkRef(),
+					KeyType: keyType, ValueType: aotir.TypeList, ListValueElemType: sourceElemType,
+				}},
+			}},
+		},
+		&aotir.MapPutStmt{
+			Name: grpMapName, Key: gkRef(),
+			Value:     &aotir.AppendExpr{Receiver: gvRef(), Value: sourceVarRef, ElemType: sourceElemType},
+			KeyType:   keyType,
+			ValueType: aotir.TypeList,
+		},
+	}
+
+	var accBlock *aotir.Block
+	if whereCond != nil {
+		accBlock = &aotir.Block{Statements: []aotir.Stmt{&aotir.IfStmt{
+			Cond: whereCond,
+			Then: &aotir.Block{Statements: accStmts},
+		}}}
+	} else {
+		accBlock = &aotir.Block{Statements: accStmts}
+	}
+
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.ForEachStmt{
+		Var:              q.Var,
+		List:             source,
+		ElemType:         sourceElemType,
+		ElemRecordName:   sourceElemRecord,
+		InnerElemType:    sourceInnerElem,
+		MapElemKeyType:   sourceMapKey,
+		MapElemValueType: sourceMapValue,
+		Body:             accBlock,
+	})
+
+	// Lower select expression with grp in scope.
+	l.scope = newLScope(prev)
+	l.scope.vars[gkName] = lbinding{t: keyType}
+	l.scope.vars[q.Group.Name] = lbinding{t: aotir.TypeList, elem: sourceElemType}
+	selectExpr, err := l.lowerExpr(q.Select)
+	if err != nil {
+		l.scope = prev
+		return nil, fmt.Errorf("group-by select: %w", err)
+	}
+	selectElemType := selectExpr.Type()
+	l.scope = prev
+
+	l.tempCounter++
+	arenaVar := fmt.Sprintf("__qa%d", l.tempCounter)
+
+	prev.vars[resultName] = lbinding{t: aotir.TypeList, mutable: true, elem: selectElemType}
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.LetStmt{
+		Name:     resultName,
+		VarType:  aotir.TypeList,
+		ElemType: selectElemType,
+		Init:     &aotir.ListLit{ElemType: selectElemType},
+		Mutable:  true,
+	})
+
+	grpKeysExpr := &aotir.MapKeysExpr{
+		Receiver:          grpMapRef(),
+		KeyType:           keyType,
+		ValueType:         aotir.TypeList,
+		ListValueElemType: sourceElemType,
+	}
+	prev.vars[grpKeysName] = lbinding{t: aotir.TypeList, elem: keyType}
+
+	resultRef := &aotir.VarRef{Name: resultName, VarType: aotir.TypeList, ElemType: selectElemType}
+	appendStmt := &aotir.AssignStmt{
+		Name: resultName,
+		Value: &aotir.AppendExpr{
+			Receiver: resultRef, Value: selectExpr, ElemType: selectElemType,
+		},
+	}
+
+	projBody := &aotir.Block{Statements: []aotir.Stmt{
+		&aotir.LetStmt{
+			Name:    q.Group.Name,
+			VarType: aotir.TypeList, ElemType: sourceElemType,
+			Init: &aotir.MapGetExpr{
+				Receiver: grpMapRef(), Key: &aotir.VarRef{Name: gkName, VarType: keyType},
+				KeyType: keyType, ValueType: aotir.TypeList, ListValueElemType: sourceElemType,
+			},
+		},
+		appendStmt,
+	}}
+
+	queryBody := &aotir.Block{Statements: []aotir.Stmt{
+		&aotir.LetStmt{
+			Name: grpKeysName, VarType: aotir.TypeList, ElemType: keyType,
+			Init: grpKeysExpr,
+		},
+		&aotir.ForEachStmt{
+			Var:      gkName,
+			List:     &aotir.VarRef{Name: grpKeysName, VarType: aotir.TypeList, ElemType: keyType},
+			ElemType: keyType,
+			Body:     projBody,
+		},
+	}}
+
+	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.QueryScopeStmt{
+		ResultVar: resultName,
+		ArenaVar:  arenaVar,
+		ElemType:  selectElemType,
+		Body:      queryBody,
+	})
+
+	return &aotir.VarRef{Name: resultName, VarType: aotir.TypeList, ElemType: selectElemType}, nil
+}
+
 // lowerQueryExpr lowers a `from x in src [where cond] select expr`
 // query expression. Phase 8.0 supports filter+map queries over scalar
 // list sources. The approach mirrors lowerMatchExpr: statements are
@@ -5086,9 +6341,9 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 	if l.currentBlock == nil {
 		return nil, fmt.Errorf("query expression outside a statement block (internal error)")
 	}
-	// Phase 8.2: cross-join (from) and join clauses are now supported.
+	// Phase 7.2: group-by queries delegate to lowerGroupByQueryExpr.
 	if q.Group != nil {
-		return nil, fmt.Errorf("group-by queries land in Phase 8.1")
+		return l.lowerGroupByQueryExpr(q)
 	}
 	// Phase 8.1: Sort, Skip, Take are handled after the main loop below.
 	if q.Distinct {
@@ -5274,21 +6529,28 @@ func (l *lowerer) lowerQueryExpr(q *parser.QueryExpr) (aotir.Expr, error) {
 		si := joinSrcs[i]
 		on := joinOns[i]
 		if j.Side == nil {
-			// Inner join: for y in ys { if on { innerBody } }
-			innerBody = &aotir.Block{Statements: []aotir.Stmt{
-				&aotir.ForEachStmt{
-					Var:              j.Var,
-					List:             si.src,
-					ElemType:         si.elemType,
-					ElemRecordName:   si.elemRec,
-					InnerElemType:    si.innerElem,
-					MapElemKeyType:   si.mapKey,
-					MapElemValueType: si.mapValue,
-					Body: &aotir.Block{Statements: []aotir.Stmt{
-						&aotir.IfStmt{Cond: on, Then: innerBody},
-					}},
-				},
-			}}
+			// Phase 7.3: attempt hash join when the On condition is a simple
+			// equality between expressions that each reference only one side.
+			outerVars := collectOuterJoinVars(q, i)
+			if hj := extractHashJoinKeys(on, j.Var, outerVars); hj != nil {
+				innerBody = l.buildHashJoin(j.Var, si.src, si.elemType, si.elemRec, hj, innerBody, prev)
+			} else {
+				// Inner join: nested-loop fallback: for y in ys { if on { innerBody } }
+				innerBody = &aotir.Block{Statements: []aotir.Stmt{
+					&aotir.ForEachStmt{
+						Var:              j.Var,
+						List:             si.src,
+						ElemType:         si.elemType,
+						ElemRecordName:   si.elemRec,
+						InnerElemType:    si.innerElem,
+						MapElemKeyType:   si.mapKey,
+						MapElemValueType: si.mapValue,
+						Body: &aotir.Block{Statements: []aotir.Stmt{
+							&aotir.IfStmt{Cond: on, Then: innerBody},
+						}},
+					},
+				}}
+			}
 		} else {
 			// Left join: emit __anyN sentinel + matched rows + unmatched fallback.
 			l.tempCounter++
@@ -5633,7 +6895,15 @@ func (l *lowerer) lowerMatchArm(c *parser.MatchCase, ud *aotir.UnionDecl, result
 		if err != nil {
 			return nil, true, err
 		}
-		return &aotir.MatchArm{VariantName: "", Body: body}, true, nil
+		var guard aotir.Expr
+		if c.Guard != nil {
+			g, err := l.lowerExpr(c.Guard)
+			if err != nil {
+				return nil, true, fmt.Errorf("arm guard: %w", err)
+			}
+			guard = g
+		}
+		return &aotir.MatchArm{VariantName: "", Guard: guard, Body: body}, true, nil
 	}
 
 	// Field-bearing variant: `Circle(r) => ...`
@@ -5670,11 +6940,26 @@ func (l *lowerer) lowerMatchArm(c *parser.MatchCase, ud *aotir.UnionDecl, result
 			})
 			bindingScope[varName] = lbinding{t: vd.Fields[i].FieldType, mutable: false}
 		}
+		// Lower guard with binding scope injected so pattern variables are in scope.
+		var guard aotir.Expr
+		if c.Guard != nil {
+			prev := l.scope
+			l.scope = newLScope(prev)
+			for name, b := range bindingScope {
+				l.scope.vars[name] = b
+			}
+			g, err := l.lowerExpr(c.Guard)
+			l.scope = prev
+			if err != nil {
+				return nil, false, fmt.Errorf("arm guard: %w", err)
+			}
+			guard = g
+		}
 		body, err := l.lowerMatchBodyWithScope(c, bindingScope, resultVar, resultType)
 		if err != nil {
 			return nil, false, err
 		}
-		return &aotir.MatchArm{VariantName: variantName, Tag: vd.Tag, Bindings: bindings, Body: body}, false, nil
+		return &aotir.MatchArm{VariantName: variantName, Tag: vd.Tag, Bindings: bindings, Guard: guard, Body: body}, false, nil
 	}
 
 	// Unit variant: `None => ...` or `MyVariant => ...`
@@ -5689,11 +6974,19 @@ func (l *lowerer) lowerMatchArm(c *parser.MatchCase, ud *aotir.UnionDecl, result
 		if vd == nil {
 			return nil, false, fmt.Errorf("pattern variant %q not found in union %q", variantName, ud.Name)
 		}
+		var guard aotir.Expr
+		if c.Guard != nil {
+			g, err := l.lowerExpr(c.Guard)
+			if err != nil {
+				return nil, false, fmt.Errorf("arm guard: %w", err)
+			}
+			guard = g
+		}
 		body, err := l.lowerMatchBody(c, nil, resultVar, resultType)
 		if err != nil {
 			return nil, false, err
 		}
-		return &aotir.MatchArm{VariantName: variantName, Tag: vd.Tag, Body: body}, false, nil
+		return &aotir.MatchArm{VariantName: variantName, Tag: vd.Tag, Guard: guard, Body: body}, false, nil
 	}
 
 	return nil, false, fmt.Errorf("unsupported pattern shape in Phase 4.0 (expected identifier or call pattern)")
@@ -5905,9 +7198,10 @@ func trimPrimary(pr *parser.Primary) string {
 
 // ---- Phase 14.0: LLM generation expression lowering ----
 
-// lowerGenerateExpr lowers `generate <provider> { prompt: ..., model: ... }`
-// to an LLMGenerateExpr IR node. Phase 14.0 supports text generation only;
-// the target must name a known LLM provider (not a struct type).
+// lowerGenerateExpr lowers `generate <provider> { prompt: ..., model: ..., schema: ... }`
+// to an LLMGenerateExpr IR node. Phase 14.0 supports text generation;
+// Phase 13.1 adds the optional schema field for structured output: the schema
+// string is appended to the prompt as a JSON schema hint.
 func (l *lowerer) lowerGenerateExpr(g *parser.GenerateExpr) (aotir.Expr, error) {
 	if g == nil {
 		return nil, fmt.Errorf("lowerGenerateExpr: nil GenerateExpr")
@@ -5915,9 +7209,10 @@ func (l *lowerer) lowerGenerateExpr(g *parser.GenerateExpr) (aotir.Expr, error) 
 
 	provider := g.Target
 
-	// Collect prompt and model from the field list.
+	// Collect prompt, model, and schema from the field list.
 	var promptExpr aotir.Expr
 	var modelExpr aotir.Expr
+	var schemaExpr aotir.Expr
 
 	for _, f := range g.Fields {
 		lowered, err := l.lowerExpr(f.Value)
@@ -5935,8 +7230,14 @@ func (l *lowerer) lowerGenerateExpr(g *parser.GenerateExpr) (aotir.Expr, error) 
 				return nil, fmt.Errorf("generate %s: model must be a string, got %s", provider, lowered.Type())
 			}
 			modelExpr = lowered
+		case "schema":
+			// Phase 13.1: schema is a JSON schema string appended to the prompt.
+			if lowered.Type() != aotir.TypeString {
+				return nil, fmt.Errorf("generate %s: schema must be a string, got %s", provider, lowered.Type())
+			}
+			schemaExpr = lowered
 		default:
-			return nil, fmt.Errorf("generate %s: unsupported field %q in Phase 14.0 (only prompt and model)", provider, f.Name)
+			return nil, fmt.Errorf("generate %s: unsupported field %q (supported: prompt, model, schema)", provider, f.Name)
 		}
 	}
 
@@ -5945,6 +7246,23 @@ func (l *lowerer) lowerGenerateExpr(g *parser.GenerateExpr) (aotir.Expr, error) 
 	}
 	if modelExpr == nil {
 		modelExpr = &aotir.StringLit{Value: ""}
+	}
+
+	// Phase 13.1: if a schema field was provided, append it to the prompt so
+	// the cassette key incorporates the schema and the LLM sees the constraint.
+	if schemaExpr != nil {
+		separator := &aotir.StringLit{Value: "\nRespond with JSON matching this schema: "}
+		promptExpr = &aotir.BinaryExpr{
+			Op: aotir.BinStrCat,
+			Left: &aotir.BinaryExpr{
+				Op:     aotir.BinStrCat,
+				Left:   promptExpr,
+				Right:  separator,
+				Result: aotir.TypeString,
+			},
+			Right:  schemaExpr,
+			Result: aotir.TypeString,
+		}
 	}
 
 	return &aotir.LLMGenerateExpr{
@@ -6710,10 +8028,50 @@ func (l *lowerer) lowerLogicQuery(q *parser.LogicQueryExpr) (aotir.Expr, error) 
 
 	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.RawCStmt{Code: code.String()})
 
-	// Return a RawCExpr that references the result variable.
-	return &aotir.RawCExpr{
-		Code:    resultVar,
-		RawType: aotir.TypeList,
+	// Build a DatalogProgram snapshot at query time (for BEAM compile-time eval).
+	dpFacts := make([]aotir.DatalogFact, len(l.logicFacts))
+	for i, f := range l.logicFacts {
+		argsCopy := make([]string, len(f.args))
+		copy(argsCopy, f.args)
+		dpFacts[i] = aotir.DatalogFact{Name: f.name, Args: argsCopy}
+	}
+	dpRules := make([]aotir.DatalogRule, len(l.logicRules))
+	for i, r := range l.logicRules {
+		haCopy := make([]string, len(r.headArgs))
+		copy(haCopy, r.headArgs)
+		rbBody := make([]aotir.DatalogRuleBody, len(r.body))
+		for j, rb := range r.body {
+			argsCopy := make([]string, len(rb.args))
+			copy(argsCopy, rb.args)
+			rbBody[j] = aotir.DatalogRuleBody{
+				Name:  rb.name,
+				Args:  argsCopy,
+				IsNot: rb.isNot,
+				IsNeq: rb.isNeq,
+				NeqA:  rb.neqA,
+				NeqB:  rb.neqB,
+			}
+		}
+		dpRules[i] = aotir.DatalogRule{
+			HeadName: r.headName,
+			HeadArgs: haCopy,
+			Body:     rbBody,
+		}
+	}
+
+	// Build queryArgs from the query predicate.
+	queryArgs := make([]string, len(q.Pred.Args))
+	for i, qa := range q.Pred.Args {
+		if qa.Str != nil {
+			queryArgs[i] = `"` + *qa.Str + `"`
+		} // else "" = free variable
+	}
+
+	return &aotir.DatalogQueryExpr{
+		QueryName:  q.Pred.Name,
+		QueryArgs:  queryArgs,
+		Prog:       &aotir.DatalogProgram{Facts: dpFacts, Rules: dpRules},
+		CResultVar: resultVar,
 	}, nil
 }
 
@@ -6835,15 +8193,17 @@ func (l *lowerer) lowerAgentIntentCallStmt(out *aotir.Block, match *agentIntentC
 	}
 	// Build the receiver VarRef.
 	receiverExpr := &aotir.VarRef{
-		Name:      match.receiverName,
-		VarType:   aotir.TypeAgent,
-		AgentName: b.agentName,
+		Name:         match.receiverName,
+		VarType:      aotir.TypeAgent,
+		AgentName:    b.agentName,
+		IsSpawnedRef: b.isSpawned,
 	}
 	out.Statements = append(out.Statements, &aotir.AgentIntentCallStmt{
 		AgentName:  b.agentName,
 		IntentName: match.intentName,
 		Receiver:   receiverExpr,
 		Args:       args,
+		SpawnedRef: b.isSpawned,
 	})
 	return nil
 }
@@ -6892,6 +8252,7 @@ func (l *lowerer) lowerAgentMethodCallOp(amr *aotir.AgentMethodRef, callOp *pars
 		Receiver:   amr.Receiver,
 		Args:       args,
 		Result:     intentDecl.ReturnType,
+		SpawnedRef: amr.SpawnedRef,
 	}, nil
 }
 
@@ -7074,6 +8435,8 @@ func exprAgentName(e aotir.Expr) string {
 		}
 	case *aotir.AgentLit:
 		return v.AgentName
+	case *aotir.AgentSpawnExpr:
+		return v.AgentName
 	}
 	return ""
 }
@@ -7179,4 +8542,60 @@ func lowerAgentIntentBody(
 		ReturnType: retType,
 		Body:       body,
 	}, nil
+}
+
+// lowerAgentOnCloseBody creates a lowerer scoped to the on_close body of an agent.
+// The body has access to agent fields (read-only in terminate context).
+// Returns a *aotir.Block that becomes AgentDecl.OnClose.
+func lowerAgentOnCloseBody(
+	records map[string]*aotir.RecordDecl,
+	unions map[string]*aotir.UnionDecl,
+	agents map[string]*aotir.AgentDecl,
+	funcs map[string]*funcSig,
+	externFuncs map[string]*funcSig,
+	goFuncNames map[string]bool,
+	pythonFuncNames map[string]bool,
+	jsFuncNames map[string]bool,
+	agentName string,
+	agDecl *aotir.AgentDecl,
+	onClose *parser.OnCloseDecl,
+	anonCounter *int,
+	liftedFuncs *[]*aotir.Function,
+	shimFuncs *map[string]bool,
+) (*aotir.Block, error) {
+	variantToUnion := map[string]*aotir.UnionDecl{}
+	l := &lowerer{
+		funcs:           funcs,
+		externFuncs:     externFuncs,
+		goFuncNames:     goFuncNames,
+		pythonFuncNames: pythonFuncNames,
+		jsFuncNames:     jsFuncNames,
+		records:         records,
+		unions:          unions,
+		agents:          agents,
+		variantToUnion:  variantToUnion,
+		scope:           newLScope(nil),
+		currentFnReturn: aotir.TypeUnit,
+		anonCounter:     anonCounter,
+		liftedFuncs:     liftedFuncs,
+		shimFuncs:       shimFuncs,
+	}
+	// Seed agent fields as read-only bindings (terminate receives final state).
+	for _, f := range agDecl.Fields {
+		l.scope.vars[f.Name] = lbinding{
+			t:        f.Type,
+			mutable:  false,
+			emitName: "__self->" + f.Name,
+		}
+	}
+	body := &aotir.Block{}
+	for i, st := range onClose.Body {
+		if st == nil {
+			return nil, fmt.Errorf("on_close stmt %d is nil", i)
+		}
+		if err := l.lowerStatement(body, st); err != nil {
+			return nil, fmt.Errorf("on_close stmt %d: %w", i, err)
+		}
+	}
+	return body, nil
 }

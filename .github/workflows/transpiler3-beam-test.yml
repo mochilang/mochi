@@ -1,8 +1,10 @@
 name: BEAM transpiler tests
 
-# MEP-46 Phase 16.0: CI gate for the Mochi-to-BEAM transpiler test suite.
-# Installs Erlang/OTP and runs the full beam/build test suite on Linux and
-# macOS. Covers OTP 28 (latest) initially; OTP 27 matrix added in Phase 16.1.
+# MEP-46: CI gate for the Mochi-to-BEAM transpiler test suite.
+# Phase 16.0: OTP 28 on Linux + macOS (blocking).
+# Phase 16.1: OTP 27 added to blocking matrix.
+# Phase 16.2: OTP 29 RC added as non-blocking nightly.
+# Phase 16.3: Windows x86-64 best-effort (non-blocking).
 
 on:
   push:
@@ -13,6 +15,9 @@ on:
       - 'transpiler3/c/aotir/**'
       - 'transpiler3/c/lower/**'
       - '.github/workflows/transpiler3-beam-test.yml'
+  schedule:
+    # Phase 16.2: nightly run on OTP 29 RC (non-blocking).
+    - cron: '0 3 * * *'
 
 jobs:
   beam-test:
@@ -25,12 +30,30 @@ jobs:
         include:
           - os: ubuntu-latest
             otp: '28'
+            blocking: true
           - os: macos-latest
             otp: '28'
+            blocking: true
           - os: ubuntu-latest
             otp: '27'
+            blocking: true
           - os: macos-latest
             otp: '27'
+            blocking: true
+          - os: ubuntu-latest
+            otp: '29'
+            blocking: false
+          - os: macos-latest
+            otp: '29'
+            blocking: false
+          - os: windows-latest
+            otp: '27'
+            blocking: false
+          - os: windows-latest
+            otp: '28'
+            blocking: false
+
+    continue-on-error: ${{ !matrix.blocking }}
 
     steps:
       - name: Checkout

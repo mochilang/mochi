@@ -1,0 +1,3 @@
+extern fun erlang.max(a: int, b: int): int
+let m = erlang.max(7, 3)
+print(m)

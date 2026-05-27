@@ -1,0 +1,27 @@
+# Mochi BEAM runtime Dialyzer allowlist
+#
+# Each entry documents a known dialyzer false positive in the Mochi BEAM
+# runtime source files (transpiler3/beam/runtime/src/*.erl).
+#
+# Format:
+#   MODULE:FUNCTION/ARITY  <short reason>
+#
+# How to apply: if dialyzer reports a warning that matches an entry here,
+# the warning is expected and intentional. CI enforces zero *unlisted*
+# warnings (see TestDialyzer in transpiler3/beam/build/dialyzer_test.go).
+#
+# As of 2026-05-26 the runtime source files produce zero dialyzer warnings
+# when checked against a PLT built with erts, kernel, stdlib, inets,
+# public_key, and ssl. This file is kept as a placeholder and extended
+# whenever a new OTP version introduces a new false positive.
+#
+# Known false-positive patterns to watch for:
+#
+# 1. httpc:request/4 "unknown function" on OTP versions < 27 that ship
+#    without an inets PLT entry. Resolved by including `inets` in the PLT
+#    build command (--apps erts kernel stdlib inets public_key ssl).
+#
+# 2. public_key:cacerts_get/0 "unknown function" on OTP < 25 (function
+#    was added in OTP 25.1). The CI matrix enforces OTP >= 27 so this
+#    cannot appear in CI; add an entry here if a user reports it on an
+#    older OTP.

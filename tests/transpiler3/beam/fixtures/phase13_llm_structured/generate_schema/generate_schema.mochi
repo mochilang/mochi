@@ -1,0 +1,3 @@
+let schema = "name:string,age:string"
+let r = generate openai { prompt: "Extract name and age from: John is 30 years old.", schema: schema }
+print(r)

@@ -122,6 +122,14 @@ func CBool(b bool) Expr {
 	return ETuple{EAtom("c_literal"), anno, EAtom(name)}
 }
 
+// CLit wraps an arbitrary raw ETF term in a c_literal node.
+// Used to create module attribute values that are complex terms.
+//
+//	{c_literal, [], Val}
+func CLit(val Term) Expr {
+	return ETuple{EAtom("c_literal"), anno, val}
+}
+
 // CNil builds a c_literal node for the empty list [].
 //
 //	{c_literal, [], []}

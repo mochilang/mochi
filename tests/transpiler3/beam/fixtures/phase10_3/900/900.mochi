@@ -1,0 +1,19 @@
+// Phase 10.3: cross-node streams via pg process groups.
+// The stream broker process is identified by PID. In a multi-node setup,
+// streams would be backed by pg:join/pg:get_members for automatic cross-node
+// fanout. This fixture verifies the stream infrastructure works correctly in
+// single-node mode (pg-backed distribution is transparent to the producer
+// and consumer API).
+let s: stream<int> = make_stream(4)
+let sub1 = subscribe(s)
+let sub2 = subscribe_limit(s, 10)
+emit(s, 42)
+emit(s, 7)
+let a = recv_sub(sub1)
+let b = recv_sub(sub1)
+let c = recv_sub(sub2)
+let d = recv_sub(sub2)
+print(a)
+print(b)
+print(c)
+print(d)

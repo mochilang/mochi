@@ -184,7 +184,7 @@ type InlineStructType struct {
 }
 
 type GenericType struct {
-	Name string     `json:"name,omitempty" parser:"@Ident '<'"`
+	Name string     `json:"name,omitempty" parser:"@(Ident | Keyword) '<'"`
 	Args []*TypeRef `json:"args,omitempty" parser:"@@ { ',' @@ } '>'"`
 }
 
@@ -482,8 +482,18 @@ type ListLiteral struct {
 	Elems []*Expr `json:"elems,omitempty" parser:"'[' [ @@ { ',' @@ } ] [ ',' ]? ']'"`
 }
 
+type SetLiteral struct {
+	Elems []*Expr `json:"elems,omitempty" parser:"'set' '{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
+}
+
 type MapLiteral struct {
 	Items []*MapEntry `json:"items,omitempty" parser:"'{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
+}
+
+// OMapLiteral is an ordered-map literal: omap{k1: v1, k2: v2, ...}.
+// The body is identical to MapLiteral; the 'omap' prefix distinguishes it.
+type OMapLiteral struct {
+	Items []*MapEntry `json:"items,omitempty" parser:"'omap' '{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
 }
 
 type MapEntry struct {
@@ -518,6 +528,29 @@ type FetchExpr struct {
 	Pos  lexer.Position `json:"pos,omitempty" parser:""`
 	URL  *Expr          `json:"url,omitempty" parser:"'fetch' @@"`
 	With *Expr          `json:"with,omitempty" parser:"[ 'with' @@ ]"`
+}
+
+// SpawnExpr is `spawn AgentType(args...)` — starts a supervised gen_server
+// process for the named agent type and returns an opaque agent ref (PID).
+// Phase 9.1.
+type SpawnExpr struct {
+	Pos       lexer.Position `json:"pos,omitempty" parser:""`
+	AgentType string         `json:"agent_type,omitempty" parser:"'spawn' @Ident"`
+	Args      []*Expr        `json:"args,omitempty" parser:"'(' [ @@ { ',' @@ } ] ')'"`
+}
+
+// AsyncExpr is `async <expr>` — evaluates expr in a spawned process
+// and returns a future reference. Phase 11.0.
+type AsyncExpr struct {
+	Pos  lexer.Position `json:"pos,omitempty" parser:""`
+	Expr *Expr          `json:"expr,omitempty" parser:"'async' @@"`
+}
+
+// AwaitExpr is `await <expr>` — blocks until the future resolves
+// and returns the result. Phase 11.1.
+type AwaitExpr struct {
+	Pos    lexer.Position `json:"pos,omitempty" parser:""`
+	Future *Expr          `json:"future,omitempty" parser:"'await' @@"`
 }
 
 type LoadExpr struct {
@@ -591,8 +624,9 @@ type IfExpr struct {
 
 type MatchCase struct {
 	Pos     lexer.Position `json:"pos,omitempty" parser:""`
-	Pattern *Expr          `json:"pattern,omitempty" parser:"@@ '=>'"`
-	Result  *Expr          `json:"result,omitempty" parser:"[ @@ ]"`
+	Pattern *Expr          `json:"pattern,omitempty" parser:"@@"`
+	Guard   *Expr          `json:"guard,omitempty" parser:"[ 'when' @@ ]"`
+	Result  *Expr          `json:"result,omitempty" parser:"'=>' [ @@ ]"`
 	Block   []*Statement   `json:"block,omitempty" parser:"[ '{' @@* '}' ]"`
 }
 
@@ -605,11 +639,16 @@ type Primary struct {
 	If         *IfExpr         `json:"if,omitempty" parser:"| @@"`
 	Selector   *SelectorExpr   `json:"selector,omitempty" parser:"| @@"`
 	List       *ListLiteral    `json:"list,omitempty" parser:"| @@"`
+	Set        *SetLiteral     `json:"set,omitempty" parser:"| @@"`
+	OMap       *OMapLiteral    `json:"omap,omitempty" parser:"| @@"`
 	Map        *MapLiteral     `json:"map,omitempty" parser:"| @@"`
 	FunExpr    *FunExpr        `json:"funexpr,omitempty" parser:"| @@"`
 	Match      *MatchExpr      `json:"match,omitempty" parser:"| @@"`
 	Generate   *GenerateExpr   `json:"generate,omitempty" parser:"| @@"`
 	Fetch      *FetchExpr      `json:"fetch,omitempty" parser:"| @@"`
+	Spawn      *SpawnExpr      `json:"spawn,omitempty" parser:"| @@"`
+	Async      *AsyncExpr      `json:"async,omitempty" parser:"| @@"`
+	Await      *AwaitExpr      `json:"await,omitempty" parser:"| @@"`
 	Load       *LoadExpr       `json:"load,omitempty" parser:"| @@"`
 	Save       *SaveExpr       `json:"save,omitempty" parser:"| @@"`
 	Lit        *Literal        `json:"lit,omitempty" parser:"| @@"`
@@ -722,13 +761,21 @@ type AgentDecl struct {
 	Body []*AgentBlock  `json:"body,omitempty" parser:"'{' @@* '}'"`
 }
 
+// OnCloseDecl is the Phase 9.3 `on close { ... }` block inside an agent body.
+// It maps to the terminate/2 callback in the BEAM gen_server lifecycle.
+type OnCloseDecl struct {
+	Pos  lexer.Position `json:"pos,omitempty" parser:""`
+	Body []*Statement   `json:"body,omitempty" parser:"'on' 'close' '{' @@* '}'"`
+}
+
 type AgentBlock struct {
-	Pos    lexer.Position `json:"pos,omitempty" parser:""`
-	Let    *LetStmt       `json:"let,omitempty" parser:"@@"`
-	Var    *VarStmt       `json:"var,omitempty" parser:"| @@"`
-	Assign *AssignStmt    `json:"assign,omitempty" parser:"| @@"`
-	On     *OnHandler     `json:"on,omitempty" parser:"| @@"`
-	Intent *IntentDecl    `json:"intent,omitempty" parser:"| @@"`
+	Pos      lexer.Position `json:"pos,omitempty" parser:""`
+	OnClose  *OnCloseDecl   `json:"on_close,omitempty" parser:"@@"`
+	Let      *LetStmt       `json:"let,omitempty" parser:"| @@"`
+	Var      *VarStmt       `json:"var,omitempty" parser:"| @@"`
+	Assign   *AssignStmt    `json:"assign,omitempty" parser:"| @@"`
+	On       *OnHandler     `json:"on,omitempty" parser:"| @@"`
+	Intent   *IntentDecl    `json:"intent,omitempty" parser:"| @@"`
 }
 
 type IntentDecl struct {

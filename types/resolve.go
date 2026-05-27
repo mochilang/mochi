@@ -33,6 +33,10 @@ func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 		name := t.Generic.Name
 		args := t.Generic.Args
 		switch name {
+		case "set":
+			if len(args) == 1 {
+				return SetType{Elem: resolveTypeRef(args[0], env)}
+			}
 		case "list":
 			if len(args) == 1 {
 				return ListType{Elem: resolveTypeRef(args[0], env)}
@@ -40,6 +44,13 @@ func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 		case "map":
 			if len(args) == 2 {
 				return MapType{
+					Key:   resolveTypeRef(args[0], env),
+					Value: resolveTypeRef(args[1], env),
+				}
+			}
+		case "omap":
+			if len(args) == 2 {
+				return OMapType{
 					Key:   resolveTypeRef(args[0], env),
 					Value: resolveTypeRef(args[1], env),
 				}
@@ -55,6 +66,10 @@ func resolveTypeRefInner(t *parser.TypeRef, env *Env) Type {
 		case "sub":
 			if len(args) == 1 {
 				return SubType{Elem: resolveTypeRef(args[0], env)}
+			}
+		case "future":
+			if len(args) == 1 {
+				return FutureType{Elem: resolveTypeRef(args[0], env)}
 			}
 		}
 		// Fallback: unknown generic type

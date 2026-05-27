@@ -53,6 +53,14 @@ func Subtype(s, t Type) bool {
 		_, ok := t.(BigRatType)
 		return ok
 
+	case SetType:
+		// Set elements are covariant in read position (same rationale as ListType).
+		tv, ok := t.(SetType)
+		if !ok {
+			return false
+		}
+		return Subtype(sv.Elem, tv.Elem)
+
 	case ListType:
 		// MEP-11 §T-List-Read. List elements are covariant in read
 		// position only. Routing through Subtype is read position by
@@ -70,6 +78,14 @@ func Subtype(s, t Type) bool {
 		// Equal(s.V, t.V). The Subtype call here intentionally bottoms
 		// out at structural equality on the children.
 		tv, ok := t.(MapType)
+		if !ok {
+			return false
+		}
+		return equalKinds(sv.Key, tv.Key) && equalKinds(sv.Value, tv.Value)
+
+	case OMapType:
+		// OMapType is invariant in both key and value (same rationale as MapType).
+		tv, ok := t.(OMapType)
 		if !ok {
 			return false
 		}
@@ -209,6 +225,10 @@ func assignableAt(src, dst Type, elementContext bool) bool {
 		if dv, ok := dst.(MapType); ok {
 			return assignableAt(sv.Key, dv.Key, true) && assignableAt(sv.Value, dv.Value, true)
 		}
+	case OMapType:
+		if dv, ok := dst.(OMapType); ok {
+			return assignableAt(sv.Key, dv.Key, true) && assignableAt(sv.Value, dv.Value, true)
+		}
 	case ChanType:
 		if dv, ok := dst.(ChanType); ok {
 			return assignableAt(sv.Elem, dv.Elem, true)
@@ -276,11 +296,17 @@ func equalKinds(a, b Type) bool {
 	case UnitType:
 		_, ok := b.(UnitType)
 		return ok
+	case SetType:
+		bv, ok := b.(SetType)
+		return ok && equalKinds(av.Elem, bv.Elem)
 	case ListType:
 		bv, ok := b.(ListType)
 		return ok && equalKinds(av.Elem, bv.Elem)
 	case MapType:
 		bv, ok := b.(MapType)
+		return ok && equalKinds(av.Key, bv.Key) && equalKinds(av.Value, bv.Value)
+	case OMapType:
+		bv, ok := b.(OMapType)
 		return ok && equalKinds(av.Key, bv.Key) && equalKinds(av.Value, bv.Value)
 	case ChanType:
 		bv, ok := b.(ChanType)

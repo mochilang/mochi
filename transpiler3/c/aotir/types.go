@@ -33,6 +33,8 @@ const (
 	TypeRecord // struct mochi_<Name>; identity carried as RecordName beside the Type
 	TypeList   // mochi_list_<T>; element type carried as ElemType beside the Type
 	TypeMap    // mochi_map_<K>_<V>; key + value types carried as KeyType + ValueType beside the Type
+	TypeSet    // OTP sets module v2 set; element type carried as ElemType beside the Type (Phase 3.3)
+	TypeOMap   // OTP orddict ordered map; key + value types carried as KeyType + ValueType beside the Type (Phase 3.4)
 	TypeUnion  // struct pkg_<S> with uint8_t tag + union; identity carried as UnionName beside the Type
 	TypeFun    // function pointer; signature carried as FunSig beside the Type (Phase 5.0)
 	TypeChan   // mochi_chan_t *; element type carried as ChanElemType beside the Type (Phase 9.1)
@@ -40,6 +42,7 @@ const (
 	TypeSub    // mochi_sub_t *; element type carried as SubElemType beside the Type (Phase 9.2)
 	TypeAgent  // mochi_agent_NAME_t; identity carried as AgentName beside the Type (Phase 9.3)
 	TypeValue  // mochi_value_t; tagged union for FFI-crossing values (Phase 10.1)
+	TypeFuture // Erlang reference returned by mochi_async:async/1 (Phase 11.0)
 )
 
 // String returns a stable identifier for the type, used in
@@ -64,6 +67,10 @@ func (t Type) String() string {
 		return "list"
 	case TypeMap:
 		return "map"
+	case TypeSet:
+		return "set"
+	case TypeOMap:
+		return "omap"
 	case TypeUnion:
 		return "union"
 	case TypeFun:
@@ -78,6 +85,8 @@ func (t Type) String() string {
 		return "agent"
 	case TypeValue:
 		return "value"
+	case TypeFuture:
+		return "future"
 	default:
 		return "invalid"
 	}

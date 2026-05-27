@@ -1,0 +1,54 @@
+name: BEAM runtime Dialyzer
+
+# MEP-46 Phase 17.2: CI job runs Dialyzer on the Mochi BEAM runtime
+# source files (.erl in transpiler3/beam/runtime/src/). Zero warnings
+# required on all blocking matrix cells.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    paths:
+      - 'transpiler3/beam/runtime/src/**'
+      - 'transpiler3/beam/build/dialyzer_test.go'
+      - '.github/workflows/transpiler3-beam-dialyzer.yml'
+
+jobs:
+  dialyzer:
+    name: Dialyzer (OTP ${{ matrix.otp }} / ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            otp: '28'
+            blocking: true
+          - os: ubuntu-latest
+            otp: '27'
+            blocking: true
+
+    continue-on-error: ${{ !matrix.blocking }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Set up Erlang/OTP ${{ matrix.otp }}
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ matrix.otp }}
+          version-type: loose
+
+      - name: Verify dialyzer available
+        run: dialyzer --version
+
+      - name: Run Dialyzer via Go test
+        run: go test -v -run TestDialyzer -timeout 300s ./transpiler3/beam/build/

@@ -62,60 +62,6 @@ try_decimal(F, Prec) ->
         false -> try_decimal(F, Prec + 1)
     end.
 
-%% normalize_g ensures the result matches Go's 'g' format:
-%% - exponent uses 'e+N' / 'e-N' notation (Go uses lowercase e)
-%% - no trailing zeros after the decimal point
-%% - always has a decimal point for non-integer floats
-normalize_g(Bin) ->
-    S = binary_to_list(Bin),
-    case lists:member($e, S) orelse lists:member($E, S) of
-        true ->
-            %% Scientific notation: normalize exponent format.
-            normalize_scientific(S);
-        false ->
-            %% Decimal notation.
-            normalize_decimal(S)
-    end.
-
-normalize_scientific(S) ->
-    %% Split at e/E.
-    {Mantissa, [$e|Exp]} = lists:splitwith(fun(C) -> C =/= $e andalso C =/= $E end, S),
-    NormMantissa = strip_trailing_zeros(Mantissa),
-    NormExp = normalize_exp(Exp),
-    list_to_binary(NormMantissa ++ "e" ++ NormExp).
-
-normalize_exp([$+|Digits]) ->
-    %% Remove leading zeros from positive exponent.
-    "+" ++ strip_leading_zeros(Digits);
-normalize_exp([$-|Digits]) ->
-    "-" ++ strip_leading_zeros(Digits);
-normalize_exp(Digits) ->
-    "+" ++ strip_leading_zeros(Digits).
-
-strip_leading_zeros([]) -> "0";
-strip_leading_zeros([$0|Rest]) -> strip_leading_zeros(Rest);
-strip_leading_zeros(S) -> S.
-
-normalize_decimal(S) ->
-    case lists:member($., S) of
-        true  -> list_to_binary(strip_trailing_zeros(S));
-        false -> list_to_binary(S)
-    end.
-
-strip_trailing_zeros(S) ->
-    case lists:member($., S) of
-        false -> S;
-        true  -> strip_trailing_zeros_after_dot(lists:reverse(S))
-    end.
-
-strip_trailing_zeros_after_dot([$0|Rest]) ->
-    strip_trailing_zeros_after_dot(Rest);
-strip_trailing_zeros_after_dot([$.|Rest]) ->
-    %% Remove trailing dot too (Go does not keep trailing dot).
-    lists:reverse(Rest);
-strip_trailing_zeros_after_dot(S) ->
-    lists:reverse(S).
-
 %% concat/2 concatenates two binaries.
 concat(A, B) when is_binary(A), is_binary(B) ->
     <<A/binary, B/binary>>.

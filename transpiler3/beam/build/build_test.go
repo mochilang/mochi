@@ -11,11 +11,11 @@ import (
 // repoRoot walks up from the test binary's working directory until
 // it finds go.mod, then returns that directory. Failing to find
 // go.mod is fatal: the build cannot proceed without the repo root.
-func repoRoot(t *testing.T) string {
-	t.Helper()
+func repoRoot(tb testing.TB) string {
+	tb.Helper()
 	dir, err := os.Getwd()
 	if err != nil {
-		t.Fatalf("getwd: %v", err)
+		tb.Fatalf("getwd: %v", err)
 	}
 	for {
 		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
@@ -23,7 +23,7 @@ func repoRoot(t *testing.T) string {
 		}
 		parent := filepath.Dir(dir)
 		if parent == dir {
-			t.Fatalf("no go.mod found above %s", dir)
+			tb.Fatalf("no go.mod found above %s", dir)
 		}
 		dir = parent
 	}
@@ -54,9 +54,10 @@ func runVm3(t *testing.T, src string) []byte {
 // runs the resulting escript, and diffs stdout against the content
 // of outPath. Any mismatch is a fatal test failure.
 //
-// This is the shared helper used by all phase gate tests. It is
-// defined here in Phase 0 so later phases can call it without
-// reimplementing the driver invocation and diff.
+// If a cassette/ subdirectory exists next to the .mochi file, it is
+// passed to the escript via MOCHI_LLM_CASSETTE_DIR (Phase 13.0).
+//
+// This is the shared helper used by all phase gate tests.
 func runBeamFixture(t *testing.T, mochiPath, outPath string) {
 	t.Helper()
 
@@ -75,6 +76,14 @@ func runBeamFixture(t *testing.T, mochiPath, outPath string) {
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = os.Stderr
+
+	// Phase 13.0: if a cassette/ directory exists next to the fixture,
+	// set MOCHI_LLM_CASSETTE_DIR so mochi_llm replays recorded responses.
+	cassetteDir := filepath.Join(filepath.Dir(mochiPath), "cassette")
+	if _, err := os.Stat(cassetteDir); err == nil {
+		cmd.Env = append(os.Environ(), "MOCHI_LLM_CASSETTE_DIR="+cassetteDir)
+	}
+
 	if err := cmd.Run(); err != nil {
 		t.Fatalf("run escript %s: %v", escriptPath, err)
 	}

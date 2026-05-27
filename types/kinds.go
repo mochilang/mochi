@@ -53,6 +53,12 @@ type ListType struct {
 
 func (t ListType) String() string { return "[" + t.Elem.String() + "]" }
 
+type SetType struct {
+	Elem Type
+}
+
+func (t SetType) String() string { return "set[" + t.Elem.String() + "]" }
+
 type MapType struct {
 	Key   Type
 	Value Type
@@ -60,6 +66,17 @@ type MapType struct {
 
 func (t MapType) String() string {
 	return fmt.Sprintf("{%s: %s}", t.Key.String(), t.Value.String())
+}
+
+// OMapType is an ordered map keyed by Key with values of type Value.
+// On BEAM it is represented as an OTP orddict (sorted list of {K,V} tuples).
+type OMapType struct {
+	Key   Type
+	Value Type
+}
+
+func (t OMapType) String() string {
+	return fmt.Sprintf("omap[%s,%s]", t.Key.String(), t.Value.String())
 }
 
 type OptionType struct {
@@ -91,6 +108,15 @@ type SubType struct {
 }
 
 func (t SubType) String() string { return fmt.Sprintf("sub<%s>", t.Elem.String()) }
+
+// FutureType is the type of a value returned by `async expr`.
+// On BEAM it is an Erlang reference (make_ref/0) used to receive
+// the result via selective receive. Phase 11.0.
+type FutureType struct {
+	Elem Type
+}
+
+func (t FutureType) String() string { return fmt.Sprintf("future<%s>", t.Elem.String()) }
 
 type GroupType struct {
 	Key  Type
