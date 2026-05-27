@@ -124,13 +124,16 @@ func runtimeJarPath() string {
 		// thisFile is .../transpiler3/jvm/build/build.go
 		// repo root is three dirs up
 		repoRoot := filepath.Dir(filepath.Dir(filepath.Dir(filepath.Dir(thisFile))))
-		jarPath := filepath.Join(repoRoot, "transpiler3", "jvm", "runtime", "target", "mochi-runtime-0.10.0-SNAPSHOT.jar")
-		if _, err := os.Stat(jarPath); err == nil {
-			return jarPath
+		for _, name := range []string{"mochi-runtime-0.14.0.jar", "mochi-runtime-0.10.0-SNAPSHOT.jar"} {
+			jarPath := filepath.Join(repoRoot, "transpiler3", "jvm", "runtime", "target", name)
+			if _, err := os.Stat(jarPath); err == nil {
+				return jarPath
+			}
 		}
 	}
 	// Fallback: relative from CWD (e.g. running from repo root directly)
 	candidates := []string{
+		"transpiler3/jvm/runtime/target/mochi-runtime-0.14.0.jar",
 		"transpiler3/jvm/runtime/target/mochi-runtime-0.10.0-SNAPSHOT.jar",
 	}
 	for _, c := range candidates {
