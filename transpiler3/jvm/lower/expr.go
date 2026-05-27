@@ -118,6 +118,23 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (javasrc.Expr, error) {
 	case *aotir.VariantFieldAccess:
 		return l.lowerVariantFieldAccess(e)
 
+	// --- Closure / HOF expressions (Phase 6) ---
+
+	case *aotir.FunLit:
+		return l.lowerFunLit(e)
+
+	case *aotir.FunCallExpr:
+		return l.lowerFunCallExpr(e)
+
+	case *aotir.ListMapExpr:
+		return l.lowerListMapExpr(e)
+
+	case *aotir.ListFilterExpr:
+		return l.lowerListFilterExpr(e)
+
+	case *aotir.ListFoldlExpr:
+		return l.lowerListFoldlExpr(e)
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported expr %T", e)
 	}

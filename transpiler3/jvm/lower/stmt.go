@@ -63,6 +63,13 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (javasrc.Stmt, error) {
 	case *aotir.MatchStmt:
 		return l.lowerMatchStmt(s)
 
+	// --- Closure statements (Phase 6) ---
+
+	// ClosureEnvStmt is a C-backend concern (malloc+fill env struct).
+	// On JVM, Java lambdas capture variables directly; no env struct needed.
+	case *aotir.ClosureEnvStmt:
+		return nil, nil // no-op
+
 	default:
 		return nil, fmt.Errorf("jvm/lower: unsupported stmt %T", s)
 	}
@@ -125,6 +132,9 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (javasrc.Stmt, error) {
 	case aotir.TypeUnion:
 		// The union/sum type is named exactly as in Mochi source.
 		javaType = javasrc.TypeRef{Name: s.UnionName}
+	case aotir.TypeFun:
+		// Function-typed binding: choose the precise functional interface from the sig.
+		javaType = funcTypeRef(s.FunSig)
 	default:
 		javaType, err = lowerType(s.VarType)
 		if err != nil {

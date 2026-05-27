@@ -148,13 +148,31 @@ func lowerFieldType(f aotir.RecordField) (javasrc.TypeRef, error) {
 }
 
 // lowerFunction translates a user-defined aotir.Function to a static MethodDecl.
+// For lifted closure functions (IsLifted==true), captured variables are prepended
+// as extra parameters (before the declared params) so that the Java lambda
+// can pass them as regular arguments rather than through a C env struct pointer.
 func (l *lowerer) lowerFunction(fn *aotir.Function) (*javasrc.MethodDecl, error) {
 	retType, err := l.lowerReturnType(fn)
 	if err != nil {
 		return nil, err
 	}
 
-	params := make([]javasrc.Param, len(fn.Params))
+	// For lifted functions, prepend captured-variable params.
+	// The C backend uses __e->field to access them; for JVM we make them
+	// explicit params and rewrite the body below.
+	var captureParams []javasrc.Param
+	if fn.IsLifted && len(fn.Captures) > 0 {
+		captureParams = make([]javasrc.Param, len(fn.Captures))
+		for i, cap := range fn.Captures {
+			pt, err := lowerType(cap.VarType)
+			if err != nil {
+				return nil, fmt.Errorf("capture %q: %w", cap.FieldName, err)
+			}
+			captureParams[i] = javasrc.Param{Type: &pt, Name: cap.FieldName}
+		}
+	}
+
+	declParams := make([]javasrc.Param, len(fn.Params))
 	for i, p := range fn.Params {
 		var pt javasrc.TypeRef
 		switch p.Type {
@@ -168,16 +186,29 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*javasrc.MethodDecl, error)
 			pt = javasrc.TypeRef{Name: p.RecordName}
 		case aotir.TypeUnion:
 			pt = javasrc.TypeRef{Name: p.UnionName}
+		case aotir.TypeFun:
+			pt = funcTypeRef(p.FunSig)
 		default:
 			pt, err = lowerType(p.Type)
 			if err != nil {
 				return nil, err
 			}
 		}
-		params[i] = javasrc.Param{Type: &pt, Name: p.Name}
+		declParams[i] = javasrc.Param{Type: &pt, Name: p.Name}
 	}
 
-	body, err := l.lowerBlock(fn.Body)
+	// Combine capture params + declared params.
+	allParams := append(captureParams, declParams...)
+
+	// For lifted functions, rewrite the body so __e->field VarRefs become
+	// plain field-name references (the C env-struct access pattern does not
+	// apply on JVM; the capture vars are now plain parameters).
+	bodyToLower := fn.Body
+	if fn.IsLifted && len(fn.Captures) > 0 {
+		bodyToLower = rewriteEnvRefs(fn.Body, fn.Captures)
+	}
+
+	body, err := l.lowerBlock(bodyToLower)
 	if err != nil {
 		return nil, err
 	}
@@ -186,9 +217,128 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*javasrc.MethodDecl, error)
 		Modifiers:  []string{"public", "static"},
 		ReturnType: retType,
 		Name:       fn.Name,
-		Params:     params,
+		Params:     allParams,
 		Body:       &body,
 	}, nil
+}
+
+// rewriteEnvRefs returns a copy of b where every VarRef whose Name starts with
+// "__e->" is replaced with a VarRef using just the field name (the suffix after "->").
+// This converts C env-struct access to plain-variable access for JVM emission.
+func rewriteEnvRefs(b *aotir.Block, captures []aotir.FunCapture) *aotir.Block {
+	if b == nil {
+		return nil
+	}
+	// Build a map from emitName "__e->field" -> fieldName.
+	renames := make(map[string]string, len(captures))
+	for _, cap := range captures {
+		renames["__e->"+cap.FieldName] = cap.FieldName
+	}
+	stmts := make([]aotir.Stmt, len(b.Statements))
+	for i, s := range b.Statements {
+		stmts[i] = rewriteStmtEnvRefs(s, renames)
+	}
+	return &aotir.Block{Statements: stmts}
+}
+
+func rewriteStmtEnvRefs(s aotir.Stmt, renames map[string]string) aotir.Stmt {
+	switch s := s.(type) {
+	case *aotir.ReturnStmt:
+		if s.Value == nil {
+			return s
+		}
+		return &aotir.ReturnStmt{Value: rewriteExprEnvRefs(s.Value, renames)}
+	case *aotir.LetStmt:
+		cp := *s
+		if s.Init != nil {
+			cp.Init = rewriteExprEnvRefs(s.Init, renames)
+		}
+		return &cp
+	case *aotir.AssignStmt:
+		return &aotir.AssignStmt{Name: s.Name, Value: rewriteExprEnvRefs(s.Value, renames)}
+	case *aotir.CallStmt:
+		args := make([]aotir.Expr, len(s.Args))
+		for i, a := range s.Args {
+			args[i] = rewriteExprEnvRefs(a, renames)
+		}
+		return &aotir.CallStmt{Func: s.Func, Args: args}
+	case *aotir.IfStmt:
+		cp := *s
+		cp.Cond = rewriteExprEnvRefs(s.Cond, renames)
+		cp.Then = rewriteEnvRefsBlock(s.Then, renames)
+		if s.Else != nil {
+			cp.Else = rewriteEnvRefsBlock(s.Else, renames)
+		}
+		return &cp
+	case *aotir.WhileStmt:
+		return &aotir.WhileStmt{
+			Cond: rewriteExprEnvRefs(s.Cond, renames),
+			Body: rewriteEnvRefsBlock(s.Body, renames),
+		}
+	case *aotir.ForEachStmt:
+		cp := *s
+		cp.List = rewriteExprEnvRefs(s.List, renames)
+		cp.Body = rewriteEnvRefsBlock(s.Body, renames)
+		return &cp
+	default:
+		return s
+	}
+}
+
+func rewriteEnvRefsBlock(b *aotir.Block, renames map[string]string) *aotir.Block {
+	if b == nil {
+		return nil
+	}
+	stmts := make([]aotir.Stmt, len(b.Statements))
+	for i, s := range b.Statements {
+		stmts[i] = rewriteStmtEnvRefs(s, renames)
+	}
+	return &aotir.Block{Statements: stmts}
+}
+
+func rewriteExprEnvRefs(e aotir.Expr, renames map[string]string) aotir.Expr {
+	if e == nil {
+		return nil
+	}
+	switch e := e.(type) {
+	case *aotir.VarRef:
+		if newName, ok := renames[e.Name]; ok {
+			cp := *e
+			cp.Name = newName
+			return &cp
+		}
+		return e
+	case *aotir.BinaryExpr:
+		return &aotir.BinaryExpr{
+			Op:     e.Op,
+			Left:   rewriteExprEnvRefs(e.Left, renames),
+			Right:  rewriteExprEnvRefs(e.Right, renames),
+			Result: e.Result,
+		}
+	case *aotir.UnaryExpr:
+		return &aotir.UnaryExpr{
+			Op:      e.Op,
+			Operand: rewriteExprEnvRefs(e.Operand, renames),
+			Result:  e.Result,
+		}
+	case *aotir.CallExpr:
+		args := make([]aotir.Expr, len(e.Args))
+		for i, a := range e.Args {
+			args[i] = rewriteExprEnvRefs(a, renames)
+		}
+		cp := *e
+		cp.Args = args
+		return &cp
+	case *aotir.FunCallExpr:
+		callee := rewriteExprEnvRefs(e.Callee, renames)
+		args := make([]aotir.Expr, len(e.Args))
+		for i, a := range e.Args {
+			args[i] = rewriteExprEnvRefs(a, renames)
+		}
+		return &aotir.FunCallExpr{Callee: callee, Args: args, Result: e.Result}
+	default:
+		return e
+	}
 }
 
 // lowerReturnType maps a Function's return type (with record/union support) to a TypeRef.
@@ -204,6 +354,8 @@ func (l *lowerer) lowerReturnType(fn *aotir.Function) (javasrc.TypeRef, error) {
 		return lowerMapType(fn.ReturnKeyType, fn.ReturnValueType), nil
 	case aotir.TypeSet:
 		return lowerSetType(fn.ReturnElemType), nil
+	case aotir.TypeFun:
+		return funcTypeRef(fn.ReturnFunSig), nil
 	default:
 		return lowerType(fn.ReturnType)
 	}

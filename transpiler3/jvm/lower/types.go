@@ -29,6 +29,10 @@ func lowerType(t aotir.Type) (javasrc.TypeRef, error) {
 		return javasrc.TypeRef{Name: "java.util.LinkedHashMap"}, nil
 	case aotir.TypeSet:
 		return javasrc.TypeRef{Name: "java.util.LinkedHashSet"}, nil
+	// Function type (Phase 6): erased to Object in raw context; callers that know
+	// the FunSig should use funcTypeRef() from closure.go.
+	case aotir.TypeFun:
+		return javasrc.TypeRef{Name: "Object"}, nil
 	default:
 		return javasrc.TypeRef{}, fmt.Errorf("jvm/lower: unsupported type %v", t)
 	}
