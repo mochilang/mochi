@@ -123,9 +123,7 @@ These are used in Phase 7 (query DSL generates partial applications of predicate
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/dotnet/lower/closure.go` | Closure conversion: `let` capture copy; `var` capture via `MutableCell<T>`; lambda emission |
-| `transpiler3/dotnet/lower/expr.go` | Lambda literal lowering; method group conversion |
-| `transpiler3/dotnet/lower/types.go` | `Func<...>` / `Action<...>` type mapping; high-arity `Func17+` routing |
+| `transpiler3/dotnet/lower/lower.go` | Closure conversion: `let` capture copy; `var` capture via `MutableCell<T>`; lambda emission; `Func<...>` / `Action<...>` type mapping; high-arity `Func17+` routing |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Func/MutableCell.cs` | Mutable cell for var captures |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Func/Func17.cs` | High-arity delegate types (Func17..Func32) |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Func/CurryHelpers.cs` | Curry / uncurry / partial apply |

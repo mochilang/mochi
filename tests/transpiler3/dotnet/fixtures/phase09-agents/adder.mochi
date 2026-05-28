@@ -1,0 +1,11 @@
+agent Adder {
+    var total: int = 0
+    intent add(n: int) { total = total + n }
+    intent get(): int { return total }
+}
+
+let a = Adder { total: 0 }
+a.add(10)
+a.add(5)
+a.add(27)
+print(a.get())

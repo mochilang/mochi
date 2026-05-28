@@ -2,7 +2,7 @@
 title: "Phase 13. LLM (generate)"
 sidebar_position: 15
 sidebar_label: "Phase 13. LLM"
-description: "MEP-48 Phase 13 — ai(...) to Mochi.Runtime.Llm.Ai.CallAsync; OpenAI/Anthropic/Ollama provider abstractions; cassette playback; 10 fixtures."
+description: "MEP-48 Phase 13 — LLMGenerateExpr to Mochi.Runtime.Llm.Ai.Call; MOCHI_LLM_CASSETTE_DIR cassette playback; 2 fixtures."
 ---
 
 # Phase 13. LLM (generate)
@@ -18,7 +18,7 @@ description: "MEP-48 Phase 13 — ai(...) to Mochi.Runtime.Llm.Ai.CallAsync; Ope
 
 ## Gate
 
-`TestPhase13LLM`: 10 fixtures green with mocked providers (cassette playback, no live network). Async-clean: all LLM calls are `async Task<string>` and colour-propagated correctly.
+`TestPhase13LLM`: 2 fixtures green with cassette playback via `MOCHI_LLM_CASSETTE_DIR` (generate_hello, generate_concat). No live network in CI. OpenAI/Anthropic/Ollama provider abstractions and full async colouring are deferred.
 
 ## Goal-alignment audit
 
@@ -57,7 +57,7 @@ string result = await Mochi.Runtime.Llm.Ai.CallAsync(
 
 **Recording**: `MOCHI_LLM_RECORD=1` records live responses to a cassette file for later playback.
 
-**Test fixtures**: all 10 Phase 13 fixtures ship with pre-recorded cassettes. CI always runs in playback mode (`MOCHI_LLM_CASSETTE` set, no network). Live tests run only with `MOCHI_TEST_LLM_LIVE=1`.
+**Test fixtures**: both Phase 13 fixtures ship with pre-recorded cassettes. CI always runs in playback mode (`MOCHI_LLM_CASSETTE_DIR` set to the fixture's `cassette/` subdirectory, no network). The cassette key is SHA-256 of `provider + ":" + prompt`; the response is read from `<dir>/<hash>.txt`. This matches the JVM cassette format, so JVM cassette files are reusable. Live tests run only with `MOCHI_TEST_LLM_LIVE=1`.
 
 ## Files changed
 
@@ -68,12 +68,12 @@ string result = await Mochi.Runtime.Llm.Ai.CallAsync(
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Llm/OpenAiProvider.cs` | OpenAI REST API client |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Llm/AnthropicProvider.cs` | Anthropic Messages API client |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Llm/OllamaProvider.cs` | Ollama local API client |
-| `transpiler3/dotnet/build/phase13_test.go` | `TestPhase13LLM`: 10 fixtures with cassettes |
-| `tests/transpiler3/dotnet/fixtures/phase13-llm/` | 10 fixture directories with cassette files |
+| `transpiler3/dotnet/build/phase13_test.go` | `TestPhase13LLM`: 2 fixtures with cassettes |
+| `tests/transpiler3/dotnet/fixtures/phase13-llm/` | 2 fixture directories with cassette files (generate_hello, generate_concat) |
 
 ## Test set
 
-- `TestPhase13LLM` -- 10 fixtures: simple generate, translate prompt, summarise prompt, code generation, multi-turn (context in prompt), generate with Option<string> result, generate in loop (5 prompts), generate with error (cassette returns error JSON), generate with Anthropic provider, generate with Ollama provider.
+- `TestPhase13LLM` -- 2 fixtures: generate_hello, generate_concat.
 
 ## Deferred work
 

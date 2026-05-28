@@ -143,7 +143,7 @@ Consumed with `await foreach (var x in result) { ... }`.
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/dotnet/lower/query.go` | Query DSL → LINQ method chain lowering |
+| `transpiler3/dotnet/lower/lower.go` | Query DSL → LINQ method chain lowering |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Query/` | Window function helpers (Lag, Lead, RollingWindow, RowNumber) |
 | `transpiler3/dotnet/build/phase07_test.go` | `TestPhase7Query`: 30 fixtures |
 | `tests/transpiler3/dotnet/fixtures/phase07-query/` | 30 fixture directories |

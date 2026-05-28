@@ -18,7 +18,7 @@ description: "MEP-48 Phase 0 — directory layout, dotnet SDK detection, csharps
 
 ## Gate
 
-`TestPhase0Skeleton`: directory layout exists; `go build ./transpiler3/dotnet/...` clean; `dotnet build transpiler3/dotnet/runtime/Mochi.Runtime.csproj` produces an empty `Mochi.Runtime.0.10.0-alpha.nupkg`; dotnet SDK detection rejects SDK < 8.0.
+`TestPhase0Skeleton`: three sub-tests: (1) toolchain detection (`resolveToolchain()` returns SDK 8+), (2) runtime `.nupkg` (`dotnet pack` produces `Mochi.Runtime.0.15.0-alpha.nupkg`), (3) `go build ./transpiler3/dotnet/...` exits 0. SDK detection rejects SDK < 8.0.
 
 ## Goal-alignment audit
 
@@ -47,33 +47,20 @@ The directory layout establishes the package boundaries. Without it, the first c
 transpiler3/dotnet/
   colour/
     colour.go      # async colouring pass: propagates async/sync colour through call graph
-    graph.go       # call-graph construction over aotir.Program
-    fixpoint.go    # fixed-point iteration for colour propagation
   lower/
-    lower.go       # aotir -> csharpsrc nodes (entry point)
-    types.go       # Mochi type -> C# type mapping
-    expr.go        # expression lowering
-    stmt.go        # statement lowering
-    decl.go        # top-level declarations (records, sum types, functions, modules)
-    closure.go     # closure conversion; cell lifting into Func<> delegates
-    match.go       # match -> C# switch expression (C# 8+)
-    query.go       # query DSL + datalog lowering to LINQ
-    agent.go       # agent class generation (Channel<TMessage> + async loop)
-    stream.go      # stream class generation (IAsyncEnumerable<T>)
-    mangle.go      # name mangling: reserved words, apostrophe, bang, mono-tag
+    lower.go       # aotir -> csharpsrc nodes (entry point + all lowering)
   emit/
     emit.go        # csharpsrc -> C# source text (pretty printer)
-    roslyn.go      # CSharpCompilation in-process invocation; .dll emission
-    format.go      # deterministic source formatting (sorted usings, stable indent)
+    dotnet.go      # dotnet build subprocess invocation + fx-dependent packaging
   ilemit/
     ilemit.go      # System.Reflection.Emit / PersistedAssemblyBuilder direct-IL path
   build/
     build.go       # Driver.Build() entry point + Target constants
     fxdep.go       # --target=dotnet-fx-dependent packaging
-    singlefile.go  # --target=dotnet-singlefile packaging
+    singlefile.go  # --target=dotnet-singlefile packaging (stub; returns unsupported error)
     selfcontained.go # --target=dotnet-self-contained packaging
     aot.go         # --target=dotnet-aot: NativeAOT publish
-    nuget.go       # --target=dotnet-nuget: NuGet package publish
+    nuget.go       # --target=dotnet-nuget: NuGet package publish (stub; returns unsupported error)
     csproj.go      # csproj XML generation
     phase00_test.go
   csharpsrc/
@@ -82,9 +69,6 @@ transpiler3/dotnet/
     Mochi.Runtime/
       Runtime.cs   # version constant + namespace anchors
       Mochi.Runtime.csproj
-    Mochi.Analyzers/
-      Analyzers.cs # MOCHI001..MOCHI006 Roslyn analyzer stubs
-      Mochi.Analyzers.csproj
   testdata/
     phase00-skeleton/
       README.txt
@@ -107,21 +91,21 @@ The NuGet project establishes the package identity (`Mochi.Runtime`) and namespa
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Deterministic>true</Deterministic>
     <PackageId>Mochi.Runtime</PackageId>
-    <Version>0.10.0-alpha</Version>
+    <Version>0.15.0-alpha</Version>
     <Authors>Mochi core</Authors>
     <License>Apache-2.0</License>
   </PropertyGroup>
 </Project>
 ```
 
-Multi-targeting (`net8.0;net10.0`) from day one. `TreatWarningsAsErrors=true` on the runtime itself enforces the Roslyn-clean secondary gate.
+Multi-targeting (`net8.0;net9.0;net10.0`) from day one. `TreatWarningsAsErrors=true` on the runtime itself enforces the Roslyn-clean secondary gate.
 
 **`Runtime.cs`**:
 
@@ -131,13 +115,13 @@ namespace Mochi.Runtime;
 /// <summary>Mochi runtime for .NET. Apache-2.0.</summary>
 public static class MochiRuntime
 {
-    public const string Version = "0.10.0-alpha";
+    public const string Version = "0.15.0-alpha";
 }
 ```
 
 This single file compiles cleanly. The resulting NuGet package is ~3 KB. It serves as the anchor for all later `Mochi.Runtime.*` sub-namespaces.
 
-**`dotnet pack`**: `dotnet pack transpiler3/dotnet/runtime/Mochi.Runtime/Mochi.Runtime.csproj -c Release -o dist/` is the Phase 0 gate command. The `.nupkg` is written to `dist/Mochi.Runtime.0.10.0-alpha.nupkg`.
+**`dotnet pack`**: `dotnet pack transpiler3/dotnet/runtime/Mochi.Runtime/Mochi.Runtime.csproj -c Release -o dist/` is the Phase 0 gate command. The `.nupkg` is written to `dist/Mochi.Runtime.0.15.0-alpha.nupkg`.
 
 ## Sub-phase 0.2 -- dotnet SDK detection
 
@@ -242,32 +226,31 @@ Each node implements `csString(indent int) string`. The emitter in `emit/emit.go
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/dotnet/colour/doc.go` | Package doc: owns the async colouring pass |
-| `transpiler3/dotnet/lower/doc.go` | Package doc: owns `Lower(prog *aotir.Program, colours ColourMap) (*csharpsrc.CompilationUnit, error)` |
-| `transpiler3/dotnet/emit/doc.go` | Package doc: owns C# text emission and Roslyn CSharpCompilation invocation |
-| `transpiler3/dotnet/ilemit/doc.go` | Package doc: owns System.Reflection.Emit direct-IL path |
-| `transpiler3/dotnet/build/doc.go` | Package doc: owns `Driver.Build()` and all packaging targets |
-| `transpiler3/dotnet/csharpsrc/nodes.go` | All ~35 AST node types + `csString()` implementations |
+| `transpiler3/dotnet/colour/colour.go` | Async colouring pass (stub in Phase 0) |
+| `transpiler3/dotnet/lower/lower.go` | Lowering entry point (stub in Phase 0) |
+| `transpiler3/dotnet/emit/emit.go` | C# text emitter (stub in Phase 0) |
+| `transpiler3/dotnet/emit/dotnet.go` | dotnet build subprocess + fx-dependent packaging (stub in Phase 0) |
+| `transpiler3/dotnet/ilemit/ilemit.go` | System.Reflection.Emit direct-IL path (stub in Phase 0) |
 | `transpiler3/dotnet/build/build.go` | `Toolchain` struct, `resolveToolchain()`, `Target` constants |
+| `transpiler3/dotnet/build/singlefile.go` | `TargetSingleFile` stub (returns unsupported error) |
+| `transpiler3/dotnet/build/nuget.go` | `TargetNuGet` stub (returns unsupported error) |
+| `transpiler3/dotnet/csharpsrc/nodes.go` | All ~35 AST node types + `csString()` implementations |
 | `transpiler3/dotnet/build/phase00_test.go` | `TestPhase0Skeleton`: toolchain detect, nupkg exists, `go build` clean |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Runtime.cs` | Version constant + namespace anchor |
-| `transpiler3/dotnet/runtime/Mochi.Runtime/Mochi.Runtime.csproj` | Multi-target net8.0/net10.0 project |
-| `transpiler3/dotnet/runtime/Mochi.Analyzers/Analyzers.cs` | MOCHI001-MOCHI006 analyzer stubs |
-| `transpiler3/dotnet/runtime/Mochi.Analyzers/Mochi.Analyzers.csproj` | Analyzer project referencing Roslyn |
+| `transpiler3/dotnet/runtime/Mochi.Runtime/Mochi.Runtime.csproj` | Multi-target net8.0/net9.0/net10.0 project |
 | `transpiler3/dotnet/testdata/phase00-skeleton/README.txt` | Fixture directory placeholder |
 
 ## Test set
 
-- `transpiler3/dotnet/build/phase00_test.go::TestPhase0Skeleton` -- three assertions: (1) `resolveToolchain()` returns SDK 8+, (2) runtime `.nupkg` exists after `dotnet pack`, (3) `go build ./transpiler3/dotnet/...` exits 0.
-- `transpiler3/dotnet/csharpsrc/nodes_test.go::TestCSharpSrcNodes` -- round-trip: construct each node type and call `csString(0)`; verify the output is a valid C# fragment by running it through Roslyn's parser (`CSharpSyntaxTree.ParseText`). Covers all 35 node types.
+- `transpiler3/dotnet/build/phase00_test.go::TestPhase0Skeleton` -- three sub-tests: (1) `toolchain`: `resolveToolchain()` returns SDK 8+, (2) `runtime_nupkg`: runtime `.nupkg` exists after `dotnet pack`, (3) `go_build`: `go build ./transpiler3/dotnet/...` exits 0.
 
 ## Deferred work
 
 - `ilemit/ilemit.go` is a stub in Phase 0. `System.Reflection.Emit` / `PersistedAssemblyBuilder` direct-IL path for agent trampolines lands in Phase 9.
-- `Mochi.Analyzers` is a stub in Phase 0. The six diagnostics (MOCHI001-MOCHI006) are implemented in Phase 5 (MOCHI001-MOCHI002), Phase 2 (MOCHI003), Phase 11 (MOCHI004-MOCHI005), and Phase 4 (MOCHI006).
-- All build target files (`fxdep.go`, `singlefile.go`, etc.) are stubs in Phase 0.
-- `format.go` deterministic formatting is a stub (returns raw `csString()` output). Proper sorted `using` directives and canonical blank lines land in Phase 16.
+- `Mochi.Analyzers` project is not created in Phase 0. The six diagnostics (MOCHI001-MOCHI002 in Phase 5, MOCHI003 in Phase 2, MOCHI004-MOCHI005 in Phase 11, MOCHI006 in Phase 4) are deferred to their respective phases.
+- `build/singlefile.go` and `build/nuget.go` are stubs that return an unsupported error. Full implementations land in Phase 17 (single-file) and Phase 15 (NuGet).
+- Deterministic source formatting (sorted `using` directives, canonical blank lines) is not implemented in Phase 0; `emit.go` emits raw `csString()` output. Proper formatting lands in Phase 16.
 
 ## Closeout notes
 
-Phase 0 landed. All stub packages created, `go build ./transpiler3/dotnet/...` clean, `TestPhase0Skeleton` PASS (dotnet 10.0.107, go build clean).
+Phase 0 landed. All stub packages created, `go build ./transpiler3/dotnet/...` clean, `TestPhase0Skeleton` PASS: sub-tests toolchain (dotnet 10.0.107), runtime_nupkg, go_build all green. `Mochi.Runtime.csproj` targets `net8.0;net9.0;net10.0`; runtime version is `0.15.0-alpha`. `colour/` has `colour.go` only; `lower/` has `lower.go` only; `emit/` has `emit.go` and `dotnet.go`; `build/singlefile.go` and `build/nuget.go` are unsupported-error stubs. `Mochi.Analyzers` project not created in Phase 0.

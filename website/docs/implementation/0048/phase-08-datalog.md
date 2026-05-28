@@ -83,7 +83,7 @@ The evaluator is single-threaded and in-memory (no RETE network in Phase 8). Suf
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/dotnet/lower/query.go` | Datalog fact/rule/query lowering to Engine.Assert/AddRule/Query calls |
+| `transpiler3/dotnet/lower/lower.go` | Datalog fact/rule/query lowering to Engine.Assert/AddRule/Query calls |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Datalog/Engine.cs` | Semi-naive evaluator, fact store, rule application |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Datalog/DatalogTerm.cs` | `Const` / `Var` term discriminated union |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Datalog/DatalogTuple.cs` | Binding environment |

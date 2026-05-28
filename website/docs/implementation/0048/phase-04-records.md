@@ -18,7 +18,7 @@ description: "MEP-48 Phase 4 — record types to sealed record class / readonly 
 
 ## Gate
 
-`TestPhase4Records`: 25 fixtures green on net8.0 and net10.0. `MOCHI006` analyzer suggestion fires for large records (>4 reference-type fields) where `record struct` would be suboptimal.
+`TestPhase4Records`: 25 fixtures green on net8.0 and net10.0.
 
 ## Goal-alignment audit
 
@@ -97,10 +97,7 @@ Methods on `readonly record struct` work the same way; they are `public` instanc
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/dotnet/lower/decl.go` | Record type → `sealed record` / `readonly record struct` decision + emission |
-| `transpiler3/dotnet/lower/types.go` | Record field type mapping including struct elision heuristic |
-| `transpiler3/dotnet/lower/expr.go` | Record literal `{ x: 1, y: 2 }` → `new Point(1L, 2L)`; update `{ r with x: 3 }` → `r with { X = 3L }` |
-| `transpiler3/dotnet/runtime/Mochi.Analyzers/Rules/MOCHI006.cs` | Value-type elision suggestion |
+| `transpiler3/dotnet/lower/lower.go` | Record type → `sealed record` / `readonly record struct` decision + emission; field type mapping; record literal `{ x: 1, y: 2 }` → `new Point(1L, 2L)`; update `{ r with x: 3 }` → `r with { X = 3L }` |
 | `transpiler3/dotnet/build/phase04_test.go` | `TestPhase4Records`: 25 fixtures |
 | `tests/transpiler3/dotnet/fixtures/phase04-records/` | 25 fixture directories |
 

@@ -1,0 +1,11 @@
+agent Toggle {
+    var active: bool = false
+    intent flip() { active = !active }
+    intent is_active(): bool { return active }
+}
+
+let t = Toggle { active: false }
+t.flip()
+print(t.is_active())
+t.flip()
+print(t.is_active())

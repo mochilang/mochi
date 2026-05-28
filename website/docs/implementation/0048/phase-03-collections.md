@@ -107,8 +107,7 @@ The lowerer generates `OrderedMap<K,V>` unconditionally; the runtime class condi
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/dotnet/lower/types.go` | `listType()`, `mapType()`, `setType()` with net8.0 vs net10.0 branching |
-| `transpiler3/dotnet/lower/expr.go` | Collection literal lowering; indexing; len/append/get/set/add/contains |
+| `transpiler3/dotnet/lower/lower.go` | Collection type mapping (`listType`, `mapType`, `setType`); collection literal lowering; indexing; len/append/get/set/add/contains |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Collections/OrderedMap.cs` | net8.0 insertion-order map polyfill |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Eq/CollectionEq.cs` | `ListEqual`, `MapEqual`, `SetEqual` helpers |
 | `transpiler3/dotnet/build/phase03_test.go` | `TestPhase3Lists`, `TestPhase3Maps`, `TestPhase3Sets`, `TestPhase3ListOfRecord` |

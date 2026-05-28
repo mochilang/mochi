@@ -17,7 +17,7 @@ type ColourMap map[string]Colour
 
 // Analyse performs the async colouring pass over prog.
 // In Phase 0 all functions are coloured Blue (synchronous).
-// Phase 6 (async/await) replaces this with a full fixed-point propagation.
+// Phase 11 (async/await) replaces this with a full fixed-point propagation.
 func Analyse(prog *aotir.Program) ColourMap {
 	cm := make(ColourMap, len(prog.Functions))
 	for _, fn := range prog.Functions {

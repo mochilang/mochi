@@ -2,7 +2,7 @@
 title: "Phase 14. fetch (HTTP)"
 sidebar_position: 16
 sidebar_label: "Phase 14. fetch"
-description: "MEP-48 Phase 14 — fetch(...) to HttpClient via Mochi.Runtime.Fetch.FetchAsync; TLS 1.3; HTTP/3; local test server; 10 fixtures."
+description: "MEP-48 Phase 14 — HttpGetExpr to Mochi.Runtime.IO.Fetch.Get (synchronous HttpClient); local httptest server; 2 fixtures."
 ---
 
 # Phase 14. fetch (HTTP)
@@ -18,7 +18,7 @@ description: "MEP-48 Phase 14 — fetch(...) to HttpClient via Mochi.Runtime.Fet
 
 ## Gate
 
-`TestPhase14Fetch`: 10 fixtures green against a local test HTTP server (no live network in CI). TLS 1.3 default verified. `HttpClient` instance reuse across calls (no socket exhaustion).
+`TestPhase14Fetch`: 2 fixtures green (fetch_hello, fetch_json) against a local httptest server (HTTPTEST_URL substitution). `Fetch.Get` uses `HttpClient.GetStringAsync().GetAwaiter().GetResult()` (synchronous). Full async HttpClient, TLS 1.3 gate, and additional fixture coverage are deferred.
 
 ## Goal-alignment audit
 
@@ -66,12 +66,12 @@ Result<string, string> resp =
 |------|---------|
 | `transpiler3/dotnet/lower/expr.go` | `fetch(...)` → `FetchClient.GetAsync(...)` / `PostAsync(...)` |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Fetch/FetchClient.cs` | Singleton HttpClient; GetAsync, PostAsync, fetch_json |
-| `transpiler3/dotnet/build/phase14_test.go` | `TestPhase14Fetch`: 10 fixtures + local test server |
-| `tests/transpiler3/dotnet/fixtures/phase14-fetch/` | 10 fixture directories |
+| `transpiler3/dotnet/build/phase14_test.go` | `TestPhase14Fetch`: 2 fixtures + local httptest server |
+| `tests/transpiler3/dotnet/fixtures/phase14-fetch/` | 2 fixture directories (fetch_hello, fetch_json) |
 
 ## Test set
 
-- `TestPhase14Fetch` -- 10 fixtures: GET returns body, GET 404 returns Err, POST JSON body, POST and read response, fetch_json deserialise, fetch with custom header, fetch with timeout, fetch parallel (5 concurrent GETs), fetch in loop (3 sequential), fetch error handling with Result.
+- `TestPhase14Fetch` -- 2 fixtures: fetch_hello (GET plain text), fetch_json (GET + JSON decode via `Mochi.Runtime.IO.JSON.Decode`).
 
 ## Deferred work
 

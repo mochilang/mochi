@@ -2,7 +2,7 @@
 title: "Phase 12. .NET FFI and NuGet deps"
 sidebar_position: 14
 sidebar_label: "Phase 12. .NET FFI"
-description: "MEP-48 Phase 12 — import dotnet/...; @nuget pragma; lockfile pinning; [LibraryImport] P/Invoke; BCL API gate; 25 fixtures."
+description: "MEP-48 Phase 12 — extern java fun → .NET BCL call mapping; 3 fixtures."
 ---
 
 # Phase 12. .NET FFI and NuGet deps
@@ -18,7 +18,7 @@ description: "MEP-48 Phase 12 — import dotnet/...; @nuget pragma; lockfile pin
 
 ## Gate
 
-`TestPhase12FFI`: 25 fixtures green. `TestPhase12BclFFI`: curated BCL-API gate (10 specific BCL calls round-trip correctly). `TestPhase12NuGetRoundtrip`: nightly gate verifies that a fixture with `@nuget("Polly", "8.5.0")` restores, compiles, and runs correctly.
+`TestPhase12FFI`: 3 fixtures green on net10.0 (math_abs, math_max, uuid_static). `JavaFuncDecl` (`extern java fun`) declarations are indexed and dispatched via `lowerJavaCallToDotnet`, mapping Java class+method pairs to .NET BCL equivalents. NuGet pragma, SHA-256 lockfile, and `[LibraryImport]` P/Invoke (sub-phases 12.1-12.3) are deferred.
 
 ## Goal-alignment audit
 
@@ -113,14 +113,12 @@ The `LibraryImportGenerator` (part of `dotnet/runtime`) generates the marshallin
 | `transpiler3/dotnet/build/csproj.go` | `@nuget` pragma → `<PackageReference>`; lockfile flags |
 | `transpiler3/dotnet/build/nuget.go` | `mochi.lock.json` read/write/verify; `mochi nuget audit` |
 | `transpiler3/dotnet/lower/decl.go` | Native `import` → `[LibraryImport]` partial class |
-| `transpiler3/dotnet/build/phase12_test.go` | `TestPhase12FFI`, `TestPhase12BclFFI`, `TestPhase12NuGetRoundtrip` |
-| `tests/transpiler3/dotnet/fixtures/phase12-ffi/` | 25 fixture directories |
+| `transpiler3/dotnet/build/phase12_test.go` | `TestPhase12FFI` |
+| `tests/transpiler3/dotnet/fixtures/phase12-ffi/` | 3 fixture directories (math_abs, math_max, uuid_static) |
 
 ## Test set
 
-- `TestPhase12FFI` -- 25 fixtures: JSON serialize, JSON deserialize, File read/write, Regex match, DateTime now, env var, console readline, base64, SHA256, HTTP GET (mock), HTTP POST (mock), Polly retry (NuGet), Polly circuit breaker (NuGet), BCL cryptography, BCL compression (GZip), BCL collections (SortedDictionary), BCL threading (Mutex), BCL diagnostics (Stopwatch), BCL numerics (BigInteger), native libz crc32 (P/Invoke), COM object (Windows-only), unsafe pointer arithmetic, multiple NuGet packages, package lockfile verification, OSV audit clean.
-- `TestPhase12BclFFI` -- 10 BCL-API fixtures from the curated list above.
-- `TestPhase12NuGetRoundtrip` -- nightly: Polly + Serilog fixture restores, compiles, runs.
+- `TestPhase12FFI` -- 3 fixtures: math_abs (`java.lang.Math.abs` → `Math.Abs`), math_max (`java.lang.Math.max` → `Math.Max`), uuid_static (`java.util.UUID.randomUUID` → `Guid.NewGuid`; prints "ok" rather than the actual UUID).
 
 ## Deferred work
 

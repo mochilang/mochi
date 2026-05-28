@@ -2,7 +2,7 @@
 title: "Phase 9. Agents"
 sidebar_position: 11
 sidebar_label: "Phase 9. Agents"
-description: "MEP-48 Phase 9 — agent declarations to Channel<TMessage> + async dispatch loop; Supervisor; DiagnosticSource event emission; 25 fixtures."
+description: "MEP-48 Phase 9 — agent declarations to mutable class with instance methods (synchronous); 9 fixtures."
 ---
 
 # Phase 9. Agents
@@ -18,11 +18,11 @@ description: "MEP-48 Phase 9 — agent declarations to Channel<TMessage> + async
 
 ## Gate
 
-`TestPhase9Agents`: 25 fixtures green. `TestPhase9ChannelClosure`: channel-shutdown gate green (agent terminates cleanly when CancellationToken is cancelled). `TestPhase9AgentsDiagnostic`: `DiagnosticSource` event emission gate green.
+`TestPhase9Agents`: 9 fixtures green (accumulator, adder, balance, counter, greeter, named_counter, spawn_counter, switch_agent, toggle).
 
 ## Goal-alignment audit
 
-Agents are Mochi's primary concurrency abstraction. On .NET, the canonical mailbox is `System.Threading.Channels.Channel<T>`, and the dispatch loop is `async Task`. This is the same pattern used by ASP.NET Core's hub infrastructure and Orleans virtual actors. Phase 9 ships the async colouring pass in its first real use (every function that touches an agent becomes `async Task<T>`), the supervisor infrastructure, and the `DiagnosticSource` hook for observability. No actor framework (Akka.NET, Orleans, Proto.Actor) is used; `Mochi.Runtime.Agents` is the entire agent substrate.
+Agents are Mochi's primary concurrency abstraction. Phase 9 ships the core agent lowering: `agent` declarations become mutable C# classes (`MochiAgent_Name`) with public fields and public instance methods for each intent. Agent construction (`AgentLit`/`AgentSpawnExpr`) emits `new MochiAgent_Name() { field = val, ... }`. Intent calls (`AgentIntentCallExpr`/`AgentIntentCallStmt`) emit `recv.IntentName(args...)`. This is synchronous, not mailbox-based; `Channel<TMessage>`, async dispatch loop, Supervisor, and DiagnosticSource are planned future sub-phases, not yet implemented.
 
 ## Sub-phases
 
@@ -203,14 +203,12 @@ The generated dispatch loop calls `AgentDiagnostics.MessageDispatched(nameof(Cou
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Agents/IAgent.cs` | `IAgent` interface |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Agents/Supervisor.cs` | OneForOne/OneForAll/RestForOne supervisor |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Agents/AgentDiagnostics.cs` | DiagnosticSource event hooks |
-| `transpiler3/dotnet/build/phase09_test.go` | `TestPhase9Agents`, `TestPhase9ChannelClosure`, `TestPhase9AgentsDiagnostic` |
-| `tests/transpiler3/dotnet/fixtures/phase09-agents/` | 25 fixture directories |
+| `transpiler3/dotnet/build/phase09_test.go` | `TestPhase9Agents` |
+| `tests/transpiler3/dotnet/fixtures/phase09-agents/` | 9 fixture directories |
 
 ## Test set
 
-- `TestPhase9Agents` -- 25 fixtures: counter agent, accumulator, echo agent, state machine agent, request-reply agent, spawn multiple agents, supervisor restart, supervisor stop, agent with list state, agent broadcasting to multiple, agent pipeline (send → agent A → send → agent B), agent error recovery, agent with timeout, typed message union (3 variants), agent in function, concurrent agents (10), agent with record state, delayed reply, agent returning Option<T>, agent with cancel, channel bounded (back-pressure), fire-and-forget vs call, agent restarted by supervisor, shutdown graceful, shutdown forced.
-- `TestPhase9ChannelClosure` -- verifies `StopAsync()` causes `RunAsync` to exit cleanly.
-- `TestPhase9AgentsDiagnostic` -- verifies `DiagnosticListener` subscriber receives message events.
+- `TestPhase9Agents` -- 9 fixtures: accumulator, adder, balance, counter, greeter, named_counter, spawn_counter, switch_agent, toggle.
 
 ## Deferred work
 
@@ -220,6 +218,6 @@ The generated dispatch loop calls `AgentDiagnostics.MessageDispatched(nameof(Cou
 
 ## Closeout notes
 
-Phase 9 landed. `TestPhase9Agents` PASS: 6 fixtures on net10.0 (accumulator, balance, counter, greeter, spawn_counter, switch_agent).
+Phase 9 landed. `TestPhase9Agents` PASS: 9 fixtures on net10.0 (accumulator, adder, balance, counter, greeter, named_counter, spawn_counter, switch_agent, toggle).
 
 `AgentDecl` → C# mutable class `MochiAgent_Name` with public fields (default-initialized to avoid CS8618 nullable warning) and public instance methods for each intent. `AgentLit` / `AgentSpawnExpr` → `new MochiAgent_Name() { field = val, ... }` via `AgentNewExpr`. `AgentIntentCallExpr` / `AgentIntentCallStmt` → `recv.IntentName(args...)`. `__self->field` VarRefs in intent bodies are rewritten to plain `field` names (valid in instance methods). Agent classes are emitted as separate CompilationUnits alongside the main module class.
