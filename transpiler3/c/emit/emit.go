@@ -1862,6 +1862,10 @@ func walkStmtMapOfList(st aotir.Stmt, add func(aotir.Type, aotir.Type, aotir.Typ
 		walkExprMapOfList(s.Init, add)
 	case *aotir.AssignStmt:
 		walkExprMapOfList(s.Value, add)
+	case *aotir.MapPutStmt:
+		add(s.KeyType, s.ValueType, s.ListValueElemType)
+		walkExprMapOfList(s.Key, add)
+		walkExprMapOfList(s.Value, add)
 	case *aotir.CallStmt:
 		for _, a := range s.Args {
 			walkExprMapOfList(a, add)
@@ -2119,6 +2123,37 @@ func emitMapOfListHelpers(b *strings.Builder, pairs []mapOfListPair) error {
 		fmt.Fprintf(b, "        %s *e = &m.table[pos];\n", entryName)
 		b.WriteString("        if (e->hash == 0) return 0;\n")
 		fmt.Fprintf(b, "        if (e->hash == h && %s) return 1;\n", eqFn("e->key", "k"))
+		b.WriteString("        pos = (pos + 1) & mask;\n")
+		b.WriteString("    }\n")
+		b.WriteString("}\n\n")
+
+		// _grow_ (internal resize helper for _put)
+		fmt.Fprintf(b, "static void %s_grow_(%s *m) {\n", name, name)
+		fmt.Fprintf(b, "    int64_t new_cap = m->cap ? m->cap * 2 : 8;\n")
+		fmt.Fprintf(b, "    %s *nt = (%s *)calloc((size_t)new_cap, sizeof(%s));\n", entryName, entryName, entryName)
+		b.WriteString("    if (nt == NULL) mochi_panic_index();\n")
+		b.WriteString("    uint64_t mask = (uint64_t)(new_cap - 1);\n")
+		b.WriteString("    for (int64_t i = 0; i < m->cap; i++) {\n")
+		fmt.Fprintf(b, "        %s *e = &m->table[i];\n", entryName)
+		b.WriteString("        if (e->hash == 0) continue;\n")
+		b.WriteString("        uint64_t pos = e->hash & mask;\n")
+		b.WriteString("        while (nt[pos].hash != 0) pos = (pos + 1) & mask;\n")
+		b.WriteString("        nt[pos] = *e;\n")
+		b.WriteString("    }\n")
+		b.WriteString("    free(m->table);\n")
+		b.WriteString("    m->table = nt; m->cap = new_cap;\n")
+		b.WriteString("}\n\n")
+
+		// _put
+		fmt.Fprintf(b, "static void %s_put(%s *m, %s k, %s v) {\n", name, name, keyC, valC)
+		fmt.Fprintf(b, "    if (m->nLive * 2 >= m->cap) %s_grow_(m);\n", name)
+		fmt.Fprintf(b, "    uint64_t h = %s(k);\n", hashFn)
+		b.WriteString("    uint64_t mask = (uint64_t)(m->cap - 1);\n")
+		b.WriteString("    uint64_t pos = h & mask;\n")
+		b.WriteString("    while (1) {\n")
+		fmt.Fprintf(b, "        %s *e = &m->table[pos];\n", entryName)
+		b.WriteString("        if (e->hash == 0) { e->hash = h; e->key = k; e->value = v; m->nLive++; return; }\n")
+		fmt.Fprintf(b, "        if (e->hash == h && %s) { e->value = v; return; }\n", eqFn("e->key", "k"))
 		b.WriteString("        pos = (pos + 1) & mask;\n")
 		b.WriteString("    }\n")
 		b.WriteString("}\n\n")
@@ -3032,7 +3067,7 @@ func emitListSetStmt(b *strings.Builder, s *aotir.ListSetStmt, indent string) er
 }
 
 func emitMapPutStmt(b *strings.Builder, s *aotir.MapPutStmt, indent string) error {
-	suf, err := mapSuffix(s.KeyType, s.ValueType, aotir.TypeInvalid)
+	suf, err := mapSuffix(s.KeyType, s.ValueType, s.ListValueElemType)
 	if err != nil {
 		return fmt.Errorf("map-put: %w", err)
 	}

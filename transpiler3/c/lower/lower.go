@@ -560,7 +560,7 @@ func Lower(prog *parser.Program) (*aotir.Program, error) {
 			}
 		}
 		out.Functions = append(out.Functions, &aotir.Function{
-			Name:                    fn.Name,
+			Name:                    "mochi__" + fn.Name,
 			Params:                  sig.params,
 			ReturnType:              sig.returnType,
 			ReturnRecordName:        sig.returnRecordName,
@@ -1122,7 +1122,7 @@ func (l *lowerer) lowerExprStmt(out *aotir.Block, es *parser.ExprStmt) error {
 	}
 	_ = sig.returnType // discarded
 	out.Statements = append(out.Statements, &aotir.CallStmt{
-		Func: call.Func,
+		Func: "mochi__" + call.Func,
 		Args: args,
 	})
 	return nil
@@ -2019,11 +2019,12 @@ func (l *lowerer) lowerIndexAssign(out *aotir.Block, as *parser.AssignStmt) erro
 			return fmt.Errorf("map-put %q: binding value %s, got %s", as.Name, b.value, valExpr.Type())
 		}
 		out.Statements = append(out.Statements, &aotir.MapPutStmt{
-			Name:      as.Name,
-			Key:       keyExpr,
-			Value:     valExpr,
-			KeyType:   b.key,
-			ValueType: b.value,
+			Name:              as.Name,
+			Key:               keyExpr,
+			Value:             valExpr,
+			KeyType:           b.key,
+			ValueType:         b.value,
+			ListValueElemType: b.listValElem,
 		})
 		return nil
 	case aotir.TypeOMap:
@@ -4077,13 +4078,13 @@ func (l *lowerer) lowerFunRef(funcName string, sig *funcSig) (aotir.Expr, error)
 		body := &aotir.Block{}
 		if sig.returnType == aotir.TypeUnit {
 			body.Statements = append(body.Statements, &aotir.CallStmt{
-				Func: funcName,
+				Func: "mochi__" + funcName,
 				Args: args,
 			})
 		} else {
 			body.Statements = append(body.Statements, &aotir.ReturnStmt{
 				Value: &aotir.CallExpr{
-					Func:   funcName,
+					Func:   "mochi__" + funcName,
 					Args:   args,
 					Result: sig.returnType,
 				},
@@ -4890,7 +4891,7 @@ func (l *lowerer) lowerUserCallExpr(call *parser.CallExpr) (aotir.Expr, error) {
 		return nil, err
 	}
 	return &aotir.CallExpr{
-		Func:                    call.Func,
+		Func:                    "mochi__" + call.Func,
 		Args:                    args,
 		Result:                  sig.returnType,
 		ResultRecordName:        sig.returnRecordName,
@@ -5900,13 +5901,13 @@ func (l *lowerer) lowerPartialApply(call *parser.CallExpr, sig *funcSig) (aotir.
 
 	// Build the closure body: a single return statement calling the original function.
 	bodyCallExpr := &aotir.CallExpr{
-		Func:   call.Func,
+		Func:   "mochi__" + call.Func,
 		Args:   bodyCallArgs,
 		Result: sig.returnType,
 	}
 	var bodyStmt aotir.Stmt
 	if sig.returnType == aotir.TypeUnit {
-		bodyStmt = &aotir.CallStmt{Func: call.Func, Args: bodyCallArgs}
+		bodyStmt = &aotir.CallStmt{Func: "mochi__" + call.Func, Args: bodyCallArgs}
 	} else {
 		bodyStmt = &aotir.ReturnStmt{Value: bodyCallExpr}
 	}
@@ -6105,9 +6106,10 @@ func (l *lowerer) buildHashJoin(
 		},
 		&aotir.MapPutStmt{
 			Name: idxName, Key: hkRef(),
-			Value:     &aotir.AppendExpr{Receiver: hvRef(), Value: innerVarRef, ElemType: srcElemType},
-			KeyType:   hj.keyType,
-			ValueType: aotir.TypeList,
+			Value:             &aotir.AppendExpr{Receiver: hvRef(), Value: innerVarRef, ElemType: srcElemType},
+			KeyType:           hj.keyType,
+			ValueType:         aotir.TypeList,
+			ListValueElemType: srcElemType,
 		},
 	}}
 	l.currentBlock.Statements = append(l.currentBlock.Statements, &aotir.ForEachStmt{

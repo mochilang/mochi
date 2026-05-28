@@ -90,12 +90,8 @@ func TestPhase12WasmCorpus(t *testing.T) {
 		runFixtureSuiteWasmExclude(t, "shutdown", wasmtime, []string{"shutdown_sched"})
 	})
 
-	// Functions suite: exclude fun_early_return which defines a Mochi function
-	// named "abs". wasm-wasi-musl's __math.h declares extern int abs(int), which
-	// conflicts with the emitter's static int64_t abs(...). Pre-existing issue;
-	// the same fixture compiles fine on LP64 targets where __math.h is not pulled in.
 	t.Run("functions", func(t *testing.T) {
-		runFixtureSuiteWasmExclude(t, "functions", wasmtime, []string{"fun_early_return"})
+		runFixtureSuiteWasm(t, "functions", wasmtime)
 	})
 }
 
