@@ -10,9 +10,9 @@ description: "MEP-49 Phase 11 — async colour pass adds async/await throughout 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-49 §Phases · Phase 11](/docs/mep/mep-0049#phase-11-async-colour) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 14:02 (GMT+7) |
+| Landed         | 2026-05-28 14:02 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,11 +28,11 @@ Swift's strict concurrency model requires every async call to be explicitly `awa
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 11.0 | Async colour pass over `aotir.Program`: propagate `async` upward through the call graph | NOT STARTED | — |
-| 11.1 | `async func` emission; `await` at every async call site; `async let` for concurrent bindings | NOT STARTED | — |
-| 11.2 | SE-0413 typed throws: `fun foo(): T throws E` → `func foo() throws(E) -> T` | NOT STARTED | — |
-| 11.3 | `result<T,E>` / `throws(E)` interconversion bridge: `Result.get()`, `Result(catching:)` | NOT STARTED | — |
-| 11.4 | `try await` at combined async-throwing call sites | NOT STARTED | — |
+| 11.0 | Async colour pass over `aotir.Program`: propagate `async` upward through the call graph | LANDED | mep/0049-phase-11 |
+| 11.1 | `async func` emission; `await` at every async call site; `async let` for concurrent bindings | LANDED | mep/0049-phase-11 |
+| 11.2 | SE-0413 typed throws: `fun foo(): T throws E` → `func foo() throws(E) -> T` | DEFERRED | — |
+| 11.3 | `result<T,E>` / `throws(E)` interconversion bridge: `Result.get()`, `Result(catching:)` | DEFERRED | — |
+| 11.4 | `try await` at combined async-throwing call sites | DEFERRED | — |
 
 ## Sub-phase 11.0 -- Async colour pass
 
