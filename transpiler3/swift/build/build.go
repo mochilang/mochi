@@ -24,8 +24,10 @@ import (
 type Target int
 
 const (
-	TargetMacOSExecutable Target = iota // swift build -c release → binary
-	TargetSwiftSource                   // emit .swift only, no build
+	TargetMacOSExecutable  Target = iota // swift build -c release → binary
+	TargetSwiftSource                    // emit .swift only, no build
+	TargetLinuxStaticX64                 // swift build -c release --swift-sdk x86_64-swift-linux-musl
+	TargetLinuxStaticArm64               // swift build -c release --swift-sdk aarch64-swift-linux-musl
 )
 
 // Driver is the Swift transpiler pipeline entry point.
@@ -142,8 +144,23 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 		return "", fmt.Errorf("swift build: write Package.swift: %w", err)
 	}
 
-	// Run swift build -c release.
-	buildCmd := exec.Command(d.swiftPath, "build", "-c", "release")
+	// Run swift build -c release (with optional --swift-sdk for static Linux targets).
+	buildArgs := []string{"build", "-c", "release"}
+	switch target {
+	case TargetLinuxStaticX64:
+		triple := SDKTripleX64
+		if !StaticLinuxSDKAvailable(triple) {
+			return "", fmt.Errorf("Swift Static Linux SDK %q not installed; run: swift sdk install ...", triple)
+		}
+		buildArgs = append(buildArgs, "--swift-sdk", triple)
+	case TargetLinuxStaticArm64:
+		triple := SDKTripleArm64
+		if !StaticLinuxSDKAvailable(triple) {
+			return "", fmt.Errorf("Swift Static Linux SDK %q not installed; run: swift sdk install ...", triple)
+		}
+		buildArgs = append(buildArgs, "--swift-sdk", triple)
+	}
+	buildCmd := exec.Command(d.swiftPath, buildArgs...)
 	buildCmd.Dir = workDir
 	buildCmd.Stdout = os.Stderr // forward build output to stderr so tests can see it
 	buildCmd.Stderr = os.Stderr
