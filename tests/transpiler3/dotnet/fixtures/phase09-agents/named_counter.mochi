@@ -1,0 +1,14 @@
+agent NamedCounter {
+    var name: string = ""
+    var count: int = 0
+    intent inc() { count = count + 1 }
+    intent get_count(): int { return count }
+    intent get_name(): string { return name }
+}
+
+let c = NamedCounter { name: "hits", count: 0 }
+c.inc()
+c.inc()
+c.inc()
+print(c.get_name())
+print(c.get_count())

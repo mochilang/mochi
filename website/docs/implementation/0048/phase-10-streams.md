@@ -2,7 +2,7 @@
 title: "Phase 10. Streams"
 sidebar_position: 12
 sidebar_label: "Phase 10. Streams"
-description: "MEP-48 Phase 10 — stream<T> to IAsyncEnumerable<T> (cold) and ChannelReader<T> (hot); System.Linq.Async operators; 20 fixtures."
+description: "MEP-48 Phase 10 — chan<T> to BlockingCollection<T>; stream<T> to MochiStream<T> with fan-out subscribers; 10 fixtures."
 ---
 
 # Phase 10. Streams
@@ -18,7 +18,7 @@ description: "MEP-48 Phase 10 — stream<T> to IAsyncEnumerable<T> (cold) and Ch
 
 ## Gate
 
-`TestPhase10Streams`: 20 fixtures green on net8.0 and net10.0.
+`TestPhase10Streams`: 10 fixtures green on net10.0 (chan_bool, chan_five, chan_int, chan_multi, chan_string, stream_bool, stream_float, stream_int, stream_string, stream_two_subs). Sub-phases 10.2 (hot agent stream) and 10.3 (replay channel) are deferred.
 
 ## Goal-alignment audit
 
@@ -110,12 +110,12 @@ Used for Mochi's pubsub pattern where late subscribers need historical values.
 |------|---------|
 | `transpiler3/dotnet/lower/stream.go` | Stream declaration → `async IAsyncEnumerable<T>` method; hot stream → ChannelReader<T> |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Streams/ReplayChannel.cs` | Replay buffer channel |
-| `transpiler3/dotnet/build/phase10_test.go` | `TestPhase10Streams`: 20 fixtures |
-| `tests/transpiler3/dotnet/fixtures/phase10-streams/` | 20 fixture directories |
+| `transpiler3/dotnet/build/phase10_test.go` | `TestPhase10Streams`: 10 fixtures |
+| `tests/transpiler3/dotnet/fixtures/phase10-streams/` | 10 fixture directories |
 
 ## Test set
 
-- `TestPhase10Streams` -- 20 fixtures: countdown generator, range stream, infinite stream with take, stream map, stream filter, stream flat_map, stream zip, stream collect, nested stream, stream cancellation, stream from agent, hot stream subscribe, replay channel (late subscriber), stream pipeline (map+filter+take), async foreach consumer, stream error handling, empty stream, single-item stream, stream merge (two sources), concurrent consumers.
+- `TestPhase10Streams` -- 10 fixtures: chan_bool, chan_five, chan_int, chan_multi, chan_string, stream_bool, stream_float, stream_int, stream_string, stream_two_subs.
 
 ## Deferred work
 

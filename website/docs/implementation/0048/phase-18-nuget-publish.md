@@ -18,7 +18,7 @@ description: "MEP-48 Phase 18 — Mochi.Runtime and Mochi.Analyzers 0.10.x to nu
 
 ## Gate
 
-`TestPhase18Publish` (nightly): `Mochi.Runtime 0.10.x` and `Mochi.Analyzers 0.10.x` published to nuget.org are consumable in a fresh project. `TestPhase18TrimWarnings`: zero IL2026/IL2070/IL2080/IL3050 warnings across all fixtures on net8.0 and net10.0. Perf dashboard updated with Phase 18 baseline numbers.
+`TestPhase18TrimWarnings` (gated on `MOCHI_TEST_TRIM=1`): zero IL2026/IL2070/IL2080/IL3050 warnings on the 3 Phase 1 fixtures (hello, hello_bool, hello_int). `TestPhase18Publish` (gated on `MOCHI_TEST_NUGET_PUBLISH=1`): stub that logs "not implemented". Full NuGet push, Authenticode signing, Mochi.Analyzers publish, perf baselines, and v0.15.0 release (sub-phases 18.1-18.4) are NOT STARTED.
 
 ## Goal-alignment audit
 
@@ -28,7 +28,7 @@ Phase 18 closes the loop: the runtime and analyzer packages are published to nug
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 18.0 | `Mochi.Runtime 0.10.x` published to nuget.org with Authenticode code-signing certificate | NOT STARTED | — |
+| 18.0 | `TestPhase18TrimWarnings` (3 Phase 1 fixtures, trim-clean gate); `TestPhase18Publish` stub | PARTIAL | — |
 | 18.1 | `Mochi.Analyzers 0.10.x` published to nuget.org | NOT STARTED | — |
 | 18.2 | Full trim warning sweep: IL2xxx family clean on the complete fixture corpus (all Phases 1-17 fixtures) | NOT STARTED | — |
 | 18.3 | Performance baselines vs vm3: startup time, throughput, memory; perf dashboard updated | NOT STARTED | — |
@@ -67,7 +67,7 @@ The `<PrivateAssets>all</PrivateAssets>` setting ensures the analyzer is not tra
 
 ### Decisions made (18.2)
 
-**Scope**: all Phase 1-17 fixtures (≈390 fixture files) compiled with:
+**Scope** (partial, as landed): 3 Phase 1 fixtures (hello, hello_bool, hello_int) compiled with:
 - `<PublishTrimmed>true</PublishTrimmed>`
 - `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>`
 - `<WarningsAsErrors>IL2026;IL2070;IL2080;IL2062;IL2067;IL2068;IL3050;IL3051;IL3052;IL3053</WarningsAsErrors>`
@@ -125,10 +125,8 @@ The `<PrivateAssets>all</PrivateAssets>` setting ensures the analyzer is not tra
 
 ## Test set
 
-- `TestPhase18Publish` (nightly) -- fresh project restore from nuget.org; compile + run hello-world.
-- `TestPhase18TrimWarnings` -- full IL2xxx sweep on all ~390 fixtures; zero warnings gate.
-- `TestPhase18PerfBaseline` (nightly) -- 5 benchmark fixtures; results posted to perf dashboard.
-- `TestPhase18AnalyzerVersionMatch` -- CI check: Mochi.Runtime and Mochi.Analyzers version fields must match.
+- `TestPhase18TrimWarnings` (gated on `MOCHI_TEST_TRIM=1`) -- IL2xxx sweep on 3 Phase 1 fixtures (hello, hello_bool, hello_int); zero warnings gate.
+- `TestPhase18Publish` (gated on `MOCHI_TEST_NUGET_PUBLISH=1`) -- stub; logs "not implemented" and returns.
 
 ## Deferred work
 
@@ -139,4 +137,4 @@ The `<PrivateAssets>all</PrivateAssets>` setting ensures the analyzer is not tra
 
 ## Closeout notes
 
-Phase 18 not yet started.
+Phase 18 partially landed. `TestPhase18TrimWarnings` PASS: 3 Phase 1 fixtures (hello, hello_bool, hello_int) on net10.0 with trim warnings as errors; gated on `MOCHI_TEST_TRIM=1`. `TestPhase18Publish` is a stub (logs "not implemented"; gated on `MOCHI_TEST_NUGET_PUBLISH=1`). Sub-phases 18.1-18.4 (Mochi.Analyzers publish, full ~390-fixture trim sweep, perf baselines, v0.15.0 release) are NOT STARTED.

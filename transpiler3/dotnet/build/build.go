@@ -240,7 +240,7 @@ func (d *Driver) Build(src, out string, target Target) error {
 		}
 		return packAot(d.tc.Dotnet, srcDir, out, tfm)
 	default:
-		return fmt.Errorf("dotnet build: unsupported target %d in Phase 1", target)
+		return fmt.Errorf("dotnet build: unsupported target %d", target)
 	}
 }
 

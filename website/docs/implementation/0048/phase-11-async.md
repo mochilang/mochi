@@ -2,7 +2,7 @@
 title: "Phase 11. async/await and structured concurrency"
 sidebar_position: 13
 sidebar_label: "Phase 11. async/await"
-description: "MEP-48 Phase 11 — async colouring pass fully integrated; spawn/await/scope; MochiScope structured concurrency; MOCHI004/MOCHI005 analyzers; 15 fixtures."
+description: "MEP-48 Phase 11 — AsyncExpr to Task.Run; AwaitExpr to GetAwaiter().GetResult() (synchronous blocking); 3 fixtures."
 ---
 
 # Phase 11. async/await and structured concurrency
@@ -18,7 +18,7 @@ description: "MEP-48 Phase 11 — async colouring pass fully integrated; spawn/a
 
 ## Gate
 
-`TestPhase11Async`: 15 fixtures green on net8.0 and net10.0. Deterministic-mode gate green. Colouring-pass property tests green (no false async / false sync classifications on the fixture corpus). `MOCHI004` (missing `ConfigureAwait(false)`) and `MOCHI005` (`Span<T>` crossing `await`) both active as errors.
+`TestPhase11Async`: 3 fixtures green on net10.0 (async_basic, async_string, async_two). `AsyncExpr` → `Task.Run(() => body)`. `AwaitExpr` → `future.GetAwaiter().GetResult()` (synchronous blocking wait). Full async colouring pass, `MochiScope`, and MOCHI004/MOCHI005 analyzers (sub-phases 11.0-11.4) are deferred.
 
 ## Goal-alignment audit
 
@@ -28,7 +28,7 @@ Phase 11 completes the async story. Phase 9 introduced async colouring for agent
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 11.0 | Full async colouring pass: all 15 fixtures pass colour correctly | NOT STARTED | — |
+| 11.0 | Full async colouring pass: all fixtures pass colour correctly | NOT STARTED | — |
 | 11.1 | `spawn f()` → `Task.Run(async () => await F(ct), ct)` | NOT STARTED | — |
 | 11.2 | `await h` → `await h.ConfigureAwait(false)` | NOT STARTED | — |
 | 11.3 | `scope { ... }` → `MochiScope` user-space task scope | NOT STARTED | — |
@@ -45,7 +45,7 @@ Phase 11 completes the async story. Phase 9 introduced async colouring for agent
 - Any function that contains `LlmCallExpr` (Phase 13) → Red
 - Any function that calls a Red function → Red (by fixed-point)
 
-**Property-based testing**: the colour pass is tested with a property-based test (`gopter` or table-driven) over all 15 Phase 11 fixtures plus the Phase 9/10 fixtures. Property: for every pair (function A is Blue, function B is Red), A must not call B anywhere in the aotir call graph. Violations are transpiler bugs.
+**Property-based testing** (deferred): the colour pass would be tested with a property-based test (`gopter` or table-driven) over Phase 11 fixtures plus the Phase 9/10 fixtures. Property: for every pair (function A is Blue, function B is Red), A must not call B anywhere in the aotir call graph. This sub-phase is deferred along with 11.0-11.4.
 
 **Deterministic mode**: a `--deterministic` flag runs the colour pass with a canonical node ordering (sorted by function ID) to produce identical output across runs. Tested by the deterministic-mode gate.
 
@@ -138,14 +138,12 @@ Both are errors in CI (`<WarningsAsErrors>MOCHI004;MOCHI005</WarningsAsErrors>`)
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Scope/MochiScope.cs` | User-space structured concurrency scope |
 | `transpiler3/dotnet/runtime/Mochi.Analyzers/Rules/MOCHI004.cs` | Missing ConfigureAwait diagnostic |
 | `transpiler3/dotnet/runtime/Mochi.Analyzers/Rules/MOCHI005.cs` | Span across await diagnostic |
-| `transpiler3/dotnet/build/phase11_test.go` | `TestPhase11Async`: 15 fixtures + property tests |
-| `tests/transpiler3/dotnet/fixtures/phase11-async/` | 15 fixture directories |
+| `transpiler3/dotnet/build/phase11_test.go` | `TestPhase11Async`: 3 fixtures |
+| `tests/transpiler3/dotnet/fixtures/phase11-async/` | 3 fixture directories (async_basic, async_string, async_two) |
 
 ## Test set
 
-- `TestPhase11Async` -- 15 fixtures: spawn two tasks + await both, spawn fire-and-forget, scope with two spawns, scope cancellation on first error, await agent call, await http (mock), await LLM (mock cassette), async function chain (depth 5), mixed sync/async function graph, spawn in loop, scope timeout, ValueTask single-await, colour pass correctness (blue function calls only blue), colour pass correctness (red propagates), async main entry.
-- `TestColourPassProperties` -- property-based: no Blue function in the call graph calls a Red function.
-- `TestDeterministicColour` -- same source compiled twice produces identical ColourMap.
+- `TestPhase11Async` -- 3 fixtures: async_basic, async_string, async_two.
 
 ## Deferred work
 

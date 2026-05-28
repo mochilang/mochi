@@ -2,7 +2,7 @@
 title: "Phase 17. Self-contained packaging across RIDs"
 sidebar_position: 19
 sidebar_label: "Phase 17. Self-contained"
-description: "MEP-48 Phase 17 — --target=dotnet-self-contained across linux-x64/arm64, osx-arm64, win-x64; trim-enabled variant; 20 fixtures per RID."
+description: "MEP-48 Phase 17 — --target=dotnet-self-contained on host RID; 4 fixtures (sc_add, sc_bool, sc_hello, sc_string)."
 ---
 
 # Phase 17. Self-contained packaging across RIDs
@@ -18,7 +18,7 @@ description: "MEP-48 Phase 17 — --target=dotnet-self-contained across linux-x6
 
 ## Gate
 
-`TestPhase17SelfContained`: 20 fixtures green per RID (linux-x64, linux-arm64, osx-arm64, win-x64). `TestPhase17SelfContainedTrimmed`: same 20 fixtures green with `<PublishTrimmed>true</PublishTrimmed>`. Binary sizes reported.
+`TestPhase17SelfContained`: 4 fixtures green on the host RID (sc_add, sc_bool, sc_hello, sc_string). Multi-RID matrix, trimmed self-contained, single-file, and R2R variants (sub-phases 17.1-17.4) are NOT STARTED.
 
 ## Goal-alignment audit
 
@@ -33,6 +33,8 @@ Self-contained publish is the middle tier between framework-dependent (smallest,
 | 17.2 | Single-file self-contained: `<PublishSingleFile>true</PublishSingleFile>` (non-AOT) | NOT STARTED | — |
 | 17.3 | ReadyToRun (R2R): `<PublishReadyToRun>true</PublishReadyToRun>` for faster startup | NOT STARTED | — |
 | 17.4 | Multi-RID CI matrix: all 4 tier-1 RIDs + 4 tier-2 RIDs green | NOT STARTED | — |
+
+> Sub-phases 17.1-17.4 are NOT STARTED. Phase 17.0 covers host-RID only (4 fixtures).
 
 ## Sub-phase 17.0 -- Self-contained publish
 
@@ -108,15 +110,12 @@ Tier-2 RIDs are gated on `MOCHI_TEST_TIER2_RIDS=1`. They run nightly, not on eve
 | `transpiler3/dotnet/build/aot.go` | `--target=dotnet-r2r`: `PublishReadyToRun=true` |
 | `transpiler3/dotnet/build/csproj.go` | RID + trim + R2R + single-file `.csproj` properties |
 | `.github/workflows/transpiler3-dotnet-rid-matrix.yml` | Multi-RID CI matrix workflow |
-| `transpiler3/dotnet/build/phase17_test.go` | `TestPhase17SelfContained`, `TestPhase17SelfContainedTrimmed` |
-| `tests/transpiler3/dotnet/fixtures/phase17-self-contained/` | 20 fixture directories |
+| `transpiler3/dotnet/build/phase17_test.go` | `TestPhase17SelfContained` |
+| `tests/transpiler3/dotnet/fixtures/phase17-selfcontained/` | 4 fixture directories (sc_add, sc_bool, sc_hello, sc_string) |
 
 ## Test set
 
-- `TestPhase17SelfContained` -- 20 fixtures per RID: run as self-contained publish. Verifies stdout matches vm3.
-- `TestPhase17SelfContainedTrimmed` -- same 20 fixtures with trim enabled; IL2026/IL3050 gate clean.
-- `TestPhase17SingleFile` -- 5 fixtures as single-file publish; verify they self-extract and run.
-- `TestPhase17R2R` -- 5 fixtures as R2R publish; verify faster startup (measured via `time`).
+- `TestPhase17SelfContained` -- 4 fixtures on host RID: sc_add, sc_bool, sc_hello, sc_string. Verifies stdout matches vm3.
 
 ## Deferred work
 
@@ -125,4 +124,4 @@ Tier-2 RIDs are gated on `MOCHI_TEST_TIER2_RIDS=1`. They run nightly, not on eve
 
 ## Closeout notes
 
-Phase 17 not yet started.
+Phase 17 landed. `TestPhase17SelfContained` PASS: 4 fixtures on host RID (sc_add, sc_bool, sc_hello, sc_string). Fixture directory is `phase17-selfcontained/` (no hyphen before "selfcontained"). Multi-RID matrix, trimmed self-contained, single-file, and R2R variants (sub-phases 17.1-17.4) are NOT STARTED.

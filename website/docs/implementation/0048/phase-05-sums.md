@@ -18,7 +18,7 @@ description: "MEP-48 Phase 5 — sum types to abstract record + sealed record va
 
 ## Gate
 
-`TestPhase5Sums`: 25 fixtures green on net8.0 and net10.0. Analyzer-clean: `MOCHI001` (non-exhaustive match) and `MOCHI002` (unreachable arm) both active in CI as errors.
+`TestPhase5Sums`: 25 fixtures green on net8.0 and net10.0.
 
 ## Goal-alignment audit
 
@@ -121,28 +121,23 @@ public sealed record Err<T, E>(E Error) : Result<T, E>;
 
 **MOCHI002** fires when a switch arm is unreachable because a prior arm already covers the same pattern. This catches transpiler bugs where the lowerer emits duplicate arms.
 
-Both diagnostics are implemented as Roslyn `DiagnosticAnalyzer` in `Mochi.Analyzers`. They are active in Phase 5 CI as errors (`<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` + `<WarningsAsErrors>MOCHI001;MOCHI002</WarningsAsErrors>`).
+Both diagnostics are planned as Roslyn `DiagnosticAnalyzer` in `Mochi.Analyzers`. `Mochi.Analyzers` is not yet created; MOCHI001 and MOCHI002 remain deferred. The exhaustive `default: throw` catch-all is generated unconditionally by the lowerer to satisfy C# definite-assignment analysis.
 
 ## Files changed
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/dotnet/lower/decl.go` | Sum type → abstract record + sealed records; `[MochiUnion]` attribute |
-| `transpiler3/dotnet/lower/match.go` | match → switch expression with record-pattern deconstruction |
+| `transpiler3/dotnet/lower/lower.go` | Sum type → abstract record + sealed records; `[MochiUnion]` attribute; match → switch statement with type-pattern cases |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Types/Option.cs` | `Option<T>`, `Some<T>`, `None<T>` |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Types/Result.cs` | `Result<T,E>`, `Ok<T,E>`, `Err<T,E>` |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Types/MochiUnionAttribute.cs` | `[MochiUnion]` attribute definition |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Errors/MochiMatchExhaustivityError.cs` | Runtime catch-all exception |
-| `transpiler3/dotnet/runtime/Mochi.Analyzers/Rules/MOCHI001.cs` | Non-exhaustive match diagnostic |
-| `transpiler3/dotnet/runtime/Mochi.Analyzers/Rules/MOCHI002.cs` | Unreachable arm diagnostic |
-| `transpiler3/dotnet/build/phase05_test.go` | `TestPhase5Sums`: 25 fixtures + analyzer-clean gate |
+| `transpiler3/dotnet/build/phase05_test.go` | `TestPhase5Sums`: 25 fixtures |
 | `tests/transpiler3/dotnet/fixtures/phase05-sums/` | 25 fixture directories |
 
 ## Test set
 
 - `TestPhase5Sums` -- 25 fixtures: circle/rect area, option some/none, result ok/err, nested match, guard match, list pattern empty, list pattern head/tail, exhaustive shape match, option chain, result unwrap, recursive sum type (tree), json-like ADT, match on string literal, match on int literal, match with when guard, nested option, option map/flatMap (implemented as match), result map/flatMap, multi-variant match, wildcard arm, sum type in list, sum type as record field, Option<string> fast path (nullable), sum type printed via ToString, match result in loop.
-- `TestMOCHI001Fires` -- verify `MOCHI001` fires on a handwritten C# file missing a variant.
-- `TestMOCHI002Fires` -- verify `MOCHI002` fires on a duplicate pattern arm.
 
 ## Deferred work
 

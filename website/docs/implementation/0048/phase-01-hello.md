@@ -55,7 +55,7 @@ The pipeline must produce a runnable artefact on the first sub-phase so that 1.1
 4. `colour.Colour(prog)` → `ColourMap` (Phase 1: all functions are blue/sync)
 5. `lower.Lower(prog, colours)` → `*csharpsrc.CompilationUnit`
 6. `emit.Emit(cu, workDir)` → writes `.cs` files to a temp dir
-7. `roslyn.Compile(csFiles, outDir, tfm)` → calls `dotnet build` subprocess on generated `.csproj`
+7. `dotnet.Publish(csFiles, outDir, tfm)` → calls `dotnet publish` subprocess on generated `.csproj`
 8. Package per target (Phase 1.2: fx-dependent)
 
 **Lowering of `print("hello, world")`**: `aotir.PrintStmt` with a `StringLit` lowers to an `ExprStmt` wrapping a `StaticCallExpr` to `Mochi.Runtime.IO.Print`:
@@ -96,7 +96,7 @@ public static class Print
 
 This indirection lets tests redirect `Console.Out` to a buffer without changing generated code, and lets NativeAOT trimming see which overloads are actually called.
 
-**Roslyn vs subprocess**: Phase 1 uses `dotnet build` subprocess. In-process `CSharpCompilation` (eliminating the subprocess) is implemented in Phase 16 (reproducibility). The subprocess is simpler for Phase 1 and gives free MSBuild integration (NuGet restore, multi-targeting) at the cost of ~400ms SDK startup.
+**`dotnet publish` subprocess**: Phase 1 uses a `dotnet publish` subprocess (not in-process Roslyn). In-process `CSharpCompilation` (eliminating the subprocess) is deferred to Phase 16 (reproducibility). The subprocess is simpler for Phase 1 and gives free MSBuild integration (NuGet restore, multi-targeting) at the cost of ~400ms SDK startup. `emit/roslyn.go` does not exist; the publish logic lives in `emit/dotnet.go`.
 
 ## Sub-phase 1.1 -- Scalar print
 
@@ -165,13 +165,12 @@ Incremental builds matter even for hello-world programs during development. A Mo
 
 **Cache key**: SHA-256 of:
 ```
-source_bytes || sdk_version_string || transpiler_version || runtime_dll_sha256
+source_bytes || sdk_version_string || tfm
 ```
 
 - `source_bytes`: raw bytes of the `.mochi` source file.
 - `sdk_version_string`: from `dotnet --version` output, e.g., `"8.0.204"`.
-- `transpiler_version`: from Go build info (`debug.ReadBuildInfo().Main.Version`).
-- `runtime_dll_sha256`: SHA-256 of `Mochi.Runtime.dll` (computed once per `Driver` lifetime, memoised).
+- `tfm`: target framework moniker string (e.g., `"net10.0"`).
 
 **Cache directory**: `~/.cache/mochi/dotnet/` (XDG Base Directory). Overridable via `$MOCHI_CACHE_DIR`. Cache entry: `<key>.dll` and `<key>.runtimeconfig.json`.
 
@@ -185,7 +184,7 @@ source_bytes || sdk_version_string || transpiler_version || runtime_dll_sha256
 |------|---------|
 | `transpiler3/dotnet/lower/lower.go` | `Lower` entry; `lowerProgram`, `lowerStmt`, `lowerExpr` for Phase 1 surface |
 | `transpiler3/dotnet/emit/emit.go` | C# source text emitter: walks `csharpsrc` nodes → `.cs` file content |
-| `transpiler3/dotnet/emit/roslyn.go` | `dotnet build` subprocess invocation with generated `.csproj` |
+| `transpiler3/dotnet/emit/dotnet.go` | `dotnet publish` subprocess invocation with generated `.csproj` |
 | `transpiler3/dotnet/build/build.go` | `Driver.Build`; `Target` constants |
 | `transpiler3/dotnet/build/fxdep.go` | fx-dependent packaging: `.dll` + `.runtimeconfig.json` + apphost |
 | `transpiler3/dotnet/build/csproj.go` | `.csproj` XML generation |
@@ -206,10 +205,6 @@ source_bytes || sdk_version_string || transpiler_version || runtime_dll_sha256
 ## Test set
 
 - `TestPhase1Hello` -- walks all 5 fixtures; calls `runDotnetFixture`; diffs stdout byte-for-byte against `.out` file.
-- `TestPhase1HelloNet10` -- same fixtures on net10.0 (env `TEST_DOTNET_TFM=net10.0`).
-- `TestLowerHello` -- unit test: `Lower` on a single `PrintStmt("hello, world")` produces the expected `CompilationUnit` shape.
-- `TestEmitHello` -- unit test: `emit.Emit` on that `CompilationUnit` produces C# that Roslyn parses without errors.
-- `TestDriverCacheHit` -- second build on same source skips subprocess.
 
 ## Deferred work
 
@@ -220,4 +215,4 @@ source_bytes || sdk_version_string || transpiler_version || runtime_dll_sha256
 
 ## Closeout notes
 
-Phase 1 landed. Pipeline: `parser.Parse` → `types.Check` → `clower.Lower` → `colour.Analyse` (all Blue) → `lower.Lower` (PrintStmt → `Mochi.Runtime.IO.Print.Line`) → `emit.Emit` (writes `.cs`) → `packFxDependent` (`dotnet publish --self-contained false`). `TestPhase1Hello` PASS: 3 fixtures (hello, hello_int, hello_bool) on SDK 10.0.107 with `net10.0` TFM. `Mochi.Runtime.csproj` expanded to `net8.0;net9.0;net10.0`.
+Phase 1 landed. Pipeline: `parser.Parse` → `types.Check` → `clower.Lower` → `colour.Analyse` (all Blue) → `lower.Lower` (PrintStmt → `Mochi.Runtime.IO.Print.Line`) → `emit.Emit` (writes `.cs`) → `packFxDependent` (`dotnet publish --self-contained false`). `TestPhase1Hello` PASS: 5 fixtures (hello, hello_int, hello_bool, hello_newline, hello_fx) on SDK 10.0.107 with `net10.0` TFM. `Mochi.Runtime.csproj` targets `net8.0;net9.0;net10.0`. Cache key: SHA-256 of source bytes + SDK version string + TFM (3 components). Pipeline uses `dotnet publish` subprocess; in-process Roslyn deferred to Phase 16.

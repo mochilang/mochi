@@ -18,7 +18,7 @@ description: "MEP-48 Phase 2 — int/float/bool/string arithmetic, comparisons, 
 
 ## Gate
 
-`TestPhase2Scalars`: 20 fixtures green on net8.0 and net10.0, all four tier-1 OS cells. Roslyn-clean secondary gate (zero warnings with `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>`). `MOCHI003` analyzer enforces `long` for all Mochi `int` lowerings.
+`TestPhase2Scalars`: 20 fixtures green on net8.0 and net10.0, all four tier-1 OS cells. Roslyn-clean secondary gate (zero warnings with `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>`).
 
 ## Goal-alignment audit
 
@@ -47,7 +47,7 @@ Phase 2 closes the gap between "hello world" and "a real program". After Phase 2
 | `bool` | `bool` | Literals `true` / `false`. |
 | `string` | `string` | UTF-16 internally; UTF-8 at boundaries. |
 
-**MOCHI003 analyzer**: `Mochi.Analyzers` ships `MOCHI003` which fires if a Mochi `int`-typed expression is lowered to C# `int` instead of `long`. This catches accidental `int` literals (e.g., `42` without `L`). The analyzer is active in Phase 2 (it was stubbed in Phase 0). Any generated file that triggers MOCHI003 is a transpiler bug, not a user bug; `TreatWarningsAsErrors=true` makes this an error.
+**MOCHI003 analyzer**: planned for `Mochi.Analyzers`; would fire if a Mochi `int`-typed expression is lowered to C# `int` instead of `long`. `Mochi.Analyzers` is not yet created; MOCHI003 is deferred. The `long` invariant is enforced by convention and by `TreatWarningsAsErrors=true` on generated code.
 
 **`let` binding**: `let x = expr` lowers to `var x = expr;` (C# implicitly typed). Mochi `let` is single-assignment; C# `var` does not enforce this statically, but Mochi's type checker ensures there is no re-assignment, so the generated code is always single-write.
 
@@ -157,21 +157,16 @@ public static void Line(double v) {
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/dotnet/lower/expr.go` | All scalar expression lowering (arithmetic, comparison, cast) |
-| `transpiler3/dotnet/lower/stmt.go` | if/while/for/return/break/continue lowering |
-| `transpiler3/dotnet/lower/lower.go` | User function → static method lowering; tail-call rewriter |
-| `transpiler3/dotnet/lower/mangle.go` | snake_case → PascalCase; reserved-word `@` prefix; `'` → `_prime`; `!` → `_bang` |
+| `transpiler3/dotnet/lower/lower.go` | All scalar expression lowering (arithmetic, comparison, cast); if/while/for/return/break/continue; user function → static method; tail-call rewriter; snake_case → PascalCase name mangling |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/IO/Print.cs` | Float formatting; bool lowercase |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Errors/MochiDivideByZeroError.cs` | Divide-by-zero exception |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Math/MochiMath.cs` | `IntDiv` wrapper; float cast helpers |
-| `transpiler3/dotnet/runtime/Mochi.Analyzers/Rules/MOCHI003.cs` | Mochi int → C# int diagnostic |
 | `transpiler3/dotnet/build/phase02_test.go` | `TestPhase2Scalars`: 20 fixtures |
 | `tests/transpiler3/dotnet/fixtures/phase02-scalars/` | 20 fixture directories |
 
 ## Test set
 
 - `TestPhase2Scalars` -- 20 fixtures covering: int arithmetic, float arithmetic, bool ops, string concat, if/else, while, for-in, user functions, recursive functions (fact, fib), tail-recursive fact, divide-by-zero error, float NaN, float Infinity, int_cast, float_cast, string_to_int, compare_float, comparison chain, nested conditions.
-- `TestMOCHI003Clean` -- verify `MOCHI003` fires when a test file has `(int)42L` downcast and is silent on correct `42L` literals.
 
 ## Deferred work
 
