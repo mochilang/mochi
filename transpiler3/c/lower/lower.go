@@ -2428,6 +2428,15 @@ func (l *lowerer) lowerFetchStmt(out *aotir.Block, fs *parser.FetchStmt) error {
 	return nil
 }
 
+// lowerFetchExpr lowers `fetch <url>` as an expression to an HttpGetExpr. Phase 14.0.
+func (l *lowerer) lowerFetchExpr(fe *parser.FetchExpr) (aotir.Expr, error) {
+	urlExpr, err := l.lowerExpr(fe.URL)
+	if err != nil {
+		return nil, fmt.Errorf("fetch url: %w", err)
+	}
+	return &aotir.HttpGetExpr{URL: urlExpr}, nil
+}
+
 // lowerSubscribeCall lowers `subscribe(stream)` to a SubMakeExpr. Phase 9.2.
 func (l *lowerer) lowerSubscribeCall(call *parser.CallExpr) (aotir.Expr, error) {
 	if len(call.Args) != 1 {
@@ -4232,6 +4241,10 @@ func (l *lowerer) lowerPrimary(pr *parser.Primary) (aotir.Expr, error) {
 	// Phase 11.1: await fut → AwaitExpr(future, elemType)
 	if pr.Await != nil {
 		return l.lowerAwaitExpr(pr.Await)
+	}
+	// Phase 14.0: fetch <url> expression → HttpGetExpr
+	if pr.Fetch != nil {
+		return l.lowerFetchExpr(pr.Fetch)
 	}
 	return nil, fmt.Errorf("primary %s not supported in Phase 3.2%s", trimPrimary(pr), primaryPhaseHint(pr))
 }
