@@ -13,8 +13,8 @@ description: "MEP-49 Phase 16 — deterministic .o and binary output via SWIFTPM
 | Status         | LANDED |
 | Started        | 2026-05-28 13:40 (GMT+7) |
 | Landed         | 2026-05-28 13:40 (GMT+7) |
-| Tracking issue | — |
-| Tracking PR    | — |
+| Tracking issue | [#22458](https://github.com/mochilang/mochi/issues/22458) |
+| Tracking PR    | [#22459](https://github.com/mochilang/mochi/pull/22459) |
 
 ## Gate
 
