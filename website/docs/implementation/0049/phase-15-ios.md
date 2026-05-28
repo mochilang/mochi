@@ -10,9 +10,9 @@ description: "MEP-49 Phase 15 — xcodebuild archive + exportArchive pipeline; X
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-49 §Phases · Phase 15](/docs/mep/mep-0049#phase-15-ios-bundle) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 13:40 (GMT+7) |
+| Landed         | 2026-05-28 13:40 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
