@@ -103,11 +103,25 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 		return "", fmt.Errorf("swift build: swift lower: %w", err)
 	}
 
-	workDir, err := os.MkdirTemp("", "mochi-swift-*")
-	if err != nil {
-		return "", err
+	var workDir string
+	if d.Deterministic || os.Getenv("MOCHI_DETERMINISTIC") == "1" {
+		// Use a content-addressed, fixed workDir so embedded build paths are
+		// identical between two deterministic builds of the same source.
+		h := sha256.Sum256(srcBytes)
+		workDir = filepath.Join(os.TempDir(), fmt.Sprintf("mochi-swift-det-%x", h[:8]))
+		if mkErr := os.MkdirAll(workDir, 0o755); mkErr != nil {
+			return "", mkErr
+		}
+		// Remove stale SwiftPM artifacts so each run starts clean.
+		_ = os.RemoveAll(filepath.Join(workDir, ".build"))
+	} else {
+		var mkErr error
+		workDir, mkErr = os.MkdirTemp("", "mochi-swift-*")
+		if mkErr != nil {
+			return "", mkErr
+		}
+		defer os.RemoveAll(workDir)
 	}
-	defer os.RemoveAll(workDir)
 
 	// Write generated Swift source to Sources/MochiOut/.
 	mochiOutDir := filepath.Join(workDir, "Sources", "MochiOut")
@@ -161,13 +175,9 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 		buildArgs = append(buildArgs, "--swift-sdk", triple)
 	}
 	if d.Deterministic || os.Getenv("MOCHI_DETERMINISTIC") == "1" {
-		// -gnone removes DWARF. -file-prefix-map remaps the random workDir
-		// path in Swift reflection metadata to a canonical placeholder so
-		// two builds from different temp dirs produce bit-identical binaries.
-		buildArgs = append(buildArgs,
-			"-Xswiftc", "-gnone",
-			"-Xswiftc", "-file-prefix-map", "-Xswiftc", workDir+"=/_mochi_build_",
-		)
+		// -gnone strips DWARF sections; the fixed content-addressed workDir
+		// ensures any remaining embedded paths are identical between builds.
+		buildArgs = append(buildArgs, "-Xswiftc", "-gnone")
 	}
 	buildCmd := exec.Command(d.swiftPath, buildArgs...)
 	buildCmd.Dir = workDir
