@@ -473,6 +473,18 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (sxtree.Stmt, error) {
 		return l.lowerQueryScopeStmt(s)
 	case *aotir.AgentIntentCallStmt:
 		return l.lowerAgentIntentCallStmt(s)
+	case *aotir.StreamEmitStmt:
+		stream, err := l.lowerExpr(s.Stream)
+		if err != nil {
+			return nil, err
+		}
+		val, err := l.lowerExpr(s.Val)
+		if err != nil {
+			return nil, err
+		}
+		return &sxtree.RawSwiftStmt{
+			Code: fmt.Sprintf("%s.emit(%s)", stream.SwiftExprString(), val.SwiftExprString()),
+		}, nil
 	default:
 		return nil, fmt.Errorf("swift/lower: unsupported statement %T", s)
 	}
@@ -556,8 +568,27 @@ func lowerLetTypeName(s *aotir.LetStmt) string {
 		return swiftFunType(s.FunSig)
 	case aotir.TypeAgent:
 		return s.AgentName
+	case aotir.TypeStream:
+		return "MochiStream<" + swiftStreamElemType(s.StreamElemType) + ">"
+	case aotir.TypeSub:
+		return "MochiSub<" + swiftStreamElemType(s.SubElemType) + ">"
 	default:
 		return ""
+	}
+}
+
+func swiftStreamElemType(t aotir.Type) string {
+	switch t {
+	case aotir.TypeInt:
+		return "Int64"
+	case aotir.TypeFloat:
+		return "Double"
+	case aotir.TypeBool:
+		return "Bool"
+	case aotir.TypeString:
+		return "String"
+	default:
+		return "Any"
 	}
 }
 
@@ -898,6 +929,40 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (sxtree.Expr, error) {
 		return l.lowerAgentLit(e)
 	case *aotir.AgentIntentCallExpr:
 		return l.lowerAgentIntentCallExpr(e)
+	// --- Phase 10 streams ---
+	case *aotir.StreamMakeExpr:
+		cap, err := l.lowerExpr(e.Cap)
+		if err != nil {
+			return nil, err
+		}
+		elemType := swiftStreamElemType(e.ElemType)
+		return &sxtree.RawSwiftExpr{
+			Code: fmt.Sprintf("MochiStream<%s>(capacity: %s)", elemType, cap.SwiftExprString()),
+		}, nil
+	case *aotir.SubMakeExpr:
+		stream, err := l.lowerExpr(e.Stream)
+		if err != nil {
+			return nil, err
+		}
+		return &sxtree.RawSwiftExpr{
+			Code: fmt.Sprintf("%s.subscribe()", stream.SwiftExprString()),
+		}, nil
+	case *aotir.SubMakeLimitExpr:
+		stream, err := l.lowerExpr(e.Stream)
+		if err != nil {
+			return nil, err
+		}
+		return &sxtree.RawSwiftExpr{
+			Code: fmt.Sprintf("%s.subscribe()", stream.SwiftExprString()),
+		}, nil
+	case *aotir.SubRecvExpr:
+		sub, err := l.lowerExpr(e.Sub)
+		if err != nil {
+			return nil, err
+		}
+		return &sxtree.RawSwiftExpr{
+			Code: fmt.Sprintf("%s.recv()", sub.SwiftExprString()),
+		}, nil
 	// --- math builtins ---
 	case *aotir.MathCallExpr:
 		return l.lowerMathCallExpr(e)
