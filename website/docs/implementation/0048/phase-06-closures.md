@@ -18,7 +18,7 @@ description: "MEP-48 Phase 6 — fun(...) => to Func<>/Action<> delegates; mutab
 
 ## Gate
 
-`TestPhase6Funs`: 25 fixtures green on net8.0 and net10.0.
+`TestPhase6Closures`: 6 fixtures green on net8.0 and net10.0.
 
 ## Goal-alignment audit
 
@@ -127,13 +127,12 @@ These are used in Phase 7 (query DSL generates partial applications of predicate
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Func/MutableCell.cs` | Mutable cell for var captures |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Func/Func17.cs` | High-arity delegate types (Func17..Func32) |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Func/CurryHelpers.cs` | Curry / uncurry / partial apply |
-| `transpiler3/dotnet/build/phase06_test.go` | `TestPhase6Funs`: 25 fixtures |
-| `tests/transpiler3/dotnet/fixtures/phase06-closures/` | 25 fixture directories |
+| `transpiler3/dotnet/build/phase06_test.go` | `TestPhase6Closures`: 6 fixtures |
+| `tests/transpiler3/dotnet/fixtures/phase06-closures/` | 6 fixture directories |
 
 ## Test set
 
-- `TestPhase6Funs` -- 25 fixtures: identity function, add function, double function, closure over let, closure over var (counter), higher-order map, higher-order filter, compose, partial application, two-arg lambda, three-arg lambda, curried add, closure returned from function, callback pattern, adder factory, accumulator via mutable cell, map with closure, filter with closure, fold (reduce), function as record field, option map via closure, function composition chain, closure in match arm, lambda as argument to lambda, higher-arity (17-arg) function.
-- `TestClosureSemantics` -- unit tests verifying capture semantics: let-capture does not observe post-creation mutation; var-capture via MutableCell does.
+- `TestPhase6Closures` -- 6 fixtures (closure_capture, hof_filter, hof_map, hof_reduce, lambda_as_arg, lambda_basic).
 
 ## Deferred work
 

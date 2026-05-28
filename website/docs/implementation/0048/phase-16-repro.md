@@ -18,7 +18,7 @@ description: "MEP-48 Phase 16 — Roslyn /deterministic; Deterministic=true; Sou
 
 ## Gate
 
-`TestPhase16Reproducible`: bit-identical `.dll` files verified on 3 Phase 1 fixtures (hello, hello_bool, hello_int) using `<Deterministic>true</Deterministic>` + `<PathMap>` + `<DebugType>none</DebugType>`. Cross-host comparison, `diffoscope` sweep, and NativeAOT reproducibility (sub-phases 16.1-16.4) are deferred.
+`TestPhase16Reproducible`: bit-identical `.dll` files verified on 5 Phase 1 fixtures (hello, hello_bool, hello_fx, hello_int, hello_newline) using `<Deterministic>true</Deterministic>` + `<PathMap>` + `<DebugType>none</DebugType>`. Cross-host comparison, `diffoscope` sweep, and NativeAOT reproducibility (sub-phases 16.1-16.4) are deferred.
 
 ## Goal-alignment audit
 
@@ -124,7 +124,7 @@ func CompileInProcess(cu *csharpsrc.CompilationUnit, outDll string) error {
 
 ## Test set
 
-- `TestPhase16Reproducible` -- 3 Phase 1 fixtures (hello, hello_bool, hello_int) built twice; SHA-256 of `.dll` outputs compared.
+- `TestPhase16Reproducible` -- 5 Phase 1 fixtures (hello, hello_bool, hello_fx, hello_int, hello_newline) built twice; SHA-256 of `.dll` outputs compared.
 
 ## Deferred work
 

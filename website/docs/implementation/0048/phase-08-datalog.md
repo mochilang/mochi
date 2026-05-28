@@ -2,7 +2,7 @@
 title: "Phase 8. Datalog"
 sidebar_position: 10
 sidebar_label: "Phase 8. Datalog"
-description: "MEP-48 Phase 8 — fact/rule/query lowering to Mochi.Runtime.Datalog; semi-naive evaluator; 20 fixtures."
+description: "MEP-48 Phase 8 — fact/rule/query lowering to Mochi.Runtime.Datalog; semi-naive evaluator; 6 fixtures."
 ---
 
 # Phase 8. Datalog
@@ -18,7 +18,7 @@ description: "MEP-48 Phase 8 — fact/rule/query lowering to Mochi.Runtime.Datal
 
 ## Gate
 
-`TestPhase8Datalog`: 20 fixtures green on net8.0 and net10.0.
+`TestPhase8Datalog`: 6 fixtures green on net8.0 and net10.0.
 
 ## Goal-alignment audit
 
@@ -87,12 +87,12 @@ The evaluator is single-threaded and in-memory (no RETE network in Phase 8). Suf
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Datalog/Engine.cs` | Semi-naive evaluator, fact store, rule application |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Datalog/DatalogTerm.cs` | `Const` / `Var` term discriminated union |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Datalog/DatalogTuple.cs` | Binding environment |
-| `transpiler3/dotnet/build/phase08_test.go` | `TestPhase8Datalog`: 20 fixtures |
-| `tests/transpiler3/dotnet/fixtures/phase08-datalog/` | 20 fixture directories |
+| `transpiler3/dotnet/build/phase08_test.go` | `TestPhase8Datalog`: 6 fixtures |
+| `tests/transpiler3/dotnet/fixtures/phase08-datalog/` | 6 fixture directories |
 
 ## Test set
 
-- `TestPhase8Datalog` -- 20 fixtures: parent/ancestor, sibling, grandparent, multi-hop path, graph reachability, mutual recursion, multiple rules per head, query with multiple vars, query with all constants, rule with multiple body atoms, stratified negation (if supported), empty result, single-fact query, multi-step chain (depth 5), join in rule body, rule fan-out, same-generation, symmetric relation, transitive relation, fact retraction (if supported in Phase 8).
+- `TestPhase8Datalog` -- 6 fixtures (dl_ancestor, dl_connected, dl_facts_grandparent, dl_negation, dl_parent_basic, dl_sibling).
 
 ## Deferred work
 
