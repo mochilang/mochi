@@ -487,6 +487,27 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (sxtree.Stmt, error) {
 		return &sxtree.RawSwiftStmt{
 			Code: fmt.Sprintf("%s.emit(%s)", stream.SwiftExprString(), val.SwiftExprString()),
 		}, nil
+	// --- Phase 12 file I/O ---
+	case *aotir.WriteFileStmt:
+		path, err := l.lowerExpr(s.Path)
+		if err != nil {
+			return nil, err
+		}
+		content, err := l.lowerExpr(s.Content)
+		if err != nil {
+			return nil, err
+		}
+		return &sxtree.RawSwiftStmt{Code: fmt.Sprintf("mochiWriteFile(%s, %s)", path.SwiftExprString(), content.SwiftExprString())}, nil
+	case *aotir.AppendFileStmt:
+		path, err := l.lowerExpr(s.Path)
+		if err != nil {
+			return nil, err
+		}
+		content, err := l.lowerExpr(s.Content)
+		if err != nil {
+			return nil, err
+		}
+		return &sxtree.RawSwiftStmt{Code: fmt.Sprintf("mochiAppendFile(%s, %s)", path.SwiftExprString(), content.SwiftExprString())}, nil
 	default:
 		return nil, fmt.Errorf("swift/lower: unsupported statement %T", s)
 	}
@@ -1011,6 +1032,19 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (sxtree.Expr, error) {
 		return &sxtree.RawSwiftExpr{
 			Code: fmt.Sprintf("await %s.value", fut.SwiftExprString()),
 		}, nil
+	// --- Phase 12 file I/O ---
+	case *aotir.ReadFileExpr:
+		path, err := l.lowerExpr(e.Path)
+		if err != nil {
+			return nil, err
+		}
+		return &sxtree.RawSwiftExpr{Code: fmt.Sprintf("mochiReadFile(%s)", path.SwiftExprString())}, nil
+	case *aotir.LinesExpr:
+		path, err := l.lowerExpr(e.Path)
+		if err != nil {
+			return nil, err
+		}
+		return &sxtree.RawSwiftExpr{Code: fmt.Sprintf("mochiLines(%s)", path.SwiftExprString())}, nil
 	default:
 		return nil, fmt.Errorf("swift/lower: unsupported expression %T", e)
 	}
