@@ -1,7 +1,11 @@
 // Package colour computes the async/sync colour of each function in the call graph.
 package colour
 
-import "mochi/transpiler3/c/aotir"
+import (
+	"slices"
+
+	"mochi/transpiler3/c/aotir"
+)
 
 // Colour represents the async/sync colour of a function.
 type Colour int
@@ -48,12 +52,7 @@ func containsAsyncOrAwait(b *aotir.Block) bool {
 	if b == nil {
 		return false
 	}
-	for _, s := range b.Statements {
-		if stmtHasAsyncOrAwait(s) {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(b.Statements, stmtHasAsyncOrAwait)
 }
 
 func stmtHasAsyncOrAwait(s aotir.Stmt) bool {
@@ -69,12 +68,7 @@ func stmtHasAsyncOrAwait(s aotir.Stmt) bool {
 	case *aotir.WhileStmt:
 		return exprHasAsyncOrAwait(s.Cond) || containsAsyncOrAwait(s.Body)
 	case *aotir.CallStmt:
-		for _, a := range s.Args {
-			if exprHasAsyncOrAwait(a) {
-				return true
-			}
-		}
-		return false
+		return slices.ContainsFunc(s.Args, exprHasAsyncOrAwait)
 	default:
 		return false
 	}
@@ -98,12 +92,7 @@ func callsRed(b *aotir.Block, cm ColourMap) bool {
 	if b == nil {
 		return false
 	}
-	for _, s := range b.Statements {
-		if stmtCallsRed(s, cm) {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(b.Statements, func(s aotir.Stmt) bool { return stmtCallsRed(s, cm) })
 }
 
 func stmtCallsRed(s aotir.Stmt, cm ColourMap) bool {
