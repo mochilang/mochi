@@ -207,6 +207,10 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 // resolveSwift finds the swift binary.
 func resolveSwift() (string, error) {
 	if p := os.Getenv("SWIFT_PATH"); p != "" {
+		// setup-swift sets SWIFT_PATH to the bin directory; handle both forms.
+		if info, err := os.Stat(p); err == nil && info.IsDir() {
+			p = filepath.Join(p, "swift")
+		}
 		return p, nil
 	}
 	// Check well-known paths first.

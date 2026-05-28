@@ -45,7 +45,10 @@ func runDotnetFixture(t *testing.T, mochiPath, wantFile string) {
 		t.Fatalf("dotnet %s: %v", dllPath, err)
 	}
 
-	got := stdout.Bytes()
+	// Normalize CRLF so golden files stored with LF compare cleanly on Windows.
+	norm := func(b []byte) []byte { return bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n")) }
+	got := norm(stdout.Bytes())
+	want = norm(want)
 	if !bytes.Equal(got, want) {
 		t.Errorf("stdout mismatch\ngot:  %q\nwant: %q", got, want)
 	}
