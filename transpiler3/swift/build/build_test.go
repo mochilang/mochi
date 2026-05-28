@@ -10,6 +10,11 @@ import (
 
 func runSwiftFixture(t *testing.T, mochiPath, wantFile string) {
 	t.Helper()
+	runSwiftFixtureWithEnv(t, mochiPath, wantFile, nil)
+}
+
+func runSwiftFixtureWithEnv(t *testing.T, mochiPath, wantFile string, extraEnv []string) {
+	t.Helper()
 	want, err := os.ReadFile(wantFile)
 	if err != nil {
 		t.Fatalf("read want file %s: %v", wantFile, err)
@@ -23,6 +28,9 @@ func runSwiftFixture(t *testing.T, mochiPath, wantFile string) {
 	}
 
 	cmd := exec.Command(binPath)
+	if len(extraEnv) > 0 {
+		cmd.Env = append(os.Environ(), extraEnv...)
+	}
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = os.Stderr
