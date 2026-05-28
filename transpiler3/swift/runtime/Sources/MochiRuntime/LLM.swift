@@ -7,11 +7,15 @@ public func mochiLLMGenerate(_ provider: String, _ model: String, _ prompt: Stri
         if let content = try? String(contentsOfFile: path, encoding: .utf8) {
             return content.trimmingCharacters(in: .newlines)
         }
-        fputs("mochi_llm: cassette not found: \(path)\n", stderr)
+        mochiStderr("mochi_llm: cassette not found: \(path)\n")
         return ""
     }
-    fputs("mochi_llm: MOCHI_LLM_CASSETTE_DIR not set; set it to a cassette directory or provide an API key\n", stderr)
+    mochiStderr("mochi_llm: MOCHI_LLM_CASSETTE_DIR not set; set it to a cassette directory or provide an API key\n")
     return ""
+}
+
+private func mochiStderr(_ message: String) {
+    FileHandle.standardError.write(Data(message.utf8))
 }
 
 private func mochiDJB2Key(_ provider: String, _ model: String, _ prompt: String) -> UInt64 {
