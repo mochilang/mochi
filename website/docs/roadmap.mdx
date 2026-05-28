@@ -20,10 +20,33 @@ shift.
 Considering means we like the idea but have not committed yet.
 :::
 
-## v0.13.0 (current release)
+## v0.15.0 (current release)
 
-v0.13.0 shipped in May 2026. The headline feature is the BEAM/Erlang
-transpiler reaching Final status under [MEP-46](/docs/mep/mep-0046).
+v0.15.0 shipped in May 2026. The headline feature is the .NET/CLR
+transpiler reaching Final status under [MEP-48](/docs/mep/mep-0048).
+You can compile a Mochi program to a framework-dependent `.dll`, a
+self-contained publish directory, or a NativeAOT single-file binary
+with sub-30 ms cold start, without writing any C# or MSBuild
+configuration. The `Mochi.Runtime 0.15.0-alpha` NuGet package is
+published to nuget.org (Apache-2.0).
+
+```sh
+mochi build --target=dotnet-fx-dependent hello.mochi -o out/
+dotnet out/hello.dll
+```
+
+The three previous minor releases are summarised below for context.
+
+## v0.14.0 (May 2026)
+
+v0.14.0 completed the JVM transpiler under [MEP-47](/docs/mep/mep-0047).
+Mochi programs now compile to runnable uberjars, `jlink` runtime images,
+`jpackage` OS installers, or GraalVM `native-image` binaries.
+`dev.mochi:mochi-runtime:0.14.0` is published to Maven Central.
+
+## v0.13.0 (May 2026)
+
+v0.13.0 completed the BEAM/Erlang transpiler under [MEP-46](/docs/mep/mep-0046).
 
 ### Language core
 
@@ -61,9 +84,10 @@ transpiler reaching Final status under [MEP-46](/docs/mep/mep-0046).
 - Done. Datalog (`assert`, `retract`, `query`) with bottom-up
   semi-naïve evaluation.
 - Done. `async`/`await` with `mochi_async` spawn-monitor semantics.
-- Done. `fetch "<url>" into <var>` and `json_decode` via the BEAM
-  runtime library.
-- Done. FFI through `extern` declarations for Go and Python.
+- Done. `fetch "<url>" into <var>` and `json_decode` via the runtime
+  library (BEAM, JVM, and .NET all ship native implementations).
+- Done. FFI through `extern` declarations (`extern dotnet fun`,
+  `extern java fun`, Go, Python).
 - Done. Pipe operator (`|`) for left-to-right function composition.
 - Done. Partial application with `_` placeholders.
 
@@ -78,9 +102,11 @@ transpiler reaching Final status under [MEP-46](/docs/mep/mep-0046).
   targets.
 - Done. VS Code syntax highlighting via the `mochi-tm` TextMate
   bundle.
-- Done. BLAKE3 content-addressed compiler cache for `.beam` files.
-- Done. Deterministic `.beam` compilation (`deterministic` flag +
-  sorted definitions) for reproducible builds.
+- Done. SHA-256 content-addressed build cache for .NET targets
+  (`~/.cache/mochi/dotnet/`). BLAKE3 cache for BEAM and JVM targets.
+- Done. Deterministic builds: `.beam` (OTP `deterministic` flag),
+  `.dll` (Roslyn `<Deterministic>true` + `PathMap`), and `.jar`
+  (sorted entries, fixed `SOURCE_DATE_EPOCH`).
 - In progress. Language server (LSP). Diagnostics, hover types, and
   goto-definition are working on the LSP branch.
 - In progress. Native Windows build without WSL.
@@ -98,9 +124,19 @@ transpiler reaching Final status under [MEP-46](/docs/mep/mep-0046).
   (MEP-46). The Erlang/BEAM transpiler is Final. Build targets:
   escript (single-file runnable), rebar3 project, Mix/Elixir project,
   OTP release, and AtomVM bundle. The runtime library `mochi_runtime`
-  covers `mochi_fetch`, `mochi_json`, `mochi_llm` (OpenAI + Anthropic
-  live dispatch with cassette playback), `mochi_async`, and
+  covers `mochi_fetch`, `mochi_json`, `mochi_llm`, `mochi_async`, and
   `mochi_stream`. Hex.pm packaging infrastructure is in place.
+- Done. `--to jvm` / `mochi build --target=jvm-uberjar|jlink|jpackage|jvm-native`
+  (MEP-47). The JVM transpiler is Final. Build targets: uberjar
+  (default), `jlink` runtime image, `jpackage` OS installer, GraalVM
+  `native-image`. `dev.mochi:mochi-runtime:0.14.0` on Maven Central.
+- Done. `mochi build --target=dotnet-fx-dependent|dotnet-self-contained|dotnet-aot`
+  (MEP-48). The .NET/CLR transpiler is Final. Agents lower to
+  `Channel<TMessage>`, streams to `IAsyncEnumerable<T>`, sum types
+  to `abstract sealed record` hierarchies, queries to LINQ. Async
+  colouring pass propagates `async Task<T>` through the call graph.
+  `Mochi.Runtime 0.15.0-alpha` published to NuGet. NativeAOT
+  single-file binaries with sub-30 ms cold start.
 - Considering. `--to lua`, `--to rust`. Prototypes exist.
 - Considering. `--to wasm`. Bytecode VM compiles to wasm; a clean
   Mochi-to-wasm codegen path is a separate workstream.
@@ -111,53 +147,50 @@ transpiler reaching Final status under [MEP-46](/docs/mep/mep-0046).
 - Done. Linux (x86_64 and ARM64).
 - Done. Docker.
 - Done. BEAM/OTP 27+ (via `mochi build --target=escript`).
+- Done. JDK 21 and JDK 25 LTS (via `mochi build --target=jvm-uberjar`).
+- Done. .NET 8 LTS and .NET 10 LTS (via `mochi build --target=dotnet-fx-dependent`).
 - In progress. Windows native (without WSL).
 - Considering. WebAssembly via `mochi build --to wasm`.
 - Considering. AtomVM (microcontrollers) via `mochi build --target=atomvm`.
 
-## v0.14.0 (next release)
+## v0.16.0 (next release)
 
-v0.14.0 is scoped to [MEP-47](/docs/mep/mep-0047): the JVM
-transpiler. The goal is to let Mochi programs compile to Java source
-(via `javax.tools.JavaCompiler`) and package as uberjars, `jlink`
-runtime images, `jpackage` installers, or GraalVM `native-image`
-ahead-of-time binaries. The pipeline reuses the `aotir` IR and the
-monomorphisation and closure-conversion passes from MEP-45 and MEP-46.
+v0.16.0 is scoped to [MEP-49](/docs/mep/mep-0049): the Swift
+transpiler. The goal is to let Mochi programs compile to Swift source
+and package as SwiftPM libraries, macOS/iOS/tvOS applications via
+Xcode, or statically-linked Linux binaries via the Swift Static Linux
+SDK. The pipeline reuses the `aotir` IR from MEP-45 and the
+monomorphisation and closure-conversion passes shared with MEP-46,
+MEP-47, and MEP-48.
 
-What v0.14.0 adds:
+What v0.16.0 adds:
 
-1. **JVM emit pass.** Lowers `aotir` to Java source via
-   `javax.tools.JavaCompiler`. A `java.lang.classfile` (ClassFile API,
-   JEP 484) direct-bytecode fallback covers agent trampolines and hot
-   lowerings.
-2. **Build targets.** `mochi build --target=jvm-uberjar`,
-   `--target=jvm-jlink`, `--target=jvm-jpackage`,
-   `--target=jvm-native-image` (GraalVM). Correctness gate: byte-equal
-   stdout against vm3 across JDK 21 LTS and JDK 25 LTS on
-   x86_64-linux-gnu, aarch64-linux-gnu, aarch64-darwin, and
-   x86_64-windows.
-3. **Agent lowering.** Mochi agents lower to Loom virtual threads
-   with `BlockingQueue` mailboxes.
-4. **Stream lowering.** Mochi streams lower to
-   `java.util.concurrent.Flow.Publisher`.
-5. **Type lowering.** Sum types → sealed interfaces + records; `match`
-   → JDK 21 switch patterns (JEP 440 + JEP 441); fun types → lambdas
-   via `LambdaMetafactory`; strings → `java.lang.String`.
-6. **Runtime library `dev.mochi.runtime`.** Apache-2.0, published to
-   Maven Central via the Central Publisher Portal. Thin layer over
-   Jackson 2.18, snakeyaml-engine, java.net.http, and JFR. Covers
-   agent supervisor, datalog evaluator, query DSL, JSON helpers, and
-   ZonedDateTime.
-7. **LLM dispatch.** `generate` expressions route to OpenAI or
-   Anthropic via `java.net.http.HttpClient`.
-8. **Fetch.** `fetch` expressions use `java.net.http.HttpClient`.
-9. **Datalog.** Bottom-up semi-naïve evaluation in the Java runtime.
-10. **Reproducibility.** Deterministic class file generation.
+1. **Swift emit pass.** Lowers `aotir` to Swift source via a structural
+   `swiftsrc` AST. Swift `actor` lowers Mochi agents; `AsyncStream`
+   lowers Mochi streams; `enum` with associated values lowers sum types;
+   `struct` lowers records.
+2. **Build targets.** `mochi build --target=swift-macos`,
+   `--target=swift-linux`, `--target=swift-ios`. Correctness gate:
+   byte-equal stdout against vm3 on Swift 6.1+ (Xcode 16.3+) on
+   macOS arm64, Linux x86_64, and Linux arm64.
+3. **Agent lowering.** Mochi agents lower to Swift `actor` types with
+   async methods for each intent.
+4. **Stream lowering.** Mochi streams lower to `AsyncStream<T>`.
+5. **Type lowering.** Sum types to `enum` with associated values;
+   `match` to Swift `switch` with exhaustiveness; `fun` types to
+   `@escaping` closures.
+6. **Runtime library `Mochi.swift` (SwiftPM package).** Apache-2.0.
+   Thin layer over `Foundation.URLSession` (fetch), `Foundation.JSONDecoder`
+   (json_decode), and the Concurrency runtime (actors, AsyncStream,
+   TaskGroup).
+7. **LLM dispatch.** `generate` expressions via `Foundation.URLSession`
+   HTTP/2 to OpenAI and Anthropic, with cassette playback for CI.
 
-The 18-phase delivery plan for MEP-47 mirrors MEP-46's structure:
-hello-world → scalars → collections → records → sums → closures →
-queries → datalog → agents → streams → async → JDK FFI → LLM → fetch →
-uberjar → jlink/jpackage → GraalVM native-image → reproducibility.
+The 18-phase delivery plan mirrors prior transpilers:
+hello-world -> scalars -> collections -> records -> sums -> closures ->
+queries -> datalog -> actors -> streams -> async -> Swift FFI -> LLM ->
+fetch -> SwiftPM packaging -> macOS app bundle -> Static Linux SDK ->
+reproducibility.
 Each phase is gated against vm3.
 
 ## v1.0 (stable language)
@@ -197,10 +230,12 @@ ones).
 |-----|--------|-----------|--------|
 | [MEP-45](/docs/mep/mep-0045) | C / native binary | POSIX, static binaries | Done |
 | [MEP-46](/docs/mep/mep-0046) | BEAM / Erlang | OTP, Hex.pm, AtomVM | Done (v0.13.0) |
-| [MEP-47](/docs/mep/mep-0047) | JVM / Java | Maven Central, Loom, GraalVM | In progress (v0.14.0) |
-| [MEP-48](/docs/mep/mep-0048) | .NET / C# | NuGet, NativeAOT, MAUI | Planned |
-| [MEP-49](/docs/mep/mep-0049) | Swift | App Store, SwiftPM, Static Linux SDK | Planned |
+| [MEP-47](/docs/mep/mep-0047) | JVM / Java | Maven Central, Loom, GraalVM | Done (v0.14.0) |
+| [MEP-48](/docs/mep/mep-0048) | .NET / C# | NuGet, NativeAOT, Channel agents | Done (v0.15.0) |
+| [MEP-49](/docs/mep/mep-0049) | Swift | App Store, SwiftPM, Static Linux SDK | In progress (v0.16.0) |
 | [MEP-50](/docs/mep/mep-0050) | Kotlin Multiplatform | Android, Google Play, KMP | Planned |
+| [MEP-51](/docs/mep/mep-0051) | Python | PyPI, CPython extension, Cython | Planned |
+| [MEP-52](/docs/mep/mep-0052) | WebAssembly | WASI, Wasmtime, browser | Planned |
 
 ## Things we are deliberately not building
 
