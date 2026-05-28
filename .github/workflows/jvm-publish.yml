@@ -17,11 +17,24 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      - name: Check secrets configured
+        id: check
+        run: |
+          if [ -z "$GPG_PRIVATE_KEY" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::GPG_PRIVATE_KEY not configured; skipping publish"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
       - name: Import GPG key
+        if: steps.check.outputs.configured == 'true'
         run: echo "$GPG_PRIVATE_KEY" | gpg --batch --import
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
       - name: Publish to Maven Central
+        if: steps.check.outputs.configured == 'true'
         run: |
           mvn -f transpiler3/jvm/runtime/pom.xml \
             --no-transfer-progress \
