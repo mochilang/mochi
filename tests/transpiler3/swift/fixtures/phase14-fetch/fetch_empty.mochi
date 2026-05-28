@@ -1,0 +1,3 @@
+writeFile("/tmp/mochi_swift_fe.txt", "empty test")
+let r = fetch("file:///tmp/mochi_swift_fe.txt")
+print(r)

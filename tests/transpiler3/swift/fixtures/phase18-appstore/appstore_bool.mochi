@@ -1,0 +1,4 @@
+let flag = true
+if flag {
+    print("on")
+}

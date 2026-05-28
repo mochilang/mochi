@@ -1,0 +1,11 @@
+agent Latch {
+    var fired: bool = false
+    intent fire() { fired = true }
+    intent check(): bool { return fired }
+}
+let l = Latch { fired: false }
+print(l.check())
+l.fire()
+print(l.check())
+l.fire()
+print(l.check())
