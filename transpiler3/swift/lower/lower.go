@@ -1045,6 +1045,19 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (sxtree.Expr, error) {
 			return nil, err
 		}
 		return &sxtree.RawSwiftExpr{Code: fmt.Sprintf("mochiLines(%s)", path.SwiftExprString())}, nil
+	// --- Phase 13 LLM ---
+	case *aotir.LLMGenerateExpr:
+		model, err := l.lowerExpr(e.Model)
+		if err != nil {
+			return nil, err
+		}
+		prompt, err := l.lowerExpr(e.Prompt)
+		if err != nil {
+			return nil, err
+		}
+		return &sxtree.RawSwiftExpr{
+			Code: fmt.Sprintf("mochiLLMGenerate(%q, %s, %s)", e.Provider, model.SwiftExprString(), prompt.SwiftExprString()),
+		}, nil
 	default:
 		return nil, fmt.Errorf("swift/lower: unsupported expression %T", e)
 	}

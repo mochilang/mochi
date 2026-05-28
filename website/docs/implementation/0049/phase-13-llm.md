@@ -10,9 +10,9 @@ description: "MEP-49 Phase 13 — @llm annotation using Apple FoundationModels f
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-49 §Phases · Phase 13](/docs/mep/mep-0049#phase-13-llm) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 13:40 (GMT+7) |
+| Landed         | 2026-05-28 14:15 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
