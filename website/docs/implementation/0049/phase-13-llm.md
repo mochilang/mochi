@@ -1,11 +1,11 @@
 ---
-title: "Phase 13. LLM (FoundationModels on Apple)"
+title: "Phase 13. LLM (cassette playback)"
 sidebar_position: 17
 sidebar_label: "Phase 13. LLM"
-description: "MEP-49 Phase 13 — @llm annotation using Apple FoundationModels framework (on-device); cassette playback for deterministic tests; cloud fallback via URLSession."
+description: "MEP-49 Phase 13 — @llm lowering to mochiLLMGenerate; DJB2 XOR cassette lookup from MOCHI_LLM_CASSETTE_DIR; synchronous string return."
 ---
 
-# Phase 13. LLM (FoundationModels on Apple)
+# Phase 13. LLM (cassette playback)
 
 | Field          | Value |
 |----------------|-------|
@@ -18,158 +18,83 @@ description: "MEP-49 Phase 13 — @llm annotation using Apple FoundationModels f
 
 ## Gate
 
-`TestPhase13LLM`: 10 fixtures green on Swift 6.0 and 6.1, macOS arm64 only (FoundationModels requires Apple Neural Engine). Cassette playback mode for linux-x64 CI. `TestSwiftcClean` remains green.
+`TestPhase13LLM`: 5 fixtures green on Swift 6.0+, macOS 15, with cassette playback via `MOCHI_LLM_CASSETTE_DIR`. Gate builds each fixture, sets the cassette dir env var, runs the binary, and compares stdout to `.out`.
 
 ## Goal-alignment audit
 
-LLM integration is a first-class Mochi feature, not an afterthought via FFI. On Apple platforms (macOS 15+, iOS 18+), Apple's `FoundationModels` framework provides on-device LLM inference with no API key, no network latency, and no data leaving the device. Phase 13 ships the `@llm` annotation that routes to `FoundationModels` on Apple and to a cloud LLM via `URLSession` on Linux/Windows. Test determinism is achieved via cassette playback (pre-recorded responses).
+LLM calls are non-deterministic at runtime, so the gate uses pre-recorded cassette files (matching MEP-46 Phase 13 for the BEAM backend). The v1 implementation is synchronous: `mochiLLMGenerate` reads a `.txt` cassette file keyed by a DJB2 XOR hash of `provider + "\0" + model + "\0" + prompt`. This matches the BEAM backend's cassette format exactly. Apple `FoundationModels` on-device inference and cloud fallback are deferred.
 
 ## Sub-phases
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 13.0 | `@llm fun summarise(text: string): string` → `FoundationModels.LanguageModel.complete(prompt:)` on Apple | NOT STARTED | — |
-| 13.1 | Structured output: `@llm fun extract(text: string): Person` → `FoundationModels` with `Generable` protocol | NOT STARTED | — |
-| 13.2 | Cassette playback for deterministic CI: record LLM calls to `.cassette` files; replay in test | NOT STARTED | — |
-| 13.3 | Cloud fallback: `@llm(provider: cloud) fun foo()` → `URLSession` HTTP call to configured LLM API | NOT STARTED | — |
+| 13.0 | `LLMExpr` → `mochiLLMGenerate(provider, model, prompt)` | LANDED | mep/0049-phase-13 |
+| 13.1 | Cassette lookup: DJB2 XOR hash → `MOCHI_LLM_CASSETTE_DIR/<hash>.txt` | LANDED | mep/0049-phase-13 |
+| 13.2 | Apple `FoundationModels` on-device inference path | DEFERRED | — |
+| 13.3 | Cloud fallback via URLSession for non-Apple platforms | DEFERRED | — |
+| 13.4 | Structured output: `@Generable` protocol + `@Guide` annotations | DEFERRED | — |
 
-## Sub-phase 13.0 -- FoundationModels text generation
+## Sub-phase 13.0 -- LLM expression lowering
 
 ### Decisions made (13.0)
 
-**`FoundationModels` framework availability**: `import FoundationModels` (Apple SDK, macOS 15+, iOS 18+, Xcode 16+). The framework provides on-device Apple Intelligence inference. It is NOT available on Linux or Windows.
+**`LLMExpr`**: the aotir IR node for an LLM call, carrying `Provider`, `Model`, and `Prompt` fields.
 
-**Platform guard**: the lowerer wraps `FoundationModels` usage in `#if canImport(FoundationModels)` ... `#else` (cloud fallback). This compiles on all platforms.
-
-**`@llm fun summarise(text: string): string` lowering**:
+**Lowering**: the lowerer emits:
 
 ```swift
-// Generated:
-#if canImport(FoundationModels)
-import FoundationModels
-#endif
-
-public func summarise(_ text: String) async throws -> String {
-    #if canImport(FoundationModels)
-    let session = LanguageModelSession()
-    let response = try await session.respond(to: Prompt(text))
-    return response.content
-    #else
-    return try await __llmCloudFallback(prompt: text, model: "default")
-    #endif
-}
+mochiLLMGenerate("anthropic", model, prompt)
 ```
 
-**`LanguageModelSession`**: the primary entry point into FoundationModels. Sessions maintain conversation context. For stateless `@llm` functions, a new session is created per call. For stateful Mochi agents with LLM state, the session is stored in the actor's state.
+as a `RawSwiftExpr`. The provider string is embedded as a string literal; model and prompt are lowered expressions.
 
-**`async throws`**: all LLM calls are async (network or on-device inference is non-blocking) and can throw (model unavailable, token limit exceeded, content policy). The enclosing Mochi function must be coloured red (Phase 11).
+**Return type**: `String`. The function is synchronous; no `async`/`await` needed.
 
-**`FoundationModels` opacity**: Apple's FoundationModels API is intentionally opaque about which model it uses internally. The lowerer cannot predict output tokens, which is why cassette playback is essential for deterministic tests.
-
-## Sub-phase 13.1 -- Structured output
+## Sub-phase 13.1 -- Cassette lookup
 
 ### Decisions made (13.1)
 
-**`Generable` protocol**: FoundationModels supports structured output via the `@Generable` macro (Xcode 26 / Swift 6.1). A Swift struct annotated with `@Generable` can be used as the target type for structured generation.
+**Hash function**: DJB2 XOR variant: `h = (h &* 33) ^ UInt64(byte)`, initialised at `5381`, over the UTF-8 bytes of `provider + "\0" + model + "\0" + prompt`. This matches the BEAM backend's cassette hash exactly, so cassette files are portable between backends.
 
-**Mochi `@llm fun extract(text: string): Person`**: the return type is a Mochi record. The lowerer emits `@Generable` on the corresponding Swift struct and uses FoundationModels structured generation:
+**Cassette file path**: `$MOCHI_LLM_CASSETTE_DIR/<hash>.txt`. The file contains the raw LLM response text (no JSON envelope). The result is trimmed of trailing newlines before being returned.
 
-```swift
-// In Person.swift (augmented):
-@Generable
-@frozen
-public struct Person: Sendable, Hashable, Codable {
-    @Guide(description: "The person's full name")
-    public let name: String
-    @Guide(description: "Age in years")
-    public let age: Int64
-}
-
-// Generated function:
-public func extract(_ text: String) async throws -> Person {
-    #if canImport(FoundationModels)
-    let session = LanguageModelSession()
-    let response = try await session.respond(
-        to: Prompt(text),
-        generating: Person.self
-    )
-    return response.content
-    #else
-    return try await __llmStructuredCloudFallback(prompt: text, type: Person.self)
-    #endif
-}
-```
-
-**`@Guide` annotations**: Mochi record field doc-comments (`/// The person's full name`) are converted to `@Guide(description:)` annotations in the generated Swift. This guides the model's structured output.
-
-**Fallback JSON parsing**: on Linux (cloud fallback), structured output is requested as JSON from the cloud API and decoded via `Codable`.
-
-## Sub-phase 13.2 -- Cassette playback
-
-### Decisions made (13.2)
-
-**Cassette pattern**: same as the BEAM backend (MEP-46 Phase 13). Pre-recorded LLM responses are stored in `.cassette` JSON files alongside fixtures. In test mode, the lowerer injects a `MockLanguageModelSession` that replays recorded responses instead of calling FoundationModels.
-
-**`MockLanguageModelSession`**: in `MochiRuntime/Sources/MochiRuntime/LLM/Mock.swift`:
+**`mochiLLMGenerate` implementation**:
 
 ```swift
-#if DEBUG
-public final class MockLanguageModelSession {
-    private let cassette: [String: String]
-    public init(cassette: [String: String]) { self.cassette = cassette }
-    public func respond(to prompt: String) async -> String {
-        cassette[prompt] ?? "<<no cassette entry for: \(prompt)>>"
+public func mochiLLMGenerate(_ provider: String, _ model: String, _ prompt: String) -> String {
+    if let cassetteDir = ProcessInfo.processInfo.environment["MOCHI_LLM_CASSETTE_DIR"] {
+        let key = mochiDJB2Key(provider, model, prompt)
+        let path = "\(cassetteDir)/\(key).txt"
+        if let content = try? String(contentsOfFile: path, encoding: .utf8) {
+            return content.trimmingCharacters(in: .newlines)
+        }
+        fputs("mochi_llm: cassette not found: \(path)\n", stderr)
+        return ""
     }
-}
-#endif
-```
-
-**Test injection**: the generated code checks `ProcessInfo.processInfo.environment["MOCHI_LLM_CASSETTE"]`. If set, it loads the cassette file and uses `MockLanguageModelSession`. This allows CI (linux-x64) to run LLM tests without FoundationModels.
-
-**Cassette recording**: `MOCHI_LLM_RECORD=1` mode runs the real FoundationModels and writes responses to the cassette file. Recording only works on macOS arm64 with Apple Intelligence enabled.
-
-## Sub-phase 13.3 -- Cloud fallback
-
-### Decisions made (13.3)
-
-**`@llm(provider: cloud)` annotation**: forces cloud LLM even on Apple platforms (useful when the Mochi program needs a larger model than on-device Apple Intelligence provides).
-
-**Cloud provider**: Mochi ships a default cloud provider configuration via `MochiRuntime`. The API key is read from environment variable `MOCHI_LLM_API_KEY`. The default endpoint is configurable. No specific LLM provider is hard-coded (the interface is OpenAI-compatible).
-
-**`URLSession`-based HTTP call**:
-
-```swift
-public func __llmCloudFallback(prompt: String, model: String) async throws -> String {
-    var request = URLRequest(url: URL(string: ProcessInfo.processInfo.environment["MOCHI_LLM_ENDPOINT"]!)!)
-    request.httpMethod = "POST"
-    request.httpBody = try JSONEncoder().encode(["prompt": prompt, "model": model])
-    request.addValue("Bearer \(ProcessInfo.processInfo.environment["MOCHI_LLM_API_KEY"]!)", forHTTPHeaderField: "Authorization")
-    let (data, _) = try await URLSession.shared.data(for: request)
-    return try JSONDecoder().decode(LLMResponse.self, from: data).text
+    fputs("mochi_llm: MOCHI_LLM_CASSETTE_DIR not set\n", stderr)
+    return ""
 }
 ```
 
-**Streaming responses**: `@llm(stream: true) fun chat(msg: string): stream<string>` → `URLSession.bytes(for:)` async byte stream, split on SSE `data:` lines.
+**Fixture structure**: each LLM fixture is a subdirectory (not a flat `.mochi` file) containing `<name>.mochi`, `<name>.out`, and a `cassette/` subdirectory with `<hash>.txt` files.
 
 ## Files changed
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/swift/lower/llm.go` | `@llm` annotation lowering; `#if canImport(FoundationModels)` guard; `@Generable` emission |
-| `transpiler3/swift/lower/lower.go` | `@Guide` annotation from record field comments |
-| `transpiler3/swift/runtime/Sources/MochiRuntime/LLM/FoundationModels.swift` | `LanguageModelSession` wrapper; cloud fallback |
-| `transpiler3/swift/runtime/Sources/MochiRuntime/LLM/Mock.swift` | `MockLanguageModelSession`; cassette loader |
-| `transpiler3/swift/build/phase13_test.go` | `TestPhase13LLM`: 10 fixtures with cassette playback |
-| `tests/transpiler3/swift/fixtures/phase13-llm/` | 10 fixture directories with `.cassette` files |
+| `transpiler3/swift/lower/lower.go` | `LLMExpr` lowering to `mochiLLMGenerate(provider, model, prompt)` |
+| `transpiler3/swift/runtime/Sources/MochiRuntime/LLM.swift` | `mochiLLMGenerate`, `mochiDJB2Key` |
+| `transpiler3/swift/build/phase13_test.go` | `TestPhase13LLM`: 5 fixtures with cassette playback |
+| `tests/transpiler3/swift/fixtures/phase13-llm/` | 5 fixture subdirectories (each with `cassette/` dir) |
 
 ## Test set
 
-- `TestPhase13LLM` -- 10 fixtures (all with cassette playback, runnable on linux-x64 CI): `llm_summarise`, `llm_classify`, `llm_extract_person`, `llm_extract_list`, `llm_translate`, `llm_code_gen`, `llm_streaming`, `llm_cloud_fallback`, `llm_structured_output`, `llm_error_handling`.
+- `TestPhase13LLM` -- 5 fixtures: `generate_anthropic`, `generate_concat`, `generate_in_var`, `generate_multiple`, `generate_text`.
 
 ## Deferred work
 
-- FoundationModels conversation history (multi-turn chat). Deferred to Phase 13.1.
-- FoundationModels tool use (function calling). Deferred to Phase 13.2.
-- Whisper-based speech-to-text (separate `SpeechAnalyzer` API). Deferred to Phase 13.3.
-- Embeddings API. Out of v1 scope.
-- Local Ollama / LLaMA.cpp integration for Linux. Deferred to Phase 12 (FFI).
+- Apple `FoundationModels` on-device inference (`LanguageModelSession`, `#if canImport(FoundationModels)`). Deferred to Phase 13.2.
+- Cloud fallback via `URLSession` for Linux/Windows. Deferred to Phase 13.3.
+- Structured output: `@Generable` macro + `@Guide` field annotations. Deferred to Phase 13.4.
+- Streaming LLM responses (`@llm(stream: true)`). Deferred.
+- Multi-turn conversation history. Deferred.

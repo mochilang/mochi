@@ -1,11 +1,11 @@
 ---
-title: "Phase 11. Async colouring and typed throws"
+title: "Phase 11. Async colouring"
 sidebar_position: 15
-sidebar_label: "Phase 11. Async / typed throws"
-description: "MEP-49 Phase 11 — async colour pass adds async/await throughout the call graph; SE-0413 typed throws fun foo(): T throws E → func foo() throws(E) -> T."
+sidebar_label: "Phase 11. Async"
+description: "MEP-49 Phase 11 — async colour pass propagates async/await through the call graph; AsyncExpr → Task{...}; AwaitExpr → await fut.value; __await_all__ → mochiAwaitAll."
 ---
 
-# Phase 11. Async colouring and typed throws
+# Phase 11. Async colouring
 
 | Field          | Value |
 |----------------|-------|
@@ -18,133 +18,95 @@ description: "MEP-49 Phase 11 — async colour pass adds async/await throughout 
 
 ## Gate
 
-`TestPhase11Async`: 15 fixtures green on Swift 6.0 and 6.1, linux-x64. `TestSwiftcClean` remains green.
+`TestPhase11Async`: 7 fixtures green on Swift 6.0+, macOS 15. Gate builds each fixture and compares stdout to `.expected`.
 
 ## Goal-alignment audit
 
-Swift's strict concurrency model requires every async call to be explicitly `await`ed, and every function that calls an async function must itself be `async`. This "colour" propagation must be done globally over the Mochi program's call graph before code generation. Phase 11 ships the colour pass and typed-throws lowering, which unblocks all async features (agent calls, stream consumption, fetch, LLM) from being usable in arbitrary function positions.
+Swift's strict concurrency model requires every async call to be explicitly `await`ed, and every function that calls an async function must itself be `async`. Phase 11 ships the colour pass that propagates async upward through the call graph, plus lowering for `AsyncExpr`, `AwaitExpr`, and the `__await_all__` built-in.
 
 ## Sub-phases
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 11.0 | Async colour pass over `aotir.Program`: propagate `async` upward through the call graph | LANDED | mep/0049-phase-11 |
-| 11.1 | `async func` emission; `await` at every async call site; `async let` for concurrent bindings | LANDED | mep/0049-phase-11 |
-| 11.2 | SE-0413 typed throws: `fun foo(): T throws E` → `func foo() throws(E) -> T` | DEFERRED | — |
-| 11.3 | `result<T,E>` / `throws(E)` interconversion bridge: `Result.get()`, `Result(catching:)` | DEFERRED | — |
+| 11.0 | Async colour pass over `aotir.Program`: propagate `async` upward through call graph | LANDED | mep/0049-phase-11 |
+| 11.1 | `AsyncExpr` → `Task<T, Never> { body }`; `AwaitExpr` → `await fut.value` | LANDED | mep/0049-phase-11 |
+| 11.2 | `__await_all__(list)` → `mochiAwaitAll(list)` | LANDED | mep/0049-phase-11 |
+| 11.3 | SE-0413 typed throws; `Result`/`throws` bridge | DEFERRED | — |
 | 11.4 | `try await` at combined async-throwing call sites | DEFERRED | — |
 
 ## Sub-phase 11.0 -- Async colour pass
 
 ### Decisions made (11.0)
 
-**Colour analysis**: a function is "red" (async) if it contains any of:
-- An `await agent_call` expression.
-- A `for await` loop over a stream.
-- A `try await` expression (async throws).
-- Any call to another red function.
-- An `async let` binding.
+**`ColourMap`**: a `map[string]Colour` in `transpiler3/swift/colour/colour.go`. `Colour` is an int (`Blue = 0` = synchronous, `Red = 1` = async).
 
-The colour pass performs a topological traversal of the `aotir` call graph, marking functions red bottom-up. The pass runs after `aotir.Lower` and before `lower.Lower`.
+**Seeding**: a function is initially Red if its body contains any `AsyncExpr` or `AwaitExpr` AST node (detected via recursive walk of `aotir.Stmt`/`aotir.Expr`).
 
-**`ColourMap`**: a `map[FunctionID]bool` stored in the lowerer context. The lowerer checks `ColourMap[fnID]` when emitting a function declaration or call.
+**Propagation**: after seeding, the pass iterates to fixpoint: if function A calls function B and B is Red, A becomes Red. This ensures `async` propagates up the entire call chain.
 
-**`main` is always red if any top-level code is async**: if `main` contains any red call (including spawning agents), the lowerer emits `@main struct { static func main() async { ... } }`.
+**`main` is Red if any function is Red**: when the colour pass marks `main` as Red (because it directly or transitively calls an async function), the lowerer emits:
 
-**`Task { }` wrapping**: synchronous callers of red functions cannot call them directly in Swift 6. The lowerer detects this pattern (a "blue" function that logically should call a red function) and wraps the call in `Task { await f() }`. For agent casts (fire-and-forget), `Task.detached { await ... }` is used if the context is synchronous.
+```swift
+@main
+struct MochiOut {
+    static func main() async {
+        // ...
+    }
+}
+```
 
-## Sub-phase 11.1 -- async func emission
+## Sub-phase 11.1 -- AsyncExpr and AwaitExpr lowering
 
 ### Decisions made (11.1)
 
-**`async func` keyword**: functions marked red in `ColourMap` → `func name(...) async -> T`. The `async` keyword is placed before `->`.
-
-**`await` at call sites**: every call to a red function from another red function → `await f(args)`. The sxtree `FunctionCallExpr` node has an `IsAsync bool` field; the emitter adds `await ` prefix when true.
-
-**`async let` for concurrent bindings**: Mochi `let (x, y) = concurrent { (f(), g()) }` (parallel bindings) → Swift `async let`:
+**`AsyncExpr` → `Task<T, Never>`**: a Mochi `async { expr }` becomes a Swift unstructured task:
 
 ```swift
-async let x = f()
-async let y = g()
-let (xVal, yVal) = await (x, y)
-```
-
-`async let` starts both tasks concurrently; the `await` at the tuple collects both results.
-
-**`withTaskGroup` for dynamic concurrency**: Mochi `let results = parallel { xs.map(f) }` (parallel map over a list where `f` is async) → Swift:
-
-```swift
-let results: [U] = await withTaskGroup(of: U.self) { group in
-    for x in xs {
-        group.addTask { await f(x) }
-    }
-    var out: [U] = []
-    for await r in group { out.append(r) }
-    return out
+Task<Int64, Never> {
+    return expr
 }
 ```
 
-## Sub-phase 11.2 -- Typed throws (SE-0413)
+The return type is inferred from the `AsyncExpr.Type` field in the aotir IR.
+
+**`AwaitExpr` → `await fut.value`**: a Mochi `await futureVar` becomes:
+
+```swift
+await futureVar.value
+```
+
+`Task.value` is the async property that suspends until the task completes and returns its result.
+
+**`async func` keyword on FuncDecl**: functions marked Red in `ColourMap` get `IsAsync: true` on their `sxtree.FuncDecl` node. The `FuncDecl.SwiftString` emitter adds `async` before `->` in the signature.
+
+## Sub-phase 11.2 -- mochiAwaitAll
 
 ### Decisions made (11.2)
 
-**SE-0413** (Swift 6.0): `func foo() throws(E) -> T` where `E: Error`. Previously, Swift only supported untyped `throws` (which erases the error type to `any Error`). With typed throws, the error type is statically known.
+**`__await_all__(list)` built-in**: Mochi parallel-await of a list of tasks is lowered by the call-expression handler: when `e.Func == "__await_all__"`, emit `mochiAwaitAll(arg)`.
 
-**Mochi `fun foo(): T throws E` mapping**:
-
-```swift
-// Mochi: fun parse(s: string): int throws ParseError
-public func parse(_ s: String) throws(ParseError) -> Int64 {
-    // ...
-}
-```
-
-**Untyped throws bridge**: when Mochi code calls a Swift FFI function that uses untyped `throws`, the lowerer wraps it in a `do { ... } catch { throw MochiError.wrap(error) }` to convert to a typed throw. `MochiError` is a catch-all error type in MochiRuntime.
-
-**Re-throw**: `fun foo(): T throws E` that calls `bar(): U throws E` can re-throw directly. Functions that call multiple throwing functions with different error types must use `throws` (untyped) or a union error type.
-
-**`rethrows`**: Mochi HOFs like `list.map_throwing(f)` where `f` is a throwing closure → `func mapThrowing<E>(_ f: (T) throws(E) -> U) throws(E) -> [U]`. The Swift compiler handles `rethrows` for this pattern.
-
-## Sub-phase 11.3 -- Result / throws bridge
-
-### Decisions made (11.3)
-
-**`Result.get()` → throws**: `res.get()` in Mochi → `try res.get()` in Swift. Swift's `Result<T,E>.get()` throws the failure value when the result is `.failure`.
-
-**`Result(catching:)`**: Mochi `result_of { f() }` → `Result { try f() }`. Wraps a throwing call in a `Result`.
-
-**Async result**: `async_result_of { await f() }` → `await Result { try await f() }`. Both `async` and `throws` at the same call site.
-
-**`flatMap` bridge**: `res.flat_map(f)` where `f` returns `result<U,E>` → `res.flatMap(f)`. Swift's `Result.flatMap` handles this.
-
-## Sub-phase 11.4 -- try await
-
-### Decisions made (11.4)
-
-**Combined async + throws call sites**: agent calls that can throw (e.g., `call(agent, fetch_data)` where `fetch_data` throws a network error) → `try await agent.fetchData()`.
-
-**Error propagation**: in a `func foo() async throws(NetworkError)`, a `try await agent.fetchData()` that throws `NetworkError` propagates the error automatically. No explicit re-throw needed.
-
-**`for try await`**: a stream that can throw (e.g., a network stream that terminates with an error) → `for try await x in stream { ... }`. The loop is wrapped in `do { ... } catch { }`.
+**`mochiAwaitAll<T: Sendable>([Task<T, Never>]) async -> [T]`**: defined in `Async.swift`. Iterates the task list sequentially with `await task.value`, collecting results. Sequential rather than concurrent collection is correct because the tasks are already running; this just harvests results in order.
 
 ## Files changed
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/swift/colour/colour.go` | `ColourPass`: propagates async colour upward through call graph |
-| `transpiler3/swift/lower/lower.go` | Checks `ColourMap`; emits `async func`, `await`, `async let`, typed throws |
-| `transpiler3/swift/lower/throws.go` | Typed throws emission; `Result`/`throws` bridge; `rethrows` analysis |
-| `transpiler3/swift/runtime/Sources/MochiRuntime/Error.swift` | `MochiError` catch-all; `withTimeout`; error wrapping |
-| `transpiler3/swift/build/phase11_test.go` | `TestPhase11Async`: 15 fixtures |
-| `tests/transpiler3/swift/fixtures/phase11-async/` | 15 fixture directories |
+| `transpiler3/swift/colour/colour.go` | `Analyse(prog)`: seeds AsyncExpr/AwaitExpr, propagates Red upward to fixpoint |
+| `transpiler3/swift/lower/lower.go` | Checks `ColourMap`; emits `async func`; lowers `AsyncExpr`, `AwaitExpr`, `__await_all__` |
+| `transpiler3/swift/sxtree/nodes.go` | `IsAsync bool` field on `FuncDecl` |
+| `transpiler3/swift/runtime/Sources/MochiRuntime/Async.swift` | `mochiAwaitAll<T: Sendable>([Task<T, Never>]) async -> [T]` |
+| `transpiler3/swift/build/phase11_test.go` | `TestPhase11Async`: 7 fixtures |
+| `tests/transpiler3/swift/fixtures/phase11-async/` | 7 fixture directories |
 
 ## Test set
 
-- `TestPhase11Async` -- 15 fixtures covering: `async_basic`, `async_chain`, `async_agent_call`, `async_stream_for_await`, `async_let_parallel`, `async_task_group`, `throws_basic`, `throws_propagate`, `throws_typed`, `throws_result_bridge`, `try_await_basic`, `try_await_agent`, `async_throws_rethrow`, `async_throws_for_try_await`, `async_colour_propagation`.
+- `TestPhase11Async` -- 7 fixtures: `async_all`, `async_basic`, `async_bool`, `async_chain`, `async_string`, `async_sum`, `async_two`.
 
 ## Deferred work
 
-- `async throws` functions with multiple error types (requires error union or untyped throws). Deferred to a Phase 11 extension.
-- Swift Concurrency structured task tree visualization. Out of scope.
-- Deadlock detection in the colour pass (cycle detection in the async call graph). Deferred.
-- `@discardableResult` for fire-and-forget async functions. Deferred to a linting pass.
+- SE-0413 typed throws: `fun foo(): T throws E` → `func foo() throws(E) -> T`. Deferred to Phase 11.3.
+- `Result`/`throws` bridge: `Result.get()`, `Result(catching:)`. Deferred.
+- `try await` at combined async-throwing call sites. Deferred to Phase 11.4.
+- `async let` for concurrent bindings. Deferred.
+- `withTaskGroup` for dynamic parallel maps. Deferred.
+- Deadlock detection in the colour pass (cycle detection). Deferred.
