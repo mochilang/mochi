@@ -54,8 +54,15 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, className string) (*sx
 		members = append(members, fd)
 	}
 
-	// Top-level type declarations: enums first, then structs, then the main struct.
+	// Top-level type declarations: agent classes first, then enums, then structs, then the main struct.
 	var topDecls []sxtree.Decl
+	for _, ag := range prog.Agents {
+		cd, err := l.lowerAgentDecl(ag)
+		if err != nil {
+			return nil, err
+		}
+		topDecls = append(topDecls, cd)
+	}
 	for _, ud := range prog.Unions {
 		topDecls = append(topDecls, lowerUnionDecl(ud))
 	}
@@ -464,6 +471,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (sxtree.Stmt, error) {
 		return l.lowerMatchStmt(s)
 	case *aotir.QueryScopeStmt:
 		return l.lowerQueryScopeStmt(s)
+	case *aotir.AgentIntentCallStmt:
+		return l.lowerAgentIntentCallStmt(s)
 	default:
 		return nil, fmt.Errorf("swift/lower: unsupported statement %T", s)
 	}
@@ -545,6 +554,8 @@ func lowerLetTypeName(s *aotir.LetStmt) string {
 		return "Set<" + swiftScalarType(s.ElemType) + ">"
 	case aotir.TypeFun:
 		return swiftFunType(s.FunSig)
+	case aotir.TypeAgent:
+		return s.AgentName
 	default:
 		return ""
 	}
@@ -882,6 +893,11 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (sxtree.Expr, error) {
 		return l.lowerListSliceExpr(e)
 	case *aotir.DatalogQueryExpr:
 		return l.lowerDatalogQueryExpr(e)
+	// --- Phase 9 agents ---
+	case *aotir.AgentLit:
+		return l.lowerAgentLit(e)
+	case *aotir.AgentIntentCallExpr:
+		return l.lowerAgentIntentCallExpr(e)
 	// --- math builtins ---
 	case *aotir.MathCallExpr:
 		return l.lowerMathCallExpr(e)
@@ -1554,6 +1570,252 @@ func dlCopyEnv(env map[string]string) map[string]string {
 	cp := make(map[string]string, len(env))
 	maps.Copy(cp, env)
 	return cp
+}
+
+// --- Phase 9 agent lowering ---
+
+// rewriteAgentSelfRefs rewrites "__self->field" VarRef/AssignStmt names to bare
+// field names so that intent bodies work as Swift class methods (implicit self).
+func rewriteAgentSelfRefs(b *aotir.Block, fields []aotir.RecordField) *aotir.Block {
+	if b == nil {
+		return nil
+	}
+	// Build rename map: "__self->field" -> "field"
+	renames := make(map[string]string, len(fields))
+	for _, f := range fields {
+		renames["__self->"+f.Name] = f.Name
+	}
+	stmts := make([]aotir.Stmt, len(b.Statements))
+	for i, s := range b.Statements {
+		stmts[i] = rewriteAgentStmt(s, renames)
+	}
+	return &aotir.Block{Statements: stmts}
+}
+
+func rewriteAgentStmt(s aotir.Stmt, renames map[string]string) aotir.Stmt {
+	switch s := s.(type) {
+	case *aotir.ReturnStmt:
+		if s.Value == nil {
+			return s
+		}
+		return &aotir.ReturnStmt{Value: rewriteAgentExpr(s.Value, renames)}
+	case *aotir.LetStmt:
+		cp := *s
+		if s.Init != nil {
+			cp.Init = rewriteAgentExpr(s.Init, renames)
+		}
+		return &cp
+	case *aotir.AssignStmt:
+		cp := *s
+		if newName, ok := renames[s.Name]; ok {
+			cp.Name = newName
+		}
+		cp.Value = rewriteAgentExpr(s.Value, renames)
+		return &cp
+	case *aotir.CallStmt:
+		args := make([]aotir.Expr, len(s.Args))
+		for i, a := range s.Args {
+			args[i] = rewriteAgentExpr(a, renames)
+		}
+		cp := *s
+		cp.Args = args
+		return &cp
+	case *aotir.AgentIntentCallStmt:
+		recv := rewriteAgentExpr(s.Receiver, renames)
+		args := make([]aotir.Expr, len(s.Args))
+		for i, a := range s.Args {
+			args[i] = rewriteAgentExpr(a, renames)
+		}
+		cp := *s
+		cp.Receiver = recv
+		cp.Args = args
+		return &cp
+	case *aotir.IfStmt:
+		cp := *s
+		cp.Cond = rewriteAgentExpr(s.Cond, renames)
+		cp.Then = rewriteAgentBlock(s.Then, renames)
+		if s.Else != nil {
+			cp.Else = rewriteAgentBlock(s.Else, renames)
+		}
+		return &cp
+	case *aotir.WhileStmt:
+		cp := *s
+		cp.Cond = rewriteAgentExpr(s.Cond, renames)
+		cp.Body = rewriteAgentBlock(s.Body, renames)
+		return &cp
+	default:
+		return s
+	}
+}
+
+func rewriteAgentBlock(b *aotir.Block, renames map[string]string) *aotir.Block {
+	if b == nil {
+		return nil
+	}
+	stmts := make([]aotir.Stmt, len(b.Statements))
+	for i, s := range b.Statements {
+		stmts[i] = rewriteAgentStmt(s, renames)
+	}
+	return &aotir.Block{Statements: stmts}
+}
+
+func rewriteAgentExpr(e aotir.Expr, renames map[string]string) aotir.Expr {
+	if e == nil {
+		return nil
+	}
+	switch e := e.(type) {
+	case *aotir.VarRef:
+		if newName, ok := renames[e.Name]; ok {
+			cp := *e
+			cp.Name = newName
+			return &cp
+		}
+		return e
+	case *aotir.UnionVarRef:
+		if newName, ok := renames[e.Name]; ok {
+			cp := *e
+			cp.Name = newName
+			return &cp
+		}
+		return e
+	case *aotir.BinaryExpr:
+		cp := *e
+		cp.Left = rewriteAgentExpr(e.Left, renames)
+		cp.Right = rewriteAgentExpr(e.Right, renames)
+		return &cp
+	case *aotir.UnaryExpr:
+		cp := *e
+		cp.Operand = rewriteAgentExpr(e.Operand, renames)
+		return &cp
+	case *aotir.AgentIntentCallExpr:
+		cp := *e
+		cp.Receiver = rewriteAgentExpr(e.Receiver, renames)
+		args := make([]aotir.Expr, len(e.Args))
+		for i, a := range e.Args {
+			args[i] = rewriteAgentExpr(a, renames)
+		}
+		cp.Args = args
+		return &cp
+	default:
+		return e
+	}
+}
+
+// lowerAgentDecl converts an AgentDecl to a Swift final class.
+func (l *lowerer) lowerAgentDecl(ag *aotir.AgentDecl) (*sxtree.ClassDecl, error) {
+	// Build properties.
+	props := make([]sxtree.ClassProp, len(ag.Fields))
+	for i, f := range ag.Fields {
+		props[i] = sxtree.ClassProp{
+			Name:     f.Name,
+			TypeName: lowerFieldTypeName(f),
+		}
+	}
+
+	// Build init params.
+	initParams := make([]sxtree.FuncParam, len(ag.Fields))
+	for i, f := range ag.Fields {
+		initParams[i] = sxtree.FuncParam{
+			Name:     f.Name,
+			TypeName: lowerFieldTypeName(f),
+		}
+	}
+
+	// Build methods from intents.
+	methods := make([]sxtree.FuncDecl, len(ag.Intents))
+	for i, intent := range ag.Intents {
+		// Rewrite "__self->field" references to bare field names for Swift.
+		cleanBody := rewriteAgentSelfRefs(intent.Body, ag.Fields)
+		body, err := l.lowerBlock(cleanBody)
+		if err != nil {
+			return nil, fmt.Errorf("swift/lower: agent %s intent %s: %w", ag.Name, intent.Name, err)
+		}
+
+		params := make([]sxtree.FuncParam, len(intent.Params))
+		for j, p := range intent.Params {
+			params[j] = sxtree.FuncParam{
+				Label:    "_",
+				Name:     p.Name,
+				TypeName: swiftScalarType(p.Type),
+			}
+		}
+
+		retType := ""
+		if intent.ReturnType != aotir.TypeUnit && intent.ReturnType != aotir.TypeInvalid {
+			retType = swiftScalarType(intent.ReturnType)
+		}
+
+		methods[i] = sxtree.FuncDecl{
+			Modifiers:  []string{"public"},
+			Name:       intent.Name,
+			Params:     params,
+			ReturnType: retType,
+			Body:       body,
+		}
+	}
+
+	return &sxtree.ClassDecl{
+		Name:    ag.Name,
+		Props:   props,
+		Inits:   initParams,
+		Methods: methods,
+	}, nil
+}
+
+// lowerAgentLit lowers AgentLit to ClassName(field1: val1, ...).
+func (l *lowerer) lowerAgentLit(e *aotir.AgentLit) (sxtree.Expr, error) {
+	labeledArgs := make([]string, len(e.Fields))
+	for i, f := range e.Fields {
+		v, err := l.lowerExpr(f.Value)
+		if err != nil {
+			return nil, err
+		}
+		labeledArgs[i] = f.Name + ": " + v.SwiftExprString()
+	}
+	return &sxtree.RawSwiftExpr{
+		Code: e.AgentName + "(" + strings.Join(labeledArgs, ", ") + ")",
+	}, nil
+}
+
+// lowerAgentIntentCallExpr lowers a value-returning intent call: receiver.method(args...).
+func (l *lowerer) lowerAgentIntentCallExpr(e *aotir.AgentIntentCallExpr) (sxtree.Expr, error) {
+	if e.SpawnedRef {
+		return nil, fmt.Errorf("swift/lower: spawn not yet supported in Swift")
+	}
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	args := make([]sxtree.Expr, len(e.Args))
+	for i, a := range e.Args {
+		ae, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, err
+		}
+		args[i] = ae
+	}
+	return &sxtree.MethodCallExpr{Receiver: recv, Method: e.IntentName, Args: args}, nil
+}
+
+// lowerAgentIntentCallStmt lowers a void intent call as a statement.
+func (l *lowerer) lowerAgentIntentCallStmt(s *aotir.AgentIntentCallStmt) (sxtree.Stmt, error) {
+	if s.SpawnedRef {
+		return nil, fmt.Errorf("swift/lower: spawn not yet supported in Swift")
+	}
+	recv, err := l.lowerExpr(s.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	args := make([]sxtree.Expr, len(s.Args))
+	for i, a := range s.Args {
+		ae, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, err
+		}
+		args[i] = ae
+	}
+	call := &sxtree.MethodCallExpr{Receiver: recv, Method: s.IntentName, Args: args}
+	return &sxtree.ExprStmt{X: call}, nil
 }
 
 // --- Math and string builtins ---

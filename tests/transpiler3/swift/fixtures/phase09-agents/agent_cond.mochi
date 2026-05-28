@@ -1,0 +1,12 @@
+agent Threshold {
+    var limit: int = 10
+    intent check(v: int): bool {
+        if v > limit {
+            return true
+        }
+        return false
+    }
+}
+let t = Threshold { limit: 10 }
+print(t.check(5))
+print(t.check(15))

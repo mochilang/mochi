@@ -764,6 +764,66 @@ func (s *SwitchStmt) SwiftString(ind int) string {
 	return sb.String()
 }
 
+// ---- ClassDecl ----
+
+// ClassProp is one stored property of a ClassDecl.
+type ClassProp struct {
+	Name     string
+	TypeName string
+}
+
+// ClassDecl is a Swift final class declaration for Mochi agents.
+// It is rendered as `public final class Name { ... }`.
+type ClassDecl struct {
+	Name    string
+	Props   []ClassProp  // public var properties
+	Inits   []FuncParam  // init parameters (name + type + default via Init field)
+	Inits2  []string     // default values as Swift expressions, parallel to Inits
+	Methods []FuncDecl   // public func methods
+}
+
+func (*ClassDecl) swiftDecl() {}
+
+func (c *ClassDecl) SwiftString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%spublic final class %s {\n", pad, c.Name)
+
+	// Properties.
+	for _, p := range c.Props {
+		fmt.Fprintf(&sb, "%s    public var %s: %s\n", pad, p.Name, p.TypeName)
+	}
+
+	// Initialiser.
+	sb.WriteString("\n")
+	sb.WriteString(pad + "    public init(")
+	for i, p := range c.Inits {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		if c.Inits2 != nil && i < len(c.Inits2) && c.Inits2[i] != "" {
+			fmt.Fprintf(&sb, "%s: %s = %s", p.Name, p.TypeName, c.Inits2[i])
+		} else {
+			fmt.Fprintf(&sb, "%s: %s", p.Name, p.TypeName)
+		}
+	}
+	sb.WriteString(") {\n")
+	for _, p := range c.Inits {
+		fmt.Fprintf(&sb, "%s        self.%s = %s\n", pad, p.Name, p.Name)
+	}
+	sb.WriteString(pad + "    }\n")
+
+	// Methods.
+	for _, m := range c.Methods {
+		sb.WriteString("\n")
+		sb.WriteString(m.SwiftString(ind + 1))
+		sb.WriteString("\n")
+	}
+
+	sb.WriteString(pad + "}")
+	return sb.String()
+}
+
 // ---- IndexSetStmt ----
 
 // IndexSetStmt is an indexed assignment: receiver[index] = value.
