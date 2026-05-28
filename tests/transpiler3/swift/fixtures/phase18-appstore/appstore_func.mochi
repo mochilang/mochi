@@ -1,0 +1,2 @@
+fun greet(name: string): string { return "Hello, " + name }
+print(greet("App Store"))

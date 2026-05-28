@@ -1,0 +1,5 @@
+type Msg {
+  text: string
+}
+let m = Msg { text: "app store" }
+print(m.text)
