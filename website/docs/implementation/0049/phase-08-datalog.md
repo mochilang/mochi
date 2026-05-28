@@ -10,9 +10,9 @@ description: "MEP-49 Phase 8 — fact/rule/query lowering to MochiRuntime.Datalo
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-49 §Phases · Phase 8](/docs/mep/mep-0049#phase-8-datalog) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 13:40 (GMT+7) |
+| Landed         | 2026-05-28 13:40 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 

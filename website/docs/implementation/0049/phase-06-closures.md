@@ -10,9 +10,9 @@ description: "MEP-49 Phase 6 — fun(...)=>expr to Swift closures; @escaping, @S
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-49 §Phases · Phase 6](/docs/mep/mep-0049#phase-6-closures) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 13:40 (GMT+7) |
+| Landed         | 2026-05-28 13:40 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 

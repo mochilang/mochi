@@ -1,0 +1,8 @@
+fact parent("tom", "bob")
+fact parent("tom", "liz")
+fact parent("bob", "ann")
+rule sibling(X, Y) :- parent(Z, X), parent(Z, Y)
+let ss = query sibling("bob", Y)
+for s in ss {
+    print(s)
+}

@@ -1,0 +1,8 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let a = Pt { x: 1, y: 2 }
+let b = Pt { x: 1, y: 2 }
+print(a == b)

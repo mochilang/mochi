@@ -1,0 +1,11 @@
+type Color = Red | Green | Blue
+
+let c: Color = Blue
+
+let val = match c {
+  Red => 0
+  Green => 1
+  Blue => 2
+}
+
+print(val)

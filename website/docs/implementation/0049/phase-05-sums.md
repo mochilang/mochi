@@ -10,9 +10,9 @@ description: "MEP-49 Phase 5 — Mochi union types to Swift enum with associated
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-49 §Phases · Phase 5](/docs/mep/mep-0049#phase-5-sum-types) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 13:40 (GMT+7) |
+| Landed         | 2026-05-28 13:40 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 

@@ -10,9 +10,9 @@ description: "MEP-49 Phase 3.3 — set<T> to OrderedSet (swift-collections); uni
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-49 §Phases · Phase 3.3](/docs/mep/mep-0049#phase-3-collections) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 13:40 (GMT+7) |
+| Landed         | 2026-05-28 13:40 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
