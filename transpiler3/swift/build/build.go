@@ -161,9 +161,13 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 		buildArgs = append(buildArgs, "--swift-sdk", triple)
 	}
 	if d.Deterministic || os.Getenv("MOCHI_DETERMINISTIC") == "1" {
-		// -gnone strips DWARF debug sections whose absolute source paths
-		// differ between build directories and break SHA-256 equality.
-		buildArgs = append(buildArgs, "-Xswiftc", "-gnone")
+		// -gnone removes DWARF. -file-prefix-map remaps the random workDir
+		// path in Swift reflection metadata to a canonical placeholder so
+		// two builds from different temp dirs produce bit-identical binaries.
+		buildArgs = append(buildArgs,
+			"-Xswiftc", "-gnone",
+			"-Xswiftc", "-file-prefix-map", "-Xswiftc", workDir+"=/_mochi_build_",
+		)
 	}
 	buildCmd := exec.Command(d.swiftPath, buildArgs...)
 	buildCmd.Dir = workDir
