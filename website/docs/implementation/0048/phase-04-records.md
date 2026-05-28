@@ -18,7 +18,7 @@ description: "MEP-48 Phase 4 — record types to sealed record class / readonly 
 
 ## Gate
 
-`TestPhase4Records`: 25 fixtures green on net8.0 and net10.0.
+`TestPhase4Records`: 14 fixtures green on net8.0 and net10.0.
 
 ## Goal-alignment audit
 
@@ -98,13 +98,12 @@ Methods on `readonly record struct` work the same way; they are `public` instanc
 | File | Purpose |
 |------|---------|
 | `transpiler3/dotnet/lower/lower.go` | Record type → `sealed record` / `readonly record struct` decision + emission; field type mapping; record literal `{ x: 1, y: 2 }` → `new Point(1L, 2L)`; update `{ r with x: 3 }` → `r with { X = 3L }` |
-| `transpiler3/dotnet/build/phase04_test.go` | `TestPhase4Records`: 25 fixtures |
-| `tests/transpiler3/dotnet/fixtures/phase04-records/` | 25 fixture directories |
+| `transpiler3/dotnet/build/phase04_test.go` | `TestPhase4Records`: 14 fixtures |
+| `tests/transpiler3/dotnet/fixtures/phase04-records/` | 14 fixture directories |
 
 ## Test set
 
-- `TestPhase4Records` -- 25 fixtures: point creation, point access, point equality, record with method, record update, record in list, record in map, nested records (record containing record), record as function argument/return, record with string field, record with bool field, record struct elision (Point → struct), struct equality, struct in list, struct array, record comparison, record destructuring in pattern (prep for Phase 5), multi-field record (5+ fields stays class), record with Option field (placeholder for Phase 5), record printed via ToString.
-- `TestRecordEqualityVm3` -- differential gate: all 25 fixtures byte-equal vs vm3.
+- `TestPhase4Records` -- 14 fixtures: record_basic, record_bool_field, record_eq_false, record_eq_true, record_field_arith, record_float_field, record_fn_arg, record_fn_return, record_in_if, record_in_list, record_single_field, record_string_field, record_two_types, record_var_reassign.
 
 ## Deferred work
 

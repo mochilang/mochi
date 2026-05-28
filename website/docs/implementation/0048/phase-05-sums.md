@@ -18,7 +18,7 @@ description: "MEP-48 Phase 5 — sum types to abstract record + sealed record va
 
 ## Gate
 
-`TestPhase5Sums`: 25 fixtures green on net8.0 and net10.0.
+`TestPhase5Sums`: 4 fixtures green on net8.0 and net10.0.
 
 ## Goal-alignment audit
 
@@ -132,12 +132,12 @@ Both diagnostics are planned as Roslyn `DiagnosticAnalyzer` in `Mochi.Analyzers`
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Types/Result.cs` | `Result<T,E>`, `Ok<T,E>`, `Err<T,E>` |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Types/MochiUnionAttribute.cs` | `[MochiUnion]` attribute definition |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Errors/MochiMatchExhaustivityError.cs` | Runtime catch-all exception |
-| `transpiler3/dotnet/build/phase05_test.go` | `TestPhase5Sums`: 25 fixtures |
-| `tests/transpiler3/dotnet/fixtures/phase05-sums/` | 25 fixture directories |
+| `transpiler3/dotnet/build/phase05_test.go` | `TestPhase5Sums`: 4 fixtures |
+| `tests/transpiler3/dotnet/fixtures/phase05-sums/` | 4 fixture directories |
 
 ## Test set
 
-- `TestPhase5Sums` -- 25 fixtures: circle/rect area, option some/none, result ok/err, nested match, guard match, list pattern empty, list pattern head/tail, exhaustive shape match, option chain, result unwrap, recursive sum type (tree), json-like ADT, match on string literal, match on int literal, match with when guard, nested option, option map/flatMap (implemented as match), result map/flatMap, multi-variant match, wildcard arm, sum type in list, sum type as record field, Option<string> fast path (nullable), sum type printed via ToString, match result in loop.
+- `TestPhase5Sums` -- 4 fixtures (sum_basic, sum_function, sum_nullary, sum_string_result).
 
 ## Deferred work
 

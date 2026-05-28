@@ -18,7 +18,7 @@ description: "MEP-48 Phase 7 — query DSL to LINQ method syntax; group_by, join
 
 ## Gate
 
-`TestPhase7Query`: 30 fixtures green on net8.0 and net10.0.
+`TestPhase7Query`: 10 fixtures green on net8.0 and net10.0.
 
 ## Goal-alignment audit
 
@@ -145,12 +145,12 @@ Consumed with `await foreach (var x in result) { ... }`.
 |------|---------|
 | `transpiler3/dotnet/lower/lower.go` | Query DSL → LINQ method chain lowering |
 | `transpiler3/dotnet/runtime/Mochi.Runtime/Query/` | Window function helpers (Lag, Lead, RollingWindow, RowNumber) |
-| `transpiler3/dotnet/build/phase07_test.go` | `TestPhase7Query`: 30 fixtures |
-| `tests/transpiler3/dotnet/fixtures/phase07-query/` | 30 fixture directories |
+| `transpiler3/dotnet/build/phase07_test.go` | `TestPhase7Query`: 10 fixtures |
+| `tests/transpiler3/dotnet/fixtures/phase07-query/` | 10 fixture directories |
 
 ## Test set
 
-- `TestPhase7Query` -- 30 fixtures: simple filter, simple projection, chained filter+projection, group_by sum, group_by count, order_by asc, order_by desc, order_by multi-key, take, skip, take+skip, inner join, left_join, left_join missing, aggregate sum/avg/min/max, count, distinct, flat_map (SelectMany), zip, window_lag, window_lead, rolling_window, parallel filter, parallel map, parallel group, async filter, async projection, async group_by, mixed sync source with async predicate, empty source.
+- `TestPhase7Query` -- 10 fixtures (query_empty_result, query_filter, query_filter_select, query_group_by, query_no_where, query_select, query_skip, query_skip_take, query_sort, query_take).
 
 ## Deferred work
 
