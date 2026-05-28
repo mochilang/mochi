@@ -3,6 +3,7 @@ package build
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -12,6 +13,9 @@ import (
 func TestPhase16Repro(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping reproducibility test in short mode")
+	}
+	if runtime.GOOS == "darwin" {
+		t.Skip("reproducibility gate runs on linux-x64; macOS Mach-O UUID causes known non-determinism (see phase-16-repro.md deferred work)")
 	}
 	fixtureDir := filepath.Join(repoRoot(t), "tests", "transpiler3", "swift", "fixtures", "phase16-repro")
 	entries, err := os.ReadDir(fixtureDir)
