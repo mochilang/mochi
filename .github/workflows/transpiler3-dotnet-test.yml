@@ -1,0 +1,65 @@
+name: .NET transpiler tests
+
+# MEP-48: CI gate for the Mochi-to-.NET transpiler test suite.
+# Phases 0-14 run on every push/PR.
+# Phase 15 (NativeAOT) and Phase 18 (trim/publish) are env-gated and skipped in CI.
+# Phase 16 (reproducibility) runs on every push.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    paths:
+      - 'transpiler3/dotnet/**'
+      - 'tests/transpiler3/dotnet/**'
+      - 'transpiler3/c/aotir/**'
+      - 'transpiler3/c/lower/**'
+      - '.github/workflows/transpiler3-dotnet-test.yml'
+
+jobs:
+  dotnet-test:
+    name: .NET test (.NET ${{ matrix.dotnet }} / ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            dotnet: '10.0'
+            blocking: true
+          - os: ubuntu-latest
+            dotnet: '8.0'
+            blocking: true
+          - os: macos-latest
+            dotnet: '10.0'
+            blocking: false
+          - os: windows-latest
+            dotnet: '10.0'
+            blocking: false
+
+    continue-on-error: ${{ !matrix.blocking }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Set up .NET ${{ matrix.dotnet }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+
+      - name: Verify .NET installation
+        run: dotnet --version
+
+      - name: Restore runtime NuGet packages
+        run: dotnet restore transpiler3/dotnet/runtime/Mochi.Runtime/Mochi.Runtime.csproj
+
+      - name: Run .NET transpiler tests
+        run: go test -v -timeout 600s ./transpiler3/dotnet/...

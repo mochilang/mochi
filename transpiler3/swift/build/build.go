@@ -103,11 +103,25 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 		return "", fmt.Errorf("swift build: swift lower: %w", err)
 	}
 
-	workDir, err := os.MkdirTemp("", "mochi-swift-*")
-	if err != nil {
-		return "", err
+	var workDir string
+	if d.Deterministic || os.Getenv("MOCHI_DETERMINISTIC") == "1" {
+		// Use a content-addressed, fixed workDir so embedded build paths are
+		// identical between two deterministic builds of the same source.
+		h := sha256.Sum256(srcBytes)
+		workDir = filepath.Join(os.TempDir(), fmt.Sprintf("mochi-swift-det-%x", h[:8]))
+		if mkErr := os.MkdirAll(workDir, 0o755); mkErr != nil {
+			return "", mkErr
+		}
+		// Remove stale SwiftPM artifacts so each run starts clean.
+		_ = os.RemoveAll(filepath.Join(workDir, ".build"))
+	} else {
+		var mkErr error
+		workDir, mkErr = os.MkdirTemp("", "mochi-swift-*")
+		if mkErr != nil {
+			return "", mkErr
+		}
+		defer os.RemoveAll(workDir)
 	}
-	defer os.RemoveAll(workDir)
 
 	// Write generated Swift source to Sources/MochiOut/.
 	mochiOutDir := filepath.Join(workDir, "Sources", "MochiOut")
@@ -160,6 +174,11 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 		}
 		buildArgs = append(buildArgs, "--swift-sdk", triple)
 	}
+	if d.Deterministic || os.Getenv("MOCHI_DETERMINISTIC") == "1" {
+		// -gnone strips DWARF sections; the fixed content-addressed workDir
+		// ensures any remaining embedded paths are identical between builds.
+		buildArgs = append(buildArgs, "-Xswiftc", "-gnone")
+	}
 	buildCmd := exec.Command(d.swiftPath, buildArgs...)
 	buildCmd.Dir = workDir
 	buildCmd.Stdout = os.Stderr // forward build output to stderr so tests can see it
@@ -207,6 +226,10 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 // resolveSwift finds the swift binary.
 func resolveSwift() (string, error) {
 	if p := os.Getenv("SWIFT_PATH"); p != "" {
+		// setup-swift sets SWIFT_PATH to the bin directory; handle both forms.
+		if info, err := os.Stat(p); err == nil && info.IsDir() {
+			p = filepath.Join(p, "swift")
+		}
 		return p, nil
 	}
 	// Check well-known paths first.

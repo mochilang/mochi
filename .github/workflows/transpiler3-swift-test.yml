@@ -1,0 +1,61 @@
+name: Swift transpiler tests
+
+# MEP-49: CI gate for the Mochi-to-Swift transpiler test suite.
+# Phases 1-14 and 18 (structure checks) run on every push/PR.
+# Phase 15 (iOS/xcodegen) auto-skips when xcodegen is absent.
+# Phase 16 (reproducibility) auto-skips on macOS; runs on Linux.
+# Phase 17 (static Linux SDK) auto-skips when the musl SDK is absent.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    paths:
+      - 'transpiler3/swift/**'
+      - 'tests/transpiler3/swift/**'
+      - 'transpiler3/c/aotir/**'
+      - 'transpiler3/c/lower/**'
+      - '.github/workflows/transpiler3-swift-test.yml'
+
+jobs:
+  swift-test:
+    name: Swift test (Swift ${{ matrix.swift }} / ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            swift: 'pre-installed'
+            blocking: true
+          - os: ubuntu-latest
+            swift: '6.0'
+            blocking: true
+          - os: macos-13
+            swift: 'pre-installed'
+            blocking: false
+
+    continue-on-error: ${{ !matrix.blocking }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Set up Swift ${{ matrix.swift }}
+        if: matrix.swift != 'pre-installed'
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: ${{ matrix.swift }}
+
+      - name: Verify Swift installation
+        run: swift --version
+
+      - name: Run Swift transpiler tests
+        run: go test -v -timeout 1800s ./transpiler3/swift/...
