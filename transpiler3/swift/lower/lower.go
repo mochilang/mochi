@@ -38,6 +38,7 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, className string) (*sx
 	mainFunc := &sxtree.FuncDecl{
 		Modifiers: []string{"static"},
 		Name:      "main",
+		IsAsync:   colours[prog.Functions[prog.Main].Name] == colour.Red,
 		Body:      body,
 	}
 
@@ -218,6 +219,7 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*sxtree.FuncDecl, error) {
 		Name:       fn.Name,
 		Params:     params,
 		ReturnType: retType,
+		IsAsync:    l.colours[fn.Name] == colour.Red,
 		Body:       body,
 	}, nil
 }
@@ -572,6 +574,8 @@ func lowerLetTypeName(s *aotir.LetStmt) string {
 		return "MochiStream<" + swiftStreamElemType(s.StreamElemType) + ">"
 	case aotir.TypeSub:
 		return "MochiSub<" + swiftStreamElemType(s.SubElemType) + ">"
+	case aotir.TypeFuture:
+		return "Task<" + swiftStreamElemType(s.FutureElemType) + ", Never>"
 	default:
 		return ""
 	}
@@ -989,6 +993,24 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (sxtree.Expr, error) {
 		return l.lowerListSumExpr(e)
 	case *aotir.ListContainsExpr:
 		return l.lowerListContainsExpr(e)
+	// --- Phase 11 async/await ---
+	case *aotir.AsyncExpr:
+		body, err := l.lowerExpr(e.Body)
+		if err != nil {
+			return nil, err
+		}
+		elemType := swiftStreamElemType(e.ElemType)
+		return &sxtree.RawSwiftExpr{
+			Code: fmt.Sprintf("Task<%s, Never> { %s }", elemType, body.SwiftExprString()),
+		}, nil
+	case *aotir.AwaitExpr:
+		fut, err := l.lowerExpr(e.Future)
+		if err != nil {
+			return nil, err
+		}
+		return &sxtree.RawSwiftExpr{
+			Code: fmt.Sprintf("await %s.value", fut.SwiftExprString()),
+		}, nil
 	default:
 		return nil, fmt.Errorf("swift/lower: unsupported expression %T", e)
 	}
@@ -1035,6 +1057,16 @@ func (l *lowerer) lowerUnaryExpr(e *aotir.UnaryExpr) (sxtree.Expr, error) {
 }
 
 func (l *lowerer) lowerCallExpr(e *aotir.CallExpr) (sxtree.Expr, error) {
+	// Handle __await_all__ built-in.
+	if e.Func == "__await_all__" && len(e.Args) == 1 {
+		arg, err := l.lowerExpr(e.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		return &sxtree.RawSwiftExpr{
+			Code: fmt.Sprintf("await mochiAwaitAll(%s)", arg.SwiftExprString()),
+		}, nil
+	}
 	args := make([]sxtree.Expr, len(e.Args))
 	for i, a := range e.Args {
 		se, err := l.lowerExpr(a)
