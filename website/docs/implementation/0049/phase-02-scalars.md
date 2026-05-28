@@ -10,9 +10,9 @@ description: "MEP-49 Phase 2 — complete scalar type lowering: int→Int64, flo
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-49 §Phases · Phase 2](/docs/mep/mep-0049#phase-2-scalars) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 13:40 (GMT+7) |
+| Landed         | 2026-05-28 13:40 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 

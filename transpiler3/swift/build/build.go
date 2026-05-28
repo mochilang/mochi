@@ -1,0 +1,366 @@
+// Package build is the Swift transpiler pipeline driver.
+// Entry point: Driver.Build(src, outDir string, target Target) (string, error).
+package build
+
+import (
+	"crypto/sha256"
+	"fmt"
+	"io"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
+	"strings"
+
+	"mochi/parser"
+	clower "mochi/transpiler3/c/lower"
+	"mochi/transpiler3/swift/colour"
+	"mochi/transpiler3/swift/emit"
+	"mochi/transpiler3/swift/lower"
+	"mochi/types"
+)
+
+// Target selects the Swift build output format.
+type Target int
+
+const (
+	TargetMacOSExecutable Target = iota // swift build -c release → binary
+	TargetSwiftSource                   // emit .swift only, no build
+)
+
+// Driver is the Swift transpiler pipeline entry point.
+type Driver struct {
+	// CacheDir overrides the default ~/.cache/mochi/swift/ location.
+	CacheDir string
+	// NoCache disables the build cache.
+	NoCache bool
+
+	swiftPath string
+}
+
+// Build compiles src to the given target artefact.
+// For TargetMacOSExecutable it returns the path to the built binary.
+// For TargetSwiftSource it returns the path to the emitted .swift file.
+func (d *Driver) Build(src, outDir string, target Target) (string, error) {
+	if d.swiftPath == "" {
+		p, err := resolveSwift()
+		if err != nil {
+			return "", err
+		}
+		d.swiftPath = p
+	}
+
+	srcBytes, err := os.ReadFile(src)
+	if err != nil {
+		return "", fmt.Errorf("swift build: read %s: %w", src, err)
+	}
+
+	className := lower.ClassName(src)
+
+	if target == TargetMacOSExecutable && !d.NoCache {
+		cacheKey := d.cacheKey(srcBytes)
+		cacheEntry := filepath.Join(d.effectiveCacheDir(), cacheKey)
+		if _, err := os.Stat(cacheEntry); err == nil {
+			// Cache hit: copy binary to outDir.
+			if err := os.MkdirAll(outDir, 0o755); err != nil {
+				return "", err
+			}
+			dest := filepath.Join(outDir, "MochiOut")
+			if err := copyFile(dest, cacheEntry); err != nil {
+				return "", err
+			}
+			if err := os.Chmod(dest, 0o755); err != nil {
+				return "", err
+			}
+			return dest, nil
+		}
+	}
+
+	ast, err := parser.Parse(src)
+	if err != nil {
+		return "", fmt.Errorf("swift build: parse: %w", err)
+	}
+
+	if errs := types.Check(ast, types.NewEnv(nil)); len(errs) > 0 {
+		return "", fmt.Errorf("swift build: typecheck: %w", errs[0])
+	}
+
+	prog, err := clower.Lower(ast)
+	if err != nil {
+		return "", fmt.Errorf("swift build: aotir lower: %w", err)
+	}
+
+	colours := colour.Analyse(prog)
+	sf, err := lower.Lower(prog, colours, className)
+	if err != nil {
+		return "", fmt.Errorf("swift build: swift lower: %w", err)
+	}
+
+	workDir, err := os.MkdirTemp("", "mochi-swift-*")
+	if err != nil {
+		return "", err
+	}
+	defer os.RemoveAll(workDir)
+
+	// Write generated Swift source to Sources/MochiOut/.
+	mochiOutDir := filepath.Join(workDir, "Sources", "MochiOut")
+	if _, err := emit.Emit(sf, mochiOutDir); err != nil {
+		return "", fmt.Errorf("swift build: emit: %w", err)
+	}
+
+	if target == TargetSwiftSource {
+		if err := os.MkdirAll(outDir, 0o755); err != nil {
+			return "", err
+		}
+		swiftFile := filepath.Join(mochiOutDir, sf.Name+".swift")
+		dest := filepath.Join(outDir, sf.Name+".swift")
+		if err := copyFile(dest, swiftFile); err != nil {
+			return "", err
+		}
+		return dest, nil
+	}
+
+	// Copy MochiRuntime sources into Sources/MochiRuntime/.
+	runtimeSrcDir := runtimeSourceDir()
+	if runtimeSrcDir == "" {
+		return "", fmt.Errorf("swift build: cannot locate MochiRuntime sources")
+	}
+	runtimeDestDir := filepath.Join(workDir, "Sources", "MochiRuntime")
+	if err := copyDir(runtimeDestDir, runtimeSrcDir); err != nil {
+		return "", fmt.Errorf("swift build: copy runtime: %w", err)
+	}
+
+	// Write Package.swift.
+	pkgSwift := generatePackageSwift()
+	if err := os.WriteFile(filepath.Join(workDir, "Package.swift"), []byte(pkgSwift), 0o644); err != nil {
+		return "", fmt.Errorf("swift build: write Package.swift: %w", err)
+	}
+
+	// Run swift build -c release.
+	buildCmd := exec.Command(d.swiftPath, "build", "-c", "release")
+	buildCmd.Dir = workDir
+	buildCmd.Stdout = os.Stderr // forward build output to stderr so tests can see it
+	buildCmd.Stderr = os.Stderr
+	if err := buildCmd.Run(); err != nil {
+		return "", fmt.Errorf("swift build: swift build: %w", err)
+	}
+
+	// Find the built binary.
+	binPath, err := findBinary(workDir, "MochiOut")
+	if err != nil {
+		return "", fmt.Errorf("swift build: find binary: %w", err)
+	}
+
+	// Copy binary to outDir.
+	if err := os.MkdirAll(outDir, 0o755); err != nil {
+		return "", err
+	}
+	dest := filepath.Join(outDir, "MochiOut")
+	if err := copyFile(dest, binPath); err != nil {
+		return "", err
+	}
+	if err := os.Chmod(dest, 0o755); err != nil {
+		return "", err
+	}
+
+	// Cache the binary.
+	if !d.NoCache {
+		cacheKey := d.cacheKey(srcBytes)
+		cacheEntry := filepath.Join(d.effectiveCacheDir(), cacheKey)
+		if err := os.MkdirAll(filepath.Dir(cacheEntry), 0o755); err == nil {
+			_ = copyFile(cacheEntry, binPath)
+		}
+	}
+
+	return dest, nil
+}
+
+// resolveSwift finds the swift binary.
+func resolveSwift() (string, error) {
+	if p := os.Getenv("SWIFT_PATH"); p != "" {
+		return p, nil
+	}
+	// Check well-known paths first.
+	for _, candidate := range []string{"/usr/bin/swift", "/usr/local/bin/swift"} {
+		if _, err := os.Stat(candidate); err == nil {
+			return candidate, nil
+		}
+	}
+	p, err := exec.LookPath("swift")
+	if err != nil {
+		return "", fmt.Errorf("swift not found on PATH (set SWIFT_PATH or add swift to PATH): %w", err)
+	}
+	return p, nil
+}
+
+// effectiveCacheDir returns the build cache directory.
+func (d *Driver) effectiveCacheDir() string {
+	if d.CacheDir != "" {
+		return d.CacheDir
+	}
+	if c := os.Getenv("MOCHI_CACHE_DIR"); c != "" {
+		return filepath.Join(c, "swift")
+	}
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return os.TempDir()
+	}
+	return filepath.Join(home, ".cache", "mochi", "swift")
+}
+
+// cacheKey computes a SHA-256 cache key from source bytes and swift version.
+func (d *Driver) cacheKey(srcBytes []byte) string {
+	h := sha256.New()
+	h.Write(srcBytes)
+	// Include swift path so different swift installs don't share cache.
+	h.Write([]byte(d.swiftPath))
+	return fmt.Sprintf("%x", h.Sum(nil))
+}
+
+// runtimeSourceDir returns the absolute path to transpiler3/swift/runtime/Sources/MochiRuntime/.
+func runtimeSourceDir() string {
+	_, thisFile, _, ok := runtime.Caller(0)
+	if !ok {
+		return ""
+	}
+	// thisFile: .../transpiler3/swift/build/build.go
+	// runtime:  .../transpiler3/swift/runtime/Sources/MochiRuntime/
+	dir := filepath.Dir(thisFile)                                                        // .../build
+	swiftDir := filepath.Dir(dir)                                                        // .../swift
+	p := filepath.Join(swiftDir, "runtime", "Sources", "MochiRuntime")
+	if _, err := os.Stat(p); err != nil {
+		return ""
+	}
+	return p
+}
+
+// repoRootForBuild returns the absolute repo root by walking up from this source file.
+func repoRootForBuild(t interface {
+	Helper()
+	Fatalf(string, ...any)
+}) string {
+	t.Helper()
+	_, thisFile, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatalf("runtime.Caller(0) failed")
+	}
+	dir := filepath.Dir(thisFile)
+	for {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			t.Fatalf("go.mod not found walking up from %s", thisFile)
+		}
+		dir = parent
+	}
+}
+
+// generatePackageSwift returns the Package.swift content for the generated project.
+func generatePackageSwift() string {
+	return `// swift-tools-version: 6.0
+import PackageDescription
+
+let package = Package(
+    name: "MochiOut",
+    platforms: [.macOS(.v13)],
+    targets: [
+        .executableTarget(
+            name: "MochiOut",
+            dependencies: ["MochiRuntime"],
+            path: "Sources/MochiOut"
+        ),
+        .target(
+            name: "MochiRuntime",
+            path: "Sources/MochiRuntime"
+        ),
+    ]
+)
+`
+}
+
+// findBinary searches for the built binary named name in the swift build output dirs.
+func findBinary(workDir, name string) (string, error) {
+	// Try .build/release/<name> first (standard layout).
+	candidate := filepath.Join(workDir, ".build", "release", name)
+	if _, err := os.Stat(candidate); err == nil {
+		return candidate, nil
+	}
+
+	// Walk .build/ for */release/<name> (platform-specific triple layout).
+	buildDir := filepath.Join(workDir, ".build")
+	entries, err := os.ReadDir(buildDir)
+	if err != nil {
+		return "", fmt.Errorf("readdir %s: %w", buildDir, err)
+	}
+	for _, e := range entries {
+		if !e.IsDir() {
+			continue
+		}
+		p := filepath.Join(buildDir, e.Name(), "release", name)
+		if _, err := os.Stat(p); err == nil {
+			return p, nil
+		}
+	}
+
+	// Fallback: use find.
+	out, err := exec.Command("find", buildDir, "-name", name, "-type", "f").Output()
+	if err != nil {
+		return "", fmt.Errorf("find binary %s in %s: not found", name, buildDir)
+	}
+	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		// Prefer release builds.
+		if strings.Contains(line, "/release/") {
+			return line, nil
+		}
+	}
+	if len(lines) > 0 && lines[0] != "" {
+		return lines[0], nil
+	}
+	return "", fmt.Errorf("binary %s not found in %s", name, buildDir)
+}
+
+// copyFile copies src to dst, creating dst's parent directories as needed.
+func copyFile(dst, src string) error {
+	if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+		return err
+	}
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	_, err = io.Copy(out, in)
+	return err
+}
+
+// copyDir copies all regular files from srcDir into dstDir (non-recursive).
+func copyDir(dstDir, srcDir string) error {
+	if err := os.MkdirAll(dstDir, 0o755); err != nil {
+		return err
+	}
+	entries, err := os.ReadDir(srcDir)
+	if err != nil {
+		return err
+	}
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		if err := copyFile(filepath.Join(dstDir, e.Name()), filepath.Join(srcDir, e.Name())); err != nil {
+			return err
+		}
+	}
+	return nil
+}

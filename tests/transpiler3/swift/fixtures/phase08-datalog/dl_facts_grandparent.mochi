@@ -1,0 +1,7 @@
+fact parent("Alice", "Bob")
+fact parent("Bob", "Carol")
+rule grandparent(X, Z) :- parent(X, Y), parent(Y, Z)
+let g = query grandparent(X, Z)
+for x in g {
+    print(x)
+}
