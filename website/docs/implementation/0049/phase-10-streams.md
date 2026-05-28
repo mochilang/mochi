@@ -10,9 +10,9 @@ description: "MEP-49 Phase 10 — stream<T> to AsyncStream<T>; producer closures
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-49 §Phases · Phase 10](/docs/mep/mep-0049#phase-10-streams) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 13:40 (GMT+7) |
+| Landed         | 2026-05-28 13:54 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
