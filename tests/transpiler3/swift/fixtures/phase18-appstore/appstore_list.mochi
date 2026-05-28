@@ -1,0 +1,4 @@
+let items = ["alpha", "beta", "gamma"]
+for item in items {
+    print(item)
+}

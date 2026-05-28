@@ -10,9 +10,9 @@ description: "MEP-49 Phase 18 — App Store Connect API automated submission; Ma
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-49 §Phases · Phase 18](/docs/mep/mep-0049#phase-18-app-store) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 13:40 (GMT+7) |
+| Landed         | 2026-05-28 14:44 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
