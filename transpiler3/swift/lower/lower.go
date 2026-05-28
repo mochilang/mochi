@@ -1058,6 +1058,13 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (sxtree.Expr, error) {
 		return &sxtree.RawSwiftExpr{
 			Code: fmt.Sprintf("mochiLLMGenerate(%q, %s, %s)", e.Provider, model.SwiftExprString(), prompt.SwiftExprString()),
 		}, nil
+	// --- Phase 14 HTTP fetch ---
+	case *aotir.HttpGetExpr:
+		url, err := l.lowerExpr(e.URL)
+		if err != nil {
+			return nil, err
+		}
+		return &sxtree.RawSwiftExpr{Code: fmt.Sprintf("mochiHttpGet(%s)", url.SwiftExprString())}, nil
 	default:
 		return nil, fmt.Errorf("swift/lower: unsupported expression %T", e)
 	}
