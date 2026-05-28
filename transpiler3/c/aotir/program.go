@@ -603,11 +603,12 @@ func (*ListSetStmt) isStmt() {}
 // helper receives a pointer to the local struct so it can
 // resize the table when a new key is inserted.
 type MapPutStmt struct {
-	Name      string
-	Key       Expr
-	Value     Expr
-	KeyType   Type
-	ValueType Type
+	Name              string
+	Key               Expr
+	Value             Expr
+	KeyType           Type
+	ValueType         Type
+	ListValueElemType Type // valid when ValueType==TypeList (Phase 3.4e)
 }
 
 func (*MapPutStmt) isStmt() {}
