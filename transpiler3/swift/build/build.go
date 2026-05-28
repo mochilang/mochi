@@ -34,6 +34,11 @@ type Driver struct {
 	CacheDir string
 	// NoCache disables the build cache.
 	NoCache bool
+	// Deterministic enables reproducible builds by setting SWIFTPM_DETERMINISTIC_BUILD=1
+	// and SOURCE_DATE_EPOCH=0 when invoking swift build. It also includes the flag
+	// in the cache key so deterministic and non-deterministic builds do not share
+	// cached binaries.
+	Deterministic bool
 
 	swiftPath string
 }
@@ -131,7 +136,8 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 	}
 
 	// Write Package.swift.
-	pkgSwift := generatePackageSwift()
+	deterministicPkg := d.Deterministic || os.Getenv("MOCHI_DETERMINISTIC") == "1"
+	pkgSwift := generatePackageSwift(deterministicPkg)
 	if err := os.WriteFile(filepath.Join(workDir, "Package.swift"), []byte(pkgSwift), 0o644); err != nil {
 		return "", fmt.Errorf("swift build: write Package.swift: %w", err)
 	}
@@ -141,6 +147,12 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 	buildCmd.Dir = workDir
 	buildCmd.Stdout = os.Stderr // forward build output to stderr so tests can see it
 	buildCmd.Stderr = os.Stderr
+	if d.Deterministic || os.Getenv("MOCHI_DETERMINISTIC") == "1" {
+		buildCmd.Env = append(os.Environ(),
+			"SWIFTPM_DETERMINISTIC_BUILD=1",
+			"SOURCE_DATE_EPOCH=0",
+		)
+	}
 	if err := buildCmd.Run(); err != nil {
 		return "", fmt.Errorf("swift build: swift build: %w", err)
 	}
@@ -214,6 +226,13 @@ func (d *Driver) cacheKey(srcBytes []byte) string {
 	h.Write(srcBytes)
 	// Include swift path so different swift installs don't share cache.
 	h.Write([]byte(d.swiftPath))
+	// Include deterministic flag so deterministic and non-deterministic builds
+	// do not share cached binaries.
+	if d.Deterministic {
+		h.Write([]byte{1})
+	} else {
+		h.Write([]byte{0})
+	}
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
@@ -258,8 +277,11 @@ func repoRootForBuild(t interface {
 }
 
 // generatePackageSwift returns the Package.swift content for the generated project.
-func generatePackageSwift() string {
-	return `// swift-tools-version: 6.0
+// When deterministic is true it adds linker flags to suppress non-deterministic
+// binary metadata (UUID on macOS, build-id on Linux) for reproducible builds.
+func generatePackageSwift(deterministic bool) string {
+	if !deterministic {
+		return `// swift-tools-version: 6.0
 import PackageDescription
 
 let package = Package(
@@ -270,6 +292,30 @@ let package = Package(
             name: "MochiOut",
             dependencies: ["MochiRuntime"],
             path: "Sources/MochiOut"
+        ),
+        .target(
+            name: "MochiRuntime",
+            path: "Sources/MochiRuntime"
+        ),
+    ]
+)
+`
+	}
+	return `// swift-tools-version: 6.0
+import PackageDescription
+
+let package = Package(
+    name: "MochiOut",
+    platforms: [.macOS(.v13)],
+    targets: [
+        .executableTarget(
+            name: "MochiOut",
+            dependencies: ["MochiRuntime"],
+            path: "Sources/MochiOut",
+            linkerSettings: [
+                .unsafeFlags(["-Xlinker", "-no_uuid"], .when(platforms: [.macOS])),
+                .unsafeFlags(["-Xlinker", "--build-id=none"], .when(platforms: [.linux])),
+            ]
         ),
         .target(
             name: "MochiRuntime",

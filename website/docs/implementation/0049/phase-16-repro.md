@@ -10,9 +10,9 @@ description: "MEP-49 Phase 16 — deterministic .o and binary output via SWIFTPM
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-49 §Phases · Phase 16](/docs/mep/mep-0049#phase-16-reproducible-build) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-28 13:40 (GMT+7) |
+| Landed         | 2026-05-28 13:40 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -28,10 +28,10 @@ Reproducible builds enable supply-chain verification: a user can rebuild from so
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 16.0 | `SWIFTPM_DETERMINISTIC_BUILD=1` flag; `SOURCE_DATE_EPOCH` for file timestamps | NOT STARTED | — |
-| 16.1 | `-Xlinker -no_uuid` (macOS) / `--build-id=none` (Linux ld) to remove link-time UUIDs | NOT STARTED | — |
-| 16.2 | Sorted imports and declarations in emitted `.swift` source; deterministic sxtree traversal | NOT STARTED | — |
-| 16.3 | SHA-256 comparison gate: two parallel builds, compare binary hashes | NOT STARTED | — |
+| 16.0 | `SWIFTPM_DETERMINISTIC_BUILD=1` flag; `SOURCE_DATE_EPOCH` for file timestamps | LANDED | — |
+| 16.1 | `-Xlinker -no_uuid` (macOS) / `--build-id=none` (Linux ld) to remove link-time UUIDs | LANDED | — |
+| 16.2 | Sorted imports and declarations in emitted `.swift` source; deterministic sxtree traversal | LANDED | — |
+| 16.3 | SHA-256 comparison gate: two parallel builds, compare binary hashes | LANDED | — |
 
 ## Sub-phase 16.0 -- SwiftPM deterministic build
 
