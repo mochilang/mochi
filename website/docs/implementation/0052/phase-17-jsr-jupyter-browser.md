@@ -13,8 +13,8 @@ description: "MEP-52 Phase 17, three secondary packaging targets reach JSR (deno
 | Status         | LANDED (structural gates + deno publish --dry-run); 17.4 Playwright + Jupyter install deferred |
 | Started        | 2026-05-30 01:42 (GMT+7) |
 | Landed         | 2026-05-30 01:56 (GMT+7) |
-| Tracking issue | (pending) |
-| Tracking PR    | (pending) |
+| Tracking issue | [#23027](https://github.com/mochilang/mochi/issues/23027) |
+| Tracking PR    | [#23028](https://github.com/mochilang/mochi/pull/23028) |
 
 ## Gates
 
