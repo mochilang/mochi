@@ -1,0 +1,5 @@
+let words: list<string> = ["banana", "apple", "cherry", "date"]
+let sorted = from w in words order by w select w
+for s in sorted {
+    print(s)
+}

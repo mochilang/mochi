@@ -1,0 +1,6 @@
+let nums = [1, 2, 3, 4, 5]
+let small = from n in nums where n < 4 select n
+let doubled_small = from n in small select n * 2
+for d in doubled_small {
+  print(d)
+}

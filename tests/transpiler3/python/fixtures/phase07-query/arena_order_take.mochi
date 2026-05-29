@@ -1,0 +1,5 @@
+let xs = [5, 2, 8, 1, 9, 3, 7, 4, 6]
+let top3 = from x in xs order by x take 3 select x
+for v in top3 {
+  print(v)
+}
