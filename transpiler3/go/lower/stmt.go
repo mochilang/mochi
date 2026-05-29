@@ -23,6 +23,14 @@ func (l *lowerer) lowerBlock(b *aotir.Block) (*gotree.BlockStmt, error) {
 		if _, ok := s.(*aotir.ClosureEnvStmt); ok {
 			continue
 		}
+		if qs, ok := s.(*aotir.QueryScopeStmt); ok {
+			inner, err := l.lowerBlock(qs.Body)
+			if err != nil {
+				return nil, err
+			}
+			out.List = append(out.List, inner.List...)
+			continue
+		}
 		gs, err := l.lowerStmt(s)
 		if err != nil {
 			return nil, err

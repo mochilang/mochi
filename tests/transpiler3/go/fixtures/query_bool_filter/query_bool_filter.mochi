@@ -1,0 +1,5 @@
+let flags = [true, false, true, true, false]
+let trues = from f in flags where f select f
+for t in trues {
+  print(t)
+}
