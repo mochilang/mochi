@@ -1,0 +1,7 @@
+let data = [["name", "score"], ["alice", "95"], ["bob", "87"]]
+saveCSV("/tmp/mochi3_go_csv_save.csv", data)
+let back = loadCSV("/tmp/mochi3_go_csv_save.csv")
+for row in back {
+    print(row[0])
+    print(row[1])
+}

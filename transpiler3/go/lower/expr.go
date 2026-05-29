@@ -122,6 +122,8 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerReadFileExpr(e)
 	case *aotir.LinesExpr:
 		return l.lowerLinesExpr(e)
+	case *aotir.LoadCSVExpr:
+		return l.lowerLoadCSVExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -810,6 +812,12 @@ func (l *lowerer) lowerListLit(e *aotir.ListLit) (gotree.Expr, error) {
 			return nil, fmt.Errorf("list literal of records missing ElemRecordName")
 		}
 		elemType = e.ElemRecordName
+	case aotir.TypeList:
+		inner, err := l.lowerListType(e.InnerElemType)
+		if err != nil {
+			return nil, fmt.Errorf("list<list> literal: %w", err)
+		}
+		elemType = inner
 	default:
 		t, err := l.lowerType(e.ElemType)
 		if err != nil {
@@ -1216,4 +1224,19 @@ func (l *lowerer) lowerLinesExpr(e *aotir.LinesExpr) (gotree.Expr, error) {
 	l.addImport("strings")
 	l.addHelper("mochiLines")
 	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiLines"}, Args: []gotree.Expr{path}}, nil
+}
+
+// lowerLoadCSVExpr emits mochiLoadCSV(path) which uses encoding/csv to
+// parse the file as RFC 4180. Returns nil on error so the program can
+// inspect len(rows)==0 rather than handling a missing-file panic
+// (matches the C runtime's silent-failure behaviour).
+func (l *lowerer) lowerLoadCSVExpr(e *aotir.LoadCSVExpr) (gotree.Expr, error) {
+	path, err := l.lowerExpr(e.Path)
+	if err != nil {
+		return nil, err
+	}
+	l.addImport("os")
+	l.addImport("encoding/csv")
+	l.addHelper("mochiLoadCSV")
+	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiLoadCSV"}, Args: []gotree.Expr{path}}, nil
 }
