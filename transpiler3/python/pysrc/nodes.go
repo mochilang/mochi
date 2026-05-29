@@ -138,6 +138,61 @@ func (f *FunctionDef) PyString(indent int) string {
 	return sb.String()
 }
 
+// ClassDef is a `class Name:` declaration with optional decorators and
+// PEP 526 annotated attributes. Phase 3.4 uses this for record types
+// emitted as `@dataclasses.dataclass(frozen=True, slots=True)`.
+type ClassDef struct {
+	Name       string
+	Decorators []string
+	Fields     []ClassField
+}
+
+// ClassField is `name: Type` inside a class body.
+type ClassField struct {
+	Name string
+	Type TypeRef
+}
+
+func (*ClassDef) isStmt() {}
+
+// PyString renders the class declaration.
+func (c *ClassDef) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	var sb strings.Builder
+	for _, dec := range c.Decorators {
+		sb.WriteString(pad)
+		sb.WriteByte('@')
+		sb.WriteString(dec)
+		sb.WriteByte('\n')
+	}
+	sb.WriteString(pad)
+	sb.WriteString("class ")
+	sb.WriteString(c.Name)
+	sb.WriteString(":\n")
+	if len(c.Fields) == 0 {
+		sb.WriteString(pad)
+		sb.WriteString("    pass")
+		return sb.String()
+	}
+	for i, f := range c.Fields {
+		if i > 0 {
+			sb.WriteByte('\n')
+		}
+		sb.WriteString(pad)
+		sb.WriteString("    ")
+		sb.WriteString(f.Name)
+		sb.WriteString(": ")
+		sb.WriteString(f.Type.PyString())
+	}
+	return sb.String()
+}
+
+// KeywordArg is `name=value` inside a Call.
+type KeywordArg struct {
+	Name  string
+	Value Expr
+}
+
 // IfStmt is `if cond:` and optional `else:` block.
 type IfStmt struct {
 	Cond Expr
@@ -239,8 +294,9 @@ type Expr interface {
 
 // Call is `f(args, kw=v)`.
 type Call struct {
-	Func Expr
-	Args []Expr
+	Func   Expr
+	Args   []Expr
+	Kwargs []KeywordArg
 }
 
 func (*Call) isExpr() {}
@@ -250,11 +306,22 @@ func (c *Call) PyString() string {
 	var sb strings.Builder
 	sb.WriteString(c.Func.PyString())
 	sb.WriteByte('(')
-	for i, a := range c.Args {
-		if i > 0 {
+	first := true
+	for _, a := range c.Args {
+		if !first {
 			sb.WriteString(", ")
 		}
+		first = false
 		sb.WriteString(a.PyString())
+	}
+	for _, kw := range c.Kwargs {
+		if !first {
+			sb.WriteString(", ")
+		}
+		first = false
+		sb.WriteString(kw.Name)
+		sb.WriteByte('=')
+		sb.WriteString(kw.Value.PyString())
 	}
 	sb.WriteByte(')')
 	return sb.String()

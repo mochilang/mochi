@@ -29,9 +29,10 @@ func PackageName(src string) string {
 
 // lowerer carries per-program state.
 type lowerer struct {
-	needsMath    bool // true once any float div emitted; pulls in mochi_runtime.math
-	needsFmt     bool // true once print(float) emitted; pulls in mochi_runtime.fmt
-	needsMapping bool // true once a sorted map keys/values call is emitted
+	needsMath       bool // true once any float div emitted; pulls in mochi_runtime.math
+	needsFmt        bool // true once print(float) emitted; pulls in mochi_runtime.fmt
+	needsMapping    bool // true once a sorted map keys/values call is emitted
+	needsDataclass  bool // true once any record class is emitted (Phase 3.4)
 }
 
 // Lower translates an aotir.Program into a pysrc.Module covering the
@@ -49,6 +50,10 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 	}
 
 	var defs []pysrc.Stmt
+	for _, rec := range prog.Records {
+		l.needsDataclass = true
+		defs = append(defs, lowerRecordDecl(rec))
+	}
 	for i, fn := range prog.Functions {
 		if i == prog.Main {
 			continue
@@ -84,7 +89,30 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 	if l.needsMapping {
 		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "mochi_runtime.mapping", Names: []string{"keys_sorted", "values_sorted"}})
 	}
+	if l.needsDataclass {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "dataclasses", Names: []string{"dataclass"}})
+	}
 	return mod, nil
+}
+
+// lowerRecordDecl emits a Mochi record as a frozen + slotted dataclass.
+// Frozen gives structural immutability (Phase 4 `with` will use
+// dataclasses.replace), slots gives memory locality and protects against
+// typo-attribute writes. Fields render with PEP 526 annotations under
+// the module's `from __future__ import annotations`.
+func lowerRecordDecl(rec *aotir.RecordDecl) pysrc.Stmt {
+	fields := make([]pysrc.ClassField, 0, len(rec.Fields))
+	for _, f := range rec.Fields {
+		fields = append(fields, pysrc.ClassField{
+			Name: f.Name,
+			Type: pyTypeForRecord(f.Type, aotir.TypeInvalid, f.RecordName, "", aotir.TypeInvalid, aotir.TypeInvalid),
+		})
+	}
+	return &pysrc.ClassDef{
+		Name:       rec.Name,
+		Decorators: []string{"dataclass(frozen=True, slots=True)"},
+		Fields:     fields,
+	}
 }
 
 func (l *lowerer) lowerFunction(fn *aotir.Function) (pysrc.Stmt, error) {
@@ -92,14 +120,14 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (pysrc.Stmt, error) {
 	for _, p := range fn.Params {
 		params = append(params, pysrc.Param{
 			Name: p.Name,
-			Type: pyTypeForCompound(p.Type, p.ElemType, p.KeyType, p.ValueType),
+			Type: pyTypeForRecord(p.Type, p.ElemType, p.RecordName, p.ElemRecordName, p.KeyType, p.ValueType),
 		})
 	}
 	body, err := l.lowerBlock(fn.Body)
 	if err != nil {
 		return nil, fmt.Errorf("function %s: %w", fn.Name, err)
 	}
-	ret := pyTypeForCompound(fn.ReturnType, fn.ReturnElemType, fn.ReturnKeyType, fn.ReturnValueType)
+	ret := pyTypeForRecord(fn.ReturnType, fn.ReturnElemType, fn.ReturnRecordName, fn.ReturnElemRecordName, fn.ReturnKeyType, fn.ReturnValueType)
 	if fn.ReturnType == aotir.TypeUnit {
 		ret = pysrc.TypeNone
 	}
@@ -225,7 +253,7 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (pysrc.Stmt, error) {
 	}
 	return &pysrc.AssignStmt{
 		Target: s.Name,
-		Type:   pyTypeForCompound(s.VarType, s.ElemType, s.KeyType, s.ValueType),
+		Type:   pyTypeForRecord(s.VarType, s.ElemType, s.RecordName, s.ElemRecordName, s.KeyType, s.ValueType),
 		Value:  val,
 	}, nil
 }
@@ -556,9 +584,41 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 			return nil, fmt.Errorf("python/lower: capturing closure %q not supported until phase 6", v.FuncName)
 		}
 		return &pysrc.Name{Id: v.FuncName}, nil
+	case *aotir.RecordLit:
+		return l.lowerRecordLit(v)
+	case *aotir.FieldAccess:
+		return l.lowerFieldAccess(v)
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported expression %T", e)
 	}
+}
+
+// lowerRecordLit emits `RecordName(field1=v1, field2=v2)`. The c lower
+// orders RecordLit.Fields in declared field order; the emitter keeps
+// keyword form for readability and to make positional drift impossible
+// if the dataclass field order ever shifts.
+func (l *lowerer) lowerRecordLit(e *aotir.RecordLit) (pysrc.Expr, error) {
+	kwargs := make([]pysrc.KeywordArg, 0, len(e.Fields))
+	for _, f := range e.Fields {
+		val, err := l.lowerExpr(f.Value)
+		if err != nil {
+			return nil, err
+		}
+		kwargs = append(kwargs, pysrc.KeywordArg{Name: f.Name, Value: val})
+	}
+	return &pysrc.Call{
+		Func:   &pysrc.Name{Id: e.TypeName},
+		Kwargs: kwargs,
+	}, nil
+}
+
+// lowerFieldAccess emits `recv.field`.
+func (l *lowerer) lowerFieldAccess(e *aotir.FieldAccess) (pysrc.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return &pysrc.Attribute{Value: recv, Attr: e.FieldName}, nil
 }
 
 func (l *lowerer) lowerBinaryExpr(e *aotir.BinaryExpr) (pysrc.Expr, error) {
@@ -615,10 +675,12 @@ var binOpToPython = map[aotir.BinOp]string{
 	aotir.BinEqF64:   "==",
 	aotir.BinEqBool:  "==",
 	aotir.BinEqStr:   "==",
+	aotir.BinEqRec:   "==",
 	aotir.BinNeI64:   "!=",
 	aotir.BinNeF64:   "!=",
 	aotir.BinNeBool:  "!=",
 	aotir.BinNeStr:   "!=",
+	aotir.BinNeRec:   "!=",
 	aotir.BinLtI64:   "<",
 	aotir.BinLtF64:   "<",
 	aotir.BinLeI64:   "<=",
@@ -655,8 +717,27 @@ func pyTypeFor(t aotir.Type) pysrc.TypeRef {
 // for TypeMap it emits `dict[<key>, <value>]` (both PEP 585 built-in
 // subscripted generics, lazy under `from __future__ import annotations`).
 func pyTypeForCompound(t, elem, k, v aotir.Type) pysrc.TypeRef {
+	return pyTypeForRecord(t, elem, "", "", k, v)
+}
+
+// pyTypeForRecord adds record-name slots so the lowerer can emit
+// `list[RecordName]` (Phase 3.4) and a bare `RecordName` annotation
+// (Phase 4). recordName is the receiver's record name when t==TypeRecord;
+// elemRecordName is the list element's record name when elem==TypeRecord.
+func pyTypeForRecord(t, elem aotir.Type, recordName, elemRecordName string, k, v aotir.Type) pysrc.TypeRef {
 	switch t {
+	case aotir.TypeRecord:
+		if recordName == "" {
+			return pysrc.TypeRef{}
+		}
+		return pysrc.TypeRef{Name: recordName}
 	case aotir.TypeList:
+		if elem == aotir.TypeRecord {
+			if elemRecordName == "" {
+				return pysrc.TypeRef{}
+			}
+			return pysrc.TypeRef{Name: "list[" + elemRecordName + "]"}
+		}
 		inner := pyTypeFor(elem)
 		if inner.Name == "" {
 			return pysrc.TypeRef{}
