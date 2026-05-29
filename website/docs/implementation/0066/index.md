@@ -27,8 +27,8 @@ A phase is LANDED only when its gate is green for every target in the runtime ma
 | 9 | TargetErlangPort emit (rebar3 app skeleton + mochi_port_driver.erl + priv/mochi_binary) | LANDED | 178280d | [phase-09](/docs/implementation/0066/phase-09-target-erlang-port) |
 | 10 | Hex.pm trusted publishing (OIDC flow + rebar3 hex publish) | LANDED | a66f1db | [phase-10](/docs/implementation/0066/phase-10-trusted-publish) |
 | 11 | OTP behavior bindings (gen_server call/cast, supervisor, application) | LANDED | 42e7b50 | [phase-11](/docs/implementation/0066/phase-11-otp-behaviors) |
-| 12 | Async process bridge (OTP process spawn/receive/send/monitor via Mochi async) | IN PROGRESS | — | [phase-12](/docs/implementation/0066/phase-12-async-bridge) |
-| 13 | Distributed Erlang node bridge (C-node via erl_interface + `dist` capability) | NOT STARTED | — | [phase-13](/docs/implementation/0066/phase-13-dist-bridge) |
+| 12 | Async process bridge (OTP process spawn/receive/send/monitor via Mochi async) | LANDED | a2f8956 | [phase-12](/docs/implementation/0066/phase-12-async-bridge) |
+| 13 | Distributed Erlang node bridge (C-node via erl_interface + `dist` capability) | IN PROGRESS | — | [phase-13](/docs/implementation/0066/phase-13-dist-bridge) |
 
 ## Per-phase fields
 
