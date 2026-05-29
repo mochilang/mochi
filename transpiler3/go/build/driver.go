@@ -75,8 +75,9 @@ type Driver struct {
 // gotree.File, renders it via emit, writes go.mod, invokes
 // `go build`, and writes the produced binary to out.
 //
-// target and profile are accepted for forward compatibility;
-// Phase 1 builds only for the host tuple.
+// When target == TargetGoModule, Build skips `go build` and
+// instead copies the work directory (go.mod + main.go) into
+// out as a publish-ready Go module. profile is informational.
 func (d *Driver) Build(src, out string, target, profile string) error {
 	if src == "" {
 		return errors.New("transpiler3/go/build: source path is required")
@@ -128,8 +129,48 @@ func (d *Driver) Build(src, out string, target, profile string) error {
 	if err != nil {
 		return fmt.Errorf("transpiler3/go/build: abs %s: %w", out, err)
 	}
+
+	if Target(target) == TargetGoModule {
+		if err := copyModule(workDir, absOut); err != nil {
+			return fmt.Errorf("transpiler3/go/build: copy module: %w", err)
+		}
+		return nil
+	}
+
 	if err := goBuild(d.GoBin, workDir, absOut, nil); err != nil {
 		return err
+	}
+	return nil
+}
+
+// copyModule copies the work directory's go.mod + *.go files
+// into outDir as a publish-ready Go module. No `go build` is
+// invoked; the caller can `cd outDir && go build .` themselves.
+//
+// The destination is created if missing. Existing files with
+// the same name are overwritten so re-runs are idempotent.
+func copyModule(workDir, outDir string) error {
+	if err := os.MkdirAll(outDir, 0o755); err != nil {
+		return fmt.Errorf("mkdir out: %w", err)
+	}
+	entries, err := os.ReadDir(workDir)
+	if err != nil {
+		return fmt.Errorf("read work dir: %w", err)
+	}
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		name := e.Name()
+		src := filepath.Join(workDir, name)
+		dst := filepath.Join(outDir, name)
+		b, err := os.ReadFile(src)
+		if err != nil {
+			return fmt.Errorf("read %s: %w", src, err)
+		}
+		if err := os.WriteFile(dst, b, 0o644); err != nil {
+			return fmt.Errorf("write %s: %w", dst, err)
+		}
 	}
 	return nil
 }
