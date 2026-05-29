@@ -1,39 +1,41 @@
-// Package colour computes the async colouring of an aotir
-// program for the PHP target.
+// Package colour holds the async colouring infrastructure for the
+// PHP target. Every function is always Blue (synchronous): Phase 11
+// shipped async/await as a synchronous value wrapper (mochi_future_make
+// just stores the value, mochi_future_await returns it) rather than
+// the originally-planned Amphp/Fiber dispatch, so no PHP function
+// ever needs an `Amp\Future<T>` return type and no call site ever
+// needs to `await`.
 //
-// PHP 8.1+ fibers provide stackful coroutines; combined with
-// Amphp v3 (amphp/amp, amphp/pipeline) we expose
-// `Amp\Future<T>` as the return type of async functions and
-// drive them with `Amp\async(...)`. Colouring decides which
-// Mochi functions are async (their lowered PHP signature
-// returns `\Amp\Future<T>` instead of `T`).
-//
-// Phase 0 ships a stub colour map: every function is `Blue`
-// (synchronous). The full forward-and-backward dataflow lands
-// in Phase 11 when async/await semantics first appear.
+// The pass and its result are still wired through build.Build for
+// symmetry with the other transpiler3 targets (C, BEAM, JVM, .NET,
+// Swift), and to keep a single place to flip the design back to
+// real futures if a future MEP wants them.
 package colour
 
 import "mochi/transpiler3/c/aotir"
 
-// Colour is a per-function tag controlling lowering.
+// Colour is a per-function tag controlling lowering. Currently only
+// Blue is produced; Red is reserved for a future revival of real
+// async dispatch.
 type Colour int
 
 const (
 	// Blue marks a synchronous function. Its lowered PHP signature
 	// returns `T` (or `void`) and is called directly.
 	Blue Colour = iota
-	// Red marks an asynchronous function. Its lowered PHP signature
-	// returns `\Amp\Future<T>` and call sites lower `await f(...)`
-	// to `f(...)->await()`.
+	// Red is reserved. The PHP target's Phase 11 design avoided real
+	// futures, so this colour is never produced today. Keeping the
+	// constant lets a future async revival plug in without breaking
+	// the public Colour type.
 	Red
 )
 
 // ColourMap maps function names to their colour.
 type ColourMap map[string]Colour
 
-// Compute returns the colour assignment for prog. Phase 0
-// returns all-Blue; Phase 11 replaces this with the real
-// async/await fixed-point pass.
+// Compute returns the colour assignment for prog. Every entry is
+// Blue: the PHP target chose sync wrappers over fibers/Amp, so no
+// function is ever Red. See package doc.
 func Compute(prog *aotir.Program) ColourMap {
 	m := make(ColourMap, len(prog.Functions))
 	for _, fn := range prog.Functions {
