@@ -1,0 +1,5 @@
+let s = set { 1, 2 }
+let s2 = add(s, 3)
+for x in s2 {
+  print(x)
+}

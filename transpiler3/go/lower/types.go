@@ -61,3 +61,16 @@ func (l *lowerer) lowerMapType(key, value aotir.Type) (string, error) {
 	}
 	return "map[" + kt + "]" + vt, nil
 }
+
+// lowerSetType produces `map[Elem]struct{}` for a set<elem> value.
+// Phase 3.3 uses the idiomatic Go set encoding.
+func (l *lowerer) lowerSetType(elem aotir.Type) (string, error) {
+	et, err := l.lowerType(elem)
+	if err != nil {
+		return "", fmt.Errorf("set element: %w", err)
+	}
+	if et == "" {
+		return "", fmt.Errorf("transpiler3/go/lower: set element type cannot be unit")
+	}
+	return "map[" + et + "]struct{}", nil
+}
