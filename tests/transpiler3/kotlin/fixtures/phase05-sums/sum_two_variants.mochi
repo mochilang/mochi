@@ -1,0 +1,7 @@
+type Color = Red | Blue
+let c: Color = Red
+let name = match c {
+  Red => "red"
+  Blue => "blue"
+}
+print(name)

@@ -1,0 +1,6 @@
+type Point {
+  x: int
+  y: int
+}
+let p = Point { x: 10, y: 20 }
+print(p.x + p.y)

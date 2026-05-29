@@ -1,0 +1,3 @@
+var m: map<string, int> = {}
+m["key"] = 42
+print(m["key"])

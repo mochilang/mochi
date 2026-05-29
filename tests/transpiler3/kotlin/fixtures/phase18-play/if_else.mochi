@@ -1,0 +1,5 @@
+if 2 > 1 {
+  print("ok")
+} else {
+  print("fail")
+}

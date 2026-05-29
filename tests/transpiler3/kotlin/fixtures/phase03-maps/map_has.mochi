@@ -1,0 +1,3 @@
+let m = {"x": 10}
+print(has(m, "x"))
+print(has(m, "y"))
