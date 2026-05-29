@@ -20,8 +20,8 @@ A phase is LANDED only when its gate is green for every target (consume directio
 | 2 | Rustdoc-JSON ingest + ApiSurface emit | LANDED | [1cd97c1b](https://github.com/mochilang/mochi/commit/1cd97c1b) | [phase-02](/docs/implementation/0073/phase-02-rustdoc-ingest) |
 | 3 | Closed type-mapping table (scalars / strings / collections / Option / Result / Tuple / Struct / Enum) | LANDED | [0be87e7f](https://github.com/mochilang/mochi/commit/0be87e7f) | [phase-03](/docs/implementation/0073/phase-03-type-mapping) |
 | 4 | Wrapper crate synthesiser (extern "C" surface, MochiString / MochiSlice / opaque handles) | LANDED | [2bf1474c](https://github.com/mochilang/mochi/commit/2bf1474c) | [phase-04](/docs/implementation/0073/phase-04-wrapper) |
-| 5 | Mochi-side extern fn emitter + alias shim file generation | LANDED | (pending) | [phase-05](/docs/implementation/0073/phase-05-extern-emit) |
-| 6 | `import rust "<crate>@<semver>" as <alias>` grammar + parser | NOT STARTED | — | [phase-06](/docs/implementation/0073/phase-06-import-grammar) |
+| 5 | Mochi-side extern fn emitter + alias shim file generation | LANDED | [6da45d5d](https://github.com/mochilang/mochi/commit/6da45d5d) | [phase-05](/docs/implementation/0073/phase-05-extern-emit) |
+| 6 | `import rust "<crate>@<semver>" as <alias>` grammar + parser | LANDED | (pending) | [phase-06](/docs/implementation/0073/phase-06-import-grammar) |
 | 7 | Build orchestration: workspace synth + cargo build invocation + artifact link | NOT STARTED | — | [phase-07](/docs/implementation/0073/phase-07-build) |
 | 8 | mochi.lock `[[rust-package]]` integration + `--check` mode | NOT STARTED | — | [phase-08](/docs/implementation/0073/phase-08-lockfile) |
 | 9 | `TargetRustLibrary` emit (rlib + cdylib + Cargo.toml + cbindgen) | NOT STARTED | — | [phase-09](/docs/implementation/0073/phase-09-rust-library-emit) |
@@ -71,7 +71,7 @@ The `package3/rust/` location is shared with the broader MEP-57 polyglot package
 
 ## Status snapshot
 
-As of 2026-05-29 22:03 (GMT+7): phases 0, 1, 2, 3, 4, and 5 LANDED (skeleton + sparse-index client + cargo semver + rustdoc-JSON ingest + closed type-mapping table + extern-C wrapper synthesiser + Mochi extern-fn emitter). Phases 6-13 pending. The MEP spec and research bundle are landed; implementation is progressing one phase per PR with auto-merge.
+As of 2026-05-29 22:42 (GMT+7): phases 0, 1, 2, 3, 4, 5, and 6 LANDED (skeleton + sparse-index client + cargo semver + rustdoc-JSON ingest + closed type-mapping table + extern-C wrapper synthesiser + Mochi extern-fn emitter + `import rust` grammar). Phases 7-13 pending. The MEP spec and research bundle are landed; implementation is progressing one phase per PR with auto-merge.
 
 ## Cross-references
 

@@ -5,4 +5,4 @@ error[P064]: unknown import language: "pythn"
     | ^
 
 help:
-  The supported languages are `go`, `python`, `typescript`, `zig`, `lua`, `clj`, and `clojure`. Omit the language to use the Mochi default, or check the spelling.
+  The supported languages are `go`, `python`, `typescript`, `zig`, `lua`, `clj`, `clojure`, and `rust`. Omit the language to use the Mochi default, or check the spelling.

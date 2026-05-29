@@ -1,0 +1,8 @@
+error[P066]: rust import path "hex" is not in `<crate>@<semver>` form
+  --> tests/parser/errors/import_rust_missing_version.mochi:1:1
+
+  1 | import rust "hex" as hex
+    | ^
+
+help:
+  An `import rust "..." as <alias>` statement names a crates.io crate plus a version, eg. `import rust "hex@0.4.3" as hex`. The version is required because MEP-73 binds the synthesised wrapper crate to an exact upstream version.
