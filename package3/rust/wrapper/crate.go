@@ -14,6 +14,7 @@ package wrapper
 import (
 	"fmt"
 
+	"mochi/package3/rust/asyncbridge"
 	"mochi/package3/rust/errors"
 	"mochi/package3/rust/rustdoc"
 	"mochi/package3/rust/typemap"
@@ -40,6 +41,24 @@ type Crate struct {
 	// the new SkipReports produced when typemap refuses a function
 	// signature.
 	Skipped []errors.SkipReport
+
+	// AsyncFlavor is the tokio runtime flavor the wrapper crate
+	// uses when any synthesised fn is `async fn`. Defaults to
+	// current-thread; callers override from the `[rust.runtime]`
+	// section of mochi.toml.
+	AsyncFlavor asyncbridge.Flavor
+}
+
+// HasAsync reports whether any synthesised function is `async fn`.
+// When true, EmitLibRS adds `mod mochi_rt;` to the prologue and
+// EmitCargoTOML emits tokio + once_cell dependency rows.
+func (c *Crate) HasAsync() bool {
+	for _, fn := range c.Functions {
+		if fn.IsAsync {
+			return true
+		}
+	}
+	return false
 }
 
 // SynthFn is a single synthesised extern-C wrapper.
@@ -58,6 +77,11 @@ type SynthFn struct {
 	// Return is the return-type mapping. Nil iff the function
 	// returns the unit type.
 	Return *typemap.Mapping
+
+	// IsAsync marks an upstream `async fn`. The emitter wraps the
+	// body in `mochi_rt::block_on(async { ... .await })` and the
+	// crate-level emit prepends the mochi_rt module + tokio deps.
+	IsAsync bool
 }
 
 // SynthParam is one input parameter.
@@ -127,6 +151,7 @@ func synthFn(upstream string, fn rustdoc.FunctionEntry) (*SynthFn, errors.SkipRe
 		UpstreamPath: joinPath(fn.Path),
 		Params:       params,
 		Return:       ret,
+		IsAsync:      fn.Header.IsAsync,
 	}, errors.SkipUnknown, ""
 }
 
