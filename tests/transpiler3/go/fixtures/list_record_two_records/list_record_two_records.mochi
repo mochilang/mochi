@@ -1,0 +1,16 @@
+type A {
+  v: int
+}
+
+type B {
+  v: int
+}
+
+let xs = [A { v: 1 }, A { v: 2 }]
+let ys = [B { v: 10 }, B { v: 20 }]
+for x in xs {
+  print(x.v)
+}
+for y in ys {
+  print(y.v)
+}

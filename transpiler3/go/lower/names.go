@@ -48,3 +48,18 @@ func mangleIdent(name string) string {
 	}
 	return name
 }
+
+// exportIdent capitalises the first rune so a struct field can be
+// addressed from package main (and so reflect / encoding round-trips
+// keep working). Phase 3.4 emits each record's source-named field
+// through this helper.
+func exportIdent(name string) string {
+	if name == "" {
+		return name
+	}
+	first := name[0]
+	if first >= 'a' && first <= 'z' {
+		first -= 'a' - 'A'
+	}
+	return string(first) + name[1:]
+}

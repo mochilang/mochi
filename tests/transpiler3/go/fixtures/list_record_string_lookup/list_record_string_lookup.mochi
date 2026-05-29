@@ -1,0 +1,17 @@
+type Entry {
+  key: string
+  val: int
+}
+
+let entries = [
+  Entry { key: "a", val: 1 },
+  Entry { key: "b", val: 2 },
+  Entry { key: "c", val: 3 },
+]
+var got: int = -1
+for e in entries {
+  if e.key == "b" {
+    got = e.val
+  }
+}
+print(got)

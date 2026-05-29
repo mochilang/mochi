@@ -1,0 +1,9 @@
+type P {
+  x: int
+}
+
+let xs = [P { x: 1 }, P { x: 2 }, P { x: 3 }, P { x: 4 }]
+let n = len(xs)
+for i in 0..n {
+  print(xs[n - 1 - i].x)
+}

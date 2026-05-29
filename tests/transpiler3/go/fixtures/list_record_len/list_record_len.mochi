@@ -1,0 +1,6 @@
+type P {
+  x: int
+}
+
+let xs = [P { x: 10 }, P { x: 20 }, P { x: 30 }]
+print(len(xs))

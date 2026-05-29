@@ -65,9 +65,45 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerSetLen(e)
 	case *aotir.SetToListExpr:
 		return l.lowerSetToList(e)
+	case *aotir.RecordLit:
+		return l.lowerRecordLit(e)
+	case *aotir.FieldAccess:
+		return l.lowerFieldAccess(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
+}
+
+// lowerRecordLit emits a struct composite literal with explicit
+// field-name initialisers, e.g. `Point{X: 1, Y: 2}`. Field order
+// follows RecordLit.Fields (already reordered into source-declared
+// order by the aotir lowerer).
+func (l *lowerer) lowerRecordLit(e *aotir.RecordLit) (gotree.Expr, error) {
+	elts := make([]gotree.Expr, 0, len(e.Fields))
+	for _, f := range e.Fields {
+		v, err := l.lowerExpr(f.Value)
+		if err != nil {
+			return nil, fmt.Errorf("record %s field %s: %w", e.TypeName, f.Name, err)
+		}
+		elts = append(elts, &gotree.KeyValueExpr{
+			Key:   &gotree.Ident{Name: exportIdent(f.Name)},
+			Value: v,
+		})
+	}
+	return &gotree.CompositeLit{
+		Type: &gotree.Ident{Name: e.TypeName},
+		Elts: elts,
+	}, nil
+}
+
+// lowerFieldAccess emits `recv.Field` (with Field capitalised so the
+// underlying Go struct field is exported).
+func (l *lowerer) lowerFieldAccess(e *aotir.FieldAccess) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("field access receiver: %w", err)
+	}
+	return &gotree.SelectorExpr{X: recv, Sel: exportIdent(e.FieldName)}, nil
 }
 
 // lowerSetLit emits an IIFE that builds the set with sequential
@@ -433,12 +469,23 @@ func (l *lowerer) lowerMapValuesExpr(e *aotir.MapValuesExpr) (gotree.Expr, error
 	}, nil
 }
 
-// lowerListLit emits `[]T{e0, e1, ...}` for a Phase 3.1 list of
-// scalar elements.
+// lowerListLit emits `[]T{e0, e1, ...}`. Phase 3.1 handles scalar
+// element types; Phase 3.4 widens to record element types (where
+// the element type is the record's Go struct name).
 func (l *lowerer) lowerListLit(e *aotir.ListLit) (gotree.Expr, error) {
-	elemType, err := l.lowerType(e.ElemType)
-	if err != nil {
-		return nil, fmt.Errorf("list literal: %w", err)
+	var elemType string
+	switch e.ElemType {
+	case aotir.TypeRecord:
+		if e.ElemRecordName == "" {
+			return nil, fmt.Errorf("list literal of records missing ElemRecordName")
+		}
+		elemType = e.ElemRecordName
+	default:
+		t, err := l.lowerType(e.ElemType)
+		if err != nil {
+			return nil, fmt.Errorf("list literal: %w", err)
+		}
+		elemType = t
 	}
 	elts := make([]gotree.Expr, 0, len(e.Elems))
 	for i, x := range e.Elems {

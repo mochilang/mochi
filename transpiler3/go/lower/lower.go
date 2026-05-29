@@ -29,6 +29,14 @@ type lowerer struct {
 func (l *lowerer) lowerProgram() (*gotree.File, error) {
 	f := &gotree.File{PackageName: "main"}
 
+	for _, rd := range l.prog.Records {
+		decl, err := l.lowerRecordDecl(rd)
+		if err != nil {
+			return nil, err
+		}
+		f.Decls = append(f.Decls, decl)
+	}
+
 	mainFn, err := l.findMain()
 	if err != nil {
 		return nil, err
@@ -47,6 +55,42 @@ func (l *lowerer) lowerProgram() (*gotree.File, error) {
 
 	f.Imports = l.emittedImports()
 	return f, nil
+}
+
+// lowerRecordDecl emits `type Name struct { Field T; ... }` per
+// MEP-54 §6 "Record lowering". Field order matches the source-order
+// captured in RecordDecl.Fields.
+func (l *lowerer) lowerRecordDecl(rd *aotir.RecordDecl) (gotree.Decl, error) {
+	fields := make([]gotree.Field, 0, len(rd.Fields))
+	for _, fd := range rd.Fields {
+		ft, err := l.lowerFieldType(fd)
+		if err != nil {
+			return nil, fmt.Errorf("record %s field %s: %w", rd.Name, fd.Name, err)
+		}
+		fields = append(fields, gotree.Field{
+			Names: []string{exportIdent(fd.Name)},
+			Type:  &gotree.Ident{Name: ft},
+		})
+	}
+	return &gotree.GenDecl{
+		Tok: "type",
+		Specs: []gotree.Spec{&gotree.TypeSpec{
+			Name: rd.Name,
+			Type: &gotree.StructType{Fields: fields},
+		}},
+	}, nil
+}
+
+// lowerFieldType resolves a RecordField's Go type-expression text.
+// For nested record types it uses the field's RecordName.
+func (l *lowerer) lowerFieldType(fd aotir.RecordField) (string, error) {
+	if fd.Type == aotir.TypeRecord {
+		if fd.RecordName == "" {
+			return "", fmt.Errorf("nested record field missing RecordName")
+		}
+		return fd.RecordName, nil
+	}
+	return l.lowerType(fd.Type)
 }
 
 func (l *lowerer) findMain() (*aotir.Function, error) {

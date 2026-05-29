@@ -186,11 +186,22 @@ func (l *lowerer) lowerForRangeStmt(s *aotir.ForRangeStmt) (gotree.Stmt, error) 
 func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 	switch s.VarType {
 	case aotir.TypeList:
+		if s.ElemType == aotir.TypeRecord {
+			if s.ElemRecordName == "" {
+				return "", fmt.Errorf("list<record> missing ElemRecordName")
+			}
+			return "[]" + s.ElemRecordName, nil
+		}
 		return l.lowerListType(s.ElemType)
 	case aotir.TypeMap:
 		return l.lowerMapType(s.KeyType, s.ValueType)
 	case aotir.TypeSet:
 		return l.lowerSetType(s.ElemType)
+	case aotir.TypeRecord:
+		if s.RecordName == "" {
+			return "", fmt.Errorf("record let missing RecordName")
+		}
+		return s.RecordName, nil
 	}
 	return l.lowerType(s.VarType)
 }

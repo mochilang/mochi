@@ -1,0 +1,9 @@
+type P {
+  x: int
+  y: int
+}
+
+let xs = [P { x: 1, y: 2 }, P { x: 3, y: 4 }, P { x: 5, y: 6 }]
+for p in xs {
+  print(p.x + p.y)
+}
