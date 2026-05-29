@@ -124,8 +124,6 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerLinesExpr(e)
 	case *aotir.HttpGetExpr:
 		return l.lowerHttpGetExpr(e)
-	case *aotir.LLMGenerateExpr:
-		return l.lowerLLMGenerateExpr(e)
 	case *aotir.LoadCSVExpr:
 		return l.lowerLoadCSVExpr(e)
 	case *aotir.OMapLiteralExpr:
@@ -1410,35 +1408,6 @@ func (l *lowerer) lowerHttpGetExpr(e *aotir.HttpGetExpr) (gotree.Expr, error) {
 	l.addImport("strings")
 	l.addHelper("mochiHttpGet")
 	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiHttpGet"}, Args: []gotree.Expr{url}}, nil
-}
-
-// lowerLLMGenerateExpr emits mochiLLMGenerate(provider, model, prompt)
-// which reads a pre-recorded response from $MOCHI_LLM_CASSETTE_DIR.
-// The cassette filename is the DJB2 hash of provider + "\0" + model +
-// "\0" + prompt + ".txt", matching the Swift / BEAM cassette layout
-// so a single fixture cassette works across all targets. Phase 13.0.
-func (l *lowerer) lowerLLMGenerateExpr(e *aotir.LLMGenerateExpr) (gotree.Expr, error) {
-	model, err := l.lowerExpr(e.Model)
-	if err != nil {
-		return nil, fmt.Errorf("llm model: %w", err)
-	}
-	prompt, err := l.lowerExpr(e.Prompt)
-	if err != nil {
-		return nil, fmt.Errorf("llm prompt: %w", err)
-	}
-	l.addImport("fmt")
-	l.addImport("os")
-	l.addImport("strings")
-	l.addHelper("mochiDJB2Key")
-	l.addHelper("mochiLLMGenerate")
-	return &gotree.CallExpr{
-		Fun: &gotree.Ident{Name: "mochiLLMGenerate"},
-		Args: []gotree.Expr{
-			&gotree.BasicLit{Kind: gotree.StringLit, Value: e.Provider},
-			model,
-			prompt,
-		},
-	}, nil
 }
 
 // lowerOMapLiteralExpr emits an IIFE that allocates a fresh *mochiOMap[K, V]
