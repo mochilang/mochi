@@ -4,7 +4,7 @@ Bidirectional Python package bridge for Mochi. Implementation lives under this d
 
 ## Status
 
-Stub. No code yet. The phase-00 skeleton (Driver, Venv, SkipReason, BridgeError, layout) is the first implementation deliverable.
+Phase 0 LANDED (2026-05-29). `Driver`, `Venv`, `SkipReason`, `BridgeError`, and the deterministic pyproject.toml renderer are in place. Phases 1-18 NOT STARTED.
 
 ## What this is
 
