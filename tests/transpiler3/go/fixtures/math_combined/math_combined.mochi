@@ -1,0 +1,3 @@
+print(abs(-42))
+print(floor(7.8))
+print(ceil(7.2))
