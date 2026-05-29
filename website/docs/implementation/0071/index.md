@@ -16,8 +16,8 @@ A phase is LANDED only when its gate is green for every target (consume directio
 | Phase | Title | Status | Commit | Tracking page |
 |-------|-------|--------|--------|---------------|
 | 0 | Skeleton: `package3/python/` layout + `Driver` / `Venv` / `SkipReason` / `BridgeError` | LANDED | `8e1ef75f` | [phase-00](/docs/implementation/0071/phase-00-skeleton) |
-| 1 | Simple-index client (PEP 503 HTML + PEP 691 JSON + PEP 700 metadata, sha256 + blake3 download verify) | LANDED | (pending merge) | [phase-01](/docs/implementation/0071/phase-01-simple-index) |
-| 2 | uv resolver bridge (subprocess + lockfile parsing) + PEP 751 pylock.toml round-trip | NOT STARTED | — | [phase-02](/docs/implementation/0071/phase-02-uv-resolver) |
+| 1 | Simple-index client (PEP 503 HTML + PEP 691 JSON + PEP 700 metadata, sha256 + blake3 download verify) | LANDED | `3dfc4490` | [phase-01](/docs/implementation/0071/phase-01-simple-index) |
+| 2 | uv resolver bridge (subprocess + lockfile parsing) + PEP 751 pylock.toml round-trip | LANDED | (pending merge) | [phase-02](/docs/implementation/0071/phase-02-uv-resolver) |
 | 3 | PEP 561 stub discovery (4-tier precedence, typeshed pin, stubgen sandbox) + `.pyi` parser | NOT STARTED | — | [phase-03](/docs/implementation/0071/phase-03-stub-ingest) |
 | 4 | Closed type-mapping table (scalars / strings / collections / Optional / Union / dataclass / TypedDict / Protocol) | NOT STARTED | — | [phase-04](/docs/implementation/0071/phase-04-type-mapping) |
 | 5 | Wrapper module synthesiser (CPython extension `.so` + `_mochi_wrap.py` + `.pyi`) | NOT STARTED | — | [phase-05](/docs/implementation/0071/phase-05-wrapper) |
@@ -73,6 +73,7 @@ package3/python/
   build/                  # Workspace + Driver + Venv + libpython link (phase 0)
   semver/                 # PEP 440 version parser (phase 1)
   simple/                 # PEP 503 / 691 / 700 simple-index client + content-addressed cache (phase 1)
+  toml/                   # minimal TOML reader scoped to uv.lock + pylock.toml + pyproject.toml (phase 2)
   uv/                     # uv subprocess bridge + uv.lock parser + pylock.toml round-trip (phase 2)
   stubs/                  # PEP 561 stub discovery + typeshed pin + stubgen sandbox + .pyi parser (phase 3)
   typemap/                # closed type table + Mochi/Python rendering (phase 4)
@@ -89,7 +90,7 @@ The `package3/python/` location is shared with the broader MEP-57 polyglot packa
 
 ## Status snapshot
 
-As of 2026-05-29 22:57 (GMT+7): MEP-71 spec and research bundle landed; phases 0-1 LANDED; phases 2-18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
+As of 2026-05-29 23:09 (GMT+7): MEP-71 spec and research bundle landed; phases 0-2 LANDED; phases 3-18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
 
 ## Cross-references
 
