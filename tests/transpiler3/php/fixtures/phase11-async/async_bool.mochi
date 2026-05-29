@@ -1,0 +1,4 @@
+fun is_even(n: int): bool { return n % 2 == 0 }
+let fut = async is_even(4)
+let result = await fut
+print(result)

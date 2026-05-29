@@ -33,6 +33,7 @@ type runtimeFlags struct {
 	setAdd      bool // mochi_set_add($s, 4) → $s with 4 added
 	listSortAsc bool // mochi_list_sort_asc($xs) → ascending stable copy
 	streams     bool // Phase 10: MochiStream/MochiSub classes + helpers
+	async       bool // Phase 11: MochiFuture class + future helpers
 }
 
 type lowerer struct {
@@ -331,6 +332,46 @@ final class MochiSub
 			ReturnType: "mixed",
 			Body: []ptree.Stmt{
 				&ptree.RawStmt{Text: `return array_shift($sub->stream->subs[$sub->idx]);`},
+			},
+		})
+	}
+	if l.runtime.async {
+		// MochiFuture wraps an already-computed value. All Phase 11
+		// fixtures observe deterministic results from sequential
+		// computations, so async/await lowers to eager evaluation
+		// inside a value wrapper. mochi_future_await_all unwraps a
+		// list of futures into a list of values, matching the
+		// `__await_all__` builtin contract.
+		out = append(out, &ptree.RawDecl{Text: `
+final class MochiFuture
+{
+    public function __construct(public mixed $value) {}
+}`})
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc:     []string{"Phase 11: wrap an eagerly-evaluated value as a future."},
+			Name:       "mochi_future_make",
+			Params:     []ptree.FuncParam{{Name: "v"}},
+			ReturnType: "MochiFuture",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `return new MochiFuture(value: $v);`},
+			},
+		})
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc:     []string{"Phase 11: unwrap a future. Eager evaluation means the value is already populated."},
+			Name:       "mochi_future_await",
+			Params:     []ptree.FuncParam{{TypeName: "MochiFuture", Name: "f"}},
+			ReturnType: "mixed",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `return $f->value;`},
+			},
+		})
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc:     []string{"Phase 11: unwrap a list of futures into a list of values, mirroring `__await_all__`."},
+			Name:       "mochi_future_await_all",
+			Params:     []ptree.FuncParam{{TypeName: "array", Name: "fs"}},
+			ReturnType: "array",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `return array_map(fn(MochiFuture $f) => $f->value, $fs);`},
 			},
 		})
 	}
@@ -784,6 +825,10 @@ func phpParamType(t aotir.Type, recordName, unionName string) (string, error) {
 		// Phase 10: every subscriber is a MochiSub; the carried element
 		// type is recovered via the parent stream's `subs[$idx]` slot.
 		return "MochiSub", nil
+	case aotir.TypeFuture:
+		// Phase 11: every future is a MochiFuture; the carried element
+		// type is recovered via the `value` slot at unwrap time.
+		return "MochiFuture", nil
 	case aotir.TypeFun:
 		// PHP's Closure class is the type emitted for any function-typed
 		// value. PHP cannot express a parameterised callable type at the
@@ -1142,6 +1187,16 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 			}
 			args = append(args, lo)
 		}
+		if v.Func == "__await_all__" {
+			// Phase 11: the IR carries `await_all(futs)` as a magic
+			// CallExpr; lower it to `mochi_future_await_all(...)` which
+			// array-maps the values out of the futures.
+			l.runtime.async = true
+			return &ptree.CallExpr{
+				Callee: &ptree.IdentExpr{Name: "mochi_future_await_all"},
+				Args:   args,
+			}, nil
+		}
 		return &ptree.CallExpr{
 			Callee: &ptree.IdentExpr{Name: v.Func},
 			Args:   args,
@@ -1468,6 +1523,33 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 		return &ptree.CallExpr{
 			Callee: &ptree.IdentExpr{Name: "mochi_sub_recv"},
 			Args:   []ptree.Expr{s},
+		}, nil
+	case *aotir.AsyncExpr:
+		// Phase 11: `async { body }` becomes
+		// `mochi_future_make(<body>)`. All Phase 11 fixtures observe
+		// deterministic results from sequential computations, so we
+		// evaluate the body eagerly and wrap the value. The MochiFuture
+		// class records the eagerly-computed value for later await.
+		l.runtime.async = true
+		body, err := l.lowerExpr(v.Body)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "mochi_future_make"},
+			Args:   []ptree.Expr{body},
+		}, nil
+	case *aotir.AwaitExpr:
+		// Phase 11: `await f` becomes `mochi_future_await($f)`, which
+		// returns the eagerly-stored value out of the MochiFuture.
+		l.runtime.async = true
+		fut, err := l.lowerExpr(v.Future)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "mochi_future_await"},
+			Args:   []ptree.Expr{fut},
 		}, nil
 	case *aotir.AgentLit:
 		// Phase 9: `Counter { count: 0 }` becomes
