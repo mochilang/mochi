@@ -1,0 +1,22 @@
+agent Clamp {
+    var v: int = 0
+    intent setv(n: int) {
+        if n < 0 {
+            v = 0
+        } else {
+            if n > 10 {
+                v = 10
+            } else {
+                v = n
+            }
+        }
+    }
+    intent get(): int { return v }
+}
+let c = Clamp { v: 0 }
+c.setv(-3)
+print(c.get())
+c.setv(7)
+print(c.get())
+c.setv(99)
+print(c.get())

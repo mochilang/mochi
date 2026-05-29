@@ -51,6 +51,9 @@ type lowerer struct {
 	// unions indexes union decls by name so the lowerer can stamp
 	// canonical union names onto EnumVariantLits and patterns.
 	unions map[string]*aotir.UnionDecl
+	// agents indexes agent decls by name so intent calls can resolve
+	// the Rust type token for `&mut` argument annotations.
+	agents map[string]*aotir.AgentDecl
 }
 
 // Lower translates an aotir.Program into a rtree.File.
@@ -59,6 +62,10 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, crateName string) (*rt
 	l.unions = make(map[string]*aotir.UnionDecl, len(prog.Unions))
 	for _, ud := range prog.Unions {
 		l.unions[ud.Name] = ud
+	}
+	l.agents = make(map[string]*aotir.AgentDecl, len(prog.Agents))
+	for _, ad := range prog.Agents {
+		l.agents[ad.Name] = ad
 	}
 
 	mainFn := prog.Functions[prog.Main]
@@ -84,6 +91,19 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, crateName string) (*rt
 	// Unions next; emit declaration-order to keep diffable output.
 	for _, ud := range prog.Unions {
 		file.Items = append(file.Items, lowerUnionDecl(ud))
+	}
+	// Agents: struct + free fns for each intent. The struct comes first
+	// so intent bodies (free fns) can name it; the intent fns are then
+	// callable from main and from other intent bodies.
+	for _, ad := range prog.Agents {
+		structItem, intentFns, err := l.lowerAgentDecl(ad)
+		if err != nil {
+			return nil, err
+		}
+		file.Items = append(file.Items, structItem)
+		for _, fn := range intentFns {
+			file.Items = append(file.Items, fn)
+		}
 	}
 
 	file.Items = append(file.Items, mainItem)
@@ -138,7 +158,10 @@ func rustFieldTypeName(t aotir.Type, recordName string) string {
 
 // rustNamedTypeName resolves a Rust type name that may carry a nominal
 // identity. recordName is used for TypeRecord, unionName for TypeUnion.
-// Other types fall back to rustTypeName.
+// Other types fall back to rustTypeName. For TypeAgent the agent name
+// is encoded in the same recordName slot when the caller knows it; the
+// fallback path handles VarRef/LetStmt where AgentName lives separately
+// (see lowerLetStmt).
 func rustNamedTypeName(t aotir.Type, recordName, unionName string) string {
 	switch t {
 	case aotir.TypeRecord:
@@ -148,6 +171,10 @@ func rustNamedTypeName(t aotir.Type, recordName, unionName string) string {
 	case aotir.TypeUnion:
 		if unionName != "" {
 			return unionName
+		}
+	case aotir.TypeAgent:
+		if recordName != "" {
+			return recordName
 		}
 	}
 	return rustTypeName(t)
@@ -182,6 +209,62 @@ func lowerUnionDecl(ud *aotir.UnionDecl) rtree.Item {
 		Name:     ud.Name,
 		Variants: variants,
 	}
+}
+
+// lowerAgentDecl translates an aotir.AgentDecl into a Rust StructDecl
+// plus a free function per intent. The struct mirrors the agent's
+// fields (Debug + Clone derives; PartialEq is omitted because agents
+// are state holders and not compared for equality in Phase 9.3). Each
+// intent becomes a free fn named `mochi_agent_NAME__INTENT` with first
+// parameter `__self: &mut TypeName` so the intent body can mutate the
+// agent's state through a Rust mutable reference. Field accesses and
+// assignments are rewritten from `__self->field` to `__self.field`
+// in lowerExpr / lowerAssignStmt.
+func (l *lowerer) lowerAgentDecl(ad *aotir.AgentDecl) (rtree.Item, []*rtree.FnDecl, error) {
+	derives := []string{"Debug", "Clone"}
+	fields := make([]rtree.StructField, 0, len(ad.Fields))
+	for _, f := range ad.Fields {
+		fields = append(fields, rtree.StructField{
+			Name:     f.Name,
+			TypeName: rustFieldTypeName(f.Type, f.RecordName),
+		})
+	}
+	structItem := &rtree.StructDecl{
+		Derives: derives,
+		Name:    ad.Name,
+		Fields:  fields,
+	}
+
+	intentFns := make([]*rtree.FnDecl, 0, len(ad.Intents))
+	for _, intent := range ad.Intents {
+		fnName := "mochi_agent_" + ad.Name + "__" + intent.Name
+		params := make([]rtree.FnParam, 0, len(intent.Params)+1)
+		params = append(params, rtree.FnParam{
+			Name:     "__self",
+			TypeName: "&mut " + ad.Name,
+		})
+		for _, p := range intent.Params {
+			params = append(params, rtree.FnParam{
+				Name:     p.Name,
+				TypeName: rustTypeName(p.Type),
+			})
+		}
+		retTy := ""
+		if intent.ReturnType != aotir.TypeUnit {
+			retTy = rustTypeName(intent.ReturnType)
+		}
+		body, err := l.lowerBlock(intent.Body)
+		if err != nil {
+			return nil, nil, fmt.Errorf("agent %q intent %q: %w", ad.Name, intent.Name, err)
+		}
+		intentFns = append(intentFns, &rtree.FnDecl{
+			Name:       fnName,
+			Params:     params,
+			ReturnType: retTy,
+			Body:       body,
+		})
+	}
+	return structItem, intentFns, nil
 }
 
 func (l *lowerer) lowerFunction(fn *aotir.Function) (*rtree.FnDecl, error) {
@@ -338,6 +421,12 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 		return l.lowerListSetStmt(n)
 	case *aotir.MatchStmt:
 		return l.lowerMatchStmt(n)
+	case *aotir.AgentIntentCallStmt:
+		expr, err := l.lowerAgentIntentCall(n.AgentName, n.IntentName, n.Receiver, n.Args)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.ExprStmt{Expr: expr}, nil
 	}
 	return nil, fmt.Errorf("rust lower: unsupported stmt %T", s)
 }
@@ -488,11 +577,16 @@ func (l *lowerer) lowerListSetStmt(s *aotir.ListSetStmt) (rtree.Stmt, error) {
 }
 
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (rtree.Stmt, error) {
+	// Agent-typed bindings must be mutable because intent calls take
+	// `&mut self` references. Mochi's `let c = Agent{...}` is treated as
+	// mutable in Rust since intents inherently mutate agent state, and
+	// Rust would otherwise reject the `&mut c` borrow at the call site.
+	mutable := s.Mutable || s.VarType == aotir.TypeAgent
 	if s.Init == nil {
 		// Bare declaration. Rust requires a type annotation here since
 		// there is no initializer to infer from.
 		return &rtree.LetStmt{
-			Mutable:  s.Mutable,
+			Mutable:  mutable,
 			Name:     s.Name,
 			TypeName: rustParamType(s.VarType, s.RecordName, s.UnionName, s.FunSig),
 		}, nil
@@ -518,7 +612,7 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (rtree.Stmt, error) {
 			nil)
 	}
 	return &rtree.LetStmt{
-		Mutable:  s.Mutable,
+		Mutable:  mutable,
 		Name:     s.Name,
 		TypeName: typeName,
 		Value:    v,
@@ -529,6 +623,12 @@ func (l *lowerer) lowerAssignStmt(s *aotir.AssignStmt) (rtree.Stmt, error) {
 	v, err := l.lowerExpr(s.Value)
 	if err != nil {
 		return nil, err
+	}
+	if rest, ok := strings.CutPrefix(s.Name, "__self->"); ok {
+		return &rtree.AssignStmt{
+			Target: &rtree.FieldAccess{Receiver: &rtree.Ident{Name: "__self"}, Field: rest},
+			Value:  v,
+		}, nil
 	}
 	return &rtree.AssignStmt{Target: &rtree.Ident{Name: s.Name}, Value: v}, nil
 }
@@ -646,6 +746,16 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 		// in aotir, since the C lowerer rewrites them through the env
 		// pointer. The Rust ABI prepends captures as plain parameters
 		// (see lowerFunction), so the env prefix is stripped here.
+		// Agent intent bodies likewise see field accesses as
+		// `__self->FieldName`, which we rewrite to a Rust FieldAccess
+		// on the `__self: &mut TypeName` parameter.
+		if rest, ok := strings.CutPrefix(n.Name, "__self->"); ok {
+			fa := &rtree.FieldAccess{Receiver: &rtree.Ident{Name: "__self"}, Field: rest}
+			if isOwnedType(n.VarType) {
+				return &rtree.CloneExpr{Expr: fa}, nil
+			}
+			return fa, nil
+		}
 		name := strings.TrimPrefix(n.Name, "__e->")
 		ident := &rtree.Ident{Name: name}
 		if isOwnedType(n.VarType) {
@@ -995,8 +1105,51 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			return &rtree.CloneExpr{Expr: fa}, nil
 		}
 		return fa, nil
+	case *aotir.AgentLit:
+		fields := make([]rtree.StructLitField, 0, len(n.Fields))
+		for _, f := range n.Fields {
+			v, err := l.lowerExpr(f.Value)
+			if err != nil {
+				return nil, fmt.Errorf("agent %q field %q: %w", n.AgentName, f.Name, err)
+			}
+			fields = append(fields, rtree.StructLitField{Name: f.Name, Value: v})
+		}
+		return &rtree.StructLit{TypeName: n.AgentName, Fields: fields}, nil
+	case *aotir.AgentIntentCallExpr:
+		return l.lowerAgentIntentCall(n.AgentName, n.IntentName, n.Receiver, n.Args)
 	}
 	return nil, fmt.Errorf("rust lower: unsupported expr %T", e)
+}
+
+// lowerAgentIntentCall builds a Rust call to the per-intent free
+// function: `mochi_agent_NAME__INTENT(&mut receiver, args...)`. The
+// receiver may be a VarRef, a __self field access, or any other Expr.
+// When the receiver is a VarRef we emit `&mut name` directly so the
+// borrow checker sees a plain mutable borrow of the agent binding.
+func (l *lowerer) lowerAgentIntentCall(agentName, intentName string, receiver aotir.Expr, callArgs []aotir.Expr) (rtree.Expr, error) {
+	args := make([]rtree.Expr, 0, len(callArgs)+1)
+	recvExpr, err := l.lowerExpr(receiver)
+	if err != nil {
+		return nil, fmt.Errorf("agent %q intent %q receiver: %w", agentName, intentName, err)
+	}
+	// The lowered VarRef returns a CloneExpr for owned types; for an
+	// agent receiver we want a mutable borrow of the binding, not a
+	// clone, so peel off the clone and emit `&mut name`.
+	if ce, ok := recvExpr.(*rtree.CloneExpr); ok {
+		recvExpr = ce.Expr
+	}
+	args = append(args, &rtree.RawExpr{Code: "&mut " + recvExpr.RustExpr()})
+	for i, a := range callArgs {
+		ea, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, fmt.Errorf("agent %q intent %q arg %d: %w", agentName, intentName, i, err)
+		}
+		args = append(args, ea)
+	}
+	return &rtree.CallExpr{
+		Func: "mochi_agent_" + agentName + "__" + intentName,
+		Args: args,
+	}, nil
 }
 
 // lowerFunLit builds the Rust expression that constructs a Box<dyn Fn>

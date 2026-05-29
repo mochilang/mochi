@@ -1,0 +1,16 @@
+agent Bag {
+    var a: int = 0
+    var b: int = 0
+    var c: int = 0
+    intent bump() {
+        a = a + 1
+        b = b + 2
+        c = c + 3
+    }
+    intent total(): int { return a + b + c }
+}
+let g = Bag { a: 0, b: 0, c: 0 }
+g.bump()
+g.bump()
+g.bump()
+print(g.total())

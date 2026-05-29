@@ -1,0 +1,10 @@
+agent Echo {
+    var last: string = ""
+    intent say(s: string) { last = s }
+    intent get(): string { return last }
+}
+let e = Echo { last: "" }
+e.say("alpha")
+print(e.get())
+e.say("beta")
+print(e.get())

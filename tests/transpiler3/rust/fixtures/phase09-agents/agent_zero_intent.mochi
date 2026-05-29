@@ -1,0 +1,13 @@
+agent Zero {
+    var v: int = 0
+    intent zero() { v = 0 }
+    intent set_one() { v = 1 }
+    intent get(): int { return v }
+}
+let z = Zero { v: 42 }
+z.zero()
+print(z.get())
+z.set_one()
+print(z.get())
+z.zero()
+print(z.get())
