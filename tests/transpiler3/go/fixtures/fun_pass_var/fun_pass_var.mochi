@@ -1,0 +1,7 @@
+fun cube(x: int): int {
+  return x * x * x
+}
+
+let n = 4
+let c = cube(n)
+print(c)

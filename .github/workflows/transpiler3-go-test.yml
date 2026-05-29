@@ -1,0 +1,60 @@
+name: Go transpiler tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    paths:
+      - 'transpiler3/go/**'
+      - 'tests/transpiler3/go/**'
+      - 'transpiler3/c/aotir/**'
+      - 'transpiler3/c/lower/**'
+      - '.github/workflows/transpiler3-go-test.yml'
+
+jobs:
+  go-test:
+    name: Go test (Go ${{ matrix.go }} / ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            go: '1.26.0'
+            blocking: true
+          - os: ubuntu-24.04
+            go: '1.26.3'
+            blocking: true
+          - os: macos-15
+            go: '1.26.3'
+            blocking: true
+          - os: windows-2025
+            go: '1.26.3'
+            blocking: false
+
+    continue-on-error: ${{ !matrix.blocking }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go }}
+          cache-dependency-path: go.sum
+
+      - name: Show toolchain
+        run: |
+          go version
+          go env GOROOT GOPATH GOCACHE GOMODCACHE
+
+      - name: Build transpiler packages
+        run: go build ./transpiler3/go/...
+
+      - name: Vet transpiler packages
+        run: go vet ./transpiler3/go/...
+
+      - name: Run Go transpiler tests
+        run: go test -v -timeout 1800s ./transpiler3/go/...
+        env:
+          GOFLAGS: '-mod=readonly'

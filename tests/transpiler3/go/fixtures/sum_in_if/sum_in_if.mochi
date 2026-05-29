@@ -1,0 +1,11 @@
+type Tag =
+  Yes { v: int }
+  | No { v: int }
+
+let t: Tag = Yes { v: 7 }
+if true {
+  match t {
+    Yes(v) => print(v)
+    No(v) => print(v)
+  }
+}

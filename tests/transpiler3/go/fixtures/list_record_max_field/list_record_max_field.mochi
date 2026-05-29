@@ -1,0 +1,12 @@
+type P {
+  x: int
+}
+
+let xs = [P { x: 3 }, P { x: 7 }, P { x: 2 }, P { x: 9 }, P { x: 5 }]
+var best: int = -1
+for p in xs {
+  if p.x > best {
+    best = p.x
+  }
+}
+print(best)

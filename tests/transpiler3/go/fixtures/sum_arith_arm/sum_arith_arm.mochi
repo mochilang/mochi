@@ -1,0 +1,9 @@
+type Op =
+  Add { a: int b: int }
+  | Mul { a: int b: int }
+
+let o: Op = Mul { a: 6, b: 7 }
+match o {
+  Add(a, b) => print(a + b)
+  Mul(a, b) => print(a * b)
+}

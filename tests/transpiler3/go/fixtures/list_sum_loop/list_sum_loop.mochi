@@ -1,0 +1,6 @@
+let xs = [10, 20, 30, 40]
+var total = 0
+for x in xs {
+  total = total + x
+}
+print(total)

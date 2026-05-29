@@ -1,0 +1,4 @@
+let cube: fun(int): int = fun(x: int): int => x * x * x
+print(cube(3))
+print(cube(4))
+print(cube(cube(2)))

@@ -1,0 +1,5 @@
+let words = ["apple", "banana", "cherry", "avocado"]
+let with_a = filter(words, fun(s: string): bool => s.contains("a"))
+for w in with_a {
+    print(w)
+}

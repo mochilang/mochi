@@ -1,0 +1,5 @@
+fun shout(s: string): string {
+  return s + "!"
+}
+
+print(shout("hey"))

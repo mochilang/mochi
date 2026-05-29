@@ -1,0 +1,10 @@
+fun makeAdder(n: int): fun(int): int {
+  return fun(x: int): int => x + n
+}
+
+let add10: fun(int): int = makeAdder(10)
+let add100: fun(int): int = makeAdder(100)
+print(add10(5))
+print(add10(7))
+print(add100(1))
+print(add100(23))

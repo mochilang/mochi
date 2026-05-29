@@ -1,0 +1,6 @@
+let x = 10
+let y = 20
+print(x + y)
+var z = 5
+z = z * 2
+print(z)

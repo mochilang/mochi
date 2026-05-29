@@ -1,0 +1,12 @@
+type P {
+  x: int
+}
+
+let xs = [P { x: 1 }, P { x: 6 }, P { x: 3 }, P { x: 9 }, P { x: 4 }, P { x: 7 }]
+var n: int = 0
+for p in xs {
+  if p.x > 5 {
+    n = n + 1
+  }
+}
+print(n)

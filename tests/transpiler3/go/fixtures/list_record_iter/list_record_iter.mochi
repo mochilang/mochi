@@ -1,0 +1,13 @@
+type Item {
+  name: string
+  qty: int
+}
+
+let items = [
+  Item { name: "a", qty: 1 },
+  Item { name: "b", qty: 2 },
+  Item { name: "c", qty: 3 },
+]
+for it in items {
+  print(it.name)
+}

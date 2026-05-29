@@ -1,0 +1,10 @@
+type P {
+  x: int
+  y: float
+}
+
+let a = P { x: 1, y: 2.5 }
+let b = P { x: 1, y: 2.5 }
+let c = P { x: 1, y: 7.5 }
+print(a == b)
+print(a == c)

@@ -1,0 +1,3 @@
+let xs = split("one:two:three", ":")
+let s = join(xs, "-")
+print(s)

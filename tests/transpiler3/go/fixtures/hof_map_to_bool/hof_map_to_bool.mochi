@@ -1,0 +1,5 @@
+let nums = [1, 2, 3, 4, 5]
+let parity = map(nums, fun(x: int): bool => x % 2 == 0)
+for p in parity {
+    print(p)
+}

@@ -1,0 +1,8 @@
+type V {
+  x: int
+  ok: bool
+}
+
+let v = V { x: 5, ok: true }
+print(-v.x)
+print(!v.ok)

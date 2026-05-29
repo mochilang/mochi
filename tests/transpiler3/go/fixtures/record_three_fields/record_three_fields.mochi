@@ -1,0 +1,10 @@
+type Triple {
+  i: int
+  s: string
+  b: bool
+}
+
+let t = Triple { i: 99, s: "ok", b: true }
+print(t.i)
+print(t.s)
+print(t.b)

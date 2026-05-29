@@ -1,0 +1,7 @@
+var m: map<string, int> = {}
+m["x"] = 10
+m["y"] = 20
+print(m["x"])
+print(m["y"])
+m["x"] = 100
+print(m["x"])

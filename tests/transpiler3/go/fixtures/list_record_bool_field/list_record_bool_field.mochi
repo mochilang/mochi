@@ -1,0 +1,12 @@
+type Flag {
+  active: bool
+}
+
+let xs = [Flag { active: true }, Flag { active: false }, Flag { active: true }, Flag { active: true }]
+var n: int = 0
+for f in xs {
+  if f.active {
+    n = n + 1
+  }
+}
+print(n)

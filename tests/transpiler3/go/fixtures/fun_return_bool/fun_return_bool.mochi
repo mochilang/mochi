@@ -1,0 +1,6 @@
+fun is_pos(x: int): bool {
+  return x > 0
+}
+
+print(is_pos(5))
+print(is_pos(-3))

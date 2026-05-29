@@ -1,0 +1,9 @@
+type Wrap =
+  W { v: int }
+  | X { v: int }
+
+let w: Wrap = W { v: 6 + 4 }
+match w {
+  W(v) => print(v + 1)
+  X(v) => print(v - 1)
+}

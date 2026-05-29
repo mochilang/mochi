@@ -1,0 +1,3 @@
+let xs: list<float> = [1.5, 0.5, 3.14, 2.71]
+let m: float = min(xs)
+print(m)

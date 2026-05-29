@@ -1,0 +1,4 @@
+let xs = [7, 14, 21, 28]
+for x in xs {
+  print(x * 2)
+}

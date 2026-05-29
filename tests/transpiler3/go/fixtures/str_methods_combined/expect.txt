@@ -1,0 +1,5 @@
+true
+w
+world
+cba
+oof

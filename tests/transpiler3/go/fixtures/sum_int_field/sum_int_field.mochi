@@ -1,0 +1,7 @@
+type T = A { x: int } | B { x: int }
+
+let t: T = A { x: 7 }
+match t {
+  A(x) => print(x + 1)
+  B(x) => print(x - 1)
+}

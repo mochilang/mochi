@@ -1,0 +1,4 @@
+var m: omap<string,int> = omap{"x": 10}
+m["y"] = 20
+print(m["x"])
+print(m["y"])

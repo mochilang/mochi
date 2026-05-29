@@ -1,0 +1,8 @@
+let nums: list<int> = [1, 2, 3]
+for n in nums {
+    print(str(n))
+}
+let flags: list<bool> = [true, false, true]
+for f in flags {
+    print(str(f))
+}

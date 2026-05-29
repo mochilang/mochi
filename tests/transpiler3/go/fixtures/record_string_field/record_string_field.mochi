@@ -1,0 +1,6 @@
+type S {
+  name: string
+}
+
+let s = S { name: "hello" }
+print(s.name)

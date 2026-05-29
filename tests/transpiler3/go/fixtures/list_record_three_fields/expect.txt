@@ -1,0 +1,9 @@
+A
+100
+true
+B
+200
+false
+C
+300
+true

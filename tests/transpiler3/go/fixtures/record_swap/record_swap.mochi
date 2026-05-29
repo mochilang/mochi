@@ -1,0 +1,10 @@
+type Pair {
+  a: int
+  b: int
+}
+
+var p: Pair = Pair { a: 1, b: 2 }
+let tmp: int = p.a
+p = Pair { a: p.b, b: tmp }
+print(p.a)
+print(p.b)

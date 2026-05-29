@@ -1,0 +1,4 @@
+let names = {1: "alice", 2: "bob", 3: "carol"}
+print(names[1])
+print(names[2])
+print(names[3])

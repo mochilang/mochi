@@ -1,0 +1,6 @@
+writeFile("/tmp/mochi3_go_csv_quoted.csv", "\"hello, world\",42\n\"say \"\"hi\"\"\",99\n")
+let rows = loadCSV("/tmp/mochi3_go_csv_quoted.csv")
+print(rows[0][0])
+print(rows[0][1])
+print(rows[1][0])
+print(rows[1][1])

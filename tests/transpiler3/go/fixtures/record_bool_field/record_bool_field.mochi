@@ -1,0 +1,6 @@
+type B {
+  ok: bool
+}
+
+let b = B { ok: true }
+print(b.ok)

@@ -1,0 +1,16 @@
+type Book {
+  title: string
+  pages: int
+  in_print: bool
+}
+
+let books = [
+  Book { title: "A", pages: 100, in_print: true },
+  Book { title: "B", pages: 200, in_print: false },
+  Book { title: "C", pages: 300, in_print: true },
+]
+for b in books {
+  print(b.title)
+  print(b.pages)
+  print(b.in_print)
+}

@@ -1,0 +1,23 @@
+type Cell =
+  IntCell { i: int }
+  | StrCell { s: string }
+  | FloatCell { f: float }
+
+let c1: Cell = IntCell { i: 1 }
+let c2: Cell = StrCell { s: "hi" }
+let c3: Cell = FloatCell { f: 2.5 }
+match c1 {
+  IntCell(i) => print(i)
+  StrCell(s) => print(s)
+  FloatCell(f) => print(f)
+}
+match c2 {
+  IntCell(i) => print(i)
+  StrCell(s) => print(s)
+  FloatCell(f) => print(f)
+}
+match c3 {
+  IntCell(i) => print(i)
+  StrCell(s) => print(s)
+  FloatCell(f) => print(f)
+}

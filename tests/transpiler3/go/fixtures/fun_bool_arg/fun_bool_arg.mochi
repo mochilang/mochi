@@ -1,0 +1,6 @@
+fun neg(b: bool): bool {
+  return !b
+}
+
+print(neg(true))
+print(neg(false))

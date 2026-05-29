@@ -1,0 +1,4 @@
+var m: omap<string,int> = omap{"alpha": 100, "beta": 200, "gamma": 300}
+print(m["alpha"])
+print(m["beta"])
+print(m["gamma"])

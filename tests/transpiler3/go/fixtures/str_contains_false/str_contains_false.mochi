@@ -1,0 +1,4 @@
+let s = "hello"
+print(s.contains("xyz"))
+print(s.contains("helloo"))
+print(s.contains(""))
