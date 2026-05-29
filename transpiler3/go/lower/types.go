@@ -161,6 +161,22 @@ func (l *lowerer) lowerSubType(elem aotir.Type) (string, error) {
 	return "*mochiSub[" + et + "]", nil
 }
 
+// lowerFutureType produces `chan T` for a future<T> value. Phase 11.0
+// maps Mochi futures onto a one-shot buffered Go channel: the async
+// goroutine sends the computed value once and the await is a single
+// receive. The chan element type and direction are both already
+// well-suited to one-shot semantics so no runtime helper is needed.
+func (l *lowerer) lowerFutureType(elem aotir.Type) (string, error) {
+	et, err := l.lowerType(elem)
+	if err != nil {
+		return "", fmt.Errorf("future element: %w", err)
+	}
+	if et == "" {
+		return "", fmt.Errorf("transpiler3/go/lower: future element type cannot be unit")
+	}
+	return "chan " + et, nil
+}
+
 // lowerFunType produces `func(T1, T2, ...) R` for a fun-typed value.
 // Phase 6.1 restricts the parameter and return types to scalar primitives
 // and unit (matching the aotir FunSig restriction).
