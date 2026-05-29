@@ -10,6 +10,11 @@ import (
 	"mochi/transpiler3/ruby/rtree"
 )
 
+// agentsByName maps an agent type name to its declaration, populated at the
+// start of each Lower() pass so AgentSpawnExpr (which carries no init args)
+// can synthesize zero-value field assignments from the field list.
+var agentsByName map[string]*aotir.AgentDecl
+
 // Lower translates an aotir.Program into an rtree.SourceFile. The fileBase
 // is the basename of the .rb file (no extension); className is the
 // PascalCase module name that wraps the Mochi main function.
@@ -19,6 +24,10 @@ func Lower(prog *aotir.Program, fileBase, className string) (*rtree.SourceFile, 
 	}
 	if prog.Main < 0 || prog.Main >= len(prog.Functions) {
 		return nil, fmt.Errorf("ruby lower: invalid Main index %d (have %d functions)", prog.Main, len(prog.Functions))
+	}
+	agentsByName = make(map[string]*aotir.AgentDecl, len(prog.Agents))
+	for _, a := range prog.Agents {
+		agentsByName[a.Name] = a
 	}
 
 	mainFn := prog.Functions[prog.Main]
@@ -740,6 +749,16 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			args = append(args, f.Name+": "+fv.RubyExprString())
 		}
 		return &rtree.RawExpr{Text: e.AgentName + ".new(" + strings.Join(args, ", ") + ")"}, nil
+	case *aotir.AgentSpawnExpr:
+		decl, ok := agentsByName[e.AgentName]
+		if !ok {
+			return nil, fmt.Errorf("ruby lower: spawn unknown agent %q", e.AgentName)
+		}
+		args := make([]string, 0, len(decl.Fields))
+		for _, f := range decl.Fields {
+			args = append(args, f.Name+": "+rubyZeroValue(f.Type))
+		}
+		return &rtree.RawExpr{Text: e.AgentName + ".new(" + strings.Join(args, ", ") + ")"}, nil
 	case *aotir.AgentIntentCallExpr:
 		recv, err := lowerExpr(e.Receiver)
 		if err != nil {
@@ -1355,6 +1374,23 @@ func lowerFunCallExpr(c *aotir.FunCallExpr) (rtree.Expr, error) {
 		return nil, fmt.Errorf("FunCallExpr callee: %w", err)
 	}
 	return &rtree.MethodCall{Receiver: callee, Method: "call", Args: args, UseParens: true}, nil
+}
+
+// rubyZeroValue returns the Ruby literal corresponding to the zero value of
+// the given Mochi scalar type. Used by AgentSpawnExpr, which carries no
+// init args, so each field defaults to its type's zero.
+func rubyZeroValue(t aotir.Type) string {
+	switch t {
+	case aotir.TypeInt:
+		return "0"
+	case aotir.TypeFloat:
+		return "0.0"
+	case aotir.TypeBool:
+		return "false"
+	case aotir.TypeString:
+		return "\"\""
+	}
+	return "nil"
 }
 
 // rubyIdent maps a Mochi-source identifier to a Ruby-safe local variable
