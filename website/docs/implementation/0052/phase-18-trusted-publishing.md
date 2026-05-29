@@ -13,8 +13,8 @@ description: "MEP-52 Phase 18, emit .github/workflows/release.yml driving npm Tr
 | Status         | LANDED (workflow emit + structural gates + provenance dry-run); 18.3 verdaccio round-trip and 18.4 real OIDC publish deferred |
 | Started        | 2026-05-30 02:00 (GMT+7) |
 | Landed         | 2026-05-30 02:14 (GMT+7) |
-| Tracking issue | (pending) |
-| Tracking PR    | (pending) |
+| Tracking issue | [#23029](https://github.com/mochilang/mochi/issues/23029) |
+| Tracking PR    | [#23030](https://github.com/mochilang/mochi/pull/23030) |
 
 ## Gates
 
