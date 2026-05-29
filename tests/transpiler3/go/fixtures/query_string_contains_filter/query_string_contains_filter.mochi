@@ -1,0 +1,5 @@
+let words = ["hello", "world", "mochi", "lang"]
+let l_words = from w in words where w.contains("l") select w
+for w in l_words {
+  print(w)
+}
