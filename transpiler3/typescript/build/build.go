@@ -102,6 +102,21 @@ const (
 	// gate that the bundle is non-empty ESM. Playwright Chromium
 	// end-to-end execution lands in sub-phase 17.4.
 	TargetBrowserBundle
+
+	// TargetReleaseWorkflow emits the npm package skeleton plus a
+	// `.github/workflows/release.yml` that publishes the package
+	// via npm Trusted Publishing (Sigstore + GitHub OIDC,
+	// GA April 2024) and JSR Trusted Publishing (Deno's
+	// --token-source=github-actions). The returned path is the
+	// absolute path of the emitted workflow file.
+	//
+	// Phase 18.0 ships the workflow emit + structural gates (no
+	// long-lived tokens, OIDC permissions, provenance flags). The
+	// real `npm publish --provenance` round-trip only runs in CI
+	// because it requires the Actions runtime to issue an OIDC
+	// token; verdaccio-based local round-trip lands in sub-phase
+	// 18.3.
+	TargetReleaseWorkflow
 )
 
 // Driver is the TypeScript transpiler pipeline entry point.
@@ -250,6 +265,23 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 		}
 		_ = srcBytes
 		return bundlePath, nil
+	}
+
+	// Phase 18.0: TargetReleaseWorkflow emits the Phase 15 package
+	// scaffold and a .github/workflows/release.yml that publishes
+	// via npm Trusted Publishing (Sigstore + OIDC) and JSR
+	// Trusted Publishing. Returns the workflow file path.
+	if target == TargetReleaseWorkflow {
+		pkgName := npmPackageNameFromSrc(src)
+		if _, err := emit.EmitPackage(file, outDir, emit.PackageInfo{Name: pkgName, Version: "0.0.0"}); err != nil {
+			return "", fmt.Errorf("ts build: emit pkg: %w", err)
+		}
+		workflowPath, err := emitReleaseWorkflow(outDir, pkgName)
+		if err != nil {
+			return "", fmt.Errorf("ts build: workflow emit: %w", err)
+		}
+		_ = srcBytes
+		return workflowPath, nil
 	}
 
 	emittedPath, err := emit.Emit(file, outDir, "main")
