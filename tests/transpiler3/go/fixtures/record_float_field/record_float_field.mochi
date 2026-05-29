@@ -1,0 +1,6 @@
+type F {
+  v: float
+}
+
+let f = F { v: 3.14 }
+print(f.v)

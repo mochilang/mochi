@@ -1,0 +1,9 @@
+type P {
+  x: int
+}
+
+let a = P { x: 9 }
+let b = a
+print(a.x)
+print(b.x)
+print(a == b)

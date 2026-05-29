@@ -1,0 +1,8 @@
+type P {
+  x: int
+}
+
+let p = P { x: 7 }
+print(p.x)
+print(p.x + p.x)
+print(p.x * p.x * p.x)

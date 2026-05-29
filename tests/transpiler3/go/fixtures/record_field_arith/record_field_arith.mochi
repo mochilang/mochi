@@ -1,0 +1,9 @@
+type Vec {
+  x: int
+  y: int
+}
+
+let v = Vec { x: 5, y: 12 }
+print(v.x * v.x + v.y * v.y)
+print(v.x - v.y)
+print(v.x % 2)

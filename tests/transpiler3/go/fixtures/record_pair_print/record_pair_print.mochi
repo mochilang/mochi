@@ -1,0 +1,9 @@
+type Pair {
+  a: int
+  b: int
+}
+
+let p = Pair { a: 10, b: 20 }
+let q = Pair { a: 30, b: 40 }
+print(p.a + q.a)
+print(p.b + q.b)
