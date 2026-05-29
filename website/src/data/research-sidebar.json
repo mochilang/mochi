@@ -172,6 +172,7 @@
       "research/0054/codegen-design",
       "research/0054/type-lowering",
       "research/0054/go-target-portability",
+      "research/0054/runtime-portability",
       "research/0054/dataset-pipeline",
       "research/0054/agent-streams",
       "research/0054/build-system",
@@ -285,6 +286,24 @@
       "research/0074/interface-and-method-set",
       "research/0074/tinygo-embedded-wasm",
       "research/0074/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0075",
+    "items": [
+      "research/0075/index",
+      "research/0075/language-surface",
+      "research/0075/design-philosophy",
+      "research/0075/prior-art-bridges",
+      "research/0075/packagist-ingest",
+      "research/0075/type-mapping",
+      "research/0075/composer-publish-flow",
+      "research/0075/packagist-trusted-publishing-gap",
+      "research/0075/async-bridge",
+      "research/0075/psr-autoloading",
+      "research/0075/build-system",
+      "research/0075/testing-gates",
+      "research/0075/risks-and-alternatives"
     ]
   },
   {
