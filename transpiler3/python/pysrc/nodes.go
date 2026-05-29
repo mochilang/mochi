@@ -145,6 +145,14 @@ type ClassDef struct {
 	Name       string
 	Decorators []string
 	Fields     []ClassField
+	// Init is an optional explicit __init__ body. When non-empty the
+	// emitter renders `def __init__(self, ...):` after the field
+	// annotations. Used by Phase 9 agents whose mutable state cannot live
+	// in a frozen dataclass.
+	Init *FunctionDef
+	// Methods are instance methods rendered after the field block (and
+	// after Init when present). Used by Phase 9 agent intent methods.
+	Methods []*FunctionDef
 }
 
 // ClassField is `name: Type` inside a class body.
@@ -169,11 +177,12 @@ func (c *ClassDef) PyString(indent int) string {
 	sb.WriteString("class ")
 	sb.WriteString(c.Name)
 	sb.WriteString(":\n")
-	if len(c.Fields) == 0 {
+	if len(c.Fields) == 0 && c.Init == nil && len(c.Methods) == 0 {
 		sb.WriteString(pad)
 		sb.WriteString("    pass")
 		return sb.String()
 	}
+	wrote := false
 	for i, f := range c.Fields {
 		if i > 0 {
 			sb.WriteByte('\n')
@@ -183,6 +192,21 @@ func (c *ClassDef) PyString(indent int) string {
 		sb.WriteString(f.Name)
 		sb.WriteString(": ")
 		sb.WriteString(f.Type.PyString())
+		wrote = true
+	}
+	if c.Init != nil {
+		if wrote {
+			sb.WriteString("\n\n")
+		}
+		sb.WriteString(c.Init.PyString(indent + 1))
+		wrote = true
+	}
+	for _, m := range c.Methods {
+		if wrote {
+			sb.WriteString("\n\n")
+		}
+		sb.WriteString(m.PyString(indent + 1))
+		wrote = true
 	}
 	return sb.String()
 }
@@ -367,6 +391,22 @@ func (s *AssignStmt) PyString(indent int) string {
 		return fmt.Sprintf("%s%s: %s = %s", pad, s.Target, s.Type.PyString(), s.Value.PyString())
 	}
 	return fmt.Sprintf("%s%s = %s", pad, s.Target, s.Value.PyString())
+}
+
+// AttrAssignStmt is `obj.attr = value`. Used by Phase 9 to mutate agent
+// state inside intent methods (`self.count = self.count + 1`).
+type AttrAssignStmt struct {
+	Target Expr
+	Attr   string
+	Value  Expr
+}
+
+func (*AttrAssignStmt) isStmt() {}
+
+// PyString renders the attribute assignment.
+func (s *AttrAssignStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	return fmt.Sprintf("%s%s.%s = %s", pad, s.Target.PyString(), s.Attr, s.Value.PyString())
 }
 
 // ReturnStmt is `return value` or bare `return`.

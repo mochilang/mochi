@@ -38,6 +38,7 @@ type lowerer struct {
 	needsStrFrom    bool // true once `str(x)` lowers to mochi_runtime.fmt.str_from (Phase 7.0)
 	needsSumI64     bool // true once `sum(xs:int)` lowers to mochi_runtime.query.sum_i64 (Phase 7.0)
 	needsSumF64     bool // true once `sum(xs:float)` lowers to mochi_runtime.query.sum_f64 (Phase 7.0)
+	needsDeque      bool // true once a chan<T> lowers to collections.deque (Phase 9.0)
 }
 
 // Lower translates an aotir.Program into a pysrc.Module covering the
@@ -62,6 +63,13 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 	for _, u := range prog.Unions {
 		l.needsDataclass = true
 		defs = append(defs, lowerUnionDecl(u)...)
+	}
+	for _, a := range prog.Agents {
+		def, err := l.lowerAgentDecl(a)
+		if err != nil {
+			return nil, err
+		}
+		defs = append(defs, def)
 	}
 	for i, fn := range prog.Functions {
 		if i == prog.Main {
@@ -129,6 +137,9 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 	}
 	if l.needsStrFrom {
 		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "mochi_runtime.fmt", Names: []string{"str_from"}})
+	}
+	if l.needsDeque {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "collections", Names: []string{"deque"}})
 	}
 	return mod, nil
 }
@@ -257,6 +268,15 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (pysrc.Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		// C lower bakes agent intent self-field assignments as
+		// AssignStmt.Name = "__self->fieldname". Rewrite to `self.fieldname = val`.
+		if field, ok := strings.CutPrefix(v.Name, "__self->"); ok {
+			return &pysrc.AttrAssignStmt{
+				Target: &pysrc.Name{Id: "self"},
+				Attr:   field,
+				Value:  val,
+			}, nil
+		}
 		return &pysrc.ReassignStmt{Target: v.Name, Value: val}, nil
 	case *aotir.IfStmt:
 		return l.lowerIfStmt(v)
@@ -293,6 +313,10 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (pysrc.Stmt, error) {
 			return nil, err
 		}
 		return &pysrc.ReturnStmt{Value: val}, nil
+	case *aotir.AgentIntentCallStmt:
+		return l.lowerAgentIntentCallStmt(v)
+	case *aotir.ChanSendStmt:
+		return l.lowerChanSendStmt(v)
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported statement %T", s)
 	}
@@ -340,6 +364,16 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (pysrc.Stmt, error) {
 
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (pysrc.Stmt, error) {
 	annot := pyTypeForUnion(s.VarType, s.ElemType, s.RecordName, s.ElemRecordName, s.UnionName, "", s.KeyType, s.ValueType)
+	if s.VarType == aotir.TypeAgent && s.AgentName != "" {
+		annot = pysrc.TypeRef{Name: s.AgentName}
+	}
+	if s.VarType == aotir.TypeChan {
+		inner := pyTypeFor(s.ChanElemType)
+		if inner.Name != "" {
+			l.needsDeque = true
+			annot = pysrc.TypeRef{Name: "deque[" + inner.Name + "]"}
+		}
+	}
 	// Init==nil happens when the c lower introduces a mutable result var
 	// for a match expression: the LetStmt declares the binding and the
 	// following MatchStmt assigns into it from every arm. Emit a PEP 526
@@ -495,6 +529,11 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 	case *aotir.BoolLit:
 		return &pysrc.BoolLit{Value: v.Value}, nil
 	case *aotir.VarRef:
+		// C lower bakes agent intent self-field references as
+		// VarRef.Name = "__self->fieldname". Rewrite to `self.fieldname`.
+		if field, ok := strings.CutPrefix(v.Name, "__self->"); ok {
+			return &pysrc.Attribute{Value: &pysrc.Name{Id: "self"}, Attr: field}, nil
+		}
 		return &pysrc.Name{Id: v.Name}, nil
 	case *aotir.BinaryExpr:
 		return l.lowerBinaryExpr(v)
@@ -819,6 +858,14 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 		return &pysrc.Attribute{Value: recv, Attr: v.FieldName}, nil
 	case *aotir.DatalogQueryExpr:
 		return l.lowerDatalogQueryExpr(v)
+	case *aotir.AgentLit:
+		return l.lowerAgentLit(v)
+	case *aotir.AgentIntentCallExpr:
+		return l.lowerAgentIntentCallExpr(v)
+	case *aotir.ChanMakeExpr:
+		return l.lowerChanMakeExpr(v)
+	case *aotir.ChanRecvExpr:
+		return l.lowerChanRecvExpr(v)
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported expression %T", e)
 	}
