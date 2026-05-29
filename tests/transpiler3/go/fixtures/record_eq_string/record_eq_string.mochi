@@ -1,0 +1,11 @@
+type Tag {
+  name: string
+  id: int
+}
+
+let a = Tag { name: "x", id: 1 }
+let b = Tag { name: "x", id: 1 }
+let c = Tag { name: "y", id: 1 }
+print(a == b)
+print(a == c)
+print(a != c)

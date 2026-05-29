@@ -1,0 +1,12 @@
+type A {
+  v: int
+}
+
+type B {
+  s: string
+}
+
+let a = A { v: 11 }
+let b = B { s: "go" }
+print(a.v)
+print(b.s)

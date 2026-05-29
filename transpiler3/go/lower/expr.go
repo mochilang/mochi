@@ -627,9 +627,9 @@ func binOpInfix(op aotir.BinOp) (string, bool) {
 		return "/", true
 	case aotir.BinModI64:
 		return "%", true
-	case aotir.BinEqI64, aotir.BinEqF64, aotir.BinEqBool, aotir.BinEqStr:
+	case aotir.BinEqI64, aotir.BinEqF64, aotir.BinEqBool, aotir.BinEqStr, aotir.BinEqRec:
 		return "==", true
-	case aotir.BinNeI64, aotir.BinNeF64, aotir.BinNeBool, aotir.BinNeStr:
+	case aotir.BinNeI64, aotir.BinNeF64, aotir.BinNeBool, aotir.BinNeStr, aotir.BinNeRec:
 		return "!=", true
 	case aotir.BinLtI64, aotir.BinLtF64:
 		return "<", true

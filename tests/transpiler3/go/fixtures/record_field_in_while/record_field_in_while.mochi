@@ -1,0 +1,10 @@
+type C {
+  n: int
+}
+
+let c = C { n: 5 }
+var i: int = 0
+while i < c.n {
+  print(i)
+  i = i + 1
+}

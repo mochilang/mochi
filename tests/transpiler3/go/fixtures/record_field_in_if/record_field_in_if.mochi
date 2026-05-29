@@ -1,0 +1,18 @@
+type Score {
+  v: int
+}
+
+let s = Score { v: 75 }
+if s.v >= 90 {
+  print("A")
+} else {
+  if s.v >= 80 {
+    print("B")
+  } else {
+    if s.v >= 70 {
+      print("C")
+    } else {
+      print("F")
+    }
+  }
+}
