@@ -35,6 +35,7 @@ type runtimeFlags struct {
 
 type lowerer struct {
 	runtime runtimeFlags
+	prog    *aotir.Program
 }
 
 // Lower translates an aotir.Program into a ptree.PhpFile. The returned
@@ -48,7 +49,19 @@ func Lower(prog *aotir.Program, _ colour.ColourMap) (*ptree.PhpFile, error) {
 	if prog.Main < 0 || prog.Main >= len(prog.Functions) {
 		return nil, fmt.Errorf("php lower: invalid Main index %d", prog.Main)
 	}
-	l := &lowerer{}
+	l := &lowerer{prog: prog}
+
+	// Emit one final readonly class per record declaration. Source
+	// order matters for Phase 16 reproducibility, so we walk
+	// prog.Records directly.
+	var classDecls []ptree.Decl
+	for _, r := range prog.Records {
+		d, err := l.lowerRecord(r)
+		if err != nil {
+			return nil, err
+		}
+		classDecls = append(classDecls, d)
+	}
 
 	// Lower non-main user functions in source order so the emitted
 	// file preserves declaration ordering across runs (Phase 16
@@ -78,6 +91,7 @@ func Lower(prog *aotir.Program, _ colour.ColourMap) (*ptree.PhpFile, error) {
 	}
 
 	decls := l.runtimeDecls()
+	decls = append(decls, classDecls...)
 	decls = append(decls, userDecls...)
 	decls = append(decls, mainDecl)
 
@@ -372,13 +386,13 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*ptree.FuncDecl, error) {
 	}
 	params := make([]ptree.FuncParam, 0, len(fn.Params))
 	for _, p := range fn.Params {
-		typeName, err := phpType(p.Type)
+		typeName, err := phpParamType(p.Type, p.RecordName)
 		if err != nil {
 			return nil, fmt.Errorf("php lower: param %q of %q: %w", p.Name, fn.Name, err)
 		}
 		params = append(params, ptree.FuncParam{TypeName: typeName, Name: p.Name})
 	}
-	ret, err := phpType(fn.ReturnType)
+	ret, err := phpParamType(fn.ReturnType, fn.ReturnRecordName)
 	if err != nil {
 		return nil, fmt.Errorf("php lower: return type of %q: %w", fn.Name, err)
 	}
@@ -390,10 +404,10 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*ptree.FuncDecl, error) {
 	}, nil
 }
 
-// phpType maps an aotir scalar Type to its PHP type-declaration form.
-// Phase 2 only handles scalars + unit; lists/maps/records arrive in
-// Phase 3+ and will extend this mapping.
-func phpType(t aotir.Type) (string, error) {
+// phpScalarType is the subset of phpType used where a record name is
+// unavailable. Callers that may see TypeRecord/TypeList/TypeMap should
+// use phpParamType instead.
+func phpScalarType(t aotir.Type) (string, error) {
 	switch t {
 	case aotir.TypeInt:
 		return "int", nil
@@ -406,8 +420,44 @@ func phpType(t aotir.Type) (string, error) {
 	case aotir.TypeUnit:
 		return "void", nil
 	default:
-		return "", fmt.Errorf("phase 2 cannot map aotir type %v to PHP", t)
+		return "", fmt.Errorf("cannot map aotir scalar type %v to PHP", t)
 	}
+}
+
+// phpType is the legacy name; keep for callsites that handle only
+// scalars + unit. New callers should prefer phpParamType.
+func phpType(t aotir.Type) (string, error) { return phpScalarType(t) }
+
+// phpParamType maps a parameter type to its PHP type declaration,
+// including record class names and collection types (Phase 3+).
+func phpParamType(t aotir.Type, recordName string) (string, error) {
+	switch t {
+	case aotir.TypeRecord:
+		if recordName == "" {
+			return "", fmt.Errorf("TypeRecord needs a RecordName")
+		}
+		return recordName, nil
+	case aotir.TypeList, aotir.TypeMap, aotir.TypeSet:
+		return "array", nil
+	default:
+		return phpScalarType(t)
+	}
+}
+
+func (l *lowerer) lowerRecord(r *aotir.RecordDecl) (*ptree.ClassDecl, error) {
+	fields := make([]ptree.ClassField, 0, len(r.Fields))
+	for _, f := range r.Fields {
+		typeName, err := phpParamType(f.Type, f.RecordName)
+		if err != nil {
+			return nil, fmt.Errorf("record %q field %q: %w", r.Name, f.Name, err)
+		}
+		fields = append(fields, ptree.ClassField{TypeName: typeName, Name: f.Name})
+	}
+	return &ptree.ClassDecl{
+		Name:   r.Name,
+		Fields: fields,
+		PhpDoc: []string{"Mochi record `" + r.Name + "`. Generated; do not edit by hand."},
+	}, nil
 }
 
 // lowerExpr translates one aotir expression.
@@ -633,8 +683,24 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 			Callee: &ptree.IdentExpr{Name: "count"},
 			Args:   []ptree.Expr{recv},
 		}, nil
+	case *aotir.RecordLit:
+		args := make([]ptree.NamedArg, 0, len(v.Fields))
+		for _, f := range v.Fields {
+			val, err := l.lowerExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, ptree.NamedArg{Name: f.Name, Value: val})
+		}
+		return &ptree.NewExpr{Class: v.TypeName, Args: args}, nil
+	case *aotir.FieldAccess:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.PropAccessExpr{Receiver: recv, Field: v.FieldName}, nil
 	default:
-		return nil, fmt.Errorf("php lower: phase 3 cannot lower %T", e)
+		return nil, fmt.Errorf("php lower: phase 4 cannot lower %T", e)
 	}
 }
 
@@ -669,6 +735,14 @@ func (l *lowerer) lowerBinaryExpr(b *aotir.BinaryExpr) (ptree.Expr, error) {
 		return &ptree.BinaryExpr{Op: "===", Left: left, Right: right}, nil
 	case aotir.BinNeI64, aotir.BinNeF64, aotir.BinNeBool, aotir.BinNeStr:
 		return &ptree.BinaryExpr{Op: "!==", Left: left, Right: right}, nil
+	case aotir.BinEqRec, aotir.BinEqList, aotir.BinEqMap:
+		// PHP `==` compares same-class objects field-by-field and
+		// indexed/assoc arrays element-by-element, matching Mochi's
+		// structural value-equality semantics. `===` would compare
+		// object identity / array reference instead.
+		return &ptree.BinaryExpr{Op: "==", Left: left, Right: right}, nil
+	case aotir.BinNeRec, aotir.BinNeList, aotir.BinNeMap:
+		return &ptree.BinaryExpr{Op: "!=", Left: left, Right: right}, nil
 	case aotir.BinLtI64, aotir.BinLtF64:
 		return &ptree.BinaryExpr{Op: "<", Left: left, Right: right}, nil
 	case aotir.BinLeI64, aotir.BinLeF64:

@@ -666,3 +666,96 @@ func (*IndexAssignStmt) phpStmt() {}
 func (s *IndexAssignStmt) PhpString(ind int) string {
 	return indent(ind) + "$" + s.Name + "[" + s.Key.PhpString() + "] = " + s.Value.PhpString() + ";"
 }
+
+// ClassField is one field of a ClassDecl. Phase 4 records emit each
+// field as a promoted constructor parameter (public readonly int $x).
+type ClassField struct {
+	TypeName string
+	Name     string
+}
+
+// ClassDecl is `final readonly class Name { public function __construct(...) {} }`,
+// emitted for each Mochi record type. PHP 8.4 readonly classes give us
+// value semantics for free (== compares field-by-field for same-class
+// instances).
+type ClassDecl struct {
+	Name   string
+	Fields []ClassField
+	// PhpDoc is the optional docblock written above the class keyword.
+	PhpDoc []string
+}
+
+func (*ClassDecl) phpDecl() {}
+
+func (d *ClassDecl) PhpString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	if len(d.PhpDoc) > 0 {
+		sb.WriteString(pad + "/**\n")
+		for _, line := range d.PhpDoc {
+			sb.WriteString(pad + " * " + line + "\n")
+		}
+		sb.WriteString(pad + " */\n")
+	}
+	sb.WriteString(pad)
+	sb.WriteString("final readonly class ")
+	sb.WriteString(d.Name)
+	sb.WriteString("\n")
+	sb.WriteString(pad + "{\n")
+	if len(d.Fields) == 0 {
+		sb.WriteString(indent(ind+1) + "public function __construct() {}\n")
+	} else {
+		sb.WriteString(indent(ind+1) + "public function __construct(\n")
+		for _, f := range d.Fields {
+			sb.WriteString(indent(ind+2) + "public " + f.TypeName + " $" + f.Name + ",\n")
+		}
+		sb.WriteString(indent(ind+1) + ") {}\n")
+	}
+	sb.WriteString(pad + "}")
+	return sb.String()
+}
+
+// NamedArg is one named argument to a NewExpr (`field: value`).
+type NamedArg struct {
+	Name  string
+	Value Expr
+}
+
+// NewExpr is `new ClassName(field1: v1, field2: v2)`. PHP 8.0+ named
+// arguments let the lowerer pass record fields in any order, which
+// keeps the emitter source-faithful to the Mochi literal.
+type NewExpr struct {
+	Class string
+	Args  []NamedArg
+}
+
+func (*NewExpr) phpExpr() {}
+
+func (e *NewExpr) PhpString() string {
+	var sb strings.Builder
+	sb.WriteString("new ")
+	sb.WriteString(e.Class)
+	sb.WriteByte('(')
+	for i, a := range e.Args {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(a.Name)
+		sb.WriteString(": ")
+		sb.WriteString(a.Value.PhpString())
+	}
+	sb.WriteByte(')')
+	return sb.String()
+}
+
+// PropAccessExpr is `<recv>-><field>`. Used to read record fields.
+type PropAccessExpr struct {
+	Receiver Expr
+	Field    string
+}
+
+func (*PropAccessExpr) phpExpr() {}
+
+func (e *PropAccessExpr) PhpString() string {
+	return e.Receiver.PhpString() + "->" + e.Field
+}
