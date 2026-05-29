@@ -13,8 +13,8 @@ description: "MEP-52 Phase 12, Mochi `extern fun` to inline-translated TypeScrip
 | Status         | LANDED (Node + Deno + Bun) |
 | Started        | 2026-05-30 00:47 (GMT+7) |
 | Landed         | 2026-05-30 00:50 (GMT+7) |
-| Tracking issue | (to be filled in on merge) |
-| Tracking PR    | (to be filled in on merge) |
+| Tracking issue | [#22969](https://github.com/mochilang/mochi/issues/22969) |
+| Tracking PR    | [#22972](https://github.com/mochilang/mochi/pull/22972) |
 
 ## Gate
 
