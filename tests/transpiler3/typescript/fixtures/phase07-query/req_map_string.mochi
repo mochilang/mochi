@@ -1,0 +1,5 @@
+let xs = ["a", "b", "c"]
+let upper = from s in xs select s + "!"
+for v in upper {
+  print(v)
+}

@@ -1,0 +1,5 @@
+let xs = [true, false, true, false, true]
+let trues = from x in xs where x select x
+for v in trues {
+  print(v)
+}

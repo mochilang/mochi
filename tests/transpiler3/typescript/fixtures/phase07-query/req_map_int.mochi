@@ -1,0 +1,5 @@
+let xs = [1, 2, 3, 4]
+let doubled = from x in xs select x * 2
+for v in doubled {
+  print(v)
+}

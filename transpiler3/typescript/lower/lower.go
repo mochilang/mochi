@@ -425,8 +425,10 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]tstree.Stmt, error) {
 		return l.lowerMatchStmt(v)
 	case *aotir.ClosureEnvStmt:
 		return l.lowerClosureEnvStmt(v)
+	case *aotir.QueryScopeStmt:
+		return l.lowerQueryScopeStmt(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 6 surface)", s)
+		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 7 surface)", s)
 	}
 }
 
@@ -479,7 +481,7 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) ([]tstree.Stmt, error) {
 	if s.VarType == aotir.TypeFun {
 		tn, err = tsTypeForFunSig(s.FunSig)
 	} else {
-		tn, err = tsTypeForLetSlot(s.VarType, s.ElemType, s.KeyType, s.ValueType, s.RecordName, s.ElemRecordName, s.UnionName)
+		tn, err = tsTypeForLetSlotV2(s.VarType, s.ElemType, s.KeyType, s.ValueType, s.ListValueElemType, s.RecordName, s.ElemRecordName, s.UnionName)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("ts lower: let %q: %w", s.Name, err)

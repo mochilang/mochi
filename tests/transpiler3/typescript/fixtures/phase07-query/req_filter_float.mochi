@@ -1,0 +1,5 @@
+let xs = [0.5, 1.5, 2.5, 3.5]
+let big = from x in xs where x > 1.0 select x
+for v in big {
+  print(v)
+}

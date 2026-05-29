@@ -1,0 +1,5 @@
+let xs = ["banana", "apple", "cherry"]
+let sorted = from s in xs order by s select s
+for v in sorted {
+  print(v)
+}

@@ -1,0 +1,5 @@
+let xs = [1, 2, 3, 4, 5, 6, 7, 8]
+let page = from x in xs order by x skip 2 take 3 select x
+for v in page {
+  print(v)
+}

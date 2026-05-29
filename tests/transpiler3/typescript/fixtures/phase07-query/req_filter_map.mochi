@@ -1,0 +1,5 @@
+let xs = [1, 2, 3, 4, 5, 6, 7, 8]
+let r = from x in xs where x > 2 select x * 10
+for v in r {
+  print(v)
+}

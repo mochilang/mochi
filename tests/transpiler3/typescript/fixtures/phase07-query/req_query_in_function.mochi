@@ -1,0 +1,7 @@
+fun evens(xs: list<int>): list<int> {
+  return from x in xs where x % 2 == 0 select x
+}
+let r = evens([1, 2, 3, 4, 5, 6])
+for v in r {
+  print(v)
+}

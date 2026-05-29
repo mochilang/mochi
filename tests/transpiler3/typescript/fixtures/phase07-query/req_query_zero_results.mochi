@@ -1,0 +1,3 @@
+let xs: list<int> = []
+let r = from x in xs select x
+print(len(r))

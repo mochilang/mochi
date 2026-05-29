@@ -1,0 +1,5 @@
+let xs = [1.0, 2.0, 3.0]
+let scaled = from x in xs select x * 0.5
+for v in scaled {
+  print(v)
+}
