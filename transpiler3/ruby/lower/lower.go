@@ -787,6 +787,71 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			return nil, err
 		}
 		return &rtree.MethodCall{Receiver: recv, Method: "key?", Args: []rtree.Expr{key}, UseParens: true}, nil
+	case *aotir.ListMinExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "min"}, nil
+	case *aotir.ListMaxExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "max"}, nil
+	case *aotir.ListContainsExpr:
+		list, err := lowerExpr(e.List)
+		if err != nil {
+			return nil, err
+		}
+		val, err := lowerExpr(e.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: list, Method: "include?", Args: []rtree.Expr{val}, UseParens: true}, nil
+	case *aotir.ListSumExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "sum"}, nil
+	case *aotir.ListMapExpr:
+		list, err := lowerExpr(e.List)
+		if err != nil {
+			return nil, err
+		}
+		fn, err := lowerExpr(e.Fn)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: fmt.Sprintf("%s.map { |__x| (%s).call(__x) }",
+			list.RubyExprString(), fn.RubyExprString())}, nil
+	case *aotir.ListFilterExpr:
+		list, err := lowerExpr(e.List)
+		if err != nil {
+			return nil, err
+		}
+		fn, err := lowerExpr(e.Fn)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: fmt.Sprintf("%s.select { |__x| (%s).call(__x) }",
+			list.RubyExprString(), fn.RubyExprString())}, nil
+	case *aotir.ListFoldlExpr:
+		list, err := lowerExpr(e.List)
+		if err != nil {
+			return nil, err
+		}
+		fn, err := lowerExpr(e.Fn)
+		if err != nil {
+			return nil, err
+		}
+		init, err := lowerExpr(e.Init)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: fmt.Sprintf("%s.inject(%s) { |__acc, __x| (%s).call(__acc, __x) }",
+			list.RubyExprString(), init.RubyExprString(), fn.RubyExprString())}, nil
 	}
 	return nil, fmt.Errorf("ruby lower: unsupported expression type %T", e)
 }
