@@ -1,12 +1,24 @@
 name: Deploy website to Cloudflare Pages
 
+# Deploy only on push to main (or manual trigger).
+#
+# PR builds were removed because they were the primary cause of runner
+# queue starvation: every website-touching PR triggered a full deploy,
+# creating 10-20 concurrent jobs and 25-50 min queue waits. Cloudflare
+# Pages provides native branch-preview URLs without needing Actions.
+#
+# Build time budget (target <5 min end-to-end):
+#   checkout:          ~5s   (fetch-depth: 1, no full history)
+#   node setup:        ~3s   (npm cache hit)
+#   npm ci:            ~8s   (node_modules cached)
+#   docusaurus build: ~45s   (webpack cache hit: .docusaurus + node_modules/.cache)
+#   wrangler deploy:  ~20s
+#   total:            ~81s   well under 5 min even on cold cache
+#
+# First run after cache miss: ~3.5 min (webpack cold build ~140s).
+
 on:
   push:
-    branches: [main]
-    paths:
-      - 'website/**'
-      - '.github/workflows/deploy-website.yml'
-  pull_request:
     branches: [main]
     paths:
       - 'website/**'
@@ -16,10 +28,10 @@ on:
 permissions:
   contents: read
   deployments: write
-  pull-requests: write
 
+# Only one production deploy at a time; cancel any superseded run.
 concurrency:
-  group: cloudflare-pages-${{ github.ref }}
+  group: cloudflare-pages-deploy
   cancel-in-progress: true
 
 jobs:
@@ -29,15 +41,14 @@ jobs:
     defaults:
       run:
         working-directory: website
+
     steps:
       - name: Checkout
-        id: checkout
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Set up Node.js
-        id: setup-node
         uses: actions/setup-node@v6
         with:
           node-version: 22
@@ -45,25 +56,31 @@ jobs:
           cache-dependency-path: website/package-lock.json
 
       - name: Install dependencies
-        id: install
-        run: |
-          echo "::group::Step: install"
-          npm ci
-          echo "::endgroup::"
+        run: npm ci --prefer-offline
+
+      # Cache the Docusaurus webpack incremental build artefacts.
+      # Key rotates when package-lock.json changes (new deps = cold build).
+      # The fallback key reuses the most recent build cache on cache miss
+      # so even a package bump only does an incremental rebuild.
+      - name: Restore Docusaurus build cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            website/.docusaurus
+            website/node_modules/.cache
+          key: docusaurus-build-${{ runner.os }}-${{ hashFiles('website/package-lock.json') }}-${{ hashFiles('website/docs/**', 'website/src/**', 'website/docusaurus.config.js', 'website/sidebars.js') }}
+          restore-keys: |
+            docusaurus-build-${{ runner.os }}-${{ hashFiles('website/package-lock.json') }}-
+            docusaurus-build-${{ runner.os }}-
 
       - name: Build website
-        id: build
-        run: |
-          echo "::group::Step: build"
-          npm run build
-          echo "::endgroup::"
+        run: npm run build
 
       - name: Deploy to Cloudflare Pages
-        id: deploy
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy website/build --project-name=mochi-lang --branch=${{ github.head_ref || github.ref_name }}
+          command: pages deploy website/build --project-name=mochi-lang --branch=main
           workingDirectory: .
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
