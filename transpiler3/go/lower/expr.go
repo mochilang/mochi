@@ -90,6 +90,8 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerStrLenExpr(e)
 	case *aotir.StrContainsExpr:
 		return l.lowerStrContainsExpr(e)
+	case *aotir.StrConvertExpr:
+		return l.lowerStrConvertExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -502,7 +504,7 @@ func boolSetAppendIf(bool_ string) gotree.Stmt {
 
 // lowerMapLit emits `map[K]V{k0: v0, k1: v1, ...}`.
 func (l *lowerer) lowerMapLit(e *aotir.MapLit) (gotree.Expr, error) {
-	mapType, err := l.lowerMapType(e.KeyType, e.ValueType)
+	mapType, err := l.lowerMapTypeWithList(e.KeyType, e.ValueType, e.ListValueElemType)
 	if err != nil {
 		return nil, fmt.Errorf("map literal: %w", err)
 	}
@@ -879,6 +881,47 @@ func (l *lowerer) lowerStrLenExpr(e *aotir.StrLenExpr) (gotree.Expr, error) {
 			Args: []gotree.Expr{runes},
 		}},
 	}, nil
+}
+
+// lowerStrConvertExpr emits the Mochi `str(x)` builtin. The result
+// must match the C runtime's mochi_str_from_<T> formatting:
+//   - int: base-10, no leading zero
+//   - float: shortest round-trip via strconv.FormatFloat 'g'
+//   - bool: "true" / "false"
+//   - string: identity
+func (l *lowerer) lowerStrConvertExpr(e *aotir.StrConvertExpr) (gotree.Expr, error) {
+	operand, err := l.lowerExpr(e.Operand)
+	if err != nil {
+		return nil, err
+	}
+	switch e.Operand.Type() {
+	case aotir.TypeString:
+		return operand, nil
+	case aotir.TypeInt:
+		l.addImport("strconv")
+		return &gotree.CallExpr{
+			Fun: &gotree.SelectorExpr{X: &gotree.Ident{Name: "strconv"}, Sel: "FormatInt"},
+			Args: []gotree.Expr{operand, &gotree.BasicLit{Kind: gotree.IntLit, Value: "10"}},
+		}, nil
+	case aotir.TypeFloat:
+		l.addImport("strconv")
+		return &gotree.CallExpr{
+			Fun: &gotree.SelectorExpr{X: &gotree.Ident{Name: "strconv"}, Sel: "FormatFloat"},
+			Args: []gotree.Expr{
+				operand,
+				&gotree.BasicLit{Kind: gotree.CharLit, Value: "'g'"},
+				&gotree.UnaryExpr{Op: "-", X: &gotree.BasicLit{Kind: gotree.IntLit, Value: "1"}},
+				&gotree.BasicLit{Kind: gotree.IntLit, Value: "64"},
+			},
+		}, nil
+	case aotir.TypeBool:
+		l.addImport("strconv")
+		return &gotree.CallExpr{
+			Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "strconv"}, Sel: "FormatBool"},
+			Args: []gotree.Expr{operand},
+		}, nil
+	}
+	return nil, fmt.Errorf("transpiler3/go/lower: StrConvertExpr does not handle operand type %s", e.Operand.Type())
 }
 
 // lowerStrContainsExpr emits `strings.Contains(s, sub)`, matching the

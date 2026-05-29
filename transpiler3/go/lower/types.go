@@ -46,18 +46,38 @@ func (l *lowerer) lowerListType(elem aotir.Type) (string, error) {
 
 // lowerMapType produces the Go type expression `map[K]V` for a
 // map<K, V> value. Phase 3.2 accepts the eight (K, V) scalar
-// combinations enumerated by the verifier.
+// combinations enumerated by the verifier; Phase 7.4 adds the
+// list-valued case `map[K][]E` used by the join hash index.
 func (l *lowerer) lowerMapType(key, value aotir.Type) (string, error) {
+	return l.lowerMapTypeWithList(key, value, aotir.TypeInvalid)
+}
+
+// lowerMapTypeWithList is the full form of lowerMapType: when
+// value==TypeList, listValueElem provides the element type so the
+// emitted Go type is `map[K][]E`. When value is not TypeList,
+// listValueElem is ignored.
+func (l *lowerer) lowerMapTypeWithList(key, value, listValueElem aotir.Type) (string, error) {
 	kt, err := l.lowerType(key)
 	if err != nil {
 		return "", fmt.Errorf("map key: %w", err)
 	}
-	vt, err := l.lowerType(value)
-	if err != nil {
-		return "", fmt.Errorf("map value: %w", err)
+	if kt == "" {
+		return "", fmt.Errorf("transpiler3/go/lower: map key type cannot be unit")
 	}
-	if kt == "" || vt == "" {
-		return "", fmt.Errorf("transpiler3/go/lower: map key/value type cannot be unit")
+	var vt string
+	if value == aotir.TypeList {
+		vt, err = l.lowerListType(listValueElem)
+		if err != nil {
+			return "", fmt.Errorf("map list value: %w", err)
+		}
+	} else {
+		vt, err = l.lowerType(value)
+		if err != nil {
+			return "", fmt.Errorf("map value: %w", err)
+		}
+		if vt == "" {
+			return "", fmt.Errorf("transpiler3/go/lower: map value type cannot be unit")
+		}
 	}
 	return "map[" + kt + "]" + vt, nil
 }
