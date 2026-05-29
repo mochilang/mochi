@@ -1,0 +1,7 @@
+type V {
+  d: float
+}
+
+let v = V { d: 2.5 }
+print(v.d)
+print(v.d * 2.0)

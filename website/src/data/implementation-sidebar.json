@@ -132,6 +132,32 @@
   },
   "implementation/0050/index",
   "implementation/0051/index",
+  {
+    "label": "MEP-51 phases",
+    "items": [
+      "implementation/0051/phase-01-hello",
+      "implementation/0051/phase-02-scalars",
+      "implementation/0051/phase-03-1-lists",
+      "implementation/0051/phase-03-2-maps",
+      "implementation/0051/phase-03-3-sets",
+      "implementation/0051/phase-03-4-list-of-records",
+      "implementation/0051/phase-04-records",
+      "implementation/0051/phase-05-sums",
+      "implementation/0051/phase-06-closures",
+      "implementation/0051/phase-07-query",
+      "implementation/0051/phase-08-datalog",
+      "implementation/0051/phase-09-agents",
+      "implementation/0051/phase-10-streams",
+      "implementation/0051/phase-11-async",
+      "implementation/0051/phase-12-ffi",
+      "implementation/0051/phase-13-llm",
+      "implementation/0051/phase-14-fetch",
+      "implementation/0051/phase-15-wheel-sdist",
+      "implementation/0051/phase-16-repro",
+      "implementation/0051/phase-17-ipykernel",
+      "implementation/0051/phase-18-pypi-publish"
+    ]
+  },
   "implementation/0052/index",
   "implementation/0054/index",
   {

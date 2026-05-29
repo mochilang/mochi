@@ -1,0 +1,5 @@
+let inc = fun(x: int): int => x + 1
+let dec = fun(x: int): int => x - 1
+let negate = fun(x: bool): bool => !x
+print(inc(dec(10)))
+print(negate(true))

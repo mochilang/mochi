@@ -142,5 +142,113 @@
       "research/0052/testing-gates",
       "research/0052/risks-and-alternatives"
     ]
+  },
+  {
+    "label": "MEP-0053",
+    "items": [
+      "research/0053/index",
+      "research/0053/language-surface",
+      "research/0053/design-philosophy",
+      "research/0053/prior-art-transpilers",
+      "research/0053/runtime",
+      "research/0053/codegen-design",
+      "research/0053/type-lowering",
+      "research/0053/rust-target-portability",
+      "research/0053/dataset-pipeline",
+      "research/0053/agent-streams",
+      "research/0053/build-system",
+      "research/0053/testing-gates",
+      "research/0053/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0054",
+    "items": [
+      "research/0054/index",
+      "research/0054/language-surface",
+      "research/0054/design-philosophy",
+      "research/0054/prior-art-transpilers",
+      "research/0054/runtime",
+      "research/0054/codegen-design",
+      "research/0054/type-lowering",
+      "research/0054/go-target-portability",
+      "research/0054/dataset-pipeline",
+      "research/0054/agent-streams",
+      "research/0054/build-system",
+      "research/0054/testing-gates",
+      "research/0054/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0055",
+    "items": [
+      "research/0055/index",
+      "research/0055/language-surface",
+      "research/0055/design-philosophy",
+      "research/0055/prior-art-transpilers",
+      "research/0055/runtime",
+      "research/0055/codegen-design",
+      "research/0055/type-lowering",
+      "research/0055/php-target-portability",
+      "research/0055/dataset-pipeline",
+      "research/0055/agent-streams",
+      "research/0055/build-system",
+      "research/0055/testing-gates",
+      "research/0055/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0056",
+    "items": [
+      "research/0056/index",
+      "research/0056/language-surface",
+      "research/0056/design-philosophy",
+      "research/0056/prior-art-transpilers",
+      "research/0056/runtime",
+      "research/0056/codegen-design",
+      "research/0056/type-lowering",
+      "research/0056/ruby-target-portability",
+      "research/0056/dataset-pipeline",
+      "research/0056/agent-streams",
+      "research/0056/build-system",
+      "research/0056/testing-gates",
+      "research/0056/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0057",
+    "items": [
+      "research/0057/index",
+      "research/0057/language-surface",
+      "research/0057/design-philosophy",
+      "research/0057/prior-art-registries",
+      "research/0057/manifest-format",
+      "research/0057/solver-design",
+      "research/0057/lockfile-format",
+      "research/0057/registry-index",
+      "research/0057/content-addressed-store",
+      "research/0057/trusted-publishing",
+      "research/0057/capability-model",
+      "research/0057/polyglot-fanout",
+      "research/0057/risks-and-alternatives"
+    ]
+  },
+  {
+    "label": "MEP-0073",
+    "items": [
+      "research/0073/index",
+      "research/0073/language-surface",
+      "research/0073/design-philosophy",
+      "research/0073/prior-art-bridges",
+      "research/0073/rustdoc-json-ingest",
+      "research/0073/type-mapping",
+      "research/0073/cargo-publish-flow",
+      "research/0073/sigstore-cargo-rfc3724",
+      "research/0073/async-bridge",
+      "research/0073/abi-stability",
+      "research/0073/lifetimes-and-ownership",
+      "research/0073/embedded-and-no-std",
+      "research/0073/risks-and-alternatives"
+    ]
   }
 ]

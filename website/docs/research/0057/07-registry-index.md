@@ -9,7 +9,7 @@ sidebar_position: 7
 **Status**: research note. **Date**: 2026-05-29 (GMT+7).
 **Mirrors**: deployed to `/docs/research/0057/registry-index`.
 
-This note specifies the sparse HTTPS registry index protocol Mochi-57 ships in `pkg/pkgindex/`. The choice of sparse-over-git is in [02-design-philosophy](./02-design-philosophy) §4; the comparison with Cargo's 2023 GA migration is in [03-prior-art-registries](./03-prior-art-registries) §1.
+This note specifies the sparse HTTPS registry index protocol Mochi-57 ships in `pkg/pkgregistry/sparse/` (the working name in early drafts was `pkg/pkgindex/`; phase docs 0, 2, 7, 8, 11, 18 canonicalize the implementation under `pkg/pkgregistry/` and there is no `pkg/pkgindex/` directory at v1). The choice of sparse-over-git is in [02-design-philosophy](./02-design-philosophy) §4; the comparison with Cargo's 2023 GA migration is in [03-prior-art-registries](./03-prior-art-registries) §1.
 
 ## 1. Why a sparse index
 

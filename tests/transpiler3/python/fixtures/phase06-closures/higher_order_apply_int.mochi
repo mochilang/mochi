@@ -1,0 +1,7 @@
+fun apply(x: int, f: fun(int): int): int {
+  return f(x)
+}
+
+let inc = fun(n: int): int => n + 1
+print(apply(10, inc))
+print(apply(99, inc))

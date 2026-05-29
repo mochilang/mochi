@@ -1,0 +1,5 @@
+let m: map<string, int> = {"a": 10, "b": 20, "c": 30}
+let vs = values(m)
+for v in vs {
+  print(v)
+}

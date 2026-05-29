@@ -1,0 +1,7 @@
+fun greet(name: string, f: fun(string): string): string {
+  return f(name)
+}
+
+let bang = fun(s: string): string => s + "!"
+print(greet("hi", bang))
+print(greet("bye", bang))

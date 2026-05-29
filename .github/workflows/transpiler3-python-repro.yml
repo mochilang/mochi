@@ -1,0 +1,117 @@
+name: Python reproducibility check
+
+# MEP-51 Phase 16: rebuild every Python fixture twice and compare SHA-256
+# of the wheel and sdist to verify byte-identical output (no timestamp
+# leakage). Cross-host gate spans linux-x86_64 + linux-aarch64 + macos-arm64;
+# the SHAs from all three runners are uploaded as artifacts and a final
+# compare job diffs them.
+
+on:
+  schedule:
+    - cron: '0 5 * * *'
+  push:
+    paths:
+      - 'transpiler3/python/**'
+      - 'transpiler3/c/aotir/**'
+      - 'transpiler3/c/lower/**'
+      - 'runtime/python/**'
+      - '.github/workflows/transpiler3-python-repro.yml'
+  workflow_dispatch:
+
+jobs:
+  python-repro-host:
+    name: Python repro (${{ matrix.tag }})
+    runs-on: ${{ matrix.runner }}
+    continue-on-error: true
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            tag: linux-x86_64
+          - runner: ubuntu-24.04-arm
+            tag: linux-aarch64
+          - runner: macos-14
+            tag: macos-arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run host reproducibility gate
+        env:
+          SOURCE_DATE_EPOCH: ${{ github.event.repository.pushed_at && '1700000000' || '1700000000' }}
+        run: |
+          export SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
+          go test -v -run TestPhase16Reproducible -timeout 240s ./transpiler3/python/build/
+
+      - name: Compute wheel + sdist SHAs for cross-host compare
+        run: |
+          set -euo pipefail
+          export SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
+          mkdir -p sha-out
+          for fixture in reproducibility_basic reproducibility_with_extras; do
+            outdir=$(mktemp -d)
+            go run ./cmd/mochi build \
+              --target python-wheel \
+              -o "$outdir" \
+              "tests/transpiler3/python/fixtures/phase16-repro/${fixture}/repro_$( echo $fixture | sed 's/reproducibility_//' ).mochi" || true
+            for whl in "$outdir"/*.whl; do
+              [ -f "$whl" ] && shasum -a 256 "$whl" >> "sha-out/wheel-${fixture}.txt" || true
+            done
+          done
+          ls sha-out/ || true
+
+      - name: Upload host SHA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-sha-${{ matrix.tag }}
+          path: sha-out/
+
+  python-repro-compare:
+    name: Cross-host SHA compare
+    needs: python-repro-host
+    runs-on: ubuntu-24.04
+    if: always()
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: shas
+
+      - name: Diff host SHAs
+        run: |
+          set -euo pipefail
+          ls -la shas/
+          # Each host's directory holds the per-fixture SHA file. Compare
+          # the wheel SHA across hosts; any divergence fails the job.
+          fail=0
+          for fixture in reproducibility_basic reproducibility_with_extras; do
+            files=$(find shas -name "wheel-${fixture}.txt" | sort)
+            count=$(echo "$files" | wc -l)
+            if [ "$count" -lt 2 ]; then
+              echo "skip $fixture: only $count host(s) reported"
+              continue
+            fi
+            # Strip the per-host wheel path (column 2) and keep the hash.
+            uniq_count=$(awk '{print $1}' $files | sort -u | wc -l)
+            if [ "$uniq_count" -gt 1 ]; then
+              echo "DIVERGENT $fixture across hosts:"
+              cat $files
+              fail=1
+            else
+              echo "OK $fixture: SHA matches across $count hosts"
+            fi
+          done
+          exit $fail

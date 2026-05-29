@@ -1,0 +1,18 @@
+type Pt {
+  x: int
+  y: int
+}
+
+type Box {
+  w: int
+  h: int
+}
+
+let ps = [Pt { x: 1, y: 2 }, Pt { x: 3, y: 4 }]
+let bs = [Box { w: 10, h: 20 }, Box { w: 30, h: 40 }, Box { w: 50, h: 60 }]
+print(ps[0].x)
+print(ps[1].y)
+print(bs[0].w)
+print(bs[2].h)
+print(len(ps))
+print(len(bs))

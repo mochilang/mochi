@@ -140,6 +140,10 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerListFilterExpr(e)
 	case *aotir.ListFoldlExpr:
 		return l.lowerListFoldlExpr(e)
+	case *aotir.ChanMakeExpr:
+		return l.lowerChanMakeExpr(e)
+	case *aotir.ChanRecvExpr:
+		return l.lowerChanRecvExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -401,7 +405,7 @@ func (l *lowerer) lowerCallExpr(e *aotir.CallExpr) (gotree.Expr, error) {
 		args = append(args, v)
 	}
 	return &gotree.CallExpr{
-		Fun:  &gotree.Ident{Name: e.Func},
+		Fun:  &gotree.Ident{Name: stripFFIPrefix(e.Func)},
 		Args: args,
 	}, nil
 }
@@ -1573,4 +1577,45 @@ func (l *lowerer) lowerLoadCSVExpr(e *aotir.LoadCSVExpr) (gotree.Expr, error) {
 	l.addImport("encoding/csv")
 	l.addHelper("mochiLoadCSV")
 	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiLoadCSV"}, Args: []gotree.Expr{path}}, nil
+}
+
+// lowerChanMakeExpr lowers `make_chan(cap)` (Phase 9.1) to Go's
+// `make(chan T, cap)`. The Mochi spec calls for a bounded ring
+// channel; Go's native channel matches the semantics directly so
+// no runtime helper is needed. The element type comes from the
+// node's ElemType field; the cap argument is cast to int because
+// Go's make takes an `int` length, while Mochi ints are int64.
+func (l *lowerer) lowerChanMakeExpr(e *aotir.ChanMakeExpr) (gotree.Expr, error) {
+	cap, err := l.lowerExpr(e.Cap)
+	if err != nil {
+		return nil, fmt.Errorf("chan cap: %w", err)
+	}
+	elem, err := l.lowerType(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("chan elem type: %w", err)
+	}
+	if elem == "" {
+		return nil, fmt.Errorf("transpiler3/go/lower: chan element type cannot be unit")
+	}
+	return &gotree.CallExpr{
+		Fun: &gotree.Ident{Name: "make"},
+		Args: []gotree.Expr{
+			&gotree.RawExpr{Src: "chan " + elem},
+			&gotree.CallExpr{
+				Fun:  &gotree.Ident{Name: "int"},
+				Args: []gotree.Expr{cap},
+			},
+		},
+	}, nil
+}
+
+// lowerChanRecvExpr lowers `recv(c)` (Phase 9.1) to Go's `<-c`.
+// Like ChanMake the mapping is direct because Go's native channel
+// receive blocks the same way Mochi's recv does.
+func (l *lowerer) lowerChanRecvExpr(e *aotir.ChanRecvExpr) (gotree.Expr, error) {
+	ch, err := l.lowerExpr(e.Chan)
+	if err != nil {
+		return nil, fmt.Errorf("chan recv: %w", err)
+	}
+	return &gotree.UnaryExpr{Op: "<-", X: ch}, nil
 }

@@ -1,0 +1,5 @@
+writeFile("/tmp/mochi_swift_fre.txt", "reused")
+let r1 = fetch("file:///tmp/mochi_swift_fre.txt")
+let r2 = fetch("file:///tmp/mochi_swift_fre.txt")
+print(r1)
+print(r2)
