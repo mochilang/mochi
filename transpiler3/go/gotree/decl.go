@@ -141,6 +141,21 @@ func (f *FuncDecl) write(w *Writer) {
 	f.Body.writeInline(w)
 }
 
+// RawDecl carries a pre-rendered top-level Go declaration. Used by
+// the lowerer to inline small generic helpers (e.g. `mochiListSlice`)
+// without threading their FuncDecl AST through the gotree layer.
+// The writer emits Code verbatim followed by a newline.
+type RawDecl struct {
+	Doc  *CommentGroup
+	Code string
+}
+
+func (*RawDecl) declNode() {}
+func (d *RawDecl) write(w *Writer) {
+	d.Doc.write(w)
+	w.Line(d.Code)
+}
+
 // TypeParam is one entry in a type parameter list `[T any, U ~int]`.
 type TypeParam struct {
 	Name       string

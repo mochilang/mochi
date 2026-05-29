@@ -144,6 +144,11 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (gotree.Stmt, error) {
 }
 
 func (l *lowerer) lowerAssignStmt(s *aotir.AssignStmt) (gotree.Stmt, error) {
+	if stmt, ok, err := l.lowerQuerySortInPlace(s); err != nil {
+		return nil, err
+	} else if ok {
+		return stmt, nil
+	}
 	val, err := l.lowerExpr(s.Value)
 	if err != nil {
 		return nil, err
@@ -153,6 +158,52 @@ func (l *lowerer) lowerAssignStmt(s *aotir.AssignStmt) (gotree.Stmt, error) {
 		Tok: "=",
 		Rhs: []gotree.Expr{val},
 	}, nil
+}
+
+// lowerQuerySortInPlace recognises the post-query patterns
+//   __queryN = ListSortAscExpr(__queryN)
+//   __queryN = ListSliceExpr(__queryN, start, end)
+// emitted by the shared C lowerer for `order by` / `skip` / `take`,
+// and rewrites them to in-place Go forms (`slices.Sort(xs)` and
+// `xs = xs[start:end]`). The receiver and LHS always alias the same
+// freshly-built list so in-place mutation matches Mochi semantics
+// without an extra clone.
+func (l *lowerer) lowerQuerySortInPlace(s *aotir.AssignStmt) (gotree.Stmt, bool, error) {
+	switch v := s.Value.(type) {
+	case *aotir.ListSortAscExpr:
+		recv, ok := v.Receiver.(*aotir.VarRef)
+		if !ok || recv.Name != s.Name {
+			return nil, false, nil
+		}
+		l.addImport("slices")
+		return &gotree.ExprStmt{X: &gotree.CallExpr{
+			Fun: &gotree.SelectorExpr{X: &gotree.Ident{Name: "slices"}, Sel: "Sort"},
+			Args: []gotree.Expr{&gotree.Ident{Name: mangleIdent(s.Name)}},
+		}}, true, nil
+	case *aotir.ListSliceExpr:
+		recv, ok := v.Receiver.(*aotir.VarRef)
+		if !ok || recv.Name != s.Name {
+			return nil, false, nil
+		}
+		start, err := l.lowerExpr(v.Start)
+		if err != nil {
+			return nil, false, err
+		}
+		end, err := l.lowerExpr(v.End)
+		if err != nil {
+			return nil, false, err
+		}
+		l.addHelper("mochiListSlice")
+		return &gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: mangleIdent(s.Name)}},
+			Tok: "=",
+			Rhs: []gotree.Expr{&gotree.CallExpr{
+				Fun:  &gotree.Ident{Name: "mochiListSlice"},
+				Args: []gotree.Expr{&gotree.Ident{Name: mangleIdent(s.Name)}, start, end},
+			}},
+		}, true, nil
+	}
+	return nil, false, nil
 }
 
 func (l *lowerer) lowerIfStmt(s *aotir.IfStmt) (gotree.Stmt, error) {
