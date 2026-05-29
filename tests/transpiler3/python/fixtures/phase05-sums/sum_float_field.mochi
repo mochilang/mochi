@@ -1,0 +1,8 @@
+type Measure = Metric(cm: float) | Imperial(inches: float)
+
+let m: Measure = Metric(100.0)
+let val = match m {
+  Metric(c) => c
+  Imperial(i) => i * 2.54
+}
+print(val)

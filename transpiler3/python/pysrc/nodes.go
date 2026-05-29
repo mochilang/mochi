@@ -193,6 +193,115 @@ type KeywordArg struct {
 	Value Expr
 }
 
+// UnionDef is a PEP 695 type alias declaration: `type Name = V1 | V2`.
+// Phase 5 uses this for Mochi sum types, after the per-variant
+// `@dataclass(frozen=True, slots=True)` classes are emitted.
+type UnionDef struct {
+	Name     string
+	Variants []string
+}
+
+func (*UnionDef) isStmt() {}
+
+// PyString renders the PEP 695 type alias on a single line.
+func (u *UnionDef) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	return pad + "type " + u.Name + " = " + strings.Join(u.Variants, " | ")
+}
+
+// MatchStmt is a PEP 634 structural pattern match.
+type MatchStmt struct {
+	Target Expr
+	Cases  []MatchCase
+}
+
+// MatchCase is one `case Pattern:` arm. Wildcard arms set Wildcard=true;
+// otherwise Variant is the class name. Bindings render as keyword
+// patterns `Variant(field=bind)`. An empty Bindings slice on a non-
+// wildcard arm renders as `Variant()`, matching PEP 634 for nullary
+// dataclass variants.
+type MatchCase struct {
+	Wildcard bool
+	Variant  string
+	Bindings []FieldBinding
+	Guard    Expr
+	Body     []Stmt
+}
+
+// FieldBinding is one keyword pattern field=binding inside a class pattern.
+type FieldBinding struct {
+	FieldName string
+	BindName  string
+}
+
+func (*MatchStmt) isStmt() {}
+
+// PyString renders the match statement.
+func (m *MatchStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	var sb strings.Builder
+	sb.WriteString(pad)
+	sb.WriteString("match ")
+	sb.WriteString(m.Target.PyString())
+	sb.WriteString(":\n")
+	for i, c := range m.Cases {
+		if i > 0 {
+			sb.WriteByte('\n')
+		}
+		sb.WriteString(pad)
+		sb.WriteString("    case ")
+		if c.Wildcard {
+			sb.WriteByte('_')
+		} else {
+			sb.WriteString(c.Variant)
+			sb.WriteByte('(')
+			for j, b := range c.Bindings {
+				if j > 0 {
+					sb.WriteString(", ")
+				}
+				sb.WriteString(b.FieldName)
+				sb.WriteByte('=')
+				sb.WriteString(b.BindName)
+			}
+			sb.WriteByte(')')
+		}
+		if c.Guard != nil {
+			sb.WriteString(" if ")
+			sb.WriteString(c.Guard.PyString())
+		}
+		sb.WriteString(":\n")
+		if len(c.Body) == 0 {
+			sb.WriteString(pad)
+			sb.WriteString("        pass")
+			continue
+		}
+		for j, s := range c.Body {
+			if j > 0 {
+				sb.WriteByte('\n')
+			}
+			sb.WriteString(s.PyString(indent + 2))
+		}
+	}
+	return sb.String()
+}
+
+// AnnotateStmt is a PEP 526 declaration-only annotation `name: Type`
+// with no value. Used when a mutable binding is introduced before any
+// assignment (Phase 5 match-expression lowering: the result var is
+// declared, then every match arm assigns to it).
+type AnnotateStmt struct {
+	Target string
+	Type   TypeRef
+}
+
+func (*AnnotateStmt) isStmt() {}
+
+// PyString renders the annotation-only declaration.
+func (s *AnnotateStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	return pad + s.Target + ": " + s.Type.PyString()
+}
+
 // IfStmt is `if cond:` and optional `else:` block.
 type IfStmt struct {
 	Cond Expr

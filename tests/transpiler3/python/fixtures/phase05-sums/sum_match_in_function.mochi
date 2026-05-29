@@ -1,0 +1,13 @@
+type Num = Pos(n: int) | Neg(n: int) | Zero
+
+fun abs_val(x: Num): int {
+  return match x {
+    Pos(n) => n
+    Neg(n) => -n
+    Zero => 0
+  }
+}
+
+print(abs_val(Pos(5)))
+print(abs_val(Neg(3)))
+print(abs_val(Zero))
