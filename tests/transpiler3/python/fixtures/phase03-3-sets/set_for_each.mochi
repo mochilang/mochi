@@ -1,0 +1,6 @@
+let s = set{100, 200, 300, 400}
+var total = 0
+for x in s {
+  total = total + x
+}
+print(total)

@@ -336,6 +336,30 @@ func (l *ListLit) PyString() string {
 	return sb.String()
 }
 
+// SetLit is `{e1, e2, ...}` (Python set display). Empty sets cannot
+// use `{}` (that is a dict literal); the lowerer emits `set()` via
+// a `Call(Name "set", nil)` instead, so SetLit is only used with at
+// least one element.
+type SetLit struct {
+	Elems []Expr
+}
+
+func (*SetLit) isExpr() {}
+
+// PyString renders the set literal.
+func (s *SetLit) PyString() string {
+	var sb strings.Builder
+	sb.WriteByte('{')
+	for i, e := range s.Elems {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(e.PyString())
+	}
+	sb.WriteByte('}')
+	return sb.String()
+}
+
 // DictLit is `{k1: v1, k2: v2, ...}` (PEP 448 dict display).
 type DictLit struct {
 	Keys   []Expr
