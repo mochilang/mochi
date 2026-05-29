@@ -13,8 +13,8 @@ description: "MEP-52 Phase 7, Mochi query DSL desugared to for-of loops; hash-jo
 | Status         | LANDED (Node + Deno + Bun) |
 | Started        | 2026-05-29 (GMT+7) |
 | Landed         | 2026-05-29 23:00 (GMT+7) |
-| Tracking issue | (filled at PR creation) |
-| Tracking PR    | (filled at PR creation) |
+| Tracking issue | mochilang/mochi#22788 |
+| Tracking PR    | mochilang/mochi#22789 |
 
 ## Gate
 
