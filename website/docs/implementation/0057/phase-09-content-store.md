@@ -186,6 +186,8 @@ func (l *BlobLock) Release() error {
 
 The lock path is per `(name, version)` because two concurrent installs of distinct blobs should not serialise on each other. Windows uses `LockFileEx`; the abstraction lives behind `pkg/pkgblob/lock_unix.go` and `lock_windows.go`.
 
+This lock is internal to the `mochi` CLI process group sharing one `$MOCHI_HOME`; it is not a capability that downstream packages can request or grant. The Phase 10 capability whitelist does not list `fs.lock`; packages have no syscall surface to acquire OS-level file locks. The `fcntl` / `LockFileEx` calls happen inside the CLI binary before any package code runs.
+
 The flow:
 
 1. Acquire shared lock to check extracted dir exists.
