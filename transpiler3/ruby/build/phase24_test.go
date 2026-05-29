@@ -24,7 +24,7 @@ func TestPhase24TargetIRubyKernel(t *testing.T) {
 	}
 
 	out := t.TempDir()
-	d := &Driver{CacheDir: t.TempDir()}
+	d := &Driver{}
 	if err := d.Build(src, out, TargetIRubyKernel); err != nil {
 		t.Fatalf("Build TargetIRubyKernel: %v", err)
 	}
