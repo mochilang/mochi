@@ -1,0 +1,10 @@
+type Greeting {
+  who: string
+}
+
+let a = Greeting { who: "world" }
+let b = Greeting { who: "world" }
+let c = Greeting { who: "moon" }
+print(a == b)
+print(a == c)
+print(a != c)
