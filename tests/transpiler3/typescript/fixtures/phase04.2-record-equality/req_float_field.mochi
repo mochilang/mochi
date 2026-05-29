@@ -1,0 +1,11 @@
+type Sample {
+  v: float
+  ok: bool
+}
+
+let a = Sample { v: 1.5, ok: true }
+let b = Sample { v: 1.5, ok: true }
+let c = Sample { v: 2.5, ok: true }
+print(a == b)
+print(a == c)
+print(a != c)

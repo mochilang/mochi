@@ -1,0 +1,9 @@
+type User {
+  id: int
+  name: string
+}
+
+let u1 = User { id: 1, name: "alice" }
+let u2 = User { id: 1, name: "bob" }
+print(u1 == u2)
+print(u1 != u2)

@@ -1,0 +1,14 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let target = Pt { x: 2, y: 3 }
+let ps = [Pt { x: 1, y: 1 }, Pt { x: 2, y: 3 }, Pt { x: 4, y: 4 }, Pt { x: 2, y: 3 }, Pt { x: 5, y: 5 }]
+var misses = 0
+for p in ps {
+  if p != target {
+    misses = misses + 1
+  }
+}
+print(misses)
