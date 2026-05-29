@@ -116,6 +116,8 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerStrSplitExpr(e)
 	case *aotir.StrJoinExpr:
 		return l.lowerStrJoinExpr(e)
+	case *aotir.MathCallExpr:
+		return l.lowerMathCallExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -1147,4 +1149,40 @@ func (l *lowerer) lowerNumCastExpr(e *aotir.NumCastExpr) (gotree.Expr, error) {
 		return nil, err
 	}
 	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "int64"}, Args: []gotree.Expr{operand}}, nil
+}
+
+// lowerMathCallExpr lowers MathCallExpr for the four supported
+// builtins. abs_i64 uses a tiny generic helper because Go has no
+// integer math.Abs; abs_f64 / floor / ceil delegate to math.* and
+// register the import. The C runtime emits the same operations.
+func (l *lowerer) lowerMathCallExpr(e *aotir.MathCallExpr) (gotree.Expr, error) {
+	arg, err := l.lowerExpr(e.Arg)
+	if err != nil {
+		return nil, err
+	}
+	switch e.Func {
+	case "abs_i64":
+		l.addHelper("mochiAbsI64")
+		return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiAbsI64"}, Args: []gotree.Expr{arg}}, nil
+	case "abs_f64":
+		l.addImport("math")
+		return &gotree.CallExpr{
+			Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "math"}, Sel: "Abs"},
+			Args: []gotree.Expr{arg},
+		}, nil
+	case "floor":
+		l.addImport("math")
+		return &gotree.CallExpr{
+			Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "math"}, Sel: "Floor"},
+			Args: []gotree.Expr{arg},
+		}, nil
+	case "ceil":
+		l.addImport("math")
+		return &gotree.CallExpr{
+			Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "math"}, Sel: "Ceil"},
+			Args: []gotree.Expr{arg},
+		}, nil
+	default:
+		return nil, fmt.Errorf("transpiler3/go/lower: math builtin %q not supported", e.Func)
+	}
 }

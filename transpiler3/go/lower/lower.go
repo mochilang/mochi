@@ -599,6 +599,13 @@ func helperDecl(name string) gotree.Decl {
 	}
 	return string(rs)
 }`}
+	case "mochiAbsI64":
+		return &gotree.RawDecl{Code: `func mochiAbsI64(x int64) int64 {
+	if x < 0 {
+		return -x
+	}
+	return x
+}`}
 	}
 	return nil
 }
