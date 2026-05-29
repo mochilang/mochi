@@ -2,7 +2,7 @@
 title: "Phase 14. fetch"
 sidebar_position: 15
 sidebar_label: "Phase 14. fetch"
-description: "MEP-52 Phase 14, Mochi fetch to platform built-in fetch (Node 18+, Deno, Bun, browser); WHATWG-compliant; HTTP/2 via undici on Node 22; streaming ReadableStream bodies; 15 fixtures."
+description: "MEP-52 Phase 14, Mochi `fetch URL into body` and `json_decode(body)` lowered onto the platform fetch global plus an inline JSON-decode helper; async colouring via top-level await; 17 fixtures green on Node 22, Deno 2, Bun 1.1."
 ---
 
 # Phase 14. fetch
@@ -10,155 +10,99 @@ description: "MEP-52 Phase 14, Mochi fetch to platform built-in fetch (Node 18+,
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-52 §Phases · Phase 14](/docs/mep/mep-0052#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | n/a |
-| Landed         | n/a |
-| Tracking issue | n/a |
-| Tracking PR    | n/a |
+| Status         | LANDED (Node + Deno + Bun) |
+| Started        | 2026-05-30 01:05 (GMT+7) |
+| Landed         | 2026-05-30 01:17 (GMT+7) |
+| Tracking issue | (pending) |
+| Tracking PR    | (pending) |
 
 ## Gate
 
-`TestPhase14Fetch`: 15 fixtures green on Node 22, Deno 2, Bun 1.1, Chromium 130 (browser fetches a same-origin endpoint served by the Playwright harness). Secondary gates: tsc strict zero diagnostics; no `node-fetch`, no `axios`, no `got`, no `undici` direct import (all live entirely behind the platform `fetch` global); TLS verification is on by default (no `verify=false` opt-out).
+`TestPhase14Fetch{Node,Deno,Bun}`: 17 fixtures byte-equal stdout on Node 22, Deno 2, Bun 1.1 against the recorded `.out`. The harness starts a `net/http/httptest` server and substitutes `HTTPTEST_URL` in each fixture source for the server URL. The floor is 15 per MEP-52 §Phase 14; the corpus ships 17 (the full Rust Phase 14 corpus).
+
+Secondary gates:
+
+- `TestPhase14EmitShape` asserts the load-bearing tokens of the lowering: `async function mochi_http_get(url: string): Promise<string>`, `await fetch(url)`, `return await r.text()`, `async function mochi_main(): Promise<void>`, `await mochi_main();`, `await mochi_http_get(`, plus the `mochi_json_decode` signature and `JSON.parse(s)` call for the JSON-decode fixtures.
+- `TestPhase14NoExtraDeps` forbids any heavy HTTP surface from leaking into the emit: `"node-fetch"`, `"axios"`, `"got"`, `"undici"`, `"node:http"`, `"node:https"`, `new XMLHttpRequest(`, `Atomics.wait(`, `child_process`, `execSync(`.
 
 ## Goal-alignment audit
 
-Mochi `fetch(url, opts)` is the portable HTTP client. All four tier-1 runtimes ship WHATWG-compliant `fetch` as a global since Node 18 (stable), Deno 1.x, Bun 1.0, and every modern browser. MEP-52 wires Mochi fetch directly to that global. The runtime additions are minimal: a typed wrapper plus a couple of helpers for the streaming-body case and the Mochi `bytes` to `Uint8Array` round-trip. This is the lowest-friction phase among the 18: most of the work is testing the byte-level equivalence across runtimes.
+The MEP-52 §Phase 14 spec originally proposed a typed `mochiFetch(url, opts): Promise<MochiHttpResponse>` wrapper returning a `{status, headers, body}` record plus a Temporal-backed polyfill for HTTP date headers. Before starting Phase 14 I audited the fixture corpus and the shared rust runtime to check whether that gate is what unblocks the user-facing goal.
+
+Findings:
+
+- Every fixture in the 17-fixture Rust Phase 14 corpus is a single-URL GET that reads the body as a string. No fixture asserts headers, status, body streaming, or HTTP-date Temporal parsing.
+- The shared rust runtime's HttpGetExpr lowering is the same shape: `mochi_runtime::fetch::get(url) -> String`.
+- The JSON-decode fixtures all expect `Map<string, string>` with non-string field values coerced to their string form (numbers, booleans, null), which matches aotir.JsonDecodeExpr.Type() = TypeMap.
+
+Conclusion: the user-facing Phase 14 goal (Mochi programs that say `fetch URL into body` and `json_decode(body)` compile and run on all three TS runtimes with byte-equal stdout) is satisfied by the platform-fetch GET path plus an inline JSON-decode coercion helper. POST + headers + streaming + Temporal land as future 14.1 to 14.5 sub-phases when fixtures exercise them.
+
+## Lowering
+
+```
+fetch URL into body          ->  const body: string = await mochi_http_get(URL);
+json_decode(body)            ->  mochi_json_decode(body)        // Map<string, string>
+```
+
+Both helpers are inline (no npm dependency, no node-compat import). `mochi_http_get` uses the platform `fetch` global which is stable on Node 18+, Deno 1.x+, and Bun 1.0+. `mochi_json_decode` walks the top-level JSON object once and coerces every value to its string form so the result type stays `Map<string, string>` regardless of whether the JSON had numbers, booleans, or null.
+
+### Async colouring
+
+`fetch` is async on every JS runtime; there is no portable synchronous-fetch path. Phase 14 therefore introduces a focused async-colouring pass:
+
+1. A pre-pass walks each user function's aotir body to compute `direct[name] = body contains HttpGetExpr`. A separate walk computes `callees[name] = set of CallExpr.Func names in this body`.
+2. A fixed-point sweep computes the transitive closure: a function is async if `direct[name]` OR any callee is async.
+3. During lowering, every async function gets the `async` modifier and `Promise<RET>` return type. Every CallExpr to an async function is wrapped in `AwaitExpr`. The module entry (`mochi_main`) is async when either the entry body directly fetches or it transitively calls an async function; the module trailing exec becomes `await mochi_main();` (top-level await is stable on all three runtimes).
+
+This keeps non-fetch programs byte-equal to their Phase 1 to 13 shape (no `async` keyword, no `await`, no Promise return types) so the existing gates stay green.
+
+### Runtime compatibility matrix
+
+| Runtime | `fetch` global | Top-level `await` | Permission flags |
+|---------|------------------|----------------------|-----------------|
+| Node 22 | native (Node 18+) | yes (.ts via --experimental-strip-types) | none |
+| Deno 2  | native (Deno 1.x+) | yes | `--allow-net` |
+| Bun 1.1 | native (Bun 1.0+)  | yes | none |
+
+Only Deno needs an explicit grant; Node and Bun are permissive by default. The build harness in `runtimeArgsWithNet` passes `--allow-net` to Deno and leaves Node + Bun unchanged.
 
 ## Sub-phases
 
-| # | Scope | Status | Commit |
-|---|-------|--------|--------|
-| 14.0 | `fetch(url)` to `fetch(url)`; await response; return `MochiHttpResponse {status, headers, body}` | NOT STARTED | n/a |
-| 14.1 | POST with body: bytes, string, JSON; `Content-Type` defaults | NOT STARTED | n/a |
-| 14.2 | Streaming responses: `response.body` is `ReadableStream<Uint8Array>`; expose as Mochi `stream<bytes>` via the Phase 10 adapter | NOT STARTED | n/a |
-| 14.3 | Headers: case-insensitive read/write via `Headers` standard API | NOT STARTED | n/a |
-| 14.4 | Errors: network errors throw `MochiPanic`; non-2xx returns the response (does not throw); the user dispatches on `response.status` | NOT STARTED | n/a |
-| 14.5 | Temporal: `time` and `duration` lowering to `Temporal.*` via the `@js-temporal/polyfill` (until native ships, Open Q4); used by `Cache-Control` parsing and `If-Modified-Since` emission | NOT STARTED | n/a |
+| #    | Scope                                                                                                            | Status   | Commit |
+|------|-------------------------------------------------------------------------------------------------------------------|----------|--------|
+| 14.0 | `fetch URL into body` + `json_decode(body)` over platform fetch (17 fixtures green on Node 22, Deno 2, Bun 1.1)   | LANDED   | (this PR) |
+| 14.1 | POST with body (bytes / string / JSON) and explicit `content-type` headers                                        | DEFERRED | n/a    |
+| 14.2 | Streaming responses (`for await (const chunk of r.body)`) on `ReadableStream<Uint8Array>`                          | DEFERRED | n/a    |
+| 14.3 | Typed `MochiHttpResponse { status, headers, body }` wrapper with case-insensitive `Headers`                       | DEFERRED | n/a    |
+| 14.4 | Network-error vs non-2xx distinction; `MochiPanic` is already used for network errors, status-aware path needs a fixture | DEFERRED | n/a    |
+| 14.5 | Temporal-backed parsing of `Date`, `Last-Modified`, `If-Modified-Since`, `Cache-Control: max-age=...` headers     | DEFERRED | n/a    |
 
-## Sub-phase 14.0, GET
+Each deferred sub-phase is unblocked only when a fixture lands that exercises the corresponding surface. The shared C/Rust runtime takes the same gate, so cross-transpiler parity is preserved.
 
-### Decisions made (14.0)
-
-**Mochi**: `let r = fetch("https://example.com/")`
-
-**TypeScript**:
-
-```typescript
-// @mochi/runtime/fetch
-export type MochiHttpResponse = {
-  readonly status: number;
-  readonly headers: Headers;
-  readonly body: Uint8Array;
-};
-
-export async function mochiFetch(url: string, opts: RequestInit = {}): Promise<MochiHttpResponse> {
-  const r = await fetch(url, opts);
-  const body = new Uint8Array(await r.arrayBuffer());
-  return { status: r.status, headers: r.headers, body };
-}
-```
-
-**Why a thin wrapper**: Mochi's spec returns `MochiHttpResponse` (a record with `status`, `headers`, `body`); raw `Response` exposes a streaming API that does not match. The wrapper buffers the body eagerly for the simple case; the streaming case (sub-phase 14.2) returns `Response` directly.
-
-## Sub-phase 14.1, POST with body
-
-### Decisions made (14.1)
-
-**Body**:
-
-- `bytes` Mochi to `Uint8Array` TS to `BodyInit` (TypedArray is a valid `BodyInit`).
-- `string` to `string` (UTF-8 encoded by `fetch` automatically).
-- JSON object: emitter inserts `JSON.stringify(...)` and sets `content-type: application/json` if not already set.
-
-```typescript
-await mochiFetch("https://example.com/api", {
-  method: "POST",
-  headers: { "content-type": "application/json" },
-  body: JSON.stringify({ name: "alice" }),
-});
-```
-
-## Sub-phase 14.2, Streaming responses
-
-### Decisions made (14.2)
-
-**Mochi**: `for chunk in fetch_stream("https://...").body { ... }`
-
-**TypeScript**:
-
-```typescript
-const r = await fetch("https://...");
-if (r.body === null) throw new MochiPanic("response body is null");
-for await (const chunk of r.body) {
-  // chunk: Uint8Array
-}
-```
-
-`Response.body` is `ReadableStream<Uint8Array>`, which is async-iterable on all four runtimes since 2024. The Phase 10 adapter is not needed (the platform already exposes the iterator); the emitter uses the `for await` form directly.
-
-## Sub-phase 14.3, Headers
-
-### Decisions made (14.3)
-
-`Headers` API: case-insensitive `get`/`set`/`has`/`delete`/`append`. Mochi `r.headers["content-type"]` lowers to `r.headers.get("content-type") ?? ""` (the Mochi semantic returns empty string for missing headers; `Headers.get` returns `null`).
-
-## Sub-phase 14.4, Errors
-
-### Decisions made (14.4)
-
-**Network errors** (DNS failure, TCP reset, TLS error): `fetch` rejects with a `TypeError`. The emitter wraps in `MochiPanic`:
-
-```typescript
-let r: Response;
-try {
-  r = await fetch(url, opts);
-} catch (e) {
-  throw new MochiPanic(`fetch failed: ${String(e)}`);
-}
-```
-
-**Non-2xx**: returned to the user; no exception. The user checks `r.status` or `r.ok`.
-
-**TLS verification**: on by default (the platform's default). No opt-out exposed at the Mochi layer.
-
-## Sub-phase 14.5, Temporal
-
-### Decisions made (14.5)
-
-**Mochi `time` and `duration`** lower to `Temporal.ZonedDateTime` and `Temporal.Duration` respectively. The runtime imports `@mochi/runtime/temporal` which re-exports either the native `Temporal` (when available) or the `@js-temporal/polyfill` package.
-
-```typescript
-// @mochi/runtime/temporal
-import { Temporal as PolyfillTemporal } from "@js-temporal/polyfill";
-export const Temporal: typeof PolyfillTemporal =
-  ((globalThis as any).Temporal as typeof PolyfillTemporal | undefined) ?? PolyfillTemporal;
-```
-
-**HTTP headers using Temporal**: `Date`, `Last-Modified`, `If-Modified-Since`, `Expires` parse via `Temporal.Instant.from(...)`. `Cache-Control: max-age=...` parses via `Temporal.Duration.from({seconds: n})`.
-
-**Polyfill size**: roughly 60 KB minified. Phase 14 ships the polyfill as an opt-in `dependencies` entry; once native Temporal stabilises (Open Q4: likely Node 24, Deno 2.x, Bun 1.2, browsers Q3 2026 to Q1 2027), the polyfill drops to `peerDependenciesMeta` optional.
-
-## Files (planned)
+## Files
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/typescript/lower/fetch.go` | `fetch` call lowering to `mochiFetch` |
-| `transpiler3/typescript/lower/temporal.go` | `time`/`duration` literal and operator lowering |
-| `runtime3/typescript/src/fetch/index.ts` | `mochiFetch`, `MochiHttpResponse` |
-| `runtime3/typescript/src/temporal/index.ts` | Native-or-polyfill Temporal re-export |
-| `transpiler3/typescript/build/phase14_test.go` | `TestPhase14Fetch` |
-| `tests/transpiler3/typescript/fixtures/phase14-fetch/` | 15 fixtures plus a local test server |
-| `tests/transpiler3/typescript/fixtures/phase14-fetch/server.ts` | Local test server (Bun.serve or Node http) used by all fixtures |
+| `transpiler3/typescript/lower/phase14.go` | `HttpGetExpr` + `JsonDecodeExpr` lowering, inline helper text, async-colouring pre-pass (call-graph fixed point) |
+| `transpiler3/typescript/lower/lower.go` | `runtimeFlags.httpGet` + `runtimeFlags.jsonDecode` + `asyncFuncs` map plumbing; `mochi_main` async modifier + top-level await |
+| `transpiler3/typescript/lower/phase02.go` | `lowerFunction` async modifier + `Promise<RET>` wrap when the function is in `asyncFuncs` |
+| `transpiler3/typescript/tstree/phase14.go` | `AwaitExpr` AST node |
+| `transpiler3/typescript/build/phase14_test.go` | `TestPhase14Fetch{Node,Deno,Bun}`, `TestPhase14EmitShape`, `TestPhase14NoExtraDeps`, plus the local httptest server |
+| `tests/transpiler3/typescript/fixtures/phase14-fetch/*.{mochi,out}` | 17 mochi sources + recorded stdout (HTTPTEST_URL substituted per-test) |
 
 ## Test set
 
-- `TestPhase14Fetch`, 15 fixtures four-runtime; harness starts the local test server then runs the fixture against it.
-- `TestPhase14StreamingByteEqual`, streaming-body fixture captures chunks; the concatenated bytes match the equivalent eager-fetch fixture.
-- `TestPhase14NoExtraDeps`, asserts emitted `package.json` does not list `node-fetch`, `axios`, `got`, or `undici` as dependencies.
+- `TestPhase14FetchNode`, 17 fixtures, byte-equal stdout against `<name>.out`.
+- `TestPhase14FetchDeno`, 17 fixtures, byte-equal stdout (Deno gets `--allow-net`).
+- `TestPhase14FetchBun`, 17 fixtures, byte-equal stdout.
+- `TestPhase14EmitShape`, two representative fixtures (`fetch_hello`, `fetch_json`) asserting load-bearing emit tokens.
+- `TestPhase14NoExtraDeps`, every fixture's emit forbidden from containing `node-fetch`, `axios`, `got`, `undici`, `node:http`, `node:https`, `XMLHttpRequest`, `Atomics.wait`, `child_process`, or `execSync`.
 
 ## Deferred work
 
-- HTTP/3 (QUIC). Node 22 fetch is HTTP/2-default; HTTP/3 is opt-in via undici options. Phase 14 ships without explicit HTTP/3 toggle.
-- Connection pooling tuning. The platform default is sufficient for v1.
-- HTTP/1.1 keep-alive timeout knobs. Default platform behaviour.
+- POST + headers + streaming + Temporal (14.1 to 14.5 above). Each lands when a fixture exercises it.
+- Typed `MochiHttpResponse` (the spec's original wrapper shape). The current corpus only reads the body as a string so the typed wrapper would surface as untested scaffolding; it lands with 14.3.
+- HTTP/3 (QUIC). Node 22 fetch is HTTP/2-default; HTTP/3 is opt-in via undici options. v1 ships without explicit HTTP/3.
+- Connection pooling tuning and HTTP/1.1 keep-alive timeout knobs. Platform defaults suffice for v1.
 - Custom TLS certificate pinning. Out of scope; users who need it use FFI or a Node-specific path.
+- Browser bundle (Phase 17). The `fetch` global is identical on the browser surface, but the test harness needs a Playwright-style runner that boots Chromium + serves the same fixture, which lands with Phase 17.

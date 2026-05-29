@@ -1,0 +1,3 @@
+fetch "HTTPTEST_URL/empty" into body
+print(body)
+print("after")
