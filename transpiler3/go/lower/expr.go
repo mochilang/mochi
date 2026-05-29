@@ -140,6 +140,8 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerListFilterExpr(e)
 	case *aotir.ListFoldlExpr:
 		return l.lowerListFoldlExpr(e)
+	case *aotir.DatalogQueryExpr:
+		return l.lowerDatalogQueryExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}

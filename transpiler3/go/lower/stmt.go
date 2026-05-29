@@ -23,6 +23,13 @@ func (l *lowerer) lowerBlock(b *aotir.Block) (*gotree.BlockStmt, error) {
 		if _, ok := s.(*aotir.ClosureEnvStmt); ok {
 			continue
 		}
+		if _, ok := s.(*aotir.RawCStmt); ok {
+			// Phase 8.0: Datalog setup is a RawCStmt the C backend
+			// uses for runtime engine wiring. The Go backend evaluates
+			// Datalog at compile time inside lowerDatalogQueryExpr, so
+			// the raw-C statement carries no information here.
+			continue
+		}
 		if qs, ok := s.(*aotir.QueryScopeStmt); ok {
 			inner, err := l.lowerBlock(qs.Body)
 			if err != nil {
