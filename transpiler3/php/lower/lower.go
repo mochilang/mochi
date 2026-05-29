@@ -32,6 +32,7 @@ type runtimeFlags struct {
 	setMake     bool // mochi_set_make([1,2,1]) → [1=>true, 2=>true]
 	setAdd      bool // mochi_set_add($s, 4) → $s with 4 added
 	listSortAsc bool // mochi_list_sort_asc($xs) → ascending stable copy
+	streams     bool // Phase 10: MochiStream/MochiSub classes + helpers
 }
 
 type lowerer struct {
@@ -251,6 +252,88 @@ func (l *lowerer) runtimeDecls() []ptree.Decl {
 			},
 		})
 	}
+	if l.runtime.streams {
+		// MochiStream and MochiSub model the Phase 10 pub/sub semantics
+		// using one queue per subscriber. Each emit fans out by appending
+		// to every subscriber's queue; recv_sub shifts the head. The
+		// per-sub `limit` slot enables Phase 10.2 backpressure by
+		// dropping incoming messages when the queue is full. All
+		// fixtures emit-before-recv synchronously, so no fibers/yields
+		// are needed in Phase 10.0.
+		out = append(out, &ptree.RawDecl{Text: `
+final class MochiStream
+{
+    /** @var array<int, array<int, mixed>> Per-subscriber message queues. */
+    public array $subs = [];
+
+    /** @var array<int, int> Per-subscriber drop threshold; 0 = unlimited. */
+    public array $limits = [];
+
+    public function __construct(public int $cap) {}
+}`})
+		out = append(out, &ptree.RawDecl{Text: `
+final class MochiSub
+{
+    public function __construct(
+        public MochiStream $stream,
+        public int $idx,
+    ) {}
+}`})
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc:     []string{"Phase 10: build a bounded broadcast stream with the given capacity."},
+			Name:       "mochi_stream_make",
+			Params:     []ptree.FuncParam{{TypeName: "int", Name: "cap"}},
+			ReturnType: "MochiStream",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `return new MochiStream(cap: $cap);`},
+			},
+		})
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc:     []string{"Phase 10: subscribe to a stream. Each subscriber sees every message emitted after this call."},
+			Name:       "mochi_sub_make",
+			Params:     []ptree.FuncParam{{TypeName: "MochiStream", Name: "s"}},
+			ReturnType: "MochiSub",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `$idx = count($s->subs);`},
+				&ptree.RawStmt{Text: `$s->subs[$idx] = [];`},
+				&ptree.RawStmt{Text: `$s->limits[$idx] = 0;`},
+				&ptree.RawStmt{Text: `return new MochiSub(stream: $s, idx: $idx);`},
+			},
+		})
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc:     []string{"Phase 10.2: subscribe with backpressure. The subscriber drops messages when its queue holds $limit items."},
+			Name:       "mochi_sub_make_limit",
+			Params:     []ptree.FuncParam{{TypeName: "MochiStream", Name: "s"}, {TypeName: "int", Name: "limit"}},
+			ReturnType: "MochiSub",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `$idx = count($s->subs);`},
+				&ptree.RawStmt{Text: `$s->subs[$idx] = [];`},
+				&ptree.RawStmt{Text: `$s->limits[$idx] = $limit;`},
+				&ptree.RawStmt{Text: `return new MochiSub(stream: $s, idx: $idx);`},
+			},
+		})
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc:     []string{"Phase 10: fan-out emit. Append $v to every subscriber's queue, respecting per-subscriber drop limits."},
+			Name:       "mochi_stream_emit",
+			Params:     []ptree.FuncParam{{TypeName: "MochiStream", Name: "s"}, {Name: "v"}},
+			ReturnType: "void",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `foreach (array_keys($s->subs) as $k) {`},
+				&ptree.RawStmt{Text: `    if ($s->limits[$k] > 0 && count($s->subs[$k]) >= $s->limits[$k]) { continue; }`},
+				&ptree.RawStmt{Text: `    $s->subs[$k][] = $v;`},
+				&ptree.RawStmt{Text: `}`},
+			},
+		})
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc:     []string{"Phase 10: shift the next message off a subscriber's queue. All Phase 10 fixtures emit-before-recv so the queue is non-empty here."},
+			Name:       "mochi_sub_recv",
+			Params:     []ptree.FuncParam{{TypeName: "MochiSub", Name: "sub"}},
+			ReturnType: "mixed",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `return array_shift($sub->stream->subs[$sub->idx]);`},
+			},
+		})
+	}
 	return out
 }
 
@@ -307,6 +390,23 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]ptree.Stmt, error) {
 		// emits a plain array literal of results, so this hint is a
 		// no-op here.
 		return nil, nil
+	case *aotir.StreamEmitStmt:
+		// Phase 10: `emit(s, v)` becomes `mochi_stream_emit($s, $v);`.
+		l.runtime.streams = true
+		s, err := l.lowerExpr(v.Stream)
+		if err != nil {
+			return nil, err
+		}
+		val, err := l.lowerExpr(v.Val)
+		if err != nil {
+			return nil, err
+		}
+		return []ptree.Stmt{&ptree.ExprStmt{
+			Expr: &ptree.CallExpr{
+				Callee: &ptree.IdentExpr{Name: "mochi_stream_emit"},
+				Args:   []ptree.Expr{s, val},
+			},
+		}}, nil
 	case *aotir.AgentIntentCallStmt:
 		// Phase 9: discard-result intent call:
 		// `c.increment()` becomes `$c->increment();`.
@@ -676,6 +776,14 @@ func phpParamType(t aotir.Type, recordName, unionName string) (string, error) {
 		return unionName, nil
 	case aotir.TypeList, aotir.TypeMap, aotir.TypeSet:
 		return "array", nil
+	case aotir.TypeStream:
+		// Phase 10: every stream is a MochiStream regardless of element
+		// type; per-element typing is enforced upstream by the verifier.
+		return "MochiStream", nil
+	case aotir.TypeSub:
+		// Phase 10: every subscriber is a MochiSub; the carried element
+		// type is recovered via the parent stream's `subs[$idx]` slot.
+		return "MochiSub", nil
 	case aotir.TypeFun:
 		// PHP's Closure class is the type emitted for any function-typed
 		// value. PHP cannot express a parameterised callable type at the
@@ -1306,6 +1414,60 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 		return &ptree.CallExpr{
 			Callee: &ptree.IdentExpr{Name: "array_slice"},
 			Args:   []ptree.Expr{recv, start, length},
+		}, nil
+	case *aotir.StreamMakeExpr:
+		// Phase 10: `make_stream(N)` becomes `mochi_stream_make($N)`.
+		// The capacity is currently advisory; all Phase 10 fixtures are
+		// emit-before-recv so no blocking happens.
+		l.runtime.streams = true
+		cap, err := l.lowerExpr(v.Cap)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "mochi_stream_make"},
+			Args:   []ptree.Expr{cap},
+		}, nil
+	case *aotir.SubMakeExpr:
+		// Phase 10: `subscribe(s)` becomes `mochi_sub_make($s)`. Each
+		// call allocates a fresh per-subscriber queue inside the stream.
+		l.runtime.streams = true
+		s, err := l.lowerExpr(v.Stream)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "mochi_sub_make"},
+			Args:   []ptree.Expr{s},
+		}, nil
+	case *aotir.SubMakeLimitExpr:
+		// Phase 10.2: `subscribe_limit(s, n)` becomes
+		// `mochi_sub_make_limit($s, $n)`; the helper records the drop
+		// threshold so subsequent emits skip a full subscriber queue.
+		l.runtime.streams = true
+		s, err := l.lowerExpr(v.Stream)
+		if err != nil {
+			return nil, err
+		}
+		lim, err := l.lowerExpr(v.Limit)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "mochi_sub_make_limit"},
+			Args:   []ptree.Expr{s, lim},
+		}, nil
+	case *aotir.SubRecvExpr:
+		// Phase 10: `recv_sub(sub)` becomes `mochi_sub_recv($sub)`,
+		// which shifts the head off the subscriber's queue.
+		l.runtime.streams = true
+		s, err := l.lowerExpr(v.Sub)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "mochi_sub_recv"},
+			Args:   []ptree.Expr{s},
 		}, nil
 	case *aotir.AgentLit:
 		// Phase 9: `Counter { count: 0 }` becomes

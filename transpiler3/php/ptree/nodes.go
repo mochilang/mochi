@@ -98,6 +98,17 @@ type Decl interface {
 	PhpString(ind int) string
 }
 
+// RawDecl is verbatim PHP source spliced into the output. Used for
+// inline runtime classes whose shape is fixed (e.g. MochiStream in
+// Phase 10) so the lowerer doesn't pay a ClassDecl roundtrip.
+type RawDecl struct {
+	Text string
+}
+
+func (*RawDecl) phpDecl() {}
+
+func (d *RawDecl) PhpString(_ int) string { return strings.TrimRight(d.Text, "\n") }
+
 // FuncDecl is a top-level function declaration.
 type FuncDecl struct {
 	// PhpDoc is the optional docblock written immediately above
