@@ -618,6 +618,33 @@ func (f *FieldAccess) RustExpr() string {
 	return fmt.Sprintf("%s.%s", f.Receiver.RustExpr(), f.Field)
 }
 
+// ---- MethodCallExpr ----
+
+// MethodCallExpr is `receiver.method(args...)`.
+type MethodCallExpr struct {
+	Receiver Expr
+	Method   string
+	Args     []Expr
+}
+
+func (*MethodCallExpr) rustExpr() {}
+
+func (m *MethodCallExpr) RustExpr() string {
+	var sb strings.Builder
+	sb.WriteString(m.Receiver.RustExpr())
+	sb.WriteByte('.')
+	sb.WriteString(m.Method)
+	sb.WriteByte('(')
+	for i, a := range m.Args {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(a.RustExpr())
+	}
+	sb.WriteByte(')')
+	return sb.String()
+}
+
 // ---- StructLit ----
 
 // StructLit is `TypeName { field: expr, ... }`.

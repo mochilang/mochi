@@ -427,8 +427,53 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 			return nil, err
 		}
 		return &rtree.ExprStmt{Expr: expr}, nil
+	case *aotir.ChanSendStmt:
+		recv, err := l.lowerChanReceiver(n.Chan)
+		if err != nil {
+			return nil, fmt.Errorf("chan send receiver: %w", err)
+		}
+		val, err := l.lowerExpr(n.Val)
+		if err != nil {
+			return nil, fmt.Errorf("chan send value: %w", err)
+		}
+		return &rtree.ExprStmt{Expr: &rtree.MethodCallExpr{
+			Receiver: recv,
+			Method:   "send",
+			Args:     []rtree.Expr{val},
+		}}, nil
+	case *aotir.StreamEmitStmt:
+		recv, err := l.lowerChanReceiver(n.Stream)
+		if err != nil {
+			return nil, fmt.Errorf("stream emit receiver: %w", err)
+		}
+		val, err := l.lowerExpr(n.Val)
+		if err != nil {
+			return nil, fmt.Errorf("stream emit value: %w", err)
+		}
+		return &rtree.ExprStmt{Expr: &rtree.MethodCallExpr{
+			Receiver: recv,
+			Method:   "emit",
+			Args:     []rtree.Expr{val},
+		}}, nil
 	}
 	return nil, fmt.Errorf("rust lower: unsupported stmt %T", s)
+}
+
+// lowerChanReceiver lowers a chan/stream/sub receiver expression and
+// peels off the implicit CloneExpr that lowerExpr adds for owned types.
+// The runtime wrappers are Rc-backed, so we can call .send/.emit/.recv
+// through a borrow without taking an extra clone. When the inner expr
+// is not a VarRef (already a method call result, etc.) we keep the
+// expression as-is, since later stages need a concrete owning value.
+func (l *lowerer) lowerChanReceiver(e aotir.Expr) (rtree.Expr, error) {
+	v, err := l.lowerExpr(e)
+	if err != nil {
+		return nil, err
+	}
+	if ce, ok := v.(*rtree.CloneExpr); ok {
+		return ce.Expr, nil
+	}
+	return v, nil
 }
 
 // lowerMatchStmt handles a match in statement position. When ResultVar
@@ -610,6 +655,14 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (rtree.Stmt, error) {
 			aotir.TypeInvalid, aotir.TypeInvalid,
 			aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid,
 			nil)
+	}
+	switch s.VarType {
+	case aotir.TypeChan:
+		typeName = "mochi_runtime::chan::Chan<" + rustTypeName(s.ChanElemType) + ">"
+	case aotir.TypeStream:
+		typeName = "mochi_runtime::stream::Stream<" + rustTypeName(s.StreamElemType) + ">"
+	case aotir.TypeSub:
+		typeName = "mochi_runtime::stream::Sub<" + rustTypeName(s.SubElemType) + ">"
 	}
 	return &rtree.LetStmt{
 		Mutable:  mutable,
@@ -1117,6 +1170,58 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 		return &rtree.StructLit{TypeName: n.AgentName, Fields: fields}, nil
 	case *aotir.AgentIntentCallExpr:
 		return l.lowerAgentIntentCall(n.AgentName, n.IntentName, n.Receiver, n.Args)
+	case *aotir.ChanMakeExpr:
+		cap, err := l.lowerExpr(n.Cap)
+		if err != nil {
+			return nil, fmt.Errorf("chan make cap: %w", err)
+		}
+		return &rtree.CallExpr{
+			Func: "mochi_runtime::chan::Chan::<" + rustTypeName(n.ElemType) + ">::make",
+			Args: []rtree.Expr{cap},
+		}, nil
+	case *aotir.ChanRecvExpr:
+		recv, err := l.lowerChanReceiver(n.Chan)
+		if err != nil {
+			return nil, fmt.Errorf("chan recv receiver: %w", err)
+		}
+		return &rtree.MethodCallExpr{Receiver: recv, Method: "recv"}, nil
+	case *aotir.StreamMakeExpr:
+		cap, err := l.lowerExpr(n.Cap)
+		if err != nil {
+			return nil, fmt.Errorf("stream make cap: %w", err)
+		}
+		return &rtree.CallExpr{
+			Func: "mochi_runtime::stream::Stream::<" + rustTypeName(n.ElemType) + ">::make",
+			Args: []rtree.Expr{cap},
+		}, nil
+	case *aotir.SubMakeExpr:
+		recv, err := l.lowerChanReceiver(n.Stream)
+		if err != nil {
+			return nil, fmt.Errorf("subscribe receiver: %w", err)
+		}
+		return &rtree.CallExpr{
+			Func: "mochi_runtime::stream::subscribe",
+			Args: []rtree.Expr{&rtree.RefExpr{Expr: recv}},
+		}, nil
+	case *aotir.SubMakeLimitExpr:
+		recv, err := l.lowerChanReceiver(n.Stream)
+		if err != nil {
+			return nil, fmt.Errorf("subscribe_limit receiver: %w", err)
+		}
+		lim, err := l.lowerExpr(n.Limit)
+		if err != nil {
+			return nil, fmt.Errorf("subscribe_limit limit: %w", err)
+		}
+		return &rtree.CallExpr{
+			Func: "mochi_runtime::stream::subscribe_limit",
+			Args: []rtree.Expr{&rtree.RefExpr{Expr: recv}, lim},
+		}, nil
+	case *aotir.SubRecvExpr:
+		recv, err := l.lowerChanReceiver(n.Sub)
+		if err != nil {
+			return nil, fmt.Errorf("sub recv receiver: %w", err)
+		}
+		return &rtree.MethodCallExpr{Receiver: recv, Method: "recv"}, nil
 	}
 	return nil, fmt.Errorf("rust lower: unsupported expr %T", e)
 }
@@ -1387,7 +1492,7 @@ func isOwnedType(t aotir.Type) bool {
 	switch t {
 	case aotir.TypeString, aotir.TypeRecord, aotir.TypeList, aotir.TypeMap,
 		aotir.TypeSet, aotir.TypeUnion, aotir.TypeChan,
-		aotir.TypeStream, aotir.TypeAgent:
+		aotir.TypeStream, aotir.TypeSub, aotir.TypeAgent:
 		return true
 	}
 	return false

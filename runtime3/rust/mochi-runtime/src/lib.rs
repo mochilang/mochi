@@ -103,3 +103,105 @@ pub mod strings {
         s.as_ref().chars().rev().collect()
     }
 }
+
+pub mod chan {
+    use std::cell::RefCell;
+    use std::collections::VecDeque;
+    use std::rc::Rc;
+
+    pub struct Chan<T> {
+        inner: Rc<RefCell<VecDeque<T>>>,
+    }
+
+    impl<T> Chan<T> {
+        pub fn make(_cap: i64) -> Self {
+            Self { inner: Rc::new(RefCell::new(VecDeque::new())) }
+        }
+
+        pub fn send(&self, v: T) {
+            self.inner.borrow_mut().push_back(v);
+        }
+
+        pub fn recv(&self) -> T {
+            self.inner.borrow_mut().pop_front().expect("recv on empty chan")
+        }
+    }
+
+    impl<T> Clone for Chan<T> {
+        fn clone(&self) -> Self {
+            Self { inner: Rc::clone(&self.inner) }
+        }
+    }
+
+    impl<T> std::fmt::Debug for Chan<T> {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            f.write_str("Chan(..)")
+        }
+    }
+}
+
+pub mod stream {
+    use std::cell::RefCell;
+    use std::collections::VecDeque;
+    use std::rc::Rc;
+
+    pub struct Stream<T> {
+        subs: Rc<RefCell<Vec<Rc<RefCell<VecDeque<T>>>>>>,
+    }
+
+    impl<T: Clone> Stream<T> {
+        pub fn make(_cap: i64) -> Self {
+            Self { subs: Rc::new(RefCell::new(Vec::new())) }
+        }
+
+        pub fn emit(&self, v: T) {
+            for s in self.subs.borrow().iter() {
+                s.borrow_mut().push_back(v.clone());
+            }
+        }
+    }
+
+    impl<T> Clone for Stream<T> {
+        fn clone(&self) -> Self {
+            Self { subs: Rc::clone(&self.subs) }
+        }
+    }
+
+    impl<T> std::fmt::Debug for Stream<T> {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            f.write_str("Stream(..)")
+        }
+    }
+
+    pub struct Sub<T> {
+        inner: Rc<RefCell<VecDeque<T>>>,
+    }
+
+    impl<T> Sub<T> {
+        pub fn recv(&self) -> T {
+            self.inner.borrow_mut().pop_front().expect("recv on empty sub")
+        }
+    }
+
+    impl<T> Clone for Sub<T> {
+        fn clone(&self) -> Self {
+            Self { inner: Rc::clone(&self.inner) }
+        }
+    }
+
+    impl<T> std::fmt::Debug for Sub<T> {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            f.write_str("Sub(..)")
+        }
+    }
+
+    pub fn subscribe<T>(s: &Stream<T>) -> Sub<T> {
+        let q = Rc::new(RefCell::new(VecDeque::new()));
+        s.subs.borrow_mut().push(Rc::clone(&q));
+        Sub { inner: q }
+    }
+
+    pub fn subscribe_limit<T>(s: &Stream<T>, _limit: i64) -> Sub<T> {
+        subscribe(s)
+    }
+}
