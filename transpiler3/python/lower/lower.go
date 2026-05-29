@@ -54,6 +54,10 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 		l.needsDataclass = true
 		defs = append(defs, lowerRecordDecl(rec))
 	}
+	for _, u := range prog.Unions {
+		l.needsDataclass = true
+		defs = append(defs, lowerUnionDecl(u)...)
+	}
 	for i, fn := range prog.Functions {
 		if i == prog.Main {
 			continue
@@ -95,6 +99,34 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 	return mod, nil
 }
 
+// lowerUnionDecl emits a Mochi sum type as N frozen+slotted dataclass
+// variants followed by a PEP 695 `type` alias `Name = V1 | V2 | ...`.
+// Variants are emitted in declaration order so the emitted source
+// matches Mochi source order; PEP 695 type-alias evaluation is lazy,
+// so the order does not affect runtime semantics. Nullary variants
+// render as a `pass` body.
+func lowerUnionDecl(u *aotir.UnionDecl) []pysrc.Stmt {
+	out := make([]pysrc.Stmt, 0, len(u.Variants)+1)
+	names := make([]string, 0, len(u.Variants))
+	for _, v := range u.Variants {
+		fields := make([]pysrc.ClassField, 0, len(v.Fields))
+		for _, f := range v.Fields {
+			fields = append(fields, pysrc.ClassField{
+				Name: f.Name,
+				Type: pyTypeForUnion(f.FieldType, aotir.TypeInvalid, f.RecordName, "", f.UnionName, "", aotir.TypeInvalid, aotir.TypeInvalid),
+			})
+		}
+		out = append(out, &pysrc.ClassDef{
+			Name:       v.Name,
+			Decorators: []string{"dataclass(frozen=True, slots=True)"},
+			Fields:     fields,
+		})
+		names = append(names, v.Name)
+	}
+	out = append(out, &pysrc.UnionDef{Name: u.Name, Variants: names})
+	return out
+}
+
 // lowerRecordDecl emits a Mochi record as a frozen + slotted dataclass.
 // Frozen gives structural immutability (Phase 4 `with` will use
 // dataclasses.replace), slots gives memory locality and protects against
@@ -120,14 +152,14 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (pysrc.Stmt, error) {
 	for _, p := range fn.Params {
 		params = append(params, pysrc.Param{
 			Name: p.Name,
-			Type: pyTypeForRecord(p.Type, p.ElemType, p.RecordName, p.ElemRecordName, p.KeyType, p.ValueType),
+			Type: pyTypeForUnion(p.Type, p.ElemType, p.RecordName, p.ElemRecordName, p.UnionName, "", p.KeyType, p.ValueType),
 		})
 	}
 	body, err := l.lowerBlock(fn.Body)
 	if err != nil {
 		return nil, fmt.Errorf("function %s: %w", fn.Name, err)
 	}
-	ret := pyTypeForRecord(fn.ReturnType, fn.ReturnElemType, fn.ReturnRecordName, fn.ReturnElemRecordName, fn.ReturnKeyType, fn.ReturnValueType)
+	ret := pyTypeForUnion(fn.ReturnType, fn.ReturnElemType, fn.ReturnRecordName, fn.ReturnElemRecordName, fn.ReturnUnionName, "", fn.ReturnKeyType, fn.ReturnValueType)
 	if fn.ReturnType == aotir.TypeUnit {
 		ret = pysrc.TypeNone
 	}
@@ -160,6 +192,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (pysrc.Stmt, error) {
 		return l.lowerCallStmt(v)
 	case *aotir.LetStmt:
 		return l.lowerLetStmt(v)
+	case *aotir.MatchStmt:
+		return l.lowerMatchStmt(v)
 	case *aotir.AssignStmt:
 		val, err := l.lowerExpr(v.Value)
 		if err != nil {
@@ -247,15 +281,77 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (pysrc.Stmt, error) {
 }
 
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (pysrc.Stmt, error) {
+	annot := pyTypeForUnion(s.VarType, s.ElemType, s.RecordName, s.ElemRecordName, s.UnionName, "", s.KeyType, s.ValueType)
+	// Init==nil happens when the c lower introduces a mutable result var
+	// for a match expression: the LetStmt declares the binding and the
+	// following MatchStmt assigns into it from every arm. Emit a PEP 526
+	// annotation-only statement; the match arms bind the name before
+	// any read.
+	if s.Init == nil {
+		return &pysrc.AnnotateStmt{Target: s.Name, Type: annot}, nil
+	}
 	val, err := l.lowerExpr(s.Init)
 	if err != nil {
 		return nil, err
 	}
 	return &pysrc.AssignStmt{
 		Target: s.Name,
-		Type:   pyTypeForRecord(s.VarType, s.ElemType, s.RecordName, s.ElemRecordName, s.KeyType, s.ValueType),
+		Type:   annot,
 		Value:  val,
 	}, nil
+}
+
+// lowerMatchStmt emits a PEP 634 match. For statement-position matches
+// (ResultVar==""), each arm body lowers straight through. For expression-
+// position matches (ResultVar non-empty), the c lower has already rewritten
+// every arm body to end with `ResultVar = <expr>`, and a LetStmt that
+// declares ResultVar (Init==nil) sits immediately before us in the parent
+// block. Variant patterns use keyword form `Variant(field=binding)` so
+// dataclass field reordering cannot silently rebind positional patterns.
+func (l *lowerer) lowerMatchStmt(s *aotir.MatchStmt) (pysrc.Stmt, error) {
+	target, err := l.lowerExpr(s.Target)
+	if err != nil {
+		return nil, err
+	}
+	cases := make([]pysrc.MatchCase, 0, len(s.Arms)+1)
+	for _, arm := range s.Arms {
+		body, err := l.lowerBlock(arm.Body)
+		if err != nil {
+			return nil, err
+		}
+		bindings := make([]pysrc.FieldBinding, 0, len(arm.Bindings))
+		for _, b := range arm.Bindings {
+			bindings = append(bindings, pysrc.FieldBinding{FieldName: b.FieldName, BindName: b.VarName})
+		}
+		var guard pysrc.Expr
+		if arm.Guard != nil {
+			guard, err = l.lowerExpr(arm.Guard)
+			if err != nil {
+				return nil, err
+			}
+		}
+		cases = append(cases, pysrc.MatchCase{
+			Variant:  arm.VariantName,
+			Bindings: bindings,
+			Guard:    guard,
+			Body:     body,
+		})
+	}
+	if s.Default != nil {
+		body, err := l.lowerBlock(s.Default.Body)
+		if err != nil {
+			return nil, err
+		}
+		var guard pysrc.Expr
+		if s.Default.Guard != nil {
+			guard, err = l.lowerExpr(s.Default.Guard)
+			if err != nil {
+				return nil, err
+			}
+		}
+		cases = append(cases, pysrc.MatchCase{Wildcard: true, Guard: guard, Body: body})
+	}
+	return &pysrc.MatchStmt{Target: target, Cases: cases}, nil
 }
 
 func (l *lowerer) lowerIfStmt(s *aotir.IfStmt) (pysrc.Stmt, error) {
@@ -588,9 +684,37 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 		return l.lowerRecordLit(v)
 	case *aotir.FieldAccess:
 		return l.lowerFieldAccess(v)
+	case *aotir.VariantLit:
+		return l.lowerVariantLit(v)
+	case *aotir.UnionVarRef:
+		return &pysrc.Name{Id: v.Name}, nil
+	case *aotir.VariantFieldAccess:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.Attribute{Value: recv, Attr: v.FieldName}, nil
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported expression %T", e)
 	}
+}
+
+// lowerVariantLit emits `VariantName(field=v, ...)`. For nullary variants
+// the emit collapses to `VariantName()`, which PEP 634 `case Variant():`
+// also matches without binding any fields.
+func (l *lowerer) lowerVariantLit(e *aotir.VariantLit) (pysrc.Expr, error) {
+	kwargs := make([]pysrc.KeywordArg, 0, len(e.Fields))
+	for _, f := range e.Fields {
+		val, err := l.lowerExpr(f.Value)
+		if err != nil {
+			return nil, err
+		}
+		kwargs = append(kwargs, pysrc.KeywordArg{Name: f.Name, Value: val})
+	}
+	return &pysrc.Call{
+		Func:   &pysrc.Name{Id: e.VariantName},
+		Kwargs: kwargs,
+	}, nil
 }
 
 // lowerRecordLit emits `RecordName(field1=v1, field2=v2)`. The c lower
@@ -720,23 +844,40 @@ func pyTypeForCompound(t, elem, k, v aotir.Type) pysrc.TypeRef {
 	return pyTypeForRecord(t, elem, "", "", k, v)
 }
 
-// pyTypeForRecord adds record-name slots so the lowerer can emit
-// `list[RecordName]` (Phase 3.4) and a bare `RecordName` annotation
-// (Phase 4). recordName is the receiver's record name when t==TypeRecord;
-// elemRecordName is the list element's record name when elem==TypeRecord.
+// pyTypeForRecord is the Phase 3.4 callsite shape, preserved for record
+// annotations that do not need union threading. Delegates to pyTypeForUnion.
 func pyTypeForRecord(t, elem aotir.Type, recordName, elemRecordName string, k, v aotir.Type) pysrc.TypeRef {
+	return pyTypeForUnion(t, elem, recordName, elemRecordName, "", "", k, v)
+}
+
+// pyTypeForUnion adds union-name slots so the lowerer can emit a bare
+// `UnionName` annotation (Phase 5) alongside the record-name plumbing.
+// unionName is the receiver's union name when t==TypeUnion; elemUnionName
+// is the list element's union name when t==TypeList && elem==TypeUnion.
+func pyTypeForUnion(t, elem aotir.Type, recordName, elemRecordName, unionName, elemUnionName string, k, v aotir.Type) pysrc.TypeRef {
 	switch t {
 	case aotir.TypeRecord:
 		if recordName == "" {
 			return pysrc.TypeRef{}
 		}
 		return pysrc.TypeRef{Name: recordName}
+	case aotir.TypeUnion:
+		if unionName == "" {
+			return pysrc.TypeRef{}
+		}
+		return pysrc.TypeRef{Name: unionName}
 	case aotir.TypeList:
 		if elem == aotir.TypeRecord {
 			if elemRecordName == "" {
 				return pysrc.TypeRef{}
 			}
 			return pysrc.TypeRef{Name: "list[" + elemRecordName + "]"}
+		}
+		if elem == aotir.TypeUnion {
+			if elemUnionName == "" {
+				return pysrc.TypeRef{}
+			}
+			return pysrc.TypeRef{Name: "list[" + elemUnionName + "]"}
 		}
 		inner := pyTypeFor(elem)
 		if inner.Name == "" {

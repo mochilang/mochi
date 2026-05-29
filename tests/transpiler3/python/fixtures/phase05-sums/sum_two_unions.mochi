@@ -1,0 +1,19 @@
+type Shape = Circle(r: int) | Square(side: int)
+type Color = Red | Green | Blue
+
+let s: Shape = Circle(4)
+let c: Color = Blue
+
+let area = match s {
+  Circle(r) => r * r
+  Square(side) => side * side
+}
+
+let name = match c {
+  Red => "red"
+  Green => "green"
+  Blue => "blue"
+}
+
+print(area)
+print(name)
