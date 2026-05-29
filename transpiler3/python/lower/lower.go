@@ -29,8 +29,9 @@ func PackageName(src string) string {
 
 // lowerer carries per-program state.
 type lowerer struct {
-	needsMath bool // true once any float div emitted; pulls in mochi_runtime.math
-	needsFmt  bool // true once print(float) emitted; pulls in mochi_runtime.fmt
+	needsMath    bool // true once any float div emitted; pulls in mochi_runtime.math
+	needsFmt     bool // true once print(float) emitted; pulls in mochi_runtime.fmt
+	needsMapping bool // true once a sorted map keys/values call is emitted
 }
 
 // Lower translates an aotir.Program into a pysrc.Module covering the
@@ -80,19 +81,25 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 	if l.needsMath {
 		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "mochi_runtime.math", Names: []string{"fdiv"}})
 	}
+	if l.needsMapping {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "mochi_runtime.mapping", Names: []string{"keys_sorted", "values_sorted"}})
+	}
 	return mod, nil
 }
 
 func (l *lowerer) lowerFunction(fn *aotir.Function) (pysrc.Stmt, error) {
 	params := make([]pysrc.Param, 0, len(fn.Params))
 	for _, p := range fn.Params {
-		params = append(params, pysrc.Param{Name: p.Name, Type: pyTypeForFull(p.Type, p.ElemType)})
+		params = append(params, pysrc.Param{
+			Name: p.Name,
+			Type: pyTypeForCompound(p.Type, p.ElemType, p.KeyType, p.ValueType),
+		})
 	}
 	body, err := l.lowerBlock(fn.Body)
 	if err != nil {
 		return nil, fmt.Errorf("function %s: %w", fn.Name, err)
 	}
-	ret := pyTypeForFull(fn.ReturnType, fn.ReturnElemType)
+	ret := pyTypeForCompound(fn.ReturnType, fn.ReturnElemType, fn.ReturnKeyType, fn.ReturnValueType)
 	if fn.ReturnType == aotir.TypeUnit {
 		ret = pysrc.TypeNone
 	}
@@ -139,6 +146,20 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (pysrc.Stmt, error) {
 		return l.lowerForRangeStmt(v)
 	case *aotir.ForEachStmt:
 		return l.lowerForEachStmt(v)
+	case *aotir.MapPutStmt:
+		key, err := l.lowerExpr(v.Key)
+		if err != nil {
+			return nil, err
+		}
+		val, err := l.lowerExpr(v.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.IndexAssignStmt{
+			Target: &pysrc.Name{Id: v.Name},
+			Key:    key,
+			Value:  val,
+		}, nil
 	case *aotir.BreakStmt:
 		return &pysrc.BreakStmt{}, nil
 	case *aotir.ContinueStmt:
@@ -204,7 +225,7 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (pysrc.Stmt, error) {
 	}
 	return &pysrc.AssignStmt{
 		Target: s.Name,
-		Type:   pyTypeForFull(s.VarType, s.ElemType),
+		Type:   pyTypeForCompound(s.VarType, s.ElemType, s.KeyType, s.ValueType),
 		Value:  val,
 	}, nil
 }
@@ -423,6 +444,57 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 				Args: []pysrc.Expr{fn, list},
 			}},
 		}, nil
+	case *aotir.MapLit:
+		keys, err := l.lowerExprs(v.Keys)
+		if err != nil {
+			return nil, err
+		}
+		vals, err := l.lowerExprs(v.Values)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.DictLit{Keys: keys, Values: vals}, nil
+	case *aotir.MapGetExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		key, err := l.lowerExpr(v.Key)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.IndexExpr{Receiver: recv, Index: key}, nil
+	case *aotir.MapHasExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		key, err := l.lowerExpr(v.Key)
+		if err != nil {
+			return nil, err
+		}
+		// `k in m` is the idiomatic, O(1)-average Python form.
+		return &pysrc.BinaryExpr{Left: key, Op: "in", Right: recv}, nil
+	case *aotir.MapLenExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.Call{Func: &pysrc.Name{Id: "len"}, Args: []pysrc.Expr{recv}}, nil
+	case *aotir.MapKeysExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		l.needsMapping = true
+		return &pysrc.Call{Func: &pysrc.Name{Id: "keys_sorted"}, Args: []pysrc.Expr{recv}}, nil
+	case *aotir.MapValuesExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		l.needsMapping = true
+		return &pysrc.Call{Func: &pysrc.Name{Id: "values_sorted"}, Args: []pysrc.Expr{recv}}, nil
 	case *aotir.FunLit:
 		// Closure-converted FunLit. The c lower lifts the closure body
 		// to a top-level aotir.Function emitted by lowerFunction above,
@@ -526,18 +598,26 @@ func pyTypeFor(t aotir.Type) pysrc.TypeRef {
 	}
 }
 
-// pyTypeForFull resolves a (Type, ElemType) pair into the matching
-// Python annotation. For scalar types ElemType is ignored. For
-// TypeList it emits `list[<elem>]` (PEP 585 built-in generic),
-// which under `from __future__ import annotations` is a lazy string
-// at runtime and so does not require any imports.
-func pyTypeForFull(t, elem aotir.Type) pysrc.TypeRef {
-	if t == aotir.TypeList {
+// pyTypeForCompound resolves a (Type, ElemType, KeyType, ValueType)
+// tuple into the matching Python annotation. For scalar types the
+// compound fields are ignored. For TypeList it emits `list[<elem>]`,
+// for TypeMap it emits `dict[<key>, <value>]` (both PEP 585 built-in
+// subscripted generics, lazy under `from __future__ import annotations`).
+func pyTypeForCompound(t, elem, k, v aotir.Type) pysrc.TypeRef {
+	switch t {
+	case aotir.TypeList:
 		inner := pyTypeFor(elem)
 		if inner.Name == "" {
 			return pysrc.TypeRef{}
 		}
 		return pysrc.TypeRef{Name: "list[" + inner.Name + "]"}
+	case aotir.TypeMap:
+		kr := pyTypeFor(k)
+		vr := pyTypeFor(v)
+		if kr.Name == "" || vr.Name == "" {
+			return pysrc.TypeRef{}
+		}
+		return pysrc.TypeRef{Name: "dict[" + kr.Name + ", " + vr.Name + "]"}
 	}
 	return pyTypeFor(t)
 }

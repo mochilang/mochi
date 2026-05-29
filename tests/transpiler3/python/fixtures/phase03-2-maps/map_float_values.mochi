@@ -1,0 +1,3 @@
+let m: map<string, float> = {"pi": 3.14, "e": 2.71}
+print(m["pi"])
+print(m["e"])
