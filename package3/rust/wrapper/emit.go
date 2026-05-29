@@ -5,6 +5,7 @@ import (
 	"sort"
 	"strings"
 
+	"mochi/package3/rust/asyncbridge"
 	"mochi/package3/rust/errors"
 	"mochi/package3/rust/typemap"
 )
@@ -25,11 +26,26 @@ func EmitLibRS(c *Crate) string {
 	b.WriteString("\n")
 	b.WriteString(fmt.Sprintf("// upstream crate: %s %s\n", c.Upstream, c.UpstreamVersion))
 	b.WriteString("\n")
+	if c.HasAsync() {
+		b.WriteString("pub mod mochi_rt;\n")
+		b.WriteString("\n")
+	}
 	for _, fn := range c.Functions {
 		emitFn(&b, &fn)
 		b.WriteString("\n")
 	}
 	return b.String()
+}
+
+// EmitMochiRT renders src/mochi_rt.rs when the crate has at least one
+// async fn. Callers write the returned text to
+// `<wrapper>/src/mochi_rt.rs`. Returns empty when no async fns are
+// present.
+func EmitMochiRT(c *Crate) string {
+	if !c.HasAsync() {
+		return ""
+	}
+	return asyncbridge.RuntimeModule(c.AsyncFlavor)
 }
 
 func emitFn(b *strings.Builder, fn *SynthFn) {
@@ -88,7 +104,12 @@ func emitBody(b *strings.Builder, fn *SynthFn) {
 			args = append(args, p.Name)
 		}
 	}
-	call := fmt.Sprintf("%s(%s)", fn.UpstreamPath, strings.Join(args, ", "))
+	var call string
+	if fn.IsAsync {
+		call = asyncbridge.FnBody(fn.UpstreamPath, args)
+	} else {
+		call = fmt.Sprintf("%s(%s)", fn.UpstreamPath, strings.Join(args, ", "))
+	}
 	if fn.Return == nil {
 		b.WriteString(fmt.Sprintf("    %s;\n", call))
 		return
@@ -105,6 +126,11 @@ func emitBody(b *strings.Builder, fn *SynthFn) {
 // EmitCargoTOML renders the wrapper crate's Cargo.toml. The crate
 // is built as cdylib + rlib so it can be linked into the Mochi
 // runtime (cdylib) and rebuilt against other Rust callers (rlib).
+//
+// When the crate has any `async fn` (HasAsync() returns true), the
+// `[dependencies]` block additionally carries tokio (pinned to
+// asyncbridge.MinTokioVersion with the flavor's feature set) and
+// once_cell (for the runtime singleton).
 func EmitCargoTOML(c *Crate) string {
 	var b strings.Builder
 	b.WriteString("[package]\n")
@@ -119,6 +145,12 @@ func EmitCargoTOML(c *Crate) string {
 	b.WriteString("\n")
 	b.WriteString("[dependencies]\n")
 	b.WriteString(fmt.Sprintf("%s = \"=%s\"\n", c.Upstream, c.UpstreamVersion))
+	if c.HasAsync() {
+		b.WriteString(asyncbridge.CargoDepRow(c.AsyncFlavor))
+		b.WriteString("\n")
+		b.WriteString(asyncbridge.OnceCellDepRow())
+		b.WriteString("\n")
+	}
 	return b.String()
 }
 
