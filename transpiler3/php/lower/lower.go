@@ -288,6 +288,13 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]ptree.Stmt, error) {
 		// inline the desugared LetStmt/ForEachStmt/append body
 		// directly into the surrounding block.
 		return l.lowerBlock(v.Body)
+	case *aotir.RawCStmt:
+		// RawCStmt carries pre-rendered C source for the C backend
+		// (currently: Datalog setup). The PHP path runs the Datalog
+		// evaluator at compile time inside lowerDatalogQueryExpr and
+		// emits a plain array literal of results, so this hint is a
+		// no-op here.
+		return nil, nil
 	case *aotir.MapPutStmt:
 		key, err := l.lowerExpr(v.Key)
 		if err != nil {
@@ -1165,6 +1172,17 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 			Callee: &ptree.IdentExpr{Name: "array_slice"},
 			Args:   []ptree.Expr{recv, start, length},
 		}, nil
+	case *aotir.DatalogQueryExpr:
+		// Phase 8: run the semi-naive bottom-up Datalog evaluator at
+		// compile time (matching the BEAM backend's strategy) and emit
+		// a static PHP array literal of result strings. This dodges
+		// shipping a runtime engine and keeps the generated code tiny.
+		results := datalogEval(v)
+		elems := make([]ptree.Expr, 0, len(results))
+		for _, r := range results {
+			elems = append(elems, &ptree.StringLit{Value: r})
+		}
+		return &ptree.ArrayLit{Elems: elems}, nil
 	default:
 		return nil, fmt.Errorf("php lower: phase 4 cannot lower %T", e)
 	}
