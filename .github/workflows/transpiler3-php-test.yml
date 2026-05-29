@@ -1,0 +1,85 @@
+name: transpiler3-php-test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'transpiler3/php/**'
+      - 'tests/transpiler3/php/**'
+      - '.github/workflows/transpiler3-php-test.yml'
+  pull_request:
+    paths:
+      - 'transpiler3/php/**'
+      - 'tests/transpiler3/php/**'
+      - '.github/workflows/transpiler3-php-test.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  go-side:
+    name: go-side (php transpiler)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+          cache: true
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, gmp
+          coverage: none
+          tools: composer:v2
+      - name: go vet
+        run: go vet ./transpiler3/php/...
+      - name: go build
+        run: go build ./transpiler3/php/...
+      - name: go test
+        run: go test ./transpiler3/php/...
+
+  php-runtime:
+    name: php-runtime (${{ matrix.php }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.4.0'
+            allow_failure: false
+          - php: '8.4'
+            allow_failure: false
+          - php: '8.5'
+            allow_failure: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, gmp
+          coverage: none
+          tools: composer:v2
+      - name: Composer install
+        working-directory: transpiler3/php/runtime
+        run: composer install --no-interaction --prefer-dist
+      - name: PHPStan
+        working-directory: transpiler3/php/runtime
+        run: vendor/bin/phpstan analyse --no-progress
+        continue-on-error: ${{ matrix.allow_failure }}
+      - name: Psalm
+        working-directory: transpiler3/php/runtime
+        run: vendor/bin/psalm --no-progress --no-cache
+        continue-on-error: ${{ matrix.allow_failure }}
+      - name: php-cs-fixer (dry-run)
+        working-directory: transpiler3/php/runtime
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+        continue-on-error: ${{ matrix.allow_failure }}
+      - name: PHPUnit
+        working-directory: transpiler3/php/runtime
+        run: vendor/bin/phpunit --no-coverage
+        continue-on-error: ${{ matrix.allow_failure }}
