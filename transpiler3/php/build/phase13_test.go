@@ -171,6 +171,17 @@ func TestPhase13EmitFragments(t *testing.T) {
 				`$r = mochi_llm_generate("openai", "", "Is 7 prime?");`,
 			},
 		},
+		{
+			// Non-empty `model:` field. Every other Phase 13 fixture
+			// passes "" (provider default), which only pins the empty
+			// branch of the cassette-key derivation. A regression that
+			// dropped the model from the concat would still pass the
+			// other fixtures but mis-hash this one.
+			fixture: "generate_with_model",
+			wants: []string{
+				`$r = mochi_llm_generate("openai", "gpt-4o-mini", "Say hi.");`,
+			},
+		},
 	}
 
 	for _, c := range cases {
@@ -233,6 +244,8 @@ func TestPhase13DJB2HashMatchesCassetteFilenames(t *testing.T) {
 		{"generate_in_var", "openai", "", "What color is the sky?", "9323966891408970643"},
 		{"generate_math", "openai", "", "What is 6 times 7?", "7500588262126349073"},
 		{"generate_prime", "openai", "", "Is 7 prime?", "16185609923679915080"},
+		// Non-empty model: pins the branch the other rows miss.
+		{"generate_with_model", "openai", "gpt-4o-mini", "Say hi.", "16094040660861522854"},
 	}
 	for _, c := range cases {
 		t.Run(c.fixture, func(t *testing.T) {
