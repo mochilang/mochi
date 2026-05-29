@@ -72,9 +72,13 @@ trust root and demote the others to secondary.
 ## composer audit
 
 Every release is published after a clean `composer audit` against the
-FriendsOfPHP advisory database. The publish workflow re-runs the audit
-in an independent `verify-gate` job after publish, so a leaked credential
-in the publish job alone cannot mask a vulnerable release.
+FriendsOfPHP advisory database. The audit runs against the **extracted
+release tarball** (not the in-tree source), so an out-of-band
+`composer.lock` or `vendor/` directory in the working tree cannot mask
+a vulnerable artifact. The publish workflow re-runs the audit in an
+independent `verify-gate` job after publish, which re-stages the
+tarball from a fresh checkout and audits the result, so a leaked
+credential in the publish job alone cannot mask a vulnerable release.
 
 ## Release key fingerprint
 
