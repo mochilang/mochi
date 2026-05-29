@@ -34,6 +34,10 @@ type lowerer struct {
 	needsMapping    bool // true once a sorted map keys/values call is emitted
 	needsDataclass  bool // true once any record class is emitted (Phase 3.4)
 	needsCallable   bool // true once any Callable[...] annotation is emitted (Phase 6.0)
+	needsQuery      bool // true once a query-DSL helper (sort_asc, ...) is emitted (Phase 7.0)
+	needsStrFrom    bool // true once `str(x)` lowers to mochi_runtime.fmt.str_from (Phase 7.0)
+	needsSumI64     bool // true once `sum(xs:int)` lowers to mochi_runtime.query.sum_i64 (Phase 7.0)
+	needsSumF64     bool // true once `sum(xs:float)` lowers to mochi_runtime.query.sum_f64 (Phase 7.0)
 }
 
 // Lower translates an aotir.Program into a pysrc.Module covering the
@@ -109,6 +113,22 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 	}
 	if l.needsCallable {
 		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "collections.abc", Names: []string{"Callable"}})
+	}
+	if l.needsQuery || l.needsSumI64 || l.needsSumF64 {
+		names := []string{}
+		if l.needsQuery {
+			names = append(names, "sort_asc")
+		}
+		if l.needsSumI64 {
+			names = append(names, "sum_i64")
+		}
+		if l.needsSumF64 {
+			names = append(names, "sum_f64")
+		}
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "mochi_runtime.query", Names: names})
+	}
+	if l.needsStrFrom {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "mochi_runtime.fmt", Names: []string{"str_from"}})
 	}
 	return mod, nil
 }
@@ -192,6 +212,18 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (pysrc.Stmt, error) {
 func (l *lowerer) lowerBlock(blk *aotir.Block) ([]pysrc.Stmt, error) {
 	out := make([]pysrc.Stmt, 0, len(blk.Statements))
 	for _, s := range blk.Statements {
+		// QueryScopeStmt is a C-only arena wrapper; on Python its body
+		// statements splice straight into the parent block. Handle this
+		// here so the splice fits the [single Stmt]-returning lowerStmt
+		// shape without introducing a no-op container node.
+		if q, ok := s.(*aotir.QueryScopeStmt); ok {
+			body, err := l.lowerBlock(q.Body)
+			if err != nil {
+				return nil, fmt.Errorf("QueryScopeStmt: %w", err)
+			}
+			out = append(out, body...)
+			continue
+		}
 		ps, err := l.lowerStmt(s)
 		if err != nil {
 			return nil, err
@@ -532,6 +564,61 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 			return nil, err
 		}
 		return &pysrc.Call{Func: &pysrc.Name{Id: "len"}, Args: []pysrc.Expr{recv}}, nil
+	case *aotir.StrConvertExpr:
+		// Mochi `str(x)` must match Print byte-for-byte: bool to lowercase
+		// `true`/`false`, float through `float_str`. Cannot emit a bare
+		// `str(...)` because (a) Python's str(True) is "True", not "true",
+		// and (b) user `let str = ...` would shadow the builtin. Route
+		// through `mochi_runtime.fmt.str_from`.
+		operand, err := l.lowerExpr(v.Operand)
+		if err != nil {
+			return nil, err
+		}
+		l.needsStrFrom = true
+		return &pysrc.Call{Func: &pysrc.Name{Id: "str_from"}, Args: []pysrc.Expr{operand}}, nil
+	case *aotir.ListSumExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		// Route through `mochi_runtime.query.sum_i64` / `sum_f64` so user
+		// `let sum = ...` cannot shadow Python's builtin. Picking the
+		// helper by ElemType also gives the correct empty-list zero
+		// (0 for int, 0.0 for float) which keeps stdout byte-equal to vm3.
+		var fn string
+		switch v.ElemType {
+		case aotir.TypeFloat:
+			l.needsSumF64 = true
+			fn = "sum_f64"
+		default:
+			l.needsSumI64 = true
+			fn = "sum_i64"
+		}
+		return &pysrc.Call{Func: &pysrc.Name{Id: fn}, Args: []pysrc.Expr{recv}}, nil
+	case *aotir.StrUpperExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		// `s.upper()` is a method, no shadowing risk.
+		return &pysrc.Call{Func: &pysrc.Attribute{Value: recv, Attr: "upper"}}, nil
+	case *aotir.StrLowerExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.Call{Func: &pysrc.Attribute{Value: recv, Attr: "lower"}}, nil
+	case *aotir.ListSortAscExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		// Cannot emit a bare `sorted(...)` because user `let` bindings may
+		// shadow Python's builtin (e.g. `let sorted = from n in nums order by n select n`)
+		// which triggers UnboundLocalError. Route through the runtime
+		// helper which keeps the builtin reference qualified.
+		l.needsQuery = true
+		return &pysrc.Call{Func: &pysrc.Name{Id: "sort_asc"}, Args: []pysrc.Expr{recv}}, nil
 	case *aotir.AppendExpr:
 		// Mochi append returns a new list (functional semantics). Python
 		// `xs + [v]` produces a fresh list and leaves the input untouched,

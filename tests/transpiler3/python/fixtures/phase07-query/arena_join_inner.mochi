@@ -1,0 +1,6 @@
+let xs = [1, 2, 3]
+let ys = [10, 20, 30]
+let pairs = from x in xs join y in ys on x < 2 select x + y
+for p in pairs {
+  print(p)
+}
