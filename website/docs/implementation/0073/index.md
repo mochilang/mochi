@@ -15,7 +15,7 @@ A phase is LANDED only when its gate is green for every target (consume directio
 
 | Phase | Title | Status | Commit | Tracking page |
 |-------|-------|--------|--------|---------------|
-| 0 | Skeleton: package3/rust/ layout + cargo workspace plumbing | NOT STARTED | — | [phase-00](/docs/implementation/0073/phase-00-skeleton) |
+| 0 | Skeleton: package3/rust/ layout + cargo workspace plumbing | LANDED | (pending) | [phase-00](/docs/implementation/0073/phase-00-skeleton) |
 | 1 | Sparse-index client (`index.crates.io` reader, sha256 + blake3 download verify) | NOT STARTED | — | [phase-01](/docs/implementation/0073/phase-01-sparse-index) |
 | 2 | Rustdoc-JSON ingest + ApiSurface emit | NOT STARTED | — | [phase-02](/docs/implementation/0073/phase-02-rustdoc-ingest) |
 | 3 | Closed type-mapping table (scalars / strings / collections / Option / Result / Tuple / Struct / Enum) | NOT STARTED | — | [phase-03](/docs/implementation/0073/phase-03-type-mapping) |
