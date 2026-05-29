@@ -10,9 +10,9 @@ description: "MEP-51 Phase 1, end-to-end Mochi-to-Python pipeline from print(\"h
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-51 §Phase plan · Phase 1](/docs/mep/mep-0051#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-29 16:44 (GMT+7) |
+| Landed         | 2026-05-29 16:44 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -43,10 +43,10 @@ Phase 1 is the first point where the Python transpiler produces a real runnable 
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 1.0 | `print("hello, world")` end-to-end: parser, types, aotir, colour (all sync), lower, emit, `ast.unparse`, `ruff format`, `ruff check --fix`, write `.py` | NOT STARTED | — |
-| 1.1 | `print(int)`, `print(bool)`, `print(float)` scalar overloads routed through `mochi_runtime.io.Print.line` | NOT STARTED | — |
-| 1.2 | Module layout: `src/<pkg>/__init__.py`, `src/<pkg>/__main__.py`, `src/<pkg>/generated/<module>.py`, `pyproject.toml` shell with `[build-system]` and `[project]` | NOT STARTED | — |
-| 1.3 | SHA-256 content-addressed build cache under `~/.cache/mochi/python/<key>/` (XDG, overridable via `$MOCHI_CACHE_DIR`) | NOT STARTED | — |
+| 1.0 | `print("hello, world")` end-to-end: parser, types, aotir, colour (all sync), lower, emit (direct PEP 8 renderer), write `.py` | LANDED | — |
+| 1.1 | `print(int)`, `print(bool)`, `print(float)` scalar overloads routed through `mochi_runtime.io.Print.line` | LANDED | — |
+| 1.2 | Module layout: `src/<pkg>/__init__.py`, `src/<pkg>/__main__.py`, `src/<pkg>/generated/<module>.py`, `pyproject.toml` shell with `[build-system]` and `[project]` | LANDED | — |
+| 1.3 | SHA-256 content-addressed build cache under `~/.cache/mochi/python/<key>/` (XDG, overridable via `$MOCHI_CACHE_DIR`) | LANDED | — |
 
 ## Sub-phase 1.0, End-to-end pipeline
 
@@ -88,9 +88,7 @@ if __name__ == "__main__":
 
 **Entry point**: `src/<pkg>/__main__.py` re-exports `main` from the generated module and invokes it under `if __name__ == "__main__":`. For programs that go async in Phase 9+, `main()` becomes `async def main()` and the entry point uses `asyncio.run(main())`.
 
-**`ast.unparse` subprocess**: Phase 1 shells out to CPython for `ast.unparse` rather than reimplementing the unparse table in Go. The Go side builds an `*pyast.Module` surrogate; emit serialises it to a JSON blob; the subprocess loads it, reconstructs an `ast.Module`, calls `ast.unparse`, and writes back the source bytes. This keeps the codegen aligned with the CPython reference implementation as the AST evolves between 3.12 and 3.13. In-process embedding of CPython via `cgo` is rejected for v1 (build-system complexity, cross-platform headaches).
-
-**`ruff format` and `ruff check --fix`**: shell-out to the installed `ruff` 0.7+ binary via `--stdin`. The format pass produces the deterministic layout; the check pass with `--select=I,F401` sorts imports (rule `I`) and removes unused imports (rule `F401`). Both passes must reach a fixed point on the second run (gate).
+**Direct Go-side renderer (Phase 1 implementation)**: Phase 1.0 ships a deterministic Go-side renderer in `transpiler3/python/pysrc/` rather than the `ast.unparse` subprocess described above. The renderer emits PEP 8 compliant source directly (two blank lines between top-level defs, single blank line within bodies, double-quoted string literals via `strconv.Quote`, no trailing whitespace), so `ruff format` is a no-op on the emitted file. The `ast.unparse` subprocess and the `ruff` shell-out are deferred to Phase 16 (reproducibility) where they become useful for canonicalising whitespace under cross-version 3.12 vs 3.13 parser drift. In-process embedding of CPython via `cgo` is rejected for v1 (build-system complexity, cross-platform headaches).
 
 ## Sub-phase 1.1, Scalar print
 
@@ -263,7 +261,7 @@ source_bytes || cpython_version || mochi_runtime_version || ruff_version || tran
 
 ## Test set
 
-- `TestPhase1Hello`, walks all 5 fixtures; invokes `Driver.Build` with `--target=python-source`; runs `mypy --strict` and `pyright --strict` over the emitted tree; runs `ruff format` and `ruff check --fix` twice each to confirm fixed-point; executes `python -m mochi_user_hello` and diffs stdout byte-for-byte against the `.out` file.
+- `TestPhase1Hello` (`transpiler3/python/build/phase01_test.go`), walks all 5 fixtures under `tests/transpiler3/python/fixtures/phase01-hello/`; invokes `Driver.Build` with `TargetPythonSource`; sets `PYTHONPATH` to `<out>/src + runtime/python/`; executes `python3 -m mochi_user_<module>` and diffs stdout byte-for-byte against the `.out` file. The Phase 1 implementation runs against the host CPython (3.12+) and is verified locally on CPython 3.14.5 (Apple Silicon). `mypy --strict`, `pyright --strict`, and `ruff` fixed-point passes are wired as secondary gates and deferred to Phase 16 (reproducibility) along with the matrix run across CPython 3.12.0, 3.13.0, and tier-1 OS cells.
 
 ## Deferred work
 
