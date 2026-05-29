@@ -15,12 +15,26 @@ import (
 )
 
 type lowerer struct {
-	matchBindings map[string]string // field name → binding var name in current match arm
+	matchBindings map[string]string            // field name → binding var name in current match arm
+	agents        map[string]*aotir.AgentDecl  // name → agent decl, for agent lowering
+	javaFuncs     map[string]*aotir.JavaFuncDecl // mochiName → Java func decl
+	usesLLM       bool                         // true if any LLMGenerateExpr was lowered
+	usesHTTP      bool                         // true if any HttpGetExpr was lowered
 }
 
 // Lower translates an aotir.Program into a ktree.SourceFile.
 func Lower(prog *aotir.Program) (*ktree.SourceFile, error) {
 	l := &lowerer{}
+	// Track agent declarations for use in lowerExpr (AgentLit, AgentSpawn etc.)
+	l.agents = make(map[string]*aotir.AgentDecl, len(prog.Agents))
+	for _, ad := range prog.Agents {
+		l.agents[ad.Name] = ad
+	}
+	// Track Java FFI function declarations for call-site redirect.
+	l.javaFuncs = make(map[string]*aotir.JavaFuncDecl, len(prog.JavaFuncs))
+	for _, jf := range prog.JavaFuncs {
+		l.javaFuncs[jf.MochiName] = jf
+	}
 
 	mainFn := prog.Functions[prog.Main]
 	body, err := l.lowerBlock(mainFn.Body)
@@ -44,6 +58,15 @@ func Lower(prog *aotir.Program) (*ktree.SourceFile, error) {
 		topDecls = append(topDecls, lowerUnionDecl(ud))
 	}
 
+	// Agent class declarations.
+	for _, ad := range prog.Agents {
+		agentDecl, err := lowerAgentDecl(ad)
+		if err != nil {
+			return nil, fmt.Errorf("kotlin/lower: agent %q: %w", ad.Name, err)
+		}
+		topDecls = append(topDecls, agentDecl)
+	}
+
 	// User-defined functions (non-main).
 	for i, fn := range prog.Functions {
 		if i == prog.Main {
@@ -58,6 +81,16 @@ func Lower(prog *aotir.Program) (*ktree.SourceFile, error) {
 
 	// Helpers used by the generated code.
 	topDecls = append(topDecls, mochiHelpers()...)
+
+	// Phase 13: LLM helpers.
+	if l.usesLLM {
+		topDecls = append(topDecls, mochiLLMHelpers()...)
+	}
+
+	// Phase 14: HTTP fetch helpers.
+	if l.usesHTTP {
+		topDecls = append(topDecls, mochiHttpHelpers()...)
+	}
 
 	// Main function last.
 	topDecls = append(topDecls, mainFunc)
@@ -526,6 +559,10 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (ktree.Stmt, error) {
 		return l.lowerMatchStmt(s)
 	case *aotir.QueryScopeStmt:
 		return l.lowerQueryScopeStmt(s)
+	case *aotir.AgentIntentCallStmt:
+		return l.lowerAgentIntentCallStmt(s)
+	case *aotir.ChanSendStmt:
+		return l.lowerChanSendStmt(s)
 	default:
 		return nil, fmt.Errorf("kotlin/lower: unsupported statement %T", s)
 	}
@@ -579,6 +616,15 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (ktree.Stmt, error) {
 		call := &ktree.CallExpr{Func: "println", Args: []ktree.Expr{arg}}
 		return &ktree.ExprStmt{X: call}, nil
 	default:
+		// Phase 12: if this is a Java FFI call, redirect to the Java method.
+		if decl, ok := l.javaFuncs[s.Func]; ok {
+			fakeExpr := &aotir.JavaCallExpr{Decl: decl, Args: s.Args, Result: aotir.TypeUnit}
+			e, err := l.lowerJavaCallExpr(fakeExpr)
+			if err != nil {
+				return nil, err
+			}
+			return &ktree.ExprStmt{X: e}, nil
+		}
 		if !strings.HasPrefix(s.Func, "mochi_") {
 			// User-defined function call.
 			args := make([]ktree.Expr, len(s.Args))
@@ -639,6 +685,12 @@ func lowerLetTypeName(s *aotir.LetStmt) string {
 		return "LinkedHashSet<" + ktScalarType(s.ElemType) + ">"
 	case aotir.TypeFun:
 		return ktFunType(s.FunSig)
+	case aotir.TypeChan:
+		return lowerChanLetTypeName(s.ChanElemType)
+	case aotir.TypeFuture:
+		return lowerFutureLetTypeName(s.FutureElemType)
+	case aotir.TypeAgent:
+		return s.AgentName + "Agent"
 	default:
 		return ""
 	}
@@ -1048,6 +1100,32 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ktree.Expr, error) {
 		return l.lowerListSumExpr(e)
 	case *aotir.ListContainsExpr:
 		return l.lowerListContainsExpr(e)
+	case *aotir.DatalogQueryExpr:
+		return l.lowerDatalogQueryExpr(e)
+	case *aotir.AgentLit:
+		return l.lowerAgentLitExpr(e)
+	case *aotir.AgentSpawnExpr:
+		return l.lowerAgentSpawnExpr(e)
+	case *aotir.AgentIntentCallExpr:
+		return l.lowerAgentIntentCallExpr(e)
+	case *aotir.ChanMakeExpr:
+		return l.lowerChanMakeExpr(e)
+	case *aotir.ChanRecvExpr:
+		return l.lowerChanRecvExpr(e)
+	case *aotir.AsyncExpr:
+		return l.lowerAsyncExpr(e)
+	case *aotir.AwaitExpr:
+		return l.lowerAwaitExpr(e)
+	case *aotir.JavaCallExpr:
+		return l.lowerJavaCallExpr(e)
+	case *aotir.LLMGenerateExpr:
+		l.usesLLM = true
+		return l.lowerLLMGenerateExpr(e)
+	case *aotir.HttpGetExpr:
+		l.usesHTTP = true
+		return l.lowerHttpGetExpr(e)
+	case *aotir.JsonDecodeExpr:
+		return l.lowerJsonDecodeExpr(e)
 	default:
 		return nil, fmt.Errorf("kotlin/lower: unsupported expression %T", e)
 	}
@@ -1106,6 +1184,10 @@ func (l *lowerer) lowerCallExpr(e *aotir.CallExpr) (ktree.Expr, error) {
 			return nil, err
 		}
 		args[i] = se
+	}
+	// Phase 12: if this is a Java FFI call, redirect to the Java method.
+	if decl, ok := l.javaFuncs[e.Func]; ok {
+		return l.lowerJavaCallExpr(&aotir.JavaCallExpr{Decl: decl, Args: e.Args, Result: e.Result})
 	}
 	return &ktree.CallExpr{
 		Func: e.Func,
