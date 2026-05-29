@@ -1,0 +1,8 @@
+type Msg {
+  text: string
+  count: int
+}
+
+let m = Msg { text: "hello", count: 3 }
+print(m.text)
+print(m.count)

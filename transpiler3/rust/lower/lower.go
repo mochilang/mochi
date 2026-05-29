@@ -64,8 +64,14 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, crateName string) (*rt
 	file := &rtree.File{
 		Name: crateName,
 		Uses: []*rtree.Use{},
-		Items: []rtree.Item{mainItem},
 	}
+
+	// Records first so types are in scope.
+	for _, rd := range prog.Records {
+		file.Items = append(file.Items, lowerRecordDecl(rd))
+	}
+
+	file.Items = append(file.Items, mainItem)
 
 	for i, fn := range prog.Functions {
 		if i == prog.Main {
@@ -81,6 +87,40 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, crateName string) (*rt
 	return file, nil
 }
 
+// lowerRecordDecl translates an aotir.RecordDecl into a Rust StructDecl.
+// Phase 4 derives Debug, Clone, PartialEq for every record. Eq is added
+// when no float fields are present.
+func lowerRecordDecl(rd *aotir.RecordDecl) rtree.Item {
+	derives := []string{"Debug", "Clone", "PartialEq"}
+	hasFloat := false
+	fields := make([]rtree.StructField, 0, len(rd.Fields))
+	for _, f := range rd.Fields {
+		if f.Type == aotir.TypeFloat {
+			hasFloat = true
+		}
+		fields = append(fields, rtree.StructField{
+			Visibility: "",
+			Name:       f.Name,
+			TypeName:   rustFieldTypeName(f.Type, f.RecordName),
+		})
+	}
+	if !hasFloat {
+		derives = append(derives, "Eq", "Hash")
+	}
+	return &rtree.StructDecl{
+		Derives: derives,
+		Name:    rd.Name,
+		Fields:  fields,
+	}
+}
+
+func rustFieldTypeName(t aotir.Type, recordName string) string {
+	if t == aotir.TypeRecord && recordName != "" {
+		return recordName
+	}
+	return rustTypeName(t)
+}
+
 func (l *lowerer) lowerFunction(fn *aotir.Function) (*rtree.FnDecl, error) {
 	body, err := l.lowerBlock(fn.Body)
 	if err != nil {
@@ -90,13 +130,17 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*rtree.FnDecl, error) {
 	for _, p := range fn.Params {
 		params = append(params, rtree.FnParam{
 			Name:     p.Name,
-			TypeName: rustTypeName(p.Type),
+			TypeName: rustFieldTypeName(p.Type, p.RecordName),
 		})
+	}
+	retTy := ""
+	if fn.ReturnType != aotir.TypeUnit {
+		retTy = rustFieldTypeName(fn.ReturnType, fn.ReturnRecordName)
 	}
 	return &rtree.FnDecl{
 		Name:       fn.Name,
 		Params:     params,
-		ReturnType: rustReturnType(fn.ReturnType),
+		ReturnType: retTy,
 		Body:       body,
 		IsAsync:    l.colours[fn.Name] == colour.Red,
 	}, nil
@@ -329,7 +373,11 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 	case *aotir.BoolLit:
 		return &rtree.BoolLit{Value: n.Value}, nil
 	case *aotir.VarRef:
-		return &rtree.Ident{Name: n.Name}, nil
+		ident := &rtree.Ident{Name: n.Name}
+		if isOwnedType(n.VarType) {
+			return &rtree.CloneExpr{Expr: ident}, nil
+		}
+		return ident, nil
 	case *aotir.BinaryExpr:
 		return l.lowerBinaryExpr(n)
 	case *aotir.UnaryExpr:
@@ -596,6 +644,27 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			return nil, err
 		}
 		return &rtree.RawExpr{Code: "*" + r.RustExpr() + ".iter().max().unwrap()"}, nil
+	case *aotir.RecordLit:
+		fields := make([]rtree.StructLitField, 0, len(n.Fields))
+		for _, f := range n.Fields {
+			v, err := l.lowerExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, rtree.StructLitField{Name: f.Name, Value: v})
+		}
+		return &rtree.StructLit{TypeName: n.TypeName, Fields: fields}, nil
+	case *aotir.FieldAccess:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		fa := &rtree.FieldAccess{Receiver: r, Field: n.FieldName}
+		if n.Result == aotir.TypeString {
+			// Owned String field: clone on read to avoid moving out of receiver.
+			return &rtree.CloneExpr{Expr: fa}, nil
+		}
+		return fa, nil
 	}
 	return nil, fmt.Errorf("rust lower: unsupported expr %T", e)
 }
@@ -738,6 +807,18 @@ func builtinValueCall(name string) (string, bool) {
 		return "mochi_runtime::strings::contains", true
 	}
 	return "", false
+}
+
+// isOwnedType reports whether values of t are owning (need .clone() on reads
+// when bound to a variable). Copy primitives like i64/f64/bool return false.
+func isOwnedType(t aotir.Type) bool {
+	switch t {
+	case aotir.TypeString, aotir.TypeRecord, aotir.TypeList, aotir.TypeMap,
+		aotir.TypeSet, aotir.TypeUnion, aotir.TypeFun, aotir.TypeChan,
+		aotir.TypeStream, aotir.TypeAgent:
+		return true
+	}
+	return false
 }
 
 func rustTypeName(t aotir.Type) string {

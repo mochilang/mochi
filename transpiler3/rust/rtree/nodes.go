@@ -416,7 +416,9 @@ type Expr interface {
 
 // ---- Literals ----
 
-// StringLit is a string literal (rendered with Rust's escape rules).
+// StringLit is a string literal. Rendered as `String::from("...")` so the
+// expression is always an owned String. Callers needing &str rely on
+// AsRef<str> impls on String at the call site.
 type StringLit struct {
 	Value string
 }
@@ -424,7 +426,7 @@ type StringLit struct {
 func (*StringLit) rustExpr() {}
 
 func (s *StringLit) RustExpr() string {
-	return strconv.Quote(s.Value)
+	return "String::from(" + strconv.Quote(s.Value) + ")"
 }
 
 // IntLit is a 64-bit signed integer literal.
@@ -614,6 +616,36 @@ func (*FieldAccess) rustExpr() {}
 
 func (f *FieldAccess) RustExpr() string {
 	return fmt.Sprintf("%s.%s", f.Receiver.RustExpr(), f.Field)
+}
+
+// ---- StructLit ----
+
+// StructLit is `TypeName { field: expr, ... }`.
+type StructLit struct {
+	TypeName string
+	Fields   []StructLitField
+}
+
+// StructLitField is one (name, value) pair.
+type StructLitField struct {
+	Name  string
+	Value Expr
+}
+
+func (*StructLit) rustExpr() {}
+
+func (s *StructLit) RustExpr() string {
+	var sb strings.Builder
+	sb.WriteString(s.TypeName)
+	sb.WriteString(" { ")
+	for i, f := range s.Fields {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		fmt.Fprintf(&sb, "%s: %s", f.Name, f.Value.RustExpr())
+	}
+	sb.WriteString(" }")
+	return sb.String()
 }
 
 // ---- IndexExpr ----
