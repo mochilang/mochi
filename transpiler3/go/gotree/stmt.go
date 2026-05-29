@@ -35,6 +35,22 @@ func (b *BlockStmt) writeInline(w *Writer) {
 	w.Line("}")
 }
 
+// writeInlineNoNewline is like writeInline but omits the trailing
+// newline so callers (such as IfStmt) can append ` else ...` on
+// the same line.
+func (b *BlockStmt) writeInlineNoNewline(w *Writer) {
+	w.Raw("{\n")
+	w.Indent()
+	for _, s := range b.List {
+		s.write(w)
+	}
+	w.Dedent()
+	for range w.depth {
+		w.Raw("\t")
+	}
+	w.Raw("}")
+}
+
 // ExprStmt is a bare expression statement, e.g. `f()`.
 type ExprStmt struct{ X Expr }
 
@@ -128,13 +144,20 @@ func (i *IfStmt) write(w *Writer) {
 	}
 	i.Cond.write(w)
 	w.Raw(" ")
-	i.Body.writeInline(w)
+	i.Body.writeInlineNoNewline(w)
 	if i.Else != nil {
-		for range w.depth {
-			w.Raw("\t")
-		}
 		w.Raw(" else ")
-		i.Else.write(w)
+		switch e := i.Else.(type) {
+		case *IfStmt, *BlockStmt:
+			depth := w.depth
+			w.depth = 0
+			e.write(w)
+			w.depth = depth
+		default:
+			i.Else.write(w)
+		}
+	} else {
+		w.Newline()
 	}
 }
 

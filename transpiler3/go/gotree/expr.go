@@ -171,7 +171,24 @@ type UnaryExpr struct {
 func (*UnaryExpr) exprNode() {}
 func (u *UnaryExpr) write(w *Writer) {
 	w.Raw(u.Op)
+	if needsUnaryParens(u.Op, u.X) {
+		w.Raw("(")
+		u.X.write(w)
+		w.Raw(")")
+		return
+	}
 	u.X.write(w)
+}
+
+// needsUnaryParens reports whether the operand of a UnaryExpr
+// must be parenthesised to avoid forming an unintended token
+// like `--`, `++`, `<-<-`, or `**`.
+func needsUnaryParens(op string, x Expr) bool {
+	inner, ok := x.(*UnaryExpr)
+	if !ok {
+		return false
+	}
+	return op == inner.Op || (op == "-" && inner.Op == "-") || (op == "+" && inner.Op == "+") || (op == "<-" && inner.Op == "<-")
 }
 
 // ParenExpr is (X). Use sparingly; gofmt removes redundant

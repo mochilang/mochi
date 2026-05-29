@@ -8,8 +8,7 @@ import (
 )
 
 // lowerBlock walks an aotir.Block's statement list into a
-// gotree.BlockStmt. Phase 1 supports only CallStmt; other Stmt
-// shapes are rejected with a phase-named diagnostic.
+// gotree.BlockStmt.
 func (l *lowerer) lowerBlock(b *aotir.Block) (*gotree.BlockStmt, error) {
 	out := &gotree.BlockStmt{}
 	for _, s := range b.Statements {
@@ -26,8 +25,24 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 	switch s := s.(type) {
 	case *aotir.CallStmt:
 		return l.lowerCallStmt(s)
+	case *aotir.LetStmt:
+		return l.lowerLetStmt(s)
+	case *aotir.AssignStmt:
+		return l.lowerAssignStmt(s)
+	case *aotir.IfStmt:
+		return l.lowerIfStmt(s)
+	case *aotir.WhileStmt:
+		return l.lowerWhileStmt(s)
+	case *aotir.ForRangeStmt:
+		return l.lowerForRangeStmt(s)
+	case *aotir.BreakStmt:
+		return &gotree.BranchStmt{Tok: "break"}, nil
+	case *aotir.ContinueStmt:
+		return &gotree.BranchStmt{Tok: "continue"}, nil
+	case *aotir.ReturnStmt:
+		return l.lowerReturnStmt(s)
 	default:
-		return nil, fmt.Errorf("transpiler3/go/lower: Phase 1 does not handle %T", s)
+		return nil, fmt.Errorf("transpiler3/go/lower: Phase 2 does not handle stmt %T", s)
 	}
 }
 
@@ -51,6 +66,120 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (gotree.Stmt, error) {
 			Args: []gotree.Expr{arg},
 		}}, nil
 	default:
-		return nil, fmt.Errorf("transpiler3/go/lower: Phase 1 does not handle call %q", s.Func)
+		return nil, fmt.Errorf("transpiler3/go/lower: Phase 2 does not handle call %q", s.Func)
 	}
+}
+
+func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (gotree.Stmt, error) {
+	typeText, err := l.lowerType(s.VarType)
+	if err != nil {
+		return nil, fmt.Errorf("transpiler3/go/lower: let %s: %w", s.Name, err)
+	}
+	init, err := l.lowerExpr(s.Init)
+	if err != nil {
+		return nil, fmt.Errorf("transpiler3/go/lower: let %s init: %w", s.Name, err)
+	}
+	name := mangleIdent(s.Name)
+	if s.Mutable {
+		// `var name Type = init` keeps the binding mutable so
+		// subsequent AssignStmts can update it; gofmt collapses
+		// to the appropriate form.
+		return &gotree.DeclStmt{Decl: &gotree.GenDecl{
+			Tok: "var",
+			Specs: []gotree.Spec{&gotree.ValueSpec{
+				Names:  []string{name},
+				Type:   &gotree.Ident{Name: typeText},
+				Values: []gotree.Expr{init},
+			}},
+		}}, nil
+	}
+	// Immutable let: use `name := init`. The type annotation is
+	// implicit; gotree-level typing is handled by gofmt and the
+	// Go compiler.
+	return &gotree.AssignStmt{
+		Lhs: []gotree.Expr{&gotree.Ident{Name: name}},
+		Tok: ":=",
+		Rhs: []gotree.Expr{init},
+	}, nil
+}
+
+func (l *lowerer) lowerAssignStmt(s *aotir.AssignStmt) (gotree.Stmt, error) {
+	val, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, err
+	}
+	return &gotree.AssignStmt{
+		Lhs: []gotree.Expr{&gotree.Ident{Name: mangleIdent(s.Name)}},
+		Tok: "=",
+		Rhs: []gotree.Expr{val},
+	}, nil
+}
+
+func (l *lowerer) lowerIfStmt(s *aotir.IfStmt) (gotree.Stmt, error) {
+	cond, err := l.lowerExpr(s.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenBlk, err := l.lowerBlock(s.Then)
+	if err != nil {
+		return nil, err
+	}
+	out := &gotree.IfStmt{Cond: cond, Body: thenBlk}
+	if s.Else != nil {
+		elseBlk, err := l.lowerBlock(s.Else)
+		if err != nil {
+			return nil, err
+		}
+		out.Else = elseBlk
+	}
+	return out, nil
+}
+
+func (l *lowerer) lowerWhileStmt(s *aotir.WhileStmt) (gotree.Stmt, error) {
+	cond, err := l.lowerExpr(s.Cond)
+	if err != nil {
+		return nil, err
+	}
+	body, err := l.lowerBlock(s.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &gotree.ForStmt{Cond: cond, Body: body}, nil
+}
+
+// lowerForRangeStmt lowers Mochi `for i in a..b { ... }` to
+// the canonical Go `for i := a; i < b; i++ { ... }` form.
+func (l *lowerer) lowerForRangeStmt(s *aotir.ForRangeStmt) (gotree.Stmt, error) {
+	start, err := l.lowerExpr(s.Start)
+	if err != nil {
+		return nil, err
+	}
+	end, err := l.lowerExpr(s.End)
+	if err != nil {
+		return nil, err
+	}
+	name := mangleIdent(s.Var)
+	body, err := l.lowerBlock(s.Body)
+	if err != nil {
+		return nil, err
+	}
+	init := &gotree.AssignStmt{
+		Lhs: []gotree.Expr{&gotree.Ident{Name: name}},
+		Tok: ":=",
+		Rhs: []gotree.Expr{start},
+	}
+	cond := &gotree.BinaryExpr{X: &gotree.Ident{Name: name}, Op: "<", Y: end}
+	post := &gotree.IncDecStmt{X: &gotree.Ident{Name: name}, Tok: "++"}
+	return &gotree.ForStmt{Init: init, Cond: cond, Post: post, Body: body}, nil
+}
+
+func (l *lowerer) lowerReturnStmt(s *aotir.ReturnStmt) (gotree.Stmt, error) {
+	if s.Value == nil {
+		return &gotree.ReturnStmt{}, nil
+	}
+	val, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, err
+	}
+	return &gotree.ReturnStmt{Results: []gotree.Expr{val}}, nil
 }
