@@ -264,9 +264,13 @@ func classHandle(fqcn string) string {
 	return name
 }
 
-// toSnakeCase converts a PascalCase or camelCase identifier to snake_case.
+// ToSnakeCase converts a PascalCase or camelCase identifier to snake_case.
 // "GuzzleHttpClient" -> "guzzle_http_client"
 // "send" -> "send"
+func ToSnakeCase(s string) string {
+	return toSnakeCase(s)
+}
+
 func toSnakeCase(s string) string {
 	var sb strings.Builder
 	for i, r := range s {
