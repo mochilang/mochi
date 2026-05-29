@@ -191,20 +191,44 @@ func (d *Driver) Build(src, out string, target Target) error {
 		}
 	}
 
-	if target != TargetPythonSource {
+	switch target {
+	case TargetPythonSource:
+		if err := copyTree(out, workDir); err != nil {
+			return err
+		}
+		if !d.NoCache {
+			cacheEntry := filepath.Join(d.effectiveCacheDir(), cacheKey)
+			if err := os.MkdirAll(filepath.Dir(cacheEntry), 0o755); err == nil {
+				_ = copyTree(cacheEntry, workDir)
+			}
+		}
+		return nil
+	case TargetPythonWheel:
+		// Phase 15.0: wheel build via stdlib zip; no external build
+		// backend required at test or ship time. The runtime support
+		// package ships bundled inside the wheel.
+		rt, err := runtimeDir()
+		if err != nil {
+			return err
+		}
+		if _, err := buildWheel(out, workDir, rt, pkgName); err != nil {
+			return err
+		}
+		return nil
+	case TargetPythonSdist:
+		// Phase 15.0: sdist via stdlib tar.gz. Bundles the same
+		// source tree the wheel ships, plus pyproject.toml.
+		rt, err := runtimeDir()
+		if err != nil {
+			return err
+		}
+		if _, err := buildSdist(out, workDir, rt, pkgName); err != nil {
+			return err
+		}
+		return nil
+	default:
 		return fmt.Errorf("python build: target %d not supported until later phase", target)
 	}
-
-	if err := copyTree(out, workDir); err != nil {
-		return err
-	}
-	if !d.NoCache {
-		cacheEntry := filepath.Join(d.effectiveCacheDir(), cacheKey)
-		if err := os.MkdirAll(filepath.Dir(cacheEntry), 0o755); err == nil {
-			_ = copyTree(cacheEntry, workDir)
-		}
-	}
-	return nil
 }
 
 func (d *Driver) packageName(src string) string {
@@ -235,7 +259,7 @@ func (d *Driver) cacheKey(srcBytes []byte) string {
 	if d.tc != nil {
 		fmt.Fprintf(h, "%d.%d.%d", d.tc.Major, d.tc.Minor, d.tc.Patch)
 	}
-	h.Write([]byte("mep51-phase14"))
+	h.Write([]byte("mep51-phase15"))
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
