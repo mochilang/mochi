@@ -365,7 +365,8 @@
       "implementation/0074/phase-07-extern-emit",
       "implementation/0074/phase-08-import-grammar",
       "implementation/0074/phase-09-build",
-      "implementation/0074/phase-10-lockfile"
+      "implementation/0074/phase-10-lockfile",
+      "implementation/0074/phase-11-library-emit"
     ]
   },
   "implementation/0075/index",
