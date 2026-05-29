@@ -1,0 +1,6 @@
+extern python fun py_mul(x: int, y: int): int
+
+let a: int = py_mul(6, 7)
+let b: int = py_mul(3, 4)
+print(a)
+print(b)

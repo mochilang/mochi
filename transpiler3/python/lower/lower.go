@@ -41,15 +41,27 @@ type lowerer struct {
 	needsDeque      bool // true once a chan<T> lowers to collections.deque (Phase 9.0)
 	needsStream     bool // true once a stream<T> / sub<T> needs the mochi_runtime.stream surface (Phase 10.0)
 	needsExcept     bool // true once a panic/try-catch needs the mochi_runtime.except_ surface (Phase 11.0)
+	moduleName      string          // Mochi module name (drives the externs module import in Phase 12.0)
+	pythonExterns   map[string]bool // Phase 12.0: registered `extern python fun` names
 }
 
 // Lower translates an aotir.Program into a pysrc.Module covering the
 // Phase 2 surface (scalars, control flow, user functions) plus the
 // Phase 3.1 list surface: literal, index, len, for-each, append,
 // slice, filter/map via the lifted-closure plumbing the c lower built.
-func Lower(prog *aotir.Program) (*pysrc.Module, error) {
+// moduleName is the Mochi module name (e.g. "py_add_floats"); it drives
+// the externs import emitted when prog.PythonFuncs is non-empty
+// (Phase 12.0).
+func Lower(prog *aotir.Program, moduleName string) (*pysrc.Module, error) {
 	mod := &pysrc.Module{FutureAnnotations: true}
-	l := &lowerer{}
+	l := &lowerer{
+		moduleName:    moduleName,
+		pythonExterns: map[string]bool{},
+	}
+	if err := rejectNonPythonExterns(prog); err != nil {
+		return nil, err
+	}
+	l.registerPythonExterns(prog)
 
 	mainFn := prog.Functions[prog.Main]
 	mainBody, err := l.lowerBlock(mainFn.Body)
@@ -153,6 +165,12 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
 			From:  "mochi_runtime.except_",
 			Names: []string{"MochiPanic", "_panic_code"},
+		})
+	}
+	if names := l.pythonExternNames(); len(names) > 0 {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
+			From:  "mochi_user_" + l.moduleName + "_externs",
+			Names: names,
 		})
 	}
 	return mod, nil
@@ -370,6 +388,16 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (pysrc.Stmt, error) {
 			Args: []pysrc.Expr{arg},
 		}}, nil
 	default:
+		// Phase 12.0: Python FFI call statement (return value discarded).
+		// Same prefix-strip as the expression case; the import is emitted
+		// at the module level.
+		if bare, ok := stripPythonExternPrefix(s.Func); ok {
+			args, err := l.lowerExprs(s.Args)
+			if err != nil {
+				return nil, err
+			}
+			return &pysrc.ExprStmt{X: &pysrc.Call{Func: &pysrc.Name{Id: bare}, Args: args}}, nil
+		}
 		if strings.HasPrefix(s.Func, "mochi_") {
 			return nil, fmt.Errorf("python/lower: unsupported builtin %q", s.Func)
 		}
@@ -577,6 +605,12 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 		args, err := l.lowerExprs(v.Args)
 		if err != nil {
 			return nil, err
+		}
+		// Phase 12.0: a `mochi_py_<name>` call expression is a Python FFI
+		// call. Strip the C-target mangling and call the bare name; the
+		// import is emitted at the module level.
+		if bare, ok := stripPythonExternPrefix(v.Func); ok {
+			return &pysrc.Call{Func: &pysrc.Name{Id: bare}, Args: args}, nil
 		}
 		return &pysrc.Call{Func: &pysrc.Name{Id: v.Func}, Args: args}, nil
 	case *aotir.FunCallExpr:
