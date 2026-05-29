@@ -180,6 +180,11 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (gotree.Stmt, error) {
 	default:
 		// User-defined function call as a statement. Func is the
 		// already-mangled mochi__<source> name; args lower as usual.
+		// Phase 10.2: Go FFI calls arrive with a `mochi_go_` prefix
+		// from the shared aotir lowerer (used by the C target for
+		// its subprocess-RPC trampoline). The Go target calls the
+		// user-supplied Go function directly, so the prefix is
+		// stripped here.
 		args := make([]gotree.Expr, 0, len(s.Args))
 		for i, a := range s.Args {
 			v, err := l.lowerExpr(a)
@@ -189,10 +194,23 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (gotree.Stmt, error) {
 			args = append(args, v)
 		}
 		return &gotree.ExprStmt{X: &gotree.CallExpr{
-			Fun:  &gotree.Ident{Name: s.Func},
+			Fun:  &gotree.Ident{Name: stripFFIPrefix(s.Func)},
 			Args: args,
 		}}, nil
 	}
+}
+
+// stripFFIPrefix removes the C-target-specific FFI mangling
+// (mochi_go_, mochi_py_, mochi_js_) from a function name so
+// the Go target calls the user's Go function directly. User
+// Mochi functions carry a `mochi__` prefix; that one stays.
+func stripFFIPrefix(name string) string {
+	for _, p := range []string{"mochi_go_", "mochi_py_", "mochi_js_"} {
+		if len(name) > len(p) && name[:len(p)] == p {
+			return name[len(p):]
+		}
+	}
+	return name
 }
 
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (gotree.Stmt, error) {
