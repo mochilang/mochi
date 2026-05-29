@@ -119,9 +119,15 @@ func lowerFunction(fn *aotir.Function) (*rtree.MethodDecl, error) {
 	if err != nil {
 		return nil, err
 	}
-	params := make([]rtree.MethodParam, len(fn.Params))
-	for i, p := range fn.Params {
-		params[i] = rtree.MethodParam{Name: rubyIdent(p.Name)}
+	params := make([]rtree.MethodParam, 0, len(fn.Params)+1)
+	if fn.IsLifted {
+		// Lifted closure: receives the env Hash as its first parameter so
+		// captures can be looked up as __env[:name]. Non-capturing lifted
+		// functions still take the slot (caller passes nil) for ABI uniformity.
+		params = append(params, rtree.MethodParam{Name: "__env"})
+	}
+	for _, p := range fn.Params {
+		params = append(params, rtree.MethodParam{Name: rubyIdent(p.Name)})
 	}
 	return &rtree.MethodDecl{
 		Receiver: "self",
@@ -183,6 +189,8 @@ func lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 		return &rtree.RawStmt{Text: fmt.Sprintf("%s[%s] = %s", rubyIdent(s.Name), idx.RubyExprString(), val.RubyExprString())}, nil
 	case *aotir.MatchStmt:
 		return lowerMatchStmt(s)
+	case *aotir.ClosureEnvStmt:
+		return lowerClosureEnvStmt(s)
 	case *aotir.MapPutStmt:
 		key, err := lowerExpr(s.Key)
 		if err != nil {
@@ -400,6 +408,12 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 	case *aotir.BoolLit:
 		return &rtree.BoolLit{Value: e.Value}, nil
 	case *aotir.VarRef:
+		// Captured variables inside a lifted closure body appear as
+		// VarRef{Name: "__e->field"} (the C lowerer's emit-name convention).
+		// Rewrite them to __env[:field] for Ruby.
+		if rest, ok := strings.CutPrefix(e.Name, "__e->"); ok {
+			return &rtree.RawExpr{Text: "__env[:" + rest + "]"}, nil
+		}
 		return &rtree.Ident{Name: rubyIdent(e.Name)}, nil
 	case *aotir.BinaryExpr:
 		return lowerBinary(e)
@@ -505,6 +519,10 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			return nil, err
 		}
 		return &rtree.MethodCall{Receiver: recv, Method: e.FieldName}, nil
+	case *aotir.FunLit:
+		return lowerFunLit(e)
+	case *aotir.FunCallExpr:
+		return lowerFunCallExpr(e)
 	case *aotir.MapHasExpr:
 		recv, err := lowerExpr(e.Receiver)
 		if err != nil {
@@ -673,6 +691,80 @@ func rubyBinOp(op aotir.BinOp) (string, bool) {
 		return "+", true
 	}
 	return "", false
+}
+
+// lowerClosureEnvStmt lowers the C lowerer's ClosureEnvStmt, which precedes
+// a LetStmt binding a capturing FunLit. It builds a Ruby Hash literal
+// keyed by FieldName so the lifted method can read captures via __env[:name].
+func lowerClosureEnvStmt(s *aotir.ClosureEnvStmt) (rtree.Stmt, error) {
+	parts := make([]string, 0, len(s.Captures))
+	for _, cap := range s.Captures {
+		parts = append(parts, fmt.Sprintf(":%s => %s", cap.FieldName, rubyIdent(cap.SrcName)))
+	}
+	return &rtree.Assign{
+		LHS: rubyIdent(s.EnvVarName),
+		RHS: &rtree.RawExpr{Text: "{" + strings.Join(parts, ", ") + "}"},
+	}, nil
+}
+
+// lowerFunLit lowers an aotir.FunLit to a Ruby lambda that wraps a call to
+// the lifted module method. The lambda captures the env hash (or nil for
+// non-capturing closures) so the resulting value is a first-class Proc.
+func lowerFunLit(f *aotir.FunLit) (rtree.Expr, error) {
+	var envExpr string
+	if f.EnvVarName != "" {
+		envExpr = rubyIdent(f.EnvVarName)
+	} else {
+		envExpr = "nil"
+	}
+	params := make([]string, len(f.Sig.ParamTypes))
+	for i := range params {
+		params[i] = fmt.Sprintf("__a%d", i)
+	}
+	call := rubyMethodName(f.FuncName) + "(" + envExpr
+	for _, p := range params {
+		call += ", " + p
+	}
+	call += ")"
+	var lambda string
+	if len(params) == 0 {
+		lambda = "->() { " + call + " }"
+	} else {
+		lambda = "->(" + strings.Join(params, ", ") + ") { " + call + " }"
+	}
+	return &rtree.RawExpr{Text: lambda}, nil
+}
+
+// lowerFunCallExpr lowers a call through a fun-typed value. If the callee is
+// a FunLit we call the lifted method directly; otherwise we go through the
+// Proc's .call.
+func lowerFunCallExpr(c *aotir.FunCallExpr) (rtree.Expr, error) {
+	args := make([]rtree.Expr, 0, len(c.Args))
+	for _, a := range c.Args {
+		ax, err := lowerExpr(a)
+		if err != nil {
+			return nil, fmt.Errorf("FunCallExpr arg: %w", err)
+		}
+		args = append(args, ax)
+	}
+	if fl, ok := c.Callee.(*aotir.FunLit); ok {
+		var envExpr string
+		if fl.EnvVarName != "" {
+			envExpr = rubyIdent(fl.EnvVarName)
+		} else {
+			envExpr = "nil"
+		}
+		parts := []string{envExpr}
+		for _, a := range args {
+			parts = append(parts, a.RubyExprString())
+		}
+		return &rtree.RawExpr{Text: rubyMethodName(fl.FuncName) + "(" + strings.Join(parts, ", ") + ")"}, nil
+	}
+	callee, err := lowerExpr(c.Callee)
+	if err != nil {
+		return nil, fmt.Errorf("FunCallExpr callee: %w", err)
+	}
+	return &rtree.MethodCall{Receiver: callee, Method: "call", Args: args, UseParens: true}, nil
 }
 
 // rubyIdent maps a Mochi-source identifier to a Ruby-safe local variable
