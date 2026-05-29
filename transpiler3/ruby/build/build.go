@@ -209,6 +209,10 @@ func (d *Driver) Build(src, out string, target Target) error {
 		return buildIRubyNotebook(sf, fileBase, out)
 	case TargetTebako:
 		return buildTebakoPackage(sf, fileBase, out)
+	case TargetTruffleNative:
+		return buildTruffleNative(sf, fileBase, out)
+	case TargetMRuby:
+		return buildMRuby(sf, fileBase, out)
 	}
 	return fmt.Errorf("ruby build: target %d not implemented", target)
 }
@@ -380,6 +384,111 @@ docker run --rm \
 	pressPath := filepath.Join(out, "press.sh")
 	if err := os.WriteFile(pressPath, []byte(press), 0o755); err != nil {
 		return fmt.Errorf("ruby build: write press.sh: %w", err)
+	}
+	return nil
+}
+
+// buildTruffleNative emits a TruffleRuby native-image build layout:
+//
+//	<out>/<name>.rb
+//	<out>/native_build.sh    (chmod +x)
+//
+// native_build.sh drives `native-image --language:ruby` (or, on older
+// GraalVM, `truffleruby --native`) to produce a standalone AOT binary
+// next to the script. The MOCHI_GRAALVM_HOME env var lets users point
+// at a specific GraalVM installation.
+func buildTruffleNative(sf *rtree.SourceFile, name, out string) error {
+	if err := os.MkdirAll(out, 0o755); err != nil {
+		return err
+	}
+	scriptPath := filepath.Join(out, name+".rb")
+	if err := os.WriteFile(scriptPath, []byte(sf.RubySource()), 0o644); err != nil {
+		return fmt.Errorf("ruby build: write truffle script: %w", err)
+	}
+	script := fmt.Sprintf(`#!/usr/bin/env bash
+# Build a TruffleRuby native-image of %[1]s.rb. Requires GraalVM with the
+# Ruby component installed (`+"`gu install ruby`"+`).
+set -euo pipefail
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+GRAAL_HOME="${MOCHI_GRAALVM_HOME:-$GRAALVM_HOME}"
+if [[ -z "$GRAAL_HOME" ]]; then
+  echo "MOCHI_GRAALVM_HOME or GRAALVM_HOME must be set" >&2
+  exit 1
+fi
+
+NATIVE_IMAGE="$GRAAL_HOME/bin/native-image"
+if [[ ! -x "$NATIVE_IMAGE" ]]; then
+  echo "native-image not found at $NATIVE_IMAGE" >&2
+  exit 1
+fi
+
+cd "$HERE"
+"$NATIVE_IMAGE" \
+  --language:ruby \
+  --no-fallback \
+  --initialize-at-build-time \
+  -o "%[1]s" \
+  "%[1]s.rb"
+`, name)
+	if err := os.WriteFile(filepath.Join(out, "native_build.sh"), []byte(script), 0o755); err != nil {
+		return fmt.Errorf("ruby build: write native_build.sh: %w", err)
+	}
+	return nil
+}
+
+// buildMRuby emits an mruby compile layout suitable for embedding:
+//
+//	<out>/<name>.rb
+//	<out>/build_config.rb
+//	<out>/mruby_build.sh     (chmod +x)
+//
+// mruby_build.sh compiles the script to mruby bytecode (.mrb) via mrbc
+// and, if MRUBY_HOME points at a checkout, also drives a full
+// build_config.rb-based build into a self-contained binary. MRUBY_HOME
+// overrides the default expected location.
+func buildMRuby(sf *rtree.SourceFile, name, out string) error {
+	if err := os.MkdirAll(out, 0o755); err != nil {
+		return err
+	}
+	scriptPath := filepath.Join(out, name+".rb")
+	if err := os.WriteFile(scriptPath, []byte(sf.RubySource()), 0o644); err != nil {
+		return fmt.Errorf("ruby build: write mruby script: %w", err)
+	}
+	cfg := fmt.Sprintf(`# frozen_string_literal: true
+MRuby::Build.new do |conf|
+  toolchain :gcc
+  conf.gembox 'default'
+  conf.gem core: 'mruby-bin-mrbc'
+  conf.gem core: 'mruby-bin-mruby'
+  conf.gem '#{__dir__}'
+  conf.bins = ['%s']
+end
+`, name)
+	if err := os.WriteFile(filepath.Join(out, "build_config.rb"), []byte(cfg), 0o644); err != nil {
+		return fmt.Errorf("ruby build: write build_config.rb: %w", err)
+	}
+	script := fmt.Sprintf(`#!/usr/bin/env bash
+# Compile %[1]s.rb to mruby bytecode and (optionally) drive a full mruby
+# build via build_config.rb. Requires MRUBY_HOME to point at an mruby
+# source checkout when producing a binary.
+set -euo pipefail
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+MRUBY_HOME="${MRUBY_HOME:-}"
+MRBC="${MOCHI_MRBC:-mrbc}"
+
+cd "$HERE"
+"$MRBC" -o "%[1]s.mrb" "%[1]s.rb"
+
+if [[ -n "$MRUBY_HOME" && -d "$MRUBY_HOME" ]]; then
+  cp "$HERE/build_config.rb" "$MRUBY_HOME/build_config.rb"
+  ( cd "$MRUBY_HOME" && rake )
+  cp "$MRUBY_HOME/build/host/bin/%[1]s" "$HERE/%[1]s" 2>/dev/null || true
+fi
+`, name)
+	if err := os.WriteFile(filepath.Join(out, "mruby_build.sh"), []byte(script), 0o755); err != nil {
+		return fmt.Errorf("ruby build: write mruby_build.sh: %w", err)
 	}
 	return nil
 }
