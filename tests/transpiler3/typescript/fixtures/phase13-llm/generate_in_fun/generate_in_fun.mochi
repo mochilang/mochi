@@ -1,0 +1,6 @@
+fun ask(p: string): string {
+  return generate openai { prompt: p }
+}
+
+let r = ask("Say foo.")
+print(r)
