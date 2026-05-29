@@ -25,7 +25,7 @@ A phase is LANDED only when its gate is green for every applicable target (consu
 | 7 | Mochi-side extern fn emitter + alias shim file generation | LANDED (baseline; 7.1+ deferred) | (pending) | [phase-07](/docs/implementation/0074/phase-07-extern-emit) |
 | 8 | `import go "<module>@<semver>" as <alias>` grammar + parser | LANDED | (pending) | [phase-08](/docs/implementation/0074/phase-08-import-grammar) |
 | 9 | Build orchestration: workspace synth + `go build -buildmode=c-archive` + artifact link | LANDED (baseline; 9.1+ deferred) | (pending) | [phase-09](/docs/implementation/0074/phase-09-build) |
-| 10 | mochi.lock `[[go-package]]` integration + `--check` mode | NOT STARTED | — | [phase-10](/docs/implementation/0074/phase-10-lockfile) |
+| 10 | mochi.lock `[[go-package]]` integration + `--check` mode | LANDED (schema; 10.1+ CLI deferred) | (pending) | [phase-10](/docs/implementation/0074/phase-10-lockfile) |
 | 11 | `TargetGoLibrary` emit (`go.mod` + exported package + `_cgo_export.h`) | NOT STARTED | — | [phase-11](/docs/implementation/0074/phase-11-go-library-emit) |
 | 12 | Git-tag publish flow (`mochi pkg publish --to=git-tag`) + canonical-import-path gate | NOT STARTED | — | [phase-12](/docs/implementation/0074/phase-12-git-tag-publish) |
 | 13 | Cosign-on-sibling-tag opt-in (`mochi pkg publish --cosign-sign`) | NOT STARTED | — | [phase-13](/docs/implementation/0074/phase-13-cosign) |
@@ -50,7 +50,7 @@ Each phase's LANDED gate must be green for every applicable target. `n/a` cells 
 | 7. extern emitter | LANDED (baseline) | required | required | required | required |
 | 8. import-go grammar (semver) | LANDED | required | required | required | required |
 | 9. build orchestration | LANDED (baseline) | required | required | required (no cgo) | required |
-| 10. mochi.lock integration | NOT STARTED | required | required | required | required |
+| 10. mochi.lock integration | LANDED (schema) | required | required | required | required |
 | 11. TargetGoLibrary emit | NOT STARTED | required | required | required | required |
 | 12. git-tag publish | NOT STARTED | n/a (publish is host-only) | n/a | n/a | n/a |
 | 13. cosign on tag.sig | NOT STARTED | n/a | n/a | n/a | n/a |
@@ -95,6 +95,7 @@ package3/go/
   wrapper/                # cgo wrapper synthesiser (phase 6)
   emit/                   # Mochi extern fn emitter (phase 7)
   build/                  # workspace + go build orchestration (phase 9)
+  lockfile/               # `[[go-package]]` schema + drift check (phase 10)
   publish/                # git-tag publish + cosign (phases 12-13)
   goroutine/              # cgo handle pool + bridge runtime (phase 14)
   tinygo/                 # TinyGo embedded subset (phase 16)
@@ -105,7 +106,7 @@ The `package3/go/` location is shared with the broader MEP-57 polyglot package w
 
 ## Status snapshot
 
-As of 2026-05-29: phases 0-9 LANDED on `main` (phases 6 + 7 + 9 baseline only; sub-phases 6.1+/7.1+/9.1+ deferred), phases 10-17 NOT STARTED.
+As of 2026-05-29: phases 0-10 LANDED on `main` (phases 6 + 7 + 9 baseline only; phase 10 schema only; sub-phases 6.1+/7.1+/9.1+/10.1+ deferred), phases 11-17 NOT STARTED.
 
 ## Cross-references
 
