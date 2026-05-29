@@ -20,7 +20,7 @@ A phase is LANDED only when its gate is green for every applicable target (consu
 | 2 | sum.golang.org transparency-log client (signed-tree-head + tile fetch + inclusion proof) | LANDED | (pending) | [phase-02](/docs/implementation/0074/phase-02-sumdb) |
 | 3 | go/packages ingest helper (`package3/go/cmd/go-ingest`) | LANDED | (pending) | [phase-03](/docs/implementation/0074/phase-03-gopackages-ingest) |
 | 4 | ApiSurface JSON schema + bridge-side parser | LANDED | (pending) | [phase-04](/docs/implementation/0074/phase-04-apisurface) |
-| 5 | Closed type-mapping table (scalars / strings / `[]byte` / `[]T` / `map[K]V` / structs / interfaces / `chan T` / `func` / `error` / generics) | NOT STARTED | — | [phase-05](/docs/implementation/0074/phase-05-type-mapping) |
+| 5 | Closed type-mapping table (scalars / strings / `[]byte` / `[]T` / `map[K]V` / structs / interfaces / `chan T` / `func` / `error` / generics) | LANDED | (pending) | [phase-05](/docs/implementation/0074/phase-05-typemap) |
 | 6 | Cgo wrapper synthesiser (`//export` directives + `c-archive` + handle pool) | NOT STARTED | — | [phase-06](/docs/implementation/0074/phase-06-wrapper) |
 | 7 | Mochi-side extern fn emitter + alias shim file generation | NOT STARTED | — | [phase-07](/docs/implementation/0074/phase-07-extern-emit) |
 | 8 | `import go "<module>@<semver>" as <alias>` grammar + parser | NOT STARTED | — | [phase-08](/docs/implementation/0074/phase-08-import-grammar) |
@@ -45,7 +45,7 @@ Each phase's LANDED gate must be green for every applicable target. `n/a` cells 
 | 2. sum.golang.org client | LANDED | n/a | n/a | n/a | n/a |
 | 3. go/packages ingest | LANDED | n/a | n/a | n/a | n/a |
 | 4. ApiSurface JSON | LANDED | n/a | n/a | n/a | n/a |
-| 5. type-mapping table | NOT STARTED | required | required | required | required |
+| 5. type-mapping table | LANDED | required | required | required | required |
 | 6. cgo wrapper synthesiser | NOT STARTED | required | required | n/a (cgo off on wasm) | required (no_cgo subset) |
 | 7. extern emitter | NOT STARTED | required | required | required | required |
 | 8. import-go grammar (semver) | NOT STARTED | required | required | required | required |
@@ -105,7 +105,7 @@ The `package3/go/` location is shared with the broader MEP-57 polyglot package w
 
 ## Status snapshot
 
-As of 2026-05-29: all 18 phases NOT STARTED. The MEP spec and research bundle are landed; implementation is the next major undertaking.
+As of 2026-05-29: phases 0-5 LANDED on `main`, phases 6-17 NOT STARTED.
 
 ## Cross-references
 
