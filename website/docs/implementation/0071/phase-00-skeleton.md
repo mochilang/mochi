@@ -15,7 +15,7 @@ description: "MEP-71 Phase 0 lands package3/python/ skeleton: Driver / Venv type
 | Landed         | 2026-05-29 22:40 (GMT+7) |
 | Tracking issue | (filled by automation) |
 | Tracking PR    | (filled by automation) |
-| Commit         | (filled by automation) |
+| Commit         | `8e1ef75f` |
 
 ## Gate
 
