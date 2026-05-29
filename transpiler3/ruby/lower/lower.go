@@ -274,6 +274,26 @@ func lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 			return nil, err
 		}
 		return &rtree.RawStmt{Text: fmt.Sprintf("%s[%s] = %s", rubyIdent(s.Name), key.RubyExprString(), val.RubyExprString())}, nil
+	case *aotir.WriteFileStmt:
+		p, err := lowerExpr(s.Path)
+		if err != nil {
+			return nil, err
+		}
+		c, err := lowerExpr(s.Content)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawStmt{Text: fmt.Sprintf("File.write(%s, %s)", p.RubyExprString(), c.RubyExprString())}, nil
+	case *aotir.AppendFileStmt:
+		p, err := lowerExpr(s.Path)
+		if err != nil {
+			return nil, err
+		}
+		c, err := lowerExpr(s.Content)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawStmt{Text: fmt.Sprintf("File.open(%s, 'a') { |__f| __f.write(%s) }", p.RubyExprString(), c.RubyExprString())}, nil
 	case *aotir.BreakStmt:
 		return &rtree.RawStmt{Text: "break"}, nil
 	case *aotir.ContinueStmt:
@@ -977,6 +997,36 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			return nil, err
 		}
 		return &rtree.MethodCall{Receiver: recv, Method: "values"}, nil
+	case *aotir.ReadFileExpr:
+		p, err := lowerExpr(e.Path)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: "File.read(" + p.RubyExprString() + ")"}, nil
+	case *aotir.LinesExpr:
+		p, err := lowerExpr(e.Path)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: "File.readlines(" + p.RubyExprString() + ", chomp: true)"}, nil
+	case *aotir.HttpGetExpr:
+		u, err := lowerExpr(e.URL)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: "(require 'open-uri'; URI.parse(" + u.RubyExprString() + ").open.read)"}, nil
+	case *aotir.LoadCSVExpr:
+		p, err := lowerExpr(e.Path)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: "(require 'csv'; CSV.read(" + p.RubyExprString() + "))"}, nil
+	case *aotir.JsonDecodeExpr:
+		s, err := lowerExpr(e.Input)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: "(require 'json'; JSON.parse(" + s.RubyExprString() + "))"}, nil
 	}
 	return nil, fmt.Errorf("ruby lower: unsupported expression type %T", e)
 }
