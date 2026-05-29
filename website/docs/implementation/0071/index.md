@@ -52,11 +52,14 @@ A phase is LANDED only when its gate is green for every target (consume directio
 | 15.1 | Live sigstore-go crypto verifier (X.509 chain + Rekor inclusion proof + SCT) | NOT STARTED | — | [phase-15](/docs/implementation/0071/phase-15-attestation-verify) |
 | 15.2 | Live PyPI HTTP `<wheel-url>.provenance` fetcher with cache + retry | NOT STARTED | — | [phase-15](/docs/implementation/0071/phase-15-attestation-verify) |
 | 15.3 | `mochi pkg install --require-attestations` + `--allowed-builder` + `--trusted-publisher` CLI verbs | NOT STARTED | — | [phase-15](/docs/implementation/0071/phase-15-attestation-verify) |
-| 16 | Pyodide / WASI target support (`wasm32-emscripten`, `wasm32-wasip2` wheel resolution + WIT interface) | LANDED | (pending merge) | [phase-16](/docs/implementation/0071/phase-16-pyodide-wasi) |
+| 16 | Pyodide / WASI target support (`wasm32-emscripten`, `wasm32-wasip2` wheel resolution + WIT interface) | LANDED | `a2ac4f8c` | [phase-16](/docs/implementation/0071/phase-16-pyodide-wasi) |
 | 16.1 | Wire WIT world emit into wrapper synthesiser so `extern python` -> WIT export for WASI targets | NOT STARTED | — | [phase-16](/docs/implementation/0071/phase-16-pyodide-wasi) |
 | 16.2 | Live Pyodide distribution index client at `pyodide.org/distribution/v<X>/full/` | NOT STARTED | — | [phase-16](/docs/implementation/0071/phase-16-pyodide-wasi) |
 | 16.3 | `mochi pkg install --target=pyodide` / `--target=wasi-p2` CLI verbs + lockfile target field | NOT STARTED | — | [phase-16](/docs/implementation/0071/phase-16-pyodide-wasi) |
-| 17 | Free-threaded CPython 3.13t / 3.14t (`cp3XYt` ABI tag, PyMutex, atomic refcount) | NOT STARTED | — | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
+| 17 | Free-threaded CPython 3.13t / 3.14t (`cp3XYt` ABI tag, PyMutex, atomic refcount) | LANDED | (pending merge) | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
+| 17.1 | Live ELF / Mach-O / PE module-marker reader (PEP 703 `Py_mod_gil` slot) | NOT STARTED | — | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
+| 17.2 | Wire RenderLockShim into wrapper synthesiser so `extern python` shims pick the right primitive | NOT STARTED | — | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
+| 17.3 | `mochi pkg install --runtime=free-threaded` + `--allow-untested-freethread` + deny-list config | NOT STARTED | — | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
 | 18 | abi2026 transition (`abi-tag-policy = "legacy" | "abi2026" | "both"`) + 2026-Q1 rollout | NOT STARTED | — | [phase-18](/docs/implementation/0071/phase-18-abi2026) |
 
 ## Per-phase fields
@@ -112,7 +115,7 @@ package3/python/
   subproc/                # JSON-RPC 2.0 stdio protocol + Python worker source renderer (phase 14)
   attest/                 # install-time PEP 740 verification + policy (phase 15)
   pyodide/                # pyodide / emscripten / wasi-p2 platform-tag matcher + WIT emitter (phase 16)
-  freethread/             # free-threaded mode wrapper variants (phase 17)
+  freethread/             # cp3XYt ABI matcher + PEP 703 module-marker audit + PyMutex lock shim (phase 17)
   runtime/                # the embedded mochi_runtime Python package (phase 5 + phase 12)
 ```
 
@@ -120,7 +123,7 @@ The `package3/python/` location is shared with the broader MEP-57 polyglot packa
 
 ## Status snapshot
 
-As of 2026-05-30 01:17 (GMT+7): MEP-71 spec and research bundle landed; phases 0-16 LANDED (8.1, 8.2, 10.1, 10.2, 10.3, 11.1, 11.2, 11.3, 12.1, 12.2, 12.3, 13.1, 13.2, 13.3, 14.1, 14.2, 14.3, 14.4, 15.1, 15.2, 15.3, 16.1, 16.2, 16.3 deferred sub-phases); phases 17-18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
+As of 2026-05-30 01:24 (GMT+7): MEP-71 spec and research bundle landed; phases 0-17 LANDED (8.1, 8.2, 10.1, 10.2, 10.3, 11.1, 11.2, 11.3, 12.1, 12.2, 12.3, 13.1, 13.2, 13.3, 14.1, 14.2, 14.3, 14.4, 15.1, 15.2, 15.3, 16.1, 16.2, 16.3, 17.1, 17.2, 17.3 deferred sub-phases); phase 18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
 
 ## Cross-references
 
