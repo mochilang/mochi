@@ -967,6 +967,38 @@ func phpClassName(name string) string {
 	return name
 }
 
+// lookupAgentDecl finds the agent declaration named name in prog. The
+// PHP target uses this when lowering `spawn AgentType()` so it can
+// synthesize default field values from the declaration (the
+// AgentSpawnExpr IR carries the agent name but no field args).
+func lookupAgentDecl(prog *aotir.Program, name string) *aotir.AgentDecl {
+	for _, ag := range prog.Agents {
+		if ag.Name == name {
+			return ag
+		}
+	}
+	return nil
+}
+
+// phpZeroLit returns the PHP literal expression for the zero value of
+// the given scalar type. Used when lowering `spawn AgentType()` to
+// initialize agent fields whose initial value Mochi leaves implicit.
+// Only the four scalar types that AgentDecl fields support in Phase
+// 9.3 are handled; richer field types would need explicit init args.
+func phpZeroLit(t aotir.Type) (ptree.Expr, error) {
+	switch t {
+	case aotir.TypeInt:
+		return &ptree.IntLit{Value: 0}, nil
+	case aotir.TypeFloat:
+		return &ptree.FloatLit{Value: 0}, nil
+	case aotir.TypeBool:
+		return &ptree.BoolLit{Value: false}, nil
+	case aotir.TypeString:
+		return &ptree.StringLit{Value: ""}, nil
+	}
+	return nil, fmt.Errorf("php spawn: no zero literal for agent field type %v", t)
+}
+
 func (l *lowerer) lowerUnion(u *aotir.UnionDecl) ([]ptree.Decl, error) {
 	out := make([]ptree.Decl, 0, 1+len(u.Variants))
 	out = append(out, &ptree.ClassDecl{
@@ -1705,6 +1737,27 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 				return nil, fmt.Errorf("agent lit %q field %q: %w", v.AgentName, f.Name, err)
 			}
 			args = append(args, ptree.NamedArg{Name: f.Name, Value: val})
+		}
+		return &ptree.NewExpr{Class: phpClassName(v.AgentName), Args: args}, nil
+	case *aotir.AgentSpawnExpr:
+		// Phase 9.1: `spawn Counter()` constructs an agent with
+		// zero-valued fields. PHP has no process model, so we lower
+		// it to `new Counter(...)` with each field initialized from
+		// the agent decl's per-type zero value. Subsequent intent
+		// dispatch goes through the same instance-method path used
+		// for AgentLit (lowerAgentIntentCallStmt / Expr), so spawn
+		// and AgentLit converge on the same runtime object shape.
+		decl := lookupAgentDecl(l.prog, v.AgentName)
+		if decl == nil {
+			return nil, fmt.Errorf("spawn: unknown agent type %q", v.AgentName)
+		}
+		args := make([]ptree.NamedArg, 0, len(decl.Fields))
+		for _, f := range decl.Fields {
+			zero, err := phpZeroLit(f.Type)
+			if err != nil {
+				return nil, fmt.Errorf("spawn %q field %q: %w", v.AgentName, f.Name, err)
+			}
+			args = append(args, ptree.NamedArg{Name: f.Name, Value: zero})
 		}
 		return &ptree.NewExpr{Class: phpClassName(v.AgentName), Args: args}, nil
 	case *aotir.AgentIntentCallExpr:
