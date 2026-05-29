@@ -1,0 +1,5 @@
+let nums = [1, 2, 3, 4]
+let r = from n in nums select (n * n) + n
+for x in r {
+  print(x)
+}

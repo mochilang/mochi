@@ -1,0 +1,5 @@
+let nums = [3, 1, 4, 1, 5, 9, 2, 6]
+let r = from n in nums where n > 2 order by n select n
+for x in r {
+  print(x)
+}

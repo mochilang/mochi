@@ -1,0 +1,5 @@
+let nums = [10, 20, 30]
+let r = from n in nums skip 0 select n
+for x in r {
+  print(x)
+}

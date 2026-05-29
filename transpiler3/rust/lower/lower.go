@@ -203,12 +203,12 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*rtree.FnDecl, error) {
 	for _, p := range fn.Params {
 		params = append(params, rtree.FnParam{
 			Name:     p.Name,
-			TypeName: rustParamType(p.Type, p.RecordName, p.UnionName, p.FunSig),
+			TypeName: rustParamTypeFromParam(p),
 		})
 	}
 	retTy := ""
 	if fn.ReturnType != aotir.TypeUnit {
-		retTy = rustParamType(fn.ReturnType, fn.ReturnRecordName, fn.ReturnUnionName, fn.ReturnFunSig)
+		retTy = rustReturnTypeFromFunction(fn)
 	}
 	return &rtree.FnDecl{
 		Name:       fn.Name,
@@ -260,6 +260,19 @@ func (l *lowerer) lowerBlock(b *aotir.Block) ([]rtree.Stmt, error) {
 		// ClosureEnvStmt is a C-specific env-alloc step; the Rust
 		// translation uses move-closures so no env struct exists.
 		if _, ok := s.(*aotir.ClosureEnvStmt); ok {
+			i++
+			continue
+		}
+		// QueryScopeStmt is a C arena wrapper around the desugared
+		// query body (ForEach + optional sort/slice assigns). Rust
+		// does not need arenas, so we inline the body's statements
+		// into the current block.
+		if qs, ok := s.(*aotir.QueryScopeStmt); ok {
+			bodyStmts, err := l.lowerBlock(qs.Body)
+			if err != nil {
+				return nil, err
+			}
+			out = append(out, bodyStmts...)
 			i++
 			continue
 		}
@@ -484,10 +497,18 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (rtree.Stmt, error) {
 	// Closure-typed bindings need an explicit `Box<dyn Fn(...)->...>`
 	// annotation so the Box<closure>/Box<fn item> on the RHS coerces
 	// into the trait-object shape used at call sites and downstream
-	// function parameters.
+	// function parameters. Empty collection literals (vec![], etc.)
+	// likewise need an explicit element type for inference.
 	typeName := ""
 	if s.VarType == aotir.TypeFun && s.FunSig != nil {
 		typeName = rustFnType(s.FunSig)
+	}
+	if ll, ok := s.Init.(*aotir.ListLit); ok && len(ll.Elems) == 0 {
+		typeName = rustCollectionTypeName(s.VarType, s.RecordName, s.UnionName,
+			s.ElemType, "", aotir.TypeInvalid,
+			aotir.TypeInvalid, aotir.TypeInvalid,
+			aotir.TypeInvalid, aotir.TypeInvalid, aotir.TypeInvalid,
+			nil)
 	}
 	return &rtree.LetStmt{
 		Mutable:  s.Mutable,
@@ -749,6 +770,19 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			},
 			Tail: &rtree.Ident{Name: "__t"},
 		}, nil
+	case *aotir.ListSortAscExpr:
+		return l.lowerListSortAscExpr(n)
+	case *aotir.ListSliceExpr:
+		return l.lowerListSliceExpr(n)
+	case *aotir.StrConvertExpr:
+		op, err := l.lowerExpr(n.Operand)
+		if err != nil {
+			return nil, err
+		}
+		// str(x) renders any scalar to its textual form. For strings
+		// this is identity; .to_string() preserves an owned String
+		// (cloning if needed).
+		return &rtree.MethodCall{Receiver: op, Method: "to_string"}, nil
 	case *aotir.MapLit:
 		return l.lowerMapLit(n)
 	case *aotir.MapGetExpr:
@@ -1218,4 +1252,126 @@ func rustReturnType(t aotir.Type) string {
 		return ""
 	}
 	return rustTypeName(t)
+}
+
+// rustCollectionTypeName builds a Rust type string for a (possibly
+// nested) collection. It handles Vec<T>, Vec<Vec<T>>, Vec<HashMap<K,V>>,
+// HashMap<K,V>, HashMap<K, Vec<V>>, HashSet<T>. Primitives/records/
+// unions fall back to rustNamedTypeName.
+func rustCollectionTypeName(t aotir.Type, recordName, unionName string,
+	elemType aotir.Type, elemRecordName string, innerElemType aotir.Type,
+	mapKey, mapValue aotir.Type,
+	keyType, valueType aotir.Type, listValueElem aotir.Type,
+	funSig *aotir.FunSig) string {
+	switch t {
+	case aotir.TypeList:
+		switch elemType {
+		case aotir.TypeList:
+			inner := rustNamedTypeName(innerElemType, "", "")
+			return "Vec<Vec<" + inner + ">>"
+		case aotir.TypeMap:
+			k := rustNamedTypeName(mapKey, "", "")
+			v := rustNamedTypeName(mapValue, "", "")
+			return "Vec<std::collections::HashMap<" + k + ", " + v + ">>"
+		case aotir.TypeRecord:
+			return "Vec<" + elemRecordName + ">"
+		default:
+			return "Vec<" + rustNamedTypeName(elemType, "", "") + ">"
+		}
+	case aotir.TypeMap:
+		k := rustNamedTypeName(keyType, "", "")
+		if valueType == aotir.TypeList {
+			v := rustNamedTypeName(listValueElem, "", "")
+			return "std::collections::HashMap<" + k + ", Vec<" + v + ">>"
+		}
+		v := rustNamedTypeName(valueType, "", "")
+		return "std::collections::HashMap<" + k + ", " + v + ">"
+	case aotir.TypeSet:
+		return "std::collections::HashSet<" + rustNamedTypeName(elemType, "", "") + ">"
+	case aotir.TypeFun:
+		if funSig != nil {
+			return rustFnType(funSig)
+		}
+	}
+	return rustNamedTypeName(t, recordName, unionName)
+}
+
+func rustParamTypeFromParam(p aotir.Param) string {
+	return rustCollectionTypeName(p.Type, p.RecordName, p.UnionName,
+		p.ElemType, p.ElemRecordName, p.InnerElemType,
+		p.MapElemKeyType, p.MapElemValueType,
+		p.KeyType, p.ValueType, p.ListValueElemType,
+		p.FunSig)
+}
+
+func rustReturnTypeFromFunction(fn *aotir.Function) string {
+	return rustCollectionTypeName(fn.ReturnType, fn.ReturnRecordName, fn.ReturnUnionName,
+		fn.ReturnElemType, fn.ReturnElemRecordName, fn.ReturnInnerElemType,
+		fn.ReturnMapElemKeyType, fn.ReturnMapElemValueType,
+		fn.ReturnKeyType, fn.ReturnValueType, fn.ReturnListValueElemType,
+		fn.ReturnFunSig)
+}
+
+// lowerListSortAscExpr emits a Rust block expression that clones the
+// receiver list, sorts it in ascending order, and returns the new
+// list. f64 elements use sort_by(partial_cmp) because f64 is not Ord.
+func (l *lowerer) lowerListSortAscExpr(n *aotir.ListSortAscExpr) (rtree.Expr, error) {
+	r, err := l.lowerExpr(n.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	var sortStmt rtree.Stmt
+	if n.ElemType == aotir.TypeFloat {
+		sortStmt = &rtree.ExprStmt{Expr: &rtree.RawExpr{
+			Code: "__t.sort_by(|a, b| a.partial_cmp(b).unwrap())",
+		}}
+	} else {
+		sortStmt = &rtree.ExprStmt{Expr: &rtree.MethodCall{
+			Receiver: &rtree.Ident{Name: "__t"},
+			Method:   "sort",
+		}}
+	}
+	return &rtree.BlockExpr{
+		Stmts: []rtree.Stmt{
+			&rtree.LetStmt{Mutable: true, Name: "__t", Value: &rtree.CloneExpr{Expr: r}},
+			sortStmt,
+		},
+		Tail: &rtree.Ident{Name: "__t"},
+	}, nil
+}
+
+// lowerListSliceExpr emits a Rust block expression that clamps Start
+// and End to [0, len], slices the cloned receiver, and returns a fresh
+// Vec. Mochi/C semantics: out-of-range bounds are clamped silently.
+func (l *lowerer) lowerListSliceExpr(n *aotir.ListSliceExpr) (rtree.Expr, error) {
+	r, err := l.lowerExpr(n.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	start, err := l.lowerExpr(n.Start)
+	if err != nil {
+		return nil, err
+	}
+	end, err := l.lowerExpr(n.End)
+	if err != nil {
+		return nil, err
+	}
+	return &rtree.BlockExpr{
+		Stmts: []rtree.Stmt{
+			&rtree.LetStmt{Name: "__src", Value: &rtree.CloneExpr{Expr: r}},
+			&rtree.LetStmt{Name: "__len", Value: &rtree.RawExpr{Code: "__src.len() as i64"}},
+			&rtree.LetStmt{Name: "__s_raw", Value: start},
+			&rtree.LetStmt{Name: "__e_raw", Value: end},
+			&rtree.LetStmt{Name: "__s", Value: &rtree.RawExpr{
+				Code: "if __s_raw < 0 { 0 } else if __s_raw > __len { __len as usize } else { __s_raw as usize }",
+			}},
+			&rtree.LetStmt{Name: "__e", Value: &rtree.RawExpr{
+				Code: "if __e_raw < 0 { 0 } else if __e_raw > __len { __len as usize } else { __e_raw as usize }",
+			}},
+			&rtree.LetStmt{Name: "__e2", Value: &rtree.RawExpr{
+				Code: "if __e < __s { __s } else { __e }",
+			}},
+		},
+		Tail: &rtree.RawExpr{Code: "__src[__s..__e2].to_vec()"},
+	}, nil
 }

@@ -1,0 +1,5 @@
+let nums: list<int> = [5, 2, 8, 1, 9, 3]
+let top3 = from n in nums order by n take 3 select n
+for x in top3 {
+    print(x)
+}

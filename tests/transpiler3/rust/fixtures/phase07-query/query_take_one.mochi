@@ -1,0 +1,5 @@
+let nums = [7, 8, 9]
+let r = from n in nums take 1 select n
+for x in r {
+  print(x)
+}
