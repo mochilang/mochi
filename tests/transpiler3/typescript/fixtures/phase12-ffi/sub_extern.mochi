@@ -1,0 +1,2 @@
+extern fun c_sub(a: int, b: int): int
+print(c_sub(10, 3))

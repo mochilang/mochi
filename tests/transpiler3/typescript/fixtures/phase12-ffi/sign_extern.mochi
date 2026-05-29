@@ -1,0 +1,4 @@
+extern fun c_sign(x: int): int
+print(c_sign(7))
+print(c_sign(0))
+print(c_sign(-5))
