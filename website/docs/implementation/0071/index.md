@@ -56,11 +56,14 @@ A phase is LANDED only when its gate is green for every target (consume directio
 | 16.1 | Wire WIT world emit into wrapper synthesiser so `extern python` -> WIT export for WASI targets | NOT STARTED | — | [phase-16](/docs/implementation/0071/phase-16-pyodide-wasi) |
 | 16.2 | Live Pyodide distribution index client at `pyodide.org/distribution/v<X>/full/` | NOT STARTED | — | [phase-16](/docs/implementation/0071/phase-16-pyodide-wasi) |
 | 16.3 | `mochi pkg install --target=pyodide` / `--target=wasi-p2` CLI verbs + lockfile target field | NOT STARTED | — | [phase-16](/docs/implementation/0071/phase-16-pyodide-wasi) |
-| 17 | Free-threaded CPython 3.13t / 3.14t (`cp3XYt` ABI tag, PyMutex, atomic refcount) | LANDED | (pending merge) | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
+| 17 | Free-threaded CPython 3.13t / 3.14t (`cp3XYt` ABI tag, PyMutex, atomic refcount) | LANDED | `332255f1` | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
 | 17.1 | Live ELF / Mach-O / PE module-marker reader (PEP 703 `Py_mod_gil` slot) | NOT STARTED | — | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
 | 17.2 | Wire RenderLockShim into wrapper synthesiser so `extern python` shims pick the right primitive | NOT STARTED | — | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
 | 17.3 | `mochi pkg install --runtime=free-threaded` + `--allow-untested-freethread` + deny-list config | NOT STARTED | — | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
-| 18 | abi2026 transition (`abi-tag-policy = "legacy" | "abi2026" | "both"`) + 2026-Q1 rollout | NOT STARTED | — | [phase-18](/docs/implementation/0071/phase-18-abi2026) |
+| 18 | abi2026 transition (`abi-tag-policy = "legacy" | "abi2026" | "both"`) + 2026-Q1 rollout | LANDED | (pending merge) | [phase-18](/docs/implementation/0071/phase-18-abi2026) |
+| 18.1 | `mochi.lock` `[python].abi-tag-policy` field + `mochi.toml` mirror | NOT STARTED | — | [phase-18](/docs/implementation/0071/phase-18-abi2026) |
+| 18.2 | `mochi pkg promote --to=abi2026` CLI verb + `.dist-info/` interpreter-tag relink | NOT STARTED | — | [phase-18](/docs/implementation/0071/phase-18-abi2026) |
+| 18.3 | Live PyPI two-tag publish (cp32-abi3 + cp314-abi2026 side-by-side during migration window) | NOT STARTED | — | [phase-18](/docs/implementation/0071/phase-18-abi2026) |
 
 ## Per-phase fields
 
@@ -116,6 +119,7 @@ package3/python/
   attest/                 # install-time PEP 740 verification + policy (phase 15)
   pyodide/                # pyodide / emscripten / wasi-p2 platform-tag matcher + WIT emitter (phase 16)
   freethread/             # cp3XYt ABI matcher + PEP 703 module-marker audit + PyMutex lock shim (phase 17)
+  abi2026/                # 2026-Q1 ABI-tag transition: TagClass + Policy + Selector + Promote/Downgrade (phase 18)
   runtime/                # the embedded mochi_runtime Python package (phase 5 + phase 12)
 ```
 
@@ -123,7 +127,7 @@ The `package3/python/` location is shared with the broader MEP-57 polyglot packa
 
 ## Status snapshot
 
-As of 2026-05-30 01:24 (GMT+7): MEP-71 spec and research bundle landed; phases 0-17 LANDED (8.1, 8.2, 10.1, 10.2, 10.3, 11.1, 11.2, 11.3, 12.1, 12.2, 12.3, 13.1, 13.2, 13.3, 14.1, 14.2, 14.3, 14.4, 15.1, 15.2, 15.3, 16.1, 16.2, 16.3, 17.1, 17.2, 17.3 deferred sub-phases); phase 18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
+As of 2026-05-30 01:31 (GMT+7): MEP-71 spec and research bundle landed; phases 0-18 LANDED (8.1, 8.2, 10.1, 10.2, 10.3, 11.1, 11.2, 11.3, 12.1, 12.2, 12.3, 13.1, 13.2, 13.3, 14.1, 14.2, 14.3, 14.4, 15.1, 15.2, 15.3, 16.1, 16.2, 16.3, 17.1, 17.2, 17.3, 18.1, 18.2, 18.3 deferred sub-phases). Every umbrella phase shipped one-PR-per-phase with auto-merge, following the MEP-73 cadence; only the deferred sub-phases (live IO, CLI verbs, live crypto) remain.
 
 ## Cross-references
 
