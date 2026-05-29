@@ -76,7 +76,7 @@ type CLI struct {
 // --out, shells to the system cc, and writes a native executable.
 type BuildCmd struct {
 	File           string `arg:"positional,required" help:"Path to .mochi source file"`
-	Target         string `arg:"--target" default:"go" help:"Target language (go|c|c-aot|beam-escript|python-source|python-wheel|python-sdist|python-ipykernel)"`
+	Target         string `arg:"--target" default:"go" help:"Target language (go|c|c-aot|beam-escript|python-source|python-wheel|python-sdist|python-ipykernel|python-publish)"`
 	Emit           string `arg:"--emit" default:"executable" help:"Emit shape (executable|go-library|c). --target=c-aot accepts executable|c."`
 	Out            string `arg:"--out" help:"Output path. --target=go|c: output directory; --target=c-aot: binary path; --target=beam-escript: escript output path"`
 	KeepEmit       bool   `arg:"--keep-emit" help:"Retain the emitted source file(s) after build"`
@@ -220,8 +220,10 @@ func runBuild(cmd *BuildCmd) error {
 		return runBuildPython(cmd, pybuild.TargetPythonSdist)
 	case "python-ipykernel":
 		return runBuildPython(cmd, pybuild.TargetPythonIpykernel)
+	case "python-publish":
+		return runBuildPython(cmd, pybuild.TargetPythonPublish)
 	default:
-		return fmt.Errorf("build: unsupported --target=%q (expected go|c|c-aot|beam-escript|python-source|python-wheel|python-sdist|python-ipykernel)", cmd.Target)
+		return fmt.Errorf("build: unsupported --target=%q (expected go|c|c-aot|beam-escript|python-source|python-wheel|python-sdist|python-ipykernel|python-publish)", cmd.Target)
 	}
 }
 
