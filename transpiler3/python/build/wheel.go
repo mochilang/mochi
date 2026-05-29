@@ -209,6 +209,22 @@ func buildRecord(stageDir, recordPosixPath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	// The RECORD self-line must be present even though the file does
+	// not exist on disk at compute time. Inject the path into the
+	// list so the sort interleaves it lex-correctly with the rest;
+	// PEP 376 plus reproducibility tooling (hatchling, pip wheel) all
+	// emit RECORD lines in lex order, and the Phase 16 gate enforces
+	// the same.
+	hasRecord := false
+	for _, p := range paths {
+		if p == recordPosixPath {
+			hasRecord = true
+			break
+		}
+	}
+	if !hasRecord {
+		paths = append(paths, recordPosixPath)
+	}
 	sort.Strings(paths)
 
 	var b strings.Builder
@@ -224,11 +240,6 @@ func buildRecord(stageDir, recordPosixPath string) (string, error) {
 		sum := sha256.Sum256(data)
 		digest := strings.TrimRight(base64.URLEncoding.EncodeToString(sum[:]), "=")
 		fmt.Fprintf(&b, "%s,sha256=%s,%d\n", rel, digest, len(data))
-	}
-	// The RECORD self-line must be present even if the walk did not
-	// see it on disk (it doesn't exist yet at compute time).
-	if !strings.Contains(b.String(), recordPosixPath+",,\n") {
-		fmt.Fprintf(&b, "%s,,\n", recordPosixPath)
 	}
 	return b.String(), nil
 }
@@ -385,11 +396,12 @@ func copyTreeFiltered(dstDir, srcDir string, filter func(rel string) bool) error
 }
 
 // zeroTime is the reproducible mtime stamped on every wheel/sdist
-// entry. 1980-01-01 is the zip format's epoch floor so it survives
-// the lossy DOS-format mtime in both archive types. The Phase 16
-// reproducible-build gate compares wheel bytes across two builds;
-// any source-of-non-determinism (mtime, file order, gzip header)
-// must be pinned here, not at the call site.
+// entry. Phase 16.0: honours `$SOURCE_DATE_EPOCH` per the
+// reproducible-builds.org spec; falls back to 1980-01-01 (the zip
+// format's DOS-encoded mtime epoch floor) when unset or malformed.
+// The Phase 16 gate compares wheel bytes across two builds; any
+// source-of-non-determinism (mtime, file order, gzip header) must
+// be pinned here, not at the call site.
 func zeroTime() time.Time {
-	return time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC)
+	return sourceDateEpoch()
 }
