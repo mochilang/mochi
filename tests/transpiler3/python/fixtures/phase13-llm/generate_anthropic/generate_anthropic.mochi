@@ -1,0 +1,2 @@
+let r = generate anthropic { prompt: "Count to 3." }
+print(r)

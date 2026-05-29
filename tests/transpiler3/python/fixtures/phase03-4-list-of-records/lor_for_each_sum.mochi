@@ -1,0 +1,11 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let ps = [Pt { x: 1, y: 10 }, Pt { x: 2, y: 20 }, Pt { x: 3, y: 30 }, Pt { x: 4, y: 40 }]
+var sum = 0
+for p in ps {
+  sum = sum + p.x + p.y
+}
+print(sum)

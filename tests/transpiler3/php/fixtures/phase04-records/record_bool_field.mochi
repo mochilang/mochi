@@ -1,0 +1,8 @@
+type Flag {
+  active: bool
+  count: int
+}
+
+let f = Flag { active: true, count: 5 }
+print(f.active)
+print(f.count)

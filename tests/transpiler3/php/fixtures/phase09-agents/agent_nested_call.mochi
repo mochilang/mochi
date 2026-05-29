@@ -1,0 +1,8 @@
+agent Adder {
+    var base: int = 10
+    intent add(x: int): int { return base + x }
+}
+let a = Adder { base: 10 }
+let r1 = a.add(5)
+let r2 = a.add(r1)
+print(r2)

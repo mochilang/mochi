@@ -1,0 +1,12 @@
+type Sex = M | F | X
+
+fun describe(s: Sex): string {
+  return match s {
+    M => "male"
+    F => "female"
+    X => "other"
+  }
+}
+
+let parts = describe(M) + " and " + describe(F)
+print(parts)

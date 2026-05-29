@@ -1,0 +1,8 @@
+extern python fun py_double(x: int): int
+extern python fun py_inc(x: int): int
+
+let a: int = py_double(5)
+let b: int = py_inc(a)
+print(a)
+print(b)
+print(py_double(py_inc(10)))

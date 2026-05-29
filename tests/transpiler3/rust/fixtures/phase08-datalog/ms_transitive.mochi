@@ -1,0 +1,10 @@
+fact hop("a", "b")
+fact hop("b", "c")
+fact hop("c", "d")
+fact hop("d", "e")
+rule trans(X, Y) :- hop(X, Y)
+rule trans(X, Y) :- trans(X, Z), hop(Z, Y)
+let xs = query trans("a", Y)
+for x in xs {
+    print(x)
+}

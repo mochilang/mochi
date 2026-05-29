@@ -1,0 +1,4 @@
+let xs = [11, 22, 33, 44]
+for i in 0..len(xs) {
+  print(xs[i])
+}

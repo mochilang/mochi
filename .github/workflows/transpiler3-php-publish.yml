@@ -1,0 +1,171 @@
+name: Publish mochi/runtime to Packagist
+
+# Phase 18 of MEP-55: signed releases for the PHP runtime Composer
+# package. Packagist auto-discovers tags via webhook, so the publish
+# step here is the trust-root work: GPG-sign the tag, attach a
+# Sigstore-backed provenance attestation, run composer audit on a fresh
+# install, and (optionally) emit a php-signify Ed25519 signature.
+#
+# Skipped silently when GPG_PRIVATE_KEY is not configured; this is the
+# same pattern jvm-publish.yml uses so fork CI does not break.
+
+on:
+  push:
+    tags:
+      - 'v0.*'
+      - 'v1.*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    # Hoist the optional secrets to job level so step-level `if:`
+    # expressions see them. Step-level `env:` is merged into the
+    # command environment after `if:` is evaluated, so referencing
+    # `env.PACKAGIST_API_TOKEN` from a step's own `if:` block when
+    # the env is declared in the same step always reads as empty.
+    env:
+      PACKAGIST_API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
+      PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
+      PHP_SIGNIFY_SECRET_KEY: ${{ secrets.PHP_SIGNIFY_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, gmp
+          coverage: none
+          tools: composer:v2
+
+      - name: Check GPG key
+        id: check
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          if [ -z "$GPG_PRIVATE_KEY" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::GPG_PRIVATE_KEY not configured; skipping signed publish"
+          elif echo "$GPG_PRIVATE_KEY" | gpg --batch --import 2>/dev/null; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::GPG_PRIVATE_KEY is not valid GPG data; skipping signed publish"
+          fi
+
+      - name: Verify signed tag
+        if: steps.check.outputs.configured == 'true' && startsWith(github.ref, 'refs/tags/')
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          git tag -v "$tag" || {
+            echo "::error::tag $tag is not GPG-signed; refusing to publish"
+            exit 1
+          }
+
+      - name: Stage release tarball
+        id: stage
+        if: steps.check.outputs.configured == 'true' && startsWith(github.ref, 'refs/tags/')
+        working-directory: transpiler3/php/runtime
+        run: |
+          mkdir -p ../../../dist
+          tarball="../../../dist/mochi-runtime-${GITHUB_REF#refs/tags/}.tar.gz"
+          tar --sort=name --owner=0 --group=0 --numeric-owner \
+              --mtime='2024-01-01 00:00:00 UTC' \
+              -czf "$tarball" \
+              composer.json src
+          echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
+
+      - name: Composer audit (against staged tarball)
+        if: steps.check.outputs.configured == 'true' && startsWith(github.ref, 'refs/tags/')
+        # composer audit (Composer 2.4+) reports known-vulnerable deps
+        # from the FriendsOfPHP advisory database. Phase 18 requires a
+        # clean audit before tag publication. We extract the staged
+        # tarball into a temp dir and audit *that*: auditing the source
+        # tree at transpiler3/php/runtime/ could read a different
+        # composer.lock/vendor state than what users will install.
+        run: |
+          audit_dir="$(mktemp -d)"
+          tar -xzf "${{ steps.stage.outputs.tarball }}" -C "$audit_dir"
+          (cd "$audit_dir" && \
+            composer install --no-interaction --no-dev --prefer-dist --classmap-authoritative && \
+            composer audit --no-interaction)
+
+      - name: Attest build provenance
+        # GitHub Actions OIDC attestation (GA April 2024). Attaches a
+        # Sigstore-backed provenance statement to the release tarball.
+        # Consumers verify with `gh attestation verify <tarball>`.
+        # Gated on the GPG check so an unsigned-tag push cannot attach
+        # an attestation that downstream consumers might mistake for a
+        # full trust-root assertion.
+        if: steps.check.outputs.configured == 'true' && startsWith(github.ref, 'refs/tags/')
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: ${{ steps.stage.outputs.tarball }}
+
+      - name: php-signify (optional Ed25519 signature)
+        if: steps.check.outputs.configured == 'true' && startsWith(github.ref, 'refs/tags/') && env.PHP_SIGNIFY_SECRET_KEY != ''
+        run: |
+          # Drupal's php-signify ports OpenBSD signify(1) to PHP. The
+          # signature file is published alongside the tarball; key
+          # fingerprint is in SECURITY.md. Pin the major to avoid a
+          # publish-time supply-chain swap.
+          echo "$PHP_SIGNIFY_SECRET_KEY" > /tmp/release.key
+          composer global require --no-interaction 'drupal/php-signify:^1.0'
+          ~/.composer/vendor/bin/signify -S \
+            -s /tmp/release.key \
+            -m "${{ steps.stage.outputs.tarball }}"
+          rm -f /tmp/release.key
+
+      - name: Notify Packagist
+        # Packagist auto-discovers tags via the GitHub webhook the user
+        # configured in their Packagist account settings. This step is
+        # a defensive ping in case the webhook was disabled. Gated on
+        # GPG so unsigned tags do not trigger a Packagist update.
+        if: steps.check.outputs.configured == 'true' && startsWith(github.ref, 'refs/tags/') && env.PACKAGIST_API_TOKEN != ''
+        run: |
+          curl -X POST \
+            -H 'content-type:application/json' \
+            "https://packagist.org/api/update-package?username=${PACKAGIST_USERNAME}&apiToken=${PACKAGIST_API_TOKEN}" \
+            -d '{"repository":{"url":"https://github.com/mochilang/mochi"}}'
+
+  verify-gate:
+    # Defensive: independent job re-stages the release tarball from a
+    # fresh checkout, then runs composer install + audit against the
+    # extracted artifact. A publish-job-side credential leak or in-place
+    # composer.lock tamper cannot mask a broken release because this
+    # job's checkout, stage, and audit all run on a clean runner.
+    runs-on: ubuntu-24.04
+    needs: publish
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, gmp
+          coverage: none
+          tools: composer:v2
+      - name: Re-stage release tarball
+        id: restage
+        working-directory: transpiler3/php/runtime
+        run: |
+          mkdir -p ../../../dist
+          tarball="../../../dist/mochi-runtime-${GITHUB_REF#refs/tags/}.tar.gz"
+          tar --sort=name --owner=0 --group=0 --numeric-owner \
+              --mtime='2024-01-01 00:00:00 UTC' \
+              -czf "$tarball" \
+              composer.json src
+          echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
+      - name: Composer install + audit (against re-staged tarball)
+        run: |
+          audit_dir="$(mktemp -d)"
+          tar -xzf "${{ steps.restage.outputs.tarball }}" -C "$audit_dir"
+          (cd "$audit_dir" && \
+            composer install --no-interaction --no-dev --prefer-dist && \
+            composer audit --no-interaction)

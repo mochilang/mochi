@@ -1,0 +1,13 @@
+type Op = Inc(n: int) | Dec(n: int)
+
+let o: Op = Inc(10)
+match o {
+  Inc(n) => {
+    let v = n + 1
+    print(v)
+  }
+  Dec(n) => {
+    let v = n - 1
+    print(v)
+  }
+}

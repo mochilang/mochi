@@ -34,7 +34,7 @@ func TestPhase22TargetRubyGem(t *testing.T) {
 	}
 
 	out := t.TempDir()
-	d := &Driver{CacheDir: t.TempDir()}
+	d := &Driver{}
 	if err := d.Build(src, out, TargetRubyGem); err != nil {
 		t.Fatalf("Build TargetRubyGem: %v", err)
 	}

@@ -1,0 +1,4 @@
+let prefix = "hello"
+let greet = fun(name: string): string => prefix + " " + name
+let r = greet("world")
+print(r)

@@ -1,0 +1,4 @@
+fetch "HTTPTEST_URL/json" into body
+let data = json_decode(body)
+print(data["name"])
+print(data["city"])

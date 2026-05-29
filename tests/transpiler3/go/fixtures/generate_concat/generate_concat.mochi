@@ -1,0 +1,2 @@
+let r = generate openai { prompt: "Capital of France?" }
+print("Answer: " + r)

@@ -1,0 +1,12 @@
+fun maybe_div(a: int, b: int): int {
+  var r: int = 0
+  try {
+    r = a / b
+  } catch e {
+    r = 0 - e
+  }
+  return r
+}
+
+print(maybe_div(15, 3))
+print(maybe_div(15, 0))

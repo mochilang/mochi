@@ -1,0 +1,7 @@
+let mult = 7
+let mul7 = fun(x: int): int => x * mult
+print(mul7(1))
+print(mul7(2))
+print(mul7(3))
+print(mul7(4))
+print(mul7(5))

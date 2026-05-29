@@ -1,0 +1,16 @@
+type Pt {
+  x: int
+  y: int
+}
+
+fun mk(): list<Pt> {
+  return [Pt { x: 1, y: 2 }]
+}
+
+let xs = mk()
+let ys = append(xs, Pt { x: 3, y: 4 })
+print(len(ys))
+print(ys[0].x)
+print(ys[0].y)
+print(ys[1].x)
+print(ys[1].y)

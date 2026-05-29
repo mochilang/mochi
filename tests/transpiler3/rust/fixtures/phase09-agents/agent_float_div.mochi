@@ -1,0 +1,15 @@
+agent Avg {
+    var sum: float = 0.0
+    var n: int = 0
+    intent add(v: float) {
+        sum = sum + v
+        n = n + 1
+    }
+    intent mean(): float { return sum / 4.0 }
+}
+let a = Avg { sum: 0.0, n: 0 }
+a.add(1.0)
+a.add(2.0)
+a.add(3.0)
+a.add(4.0)
+print(a.mean())

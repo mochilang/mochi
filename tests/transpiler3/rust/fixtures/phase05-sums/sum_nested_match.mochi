@@ -1,0 +1,12 @@
+type Size = Small(n: int) | Large(n: int)
+
+let s: Size = Small(3)
+let result = match s {
+  Small(n) => n * 2
+  Large(n) => n * 10
+}
+if result > 5 {
+  print("big")
+} else {
+  print("small")
+}

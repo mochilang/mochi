@@ -1,0 +1,3 @@
+let blend = fun(a: int, b: int, c: int): int => (a * 100) + (b * 10) + c
+print(blend(1, 2, 3))
+print(blend(9, 8, 7))

@@ -1,0 +1,16 @@
+agent Stat {
+    var sum: int = 0
+    var count: int = 0
+    intent record(n: int) {
+        sum = sum + n
+        count = count + 1
+    }
+    intent total(): int { return sum }
+    intent num(): int { return count }
+}
+let s = Stat { sum: 0, count: 0 }
+s.record(10)
+s.record(20)
+s.record(30)
+print(s.total())
+print(s.num())

@@ -1,0 +1,6 @@
+try {
+  panic(-1, "neg")
+  print("unreached")
+} catch e {
+  print(e)
+}

@@ -1,0 +1,12 @@
+let s: stream<int> = make_stream(4)
+let sub = subscribe(s)
+emit(s, 3)
+emit(s, 7)
+emit(s, 2)
+emit(s, 8)
+var total = 0
+total = total + recv_sub(sub)
+total = total + recv_sub(sub)
+total = total + recv_sub(sub)
+total = total + recv_sub(sub)
+print(total)

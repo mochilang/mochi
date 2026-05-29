@@ -1,0 +1,15 @@
+let xss: list<list<int>> = [[1, 2], [3, 4]]
+try {
+  let row: list<int> = xss[5]
+  print(row[0])
+} catch e {
+  print("outer oob")
+  print(e)
+}
+try {
+  let v: int = xss[1][9]
+  print(v)
+} catch e {
+  print("inner oob")
+  print(e)
+}

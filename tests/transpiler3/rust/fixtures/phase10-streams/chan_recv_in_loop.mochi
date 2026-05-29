@@ -1,0 +1,9 @@
+let ch: chan<int> = make_chan(4)
+send(ch, 10)
+send(ch, 20)
+send(ch, 30)
+send(ch, 40)
+for i in 0..4 {
+    let v = recv(ch)
+    print(v)
+}

@@ -1,0 +1,6 @@
+let xs = [1, 2]
+let ys = ["a", "b"]
+let result = from x in xs from y in ys select str(x) + y
+for r in result {
+  print(r)
+}

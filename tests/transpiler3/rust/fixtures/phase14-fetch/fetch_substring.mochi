@@ -1,0 +1,2 @@
+fetch "HTTPTEST_URL/hello" into body
+print(substring(body, 0, 5))

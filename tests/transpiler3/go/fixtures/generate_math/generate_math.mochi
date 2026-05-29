@@ -1,0 +1,2 @@
+let r = generate openai { prompt: "What is 6 times 7?" }
+print(r)

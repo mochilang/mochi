@@ -1,0 +1,10 @@
+agent Light {
+    var lit: bool = false
+    intent toggle() { lit = !lit }
+    intent get(): bool { return lit }
+}
+let l = Light { lit: false }
+for i in 0..7 {
+    l.toggle()
+}
+print(l.get())

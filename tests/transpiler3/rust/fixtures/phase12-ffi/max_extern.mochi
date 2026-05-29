@@ -1,0 +1,4 @@
+extern fun c_max(a: int, b: int): int
+print(c_max(5, 9))
+print(c_max(7, 2))
+print(c_max(-3, -5))

@@ -1,0 +1,7 @@
+var ran_catch: bool = false
+try {
+  panic(8, "x")
+} catch e {
+  ran_catch = true
+}
+print(ran_catch)

@@ -1,0 +1,12 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let ps = [Pt { x: 1, y: 1 }, Pt { x: 2, y: 2 }]
+let qs = append(ps, Pt { x: 9, y: 9 })
+print(len(ps))
+print(len(qs))
+print(ps[0].x)
+print(ps[1].x)
+print(qs[2].x)

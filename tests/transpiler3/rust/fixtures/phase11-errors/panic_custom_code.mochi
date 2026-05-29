@@ -1,0 +1,10 @@
+try {
+  panic(7, "lucky")
+} catch e {
+  print(e)
+}
+try {
+  panic(13, "spooky")
+} catch e {
+  print(e)
+}

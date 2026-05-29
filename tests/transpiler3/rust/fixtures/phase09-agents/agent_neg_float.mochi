@@ -1,0 +1,9 @@
+agent Sum {
+    var total: float = 0.0
+    intent add(v: float) { total = total + v }
+    intent get(): float { return total }
+}
+let s = Sum { total: 0.0 }
+s.add(-1.5)
+s.add(2.25)
+print(s.get())

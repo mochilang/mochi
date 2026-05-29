@@ -1,0 +1,12 @@
+let ch: chan<int> = make_chan(2)
+send(ch, 7)
+send(ch, 8)
+let a = recv(ch)
+let b = recv(ch)
+if a < b {
+    print(a)
+    print(b)
+} else {
+    print(b)
+    print(a)
+}

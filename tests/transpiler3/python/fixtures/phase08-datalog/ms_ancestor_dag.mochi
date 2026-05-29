@@ -1,0 +1,11 @@
+fact parent("a", "b")
+fact parent("a", "c")
+fact parent("b", "d")
+fact parent("c", "d")
+fact parent("d", "e")
+rule anc(X, Y) :- parent(X, Y)
+rule anc(X, Y) :- anc(X, Z), parent(Z, Y)
+let xs = query anc("a", Y)
+for x in xs {
+    print(x)
+}

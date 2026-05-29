@@ -1,0 +1,4 @@
+fact parent("alice", "bob")
+fact parent("alice", "carol")
+let xs = query parent("nobody", Y)
+print(len(xs))

@@ -1,0 +1,13 @@
+agent Point {
+    var x: int = 0
+    var y: int = 0
+    intent shift(dx: int, dy: int) {
+        x = x + dx
+        y = y + dy
+    }
+    intent sum(): int { return x + y }
+}
+let p = Point { x: 0, y: 0 }
+p.shift(3, 4)
+p.shift(5, 6)
+print(p.sum())

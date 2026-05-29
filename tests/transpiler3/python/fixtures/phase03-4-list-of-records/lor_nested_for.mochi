@@ -1,0 +1,12 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let ps = [Pt { x: 1, y: 2 }, Pt { x: 3, y: 4 }]
+let qs = [Pt { x: 10, y: 20 }, Pt { x: 30, y: 40 }]
+for p in ps {
+  for q in qs {
+    print(p.x + q.x)
+  }
+}

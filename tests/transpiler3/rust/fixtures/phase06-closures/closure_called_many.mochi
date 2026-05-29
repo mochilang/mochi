@@ -1,0 +1,7 @@
+let inc = fun(x: int): int => x + 1
+var total = 0
+total = total + inc(0)
+total = total + inc(10)
+total = total + inc(20)
+total = total + inc(30)
+print(total)

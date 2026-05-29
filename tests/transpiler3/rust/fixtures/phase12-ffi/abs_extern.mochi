@@ -1,0 +1,4 @@
+extern fun c_abs(x: int): int
+print(c_abs(-42))
+print(c_abs(42))
+print(c_abs(0))
