@@ -11,8 +11,11 @@ import (
 // tests/transpiler3/python/fixtures/phase09-agents and runs
 // runPythonFixture against the matching .out file. The corpus covers
 // synchronous agent intents (no spawn) and bounded FIFO channels
-// (collections.deque). Async / spawn / cross-task channels are in
-// Phase 10.
+// (collections.deque). Sub-phase 9.1 (spawn + async cast/call over
+// asyncio.Queue) is deferred to Phase 10's async colour pass; 9.2
+// (TaskGroup supervision), 9.3 (ExceptionGroup unwrap), and 9.4
+// (named-agent Registry) are deferred to Phase 11's error model and
+// runtime registry work.
 func TestPhase9Agents(t *testing.T) {
 	fixtureDir := filepath.Join(repoRootForBuild(t), "tests", "transpiler3", "python", "fixtures", "phase09-agents")
 	entries, err := os.ReadDir(fixtureDir)

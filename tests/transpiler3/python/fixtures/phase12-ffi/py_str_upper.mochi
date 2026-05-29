@@ -1,0 +1,4 @@
+extern python fun py_upper(s: string): string
+
+let result: string = py_upper("hello")
+print(result)

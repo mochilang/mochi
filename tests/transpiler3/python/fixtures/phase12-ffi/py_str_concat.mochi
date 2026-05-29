@@ -1,0 +1,4 @@
+extern python fun py_concat(a: string, b: string): string
+
+let result: string = py_concat("foo", "bar")
+print(result)

@@ -2,7 +2,7 @@
 title: "Phase 12. FFI (Python externs)"
 sidebar_position: 17
 sidebar_label: "Phase 12. FFI"
-description: "MEP-51 Phase 12 -- extern python fun lowers to a from <pkg>_externs import import; sidecar <name>_externs.py shipped beside the .mochi; Go FFI, JS FFI, Java FFI, and C extern reject at lower time; 5 fixtures."
+description: "MEP-51 Phase 12 -- extern python fun lowers to a from <pkg>_externs import import; sidecar <name>_externs.py shipped beside the .mochi; Go FFI, JS FFI, Java FFI, and C extern reject at lower time; 10 fixtures."
 ---
 
 # Phase 12. FFI (Python externs)
@@ -18,7 +18,7 @@ description: "MEP-51 Phase 12 -- extern python fun lowers to a from <pkg>_extern
 
 ## Gate
 
-`TestPhase12FFI`: 5 fixtures green on CPython 3.12.7 in `transpiler3/python/build/phase12_test.go`. The corpus covers all four scalar types round-trip (int, float, bool, string), one fixture with multiple `extern python fun` declarations, and one fixture with chained extern calls. Each fixture rebuilds from `tests/transpiler3/python/fixtures/phase12-ffi/*.mochi`, copies the sidecar `<name>_externs.py` next to the `.mochi` into the generated `src/<pkg>_externs.py`, runs `python -m mochi_user_<name>`, and byte-compares stdout to the matching `.out`. The full Phase 1-12 regression (`go test ./transpiler3/python/... -count=1`) finishes in 29.5s with zero regressions.
+`TestPhase12FFI`: 10 fixtures green on CPython 3.12+ (locally verified against CPython 3.14.5 on Apple Silicon) in `transpiler3/python/build/phase12_test.go`. The corpus covers all four scalar types as both arguments and returns (`int`, `float`, `bool`, `string`), unary and 2-arity signatures, two fixtures stressing whole-number float return via `mochi_runtime.fmt.float_str` (`py_add_floats`, `py_float_div`), one fixture with multiple `extern python fun` declarations from a single sidecar (`py_two_decls`), and one fixture that crosses the scalar boundary by returning `int` from a `float` argument (`py_round`). Each fixture rebuilds from `tests/transpiler3/python/fixtures/phase12-ffi/*.mochi`, copies the sidecar `<name>_externs.py` next to the `.mochi` into the generated `src/<pkg>_externs.py`, runs `python -m mochi_user_<name>`, and byte-compares stdout to the matching `.out`. The tier-1 OS matrix and `mypy --strict` / `pyright --strict` are carried by the cross-host reproducibility workflow introduced in Phase 16.
 
 ## Goal-alignment audit
 
@@ -59,19 +59,24 @@ The Python extern surface is the load-bearing emit shape for every Python ecosys
 
 **Go, JS, Java FFI, and C extern reject at lower time with an explicit error.** The Mochi C aotir IR carries `prog.GoFuncs`, `prog.JSFuncs`, `prog.JavaFuncs`, and `prog.ExternFuncs`. The Python lower rejects each with a clear "not supported on Python target" error, naming the offending decl. The alternative (silently ignore) would let a program that declares but never calls a Go FFI compile, then fail at run time when something does call it.
 
-### Fixture corpus (5 fixtures)
+### Fixture corpus (10 fixtures)
 
 `tests/transpiler3/python/fixtures/phase12-ffi/`:
 
 | Fixture | Surface | Notes |
 |---------|---------|-------|
-| `py_add_floats.mochi` | `py_add(x: float, y: float): float` | Float round-trip; `1.5 + 2.5 == 4.0` to print `4` |
-| `py_str_lower.mochi` | `py_lower(s: string): string` | String round-trip |
+| `py_add_floats.mochi` | `py_add(x: float, y: float): float` | Float round-trip; `1.5 + 2.5 == 4.0` prints `4` via `float_str` whole-number collapse |
+| `py_float_div.mochi` | `py_div(a: float, b: float): float` | Float `/` from Python (true division); `7.5 / 2.5 == 3.0` prints `3` |
+| `py_str_lower.mochi` | `py_lower(s: string): string` | String round-trip; exercises `str.lower()` |
+| `py_str_upper.mochi` | `py_upper(s: string): string` | String round-trip mirror; pins string round-trip in both case directions |
+| `py_str_concat.mochi` | `py_concat(a: string, b: string): string` | Two-arg string return; ensures the import line orders the params correctly |
 | `py_int_mul.mochi` | `py_mul(x: int, y: int): int` | Int round-trip; two calls in one program |
-| `py_bool_not.mochi` | `py_negate(b: bool): bool` | Bool round-trip; lowercase `true`/`false` print |
-| `py_two_decls.mochi` | `py_double` + `py_inc` | Multiple externs from one sidecar; chained calls |
+| `py_int_sub.mochi` | `py_sub(x: int, y: int): int` | Int round-trip; non-commutative operand order |
+| `py_bool_not.mochi` | `py_negate(b: bool): bool` | Bool round-trip; lowercase `true`/`false` print via `Print._format` |
+| `py_round.mochi` | `py_round(x: float): int` | Cross-type return: float argument, int return; exercises the `int` print path for an FFI-produced value |
+| `py_two_decls.mochi` | `py_double` + `py_inc` | Multiple externs from one sidecar; chained calls; deterministic alphabetic ordering in the emitted `from ... import` line |
 
-Each fixture has a matching `_externs.py` sidecar (the implementation) and a `.out` file with the canonical vm3 stdout. `TestPhase12FFI` walks the directory, runs `runPythonFixture` (which now also copies the sidecar via the new `prog.PythonFuncs != nil` branch in `build.go`). All 5 fixtures pass on CPython 3.12.7.
+Each fixture has a matching `_externs.py` sidecar (the implementation) and a `.out` file with the canonical vm3 stdout. `TestPhase12FFI` walks the directory, runs `runPythonFixture` (which now also copies the sidecar via the `len(prog.PythonFuncs) > 0` branch in `build.go`). All 10 fixtures pass on CPython 3.14.5 (Apple Silicon).
 
 ### Files changed
 
@@ -81,7 +86,7 @@ Each fixture has a matching `_externs.py` sidecar (the implementation) and a `.o
 | `transpiler3/python/lower/lower.go` | `Lower(prog, moduleName)` signature; `pythonExterns` map + emit gating; CallStmt + CallExpr strip `mochi_py_` prefix; emit `from mochi_user_<modname>_externs import ...` |
 | `transpiler3/python/build/build.go` | Pass moduleName to lower.Lower; copy `<srcDir>/<moduleName>_externs.py` to `src/<pkgName>_externs.py` when `prog.PythonFuncs != nil`; cache marker bump |
 | `transpiler3/python/build/phase12_test.go` (new) | `TestPhase12FFI` walks `phase12-ffi/` |
-| `tests/transpiler3/python/fixtures/phase12-ffi/` (new) | 5 `.mochi` + 5 `_externs.py` + 5 `.out` |
+| `tests/transpiler3/python/fixtures/phase12-ffi/` (new) | 10 `.mochi` + 10 `_externs.py` + 10 `.out`, expanded from the original 5 to cover unary and 2-arity per scalar type, whole-number float collapse, and cross-type return (`float -> int`) |
 
 ## Deferred work
 
