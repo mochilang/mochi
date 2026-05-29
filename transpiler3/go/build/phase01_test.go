@@ -33,9 +33,15 @@ func TestPhase1Hello(t *testing.T) {
 
 	var names []string
 	for _, e := range entries {
-		if e.IsDir() {
-			names = append(names, e.Name())
+		if !e.IsDir() {
+			continue
 		}
+		// LLM fixtures carry a cassette/ subdir and need
+		// MOCHI_LLM_CASSETTE_DIR set; they run under phase13_test.go.
+		if _, err := os.Stat(filepath.Join(base, e.Name(), "cassette")); err == nil {
+			continue
+		}
+		names = append(names, e.Name())
 	}
 	sort.Strings(names)
 	if len(names) == 0 {

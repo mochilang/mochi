@@ -794,6 +794,30 @@ func helperDecl(name string) gotree.Decl {
 	}
 	return strings.TrimRight(string(b), "\n")
 }`}
+	case "mochiDJB2Key":
+		return &gotree.RawDecl{Code: `func mochiDJB2Key(provider, model, prompt string) uint64 {
+	var h uint64 = 5381
+	for _, b := range []byte(provider + "\x00" + model + "\x00" + prompt) {
+		h = (h * 33) ^ uint64(b)
+	}
+	return h
+}`}
+	case "mochiLLMGenerate":
+		return &gotree.RawDecl{Code: `func mochiLLMGenerate(provider, model, prompt string) string {
+	cassetteDir := os.Getenv("MOCHI_LLM_CASSETTE_DIR")
+	if cassetteDir == "" {
+		fmt.Fprintln(os.Stderr, "mochi_llm: MOCHI_LLM_CASSETTE_DIR not set; set it to a cassette directory or provide an API key")
+		return ""
+	}
+	key := mochiDJB2Key(provider, model, prompt)
+	path := fmt.Sprintf("%s/%d.txt", cassetteDir, key)
+	b, err := os.ReadFile(path)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "mochi_llm: cassette not found: %s\n", path)
+		return ""
+	}
+	return strings.TrimRight(string(b), "\n")
+}`}
 	case "mochiPanicValue":
 		return &gotree.RawDecl{Code: `type mochiPanicValue struct {
 	code int64
