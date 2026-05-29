@@ -1,0 +1,5 @@
+let names = ["alice", "bob", "carol"]
+let upper = map(names, fun(s: string): string => upper(s))
+for n in upper {
+    print(n)
+}
