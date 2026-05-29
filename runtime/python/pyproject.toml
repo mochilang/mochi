@@ -1,0 +1,14 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mochi-runtime"
+version = "0.1.0"
+description = "Mochi runtime support library for the Python target (MEP-51)."
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Mochi Authors" }]
+
+[tool.hatch.build.targets.wheel]
+packages = ["mochi_runtime"]
