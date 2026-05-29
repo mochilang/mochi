@@ -161,6 +161,24 @@ func TestPhase10EmitFragments(t *testing.T) {
 				`$v = mochi_sub_recv($sub);`,
 			},
 		},
+		{
+			fixture: "stream_backpressure.mochi",
+			wants: []string{
+				// Phase 10.2 helper must be emitted alongside the
+				// default subscribe path so the drop branch exists.
+				`function mochi_sub_make_limit(MochiStream $s, int $limit): MochiSub`,
+				`$s->limits[$idx] = $limit;`,
+				// mochi_stream_emit's per-subscriber drop check: if the
+				// queue length has hit the configured limit, the new
+				// value is discarded silently.
+				`if ($s->limits[$k] > 0 && count($s->subs[$k]) >= $s->limits[$k]) { continue; }`,
+				// User call sites: subscribe_limit lowers to the
+				// dedicated helper, not mochi_sub_make.
+				`$sub = mochi_sub_make_limit($s, 2);`,
+				`mochi_stream_emit($s, 5);`,
+				`mochi_stream_emit($s, 99);`,
+			},
+		},
 	}
 
 	for _, c := range cases {
