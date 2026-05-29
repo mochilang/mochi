@@ -91,6 +91,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 		return l.lowerStreamEmitStmt(s)
 	case *aotir.OMapPutStmt:
 		return l.lowerOMapPutStmt(s)
+	case *aotir.AgentIntentCallStmt:
+		return l.lowerAgentIntentCallStmt(s)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle stmt %T", s)
 	}
@@ -267,16 +269,38 @@ func (l *lowerer) lowerAssignStmt(s *aotir.AssignStmt) (gotree.Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	var lhs gotree.Expr = &gotree.Ident{Name: mangleIdent(s.Name)}
+	// Agent intent bodies see field writes as AssignStmt with
+	// Name="__self->field"; lower the LHS to self.Field so the
+	// pointer-receiver method mutates the receiver in place.
+	if rest, ok := stripSelfPrefix(s.Name); ok {
+		lhs = &gotree.SelectorExpr{
+			X:   &gotree.Ident{Name: agentSelfName},
+			Sel: exportIdent(rest),
+		}
+	}
 	return &gotree.AssignStmt{
-		Lhs: []gotree.Expr{&gotree.Ident{Name: mangleIdent(s.Name)}},
+		Lhs: []gotree.Expr{lhs},
 		Tok: "=",
 		Rhs: []gotree.Expr{val},
 	}, nil
 }
 
+// stripSelfPrefix returns the field name after `__self->`, matching the
+// emitName encoding the shared C lowerer uses inside agent intent bodies.
+func stripSelfPrefix(name string) (string, bool) {
+	const p = "__self->"
+	if len(name) > len(p) && name[:len(p)] == p {
+		return name[len(p):], true
+	}
+	return "", false
+}
+
 // lowerQuerySortInPlace recognises the post-query patterns
-//   __queryN = ListSortAscExpr(__queryN)
-//   __queryN = ListSliceExpr(__queryN, start, end)
+//
+//	__queryN = ListSortAscExpr(__queryN)
+//	__queryN = ListSliceExpr(__queryN, start, end)
+//
 // emitted by the shared C lowerer for `order by` / `skip` / `take`,
 // and rewrites them to in-place Go forms (`slices.Sort(xs)` and
 // `xs = xs[start:end]`). The receiver and LHS always alias the same
@@ -291,7 +315,7 @@ func (l *lowerer) lowerQuerySortInPlace(s *aotir.AssignStmt) (gotree.Stmt, bool,
 		}
 		l.addImport("slices")
 		return &gotree.ExprStmt{X: &gotree.CallExpr{
-			Fun: &gotree.SelectorExpr{X: &gotree.Ident{Name: "slices"}, Sel: "Sort"},
+			Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "slices"}, Sel: "Sort"},
 			Args: []gotree.Expr{&gotree.Ident{Name: mangleIdent(s.Name)}},
 		}}, true, nil
 	case *aotir.ListSliceExpr:
@@ -414,6 +438,11 @@ func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 	case aotir.TypeSub:
 		l.addHelper("mochiSub")
 		return l.lowerSubType(s.SubElemType)
+	case aotir.TypeAgent:
+		if s.AgentName == "" {
+			return "", fmt.Errorf("agent let missing AgentName")
+		}
+		return "*" + s.AgentName, nil
 	case aotir.TypeRecord:
 		if s.RecordName == "" {
 			return "", fmt.Errorf("record let missing RecordName")
@@ -694,5 +723,28 @@ func (l *lowerer) lowerPanicStmt(s *aotir.PanicStmt) (gotree.Stmt, error) {
 	return &gotree.ExprStmt{X: &gotree.CallExpr{
 		Fun:  &gotree.Ident{Name: "mochiPanic"},
 		Args: []gotree.Expr{code, msg},
+	}}, nil
+}
+
+// lowerAgentIntentCallStmt lowers a discard-result intent call to a Go
+// method-call expression statement: `recv.IntentName(args...)`. Lowers
+// identically to AgentIntentCallExpr but wraps the call as an ExprStmt
+// so the void value is correctly dropped.
+func (l *lowerer) lowerAgentIntentCallStmt(s *aotir.AgentIntentCallStmt) (gotree.Stmt, error) {
+	recv, err := l.lowerExpr(s.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("intent %s.%s receiver: %w", s.AgentName, s.IntentName, err)
+	}
+	args := make([]gotree.Expr, 0, len(s.Args))
+	for i, a := range s.Args {
+		v, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, fmt.Errorf("intent %s.%s arg %d: %w", s.AgentName, s.IntentName, i, err)
+		}
+		args = append(args, v)
+	}
+	return &gotree.ExprStmt{X: &gotree.CallExpr{
+		Fun:  &gotree.SelectorExpr{X: recv, Sel: exportIdent(s.IntentName)},
+		Args: args,
 	}}, nil
 }

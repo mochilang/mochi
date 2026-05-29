@@ -152,6 +152,12 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerSubMakeLimitExpr(e)
 	case *aotir.SubRecvExpr:
 		return l.lowerSubRecvExpr(e)
+	case *aotir.AgentLit:
+		return l.lowerAgentLit(e)
+	case *aotir.AgentSpawnExpr:
+		return l.lowerAgentSpawnExpr(e)
+	case *aotir.AgentIntentCallExpr:
+		return l.lowerAgentIntentCallExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -259,13 +265,21 @@ func (l *lowerer) lowerStrJoinExpr(e *aotir.StrJoinExpr) (gotree.Expr, error) {
 
 // varRefExpr maps an aotir.VarRef.Name to a gotree expression. The
 // shared C lowerer rewrites captured-variable references inside lifted
-// closure bodies to `__e->FieldName` (C member-access syntax). For Go
-// we translate that back to `__mochi_env.FieldName` (with FieldName
-// capitalised so it matches the env struct's exported field).
+// closure bodies to `__e->FieldName` (C member-access syntax) and
+// agent intent bodies see their fields as `__self->FieldName`. For Go
+// we translate those back to selectors on the synthetic receiver:
+// captures hit `__mochi_env.Field`, agent fields hit `self.Field`,
+// with FieldName capitalised so it matches the struct's exported field.
 func varRefExpr(name string) gotree.Expr {
 	if rest, ok := strings.CutPrefix(name, "__e->"); ok {
 		return &gotree.SelectorExpr{
 			X:   &gotree.Ident{Name: envParamName},
+			Sel: exportIdent(rest),
+		}
+	}
+	if rest, ok := strings.CutPrefix(name, "__self->"); ok {
+		return &gotree.SelectorExpr{
+			X:   &gotree.Ident{Name: agentSelfName},
 			Sel: exportIdent(rest),
 		}
 	}
@@ -1066,7 +1080,7 @@ func (l *lowerer) lowerStrConvertExpr(e *aotir.StrConvertExpr) (gotree.Expr, err
 	case aotir.TypeInt:
 		l.addImport("strconv")
 		return &gotree.CallExpr{
-			Fun: &gotree.SelectorExpr{X: &gotree.Ident{Name: "strconv"}, Sel: "FormatInt"},
+			Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "strconv"}, Sel: "FormatInt"},
 			Args: []gotree.Expr{operand, &gotree.BasicLit{Kind: gotree.IntLit, Value: "10"}},
 		}, nil
 	case aotir.TypeFloat:
@@ -1736,4 +1750,107 @@ func (l *lowerer) lowerSubRecvExpr(e *aotir.SubRecvExpr) (gotree.Expr, error) {
 		Fun:  &gotree.Ident{Name: "mochiSubRecv"},
 		Args: []gotree.Expr{sub},
 	}, nil
+}
+
+// agentSelfName is the formal receiver name on every emitted intent
+// method, so `count = count + 1` inside `intent increment()` lowers
+// to `self.Count = self.Count + 1` once the C lowerer's
+// `__self->count` emitName encoding round-trips through varRefExpr.
+const agentSelfName = "self"
+
+// lowerAgentLit lowers `AgentName { f1: v1, f2: v2, ... }` to
+// `&AgentName{F1: v1, F2: v2, ...}`. Agents are pointer-receiver
+// values so the literal address is taken at construction time;
+// intent calls then mutate fields through `self.Field = ...`.
+//
+// The C lowerer reorders fields into declaration order; the Go
+// emitter preserves that ordering by walking AgentLit.Fields
+// directly.
+func (l *lowerer) lowerAgentLit(e *aotir.AgentLit) (gotree.Expr, error) {
+	elts := make([]gotree.Expr, 0, len(e.Fields))
+	for _, f := range e.Fields {
+		val, err := l.lowerExpr(f.Value)
+		if err != nil {
+			return nil, fmt.Errorf("agent %s field %s: %w", e.AgentName, f.Name, err)
+		}
+		elts = append(elts, &gotree.KeyValueExpr{
+			Key:   &gotree.Ident{Name: exportIdent(f.Name)},
+			Value: val,
+		})
+	}
+	return &gotree.UnaryExpr{
+		Op: "&",
+		X: &gotree.CompositeLit{
+			Type: &gotree.Ident{Name: e.AgentName},
+			Elts: elts,
+		},
+	}, nil
+}
+
+// lowerAgentSpawnExpr lowers Mochi `spawn AgentName { f1: v1 }` to the
+// same `&AgentName{...}` form as AgentLit. Go agents have no separate
+// gen_server process (BEAM-style supervision is a Phase 12 concern);
+// synchronous dispatch through pointer-receiver methods is enough to
+// match the Mochi observable semantics here.
+func (l *lowerer) lowerAgentSpawnExpr(e *aotir.AgentSpawnExpr) (gotree.Expr, error) {
+	agDecl := l.findAgent(e.AgentName)
+	if agDecl == nil {
+		return nil, fmt.Errorf("transpiler3/go/lower: spawn AgentName %s not declared", e.AgentName)
+	}
+	if len(e.InitArgs) != len(agDecl.Fields) {
+		return nil, fmt.Errorf("transpiler3/go/lower: spawn %s expected %d field args, got %d",
+			e.AgentName, len(agDecl.Fields), len(e.InitArgs))
+	}
+	elts := make([]gotree.Expr, 0, len(e.InitArgs))
+	for i, arg := range e.InitArgs {
+		val, err := l.lowerExpr(arg)
+		if err != nil {
+			return nil, fmt.Errorf("spawn %s field %s: %w", e.AgentName, agDecl.Fields[i].Name, err)
+		}
+		elts = append(elts, &gotree.KeyValueExpr{
+			Key:   &gotree.Ident{Name: exportIdent(agDecl.Fields[i].Name)},
+			Value: val,
+		})
+	}
+	return &gotree.UnaryExpr{
+		Op: "&",
+		X: &gotree.CompositeLit{
+			Type: &gotree.Ident{Name: e.AgentName},
+			Elts: elts,
+		},
+	}, nil
+}
+
+// lowerAgentIntentCallExpr lowers a value-returning intent call to a
+// Go method call on the agent receiver: `recv.IntentName(args...)`.
+// The C lowerer reuses this node for both expression and statement
+// positions; we emit the same selector-call form either way and let
+// the surrounding context decide whether to use the value.
+func (l *lowerer) lowerAgentIntentCallExpr(e *aotir.AgentIntentCallExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("intent %s.%s receiver: %w", e.AgentName, e.IntentName, err)
+	}
+	args := make([]gotree.Expr, 0, len(e.Args))
+	for i, a := range e.Args {
+		v, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, fmt.Errorf("intent %s.%s arg %d: %w", e.AgentName, e.IntentName, i, err)
+		}
+		args = append(args, v)
+	}
+	return &gotree.CallExpr{
+		Fun:  &gotree.SelectorExpr{X: recv, Sel: exportIdent(e.IntentName)},
+		Args: args,
+	}, nil
+}
+
+// findAgent returns the AgentDecl for name (or nil if not declared).
+func (l *lowerer) findAgent(name string) *aotir.AgentDecl {
+	for _, a := range l.prog.Agents {
+		if a != nil && a.Name == name {
+			return a
+		}
+	}
+	return nil
 }
