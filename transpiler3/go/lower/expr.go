@@ -122,6 +122,8 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerReadFileExpr(e)
 	case *aotir.LinesExpr:
 		return l.lowerLinesExpr(e)
+	case *aotir.HttpGetExpr:
+		return l.lowerHttpGetExpr(e)
 	case *aotir.LoadCSVExpr:
 		return l.lowerLoadCSVExpr(e)
 	case *aotir.OMapLiteralExpr:
@@ -1388,6 +1390,24 @@ func (l *lowerer) lowerLinesExpr(e *aotir.LinesExpr) (gotree.Expr, error) {
 	l.addImport("strings")
 	l.addHelper("mochiLines")
 	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiLines"}, Args: []gotree.Expr{path}}, nil
+}
+
+// lowerHttpGetExpr emits mochiHttpGet(url) which dispatches between
+// `file://` URLs (handled with os.ReadFile) and http(s):// URLs
+// (handled with net/http.Get). The helper trims a single trailing
+// newline so the result matches the Swift/BEAM runtime behaviour.
+// Phase 14.1.
+func (l *lowerer) lowerHttpGetExpr(e *aotir.HttpGetExpr) (gotree.Expr, error) {
+	url, err := l.lowerExpr(e.URL)
+	if err != nil {
+		return nil, err
+	}
+	l.addImport("io")
+	l.addImport("net/http")
+	l.addImport("os")
+	l.addImport("strings")
+	l.addHelper("mochiHttpGet")
+	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiHttpGet"}, Args: []gotree.Expr{url}}, nil
 }
 
 // lowerOMapLiteralExpr emits an IIFE that allocates a fresh *mochiOMap[K, V]
