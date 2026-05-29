@@ -23,10 +23,10 @@ A phase is LANDED only when its gate is green for every target (consume directio
 | 5 | Wrapper module synthesiser (`<pkg>_externs.py` + `.pyi` + `_mochi_wrap.py` runtime) | LANDED | `627e3267` | [phase-05](/docs/implementation/0071/phase-05-wrapper) |
 | 6 | Mochi-side extern fn emitter (`<pkg>_shim.mochi` with `extern python fun` + `type ... = { ... }`) | LANDED | `82aa45b6` | [phase-06](/docs/implementation/0071/phase-06-extern-emit) |
 | 7 | `import python "<package>@<semver>" as <alias>` grammar + parser | LANDED | `cd5fe055` | [phase-07](/docs/implementation/0071/phase-07-import-grammar) |
-| 8 | Build orchestration: workspace synth (+ wheel install + libpython link as sub-phases 8.1 / 8.2) | LANDED | (pending merge) | [phase-08](/docs/implementation/0071/phase-08-build) |
+| 8 | Build orchestration: workspace synth (+ wheel install + libpython link as sub-phases 8.1 / 8.2) | LANDED | `a8ec48f3` | [phase-08](/docs/implementation/0071/phase-08-build) |
 | 8.1 | Wheel install loop: drive uv against rendered pyproject.toml | NOT STARTED | — | [phase-08](/docs/implementation/0071/phase-08-build) |
 | 8.2 | libpython link: cgo embed for `runtime-mode = "embedded"` | NOT STARTED | — | [phase-08](/docs/implementation/0071/phase-08-build) |
-| 9 | `mochi.lock` `[[python-package]]` integration + `--check` mode + capability database | NOT STARTED | — | [phase-09](/docs/implementation/0071/phase-09-lockfile) |
+| 9 | `mochi.lock` `[[python-package]]` integration + `--check` mode + capability database | LANDED | (pending merge) | [phase-09](/docs/implementation/0071/phase-09-lockfile) |
 | 10 | `TargetPythonPackage` emit (sdist + wheel + `mochi-build` PEP 517 backend + `.pyi` for downstream typing) | NOT STARTED | — | [phase-10](/docs/implementation/0071/phase-10-python-package-emit) |
 | 11 | Trusted publishing (`mochi pkg publish --to=pypi`) Sigstore OIDC + PEP 740 attestations | NOT STARTED | — | [phase-11](/docs/implementation/0071/phase-11-trusted-publish) |
 | 12 | Async bridge (asyncio.run per-call + persistent loop opt-in + cross-loop hazard guards) | NOT STARTED | — | [phase-12](/docs/implementation/0071/phase-12-async-bridge) |
@@ -82,6 +82,7 @@ package3/python/
   wrapper/                # <pkg>_externs.py + .pyi + _mochi_wrap.py synthesiser (phase 5)
   emit/                   # Mochi shim emitter — <pkg>_shim.mochi with extern python fun + type aliases (phase 6)
   importspec/             # import python "<spec>" body parser (phase 7)
+  lockfile/               # mochi.lock [[python-package]] table + --check diff + capability database (phase 9)
   publish/                # PyPI publish + Sigstore + PEP 740 attestations (phase 11)
   attest/                 # attestation verification (phase 15)
   pyodide/                # wasm32-emscripten + WASI Preview 2 target support (phase 16)
@@ -93,7 +94,7 @@ The `package3/python/` location is shared with the broader MEP-57 polyglot packa
 
 ## Status snapshot
 
-As of 2026-05-30 00:10 (GMT+7): MEP-71 spec and research bundle landed; phases 0-8 LANDED (8.1 + 8.2 deferred sub-phases); phases 9-18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
+As of 2026-05-30 00:17 (GMT+7): MEP-71 spec and research bundle landed; phases 0-9 LANDED (8.1 + 8.2 deferred sub-phases); phases 10-18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
 
 ## Cross-references
 
