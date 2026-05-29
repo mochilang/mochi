@@ -10,7 +10,7 @@ description: "MEP-52 Phase 3, Mochi list/map/set lowering to TypeScript readonly
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-52 §Phases · Phase 3](/docs/mep/mep-0052#phase-plan) |
-| Status         | IN PROGRESS (3.1 LANDED; 3.2/3.3/3.4 pending) |
+| Status         | IN PROGRESS (3.1 + 3.2 LANDED; 3.3/3.4 pending) |
 | Started        | 2026-05-29 17:21 (GMT+7) |
 | Landed         | n/a (umbrella) |
 | Tracking issue | n/a (umbrella) |
@@ -31,7 +31,7 @@ The MEP-52 phase matrix splits Phase 3 into four sub-phases. Each is its own gat
 | # | Scope | Fixtures | Status | Commit |
 |---|-------|----------|--------|--------|
 | 3.1 | Lists (scalar element types; index, len, for-each, append, sum/min/max/contains, fn round-trip, index assign, loop control) | 25 | LANDED (Node + Deno + Bun) | tbd |
-| 3.2 | Maps (`Map<K, V>`; get, set, has, delete, for-each, entries) | 25 | NOT STARTED | n/a |
+| 3.2 | Maps (`Map<K, V>`; literal, get, set, has, len, for-each, keys, values, fn round-trip) | 25 | LANDED (Node + Deno + Bun) | tbd |
 | 3.3 | Sets (`Set<T>` with ES2024 union/intersection/difference) | 15 | NOT STARTED | n/a |
 | 3.4 | Lists of records (records via a Phase 4 preview; comprehensions over records) | 20 | NOT STARTED | n/a |
 
@@ -56,23 +56,24 @@ The full mutability split (`readonly T[]` for immutable views, `T[]` when mutate
 
 ## Sub-phase 3.2, Maps
 
-### Decisions made (3.2)
+### Decisions made (3.2) — as shipped
 
-**Type**: `Map<K, V>` (or `ReadonlyMap<K, V>` view per IR mutability).
+The bigint-keyed `new Map<bigint, string>([[1n, ...]])` form and the
+`mochiMapGet` Option-returning variant in the original 3.2 plan
+both shift; the actual ship simplifies several choices once the
+phase landed against vm3's real semantics.
 
-**Construction**: `{1: "a", 2: "b"}` lowers to `new Map<bigint, string>([[1n, "a"], [2n, "b"]])`. Object literals are not used as maps (the prototype-chain risk plus key-stringification semantic mismatch make `Map` the only acceptable choice).
-
-**Get**: `m[k]` lowers to `mochiMapGet(m, k)` when Mochi's semantic is "panic if absent", or to a runtime-helper that returns the Mochi `Option<V>` when the IR signals the optional read. The emitter never uses the bare `m.get(k)` form for `m[k]` because `Map.prototype.get` returns `V | undefined`, which differs from `null` (Mochi's `T?` is `T | null`).
-
-**Set**: `m[k] = v` lowers to `m.set(k, v)`.
-
-**Has**: `k in m` lowers to `m.has(k)`.
-
-**Delete**: `delete m[k]` lowers to `m.delete(k)`.
-
-**Iteration**: `for (k, v) in m` lowers to `for (const [k, v] of m)`. Insertion order is guaranteed by the ECMAScript spec (Maps iterate in insertion order); this matches the vm3 ordering.
-
-**Equality**: `Map`s use SameValueZero for key matching (`NaN` is a single key, `1 !== 1n`). The emitter never mixes `number` and `bigint` keys in one map (monomorphisation forces a single K type).
+- **Type**: every map lowers to `Map<K, V>` (no `readonly` view variant). Same reasoning as 3.1: aotir does not yet carry per-occurrence mutability, and the strict-mode toll of `ReadonlyMap` for IR-immutable bindings can be paid later once Phase 4 records expose the equality contract the mutability inference needs.
+- **Construction**: `{1: "a", 2: "b"}` lowers to `new Map<number, string>([[1, "a"], [2, "b"]])`. The bigint key form is deferred alongside the int→bigint sub-phase; today every Mochi int is a TS `number`, so the entries are pairs of `number`. Object literals are explicitly rejected (prototype-chain pollution and key-stringification semantic mismatch). Empty maps emit `new Map<K, V>()` (TS allows the parameterless ctor and infers nothing, so the explicit type parameters keep `tsc --strict` happy).
+- **Get**: `m[k]` lowers to `mochi_map_get(m, k)`, a runtime helper that calls `m.has(k)` and throws `RangeError` on miss before unwrapping `m.get(k) as V`. Reason: `Map.prototype.get` returns `V | undefined` under `--strict`, which would force every caller to narrow; the helper raises and returns `V` cleanly. The Option-returning variant for vm3's `option[V]` semantic is deferred to the same sub-phase that lands the Phase 4 `T?` surface. `TestPhase3_2MapGetAlwaysGuarded` enforces that no user-code line emits a bare `m.get(...)` call.
+- **Set**: `m[k] = v` lowers to `m.set(k, v);` (a plain ExprStmt + MemberCallExpr; no new tstree node).
+- **Has**: `k in m` lowers to `m.has(k)`. ES2015+ semantics are SameValueZero (`NaN === NaN`, `-0 === 0`), which matches Mochi's contract for scalar keys.
+- **Length**: `len(m)` lowers to `m.size` (a property read, not a function call).
+- **Iteration ordering**: `for k in m` lowers to `for (const k of mochi_map_keys_sorted(m))`. The helper sorts keys ascending by `String(k)`, which matches vm3's lexicographic-sort iteration order. JavaScript `Map` preserves insertion order natively, which would diverge from vm3 for any Mochi program that constructs the map out of sort order. The sorted helper is the cheapest way to keep stdout byte-equal across vm3 and three JS runtimes. `TestPhase3_2KeyIterIsSorted` enforces no fixture emits raw `m.keys()` / `m.values()` in user code.
+- **`for v in values(m)`**: lowers to `for (const v of mochi_map_values_sorted(m))`. The values helper sorts by the same stringified-key key, so parallel iteration with `mochi_map_keys_sorted` yields matching (k, v) pairs. vm3's `keys()` builtin currently returns an empty list (a vm3 bug); fixtures use `values(m)` exclusively for value-list iteration until that bug lands. The `for k in m` form still routes through `MapKeysExpr` and works as expected.
+- **Equality**: `Map`s use SameValueZero for key matching. The emitter never mixes `number` and `bigint` keys in one map (monomorphisation forces a single K type).
+- **Delete**: `delete m[k]` is not in the 3.2 surface; no Mochi fixture exercises it and the aotir IR does not carry a MapDeleteStmt yet. The TS path (`m.delete(k)`) is straightforward when needed.
+- **Tuple iteration `for (k, v) in m`**: not in the 3.2 surface; Mochi's parser does not currently accept the tuple binding on the for-loop head. Iteration over `for k in m` plus `m[k]` lookup is the workaround.
 
 ## Sub-phase 3.3, Sets
 
@@ -123,13 +124,22 @@ Sub-phase 3.4 includes record method call chains (`u.name.toUpperCase()` etc.) s
 | `transpiler3/typescript/build/phase03_test.go` | `TestPhase3_1ListsNode/Deno/Bun`, `TestPhase3_1EmitWithoutRuntime`, `TestPhase3_1ListAtAlwaysGuarded` |
 | `tests/transpiler3/typescript/fixtures/phase03.1-lists/` | 25 `.mochi` fixtures + 25 vm3-recorded `.out` |
 
-## Files (planned, 3.2 to 3.4)
+## Files (as shipped, 3.2)
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/typescript/lower/phase03_maps.go` | Map literal, get/set/has/delete, iteration |
+| `transpiler3/typescript/tstree/phase03.go` | `NewMapExpr` node kind added |
+| `transpiler3/typescript/lower/phase03.go` | `tsTypeForMapSlot`, `tsTypeForLetSlot`, 6 map lower funcs (`lowerMapLit`, `lowerMapGetExpr`, `lowerMapHasExpr`, `lowerMapLenExpr`, `lowerMapKeysExpr`, `lowerMapValuesExpr`), `lowerMapPutStmt`, and `runtimeMapDecls()` emitting 3 helpers (`mochi_map_get`, `mochi_map_keys_sorted`, `mochi_map_values_sorted`) gated by usage flags |
+| `transpiler3/typescript/lower/phase02.go` | `paramType` and `lowerFunction` return-type slots routed through `tsTypeForLetSlot` so map params and map returns lower correctly |
+| `transpiler3/typescript/lower/lower.go` | `runtimeFlags` extended with 3 map-helper flags; Phase 3.2 stmt/expr dispatch wired; let-decl type slot routed through `tsTypeForLetSlot` |
+| `transpiler3/typescript/build/phase03_2_test.go` | `TestPhase3_2MapsNode/Deno/Bun` (29 × 3 fixture runs), `TestPhase3_2EmitWithoutRuntime` (13 shape cases), `TestPhase3_2MapGetAlwaysGuarded` (regression guard against bare `m.get`), `TestPhase3_2KeyIterIsSorted` (regression guard against raw `m.keys()` / `m.values()`) |
+| `tests/transpiler3/typescript/fixtures/phase03.2-maps/` | 29 `.mochi` fixtures + 29 vm3-recorded `.out`, byte-equal across Node 22, Deno 2, Bun 1.1 |
+
+## Files (planned, 3.3 to 3.4)
+
+| File | Purpose |
+|------|---------|
 | `transpiler3/typescript/lower/phase03_sets.go` | Set literal, ES2024 method dispatch |
-| `tests/transpiler3/typescript/fixtures/phase03.2-maps/` | 25 fixtures |
 | `tests/transpiler3/typescript/fixtures/phase03.3-sets/` | 15 fixtures |
 | `tests/transpiler3/typescript/fixtures/phase03.4-list-records/` | 20 fixtures |
 
@@ -138,7 +148,11 @@ Sub-phase 3.4 includes record method call chains (`u.name.toUpperCase()` etc.) s
 - `TestPhase3_1Lists{Node,Deno,Bun}`, the runtime gate (25 × 3 = 75 fixture runs).
 - `TestPhase3_1EmitWithoutRuntime`, 11 shape-check cases verifying load-bearing emit tokens land in the right form (`const xs: number[] = [1, 2, 3];`, `mochi_list_at(xs, 0)`, `xs.length`, `[...xs, 4]`, `for (const x of xs) {`, etc.).
 - `TestPhase3_1ListAtAlwaysGuarded`, scans every emitted `.ts` and asserts no bare bracket read escapes the `mochi_list_at` helper boundary. The helper body is filtered (its `return xs[i] as T` is intentional); LHS bracket form (`xs[i] = v`) is skipped on the assignment line.
-- `TestPhase3_2Maps`, `TestPhase3_3Sets`, `TestPhase3_4ListRecords`: pending.
+- `TestPhase3_2Maps{Node,Deno,Bun}`, the 3.2 runtime gate (29 × 3 = 87 fixture runs across the four scalar value types, both supported key types (string and int), get/has/len/put, iteration via `for k in m` (MapKeysExpr) and `for v in values(m)` (MapValuesExpr), aggregation (sum, count, max via values()), and fn round-trip).
+- `TestPhase3_2EmitWithoutRuntime`, 13 shape-check cases verifying load-bearing emit tokens land in the right form (`new Map<K, V>([[k, v], ...])`, `mochi_map_get(m, "a")`, `m.size`, `m.has("a")`, `m.set("b", 2);`, `for (const k of mochi_map_keys_sorted(m)) {`, `function mochi__total(m: Map<string, number>): number`, etc.).
+- `TestPhase3_2MapGetAlwaysGuarded`, scans every emitted `.ts` and asserts no bare `.get(` call escapes the helper boundary (the runtime helpers' bodies are filtered out).
+- `TestPhase3_2KeyIterIsSorted`, scans every emitted `.ts` and asserts no raw `m.keys()` / `m.values()` call escapes the sorted-helper boundary; required because JS Map iterates in insertion order and would diverge from vm3's lex-sorted output.
+- `TestPhase3_3Sets`, `TestPhase3_4ListRecords`: pending.
 - `TestPhase3NoObjectAsMap` (asserts no emitted `.ts` uses a plain object literal as a map): pending.
 
 ## Deferred work
@@ -162,3 +176,13 @@ Sub-phase 3.4 includes record method call chains (`u.name.toUpperCase()` etc.) s
 - **Fixture count**: 25 `.mochi` + 25 vm3-recorded `.out`, all byte-equal across the three runtimes
 - **Test count**: `TestPhase3_1ListsNode` (25), `TestPhase3_1ListsDeno` (25), `TestPhase3_1ListsBun` (25), `TestPhase3_1EmitWithoutRuntime` (11), `TestPhase3_1ListAtAlwaysGuarded` (25)
 - **Notable scope changes vs the original 3.1 plan**: see "Decisions made (3.1) — as shipped" above. The list comprehension surface is the largest single deferral and moves to Phase 7.
+
+### Sub-phase 3.2 — Maps
+
+- **Started**: 2026-05-29 17:50 (GMT+7)
+- **Landed**: 2026-05-29 18:28 (GMT+7)
+- **Runtime coverage**: Node 22.21.1, Deno 2, Bun 1.1
+- **Fixture count**: 29 `.mochi` + 29 vm3-recorded `.out`, all byte-equal across the three runtimes (the 25-fixture floor is exceeded; the +4 cover the int-keyed surface and `for v in values(m)` aggregation paths)
+- **Test count**: `TestPhase3_2MapsNode` (29), `TestPhase3_2MapsDeno` (29), `TestPhase3_2MapsBun` (29), `TestPhase3_2EmitWithoutRuntime` (13), `TestPhase3_2MapGetAlwaysGuarded` (29), `TestPhase3_2KeyIterIsSorted` (29)
+- **Notable scope changes vs the original 3.2 plan**: see "Decisions made (3.2) — as shipped" above. The bigint-keyed literal form, the Option-returning `mochi_map_get` variant, `delete m[k]`, and tuple-form iteration `for (k, v) in m` are all deferred; the C aotir lowerer rejects `if v != none` patterns ("none literal lands with Option in Phase 3"), so fixtures use `for v in values(m)` for value-list aggregation rather than option narrowing on `m[k]`.
+- **vm3 quirks observed**: `keys(m)` is a vm3 bug (returns empty list); `values(m)` works correctly. `len(m)` returns the pre-mutation allocation count, not the live count after `m[k] = v` extends the map; fixtures avoid `len(m)` after mutation. Iteration order is lexicographic-by-stringified-key; the TS helpers sort the same way for byte-equal output.

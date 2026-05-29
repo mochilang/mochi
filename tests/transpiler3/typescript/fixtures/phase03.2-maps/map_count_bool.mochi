@@ -1,0 +1,8 @@
+let flags: map<string, bool> = {"a": true, "b": false, "c": true, "d": true}
+var count = 0
+for v in values(flags) {
+  if v {
+    count = count + 1
+  }
+}
+print(count)

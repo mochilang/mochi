@@ -1,0 +1,4 @@
+let m: map<string, string> = {"hello": "world", "foo": "bar"}
+let s = m["hello"]
+print(s)
+print(m["foo"])

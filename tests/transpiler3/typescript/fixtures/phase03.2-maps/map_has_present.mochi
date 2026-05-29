@@ -1,0 +1,6 @@
+let m: map<string, int> = {"a": 1, "b": 2}
+if "a" in m {
+  print("yes")
+} else {
+  print("no")
+}

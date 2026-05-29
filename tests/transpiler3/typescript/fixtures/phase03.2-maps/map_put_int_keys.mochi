@@ -1,0 +1,6 @@
+var m: map<int, int> = {1: 10}
+m[2] = 20
+m[3] = 30
+print(m[1])
+print(m[2])
+print(m[3])

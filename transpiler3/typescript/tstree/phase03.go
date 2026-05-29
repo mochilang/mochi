@@ -112,3 +112,44 @@ func (e *SpreadAppendExpr) exprNode() {}
 func (e *SpreadAppendExpr) TsString(_ int) string {
 	return "[..." + e.List.TsString(0) + ", " + e.Tail.TsString(0) + "]"
 }
+
+// NewMapExpr is `new Map<K, V>([[k1, v1], [k2, v2], ...])`. Mochi map
+// literals lower here; the K/V type arguments are emitted explicitly
+// because `tsc --strict` can't always infer them for an empty literal
+// (and emitting them everywhere keeps the printed form uniform).
+//
+// Entries are rendered comma-separated inline. Empty maps emit
+// `new Map<K, V>()` (TS allows the parameterless ctor).
+type NewMapExpr struct {
+	KeyType   string
+	ValueType string
+	Keys      []Expr
+	Values    []Expr // len(Keys) == len(Values), checked at build time
+}
+
+func (e *NewMapExpr) exprNode() {}
+func (e *NewMapExpr) TsString(_ int) string {
+	var b strings.Builder
+	b.WriteString("new Map<")
+	b.WriteString(e.KeyType)
+	b.WriteString(", ")
+	b.WriteString(e.ValueType)
+	b.WriteString(">(")
+	if len(e.Keys) == 0 {
+		b.WriteByte(')')
+		return b.String()
+	}
+	b.WriteByte('[')
+	for i := range e.Keys {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		b.WriteByte('[')
+		b.WriteString(e.Keys[i].TsString(0))
+		b.WriteString(", ")
+		b.WriteString(e.Values[i].TsString(0))
+		b.WriteByte(']')
+	}
+	b.WriteString("])")
+	return b.String()
+}

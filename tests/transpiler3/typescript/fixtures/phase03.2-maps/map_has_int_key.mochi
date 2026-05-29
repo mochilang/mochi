@@ -1,0 +1,9 @@
+let m: map<int, string> = {1: "one", 2: "two"}
+if 1 in m {
+  print("present")
+}
+if 99 in m {
+  print("nope")
+} else {
+  print("absent")
+}
