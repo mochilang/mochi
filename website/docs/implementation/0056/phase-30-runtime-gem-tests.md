@@ -15,7 +15,7 @@ description: "MEP-56 Phase 30, add the mochi-runtime gem's own minitest suite (V
 | Landed         | 2026-05-29 14:13 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | [#22510](https://github.com/mochilang/mochi/pull/22510) |
-| Commit         | TBD |
+| Commit         | c1fe1b55ef |
 
 ## Gate
 
