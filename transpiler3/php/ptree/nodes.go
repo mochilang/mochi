@@ -733,7 +733,10 @@ func (d *ClassDecl) PhpString(ind int) string {
 	sb.WriteString(pad)
 	switch {
 	case d.Abstract:
-		sb.WriteString("abstract class ")
+		// PHP 8.4: a readonly subclass can only extend a readonly base,
+		// so sum-type bases must be `abstract readonly` to admit
+		// `final readonly` variants.
+		sb.WriteString("abstract readonly class ")
 	case d.Mutable:
 		sb.WriteString("final class ")
 	default:
