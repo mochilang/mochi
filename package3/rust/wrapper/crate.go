@@ -15,6 +15,7 @@ import (
 	"fmt"
 
 	"mochi/package3/rust/asyncbridge"
+	"mochi/package3/rust/embedded"
 	"mochi/package3/rust/errors"
 	"mochi/package3/rust/monomorphise"
 	"mochi/package3/rust/rustdoc"
@@ -48,6 +49,14 @@ type Crate struct {
 	// current-thread; callers override from the `[rust.runtime]`
 	// section of mochi.toml.
 	AsyncFlavor asyncbridge.Flavor
+
+	// Profile selects the wrapper-crate build profile. Defaults to
+	// embedded.ProfileHosted (the pre-Phase-13 behaviour); callers
+	// switch to ProfileEmbedded via the `[rust] profile = "embedded"`
+	// row in mochi.toml. The embedded profile narrows the wrapper
+	// to a `no_std + alloc` build and refuses async fns at synth
+	// time because tokio requires std.
+	Profile embedded.Profile
 }
 
 // HasAsync reports whether any synthesised function is `async fn`.
@@ -103,6 +112,52 @@ type SynthParam struct {
 // by the phase-2 walker.
 func Synth(upstream, version string, surface *rustdoc.ApiSurface) *Crate {
 	return SynthWithSpec(upstream, version, surface, monomorphise.Spec{})
+}
+
+// SynthWithProfile is Synth plus an explicit embedded profile. The
+// profile threads through to Crate.Profile so EmitLibRS /
+// EmitCargoTOML produce the no_std prologue and default-features
+// flip when ProfileEmbedded is selected. Async fns are refused at
+// synth time when embedded.RefuseAsync(profile) returns true; the
+// refusal lands in c.Skipped with the canonical SkipEmbedded reason.
+func SynthWithProfile(upstream, version string, surface *rustdoc.ApiSurface, profile embedded.Profile) *Crate {
+	c := SynthWithSpec(upstream, version, surface, monomorphise.Spec{})
+	c.Profile = profile
+	return applyProfileRefusal(c)
+}
+
+// SynthFull is the most-general entry point: spec + profile. Order
+// of operations: typemap.Map (with substitution when an entry
+// matches), then the embedded async-refusal pass.
+func SynthFull(upstream, version string, surface *rustdoc.ApiSurface, spec monomorphise.Spec, profile embedded.Profile) *Crate {
+	c := SynthWithSpec(upstream, version, surface, spec)
+	c.Profile = profile
+	return applyProfileRefusal(c)
+}
+
+// applyProfileRefusal walks the synthesised function list and moves
+// every async fn into c.Skipped when the profile rejects async. The
+// refusal carries SkipEmbedded so downstream tooling can distinguish
+// it from the SkipUnknown bucket. Idempotent: re-running on an
+// already-filtered Crate is a no-op.
+func applyProfileRefusal(c *Crate) *Crate {
+	if !embedded.RefuseAsync(c.Profile) {
+		return c
+	}
+	kept := make([]SynthFn, 0, len(c.Functions))
+	for _, fn := range c.Functions {
+		if fn.IsAsync {
+			c.Skipped = append(c.Skipped, errors.SkipReport{
+				ItemPath: fn.UpstreamPath,
+				Reason:   errors.SkipEmbedded,
+				Detail:   embedded.AsyncRefusalReason,
+			})
+			continue
+		}
+		kept = append(kept, fn)
+	}
+	c.Functions = kept
+	return c
 }
 
 // SynthWithSpec is Synth plus an explicit monomorphisation spec. For

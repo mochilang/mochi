@@ -55,6 +55,11 @@ const (
 	SkipQualifiedPath
 	// SkipOpaqueTypeAlias: type T = impl Trait.
 	SkipOpaqueTypeAlias
+	// SkipEmbedded: the item cannot be exposed under the embedded
+	// (no_std + alloc) profile. Phase 13 emits this when an async
+	// fn would otherwise reach the runtime singleton (tokio
+	// requires std).
+	SkipEmbedded
 )
 
 // String renders the SkipReason as a short token used in the SKIPPED.txt
@@ -100,6 +105,8 @@ func (r SkipReason) String() string {
 		return "SkipQualifiedPath"
 	case SkipOpaqueTypeAlias:
 		return "SkipOpaqueTypeAlias"
+	case SkipEmbedded:
+		return "SkipEmbedded"
 	default:
 		return "SkipUnknown"
 	}
