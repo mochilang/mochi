@@ -16,12 +16,12 @@ name: Transpiler3-C Cross Tier-1 Matrix
 #     - 11.4 aarch64-darwin    : native build + run
 #     - 11.5 x86_64-darwin     : zig cc cross + Rosetta 2 run-gate
 #
-#   macos-13 (darwin/amd64):
-#     - 11.5 x86_64-darwin     : native build + run
-#
 #   windows-latest:
 #     - 11.6 x86_64-windows-msvc: native build + run (host cc / clang-cl)
 #     - 11.7 x86_64-windows-gnu : zig cc cross + native run
+#
+# Note: macos-13 (Intel x86_64) was removed; GitHub retired those runners.
+# x86_64-darwin is covered by the Rosetta 2 cross-compile step on macos-latest.
 
 on:
   push:
@@ -114,26 +114,6 @@ jobs:
         run: |
           go test -vet=off -v -count=1 -timeout=300s \
             ./transpiler3/c/build/ -run TestPhase11X86DarwinCross
-
-  cross-macos-x86:
-    name: Tier-1 cross (macos-13 x86_64 native)
-    runs-on: macos-13
-    continue-on-error: true
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: '^1.26'
-          cache-dependency-path: go.sum
-
-      - name: Phase 11.5 - x86_64-darwin native
-        run: |
-          go test -vet=off -v -count=1 -timeout=120s \
-            ./transpiler3/c/build/ -run TestPhase11NativeDarwin
 
   cross-windows:
     name: Tier-1 cross (windows-latest)

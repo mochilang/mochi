@@ -1,0 +1,5 @@
+let words = ["apple", "banana", "cherry", "avocado", "blueberry"]
+let result = from w in words where w != "apple" select w
+for x in result {
+  print(x)
+}

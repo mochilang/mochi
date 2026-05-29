@@ -1,0 +1,6 @@
+let xs = [1, 2, 3]
+let ys = [10, 20, 30]
+let result = from x in xs from y in ys where x == 2 select y
+for r in result {
+  print(r)
+}

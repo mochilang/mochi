@@ -1,0 +1,6 @@
+type Counter {
+  value: int
+}
+var c = Counter { value: 0 }
+c = Counter { value: c.value + 1 }
+print(c.value)

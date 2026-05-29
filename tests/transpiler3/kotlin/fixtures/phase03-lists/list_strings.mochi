@@ -1,0 +1,3 @@
+let xs = ["hello", "world"]
+print(xs[0])
+print(xs[1])

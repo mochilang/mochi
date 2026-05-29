@@ -1,0 +1,6 @@
+fun apply_bool(f: fun(bool): bool, x: bool): bool {
+    return f(x)
+}
+let negate: fun(bool): bool = fun(b: bool): bool => !b
+print(apply_bool(negate, true))
+print(apply_bool(negate, false))

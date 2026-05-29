@@ -1,0 +1,9 @@
+type Option = Some(value: int) | None
+fun unwrap(o: Option): int {
+  return match o {
+    Some(value) => value
+    None => 0
+  }
+}
+print(unwrap(Some(99)))
+print(unwrap(None))

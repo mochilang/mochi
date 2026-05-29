@@ -1,0 +1,5 @@
+type Flag {
+  active: bool
+}
+let f = Flag { active: true }
+print(f.active)

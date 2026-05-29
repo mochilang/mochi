@@ -1,0 +1,7 @@
+fun greet(name: string): string {
+  return "hello " + name
+}
+
+let fut = async greet("world")
+let msg = await fut
+print(msg)

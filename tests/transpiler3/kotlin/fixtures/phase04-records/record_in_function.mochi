@@ -1,0 +1,9 @@
+type Vec {
+  dx: int
+  dy: int
+}
+fun sumFields(v: Vec): int {
+  return v.dx + v.dy
+}
+let v = Vec { dx: 3, dy: 4 }
+print(sumFields(v))

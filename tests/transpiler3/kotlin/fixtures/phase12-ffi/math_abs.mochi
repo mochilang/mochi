@@ -1,0 +1,4 @@
+extern java fun java.lang.Math.abs(int): int as math_abs
+
+let x = math_abs(-42)
+print(x)
