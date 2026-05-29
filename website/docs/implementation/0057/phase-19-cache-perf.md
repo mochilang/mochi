@@ -210,23 +210,102 @@ workspace-10            1.12s    1.20s    1.25s    +4.4% (within 15% bound)
 
 ## Sub-phase 19.5 — CI regression gate
 
-A nightly CI job:
+A nightly CI job plus a PR-gated comparison run:
 
 ```yaml
 # .github/workflows/bench.yml
+name: Package system bench
+
 on:
-  schedule: [{cron: "0 7 * * *"}]
+  schedule:
+    - cron: "0 7 * * *"           # nightly UTC; regenerates baseline.json
   pull_request:
+    paths:
+      - 'pkg/pkgsolver/**'
+      - 'pkg/pkgblob/**'
+      - 'pkg/pkgstore/**'
+      - 'pkg/pkgregistry/**'
+      - 'bench/**'
+      - '.github/workflows/bench.yml'
+
+permissions:
+  contents: read
+  # The nightly job writes back baseline.json via a follow-up PR (see
+  # the "publish-baseline" step). PR runs do NOT receive this scope.
+  pull-requests: write
+
+concurrency:
+  group: bench-${{ github.event_name }}-${{ github.head_ref || 'main' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   bench:
-    runs-on: ubuntu-22.04
+    # Refuse fork PRs: the bench machine type (large runner) is paid time
+    # and exposing it to untrusted code is a DoS surface.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04-large    # 8-core runner for stable timing
+    timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
-      - run: go build ./cmd/mochi
-      - run: ./mochi pkg bench resolve --baseline=bench/baseline.json --threshold=0.15
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0           # bench/baseline.json history
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      # Pin clock, locale, CPU governor for stable measurement.
+      - name: Pin bench environment
+        run: |
+          echo "TZ=UTC" >> "$GITHUB_ENV"
+          echo "LC_ALL=C.UTF-8" >> "$GITHUB_ENV"
+          echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
+          sudo cpupower frequency-set --governor performance || true
+        shell: bash
+      - run: go build -trimpath -o mochi ./cmd/mochi
+      - name: Run bench
+        run: |
+          ./mochi pkg bench resolve \
+            --baseline=bench/baseline.json \
+            --threshold=0.15 \
+            --report=bench/report.json
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: bench-report-${{ github.run_id }}
+          path: bench/report.json
+          retention-days: 90
+      # Nightly only: regenerate baseline.json and open a follow-up PR
+      # so a human reviews the rolling drift.
+      - name: Publish new baseline
+        if: github.event_name == 'schedule'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp bench/report.json bench/baseline.json
+          gh pr create --title "bench: rolling baseline ${{ github.run_id }}" \
+            --body "Auto-generated from nightly bench run" \
+            --label "bench-baseline" \
+            --base main
 ```
 
-The `baseline.json` is regenerated weekly on the `main` branch after smoke tests pass; PRs are compared against the rolling baseline. Exceeding the threshold marks the PR as failing the bench gate (separate from the test gate; the PR can be merged with a `bench-exempt` label and reason).
+The `baseline.json` is regenerated nightly on the `main` branch after the
+smoke tests gate. PRs run the bench against the rolling baseline. Exceeding
+the 15% threshold marks the PR as failing the bench gate (separate from
+the unit-test gate; the PR can be merged with a `bench-exempt` label and a
+written reason in the PR body).
+
+Workflow security notes:
+
+- `pull-requests: write` is set at workflow level but only the nightly
+  step (`if: github.event_name == 'schedule'`) ever invokes `gh pr
+  create`. PR runs never reach that step.
+- Fork PRs are refused via the `if:` guard on the job (`head.repo.full_name
+  == github.repository`); they receive the same skipped result a path
+  filter miss would produce.
+- `actions/upload-artifact@v5` is the only secret-touching action; it
+  uses the workflow's default `GITHUB_TOKEN` with `contents: read` scope,
+  which is sufficient.
 
 ## Sub-phase 19.6 — Cache GC
 

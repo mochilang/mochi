@@ -300,21 +300,66 @@ on:
       - 'tests/pkgsystem/**'
       - '.github/workflows/pkgsystem-test.yml'
 
+# Default permissions: read-only on all scopes. Individual jobs widen as
+# needed (Phase 13 publish-mock needs id-token: write). PRs from forks
+# never receive elevated tokens; the bench job (Phase 19) refuses to run
+# on a fork-PR via the conditional in §19's workflow.
+permissions:
+  contents: read
+
+# Cancel superseded runs for the same PR; main-branch runs are never
+# cancelled so historical builds remain reproducible.
+concurrency:
+  group: pkgsystem-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   pkgsystem-test:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
         os: [ ubuntu-24.04, macos-15, windows-2022 ]
     steps:
       - uses: actions/checkout@v6
+        with:
+          # full history so SOURCE_DATE_EPOCH derivation from commit
+          # timestamps works in reproducibility tests (Phase 17)
+          fetch-depth: 0
       - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
+          # cache key is hash(go.sum) + OS + Go version; setup-go@v6
+          # composes this automatically when cache-dependency-path is set.
           cache-dependency-path: go.sum
+      # Reproducibility tests need a pinned timezone and locale.
+      - name: Pin environment
+        run: |
+          echo "TZ=UTC" >> "$GITHUB_ENV"
+          echo "LC_ALL=C.UTF-8" >> "$GITHUB_ENV"
+          echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
+        shell: bash
       - run: go test -v -timeout 900s ./pkg/...
+      # Soft step: lint runs only on Linux to avoid triple cost.
+      - if: matrix.os == 'ubuntu-24.04'
+        run: go vet ./pkg/...
 ```
+
+Action pinning policy: every `uses:` line references a tagged major
+(`@v6` form). Renovate updates them as a single coordinated PR;
+SHA pinning is deferred to Phase 13 (the publish workflow that signs
+artefacts needs immutable references; the test workflow does not).
+
+Secrets surface: this workflow uses no secrets. The `GITHUB_TOKEN`
+default token is read-only for `contents` and unused. Phase 13.7's
+`publish-test.yml` is the first workflow that needs OIDC; it explicitly
+sets `permissions: { id-token: write, contents: read }`.
+
+Fork PR behaviour: this workflow runs against fork PRs. Because there is
+no secret access and no write permission, fork code cannot exfiltrate
+anything. Phase 13's publish-test refuses fork PRs explicitly with `if:
+github.event.pull_request.head.repo.full_name == github.repository`.
 
 ## Files changed
 
