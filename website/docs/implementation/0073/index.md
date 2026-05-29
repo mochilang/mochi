@@ -28,7 +28,7 @@ A phase is LANDED only when its gate is green for every target (consume directio
 | 10 | Trusted publishing (`mochi pkg publish --to=crates.io`) Sigstore OIDC flow | LANDED | [003e897f](https://github.com/mochilang/mochi/commit/003e897f) | [phase-10](/docs/implementation/0073/phase-10-trusted-publish) |
 | 11 | Async bridge (tokio runtime singleton + block_on entry) | LANDED | [fce8fc5e](https://github.com/mochilang/mochi/commit/fce8fc5e) | [phase-11](/docs/implementation/0073/phase-11-async-bridge) |
 | 12 | Monomorphisation (`[rust.monomorphise]` manifest + per-instantiation wrapper) | LANDED | [37768e85](https://github.com/mochilang/mochi/commit/37768e85) | [phase-12](/docs/implementation/0073/phase-12-monomorphise) |
-| 13 | Embedded / no_std subset (`profile = "embedded"` + alloc opt-in) | LANDED | (pending) | [phase-13](/docs/implementation/0073/phase-13-embedded) |
+| 13 | Embedded / no_std subset (`profile = "embedded"` + alloc opt-in) | LANDED | [032a842d](https://github.com/mochilang/mochi/commit/032a842d) | [phase-13](/docs/implementation/0073/phase-13-embedded) |
 
 ## Per-phase fields
 
