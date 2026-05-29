@@ -314,6 +314,54 @@ func (u *UnaryExpr) PyString() string {
 	return "(" + u.Op + u.Operand.PyString() + ")"
 }
 
+// ListLit is `[e1, e2, ...]`. The element type is implicit in the
+// surrounding annotation (PEP 526 form `xs: list[int] = [...]`).
+type ListLit struct {
+	Elems []Expr
+}
+
+func (*ListLit) isExpr() {}
+
+// PyString renders the list literal.
+func (l *ListLit) PyString() string {
+	var sb strings.Builder
+	sb.WriteByte('[')
+	for i, e := range l.Elems {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(e.PyString())
+	}
+	sb.WriteByte(']')
+	return sb.String()
+}
+
+// SliceExpr is `receiver[start:end]`. Either bound may be nil for
+// open-ended slices (Python `xs[:n]` / `xs[n:]`).
+type SliceExpr struct {
+	Receiver Expr
+	Start    Expr
+	End      Expr
+}
+
+func (*SliceExpr) isExpr() {}
+
+// PyString renders the slice expression.
+func (s *SliceExpr) PyString() string {
+	var sb strings.Builder
+	sb.WriteString(s.Receiver.PyString())
+	sb.WriteByte('[')
+	if s.Start != nil {
+		sb.WriteString(s.Start.PyString())
+	}
+	sb.WriteByte(':')
+	if s.End != nil {
+		sb.WriteString(s.End.PyString())
+	}
+	sb.WriteByte(']')
+	return sb.String()
+}
+
 // IndexExpr is `receiver[index]`.
 type IndexExpr struct {
 	Receiver Expr
@@ -342,6 +390,39 @@ func (s *WhileStmt) PyString(indent int) string {
 	sb.WriteString(pad)
 	sb.WriteString("while ")
 	sb.WriteString(s.Cond.PyString())
+	sb.WriteString(":\n")
+	for i, st := range s.Body {
+		if i > 0 {
+			sb.WriteByte('\n')
+		}
+		sb.WriteString(st.PyString(indent + 1))
+	}
+	if len(s.Body) == 0 {
+		sb.WriteString(pad)
+		sb.WriteString("    pass")
+	}
+	return sb.String()
+}
+
+// ForEachStmt is `for var in iter:` over an arbitrary iterable expression
+// (list, string, range, etc.). Phase 3.1 uses this for `for x in xs`.
+type ForEachStmt struct {
+	Var  string
+	Iter Expr
+	Body []Stmt
+}
+
+func (*ForEachStmt) isStmt() {}
+
+// PyString renders the for-each statement.
+func (s *ForEachStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	var sb strings.Builder
+	sb.WriteString(pad)
+	sb.WriteString("for ")
+	sb.WriteString(s.Var)
+	sb.WriteString(" in ")
+	sb.WriteString(s.Iter.PyString())
 	sb.WriteString(":\n")
 	for i, st := range s.Body {
 		if i > 0 {

@@ -1,0 +1,4 @@
+let xs = [10, 20, 30, 40]
+let n = len(xs)
+print(xs[n - 1])
+print(xs[1])
