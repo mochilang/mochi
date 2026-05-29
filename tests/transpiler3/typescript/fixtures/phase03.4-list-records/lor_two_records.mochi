@@ -1,0 +1,21 @@
+type Pt {
+  x: int
+  y: int
+}
+
+type User {
+  id: int
+  name: string
+}
+
+let ps = [Pt { x: 1, y: 2 }, Pt { x: 3, y: 4 }]
+let us = [User { id: 10, name: "ada" }, User { id: 20, name: "bea" }]
+print(len(ps))
+print(len(us))
+for p in ps {
+  print(p.x + p.y)
+}
+for u in us {
+  print(u.id)
+  print(u.name)
+}

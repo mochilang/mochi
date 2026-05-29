@@ -1,0 +1,13 @@
+type Item {
+  id: int
+  active: bool
+}
+
+let xs = [Item { id: 1, active: true }, Item { id: 2, active: false }, Item { id: 3, active: true }, Item { id: 4, active: true }]
+var n = 0
+for x in xs {
+  if x.active {
+    n = n + 1
+  }
+}
+print(n)

@@ -1,0 +1,8 @@
+type User {
+  id: int
+  name: string
+}
+
+let u = User { id: 42, name: "alice" }
+print(u.id)
+print(u.name)

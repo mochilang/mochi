@@ -1,0 +1,8 @@
+type Tag {
+  v: int
+}
+
+let ts = [Tag { v: 1 }, Tag { v: 2 }, Tag { v: 3 }, Tag { v: 4 }, Tag { v: 5 }]
+print(len(ts))
+let empty: list<Tag> = []
+print(len(empty))

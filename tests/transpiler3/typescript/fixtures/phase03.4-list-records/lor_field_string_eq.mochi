@@ -1,0 +1,16 @@
+type Tag {
+  name: string
+  score: int
+}
+
+let ts = [Tag { name: "a", score: 1 }, Tag { name: "b", score: 2 }, Tag { name: "a", score: 4 }, Tag { name: "c", score: 8 }, Tag { name: "a", score: 16 }]
+var hits = 0
+var total = 0
+for t in ts {
+  if t.name == "a" {
+    hits = hits + 1
+    total = total + t.score
+  }
+}
+print(hits)
+print(total)

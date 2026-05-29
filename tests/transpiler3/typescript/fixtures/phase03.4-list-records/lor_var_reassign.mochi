@@ -1,0 +1,15 @@
+type Pt {
+  x: int
+  y: int
+}
+
+var ps = [Pt { x: 1, y: 1 }]
+print(len(ps))
+for p in ps {
+  print(p.x)
+}
+ps = [Pt { x: 2, y: 2 }, Pt { x: 3, y: 3 }]
+print(len(ps))
+for p in ps {
+  print(p.x)
+}

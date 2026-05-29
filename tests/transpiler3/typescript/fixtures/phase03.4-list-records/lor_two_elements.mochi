@@ -1,0 +1,13 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let ps = [Pt { x: 1, y: 2 }, Pt { x: 3, y: 4 }]
+print(len(ps))
+for p in ps {
+  print(p.x)
+}
+for p in ps {
+  print(p.y)
+}

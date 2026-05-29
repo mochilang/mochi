@@ -1,0 +1,15 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let ps = [Pt { x: 1, y: 2 }, Pt { x: 3, y: 4 }, Pt { x: 5, y: 6 }]
+let first = ps[0]
+let second = ps[1]
+let third = ps[2]
+print(first.x)
+print(first.y)
+print(second.x)
+print(second.y)
+print(third.x)
+print(third.y)
