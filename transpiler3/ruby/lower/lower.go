@@ -507,6 +507,85 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			return nil, err
 		}
 		return &rtree.MethodCall{Receiver: recv, Method: "length"}, nil
+	case *aotir.StrIndexExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		idx, err := lowerExpr(e.Index)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: recv.RubyExprString() + "[" + idx.RubyExprString() + "]"}, nil
+	case *aotir.StrContainsExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		sub, err := lowerExpr(e.Sub)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "include?", Args: []rtree.Expr{sub}, UseParens: true}, nil
+	case *aotir.StrSubstringExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		start, err := lowerExpr(e.Start)
+		if err != nil {
+			return nil, err
+		}
+		end, err := lowerExpr(e.End)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: fmt.Sprintf("(%s[%s...%s] || \"\")",
+			recv.RubyExprString(), start.RubyExprString(), end.RubyExprString())}, nil
+	case *aotir.StrReverseExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "reverse"}, nil
+	case *aotir.StrConvertExpr:
+		x, err := lowerExpr(e.Operand)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: x, Method: "to_s"}, nil
+	case *aotir.StrUpperExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "upcase"}, nil
+	case *aotir.StrLowerExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "downcase"}, nil
+	case *aotir.StrSplitExpr:
+		s, err := lowerExpr(e.Str)
+		if err != nil {
+			return nil, err
+		}
+		sep, err := lowerExpr(e.Sep)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: s, Method: "split", Args: []rtree.Expr{sep}, UseParens: true}, nil
+	case *aotir.StrJoinExpr:
+		list, err := lowerExpr(e.List)
+		if err != nil {
+			return nil, err
+		}
+		sep, err := lowerExpr(e.Sep)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: list, Method: "join", Args: []rtree.Expr{sep}, UseParens: true}, nil
 	case *aotir.AppendExpr:
 		recv, err := lowerExpr(e.Receiver)
 		if err != nil {
