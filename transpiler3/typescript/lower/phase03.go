@@ -104,17 +104,28 @@ func tsTypeForSetSlot(elem aotir.Type) (string, error) {
 }
 
 // tsTypeForLetSlot picks the right type renderer for a LetStmt's
-// declared shape. Lists use ElemType; maps use KeyType + ValueType;
-// sets use ElemType (sharing the slot with lists); every other
-// VarType falls through to tsTypeFor.
-func tsTypeForLetSlot(t, elem, key, value aotir.Type) (string, error) {
+// declared shape. Lists use ElemType (+ ElemRecordName when the
+// element is a record, Phase 3.4); maps use KeyType + ValueType;
+// sets use ElemType (sharing the slot with lists); records use
+// RecordName (Phase 3.4); every other VarType falls through to
+// tsTypeFor.
+func tsTypeForLetSlot(t, elem, key, value aotir.Type, recordName, elemRecordName string) (string, error) {
 	switch t {
 	case aotir.TypeList:
+		if elem == aotir.TypeRecord {
+			es, err := tsTypeForRecord(elemRecordName)
+			if err != nil {
+				return "", fmt.Errorf("ts lower: list-of-record slot: %w", err)
+			}
+			return es + "[]", nil
+		}
 		return tsTypeForCompound(t, elem)
 	case aotir.TypeMap:
 		return tsTypeForMapSlot(key, value)
 	case aotir.TypeSet:
 		return tsTypeForSetSlot(elem)
+	case aotir.TypeRecord:
+		return tsTypeForRecord(recordName)
 	default:
 		return tsTypeFor(t)
 	}
@@ -278,7 +289,11 @@ func (l *lowerer) lowerForEachStmt(s *aotir.ForEachStmt) ([]tstree.Stmt, error) 
 	if err != nil {
 		return nil, err
 	}
-	if _, err := tsTypeForList(s.ElemType); err != nil {
+	if s.ElemType == aotir.TypeRecord {
+		if _, err := tsTypeForRecord(s.ElemRecordName); err != nil {
+			return nil, fmt.Errorf("ts lower: for-each record elem: %w", err)
+		}
+	} else if _, err := tsTypeForList(s.ElemType); err != nil {
 		return nil, fmt.Errorf("ts lower: for-each elem: %w", err)
 	}
 	return []tstree.Stmt{&tstree.ForEachStmt{

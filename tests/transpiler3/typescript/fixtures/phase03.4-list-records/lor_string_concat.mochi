@@ -1,0 +1,11 @@
+type Word {
+  s: string
+}
+
+let ws = [Word { s: "hello" }, Word { s: " " }, Word { s: "world" }]
+var acc = ""
+for w in ws {
+  acc = acc + w.s
+}
+print(acc)
+print(len(ws))

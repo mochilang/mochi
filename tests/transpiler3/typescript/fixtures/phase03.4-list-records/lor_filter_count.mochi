@@ -1,0 +1,16 @@
+type User {
+  id: int
+  age: int
+}
+
+let users = [User { id: 1, age: 17 }, User { id: 2, age: 22 }, User { id: 3, age: 19 }, User { id: 4, age: 30 }, User { id: 5, age: 12 }]
+var adults = 0
+var total_age = 0
+for u in users {
+  if u.age >= 18 {
+    adults = adults + 1
+    total_age = total_age + u.age
+  }
+}
+print(adults)
+print(total_age)

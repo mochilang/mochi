@@ -10,7 +10,7 @@ description: "MEP-52 Phase 3, Mochi list/map/set lowering to TypeScript readonly
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-52 §Phases · Phase 3](/docs/mep/mep-0052#phase-plan) |
-| Status         | IN PROGRESS (3.1 + 3.2 + 3.3 LANDED; 3.4 pending) |
+| Status         | LANDED (3.1 + 3.2 + 3.3 + 3.4) |
 | Started        | 2026-05-29 17:21 (GMT+7) |
 | Landed         | n/a (umbrella) |
 | Tracking issue | n/a (umbrella) |
@@ -33,7 +33,7 @@ The MEP-52 phase matrix splits Phase 3 into four sub-phases. Each is its own gat
 | 3.1 | Lists (scalar element types; index, len, for-each, append, sum/min/max/contains, fn round-trip, index assign, loop control) | 25 | LANDED (Node + Deno + Bun) | tbd |
 | 3.2 | Maps (`Map<K, V>`; literal, get, set, has, len, for-each, keys, values, fn round-trip) | 25 | LANDED (Node + Deno + Bun) | tbd |
 | 3.3 | Sets (`Set<T>`; literal, has, add, len, for-each, fn round-trip) | 25 | LANDED (Node + Deno + Bun) | (this PR) |
-| 3.4 | Lists of records (records via a Phase 4 preview; comprehensions over records) | 20 | NOT STARTED | n/a |
+| 3.4 | Lists of records (records via a Phase 4 preview; comprehensions over records) | 20 | LANDED (Node + Deno + Bun) | (this PR) |
 
 ## Sub-phase 3.1, Lists
 
@@ -99,16 +99,25 @@ vm3 sets are broken, so the TS-side contract for `for x in s` is "sorted ascendi
 
 ## Sub-phase 3.4, Lists of records
 
-### Decisions made (3.4)
+### Decisions made (3.4) — as shipped
 
-Lists of records are the data shape every query, every datalog rule, and every fold in Phase 7 and 8 will iterate. The phase ships a minimum record surface (Phase 4 lands the full surface):
+Lists of records are the data shape every query, every datalog rule, and every fold in Phase 7 and 8 will iterate. Sub-phase 3.4 ships the record + list-of-record surface needed to unblock Phase 7's query DSL; the full record surface (deep equality, hashing, pattern deconstruction) lands in Phase 4.
 
-- Record declaration `record User { id: int, name: string }` emits a `class User { ... }` with `readonly` fields, private constructor, and a static `User.of({id, name})` factory.
-- A list of records: `let users: [User] = [User.of({id: 1n, name: "alice"})]` lowers to `[User.of({id: 1n, name: "alice"})]` typed as `readonly User[]` or `User[]` per Mutability.
-- Comprehension: `[u.name for u in users]` lowers to `users.map((u) => u.name)`.
-- Filtering: `[u for u in users if u.id > 0n]` lowers to `users.filter((u) => u.id > 0n)`.
+- **Record decl `type Pt { x: int; y: int }`** emits a TS `class Pt { ... }` with: `readonly` fields, a `private constructor(opts: { ... })` that copies each field, and a `static of(opts: { ... }): Pt` factory whose body is exactly `return new Pt(opts);`. The factory is the only construction path from user code: the private ctor blocks `new Pt(...)` so user code must funnel through `Pt.of({...})`. Class declarations emit before runtime helpers because TS hoists `function` but not `class`; the order matters under `--strict`.
+- **Record literal `Pt { x: 1, y: 2 }`** lowers to `Pt.of({ x: 1, y: 2 })`. Field order in the emitted object literal matches the aotir IR's `RecordLit.Fields` order (which already mirrors the record-decl field order), giving a stable byte-equal emit for Phase 16 reproducibility.
+- **Field access `p.x`** lowers to a direct property read `p.x` (`tstree.MemberAccessExpr`). No runtime helper — the field is a `readonly` slot on the class, so the read is one v8 / SpiderMonkey / JavaScriptCore property load. Introducing a `mochi_field_*` helper here would be a measurable cost in the hot loop Phase 7's query DSL will produce.
+- **List slot `list<Pt>`** lowers to `Pt[]`. The `tsTypeForLetSlot` helper Phase 3.2 introduced (and 3.3 extended for sets) gains a record case (`TypeRecord` → record name) plus a list-of-record case (`TypeList` + `ElemType=TypeRecord` → `<ElemRecordName>[]`). `Param.RecordName` / `Param.ElemRecordName` and `Function.ReturnRecordName` / `Function.ReturnElemRecordName` (already on aotir from Phase 4 prep) route the same way so records flow through function params and returns without ad-hoc casts.
+- **For-each over list-of-records** (`for p in ps`) lowers to `for (const p of ps) { ... }`; the elem-type validation gate (Phase 3.1) accepts `TypeRecord` via `tsTypeForRecord(s.ElemRecordName)` so the loop typechecks under `--strict`.
+- **Record literals inside list growth** (`xs = [...xs, Item.of({...})]`) lower through the same SpreadAppendExpr path Phase 3.1 emits for scalar `append(xs, v)`.
 
-Sub-phase 3.4 includes record method call chains (`u.name.toUpperCase()` etc.) so that Phase 7's query DSL has a real target.
+Sub-phase 3.4 deliberately stops short of:
+- **Record method declarations**. The aotir IR carries fields-only records today; `type Pt { fun magnitude() }` is not yet a Mochi surface in MVP. Method call chains (`u.name.toUpperCase()`) work via the field-access + string-method path Phase 2 + 3.1 already covered.
+- **List comprehensions over records** (`[u.name for u in users]`). Phase 7's query DSL will land the comprehension surface for both scalars and records together; until then fixtures use explicit `for u in users { ... }` loops.
+- **Deep equality and hashing of records**. Phase 4 lands those once the IR carries equality semantics.
+
+### Foundational fix landed with 3.4
+
+While bringing up the magnitude-squared fixture (`p.x * p.x + p.y * p.y`), the C aotir lowerer (`transpiler3/c/lower/lower.go`'s `lowerBinary`) was found to fold the parser's flat operator chain left-to-right without applying precedence; `a + b * c` lowered as `(a + b) * c`. The reference impl at `compiler3/frontend/lower.go:1620-1647` uses a precedence-level sweep; the C aotir lowerer now follows the same algorithm. The fix is observable on both the TS transpiler and the C-AOT runtime (the C transpiler shares this lowerer); all existing transpiler3 tests stay green because none of them exercised mixed-precedence chains. `binaryPrecedenceLevels` in `transpiler3/c/lower/lower.go` mirrors the compiler3/frontend table verbatim (`*` / `/` / `%` tightest, `??` loosest).
 
 ## Files (as shipped, 3.1)
 
@@ -141,11 +150,18 @@ Sub-phase 3.4 includes record method call chains (`u.name.toUpperCase()` etc.) s
 | `transpiler3/typescript/build/phase03_3_test.go` | `TestPhase3_3SetsNode/Deno/Bun` (33 × 3 fixture runs), `TestPhase3_3EmitWithoutRuntime` (11 shape cases), `TestPhase3_3SetIterIsSorted` (regression guard against raw `for of s`), `TestPhase3_3SetAddIsFunctional` (regression guard against bare `s.add`) |
 | `tests/transpiler3/typescript/fixtures/phase03.3-sets/` | 33 `.mochi` fixtures + 33 hand-validated `.out`, byte-equal across Node 22, Deno 2, Bun 1.1 |
 
-## Files (planned, 3.4)
+## Files (as shipped, 3.4)
 
 | File | Purpose |
 |------|---------|
-| `tests/transpiler3/typescript/fixtures/phase03.4-list-records/` | 20 fixtures |
+| `transpiler3/typescript/tstree/phase03_4.go` | `ClassDecl` + `ClassField` (with TsString emitting readonly fields, private ctor, static `of` factory in source order), `ObjectLit` + `ObjectLitField` (`{ k: v, ... }`), `RecordOfCallExpr` (`<RecordName>.of(<ObjectLit>)`) |
+| `transpiler3/typescript/lower/phase03_4.go` | `tsTypeForRecord`, `tsTypeForListElemWithRecord`, `lowerRecordLit`, `lowerFieldAccess`, `recordDecls()` (walks `prog.Records`, emits a `ClassDecl` per record with explanatory `Doc`) |
+| `transpiler3/typescript/lower/phase03.go` | `tsTypeForLetSlot` signature widened with `recordName, elemRecordName` for the `TypeRecord` and list-of-record cases; `lowerForEachStmt` accepts `TypeRecord` elem types via `tsTypeForRecord(ElemRecordName)` |
+| `transpiler3/typescript/lower/phase02.go` | `paramType` and `lowerFunction` route through the widened `tsTypeForLetSlot`, passing `p.RecordName` / `p.ElemRecordName` and `fn.ReturnRecordName` / `fn.ReturnElemRecordName` so records and lists of records flow through function params and returns |
+| `transpiler3/typescript/lower/lower.go` | `lowerLetStmt` passes `s.RecordName` / `s.ElemRecordName` to the let-slot type renderer; `*aotir.RecordLit` + `*aotir.FieldAccess` cases wired in `lowerExpr`; lower entry point now emits `recordDecls()` before runtime helpers (TS hoists `function` but not `class`) |
+| `transpiler3/c/lower/lower.go` | `lowerBinary` reworked from a left-to-right fold to a precedence-level sweep matching `compiler3/frontend/lower.go`; `reduceBinOp` helper preserves the `in` map / set / list special cases; `binaryPrecedenceLevels` table mirrors the reference impl |
+| `transpiler3/typescript/build/phase03_4_test.go` | `TestPhase3_4ListRecordsNode/Deno/Bun` (33 × 3 fixture runs), `TestPhase3_4EmitWithoutRuntime` (13 shape cases), `TestPhase3_4RecordClassShape` (regression guard: private ctor + static of() + readonly fields + no public `new` outside the factory, with built-in error constructors whitelisted), `TestPhase3_4FieldAccessIsDirect` (regression guard against `mochi_field_*` / `Reflect.get`) |
+| `tests/transpiler3/typescript/fixtures/phase03.4-list-records/` | 33 `.mochi` fixtures + 33 vm3-recorded `.out`, byte-equal across Node 22, Deno 2, Bun 1.1 |
 
 ## Test set
 
@@ -160,8 +176,10 @@ Sub-phase 3.4 includes record method call chains (`u.name.toUpperCase()` etc.) s
 - `TestPhase3_3EmitWithoutRuntime`, 11 shape-check cases verifying load-bearing emit tokens land in the right form (`new Set<number>([1, 2, 3])`, `s.has(1)`, `s.size`, `new Set<number>([...s, 3])`, `for (const x of mochi_set_to_list_sorted(s)) {`, etc.).
 - `TestPhase3_3SetIterIsSorted`, scans every emitted `.ts` and asserts no raw `for of s` escapes the helper boundary (required because JS Set preserves insertion order whereas Mochi's iteration order is unspecified — emit sorts for determinism).
 - `TestPhase3_3SetAddIsFunctional`, scans every emitted `.ts` and asserts no bare `.add(` call escapes the helper boundary (`Set.prototype.add` mutates; Mochi `add` is functional — emit uses `new Set([...s, x])` instead).
-- `TestPhase3_4ListRecords`: pending.
-- `TestPhase3NoObjectAsMap` (asserts no emitted `.ts` uses a plain object literal as a map): pending.
+- `TestPhase3_4ListRecords{Node,Deno,Bun}`, the 3.4 runtime gate (33 × 3 = 99 fixture runs covering record decls with all four scalar fields, list-of-record literals + len + index-via-let + functional append + grow-via-append-in-loop, for-each over records, nested for-loops (cartesian product), field-driven control flow, records as fn params + returns, lists of records as fn params + returns, and multi-record-type programs).
+- `TestPhase3_4EmitWithoutRuntime`, 13 shape-check cases verifying load-bearing emit tokens land in the right form (`class Pt {`, `readonly x: number;`, `private constructor(opts: { x: number; y: number; })`, `static of(opts: ...): Pt`, `return new Pt(opts);`, `Pt.of({ x: 3, y: 7 })`, `const ps: Pt[] = [...]`, `for (const p of ps) {`, `function mochi__total_x(ps: Pt[]): number`, `((p.x * p.x) + (p.y * p.y))`, etc.).
+- `TestPhase3_4RecordClassShape`, scans every emitted `.ts` for a 3.4 fixture and asserts the four invariants per class: private constructor, static `of` factory, at least one `readonly` field, and the only `new <RecordName>(` site is `return new <RecordName>(opts);` inside the factory body (built-in error constructors `new RangeError(`, `new TypeError(`, `new Error(` and JS containers `new Set<` / `new Map<` are whitelisted because runtime helpers throw them).
+- `TestPhase3_4FieldAccessIsDirect`, scans every emitted `.ts` and asserts no `mochi_field_*` helper and no `Reflect.get` (field access must remain a direct property read so Phase 7's query DSL doesn't pay a per-access call overhead).
 
 ## Deferred work
 
@@ -204,3 +222,13 @@ Sub-phase 3.4 includes record method call chains (`u.name.toUpperCase()` etc.) s
 - **Test count**: `TestPhase3_3SetsNode` (33), `TestPhase3_3SetsDeno` (33), `TestPhase3_3SetsBun` (33), `TestPhase3_3EmitWithoutRuntime` (11), `TestPhase3_3SetIterIsSorted` (33), `TestPhase3_3SetAddIsFunctional` (33)
 - **Notable scope changes vs the original 3.3 plan**: see "Decisions made (3.3) — as shipped" above. The full ES2024 set-operator surface (union/intersection/difference/symmetricDifference/isSubsetOf/isSupersetOf/isDisjointFrom) is deferred until the aotir IR carries matching node kinds; fixtures express the same semantics via the four primitives. Mochi front-end does not yet allow set-typed function parameters (the aotir verifier rejects `Param.ElemType=TypeSet` on a `TypeSet` slot with "ElemType set on non-list type set") or set-typed function returns (the typechecker rejects `return s` with an identity-mismatch error); fixtures inline the equivalents at top-level scope rather than wrap in helper functions. Both are Mochi front-end issues independent of the TS transpiler and will be addressed in a follow-up Mochi PR.
 - **vm3 quirks observed**: vm3's set support is entirely broken: `has(s, x)` returns the literal string `"nil"`; `len(s)` returns `0`. The Go and c-aot targets also reject sets in MVP. The Phase 3.3 `.out` files are hand-validated against documented Mochi set semantics rather than vm3-recorded; the Kotlin / Rust / JVM transpilers' set fixtures served as a cross-check during validation.
+
+### Sub-phase 3.4 — Lists of records
+
+- **Started**: 2026-05-29 19:00 (GMT+7)
+- **Landed**: 2026-05-29 20:05 (GMT+7)
+- **Runtime coverage**: Node 22.21.1, Deno 2, Bun 1.1
+- **Fixture count**: 33 `.mochi` + 33 vm3-recorded `.out`, all byte-equal across the three runtimes (the 20-fixture floor is exceeded; the +13 cover all four scalar field types, list-of-record literal + len + index-via-let + functional append + grow-via-append-in-loop, for-each, nested for-loops over two lists, field-driven control flow, records as fn params + returns, lists of records as fn params + returns, and multi-record-type programs with separate class-decl emit order matching source order)
+- **Test count**: `TestPhase3_4ListRecordsNode` (33), `TestPhase3_4ListRecordsDeno` (33), `TestPhase3_4ListRecordsBun` (33), `TestPhase3_4EmitWithoutRuntime` (13), `TestPhase3_4RecordClassShape` (33), `TestPhase3_4FieldAccessIsDirect` (33)
+- **Notable scope changes vs the original 3.4 plan**: see "Decisions made (3.4) — as shipped" above. Record method declarations, list comprehensions over records, and deep equality / hashing are deferred — fixtures use explicit `for u in users { ... }` loops in place of comprehensions. The C aotir lowerer's `lowerBinary` was rewritten from a left-to-right fold to a precedence-level sweep matching `compiler3/frontend/lower.go`; the fix is foundational (the C transpiler and C-AOT runtime share the lowerer) but no existing transpiler3 test exercised mixed-precedence chains, so all earlier phases remain green.
+- **vm3 quirks observed**: `print(xs[i].field)` is broken in vm3 (prints the whole record JSON instead of the field). The for-each pattern (`for p in ps { print(p.x) }`) and the let-binding pattern (`let p = ps[0]; print(p.x)`) both work in vm3, so the 33-fixture corpus uses those two patterns and avoids `print(xs[i].field)` entirely. The TS emit handles `ps[0].x` correctly via `mochi_list_at(ps, 0).x` — fixtures could exercise it but vm3 cannot record the expected output for the byte-equal gate.

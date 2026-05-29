@@ -1,0 +1,19 @@
+type Pt {
+  x: int
+  y: int
+}
+
+fun origin(): Pt {
+  return Pt { x: 0, y: 0 }
+}
+
+fun shift(p: Pt, dx: int, dy: int): Pt {
+  return Pt { x: p.x + dx, y: p.y + dy }
+}
+
+let o = origin()
+print(o.x)
+print(o.y)
+let s = shift(o, 5, 7)
+print(s.x)
+print(s.y)

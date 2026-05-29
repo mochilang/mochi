@@ -1,0 +1,12 @@
+type Item {
+  v: int
+}
+
+var xs: list<Item> = []
+for i in 0..5 {
+  xs = append(xs, Item { v: i * i })
+}
+print(len(xs))
+for x in xs {
+  print(x.v)
+}

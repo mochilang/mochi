@@ -1,0 +1,15 @@
+type Pt {
+  x: int
+  y: int
+}
+
+fun total_x(ps: list<Pt>): int {
+  var sum = 0
+  for p in ps {
+    sum = sum + p.x
+  }
+  return sum
+}
+
+let qs = [Pt { x: 7, y: 8 }, Pt { x: 9, y: 10 }, Pt { x: 4, y: 0 }]
+print(total_x(qs))
