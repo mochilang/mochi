@@ -18,8 +18,8 @@ A phase is LANDED only when its gate is green for every target in the runtime ma
 | 0 | Skeleton: package3/erlang/ layout + rebar3 workspace plumbing | LANDED | 3b9fe10 | [phase-00](/docs/implementation/0066/phase-00-skeleton) |
 | 1 | Hex.pm API v2 client (package fetch + outer/inner tarball + SHA-256/SHA-512 verify) | LANDED | a0e95be | [phase-01](/docs/implementation/0066/phase-01-hex-index) |
 | 2 | BEAM abstract code ingest (Dbgi/Abst chunk ETF decoder, -spec/-type walker) | LANDED | 99f463c | [phase-02](/docs/implementation/0066/phase-02-beam-ingest) |
-| 3 | EDoc XML fallback ingest (for packages with no -spec directives) | IN PROGRESS | — | [phase-03](/docs/implementation/0066/phase-03-edoc-fallback) |
-| 4 | Dialyzer typespec-to-Mochi type mapping + SkipReport emit | NOT STARTED | — | [phase-04](/docs/implementation/0066/phase-04-type-mapping) |
+| 3 | EDoc XML fallback ingest (for packages with no -spec directives) | LANDED | 445e4a0 | [phase-03](/docs/implementation/0066/phase-03-edoc-fallback) |
+| 4 | Dialyzer typespec-to-Mochi type mapping + SkipReport emit | IN PROGRESS | — | [phase-04](/docs/implementation/0066/phase-04-type-mapping) |
 | 5 | Port bridge shim emitter (shim.erl gen_server + shim.mochi extern fn corpus) | NOT STARTED | — | [phase-05](/docs/implementation/0066/phase-05-shim-emit) |
 | 6 | `import erlang "..."` grammar + parser | NOT STARTED | — | [phase-06](/docs/implementation/0066/phase-06-import-grammar) |
 | 7 | Build orchestration (rebar3 compile + Port process spawn + workspace setup) | NOT STARTED | — | [phase-07](/docs/implementation/0066/phase-07-build) |
