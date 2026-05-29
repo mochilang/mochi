@@ -6,11 +6,7 @@
     "require": {
         "php": "^8.4",
         "ext-mbstring": "*",
-        "ext-gmp": "*",
-        "amphp/amp": "^3.0",
-        "amphp/pipeline": "^1.0",
-        "revolt/event-loop": "^1.0",
-        "amphp/http-client": "^5.0"
+        "ext-gmp": "*"
     },
     "require-dev": {
         "phpstan/phpstan": "^1.12",
