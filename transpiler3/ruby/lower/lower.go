@@ -34,14 +34,36 @@ func Lower(prog *aotir.Program, fileBase, className string) (*rtree.SourceFile, 
 		Body:     body,
 	}
 
+	mainDecls := []rtree.Decl{runMethod}
+	for i, fn := range prog.Functions {
+		if i == prog.Main {
+			continue
+		}
+		md, err := lowerFunction(fn)
+		if err != nil {
+			return nil, fmt.Errorf("ruby lower: function %s: %w", fn.Name, err)
+		}
+		mainDecls = append(mainDecls, md)
+	}
+
 	mainModule := &rtree.ModuleDecl{
 		Name:  "Main",
-		Decls: []rtree.Decl{runMethod},
+		Decls: mainDecls,
 	}
+
+	progDecls := make([]rtree.Decl, 0, len(prog.Records)+1)
+	for _, r := range prog.Records {
+		fields := make([]string, len(r.Fields))
+		for i, f := range r.Fields {
+			fields[i] = f.Name
+		}
+		progDecls = append(progDecls, &rtree.DataDecl{Name: r.Name, Fields: fields})
+	}
+	progDecls = append(progDecls, mainModule)
 
 	programModule := &rtree.ModuleDecl{
 		Name:  className,
-		Decls: []rtree.Decl{mainModule},
+		Decls: progDecls,
 	}
 
 	entry := &rtree.RawDecl{
@@ -81,6 +103,30 @@ func ModuleName(src string) string {
 	return sb.String()
 }
 
+func lowerFunction(fn *aotir.Function) (*rtree.MethodDecl, error) {
+	body, err := lowerBlock(fn.Body)
+	if err != nil {
+		return nil, err
+	}
+	params := make([]rtree.MethodParam, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = rtree.MethodParam{Name: rubyIdent(p.Name)}
+	}
+	return &rtree.MethodDecl{
+		Receiver: "self",
+		Name:     rubyMethodName(fn.Name),
+		Params:   params,
+		Body:     body,
+	}, nil
+}
+
+// rubyMethodName lowers a Mochi (possibly mangled) function name to a
+// Ruby-safe method name. Currently a no-op pass-through; future work may
+// strip mochi internal prefixes or fold dotted names.
+func rubyMethodName(name string) string {
+	return name
+}
+
 func lowerBlock(blk *aotir.Block) ([]rtree.Stmt, error) {
 	if blk == nil {
 		return nil, nil
@@ -106,8 +152,140 @@ func lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 		return lowerLetStmt(s)
 	case *aotir.AssignStmt:
 		return lowerAssignStmt(s)
+	case *aotir.IfStmt:
+		return lowerIfStmt(s)
+	case *aotir.WhileStmt:
+		return lowerWhileStmt(s)
+	case *aotir.ForRangeStmt:
+		return lowerForRangeStmt(s)
+	case *aotir.ForEachStmt:
+		return lowerForEachStmt(s)
+	case *aotir.ListSetStmt:
+		idx, err := lowerExpr(s.Index)
+		if err != nil {
+			return nil, err
+		}
+		val, err := lowerExpr(s.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawStmt{Text: fmt.Sprintf("%s[%s] = %s", rubyIdent(s.Name), idx.RubyExprString(), val.RubyExprString())}, nil
+	case *aotir.BreakStmt:
+		return &rtree.RawStmt{Text: "break"}, nil
+	case *aotir.ContinueStmt:
+		return &rtree.RawStmt{Text: "next"}, nil
+	case *aotir.ReturnStmt:
+		if s.Value == nil {
+			return &rtree.Return{}, nil
+		}
+		v, err := lowerExpr(s.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.Return{X: v}, nil
 	}
 	return nil, fmt.Errorf("ruby lower: unsupported statement type %T", s)
+}
+
+func lowerIfStmt(i *aotir.IfStmt) (rtree.Stmt, error) {
+	cond, err := lowerExpr(i.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenBody, err := lowerBlock(i.Then)
+	if err != nil {
+		return nil, err
+	}
+	out := &rtree.IfStmt{Cond: cond, Then: thenBody}
+	// Detect chained if/elsif/else patterns: when Else is a single Block
+	// containing one IfStmt, fold it into an elsif arm. The aotir IR for
+	// `if A {} else if B {} else {}` is a nested IfStmt inside Else.
+	cur := i.Else
+	for cur != nil && len(cur.Statements) == 1 {
+		nested, ok := cur.Statements[0].(*aotir.IfStmt)
+		if !ok {
+			break
+		}
+		ncond, err := lowerExpr(nested.Cond)
+		if err != nil {
+			return nil, err
+		}
+		nthen, err := lowerBlock(nested.Then)
+		if err != nil {
+			return nil, err
+		}
+		out.Elsifs = append(out.Elsifs, rtree.ElsifBranch{Cond: ncond, Body: nthen})
+		cur = nested.Else
+	}
+	if cur != nil {
+		elseBody, err := lowerBlock(cur)
+		if err != nil {
+			return nil, err
+		}
+		out.Else = elseBody
+	}
+	return out, nil
+}
+
+func lowerWhileStmt(w *aotir.WhileStmt) (rtree.Stmt, error) {
+	cond, err := lowerExpr(w.Cond)
+	if err != nil {
+		return nil, err
+	}
+	body, err := lowerBlock(w.Body)
+	if err != nil {
+		return nil, err
+	}
+	// Render as `while Cond ... end` via a RawStmt wrapping a sub-render.
+	var sb strings.Builder
+	sb.WriteString("while " + cond.RubyExprString() + "\n")
+	for _, st := range body {
+		sb.WriteString(st.RubyString(1) + "\n")
+	}
+	sb.WriteString("end")
+	return &rtree.RawStmt{Text: sb.String()}, nil
+}
+
+func lowerForEachStmt(f *aotir.ForEachStmt) (rtree.Stmt, error) {
+	list, err := lowerExpr(f.List)
+	if err != nil {
+		return nil, err
+	}
+	body, err := lowerBlock(f.Body)
+	if err != nil {
+		return nil, err
+	}
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%s.each do |%s|\n", list.RubyExprString(), rubyIdent(f.Var))
+	for _, st := range body {
+		sb.WriteString(st.RubyString(1) + "\n")
+	}
+	sb.WriteString("end")
+	return &rtree.RawStmt{Text: sb.String()}, nil
+}
+
+func lowerForRangeStmt(f *aotir.ForRangeStmt) (rtree.Stmt, error) {
+	start, err := lowerExpr(f.Start)
+	if err != nil {
+		return nil, err
+	}
+	end, err := lowerExpr(f.End)
+	if err != nil {
+		return nil, err
+	}
+	body, err := lowerBlock(f.Body)
+	if err != nil {
+		return nil, err
+	}
+	var sb strings.Builder
+	// (start...end).each do |var| ... end -- triple-dot range is half-open,
+	// matching Mochi's [Start, End) semantics.
+	fmt.Fprintf(&sb, "(%s...%s).each do |%s|\n", start.RubyExprString(), end.RubyExprString(), rubyIdent(f.Var))
+	for _, st := range body {
+		sb.WriteString(st.RubyString(1) + "\n")
+	}
+	sb.WriteString("end")
+	return &rtree.RawStmt{Text: sb.String()}, nil
 }
 
 func lowerLetStmt(l *aotir.LetStmt) (rtree.Stmt, error) {
@@ -169,7 +347,17 @@ func lowerCallStmt(c *aotir.CallStmt) (rtree.Stmt, error) {
 			Args:     []rtree.Expr{arg},
 		}}, nil
 	}
-	return nil, fmt.Errorf("ruby lower: unsupported callee %q", c.Func)
+	// Fall through: a discarded user-fn call (CallStmt for a non-void fn whose result
+	// is unused). Render as a bare method call.
+	args := make([]rtree.Expr, 0, len(c.Args))
+	for _, a := range c.Args {
+		ax, err := lowerExpr(a)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, ax)
+	}
+	return &rtree.ExprStmt{X: &rtree.MethodCall{Method: rubyMethodName(c.Func), Args: args, UseParens: true}}, nil
 }
 
 func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
@@ -188,8 +376,97 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 		return lowerBinary(e)
 	case *aotir.UnaryExpr:
 		return lowerUnary(e)
+	case *aotir.ListLit:
+		return lowerListLit(e)
+	case *aotir.IndexExpr:
+		return lowerIndexExpr(e)
+	case *aotir.LenExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "length"}, nil
+	case *aotir.StrLenExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "length"}, nil
+	case *aotir.AppendExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		val, err := lowerExpr(e.Value)
+		if err != nil {
+			return nil, err
+		}
+		// Functional append: receiver + [value] returns a new array; the
+		// input list is never mutated, matching Mochi append() semantics.
+		return &rtree.BinaryOp{Op: "+", Lhs: recv, Rhs: &rtree.RawExpr{Text: "[" + val.RubyExprString() + "]"}}, nil
+	case *aotir.NumCastExpr:
+		x, err := lowerExpr(e.Operand)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: x, Method: "to_i"}, nil
+	case *aotir.RecordLit:
+		args := make([]rtree.Expr, 0, len(e.Fields))
+		for _, f := range e.Fields {
+			fv, err := lowerExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, &rtree.RawExpr{Text: f.Name + ": " + fv.RubyExprString()})
+		}
+		return &rtree.MethodCall{
+			Receiver:  &rtree.Ident{Name: e.TypeName},
+			Method:    "new",
+			Args:      args,
+			UseParens: true,
+		}, nil
+	case *aotir.FieldAccess:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: e.FieldName}, nil
+	case *aotir.CallExpr:
+		args := make([]rtree.Expr, 0, len(e.Args))
+		for _, a := range e.Args {
+			ax, err := lowerExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, ax)
+		}
+		return &rtree.MethodCall{Method: rubyMethodName(e.Func), Args: args, UseParens: true}, nil
 	}
 	return nil, fmt.Errorf("ruby lower: unsupported expression type %T", e)
+}
+
+func lowerListLit(l *aotir.ListLit) (rtree.Expr, error) {
+	parts := make([]string, 0, len(l.Elems))
+	for _, el := range l.Elems {
+		ex, err := lowerExpr(el)
+		if err != nil {
+			return nil, err
+		}
+		parts = append(parts, ex.RubyExprString())
+	}
+	return &rtree.RawExpr{Text: "[" + strings.Join(parts, ", ") + "]"}, nil
+}
+
+func lowerIndexExpr(e *aotir.IndexExpr) (rtree.Expr, error) {
+	recv, err := lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	idx, err := lowerExpr(e.Index)
+	if err != nil {
+		return nil, err
+	}
+	return &rtree.RawExpr{Text: recv.RubyExprString() + "[" + idx.RubyExprString() + "]"}, nil
 }
 
 func lowerBinary(b *aotir.BinaryExpr) (rtree.Expr, error) {
@@ -238,9 +515,11 @@ func rubyBinOp(op aotir.BinOp) (string, bool) {
 		return "/", true
 	case aotir.BinModI64:
 		return "%", true
-	case aotir.BinEqI64, aotir.BinEqF64, aotir.BinEqBool, aotir.BinEqStr:
+	case aotir.BinEqI64, aotir.BinEqF64, aotir.BinEqBool, aotir.BinEqStr,
+		aotir.BinEqRec, aotir.BinEqList, aotir.BinEqMap:
 		return "==", true
-	case aotir.BinNeI64, aotir.BinNeF64, aotir.BinNeBool, aotir.BinNeStr:
+	case aotir.BinNeI64, aotir.BinNeF64, aotir.BinNeBool, aotir.BinNeStr,
+		aotir.BinNeRec, aotir.BinNeList, aotir.BinNeMap:
 		return "!=", true
 	case aotir.BinLtI64, aotir.BinLtF64:
 		return "<", true
