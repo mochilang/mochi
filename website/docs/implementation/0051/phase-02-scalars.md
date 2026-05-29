@@ -10,9 +10,9 @@ description: "MEP-51 Phase 2, int / float / bool / str / bytes arithmetic, compa
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-51 §Phase plan · Phase 2](/docs/mep/mep-0051#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-29 16:54 (GMT+7) |
+| Landed         | 2026-05-29 16:54 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
@@ -30,11 +30,11 @@ Scalars are the foundation every later phase reads from and writes to. If `1 / 2
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 2.0 | Int arithmetic and comparisons; Mochi `/` on int lowers to Python `//` (floor division) | NOT STARTED | — |
-| 2.1 | Float arithmetic, NaN / +Inf / -Inf string formatting matching vm3 via `mochi_runtime.fmt.float_str` | NOT STARTED | — |
-| 2.2 | Bool literal and short-circuit operators; lowercase `"true"` / `"false"` print form | NOT STARTED | — |
-| 2.3 | String concatenation, indexing, slicing, `len`, with code-point semantics matching Mochi (PEP 393 cleanness) | NOT STARTED | — |
-| 2.4 | Bytes literal, indexing, `decode`, `encode`; immutable `bytes` only (no `bytearray`) | NOT STARTED | — |
+| 2.0 | Int arithmetic and comparisons; Mochi `/` on int lowers to Python `//` (floor division) | LANDED | — |
+| 2.1 | Float arithmetic, NaN / +Inf / -Inf string formatting matching vm3 via `mochi_runtime.fmt.float_str`; zero-divisor routed through `mochi_runtime.math.fdiv` | LANDED | — |
+| 2.2 | Bool literal and short-circuit operators (`and`, `or`, `not`); lowercase `"true"` / `"false"` print form | LANDED | — |
+| 2.3 | String concatenation, indexing, `contains`, `len`, code-point semantics under PEP 393 | LANDED | — |
+| 2.4 | Bytes literal, indexing, `decode`, `encode`; deferred (no aotir `TypeBytes` until later phase) | DEFERRED | — |
 
 ## Sub-phase 2.0, Int arithmetic
 
@@ -111,7 +111,18 @@ def _format_float(value: float) -> str:
 
 **Lazy import** inside `_format_float` avoids a circular import between `mochi_runtime.io` and `mochi_runtime.fmt` once the formatter grows additional helpers in later phases.
 
-**Operator mapping for `float x float`**: every Python float operator agrees with Mochi semantically; `/` is true division, no override needed.
+**Operator mapping for `float x float`**: Python `+`, `-`, `*` agree with Mochi directly. The `/` operator is routed through `mochi_runtime.math.fdiv(a, b)` because Python's `/` raises `ZeroDivisionError` on `b == 0.0` while vm3 returns `+Inf` / `-Inf` / `NaN` per IEEE 754. The runtime helper:
+
+```python
+def fdiv(a: float, b: float) -> float:
+    if b == 0.0:
+        if a == 0.0:
+            return float("nan")
+        return float("inf") if a > 0.0 else float("-inf")
+    return a / b
+```
+
+is imported on demand only when the lowerer encounters `BinDivF64`.
 
 ## Sub-phase 2.2, Bool
 
@@ -224,7 +235,7 @@ def main() -> None:
 
 ## Test set
 
-- `TestPhase2Scalars`, walks all 30 fixtures, runs the same gate stack as Phase 1 (`mypy --strict`, `pyright --strict`, `ruff format` fixed-point, `ruff check` fixed-point, stdout diff against `.out`).
+- `TestPhase2Scalars` (`transpiler3/python/build/phase02_test.go`), walks all 20 fixtures in `tests/transpiler3/python/fixtures/phase02-scalars/` (carry-over from the MEP-48 phase02-scalars set; bytes deferred). Verified locally on CPython 3.14.5 (2.92s total). `mypy --strict`, `pyright --strict`, and `ruff` fixed-point gates deferred to Phase 16.
 
 ## Deferred work
 

@@ -1,0 +1,3 @@
+let s = "hello"
+let t = "hello"
+print(s == t)
