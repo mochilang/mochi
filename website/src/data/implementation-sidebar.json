@@ -307,7 +307,10 @@
     "items": [
       "implementation/0073/phase-00-skeleton",
       "implementation/0073/phase-01-sparse-index",
-      "implementation/0073/phase-02-rustdoc-ingest"
+      "implementation/0073/phase-02-rustdoc-ingest",
+      "implementation/0073/phase-03-type-mapping",
+      "implementation/0073/phase-04-wrapper",
+      "implementation/0073/phase-05-extern-emit"
     ]
   },
   "implementation/0074/index",
