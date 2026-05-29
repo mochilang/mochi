@@ -337,10 +337,14 @@ The output is deterministic; the test fixtures golden-match this text.
 The client constructs the JSONL entry the registry will append to the package's index file (the registry may also derive it server-side; sending it as a hint speeds the round-trip):
 
 ```go
-func BuildIndexEntry(m *Manifest, art *Artefact) IndexEntry {
+func BuildIndexEntry(m *Manifest, art *Artefact, sde time.Time) IndexEntry {
+    // sde is pkgrepro.SourceDateEpoch() (Phase 17.0). When SOURCE_DATE_EPOCH
+    // is unset the publish CLI passes wall time; when set, the value flows
+    // through unchanged so two publishes of the same tag yield byte-identical
+    // entries.
     return IndexEntry{
         V:  m.Package.Version,
-        R:  time.Now().UTC().Truncate(time.Second),
+        R:  sde.UTC().Truncate(time.Second),
         B3: art.BLAKE3,
         S2: art.SHA256,
         C:  m.Capabilities.Required.Sorted(),
@@ -356,6 +360,13 @@ func BuildIndexEntry(m *Manifest, art *Artefact) IndexEntry {
 `shortenDeps` writes each dep as `name = "range"`, sorted by name.
 
 Field names map to the abbreviations in Phase 8.3's parser.
+
+Determinism: `R` is the only timestamp the publisher controls in the index
+entry. The registry may stamp its own `received_at` server-side for audit,
+but the JSONL line stored in the bucket is computed client-side and is
+required to be byte-identical across reproducing publishes. See
+[phase 17 §17.0](./phase-17-repro#sub-phase-170--source_date_epoch) for the
+SDE-flow contract.
 
 ## Files changed
 

@@ -100,6 +100,13 @@ Manifest:
 }
 ```
 
+`generated_at` uses `pkgrepro.SourceDateEpoch()`
+([phase 17 §17.0](./phase-17-repro#sub-phase-170--source_date_epoch)) so
+two `mochi pkg vendor` runs from the same lockfile produce byte-identical
+`vendor/index.json`. `packages` is sorted by `<PackageKey>@<Version>`;
+inner objects emit fields in declared order. Reproducibility is asserted
+by `TestPhase18VendorReproducible`: vendor twice, byte-compare.
+
 `lockfile_sha` lets `mochi build --offline` detect lockfile drift without reading every package.
 
 ## Sub-phase 18.1 — `vendor/` layout

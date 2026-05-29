@@ -131,6 +131,17 @@ func (c *Client) GetCert(ctx context.Context, idToken string) (*SigningCert, err
 
 Key material lifecycle: the ECDSA private key is generated in-process, used to sign the in-toto Statement, then discarded. It never touches disk. The Fulcio cert binding it to the OIDC identity is what makes the signature usable.
 
+Determinism carve-out: the Sigstore bundle is **not** byte-deterministic.
+The ephemeral key, the wall-clock-tied Fulcio cert NotBefore/NotAfter, the
+Rekor log index, and the inclusion proof all differ between two publishes
+of the same source. Phase 17's reproducibility contract therefore applies
+to the *tarball* (Phase 12) and the *in-toto Statement payload* (Phase
+13.2), not to the bundle's `signatures[].sig` or `verificationMaterial`.
+Bundle verification asserts the payload hash matches the expected blob;
+two reproducing publishes produce different bundles that both validate
+against the same blob. Documented as a known and intentional gap in
+[research note 12 §A.14](/docs/research/0057/risks-and-alternatives).
+
 ## Sub-phase 13.2 — In-toto Statement v1 + SLSA Build L3
 
 The signed payload is an in-toto Statement (research note 09 §5):

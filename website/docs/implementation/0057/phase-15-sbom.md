@@ -78,14 +78,14 @@ type Component struct {
     Properties   []Property         `json:"properties,omitempty"`  // CBOM lives here
 }
 
-func Emit(lock *Lockfile, m *Manifest) *BOM {
+func Emit(lock *Lockfile, m *Manifest, sde time.Time) *BOM {
     bom := &BOM{
         BOMFormat: "CycloneDX",
         SpecVersion: "1.6",
-        SerialNumber: "urn:uuid:" + uuid.NewString(),
+        SerialNumber: deterministicSerial(m, lock),
         Version: 1,
         Metadata: Metadata{
-            Timestamp: time.Now().UTC().Format(time.RFC3339),
+            Timestamp: sde.UTC().Format(time.RFC3339),
             Tools: []Tool{{Vendor: "mochi-lang.org", Name: "mochi", Version: runtimeVersion}},
             Component: rootComponent(m),
         },
@@ -95,6 +95,17 @@ func Emit(lock *Lockfile, m *Manifest) *BOM {
     }
     bom.Dependencies = buildDepGraph(lock)
     return bom
+}
+
+// deterministicSerial derives the urn:uuid SerialNumber from the manifest
+// + lockfile so two SBOM emits of the same input produce the same URN. The
+// input is `package.name + "@" + version + ":" + ManifestHash + ":" +
+// LockfileHash`; the output is BLAKE3-derived UUIDv8 per RFC 4122 §5.8
+// (vendor-specified namespaced UUID). Required for Phase 17 reproducibility.
+func deterministicSerial(m *Manifest, lock *Lockfile) string {
+    h := blake3.Sum256([]byte(m.Package.Name + "@" + m.Package.Version +
+        ":" + manifestHash(m) + ":" + lockfileHash(lock)))
+    return "urn:uuid:" + uuidv8FromHash(h[:])
 }
 
 func componentFromLock(p LockedPackage) Component {
@@ -129,13 +140,13 @@ type Document struct {
     RootElement    []string                  `json:"rootElement"`
 }
 
-func Emit(lock *Lockfile, m *Manifest) *Document {
+func Emit(lock *Lockfile, m *Manifest, sde time.Time) *Document {
     doc := &Document{
         Context: []string{"https://spdx.org/rdf/3.0.0/spdx-context.jsonld"},
         Type: "SpdxDocument",
         SpdxID: "SPDXRef-DOCUMENT",
         CreationInfo: CreationInfo{
-            Created: time.Now().UTC().Format(time.RFC3339),
+            Created: sde.UTC().Format(time.RFC3339),
             Tool: []string{"Tool-mochi-" + runtimeVersion},
         },
     }
@@ -228,7 +239,14 @@ The npm `package.json` `mochi.sbom` field references the bundled SBOM path.
     .integrity           # BLAKE3+SHA256 of each file above
 ```
 
-Files are deterministic (timestamps from `SOURCE_DATE_EPOCH`, sorted entries).
+Files are deterministic: the CycloneDX `metadata.timestamp` and SPDX
+`creationInfo.created` are populated from `pkgrepro.SourceDateEpoch()`
+([phase 17 §17.0](./phase-17-repro#sub-phase-170--source_date_epoch));
+CycloneDX `serialNumber` uses `deterministicSerial` (BLAKE3-derived UUIDv8
+of manifest + lock hash, see §15.0); component arrays are sorted by name;
+JSON object keys emit in declared order via the `encoding/json` `omitempty`
++ reflection ordering pinned to Go 1.24. The SBOM's reproducibility is
+asserted by `TestPhase15Reproducible`: emit twice, byte-compare.
 
 ## Sub-phase 15.6 — Validation
 

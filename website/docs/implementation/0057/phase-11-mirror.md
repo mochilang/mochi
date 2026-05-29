@@ -209,6 +209,13 @@ A successful sync writes a `dest/.last-sync.json`:
 }
 ```
 
+`finished_at` is operational metadata and intentionally records the actual
+wall-clock end of the sync (not `SOURCE_DATE_EPOCH`); `/healthz` and
+mirror-staleness audits depend on it being real time. The mirror's served
+*content* (index entries, blobs, bundles) is byte-identical to upstream
+and reproducible; `.last-sync.json` is metadata that lives next to it, not
+part of the registry surface.
+
 ## Sub-phase 11.4 — `mochi pkg mirror serve`
 
 A wrapper around Phase 7.3's `mochi registry serve` that adds:
