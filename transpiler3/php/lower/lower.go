@@ -4,8 +4,10 @@
 // Phase 0 ships an empty `mochi_main()` no-op plus a trailing call.
 // Phase 1 wires CallStmt for the four print runtime entries by emitting
 // matching `mochi_print_*` PHP helpers inline (Phase 15 will switch
-// these to a Composer-autoloaded \Mochi\Runtime\IO). Phase 2 adds
-// scalar literals + arithmetic, and so on.
+// these to a Composer-autoloaded \Mochi\Runtime\IO). Phase 2 lands
+// scalars: literals, let/var, binary/unary ops, comparisons, str
+// concat, str.contains, int() cast, if/else, while + for-range +
+// break/continue.
 package lower
 
 import (
@@ -21,10 +23,12 @@ import (
 // runtimeFlags tracks which inline runtime helpers the lowered program
 // needs so the emit pass only includes the ones that are actually used.
 type runtimeFlags struct {
-	printStr  bool
-	printInt  bool
-	printBool bool
-	printF64  bool
+	printStr     bool
+	printInt     bool
+	printBool    bool
+	printF64     bool
+	strContains  bool
+	strCat       bool
 }
 
 type lowerer struct {
@@ -43,6 +47,22 @@ func Lower(prog *aotir.Program, _ colour.ColourMap) (*ptree.PhpFile, error) {
 		return nil, fmt.Errorf("php lower: invalid Main index %d", prog.Main)
 	}
 	l := &lowerer{}
+
+	// Lower non-main user functions in source order so the emitted
+	// file preserves declaration ordering across runs (Phase 16
+	// reproducibility relies on this).
+	var userDecls []ptree.Decl
+	for i, fn := range prog.Functions {
+		if i == prog.Main {
+			continue
+		}
+		d, err := l.lowerFunction(fn)
+		if err != nil {
+			return nil, err
+		}
+		userDecls = append(userDecls, d)
+	}
+
 	mainFn := prog.Functions[prog.Main]
 	body, err := l.lowerBlock(mainFn.Body)
 	if err != nil {
@@ -56,11 +76,12 @@ func Lower(prog *aotir.Program, _ colour.ColourMap) (*ptree.PhpFile, error) {
 	}
 
 	decls := l.runtimeDecls()
+	decls = append(decls, userDecls...)
 	decls = append(decls, mainDecl)
 
 	file := &ptree.PhpFile{
-		// Phase 0/1 keep a global-namespace file. Phase 15 will add a
-		// real PSR-4 namespace when the Composer package lands.
+		// Phase 0/1/2 keep a global-namespace file. Phase 15 will add
+		// a real PSR-4 namespace when the Composer package lands.
 		Namespace: "",
 		Uses:      nil,
 		Decls:     decls,
@@ -76,8 +97,7 @@ func Lower(prog *aotir.Program, _ colour.ColourMap) (*ptree.PhpFile, error) {
 }
 
 // runtimeDecls emits FuncDecl entries for each inline runtime helper
-// the lowered body requested. The order matches the C aotir naming
-// (mochi_print_str / i64 / f64 / bool) for review-friendly diffs.
+// the lowered body requested.
 func (l *lowerer) runtimeDecls() []ptree.Decl {
 	var out []ptree.Decl
 	if l.runtime.printStr {
@@ -127,6 +147,17 @@ func (l *lowerer) runtimeDecls() []ptree.Decl {
 			},
 		})
 	}
+	if l.runtime.strContains {
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc:     []string{"Return true when $needle is a substring of $haystack (vm3 str.contains)."},
+			Name:       "mochi_str_contains",
+			Params:     []ptree.FuncParam{{TypeName: "string", Name: "haystack"}, {TypeName: "string", Name: "needle"}},
+			ReturnType: "bool",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `return $needle === "" || str_contains($haystack, $needle);`},
+			},
+		})
+	}
 	return out
 }
 
@@ -146,78 +177,182 @@ func (l *lowerer) lowerBlock(b *aotir.Block) ([]ptree.Stmt, error) {
 	return out, nil
 }
 
-// lowerStmt translates one aotir statement. Phase 1 only handles the
-// four print CallStmt forms; later phases extend the switch with
-// LetStmt, AssignStmt, control-flow, etc.
+// lowerStmt translates one aotir statement.
 func (l *lowerer) lowerStmt(s aotir.Stmt) ([]ptree.Stmt, error) {
 	switch v := s.(type) {
 	case *aotir.CallStmt:
 		return l.lowerCallStmt(v)
+	case *aotir.LetStmt:
+		return l.lowerLetStmt(v)
+	case *aotir.AssignStmt:
+		return l.lowerAssignStmt(v)
+	case *aotir.IfStmt:
+		return l.lowerIfStmt(v)
+	case *aotir.WhileStmt:
+		return l.lowerWhileStmt(v)
+	case *aotir.ForRangeStmt:
+		return l.lowerForRangeStmt(v)
+	case *aotir.BreakStmt:
+		return []ptree.Stmt{&ptree.BreakStmt{}}, nil
+	case *aotir.ContinueStmt:
+		return []ptree.Stmt{&ptree.ContinueStmt{}}, nil
+	case *aotir.ReturnStmt:
+		if v.Value == nil {
+			return []ptree.Stmt{&ptree.ReturnStmt{}}, nil
+		}
+		e, err := l.lowerExpr(v.Value)
+		if err != nil {
+			return nil, err
+		}
+		return []ptree.Stmt{&ptree.ReturnStmt{Value: e}}, nil
 	default:
-		return nil, fmt.Errorf("php lower: phase 1 cannot lower %T", s)
+		return nil, fmt.Errorf("php lower: phase 2 cannot lower %T", s)
 	}
 }
 
-// lowerCallStmt maps a runtime print call to its inline PHP helper.
-// User-defined function calls are deferred to Phase 6+ (Mochi Phase 2.2
-// in the C transpiler) and rejected here so misroutes are visible.
 func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) ([]ptree.Stmt, error) {
 	switch s.Func {
 	case "mochi_print_str":
-		if len(s.Args) != 1 {
-			return nil, fmt.Errorf("php lower: %s wants 1 arg, got %d", s.Func, len(s.Args))
-		}
-		arg, err := l.lowerExpr(s.Args[0])
-		if err != nil {
-			return nil, err
-		}
 		l.runtime.printStr = true
-		return []ptree.Stmt{
-			&ptree.ExprStmt{Expr: &ptree.CallExpr{Callee: &ptree.IdentExpr{Name: "mochi_print_str"}, Args: []ptree.Expr{arg}}},
-		}, nil
 	case "mochi_print_i64":
-		if len(s.Args) != 1 {
-			return nil, fmt.Errorf("php lower: %s wants 1 arg, got %d", s.Func, len(s.Args))
-		}
-		arg, err := l.lowerExpr(s.Args[0])
-		if err != nil {
-			return nil, err
-		}
 		l.runtime.printInt = true
-		return []ptree.Stmt{
-			&ptree.ExprStmt{Expr: &ptree.CallExpr{Callee: &ptree.IdentExpr{Name: "mochi_print_i64"}, Args: []ptree.Expr{arg}}},
-		}, nil
 	case "mochi_print_f64":
-		if len(s.Args) != 1 {
-			return nil, fmt.Errorf("php lower: %s wants 1 arg, got %d", s.Func, len(s.Args))
-		}
-		arg, err := l.lowerExpr(s.Args[0])
-		if err != nil {
-			return nil, err
-		}
 		l.runtime.printF64 = true
-		return []ptree.Stmt{
-			&ptree.ExprStmt{Expr: &ptree.CallExpr{Callee: &ptree.IdentExpr{Name: "mochi_print_f64"}, Args: []ptree.Expr{arg}}},
-		}, nil
 	case "mochi_print_bool":
-		if len(s.Args) != 1 {
-			return nil, fmt.Errorf("php lower: %s wants 1 arg, got %d", s.Func, len(s.Args))
-		}
-		arg, err := l.lowerExpr(s.Args[0])
+		l.runtime.printBool = true
+	default:
+		return nil, fmt.Errorf("php lower: unsupported builtin call %q", s.Func)
+	}
+	if len(s.Args) != 1 {
+		return nil, fmt.Errorf("php lower: %s wants 1 arg, got %d", s.Func, len(s.Args))
+	}
+	arg, err := l.lowerExpr(s.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	return []ptree.Stmt{
+		&ptree.ExprStmt{Expr: &ptree.CallExpr{Callee: &ptree.IdentExpr{Name: s.Func}, Args: []ptree.Expr{arg}}},
+	}, nil
+}
+
+func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) ([]ptree.Stmt, error) {
+	if s.Init == nil {
+		// Uninitialised binding: emit a null seed so PHP doesn't pick
+		// up a notice on first read. Mochi requires initialisation
+		// in source so this branch is defensive.
+		return []ptree.Stmt{&ptree.AssignStmt{Name: s.Name, Value: &ptree.NullLit{}}}, nil
+	}
+	init, err := l.lowerExpr(s.Init)
+	if err != nil {
+		return nil, err
+	}
+	return []ptree.Stmt{&ptree.AssignStmt{Name: s.Name, Value: init}}, nil
+}
+
+func (l *lowerer) lowerAssignStmt(s *aotir.AssignStmt) ([]ptree.Stmt, error) {
+	v, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, err
+	}
+	return []ptree.Stmt{&ptree.AssignStmt{Name: s.Name, Value: v}}, nil
+}
+
+func (l *lowerer) lowerIfStmt(s *aotir.IfStmt) ([]ptree.Stmt, error) {
+	cond, err := l.lowerExpr(s.Cond)
+	if err != nil {
+		return nil, err
+	}
+	thenBody, err := l.lowerBlock(s.Then)
+	if err != nil {
+		return nil, err
+	}
+	var elseBody []ptree.Stmt
+	if s.Else != nil {
+		elseBody, err = l.lowerBlock(s.Else)
 		if err != nil {
 			return nil, err
 		}
-		l.runtime.printBool = true
-		return []ptree.Stmt{
-			&ptree.ExprStmt{Expr: &ptree.CallExpr{Callee: &ptree.IdentExpr{Name: "mochi_print_bool"}, Args: []ptree.Expr{arg}}},
-		}, nil
+	}
+	return []ptree.Stmt{&ptree.IfStmt{Cond: cond, Then: thenBody, Else: elseBody}}, nil
+}
+
+func (l *lowerer) lowerWhileStmt(s *aotir.WhileStmt) ([]ptree.Stmt, error) {
+	cond, err := l.lowerExpr(s.Cond)
+	if err != nil {
+		return nil, err
+	}
+	body, err := l.lowerBlock(s.Body)
+	if err != nil {
+		return nil, err
+	}
+	return []ptree.Stmt{&ptree.WhileStmt{Cond: cond, Body: body}}, nil
+}
+
+func (l *lowerer) lowerForRangeStmt(s *aotir.ForRangeStmt) ([]ptree.Stmt, error) {
+	start, err := l.lowerExpr(s.Start)
+	if err != nil {
+		return nil, err
+	}
+	end, err := l.lowerExpr(s.End)
+	if err != nil {
+		return nil, err
+	}
+	body, err := l.lowerBlock(s.Body)
+	if err != nil {
+		return nil, err
+	}
+	return []ptree.Stmt{&ptree.ForRangeStmt{Var: s.Var, Start: start, End: end, Body: body}}, nil
+}
+
+// lowerFunction translates one non-main aotir Function to a PHP FuncDecl.
+// Phase 2 only sees scalar parameter and return types; later phases extend
+// phpType to cover records, lists, maps, sums, and closures.
+func (l *lowerer) lowerFunction(fn *aotir.Function) (*ptree.FuncDecl, error) {
+	body, err := l.lowerBlock(fn.Body)
+	if err != nil {
+		return nil, fmt.Errorf("php lower: in function %q: %w", fn.Name, err)
+	}
+	params := make([]ptree.FuncParam, 0, len(fn.Params))
+	for _, p := range fn.Params {
+		typeName, err := phpType(p.Type)
+		if err != nil {
+			return nil, fmt.Errorf("php lower: param %q of %q: %w", p.Name, fn.Name, err)
+		}
+		params = append(params, ptree.FuncParam{TypeName: typeName, Name: p.Name})
+	}
+	ret, err := phpType(fn.ReturnType)
+	if err != nil {
+		return nil, fmt.Errorf("php lower: return type of %q: %w", fn.Name, err)
+	}
+	return &ptree.FuncDecl{
+		Name:       fn.Name,
+		Params:     params,
+		ReturnType: ret,
+		Body:       body,
+	}, nil
+}
+
+// phpType maps an aotir scalar Type to its PHP type-declaration form.
+// Phase 2 only handles scalars + unit; lists/maps/records arrive in
+// Phase 3+ and will extend this mapping.
+func phpType(t aotir.Type) (string, error) {
+	switch t {
+	case aotir.TypeInt:
+		return "int", nil
+	case aotir.TypeFloat:
+		return "float", nil
+	case aotir.TypeString:
+		return "string", nil
+	case aotir.TypeBool:
+		return "bool", nil
+	case aotir.TypeUnit:
+		return "void", nil
 	default:
-		return nil, fmt.Errorf("php lower: phase 1 cannot lower CallStmt to %q", s.Func)
+		return "", fmt.Errorf("phase 2 cannot map aotir type %v to PHP", t)
 	}
 }
 
-// lowerExpr translates one aotir expression. Phase 1 only supports the
-// four scalar literal forms (StringLit, IntLit, FloatLit, BoolLit).
+// lowerExpr translates one aotir expression.
 func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 	switch v := e.(type) {
 	case *aotir.StringLit:
@@ -228,14 +363,145 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 		return &ptree.FloatLit{Value: v.Value}, nil
 	case *aotir.BoolLit:
 		return &ptree.BoolLit{Value: v.Value}, nil
+	case *aotir.VarRef:
+		return &ptree.VarExpr{Name: v.Name}, nil
+	case *aotir.BinaryExpr:
+		return l.lowerBinaryExpr(v)
+	case *aotir.UnaryExpr:
+		return l.lowerUnaryExpr(v)
+	case *aotir.NumCastExpr:
+		op, err := l.lowerExpr(v.Operand)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CastExpr{TargetType: "int", Operand: op}, nil
+	case *aotir.StrContainsExpr:
+		l.runtime.strContains = true
+		hay, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		needle, err := l.lowerExpr(v.Sub)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "mochi_str_contains"},
+			Args:   []ptree.Expr{hay, needle},
+		}, nil
+	case *aotir.StrLenExpr:
+		// Phase 2 strings are UTF-8 byte strings; vm3's len(str) reports
+		// byte length, so PHP's strlen() is the correct primitive (and
+		// matches the swift transpiler's String.utf8.count behaviour).
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "strlen"},
+			Args:   []ptree.Expr{recv},
+		}, nil
+	case *aotir.StrIndexExpr:
+		// s[i] returns the i'th byte as a one-character string; PHP's
+		// substr($s, $i, 1) matches vm3's byte-indexed semantics.
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		idx, err := l.lowerExpr(v.Index)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "substr"},
+			Args:   []ptree.Expr{recv, idx, &ptree.IntLit{Value: 1}},
+		}, nil
+	case *aotir.CallExpr:
+		args := make([]ptree.Expr, 0, len(v.Args))
+		for _, a := range v.Args {
+			lo, err := l.lowerExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, lo)
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: v.Func},
+			Args:   args,
+		}, nil
 	default:
-		return nil, fmt.Errorf("php lower: phase 1 cannot lower %T", e)
+		return nil, fmt.Errorf("php lower: phase 2 cannot lower %T", e)
+	}
+}
+
+func (l *lowerer) lowerBinaryExpr(b *aotir.BinaryExpr) (ptree.Expr, error) {
+	left, err := l.lowerExpr(b.Left)
+	if err != nil {
+		return nil, err
+	}
+	right, err := l.lowerExpr(b.Right)
+	if err != nil {
+		return nil, err
+	}
+	switch b.Op {
+	case aotir.BinAddI64, aotir.BinAddF64:
+		return &ptree.BinaryExpr{Op: "+", Left: left, Right: right}, nil
+	case aotir.BinSubI64, aotir.BinSubF64:
+		return &ptree.BinaryExpr{Op: "-", Left: left, Right: right}, nil
+	case aotir.BinMulI64, aotir.BinMulF64:
+		return &ptree.BinaryExpr{Op: "*", Left: left, Right: right}, nil
+	case aotir.BinDivI64:
+		// PHP `/` between two ints yields a float when the division
+		// is not exact. Mochi int/int is truncating, so use intdiv.
+		return &ptree.BinaryExpr{Op: "intdiv", IsCall: true, Left: left, Right: right}, nil
+	case aotir.BinDivF64:
+		// PHP 8 throws DivisionByZeroError on `/` when the divisor is
+		// 0.0; fdiv() returns IEEE 754 +Inf/-Inf/NaN, which is what
+		// Mochi expects (see the float_nan_inf fixture).
+		return &ptree.BinaryExpr{Op: "fdiv", IsCall: true, Left: left, Right: right}, nil
+	case aotir.BinModI64:
+		return &ptree.BinaryExpr{Op: "%", Left: left, Right: right}, nil
+	case aotir.BinEqI64, aotir.BinEqF64, aotir.BinEqBool, aotir.BinEqStr:
+		return &ptree.BinaryExpr{Op: "===", Left: left, Right: right}, nil
+	case aotir.BinNeI64, aotir.BinNeF64, aotir.BinNeBool, aotir.BinNeStr:
+		return &ptree.BinaryExpr{Op: "!==", Left: left, Right: right}, nil
+	case aotir.BinLtI64, aotir.BinLtF64:
+		return &ptree.BinaryExpr{Op: "<", Left: left, Right: right}, nil
+	case aotir.BinLeI64, aotir.BinLeF64:
+		return &ptree.BinaryExpr{Op: "<=", Left: left, Right: right}, nil
+	case aotir.BinGtI64, aotir.BinGtF64:
+		return &ptree.BinaryExpr{Op: ">", Left: left, Right: right}, nil
+	case aotir.BinGeI64, aotir.BinGeF64:
+		return &ptree.BinaryExpr{Op: ">=", Left: left, Right: right}, nil
+	case aotir.BinAndBool:
+		return &ptree.BinaryExpr{Op: "&&", Left: left, Right: right}, nil
+	case aotir.BinOrBool:
+		return &ptree.BinaryExpr{Op: "||", Left: left, Right: right}, nil
+	case aotir.BinStrCat:
+		return &ptree.BinaryExpr{Op: ".", Left: left, Right: right}, nil
+	default:
+		return nil, fmt.Errorf("php lower: unsupported BinOp %v", b.Op)
+	}
+}
+
+func (l *lowerer) lowerUnaryExpr(u *aotir.UnaryExpr) (ptree.Expr, error) {
+	op, err := l.lowerExpr(u.Operand)
+	if err != nil {
+		return nil, err
+	}
+	switch u.Op {
+	case aotir.UnNegI64, aotir.UnNegF64:
+		return &ptree.UnaryExpr{Op: "-", Operand: op}, nil
+	case aotir.UnNotBool:
+		return &ptree.UnaryExpr{Op: "!", Operand: op}, nil
+	default:
+		return nil, fmt.Errorf("php lower: unsupported UnOp %v", u.Op)
 	}
 }
 
 // ModuleName converts a Mochi source filename to a PSR-4 module name.
-// Phase 0/1 return the base name without the .mochi suffix; Phase 15
-// will mangle this further when the Composer namespace is wired.
+// Phase 0/1/2 return the base name without the .mochi suffix; Phase
+// 15 will mangle this further when the Composer namespace is wired.
 //
 //	"hello.mochi"       -> "Hello"
 //	"hello_world.mochi" -> "HelloWorld"

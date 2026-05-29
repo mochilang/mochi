@@ -209,6 +209,124 @@ func (s *ReturnStmt) PhpString(ind int) string {
 	return indent(ind) + "return " + s.Value.PhpString() + ";"
 }
 
+// AssignStmt is `$name = <value>;`. Used for both `let` (first
+// binding) and reassignment to a `var` binding. PHP has no
+// declaration form, so both lower the same way.
+type AssignStmt struct {
+	Name  string
+	Value Expr
+}
+
+func (*AssignStmt) phpStmt() {}
+
+func (s *AssignStmt) PhpString(ind int) string {
+	return indent(ind) + "$" + s.Name + " = " + s.Value.PhpString() + ";"
+}
+
+// IfStmt is `if (<cond>) { <then> } else { <else> }`. The else
+// branch may be empty (nil) to emit just the if.
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt // nil means no else arm
+}
+
+func (*IfStmt) phpStmt() {}
+
+func (s *IfStmt) PhpString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	sb.WriteString(pad)
+	sb.WriteString("if (")
+	sb.WriteString(s.Cond.PhpString())
+	sb.WriteString(") {\n")
+	for _, st := range s.Then {
+		sb.WriteString(st.PhpString(ind + 1))
+		sb.WriteString("\n")
+	}
+	sb.WriteString(pad)
+	sb.WriteString("}")
+	if s.Else != nil {
+		sb.WriteString(" else {\n")
+		for _, st := range s.Else {
+			sb.WriteString(st.PhpString(ind + 1))
+			sb.WriteString("\n")
+		}
+		sb.WriteString(pad)
+		sb.WriteString("}")
+	}
+	return sb.String()
+}
+
+// WhileStmt is `while (<cond>) { <body> }`.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (*WhileStmt) phpStmt() {}
+
+func (s *WhileStmt) PhpString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	sb.WriteString(pad)
+	sb.WriteString("while (")
+	sb.WriteString(s.Cond.PhpString())
+	sb.WriteString(") {\n")
+	for _, st := range s.Body {
+		sb.WriteString(st.PhpString(ind + 1))
+		sb.WriteString("\n")
+	}
+	sb.WriteString(pad)
+	sb.WriteString("}")
+	return sb.String()
+}
+
+// ForRangeStmt is `for ($var = start; $var < end; $var++) { body }`,
+// emitted for Mochi `for x in start..end`. The induction variable is
+// treated as immutable in the source but PHP doesn't enforce that;
+// the lowerer rejects assignment to it before reaching emit.
+type ForRangeStmt struct {
+	Var   string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (*ForRangeStmt) phpStmt() {}
+
+func (s *ForRangeStmt) PhpString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	sb.WriteString(pad)
+	fmt.Fprintf(&sb, "for ($%s = ", s.Var)
+	sb.WriteString(s.Start.PhpString())
+	fmt.Fprintf(&sb, "; $%s < ", s.Var)
+	sb.WriteString(s.End.PhpString())
+	fmt.Fprintf(&sb, "; $%s++) {\n", s.Var)
+	for _, st := range s.Body {
+		sb.WriteString(st.PhpString(ind + 1))
+		sb.WriteString("\n")
+	}
+	sb.WriteString(pad)
+	sb.WriteString("}")
+	return sb.String()
+}
+
+// BreakStmt is `break;`.
+type BreakStmt struct{}
+
+func (*BreakStmt) phpStmt() {}
+
+func (s *BreakStmt) PhpString(ind int) string { return indent(ind) + "break;" }
+
+// ContinueStmt is `continue;`.
+type ContinueStmt struct{}
+
+func (*ContinueStmt) phpStmt() {}
+
+func (s *ContinueStmt) PhpString(ind int) string { return indent(ind) + "continue;" }
+
 // RawStmt is a verbatim PHP statement, used by the lowerer for
 // edge cases that do not yet have first-class node types. The
 // text must include the trailing semicolon (or block braces) the
@@ -396,4 +514,53 @@ func (*RawExpr) phpExpr() {}
 
 func (e *RawExpr) PhpString() string {
 	return e.Text
+}
+
+// BinaryExpr is `(<left> <op> <right>)`. The parentheses are
+// always emitted so the operator precedence of the source program
+// is preserved without the lowerer having to track PHP's
+// precedence table.
+type BinaryExpr struct {
+	Op    string // PHP operator string (e.g. "+", "===", "&&", "intdiv")
+	Left  Expr
+	Right Expr
+	// IsCall is true when Op is a function name like "intdiv".
+	// The emitter renders `intdiv(left, right)` instead of an infix.
+	IsCall bool
+}
+
+func (*BinaryExpr) phpExpr() {}
+
+func (e *BinaryExpr) PhpString() string {
+	if e.IsCall {
+		return e.Op + "(" + e.Left.PhpString() + ", " + e.Right.PhpString() + ")"
+	}
+	return "(" + e.Left.PhpString() + " " + e.Op + " " + e.Right.PhpString() + ")"
+}
+
+// UnaryExpr is `(<op><operand>)`. Like BinaryExpr the outer parens
+// are always emitted so source precedence survives lowering.
+type UnaryExpr struct {
+	Op      string // "-" or "!"
+	Operand Expr
+}
+
+func (*UnaryExpr) phpExpr() {}
+
+func (e *UnaryExpr) PhpString() string {
+	return "(" + e.Op + e.Operand.PhpString() + ")"
+}
+
+// CastExpr is `(<targetType>) <operand>`. PHP has cast operators
+// like (int), (float), (string), (bool). Phase 2 uses this to lower
+// Mochi's `int(x)` truncating float-to-int cast.
+type CastExpr struct {
+	TargetType string // "int", "float", "string", "bool"
+	Operand    Expr
+}
+
+func (*CastExpr) phpExpr() {}
+
+func (e *CastExpr) PhpString() string {
+	return "(" + e.TargetType + ") " + e.Operand.PhpString()
 }
