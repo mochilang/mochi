@@ -294,6 +294,19 @@ func lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 			return nil, err
 		}
 		return &rtree.RawStmt{Text: fmt.Sprintf("File.open(%s, 'a') { |__f| __f.write(%s) }", p.RubyExprString(), c.RubyExprString())}, nil
+	case *aotir.TryCatchStmt:
+		return lowerTryCatchStmt(s)
+	case *aotir.PanicStmt:
+		code, err := lowerExpr(s.Code)
+		if err != nil {
+			return nil, err
+		}
+		msg, err := lowerExpr(s.Msg)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawStmt{Text: fmt.Sprintf("raise Mochi::Runtime::Panic.new(%s, %s)",
+			code.RubyExprString(), msg.RubyExprString())}, nil
 	case *aotir.BreakStmt:
 		return &rtree.RawStmt{Text: "break"}, nil
 	case *aotir.ContinueStmt:
@@ -1238,6 +1251,32 @@ func lowerQueryScopeStmt(s *aotir.QueryScopeStmt) (rtree.Stmt, error) {
 	var sb strings.Builder
 	sb.WriteString("begin\n")
 	for _, st := range body {
+		sb.WriteString(st.RubyString(1) + "\n")
+	}
+	sb.WriteString("end")
+	return &rtree.RawStmt{Text: sb.String()}, nil
+}
+
+// lowerTryCatchStmt lowers try/catch to Ruby begin/rescue. The catch binds
+// an int code, so the rescue clause reads it off the Panic exception and
+// assigns it to the user-named local before the catch body runs.
+func lowerTryCatchStmt(s *aotir.TryCatchStmt) (rtree.Stmt, error) {
+	tryBody, err := lowerBlock(s.TryBody)
+	if err != nil {
+		return nil, err
+	}
+	catchBody, err := lowerBlock(s.CatchBody)
+	if err != nil {
+		return nil, err
+	}
+	var sb strings.Builder
+	sb.WriteString("begin\n")
+	for _, st := range tryBody {
+		sb.WriteString(st.RubyString(1) + "\n")
+	}
+	sb.WriteString("rescue Mochi::Runtime::Panic => __exc\n")
+	sb.WriteString(fmt.Sprintf("  %s = __exc.code\n", rubyIdent(s.CatchVar)))
+	for _, st := range catchBody {
 		sb.WriteString(st.RubyString(1) + "\n")
 	}
 	sb.WriteString("end")

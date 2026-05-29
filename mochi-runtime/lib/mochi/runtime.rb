@@ -5,6 +5,7 @@
 require_relative "runtime/version"
 require_relative "runtime/io"
 require_relative "runtime/stream"
+require_relative "runtime/panic"
 
 module Mochi
   module Runtime
