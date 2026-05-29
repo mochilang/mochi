@@ -1,0 +1,4 @@
+let words = ["alpha", "beta", "gamma"]
+for w in words {
+  print(w)
+}
