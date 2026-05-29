@@ -1,0 +1,4 @@
+writeFile("/tmp/mochi_swift_fetch5.txt", "hello fetch")
+let r1 = fetch("file:///tmp/mochi_swift_fetch5.txt")
+let r2 = fetch("file:///tmp/mochi_swift_fetch5.txt")
+print(r1 + " " + r2)

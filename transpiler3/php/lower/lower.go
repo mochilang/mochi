@@ -1605,6 +1605,20 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 			Callee: &ptree.IdentExpr{Name: "mochi_sub_recv"},
 			Args:   []ptree.Expr{s},
 		}, nil
+	case *aotir.HttpGetExpr:
+		// Phase 14: `fetch(url)` maps to PHP's `file_get_contents`,
+		// which natively supports both `http://` and `file://` URLs
+		// via PHP's stream wrappers. All Phase 14 fixtures use
+		// `file://` schemes so the dependency surface is the same as
+		// Phase 12; HTTP wrappers ship with the default PHP build.
+		url, err := l.lowerExpr(v.URL)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "file_get_contents"},
+			Args:   []ptree.Expr{url},
+		}, nil
 	case *aotir.LLMGenerateExpr:
 		// Phase 13: `generate openai { prompt: ... }` lowers to a
 		// runtime helper that reads a cassette file keyed by the DJB2
