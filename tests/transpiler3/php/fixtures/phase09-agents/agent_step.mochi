@@ -1,0 +1,13 @@
+agent Stepper {
+    var pos: int = 0
+    var step: int = 1
+    intent set_step(s: int) { step = s }
+    intent advance() { pos = pos + step }
+    intent position(): int { return pos }
+}
+let s = Stepper { pos: 0, step: 1 }
+s.advance()
+s.advance()
+s.set_step(5)
+s.advance()
+print(s.position())

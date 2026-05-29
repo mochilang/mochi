@@ -1,0 +1,5 @@
+fun greet(name: string): string {
+    return "hello " + name
+}
+let msg = greet("ios")
+print(msg)

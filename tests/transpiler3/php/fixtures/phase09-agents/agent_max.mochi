@@ -1,0 +1,11 @@
+agent MaxTracker {
+    var best: int = 0
+    intent update(v: int) { if v > best { best = v } }
+    intent result(): int { return best }
+}
+let m = MaxTracker { best: 0 }
+m.update(5)
+m.update(3)
+m.update(9)
+m.update(2)
+print(m.result())

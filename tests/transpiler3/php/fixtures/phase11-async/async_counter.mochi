@@ -1,0 +1,6 @@
+fun inc(x: int): int {
+    return x + 1
+}
+let fut = async inc(41)
+let r = await fut
+print(r)

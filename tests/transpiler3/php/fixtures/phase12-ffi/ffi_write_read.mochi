@@ -1,0 +1,3 @@
+writeFile("/tmp/mochi_swift_wr.txt", "hello world")
+let content = readFile("/tmp/mochi_swift_wr.txt")
+print(content)

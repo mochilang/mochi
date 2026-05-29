@@ -1,0 +1,6 @@
+type Box {
+  value: int
+}
+
+let b = Box { value: 42 }
+print(b.value)

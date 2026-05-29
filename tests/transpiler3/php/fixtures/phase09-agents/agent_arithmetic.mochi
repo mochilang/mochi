@@ -1,0 +1,13 @@
+agent Calc {
+    var val: int = 0
+    intent assign(v: int) { val = v }
+    intent double_it() { val = val * 2 }
+    intent negate() { val = 0 - val }
+    intent get(): int { return val }
+}
+let c = Calc { val: 0 }
+c.assign(7)
+c.double_it()
+print(c.get())
+c.negate()
+print(c.get())
