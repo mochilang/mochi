@@ -193,6 +193,11 @@ func lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 		return lowerClosureEnvStmt(s)
 	case *aotir.QueryScopeStmt:
 		return lowerQueryScopeStmt(s)
+	case *aotir.RawCStmt:
+		// C-target-specific scaffolding (e.g. the Datalog fixpoint setup
+		// emitted by the C lowerer). Ruby evaluates the Datalog program at
+		// compile time via lowerDatalogQueryExpr, so this is dead weight.
+		return nil, nil
 	case *aotir.MapPutStmt:
 		key, err := lowerExpr(s.Key)
 		if err != nil {
@@ -521,6 +526,8 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			return nil, err
 		}
 		return &rtree.MethodCall{Receiver: recv, Method: e.FieldName}, nil
+	case *aotir.DatalogQueryExpr:
+		return lowerDatalogQueryExpr(e)
 	case *aotir.ListSortAscExpr:
 		recv, err := lowerExpr(e.Receiver)
 		if err != nil {
