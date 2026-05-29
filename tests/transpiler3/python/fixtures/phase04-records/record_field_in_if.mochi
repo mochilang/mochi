@@ -1,0 +1,11 @@
+type Flag {
+  enabled: bool
+  val: int
+}
+
+let f = Flag { enabled: true, val: 7 }
+if f.enabled {
+  print(f.val)
+} else {
+  print(0)
+}

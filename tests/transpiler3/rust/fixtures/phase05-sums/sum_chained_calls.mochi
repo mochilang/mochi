@@ -1,0 +1,18 @@
+type Result = Ok(v: int) | Err(msg: string)
+
+fun parse_or_zero(s: string): Result {
+  if s == "" {
+    return Err("empty")
+  }
+  return Ok(42)
+}
+
+fun extract(r: Result): int {
+  return match r {
+    Ok(v) => v
+    Err(m) => 0
+  }
+}
+
+print(extract(parse_or_zero("abc")))
+print(extract(parse_or_zero("")))

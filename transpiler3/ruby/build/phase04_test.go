@@ -64,7 +64,7 @@ func TestPhase4Records(t *testing.T) {
 				t.Fatalf("write src: %v", err)
 			}
 			outDir := t.TempDir()
-			d := &Driver{CacheDir: t.TempDir()}
+			d := &Driver{}
 			if err := d.Build(src, outDir, TargetRubySource); err != nil {
 				t.Fatalf("Build: %v\nsrc:\n%s", err, c.src)
 			}

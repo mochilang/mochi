@@ -1,0 +1,8 @@
+type Greeting {
+  who: string
+  msg: string
+}
+
+let g = Greeting { who: "world", msg: "hello" }
+print(g.msg)
+print(g.who)

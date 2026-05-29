@@ -20,12 +20,22 @@ description: "MEP-57 Phase 17 — SOURCE_DATE_EPOCH respect, sorted tar entries,
 
 `TestPhase17Reproducible`: for every fixture under `tests/pkgsystem/repro/`, building the package twice in different temp directories with different umasks and TZ produces byte-identical tarballs and identical BLAKE3 + SHA-256 hashes.
 
+The reproducibility gate runs on linux-x86_64 and macos-arm64 (the two
+hosts that share POSIX tar + zstd semantics). Windows-x86_64 runs the
+gate in *consume* mode only: it verifies that a tarball built upstream
+on linux/mac extracts and hashes identically, but it does not act as a
+build origin because Windows file-attribute and CRLF handling would
+require a separate normalization pass. This is a deliberate scope cut
+documented as Phase 17 open question 4; consumer rebuilds (criterion 6)
+on Windows still pass because the source tag plus a linux/mac builder
+produces the registry's `<b3>`.
+
 Pass criteria:
 
 1. Cross-TZ. Building in `TZ=UTC` and `TZ=Asia/Ho_Chi_Minh` produces byte-identical tarballs.
 2. Cross-umask. `umask 022` vs `umask 077` produces byte-identical tarballs.
 3. Cross-locale. `LC_ALL=C` vs `LC_ALL=en_US.UTF-8` vs `LC_ALL=ja_JP.UTF-8` produces byte-identical tarballs.
-4. Cross-filesystem. ext4 vs APFS vs NTFS source mounts produce byte-identical tarballs (case-sensitive; case-folding fs is out of scope).
+4. Cross-filesystem. ext4 vs APFS source mounts produce byte-identical tarballs (case-sensitive; case-folding fs is out of scope; NTFS deferred per the Windows scope cut above).
 5. SOURCE_DATE_EPOCH. With `SOURCE_DATE_EPOCH=1700000000`, every tar entry has `mtime=1700000000`; every zstd frame is independent of wall clock.
 6. Rebuild script. `mochi pkg rebuild --from-source <repo>@<tag>` reproduces the registry's `<b3>` from a fresh git clone with no machine-specific environment.
 7. Diffoscope-clean. For a fixture where reproducibility fails, `diffoscope` output is the test diagnostic; the harness asserts no diff at the byte level.
@@ -317,6 +327,7 @@ Network access during rebuild: git clone of source repo. No registry access (the
 - Whether to require reproducibility for publishes (refuse to publish if `--verify-reproducible` fails); current plan: warn at v1, require at v2.
 - Whether to support a wider rebuild matrix (e.g., across mochi compiler versions); deferred to v1.1 with explicit compatibility windows.
 - Whether to publish rebuild attestations from third parties (cross-rebuilders like Debian's); current plan: yes, post v1.0, accept rebuild signatures from a configured trust list.
+- Windows-x86_64 as a build origin (currently consumer-only per Gate). Adding it requires a tar-builder pass that normalizes CRLF line endings, strips Windows file attributes, and forces case-sensitive sort order for paths that case-fold on NTFS. Tracked for v1.1.
 
 ## Cross-references
 

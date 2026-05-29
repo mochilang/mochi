@@ -1,0 +1,4 @@
+extern python fun py_round(x: float): int
+
+let result: int = py_round(3.6)
+print(result)

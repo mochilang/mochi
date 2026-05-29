@@ -1,0 +1,8 @@
+let s1: stream<int> = make_stream(2)
+let s2: stream<string> = make_stream(2)
+let sub1 = subscribe(s1)
+let sub2 = subscribe(s2)
+emit(s1, 99)
+emit(s2, "kept")
+print(recv_sub(sub1))
+print(recv_sub(sub2))

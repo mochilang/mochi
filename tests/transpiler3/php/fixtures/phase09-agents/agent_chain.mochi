@@ -1,0 +1,12 @@
+agent Stack {
+    var top: int = 0
+    var size: int = 0
+    intent push(v: int) { top = v; size = size + 1 }
+    intent pop(): int { size = size - 1; return top }
+    intent len(): int { return size }
+}
+let s = Stack { top: 0, size: 0 }
+s.push(42)
+s.push(99)
+print(s.len())
+print(s.pop())

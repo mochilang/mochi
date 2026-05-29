@@ -1,0 +1,16 @@
+// Phase 9.1: `spawn AgentType()` constructs an agent with zero-valued
+// fields. PHP has no process model so the spawn form lowers to a plain
+// `new Counter(count: 0)`, identical to the AgentLit `Counter { count:
+// 0 }` form. Subsequent intent dispatch goes through the same
+// instance-method path.
+agent Counter {
+    var count: int = 0
+    intent increment() { count = count + 1 }
+    intent value(): int { return count }
+}
+let c = spawn Counter()
+c.increment()
+c.increment()
+c.increment()
+let v = c.value()
+print(v)

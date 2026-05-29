@@ -1,0 +1,11 @@
+agent Calc {
+    var value: int = 1
+    intent mul(n: int) { value = value * n }
+    intent div(n: int) { value = value / n }
+    intent get(): int { return value }
+}
+let c = Calc { value: 1 }
+c.mul(100)
+c.div(4)
+c.mul(3)
+print(c.get())

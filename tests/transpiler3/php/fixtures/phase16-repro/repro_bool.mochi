@@ -1,0 +1,6 @@
+let x = true
+if x {
+    print("yes")
+} else {
+    print("no")
+}

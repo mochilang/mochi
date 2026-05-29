@@ -1,0 +1,9 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let ps = [Pt { x: 42, y: 99 }]
+print(len(ps))
+print(ps[0].x)
+print(ps[0].y)

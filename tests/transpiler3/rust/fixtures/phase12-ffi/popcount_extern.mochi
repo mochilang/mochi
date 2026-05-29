@@ -1,0 +1,5 @@
+extern fun c_popcount(x: int): int
+print(c_popcount(0))
+print(c_popcount(7))
+print(c_popcount(255))
+print(c_popcount(1024))

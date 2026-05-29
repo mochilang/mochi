@@ -1,0 +1,5 @@
+let nums = [1, 2, 3, 4, 5]
+let r = from n in nums where n > 0 select n
+for x in r {
+  print(x)
+}

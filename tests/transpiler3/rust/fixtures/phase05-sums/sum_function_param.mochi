@@ -1,0 +1,11 @@
+type Shape = Circle(r: int) | Square(side: int)
+
+fun area(s: Shape): int {
+  return match s {
+    Circle(r) => r * r
+    Square(side) => side * side
+  }
+}
+
+print(area(Circle(3)))
+print(area(Square(4)))

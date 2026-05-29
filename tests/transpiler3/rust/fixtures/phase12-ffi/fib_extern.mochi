@@ -1,0 +1,5 @@
+extern fun c_fib(n: int): int
+print(c_fib(0))
+print(c_fib(1))
+print(c_fib(10))
+print(c_fib(20))

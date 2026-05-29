@@ -1,0 +1,10 @@
+agent Box {
+    var v: int = 0
+    intent setv(n: int) { v = n }
+    intent doubled(): int { return v * 2 }
+    intent tripled(): int { return v * 3 }
+}
+let b = Box { v: 0 }
+b.setv(5)
+print(b.doubled())
+print(b.tripled())

@@ -1,0 +1,5 @@
+var m: map<string, int> = {"k": 1}
+m["k"] = 2
+m["k"] = 3
+print(m["k"])
+print(len(m))

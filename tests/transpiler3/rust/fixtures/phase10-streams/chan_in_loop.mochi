@@ -1,0 +1,14 @@
+let ch: chan<int> = make_chan(10)
+for i in 0..5 {
+    send(ch, i * 2)
+}
+let a = recv(ch)
+let b = recv(ch)
+let c = recv(ch)
+let d = recv(ch)
+let e = recv(ch)
+print(a)
+print(b)
+print(c)
+print(d)
+print(e)

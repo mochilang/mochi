@@ -1,0 +1,4 @@
+extern fun c_sum3(a: int, b: int, c: int): int
+print(c_sum3(1, 2, 3))
+print(c_sum3(-5, 5, 0))
+print(c_sum3(100, 200, 300))

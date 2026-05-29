@@ -1,0 +1,7 @@
+try {
+  panic(0, "zero")
+  print("unreached")
+} catch e {
+  print("got")
+  print(e)
+}

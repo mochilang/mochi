@@ -1,0 +1,8 @@
+fun combine(a: int, b: int, f: fun(int, int): int): int {
+  return f(a, b)
+}
+
+let sum = fun(x: int, y: int): int => x + y
+let product = fun(x: int, y: int): int => x * y
+print(combine(3, 4, sum))
+print(combine(3, 4, product))

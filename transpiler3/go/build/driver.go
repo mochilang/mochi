@@ -1,10 +1,12 @@
 package build
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"mochi/parser"
 	clower "mochi/transpiler3/c/lower"
@@ -12,6 +14,46 @@ import (
 	glower "mochi/transpiler3/go/lower"
 	"mochi/types"
 )
+
+// copySiblingGoFiles copies every *.go file in the source's
+// parent directory into workDir, skipping _test.go and any file
+// whose package declaration is not `package main`. Phase 10.2
+// uses this to materialize Go FFI companion sources alongside
+// the emitted main.go.
+func copySiblingGoFiles(src, workDir string) error {
+	srcDir := filepath.Dir(src)
+	entries, err := os.ReadDir(srcDir)
+	if err != nil {
+		return fmt.Errorf("read source dir %s: %w", srcDir, err)
+	}
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		name := e.Name()
+		if !strings.HasSuffix(name, ".go") {
+			continue
+		}
+		if strings.HasSuffix(name, "_test.go") {
+			continue
+		}
+		full := filepath.Join(srcDir, name)
+		b, err := os.ReadFile(full)
+		if err != nil {
+			return fmt.Errorf("read %s: %w", full, err)
+		}
+		// Skip files that don't declare `package main` so foreign
+		// .go files don't accidentally break the build.
+		if !bytes.Contains(b, []byte("package main")) {
+			continue
+		}
+		dst := filepath.Join(workDir, name)
+		if err := os.WriteFile(dst, b, 0o644); err != nil {
+			return fmt.Errorf("write %s: %w", dst, err)
+		}
+	}
+	return nil
+}
 
 // Target enumerates the supported MEP-54 build targets.
 // Phase 1 wires only the host go-binary target; the rest are
@@ -75,8 +117,9 @@ type Driver struct {
 // gotree.File, renders it via emit, writes go.mod, invokes
 // `go build`, and writes the produced binary to out.
 //
-// target and profile are accepted for forward compatibility;
-// Phase 1 builds only for the host tuple.
+// When target == TargetGoModule, Build skips `go build` and
+// instead copies the work directory (go.mod + main.go) into
+// out as a publish-ready Go module. profile is informational.
 func (d *Driver) Build(src, out string, target, profile string) error {
 	if src == "" {
 		return errors.New("transpiler3/go/build: source path is required")
@@ -123,13 +166,60 @@ func (d *Driver) Build(src, out string, target, profile string) error {
 	if err := gemit.Emit(file, workDir, "main.go"); err != nil {
 		return fmt.Errorf("transpiler3/go/build: emit main.go: %w", err)
 	}
+	// Phase 10.2 Go FFI: copy any sibling *.go files next to the
+	// .mochi source into the work dir as `package main` companions.
+	// `extern go fun NAME(...)` declarations in the .mochi resolve
+	// against these copied files at link time.
+	if err := copySiblingGoFiles(src, workDir); err != nil {
+		return fmt.Errorf("transpiler3/go/build: copy sibling go files: %w", err)
+	}
 
 	absOut, err := filepath.Abs(out)
 	if err != nil {
 		return fmt.Errorf("transpiler3/go/build: abs %s: %w", out, err)
 	}
+
+	if Target(target) == TargetGoModule {
+		if err := copyModule(workDir, absOut); err != nil {
+			return fmt.Errorf("transpiler3/go/build: copy module: %w", err)
+		}
+		return nil
+	}
+
 	if err := goBuild(d.GoBin, workDir, absOut, nil); err != nil {
 		return err
+	}
+	return nil
+}
+
+// copyModule copies the work directory's go.mod + *.go files
+// into outDir as a publish-ready Go module. No `go build` is
+// invoked; the caller can `cd outDir && go build .` themselves.
+//
+// The destination is created if missing. Existing files with
+// the same name are overwritten so re-runs are idempotent.
+func copyModule(workDir, outDir string) error {
+	if err := os.MkdirAll(outDir, 0o755); err != nil {
+		return fmt.Errorf("mkdir out: %w", err)
+	}
+	entries, err := os.ReadDir(workDir)
+	if err != nil {
+		return fmt.Errorf("read work dir: %w", err)
+	}
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		name := e.Name()
+		src := filepath.Join(workDir, name)
+		dst := filepath.Join(outDir, name)
+		b, err := os.ReadFile(src)
+		if err != nil {
+			return fmt.Errorf("read %s: %w", src, err)
+		}
+		if err := os.WriteFile(dst, b, 0o644); err != nil {
+			return fmt.Errorf("write %s: %w", dst, err)
+		}
 	}
 	return nil
 }

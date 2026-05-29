@@ -1,0 +1,4 @@
+writeFile("/tmp/mochi_swift_ow.txt", "first")
+writeFile("/tmp/mochi_swift_ow.txt", "second")
+let content = readFile("/tmp/mochi_swift_ow.txt")
+print(content)

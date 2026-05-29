@@ -40,7 +40,10 @@ func goBuild(goBin, workDir, outBin string, env []string) error {
 	}
 	cmd := exec.Command(goBin, args...)
 	cmd.Dir = workDir
-	cmd.Env = mergeEnv(os.Environ(), env)
+	// Phase 16 reproducibility: pin SOURCE_DATE_EPOCH=0 so any
+	// downstream tool that honors it sees a fixed value. Caller-
+	// supplied env wins (overlaid after the default).
+	cmd.Env = mergeEnv(os.Environ(), append([]string{"SOURCE_DATE_EPOCH=0"}, env...))
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {

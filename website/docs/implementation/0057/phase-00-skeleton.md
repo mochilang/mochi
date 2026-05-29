@@ -94,11 +94,12 @@ type Dep struct {
     Rev      string   `toml:"rev,omitempty"`            // git commit-ish
     Tag      string   `toml:"tag,omitempty"`            // git tag
     Branch   string   `toml:"branch,omitempty"`         // git branch
-    Optional bool     `toml:"optional,omitempty"`
-    Features []string `toml:"features,omitempty"`       // pkg feature set
-    Default  *bool    `toml:"default-features,omitempty"`
-    Registry string   `toml:"registry,omitempty"`       // mirror override
-    Targets  []string `toml:"targets,omitempty"`        // limit to listed transpiler targets
+    Optional  bool     `toml:"optional,omitempty"`
+    Features  []string `toml:"features,omitempty"`       // pkg feature set
+    Default   *bool    `toml:"default-features,omitempty"`
+    Registry  string   `toml:"registry,omitempty"`       // mirror override
+    Targets   []string `toml:"targets,omitempty"`        // limit to listed transpiler targets
+    Workspace bool     `toml:"workspace,omitempty"`      // inherit from [workspace.dependencies]
 }
 
 type Capabilities struct {
@@ -129,10 +130,16 @@ type Provenance struct {
     SourceDate  *time.Time `toml:"source-date,omitempty"`
 }
 
+// Workspace stub; Phase 1 promotes it to pkg/pkgmanifest/workspace.go
+// and Phase 3 adds DefaultTarget, Dependencies, Targets, AllowMultiVer.
 type Workspace struct {
-    Members  []string `toml:"members,omitempty"`
-    Exclude  []string `toml:"exclude,omitempty"`
-    Resolver string   `toml:"resolver,omitempty"`       // "pubgrub" (default) or "mvs"
+    Members        []string            `toml:"members,omitempty"`
+    Exclude        []string            `toml:"exclude,omitempty"`
+    Resolver       string              `toml:"resolver,omitempty"`         // "pubgrub" (default) or "mvs"
+    DefaultTarget  []string            `toml:"default-target,omitempty"`   // added Phase 3
+    Dependencies   map[string]Dep      `toml:"dependencies,omitempty"`     // added Phase 3
+    Targets        map[string][]string `toml:"targets,omitempty"`          // added Phase 3
+    AllowMultiVer  []string            `toml:"allow-multi-version,omitempty"` // added Phase 3
 }
 ```
 
@@ -402,6 +409,15 @@ Conventions used across the phase tracking pages:
   no separate config root; `config/` is a subtree of `$MOCHI_HOME` because
   registries.toml is read every command and the OS-defined config root adds
   a second lookup path that is rarely useful in CI containers.
+- **Schema key naming**: two conventions coexist by design.
+  Index JSONL entries (Phase 8) use compact short keys (`v`, `r`, `b3`,
+  `s2`, `deps`, `y`, `cap`, `tgt`) because each line is shipped over the
+  wire on every solve and the bytes add up. Manifests (`mochi.toml`,
+  Phase 1) and lockfiles (`mochi.lock`, Phase 4) use long keys (`version`,
+  `released`, `blake3`, `sha256`, `dependencies`, `yanked`, `capabilities`,
+  `targets`) because both are human-edited and reviewed in PRs. The
+  long-key form is canonical; the JSONL form is a wire encoding. Phase 8
+  documents the bidirectional mapping table.
 
 | File | Purpose | Owner |
 |------|---------|-------|

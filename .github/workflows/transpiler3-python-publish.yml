@@ -1,0 +1,88 @@
+# MEP-51 Phase 18: dry-run gate for the Python publish pipeline.
+#
+# This workflow is intentionally separate from the runtime-stub
+# publish (mochilang/mochi is a Go binary; we never publish the Mochi
+# *compiler* to PyPI). It exercises the `mochi build
+# --target=python-publish` emitter against a fixture by:
+#
+#   1. Building the Mochi CLI.
+#   2. Running `mochi build --target=python-publish` over a fixture
+#      to produce dist/*.whl + dist/*.tar.gz + .github/workflows/publish.yml.
+#   3. Running `uv publish --dry-run --trusted-publishing always` against
+#      TestPyPI from a clone of the emitted bundle. This uses TestPyPI's
+#      Trusted Publisher configuration for a reserved staging project name.
+#
+# Why this exists: the Go-side TestPhase18PypiPublish gate checks the
+# emitted workflow YAML's shape, but only a real CI invocation with
+# `id-token: write` proves the OIDC exchange + sigstore signing path
+# end-to-end. This workflow is that gate.
+#
+# Trusted Publisher setup (one-time, documented in MEP-51 §Phase 18):
+#   - TestPyPI project "mochi-publish-dryrun" with publisher trust
+#     on this repo + workflow filename `transpiler3-python-publish.yml`
+#     + environment `testpypi`.
+#   - GitHub environment `testpypi` (no required reviewers).
+
+name: transpiler3-python-publish
+
+on:
+  pull_request:
+    paths:
+      - transpiler3/python/build/workflow.go
+      - transpiler3/python/build/phase18_test.go
+      - .github/workflows/transpiler3-python-publish.yml
+  workflow_dispatch: {}
+
+jobs:
+  emit-bundle:
+    name: Emit publish bundle
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Build Mochi CLI
+        run: go build -o ./mochi ./cmd/mochi
+      - name: Emit publish bundle
+        run: |
+          ./mochi build --target=python-publish \
+            --out dist-publish \
+            tests/transpiler3/python/fixtures/phase17-ipykernel/notebook_helloworld/hello.mochi
+      - name: Inspect bundle
+        run: |
+          ls -la dist-publish
+          ls -la dist-publish/dist
+          cat dist-publish/.github/workflows/publish.yml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: publish-bundle
+          path: dist-publish/
+
+  testpypi-dryrun:
+    name: TestPyPI dry-run
+    needs: emit-bundle
+    runs-on: ubuntu-24.04
+    if: ${{ false }}  # Disabled until the TestPyPI Trusted Publisher
+                      # for mochi-publish-dryrun is registered. Once
+                      # the staging trust is live, flip to `true` or
+                      # gate on github.event_name.
+    environment: testpypi
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: publish-bundle
+          path: dist-publish/
+      - uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.7.0"
+      - name: Dry-run publish to TestPyPI
+        run: |
+          uv publish --dry-run --trusted-publishing always \
+            --publish-url https://test.pypi.org/legacy/ \
+            dist-publish/dist/*

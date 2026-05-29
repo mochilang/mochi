@@ -413,7 +413,7 @@ The VM3 trace tag is used in `mochi run --trace-capabilities`, which logs every 
 
 ## Open questions
 
-- Whether `clock` and `random` should be in the closed set at all (both are present in research note 10 §1; the argument is that deterministic-replay tools want to see them as effects).
+- Whether `clock` and `random` should be in the closed set at all (both are present in research note 10 §1; the argument is that deterministic-replay tools want to see them as effects). Decision: keep both. The reproducibility surface that consumes them lives in [Phase 17](./phase-17-repro): `SOURCE_DATE_EPOCH` shadows `clock` so reproducible builds are unaffected; deterministic-RNG seeding for `random` is tracked under Phase 17 open question 4.
 - Whether to support a per-target capability override (e.g., `net.dial` allowed on the server target but denied on the wasm target); current plan: per-target overrides live in the consumer pin, not the publisher declaration.
 - Whether the suspicious detector should fail the build or only warn; current plan: warn by default, `--suspicious-as-error` opts in.
 

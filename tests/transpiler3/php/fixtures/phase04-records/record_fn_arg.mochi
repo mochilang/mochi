@@ -1,0 +1,11 @@
+type Pt {
+  x: int
+  y: int
+}
+
+fun sum(p: Pt): int {
+  return p.x + p.y
+}
+
+let q = Pt { x: 4, y: 6 }
+print(sum(q))

@@ -1,0 +1,5 @@
+writeFile("/tmp/mochi_swift_am.txt", "a")
+appendFile("/tmp/mochi_swift_am.txt", "b")
+appendFile("/tmp/mochi_swift_am.txt", "c")
+let content = readFile("/tmp/mochi_swift_am.txt")
+print(content)

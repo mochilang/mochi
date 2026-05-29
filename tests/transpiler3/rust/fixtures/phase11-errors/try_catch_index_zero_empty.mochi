@@ -1,0 +1,8 @@
+let xs: list<int> = []
+try {
+  let v: int = xs[0]
+  print(v)
+} catch e {
+  print("empty")
+  print(e)
+}
