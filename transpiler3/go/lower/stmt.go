@@ -78,6 +78,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 		return l.lowerTryCatchStmt(s)
 	case *aotir.PanicStmt:
 		return l.lowerPanicStmt(s)
+	case *aotir.ChanSendStmt:
+		return l.lowerChanSendStmt(s)
 	case *aotir.OMapPutStmt:
 		return l.lowerOMapPutStmt(s)
 	default:
@@ -377,6 +379,8 @@ func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 	case aotir.TypeOMap:
 		l.addHelper("mochiOMap")
 		return l.lowerOMapType(s.KeyType, s.ValueType)
+	case aotir.TypeChan:
+		return l.lowerChanType(s.ChanElemType)
 	case aotir.TypeRecord:
 		if s.RecordName == "" {
 			return "", fmt.Errorf("record let missing RecordName")
@@ -601,6 +605,21 @@ func (l *lowerer) lowerOMapPutStmt(s *aotir.OMapPutStmt) (gotree.Stmt, error) {
 		Fun:  &gotree.Ident{Name: "mochiOMapSet"},
 		Args: []gotree.Expr{&gotree.Ident{Name: mangleIdent(s.Name)}, key, val},
 	}}, nil
+}
+
+// lowerChanSendStmt lowers `send(c, v)` (Phase 9.1) to Go's `c <- v`.
+// Like ChanMake / ChanRecv the mapping is direct because Mochi's send
+// semantics (block on full, no error) match Go's native channel send.
+func (l *lowerer) lowerChanSendStmt(s *aotir.ChanSendStmt) (gotree.Stmt, error) {
+	ch, err := l.lowerExpr(s.Chan)
+	if err != nil {
+		return nil, fmt.Errorf("chan send chan: %w", err)
+	}
+	val, err := l.lowerExpr(s.Val)
+	if err != nil {
+		return nil, fmt.Errorf("chan send value: %w", err)
+	}
+	return &gotree.SendStmt{Chan: ch, Value: val}, nil
 }
 
 // lowerPanicStmt emits `mochiPanic(code, msg)` so the value propagates as
