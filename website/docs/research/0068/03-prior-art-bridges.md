@@ -1,197 +1,104 @@
 ---
 title: "03. Prior-art bridges"
 sidebar_position: 4
-sidebar_label: "03. Prior-art"
-description: "pythonnet, IKVM.NET, CsWin32, ClangSharp, uniffi, GraalVM polyglot, JNI-style manual bridging, SwiftUI + C headers, diplomat, Kotlin/Native COM interop. What each gets right, what each requires the user to write, and what MEP-68 borrows or diverges from."
+sidebar_label: "03. Prior-art bridges"
+description: "pythonnet, CppSharp, IKVM.NET, grpc-dotnet, NativeAOT interop experiments, swift-bridge analogues, uniffi for .NET, ClangSharp, and the Unity IL2CPP pipeline. What each gets right, what each requires the user to write, and what MEP-68 borrows."
 ---
 
 # 03. Prior-art bridges
 
-This note surveys the prior-art landscape of .NET-to-other-language bridges and broadly applicable binding generators. The goal is to position MEP-68 in the design space: which problems each prior bridge solves, which it leaves unsolved, and which lessons MEP-68 takes forward.
+MEP-68 sits in a large landscape of existing .NET interop tools. This note surveys the most relevant prior art, documents what each tool provides, what it requires from the user, and where MEP-68 borrows or deliberately diverges.
 
-## pythonnet (Python ↔ .NET)
+## pythonnet (Python.NET)
 
-pythonnet (`pythonnet` PyPI package, originating from 2003, maintained by the Python for .NET project) lets Python code call into .NET assemblies via CLR hosting:
+**What it is.** A bidirectional Python / .NET interop runtime. Python scripts call `import clr; clr.AddReference("MyLib"); from MyLib import MyClass`. The CLR is hosted in the Python process via `coreclr_initialize`. Object references are proxied through Python wrapper objects backed by GCHandles.
 
-```python
-import clr
-clr.AddReference("System.Windows.Forms")
-from System.Windows.Forms import Form, Application
+**What it requires.** Zero boilerplate on the .NET side (all public types are available). Python must have the `pythonnet` package installed; .NET 8+ must be installed on the machine.
 
-form = Form()
-form.Text = "Hello from Python"
-Application.Run(form)
-```
+**What MEP-68 borrows.** The GCHandle proxy strategy: every .NET reference type returned across the boundary is tracked by a `GCHandle`, and the foreign-language side holds an opaque handle rather than a raw pointer. pythonnet's design proves this is the right strategy for object identity and lifetime across a GC boundary.
 
-pythonnet uses the CLR hosting API (`mono_jit_init` on Mono, `hostfxr` on .NET 5+) to embed the .NET runtime in the Python process. No wrapper assembly is required; pythonnet performs runtime reflection to discover types and methods, then dispatches via `MethodInfo.Invoke`.
+**Why MEP-68 diverges.** pythonnet uses CoreCLR hosting (JIT mode); MEP-68 uses NativeAOT. pythonnet requires the .NET runtime on the target machine; MEP-68's NativeAOT primary path requires nothing at runtime. pythonnet's proxy objects are dynamically typed (Python does not validate the method signature at import time); MEP-68's closed type table performs static validation at `mochi pkg lock` time and emits typed `extern fn` declarations.
 
-**What it gets right.** Full .NET type system access via reflection. No wrapper code required on the .NET side. Every public type in every loaded assembly is immediately callable from Python.
+## CppSharp
 
-**What it requires.** The user calls `clr.AddReference("AssemblyName")` to load each assembly. Beyond that, no boilerplate. The reflection-based dispatch is the "no boilerplate" mechanism.
+**What it is.** A binding generator that reads a C/C++ header via Clang and emits C# P/Invoke bindings. Used by the .NET community to call native C++ libraries from C#.
 
-**Trade-offs.** The reflection-based dispatch (`MethodInfo.Invoke`) incurs a per-call overhead of approximately 1-2 microseconds versus a direct native call via `[UnmanagedCallersOnly]`. For high-frequency calls, this is significant. pythonnet also does not produce a static, auditable, lockfile-pinnable surface: the Python code's behaviour changes if the .NET assembly changes without explicit versioning.
+**What it requires.** A C/C++ header. The `CppSharp.Generator` NuGet tool is invoked with the header path and output directory.
 
-**MEP-68 divergence.** MEP-68 takes CLR hosting from pythonnet (the embedding strategy) but replaces reflection dispatch with `[UnmanagedCallersOnly]` function pointers (the zero-overhead dispatch strategy). MEP-68 also produces a static shim surface pinned in `mochi.lock`; pythonnet's reflection surface is dynamic and unaudited. The "what pythonnet gets right" is the CLR hosting approach; MEP-68 borrows it.
+**What MEP-68 borrows.** The idea of reading a source-level type description (header for C++; ECMA-335 for .NET) and generating typed bindings automatically. CppSharp is the "C++ → C#" direction; MEP-68 is the ".NET → Mochi" direction. Both avoid hand-written interop boilerplate.
 
-## IKVM.NET (JVM ↔ .NET)
+**Why MEP-68 diverges.** CppSharp is single-direction (C++ to C#). MEP-68 is bidirectional. CppSharp reads C++ headers (text); MEP-68 reads ECMA-335 binary metadata. CppSharp does not synthesise NativeAOT wrappers; MEP-68 does.
 
-IKVM.NET (originally by Jeroen Frijters, now maintained as a community fork) translates JVM bytecode (`.class` / `.jar`) to .NET MSIL and can also translate .NET MSIL to JVM bytecode. It has been used to run Java programs on the .NET CLR and to expose .NET libraries to Java programs.
+## IKVM.NET
 
-```java
-// Java calling .NET via IKVM
-import cli.System.Console;
-public class Hello {
-    public static void main(String[] args) {
-        Console.WriteLine("Hello from Java via IKVM");
-    }
-}
-```
+**What it is.** A .NET implementation of the Java Virtual Machine (JVM). IKVM compiles Java `.class` files to .NET assemblies (static compilation) or runs Java bytecode under the .NET CLR (dynamic mode).
 
-**What it gets right.** Bidirectional translation model. The user writes Java or .NET code naturally; IKVM handles the translation. No C glue layer needed.
+**What it requires.** Java source or bytecode. IKVM is a .NET-side tool for consuming Java from .NET; it is not directly applicable to Mochi.
 
-**What it requires.** The IKVM toolchain (the translator, the stub assemblies) must be installed. The translation is lossy: IKVM cannot translate every .NET feature to JVM and vice versa (e.g., `unsafe` blocks, `stackalloc`, `Span<T>`, NativeAOT-only features).
+**What MEP-68 borrows.** IKVM's "compile to .NET assembly" approach demonstrates that ahead-of-time cross-language compilation (not hosting a foreign runtime) is a viable strategy for language bridge design. NativeAOT is MEP-68's equivalent: compile .NET ahead-of-time to native machine code, then link it into the Mochi binary without a hosted runtime.
 
-**Trade-offs.** IKVM translates at the bytecode level, not at the source level. This works well for pure-managed code but fails for anything that touches native interop on either side. As of 2025, the community fork is maintained but has not kept pace with .NET 8/9 features.
+## grpc-dotnet (gRPC for .NET)
 
-**MEP-68 divergence.** IKVM's bidirectional IL translation is a different paradigm from MEP-68's CLR hosting + C# shim approach. MEP-68 does not translate bytecode; it calls into the .NET runtime via native function pointers. The lesson from IKVM is that bidirectional bridges are feasible and valuable; the lesson it does NOT teach MEP-68 is "translate bytecode."
+**What it is.** The official .NET gRPC client and server libraries. Applications generate C# stubs from `.proto` files and communicate over HTTP/2.
 
-## CsWin32 (Windows Win32 ↔ .NET)
+**What it requires.** A `.proto` file describing the service contract. The `dotnet-grpc` tool generates C# client and server stubs.
 
-CsWin32 (Microsoft, GA 2021, part of the `microsoft/CsWin32` GitHub repo) auto-generates P/Invoke declarations for the Windows Win32 API from machine-readable metadata (the `Windows.Win32.winmd` metadata file that ships with the Windows SDK):
+**Why MEP-68 rejects it.** gRPC runs a separate process per service and communicates over a socket. Per-call overhead is ~100µs minimum (socket write + serialize + HTTP/2 + deserialize + socket read). For tight loops calling into a NuGet library, this is 100-1000x the overhead of a direct function call via NativeAOT. gRPC is the right tool for distributed service communication; it is not the right tool for in-process library calls.
 
-```csharp
-// Instead of hand-writing:
-[DllImport("user32.dll")]
-static extern int MessageBox(IntPtr hWnd, string text, string caption, int type);
+**What MEP-68 borrows.** The `.proto` → strongly-typed stub generation pattern is analogous to ECMA-335 → Mochi extern fn generation. Both start from a structured type description and generate language-native bindings automatically.
 
-// CsWin32 generates this automatically when you reference the NuGet package.
-```
+## NativeAOT interop experiments (dotnet/runtime)
 
-The user adds `NuGet: Microsoft.Windows.CsWin32`, annotates a `NativeMethods.txt` file with the function names they want, and CsWin32 generates the P/Invoke declarations at build time via a Roslyn source generator.
+**What they are.** The dotnet/runtime repository has several experimental NativeAOT interop guides: `NativeLibrary.SetDllImportResolver`, `NativeAOT/samples/NativeLibrary`, and `NativeAOT/samples/HelloWorld`. These demonstrate `[UnmanagedCallersOnly]` entry points and `NativeLib=Static` builds.
 
-**What it gets right.** Machine-readable metadata (the `.winmd` file) as the authoritative source of Win32 API types and signatures. Automatic P/Invoke generation from the metadata. No hand-writing of `DllImport` attributes.
+**What they require.** A C# class library project with `[UnmanagedCallersOnly]` methods, `<NativeLib>Static</NativeLib>` in `.csproj`, and `dotnet publish -r <rid> /p:PublishAot=true`.
 
-**What it requires.** The `NativeMethods.txt` file listing the functions to expose. This is minimal boilerplate (one function name per line).
+**What MEP-68 borrows.** Exactly this pattern, fully automated. The NativeAOT interop sample is the "hello world" of the wrapper approach; MEP-68 is the tool that generates the sample for every NuGet package.
 
-**MEP-68 relationship.** CsWin32 is the closest prior art to MEP-68's shim generator in direction and spirit: both use machine-readable metadata as the authoritative surface source, both auto-generate callable stubs, both require minimal user input. The difference: CsWin32 generates P/Invoke stubs pointing to native Win32 DLLs; MEP-68 generates `[UnmanagedCallersOnly]` stubs pointing from native code into the CLR. The direction is reversed. MEP-68 borrows the "metadata as source of truth, auto-generate the glue" principle from CsWin32.
+## swift-bridge
 
-## ClangSharp (C headers ↔ .NET)
+**What it is.** A Rust library and code generator for Swift-Rust bidirectional FFI. The user writes a `#[swift_bridge::bridge]` module declaring the types and functions shared across the boundary, and `swift-bridge` generates Swift and Rust glue code.
 
-ClangSharp (Microsoft, part of the `dotnet/clangsharp` project) auto-generates P/Invoke declarations for C/C++ APIs by parsing C headers via `libclang`. It is used to generate .NET bindings for the Clang and LLVM C APIs.
+**What it requires.** A hand-written bridge module (analogous to `cxx::bridge` for C++). The user must enumerate every function and type they want to share.
 
-```xml
-<GenerateBindings Include="llvm-c/Core.h" />
-```
+**What MEP-68 borrows.** The architectural pattern of generating bridge glue from a declaration, not from reflection. MEP-68 differs by generating the declaration automatically from ECMA-335 metadata, so the user writes nothing.
 
-After running ClangSharp, the user gets a complete set of P/Invoke declarations for every function in `Core.h`.
+## uniffi-rs for .NET (mozWinRT / UniFFI .NET backend)
 
-**What it gets right.** Automatic P/Invoke generation from C headers. No hand-writing required; the user provides a header, gets bindings. Handles pointer types, struct layouts, enums, and function pointers.
+**What it is.** Mozilla's `uniffi-rs` tool generates bindings from a `.udl` interface description file for Swift, Kotlin, Python, and (experimentally) C#/.NET. The .NET backend generates C# bindings from the `.udl`.
 
-**What it requires.** The C header file as input. ClangSharp is a build-time code generator, not a runtime tool.
+**What it requires.** A `.udl` file describing the interface. The user must write the `.udl` for every library they want to bridge.
 
-**MEP-68 relationship.** ClangSharp is the "C headers → .NET P/Invoke" direction; MEP-68 is the "CLR assembly → native function pointers" direction. They are mirror images. ClangSharp shows that auto-generation from a machine-readable description (C headers via libclang, assembly metadata via MetadataReader) is the right approach; MEP-68 takes this principle.
+**Why MEP-68 rejects it.** The `.udl` file is the same kind of boilerplate MEP-68 is designed to eliminate. uniffi is the right tool when the bridge author wants fine-grained control; MEP-68 derives the interface automatically.
 
-## uniffi (Rust ↔ Swift, Kotlin, Python, Go)
+**What MEP-68 borrows.** The `SkipReport` concept: uniffi generates a "not representable" error for types it cannot express in its UDL. MEP-68 generates a `SkipReport` entry for types outside the closed table. Both communicate clearly what the bridge covers and what it skips.
 
-uniffi (Mozilla, GA 2021) generates language bindings from a `.udl` (UniFFI Definition Language) interface description file, producing Rust-side glue and host-side bindings for multiple languages. Although uniffi targets Rust-to-other, it is relevant because it represents the "explicit interface description" approach that MEP-68 rejects.
+## ClangSharp
 
-**What it gets right.** Multi-language fan-out from a single Rust library. Strong typing across the FFI boundary.
+**What it is.** Microsoft's `ClangSharp.PInvokeGenerator` tool, which reads C/C++ headers via libClang and generates C# P/Invoke declarations. Used to generate the Win32Metadata NuGet package (the Windows API as a NuGet package).
 
-**What it requires.** The `.udl` file (authored by the Rust library developer) plus `uniffi_bindgen` invocation per host language. Three layers of configuration.
+**What it requires.** A C header. The generator is invoked with the header, a config file specifying namespaces and excluded items, and an output directory.
 
-**MEP-68 divergence.** MEP-68 makes the interface description automatic (reading assembly metadata) rather than hand-authored (`.udl` file). The uniffi approach works when the library developer wants explicit control over the FFI surface; MEP-68 assumes the developer wrote a standard .NET library with no MEP-68-specific knowledge. "No boilerplate on the .NET side" is the invariant.
+**What MEP-68 borrows.** The generator-plus-config model: ClangSharp takes a "here are all the types you can skip" config; MEP-68 has a `SkipReport` for types outside the closed table. Both accept that not every item in the source surface can be represented in the target language, and communicate the gap explicitly.
 
-## GraalVM polyglot (JVM + JavaScript + other languages in one VM)
+## Unity IL2CPP
 
-GraalVM (Oracle, GA 2019 for JVM + JavaScript) allows multiple languages to share object references in the same VM. A Java object can be passed to JavaScript, manipulated there, and returned to Java without serialisation.
+**What it is.** Unity's ahead-of-time C# compiler that converts managed CIL bytecode to C++ source code, which is then compiled to native machine code by the platform's C++ compiler. IL2CPP is Unity's production path for iOS, WebGL, and console builds.
 
-**What it gets right.** True polyglot with shared heap. No marshalling across a native boundary.
+**What it requires.** Nothing from the developer; IL2CPP is Unity's build-time transform. The developer writes C# against the Unity API and IL2CPP handles the rest.
 
-**What it requires.** All participating languages must run inside GraalVM. A Mochi program would have to run inside GraalVM's JVM, which is not Mochi's execution model.
+**What MEP-68 borrows.** The "compile managed code to native ahead-of-time" principle. IL2CPP via C++ is to NativeAOT via LLVM as an older slower path to a newer faster one. Both prove that the full .NET BCL + user code + NuGet packages can be compiled to native without a JIT runtime. NativeAOT (shipping as part of the official .NET SDK since .NET 8) is the modern replacement for the IL2CPP approach.
 
-**MEP-68 divergence.** MEP-68 is a native bridge: Mochi runs as a native binary, the CLR runs as an in-process hosted runtime, and data crosses the native↔managed boundary via the `[UnmanagedCallersOnly]` surface. GraalVM's shared-heap model requires all participants to be inside one VM. MEP-68's model is more composable (Mochi can import multiple runtimes, not just one) and more portable (the CLR hosting API does not require GraalVM's substrate).
+**Why MEP-68 uses NativeAOT instead.** NativeAOT is an official Microsoft product with LTS support, ships in the .NET SDK without third-party tooling, and produces native binaries that link directly as static archives. IL2CPP is Unity-specific and requires the Unity Editor to orchestrate.
 
-## JNI-style manual bridging (Java Native Interface)
+## Summary: what MEP-68 synthesises
 
-JNI (Java, GA 1997) requires every native-to-JVM function to be manually declared with the `Java_<package>_<class>_<method>` naming convention:
-
-```c
-JNIEXPORT jstring JNICALL Java_com_example_Foo_greet(JNIEnv *env, jobject obj, jstring name) {
-    const char *cname = (*env)->GetStringUTFChars(env, name, NULL);
-    // ...
-}
-```
-
-Every function, parameter type, and return type is hand-written. There is no auto-generation.
-
-**What it gets right.** Production-grade, stable, widely understood.
-
-**What it requires.** Every single bridge function must be manually authored. There is no discovery from class metadata; the JNI programmer must know the method signature.
-
-**MEP-68 divergence.** MEP-68 is "JNI auto-generated from assembly metadata." The `mochi-dotnet-meta` tool reads the assembly metadata and the shim generator writes what a JNI programmer would have written by hand. The difference is scale: a JNI programmer can maintain 10-20 hand-written bridge functions; the bridge generates hundreds.
-
-## SwiftUI + C headers (Apple cross-language via C ABI)
-
-Apple's approach to Swift-to-C/C++ interop uses C headers as the lingua franca: a Swift library that wants to be callable from C or C++ exports a C header (`module.modulemap` + `.h`) via `@_cdecl("function_name")` attributes. The C consumer includes the header and calls as if the function were C.
-
-**What it gets right.** The C ABI as the universal bridge surface. Works across Swift, C, C++, Objective-C.
-
-**What it requires.** The Swift library author must annotate each function with `@_cdecl`. Boilerplate per function on the library side.
-
-**MEP-68 divergence.** MEP-68's `[UnmanagedCallersOnly]` exports are the .NET analogue of Swift's `@_cdecl`. Both annotate a managed/high-level function to expose it with a C-ABI entry point. The difference is that MEP-68 generates the `[UnmanagedCallersOnly]` annotations automatically from assembly metadata; SwiftUI's `@_cdecl` requires manual annotation.
-
-## diplomat (Unicode Consortium)
-
-diplomat (used by ICU4X, GA 2022) generates bindings from Rust to C, C++, JavaScript, Dart, Kotlin by annotating Rust functions with `#[diplomat::bridge]`. It is designed for a Rust-side developer to expose a carefully curated subset of their API to multiple languages.
-
-**What it gets right.** Multi-language fan-out. Precise control over the exposed surface.
-
-**What it requires.** `#[diplomat::bridge]` annotation on every exposed item. The developer controls exactly what is exposed.
-
-**MEP-68 divergence.** diplomat's "Rust author annotates items" model is not applicable to arbitrary NuGet packages. MEP-68 assumes the .NET library author did not know about Mochi and annotated nothing. The `mochi-dotnet-meta` tool discovers the surface from the compiled assembly; no .NET-side annotation is required. diplomat's precision is the right tool when you control both sides; MEP-68's auto-discovery is necessary when you do not.
-
-## Kotlin/Native COM interop
-
-Kotlin/Native's approach to calling Windows APIs uses COM (Component Object Model) interop: the user declares a `@CName`-annotated Kotlin interface that mirrors a COM interface, and the Kotlin/Native runtime dispatches via vtable. This is Windows-only (COM is Windows-specific).
-
-**What it gets right.** Tight integration with Windows COM for the Windows-only use case.
-
-**What it requires.** The COM interface must be declared manually. COM-aware type declarations are verbose.
-
-**MEP-68 divergence.** MEP-68 explicitly rejects COM as the primary path (it is Windows-only; see [[02-design-philosophy]] §3). The CLR hosting approach works on all three platforms MEP-68 targets.
-
-## The MEP-68 niche
-
-Reading the landscape, every prior .NET bridge that is not MEP-68 requires either:
-
-1. Runtime reflection dispatch (pythonnet): flexible but unauditable and with per-call overhead.
-2. Bytecode translation (IKVM.NET): bidirectional but lossy.
-3. Machine-readable metadata ingest with auto-generation (CsWin32, ClangSharp): the right model, but in the C→.NET direction, not the .NET→native direction.
-4. Manual annotation on the library side (uniffi, diplomat, Swift `@_cdecl`): boilerplate per function.
-5. Manual declaration on the consumer side (JNI, COM): boilerplate per function.
-6. Shared-VM execution (GraalVM): not applicable to native Mochi.
-
-MEP-68 occupies the "CsWin32/ClangSharp model but in reverse": auto-generate native-callable stubs from .NET assembly metadata. The assembly is the machine-readable metadata source (analogous to the `.winmd` file for CsWin32 and the C header for ClangSharp); the `[UnmanagedCallersOnly]` shim is the auto-generated glue (analogous to CsWin32's P/Invoke declarations and ClangSharp's P/Invoke bindings). The direction is reversed: instead of C→.NET, MEP-68 does .NET→native.
-
-No prior bridge combines:
-- Auto-generation from compiled assembly metadata (no .NET-side annotation required).
-- CLR hosting as the runtime (not reflection dispatch, not bytecode translation).
-- A static, lockfile-pinned, auditable shim surface.
-- Cross-platform support (Linux, macOS, Windows).
-- A NuGet trusted publishing path for the reverse direction.
-
-## Lessons taken forward
-
-- **From pythonnet**: CLR hosting (`hostfxr`) is the correct native .NET embedding mechanism. MEP-68 uses the same CLR hosting API.
-- **From CsWin32**: machine-readable metadata as the authoritative source for auto-generated bindings is the right model. MEP-68 applies this model to ECMA-335 assembly metadata.
-- **From ClangSharp**: the reverse direction (C header → .NET) confirms that auto-generation from metadata is feasible at scale. MEP-68 scales the same concept.
-- **From IKVM.NET**: bidirectional bridges are achievable; the IL-translation approach is a dead end for modern .NET but the architecture goal (both directions in one tool) is correct.
-- **From uniffi**: strict interface description separation ("what is the surface" vs "how do you call it") is the right architecture. In MEP-68, `mochi-dotnet-meta` is the "what is the surface" stage; the shim generator is the "how do you call it" stage.
-- **From the supply-chain story**: NuGet trusted publishing (GA March 2024) is the only acceptable publish path in 2026.
-
-## Cross-references
-
-- [[02-design-philosophy]] for the rationale of the CLR hosting + `[UnmanagedCallersOnly]` choice.
-- [[04-assembly-metadata-ingest]] for the `mochi-dotnet-meta` tool that replaces CsWin32's `.winmd` reader.
-- [[09-abi-stability]] for the `[UnmanagedCallersOnly]` ABI details.
-- [MEP-68 §Alternatives](/docs/mep/mep-0068#alternatives-considered) for the normative rejection list.
+| Prior art | Key idea borrowed | Key difference |
+|-----------|-------------------|----------------|
+| pythonnet | GCHandle proxy for reference types | MEP-68 uses NativeAOT, not CLR hosting; types are statically verified |
+| CppSharp | Auto-generate bindings from structured type description | MEP-68 reads ECMA-335 binary, not C++ headers; direction is reversed |
+| NativeAOT samples | `[UnmanagedCallersOnly]` + `NativeLib=Static` | MEP-68 generates the wrapper automatically |
+| uniffi-rs | SkipReport for out-of-table items | MEP-68 derives the interface from metadata, not a UDL |
+| ClangSharp | Generator-plus-config, explicit skip list | MEP-68 uses a closed type table instead of an exclude list |
+| Unity IL2CPP | AOT compile of managed code to native | MEP-68 uses official .NET NativeAOT, not IL2CPP |
+| grpc-dotnet | Auto-generate typed stubs from a schema | MEP-68 generates directly to Mochi extern fn, not to a protobuf schema |

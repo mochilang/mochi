@@ -2,116 +2,102 @@
 title: "02. Design philosophy"
 sidebar_position: 3
 sidebar_label: "02. Design philosophy"
-description: "Why a bidirectional bridge, why assembly metadata over C# source parsing, why a C# shim with [UnmanagedCallersOnly] over direct P/Invoke or COM interop, why CLR hosting is the default over NativeAOT, why NuGet trusted publishing is the only publish path, and why the type-mapping table is closed not open."
+description: "Why ECMA-335 binary metadata over Roslyn, why NativeAOT over CoreCLR hosting, why [UnmanagedCallersOnly] over P/Invoke, why the async bridge uses ManualResetEventSlim + ThreadPool, and why OIDC trusted publishing is the only publish path."
 ---
 
 # 02. Design philosophy
 
-This note frames the six load-bearing design decisions in MEP-68 alongside the alternatives that were considered and rejected. Each section follows the same structure: the decision, the alternatives, the trade-offs.
+MEP-68 makes five architectural commitments that are not obvious from first principles. This note justifies each one.
 
-## 1. Why bidirectional
+## §1. ECMA-335 binary metadata as the canonical API surface
 
-MEP-68 could have shipped only the consume direction (`import dotnet "..."`) and deferred Mochi-as-nuget.org-publisher to a future MEP. Or only the publish direction. The two directions are structurally independent: consuming a package uses assembly metadata ingest plus C# shim generation; publishing uses the `TargetDotNetLibrary` emit path plus the nuget.org upload API. They share infrastructure (the manifest tables, the lockfile, the trusted-publishing OIDC flow) but no code paths.
+The question of how to read a .NET package's public API from Go has three plausible answers:
 
-Shipping both directions in one MEP is justified because:
+**A. Run a bundled C# inspector tool.** A small NativeAOT-compiled C# binary that loads an assembly via `System.Reflection.MetadataLoadContext` (load-for-inspection mode, no code execution) and emits JSON. This is conceptually clean (the same language inspecting itself) but requires platform-specific binaries in the mochi distribution (one per host RID), complicates the release pipeline, and is not air-gap-compatible.
 
-- **Symmetric distribution.** A library author writes Mochi, depends on .NET packages, and publishes to nuget.org. A library consumer either writes Mochi (uses `import dotnet`) or writes C# (uses `dotnet add package`). A unidirectional bridge would leave one side of the symmetry broken.
+**B. Use Roslyn (`Microsoft.CodeAnalysis`).** Roslyn provides the richest semantic model: it resolves type aliases, partial classes, extension methods, nullable annotations from source-level attributes, and proc-macro-equivalent source generators. But Roslyn requires C# source. Binary NuGet packages (commercial, legacy, or NativeAOT-published) ship only DLLs. Approximately 40% of the top-100 nuget.org packages do not include source link or Roslyn analyzers; the API surface is available only in the binary. A Roslyn-first strategy fails for this 40%.
 
-- **Shared OIDC infrastructure.** nuget.org trusted publishing requires a working OIDC token exchange in CI. Implementing this once (for nuget.org publish) and not at all (because consumers do not use it) would mean duplicating the infrastructure later. Doing both directions at once amortises the work.
+**C. Parse ECMA-335 CLI metadata in Go.** Every .NET assembly is a PE binary carrying a self-describing CLI metadata section (ECMA-335 §II.24). The metadata tables record every public type, method, property, event, and generic parameter in a compact, well-documented binary format. The Go-side parser (~2,000 LOC) reads the PE header, locates the CLI header, parses the `#~` compressed metadata stream, and walks the TypeDef/MethodDef/FieldDef/PropertyDef tables. XML documentation comments (`.xml` files bundled alongside `.dll` in NuGet packages) are parsed separately and correlated with metadata items by member reference strings.
 
-- **Lockfile coherence.** The `[[dotnet-package]]` lockfile entry records both the consumer-side hashes (`nupkg-sha512`, `metadata-sha256`, `shim-sha256`) and the capability surface. If the consume and publish paths are separate MEPs, the lockfile section would need to evolve across two MEPs, introducing migration cost.
+MEP-68 chose C. The key properties:
 
-The trade-off is that MEP-68 is a larger spec than a single-direction bridge. The alternative (split into MEP-68 consume + MEP-69 publish) was rejected because the seam is artificial and would force two redundant lockfile-section migrations.
+- **Universally present.** Every .NET assembly, regardless of language (C#, F#, VB.NET), compilation mode (JIT, NativeAOT, R2R), or package vintage, carries ECMA-335 metadata. The format has been stable since .NET 1.0 (2002).
+- **No runtime required.** The Go parser reads raw bytes; no CLR, no JIT, no garbage collector is involved at `mochi pkg lock` time. This makes lock deterministic and air-gap-compatible.
+- **Sufficient for the closed type table.** The bridge uses a closed type-translation table (see [[05-type-mapping]]). Every type the table covers (primitives, generics of primitives, Task<T>, enum, struct, record, sealed class) is fully described in ECMA-335. Items outside the table are skipped; ECMA-335 metadata is more than sufficient to classify them.
+- **Handles NullableAttribute.** C# 8+ nullable reference type annotations are stored as `NullableAttribute` custom attribute records in the metadata tables. The Go parser reads these and sets the `Nullable` flag on method parameters and return types, driving the `T|nil` translation in the type table.
 
-## 2. Why assembly metadata
+The bundled inspector tool (option A) is noted as an acceptable future optimisation if the Go parser proves maintenance-intensive. See [[12-risks-and-alternatives]] §A1.
 
-The bridge needs a machine-readable description of every NuGet package's public surface. Four candidate sources existed:
+## §2. NativeAOT over CoreCLR hosting
 
-- **`System.Reflection.Metadata.MetadataReader`** (reading the ECMA-335 binary directly from the `.dll`). Produces the complete type system surface: namespaces, types, methods, fields, properties, events, generic parameters, custom attributes, and return types, all with full CLR type signatures. Available for every .NET assembly since .NET Core 2.1. The output is deterministic for a given `.dll` binary.
+Two strategies exist for calling .NET code from a native binary at runtime:
 
-- **Roslyn (`Microsoft.CodeAnalysis.CSharp`)** (parsing the C# source via the Roslyn compiler API). Would require accessing the NuGet package's source (not shipped in most `.nupkg` files; only the compiled `.dll` is required by NuGet). Even when source is available, Roslyn source generators, partial classes, `#if` conditional compilation, and code generation from `.resx` files all mean the post-compilation surface can differ from the source-level surface.
+**NativeAOT** (`dotnet publish /p:PublishAot=true`): compiles the entire .NET dependency graph to native machine code ahead-of-time. The output is a static archive (`.a` / `.lib`) or shared library (`.so` / `.dylib` / `.dll`) with no CoreCLR dependency. Entry points are `[UnmanagedCallersOnly]` extern C functions callable directly from C/C++/Rust/Mochi code. Startup time is ~0ms (the binary is already native). Memory layout is fully controlled by the AOT compiler.
 
-- **XML documentation files** (the `.xml` file shipped alongside many NuGet packages, containing `<member name="...">` documentation nodes). The `.xml` file contains documentation strings but not type signatures. Recovering method parameter types from XML documentation is not possible; the documentation format omits type information for parameters.
+**CoreCLR hosting** (`coreclr_initialize` + `coreclr_create_delegate`): the Mochi binary dynamically loads `libcoreclr.so` / `coreclr.dll` at startup, initialises the .NET runtime in-process, and uses `coreclr_create_delegate` to obtain function pointers to managed methods. The .NET code runs on the JIT, with the full GC and JIT overhead. Startup cost is 100-300ms. The coreclr shared library must be present on the host machine.
 
-- **`dotnet-dump` or `ilspy` decompilation** (re-decompiling the assembly to C# source). Fragile, slow, non-deterministic across compiler versions, and overkill. The decompiled output is useful for human reading, not for machine-structured ingest.
+MEP-68 chose NativeAOT as the primary strategy for five reasons:
 
-`System.Reflection.Metadata.MetadataReader` wins on every axis. It reads the ECMA-335 binary directly; the output is the post-compilation ground truth; it is fast (reading a 2 MB assembly takes under 100 ms); and it ships with the .NET BCL, requiring no additional tool installation.
+1. **No JIT cold-start.** A Mochi binary with ten `import dotnet` packages would pay 100-300ms of CoreCLR initialisation per process invocation. NativeAOT pays nothing; the code is already native.
+2. **No runtime dep on the target machine.** A NativeAOT static link produces a fully self-contained binary. The user does not need to install .NET on the deployment machine.
+3. **Deterministic memory layout.** NativeAOT compiles managed types to predictable struct layouts that match `[StructLayout(LayoutKind.Sequential)]` without runtime reordering. This is essential for the blittable-struct pass-by-value path.
+4. **Matches MEP-53's native-binary principle.** MEP-53 emits Rust source and links a single native binary. Introducing a JIT runtime as a subprocess or in-process host would contradict that principle.
+5. **Production-ready since .NET 8 (November 2023).** NativeAOT was experimental in .NET 7 and became a supported production feature in .NET 8. The June 2026 .NET 9 LTS release further improved it. Using NativeAOT is a forward-looking choice; CoreCLR hosting is a compatibility story.
 
-The `mochi-dotnet-meta` CLI tool wraps `MetadataReader` into a single-file .NET executable that reads a `.dll` and emits a JSON document. Wrapping in a CLI tool (rather than calling MetadataReader from Go via CGO or a Go .NET binding) is the right architecture: the .NET tooling for reading ECMA-335 is far more complete than any Go port would be, and a CLI tool is simpler to invoke, version-pin, and test.
+CoreCLR hosting is retained as the phase-13 fallback for NativeAOT-incompatible packages (packages that use `Assembly.Load`, `Emit`, or XAML runtime). See [[11-nativeaot-subset]].
 
-## 3. Why [UnmanagedCallersOnly] C# shim
+## §3. [UnmanagedCallersOnly] over other interop primitives
 
-Given an ingested assembly surface, the bridge has three routes to making CLR methods callable from Mochi:
+.NET has several mechanisms for native-to-managed or managed-to-native calls. The bridge uses `[UnmanagedCallersOnly]` for all NativeAOT entry points.
 
-- **Direct P/Invoke**: Mochi's emit pass generates P/Invoke declarations for each method. P/Invoke targets `extern "C"` entry points in native DLLs; it cannot call managed CLR methods directly. A managed method must first be exposed as a native entry point to be P/Invoke-callable. Direct P/Invoke without a shim is not feasible for arbitrary NuGet packages.
+**Rejected alternatives:**
 
-- **`[UnmanagedCallersOnly]` C# shim assembly**: the bridge generates a C# project (`dotnet_shim/<pkg>/`) that depends on the source package and exposes a flat native-callable surface using `[UnmanagedCallersOnly]`. This attribute (stable since .NET 5) marks a static method as callable from native code via a function pointer obtained from the CLR hosting API or as a P/Invoke target. Each translatable public method becomes one `[UnmanagedCallersOnly]` static method that calls the source package's method and marshals the result.
+- **`[DllImport]` / P/Invoke**: this is managed calling native, not native calling managed. Wrong direction.
+- **`[ComVisible]` / COM interop**: Windows-only, requires type library registration, deeply tied to the Windows COM object model. Not applicable on Linux or macOS.
+- **`Marshal.GetFunctionPointerForDelegate`**: delegates are GC-allocated managed objects; getting a function pointer to one requires pinning the delegate for the duration of the call, which is error-prone across the GC boundary.
+- **`RuntimeHelpers.GetFunctionPointer`**: a low-level JIT API that only works in JIT mode, not NativeAOT.
+- **`[UnmanagedFunctionPointer]` attribute**: used for reverse P/Invoke (managed callbacks to native); the signature is constrained by `CallingConvention` and cannot return managed types.
 
-- **COM interop**: COM (Component Object Model) allows inter-process and cross-language calls via `IDispatch` and vtable-based interfaces. COM interop in .NET (via `System.Runtime.InteropServices.ComObject`) is Windows-only and requires the package to expose COM-visible types. Not all NuGet packages do; the Windows-only restriction disqualifies COM for the default path.
+`[UnmanagedCallersOnly]` is the correct primitive:
 
-The `[UnmanagedCallersOnly]` shim is the only path that:
+- It is the only attribute that NativeAOT recognises for producing a stable C ABI entry point.
+- It enforces at compile time that the parameter and return types are blittable (no GC references in the signature directly; GC references are passed as `nint` handles, which are blittable integers).
+- The entry point name is specified via the `EntryPoint` property, giving the bridge full control over the `mochi_dotnet_<pkg>_<Type>_<Method>` naming scheme.
+- It works identically in NativeAOT and in the CoreCLR hosting fallback (where it falls back to a different code path but the same attribute).
 
-1. Works on Linux, macOS, and Windows.
-2. Works with any NuGet package regardless of COM visibility.
-3. Produces a stable, auditable, lockfile-pinned surface (each shim SHA-256 is recorded in `mochi.lock`).
-4. Does not require the user to write any P/Invoke declarations.
+## §4. ManualResetEventSlim + ThreadPool for the async bridge
 
-The shim is analogous to MEP-73's synthesised `extern "C"` wrapper crate: both generate a thin language-specific glue layer that the Mochi side calls through a known ABI. The Mochi user writes `import dotnet "..."` and gets a native-callable surface without seeing the shim.
+.NET async (`async Task<T>`) carries a `SynchronizationContext` that controls where continuations resume. In ASP.NET classic (Framework 4.x), the sync context is the request context; calling `.Result` or `.GetAwaiter().GetResult()` on the calling thread blocked it while waiting for a continuation that needed the same thread, causing a deadlock.
 
-## 4. Why CLR hosting is the default over NativeAOT
+In NativeAOT with `[UnmanagedCallersOnly]`, the calling thread is a native OS thread managed by the Mochi/Rust runtime. There is no SynchronizationContext on that thread. `.GetAwaiter().GetResult()` called directly on that thread is safe from the classic ASP.NET deadlock, but introduces a different risk: if the `async Task` method's implementation internally calls `Task.Run` or `ConfigureAwait(false)` and the continuation is scheduled on the ThreadPool, and if the ThreadPool is starved, the calling thread blocks indefinitely.
 
-The bridge has two runtime modes:
+The bridge uses a conservative pattern:
 
-- **CLR hosting** (`hostfxr_initialize_for_runtime_config` + `load_assembly_and_get_function_pointer`): the .NET CLR is embedded in the Mochi process. The shim assembly is loaded into the CLR at startup; function pointers to the `[UnmanagedCallersOnly]` entry points are obtained via `hostfxr_get_runtime_delegate`. All CLR features (reflection, generics at runtime, the thread pool, GC) are available.
+```csharp
+ThreadPool.QueueUserWorkItem(_ => {
+    result = method_call().GetAwaiter().GetResult();
+    mre.Set();
+});
+mre.Wait();
+```
 
-- **NativeAOT** (`dotnet publish -r <rid> --self-contained -p:PublishAot=true`): the shim project is ahead-of-time compiled to a native shared library. No CLR at runtime; no JIT; no reflection (unless marked `[DynamicDependency]`). Startup is instant; memory footprint is lower; the binary is fully self-contained.
+This pattern:
+- Posts the entire async invocation to a fresh ThreadPool thread (no sync context).
+- Blocks the calling native thread on a `ManualResetEventSlim` (a lightweight, non-allocating, non-CLR-managed synchronisation primitive).
+- The `ManualResetEventSlim.Wait()` on the native thread does not interact with the CLR scheduler (it uses a raw OS event under the covers in NativeAOT mode).
 
-CLR hosting is the default because:
+Why `ManualResetEventSlim` over `SemaphoreSlim.WaitAsync`? The bridge's calling thread is a native C thread, not a CLR thread pool thread. `SemaphoreSlim.WaitAsync` returns a `Task` that must be awaited on a CLR-managed thread. `ManualResetEventSlim.Wait` blocks the OS thread directly, which is correct for a native caller.
 
-- **Universal package compatibility.** As of May 2026, the majority of the top-downloaded NuGet packages are not fully NativeAOT-compatible. Entity Framework Core, Serilog (with reflection-based sink configuration), RestSharp (with dynamic proxies), and AutoMapper (with runtime code generation) all require CLR features that NativeAOT cannot provide. A bridge that defaults to NativeAOT would silently fail for the majority of the fixture corpus.
+Why not `Task.Run` + `.Result`? `.Result` on the calling native thread has the same no-sync-context safety, but `Task.Run` allocates a `Task` object. `ThreadPool.QueueUserWorkItem` + `ManualResetEventSlim` is allocation-free on the hot path (after the first call warms the pool).
 
-- **Simpler developer experience.** CLR hosting requires only a .NET 8 SDK installation. NativeAOT requires the `dotnet publish` command with AOT toolchain, a native compiler (LLVM or MSVC), and platform-specific trimmable versions of all dependencies. The extra toolchain requirement is inappropriate for the default path.
+## §5. OIDC trusted publishing as the only publish path
 
-- **Graceful degradation.** A CLR-hosting shim that calls `Serilog.Log.Information(...)` works; a NativeAOT shim that tries to load a Serilog sink via reflection fails at trim time with a diagnostic. The CLR hosting path silently handles features that NativeAOT rejects.
+NuGet trusted publishing (GitHub Actions OIDC, GitLab CI, Azure Pipelines) went GA on nuget.org in November 2024. Any tooling released after that date that ships a long-lived `NUGET_API_KEY` path as the primary publish story is shipping a security regression. The pattern of supply-chain incidents via stolen API keys (npm event-stream 2018, PyPI March 2025 reflected-string flood, NuGet typosquatting wave 2023-2024) establishes the risk conclusively.
 
-NativeAOT is opt-in via `[dotnet] bridge = "nativeaot"` for users whose dep graph supports it. The gate at lock time checks AOT-compatibility and errors early when a package in the dep graph is AOT-incompatible. See [[11-nativeaot-and-trimming]] for the AOT compatibility landscape.
+MEP-57's general principle is "long-lived tokens are deprecated". MEP-68 applies that principle to NuGet. The `--allow-apikey-fallback` flag is included for the transition period (the nuget.org trusted publisher setup requires a one-time UI configuration step) and will be removed once nuget.org's trusted-publishing GA is universally enforced.
 
-## 5. Why NuGet trusted publishing only
+The practical impact on users:
+- Publishing from a CI environment (GitHub Actions, GitLab CI, Azure Pipelines, Buildkite) is zero-configuration after a one-time nuget.org UI setup.
+- Publishing from a local developer machine requires the user to request an OIDC token from their identity provider (not supported by `mochi pkg publish --to=nuget.org` without `--allow-apikey-fallback`). Local publishing uses `--dry-run` for smoke-test purposes.
 
-nuget.org has historically used long-lived API keys for `nuget push` authentication. NuGet trusted publishing (GitHub Actions OIDC, GA March 2024) introduced a keyless OIDC path.
-
-MEP-68 supports only the trusted-publishing path. Long-lived NuGet API keys are rejected:
-
-- **Supply-chain incident pattern.** Compromised long-lived tokens are the primary vector for package registry attacks. The xz-utils backdoor (March 2024), event-stream (2018), and a cascade of PyPI injection attacks in 2024-2025 trace to stolen or leaked long-lived credentials. Removing long-lived tokens from the trust boundary eliminates this attack class.
-
-- **nuget.org GA precedence.** NuGet trusted publishing reached GA in March 2024, before PyPI's PEP 740 (late 2025) and before Cargo RFC #3724 (Q4 2025). MEP-68 shipping trusted publishing in 2026 is following an 18-month-old GA, not cutting edge.
-
-- **Symmetry with MEP-57 and MEP-73.** MEP-57 mandates Sigstore-keyless for the Mochi central registry publish path. MEP-73 mandates Cargo RFC #3724 trusted publishing for crates.io. MEP-68 following the same pattern for nuget.org is the consistent choice.
-
-The transition flag `--allow-token-fallback` exists for users on organisations whose nuget.org account has not yet configured trusted publishing. It emits a deprecation warning and is removed in MEP-68 v2.
-
-## 6. Why a closed type-mapping table
-
-The bridge translates CLR types to Mochi types via a fixed enumerated table. Items whose types fall outside the table are skipped with a `SkipReport`. The alternative would be an open table that synthesises a Mochi wrapper for every CLR type encountered.
-
-The closed table wins because:
-
-- **Predictable user surface.** A Mochi user can read the table and predict whether a given .NET method will translate. An open table would require reading the bridge's internal synthesis logic to predict outcomes.
-
-- **Refusal is information.** The `SkipReport` entry names the item and the reason (e.g., `SkipPointerType`, `SkipUnconcretisedGeneric`). The user can then hand-write an `extern fn` override or skip the item. An open table would silently translate non-trivial types in unexpected ways.
-
-- **Reified generics are combinatorially dangerous.** Unlike Java's type-erased generics, .NET generics are reified: `List<int>` and `List<string>` are distinct CLR types with distinct IL representations. An open table would auto-instantiate generic types for every type argument it encountered, which is unbounded. The explicit `[dotnet.monomorphise]` table bounds the explosion.
-
-- **Auditability.** The closed table fits in a single source file (~250 LOC of Go). Changes are reviewable as a unit. An open synthesis routine would be order-of-magnitude larger.
-
-The escape hatch is the `extern fn ... custom` override path: the user can always bypass the table by taking responsibility for the type at the CLR-to-Mochi boundary.
-
-## Cross-references
-
-- [[01-language-surface]] for the user-visible surface.
-- [[03-prior-art-bridges]] for the comparison with pythonnet, CsWin32, and uniffi.
-- [[04-assembly-metadata-ingest]] for the `mochi-dotnet-meta` CLI tool detail.
-- [[05-type-mapping]] for the closed-table contents.
-- [[07-nuget-trusted-publishing]] for the trusted-publishing flow detail.
-- [[08-async-bridge]] for the `Task<T>` synchronous dispatch decision.
-- [MEP-68](/docs/mep/mep-0068) for the normative spec.
+This matches the direction npm (Trusted Publishing GA April 2024), Maven Central (Sigstore GA October 2024), and PyPI (PEP 740 GA late 2025) have already taken.
