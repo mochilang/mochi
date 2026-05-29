@@ -1,0 +1,3 @@
+import rust "hex@0.4.3" as hex
+import rust "once_cell@1.19.0" as once_cell
+import rust "serde@^1.0" as serde

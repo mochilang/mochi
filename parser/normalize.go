@@ -25,12 +25,17 @@ var (
 	errUnknownImportLang = diagnostic.Template{
 		Code:    "P064",
 		Message: "unknown import language: %q",
-		Help:    "The supported languages are `go`, `python`, `typescript`, `zig`, `lua`, `clj`, and `clojure`. Omit the language to use the Mochi default, or check the spelling.",
+		Help:    "The supported languages are `go`, `python`, `typescript`, `zig`, `lua`, `clj`, `clojure`, and `rust`. Omit the language to use the Mochi default, or check the spelling.",
 	}
 	errUselessExprStmt = diagnostic.Template{
 		Code:    "P065",
 		Message: "expression statement has no observable effect",
 		Help:    "An expression used as a statement must perform I/O or call a function. Bare values, arithmetic, and field/index access compute a result that nothing reads. Use `let _ = ...` if you need to evaluate for a side effect inside an argument, or remove the line.",
+	}
+	errInvalidRustImportPath = diagnostic.Template{
+		Code:    "P066",
+		Message: "rust import path %q is not in `<crate>@<semver>` form",
+		Help:    "An `import rust \"...\" as <alias>` statement names a crates.io crate plus a version, eg. `import rust \"hex@0.4.3\" as hex`. The version is required because MEP-73 binds the synthesised wrapper crate to an exact upstream version.",
 	}
 )
 
@@ -48,6 +53,7 @@ var knownImportLangs = map[string]struct{}{
 	"lua":        {},
 	"clj":        {},
 	"clojure":    {},
+	"rust":       {},
 }
 
 // normalizeProgram performs the post-parse pass that turns the raw
@@ -170,6 +176,9 @@ func normalizeStatement(s *Statement) error {
 		}
 	case s.Import != nil:
 		if err := validateImportLang(s.Import); err != nil {
+			return err
+		}
+		if err := validateRustImport(s.Import); err != nil {
 			return err
 		}
 	case s.Expr != nil:
@@ -354,6 +363,23 @@ func validateImportLang(im *ImportStmt) error {
 		return nil
 	}
 	return errUnknownImportLang.New(im.Pos, *im.Lang)
+}
+
+// validateRustImport rejects `import rust "..." as <alias>` whose path is
+// not in `<crate>@<semver>` form. The path string is required to carry the
+// version because the MEP-73 bridge binds the synthesised wrapper crate to
+// an exact upstream version (the rustdoc-JSON the wrapper is built against
+// is version-specific). The grammar accepts an arbitrary string here; this
+// validator turns a malformed path into a parse-time diagnostic instead of
+// a later "crate not found" or wrapper-build failure.
+func validateRustImport(im *ImportStmt) error {
+	if im == nil || im.Lang == nil || *im.Lang != "rust" {
+		return nil
+	}
+	if _, _, ok := RustImportRef(im.Path); !ok {
+		return errInvalidRustImportPath.New(im.Pos, im.Path)
+	}
+	return nil
 }
 
 // validateIndexOp rejects `xs[]`, `xs[:]`, and `xs[::]`. The grammar

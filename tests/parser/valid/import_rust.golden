@@ -1,0 +1,5 @@
+(program
+  (import "hex@0.4.3" (lang rust) (as hex))
+  (import "once_cell@1.19.0" (lang rust) (as once_cell))
+  (import "serde@^1.0" (lang rust) (as serde))
+)
