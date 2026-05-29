@@ -207,6 +207,8 @@ func (d *Driver) Build(src, out string, target Target) error {
 		return buildBundle(sf, fileBase, out)
 	case TargetIRubyKernel:
 		return buildIRubyNotebook(sf, fileBase, out)
+	case TargetTebako:
+		return buildTebakoPackage(sf, fileBase, out)
 	}
 	return fmt.Errorf("ruby build: target %d not implemented", target)
 }
@@ -324,6 +326,60 @@ func buildIRubyNotebook(sf *rtree.SourceFile, name, out string) error {
 	nbPath := filepath.Join(out, name+".ipynb")
 	if err := os.WriteFile(nbPath, buf, 0o644); err != nil {
 		return fmt.Errorf("ruby build: write notebook: %w", err)
+	}
+	return nil
+}
+
+// buildTebakoPackage emits a Tebako-ready packing layout:
+//
+//	<out>/root/<name>.rb
+//	<out>/root/Gemfile
+//	<out>/press.sh        (chmod +x)
+//
+// The user runs `./press.sh` (with Docker available) to drive
+// `tebako press` against the root tree and obtain a single-file native
+// binary at <out>/<name>. The press script pins the Tebako container
+// image and Ruby version so the build is reproducible.
+func buildTebakoPackage(sf *rtree.SourceFile, name, out string) error {
+	rootDir := filepath.Join(out, "root")
+	if err := os.MkdirAll(rootDir, 0o755); err != nil {
+		return err
+	}
+	scriptPath := filepath.Join(rootDir, name+".rb")
+	if err := os.WriteFile(scriptPath, []byte(sf.RubySource()), 0o644); err != nil {
+		return fmt.Errorf("ruby build: write tebako script: %w", err)
+	}
+	gemfile := `# frozen_string_literal: true
+source "https://rubygems.org"
+
+ruby ">= 3.2"
+
+gem "mochi-runtime", ">= 0.1"
+`
+	if err := os.WriteFile(filepath.Join(rootDir, "Gemfile"), []byte(gemfile), 0o644); err != nil {
+		return fmt.Errorf("ruby build: write tebako Gemfile: %w", err)
+	}
+	press := fmt.Sprintf(`#!/usr/bin/env bash
+# Drive Tebako press against the bundled root/ tree to produce a single-file
+# native executable. Requires Docker and the tamatebako container image.
+set -euo pipefail
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+IMAGE="${MOCHI_TEBAKO_IMAGE:-ghcr.io/tamatebako/tebako-ubuntu-20.04:latest}"
+RUBY_VERSION="${MOCHI_TEBAKO_RUBY:-3.3.7}"
+
+docker run --rm \
+  -v "$HERE":/mnt/w \
+  -t "$IMAGE" \
+  press \
+    --root=/mnt/w/root \
+    --entry-point=%s.rb \
+    --output=/mnt/w/%s \
+    --Ruby="$RUBY_VERSION"
+`, name, name)
+	pressPath := filepath.Join(out, "press.sh")
+	if err := os.WriteFile(pressPath, []byte(press), 0o755); err != nil {
+		return fmt.Errorf("ruby build: write press.sh: %w", err)
 	}
 	return nil
 }
