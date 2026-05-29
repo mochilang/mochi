@@ -142,6 +142,61 @@ func TestPhase7EmitFragments(t *testing.T) {
 				`$__query1 = array_slice($__query1, 2, ((2 + 4) - 2));`,
 			},
 		},
+		{
+			fixture: "query_bool_filter.mochi",
+			wants: []string{
+				// Bare bool predicate `where f` lowers to a raw
+				// truthiness check, not `=== true`.
+				`foreach ($flags as $f) {`,
+				`if ($f) {`,
+				`$__query1 = [...$__query1, $f];`,
+			},
+		},
+		{
+			fixture: "query_order_by_strings.mochi",
+			wants: []string{
+				// `order by w` over strings goes through the same
+				// spaceship-backed helper as ints/floats. Locks the
+				// type-agnostic sort path.
+				`$words = ["banana", "apple", "cherry", "date"];`,
+				`foreach ($words as $w) {`,
+				`$__query1 = [...$__query1, $w];`,
+				`$__query1 = mochi_list_sort_asc($__query1);`,
+				`$sorted = $__query1;`,
+			},
+		},
+		{
+			fixture: "query_order_filter.mochi",
+			wants: []string{
+				// `where n % 2 == 0 order by n` composes a filtered
+				// gather and a sort, in that order.
+				`foreach ($nums as $n) {`,
+				`if ((($n % 2) === 0)) {`,
+				`$__query1 = [...$__query1, $n];`,
+				`$__query1 = mochi_list_sort_asc($__query1);`,
+				`$evens_sorted = $__query1;`,
+			},
+		},
+		{
+			fixture: "query_order_take.mochi",
+			wants: []string{
+				// `order by n take 3` produces gather → sort → slice
+				// (with the zero-skip canonical form).
+				`$__query1 = mochi_list_sort_asc($__query1);`,
+				`$__query1 = array_slice($__query1, 0, ((0 + 3) - 0));`,
+				`$top3 = $__query1;`,
+			},
+		},
+		{
+			fixture: "query_string_map.mochi",
+			wants: []string{
+				// `select len(w)` invokes the StrLenExpr lowering
+				// inside the per-row push expression.
+				`foreach ($words as $w) {`,
+				`$__query1 = [...$__query1, strlen($w)];`,
+				`$lengths = $__query1;`,
+			},
+		},
 	}
 
 	for _, c := range cases {

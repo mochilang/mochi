@@ -108,31 +108,50 @@ func TestPhase4EmitFragments(t *testing.T) {
 		{
 			fixture: "record_single_field.mochi",
 			wants: []string{
-				`final readonly class`,
+				// Lock the class name and the lone field so a
+				// regression that dropped either is caught.
+				`final readonly class Box`,
+				`public int $value,`,
+				`new Box(value: 42);`,
 			},
 		},
 		{
 			fixture: "record_bool_field.mochi",
 			wants: []string{
-				`public bool`,
+				`final readonly class Flag`,
+				`public bool $active,`,
+				`public int $count,`,
+				`new Flag(active: true, count: 5);`,
 			},
 		},
 		{
 			fixture: "record_float_field.mochi",
 			wants: []string{
-				`public float`,
+				`final readonly class Vec`,
+				`public float $dx,`,
+				`public float $dy,`,
+				`new Vec(dx: 1.5, dy: 2.5);`,
 			},
 		},
 		{
 			fixture: "record_string_field.mochi",
 			wants: []string{
-				`public string`,
+				`final readonly class Msg`,
+				`public string $text,`,
+				`public int $count,`,
+				`new Msg(text: "hello", count: 3);`,
 			},
 		},
 		{
 			fixture: "record_field_arith.mochi",
 			wants: []string{
-				`($`,
+				// Lock the actual arithmetic shapes so a regression
+				// that swapped the operands or dropped the field
+				// reference would surface. A bare `($` substring is
+				// too loose; any binary expression in any record
+				// program would satisfy it.
+				`$area = ($r->w * $r->h);`,
+				`mochi_print_i64(($r->w + $r->h));`,
 			},
 		},
 	}

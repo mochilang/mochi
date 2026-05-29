@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -186,4 +187,72 @@ func TestPhase13EmitFragments(t *testing.T) {
 			}
 		})
 	}
+}
+
+// djb2CassetteKey is a Go reimplementation of the PHP
+// mochi_llm_cassette_key helper. Both must agree: any divergence here
+// means a regression in the emitter that no end-to-end PHP run would
+// catch on hosts without `php`. The PHP version uses GMP because the
+// uint64 product can exceed PHP_INT_MAX; Go's uint64 already wraps
+// modulo 2^64 so the result is the same without GMP.
+func djb2CassetteKey(provider, model, prompt string) string {
+	buf := provider + "\x00" + model + "\x00" + prompt
+	var h uint64 = 5381
+	for i := 0; i < len(buf); i++ {
+		h = (h * 33) ^ uint64(buf[i])
+	}
+	return strconv.FormatUint(h, 10)
+}
+
+// TestPhase13DJB2HashMatchesCassetteFilenames pins the cassette
+// lookup algorithm: every (provider, model, prompt) tuple used by a
+// Phase 13 fixture must hash to a filename that actually exists in
+// that fixture's cassette/ directory. The test runs without PHP - it
+// only needs the fixture directory. It catches a regression in the
+// PHP DJB2 implementation (wrong concat order, missing NUL, wrong
+// mask, signed-int overflow), a wrong default model passed by the
+// lowerer, or a renamed cassette file.
+func TestPhase13DJB2HashMatchesCassetteFilenames(t *testing.T) {
+	cases := []struct {
+		fixture, provider, model, prompt, wantHash string
+	}{
+		{"generate_text", "openai", "", "Say hello.", "15023835511162652990"},
+		{"generate_anthropic", "anthropic", "", "Count to 3.", "2324397449310383700"},
+		{"generate_concat", "openai", "", "Capital of France?", "13416524672896750544"},
+		{"generate_confirm", "anthropic", "", "Reply with only the word: yes", "7071908178434434007"},
+		{"generate_in_var", "openai", "", "What color is the sky?", "9323966891408970643"},
+		{"generate_math", "openai", "", "What is 6 times 7?", "7500588262126349073"},
+		{"generate_prime", "openai", "", "Is 7 prime?", "16185609923679915080"},
+	}
+	for _, c := range cases {
+		t.Run(c.fixture, func(t *testing.T) {
+			got := djb2CassetteKey(c.provider, c.model, c.prompt)
+			if got != c.wantHash {
+				t.Errorf("djb2(%q, %q, %q) = %s; want %s", c.provider, c.model, c.prompt, got, c.wantHash)
+			}
+			path := filepath.Join(repoRoot(t), "tests", "transpiler3", "php", "fixtures", "phase13-llm", c.fixture, "cassette", got+".txt")
+			if _, err := os.Stat(path); err != nil {
+				t.Errorf("cassette file %s does not exist: %v", path, err)
+			}
+		})
+	}
+
+	// generate_multiple issues two distinct prompts in one program;
+	// both must resolve. This pins the path that hashes per call
+	// rather than carrying state across calls.
+	t.Run("generate_multiple", func(t *testing.T) {
+		for prompt, want := range map[string]string{
+			"Say foo.":        "14733925101528638458",
+			"Is Mochi great?": "16198809129143077817",
+		} {
+			got := djb2CassetteKey("openai", "", prompt)
+			if got != want {
+				t.Errorf("djb2(openai, \"\", %q) = %s; want %s", prompt, got, want)
+			}
+			path := filepath.Join(repoRoot(t), "tests", "transpiler3", "php", "fixtures", "phase13-llm", "generate_multiple", "cassette", got+".txt")
+			if _, err := os.Stat(path); err != nil {
+				t.Errorf("cassette file %s does not exist: %v", path, err)
+			}
+		}
+	})
 }

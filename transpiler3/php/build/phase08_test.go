@@ -112,6 +112,26 @@ func TestPhase8EmitFragments(t *testing.T) {
 				`$results = ["a", "d"];`,
 			},
 		},
+		{
+			fixture: "dl_chain.mochi",
+			wants: []string{
+				// Length-4 transitive closure exercises the
+				// semi-naive evaluator's iterate-until-fixpoint loop
+				// (lower/datalog.go:dlDeriveRule). The result order
+				// is the derivation order, so a regression that
+				// re-ordered tuples in dlTupleIn would surface here.
+				`$xs = ["n2", "n3", "n4", "n5"];`,
+			},
+		},
+		{
+			fixture: "dl_filter_const.mochi",
+			wants: []string{
+				// Query with a constant LHS argument (`like("alice", Y)`)
+				// locks the binding/unification path where one query
+				// arg is a literal and the other is the binder.
+				`$xs = ["cats", "birds"];`,
+			},
+		},
 	}
 
 	for _, c := range cases {
