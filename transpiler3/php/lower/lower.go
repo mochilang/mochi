@@ -31,6 +31,7 @@ type runtimeFlags struct {
 	strCat      bool
 	setMake     bool // mochi_set_make([1,2,1]) → [1=>true, 2=>true]
 	setAdd      bool // mochi_set_add($s, 4) → $s with 4 added
+	listSortAsc bool // mochi_list_sort_asc($xs) → ascending stable copy
 }
 
 type lowerer struct {
@@ -221,6 +222,23 @@ func (l *lowerer) runtimeDecls() []ptree.Decl {
 			},
 		})
 	}
+	if l.runtime.listSortAsc {
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc: []string{
+				"Return a sorted (ascending) copy of $xs. Mochi semantics",
+				"are non-mutating; the argument is taken by value so the",
+				"caller's array is untouched. Uses PHP's spaceship operator",
+				"so ints, floats, and strings all order naturally.",
+			},
+			Name:       "mochi_list_sort_asc",
+			Params:     []ptree.FuncParam{{TypeName: "array", Name: "xs"}},
+			ReturnType: "array",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `usort($xs, fn($a, $b) => $a <=> $b);`},
+				&ptree.RawStmt{Text: `return $xs;`},
+			},
+		})
+	}
 	return out
 }
 
@@ -264,6 +282,12 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]ptree.Stmt, error) {
 		// inherit by value automatically), so the env-struct allocation
 		// the aotir lowerer emits for the C target is a no-op here.
 		return nil, nil
+	case *aotir.QueryScopeStmt:
+		// Arena scopes are a C-specific optimisation; PHP relies on
+		// refcount + cycle collection, so we drop the wrapper and
+		// inline the desugared LetStmt/ForEachStmt/append body
+		// directly into the surrounding block.
+		return l.lowerBlock(v.Body)
 	case *aotir.MapPutStmt:
 		key, err := l.lowerExpr(v.Key)
 		if err != nil {
@@ -1105,6 +1129,41 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 		return &ptree.CallExpr{
 			Callee: &ptree.IdentExpr{Name: "array_reduce"},
 			Args:   []ptree.Expr{list, fn, init},
+		}, nil
+	case *aotir.ListSortAscExpr:
+		l.runtime.listSortAsc = true
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		// Inline runtime helper takes the array by value so the
+		// caller's slot is unchanged; usort inside the helper sorts
+		// the local copy with the spaceship operator.
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "mochi_list_sort_asc"},
+			Args:   []ptree.Expr{recv},
+		}, nil
+	case *aotir.ListSliceExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		start, err := l.lowerExpr(v.Start)
+		if err != nil {
+			return nil, err
+		}
+		end, err := l.lowerExpr(v.End)
+		if err != nil {
+			return nil, err
+		}
+		// array_slice($xs, $start, $length): length = end - start.
+		// array_slice clamps length to the underlying array size, so
+		// over-large $end (e.g. INT_MAX from `take` with no upper bound)
+		// is handled without an explicit guard.
+		length := &ptree.BinaryExpr{Op: "-", Left: end, Right: start}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "array_slice"},
+			Args:   []ptree.Expr{recv, start, length},
 		}, nil
 	default:
 		return nil, fmt.Errorf("php lower: phase 4 cannot lower %T", e)
