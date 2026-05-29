@@ -1,0 +1,4 @@
+let flag: bool = true
+let toggle: fun(bool): bool = fun(b: bool): bool => b != flag
+print(toggle(true))
+print(toggle(false))

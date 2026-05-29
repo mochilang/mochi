@@ -1,0 +1,3 @@
+let id: fun(int): int = fun(x: int): int => x
+print(id(42))
+print(id(-7))

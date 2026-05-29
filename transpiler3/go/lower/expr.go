@@ -3,6 +3,7 @@ package lower
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"mochi/transpiler3/c/aotir"
 	"mochi/transpiler3/go/gotree"
@@ -30,7 +31,7 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		}
 		return &gotree.Ident{Name: name}, nil
 	case *aotir.VarRef:
-		return &gotree.Ident{Name: mangleIdent(e.Name)}, nil
+		return varRefExpr(e.Name), nil
 	case *aotir.BinaryExpr:
 		return l.lowerBinary(e)
 	case *aotir.UnaryExpr:
@@ -72,7 +73,7 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 	case *aotir.VariantLit:
 		return l.lowerVariantLit(e)
 	case *aotir.UnionVarRef:
-		return &gotree.Ident{Name: mangleIdent(e.Name)}, nil
+		return varRefExpr(e.Name), nil
 	case *aotir.VariantFieldAccess:
 		recv, err := l.lowerExpr(e.Receiver)
 		if err != nil {
@@ -81,9 +82,155 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return &gotree.SelectorExpr{X: recv, Sel: variantFieldName(e.VariantName, e.FieldName)}, nil
 	case *aotir.CallExpr:
 		return l.lowerCallExpr(e)
+	case *aotir.FunLit:
+		return l.lowerFunLit(e)
+	case *aotir.FunCallExpr:
+		return l.lowerFunCallExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
+}
+
+// varRefExpr maps an aotir.VarRef.Name to a gotree expression. The
+// shared C lowerer rewrites captured-variable references inside lifted
+// closure bodies to `__e->FieldName` (C member-access syntax). For Go
+// we translate that back to `__mochi_env.FieldName` (with FieldName
+// capitalised so it matches the env struct's exported field).
+func varRefExpr(name string) gotree.Expr {
+	if rest, ok := strings.CutPrefix(name, "__e->"); ok {
+		return &gotree.SelectorExpr{
+			X:   &gotree.Ident{Name: envParamName},
+			Sel: exportIdent(rest),
+		}
+	}
+	return &gotree.Ident{Name: mangleIdent(name)}
+}
+
+// lowerFunLit emits a Go value of the function type carried by e.Sig.
+//
+// Non-capturing (no Captures): the lifted function has no env
+// parameter, so the bare function name is itself a Go value of the
+// right type.
+//
+// Capturing (len(Captures) > 0): the lifted function takes an env
+// pointer as its first parameter. We emit an IIFE that materialises
+// the env struct once from the captured outer-scope variables and
+// returns a closure wrapper that threads the pointer on each call:
+//
+//	func() func(p1 T1) R {
+//	    __env := &__anon_N_env_t{Field1: src1, Field2: src2}
+//	    return func(p1 T1) R { return __anon_N(__env, p1) }
+//	}()
+//
+// The IIFE form keeps the env allocation co-located with the FunLit
+// regardless of whether the upstream C lowerer paired the literal with
+// a ClosureEnvStmt (the `return fun(x) => ...` path does not).
+func (l *lowerer) lowerFunLit(e *aotir.FunLit) (gotree.Expr, error) {
+	if len(e.Captures) == 0 {
+		return &gotree.Ident{Name: e.FuncName}, nil
+	}
+	if e.Sig == nil {
+		return nil, fmt.Errorf("FunLit %s: missing Sig", e.FuncName)
+	}
+	if e.EnvTypeName == "" {
+		return nil, fmt.Errorf("FunLit %s: capturing closure missing EnvTypeName", e.FuncName)
+	}
+	envLocal := "__env"
+	elts := make([]gotree.Expr, 0, len(e.Captures))
+	for _, c := range e.Captures {
+		elts = append(elts, &gotree.KeyValueExpr{
+			Key:   &gotree.Ident{Name: exportIdent(c.FieldName)},
+			Value: varRefExpr(c.SrcName),
+		})
+	}
+	envAlloc := &gotree.AssignStmt{
+		Lhs: []gotree.Expr{&gotree.Ident{Name: envLocal}},
+		Tok: ":=",
+		Rhs: []gotree.Expr{&gotree.UnaryExpr{
+			Op: "&",
+			X: &gotree.CompositeLit{
+				Type: &gotree.Ident{Name: e.EnvTypeName},
+				Elts: elts,
+			},
+		}},
+	}
+
+	wrapper, err := l.funLitWrapper(e, envLocal)
+	if err != nil {
+		return nil, err
+	}
+	resultText, err := l.lowerFunType(e.Sig)
+	if err != nil {
+		return nil, fmt.Errorf("FunLit %s result type: %w", e.FuncName, err)
+	}
+
+	outerFn := &gotree.FuncLit{
+		Type: &gotree.FuncType{Results: []gotree.Field{{Type: &gotree.Ident{Name: resultText}}}},
+		Body: &gotree.BlockStmt{List: []gotree.Stmt{
+			envAlloc,
+			&gotree.ReturnStmt{Results: []gotree.Expr{wrapper}},
+		}},
+	}
+	return &gotree.CallExpr{Fun: outerFn}, nil
+}
+
+// funLitWrapper builds the inner closure that forwards each call into
+// the lifted function with envExpr threaded as the first argument.
+func (l *lowerer) funLitWrapper(e *aotir.FunLit, envIdent string) (*gotree.FuncLit, error) {
+	params := make([]gotree.Field, 0, len(e.Sig.ParamTypes))
+	args := []gotree.Expr{&gotree.Ident{Name: envIdent}}
+	for i, pt := range e.Sig.ParamTypes {
+		pname := fmt.Sprintf("__p%d", i)
+		ptText, err := l.lowerType(pt)
+		if err != nil {
+			return nil, fmt.Errorf("FunLit %s param %d: %w", e.FuncName, i, err)
+		}
+		if ptText == "" {
+			return nil, fmt.Errorf("FunLit %s param %d: unit not allowed", e.FuncName, i)
+		}
+		params = append(params, gotree.Field{
+			Names: []string{pname},
+			Type:  &gotree.Ident{Name: ptText},
+		})
+		args = append(args, &gotree.Ident{Name: pname})
+	}
+	ft := &gotree.FuncType{Params: params}
+	call := &gotree.CallExpr{Fun: &gotree.Ident{Name: e.FuncName}, Args: args}
+	var bodyStmt gotree.Stmt
+	if e.Sig.ReturnType == aotir.TypeUnit {
+		bodyStmt = &gotree.ExprStmt{X: call}
+	} else {
+		rt, err := l.lowerType(e.Sig.ReturnType)
+		if err != nil {
+			return nil, fmt.Errorf("FunLit %s return: %w", e.FuncName, err)
+		}
+		ft.Results = []gotree.Field{{Type: &gotree.Ident{Name: rt}}}
+		bodyStmt = &gotree.ReturnStmt{Results: []gotree.Expr{call}}
+	}
+	return &gotree.FuncLit{
+		Type: ft,
+		Body: &gotree.BlockStmt{List: []gotree.Stmt{bodyStmt}},
+	}, nil
+}
+
+// lowerFunCallExpr emits `callee(arg0, arg1, ...)` for a call through
+// a function-typed value. The callee is itself any expression that
+// lowers to a Go func value (a VarRef bound to TypeFun, a FunLit, or a
+// CallExpr returning TypeFun).
+func (l *lowerer) lowerFunCallExpr(e *aotir.FunCallExpr) (gotree.Expr, error) {
+	callee, err := l.lowerExpr(e.Callee)
+	if err != nil {
+		return nil, fmt.Errorf("FunCallExpr callee: %w", err)
+	}
+	args := make([]gotree.Expr, 0, len(e.Args))
+	for i, a := range e.Args {
+		v, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, fmt.Errorf("FunCallExpr arg %d: %w", i, err)
+		}
+		args = append(args, v)
+	}
+	return &gotree.CallExpr{Fun: callee, Args: args}, nil
 }
 
 // lowerCallExpr emits a Go call expression for a user-defined function.

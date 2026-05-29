@@ -1,0 +1,3 @@
+let prefix: fun(string, string): string = fun(p: string, s: string): string => p + s
+print(prefix("hi-", "world"))
+print(prefix(">> ", "log"))

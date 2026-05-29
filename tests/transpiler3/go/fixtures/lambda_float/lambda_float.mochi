@@ -1,0 +1,3 @@
+let half: fun(float): float = fun(x: float): float => x / 2.0
+print(half(9.0))
+print(half(1.0))

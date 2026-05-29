@@ -9,9 +9,20 @@ import (
 
 // lowerBlock walks an aotir.Block's statement list into a
 // gotree.BlockStmt.
+//
+// ClosureEnvStmt is dropped at this layer: the Go FunLit emitter
+// allocates the env struct inline via an IIFE so the env pointer
+// is always materialised at the FunLit's expression site, regardless
+// of whether the upstream C lowerer inserted a paired env allocation
+// statement. Keeping a separate local would also force Go's
+// "declared and not used" diagnostic to fire whenever the FunLit
+// flowed through a path the env-allocation statement did not cover.
 func (l *lowerer) lowerBlock(b *aotir.Block) (*gotree.BlockStmt, error) {
 	out := &gotree.BlockStmt{}
 	for _, s := range b.Statements {
+		if _, ok := s.(*aotir.ClosureEnvStmt); ok {
+			continue
+		}
 		gs, err := l.lowerStmt(s)
 		if err != nil {
 			return nil, err
@@ -222,6 +233,8 @@ func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 			return "", fmt.Errorf("union let missing UnionName")
 		}
 		return s.UnionName, nil
+	case aotir.TypeFun:
+		return l.lowerFunType(s.FunSig)
 	}
 	return l.lowerType(s.VarType)
 }
