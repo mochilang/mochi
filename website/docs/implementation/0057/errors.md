@@ -152,6 +152,18 @@ Phase 18's verify mismatch is `BLOB_E006`.
 | M057_SIG_E008 | 13.10 | TUF root expired or signature invalid | "refresh TUF root from pinned source" |
 | M057_SIG_E009 | 13.10 | TUF metadata rollback detected | "abort; report to registry operator" |
 
+## TUF (Phase 13 metadata client)
+
+`SIG_E008` and `SIG_E009` cover root + rollback at the trust-root layer.
+`TUF_E*` codes cover the targets-metadata client used per fetch (separate
+sentinels so callers can distinguish "trust root broken" from "this
+specific target failed").
+
+| Code | Owner | Trigger | Recovery hint |
+|------|-------|---------|---------------|
+| M057_TUF_E001 | 13.10 | TUF targets metadata expired or signature invalid | "refresh metadata; check clock skew" |
+| M057_TUF_E002 | 13.10 | TUF target hash/length disagrees with metadata | "treat as untrusted; report to operator" |
+
 ## FAN (Phase 14 polyglot fan-out)
 
 | Code | Owner | Trigger | Recovery hint |
@@ -179,6 +191,16 @@ Phase 18's verify mismatch is `BLOB_E006`.
 | M057_ADV_E003 | 16.0 | Advisory YAML schema invalid | "advisory author / registry bug" |
 | M057_ADV_E004 | 16.6 | `[ignore-advisories]` references unknown ID | "remove or update the ignore" |
 
+## REPRO (Phase 17)
+
+| Code | Owner | Trigger | Recovery hint |
+|------|-------|---------|---------------|
+| M057_REPRO_E001 | 17.2 | Tarball contains non-deterministic metadata (xattr, PAX record) | "drop the xattr; rebuild" |
+| M057_REPRO_E002 | 17.5 | Twice-built tarball hashes differ | "see [phase 17](./phase-17-repro) repro harness" |
+| M057_REPRO_E003 | 17.6 | Consumer rebuild does not match registry hash | "report to publisher; treat as untrusted" |
+| M057_REPRO_E004 | 17.7 | Source repository tag missing or moved | "publisher must re-tag commit" |
+| M057_REPRO_E005 | 17.0 | `SOURCE_DATE_EPOCH` not a valid integer | "unset or set to seconds since epoch" |
+
 ## OFFLINE (Phase 18)
 
 | Code | Owner | Trigger | Recovery hint |
@@ -194,6 +216,18 @@ Phase 18's verify mismatch is `BLOB_E006`.
 | M057_CACHE_E001 | 19.6 | GC raced a concurrent build | "the build will retry transparently" |
 | M057_CACHE_E002 | 19.0 | Hardlink installer hit per-inode limit | "fallback to copy is automatic" |
 | M057_CACHE_E003 | 19.6 | `mochi pkg cache verify` found tampering | "run `mochi pkg cache prune`" |
+
+## PERF (Phase 19)
+
+`CACHE_*` covers correctness of the on-disk cache. `PERF_*` covers
+bench-gate and operational failures of GC/install paths, which are
+recoverable but user-visible.
+
+| Code | Owner | Trigger | Recovery hint |
+|------|-------|---------|---------------|
+| M057_PERF_E001 | 19.5 | Bench result exceeds rolling baseline beyond threshold | "see `bench/baseline.json`; investigate regression" |
+| M057_PERF_E002 | 19.6 | Cache GC failed (filesystem permissions, disk full) | "free disk space; check `$MOCHI_HOME` permissions" |
+| M057_PERF_E003 | 19.0 | Hardlink failed across filesystems; fell back to copy | "internal; logged at debug, not surfaced to user" |
 
 ## Localization policy
 
