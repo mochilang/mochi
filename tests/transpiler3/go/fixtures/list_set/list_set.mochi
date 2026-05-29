@@ -1,0 +1,7 @@
+var xs = [10, 20, 30]
+xs[0] = 11
+xs[1] = 22
+xs[2] = 33
+for x in xs {
+  print(x)
+}

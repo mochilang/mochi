@@ -1,0 +1,6 @@
+var xs = [1, 2, 3]
+xs = append(xs, 4)
+xs = append(xs, 5)
+for x in xs {
+  print(x)
+}

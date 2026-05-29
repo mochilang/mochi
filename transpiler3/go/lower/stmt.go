@@ -35,6 +35,10 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 		return l.lowerWhileStmt(s)
 	case *aotir.ForRangeStmt:
 		return l.lowerForRangeStmt(s)
+	case *aotir.ForEachStmt:
+		return l.lowerForEachStmt(s)
+	case *aotir.ListSetStmt:
+		return l.lowerListSetStmt(s)
 	case *aotir.BreakStmt:
 		return &gotree.BranchStmt{Tok: "break"}, nil
 	case *aotir.ContinueStmt:
@@ -42,7 +46,7 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 	case *aotir.ReturnStmt:
 		return l.lowerReturnStmt(s)
 	default:
-		return nil, fmt.Errorf("transpiler3/go/lower: Phase 2 does not handle stmt %T", s)
+		return nil, fmt.Errorf("transpiler3/go/lower: does not handle stmt %T", s)
 	}
 }
 
@@ -71,7 +75,7 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (gotree.Stmt, error) {
 }
 
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (gotree.Stmt, error) {
-	typeText, err := l.lowerType(s.VarType)
+	typeText, err := l.letTypeText(s)
 	if err != nil {
 		return nil, fmt.Errorf("transpiler3/go/lower: let %s: %w", s.Name, err)
 	}
@@ -171,6 +175,58 @@ func (l *lowerer) lowerForRangeStmt(s *aotir.ForRangeStmt) (gotree.Stmt, error) 
 	cond := &gotree.BinaryExpr{X: &gotree.Ident{Name: name}, Op: "<", Y: end}
 	post := &gotree.IncDecStmt{X: &gotree.Ident{Name: name}, Tok: "++"}
 	return &gotree.ForStmt{Init: init, Cond: cond, Post: post, Body: body}, nil
+}
+
+// letTypeText returns the Go type-expression text for a LetStmt's
+// binding type, dispatching on VarType so compound types (lists
+// today, maps and records later) can carry their element / field
+// metadata through the type renderer.
+func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
+	if s.VarType == aotir.TypeList {
+		return l.lowerListType(s.ElemType)
+	}
+	return l.lowerType(s.VarType)
+}
+
+// lowerForEachStmt lowers Mochi `for x in xs { ... }` to
+// `for _, x := range xs { ... }`. The key (index) slot is
+// discarded with `_`.
+func (l *lowerer) lowerForEachStmt(s *aotir.ForEachStmt) (gotree.Stmt, error) {
+	xs, err := l.lowerExpr(s.List)
+	if err != nil {
+		return nil, err
+	}
+	body, err := l.lowerBlock(s.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &gotree.RangeStmt{
+		Key:   &gotree.Ident{Name: "_"},
+		Value: &gotree.Ident{Name: mangleIdent(s.Var)},
+		Tok:   ":=",
+		X:     xs,
+		Body:  body,
+	}, nil
+}
+
+// lowerListSetStmt lowers Mochi `xs[i] = v` to `xs[int(i)] = v`.
+func (l *lowerer) lowerListSetStmt(s *aotir.ListSetStmt) (gotree.Stmt, error) {
+	idx, err := l.lowerExpr(s.Index)
+	if err != nil {
+		return nil, err
+	}
+	val, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, err
+	}
+	return &gotree.AssignStmt{
+		Lhs: []gotree.Expr{&gotree.IndexExpr{
+			X:     &gotree.Ident{Name: mangleIdent(s.Name)},
+			Index: narrowToInt(idx),
+		}},
+		Tok: "=",
+		Rhs: []gotree.Expr{val},
+	}, nil
 }
 
 func (l *lowerer) lowerReturnStmt(s *aotir.ReturnStmt) (gotree.Stmt, error) {
