@@ -51,13 +51,24 @@ func Lower(prog *aotir.Program, fileBase, className string) (*rtree.SourceFile, 
 		Decls: mainDecls,
 	}
 
-	progDecls := make([]rtree.Decl, 0, len(prog.Records)+1)
+	progDecls := make([]rtree.Decl, 0, len(prog.Records)+len(prog.Unions)+1)
 	for _, r := range prog.Records {
 		fields := make([]string, len(r.Fields))
 		for i, f := range r.Fields {
 			fields[i] = f.Name
 		}
 		progDecls = append(progDecls, &rtree.DataDecl{Name: r.Name, Fields: fields})
+	}
+	for _, u := range prog.Unions {
+		variantDecls := make([]rtree.Decl, len(u.Variants))
+		for i, v := range u.Variants {
+			fs := make([]string, len(v.Fields))
+			for j, f := range v.Fields {
+				fs[j] = f.Name
+			}
+			variantDecls[i] = &rtree.DataDecl{Name: v.Name, Fields: fs}
+		}
+		progDecls = append(progDecls, &rtree.ModuleDecl{Name: u.Name, Decls: variantDecls})
 	}
 	progDecls = append(progDecls, mainModule)
 
@@ -170,6 +181,18 @@ func lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 			return nil, err
 		}
 		return &rtree.RawStmt{Text: fmt.Sprintf("%s[%s] = %s", rubyIdent(s.Name), idx.RubyExprString(), val.RubyExprString())}, nil
+	case *aotir.MatchStmt:
+		return lowerMatchStmt(s)
+	case *aotir.MapPutStmt:
+		key, err := lowerExpr(s.Key)
+		if err != nil {
+			return nil, err
+		}
+		val, err := lowerExpr(s.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawStmt{Text: fmt.Sprintf("%s[%s] = %s", rubyIdent(s.Name), key.RubyExprString(), val.RubyExprString())}, nil
 	case *aotir.BreakStmt:
 		return &rtree.RawStmt{Text: "break"}, nil
 	case *aotir.ContinueStmt:
@@ -289,6 +312,12 @@ func lowerForRangeStmt(f *aotir.ForRangeStmt) (rtree.Stmt, error) {
 }
 
 func lowerLetStmt(l *aotir.LetStmt) (rtree.Stmt, error) {
+	if l.Init == nil {
+		// Uninitialised declaration: the C lowerer emits these for
+		// match-as-expression result vars; the MatchStmt arms assign them.
+		// Initialise to nil so the binding is in scope for arm bodies.
+		return &rtree.Assign{LHS: rubyIdent(l.Name), RHS: &rtree.NilLit{}}, nil
+	}
 	rhs, err := lowerExpr(l.Init)
 	if err != nil {
 		return nil, fmt.Errorf("let %s: %w", l.Name, err)
@@ -441,6 +470,51 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			args = append(args, ax)
 		}
 		return &rtree.MethodCall{Method: rubyMethodName(e.Func), Args: args, UseParens: true}, nil
+	case *aotir.MapLit:
+		return lowerMapLit(e)
+	case *aotir.MapGetExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		key, err := lowerExpr(e.Key)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: recv.RubyExprString() + ".fetch(" + key.RubyExprString() + ")"}, nil
+	case *aotir.VariantLit:
+		args := make([]rtree.Expr, 0, len(e.Fields))
+		for _, f := range e.Fields {
+			fv, err := lowerExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, &rtree.RawExpr{Text: f.Name + ": " + fv.RubyExprString()})
+		}
+		return &rtree.MethodCall{
+			Receiver:  &rtree.Ident{Name: e.UnionName + "::" + e.VariantName},
+			Method:    "new",
+			Args:      args,
+			UseParens: true,
+		}, nil
+	case *aotir.UnionVarRef:
+		return &rtree.Ident{Name: rubyIdent(e.Name)}, nil
+	case *aotir.VariantFieldAccess:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: e.FieldName}, nil
+	case *aotir.MapHasExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		key, err := lowerExpr(e.Key)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "key?", Args: []rtree.Expr{key}, UseParens: true}, nil
 	}
 	return nil, fmt.Errorf("ruby lower: unsupported expression type %T", e)
 }
@@ -455,6 +529,68 @@ func lowerListLit(l *aotir.ListLit) (rtree.Expr, error) {
 		parts = append(parts, ex.RubyExprString())
 	}
 	return &rtree.RawExpr{Text: "[" + strings.Join(parts, ", ") + "]"}, nil
+}
+
+func lowerMatchStmt(m *aotir.MatchStmt) (rtree.Stmt, error) {
+	target, err := lowerExpr(m.Target)
+	if err != nil {
+		return nil, err
+	}
+	arms := make([]rtree.CaseInArm, 0, len(m.Arms))
+	for _, a := range m.Arms {
+		// Build the pattern: UnionName::Variant(field1:, field2:).
+		// Each binding renames the matched field to a Ruby local var by appending
+		// `=> varname` if the var name differs from the field name.
+		var pat strings.Builder
+		fmt.Fprintf(&pat, "%s::%s", m.UnionName, a.VariantName)
+		if len(a.Bindings) > 0 {
+			pat.WriteByte('(')
+			for i, b := range a.Bindings {
+				if i > 0 {
+					pat.WriteString(", ")
+				}
+				if b.VarName == b.FieldName {
+					fmt.Fprintf(&pat, "%s:", b.FieldName)
+				} else {
+					fmt.Fprintf(&pat, "%s: %s", b.FieldName, rubyIdent(b.VarName))
+				}
+			}
+			pat.WriteByte(')')
+		}
+		body, err := lowerBlock(a.Body)
+		if err != nil {
+			return nil, err
+		}
+		arms = append(arms, rtree.CaseInArm{Pattern: pat.String(), Body: body})
+	}
+	var elseBody []rtree.Stmt
+	if m.Default != nil {
+		body, err := lowerBlock(m.Default.Body)
+		if err != nil {
+			return nil, err
+		}
+		elseBody = body
+	}
+	return &rtree.CaseInStmt{Scrutinee: target, Arms: arms, Else: elseBody}, nil
+}
+
+func lowerMapLit(m *aotir.MapLit) (rtree.Expr, error) {
+	if len(m.Keys) != len(m.Values) {
+		return nil, fmt.Errorf("ruby lower: MapLit Keys/Values length mismatch")
+	}
+	parts := make([]string, 0, len(m.Keys))
+	for i := range m.Keys {
+		k, err := lowerExpr(m.Keys[i])
+		if err != nil {
+			return nil, err
+		}
+		v, err := lowerExpr(m.Values[i])
+		if err != nil {
+			return nil, err
+		}
+		parts = append(parts, k.RubyExprString()+" => "+v.RubyExprString())
+	}
+	return &rtree.RawExpr{Text: "{" + strings.Join(parts, ", ") + "}"}, nil
 }
 
 func lowerIndexExpr(e *aotir.IndexExpr) (rtree.Expr, error) {
