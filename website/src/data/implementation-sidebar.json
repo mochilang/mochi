@@ -374,7 +374,8 @@
       "implementation/0074/phase-12-git-tag-publish",
       "implementation/0074/phase-13-cosign",
       "implementation/0074/phase-14-goroutine-bridge",
-      "implementation/0074/phase-15-monomorphise"
+      "implementation/0074/phase-15-monomorphise",
+      "implementation/0074/phase-16-tinygo-embedded"
     ]
   },
   "implementation/0075/index",
