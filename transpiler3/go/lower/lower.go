@@ -469,6 +469,100 @@ func helperDecl(name string) gotree.Decl {
 	}
 	return xs[start:end]
 }`}
+	case "mochiListSumI64":
+		return &gotree.RawDecl{Code: `func mochiListSumI64(xs []int64) int64 {
+	var s int64
+	for _, v := range xs {
+		s += v
+	}
+	return s
+}`}
+	case "mochiListSumF64":
+		return &gotree.RawDecl{Code: `func mochiListSumF64(xs []float64) float64 {
+	var s float64
+	for _, v := range xs {
+		s += v
+	}
+	return s
+}`}
+	case "mochiListMinI64":
+		return &gotree.RawDecl{Code: `func mochiListMinI64(xs []int64) int64 {
+	if len(xs) == 0 {
+		panic("min: empty list")
+	}
+	m := xs[0]
+	for _, v := range xs[1:] {
+		if v < m {
+			m = v
+		}
+	}
+	return m
+}`}
+	case "mochiListMaxI64":
+		return &gotree.RawDecl{Code: `func mochiListMaxI64(xs []int64) int64 {
+	if len(xs) == 0 {
+		panic("max: empty list")
+	}
+	m := xs[0]
+	for _, v := range xs[1:] {
+		if v > m {
+			m = v
+		}
+	}
+	return m
+}`}
+	case "mochiListMinF64":
+		return &gotree.RawDecl{Code: `func mochiListMinF64(xs []float64) float64 {
+	if len(xs) == 0 {
+		panic("min: empty list")
+	}
+	m := xs[0]
+	for _, v := range xs[1:] {
+		if v < m {
+			m = v
+		}
+	}
+	return m
+}`}
+	case "mochiListMaxF64":
+		return &gotree.RawDecl{Code: `func mochiListMaxF64(xs []float64) float64 {
+	if len(xs) == 0 {
+		panic("max: empty list")
+	}
+	m := xs[0]
+	for _, v := range xs[1:] {
+		if v > m {
+			m = v
+		}
+	}
+	return m
+}`}
+	case "mochiListMinStr":
+		return &gotree.RawDecl{Code: `func mochiListMinStr(xs []string) string {
+	if len(xs) == 0 {
+		panic("min: empty list")
+	}
+	m := xs[0]
+	for _, v := range xs[1:] {
+		if v < m {
+			m = v
+		}
+	}
+	return m
+}`}
+	case "mochiListMaxStr":
+		return &gotree.RawDecl{Code: `func mochiListMaxStr(xs []string) string {
+	if len(xs) == 0 {
+		panic("max: empty list")
+	}
+	m := xs[0]
+	for _, v := range xs[1:] {
+		if v > m {
+			m = v
+		}
+	}
+	return m
+}`}
 	}
 	return nil
 }

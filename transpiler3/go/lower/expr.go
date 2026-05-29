@@ -92,9 +92,39 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerStrContainsExpr(e)
 	case *aotir.StrConvertExpr:
 		return l.lowerStrConvertExpr(e)
+	case *aotir.ListSumExpr:
+		return l.lowerListSumExpr(e)
+	case *aotir.ListMinExpr:
+		return l.lowerListMinExpr(e)
+	case *aotir.ListMaxExpr:
+		return l.lowerListMaxExpr(e)
+	case *aotir.ListContainsExpr:
+		return l.lowerListContainsExpr(e)
+	case *aotir.NumCastExpr:
+		return l.lowerNumCastExpr(e)
+	case *aotir.StrUpperExpr:
+		return l.lowerStrUpperLower(e.Receiver, "ToUpper")
+	case *aotir.StrLowerExpr:
+		return l.lowerStrUpperLower(e.Receiver, "ToLower")
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
+}
+
+// lowerStrUpperLower emits `strings.ToUpper(s)` / `strings.ToLower(s)`
+// for the matching Mochi `upper(s)` / `lower(s)` builtins. The
+// stdlib helpers apply Unicode case folding, matching the C runtime's
+// per-rune transformation.
+func (l *lowerer) lowerStrUpperLower(recv aotir.Expr, fn string) (gotree.Expr, error) {
+	r, err := l.lowerExpr(recv)
+	if err != nil {
+		return nil, err
+	}
+	l.addImport("strings")
+	return &gotree.CallExpr{
+		Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "strings"}, Sel: fn},
+		Args: []gotree.Expr{r},
+	}, nil
 }
 
 // varRefExpr maps an aotir.VarRef.Name to a gotree expression. The
@@ -941,4 +971,86 @@ func (l *lowerer) lowerStrContainsExpr(e *aotir.StrContainsExpr) (gotree.Expr, e
 		Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "strings"}, Sel: "Contains"},
 		Args: []gotree.Expr{recv, sub},
 	}, nil
+}
+
+// lowerListSumExpr emits `mochiListSumI64(xs)` for list<int> and
+// `mochiListSumF64(xs)` for list<float>. The helper does the
+// straightforward accumulator loop so the sum stays type-stable
+// at the Mochi int / float pin.
+func (l *lowerer) lowerListSumExpr(e *aotir.ListSumExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	switch e.ElemType {
+	case aotir.TypeInt:
+		l.addHelper("mochiListSumI64")
+		return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiListSumI64"}, Args: []gotree.Expr{recv}}, nil
+	case aotir.TypeFloat:
+		l.addHelper("mochiListSumF64")
+		return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiListSumF64"}, Args: []gotree.Expr{recv}}, nil
+	}
+	return nil, fmt.Errorf("transpiler3/go/lower: sum() does not handle element type %s", e.ElemType)
+}
+
+// lowerListMinExpr emits `mochiListMin[T](xs)`. The helper panics
+// when xs is empty (matching the C runtime's mochi_panic_empty).
+func (l *lowerer) lowerListMinExpr(e *aotir.ListMinExpr) (gotree.Expr, error) {
+	return l.lowerListMinMax(e.Receiver, e.ElemType, "Min")
+}
+
+func (l *lowerer) lowerListMaxExpr(e *aotir.ListMaxExpr) (gotree.Expr, error) {
+	return l.lowerListMinMax(e.Receiver, e.ElemType, "Max")
+}
+
+func (l *lowerer) lowerListMinMax(recv aotir.Expr, elem aotir.Type, op string) (gotree.Expr, error) {
+	r, err := l.lowerExpr(recv)
+	if err != nil {
+		return nil, err
+	}
+	var helper string
+	switch elem {
+	case aotir.TypeInt:
+		helper = "mochiList" + op + "I64"
+	case aotir.TypeFloat:
+		helper = "mochiList" + op + "F64"
+	case aotir.TypeString:
+		helper = "mochiList" + op + "Str"
+	default:
+		return nil, fmt.Errorf("transpiler3/go/lower: %s() does not handle element type %s", op, elem)
+	}
+	l.addHelper(helper)
+	return &gotree.CallExpr{Fun: &gotree.Ident{Name: helper}, Args: []gotree.Expr{r}}, nil
+}
+
+// lowerListContainsExpr emits `slices.Contains(xs, v)` for the
+// `v in xs` predicate. The stdlib helper works for every scalar
+// element type Mochi allows here (int/float/bool/string).
+func (l *lowerer) lowerListContainsExpr(e *aotir.ListContainsExpr) (gotree.Expr, error) {
+	xs, err := l.lowerExpr(e.List)
+	if err != nil {
+		return nil, err
+	}
+	v, err := l.lowerExpr(e.Value)
+	if err != nil {
+		return nil, err
+	}
+	l.addImport("slices")
+	return &gotree.CallExpr{
+		Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "slices"}, Sel: "Contains"},
+		Args: []gotree.Expr{xs, v},
+	}, nil
+}
+
+// lowerNumCastExpr emits the int(x) cast for a float operand. The
+// aotir node fixes Result==TypeInt and the verifier ensures the
+// operand type is TypeFloat, so the lowering is a constant
+// `int64(operand)` wrap that truncates toward zero (Go conversion
+// semantics, matching the C runtime's `(int64_t)x` lowering).
+func (l *lowerer) lowerNumCastExpr(e *aotir.NumCastExpr) (gotree.Expr, error) {
+	operand, err := l.lowerExpr(e.Operand)
+	if err != nil {
+		return nil, err
+	}
+	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "int64"}, Args: []gotree.Expr{operand}}, nil
 }
