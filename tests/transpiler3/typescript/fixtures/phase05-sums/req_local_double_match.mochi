@@ -1,0 +1,16 @@
+type Result = Ok(value: int) | Err(msg: string)
+
+fun describe(r: Result): string {
+  let tag = match r {
+    Ok(v) => "ok"
+    Err(m) => "err"
+  }
+  let detail = match r {
+    Ok(v) => v
+    Err(m) => 0
+  }
+  return tag
+}
+
+print(describe(Ok(7)))
+print(describe(Err("boom")))

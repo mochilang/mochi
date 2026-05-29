@@ -107,9 +107,9 @@ func tsTypeForSetSlot(elem aotir.Type) (string, error) {
 // declared shape. Lists use ElemType (+ ElemRecordName when the
 // element is a record, Phase 3.4); maps use KeyType + ValueType;
 // sets use ElemType (sharing the slot with lists); records use
-// RecordName (Phase 3.4); every other VarType falls through to
-// tsTypeFor.
-func tsTypeForLetSlot(t, elem, key, value aotir.Type, recordName, elemRecordName string) (string, error) {
+// RecordName (Phase 3.4); unions use UnionName (Phase 5); every
+// other VarType falls through to tsTypeFor.
+func tsTypeForLetSlot(t, elem, key, value aotir.Type, recordName, elemRecordName, unionName string) (string, error) {
 	switch t {
 	case aotir.TypeList:
 		if elem == aotir.TypeRecord {
@@ -126,6 +126,8 @@ func tsTypeForLetSlot(t, elem, key, value aotir.Type, recordName, elemRecordName
 		return tsTypeForSetSlot(elem)
 	case aotir.TypeRecord:
 		return tsTypeForRecord(recordName)
+	case aotir.TypeUnion:
+		return tsTypeForUnion(unionName)
 	default:
 		return tsTypeFor(t)
 	}

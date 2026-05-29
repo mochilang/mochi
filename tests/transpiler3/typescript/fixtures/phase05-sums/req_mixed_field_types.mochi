@@ -1,0 +1,16 @@
+type Item = Count(n: int) | Name(s: string) | Flag(b: bool) | Empty
+
+let a: Item = Count(3)
+let b: Item = Name("hi")
+let c: Item = Flag(true)
+let d: Item = Empty
+
+let pa = match a { Count(n) => n  _ => -1 }
+let pb = match b { Name(s) => s   _ => "" }
+let pc = match c { Flag(b) => b   _ => false }
+let pd = match d { Empty => "unit" _ => "other" }
+
+print(pa)
+print(pb)
+print(pc)
+print(pd)

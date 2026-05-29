@@ -1,0 +1,17 @@
+type Tag = Even(n: int) | Odd(n: int)
+
+fun classify(n: int): Tag {
+  if n % 2 == 0 {
+    return Even(n)
+  }
+  return Odd(n)
+}
+
+for i in 0..5 {
+  let t = classify(i)
+  let kind = match t {
+    Even(n) => "even"
+    Odd(n) => "odd"
+  }
+  print(kind)
+}

@@ -1,0 +1,9 @@
+type Num = Pos(n: int) | Neg(n: int) | Zero
+
+let x: Num = Neg(7)
+let v = match x {
+  Pos(n) => n
+  Neg(n) => -n
+  Zero => 0
+}
+print(v)

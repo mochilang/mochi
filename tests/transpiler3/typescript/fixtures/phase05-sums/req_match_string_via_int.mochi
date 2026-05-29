@@ -1,0 +1,9 @@
+type Tag = T1(n: int) | T2(n: int) | T3(n: int)
+
+let t: Tag = T2(7)
+let label = match t {
+  T1(n) => "one"
+  T2(n) => "two"
+  T3(n) => "three"
+}
+print(label)
