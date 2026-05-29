@@ -281,6 +281,7 @@ const sidebars = {
         'implementation/0056/phase-28-audit',
         'implementation/0056/phase-29-runtime-matrix',
         'implementation/0056/phase-30-runtime-gem-tests',
+        'implementation/0056/phase-31-audit-6',
       ],
     },
   ],

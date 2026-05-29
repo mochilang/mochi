@@ -14,7 +14,6 @@ on:
     paths:
       - 'transpiler3/ruby/**'
       - 'mochi-runtime/**'
-      - 'tests/transpiler3/ruby/**'
       - '.github/workflows/transpiler3-ruby-test.yml'
 
 jobs:
