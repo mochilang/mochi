@@ -55,8 +55,214 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerMapKeysExpr(e)
 	case *aotir.MapValuesExpr:
 		return l.lowerMapValuesExpr(e)
+	case *aotir.SetLiteralExpr:
+		return l.lowerSetLit(e)
+	case *aotir.SetAddExpr:
+		return l.lowerSetAdd(e)
+	case *aotir.SetHasExpr:
+		return l.lowerSetHas(e)
+	case *aotir.SetLenExpr:
+		return l.lowerSetLen(e)
+	case *aotir.SetToListExpr:
+		return l.lowerSetToList(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
+	}
+}
+
+// lowerSetLit emits an IIFE that builds the set with sequential
+// assignments. The IIFE form, instead of a composite literal,
+// handles duplicate elements (which Mochi allows in `set{...}`
+// source but Go rejects as duplicate map keys).
+func (l *lowerer) lowerSetLit(e *aotir.SetLiteralExpr) (gotree.Expr, error) {
+	setType, err := l.lowerSetType(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("set literal: %w", err)
+	}
+	stmts := []gotree.Stmt{
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: "s"}},
+			Tok: ":=",
+			Rhs: []gotree.Expr{&gotree.CompositeLit{Type: &gotree.RawExpr{Src: setType}}},
+		},
+	}
+	for i, x := range e.Elems {
+		ge, err := l.lowerExpr(x)
+		if err != nil {
+			return nil, fmt.Errorf("set literal elem %d: %w", i, err)
+		}
+		stmts = append(stmts, &gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.IndexExpr{X: &gotree.Ident{Name: "s"}, Index: ge}},
+			Tok: "=",
+			Rhs: []gotree.Expr{&gotree.RawExpr{Src: "struct{}{}"}},
+		})
+	}
+	stmts = append(stmts, &gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: "s"}}})
+	return &gotree.CallExpr{
+		Fun: &gotree.FuncLit{
+			Type: &gotree.FuncType{Results: []gotree.Field{{Type: &gotree.RawExpr{Src: setType}}}},
+			Body: &gotree.BlockStmt{List: stmts},
+		},
+	}, nil
+}
+
+// lowerSetAdd emits an IIFE that clones the receiver and inserts
+// the element, matching Mochi's pure-set semantics.
+func (l *lowerer) lowerSetAdd(e *aotir.SetAddExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	elem, err := l.lowerExpr(e.Elem)
+	if err != nil {
+		return nil, err
+	}
+	setType, err := l.lowerSetType(e.ElemType)
+	if err != nil {
+		return nil, err
+	}
+	l.addImport("maps")
+	body := &gotree.BlockStmt{List: []gotree.Stmt{
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: "out"}},
+			Tok: ":=",
+			Rhs: []gotree.Expr{&gotree.CallExpr{
+				Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "maps"}, Sel: "Clone"},
+				Args: []gotree.Expr{recv},
+			}},
+		},
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.IndexExpr{X: &gotree.Ident{Name: "out"}, Index: elem}},
+			Tok: "=",
+			Rhs: []gotree.Expr{&gotree.RawExpr{Src: "struct{}{}"}},
+		},
+		&gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: "out"}}},
+	}}
+	return &gotree.CallExpr{
+		Fun: &gotree.FuncLit{
+			Type: &gotree.FuncType{Results: []gotree.Field{{Type: &gotree.RawExpr{Src: setType}}}},
+			Body: body,
+		},
+	}, nil
+}
+
+// lowerSetHas emits the same IIFE pattern as MapHasExpr.
+func (l *lowerer) lowerSetHas(e *aotir.SetHasExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	elem, err := l.lowerExpr(e.Elem)
+	if err != nil {
+		return nil, err
+	}
+	return &gotree.CallExpr{
+		Fun: &gotree.FuncLit{
+			Type: &gotree.FuncType{Results: []gotree.Field{{Type: &gotree.Ident{Name: "bool"}}}},
+			Body: &gotree.BlockStmt{List: []gotree.Stmt{
+				&gotree.AssignStmt{
+					Lhs: []gotree.Expr{&gotree.Ident{Name: "_"}, &gotree.Ident{Name: "ok"}},
+					Tok: ":=",
+					Rhs: []gotree.Expr{&gotree.IndexExpr{X: recv, Index: elem}},
+				},
+				&gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: "ok"}}},
+			}},
+		},
+	}, nil
+}
+
+// lowerSetLen emits `int64(len(s))`.
+func (l *lowerer) lowerSetLen(e *aotir.SetLenExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return &gotree.CallExpr{
+		Fun: &gotree.Ident{Name: "int64"},
+		Args: []gotree.Expr{&gotree.CallExpr{
+			Fun:  &gotree.Ident{Name: "len"},
+			Args: []gotree.Expr{recv},
+		}},
+	}, nil
+}
+
+// lowerSetToList emits `slices.Sorted(maps.Keys(s))` so iteration
+// order matches Mochi's sorted-on-iteration semantics. Bool-element
+// sets fall back to a manual sorted enumeration because cmp.Ordered
+// excludes bool.
+func (l *lowerer) lowerSetToList(e *aotir.SetToListExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	if e.ElemType == aotir.TypeBool {
+		return l.boolSetToList(recv), nil
+	}
+	l.addImport("maps")
+	l.addImport("slices")
+	return &gotree.CallExpr{
+		Fun: &gotree.SelectorExpr{X: &gotree.Ident{Name: "slices"}, Sel: "Sorted"},
+		Args: []gotree.Expr{&gotree.CallExpr{
+			Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "maps"}, Sel: "Keys"},
+			Args: []gotree.Expr{recv},
+		}},
+	}, nil
+}
+
+// boolSetToList returns a slice in canonical false-then-true order
+// for a set<bool>, since Go's cmp.Ordered does not include bool.
+// The IIFE binds the receiver to `s` once so re-emitting the
+// receiver subtree across multiple statements is safe.
+func (l *lowerer) boolSetToList(recv gotree.Expr) gotree.Expr {
+	body := &gotree.BlockStmt{List: []gotree.Stmt{
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: "s"}},
+			Tok: ":=",
+			Rhs: []gotree.Expr{recv},
+		},
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: "out"}},
+			Tok: ":=",
+			Rhs: []gotree.Expr{&gotree.CallExpr{
+				Fun: &gotree.Ident{Name: "make"},
+				Args: []gotree.Expr{
+					&gotree.RawExpr{Src: "[]bool"},
+					&gotree.BasicLit{Kind: gotree.IntLit, Value: "0"},
+					&gotree.CallExpr{Fun: &gotree.Ident{Name: "len"}, Args: []gotree.Expr{&gotree.Ident{Name: "s"}}},
+				},
+			}},
+		},
+		boolSetAppendIf("false"),
+		boolSetAppendIf("true"),
+		&gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: "out"}}},
+	}}
+	return &gotree.CallExpr{
+		Fun: &gotree.FuncLit{
+			Type: &gotree.FuncType{Results: []gotree.Field{{Type: &gotree.RawExpr{Src: "[]bool"}}}},
+			Body: body,
+		},
+	}
+}
+
+// boolSetAppendIf builds `if _, ok := s[BOOL]; ok { out = append(out, BOOL) }`.
+func boolSetAppendIf(bool_ string) gotree.Stmt {
+	return &gotree.IfStmt{
+		Init: &gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: "_"}, &gotree.Ident{Name: "ok"}},
+			Tok: ":=",
+			Rhs: []gotree.Expr{&gotree.IndexExpr{X: &gotree.Ident{Name: "s"}, Index: &gotree.Ident{Name: bool_}}},
+		},
+		Cond: &gotree.Ident{Name: "ok"},
+		Body: &gotree.BlockStmt{List: []gotree.Stmt{
+			&gotree.AssignStmt{
+				Lhs: []gotree.Expr{&gotree.Ident{Name: "out"}},
+				Tok: "=",
+				Rhs: []gotree.Expr{&gotree.CallExpr{
+					Fun:  &gotree.Ident{Name: "append"},
+					Args: []gotree.Expr{&gotree.Ident{Name: "out"}, &gotree.Ident{Name: bool_}},
+				}},
+			},
+		}},
 	}
 }
 

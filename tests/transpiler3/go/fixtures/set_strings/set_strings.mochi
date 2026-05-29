@@ -1,0 +1,4 @@
+let names = set { "alice", "bob", "carol" }
+for n in names {
+  print(n)
+}

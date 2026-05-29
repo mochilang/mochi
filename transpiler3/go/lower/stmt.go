@@ -189,6 +189,8 @@ func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 		return l.lowerListType(s.ElemType)
 	case aotir.TypeMap:
 		return l.lowerMapType(s.KeyType, s.ValueType)
+	case aotir.TypeSet:
+		return l.lowerSetType(s.ElemType)
 	}
 	return l.lowerType(s.VarType)
 }
