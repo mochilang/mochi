@@ -15,7 +15,7 @@ description: "MEP-56 Phase 32, align mochi-runtime gem license with the spec, ex
 | Landed         | 2026-05-29 14:54 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | [#22510](https://github.com/mochilang/mochi/pull/22510) follow-up |
-| Commit         | TBD |
+| Commit         | 0a753708ad |
 
 ## Gate
 
