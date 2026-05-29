@@ -425,6 +425,89 @@ func (s *ReturnStmt) PyString(indent int) string {
 	return pad + "return " + s.Value.PyString()
 }
 
+// RaiseStmt is `raise Exc(args, kw=v)`. Phase 11.0 uses this to lower
+// Mochi `panic(code, msg)` to `raise MochiPanic(code, msg)`.
+type RaiseStmt struct {
+	Exc Expr
+}
+
+func (*RaiseStmt) isStmt() {}
+
+// PyString renders the raise statement.
+func (s *RaiseStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	if s.Exc == nil {
+		return pad + "raise"
+	}
+	return pad + "raise " + s.Exc.PyString()
+}
+
+// TryExceptStmt is `try: ... except (E1, E2) as Bind: <prologue> ...`.
+// Phase 11.0 lowers Mochi try/catch to a single except arm matching the
+// MochiPanic family. CatchVar is the user-visible Mochi catch binding
+// (an int code). The lowerer prepends a `CatchVar = _panic_code(__mp)`
+// statement to the catch body so the rest of the body sees the canonical
+// integer surface.
+type TryExceptStmt struct {
+	Body     []Stmt
+	ExcTypes []string // identifiers for the except clause tuple, e.g. ["MochiPanic", "ZeroDivisionError", "IndexError"]
+	BindName string   // `as <name>` binding (internal scratch, e.g. "__mp")
+	Handler  []Stmt
+}
+
+func (*TryExceptStmt) isStmt() {}
+
+// PyString renders the try/except statement.
+func (s *TryExceptStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	var sb strings.Builder
+	sb.WriteString(pad)
+	sb.WriteString("try:\n")
+	if len(s.Body) == 0 {
+		sb.WriteString(pad)
+		sb.WriteString("    pass")
+	} else {
+		for i, st := range s.Body {
+			if i > 0 {
+				sb.WriteByte('\n')
+			}
+			sb.WriteString(st.PyString(indent + 1))
+		}
+	}
+	sb.WriteByte('\n')
+	sb.WriteString(pad)
+	sb.WriteString("except ")
+	if len(s.ExcTypes) == 1 {
+		sb.WriteString(s.ExcTypes[0])
+	} else {
+		sb.WriteByte('(')
+		for i, t := range s.ExcTypes {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(t)
+		}
+		sb.WriteByte(')')
+	}
+	if s.BindName != "" {
+		sb.WriteString(" as ")
+		sb.WriteString(s.BindName)
+	}
+	sb.WriteString(":\n")
+	if len(s.Handler) == 0 {
+		sb.WriteString(pad)
+		sb.WriteString("    pass")
+	} else {
+		for i, st := range s.Handler {
+			if i > 0 {
+				sb.WriteByte('\n')
+			}
+			sb.WriteString(st.PyString(indent + 1))
+		}
+	}
+	return sb.String()
+}
+
 // PassStmt is the no-op `pass`.
 type PassStmt struct{}
 

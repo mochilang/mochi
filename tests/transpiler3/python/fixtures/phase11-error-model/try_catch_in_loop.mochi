@@ -1,0 +1,10 @@
+var i: int = 0
+while i < 3 {
+  try {
+    let x: int = 10 / i
+    print(x)
+  } catch e {
+    print(e)
+  }
+  i = i + 1
+}

@@ -40,6 +40,7 @@ type lowerer struct {
 	needsSumF64     bool // true once `sum(xs:float)` lowers to mochi_runtime.query.sum_f64 (Phase 7.0)
 	needsDeque      bool // true once a chan<T> lowers to collections.deque (Phase 9.0)
 	needsStream     bool // true once a stream<T> / sub<T> needs the mochi_runtime.stream surface (Phase 10.0)
+	needsExcept     bool // true once a panic/try-catch needs the mochi_runtime.except_ surface (Phase 11.0)
 }
 
 // Lower translates an aotir.Program into a pysrc.Module covering the
@@ -146,6 +147,12 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
 			From:  "mochi_runtime.stream",
 			Names: []string{"MochiStream", "MochiSub", "mochi_emit", "mochi_make_stream", "mochi_recv_sub", "mochi_subscribe"},
+		})
+	}
+	if l.needsExcept {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
+			From:  "mochi_runtime.except_",
+			Names: []string{"MochiPanic", "_panic_code"},
 		})
 	}
 	return mod, nil
@@ -326,6 +333,10 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (pysrc.Stmt, error) {
 		return l.lowerChanSendStmt(v)
 	case *aotir.StreamEmitStmt:
 		return l.lowerStreamEmitStmt(v)
+	case *aotir.PanicStmt:
+		return l.lowerPanicStmt(v)
+	case *aotir.TryCatchStmt:
+		return l.lowerTryCatchStmt(v)
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported statement %T", s)
 	}

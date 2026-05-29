@@ -1,0 +1,15 @@
+let x: int = 10
+let y: int = 0
+try {
+  try {
+    let z: int = x / y
+    print(z)
+  } catch inner {
+    print("inner caught")
+    print(inner)
+  }
+  print("after inner try")
+} catch outer {
+  print("outer caught")
+  print(outer)
+}
