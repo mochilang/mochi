@@ -1,0 +1,3 @@
+let nums = [1.5, 2.5, 3.5]
+let total = reduce(nums, fun(acc: float, x: float): float => acc + x, 0.0)
+print(total)

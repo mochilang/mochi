@@ -134,6 +134,12 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerOMapHasExpr(e)
 	case *aotir.OMapLenExpr:
 		return l.lowerOMapLenExpr(e)
+	case *aotir.ListMapExpr:
+		return l.lowerListMapExpr(e)
+	case *aotir.ListFilterExpr:
+		return l.lowerListFilterExpr(e)
+	case *aotir.ListFoldlExpr:
+		return l.lowerListFoldlExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -1383,6 +1389,174 @@ func (l *lowerer) lowerOMapLenExpr(e *aotir.OMapLenExpr) (gotree.Expr, error) {
 	return &gotree.CallExpr{
 		Fun:  &gotree.Ident{Name: "mochiOMapLen"},
 		Args: []gotree.Expr{recv},
+	}, nil
+}
+
+// lowerListMapExpr emits an IIFE that walks the input list and applies the
+// function to each element. The result-element type comes from ListMapExpr.ElemType
+// (B in `map(xs: list<A>, fn: fun(A): B): list<B>`). The IIFE wrapper keeps
+// the result available as an expression so it composes inside larger forms.
+func (l *lowerer) lowerListMapExpr(e *aotir.ListMapExpr) (gotree.Expr, error) {
+	xs, err := l.lowerExpr(e.List)
+	if err != nil {
+		return nil, fmt.Errorf("map list: %w", err)
+	}
+	fn, err := l.lowerExpr(e.Fn)
+	if err != nil {
+		return nil, fmt.Errorf("map fn: %w", err)
+	}
+	outType, err := l.lowerListType(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("map result type: %w", err)
+	}
+	body := &gotree.BlockStmt{List: []gotree.Stmt{
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: "out"}},
+			Tok: ":=",
+			Rhs: []gotree.Expr{&gotree.CallExpr{
+				Fun: &gotree.Ident{Name: "make"},
+				Args: []gotree.Expr{
+					&gotree.RawExpr{Src: outType},
+					&gotree.BasicLit{Kind: gotree.IntLit, Value: "0"},
+					&gotree.CallExpr{Fun: &gotree.Ident{Name: "len"}, Args: []gotree.Expr{xs}},
+				},
+			}},
+		},
+		&gotree.RangeStmt{
+			Key:   &gotree.Ident{Name: "_"},
+			Value: &gotree.Ident{Name: "x"},
+			Tok:   ":=",
+			X:     xs,
+			Body: &gotree.BlockStmt{List: []gotree.Stmt{
+				&gotree.AssignStmt{
+					Lhs: []gotree.Expr{&gotree.Ident{Name: "out"}},
+					Tok: "=",
+					Rhs: []gotree.Expr{&gotree.CallExpr{
+						Fun:  &gotree.Ident{Name: "append"},
+						Args: []gotree.Expr{&gotree.Ident{Name: "out"}, &gotree.CallExpr{Fun: fn, Args: []gotree.Expr{&gotree.Ident{Name: "x"}}}},
+					}},
+				},
+			}},
+		},
+		&gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: "out"}}},
+	}}
+	return &gotree.CallExpr{
+		Fun: &gotree.FuncLit{
+			Type: &gotree.FuncType{Results: []gotree.Field{{Type: &gotree.RawExpr{Src: outType}}}},
+			Body: body,
+		},
+	}, nil
+}
+
+// lowerListFilterExpr emits an IIFE that walks the input list and keeps
+// elements for which fn returns true. The result element type is the
+// preserved input element type (ListFilterExpr.ElemType).
+func (l *lowerer) lowerListFilterExpr(e *aotir.ListFilterExpr) (gotree.Expr, error) {
+	xs, err := l.lowerExpr(e.List)
+	if err != nil {
+		return nil, fmt.Errorf("filter list: %w", err)
+	}
+	fn, err := l.lowerExpr(e.Fn)
+	if err != nil {
+		return nil, fmt.Errorf("filter fn: %w", err)
+	}
+	outType, err := l.lowerListType(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("filter result type: %w", err)
+	}
+	body := &gotree.BlockStmt{List: []gotree.Stmt{
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: "out"}},
+			Tok: ":=",
+			Rhs: []gotree.Expr{&gotree.CallExpr{
+				Fun: &gotree.Ident{Name: "make"},
+				Args: []gotree.Expr{
+					&gotree.RawExpr{Src: outType},
+					&gotree.BasicLit{Kind: gotree.IntLit, Value: "0"},
+					&gotree.CallExpr{Fun: &gotree.Ident{Name: "len"}, Args: []gotree.Expr{xs}},
+				},
+			}},
+		},
+		&gotree.RangeStmt{
+			Key:   &gotree.Ident{Name: "_"},
+			Value: &gotree.Ident{Name: "x"},
+			Tok:   ":=",
+			X:     xs,
+			Body: &gotree.BlockStmt{List: []gotree.Stmt{
+				&gotree.IfStmt{
+					Cond: &gotree.CallExpr{Fun: fn, Args: []gotree.Expr{&gotree.Ident{Name: "x"}}},
+					Body: &gotree.BlockStmt{List: []gotree.Stmt{
+						&gotree.AssignStmt{
+							Lhs: []gotree.Expr{&gotree.Ident{Name: "out"}},
+							Tok: "=",
+							Rhs: []gotree.Expr{&gotree.CallExpr{
+								Fun:  &gotree.Ident{Name: "append"},
+								Args: []gotree.Expr{&gotree.Ident{Name: "out"}, &gotree.Ident{Name: "x"}},
+							}},
+						},
+					}},
+				},
+			}},
+		},
+		&gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: "out"}}},
+	}}
+	return &gotree.CallExpr{
+		Fun: &gotree.FuncLit{
+			Type: &gotree.FuncType{Results: []gotree.Field{{Type: &gotree.RawExpr{Src: outType}}}},
+			Body: body,
+		},
+	}, nil
+}
+
+// lowerListFoldlExpr emits an IIFE that walks the input list and folds
+// each element into the accumulator via `acc = fn(acc, x)`. AccType is the
+// result type carried on the node.
+func (l *lowerer) lowerListFoldlExpr(e *aotir.ListFoldlExpr) (gotree.Expr, error) {
+	xs, err := l.lowerExpr(e.List)
+	if err != nil {
+		return nil, fmt.Errorf("reduce list: %w", err)
+	}
+	fn, err := l.lowerExpr(e.Fn)
+	if err != nil {
+		return nil, fmt.Errorf("reduce fn: %w", err)
+	}
+	init, err := l.lowerExpr(e.Init)
+	if err != nil {
+		return nil, fmt.Errorf("reduce init: %w", err)
+	}
+	accType, err := l.lowerType(e.AccType)
+	if err != nil {
+		return nil, fmt.Errorf("reduce acc type: %w", err)
+	}
+	body := &gotree.BlockStmt{List: []gotree.Stmt{
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: "acc"}},
+			Tok: ":=",
+			Rhs: []gotree.Expr{init},
+		},
+		&gotree.RangeStmt{
+			Key:   &gotree.Ident{Name: "_"},
+			Value: &gotree.Ident{Name: "x"},
+			Tok:   ":=",
+			X:     xs,
+			Body: &gotree.BlockStmt{List: []gotree.Stmt{
+				&gotree.AssignStmt{
+					Lhs: []gotree.Expr{&gotree.Ident{Name: "acc"}},
+					Tok: "=",
+					Rhs: []gotree.Expr{&gotree.CallExpr{
+						Fun:  fn,
+						Args: []gotree.Expr{&gotree.Ident{Name: "acc"}, &gotree.Ident{Name: "x"}},
+					}},
+				},
+			}},
+		},
+		&gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: "acc"}}},
+	}}
+	return &gotree.CallExpr{
+		Fun: &gotree.FuncLit{
+			Type: &gotree.FuncType{Results: []gotree.Field{{Type: &gotree.RawExpr{Src: accType}}}},
+			Body: body,
+		},
 	}, nil
 }
 
