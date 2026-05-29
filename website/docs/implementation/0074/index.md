@@ -32,7 +32,7 @@ A phase is LANDED only when its gate is green for every applicable target (consu
 | 14 | Goroutine bridge (cgo handle pool + channel-as-handle + callback-as-handle) | LANDED (baseline; 14.1+ deferred) | (pending) | [phase-14](/docs/implementation/0074/phase-14-goroutine-bridge) |
 | 15 | Monomorphisation (`[go.monomorphise]` manifest + per-instantiation wrapper) | LANDED (baseline; 15.1+ deferred) | (pending) | [phase-15](/docs/implementation/0074/phase-15-monomorphise) |
 | 16 | TinyGo embedded subset (`profile = "embedded"` + `//go:linkname` wrapper) | LANDED (baseline; 16.1+ deferred) | (pending) | [phase-16](/docs/implementation/0074/phase-16-tinygo-embedded) |
-| 17 | Vanity-import resolver + wasm-wasip1 / wasm-js publish gate (wazero host integration) | NOT STARTED | — | [phase-17](/docs/implementation/0074/phase-17-vanity-and-wasm) |
+| 17 | Vanity-import resolver + wasm-wasip1 / wasm-js publish gate (wazero host integration) | LANDED (baseline; 17.1+ deferred) | (pending) | [phase-17](/docs/implementation/0074/phase-17-vanity-and-wasm) |
 
 ## Target coverage matrix
 
@@ -57,7 +57,7 @@ Each phase's LANDED gate must be green for every applicable target. `n/a` cells 
 | 14. goroutine bridge | LANDED (baseline) | required | required | n/a (no goroutines on wasm-js without scheduler shim) | required |
 | 15. monomorphisation | LANDED (baseline) | required | required | required | required |
 | 16. TinyGo embedded subset | LANDED (baseline) | n/a | n/a | required (wasm-js via tinygo) | required |
-| 17. vanity-import + WASI publish | NOT STARTED | required | required | required | n/a |
+| 17. vanity-import + WASI publish | LANDED (baseline) | required | required | required | n/a |
 
 Cell legend: `required` means the phase's gate runs against this target; `n/a` means the phase's behaviour is intentionally not exercised on this target (architectural reason in parentheses).
 
@@ -109,7 +109,7 @@ The `package3/go/` location is shared with the broader MEP-57 polyglot package w
 
 ## Status snapshot
 
-As of 2026-05-30: phases 0-16 LANDED on `main` (phases 6 + 7 + 9 + 11 + 12 + 13 + 14 + 15 + 16 baseline only; phase 10 schema only; sub-phases 6.1+/7.1+/9.1+/10.1+/11.1+/12.1+/13.1+/14.1+/15.1+/16.1+ deferred), phase 17 NOT STARTED.
+As of 2026-05-30: all 18 phases (0-17) LANDED on `main` (phases 6 + 7 + 9 + 11 + 12 + 13 + 14 + 15 + 16 + 17 baseline only; phase 10 schema only; sub-phases 6.1+/7.1+/9.1+/10.1+/11.1+/12.1+/13.1+/14.1+/15.1+/16.1+/17.1+ deferred). The MEP-74 umbrella plan is complete at the baseline level; remaining work is per-phase sub-phase integration (wrapper-synth wiring, MEP-54 driver wiring, mochi.lock CLI, live-target gates).
 
 ## Cross-references
 

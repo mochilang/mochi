@@ -375,7 +375,8 @@
       "implementation/0074/phase-13-cosign",
       "implementation/0074/phase-14-goroutine-bridge",
       "implementation/0074/phase-15-monomorphise",
-      "implementation/0074/phase-16-tinygo-embedded"
+      "implementation/0074/phase-16-tinygo-embedded",
+      "implementation/0074/phase-17-vanity-and-wasm"
     ]
   },
   "implementation/0075/index",
