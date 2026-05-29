@@ -25,8 +25,8 @@ Pass criteria:
 1. URL parity. The `Registry` interface implemented by `pkg/pkgregistry/local` returns identical bytes to the planned `pkg/pkgregistry/sparse` (HTTP) backend, given identical on-disk content. The harness compares `Versions(name)` and `Manifest(name, ver)` outputs across both backends.
 2. Solver parity. Running `mochi pkg lock` with `[registry] default = "file:///opt/mochi-cache"` produces a lockfile byte-identical to the same lock against the HTTP backend (`https://index.mochi.dev`) seeded with the same fixture content.
 3. Blob retrieval. `Blob(blake3)` returns the byte-identical tarball whether sourced from disk or HTTPS.
-4. Init helper. `mochi registry init <root>` populates a usable filesystem registry from a set of input manifests + tarballs.
-5. Serve helper. `mochi registry serve --local=<root> --port=N` opens an HTTPS reverse proxy that fronts a local root with the sparse URL scheme; the test harness uses this to verify the local backend matches the HTTP shape.
+4. Init helper. `mochi pkg registry init <root>` populates a usable filesystem registry from a set of input manifests + tarballs.
+5. Serve helper. `mochi pkg registry serve --local=<root> --port=N` opens an HTTPS reverse proxy that fronts a local root with the sparse URL scheme; the test harness uses this to verify the local backend matches the HTTP shape.
 
 ## Goal-alignment audit
 
@@ -43,8 +43,8 @@ Phase 7 deliberately does *not* implement HTTP semantics (ETag, conditional GET,
 | 7.0 | `pkg/pkgregistry/local` package: parse `file://` URL, walk filesystem | NOT STARTED | — |
 | 7.1 | URL scheme on disk: `<root>/<bucket>/<scope>/<name>` | NOT STARTED | — |
 | 7.2 | Blob lookup: `<root>/blobs/<blake3-hex>` | NOT STARTED | — |
-| 7.3 | `mochi registry serve --local=<root>` debug command | NOT STARTED | — |
-| 7.4 | `mochi registry init <root>` for populating a test root from manifests | NOT STARTED | — |
+| 7.3 | `mochi pkg registry serve --local=<root>` debug command | NOT STARTED | — |
+| 7.4 | `mochi pkg registry init <root>` for populating a test root from manifests | NOT STARTED | — |
 | 7.5 | Cross-backend parity tests | NOT STARTED | — |
 | 7.6 | Negative paths (missing pkg -> 404 analog, malformed JSONL -> M057_INDEX_E002) | NOT STARTED | — |
 
@@ -166,7 +166,7 @@ func (r *FilesystemRegistry) blobPath(blake3 string) string {
 
 Two-character pair sharding keeps any single directory bounded for popular projects.
 
-## Sub-phase 7.3 — `mochi registry serve`
+## Sub-phase 7.3 — `mochi pkg registry serve`
 
 A debug HTTPS server that fronts a local root with the URL scheme. Used to integration-test Phase 8 (sparse HTTPS) against a local backend:
 
@@ -194,9 +194,9 @@ func cmdRegistryServe(c *cli.Context) error {
 
 `serveBlob` streams the tarball with `Content-Type: application/vnd.mochi.tarball+zstd` and `ETag` equal to the BLAKE3 hex (matches blobs.mochi.dev convention).
 
-This server is the test-time alternative to mocking `net/http` in unit tests; integration tests against `mochi registry serve` exercise the same code path used in production HTTPS.
+This server is the test-time alternative to mocking `net/http` in unit tests; integration tests against `mochi pkg registry serve` exercise the same code path used in production HTTPS.
 
-## Sub-phase 7.4 — `mochi registry init`
+## Sub-phase 7.4 — `mochi pkg registry init`
 
 Populates a registry root from a set of manifests + tarballs:
 
@@ -220,7 +220,7 @@ The output tree is a complete sparse index ready to be served.
 
 ## Sub-phase 7.5 — Cross-backend parity tests
 
-The test harness runs each solver fixture twice: once against the local filesystem registry and once against `mochi registry serve` over HTTPS:
+The test harness runs each solver fixture twice: once against the local filesystem registry and once against `mochi pkg registry serve` over HTTPS:
 
 ```go
 // tests/pkgsystem/local-registry/parity_test.go
@@ -284,7 +284,7 @@ row was a collision with Phase 9's hash-mismatch code and is removed.
 - `TestPhase7ManifestFetch` — `Manifest` returns the parsed manifest for a version.
 - `TestPhase7Blob` — `Blob` streams tarball.
 - `TestPhase7Parity` — local vs HTTPS-serve parity.
-- `TestPhase7Init` — `mochi registry init` produces a usable tree.
+- `TestPhase7Init` — `mochi pkg registry init` produces a usable tree.
 
 ## Open questions
 
