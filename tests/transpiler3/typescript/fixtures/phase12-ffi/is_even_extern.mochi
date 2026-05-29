@@ -1,0 +1,5 @@
+extern fun c_is_even(x: int): bool
+print(c_is_even(4))
+print(c_is_even(5))
+print(c_is_even(0))
+print(c_is_even(-2))

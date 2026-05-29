@@ -24,12 +24,15 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"mochi/parser"
 	clower "mochi/transpiler3/c/lower"
+	"mochi/transpiler3/typescript/cffi"
 	"mochi/transpiler3/typescript/colour"
 	"mochi/transpiler3/typescript/emit"
 	"mochi/transpiler3/typescript/lower"
+	"mochi/transpiler3/typescript/tstree"
 	"mochi/types"
 )
 
@@ -118,6 +121,14 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 		return "", fmt.Errorf("ts build: ts lower: %w", err)
 	}
 
+	// Phase 12: if a sidecar `<src-without-.mochi>.c` file exists,
+	// translate it to inline TS function declarations and inject
+	// them so the program self-contains its `extern fun` definitions
+	// without runtime FFI dispatch.
+	if err := injectSidecarC(src, file); err != nil {
+		return "", fmt.Errorf("ts build: cffi: %w", err)
+	}
+
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return "", err
 	}
@@ -141,6 +152,63 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 	_ = io.Copy
 	_ = runtime.GOOS
 	return emittedPath, nil
+}
+
+// injectSidecarC looks for `<src-without-.mochi>.c` next to the
+// source path. When present, it reads the file, hands the bytes
+// to cffi.Translate, and prepends a RawDecl per translated C
+// function to file.Decls. The injected text is formatted as a
+// regular TS function declaration so the generated .ts compiles
+// with `tsc --strict` and runs byte-equal on Node, Deno, and Bun.
+func injectSidecarC(src string, file *tstree.SourceFile) error {
+	sidecar := strings.TrimSuffix(src, ".mochi") + ".c"
+	if sidecar == src {
+		return nil
+	}
+	cBytes, err := os.ReadFile(sidecar)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
+	}
+	funcs, err := cffi.Translate(string(cBytes))
+	if err != nil {
+		return fmt.Errorf("%s: %w", filepath.Base(sidecar), err)
+	}
+	var injected []tstree.Decl
+	for _, f := range funcs {
+		injected = append(injected, &tstree.RawDecl{
+			Doc: []string{
+				"Phase 12: inline-translated from sidecar " + filepath.Base(sidecar) + ".",
+			},
+			Text: renderCffiFunc(f),
+		})
+	}
+	file.Decls = append(injected, file.Decls...)
+	return nil
+}
+
+// renderCffiFunc formats one cffi.Func as a TS function declaration
+// string suitable for a tstree.RawDecl.Text.
+func renderCffiFunc(f cffi.Func) string {
+	var b bytes.Buffer
+	b.WriteString("function ")
+	b.WriteString(f.Name)
+	b.WriteByte('(')
+	for i, p := range f.Params {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		b.WriteString(p.Name)
+		b.WriteString(": ")
+		b.WriteString(p.Type)
+	}
+	b.WriteString("): ")
+	b.WriteString(f.ReturnType)
+	b.WriteByte(' ')
+	b.WriteString(f.Body)
+	return b.String()
 }
 
 // runIfRequested dispatches a TargetXxxRun to the appropriate
