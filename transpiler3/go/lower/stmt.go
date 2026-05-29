@@ -438,6 +438,8 @@ func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 	case aotir.TypeSub:
 		l.addHelper("mochiSub")
 		return l.lowerSubType(s.SubElemType)
+	case aotir.TypeFuture:
+		return l.lowerFutureType(s.FutureElemType)
 	case aotir.TypeAgent:
 		if s.AgentName == "" {
 			return "", fmt.Errorf("agent let missing AgentName")

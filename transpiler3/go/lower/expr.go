@@ -158,6 +158,10 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerAgentSpawnExpr(e)
 	case *aotir.AgentIntentCallExpr:
 		return l.lowerAgentIntentCallExpr(e)
+	case *aotir.AsyncExpr:
+		return l.lowerAsyncExpr(e)
+	case *aotir.AwaitExpr:
+		return l.lowerAwaitExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -1853,4 +1857,75 @@ func (l *lowerer) findAgent(name string) *aotir.AgentDecl {
 		}
 	}
 	return nil
+}
+
+// lowerAsyncExpr lowers `async body` to a one-shot Go channel:
+//
+//	func() chan T {
+//	    __fut := make(chan T, 1)
+//	    go func() { __fut <- body }()
+//	    return __fut
+//	}()
+//
+// The buffered channel (cap 1) lets the producer goroutine return
+// without blocking when await runs later than the body's send.
+// Mochi futures are one-shot so the channel is never reused after
+// the single send + receive pair.
+func (l *lowerer) lowerAsyncExpr(e *aotir.AsyncExpr) (gotree.Expr, error) {
+	body, err := l.lowerExpr(e.Body)
+	if err != nil {
+		return nil, fmt.Errorf("async body: %w", err)
+	}
+	chType, err := l.lowerFutureType(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("async future type: %w", err)
+	}
+	elemType, err := l.lowerType(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("async element type: %w", err)
+	}
+	if elemType == "" {
+		return nil, fmt.Errorf("transpiler3/go/lower: async element type cannot be unit")
+	}
+	futName := "__fut"
+	makeStmt := &gotree.AssignStmt{
+		Lhs: []gotree.Expr{&gotree.Ident{Name: futName}},
+		Tok: ":=",
+		Rhs: []gotree.Expr{&gotree.CallExpr{
+			Fun: &gotree.Ident{Name: "make"},
+			Args: []gotree.Expr{
+				&gotree.Ident{Name: chType},
+				&gotree.BasicLit{Kind: gotree.IntLit, Value: "1"},
+			},
+		}},
+	}
+	sendStmt := &gotree.SendStmt{
+		Chan:  &gotree.Ident{Name: futName},
+		Value: body,
+	}
+	innerFn := &gotree.FuncLit{
+		Type: &gotree.FuncType{},
+		Body: &gotree.BlockStmt{List: []gotree.Stmt{sendStmt}},
+	}
+	goStmt := &gotree.GoStmt{Call: &gotree.CallExpr{Fun: innerFn}}
+	retStmt := &gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: futName}}}
+	outerFn := &gotree.FuncLit{
+		Type: &gotree.FuncType{
+			Results: []gotree.Field{{Type: &gotree.Ident{Name: chType}}},
+		},
+		Body: &gotree.BlockStmt{List: []gotree.Stmt{makeStmt, goStmt, retStmt}},
+	}
+	return &gotree.CallExpr{Fun: outerFn}, nil
+}
+
+// lowerAwaitExpr lowers `await fut` to `<-fut`. The receive blocks
+// until the producer goroutine has sent its value, which matches
+// Mochi await semantics. Phase 11.1 keeps await synchronous so
+// successive awaits run in source order.
+func (l *lowerer) lowerAwaitExpr(e *aotir.AwaitExpr) (gotree.Expr, error) {
+	fut, err := l.lowerExpr(e.Future)
+	if err != nil {
+		return nil, fmt.Errorf("await future: %w", err)
+	}
+	return &gotree.UnaryExpr{Op: "<-", X: fut}, nil
 }
