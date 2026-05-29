@@ -133,6 +133,34 @@ func (l *lowerer) lowerChanType(elem aotir.Type) (string, error) {
 	return "chan " + et, nil
 }
 
+// lowerStreamType produces `*mochiStream[T]` for a stream<T> value.
+// Phase 9.2 streams are MPMC broadcast queues with backpressure: a
+// runtime helper holds the fan-out list and per-subscriber buffers,
+// so the surface type is a pointer to that helper.
+func (l *lowerer) lowerStreamType(elem aotir.Type) (string, error) {
+	et, err := l.lowerType(elem)
+	if err != nil {
+		return "", fmt.Errorf("stream element: %w", err)
+	}
+	if et == "" {
+		return "", fmt.Errorf("transpiler3/go/lower: stream element type cannot be unit")
+	}
+	return "*mochiStream[" + et + "]", nil
+}
+
+// lowerSubType produces `*mochiSub[T]` for a sub<T> value. The
+// subscriber wraps a per-listener buffered Go channel.
+func (l *lowerer) lowerSubType(elem aotir.Type) (string, error) {
+	et, err := l.lowerType(elem)
+	if err != nil {
+		return "", fmt.Errorf("sub element: %w", err)
+	}
+	if et == "" {
+		return "", fmt.Errorf("transpiler3/go/lower: sub element type cannot be unit")
+	}
+	return "*mochiSub[" + et + "]", nil
+}
+
 // lowerFunType produces `func(T1, T2, ...) R` for a fun-typed value.
 // Phase 6.1 restricts the parameter and return types to scalar primitives
 // and unit (matching the aotir FunSig restriction).
