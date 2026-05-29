@@ -15,7 +15,7 @@ description: "MEP-71 Phase 1 lands the PEP 503 / 691 / 700 / 658 / 592 simple-in
 | Landed         | 2026-05-29 22:57 (GMT+7) |
 | Tracking issue | (filled by automation) |
 | Tracking PR    | (filled by automation) |
-| Commit         | (filled by automation) |
+| Commit         | `3dfc4490` |
 
 ## Gate
 
