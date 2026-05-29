@@ -1,0 +1,8 @@
+type Color = Named(name: string) | Hex(code: string)
+
+let c: Color = Named("red")
+let s = match c {
+  Named(n) => n
+  Hex(h) => h
+}
+print(s)

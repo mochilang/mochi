@@ -1,0 +1,8 @@
+type Flag = On(active: bool) | Off
+
+let f: Flag = On(true)
+let msg = match f {
+  On(a) => a
+  Off => false
+}
+print(msg)

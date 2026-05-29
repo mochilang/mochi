@@ -1,0 +1,6 @@
+// mochi_print_f64 routes negative infinity through the same
+// is_infinite() branch as +Inf but emits the "-Inf" string. The
+// existing float_nan_inf fixture covers +Inf and NaN; this one
+// pins the sign-aware branch.
+let a = -1.0 / 0.0
+print(a)

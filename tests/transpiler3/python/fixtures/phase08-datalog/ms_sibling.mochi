@@ -1,0 +1,8 @@
+fact child("ali", "ben")
+fact child("ali", "cai")
+fact child("ali", "dan")
+rule sib(X, Y) :- child(P, X), child(P, Y), X != Y
+let xs = query sib("ben", Y)
+for x in xs {
+    print(x)
+}

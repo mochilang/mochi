@@ -1,0 +1,9 @@
+agent Calc {
+    var total: int = 0
+    intent triadd(a: int, b: int, c: int) { total = total + a + b + c }
+    intent get(): int { return total }
+}
+let c = Calc { total: 0 }
+c.triadd(1, 2, 3)
+c.triadd(10, 20, 30)
+print(c.get())

@@ -1,0 +1,13 @@
+type Box = B(v: int)
+
+fun unwrap(b: Box): int {
+  return match b {
+    B(v) => v
+  }
+}
+
+fun add(a: Box, b: Box): int {
+  return unwrap(a) + unwrap(b)
+}
+
+print(add(B(3), B(4)))

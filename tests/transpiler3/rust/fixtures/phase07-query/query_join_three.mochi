@@ -1,0 +1,7 @@
+let xs = [1, 2]
+let ys = [10, 20]
+let zs = [100, 200]
+let result = from x in xs from y in ys from z in zs select x + y + z
+for r in result {
+  print(r)
+}

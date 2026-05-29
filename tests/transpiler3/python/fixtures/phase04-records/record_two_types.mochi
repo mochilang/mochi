@@ -1,0 +1,14 @@
+type Point {
+  x: int
+  y: int
+}
+
+type Size {
+  w: int
+  h: int
+}
+
+let p = Point { x: 1, y: 2 }
+let s = Size { w: 10, h: 20 }
+print(p.x + s.w)
+print(p.y + s.h)

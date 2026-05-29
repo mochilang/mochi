@@ -1,0 +1,8 @@
+fun make(): map<string, int> {
+  return {"x": 1, "y": 2, "z": 3}
+}
+let m = make()
+print(len(m))
+for k in keys(m) {
+  print(k)
+}

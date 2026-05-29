@@ -1,0 +1,6 @@
+fun negate(x: int): int {
+    return 0 - x
+}
+let fut = async negate(99)
+let r = await fut
+print(r)

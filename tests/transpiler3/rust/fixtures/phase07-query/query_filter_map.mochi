@@ -1,0 +1,5 @@
+let nums = [1, 2, 3, 4, 5, 6, 7, 8]
+let result = from n in nums where n > 3 select n * 10
+for r in result {
+  print(r)
+}

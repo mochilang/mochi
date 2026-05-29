@@ -1,0 +1,7 @@
+let xs = [1, 2, 3]
+let ys = [10, 20]
+for x in xs {
+  for y in ys {
+    print(x + y)
+  }
+}

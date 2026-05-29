@@ -1,0 +1,2 @@
+let xs = [5, 6, 7, 8]
+print(len(xs))

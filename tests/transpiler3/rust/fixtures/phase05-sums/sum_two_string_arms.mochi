@@ -1,0 +1,17 @@
+type Greeting = Hello(name: string) | Bye(name: string)
+
+let g1: Greeting = Hello("alice")
+let g2: Greeting = Bye("bob")
+
+let s1 = match g1 {
+  Hello(n) => "hi " + n
+  Bye(n) => "bye " + n
+}
+
+let s2 = match g2 {
+  Hello(n) => "hi " + n
+  Bye(n) => "bye " + n
+}
+
+print(s1)
+print(s2)

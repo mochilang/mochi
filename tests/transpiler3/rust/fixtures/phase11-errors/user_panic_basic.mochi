@@ -1,0 +1,8 @@
+try {
+  print("before panic")
+  panic(42, "boom")
+  print("after panic")
+} catch e {
+  print("caught")
+  print(e)
+}

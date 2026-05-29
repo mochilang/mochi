@@ -1,0 +1,4 @@
+let flag = true
+let check = fun(x: int): bool => flag && (x > 0)
+let r = check(5)
+print(r)

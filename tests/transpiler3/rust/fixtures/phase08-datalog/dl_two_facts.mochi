@@ -1,0 +1,6 @@
+fact color("apple", "red")
+fact color("banana", "yellow")
+let xs = query color(X, Y)
+for x in xs {
+    print(x)
+}

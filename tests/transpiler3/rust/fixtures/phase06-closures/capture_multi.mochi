@@ -1,0 +1,5 @@
+let a = 3
+let b = 7
+let combine = fun(x: int): int => x + a + b
+let r = combine(10)
+print(r)

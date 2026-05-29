@@ -1,0 +1,8 @@
+var total: int = 0
+try {
+  let v: int = 10 / 0
+  total = total + v
+} catch e {
+  total = total + e
+}
+print(total)

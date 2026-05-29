@@ -1,0 +1,8 @@
+type Triple = T3(a: int, b: int, c: int) | Z
+
+let t: Triple = T3(1, 2, 3)
+let total = match t {
+  T3(a, b, c) => a + b + c
+  Z => 0
+}
+print(total)

@@ -1,0 +1,6 @@
+fetch "HTTPTEST_URL/hello" into body
+if body.contains("world") {
+  print("yes")
+} else {
+  print("no")
+}

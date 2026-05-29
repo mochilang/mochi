@@ -1,0 +1,3 @@
+let plus = fun(a: int, b: int): int => a + b
+let r = plus(3, 4)
+print(r)

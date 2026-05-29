@@ -1,0 +1,8 @@
+type Pair = P(a: int, b: int) | Single(x: int)
+
+let p: Pair = P(3, 4)
+let sum = match p {
+  P(a, b) => a + b
+  Single(x) => x
+}
+print(sum)

@@ -1,0 +1,6 @@
+type Pt {
+  x: int
+}
+
+let p = Pt { x: 42 }
+print(p.x)

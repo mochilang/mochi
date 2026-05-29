@@ -1,12 +1,13 @@
-name: Deploy website to Cloudflare Pages
+name: Sync docs to mochilang/docs
+
+# Syncs website/ to mochilang/docs on push to main, which then triggers
+# the deploy workflow there (isolated from all other mochi CI runners).
+#
+# Required secret in mochilang/mochi:
+#   DOCS_DEPLOY_TOKEN — fine-grained PAT with Contents:Write on mochilang/docs
 
 on:
   push:
-    branches: [main]
-    paths:
-      - 'website/**'
-      - '.github/workflows/deploy-website.yml'
-  pull_request:
     branches: [main]
     paths:
       - 'website/**'
@@ -15,55 +16,49 @@ on:
 
 permissions:
   contents: read
-  deployments: write
-  pull-requests: write
 
 concurrency:
-  group: cloudflare-pages-${{ github.ref }}
+  group: sync-docs
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    name: Build and deploy website
+  sync:
+    name: Sync website to mochilang/docs
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: website
+
     steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v6
+      - name: Checkout mochi
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
-      - name: Set up Node.js
-        id: setup-node
-        uses: actions/setup-node@v6
+      - name: Checkout mochilang/docs
+        uses: actions/checkout@v4
         with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: website/package-lock.json
+          repository: mochilang/docs
+          token: ${{ secrets.DOCS_DEPLOY_TOKEN }}
+          path: docs-repo
+          fetch-depth: 1
 
-      - name: Install dependencies
-        id: install
+      - name: Sync website/ content
         run: |
-          echo "::group::Step: install"
-          npm ci
-          echo "::endgroup::"
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='.docusaurus' \
+            --exclude='build' \
+            website/ docs-repo/
 
-      - name: Build website
-        id: build
+      - name: Commit and push
         run: |
-          echo "::group::Step: build"
-          npm run build
-          echo "::endgroup::"
-
-      - name: Deploy to Cloudflare Pages
-        id: deploy
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy website/build --project-name=mochi-lang --branch=${{ github.head_ref || github.ref_name }}
-          workingDirectory: .
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          cd docs-repo
+          git config user.name "mochi-bot"
+          git config user.email "bot@mochi-lang.dev"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes — docs repo already up to date."
+            exit 0
+          fi
+          MOCHI_SHA="${{ github.sha }}"
+          git commit -m "sync: website from mochi@${MOCHI_SHA:0:8}"
+          git push

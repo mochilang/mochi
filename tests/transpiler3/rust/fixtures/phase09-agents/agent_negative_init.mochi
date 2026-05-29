@@ -1,0 +1,8 @@
+agent Bal {
+    var amount: int = -5
+    intent add(n: int) { amount = amount + n }
+    intent get(): int { return amount }
+}
+let b = Bal { amount: -5 }
+b.add(10)
+print(b.get())

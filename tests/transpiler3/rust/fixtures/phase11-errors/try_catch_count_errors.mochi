@@ -1,0 +1,14 @@
+var errors: int = 0
+let divs: list<int> = [2, 0, 4, 0, 5]
+var i: int = 0
+while i < 5 {
+  try {
+    let r: int = 100 / divs[i]
+    print(r)
+  } catch e {
+    errors = errors + 1
+  }
+  i = i + 1
+}
+print("errors")
+print(errors)

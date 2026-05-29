@@ -1,0 +1,10 @@
+type User {
+  name: string
+  age: int
+}
+
+let us = [User { name: "alice", age: 30 }, User { name: "bob", age: 25 }]
+print(us[0].name)
+print(us[0].age)
+print(us[1].name)
+print(us[1].age)

@@ -1,0 +1,13 @@
+agent Logger {
+    var n: int = 0
+    intent log(msg: string) {
+        n = n + 1
+        print(msg)
+    }
+    intent count(): int { return n }
+}
+let l = Logger { n: 0 }
+l.log("one")
+l.log("two")
+l.log("three")
+print(l.count())

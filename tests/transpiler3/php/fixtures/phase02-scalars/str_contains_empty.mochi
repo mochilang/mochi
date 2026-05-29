@@ -1,0 +1,8 @@
+// mochi_str_contains short-circuits on an empty needle, returning
+// true unconditionally (matching PHP's native str_contains and Go's
+// strings.Contains). The existing str_contains fixture only exercises
+// non-empty needles, so this pins the empty-needle code path.
+let s = "hello"
+print(s.contains(""))
+let empty = ""
+print(empty.contains(""))

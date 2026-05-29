@@ -1,0 +1,8 @@
+let xs: list<int> = [10, 20, 30]
+try {
+  let v: int = xs[5]
+  print(v)
+} catch e {
+  print("caught")
+  print(e)
+}

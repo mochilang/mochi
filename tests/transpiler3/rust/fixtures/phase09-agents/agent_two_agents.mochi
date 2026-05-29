@@ -1,0 +1,17 @@
+agent A {
+    var n: int = 0
+    intent inc() { n = n + 1 }
+    intent get(): int { return n }
+}
+agent B {
+    var n: int = 0
+    intent inc() { n = n + 10 }
+    intent get(): int { return n }
+}
+let a = A { n: 0 }
+let b = B { n: 0 }
+a.inc()
+b.inc()
+a.inc()
+print(a.get())
+print(b.get())

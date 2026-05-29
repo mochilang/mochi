@@ -1,0 +1,7 @@
+type Pt {
+  x: int
+}
+
+let a = Pt { x: 1 }
+let b = Pt { x: 2 }
+print(a != b)

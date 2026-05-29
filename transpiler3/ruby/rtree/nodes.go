@@ -130,8 +130,7 @@ type MethodDecl struct {
 
 // MethodParam is one formal parameter.
 type MethodParam struct {
-	Name    string
-	Default Expr // optional
+	Name string
 }
 
 func (*MethodDecl) rubyDecl() {}
@@ -153,10 +152,6 @@ func (m *MethodDecl) RubyString(ind int) string {
 				sb.WriteString(", ")
 			}
 			sb.WriteString(p.Name)
-			if p.Default != nil {
-				sb.WriteString(" = ")
-				sb.WriteString(p.Default.RubyExprString())
-			}
 		}
 		sb.WriteByte(')')
 	}

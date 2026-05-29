@@ -1,0 +1,10 @@
+agent Counter {
+    var count: int = 0
+    intent increment() { count = count + 1 }
+    intent value(): int { return count }
+}
+let c = Counter { count: 0 }
+c.increment()
+c.increment()
+c.increment()
+print(c.value())

@@ -23,7 +23,7 @@ func TestPhase26TargetTruffleNative(t *testing.T) {
 	}
 
 	out := t.TempDir()
-	d := &Driver{CacheDir: t.TempDir()}
+	d := &Driver{}
 	if err := d.Build(src, out, TargetTruffleNative); err != nil {
 		t.Fatalf("Build TargetTruffleNative: %v", err)
 	}

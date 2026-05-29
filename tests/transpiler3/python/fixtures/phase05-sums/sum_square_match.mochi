@@ -1,0 +1,8 @@
+type Shape = Circle(r: int) | Square(side: int)
+
+let s: Shape = Square(4)
+let area = match s {
+  Circle(r) => r * r
+  Square(side) => side * side
+}
+print(area)
