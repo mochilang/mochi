@@ -279,6 +279,7 @@ const sidebars = {
         'implementation/0056/phase-26-truffle-native',
         'implementation/0056/phase-27-mruby',
         'implementation/0056/phase-28-audit',
+        'implementation/0056/phase-29-runtime-matrix',
       ],
     },
   ],

@@ -420,21 +420,14 @@ func (*Ident) rubyExpr() {}
 
 func (e *Ident) RubyExprString() string { return e.Name }
 
-// MethodCall is `Receiver.Method(Args...) [{ |bp| BodyExpr }]`.
+// MethodCall is `Receiver.Method(Args...)`.
 // If Receiver is nil, the receiver is omitted (implicit self).
+// Method-with-block call sites are emitted via RawExpr (see lower.go).
 type MethodCall struct {
 	Receiver  Expr
 	Method    string
 	Args      []Expr
-	Block     *BlockLit // optional do/end block
-	UseParens bool      // when false and Args==nil, omit parens (e.g. `puts "..."`)
-}
-
-// BlockLit is a `{ |p1, p2| Body }` or `do |p| Body end` block literal.
-type BlockLit struct {
-	Params []string
-	Body   []Stmt
-	Result Expr // optional implicit-return expression after Body
+	UseParens bool // when false and Args==nil, omit parens (e.g. `puts "..."`)
 }
 
 func (*MethodCall) rubyExpr() {}
@@ -464,20 +457,6 @@ func (e *MethodCall) RubyExprString() string {
 	} else if e.UseParens {
 		sb.WriteString("()")
 	}
-	if e.Block != nil {
-		sb.WriteString(" { ")
-		if len(e.Block.Params) > 0 {
-			fmt.Fprintf(&sb, "|%s| ", strings.Join(e.Block.Params, ", "))
-		}
-		for _, s := range e.Block.Body {
-			sb.WriteString(strings.TrimLeft(s.RubyString(0), " "))
-			sb.WriteString("; ")
-		}
-		if e.Block.Result != nil {
-			sb.WriteString(e.Block.Result.RubyExprString())
-		}
-		sb.WriteString(" }")
-	}
 	return sb.String()
 }
 
@@ -504,18 +483,6 @@ func (*UnaryOp) rubyExpr() {}
 
 func (e *UnaryOp) RubyExprString() string {
 	return fmt.Sprintf("(%s%s)", e.Op, e.X.RubyExprString())
-}
-
-// Lambda is `->(p1, p2) { Body }`.
-type Lambda struct {
-	Params []string
-	Body   Expr // single-expression body; for multi-stmt bodies use a method
-}
-
-func (*Lambda) rubyExpr() {}
-
-func (e *Lambda) RubyExprString() string {
-	return fmt.Sprintf("->(%s) { %s }", strings.Join(e.Params, ", "), e.Body.RubyExprString())
 }
 
 // RawExpr is a verbatim expression string (escape hatch).

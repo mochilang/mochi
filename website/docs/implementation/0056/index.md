@@ -46,18 +46,20 @@ A phase is LANDED only when its gate is green on every Ruby runtime listed for i
 | 26 | TargetTruffleNative | LANDED | 64bccce8c5 | [phase-26](/docs/implementation/0056/phase-26-truffle-native) |
 | 27 | TargetMRuby | LANDED | 64bccce8c5 | [phase-27](/docs/implementation/0056/phase-27-mruby) |
 | 28 | Audit gap closure (driver errors, edge cases, emitted-syntax checks, integration) | LANDED | d43705737a + audit-2 | [phase-28](/docs/implementation/0056/phase-28-audit) |
+| 29 | Runtime matrix CI + dead-code cull (audit-4) | LANDED | TBD | [phase-29](/docs/implementation/0056/phase-29-runtime-matrix) |
 
 ## Runtime matrix
 
 A phase is fully LANDED only after its gate passes on every required runtime. Phases not yet exercised on a runtime become N.1, N.2, ... sub-phases.
 
-| Runtime | Phases 0-21 (language) | Phases 22-28 (packaging + audit) |
-|---------|------------------------|-----------------------------------|
-| CRuby 3.2 LTS | NOT EXERCISED IN CI | NOT EXERCISED IN CI |
-| CRuby 3.4 | NOT EXERCISED IN CI | NOT EXERCISED IN CI |
-| CRuby 4.0 (Homebrew) | LANDED (local) | LANDED (local) |
-| JRuby 10 | NOT STARTED | NOT STARTED |
-| TruffleRuby 33 | NOT STARTED | NOT STARTED |
-| mruby 4 | NOT STARTED (subset) | NOT STARTED (subset) |
+| Runtime | Phases 0-21 (language) | Phases 22-28 (packaging + audit) | Source |
+|---------|------------------------|-----------------------------------|--------|
+| CRuby 3.2 LTS | LANDED (ubuntu CI) | LANDED (ubuntu CI) | `.github/workflows/transpiler3-ruby-test.yml` (blocking) |
+| CRuby 3.4 | LANDED (ubuntu CI) | LANDED (ubuntu CI) | `.github/workflows/transpiler3-ruby-test.yml` (blocking) |
+| CRuby 3.4 (macos) | LANDED (macos CI) | LANDED (macos CI) | `.github/workflows/transpiler3-ruby-test.yml` (non-blocking) |
+| CRuby 4.0 (Homebrew) | LANDED (local) | LANDED (local) | local toolchain via `MOCHI_RUBY` env |
+| JRuby 10 | NOT STARTED (29.1) | NOT STARTED (29.1) | sub-phase 29.1, container image required |
+| TruffleRuby 33 | NOT STARTED (29.2) | NOT STARTED (29.2) | sub-phase 29.2, container image required |
+| mruby 4 | NOT STARTED (29.3, subset) | NOT STARTED (29.3, subset) | sub-phase 29.3, language subset only |
 
-CRuby 3.4 / 3.2 / JRuby / TruffleRuby / mruby coverage will land as sub-phases (e.g., 0.1 JRuby 10 on phase 0, 0.2 TruffleRuby 33 on phase 0) once a Ruby CI matrix workflow is added.
+Phase 29 added the CRuby matrix workflow `transpiler3-ruby-test.yml`. JRuby / TruffleRuby / mruby coverage is tracked under sub-phases 29.1 / 29.2 / 29.3 and depends on container-based toolchain detection landing in `build.go`.

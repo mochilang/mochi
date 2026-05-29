@@ -1,0 +1,65 @@
+name: Ruby transpiler tests
+
+# MEP-56: CI gate for the Mochi-to-Ruby transpiler test suite.
+# Runs the transpiler3/ruby/* unit tests across the CRuby versions that
+# MEP-56 §6 names as required runtimes (CRuby 3.2 LTS, 3.4, plus the
+# in-development 4.x stream when available). JRuby, TruffleRuby, and mruby
+# coverage will land as separate non-blocking matrix entries once container
+# images and toolchain detection sub-phases are in place.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    paths:
+      - 'transpiler3/ruby/**'
+      - 'mochi-runtime/**'
+      - 'tests/transpiler3/ruby/**'
+      - '.github/workflows/transpiler3-ruby-test.yml'
+
+jobs:
+  ruby-test:
+    name: Ruby test (CRuby ${{ matrix.ruby }} / ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            ruby: '3.2'
+            blocking: true
+          - os: ubuntu-latest
+            ruby: '3.4'
+            blocking: true
+          - os: macos-latest
+            ruby: '3.4'
+            blocking: false
+
+    continue-on-error: ${{ !matrix.blocking }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '^1.26'
+          cache-dependency-path: go.sum
+
+      - name: Set up Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: false
+
+      - name: Verify Ruby
+        run: |
+          ruby --version
+          echo "MOCHI_RUBY=$(which ruby)" >> "$GITHUB_ENV"
+
+      - name: Run Ruby transpiler tests
+        env:
+          MOCHI_RUBY: ${{ env.MOCHI_RUBY }}
+        run: go test -v -timeout 600s ./transpiler3/ruby/...
