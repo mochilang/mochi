@@ -31,11 +31,14 @@ A phase is LANDED only when its gate is green for every target (consume directio
 | 10.1 | Sdist tar.gz + wheel zip packer (deterministic mtimes, ZIP64-aware) | NOT STARTED | — | [phase-10](/docs/implementation/0071/phase-10-python-package-emit) |
 | 10.2 | `mochi pkg build --target=python-package` CLI verb | NOT STARTED | — | [phase-10](/docs/implementation/0071/phase-10-python-package-emit) |
 | 10.3 | Mochi module -> `pypackage.Package` surface walker | NOT STARTED | — | [phase-10](/docs/implementation/0071/phase-10-python-package-emit) |
-| 11 | Trusted publishing (`mochi pkg publish --to=pypi`) Sigstore OIDC + PEP 740 attestations | LANDED | (pending merge) | [phase-11](/docs/implementation/0071/phase-11-trusted-publish) |
+| 11 | Trusted publishing (`mochi pkg publish --to=pypi`) Sigstore OIDC + PEP 740 attestations | LANDED | `981e7baa` | [phase-11](/docs/implementation/0071/phase-11-trusted-publish) |
 | 11.1 | Sigstore live signing harness (`sigstore-python` shell-out + Rekor log) | NOT STARTED | — | [phase-11](/docs/implementation/0071/phase-11-trusted-publish) |
 | 11.2 | Live PyPI / TestPyPI HTTP (mint endpoint contract test) | NOT STARTED | — | [phase-11](/docs/implementation/0071/phase-11-trusted-publish) |
 | 11.3 | `mochi pkg publish --to=pypi` CLI verb | NOT STARTED | — | [phase-11](/docs/implementation/0071/phase-11-trusted-publish) |
-| 12 | Async bridge (asyncio.run per-call + persistent loop opt-in + cross-loop hazard guards) | NOT STARTED | — | [phase-12](/docs/implementation/0071/phase-12-async-bridge) |
+| 12 | Async bridge (asyncio.run per-call + persistent loop opt-in + cross-loop hazard guards) | LANDED | (pending merge) | [phase-12](/docs/implementation/0071/phase-12-async-bridge) |
+| 12.1 | Wire asyncbridge into wrapper synthesiser so async surfaces emit sync shims end-to-end | NOT STARTED | — | [phase-12](/docs/implementation/0071/phase-12-async-bridge) |
+| 12.2 | Free-threaded GIL handling around the persistent loop cache (PyMutex on `cp3XYt`) | NOT STARTED | — | [phase-12](/docs/implementation/0071/phase-12-async-bridge) |
+| 12.3 | Cancellation + timeout propagation (`mochi_async_timeout` ContextVar -> `asyncio.wait_for`) | NOT STARTED | — | [phase-12](/docs/implementation/0071/phase-12-async-bridge) |
 | 13 | abi3 wheel slimming + auditwheel-equivalent platform tag validation | NOT STARTED | — | [phase-13](/docs/implementation/0071/phase-13-abi3) |
 | 14 | Subprocess runtime mode (`[python].runtime-mode = "subprocess"` with JSON-RPC protocol) | NOT STARTED | — | [phase-14](/docs/implementation/0071/phase-14-subprocess-mode) |
 | 15 | Attestation verification at install time + `--require-attestations` enforcement | NOT STARTED | — | [phase-15](/docs/implementation/0071/phase-15-attestation-verify) |
@@ -91,6 +94,7 @@ package3/python/
   lockfile/               # mochi.lock [[python-package]] table + --check diff + capability database (phase 9)
   pypackage/              # TargetPythonPackage emit: sdist + wheel + mochi_build PEP 517 backend (phase 10)
   publish/                # PyPI publish + Sigstore + PEP 740 attestations (phase 11)
+  asyncbridge/            # async-fn -> sync-fn shim renderer + cross-loop guard (phase 12)
   attest/                 # attestation verification (phase 15)
   pyodide/                # wasm32-emscripten + WASI Preview 2 target support (phase 16)
   freethread/             # free-threaded mode wrapper variants (phase 17)
@@ -101,7 +105,7 @@ The `package3/python/` location is shared with the broader MEP-57 polyglot packa
 
 ## Status snapshot
 
-As of 2026-05-30 00:36 (GMT+7): MEP-71 spec and research bundle landed; phases 0-11 LANDED (8.1, 8.2, 10.1, 10.2, 10.3, 11.1, 11.2, 11.3 deferred sub-phases); phases 12-18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
+As of 2026-05-30 00:45 (GMT+7): MEP-71 spec and research bundle landed; phases 0-12 LANDED (8.1, 8.2, 10.1, 10.2, 10.3, 11.1, 11.2, 11.3, 12.1, 12.2, 12.3 deferred sub-phases); phases 13-18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
 
 ## Cross-references
 

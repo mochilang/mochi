@@ -27,8 +27,8 @@ A phase is LANDED only when its gate is green for every target (consume directio
 | 9 | `TargetRustLibrary` emit (rlib + cdylib + Cargo.toml + cbindgen) | LANDED | [6e966397](https://github.com/mochilang/mochi/commit/6e966397) | [phase-09](/docs/implementation/0073/phase-09-rust-library-emit) |
 | 10 | Trusted publishing (`mochi pkg publish --to=crates.io`) Sigstore OIDC flow | LANDED | [003e897f](https://github.com/mochilang/mochi/commit/003e897f) | [phase-10](/docs/implementation/0073/phase-10-trusted-publish) |
 | 11 | Async bridge (tokio runtime singleton + block_on entry) | LANDED | [fce8fc5e](https://github.com/mochilang/mochi/commit/fce8fc5e) | [phase-11](/docs/implementation/0073/phase-11-async-bridge) |
-| 12 | Monomorphisation (`[rust.monomorphise]` manifest + per-instantiation wrapper) | LANDED | (pending) | [phase-12](/docs/implementation/0073/phase-12-monomorphise) |
-| 13 | Embedded / no_std subset (`profile = "embedded"` + alloc opt-in) | NOT STARTED | — | [phase-13](/docs/implementation/0073/phase-13-embedded) |
+| 12 | Monomorphisation (`[rust.monomorphise]` manifest + per-instantiation wrapper) | LANDED | [37768e85](https://github.com/mochilang/mochi/commit/37768e85) | [phase-12](/docs/implementation/0073/phase-12-monomorphise) |
+| 13 | Embedded / no_std subset (`profile = "embedded"` + alloc opt-in) | LANDED | [032a842d](https://github.com/mochilang/mochi/commit/032a842d) | [phase-13](/docs/implementation/0073/phase-13-embedded) |
 
 ## Per-phase fields
 
@@ -71,7 +71,7 @@ The `package3/rust/` location is shared with the broader MEP-57 polyglot package
 
 ## Status snapshot
 
-As of 2026-05-30 00:32 (GMT+7): phases 0-12 LANDED (skeleton + sparse-index client + cargo semver + rustdoc-JSON ingest + closed type-mapping table + extern-C wrapper synthesiser + Mochi extern-fn emitter + `import rust` grammar + build orchestration pipeline + mochi.lock `[[rust-package]]` schema + drift checker + TargetRustLibrary publish-direction emit with cbindgen header + trusted-publishing flow with Sigstore-keyless attestation bundle and crates.io upload wire-format + async-fn bridge with lazy tokio runtime singleton and `block_on` wrapper bodies + monomorphisation pipeline with `[rust.monomorphise]` manifest parsing, per-instantiation symbol mangling, and turbofish call-site rendering). Phase 13 pending. The MEP spec and research bundle are landed; implementation is progressing one phase per PR with auto-merge.
+As of 2026-05-30 00:41 (GMT+7): all 14 phases (0-13) LANDED (skeleton + sparse-index client + cargo semver + rustdoc-JSON ingest + closed type-mapping table + extern-C wrapper synthesiser + Mochi extern-fn emitter + `import rust` grammar + build orchestration pipeline + mochi.lock `[[rust-package]]` schema + drift checker + TargetRustLibrary publish-direction emit with cbindgen header + trusted-publishing flow with Sigstore-keyless attestation bundle and crates.io upload wire-format + async-fn bridge with lazy tokio runtime singleton and `block_on` wrapper bodies + monomorphisation pipeline with `[rust.monomorphise]` manifest parsing + per-instantiation symbol mangling + turbofish call-site rendering + embedded `no_std + alloc` profile with async refusal and `default-features = false` upstream pin). The MEP spec, research bundle, and implementation are all landed; the bridge is ready for integration with MEP-53's build driver.
 
 ## Cross-references
 

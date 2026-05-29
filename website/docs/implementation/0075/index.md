@@ -15,21 +15,21 @@ A phase is LANDED only when its gate is green for every target (consume directio
 
 | Phase | Title | Status | Commit | Tracking page |
 |-------|-------|--------|--------|---------------|
-| 0 | Skeleton: package3/php/ layout + Driver/Workspace scaffold + errors | IN PROGRESS | — | [phase-00](/docs/implementation/0075/phase-00-skeleton) |
-| 1 | Packagist v2 sparse-index client (version resolution + dist URL) | NOT STARTED | — | — |
-| 2 | Composer dist fetcher + SHA-256 content-addressed cache | NOT STARTED | — | — |
-| 3 | PHP Reflection CLI (reflect.php + Go invoker + JSON surface parser) | NOT STARTED | — | — |
-| 4 | Closed PHP-to-Mochi type-mapping table | NOT STARTED | — | — |
-| 5 | Mochi extern fn / extern type emitter + SKIPPED.txt | NOT STARTED | — | — |
-| 6 | `import php` grammar wiring + MEP-55 build orchestration | NOT STARTED | — | — |
-| 7 | vendor/autoload.php generator (PSR-4, no composer install) | NOT STARTED | — | — |
-| 8 | mochi.lock `[[php-package]]` integration + `--check` mode | NOT STARTED | — | — |
-| 9 | `TargetPhpLibrary` emit (PSR-4 src/ + composer.json + README) | NOT STARTED | — | — |
-| 10 | Packagist publish flow (GPG tag + Sigstore OIDC + Update API) | NOT STARTED | — | — |
-| 11 | Interface and abstract class bridge | NOT STARTED | — | — |
-| 12 | Async PHP bridge (ReactPHP / RevoltPHP event-loop injection) | NOT STARTED | — | — |
-| 13 | Phar distribution path | NOT STARTED | — | — |
-| 14 | Full 24-package fixture corpus gate + mochi.lock round-trip | NOT STARTED | — | — |
+| 0 | Skeleton: package3/php/ layout + Driver/Workspace scaffold + errors | LANDED | — | [phase-00](/docs/implementation/0075/phase-00-skeleton) |
+| 1 | Packagist v2 sparse-index client (version resolution + dist URL) | LANDED | — | — |
+| 2 | Composer dist fetcher + SHA-256 content-addressed cache | LANDED | — | — |
+| 3 | PHP Reflection CLI (reflect.php + Go invoker + JSON surface parser) | LANDED | — | — |
+| 4 | Closed PHP-to-Mochi type-mapping table | LANDED | — | [phase-04](/docs/implementation/0075/phase-04-typemap) |
+| 5 | Mochi extern fn / extern type emitter + SKIPPED.txt | LANDED | — | [phase-05](/docs/implementation/0075/phase-05-externemit) |
+| 6 | `import php` grammar wiring + MEP-55 build orchestration | LANDED | — | [phase-06](/docs/implementation/0075/phase-06-glue) |
+| 7 | vendor/autoload.php generator (PSR-4, no composer install) | LANDED | — | [phase-07](/docs/implementation/0075/phase-07-autoload) |
+| 8 | mochi.lock `[[php-package]]` integration + `--check` mode | LANDED | — | [phase-08](/docs/implementation/0075/phase-08-lock) |
+| 9 | `TargetPhpLibrary` emit (PSR-4 src/ + composer.json + README) | LANDED | — | [phase-09](/docs/implementation/0075/phase-09-library) |
+| 10 | Packagist publish flow (GPG tag + Sigstore OIDC + Update API) | LANDED | — | [phase-10](/docs/implementation/0075/phase-10-publish) |
+| 11 | Interface and abstract class bridge | LANDED | — | [phase-11](/docs/implementation/0075/phase-11-abstract) |
+| 12 | Async PHP bridge (ReactPHP / RevoltPHP event-loop injection) | LANDED | — | [phase-12](/docs/implementation/0075/phase-12-async) |
+| 13 | Phar distribution path | LANDED | — | [phase-13](/docs/implementation/0075/phase-13-phar) |
+| 14 | Full 24-package fixture corpus gate + mochi.lock round-trip | LANDED | — | [phase-14](/docs/implementation/0075/phase-14-corpus) |
 
 ## Per-phase fields
 
@@ -94,6 +94,10 @@ package3/php/
   lock/                   # mochi.lock [[php-package]] read/write (phase 8)
   library/                # TargetPhpLibrary: PSR-4 src/ + composer.json (phase 9)
   publish/                # Packagist publish: GPG tag + Sigstore + Update API (phase 10)
+  externemit/hierarchy.go # PHP class/interface hierarchy analysis (phase 11)
+  asyncemit/              # async extern fn emitter for promise/future returns (phase 12)
+  pharemit/               # Phar stub + build script generator (phase 13)
+  corpus/                 # 24-package fixture corpus + integration tests (phase 14)
 ```
 
 ## CI matrix
@@ -106,7 +110,7 @@ package3/php/
 
 ## Status snapshot
 
-As of 2026-05-29 23:11 (GMT+7): phase 0 IN PROGRESS (skeleton + Driver/Workspace/errors scaffolding). Phases 1-14 pending. The MEP spec and research bundle are landed; implementation begins with this phase.
+As of 2026-05-30 00:43 (GMT+7): all 15 phases (0-14) LANDED. The full 24-package fixture corpus gate is green. The mochi.lock round-trip (Format/Check) passes against all fixtures. Async bridge detects ReactPHP/Amp/Revolt promise methods. Phar distribution path generates stub + build scripts.
 
 ## Cross-references
 
