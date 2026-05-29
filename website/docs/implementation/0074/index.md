@@ -22,7 +22,7 @@ A phase is LANDED only when its gate is green for every applicable target (consu
 | 4 | ApiSurface JSON schema + bridge-side parser | LANDED | (pending) | [phase-04](/docs/implementation/0074/phase-04-apisurface) |
 | 5 | Closed type-mapping table (scalars / strings / `[]byte` / `[]T` / `map[K]V` / structs / interfaces / `chan T` / `func` / `error` / generics) | LANDED | (pending) | [phase-05](/docs/implementation/0074/phase-05-typemap) |
 | 6 | Cgo wrapper synthesiser (`//export` directives + `c-archive` + handle pool) | LANDED (baseline; 6.1+ deferred) | (pending) | [phase-06](/docs/implementation/0074/phase-06-wrapper) |
-| 7 | Mochi-side extern fn emitter + alias shim file generation | NOT STARTED | — | [phase-07](/docs/implementation/0074/phase-07-extern-emit) |
+| 7 | Mochi-side extern fn emitter + alias shim file generation | LANDED (baseline; 7.1+ deferred) | (pending) | [phase-07](/docs/implementation/0074/phase-07-extern-emit) |
 | 8 | `import go "<module>@<semver>" as <alias>` grammar + parser | NOT STARTED | — | [phase-08](/docs/implementation/0074/phase-08-import-grammar) |
 | 9 | Build orchestration: workspace synth + `go build -buildmode=c-archive` + artifact link | NOT STARTED | — | [phase-09](/docs/implementation/0074/phase-09-build) |
 | 10 | mochi.lock `[[go-package]]` integration + `--check` mode | NOT STARTED | — | [phase-10](/docs/implementation/0074/phase-10-lockfile) |
@@ -47,7 +47,7 @@ Each phase's LANDED gate must be green for every applicable target. `n/a` cells 
 | 4. ApiSurface JSON | LANDED | n/a | n/a | n/a | n/a |
 | 5. type-mapping table | LANDED | required | required | required | required |
 | 6. cgo wrapper synthesiser | LANDED (baseline) | required | required | n/a (cgo off on wasm) | required (no_cgo subset) |
-| 7. extern emitter | NOT STARTED | required | required | required | required |
+| 7. extern emitter | LANDED (baseline) | required | required | required | required |
 | 8. import-go grammar (semver) | NOT STARTED | required | required | required | required |
 | 9. build orchestration | NOT STARTED | required | required | required (no cgo) | required |
 | 10. mochi.lock integration | NOT STARTED | required | required | required | required |
@@ -105,7 +105,7 @@ The `package3/go/` location is shared with the broader MEP-57 polyglot package w
 
 ## Status snapshot
 
-As of 2026-05-29: phases 0-6 LANDED on `main` (phase 6 baseline only; sub-phases 6.1+ deferred), phases 7-17 NOT STARTED.
+As of 2026-05-29: phases 0-7 LANDED on `main` (phases 6 + 7 baseline only; sub-phases 6.1+/7.1+ deferred), phases 8-17 NOT STARTED.
 
 ## Cross-references
 
