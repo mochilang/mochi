@@ -13,8 +13,8 @@ description: "MEP-52 Phase 8, Mochi Datalog facts, rules, and queries routed thr
 | Status         | LANDED (Node + Deno + Bun) |
 | Started        | 2026-05-29 23:00 (GMT+7) |
 | Landed         | 2026-05-29 23:21 (GMT+7) |
-| Tracking issue | (pending) |
-| Tracking PR    | (pending) |
+| Tracking issue | [#22805](https://github.com/mochilang/mochi/issues/22805) |
+| Tracking PR    | [#22808](https://github.com/mochilang/mochi/pull/22808) |
 
 ## Gate
 
