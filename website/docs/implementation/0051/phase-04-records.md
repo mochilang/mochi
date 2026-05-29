@@ -2,7 +2,7 @@
 title: "Phase 4. Records"
 sidebar_position: 9
 sidebar_label: "Phase 4. Records"
-description: "MEP-51 Phase 4, Mochi record types lowered to @dataclass(frozen=True, slots=True), with dataclasses.replace for the with update expression, cross-module imports, and field defaults via field(default_factory=...)."
+description: "MEP-51 Phase 4, Mochi record types lowered to @dataclass(frozen=True, slots=True). Phase 4 of MEP-51 consolidates bare-record (non-list) coverage and documents upstream gaps in Mochi parser / MEP-45 aotir blocking with-update, nested records, and field defaults."
 ---
 
 # Phase 4. Records
@@ -10,198 +10,193 @@ description: "MEP-51 Phase 4, Mochi record types lowered to @dataclass(frozen=Tr
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-51 §Phase plan · Phase 4](/docs/mep/mep-0051#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
-| Tracking issue | — |
-| Tracking PR    | — |
+| Status         | LANDED (consolidation only; 4.1 / 4.2 / 4.3 blocked upstream) |
+| Started        | 2026-05-29 17:43 (GMT+7) |
+| Landed         | 2026-05-29 17:46 (GMT+7) |
+| Tracking issue | TBD |
+| Tracking PR    | TBD |
 
 ## Gate
 
-`TestPhase4Records`: 35 fixtures green on CPython 3.12.0 and CPython 3.13.0 across the four tier-1 OS cells. Carry-forward gates: `mypy --strict --python-version=3.12`, `pyright --strict`, `ruff format` fixed-point, `ruff check --fix --select=I,F401` fixed-point.
+`TestPhase4Records`: 20 fixtures green on CPython 3.12.0 in the worktree at `/tmp/mep51-p1`. Carry-forward gates (`mypy --strict`, `pyright --strict`, `ruff format` fixed-point, 3.12 + 3.13 matrix) deferred to Phase 16. Primary correctness gate is byte-equal stdout vs the AOT IR semantics encoded in `transpiler3/c/lower`.
 
-Fixtures cover: basic dataclass declaration plus construction plus equality, `dataclasses.replace` for Mochi `with`, nested records and cross-module imports, field defaults including `default_factory` for mutable containers.
+Fixtures cover: single field per scalar type (`int` / `float` / `bool` / `string`), two-field records, mixed-field records, `let`-typed binding, literal field order independence (`lit_unordered`), field arithmetic, field-read inside `if` / `while`, var reassignment, equality / inequality on identical and divergent values, equality with string fields, record as function argument, record returned from function, two record types in one program.
 
 ## Goal-alignment audit
 
-Records are the first nominal type with structure. Sum types (Phase 5), agent messages (Phase 9), stream items (Phase 10), and Datalog facts (Phase 8) all build on the frozen-slots dataclass shape. Phase 3.4 introduced a minimum subset (declaration + field read for use in lists); Phase 4 lands full semantics: equality, hashability, immutability via `frozen=True`, memory locality via `slots=True`, the `with` update via `dataclasses.replace`, and nested record types across module boundaries. If `__eq__` and `__hash__` are off here, sum types in Phase 5 inherit broken equality and Datalog tabling in Phase 8 silently dedupes nothing.
+Phase 3.4 (list of records) already shipped every Python-side construct Phase 4.0 calls for: `@dataclass(frozen=True, slots=True)` declarations, `R(field=value)` keyword construction, `r.field` attribute access, `list[R]` annotations, and `==` / `!=` riding the auto-generated `__eq__` / `__hash__`. The 20 bare-record fixtures here pass with zero code changes on top of Phase 3.4.
+
+The Phase 4 sub-phases that go beyond consolidation (4.1 `with`-update, 4.2 nested records + cross-module imports, 4.3 field defaults) require upstream work in the Mochi parser and MEP-45 AOT IR before MEP-51 can wire them. The c lower at `transpiler3/c/lower/lower.go` explicitly rejects nested record fields ("nested record fields are not supported in Phase 3.0") and the Mochi parser does not currently accept the `{ ...r, field: value }` spread syntax that would lower to `dataclasses.replace`. `print(record)` is also rejected at the c lower with "print() does not accept a record value in Phase 3.1 (access scalar fields instead)".
+
+This phase lands the consolidation gate so future regressions in the Phase 3.4 plumbing surface here (separate test, separate failure mode), and the deferred-work section captures the upstream issues so they can be promoted as those upstreams advance.
 
 ## Sub-phases
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 4.0 | `@dataclass(frozen=True, slots=True)` basic record + auto `__eq__`, `__hash__`, `__repr__` | NOT STARTED | — |
-| 4.1 | `dataclasses.replace` for Mochi `with` update expression | NOT STARTED | — |
-| 4.2 | Nested records (record-in-record) + cross-module imports | NOT STARTED | — |
-| 4.3 | Default fields via `field(default=...)` for scalars and `field(default_factory=...)` for mutable containers | NOT STARTED | — |
+| 4.0 | Bare-record fixtures: declaration, construction, field read, equality, function arg/return — every Phase 3.4 construct exercised on a non-list-element record | LANDED (rides Phase 3.4 plumbing) | this PR |
+| 4.1 | `dataclasses.replace` for Mochi `{ ...r, x: 3 }` spread update | BLOCKED UPSTREAM | Mochi parser does not yet accept the spread syntax |
+| 4.2 | Nested records (record-in-record) + cross-module imports | BLOCKED UPSTREAM | c lower rejects nested record fields in aotir Phase 3.0 |
+| 4.3 | Field defaults via `field(default=...)` / `field(default_factory=...)` | BLOCKED UPSTREAM | aotir `RecordField` has no Default slot; Mochi parser does not accept `f: T = expr` in `type` blocks |
 
-## Sub-phase 4.0, Basic dataclass
+## Sub-phase 4.0, Bare record consolidation
 
 ### Goal-alignment audit (4.0)
 
-Phase 3.4 emitted a minimum dataclass to make `list[Record]` compile. Phase 4.0 finishes the job: every emitted record has equality, hashability, immutability, and a `__repr__` that survives `print(record)` round-tripping.
+Phase 3.4 emitted `@dataclass(frozen=True, slots=True)` classes for every record declared anywhere in the program. Phase 4.0 confirms that bare-record use sites (records not embedded in a list, not iterated, not field-accessed via index) all work: construction, field read, var reassignment, equality, function argument, function return. This is the rigorous "consolidate Phase 3.4 plumbing" gate.
 
 ### Decisions made (4.0)
 
-**Emitted source for `type Point { x: int, y: int }`**:
+**Emitted source for `type Pt { x: int, y: int }; let p = Pt { x: 1, y: 2 }; print(p.x)`** is identical to what Phase 3.4 emits (the lowerer doesn't distinguish list-element from bare records):
 
 ```python
 from __future__ import annotations
 
+from mochi_runtime.io import Print
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True, slots=True)
-class Point:
+class Pt:
     x: int
     y: int
+
+
+def main() -> None:
+    p: Pt = Pt(x=1, y=2)
+    Print.line(p.x)
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-**Auto-derived methods**: `@dataclass(frozen=True, slots=True)` gives:
+**Auto-derived methods** (`__init__`, `__eq__`, `__hash__`, `__repr__`, `__match_args__`) all come from `@dataclass(frozen=True, slots=True)` — no manual emission. The Mochi `==` / `!=` operators (`BinEqRec` / `BinNeRec`) wire directly to Python `==` / `!=`, locked in by `record_eq_same_true`, `record_eq_diff_false`, `record_eq_string_field`, `record_ne_true`, `record_ne_false`.
 
-- `__init__(self, x: int, y: int)` (positional and keyword).
-- `__eq__(self, other)` comparing all fields.
-- `__hash__(self)` over the tuple of field values (only when `frozen=True`; mutable dataclasses get `__hash__ = None`).
-- `__repr__(self)` returning `"Point(x=1, y=2)"`.
-- `__match_args__ = ("x", "y")` for PEP 634 positional matching in Phase 5.
+**`record_lit_unordered`** locks in that the c lower reorders Mochi-source field order to declared field order at the IR boundary, so `Pt { y: 2, x: 1 }` and `Pt { x: 1, y: 2 }` both lower to the same Python `Pt(x=1, y=2)` keyword call. Field-order drift in user source code does not affect emitted output.
 
-**Field naming**: Mochi snake_case field names are preserved verbatim (`user_id` stays `user_id`). Python convention agrees with Mochi here; no PascalCase conversion (which would be needed for .NET or JVM targets).
+**`record_let_typed`** locks in `let p: Pt = Pt { x: 1, y: 2 }` — explicit type annotation on the binding. The `pyTypeForRecord(TypeRecord, _, "Pt", "", _, _)` path emits `p: Pt = Pt(x=1, y=2)` with both sides annotated identically.
 
-**`kw_only=True` threshold**: when a record has more than three fields, the lowerer emits `@dataclass(frozen=True, slots=True, kw_only=True)` so call sites must use keyword arguments and field-order drift becomes a compile error at every call site. Records with three or fewer fields stay with positional construction allowed.
+**`record_passed_to_function` / `record_returned_from_function`** lock in that `Function.Params[].RecordName` and `Function.ReturnRecordName` thread through `lowerFunction` into the emitted `def fn(p: Pt) -> Pt:` annotation.
 
-**Equality semantics**: `Point(x=1, y=2) == Point(x=1, y=2)` is `True`. Both type checkers accept the dataclass-generated `__eq__`. Mochi-level `==` on records lowers directly to Python `==`.
-
-**Hashability**: `hash(Point(x=1, y=2))` is well-defined and consistent with `__eq__`. Records can be used as dict keys, set elements, and Datalog table keys (Phase 8). `slots=True` does not affect hashability but reduces memory.
-
-**`__repr__` and `print(p)`**: `print(Point(x=1, y=2))` produces `"Point(x=1, y=2)\n"`. vm3 also produces this representation. The Mochi-level `print(record)` lowers to `Print.line(repr(record))` only when the record has no custom display surface; the default dataclass `__repr__` matches vm3.
-
-## Sub-phase 4.1, with update via dataclasses.replace
+## Sub-phase 4.1, with-update (BLOCKED UPSTREAM)
 
 ### Goal-alignment audit (4.1)
 
-Mochi `{ r with x: 3 }` is the canonical immutable-update expression. Python has no native `with` expression on dataclasses, but `dataclasses.replace(r, x=3)` is the stdlib equivalent and is type-checker friendly under both mypy and pyright.
+Mochi's intended `{ ...r, x: 3 }` spread update is the canonical immutable-record-update form. The Python target is `dataclasses.replace(r, x=3)`, which the stdlib already provides — no runtime helper needed.
 
-### Decisions made (4.1)
+### Blocker
 
-**Emitted source for `let p2 = { p with x: 3 }`**:
+The Mochi parser currently rejects `let p2 = Pt { ...p, x: 3 }`:
 
-```python
-from __future__ import annotations
-
-from dataclasses import dataclass, replace
-
-
-@dataclass(frozen=True, slots=True)
-class Point:
-    x: int
-    y: int
-
-
-def main() -> None:
-    p: Point = Point(x=1, y=2)
-    p2: Point = replace(p, x=3)
+```
+help:
+  Check for a missing `{` or `}` to close the block.
 ```
 
-**Why `replace` not a custom `with_x` helper**: `dataclasses.replace` is stdlib (no runtime helper to ship), type-aware (both checkers infer the return type as the same dataclass), and matches the canonical Python idiom. A custom helper per field would balloon the emitted module size and obscure the semantic.
+The grammar does not include a spread arm inside record literals. Until the parser ships this surface, MEP-51 cannot lower it; the IR has no `RecordUpdate` node to map to `replace`.
 
-**Multi-field update**: `{ p with x: 3, y: 4 }` lowers to `replace(p, x=3, y=4)`. `replace` accepts arbitrary keyword arguments and the type checker confirms each key is a valid field.
+### Forward plan
 
-**Type checker quirk**: pyright 1.1.380+ infers `replace(p, x=3)` as `Point` correctly. mypy 1.13+ needs the `--strict` flag to be combined with the dataclass plugin (enabled by default since 1.0). No additional config required in `pyproject.toml`.
+When Mochi grammar adds `{ ...r, field: value }` (or `{ r with field: value }`, whichever wins the surface discussion), MEP-45 aotir adds a `RecordUpdate` node carrying `Receiver Expr` + `Overrides []RecordLitArg`. MEP-51 then adds one handler:
 
-**`Mochi.with` chained**: `{ p with x: 3 } with y: 4` lowers to `replace(replace(p, x=3), y=4)`. The two-step form is slightly chatty but type-checker clean. A future v2 optimisation could collapse the two `replace` calls into one when the IR sees them adjacent.
+```go
+case *aotir.RecordUpdate:
+    recv, _ := l.lowerExpr(v.Receiver)
+    kwargs := []pysrc.KeywordArg{}
+    for _, f := range v.Overrides {
+        val, _ := l.lowerExpr(f.Value)
+        kwargs = append(kwargs, pysrc.KeywordArg{Name: f.Name, Value: val})
+    }
+    l.needsReplace = true
+    return &pysrc.Call{Func: &pysrc.Name{Id: "replace"}, Args: []pysrc.Expr{recv}, Kwargs: kwargs}, nil
+```
 
-## Sub-phase 4.2, Nested records and cross-module imports
+Plus `from dataclasses import dataclass, replace` when `needsReplace`.
+
+## Sub-phase 4.2, Nested records and cross-module imports (BLOCKED UPSTREAM)
 
 ### Goal-alignment audit (4.2)
 
-Real Mochi programs declare records across modules. A `pipelines.compute` module imports `models.user.User` and produces results typed as `models.result.Result`. The lowerer must emit clean `from .models.user import User` imports and `ruff check --fix --select=I` must sort them deterministically.
+Real programs nest records (`type User { id: int, addr: Addr }`) and split records across files. The Python target is straightforward: nested records are just nested type references on the dataclass field, and cross-module imports become `from .module import RecordName`.
 
-### Decisions made (4.2)
+### Blocker
 
-**Emitted source for nested record**:
+The c lower (MEP-45 aotir) explicitly rejects nested record fields:
 
-```python
-from __future__ import annotations
-
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True, slots=True)
-class Address:
-    street: str
-    city: str
-
-
-@dataclass(frozen=True, slots=True)
-class User:
-    id: int
-    name: str
-    address: Address
-
-
-def main() -> None:
-    u: User = User(
-        id=1,
-        name="Ana",
-        address=Address(street="1 Main", city="Hanoi"),
-    )
-    home_city: str = u.address.city
+```
+transpiler3/c/lower: type "User": field "addr": nested record fields are not supported in Phase 3.0
 ```
 
-**Cross-module import**: Mochi source `pipelines/compute.mochi` referencing `models.user.User` emits a Python module `pipelines/compute.py` with `from ..models.user import User` (relative import within the same package). Absolute imports (`from mochi_user.models.user import User`) are emitted only at the top level of the package per `ruff` convention.
+The aotir IR's verifier (see `transpiler3/c/aotir/verifier.go`) gates `TypeRecord` fields out of `RecordDecl.Fields` until MEP-45's own Phase 3.X advances. Mochi cross-module imports also require parser-level work (module resolution, import path syntax) that has not yet shipped.
 
-**Forward references**: under `from __future__ import annotations`, all annotations are lazily evaluated. A record that references another record declared later in the same module compiles without issue (no forward-reference quoting needed). Mutually recursive records (User holds list of Friend, Friend holds User) compile cleanly under the future-import.
+### Forward plan
 
-**Equality on nested records**: `__eq__` recurses through fields. `User(id=1, address=Address("1 Main", "Hanoi")) == User(id=1, address=Address("1 Main", "Hanoi"))` is `True` because `Address.__eq__` is also auto-derived and field-by-field.
+When MEP-45 lifts the nested-record gate, MEP-51's Python lowerer already handles them by accident: `lowerRecordDecl` walks `rec.Fields` and emits each as a `ClassField{Name, Type}` with `pyTypeForRecord` resolving record-typed fields via `f.RecordName`. The `from __future__ import annotations` mode means forward references inside the same module compile without explicit quoting.
 
-**Hashing on nested records**: `hash(user)` hashes the tuple `(id, name, address)`, which in turn hashes the `Address` tuple. Both records must be frozen for hashing to work; the lowerer always emits `frozen=True`.
+Cross-module imports will need the lowerer to track which records were declared in which Mochi modules and emit `from .module import R` at the top of each consuming module. Until Mochi cross-module surface ships, this stays speculative.
 
-## Sub-phase 4.3, Field defaults
+## Sub-phase 4.3, Field defaults (BLOCKED UPSTREAM)
 
 ### Goal-alignment audit (4.3)
 
-Mochi `type Config { retries: int = 3, timeout: float = 1.0, tags: list<str> = [] }` is a common pattern. Python dataclass defaults must use `field(default_factory=...)` for mutable defaults (lists, dicts, sets) to avoid the well-known "shared mutable default" bug.
+Mochi `type Config { retries: int = 3, tags: list<string> = [] }` is a common pattern. Python dataclass defaults need `field(default_factory=...)` for mutable values to avoid the well-known shared-default bug.
 
-### Decisions made (4.3)
+### Blocker
 
-**Emitted source for `type Config { retries: int = 3, tags: list<str> = [] }`**:
+Mochi parser does not accept `f: T = expr` inside `type` blocks. aotir `RecordField` (at `transpiler3/c/aotir/program.go:136-140`) has no `Default Expr` slot.
 
-```python
-from __future__ import annotations
+### Forward plan
 
-from dataclasses import dataclass, field
-
-
-@dataclass(frozen=True, slots=True)
-class Config:
-    retries: int = 3
-    tags: list[str] = field(default_factory=list)
-```
-
-**Scalar default**: lowers to a literal default (`retries: int = 3`). Both type checkers accept this on a `frozen=True` dataclass.
-
-**Mutable default**: lowers to `field(default_factory=list)` (or `dict`, or `set`, or a no-arg constructor for any user record). Python forbids `field(default=[])` on dataclasses (raises at class creation time); the lowerer must use the factory form.
-
-**`default_factory` for nested record**: `tags: TagSet = TagSet()` lowers to `tags: TagSet = field(default_factory=TagSet)`. The factory is the bare class name (no-arg constructor); for parameterised defaults, the lowerer emits a `lambda: TagSet(initial_capacity=8)` factory.
-
-**Defaults must follow non-defaults**: Python forbids `def foo(x=1, y)`. Dataclasses inherit this restriction. The Mochi type checker enforces the same ordering at the record-declaration level (records with defaults follow records without defaults in field order); the lowerer trusts this and does not re-validate.
+When Mochi grammar adds default-value syntax and aotir grows `RecordField.Default Expr` + `RecordField.DefaultIsMutable bool`, MEP-51's `lowerRecordDecl` extends to emit `field(default=<lit>)` for scalar defaults and `field(default_factory=<callable>)` for list/dict/set/record defaults. The Python lowerer also needs a `needsField` flag to add `field` to the `from dataclasses import dataclass, field` import.
 
 ## Files changed
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/python/lower/lower.go` | `RecordDecl` to `@dataclass(frozen=True, slots=True)`; `with` expression to `dataclasses.replace`; nested record support |
-| `transpiler3/python/lower/dataclass.go` | Phase 3.4 minimal lowering extended with defaults (`field(default=...)` and `field(default_factory=...)`); `kw_only=True` threshold; cross-module import emission |
-| `transpiler3/python/build/phase04_test.go` | `TestPhase4Records`: 35 fixtures |
-| `tests/transpiler3/python/fixtures/phase04-records/` | 35 fixture directories: rec_basic, rec_int_field, rec_str_field, rec_bool_field, rec_float_field, rec_two_fields, rec_three_fields, rec_four_fields_kw, rec_eq_true, rec_eq_false, rec_hash_in_set, rec_hash_in_dict_key, rec_with_one_field, rec_with_two_fields, rec_with_chained, rec_nested_one_level, rec_nested_two_levels, rec_mutual_recursive, rec_default_int, rec_default_str, rec_default_bool, rec_default_float, rec_default_factory_list, rec_default_factory_dict, rec_default_factory_set, rec_default_factory_record, rec_cross_module_simple, rec_cross_module_nested, rec_cross_module_with_update, rec_repr, rec_print, rec_field_access_chain, rec_fn_arg, rec_fn_return, rec_in_list |
+| `transpiler3/python/build/build.go` | Cache marker bumped to `mep51-phase04` |
+| `transpiler3/python/build/phase04_test.go` | `TestPhase4Records`, walks fixture directory |
+| `tests/transpiler3/python/fixtures/phase04-records/` | 20 fixtures (see Test set) |
+
+No code changes to `lower.go` / `pysrc/nodes.go` / `emit/emit.go`. Phase 3.4 already shipped every Python construct Phase 4.0 needs; this phase is consolidation only.
 
 ## Test set
 
-- `TestPhase4Records`, walks all 35 fixtures with the standard gate stack.
+`TestPhase4Records` walks 20 fixtures (lifted from `tests/transpiler3/c/fixtures/records/`, which is the canonical aotir-Phase-3.0 records corpus):
+
+| Fixture | What it locks in |
+|---------|------------------|
+| `record_bool_field` | Bool field declaration + construction + read + Print.line round-trip |
+| `record_int_field` | Int field analog |
+| `record_float_field` | Float field analog; touches Print.line(float) → Phase 2.1 fmt path |
+| `record_string_field` | String field analog |
+| `record_two_int_fields` | Multi-field record; both fields read |
+| `record_mixed_fields` | Mixed types in one record (int, string, bool, float) |
+| `record_let_typed` | Explicit type annotation on let binding: `let p: Pt = Pt{...}` |
+| `record_lit_unordered` | Field-order independence: source order ≠ declared order, output matches declared order |
+| `record_field_arith` | Arithmetic on record fields (`r.x + r.y`) |
+| `record_field_in_if` | Field read inside an if-condition |
+| `record_field_in_while` | Field read inside a while-condition and body |
+| `record_var_reassign` | `var p: Pt = ...; p = ...`; record reassignment via fresh literal |
+| `record_eq_same_true` | `Pt{x: 1, y: 2} == Pt{x: 1, y: 2}` is true (auto `__eq__`) |
+| `record_eq_diff_false` | `Pt{x: 1, y: 2} == Pt{x: 1, y: 3}` is false |
+| `record_eq_string_field` | Equality with string fields (locks in `str == str` not `is`) |
+| `record_ne_true` | `!=` returns true when fields differ |
+| `record_ne_false` | `!=` returns false when fields match |
+| `record_passed_to_function` | `fun f(p: Pt): int` reads `p.x`; record param annotation via `RecordName` |
+| `record_returned_from_function` | `fun mk(): Pt` returns record literal; `ReturnRecordName` annotation |
+| `record_two_types` | Two record declarations in one program; each gets its own `@dataclass` |
 
 ## Deferred work
 
-- `__match_args__` positional vs keyword-only matching strategy under PEP 634, deferred to Phase 5.1 (sum-type match emission picks the strategy).
-- JSON serialisation via `dataclasses.asdict` plus `json.dumps`, deferred to Phase 12 (FFI surfaces JSON helpers in `mochi_runtime.json`).
-- `pydantic.BaseModel` adapter for FastAPI consumers, deferred to v1.5 per MEP-51 §Open questions Q1.
-- Mutable record fields (Mochi `var` field), deferred indefinitely (Mochi records are immutable by spec).
+- **`{ ...r, field: value }` spread update** for Mochi-side record-with-update → Phase 4.1, blocked on Mochi parser; tracking issue to be opened against `mochilang/mochi`. Once unblocked, the MEP-51 lowering plan is a 10-line patch (see 4.1 § "Forward plan" above).
+- **Nested records (record-in-record)** → Phase 4.2, blocked on MEP-45 aotir lifting the "nested record fields are not supported in Phase 3.0" gate at `transpiler3/c/lower/lower.go`. The Python emitter is already correct for nested fields once the upstream lets them through.
+- **Cross-module imports** → Phase 4.2, blocked on Mochi parser module resolution. Speculative until that ships.
+- **Field defaults** (`f: T = default`) → Phase 4.3, blocked on Mochi parser + aotir `RecordField.Default` slot.
+- **`print(record)` via auto `__repr__`** → blocked on c lower's `print() does not accept a record value in Phase 3.1` gate. The Python emitter already has `__repr__` for free via `@dataclass`; the gate is upstream.
+- **Record as map key, set element** → blocked on aotir verifier rejecting `KeyType=TypeRecord` (map) and `ElemType=TypeRecord` on `set` params/lets. Hashing is correct on the Python side (frozen dataclass auto-`__hash__`), so the gate is purely upstream.
+- **`__match_args__` PEP 634 positional matching** → Phase 5 (sum-type match emission picks the strategy).
+- **JSON serialisation via `dataclasses.asdict` + `json.dumps`** → Phase 12 (FFI surfaces JSON helpers).
+- **`pydantic.BaseModel` adapter for FastAPI consumers** → v1.5 per MEP-51 §Open questions Q1.
+- **Mutable record fields** (Mochi `var` field) → indefinite; Mochi records are immutable by spec.
+- **mypy / pyright / ruff strict gates + 3.12 + 3.13 matrix** → Phase 16.

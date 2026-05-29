@@ -131,7 +131,7 @@ func LoadWorkspace(rootDir string) (*WorkspaceState, error) {
 Edge cases:
 
 - Empty workspace (`members = []`) is allowed; the umbrella is a degenerate case.
-- A member with the same `package.name` as another member raises `M057_DUPLICATE_MEMBER`.
+- A member with the same `package.name` as another member raises `M057_WORKSPACE_E001`.
 - A member listed under `members` whose directory has no `mochi.toml` is silently skipped (matches Cargo).
 
 ## Sub-phase 3.2 — Cross-member short-circuit
@@ -238,7 +238,7 @@ The workspace root can be one of two shapes (research note 04 §8):
 |------------------------------|---------------------|-----------------------------------------|
 | `mochi.workspace.toml` only  | required            | Umbrella only; root is not a package    |
 | `mochi.toml` only            | required            | Combined: root is also a member         |
-| both                         | -                   | `M057_AMBIGUOUS_MANIFEST`               |
+| both                         | -                   | `M057_RESOLVE_E010`               |
 
 In the combined case the root manifest's `[package]` produces a member; its sources live in the workspace root directory.
 
@@ -272,7 +272,7 @@ func DetectCycles(ws *WorkspaceState) error {
 }
 ```
 
-Cycles raise `M057_WORKSPACE_CYCLE` with the full cycle path in the error message.
+Cycles raise `M057_WORKSPACE_E003` with the full cycle path in the error message.
 
 ## Files changed
 
@@ -292,13 +292,16 @@ Cycles raise `M057_WORKSPACE_CYCLE` with the full cycle path in the error messag
 
 ## Error code surface
 
+Sources (see [error registry](./errors)). Verbal aliases from early
+drafts are renamed to the canonical `M057_WORKSPACE_E<NNN>` form:
+
 | Code | Trigger |
 |------|---------|
-| `M057_DUPLICATE_MEMBER` | Two members share `package.name`. |
-| `M057_AMBIGUOUS_MANIFEST` | Both `mochi.toml` and `mochi.workspace.toml` at the root. |
-| `M057_WORKSPACE_CYCLE` | Cross-member imports form a cycle. |
+| `M057_WORKSPACE_E001` | Two members share `package.name`. |
+| `M057_RESOLVE_E010` | Both `mochi.toml` and `mochi.workspace.toml` at the root (shared with Phase 2). |
+| `M057_WORKSPACE_E003` | Cross-member imports form a cycle. |
+| `M057_WORKSPACE_E004` | Member glob escapes workspace root. |
 | `M057_MANIFEST_E009` | Member's `workspace = true` dep is not in `[workspace.dependencies]`. |
-| `M057_GLOB_OUT_OF_BOUNDS` | Member glob escapes the workspace root. |
 
 ## Fixtures
 
@@ -320,7 +323,7 @@ Cycles raise `M057_WORKSPACE_CYCLE` with the full cycle path in the error messag
 
 ## Open questions
 
-- Whether to support nested workspaces (a member that is itself a workspace root); current plan: reject with `M057_NESTED_WORKSPACE` at v1.
+- Whether to support nested workspaces (a member that is itself a workspace root); current plan: reject with `M057_WORKSPACE_E005` at v1.
 - Whether `workspace = "name"` (named workspace reference) is useful for cross-repo workspaces; deferred to v2.
 
 ## Cross-references

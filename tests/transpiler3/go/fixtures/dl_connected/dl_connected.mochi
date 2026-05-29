@@ -1,0 +1,9 @@
+fact link("p", "q")
+fact link("q", "r")
+fact link("r", "s")
+rule connected(X, Y) :- link(X, Y)
+rule connected(X, Y) :- link(X, M), connected(M, Y)
+let xs = query connected("p", Y)
+for x in xs {
+    print(x)
+}

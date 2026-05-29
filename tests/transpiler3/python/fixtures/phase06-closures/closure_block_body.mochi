@@ -1,0 +1,8 @@
+let abs_val = fun(x: int): int {
+  if x < 0 {
+    return x * -1
+  }
+  return x
+}
+print(abs_val(-7))
+print(abs_val(3))

@@ -1,0 +1,9 @@
+type Dir = North | South | East | West
+
+let d: Dir = East
+let label = match d {
+  North => "up"
+  South => "down"
+  _ => "sideways"
+}
+print(label)
