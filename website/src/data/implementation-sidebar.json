@@ -351,7 +351,8 @@
       "implementation/0073/phase-09-rust-library-emit",
       "implementation/0073/phase-10-trusted-publish",
       "implementation/0073/phase-11-async-bridge",
-      "implementation/0073/phase-12-monomorphise"
+      "implementation/0073/phase-12-monomorphise",
+      "implementation/0073/phase-13-embedded"
     ]
   },
   "implementation/0074/index",

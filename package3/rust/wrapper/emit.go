@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"mochi/package3/rust/asyncbridge"
+	"mochi/package3/rust/embedded"
 	"mochi/package3/rust/errors"
 	"mochi/package3/rust/typemap"
 )
@@ -22,6 +23,7 @@ import (
 // the gate here is structural correctness.
 func EmitLibRS(c *Crate) string {
 	var b strings.Builder
+	b.WriteString(embedded.LibRSHeader(c.Profile))
 	b.WriteString(runtimePrologue)
 	b.WriteString("\n")
 	b.WriteString(fmt.Sprintf("// upstream crate: %s %s\n", c.Upstream, c.UpstreamVersion))
@@ -144,7 +146,7 @@ func EmitCargoTOML(c *Crate) string {
 	b.WriteString("crate-type = [\"cdylib\", \"rlib\"]\n")
 	b.WriteString("\n")
 	b.WriteString("[dependencies]\n")
-	b.WriteString(fmt.Sprintf("%s = \"=%s\"\n", c.Upstream, c.UpstreamVersion))
+	b.WriteString(embedded.CargoUpstreamDepRow(c.Profile, c.Upstream, c.UpstreamVersion))
 	if c.HasAsync() {
 		b.WriteString(asyncbridge.CargoDepRow(c.AsyncFlavor))
 		b.WriteString("\n")
