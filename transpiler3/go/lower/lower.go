@@ -735,6 +735,57 @@ func helperDecl(name string) gotree.Decl {
 	}()
 	try()
 }`}
+	case "mochiSub":
+		return &gotree.RawDecl{Code: `type mochiSub[T any] struct {
+	ch    chan T
+	drops bool
+}`}
+	case "mochiStream":
+		return &gotree.RawDecl{Code: `type mochiStream[T any] struct {
+	mu   sync.Mutex
+	cap  int
+	subs []*mochiSub[T]
+}`}
+	case "mochiStreamMake":
+		return &gotree.RawDecl{Code: `func mochiStreamMake[T any](cap int) *mochiStream[T] {
+	return &mochiStream[T]{cap: cap}
+}`}
+	case "mochiStreamSubscribe":
+		return &gotree.RawDecl{Code: `func mochiStreamSubscribe[T any](s *mochiStream[T]) *mochiSub[T] {
+	sub := &mochiSub[T]{ch: make(chan T, s.cap)}
+	s.mu.Lock()
+	s.subs = append(s.subs, sub)
+	s.mu.Unlock()
+	return sub
+}`}
+	case "mochiStreamSubscribeLimit":
+		return &gotree.RawDecl{Code: `func mochiStreamSubscribeLimit[T any](s *mochiStream[T], n int) *mochiSub[T] {
+	sub := &mochiSub[T]{ch: make(chan T, n), drops: true}
+	s.mu.Lock()
+	s.subs = append(s.subs, sub)
+	s.mu.Unlock()
+	return sub
+}`}
+	case "mochiStreamEmit":
+		return &gotree.RawDecl{Code: `func mochiStreamEmit[T any](s *mochiStream[T], v T) {
+	s.mu.Lock()
+	subs := append([]*mochiSub[T](nil), s.subs...)
+	s.mu.Unlock()
+	for _, sub := range subs {
+		if sub.drops {
+			select {
+			case sub.ch <- v:
+			default:
+			}
+		} else {
+			sub.ch <- v
+		}
+	}
+}`}
+	case "mochiSubRecv":
+		return &gotree.RawDecl{Code: `func mochiSubRecv[T any](sub *mochiSub[T]) T {
+	return <-sub.ch
+}`}
 	}
 	return nil
 }

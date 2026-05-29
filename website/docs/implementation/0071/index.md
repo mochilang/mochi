@@ -15,7 +15,7 @@ A phase is LANDED only when its gate is green for every target (consume directio
 
 | Phase | Title | Status | Commit | Tracking page |
 |-------|-------|--------|--------|---------------|
-| 0 | Skeleton: `package3/python/` layout + `Driver` / `Venv` / `SkipReason` / `BridgeError` | NOT STARTED | — | [phase-00](/docs/implementation/0071/phase-00-skeleton) |
+| 0 | Skeleton: `package3/python/` layout + `Driver` / `Venv` / `SkipReason` / `BridgeError` | LANDED | (pending merge) | [phase-00](/docs/implementation/0071/phase-00-skeleton) |
 | 1 | Simple-index client (PEP 503 HTML + PEP 691 JSON + PEP 700 metadata, sha256 + blake3 download verify) | NOT STARTED | — | [phase-01](/docs/implementation/0071/phase-01-simple-index) |
 | 2 | uv resolver bridge (subprocess + lockfile parsing) + PEP 751 pylock.toml round-trip | NOT STARTED | — | [phase-02](/docs/implementation/0071/phase-02-uv-resolver) |
 | 3 | PEP 561 stub discovery (4-tier precedence, typeshed pin, stubgen sandbox) + `.pyi` parser | NOT STARTED | — | [phase-03](/docs/implementation/0071/phase-03-stub-ingest) |
@@ -89,7 +89,7 @@ The `package3/python/` location is shared with the broader MEP-57 polyglot packa
 
 ## Status snapshot
 
-As of 2026-05-29 22:00 (GMT+7): MEP-71 spec and research bundle landed; implementation phase 0-18 NOT STARTED. The implementation will proceed one phase per PR with auto-merge, following the MEP-73 cadence.
+As of 2026-05-29 22:40 (GMT+7): MEP-71 spec and research bundle landed; phase 0 LANDED; phases 1-18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
 
 ## Cross-references
 

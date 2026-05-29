@@ -23,6 +23,13 @@ func (l *lowerer) lowerBlock(b *aotir.Block) (*gotree.BlockStmt, error) {
 		if _, ok := s.(*aotir.ClosureEnvStmt); ok {
 			continue
 		}
+		if _, ok := s.(*aotir.RawCStmt); ok {
+			// Phase 8.0: Datalog setup is a RawCStmt the C backend
+			// uses for runtime engine wiring. The Go backend evaluates
+			// Datalog at compile time inside lowerDatalogQueryExpr, so
+			// the raw-C statement carries no information here.
+			continue
+		}
 		if qs, ok := s.(*aotir.QueryScopeStmt); ok {
 			inner, err := l.lowerBlock(qs.Body)
 			if err != nil {
@@ -80,6 +87,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 		return l.lowerPanicStmt(s)
 	case *aotir.ChanSendStmt:
 		return l.lowerChanSendStmt(s)
+	case *aotir.StreamEmitStmt:
+		return l.lowerStreamEmitStmt(s)
 	case *aotir.OMapPutStmt:
 		return l.lowerOMapPutStmt(s)
 	default:
@@ -399,6 +408,12 @@ func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 		return l.lowerOMapType(s.KeyType, s.ValueType)
 	case aotir.TypeChan:
 		return l.lowerChanType(s.ChanElemType)
+	case aotir.TypeStream:
+		l.addHelper("mochiStream")
+		return l.lowerStreamType(s.StreamElemType)
+	case aotir.TypeSub:
+		l.addHelper("mochiSub")
+		return l.lowerSubType(s.SubElemType)
 	case aotir.TypeRecord:
 		if s.RecordName == "" {
 			return "", fmt.Errorf("record let missing RecordName")
@@ -638,6 +653,29 @@ func (l *lowerer) lowerChanSendStmt(s *aotir.ChanSendStmt) (gotree.Stmt, error) 
 		return nil, fmt.Errorf("chan send value: %w", err)
 	}
 	return &gotree.SendStmt{Chan: ch, Value: val}, nil
+}
+
+// lowerStreamEmitStmt lowers `emit(stream, val)` (Phase 9.2) to a
+// call into the mochiStreamEmit runtime helper which fans val out
+// to every subscriber: unbounded subscribers block until they can
+// receive, bounded (subscribe_limit) subscribers drop on full.
+func (l *lowerer) lowerStreamEmitStmt(s *aotir.StreamEmitStmt) (gotree.Stmt, error) {
+	stream, err := l.lowerExpr(s.Stream)
+	if err != nil {
+		return nil, fmt.Errorf("emit stream: %w", err)
+	}
+	val, err := l.lowerExpr(s.Val)
+	if err != nil {
+		return nil, fmt.Errorf("emit value: %w", err)
+	}
+	l.addHelper("mochiStream")
+	l.addHelper("mochiSub")
+	l.addHelper("mochiStreamEmit")
+	l.addImport("sync")
+	return &gotree.ExprStmt{X: &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiStreamEmit"},
+		Args: []gotree.Expr{stream, val},
+	}}, nil
 }
 
 // lowerPanicStmt emits `mochiPanic(code, msg)` so the value propagates as

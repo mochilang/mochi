@@ -299,13 +299,15 @@ func exprReferencesVar(e aotir.Expr, name string) bool {
 	case *aotir.ChanRecvExpr:
 		return exprReferencesVar(v.Chan, name)
 	case *aotir.StreamMakeExpr:
-		return false
+		return exprReferencesVar(v.Cap, name)
 	case *aotir.SubMakeExpr:
 		return exprReferencesVar(v.Stream, name)
 	case *aotir.SubMakeLimitExpr:
 		return exprReferencesVar(v.Stream, name) || exprReferencesVar(v.Limit, name)
 	case *aotir.SubRecvExpr:
 		return exprReferencesVar(v.Sub, name)
+	case *aotir.DatalogQueryExpr:
+		return false
 	}
 	return true
 }
