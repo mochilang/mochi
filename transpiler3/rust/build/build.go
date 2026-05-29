@@ -145,7 +145,21 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 		return "", fmt.Errorf("rust build: cannot locate mochi-runtime sources")
 	}
 
-	cargoToml := generateCargoToml(crateName, runtimeDir)
+	// Phase 12 (FFI): discover sidecar *.c files in the source directory
+	// and stage them as a compiled C archive via build.rs + cc-rs.
+	srcStem := strings.TrimSuffix(filepath.Base(src), ".mochi")
+	cFiles, err := copySidecarCFiles(filepath.Dir(src), srcStem, workDir)
+	if err != nil {
+		return "", fmt.Errorf("rust build: stage sidecar C: %w", err)
+	}
+	withFFI := len(cFiles) > 0
+	if withFFI {
+		if err := os.WriteFile(filepath.Join(workDir, "build.rs"), []byte(generateBuildRs(cFiles)), 0o644); err != nil {
+			return "", fmt.Errorf("rust build: write build.rs: %w", err)
+		}
+	}
+
+	cargoToml := generateCargoToml(crateName, runtimeDir, withFFI)
 	if err := os.WriteFile(filepath.Join(workDir, "Cargo.toml"), []byte(cargoToml), 0o644); err != nil {
 		return "", fmt.Errorf("rust build: write Cargo.toml: %w", err)
 	}
@@ -295,7 +309,11 @@ func repoRootForBuild(t interface {
 	}
 }
 
-func generateCargoToml(crateName, runtimePath string) string {
+func generateCargoToml(crateName, runtimePath string, withFFI bool) string {
+	buildDeps := ""
+	if withFFI {
+		buildDeps = "\n[build-dependencies]\ncc = \"1\"\n"
+	}
 	return fmt.Sprintf(`[package]
 name = %q
 version = "0.1.0"
@@ -307,14 +325,62 @@ path = "src/main.rs"
 
 [dependencies]
 mochi-runtime = { path = %q }
-
+%s
 [profile.release]
 opt-level = 3
 lto = "thin"
 codegen-units = 1
 panic = "unwind"
 strip = "symbols"
-`, crateName, crateName, runtimePath)
+`, crateName, crateName, runtimePath, buildDeps)
+}
+
+// copySidecarCFiles copies *.c files matching srcStem from srcDir into
+// workDir/cffi/. Two patterns are accepted: `<stem>.c` (single file) and
+// `<stem>_*.c` (multiple helpers per fixture). Returns the relative paths
+// (under workDir) of the copied files so a build.rs script can compile
+// them via cc-rs. Phase 12.
+func copySidecarCFiles(srcDir, srcStem, workDir string) ([]string, error) {
+	entries, err := os.ReadDir(srcDir)
+	if err != nil {
+		return nil, err
+	}
+	var copied []string
+	for _, e := range entries {
+		if e.IsDir() || !strings.HasSuffix(e.Name(), ".c") {
+			continue
+		}
+		base := strings.TrimSuffix(e.Name(), ".c")
+		if base != srcStem && !strings.HasPrefix(base, srcStem+"_") {
+			continue
+		}
+		if len(copied) == 0 {
+			if mkErr := os.MkdirAll(filepath.Join(workDir, "cffi"), 0o755); mkErr != nil {
+				return nil, mkErr
+			}
+		}
+		dst := filepath.Join(workDir, "cffi", e.Name())
+		if err := copyFile(dst, filepath.Join(srcDir, e.Name())); err != nil {
+			return nil, err
+		}
+		copied = append(copied, "cffi/"+e.Name())
+	}
+	return copied, nil
+}
+
+// generateBuildRs returns a build.rs that compiles the listed C files into
+// one static archive via cc-rs. Each path is workDir-relative. Phase 12.
+func generateBuildRs(cFiles []string) string {
+	var sb strings.Builder
+	sb.WriteString("fn main() {\n")
+	sb.WriteString("    let mut build = cc::Build::new();\n")
+	for _, f := range cFiles {
+		fmt.Fprintf(&sb, "    build.file(%q);\n", f)
+		fmt.Fprintf(&sb, "    println!(\"cargo:rerun-if-changed={}\", %q);\n", f)
+	}
+	sb.WriteString("    build.compile(\"mochi_ffi\");\n")
+	sb.WriteString("}\n")
+	return sb.String()
 }
 
 func findBinary(workDir string, target Target, crateName, binName string) (string, error) {

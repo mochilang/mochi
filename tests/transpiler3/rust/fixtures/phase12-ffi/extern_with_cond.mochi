@@ -1,0 +1,7 @@
+extern fun c_neg(x: int): int
+let v: int = 7
+if v > 0 {
+  print(c_neg(v))
+} else {
+  print(v)
+}

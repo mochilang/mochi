@@ -1,0 +1,2 @@
+extern fun c_square(x: int): int
+print(c_square(9))

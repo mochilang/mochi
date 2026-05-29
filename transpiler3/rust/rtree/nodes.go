@@ -158,6 +158,45 @@ func (s *StructDecl) RustString(ind int) string {
 	return sb.String()
 }
 
+// ---- ExternBlock ----
+
+// ExternBlock is a `unsafe extern "C" { fn NAME(args) -> ret; ... }`
+// item containing one or more ExternFn declarations. Phase 12 (FFI).
+type ExternBlock struct {
+	Funcs []ExternFn
+}
+
+// ExternFn is one function signature inside an ExternBlock.
+type ExternFn struct {
+	Name       string
+	Params     []FnParam
+	ReturnType string  // empty means no return (())
+}
+
+func (*ExternBlock) rustItem() {}
+
+func (b *ExternBlock) RustString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%sunsafe extern \"C\" {\n", pad)
+	for _, fn := range b.Funcs {
+		fmt.Fprintf(&sb, "%sfn %s(", indent(ind+1), fn.Name)
+		for i, p := range fn.Params {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			fmt.Fprintf(&sb, "%s: %s", p.Name, p.TypeName)
+		}
+		sb.WriteByte(')')
+		if fn.ReturnType != "" {
+			fmt.Fprintf(&sb, " -> %s", fn.ReturnType)
+		}
+		sb.WriteString(";\n")
+	}
+	sb.WriteString(pad + "}")
+	return sb.String()
+}
+
 // ---- EnumDecl ----
 
 // EnumDecl is a Rust enum declaration (used for sum types in Phase 5).
@@ -676,6 +715,32 @@ func (m *MethodCallExpr) RustExpr() string {
 		sb.WriteString(a.RustExpr())
 	}
 	sb.WriteByte(')')
+	return sb.String()
+}
+
+// ---- UnsafeCallExpr ----
+
+// UnsafeCallExpr is `unsafe { func(args...) }`, used for FFI extern "C"
+// calls. Phase 12.
+type UnsafeCallExpr struct {
+	Func string
+	Args []Expr
+}
+
+func (*UnsafeCallExpr) rustExpr() {}
+
+func (u *UnsafeCallExpr) RustExpr() string {
+	var sb strings.Builder
+	sb.WriteString("unsafe { ")
+	sb.WriteString(u.Func)
+	sb.WriteByte('(')
+	for i, a := range u.Args {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(a.RustExpr())
+	}
+	sb.WriteString(") }")
 	return sb.String()
 }
 

@@ -54,6 +54,9 @@ type lowerer struct {
 	// agents indexes agent decls by name so intent calls can resolve
 	// the Rust type token for `&mut` argument annotations.
 	agents map[string]*aotir.AgentDecl
+	// externs collects FFI extern function names (Phase 12). Any CallExpr
+	// or CallStmt whose Func appears here is wrapped in `unsafe { ... }`.
+	externs map[string]bool
 }
 
 // Lower translates an aotir.Program into a rtree.File.
@@ -66,6 +69,10 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, crateName string) (*rt
 	l.agents = make(map[string]*aotir.AgentDecl, len(prog.Agents))
 	for _, ad := range prog.Agents {
 		l.agents[ad.Name] = ad
+	}
+	l.externs = make(map[string]bool, len(prog.ExternFuncs))
+	for _, ef := range prog.ExternFuncs {
+		l.externs[ef.Name] = true
 	}
 
 	mainFn := prog.Functions[prog.Main]
@@ -82,6 +89,31 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, crateName string) (*rt
 	file := &rtree.File{
 		Name: crateName,
 		Uses: []*rtree.Use{},
+	}
+
+	// Extern "C" block for FFI declarations. Phase 12. Emitted first so
+	// these signatures are in scope for every function below.
+	if len(prog.ExternFuncs) > 0 {
+		funcs := make([]rtree.ExternFn, 0, len(prog.ExternFuncs))
+		for _, ef := range prog.ExternFuncs {
+			params := make([]rtree.FnParam, 0, len(ef.Params))
+			for _, p := range ef.Params {
+				params = append(params, rtree.FnParam{
+					Name:     p.Name,
+					TypeName: rustTypeName(p.Type),
+				})
+			}
+			ret := ""
+			if ef.ReturnType != aotir.TypeUnit {
+				ret = rustTypeName(ef.ReturnType)
+			}
+			funcs = append(funcs, rtree.ExternFn{
+				Name:       ef.Name,
+				Params:     params,
+				ReturnType: ret,
+			})
+		}
+		file.Items = append(file.Items, &rtree.ExternBlock{Funcs: funcs})
 	}
 
 	// Records first so types are in scope.
@@ -787,6 +819,9 @@ func (l *lowerer) lowerCallStmt(c *aotir.CallStmt) (rtree.Stmt, error) {
 			return nil, err
 		}
 		args = append(args, ea)
+	}
+	if l.externs[c.Func] {
+		return &rtree.ExprStmt{Expr: &rtree.UnsafeCallExpr{Func: c.Func, Args: args}}, nil
 	}
 	return &rtree.ExprStmt{Expr: &rtree.CallExpr{Func: c.Func, Args: args}}, nil
 }
@@ -1501,6 +1536,9 @@ func (l *lowerer) lowerCallExpr(c *aotir.CallExpr) (rtree.Expr, error) {
 			return nil, err
 		}
 		args = append(args, ea)
+	}
+	if l.externs[c.Func] {
+		return &rtree.UnsafeCallExpr{Func: c.Func, Args: args}, nil
 	}
 	return &rtree.CallExpr{Func: c.Func, Args: args}, nil
 }

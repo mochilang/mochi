@@ -1,0 +1,4 @@
+extern fun c_gcd(a: int, b: int): int
+print(c_gcd(48, 18))
+print(c_gcd(100, 75))
+print(c_gcd(17, 5))

@@ -1,0 +1,3 @@
+extern fun c_fadd(a: float, b: float): float
+print(c_fadd(1.5, 2.25))
+print(c_fadd(-1.0, 0.5))
