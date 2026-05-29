@@ -421,7 +421,13 @@ func (l *lowerer) lowerFunCallExpr(e *aotir.FunCallExpr) (gotree.Expr, error) {
 // Builtins like the print family are surfaced as CallStmts, so any
 // CallExpr that reaches the lowerer is a user-defined Function whose
 // mangled name is already stored verbatim in Func.
+//
+// Phase 11.2: the synthetic `__await_all__` builtin is intercepted
+// here and lowered to a loop-receive IIFE over a `[]chan T`.
 func (l *lowerer) lowerCallExpr(e *aotir.CallExpr) (gotree.Expr, error) {
+	if e.Func == "__await_all__" {
+		return l.lowerAwaitAllCall(e)
+	}
 	args := make([]gotree.Expr, 0, len(e.Args))
 	for i, a := range e.Args {
 		v, err := l.lowerExpr(a)
@@ -433,6 +439,118 @@ func (l *lowerer) lowerCallExpr(e *aotir.CallExpr) (gotree.Expr, error) {
 	return &gotree.CallExpr{
 		Fun:  &gotree.Ident{Name: e.Func},
 		Args: args,
+	}, nil
+}
+
+// lowerAwaitAllCall lowers `await_all(futs)` to:
+//
+//	func(__futs []chan T) []T {
+//	    __out := make([]T, len(__futs))
+//	    for __i, __f := range __futs {
+//	        __out[__i] = <-__f
+//	    }
+//	    return __out
+//	}(futs)
+//
+// The list of futures is gathered sequentially. The producer
+// goroutines run concurrently (seeded by `async`); the receives
+// merely wait for each one to be done.
+func (l *lowerer) lowerAwaitAllCall(e *aotir.CallExpr) (gotree.Expr, error) {
+	if len(e.Args) != 1 {
+		return nil, fmt.Errorf("__await_all__: expected 1 arg, got %d", len(e.Args))
+	}
+	elemType, err := l.lowerType(e.ResultElemType)
+	if err != nil {
+		return nil, fmt.Errorf("__await_all__ element: %w", err)
+	}
+	if elemType == "" {
+		return nil, fmt.Errorf("transpiler3/go/lower: __await_all__ element type cannot be unit")
+	}
+	listType := "[]" + elemType
+	chanListType := "[]chan " + elemType
+
+	// The argument is a list<future<T>> whose element type isn't carried
+	// on ListLit (it just records ElemType=TypeFuture). Build the slice
+	// literal in place so the Go side gets the right type annotation.
+	var arg gotree.Expr
+	if ll, ok := e.Args[0].(*aotir.ListLit); ok && ll.ElemType == aotir.TypeFuture {
+		elts := make([]gotree.Expr, 0, len(ll.Elems))
+		for i, x := range ll.Elems {
+			ge, err := l.lowerExpr(x)
+			if err != nil {
+				return nil, fmt.Errorf("__await_all__ elem %d: %w", i, err)
+			}
+			elts = append(elts, ge)
+		}
+		arg = &gotree.CompositeLit{
+			Type: &gotree.RawExpr{Src: chanListType},
+			Elts: elts,
+		}
+	} else {
+		arg, err = l.lowerExpr(e.Args[0])
+		if err != nil {
+			return nil, fmt.Errorf("__await_all__ arg: %w", err)
+		}
+	}
+
+	futsName := "__futs"
+	outName := "__out"
+	idxName := "__i"
+	chName := "__f"
+
+	makeOut := &gotree.AssignStmt{
+		Lhs: []gotree.Expr{&gotree.Ident{Name: outName}},
+		Tok: ":=",
+		Rhs: []gotree.Expr{&gotree.CallExpr{
+			Fun: &gotree.Ident{Name: "make"},
+			Args: []gotree.Expr{
+				&gotree.Ident{Name: listType},
+				&gotree.CallExpr{
+					Fun:  &gotree.Ident{Name: "len"},
+					Args: []gotree.Expr{&gotree.Ident{Name: futsName}},
+				},
+			},
+		}},
+	}
+
+	body := &gotree.BlockStmt{List: []gotree.Stmt{
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.IndexExpr{
+				X:     &gotree.Ident{Name: outName},
+				Index: &gotree.Ident{Name: idxName},
+			}},
+			Tok: "=",
+			Rhs: []gotree.Expr{&gotree.UnaryExpr{
+				Op: "<-",
+				X:  &gotree.Ident{Name: chName},
+			}},
+		},
+	}}
+
+	rangeLoop := &gotree.RangeStmt{
+		Key:   &gotree.Ident{Name: idxName},
+		Value: &gotree.Ident{Name: chName},
+		Tok:   ":=",
+		X:     &gotree.Ident{Name: futsName},
+		Body:  body,
+	}
+
+	ret := &gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: outName}}}
+
+	fn := &gotree.FuncLit{
+		Type: &gotree.FuncType{
+			Params: []gotree.Field{{
+				Names: []string{futsName},
+				Type:  &gotree.Ident{Name: chanListType},
+			}},
+			Results: []gotree.Field{{Type: &gotree.Ident{Name: listType}}},
+		},
+		Body: &gotree.BlockStmt{List: []gotree.Stmt{makeOut, rangeLoop, ret}},
+	}
+
+	return &gotree.CallExpr{
+		Fun:  fn,
+		Args: []gotree.Expr{arg},
 	}, nil
 }
 

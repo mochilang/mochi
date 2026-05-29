@@ -52,6 +52,48 @@ func TestPhase11AsyncSource(t *testing.T) {
 	}
 }
 
+// TestPhase11AwaitAllSource verifies the MEP-54 Phase 11.2 lowering
+// emits the loop-receive IIFE for `await_all([fs...])`. The async_all
+// fixture binds three futures (int64) then drains them via a slice.
+// The gate checks for:
+//
+//   - the `[]chan int64{...}` slice literal passed as the argument
+//   - the inner function signature with `__futs []chan int64`
+//   - the `make([]int64, len(__futs))` allocation
+//   - the `range __futs` loop and `<-__f` receive
+func TestPhase11AwaitAllSource(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Phase 1 ships POSIX `go` invocation only; Windows lands in Phase 16")
+	}
+	root := repoRoot(t)
+	src := filepath.Join(root, "tests", "transpiler3", "go", "fixtures", "async_all", "async_all.mochi")
+	outBin := filepath.Join(t.TempDir(), "async_all")
+	d := &Driver{CacheDir: t.TempDir(), KeepWorkDir: true}
+	if err := d.Build(src, outBin, "", ""); err != nil {
+		t.Fatalf("Driver.Build: %v", err)
+	}
+	defer os.RemoveAll(d.WorkDirPath)
+
+	mainPath := filepath.Join(d.WorkDirPath, "main.go")
+	srcBytes, err := os.ReadFile(mainPath)
+	if err != nil {
+		t.Fatalf("read main.go: %v", err)
+	}
+	got := string(srcBytes)
+
+	for _, marker := range []string{
+		"[]chan int64{f1, f2, f3}",
+		"__futs []chan int64",
+		"make([]int64, len(__futs))",
+		"range __futs",
+		"<-__f",
+	} {
+		if !strings.Contains(got, marker) {
+			t.Fatalf("main.go missing %q:\n%s", marker, got)
+		}
+	}
+}
+
 // TestPhase11AsyncStringSource exercises the string-element variant
 // of the lowering so the chan element type is `string` (not int64)
 // and the IIFE's return type matches.
