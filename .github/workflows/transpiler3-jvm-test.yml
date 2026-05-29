@@ -43,7 +43,7 @@ jobs:
           cache-dependency-path: go.sum
 
       - name: Set up JDK ${{ matrix.jdk }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: ${{ matrix.jdk }}
