@@ -782,5 +782,495 @@
         "docId": "research/0052/risks-and-alternatives"
       }
     ]
+  },
+  {
+    "number": 53,
+    "title": "MEP-53 research notes",
+    "slug": "/docs/research/0053/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0053/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "01. Language surface",
+        "docId": "research/0053/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "02. Design philosophy",
+        "docId": "research/0053/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "03. Prior art",
+        "docId": "research/0053/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "04. Runtime",
+        "docId": "research/0053/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "05. Codegen",
+        "docId": "research/0053/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "06. Type lowering",
+        "docId": "research/0053/type-lowering"
+      },
+      {
+        "stem": "07-rust-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "07. Portability",
+        "docId": "research/0053/rust-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "08. Dataset",
+        "docId": "research/0053/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "09. Agents & streams",
+        "docId": "research/0053/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "10. Build",
+        "docId": "research/0053/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "11. Testing gates",
+        "docId": "research/0053/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "12. Risks",
+        "docId": "research/0053/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 54,
+    "title": "MEP-54 research bundle: Mochi to Go transpiler",
+    "slug": "/docs/research/0054/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "MEP-54",
+        "docId": "research/0054/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "01. Language surface (Go target)",
+        "docId": "research/0054/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "02. Design philosophy",
+        "docId": "research/0054/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "03. Prior-art transpilers",
+        "docId": "research/0054/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "04. Runtime building blocks",
+        "docId": "research/0054/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "05. Codegen design",
+        "docId": "research/0054/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "06. Type-system lowering",
+        "docId": "research/0054/type-lowering"
+      },
+      {
+        "stem": "07-go-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "07. Go target and portability",
+        "docId": "research/0054/go-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "08. Dataset pipeline",
+        "docId": "research/0054/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "09. Agents and streams",
+        "docId": "research/0054/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "10. Build system",
+        "docId": "research/0054/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "11. Testing gates",
+        "docId": "research/0054/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "12. Risks and alternatives",
+        "docId": "research/0054/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 55,
+    "title": "MEP-55 research bundle: Mochi to PHP 8.4 transpiler",
+    "slug": "/docs/research/0055/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "MEP-55",
+        "docId": "research/0055/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "Language surface: Mochi features mapped to PHP 8.4 lowering obligations",
+        "docId": "research/0055/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "Design philosophy: why PHP 8.4, why strict_types, why sync wrappers, why final readonly, why DJB2/GMP, why Phar",
+        "docId": "research/0055/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "Prior art: source-to-PHP tools, PHP version history, and why aotir→ptree→emit",
+        "docId": "research/0055/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "Runtime: the mochi/runtime Composer package",
+        "docId": "research/0055/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "Codegen design: aotir → ptree → emit pipeline",
+        "docId": "research/0055/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "Type lowering: per-Mochi-type PHP 8.4 lowering rules",
+        "docId": "research/0055/type-lowering"
+      },
+      {
+        "stem": "07-php-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "PHP target portability: CI matrix, phar.readonly, FrankenPHP, RoadRunner, Packagist",
+        "docId": "research/0055/php-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "Dataset pipeline: query DSL lowering and Datalog compile-time evaluation",
+        "docId": "research/0055/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "Agents and streams: Phase 9 agents, Phase 10 streams, Phase 11 async coloring",
+        "docId": "research/0055/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "Build system: Driver.Build pipeline, resolvePhp, cacheKey, Phase 17 packaging, CI workflow",
+        "docId": "research/0055/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "Testing gates: two-tier strategy, fragment tests, PHP execution tests, DJB2, Phar, reproducibility",
+        "docId": "research/0055/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "Risks and alternatives: scheduling, PHP_INT_MAX overflow, Psalm 5 vs 6, abstract readonly, phar.readonly, amphp removed, live LLM deferred, PHP 8.5",
+        "docId": "research/0055/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 56,
+    "title": "MEP-56 research bundle: Mochi to Ruby transpiler",
+    "slug": "/docs/research/0056/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "MEP-56",
+        "docId": "research/0056/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "01. Language surface (Ruby target)",
+        "docId": "research/0056/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "02. Design philosophy",
+        "docId": "research/0056/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-transpilers",
+        "order": 3,
+        "isIndex": false,
+        "label": "03. Prior-art transpilers",
+        "docId": "research/0056/prior-art-transpilers"
+      },
+      {
+        "stem": "04-runtime",
+        "order": 4,
+        "isIndex": false,
+        "label": "04. Runtime building blocks",
+        "docId": "research/0056/runtime"
+      },
+      {
+        "stem": "05-codegen-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "05. Codegen design",
+        "docId": "research/0056/codegen-design"
+      },
+      {
+        "stem": "06-type-lowering",
+        "order": 6,
+        "isIndex": false,
+        "label": "06. Type-system lowering",
+        "docId": "research/0056/type-lowering"
+      },
+      {
+        "stem": "07-ruby-target-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "07. Ruby target and portability",
+        "docId": "research/0056/ruby-target-portability"
+      },
+      {
+        "stem": "08-dataset-pipeline",
+        "order": 8,
+        "isIndex": false,
+        "label": "08. Dataset pipeline",
+        "docId": "research/0056/dataset-pipeline"
+      },
+      {
+        "stem": "09-agent-streams",
+        "order": 9,
+        "isIndex": false,
+        "label": "09. Agents and streams",
+        "docId": "research/0056/agent-streams"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "10. Build system",
+        "docId": "research/0056/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "11. Testing gates",
+        "docId": "research/0056/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "12. Risks and alternatives",
+        "docId": "research/0056/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 57,
+    "title": "MEP-57 research bundle: Mochi module and package system",
+    "slug": "/docs/research/0057/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "MEP-57",
+        "docId": "research/0057/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "Language surface: package imports, workspaces, capabilities",
+        "docId": "research/0057/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "Design philosophy: the six load-bearing decisions",
+        "docId": "research/0057/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-registries",
+        "order": 3,
+        "isIndex": false,
+        "label": "Prior art: registries and package managers (2024-2026 survey)",
+        "docId": "research/0057/prior-art-registries"
+      },
+      {
+        "stem": "04-manifest-format",
+        "order": 4,
+        "isIndex": false,
+        "label": "Manifest format: mochi.toml schema deep dive",
+        "docId": "research/0057/manifest-format"
+      },
+      {
+        "stem": "05-solver-design",
+        "order": 5,
+        "isIndex": false,
+        "label": "Solver design: PubGrub-derived conflict-driven backtracking",
+        "docId": "research/0057/solver-design"
+      },
+      {
+        "stem": "06-lockfile-format",
+        "order": 6,
+        "isIndex": false,
+        "label": "Lockfile format: mochi.lock canonical TOML serialisation",
+        "docId": "research/0057/lockfile-format"
+      },
+      {
+        "stem": "07-registry-index",
+        "order": 7,
+        "isIndex": false,
+        "label": "Registry index: sparse HTTPS protocol",
+        "docId": "research/0057/registry-index"
+      },
+      {
+        "stem": "08-content-addressed-store",
+        "order": 8,
+        "isIndex": false,
+        "label": "Content-addressed object store: BLAKE3 plus SHA-256",
+        "docId": "research/0057/content-addressed-store"
+      },
+      {
+        "stem": "09-trusted-publishing",
+        "order": 9,
+        "isIndex": false,
+        "label": "Trusted publishing: Sigstore plus OIDC end-to-end",
+        "docId": "research/0057/trusted-publishing"
+      },
+      {
+        "stem": "10-capability-model",
+        "order": 10,
+        "isIndex": false,
+        "label": "Capability model: closed set, manifest-declared, target-enforced",
+        "docId": "research/0057/capability-model"
+      },
+      {
+        "stem": "11-polyglot-fanout",
+        "order": 11,
+        "isIndex": false,
+        "label": "Polyglot fan-out: one source, eight ecosystem artifacts",
+        "docId": "research/0057/polyglot-fanout"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "Risks and alternatives",
+        "docId": "research/0057/risks-and-alternatives"
+      }
+    ]
   }
 ]
