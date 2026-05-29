@@ -23,7 +23,7 @@ A phase is LANDED only when its gate is green for every target (consume directio
 | 5 | Mochi-side extern fn emitter + alias shim file generation | LANDED | [6da45d5d](https://github.com/mochilang/mochi/commit/6da45d5d) | [phase-05](/docs/implementation/0073/phase-05-extern-emit) |
 | 6 | `import rust "<crate>@<semver>" as <alias>` grammar + parser | LANDED | [8a4e5b8d](https://github.com/mochilang/mochi/commit/8a4e5b8d) | [phase-06](/docs/implementation/0073/phase-06-import-grammar) |
 | 7 | Build orchestration: workspace synth + cargo build invocation + artifact link | LANDED | (pending) | [phase-07](/docs/implementation/0073/phase-07-build) |
-| 8 | mochi.lock `[[rust-package]]` integration + `--check` mode | NOT STARTED | — | [phase-08](/docs/implementation/0073/phase-08-lockfile) |
+| 8 | mochi.lock `[[rust-package]]` integration + `--check` mode | LANDED | (pending) | [phase-08](/docs/implementation/0073/phase-08-lockfile) |
 | 9 | `TargetRustLibrary` emit (rlib + cdylib + Cargo.toml + cbindgen) | NOT STARTED | — | [phase-09](/docs/implementation/0073/phase-09-rust-library-emit) |
 | 10 | Trusted publishing (`mochi pkg publish --to=crates.io`) Sigstore OIDC flow | NOT STARTED | — | [phase-10](/docs/implementation/0073/phase-10-trusted-publish) |
 | 11 | Async bridge (tokio runtime singleton + block_on entry) | NOT STARTED | — | [phase-11](/docs/implementation/0073/phase-11-async-bridge) |
@@ -71,7 +71,7 @@ The `package3/rust/` location is shared with the broader MEP-57 polyglot package
 
 ## Status snapshot
 
-As of 2026-05-29 23:04 (GMT+7): phases 0, 1, 2, 3, 4, 5, 6, and 7 LANDED (skeleton + sparse-index client + cargo semver + rustdoc-JSON ingest + closed type-mapping table + extern-C wrapper synthesiser + Mochi extern-fn emitter + `import rust` grammar + build orchestration pipeline). Phases 8-13 pending. The MEP spec and research bundle are landed; implementation is progressing one phase per PR with auto-merge.
+As of 2026-05-29 23:23 (GMT+7): phases 0, 1, 2, 3, 4, 5, 6, 7, and 8 LANDED (skeleton + sparse-index client + cargo semver + rustdoc-JSON ingest + closed type-mapping table + extern-C wrapper synthesiser + Mochi extern-fn emitter + `import rust` grammar + build orchestration pipeline + mochi.lock `[[rust-package]]` schema + drift checker). Phases 9-13 pending. The MEP spec and research bundle are landed; implementation is progressing one phase per PR with auto-merge.
 
 ## Cross-references
 
