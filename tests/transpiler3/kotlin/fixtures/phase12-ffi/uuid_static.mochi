@@ -1,0 +1,4 @@
+extern java fun java.util.UUID.randomUUID(): string as uuid_new
+
+let id = uuid_new()
+print("ok")

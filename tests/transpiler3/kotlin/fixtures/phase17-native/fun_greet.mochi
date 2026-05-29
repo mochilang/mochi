@@ -1,0 +1,2 @@
+fun greet(name: string): string { return "hello, " + name }
+print(greet("native"))

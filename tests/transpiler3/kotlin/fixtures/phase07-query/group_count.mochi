@@ -1,0 +1,5 @@
+let nums = [1, 2, 3, 4, 5, 6]
+let odds = from n in nums where n % 2 != 0 select n
+let evens = from n in nums where n % 2 == 0 select n
+print(len(odds))
+print(len(evens))

@@ -1,0 +1,6 @@
+type Wrapper = Bool(flag: bool)
+let w: Wrapper = Bool(true)
+let result = match w {
+  Bool(flag) => flag
+}
+print(result)

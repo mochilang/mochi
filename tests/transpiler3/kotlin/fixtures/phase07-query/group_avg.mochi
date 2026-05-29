@@ -1,0 +1,5 @@
+let nums = [2, 4, 6, 8, 10]
+let total = sum(from n in nums select n)
+let count = len(from n in nums select n)
+print(total)
+print(count)

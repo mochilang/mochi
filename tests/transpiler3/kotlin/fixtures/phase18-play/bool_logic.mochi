@@ -1,0 +1,3 @@
+print(true && true)
+print(false || false)
+print(true && false)

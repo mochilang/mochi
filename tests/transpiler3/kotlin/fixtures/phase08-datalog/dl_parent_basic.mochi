@@ -1,0 +1,7 @@
+fact parent("alice", "bob")
+fact parent("alice", "carol")
+fact parent("bob", "dave")
+let xs = query parent("alice", Y)
+for x in xs {
+    print(x)
+}

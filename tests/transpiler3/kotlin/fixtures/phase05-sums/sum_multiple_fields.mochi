@@ -1,0 +1,6 @@
+type Pair = IntPair(a: int, b: int)
+let p: Pair = IntPair(10, 20)
+let result = match p {
+  IntPair(a, b) => a + b
+}
+print(result)
