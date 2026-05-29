@@ -336,6 +336,45 @@ func (l *ListLit) PyString() string {
 	return sb.String()
 }
 
+// DictLit is `{k1: v1, k2: v2, ...}` (PEP 448 dict display).
+type DictLit struct {
+	Keys   []Expr
+	Values []Expr
+}
+
+func (*DictLit) isExpr() {}
+
+// PyString renders the dict literal.
+func (d *DictLit) PyString() string {
+	var sb strings.Builder
+	sb.WriteByte('{')
+	for i := range d.Keys {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(d.Keys[i].PyString())
+		sb.WriteString(": ")
+		sb.WriteString(d.Values[i].PyString())
+	}
+	sb.WriteByte('}')
+	return sb.String()
+}
+
+// IndexAssignStmt is `target[key] = value` (Python subscript assignment).
+type IndexAssignStmt struct {
+	Target Expr
+	Key    Expr
+	Value  Expr
+}
+
+func (*IndexAssignStmt) isStmt() {}
+
+// PyString renders the index-assign statement.
+func (s *IndexAssignStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	return pad + s.Target.PyString() + "[" + s.Key.PyString() + "] = " + s.Value.PyString()
+}
+
 // SliceExpr is `receiver[start:end]`. Either bound may be nil for
 // open-ended slices (Python `xs[:n]` / `xs[n:]`).
 type SliceExpr struct {
