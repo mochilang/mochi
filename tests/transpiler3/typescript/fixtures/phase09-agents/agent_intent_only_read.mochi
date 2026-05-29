@@ -1,0 +1,10 @@
+agent Const {
+    var v: int = 42
+    intent get_v(): int { return v }
+    intent get_double(): int { return v + v }
+    intent get_triple(): int { return v + v + v }
+}
+let c = Const { v: 42 }
+print(c.get_v())
+print(c.get_double())
+print(c.get_triple())
