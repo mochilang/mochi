@@ -74,3 +74,39 @@ func (l *lowerer) lowerSetType(elem aotir.Type) (string, error) {
 	}
 	return "map[" + et + "]struct{}", nil
 }
+
+// lowerFunType produces `func(T1, T2, ...) R` for a fun-typed value.
+// Phase 6.1 restricts the parameter and return types to scalar primitives
+// and unit (matching the aotir FunSig restriction).
+func (l *lowerer) lowerFunType(sig *aotir.FunSig) (string, error) {
+	if sig == nil {
+		return "", fmt.Errorf("transpiler3/go/lower: fun type missing FunSig")
+	}
+	parts := make([]string, 0, len(sig.ParamTypes))
+	for i, pt := range sig.ParamTypes {
+		s, err := l.lowerType(pt)
+		if err != nil {
+			return "", fmt.Errorf("fun param %d: %w", i, err)
+		}
+		if s == "" {
+			return "", fmt.Errorf("fun param %d: unit not allowed", i)
+		}
+		parts = append(parts, s)
+	}
+	head := "func("
+	for i, p := range parts {
+		if i > 0 {
+			head += ", "
+		}
+		head += p
+	}
+	head += ")"
+	if sig.ReturnType == aotir.TypeUnit {
+		return head, nil
+	}
+	rt, err := l.lowerType(sig.ReturnType)
+	if err != nil {
+		return "", fmt.Errorf("fun return: %w", err)
+	}
+	return head + " " + rt, nil
+}

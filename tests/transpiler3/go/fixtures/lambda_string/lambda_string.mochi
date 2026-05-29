@@ -1,0 +1,3 @@
+let shout: fun(string): string = fun(s: string): string => s + "!"
+print(shout("hi"))
+print(shout("bye"))

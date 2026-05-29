@@ -1,5 +1,7 @@
 package gotree
 
+import "os"
+
 // File is the top-level shadow AST node: one .go source file.
 // PackageName is the identifier in the `package` clause; the
 // import group and decl list follow in source order.
@@ -17,7 +19,14 @@ type File struct {
 func (f *File) Render() ([]byte, error) {
 	w := NewWriter()
 	f.write(w)
-	return Format(w.Bytes())
+	raw := w.Bytes()
+	out, err := Format(raw)
+	if err != nil && os.Getenv("MOCHI_DUMP_RAW") != "" {
+		os.Stderr.Write([]byte("--- RAW ---\n"))
+		os.Stderr.Write(raw)
+		os.Stderr.Write([]byte("--- END RAW ---\n"))
+	}
+	return out, err
 }
 
 func (f *File) write(w *Writer) {

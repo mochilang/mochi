@@ -1,0 +1,4 @@
+let n: int = 10
+let add_n: fun(int): int = fun(x: int): int => x + n
+print(add_n(5))
+print(add_n(7))

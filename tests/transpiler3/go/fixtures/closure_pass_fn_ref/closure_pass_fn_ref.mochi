@@ -1,0 +1,10 @@
+fun double(x: int): int {
+  return x * 2
+}
+
+fun apply(f: fun(int): int, x: int): int {
+  return f(x)
+}
+
+print(apply(double, 5))
+print(apply(double, 21))

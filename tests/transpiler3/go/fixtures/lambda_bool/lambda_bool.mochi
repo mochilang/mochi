@@ -1,0 +1,3 @@
+let neg: fun(bool): bool = fun(b: bool): bool => !b
+print(neg(true))
+print(neg(false))

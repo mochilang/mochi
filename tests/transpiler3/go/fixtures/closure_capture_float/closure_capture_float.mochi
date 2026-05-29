@@ -1,0 +1,4 @@
+let scale: float = 2.5
+let scaled: fun(float): float = fun(x: float): float => x * scale
+print(scaled(2.0))
+print(scaled(4.0))

@@ -60,9 +60,10 @@ func (l *lowerer) lowerProgram() (*gotree.File, error) {
 	}
 
 	// Lower every non-Main top-level function before main. Each is a
-	// user-defined Mochi `fun` with a mangled name (mochi__<name>).
-	// Phase 6.0 ships scalar / record / union parameters and returns;
-	// lifted closure functions (IsLifted=true) land in 6.1.
+	// user-defined Mochi `fun` with a mangled name (mochi__<name>) or
+	// a lifted closure body (IsLifted=true) named __anon_N / __shim_X.
+	// Capturing lifted functions emit an env struct typedef immediately
+	// before the function so the env pointer parameter has a typed shape.
 	for i, fn := range l.prog.Functions {
 		if i == l.prog.Main {
 			continue
@@ -70,11 +71,11 @@ func (l *lowerer) lowerProgram() (*gotree.File, error) {
 		if fn == nil {
 			return nil, fmt.Errorf("transpiler3/go/lower: function %d is nil", i)
 		}
-		decl, err := l.lowerFunction(fn)
+		decls, err := l.lowerFunction(fn)
 		if err != nil {
 			return nil, fmt.Errorf("function %s: %w", fn.Name, err)
 		}
-		f.Decls = append(f.Decls, decl)
+		f.Decls = append(f.Decls, decls...)
 	}
 
 	body, err := l.lowerBlock(mainFn.Body)
@@ -92,12 +93,32 @@ func (l *lowerer) lowerProgram() (*gotree.File, error) {
 	return f, nil
 }
 
-// lowerFunction lowers one aotir.Function to a Go FuncDecl. The
+// lowerFunction lowers one aotir.Function to one or more Go decls. The
 // function name is taken verbatim from Function.Name (already mangled
-// to mochi__<source> by the shared aotir lowerer). Each Param is
-// rendered through paramTypeText. Unit returns omit the Results clause.
-func (l *lowerer) lowerFunction(fn *aotir.Function) (gotree.Decl, error) {
-	params := make([]gotree.Field, 0, len(fn.Params))
+// to mochi__<source> by the shared aotir lowerer, or __anon_N / __shim_X
+// for lifted closures). Each Param is rendered through paramTypeText.
+// Unit returns omit the Results clause.
+//
+// For a capturing lifted function (IsLifted && EnvTypeName != ""), the
+// result is two decls: the env struct typedef followed by the function
+// itself, which takes `__mochi_env *<EnvTypeName>` as its first param.
+func (l *lowerer) lowerFunction(fn *aotir.Function) ([]gotree.Decl, error) {
+	var out []gotree.Decl
+	if fn.IsLifted && fn.EnvTypeName != "" {
+		envDecl, err := l.lowerEnvTypedef(fn)
+		if err != nil {
+			return nil, fmt.Errorf("env typedef: %w", err)
+		}
+		out = append(out, envDecl)
+	}
+
+	params := make([]gotree.Field, 0, len(fn.Params)+1)
+	if fn.IsLifted && fn.EnvTypeName != "" {
+		params = append(params, gotree.Field{
+			Names: []string{envParamName},
+			Type:  &gotree.Ident{Name: "*" + fn.EnvTypeName},
+		})
+	}
 	for _, p := range fn.Params {
 		pt, err := l.paramTypeText(p)
 		if err != nil {
@@ -120,7 +141,38 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (gotree.Decl, error) {
 	if err != nil {
 		return nil, fmt.Errorf("body: %w", err)
 	}
-	return &gotree.FuncDecl{Name: fn.Name, Type: ft, Body: body}, nil
+	out = append(out, &gotree.FuncDecl{Name: fn.Name, Type: ft, Body: body})
+	return out, nil
+}
+
+// envParamName is the formal parameter name carried by every capturing
+// lifted function. Mirrors the C model's `__mochi_env` so capture
+// references can be rewritten uniformly across emitters.
+const envParamName = "__mochi_env"
+
+// lowerEnvTypedef emits `type <EnvTypeName> struct { Field1 T1; ... }`
+// for a capturing lifted function. Field names are taken from the
+// Capture's FieldName and capitalised so they remain accessible from
+// the same package.
+func (l *lowerer) lowerEnvTypedef(fn *aotir.Function) (gotree.Decl, error) {
+	fields := make([]gotree.Field, 0, len(fn.Captures))
+	for _, c := range fn.Captures {
+		ft, err := l.lowerType(c.VarType)
+		if err != nil {
+			return nil, fmt.Errorf("capture %s: %w", c.FieldName, err)
+		}
+		fields = append(fields, gotree.Field{
+			Names: []string{exportIdent(c.FieldName)},
+			Type:  &gotree.Ident{Name: ft},
+		})
+	}
+	return &gotree.GenDecl{
+		Tok: "type",
+		Specs: []gotree.Spec{&gotree.TypeSpec{
+			Name: fn.EnvTypeName,
+			Type: &gotree.StructType{Fields: fields},
+		}},
+	}, nil
 }
 
 // paramTypeText picks the Go type-expression text for one Param.
@@ -149,6 +201,8 @@ func (l *lowerer) paramTypeText(p aotir.Param) (string, error) {
 			return "", fmt.Errorf("union param missing UnionName")
 		}
 		return p.UnionName, nil
+	case aotir.TypeFun:
+		return l.lowerFunType(p.FunSig)
 	}
 	return l.lowerType(p.Type)
 }
@@ -180,6 +234,8 @@ func (l *lowerer) returnTypeText(fn *aotir.Function) (string, error) {
 			return "", fmt.Errorf("union return missing ReturnUnionName")
 		}
 		return fn.ReturnUnionName, nil
+	case aotir.TypeFun:
+		return l.lowerFunType(fn.ReturnFunSig)
 	}
 	return l.lowerType(fn.ReturnType)
 }
