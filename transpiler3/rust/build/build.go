@@ -35,6 +35,10 @@ const (
 	TargetLinuxStaticArm64
 	// TargetWasm32WASI: cargo build --target wasm32-wasi.
 	TargetWasm32WASI
+	// TargetRustCrate: emit the full Cargo crate (Cargo.toml + src/ +
+	// any sidecar cffi/build.rs) into outDir without invoking cargo.
+	// Used by Phase 15 for publish-ready crate inspection.
+	TargetRustCrate
 )
 
 // Driver is the Rust transpiler pipeline entry point.
@@ -162,6 +166,16 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 	cargoToml := generateCargoToml(crateName, runtimeDir, withFFI)
 	if err := os.WriteFile(filepath.Join(workDir, "Cargo.toml"), []byte(cargoToml), 0o644); err != nil {
 		return "", fmt.Errorf("rust build: write Cargo.toml: %w", err)
+	}
+
+	if target == TargetRustCrate {
+		if err := os.MkdirAll(outDir, 0o755); err != nil {
+			return "", err
+		}
+		if err := copyTree(workDir, outDir); err != nil {
+			return "", fmt.Errorf("rust build: copy crate: %w", err)
+		}
+		return outDir, nil
 	}
 
 	buildArgs := []string{"build", "--release"}
@@ -318,6 +332,9 @@ func generateCargoToml(crateName, runtimePath string, withFFI bool) string {
 name = %q
 version = "0.1.0"
 edition = "2024"
+license = "Apache-2.0"
+description = "Mochi-generated Rust crate."
+repository = "https://github.com/mochilang/mochi"
 
 [[bin]]
 name = %q
@@ -437,4 +454,29 @@ func copyFile(dst, src string) error {
 	defer out.Close()
 	_, err = io.Copy(out, in)
 	return err
+}
+
+// copyTree recursively copies srcDir into dstDir, skipping the cargo
+// target directory. Used by TargetRustCrate (Phase 15) to export a
+// publish-ready crate layout to the caller's outDir.
+func copyTree(srcDir, dstDir string) error {
+	return filepath.Walk(srcDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(srcDir, path)
+		if err != nil {
+			return err
+		}
+		if rel == "." {
+			return nil
+		}
+		if info.IsDir() {
+			if rel == "target" {
+				return filepath.SkipDir
+			}
+			return os.MkdirAll(filepath.Join(dstDir, rel), 0o755)
+		}
+		return copyFile(filepath.Join(dstDir, rel), path)
+	})
 }
