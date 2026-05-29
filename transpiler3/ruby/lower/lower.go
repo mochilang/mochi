@@ -303,6 +303,18 @@ func lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 			return nil, err
 		}
 		return &rtree.RawStmt{Text: fmt.Sprintf("File.open(%s, 'a') { |__f| __f.write(%s) }", p.RubyExprString(), c.RubyExprString())}, nil
+	case *aotir.SaveCSVStmt:
+		p, err := lowerExpr(s.Path)
+		if err != nil {
+			return nil, err
+		}
+		data, err := lowerExpr(s.Data)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawStmt{Text: fmt.Sprintf(
+			"(require 'csv'; CSV.open(%s, 'w') { |__c| (%s).each { |__row| __c << __row } })",
+			p.RubyExprString(), data.RubyExprString())}, nil
 	case *aotir.TryCatchStmt:
 		return lowerTryCatchStmt(s)
 	case *aotir.PanicStmt:
@@ -790,6 +802,16 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			return nil, err
 		}
 		return &rtree.MethodCall{Receiver: st, Method: "subscribe"}, nil
+	case *aotir.SubMakeLimitExpr:
+		st, err := lowerExpr(e.Stream)
+		if err != nil {
+			return nil, err
+		}
+		limit, err := lowerExpr(e.Limit)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: st, Method: "subscribe_limit", Args: []rtree.Expr{limit}, UseParens: true}, nil
 	case *aotir.SubRecvExpr:
 		sub, err := lowerExpr(e.Sub)
 		if err != nil {
